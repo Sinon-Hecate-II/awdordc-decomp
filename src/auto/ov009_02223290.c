@@ -144,11 +144,11 @@ void func_ov009_0222359c(void *arg0) {
 }
 
 s32 func_ov009_02223640(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    M2C_UNK func_020067e0(M2C_UNK *, s32);
+    M2C_UNK DC_FlushRange(M2C_UNK *, s32);
     s32 func_02012c28(M2C_UNK *,s32,s32,s32,s32,s32,s32);
     extern M2C_UNK gLinkState, data_ov009_02227000, func_ov009_022236c0;
     s32 result;
-    func_020067e0(&data_ov009_02227000, M2C_FIELD(&gLinkState,s32 *,0x14));
+    DC_FlushRange(&data_ov009_02227000, M2C_FIELD(&gLinkState,s32 *,0x14));
     result = func_02012c28(&func_ov009_022236c0,arg4,arg2,arg3,arg1,arg0,2);
     if (result != 2) {
         if (result != 7) SignalLinkError();

@@ -159,12 +159,12 @@ s32 func_02040878(s32 peerId, s32 force) {
  * and whose FME field equals my own id; then starts a connection to it.
  * Stops and resets the timeout once it has wrapped around the record list. */
 s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
-    s32 func_02032580(void *, void *);
+    s32 GetPlayerRecordId(void *, void *);
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 func_0204e1b4(void **, s32, void *);
     s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
     s32 func_0206abd8(void *, s32, s32);
-    s32 func_02039d98(void);
+    s32 GetLocalPlayerInfo(void);
     s32 func_02032398(void *);
     u64 GetSystemTick(void);
     s32 func_02040878(s32, s32);
@@ -211,7 +211,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
             return 0;
         }
         found = 1;
-        peerId = func_02032580(func_02039d98(),
+        peerId = GetPlayerRecordId(GetLocalPlayerInfo(),
             M2C_FIELD(GetConnection(), s32 *, 0x2fc) +
             12 * M2C_FIELD((u8 *)GetConnection() + M2C_FIELD(GetConnection(), u8 *, 0x1a5), u8 *, 0x304));
         if (peerId == 0 || peerId == -1) {

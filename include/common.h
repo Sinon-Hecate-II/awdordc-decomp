@@ -141,6 +141,24 @@ enum {
 #define TLS_RANDOM_B       0x54  /* u8[32] the other handshake random */
 #define TLS_KEY_BLOCK      0x74  /* per-direction MAC secrets and RC4 keys derived by TlsInitRecordKeys */
 #define TLS_SERVER_SIDE    0x454 /* u8 nonzero when this endpoint uses the server-side role */
+#define TLS_CLIENT_CERT_REQUESTED 0x5ac /* u8 set once a CertificateRequest was received */
+#define TLS_PENDING_RECORD 0x824 /* void * record buffer being reassembled */
+#define TLS_PENDING_SIZE   0x828 /* u32 total size of that record */
+#define TLS_PENDING_READ   0x82c /* s32 bytes of it read so far */
+#define TLS_PENDING_KEEP   0x456 /* u8 keep the reassembled record for the caller */
+#define TLS_STATE_ERROR    9     /* TLS_STATE value meaning the handshake failed */
+#define TLS_RECORD_HEADER  5     /* bytes of a TLS record header */
+#define TLS_MAX_RECORD     0x4800 /* largest accepted record body */
+
+/* ov003 map-list menu entity: the mode nibble selects the map screen, and the
+ * selected map id is read either from the paged list or from MAP_ID below. */
+#define MENU_ENTITY_MODE      0x3b /* u8 low nibble: menu kind */
+#define MENU_ENTITY_MAP_ID    0x3c /* u16 selected map id for non-list menus */
+#define MENU_ENTITY_MAP_LIST  0x44 /* paged table of u16 map ids */
+#define MENU_ENTITY_CURSOR    0x4c /* list cursor object, +0x14 selected row */
+#define MENU_ENTITY_PAGER     0x5c /* paging object, +4 page index */
+#define MENU_MAP_PAGE_SIZE    0x200 /* bytes per map-list page */
+#define MENU_MAP_ENTRY_OFFSET 0x2e /* u16 map id per row within a page */
 
 /* ov003 map-select screen: six preview rows of three animations each. */
 typedef struct MapSelectRow {
@@ -174,6 +192,14 @@ typedef struct MapSelectScreen {
     void *obj64;           /* +0x64: polymorphic, vtable[1] is its destructor */
     void **buffers68;      /* +0x68: 6 buffers */
 } MapSelectScreen;
+
+/* Label state of the ov003 map-select screen (DrawMapSelectLabel). */
+#define MAP_SELECT_KIND         0x0F /* byte in the descriptor at +0x3C that picks the label kind */
+#define MAP_SELECT_ENTRY_ID     0x08 /* u16 entry id in the pager's current page object */
+#define MAP_SELECT_ROW_ID_BASE  11   /* entry ids start this far above the row index */
+#define MAP_SELECT_ROW_STRIDE   0x24 /* bytes per preview row in the +0x48 array */
+#define MAP_SELECT_ROW_TEXT_KEY 0x0C /* s32 localized-text key in the object a row points at */
+#define MAP_SELECT_BLINK        0x04 /* flags38 bit toggled on every label redraw */
 
 /* ov001 map-select list screen: the object pointed at by gMapSelectState+4.
  * It holds two rows of label sprites and a table of 42-byte map entries. */
@@ -490,8 +516,17 @@ enum {
 #define CONN_SESSION_PEER_PORTS   0x290 /* u16 per slot: peer port */
 #define CONN_SESSION_PLAYER_MASK  0x2F0 /* u32 bitmask of player slots that are present */
 
+/* Connection session fields used while GameSpy QR2 server reporting runs. */
+#define CONN_SESSION_GT2_SOCKET   0x04  /* GameSpy GT2 socket wrapper (handle at +0, local port at +8) */
+#define CONN_SESSION_QR2_RECORD   0x10  /* void *GameSpy QR2 connection record (see qr2.h) */
+#define CONN_SESSION_PUBLIC_PORT  0x1A  /* u16 port the master reported for this client */
+#define CONN_SESSION_PUBLIC_IP    0x1C  /* s32 IPv4 address the master reported for this client */
+#define CONN_SESSION_QR2_PARAM    0x200 /* s32 matchmaking parameter reported to the master */
+#define CONN_SESSION_GAME_NAME    0x2F4 /* s32 game name string given to QR2 */
+#define CONN_SESSION_PLAYER_NAME  0x2F8 /* s32 player name string given to QR2 */
+
 /* Fields of the online-match session context (the pointer held at
- * data_0213d38c + 8). */
+ * gMatchSessionMgr + 8). */
 #define MATCH_SESSION_STATUS       0x00 /* s32 0 idle, 1 running, 2 finished */
 #define MATCH_SESSION_PLAYER_COUNT 0x14 /* s32 number of players */
 #define MATCH_SESSION_PLAYERS      0x18 /* array of 12-byte player records */
@@ -499,6 +534,11 @@ enum {
 #define MATCH_SESSION_CURSOR       0x1C /* u8 player being processed */
 #define MATCH_SESSION_DIRTY        0x1D /* u8 player list changed */
 #define MATCH_SESSION_STATE        0x1E /* u8 match-setup step */
+
+/* A GPI player-info result (the buffer handed to a gpiGetInfo callback). */
+#define GPI_INFO_STATUS    0x00 /* s32 0 = ok, nonzero = error/status */
+#define GPI_INFO_PLAYER_ID 0x04 /* s32 player/profile id */
+#define GPI_INFO_NAS_ID    0x8E /* char[] NAS id as text */
 
 /* States of the WFC match-making session (gNetSession + 0x24). */
 enum {
@@ -560,6 +600,17 @@ enum {
     OV001_DIR_RIGHT = 2,
     OV001_DIR_DOWN  = 3
 };
+
+/* The ov001 save data (gSaveData, 0x6f8 bytes): four 0x100-byte save slots from
+ * +0 and the working copy of the current slot at +0x400.  Name data lives at the
+ * same slot-relative offsets the StorePlayerName helper uses on the working slot. */
+#define SAVE_PLAYER_NAMES   0x480 /* four 16-byte player-name fields in the working slot */
+#define SAVE_NAME_SIZE      0x10  /* bytes per stored name */
+#define SAVE_NAME_TEXT_MAX  0x20  /* longest name text accepted (hex or raw) */
+#define SAVE_NAME_FLAGS     0x4e6 /* u8: low 2 bits name-length class, high bits flags */
+#define SAVE_NAME_MODE_MASK 0x03  /* name-length class (0, 5, 13 or 16 bytes) */
+#define SAVE_NAME_RAW       0x04  /* name was copied raw instead of hex-decoded */
+#define SAVE_NAME_FLAGS_MASK 0xfc /* remaining flag bits */
 
 /* Kinds of 4-byte connection notice sent by SendConnectionPacket(kind, slot). */
 enum {
@@ -667,6 +718,23 @@ typedef struct RsaCrtKey {
 
 /* Length of the decrypted RSA block (the TLS premaster secret). */
 #define RSA_PREMASTER_LEN 0x30
+
+/* Named RSA public key from the TLS handshake's key list (see func_02022128): the peer's
+ * ServerKeyExchange carries the name that selects one, and a signature is verified by
+ * exponentiating it with exponent modulo modulus. */
+typedef struct NamedRsaKey {
+    char *name;         /* +0x00 name sent with the handshake */
+    s32 modulusLength;  /* +0x04 bytes in modulus[] */
+    u8 *modulus;        /* +0x08 n, big-endian */
+    s32 exponentLength; /* +0x0c bytes in exponent[] */
+    u8 *exponent;       /* +0x10 e, big-endian */
+} NamedRsaKey;
+
+/* TLS handshake fields used by the signature verification. */
+#define TLS_DIGEST        0x468 /* u8[] hash of the handshake message that was signed */
+#define TLS_DIGEST_LEN    0x47c /* s32 bytes written to TLS_DIGEST */
+#define TLS_SIGNATURE     0x5a4 /* u8 * signature bytes of the handshake message */
+#define TLS_SIGNATURE_LEN 0x5a8 /* s32 bytes in TLS_SIGNATURE */
 
 /* On-screen keyboard of the ov001 name-entry screen; gOv001MenuState points at one.  The 47
  * character keys of a page are followed by two page toggles, space, delete and the two actions. */

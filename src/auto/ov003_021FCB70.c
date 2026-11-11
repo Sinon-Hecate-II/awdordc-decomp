@@ -2,22 +2,25 @@
 #include "common.h"
 
 #pragma opt_common_subs off
-void func_ov003_021fcb70(void *arg0) {
-M2C_UNK PlaySoundEffect(s32);s32 func_020c7f30(u16);
+/* Confirms the map selected in the map-list menu: reads the map id from the
+ * current list page (or from the entity for non-list modes) and, depending on
+ * the menu kind, starts it or plays the unavailable-map sound. */
+void ConfirmMapSelection(void *entity) {
+M2C_UNK PlaySoundEffect(s32);s32 IsCampaignMapAvailable(u16);
 M2C_UNK func_ov006_022177c8(u16,void *);M2C_UNK func_ov006_02217c0c(u16,void *);M2C_UNK func_ov006_02217c30(u16,void *);
-u16 unit;s16 index;u8 page;u8 *row;u32 mode=(u32)(M2C_FIELD(arg0,u8 *,0x3b)<<28)>>28;
-if((u8)(mode==0)||(u8)(mode==2)||(u8)(mode==3)||(u8)(mode==4)||(u8)(mode==6)||(u8)(mode==7)||(u8)(mode==8)){
-index=M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x14);page=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4);
-row=M2C_FIELD(arg0,u8 **,0x44)+(page<<9);
-unit=((u16 *)(row+0x2e))[(u16)index];
-}else unit=M2C_FIELD(arg0,u16 *,0x3c);
-if((u8)(mode==6)){
-if(func_020c7f30(unit)){func_ov003_021fc98c(arg0,1);func_ov006_022177c8(unit,arg0);PlaySoundEffect(0x1000d);return;}
+u16 mapId;s16 cursorRow;u8 pageIndex;u8 *pageBase;u32 menuKind=(u32)(M2C_FIELD(entity,u8 *,MENU_ENTITY_MODE)<<28)>>28;
+if((u8)(menuKind==0)||(u8)(menuKind==2)||(u8)(menuKind==3)||(u8)(menuKind==4)||(u8)(menuKind==6)||(u8)(menuKind==7)||(u8)(menuKind==8)){
+cursorRow=M2C_FIELD(M2C_FIELD(entity,void **,MENU_ENTITY_CURSOR),s32 *,0x14);pageIndex=M2C_FIELD(M2C_FIELD(entity,void **,MENU_ENTITY_PAGER),s32 *,4);
+pageBase=M2C_FIELD(entity,u8 **,MENU_ENTITY_MAP_LIST)+(pageIndex<<9);
+mapId=((u16 *)(pageBase+MENU_MAP_ENTRY_OFFSET))[(u16)cursorRow];
+}else mapId=M2C_FIELD(entity,u16 *,MENU_ENTITY_MAP_ID);
+if((u8)(menuKind==6)){
+if(IsCampaignMapAvailable(mapId)){SetMenuPanelState(entity,1);func_ov006_022177c8(mapId,entity);PlaySoundEffect(0x1000d);return;}
 PlaySoundEffect(0x1001d);return;
 }
-if((u8)(mode==7)){func_ov003_021fc98c(arg0,2);func_ov006_02217c30(unit,arg0);PlaySoundEffect(0x1000d);return;}
-if(!(u8)(mode==8))return;
-func_ov003_021fc98c(arg0,2);func_ov006_02217c0c(unit,arg0);PlaySoundEffect(0x1000d);
+if((u8)(menuKind==7)){SetMenuPanelState(entity,2);func_ov006_02217c30(mapId,entity);PlaySoundEffect(0x1000d);return;}
+if(!(u8)(menuKind==8))return;
+SetMenuPanelState(entity,2);func_ov006_02217c0c(mapId,entity);PlaySoundEffect(0x1000d);
 }
 #pragma opt_common_subs reset
 void func_ov003_021fcd10(void **arg0) {
@@ -372,7 +375,7 @@ void func_ov003_021fd2d0(void *entity) {
     M2C_UNK func_020893a8(s32, s32, M2C_UNK, s32);
     M2C_UNK func_0208b758(s32, s32);
     s32 func_020ae22c(M2C_UNK);
-    M2C_UNK func_ov003_021fc98c(void *, M2C_UNK);
+    M2C_UNK SetMenuPanelState(void *, M2C_UNK);
     M2C_UNK func_ov006_02217840(void *);
     M2C_UNK func_ov006_02217c74(void *);
     M2C_UNK func_ov006_02217cb8(void *);
@@ -417,7 +420,7 @@ void func_ov003_021fd2d0(void *entity) {
     M2C_FIELD(entity, u8 *, 0x3E) = (u8) (M2C_FIELD(entity, u8 *, 0x3E) & ~7);
     func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 3, 7);
     if (((u32) (M2C_FIELD(entity, u8 *, 0x3E) << 0x18) >> 0x1F) != 0) {
-        func_ov003_021fc98c(entity, 4);
+        SetMenuPanelState(entity, 4);
     }
     func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x10, 3, 6);
     func_0208b758(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 4), 0x4700001D);

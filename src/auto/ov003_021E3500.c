@@ -132,9 +132,9 @@ void func_ov003_021e3714(void *arg0) {
     void ResetBattleMap(void);
     void func_020cf278(s32);
     void LoadBattleMap(s32);
-    void func_020809c0(u16 *, s32, s32);
-    void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
-    void func_01ff9ce8(void);
+    void ClearTileRect(u16 *, s32, s32);
+    void DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
+    void Clear3DSpriteLayer(void);
     void func_020c12f8(s32, M2C_UNK, s32, s32);
     s32 func_020c1878(void *);
 
@@ -189,16 +189,16 @@ void func_ov003_021e3714(void *arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
 
     ptr = (u8 *)(*(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 6) >= 5 ? M2C_FIELD(arg0,void **,0x6c) : M2C_FIELD(arg0,void **,0x68)) + offset + 6;
-    func_020809c0(M2C_FIELD(gCur3DSpriteEngine,u16 **,0x2c), 9, 2);
+    ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u16 **,0x2c), 9, 2);
 
     b0 = *(u8 *)((u8 *)arg0 + 0x60);
     arg5 = (u16)((((u32)(b0 << 28) >> 30) << 4) + 1);
 
-    func_0209b2b4(0, 0, 3, ptr, 0x9000, arg5);
+    DrawTextLine(0, 0, 3, ptr, 0x9000, arg5);
 
     eng = (u8 *)gCur3DSpriteEngine;
     *(eng + 0x46) |= 0x08;
-    ((void (*)(s32))func_01ff9ce8)(0);
+    ((void (*)(s32))Clear3DSpriteLayer)(0);
     eng=(u8 *)gCur3DSpriteEngine;
 
     b1 = *(u8 *)((u8 *)arg0 + 0x60);
@@ -443,7 +443,7 @@ M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x3e)=-(arg1-6);
 M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x46)=0;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x38)=-(arg1+40);
 M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x40)=-arg2;
-func_01ff9ce8(0);
+Clear3DSpriteLayer(0);
 i=0;
 sequence=1;
 do{

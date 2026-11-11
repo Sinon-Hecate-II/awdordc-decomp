@@ -37,7 +37,7 @@ void func_020bbc2c(M2C_UNK arg0) {
 }
 
 void func_020bbc74(void *arg0) {
-    M2C_UNK func_020a8240(M2C_UNK *, s32, s32, M2C_UNK *);
+    M2C_UNK BuildMovePath(M2C_UNK *, s32, s32, M2C_UNK *);
     M2C_UNK func_020a8050(M2C_UNK *, s16 *, s16 *, M2C_UNK *);
     M2C_UNK func_020a83e4(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov000_0216939c(M2C_UNK *);
@@ -48,7 +48,7 @@ void func_020bbc74(void *arg0) {
     M2C_UNK *temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, M2C_UNK **, 0x54);
-    func_020a8240(temp_r4, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), buf);
+    BuildMovePath(temp_r4, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), buf);
     func_ov000_0216939c(temp_r4);
     func_ov000_02169518(buf);
     arr1[0] = M2C_FIELD(temp_r4, u8 *, 1);
@@ -171,19 +171,19 @@ void func_020bc0e0(void) {
  * to the map and then steps it one cell along the direction. */
 void MoveMapCursorWithKeys(void) {
 s32 func_0207d0b8(void); s32 func_0207d0d4(void); void ClampCursorToMap(void);
-extern s32 *gCurrentMap; extern void *gKeyState; extern s16 data_021292dc; extern s16 data_021292de;
+extern s32 *gCurrentMap; extern void *gKeyState; extern s16 gDirectionStepX; extern s16 gDirectionStepY;
 s32 dir=(M2C_FIELD(gKeyState,u16 *,6)>>4)&15;
 s32 viewW=func_0207d0b8(), viewH=func_0207d0d4(), n;
 if(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<viewW)viewW=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);
 if(M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)<viewH)viewH=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);
-if(((s16 (*)[2])&data_021292dc)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4)+1;
-if(((s16 (*)[2])&data_021292dc)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(viewW-2)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4);
-if(((s16 (*)[2])&data_021292de)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y)>>4)+1;
-if(((s16 (*)[2])&data_021292de)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=(viewH-2)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y)>>4);
+if(((s16 (*)[2])&gDirectionStepX)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4)+1;
+if(((s16 (*)[2])&gDirectionStepX)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(viewW-2)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4);
+if(((s16 (*)[2])&gDirectionStepY)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y)>>4)+1;
+if(((s16 (*)[2])&gDirectionStepY)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=(viewH-2)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y)>>4);
 ClampCursorToMap();
-n=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)+((s16 (*)[2])&data_021292dc)[dir][0];
+n=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)+((s16 (*)[2])&gDirectionStepX)[dir][0];
 if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH))M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=n;
-n=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)+((s16 (*)[2])&data_021292de)[dir][0];
+n=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)+((s16 (*)[2])&gDirectionStepY)[dir][0];
 if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=n;
 }
 #pragma pop
@@ -191,8 +191,8 @@ void func_020bc610(void *arg0) {
     void PlaySoundEffect(void *);
     extern void *gKeyState;
     extern s32 *data_027e0058;
-    extern s16 data_021292dc;
-    extern s16 data_021292de;
+    extern s16 gDirectionStepX;
+    extern s16 gDirectionStepY;
     s32 raw;
     s32 dir;
     void *p;
@@ -200,20 +200,20 @@ void func_020bc610(void *arg0) {
     raw = (s32)M2C_FIELD(gKeyState, u16 *, 4);
     dir = (raw >> 4) & 15;
     p = (void *)*data_027e0058;
-    n = M2C_FIELD(p, s16 *, 0x52c2) + ((volatile s16 (*)[2])&data_021292dc)[dir][0];
+    n = M2C_FIELD(p, s16 *, 0x52c2) + ((volatile s16 (*)[2])&gDirectionStepX)[dir][0];
     if (n >= 0 && n < M2C_FIELD(p, u16 *, 0x5144)) {
         M2C_FIELD(p, s16 *, 0x52c2) = n;
-        if (((volatile s16 (*)[2])&data_021292dc)[dir][0] != 0) PlaySoundEffect(arg0);
+        if (((volatile s16 (*)[2])&gDirectionStepX)[dir][0] != 0) PlaySoundEffect(arg0);
     }
     p = (void *)*data_027e0058;
-    n = M2C_FIELD(p, s16 *, 0x52c4) + ((volatile s16 (*)[2])&data_021292de)[dir][0];
+    n = M2C_FIELD(p, s16 *, 0x52c4) + ((volatile s16 (*)[2])&gDirectionStepY)[dir][0];
     if (n >= 0 && n < M2C_FIELD(p, u16 *, 0x5146)) {
         M2C_FIELD(p, s16 *, 0x52c4) = n;
-        if (((volatile s16 (*)[2])&data_021292de)[dir][0] != 0) PlaySoundEffect(arg0);
+        if (((volatile s16 (*)[2])&gDirectionStepY)[dir][0] != 0) PlaySoundEffect(arg0);
     }
 }
 
-s32 func_020bc6ec(s32 a,s32 b) {
+s32 IsCellEnterable(s32 a,s32 b) {
  extern s32 *gCurrentMap;
  s32 p=*gCurrentMap;
  s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),s8 *,0x1e30);
@@ -221,7 +221,7 @@ s32 func_020bc6ec(s32 a,s32 b) {
  return 0;
 }
 
-u8 func_020bc734(s32 arg0, s32 arg1) {
+u8 IsCellOccupied(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 temp_r2;
     u8 var_r0;
@@ -236,21 +236,47 @@ u8 func_020bc734(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_strength_reduction off
-void func_020bc774(void *arg0){
-void PlaySoundEffect(void *);extern void *gKeyState;extern s32 *gCurrentMap;extern s16 data_021292dc,data_021292de;
-s32 dir;u16 keys;s16 x,y;void *p;s32 n;
-dir=(M2C_FIELD(gKeyState,volatile u16 *,4)>>4)&15;keys=M2C_FIELD(gKeyState,u16 *,0);
-p=(void *)*gCurrentMap;
-x=M2C_FIELD(p,s16 *,0x52c2)+((s16 (*)[2])&data_021292dc)[dir][0];y=M2C_FIELD(p,s16 *,0x52c4)+((s16 (*)[2])&data_021292de)[dir][0];
-if(!keys){
-if(func_020bc6ec(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4))&&!func_020bc6ec(x,y)){if(!func_020bc734(x,y))return;}
-p=(void *)*gCurrentMap;
-if(func_020bc734(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4))){if(!func_020bc734(x,y))return;}
-}
-p=(void *)*gCurrentMap;n=M2C_FIELD(p,s16 *,0x52c2)+((s16 (*)[2])&data_021292dc)[dir][0];
-if(n>=0&&n<M2C_FIELD(p,u16 *,0x5144)){M2C_FIELD(p,s16 *,0x52c2)=n;if(((s16 (*)[2])&data_021292dc)[dir][0])PlaySoundEffect(arg0);}
-p=(void *)*gCurrentMap;n=M2C_FIELD(p,s16 *,0x52c4)+((s16 (*)[2])&data_021292de)[dir][0];
-if(n>=0&&n<M2C_FIELD(p,u16 *,0x5146)){M2C_FIELD(p,s16 *,0x52c4)=n;if(((s16 (*)[2])&data_021292de)[dir][0])PlaySoundEffect(arg0);}
+/* Auto-repeat cursor move: step the aimed tile one cell along the held D-pad
+ * direction and play the move sound. On a frame without a fresh key press the
+ * step is refused when it would leave enterable terrain for blocked terrain, or
+ * leave a unit for a cell that holds none. */
+void MoveMapCursorByDirection(void *arg0) {
+    void PlaySoundEffect(void *);
+    extern void *gKeyState;
+    extern s32 *gCurrentMap;
+    extern s16 gDirectionStepX, gDirectionStepY;
+    s32 dir;
+    u16 keys;
+    s16 x, y;
+    void *p;
+    s32 n;
+
+    dir = (M2C_FIELD(gKeyState, volatile u16 *, 4) >> 4) & 15;
+    keys = M2C_FIELD(gKeyState, u16 *, 0);
+    p = (void *)*gCurrentMap;
+    x = M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_X) + ((s16 (*)[2])&gDirectionStepX)[dir][0];
+    y = M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_Y) + ((s16 (*)[2])&gDirectionStepY)[dir][0];
+    if (!keys) {
+        if (IsCellEnterable(M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_Y)) && !IsCellEnterable(x, y)) {
+            if (!IsCellOccupied(x, y)) return;
+        }
+        p = (void *)*gCurrentMap;
+        if (IsCellOccupied(M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_Y))) {
+            if (!IsCellOccupied(x, y)) return;
+        }
+    }
+    p = (void *)*gCurrentMap;
+    n = M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_X) + ((s16 (*)[2])&gDirectionStepX)[dir][0];
+    if (n >= 0 && n < M2C_FIELD(p, u16 *, MAP_WIDTH)) {
+        M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_X) = n;
+        if (((s16 (*)[2])&gDirectionStepX)[dir][0]) PlaySoundEffect(arg0);
+    }
+    p = (void *)*gCurrentMap;
+    n = M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_Y) + ((s16 (*)[2])&gDirectionStepY)[dir][0];
+    if (n >= 0 && n < M2C_FIELD(p, u16 *, MAP_HEIGHT)) {
+        M2C_FIELD(p, s16 *, MAP_CURSOR_TARGET_Y) = n;
+        if (((s16 (*)[2])&gDirectionStepY)[dir][0]) PlaySoundEffect(arg0);
+    }
 }
 #pragma opt_strength_reduction reset
 s32 func_020bc910(void) {

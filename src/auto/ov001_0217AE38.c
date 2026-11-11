@@ -194,12 +194,12 @@ void func_ov001_0217b41c(void) {
 void func_ov001_0217b444(void) {
 extern void *data_ov001_0218f81c; extern void *gNameEntryState;
 void *func_ov001_0218b6f8(s32,s32);void func_ov001_02175db4(s32 *,s32);
-s32 func_ov001_0218c3e0(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
+s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217b634(void);
 u8 choices[2]={M2C_FIELD(&data_ov001_0218f81c,u8 *,0),M2C_FIELD(&data_ov001_0218f81c,u8 *,1)};s32 a,b;
 gNameEntryState=func_ov001_0218b6f8(44,4);
 func_ov001_02175db4(&a,(s32)&b);
-if(a==0) {func_ov001_021846f8(gNameEntryState+8); M2C_FIELD(gNameEntryState,u8 *,41)=func_ov001_0218c3e0(gNameEntryState+8,32);}
+if(a==0) {func_ov001_021846f8(gNameEntryState+8); M2C_FIELD(gNameEntryState,u8 *,41)=StringLengthUpTo(gNameEntryState+8,32);}
 func_ov001_0217b578();func_ov001_02172250(a+9);
 if(b==1)func_ov001_02171c24(53,-1,0);else func_ov001_02171c24(choices[a],-1,0);
 func_ov001_02171dd0(2);
@@ -215,13 +215,13 @@ void func_ov001_0217b578(void) {
     extern M2C_UNK data_ov001_02190714;
     extern M2C_UNK data_ov001_0219072c;
     extern M2C_UNK data_ov001_02190744;
-    extern M2C_UNK func_020040b4;
+    extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK func_02004160;
     extern M2C_UNK func_0200448c;
     extern M2C_UNK func_020046cc;
     Ov001_LoadAsset(&data_ov001_02190700, &func_02004160);
     Ov001_LoadAsset(&data_ov001_02190714, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_0219072c, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_0219072c, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190744, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);

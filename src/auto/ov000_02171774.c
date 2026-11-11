@@ -92,11 +92,11 @@ func_020a92bc(sp,M2C_FIELD(gMapConfig,u16 *,6));M2C_FIELD(sp,s16 *,6)=96;M2C_FIE
 switch((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<26)>>29){case 0:tile=func_ov000_02171768(11);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 1:tile=func_ov000_02171768(12);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2:tile=func_ov000_02171768(13);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3:tile=func_ov000_02171768(14);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}if((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<23)>>31){tile=func_ov000_02171768(0);AddSprite(192,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else{tile=func_ov000_02171768(1);AddSprite(192,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}gCur3DSpriteEngine=saved;}
 #pragma opt_strength_reduction reset
 void func_ov000_021723bc(void) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     extern void *gCur3DSpriteEngine;
-    func_01ff9ce8(1);
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     PlaySoundEffect(0x10018);
@@ -128,12 +128,12 @@ M2C_UNK *func_ov000_0217244c(void) {
     return &data_ov000_021df5ec;
 }
 
-s32 GetNationFlagSprite(void *arg0, s32 arg1) {
+s32 GetTerrainGraphic(void *arg0, s32 arg1) {
     extern u8 data_ov000_021add1c[];
     return M2C_FIELD(data_ov000_021add1c, s32 *, arg1 << 5);
 }
 
-s32 func_ov000_02172468(void *arg0, s32 arg1) {
+s32 GetTerrainIcon(void *arg0, s32 arg1) {
     extern u8 data_ov000_021add20[];
     return M2C_FIELD(data_ov000_021add20, s32 *, arg1 << 5);
 }
@@ -163,7 +163,7 @@ s16 func_ov000_021724b8(void *arg0, s32 arg1) {
     return M2C_FIELD(data_ov000_021add34, s16 *, arg1 << 5);
 }
 
-s32 GetNationName(void *arg0, s32 arg1) {
+s32 GetTerrainNameId(void *arg0, s32 arg1) {
     extern u8 data_ov000_021add38[];
     return M2C_FIELD(data_ov000_021add38, s32 *, arg1 << 5);
 }
@@ -196,15 +196,15 @@ void *func_ov000_021725c8(void *arg0) {
 }
 
 void func_ov000_021725e0(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_01ff9ce8(2);
-    func_01ff9ce8(1);
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(0);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(arg0, s32 *, 4) = 2;
     M2C_FIELD(arg0, s32 *, 8) = 0;
@@ -224,23 +224,23 @@ void func_ov000_02172654(void *entry) {
         break;
     case 1:
         func_020c127c(entry);
-        func_020809c0(M2C_FIELD(g3DSpriteEngineSub, void **, 0x24), 32, 32);
+        ClearTileRect(M2C_FIELD(g3DSpriteEngineSub, void **, 0x24), 32, 32);
         func_ov000_02173290(entry);
-        func_ov000_021732c0(entry);
+        DrawMapInfoWindow(entry);
         M2C_FIELD(entry, s32 *, 8) = 0;
         M2C_FIELD(entry, s32 *, 12) = 0;
         M2C_FIELD(entry, s32 *, 4) = 0;
         break;
     case 2:
         func_ov000_02173290(entry);
-        func_ov000_021732c0(entry);
+        DrawMapInfoWindow(entry);
         M2C_FIELD(entry, s32 *, 8) = 0;
         M2C_FIELD(entry, s32 *, 12) = 0;
         M2C_FIELD(entry, s32 *, 4) = 0;
         break;
     }
     func_ov000_02173468(entry);
-    if (!func_ov000_02172468(func_ov000_0217244c(), *M2C_FIELD(entry, s32 **, 0x18))
+    if (!GetTerrainIcon(func_ov000_0217244c(), *M2C_FIELD(entry, s32 **, 0x18))
         && !M2C_FIELD(entry, u8 *, 0x15)) {
         func_ov000_02172dc0(entry);
     }

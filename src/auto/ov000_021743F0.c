@@ -393,16 +393,16 @@ void *func_ov000_0217519c(void *arg0) {
 }
 
 void func_ov000_021751b4(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r4;
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_01ff9ce8(2);
-    func_01ff9ce8(1);
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(0);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
@@ -427,7 +427,7 @@ void func_ov000_02175234(void *arg0){
 
     switch (M2C_FIELD(arg0, s32 *, 4)) {
         case 1:
-            func_020809c0(M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), 32, 32);
+            ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), 32, 32);
             func_ov000_021769dc(arg0);
             func_ov000_02176a0c(arg0);
             M2C_FIELD(arg0, s32 *, 4) = 0;

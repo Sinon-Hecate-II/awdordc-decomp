@@ -327,7 +327,7 @@ return penalty+(cap+bonus);
 
 s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
 
-s32 func_020a76d4(u8 *p){s32 func_020a7bd4(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=func_020a7bd4((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
+s32 GetUnitAttackRangeMax(u8 *p){s32 func_020a7bd4(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=func_020a7bd4((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
 
 s32 func_020a7714(void *arg0) {
     s32 func_020a26c8(void *, u8, u8);

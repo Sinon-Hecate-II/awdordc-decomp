@@ -14,7 +14,7 @@ s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a10e4(s32,void *);
 s32 ManhattanDistance(s32,s32,s16,s16);void SelectMapLayer(void *);
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
 s32 func_ov000_021a99dc(void *);s32 IsFootUnitKind(s32);
-s32 IsPropertyTerrain(s32);s32 func_020d27ec(s16,s32);
+s32 IsPropertyTerrain(s32);s32 IsTerrainOnUnitTeam(s16,s32);
 register u8 *p asm("r8");
 s32 y,i,id,d,xmin,xmax,ymin,ymax,r,dx,dy,cx,cy,w,h;
 s32 x;
@@ -81,7 +81,7 @@ if(((Map16E8 *)map)->grid[y][x]<0)continue;
 id=map[((Map16E8 *)map)->rows[y]+x+0x1420];
 if(IsPropertyTerrain(id)!=1)continue;
 map=*gCurrentMap;id=map[((Map16E8 *)map)->rows[y]+x+0x1420];
-if(func_020d27ec(M2C_FIELD(map,s16 *,0x52a8),id)!=0)continue;
+if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),id)!=0)continue;
 d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[8]>d)p[8]=d;
 }
 }

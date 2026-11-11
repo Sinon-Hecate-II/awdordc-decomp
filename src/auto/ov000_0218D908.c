@@ -33,9 +33,9 @@ void func_ov000_0218d908(void) {
     s32 CanKindAttack(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 CanUnitAttackKind(void *, s32);
-    s32 func_ov000_021a9214(void *, s32, s32);
+    s32 IsCaptureTargetAt(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
-    s32 func_ov000_021a9d8c(s16, s16);
+    s32 IsAllyUnitAtCell(s16, s16);
     s32 func_ov000_02178778(s16, s16);
     s32 func_ov000_02178e84(s16, s16);
     s32 CellMoveScore(s32, s32, s32, s32);
@@ -78,8 +78,8 @@ void func_ov000_0218d908(void) {
                         goto nextTile;
                     }
                 }
-                if (!func_ov000_021a9214(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y) && !func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y)) goto nextTile;
-                if (func_ov000_021a9d8c((s16)x, (s16)y)) goto nextTile;
+                if (!IsCaptureTargetAt(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y) && !func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y)) goto nextTile;
+                if (IsAllyUnitAtCell((s16)x, (s16)y)) goto nextTile;
                 if (func_ov000_02178778((s16)x, (s16)y) == 1) goto nextTile;
                 if (!func_ov000_02178e84((s16)x, (s16)y)) goto nextTile;
                 map = *gCurrentMap;

@@ -212,7 +212,7 @@ void InitBattleMapConfig(void) {
     extern MapConfigRecord gMapConfig;
     void ResetPlayerSetupTables(void);
     s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
-    void func_020a230c(s32,s32); void func_020a232c(s32,s32); void func_020a231c(s32,s32); void func_020a23a4(s32,s32);
+    void func_020a230c(s32,s32); void func_020a232c(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
     s32 func_020a88d4(s32); s32 func_020a8994(s32); s32 func_020a89a4(s32); s32 func_020a89c4(s32); s32 func_020a89e4(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void func_020a4100(void); s32 MapData_GetTileset(s32);
     s32 player, value, fieldA, fieldB, playerFlags, team;
@@ -232,10 +232,10 @@ void InitBattleMapConfig(void) {
         default: func_020a230c(player, value); break;
         }
         func_020a232c(player, fieldA);
-        func_020a231c(player, fieldB);
+        SetPlayerIdForSlot(player, fieldB);
         if (playerFlags & 0x80) team = 1;
         else team = (player != 1) ? 2 : 1;
-        func_020a23a4(player, team);
+        SetPlayerTeam(player, team);
     }
     if (func_020a88d4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
     setting = func_020a8994(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
@@ -263,11 +263,11 @@ void InitBattleMapConfig(void) {
  * default values 0/1000/0/0), setting its default flag bits. */
 void ResetPlayerSetupTables(void) {
     void func_020a230c(s32, s32);
-    void func_020a231c(s32, s32);
+    void SetPlayerIdForSlot(s32, s32);
     void func_020a232c(s32, s32);
     void func_020a233c(s32, s32);
     void func_020a234c(s32, s32);
-    void func_020a23a4(s32, s32);
+    void SetPlayerTeam(s32, s32);
     extern void **gCurrentMap;
     extern MapConfigRecord gMapConfig;
     u8 *p;
@@ -284,14 +284,14 @@ void ResetPlayerSetupTables(void) {
     p += 0x5000;
     p[0x2af] = 0;
 
-    func_020a23a4(1, 1);
-    func_020a23a4(2, 2);
-    func_020a23a4(3, 2);
-    func_020a23a4(4, 2);
-    func_020a231c(1, 1);
-    func_020a231c(2, 2);
-    func_020a231c(3, 3);
-    func_020a231c(4, 4);
+    SetPlayerTeam(1, 1);
+    SetPlayerTeam(2, 2);
+    SetPlayerTeam(3, 2);
+    SetPlayerTeam(4, 2);
+    SetPlayerIdForSlot(1, 1);
+    SetPlayerIdForSlot(2, 2);
+    SetPlayerIdForSlot(3, 3);
+    SetPlayerIdForSlot(4, 4);
     func_020a230c(1, 0);
     func_020a230c(2, 0);
     func_020a230c(3, 0);

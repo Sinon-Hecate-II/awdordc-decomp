@@ -183,7 +183,7 @@ void *GetScrollList(void) {
 #pragma opt_propagation off
 #pragma opt_scheduling off
 void func_ov000_02170110(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
@@ -247,8 +247,8 @@ void func_ov000_02170110(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3E) = 0;
     M2C_FIELD(arg0, s16 *, 0x40) = 0;
     ScrollListRebuild(M2C_FIELD(arg0, s16 *, 0x34), M2C_FIELD(arg0, s16 *, 0x36));
-    func_01ff9ce8(1);
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(2);
     zero=0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = zero;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 1;
@@ -389,7 +389,7 @@ void func_ov000_021703e8(void *arg0) {
 
 #pragma opt_common_subs off
 void func_ov000_0217074c(void) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_020cfd28();
     M2C_UNK func_020e35cc(s32);
     extern void *g3DSpriteEngineMain;
@@ -404,8 +404,8 @@ void func_ov000_0217074c(void) {
     value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
     gCur3DSpriteEngine = next2;
     func_020e35cc(value);
-    func_01ff9ce8(1);
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
     func_020cfd28();

@@ -136,7 +136,7 @@ func_02049098(M2C_FIELD(a,s32 *,12),func_0205afdc,0);
 data_0213e110=0;
 }
 
-u16 func_0205b030(void *arg0) {
+u16 GT2SocketPort(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 8);
 }
 
@@ -144,7 +144,7 @@ s32 func_0205b038(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x54) - M2C_FIELD(arg0, s32 *, 0x58);
 }
 
-s32 func_0205b048(s32 *arg0) {
+s32 GT2SocketHandle(s32 *arg0) {
     return *arg0;
 }
 

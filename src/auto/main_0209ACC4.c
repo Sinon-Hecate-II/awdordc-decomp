@@ -241,7 +241,7 @@ void func_0209b084(void *entity) {
     s32 func_02095fe8(void);
     void func_02095ff8(s8);
     M2C_UNK func_01ffa9e4(M2C_UNK *);
-    void func_01ff9ce8(u8);
+    void Clear3DSpriteLayer(u8);
     void func_02095fc0(void);
     void func_02097768(void);
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
@@ -269,7 +269,7 @@ void func_0209b084(void *entity) {
                 if (mode == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) continue;
                 if (mode == 3 && gCur3DSpriteEngine != saved) continue;
             }
-            func_01ff9ce8(M2C_FIELD(entity, u8 *, 0x57));
+            Clear3DSpriteLayer(M2C_FIELD(entity, u8 *, 0x57));
             {
                 u8 *p = (u8 *)gCur3DSpriteEngine;
                 s8 idx = M2C_FIELD(entity, s8 *, 0x57);
@@ -323,11 +323,11 @@ void func_0209b1b0(void *arg0) {
 }
 
 void func_0209b26c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
-    void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
-    func_0209b2b4(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5);
+    void DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
+    DrawTextLine(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5);
 }
 
-void func_0209b2b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
+void DrawTextLine(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
     void func_0209b32c(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
 
     func_0209b32c(arg0, arg1, arg2, arg3, arg4, 0, arg5);
@@ -361,7 +361,7 @@ StopTextObject(p);func_01ffa3dc(&data_021032d8,7);
 void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
  s32 Divide(s32,s32);
  DigitTable table=data_020f399c;
- do {func_0209b2b4(a,b,c,table.digits[d%10],e,f);
+ do {DrawTextLine(a,b,c,table.digits[d%10],e,f);
  d=Divide(d,10); if(!d) return;
  f+=2; a--;
  } while(1);

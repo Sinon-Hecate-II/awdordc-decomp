@@ -337,29 +337,32 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_02053c9c(void **a,s32 b,s32 c,s32 d,s32 e,s32 f) {
+/* Send a type-2 (set) operation for profile profileId. When useLocal is set
+ * and the profile is cached, update the cached record first; callback and
+ * callbackArg are delivered on completion, and doFinish waits for the result. */
+s32 func_02053c9c(void **connection,s32 profileId,s32 useLocal,s32 doFinish,s32 callback,s32 callbackArg) {
 s32 func_02055b84(void **,s32,void **);void *gpiMalloc(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void gpiCopyInfo(void *,void *);
 s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 gpiThink(void **,s32);
 extern M2C_UNK data_020fe824;
-register void *buffer; register s32 id; register s32 finish=d; register s32 value=b;
-void *found,*req; void *base=*a; s32 enabled,result;RequestPair534 pair;
-req=0;enabled=0;if(c==1)enabled=1;
-if(M2C_FIELD(base,s32 *,256)==0)enabled=0;
-if(e && enabled && func_02055b84(a,b,&found) && M2C_FIELD(found,void **,12)) {
+register void *buffer; register s32 operationId; register s32 finish=doFinish; register s32 value=profileId;
+void *cachedInfo,*operation; void *session=*connection; s32 useCache,rc;RequestPair534 pair;
+operation=0;useCache=0;if(useLocal==1)useCache=1;
+if(M2C_FIELD(session,s32 *,256)==0)useCache=0;
+if(callback && useCache && func_02055b84(connection,profileId,&cachedInfo) && M2C_FIELD(cachedInfo,void **,12)) {
 buffer=gpiMalloc(516);
-if(!buffer){gpiSetErrorString(a,&data_020fe824);return 1;}
-gpiCopyInfo(M2C_FIELD(found,void **,12),buffer);
-M2C_FIELD(buffer,s32 *,0)=0;M2C_FIELD(buffer,s32 *,4)=b;
-pair.a=e;pair.b=f;
-result=gpiAddOperation(a,2,0,&req,1,e,f);if(result)return result;
-id=M2C_FIELD(req,s32 *,24);
-result=gpiAddCallback(a,pair,buffer,req,0);if(result)return result;
-func_02054484(a,req);
+if(!buffer){gpiSetErrorString(connection,&data_020fe824);return 1;}
+gpiCopyInfo(M2C_FIELD(cachedInfo,void **,12),buffer);
+M2C_FIELD(buffer,s32 *,0)=0;M2C_FIELD(buffer,s32 *,4)=profileId;
+pair.a=callback;pair.b=callbackArg;
+rc=gpiAddOperation(connection,2,0,&operation,1,callback,callbackArg);if(rc)return rc;
+operationId=M2C_FIELD(operation,s32 *,24);
+rc=gpiAddCallback(connection,pair,buffer,operation,0);if(rc)return rc;
+func_02054484(connection,operation);
 }else{
-result=gpiAddOperation(a,2,0,&req,d,e,f);if(result)return result;
-id=M2C_FIELD(req,s32 *,24);result=func_02053c04(a,b,id);if(result)return result;
+rc=gpiAddOperation(connection,2,0,&operation,doFinish,callback,callbackArg);if(rc)return rc;
+operationId=M2C_FIELD(operation,s32 *,24);rc=func_02053c04(connection,profileId,operationId);if(rc)return rc;
 }
-if(d){result=gpiThink(a,id);if(result)return result;}
+if(doFinish){rc=gpiThink(connection,operationId);if(rc)return rc;}
 return 0;
 }
 

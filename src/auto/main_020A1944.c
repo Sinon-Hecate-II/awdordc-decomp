@@ -218,7 +218,7 @@ s32 func_020a1f88(s32 player) {
 void func_020a2148(u16 *arg0) {
  s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
  u16 *func_020bfa74(void); void func_020bfa80(u16 *); void func_020bfebc(u16 *);
- s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 func_020a23b4(s32);
+ s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 GetPlayerTeam(s32);
  s32 i; u16 *p; u16 value;
  p=arg0;
  if(p==0) p=func_020bfa74();
@@ -229,7 +229,7 @@ void func_020a2148(u16 *arg0) {
  do {
  *p=(*p & ~0xff) | (u8)(u16)func_020a22fc(i+1);
  *p=(*p & ~0xf00) | ((u32)((u16)func_020a2370(i+1)<<28)>>20);
- value=func_020a23b4(i+1); i++;
+ value=GetPlayerTeam(i+1); i++;
  *p=(*p & ~0xf000) | ((u32)(value<<28)>>16);
  p++;
  }while(i<4);
@@ -243,7 +243,7 @@ s32 IsLinkSessionActive(void);
 u32 func_020bf894(s32);
 void func_020a230c(s32,s32);
 void func_020a232c(s32,s32);
-void func_020a23a4(s32,s32);
+void SetPlayerTeam(s32,s32);
 extern M2C_UNK data_0211faf4;
 u16 *p;
 s32 i;
@@ -263,7 +263,7 @@ func_020c002c(p);
 for(idx=1;idx<5;idx++){
 func_020a230c(idx,0);
 func_020a232c(idx,idx);
-func_020a23a4(idx,0);
+SetPlayerTeam(idx,0);
 }
 p=arg0; i=0;
 do {
@@ -277,7 +277,7 @@ r6=M2C_FIELD(&data_0211faf4,u8 *,r9); r7=r9; r8=0;
 }
 func_020a230c(r9,r6);
 func_020a232c(r9,r7);
-func_020a23a4(r9,r8);
+SetPlayerTeam(r9,r8);
 i++;p++;
 }while(i<4);
 }
@@ -292,7 +292,7 @@ void func_020a230c(s32 arg0, s32 arg1) {
     M2C_FIELD(&data_0215c386, s8 *, arg0) = arg1;
 }
 
-void func_020a231c(s32 arg0, s8 arg1) {
+void SetPlayerIdForSlot(s32 arg0, s8 arg1) {
     extern M2C_UNK data_0215c381;
     M2C_FIELD(&data_0215c381, s8 *, arg0) = arg1;
 }
@@ -312,7 +312,7 @@ void func_020a234c(s32 arg0, s16 arg1) {
  M2C_FIELD(&data_0215c396, s16 *, arg0 * 2) = arg1;
 }
 
-u8 func_020a2360(s32 arg0) {
+u8 GetPlayerIdForSlot(s32 arg0) {
     extern M2C_UNK data_0215c381;
     return M2C_FIELD(&data_0215c381, u8 *, arg0);
 }
@@ -332,12 +332,12 @@ u16 func_020a2390(s32 arg0) {
  return M2C_FIELD(&data_0215c396, u16 *, arg0 * 2);
 }
 
-void func_020a23a4(s32 arg0, s32 arg1) {
+void SetPlayerTeam(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0215c37c;
     M2C_FIELD(&data_0215c37c, s8 *, arg0) = arg1;
 }
 
-s32 func_020a23b4(s32 arg0) {
+s32 GetPlayerTeam(s32 arg0) {
     extern M2C_UNK data_0215c37c;
     return M2C_FIELD(&data_0215c37c, u8 *, arg0);
 }

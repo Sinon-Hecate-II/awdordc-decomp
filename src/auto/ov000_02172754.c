@@ -122,7 +122,7 @@ void func_ov000_02172754(void *arg0) {
     gCur3DSpriteEngine = saved;
 }
 
-void func_ov000_02172aa0(void *unused) {
+void DrawInfoWindowFrame(void *unused) {
  M2C_UNK func_0207c780(M2C_UNK *,s32); u32 GetInfoWindowMode();
  void *saved; s32 base; M2C_UNK *p;
  base=M2C_FIELD(g3DSpriteEngineSub,s32 *,0x28); saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -138,31 +138,31 @@ void func_ov000_02172aa0(void *unused) {
  func_0207c780(p,base);gCur3DSpriteEngine=saved;
 }
 
-/* Draw one player's nation banner on the top screen: the nation's flag sprite,
-   the emblem tiles for the current map tileset, and its localized name. */
-void DrawPlayerNationInfo(void *entry) {
+/* Draw the selected terrain's banner: its graphic, the tileset-specific tiles
+   and its localized name. */
+void DrawTerrainInfoBanner(void *entry) {
     M2C_UNK func_0207c780(M2C_UNK *, s32);
     void func_01ff9e44(M2C_UNK, s32, s32);
     void func_0209b26c(s32, s32, s32, s32, s32, u16);
     s32 func_ov000_0217244c();
-    s32 GetNationFlagSprite(s32, s32);
+    s32 GetTerrainGraphic(s32, s32);
     s32 func_ov000_02172478(s32, s32);
     s32 func_ov000_02172488(s32, s32);
     s32 func_ov000_02172498(s32, s32);
     s32 func_ov000_021724a8(s32, s32);
-    s32 GetNationName(s32, s32);
+    s32 GetTerrainNameId(s32, s32);
     s32 context; void *savedEngine; s32 drawY; s32 palette;
     context = func_ov000_0217244c();
     palette = M2C_FIELD(entry, s32 *, 0) ? 0xa3 : 0x103;
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     drawY = M2C_FIELD(entry, s32 *, 0) ? M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x10) + 0x20 : M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x10) + 0xa40;
-    if (GetNationFlagSprite(context, *M2C_FIELD(entry, s32 **, 0x18))) {
-        func_0207c780((M2C_UNK *)GetNationFlagSprite(context, *M2C_FIELD(entry, s32 **, 0x18)), drawY);
+    if (GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18))) {
+        func_0207c780((M2C_UNK *)GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18)), drawY);
     } else {
         func_0207c780(&data_ov000_021d841c, drawY);
     }
-    if (GetNationFlagSprite(context, *M2C_FIELD(entry, s32 **, 0x18))) {
+    if (GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18))) {
         switch (M2C_FIELD(M2C_FIELD(gCurrentMap, s32 *, 0) + 0x5000, u8 *, 0x157)) {
         case 0: case 5: case 7: case 8: case 9:
             func_01ff9e44(func_ov000_02172478(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
@@ -176,20 +176,20 @@ void DrawPlayerNationInfo(void *entry) {
     } else {
         func_01ff9e44((s32)&data_ov000_021b8f5c, 0x80, 0xc0);
     }
-    func_0209b26c(2, 0xa, 1, GetNationName(context, *M2C_FIELD(entry, s32 **, 0x18)), 0xf000, (u16)palette);
+    func_0209b26c(2, 0xa, 1, GetTerrainNameId(context, *M2C_FIELD(entry, s32 **, 0x18)), 0xf000, (u16)palette);
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov000_02172d28(void *arg0) {
+void DrawTerrainInfoIcon(void *arg0) {
  M2C_UNK func_020807e4(s32,s32,u16,s32);
- s32 func_ov000_0217244c(); s32 func_ov000_02172468(s32,s32);
+ s32 func_ov000_0217244c(); s32 GetTerrainIcon(s32,s32);
  s32 base; void *saved; s32 ctx,value; s32 color;
  saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
  ctx=func_ov000_0217244c();
  base=M2C_FIELD(g3DSpriteEngineSub,s32 *,0x24);
  color=M2C_FIELD(arg0,s32 *,0)?0x52:1;
- value=func_ov000_02172468(ctx,*M2C_FIELD(arg0,s32 **,0x18));
- if(func_ov000_02172468(ctx,*M2C_FIELD(arg0,s32 **,0x18))) func_020807e4(value,base+0xc4,(u16)color,4);
+ value=GetTerrainIcon(ctx,*M2C_FIELD(arg0,s32 **,0x18));
+ if(GetTerrainIcon(ctx,*M2C_FIELD(arg0,s32 **,0x18))) func_020807e4(value,base+0xc4,(u16)color,4);
  gCur3DSpriteEngine=saved;
 }
 
@@ -312,7 +312,7 @@ gCur3DSpriteEngine=saved;
  * emblem sprite (its table chosen by the info window's view) followed by the
  * player's army label element. */
 void DrawPlayerArmyList(void *info) {
-    M2C_UNK func_01ff9ce8(s32);
+    M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK func_020807e4(s32, s32, u16, s32);
     void func_02098844(u32, s32, s32, s32, u16, u16, u8);
     u32 GetInfoWindowMode();
@@ -338,7 +338,7 @@ void DrawPlayerArmyList(void *info) {
     paletteIndices[5] = gArmyPaletteIndices[5];
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(0);
     player = 0;
     stateOff = 0;
     rowOff = 0;
@@ -368,63 +368,66 @@ void DrawPlayerArmyList(void *info) {
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02173290(void *arg0) {
-     void DrawPlayerNationInfo(void *);
+     void DrawTerrainInfoBanner(void *);
  void func_ov000_02173058();
  func_ov000_02173058();
     if (M2C_FIELD(arg0, u8 *, 0x15) != 0) {
         return;
     }
-    DrawPlayerNationInfo(arg0);
+    DrawTerrainInfoBanner(arg0);
     M2C_FIELD(arg0, s32 *, 0) = (s32) (1 - M2C_FIELD(arg0, s32 *, 0));
 }
 
-void func_ov000_021732c0(void *arg0) {
-    void func_020809c0(M2C_UNK, s32, s32);
-    s32 func_0209b2b4(s32, s32, s32, s32, s32, s32);
-    void func_020c1230(M2C_UNK, M2C_UNK, s32, s32);
-    void func_020c1d28(s32, s32, s32, s32);
-    s32 func_020cfb78(void);
-    void func_ov000_02172aa0(void *);
-    void func_ov000_02172d28(void *);
+/* Draws the map info window on the lower screen: first the window frame, then
+ * either the selected terrain's icon or the map overview (cleared preview area,
+ * terrain preview centred with its name drawn below), then one row per player. */
+void DrawMapInfoWindow(void *window) {
+    void ClearTileRect(M2C_UNK, s32, s32);
+    s32 DrawTextLine(s32, s32, s32, s32, s32, s32);
+    void DrawMapPreview(M2C_UNK, M2C_UNK, s32, s32);
+    void SetFrameRect(s32, s32, s32, s32);
+    s32 GetCurrentMapName(void);
+    void DrawInfoWindowFrame(void *);
+    void DrawTerrainInfoIcon(void *);
     void DrawPlayerArmyList(void *);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void **gCurrentMap;
 
-    void *saved;
-    void **mapPtr;
-    s32 temp_r2;
-    s32 temp_r3;
-    u32 xm;
-    u32 ym;
+    void *savedEngine;
+    void **map;
+    s32 previewWidth;
+    s32 previewHeight;
+    u32 left;
+    u32 top;
 
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     M2C_FIELD(M2C_FIELD(g3DSpriteEngineSub, void **, 0), s16 *, 0x38) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x40) = 0;
-    func_ov000_02172aa0(arg0);
-    if (M2C_FIELD(arg0, u8 *, 0x15) == 0) {
-        func_ov000_02172d28(arg0);
+    DrawInfoWindowFrame(window);
+    if (M2C_FIELD(window, u8 *, 0x15) == 0) {
+        DrawTerrainInfoIcon(window);
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = 0;
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
     } else {
-        func_020809c0(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28) + 0x80, 0x18, 0x14);
-        mapPtr = *gCurrentMap;
-        temp_r2 = M2C_FIELD(mapPtr, u16 *, 0x5144) * 4;
-        temp_r3 = M2C_FIELD(mapPtr, u16 *, 0x5146) * 4;
-        xm = 0x58 - (temp_r2 / 2);
-        ym = 0x60 - (temp_r3 / 2);
-        func_020c1230(M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x10), M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x24), 1, 10);
+        ClearTileRect(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28) + 0x80, 0x18, 0x14);
+        map = *gCurrentMap;
+        previewWidth = M2C_FIELD(map, u16 *, MAP_WIDTH) * 4;
+        previewHeight = M2C_FIELD(map, u16 *, MAP_HEIGHT) * 4;
+        left = 0x58 - (previewWidth / 2);
+        top = 0x60 - (previewHeight / 2);
+        DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x10), M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x24), 1, 10);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = (s16) (0 - xm);
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = (s16) (0 - ym);
-        func_020c1d28(xm, ym, 0x60, 7);
-        func_0209b2b4(1, 2, 2, func_020cfb78(), 0xF000, 0x340);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = (s16) (0 - left);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = (s16) (0 - top);
+        SetFrameRect(left, top, 0x60, 7);
+        DrawTextLine(1, 2, 2, GetCurrentMapName(), 0xF000, 0x340);
     }
-    DrawPlayerArmyList(arg0);
+    DrawPlayerArmyList(window);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 }
 

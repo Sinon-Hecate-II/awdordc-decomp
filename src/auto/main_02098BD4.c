@@ -212,7 +212,7 @@ void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
 }
 
 void func_020990fc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-u8 func_02097ce4(s32);
+u8 GetFaceTileRow(s32);
 u8 func_02099320(void *);
 void func_020985b0(s32, s32, s32);
 void func_02098e2c(void *, s32);
@@ -222,7 +222,7 @@ extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 void *old; void *v; s32 i; u32 mode;
 M2C_FIELD(arg0, u8 *, 0x58) = (u8)arg1;
 M2C_FIELD(arg0, u8 *, 0x59) = (u8)arg2;
-M2C_FIELD(arg0, u8 *, 0x49) = func_02097ce4(M2C_FIELD(arg0,u8*,0x58));
+M2C_FIELD(arg0, u8 *, 0x49) = GetFaceTileRow(M2C_FIELD(arg0,u8*,0x58));
 if (func_02099320(arg0)) {
 old = gCur3DSpriteEngine;
 i = 0;
@@ -564,10 +564,10 @@ u16 *func_02099a0c(void *arg0) {
 }
 
 void func_02099a30(void *arg0) {
- M2C_UNK func_020809c0(s32,u8,u8);
+ M2C_UNK ClearTileRect(s32,u8,u8);
  u16 *base=M2C_FIELD(arg0,u16 **,0x40);
  if(base==0) return;
- func_020809c0((s32)(base+M2C_FIELD(arg0,u8 *,0x48)+(M2C_FIELD(arg0,u8 *,0x49)<<5)),M2C_FIELD(arg0,u8 *,0x58),M2C_FIELD(arg0,u8 *,0x59));
+ ClearTileRect((s32)(base+M2C_FIELD(arg0,u8 *,0x48)+(M2C_FIELD(arg0,u8 *,0x49)<<5)),M2C_FIELD(arg0,u8 *,0x58),M2C_FIELD(arg0,u8 *,0x59));
  M2C_FIELD(arg0,M2C_UNK (**)(),0x50)();
 }
 

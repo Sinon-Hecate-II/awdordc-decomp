@@ -272,7 +272,7 @@ void func_ov001_02183e58(s32 arg0, M2C_UNK *arg1) {
 }
 
 void func_ov001_02183f30(s32 arg0) {
-    s32 func_ov001_0218a384(M2C_UNK, s32, u16, s32);
+    s32 Ov001_MoveSpriteLayout(M2C_UNK, s32, u16, s32);
     extern void *data_ov001_02193dfc;
     u16 f10;
     u16 f12;
@@ -283,7 +283,7 @@ void func_ov001_02183f30(s32 arg0) {
     f12 = M2C_FIELD(base, u16 *, 0x12);
     f10 = M2C_FIELD(base, u16 *, 0x10);
     nested = M2C_FIELD(base, void **, 0x0);
-    func_ov001_0218a384(nested, -1, f10, arg0 + (s32)f12);
+    Ov001_MoveSpriteLayout(nested, -1, f10, arg0 + (s32)f12);
     M2C_FIELD(data_ov001_02193dfc, s8 *, 0x1A) = (s8)arg0;
 }
 
@@ -299,10 +299,10 @@ void func_ov001_02183f6c(void) {
 #pragma opt_common_subs off
 #pragma pool_constants off
 void func_ov001_02183fa0(void) {
- u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK data_ov001_02193e00; extern s32 data_ov001_02193e04;
+ u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK data_ov001_02193e00; extern s32 gSaveData;
  if(*(volatile M2C_UNK *)&data_ov001_02193e00==0)return;
  while(func_02011d58()!=0x8000){}
- func_ov001_0218b71c(&data_ov001_02193e04-1);
+ func_ov001_0218b71c(&gSaveData-1);
 }
 #pragma pool_constants reset
 #pragma opt_common_subs reset
@@ -367,7 +367,7 @@ s32 func_ov001_021840d4(void) {
 }
 
 s32 func_ov001_02184170(void **arg0) {
-    s32 func_0206527c(M2C_UNK, M2C_UNK, s32);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     extern u8 data_ov001_0218fb64[];
     extern s32 data_ov001_02193e00;
     s8 *r8;
@@ -379,7 +379,7 @@ s32 func_ov001_02184170(void **arg0) {
     r6 = 0;
     r7 = 0;
     for (r7 = 0; r7 < 20; r7++) {
-        if (func_0206527c((M2C_UNK)(r8 + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
+        if (ByteCompareN((M2C_UNK)(r8 + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
             r6 = r6 + 1;
         }
         r8 = r8 + 0x2a;
@@ -418,7 +418,7 @@ void func_ov001_021841cc(u16 *p) {
 void func_ov001_02184230(u16 *arg0) {
     void DC_InvalidateRange(void *, s32);
     void MI_CpuCopy8(void *, void *, u32);
-    s32 func_0206527c(M2C_UNK, M2C_UNK, s32);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     void func_02011f2c(M2C_UNK *, M2C_UNK *);
     extern s32 data_ov001_02193e00;
     extern u8 data_ov001_0218fb64[];
@@ -448,7 +448,7 @@ void func_ov001_02184230(u16 *arg0) {
             searchSlot = work.slots;
             j = 0;
             do {
-                if (func_0206527c((M2C_UNK)(record + 4), (M2C_UNK)(searchSlot + 0x20), 6) == 0) {
+                if (ByteCompareN((M2C_UNK)(record + 4), (M2C_UNK)(searchSlot + 0x20), 6) == 0) {
                     break;
                 }
                 j++;
@@ -462,7 +462,7 @@ void func_ov001_02184230(u16 *arg0) {
                 fallbackSlot = work.slots;
                 j = 0;
                 do {
-                    if (func_0206527c((M2C_UNK)(fallbackSlot + 0x20), (M2C_UNK)fallbackName, 6) == 0) {
+                    if (ByteCompareN((M2C_UNK)(fallbackSlot + 0x20), (M2C_UNK)fallbackName, 6) == 0) {
                         break;
                     }
                     j++;
@@ -499,7 +499,7 @@ void func_ov001_02184230(u16 *arg0) {
                         }
                         if (work.parsed.items[k].kind == 0xdd &&
                             work.parsed.items[k].length >= 4 &&
-                            func_0206527c((M2C_UNK)work.parsed.items[k].data,
+                            ByteCompareN((M2C_UNK)work.parsed.items[k].data,
                                           (M2C_UNK)data_ov001_0218fb60, 4) == 0) {
                             dest[0x28] = 2;
                             break;
@@ -517,140 +517,143 @@ void func_ov001_02184404(void) {
     s32 func_ov001_0218b6f8(s32, M2C_UNK);
     void func_02076710(u16 *, u32);
     s32 func_02045eb4(M2C_UNK);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
 
-    data_ov001_02193e04 = func_ov001_0218b6f8(0x6f8, 0x20);
-    func_02076710((u16 *)(data_ov001_02193e04 + 0x4f8), 0xa001);
-    func_02045eb4((M2C_UNK)data_ov001_02193e04);
+    gSaveData = func_ov001_0218b6f8(0x6f8, 0x20);
+    func_02076710((u16 *)(gSaveData + 0x4f8), 0xa001);
+    func_02045eb4((M2C_UNK)gSaveData);
 }
 
 void func_ov001_02184448(void) {
     M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193e04;
-    func_ov001_0218b71c(&data_ov001_02193e04);
+    extern M2C_UNK gSaveData;
+    func_ov001_0218b71c(&gSaveData);
 }
 
-s32 func_ov001_0218445c(void) {
-    extern s32 data_ov001_02193e04;
-    return data_ov001_02193e04 + 0x400;
+s32 GetCurrentMapRecord(void) {
+    extern s32 gSaveData;
+    return gSaveData + 0x400;
 }
 
 void func_ov001_02184470(s8 arg0) {
-    extern s32 data_ov001_02193e04;
-    M2C_FIELD((void *)data_ov001_02193e04, s8 *, 0x4f5) = arg0;
+    extern s32 gSaveData;
+    M2C_FIELD((void *)gSaveData, s8 *, 0x4f5) = arg0;
 }
 
 void func_ov001_02184484(s8 arg0) {
-    extern s32 data_ov001_02193e04;
-    M2C_FIELD((void *)data_ov001_02193e04, s8 *, 0x4f6) = arg0;
+    extern s32 gSaveData;
+    M2C_FIELD((void *)gSaveData, s8 *, 0x4f6) = arg0;
 }
 
 void func_ov001_02184498(void *arg0) {
     void MI_CpuCopy8(void *, void *, u32);
-    extern s32 data_ov001_02193e04;
-    MI_CpuCopy8(arg0, (void *)((s8 *)data_ov001_02193e04 + 0x440), 0x20);
-    *(u8 *)((s8 *)data_ov001_02193e04 + 0x4e7) = 0;
+    extern s32 gSaveData;
+    MI_CpuCopy8(arg0, (void *)((s8 *)gSaveData + 0x440), 0x20);
+    *(u8 *)((s8 *)gSaveData + 0x4e7) = 0;
 }
 
-void func_ov001_021844c8(u8 *arg0) {
+/* Store a player name in the working save slot: even-length hex text is decoded
+ * two digits per byte, anything else is copied raw; the slot's mode bits record
+ * the name-length class and whether the name was stored raw. */
+void StorePlayerName(u8 *arg0) {
     void MI_CpuFill8(void *, s32, u32);
     void MI_CpuCopy8(void *, void *, u32);
-    s32 func_ov001_0218c3e0(u8 *, s32);
-    s32 func_ov001_02184f4c(u8);
-    extern s32 data_ov001_02193e04;
+    s32 StringLengthUpTo(u8 *, s32);
+    s32 HexCharValue(u8);
+    extern s32 gSaveData;
 
     register s32 i;
-    register s32 result;
-    register s32 hi;
-    register u8 *out;
-    s32 lo;
+    register s32 length;
+    register s32 highNibble;
+    register u8 *dest;
+    s32 lowNibble;
 
-    MI_CpuFill8((u8 *)data_ov001_02193e04 + 0x480, 0, 0x10);
-    result = func_ov001_0218c3e0(arg0, 0x20);
+    MI_CpuFill8((u8 *)gSaveData + SAVE_PLAYER_NAMES, 0, SAVE_NAME_SIZE);
+    length = StringLengthUpTo(arg0, SAVE_NAME_TEXT_MAX);
 
-    switch (result) {
+    switch (length) {
         case 0:
         case 10:
         case 0x1a:
         case 0x20: {
             i = 0;
-            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)(((u8 *)data_ov001_02193e04)[0x4e6] & ~0xfc);
-            out = (u8 *)data_ov001_02193e04 + 0x480;
-            if (result > 0) {
+            ((u8 *)gSaveData)[SAVE_NAME_FLAGS] = (u8)(((u8 *)gSaveData)[SAVE_NAME_FLAGS] & ~SAVE_NAME_FLAGS_MASK);
+            dest = (u8 *)gSaveData + SAVE_PLAYER_NAMES;
+            if (length > 0) {
                 do {
-                    hi = func_ov001_02184f4c(arg0[i]);
-                    lo = func_ov001_02184f4c(arg0[i + 1]);
-                    *out++ = (u8)((hi << 4) + lo);
+                    highNibble = HexCharValue(arg0[i]);
+                    lowNibble = HexCharValue(arg0[i + 1]);
+                    *dest++ = (u8)((highNibble << 4) + lowNibble);
                     i += 2;
-                } while (i < result);
+                } while (i < length);
             }
             break;
         }
         default:
-            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0xfc) | 0x04);
-            MI_CpuCopy8(arg0, (u8 *)data_ov001_02193e04 + 0x480, 0x10);
+            ((u8 *)gSaveData)[SAVE_NAME_FLAGS] = (u8)((((u8 *)gSaveData)[SAVE_NAME_FLAGS] & ~SAVE_NAME_FLAGS_MASK) | SAVE_NAME_RAW);
+            MI_CpuCopy8(arg0, (u8 *)gSaveData + SAVE_PLAYER_NAMES, SAVE_NAME_SIZE);
             break;
     }
 
-    switch (result) {
+    switch (length) {
         case 0:
-            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)(((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03);
+            ((u8 *)gSaveData)[SAVE_NAME_FLAGS] = (u8)(((u8 *)gSaveData)[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK);
             break;
         case 5:
         case 10:
-            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03) | 0x01);
+            ((u8 *)gSaveData)[SAVE_NAME_FLAGS] = (u8)((((u8 *)gSaveData)[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK) | 0x01);
             break;
         case 13:
         case 0x1a:
-            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03) | 0x02);
+            ((u8 *)gSaveData)[SAVE_NAME_FLAGS] = (u8)((((u8 *)gSaveData)[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK) | 0x02);
             break;
         default:
-            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03) | 0x03);
+            ((u8 *)gSaveData)[SAVE_NAME_FLAGS] = (u8)((((u8 *)gSaveData)[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK) | 0x03);
             break;
     }
 }
 
 void func_ov001_02184660(u8 *arg0) {
     void func_ov001_02184ec4(u8 *, u8 *);
-    extern s32 data_ov001_02193e04;
-    func_ov001_02184ec4(arg0, (u8 *)data_ov001_02193e04 + 0x4c0);
+    extern s32 gSaveData;
+    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4c0);
 }
 
 void func_ov001_0218467c(u8 *arg0) {
     void func_ov001_02184ec4(u8 *, u8 *);
-    extern s32 data_ov001_02193e04;
-    func_ov001_02184ec4(arg0, (u8 *)data_ov001_02193e04 + 0x4f0);
+    extern s32 gSaveData;
+    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4f0);
 }
 
 void func_ov001_02184698(u8 *arg0) {
     void func_ov001_02184ec4(u8 *, u8 *);
-    extern s32 data_ov001_02193e04;
-    func_ov001_02184ec4(arg0, (u8 *)data_ov001_02193e04 + 0x4c4);
+    extern s32 gSaveData;
+    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4c4);
 }
 
 void func_ov001_021846b8(u8 *arg0) {
     void func_ov001_02184ec4(u8 *, u8 *);
-    extern s32 data_ov001_02193e04;
-    func_ov001_02184ec4(arg0, (u8 *)data_ov001_02193e04 + 0x4c8);
+    extern s32 gSaveData;
+    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4c8);
 }
 
 void func_ov001_021846d8(u8 *arg0) {
     void func_ov001_02184ec4(u8 *, u8 *);
-    extern s32 data_ov001_02193e04;
-    func_ov001_02184ec4(arg0, (u8 *)data_ov001_02193e04 + 0x4cc);
+    extern s32 gSaveData;
+    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4cc);
 }
 
 void func_ov001_021846f8(u8 *arg0) {
     void MI_CpuCopy8(void *, void *, u32);
-    extern s32 data_ov001_02193e04;
-    MI_CpuCopy8((void *)((u8 *)data_ov001_02193e04 + 0x440), arg0, 0x20);
+    extern s32 gSaveData;
+    MI_CpuCopy8((void *)((u8 *)gSaveData + 0x440), arg0, 0x20);
 }
 
 void func_ov001_0218471c(s32 arg0) {
     void func_0200563c(s32, s32, ...);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
     extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *p = (u8 *)gSaveData;
     u8 t0 = p[0x4c2];
     u8 t1 = p[0x4c3];
     func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c0], p[0x4c1], t0, t1);
@@ -658,9 +661,9 @@ void func_ov001_0218471c(s32 arg0) {
 
 void func_ov001_0218475c(s32 arg0) {
     void func_0200563c(s32, s32, ...);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
     extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *p = (u8 *)gSaveData;
     u8 t0 = p[0x4f2];
     u8 t1 = p[0x4f3];
     func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4f0], p[0x4f1], t0, t1);
@@ -669,9 +672,9 @@ void func_ov001_0218475c(s32 arg0) {
 #pragma opt_peephole off
 void func_ov001_0218479c(s32 arg0) {
     void func_0200563c(s32, s32, ...);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
     extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *p = (u8 *)gSaveData;
     u8 *q = p + 0x4c4;
     u8 t0 = q[2];
     u8 t1 = q[3];
@@ -680,9 +683,9 @@ void func_ov001_0218479c(s32 arg0) {
 #pragma opt_peephole reset
 void func_ov001_021847e0(s32 arg0) {
     void func_0200563c(s32, s32, ...);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
     extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *p = (u8 *)gSaveData;
     u8 *q = p + 0x4c8;
     u8 t0 = q[2];
     u8 t1 = q[3];
@@ -692,9 +695,9 @@ void func_ov001_021847e0(s32 arg0) {
 #pragma opt_strength_reduction off
 void func_ov001_02184824(s32 arg0) {
     void func_0200563c(s32, s32, ...);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
     extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *p = (u8 *)gSaveData;
     u8 *q = p + 0x4cc;
     u8 t0 = q[2];
     u8 t1 = q[3];
@@ -702,16 +705,16 @@ void func_ov001_02184824(s32 arg0) {
 }
 #pragma opt_strength_reduction reset
 u8 func_ov001_02184868(s32 arg0) {
-    extern s32 data_ov001_02193e04;
-    return *((u8 *)((s8 *)data_ov001_02193e04 + (arg0 << 8) + 0xe7));
+    extern s32 gSaveData;
+    return *((u8 *)((s8 *)gSaveData + (arg0 << 8) + 0xe7));
 }
 
 void func_ov001_02184880(s32 arg0) {
-    s32 func_0206527c(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02046058(u8, M2C_UNK *);
-    extern s32 data_ov001_02193e04;
+    extern s32 gSaveData;
     extern u8 data_ov001_0218fbb0[];
-    u8 *base = (u8 *)data_ov001_02193e04;
+    u8 *base = (u8 *)gSaveData;
     u8 *page = base + (arg0 << 8);
     u8 *src = page;
     u8 *dst = base + 0x400;
@@ -726,18 +729,18 @@ void func_ov001_02184880(s32 arg0) {
         count--;
     } while (count != 0);
     base[0x4f4] = (u8)arg0;
-    if (func_0206527c((M2C_UNK)(page + 0xc0), (M2C_UNK)data_ov001_0218fbb0, 4) == 0) {
-        ((u8 *)data_ov001_02193e04)[0x4f5] = 1;
+    if (ByteCompareN((M2C_UNK)(page + 0xc0), (M2C_UNK)data_ov001_0218fbb0, 4) == 0) {
+        ((u8 *)gSaveData)[0x4f5] = 1;
     } else {
-        ((u8 *)data_ov001_02193e04)[0x4f5] = 0;
+        ((u8 *)gSaveData)[0x4f5] = 0;
     }
-    if (func_0206527c((M2C_UNK)(page + 0xc8), (M2C_UNK)data_ov001_0218fbb0, 4) != 0) {
-        ((u8 *)data_ov001_02193e04)[0x4f6] = 0;
-    } else if (func_0206527c((M2C_UNK)(page + 0xcc), (M2C_UNK)data_ov001_0218fbb0, 4) == 0) {
-        ((u8 *)data_ov001_02193e04)[0x4f6] = 1;
+    if (ByteCompareN((M2C_UNK)(page + 0xc8), (M2C_UNK)data_ov001_0218fbb0, 4) != 0) {
+        ((u8 *)gSaveData)[0x4f6] = 0;
+    } else if (ByteCompareN((M2C_UNK)(page + 0xcc), (M2C_UNK)data_ov001_0218fbb0, 4) == 0) {
+        ((u8 *)gSaveData)[0x4f6] = 1;
     } else {
-        ((u8 *)data_ov001_02193e04)[0x4f6] = 0;
+        ((u8 *)gSaveData)[0x4f6] = 0;
     }
-    func_02046058(base[page - base + 0xd0], (M2C_UNK *)(data_ov001_02193e04 + 0x4f0));
+    func_02046058(base[page - base + 0xd0], (M2C_UNK *)(gSaveData + 0x4f0));
 }
 

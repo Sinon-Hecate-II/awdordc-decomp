@@ -127,14 +127,14 @@ void func_ov005_0221b01c(void *arg0) {
 }
 
 void func_ov005_0221b088(void *arg0) {
-    M2C_UNK func_01ff9ce8(s32);
+    M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK DeleteSpriteObject(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(arg0, s32 *, 0x34) += 1;
     M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(1, 0, 0x100, M2C_FIELD(arg0, s32 *, 0x34), 0x20);
     if (M2C_FIELD(arg0, s32 *, 0x34) != 0x20) return;
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3C) = 0;
     M2C_FIELD(arg0, s32 *, 0x34) = 0;

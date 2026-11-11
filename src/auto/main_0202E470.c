@@ -41,7 +41,7 @@ void func_0202ee2c(void);
 void func_0202e470(void *arg0) {
     void func_02006564(void *);
     void func_020065e8(void *);
-    M2C_UNK func_020067e0(s32, u32);
+    M2C_UNK DC_FlushRange(s32, u32);
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     M2C_UNK func_0202e32c(void *);
     u32 func_020722fc(s32, u32);
@@ -307,7 +307,7 @@ block_118:
     var_r4_3 = 0;
     if ((s32) M2C_FIELD(sp8, s32 *, 0x10) > 0) {
         do {
-            func_020067e0(M2C_FIELD((sp8 + (var_r4_3 * 4)), s32 *, 0x14), M2C_FIELD(sp8, u32 *, 0x2C));
+            DC_FlushRange(M2C_FIELD((sp8 + (var_r4_3 * 4)), s32 *, 0x14), M2C_FIELD(sp8, u32 *, 0x2C));
             var_r4_3 += 1;
         } while (var_r4_3 < (s32) M2C_FIELD(sp8, s32 *, 0x10));
     }
@@ -444,15 +444,20 @@ s32 func_0202ef4c(void *arg0) {
     return 0;
 }
 
-s32 func_0202ef64(void *a) {
+/* Initializes the networked voice-stream session: allocates its state block and
+ * working buffers through the caller-supplied allocator callback, clears them,
+ * copies the caller's settings into the global session and starts the WFC
+ * session. Returns 1 on success, or 0 after tearing the resources down again
+ * when the session cannot start. */
+s32 WFC_Init(void *params) {
 void func_02007e54(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 func_020270b4(void *,s32);void func_0202f37c(void);
 extern M2C_UNK data_0213d100;
-void *p,*q;Config0202ef *cfg;s32 r;
-p=M2C_FIELD(a,void *(**)(s32,s32),0)(1,24);
-M2C_FIELD(&data_0213d100,void **,16)=p;func_02007e54(0,p,24);
-p=M2C_FIELD(&data_0213d100,void **,16);
-M2C_FIELD(p,s32 *,0)=M2C_FIELD(a,s32 *,0);M2C_FIELD(p,s32 *,4)=M2C_FIELD(a,s32 *,4);
-M2C_FIELD(p,u8 *,9)=1;M2C_FIELD(p,u8 *,22)=1;M2C_FIELD(p,u8 *,8)=1;
+void *block,*buffer;Config0202ef *config;s32 status;
+block=M2C_FIELD(params,void *(**)(s32,s32),0)(1,24);
+M2C_FIELD(&data_0213d100,void **,16)=block;func_02007e54(0,block,24);
+block=M2C_FIELD(&data_0213d100,void **,16);
+M2C_FIELD(block,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(block,s32 *,4)=M2C_FIELD(params,s32 *,4);
+M2C_FIELD(block,u8 *,9)=1;M2C_FIELD(block,u8 *,22)=1;M2C_FIELD(block,u8 *,8)=1;
 M2C_FIELD(&data_0213d100,s32 *,0)=func_0202f2f4(16,0xd18);
 M2C_FIELD(&data_0213d100,s32 *,4)=func_0202f2f4(2,0x2300);
 M2C_FIELD(&data_0213d100,s32 *,8)=func_0202f2f4(4,88);
@@ -461,13 +466,13 @@ func_02007e54(0,M2C_FIELD(&data_0213d100,void **,0),0xd18);
 func_02007e54(0,M2C_FIELD(&data_0213d100,void **,4),0x2300);
 func_02007e54(0,M2C_FIELD(&data_0213d100,void **,8),88);
 func_02007e54(0,M2C_FIELD(&data_0213d100,void **,12),12);
-cfg=M2C_FIELD(&data_0213d100,Config0202ef **,0);
-cfg->a=M2C_FIELD(a,u8 *,8);cfg->b=M2C_FIELD(a,u8 *,9);
-q=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(q,s32 *,0)=M2C_FIELD(a,s32 *,0);M2C_FIELD(q,s32 *,4)=M2C_FIELD(a,s32 *,4);M2C_FIELD(q,s32 *,8)=0;
-cfg->c=M2C_FIELD(a,u8 *,10);cfg->d=M2C_FIELD(a,u8 *,11);
+config=M2C_FIELD(&data_0213d100,Config0202ef **,0);
+config->a=M2C_FIELD(params,u8 *,8);config->b=M2C_FIELD(params,u8 *,9);
+buffer=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(buffer,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(buffer,s32 *,4)=M2C_FIELD(params,s32 *,4);M2C_FIELD(buffer,s32 *,8)=0;
+config->c=M2C_FIELD(params,u8 *,10);config->d=M2C_FIELD(params,u8 *,11);
 func_02045c90();
-r=func_020270b4(M2C_FIELD(&data_0213d100,void **,4),0x2300);
-if(r==1 || r>=4){func_0202f37c();return 0;}return 1;
+status=func_020270b4(M2C_FIELD(&data_0213d100,void **,4),0x2300);
+if(status==1 || status>=4){func_0202f37c();return 0;}return 1;
 }
 
 s32 func_0202f10c(void) {
@@ -506,17 +511,17 @@ s32 func_0202f1dc(void) {
 
 u8 func_0202f248(void) {
     u32 func_0202f544();
-    extern M2C_UNK data_0213d100;
+    extern M2C_UNK gWfcManager;
     u32 temp_r0;
     u8 var_r4;
 
     var_r4 = 0xFF;
-    if (M2C_FIELD(&data_0213d100, void **, 0x10) == NULL) {
+    if (M2C_FIELD(&gWfcManager, void **, 0x10) == NULL) {
         return 0xFFU;
     }
     temp_r0 = func_0202f544();
     if ((temp_r0 >= 0xAU) && (temp_r0 <= 0x10U)) {
-        var_r4 = M2C_FIELD(M2C_FIELD(&data_0213d100, void **, 0x10), u8 *, 0x17);
+        var_r4 = M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17);
     }
     return var_r4;
 }

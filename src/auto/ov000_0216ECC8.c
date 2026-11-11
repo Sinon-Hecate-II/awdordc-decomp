@@ -209,7 +209,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  gCur3DSpriteEngine=saved;
 }
 void ScrollListDrawRows(s32 mode) {
-    M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
     void func_ov000_0216f3d0(s32, s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -223,7 +223,7 @@ void ScrollListDrawRows(s32 mode) {
 
     savedPtr = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020809c0(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x24) + 0x140, 0x20, 0xC);
+    ClearTileRect(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x24) + 0x140, 0x20, 0xC);
     if (mode & 1) {
         var_r6 = 0;
         var_r5 = mode >> 1;
@@ -234,8 +234,8 @@ void ScrollListDrawRows(s32 mode) {
             var_r5 += 1;
             var_r7 += 2;
         } while (var_r6 < 7);
-        func_020809c0(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x100, 0x20, 1);
-        func_020809c0(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x440, 0x20, 1);
+        ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x100, 0x20, 1);
+        ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x440, 0x20, 1);
     } else {
         var_r7_2 = 0;
         var_r6_2 = 0;

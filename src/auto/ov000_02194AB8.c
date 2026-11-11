@@ -10,7 +10,7 @@ int func_ov000_02194ab8(short *arg0) {
 void func_ov000_02179be0(void);
 void func_ov000_02179d3c(void);
 s32 GetUnitAttackClass(s32);
-s32 func_020a76d4(void *);
+s32 GetUnitAttackRangeMax(void *);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(s32,s32);
 s32 IsUnitVisibleAtCell(s32,s32,s32,s32);
@@ -18,7 +18,7 @@ s32 func_020a600c(u16);
 s32 func_ov000_021a96f4(s32,s32,s32);
 s32 GetAttackDamage(s32,s32,s32);
 s32 IsFootUnitKind(s32);
-s32 func_020d27ec(s32,s32);
+s32 IsTerrainOnUnitTeam(s32,s32);
 s32 func_ov000_0217d000(s32,s32);
 void func_01ffc2e8(void *);
 void func_01ffb9c4(s32);
@@ -39,7 +39,7 @@ u8 *map,*unit,*selected;
 func_ov000_02179be0();
 func_ov000_02179d3c();
 if(!(M2C_FIELD(gAiCommandState,u16 *,8)&32)&&GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1){
-threshold=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(gAiCommandState,u8 *,5);
+threshold=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(gAiCommandState,u8 *,5);
 }else threshold=0;
 for(team=1;team<5;team++){
 if(!IsPlayerActive(team))continue;
@@ -88,7 +88,7 @@ if(M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x]<0)continue;
 index=M2C_FIELD(map+(y)*2,u16 *,0x3758);
 terrain=map[index+x+0x1420];
 if(!(terrain&224))continue;
-if(func_020d27ec(M2C_FIELD(map,s16 *,0x52a8),terrain&255)==1)continue;
+if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),terrain&255)==1)continue;
 if(!func_ov000_0217d000((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,terrain))continue;
 map=*gCurrentMap;
 if(high<=threshold){cost=M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x];if(cost>threshold||cost<high)continue;}

@@ -312,7 +312,7 @@ s32 func_01ff9c34(u8 arg0, s32 arg1) {
     return data_01ff9b60[(u32)(M2C_FIELD(*gCur3DSpriteEngine + arg1, u16 *, 6) << 16) >> 30] * 2;
 }
 
-void func_01ff9ce8(u8 arg0) {
+void Clear3DSpriteLayer(u8 arg0) {
     s32 func_01ff9c34(u8, s32);
     M2C_UNK func_02007e98(M2C_UNK, s32, s32);
     extern u16 **gCur3DSpriteEngine;
@@ -339,7 +339,7 @@ void func_01ff9e00(void) {
     s32 i;
     for (i = 0; i < 4; i++) {
         func_01ff9dd8((u8)i);
-        func_01ff9ce8((u8)i);
+        Clear3DSpriteLayer((u8)i);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << i;
     }
 }

@@ -12,7 +12,7 @@ static inline s32 GetPathX(s8 *ctx, s32 index) { return (ctx + index)[0x36]; }
 static inline s32 GetPathY(s8 *ctx, s32 index) { return (ctx + index)[0x42]; }
 
 void func_020a0964(s32 a, s32 b, u16 *out) {
-    M2C_UNK func_020a76d4(M2C_UNK);
+    M2C_UNK GetUnitAttackRangeMax(M2C_UNK);
     M2C_UNK func_020a85c8(M2C_UNK);
     M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK func_020a0560(void);
@@ -53,7 +53,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     unit = *(u8 **)(base + 0x52d0);
     kind = unit[0] & 0x3F;
     attr = gUnitMinAttackRange[kind * 112];
-    cap = func_020a76d4((M2C_UNK)unit);
+    cap = GetUnitAttackRangeMax((M2C_UNK)unit);
 
     if (cap > 1 && func_020a85c8(kind) == 0) {
         out[0] = unit[1];

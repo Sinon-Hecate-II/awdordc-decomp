@@ -399,7 +399,7 @@ u8 *FindLastByte(u8 *p,s32 value,u32 n) {
  return NULL;
 }
 
-s32 func_0206527c(u8 *a,u8 *b,u32 n) {
+s32 ByteCompareN(u8 *a,u8 *b,u32 n) {
  if(n) { do {
  u32 x=*a++; u32 y=*b++;
  if(x!=y) return a[-1]<b[-1]?-1:1;

@@ -81,7 +81,7 @@ if(s[4]==0)return 0;
 return *(u64 *)&s[0]==func_02031d90((u8 *)a+0x10);
 }
 
-void func_0203248c(void *a,Unk032Record *b,s32 c) {
+void SetNasProfileKey(void *a,Unk032Record *b,s32 c) {
 void func_02076794(void *,u32);
 u32 func_02076860(void *,void *,u32);
 u32 table[256];
@@ -124,7 +124,7 @@ if(func_02031e28(a)!=2)return 0;
 return func_02031db8(a);
 }
 
-s32 func_02032580(void *a,void *b) {
+s32 GetPlayerRecordId(void *a,void *b) {
 u64 func_02031db8(void *);
 s32 func_02031dcc(void *);
 s32 func_02031f74(u64,s32);
@@ -163,7 +163,7 @@ func_02031e94(b,3);
 } else *b=*(Unk032Record *)((u8 *)a+4);
 }
 
-void func_020326c4(M2C_UNK arg0, M2C_UNK arg1) {
+void AssignPlayerRecordId(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02031e0c(M2C_UNK, M2C_UNK);
     M2C_UNK func_02031e94(M2C_UNK, M2C_UNK);
@@ -172,9 +172,9 @@ void func_020326c4(M2C_UNK arg0, M2C_UNK arg1) {
     func_02031e94(arg0, 3);
 }
 
-void func_020326f8(void *a,s32 b,s32 c) {
-void func_0203211c(s32,s32,s32);
-func_0203211c(b,M2C_FIELD(a,s32 *,0x24),c);
+void FormatPlayerNasId(void *a,s32 b,s32 c) {
+void FormatNasId(s32,s32,s32);
+FormatNasId(b,M2C_FIELD(a,s32 *,0x24),c);
 }
 
 s32 func_02032710(void *a,void *b){
@@ -188,14 +188,14 @@ return 0;
 }
 
 s32 func_020327f4(s32 a,s32 b) {
-void func_02031e38();
+void IsPlayerRecordJoined();
 u64 func_02031db8(void *);
 void func_02032004(void *,u32,u32);
-void func_0203211c(s32,s32,s32);
+void FormatNasId(s32,s32,s32);
 u8 buf[33];u64 v;
-if(func_02031e28(b)==3) {func_02031e38(b);return;}
+if(func_02031e28(b)==3) {IsPlayerRecordJoined(b);return;}
 if(func_02031e28(b)==2) {v=func_02031db8((void *)b);func_02032004(buf+21,(u32)v,(u32)(v>>32));return;}
-if(func_02031e28(b)==1)func_0203211c(b,M2C_FIELD(a,s32 *,0x24),(s32)buf);
+if(func_02031e28(b)==1)FormatNasId(b,M2C_FIELD(a,s32 *,0x24),(s32)buf);
 }
 
 void func_0203287c(s32 arg0) {

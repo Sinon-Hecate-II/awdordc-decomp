@@ -116,7 +116,7 @@ void func_ov000_0216b194(void *arg0) {
     s32 func_0209c268();
     s8 GetSpriteAnimValue(s32);
     M2C_UNK func_020a92bc(void *, s32);
-    s32 func_020cfb78();
+    s32 GetCurrentMapName();
     s32 GetLanguage();
     s32 GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_020e35cc(s32);
@@ -210,10 +210,10 @@ void func_ov000_0216b194(void *arg0) {
     func_020e35cc(temp_r0_18);
     func_0209b59c(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
     temp_r6_5 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    func_0209b5e4(temp_r6_5 + 0x8FC0, func_020cfb78());
+    func_0209b5e4(temp_r6_5 + 0x8FC0, GetCurrentMapName());
     func_02091d4c(0x12);
     M2C_FIELD(arg0, s16 *, 0x3E) = 0x20;
-    func_020cfb78();
+    GetCurrentMapName();
     temp_r0_19 = func_0209c268();
     if ((s32) temp_r0_19 > 0x40) {
         M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (M2C_FIELD(arg0, s16 *, 0x3E) - (temp_r0_19 - 0x40));

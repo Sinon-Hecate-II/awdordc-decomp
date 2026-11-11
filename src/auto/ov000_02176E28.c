@@ -1,6 +1,6 @@
 /* 1 function from 0x02176E28 to 0x02177CE0 (ov000), found by ds-decomp. */
 #include "common.h"
-s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 func_ov000_021a9214(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
+s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
 
 extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],gUnitKindFlags[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],data_ov000_021dfba8[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
 void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 func_ov000_021a9904(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 func_ov000_021a8a88(void *);
@@ -76,7 +76,7 @@ ka=((u32)(a[0]<<26)>>26);attr=gUnitKindFlags[((u32)(a[0]<<26)>>26)*112]&7;
 if(attr&&((u32)(b[0]<<26)>>26)==9){vb+=vb>>1;if(ka==9)va>>=1;}
 if(attr&&((u32)(b[0]<<26)>>26)==26){vb+=vb>>1;if((u8)(ka+248)<=1)va>>=1;}
 if(IsUnitSelected(b))vb<<=1;
-if(!M2C_FIELD((*gCurrentMap),s16 *,28390)&&func_ov000_021a9214(b,b[1],b[2])==1)vb+=Divide(M2C_FIELD(data_ov000_021b5c00+((u32)(b[0]<<26)>>26)*112,u16 *,0)*20,100);
+if(!M2C_FIELD((*gCurrentMap),s16 *,28390)&&IsCaptureTargetAt(b,b[1],b[2])==1)vb+=Divide(M2C_FIELD(data_ov000_021b5c00+((u32)(b[0]<<26)>>26)*112,u16 *,0)*20,100);
 if(IsFootUnitKind(((u32)(b[0]<<26)>>26))){
 if(((u32)(b[0]<<26)>>26)==1)vb<<=1;else vb=(vb*3)>>1;
 if((u32)(M2C_FIELD(b,u16 *,6)<<16)>>27){

@@ -11,7 +11,7 @@ s32 func_02022970(void *arg0) {
     void SHA1_Update(void *, void *, s32);
     void SHA1_Final(void *, void *);
     s32 func_02022150(void *, void *);
-    s32 func_020227c8(void *, void *);
+    s32 VerifyRsaSignature(void *, void *);
     s32 var_r4;
     s32 t0, t1;
     register s32 p asm("r1");
@@ -45,7 +45,7 @@ s32 func_02022970(void *arg0) {
     if (p == 0) {
         return var_r4 | 1;
     }
-    return var_r4 | func_020227c8(arg0, (void *)p);
+    return var_r4 | VerifyRsaSignature(arg0, (void *)p);
 }
 
 s32 func_02022a54(s8 *p) {
@@ -67,10 +67,10 @@ p+=a-b;
 goto again;
 }
 #pragma optimization_level reset
-void func_02022ae4(void *a, u8 *b) {
+void TlsProcessCertificate(void *a, u8 *b) {
 s32 func_020222d8(void *,u8 **,s32,s32,s32);
 void func_0200ef4c(s32 *);
-s32 func_020227c8(void *,void *);
+s32 VerifyRsaSignature(void *,void *);
 s32 date[4]; u8 low; s32 result; u32 remaining; s32 i; u8 *next; u32 n;
 n=b[0]; remaining=b[1]; remaining=b[2]+(((n<<8)+remaining)<<8);b+=3;
 M2C_FIELD(a,s32 *,0x45c)=-1;
@@ -91,7 +91,7 @@ low=(u8)result;
 if(low==1 && remaining){
 next=b+3;M2C_FIELD(a,u8 *,0x5ad)=0;
 if(func_020222d8(a,&next,0,0,2)){M2C_FIELD(a,u8 *,0x455)=9;return;}
-result=(result&~255)|func_020227c8(a,(u8 *)a+0x480);
+result=(result&~255)|VerifyRsaSignature(a,(u8 *)a+0x480);
 }
 if(M2C_FIELD(a,s32 (**)(s32,void *,s32),0x810))result=M2C_FIELD(a,s32 (**)(s32,void *,s32),0x810)(result,a,i);
 i++;
@@ -100,11 +100,11 @@ if(result==0)M2C_FIELD(a,u8 *,0x455)=3;else M2C_FIELD(a,u8 *,0x455)=9;
 }
 
 #pragma opt_propagation off
-void func_02022d08(s32 p,u8 *s) {
+void TlsProcessServerHello(s32 p,u8 *s) {
 s32 old,n;
 MI_CpuCopy8(s+2,p+0x54,0x20);
 old=M2C_FIELD(p,u8 *,0x30);n=s[0x22];s+=0x23;
-if(old && n==0x20 && !func_0206527c(p+0x74,s,0x20))M2C_FIELD(p,u8 *,0x31)=1;
+if(old && n==0x20 && !ByteCompareN(p+0x74,s,0x20))M2C_FIELD(p,u8 *,0x31)=1;
 else {
 if(old)func_02022008(p);
 if(!n) M2C_FIELD(p,u8 *,0x30)=0;
@@ -143,7 +143,7 @@ s32 func_02022e68(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_propagation off
-void func_02022e78(u8 *p,u8 *q){
+void TlsProcessClientHelloSslV2(u8 *p,u8 *q){
 s32 MI_CpuCopy8(); void MI_CpuFill8();
 s32 size,offset,n;u16 value;
 if(!func_02022e68(q[0],q[1]))return;
@@ -159,7 +159,7 @@ else {MI_CpuFill8(p+0x34,0,32-n);MI_CpuCopy8(q+offset,p+0x54-n,n);}
 p[0x455]=1;
 }
 #pragma opt_propagation reset
-void func_02022f40(void *arg0,u8 *arg1) {
+void TlsProcessClientHello(void *arg0,u8 *arg1) {
 s32 MI_CpuCopy8(); void func_02021de8(void *);
 u32 n; u8 *p; u16 value;
 if(func_02022e68(arg1[0],arg1[1])==0)return;
@@ -262,7 +262,7 @@ MD5_Final(arg2+0x3fc,arg0);
 #pragma opt_strength_reduction off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
 s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void func_020221ec(void*,u8*,s32);
-u32 func_02022258(u8*); s32 func_0206527c(void*,void*,s32); s32 StringLength(void*);
+u32 func_02022258(u8*); s32 ByteCompareN(void*,void*,s32); s32 StringLength(void*);
 extern char *data_020fb004[6];
 u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 sw;
 if(len<0 || len>2000)return 1;
@@ -295,7 +295,7 @@ case 6: {
 u8 *oid=p; char *name;
 for(i=0;i<6;i++){
 name=data_020fb004[i];
-if(func_0206527c(oid,name,StringLength(name))==0){
+if(ByteCompareN(oid,name,StringLength(name))==0){
 switch(i){
 case 1:case 2:if(mode==0)M2C_FIELD(ctx,s32*,0x45c)=i;M2C_FIELD(ctx,u8*,0x5ad)=i;break;
 case 3:case 4:if(mode!=2)M2C_FIELD(ctx,s32*,0x458)=i;break;
@@ -338,7 +338,11 @@ break;
 *input=p;return 0;
 }
 #pragma opt_strength_reduction reset
-s32 func_020227c8(void *arg0, void *arg1) {
+/* Verify the RSA signature carried in the current TLS handshake message: exponentiate it with
+ * the named public key, then check the recovered PKCS#1 v1.5 block (00 01 ff..ff 00 30 ...)
+ * ends in the handshake digest. Returns 0 when it verifies, 2 when the key or signature is
+ * missing or does not check out. */
+s32 VerifyRsaSignature(void *arg0, void *arg1) {
     extern u32 gAlloc[];
     extern u32 gFree[];
     void BigNumFromBytes(void *, void *, void *, s32);
@@ -346,63 +350,65 @@ s32 func_020227c8(void *arg0, void *arg1) {
     void func_020269dc(void *, void *, s32, s32, void *);
     void RestoreThreadPriority(s32);
     void BigNumToBytes(void *, void *, s32, s32);
-    s32 func_0206527c(void *, void *, s32);
-    u8 *base;
-    s32 cnt;
-    u8 *r6;
-    u8 *r9;
-    u8 *r10;
-    s32 t;
-    s32 r3count;
-    s32 r2;
+    s32 ByteCompareN(void *, void *, s32);
+    NamedRsaKey *key;
+    u8 *work;
+    s32 limbs;
+    u8 *sig;
+    u8 *exp;
+    u8 *mod;
+    s32 savedPriority;
+    s32 keyLen;
+    s32 i;
     s32 length;
-    if (!*(u32 *)((u8 *)arg0 + 0x5a4) || !*(u32 *)((u8 *)arg0 + 0x5a8) ||
-        !*(u32 *)((u8 *)arg1 + 0x10) || !*(u32 *)((u8 *)arg1 + 0xc) ||
-        !*(u32 *)((u8 *)arg1 + 0x8) || !(length=*(s32 *)((u8 *)arg1 + 0x4))) {
+    key = (NamedRsaKey *)arg1;
+    if (!*(u32 *)((u8 *)arg0 + TLS_SIGNATURE) || !*(u32 *)((u8 *)arg0 + TLS_SIGNATURE_LEN) ||
+        !key->exponent || !key->exponentLength ||
+        !key->modulus || !(length = key->modulusLength)) {
         return 2;
     }
-    cnt = (length * 2) / 2;
+    limbs = (length * 2) / 2;
     {
         void *(*alloc)(u32) = (void *(*)(u32))gAlloc[0];
-        base = (u8 *)alloc((u32)(cnt * 8));
+        work = (u8 *)alloc((u32)(limbs * 8));
     }
-    if (base == 0) {
+    if (work == 0) {
         return 2;
     }
-    r6 = base + cnt * 2;
-    r9 = r6 + cnt * 2;
-    r10 = r9 + cnt * 2;
-    BigNumFromBytes(r6, *(void **)((u8 *)arg0 + 0x5a4), *(void **)((u8 *)arg0 + 0x5a8), cnt);
-    BigNumFromBytes(r9, *(void **)((u8 *)arg1 + 0x10), *(void **)((u8 *)arg1 + 0xc), cnt);
-    BigNumFromBytes(r10, *(void **)((u8 *)arg1 + 0x8), *(void **)((u8 *)arg1 + 0x4), cnt);
-    t = BoostThreadPriority();
-    func_020269dc(base, r6, (s32)r9, cnt, r10);
-    RestoreThreadPriority(t);
-    BigNumToBytes(r6, base, *(s32 *)((u8 *)arg1 + 0x4), cnt);
-    t = base[cnt * 2];
-    cnt = 0;
-    if (t != 0 || r6[1] != 1) {
-        cnt = 2;
+    sig = work + limbs * 2;
+    exp = sig + limbs * 2;
+    mod = exp + limbs * 2;
+    BigNumFromBytes(sig, *(void **)((u8 *)arg0 + TLS_SIGNATURE), *(void **)((u8 *)arg0 + TLS_SIGNATURE_LEN), limbs);
+    BigNumFromBytes(exp, key->exponent, (void *)key->exponentLength, limbs);
+    BigNumFromBytes(mod, key->modulus, (void *)key->modulusLength, limbs);
+    savedPriority = BoostThreadPriority();
+    func_020269dc(work, sig, (s32)exp, limbs, mod);
+    RestoreThreadPriority(savedPriority);
+    BigNumToBytes(sig, work, key->modulusLength, limbs);
+    savedPriority = work[limbs * 2];
+    limbs = 0;
+    if (savedPriority != 0 || sig[1] != 1) {
+        limbs = 2;
         goto done;
     }
-    r3count = *(s32 *)((u8 *)arg1 + 4);
-    r2 = 2;
-    while (r2 < r3count) {
-        if (r6[r2] != 0xff) break;
-        r2++;
+    keyLen = key->modulusLength;
+    i = 2;
+    while (i < keyLen) {
+        if (sig[i] != 0xff) break;
+        i++;
     }
-    if (r2 + 1 >= r3count) goto bad;
-    if (r6[r2] != 0 || r6[r2 + 1] != 0x30) goto bad;
+    if (i + 1 >= keyLen) goto bad;
+    if (sig[i] != 0 || sig[i + 1] != 0x30) goto bad;
     {
-        s32 field = *(s32 *)((u8 *)arg0 + 0x47c);
-        if (!func_0206527c((u8 *)arg0 + 0x468, r6 + r3count - field, field)) goto done;
+        s32 digestLen = *(s32 *)((u8 *)arg0 + TLS_DIGEST_LEN);
+        if (!ByteCompareN((u8 *)arg0 + TLS_DIGEST, sig + keyLen - digestLen, digestLen)) goto done;
     }
 bad:
-    cnt = 2;
+    limbs = 2;
 done:
     {
         void (*freefn)(void *) = (void (*)(void *))gFree[0];
-        freefn(base);
+        freefn(work);
     }
-    return cnt;
+    return limbs;
 }

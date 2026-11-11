@@ -44,10 +44,10 @@ s32 func_ov000_02195b80(s16 *out) {
     s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     void SelectMapLayer(void *);
     void BuildUnitMoveRange(void *);
-    s32 func_ov000_021a9d8c(s16, s16);
+    s32 IsAllyUnitAtCell(s16, s16);
     s32 IsValidMoveCell(s16, s16);
     s32 func_ov000_021959cc(s32, s32, s32, s32);
-    s32 func_020a76d4(void *);
+    s32 GetUnitAttackRangeMax(void *);
 
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
@@ -119,7 +119,7 @@ s32 func_ov000_02195b80(s16 *out) {
 
                 {
                     s32 mask;
-                    mask = func_020a76d4(*(void **)((u8 *)*gCurrentMap + 0x52d0));
+                    mask = GetUnitAttackRangeMax(*(void **)((u8 *)*gCurrentMap + 0x52d0));
                     if (func_ov000_021959cc(x, y, unitKind, mask & 0xff) == 0) continue;
                 }
 
@@ -138,7 +138,7 @@ s32 func_ov000_02195b80(s16 *out) {
                     if (*p < 0) continue;
                 }
 
-                if (func_ov000_021a9d8c((s16)x, (s16)y) != 0) continue;
+                if (IsAllyUnitAtCell((s16)x, (s16)y) != 0) continue;
                 if (IsValidMoveCell((s16)x, (s16)y) == 0) continue;
 
                 if (flag != 0) {
@@ -536,13 +536,13 @@ s32 func_ov000_02196430(s16 *outPos) {
  * a firing position next to it and plan the move there. */
 void SelectPropertyAttackDestination(void) {
 extern void **gCurrentMap; extern u8 **gAiCommandState;
-s32 GetUnitAttackClass(u32); s32 func_020a76d4(void *);
+s32 GetUnitAttackClass(u32); s32 GetUnitAttackRangeMax(void *);
 void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
-s32 func_020d27ec(s32,u8); s32 func_ov000_0217d000(u32,s32);
+s32 IsTerrainOnUnitTeam(s32,u8); s32 func_ov000_0217d000(u32,s32);
 s32 FindAttackPosition(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
 s32 attackLimit; s32 terrain; s32 bestCost=0x7fff; s32 y,x; s16 target[2];
 if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind)==1)
-attackLimit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(gAiCommandState,u8 *,5);
+attackLimit=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(gAiCommandState,u8 *,5);
 else attackLimit=0;
 func_ov000_02179be0(); func_ov000_02179d3c();
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
@@ -550,7 +550,7 @@ for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
 if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]<0)continue;
 terrain=M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN);
 if(!(terrain&MAP_TERRAIN_OWNER_MASK))continue;
-if(func_020d27ec(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_OWNER),(u8)terrain)==1)continue;
+if(IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_OWNER),(u8)terrain)==1)continue;
 if(!func_ov000_0217d000(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind,terrain))continue;
 if(bestCost<=attackLimit){
 if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]>attackLimit)continue;

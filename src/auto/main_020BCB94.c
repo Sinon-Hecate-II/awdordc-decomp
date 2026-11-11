@@ -1,5 +1,6 @@
 /* 30 functions from 0x020BCB94 to 0x020BDA88 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 s32 GetKeyActionFlags(void){extern void *gKeyState;u16 v=M2C_FIELD(gKeyState,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
 
@@ -110,10 +111,10 @@ void func_020bcee4(void *arg0) {
 
 void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}
 
-void func_020bcf6c(void){extern void *gTouchState;extern void **gCurrentMap;s32 func_020947c0(void);void func_0207bb3c(u16,u16,s32 *);s32 Divide(s32,s32);void ClampCursorToMap(void);
+void func_020bcf6c(void){extern void *gTouchState;extern void **gCurrentMap;s32 IsTouchInputDisabled(void);void ScreenToMapPosition(u16,u16,s32 *);s32 Divide(s32,s32);void ClampCursorToMap(void);
 s32 pos[3];u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
-if(func_020947c0())return;if(!M2C_FIELD(gTouchState,u8 *,0x12))return;
-func_0207bb3c(x,y,pos);
+if(IsTouchInputDisabled())return;if(!M2C_FIELD(gTouchState,u8 *,0x12))return;
+ScreenToMapPosition(x,y,pos);
 M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=Divide(pos[0],768);
 M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=Divide(pos[1],768);
 ClampCursorToMap();if(!M2C_FIELD(gTouchState,u8 *,0x14))return;
@@ -153,9 +154,9 @@ void func_020bd084(void *arg0) {
     }
 }
 
-void func_020bd0a8(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *func_01ffa3dc(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=func_01ffa3dc(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
+void CreateTouchCursor(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *func_01ffa3dc(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=func_01ffa3dc(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
 
-void func_020bd0e0(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa9e4(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;func_01ffa9e4(&data_021293d4);}
+void DeleteTouchCursor(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa9e4(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;func_01ffa9e4(&data_021293d4);}
 
 void func_020bd104(void) {
     M2C_UNK func_01ffa9bc(M2C_UNK *);
@@ -176,9 +177,9 @@ u8 func_020bd118(void) {
     return var_r0;
 }
 
-s32 func_020bd13c(s32 a){extern void *gTouchState;s32 func_020947c0(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
+s32 func_020bd13c(s32 a){extern void *gTouchState;s32 IsTouchInputDisabled(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
 u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
-if(func_020947c0())return 0;if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
+if(IsTouchInputDisabled())return 0;if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
 if(func_020bdecc(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 16;return 4096;}
 if(func_020bdf7c(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 256;return 4096;}
 if(a&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 64;return 32;}return 4096;
@@ -186,12 +187,12 @@ if(a&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 64;return 3
 
 /* Updates the map cursor target from the current stylus position. */
 void func_020bd220(void *arg0) {
-    void func_0207bb3c(u16, u16, s32 *);
+    void ScreenToMapPosition(u16, u16, s32 *);
     s32 Divide(s32, s32);
     void PlaySoundEffect(void *);
-    s32 func_020947c0(void);
-    void func_020bd0a8(s16, s16);
-    void func_020bd0e0(void);
+    s32 IsTouchInputDisabled(void);
+    void CreateTouchCursor(s16, s16);
+    void DeleteTouchCursor(void);
     extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
@@ -203,12 +204,12 @@ void func_020bd220(void *arg0) {
     map = *gCurrentMap;
     oldX = M2C_FIELD(map, s16 *, 0x52C2);
     oldY = M2C_FIELD(map, s16 *, 0x52C4);
-    if (func_020947c0() != 0) return;
+    if (IsTouchInputDisabled() != 0) return;
     if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) {
-        func_020bd0e0();
+        DeleteTouchCursor();
         return;
     }
-    func_0207bb3c(touchX, touchY, coords);
+    ScreenToMapPosition(touchX, touchY, coords);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = Divide(coords[0], 0x300);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = Divide(coords[1], 0x300);
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
@@ -217,12 +218,12 @@ void func_020bd220(void *arg0) {
         map = *gCurrentMap;
         M2C_FIELD(map, s16 *, 0x52CC) = M2C_FIELD(map, s16 *, 0x52C4);
         map = *gCurrentMap;
-        func_020bd0a8(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
+        CreateTouchCursor(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
     }
     map = *gCurrentMap;
     if (M2C_FIELD(map, s16 *, 0x52CA) != M2C_FIELD(map, s16 *, 0x52C2) ||
         M2C_FIELD(map, s16 *, 0x52CC) != M2C_FIELD(map, s16 *, 0x52C4)) {
-        func_020bd0e0();
+        DeleteTouchCursor();
         M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = 0xFF;
         M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = 0xFF;
     }
@@ -233,12 +234,12 @@ void func_020bd220(void *arg0) {
 
 /* Update the map camera target, optionally moving its lookAt and requesting a refresh. */
 void func_020bd3c0(void *arg0) {
-    void func_0207bb3c(u16, u16, s32 *);
+    void ScreenToMapPosition(u16, u16, s32 *);
     s32 Divide(s32, s32);
     void PlaySoundEffect(void *);
-    s32 func_020947c0(void);
-    void func_020bd0a8(s16, s16);
-    void func_020bd0e0(void);
+    s32 IsTouchInputDisabled(void);
+    void CreateTouchCursor(s16, s16);
+    void DeleteTouchCursor(void);
     extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
@@ -250,12 +251,12 @@ void func_020bd3c0(void *arg0) {
     map = *gCurrentMap;
     oldX = M2C_FIELD(map, s16 *, 0x52C2);
     oldY = M2C_FIELD(map, s16 *, 0x52C4);
-    if (func_020947c0() != 0) return;
+    if (IsTouchInputDisabled() != 0) return;
     if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) {
-        func_020bd0e0();
+        DeleteTouchCursor();
         return;
     }
-    func_0207bb3c(touchX, touchY, coords);
+    ScreenToMapPosition(touchX, touchY, coords);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = Divide(coords[0], 0x300);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = Divide(coords[1], 0x300);
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
@@ -264,12 +265,12 @@ void func_020bd3c0(void *arg0) {
         map = *gCurrentMap;
         M2C_FIELD(map, s16 *, 0x52CC) = M2C_FIELD(map, s16 *, 0x52C4);
         map = *gCurrentMap;
-        func_020bd0a8(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
+        CreateTouchCursor(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
     }
     map = *gCurrentMap;
     if (M2C_FIELD(map, s16 *, 0x52CA) != M2C_FIELD(map, s16 *, 0x52C2) ||
         M2C_FIELD(map, s16 *, 0x52CC) != M2C_FIELD(map, s16 *, 0x52C4)) {
-        func_020bd0e0();
+        DeleteTouchCursor();
         M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = 0xFF;
         M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = 0xFF;
     }
@@ -278,16 +279,16 @@ void func_020bd3c0(void *arg0) {
     PlaySoundEffect(arg0);
 }
 
-s32 func_020bd560(void){s32 func_020947c0(void);void SelectCursorTarget(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
-if(func_020947c0())return 0;
-if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){SelectCursorTarget(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));func_020bd0e0();return 1;}
+s32 func_020bd560(void){s32 IsTouchInputDisabled(void);void SelectCursorTarget(s32,s32);void DeleteTouchCursor(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
+if(IsTouchInputDisabled())return 0;
+if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){SelectCursorTarget(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));DeleteTouchCursor();return 1;}
 if(M2C_FIELD(gTouchState,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
 }
 
 s32 func_020bd650(void) {
-    s32 func_020947c0();
+    s32 IsTouchInputDisabled();
     extern void *gTouchState;
-    if (func_020947c0() != 0) {
+    if (IsTouchInputDisabled() != 0) {
         return 0x20;
     }
     if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
@@ -297,10 +298,10 @@ s32 func_020bd650(void) {
 }
 
 s32 func_020bd684(void) {
-    s32 func_020947c0(void);
+    s32 IsTouchInputDisabled(void);
     void func_020bd104(void);
     s32 func_020d6398(s16, s16);
-    void func_0207bb3c(u16, u16, s32 *);
+    void ScreenToMapPosition(u16, u16, s32 *);
     extern void *gTouchState;
     extern void **gCurrentMap;
     extern u8 data_02164d5d[];
@@ -311,7 +312,7 @@ s32 func_020bd684(void) {
 
     x = M2C_FIELD(gTouchState, u16 *, 0);
     y = M2C_FIELD(gTouchState, u16 *, 2);
-    if (func_020947c0() != 0) return 0;
+    if (IsTouchInputDisabled() != 0) return 0;
     if (M2C_FIELD(gTouchState, u8 *, 0x16) == 0) return 0;
     base = *gCurrentMap;
     if (M2C_FIELD(base, s16 *, 0x52C2) == M2C_FIELD(base, s16 *, 0x52CA) &&
@@ -325,7 +326,7 @@ s32 func_020bd684(void) {
                 goto ret20;
             }
         }
-        if (((s32 (*)(u16, u16, s32 *)) func_0207bb3c)(x, y, pos) != 0) {
+        if (((s32 (*)(u16, u16, s32 *)) ScreenToMapPosition)(x, y, pos) != 0) {
             data_02164d5d[0] = 1;
             return 0x10;
         }
@@ -335,66 +336,70 @@ s32 func_020bd684(void) {
     return 0;
 }
 
+/* Track the stylus over the current selection: move the map cursor to the tile
+ * under the finger and report the matching target's index, cycling the index
+ * when the "next" button is tapped, and keep the touch cursor shown only while
+ * the finger stays on the tile it pressed. */
 void UpdateSelectionFromTouch(s32 *outIndex, s32 count) {
-    void func_0207bb3c(u16, u16, s32 *);
+    void ScreenToMapPosition(u16, u16, s32 *);
     s32 Divide(s32, s32);
-    s32 func_020947c0(void);
-    s32 func_020bd940(s32, s32, s32);
-    void func_020bd0a8(s16, s16);
-    void func_020bd0e0(void);
-    s32 func_020bdf24(s32, s32);
+    s32 IsTouchInputDisabled(void);
+    s32 FindTargetIndexAt(s32, s32, s32);
+    void CreateTouchCursor(s16, s16);
+    void DeleteTouchCursor(void);
+    s32 IsTouchOnNextButton(s32, s32);
     extern void *gTouchState;
     extern void **gCurrentMap;
-    s32 coords[3];
+    s32 mapPos[3];
     u16 touchX;
     u16 touchY;
-    s32 pixelX;
-    s32 pixelY;
+    s32 tileX;
+    s32 tileY;
     void *map;
-    s32 idx;
-    touchX = M2C_FIELD(gTouchState, u16 *, 0);
-    touchY = M2C_FIELD(gTouchState, u16 *, 2);
-    if (func_020947c0() != 0) return;
-    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return;
-    func_0207bb3c(touchX, touchY, coords);
-    pixelX = Divide(coords[0], 0x300);
-    pixelY = Divide(coords[1], 0x300);
-    idx = func_020bd940(count, pixelX, pixelY);
-    if (idx >= 0) {
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = pixelX;
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = pixelY;
-        *outIndex = idx;
+    s32 targetIndex;
+    touchX = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_X);
+    touchY = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_Y);
+    if (IsTouchInputDisabled() != 0) return;
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE) == 0) return;
+    ScreenToMapPosition(touchX, touchY, mapPos);
+    tileX = Divide(mapPos[0], MAP_TILE_SUBPIXEL);
+    tileY = Divide(mapPos[1], MAP_TILE_SUBPIXEL);
+    targetIndex = FindTargetIndexAt(count, tileX, tileY);
+    if (targetIndex >= 0) {
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = tileX;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = tileY;
+        *outIndex = targetIndex;
     }
-    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
-        if (func_020bdf24(touchX, touchY)) {
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) != 0) {
+        if (IsTouchOnNextButton(touchX, touchY)) {
             (*outIndex)++;
             if (*outIndex == count) {
                 *outIndex = 0;
             }
         } else {
-            M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = pixelX;
-            M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = pixelY;
+            M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_X) = tileX;
+            M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_Y) = tileY;
             map = *gCurrentMap;
-            func_020bd0a8(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
+            CreateTouchCursor(M2C_FIELD(map, s16 *, MAP_TOUCH_TILE_X), M2C_FIELD(map, s16 *, MAP_TOUCH_TILE_Y));
         }
     }
     map = *gCurrentMap;
-    if (M2C_FIELD(map, s16 *, 0x52CA) == pixelX && M2C_FIELD(map, s16 *, 0x52CC) == pixelY) return;
-    func_020bd0e0();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = 255;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = 255;
+    if (M2C_FIELD(map, s16 *, MAP_TOUCH_TILE_X) == tileX && M2C_FIELD(map, s16 *, MAP_TOUCH_TILE_Y) == tileY) return;
+    DeleteTouchCursor();
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_X) = 255;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_Y) = 255;
 }
 
-s32 func_020bd940(s32 n,s32 x,s32 y){void *GetTargetPosition(s32);s32 i;for(i=0;i<n;i++){void *p=GetTargetPosition(i);if(x==M2C_FIELD(p,s16 *,4)&&y==M2C_FIELD(p,s16 *,6))return i;}return -1;}
+s32 FindTargetIndexAt(s32 n,s32 x,s32 y){void *GetTargetPosition(s32);s32 i;for(i=0;i<n;i++){void *p=GetTargetPosition(i);if(x==M2C_FIELD(p,s16 *,4)&&y==M2C_FIELD(p,s16 *,6))return i;}return -1;}
 
 /* Returns an action code for the unit under the current cursor when it matches the selected tile. */
 s32 GetTouchActionFlags(s32 unitIndex) {
-    s32 func_020947c0(void);
-    void func_0207bb3c(u16, u16, s32 *);
+    s32 IsTouchInputDisabled(void);
+    void ScreenToMapPosition(u16, u16, s32 *);
     s32 Divide(s32, s32);
-    s32 func_020bdf24(s32, s32);
+    s32 IsTouchOnNextButton(s32, s32);
     void func_020bd104(void);
-    s32 func_020bd940(s32, s32, s32);
+    s32 FindTargetIndexAt(s32, s32, s32);
     extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
@@ -403,22 +408,22 @@ s32 GetTouchActionFlags(s32 unitIndex) {
     s32 result;
     cursorX = M2C_FIELD(gTouchState, u16 *, 0);
     cursorY = M2C_FIELD(gTouchState, u16 *, 2);
-    if (func_020947c0() != 0) {
+    if (IsTouchInputDisabled() != 0) {
         return 0;
     }
-    func_0207bb3c(cursorX, cursorY, coords);
+    ScreenToMapPosition(cursorX, cursorY, coords);
     tileX = Divide(coords[0], 0x300);
     tileY = Divide(coords[1], 0x300);
     if (M2C_FIELD(gTouchState, u8 *, 0x16) == 0) {
         return 0;
     }
-    if (func_020bdf24((s32) cursorX, (s32) cursorY) != 0) {
+    if (IsTouchOnNextButton((s32) cursorX, (s32) cursorY) != 0) {
         return 0;
     }
     if (tileX == M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) &&
         tileY == M2C_FIELD(*gCurrentMap, s16 *, 0x52CC)) {
         func_020bd104();
-        if (func_020bd940(unitIndex, tileX, tileY) >= 0) {
+        if (FindTargetIndexAt(unitIndex, tileX, tileY) >= 0) {
             result = 0x10;
         } else {
             result = 0x20;

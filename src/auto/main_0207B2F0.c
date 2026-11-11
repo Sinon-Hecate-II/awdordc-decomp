@@ -301,7 +301,7 @@ u32 func_0207badc(s32 arg0, s32 arg1, M2C_UNK arg2) {
     return result;
 }
 
-s32 func_0207bb3c(s32 arg0, s32 arg1, s32 *arg2) {
+s32 ScreenToMapPosition(s32 arg0, s32 arg1, s32 *arg2) {
     void func_02079d0c(s32, s32, s32 *);
     extern void *gCurrentMap;
     s32 result = 1;

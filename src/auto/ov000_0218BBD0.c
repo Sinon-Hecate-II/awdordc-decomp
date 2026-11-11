@@ -18,7 +18,7 @@ int func_ov000_0218bbd0(void *arg0) {
     void BuildUnitMoveRange(void *);
     void func_01ffb9c4(int);
     s32 IsUnitSelected(void *);
-    s32 func_020a76d4(void *);
+    s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_021a9740(void *, s32);
@@ -48,17 +48,17 @@ int func_ov000_0218bbd0(void *arg0) {
 
     if (IsUnitSelected(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
     if (((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->state != 6) {
-        if (func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && (M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31) == 17 && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health > 80)
+        if (IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && (M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31) == 17 && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health > 80)
             terrainFlags |= 0x40000;
-        else if ((func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && gTerrainPropertyType[M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31] != 0) ||
+        else if ((IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && gTerrainPropertyType[M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31] != 0) ||
             ((gUnitKindFlags[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind * 112] & 7) && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health <= 70 && func_ov000_021a9318(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind, M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2]) == 0))
             terrainFlags |= 0x10000;
     }
     position[0] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1]; position[1] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
-    minX = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) < 0 ? 0 : M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
-    minY = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) < 0 ? 0 : M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
-    if (M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x24)-1 <= M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) maxX = M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x24)-1; else maxX = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
-    if (M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x26)-1 <= M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) maxY = M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x26)-1; else maxY = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    minX = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) < 0 ? 0 : M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    minY = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) < 0 ? 0 : M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    if (M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x24)-1 <= M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) maxX = M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x24)-1; else maxX = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    if (M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x26)-1 <= M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] + GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) maxY = M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x26)-1; else maxY = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] + GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
     for (y=minY; y<=maxY; y++) {
         for (x=minX; x<=maxX; x++) {
             s32 dx = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - x, dy;
@@ -67,7 +67,7 @@ int func_ov000_0218bbd0(void *arg0) {
             dy = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - y;
             if (dx <= 0) dx = x - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1];
             if (dy <= 0) dy = y - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
-            if (i+dy < gUnitKindStats[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
+            if (i+dy < gUnitKindStats[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
             unit = func_020a47e0(x, y);
             if (unit != 0 && func_ov000_021a9bc0() != 0) {
                 health = unit[4];
@@ -146,7 +146,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     void BuildUnitMoveRange(void *);
     void func_01ffb9c4(int);
     s32 IsUnitSelected(void *);
-    s32 func_020a76d4(void *);
+    s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_021a9740(void *, s32);
@@ -173,7 +173,7 @@ s32 func_ov000_0218c400(s32 arg0) {
 
     if (IsUnitSelected(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
     BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
-    for (i = 0; i < func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)); i++)
+    for (i = 0; i < GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)); i++)
         func_01ffb9c4((s8)(i + 0x6f));
 
     for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {

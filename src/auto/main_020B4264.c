@@ -17,8 +17,8 @@ s32 func_020b4264(u8 *arg0) {
     void BuildMapRowOffsets(void);
     void FreeMapTileData(void);
     void func_020a17c0(s32, s32);
-    void func_020a23a4(s32, s32);
-    void func_020a231c(s32, s32);
+    void SetPlayerTeam(s32, s32);
+    void SetPlayerIdForSlot(s32, s32);
     void func_020a232c(s32, s32);
     void func_020a233c(s32, s32);
     void func_020a44fc(u8 *, s32);
@@ -215,8 +215,8 @@ s32 func_020b4264(u8 *arg0) {
     i = 0;
     unit = arg0;
     for (; i < 4; i++) {
-        func_020a23a4(i + 1, M2C_FIELD(unit, u8 *, 0x1CE));
-        func_020a231c(i + 1, M2C_FIELD(unit, u8 *, 0x1CD));
+        SetPlayerTeam(i + 1, M2C_FIELD(unit, u8 *, 0x1CE));
+        SetPlayerIdForSlot(i + 1, M2C_FIELD(unit, u8 *, 0x1CD));
         func_020a232c(i + 1, M2C_FIELD(unit, u8 *, 0x1D6));
         func_020a233c(i + 1, M2C_FIELD(unit, u8 *, 0x1E2));
         unit += 0x8C;
@@ -307,9 +307,9 @@ func_020be324(arg0,func_020be120());func_020b4ab4(func_020be120());if(!func_020b
 func_020cfd14();fn=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x50);if(fn)fn();SetupPlayerTeams();func_020cfd28();func_020c0a1c(3);}
 
 void func_020b4ca0(void) {
-    s32 func_020bee64();
+    s32 IsUnitAvailable();
     func_020befd8();
-    if (func_020bee64() == 0) {
+    if (IsUnitAvailable() == 0) {
         func_02086720(0xC000032D);
         return;
     }

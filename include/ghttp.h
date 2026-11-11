@@ -158,6 +158,47 @@ typedef struct GHIPostData {
 typedef struct GHIPostState {
     GHIPostData *data; /* +0x00 part being posted */
     s32 pos;           /* +0x04 bytes of it sent, -1 before the part header is written */
+    void *file;        /* +0x08 open file handle for a GHIFile part */
+    s32 length;        /* +0x0C total bytes this part contributes */
 } GHIPostState;
+
+/* The POST source a connection uploads: its part list plus the two posting
+ * options that are copied into the connection when the upload is prepared. */
+typedef struct GHIPost {
+    s32 items;   /* +0x00 Vector of GHIPostData* parts */
+    s32 unk04;   /* +0x04 copied to GHIConnection.unk150 */
+    s32 unk08;   /* +0x08 copied to GHIConnection.unk154 */
+    s32 hasFiles;/* +0x0C nonzero: multipart/form-data, else a query string */
+} GHIPost;
+
+/* Fixed byte counts of a multipart/form-data body, measured once from the
+ * boundary length.  The per-part values cover the part header and its CRLFs. */
+typedef struct GHIPostLengths {
+    s32 endLength;        /* +0x00 bytes of the closing boundary line */
+    s32 stringPartLength; /* +0x04 fixed bytes around one string part */
+    s32 boundaryLength;   /* +0x08 strlen of the bare boundary; 0 until computed */
+    s32 filePartLength;   /* +0x0C fixed bytes around one file part */
+} GHIPostLengths;
+
+/* Extra bytes each kind of multipart body piece adds to the bare boundary:
+ * a string part, a file part, and the closing "--boundary--" line. */
+#define GHI_STRING_PART_OVERHEAD 47
+#define GHI_FILE_PART_OVERHEAD   76
+#define GHI_END_OVERHEAD          4
+
+/* One in-flight high-level web request, the node HttpRequestStart (main_02044E04) puts in
+ * gHttpRequestList. The caller's callbacks and data occupy the first four words; the body
+ * buffer, the ghttp result and the list link follow. */
+typedef struct WebRequestNode {
+    s32 userData;                                    /* +0x00 value passed back to the callbacks */
+    void (*onComplete)(s32, s32, s32, s32);          /* +0x04 (received, total, result, userData) */
+    void (*onProgress)(s32, s32, s32, s32, s32, s32);/* +0x08 ghttp progress callback */
+    s32 reuseConnection;                             /* +0x0c nonzero to keep the connection afterwards */
+    void *buffer;                                    /* +0x10 body buffer, 0 when the caller supplied none */
+    s32 result;                                      /* +0x14 ghttp result */
+    struct WebRequestNode *next;                     /* +0x18 next request in the list */
+} WebRequestNode;    /* 0x1c bytes */
+
+#define HTTP_REQUEST_NODE_SIZE 0x1c
 
 #endif

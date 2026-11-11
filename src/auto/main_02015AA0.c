@@ -133,10 +133,10 @@ s32 func_02015e44(u32 a, u32 p, u32 n) {
 }
 
 void func_02015f10(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020067e0(M2C_UNK, s32);
+    M2C_UNK DC_FlushRange(M2C_UNK, s32);
     M2C_UNK func_02006804();
     M2C_UNK func_020182b0(M2C_UNK, s32, M2C_UNK);
-    func_020067e0(arg2, (arg0 + 0x1F) & ~0x1F);
+    DC_FlushRange(arg2, (arg0 + 0x1F) & ~0x1F);
     func_02006804();
     func_020182b0(arg2, arg0, arg1);
 }

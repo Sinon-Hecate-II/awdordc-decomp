@@ -13,15 +13,15 @@ extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncodi
  * give-up timeout in ms (0 or less uses the default). Returns 0 if the socket
  * could not be set up, 1 once the connection attempt is under way. */
 s32 OpenWfcHttpConnection(s32 timeout){
-M2C_UNK func_02037694();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 func_02021558(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK func_020376d8();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
+M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 func_02021558(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
 s32 r;u32 ip;
 if(M2C_FIELD(&gWfcNet,void **,16)||!M2C_FIELD(&gWfcNet,u32 *,8))return 0;
-M2C_FIELD(&gWfcNet,void **,16)=func_02037694(0,72);
+M2C_FIELD(&gWfcNet,void **,16)=HeapAlloc(0,72);
 if(!M2C_FIELD(&gWfcNet,void **,16))return 0;
 MI_CpuFill8(M2C_FIELD(&gWfcNet,void **,16),0,72);
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=-1;
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=func_02021500(2,1,0);
-if(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket<0){func_020376d8(0,M2C_FIELD(&gWfcNet,void **,16),0);M2C_FIELD(&gWfcNet,void **,16)=0;return 0;}
+if(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket<0){HeapFree(0,M2C_FIELD(&gWfcNet,void **,16),0);M2C_FIELD(&gWfcNet,void **,16)=0;return 0;}
 r=func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,3,0);
 func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,4,r|4);
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addrLen=8;
@@ -46,7 +46,7 @@ s32 func_020364f4(void) {
     M2C_UNK func_0202175c(s32);
     void func_0203667c(void);
     void func_02036718(void);
-    M2C_UNK func_020376d8(s32, M2C_UNK *, s32);
+    M2C_UNK HeapFree(s32, M2C_UNK *, s32);
     extern M2C_UNK gWfcNet;
 
     void *p;
@@ -84,7 +84,7 @@ s32 func_020364f4(void) {
         return 0;
     case 3:
         r = M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c);
-        func_020376d8(0, M2C_FIELD(&gWfcNet, void **, 0x10), 0);
+        HeapFree(0, M2C_FIELD(&gWfcNet, void **, 0x10), 0);
         M2C_FIELD(&gWfcNet, void **, 0x10) = 0;
         return r;
     default:
@@ -168,14 +168,14 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK func_02037694();M2C_UNK func_020376d8();void func_02068d18();void *StringFind();void MI_CpuCopy8();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
+ s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void func_02068d18();void *StringFind();void MI_CpuCopy8();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
  if(totalLen-1<=0||totalLen-1>500)return 0;
  if(gWfcMatchSession)return 0;
  MI_CpuFill8(flagsOut,0,count);
- gWfcMatchSession=(void *)func_02037694(0,0x1d28);
+ gWfcMatchSession=(void *)HeapAlloc(0,0x1d28);
  if(!gWfcMatchSession)goto fail;
  MI_CpuFill8(gWfcMatchSession,0,0x1d28);
  M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)=0;
@@ -198,18 +198,18 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  if(func_020346d0(gWfcMatchSession,sWfcParamEncoding,sWfcEncodingUtf16,8))goto fail;
  if(typeValue&&func_020346d0(gWfcMatchSession,sWfcParamType,typeValue,4))goto fail;
  if(func_020347dc(gWfcMatchSession,sWfcTypeQuery))goto fail;
- namesBuf=(u16 *)func_02037694(0,totalLen*2);
+ namesBuf=(u16 *)HeapAlloc(0,totalLen*2);
  if(!namesBuf)goto fail;
  pos=0;for(i=0;i<count;i++){func_0206cdac(namesBuf+pos,((s32 *)names)[i]);n=pos+func_0206cd90(((s32 *)names)[i]);if(n>=totalLen-1)break;namesBuf[n]=9;pos=n+1;}
  if(func_020346d0(gWfcMatchSession,sWfcParamWords,namesBuf,(totalLen-1)*2))goto fail;
- func_020376d8(0,namesBuf,0);namesBuf=0;
+ HeapFree(0,namesBuf,0);namesBuf=0;
  if(func_02033de8(gWfcMatchSession))goto fail;
  n=func_02006028(gSocketManager[1]);
  func_02033e80(gWfcMatchSession,n-1);
  if(M2C_FIELD(gWfcMatchSession,s32 *,0x1ba4))return 1;
 fail:
- if(namesBuf)func_020376d8(0,namesBuf,0);
- if(gWfcMatchSession){if(M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)==1)func_02034480(gWfcMatchSession);func_020376d8(0,gWfcMatchSession,0);gWfcMatchSession=0;}
+ if(namesBuf)HeapFree(0,namesBuf,0);
+ if(gWfcMatchSession){if(M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)==1)func_02034480(gWfcMatchSession);HeapFree(0,gWfcMatchSession,0);gWfcMatchSession=0;}
  return 0;
 }
 
@@ -270,7 +270,7 @@ s32 func_02036f14(void) {
         break;
     }
     func_02034480(gWfcMatchSession);
-    func_020376d8(0, gWfcMatchSession, 0);
+    HeapFree(0, gWfcMatchSession, 0);
     gWfcMatchSession = 0;
     return var_r4;
 }
@@ -312,12 +312,12 @@ SetNetError(18,-33020);return 0;
 }
 
 void func_020371f4(void) {
-    M2C_UNK func_02037694(M2C_UNK);
-    func_02037694(0);
+    M2C_UNK HeapAlloc(M2C_UNK);
+    HeapAlloc(0);
 }
 
 void func_02037204(void) {
-    M2C_UNK func_020376d8(M2C_UNK);
-    func_020376d8(0);
+    M2C_UNK HeapFree(M2C_UNK);
+    HeapFree(0);
 }
 

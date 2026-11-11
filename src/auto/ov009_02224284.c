@@ -312,7 +312,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     void func_02007e98(s32, void *, s32);
     void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
-    M2C_UNK func_020067e0(M2C_UNK, M2C_UNK);
+    M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02006804(void);
     M2C_UNK func_ov009_02223290(void);
     void func_ov009_0222496c(void *);
@@ -461,7 +461,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     void func_02007e98(s32, void *, s32);
     void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
-    M2C_UNK func_020067e0(M2C_UNK, M2C_UNK);
+    M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02006804(void);
     M2C_UNK func_ov009_02223290(void);
     void func_ov009_0222496c(void *);
@@ -564,7 +564,7 @@ test:
 
     if (arg0 == 1) {
         MI_CpuCopy8(arg2, &data_ov009_02226a80, 0xc0);
-        func_020067e0((s32)&data_ov009_02226a80, 0xc0);
+        DC_FlushRange((s32)&data_ov009_02226a80, 0xc0);
         func_02006804();
         return func_ov009_02223290();
     }

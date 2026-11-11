@@ -1,7 +1,7 @@
 /* 18 functions from 0x0204309C to 0x02043E10 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_0204309c(u32 ret){
+s32 ReportQr2Error(u32 ret){
 s32 func_02038f6c(void);
 u32 off,code;
 if(ret==0)return 0;
@@ -318,7 +318,7 @@ s32 func_020438b4(void) {
     return SBServerListSort(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, sDwcKeyEval, 0);
 }
 
-void func_02043a24(s32 a, void *b) {
+void Qr2AppendGameKey(s32 a, void *b) {
     void *GetConnection(void);
     void Qr2AppendInt(void *, s32);
     void Qr2AppendString(void *, void *);
@@ -351,15 +351,15 @@ case 54:  Qr2AppendInt(b,1); return;
     }
 }
 
-void func_02043b6c(void) {
+void Qr2AppendIndex1Noop(void) {
 
 }
 
-void func_02043b70(void) {
+void Qr2AppendIndex2Noop(void) {
 
 }
 
-void func_02043b74(s32 a,s32 b) {
+void Qr2CollectKeys(s32 a,s32 b) {
 extern u8 gSessionPlayers[];
 s32 i;u8 *p;
 switch(a){case 0:break;case 1:case 2:default:return;}
@@ -374,22 +374,22 @@ p=gSessionPlayers;
 for(i=0;i<154;i++,p+=12)if(*p)func_0205eb50(b,*p);
 }
 
-s32 func_02043c18(void) {
+s32 Qr2RepeatCountNone(void) {
     return 0;
 }
 
-void func_02043c20(void) {
-    M2C_UNK func_0204309c();
-    func_0204309c();
+void Qr2ReportErrorCallback(void) {
+    M2C_UNK ReportQr2Error();
+    ReportQr2Error();
 }
 
-void func_02043c2c(s32 arg0, s16 arg1) {
+void Qr2OnPublicAddress(s32 arg0, s16 arg1) {
     void *GetConnection();
     M2C_FIELD(GetConnection(), s32 *, 0x1C) = arg0;
     M2C_FIELD(GetConnection(), s16 *, 0x1A) = arg1;
 }
 
-void func_02043c4c(s32 arg0){
+void Qr2OnStateChanged(s32 arg0){
 void *GetConnection();M2C_UNK SetConnectionState(M2C_UNK);s32 func_02043184();s32 func_0203ecb0();
 void *p; s32 zero;
 p=GetConnection();
@@ -401,7 +401,7 @@ func_0203ecb0(1,arg0,zero);
 if(func_02043184()!=0)return;p=GetConnection();M2C_FIELD(p,u8 *,0x3cc)=255;
 }
 
-void func_02043d00(s32 arg0, u32 arg1) {
+void Qr2OnReceiveState(s32 arg0, u32 arg1) {
     s32 func_02038f6c(void);
     void *GetConnection(void);
     void MI_CpuCopy8(void *, void *, s32);

@@ -407,9 +407,9 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021804f0);
 void func_ov001_02180448(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190914, data_ov001_0219092c, data_ov001_02190944;
-    extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
+    extern M2C_UNK func_020046cc, GX_LoadBGPltt, func_0200448c;
     Ov001_LoadAsset(&data_ov001_02190914, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_0219092c, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_0219092c, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190944, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
@@ -618,9 +618,9 @@ Ov001_SetStepCallback(&func_ov001_02180970);
 void func_ov001_021808c8(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190958, data_ov001_02190970, data_ov001_02190988;
-    extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
+    extern M2C_UNK func_020046cc, GX_LoadBGPltt, func_0200448c;
     Ov001_LoadAsset(&data_ov001_02190958, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_02190970, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_02190970, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190988, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;

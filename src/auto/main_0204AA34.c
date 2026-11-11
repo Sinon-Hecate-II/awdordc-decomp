@@ -2,7 +2,7 @@
 #include "common.h"
 #include "ghttp.h"
 
-s32 func_0204aa34(void) {
+s32 ghiFindFreeConnection(void) {
 extern M2C_UNK gGhiConnectionList,data_020fd068,data_020fd090,data_020fd014;
 s32 i, newCount, oldCount; void *p;
 for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) {
@@ -30,65 +30,67 @@ return oldCount;
 
 #pragma push
 #pragma opt_propagation off
-void *func_0204ab50(void) {
+/* Take a free connection slot (growing the table if needed), clear it, give it
+   the next id and initialise its three HTTP buffers. */
+GHIConnection *ghiNewConnection(void) {
 extern M2C_UNK gGhiConnectionList;
 M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
 s32 ghiInitBuffer(void *,void *,s32,s32);
 s32 ghiFreeConnection(void *);
-s32 i, ok; void *p;
-ghiLockMutex(); i=func_0204aa34();
+s32 i, ok; GHIConnection *conn;
+ghiLockMutex(); i=ghiFindFreeConnection();
 if(i==-1){ghiUnlockMutex();return NULL;}
-p=M2C_FIELD(&gGhiConnectionList,void ***,4)[i];
-func_02065210(p,0,0x184);
-M2C_FIELD(p,volatile s32 *,0)=1;
-M2C_FIELD(p,volatile s32 *,4)=i;
-{s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,8); M2C_FIELD(&gGhiConnectionList,s32 *,8)=old+1; M2C_FIELD(p,s32 *,8)=old;}
-M2C_FIELD(p,s32 *,12)=0;
-M2C_FIELD(p,s32 *,16)=0;
-M2C_FIELD(p,s32 *,20)=0;
-M2C_FIELD(p,s32 *,24)=0;
-M2C_FIELD(p,s32 *,28)=0;
-M2C_FIELD(p,s16 *,0x20)=0;
-M2C_FIELD(p,s32 *,36)=0;
-M2C_FIELD(p,s32 *,40)=0;
-M2C_FIELD(p,s32 *,44)=0;
-M2C_FIELD(p,s32 *,48)=0;
-M2C_FIELD(p,s32 *,52)=0;
-M2C_FIELD(p,s32 *,56)=0;
-M2C_FIELD(p,s32 *,60)=0;
-M2C_FIELD(p,s32 *,64)=0;
-M2C_FIELD(p,s32 *,68)=0;
-M2C_FIELD(p,s32 *,0x48)=-1;
-M2C_FIELD(p,s32 *,76)=0;
-M2C_FIELD(p,s32 *,224)=0;
-M2C_FIELD(p,s32 *,228)=0;
-M2C_FIELD(p,s32 *,232)=0;
-M2C_FIELD(p,s32 *,236)=0;
-M2C_FIELD(p,s32 *,240)=0;
-M2C_FIELD(p,s32 *,244)=0;
-M2C_FIELD(p,s32 *,248)=0;
-M2C_FIELD(p,s32 *,252)=0;
-M2C_FIELD(p,s32 *,256)=0;
-M2C_FIELD(p,s32 *,0x104)=-1;
-M2C_FIELD(p,s32 *,264)=0;
-M2C_FIELD(p,s32 *,268)=0;
-M2C_FIELD(p,s32 *,272)=0;
-M2C_FIELD(p,s32 *,300)=0;
-M2C_FIELD(p,s32 *,308)=0;
-M2C_FIELD(p,s32 *,312)=0;
-M2C_FIELD(p,s32 *,316)=0;
-M2C_FIELD(p,s32 *,0x158)=500;
-M2C_FIELD(p,s16 *,0x160)=80;
-M2C_FIELD(p,s32 *,0x15c)=0;
-M2C_FIELD(p,s32 *,0x164)=0;
-ok=ghiInitBuffer(p,p+0x50,0x800,0x1000);
-if(ok)ok=ghiInitBuffer(p,p+0x74,0x800,0x800);
-if(ok)ok=ghiInitBuffer(p,p+0x98,0x800,0x400);
+conn=M2C_FIELD(&gGhiConnectionList,GHIConnection ***,4)[i];
+func_02065210(conn,0,0x184);
+M2C_FIELD(conn,volatile s32 *,0)=1;
+M2C_FIELD(conn,volatile s32 *,4)=i;
+{s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,8); M2C_FIELD(&gGhiConnectionList,s32 *,8)=old+1; conn->id=old;}
+conn->pad0C=0;
+conn->state=0;
+conn->url=0;
+conn->host=0;
+conn->addr=0;
+conn->port=0;
+conn->path=0;
+conn->headers=0;
+M2C_FIELD(conn,s32 *,0x2c)=0;
+M2C_FIELD(conn,s32 *,0x30)=0;
+M2C_FIELD(conn,s32 *,0x34)=0;
+conn->result=0;
+M2C_FIELD(conn,s32 *,0x3c)=0;
+M2C_FIELD(conn,s32 *,0x40)=0;
+M2C_FIELD(conn,s32 *,0x44)=0;
+conn->socket=-1;
+conn->lastSocketError=0;
+M2C_FIELD(conn,s32 *,0xe0)=0;
+M2C_FIELD(conn,s32 *,0xe4)=0;
+M2C_FIELD(conn,s32 *,0xe8)=0;
+M2C_FIELD(conn,s32 *,0xec)=0;
+M2C_FIELD(conn,s32 *,0xf0)=0;
+M2C_FIELD(conn,s32 *,0xf4)=0;
+M2C_FIELD(conn,s32 *,0xf8)=0;
+conn->completed=0;
+conn->bytesReceived=0;
+conn->contentLength=-1;
+conn->redirectURL=0;
+M2C_FIELD(conn,s32 *,0x10c)=0;
+conn->chunked=0;
+M2C_FIELD(conn,s32 *,0x12c)=0;
+conn->throttle=0;
+M2C_FIELD(conn,s32 *,0x138)=0;
+conn->postData=0;
+conn->timeout=500;
+conn->portOverride=80;
+conn->serverOverride=0;
+M2C_FIELD(conn,s32 *,0x164)=0;
+ok=ghiInitBuffer(conn,(u8 *)conn+0x50,0x800,0x1000);
+if(ok)ok=ghiInitBuffer(conn,(u8 *)conn+0x74,0x800,0x800);
+if(ok)ok=ghiInitBuffer(conn,(u8 *)conn+0x98,0x800,0x400);
 if(!ok){
-((void (*)(void *))&ghiFreeConnection)(p);ghiUnlockMutex();return NULL;
+((void (*)(void *))&ghiFreeConnection)(conn);ghiUnlockMutex();return NULL;
 }
 {s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,0); M2C_FIELD(&gGhiConnectionList,s32 *,0)=old+1;}
-ghiUnlockMutex();return p;
+ghiUnlockMutex();return conn;
 }
 #pragma pop
 /* Release a connection slot: free the strings, buffers and socket it owns,
@@ -309,7 +311,7 @@ void func_0204b3cc(void) {
     ghiUnlockMutex();
 }
 
-s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 post, s32 throttle, s32 blocking, s32 progressCallback, s32 completedCallback, s32 callbackParam) {
+s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post, s32 throttle, s32 blocking, s32 progressCallback, s32 completedCallback, s32 callbackParam) {
     extern s32 data_020fd1c4, data_020fd17c, data_020fd14c, data_020fd1d4, data_020fd1e4, data_0213dcbc;
     void *gpiStringDup(char *);
     s32 ghiInitFixedBuffer(void *, void *, void *, s32);
@@ -327,7 +329,7 @@ s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 po
     if (bufferSize < 0) return -1;
     if (buffer && bufferSize == 0) return -1;
     if (!data_0213dcbc) func_0204b378();
-    connection = func_0204ab50();
+    connection = ghiNewConnection();
     if (!connection) return -1;
     M2C_FIELD(connection, s32 *, 12) = 0;
     M2C_FIELD(connection, void **, 20) = gpiStringDup(url);
@@ -424,33 +426,64 @@ s32 func_0204b70c(void *arg0) {
  return total+(n-1);
 }
 
-s32 func_0204b7b8(void *obj) {
-s32 StringLength(s32); s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32);
-extern M2C_UNK sGhttpPostFile; extern s32 data_0213dcc0[]; extern u8 data_020fd410[],data_020fd438[],data_020fd310[],sAssertZero[];
-void *p=M2C_FIELD(obj,void **,0x13c); void *q; s32 i,count; s32 total=0;
-if(!data_0213dcc0[2]){s32 n=StringLength((s32)data_020fd410);data_0213dcc0[2]=n;data_0213dcc0[1]=n+47;data_0213dcc0[3]=n+76;data_0213dcc0[0]=n+4;}
-count=Vector_GetCount(M2C_FIELD(p,s32 *,0));
-for(i=0;i<count;i++){
-q=Vector_GetItem(M2C_FIELD(p,s32 *,0),i);
-if(M2C_FIELD(q,s32 *,0)==0){
-total+=data_0213dcc0[1];total+=StringLength(M2C_FIELD(q,s32 *,4));total+=M2C_FIELD(q,s32 *,12);
-}else if(M2C_FIELD(q,s32 *,0)==1){
-total+=data_0213dcc0[3];total+=StringLength(M2C_FIELD(q,s32 *,4));total+=StringLength(M2C_FIELD(q,s32 *,12));total+=StringLength(M2C_FIELD(q,s32 *,16));
-q=Vector_GetItem(M2C_FIELD(obj,s32 *,0x140),i);if(!q)AssertFailed(data_020fd438,&sGhttpPostFile,data_020fd310,0x1ec);total+=M2C_FIELD(q,s32 *,12);
-}else if(M2C_FIELD(q,s32 *,0)==2){
-total+=data_0213dcc0[3];total+=StringLength(M2C_FIELD(q,s32 *,4));total+=StringLength(M2C_FIELD(q,s32 *,16));total+=StringLength(M2C_FIELD(q,s32 *,20));total+=M2C_FIELD(q,s32 *,12);
-}else {AssertFailed(sAssertZero,&sGhttpPostFile,data_020fd310,0x1f9);return 0;}
-}
-return total+data_0213dcc0[0];
+/* Byte length of the multipart/form-data body of a POST that contains files:
+ * the closing boundary line plus, for every part, its fixed header bytes, its
+ * field and file names, and the length of its value or file contents. */
+s32 ghiPostGetHasFilesContentLength(void *obj) {
+    s32 StringLength(s32);
+    s32 Vector_GetCount(s32);
+    void *Vector_GetItem(s32, s32);
+    extern M2C_UNK sGhttpPostFile;
+    extern GHIPostLengths ghiPostLengthCache;
+    extern u8 sMultipartBoundaryPlain[], sAssertState[], sGhiPostGetHasFilesContentLength[], sAssertZero[];
+    GHIPost *post = (GHIPost *)M2C_FIELD(obj, void **, 0x13c);
+    GHIPostData *part;
+    s32 i, count;
+    s32 total = 0;
+
+    if (!ghiPostLengthCache.boundaryLength) {
+        s32 boundaryLength = StringLength((s32)sMultipartBoundaryPlain);
+        ghiPostLengthCache.boundaryLength = boundaryLength;
+        ghiPostLengthCache.stringPartLength = boundaryLength + GHI_STRING_PART_OVERHEAD;
+        ghiPostLengthCache.filePartLength = boundaryLength + GHI_FILE_PART_OVERHEAD;
+        ghiPostLengthCache.endLength = boundaryLength + GHI_END_OVERHEAD;
+    }
+    count = Vector_GetCount(post->items);
+    for (i = 0; i < count; i++) {
+        part = (GHIPostData *)Vector_GetItem(post->items, i);
+        if (part->type == GHIString) {
+            total += ghiPostLengthCache.stringPartLength;
+            total += StringLength((s32)part->name);
+            total += part->u.string.length;
+        } else if (part->type == GHIFile) {
+            total += ghiPostLengthCache.filePartLength;
+            total += StringLength((s32)part->name);
+            total += StringLength((s32)part->u.diskFile.filename);
+            total += StringLength((s32)part->u.diskFile.contentType);
+            part = (GHIPostData *)Vector_GetItem(((GHIConnection *)obj)->postItems, i);
+            if (!part) AssertFailed(sAssertState, &sGhttpPostFile, sGhiPostGetHasFilesContentLength, 0x1ec);
+            total += ((GHIPostState *)part)->length;
+        } else if (part->type == GHIFileMemory) {
+            total += ghiPostLengthCache.filePartLength;
+            total += StringLength((s32)part->name);
+            total += StringLength((s32)part->u.memoryFile.filename);
+            total += StringLength((s32)part->u.memoryFile.contentType);
+            total += part->u.memoryFile.length;
+        } else {
+            AssertFailed(sAssertZero, &sGhttpPostFile, sGhiPostGetHasFilesContentLength, 0x1f9);
+            return 0;
+        }
+    }
+    return total + ghiPostLengthCache.endLength;
 }
 
 s32 func_0204b958(void *arg0) {
- s32 func_0204b7b8(void *); s32 func_0204b70c(void *);
+ s32 ghiPostGetHasFilesContentLength(void *); s32 func_0204b70c(void *);
  extern M2C_UNK data_020fd384,sGhttpPostFile,data_020fd27c;
  void *p=M2C_FIELD(arg0,void **,0x13c);
  if(p==NULL)AssertFailed(&data_020fd384,&sGhttpPostFile,&data_020fd27c,0x20c);
  if(p==NULL)return 0;
- if(M2C_FIELD(p,s32 *,12)!=0)return func_0204b7b8(arg0);
+ if(M2C_FIELD(p,s32 *,12)!=0)return ghiPostGetHasFilesContentLength(arg0);
  return func_0204b70c(arg0);
 }
 

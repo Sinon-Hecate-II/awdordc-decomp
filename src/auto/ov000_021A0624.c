@@ -103,12 +103,12 @@ s32 Divide(s32,M2C_UNK);
 s32 func_020a2668(void *,u8,u8);
 s32 func_020a7558(void *);
 s32 func_ov000_021a0aec(M2C_UNK,M2C_UNK,s32);
-s32 func_ov000_021a9214(void *,u8,u8);
+s32 IsCaptureTargetAt(void *,u8,u8);
 s32 max,v,total;u32 n;
 if(((u32)(M2C_FIELD(arg2,u16 *,6)<<25)>>25)>=91)return 0;
 total=0;
 if(!(M2C_FIELD(arg2,u16 *,4)&8))total+=func_020a2668(arg2,M2C_FIELD(arg2,u8 *,1),M2C_FIELD(arg2,u8 *,2));
-if(func_ov000_021a9214(arg2,M2C_FIELD(arg2,u8 *,1),M2C_FIELD(arg2,u8 *,2)))total+=func_020a7558(arg2);
+if(IsCaptureTargetAt(arg2,M2C_FIELD(arg2,u8 *,1),M2C_FIELD(arg2,u8 *,2)))total+=func_020a7558(arg2);
 if(total==0)return 0;
 n=(u32)(M2C_FIELD(arg2,u16 *,6)<<25)>>25;
 if(n==0)v=0;else v=Divide(n-1,10)+1;
@@ -132,7 +132,7 @@ s32 BuildAiTargetGroups(void) {
     s32 GetUnitAttackClass(s32);
     s32 func_ov000_021a99dc(void *);
     s32 IsPropertyTerrain(s32);
-    s32 func_020d27ec(s32,s32);
+    s32 IsTerrainOnUnitTeam(s32,s32);
     s32 func_ov000_021a4a98(s32,s32);
     void func_ov000_021a11b0(s32);
     extern void *gAiState;
@@ -189,7 +189,7 @@ s32 BuildAiTargetGroups(void) {
                     terrainId=base[0x1420+x+*(u16 *)(base+y*2+0x3758)];
                     if(IsPropertyTerrain(terrainId)==1) {
                         base=*gCurrentMap;
-                        if(!func_020d27ec(M2C_FIELD(base,s16 *,0x52a8),base[0x1420+x+*(u16 *)(base+y*2+0x3758)])) {
+                        if(!IsTerrainOnUnitTeam(M2C_FIELD(base,s16 *,0x52a8),base[0x1420+x+*(u16 *)(base+y*2+0x3758)])) {
                             base=*gCurrentMap;
                             terrainValue=(*(s8 **)(base+y*4+0x52e8))[x];
                             if(candidate[8]>terrainValue)candidate[8]=terrainValue;

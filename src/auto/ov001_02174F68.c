@@ -15,7 +15,7 @@ typedef struct { s32 x; u32 y; } Position;
 void func_ov001_02174f68(s32 arg0, s32 arg1) {
  void func_ov001_0218b200(s32,u16,s32,s32,s32);
  void func_ov001_0218a260(s32,s32,s32,s32);
- s32 func_ov001_0218a384(s32,s32,u16,u16);
+ s32 Ov001_MoveSpriteLayout(s32,s32,u16,u16);
  volatile u8 a[5]={gKeypadLayout[21],gKeypadLayout[22],gKeypadLayout[23],gKeypadLayout[24],gKeypadLayout[25]};
  volatile u8 b[5]={gKeypadLayout[26],gKeypadLayout[27],gKeypadLayout[28],gKeypadLayout[29],gKeypadLayout[30]};
  volatile u8 c[5]={gKeypadLayout[16],gKeypadLayout[17],gKeypadLayout[18],gKeypadLayout[19],gKeypadLayout[20]};
@@ -38,7 +38,7 @@ void func_ov001_02174f68(s32 arg0, s32 arg1) {
  }
  for(i=0;i<c[arg0];i++){
  func_ov001_0218a260(M2C_FIELD((u8 *)gOv001Keypad+i*4,s32 *,0x40),-1,0,0);
- func_ov001_0218a384(M2C_FIELD((u8 *)gOv001Keypad+i*4,s32 *,0x40),-1,gKeypadActionRects[i*2],arg1);
+ Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)gOv001Keypad+i*4,s32 *,0x40),-1,gKeypadActionRects[i*2],arg1);
  }
 }
 #pragma pop
@@ -68,7 +68,7 @@ func_ov001_0218a304(M2C_FIELD((u8 *)gOv001Keypad+(arg0-12)*4,s32 *,0x40),-1,0,da
 
 void Ov001KeypadCommitKey(void) {
     s32 func_ov001_0218a24c(s32, M2C_UNK);
-    M2C_UNK func_ov001_0218a384(s32, M2C_UNK, u16, u16);
+    M2C_UNK Ov001_MoveSpriteLayout(s32, M2C_UNK, u16, u16);
     M2C_UNK func_ov001_0218a474(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a55c(M2C_UNK, M2C_UNK, s32);
     extern u16 data_ov001_0218f66a[];
@@ -81,7 +81,7 @@ void Ov001KeypadCommitKey(void) {
     func_ov001_0218a55c(0, var_r4, func_ov001_0218a24c(M2C_FIELD(gOv001Keypad, s32 *, 0x58), 0));
     func_ov001_0218a474(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, 2);
     temp_ip = M2C_FIELD(gOv001Keypad, s8 *, 0x63) * 2;
-    func_ov001_0218a384(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, data_ov001_0218f66a[temp_ip], data_ov001_0218f66c[temp_ip]);
+    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, data_ov001_0218f66a[temp_ip], data_ov001_0218f66c[temp_ip]);
 }
 
 void func_ov001_0217531c(s32 arg0) {

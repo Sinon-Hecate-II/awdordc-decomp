@@ -68,11 +68,11 @@ gCur3DSpriteEngine=old;
 
 void func_ov007_02219c58(s32 a,s32 b,s32 c,s32 d) {
 extern s32 gCur3DSpriteEngine;
-void func_020809c0(void *,s32,s32);
+void ClearTileRect(void *,s32,s32);
 void func_0209c048(s16,s16,void *,s32,s32,s32);
 void func_020808dc(void *,s32,s32,u16);
 s32 tile=c+4;
-func_020809c0(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x20)+a*2+(b+1)*64,2,2);
+ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x20)+a*2+(b+1)*64,2,2);
 if(d>0) {
 func_0209c048(a+1,b+1,M2C_FIELD(gCur3DSpriteEngine,void **,0x20),d,0x1000,0);
 tile+=5;
@@ -203,7 +203,7 @@ gCur3DSpriteEngine=old;
 }
 
 void func_ov007_0221a160(void) {
-    M2C_UNK func_01ff9ce8(s32);
+    M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK SetFileDirectory();
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
@@ -212,7 +212,7 @@ void func_ov007_0221a160(void) {
     void LoadFileToSpriteBuffer(M2C_UNK, s32, s32);
     s32 func_01ff9c34(s32);
     void func_01ff85b8(M2C_UNK, u16, s32);
-    void func_020c1230(M2C_UNK, M2C_UNK);
+    void DrawMapPreview(M2C_UNK, M2C_UNK);
     void func_020af04c(s32, s32, s32);
     void func_02099450(s32, s32, s32);
     void func_02091d4c(s32);
@@ -261,10 +261,10 @@ void func_ov007_0221a160(void) {
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
 
-    func_01ff9ce8(0);
-    func_01ff9ce8(1);
-    func_01ff9ce8(2);
-    func_01ff9ce8(3);
+    Clear3DSpriteLayer(0);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(2);
+    Clear3DSpriteLayer(3);
 
     p0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *p0 &= ~7;
@@ -302,7 +302,7 @@ void func_ov007_0221a160(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3A) = 2;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x42) = 0;
-    func_020c1230(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+    DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
 
     func_020af04c(3, 0xF, 6);
     func_02099450(0, 0, 1);

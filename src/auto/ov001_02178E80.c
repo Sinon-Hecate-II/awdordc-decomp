@@ -378,9 +378,9 @@ void func_ov001_02179718(void) {
 void func_ov001_02179778(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190690, data_ov001_021906a8, data_ov001_021906c0;
-    extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
+    extern M2C_UNK func_020046cc, GX_LoadBGPltt, func_0200448c;
     Ov001_LoadAsset(&data_ov001_02190690, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_021906a8, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_021906a8, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_021906c0, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;

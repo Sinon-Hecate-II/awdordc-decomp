@@ -1,5 +1,6 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
 
 #pragma push
 #pragma opt_propagation off
@@ -159,24 +160,27 @@ if(b || (u8)((u8)(k==8) && idx==1))func_ov003_0220c0e8(arg0);
 }
 #pragma opt_propagation reset
 
-void func_ov003_0220c190(void *arg,s32 index){
+/* Activates the unit-list row under the cursor: records the row index in the
+ * current selection slot, then runs the row's action (select the unit, show its
+ * information, or open its submenu), with the row's descriptor deciding which. */
+void Ov003_ActivateUnitListEntry(void *arg, s32 index){
 extern void *g3DSpriteEngineSub;
-s32 func_020bee64(s32);
-u8 *p=arg,*q,*entry; s32 type,value,flag;void *ptr;u32 n;
-p[0x38]|=2;
-entry=*(u8**)((u8*)M2C_FIELD(p,void**,0x48)+index*36);
-q=M2C_FIELD(p,u8**,0x3c);
-type=entry[1];value=entry[2];q[q[15]]=index;
-q=M2C_FIELD(p,u8**,0x3c);flag=q[15]==1;
-if((u8)flag){
-ptr=*M2C_FIELD(p,void***,0x5c);
-n=ptr?M2C_FIELD(ptr,u16*,8):-1;
-if((u8)(n-11)==1 && !func_020bee64(8)){type=2;value=5;}
+s32 IsUnitAvailable(s32);
+u8 *menu=arg,*selection,*desc; s32 type,value,isModeOne;void *unit;u32 unitId;
+menu[MENU_FLAGS]|=MENU_FLAG_PENDING;
+desc=*(u8**)((u8*)M2C_FIELD(menu,void**,MENU_ROWS)+index*MENU_ROW_STRIDE);
+selection=M2C_FIELD(menu,u8**,MENU_SELECTION);
+type=desc[MENU_DESC_TYPE];value=desc[MENU_DESC_VALUE];selection[selection[MENU_SELECTION_MODE]]=index;
+selection=M2C_FIELD(menu,u8**,MENU_SELECTION);isModeOne=selection[MENU_SELECTION_MODE]==1;
+if((u8)isModeOne){
+unit=*M2C_FIELD(menu,void***,MENU_SELECTED_UNIT);
+unitId=unit?M2C_FIELD(unit,u16*,8):-1;
+if((u8)(unitId-11)==1 && !IsUnitAvailable(8)){type=MENU_ENTRY_INFO;value=5;}
 }
 switch(type){
-case 1:p[0x34]=49;func_ov003_0220a698(p,value);func_ov003_0220828c(p,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
-case 2:func_020d47d0();func_020d885c(value);func_ov003_0220828c(p,0,(u8)index);func_01ffa6fc(p);PlaySoundEffect(0x1000e);break;
-case 3:switch(entry[2]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(p,1);func_020b4db0(value,p);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(p,3);func_020b4e10(p);break;}break;
+case MENU_ENTRY_UNIT:menu[MENU_ACTION]=49;Ov003_SetRowAnimation(menu,value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
+case MENU_ENTRY_INFO:func_020d47d0();func_020d885c(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ffa6fc(menu);PlaySoundEffect(0x1000e);break;
+case MENU_ENTRY_SUBMENU:switch(desc[MENU_DESC_VALUE]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(menu,1);func_020b4db0(value,menu);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(menu,3);func_020b4e10(menu);break;}break;
 }
 }
 
@@ -189,7 +193,7 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  if((u8)((((unsigned int)p[0x36]<<24)>>28)==1) || (u8)((((unsigned int)p[0x36]<<24)>>28)==2)){p[0x35]=1;func_020d47f0();func_01ffa6fc(p);}
  p[0x38]&=~8;
  q=*(u8 **)(p+0x3c);q[q[0xf]]=arg1;
- if(v!=16){p[0x34]=30;func_ov003_0220a698(p,v);func_ov003_0220828c(p,5,255);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
+ if(v!=16){p[0x34]=30;Ov003_SetRowAnimation(p,v);Ov003_RefreshListRowAnimations(p,5,255);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
  else {func_020d47f0();func_01ffa6fc(p);}
 }
 
@@ -204,7 +208,7 @@ M2C_FIELD(arg0,u8 *,0x38) |= 0x10;
    selection, 2 redraws the unit label, 3 resets the selection buffer. */
 void RunPendingMenuAction(void *arg0) {
     s32 func_020d4810(void);
-    void func_ov003_02207e80(void *);
+    void DrawMapSelectLabel(void *);
     void func_ov003_0220c328(void *, s32);
     void func_02083464(void);
     extern void **gCur3DSpriteEngine;
@@ -289,7 +293,7 @@ void RunPendingMenuAction(void *arg0) {
             if (canConfirm == 0) {
                 return;
             }
-            func_ov003_02207e80(obj);
+            DrawMapSelectLabel(obj);
             {
                 u16 *unit = **(u16 ***)(obj + 0x5c);
                 s32 sel;
@@ -304,7 +308,7 @@ void RunPendingMenuAction(void *arg0) {
             return;
         }
         case 2: {
-            func_ov003_02207e80(obj);
+            DrawMapSelectLabel(obj);
             return;
         }
         case 3: {

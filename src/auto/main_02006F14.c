@@ -49,7 +49,7 @@ u64 GetSystemTick(void) {
     volatile u64 count;
     u32 state = OS_DisableInterrupts();
     timer = *(volatile u16 *)0x04000100;
-    count = M2C_FIELD(&data_0212dfb4, u64 *, 8) & 0x0000FFFFFFFFFFFFULL;
+    count = M2C_FIELD(&data_0212dfb4, volatile u64 *, 8) & 0x0000FFFFFFFFFFFFULL;
     if ((*(volatile u32 *)0x04000214 & 8) && !(timer & 0x8000)) count++;
     OS_RestoreInterrupts(state);
     return (count << 16) | timer;

@@ -4,7 +4,7 @@ typedef struct { u8 active:1; u8 remaining:7; } TransitionFlags;
 
 #pragma opt_common_subs off
 u32 func_ov011_02226658(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK DeleteSpriteObject();
     u8 func_01ffa6fc(void *);
     s32 EaseInterpolate(s32, s32, M2C_UNK, s32, s32);
@@ -135,8 +135,8 @@ u32 func_ov011_02226658(void *arg0) {
                 *sp70 = *sp70 | 0x80;
                 sp6C = *gCur3DSpriteEngine;
                 *sp6C = *sp6C | 0x100;
-                func_01ff9ce8(1);
-                func_01ff9ce8(2);
+                Clear3DSpriteLayer(1);
+                Clear3DSpriteLayer(2);
                 break;
             }
         }

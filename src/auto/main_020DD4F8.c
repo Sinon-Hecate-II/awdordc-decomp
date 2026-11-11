@@ -287,7 +287,7 @@ void func_020ddfcc(void) {
    loads the palette/texture set for the menu's screen kind, resets the menu
    sprites, then queues either the confirm action or the slot's unit preview. */
 void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_02012084();
     M2C_UNK func_02080944(s32, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -322,7 +322,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     SetFileDirectory(&data_0212d3f0);
     GetLocalizedFileName(&data_0212d3f8);

@@ -243,7 +243,7 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 void func_ov003_021fc26c(void *arg0) {
  s32 func_ov003_021f2780(void *,void *);
- void func_ov003_021fc98c(void *,u32);
+ void SetMenuPanelState(void *,u32);
  M2C_UNK PlaySoundEffect(s32);
  u32 func_020d886c(void);
  M2C_UNK func_ov003_021f92f4(void *,s32);
@@ -266,7 +266,7 @@ void func_ov003_021fc26c(void *arg0) {
   if(!func_ov003_021f2780((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+8) &&
      !func_ov003_021f2780((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+0x12)) {
    PlaySoundEffect(0x1001d);
-   func_ov003_021fc98c(arg0,6);
+   SetMenuPanelState(arg0,6);
    return;
   }
  }
@@ -445,7 +445,7 @@ void func_ov003_021fc95c(void *arg0) {
     func_01ffa6fc(arg0);
 }
 
-void func_ov003_021fc98c(void *arg0, u32 arg1) {
+void SetMenuPanelState(void *arg0, u32 arg1) {
 void *func_0208b564(void *);
 void func_020899cc(void *, s32, s32, u32);
 u8 byte;
@@ -492,12 +492,12 @@ default:
 
 #pragma scheduling off
 void func_ov003_021fca84(void *arg0) {
- s32 func_020d4810(); M2C_UNK func_01ff9ce8(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK); M2C_UNK func_020c8e40(); extern void *gCur3DSpriteEngine;
+ s32 func_020d4810(); M2C_UNK Clear3DSpriteLayer(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK); M2C_UNK func_020c8e40(); extern void *gCur3DSpriteEngine;
  PanelFlagByte *flags=(PanelFlagByte *)((u8 *)arg0+0x3e);
  if(!flags->pending)return;
  flags->pending=0;
  switch(flags->mode) {
- case 0: if(!func_020d4810())return; func_01ff9ce8(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); func_020c8e40(); func_ov003_021f92f4(arg0,0); return;
+ case 0: if(!func_020d4810())return; Clear3DSpriteLayer(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); func_020c8e40(); func_ov003_021f92f4(arg0,0); return;
  case 1: case 2: if(!func_020d4810())return; PanelDispatch(arg0, 7); return;
  case 3: if(!func_020d4810())return; PanelDispatch(arg0, 8); return;
  case 4: case 5: case 6: default: return;

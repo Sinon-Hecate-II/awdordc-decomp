@@ -25,7 +25,7 @@ func_02082134(arg0,(u8)arg1->f9);
 ((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f7=arg1->f13;
 ((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f13=arg1->f14;
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine+arg0,s32 *,0xc),0x40);
-func_01ff9ce8(arg0);
+Clear3DSpriteLayer(arg0);
 v=func_01ff9c34((u8)((SpriteHead *)*gCur3DSpriteEngine)->f0,arg0);
 src=base+((u32)((volatile SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f8<<11);
 func_02007ef4(M2C_FIELD(gCur3DSpriteEngine+arg0,volatile s32 *,0x20),src,v);
@@ -298,7 +298,7 @@ void func_02082d08(void) {
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_54 = (void *)data_0214c270;
 }
 
-void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain; s32 v; func_020067e0(a,d); if(gCur3DSpriteEngine==g3DSpriteEngineMain)v=1;else v=0; if(v&255){func_0200478c();func_0200482c(a,c+(b<<13),d);func_0200489c();}else{func_020049dc();func_020049f4(a,c+(b<<13),d);func_02004a58();}}
+void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain; s32 v; DC_FlushRange(a,d); if(gCur3DSpriteEngine==g3DSpriteEngineMain)v=1;else v=0; if(v&255){func_0200478c();func_0200482c(a,c+(b<<13),d);func_0200489c();}else{func_020049dc();func_020049f4(a,c+(b<<13),d);func_02004a58();}}
 
 s32 func_02082f34(s32 arg0) {
     s32 IsLinkSessionActive();

@@ -1,5 +1,6 @@
 /* 30 functions from 0x0202F37C to 0x02030348 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 typedef struct SelectionEntryFlag { u8 low:4; u8 high:4; } SelectionEntryFlag;
 typedef struct SelectionFlagBlock { u8 pad[0xc00]; u8 low:6; u8 mode:2; } SelectionFlagBlock;
 
@@ -14,12 +15,12 @@ void func_0202f37c(void) {
 }
 
 void *func_0202f48c(s32 arg0) {
- extern M2C_UNK data_0213d100;
- if (arg0 & 1) return M2C_FIELD(&data_0213d100, void **, 0x10);
- if (arg0 & 2) return M2C_FIELD(&data_0213d100, void **, 4);
- if (arg0 & 4) return M2C_FIELD(&data_0213d100, void **, 8);
- if (arg0 & 8) return M2C_FIELD(&data_0213d100, void **, 0xC);
- if (arg0 & 0x10) return M2C_FIELD(&data_0213d100, void **, 0);
+ extern M2C_UNK gWfcManager;
+ if (arg0 & 1) return M2C_FIELD(&gWfcManager, void **, 0x10);
+ if (arg0 & 2) return M2C_FIELD(&gWfcManager, void **, 4);
+ if (arg0 & 4) return M2C_FIELD(&gWfcManager, void **, 8);
+ if (arg0 & 8) return M2C_FIELD(&gWfcManager, void **, 0xC);
+ if (arg0 & 0x10) return M2C_FIELD(&gWfcManager, void **, 0);
  return 0;
 }
 
@@ -41,8 +42,8 @@ void func_0202f4e4(u8 arg0) {
 }
 
 u8 func_0202f544(void) {
-    extern M2C_UNK data_0213d100;
-    return M2C_FIELD(M2C_FIELD(&data_0213d100, void **, 0x10), u8 *, 9);
+    extern M2C_UNK gWfcManager;
+    return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 9);
 }
 
 void func_0202f558(s32 arg0) {
@@ -55,13 +56,13 @@ void func_0202f558(s32 arg0) {
 }
 
 s32 func_0202f57c(void) {
- extern M2C_UNK data_0213d100;
- return M2C_FIELD(M2C_FIELD(&data_0213d100, void **, 0x10), s32 *, 0xC);
+ extern M2C_UNK gWfcManager;
+ return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), s32 *, 0xC);
 }
 
 void func_0202f590(u32 arg0) {
- extern M2C_UNK data_0213d100;
- M2C_FIELD(M2C_FIELD(&data_0213d100, void **, 0x10), u8 *, 0x17) = func_0202f5ac(arg0);
+ extern M2C_UNK gWfcManager;
+ M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17) = func_0202f5ac(arg0);
 }
 
 u32 func_0202f5ac(u32 arg0) {
@@ -71,21 +72,21 @@ u32 func_0202f5ac(u32 arg0) {
 
 void func_0202f5bc(void) {
  void func_0202f334(s32, void *, s32);
- extern M2C_UNK data_0213d100;
- func_0202f334(8, M2C_FIELD(&data_0213d100, void **, 0xC), 0xC);
- func_0202f334(0x10, M2C_FIELD(&data_0213d100, void **, 0), 0xD18);
+ extern M2C_UNK gWfcManager;
+ func_0202f334(8, M2C_FIELD(&gWfcManager, void **, 0xC), 0xC);
+ func_0202f334(0x10, M2C_FIELD(&gWfcManager, void **, 0), 0xD18);
 }
 
 s32 func_0202f5f4(void) {
  s32 StringCompareN(void *, void *, s32);
- extern M2C_UNK data_0213d100;
+ extern M2C_UNK gWfcManager;
  s32 offset;
  void *base;
  u8 i;
  u8 selected;
  void *p;
  u8 count;
- p = M2C_FIELD(&data_0213d100, void **, 0);
+ p = M2C_FIELD(&gWfcManager, void **, 0);
  selected = M2C_FIELD(p,u8 *,0xD13);
  base = p + 0x474;
  offset = (s16)selected * (s16)0xC0;
@@ -133,7 +134,7 @@ void func_0202f694(s32 arg0) {
  if(result>=0) func_0202fb20(func_0202f9a0(result,a,v,p),(s32)p);
 }
 
-s32 func_0202f800(void *arg0) {
+s32 Wfc_MatchFriendCode(void *arg0) {
  s32 func_0203174c(void *);
  s32 func_020317f8(void *);
  void *p = func_0202f48c(0x10);
@@ -147,7 +148,7 @@ s32 func_0202f800(void *arg0) {
 s32 func_0202f894(void *arg0, s32 arg1, void *arg2) {
  s32 StringCompareN(void *,void *,s32);
  s32 t; u8 k; s32 i; u32 n; void *p=arg2;
- if(M2C_FIELD(arg0,u16 *,0xA)==0x20) { t=func_0202f800(arg0); if(t>0)return t; }
+ if(M2C_FIELD(arg0,u16 *,0xA)==0x20) { t=Wfc_MatchFriendCode(arg0); if(t>0)return t; }
  i=0;
  if(arg1>0) {
  n=M2C_FIELD(arg0,u16 *,0xA); k=n;
@@ -162,7 +163,7 @@ s32 func_0202f894(void *arg0, s32 arg1, void *arg2) {
 s32 func_0202f910(void *arg0,void *arg1) {
  s32 StringCompareN(void *,void *,s32);
  s32 t,i; void *p,*q; s32 len,n;
- if(M2C_FIELD(arg0,u16 *,0xA)==0x20) {t=func_0202f800(arg0); if(t>0)return t;}
+ if(M2C_FIELD(arg0,u16 *,0xA)==0x20) {t=Wfc_MatchFriendCode(arg0); if(t>0)return t;}
  n=M2C_FIELD(arg1,u8 *,0xD12); i=0;
  if(n>0) {
  len=M2C_FIELD(arg0,u16 *,0xA); p=arg1; q=arg1+0x47C;
@@ -322,10 +323,10 @@ s32 func_0202fc9c(void) {
 /* Polls/refreshes the current entry for state 'p': clears the D0D slot, zeroes a temp buffer,
    calls func_020300e8 to (re)validate, then updates the D0B flags and reports 9 or 8. */
 s32 func_0202fce0(void *p) {
-void MI_CpuFill8(void *,s32,s32); u8 func_0202ff14(void *);
+void MI_CpuFill8(void *,s32,s32); u8 Wfc_ResolveFriendSelection(void *);
 void *q=p+0x470+M2C_FIELD(p,u8 *,0xD13)*0xC0;
 s32 ok;
-M2C_FIELD(p,u8 *,0xD0D)=func_0202ff14(p);
+M2C_FIELD(p,u8 *,0xD0D)=Wfc_ResolveFriendSelection(p);
 MI_CpuFill8(p+0xCB8,0,0x52);
 ok=func_020300e8(p,M2C_FIELD(p,u8 *,0xD0D),p+0xCB8);
 if(ok) {
@@ -360,88 +361,92 @@ WFC_StartConnection(base+off,p+0xcb8,flags|func_020300cc(p));
 return 8;
 }
 
-u8 func_0202ff14(void *arg0) {
-    s32 func_0202f800(void *);
-    s32 func_020305e8(s32);
+/* Resolves which friend-list row the selected friend record corresponds to.  In
+ * collect mode (selection mode 0) it returns the id of the first row whose code
+ * matches the record and marks the duplicate rows; in commit mode it clears the
+ * mark of the single selected row, returns its id and resets the mode. */
+u8 Wfc_ResolveFriendSelection(void *arg0) {
+    s32 Wfc_MatchFriendCode(void *);
+    s32 Wfc_MatchFreespotCode(s32);
     s32 StringCompareN(void *, void *, s32);
-    s32 sp0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 temp_r4;
-    u8 *var_r2;
-    void *var_r3;
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r5_2;
-    s32 var_r6;
-    u16 temp_r0;
-    u8 temp_r0_4;
-    void *temp_r11;
-    void *var_r7;
-    void *var_r8;
-    u8 *var_r9;
+    s32 friendId;
+    s32 result;
+    s32 match;
+    s32 record;
+    u8 *entryFlags2;
+    void *entryBase;
+    s32 matchCount2;
+    s32 i;
+    s32 i2;
+    s32 matchCount;
+    u16 codeLen;
+    u8 entryFlag;
+    void *modeBlock;
+    void *entry;
+    void *entryCode;
+    u8 *entryFlags;
 
-    temp_r4 = (M2C_FIELD(arg0, u8 *, 0xD13) * 0xC0) + (s32) (arg0 + 0x470);
-    sp0 = 0;
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0C) << 0x18) >> 0x1E) == 0) {
-        temp_r0 = M2C_FIELD(temp_r4, u16 *, 0xA);
-        var_r6 = sp0;
-        if (temp_r0 == 0x20) {
-            temp_r0_2 = func_0202f800((void*)temp_r4);
-            sp0 = temp_r0_2;
-            if (temp_r0_2 > 0) { var_r6 += 1; } else { sp0 = 0; }
-        } else if (temp_r0 == 8) {
-            temp_r0_3 = func_020305e8(temp_r4);
-            sp0 = temp_r0_3;
-            if (temp_r0_3 != 0) { var_r6 += 1; } else { sp0 = 0; }
+    record = (M2C_FIELD(arg0, u8 *, WFC_STATE_RECORD_INDEX) * WFC_RECORD_STRIDE) + (s32) (arg0 + WFC_STATE_RECORDS);
+    friendId = 0;
+    if (((u32) (M2C_FIELD(arg0, u8 *, WFC_STATE_FLAGS) << 0x18) >> 0x1E) == 0) {
+        codeLen = M2C_FIELD(record, u16 *, WFC_RECORD_CODE_LEN);
+        matchCount = friendId;
+        if (codeLen == WFC_CODE_LEN_FRIEND) {
+            result = Wfc_MatchFriendCode((void*)record);
+            friendId = result;
+            if (result > 0) { matchCount += 1; } else { friendId = 0; }
+        } else if (codeLen == WFC_CODE_LEN_FREESPOT) {
+            match = Wfc_MatchFreespotCode(record);
+            friendId = match;
+            if (match != 0) { matchCount += 1; } else { friendId = 0; }
         }
-        var_r5 = 0;
-        if ((s32) M2C_FIELD(arg0, u8 *, 0xD10) > 0) {
-            var_r7 = arg0;
-            var_r8 = arg0 + 0x304;
-            var_r9 = arg0 + 0x300;
-            temp_r11 = arg0 + 0x10C;
+        i = 0;
+        if ((s32) M2C_FIELD(arg0, u8 *, WFC_STATE_ENTRY_COUNT) > 0) {
+            entry = arg0;
+            entryCode = arg0 + WFC_STATE_ENTRIES + WFC_ENTRY_CODE;
+            entryFlags = arg0 + WFC_STATE_ENTRIES;
+            modeBlock = arg0 + 0x10C;
             do {
-                if ((M2C_FIELD(temp_r4, u16 *, 0xA) == M2C_FIELD(var_r7, u8 *, 0x303)) && (StringCompareN((void*)(temp_r4 + 0xC), var_r8, M2C_FIELD(temp_r4,u16*,0xA)) == 0)) {
-                    if (var_r6 == 0) {
-                        sp0 = (s32) M2C_FIELD(var_r7, u8 *, 0x301);
+                if ((M2C_FIELD(record, u16 *, WFC_RECORD_CODE_LEN) == M2C_FIELD(entry, u8 *, WFC_STATE_ENTRIES + WFC_ENTRY_CODE_LEN)) && (StringCompareN((void*)(record + WFC_RECORD_CODE), entryCode, M2C_FIELD(record,u16*,WFC_RECORD_CODE_LEN)) == 0)) {
+                    if (matchCount == 0) {
+                        friendId = (s32) M2C_FIELD(entry, u8 *, WFC_STATE_ENTRIES + WFC_ENTRY_ID);
                     } else {
-                        *var_r9 = (*var_r9 & ~0xF0) | 0x10;
-                        ((SelectionFlagBlock*)temp_r11)->mode=1;
+                        *entryFlags = (*entryFlags & ~0xF0) | WFC_ENTRY_MARK;
+                        ((SelectionFlagBlock*)modeBlock)->mode=1;
                     }
-                    var_r6 += 1;
+                    matchCount += 1;
                 }
-                var_r5 += 1;
-                var_r7 += 0x24;
-                var_r8 += 0x24;
-                var_r9 += 0x24;
-            } while (var_r5 < (s32) M2C_FIELD(arg0, u8 *, 0xD10));
+                i += 1;
+                entry += WFC_ENTRY_STRIDE;
+                entryCode += WFC_ENTRY_STRIDE;
+                entryFlags += WFC_ENTRY_STRIDE;
+            } while (i < (s32) M2C_FIELD(arg0, u8 *, WFC_STATE_ENTRY_COUNT));
         }
     } else {
-        var_r5_2 = sp0;
-        var_r4 = var_r5_2;
-        if ((s32) M2C_FIELD(arg0, u8 *, 0xD10) > 0) {
-            var_r3 = arg0;
-            var_r2 = arg0 + 0x300;
+        i2 = friendId;
+        matchCount2 = i2;
+        if ((s32) M2C_FIELD(arg0, u8 *, WFC_STATE_ENTRY_COUNT) > 0) {
+            entryBase = arg0;
+            entryFlags2 = arg0 + WFC_STATE_ENTRIES;
             do {
-                temp_r0_4 = *var_r2;
-                if (((SelectionEntryFlag*)var_r2)->high == 1) {
-                    if (var_r4 == 0) {
-                        ((SelectionEntryFlag*)var_r2)->high=0;
-                        sp0 = (s32) M2C_FIELD(var_r3, u8 *, 0x301);
+                entryFlag = *entryFlags2;
+                if (((SelectionEntryFlag*)entryFlags2)->high == 1) {
+                    if (matchCount2 == 0) {
+                        ((SelectionEntryFlag*)entryFlags2)->high=0;
+                        friendId = (s32) M2C_FIELD(entryBase, u8 *, WFC_STATE_ENTRIES + WFC_ENTRY_ID);
                     }
-                    var_r4 += 1;
+                    matchCount2 += 1;
                 }
-                var_r5_2 += 1;
-                var_r2 += 0x24;
-                var_r3 += 0x24;
-            } while (var_r5_2 < (s32) M2C_FIELD(arg0, u8 *, 0xD10));
+                i2 += 1;
+                entryFlags2 += WFC_ENTRY_STRIDE;
+                entryBase += WFC_ENTRY_STRIDE;
+            } while (i2 < (s32) M2C_FIELD(arg0, u8 *, WFC_STATE_ENTRY_COUNT));
         }
-        if (var_r4 == 1) {
-            M2C_FIELD(arg0, u8 *, 0xD0C) = (u8) (M2C_FIELD(arg0, u8 *, 0xD0C) & ~0xC0);
+        if (matchCount2 == 1) {
+            M2C_FIELD(arg0, u8 *, WFC_STATE_FLAGS) = (u8) (M2C_FIELD(arg0, u8 *, WFC_STATE_FLAGS) & ~WFC_STATE_SELECT_MODE);
         }
     }
-    return (u8) sp0;
+    return (u8) friendId;
 }
 
 #pragma dont_inline reset

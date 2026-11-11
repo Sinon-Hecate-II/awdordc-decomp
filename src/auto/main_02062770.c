@@ -128,7 +128,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     s32 func_020628c0(M2C_UNK, void *, s32);
 
     s32 gpiProcessPlayerRecord(M2C_UNK, s32, u8 *, s32, s32);
-    s32 func_0206527c(void *, M2C_UNK *, M2C_UNK);
+    s32 ByteCompareN(void *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021001a0;
     s32 sp8;
     u16 sp4;
@@ -151,7 +151,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     if ((flags & 0x80) && (func_0206283c(data + headerLen, size - headerLen) == 0)) {
         return 0;
     }
-    if (func_0206527c(data + 1, &data_021001a0, 4) == 0) {
+    if (ByteCompareN(data + 1, &data_021001a0, 4) == 0) {
         return -1;
     }
     func_020629bc(context, data, size, &sp8, &sp4);

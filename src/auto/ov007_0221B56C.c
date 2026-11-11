@@ -9,11 +9,11 @@ s32 func_ov007_0221b704(s32,s32);
 void func_ov007_0221b688(s32,s32);
 s32 func_ov007_0221b56c(s32 a,s32 b,s32 c,s32 d) {
 extern s32 *gCurrentMap;
-s32 func_ov007_0221acac(s32,s32,s32,s32);
+s32 Map_CanPlaceTile(s32,s32,s32,s32);
 s32 func_020c1a80(s32);
 s32 func_ov007_0221b2cc(s32,s32,s32,s32,s32,s32);
 s32 e=func_ov007_0221b6c8(a,b),f=func_ov007_0221b704(a,b);
-s32 r=func_ov007_0221acac(a,b,c,d); s32 x,y;
+s32 r=Map_CanPlaceTile(a,b,c,d); s32 x,y;
 if(r!=1)return r;
 if(func_020c1a80(c))return 0;
 if(func_ov007_0221b2cc(a,b,c,d,e,f)){
@@ -25,12 +25,12 @@ return 0;
 }
 
 void func_ov007_0221b688(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_ov007_0221ac20(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Map_SetTileAndRefresh(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_ov007_0221ad24(M2C_UNK, M2C_UNK, s32);
     if (func_ov007_0221ad24(arg0, arg1, func_ov007_0221b6c8()) != 0) {
         return;
     }
-    func_ov007_0221ac20(arg0, arg1, 8, 3);
+    Map_SetTileAndRefresh(arg0, arg1, 8, 3);
 }
 
 s32 func_ov007_0221b6c8(s32 arg0, s32 arg1) {
@@ -220,7 +220,7 @@ s32 func_ov007_0221be00(s32 a,s32 b) {
  return (u32)(M2C_FIELD(p+id*14,u8 *,0x59AF)<<28)>>28;
 }
 
-void func_ov007_0221be4c(u8 *a,s32 b) {
+void CopyUnitGroup(u8 *a,s32 b) {
  extern s32 *gCurrentMap;
  u8 *d=(u8 *)(*gCurrentMap+0x59A4+((b-1)<<6)*14);
  s32 i=0;
@@ -235,7 +235,7 @@ void func_ov007_0221be4c(u8 *a,s32 b) {
  }while(i<64);
 }
 
-void func_ov007_0221bee4(s32 a,s32 b,s32 c,s32 d){
+void RemapUnitGroups(s32 a,s32 b,s32 c,s32 d){
 extern s32 *data_027e0058;
 void *func_020e34bc(u32); void func_020e35cc(void *);
 u8 *buf; s32 i,off; u8 *t;
@@ -249,34 +249,36 @@ M2C_FIELD(t,u16 *,6)=M2C_FIELD(p,u16 *,6);
 M2C_FIELD(t,u16 *,8)=M2C_FIELD(p,u16 *,8);
 t[10]=p[10];t[11]=p[11];x=((volatile u8 *)p)[12];y=((volatile u8 *)p)[13];t[12]=x;t[13]=y;t+=14;off+=14;
 }while(i<256);
-if(a!=1)func_ov007_0221be4c(buf+((a-1)<<6)*14,1);
-if(b!=2)func_ov007_0221be4c(buf+((b-1)<<6)*14,2);
-if(c!=3)func_ov007_0221be4c(buf+((c-1)<<6)*14,3);
-if(d!=4)func_ov007_0221be4c(buf+((d-1)<<6)*14,4);
+if(a!=1)CopyUnitGroup(buf+((a-1)<<6)*14,1);
+if(b!=2)CopyUnitGroup(buf+((b-1)<<6)*14,2);
+if(c!=3)CopyUnitGroup(buf+((c-1)<<6)*14,3);
+if(d!=4)CopyUnitGroup(buf+((d-1)<<6)*14,4);
 func_020e35cc(buf);
 }
 
 #pragma optimization_level 4
 #pragma opt_strength_reduction off
-void func_ov007_0221c030(s32 a,s32 b,s32 c,s32 d){
+/* Reassign every property cell to the player slot (slot1..slot4) that owns it,
+ * then refresh the cell's tile graphic from the new terrain byte. */
+void Map_ReassignPropertyOwners(s32 slot1,s32 slot2,s32 slot3,s32 slot4){
 extern s32 *gCurrentMap;extern s8 gTerrainPropertyFlags[];
 s32 func_0207f460(s32);
-s32 y,x,p,q,v,k;
-for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
-p=*gCurrentMap;
-q=(p+x)+M2C_FIELD(p+(y<<1),u16 *,0x3758);
-v=M2C_FIELD(q,u8 *,0x1420);k=v&31;
-if(gTerrainPropertyFlags[k]){
-if(a==((v&0xe0)>>5))M2C_FIELD(q,u8 *,0x1420)=k|0x20;
-if(b==((v&0xe0)>>5)){p=*gCurrentMap;M2C_FIELD(M2C_FIELD(p+(y<<1),u16 *,0x3758)+(p+x),u8 *,0x1420)=k|64;}
-if(c==((v&0xe0)>>5)){p=*gCurrentMap;M2C_FIELD(M2C_FIELD(p+(y<<1),u16 *,0x3758)+(p+x),u8 *,0x1420)=k|96;}
-if(d==((v&0xe0)>>5)){p=*gCurrentMap;M2C_FIELD(M2C_FIELD(p+(y<<1),u16 *,0x3758)+(p+x),u8 *,0x1420)=k|128;}
-p=*gCurrentMap;
-M2C_FIELD(p+(x+M2C_FIELD(p+(y<<1),u16 *,0x3758))*2,u16 *,0xa10)=func_0207f460(M2C_FIELD(M2C_FIELD(p+(y<<1),u16 *,0x3758)+(p+x),u8 *,0x1420));
+s32 y,x,map,cell,terrain,kind;
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
+map=*gCurrentMap;
+cell=(map+x)+M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS);
+terrain=M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN);kind=terrain&MAP_TERRAIN_KIND_MASK;
+if(gTerrainPropertyFlags[kind]){
+if(slot1==((terrain&MAP_TERRAIN_OWNER_MASK)>>5))M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN)=kind|0x20;
+if(slot2==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN)=kind|64;}
+if(slot3==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN)=kind|96;}
+if(slot4==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN)=kind|128;}
+map=*gCurrentMap;
+M2C_FIELD(map+(x+M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS))*2,u16 *,MAP_CELL_TILE_ID)=func_0207f460(M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN));
 }}}}
-void func_ov007_0221c1d4(void) {
-    s32 func_020a23b4(s32);
+void CompactPlayerSlots(void) {
+    s32 GetPlayerTeam(s32);
     s32 temp_r4;
     s32 var_r4;
     s32 var_r5;
@@ -285,43 +287,43 @@ void func_ov007_0221c1d4(void) {
     var_r5 = 1;
     var_r4 = 0;
     do {
-        func_020a231c(var_r4, var_r4);
+        SetPlayerIdForSlot(var_r4, var_r4);
         var_r4 += 1;
     } while (var_r4 < 5);
     var_r6 = 1;
     do {
-        if (func_020a23b4(var_r6) != 0) {
-            temp_r4 = func_020a2360(var_r5);
-            func_020a231c(var_r5, func_020a2360(var_r6));
-            func_020a231c(var_r6, temp_r4);
+        if (GetPlayerTeam(var_r6) != 0) {
+            temp_r4 = GetPlayerIdForSlot(var_r5);
+            SetPlayerIdForSlot(var_r5, GetPlayerIdForSlot(var_r6));
+            SetPlayerIdForSlot(var_r6, temp_r4);
             var_r5 = (s32) (u8) (var_r5 + 1);
         }
         var_r6 += 1;
     } while (var_r6 < 5);
 }
 
-void func_ov007_0221c250(void) {
-    M2C_UNK func_020a231c(s32, s32);
+void ResetPlayerOrder(void) {
+    M2C_UNK SetPlayerIdForSlot(s32, s32);
     M2C_UNK func_020d1f2c();
     M2C_UNK InitPlayerStates();
     s32 var_r4;
 
     var_r4 = 0;
     do {
-        func_020a231c(var_r4, var_r4);
+        SetPlayerIdForSlot(var_r4, var_r4);
         var_r4 += 1;
     } while (var_r4 < 5);
     InitPlayerStates();
     func_020d1f2c();
 }
 
-s32 func_ov007_0221c27c(s32 arg0) {
-    s32 func_020a2360(s32);
+s32 GetSlotForPlayerId(s32 arg0) {
+    s32 GetPlayerIdForSlot(s32);
     s32 var_r4;
 
     var_r4 = 0;
 loop_1:
-    if (arg0 == func_020a2360(var_r4)) {
+    if (arg0 == GetPlayerIdForSlot(var_r4)) {
         return var_r4;
     }
     var_r4 += 1;
@@ -341,25 +343,36 @@ void func_ov007_0221c2b0(void *a) {
  M2C_FIELD(a,u16 *,0x6C)=0;
 }
 
-void func_ov007_0221c33c(void *p) {
-extern s32 *gCurrentMap;
-s32 func_020be1a8(void); s32 func_020a2360(s32); s32 func_ov007_0221c27c(s32);
-void func_ov007_0221c030(s32,s32,s32,s32);
-void func_020c8d50(s32); void func_ov007_0221c250(void); void func_ov007_0221205c(void); void func_ov007_022121d4(s32); void func_01ffa6fc(void *);
-s32 a,b,c,d;
-if(func_020be1a8())return;
-func_ov007_0221c1d4();
-a=func_020a2360(1);b=func_020a2360(2);c=func_020a2360(3);d=func_020a2360(4);
-func_ov007_0221bee4(a,b,c,d);
-a=func_020a2360(1);b=func_020a2360(2);c=func_020a2360(3);d=func_020a2360(4);
-func_ov007_0221c030(a,b,c,d);
-if(M2C_FIELD(p,s16 *,0x6c)){s32 v=M2C_FIELD(p,s32 *,0x5c);M2C_FIELD(p,s32 *,0x5c)=v+1;func_020c8d50(v+0xe1);}else func_020c8d50(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-a=func_ov007_0221c27c(1);b=func_ov007_0221c27c(2);c=func_ov007_0221c27c(3);d=func_ov007_0221c27c(4);
-func_ov007_0221bee4(a,b,c,d);
-a=func_ov007_0221c27c(1);b=func_ov007_0221c27c(2);c=func_ov007_0221c27c(3);d=func_ov007_0221c27c(4);
-func_ov007_0221c030(a,b,c,d);
-func_ov007_0221c250();func_ov007_0221205c();func_ov007_022121d4(0);
-if(M2C_FIELD(p,s16 *,0x6c)){if(M2C_FIELD(p,s32 *,0x5c)<50)return;func_01ffa6fc(p);return;}func_01ffa6fc(p);
+/* Prepare the next map once any menu/transition object is gone: compact the
+ * player slots, remap the unit groups and property owners to the new player
+ * order, select the map record (the next campaign map, or the current map),
+ * remap back, then reset the player order and release the map object when the
+ * campaign map list is exhausted. */
+void StartNextMap(void *p) {
+    extern s32 *gCurrentMap;
+    s32 func_020be1a8(void);
+    s32 GetPlayerIdForSlot(s32);
+    s32 GetSlotForPlayerId(s32);
+    void Map_ReassignPropertyOwners(s32,s32,s32,s32);
+    void func_020c8d50(s32);
+    void ResetPlayerOrder(void);
+    void AssignPlayerTeams(void);
+    void func_ov007_022121d4(s32);
+    void func_01ffa6fc(void *);
+    s32 id1,id2,id3,id4;
+    if(func_020be1a8())return;
+    CompactPlayerSlots();
+    id1=GetPlayerIdForSlot(1);id2=GetPlayerIdForSlot(2);id3=GetPlayerIdForSlot(3);id4=GetPlayerIdForSlot(4);
+    RemapUnitGroups(id1,id2,id3,id4);
+    id1=GetPlayerIdForSlot(1);id2=GetPlayerIdForSlot(2);id3=GetPlayerIdForSlot(3);id4=GetPlayerIdForSlot(4);
+    Map_ReassignPropertyOwners(id1,id2,id3,id4);
+    if(M2C_FIELD(p,s16 *,0x6c)){s32 mapIndex=M2C_FIELD(p,s32 *,0x5c);M2C_FIELD(p,s32 *,0x5c)=mapIndex+1;func_020c8d50(mapIndex+0xe1);}else func_020c8d50(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID));
+    id1=GetSlotForPlayerId(1);id2=GetSlotForPlayerId(2);id3=GetSlotForPlayerId(3);id4=GetSlotForPlayerId(4);
+    RemapUnitGroups(id1,id2,id3,id4);
+    id1=GetSlotForPlayerId(1);id2=GetSlotForPlayerId(2);id3=GetSlotForPlayerId(3);id4=GetSlotForPlayerId(4);
+    Map_ReassignPropertyOwners(id1,id2,id3,id4);
+    ResetPlayerOrder();AssignPlayerTeams();func_ov007_022121d4(0);
+    if(M2C_FIELD(p,s16 *,0x6c)){if(M2C_FIELD(p,s32 *,0x5c)<50)return;func_01ffa6fc(p);return;}func_01ffa6fc(p);
 }
 
 void func_ov007_0221c4d4(void) {

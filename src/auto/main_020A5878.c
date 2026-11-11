@@ -206,7 +206,7 @@ s32 func_020a600c(s32 arg0) {
     extern s16 gPlayerUnitIdBase[];
     s32 func_020a7d38(Unit5B *);
     s32 IsUnitOnCurrentTeam(s32);
-    s32 func_020d27ec(s32, s32);
+    s32 IsTerrainOnUnitTeam(s32, s32);
     s32 func_020a5f80(s32, s32);
 
     u8 x;
@@ -241,7 +241,7 @@ s32 func_020a600c(s32 arg0) {
         u16 w = *(u16 *)(base + 0x52a4);
         u8 tile = *(u8 *)(x + rowOff + base + 0x1420);
         s16 val = gPlayerUnitIdBase[w];
-        if (func_020d27ec(val, tile)) {
+        if (IsTerrainOnUnitTeam(val, tile)) {
             return 1;
         }
     }
@@ -274,7 +274,7 @@ s32 func_020a600c(s32 arg0) {
 }
 
 #pragma scheduling off
-s32 func_020a61e8(void *arg0){
+s32 IsUnitVisible(void *arg0){
 s32 func_020a5d8c(s32,u8,u8);extern s32 *gCurrentMap;
 u8 *p=arg0;u16 w;u8 b2,b1;u8 *base;u32 idx;u8 byte;u16 r2;u8 val;
 w=*(u16 *)(p+4);if(w&4)return 0;
@@ -291,7 +291,7 @@ return 0;
 ret1:return 1;
 }
 #pragma scheduling reset
-s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020a61e8(void *);u8 *p;u8 v;if(a<0||b<0)goto fail;p=(u8 *)*gCurrentMap;if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;goto valid;fail:return 0;valid:v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return func_020a61e8(p+0x59a4+v*14);}
+s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitVisible(void *);u8 *p;u8 v;if(a<0||b<0)goto fail;p=(u8 *)*gCurrentMap;if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;goto valid;fail:return 0;valid:v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return IsUnitVisible(p+0x59a4+v*14);}
 
 /* Adds `amount`-scaled income to the funds of the player/commander that owns terrain entry `entry`, capped at 999999999, and notifies the funds display if applicable. */
 s32 func_020a6328(u8 *entry, s32 amount) {

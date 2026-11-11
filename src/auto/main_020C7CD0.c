@@ -119,7 +119,7 @@ s32 func_020c7ef4(s32 a) {
  return 1;
 }
 
-u8 func_020c7f30(s32 a) {
+u8 IsCampaignMapAvailable(s32 a) {
  s32 func_020c80a4(s32); s32 func_02086960(s32);
  s32 p;
  if(a<0xE1||a>=0x1A9)return 0;
@@ -158,11 +158,11 @@ s32 func_020c8020(s32 a) {
 }
 
 s32 func_020c8054(s32 arg0) {
-    s32 func_020bee64(M2C_UNK);
+    s32 IsUnitAvailable(M2C_UNK);
     u16 *func_020bfa60(M2C_UNK);
     u16 *temp_r0;
 
-    if (func_020bee64(8) != 0) {
+    if (IsUnitAvailable(8) != 0) {
         temp_r0 = func_020bfa60(8);
         if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (arg0 == *temp_r0)) {
             return 1;
@@ -240,7 +240,7 @@ i++;src++;
 }while(i<M2C_FIELD(a,u8 *,0x2f));
 }
 
-void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void *);void func_020a231c(s32,s32);s32 i;u8 *base;StringCopy((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)func_020a231c(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
+void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void *);void SetPlayerIdForSlot(s32,s32);s32 i;u8 *base;StringCopy((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)SetPlayerIdForSlot(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
 
 s32 func_020c8484(s32 arg) {
 extern void **gCurrentMap;
@@ -327,7 +327,7 @@ void func_020c86a8(void *p) {
 
 void func_020c879c(void *arg0){
 extern void **gCurrentMap;extern s8 gTerrainPropertyFlags[];
-void func_02007e98(s32,s32,s32);void StringCopy(void *,void *);s32 func_020a23b4(s32);s32 func_020a2360(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
+void func_02007e98(s32,s32,s32);void StringCopy(void *,void *);s32 GetPlayerTeam(s32);s32 GetPlayerIdForSlot(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
 u8 counts[6];u8 *out=arg0;
 u8 *cursor=out+0x54;
 u16 i;
@@ -335,9 +335,9 @@ func_02007e98(0,(s32)out,0x6f8);*(u32 *)out=0x20070731;
 StringCopy(out+6,(u8 *)*gCurrentMap+0x5120);
 out[4]=((Map8484 *)*gCurrentMap)->width;out[5]=((Map8484 *)*gCurrentMap)->height;
 {s32 y,x;
-y=0;x=0;do{if(func_020a23b4(x))y=(u16)(y+1);x=(u16)(x+1);}while((u32)x<5);
+y=0;x=0;do{if(GetPlayerTeam(x))y=(u16)(y+1);x=(u16)(x+1);}while((u32)x<5);
 if((u32)y<2)out[0x27]=255;else out[0x27]=y;
-x=0;do{out[0x28+x]=func_020a2360(x);x=(u16)(x+1);}while((u32)x<5);
+x=0;do{out[0x28+x]=GetPlayerIdForSlot(x);x=(u16)(x+1);}while((u32)x<5);
 i=0;do{counts[i]=0;i++;}while(i<6);
 y=0;while(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)){
 x=0;while(x<M2C_FIELD(*gCurrentMap,u16 *,0x5144)){

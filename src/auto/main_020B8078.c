@@ -180,7 +180,7 @@ void func_020b84a0(s32 arg0, s32 arg1) {
 }
 
 void func_020b8594(s32 arg0) {
-    M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
     void func_020b84a0(s32, s32);
     extern s32 data_0215d84c;
     extern void *g3DSpriteEngineMain;
@@ -196,7 +196,7 @@ void func_020b8594(s32 arg0) {
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     data_0215d84c = 0x124;
-    func_020809c0(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x24) + 0x140, 0x20, 0xC);
+    ClearTileRect(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x24) + 0x140, 0x20, 0xC);
     if (arg0 & 1) {
         var_r5 = 0;
         var_r6 = arg0 >> 1;
@@ -207,8 +207,8 @@ void func_020b8594(s32 arg0) {
             var_r6 += 1;
             var_r7 += 2;
         } while (var_r5 < 7);
-        func_020809c0(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x100, 0x19, 1);
-        func_020809c0(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x440, 0x19, 1);
+        ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x100, 0x19, 1);
+        ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x440, 0x19, 1);
     } else {
         var_r7_2 = 0;
         var_r6_2 = 0;
@@ -328,7 +328,7 @@ void *func_020b895c(void) {
 void func_020b8970(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    void func_01ff9ce8(s32);
+    void Clear3DSpriteLayer(s32);
     void func_02080944(void *, s32, s32, s32);
     void LoadDecompressedFileTo(void *, void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
@@ -382,8 +382,8 @@ void func_020b8970(void *arg0) {
             var_r5++;
         } while (var_r5 < M2C_FIELD(arg0, s16 *, 0x42));
     }
-    func_01ff9ce8(1);
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(2);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3a) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
     SetFileDirectory((M2C_UNK *) data_02129114);

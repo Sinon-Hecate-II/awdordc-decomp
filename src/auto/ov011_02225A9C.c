@@ -46,7 +46,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 func_01ff9ce8(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 func_01ff9c34(u8,s32);s32 func_01ff85b8(s32,u16,s32);s32 func_02091d4c(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
+s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 func_01ff9c34(u8,s32);s32 func_01ff85b8(s32,u16,s32);s32 func_02091d4c(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;func_02082cb4(state);
@@ -55,7 +55,7 @@ func_020822b8(data_ov011_02228a3c);
 Priority25d(6,0);Priority25d(8,1);Priority25d(10,2);Priority25d(12,3);
 Set25d(0,16);Clear25d(0,32);Set25d(0,64);Set25d(0,128);Set25d(0,256);
 Clear25d(18,256);Clear25d(18,512);Set25d(18,1024);Set25d(18,2048);Clear25d(18,4096);
-func_01ff9ce8(2);SetFileDirectory(data_ov011_02228b54);OpenNarcArchive(data_ov011_02228b5c);
+Clear3DSpriteLayer(2);SetFileDirectory(data_ov011_02228b54);OpenNarcArchive(data_ov011_02228b5c);
 LoadNarcFileDecompressed(data_ov011_02228b68,M2C_FIELD(gCur3DSpriteEngine,s32 *,20));
 LoadNarcFileDecompressed(data_ov011_02228b74,M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
 LoadNarcFileToSpriteBuffer(data_ov011_02228b80,32,32);CloseNarcArchive();
@@ -68,12 +68,12 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(data_ov011_02228a30);
 Priority25d(6,3);Priority25d(8,0);Priority25d(10,1);Priority25d(12,2);
 Set25d(0,16);Clear25d(0,32);Clear25d(0,64);Set25d(0,128);Clear25d(0,256);
-func_01ff9ce8(0);SetFileDirectory(data_ov011_02228b8c);OpenNarcArchive(data_ov011_02228b94);
+Clear3DSpriteLayer(0);SetFileDirectory(data_ov011_02228b8c);OpenNarcArchive(data_ov011_02228b94);
 LoadNarcFileDecompressed(data_ov011_02228ba0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12));
 LoadNarcFileDecompressed(data_ov011_02228bac,M2C_FIELD(gCur3DSpriteEngine,s32 *,32));
 LoadNarcFileToSpriteBuffer(data_ov011_02228bb8,0,32);CloseNarcArchive();
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
-func_01ff9ce8(3);SetFileDirectory(data_ov011_02228bc4);OpenNarcArchive(data_ov011_02228bcc);
+Clear3DSpriteLayer(3);SetFileDirectory(data_ov011_02228bc4);OpenNarcArchive(data_ov011_02228bcc);
 LoadNarcFileDecompressed(data_ov011_02228bd8,M2C_FIELD(gCur3DSpriteEngine,s32 *,24));
 LoadNarcFileDecompressed(data_ov011_02228be4,M2C_FIELD(gCur3DSpriteEngine,s32 *,44));
 func_0208161c(data_ov011_02228bf0,3,0,512);CloseNarcArchive();
@@ -106,7 +106,7 @@ M2C_FIELD(arg0,u8 *,0x38)++;
 }
 
 void func_ov011_02226550(s32 arg0,s32 arg1) {
-s32 func_01ff9ce8(u8);
+s32 Clear3DSpriteLayer(u8);
 s32 SetFileDirectory(void *);
 s32 StringCopy(void *,s32);
 s32 StringAppend(void *,void *);
@@ -121,7 +121,7 @@ StringCopy(sp60,arg0);StringAppend(sp60,&data_ov011_02228c14);
 StringCopy(sp40,arg0);StringAppend(sp40,&data_ov011_02228c1c);
 StringCopy(sp20,arg0);StringAppend(sp20,&data_ov011_02228c20);
 StringCopy(sp0,arg0);StringAppend(sp0,&data_ov011_02228c24);
-func_01ff9ce8((u8)arg1);SetFileDirectory(&data_ov011_02228c28);
+Clear3DSpriteLayer((u8)arg1);SetFileDirectory(&data_ov011_02228c28);
 OpenNarcArchive(sp60);
 LoadNarcFileDecompressed(sp40,M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32 *,12));
 LoadNarcFileDecompressed(sp20,M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32 *,32));

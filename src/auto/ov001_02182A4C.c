@@ -140,9 +140,9 @@ void func_ov001_02182d0c(void) {
 void func_ov001_02182d5c(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190ad0, data_ov001_02190ae8, data_ov001_02190b00;
-    extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
+    extern M2C_UNK func_020046cc, GX_LoadBGPltt, func_0200448c;
     Ov001_LoadAsset(&data_ov001_02190ad0, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_02190ae8, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_02190ae8, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190b00, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
@@ -317,9 +317,9 @@ void func_ov001_021830b8(void) {
 void func_ov001_0218314c(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190b14, data_ov001_02190b2c, data_ov001_02190b44;
-    extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
+    extern M2C_UNK func_020046cc, GX_LoadBGPltt, func_0200448c;
     Ov001_LoadAsset(&data_ov001_02190b14, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_02190b2c, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_02190b2c, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190b44, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
@@ -543,9 +543,9 @@ void func_ov001_02183720(void) {
 void func_ov001_02183738(void *a,s32 b,s32 c,s32 d){extern void *data_ov001_02193df0;u8 *src=a;u8 *dst=(u8 *)data_ov001_02193df0+4+b*2;s32 i;for(i=0;i<d;i++){func_02007e20(src,dst,c*2);src+=64;dst+=64;}}
 
 void func_ov001_02183790(void){
-extern void *data_ov001_02193df0;void func_020067e0();void func_0200448c();
+extern void *data_ov001_02193df0;void DC_FlushRange();void func_0200448c();
 if(!M2C_FIELD(data_ov001_02193df0,u8 *,0x604))return;
-func_020067e0((u8 *)data_ov001_02193df0+4,0x600);
+DC_FlushRange((u8 *)data_ov001_02193df0+4,0x600);
 func_0200448c((u8 *)data_ov001_02193df0+4,0,0x600);
 M2C_FIELD(data_ov001_02193df0,u8 *,0x604)=0;
 }
@@ -580,7 +580,7 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     void *func_ov001_0218b6f8(s32, s32);
     void func_ov001_0218b2bc(s32, s32, void *);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_0218a384(M2C_UNK, s32, s32, s32);
+    void Ov001_MoveSpriteLayout(M2C_UNK, s32, s32, s32);
     void func_ov001_0218a474(M2C_UNK, s32, s32);
     s32 func_ov001_0218c884(s32, void (*)(), s32, s32);
     void func_ov001_02183a20(void);
@@ -596,7 +596,7 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     func_ov001_0218b2bc(c, d, (char *)data_ov001_02193dfc + 0x10);
     t = func_ov001_0218a61c(0, data_ov001_0218fb58[a], 1);
     *(M2C_UNK *)data_ov001_02193dfc = t;
-    func_ov001_0218a384(*(M2C_UNK *)data_ov001_02193dfc, -1, c, d + e);
+    Ov001_MoveSpriteLayout(*(M2C_UNK *)data_ov001_02193dfc, -1, c, d + e);
     func_ov001_0218a474(*(M2C_UNK *)data_ov001_02193dfc, -1, 1);
     *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = func_ov001_0218c884(0, func_ov001_02183a20, 0, 0x80);
 }

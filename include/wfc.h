@@ -77,4 +77,58 @@ enum {
 #define SERVER_TIME_NOW    0x04 /* s64 local clock when the header arrived */
 #define SERVER_TIME_OFFSET 0x0C /* s64 local clock minus server time */
 
+/* NAS (Nintendo Authentication Server) login, driven by gNasLogin.  The global
+ * holds the pending request's kind, the current context and the completion
+ * callback; the context's state walks the NAS_STATE_* values below. */
+#define NAS_LOGIN_REQUEST_KIND 0x00 /* s32 kind handed to the completion callback */
+#define NAS_LOGIN_CONTEXT      0x04 /* void *current 0x280-byte login context */
+#define NAS_LOGIN_DONE_CB      0x08 /* void (*)(char *name, char *pass, s32 kind) */
+
+/* Fields of the login context (NAS_LOGIN_CONTEXT). */
+#define NAS_LOGIN_STATE          0x04 /* s32 state, one of NAS_STATE_* */
+#define NAS_LOGIN_KEY_TYPE       0x0C /* s32 key passed to FormatNasId */
+#define NAS_LOGIN_SESSION        0x1C /* void *local session/profile record */
+#define NAS_LOGIN_KEY            0x3C /* 12-byte profile key record */
+#define NAS_LOGIN_CONNECT_RESULT 0x260 /* connection result record */
+
+/* Login context state (NAS_LOGIN_STATE). */
+enum {
+    NAS_STATE_IDLE           = 0, /* no login in progress */
+    NAS_STATE_REQUESTING     = 1, /* NAS request sent, waiting for the reply */
+    NAS_STATE_CONNECTED      = 2, /* gpi connection established */
+    NAS_STATE_GET_PROFILE    = 3, /* profile info requested from the server */
+    NAS_STATE_VERIFY_PROFILE = 4, /* profile info returned, verify the stored id */
+    NAS_STATE_DONE           = 5  /* logged in */
+};
+
+/* GpiInfoRecord fields used by the NAS login (the record is 0x204 bytes). */
+#define GPI_INFO_PROFILE_ID     0x004 /* s32 profile id echo */
+#define GPI_INFO_LASTNAME       0x08E /* char[31], also carries the game's id */
+#define GPI_INFO_FIELD_LASTNAME 0x705 /* gpiSetInfoString: 0x700 + field 5, \lastname\ */
+
+/* Friend roster kept in the WFC manager state (func_0202f48c(16)): a list of
+ * 0x24-byte rows built from the 0xC0-byte friend records, plus the small state
+ * used while the player picks one. */
+#define WFC_STATE_FLAGS        0xD0C /* u8: low nibble list mode, bits 6..7 friend selection mode */
+#define WFC_STATE_SELECT_MODE  0xC0  /* selection-mode bits of WFC_STATE_FLAGS */
+#define WFC_STATE_RESULT_ID    0xD0D /* u8 friend id the selection resolves to */
+#define WFC_STATE_ENTRY_COUNT  0xD10 /* u8 number of friend-list rows */
+#define WFC_STATE_RECORD_INDEX 0xD13 /* u8 index of the selected friend record */
+
+#define WFC_STATE_ENTRIES      0x300 /* friend-list rows, WFC_ENTRY_STRIDE bytes each */
+#define WFC_ENTRY_STRIDE       0x24
+#define WFC_ENTRY_FLAGS        0x00 /* u8: bits 4..7 mark the rows of a selection */
+#define WFC_ENTRY_MARK         0x10 /* mark bit: the high nibble is 1 on a marked row */
+#define WFC_ENTRY_ID           0x01 /* u8 friend id returned to the caller */
+#define WFC_ENTRY_CODE_LEN     0x03 /* u8 length of the row's code */
+#define WFC_ENTRY_CODE         0x04 /* u8[] code bytes */
+
+#define WFC_STATE_RECORDS      0x470 /* friend records, WFC_RECORD_STRIDE bytes each */
+#define WFC_RECORD_STRIDE      0xC0
+#define WFC_RECORD_CODE_LEN    0x0A /* u16 length of the record's code */
+#define WFC_RECORD_CODE        0x0C /* u8[] code bytes */
+
+#define WFC_CODE_LEN_FRIEND    0x20 /* 32-byte friend code */
+#define WFC_CODE_LEN_FREESPOT  0x08 /* 8-byte FREESPOT code */
+
 #endif

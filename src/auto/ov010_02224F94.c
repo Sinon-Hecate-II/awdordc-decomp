@@ -385,7 +385,7 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, 
     s32 func_0200dfa8(void);
     void *func_ov010_02222b0c(void *, s32, s32);
     void func_ov010_022227b0(s32, s32);
-    void func_020067e0(void *, s32);
+    void DC_FlushRange(void *, s32);
     void DC_InvalidateRange(s32, s32);
 
     s32 pos;
@@ -435,7 +435,7 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, 
     if (count > 0) {
         i = 0;
         do {
-            func_020067e0(arr[i], size);
+            DC_FlushRange(arr[i], size);
             i++;
         } while (i < count);
     }
@@ -524,7 +524,7 @@ void func_ov010_02225d38(void) {
     M2C_UNK func_0200df70();
     extern M2C_UNK gStreamSoundPlayer;
     func_0200df70();
-    func_0202b760(&gStreamSoundPlayer);
+    Sound_StopIfPlaying(&gStreamSoundPlayer);
 }
 
 void EnableVoiceStream(void) {
@@ -555,7 +555,7 @@ extern s32 gStreamVoiceState;
 void func_0202b544(void *);
 void FreeBuffer(s32,s32);
 void func_0200e868(s32);
-func_0202b760(&gStreamSoundPlayer);
+Sound_StopIfPlaying(&gStreamSoundPlayer);
 func_0202b544(&gStreamSoundPlayer);
 FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,12),M2C_FIELD(&gStreamVoiceState,s32 *,24));
 M2C_FIELD(&gStreamVoiceState,s32 *,12)=0;

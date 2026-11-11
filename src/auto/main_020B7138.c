@@ -141,12 +141,12 @@ AddSprite(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DS
 }
 
 void func_020b7824(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK DeleteSpriteObject(s32);
     extern void *gCur3DSpriteEngine;
     DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x38));
     DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x3C));
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
 }
 

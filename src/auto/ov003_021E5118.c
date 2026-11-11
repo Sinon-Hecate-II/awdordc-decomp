@@ -4,7 +4,7 @@ static inline void CallSlot20(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),void (
 
 void func_ov003_021e5118(void *arg0) {
     M2C_UNK func_01ff9b38();
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
@@ -34,7 +34,7 @@ void func_ov003_021e5118(void *arg0) {
     void *func_020ab1c4(void *);
     s32 func_020ae22c(M2C_UNK);
     M2C_UNK func_020ae528(s32);
-    M2C_UNK func_020c1230(s32, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawMapPreview(s32, s32, M2C_UNK, M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_020e35cc(s32);
     M2C_UNK func_020e4cd8(s32, s32, s32, M2C_UNK, s32, s32, s32);
@@ -162,7 +162,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     func_020a9a30(1, 0, 3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3680);
     func_020a9a30(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x2C0);
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(0);
     func_01ff9dd8(0);
     func_02091d4c(7);
     temp_r6_2 = data_027e01d8;
@@ -188,7 +188,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
     func_02091d4c(9);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
-    func_020c1230(M2C_FIELD(data_027e01d8, s32 *, 0xC), M2C_FIELD(data_027e01d8, s32 *, 0x20), 1, 5);
+    DrawMapPreview(M2C_FIELD(data_027e01d8, s32 *, 0xC), M2C_FIELD(data_027e01d8, s32 *, 0x20), 1, 5);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);
     func_0208ca2c(0x5100, 0xA, func_020ae22c(0xA), 1);
     temp_r0_3 = func_02080e30(GetLocalizedFileName(&data_ov003_0220f868), 1);

@@ -18,15 +18,15 @@ extern s8 gTerrainPropertyType[];
 #pragma opt_peephole off
 void func_ov000_0219234c(void *arg0) {
 void SelectMapLayer(void *);void FloodFillUnitRange(s32,s32,u32,s32,s32);
-s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(u32);s32 IsPropertyTerrain(u32);
+s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(u32);s32 IsPropertyTerrain(u32);
 s32 func_ov000_02178518(s32,s32,s16 *);s32 func_ov000_0217bd44(s32,s32,s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
-s32 GetUnitMoveRange(u32,u32);s32 func_020d27ec(u32,u32);
+s32 GetUnitMoveRange(u32,u32);s32 IsTerrainOnUnitTeam(u32,u32);
 void *unit; s32 ux,uy,range,n,d,score,bestX,bestY,candX,candY;void *m,*p; s8 *cost; s16 point[2];s8 *table;
 m=MAP;d=M2C_FIELD(SEL,u8 *,12);unit=m+0x59a4+d*14;if(!d)return;
 d=M2C_FIELD(unit,u16 *,8);uy=(u32)(d<<20)>>26;n=M2C_FIELD(m+uy*2,u16 *,0x3758);ux=(u32)(d<<26)>>26;d=M2C_FIELD(m+(n+ux),u8 *,0x1420);
 if(((d&0xe0)&&(d&31)!=15)||
-(func_ov000_021a9d8c((s16)ux,(s16)uy)&&!IsCurrentPlayerUnit(M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)))){
+(IsAllyUnitAtCell((s16)ux,(s16)uy)&&!IsCurrentPlayerUnit(M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)))){
 M2C_FIELD(unit,u8 *,11)&=~15;
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|63;
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|0xfc0;
@@ -36,7 +36,7 @@ M2C_FIELD(SEL,u8 *,11)&=~15;
 func_ov000_02199f38();
 }
 BuildUnitMoveRange(SEL);func_01ffb9c4(111);
-if(M2C_FIELD(M2C_FIELD(MAP+uy*4,s8 **,0x52e8),s8 *,ux)>=0&&!func_ov000_021a9d8c((s16)ux,(s16)uy)&&(!IsPropertyTerrain(TILE(ux,uy))||M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)==0)&&func_ov000_02178518(ux,uy,point)){
+if(M2C_FIELD(M2C_FIELD(MAP+uy*4,s8 **,0x52e8),s8 *,ux)>=0&&!IsAllyUnitAtCell((s16)ux,(s16)uy)&&(!IsPropertyTerrain(TILE(ux,uy))||M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)==0)&&func_ov000_02178518(ux,uy,point)){
 m=MAP;n=M2C_FIELD(m+uy*2,u16 *,0x3758);p=m+0x6c60;d=M2C_FIELD(m+(ux+n),s8 *,0x1928);p+=d*6;M2C_FIELD(p,u8 *,3)++;
 d=func_ov000_0217bd44(point[0],point[1],ux,uy);
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
@@ -74,9 +74,9 @@ if(table[M2C_FIELD(p,u8 *,18)*32+(TILE(nx,ny)&31)]!=invalid)cost[nx]=(s8)range;
 SelectMapLayer(MAP+0x1e30);
 bestX=-1;bestY=-1;candX=-1;candY=-1;bestD=32767;bestScore=-1;
 for(y=0;y<M2C_FIELD(MAP,u16 *,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16 *,0x5144);x++){
-if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8 **,0x52e8),s8 *,x)<0||func_ov000_021a9d8c((s16)x,(s16)y)|| (IsPropertyTerrain(TILE(x,y))&&M2C_FIELD(MAP+x+ROW(y),u8 *,0x508))||CELL(x,y,0x2338)<0||!func_ov000_02178518(x,y,point))continue;
+if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8 **,0x52e8),s8 *,x)<0||IsAllyUnitAtCell((s16)x,(s16)y)|| (IsPropertyTerrain(TILE(x,y))&&M2C_FIELD(MAP+x+ROW(y),u8 *,0x508))||CELL(x,y,0x2338)<0||!func_ov000_02178518(x,y,point))continue;
 score=CELL(x,y,0x2338);
-if(gTerrainPropertyType[TILE(x,y)&31]&&func_020d27ec(M2C_FIELD(MAP,u8 *,0x52d4),TILE(x,y)))score+=GetUnitMoveRange(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
+if(gTerrainPropertyType[TILE(x,y)&31]&&IsTerrainOnUnitTeam(M2C_FIELD(MAP,u8 *,0x52d4),TILE(x,y)))score+=GetUnitMoveRange(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
 d=M2C_FIELD(MAP+x+ROW(y),u8 *,0x2840)+M2C_FIELD(MAP+x+ROW(y),u8 *,0x2d48);
 if(bestD<d)continue;
 if(bestD==d&&bestScore<score)continue;

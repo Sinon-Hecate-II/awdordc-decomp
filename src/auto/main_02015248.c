@@ -37,7 +37,7 @@ void AutoloadCallback(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
- s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 func_0200b144();void func_0200b99c();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void func_020067e0();
+ s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 func_0200b144();void func_0200b99c();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void DC_FlushRange();
  extern u8 data_020f554c[];extern u32 *data_020f5548;
  u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
  size=arg2;result=0;
@@ -102,7 +102,7 @@ s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
  n=(u32)AutoloadCallback-M2C_FIELD(arg1,u32 *,0x28);M2C_FIELD(M2C_FIELD(header,void **,0x48),u32 *,n)=0xe12fff1e;
  }
  }
- if(result)func_020067e0(arg1,size);
+ if(result)DC_FlushRange(arg1,size);
  }
  return result;
 }

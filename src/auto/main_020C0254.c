@@ -281,9 +281,9 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 void func_020c095c(void) {
 extern s32 gCur3DSpriteEngine;extern void *gCurrentMap;
 void (*cb)(void);
-func_01ff9ce8(2);
+Clear3DSpriteLayer(2);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);
 if(cb)cb();
@@ -481,16 +481,16 @@ func_020ab150(unit,2);func_020aad18(unit);func_02088f1c(unit);return unit;
 }
 
 void func_020c1078(void) {
-    s8 func_020a2360(s32);
-    extern s8 data_0216408c;
+    s8 GetPlayerIdForSlot(s32);
+    extern s8 gPlayerColorIndex;
     s32 var_r4;
     s8 *var_r5;
     s8 temp_r0;
 
-    var_r5 = &data_0216408c;
+    var_r5 = &gPlayerColorIndex;
     var_r4 = 0;
     do {
-        temp_r0 = func_020a2360(var_r4);
+        temp_r0 = GetPlayerIdForSlot(var_r4);
         var_r4 += 1;
         *var_r5 = temp_r0;
         var_r5 += 1;
@@ -500,7 +500,7 @@ void func_020c1078(void) {
 #pragma push
 #pragma opt_strength_reduction off
 void *func_020c10a4(s32 x,s32 y,s32 flag){
-extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
+extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 gPlayerColorIndex;extern u16 data_02129728[],gTileGfxRowOffset[],gPreviewTileGfx[];
 MapC10 *p;u32 idx; s32 k,n,v;
 if(x>=0 && y>=0){
 p=*(void**)data_027e0058;
@@ -510,11 +510,11 @@ return data_02163f9c;
 valid:
 idx=x+p->rows[y];
 {u8 *tiles=p->tiles; v=tiles[idx];}
-n=v&31;k=((u8*)&data_0216408c)[v>>5];
+n=v&31;k=((u8*)&gPlayerColorIndex)[v>>5];
 if(flag && (u8)(p->visible[(u32)idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0;}
 v=data_02129728[n];
 if(n==27 || (u32)n==28)k=0;
-return &data_0211e538[data_021296e8[v+k]];
+return &gPreviewTileGfx[gTileGfxRowOffset[v+k]];
 }
 #pragma pop
 void func_020c1184(void *arg0) {
@@ -526,7 +526,7 @@ void func_020c1190(void) {
 }
 
 void func_020c1194(void *arg0) {
-    M2C_UNK func_020c1454(s32);
+    M2C_UNK DrawMapUnitMarkers(s32);
     M2C_UNK func_020c15ec(s32);
     M2C_UNK func_020c1768(s32);
     s16 temp_r2;
@@ -543,7 +543,7 @@ void func_020c1194(void *arg0) {
         func_020c1768(M2C_FIELD(arg0, s32 *, 0x34));
         return;
     case 22:
-        func_020c1454(M2C_FIELD(arg0, s32 *, 0x34));
+        DrawMapUnitMarkers(M2C_FIELD(arg0, s32 *, 0x34));
         return;
     }
 }

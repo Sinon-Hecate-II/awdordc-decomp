@@ -195,7 +195,7 @@ void func_020dcb68(void) {
 void SetupMatchingMenu(void *entity) {
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 extern M2C_UNK gLinkPath, gMatchingNarcName, gMatchingScName, gMatchRowTemplate, gMatchWideRowTemplate;
-M2C_UNK func_01ff9ce8(s32), SetFileDirectory(void *);
+M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
 s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
@@ -218,7 +218,7 @@ u8 selectedId;
 
 savedEngine = gCur3DSpriteEngine;
 gCur3DSpriteEngine = g3DSpriteEngineMain;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
 SetFileDirectory(&gLinkPath);
 GetLocalizedFileName(&gMatchingNarcName);
@@ -311,7 +311,7 @@ void func_020dd004(void) {
 void SetupMatchingMenuAlt(void *entity) {
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 extern M2C_UNK gLinkPathAlt, gMatchingNarcNameAlt, gMatchingScNameAlt, gMatchRowTemplate, gMatchWideRowTemplate;
-M2C_UNK func_01ff9ce8(s32), SetFileDirectory(void *);
+M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
 s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
@@ -334,7 +334,7 @@ u8 selectedId;
 
 savedEngine = gCur3DSpriteEngine;
 gCur3DSpriteEngine = g3DSpriteEngineMain;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
 SetFileDirectory(&gLinkPathAlt);
 GetLocalizedFileName(&gMatchingNarcNameAlt);

@@ -207,7 +207,7 @@ func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),1,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
 func_ov000_0216cee8();
 }else{
-func_020809c0(M2C_FIELD(gCur3DSpriteEngine,s32 *,32)+24,20,24);
+ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,32)+24,20,24);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
 }
 gCur3DSpriteEngine=saved;

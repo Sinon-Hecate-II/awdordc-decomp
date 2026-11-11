@@ -58,14 +58,14 @@ void func_ov009_022222d0(s32 arg0) {
 #pragma scheduling off
 s32 func_ov009_02222348(s32 arg0) {
 M2C_UNK MI_CpuCopy8(s32,void *,s32);
-s32 func_0206527c(s32,void *,s32);
+s32 ByteCompareN(s32,void *,s32);
 extern M2C_UNK data_ov009_02226cc0, data_ov009_02226d80, data_ov009_02226d84;
 s32 freeIndex; s32 i; u8 *p; s32 offset; s32 equal;
 freeIndex=-1;i=0;p=(u8 *)&data_ov009_02226cc0;
 do {
 if(M2C_FIELD(p,s32*,0xc4)==0) { if(freeIndex<0)freeIndex=i; }
 else {
-if(func_0206527c(arg0+4,p+4,6)==0) equal=1; else equal=0;
+if(ByteCompareN(arg0+4,p+4,6)==0) equal=1; else equal=0;
 if(equal) {
 MI_CpuCopy8(arg0,p,0xc0);
 M2C_FIELD(p,u16*,0xc0)=0x1e0;

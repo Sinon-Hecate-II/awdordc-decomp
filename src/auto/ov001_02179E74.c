@@ -55,7 +55,7 @@ void func_ov001_02179ea8(void) {
 void func_ov001_02179f80(void) {
     s32 Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
+    s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183694(M2C_UNK);
     M2C_UNK func_ov001_02183720(void);
     extern M2C_UNK data_ov001_0218f7ab;
@@ -69,11 +69,11 @@ void func_ov001_02179f80(void) {
     Buf22 buf22 = *(Buf22 *)&data_ov001_0218f795;
     Ov001_LoadAsset(&data_ov001_021906e8, &func_020044ec);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4) =
-        func_ov001_02189dc8(Ov001_LocalizePath(&buf25), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath(&buf25), 0, 4);
     func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4));
     func_ov001_02183720();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8) =
-        func_ov001_02189dc8(Ov001_LocalizePath(&buf22), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath(&buf22), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x04000008, u16 *, 0) = (M2C_FIELD((void *)0x04000008, u16 *, 0) & ~3) | 3;
@@ -381,7 +381,7 @@ void func_ov001_0217a9ac(void) {
 void MapSelectList_Leave(void) {
 extern s32 gMapSelectState,data_ov001_02193d9c;
 extern s32 func_ov001_02181a84,func_ov001_02180860,func_ov001_0217b444,func_ov001_021828ac;
-s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);void *func_ov001_0218445c(void);
+s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);void *GetCurrentMapRecord(void);
 s32 i; void *obj;
 if(func_ov001_0218a800(1))return;
 if(func_ov001_0218a800(0))return;
@@ -393,12 +393,12 @@ obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OB
 }
 func_ov001_0218af0c(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,12));
 func_ov001_02183980();func_ov001_02172184();func_ov001_02171cf8();func_ov001_021836f4();
-func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,4));
-func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
+Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,4));
+Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
 *(u32 *)0x04000010=0;*(u32 *)0x04000018=0;
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,MAPSELECT_CHOSEN)==0){
-func_ov001_02183fa0();func_ov001_02184880(M2C_FIELD(func_ov001_0218445c(),u8 *,0xf4));func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_02181a84);
+func_ov001_02183fa0();func_ov001_02184880(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xf4));func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_02181a84);
 }else if(M2C_FIELD(&gMapSelectState,u8 *,0)==4){
 func_ov001_02183fa0();func_ov001_02175d64(0,1);Ov001_SetStepCallback(&func_ov001_02180860);
 }else{
@@ -456,12 +456,12 @@ void func_ov001_0217ac18(void) {
 
 void func_ov001_0217acc0(s32 arg0, s32 arg1) {
 extern M2C_UNK gMapSelectState;
-s32 func_ov001_0218c3e0(u8 *,s32);
+s32 StringLengthUpTo(u8 *,s32);
 M2C_UNK MI_CpuFill8(void *,s32,s32);
 M2C_UNK func_ov001_0218b080(void *,s32,s32,s32,s32,u16 *,s32);
 u16 buf[17];
 s32 offset=arg0*42;
-s32 len=func_ov001_0218c3e0(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 **,0)+offset,32);
+s32 len=StringLengthUpTo(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 **,0)+offset,32);
 s32 y=arg1*28;
 s32 n,i;
 void *ctx;

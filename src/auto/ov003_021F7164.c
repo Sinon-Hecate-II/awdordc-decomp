@@ -21,11 +21,11 @@ M2C_FIELD(button,u8 *,0x5a)=12;
 
 
 static inline void ov003_menu_set_mode(u8 *p,s32 mode,s32 sound){
-void PlaySoundEffect(s32);void func_020808dc(void *,s32,s32,s32);void func_ov003_021fc98c(void *,s32);
+void PlaySoundEffect(s32);void func_020808dc(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void func_0208b758(void *,s32);void func_02088f1c(void *);void func_02088ff4(void *);s32 func_020ae22c(s32);void func_020893a8(void *,s32,s32,s32);
 PlaySoundEffect(sound);p[0x3e]=(p[0x3e]&~7)|mode;
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,3,7);
-if((u32)(p[0x3e]<<24)>>31)func_ov003_021fc98c(p,mode?5:4);
+if((u32)(p[0x3e]<<24)>>31)SetMenuPanelState(p,mode?5:4);
 if(mode)func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36)+32,16,3,6);
 else func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),16,3,6);
 func_0208b758(M2C_FIELD(M2C_FIELD(p,void **,0x6c),void **,4),mode?0x4700001f:0x4700001d);
@@ -42,11 +42,11 @@ func_020893a8(M2C_FIELD(M2C_FIELD(p,void **,0x6c),void **,0),0x8b80,1,func_020ae
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }
 static inline void ov003_menu_back(void *p){
-s32 GetActiveOverlay(void);s32 IsLinkSessionActive(void);void func_ov003_021fc98c(void *,s32);
+s32 GetActiveOverlay(void);s32 IsLinkSessionActive(void);void SetMenuPanelState(void *,s32);
 s32 special;
 if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))special=1;
 else if(ov003_menu_kind(p,4)){if(GetActiveOverlay()==2)special=1;else special=0;}else special=0;
-if(special&&IsLinkSessionActive())func_ov003_021fc98c(p,3);
+if(special&&IsLinkSessionActive())SetMenuPanelState(p,3);
 else M2C_FIELD(M2C_FIELD(p,void ***,0),void (**)(void *),0x20)(p);
 }
 static inline u8 ov003_button_ready(void *button){
@@ -63,8 +63,8 @@ void func_ov003_021f7164(void *arg0) {
 void MenuSpriteUpdate(void *);void func_02088044(void *);s32 Divide(s32,s32);
 void func_020ab4c0(void *);void func_020ab598(void *);void PlaySoundEffect(s32);void func_ov003_021f92f4(void *,s32);
 s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
-void func_ov003_021fcb70(void *);void func_ov003_021f2808(void *,u16);void func_ov003_021f26c8(void *,void *,u16);
-void func_020808dc(void *,s32,s32,s32);void func_ov003_021fc98c(void *,s32);
+void ConfirmMapSelection(void *);void func_ov003_021f2808(void *,u16);void func_ov003_021f26c8(void *,void *,u16);
+void func_020808dc(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void func_0208b758(void *,s32);
 void func_02088ff4(void *);void func_02088f1c(void *);s32 func_020ae22c(s32);void func_020893a8(void *,s32,s32,s32);
 void func_020c9190(u16,void *);void func_020c9288(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void func_ov003_021fbcf8(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 func_ov003_021f4038(void);void func_ov003_021f91a4(void *);
@@ -111,7 +111,7 @@ if(active){
 buttons=M2C_FIELD(p,void ***,0x68);
 button=buttons[0];
 if((u8)ov003_button_pressed(button)||(u8)ov003_button_pressed(button=buttons[2])||(u8)ov003_button_pressed(button=buttons[1])||func_ov003_021f3f0c((s16)keyx,10,(s16)(GetScrollLimit(M2C_FIELD(p,void **,0x4c))+10))){
-if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))func_ov003_021fcb70(p);
+if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))ConfirmMapSelection(p);
 else if(ov003_menu_kind(p,4)){
 mode=(u32)(p[0x3e]<<29)>>29;
 if((u8)(mode==0)){
@@ -149,7 +149,7 @@ active=0;
 }else if(active){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,32);
 if((u8)ov003_button_pressed(button)&&ov003_menu_kind(p,2)&&ov003_button_ready(button)&&ov003_menu_positioned(p)){
-func_ov003_021fc98c(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
+SetMenuPanelState(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
 }
 }
 }
@@ -179,7 +179,7 @@ func_ov003_021f92f4(p,0);PlaySoundEffect(0x10019);active=0;
 p[0x39]=(p[0x39]&~127)|(keyy&127);
 if(inputFlag==0){
 if(active&&(held&9)){
-if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))func_ov003_021fcb70(p);
+if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))ConfirmMapSelection(p);
 else if(ov003_menu_kind(p,4)){
 if(held&1){
 mode=(u32)(p[0x3e]<<29)>>29;
@@ -212,7 +212,7 @@ active=0;
 if(active&&(held&4)&&ov003_menu_kind(p,2)){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,32);
 if(ov003_button_ready(button)&&ov003_menu_positioned(p)&&!(held&0xf0)){
-ov003_animate_button(button);func_ov003_021fc98c(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
+ov003_animate_button(button);SetMenuPanelState(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
 }
 }
 if(active){

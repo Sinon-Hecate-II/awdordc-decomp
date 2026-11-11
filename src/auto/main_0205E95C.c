@@ -69,7 +69,7 @@ void func_0205ea70(void *arg0) {
     M2C_FIELD(var_r4, s32 *, 0xB4) = 0;
 }
 
-void func_0205eacc(void *p){extern void *data_020ff8d4;extern M2C_UNK gQr2DefaultConnection;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=data_020ff8d4;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&gQr2DefaultConnection)return;gpiFree(p);}
+void Qr2_DestroyConnection(void *p){extern void *data_020ff8d4;extern M2C_UNK gQr2DefaultConnection;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=data_020ff8d4;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&gQr2DefaultConnection)return;gpiFree(p);}
 
 #pragma optimization_level 2
 #pragma opt_cond_exec off

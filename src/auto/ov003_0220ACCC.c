@@ -108,7 +108,7 @@ if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_0220b7fc(a,func_o
 if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!func_ov003_0220b8ac(a,func_ov003_02207c5c(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),12);
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))func_02088044(M2C_FIELD(a,void **,0x5c));
 old=func_ov003_02207c5c(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
-if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){func_ov003_0220c190(a,(u16)old);active=0;}
+if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
 else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));func_ov003_0220c328(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
 }else if(active&&func_ov003_02207a54(a)&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20))){
@@ -121,8 +121,8 @@ if(active&&func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))&
 if(func_ov003_02209258(a)){RequestMenuMode(a,2);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(old,a);PlaySoundEffect(0x1000d);}active=0;
 }
 if(active&&pos>=3&&pos<=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)+2){
-func_ov003_0220a698(a,M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58)+(pos-3)*4,void **,12),u8 *,4));
-M2C_FIELD(a,u8 *,0x34)=30;func_ov003_0220828c(a,5,255);func_ov003_0220bf70(a);PlaySoundEffect(0x1000f);active=0;
+Ov003_SetRowAnimation(a,M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58)+(pos-3)*4,void **,12),u8 *,4));
+M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);func_ov003_0220bf70(a);PlaySoundEffect(0x1000f);active=0;
 }
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));

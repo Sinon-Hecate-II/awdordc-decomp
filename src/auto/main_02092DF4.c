@@ -21,13 +21,13 @@ s32 func_02092df4(void *arg0) {
 }
 
 s32 func_02092e4c(void *arg0) {
- M2C_UNK func_020a23a4(u8, s16);
+ M2C_UNK SetPlayerTeam(u8, s16);
  extern void **gCurrentMap;
  u8 temp_r0;
  void *temp_r1;
  temp_r1 = M2C_FIELD(arg0,void **,4);
  temp_r0 = (u8) M2C_FIELD(temp_r1,s16 *,8);
- func_020a23a4((u8)temp_r0,M2C_FIELD(temp_r1,s16 *,0xa));
+ SetPlayerTeam((u8)temp_r0,M2C_FIELD(temp_r1,s16 *,0xa));
  M2C_FIELD((u8)temp_r0 * 0x8c + (s32)*gCurrentMap,s8 *,0x67c2) = M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,0xa);
  M2C_FIELD(arg0,void **,4) = M2C_FIELD(arg0,void **,4)+0x10;
  return 1;

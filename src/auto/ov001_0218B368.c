@@ -41,7 +41,7 @@ if(a==1){volatile u32 *p=(volatile u32 *)0x04001000;u32 t=*p&0x1f00;*p=(*p&~0x1f
 {volatile u32 *p=(volatile u32 *)0x04000000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);}
 }
 
-void func_ov001_0218b3c4(s32 a,s32 b,u16 *p){if(a==1){if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001042+4)=((y<<8)&0xff00)|(w&255);}}else{if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000042+4)=((y<<8)&0xff00)|(w&255);}}}
+void SetWindowRect(s32 a,s32 b,u16 *p){if(a==1){if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001042+4)=((y<<8)&0xff00)|(w&255);}}else{if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000042+4)=((y<<8)&0xff00)|(w&255);}}}
 
 /* Set the window IN/OUT control register fields for the selected display engine. */
 void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
@@ -371,8 +371,8 @@ M2C_FIELD(data_ov001_02193e68,s32 *,0x808)=func_ov001_0218c884(1,func_ov001_0218
 }
 
 void func_ov001_0218c070(void){
-extern s32 data_ov001_02193e68;void func_020067e0(s32,s32);void func_02004210(s32,s32,s32);void func_02004264(s32,s32,s32);
-func_020067e0(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x400);func_02004264(data_ov001_02193e68+0x400,0,0x400);
+extern s32 data_ov001_02193e68;void DC_FlushRange(s32,s32);void func_02004210(s32,s32,s32);void func_02004264(s32,s32,s32);
+DC_FlushRange(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x400);func_02004264(data_ov001_02193e68+0x400,0,0x400);
 }
 
 #pragma pool_constants off

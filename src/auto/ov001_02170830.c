@@ -17,7 +17,7 @@ extern void *data_ov001_02193cc8;
 extern const u8 data_ov001_0218f2a8[];
 extern const u8 data_ov001_0218f29a[];
 extern const u16 data_ov001_0218f284[];
-void func_ov001_0218a384(void *, s32, s32, void *);
+void Ov001_MoveSpriteLayout(void *, s32, s32, void *);
 
 #pragma thumb on
 void func_ov001_02171078(u8 *a,volatile u32 *b,u32 n){u32 i;for(i=0;i<n;i+=4){a[i]=*b;a[i+1]=*b>>8;a[i+2]=*b>>16;a[i+3]=*b>>24;b++;}}
@@ -185,5 +185,5 @@ void func_ov001_02171738(void){extern void *data_ov001_02193cc8;M2C_FIELD(data_o
 
 void func_ov001_02171750(void){M2C_FIELD(data_ov001_02193cc8,u8 *,0x18)=1;}
 
-void func_ov001_02171768(void *a){s32 n,i;n=data_ov001_0218f2a8[M2C_FIELD(data_ov001_02193cc8,u8 *,0x17)];func_ov001_0218a384(M2C_FIELD(data_ov001_02193cc8,void **,8),-1,0,a);for(i=0;i<n;i++)func_ov001_0218a384(((void **)data_ov001_02193cc8)[i],-1,data_ov001_0218f284[((const u8 (*)[2])data_ov001_0218f29a)[M2C_FIELD(data_ov001_02193cc8,u8 *,0x17)][i]*2],(u8 *)a+4);}
+void func_ov001_02171768(void *a){s32 n,i;n=data_ov001_0218f2a8[M2C_FIELD(data_ov001_02193cc8,u8 *,0x17)];Ov001_MoveSpriteLayout(M2C_FIELD(data_ov001_02193cc8,void **,8),-1,0,a);for(i=0;i<n;i++)Ov001_MoveSpriteLayout(((void **)data_ov001_02193cc8)[i],-1,data_ov001_0218f284[((const u8 (*)[2])data_ov001_0218f29a)[M2C_FIELD(data_ov001_02193cc8,u8 *,0x17)][i]*2],(u8 *)a+4);}
 

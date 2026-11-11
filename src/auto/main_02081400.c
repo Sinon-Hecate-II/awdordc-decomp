@@ -6,19 +6,19 @@ void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 temp_r0;
 
     temp_r0 = func_02080e30(arg0, 0);
-    func_020067e0(temp_r0, arg2);
+    DC_FlushRange(temp_r0, arg2);
     func_0207da60(temp_r0, arg1, arg2);
     func_020e35cc(temp_r0);
 }
 
 void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020067e0(s32, M2C_UNK);
+    M2C_UNK DC_FlushRange(s32, M2C_UNK);
     M2C_UNK func_0207c55c(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02080e30(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = func_02080e30(arg0, 0);
-    func_020067e0(temp_r0, arg2);
+    DC_FlushRange(temp_r0, arg2);
     func_0207c55c(temp_r0, arg1, arg2, 1);
 }
 
@@ -130,7 +130,7 @@ void func_020816a4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  func_02081474(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
-void func_020816cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void LoadNarcFileToBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
  void func_020814ac(s32, M2C_UNK, M2C_UNK, M2C_UNK);
  func_020814ac(BuildNarcPath(arg0), arg1, arg2, arg3);
@@ -273,16 +273,16 @@ M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6) |= arg0;
 
 #pragma scheduling off
 void func_02081a48(void){
-extern M2C_UNK gKeyState;
-void func_0200d544(void);s32 func_0200d5bc(u16 *);void func_0200d650(s32);
-u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;func_0200d650((s32)a);}
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x12)=0;
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x13)=0;
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x14)=0;
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x15)=0;
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x16)=0;
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x10)=0;
-M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x11)=16;
+extern M2C_UNK data_02101e84;
+void func_0200d544(void);s32 func_0200d5bc(u16 *);void func_0200d650(u16 *);
+u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;func_0200d650(a);}
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x12)=0;
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x13)=0;
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x14)=0;
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x15)=0;
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x16)=0;
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x10)=0;
+M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x11)=16;
 }
 #pragma scheduling reset
 /* Samples the touch screen for this frame and updates the tracked touch state:

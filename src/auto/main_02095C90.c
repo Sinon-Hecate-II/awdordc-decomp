@@ -12,7 +12,7 @@ void InitTelopWindow(void *telop) {
     M2C_UNK func_0209c268(M2C_UNK);
     void func_02091d4c(M2C_UNK);
     void func_02096d0c(void);
-    M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, M2C_UNK);
@@ -58,7 +58,7 @@ void InitTelopWindow(void *telop) {
     {
         s32 firstChar = 0;
         s32 charCount = 0x20;
-        func_0209b2b4(0, 0, 1, telop + 0x36, firstChar, charCount);
+        DrawTextLine(0, 0, 1, telop + 0x36, firstChar, charCount);
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2;

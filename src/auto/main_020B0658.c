@@ -153,14 +153,14 @@ void func_020b0af4(void *arg0) {
 
 #pragma opt_strength_reduction off
 void func_020b0b0c(void *arg0) {
-M2C_UNK func_01ff9ce8(M2C_UNK);
+M2C_UNK Clear3DSpriteLayer(M2C_UNK);
 M2C_UNK func_0207a66c(s16,s16);
 M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
 extern M2C_UNK data_020f3d60; extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
 s16 y,x,row; s32 count,j,i; void *p;
 p=*gCurrentMap; y=M2C_FIELD(p,s16 *,0x514a); x=M2C_FIELD(p,s16 *,0x5148);
 if(M2C_FIELD(p,u16 *,0x5146)-(y>>4)>12)count=13;else count=12;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 i=0; if(count>0) do { j=0; loop: func_0207a66c((s16)(j+(x>>4)),(s16)(i+(y>>4))); j++; if(j<16) goto loop; i++; }while(i<count);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 func_0207c3dc(&data_020f3d60,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+0x4900,0x80,0);

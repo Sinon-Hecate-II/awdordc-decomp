@@ -275,13 +275,13 @@ void func_020cd544(s32 arg0) {
     extern u16 gMapConfig;
     extern M2C_UNK data_0212b844;
     s32 func_020bf054(s32, s32);
-    s32 func_020bee64(s32);
+    s32 IsUnitAvailable(s32);
     u8 value;
     func_02088634();
     value = func_020bf054(0, arg0);
     gMapConfig &= ~7;
     func_020e4a18(arg0);
-    if (func_020bee64(value)) {
+    if (IsUnitAvailable(value)) {
         func_020d4ac8(value);
     } else {
         func_01ffa3dc(&data_0212b844, 7);

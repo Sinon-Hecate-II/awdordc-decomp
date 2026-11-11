@@ -89,16 +89,16 @@ void func_ov000_021a96f4(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 
 s32 func_ov000_021a9740(void *arg0, M2C_UNK arg1) {
     s32 func_020a5ae0(M2C_UNK);
-    s32 func_020a86f8(void *, s32, M2C_UNK, M2C_UNK);
+    s32 CalculateUnitDamage(void *, s32, M2C_UNK, M2C_UNK);
     extern u8 data_ov000_021b5c05;
     s32 var_r0;
     s32 var_r5;
     if ((*(&data_ov000_021b5c05 + (((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70)) != 0) && (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) == 0)) {
         var_r5 = 0;
     } else {
-        var_r5 = func_020a86f8(arg0, func_020a5ae0(arg1), 0, 0);
+        var_r5 = CalculateUnitDamage(arg0, func_020a5ae0(arg1), 0, 0);
     }
-    var_r0 = func_020a86f8(arg0, func_020a5ae0(arg1), 1, 0);
+    var_r0 = CalculateUnitDamage(arg0, func_020a5ae0(arg1), 1, 0);
     if (var_r5 > var_r0) var_r0 = var_r5;
     return var_r0;
 }
@@ -272,7 +272,7 @@ s32 func_ov000_021a9c90(s32 x,s32 y) {
  return count;
 }
 
-u8 func_ov000_021a9d8c(u32 arg0,s32 arg1) {
+u8 IsAllyUnitAtCell(u32 arg0,s32 arg1) {
  extern void **gCurrentMap;
  s32 func_020a600c(u16);
  void *base=*gCurrentMap;

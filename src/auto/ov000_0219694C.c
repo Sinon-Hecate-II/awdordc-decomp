@@ -106,7 +106,7 @@ s32 func_ov000_02178e84(s32,s32);
 void FillMapLayer(s32);
 s32 GetUnitAttackClass(u32);
 s32 GetUnitDamagePercent(s32,s32);
-s32 func_020a76d4(void *);
+s32 GetUnitAttackRangeMax(void *);
 u32 func_ov000_0219694c(s32,s32);
 void SetMapCursor(s32,s32,s32,s32,s32);
 u8 *m,*u; MapScan96 *bounds; s32 bx,by,i,off,l,b,l2,b2,l3,x,y,t,r,d,z; u32 best,v;
@@ -119,25 +119,25 @@ if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
 u=(u8 *)*gCurrentMap+0x59a4+off;
 if(!((u32)(u[0]<<26)>>26)||((UnitScan96 *)u)->health<=70||!((UnitScan96 *)u)->status||(M2C_FIELD(u,u16 *,4)&8)||GetUnitAttackClass((u32)(u[0]<<26)>>26)!=1)goto nextUnit;
 if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,7)){
-l=u[1]-func_020a76d4(u)<0?0:u[1]-func_020a76d4(u);
-t=u[2]-func_020a76d4(u)<0?0:u[2]-func_020a76d4(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+func_020a76d4(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+func_020a76d4(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b=u[2]+func_020a76d4(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+func_020a76d4(u);
+l=u[1]-GetUnitAttackRangeMax(u)<0?0:u[1]-GetUnitAttackRangeMax(u);
+t=u[2]-GetUnitAttackRangeMax(u)<0?0:u[2]-GetUnitAttackRangeMax(u);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+GetUnitAttackRangeMax(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+GetUnitAttackRangeMax(u);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b=u[2]+GetUnitAttackRangeMax(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+GetUnitAttackRangeMax(u);
 z=0;for(y=t;y<=b;y++)for(x=l;x<=r;x++){
 d=0; if(u[1]-x>0)d+=u[1]-x;else d+=x-u[1]; if(u[2]-y>0)d+=u[2]-y;else d+=y-u[2];
-if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>func_020a76d4(u))continue;
+if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>GetUnitAttackRangeMax(u))continue;
 m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
 if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
 
 M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
 }}if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,14)){
-l2=u[1]-func_020a76d4(u)<0?0:u[1]-func_020a76d4(u);
-t=u[2]-func_020a76d4(u)<0?0:u[2]-func_020a76d4(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+func_020a76d4(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+func_020a76d4(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b2=u[2]+func_020a76d4(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+func_020a76d4(u);
+l2=u[1]-GetUnitAttackRangeMax(u)<0?0:u[1]-GetUnitAttackRangeMax(u);
+t=u[2]-GetUnitAttackRangeMax(u)<0?0:u[2]-GetUnitAttackRangeMax(u);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+GetUnitAttackRangeMax(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+GetUnitAttackRangeMax(u);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b2=u[2]+GetUnitAttackRangeMax(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+GetUnitAttackRangeMax(u);
 z=0;for(y=t;y<=b2;y++)for(x=l2;x<=r;x++){
 d=0; if(u[1]-x>0)d+=u[1]-x;else d+=x-u[1]; if(u[2]-y>0)d+=u[2]-y;else d+=y-u[2];
-if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>func_020a76d4(u))continue;
+if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>GetUnitAttackRangeMax(u))continue;
 m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
 if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
 if((M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&31)!=18||!(M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&224))continue;
@@ -242,7 +242,7 @@ s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
 
 s32 ApplyHealthBonus(s32 arg0, void *arg1, s32 arg2) {
     s32 func_020a7558(void *);
-    s32 func_ov000_021a9214(void *, u8, u8);
+    s32 IsCaptureTargetAt(void *, u8, u8);
     s32 func_ov000_021a93a8(void *, u8, u8);
     s32 var_r0;
     s32 var_r4;
@@ -251,7 +251,7 @@ s32 ApplyHealthBonus(s32 arg0, void *arg1, s32 arg2) {
     if (func_ov000_021a93a8(arg1, M2C_FIELD(arg1, u8 *, 1), M2C_FIELD(arg1, u8 *, 2)) == 1) {
         var_r4 += 0x14;
     }
-    if (func_ov000_021a9214(arg1, M2C_FIELD(arg1, u8 *, 1), M2C_FIELD(arg1, u8 *, 2)) == 1) {
+    if (IsCaptureTargetAt(arg1, M2C_FIELD(arg1, u8 *, 1), M2C_FIELD(arg1, u8 *, 2)) == 1) {
         var_r4 += func_020a7558(arg1) * 0xA;
     }
     if (var_r4 >= 0x64) {

@@ -3,7 +3,7 @@
 
 /* Load the background-step character data and enable display backgrounds. */
 void func_ov001_02181a84(void) {
-    M2C_UNK func_ov001_0218445c(void);
+    M2C_UNK GetCurrentMapRecord(void);
     M2C_UNK Ov001_GetLanguage(void);
     void func_ov001_02181ba8(void);
     M2C_UNK func_ov001_021722ac(void);
@@ -30,7 +30,7 @@ void func_ov001_02181a84(void) {
     M2C_UNK r3p;
     M2C_UNK rowByte;
 
-    r4 = func_ov001_0218445c();
+    r4 = GetCurrentMapRecord();
     M2C_FIELD(&data_ov001_02193dd4, u8 *, 2) = 0;
     if ((s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 0) == 0) {
         M2C_FIELD(&data_ov001_02193dd4, s8 *, 0) = 1;
@@ -78,21 +78,21 @@ void func_ov001_02181a84(void) {
 void func_ov001_02181ba8(void) {
     s32 Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
+    s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_0218fa80;
     extern M2C_UNK data_ov001_02190a0c;
     extern M2C_UNK data_ov001_02190a24;
     extern M2C_UNK data_ov001_02190a3c;
     extern M2C_UNK data_ov001_02193dd4;
-    extern M2C_UNK func_020040b4;
+    extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK func_0200448c;
     extern M2C_UNK func_020046cc;
     typedef struct { u8 bytes[22]; } PathBuffer;
     PathBuffer pathBuffer = *(PathBuffer *)&data_ov001_0218fa80;
     Ov001_LoadAsset(&data_ov001_02190a0c, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_02190a24, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_02190a24, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190a3c, &func_0200448c);
-    M2C_FIELD(&data_ov001_02193dd4, s32 *, 4) = func_ov001_02189dc8(Ov001_LocalizePath(&pathBuffer), 0, 4);
+    M2C_FIELD(&data_ov001_02193dd4, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&pathBuffer), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -253,7 +253,7 @@ s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);
 if(func_ov001_0218a800(1))return;
 if(func_ov001_0218a800(0))return;
 if(!func_ov001_0217170c())return;
-func_ov001_02172184();func_ov001_02171cf8();func_ov001_02189ebc(M2C_FIELD(&data_ov001_02193dd4,void **,4));
+func_ov001_02172184();func_ov001_02171cf8();Ov001_FreeFile(M2C_FIELD(&data_ov001_02193dd4,void **,4));
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
 if(!M2C_FIELD(&data_ov001_02193dd4,u8 *,2)){func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_02180d44);return;}
 switch(M2C_FIELD(&data_ov001_02193dd4,s8 *,1)){
@@ -358,9 +358,9 @@ void func_ov001_0218223c(void) {
 void func_ov001_021822c8(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190a50, data_ov001_02190a68, data_ov001_02190a80;
-    extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
+    extern M2C_UNK func_020046cc, GX_LoadBGPltt, func_0200448c;
     Ov001_LoadAsset(&data_ov001_02190a50, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_02190a68, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_02190a68, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190a80, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
@@ -377,7 +377,7 @@ void func_ov001_02182370(void) {
     M2C_UNK sp0;
     u8 sp4[12];
 
-    temp_r4 = func_ov001_0218445c();
+    temp_r4 = GetCurrentMapRecord();
     func_02007e70(data_ov001_0218fb40, sp4, 0xC);
     func_ov001_02175db4(0, &sp0);
     if (sp0 == 2) {
@@ -385,7 +385,7 @@ void func_ov001_02182370(void) {
     } else {
         sp4[10] = M2C_FIELD(temp_r4, u8 *, 0xF4) + 1;
     }
-    if (func_0202ef64(sp4) == 0) {
+    if (WFC_Init(sp4) == 0) {
         func_02007958();
     }
     if (sp0 == 0) {

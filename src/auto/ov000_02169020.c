@@ -436,10 +436,10 @@ func_0207c55c(data_02120a20+(M2C_FIELD(player,u8 *,0x1d)-1)*32,a,32,0);
 }
 
 void func_ov000_02169cd4(void *arg0) {
-    void func_020912a4(s32 *);
+    void Sprite_ClearHandle(s32 *);
     M2C_UNK func_020e35cc(s32);
-    func_020912a4(M2C_FIELD(arg0, s32 *, 0x34));
-    func_020912a4(M2C_FIELD(arg0, s32 *, 0x38));
+    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x34));
+    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x38));
     func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
     func_020e35cc(M2C_FIELD(arg0, s32 *, 0x50));
 }

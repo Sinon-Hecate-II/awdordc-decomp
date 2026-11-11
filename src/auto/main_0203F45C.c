@@ -57,7 +57,7 @@ else if((M2C_FIELD(GetConnection(),s32 *,416)!=6&&M2C_FIELD(GetConnection(),s32 
 M2C_FIELD(GetConnection(),u8 *,972)=255;
 p=GetConnection();if(M2C_FIELD((u8 *)p+(M2C_FIELD(GetConnection(),u8 *,13)+1)*4,s32 *,244)!=peer){p=GetConnection();M2C_FIELD((u8 *)p+(M2C_FIELD(GetConnection(),u8 *,13)+1)*4,s32 *,244)=peer;}
 M2C_FIELD(raw,u32 *,4)=i;M2C_FIELD(raw,u16 *,2)=((j>>8)&255)|((j<<8)&0xff00);
-M2C_FIELD(GetConnection(),u8 *,404)=1;i=func_0205b048(M2C_FIELD(M2C_FIELD(GetConnection(),void * *,4),s32 *,0));p=GetConnection();func_02043e10(0,i,raw,(u8 *)p+404);
+M2C_FIELD(GetConnection(),u8 *,404)=1;i=GT2SocketHandle(M2C_FIELD(M2C_FIELD(GetConnection(),void * *,4),s32 *,0));p=GetConnection();func_02043e10(0,i,raw,(u8 *)p+404);
 p=GetConnection();M2C_FIELD(p,s32 *,396)=0;M2C_FIELD(p,s32 *,400)=0;
 break;
 case 7:

@@ -18,15 +18,15 @@ func_020985b0(value,8,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc)+0x40);
 func_02098a34(value,8,2,0,0);
 func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),1,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
-func_ov005_0221730c();
+SetOv005FileDirectory();
 }else{
-func_020809c0(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20)+0x18,0x14,0x18);
+ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20)+0x18,0x14,0x18);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 }
 gCur3DSpriteEngine=saved;
 }
 
-void func_ov005_0221760c(void) {
+void Ov005RefreshEntryLabel(void) {
 extern void *gOv005MenuState,*gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s32 value=M2C_FIELD(gOv005MenuState,s16 *,0x10);
 void *saved=gCur3DSpriteEngine;

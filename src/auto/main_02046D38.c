@@ -143,7 +143,7 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
     void func_02076658(u8 *, u8 *, s32);
     s32 StringLength(const void *);
     s32 StringCompareN(void *, void *, s32);
-    void func_020376d8(s32, s32, s32);
+    void HeapFree(s32, s32, s32);
     extern M2C_UNK gWebRequestState;
     extern u8 data_020ea95c[];
     extern u8 data_020fca88[];
@@ -181,19 +181,19 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
         } else {
             M2C_FIELD(&gWebRequestState, s32 *, 0x4) = 1;
           free_input:
-            func_020376d8(0, (s32)arg0, 0);
+            HeapFree(0, (s32)arg0, 0);
             return;
         }
     break;
     case 7:
         len = StringLength(data_020fcac8);
         if (StringCompareN(arg0, data_020fcac8, len) == 0) {
-            func_020376d8(0, (s32)arg0, 0);
+            HeapFree(0, (s32)arg0, 0);
             M2C_FIELD(&gWebRequestState, s32 *, 0x4) = 1;
             return;
         } else {
             if (M2C_FIELD(&gWebRequestState, s32 *, 0x60) != 0) {
-                func_020376d8(0, (s32)M2C_FIELD(&gWebRequestState, s32 *, 0x60), 0);
+                HeapFree(0, (s32)M2C_FIELD(&gWebRequestState, s32 *, 0x60), 0);
             }
             M2C_FIELD(&gWebRequestState, s32 **, 0x60) = (s32 *)arg0;
             M2C_FIELD(&gWebRequestState, s32 *, 0x64) = (s32)arg1;
@@ -220,14 +220,14 @@ s32 func_0204760c(u8 *arg0, u8 *arg1, u32 arg2, u8 *arg3, u32 arg4) {
     u32 sum;
     u32 n;
     s32 i, k, l;
-    u8 *func_02037694(s32, s32);
+    u8 *HeapAlloc(s32, s32);
     void func_020475b8(s32);
     s32 func_020475cc(void);
     void Base64Encode(u8 *, u8 *, s32, s32);
 
     n = arg4 + arg2;
     sum = 0;
-    p = func_02037694(0, n + 4);
+    p = HeapAlloc(0, n + 4);
     if (p == 0) return 2;
     for (i = 0; i < arg2; i++) p[i + 4] = arg1[i];
     for (i = 0; i < arg4; i++) p[arg2 + i + 4] = arg3[i];
@@ -242,7 +242,7 @@ s32 func_0204760c(u8 *arg0, u8 *arg1, u32 arg2, u8 *arg3, u32 arg4) {
     p[2] = sum >> 8;
     p[3] = sum;
     Base64Encode(p, arg0, n + 4, 2);
-    func_020376d8(0, (s32)p, 0);
+    HeapFree(0, (s32)p, 0);
     arg0[func_02047370(n + 4)] = 0;
     return 0;
 }
@@ -254,13 +254,13 @@ s32 func_020477ac(void) {
     extern M2C_UNK gWebRequestState;
     void func_020473a8(void);
     void func_020473ac(void *, u32, s32);
-    M2C_UNK func_02045110(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK HttpGetStart(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02044e68(void);
 
     switch (M2C_FIELD(&gWebRequestState, s32 *, 4)) {
     case 5:
         {
-            M2C_UNK r = func_02045110(M2C_FIELD(&gWebRequestState, M2C_UNK *, 0x54), (M2C_UNK)0, (M2C_UNK)0,
+            M2C_UNK r = HttpGetStart(M2C_FIELD(&gWebRequestState, M2C_UNK *, 0x54), (M2C_UNK)0, (M2C_UNK)0,
                           (M2C_UNK)func_020473a8, (M2C_UNK)func_020473ac, (M2C_UNK)0);
             M2C_FIELD(&gWebRequestState, M2C_UNK *, 8) = r;
             if ((s32)r >= 0) {
@@ -277,7 +277,7 @@ s32 func_020477ac(void) {
         break;
     case 7:
         {
-            M2C_UNK r = func_02045110(M2C_FIELD(&gWebRequestState, M2C_UNK *, 0x54), (M2C_UNK)0, (M2C_UNK)0,
+            M2C_UNK r = HttpGetStart(M2C_FIELD(&gWebRequestState, M2C_UNK *, 0x54), (M2C_UNK)0, (M2C_UNK)0,
                           (M2C_UNK)func_020473a8, (M2C_UNK)func_020473ac, (M2C_UNK)0);
             M2C_FIELD(&gWebRequestState, M2C_UNK *, 8) = r;
             if ((s32)r >= 0) {
@@ -300,7 +300,7 @@ s32 func_020477ac(void) {
 
 s32 func_020477ac(void);
 
-void func_020478b8(void) { extern M2C_UNK gWebRequestState; M2C_UNK func_020376d8(s32,s32,s32); s32 p; p=M2C_FIELD(&gWebRequestState,s32 *,0x54);if(p) {func_020376d8(0,p,0);M2C_FIELD(&gWebRequestState,s32 *,0x54)=0;} p=M2C_FIELD(&gWebRequestState,s32 *,0x60);if(p) {func_020376d8(0,p,0);M2C_FIELD(&gWebRequestState,s32 *,0x64)=0;M2C_FIELD(&gWebRequestState,s32 *,0x60)=0;} func_02044e28(); M2C_FIELD(&gWebRequestState,s32 *,4)=2; }
+void func_020478b8(void) { extern M2C_UNK gWebRequestState; M2C_UNK HeapFree(s32,s32,s32); s32 p; p=M2C_FIELD(&gWebRequestState,s32 *,0x54);if(p) {HeapFree(0,p,0);M2C_FIELD(&gWebRequestState,s32 *,0x54)=0;} p=M2C_FIELD(&gWebRequestState,s32 *,0x60);if(p) {HeapFree(0,p,0);M2C_FIELD(&gWebRequestState,s32 *,0x64)=0;M2C_FIELD(&gWebRequestState,s32 *,0x60)=0;} func_02044e28(); M2C_FIELD(&gWebRequestState,s32 *,4)=2; }
 
 s32 func_02047928(s32 *arg0) {
     extern M2C_UNK gWebRequestState;
@@ -341,7 +341,7 @@ s32 BuildWebPutRequest(s32 playerId, s32 sourceId, s32 field2, s32 field3, s32 p
     }
 
     if (M2C_FIELD(&gWebRequestState, s32 *, 0x54) != 0) {
-        func_020376d8(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
+        HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
     }
     dataBase64Len = func_02047370((u8 *)payloadSize+0x18);
@@ -354,7 +354,7 @@ s32 BuildWebPutRequest(s32 playerId, s32 sourceId, s32 field2, s32 field3, s32 p
     lenBase = StringLength(M2C_FIELD(&gWebRequestState,void **,0));
     lenSuffix = StringLength(&data_020fca68);
     totalLen = dataBase64Len + (lenDataParam + (lenHashPlaceholder + (lenHashParam + (lenPidText + (lenPidParam + (lenPath + (lenBase + lenSuffix)))))));
-    buffer = func_02037694(0, totalLen + 1);
+    buffer = HeapAlloc(0, totalLen + 1);
     M2C_FIELD(&gWebRequestState, void **, 0x54) = buffer;
     if (buffer == 0) {
         return 2;
@@ -382,7 +382,7 @@ s32 BuildWebPutRequest(s32 playerId, s32 sourceId, s32 field2, s32 field3, s32 p
 
     encodeResult = func_0204760c(M2C_FIELD(&gWebRequestState, void **, 0x5c), header, 0x14, (void *)payload, (s32)payloadSize);
     if (encodeResult == 2) {
-        func_020376d8(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
+        HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
         return 2;
     } else {

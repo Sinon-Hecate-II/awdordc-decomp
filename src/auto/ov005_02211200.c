@@ -413,7 +413,7 @@ M2C_FIELD(p,s16 *,2)=n-1;
 PlaySoundEffect(0x10019);func_ov005_02211a8c();return 1;
 }
 
-s16 func_ov005_02212160(void) {
+s16 HistoryPageUp(void) {
 extern s32 gHistoryMenu;
 s32 p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
 s16 old=M2C_FIELD(p,s16 *,2);

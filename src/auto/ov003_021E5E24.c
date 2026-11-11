@@ -17,9 +17,9 @@ void func_ov003_021e6220(void **arg0) {
 
 /* Sets up rendering layer 0xE1 and its dimensions for the given object. */
 void func_ov003_021e6234(void *obj) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
+    M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK ResetMapUnits();
     M2C_UNK func_020a92bc(s32, s32);
     M2C_UNK func_020c12f8(s32, s32, s32, M2C_UNK);
@@ -41,10 +41,10 @@ void func_ov003_021e6234(void *obj) {
     func_020c1878(M2C_FIELD(obj, s32 *, 0x68) + 4);
     savedContext = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020809c0(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x2C), 9, 2);
-    func_0209b2b4(0, 0, 3, GetMapName(0xE1), 0x9000, 0x11);
+    ClearTileRect(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x2C), 9, 2);
+    DrawTextLine(0, 0, 3, GetMapName(0xE1), 0x9000, 0x11);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(0);
     func_020c12f8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x143, 5);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     gCur3DSpriteEngine = savedContext;

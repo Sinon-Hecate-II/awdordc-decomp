@@ -7,7 +7,7 @@ void func_0200fc58(void) {
     extern void *data_0212fd80;
     extern u32 data_02130400[];
     void func_02007e98(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_020067e0(void *, u32);
+    void DC_FlushRange(void *, u32);
     void MI_CpuCopy8(void *, void *, u32);
     void func_02005ac0(void *, void *, s32, u8 *, u32, s32);
     void TaskWake(void *);
@@ -26,7 +26,7 @@ void func_0200fc58(void) {
     *(void **)((u8 *)base + 0x0) = &data_0212fd80;
 
     func_02007e98(0, &data_0212fd80, 0x60);
-    func_020067e0(&data_0212fd80, 0x60);
+    DC_FlushRange(&data_0212fd80, 0x60);
 
     *(s32 *)((u8 *)base + 0x118) = -1;
     *(s32 *)((u8 *)base + 0x11C) = -1;
@@ -161,7 +161,7 @@ void RunTransferTask(void *arg0) {
     void OS_WakeupThread(void *);
     void DC_InvalidateRange(void *, s32);
     void TaskWake(void *);
-    void func_020067e0(void *, u32);
+    void DC_FlushRange(void *, u32);
     void func_02006804();
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
@@ -209,7 +209,7 @@ loop_3:
         case 1:
         case 2:
             MI_CpuCopy8(M2C_FIELD(arg0, void **, 0x1C), buffer, count);
-            func_020067e0(buffer, count);
+            DC_FlushRange(buffer, count);
             func_02006804();
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = buffer;
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void **, 0x20);

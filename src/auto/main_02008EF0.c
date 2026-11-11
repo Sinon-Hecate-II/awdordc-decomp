@@ -146,7 +146,7 @@ p[3]=arg0;*arg0=0;return OS_RestoreInterrupts(s);
 #pragma opt_common_subs reset
 s32 func_020092d0(s32 flags) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
-s32 func_02009100(s32); M2C_UNK func_020067e0(M2C_UNK,M2C_UNK);
+s32 func_02009100(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
 s32 func_02009eb0(s32,M2C_UNK,s32); void func_0200968c(void);
 extern M2C_UNK data_0212e020; extern u8 data_0212e300[]; extern QueueNode09298 *data_0212e044[];
 s32 irq=OS_DisableInterrupts();
@@ -157,7 +157,7 @@ if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
 do {func_02009100(1);} while(((State09100*)&data_0212e020)->pending>=8);
 if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
-func_020067e0((M2C_UNK)data_0212e300,0x1800);
+DC_FlushRange((M2C_UNK)data_0212e300,0x1800);
 if(func_02009eb0(7,((State09100*)&data_0212e020)->unk8,0)<0){
 u8 *buf;
 if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
@@ -167,7 +167,7 @@ again: {
 OS_RestoreInterrupts(irq);
 func_02009100(0);
 irq=OS_DisableInterrupts();
-func_020067e0((M2C_UNK)buf,0x1800);
+DC_FlushRange((M2C_UNK)buf,0x1800);
 if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 retry:
@@ -271,7 +271,7 @@ int i,j;void *p=a;
 M2C_FIELD(a,int *,4)=0;M2C_FIELD(a,s16 *,8)=0;M2C_FIELD(a,s16 *,10)=0;M2C_FIELD(a,int *,0)=0;
 for(i=0;i<16;i++,p=(char *)p+36){M2C_FIELD(p,int *,64)=0;for(j=0;j<16;j++)((s16 *)p+j)[16]=-1;}
 for(j=0;j<16;j++)((s16 *)a+j)[304]=-1;
-func_020067e0(a,640);
+DC_FlushRange(a,640);
 }
 
 u16 func_020098d0(s32 a){

@@ -28,7 +28,7 @@ s32 func_ov003_022023a8();
 s32 func_ov003_022023c4();
 s32 func_ov003_022023cc();
 s32 SetFileDirectory();
-s32 func_01ff9ce8();
+s32 Clear3DSpriteLayer();
 void *func_02080e30();
 void *GetLocalizedFileName();
 s32 func_0207c780();
@@ -46,7 +46,7 @@ s32 Modulo();
 s32 func_ov003_02202408();
 s32 func_ov003_022004f0();
 s32 func_020a22fc();
-s32 func_020809c0();
+s32 ClearTileRect();
 s32 func_020985b0();
 s32 func_02098844();
 s32 func_02098a34();
@@ -125,7 +125,7 @@ func_ov003_022023a8(M2C_FIELD(p,void**,0x54),1);
 func_ov003_022023c4(M2C_FIELD(p,void**,0x54),data_ov003_02210472);
 func_ov003_022023cc(M2C_FIELD(p,void**,0x54),1);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineMain;
-SetFileDirectory(data_ov003_02210900);func_01ff9ce8(3);
+SetFileDirectory(data_ov003_02210900);Clear3DSpriteLayer(3);
 res=func_02080e30(GetLocalizedFileName(data_ov003_02210908),1);
 func_0207c780(res,M2C_FIELD(gCur3DSpriteEngine,void**,0x18));
 func_0207c780((u8 *)res+0x3cc,M2C_FIELD(gCur3DSpriteEngine,void**,0x2c));
@@ -148,17 +148,17 @@ func_0207c780((u8 *)res+0x92c,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x
 func_020e35cc(res);gCur3DSpriteEngine=saved;
 if(func_ov003_0220151c(p))return;
 saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineSub;
-SetFileDirectory(data_ov003_022109a4);func_01ff9ce8(3);
+SetFileDirectory(data_ov003_022109a4);Clear3DSpriteLayer(3);
 func_ov003_022005e4(3,2,func_ov003_022023fc(p));
 func_ov003_021ea134(3);
-func_01ff9dd8(0);func_01ff9dd8(1);func_01ff9ce8(0);func_01ff9ce8(1);
+func_01ff9dd8(0);func_01ff9dd8(1);Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);
 for(i=0;i<(u32)func_ov003_022023fc(p);i++){
 if(Modulo(i,2)==0)side=0;else side=1;
 side2=(u8)side;
 if(i<2)offset=0;else offset=func_ov003_02202408((u16)func_ov003_022004f0(2));
 character=func_020a22fc(i+1);
 if(character==0){
-func_020809c0((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+(offset+1)*2,7,7);
+ClearTileRect((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+(offset+1)*2,7,7);
 }else{
 slot=(i<<7)+2;
 func_020985b0(character,1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,12)+(slot<<5));

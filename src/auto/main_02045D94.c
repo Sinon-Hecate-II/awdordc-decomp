@@ -171,11 +171,11 @@ loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_I
 void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK func_020067c4(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);func_020067c4(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 
 s32 func_020466d0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    s32 func_0206527c(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
     if (func_020465c4(arg1, arg2, arg3) == 0) {
         return 0;
     }
-    if (func_0206527c(arg0, arg3, arg2) == 0) {
+    if (ByteCompareN(arg0, arg3, arg2) == 0) {
         return 1;
     }
     return 0;
@@ -360,7 +360,7 @@ s32 func_02046b8c(void *obj) {
     if (func_02046088(obj + 0x40) == 0) {
         return 0;
     }
-    if (func_0206527c(obj + 0xC0, &data_020ea940, 4) != 0) {
+    if (ByteCompareN(obj + 0xC0, &data_020ea940, 4) != 0) {
         if (func_0204612c(obj + 0xC4) == 0) {
             return 0;
         }
@@ -375,7 +375,7 @@ s32 func_02046b8c(void *obj) {
         goto block_13;
     }
 block_13:
-    if ((func_0206527c(obj + 0xC8, &data_020ea940, 4) != 0) && (func_0204612c(obj + 0xC8) == 0) && (func_0204612c(obj + 0xCC) == 0)) {
+    if ((ByteCompareN(obj + 0xC8, &data_020ea940, 4) != 0) && (func_0204612c(obj + 0xC8) == 0) && (func_0204612c(obj + 0xCC) == 0)) {
         return 0;
     }
     return 1;

@@ -416,18 +416,18 @@ return func_0203af50(6,sp0,0);
 }
 
 void func_0203e4e0(void) {
-    M2C_UNK func_020376d8(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020427f4();
     M2C_UNK func_02044258(M2C_UNK);
     extern M2C_UNK gConnectionMgr;
     func_02044258(0);
     if (M2C_FIELD(&gConnectionMgr, s32 *, 8) != 0) {
-        func_020376d8(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
+        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
         M2C_FIELD(&gConnectionMgr, s32 *, 8) = 0;
     }
     func_020427f4();
     if (M2C_FIELD(&gConnectionMgr, s32 *, 0) != 0) {
-        func_020376d8(4, M2C_FIELD(&gConnectionMgr, s32 *, 0), 0);
+        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 0), 0);
         M2C_FIELD(&gConnectionMgr, s32 *, 0) = 0;
     }
     M2C_FIELD(&gConnectionMgr, s8 *, 0x1C) = 0;

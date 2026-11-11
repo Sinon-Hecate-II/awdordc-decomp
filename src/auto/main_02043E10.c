@@ -176,7 +176,7 @@ void func_0204467c(void *arg0, s16 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0) = arg2;
 }
 
-u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 func_0206527c(void *,void *,s32);extern M2C_UNK data_020fca34;u16 buf[4];MI_CpuCopy8(a,buf,8);if(func_0206527c(&buf[3],&data_020fca34,2)==0)return buf[2];return 0;}
+u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 ByteCompareN(void *,void *,s32);extern M2C_UNK data_020fca34;u16 buf[4];MI_CpuCopy8(a,buf,8);if(ByteCompareN(&buf[3],&data_020fca34,2)==0)return buf[2];return 0;}
 
 s32 func_020446e8(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
 

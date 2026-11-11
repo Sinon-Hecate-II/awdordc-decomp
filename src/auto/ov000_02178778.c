@@ -18,7 +18,7 @@ static inline u8 Kind787(void *u){return M2C_FIELD(u,Bits787 *,0).low;}
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02178778(s32 x,s32 y){
-s32 func_ov000_021a9084(s32);s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);
+s32 func_ov000_021a9084(s32);s32 IsUnitOnCurrentTeam(s32);s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(s16);s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);
 s32 left,top,right,bottom,xx,yy,id,count;void *m,*u,*sel; s32 found;u32 attr;
 if(M2C_FIELD(gAiCommandState,Mode787 *,10).mode&4){s32 left,top,right,bottom,xx,yy,id;
 left=Max787(x-1,0);top=Max787(y-1,0);m=Map787();right=Min787(x+1,M2C_FIELD(m,u16 *,0x5144)-1);bottom=Min787(y+1,M2C_FIELD(m,u16 *,0x5146)-1);
@@ -36,7 +36,7 @@ if((id!=0 || (M2C_FIELD(gAiCommandState,Bit2787 *,7).bit==0 && (M2C_FIELD(sel,u8
 s16 cx=(s16)xx,cy=(s16)yy;
 s32 l=Max787(cx-1,0),t=((cy-1)<0?0:cy-1),r=Min787(cx+1,M2C_FIELD(Map787(),u16 *,0x5144)-1),b=Min787(cy+1,M2C_FIELD(Map787(),u16 *,0x5146)-1),ix,iy;
 for(iy=t;iy<=b;iy++)for(ix=l;ix<=r;ix++){
-s32 dist=Distance787(cx,ix,cy,iy);if(dist<1)continue;if(dist>1)continue;if( M2C_FIELD(M2C_FIELD((u8 *)Map787()+iy*4,s8 **,0x52e8),s8 *,ix)>=0 && func_ov000_021a9d8c((s16)ix,(s16)iy)==0)count++;
+s32 dist=Distance787(cx,ix,cy,iy);if(dist<1)continue;if(dist>1)continue;if( M2C_FIELD(M2C_FIELD((u8 *)Map787()+iy*4,s8 **,0x52e8),s8 *,ix)>=0 && IsAllyUnitAtCell((s16)ix,(s16)iy)==0)count++;
 }
 if(count==1)goto escape;
 count=0;

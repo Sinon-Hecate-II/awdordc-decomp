@@ -180,13 +180,13 @@ void func_ov000_02189df4(void) {
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_ov000_02189e2c(void){
-extern void **gCurrentMap;extern s8 data_ov000_021b54c0[];s32 func_020d27ec(u8,u8);
+extern void **gCurrentMap;extern s8 data_ov000_021b54c0[];s32 IsTerrainOnUnitTeam(u8,u8);
 s32 n=0,x,y;void *base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(base+(y<<2),s8 **,0x52e8),s8 *,x)>=0){
 if(data_ov000_021b54c0[M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420)&31]!=0){
-if(func_020d27ec(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420))==0){
+if(IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420))==0){
 if((M2C_FIELD(M2C_FIELD(*gCurrentMap+(y<<1),u16 *,0x3758)+(*gCurrentMap+x),u8 *,0x1420)&31)==15)n+=30;else n++;
 }}}
 base=*gCurrentMap;
@@ -197,13 +197,13 @@ return n;
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_ov000_02189f3c(void){
-extern void **gCurrentMap;extern s8 data_ov000_021b54c0[];s32 func_020d27ec(u8,u8);
+extern void **gCurrentMap;extern s8 data_ov000_021b54c0[];s32 IsTerrainOnUnitTeam(u8,u8);
 s32 n=0,x,y;void *base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(base+(y<<2),s8 **,0x52e8),s8 *,x)>=0){
 if(data_ov000_021b54c0[M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420)&31]!=0){
-if(func_020d27ec(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420))==0){
+if(IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420))==0){
 void *b=*gCurrentMap;
 void *cell=(b+x)+M2C_FIELD(b+(y<<1),u16 *,0x3758);
 if(M2C_FIELD(b+M2C_FIELD(cell,s8 *,0x1928)*6,u8 *,0x6c63)==0 || (M2C_FIELD(cell,u8 *,0x1420)&31)==15){

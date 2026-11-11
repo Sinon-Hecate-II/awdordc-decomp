@@ -19,7 +19,7 @@ s32 func_020511dc(void **,void *);
 s32 StringFormat(char *,M2C_UNK *,...);
 s32 StringLength(char *);
 M2C_UNK Md5Hex(char *,s32,char *);
-s32 func_0206527c(void *,void *,s32);
+s32 ByteCompareN(void *,void *,s32);
 s32 *func_02055aa0(void **,s32);
 void *gpiMalloc(s32);
 void func_02065210(void *,s32,s32);
@@ -81,7 +81,7 @@ else {StringFormat(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);cho
 StringFormat(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
 Md5Hex(work.buf,StringLength(work.buf),work.hash);
 if(!GetStringField(text,&data_020fe600,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-if(func_0206527c(work.hash,work.buf,32)){gpiSetError(a,0x108,&data_020fe608);gpiCallErrorCallback(a,3,1);return 3;}
+if(ByteCompareN(work.hash,work.buf,32)){gpiSetError(a,0x108,&data_020fe608);gpiCallErrorCallback(a,3,1);return 3;}
 if(M2C_FIELD(p,s32 *,0x100)){record=func_02055aa0(a,M2C_FIELD(p,s32 *,0x1a0));record[0]=M2C_FIELD(p,s32 *,0x1a0);record[1]=M2C_FIELD(p,s32 *,0x19c);}
 M2C_FIELD(p,s32 *,0x1d8)=3;
 callback=*(Callback518 *)((char *)b+12);

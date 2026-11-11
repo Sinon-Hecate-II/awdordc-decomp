@@ -6,53 +6,56 @@ void func_ov000_02188338(void);
 extern void **gCurrentMap;
 extern u32 gFrameCounter;
 
-s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
+/* Score a tile as an AI move destination for a unit: -1 when off-map, held by
+ * an ally or impassable; otherwise a packed score from the terrain move cost,
+ * the indirect threat on the tile and a capture-target bonus. */
+s32 MoveDestinationScore(s32 x, s32 y, u8 *unit) {
     extern void **gCurrentMap;
     extern u8 gMovementTypeTable[];
     extern s8 gTerrainPropertyType[];
     extern M2C_UNK gMovementCostTable;
-    s32 func_ov000_021a9d8c(s16, s16);
-    s32 func_020d27ec(s32, s32);
+    s32 IsAllyUnitAtCell(s16, s16);
+    s32 IsTerrainOnUnitTeam(s32, s32);
     s32 GetTerrainMoveCost(s32, s32, s32);
     s32 Divide(s32, s32);
-    s32 func_ov000_021a9214(void *, s32, s32);
+    s32 IsCaptureTargetAt(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
-    s32 result = 0;
-    s32 w;
-    void *base;
-    s32 tile, kind;
+    s32 score = 0;
+    s32 indirectThreat;
+    void *map;
+    s32 terrain, unitKind;
 
-    if (x < 0 || y < 0 || x >= M2C_FIELD(*gCurrentMap, u16 *, 0x5144) || y >= M2C_FIELD(*gCurrentMap, u16 *, 0x5146)) {
+    if (x < 0 || y < 0 || x >= M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) || y >= M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT)) {
         return -1;
     }
-    if (func_ov000_021a9d8c((s16)x, (s16)y)) {
+    if (IsAllyUnitAtCell((s16)x, (s16)y)) {
         return -1;
     }
-    base = *gCurrentMap;
-    kind = (u32)(unit[0] << 26) >> 26;
-    tile = M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x1420) & 0x1f;
-    if (M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable, void **, 0x64) + gMovementTypeTable[kind * 0x70] * 32, s8 *, tile) < 0) {
+    map = *gCurrentMap;
+    unitKind = (u32)(unit[0] << 26) >> 26;
+    terrain = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+    if (M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable, void **, 0x64) + gMovementTypeTable[unitKind * 0x70] * 32, s8 *, terrain) < 0) {
         return -1;
     }
-    w = M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x2d48);
-    if (gTerrainPropertyType[tile] == 0 || func_020d27ec(M2C_FIELD(base, u8 *, 0x52d4), M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 0) {
-        base = *gCurrentMap;
-        result += (Divide(GetTerrainMoveCost(M2C_FIELD(base, u16 *, 0x52a4), 1, tile), 10) + 1) << 4;
+    indirectThreat = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_THREAT_INDIRECT);
+    if (gTerrainPropertyType[terrain] == 0 || IsTerrainOnUnitTeam(M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID), M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN)) == 0) {
+        map = *gCurrentMap;
+        score += (Divide(GetTerrainMoveCost(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), 1, terrain), 10) + 1) << 4;
     }
-    result += (0x100 - w) << 8;
-    if (gTerrainPropertyType[tile] == 0) {
-        if (func_ov000_021a9214(unit, x, y) == 1) {
-            result += 0x10000;
+    score += (0x100 - indirectThreat) << 8;
+    if (gTerrainPropertyType[terrain] == 0) {
+        if (IsCaptureTargetAt(unit, x, y) == 1) {
+            score += 0x10000;
         }
     }
-    if (func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y) == 1) {
-        result += 0x20000;
+    if (func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), x, y) == 1) {
+        score += 0x20000;
     }
-    return result;
+    return score;
 }
 
 s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
-    s32 func_ov000_02187188(s32, s32, u8 *);
+    s32 MoveDestinationScore(s32, s32, u8 *);
     extern void **data_027e0058;
     extern u32 gFrameCounter;
     s32 sp2C;
@@ -147,7 +150,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
                         var_r0 = var_r1 + (var_r7 - sp0);
                     }
                     if ((var_r0 >= 1) && (var_r0 <= 1)) {
-                        temp_r0_3 = func_ov000_02187188((s32) var_r5, (s32) var_r7, (u8 *)(sp18 + sp1C));
+                        temp_r0_3 = MoveDestinationScore((s32) var_r5, (s32) var_r7, (u8 *)(sp18 + sp1C));
                         if ((temp_r0_3 >= var_r4) && ((temp_r0_3 != var_r4) || !(gFrameCounter & 1))) {
                             var_r4 = temp_r0_3;
                             M2C_FIELD(arg2, s16 *, 0) = (s16) var_r5;
@@ -212,7 +215,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
                     if ((var_r0_2 >= 1) && (var_r0_2 <= 1)) {
                         if ((var_r4_2 == M2C_FIELD(arg2, s16 *, 0)) && (var_r7_2 == M2C_FIELD(arg2, s16 *, 2))) {
                         } else {
-                            temp_r0_6 = func_ov000_02187188((s32) var_r4_2, (s32) var_r7_2, (u8 *)(sp24 + sp28));
+                            temp_r0_6 = MoveDestinationScore((s32) var_r4_2, (s32) var_r7_2, (u8 *)(sp24 + sp28));
                             if ((temp_r0_6 >= var_r6) && ((temp_r0_6 != var_r6) || !(gFrameCounter & 1))) {
                                 var_r6 = temp_r0_6;
                                 M2C_FIELD(sp4, s16 *, 0) = (s16) var_r4_2;
@@ -271,7 +274,7 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
 void func_ov000_02187820(void) {
     extern void **gCurrentMap;
     extern u32 gFrameCounter;
-    s32 func_ov000_021a9d8c(s16, s16);
+    s32 IsAllyUnitAtCell(s16, s16);
     s32 CountAdjacentAccessibleCells(s32, s32);
     void BuildUnitMoveRange(void *);
     void *selected;
@@ -292,7 +295,7 @@ void func_ov000_02187820(void) {
             if (((s8 **)((u8 *)*gCurrentMap + 0x52E8))[y][x] < 0) {
                 continue;
             }
-            if (func_ov000_021a9d8c((s16)x, (s16)y) != 0) {
+            if (IsAllyUnitAtCell((s16)x, (s16)y) != 0) {
                 continue;
             }
             if (M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), s8 *, 0x3250) == 0) {

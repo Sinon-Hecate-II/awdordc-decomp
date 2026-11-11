@@ -122,7 +122,7 @@ extern u8 *gAiCommandState;
 extern u8 gUnitKindStats[];
 s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
 void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
-s32 func_ov000_021a9084(s32); s32 func_ov000_021a9d8c(s16,s16);
+s32 func_ov000_021a9084(s32); s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
 register s32 sy,bestScore,score,y,x,bestCost;
 s32 bestX,bestY,kind,terrain,attr;
@@ -149,7 +149,7 @@ while(y<M2C_FIELD(map,u16*,0x5146)){
    if(costRow[x]<0)goto nextTile;
    if(M2C_FIELD((u8*)map+x+M2C_FIELD((u8*)map+y*2,u16*,0x3758),s8*,0x2338)<0)goto nextTile;
    if(!func_ov000_021a9084(M2C_FIELD((u8*)map+x+M2C_FIELD((u8*)map+y*2,u16*,0x3758),u8*,0x1420)))goto nextTile;
-   if(func_ov000_021a9d8c((s16)x,sy)){
+   if(IsAllyUnitAtCell((s16)x,sy)){
     map=*gCurrentMap;
     id=M2C_FIELD((u8*)map+x,u8*,M2C_FIELD((u8*)map+y*2,u16*,0x3758));
     if(IsCurrentPlayerUnit(id)){

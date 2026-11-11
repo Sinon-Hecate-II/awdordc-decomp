@@ -213,7 +213,7 @@ void func_02037680(s32 arg0, s32 arg1) {
     M2C_FIELD(&data_0213d1d4, s32 *, 0) = arg1;
 }
 
-void func_02037694(M2C_UNK arg0, M2C_UNK arg1) {
+void HeapAlloc(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020376a4(M2C_UNK, M2C_UNK, M2C_UNK);
     func_020376a4(arg0, arg1, 0x20);
 }
@@ -228,7 +228,7 @@ M2C_UNK func_020376a4(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     return (s32)func_02037658(temp_r0, arg1);
 }
 
-void func_020376d8(M2C_UNK a, M2C_UNK b, M2C_UNK c) {
+void HeapFree(M2C_UNK a, M2C_UNK b, M2C_UNK c) {
     extern M2C_UNK data_0213d1d4;
     if (b == 0) {
         return;
@@ -253,13 +253,13 @@ if(b){
 unused=func_02037670(b);
 if((u32)unused<=(u32)size)size=unused;
 MI_CpuCopy8(b,p,size);
-func_020376d8(a,b,unused);
+HeapFree(a,b,unused);
 }
 return p;
 }
 
 void gpiMalloc(M2C_UNK arg0) {
-    func_02037694(5, arg0);
+    HeapAlloc(5, arg0);
 }
 
 void gpiRealloc(M2C_UNK arg0, M2C_UNK arg1) {
@@ -268,8 +268,8 @@ void gpiRealloc(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void gpiFree(M2C_UNK arg0) {
-    void func_020376d8(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020376d8(5, arg0, 0);
+    void HeapFree(M2C_UNK, M2C_UNK, M2C_UNK);
+    HeapFree(5, arg0, 0);
 }
 
 M2C_UNK func_020377dc(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK d){
@@ -308,7 +308,7 @@ void func_02037854(s32 arg0) {
 void func_020378a4(void) {
     extern void *data_0213d1dc;
     void MI_CpuFill8(void *, s32, s32);
-    s32 func_0202ef64(void *);
+    s32 WFC_Init(void *);
     void SetNetError(s32, s32);
     s32 args[3];
     if (data_0213d1dc) {
@@ -316,10 +316,10 @@ void func_020378a4(void) {
         MI_CpuFill8((s32)args, 0, 12);
         M2C_FIELD(args, u8 *, 8) = M2C_FIELD(data_0213d1dc, u16 *, 8);
         M2C_FIELD(args, u8 *, 9) = M2C_FIELD(data_0213d1dc, u16 *, 10);
-        args[0] = (s32)func_02037694;
-        args[1] = (s32)func_020376d8;
+        args[0] = (s32)HeapAlloc;
+        args[1] = (s32)HeapFree;
         M2C_FIELD(data_0213d1dc, u16 *, 4) = 2;
-        if (!func_0202ef64(args)) {
+        if (!WFC_Init(args)) {
             SetNetError(9, -6);
         }
     } else {

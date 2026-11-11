@@ -28,8 +28,8 @@ s32 BuildWebGetRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     extern M2C_UNK sWebRequestFormat;
     M2C_UNK StringFormat();
 s32 func_02047370(void *);
-void func_020376d8(s32,s32,s32);
-void *func_02037694(s32,s32);
+void HeapFree(s32,s32,s32);
+void *HeapAlloc(s32,s32);
 s32 func_0204760c(void *,void *,s32,void *,s32);
 s32 StringLength(M2C_UNK);
 void *func_0206f8b8(void *,void *,s32);
@@ -53,7 +53,7 @@ void *func_0206f8b8(void *,void *,s32);
     }
 
     if (M2C_FIELD(&gWebRequestState, s32 *, 0x54) != 0) {
-        func_020376d8(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
+        HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
     }
     r5 = func_02047370((u8 *)*(void **)arg4+0x18);
@@ -66,7 +66,7 @@ void *func_0206f8b8(void *,void *,s32);
     len_data0 = StringLength(M2C_FIELD(&gWebRequestState,void **,0));
     len_cb88 = StringLength(&data_020fca68);
     accum = r5 + (len_cb1c + (lengths[0] + (lengths[1] + (lengths[2] + (lengths[3] + (lengths[4] + (len_data0 + len_cb88)))))));
-    ptr = func_02037694(0, accum + 1);
+    ptr = HeapAlloc(0, accum + 1);
     M2C_FIELD(&gWebRequestState, void **, 0x54) = ptr;
     if (ptr == 0) {
         return 2;
@@ -93,7 +93,7 @@ void *func_0206f8b8(void *,void *,s32);
     arr[4] = (u32)*(u32 *)arg4;
     res = func_0204760c(M2C_FIELD(&gWebRequestState, void **, 0x5c), arr, 0x14, (u8 *)arg4+4, *(s32 *)arg4);
     if (res == 2) {
-        func_020376d8(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
+        HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
         return 2;
     } else {
@@ -108,8 +108,8 @@ void *func_0206f8b8(void *,void *,s32);
 #pragma optimization_level 2
 s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
     s32 func_02047370(void *);
-    void func_020376d8(s32, s32, s32);
-    void *func_02037694(s32, s32);
+    void HeapFree(s32, s32, s32);
+    void *HeapAlloc(s32, s32);
     s32 func_0204760c(void *, void *, s32, void *, s32);
     s32 StringLength(M2C_UNK);
     void *func_0206f8b8(void *, void *, s32);
@@ -132,7 +132,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
     }
 
     if (M2C_FIELD(&gWebRequestState, s32 *, 0x54) != 0) {
-        func_020376d8(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
+        HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
     }
     r6 = func_02047370((void *)0x14);
@@ -148,7 +148,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
 
     accum = r6 + (len_cb1c + (len_cb24 + (len_cac0 + (len_after + (len_cb50 + (len_cba0 + (len_data0 + len_cb88)))))));
 
-    ptr = func_02037694(0, accum + 1);
+    ptr = HeapAlloc(0, accum + 1);
     M2C_FIELD(&gWebRequestState, void **, 0x54) = ptr;
     if (ptr == 0) {
         return 2;
@@ -175,7 +175,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
 
     res = func_0204760c(M2C_FIELD(&gWebRequestState, void **, 0x5c), arr, 0x10, 0, 0);
     if (res == 2) {
-        func_020376d8(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
+        HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
         return 2;
     } else {
@@ -270,11 +270,11 @@ void InitServiceAvailabilityQuery(s8 *serviceName) {
 }
 
 s32 func_020482c4(s8 *a,s32 b,void *c,u32 *d) {
-s32 func_0206527c(void *,void *,s32);
+s32 ByteCompareN(void *,void *,s32);
 if(b<7)return 1;
-if(func_0206527c((u8 *)c+4,&data_0213db90,4))return 1;
+if(ByteCompareN((u8 *)c+4,&data_0213db90,4))return 1;
 if(M2C_FIELD(c,u16 *,2)!=M2C_FIELD(&gDnsQueryState,u16 *,10))return 1;
-if(func_0206527c(a,&data_020fcbdc,3))return 1;
+if(ByteCompareN(a,&data_020fcbdc,3))return 1;
 {u32 x=(a[3]<<24)&0xff000000; u32 y=(a[4]<<16)&0xff0000; u32 z=(a[5]<<8)&0xff00; u32 w=(u8)a[6]; x|=y; x|=z; *d=x|w;}
 return 0;
 }

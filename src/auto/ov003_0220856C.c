@@ -11,7 +11,7 @@ s32 func_ov003_02206690(s32, s32, s32);
 s32 func_020e4b28(s32);
 s32 func_020a8e28(s32, s32);
 void func_020bf054(s32, s32);
-s32 func_020bee64(void);
+s32 IsUnitAvailable(void);
 void func_020a8e3c(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 static inline u8 Animated856(void *p){return M2C_FIELD(p,u8 *,0x34)!=0;}
 static inline u8 Mode856(void *p,s32 m){return M2C_FIELD(M2C_FIELD(p,void **,0x3c),u8 *,15)==m;}
@@ -59,7 +59,7 @@ if(!(Small856((24*(s16)sy)>>8)|Small856((M2C_FIELD(M2C_FIELD(arg0,void **,68),u8
 if(i!=Selected856(arg0,none)){
 shiftedX=Divide(sx<<8,205);shiftedY=Divide(sy<<8,205);
 image=M2C_FIELD(desc,u16 *,6);
-if(Mode856(arg0,9)||Mode856(arg0,11)){func_020bf054(0,i);if(func_020bee64())image=base+0x1cc0;else if(!func_020e4b28(i))image=base+0x10c0;}
+if(Mode856(arg0,9)||Mode856(arg0,11)){func_020bf054(0,i);if(IsUnitAvailable())image=base+0x1cc0;else if(!func_020e4b28(i))image=base+0x10c0;}
 if(Pair856(arg0,i)){func_020a8cf0(x-48,y,1,96,16,3,image>>5,1,(u16)shiftedX,(u16)shiftedY);}
 else if(Split856(arg0,i)){
 if(Row856(arg0,i,2)){
@@ -77,7 +77,7 @@ func_020a8cf0(x+48,y,1,96,16,3,image2>>5,1,(u16)shiftedX,(u16)shiftedY);
 func_020a8cf0(x,y,10,256,M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,3),3,M2C_FIELD(desc,u16 *,10)>>5,2,(u16)shiftedX,(u16)shiftedY);
 }else{
 imageSel=M2C_FIELD(desc,u16 *,4);
-if(Mode856(arg0,9)||Mode856(arg0,11)){func_020bf054(0,i);if(func_020bee64())imageSel=0x9500;else if(!func_020e4b28(i))imageSel=0x8000;}
+if(Mode856(arg0,9)||Mode856(arg0,11)){func_020bf054(0,i);if(IsUnitAvailable())imageSel=0x9500;else if(!func_020e4b28(i))imageSel=0x8000;}
 if(Pair856(arg0,i)){halfSel=width>>1;align=func_020a8e28(halfSel,sx);func_020a8cf0(x-(width>>2)+align,y,1,(u16)halfSel,24,3,imageSel>>5,1,(u16)sx,(u16)sy);}
 else if(Split856(arg0,i)){
 align=func_020a8e28(half,sx);if(Row856(arg0,i,2)){

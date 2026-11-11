@@ -166,7 +166,7 @@ func_020c0b40();
 void func_ov007_02213458(void) {
     M2C_UNK func_020c0adc();
     M2C_UNK func_020c0784();
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_020cfd28();
     s32 func_020c0b9c();
     M2C_UNK func_020c0634(M2C_UNK *, s32, s32, u16, s32);
@@ -174,7 +174,7 @@ void func_ov007_02213458(void) {
     extern M2C_UNK data_ov007_0221fa40;
     func_020c0adc();
     func_020c0784();
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     func_020cfd28();
     func_020c0634(&data_ov007_0221fa40, 0x60, 0x30, (u16)func_020c0b9c(), 0x50);
@@ -252,9 +252,9 @@ void func_ov007_02213554(void *arg0) {
 M2C_FIELD(r4,void**,64)=func_020ab1c4(r4);func_020aab24(M2C_FIELD(r4,void**,64),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,64);func_02088e84(p,88,80,88,80);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=80;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,64),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,68)=func_020ab1c4(r4);func_020aab24(M2C_FIELD(r4,void**,68),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,68);func_02088e84(p,88,112,88,112);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=112;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,68),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,72)=func_020ab1c4(r4);func_020aab24(M2C_FIELD(r4,void**,72),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,72);func_02088e84(p,136,80,136,80);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=80;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,72),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,76)=func_020ab1c4(r4);func_020aab24(M2C_FIELD(r4,void**,76),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,76);func_02088e84(p,136,112,136,112);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=112;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,76),0);tile=(u16)(tile+8);{s32 p=(s32)func_020ab1c4(r4);func_020aab24(p,0,tile,3,0);func_02088e84(p,192,160,256,160);SyncSprite13554(p);func_020ab150(p,1);func_02088f1c(p);}{s32 p=(s32)func_020ab1c4(r4);func_020aab24(p,2,(u16)(tile+16),3,0);func_02088e84(p,224,160,256,160);SyncSprite13554(p);func_020ab150(p,2);func_02088f1c(p);}}
 #pragma pop
 void func_ov007_02213cf4(void) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }
 

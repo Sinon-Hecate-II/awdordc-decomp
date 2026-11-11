@@ -96,7 +96,7 @@ void *saved=gCur3DSpriteEngine;
 void *p;
 u32 x,y;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_01ff9ce8(2);
+Clear3DSpriteLayer(2);
 func_020c12f8(M2C_FIELD(gCur3DSpriteEngine,s32 *,20),M2C_FIELD(gCur3DSpriteEngine,s32 *,40),1,14);
 p=*gCurrentMap;
 x=M2C_FIELD(p,u16 *,0x5144);
@@ -108,7 +108,7 @@ gCur3DSpriteEngine=saved;
 func_ov007_0221ab4c();
 }
 
-void func_ov007_0221ac20(s32 a,s32 b,u16 c,u16 d) {
+void Map_SetTileAndRefresh(s32 a,s32 b,u16 c,u16 d) {
 extern void **gCurrentMap;
 s32 func_ov007_0221bd74(s32,s32);
 s32 func_ov007_0221bd00(s32,s32,s32);
@@ -123,7 +123,7 @@ if(func_ov007_0221bd00(a,b,t)!=0)return;
 func_ov007_0221bcc0(a,b);
 }
 
-s32 func_ov007_0221acac(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
+s32 Map_CanPlaceTile(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
     s32 func_ov007_0221ad24(M2C_UNK, M2C_UNK, s32);
     s32 func_ov007_0221b030(M2C_UNK, M2C_UNK, s32, s32);
     s32 func_ov007_0221b6c8();
@@ -167,77 +167,78 @@ ret1:
     return 1;
 }
 
-s32 func_ov007_0221b0a4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+/* Paint tile/direction (tile, dir) at cell (x,y) unless the editor forbids it,
+ * then optionally re-evaluate the eight neighbouring cells and redraw the 4x4
+ * cells around the edited one. */
+s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     s32 func_0207f460(s32);
     void func_02076980(s32, s32, s32, s32);
     void func_0207843c(s32, s32, s32, s32);
-    s32 func_ov007_0221acac(s32, s32, s32, s32);
-    void func_ov007_0221ac20(s32, s32, u16, u16);
+    s32 Map_CanPlaceTile(s32, s32, s32, s32);
+    void Map_SetTileAndRefresh(s32, s32, u16, u16);
     void func_ov007_0221b688(s32, s32);
     s32 func_ov007_0221b754(s32, s32);
     s32 func_ov007_0221bad0(s32, s32);
     extern void **gCurrentMap;
     extern u8 data_ov007_0221f574[];
 
-    s32 var_r4;
-    s32 var_r5;
-    struct TileNeighbors_0221 buf;
-    s32 rc;
+    s32 encodedTile;
+    s32 graphic;
+    struct TileNeighbors_0221 neighbors;
+    s32 result;
     s32 i;
-    u8 *p;
-    u16 *ps;
-    u8 *pd;
+    u8 *offset;
 
-    var_r4 = arg2 | (arg3 << 5);
-    var_r5 = func_0207f460(var_r4);
+    encodedTile = tile | (dir << 5);
+    graphic = func_0207f460(encodedTile);
 
-    rc = func_ov007_0221acac(arg0, arg1, arg2, arg3);
-    if (rc != 1) {
-        return rc;
+    result = Map_CanPlaceTile(x, y, tile, dir);
+    if (result != 1) {
+        return result;
     }
-    switch (arg2) {
+    switch (tile) {
     case 0x1b:
-        if (func_ov007_0221b754(arg0, arg1) != 0) {
-            var_r4 = 0x3b;
-            var_r5 = 0x146;
+        if (func_ov007_0221b754(x, y) != 0) {
+            encodedTile = 0x3b;
+            graphic = 0x146;
         }
         break;
     case 0x1c:
-        if (func_ov007_0221b754(arg0, arg1) != 0) {
-            var_r4 = 0x3c;
-            var_r5 = 0x166;
+        if (func_ov007_0221b754(x, y) != 0) {
+            encodedTile = 0x3c;
+            graphic = 0x166;
         }
         break;
     case 0x0d:
-        if (func_ov007_0221bad0(arg0, arg1) != 0) {
-            var_r4 = 0x0e;
-            var_r5 = 0x25;
+        if (func_ov007_0221bad0(x, y) != 0) {
+            encodedTile = 0x0e;
+            graphic = 0x25;
         }
         break;
     }
 
-    func_ov007_0221ac20(arg0, arg1, (u16)var_r4, (u16)var_r5);
+    Map_SetTileAndRefresh(x, y, (u16)encodedTile, (u16)graphic);
 
-    if (arg4 != 0) {
+    if (refresh != 0) {
 
-    buf=*(const struct TileNeighbors_0221 *)data_ov007_0221f574;
-    p = (u8 *)&buf;
+    neighbors = *(const struct TileNeighbors_0221 *)data_ov007_0221f574;
+    offset = (u8 *)&neighbors;
     i = 0;
     do {
-        s32 x2 = arg0 + *(s16 *)p;
-        s32 y2 = arg1 + *(s16 *)(p + 2);
-        if (x2 >= 0 && y2 >= 0) {
-            void *m = *gCurrentMap;
-            if (x2 < (s32) M2C_FIELD(m, u16 *, 0x5144) && y2 < (s32) M2C_FIELD(m, u16 *, 0x5146)) {
-                func_ov007_0221b688(x2, y2);
+        s32 nx = x + *(s16 *)offset;
+        s32 ny = y + *(s16 *)(offset + 2);
+        if (nx >= 0 && ny >= 0) {
+            void *map = *gCurrentMap;
+            if (nx < (s32) M2C_FIELD(map, u16 *, 0x5144) && ny < (s32) M2C_FIELD(map, u16 *, 0x5146)) {
+                func_ov007_0221b688(nx, ny);
             }
         }
         i++;
-        p += 6;
+        offset += 6;
     } while (i < 8);
 
-    func_02076980(arg0 - 2, arg1 - 2, arg0 + 2, arg1 + 2);
-    func_0207843c(arg0 - 2, arg1 - 2, arg0 + 2, arg1 + 2);
+    func_02076980(x - 2, y - 2, x + 2, y + 2);
+    func_0207843c(x - 2, y - 2, x + 2, y + 2);
 
     }
     return 1;
@@ -261,7 +262,7 @@ return (u8)(d==func_ov007_0221b704(a,b));
 /* Flood-fills a connected 30x30 region of tiles currently matching oldTile/oldDir,
    converting each one to newTile/newDir (and extending to its neighbours). */
 s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTile, s32 oldDir) {
-    s32 func_ov007_0221b0a4(s32, s32, M2C_UNK, M2C_UNK, u8);
+    s32 Map_PaintTile(s32, s32, M2C_UNK, M2C_UNK, u8);
     s32 func_ov007_0221b24c(s32, s32, s32, s32);
     s32 rightX;
     s32 bottomY;
@@ -276,7 +277,7 @@ s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTi
     if (func_ov007_0221b24c(x, y, oldTile, oldDir) == 0) {
         return 0;
     }
-    if (func_ov007_0221b0a4(x, y, newTile, newDir, 0) == 0) {
+    if (Map_PaintTile(x, y, newTile, newDir, 0) == 0) {
         return 0;
     }
     leftX = x;
@@ -286,7 +287,7 @@ s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTi
     iLeft = x - 1;
     if (iLeft >= 0) {
 loop_5:
-        if ((func_ov007_0221b24c(iLeft, y, oldTile, oldDir) != 0) && (func_ov007_0221b0a4(iLeft, y, newTile, newDir, 0) != 0)) {
+        if ((func_ov007_0221b24c(iLeft, y, oldTile, oldDir) != 0) && (Map_PaintTile(iLeft, y, newTile, newDir, 0) != 0)) {
             leftX = iLeft;
             iLeft -= 1;
             if (iLeft >= 0) {
@@ -297,7 +298,7 @@ loop_5:
     iRight = x + 1;
     if (iRight < 0x1E) {
 loop_9:
-        if ((func_ov007_0221b24c(iRight, y, oldTile, oldDir) != 0) && (func_ov007_0221b0a4(iRight, y, newTile, newDir, 0) != 0)) {
+        if ((func_ov007_0221b24c(iRight, y, oldTile, oldDir) != 0) && (Map_PaintTile(iRight, y, newTile, newDir, 0) != 0)) {
             rightX = iRight;
             iRight += 1;
             if (iRight < 0x1E) {
@@ -308,7 +309,7 @@ loop_9:
     iUp = y - 1;
     if (iUp >= 0) {
 loop_13:
-        if ((func_ov007_0221b24c(x, iUp, oldTile, oldDir) != 0) && (func_ov007_0221b0a4(x, iUp, newTile, newDir, 0) != 0)) {
+        if ((func_ov007_0221b24c(x, iUp, oldTile, oldDir) != 0) && (Map_PaintTile(x, iUp, newTile, newDir, 0) != 0)) {
             topY = iUp;
             iUp -= 1;
             if (iUp >= 0) {
@@ -319,7 +320,7 @@ loop_13:
     iDown = y + 1;
     if (iDown < 0x1E) {
 loop_17:
-        if ((func_ov007_0221b24c(x, iDown, oldTile, oldDir) != 0) && (func_ov007_0221b0a4(x, iDown, newTile, newDir, 0) != 0)) {
+        if ((func_ov007_0221b24c(x, iDown, oldTile, oldDir) != 0) && (Map_PaintTile(x, iDown, newTile, newDir, 0) != 0)) {
             bottomY = iDown;
             iDown += 1;
             if (iDown < 0x1E) {

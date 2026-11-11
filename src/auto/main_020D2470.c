@@ -125,7 +125,7 @@ u8 IsUnitOnCurrentTeam(s32 arg0) {
     return IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), (arg0 >> 6) + 1);
 }
 
-s32 func_020d27ec(s32 arg0, s32 arg1) {
+s32 IsTerrainOnUnitTeam(s32 arg0, s32 arg1) {
     s32 temp = arg0 >> 6;
     if ((arg1 >> 5) == 0) {
         return 0;
@@ -615,10 +615,10 @@ void func_020d33ec(void) {
 
 void func_020d3400(void){
 extern M2C_UNK gMapData; extern s32 *gCurrentMap;
-s32 func_020947c0(void); s32 IsBattleEffectActive(void); void func_0209cbe4(void *);
+s32 IsTouchInputDisabled(void); s32 IsBattleEffectActive(void); void func_0209cbe4(void *);
 u8 *p; s32 q;
 if(M2C_FIELD(&gMapData,s32 *,8)==0)return;
-if(func_020947c0()!=0)return;
+if(IsTouchInputDisabled()!=0)return;
 if(IsBattleEffectActive()!=0)return;
 p=(u8 *)*gCurrentMap;
 q=(s32)p+0x67a4+M2C_FIELD(p,u16 *,0x52a4)*0x8c;

@@ -27,7 +27,7 @@ void func_02004078(s32 arg0,s32 arg1) {
  *(volatile s32 *)0x04000468=0x1000;
 }
 
-void func_020040b4(M2C_UNK arg0,s32 arg1,u32 arg2) {
+void GX_LoadBGPltt(M2C_UNK arg0,s32 arg1,u32 arg2) {
  M2C_UNK func_02007a74(s32,M2C_UNK,s32,u32);
  M2C_UNK func_02007e20(M2C_UNK,s32,u32);
  extern s32 data_020f5204;

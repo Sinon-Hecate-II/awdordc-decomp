@@ -156,9 +156,9 @@ if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8
 }
 #pragma opt_strength_reduction reset
 void func_020cdeac(s32 a,s32 b,u8 *p) {
-s32 func_020a76d4(u8 *);
+s32 GetUnitAttackRangeMax(u8 *);
 extern u8 gUnitMinAttackRange,data_ov000_021b5c09;s32 off;
-MarkAttackRangeCells(a,b,(s16)func_020a76d4(p),0);
+MarkAttackRangeCells(a,b,(s16)GetUnitAttackRangeMax(p),0);
 off=((u32)(*p<<26)>>26)*112;
 if(*(&data_ov000_021b5c09+off)==1)return;
 MarkAttackRangeCells(a,b,(s16)(*(&gUnitMinAttackRange+off)-1),-1);

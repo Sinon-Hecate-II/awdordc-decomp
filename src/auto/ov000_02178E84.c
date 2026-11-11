@@ -20,13 +20,13 @@ return d;
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02178e84(s32 arg0,s32 arg1) {
-s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(u32);s32 func_ov000_021a9318(s32,s32,s32);
+s32 func_020d2d18(u16,u8);s32 IsTerrainOnUnitTeam(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(u32);s32 func_ov000_021a9318(s32,s32,s32);
 u8 *unit;void *map;u32 terrain,kind; s32 x,y,d,xmin,ymin,xmax,ymax,radius,width,scanX,scanY;u16 player;u8 *selected;void *snapshot;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 if(((u32)(unit[11]<<28)>>28)==6)return 1;
 terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
 if(!data_ov000_021b54c0[terrain&31])return 1;
-if(!func_020d27ec(M2C_FIELD(map,s16 *,0x52a8),terrain)){
+if(!IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),terrain)){
 unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
 if(IsFootUnitKind((u32)(unit[0]<<26)>>26))return 1;
 xmin=arg0-3;if(xmin<0)xmin=0;
@@ -191,7 +191,7 @@ s32 func_ov000_02179ce4(u8 *arg0) {
 void func_ov000_02179d3c(M2C_UNK arg0) {
 M2C_UNK FloodFillUnitRange(u8,u8,u32,M2C_UNK,s32);
 M2C_UNK func_01ffb9c4(s8);
-s32 func_020a76d4(void *);
+s32 GetUnitAttackRangeMax(void *);
 s32 GetUnitMoveRange(u16,s32);
 s32 GetUnitAttackClass(void);
 extern void **gCurrentMap;
@@ -202,7 +202,7 @@ FloodFillUnitRange(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),(u32)(M2C_FIELD(p,u8 
 base=*gCurrentMap;
 if(((u32)(M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,0)<<26)>>26)==21)
 n=GetUnitMoveRange(M2C_FIELD(base,u16 *,0x52A4),17)+1;
-else if(GetUnitAttackClass()==1)n=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52D0));
+else if(GetUnitAttackClass()==1)n=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,0x52D0));
 else n=gUnitMinAttackRange[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26)*0x70];
 i=0;if(n<=0)return;do{func_01ffb9c4((s8)(i+0x6F));i++;}while(i<n);
 }

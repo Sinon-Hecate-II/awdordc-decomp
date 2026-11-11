@@ -23,16 +23,16 @@ extern M2C_UNK data_0215d890, data_0215deec, gMovementCostTable;
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 #pragma opt_propagation off
-void *func_020bf25c(s32 arg0,s32 arg1) {
+void *BuildSaveSlotText(s32 arg0,s32 arg1) {
 s32 func_020bf054(s32); void *func_020bfa60(s32);
-s32 func_020bee64(s32); s32 GetLocalizedText(s32); void StringAppend(char*,const char*); void StringFormat(char*,const char*,...);
+s32 IsUnitAvailable(s32); s32 GetLocalizedText(s32); void StringAppend(char*,const char*); void StringFormat(char*,const char*,...);
 s32 func_020a8a84(s32); s32 GetMapName(s32); void func_020bf10c(char*,void*); s32 func_020e4b28(s32); void func_020c8d7c(s32);
 char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
 buf[0x100]=0; n=func_020bf054(a);
 p=func_020bfa60(n);
 switch(a) {
 case 0: case 5:
-if(func_020bee64(n)) {
+if(IsUnitAvailable(n)) {
 StringAppend(buf+256,GetLocalizedText(0x4800003f));
 if(SaveRangeAU((u32)p[0]))StringAppend(buf+256,GetLocalizedText(0x48000039));
 if(SaveRangeBU((u32)p[0]))StringAppend(buf+256,GetLocalizedText(0x4800003a));
@@ -55,7 +55,7 @@ StringAppend(buf+256,data_021295f4);StringAppend(buf+256,GetLocalizedText(0x4800
 }else if(a==5)StringAppend(buf+256,GetLocalizedText(0x48000041));else StringAppend(buf+256,GetLocalizedText(0x4800002d));
 break;
 case 1:
-if(func_020bee64(n)&&b) {
+if(IsUnitAvailable(n)&&b) {
 func_020c8d7c(p[0]);StringAppend(buf+256,GetLocalizedText(0x4800003f));
 StringFormat(buf,data_021295f8,GetMapName(p[0]));StringAppend(buf+256,buf);
 StringAppend(buf+256,GetLocalizedText(0x4800003f));StringAppend(buf+256,GetLocalizedText(0x4800003e));

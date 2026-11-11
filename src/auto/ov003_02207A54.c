@@ -80,7 +80,7 @@ void func_ov003_02207a8c(void *arg0) {
 
 #pragma thumb off
 void func_ov003_02207b84(void *arg0) {
-void func_ov003_02207c7c(void *); void func_ov003_02207e80(void *);
+void func_ov003_02207c7c(void *); void DrawMapSelectLabel(void *);
 s32 var_ip,var_lr,var_r5,var_r5_2,var_r6,var_r7; void *temp_r8; s32 var_r9,var_r10; void *temp_r1,*temp_r5;
 temp_r1=M2C_FIELD(arg0,void **,0x50);var_r9=0;
 M2C_FIELD(temp_r1,u16 *,2)=M2C_FIELD(temp_r1,u16 *,4);
@@ -100,7 +100,7 @@ M2C_FIELD(temp_r8,s8 *,0x10)=var_r7;
 var_r10+=36;var_r9++;
 }while(var_r9<(s32)*M2C_FIELD(arg0,u8 **,0x44));
 }
-func_ov003_02207e80(arg0);func_ov003_02207c7c(arg0);
+DrawMapSelectLabel(arg0);func_ov003_02207c7c(arg0);
 }
 u8 func_ov003_02207c5c(void *arg0) {
     s32 var_r0;
@@ -177,50 +177,53 @@ u8 func_ov003_02207e38(void *arg0, s32 arg1) {
     return (u8) var_r0;
 }
 
-void func_ov003_02207e80(void *arg0) {
-extern u16 **gCur3DSpriteEngine;
-extern u16 **g3DSpriteEngineSub;
-M2C_UNK func_01ff9ce8(s32);
-void *func_020bf25c(s32,u8);
-s32 GetLocalizedText(s32);
-void StringCopy(void *,void *);
-s32 StringFormat(void *,void *,...);
-void func_0209b2b4(s32,s32,s32,void *,u16,u16);
-extern char data_ov003_02211188[];
-u16 **saved=gCur3DSpriteEngine;
-char buf[256];
-s32 scale;
-void *inner,*kindptr;
-u8 flag,kind,idx,old,byte38;
-u32 bit;
-gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_01ff9ce8(1);
-flag=M2C_FIELD(arg0,u8 *,0x34)!=0;
-if(!flag){
-inner=*M2C_FIELD(arg0,void ***,0x5c);
-byte38=M2C_FIELD(arg0,u8 *,0x38);
-kindptr=M2C_FIELD(arg0,void **,0x3c);
-idx=(u8)((inner?M2C_FIELD(inner,u16 *,8):-1)-11);
-bit=((u32)byte38<<29)>>31;
-kind=M2C_FIELD(kindptr,u8 *,15);
-scale=(bit<<8)-bit+1;
-switch(kind){
-case 9:StringCopy(buf,func_020bf25c(0,idx));break;
-case 11:StringCopy(buf,func_020bf25c(5,idx));break;
-case 10:StringCopy(buf,func_020bf25c(1,idx));break;
-default:
-idx=(u8)((inner?M2C_FIELD(inner,u16 *,8):-1)-11);
-StringFormat(buf,data_ov003_02211188,GetLocalizedText(M2C_FIELD(*(void **)((char *)M2C_FIELD(arg0,void **,0x48)+(s16)idx*(s16)36),s32 *,12)));
-break;
-}
-func_0209b2b4(0,0,1,buf,0x3000,(u16)scale);
-}
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-bit=((u32)M2C_FIELD(arg0,volatile u8 *,0x38)<<29)>>31;
-old=M2C_FIELD(arg0,u8 *,0x38);
-flag=!bit;
-M2C_FIELD(arg0,u8 *,0x38)=(old&~4)|(((u32)flag<<31)>>29);
-gCur3DSpriteEngine=saved;
+/* Redraw the label of the ov003 map-select screen once its transition timer has
+ * run out: clear 3D-sprite layer 1 on the top-screen engine, format the name of
+ * the selected row and draw it, then flip the label's blink bit. */
+void DrawMapSelectLabel(void *arg0) {
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **g3DSpriteEngineSub;
+    M2C_UNK Clear3DSpriteLayer(s32);
+    void *BuildSaveSlotText(s32,u8);
+    s32 GetLocalizedText(s32);
+    void StringCopy(void *,void *);
+    s32 StringFormat(void *,void *,...);
+    void DrawTextLine(s32,s32,s32,void *,u16,u16);
+    extern char sTextPassThroughFormat[];
+    u16 **saved=gCur3DSpriteEngine;
+    char text[256];
+    s32 scale;
+    void *current,*kindDesc;
+    u8 flag,kind,rowId,oldFlags,flags;
+    u32 bit;
+    gCur3DSpriteEngine=g3DSpriteEngineSub;
+    Clear3DSpriteLayer(1);
+    flag=M2C_FIELD(arg0,u8 *,0x34)!=0;
+    if(!flag){
+    current=*M2C_FIELD(arg0,void ***,0x5c);
+    flags=M2C_FIELD(arg0,u8 *,0x38);
+    kindDesc=M2C_FIELD(arg0,void **,0x3c);
+    rowId=(u8)((current?M2C_FIELD(current,u16 *,MAP_SELECT_ENTRY_ID):-1)-MAP_SELECT_ROW_ID_BASE);
+    bit=((u32)flags<<29)>>31;
+    kind=M2C_FIELD(kindDesc,u8 *,MAP_SELECT_KIND);
+    scale=(bit<<8)-bit+1;
+    switch(kind){
+    case 9:StringCopy(text,BuildSaveSlotText(0,rowId));break;
+    case 11:StringCopy(text,BuildSaveSlotText(5,rowId));break;
+    case 10:StringCopy(text,BuildSaveSlotText(1,rowId));break;
+    default:
+    rowId=(u8)((current?M2C_FIELD(current,u16 *,MAP_SELECT_ENTRY_ID):-1)-MAP_SELECT_ROW_ID_BASE);
+    StringFormat(text,sTextPassThroughFormat,GetLocalizedText(M2C_FIELD(*(void **)((char *)M2C_FIELD(arg0,void **,0x48)+(s16)rowId*(s16)MAP_SELECT_ROW_STRIDE),s32 *,MAP_SELECT_ROW_TEXT_KEY)));
+    break;
+    }
+    DrawTextLine(0,0,1,text,0x3000,(u16)scale);
+    }
+    M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
+    bit=((u32)M2C_FIELD(arg0,volatile u8 *,0x38)<<29)>>31;
+    oldFlags=M2C_FIELD(arg0,u8 *,0x38);
+    flag=!bit;
+    M2C_FIELD(arg0,u8 *,0x38)=(oldFlags&~MAP_SELECT_BLINK)|(((u32)flag<<31)>>29);
+    gCur3DSpriteEngine=saved;
 }
 
 u8 func_ov003_0220801c(void *arg0) {
@@ -303,7 +306,7 @@ ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,28),0);
 
 #pragma push
 #pragma scheduling off
-void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
+void Ov003_RefreshListRowAnimations(void *arg0, s32 arg1, s32 arg2) {
     s32 a, b, c, d;
     s32 i;
     s32 off;

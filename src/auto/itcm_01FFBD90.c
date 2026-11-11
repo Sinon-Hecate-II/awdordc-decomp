@@ -6,10 +6,10 @@
 void func_01ffbd90(u8 *arg0) {
     extern void **gCurrentMap;
     extern u8 gUnitKindStats[];
-    s32 func_020a76d4(u8 *);
+    s32 GetUnitAttackRangeMax(u8 *);
 
     void *map = *gCurrentMap;
-    s32 r = func_020a76d4(arg0);
+    s32 r = GetUnitAttackRangeMax(arg0);
     (void)map;
     (void)gUnitKindStats;
     (void)r;
@@ -32,10 +32,10 @@ void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
 
 void func_01ffc204(s32 arg0,s32 arg1,u8 *arg2) {
 void func_01ffc108(s16,s16,s16,s32);
-s32 func_020a76d4(u8 *);
+s32 GetUnitAttackRangeMax(u8 *);
 extern u8 gUnitMinAttackRange;
-func_01ffc108((s16)arg0,(s16)arg1,(s16)func_020a76d4(arg2),0x40);
-if(func_020a76d4(arg2)==1) return;
+func_01ffc108((s16)arg0,(s16)arg1,(s16)GetUnitAttackRangeMax(arg2),0x40);
+if(GetUnitAttackRangeMax(arg2)==1) return;
 func_01ffc108((s16)arg0,(s16)arg1,(s16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
 }
 
@@ -66,9 +66,9 @@ FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD
 
 void func_01ffc368(s32 arg0,s32 arg1,u8 *arg2) {
 void func_01ffb5ec(u16,u16,u16,s32);
-s32 func_020a76d4(u8 *);
+s32 GetUnitAttackRangeMax(u8 *);
 extern u8 gUnitMinAttackRange;
-func_01ffb5ec((u16)arg0,(u16)arg1,(u16)func_020a76d4(arg2),0);
+func_01ffb5ec((u16)arg0,(u16)arg1,(u16)GetUnitAttackRangeMax(arg2),0);
 func_01ffb5ec((u16)arg0,(u16)arg1,(u16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
 }
 

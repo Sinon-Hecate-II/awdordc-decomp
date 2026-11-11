@@ -42,20 +42,51 @@ static inline void SetMenuAnimFrame(MenuAnimSprite *obj,u32 frame) {
 obj->frame=(u16)frame;obj->phase=0;
 }
 
-void func_ov005_022131f8(u8 *a){
-extern void *gHistoryMenu;extern u16 *gKeyState;
-void *HistoryTabAt(s32);s32 HistoryScrollUp(void);s32 HistoryScrollDown(void);s32 func_ov005_02212160(void);s32 func_ov005_022121f8(void);
-s32 func_020b20e0(s32);void func_020b1c60(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
-s32 n=*a;void *p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));s32 max=M2C_FIELD(p,s16 *,8)-7; s32 pos=M2C_FIELD(p,s16 *,2);s32 delta;
-if(max<0)max=0;
-if(pos==0&&n==0){if(gKeyState[0]&64){M2C_FIELD(p,s16 *,2)=max;n=6;goto done;}}
-else if(gKeyState[1]&64){if(n>=2)n--;else if(!HistoryScrollUp()&&n!=0)n--;goto done;}
-if(pos==max&&n==6){if(gKeyState[0]&128){n=0;M2C_FIELD(p,s16 *,2)=n;goto done;}}
-else if(gKeyState[1]&128){if(n<5){if(func_020b20e0(n+1))n++;}else if(!HistoryScrollDown()){if(func_020b20e0(n+1))n++;}goto done;}
-if(gKeyState[1]&32){delta=func_ov005_02212160();n-=delta+7;if(n<0)n=0;if(delta&&n==*a)PlaySoundEffect(0x10019);}
-else if(gKeyState[1]&16){delta=func_ov005_022121f8();n+=7-delta;if(n>=7)n=6;if(delta&&n==*a)PlaySoundEffect(0x10019);}
-else return;
-done:if(n!=*a)func_020b1c60(n);M2C_FIELD(gHistoryMenu,u8 *,2)=n;func_ov005_02211a8c();
+/* Handle d-pad input for the selected history-menu tab: move the row cursor
+ * (wrapping at the ends, paging with left/right) and store it back. `selected`
+ * points at the menu's current row index. */
+void HistoryMenu_HandleDPad(u8 *selected){
+    extern void *gHistoryMenu;extern u16 *gKeyState;
+    void *HistoryTabAt(s32);s32 HistoryScrollUp(void);s32 HistoryScrollDown(void);s32 HistoryPageUp(void);s32 HistoryPageDown(void);
+    s32 func_020b20e0(s32);void func_020b1c60(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
+    s32 row = *selected;
+    HistoryMenuTab *tab = (HistoryMenuTab *)HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1));
+    s32 lastRow = tab->count - 7;
+    s32 cursor = tab->cursor;
+    s32 delta;
+    if (lastRow < 0) lastRow = 0;
+    if (cursor == 0 && row == 0) {
+        if (gKeyState[0] & KEY_UP) { tab->cursor = lastRow; row = 6; goto done; }
+    } else if (gKeyState[1] & KEY_UP) {
+        if (row >= 2) row--;
+        else if (!HistoryScrollUp() && row != 0) row--;
+        goto done;
+    }
+    if (cursor == lastRow && row == 6) {
+        if (gKeyState[0] & KEY_DOWN) { row = 0; tab->cursor = row; goto done; }
+    } else if (gKeyState[1] & KEY_DOWN) {
+        if (row < 5) {
+            if (func_020b20e0(row + 1)) row++;
+        } else if (!HistoryScrollDown()) {
+            if (func_020b20e0(row + 1)) row++;
+        }
+        goto done;
+    }
+    if (gKeyState[1] & KEY_LEFT) {
+        delta = HistoryPageUp();
+        row -= delta + 7;
+        if (row < 0) row = 0;
+        if (delta && row == *selected) PlaySoundEffect(0x10019);
+    } else if (gKeyState[1] & KEY_RIGHT) {
+        delta = HistoryPageDown();
+        row += 7 - delta;
+        if (row >= 7) row = 6;
+        if (delta && row == *selected) PlaySoundEffect(0x10019);
+    } else return;
+done:
+    if (row != *selected) func_020b1c60(row);
+    M2C_FIELD(gHistoryMenu, u8 *, 2) = row;
+    func_ov005_02211a8c();
 }
 
 void func_ov005_0221339c(u8 *arg0) {
@@ -101,7 +132,7 @@ func_02099450(1,0,0);
 SetFileDirectory(&data_ov005_02220348);
 OpenNarcArchive(GetLocalizedFileName(&data_ov005_02220358));
 LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov005_02220368),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
-func_020816cc(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
+LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
 CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_0208ca2c(0x1000,1,func_020ae22c(9),2);

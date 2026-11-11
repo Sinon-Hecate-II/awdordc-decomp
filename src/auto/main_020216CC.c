@@ -211,12 +211,12 @@ func_02006030(1);timeout-=0x20b;
 
 void func_02021de8(void *p) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); 
-void MI_CpuCopy8(void *,void *,u32);s32 func_0206527c(void *,void *,s32);
+void MI_CpuCopy8(void *,void *,u32);s32 ByteCompareN(void *,void *,s32);
 extern M2C_UNK data_02138cc8;
 s32 i; s32 old;void *q;old=OS_DisableInterrupts();i=0;q=&data_02138cc8;
 M2C_FIELD(p,u8 *,0x30)=0;
 do{
-if(M2C_FIELD(q,u8 *,0x5a)&&!M2C_FIELD(q,u32 *,0x54)&&!M2C_FIELD(q,u16 *,0x58)&&!func_0206527c(q,p+0x74,32)){
+if(M2C_FIELD(q,u8 *,0x5a)&&!M2C_FIELD(q,u32 *,0x54)&&!M2C_FIELD(q,u16 *,0x58)&&!ByteCompareN(q,p+0x74,32)){
 MI_CpuCopy8(q+32,p,48);M2C_FIELD(p,u8 *,0x30)=1;break;
 }
 i++;q+=92;
@@ -264,11 +264,11 @@ OS_RestoreInterrupts(state);
 }
 
 void func_02022008(void *p) {
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 func_0206527c(void *,void *,s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 ByteCompareN(void *,void *,s32);
 extern M2C_UNK data_02138cc8;
 s32 i; s32 old;void *q;old=OS_DisableInterrupts();q=&data_02138cc8;i=0;
 do{
-if(M2C_FIELD(q,u8 *,0x5a)&&!func_0206527c(q,p+0x74,32)){M2C_FIELD(q,u8 *,0x5a)=0;break;}
+if(M2C_FIELD(q,u8 *,0x5a)&&!ByteCompareN(q,p+0x74,32)){M2C_FIELD(q,u8 *,0x5a)=0;break;}
 i++;q+=92;
 }while(i<4);
 OS_RestoreInterrupts(old);

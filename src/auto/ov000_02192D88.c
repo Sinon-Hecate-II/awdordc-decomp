@@ -8,11 +8,11 @@ extern void **gCurrentMap;
 extern u16 *gAiCommandState;
 extern s8 gTerrainPropertyType[32];
 void BuildUnitMoveRange(void); void func_01ffb9c4(s32);
-s32 func_ov000_021a9d8c(s16,s16); u8 IsPropertyTerrain(s32);
+s32 IsAllyUnitAtCell(s16,s16); u8 IsPropertyTerrain(s32);
 s32 func_ov000_021a9860(s32,s32); s32 func_ov000_02178518(s32,s32,s16 *);
 s32 func_ov000_0217bdb4(s32,s32);s32 func_ov000_0217bd44(s32,s32,s32,s32);
 s32 SetMapCursor(s16,s16,s32,s32,s32);
-s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 func_020d27ec(s32,s32);
+s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 IsTerrainOnUnitTeam(s32,s32);
 s32 x,y,bx,by,px,py,tx,ty,best,tie,score,value,id,kind;
 s32 sx,sy,ux,uy;
 s16 dest[2],pos[2];
@@ -25,7 +25,7 @@ BuildUnitMoveRange();func_01ffb9c4(0x6f);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
-if(func_ov000_021a9d8c((s16)x,(s16)y))continue;
+if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
 if(IsPropertyTerrain(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
 if(!func_ov000_021a9860(x,y))continue;
 if(!func_ov000_02178518(x,y,pos))continue;
@@ -48,7 +48,7 @@ sy=-1;sx=sy;uy=sy;ux=sy;best=sy;tie=best+0x8000;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
-if(func_ov000_021a9d8c((s16)x,(s16)y))continue;
+if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
 if(IsPropertyTerrain(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
 if(!func_ov000_02178518(x,y,pos))continue;
 kind=(u32)(unit[0]<<26)>>26;
@@ -60,7 +60,7 @@ case 2:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8
 if(!(gAiCommandState[4]&0x20)){if(!func_ov000_0217c08c(x,y,2,dest))continue;}
 else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
 default:continue;}
-if(gTerrainPropertyType[M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31] && func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)))score=0;
+if(gTerrainPropertyType[M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31] && IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)))score=0;
 else score=M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x);
 value=M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2840)+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2d48);
 switch(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31){case 15:score+=100;break;case 17:score+=80;break;case 24:score+=60;break;case 18:score+=40;break;case 19:score+=20;break;case 22:score+=20;break;}

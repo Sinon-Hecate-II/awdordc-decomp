@@ -210,7 +210,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     M2C_UNK func_ov003_022008b8();
     void func_020a230c(M2C_UNK, M2C_UNK);
     void func_020a232c(M2C_UNK, M2C_UNK);
-    void func_020a23a4(M2C_UNK, M2C_UNK);
+    void SetPlayerTeam(M2C_UNK, M2C_UNK);
     void func_ov003_021f140c(s8);
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
@@ -241,7 +241,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(1, playerState);
+    SetPlayerTeam(1, playerState);
 
     // block 1
     setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
@@ -261,7 +261,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(2, playerState);
+    SetPlayerTeam(2, playerState);
 
     // block 2
     setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
@@ -281,7 +281,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(3, playerState);
+    SetPlayerTeam(3, playerState);
 
     // block 3
     setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
@@ -301,7 +301,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(4, playerState);
+    SetPlayerTeam(4, playerState);
 
     // per-player army colours
     func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
@@ -418,7 +418,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     M2C_UNK func_ov003_022008b8();
     void func_020a230c(M2C_UNK, M2C_UNK);
     void func_020a232c(M2C_UNK, M2C_UNK);
-    void func_020a23a4(M2C_UNK, M2C_UNK);
+    void SetPlayerTeam(M2C_UNK, M2C_UNK);
     void func_ov003_021f140c(s8);
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
@@ -449,7 +449,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(1, playerState);
+    SetPlayerTeam(1, playerState);
 
     // block 1
     setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
@@ -469,7 +469,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(2, playerState);
+    SetPlayerTeam(2, playerState);
 
     // block 2
     setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
@@ -489,7 +489,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(3, playerState);
+    SetPlayerTeam(3, playerState);
 
     // block 3
     setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
@@ -509,7 +509,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
             playerState = 2;
         }
     }
-    func_020a23a4(4, playerState);
+    SetPlayerTeam(4, playerState);
 
     // per-player army colours
     func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));

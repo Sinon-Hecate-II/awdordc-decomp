@@ -38,6 +38,19 @@ static inline void func_020dbe20(void *q) {
     }
 }
 
+typedef struct MenuSprite {
+    u8 pad[0x40];
+    unsigned field0:18;
+    unsigned frame:8;
+    unsigned field26:6;
+    u8 pad44[0x15];
+    u8 baseFrame:4;
+    u8 alternate:1;
+    u8 otherFlags:3;
+} MenuSprite;
+static inline u8 MenuSpriteIsActive(void *p) { return ((MenuSprite *)p)->baseFrame + 2 != (u16)((MenuSprite *)p)->frame; }
+static inline void MenuSpriteSetFrame(void *p, u16 frame, s8 timer) { ((MenuSprite *)p)->frame = frame; M2C_FIELD(p, s8 *, 0x5a) = timer; }
+
 M2C_UNK func_020db920() { int x = 0; return x; }
 
 void func_020dbd00(void) {
@@ -155,7 +168,7 @@ void func_020dbeb0(void *arg0) {
 M2C_UNK func_020dbebc(void *arg0) {
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 extern M2C_UNK data_0212d358, data_0212d360, data_0212d370, data_0212c658;
-M2C_UNK func_01ff9ce8(s32), SetFileDirectory(void *);
+M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
 s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
@@ -167,9 +180,7 @@ M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
 s32 GetSpriteAnimValue(s32);
 void *sp4;
 void **sp0;
-u32 changed;
 s32 i, x, test;
-u32 base, next;
 s32 i2;
 void *item;
 s32 y, end;
@@ -179,7 +190,7 @@ void *p;
 void **saved;
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 SetFileDirectory(&data_0212d358);
 GetLocalizedFileName(&data_0212d360);
@@ -231,15 +242,9 @@ func_02088f1c(p);
 p=M2C_FIELD(arg0,void **,0x58);
 func_020dbe10(p);
 M2C_FIELD(p,u8 *,0x5a)=0;
-p=M2C_FIELD(arg0,void **,0x50);
-base=(u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28;
-next=base+2;
-changed=(u16)((u32)(M2C_FIELD(p,s32 *,0x40)<<6)>>24);
-changed = (next == changed) ? 0U : 1U;
-if((u8)changed == 0){
-M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)base<<24)>>6);
-M2C_FIELD(p,u8 *,0x5a)=0;
-}
+do {
+func_020dbe20(M2C_FIELD(arg0,void **,0x50));
+} while(0);
 func_0208b758(M2C_FIELD(arg0,void **,0x64),0x4400000e);
 func_02088f1c(M2C_FIELD(arg0,void **,0x64));
 if(GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68))) {
@@ -256,7 +261,7 @@ M2C_FIELD(arg0,u16 *,0x48)&=~4;
 M2C_UNK func_020dc250(arg0)
 void *arg0;
 {
-    M2C_UNK func_01ff9ce8(s32), SetFileDirectory(void *);
+    M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
     s32 GetLocalizedFileName(void *);
     M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
     M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
@@ -280,7 +285,7 @@ void *arg0;
     void *p;
     saved=gCur3DSpriteEngine;
     gCur3DSpriteEngine=g3DSpriteEngineMain;
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
     SetFileDirectory(&data_0212d380);
     GetLocalizedFileName(&data_0212d388);

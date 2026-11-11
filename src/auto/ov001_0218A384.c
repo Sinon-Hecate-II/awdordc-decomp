@@ -9,7 +9,7 @@ static inline void set_obj_xy(void *base,s32 index,s32 x,s32 y) {
 M2C_FIELD(base,u32 *,index*8)=(M2C_FIELD(base,u32 *,index*8)&0xfe00ff00)|(y&255)|((u32)(x<<23)>>7);
 }
 
-void func_ov001_0218a384(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
+void Ov001_MoveSpriteLayout(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
 void *p=M2C_FIELD(arg0,void **,8);
 s32 orig[2],xy[2],i,dx,dy;
 if(arg1>=0) {set_obj_xy(p,arg1,arg2,arg3);return;}
@@ -42,16 +42,16 @@ void func_ov001_0218a4d4(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
 }
 
 void Ov001_LoadCharBank(s32 arg0, M2C_UNK arg1) {
- s32 func_ov001_02189dc8(M2C_UNK,M2C_UNK *,M2C_UNK);
+ s32 Ov001_LoadFile(M2C_UNK,M2C_UNK *,M2C_UNK);
  extern M2C_UNK data_ov001_02193e34;
  M2C_UNK sp0;
- (&data_ov001_02193e34)[arg0]=func_ov001_02189dc8(arg1,&sp0,4);
+ (&data_ov001_02193e34)[arg0]=Ov001_LoadFile(arg1,&sp0,4);
 }
 
 void func_ov001_0218a534(u8 arg0) {
- void func_ov001_02189ebc(s32);
+ void Ov001_FreeFile(s32);
  extern M2C_UNK data_ov001_02193e34;
- func_ov001_02189ebc(((s32 *)&data_ov001_02193e34)[arg0]);
+ Ov001_FreeFile(((s32 *)&data_ov001_02193e34)[arg0]);
  ((s32 *)&data_ov001_02193e34)[arg0] = 0;
 }
 
@@ -294,7 +294,7 @@ void func_ov001_0218aab4(void) {
     void *func_ov001_0218b6f8(s32, M2C_UNK);
     void *func_ov001_0218a698(s32, s32, s32);
     s32 Ov001_GetLanguage(void);
-    s32 func_ov001_02189dc8(M2C_UNK, M2C_UNK *, M2C_UNK);
+    s32 Ov001_LoadFile(M2C_UNK, M2C_UNK *, M2C_UNK);
     void func_ov001_02169130(void *, M2C_UNK);
     extern M2C_UNK data_ov001_02193e40;
     extern M2C_UNK data_ov001_021917c0;
@@ -311,7 +311,7 @@ void func_ov001_0218aab4(void) {
         M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c0);
         for (i = 0; i < 2; i++) {
             M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674) =
-                (M2C_UNK)func_ov001_02189dc8(arr[i], 0, 4);
+                (M2C_UNK)Ov001_LoadFile(arr[i], 0, 4);
             func_ov001_02169130((void *)data_ov001_02193e40 + acc,
                 M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674));
             acc += 8;
@@ -322,7 +322,7 @@ void func_ov001_0218aab4(void) {
         M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c8);
         for (i = 0; i < 2; i++) {
             M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674) =
-                (M2C_UNK)func_ov001_02189dc8(arr[i], 0, 4);
+                (M2C_UNK)Ov001_LoadFile(arr[i], 0, 4);
             func_ov001_02169130((void *)data_ov001_02193e40 + acc,
                 M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674));
             acc += 8;
@@ -331,14 +331,14 @@ void func_ov001_0218aab4(void) {
 }
 
 void func_ov001_0218abb8(void) {
- void func_ov001_02189ebc(s32);
+ void Ov001_FreeFile(s32);
  void func_ov001_0218a6d8(s32,...);
  M2C_UNK func_ov001_0218b71c(M2C_UNK *);
  extern M2C_UNK data_ov001_02193e40;
  extern M2C_UNK data_ov001_02193e44;
  M2C_UNK *p=&data_ov001_02193e40;
  s32 i;
- for(i=0;i<2;i++)func_ov001_02189ebc(*((s32 *)((u8 *)(*p)+0x674)+i));
+ for(i=0;i<2;i++)Ov001_FreeFile(*((s32 *)((u8 *)(*p)+0x674)+i));
  func_ov001_0218a6d8(*((s32 *)((u8 *)data_ov001_02193e40+0x670)));
  func_ov001_0218b71c(&data_ov001_02193e44-1);
 }
@@ -399,7 +399,7 @@ return p;
 }
 #pragma opt_propagation reset
 void func_ov001_0218ae84(M2C_UNK arg0, void *arg1) {
-    void func_020067e0(M2C_UNK, s32);
+    void DC_FlushRange(M2C_UNK, s32);
     void func_0200454c(M2C_UNK, s32, u32);
     void func_020045ac(M2C_UNK, s32, u32);
     extern M2C_UNK data_ov001_02193e40;
@@ -407,10 +407,10 @@ void func_ov001_0218ae84(M2C_UNK arg0, void *arg1) {
         return;
     }
     if (arg1 == (void *)((u8 *)data_ov001_02193e40 + 0x67C)) {
-        func_020067e0(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x638), 0x6000);
+        DC_FlushRange(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x638), 0x6000);
         func_0200454c(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x638), 0, 0x6000);
     } else {
-        func_020067e0(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x668), 0x3000);
+        DC_FlushRange(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x668), 0x3000);
         func_020045ac(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x668), 0x3000, 0x3000);
     }
     *(u8 *)arg1 = 0;
@@ -570,7 +570,7 @@ void func_ov001_0218b2bc(s16 arg0, s16 arg1, void *arg2) {
     M2C_FIELD(arg2, s16 *, 2) = arg1;
 }
 
-void func_ov001_0218b2c8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, void *arg4) {
+void SetRect16(s16 arg0, s16 arg1, s16 arg2, s16 arg3, void *arg4) {
     M2C_FIELD(arg4, s16 *, 0) = arg0;
     M2C_FIELD(arg4, s16 *, 2) = arg1;
     M2C_FIELD(arg4, s16 *, 4) = arg2;

@@ -81,7 +81,7 @@ void func_ov000_02186a18(void) {
     s32 IsWithinAttackRange(void *, void *, s32);
     void func_ov000_02186940(void *);
     void BuildUnitMoveRange(void *);
-    u8 func_ov000_021a9d8c(u32, s32);
+    u8 IsAllyUnitAtCell(u32, s32);
     s32 func_020cf878(s32, s32);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s32 fy, i;
@@ -113,7 +113,7 @@ void func_ov000_02186a18(void) {
                 cell = ((u8 *)gAiRangeLayer)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
                 if (cell == 0) continue;
                 if (cell >= best) continue;
-                if (func_ov000_021a9d8c((s16)x, (s16)y)) continue;
+                if (IsAllyUnitAtCell((s16)x, (s16)y)) continue;
                 if (func_020cf878(x, y)) continue;
                 if ((gUnitKindStats[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70 + 0x13] & 7) == 0) {
                     if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2840) >= gAiUnitTypeTuning[1]) continue;
@@ -131,7 +131,7 @@ void func_ov000_02186a18(void) {
 }
 
 s32 func_ov000_02186d94(s32 a,s32 b,s32 c){
-extern void **gCurrentMap; u8 func_ov000_021a9d8c(u32,s32);
+extern void **gCurrentMap; u8 IsAllyUnitAtCell(u32,s32);
 extern u8 gMovementTypeTable[];extern M2C_UNK gMovementCostTable;
 void *p; s32 off; s32 n; s32 idxByte,dataByte; s8 *table;
 if(a<0 || b<0)goto fail;
@@ -139,7 +139,7 @@ p=*gCurrentMap;
 if(a<M2C_FIELD(p,u16 *,0x5144)&&b<M2C_FIELD(p,u16 *,0x5146))goto valid;
 fail:return 0;
 valid:
-if(func_ov000_021a9d8c((s16)a,(s16)b))return 0;
+if(IsAllyUnitAtCell((s16)a,(s16)b))return 0;
 off=c*0x70;
 p=*gCurrentMap;
 n=M2C_FIELD(p+b*2,u16 *,0x3758);

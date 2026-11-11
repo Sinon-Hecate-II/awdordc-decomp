@@ -124,7 +124,7 @@ void func_02080944(u16 *p,s32 w,s32 h,u32 pal) {
  }
 }
 
-void func_020809c0(u16 *p,s32 w,s32 h){
+void ClearTileRect(u16 *p,s32 w,s32 h){
  s32 x,y;
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=0;
 }
@@ -166,9 +166,9 @@ void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, u16 bandH, u16 lo
 }
 #pragma opt_strength_reduction reset
 void func_02080b38(u16 *p,u32 w,s32 h){
- s32 y,x;u16 tmp,other;u16 *a,*b;
+ s32 y,x; u32 last=w-1;u16 tmp;u16 *a,*b;
  for(y=0;y<h;y++){
- for(x=0;x<(s32)(w>>1);x++){a=p+x;b=p+(w-1-x);tmp=a[y*32];other=b[y*32];a[y*32]=other;b[y*32]=tmp;}
+ for(x=0;x<(s32)(w>>1);x++){a=p+x;b=p+(last-x);tmp=a[y*32];a[y*32]=b[y*32];b[y*32]=tmp;}
  for(x=0;x<(s32)w;x++)p[y*32+x]^=0x400;
  }
 }
@@ -400,7 +400,7 @@ s32 func_020811b8(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 temp_r0; s32 var_r0;
  temp_r0=func_02081128(arg0,arg3);
  if(temp_r0==0) return 0;
- func_020067e0(temp_r0,arg3);
+ DC_FlushRange(temp_r0,arg3);
  if(gCur3DSpriteEngine==g3DSpriteEngineMain) var_r0=1; else var_r0=0;
  if(var_r0 & 0xFF) {func_0200478c();func_0200482c(temp_r0,arg2+(arg1<<13),arg3);func_0200489c();}
  else {func_020049dc();func_020049f4(temp_r0,arg2+(arg1<<13),arg3);func_02004a58();}
@@ -427,7 +427,7 @@ s32 func_020812a4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 temp_r0; s32 var_r0;
  temp_r0=func_02081128(arg0,arg3);
  if(temp_r0==0) return 0;
- func_020067e0(temp_r0,arg3);
+ DC_FlushRange(temp_r0,arg3);
  if(gCur3DSpriteEngine==g3DSpriteEngineMain) var_r0=1; else var_r0=0;
  if(var_r0 & 0xFF) {func_020048e4();func_0200492c(temp_r0,arg2+(arg1<<13),arg3);func_02004998();}
  else {func_02004a98();func_02004ab0(temp_r0,arg2+(arg1<<13),arg3);func_02004b14();}
@@ -448,20 +448,20 @@ s32 func_02081384(M2C_UNK arg0, M2C_UNK arg1) {
     s32 temp_r0;
 
     temp_r0 = func_02080efc(arg0, 0, &sp0);
-    func_020067e0(temp_r0, sp0);
+    DC_FlushRange(temp_r0, sp0);
     func_0207da34(temp_r0, arg1, sp0);
     func_020e35cc(temp_r0);
     return sp0;
 }
 
 s32 func_020813c4(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020067e0(s32, s32);
+    M2C_UNK DC_FlushRange(s32, s32);
     M2C_UNK func_0207c464(s32, M2C_UNK, s32, M2C_UNK);
     s32 sp0;
     s32 temp_r0;
 
     temp_r0 = func_02080efc(arg0, 0, &sp0);
-    func_020067e0(temp_r0, sp0);
+    DC_FlushRange(temp_r0, sp0);
     func_0207c464(temp_r0, arg1, sp0, 1);
     return sp0;
 }

@@ -17,7 +17,7 @@ s32 IsNameEntryValid(void) {
     func_ov001_02175db4(&a,&b);
     if(a==0) return M2C_FIELD(gNameEntryState,u8 *,8)!=0;
     if(b==1 && M2C_FIELD(gNameEntryState,u8 *,8)==0) return 0;
-    len=func_ov001_0218c3e0((u8 *)gNameEntryState+8,32);
+    len=StringLengthUpTo((u8 *)gNameEntryState+8,32);
     switch(len){
     case 0:case 5:case 13:case 16:return 1;
     case 10:case 26:case 32:
@@ -71,7 +71,7 @@ data_ov001_02193da4=func_ov001_0218b6f8(24,4);
 func_ov001_02175db4(&a,0);
 handlers.handlers[a](data_ov001_02193da4+8);
 p=data_ov001_02193da4;
-if(func_0206527c(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
+if(ByteCompareN(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
 else {MI_CpuFill8(p+8,0,12);M2C_FIELD(data_ov001_02193da4,u8*,20)=0;}
 func_ov001_0217c0f8();func_ov001_02172250(a+11);func_ov001_02171c24(choices[a],-1,0);func_ov001_02171dd0(2);
 M2C_FIELD(data_ov001_02193da4,void**,0)=CreateTextPanel(0,0);
@@ -85,13 +85,13 @@ void func_ov001_0217c0f8(void) {
     extern M2C_UNK data_ov001_02190788;
     extern M2C_UNK data_ov001_021907a0;
     extern M2C_UNK data_ov001_021907b8;
-    extern M2C_UNK func_020040b4;
+    extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK func_02004160;
     extern M2C_UNK func_0200448c;
     extern M2C_UNK func_020046cc;
     Ov001_LoadAsset(&data_ov001_02190774, &func_02004160);
     Ov001_LoadAsset(&data_ov001_02190788, &func_020046cc);
-    Ov001_LoadAsset(&data_ov001_021907a0, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_021907a0, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_021907b8, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);

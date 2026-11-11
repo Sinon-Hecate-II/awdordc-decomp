@@ -2,7 +2,7 @@
 #include "common.h"
 
 void func_ov009_02226214(M2C_UNK arg0) {
-    s32 func_0206527c(s32, s32, M2C_UNK);
+    s32 ByteCompareN(s32, s32, M2C_UNK);
     s32 func_ov009_02224064();
     s32 func_ov009_022240ac();
     s32 GetLinkPhase();
@@ -15,7 +15,7 @@ void func_ov009_02226214(M2C_UNK arg0) {
     }
     temp_r4 = func_ov009_02224064();
     func_ov009_02225450();
-    if (func_0206527c(temp_r4, func_ov009_022240ac(), 0x60) == 0) {
+    if (ByteCompareN(temp_r4, func_ov009_022240ac(), 0x60) == 0) {
         return;
     }
     func_ov009_022257ac(arg0);

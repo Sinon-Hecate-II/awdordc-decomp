@@ -4,13 +4,13 @@ typedef struct { u16 value[7]; } RuntimeZero14;
 typedef struct { u8 low:4, high:4; u8 len; u16 name[10]; } RuntimeProfile;
 static inline void RuntimeClear14(RuntimeZero14 *p) { p->value[0]=0; p->value[1]=0; p->value[2]=0; p->value[3]=0; p->value[4]=0; p->value[5]=0; p->value[6]=0; }
 extern void *data_ov001_02193e1c;
-extern void *data_ov001_02193e18;
-extern const u8 data_ov001_0218fc66[], data_ov001_0218fc52[];
-extern const u16 data_ov001_0218fccc[], data_ov001_0218fcce[];
+extern void *gOv001RegionMenu;
+extern const u8 data_ov001_0218fc66[], gOv001RegionItemSlot[];
+extern const u16 gOv001RegionItemPos[], data_ov001_0218fcce[];
 
 /* Selects the UI button under the cursor in the active button group, or deselects. */
 void func_ov001_021867ac(void) {
-extern u8 data_ov001_0218fcfc[];
+extern u8 gOv001RegionItemCount[];
 extern const u16 data_ov001_0218fc70[];
 extern const s8 data_ov001_0218fc5c[], data_ov001_0218fc5d[];
 s32 TouchRectPressed(void *);
@@ -19,70 +19,73 @@ void BuildTouchRect(const void *, const void *, void *);
 void func_ov001_02186ba8(s32);
 s32 i;
 u32 rect[2];
-for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
-    BuildTouchRect(&((const u32 (*)[2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]], &((const u32 *)data_ov001_0218fc70)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)], rect);
+for (i = 0; i < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; i++) {
+    BuildTouchRect(&((const u32 (*)[2])gOv001RegionItemPos)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)][i]], &((const u32 *)data_ov001_0218fc70)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)], rect);
     if (TouchRectPressed(rect)) {
-        M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = i;
+        M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = i;
         break;
     }
 }
-if (KeyPressed(1)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
-if (KeyPressed(2)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5d[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
-for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
-    if (i == M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b)) {
+if (KeyPressed(1)) M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = data_ov001_0218fc5c[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c) * 2];
+if (KeyPressed(2)) M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = data_ov001_0218fc5d[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c) * 2];
+for (i = 0; i < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; i++) {
+    if (i == M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b)) {
         func_ov001_02186ba8(i);
         return;
     }
 }
-M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = -1;
+M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = -1;
 }
 
 void func_ov001_02186908(s32 arg0) {
 s32 func_ov001_0218c884(s32,void (*)(s32),s32,s32);
 void func_ov001_02186c68(s32);
-M2C_FIELD(data_ov001_02193e18,s8 *,0x1b)=-1;
-M2C_FIELD(data_ov001_02193e18,u16 *,0x18)++;
-if(M2C_FIELD(data_ov001_02193e18,u16 *,0x18)<120U)return;
+M2C_FIELD(gOv001RegionMenu,s8 *,0x1b)=-1;
+M2C_FIELD(gOv001RegionMenu,u16 *,0x18)++;
+if(M2C_FIELD(gOv001RegionMenu,u16 *,0x18)<120U)return;
 func_ov001_0218c92c(0,arg0);
-M2C_FIELD(data_ov001_02193e18,s32 *,0x14)=func_ov001_0218c884(1,func_ov001_02186c68,0,120);
+M2C_FIELD(gOv001RegionMenu,s32 *,0x14)=func_ov001_0218c884(1,func_ov001_02186c68,0,120);
 }
 
-void func_ov001_02186974(s32 arg0) {
-    extern u8 data_ov001_0218fcfc[];
-    extern const u8 data_ov001_0218fc52[];
-    extern const u16 data_ov001_0218fc9c[], data_ov001_0218fccc[], data_ov001_0218fcb4[], data_ov001_0218fcb6[];
-    void func_ov001_0218a384(void *, s32, s32, s32);
-    void func_ov001_02186b1c(M2C_UNK, s32);
-    void func_ov001_0218b2c8(s32, s32, s32, s32, void *);
-    void func_ov001_0218b3c4(s32, s32, u16 *);
-    s32 i;
-    u16 stk[4];
-    func_ov001_0218a384(M2C_FIELD(data_ov001_02193e18, void **, 0), -1, data_ov001_0218fc9c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2], arg0);
-    func_ov001_0218a384(M2C_FIELD(data_ov001_02193e18, void **, 4), -1, data_ov001_0218fc9c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2] + 8, arg0 + 8);
-    func_ov001_02186b1c(M2C_FIELD(data_ov001_02193e18, void **, 0), arg0);
-    func_ov001_02186b1c(M2C_FIELD(data_ov001_02193e18, void **, 4), arg0);
-    for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
-        func_ov001_0218a384(
-            ((void **)data_ov001_02193e18)[i + 2], -1,
-            ((const u16 (*)[2][2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]][0],
-            arg0 + ((const u16 (*)[2][2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]][1]
-            - data_ov001_0218fc9c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2 + 1]);
-        func_ov001_02186b1c(((void **)data_ov001_02193e18)[i + 2], arg0);
+/* Slide the selected region's menu column to vertical position topY: move the
+ * two side sprites and every item sprite, hide those that leave the screen, and
+ * set the clip window over the region's column. */
+void Ov001_SetRegionMenuY(s32 topY) {
+    extern u8 gOv001RegionItemCount[];
+    extern const u8 gOv001RegionItemSlot[];
+    extern const u16 gOv001RegionOrigin[], gOv001RegionItemPos[], gOv001RegionWidth[], gOv001RegionHeight[];
+    void Ov001_MoveSpriteLayout(void *, s32, s32, s32);
+    void Ov001_ClipSpriteLayout(M2C_UNK, s32);
+    void SetRect16(s32, s32, s32, s32, void *);
+    void SetWindowRect(s32, s32, u16 *);
+    s32 item;
+    u16 rect[4];
+    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu, void **, 0), -1, gOv001RegionOrigin[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c) * 2], topY);
+    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu, void **, 4), -1, gOv001RegionOrigin[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c) * 2] + 8, topY + 8);
+    Ov001_ClipSpriteLayout(M2C_FIELD(gOv001RegionMenu, void **, 0), topY);
+    Ov001_ClipSpriteLayout(M2C_FIELD(gOv001RegionMenu, void **, 4), topY);
+    for (item = 0; item < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; item++) {
+        Ov001_MoveSpriteLayout(
+            ((void **)gOv001RegionMenu)[item + 2], -1,
+            ((const u16 (*)[2][2])gOv001RegionItemPos)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)][item]][0],
+            topY + ((const u16 (*)[2][2])gOv001RegionItemPos)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)][item]][1]
+            - gOv001RegionOrigin[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c) * 2 + 1]);
+        Ov001_ClipSpriteLayout(((void **)gOv001RegionMenu)[item + 2], topY);
     }
     {
-        s32 k = M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c);
-        s32 y = arg0 & 0xff;
+        s32 region = M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c);
+        s32 y = topY & 0xff;
         s32 bottom;
         if (y >= 0xc0) { bottom = 0; y = 0; }
-        else { bottom = y + data_ov001_0218fcb6[k * 2]; }
+        else { bottom = y + gOv001RegionHeight[region * 2]; }
         if (bottom > 0xc0) bottom = 0xc0;
-        func_ov001_0218b2c8(data_ov001_0218fc9c[k * 2], y,
-             data_ov001_0218fc9c[k * 2] + data_ov001_0218fcb4[k * 2], bottom, stk);
+        SetRect16(gOv001RegionOrigin[region * 2], y,
+             gOv001RegionOrigin[region * 2] + gOv001RegionWidth[region * 2], bottom, rect);
     }
-    func_ov001_0218b3c4(0, 0, stk);
+    SetWindowRect(0, 0, rect);
 }
 
-void func_ov001_02186b1c(M2C_UNK arg0,s32 arg1) {
+void Ov001_ClipSpriteLayout(M2C_UNK arg0,s32 arg1) {
 s32 func_ov001_0218a258();
 M2C_UNK func_ov001_0218a260(M2C_UNK,s32,s32,M2C_UNK);
 M2C_UNK func_ov001_0218a4d4(M2C_UNK,s32,M2C_UNK *,s32 *);
@@ -96,53 +99,53 @@ func_ov001_0218a260(arg0,var_r8,var_r2,0);var_r8++;
 
 void func_ov001_02186ba8(s32 arg0) {
 s32 func_ov001_0218a24c(s32,s32);
-func_ov001_0218a55c(0,((const u8 (*)[2])data_ov001_0218fc66)[M2C_FIELD(data_ov001_02193e18,u8 *,0x1c)][arg0]+1,func_ov001_0218a24c(M2C_FIELD(data_ov001_02193e18+arg0*4,s32 *,8),0));
-func_ov001_0218a384(M2C_FIELD(data_ov001_02193e18+arg0*4,s32 *,8),-1,((const u16 (*)[4])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18,u8 *,0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18,u8 *,0x1c)][arg0]*2],((const u16 (*)[4])data_ov001_0218fcce)[M2C_FIELD(data_ov001_02193e18,u8 *,0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18,u8 *,0x1c)][arg0]*2]);
-func_ov001_0218a474(M2C_FIELD(data_ov001_02193e18+arg0*4,s32 *,8),-1,0);
+func_ov001_0218a55c(0,((const u8 (*)[2])data_ov001_0218fc66)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][arg0]+1,func_ov001_0218a24c(M2C_FIELD(gOv001RegionMenu+arg0*4,s32 *,8),0));
+Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu+arg0*4,s32 *,8),-1,((const u16 (*)[4])gOv001RegionItemPos)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][arg0]*2],((const u16 (*)[4])data_ov001_0218fcce)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][arg0]*2]);
+func_ov001_0218a474(M2C_FIELD(gOv001RegionMenu+arg0*4,s32 *,8),-1,0);
 }
 
 void func_ov001_02186c68(M2C_UNK arg0) {
     M2C_UNK func_ov001_0218c924(M2C_UNK, M2C_UNK *);
-    extern void *data_ov001_02193e18;
+    extern void *gOv001RegionMenu;
     extern M2C_UNK func_ov001_02186ca4;
-    M2C_FIELD(data_ov001_02193e18, u8 *, 0x1D) = (u8) (M2C_FIELD(data_ov001_02193e18, u8 *, 0x1D) + 1);
-    if ((u32) M2C_FIELD(data_ov001_02193e18, u8 *, 0x1D) < 8U) {
+    M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) = (u8) (M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) + 1);
+    if ((u32) M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) < 8U) {
         return;
     }
     func_ov001_0218c924(arg0, &func_ov001_02186ca4);
 }
 
 void func_ov001_02186ca4(s32 a) {
-extern void *data_ov001_02193e18;
+extern void *gOv001RegionMenu;
 void func_ov001_02186d34(); void func_ov001_02186d90();
 s32 pos[2];
-func_ov001_0218a4d4(M2C_FIELD(data_ov001_02193e18,s32 *,0),0,&pos[1],&pos[0]);
+func_ov001_0218a4d4(M2C_FIELD(gOv001RegionMenu,s32 *,0),0,&pos[1],&pos[0]);
 pos[0]+=12;
-func_ov001_02186974(pos[0]);
+Ov001_SetRegionMenuY(pos[0]);
 if(pos[0]<192)return;
-if(M2C_FIELD(data_ov001_02193e18,u8 *,30))func_ov001_0218c924(a,func_ov001_02186d34);
+if(M2C_FIELD(gOv001RegionMenu,u8 *,30))func_ov001_0218c924(a,func_ov001_02186d34);
 else func_ov001_0218c924(a,func_ov001_02186d90);
 }
 
 void func_ov001_02186d34(s32 a) {
-extern void *data_ov001_02193e18;
+extern void *gOv001RegionMenu;
 void func_ov001_02186d90();
-M2C_FIELD(data_ov001_02193e18,s8 *,26)++;
-func_02003a10(0x4000050,M2C_FIELD(data_ov001_02193e18,s8 *,26));
-if(M2C_FIELD(data_ov001_02193e18,s8 *,26)>=0)func_ov001_0218c924(a,func_ov001_02186d90);
+M2C_FIELD(gOv001RegionMenu,s8 *,26)++;
+func_02003a10(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
+if(M2C_FIELD(gOv001RegionMenu,s8 *,26)>=0)func_ov001_0218c924(a,func_ov001_02186d90);
 }
 
 #pragma opt_strength_reduction off
 void func_ov001_02186d90(s32 a) {
-    extern void *data_ov001_02193e18; extern u8 data_ov001_0218fcfc[];
+    extern void *gOv001RegionMenu; extern u8 gOv001RegionItemCount[];
     s32 i;
     *(volatile u32 *)0x4000000 &= ~0xe000;
-    func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[0]);
-    func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[1]);
-    for (i = 0; i < data_ov001_0218fcfc[((u8*)data_ov001_02193e18)[0x1c]]; i++) {
-        if (((s32**)data_ov001_02193e18)[2 + i]) func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[2 + i]);
+    func_ov001_0218a1cc(((s32**)gOv001RegionMenu)[0]);
+    func_ov001_0218a1cc(((s32**)gOv001RegionMenu)[1]);
+    for (i = 0; i < gOv001RegionItemCount[((u8*)gOv001RegionMenu)[0x1c]]; i++) {
+        if (((s32**)gOv001RegionMenu)[2 + i]) func_ov001_0218a1cc(((s32**)gOv001RegionMenu)[2 + i]);
     }
-    func_ov001_0218ace0(((s32**)data_ov001_02193e18)[4]);
+    func_ov001_0218ace0(((s32**)gOv001RegionMenu)[4]);
     func_ov001_0218c92c(1, a);
     func_ov001_0218b71c((void*)0x02193e18);
 }

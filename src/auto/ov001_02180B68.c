@@ -5,7 +5,7 @@ extern u8 data_ov001_0218f9d4[];
 extern u16 data_ov001_0218f9ea[], data_ov001_0218f9ec[];
 extern M2C_UNK data_ov001_0219099c, data_ov001_021909b0, data_ov001_021909c8, data_ov001_021909e0;
 extern M2C_UNK gOv001MenuRegion;
-extern M2C_UNK func_02004160, func_020046cc, func_020040b4, func_0200448c;
+extern M2C_UNK func_02004160, func_020046cc, GX_LoadBGPltt, func_0200448c;
 
 void func_ov001_02180b68(void) {
     M2C_UNK func_ov001_021716d8(M2C_UNK);
@@ -64,7 +64,7 @@ void func_ov001_02180c2c(void) {
     M2C_UNK func_ov001_02175da0(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183fa0();
     s32 func_ov001_021840d4();
-    void *func_ov001_0218445c();
+    void *GetCurrentMapRecord();
     M2C_UNK func_ov001_02184880(u8);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
@@ -90,7 +90,7 @@ void func_ov001_02180c2c(void) {
     func_ov001_0218b368(0, 0x15);
     if (data_ov001_02193dc8 != 1) {
         func_ov001_02183fa0();
-        func_ov001_02184880(M2C_FIELD(func_ov001_0218445c(), u8 *, 0xF4));
+        func_ov001_02184880(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4));
         func_ov001_02175d64(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;
@@ -147,14 +147,14 @@ void func_ov001_02180d44(void) {
 void func_ov001_02180da4(void) {
 s32 Ov001_LocalizePath(void *);
 M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
+s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
 void func_ov001_0218b314(s32,s32);
 PathBuffer80 path = *(PathBuffer80 *)data_ov001_0218f9d4;
 Ov001_LoadAsset(&data_ov001_0219099c,&func_02004160);
 Ov001_LoadAsset(&data_ov001_021909b0,&func_020046cc);
-Ov001_LoadAsset(&data_ov001_021909c8,&func_020040b4);
+Ov001_LoadAsset(&data_ov001_021909c8,&GX_LoadBGPltt);
 Ov001_LoadAsset(&data_ov001_021909e0,&func_0200448c);
-*M2C_FIELD(&gOv001MenuRegion,s32 **,4) = func_ov001_02189dc8(Ov001_LocalizePath(&path),0,4);
+*M2C_FIELD(&gOv001MenuRegion,s32 **,4) = Ov001_LoadFile(Ov001_LocalizePath(&path),0,4);
 func_ov001_0218b314(1,16);
 M2C_FIELD((void *)0x04001008,u16 *,0)=(M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;
 M2C_FIELD((void *)0x04001008,u16 *,2)=(M2C_FIELD((void *)0x04001008,u16 *,2)&~3)|3;
@@ -165,7 +165,7 @@ M2C_FIELD((void *)0x0400000a,u16 *,2)=(M2C_FIELD((void *)0x0400000a,u16 *,2)&~3)
 void func_ov001_02180eb4(void) {
     s32 func_ov001_02184868(void);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_0218a384(s32, s32, u16, u16);
+    void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void func_ov001_0218a474(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
     extern u16 data_ov001_0218f9ea[];
@@ -183,7 +183,7 @@ void func_ov001_02180eb4(void) {
         }
         handle = func_ov001_0218a61c(0, 0x11, 1);
         M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, M2C_UNK *, 0x10) = handle;
-        func_ov001_0218a384(
+        Ov001_MoveSpriteLayout(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
             -1,
             data_ov001_0218f9ea[(i + 3) * 2],
@@ -195,7 +195,7 @@ void func_ov001_02180eb4(void) {
 second:
         handle = func_ov001_0218a61c(0, data_ov001_0218f9c8[idx], 1);
         M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, M2C_UNK *, 0x4) = handle;
-        func_ov001_0218a384(
+        Ov001_MoveSpriteLayout(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
             -1,
             data_ov001_0218f9ea[i * 2],
@@ -350,43 +350,46 @@ void func_ov001_021812c0(void) {
 
 void func_ov001_021812fc(void) {
     M2C_UNK func_ov001_02171694();
-    void *func_ov001_0218445c();
+    void *GetCurrentMapRecord();
     extern M2C_UNK gOv001MenuRegion;
-    extern M2C_UNK func_ov001_02181380;
+    extern M2C_UNK Ov001_FinishRegionMenu;
     if (func_ov001_0218a800(1) != 0) return;
     if (M2C_FIELD(M2C_FIELD(&gOv001MenuRegion, void **, 4), u8 *, 0x1D) == 1 &&
         (M2C_FIELD(&gOv001MenuRegion, u8 *, 0) == 3 ||
-         M2C_FIELD(func_ov001_0218445c(), u8 *, 0xE7) != 0xFF)) {
+         M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xE7) != 0xFF)) {
         func_ov001_02171694();
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x14, 8);
-    Ov001_SetStepCallback(&func_ov001_02181380);
+    Ov001_SetStepCallback(&Ov001_FinishRegionMenu);
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_02181380(void){
+/* Last step of the region-menu screen: release the item sprites and the region
+ * selector, load the map-list assets, and hand over to the next screen's step
+ * callback (map list or layout screen, depending on the chosen region). */
+void Ov001_FinishRegionMenu(void){
 extern M2C_UNK data_ov001_021909f4,data_ov001_02193dd0;
 extern M2C_UNK func_ov001_021768b8,func_ov001_02181a84,InitMapListScreen,func_ov001_02182d0c;
-s32 func_ov001_0218a800(s32);s32 func_ov001_02185b34(void);s32 func_ov001_0217170c(void);void *func_ov001_0218445c(void);
+s32 func_ov001_0218a800(s32);s32 func_ov001_02185b34(void);s32 func_ov001_0217170c(void);void *GetCurrentMapRecord(void);
 void func_ov001_0218a1cc(s32);
 u32 i;s32 p;
 if(func_ov001_0218a800(1))return;
 if(func_ov001_0218a800(0))return;
 if(!func_ov001_02185b34())return;
 if(!func_ov001_0217170c())return;
-for(i=0;i<3;i++){p=M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4);if(p)func_ov001_0218a1cc(p);}
-for(i=0;i<3;i++){p=M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,0x10);if(p)func_ov001_0218a1cc(p);}
+for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->top[i];if(p)func_ov001_0218a1cc(p);}
+for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->middle[i];if(p)func_ov001_0218a1cc(p);}
 func_ov001_02172184();func_ov001_02171cf8();
-func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),void **,0));
+Ov001_FreeFile(((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->obj);
 Ov001_LoadAsset(&data_ov001_021909f4,&func_02004160);
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
-if(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)==2){
+if(((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->mode==2){
 func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_021768b8);
-}else switch(M2C_FIELD(&gOv001MenuRegion,u8 *,0)){
+}else switch(((Ov001MenuRegion*)&gOv001MenuRegion)->index){
 case 0:case 1:case 2:
 func_ov001_02175d64(2,0);
-if(M2C_FIELD(func_ov001_0218445c(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_ov001_02181a84);
+if(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_ov001_02181a84);
 else{func_ov001_02175da0(0,0);func_ov001_0217f72c(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
 case 3:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
 }
@@ -443,7 +446,7 @@ if(direction==OV001_DIR_LEFT) ((Ov001MenuRegion *)&gOv001MenuRegion)->index=5; e
 
 void func_ov001_02181794(void) {
     s32 func_ov001_0218a24c(s32, s32);
-    void func_ov001_0218a384(s32, s32, u16, u16);
+    void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void func_ov001_0218a474(s32, s32, s32);
     void func_ov001_0218a55c(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
@@ -454,7 +457,7 @@ void func_ov001_02181794(void) {
     temp_r4 = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) - 4;
     func_ov001_0218a55c(0, 0x32, func_ov001_0218a24c(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), 0));
     temp_r3 = (temp_r4 + 3) * 2;
-    func_ov001_0218a384(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, data_ov001_0218f9ea[temp_r3], data_ov001_0218f9ec[temp_r3]);
+    Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, data_ov001_0218f9ea[temp_r3], data_ov001_0218f9ec[temp_r3]);
     func_ov001_0218a474(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, 3);
 }
 
@@ -464,7 +467,7 @@ M2C_UNK Ov001_PlaySound(s32);
 void func_ov001_02184c70(s32);
 s32 func_ov001_0218a24c(s32,s32);
 void func_ov001_0218a55c(s32,s32,s32);
-void func_ov001_0218a384(s32,s32,u16,u16);
+void Ov001_MoveSpriteLayout(s32,s32,u16,u16);
 void func_ov001_0218a474(s32,s32,s32);
 void func_ov001_0218a1cc(s32);
 M2C_UNK func_ov001_02186604();
@@ -475,7 +478,7 @@ case 1:
 Ov001_PlaySound(14);
 func_ov001_02184c70(i);
 func_ov001_0218a55c(0,86,func_ov001_0218a24c(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),0));
-func_ov001_0218a384(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,data_ov001_0218f9ea[i*2],data_ov001_0218f9ec[i*2]);
+Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,data_ov001_0218f9ea[i*2],data_ov001_0218f9ec[i*2]);
 func_ov001_0218a474(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,3);
 func_ov001_0218a1cc(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16));
 M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16)=0;
@@ -483,7 +486,7 @@ break;
 case 0:
 Ov001_PlaySound(7);
 func_ov001_0218a55c(0,17,func_ov001_0218a24c(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),0));
-func_ov001_0218a384(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,data_ov001_0218f9ea[(i+3)*2],data_ov001_0218f9ec[(i+3)*2]);
+Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,data_ov001_0218f9ea[(i+3)*2],data_ov001_0218f9ec[(i+3)*2]);
 func_ov001_0218a474(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,3);
 break;
 default:return;

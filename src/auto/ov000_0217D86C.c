@@ -150,7 +150,7 @@ void SelectMapLayer(void *);
 void FloodFillUnitRange(s32,s32,s32,s32,s32);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
-s32 func_020d27ec(s16,u8);
+s32 IsTerrainOnUnitTeam(s16,u8);
 s32 IsFootUnitKind(s32);
 s32 func_ov000_021a9a28(s32);
 s32 func_ov000_021a8d7c(s32,s32,s32);
@@ -166,7 +166,7 @@ if(((Unit7DE *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->hp<=60)return 0;
 for(entry=(u8 *)*gCurrentMap+0x6c60;entry[0]!=255;entry+=6){
 if(entry[0]==15){
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&2)continue;
-if(func_020d27ec(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),M2C_FIELD((u8 *)*gCurrentMap+(entry[1])+M2C_FIELD((u8 *)*gCurrentMap+(entry[2]*2),u16 *,0x3758),u8 *,0x1420))==0)goto terrain;
+if(IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),M2C_FIELD((u8 *)*gCurrentMap+(entry[1])+M2C_FIELD((u8 *)*gCurrentMap+(entry[2]*2),u16 *,0x3758),u8 *,0x1420))==0)goto terrain;
 goto next;
 }else if(!data_ov000_021b5500[entry[0]])continue;
 terrain:;

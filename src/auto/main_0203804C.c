@@ -54,7 +54,7 @@ gSessionGamePassword[len]=0;
 
 void func_020382d0(void) {
     extern void *gNetSession;
-    void func_0205eacc(void *resource);
+    void Qr2_DestroyConnection(void *resource);
     void func_020614b0(void *resource);
     void func_0203bd0c(void);
     void func_02058c14(void);
@@ -69,7 +69,7 @@ void func_020382d0(void) {
 
     if (!gNetSession) return;
     if (M2C_FIELD(gNetSession, void **, 0x384)) {
-        func_0205eacc(M2C_FIELD(gNetSession, void **, 0x384));
+        Qr2_DestroyConnection(M2C_FIELD(gNetSession, void **, 0x384));
         M2C_FIELD(gNetSession, void **, 0x384) = 0;
     }
     M2C_FIELD(gNetSession, u8 *, 0x38C) = 0;
@@ -120,7 +120,7 @@ void func_02038438(void) {
     void func_020447c0(void);
     s32 func_0204db04(s32, s32, s32);
     s32 func_0204db84(void *, s32, s32, s32);
-    void func_0205eacc(void *);
+    void Qr2_DestroyConnection(void *);
 
     if (func_02037bc4()) func_02039200();
     if (!gNetSession || M2C_FIELD(gNetSession, s32 *, 0x24) == 0) return;
@@ -166,7 +166,7 @@ void func_02038438(void) {
     }
     if (M2C_FIELD(gNetSession, u8 *, 0x38c) == 1) {
         if (M2C_FIELD(gNetSession, s32 *, 0x384) != 0) {
-            func_0205eacc(M2C_FIELD(gNetSession, s32 *, 0x384));
+            Qr2_DestroyConnection(M2C_FIELD(gNetSession, s32 *, 0x384));
             M2C_FIELD(gNetSession, s32 *, 0x384) = 0;
         }
         M2C_FIELD(gNetSession, u8 *, 0x38c) = 0;

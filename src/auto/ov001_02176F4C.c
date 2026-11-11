@@ -3,6 +3,24 @@
 typedef struct { u8 bytes[22]; } MenuBuf22;
 typedef struct { u8 bytes[23]; } MenuBuf23;
 
+/* The 20-byte profile GetWfcProfile fills in; value is nonzero when a Wi-Fi
+ * connection profile has been registered. */
+typedef struct { u64 value; u32 rest[3]; } WfcProfile;
+
+/* State shared by the ov001 option-menu step functions. */
+typedef struct {
+    s8 selected;       /* +0x00 selected option, 0..2 */
+    u8 paletteLoaded;  /* +0x01 nonzero once the option palette was chosen */
+    u8 pad02[2];
+    void *palette;     /* +0x04 loaded palette-file (NCL) data */
+    void *sprite;      /* +0x08 OBJ handle for the selection cursor */
+} Ov001OptionMenuState;
+
+/* Palette file layout of the option screen background. */
+#define OV001_PALETTE_NO_PROFILE 0x40  /* colours used when no WFC profile exists */
+#define OV001_PALETTE_PROFILE    0xC0  /* colours replaced when none exists */
+#define OV001_PALETTE_SIZE       0x200 /* bytes uploaded to palette RAM */
+
 void func_ov001_02176f4c(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     s32 func_ov001_0218a800(M2C_UNK);
@@ -395,9 +413,9 @@ void func_ov001_02177850(void) {
 }
 
 void func_ov001_021778c0(void) {
-extern M2C_UNK data_ov001_02193d68;
+extern M2C_UNK gOv001OptionMenuState;
 extern M2C_UNK data_ov001_0218f77a,data_ov001_0218f77e,data_ov001_0218f77c,data_ov001_0218f780;
-void func_ov001_02177988(void);
+void Ov001_LoadOptionMenuBg(void);
 void func_ov001_02177b24(void);
 void *func_ov001_0218a5f0(s32,s32);
 M2C_UNK func_ov001_02172250(s32);
@@ -405,41 +423,56 @@ M2C_UNK func_ov001_02185b60(s32);
 M2C_UNK func_ov001_02171c24(s32,s32,s32);
 M2C_UNK func_ov001_02172094(u16,u16,u16,u16);
 void *p; s32 offset;
-M2C_FIELD(&data_ov001_02193d68,u8 *,1)=0;
-func_ov001_02177988();
+M2C_FIELD(&gOv001OptionMenuState,u8 *,1)=0;
+Ov001_LoadOptionMenuBg();
 func_ov001_02172250(16);
 func_ov001_02185b60(3);
 func_ov001_02171c24(0x39,-1,0);
 p=func_ov001_0218a5f0(0,0x5b);
-M2C_FIELD(&data_ov001_02193d68,void **,8)=p;
+M2C_FIELD(&gOv001OptionMenuState,void **,8)=p;
 M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|0x84|0xe00000;
-p=M2C_FIELD(&data_ov001_02193d68,void **,8);
+p=M2C_FIELD(&gOv001OptionMenuState,void **,8);
 M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xc00)|0xc00;
-offset=M2C_FIELD(&data_ov001_02193d68,u8 *,0)*8;
+offset=M2C_FIELD(&gOv001OptionMenuState,u8 *,0)*8;
 func_ov001_02172094(M2C_FIELD(&data_ov001_0218f77a,u16 *,offset),M2C_FIELD(&data_ov001_0218f77e,u16 *,offset),M2C_FIELD(&data_ov001_0218f77c,u16 *,offset),M2C_FIELD(&data_ov001_0218f780,u16 *,offset));
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177b24);
 }
 
-void func_ov001_02177988(void) {
-s32 Ov001_LocalizePath(void *); M2C_UNK Ov001_LoadAsset(M2C_UNK *,M2C_UNK *);
-void *func_ov001_02189dc8(s32,s32,s32); M2C_UNK GetWfcProfile(void *);
-void MI_CpuCopy8(void *,void *,u32); void func_020067e0(void *,u32); void func_020040b4(void *,s32,u32);void func_ov001_02189ebc(void *);
-extern M2C_UNK data_ov001_0218f734,data_ov001_0218f74a,data_ov001_021905e8,data_ov001_02190600,data_ov001_02193d68,func_020046cc,func_0200448c;
-MenuBuf22 b=*(MenuBuf22 *)&data_ov001_0218f734;
-MenuBuf23 c=*(MenuBuf23 *)&data_ov001_0218f74a;
-struct {u64 value;u32 rest[3];} state;
-register u8 *dst,*src; register s32 i; register void *p;
-Ov001_LoadAsset(&data_ov001_021905e8,&func_020046cc);
-Ov001_LoadAsset(&data_ov001_02190600,&func_0200448c);
-M2C_FIELD(&data_ov001_02193d68,void **,4)=func_ov001_02189dc8(Ov001_LocalizePath(&c),0,4);
-p=func_ov001_02189dc8(Ov001_LocalizePath(&b),0,4);
-GetWfcProfile(&state);
-if(state.value==0) {for(i=0,dst=(u8 *)p+0xc0,src=(u8 *)p+0x40;i<2;i++,dst+=32,src+=32)MI_CpuCopy8(dst,src,32);}
-func_020067e0(p,512);func_020040b4(p,0,512);func_ov001_02189ebc(p);
-M2C_FIELD((void *)0x04001008,u16 *,0)=(M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;
-M2C_FIELD((void *)0x04001008,u16 *,2)=(M2C_FIELD((void *)0x04001008,u16 *,2)&~3)|3;
-M2C_FIELD((void *)0x0400000a,u16 *,0)=(M2C_FIELD((void *)0x0400000a,u16 *,0)&~3)|3;
-M2C_FIELD((void *)0x0400000a,u16 *,2)=(M2C_FIELD((void *)0x0400000a,u16 *,2)&~3)|3;
+/* Loads the option screen's tiles, map and palette, copies the no-profile
+ * palette over the profile colours while no Wi-Fi profile exists, uploads the
+ * palette, frees the temporary files and puts BG1/BG2 on priority 3. */
+void Ov001_LoadOptionMenuBg(void) {
+    s32 Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
+    void *Ov001_LoadFile(s32, s32, s32);
+    M2C_UNK GetWfcProfile(void *);
+    void MI_CpuCopy8(void *, void *, u32);
+    void DC_FlushRange(void *, u32);
+    void GX_LoadBGPltt(void *, s32, u32);
+    void Ov001_FreeFile(void *);
+    extern M2C_UNK gOv001OptionBgPalettePath, gOv001OptionBgPaletteBankPath, gOv001OptionBgTilesPath, gOv001OptionMenuMapPath, gOv001OptionMenuState, func_020046cc, func_0200448c;
+    MenuBuf22 palettePath = *(MenuBuf22 *)&gOv001OptionBgPalettePath;
+    MenuBuf23 layoutPath = *(MenuBuf23 *)&gOv001OptionBgPaletteBankPath;
+    WfcProfile profile;
+    register u8 *dst, *src;
+    register s32 i;
+    register void *palette;
+    Ov001_LoadAsset(&gOv001OptionBgTilesPath, &func_020046cc);
+    Ov001_LoadAsset(&gOv001OptionMenuMapPath, &func_0200448c);
+    M2C_FIELD(&gOv001OptionMenuState, void **, 4) = Ov001_LoadFile(Ov001_LocalizePath(&layoutPath), 0, 4);
+    palette = Ov001_LoadFile(Ov001_LocalizePath(&palettePath), 0, 4);
+    GetWfcProfile(&profile);
+    if (profile.value == 0) {
+        for (i = 0, dst = (u8 *)palette + OV001_PALETTE_PROFILE, src = (u8 *)palette + OV001_PALETTE_NO_PROFILE; i < 2; i++, dst += 32, src += 32)
+            MI_CpuCopy8(dst, src, 32);
+    }
+    DC_FlushRange(palette, OV001_PALETTE_SIZE);
+    GX_LoadBGPltt(palette, 0, OV001_PALETTE_SIZE);
+    Ov001_FreeFile(palette);
+    M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
+    M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
+    M2C_FIELD((void *)0x0400000a, u16 *, 0) = (M2C_FIELD((void *)0x0400000a, u16 *, 0) & ~3) | 3;
+    M2C_FIELD((void *)0x0400000a, u16 *, 2) = (M2C_FIELD((void *)0x0400000a, u16 *, 2) & ~3) | 3;
 }
 
 void func_ov001_02177b24(void) {
@@ -490,7 +523,7 @@ M2C_UNK func_ov001_02172094(u16,u16,u16,u16);
 void func_ov001_02177f1c(s32);
 s32 KeyPressed(s32);s32 KeyHeld(s32);s32 TouchRectPressed(void *);
 extern u8 data_ov001_0218f762[];
-extern M2C_UNK data_ov001_0218f77a,data_ov001_0218f77e,data_ov001_0218f77c,data_ov001_0218f780,data_ov001_02193d68;
+extern M2C_UNK data_ov001_0218f77a,data_ov001_0218f77e,data_ov001_0218f77c,data_ov001_0218f780,gOv001OptionMenuState;
 u32 index;u8 *entry;s32 offset;u16 a,b,c,d;
 entry=data_ov001_0218f762;
 for(index=0;index<3;index++,entry+=8){
@@ -501,7 +534,7 @@ a=M2C_FIELD(&data_ov001_0218f77a,u16 *,offset);
 b=M2C_FIELD(&data_ov001_0218f77e,u16 *,offset);
 c=M2C_FIELD(&data_ov001_0218f77c,u16 *,offset);
 d=M2C_FIELD(&data_ov001_0218f780,u16 *,offset);
-M2C_FIELD(&data_ov001_02193d68,s8 *,0)=index;
+M2C_FIELD(&gOv001OptionMenuState,s8 *,0)=index;
 func_ov001_02172094(a,b,c,d);return;
 }}
 if(KeyPressed(1)){func_ov001_021716d8(1);return;}
@@ -520,7 +553,7 @@ void func_ov001_02177ce8(void) {
     M2C_UNK func_ov001_021716f8(M2C_UNK);
     M2C_UNK func_ov001_02177fac();
     void func_ov001_02177d8c(void);
-    extern M2C_UNK data_ov001_02193d68;
+    extern M2C_UNK gOv001OptionMenuState;
     struct { u64 value; u32 unk_08[3]; } sp0;
     switch (func_ov001_021716c4()) {
     case 0:
@@ -528,7 +561,7 @@ void func_ov001_02177ce8(void) {
         break;
     case 1:
         GetWfcProfile(&sp0);
-        if (M2C_FIELD(&data_ov001_02193d68, u8 *, 0) != 0) {
+        if (M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) != 0) {
             if (sp0.value == 0) {
                 Ov001_PlaySound(9);
                 func_ov001_021716f8(-1);
@@ -537,7 +570,7 @@ void func_ov001_02177ce8(void) {
         }
         Ov001_PlaySound(6);
         func_ov001_02177fac();
-        M2C_FIELD(&data_ov001_02193d68, u8 *, 1) = 1;
+        M2C_FIELD(&gOv001OptionMenuState, u8 *, 1) = 1;
         break;
     default:
         return;
@@ -553,12 +586,12 @@ void func_ov001_02177d8c(void) {
 }
 
 void func_ov001_02177dac(void) {
-    extern M2C_UNK data_ov001_02193d68;
+    extern M2C_UNK gOv001OptionMenuState;
     extern M2C_UNK func_ov001_02177e10;
     if (func_ov001_0218a800(1) != 0) {
         return;
     }
-    if (M2C_FIELD(&data_ov001_02193d68, u8 *, 1) != 0) {
+    if (M2C_FIELD(&gOv001OptionMenuState, u8 *, 1) != 0) {
         func_ov001_02171694();
     }
     func_ov001_0218a824(3, 1, 1, 8);
@@ -567,18 +600,18 @@ void func_ov001_02177dac(void) {
 }
 
 void func_ov001_02177e10(void) {
-extern M2C_UNK data_ov001_02193d68;
+extern M2C_UNK gOv001OptionMenuState;
 void func_ov001_021768b8(void);void func_ov001_02177440(void);void func_ov001_02176e30(void);void func_ov001_0217868c(void);
 s32 func_ov001_0218a800(M2C_UNK);
 if(func_ov001_0218a800(1))return;
 if(func_ov001_0218a800(0))return;
 if(!func_ov001_0217170c())return;
-func_ov001_0218c104(M2C_FIELD(&data_ov001_02193d68,void **,8));
+func_ov001_0218c104(M2C_FIELD(&gOv001OptionMenuState,void **,8));
 func_ov001_02172184();func_ov001_02171cf8();
-func_ov001_02189ebc(M2C_FIELD(&data_ov001_02193d68,void **,4));
+Ov001_FreeFile(M2C_FIELD(&gOv001OptionMenuState,void **,4));
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
-if(!M2C_FIELD(&data_ov001_02193d68,u8 *,1)){func_ov001_02175d64(0,0);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021768b8);return;}
-switch(M2C_FIELD(&data_ov001_02193d68,u8 *,0)){
+if(!M2C_FIELD(&gOv001OptionMenuState,u8 *,1)){func_ov001_02175d64(0,0);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021768b8);return;}
+switch(M2C_FIELD(&gOv001OptionMenuState,u8 *,0)){
 case 0:func_ov001_02175d64(0,1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177440);return;
 case 1:func_ov001_02175d64(0,1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176e30);return;
 case 2:func_ov001_02175d64(0,1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217868c);return;

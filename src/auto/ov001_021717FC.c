@@ -43,7 +43,7 @@ extern void *data_ov001_02193cc8;
 extern const u8 data_ov001_0218f2a8[],data_ov001_0218f29a[][2],data_ov001_0218f280[],data_ov001_0218f28c[][2];
 extern const u16 data_ov001_0218f284[],data_ov001_0218f286[];
 void BuildTouchRect(const void *,const void *,void *);s32 TouchRectPressed(void *);
-void func_ov001_0218a384(s32,s32,s32,s32);s32 func_ov001_0218a24c(s32,s32);void func_ov001_0218a55c(s32,s32,s32);void func_ov001_0218a474(s32,s32,s32);void func_ov001_02171b20(s32);
+void Ov001_MoveSpriteLayout(s32,s32,s32,s32);s32 func_ov001_0218a24c(s32,s32);void func_ov001_0218a55c(s32,s32,s32);void func_ov001_0218a474(s32,s32,s32);void func_ov001_02171b20(s32);
 s32 n,i,t;u8 point[8];
 n=data_ov001_0218f2a8[M2C_FIELD(data_ov001_02193cc8,u8 *,23)];
 if(M2C_FIELD(data_ov001_02193cc8,u8 *,24)==0){
@@ -55,7 +55,7 @@ if(M2C_FIELD(data_ov001_02193cc8,s32 *,16))break;
 t=data_ov001_0218f28c[M2C_FIELD(data_ov001_02193cc8,u8 *,23)][i];
 func_ov001_0218a55c(0,t+1,func_ov001_0218a24c(((s32 *)data_ov001_02193cc8)[i],0));
 t=data_ov001_0218f29a[M2C_FIELD(data_ov001_02193cc8,u8 *,23)][i];
-func_ov001_0218a384(((s32 *)data_ov001_02193cc8)[i],-1,*(const u16 *)((const u8 *)data_ov001_0218f284+t*4),*(const u16 *)((const u8 *)data_ov001_0218f286+t*4));
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193cc8)[i],-1,*(const u16 *)((const u8 *)data_ov001_0218f284+t*4),*(const u16 *)((const u8 *)data_ov001_0218f286+t*4));
 func_ov001_0218a474(((s32 *)data_ov001_02193cc8)[i],-1,1);
 M2C_FIELD(data_ov001_02193cc8,s32 *,16)=func_ov001_0218c884(0,func_ov001_02171b20,0,110);
 M2C_FIELD(data_ov001_02193cc8,s8 *,22)=i;
@@ -146,14 +146,14 @@ void *Ov001_LocalizePath(u8 *arg0) {
 }
 
 void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
- void func_020067e0(s32,s32);
- s32 func_ov001_02189dc8(void *,s32 *,s32);
- void func_ov001_02189ebc(s32);
+ void DC_FlushRange(s32,s32);
+ s32 Ov001_LoadFile(void *,s32 *,s32);
+ void Ov001_FreeFile(s32);
  s32 size;
- s32 p=func_ov001_02189dc8(Ov001_LocalizePath(arg0),&size,4);
- func_020067e0(p,size);
+ s32 p=Ov001_LoadFile(Ov001_LocalizePath(arg0),&size,4);
+ DC_FlushRange(p,size);
  arg1(p,0,size);
- func_ov001_02189ebc(p);
+ Ov001_FreeFile(p);
 }
 
 void func_ov001_02171dd0(s32 a){
@@ -228,7 +228,7 @@ extern u8 data_ov001_0218f300[];
 extern s32 data_ov001_02193d10;
 s32 func_ov001_0218a61c(s32,s32,s32);
 void func_ov001_0218a474(s32,s32,s32);
-void func_ov001_0218a384(s32,s32,s32,s32);
+void Ov001_MoveSpriteLayout(s32,s32,s32,s32);
 s32 i;u8 *p;
 func_ov001_02172184();
 p=&data_ov001_0218f300[a*2];
@@ -236,22 +236,22 @@ for(i=0;i<2;i++){
 ((s32 *)data_ov001_02193d10)[i]=func_ov001_0218a61c(0,*p++,1);
 func_ov001_0218a474(((s32 *)data_ov001_02193d10)[i],-1,1);
 }
-func_ov001_0218a384(((s32 *)data_ov001_02193d10)[0],-1,b,d);
-func_ov001_0218a384(((s32 *)data_ov001_02193d10)[1],-1,c,d);
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[0],-1,b,d);
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[1],-1,c,d);
 }
 
 void func_ov001_02172094(s32 a,s32 b,s32 c,s32 d){
 extern s32 data_ov001_02193d10;
-s32 func_ov001_0218a61c(s32,s32,s32);void func_ov001_0218a474(s32,s32,s32);void func_ov001_0218a384(s32,s32,s32,s32);
+s32 func_ov001_0218a61c(s32,s32,s32);void func_ov001_0218a474(s32,s32,s32);void Ov001_MoveSpriteLayout(s32,s32,s32,s32);
 s32 j=6,i;func_ov001_02172184();
 for(i=0;i<4;i++,j++){
 ((s32 *)data_ov001_02193d10)[i]=func_ov001_0218a61c(0,j,1);
 func_ov001_0218a474(((s32 *)data_ov001_02193d10)[i],-1,1);
 }
-func_ov001_0218a384(((s32 *)data_ov001_02193d10)[0],-1,a,c);
-func_ov001_0218a384(((s32 *)data_ov001_02193d10)[1],-1,b,c);
-func_ov001_0218a384(((s32 *)data_ov001_02193d10)[2],-1,a,d);
-func_ov001_0218a384(((s32 *)data_ov001_02193d10)[3],-1,b,d);
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[0],-1,a,c);
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[1],-1,b,c);
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[2],-1,a,d);
+Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[3],-1,b,d);
 }
 
 void func_ov001_02172184(void) {
@@ -285,26 +285,26 @@ void func_ov001_0217223c(void) {
 void func_ov001_021722dc(s32);
 M2C_UNK func_ov001_02172250(s32 a) {
  void func_02007ef4(s32,s32,s32);
- s32 p=func_ov001_02189dc8(Ov001_LocalizePath(data_ov001_02190094[a]),0,4);
+ s32 p=Ov001_LoadFile(Ov001_LocalizePath(data_ov001_02190094[a]),0,4);
  func_02007ef4(p,data_ov001_02193d14,192);
- func_ov001_02189ebc(p);
+ Ov001_FreeFile(p);
  func_ov001_0218c884(1,func_ov001_021722dc,0,120);
 }
 
 void func_ov001_021722ac(void) {
     M2C_UNK func_ov001_02172250(s32);
-    void *func_ov001_0218445c();
-    func_ov001_02172250(M2C_FIELD(func_ov001_0218445c(), u8 *, 0xF4) + 5);
+    void *GetCurrentMapRecord();
+    func_ov001_02172250(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 5);
 }
 
 void func_ov001_021722c4(void) {
-    func_ov001_02172250(M2C_FIELD(func_ov001_0218445c(), u8 *, 0xF4) + 2);
+    func_ov001_02172250(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 2);
 }
 
 void func_ov001_021722dc(s32 a) {
  void func_020043cc(s32,s32,s32);
  void func_ov001_0218c92c(s32,s32);
- func_020067e0(data_ov001_02193d14,192);
+ DC_FlushRange(data_ov001_02193d14,192);
  func_020043cc(data_ov001_02193d14,0,192);
  func_ov001_0218c92c(1,a);
 }

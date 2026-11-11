@@ -243,7 +243,7 @@ func_ov003_021f15ac kind:function(arm,size=0x10) addr:0x021f15ac
 func_ov003_021f15bc kind:function(arm,size=0x18) addr:0x021f15bc
 func_ov003_021f15d4 kind:function(arm,size=0x34) addr:0x021f15d4
 func_ov003_021f1608 kind:function(arm,size=0x34) addr:0x021f1608
-func_ov003_021f163c kind:function(arm,size=0x1a4) addr:0x021f163c
+Ov003_StartBattleScene kind:function(arm,size=0x1a4) addr:0x021f163c
 func_ov003_021f17e0 kind:function(arm,size=0x1c) addr:0x021f17e0
 func_ov003_021f17fc kind:function(arm,size=0x30) addr:0x021f17fc
 func_ov003_021f182c kind:function(arm,size=0x2c) addr:0x021f182c
@@ -331,9 +331,9 @@ func_ov003_021fc26c kind:function(arm,size=0x5b4) addr:0x021fc26c
 func_ov003_021fc820 kind:function(arm,size=0x40) addr:0x021fc820
 func_ov003_021fc860 kind:function(arm,size=0xfc) addr:0x021fc860
 func_ov003_021fc95c kind:function(arm,size=0x30) addr:0x021fc95c
-func_ov003_021fc98c kind:function(arm,size=0xf8) addr:0x021fc98c
+SetMenuPanelState kind:function(arm,size=0xf8) addr:0x021fc98c
 func_ov003_021fca84 kind:function(arm,size=0xec) addr:0x021fca84
-func_ov003_021fcb70 kind:function(arm,size=0x1a0) addr:0x021fcb70
+ConfirmMapSelection kind:function(arm,size=0x1a0) addr:0x021fcb70
 func_ov003_021fcd10 kind:function(arm,size=0x14) addr:0x021fcd10
 func_ov003_021fcd24 kind:function(arm,size=0xc) addr:0x021fcd24
 func_ov003_021fcd30 kind:function(arm,size=0x14) addr:0x021fcd30
@@ -568,11 +568,11 @@ func_ov003_02207b84 kind:function(arm,size=0xd8) addr:0x02207b84
 func_ov003_02207c5c kind:function(arm,size=0x20) addr:0x02207c5c
 func_ov003_02207c7c kind:function(arm,size=0x1bc) addr:0x02207c7c
 func_ov003_02207e38 kind:function(arm,size=0x48) addr:0x02207e38
-func_ov003_02207e80 kind:function(arm,size=0x19c) addr:0x02207e80
+DrawMapSelectLabel kind:function(arm,size=0x19c) addr:0x02207e80
 func_ov003_0220801c kind:function(arm,size=0x18) addr:0x0220801c
 func_ov003_02208034 kind:function(arm,size=0x134) addr:0x02208034
 func_ov003_02208168 kind:function(arm,size=0x124) addr:0x02208168
-func_ov003_0220828c kind:function(arm,size=0x264) addr:0x0220828c
+Ov003_RefreshListRowAnimations kind:function(arm,size=0x264) addr:0x0220828c
 func_ov003_022084f0 kind:function(arm,size=0x7c) addr:0x022084f0
 func_ov003_0220856c kind:function(arm,size=0xcec) addr:0x0220856c
 func_ov003_02209258 kind:function(arm,size=0x1c) addr:0x02209258
@@ -585,7 +585,7 @@ func_ov003_02209cdc kind:function(arm,size=0x30) addr:0x02209cdc
 func_ov003_02209d0c kind:function(arm,size=0x8f0) addr:0x02209d0c
 func_ov003_0220a5fc kind:function(arm,size=0x5c) addr:0x0220a5fc
 func_ov003_0220a658 kind:function(arm,size=0x40) addr:0x0220a658
-func_ov003_0220a698 kind:function(arm,size=0x24) addr:0x0220a698
+Ov003_SetRowAnimation kind:function(arm,size=0x24) addr:0x0220a698
 func_ov003_0220a6bc kind:function(arm,size=0x1a8) addr:0x0220a6bc
 func_ov003_0220a864 kind:function(arm,size=0x3f4) addr:0x0220a864
 func_ov003_0220ac58 kind:function(arm,size=0x74) addr:0x0220ac58
@@ -608,7 +608,7 @@ func_ov003_0220bf70 kind:function(arm,size=0x28) addr:0x0220bf70
 func_ov003_0220bf98 kind:function(arm,size=0x150) addr:0x0220bf98
 func_ov003_0220c0e8 kind:function(arm,size=0x24) addr:0x0220c0e8
 func_ov003_0220c10c kind:function(arm,size=0x84) addr:0x0220c10c
-func_ov003_0220c190 kind:function(arm,size=0x198) addr:0x0220c190
+Ov003_ActivateUnitListEntry kind:function(arm,size=0x198) addr:0x0220c190
 func_ov003_0220c328 kind:function(arm,size=0xec) addr:0x0220c328
 RequestMenuMode kind:function(arm,size=0x28) addr:0x0220c414
 RunPendingMenuAction kind:function(arm,size=0x268) addr:0x0220c43c
@@ -880,7 +880,7 @@ data_ov003_0221113c kind:data(any) addr:0x0221113c
 data_ov003_02211148 kind:data(any) addr:0x02211148
 data_ov003_02211160 kind:data(any) addr:0x02211160
 data_ov003_02211178 kind:data(any) addr:0x02211178
-data_ov003_02211188 kind:data(any) addr:0x02211188
+sTextPassThroughFormat kind:data(any) addr:0x02211188
 data_ov003_0221118c kind:data(any) addr:0x0221118c
 data_ov003_0221119c kind:data(any) addr:0x0221119c
 data_ov003_022111c0 kind:bss addr:0x022111c0

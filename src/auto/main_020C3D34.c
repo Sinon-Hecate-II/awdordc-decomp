@@ -157,8 +157,8 @@ void func_020c4764(M2C_UNK arg0) {
 
 s32 func_020c477c(s32 arg0) {
  M2C_UNK *func_020c4acc(void);
- s32 func_02032580(void *,s32);
- return func_02032580((u8 *)func_020c4acc()+4,arg0);
+ s32 GetPlayerRecordId(void *,s32);
+ return GetPlayerRecordId((u8 *)func_020c4acc()+4,arg0);
 }
 
 s32 func_020c4798(void) {

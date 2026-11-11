@@ -182,10 +182,10 @@ void func_ov007_022116a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 void func_ov007_022116d4(M2C_UNK a,s32 x,s32 y,s32 sound){
-u8 func_ov007_02211f90();u8 func_ov007_02211fa0();s32 func_ov007_0221b0a4(s32,s32,s32,s32,s32);
+u8 func_ov007_02211f90();u8 func_ov007_02211fa0();s32 Map_PaintTile(s32,s32,s32,s32,s32);
 M2C_UNK func_020cfe2c();void func_ov007_022121b0(void);void func_ov007_022121d4(s32);M2C_UNK func_0208fb54(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
 s32 kind=func_ov007_02211f90();s32 other=func_ov007_02211fa0();
-switch(func_ov007_0221b0a4(x,y,kind,other,1)){
+switch(Map_PaintTile(x,y,kind,other,1)){
 case 1:func_020cfe2c();func_ov007_022121b0();func_ov007_022121d4(1);func_ov007_022114ac(a);
 switch(kind){case 7:case 8:case 9:case 10:case 11:case 12:func_0208fb54(0x11a,x,y,1);break;
 default:func_0208fb54(0x119,x,y,1);break;}break;
@@ -214,7 +214,7 @@ void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_ov007_02211840(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
 s32 func_ov007_0221b754(s32,s32);
-s32 func_ov007_0221b0a4(s32,s32,s32,s32,s32);
+s32 Map_PaintTile(s32,s32,s32,s32,s32);
 M2C_UNK func_020cfe2c();
 void func_ov007_022121b0(void);
 void func_ov007_022121d4(s32);
@@ -224,7 +224,7 @@ M2C_UNK PlaySoundEffect(s32);
 extern M2C_UNK data_ov007_0221f690;
 s32 n=1;
 if(func_ov007_0221b754(arg1,arg2))n=8;
-if(func_ov007_0221b0a4(arg1,arg2,n,0,1)==1) {
+if(Map_PaintTile(arg1,arg2,n,0,1)==1) {
 func_020cfe2c();func_ov007_022121b0();func_ov007_022121d4(1);
 func_ov007_022114ac(arg0);
 func_020b5134(&data_ov007_0221f690,arg1,arg2,0x50,0,0,arg0);
@@ -271,7 +271,7 @@ s32 func_ov007_02211990(s32 x, s32 y) {
     s32 func_ov007_02211f30(void); s32 func_ov007_02211f40(void); s32 func_ov007_02211f50(void);
     u8 func_ov007_02211f90(void); u8 func_ov007_02211fa0(void);
     s32 func_ov007_0221bb44(s32, s32, s32, s32, s32);
-    s32 func_ov007_0221acac(s32, s32, s32, s32); s32 func_020c1a80(s32);
+    s32 Map_CanPlaceTile(s32, s32, s32, s32); s32 func_020c1a80(s32);
     s32 a, b; void *p;
     switch (func_ov007_02211f00()) {
     case 1:
@@ -297,14 +297,14 @@ s32 func_ov007_02211990(s32 x, s32 y) {
         case 0:
         case 1:
             a = func_ov007_02211f90();
-            if (!func_ov007_0221acac(x, y, a, func_ov007_02211fa0()))
+            if (!Map_CanPlaceTile(x, y, a, func_ov007_02211fa0()))
                 return 5;
             break;
         case 2:
             return 4;
         case 3:
             a = func_ov007_02211f90();
-            if (!func_ov007_0221acac(x, y, a, func_ov007_02211fa0()))
+            if (!Map_CanPlaceTile(x, y, a, func_ov007_02211fa0()))
                 return 5;
             if (func_020c1a80(func_ov007_02211f90()))
                 return 5;
@@ -575,23 +575,23 @@ u8 func_ov007_0221204c(void) {
     return M2C_FIELD(&data_ov007_02221a00, u8 *, 4);
 }
 
-void func_ov007_0221205c(void){
-void func_020a23a4(s32,s32);void func_020a231c(s32,s32);s32 func_020a23b4(s32);s32 func_ov007_02211ffc(s32);s32 func_ov007_0221202c(s32,s32);
+void AssignPlayerTeams(void){
+void SetPlayerTeam(s32,s32);void SetPlayerIdForSlot(s32,s32);s32 GetPlayerTeam(s32);s32 func_ov007_02211ffc(s32);s32 func_ov007_0221202c(s32,s32);
 extern u8 data_ov007_02221a00;
 s32 i;
-for(i=0;i<5;i++){func_020a23a4(i,0);func_020a231c(i,i);}
+for(i=0;i<5;i++){SetPlayerTeam(i,0);SetPlayerIdForSlot(i,i);}
 for(i=1;i<5;i++){
-if(func_ov007_02211ffc(i)>0)func_020a23a4(i,1);
-if(func_ov007_0221202c(2,i)>0)func_020a23a4(i,1);
-if(func_ov007_0221202c(3,i)>0)func_020a23a4(i,1);
-if(func_ov007_0221202c(4,i)>0)func_020a23a4(i,1);
+if(func_ov007_02211ffc(i)>0)SetPlayerTeam(i,1);
+if(func_ov007_0221202c(2,i)>0)SetPlayerTeam(i,1);
+if(func_ov007_0221202c(3,i)>0)SetPlayerTeam(i,1);
+if(func_ov007_0221202c(4,i)>0)SetPlayerTeam(i,1);
 }
 M2C_FIELD(&data_ov007_02221a00,u8 *,2)=0;
-for(i=0;i<5;i++){if(func_020a23b4(i)==1)M2C_FIELD(&data_ov007_02221a00,u8 *,2)++;}
+for(i=0;i<5;i++){if(GetPlayerTeam(i)==1)M2C_FIELD(&data_ov007_02221a00,u8 *,2)++;}
 }
 
 u8 func_ov007_0221216c(s32 arg0) {
-    s32 func_020a23b4();
+    s32 GetPlayerTeam();
     extern u8 data_ov007_02221a00;
     u8 var_r0;
     u8 var_r0_2;
@@ -603,7 +603,7 @@ u8 func_ov007_0221216c(s32 arg0) {
         }
         return var_r0_2;
     }
-    if (func_020a23b4(arg0) != 0) {
+    if (GetPlayerTeam(arg0) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -613,11 +613,11 @@ u8 func_ov007_0221216c(s32 arg0) {
 
 void func_ov007_022121b0(void) {
     void func_ov007_02211fd0(void);
-    void func_ov007_0221205c(void);
+    void AssignPlayerTeams(void);
     void func_ov007_0221200c(void);
     func_ov007_02211fd0();
     func_ov007_0221200c();
-    func_ov007_0221205c();
+    AssignPlayerTeams();
 }
 
 u8 func_ov007_022121c4(void) {

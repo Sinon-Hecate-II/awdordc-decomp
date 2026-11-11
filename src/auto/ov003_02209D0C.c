@@ -46,11 +46,11 @@ M2C_UNK func_ov003_02209d0c(void *a,s32 b) {
 void func_ov003_0220a5fc(void *,s32);void func_ov003_0220a658(void *,s32);
 u8 func_ov003_022066c8(u8);void *func_ov003_022066a8(u8);
 s16 func_020bfa20(void);s16 func_020bf9e0(void);
-void func_ov003_0220accc(void *,u8);void func_01ff9ce8(s32);
+void func_ov003_0220accc(void *,u8);void Clear3DSpriteLayer(s32);
 s32 GetLanguage(void);s32 GetLocalizedText(void *);s32 func_0209c2a8(s32);
 void func_0209b26c(u8,s32,s32,void *,s32,u16);
 void func_ov003_0220a864(M2C_UNK);void func_02088f1c(void *);void func_02088ff4(void *);s32 func_02089080(void *);
-void func_02087ec0(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK func_ov003_0220828c(void *,s32,s32);
+void func_02087ec0(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK Ov003_RefreshListRowAnimations(void *,s32,s32);
 extern M2C_UNK data_0215d9b8;extern u8 data_ov003_02210c80[];extern void *gCur3DSpriteEngine;
 void *p;u8 i,total,j,x;s32 tile,k,mode;
 M2C_FIELD(a,u8 *,0x38)|=2;
@@ -81,7 +81,7 @@ M2C_FIELD(M2C_FIELD(a,void **,0x48),void **,i*36)=data_ov003_02210c80+(total+i)*
 }
 if((u8)(((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)==0)) {
 func_ov003_0220accc(a,b);
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 switch(GetLanguage()) {case 1:case 2:case 3:case 4:case 5:mode=1;break;default:mode=0;break;}
 x=0;tile=1;
 if(mode) {
@@ -148,7 +148,7 @@ func_02088f1c(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));
 p=M2C_FIELD(a,void **,0x3c);
 func_02087ec0(M2C_FIELD(a,void **,0x5c),(s16)((u8)(M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,15))+1)+10));
 func_ov003_02207a8c(a);
-return func_ov003_0220828c(a,10,255);
+return Ov003_RefreshListRowAnimations(a,10,255);
 }
 #pragma opt_strength_reduction reset
 void func_ov003_0220a5fc(void *arg0, s32 arg1) {
@@ -182,33 +182,38 @@ void func_ov003_0220a658(void *arg0, s32 arg1) {
     func_020e35cc(temp_r4);
 }
 
-void func_ov003_0220a698(void *arg0, s8 arg1) {
+void Ov003_SetRowAnimation(void *arg0, s8 arg1) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), s8 *, 0x11) = arg1;
     M2C_FIELD(arg0, u8 *, 0x38) = (u8) (M2C_FIELD(arg0, u8 *, 0x38) & ~1);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s8 *, 1) = 1;
 }
 
-u32 func_ov003_0220a6bc(void *a) {
-M2C_UNK func_020c01ec(void *);M2C_UNK func_ov003_02207e80(void *);u32 func_ov003_02208034(void *);M2C_UNK RequestMenuMode(void *,M2C_UNK);
+/* Per-frame update of the ov003 map-select screen while its transition timer
+ * (screen+0x34) counts down: at 20 it resets the sliding sprite, at 11 it
+ * restores the saved display bits and starts the new sprite object, at 10 it
+ * reconfigures the list for the chosen entry, and when the timer expires it
+ * redraws the label and window for that entry. */
+u32 func_ov003_0220a6bc(void *screen) {
+M2C_UNK func_020c01ec(void *);M2C_UNK DrawMapSelectLabel(void *);u32 func_ov003_02208034(void *);M2C_UNK RequestMenuMode(void *,M2C_UNK);
 extern M2C_UNK data_0215d9b8;
-u8 count;u32 yes,bit; s32 test,other,remaining;void *p;
-count=M2C_FIELD(a,u8 *,0x34);yes=count!=0?1:0;if(!(yes&255))return yes;
-bit=(u32)(M2C_FIELD(a,u8 *,0x38)<<27)>>31;if(bit)return bit;
-if(count==20){p=M2C_FIELD(a,void **,0x54);M2C_FIELD(p,s16 *,14)=16;M2C_FIELD(p,s16 *,16)=0;M2C_FIELD(p,s16 *,12)=10;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);}
-if(M2C_FIELD(a,u8 *,0x34)==11) {
-test=((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)==0?1:0;
-if(test&255){
-other=M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==8?1:0;
-if((other&255)&&((u32)(M2C_FIELD(a,u8 *,0x38)<<24)>>31)){
-p=M2C_FIELD(a,void **,0x40);
+u8 timer;u32 active,isPending; s32 modeIsZero,kindIs8,remaining;void *p;
+timer=M2C_FIELD(screen,u8 *,0x34);active=timer!=0?1:0;if(!(active&255))return active;
+isPending=(u32)(M2C_FIELD(screen,u8 *,0x38)<<27)>>31;if(isPending)return isPending;
+if(timer==20){p=M2C_FIELD(screen,void **,0x54);M2C_FIELD(p,s16 *,14)=16;M2C_FIELD(p,s16 *,16)=0;M2C_FIELD(p,s16 *,12)=10;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);}
+if(M2C_FIELD(screen,u8 *,0x34)==11) {
+modeIsZero=((u32)(M2C_FIELD(screen,u8 *,0x36)<<24)>>28)==0?1:0;
+if(modeIsZero&255){
+kindIs8=M2C_FIELD(M2C_FIELD(screen,void **,0x3c),u8 *,15)==8?1:0;
+if((kindIs8&255)&&((u32)(M2C_FIELD(screen,u8 *,0x38)<<24)>>31)){
+p=M2C_FIELD(screen,void **,0x40);
 M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x3000)|((u32)((u16)M2C_FIELD(p,s32 *,4)<<30)>>18);
 M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0xc00)|((u32)((u16)M2C_FIELD(p,s32 *,28)<<30)>>20);
 M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x4000)|((u32)((u16)M2C_FIELD(p,s32 *,52)<<31)>>17);
-RequestMenuMode(a,0);func_020c01ec(a);M2C_FIELD(a,u8 *,0x38)&=~128;
+RequestMenuMode(screen,0);func_020c01ec(screen);M2C_FIELD(screen,u8 *,0x38)&=~128;
 }}}
-if(M2C_FIELD(a,u8 *,0x34)==10){M2C_FIELD(a,u8 *,0x38)=(M2C_FIELD(a,u8 *,0x38)&~1)|1;func_ov003_02209d0c(a,M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,17));M2C_FIELD(M2C_FIELD(a,void **,0x50),u8 *,1)=0;}
-remaining=M2C_FIELD(a,u8 *,0x34)-1;M2C_FIELD(a,u8 *,0x34)=remaining;yes=(remaining&255)?1:0;if(yes&255)return yes;
-func_ov003_02207e80(a);return func_ov003_02208034(a);
+if(M2C_FIELD(screen,u8 *,0x34)==10){M2C_FIELD(screen,u8 *,0x38)=(M2C_FIELD(screen,u8 *,0x38)&~1)|1;func_ov003_02209d0c(screen,M2C_FIELD(M2C_FIELD(screen,void **,0x3c),u8 *,17));M2C_FIELD(M2C_FIELD(screen,void **,0x50),u8 *,1)=0;}
+remaining=M2C_FIELD(screen,u8 *,0x34)-1;M2C_FIELD(screen,u8 *,0x34)=remaining;active=(remaining&255)?1:0;if(active&255)return active;
+DrawMapSelectLabel(screen);return func_ov003_02208034(screen);
 }
 
 void func_ov003_0220a864(M2C_UNK arg0) { (void)arg0; }

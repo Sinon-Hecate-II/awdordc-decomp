@@ -45,12 +45,12 @@ void func_020b9dc8(void) {
 }
 
 void func_020b9dcc(void) {
- void func_020b9978(void); void func_01ff9ce8(s32); void func_0207a668(void); void func_020b2268(void);
+ void func_020b9978(void); void Clear3DSpriteLayer(s32); void func_0207a668(void); void func_020b2268(void);
  extern void **gCurrentMap;
  extern void *gCur3DSpriteEngine;
  void (*callback)(void);
  func_020b9978();
- func_01ff9ce8(2);
+ Clear3DSpriteLayer(2);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),4);
  if(callback) callback();
@@ -184,19 +184,19 @@ s8 func_020ba320(s32 a,s32 b,s32 c) {
 
 u8 func_020ba3b4(void *arg0) {
  extern M2C_UNK data_ov000_021b5c0b;
- s32 func_020a76d4();
+ s32 GetUnitAttackRangeMax();
  u8 var_r0;
  if (M2C_FIELD(&data_ov000_021b5c0b,u8 *,((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70) == 1) return 1;
- if(func_020a76d4(arg0)!=1)return 0;
+ if(GetUnitAttackRangeMax(arg0)!=1)return 0;
  if(((u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28)!=0)var_r0=1;else var_r0=0;
  return var_r0;
 }
 
 u8 func_020ba414(void *arg0) {
-    s32 func_020a76d4();
+    s32 GetUnitAttackRangeMax();
     u8 var_r0;
 
-    if (func_020a76d4() < 2) {
+    if (GetUnitAttackRangeMax() < 2) {
         return 0U;
     }
     if (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) != 0) {
@@ -291,10 +291,10 @@ return M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementType
 s32 GetTerrainPropertyFlagsAt(s32 a,s32 b) {
  extern void **gCurrentMap;
  extern u8 gTerrainPropertyFlags[];
- s32 func_020d27ec(s32,s32);
+ s32 IsTerrainOnUnitTeam(s32,s32);
  s32 p=(s32)*gCurrentMap;
  u8 t=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420);
- if(func_020d27ec(M2C_FIELD(p,u8 *,0x52d4),t))return 0;
+ if(IsTerrainOnUnitTeam(M2C_FIELD(p,u8 *,0x52d4),t))return 0;
  return gTerrainPropertyFlags[t&31];
 }
 

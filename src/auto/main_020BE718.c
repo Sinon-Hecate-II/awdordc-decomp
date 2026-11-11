@@ -336,7 +336,7 @@ void func_020beabc(M2C_UNK *arg0) {
     func_020e4b24();
 }
 
-s32 func_020bee64(M2C_UNK arg0) {
+s32 IsUnitAvailable(M2C_UNK arg0) {
     s32 func_020be4c0(M2C_UNK);
     void *func_020bfa60();
     if (M2C_FIELD(func_020bfa60(), u16 *, 2) == 0) {

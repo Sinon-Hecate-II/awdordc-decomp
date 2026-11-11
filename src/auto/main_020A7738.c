@@ -1,5 +1,6 @@
 /* 71 functions from 0x020A7738 to 0x020A86F8 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline s32 A8240InBounds(s32 x, s32 y) {
 extern void **gCurrentMap;
 if (x>=0 && y>=0 && x<M2C_FIELD(*gCurrentMap,u16 *,0x5144) && y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)) return 1;
@@ -83,7 +84,7 @@ s32 func_020a7914(void *arg0) {
  return result;
 }
 
-s32 func_020a792c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 GetWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 func_020a72fc(s32, s32);
  extern u8 data_ov000_021b5c13[];
  s32 var_r1;
@@ -99,12 +100,12 @@ u8 func_020a796c(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_020a799c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_020a792c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 GetWeaponDamagePercent(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
     s32 var_r4;
 
-    var_r4 = func_020a792c(arg0, arg1, 0, arg2);
-    temp_r0 = func_020a792c(arg0, arg1, 1, arg2);
+    var_r4 = GetWeaponDamagePercent(arg0, arg1, 0, arg2);
+    temp_r0 = GetWeaponDamagePercent(arg0, arg1, 1, arg2);
     if (var_r4 <= temp_r0) {
         var_r4 = temp_r0;
     }
@@ -118,8 +119,8 @@ s32 func_020a79e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8
  s32 var_r0;
  s32 base;
  s32 var_r5;
- var_r5 = func_020a792c(arg0, arg1, 0, arg2);
- temp_r0 = func_020a792c(arg0, arg1, 1, arg2);
+ var_r5 = GetWeaponDamagePercent(arg0, arg1, 0, arg2);
+ temp_r0 = GetWeaponDamagePercent(arg0, arg1, 1, arg2);
  base = 100;
  if (var_r5 <= temp_r0) var_r5 = temp_r0;
  if ((int)var_r5 == 0) return 0;
@@ -445,7 +446,10 @@ u8 func_020a8204(void *arg0) {
     return var_r0;
 }
 
-void func_020a8240(u8 *unit, s32 dx, s32 dy, u8 *out) {
+/* Builds the MOVE_DIR_* step list that slides a unit from its current tile by
+ * (dx, dy) tiles, horizontally first and then vertically, stopping at the map
+ * edge or at an occupied cell.  The list ends with MOVE_DIR_NONE. */
+void BuildMovePath(u8 *unit, s32 dx, s32 dy, u8 *out) {
 extern void **gCurrentMap;
 s32 y; s32 x; s32 step; s32 n;
 x=unit[1];y=unit[2];
@@ -453,17 +457,17 @@ n=dx<0?-dx:dx; step=dx>0?1:-(dx<0);
 while(n>0){
 x+=step;
 if(!A8240InBounds(x,y))break;
-if(M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+((u32)y<<1),u16 *,0x3758),u8 *,0x508)!=0)break;
-n--; if(step>0)*out++=1; if(step<0)*out++=0;
+if(M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+((u32)y<<1),u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_UNIT_ID)!=0)break;
+n--; if(step>0)*out++=MOVE_DIR_RIGHT; if(step<0)*out++=MOVE_DIR_LEFT;
 }
 n=dy<0?-dy:dy; step=dy>0?1:-(dy<0);
 while(n>0){
 y+=step;
 if(!A8240InBounds(x,y))break;
-if(M2C_FIELD((u8 *)(x+(u32)*gCurrentMap)+M2C_FIELD((u8 *)*gCurrentMap+((u32)y<<1),u16 *,0x3758),u8 *,0x508)!=0)break;
-n--; if(step>0)*out++=2; if(step<0)*out++=3;
+if(M2C_FIELD((u8 *)(x+(u32)*gCurrentMap)+M2C_FIELD((u8 *)*gCurrentMap+((u32)y<<1),u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_UNIT_ID)!=0)break;
+n--; if(step>0)*out++=MOVE_DIR_DOWN; if(step<0)*out++=MOVE_DIR_UP;
 }
-*(s8 *)out=-1;
+*(s8 *)out=MOVE_DIR_NONE;
 }
 
 #pragma optimize_for_size on

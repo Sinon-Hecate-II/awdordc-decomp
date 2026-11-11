@@ -71,7 +71,7 @@ void func_ov005_0221bcb0(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *FindObjectByClass(M2C_UNK *);
 void SetSpriteAnimation(void *,s32);
-void func_01ff9ce8(s32);
+void Clear3DSpriteLayer(s32);
 void DeleteSpriteObject(void *);
 extern M2C_UNK data_ov005_02220db8;void *object;
     u16 *volatile sp38;
@@ -143,7 +143,7 @@ M2C_FIELD(arg0,s32 *,0x44)=EaseInterpolate(1,0,64,v,32);
     if (M2C_FIELD(arg0, s32 *, 0x34) != (MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14)) - 1) * 2 + 0x20)
         return;
 
-func_01ff9ce8(2);
+Clear3DSpriteLayer(2);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
     sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
     *sp4 = *sp4 & ~0xc0;
@@ -151,7 +151,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
     *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = 0;
     *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = 0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=0;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 M2C_FIELD(arg0,s32 *,0x34)=0;
 DeleteSpriteObject(arg0);

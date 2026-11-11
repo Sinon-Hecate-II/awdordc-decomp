@@ -30,7 +30,7 @@ void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
 }
 
 void func_0203e9b0(void) {
-    M2C_UNK func_020376d8(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_0203bd0c();
     M2C_UNK func_020427f4();
     void *GetConnection();
@@ -51,7 +51,7 @@ void func_0203e9b0(void) {
     func_0203bd0c();
     SetConnectionState(0);
     if (M2C_FIELD(&gConnectionMgr, s32 *, 8) != 0) {
-        func_020376d8(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
+        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
         M2C_FIELD(&gConnectionMgr, s32 *, 8) = 0;
     }
     func_020427f4();
@@ -134,8 +134,8 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     s32 func_020218bc(void);
     u16 SBServerGetPort(void *);
     u32 RandomBelow(u32);
-    u16 func_0205b030(void *);
-    s32 func_0205b048(s32);
+    u16 GT2SocketPort(void *);
+    s32 GT2SocketHandle(s32);
     s32 func_0203f058(u8, s32, s32, u16, s32 *, s32);
     s32 func_0203ef9c(void *);
     void func_02043e10(s32,s32,s32,void *);
@@ -186,7 +186,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
             s32 first;
             u16 second;
             tempData[0] = func_020218bc();
-            tempData[1] = func_0205b030(*(void **)M2C_FIELD(GetConnection(), void **, 4));
+            tempData[1] = GT2SocketPort(*(void **)M2C_FIELD(GetConnection(), void **, 4));
             s = GetConnection();
             first = SBServerGetIp((s32 *)data);
             second = SBServerGetPort((void *)data);
@@ -214,7 +214,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     if (deferred) {
         result = func_0203ef9c((u8 *)GetConnection() + 0x194);
     } else {
-        value = func_0205b048(*M2C_FIELD(GetConnection(), s32 **, 4));
+        value = GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4));
         func_02043e10(0, value, 0, (u8 *)GetConnection() + 0x194);
         session = GetConnection();
         M2C_FIELD(session, s32 *, 0x18c) = 0;
@@ -225,7 +225,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
 
 s32 func_0203ef9c(void *arg0) {
     s32 func_02043008();
-    s32 func_0205b048(s32);
+    s32 GT2SocketHandle(s32);
     s32 func_0205d4d8(s32, M2C_UNK, M2C_UNK);
     s32 func_0205de88(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
     M2C_UNK func_02061690(s32, s32, u16, s32);
@@ -244,7 +244,7 @@ s32 func_0203ef9c(void *arg0) {
     }
     var_r6 = 0;
 loop_4:
-    temp_r0 = func_0205de88(func_0205b048(*M2C_FIELD(GetConnection(), s32 **, 4)), M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, u8 *, 0), &func_02043e0c, (M2C_UNK *)&func_02043e10, arg0);
+    temp_r0 = func_0205de88(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4)), M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, u8 *, 0), &func_02043e0c, (M2C_UNK *)&func_02043e10, arg0);
     if (temp_r0 == 0) {
         return temp_r0;
     }

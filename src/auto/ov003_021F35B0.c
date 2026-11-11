@@ -9,9 +9,9 @@ static inline s32 PanelHasSelection(void *p) {
 }
 
 void func_ov003_021f35b0(void *arg0) {
-    void func_ov003_021f163c(void *, u8, s32, s32, s32);
+    void Ov003_StartBattleScene(void *, u8, s32, s32, s32);
     void *ptr = M2C_FIELD(arg0, void **, 0x40);
-    func_ov003_021f163c(arg0, M2C_FIELD(ptr, u8 **, 8)[M2C_FIELD(ptr, s8 *, 5)], 0, 0, 0);
+    Ov003_StartBattleScene(arg0, M2C_FIELD(ptr, u8 **, 8)[M2C_FIELD(ptr, s8 *, 5)], 0, 0, 0);
 }
 
 void func_ov003_021f35d8(void *arg0) {

@@ -16,7 +16,7 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     s32 func_020a5ae0(s32);
     s32 func_020a8204(void *);
     s32 func_020a796c(s32, s32, s32);
-    s32 func_020a86f8(void *, s32, s32, s32);
+    s32 CalculateUnitDamage(void *, s32, s32, s32);
     void InitBattleUnit(void *, s16);
     s32 Divide(s32, s32);
     s32 func_ov000_0216b154(s32);
@@ -37,11 +37,11 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
         InitBattleUnit((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
     }
         if (func_020a8204(unit)) {
-            r4 = func_020a86f8(unit, func_020a5ae0(arg1), 0, 0);
+            r4 = CalculateUnitDamage(unit, func_020a5ae0(arg1), 0, 0);
         } else {
             r6 = func_020a796c(((UnitKindD1690 *)unit)->kind, arg1, 1);
             if (r6) {
-                r5 = func_020a86f8(unit, func_020a5ae0(arg1), 1, 0);
+                r5 = CalculateUnitDamage(unit, func_020a5ae0(arg1), 1, 0);
             }
         }
 
@@ -263,9 +263,9 @@ void func_020d1f2c(void) {
     extern void **gCurrentMap;
     extern M2C_UNK gMapData;
     s32 func_020cfb94(void);
-    s32 func_020a23a4(s32, s32);
-    s32 func_020a23b4(s32, s32);
-    s32 func_020a2360(s32);
+    s32 SetPlayerTeam(s32, s32);
+    s32 GetPlayerTeam(s32, s32);
+    s32 GetPlayerIdForSlot(s32);
     s32 func_020a8bd8(s32, s32);
     s32 func_020a22fc(s32);
     s32 func_020a2390(s32);
@@ -282,7 +282,7 @@ void func_020d1f2c(void) {
         s32 r5 = 4 - func_020cfb94();
         if (r5 >= 1) {
             do {
-                func_020a23a4(5 - r5, 0);
+                SetPlayerTeam(5 - r5, 0);
                 r5--;
             } while (r5 >= 1);
         }
@@ -290,13 +290,13 @@ void func_020d1f2c(void) {
 
     {
         u8 *p = (u8 *)*gCurrentMap + 0x67a4;
-        p[0xaa] = (u8)func_020a23b4(1, (s32)*gCurrentMap + 0x3a4);
+        p[0xaa] = (u8)GetPlayerTeam(1, (s32)*gCurrentMap + 0x3a4);
         p = (u8 *)*gCurrentMap + 0x67a4;
-        p[0x136] = (u8)func_020a23b4(2, (s32)*gCurrentMap + 0x3a4);
+        p[0x136] = (u8)GetPlayerTeam(2, (s32)*gCurrentMap + 0x3a4);
         p = (u8 *)*gCurrentMap + 0x67a4;
-        p[0x1c2] = (u8)func_020a23b4(3, (s32)*gCurrentMap + 0x3a4);
+        p[0x1c2] = (u8)GetPlayerTeam(3, (s32)*gCurrentMap + 0x3a4);
         p = (u8 *)*gCurrentMap + 0x67a4;
-        p[0x24e] = (u8)func_020a23b4(4, (s32)*gCurrentMap + 0x3a4);
+        p[0x24e] = (u8)GetPlayerTeam(4, (s32)*gCurrentMap + 0x3a4);
     }
 
     {
@@ -307,7 +307,7 @@ void func_020d1f2c(void) {
         for (; r8 < 5; r8++, r9 += 0x8c) {
             u8 *r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
 
-            r10[0x1d] = (u8)func_020a2360(r8);
+            r10[0x1d] = (u8)GetPlayerIdForSlot(r8);
 
             if (((u8 *)*gCurrentMap)[r9 + 0x67c2] == 0) {
                 func_020a8bd8(r8, 0);

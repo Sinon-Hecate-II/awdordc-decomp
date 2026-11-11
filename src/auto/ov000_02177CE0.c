@@ -8,12 +8,12 @@
 s32 ScoreMoveDestination(s32 x,s32 y){
 extern u8 gUnitKindFlags[], gAiRangeBitmap[];
 extern void **gCurrentMap;extern void *gAiCommandState;extern s8 gTerrainPropertyType[];
-s32 func_ov000_021a9d8c(s16,s16);s32 func_020d27ec(s32,s32,s32);
+s32 IsAllyUnitAtCell(s16,s16);s32 IsTerrainOnUnitTeam(s32,s32,s32);
 s32 GetTerrainMoveCost(s32,s32,s32);s32 Divide(s32,s32);
-s32 IsCellInPlayerMoveRange(s32,s32,s32);s32 func_ov000_021a9214(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
+s32 IsCellInPlayerMoveRange(s32,s32,s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
 void *base,*cell; s32 moveCost,score,terrain,threat;
 if(x<0||y<0||x>=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))return -1;
-if(func_ov000_021a9d8c((s16)x,(s16)y))return -1;
+if(IsAllyUnitAtCell((s16)x,(s16)y))return -1;
 base=*gCurrentMap;
 moveCost=M2C_FIELD(M2C_FIELD(base+y*4,s8 **,MAP_GRID),s8 *,x);
 if(moveCost<0||moveCost>M2C_FIELD(gAiCommandState,u8 *,5))return -1;
@@ -26,13 +26,13 @@ if(gUnitKindFlags[((u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26)*112]&7
 u32 index=y*M2C_FIELD(base,u16 *,MAP_WIDTH)+x;
 if((u8)((1<<(index&7))&gAiRangeBitmap[index>>3]))score+=16;
 }
-if(!gTerrainPropertyType[terrain]||!func_020d27ec(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),gTerrainPropertyType[terrain])){
+if(!gTerrainPropertyType[terrain]||!IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),gTerrainPropertyType[terrain])){
 base=*gCurrentMap;
 score+=(Divide(GetTerrainMoveCost(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
 }
 if(IsCellInPlayerMoveRange(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),x,y))score+=0x200;
 score+=(0x300-threat)<<10;
-if(!gTerrainPropertyType[terrain]&&func_ov000_021a9214(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x100000;
+if(!gTerrainPropertyType[terrain]&&IsCaptureTargetAt(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x100000;
 if(func_ov000_021a93a8(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x200000;
 if(threat<20)score+=0x400000;
 return score;
@@ -104,14 +104,14 @@ s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
 
 s32 ScoreMoveTile(s32 x,s32 y){
 extern void **gCurrentMap;extern void *gAiCommandState;extern s8 gTerrainPropertyType[];
-s32 func_ov000_021a9d8c(s16,s16);s32 func_020d27ec(s32,s32,s32);
+s32 IsAllyUnitAtCell(s16,s16);s32 IsTerrainOnUnitTeam(s32,s32,s32);
 s32 GetTerrainMoveCost(s32,s32,s32);s32 Divide(s32,s32);
-s32 IsCellInPlayerMoveRange(s32,s32,s32);s32 func_ov000_021a9214(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
+s32 IsCellInPlayerMoveRange(s32,s32,s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
 void *base,*cell; s32 moveCost,score,terrain,threat;
 /* Score a tile as a movement destination for the AI unit under the cursor:
    remaining movement, terrain value, threat and positional preferences. */
 if(x<0||y<0||x>=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))return -1;
-if(func_ov000_021a9d8c((s16)x,(s16)y))return -1;
+if(IsAllyUnitAtCell((s16)x,(s16)y))return -1;
 base=*gCurrentMap;
 moveCost=M2C_FIELD(M2C_FIELD(base+y*4,s8 **,MAP_GRID),s8 *,x);
 if(moveCost<0||moveCost>M2C_FIELD(gAiCommandState,u8 *,5))return -1;
@@ -120,13 +120,13 @@ score=15-moveCost;
 terrain=M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK;
 threat=M2C_FIELD(cell,u8 *,MAP_CELL_THREAT_DIRECT)+M2C_FIELD(cell,u8 *,MAP_CELL_THREAT_INDIRECT)*2;
 if(score<0)score=0;
-if(!gTerrainPropertyType[terrain]||!func_020d27ec(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),gTerrainPropertyType[terrain])){
+if(!gTerrainPropertyType[terrain]||!IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),gTerrainPropertyType[terrain])){
 base=*gCurrentMap;
 score+=(Divide(GetTerrainMoveCost(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
 }
 if(IsCellInPlayerMoveRange(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),x,y))score+=0x200;
 score+=(0x300-threat)<<10;
-if(!gTerrainPropertyType[terrain]&&func_ov000_021a9214(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x100000;
+if(!gTerrainPropertyType[terrain]&&IsCaptureTargetAt(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x100000;
 if(func_ov000_021a93a8(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x200000;
 if(threat<20)score+=0x400000;
 return score;
@@ -138,7 +138,7 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
     extern void **gCurrentMap;
     extern u8 gUnitKindStats[];
     extern s32 gFrameCounter;
-    s32 func_020a76d4(u8 *);
+    s32 GetUnitAttackRangeMax(u8 *);
     s32 ScoreMoveTile(s32, s32);
 
     s32 best; s32 inner; s32 dist; s32 r7;
@@ -169,33 +169,33 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
     *out = (s16)magic;
 
     up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
-    ret = func_020a76d4(up);
+    ret = GetUnitAttackRangeMax(up);
     if (x - ret < 0) {
         spC = 0;
     } else {
-        ret2 = func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        ret2 = GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
         spC = x - ret2;
     }
 
     up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
-    ret = func_020a76d4(up);
+    ret = GetUnitAttackRangeMax(up);
     if (y - ret < 0) {
         r8 = 0;
     } else {
-        ret2 = func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        ret2 = GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
         r8 = y - ret2;
     }
 
     map=*gCurrentMap;
-    ret=func_020a76d4(M2C_FIELD(map,u8 **,0x52d0));
+    ret=GetUnitAttackRangeMax(M2C_FIELD(map,u8 **,0x52d0));
     if(x+ret>=M2C_FIELD(map,u16 *,0x5144)-1)
         r9=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
-    else r9=x+func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+    else r9=x+GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
     map=*gCurrentMap;
-    ret=func_020a76d4(M2C_FIELD(map,u8 **,0x52d0));
+    ret=GetUnitAttackRangeMax(M2C_FIELD(map,u8 **,0x52d0));
     if(y+ret>=M2C_FIELD(map,u16 *,0x5146)-1)
         sp8=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
-    else sp8=y+func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+    else sp8=y+GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
 
     if (r8 <= sp8) {
         do {
@@ -216,7 +216,7 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
                     tableVal = gUnitKindStats[kind * 0x70 + 0x0c];
 
                     if (dist >= tableVal) {
-                        cap = func_020a76d4(up);
+                        cap = GetUnitAttackRangeMax(up);
                         if (dist <= cap) {
                             cost = ScoreMoveTile(inner, outerY);
                             if (cost >= best) {

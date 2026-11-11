@@ -335,10 +335,10 @@ void func_ov003_021f92f4(void *obj) {
     M2C_FIELD(obj,u16 *,0x42)=M2C_FIELD(*gCurrentMap,u16 *,0x5146)*4;
     saved=gCur3DSpriteEngine;
     gCur3DSpriteEngine=g3DSpriteEngineSub;
-    func_020809c0(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c),17,2);
-    func_0209b2b4(0,0,3,GetMapName(id),0x9000,(u16)((((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*32+1));
+    ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c),17,2);
+    DrawTextLine(0,0,3,GetMapName(id),0x9000,(u16)((((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*32+1));
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(0);
     kind=(u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28;
     if(((u8)(kind==2)||(u8)(kind==4)||(u8)(kind==6)||(u8)(kind==7)||(u8)(kind==8)) && (u8)IsUnavailable92(id)) {
         SetFileDirectory(data_ov003_02210398);

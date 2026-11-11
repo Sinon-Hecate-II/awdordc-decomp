@@ -1,6 +1,7 @@
 /* 17 functions from 0x020D068C to 0x020D166C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 bytes[14]; } D068CUnit;
 extern s32 *gCurrentMap;
 static inline s32 D068CIndex(void *p) { s32 n; if(p) n=((s32)p-(*gCurrentMap+0x59a4))/14; else n=0; return n; }
@@ -11,11 +12,11 @@ static inline void D11F4Set(void *p,u8 team){((D11F4Bits *)p)->team=team;}
 void func_020d0bf8(M2C_UNK);
 static inline u32 D068CLow(void *p) { return M2C_FIELD(p,D068CBits*,0).value; }
 static inline u32 D068CFlag(void *p) { return M2C_FIELD(p,u16*,4)&32; }
-s32 func_020a86f8();
+s32 CalculateUnitDamage();
 static inline s32 D068CCall(M2C_UNK a,void *p,s32 c) {
  u32 low,flag;
  flag=D068CFlag(p); low=D068CLow(p);
- return func_020a86f8(a,low,c,flag);
+ return CalculateUnitDamage(a,low,c,flag);
 }
 static inline void D068CApply(void *p) {
  if(M2C_FIELD(p,s16*,0x14)==0)return;
@@ -42,39 +43,77 @@ M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
 }
 
 #pragma opt_propagation off
-void ResolveUnitAttack(void *a,void **b,s32 c,s32 d) {
-s32 func_020a76d4(void *); s32 func_020a792c(); s32 func_020a875c();
-extern u8 gUnitKindStats[];
-register u16 x=0; register u16 y; register s16 z; register u8 *p=gUnitKindStats+((D068CBits *)M2C_FIELD(a,void **,0))->value*112;
-y=0; z=0;
-M2C_FIELD(a,s16 *,22)=func_020a875c(M2C_FIELD(a,void **,0));
-if(c==1) {
-void *q=*b; u32 lowA,lowB,flag;lowA=D068CLow(M2C_FIELD(a,void **,0));lowB=D068CLow(q); flag=D068CFlag(q);
-z=func_020a792c(lowA,lowB,1,flag);
-if(z) {
-void *q=*b;
-u8 kind_byte=M2C_FIELD(q,u8 *,0);
-u32 shifted=(u32)kind_byte<<26;
-u32 flagv=D068CFlag(q);
-u32 kind=shifted>>26;
-y=(u16)func_020a86f8(M2C_FIELD(a,void **,0),kind,1,flagv);
-}
-if(p[12]==1) {void *q=M2C_FIELD(a,void **,0);if((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28){void *r=*b; u8 rb=M2C_FIELD(r,u8 *,0);u32 rs=(u32)rb<<26;u32 rf=D068CFlag(r);u32 rk=rs>>26; x=(u16)func_020a86f8(q,rk,0,rf);}}
-} else if(p[12]<=c && c<=func_020a76d4(M2C_FIELD(a,void **,0))) {
-void *q=M2C_FIELD(a,void **,0);
-if(((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28) && d==1){void *r=*b; u8 rb=M2C_FIELD(r,u8 *,0);u32 rs=(u32)rb<<26;u32 rf=D068CFlag(r);u32 rk=rs>>26; x=(u16)func_020a86f8(q,rk,0,rf);}
-}
-if(x<=y){if(!z)return;M2C_FIELD(a,s16 *,30)=2;M2C_FIELD(a,u16 *,24)=y;return;}
-M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
+/* Resolves one side's strike in a battle: picks the best usable weapon for the
+ * range (secondary when it can hit, otherwise primary while it has ammo),
+ * computes the damage against the opponent's kind and records the chosen weapon
+ * and its damage on the participant.  Returns without a strike if none can hit. */
+void ResolveUnitAttack(BattleUnit *a, BattleMapUnit **b, s32 distance, s32 isAggressor) {
+    s32 GetUnitAttackRangeMax(void *);
+    s32 GetWeaponDamagePercent();
+    s32 GetUnitAttackPower();
+    extern u8 gUnitKindStats[];
+    register u16 primaryDamage = 0;
+    register u16 secondaryDamage;
+    register s16 secondaryPercent;
+    register u8 *stats = gUnitKindStats + ((D068CBits *)a->unit)->value * UNIT_KIND_STATS_SIZE;
+    secondaryDamage = 0;
+    secondaryPercent = 0;
+    a->attackPower = GetUnitAttackPower(a->unit);
+    if (distance == 1) {
+        void *target = *b;
+        u32 attackerKind, targetKind, targetFlags;
+        attackerKind = D068CLow(a->unit);
+        targetKind = D068CLow(target);
+        targetFlags = D068CFlag(target);
+        secondaryPercent = GetWeaponDamagePercent(attackerKind, targetKind, 1, targetFlags);
+        if (secondaryPercent) {
+            void *target = *b;
+            u8 targetByte = M2C_FIELD(target, u8 *, 0);
+            u32 shifted = (u32)targetByte << 26;
+            u32 targetFlags = D068CFlag(target);
+            u32 targetKind = shifted >> 26;
+            secondaryDamage = (u16)CalculateUnitDamage(a->unit, targetKind, 1, targetFlags);
+        }
+        if (stats[UNIT_KIND_STATS_MIN_RANGE] == 1) {
+            void *attackerUnit = a->unit;
+            if ((u32)(M2C_FIELD(attackerUnit, u16 *, 6) << 21) >> 28) {
+                void *target = *b;
+                u8 targetByte = M2C_FIELD(target, u8 *, 0);
+                u32 shifted = (u32)targetByte << 26;
+                u32 targetFlags = D068CFlag(target);
+                u32 targetKind = shifted >> 26;
+                primaryDamage = (u16)CalculateUnitDamage(attackerUnit, targetKind, 0, targetFlags);
+            }
+        }
+    } else if (stats[UNIT_KIND_STATS_MIN_RANGE] <= distance && distance <= GetUnitAttackRangeMax(a->unit)) {
+        void *attackerUnit = a->unit;
+        if (((u32)(M2C_FIELD(attackerUnit, u16 *, 6) << 21) >> 28) && isAggressor == 1) {
+            void *target = *b;
+            u8 targetByte = M2C_FIELD(target, u8 *, 0);
+            u32 shifted = (u32)targetByte << 26;
+            u32 targetFlags = D068CFlag(target);
+            u32 targetKind = shifted >> 26;
+            primaryDamage = (u16)CalculateUnitDamage(attackerUnit, targetKind, 0, targetFlags);
+        }
+    }
+    if (primaryDamage <= secondaryDamage) {
+        if (!secondaryPercent) return;
+        a->weapon = BATTLE_WEAPON_SECONDARY;
+        a->weaponDamage = secondaryDamage;
+        return;
+    }
+    a->weapon = BATTLE_WEAPON_PRIMARY;
+    a->weaponDamage = primaryDamage;
+    a->ammo -= 1;
 }
 #pragma opt_propagation reset
 s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
 s32 func_020a8204();
-s32 func_020a86f8();
+s32 CalculateUnitDamage();
 u16 temp_r0,var_r6;
 var_r6=0;
-if(func_020a8204(arg0)!=0)var_r6=func_020a86f8(arg0,(s32)D068CLow(arg1),0,(s32)D068CFlag(arg1));
-temp_r0=func_020a86f8(arg0,(s32)D068CLow(arg1),1,(s32)D068CFlag(arg1));
+if(func_020a8204(arg0)!=0)var_r6=CalculateUnitDamage(arg0,(s32)D068CLow(arg1),0,(s32)D068CFlag(arg1));
+temp_r0=CalculateUnitDamage(arg0,(s32)D068CLow(arg1),1,(s32)D068CFlag(arg1));
 return var_r6!=0 || temp_r0!=0;
 }
 #pragma opt_common_subs reset
@@ -82,10 +121,10 @@ s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
  s32 func_020a5ae0();
  s32 func_020a796c();
  s32 func_020a8204();
- s32 func_020a86f8();
+ s32 CalculateUnitDamage();
  u16 temp_r0,var_r4;
  var_r4=0;
- if(func_020a8204()!=0)var_r4=func_020a86f8(arg0,func_020a5ae0(arg1),0,0);
+ if(func_020a8204()!=0)var_r4=CalculateUnitDamage(arg0,func_020a5ae0(arg1),0,0);
  temp_r0=func_020a796c((u32)(*arg0<<26)>>26,arg1,1);
  return var_r4!=0 || temp_r0!=0;
 }

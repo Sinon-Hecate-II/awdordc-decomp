@@ -248,16 +248,16 @@ func_0207db18(M2C_FIELD(*gCurrentMap,u8*,0x5157));
 void BuildMapRowOffsets(void) { extern void **gCurrentMap; s32 i; for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++) M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144); }
 #pragma opt_strength_reduction reset
 void LoadPlayerArmies(M2C_UNK arg0) {
-    M2C_UNK func_020a231c(s32, s32);
+    M2C_UNK SetPlayerIdForSlot(s32, s32);
     s32 func_020a8a4c(M2C_UNK, s32);
     s32 var_r5;
 
     var_r5 = 0;
     do {
         if (var_r5 == 0) {
-            func_020a231c(var_r5, 0);
+            SetPlayerIdForSlot(var_r5, 0);
         } else {
-            func_020a231c(var_r5, func_020a8a4c(arg0, var_r5));
+            SetPlayerIdForSlot(var_r5, func_020a8a4c(arg0, var_r5));
         }
         var_r5 += 1;
     } while (var_r5 < 5);

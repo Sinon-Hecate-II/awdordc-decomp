@@ -72,7 +72,7 @@ void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
 }
 
 void func_ov010_0222bb18(M2C_UNK arg0) {
-    s32 func_0206527c(s32, s32, M2C_UNK);
+    s32 ByteCompareN(s32, s32, M2C_UNK);
     M2C_UNK func_ov010_02229a08();
     s32 func_ov010_02229b00();
     s32 func_ov010_02229b48();
@@ -84,7 +84,7 @@ void func_ov010_0222bb18(M2C_UNK arg0) {
     }
     temp_r4 = func_ov010_02229b00();
     func_ov010_02229a08();
-    if (func_0206527c(temp_r4, func_ov010_02229b48(), 0x6C) == 0) {
+    if (ByteCompareN(temp_r4, func_ov010_02229b48(), 0x6C) == 0) {
         return;
     }
     func_ov010_02229eb4(arg0);

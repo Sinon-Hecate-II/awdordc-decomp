@@ -5,13 +5,13 @@ typedef struct { u32 words[4]; } CallbackRecord;
 
 s32 func_02044e04(void) {
     M2C_UNK func_0204b378();
-    extern M2C_UNK data_0213db18;
+    extern M2C_UNK gHttpRequestList;
     func_0204b378();
-    M2C_FIELD(&data_0213db18, s32 *, 4) = (s32) (M2C_FIELD(&data_0213db18, s32 *, 4) + 1);
+    M2C_FIELD(&gHttpRequestList, s32 *, 4) = (s32) (M2C_FIELD(&gHttpRequestList, s32 *, 4) + 1);
     return 1;
 }
 
-s32 func_02044e28(void){extern M2C_UNK data_0213db18;void func_0204b3cc(void);void func_02045374(void);s32 n;if(M2C_FIELD(&data_0213db18,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&data_0213db18,s32 *,4)-1;M2C_FIELD(&data_0213db18,s32 *,4)=n;if(n==0)func_02045374();return 1;}
+s32 func_02044e28(void){extern M2C_UNK gHttpRequestList;void func_0204b3cc(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
 
 s32 func_02044e68(void) {
     s32 HasNetError();
@@ -24,30 +24,34 @@ s32 func_02044e68(void) {
 }
 
 #pragma opt_instruction_scheduling off
-s32 func_02044e88(s32 unused,s32 a,s32 b,s32 c,void *arg){
-void func_020376d8(s32,s32,s32);s32 func_02045138(s32);void func_020452f0(void *);
+s32 HttpCompletedCallback(s32 unused,s32 a,s32 b,s32 c,void *arg){
+void HeapFree(s32,s32,s32);s32 SetHttpError(s32);void HttpRequestFree(void *);
 u32 base=(u32)arg;
 s32 flag; s32 result;void (*cb)(s32,s32,s32,s32);void *p=arg;s32 x;
 cb=M2C_FIELD(p,void (**)(s32,s32,s32,s32),4);
 flag=M2C_FIELD(p,volatile s32 *,12);
-if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{func_02045138(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}
-if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else func_020376d8(4,x,0);}
-result=flag!=0;func_020452f0((void*)base);return result;
+if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{SetHttpError(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}
+if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else HeapFree(4,x,0);}
+result=flag!=0;HttpRequestFree((void*)base);return result;
 }
 #pragma opt_instruction_scheduling reset
-void func_02044f24(s32 unused,s32 a,s32 b,s32 c,s32 d,s32 e,void *p){
+void HttpProgressCallback(s32 unused,s32 a,s32 b,s32 c,s32 d,s32 e,void *p){
 void (*cb)(s32,s32,s32,s32,s32,s32)=M2C_FIELD(p,void (**)(s32,s32,s32,s32,s32,s32),8);
 if(!cb)return;cb(a,b,c,d,e,M2C_FIELD(p,s32 *,0));
 }
 
-s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
+/* Start an asynchronous ghttp request through the game's request list: fetch url with an
+ * optional POST source, a body buffer of bufferSize bytes and the caller's progress/completion
+ * callbacks. Returns the ghttp request id, or a negative error reported through onComplete. */
+s32 HttpRequestStart(s32 url, s32 bufferSize, s32 reuseConnection, s32 post,
+                     s32 onProgress, s32 onComplete, s32 userData) {
     s32 HasNetError(void);
-    void *func_02037694(s32, s32);
-    void func_020376d8(s32, s32, s32);
-    s32 func_02045138(s32);
-    void *func_02045294(CallbackRecord *);
-    void func_020452f0(void *);
-    s32 func_0204b428(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    void *HeapAlloc(s32, s32);
+    void HeapFree(s32, s32, s32);
+    s32 SetHttpError(s32);
+    void *HttpRequestAlloc(CallbackRecord *);
+    void HttpRequestFree(void *);
+    s32 ghttpGetEx(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 
     CallbackRecord rec;
     void *buf;
@@ -60,63 +64,63 @@ s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
         return -8;
     }
 
-    rec.words[0] = (u32)a6;
-    rec.words[1] = (u32)a5;
-    rec.words[2] = (u32)a4;
-    rec.words[3] = (u32)a2;
+    rec.words[0] = (u32)userData;
+    rec.words[1] = (u32)onComplete;
+    rec.words[2] = (u32)onProgress;
+    rec.words[3] = (u32)reuseConnection;
 
-    node = func_02045294(&rec);
+    node = HttpRequestAlloc(&rec);
     if (node == 0) {
-        func_02045138(-5);
-        ((void (*)(s32, s32, s32, s32))a5)((s32)buf, (s32)buf, -5, a6);
+        SetHttpError(-5);
+        ((void (*)(s32, s32, s32, s32))onComplete)((s32)buf, (s32)buf, -5, userData);
         return -5;
     }
 
-    if (a1 > 0) {
-        buf = func_02037694(4, a1);
+    if (bufferSize > 0) {
+        buf = HeapAlloc(4, bufferSize);
         if (buf == 0) {
-            func_02045138(-5);
-            ((void (*)(s32, s32, s32, s32))a5)(0, 0, -5, a6);
-            func_020452f0(node);
+            SetHttpError(-5);
+            ((void (*)(s32, s32, s32, s32))onComplete)(0, 0, -5, userData);
+            HttpRequestFree(node);
             return -5;
         }
         *(s32 *)((char *)node + 0x10) = (s32)buf;
     }
 
-    if (a3 != 0) {
-        result = func_0204b428(a0, 0, (s32)buf, a1,
-                                *(s32 *)a3, 0, 0,
-                                (s32)func_02044f24,
-                                (s32)func_02044e88,
-                                (s32)node);
+    if (post != 0) {
+        result = ghttpGetEx(url, 0, (s32)buf, bufferSize,
+                            *(s32 *)post, 0, 0,
+                            (s32)HttpProgressCallback,
+                            (s32)HttpCompletedCallback,
+                            (s32)node);
     } else {
-        result = func_0204b428(a0, 0, (s32)buf, a1,
-                                0, 0, 0,
-                                (s32)func_02044f24,
-                                (s32)func_02044e88,
-                                (s32)node);
+        result = ghttpGetEx(url, 0, (s32)buf, bufferSize,
+                            0, 0, 0,
+                            (s32)HttpProgressCallback,
+                            (s32)HttpCompletedCallback,
+                            (s32)node);
     }
 
     if (result < 0) {
-        func_02045138(result);
-        ((void (*)(s32, s32, s32, s32))a5)(0, 0, result, a6);
+        SetHttpError(result);
+        ((void (*)(s32, s32, s32, s32))onComplete)(0, 0, result, userData);
         old = *(s32 *)((char *)node + 0x10);
         if (old != 0) {
-            func_020376d8(4, old, 0);
+            HeapFree(4, old, 0);
         }
-        func_020452f0(node);
+        HttpRequestFree(node);
     }
 
     *(s32 *)((char *)node + 0x14) = result;
     return result;
 }
 
-void func_02045110(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5) {
-    M2C_UNK func_02044f6c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
-    func_02044f6c(arg0, arg1, arg2, 0, arg3, arg4, arg5);
+void HttpGetStart(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5) {
+    M2C_UNK HttpRequestStart(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    HttpRequestStart(arg0, arg1, arg2, 0, arg3, arg4, arg5);
 }
 
-s32 func_02045138(s32 arg0) {
+s32 SetHttpError(s32 arg0) {
 M2C_UNK SetNetError(M2C_UNK,s32);
 s32 a=7,b=0xfffe8130;
 if(!arg0)return 0;
@@ -142,26 +146,26 @@ case 24:b+=(u32)0xfffffc72;break;
 SetNetError(a,b);return arg0;
 }
 
-void *func_02045294(CallbackRecord *src){void *func_02037694(s32,s32);extern M2C_UNK data_0213db18;void *p=func_02037694(4,28);if(!p)return 0;*(CallbackRecord *)p=*src;M2C_FIELD(p,s32 *,24)=0;M2C_FIELD(p,s32 *,16)=0;if(!M2C_FIELD(&data_0213db18,void **,0)){M2C_FIELD(&data_0213db18,void **,0)=p;return p;}else{M2C_FIELD(p,void **,24)=M2C_FIELD(&data_0213db18,void **,0);M2C_FIELD(&data_0213db18,void **,0)=p;}return p;}
+void *HttpRequestAlloc(CallbackRecord *src){void *HeapAlloc(s32,s32);extern M2C_UNK gHttpRequestList;void *p=HeapAlloc(4,28);if(!p)return 0;*(CallbackRecord *)p=*src;M2C_FIELD(p,s32 *,24)=0;M2C_FIELD(p,s32 *,16)=0;if(!M2C_FIELD(&gHttpRequestList,void **,0)){M2C_FIELD(&gHttpRequestList,void **,0)=p;return p;}else{M2C_FIELD(p,void **,24)=M2C_FIELD(&gHttpRequestList,void **,0);M2C_FIELD(&gHttpRequestList,void **,0)=p;}return p;}
 
-void func_020452f0(void *a) {
- extern M2C_UNK data_0213db18; void func_020376d8(s32,s32,s32);
- void *p=M2C_FIELD(&data_0213db18,void **,0),*q,*n;
+void HttpRequestFree(void *a) {
+ extern M2C_UNK gHttpRequestList; void HeapFree(s32,s32,s32);
+ void *p=M2C_FIELD(&gHttpRequestList,void **,0),*q,*n;
  if(!p)return;
- if(p==a){n=M2C_FIELD(p,void **,24);func_020376d8(4,(s32)p,0);M2C_FIELD(&data_0213db18,void **,0)=n;return;}
+ if(p==a){n=M2C_FIELD(p,void **,24);HeapFree(4,(s32)p,0);M2C_FIELD(&gHttpRequestList,void **,0)=n;return;}
  q=M2C_FIELD(p,void **,24);
  while(q) {
  if(q!=a)p=q;
- else {n=M2C_FIELD(p,void **,24);M2C_FIELD(p,void **,24)=M2C_FIELD(n,void **,24);func_020376d8(4,(s32)n,0);return;}
+ else {n=M2C_FIELD(p,void **,24);M2C_FIELD(p,void **,24)=M2C_FIELD(n,void **,24);HeapFree(4,(s32)n,0);return;}
  q=M2C_FIELD(q,void **,24);
  }
 }
 
-void func_02045374(void) {
- extern M2C_UNK data_0213db18;void func_020376d8(s32,s32,s32);
- void *p=M2C_FIELD(&data_0213db18,void **,0),*q;
- while(p){q=p;p=M2C_FIELD(p,void **,24);if(M2C_FIELD(q,s32 *,16))func_020376d8(4,M2C_FIELD(q,s32 *,16),0);func_020376d8(4,(s32)q,0);}
- M2C_FIELD(&data_0213db18,void **,0)=0;
+void HttpRequestFreeAll(void) {
+ extern M2C_UNK gHttpRequestList;void HeapFree(s32,s32,s32);
+ void *p=M2C_FIELD(&gHttpRequestList,void **,0),*q;
+ while(p){q=p;p=M2C_FIELD(p,void **,24);if(M2C_FIELD(q,s32 *,16))HeapFree(4,M2C_FIELD(q,s32 *,16),0);HeapFree(4,(s32)q,0);}
+ M2C_FIELD(&gHttpRequestList,void **,0)=0;
 }
 
 s32 func_020453e4(s32 *a) {

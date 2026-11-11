@@ -5,9 +5,9 @@ typedef struct { s32 values[6]; } Table020a8b3c;
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 extern const Table020a8b3c data_020f49e0;
 
-s32 func_020a86f8(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 CalculateUnitDamage(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 func_020a736c(void *, u8, u8);
- s32 func_020a792c(u32, s32, s32, s32);
+ s32 GetWeaponDamagePercent(u32, s32, s32, s32);
  s32 Divide();
  s32 temp_r0;
  u32 temp_r4;
@@ -15,14 +15,14 @@ s32 func_020a86f8(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 temp_r5;
  temp_r4 = (u32)(arg0[0] << 26) >> 26;
  temp_r5 = func_020a736c(arg0, arg0[1], arg0[2]) + 100;
- temp_r0 = func_020a792c(temp_r4, arg1, arg2, arg3);
+ temp_r0 = GetWeaponDamagePercent(temp_r4, arg1, arg2, arg3);
  if (temp_r0 == 0) return 0;
  var_r0 = Divide(temp_r5 * temp_r0, 100);
  if (var_r0 <= 1) var_r0 = 1;
  return var_r0;
 }
 
-s32 func_020a875c(void *arg0) {
+s32 GetUnitAttackPower(void *arg0) {
     s32 func_020a74a8(void *, u8, u8);
     return func_020a74a8(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0x64;
 }

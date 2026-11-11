@@ -16,14 +16,14 @@ void DrawScreenTransition(void) {
     s32 GetScreenTransitionSide(void);
     s32 GetScreenTransitionCgTarget(void);
     s32 GetScreenTransitionScTarget(void);
-    void func_01ff9ce8(u8);
+    void Clear3DSpriteLayer(u8);
     void StringCopy(void *, void *);
     void StringAppend(void *, void *);
     M2C_UNK GetLocalizedFileName(M2C_UNK);
     u8 OpenNarcArchive(M2C_UNK);
     void LoadNarcFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 LoadNarcFileDecompressed(void *, void *);
-    void func_020816cc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void LoadNarcFileToBuffer(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void CloseNarcArchive(void);
 
     extern s32 gScreenTransition;
@@ -44,7 +44,7 @@ void DrawScreenTransition(void) {
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     SetScreenTransitionDirectory();
-    func_01ff9ce8((u8)GetScreenTransitionSide());
+    Clear3DSpriteLayer((u8)GetScreenTransitionSide());
 
     variant = ((s16 *)gScreenTransition)[1];
     StringCopy((void *)pathBuffer, gScreenTransitionNames[variant].p);
@@ -75,11 +75,11 @@ void DrawScreenTransition(void) {
 
     if (GetScreenTransitionSide() == 0) {
         resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
-        func_020816cc(resolvedPath, GetScreenTransitionScTarget(), 1, 0);
+        LoadNarcFileToBuffer(resolvedPath, GetScreenTransitionScTarget(), 1, 0);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x1;
     } else {
         resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
-        func_020816cc(resolvedPath, GetScreenTransitionScTarget(), 1, 8);
+        LoadNarcFileToBuffer(resolvedPath, GetScreenTransitionScTarget(), 1, 8);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x2;
     }
 
@@ -106,7 +106,7 @@ void InitScreenTransition(M2C_UNK a0) {
     void func_020ad968(void);
     void SetScreenTransitionDirectory(void);
     s32 GetScreenTransitionSide(void);
-    void func_01ff9ce8(u8);
+    void Clear3DSpriteLayer(u8);
     void DrawScreenTransition(void);
     M2C_UNK GetLocalizedFileName(M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK, M2C_UNK);
@@ -160,7 +160,7 @@ void InitScreenTransition(M2C_UNK a0) {
     *(s16 *)((char *)gScreenTransition + 6) = *(s16 *)((char *)gScreenTransition + 8);
 
     SetScreenTransitionDirectory();
-    func_01ff9ce8((u8)GetScreenTransitionSide());
+    Clear3DSpriteLayer((u8)GetScreenTransitionSide());
     DrawScreenTransition();
 
     LoadDecompressedFileTo(GetLocalizedFileName((M2C_UNK)sScreenChangeCgFile),

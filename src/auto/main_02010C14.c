@@ -20,7 +20,7 @@ void func_02010cc4(void){extern u8 data_0212fde0[];s32 OS_DisableInterrupts();M2
 /* Sends a packet over the device, retrying while the device reports "busy/again" (status 4). */
 s32 func_02010d14(void *dev, s32 *packet, s32 retries) {
 void OS_SleepThread(s32);
-void func_020067e0(s32 *, s32);
+void DC_FlushRange(s32 *, s32);
 void DC_InvalidateRange(s32 *, s32);
 void func_02006804(void);
 void func_0200758c(s32);
@@ -40,7 +40,7 @@ do { func_0200758c(100); } while (func_02009e8c(11, 1) == 0);
 }
 func_02010d14(dev, 0, 1);
 }
-func_020067e0(M2C_FIELD(dev, s32 **, 0), 96);
+DC_FlushRange(M2C_FIELD(dev, s32 **, 0), 96);
 func_02006804();
 again:
 M2C_FIELD(dev, s32 **, 4) = packet;

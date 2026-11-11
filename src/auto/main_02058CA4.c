@@ -440,16 +440,16 @@ void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 s32 func_02059a04(u8 *arg0) {
-s32 var_lr; s32 var_r4; s32 var_r8; s32 var_r9; u8 *temp_r7; u32 temp_r5; u32 firstBit; u8 temp_r10;
+s32 var_lr; s32 var_r4; u32 var_r8; u32 var_r9; register u8 *temp_r7; u8 temp_r5; s32 firstBit; u8 temp_r10;
 temp_r5=*arg0; firstBit=temp_r5&1; var_lr=0; var_r4=1;
 loop_1:
 temp_r7=arg0+var_r4; temp_r10=M2C_FIELD(temp_r7,u8 *,-1);
 if((u32)temp_r10<(u32)temp_r5) var_r8=1; else var_r8=0;
 if((u32)temp_r5<0x4FU) var_r9=1; else var_r9=0;
-var_lr=var_r8 ^ (var_r9 ^ (firstBit ^ (var_lr ^ ((var_r4 ^ temp_r10)&1))));
+var_lr=(((firstBit ^ (var_lr ^ ((var_r4 ^ temp_r10)&1))) ^ var_r9) ^ var_r8);
 if(var_lr!=0 && !(M2C_FIELD(temp_r7,u8 *,0)&1)) goto fail;
 if(var_lr==0 && (M2C_FIELD(temp_r7,u8 *,0)&1)==1) { fail: return 0; }
-var_r4++; if(var_r4<32) goto loop_1;
+if(++var_r4<32) goto loop_1;
 return 1;
 }
 

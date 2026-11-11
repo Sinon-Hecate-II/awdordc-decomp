@@ -226,9 +226,9 @@ s32 func_02094214(void *arg0) {
  M2C_UNK func_0207843c(s32,s32,s32,s32);
  s16 func_0207f460(s32);
  extern s32 *data_027e0058;
- s32 x,value,base;
- register s32 y;
  s16 packed;
+ s32 base,base2;
+ s32 x,y,value;
  void *cmd;
  cmd=M2C_FIELD(arg0,void **,4);
  packed=M2C_FIELD(cmd,s16 *,8);
@@ -237,8 +237,8 @@ s32 func_02094214(void *arg0) {
  base=*data_027e0058;
  x=(u8)packed;
  M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),s8 *,0x1420)=value;
- base=*data_027e0058;
- M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758))*2,s16 *,0xA10)=func_0207f460(value);
+ base2=*data_027e0058;
+ M2C_FIELD(base2+(x+M2C_FIELD(base2+y*2,u16 *,0x3758))*2,s16 *,0xA10)=func_0207f460(value);
  func_0207843c(x-1,y-1,x+1,y+1);
  M2C_FIELD(arg0,void **,4)+=0x10;
  return 1;
@@ -465,7 +465,7 @@ void func_020947ac(void) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 0;
 }
 
-u8 func_020947c0(void) {
+u8 IsTouchInputDisabled(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x47);
 }
 
@@ -536,38 +536,22 @@ void func_02094958(void *arg0) {
     s32 func_02096064(void);
     extern void *data_02102b50[];
     void **p;
+    int temp;
     s32 (*fn)(void *);
-    s32 temp;
-
-    if (M2C_FIELD(arg0, s32 *, 0) == 0) {
-        return;
-    }
+    if (M2C_FIELD(arg0, s32 *, 0) == 0) return;
     if (M2C_FIELD(arg0, u16 *, 0xC) != 0) {
-        if (func_02096064() != 0) {
-            temp = 0;
-        } else {
-            temp = M2C_FIELD(arg0, u16 *, 0xC) - 1;
-        }
+        if (func_02096064() != 0) temp = 0;
+        else temp = M2C_FIELD(arg0, u16 *, 0xC) - 1;
         M2C_FIELD(arg0, u16 *, 0xC) = (u16) temp;
-        if (M2C_FIELD(arg0, u16 *, 0xC) != 0) {
-            return;
-        }
+        if (M2C_FIELD(arg0, u16 *, 0xC) != 0) return;
     }
+    if (M2C_FIELD(arg0, s32 *, 8) != 0) return;
+    if (M2C_FIELD(arg0, void **, 4) == NULL) return;
 loop:
-    if (M2C_FIELD(arg0, s32 *, 8) != 0) {
-        return;
-    }
-    if (M2C_FIELD(arg0, void **, 4) == NULL) {
-        return;
-    }
     p = M2C_FIELD(arg0, void **, 4);
     fn = (s32 (*)(void *)) data_02102b50[*(s32 *) p];
-    if (fn == 0) {
-        goto advance;
-    }
-    if (fn(arg0) == 0) {
-        return;
-    }
+    if (!fn) goto advance;
+    if (fn(arg0) == 0) return;
     goto loop;
 advance:
     M2C_FIELD(arg0, void **, 4) = (void *) ((u8 *) M2C_FIELD(arg0, void **, 4) + 0x10);

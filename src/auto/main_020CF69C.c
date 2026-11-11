@@ -59,12 +59,12 @@ void func_020cf828(M2C_UNK arg0) {
 }
 
 void func_020cf850(M2C_UNK arg0) {
-    M2C_UNK func_020bc774(M2C_UNK);
+    M2C_UNK MoveMapCursorByDirection(M2C_UNK);
     M2C_UNK func_020bd3c0(M2C_UNK);
     if (func_020d4dd0() == 0) {
         return;
     }
-    func_020bc774(arg0);
+    MoveMapCursorByDirection(arg0);
     func_020bd3c0(arg0);
 }
 
@@ -144,7 +144,7 @@ void FreeMapTileData(void) {
     gMapData = 0;
 }
 
-s32 func_020cfb78(void) {
+s32 GetCurrentMapName(void) {
     extern s32 *gCurrentMap;
     return *gCurrentMap + 0x5120;
 }

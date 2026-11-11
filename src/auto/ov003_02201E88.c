@@ -18,7 +18,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     void *func_02099088(void *);
     M2C_UNK func_020a22fc(s32);
     M2C_UNK func_020a2370(s32);
-    M2C_UNK func_020a23b4(s32);
+    M2C_UNK GetPlayerTeam(s32);
     M2C_UNK func_020cfb94();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
@@ -68,7 +68,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     player = 0;
     do {
         appearance = (u8) func_020a22fc(player + 1);
-        if (func_020a23b4(player + 1) == 2) {
+        if (GetPlayerTeam(player + 1) == 2) {
             iconMode = 2;
         } else {
             iconMode = 1;

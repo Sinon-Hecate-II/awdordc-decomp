@@ -2,7 +2,7 @@
 #include "common.h"
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 extern u8 data_ov006_022183c0[],data_ov006_0221861c[],data_ov006_02218624[],data_ov006_02218634[],data_ov006_02218644[],data_ov006_02218658[],data_ov006_02218668[],data_ov006_02218670[],data_ov006_02218680[],data_ov006_02218690[],data_ov006_022186a4[];
-void func_01ff9ce8(s32);
+void Clear3DSpriteLayer(s32);
 void func_01ff9dd8(s32);
 void SetFileDirectory(void *);
 void *GetLocalizedFileName(void *);
@@ -121,7 +121,7 @@ M2C_FIELD(M2C_FIELD(arg0,void **,68),u16 *,0x12)=480;M2C_FIELD(M2C_FIELD(arg0,vo
 w=M2C_FIELD(arg0,void **,72);M2C_FIELD(w,u16 *,14)=0;M2C_FIELD(w,u16 *,16)=0;M2C_FIELD(w,u16 *,12)=12;M2C_FIELD(w,u16 *,2)=M2C_FIELD(w,u16 *,4);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=0;
-func_01ff9ce8(0);
+Clear3DSpriteLayer(0);
 SetFileDirectory(data_ov006_0221861c);
 OpenNarcArchive(GetLocalizedFileName(data_ov006_02218624));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218634),M2C_FIELD(gCur3DSpriteEngine,s32 *,12));
@@ -129,11 +129,11 @@ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218644),M2C_FIELD(gCu
 CloseNarcArchive();
 func_02081340(data_ov006_02218658,160,0,32);
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,32),32,32,5);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;func_01ff9ce8(3);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(3);
 w=(void *)gCur3DSpriteEngine;func_020a9a30(3,0,0,M2C_FIELD(w,s32 *,24));
 w=(void *)gCur3DSpriteEngine;func_020a9a30(3,2,0,M2C_FIELD(w,s32 *,48)+224);
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,44),32,32,7);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;func_01ff9ce8(1);func_01ff9dd8(1);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;Clear3DSpriteLayer(1);func_01ff9dd8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;func_02091d4c(6);
 w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,1,M2C_FIELD(w,s32 *,28)+0x34c0);
 w=(void *)gCur3DSpriteEngine;func_020a9a30(1,2,0,M2C_FIELD(w,s32 *,48)+0x2c0);
@@ -141,7 +141,7 @@ w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,5,M2C_FIELD(w,s32 *,28)+0x37c0);
 func_0208ca2c(0x3e40,1,func_020ae22c(9),2);
 func_0208ca2c(0x4240,1,func_020ae22c(12),2);gCur3DSpriteEngine=g3DSpriteEngineSub;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg&~128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=0;
-func_01ff9ce8(0);
+Clear3DSpriteLayer(0);
 SetFileDirectory(data_ov006_02218668);
 OpenNarcArchive(GetLocalizedFileName(data_ov006_02218670));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218680),M2C_FIELD(gCur3DSpriteEngine,s32 *,12));
@@ -149,7 +149,7 @@ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218690),M2C_FIELD(gCu
 CloseNarcArchive();
 func_02081340(data_ov006_022186a4,160,0,64);
 func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,32),32,32,5);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;func_01ff9ce8(1);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(1);
 func_01ff9dd8(1);func_02091d4c(7);
 a=2;w=(void *)gCur3DSpriteEngine;
 func_020e4cd8(func_0208206c(),M2C_FIELD(w,s32 *,16),M2C_FIELD(w,s32 *,36),7,6,4,a);

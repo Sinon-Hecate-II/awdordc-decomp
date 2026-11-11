@@ -91,7 +91,7 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
     return func_0205cb38(a,b,c);
 }
 
-s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 GetTickCountMs(); s32 func_0205a360(void *,s32); s32 func_0206527c(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(func_0206527c(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,GetTickCountMs()-sp0)!=0; }
+s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 GetTickCountMs(); s32 func_0205a360(void *,s32); s32 ByteCompareN(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(ByteCompareN(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,GetTickCountMs()-sp0)!=0; }
 
 #pragma push
 #pragma scheduling off
@@ -123,7 +123,7 @@ s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(v
 s32 gti2HandleMessage(void *socket,void *message,s32 len,M2C_UNK address,M2C_UNK port) {
 void *func_0205cca0(void *,M2C_UNK,M2C_UNK);
 s32 func_0205a614(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
-s32 func_0206527c(void *,M2C_UNK *,s32);
+s32 ByteCompareN(void *,M2C_UNK *,s32);
 s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 func_0205cb68(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
@@ -136,7 +136,7 @@ connection=func_0205cca0(socket,address,port);
 if(M2C_FIELD(socket,s32*,0x2c)!=0){
 if(!func_0205a614(socket,connection,address,port,0,(s32)buf,len,0))return 0;
 }
-if(len>2 && !func_0206527c(buf,&gGt2Magic,2))isControl=1;else isControl=0;
+if(len>2 && !ByteCompareN(buf,&gGt2Magic,2))isControl=1;else isControl=0;
 if(connection==0){
 if(!gti2UnrecognizedMessageCallback(socket,address,port,buf,len,&handled))return 0;
 if(handled)return 1;
@@ -159,7 +159,7 @@ if(isControl && buf[2]==104)goto accepted3;
 if(!((s32 (*)(void *))func_0205cb4c)(connection2))return 0;
 accepted3:return 1;
 }
-if(isControl && len>=4 && !func_0206527c(buf+2,&gGt2Magic,2)){buf+=2;len-=2;isControl=0;}
+if(isControl && len>=4 && !ByteCompareN(buf+2,&gGt2Magic,2)){buf+=2;len-=2;isControl=0;}
 if(!isControl)return func_0205b2e0(connection2,buf,len)!=0;
 msgType=buf[2];
 if(msgType<0)return func_0205b1a4(connection2)!=0;
@@ -409,7 +409,7 @@ s32 func_0205c924(M2C_UNK arg0) {
 
 s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
     s32 func_02059d24(void *);
-    s32 func_0206527c(void *, M2C_UNK *, s32);
+    s32 ByteCompareN(void *, M2C_UNK *, s32);
     s32 func_0205a9ec(s32, void *, s32);
     M2C_UNK func_02059df0(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02059e78(void *, M2C_UNK, s32);
@@ -418,7 +418,7 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
     s32 temp_r5;
     s32 temp_r6;
 
-    if ((arg2 < 2) || (func_0206527c(arg1, &gGt2Magic, 2) != 0)) {
+    if ((arg2 < 2) || (ByteCompareN(arg1, &gGt2Magic, 2) != 0)) {
         if (func_0205a9ec((s32)arg0, arg1, arg2) == 0) {
             return 0;
         }

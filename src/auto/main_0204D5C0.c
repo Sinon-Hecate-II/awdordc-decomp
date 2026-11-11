@@ -71,7 +71,7 @@ s32 func_0204dbd4(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32)
  return gpiStartConnection(p,&data_020fda44,&data_020fda44,&data_020fda44,&data_020fda44,a,b,0,c,0,d,cb,e);
 }
 
-void func_0204dcd8(void **arg0) {
+void gpiCloseConnection(void **arg0) {
     M2C_UNK gpiResetConnection(void **);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
     void *temp_r1;
@@ -107,7 +107,7 @@ s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(
  return gpiSearchProfiles(p,a,b,c,d,e,f,0,g,cb,h);
 }
 
-s32 func_0204ddd4(void **p,s32 a,s32 b,s32 c,void (*cb)(void **,s32 *,s32),s32 d){
+s32 gpiGetInfo(void **p,s32 a,s32 b,s32 c,void (*cb)(void **,s32 *,s32),s32 d){
 s32 func_02053c9c(void **,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
 extern M2C_UNK data_020fda34;extern s32 gGpiMsgDisconnected;
 void *q;
@@ -118,7 +118,7 @@ if(M2C_FIELD(q,s32 *,0x1d8)==4){gpiSetErrorString(p,&gGpiMsgDisconnected);return
 return func_02053c9c(p,a,b,c,cb,d);
 }
 
-s32 func_0204deb0(void **arg0,s32 arg1,s32 arg2) {
+s32 gpiSetInfoString(void **arg0,s32 arg1,s32 arg2) {
  s32 func_0205342c(void **,s32,s32);
  extern s32 gGpiMsgDisconnected;
  void *p;

@@ -603,7 +603,7 @@ void func_0202aadc(s32 arg0) {
 
 #pragma push
 #pragma opt_common_subs off
-s32 func_0202aaf8(void) {
+s32 Sound_AllocChannel(void) {
  extern M2C_UNK data_0213b2a0;
  s32 mask = 1;
  s32 i;

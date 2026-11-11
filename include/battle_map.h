@@ -24,6 +24,34 @@ typedef struct BattleMapUnit {
 
 typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8 pad3[0x1a0];s8 *grid[64]; } Map16E8;
 
+/* One side of a battle, copied from its BattleMapUnit at MAP_BATTLE_ATTACKER or
+ * MAP_BATTLE_DEFENDER.  A strike fills in attackPower, weaponDamage and weapon,
+ * which the damage helpers then apply. */
+typedef struct BattleUnit {
+    BattleMapUnit *unit;   /* +0x00 map unit this side was loaded from */
+    s16 terrainDefense;    /* +0x04 terrain defense stars */
+    s16 attackBase;        /* +0x06 base attack before health scaling */
+    s16 maxHealth;         /* +0x08 HP from the map unit */
+    s16 maxAmmo;           /* +0x0A ammo from the map unit */
+    s16 moveRange;         /* +0x0C */
+    s16 health;            /* +0x0E current HP */
+    s16 ammo;              /* +0x10 current ammo, spent by the primary weapon */
+    s16 unk12;             /* +0x12 */
+    s16 damage;            /* +0x14 damage applied to this side this round */
+    s16 attackPower;       /* +0x16 attack power for this strike */
+    s16 weaponDamage;      /* +0x18 damage the chosen weapon deals */
+    s16 unk1A;             /* +0x1A */
+    s16 unk1C;             /* +0x1C */
+    s16 weapon;            /* +0x1E 1 = primary weapon, 2 = secondary weapon */
+} BattleUnit;
+
+/* Weapon choice stored in BattleUnit.weapon. */
+enum {
+    BATTLE_WEAPON_NONE      = 0,
+    BATTLE_WEAPON_PRIMARY   = 1,
+    BATTLE_WEAPON_SECONDARY = 2
+};
+
 /* Fields of the battle map. */
 #define MAP_CURRENT_PLAYER  0x52a4 /* u16 the player the view belongs to */
 #define MAP_CURRENT_OWNER   0x52a6 /* u16 the current player's owner bits (MAP_CURRENT_PLAYER << 5) */
@@ -94,6 +122,10 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_CURSOR_OWNER    0x52a8 /* u16 owner mask the unit under the cursor must match */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_TARGET_Y 0x52c4
+#define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
+#define MAP_TOUCH_TILE_Y    0x52cc
+#define MAP_TILE_SUBPIXEL   0x300  /* map-position units per tile, from ScreenToMapPosition */
+#define MAP_PREVIEW_UNIT_TILE_BASE 19 /* gTileGfxRowOffset index of the first unit-marker tile row */
 
 /* The battle map's per-player states: five 0x8c-byte records at map+0x67a4.
  * Player 0 is team A's base player and player 1 team B's; the remaining players

@@ -273,7 +273,7 @@ void func_02076244(M2C_UNK arg0) {
     M2C_UNK func_02082cb4();
     M2C_UNK func_02090248(M2C_UNK);
     M2C_UNK func_02091d4c(M2C_UNK);
-    M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 func_0209c454(M2C_UNK, M2C_UNK);
     s32 func_0209c550(M2C_UNK);
     extern void *g3DSpriteBankMain;
@@ -396,7 +396,7 @@ void func_02076244(M2C_UNK arg0) {
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x3A) = (s16) (0 - ((s32) (temp_r0_15 + (temp_r0_15 >> 0x1F)) >> 1));
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x42) = (s16) (0 - temp_r1_2);
     func_02091d4c(0);
-    func_0209b2b4(0, 0, 1, arg0, 0, 1);
+    DrawTextLine(0, 0, 1, arg0, 0, 1);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
     data_027e01d8 = temp_r5;
     M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) | 1);

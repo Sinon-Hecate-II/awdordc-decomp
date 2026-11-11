@@ -63,7 +63,7 @@ void func_ov001_0218c3a0(u32 arg0) {
     func_ov001_0218a6f4(M2C_FIELD(((var_r4 * 0x1A0) + data_ov001_02193e6c), s32 *, 0x19C), arg0);
 }
 
-s32 func_ov001_0218c3e0(u8 *p,s32 n) {
+s32 StringLengthUpTo(u8 *p,s32 n) {
 s32 i;
 for(i=0;i<n;i++) if(!p[i]) break;
 return i;

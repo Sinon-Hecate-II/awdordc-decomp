@@ -117,7 +117,7 @@ void FloodFillUnitRange(s32,s32,u8,s32,s32);
 void BuildUnitMoveRange(void *);
 s32 IsValidMoveCell(s16,s16);
 s32 func_ov000_021a8be8(s16,s16,s32);
-s32 func_ov000_021a9d8c(s16,s16);
+s32 IsAllyUnitAtCell(s16,s16);
 s32 CellMoveScore(s32,s32,s32,s32);
 s32 func_ov000_021a90a8(u8,s16,s16);
 s32 DestinationScore(s32,s32,s32,s32);
@@ -143,7 +143,7 @@ if(*(u8 *)((u8 *)*gCurrentMap+0x52d6)) {
 unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
 if(x==unit[1] && y==unit[2])goto valid;
 }
-if(func_ov000_021a9d8c((s16)x,(s16)y))continue;
+if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
 valid:
 if(!IsValidMoveCell((s16)x,(s16)y))continue;
 score=CellMoveScore(x,y,1,2);

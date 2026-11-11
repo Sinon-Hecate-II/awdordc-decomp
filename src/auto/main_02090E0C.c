@@ -1,5 +1,6 @@
 /* 47 functions from 0x02090E0C to 0x02091E04 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite.h"
 
 extern u8 data_020f362c[];
 static inline s32 spriteValid02091110(void *p) { if (p != 0 && *(s32 *)p != 0) return 1; return 0; }
@@ -131,17 +132,17 @@ if(valid) return;
 DeleteSpriteObject(arg0);
 }
 #pragma opt_propagation reset
-void func_0209106c(void *a) {void func_020912a4(s32 *);void (*fp)(s32 *)=func_020912a4;fp(M2C_FIELD(a,s32 **,0x58));}
+void func_0209106c(void *a) {void Sprite_ClearHandle(s32 *);void (*fp)(s32 *)=Sprite_ClearHandle;fp(M2C_FIELD(a,s32 **,0x58));}
 s32 func_0209107c(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
 s32 func_02091af8(void *,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);
 s32 r=func_02091af8(a,b,c);if(r) {func_0207d0f0(r,d,e,f,g,h,i);return 1;}return 0;
 }
 #pragma optimization_level reset
 M2C_UNK DrawSprite3D(void *arg0) {
-void func_02091110(); void func_020913c4(void *); M2C_UNK func_020913d4(M2C_UNK);
+void func_02091110(); void Sprite_TickTimer(void *); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 s32 ok=(arg0!=0 && *(s32 *)arg0!=0);
 if(ok==0) return 0;
-((void (*)())func_02091110)(arg0); func_020913c4(arg0); return func_020913d4((M2C_UNK)arg0);
+((void (*)())func_02091110)(arg0); Sprite_TickTimer(arg0); return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
 }
 
 extern void func_02091110();
@@ -162,7 +163,7 @@ s32 func_02091270(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return temp_r0;
 }
 
-void func_020912a4(s32 *arg0) {
+void Sprite_ClearHandle(s32 *arg0) {
     if (arg0 != NULL && *arg0 != 0) {
         *arg0 = 0;
     }
@@ -170,13 +171,13 @@ void func_020912a4(s32 *arg0) {
 
 s32 DrawSprite2D(s32 *arg0, s32 arg1, s32 arg2) {
     void func_020912ec(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_020913c4(void *);
-    M2C_UNK func_020913d4(M2C_UNK);
+    void Sprite_TickTimer(void *);
+    M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 
     if (arg0 != (void *)0 && *arg0 != 0) {
         func_020912ec((M2C_UNK)arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
-        func_020913c4((void *)arg0);
-        return func_020913d4((M2C_UNK)arg0);
+        Sprite_TickTimer((void *)arg0);
+        return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
     }
     return 0;
 }
@@ -198,90 +199,94 @@ AddSprite((u16)(x|flags),(u16)y,(u16)((v&0xfc00)|(((v&0x3ff)>>((u32)(**(u16 **)g
 if (M2C_FIELD(p,s32 *,0x30) && (M2C_FIELD(p,u8 *,0x22)&1)) func_0209177c(a);
 }
 
-void func_020913c4(void *arg0) {
+void Sprite_TickTimer(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x18) = (s16) (M2C_FIELD(arg0, s16 *, 0x18) + 1);
 }
 
 #pragma opt_if-conversion on
-M2C_UNK func_020913d4(M2C_UNK arg0raw) {
-    void func_020912a4(s32 *);
-    void *arg0 = (void *)arg0raw;
-    M2C_UNK *cur;
-    u16 word0;
-    u16 cmd;
-    void *base;
-    void *p10;
-    u16 first;
-    u32 masked;
+/* Runs one step of a sprite animation script: waits out the current frame
+ * delay, then either executes a script command (loop, stop or set command),
+ * skips the word, or resolves the frame index into a frame pointer and starts
+ * its loop.  Returns SPRITE_ANIM_* and marks the frame as selected. */
+M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK spriteHandle) {
+    void Sprite_ClearHandle(s32 *);
+    void *sprite = (void *)spriteHandle;
+    M2C_UNK *cursor;
+    u16 value;
+    u16 command;
+    void *dataBase;
+    void *frame;
+    u16 header;
+    u32 offset;
 
-    if (arg0 == (void *)0 || *(s32 *)arg0 == 0) {
-        return 0;
+    if (sprite == (void *)0 || *(s32 *)sprite == 0) {
+        return SPRITE_ANIM_STOPPED;
     }
-    if (M2C_FIELD(arg0, u16 *, 0x1C) == 0) {
-        return 0xFFFF;
+    if (M2C_FIELD(sprite, u16 *, SPRITE_SPEED) == 0) {
+        return SPRITE_ANIM_RUNNING;
     }
 
-    if (M2C_FIELD(arg0, s16 *, 0x1A) != 0) {
-        M2C_FIELD(arg0, s16 *, 0x1A) = (s16)(M2C_FIELD(arg0, s16 *, 0x1A) - 1);
-        if (M2C_FIELD(arg0, s16 *, 0x1A) > 0) {
-            return 0xFFFF;
+    if (M2C_FIELD(sprite, s16 *, SPRITE_DELAY) != 0) {
+        M2C_FIELD(sprite, s16 *, SPRITE_DELAY) = (s16)(M2C_FIELD(sprite, s16 *, SPRITE_DELAY) - 1);
+        if (M2C_FIELD(sprite, s16 *, SPRITE_DELAY) > 0) {
+            return SPRITE_ANIM_RUNNING;
         }
-        M2C_FIELD(arg0, s16 *, 0x1A) = 0;
-        M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
+        M2C_FIELD(sprite, s16 *, SPRITE_DELAY) = 0;
+        M2C_FIELD(sprite, M2C_UNK **, SPRITE_SCRIPT) = M2C_FIELD(sprite, M2C_UNK **, SPRITE_SCRIPT) + 1;
 
     }
 
-        cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
-        word0 = *(u16 *)cur;
-        if (word0 == 0) {
-            cmd = *((u16 *)cur + 1);
-            switch (cmd) {
-            case 0xFF:
-                M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0x8);
-                return func_020913d4(arg0raw);
-            case 0:
-                func_020912a4((s32 *)arg0);
-                return 0;
-            case 1:
-                return 1;
+        cursor = M2C_FIELD(sprite, M2C_UNK *, SPRITE_SCRIPT);
+        value = *(u16 *)cursor;
+        if (value == 0) {
+            command = *((u16 *)cursor + 1);
+            switch (command) {
+            case SPRITE_CMD_LOOP:
+                M2C_FIELD(sprite, M2C_UNK **, SPRITE_SCRIPT) = M2C_FIELD(sprite, M2C_UNK **, SPRITE_LOOP_PTR);
+                return Sprite_UpdateAnimationScript(spriteHandle);
+            case SPRITE_CMD_STOP:
+                Sprite_ClearHandle((s32 *)sprite);
+                return SPRITE_ANIM_STOPPED;
+            case SPRITE_CMD_END:
+                return SPRITE_ANIM_DONE;
             default:
-                M2C_FIELD(arg0, u16 *, 0x24) = cmd;
-                M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
-                return func_020913d4(arg0raw);
+                M2C_FIELD(sprite, u16 *, SPRITE_COMMAND) = command;
+                M2C_FIELD(sprite, M2C_UNK **, SPRITE_SCRIPT) = M2C_FIELD(sprite, M2C_UNK **, SPRITE_SCRIPT) + 1;
+                return Sprite_UpdateAnimationScript(spriteHandle);
             }
         }
 
         {
-            u16 maxv = M2C_FIELD(arg0, u16 *, 0x1C);
-            M2C_FIELD(arg0, u16 *, 0x1E) = (u16)(word0 * maxv + M2C_FIELD(arg0, u16 *, 0x1E));
-            if (M2C_FIELD(arg0, u16 *, 0x1E) >= 0x100) {
-                M2C_FIELD(arg0, s16 *, 0x1A) = (s16)(M2C_FIELD(arg0, u16 *, 0x1E) >> 8);
-                M2C_FIELD(arg0, u16 *, 0x1E) = (u16)(M2C_FIELD(arg0, u16 *, 0x1E) & 0xFF);
+            u16 speed = M2C_FIELD(sprite, u16 *, SPRITE_SPEED);
+            M2C_FIELD(sprite, u16 *, SPRITE_FRACTION) = (u16)(value * speed + M2C_FIELD(sprite, u16 *, SPRITE_FRACTION));
+            if (M2C_FIELD(sprite, u16 *, SPRITE_FRACTION) >= 0x100) {
+                M2C_FIELD(sprite, s16 *, SPRITE_DELAY) = (s16)(M2C_FIELD(sprite, u16 *, SPRITE_FRACTION) >> 8);
+                M2C_FIELD(sprite, u16 *, SPRITE_FRACTION) = (u16)(M2C_FIELD(sprite, u16 *, SPRITE_FRACTION) & 0xFF);
             } else {
-                M2C_FIELD(arg0, s16 *, 0x1A) = 1;
-                return func_020913d4(arg0raw);
+                M2C_FIELD(sprite, s16 *, SPRITE_DELAY) = 1;
+                return Sprite_UpdateAnimationScript(spriteHandle);
             }
         }
 
-    if (M2C_FIELD(arg0, u8 *, 0x22) & 0x2) {
-        base = M2C_FIELD(arg0, void **, 0x4);
-        masked = *(u16 *)((u8 *)base + *((u16 *)M2C_FIELD(arg0, M2C_UNK *, 0xC) + 1) * 2) & ~1U;
-        M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)base + masked);
+    if (M2C_FIELD(sprite, u8 *, SPRITE_FLAGS) & SPRITE_FLAG_OFFSET_TABLE) {
+        dataBase = M2C_FIELD(sprite, void **, SPRITE_DATA_BASE);
+        offset = *(u16 *)((u8 *)dataBase + *((u16 *)M2C_FIELD(sprite, M2C_UNK *, SPRITE_SCRIPT) + 1) * 2) & ~1U;
+        M2C_FIELD(sprite, void **, SPRITE_FRAME) = (void *)((u8 *)dataBase + offset);
     } else {
-        M2C_FIELD(arg0, void **, 0x10) = (void *)(((void **)M2C_FIELD(arg0, void **, 0x4))[*((u16 *)M2C_FIELD(arg0, M2C_UNK *, 0xC) + 1)]);
+        M2C_FIELD(sprite, void **, SPRITE_FRAME) = (void *)(((void **)M2C_FIELD(sprite, void **, SPRITE_DATA_BASE))[*((u16 *)M2C_FIELD(sprite, M2C_UNK *, SPRITE_SCRIPT) + 1)]);
     }
 
-    p10 = M2C_FIELD(arg0, void **, 0x10);
-    first = *(u16 *)p10;
-    if (!(first & 0x8000)) {
-        M2C_FIELD(arg0, void **, 0x14) = (void *)0;
+    frame = M2C_FIELD(sprite, void **, SPRITE_FRAME);
+    header = *(u16 *)frame;
+    if (!(header & 0x8000)) {
+        M2C_FIELD(sprite, void **, SPRITE_LOOP_FRAME) = (void *)0;
     } else {
-        M2C_FIELD(arg0, void **, 0x14) = p10;
-        masked = *(u16 *)M2C_FIELD(arg0,void **,0x14) & 0x7FFF;
-        M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)M2C_FIELD(arg0,void **,0x10) + (masked * 3 + 1) * 2);
+        M2C_FIELD(sprite, void **, SPRITE_LOOP_FRAME) = frame;
+        offset = *(u16 *)M2C_FIELD(sprite,void **,SPRITE_LOOP_FRAME) & 0x7FFF;
+        M2C_FIELD(sprite, void **, SPRITE_FRAME) = (void *)((u8 *)M2C_FIELD(sprite,void **,SPRITE_FRAME) + (offset * 3 + 1) * 2);
     }
-    M2C_FIELD(arg0, u8 *, 0x22) |= 1;
-    return 0xFFFF;
+    M2C_FIELD(sprite, u8 *, SPRITE_FLAGS) |= SPRITE_FLAG_FRAME_SET;
+    return SPRITE_ANIM_RUNNING;
 }
 #pragma opt_if-conversion reset
 void func_02091570(M2C_UNK a) {
@@ -517,18 +522,18 @@ void func_020918a4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02091928(void *arg0) {
-    M2C_UNK func_020913d4(M2C_UNK);
+    M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
     u16 temp_r4;
     M2C_FIELD(arg0, s16 *, 0x1A) = 0;
     temp_r4 = M2C_FIELD(arg0, u16 *, 0x1C);
     M2C_FIELD(arg0, s16 *, 0x1A) = 0;
     M2C_FIELD(arg0, u16 *, 0x1C) = 0x100;
-    func_020913d4((M2C_UNK)arg0);
+    Sprite_UpdateAnimationScript((M2C_UNK)arg0);
     M2C_FIELD(arg0, u16 *, 0x1C) = temp_r4;
 }
 
 void func_02091954(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,M2C_UNK arg3) {
-void func_020918a4(M2C_UNK, M2C_UNK); M2C_UNK func_020913d4(M2C_UNK);
+void func_020918a4(M2C_UNK, M2C_UNK); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 void *r5=(void*)arg0; M2C_UNK r4=arg2; M2C_UNK r1;
 M2C_FIELD(r5,u8*,0x22)=arg3; func_020918a4(arg0,arg1); r1=0;
 M2C_FIELD(r5,s32*,0x30)=r1; M2C_FIELD(r5,s32*,0x28)=r1; M2C_FIELD(r5,s32*,0x2c)=r1;
@@ -536,7 +541,7 @@ M2C_FIELD(r5,s16*,0x18)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
 M2C_FIELD(r5,u8*,0x20)=r4; M2C_FIELD(r5,u8*,0x21)=31; M2C_FIELD(r5,s32*,0x14)=r1;
 M2C_FIELD(r5,u8*,0x23)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
 M2C_FIELD(r5,s16*,0x1c)=256; M2C_FIELD(r5,s16*,0x1e)=r1; M2C_FIELD(r5,s16*,0x24)=r1;
-func_020913d4((M2C_UNK)r5);
+Sprite_UpdateAnimationScript((M2C_UNK)r5);
 }
 
 #pragma optimization_level 2
@@ -564,7 +569,7 @@ void func_020919f4(void *arg0) {
 
 #pragma scheduling off
 void func_02091a40(void *arg0) {
-    func_020912a4(M2C_FIELD(arg0, s32 *, 0x58));
+    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x58));
 }
 #pragma scheduling reset
 void func_02091a50(void) {

@@ -406,7 +406,7 @@ s32 func_ov001_02189dc0(void) {
     return 1;
 }
 
-void *func_ov001_02189dc8(void *arg0,u32 *arg1,s32 arg2){
+void *Ov001_LoadFile(void *arg0,u32 *arg1,s32 arg2){
 s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 func_0200ba54(void *,void *);void func_02007958(void);void FileRead(void *,void *,s32);void func_0200ba9c(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
 extern void *data_ov001_02193e2c;extern s32 data_ov001_021917bc;
 void *buf;u32 work[18];u32 size;s32 align;void *out;
@@ -421,7 +421,7 @@ size=*(u32 *)buf>>8;if(arg1)*arg1=size;
 out=(void *)func_ov001_0218b6f8(size,arg2);func_020081d0(buf,out);func_ov001_0218b71c(&buf);return out;
 }
 
-void func_ov001_02189ebc(s32 arg0, ...) {
+void Ov001_FreeFile(s32 arg0, ...) {
  M2C_UNK func_ov001_0218a6f4(s32,void*); void func_ov001_0218b71c(void*); extern void *data_ov001_02193e2c;
  func_ov001_0218b71c(&arg0);
  func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193e2c,s32*,0x84),(void*)arg0);
@@ -429,7 +429,7 @@ void func_ov001_02189ebc(s32 arg0, ...) {
 
 s32 func_ov001_02189ef0(void *arg0, s32 arg1, s32 arg2) {
     s32 StringLength(void *);
-    s32 func_0206527c(void *, void *, s32);
+    s32 ByteCompareN(void *, void *, s32);
     s32 temp_r4;
     s32 temp_r0;
     
@@ -438,7 +438,7 @@ s32 func_ov001_02189ef0(void *arg0, s32 arg1, s32 arg2) {
     if (temp_r4 < arg2 || temp_r0 < arg2) {
         return 0;
     }
-    if (func_0206527c(arg0 + (temp_r4 - arg2), arg1 + (temp_r0 - arg2), arg2) == 0) {
+    if (ByteCompareN(arg0 + (temp_r4 - arg2), arg1 + (temp_r0 - arg2), arg2) == 0) {
         return 1;
     }
     return 0;

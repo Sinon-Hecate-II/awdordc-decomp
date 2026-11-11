@@ -4,7 +4,7 @@ typedef struct { u16 values[6]; } SetupParams12;
 
 void func_020d8bb4(void) {
 M2C_UNK func_0208349c(u32);
-s32 func_020bee64();
+s32 IsUnitAvailable();
 s32 func_020bf054(s32,s32);
 M2C_UNK func_020ceec8();
 s32 func_020d8b84(s32);
@@ -27,12 +27,12 @@ switch(k){
 case 0:
 j=0;
 do {t=func_020bf054(k,j);
-if(func_020bee64()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+if(IsUnitAvailable()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 j++;}while(j<3);
 break;
 case 1:
 t=func_020bf054(k,0);
-if(func_020bee64()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+if(IsUnitAvailable()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 break;
 }
 k++;
@@ -203,10 +203,10 @@ void func_020d908c(void) {
 }
 
 void func_020d9244(void) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    func_01ff9ce8(0);
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(0);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }

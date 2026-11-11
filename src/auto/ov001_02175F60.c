@@ -301,7 +301,7 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK func_02004314;
     extern M2C_UNK func_020041b8;
     extern M2C_UNK func_020046cc;
-    extern M2C_UNK func_020040b4;
+    extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK func_020042bc;
     extern M2C_UNK func_02004160;
     extern M2C_UNK func_0200442c;
@@ -327,7 +327,7 @@ void Ov001_InitScreen(void) {
     Ov001_LoadAsset(&gOv001TopObjTilesPath, &func_02004314);
     Ov001_LoadAsset(&gOv001ObjMapPath, &func_020041b8);
     Ov001_LoadAsset(&gOv001BottomBgStep1TilesPath, &func_020046cc);
-    Ov001_LoadAsset(&gOv001BottomBgStep1MapPath, &func_020040b4);
+    Ov001_LoadAsset(&gOv001BottomBgStep1MapPath, &GX_LoadBGPltt);
     Ov001_LoadAsset(&gOv001BottomObjTilesPath, &func_020042bc);
     Ov001_LoadAsset(&gOv001BottomObjMapPath, &func_02004160);
     /* The top screen's layout depends on the screen variant. */
@@ -405,21 +405,21 @@ void func_ov001_021768b8(void) {
 void func_ov001_02176934(void) {
     s32 Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
+    s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_0218f716;
     extern M2C_UNK data_ov001_021904dc;
     extern M2C_UNK data_ov001_021904f4;
     extern M2C_UNK data_ov001_0219050c;
-    extern M2C_UNK func_020040b4;
+    extern M2C_UNK GX_LoadBGPltt;
     extern u8 data_ov001_02193d5c;
     extern M2C_UNK func_0200448c;
     extern M2C_UNK func_020046cc;
     typedef struct { u8 bytes[22]; } Text;
     Text text = *(Text *)&data_ov001_0218f716;
-    Ov001_LoadAsset(&data_ov001_021904f4, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_021904f4, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_0219050c, &func_0200448c);
     Ov001_LoadAsset(&data_ov001_021904dc, &func_020046cc);
-    M2C_FIELD(&data_ov001_02193d5c, s32 *, 4) = func_ov001_02189dc8(Ov001_LocalizePath(&text), 0, 4);
+    M2C_FIELD(&data_ov001_02193d5c, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&text), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -551,7 +551,7 @@ void func_ov001_02176cd8(void) {
     s32 func_ov001_0218a800(M2C_UNK);
     M2C_UNK func_ov001_02172184();
     M2C_UNK func_ov001_02171cf8();
-    M2C_UNK func_ov001_02189ebc(s32);
+    M2C_UNK Ov001_FreeFile(s32);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -567,7 +567,7 @@ void func_ov001_02176cd8(void) {
     }
     func_ov001_02172184();
     func_ov001_02171cf8();
-    func_ov001_02189ebc(M2C_FIELD(&data_ov001_02193d5c, s32 *, 4));
+    Ov001_FreeFile(M2C_FIELD(&data_ov001_02193d5c, s32 *, 4));
     func_ov001_0218b368(1, 1);
     func_ov001_0218b368(0, 0x14);
     switch (data_ov001_02193d5c) {                  /* irregular */

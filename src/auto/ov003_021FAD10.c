@@ -16,9 +16,9 @@ extern u16 data_ov003_0220feac[];
 s32 GetSpriteAnimValue(void *);
 s32 Modulo(s32,s32);
 s32 Divide(s32,s32);
-void func_01ff9ce8(s32);
+void Clear3DSpriteLayer(s32);
 s32 func_ov003_021f3f5c(s16,s16,s32,s32,s32,s32,s32,s32);
-void func_020809c0(void *,s32,s32);
+void ClearTileRect(void *,s32,s32);
 u8 func_ov003_021f269c(void *,void *,u16);
 void func_ov003_021fac2c(u16,u16,s16,s16,s32);
 s32 func_ov003_021f3f0c(s16,s32,s32);
@@ -27,7 +27,7 @@ void func_020a94fc(void *);
 s32 func_ov003_02200a18(u8,u16);
 void AddSprite(u16,u8,u16,void *,s32);
 s32 func_ov003_021f2654(void);
-s32 func_020c7f30(u16);
+s32 IsCampaignMapAvailable(u16);
 s32 func_020c7eb8(u16);
 s32 func_020c7ef4(u16);
 s32 func_02086960(u16);
@@ -51,7 +51,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  M2C_FIELD(gCur3DSpriteEngine[0],u16 *,0x46)=neg;
  M2C_FIELD(gCur3DSpriteEngine[0],u16 *,0x38)=-(arg1+40);
  M2C_FIELD(gCur3DSpriteEngine[0],u16 *,0x40)=neg;
- func_01ff9ce8(3);
+ Clear3DSpriteLayer(3);
  p=M2C_FIELD(arg0,void **,0x4c);
  i=(s16)M2C_FIELD(p,s32 *,0x1c);
  n=(u8)M2C_FIELD(p,s16 *,8);
@@ -67,7 +67,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  if(!func_ov003_021f3f5c((s16)px,(s16)py,240,16,6,40,240,112)){
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))==0){
- func_020809c0((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
+ ClearTileRect((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
  M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&=~(1<<(idx&7));
  }
  continue;
@@ -101,11 +101,11 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  AddSprite((u16)((px+3)&0x1ff),(u8)(py-2),(u16)(((tile>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0x8800),gSpriteDesc16x16,17);}
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))){
- func_020809c0((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
+ ClearTileRect((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
  if(func_ov003_021f2654())shade=0;
  else {
  mode=M2C_FIELD(arg0,Ov003DrawNibble *,0x3b).low;
- if((u8)(mode==6))shade=(u8)(func_020c7f30(item)?0:3);
+ if((u8)(mode==6))shade=(u8)(IsCampaignMapAvailable(item)?0:3);
  else if((u8)(mode==4)||(u8)(mode==8)||(u8)(mode==7)){
  p=M2C_FIELD(arg0,void **,0x44);shade=0;
  if(!(u8)(func_ov003_021f269c((u8*)p+4,(u8*)p+18,item)!=255))

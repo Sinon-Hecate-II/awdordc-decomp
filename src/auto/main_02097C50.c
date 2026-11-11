@@ -13,7 +13,9 @@ void func_02097c84(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_02097cb8(u32 arg0) { s32 func_0209e9dc(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=func_0209e9dc((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
 
-s32 func_02097ce4(u32 arg0){switch(arg0){
+/* Returns the tile row (5 or 6) at which the given character's face graphics
+ * start in the 32-tile-wide face tile buffer. */
+s32 GetFaceTileRow(u32 character){switch(character){
 case 0: return 6;
 case 1: return 6;
 case 2: return 6;

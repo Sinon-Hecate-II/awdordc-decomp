@@ -18,6 +18,7 @@
 #define OV005_MENU_SCROLL      0x16 /* s16 scroll position of the list */
 #define OV005_MENU_SCROLL_VEL  0x18 /* s16 scroll velocity of the list */
 #define OV005_MENU_SPRITE      0x1c /* void * sprite object animated by the menu */
+#define OV005_MENU_COLOR_OBJ   0x24 /* object whose sprite (+0x3E y) shows the page colour strip */
 
 enum {
     OV005_PAGE_LIST   = 0,

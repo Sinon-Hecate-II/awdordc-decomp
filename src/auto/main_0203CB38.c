@@ -9,7 +9,7 @@ void func_02007e54(int, void *, int);
 void *GetConnection(void);
 void HandleNatNegPacket(void *, int, void *);
 void func_0205f83c(int, void *, int, void *);
-int func_0206527c(void *, void *, int);
+int ByteCompareN(void *, void *, int);
 
 void func_0203cb38(void *arg0) { }
 
@@ -25,7 +25,7 @@ s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
     if ((c==0xfe && arg3[1]==0xfd)||c==0x5c) {
         if (M2C_FIELD(GetConnection(),s32 *,0x10))
             func_0205f83c(M2C_FIELD(GetConnection(),s32 *,0x10),arg3,arg4,&packet);
-    } else if (!func_0206527c(arg3,gNatNegMagic,6)) {
+    } else if (!ByteCompareN(arg3,gNatNegMagic,6)) {
         HandleNatNegPacket(arg3,arg4,&packet);
     } else {
         switch(c) { case 0xfe: unused=0; default: return 0; }

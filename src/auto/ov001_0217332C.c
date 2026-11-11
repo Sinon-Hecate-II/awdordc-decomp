@@ -77,7 +77,7 @@ extern u16 gKeyboardAuxKeyPos[],gKeyboardActionKeyPos[];
 void func_ov001_0218b200(s32,u16,s32,s32,s32);
 s32 func_020020c4(s32,s32);
 void func_ov001_0218a260(void *,s32,s32,s32);
-M2C_UNK func_ov001_0218a384(s32,M2C_UNK,u16,u16);
+M2C_UNK Ov001_MoveSpriteLayout(s32,M2C_UNK,u16,u16);
 SpriteGroupCounts a,b,c;
 s32 index=arg1*12; s32 i,j;void *p;u16 tile;
 a=*(SpriteGroupCounts *)(data_ov001_0218f328+17);
@@ -109,7 +109,7 @@ i++;
 i=0;
 for(i=0;i<c.v[arg1];i++){
 func_ov001_0218a260(M2C_FIELD((u8 *)gOv001MenuState+i*4,void **,0xfc),-1,0,0);
-func_ov001_0218a384(M2C_FIELD((u8 *)gOv001MenuState+i*4,s32 *,0xfc),-1,gKeyboardActionKeyPos[i*2],arg2);
+Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)gOv001MenuState+i*4,s32 *,0xfc),-1,gKeyboardActionKeyPos[i*2],arg2);
 }
 }
 #pragma opt_strength_reduction off
@@ -152,7 +152,7 @@ func_ov001_0218a304(M2C_FIELD(gOv001MenuState+(arg0-0x33)*4,s32 *,0xfc),-1,0,dat
 #pragma opt_common_subs reset
 void func_ov001_02173924(void) {
     s32 *func_ov001_0218a24c(s32, s32);
-    M2C_UNK func_ov001_0218a384(s32, M2C_UNK, u16, u16);
+    M2C_UNK Ov001_MoveSpriteLayout(s32, M2C_UNK, u16, u16);
     M2C_UNK func_ov001_0218a474(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a55c(M2C_UNK, M2C_UNK, s32);
     extern void *gOv001MenuState;
@@ -185,7 +185,7 @@ void func_ov001_02173924(void) {
     func_ov001_0218a55c(0, var_r4, func_ov001_0218a24c(M2C_FIELD(gOv001MenuState, s32 *, 0x114), 0));
     func_ov001_0218a474(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, 2);
     temp_ip = M2C_FIELD(gOv001MenuState, s8 *, 0x121) * 2;
-    func_ov001_0218a384(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, data_ov001_0218f428[temp_ip], data_ov001_0218f42a[temp_ip]);
+    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, data_ov001_0218f428[temp_ip], data_ov001_0218f42a[temp_ip]);
 }
 
 /* Moves the ov001 menu cursor by `direction` (0..3) using the per-state

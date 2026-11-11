@@ -243,18 +243,18 @@ void func_02039698(s32 unused, void *arg1) {
 
 void func_020396d0(s32 a,void *b,s32 c){
 extern char data_020fc89c[],data_020fc8a4[];extern void *gNetSession;
-s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 func_0206527c(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
+s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
 void func_0203db94(s32,s32,char *);
 char buf[12]={0};char *p=M2C_FIELD(b,char **,8);u32 n;
 if(func_0203ad70(a,b,c))return;
-if(func_0206527c(p,data_020fc89c,StringLength(data_020fc89c)))return;
+if(ByteCompareN(p,data_020fc89c,StringLength(data_020fc89c)))return;
 p+=StringLength(data_020fc89c);
 n=StringFindChar(p,'v')-p;
 func_02068d18(buf,p,n);
 if(n>10)return;
 if(func_0206abd8(buf,0,10)!=3)return;
 p+=n+1;
-if(func_0206527c(p,data_020fc8a4,StringLength(data_020fc8a4)))return;
+if(ByteCompareN(p,data_020fc8a4,StringLength(data_020fc8a4)))return;
 if(M2C_FIELD(gNetSession,s32 *,0x24)!=5){
 if(M2C_FIELD(gNetSession,s32 *,0x24)!=6)return;
 if(M2C_FIELD(gNetSession,volatile u8 *,0x389)!=2&&M2C_FIELD(gNetSession,volatile u8 *,0x389)!=3)return;
@@ -462,43 +462,43 @@ void func_02039b9c(void) {
 void func_02039ba8(s32 *arg0) {
     extern void *gNetSession;
     void SetNetError(s32, s32);
-    s32 func_0205b048(s32 *);
+    s32 GT2SocketHandle(s32 *);
     s32 ghiGetLastSocketError(void);
-    func_0205b048(arg0);
+    GT2SocketHandle(arg0);
     M2C_FIELD(&gNetSession, s32 *, 4) = ghiGetLastSocketError();
     SetNetError(9, 0xfffe8515);
     M2C_FIELD(M2C_FIELD(&gNetSession, s32 *, 0), s32 *, 0) = 0;
 }
 
 void func_02039be4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    extern M2C_UNK data_0213d380;
+    extern M2C_UNK gNasLogin;
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_FIELD(&data_0213d380, s32 *, 4) = arg0;
+    M2C_FIELD(&gNasLogin, s32 *, 4) = arg0;
     MI_CpuFill8(arg0, 0, 0x280);
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0) = arg2;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 4) = 0;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 8) = arg3;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0xc) = arg4;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x10) = arg5;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x14) = arg6;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x18) = arg7;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x1c) = arg1;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0) = arg2;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 4) = 0;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 8) = arg3;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0xc) = arg4;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x10) = arg5;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x14) = arg6;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x18) = arg7;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x1c) = arg1;
 }
 
 void func_02039c68(void) {
-    void func_0203a034(void);
+    void NasLoginRequestCallback(void);
     void StartNasRequest(void *, s32);
-    extern M2C_UNK data_0213d380;
-    StartNasRequest(func_0203a034, 0);
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 4) = 1;
-    M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x30) = 0;
+    extern M2C_UNK gNasLogin;
+    StartNasRequest(NasLoginRequestCallback, 0);
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 4) = 1;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x30) = 0;
 }
 
 /* Tick the active online session: dispatch by its state (0 idle, 1 ?, 2-4 update
    peer, 5 idle). In 2-4, notify completion via func_0204db50 and, when a timeout
    (60000 units) elapses, report error 6 / -61070. */
 void func_02039ca0(void) {
-    extern M2C_UNK data_0213d380;
+    extern M2C_UNK gNasLogin;
     s32 HasNetError(void);
     void func_0203a2b4(void);
     void func_0204db50(void *);
@@ -506,9 +506,9 @@ void func_02039ca0(void) {
     u64 func_02072088(u64, u64);
     void *p;
 
-    if (!M2C_FIELD(&data_0213d380, void **, 4)) return;
+    if (!M2C_FIELD(&gNasLogin, void **, 4)) return;
     if (HasNetError()) return;
-    p = M2C_FIELD(&data_0213d380, void **, 4);
+    p = M2C_FIELD(&gNasLogin, void **, 4);
     switch (M2C_FIELD(p, u32 *, 4)) {
     case 0: break;
     case 1: func_0203a2b4(); return;
@@ -517,11 +517,11 @@ void func_02039ca0(void) {
     case 4:
         p = M2C_FIELD(p, void **, 0);
         if (p && M2C_FIELD(p, s32 *, 0)) func_0204db50(p);
-        p = M2C_FIELD(&data_0213d380, void **, 4);
+        p = M2C_FIELD(&gNasLogin, void **, 4);
         if (!M2C_FIELD(p, s32 *, 0x30)) return;
-        if (func_02072088((GetSystemTick() - M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
+        if (func_02072088((GetSystemTick() - M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
             func_02039db4(6, -61070);
-            M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x30) = 0;
+            M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x30) = 0;
         }
         return;
     case 5: break;
@@ -529,23 +529,23 @@ void func_02039ca0(void) {
     }
 }
 
-s32 func_02039d98(void) {
-    extern M2C_UNK data_0213d380;
-    if (M2C_FIELD(&data_0213d380, void **, 4) != NULL) {
-        return M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x1C);
+s32 GetLocalPlayerInfo(void) {
+    extern M2C_UNK gNasLogin;
+    if (M2C_FIELD(&gNasLogin, void **, 4) != NULL) {
+        return M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x1C);
     }
     return 0;
 }
 
 s32 func_02039db4(u32 arg0, s32 arg1) {
-    extern M2C_UNK data_0213d380;
+    extern M2C_UNK gNasLogin;
     void SetNetError(s32, s32);
     void func_02039e60(void);
     void *p;
-    p = (void *)M2C_FIELD(&data_0213d380, void **, 4);
+    p = (void *)M2C_FIELD(&gNasLogin, void **, 4);
     if (p == NULL || arg0 == 0) return;
     SetNetError(arg0, arg1);
-    p = (void *)M2C_FIELD(&data_0213d380, void **, 4);
+    p = (void *)M2C_FIELD(&gNasLogin, void **, 4);
     if (M2C_FIELD(p, void (**)(s32, u8, s32), 0x14) != NULL) {
         M2C_FIELD(p, void (**)(s32, u8, s32), 0x14)(arg0, 0, M2C_FIELD(p, s32 *, 0x18));
     }
@@ -555,28 +555,28 @@ s32 func_02039db4(u32 arg0, s32 arg1) {
 #pragma push
 #pragma opt_common_subs off
 void func_02039e04(void) {
-extern M2C_UNK data_0213d380;
-M2C_UNK func_020376d8(s32,s32,s32);
+extern M2C_UNK gNasLogin;
+M2C_UNK HeapFree(s32,s32,s32);
 void func_02032a84(void); void func_02032b10(void);
-if(M2C_FIELD(M2C_FIELD(&data_0213d380,s32 *,4),s32 *,0x24)){
+if(M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24)){
 func_02032a84();func_02032b10();
-func_020376d8(0,M2C_FIELD(M2C_FIELD(&data_0213d380,s32 *,4),s32 *,0x24),0);
-M2C_FIELD(M2C_FIELD(&data_0213d380,s32 *,4),s32 *,0x24)=0;
+HeapFree(0,M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24),0);
+M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24)=0;
 }
-M2C_FIELD(&data_0213d380,s32 *,4)=0;
+M2C_FIELD(&gNasLogin,s32 *,4)=0;
 }
 #pragma pop
 void func_02039e60(void) {
-    extern M2C_UNK data_0213d380;
+    extern M2C_UNK gNasLogin;
     M2C_UNK *p;
-    p = (M2C_UNK *)M2C_FIELD(&data_0213d380, void **, 4);
+    p = (M2C_UNK *)M2C_FIELD(&gNasLogin, void **, 4);
     if (p == NULL) return;
     M2C_FIELD(p, s32 *, 4) = 0;
-    p = (M2C_UNK *)M2C_FIELD(&data_0213d380, void **, 4);
+    p = (M2C_UNK *)M2C_FIELD(&gNasLogin, void **, 4);
     M2C_FIELD(p, s32 *, 0x30) = 0;
 }
 
-u32 func_02039e88(u32 a, u32 unused, u32 off) {
+u32 ReportNasError(u32 a, u32 unused, u32 off) {
     u32 ret = a;
     u32 code;
     if (ret == 0) return 0;

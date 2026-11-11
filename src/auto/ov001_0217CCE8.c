@@ -7,7 +7,7 @@ void func_ov001_0217ded8(void);
 void func_ov001_0217dbd8(s32);
 void func_ov001_0217dc44(s32);
 
-void *func_ov001_0218445c();
+void *GetCurrentMapRecord();
 
 M2C_UNK func_ov001_0217cce8(void) {
     return 0;
@@ -140,7 +140,7 @@ void func_ov001_0217d260(s32 arg0) {
  * text, size the scrollbar from the scroll position, create the seven entry
  * sprites and the two scroll callbacks, then start the input step. */
 void InitMapListScreen(void) {
-    void *func_ov001_0218445c(void);
+    void *GetCurrentMapRecord(void);
     void *func_ov001_0218b6f8(s32, s32);
     extern M2C_UNK gMapListState;
     void func_ov001_0217d680(void);
@@ -166,7 +166,7 @@ void InitMapListScreen(void) {
     u8 value;
     void *sprite;
 
-    profile = func_ov001_0218445c();
+    profile = GetCurrentMapRecord();
     M2C_FIELD(&gMapListState, void **, 8) = func_ov001_0218b6f8(0x48, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = M2C_FIELD(profile, u8 *, 0xf6);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x42) = 0xc;
@@ -216,7 +216,7 @@ void InitMapListScreen(void) {
 void InitMapListGraphics(void) {
     M2C_UNK Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov001_02189dc8(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LoadFile(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183694(M2C_UNK);
     M2C_UNK func_ov001_02183720(void);
     extern u8 sJb3ListBackPath[];
@@ -224,7 +224,7 @@ void InitMapListGraphics(void) {
     extern u8 sYbBgStep21NclPath[];
     extern M2C_UNK sYbObjKbPath, sJbBgStep2NcgPath, sJbBgStep21NcgPath, sJb3ListNscPath;
     extern M2C_UNK gMapListState;
-    extern M2C_UNK func_02004160, func_0200472c, func_020046cc, func_020040b4, func_020044ec;
+    extern M2C_UNK func_02004160, func_0200472c, func_020046cc, GX_LoadBGPltt, func_020044ec;
     typedef struct { u8 bytes[23]; } ListBackPath;
     typedef struct { u8 bytes[21]; } BgStep2Path;
     typedef struct { u8 bytes[22]; } BgStep21Path;
@@ -239,17 +239,17 @@ void InitMapListGraphics(void) {
     Ov001_LoadAsset(&sYbObjKbPath, &func_02004160);      /* UI palette */
     Ov001_LoadAsset(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
     Ov001_LoadAsset(&sJbBgStep21NcgPath, &func_020046cc);/* background tiles, step 21 */
-    Ov001_LoadAsset((void *)&bgStep2Path, &func_020040b4);   /* background palette, step 2 */
+    Ov001_LoadAsset((void *)&bgStep2Path, &GX_LoadBGPltt);   /* background palette, step 2 */
     Ov001_LoadAsset(&sJb3ListNscPath, &func_020044ec);   /* list tilemap */
 
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8) =
-        func_ov001_02189dc8(Ov001_LocalizePath((void *)&listBackPath), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath((void *)&listBackPath), 0, 4);
     func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8));
     func_ov001_02183720();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 12) =
-        func_ov001_02189dc8(Ov001_LocalizePath((void *)&bgStep2Path), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath((void *)&bgStep2Path), 0, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 16) =
-        func_ov001_02189dc8(Ov001_LocalizePath((void *)&bgStep21Path), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath((void *)&bgStep21Path), 0, 4);
 
     /* sub BG0/BG1 and main BG0/BG1: 256-colour tiled layers */
     M2C_FIELD((void *)0x04001008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 0) & ~3) | 3;
@@ -262,11 +262,11 @@ void InitMapListGraphics(void) {
 
 void func_ov001_0217d680(void) {
     M2C_UNK func_ov001_02175db4(M2C_UNK, s32 *);
-    void *func_ov001_0218445c();
+    void *GetCurrentMapRecord();
     extern M2C_UNK gMapListState;
     s32 sp0;
 
-    func_ov001_0218445c();
+    GetCurrentMapRecord();
     func_ov001_02175db4(0, &sp0);
     if (sp0 != 0) {
         return;
@@ -407,7 +407,7 @@ s32 func_ov001_0217d9d4(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     u32 temp_r0;
 
-    func_ov001_0218445c();
+    GetCurrentMapRecord();
     temp_r0 = func_ov001_0217eb6c();
     if (temp_r0 == 0xE) {
         return 0;
@@ -458,7 +458,7 @@ void func_ov001_0217dbd8(s32 arg0) {
     extern M2C_UNK gMapListState;
     s32 var_r5;
     void *temp_r0;
-    temp_r0 = func_ov001_0218445c();
+    temp_r0 = GetCurrentMapRecord();
     if (M2C_FIELD(temp_r0, u8 *, 0xF5) == arg0) return;
     if (arg0 != 0) {
         var_r5 = M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) != 0;
@@ -476,7 +476,7 @@ void func_ov001_0217dc44(s32 arg0) {
     M2C_UNK func_ov001_02184484(s32);
     extern M2C_UNK gMapListState;
     s32 current;
-    current = M2C_FIELD(func_ov001_0218445c(), u8 *, 0xF6);
+    current = M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF6);
     if (current == arg0) return;
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = arg0;
     func_ov001_02184484(arg0);

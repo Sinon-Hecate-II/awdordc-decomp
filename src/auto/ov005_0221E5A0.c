@@ -29,7 +29,7 @@ void *MemAlloc(s32);
 void *func_020e34bc(s32);
 s32 GetLocalizedFileName(M2C_UNK *);
 s32 func_020cfb94(void);
-s32 func_020cfb78(void);
+s32 GetCurrentMapName(void);
 s32 func_020cd6d4(void);
 s32 GetLanguage(void);
 s32 func_020a7290(void);
@@ -60,7 +60,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 LoadDecompressedFileTo(data_ov005_02220e8c,M2C_FIELD(gCur3DSpriteEngine,s32 *,28)+0x7300);
 LoadFileToSpriteBuffer(data_ov005_02220e3c,0x380,0x20);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_02082134(2,2); func_01ff9ce8(2);
+func_02082134(2,2); Clear3DSpriteLayer(2);
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e6c),M2C_FIELD(gCur3DSpriteEngine,s32 *,20));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e4c),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220edc),M2C_FIELD(gCur3DSpriteEngine,s32 *,36));
@@ -103,7 +103,7 @@ func_02007ef4(func_ov000_0216cdcc(*b),dst,256);
 b++; saved=(void **)((s32)saved+8); k++; } while(*b); }
 func_01ff9e44(func_ov000_0216cdec(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
 gCur3DSpriteEngine=g3DSpriteEngineSub; func_02099450(0,0,0);
-v=func_020cfb78(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
+v=GetCurrentMapName(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
 if(func_020cd6d4()) {
 func_0209c048(6,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
 func_0209c024(8,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);

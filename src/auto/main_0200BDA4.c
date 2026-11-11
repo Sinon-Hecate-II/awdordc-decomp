@@ -184,7 +184,7 @@ void func_0200c214(void *arg0) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     void func_02007958(void);
     void func_02000970(s32);
-    M2C_UNK func_020067e0(M2C_UNK, M2C_UNK);
+    M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     extern u8 data_0212dbac[];
     extern s16 data_0212dbc0;
     void *r5;
@@ -225,7 +225,7 @@ void func_0200c214(void *arg0) {
     if (top & 1) {
         func_02000970(M2C_FIELD(r5, s32 *, 4) + (s32)r4);
     }
-    func_020067e0(M2C_FIELD(r5, M2C_UNK *, 4), M2C_FIELD(r5, M2C_UNK *, 8));
+    DC_FlushRange(M2C_FIELD(r5, M2C_UNK *, 4), M2C_FIELD(r5, M2C_UNK *, 8));
     rr4 = M2C_FIELD(r5, u32 *, 0x10);
     rr5 = M2C_FIELD(r5, u32 *, 0x14);
     if (rr4 >= rr5) return;

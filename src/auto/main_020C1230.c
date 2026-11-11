@@ -1,8 +1,9 @@
 /* 27 functions from 0x020C1230 to 0x020C1F58 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern s32 gCOAssetNames[];
 
-void func_020c1230(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
+void DrawMapPreview(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
     s32 func_020c11e4(s32);
     M2C_UNK func_020c1298(s32, M2C_UNK, s32, M2C_UNK);
@@ -86,52 +87,57 @@ M2C_UNK func_020c13c0(M2C_UNK arg0,s32 arg1) {
  } while(y<height);
 }
 
-void func_020c1454(u16 *dst) {
-s32 func_020a61e8(void*);
-extern void **gCurrentMap;
-extern u16 data_0211e538[],data_02129660[],data_0216402c[],data_021296e8[],data_02163fdc[];
-extern u8 data_0216408c[];
-s32 i,owner,x,y;u8 *unit;u16 *out,*src;u32 kind;
-for(i=1;i<256;i++){
-unit=(u8*)*gCurrentMap+0x59a4+i*14;
-kind=(u32)(unit[0]<<26)>>26;
-if(kind && func_020a61e8(unit)){
-x=unit[1];y=unit[2];
-if(unit){if(unit) owner=(s32)(unit-((u8*)*gCurrentMap+0x59a4))/14;else owner=0;owner=(owner>>6)+1;}else owner=0;
-src=data_0211e538+data_021296e8[19+data_0216408c[owner]];
-out=dst+data_0216402c[x]+data_02163fdc[y];
-out[0]&=data_02129660[0];out[2]&=data_02129660[1];out[4]&=data_02129660[2];out[6]&=data_02129660[3];
-out[0]|=src[0];out[2]|=src[2];out[4]|=src[4];out[6]|=src[6];
-}}
+/* Stamp a colour marker for every visible unit onto the map-preview tile buffer. */
+void DrawMapUnitMarkers(u16 *dst) {
+    s32 IsUnitVisible(void*);
+    extern void **gCurrentMap;
+    extern u16 gPreviewTileGfx[],gUnitMarkerMasks[],gPreviewColumnOffset[],gTileGfxRowOffset[],gPreviewRowOffset[];
+    extern u8 gPlayerColorIndex[];
+    s32 i,owner,x,y;
+    u8 *unit;
+    u16 *out,*src;
+    u32 kind;
+    for(i=1;i<256;i++){
+        unit=(u8*)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
+        kind=(u32)(unit[0]<<26)>>26;
+        if(kind && IsUnitVisible(unit)){
+            x=unit[MAP_UNIT_X];y=unit[MAP_UNIT_Y];
+            if(unit){if(unit) owner=(s32)(unit-((u8*)*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;else owner=0;owner=(owner>>6)+1;}else owner=0;
+            src=gPreviewTileGfx+gTileGfxRowOffset[MAP_PREVIEW_UNIT_TILE_BASE+gPlayerColorIndex[owner]];
+            out=dst+gPreviewColumnOffset[x]+gPreviewRowOffset[y];
+            out[0]&=gUnitMarkerMasks[0];out[2]&=gUnitMarkerMasks[1];out[4]&=gUnitMarkerMasks[2];out[6]&=gUnitMarkerMasks[3];
+            out[0]|=src[0];out[2]|=src[2];out[4]|=src[4];out[6]|=src[6];
+        }
+    }
 }
 
 #pragma opt_common_subs off
 M2C_UNK func_020c15ec(s32 arg){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
-extern void **gCurrentMap;extern u16 data_0216402c[],data_02163fdc[];
+extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
 s32 a[2],b[2],half,w,h,mode,x,y,sum;u16 *src,*out; s32 index;u16 *dst=(u16 *)arg;
 mode=func_020d4dac();
 w=(M2C_FIELD(*gCurrentMap,u16 *,0x5144)+1)&~1;
 h=(M2C_FIELD(*gCurrentMap,u16 *,0x5146)+1)&~1;
 half=h>>1;
 a[0]=1;a[1]=15;b[0]=8;b[1]=w*8-8;
-{s32 i=0,s=0;for(;i<w;i++){data_0216402c[i]=s;s+=a[i&1];}}
-{s32 s=0,j=0;for(;j<h;j++){data_02163fdc[j]=s;s+=b[j&1];}}
+{s32 i=0,s=0;for(;i<w;i++){gPreviewColumnOffset[i]=s;s+=a[i&1];}}
+{s32 s=0,j=0;for(;j<h;j++){gPreviewRowOffset[j]=s;s+=b[j&1];}}
 for(y=0;y<half;y++)for(x=0;x<w;x++){
 src=func_020c10a4(x,y,mode);
-index=data_02163fdc[y];
-out=dst+data_0216402c[x]+index;
+index=gPreviewRowOffset[y];
+out=dst+gPreviewColumnOffset[x]+index;
 out[0]=src[0];out[2]=src[2];out[4]=src[4];out[6]=src[6];
 }
 }
 #pragma opt_common_subs reset
 M2C_UNK func_020c1768(M2C_UNK p){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
-extern void **gCurrentMap;extern u16 data_0216402c[],data_02163fdc[];
+extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
 s32 x,y,w,z,h;u16 *src,*dst;void *base;z=func_020d4dac();base=*gCurrentMap;
 h=M2C_FIELD(base,volatile u16 *,0x5146+0);w=M2C_FIELD(base,volatile u16 *,0x5144+0);
 h=(h+1)&~1;w=(w+1)&~1;
-for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+data_0216402c[x]+data_02163fdc[y];dst[0]=src[0];dst[2]=src[2];dst[4]=src[4];dst[6]=src[6];}}
+for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+gPreviewColumnOffset[x]+gPreviewRowOffset[y];dst[0]=src[0];dst[2]=src[2];dst[4]=src[4];dst[6]=src[6];}}
 }
 
 void func_020c183c(void *arg0) {
@@ -224,11 +230,11 @@ u8 func_020c1a80(void) {
 void func_020c1a9c(s32 a,s32 b){s32 func_020ae22c(s32); func_0208ca2c(a<<5,(u16)b,func_020ae22c(11),1);}
 
 void func_020c1acc(s32 x,s32 y,s32 tile,s32 pal){
-void func_0207bb3c(s32,s32,s32 *);s32 Divide(s32,s32);
+void ScreenToMapPosition(s32,s32,s32 *);s32 Divide(s32,s32);
 void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;
 s32 a[3],b[3];s32 xx,yy;
-func_0207bb3c(0,0,a);func_0207bb3c(256,192,b);
+ScreenToMapPosition(0,0,a);ScreenToMapPosition(256,192,b);
 a[0]=Divide(a[0]+24,192);a[1]=Divide(a[1]+24,192);
 b[0]=Divide(b[0]+24,192);b[1]=Divide(b[1]+24,192);
 xx=x+a[0];yy=y+a[1];
@@ -239,7 +245,7 @@ void func_020c1bf0(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gC
 
 void func_020c1c88(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))func_020c1acc(M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
 
-void func_020c1d28(s32 a,s32 b,s32 c,s32 d) {
+void SetFrameRect(s32 a,s32 b,s32 c,s32 d) {
  void *func_01ffa3dc(void *,s32);
  extern M2C_UNK data_021296b8;
  extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;

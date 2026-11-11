@@ -6,11 +6,11 @@ static inline void SetMenuSpritePosition(void *p,s16 x,s16 y){M2C_FIELD(p,s16 *,
 #pragma opt_strength_reduction off
 #pragma opt_propagation off
 void func_ov003_021ea57c(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK AddSprite(M2C_UNK, u8, u16, M2C_UNK *, s32);
     s32 Divide(u32, M2C_UNK);
     s32 Modulo(u32, M2C_UNK);
-    M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
     s32 IsLinkSessionActive();
     s32 GetLocalizedText();
     M2C_UNK func_02088d94(void *);
@@ -18,7 +18,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK func_02098844(M2C_UNK, s32, M2C_UNK, s32, u32, u32, s32);
     M2C_UNK func_02098a34(s8, M2C_UNK, u8, u32, s32);
     M2C_UNK func_020990fc(void *, s8, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
     M2C_UNK func_020abbfc(void *);
@@ -85,7 +85,7 @@ void func_ov003_021ea57c(void *arg0) {
     if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x13) != 0) {
         temp_r6 = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineSub;
-        func_01ff9ce8(3);
+        Clear3DSpriteLayer(3);
         temp_r5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0xF);
         temp_r4 = func_ov003_022008b8((u8) temp_r5);
         if (temp_r4 == 0) {
@@ -96,7 +96,7 @@ void func_ov003_021ea57c(void *arg0) {
             }
             func_020990fc(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78), temp_r4, 8, 0);
             func_ov003_021e6e94(temp_r5);
-            func_0209b2b4(1, 8, 3, GetLocalizedText(), 0x2000, (s32) (u16) ((((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1E) >> 0x1F) * 0xE0) + 1));
+            DrawTextLine(1, 8, 3, GetLocalizedText(), 0x2000, (s32) (u16) ((((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1E) >> 0x1F) * 0xE0) + 1));
         }
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
         gCur3DSpriteEngine = temp_r6;
@@ -125,7 +125,7 @@ void func_ov003_021ea57c(void *arg0) {
                 }
                 temp_r0_2 = func_ov003_022008b8(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (temp_r0_2 == 0) {
-                    func_020809c0(M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + ((var_r7 + 1) * 2), 7, 7);
+                    ClearTileRect(M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + ((var_r7 + 1) * 2), 7, 7);
                 } else {
                     func_02098844(1, var_r7, 0, M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + 2, (u32) ((((s32) ((temp_r0_2 - 1) << 0x18) >> 0x11) + 2) << 0xF) >> 0x10, var_r9, 0);
                 }

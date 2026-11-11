@@ -628,10 +628,10 @@ u8 func_020ad728(void) {
 void FlipScreenTransition(void) {
  extern s16 *gScreenTransition;
  s32 GetScreenTransitionSide();
- void func_01ff9ce8(u8);
+ void Clear3DSpriteLayer(u8);
  void DrawScreenTransition(void);
  gScreenTransition[2]=1-gScreenTransition[2];
- func_01ff9ce8((u8)GetScreenTransitionSide());
+ Clear3DSpriteLayer((u8)GetScreenTransitionSide());
  DrawScreenTransition();
  gScreenTransition[3]=0;
 }

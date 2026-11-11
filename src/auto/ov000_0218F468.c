@@ -26,7 +26,7 @@ static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2
 
 #pragma opt_strength_reduction off
 void func_ov000_0218f468(void){
-s32 Divide(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);
+s32 Divide(s32,s32);s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(s16);
 void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
 s32 func_020d27a4(s32,s32);s32 GetUnitDamagePercent(s32,s32);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
@@ -38,7 +38,7 @@ if(health==0)health=0;else health=Divide(health-1,10)+1;
 if(health>=7){
 u8 terrain=M2C_FIELD(TileF468(x,y),u8 *,0x1420);
 if((terrain&0xe0)==0 || (terrain&31)==15){
-if(func_ov000_021a9d8c((s16)x,(s16)y)==0 || IsCurrentPlayerUnit(M2C_FIELD(TileF468(x,y),u8 *,0x508))!=0)goto prepared;
+if(IsAllyUnitAtCell((s16)x,(s16)y)==0 || IsCurrentPlayerUnit(M2C_FIELD(TileF468(x,y),u8 *,0x508))!=0)goto prepared;
 }}
 ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
 prepared:
@@ -54,7 +54,7 @@ if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==
 }}
 if(PassF468(x,y)>=0){
 if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();func_ov000_02199f38();}
-if(func_ov000_021a9d8c((s16)x,(s16)y)!=0){
+if(IsAllyUnitAtCell((s16)x,(s16)y)!=0){
 if(M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)func_ov000_02199f38();return;
 }
 m=MapF468();tile=TileF468(x,y);
@@ -95,7 +95,7 @@ void SelectAIDestination(void) {
 s32 IsFootUnitKind(s32);
 void BuildUnitMoveRange(void *);
 s32 func_ov000_021a8b78(void *);
-s32 func_ov000_021a9d8c(s16,s16);
+s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16);
 s32 func_ov000_021a9860(s32,s32);
 void func_ov000_02199f38(void);
@@ -115,7 +115,7 @@ healthyUnit=(u8)(func_ov000_021a8b78(SelectedF468())>=5);
 for(cellY=0;cellY<M2C_FIELD(MapF468(),u16 *,0x5146);cellY++){
 for(cellX=0;cellX<M2C_FIELD(MapF468(),u16 *,0x5144);cellX++){
 if(PassF468(cellX,cellY)<0)continue;
-if(func_ov000_021a9d8c((s16)cellX,(s16)cellY)){
+if(IsAllyUnitAtCell((s16)cellX,(s16)cellY)){
 if(!IsCurrentPlayerUnit(M2C_FIELD(TileF468(cellX,cellY),u8 *,0)))continue;
 map=MapF468();
 if(M2C_FIELD(map+M2C_FIELD(TileF468(cellX,cellY),u8 *,0)*14,u16 *,0x59a8)&1)continue;
@@ -150,14 +150,14 @@ if(bestTransportScore<=cellScore){transportX=cellX;transportY=cellY;bestTranspor
 }
 }
 if(bestTransportScore>bestScore){
-if(func_ov000_021a9d8c((s16)transportX,(s16)transportY))func_ov000_02199f38();
+if(IsAllyUnitAtCell((s16)transportX,(s16)transportY))func_ov000_02199f38();
 pos[0]=transportX;pos[1]=transportY;
 if(func_ov000_021aa820(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
 SetMapCursor((s16)transportX,(s16)transportY,19,(u8)pos[0],(u8)pos[1]);return;
 }
 }
 if(bestScore==-1)return;
-if(func_ov000_021a9d8c((s16)bestX,(s16)bestY))func_ov000_02199f38();
+if(IsAllyUnitAtCell((s16)bestX,(s16)bestY))func_ov000_02199f38();
 if(func_ov000_021a8b78(SelectedF468())>=2){
 map=MapF468();
 record=map+0x6c60+M2C_FIELD(map+(bestX+M2C_FIELD(map+bestY*2,u16 *,0x3758)),s8 *,0x1928)*6;

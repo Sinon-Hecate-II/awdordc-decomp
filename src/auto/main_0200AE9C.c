@@ -44,27 +44,30 @@ s32 func_0200af30(void *arg0) {
     return 0;
 }
 
-s32 func_0200af74(void *a,s32 cmd) {
+/* Queue a request on its file for command; if the file is idle, start its worker
+ * (running the request inline), otherwise a blocking request waits for the
+ * worker to finish. Returns 1 while a blocking request continues. */
+s32 SubmitFileRequest(void *req,s32 command) {
 s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK CompleteFileRequest(void *,s32);void OS_SleepThread(void *);
-register void *file; register s32 key; register void *request=a; register u32 mask; void *prev,*next,*tail;
-file=M2C_FIELD(a,void **,8);mask=1<<cmd;
-M2C_FIELD(a,s32 *,16)=cmd;M2C_FIELD(a,s32 *,20)=2;M2C_FIELD(a,volatile s32 *,12)|=1;
+register void *file; register s32 key; register void *request=req; register u32 cmdMask;
+file=M2C_FIELD(req,void **,8);cmdMask=1<<command;
+M2C_FIELD(req,s32 *,16)=command;M2C_FIELD(req,s32 *,20)=2;M2C_FIELD(req,volatile s32 *,12)|=1;
 key=OS_DisableInterrupts();
-if(M2C_FIELD(file,s32 *,28)&128){CompleteFileRequest(a,3);OS_RestoreInterrupts(key);return 0;}
-if(mask&0x1fc)M2C_FIELD(a,volatile s32 *,12)|=4;
-MoveFileRequest(a,(FileLink *)((u8 *)file+32));
+if(M2C_FIELD(file,s32 *,28)&128){CompleteFileRequest(req,3);OS_RestoreInterrupts(key);return 0;}
+if(cmdMask&0x1fc)M2C_FIELD(req,volatile s32 *,12)|=4;
+MoveFileRequest(req,(FileLink *)((u8 *)file+32));
 if(!TestFileFlag(file,8)&&!TestFileFlag(file,16)){
 M2C_FIELD(file,s32 *,28)|=16;OS_RestoreInterrupts(key);
-if(M2C_FIELD(file,s32 *,88)&512) M2C_FIELD(file,void (**)(void *,s32),84)(a,9);
-{ s32 key2=OS_DisableInterrupts();M2C_FIELD(a,volatile s32 *,12)|=64;
-if(!TestRequestFlag(a,4)){OS_RestoreInterrupts(key2);func_0200ae9c(a);return 1;}
+if(M2C_FIELD(file,s32 *,88)&512) M2C_FIELD(file,void (**)(void *,s32),84)(req,9);
+{ s32 key2=OS_DisableInterrupts();M2C_FIELD(req,volatile s32 *,12)|=64;
+if(!TestRequestFlag(req,4)){OS_RestoreInterrupts(key2);func_0200ae9c(req);return 1;}
 OS_RestoreInterrupts(key2);}
 }else{
-if(!TestRequestFlag(a,4)){OS_RestoreInterrupts(key);return 1;}
-do{OS_SleepThread((u8 *)a+24);}while(!(M2C_FIELD(a,volatile s32 *,12)&64));
+if(!TestRequestFlag(req,4)){OS_RestoreInterrupts(key);return 1;}
+do{OS_SleepThread((u8 *)req+24);}while(!(M2C_FIELD(req,volatile s32 *,12)&64));
 OS_RestoreInterrupts(key);
 }
-return func_0200af30(a);
+return func_0200af30(req);
 }
 
 void func_0200b118(void *arg0) {
@@ -247,7 +250,7 @@ void InitFileRequest(void *arg0) {
 
 s32 func_0200b79c(void *a,s32 b,s32 c,s32 d) {
 extern Unk032Record data_0212fbec;
-s32 func_0200af74(void *,s32);
+s32 SubmitFileRequest(void *,s32);
 u8 *path=(u8 *)b;Unk032Record rec; s32 i,flag;void *p;
 if(*path==47||*path==92){
 M2C_FIELD(&rec,u16 *,4)=0;
@@ -269,7 +272,7 @@ M2C_FIELD(a,u32 *,8)=rec.words[0];M2C_FIELD(a,u8 **,0x3c)=path;
 M2C_FIELD(a,Unk032Record *,0x30)=rec;
 if(d!=0){M2C_FIELD(a,s32 *,0x40)=1;M2C_FIELD(a,s32 *,0x44)=d;}
 else{M2C_FIELD(a,s32 *,0x40)=0;M2C_FIELD(a,s32 *,0x44)=c;}
-return func_0200af74(a,4);
+return SubmitFileRequest(a,4);
 }
 
 M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
@@ -284,7 +287,7 @@ M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
     M2C_FIELD(self, M2C_UNK *, 0x34) = c;
     M2C_FIELD(self, s32 *, 0x38) = n;
     if (!d) M2C_FIELD(self, volatile s32 *, 0xc) |= 4;
-    func_0200af74(self, 0);
+    SubmitFileRequest(self, 0);
     if (!d) {
         if (func_0200bad8(self)) n = M2C_FIELD(self, s32 *, 0x2c) - old;
         else n = -1;
@@ -304,20 +307,20 @@ s32 func_0200b99c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD(arg0, s32 *, 0x38) = arg4;
     M2C_FIELD(arg0, s32 *, 0x30) = arg2;
     M2C_FIELD(arg0, s32 *, 0x34) = arg3;
-    if (func_0200af74(arg0, 7) == 0) {
+    if (SubmitFileRequest(arg0, 7) == 0) {
         return 0;
     }
     M2C_FIELD(arg0, s32 *, 0xC) = (s32) ((M2C_FIELD(arg0, s32 *, 0xC) | 0x10) & ~0x20);
     return 1;
 }
 
-s32 func_0200b9e4(s32 a,Unk02BDFileRange b){if(!b.words[0])return 0;M2C_FIELD(a,u32 *,8)=b.words[0];M2C_FIELD(a,u32 *,48)=b.words[0];M2C_FIELD(a,u32 *,52)=M2C_FIELD(&b,volatile u32 *,4);if(!func_0200af74((void *)a,6))return 0;M2C_FIELD(a,s32 *,12)=(M2C_FIELD(a,s32 *,12)|16)&~32;return 1;}
+s32 func_0200b9e4(s32 a,Unk02BDFileRange b){if(!b.words[0])return 0;M2C_FIELD(a,u32 *,8)=b.words[0];M2C_FIELD(a,u32 *,48)=b.words[0];M2C_FIELD(a,u32 *,52)=M2C_FIELD(&b,volatile u32 *,4);if(!SubmitFileRequest((void *)a,6))return 0;M2C_FIELD(a,s32 *,12)=(M2C_FIELD(a,s32 *,12)|16)&~32;return 1;}
 
 s32 func_0200ba54(s32 a){s32 func_0200b9e4(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&func_0200b9e4(a,v))return 1;return 0;}
 
 s32 func_0200ba9c(void *arg0) {
-    s32 func_0200af74(void *, M2C_UNK);
-    if (func_0200af74(arg0, 8) == 0) {
+    s32 SubmitFileRequest(void *, M2C_UNK);
+    if (SubmitFileRequest(arg0, 8) == 0) {
         return 0;
     }
     M2C_FIELD(arg0, s32 *, 8) = 0;

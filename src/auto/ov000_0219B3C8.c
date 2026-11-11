@@ -8,7 +8,7 @@ void func_ov000_0219b3c8(void) {
     void FloodFillUnitRange(s32, s32, s32, s32, s32);
     s32 GetUnitMoveRange(s32, s32);
     void func_ov000_0219c508(void *, s32);
-    s32 func_020d27ec(s32, u8);
+    s32 IsTerrainOnUnitTeam(s32, u8);
     s32 func_ov000_021a91d0(s32);
     s32 ManhattanDistance(s16, s16, s16, s16);
     extern void **gCurrentMap;
@@ -47,7 +47,7 @@ void func_ov000_0219b3c8(void) {
     rowVal = *(u16 *)((u8 *)data + rec_y * 2 + 0x3758);
     cellByte = *(u8 *)((u8 *)data + rec_x + rowVal + 0x1420);
 
-    if (func_020d27ec(mapFieldSigned, cellByte) == 1) {
+    if (IsTerrainOnUnitTeam(mapFieldSigned, cellByte) == 1) {
         continue;
     }
 

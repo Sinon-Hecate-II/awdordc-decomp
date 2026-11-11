@@ -534,7 +534,7 @@ if(M2C_FIELD(arg,s16 *,0x54)>=6) DeleteSpriteObject(arg);
  * the bank's control bits. */
 void UpdatePanelDisplay(void) {
     M2C_UNK GetPanelObject(void);
-    void func_01ff9ce8(s32);
+    void Clear3DSpriteLayer(s32);
     void func_02088d94(void *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
@@ -552,8 +552,8 @@ void UpdatePanelDisplay(void) {
     if (M2C_FIELD(panel, u8 *, 0x35) != 0) {
         savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        func_01ff9ce8(1);
-        func_01ff9ce8(2);
+        Clear3DSpriteLayer(1);
+        Clear3DSpriteLayer(2);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
         attrReg = (u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);

@@ -538,9 +538,9 @@ void func_0205d8f4(void) {
 }
 
 s32 func_0205d920(M2C_UNK arg0) {
-    s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK gNatNegMagic;
-    if (func_0206527c(arg0, &gNatNegMagic, 6) == 0) {
+    if (ByteCompareN(arg0, &gNatNegMagic, 6) == 0) {
         return 1;
     }
     return 0;

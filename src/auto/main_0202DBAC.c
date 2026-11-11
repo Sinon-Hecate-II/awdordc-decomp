@@ -122,7 +122,7 @@ void func_0202de1c(void *arg0, s32 arg1) {
 void func_0202de74(void *arg0) {
     M2C_UNK func_02006564(M2C_UNK *);
     M2C_UNK func_020065e8(M2C_UNK *);
-    M2C_UNK func_0202b760(void *);
+    M2C_UNK Sound_StopIfPlaying(void *);
     M2C_UNK func_0202df0c(void *);
     extern M2C_UNK data_0213c290;
     extern M2C_UNK data_0213c908;
@@ -131,7 +131,7 @@ void func_0202de74(void *arg0) {
         func_02006564(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
     }
     if (((s32) (M2C_FIELD(arg0, s32 *, 0x110) << 0x1E) >> 0x1F) != 0) {
-        func_0202b760(arg0);
+        Sound_StopIfPlaying(arg0);
     }
     if (((s32) (M2C_FIELD(arg0, s32 *, 0x110) << 0x1F) >> 0x1F) != 0) {
         M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x170)(arg0);

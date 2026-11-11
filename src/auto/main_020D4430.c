@@ -365,7 +365,7 @@ void UpdateAimingCursor(void) {
  } else if(func_020d5088(M2C_FIELD(map,void**,MAP_CURSOR_UNIT))) {
  map=*gCurrentMap;
  if(M2C_FIELD((u8*)map+(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*2,u16*,MAP_ROW_OFFSETS)),s8*,MAP_CELL_ORDER)>=0) {
- func_020cf754(1,func_020a76d4(M2C_FIELD(map,void**,MAP_CURSOR_UNIT)));
+ func_020cf754(1,GetUnitAttackRangeMax(M2C_FIELD(map,void**,MAP_CURSOR_UNIT)));
  } else MoveMapCursorToTarget(1);
  } else {
  map=*gCurrentMap;

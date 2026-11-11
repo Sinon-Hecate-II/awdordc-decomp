@@ -443,7 +443,7 @@ s32 func_0201d548(s32 *arg0, void *arg1) {
     return M2C_FIELD(arg1, s32 *, 0x40);
 }
 
-s32 func_0201d59c(u32 *arg0, M2C_UNK arg1) {
+s32 PeekReceivedData(u32 *arg0, M2C_UNK arg1) {
     s32 OS_DisableInterrupts(void);
     M2C_UNK OS_SleepThread(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(s32);
@@ -471,7 +471,7 @@ s32 func_0201d59c(u32 *arg0, M2C_UNK arg1) {
 
 s32 func_0201d618(s32 *arg0) {
     s32 func_0201d548(s32 *, void *);
-    s32 func_0201d59c(u32 *, M2C_UNK);
+    s32 PeekReceivedData(u32 *, M2C_UNK);
     s32 func_02024cb4(s32 *, void *);
     extern M2C_UNK gSocketManager;
     void *inner;
@@ -488,23 +488,23 @@ s32 func_0201d618(s32 *arg0) {
     if (((u8 *)q)[9] != 0) {
         return func_02024cb4(arg0, q);
     }
-    return func_0201d59c((u32 *)arg0, (M2C_UNK)q);
+    return PeekReceivedData((u32 *)arg0, (M2C_UNK)q);
 
 fail:
     *arg0 = 0;
     return 0;
 }
 
-void func_0201d67c(u32 arg0, void *arg1) {
+void ConsumeReceivedData(u32 arg0, void *arg1) {
 M2C_UNK OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(M2C_UNK);
 M2C_UNK func_020651c4(M2C_UNK,M2C_UNK); M2C_UNK TcpSendAck(void *,M2C_UNK);
-u8 kind; u32 flag; M2C_UNK irq; u32 left;
+u8 kind; u32 flag; u32 left; M2C_UNK irq;
 irq=OS_DisableInterrupts();
 left=M2C_FIELD(arg1,u32*,0x44); flag=0;
-if(left==M2C_FIELD(arg1,u32*,0x3c)){ if(arg0!=0) flag=1; }
+if(left==M2C_FIELD(arg1,u32*,0x3c) && arg0!=0) flag=1;
 if(arg0>=left) M2C_FIELD(arg1,u32*,0x44)=0;
 else {s32 base=M2C_FIELD(arg1,s32*,0x40);M2C_FIELD(arg1,u32*,0x44)=left-arg0;func_020651c4(base,base+arg0);}
-OS_RestoreInterrupts(irq);
+{ M2C_UNK saved = irq; OS_RestoreInterrupts(saved); }
 kind=M2C_FIELD(arg1,u8*,8);
 if(kind!=0xa && kind!=0xb){
 if(M2C_FIELD(arg1,u32*,0x44)!=0){if(flag==0)return;}
@@ -514,12 +514,12 @@ TcpSendAck(arg1,0x1b);
 
 void func_0201d70c(u32 arg0) {
 void func_02024d8c(u32,void *);
-void func_0201d67c(u32,void *);
+void ConsumeReceivedData(u32,void *);
 extern M2C_UNK gSocketManager;
 void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p==0)return;
 if(M2C_FIELD(p,u8*,9)!=0)func_02024d8c(arg0,p);
-else func_0201d67c(arg0,p);
+else ConsumeReceivedData(arg0,p);
 }
 
 s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {

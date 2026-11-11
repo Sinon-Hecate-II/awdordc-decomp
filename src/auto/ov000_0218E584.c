@@ -8,7 +8,7 @@ void func_ov000_0218e584(void) {
 M2C_UNK FloodFillUnitRange(s32,s32,s32,s32,s32);
 void SetMapCursor(u32,u32,u32,u32,u32);
 u8 CanUnitAttackKind();
-s32 func_ov000_021a9214(void*,s32,s32);
+s32 IsCaptureTargetAt(void*,s32,s32);
 s32 func_ov000_021a93a8(void*,s32,s32);
 u8 func_ov000_0217a8a0(s16,s16,s32);
 void PlanMoveDestination(s32,s32);
@@ -43,7 +43,7 @@ if(cost>((u8*)gAiCommandState)[5])goto next;
 if(!CanUnitAttackKind(unit))goto next;
 SetMapCursor((s16)x,(s16)y,7,0,0);
 }else{
-if(!func_ov000_021a9214(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)){
+if(!IsCaptureTargetAt(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)){
 
 if(!func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y))goto next;
 }
@@ -73,7 +73,7 @@ if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)gAiCommandSt
 SetMapCursor((s16)bestX,(s16)bestY,2,0,0);return;
 }
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
-if(func_ov000_021a9214(selected,selected[1],selected[2])==1 && (M2C_FIELD(gAiCommandState,u16*,8)&0x80)){
+if(IsCaptureTargetAt(selected,selected[1],selected[2])==1 && (M2C_FIELD(gAiCommandState,u16*,8)&0x80)){
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 SetMapCursor(selected[1],selected[2],2,0,0);return;
 }
@@ -84,7 +84,7 @@ void func_ov000_0218e9ac(void) {
 M2C_UNK FloodFillUnitRange(s32,s32,s32,s32,s32);
 void SetMapCursor(u32,u32,u32,u32,u32);
 u8 CanUnitAttackKind();
-s32 func_ov000_021a9214(void*,s32,s32);
+s32 IsCaptureTargetAt(void*,s32,s32);
 s32 func_ov000_021a93a8(void*,s32,s32);
 u8 func_ov000_0217a8a0(s16,s16,s32);
 void PlanMoveDestination(s32,s32);
@@ -134,7 +134,7 @@ selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 if(!CanUnitAttackKind(unit,((UnitKind18e584*)selected)->kind))goto next;
 SetMapCursor((s16)x,(s16)y,7,0,0);
 }else{
-if(!func_ov000_021a9214(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)){
+if(!IsCaptureTargetAt(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)){
 
 if(!func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y))goto next;
 }

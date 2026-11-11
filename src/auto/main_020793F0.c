@@ -67,7 +67,7 @@ void func_020796b0(M2C_UNK arg0, void *arg1) {
     if (M2C_FIELD(arg1, s32 *, 0x14) == 0x18) index += 0x1A;
     ptr = index * 14 + (s32)&data_020eb4e0;
     flip = (s32)(M2C_FIELD(arg1, s32 *, 0x18) & 7) >= 4;
-    func_020799dc(arg0, ptr, ptr + 6, (flip << 5) + 0x1400);
+    func_020799dc((void *)arg0, (void *)ptr, (void *)(ptr + 6), (flip << 5) + 0x1400);
 }
 
 #pragma opt_propagation off

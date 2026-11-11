@@ -355,7 +355,7 @@ void func_ov003_021f2e98(s32 entry) {
  void func_02086330(void); void func_02085054(s32,s32,s32);
  void func_ov003_021f140c(s32); s32 func_ov003_021f1608(void);
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
- s32 func_ov003_021f142c(void); void func_ov003_021f163c(s32,s32,s32,s32,s32);
+ s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
  if(func_ov003_021f2a9c(entry)||func_ov003_021f2b88(entry)) {
@@ -402,7 +402,7 @@ void func_ov003_021f2e98(s32 entry) {
  }
  p=M2C_FIELD(entry,void **,0x40);
  next=(u8)!BlockNext2e98(p); prev=BlockPrev2e98(p)?0:2;
- func_ov003_021f163c(entry,M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)],direction,
+ Ov003_StartBattleScene(entry,M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)],direction,
  next,prev);
  return;
  }

@@ -159,9 +159,9 @@ void func_020244c0(void *arg0) {
     gFree[0](temp_r4);
 }
 
-s32 func_02024a6c(void *p){s32 func_02023f20(void *);if(func_02023f20(p)!=7)return 1;return func_02023f20(p)!=6;}
+s32 func_02024a6c(void *p){s32 TlsReadRecord(void *);if(TlsReadRecord(p)!=7)return 1;return TlsReadRecord(p)!=6;}
 
-s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void func_020244c0(void *);if(func_02023f20(p)!=1)return 1;if(TlsSendServerHello(p)){TlsInitRecordKeys(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(func_02023f20(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
+s32 func_02024a9c(void *p){s32 TlsReadRecord(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void func_020244c0(void *);if(TlsReadRecord(p)!=1)return 1;if(TlsSendServerHello(p)){TlsInitRecordKeys(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(TlsReadRecord(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
 
 #pragma push
 #pragma peephole on
@@ -179,11 +179,11 @@ goto retry;
 }
 #pragma pop
 s32 func_02024b94(void *arg0) {
- void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void TlsInitRecordKeys(void *);s32 func_02023f20(void *);void func_020244c0(void *);void TlsSendHandshake(void *);s32 func_02024a6c(void *);
+ void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void TlsInitRecordKeys(void *);s32 TlsReadRecord(void *);void func_020244c0(void *);void TlsSendHandshake(void *);s32 func_02024a6c(void *);
  void *p=M2C_FIELD(arg0,void **,12);s32 state;
  func_02024618(arg0);
  do {
- state=func_02023f20(arg0);
+ state=TlsReadRecord(arg0);
  if(state==9)return 1;
  }while(state!=4 && M2C_FIELD(p,u8 *,0x31)==0);
  if(M2C_FIELD(p,u8 *,0x31)) {
@@ -203,9 +203,9 @@ s32 func_02024b94(void *arg0) {
 s32 func_02024c60(void *p){s32 func_0201d2f0(void *);s32 func_02024b94(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&func_0201d2f0(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return func_02024b94(p);}
 
 s32 func_02024cb4(s32 *arg0, void *arg1) {
-    s32 func_02023c08(s32, u32, M2C_UNK);
-          void func_02023ca0(void *, void *);
-    s32 func_02023f20(void *);
+    s32 ReceiveExactBytes(s32, u32, M2C_UNK);
+          void TlsProcessRecord(void *, void *);
+    s32 TlsReadRecord(void *);
     extern void (*gFree[])(void *);
     void *r4;
     void *ip;
@@ -214,20 +214,20 @@ s32 func_02024cb4(s32 *arg0, void *arg1) {
     ip = M2C_FIELD(r4, void **, 0x824);
     if (ip != 0 && M2C_FIELD(r4, u8 *, 0x456) == 0) {
         s32 r3 = M2C_FIELD(r4, s32 *, 0x82C);
-        if (func_02023c08((s32)ip + r3, (u32)(M2C_FIELD(r4, s32 *, 0x828) - r3), arg1) != 0) {
+        if (ReceiveExactBytes((s32)ip + r3, (u32)(M2C_FIELD(r4, s32 *, 0x828) - r3), arg1) != 0) {
             gFree[0](M2C_FIELD(r4, void **, 0x824));
             M2C_FIELD(r4, void **, 0x824) = 0;
             *arg0 = 0;
             return 0;
         }
-        func_02023ca0(r4, M2C_FIELD(r4, void **, 0x824));
+        TlsProcessRecord(r4, M2C_FIELD(r4, void **, 0x824));
         if (M2C_FIELD(r4, u8 *, 0x456) == 0) {
             M2C_FIELD(r4, void **, 0x824) = 0;
         }
     }
     if (M2C_FIELD(r4, void **, 0x824) == 0) {
         for (;;) {
-            if (func_02023f20(arg1) == 9) {
+            if (TlsReadRecord(arg1) == 9) {
                 *arg0 = 0;
                 return 0;
             }
@@ -254,10 +254,10 @@ void func_02024d8c(u32 arg0, void *arg1) {
 }
 
 void func_02024ddc(void *arg0) {
-    s32 func_0201d59c(u32 *, M2C_UNK);
-    M2C_UNK func_0201d67c(u32, M2C_UNK);
+    s32 PeekReceivedData(u32 *, M2C_UNK);
+    M2C_UNK ConsumeReceivedData(u32, M2C_UNK);
     M2C_UNK MI_CpuCopy8(s32, void *, u32);
-    void func_02023ca0(void *, void *);
+    void TlsProcessRecord(void *, void *);
     extern void *(*gAlloc)(s32);
     void *r4;
     u32 sp0;
@@ -269,7 +269,7 @@ void func_02024ddc(void *arg0) {
         if (M2C_FIELD(arg0, u32 *, 0x44) < 5) {
             return;
         }
-        temp_r0 = (u8 *)func_0201d59c(&sp0, (M2C_UNK)arg0);
+        temp_r0 = (u8 *)PeekReceivedData(&sp0, (M2C_UNK)arg0);
         sp0 = (u32)((u32)temp_r0[3] << 8) + temp_r0[4] + 5;
         if (sp0 > 0x4805) {
             M2C_FIELD(r4, u8 *, 0x455) = 9;
@@ -288,7 +288,7 @@ void func_02024ddc(void *arg0) {
             return;
         }
     }
-    temp_r0 = (u8 *)func_0201d59c(&sp0, (M2C_UNK)arg0);
+    temp_r0 = (u8 *)PeekReceivedData(&sp0, (M2C_UNK)arg0);
     {
         u32 remaining = (u32)(M2C_FIELD(r4, s32 *, 0x828) - M2C_FIELD(r4, s32 *, 0x82C));
         if (sp0 >= remaining) {
@@ -301,9 +301,9 @@ void func_02024ddc(void *arg0) {
     MI_CpuCopy8((s32)temp_r0,
                    (void *)((u8 *)M2C_FIELD(r4, void **, 0x824) + M2C_FIELD(r4, s32 *, 0x82C)),
                    (u32)sp0);
-    func_0201d67c(sp0, (M2C_UNK)arg0);
+    ConsumeReceivedData(sp0, (M2C_UNK)arg0);
     if (r6 != 0) {
-        func_02023ca0(r4, M2C_FIELD(r4, void **, 0x824));
+        TlsProcessRecord(r4, M2C_FIELD(r4, void **, 0x824));
         if (M2C_FIELD(r4, u8 *, 0x456) == 0) {
             M2C_FIELD(r4, void **, 0x824) = 0;
         }

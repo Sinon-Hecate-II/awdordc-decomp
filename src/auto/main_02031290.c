@@ -240,12 +240,12 @@ void func_020316c4(void *arg0) {
 #pragma opt_strength_reduction reset
 s32 func_0203174c(M2C_UNK arg0) {
     M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
-    s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fb2a4;
     M2C_UNK buf[6];
 
     func_0203182c(arg0, &buf[0]);
-    if (func_0206527c((M2C_UNK) &buf[0], &data_020fb2a4, 8) == 0) {
+    if (ByteCompareN((M2C_UNK) &buf[0], &data_020fb2a4, 8) == 0) {
         return 1;
     }
     return 0;
@@ -262,22 +262,22 @@ void func_02031784(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_020317ac(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
-    s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     void MI_CpuCopy8(void *, void *, u32);
     extern M2C_UNK data_020fb2a4;
     M2C_UNK buf0[2];
     M2C_UNK buf1[4];
     func_0203182c(arg0, buf0);
-    if (func_0206527c((M2C_UNK)buf0, &data_020fb2a4, 8) != 0) {
+    if (ByteCompareN((M2C_UNK)buf0, &data_020fb2a4, 8) != 0) {
         return;
     }
     MI_CpuCopy8(buf1, (void *)arg1, 0xA);
 }
 
 s32 func_020317f8(M2C_UNK arg0) {
-    s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
+    s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fb2b0;
-    if (func_0206527c(arg0, &data_020fb2b0, 8) == 0) {
+    if (ByteCompareN(arg0, &data_020fb2b0, 8) == 0) {
         return 1;
     }
     return 0;
@@ -535,7 +535,7 @@ s32 func_02031e28(void) {
     return func_02031e14() & 3;
 }
 
-s32 func_02031e38(M2C_UNK arg0) {
+s32 IsPlayerRecordJoined(M2C_UNK arg0) {
     s32 var_r0;
 
     if (func_02031e28() == 3) {
@@ -549,7 +549,7 @@ s32 func_02031e38(M2C_UNK arg0) {
     return 0;
 }
 
-void func_02031e70(void) {
+void GetPlayerRecordType(void) {
     M2C_UNK func_02031e28();
     func_02031e28();
 }
@@ -566,7 +566,7 @@ void func_02031e94(M2C_UNK arg0, M2C_UNK arg1) {
     func_02031e7c(arg0, temp_r0 | arg1);
 }
 
-void func_02031eb8(M2C_UNK arg0) {
+void MarkPlayerRecordJoined(M2C_UNK arg0) {
     s32 func_02031e28();
     s32 func_02031e14(u32 *);
     void func_02031e7c(M2C_UNK, M2C_UNK);
@@ -673,7 +673,7 @@ void func_020320ac(u64 value, s32 arg2, char *arg3) {
  arg3[count]=0;
 }
 
-void func_0203211c(void *arg0, u32 arg1, void *arg2) {
+void FormatNasId(void *arg0, u32 arg1, void *arg2) {
 u64 func_02031d90(void *); s32 func_02031db0(void *);
 void func_020320ac(u64,s32,char *);
 M2C_UNK func_0200567c(M2C_UNK,M2C_UNK,M2C_UNK *,...);

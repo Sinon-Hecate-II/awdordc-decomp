@@ -268,7 +268,7 @@ if(M2C_FIELD(p+a*0x8c,u8 *,0x67ca)==M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67ca))r=1
 
 s32 func_ov000_021a91d0(s32 a){switch(a&31){case 15:case 17:case 18:case 19:case 22:return 1;default:return 0;}}
 
-s32 func_ov000_021a9214(void *a,s32 b,s32 c){
+s32 IsCaptureTargetAt(void *a,s32 b,s32 c){
 extern void **gCurrentMap;s32 func_020d280c();
 u8 *p=*gCurrentMap;s32 n;
 if(IsPropertyTerrain(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420))==1){

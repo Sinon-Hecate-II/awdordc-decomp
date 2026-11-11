@@ -90,9 +90,9 @@ M2C_FIELD(arg0,u16 *,0x34)++;
 }
 
 void func_ov000_0216c068(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    func_01ff9ce8(3);
+    Clear3DSpriteLayer(3);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
     M2C_FIELD(arg0, u8 *, 0x36) = 0;
 }

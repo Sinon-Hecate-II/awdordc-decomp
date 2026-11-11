@@ -186,7 +186,7 @@ void func_ov007_0221e85c(void *arg0) {
 }
 
 void func_ov007_0221e878(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -270,9 +270,9 @@ void func_ov007_0221e878(void *arg0) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x40) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x42) = 0;
-    func_01ff9ce8(1);
-    func_01ff9ce8(0);
-    func_01ff9ce8(3);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(0);
+    Clear3DSpriteLayer(3);
     func_01ff9dd8(1);
     func_01ff9dd8(0);
     func_01ff9dd8(3);

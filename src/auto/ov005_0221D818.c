@@ -214,7 +214,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
 /* Initializes ov005's scene state when the system is ready and the global mode is not state 1. */
 void func_ov005_0221e468(M2C_UNK arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK OpenNarcArchive();
@@ -256,7 +256,7 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     savedPtr = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_02082134(2, 1);
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(2);
     GetLocalizedFileName(&data_ov005_02220ebc);
     OpenNarcArchive();
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov005_02220a90), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));

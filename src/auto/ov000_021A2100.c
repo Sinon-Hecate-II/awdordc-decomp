@@ -42,7 +42,7 @@ s16 func_ov000_021a2100(s32 areaX, s32 areaY) {
 }
 
 s32 func_ov000_021a21f8(s32 arg0) {
-s32 func_020a8a14(u16,u16); s32 func_020d27ec(s16,u8);
+s32 func_020a8a14(u16,u16); s32 IsTerrainOnUnitTeam(s16,u8);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
 s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
@@ -58,7 +58,7 @@ if(arg0){
 if(entry[0]==15){
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&2)goto nextEntry;
 map=*gCurrentMap;
-if(func_020d27ec(M2C_FIELD(map,s16 *,0x52a8),M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)))goto nextEntry;
+if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)))goto nextEntry;
 }else{
 if(!data_ov000_021b5580[entry[0]&31])goto nextEntry;
 map=*gCurrentMap;

@@ -134,7 +134,7 @@ M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s8 *, 0x8a) = arg1;
 func_01ffa3dc(&data_ov005_022204e0, func_ov005_02215650());
 }
 
-void func_ov005_0221730c(void) {
+void SetOv005FileDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_ov005_022208e0;
     SetFileDirectory(&data_ov005_022208e0);
@@ -185,7 +185,7 @@ void Ov005DrawEntryList(void) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02098a34(value, 8, 2, 0, 0);
     gCur3DSpriteEngine = saved;
-    func_ov005_0221730c();
+    SetOv005FileDirectory();
 }
 
 void func_ov005_02217440(void) {
@@ -197,7 +197,7 @@ void func_ov005_02217440(void) {
     void *func_020e3018(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     u32 func_020bf894(s32);
-    void func_ov005_0221730c(void);
+    void SetOv005FileDirectory(void);
     extern u8 *gOv005MenuState;
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
@@ -214,7 +214,7 @@ void func_ov005_02217440(void) {
         OpenNarcArchive();
         LoadNarcFileDecompressed(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
         CloseNarcArchive();
-        func_ov005_0221730c();
+        SetOv005FileDirectory();
     } else {
         func_02007e98(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
     }

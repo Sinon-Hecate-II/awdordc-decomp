@@ -252,7 +252,7 @@ void func_020da480(void *arg0) {
     M2C_UNK func_02086330(void);
     M2C_UNK func_02082340(M2C_UNK, void *);
     M2C_UNK func_02091d4c(M2C_UNK);
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK SetFileDirectory(void *);
     M2C_UNK GetLocalizedFileName(void *);
     M2C_UNK OpenNarcArchive(void);
@@ -327,7 +327,7 @@ void func_020da480(void *arg0) {
     ((u8 *)*gCur3DSpriteEngine)[0x46] |= 2;
 
     func_02091d4c(9);
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(0);
     SetFileDirectory(data_0212d1f4);
     r0v = GetLocalizedFileName(data_0212d1fc);
     (void)r0v;
@@ -361,7 +361,7 @@ void func_020da480(void *arg0) {
     *((u8 *)pcl + 0x52) = 0;
     *((u8 *)pcl + 0x53) = 0;
 
-    func_01ff9ce8(0);
+    Clear3DSpriteLayer(0);
     func_01ff9dd8(0);
     gCur3DSpriteEngine = savedEngine;
     func_020d47f0();

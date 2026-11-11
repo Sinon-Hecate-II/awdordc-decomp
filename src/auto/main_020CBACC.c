@@ -182,32 +182,32 @@ void func_020cc0a4(u8 *p){
 extern void **gCurrentMap;
 extern void *gCur3DSpriteEngine;
 s32 func_020cfd28(void);
-void func_020c1230(s32,s32,s32,s32);
-void func_020c1d28(s32,s32,s32,s32);
+void DrawMapPreview(s32,s32,s32,s32);
+void SetFrameRect(s32,s32,s32,s32);
 void Reset3DSpriteEngineState(void);
 void Reset3DSpriteBankState(void);
 void func_02091d4c(s32);
 s32 GetMapName(s32);
-void func_0209b2b4(s32,s32,s32,s32,s32,s32);
+void DrawTextLine(s32,s32,s32,s32,s32,s32);
 s32 x,y;
 func_020cfd28();
 *(s16 *)(p+52)=0;
 *(s16 *)(p+54)=*(s16 *)((u8 *)*gCurrentMap+0x5148);
 *(s16 *)(p+56)=*(s16 *)((u8 *)*gCurrentMap+0x514a);
 *(s16 *)(p+58)=0;
-func_020c1230(*(s32 *)((u8 *)gCur3DSpriteEngine+16),*(s32 *)((u8 *)gCur3DSpriteEngine+36),1,2);
+DrawMapPreview(*(s32 *)((u8 *)gCur3DSpriteEngine+16),*(s32 *)((u8 *)gCur3DSpriteEngine+36),1,2);
 ((u8 *)gCur3DSpriteEngine)[70]|=2;
 y=-((192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1);
 x=-((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1);
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+58)=x;
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+66)=y;
-func_020c1d28((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1,(192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1,0x35c,11);
+SetFrameRect((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1,(192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1,0x35c,11);
 Reset3DSpriteEngineState();
 Reset3DSpriteBankState();
 func_02091d4c(0);
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+60)=0;
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+68)=0;
-func_0209b2b4(1,0,2,GetMapName(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
+DrawTextLine(1,0,2,GetMapName(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
 *(s16 *)((u8 *)*gCurrentMap+0x52b4)=9;
 }
 
@@ -282,16 +282,16 @@ void func_020cc430(void *arg0) {
 }
 
 void func_020cc490(void *arg0) {
-    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_020c127c();
     M2C_UNK func_020cfd28();
     extern void *gCur3DSpriteEngine;
     func_020cfd28();
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    func_01ff9ce8(2);
+    Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    func_01ff9ce8(3);
+    Clear3DSpriteLayer(3);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     func_020c127c();
     M2C_FIELD(arg0, s16 *, 0x34) = 6;

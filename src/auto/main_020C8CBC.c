@@ -383,10 +383,10 @@ void func_020c97c0(void *arg0) {
 }
 
 void func_020c989c(void *arg0) {
-    void func_020912a4(s32 *);
+    void Sprite_ClearHandle(s32 *);
     M2C_UNK func_020d472c();
     func_020d472c();
-    func_020912a4(M2C_FIELD(arg0, s32 *, 0x54));
+    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
 u8 func_020c98b4(void) {

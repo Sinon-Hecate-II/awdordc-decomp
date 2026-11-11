@@ -28,7 +28,7 @@ static inline s32 GetSetupCode(void *p) {
  * palette and background chosen by GetSetupCode, sets the setup sprite's frame,
  * then registers the scene's per-variant update callback with overlay 10. */
 M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
-    void func_01ff9ce8(u8);
+    void Clear3DSpriteLayer(u8);
     void SetFileDirectory(void *);
     void *GetLocalizedFileName(void *);
     void OpenNarcArchive(void *);
@@ -65,7 +65,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     s32 updateFn;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
     SetFileDirectory(&data_0212d428);
     OpenNarcArchive(GetLocalizedFileName(&data_0212d430));
@@ -158,7 +158,7 @@ void func_020de610(void) {
  * matching archive and the 2P/4P background chosen by GetSetupCode, resets the
  * menu sprites, then registers the scene's ov010 update callbacks. */
 M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
-void func_01ff9ce8(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void OpenNarcArchive(void *); void LoadNarcFileDecompressed(void *,void *); void CloseNarcArchive(void); void func_02080944(void *,s32,s32,s32);
+void Clear3DSpriteLayer(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void OpenNarcArchive(void *); void LoadNarcFileDecompressed(void *,void *); void CloseNarcArchive(void); void func_02080944(void *,s32,s32,s32);
 void func_02088f1c(void *); void func_02088da8(void *); void func_0208b758(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
@@ -166,7 +166,7 @@ extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2P
 void func_020de868(s32,s32,void *); s32 func_020de884(s32);
 void *savedEngine=gCur3DSpriteEngine; void *sprite; s32 layout,animValue;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_01ff9ce8(1);
+Clear3DSpriteLayer(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 SetFileDirectory(&gMatchScenePath);
 OpenNarcArchive(GetLocalizedFileName(&gMatchSceneNarc));
@@ -227,7 +227,7 @@ s32 func_020de884(M2C_UNK arg0) {
  * menu sprites, then start the ov010 scene either by its screen code or by
  * the unit selected in the menu. */
 void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
-    void func_01ff9ce8(u8);
+    void Clear3DSpriteLayer(u8);
     void SetFileDirectory(void *);
     void *GetLocalizedFileName(void *);
     void OpenNarcArchive(void *);
@@ -258,7 +258,7 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     s32 animValue;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_01ff9ce8(1);
+    Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
     SetFileDirectory(&gLinkResourcePath);
     OpenNarcArchive(GetLocalizedFileName(&gMatchingNarcPath));
