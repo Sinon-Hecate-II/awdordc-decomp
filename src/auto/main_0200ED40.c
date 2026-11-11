@@ -551,22 +551,22 @@ loop: OS_SleepThread((u8 *)p+0x10);
 check: if(M2C_FIELD(p,s32 *,8)!=-3) {goto loop;}
 M2C_FIELD(p,s32 *,8)=arg0; M2C_FIELD(p,s32 *,0x18)=arg1;
 }
-{ s32 count=M2C_FIELD(p,s32 *,12); s32 *out=M2C_FIELD(p,s32 **,0); M2C_FIELD(p,s32 *,12)=count+1; *out=0; }
+{ u32 count=M2C_FIELD(p,u32 *,12); u32 *out=M2C_FIELD(p,u32 **,0); M2C_FIELD(p,s32 *,12)=count+1; *out=0; }
 OS_RestoreInterrupts(state);
 }
 #pragma opt_instruction_scheduling off
 void func_0200fbcc(s32 arg0, s32 arg1) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02007958(void); void OS_WakeupThread(void *,s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02007958(void); void OS_WakeupThread(void *);
 extern M2C_UNK data_0212fde0;
-void *p=&data_0212fde0; s32 state; s32 temp; state=OS_DisableInterrupts();
-if (M2C_FIELD(p,s32 *,8)!=arg0 || M2C_FIELD(p,s32 *,12)==0) {func_02007958(); goto done;}
-if(M2C_FIELD(p,s32 *,0x18)!=arg1) func_02007958();
-if(--M2C_FIELD(p,s32 *,12)==0) {
-M2C_FIELD(p,s32 *,8)=-3;
-M2C_FIELD(p,s32 *,0x18)=0;
-OS_WakeupThread((u8 *)p+0x10,0);
+void *p=&data_0212fde0; s32 state=OS_DisableInterrupts();
+if(M2C_FIELD(p,s32*,8)!=arg0 || M2C_FIELD(p,s32*,12)==0){func_02007958();goto done;}
+if(M2C_FIELD(p,s32*,0x18)!=arg1)func_02007958();
+if(--M2C_FIELD(p,s32*,12)==0){
+M2C_FIELD(p,s32*,8)=-3;
+M2C_FIELD(p,s32*,0x18)=M2C_FIELD(p,s32*,12);
+OS_WakeupThread((u8*)p+0x10);
 }
 done:
-*M2C_FIELD(p,s32 **,0)=0;OS_RestoreInterrupts(state);
+*M2C_FIELD(p,s32**,0)=0;OS_RestoreInterrupts(state);
 }
 #pragma opt_instruction_scheduling reset

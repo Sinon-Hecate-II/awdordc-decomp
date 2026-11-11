@@ -49,7 +49,9 @@ case 31: return 6;
 case 32: return 6;
 default:return 5;}}
 
-s32 func_02097e84(u32 arg0){switch(arg0){
+/* Maps a unit index (0..32) to one of the four sound ids 0x10026..0x10029 used
+   as that unit's voice/effect group. */
+s32 func_02097e84(u32 unitIndex){switch(unitIndex){
 case 0:return 0x10026;
 case 1:return 0x10026;
 case 2:return 0x10027;

@@ -57,18 +57,14 @@ void func_020844a0(u8 *a,u8 *b){s32 i=0,j=0,v;do{v=(a[i]>>4)&15;if(v==15)b[j]=25
 
 #pragma opt_common_subs off
 void func_020844f8(void) {
-    void func_02085348(void *, s32);
-    void **p;
-    s32 i;
-    M2C_FIELD(&data_02156e4c, u8 *, 4) = 12;
-    p = gCurrentMap;
-    M2C_FIELD(&data_02156e4c, u8 *, 10) = M2C_FIELD(*p, u8 *, 0x515a);
-    i = 0;
-    do {
-        data_02156e50[i + 12] = M2C_FIELD((u8 *)*p + i, u8 *, 0x515c);
-        i++;
-    } while (i < 4);
-    func_02085348(data_02156e50, 20);
+void func_02085348(void *, s32);
+void **p; u8 *dst; u32 i;
+u8 *packet=(u8 *)&data_02156e4c;
+packet[4]=12;p=gCurrentMap;
+packet[10]=M2C_FIELD(*p,u8 *,0x515a);
+i=0;dst=data_02156e50;
+do{dst[12]=M2C_FIELD((u8 *)*p+i,u8 *,0x515c);i++;dst++;}while((s32)i<4);
+func_02085348(data_02156e50,20);
 }
 #pragma opt_common_subs reset
 void func_02084568(s32 a,s32 b,s32 c,s32 d){void func_02085348(void *,s32);u8 *q=(u8 *)&data_02156e4c;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];func_02084464((u8 *)*p+0x5388,data_02156e5c);func_02085348(data_02156e50,20);}

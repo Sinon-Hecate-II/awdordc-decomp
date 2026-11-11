@@ -496,38 +496,20 @@ fail:
 }
 
 void func_0201d67c(u32 arg0, void *arg1) {
-    M2C_UNK OS_DisableInterrupts(void);
-    M2C_UNK OS_RestoreInterrupts(M2C_UNK);
-    M2C_UNK func_020651c4(M2C_UNK, M2C_UNK);
-    M2C_UNK TcpSendAck(void *, M2C_UNK);
-    u8 kind;
-    u32 var_r6;
-    u32 left;
-    M2C_UNK irq;
-
-    irq = OS_DisableInterrupts();
-    left = M2C_FIELD(arg1, u32 *, 0x44);
-    var_r6 = 0;
-    if ((left == M2C_FIELD(arg1, u32 *, 0x3C)) && (arg0 != 0)) {
-        var_r6 = 1;
-    }
-    if (arg0 >= left) {
-        M2C_FIELD(arg1, u32 *, 0x44) = 0;
-    } else {
-        s32 base = M2C_FIELD(arg1, s32 *, 0x40);
-        M2C_FIELD(arg1, u32 *, 0x44) = left - arg0;
-        func_020651c4(base, base + arg0);
-    }
-    OS_RestoreInterrupts(irq);
-    kind = M2C_FIELD(arg1, u8 *, 8);
-    if (kind != 0xA && kind != 0xB) {
-        if (M2C_FIELD(arg1, u32 *, 0x44) != 0) {
-            if (var_r6 == 0) {
-                return;
-            }
-            TcpSendAck(arg1, 0x1B);
-        }
-    }
+M2C_UNK OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(M2C_UNK);
+M2C_UNK func_020651c4(M2C_UNK,M2C_UNK); M2C_UNK TcpSendAck(void *,M2C_UNK);
+u8 kind; u32 flag; M2C_UNK irq; u32 left;
+irq=OS_DisableInterrupts();
+left=M2C_FIELD(arg1,u32*,0x44); flag=0;
+if(left==M2C_FIELD(arg1,u32*,0x3c)){ if(arg0!=0) flag=1; }
+if(arg0>=left) M2C_FIELD(arg1,u32*,0x44)=0;
+else {s32 base=M2C_FIELD(arg1,s32*,0x40);M2C_FIELD(arg1,u32*,0x44)=left-arg0;func_020651c4(base,base+arg0);}
+OS_RestoreInterrupts(irq);
+kind=M2C_FIELD(arg1,u8*,8);
+if(kind!=0xa && kind!=0xb){
+if(M2C_FIELD(arg1,u32*,0x44)!=0){if(flag==0)return;}
+TcpSendAck(arg1,0x1b);
+}
 }
 
 void func_0201d70c(u32 arg0) {

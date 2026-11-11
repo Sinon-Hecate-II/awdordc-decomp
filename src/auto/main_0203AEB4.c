@@ -123,7 +123,14 @@ void func_0203b3c4(void) {
 }
 
 #pragma opt_propagation off
-void func_0203b3fc(u8 *a,u32 b,u32 c){extern M2C_UNK data_0213d38c;void MI_CpuFill8(void*,s32);void *p=M2C_FIELD(&data_0213d38c,void **,8);if(!p)return;MI_CpuFill8(a+b*12,0);p=M2C_FIELD(&data_0213d38c,void **,8);if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));}
+void func_0203b3fc(u8 *a,u32 b,u32 c) {
+extern M2C_UNK data_0213d38c;void MI_CpuFill8(void*,s32,u32);
+void *p=M2C_FIELD(&data_0213d38c,void **,8);
+if(!p)return;
+MI_CpuFill8(a+b*12,0,12);
+p=M2C_FIELD(&data_0213d38c,void **,8);
+if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));
+}
 #pragma opt_propagation reset
 s32 func_0203b454(u8 *a,s32 b,s32 c) {
  extern M2C_UNK data_0213d38c; s32 GetSessionPlayerId(s32); s32 func_02031e38(void *);
@@ -266,6 +273,11 @@ M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_CURSOR)++;M2C_F
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_propagation off
+/* Callback for an incoming session-player message (buf): walk the online-session
+   player records and, for a record whose peer name or key matches the message's
+   name (+0x8e) or key (+0x97), register the peer on the connection and mark it
+   joined; then remove the message's player from the session if it matched, or
+   reject it otherwise. Ignores messages that are not type 0. */
 void func_0203b9a8(void **conn, void *buf, s32 unused) {
     extern M2C_UNK data_0213d38c;
     extern M2C_UNK data_020fc8f0;
@@ -281,61 +293,61 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
     s32 DropSessionPlayer(s32);
     s32 func_0204e0c4(void **, s32);
 
-    u8 local[0x1c];
-    void *data;
-    void *p;
-    s32 i;
+    u8 keyText[0x1c];
+    void *manager;
+    void *session;
+    s32 slot;
     s32 found;
-    s32 offset;
-    s32 t2;
-    s32 t;
-    u32 v;
+    s32 recordOffset;
+    s32 messagePlayerId;
+    s32 self;
+    u32 selfKey;
 
     found = 0;
     if (M2C_FIELD(buf, s32 *, 0) != 0) {
         return;
     }
-    data = &data_0213d38c;
-    i = 0;
-    p = M2C_FIELD(data, void **, 8);
-    if (M2C_FIELD(p, s32 *, 0x14) <= 0) {
+    manager = &data_0213d38c;
+    slot = 0;
+    session = M2C_FIELD(manager, void **, 8);
+    if (M2C_FIELD(session, s32 *, 0x14) <= 0) {
         goto after_loop;
     }
-    offset = 0;
+    recordOffset = 0;
 
     do {
-        if (func_02031e70((u8 *)M2C_FIELD(p, void **, 0x18) + offset) == 1) {
-            t = func_02039d98();
-            func_020326f8(t, (u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, local + 5);
-            if (StringCompare(local + 5, (u8 *)buf + 0x8e) == 0) {
+        if (func_02031e70((u8 *)M2C_FIELD(session, void **, 0x18) + recordOffset) == 1) {
+            self = func_02039d98();
+            func_020326f8(self, (u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset, keyText + 5);
+            if (StringCompare(keyText + 5, (u8 *)buf + 0x8e) == 0) {
                 func_0204e074(conn, M2C_FIELD(buf, s32 *, 4));
-                func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, M2C_FIELD(buf, s32 *, 4));
+                func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset, M2C_FIELD(buf, s32 *, 4));
                 found = 1;
             }
         } else {
-            if (func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 3 ||
-                func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 2) {
-                t = func_02039d98();
-                v = M2C_FIELD(t, u32 *, 0x24);
-                func_0200567c(local, 5, &data_020fc8f0,
-                              (v >> 24) & 0xff,
-                              (v >> 16) & 0xff,
-                              (v >> 8) & 0xff,
-                              v & 0xff);
-                t2 = M2C_FIELD(buf, s32 *, 4);
-                t = func_02039d98();
-                if (t2 == func_02032580(t, (s32)((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset))) {
-                    if (func_0206527c(local, (u8 *)buf + 0x97, 4) == 0) {
-                        func_0204e074(conn, t2);
+            if (func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset) == 3 ||
+                func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset) == 2) {
+                self = func_02039d98();
+                selfKey = M2C_FIELD(self, u32 *, 0x24);
+                func_0200567c(keyText, 5, &data_020fc8f0,
+                              (selfKey >> 24) & 0xff,
+                              (selfKey >> 16) & 0xff,
+                              (selfKey >> 8) & 0xff,
+                              selfKey & 0xff);
+                messagePlayerId = M2C_FIELD(buf, s32 *, 4);
+                self = func_02039d98();
+                if (messagePlayerId == func_02032580(self, (s32)((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset))) {
+                    if (func_0206527c(keyText, (u8 *)buf + 0x97, 4) == 0) {
+                        func_0204e074(conn, messagePlayerId);
                         found = 1;
                     }
                 }
             }
         }
-        p = M2C_FIELD(data, void **, 8);
-        offset += 0xc;
-        i++;
-    } while (i < M2C_FIELD(p, s32 *, 0x14));
+        session = M2C_FIELD(manager, void **, 8);
+        recordOffset += 0xc;
+        slot++;
+    } while (slot < M2C_FIELD(session, s32 *, 0x14));
 
 after_loop:
     if (found) {

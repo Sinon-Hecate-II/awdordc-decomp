@@ -159,74 +159,64 @@ s32 func_ov001_02172894(void) {
 }
 
 #pragma opt_common_subs off
-void func_ov001_021728b0(s32 arg0) {
+void func_ov001_021728b0(s32 arg0){
 extern void *gOv001MenuState;
 void func_ov001_02172944(s32);
-struct {s32 x,y;} xy,*pos=&xy;
-u32 value=*M2C_FIELD(gOv001MenuState,u32 **,0x30);
-pos->y=(value&0x1ff0000)>>16;
-pos->x=(value&255)-12;
-if(pos->x>0x51) {func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,pos->x);return;}
+u32 v; s32 x; u32 y; s32 pos[2];
+v=*M2C_FIELD(gOv001MenuState,u32 **,0x30);
+y=v&0x1ff0000;
+x=(v&255)-12;
+((volatile s32 *)pos)[1]=y>>16;
+pos[0]=x;
+if(pos[0]>0x51){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,pos[0]);return;}
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,0x51);
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,0xc0);
 func_ov001_0218c924(arg0,func_ov001_02172944);
 }
 #pragma optimization_level 2
-void func_ov001_02172944(s32 arg0) {
- extern void *gOv001MenuState;
- void func_ov001_021729d8(s32);
- struct { s32 x, y; } xy, *pos = &xy;
- u32 value = *M2C_FIELD(gOv001MenuState, u32 **, 0x60);
- pos->y = (value & 0x1FF0000) >> 16;
- pos->x = value & 0xFF;
- pos->x -= 12;
- if (pos->x > 0x67) {
-  func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 1, pos->x);
-  return;
- }
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 1, 0x67);
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 2, 0xC0);
- func_ov001_0218c924(arg0, func_ov001_021729d8);
+void func_ov001_02172944(s32 arg0){
+extern void *gOv001MenuState;
+void func_ov001_021729d8(s32);
+u32 v; s32 x; u32 y; s32 pos[2];
+v=*M2C_FIELD(gOv001MenuState,u32 **,0x60);
+y=v&0x1ff0000;
+x=(v&255)-12;
+((volatile s32 *)pos)[1]=y>>16;
+pos[0]=x;
+if(pos[0]>0x67){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,pos[0]);return;}
+func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,0x67);
+func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,0xc0);
+func_ov001_0218c924(arg0,func_ov001_021729d8);
 }
 #pragma optimization_level 3
-void func_ov001_021729d8(s32 arg0) {
- extern void *gOv001MenuState;
- void func_ov001_02172a6c(s32);
- struct { s32 x, y; } xy, *pos = &xy;
- u32 value = *M2C_FIELD(gOv001MenuState, u32 **, 0x90);
- pos->y = (value & 0x1FF0000) >> 16;
- pos->x = value & 0xFF;
- pos->x -= 12;
- if (pos->x > 0x7D) {
-  func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 2, pos->x);
-  return;
- }
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 2, 0x7D);
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 3, 0xC0);
- func_ov001_0218c924(arg0, func_ov001_02172a6c);
+void func_ov001_021729d8(s32 arg0){
+extern void *gOv001MenuState;
+void func_ov001_02172a6c(s32);
+u32 v; s32 x; u32 y; s32 pos[2];
+v=*M2C_FIELD(gOv001MenuState,u32 **,0x90);
+y=v&0x1ff0000;
+x=(v&255)-12;
+((volatile s32 *)pos)[1]=y>>16;
+pos[0]=x;
+if(pos[0]>0x7d){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,pos[0]);return;}
+func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,0x7d);
+func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,0xc0);
+func_ov001_0218c924(arg0,func_ov001_02172a6c);
 }
 #pragma peephole off
-void func_ov001_02172a6c(s32 arg0) {
- extern void *gOv001MenuState;
- void func_ov001_02172b00(s32);
- u32 value;
- s32 x;
- u32 y;
- s32 pos[2];
- s32 yy;
- value = *M2C_FIELD(gOv001MenuState, u32 **, 0xC0);
- x = (value & 0xFF) - 12;
- y = value & 0x1FF0000;
- yy = y >> 16;
- ((volatile s32 *)pos)[1] = yy;
- ((volatile s32 *)pos)[0] = x;
- if (pos[0] > 0x93) {
-  func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 3, pos[0]);
-  return;
- }
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 3, 0x93);
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 4, 0xC0);
- func_ov001_0218c924(arg0, func_ov001_02172b00);
+void func_ov001_02172a6c(s32 arg0){
+extern void *gOv001MenuState;
+void func_ov001_02172b00(s32);
+u32 v; s32 x; u32 y; s32 pos[2];
+v=*M2C_FIELD(gOv001MenuState,u32 **,0xc0);
+y=v&0x1ff0000;
+x=(v&255)-12;
+((volatile s32 *)pos)[1]=y>>16;
+pos[0]=x;
+if(pos[0]>0x93){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,pos[0]);return;}
+func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,0x93);
+func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,0xc0);
+func_ov001_0218c924(arg0,func_ov001_02172b00);
 }
 #pragma peephole reset
 void func_ov001_02172b00(s32 arg0) {

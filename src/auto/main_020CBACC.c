@@ -40,7 +40,16 @@ void func_020cbc08(void) {
 }
 
 #pragma opt_common_subs off
-void func_020cbc20(void *arg0) { extern void **gCurrentMap; void *p=*(void * volatile *)((u8 *)arg0+0x34); s32 n; func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5); if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14; func_020a6728(n);func_020cfd28();}
+void func_020cbc20(void *arg0) {
+ extern void **gCurrentMap;
+ void *p=M2C_FIELD(arg0,void **,0x34);
+ s32 n;
+ func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5,arg0);
+ if (!p) n=0;
+ else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
+ func_020a6728(n);
+ func_020cfd28();
+}
 #pragma opt_common_subs reset
 void func_020cbc88(void *arg0) {
  void *CreateSpriteObject(M2C_UNK *);
@@ -382,11 +391,12 @@ void func_020cc834(void) {
     func_0207a768();
 }
 
-#pragma opt_peephole off
+#pragma push
+#pragma scheduling off
 void func_020cc840(void *a) {
 extern void **data_027e0058;
 void *p; s32 x,y;
-SelectMapLayer((u8 *)*data_027e0058+0x1e30);FillMapLayer(-1);
+func_01ffb554((u8 *)*data_027e0058+0x1e30);func_01ffb3d0(-1);
 p=*data_027e0058;
 func_020cdfec(M2C_FIELD(p,s32 *,0x52d0),M2C_FIELD(p,volatile s16 *,0x52dc),M2C_FIELD(p,volatile s16 *,0x52de));
 func_0207a748(0);
@@ -396,7 +406,7 @@ M2C_FIELD(a,s16 *,0x6c)=func_020ba320(M2C_FIELD(p,volatile s32 *,0x52d0),x,y);
 M2C_FIELD(a,s16 *,0x6e)=3;
 M2C_FIELD(a,s16 *,0x6e)=func_020cac1c(3,M2C_FIELD(a,s16 *,0x6c));
 }
-#pragma opt_peephole reset
+#pragma pop
 void func_020cc8d8(void *arg0) {
     M2C_UNK func_020cad1c(s32 *, M2C_UNK);
     M2C_UNK DeleteSpriteObject(void *);

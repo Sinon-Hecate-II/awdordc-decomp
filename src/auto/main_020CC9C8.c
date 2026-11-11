@@ -369,14 +369,12 @@ u8 func_020cd728(void) {
 #pragma opt_common_subs off
 void func_020cd754(s32 arg0) {
     extern s32 *gCurrentMap;
-    void MI_CpuFill8(s32, s32);
+    void MI_CpuFill8(s32, s32, s32);
     s32 base = *gCurrentMap;
-    s32 multiplier = 0xA1;
-    s32 offset = 0x5160;
     if (M2C_FIELD(base, u8 *, 0x5156) == 0 && M2C_FIELD(base, u8 *, 0x5158) != 2) {
-        MI_CpuFill8(base + offset + multiplier * arg0, 255);
+        MI_CpuFill8(base + 0x5160 + 0xA1 * arg0, 255, 0xA1);
     } else {
-        MI_CpuFill8(base + offset + multiplier * arg0, 0);
+        MI_CpuFill8(base + 0x5160 + 0xA1 * arg0, 0, 0xA1);
     }
 }
 #pragma pop

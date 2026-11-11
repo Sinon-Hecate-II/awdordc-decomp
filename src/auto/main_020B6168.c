@@ -182,21 +182,16 @@ void func_020b654c(s32 arg0) {
     func_0207b7a4(arg0);
 }
 
+#pragma opt_propagation off
 void func_020b6570(void *arg0) {
-    s32 EaseInterpolate(s32, s32, s32, u16, s32);
-    M2C_UNK func_0208c0d0(void *, u8);
-    u16 temp_r5;
-    u16 temp_r7;
-    s32 temp_r5_2;
-    s32 temp_r6;
-    temp_r5 = (u16)(M2C_FIELD(arg0, u32 *, 0x48) >> 21);
-    temp_r7 = (u16)((M2C_FIELD(arg0, u32 *, 0x48) << 11) >> 21);
-    temp_r6 = EaseInterpolate(4, 31, 0, temp_r5, temp_r7);
-    temp_r5_2 = EaseInterpolate(4, 0, 0x40000, temp_r5, temp_r7);
-    func_0208c0d0(arg0, (u8)temp_r6);
-    M2C_FIELD(arg0, s32 *, 0x40) = temp_r5_2;
+s32 EaseInterpolate(s32,s32,s32,u16,s32);M2C_UNK func_0208c0d0(void *,u8);
+u32 bits=M2C_FIELD(arg0,u32 *,0x48);
+u16 top=(u16)(bits>>21),bottom=(u16)((bits<<11)>>21);
+s32 a=EaseInterpolate(4,31,0,top,bottom);
+s32 b=EaseInterpolate(4,0,0x40000,top,bottom);
+func_0208c0d0(arg0,(u8)a);M2C_FIELD(arg0,s32 *,0x40)=b;
 }
-
+#pragma opt_propagation reset
 void func_020b65e4(void *arg0) {
     s32 temp_r2;
 
@@ -285,8 +280,8 @@ s32 func_020b5594(s32,s32,s32);s32 func_020b5e00(s32,s32,void*,...);s32 func_020
 s32 a=M2C_FIELD(p,s32*,0x34);
 if(M2C_FIELD(p,s16*,0x6e)>0){func_020b5594(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),0);return;}
 switch(M2C_FIELD(p,s16*,0x6c)){
-case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),p);break;
-case 2:break;case 3:break;case 4:func_020b5964(a,p);break;case 5:break;case 6:case 7:func_020b5d94(a,p);break;default:break;
+case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),p);return;
+case 2:break;case 3:break;case 4:func_020b5964(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
 }}
 #pragma opt_propagation reset
 s32 func_020b689c(s32 a,s32 b) {

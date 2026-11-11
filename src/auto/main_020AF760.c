@@ -70,23 +70,15 @@ void func_020af828(s32 arg0, s32 arg1) {
 }
 
 void func_020af860(s32 arg0, s32 arg1) {
-    M2C_UNK func_0208ffe4(s32, s32);
+    M2C_UNK func_0208ffe4(s32, s32, s32);
     M2C_UNK func_02090100(s32, s32);
     void func_020af8c8(s32, s32);
     extern M2C_UNK gEffectTable;
-    s32 off = arg0 * 0x18;
-    u8 *p = (u8 *)&gEffectTable + off;
-    s32 v = M2C_FIELD(M2C_FIELD(*(void **)p, void **, 0x34), s32 *, 4);
-
-    if (v == 0) {
-        return;
-    }
-    func_0208ffe4(arg0, -1);
-    if (arg0 == 0) {
-        func_02090100(arg0, -0x80);
-    } else {
-        func_02090100(arg0, 0x7F);
-    }
+    s32 v = M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + arg0 * 0x18), void **, 0x34), s32 *, 4);
+    if (v == 0) return;
+    func_0208ffe4(arg0, -1, v);
+    if (arg0 == 0) func_02090100(arg0, -0x80);
+    else func_02090100(arg0, 0x7F);
     func_020af8c8(arg0, arg1);
 }
 

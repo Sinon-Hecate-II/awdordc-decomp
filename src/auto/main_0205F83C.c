@@ -236,9 +236,9 @@ func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
 #pragma opt_propagation reset
 void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_UNK func_0204926c();
-    s32 ghiSocket(M2C_UNK, M2C_UNK);
-    extern s32 gDnsQueryState[];
-    if ((arg3 == 0) && (gDnsQueryState[0] != 1)) {
+    s32 func_020496a4(M2C_UNK, M2C_UNK);
+    extern s32 data_0213db84;
+    if ((arg3 == 0) && (data_0213db84 != 1)) {
         return;
     }
     func_0204926c();
@@ -248,7 +248,7 @@ void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
     M2C_FIELD(arg0, s32 *, 0x44) = arg4;
     M2C_FIELD(arg0, s32 *, 0x48) = arg5;
     M2C_FIELD(arg0, s32 *, 0x28) = 0;
-    M2C_FIELD(arg0, s32 *, 0x20) = ghiSocket(2, 2);
+    M2C_FIELD(arg0, s32 *, 0x20) = func_020496a4(2, 2);
     func_020601a4(arg0 + 0x14);
     func_020601a4(arg0 + 8);
 }

@@ -98,7 +98,11 @@ if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) { func_02043008(arg0); return; }
 func_02042f94(arg0);
 }
 
-s32 func_02040878(s32 arg0, s32 arg1) {
+/* Starts a connection to peer `peerId`.  When forced (or when no opponent is
+   present) it only arms the connect flag and timer; otherwise it fills the
+   session's target slot - from the Wi-Fi server list in server mode, else from
+   the previous session - and sends the connection request. */
+s32 func_02040878(s32 peerId, s32 force) {
     s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     u64 GetSystemTick(void);
     void *GetConnection(void);
@@ -107,47 +111,47 @@ s32 func_02040878(s32 arg0, s32 arg1) {
     s32 SBServerGetIntValue(s32, M2C_UNK, s32);
     u16 SBServerGetPort(void *);
     extern M2C_UNK sDwcKeyPid;
-    s32 loc[3];
-    void *p, *q;
-    s32 u, slot, begin;
+    s32 fields[3];
+    void *session, *session2;
+    s32 server, fieldCount, requestType;
 
-    if (arg1 != 0 || (M2C_FIELD(GetConnection(), s32 *, 0x1c) == 0 && M2C_FIELD(GetConnection(), u16 *, 0x1a) == 0)) {
+    if (force != 0 || (M2C_FIELD(GetConnection(), s32 *, 0x1c) == 0 && M2C_FIELD(GetConnection(), u16 *, 0x1a) == 0)) {
         M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 1;
-        p = GetConnection();
-        M2C_FIELD(p, u64 *, 0x1c0) = GetSystemTick();
-        M2C_FIELD(GetConnection(), s32 *, 0xf4) = arg0;
+        session = GetConnection();
+        M2C_FIELD(session, u64 *, 0x1c0) = GetSystemTick();
+        M2C_FIELD(GetConnection(), s32 *, 0xf4) = peerId;
         return 0;
     }
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 0) {
-        u = SBServerListGetServer(M2C_FIELD(GetConnection(), s32 *, 0xe4), 0);
-        p = GetConnection();
-        M2C_FIELD(p, s32 *, 0xf4) = SBServerGetIntValue(u, (s32) &sDwcKeyPid, 0);
-        p = GetConnection();
-        M2C_FIELD(p, s32 *, 0x24) = SBServerGetIp((s32 *) u);
-        p = GetConnection();
-        M2C_FIELD(p, u16 *, 0xa4) = SBServerGetPort((void *) u);
-        p = GetConnection();
-        q = GetConnection();
-        slot = 1;
-        M2C_FIELD(p, s32 *, 0x204) = M2C_FIELD(q, s32 *, 0xf4);
+        server = SBServerListGetServer(M2C_FIELD(GetConnection(), s32 *, 0xe4), 0);
+        session = GetConnection();
+        M2C_FIELD(session, s32 *, 0xf4) = SBServerGetIntValue(server, (s32) &sDwcKeyPid, 0);
+        session = GetConnection();
+        M2C_FIELD(session, s32 *, 0x24) = SBServerGetIp((s32 *) server);
+        session = GetConnection();
+        M2C_FIELD(session, u16 *, 0xa4) = SBServerGetPort((void *) server);
+        session = GetConnection();
+        session2 = GetConnection();
+        fieldCount = 1;
+        M2C_FIELD(session, s32 *, 0x204) = M2C_FIELD(session2, s32 *, 0xf4);
     } else {
         if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1) {
-            M2C_FIELD(GetConnection(), s32 *, 0xf4) = arg0;
+            M2C_FIELD(GetConnection(), s32 *, 0xf4) = peerId;
         }
-        M2C_FIELD(GetConnection(), s32 *, 0x204) = arg0;
-        loc[1] = M2C_FIELD(GetConnection(), s32 *, 0x1c);
-        loc[2] = M2C_FIELD(GetConnection(), u16 *, 0x1a);
-        slot = 3;
+        M2C_FIELD(GetConnection(), s32 *, 0x204) = peerId;
+        fields[1] = M2C_FIELD(GetConnection(), s32 *, 0x1c);
+        fields[2] = M2C_FIELD(GetConnection(), u16 *, 0x1a);
+        fieldCount = 3;
     }
     M2C_FIELD(GetConnection(), s32 *, 0x1c8) = 0x1770;
-    p = GetConnection();
-    M2C_FIELD(p, u64 *, 0x1cc) = GetSystemTick();
+    session = GetConnection();
+    M2C_FIELD(session, u64 *, 0x1cc) = GetSystemTick();
     M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 0;
-    begin = M2C_FIELD(GetConnection(), s32 *, 0x208) != 0 ? 11 : 1;
-    loc[0] = M2C_FIELD(GetConnection(), u8 *, 0x15);
-    q = GetConnection();
-    p = GetConnection();
-    return func_0203f058(begin, arg0, M2C_FIELD(q, s32 *, 0x24), M2C_FIELD(p, u16 *, 0xa4), (s32) &loc[0], slot);
+    requestType = M2C_FIELD(GetConnection(), s32 *, 0x208) != 0 ? 11 : 1;
+    fields[0] = M2C_FIELD(GetConnection(), u8 *, 0x15);
+    session2 = GetConnection();
+    session = GetConnection();
+    return func_0203f058(requestType, peerId, M2C_FIELD(session2, s32 *, 0x24), M2C_FIELD(session, u16 *, 0xa4), (s32) &fields[0], fieldCount);
 }
 
 /* Scans the connection's peer records from the current cursor for the next

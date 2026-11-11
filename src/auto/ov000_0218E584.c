@@ -211,6 +211,10 @@ void func_ov000_0218eea8(void) {
     func_ov000_0218e9ac();
 }
 
+/* AI: builds the cursor unit's move range, scans the map for the reachable
+ * enemy it should attack (validated by func_020ba510, target flag set, lowest
+ * health), resolves a firing tile with func_ov000_02177f24, then clears the
+ * target flag and moves the cursor onto that tile (mode 6). */
 void func_ov000_0218ef40(void) {
     s32 func_020ba510(s32, s32);
     s32 func_ov000_02177f24(s32, s32, s16 *);
@@ -219,70 +223,68 @@ void func_ov000_0218ef40(void) {
     void func_01ffb9c4(s8);
     extern void **gCurrentMap;
 
-    s8 *rowPtr;
-    void *base;
-    void *entity;
-    void *bestEntity = 0;
-    s32 foundX = (s32)bestEntity - 1;
-    s32 foundY = foundX;
+    s8 *gridRow;
+    void *map;
+    void *unit;
+    void *bestUnit = 0;
+    s32 cursorX = (s32)bestUnit - 1;
+    s32 cursorY = cursorX;
     s32 bestHealth = 0x64;
     s32 x;
     s32 y;
-    s16 buf[2];
-    u16 rowOff;
-    u8 byteVal;
+    s16 pos[2];
+    u16 rowOffset;
+    u8 unitId;
     u32 kind;
-    u16 f8;
+    u16 flags;
     u8 health;
-    s32 okay;
+    s32 ok;
 
-    base=*gCurrentMap;
-    BuildUnitMoveRange(*(void **)((u8 *)base + 0x52D0));
+    map=*gCurrentMap;
+    BuildUnitMoveRange(*(void **)((u8 *)map + 0x52D0));
     func_01ffb9c4(0x6f);
 
-    base=*gCurrentMap;
+    map=*gCurrentMap;
     y=0;
-    if ((s32)*(u16 *)((u8 *)base + 0x5146) <= 0) goto outer_done;
+    if ((s32)*(u16 *)((u8 *)map + 0x5146) <= 0) goto outer_done;
 outer_top:
-    y = (s32)y; // no-op to keep
-    // keep y variable; outer loop sets later
     x = 0;
-    if ((s32)*(u16 *)((u8 *)base + 0x5144) <= 0) goto width_done;
+    if ((s32)*(u16 *)((u8 *)map + 0x5144) <= 0) goto width_done;
 inner_top:
-    rowPtr = *(s8 **)((void **)((u8 *)base + 0x52E8) + y);
-    if (rowPtr[x] < 0) goto next_cell;
-    rowOff = *(u16 *)((u8 *)base + 0x3758 + y * 2);
-    byteVal = *((u8 *)base + x + rowOff);
-    entity = (void *)((u8 *)base + 0x59A4 + byteVal * 14);
-    kind = (u32)(*((u8 *)entity)<<26)>>26;
+    gridRow = *(s8 **)((void **)((u8 *)map + 0x52E8) + y);
+    if (gridRow[x] < 0) goto next_cell;
+    rowOffset = *(u16 *)((u8 *)map + 0x3758 + y * 2);
+    unitId = *((u8 *)map + x + rowOffset);
+    unit = (void *)((u8 *)map + 0x59A4 + unitId * 14);
+    kind = (u32)(*((u8 *)unit)<<26)>>26;
     if (kind == 0) goto next_cell;
-    if (entity == *(void **)((u8 *)base + 0x52D0)) goto next_cell;
-    okay = func_020ba510(x, y);
-    if (okay == 0) goto next_cell;
-    f8 = *(u16 *)((u8 *)entity + 8);
-    if ((((u32)f8 << 18) >> 30) != 1) goto next_cell;
-    health = *((u8 *)entity + 10);
+    if (unit == *(void **)((u8 *)map + 0x52D0)) goto next_cell;
+    ok = func_020ba510(x, y);
+    if (ok == 0) goto next_cell;
+    flags = *(u16 *)((u8 *)unit + 8);
+    if ((((u32)flags << 18) >> 30) != 1) goto next_cell;
+    health = *((u8 *)unit + 10);
     if (bestHealth < (s32)((u32)(health<<25)>>25)) goto next_cell;
-    okay = func_ov000_02177f24(x, y, buf);
-    if (okay == 0) goto next_cell;
-    foundX = buf[0];
-    foundY = buf[1];
-    bestEntity = entity;
-    bestHealth = (u32)(*((u8 *)entity+10)<<25)>>25;
+    ok = func_ov000_02177f24(x, y, pos);
+    if (ok == 0) goto next_cell;
+    cursorX = pos[0];
+    cursorY = pos[1];
+    bestUnit = unit;
+    bestHealth = (u32)(*((u8 *)unit+10)<<25)>>25;
 next_cell:
-    base=*gCurrentMap;
+    map=*gCurrentMap;
     x++;
-    if (x < *(u16 *)((u8 *)base + 0x5144)) goto inner_top;
+    if (x < *(u16 *)((u8 *)map + 0x5144)) goto inner_top;
 width_done:
     y++;
-    if (y < *(u16 *)((u8 *)base + 0x5146)) goto outer_top;
+    if (y < *(u16 *)((u8 *)map + 0x5146)) goto outer_top;
 outer_done:
-    if (foundX == -1) return;
+    if (cursorX == -1) return;
     {
-        u16 tmp = *(u16 *)((u8 *)bestEntity + 8);
+        u16 tmp = *(u16 *)((u8 *)bestUnit + 8);
         tmp = tmp & ~0x3000;
-        *(u16 *)((u8 *)bestEntity + 8) = tmp;
-        SetMapCursor((s16)foundX, (s16)foundY, 6, 0, 0);
+        *(u16 *)((u8 *)bestUnit + 8) = tmp;
+        SetMapCursor((s16)cursorX, (s16)cursorY, 6, 0, 0);
     }
 }
 

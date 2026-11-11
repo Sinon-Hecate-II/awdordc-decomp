@@ -312,9 +312,16 @@ void func_0202b760(void *a){void func_0202b86c(void *);if(((s32)(M2C_FIELD(a,u32
 
 void func_0202b77c(void *a,s32 b){s32 func_020098d0(s32);s32 ch;s32 r,i;M2C_FIELD(a,s32 *,60)=b;i=0;if(M2C_FIELD(a,s32 *,72)<=0)return;do{ch=M2C_FIELD(a+i,u8 *,76);r=func_020098d0(M2C_FIELD(a,s32 *,60)+data_0213bbd4[ch*2+1]);func_02008dfc(1<<ch,r&255,r>>8);i++;}while(i<M2C_FIELD(a,s32 *,72));}
 
-#pragma scheduling off
-void func_0202b7e8(void *a,register s32 b,s32 c){M2C_UNK func_02008dfc(s32,s32,s32);s32 func_020098d0(s32);extern M2C_UNK data_0213bbd8;s32 r;if(b>M2C_FIELD(a,s32 *,72)-1)return;b=M2C_FIELD(a+b,u8 *,76);M2C_FIELD(&data_0213bbd8,s32 *,b*8)=c;r=func_020098d0(M2C_FIELD(a,s32 *,60)+c);func_02008dfc(1<<b,r&255,r>>8);}
-#pragma scheduling reset
+#pragma opt_common_subs off
+void func_0202b7e8(void *a,register s32 b,s32 c){
+M2C_UNK func_02008dfc(s32,s32,s32);s32 func_020098d0(s32);extern M2C_UNK data_0213bbd8;
+s32 r,lo,mask;
+if(b>M2C_FIELD(a,s32 *,72)-1)return;
+b=M2C_FIELD(a+b,u8 *,76);M2C_FIELD(&data_0213bbd8,s32 *,b*8)=c;
+r=func_020098d0(M2C_FIELD(a,s32 *,60)+c);
+func_02008dfc(1<<b,(u8)r,(s32)r>>8);
+}
+#pragma opt_common_subs on
 void Sound_SetChannelVolume(void *arg0, s32 arg1, M2C_UNK arg2) {
     M2C_UNK func_02008e24(s32, M2C_UNK);
     if (arg1 > (s32) (M2C_FIELD(arg0, s32 *, 0x48) - 1)) {
@@ -407,24 +414,24 @@ M2C_FIELD(p,s32 *,0)=0;
 
 void func_0202bc1c(void){M2C_UNK func_02008cf0(s32,s32,s32,s32);s32 func_020094f8();M2C_UNK func_020092d0(s32);M2C_UNK func_0200948c(s32);extern M2C_UNK data_0213bc54,data_0213bc9c;s32 r;void *p=&data_0213bc9c;s32 channel;if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;channel=M2C_FIELD(p,s32 *,44);func_02008cf0(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);r=func_020094f8();func_020092d0(1);func_0200948c(r);}
 
-#pragma scheduling off
+#pragma opt_common_subs off
 void func_0202bc7c(void) {
 void func_02007e54(s32,s32,s32); void func_020067e0(s32,s32); M2C_UNK func_02008cc8();
 extern M2C_UNK data_0213bc54,data_0213bc9c;
 AudioBufferState *p=(AudioBufferState *)&data_0213bc9c;
-s32 channel; s32 dest,size;
+s32 channel; register s32 dest,size;
 if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;
 dest=p->buffer0;
 size=p->size;
 p->state=0;
-func_02007e54(p->state,dest,size);
+func_02007e54(0,dest,size);
 func_02007e54(0,p->buffer1,p->size);
 func_020067e0(p->buffer0,p->size);
 func_020067e0(p->buffer1,p->size);
 channel=p->channel;
 func_02008cc8(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
 }
-#pragma scheduling on
+#pragma opt_common_subs on
 void func_0202bd00(void *a,s32 b,s32 c,s32 d){M2C_UNK InitFileRequest(void *);s32 func_0200b95c(void *,s32);s32 func_0200b9e4(void *,Unk02BDFileRange);s32 LoadResourceArchive(void *,s32,s32);extern void *gCurrentArchive;
 M2C_FIELD(a,s32 *,140)=0;M2C_FIELD(a,s32 *,132)=0;M2C_FIELD(a,s32 *,136)=0;
 if(!func_0200b95c(a+124,b))return;InitFileRequest(a+52);

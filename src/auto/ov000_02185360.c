@@ -115,25 +115,31 @@ if(((u32)(unit[0]<<26)>>26)==5)func_ov000_021854e0(unit[1],unit[2],5,2);
 }
 }
 #pragma optimization_level reset
+/* Expand one node of the movement-range search: start from the current node's
+   tile, step one cell in direction dir (0/1 = stay, 2/3 = down/up, 4/5 =
+   left/right), reject off-map tiles, impassable cells (grid value < 0 or > 110)
+   and cells whose range layer is already at most this cell's cost, then store
+   the cost and enqueue (x, y, dir) as the next search node while the queue has
+   room (349 nodes). */
 void func_ov000_02185a74(u32 dir) {
 extern u8 *gMoveSearchCurrent; extern u8 *gMoveSearchState; extern s32 gMoveSearchCount; extern u8 *gMoveSearchWrite;
-u8 *p; void *map; s32 w,x,y,h,c,old;
+u8 *state; void *map; s32 width,x,y,height,cost,oldCost;
 gMoveSearchState[36]=gMoveSearchCurrent[0];
 gMoveSearchState[37]=gMoveSearchCurrent[1];
 switch(dir){case 0:case 1:break;case 2:gMoveSearchState[37]--;break;case 3:gMoveSearchState[37]++;break;case 4:gMoveSearchState[36]--;break;case 5:gMoveSearchState[36]++;break;default:break;}
 if(gMoveSearchCount>=349)return;
-map=*gCurrentMap;p=gMoveSearchState;
-w=M2C_FIELD(map,u16 *,0x5144);x=p[36];
-if(x>=w)return;
-y=p[37];h=M2C_FIELD(map,u16 *,0x5146);
-if(y>=h)return;
-c=M2C_FIELD(((s8 **)((u8 *)map+0x52e8))[y],s8 *,x);
-if(c<0)return;if(c>110)return;
-if((s8)gAiRangeLayer[gMoveSearchCurrent[0]+gMoveSearchCurrent[1]*w]<=c)return;
-old=(s8)gAiRangeLayer[x+y*w];
-if(old<=c && old>=0)return;
-gAiRangeLayer[x+y*w]=c;
-gMoveSearchWrite[0]=p[36];
+map=*gCurrentMap;state=gMoveSearchState;
+width=M2C_FIELD(map,u16 *,MAP_WIDTH);x=state[36];
+if(x>=width)return;
+y=state[37];height=M2C_FIELD(map,u16 *,MAP_HEIGHT);
+if(y>=height)return;
+cost=M2C_FIELD(((s8 **)((u8 *)map+MAP_GRID))[y],s8 *,x);
+if(cost<0)return;if(cost>110)return;
+if((s8)gAiRangeLayer[gMoveSearchCurrent[0]+gMoveSearchCurrent[1]*width]<=cost)return;
+oldCost=(s8)gAiRangeLayer[x+y*width];
+if(oldCost<=cost && oldCost>=0)return;
+gAiRangeLayer[x+y*width]=cost;
+gMoveSearchWrite[0]=state[36];
 gMoveSearchWrite[1]=gMoveSearchState[37];
 gMoveSearchWrite[2]=dir;
 gMoveSearchWrite+=4;gMoveSearchCount++;

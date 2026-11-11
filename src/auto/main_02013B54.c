@@ -81,10 +81,10 @@ void func_02013e70(s32 arg0) { s32 OS_DisableInterrupts(); void OS_RestoreInterr
 
 #pragma opt_strength_reduction off
 void *func_02013e98(s32 arg0) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02015214(); void MI_CpuCopy8(void *,void *); extern s32 data_02136c4c;
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02015214(); void MI_CpuCopy8(void *,void *,u32); extern s32 data_02136c4c;
 s32 state=OS_DisableInterrupts();
 if(data_02136c4c && func_02015214(arg0)){
-MI_CpuCopy8((void *)(data_02136c4c+0x1340+(arg0-1)*22),(void *)(data_02136c4c+0x1772));
+MI_CpuCopy8((void *)(data_02136c4c+0x1340+(arg0-1)*22),(void *)(data_02136c4c+0x1772),22);
 OS_RestoreInterrupts(state); return (void *)(data_02136c4c+0x1772);
 }
 OS_RestoreInterrupts(state); return 0;

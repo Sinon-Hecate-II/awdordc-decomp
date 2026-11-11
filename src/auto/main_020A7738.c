@@ -466,24 +466,9 @@ n--; if(step>0)*out++=2; if(step<0)*out++=3;
 *(s8 *)out=-1;
 }
 
-#pragma opt_peephole off
-void func_020a83e4(u8 *p,s8 *dir) {
-    for(;;) {
-        switch(*dir++) {
-            case 9: dir++; break;
-            case -1:
-            case 4: return;
-            case 0: p[1]--; break;
-            case 1: p[1]++; break;
-            case 3: p[2]--; break;
-            case 2: p[2]++; break;
-            case 10:
-            default: break;
-        }
-    }
-    __builtin_unreachable();
-}
-#pragma opt_peephole reset
+#pragma optimize_for_size on
+void func_020a83e4(u8 *p,s8 *dir){do{switch(*dir++){case 9:dir++;break;case -1:case 4:return;case 0:p[1]--;break;case 1:p[1]++;break;case 3:p[2]--;break;case 2:p[2]++;break;case 10:default:break;}}while(1);}
+#pragma optimize_for_size reset
 void func_020a8474(void) {
 
 }

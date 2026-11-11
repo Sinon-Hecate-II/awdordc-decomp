@@ -86,11 +86,7 @@ M2C_UNK func_02090e0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u1
     return (M2C_UNK)r4;
 }
 
-void func_02090eb8(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,M2C_UNK arg3,u16 arg4,s32 arg5,s32 arg6) {
-s32 func_02081070(M2C_UNK,M2C_UNK);
-M2C_UNK func_02090e0c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);
-func_02090e0c(func_02081070(arg0,1),arg1,arg2,arg3,arg4,arg5,1,arg6);
-}
+void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK func_02090e0c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=func_02081070(a,1);func_02090e0c(r,b,c,d,e,f,1,g);}
 
 void *func_02090f0c(void *arg0) {
     M2C_UNK func_02090894();
@@ -118,75 +114,29 @@ void *func_02090f0c(void *arg0) {
     return arg0;
 }
 
-void *func_02090f78(void *arg0) {
-    M2C_UNK func_02090894();
-    M2C_UNK func_02090c7c();
-    M2C_UNK func_020e35cc(s32);
-    extern M2C_UNK data_021029cc;
-    M2C_UNK *d = &data_021029cc;
-    M2C_UNK (*temp_r1)(void *);
+void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK func_02090c7c();M2C_UNK func_020e35cc(s32);extern M2C_UNK data_021029cc;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&data_021029cc;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))func_02090c7c();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))func_020e35cc(M2C_FIELD(a,s32 *,0x40));return a;}
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = d;
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        func_02090894();
-    }
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        func_02090c7c();
-    }
-    temp_r1 = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x34);
-    if (temp_r1 != NULL) {
-        temp_r1(arg0);
-    }
-    if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
-        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x40));
-    }
-    return arg0;
-}
-
+#pragma opt_propagation off
 void func_02090fdc(void *arg0) {
-    M2C_UNK DrawSprite3D(void *);
-    M2C_UNK DeleteSpriteObject(void *);
-    volatile s32 sp8;
-    volatile s32 sp4;
-    volatile s32 sp0;
-    s32 *temp_r0;
-    s32 var_r0;
-    s32 var_r1;
-
-    sp0 = M2C_FIELD(arg0, s32 *, 0x5C) * 0x30;
-    sp4 = M2C_FIELD(arg0, s32 *, 0x60) * 0x30;
-    sp8 = M2C_FIELD(arg0, s32 *, 0x64);
-    {
-        M2C_UNK (*fp)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK) = (M2C_UNK(*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))DrawSprite3D;
-        if (fp((M2C_UNK)M2C_FIELD(arg0, s32 **, 0x58), (M2C_UNK)&sp0, 0x30000, 0) != 0) {
-            return;
-        }
-    }
-    temp_r0 = M2C_FIELD(arg0, s32 **, 0x58);
-    var_r1 = 1;
-    if ((temp_r0 != NULL) && (*temp_r0 != 0)) {
-        var_r1 = 0;
-    }
-    if (var_r1 == 0) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
-    }
-    if (var_r0 != 0) {
-        return;
-    }
-    DeleteSpriteObject(arg0);
+M2C_UNK DrawSprite3D(void *); M2C_UNK DeleteSpriteObject(void *);
+s32 pos[3]; s32 *p; s32 valid,invalid;
+pos[0]=M2C_FIELD(arg0,s32 *,0x5c)*48;
+pos[1]=M2C_FIELD(arg0,s32 *,0x60)*48;
+pos[2]=M2C_FIELD(arg0,s32 *,0x64);
+if(((s32 (*)(void *,s32 *,s32,s32))DrawSprite3D)(M2C_FIELD(arg0,void **,0x58),pos,0x30000,0)) return;
+p=M2C_FIELD(arg0,s32 **,0x58);invalid=1;
+if(p && *p) invalid=0;
+valid=invalid==0;
+if(valid) return;
+DeleteSpriteObject(arg0);
 }
-
-void func_0209106c(void *arg0) {
-    void func_020912a4(s32 *);
-    void (*fp)(s32 *) = func_020912a4;
-    fp(M2C_FIELD(arg0, s32 **, 0x58));
+#pragma opt_propagation reset
+void func_0209106c(void *a) {void func_020912a4(s32 *);void (*fp)(s32 *)=func_020912a4;fp(M2C_FIELD(a,s32 **,0x58));}
+s32 func_0209107c(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
+s32 func_02091af8(void *,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);
+s32 r=func_02091af8(a,b,c);if(r) {func_0207d0f0(r,d,e,f,g,h,i);return 1;}return 0;
 }
-
-#pragma scheduling off
-s32 func_0209107c(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,s32 arg7,u8 arg8){s32 func_02091af8(void*,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);s32 r=func_02091af8(arg0,arg1,arg2);s32 t6,t7,t4,t5;u8 t8;if(!r)return 0;t6=arg6;t7=arg7;t8=arg8;t4=arg4;t5=arg5;func_0207d0f0(r,arg3,t4,t5,t6,t7,t8);return 1;}
-#pragma scheduling on
+#pragma optimization_level reset
 M2C_UNK DrawSprite3D(void *arg0) {
 void func_02091110(); void func_020913c4(void *); M2C_UNK func_020913d4(M2C_UNK);
 s32 ok=(arg0!=0 && *(s32 *)arg0!=0);
@@ -200,17 +150,8 @@ void func_02091230(void) {
     *(s32 *)0x040004A4 = 0x081E4080;
 }
 
-void func_02091248(s32 arg0) {
-    s32 var_r1;
-
-    if (arg0 == 0x1F) {
-        var_r1 = 0;
-    } else {
-        var_r1 = 0x3F;
-    }
-    *(s32 *)0x040004A4 = (var_r1 << 0x18) | 0x80 | (arg0 << 0x10);
-}
-
+void func_02091248(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
+#pragma optimization_level reset
 s32 func_02091270(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
             void func_02091954(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_020919b4(M2C_UNK);
@@ -598,13 +539,9 @@ M2C_FIELD(r5,s16*,0x1c)=256; M2C_FIELD(r5,s16*,0x1e)=r1; M2C_FIELD(r5,s16*,0x24)
 func_020913d4((M2C_UNK)r5);
 }
 
-s32 func_020919b4(M2C_UNK arg0) {
-extern s32 data_02157918; s32 i=0; s32 *p=&data_02157918;
-do { if(*p==arg0) return i*0x34+(s32)&data_02157918;
-p=(s32*)((u8*)p+0x34); ++i;
-}while(i<32); return 0;
-}
-
+#pragma optimization_level 2
+s32 func_020919b4(M2C_UNK a) {extern s32 data_02157918;s32 i=0; s32 *p=&data_02157918;do {if(*p==a)return i*52+(s32)&data_02157918;i++;p=(s32*)((u8*)p+52);}while(i<32);return 0;}
+#pragma optimization_level reset
 void func_020919f4(void *arg0) {
     M2C_UNK DeleteSpriteObject(void *);
     s32 DrawSprite2D(s32 *, s32, s32);
@@ -625,10 +562,11 @@ void func_020919f4(void *arg0) {
     DeleteSpriteObject(arg0);
 }
 
+#pragma scheduling off
 void func_02091a40(void *arg0) {
-    func_020912a4(M2C_FIELD(arg0, s32 **, 0x58));
+    func_020912a4(M2C_FIELD(arg0, s32 *, 0x58));
 }
-
+#pragma scheduling reset
 void func_02091a50(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
     extern M2C_UNK data_02102a28;
@@ -772,12 +710,9 @@ i++;
 gCur3DSpriteEngine=save;
 }
 
-void func_02091d20(void) {
-M2C_UNK func_02007e20(M2C_UNK*,s32,M2C_UNK);
-extern M2C_UNK data_020f41e0; extern void *gCur3DSpriteEngine;
-func_02007e20(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);
-}
-
+#pragma scheduling off
+void func_02091d20(void) {M2C_UNK func_02007e20(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK data_020f41e0;extern void *gCur3DSpriteEngine;func_02007e20(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
+#pragma scheduling reset
 void func_02091d4c(s32 arg0) {
     M2C_UNK func_01ff9e44(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_0211e088;

@@ -1,5 +1,6 @@
 /* 29 functions from 0x021E24E8 to 0x021E3210 (ov002), found by ds-decomp. */
 #include "common.h"
+
 typedef struct SlotEntry { s16 value; u8 index:3; u8 rest:5; u8 pad; } SlotEntry;
 static inline void SetSlotIndex(SlotEntry *p, u8 index) { p->index=index; }
 extern M2C_UNK data_ov002_021ea704;
@@ -350,26 +351,18 @@ void func_ov002_021e3030(u8 *arg0, u8 *arg1) {
 }
 
 #pragma opt_strength_reduction off
-void func_ov002_021e3044(s32 arg0, s32 arg1, s32 arg2) {
-    s32 i;
-    for (i = 0; i < 5; i++) {
-        s32 x = *(u8 *)(arg0 + i + 0x12) * 2;
-        if (arg1 - 1 > x) {
-            *(s8 *)(arg0 + i * 2 + 8) = 2;
-        } else if (arg1 - 1 == x) {
-            *(s8 *)(arg0 + i * 2 + 8) = 1;
-        } else {
-            *(s8 *)(arg0 + i * 2 + 8) = 0;
-        }
-        x = *(u8 *)(arg0 + i + 0x12) * 2;
-        if (arg2 - 1 > x) {
-            *(s8 *)(arg0 + i * 2 + 9) = 2;
-        } else if (arg2 - 1 == x) {
-            *(s8 *)(arg0 + i * 2 + 9) = 1;
-        } else {
-            *(s8 *)(arg0 + i * 2 + 9) = 0;
-        }
-    }
+void func_ov002_021e3044(u8 *arg0, s32 arg1, s32 arg2) {
+s32 i; arg1--; arg2--;
+for(i=0;i<5;i++){
+u16 x=*(u8*)(arg0+i+18)*2;
+if(arg1>x) *(u8*)(arg0+i*2+8)=2;
+else if(arg1==x) *(u8*)(arg0+i*2+8)=1;
+else *(u8*)(arg0+i*2+8)=0;
+x=*(u8*)(arg0+i+18)*2;
+if(arg2>x) *(u8*)(arg0+i*2+9)=2;
+else if(arg2==x) *(u8*)(arg0+i*2+9)=1;
+else *(u8*)(arg0+i*2+9)=0;
+}
 }
 #pragma opt_strength_reduction on
 s32 func_ov002_021e30d0(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}

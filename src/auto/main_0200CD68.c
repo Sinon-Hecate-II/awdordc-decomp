@@ -251,15 +251,16 @@ M2C_FIELD(&data_0212fc70,s32*,48)=*(volatile s32*)0x40002a0;
 }else{M2C_FIELD(&data_0212fc70,s32*,40)=0;M2C_FIELD(&data_0212fc70,s32*,44)=0;M2C_FIELD(&data_0212fc70,s32*,48)=0;}
 OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16*,0x34)=1;}
 
-#pragma opt_instruction_scheduling off
+#pragma opt_propagation off
 void func_0200d778(void) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02009eb0(s32,u32,s32);
-s32 t=OS_DisableInterrupts();s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
-if(ok==0) {OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1;
-if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(0,4,0);
-} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=1;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~1;OS_RestoreInterrupts(t);}
+s32 t=OS_DisableInterrupts(); s32 ok=(func_02009eb0(6,0x3000000,0)>=0); u32 base;
+if(!ok) {OS_RestoreInterrupts(t);base=(u32)&data_0212fc70;
+((TouchState *)base)->flags38 = 1 | ((TouchState *)base)->flags38;
+if(((TouchState *)base)->callback)((TouchState *)base)->callback(0,4,0);
+} else {base=(u32)&data_0212fc70;((TouchState *)base)->flags3a = 1 | ((TouchState *)base)->flags3a;((TouchState *)base)->flags38&=~1;OS_RestoreInterrupts(t);}
 }
-#pragma opt_instruction_scheduling reset
+#pragma opt_propagation reset
 s32 func_0200d80c(u16 *a) {
 void func_0200dd14(u32);
 func_0200dd14(1);if(M2C_FIELD(&data_0212fc70,u16 *,0x38)&1)return 1;
@@ -311,9 +312,9 @@ okpath:
 void func_0200d95c(void) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02009eb0(s32,u32,s32);
 s32 t=OS_DisableInterrupts();s32 ok=(func_02009eb0(6,0x3000200,0)>=0);
-if(!ok) {OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=4;
+if(ok==0) {OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)=4|M2C_FIELD(&data_0212fc70,u16 *,0x38);
 if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(2,4,0);
-} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=4;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~4;OS_RestoreInterrupts(t);}
+} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)=4|M2C_FIELD(&data_0212fc70,u16 *,0x3a);M2C_FIELD(&data_0212fc70,u16 *,0x38)=~4&M2C_FIELD(&data_0212fc70,u16 *,0x38);OS_RestoreInterrupts(t);}
 }
 #pragma opt_instruction_scheduling reset
 u16 func_0200d9f4(void) {

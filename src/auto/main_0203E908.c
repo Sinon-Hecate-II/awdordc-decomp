@@ -258,7 +258,11 @@ loop_4:
     goto loop_4;
 }
 
-s32 func_0203f058(u8 command, s32 arg1, s32 arg2, u16 arg3, s32 *values, s32 count) {
+/* Send a connection command: build its payload from the value list and either
+   hand it to the binary packet path (func_0203f20c) or format it as a text
+   message and pass it to the connection's send callback; for commands 2, 6, 8
+   and 9 record the command, peer, port, payload and time so it can be resent. */
+s32 func_0203f058(u8 command, s32 peerId, s32 address, u16 port, s32 *values, s32 count) {
     void func_0203f31c(M2C_UNK,s32,M2C_UNK,u8 *);
     s32 func_0203f20c(s32,s32,s32,s32,s32);
     void func_02007e70(s32,void *,s32);
@@ -266,34 +270,34 @@ s32 func_0203f058(u8 command, s32 arg1, s32 arg2, u16 arg3, s32 *values, s32 cou
     void MI_CpuCopy8(u8 *,u8 *,u32);
     u64 GetSystemTick(void);
     extern M2C_UNK data_020fc908, data_020fc9fc;
-    u8 buffer[0x200];
-    u8 temp[0x10];
-    s32 len=0, i, n, result;
-    void *p;
+    u8 message[0x200];
+    u8 valueText[0x10];
+    s32 length=0, i, partLength, result;
+    void *conn;
     if (M2C_FIELD(GetConnection(),u8 *,0x15) == 0 ||
         ( (M2C_FIELD(GetConnection(),u8 *,0x15) == 3 ||
         M2C_FIELD(GetConnection(),u8 *,0x1a6) != 0) && command == 6)) {
-        result=func_0203f20c(command,arg2,arg3,(s32)values,count);
+        result=func_0203f20c(command,address,port,(s32)values,count);
     } else {
         if (values != 0 && count != 0) {
-            len=func_0200567c(buffer,0x200,&data_020fc908,values[0]);
+            length=func_0200567c(message,0x200,&data_020fc908,values[0]);
             for(i=1;i<count;i++){
-                n=func_0200567c(temp,0x10,&data_020fc9fc,values[i]);
-                MI_CpuCopy8(temp,buffer+len,n);
-                len+=n;
+                partLength=func_0200567c(valueText,0x10,&data_020fc9fc,values[i]);
+                MI_CpuCopy8(valueText,message+length,partLength);
+                length+=partLength;
             }
         }
-        buffer[len]=0;
-        result=((s32 (*)())func_0203f31c)(M2C_FIELD(GetConnection(),s32 *,0),command,arg1,buffer);
+        message[length]=0;
+        result=((s32 (*)())func_0203f31c)(M2C_FIELD(GetConnection(),s32 *,0),command,peerId,message);
     }
     if(command==2 || command==6 || (u8)(command+0xf8)<=1) {
         M2C_FIELD(GetConnection(),u8 *,0x3cc)=command;
-        M2C_FIELD(GetConnection(),u16 *,0x3ce)=arg3;
-        M2C_FIELD(GetConnection(),s32 *,0x3d0)=arg2;
-        M2C_FIELD(GetConnection(),s32 *,0x454)=arg1;
+        M2C_FIELD(GetConnection(),u16 *,0x3ce)=port;
+        M2C_FIELD(GetConnection(),s32 *,0x3d0)=address;
+        M2C_FIELD(GetConnection(),s32 *,0x454)=peerId;
         M2C_FIELD(GetConnection(),s32 *,0x458)=count;
-        p=GetConnection();
-        M2C_FIELD(p,u64 *,0x45c)=GetSystemTick();
+        conn=GetConnection();
+        M2C_FIELD(conn,u64 *,0x45c)=GetSystemTick();
         if(values!=0 && count!=0)func_02007e70((s32)values,(u8 *)GetConnection()+0x3d4,count*4);
     }
     return result;

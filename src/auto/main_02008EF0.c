@@ -341,35 +341,41 @@ void func_02009aa4(void *arg0) {
 
 void func_02009aec(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=0;}
 
-s32 func_02009b0c(void *base,u8 *dst,s32 *state) {
-while((u32)state[0]<M2C_FIELD(base,u32*,0x38)){
-u32 entry=M2C_FIELD((u8*)base+state[0]*4,u32*,0x3c);
-s32 type=entry&255;
-u32 offset=entry>>8;
-dst[0]=entry;
-switch(type){
+/* Iterate the entries of a packed animation table: read the entry-table word
+   (entry type in the low byte, data offset in the upper 24 bits) and copy the
+   associated record into outEntry. Types 1-5 copy one shared 10-byte field
+   block; type 16 walks a variable run of 12-byte records; type 17 up to eight
+   12-byte records prefixed by a present-flags table. cursor holds the iterator
+   state (entry index, intra-entry index); returns 1 while entries remain. */
+s32 func_02009b0c(void *animation,u8 *outEntry,s32 *cursor) {
+while((u32)cursor[0]<M2C_FIELD(animation,u32*,0x38)){
+u32 entry=M2C_FIELD((u8*)animation+cursor[0]*4,u32*,0x3c);
+s32 entryType=entry&255;
+u32 dataOffset=entry>>8;
+outEntry[0]=entry;
+switch(entryType){
 case 1: case 2: case 3: case 4: case 5:
-*(Unk02009B0CFields*)(dst+2)=*(Unk02009B0CFields*)((u8*)base+offset);
-state[0]++; return 1;
+*(Unk02009B0CFields*)(outEntry+2)=*(Unk02009B0CFields*)((u8*)animation+dataOffset);
+cursor[0]++; return 1;
 case 16:{
-u8 *p=(u8*)base+offset;
-while((u32)state[1]<(u32)(p[1]-p[0]+1)){
-*(Unk02009B0CRecord*)dst=*(Unk02009B0CRecord*)(p+2+state[1]*12);
-state[1]++;return 1;
+u8 *recordSet=(u8*)animation+dataOffset;
+while((u32)cursor[1]<(u32)(recordSet[1]-recordSet[0]+1)){
+*(Unk02009B0CRecord*)outEntry=*(Unk02009B0CRecord*)(recordSet+2+cursor[1]*12);
+cursor[1]++;return 1;
 }
 break;
 }
 case 17:{
-u8 *p=(u8*)base+offset;
-while((u32)state[1]<8){
-if(!p[state[1]])break;
-*(Unk02009B0CRecord*)dst=*(Unk02009B0CRecord*)(p+8+state[1]*12);
-state[1]++;return 1;
+u8 *recordSet=(u8*)animation+dataOffset;
+while((u32)cursor[1]<8){
+if(!recordSet[cursor[1]])break;
+*(Unk02009B0CRecord*)outEntry=*(Unk02009B0CRecord*)(recordSet+8+cursor[1]*12);
+cursor[1]++;return 1;
 }
 break;
 }
 }
-state[0]++;state[1]=0;
+cursor[0]++;cursor[1]=0;
 }
 return 0;
 }

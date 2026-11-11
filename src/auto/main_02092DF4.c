@@ -377,18 +377,19 @@ if(found)func_020935ec(found,M2C_FIELD(p,s32 *,4));
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-s32 func_0209380c(void *arg0){
+#pragma opt_propagation off
+s32 func_0209380c(void *arg0) {
 extern void **gCurrentMap;
-register void *p=M2C_FIELD(arg0,void **,4);
+void *p=M2C_FIELD(arg0,void **,4);
 void *base=*gCurrentMap;
-register u32 packed=M2C_FIELD(p,u32 *,12);
-u8 a=packed;
-u8 b=packed>>8;
-u32 index=M2C_FIELD((u8 *)base+ (M2C_FIELD(p,s16 *,8)+M2C_FIELD((u8 *)base+M2C_FIELD(p,s16 *,10)*2,u16 *,0x3758)),u8 *,0x508);
+s32 packed=M2C_FIELD(p,s32 *,12);
+u8 a=packed,b=(u32)packed>>8;
+u32 index=M2C_FIELD((u8 *)base+(M2C_FIELD(p,s16 *,8)+M2C_FIELD((u8 *)base+M2C_FIELD(p,s16 *,10)*2,u16 *,0x3758)),u8 *,0x508);
 if(index)func_02093614((u8 *)base+0x59a4+index*14,a,b);
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+M2C_FIELD(arg0,s32 *,4)+=16;
+return 1;
 }
-
+#pragma opt_propagation reset
 s32 func_02093888(void *arg0) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];

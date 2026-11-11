@@ -24,12 +24,10 @@ void WFC_DispatchEvent(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 void WFC_CallEventHandler(s16 a,s32 b,s32 c,s32 d,s32 e){
 extern void *gSession;
 CallbackArgs_0202810c args;
-void *p=(u8 *)gSession+0x2000;
-void (**cb)(CallbackArgs_0202810c *) = (void (**) (CallbackArgs_0202810c *)) p;
-cb = (void (**) (CallbackArgs_0202810c *)) ((char *) cb + 0x27c);
-if(!*cb)return;
-args.a=a;args.b=b;args.c=c;args.d=d;args.e=e;
-(*cb)(&args);
+State_02028038 *p=(State_02028038 *)((u8 *)gSession+0x2000);
+if(!p->callback)return;
+args.a=a;args.c=c;args.d=d;args.e=e;args.b=b;
+M2C_FIELD(p,void (**)(CallbackArgs_0202810c *),0x27c)(&args);
 }
 
 #pragma opt_common_subs off

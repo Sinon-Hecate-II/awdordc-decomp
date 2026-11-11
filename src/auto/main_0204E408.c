@@ -215,46 +215,50 @@ s32 gpiHandleServerData(void *ctx) {
     return 0;
 }
 
-s32 gpiThink(void **arg0, s32 arg1) {
+/* One tick of the GP connection: while connecting it pumps the handshake (waitId
+   enables the blocking poll), then reads and dispatches server data, advances the
+   search and pending-operation queues, and flushes finished callbacks; a nonzero
+   error code is returned to stop. */
+s32 gpiThink(void **connection, s32 waitId) {
     void func_02049260(s32); s32 gpiHandleServerData(void *); s32 func_02050ad4(void **,s32);
     s32 func_02051ed0(void **); void gpiFinishOperation(void **); void func_02054484(void **,void *);
     s32 func_020544d4(void **,void **,s32); s32 func_0205519c(void **);
     s32 gpiProcessSearches(void **); s32 gpiDisconnect(void **,s32);
     void AssertFailed(void *,void *,void *,s32);
     extern M2C_UNK data_020fdb64,data_020fdc80,data_020fdd78,data_020fdd80;
-    void *sp0;
-    void *state;
+    void *next;
+    void *session;
     s32 result;
-    u32 flag;
-    void *node;
-    s32 ret;
-    state=*arg0; result=0;
-    if(M2C_FIELD(state,u32 *,0x1d8)>4)AssertFailed(&data_020fdc80,&data_020fdd78,&data_020fdb64,0x1b6);
-    if(M2C_FIELD(state,u32 *,0x1d8)==1) {
+    u32 keepPolling;
+    void *pending;
+    s32 code;
+    session=*connection; result=0;
+    if(M2C_FIELD(session,u32 *,0x1d8)>4)AssertFailed(&data_020fdc80,&data_020fdd78,&data_020fdb64,0x1b6);
+    if(M2C_FIELD(session,u32 *,0x1d8)==1) {
         do {
-            result=func_02051ed0(arg0);
-            if(result==0 && arg1 && M2C_FIELD(state,u32 *,0x1d8)==1)flag=1;else flag=0;
-            if(flag)func_02049260(10);
-        }while(flag);
+            result=func_02051ed0(connection);
+            if(result==0 && waitId && M2C_FIELD(session,u32 *,0x1d8)==1)keepPolling=1;else keepPolling=0;
+            if(keepPolling)func_02049260(10);
+        }while(keepPolling);
         if(result) {
-            if(func_020544d4(arg0,&sp0,1))M2C_FIELD(sp0,s32 *,0x1c)=4;
+            if(func_020544d4(connection,&next,1))M2C_FIELD(next,s32 *,0x1c)=4;
             else AssertFailed(&data_020fdd80,&data_020fdd78,&data_020fdb64,0x1dc);
         }
     }
-    if((u32)(M2C_FIELD(state,u32 *,0x1d8)-2)<=1){
-        if(!result)result=gpiHandleServerData(arg0);
-        if(!result)result=func_0205519c(arg0);
+    if((u32)(M2C_FIELD(session,u32 *,0x1d8)-2)<=1){
+        if(!result)result=gpiHandleServerData(connection);
+        if(!result)result=func_0205519c(connection);
     }
-    if(!result)result=gpiProcessSearches(arg0);
-    node=M2C_FIELD(state,void **,0x424);sp0=node;
-    if(node)do {
-        if(M2C_FIELD(node,s32 *,0x1c)==0)sp0=M2C_FIELD(node,void **,0x20);
-        else {gpiFinishOperation(arg0);node=sp0;sp0=M2C_FIELD(node,void **,0x20);func_02054484(arg0,node);}
-        node=sp0;
-    }while(node);
-    ret=func_02050ad4(arg0,arg1);
-    if(ret)return ret;
-    if(M2C_FIELD(state,s32 *,0x41c))gpiDisconnect(arg0,0);
+    if(!result)result=gpiProcessSearches(connection);
+    pending=M2C_FIELD(session,void **,0x424);next=pending;
+    if(pending)do {
+        if(M2C_FIELD(pending,s32 *,0x1c)==0)next=M2C_FIELD(pending,void **,0x20);
+        else {gpiFinishOperation(connection);pending=next;next=M2C_FIELD(pending,void **,0x20);func_02054484(connection,pending);}
+        pending=next;
+    }while(pending);
+    code=func_02050ad4(connection,waitId);
+    if(code)return code;
+    if(M2C_FIELD(session,s32 *,0x41c))gpiDisconnect(connection,0);
     return result;
 }
 

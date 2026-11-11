@@ -364,7 +364,7 @@ s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
     return 0;
 }
 
-#pragma opt_peephole off
+#pragma scheduling off
 s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
     s32 func_02061ac8(M2C_UNK, s32, u16);
     M2C_UNK func_02061b6c(M2C_UNK);
@@ -401,4 +401,4 @@ s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
     func_02061b6c(arg0);
     return 0;
 }
-#pragma opt_peephole reset
+#pragma scheduling reset

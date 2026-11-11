@@ -279,18 +279,18 @@ if(func_020c9430(1)) v++;
 return v;
 }
 
-#pragma opt_strength_reduction off
+#pragma optimization_level 3
 void func_020c9580(s32 a) {
 extern void **gCurrentMap;
 extern M2C_UNK data_0212b1ba,data_0212b1bb,data_ov000_021e146c;
 s32 func_020a15b4(s32,s32);
 s32 i = (s32)func_020c9430(a) - 1;
-void *p = *gCurrentMap;
+volatile void *p = *gCurrentMap;
 s32 x = M2C_FIELD(p,s16 *,0x52dc);
 s32 y = M2C_FIELD(p,s16 *,0x52de);
-M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x + (s32)(s8)M2C_FIELD(&data_0212b1ba,s8 *,i*4), y + (s32)(s8)M2C_FIELD(&data_0212b1bb,s8 *,i*4));
+M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x + M2C_FIELD(&data_0212b1ba,s8 *,i*4), y + M2C_FIELD(&data_0212b1bb,s8 *,i*4));
 }
-#pragma opt_strength_reduction reset
+#pragma optimization_level reset
 void func_020c95e4(void) {
 extern M2C_UNK data_02168f04;
 s32 func_020c9550();
@@ -324,8 +324,7 @@ case 6:PlaySoundAtTile(273,arg0,arg1);return;
 case 7:PlaySoundAtTile(273,arg0,arg1);return;
 }}
 
-#pragma push
-#pragma scheduling off
+#pragma optimization_level 3
 void func_020c9730(void *arg0) {
 void *func_02091270(M2C_UNK *,s32,s32);
 void func_020c9654(s32,s32,s32);
@@ -338,9 +337,9 @@ func_020c960c(M2C_FIELD(arg0,s32 *,0x34)/16,M2C_FIELD(arg0,s32 *,0x38)/16,M2C_FI
 M2C_FIELD(arg0,s32 *,0x50)=0x200;
 M2C_FIELD(arg0,s32 *,0x4c)=-1;
 func_020c9654(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));
-CancelMapCursorAnimation();
+func_020cc6a4();
 }
-#pragma pop
+#pragma optimization_level reset
 void func_020c97c0(void *arg0) {
     s32 func_02077700(void);
     s32 Divide(s32, s32);

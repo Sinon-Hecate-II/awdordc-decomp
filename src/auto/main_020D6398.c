@@ -6,28 +6,31 @@ typedef struct { s32 v[4]; } MenuBounds;
 extern const MenuBounds data_020f4e88;
 extern u8 gMapConfig[16];
 
+/* Whether the cursor may be moved to tile (x,y): the cursor-owner guard, the
+ * reachability grid and the unit standing on the tile are checked, then the
+ * attack and join rules against the unit under the cursor. */
 s32 func_020d6398(s32 x,s32 y){
 extern void **gCurrentMap;
 s32 func_020a85b8(s32); u8 func_020ba790(s32,s32); s32 CanUnitsJoin(void*,void*); u8 IsSameTeam(s32,s32);
-u8 *base=*gCurrentMap;
-s32 id=base[x+*(u16*)(base+y*2+0x3758)];
-s32 cell,off,a,b,n;
-u8 *table,*unit,*selected;
-if(*(u16*)(base+0x52a8)!=(base[0x52d4]&0xc0))return 0;
-cell=(*(s8**)(base+y*4+0x52e8))[x];
-if(cell<0 || cell>110)return 0;
+u8 *map=*gCurrentMap;
+s32 id=map[x+*(u16*)(map+y*2+MAP_ROW_OFFSETS)];
+s32 grid,off,cursorTeam,tileTeam,n;
+u8 *units,*unit,*selected;
+if(*(u16*)(map+MAP_CURSOR_OWNER)!=(map[MAP_CURSOR_UNIT_ID]&0xc0))return 0;
+grid=(*(s8**)(map+y*4+MAP_GRID))[x];
+if(grid<0 || grid>110)return 0;
 if(id==0)return 1;
-if(id==base[0x52d6])return 0;
+if(id==map[MAP_CURSOR_CARRIER])return 0;
 if(func_020ba790(x,y)==1)return 1;
-base=*gCurrentMap; off=id*14;
-if(CanUnitsJoin(*(u8**)(base+0x52d0),base+0x59a4+off)==1)return 1;
-base=*gCurrentMap;
-if(func_020a85b8((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)){
-base=*gCurrentMap;table=base+0x59a4;unit=table+off;
-if(unit){if(unit)n=(unit-table)/14;else n=0;b=(n>>6)+1;}else b=0;
-selected=*(u8**)(base+0x52d0);
-if(selected){if(selected)n=(selected-table)/14;else n=0;a=(n>>6)+1;}else a=0;
-if(IsSameTeam(a,b)==0)return 1;
+map=*gCurrentMap; off=id*MAP_UNIT_STRIDE;
+if(CanUnitsJoin(*(u8**)(map+MAP_CURSOR_UNIT),map+MAP_UNIT_RECORDS+off)==1)return 1;
+map=*gCurrentMap;
+if(func_020a85b8((u32)((*(u8**)(map+MAP_CURSOR_UNIT))[0]<<26)>>26)){
+map=*gCurrentMap;units=map+MAP_UNIT_RECORDS;unit=units+off;
+if(unit){if(unit)n=(unit-units)/MAP_UNIT_STRIDE;else n=0;tileTeam=(n>>6)+1;}else tileTeam=0;
+selected=*(u8**)(map+MAP_CURSOR_UNIT);
+if(selected){if(selected)n=(selected-units)/MAP_UNIT_STRIDE;else n=0;cursorTeam=(n>>6)+1;}else cursorTeam=0;
+if(IsSameTeam(cursorTeam,tileTeam)==0)return 1;
 }
 return 0;
 }

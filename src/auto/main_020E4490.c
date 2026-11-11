@@ -1,5 +1,6 @@
 /* 22 functions from 0x020E4490 to 0x020E5080 (main), found by ds-decomp. */
 #include "common.h"
+
 typedef struct { u8 pixels[32]; } Unk020ETile;
 typedef struct { u8 count; u8 pad[3]; s32 ptr; } Unk02168Fec;
 u16 *func_020e4c10(u16 *,u16 *,u16 *,u32);
@@ -511,23 +512,14 @@ s8 func_020e4d80(void *arg0) {
 
 #pragma scheduling off
 s32 func_020e4e44(void *arg0) {
-    s16 temp_r1;
-    s32 var_r1;
-
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x3E);
-    if ((s32) temp_r1 > 0) {
-        M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (temp_r1 - 1);
-    }
-    if (M2C_FIELD(arg0, s16 *, 0x3E) == 0) {
-        var_r1 = 1;
-    } else {
-        var_r1 = 0;
-    }
-    if (!(var_r1 & 0xFF)) {
-        return 0;
-    }
-    M2C_FIELD(arg0, u8 *, 0x3C) = (u8) ((u8) (M2C_FIELD(arg0, u8 *, 0x3C) & ~2) | 1);
-    return 1;
+ s16 count=M2C_FIELD(arg0,s16 *,0x3e);
+ s32 done;
+ if(count>0)M2C_FIELD(arg0,s16 *,0x3e)=count-1;
+ if(M2C_FIELD(arg0,s16 *,0x3e)==0)done=1;else done=0;
+ if(!(done&255))return 0;
+ M2C_FIELD(arg0,u8 *,0x3c) &= ~2;
+ M2C_FIELD(arg0,u8 *,0x3c) |= 1;
+ return 1;
 }
 #pragma scheduling reset
 void func_020e4e8c(void *arg0) {

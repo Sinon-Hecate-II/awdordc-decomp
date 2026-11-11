@@ -483,13 +483,13 @@ void func_ov001_021699c0(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
 #pragma pop
 void func_ov001_02169bd0(void *a,s32 b) {
 M2C_UNK func_02007e98(s32,s32,s32);
-s32 bits=M2C_FIELD(a,u8 *,12);s32 v,w=M2C_FIELD(a,s32 *,4),h;
-v=bits==4 ? ((b|(b<<4))|((b|(b<<4))<<8)) : (b|(b<<8));
-v|=v<<16; h=M2C_FIELD(a,s32 *,8);
-func_02007e98(v,M2C_FIELD(a,s32 *,0),w*h*((bits<<6)/8));
+s32 bits=M2C_FIELD(a,u8 *,12), w=M2C_FIELD(a,s32 *,4), v, h;
+if(bits==4) {v=b|(b<<4)|(b<<8)|(b<<12);}else{v=b|(b<<8);}
+v=v|(v<<16);h=M2C_FIELD(a,s32 *,8);
+func_02007e98(v,M2C_FIELD(a,s32 *,0),(w*h)*((bits<<6)/8));
 }
 #pragma optimization_level reset
-void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK func_02007e98(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,sz;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);sz=(bits<<6)/8;stride=sz*M2C_FIELD(a,s32 *,16);width=sz*M2C_FIELD(a,s32 *,4);i=0;if(M2C_FIELD(a,s32 *,8)<=0)return;do{func_02007e98(v,p,width);i++;p=(u8 *)p+stride;}while(i<M2C_FIELD(a,s32 *,8));}
+void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK func_02007e98(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,sz;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);sz=(bits<<6)/8;stride=sz*M2C_FIELD(a,s32 *,16);width=sz*M2C_FIELD(a,s32 *,4);for(i=0;i<M2C_FIELD(a,s32 *,8);i++){func_02007e98(v,p,width);p=(u8 *)p+stride;}}
 
 void func_ov001_02169ca0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp);

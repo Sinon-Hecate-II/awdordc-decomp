@@ -279,7 +279,16 @@ return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
 }
 
 #pragma opt_instruction_scheduling off
-void func_020cb704(void *a){s32 func_020ba510(s32,s32);extern s32 data_0215be0c;extern void **gCurrentMap;extern u8 data_0212b1b8[][4];u16 i=0;data_0215be0c=0;do{void *p=*gCurrentMap;s32 n=func_020ba510(M2C_FIELD(p,s16 *,0x52dc)+(s8)data_0212b1b8[i][2],M2C_FIELD(p,s16 *,0x52de)+(s8)data_0212b1b8[i][3]);data_0215be0c |= data_0212b1b8[i][0]*n;i++;}while(i<4);M2C_FIELD(a,s16 *,0x34)=0;}
+void func_020cb704(void *a) {
+s32 func_020ba510(s32,s32); extern s32 data_0215be0c; extern void **gCurrentMap; extern u8 data_0212b1b8[][4];
+u16 i=0; data_0215be0c=0;
+do {
+void *p=*gCurrentMap;
+s32 n=func_020ba510(M2C_FIELD(p,s16*,0x52dc)+(s8)data_0212b1b8[i][2],M2C_FIELD(p,s16*,0x52de)+(s8)data_0212b1b8[i][3]);
+{u32 mask=data_0212b1b8[i][0]; data_0215be0c = (u32)data_0215be0c | mask*(u32)n;} i++;
+}while(i<4);
+M2C_FIELD(a,s16*,0x34)=0;
+}
 #pragma opt_instruction_scheduling reset
 void func_020cb78c(void *arg0){
 void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK func_ov000_02199f50(s32,u8,u8,u8);
@@ -320,6 +329,8 @@ void func_020cb8f8(void *arg0) {
  * whose cargo has a cost or a value. It highlights that unit's tile (mode 1 when the
  * cargo has value, 2 when only cost) and saves the next cursor; at the end of the
  * unit list the task retires itself. */
+u8 func_020c98d8(u8, u8, s32);
+void func_01ffa6fc(void *);
 void MarkUnitCargoTiles(void *state){
 extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;
 u16 i; s32 a,b; UnitCB9 *unit; s32 n;u8 *map;

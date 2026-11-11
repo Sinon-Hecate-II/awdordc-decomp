@@ -226,21 +226,26 @@ first_next:
     }
 }
 #pragma pop
-Point15A0C func_ov007_02215a0c(s32 a,s32 b,s32 c) {
+/* Place a side base (headquarters + its radius/distance decoration tiles) at a
+   random map location: picks a random tile and retries until its 3x3
+   neighbourhood is fully in bounds and contains no owned/variant terrain (the
+   0xe0 bits of the packed terrain value), clears that neighbourhood to plain
+   tile 1, then places the base there. Returns (0,0) after 100 failed tries. */
+Point15A0C func_ov007_02215a0c(s32 side,s32 radius,s32 distance) {
 s32 RandomIntRange(s32,s32);Point15A0C Map_PlaceSideBase(s32,s32,s32,s32,s32);
-s32 tries=0,i,j;s32 *map;s32 x,y,yy,xx;Point15A0C result;
+s32 tries=0,checkX,checkY;s32 *map;s32 x,y,clearY,clearX;Point15A0C result;
 retry:
 if(++tries>100){volatile Point15A0C empty;volatile u16 *p=(volatile u16 *)&empty;*p++=0;*p=0;return empty;}
 x=RandomIntRange(0,M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1);
 y=RandomIntRange(0,M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1);
-for(j=y-1;j<=y+1;j++){
-if(j<0)goto retry;map=gCurrentMap;if(j>=((Map14E24 *)*map)->height)goto retry;
-for(i=x-1;i<=x+1;i++){
-if(i<0||i>=((Map14E24 *)*map)->width)goto retry;
-if(M2C_FIELD((u8 *)*map+((Map14E24 *)*map)->rows[j]+i,u8 *,0x1420)&0xe0)goto retry;
+for(checkY=y-1;checkY<=y+1;checkY++){
+if(checkY<0)goto retry;map=gCurrentMap;if(checkY>=((Map14E24 *)*map)->height)goto retry;
+for(checkX=x-1;checkX<=x+1;checkX++){
+if(checkX<0||checkX>=((Map14E24 *)*map)->width)goto retry;
+if(M2C_FIELD((u8 *)*map+((Map14E24 *)*map)->rows[checkY]+checkX,u8 *,0x1420)&0xe0)goto retry;
 }}
-for(yy=y-1;yy<=y+1;yy++)for(xx=x-1;xx<=x+1;xx++)Map_SetCellTile(xx,yy,1);
-return Map_PlaceSideBase(x,y,a,b,c);
+for(clearY=y-1;clearY<=y+1;clearY++)for(clearX=x-1;clearX<=x+1;clearX++)Map_SetCellTile(clearX,clearY,1);
+return Map_PlaceSideBase(x,y,side,radius,distance);
 }
 #pragma opt_common_subs reset
 s32 func_ov007_02215bc4(s32 *x,s32 *y,s32 value) {

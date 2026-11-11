@@ -394,17 +394,17 @@ void func_02004b54(void) {
  extern u8 data_020e9b40[], data_020e9b42[], data_020e9b44[];
  extern M2C_UNK data_0212dbfc;
  s32 idx;
- u32 c,b,a;
+ u32 a,b,c;
  s32 off;
  idx=func_020033b8();
  off=idx*6;
  a=*(volatile u16 *)(data_020e9b40+off);
  b=*(volatile u16 *)(data_020e9b42+off);
  c=*(volatile u16 *)(data_020e9b44+off);
- M2C_FIELD(&data_0212dbfc,volatile s32 *,0x14)=idx;
- M2C_FIELD(&data_0212dbfc,volatile s32 *,4)=a<<12;
- M2C_FIELD(&data_0212dbfc,volatile s32 *,0x18)=b<<12;
- M2C_FIELD(&data_0212dbfc,volatile s32 *,0x1c)=c<<12;
+ M2C_FIELD(&data_0212dbfc,s32 *,0x14)=idx;
+ M2C_FIELD(&data_0212dbfc,s32 *,4)=a<<12;
+ M2C_FIELD(&data_0212dbfc,s32 *,0x18)=b<<12;
+ M2C_FIELD(&data_0212dbfc,s32 *,0x1c)=c<<12;
 }
 
 void func_02004bb0(M2C_UNK arg0, u32 arg1, u32 arg2) {
@@ -519,19 +519,18 @@ void func_02004e44(void *arg0, void *arg1) {
     }
 }
 
-#pragma opt_propagation off
+#pragma scheduling off
 void func_02004e60(s32 arg0,u32 mask) {
-s32 OS_DisableInterrupts(void);
-void OS_RestoreInterrupts(s32);
-void OS_SleepThread(s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);
 extern M2C_UNK data_027e0000,data_027e00e0;
 s32 ret=OS_DisableInterrupts();
-if(arg0) M2C_FIELD(&data_027e0000,u32 *,0x3ff8)&=~mask;
+if(arg0) M2C_FIELD(&data_027e0000,volatile u32 *,0x3ff8)&=~mask;
 OS_RestoreInterrupts(ret);
-if(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)) return;
-do {OS_SleepThread((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)));
+if(!(mask&M2C_FIELD(&data_027e0000,volatile u32 *,0x3ff8))) {
+do{OS_SleepThread((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&data_027e0000,volatile u32 *,0x3ff8)));
 }
-#pragma opt_propagation reset
+}
+#pragma scheduling reset
 void func_02004ed4(void) {
 
 }
@@ -539,11 +538,13 @@ void func_02004ed4(void) {
 void func_02004ed8(s32 arg0) {
  void func_020051f8(s32);
  extern M2C_UNK data_0212dc1c, data_020f5208, data_0212dc24, data_027e0000, data_0212dc20;
- s32 field20;
+ s32 field20; u16 shift;
  u32 mask;
  void (*saved)(void *);
  saved = M2C_FIELD(&data_0212dc1c, void (**)(void *), arg0*12);
- mask = 1u << M2C_FIELD(&data_020f5208,u16 *,arg0*2);
+ shift=M2C_FIELD(&data_020f5208,u16 *,arg0*2);
+ mask=1;
+ mask<<=shift;
  M2C_FIELD(&data_0212dc1c, void (**)(void *),arg0*12)=0;
  if(saved) saved(M2C_FIELD(&data_0212dc24,void **,arg0*12));
  field20=M2C_FIELD(&data_0212dc20,s32 *,arg0*12);

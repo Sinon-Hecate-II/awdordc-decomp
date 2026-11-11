@@ -110,7 +110,13 @@ src/auto/ov001_02187590.c:
     .text start:0x02187590 end:0x0218851c
 
 src/auto/ov001_0218851C.c:
-    .text start:0x0218851c end:0x021893e4
+    .text start:0x0218851c end:0x02188774
+
+src/auto/ov001_02188774.c:
+    .text start:0x02188774 end:0x021887ec
+
+src/auto/ov001_021887EC.c:
+    .text start:0x021887ec end:0x021893e4
 
 src/auto/ov001_021893E4.c:
     .text start:0x021893e4 end:0x0218a384

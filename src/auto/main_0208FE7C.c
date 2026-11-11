@@ -1,5 +1,8 @@
 /* 45 functions from 0x0208FE7C to 0x02090E0C (main), found by ds-decomp. */
 #include "common.h"
+static inline void CallNodeMethod(void *node) {
+    M2C_FIELD(*(void **)node, void (**)(void *), 0)(node);
+}
 
 void func_02090574(void);
 
@@ -593,79 +596,84 @@ void func_02090894(void **arg0) {
     M2C_FIELD(*arg0, s32 *, 0x38) = 0;
 }
 
-void func_020908dc(void *arg0) {
+/* Advances one frame of a script player: while its delay counter is nonzero it
+   only counts down; otherwise it walks the 0x10-byte script entries at the
+   cursor - executing command entries (stop, relative jump, linear search, spawn
+   a child player) and arming the next wait from a delay entry - then recurses
+   into the next player in the list. */
+void func_020908dc(void *player) {
     void func_02090830(void *);
     void func_0209075c(void *, void *, s32);
     void *MemAlloc(s32);
-    u8 *cur;
-    u8 *node;
-    void *next;
+    u8 *cursor;
+    u8 *entry;
+    void *nextPlayer;
 
-    next = M2C_FIELD(arg0, void **, 8);
-    if (M2C_FIELD(arg0, s32 *, 0x1C) != 0) {
+    nextPlayer = M2C_FIELD(player, void **, 8);
+    if (M2C_FIELD(player, s32 *, 0x1C) != 0) {
         goto decr;
     }
     goto skip;
     for (;;) {
-        if (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), u8 *, 3) != 0) {
-            switch (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), u8 *, 2)) {
+        if (M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), u8 *, 3) != 0) {
+            switch (M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), u8 *, 2)) {
             case 0:
             case 0xFF:
-                func_02090830(arg0);
+                func_02090830(player);
                 goto done;
             case 1:
-                M2C_FIELD(arg0, u8 **, 0x10) = (u8 *)M2C_FIELD(arg0, s32 **, 0xC)
-                     + M2C_FIELD(M2C_FIELD(arg0, s32 **, 0xC) + M2C_FIELD(arg0, u8 *, 0x2C), s32 *, 4);
+                M2C_FIELD(player, u8 **, 0x10) = (u8 *)M2C_FIELD(player, s32 **, 0xC)
+                     + M2C_FIELD(M2C_FIELD(player, s32 **, 0xC) + M2C_FIELD(player, u8 *, 0x2C), s32 *, 4);
                 goto skip;
             case 2:
                 goto done;
             case 3:
                 break;
             case 4:
-                node = (u8 *)M2C_FIELD(arg0, s32 **, 0xC)
-                     + M2C_FIELD(M2C_FIELD(arg0, s32 **, 0xC) + M2C_FIELD(arg0, u8 *, 0x2C), s32 *, 4);
-                while (M2C_FIELD(node, u8 *, 3) == 0 || M2C_FIELD(node, u8 *, 2) != 0xFF) {
-                    if (M2C_FIELD(node, u8 *, 3) != 0 && M2C_FIELD(node, u8 *, 2) == 3
-                        && M2C_FIELD(node, s16 *, 6) == M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6)) {
-                        M2C_FIELD(arg0, void **, 0x10) = node;
+                entry = (u8 *)M2C_FIELD(player, s32 **, 0xC)
+                     + M2C_FIELD(M2C_FIELD(player, s32 **, 0xC) + M2C_FIELD(player, u8 *, 0x2C), s32 *, 4);
+                while (M2C_FIELD(entry, u8 *, 3) == 0 || M2C_FIELD(entry, u8 *, 2) != 0xFF) {
+                    if (M2C_FIELD(entry, u8 *, 3) != 0 && M2C_FIELD(entry, u8 *, 2) == 3
+                        && M2C_FIELD(entry, s16 *, 6) == M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), s16 *, 6)) {
+                        M2C_FIELD(player, void **, 0x10) = entry;
                         break;
                     }
-                    M2C_FIELD(arg0, u8 **, 0x10) = M2C_FIELD(arg0, u8 **, 0x10) + 0x10;
+                    M2C_FIELD(player, u8 **, 0x10) = M2C_FIELD(player, u8 **, 0x10) + 0x10;
                 }
                 goto skip;
             case 0x10:
-                if (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) > 0) {
-                    node = MemAlloc(0x30);
-                    if (node != NULL) {
-                        func_0209075c(node, arg0, M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) - 1);
+                if (M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), s16 *, 6) > 0) {
+                    entry = MemAlloc(0x30);
+                    if (entry != NULL) {
+                        func_0209075c(entry, player, M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), s16 *, 6) - 1);
                     }
-                    next = M2C_FIELD(arg0, void **, 8);
+                    nextPlayer = M2C_FIELD(player, void **, 8);
                 }
                 break;
             case 0x11:
-                M2C_FIELD(arg0, u8 *, 0x2B) = M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), u16 *, 6);
+                M2C_FIELD(player, u8 *, 0x2B) = M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), u16 *, 6);
                 break;
             default:
                 break;
             }
         }
-        M2C_FIELD(arg0, u8 **, 0x10) = M2C_FIELD(arg0, u8 **, 0x10) + 0x10;
+        M2C_FIELD(player, u8 **, 0x10) = M2C_FIELD(player, u8 **, 0x10) + 0x10;
     skip:
-        cur = M2C_FIELD(arg0, u8 **, 0x10);
-        if (M2C_FIELD(cur, u8 *, 3) != 0 || M2C_FIELD(cur, u16 *, 0) == 0) {
+        cursor = M2C_FIELD(player, u8 **, 0x10);
+        if (M2C_FIELD(cursor, u8 *, 3) != 0 || M2C_FIELD(cursor, u16 *, 0) == 0) {
             continue;
         }
-        M2C_FIELD(arg0, s32 *, 0x1C) = M2C_FIELD(cur, u16 *, 0);
-        M2C_FIELD(arg0, s32 *, 0x18) = M2C_FIELD(arg0, s32 *, 0xC)
-            + M2C_FIELD(M2C_FIELD(arg0, s32 **, 0x14) + M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), u8 *, 2), s32 *, 0);
-        M2C_FIELD(arg0, u8 **, 0x10) = M2C_FIELD(arg0, u8 **, 0x10) + 0x10;
+        M2C_FIELD(player, s32 *, 0x1C) = M2C_FIELD(cursor, u16 *, 0);
+        M2C_FIELD(player, s32 *, 0x18) = M2C_FIELD(player, s32 *, 0xC)
+            + M2C_FIELD(M2C_FIELD(player, s32 **, 0x14) + M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), u8 *, 2), s32 *, 0);
+        M2C_FIELD(player, u8 **, 0x10) = M2C_FIELD(player, u8 **, 0x10) + 0x10;
         break;
     }
 decr:
-    M2C_FIELD(arg0, s32 *, 0x1C) = M2C_FIELD(arg0, s32 *, 0x1C) - 1;
+    M2C_FIELD(player, s32 *, 0x1C) = M2C_FIELD(player, s32 *, 0x1C) - 1;
 done:
-    if (next != NULL) {
-        func_020908dc(next);
+    if (nextPlayer != NULL) {
+        func_020908dc(nextPlayer);
     }
 }
 
@@ -808,30 +816,16 @@ else if(M2C_FIELD(p,void **,0x38))func_02090bd8(M2C_FIELD(p,void **,0x38));
 
 #pragma optimization_level 4
 void func_02090d84(void *arg0) {
-    void *r4;
-
-    r4 = arg0;
-    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
-    r4 = M2C_FIELD(r4, void **, 0xC);
-    if (r4 == 0) {
-        return;
-    }
-    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
-    r4 = M2C_FIELD(r4, void **, 0xC);
-    if (r4 == 0) {
-        return;
-    }
-    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
-    r4 = M2C_FIELD(r4, void **, 0xC);
-    if (r4 == 0) {
-        return;
-    }
-    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
-    r4 = M2C_FIELD(r4, void **, 0xC);
-    if (r4 == 0) {
-        return;
-    }
-    func_02090d84(r4);
+void *node;
+CallNodeMethod(arg0); node=arg0;
+node=M2C_FIELD(node,void **,12); if(!node)return;
+CallNodeMethod(node);
+node=M2C_FIELD(node,void **,12); if(!node)return;
+CallNodeMethod(node);
+node=M2C_FIELD(node,void **,12); if(!node)return;
+CallNodeMethod(node);
+node=M2C_FIELD(node,void **,12); if(!node)return;
+func_02090d84(node);
 }
 #pragma optimization_level reset
 void func_02090e00(void) {

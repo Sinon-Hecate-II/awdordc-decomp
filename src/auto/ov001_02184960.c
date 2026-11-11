@@ -302,10 +302,10 @@ s32 func_ov001_02185714(void) {
 #pragma push
 #pragma scheduling off
 void func_ov001_02185734(s32 a){
-void func_ov001_0218a4d4();void func_ov001_0218a384();void func_ov001_0218c924();void func_ov001_021857c8();extern M2C_UNK data_ov001_02193e0c;s32 pos[2];void *p; s32 neg;
+void func_ov001_0218a4d4();void func_ov001_0218a384();void func_ov001_0218c924();void func_ov001_021857c8();extern M2C_UNK data_ov001_02193e0c;s32 pos[2];void *p; s32 n;
 func_ov001_0218a4d4(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),0,&pos[1],&pos[0]);pos[1]-=8;
 if(pos[1]>152){func_ov001_0218a384(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),-1,pos[1],33);return;}
-neg=-1; p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=152;func_ov001_0218a384(M2C_FIELD(p,s32 *,16),neg,pos[1],33);func_ov001_0218c924(a,func_ov001_021857c8);
+p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=152; n=~(pos[1]-152);func_ov001_0218a384(M2C_FIELD(p,s32 *,16),n,pos[1],33);func_ov001_0218c924(a,func_ov001_021857c8);
 }
 #pragma pop
 void func_ov001_021857c8(s32 arg0) {

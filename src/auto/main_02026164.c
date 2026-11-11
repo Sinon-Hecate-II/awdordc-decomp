@@ -3,18 +3,15 @@
 
 #pragma scheduling off
 void RC4_Init(u8 *state,const u8 *key,s32 keylen) {
-s32 i; u8 *S; s32 jj; s32 ii; s32 k; u8 sk,keybyte,sj;
+u8 *S; s32 k,jj,ii,i; u8 sk,keybyte,sj;
 state[0]=0;state[1]=0;S=state+2;
 for(i=0;i<256;i++)S[i]=(u8)i;
 ii=0;jj=0;
-for(k=0;k<256;k++){
-sk=S[k];keybyte=key[ii];
-ii=(ii+1)&255;
-jj=(jj+(sk+keybyte))&255;
-sj=S[jj];
-if(ii>=keylen)ii=0;
-S[k]=sj;S[jj]=sk;
-}
+k=0;do{
+sk=S[k];keybyte=key[ii];ii=(ii+1)&255;
+jj=(jj+(sk+keybyte))&255;sj=S[jj];
+if(ii>=keylen)ii=0;S[k]=sj;S[jj]=sk;
+k++;}while(k<256);
 }
 #pragma scheduling reset
 void RC4_Crypt(u8 *state, u8 *data, s32 len) {

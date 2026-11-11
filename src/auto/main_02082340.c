@@ -241,6 +241,10 @@ void func_02082cb4(void) {
     func_020032bc(0x100);
 }
 
+/* Initialise both 3DS-sprite engines: select the main engine as the current one,
+   give each engine its sprite bank, texture address, OAM/sprite buffers and
+   offset fields, clear its OAM buffer and per-engine offsets, then install the
+   two engines' sprite list pointers. */
 void func_02082d08(void) {
     void func_02007e98(s32, s32, s32);
     extern void **gCur3DSpriteEngine;
@@ -262,36 +266,36 @@ void func_02082d08(void) {
     extern u8 data_0214c270[];
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    *g3DSpriteEngineMain = g3DSpriteBankMain;
-    *(u32 *)((u8 *)g3DSpriteEngineMain + 0x1c) = 0x06400000;
-    *(void **)((u8 *)g3DSpriteEngineMain + 0x30) = (void *)data_027e068c;
-    *(void **)((u8 *)g3DSpriteEngineMain + 0x34) = (void *)data_0214e8dc;
-    *(void **)((u8 *)g3DSpriteEngineMain + 0x38) = (void *)data_0214e0dc;
-    *(void **)((u8 *)g3DSpriteEngineMain + 0x04) = (void *)data_0214d2dc;
-    func_02007e98(0, (s32)*(void **)((u8 *)g3DSpriteEngineMain + 0x30), 0x400);
-    *(u16 *)((u8 *)g3DSpriteEngineMain + 0x3c) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineMain + 0x3e) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineMain + 0x40) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineMain + 0x42) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineMain + 0x44) = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->bank = g3DSpriteBankMain;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->textureAddr = 0x06400000;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->oamBuffer = (void *)data_027e068c;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->oamEntries = (u16 *)data_0214e8dc;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->spriteSrc = (u16 *)data_0214e0dc;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->sprites = (void *)data_0214d2dc;
+    func_02007e98(0, (s32)((DS3DSpriteEngine *)g3DSpriteEngineMain)->oamBuffer, 0x400);
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->offsetX = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->offsetY = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_40 = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_42 = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_44 = 0;
 
-    *g3DSpriteEngineSub = data_027e00c0;
-    *(u32 *)((u8 *)g3DSpriteEngineSub + 0x1c) = 0x06600000;
-    *(void **)((u8 *)g3DSpriteEngineSub + 0x30) = (void *)data_027e028c;
-    *(void **)((u8 *)g3DSpriteEngineSub + 0x34) = (void *)data_0214e4dc;
-    *(void **)((u8 *)g3DSpriteEngineSub + 0x38) = (void *)data_0214dcdc;
-    *(void **)((u8 *)g3DSpriteEngineSub + 0x04) = (void *)data_0214c8dc;
-    func_02007e98(0, (s32)*(void **)((u8 *)g3DSpriteEngineSub + 0x30), 0x400);
-    *(u16 *)((u8 *)g3DSpriteEngineSub + 0x3c) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineSub + 0x3e) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineSub + 0x40) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineSub + 0x42) = 0;
-    *(u16 *)((u8 *)g3DSpriteEngineSub + 0x44) = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->bank = data_027e00c0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->textureAddr = 0x06600000;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamBuffer = (void *)data_027e028c;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamEntries = (u16 *)data_0214e4dc;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->spriteSrc = (u16 *)data_0214dcdc;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->sprites = (void *)data_0214c8dc;
+    func_02007e98(0, (s32)((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamBuffer, 0x400);
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->offsetX = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->offsetY = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_40 = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_42 = 0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_44 = 0;
 
-    *(void **)((u8 *)g3DSpriteEngineMain + 0x50) = (void *)data_0214c2d4;
-    *(void **)((u8 *)g3DSpriteEngineSub + 0x50) = (void *)data_0214c5d8;
-    *(void **)((u8 *)g3DSpriteEngineMain + 0x54) = (void *)data_0214c20c;
-    *(void **)((u8 *)g3DSpriteEngineSub + 0x54) = (void *)data_0214c270;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_50 = (void *)data_0214c2d4;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_50 = (void *)data_0214c5d8;
+    ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_54 = (void *)data_0214c20c;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_54 = (void *)data_0214c270;
 }
 
 void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain; s32 v; func_020067e0(a,d); if(gCur3DSpriteEngine==g3DSpriteEngineMain)v=1;else v=0; if(v&255){func_0200478c();func_0200482c(a,c+(b<<13),d);func_0200489c();}else{func_020049dc();func_020049f4(a,c+(b<<13),d);func_02004a58();}}

@@ -32,12 +32,15 @@ s32 func_ov007_02215e94(s32 *x, s32 *y, s32 value, void *arg3, s32 radius) {
     return 1;
 }
 
-s32 func_ov007_02215f6c(s32 *arg0, s32 *arg1, s32 arg2, void *arg3, void *arg4, s32 arg5) {
+/* Tries up to 100 times to find a random map cell whose tile value is tileValue
+   and whose distances to pointA and pointB differ by at most tolerance, i.e. a
+   cell lying roughly between the two points; writes it to xOut/yOut. */
+s32 func_ov007_02215f6c(s32 *xOut, s32 *yOut, s32 tileValue, s16 *pointA, s16 *pointB, s32 tolerance) {
     s32 RandomIntRange(s32, s32);
     s32 ManhattanDistance(s16, s16, s16, s16);
     extern void **gCurrentMap;
     void ***gp = &gCurrentMap;
-    s32 sp0 = arg2;
+    s32 value = tileValue;
     register s32 counter = 0, temp_r0, ry, rx, distA, distB, t;
 
 loop:
@@ -45,29 +48,29 @@ loop:
     if (counter > 0x64) {
         return 0;
     }
-    *arg0 = RandomIntRange(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5144) - 1);
+    *xOut = RandomIntRange(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5144) - 1);
     {
-        *arg1 = RandomIntRange(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5146) - 1);
+        *yOut = RandomIntRange(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5146) - 1);
         
         {
-            void **b = M2C_FIELD(*gp, void **, 0);
-            rx = *arg0;
-            ry = *arg1;
-            if (sp0 != M2C_FIELD(((u8 *)b + ((rx + M2C_FIELD(((u8 *)b + (ry * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) {
+            void **map = M2C_FIELD(*gp, void **, 0);
+            rx = *xOut;
+            ry = *yOut;
+            if (value != M2C_FIELD(((u8 *)map + ((rx + M2C_FIELD(((u8 *)map + (ry * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) {
                 goto loop;
             }
             {
-                distA = ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)rx, (s16)ry);
-                distB = ManhattanDistance(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)rx, (s16)ry);
+                distA = ManhattanDistance(pointA[0], pointA[1], (s16)rx, (s16)ry);
+                distB = ManhattanDistance(pointB[0], pointB[1], (s16)rx, (s16)ry);
                 
                 if (distA - distB < 0) {
-                    t = 0 - (ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*arg0, (s16)*arg1)
-                           - ManhattanDistance(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)*arg0, (s16)*arg1));
+                    t = 0 - (ManhattanDistance(pointA[0], pointA[1], (s16)*xOut, (s16)*yOut)
+                           - ManhattanDistance(pointB[0], pointB[1], (s16)*xOut, (s16)*yOut));
                 } else {
-                    t = ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*arg0, (s16)*arg1)
-                      - ManhattanDistance(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)*arg0, (s16)*arg1);
+                    t = ManhattanDistance(pointA[0], pointA[1], (s16)*xOut, (s16)*yOut)
+                      - ManhattanDistance(pointB[0], pointB[1], (s16)*xOut, (s16)*yOut);
                 }
-                if (t <= arg5) {
+                if (t <= tolerance) {
                     return 1;
                 }
             }

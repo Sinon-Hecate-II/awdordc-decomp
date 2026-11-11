@@ -169,13 +169,12 @@ extern void *gOv001Keypad;
 void func_ov001_02174650(s32);
 u32 v; u32 hi; u32 lo; s32 x; s32 y; s32 pos[2];
 v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void**,28),u32*,0);
-hi=v&0x1ff0000;
-lo=v&255;
-x=(s32)lo-12;
-y=(s32)(hi>>16);
+y=v&0x1ff0000;
+x=(v&255)-12;
+y=(u32)y>>16;
 ((volatile s32 *)pos)[1]=y;
 ((volatile s32 *)pos)[0]=x;
-if(x>99){func_ov001_02174f68(1,x);return;}
+if(pos[0]>99){func_ov001_02174f68(1,x);return;}
 func_ov001_02174f68(1,99);
 func_ov001_02174f68(2,192);
 func_ov001_0218c924(arg0,func_ov001_02174650);

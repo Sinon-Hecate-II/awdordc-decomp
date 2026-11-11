@@ -69,10 +69,10 @@ s32 BuildRoomSetupPacket(void *session) {
 }
 s32 IsPrintableString(u8 *p,s32 n) {s32 i; for(i=0;i<n;i++){u32 c=*p++;if(c<32||c>127)return -1;}return 0;}
 
-#pragma thumb on
+#pragma scheduling off
 s32 func_ov001_0216bb4c(u32 *arg0) {
 s32 func_ov001_0216cdb4(void *,M2C_UNK *,s32);
-s32 Ov001StringLength(M2C_UNK *);
+s32 func_ov001_0216cf08(M2C_UNK *);
 extern M2C_UNK data_ov001_0218fda4;
 s32 result; u32 n;
 s32 matches;
@@ -85,7 +85,7 @@ i=0;
 if((s32)n>0) {
 text=p+8;
 do {
-if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==Ov001StringLength(&data_ov001_0218fda4) && !func_ov001_0216cdb4(text,&data_ov001_0218fda4,Ov001StringLength(&data_ov001_0218fda4)))matches++;
+if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==func_ov001_0216cf08(&data_ov001_0218fda4) && !func_ov001_0216cdb4(text,&data_ov001_0218fda4,func_ov001_0216cf08(&data_ov001_0218fda4)))matches++;
 p+=0x54;text+=0x54;i++;
 }while(i<(s32)n);
 }
@@ -93,8 +93,7 @@ if(matches>1)result=4;
 if(matches==0)result=5;
 return result;
 }
-
-#pragma thumb on
+#pragma scheduling reset
 s32 func_ov001_0216bbc8(void *p) {
 extern M2C_UNK data_ov001_0218fda4;
 extern M2C_UNK data_ov001_0218fdb0;

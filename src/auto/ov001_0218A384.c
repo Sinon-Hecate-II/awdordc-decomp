@@ -56,28 +56,21 @@ void func_ov001_0218a534(u8 arg0) {
 }
 
 void func_ov001_0218a55c(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_ov001_02193e34;
-    void func_02007e54(u32 value, void *dest, s32 size);
-    void func_02007e20(const void *src, void *dest, u32 size);
-    void func_02007e70(const void *src, void *dest, s32 size);
-    M2C_UNK *table = (M2C_UNK *)(&data_ov001_02193e34);
-    void *base = (void *)table[arg0];
-    u16 count = *(u16 *)((u8 *)base + arg1 * 8);
-    s32 offset = *(s32 *)((u8 *)base + arg1 * 8 + 4);
-    u8 *src = (u8 *)base + offset;
-    u8 *dst = (u8 *)arg2;
-    u8 sp[8];
-    s32 i;
-    func_02007e54(0, sp, 8);
-    if ((s32)count <= 0) {
-        return;
-    }
-    for (i = 0; i < (s32)count; i++) {
-        func_02007e20(src, sp, 6);
-        func_02007e70(sp, dst, 8);
-        src += 6;
-        dst += 8;
-    }
+extern M2C_UNK data_ov001_02193e34;
+void func_02007e54(u32,void *,s32);
+void func_02007e20(const void *,void *,u32);
+void func_02007e70(const void *,void *,s32);
+u8 *base=(u8 *)((M2C_UNK *)&data_ov001_02193e34)[arg0];
+s32 index=arg1<<3;
+u16 count=*(u16 *)(base+index);
+s32 offset=*(s32 *)(base+index+4);
+u8 *src=base+offset;
+u8 *dst=(u8 *)arg2;
+u8 sp[8]; s32 i;
+func_02007e54(0,sp,8);
+for(i=0;i<(s32)count;i++){
+func_02007e20(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
+}
 }
 
 s32 func_ov001_0218a5f0(M2C_UNK arg0, M2C_UNK arg1) {
@@ -150,15 +143,14 @@ void func_ov001_0218a6f4(void *arg0, s32 arg1) {
 }
 
 s32 func_ov001_0218a74c(void *arg0) {
- M2C_UNK func_020051c8(M2C_UNK);s32 func_020051f8(M2C_UNK);u8 func_020020c4(s32,u16);
- s32 result=0,saved;u8 head,tail;u16 size;s32 value;u8 idx;void *entry;
- saved=func_020051f8(1);head=M2C_FIELD(arg0,u8 *,3);tail=M2C_FIELD(arg0,u8 *,2);
- if(tail!=head){size=M2C_FIELD(arg0,u16 *,0);
- value=func_020020c4(head+size-1,size);
- idx=(u8)value;entry=(u8 *)arg0+(idx<<2);
- M2C_FIELD(arg0,u8 *,3)=value;
- result=M2C_FIELD(entry,s32 *,4);}
- func_020051c8(saved);return result;
+M2C_UNK func_020051c8(M2C_UNK);s32 func_020051f8(M2C_UNK);u8 func_020020c4(s32,u16);
+s32 result=0,saved,value;u8 head,tail,idx;u16 size;
+
+saved=func_020051f8(1);head=M2C_FIELD(arg0,u8 *,3);tail=M2C_FIELD(arg0,u8 *,2);
+if(tail!=head){size=M2C_FIELD(arg0,u16 *,0);
+value=func_020020c4(head+size-1,size);M2C_FIELD(arg0,u8 *,3)=value;idx=M2C_FIELD(arg0,u8 *,3);
+result=M2C_FIELD((u8*)arg0+(idx<<2),s32 *,4);}
+func_020051c8(saved);return result;
 }
 
 void func_ov001_0218a7a4(void) {

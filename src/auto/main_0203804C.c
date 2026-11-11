@@ -198,31 +198,34 @@ s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 HasNetError(voi
 
 s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void StartHostMatch(s32,s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,128)=c;M2C_FIELD(gNetSession,s32 *,132)=d;SetNetState(5);StartHostMatch((u8)(a-1),b,&func_02039520,0,e,f);return 1;}
 
-s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7) {
+/* Prepares the online session to join a match (it must be idle in the lobby),
+   stores the event callback, and starts the join: with the supplied player list
+   if there is one, otherwise with a shuffled list of every player slot. */
+s32 func_020388d8(s32 playerList, s32 listLength, s32 matchType, s32 flag, s32 eventCallback, s32 eventData, s32 resultCallback, s32 resultData) {
     s32 HasNetError(void); void ResetPlayerSlots(void); void SetNetState(s32);
     s32 func_0203ae50(void); u32 RandomBelow(u32);
     void StartJoinMatch(s32,s32,u8,s32,void *,s32,s32,s32);
     extern void *gNetSession; extern M2C_UNK func_02039520;
-    u8 buf2[64]; u8 buf1[64];
-    if (HasNetError() != 0 || M2C_FIELD(gNetSession,s32 *,0x24) != 3) return 0;
+    u8 shuffledSlots[64]; u8 slotPool[64];
+    if (HasNetError() != 0 || M2C_FIELD(gNetSession,s32 *,0x24) != NET_STATE_READY) return 0;
     ResetPlayerSlots();
-    M2C_FIELD(gNetSession,s32 *,0x80)=a4;
-    M2C_FIELD(gNetSession,s32 *,0x84)=a5;
-    SetNetState(5);
-    if(a0 != 0) {
-        StartJoinMatch(a0,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
+    M2C_FIELD(gNetSession,s32 *,0x80)=eventCallback;
+    M2C_FIELD(gNetSession,s32 *,0x84)=eventData;
+    SetNetState(NET_STATE_STARTING);
+    if(playerList != 0) {
+        StartJoinMatch(playerList,listLength,(u8)(matchType-1),flag,&func_02039520,0,resultCallback,resultData);
     } else {
-        u32 k; u8 *p; s32 i, j;
-        a1=0; i=a1;
-        while(i<func_0203ae50()) { buf1[i]=(u8)i; i=(i+1)&255; }
-        j=0;
-        while(j<func_0203ae50()) {
-            k=RandomBelow(func_0203ae50()-j);
-            buf2[j]=buf1[k]; p=&buf1[k]; a1++;
-            while(k<func_0203ae50()-j-1) { *p=p[1]; p++; k++; }
-            j=(j+1)&255;
+        u32 pick; u8 *shift; s32 slot, out;
+        listLength=0; slot=listLength;
+        while(slot<func_0203ae50()) { slotPool[slot]=(u8)slot; slot=(slot+1)&255; }
+        out=0;
+        while(out<func_0203ae50()) {
+            pick=RandomBelow(func_0203ae50()-out);
+            shuffledSlots[out]=slotPool[pick]; shift=&slotPool[pick]; listLength++;
+            while(pick<func_0203ae50()-out-1) { *shift=shift[1]; shift++; pick++; }
+            out=(out+1)&255;
         }
-        StartJoinMatch((s32)buf2,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
+        StartJoinMatch((s32)shuffledSlots,listLength,(u8)(matchType-1),flag,&func_02039520,0,resultCallback,resultData);
     }
     return 1;
 }

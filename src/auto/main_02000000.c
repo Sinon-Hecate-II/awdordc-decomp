@@ -79,11 +79,11 @@ return 0;
 }
 #pragma pop
 void func_02000f90(void *arg0, void *arg1, void *arg2) {
- s32 *a=arg0,*m=arg1,*o=arg2;
- s32 x=a[0], y=a[1], z=a[2]; s64 t;
- t=(s64)y*m[3]; t=(s64)x*m[0]+t; t+=(s64)z*m[6]; o[0]=t>>12;
- t=(s64)y*m[4]; t=(s64)x*m[1]+t; t+=(s64)z*m[7]; o[1]=t>>12;
- t=(s64)y*m[5]; t=(s64)x*m[2]+t; t+=(s64)z*m[8]; o[2]=t>>12;
+s32 *a=arg0,*m=arg1,*o=arg2;
+s32 x=a[0],y=a[1],z=a[2]; u64 t;
+t=(s64)y*m[3]; t-=-((s64)x*m[0]); t+=(s64)z*m[6]; o[0]=t>>12;
+t=(s64)y*m[4]; t-=-((s64)x*m[1]); t+=(s64)z*m[7]; o[1]=t>>12;
+t=(s64)y*m[5]; t-=-((s64)x*m[2]); t+=(s64)z*m[8]; o[2]=t>>12;
 }
 
 #pragma push

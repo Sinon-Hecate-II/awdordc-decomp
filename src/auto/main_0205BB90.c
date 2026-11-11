@@ -453,12 +453,11 @@ s32 func_0205ca48(void *p){
 
 s32 func_0205caac(void *p, s32 arg1, s32 arg2) {
 extern M2C_UNK gGt2Magic;
-u8 buf[8]; s32 n=0;
-M2C_FIELD(buf,u8 *,0)=M2C_FIELD(&gGt2Magic,u8 *,0);
-M2C_FIELD(buf,u8 *,1)=M2C_FIELD(&gGt2Magic,u8 *,1);
+u8 buf[8]; u32 n=0; u8 *q=buf;
+*(Unk05Bytes *)buf=*(Unk05Bytes *)&gGt2Magic;
 buf[2]=0x65;
 func_0205b0ec(buf, n+3, arg1); n+=5;
-if(arg1!=arg2){func_0205b0ec(buf,n,arg2); n+=2;}
+if((u32)arg2!=(u32)arg1){func_0205b0ec(buf,n,arg2); n+=2;}
 if(func_0205a9ec(p,buf,n)==0)return 0; return 1;
 }
 

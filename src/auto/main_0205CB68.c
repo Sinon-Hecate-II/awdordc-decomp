@@ -507,13 +507,13 @@ M2C_FIELD(p,s32 *,0)=-1; M2C_FIELD(p,s32 *,16)=4;
 }
 
 s32 *func_0205d7f4(void) {
-extern M2C_UNK gNatNegManager;
+extern M2C_UNK data_0213e144;
 s32 func_02048558(s32,s32,void (*)(void *));
-s32 Vector_GetCount(s32); s32 *Vector_GetItem(s32,s32);
-s32 handle=M2C_FIELD(&gNatNegManager,s32 *,16); s32 data[16]={0};
-if(!handle)M2C_FIELD(&gNatNegManager,s32 *,16)=func_02048558(64,4,func_0205d7c4);
-func_020486f8(M2C_FIELD(&gNatNegManager,s32 *,16),data);
-return Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,16),Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,16))-1);
+s32 func_02048688(s32); s32 *func_02048690(s32,s32);
+s32 handle=M2C_FIELD(&data_0213e144,s32 *,16); s32 data[16]={0};
+if(!handle)M2C_FIELD(&data_0213e144,s32 *,16)=func_02048558(64,4,func_0205d7c4);
+func_020486f8(M2C_FIELD(&data_0213e144,s32 *,16),data);
+return func_02048690(M2C_FIELD(&data_0213e144,s32 *,16),func_02048688(M2C_FIELD(&data_0213e144,s32 *,16))-1);
 }
 
 void func_0205d88c(s32 *p) {
@@ -546,17 +546,16 @@ s32 func_0205d920(M2C_UNK arg0) {
     return 0;
 }
 
+#pragma scheduling off
 void func_0205d944(s32 a,s32 b,s32 c,s32 d,s32 e) {
 s32 func_02049824(s32,s32,s32,s32,void *,s32);
 struct Packet_0205 p;
-struct Packet_0205 *pp;
-pp=&p;
-pp->d=b;
-pp->c=((c>>8)&255)|((c<<8)&0xff00);
-pp->b=2;
-func_02049824(a,d,e,0,pp,8);
+p.d=b;
+c=((c>>8)&255)|((c<<8)&0xff00);
+p.c=c;p.b=2;
+func_02049824(a,d,e,0,&p,8);
 }
-
+#pragma scheduling reset
 s32 func_0205d998(s32 a) {
 void *func_02049584(s32);
 s32 i;void *q;void *p;s32 result=0;p=func_02049584(a);

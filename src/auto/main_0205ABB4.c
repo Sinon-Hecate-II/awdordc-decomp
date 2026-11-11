@@ -325,20 +325,25 @@ void func_0205b89c(void *arg0, void *arg1) {
     func_0205b100(M2C_FIELD(arg0, u16 *, 0xC), M2C_FIELD(arg1, u16 *, 0xC));
 }
 
-s32 func_0205b8b0(void *a,s32 command,u16 sequence,void *data,s32 size,s32 *error){
+/* Enqueue an outgoing command: insert a header record (offset/size/command/
+   sequence) for command/sequence into the send queue kept sorted by sequence,
+   copy the payload into the session's ring buffer, and acknowledge any numbered
+   sequence gap that was filled. Returns 0 to retry, 1 when finished; *error is
+   set when the sequence already exists or the queue rejected the record. */
+s32 func_0205b8b0(void *session,s32 command,u16 sequence,void *data,s32 size,s32 *error){
 s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 func_02059d24(void *);void func_020487fc(s32,void *,void *);void func_02059df0(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
-s32 count=Vector_GetCount(M2C_FIELD(a,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 seq2;
-for(i=0;i<count;i++){u16 seq=M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x5c),i),u16 *,12);if(seq==sequence){*error=0;return 1;}if(func_0205b100(seq,sequence)>0)break;}
-if(func_02059d24(a+0x44)<size){*error=1;return 1;}
-record.offset=M2C_FIELD(a,s32 *,0x4c);record.size=size;record.command=command;record.sequence=sequence;
-func_020487fc(M2C_FIELD(a,s32 *,0x5c),&record,func_0205b89c);
-if(count+1!=Vector_GetCount(M2C_FIELD(a,s32 *,0x5c))){*error=1;return 1;}
-func_02059df0(a+0x44,data,size);
-if(count==0){if(!func_0205caac(a,M2C_FIELD(a,u16 *,0x66),(u16)(sequence-1)))return 0;}
-else {seq2=M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x5c),count),u16 *,12);if(seq2==sequence){
-prev=Vector_GetItem(M2C_FIELD(a,s32 *,0x5c),count-1);
+s32 count=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 nextSequence;
+for(i=0;i<count;i++){u16 queued=M2C_FIELD(Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),i),u16 *,12);if(queued==sequence){*error=0;return 1;}if(func_0205b100(queued,sequence)>0)break;}
+if(func_02059d24(session+0x44)<size){*error=1;return 1;}
+record.offset=M2C_FIELD(session,s32 *,0x4c);record.size=size;record.command=command;record.sequence=sequence;
+func_020487fc(M2C_FIELD(session,s32 *,0x5c),&record,func_0205b89c);
+if(count+1!=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c))){*error=1;return 1;}
+func_02059df0(session+0x44,data,size);
+if(count==0){if(!func_0205caac(session,M2C_FIELD(session,u16 *,0x66),(u16)(sequence-1)))return 0;}
+else {nextSequence=M2C_FIELD(Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),count),u16 *,12);if(nextSequence==sequence){
+prev=Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),count-1);
 if((u16)func_0205b100(sequence,M2C_FIELD(prev,u16 *,12))>1){
-if(!func_0205caac(a,(u16)(M2C_FIELD(prev,u16 *,12)+1),(u16)(sequence-1)))return 0;
+if(!func_0205caac(session,(u16)(M2C_FIELD(prev,u16 *,12)+1),(u16)(sequence-1)))return 0;
 }}}
 *error=0;return 1;
 }

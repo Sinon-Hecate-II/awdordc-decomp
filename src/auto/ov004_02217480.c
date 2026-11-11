@@ -12,7 +12,7 @@ static inline void *Selected175(void *base) { void *q;u8 *cursor=base;s32 i;for(
 /* Updates the zoom state: toggles between 1.0 (0x1000) and 0.5 (0x800) scale,
    recomputes the clipped target position, and clamps the source rectangle. */
 void func_ov004_02217480(void *state) {
-void SetSpriteAnimation(void *, s32);
+void func_01ffa8c4(void *, s32);
 void *entry; s32 i, offset; void *base; u32 flags; s16 x,y;
 i=0;
 M2C_FIELD(state,u8 *,0x36)=0;
@@ -31,7 +31,7 @@ return;
 }
 i++;offset+=32;
 }while(i<64);
-SetSpriteAnimation(state,1);
+func_01ffa8c4(state,1);
 }
 
 #pragma opt_strength_reduction off

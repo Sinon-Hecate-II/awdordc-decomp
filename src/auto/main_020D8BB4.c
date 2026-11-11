@@ -144,6 +144,10 @@ void func_020d903c(M2C_UNK arg0) {
 
 void func_020d9054(s32 a){M2C_UNK CreateSpriteObject(M2C_UNK *,M2C_UNK);extern M2C_UNK data_0212c498;extern void *data_0212c36c;M2C_FIELD(data_0212c36c,s16 *,0)=M2C_FIELD(data_0212c36c,s16 *,2);M2C_FIELD(data_0212c36c,s16 *,2)=M2C_FIELD(data_0212c36c,s16 *,4);CreateSpriteObject(&data_0212c498,a);}
 
+/* Initialises the 3D sprite engine of the current screen: loads the shared setup
+   block, runs the sub engine's teardown, clears the sprite bank's low control
+   bits, sets up the sprite source banks and texture, then enables the five
+   sprite layers (bits 4..8 of the bank's flags word). */
 void func_020d908c(void) {
     M2C_UNK func_020d4d78(void);
     void func_020822b8(void *);
@@ -160,23 +164,23 @@ void func_020d908c(void) {
     extern M2C_UNK data_020efad4;
     extern M2C_UNK data_020f28f0;
     extern M2C_UNK data_020f28d0;
-    SetupParams12 buf;
-    void *oldEngine;
-    u16 *volatile t;
-    u16 *volatile v0;
-    u16 *volatile v1;
-    u16 *volatile v2;
-    u16 *volatile v3;
-    u16 *volatile v4;
+    SetupParams12 setup;
+    void *savedEngine;
+    u16 *volatile bankFlags;
+    u16 *volatile layer1;
+    u16 *volatile layer2;
+    u16 *volatile layer3;
+    u16 *volatile layer4;
+    u16 *volatile layer5;
     s32 i;
-    buf = *(const SetupParams12 *)data_020f4ea8;
-    oldEngine = gCur3DSpriteEngine;
+    setup = *(const SetupParams12 *)data_020f4ea8;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020d4d78();
-    gCur3DSpriteEngine = oldEngine;
-    t = (u16 *)*(void **)gCur3DSpriteEngine;
-    *t = (u16)(*t & ~7);
-    func_020822b8(&buf);
+    gCur3DSpriteEngine = savedEngine;
+    bankFlags = (u16 *)*(void **)gCur3DSpriteEngine;
+    *bankFlags = (u16)(*bankFlags & ~7);
+    func_020822b8(&setup);
     Reset3DSpriteBankState();
     func_02082700();
     func_020c0a88();
@@ -186,16 +190,16 @@ void func_020d908c(void) {
     func_01ff9e44(&data_020f28d0, 0x20, 0x20);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x8);
     func_02091cd0();
-    v0 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *v0 = (u16)(*v0 | 0x10);
-    v1 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *v1 = (u16)(*v1 | 0x20);
-    v2 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *v2 = (u16)(*v2 | 0x40);
-    v3 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *v3 = (u16)(*v3 | 0x80);
-    v4 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *v4 = (u16)(*v4 | 0x100);
+    layer1 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *layer1 = (u16)(*layer1 | 0x10);
+    layer2 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *layer2 = (u16)(*layer2 | 0x20);
+    layer3 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *layer3 = (u16)(*layer3 | 0x40);
+    layer4 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *layer4 = (u16)(*layer4 | 0x80);
+    layer5 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *layer5 = (u16)(*layer5 | 0x100);
 }
 
 void func_020d9244(void) {

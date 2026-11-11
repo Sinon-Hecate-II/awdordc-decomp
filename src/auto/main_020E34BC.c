@@ -44,7 +44,7 @@ s32 func_020e34bc(s32 arg0) {
 }
 #pragma pop
 s32 func_020e34f4(s32 arg0) {
-    void func_020e3580(s32, s32);
+    s32 func_020e3580(s32, s32);
     volatile u32 saved;
     u16 old;
     u32 s;
@@ -78,18 +78,19 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
     }
 }
 
-void func_020e3580(s32 arg0,s32 arg1) {
+s32 func_020e3580(s32 arg0,s32 arg1) {
  extern s32 data_02168fe4;
  volatile u32 saved;
  u32 temp=*(volatile u16*)0x04000208;
+ s32 result;
  *(volatile u16*)0x04000208=0;
  saved=temp;
- func_0202a468(data_02168fe4,arg0,-arg1);
- temp=saved;
- (void)*(volatile u16*)0x04000208;
- *(volatile u16*)0x04000208=temp;
+ result=func_0202a468(data_02168fe4,arg0,-arg1);
+ {u32 value=saved; volatile u16 *reg=(volatile u16*)0x04000208;
+ u32 previous=*reg; *reg=value;}
+ return result;
 }
-
+#pragma opt_propagation reset
 void func_020e35cc(s32 arg0) {
  void func_0202a498(s32, s32);
  extern s32 data_02168fe4;
@@ -451,29 +452,24 @@ void func_020e3ccc(void *arg0) {
 }
 
 void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
-    void *func_01ffa444(void *, s32);
-    extern s32 data_0212d9c8;
-    extern s32 data_0212da10;
-    void *temp_r0;
-    u8 *ptr;
-
-    temp_r0 = func_01ffa444(&data_0212d9c8, arg2);
-    if (temp_r0 == NULL) {
-        return;
-    }
-    M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32)arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = *arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x3c) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = (s32)arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
-
-    for (ptr = (u8 *)arg0; (u32)ptr < (u32)arg0 + M2C_FIELD(temp_r0, s32 *, 0x38) * 0x310; ptr += 0x310) {
-        M2C_FIELD(ptr, s32 *, 0x4) = -1;
-        M2C_FIELD(ptr, s32 *, 0x8) = 0;
-        M2C_FIELD(ptr, s32 *, 0x30c) = 0;
-    }
+void *func_01ffa444(void *,s32);
+extern s32 data_0212d9c8;extern s32 data_0212da10;
+u32 base=(u32)arg0;
+void *p;u8 *ptr;
+p=func_01ffa444(&data_0212d9c8,arg2);
+if(!p)return;
+M2C_FIELD(p,s32 **,0)=&data_0212da10;
+M2C_FIELD(p,s32 *,0x34)=(s32)arg0;
+M2C_FIELD(p,s32 *,0x38)=*arg1;
+M2C_FIELD(p,s32 *,0x3c)=0;
+M2C_FIELD(p,s32 *,0x40)=(s32)arg1;
+M2C_FIELD(p,s32 *,0x44)=0;
+M2C_FIELD(p,s32 *,0x48)=0;
+for(ptr=arg0;(u32)ptr<base+M2C_FIELD(p,s32 *,0x38)*0x310;ptr+=0x310){
+M2C_FIELD(ptr,s32 *,4)=-1;
+M2C_FIELD(ptr,s32 *,8)=0;
+M2C_FIELD(ptr,s32 *,0x30c)=0;
+}
 }
 
 void func_020e3e04(void *arg0) {

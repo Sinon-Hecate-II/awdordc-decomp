@@ -488,55 +488,34 @@ void func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
  p->value=arg1;p->mode=arg2;p->low=arg4;p->high=arg4;
 }
 
-void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void *func_0209c6d8(s32);
-    s32 func_01ff8e44(s32, s32);
-    void AddSprite(s32, s32, s32, s32);
-    extern M2C_UNK gCur3DSpriteEngine;
-    u8 *r4;
-    u8 byte3;
-    u32 high;
-    u32 low;
-    s32 temp0;
-    u8 byte2;
-    u16 half_self;
-    u16 half_eng;
-    u32 mask;
-
-    r4 = (u8 *)func_0209c6d8(arg0);
-    byte3 = r4[3];
-    high = ((u32)byte3 << 24) >> 28;
-    low = ((u32)(byte3 & 0x0F)) << 3;
-    temp0 = func_01ff8e44((s32)low, (s32)(high << 3));
-    if (temp0 == 0) return;
-    byte2 = r4[2];
-    half_self = *(u16 *)r4;
-    half_eng = *(u16 *)((void *)gCur3DSpriteEngine);
-    mask = 0x3FF;
-    mask = mask & (half_self >> (((u32)half_eng >> 13) & 3));
-    mask = (u32)arg3 | mask;
-    mask = mask | ((u32)byte2 << 12);
-    AddSprite(arg1, arg2, (s32)(mask & 0xFFFF), arg4);
+void func_0209c764(s32 a,s32 b,s32 c,s32 d,s32 e) {
+void *func_0209c6d8(s32);
+s32 func_01ff8e44(s32,s32);
+void AddSprite(s32,s32,s32,s32,s32);
+extern M2C_UNK gCur3DSpriteEngine;
+u8 *p=func_0209c6d8(a);
+u8 v=p[3];
+s32 sprite=func_01ff8e44((u32)(v<<28)>>25,((u32)(v<<24)>>28)<<3);
+if(sprite) {
+AddSprite(b,c,(u16)(d|(1023&(*(u16*)p>>((u32)(***(u16 ***)(&gCur3DSpriteEngine)<<17)>>30)))|((u32)(p[2]<<28)>>16)),sprite,e);
+}
 }
 
 #pragma opt_propagation off
 void func_0209c7fc(void) {
-volatile s32 *p; s32 i,a,b,c,d;
-u32 mask1,mask2;
-p=data_0215d8a8; mask1=0xfffe007f; mask2=0xfc01ffff; i=0;
-do {
-a=*p;
-i++;
-b=a&~7;
-c=b&~0x78;
-d=c&mask1;
-a=d&mask2;
-c=a&~0x1c000000;
-a=c&~0xe0000000;
-*(volatile s32 *)p=c;
-*p++=a;
-}while(i<64);
-*(s32 *)((u8 *)&data_0215d8a0+8)=(*(s32 *)((u8 *)&data_0215d8a0+8)&~7)|1;
+ s32 i;
+ SpriteStateWord *p;
+ p=(SpriteStateWord *)data_0215d8a8; i=0;
+ do {
+ p->state=0;
+ p->field3=0;
+ p->field7=0;
+ p->field17=0;
+ p->field26=0;
+ p->field29=0;
+ p++; i++;
+ } while(i<64);
+ *(s32 *)((u8 *)&data_0215d8a0+8)=(*(s32 *)((u8 *)&data_0215d8a0+8)&~7)|1;
 }
 #pragma opt_propagation reset
 void func_0209c868(void) {

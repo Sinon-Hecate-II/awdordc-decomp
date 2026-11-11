@@ -215,7 +215,7 @@ done:
 if(get(ctx,0,2) && !conversions)return -1;
 return assigned;
 }
-#pragma opt_peephole reset
+#pragma optimize_for_size off
 s32 func_02068a04(void *arg0, s32 arg1, s32 arg2) {
     s8 *temp_r1;
     s8 temp_r2;
@@ -231,11 +231,9 @@ s32 func_02068a04(void *arg0, s32 arg1, s32 arg2) {
         M2C_FIELD(arg0, s8 **, 0) = (s8 *) (temp_r1 + 1);
         return (s32) (u8) temp_r2;
     case 1:
-        if (M2C_FIELD(arg0, s32 *, 4) != 0) {
-            M2C_FIELD(arg0, s32 *, 4) = 0;
-        } else {
-            M2C_FIELD(arg0, s8 **, 0) = (s8 *) (M2C_FIELD(arg0, s8 **, 0) - 1);
-        }
+        if (M2C_FIELD(arg0, s32 *, 4) == 0) {
+            --M2C_FIELD(arg0,s8 **,0);
+        } else M2C_FIELD(arg0,s32 *,4)=0;
         return arg1;
     case 2:
         return M2C_FIELD(arg0, s32 *, 4);
@@ -243,7 +241,7 @@ s32 func_02068a04(void *arg0, s32 arg1, s32 arg2) {
         return 0;
     }
 }
-#pragma opt_peephole reset
+#pragma optimize_for_size reset
 s32 func_02068a88(s8 *arg0, s32 arg1, s32 arg2) {
     s32 func_02068a04(void *, s32, s32);
     s32 func_02067cb0(s32 (*)(void *, s32, s32), void *, s32, s32, s32);

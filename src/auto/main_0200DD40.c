@@ -282,7 +282,7 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     M2C_FIELD(&data_0212fccc, void (**)(s32, s32 *), 0x1C) = arg2;
     M2C_FIELD(&data_0212fccc, s32 **, 0x20) = arg3;
     ((u16 (*)[4])&data_0212fd0c)[arg0][0] = 0;
-    ((s32 (*)[2])&data_0212fd10)[arg0][0] = arg1;
+    *(s32 *)((u8 *)&data_0212fd10 + arg0 * 8) = arg1;
     func_0200e8f4((u8)arg0 | 0x03006500);
     return 0;
 }

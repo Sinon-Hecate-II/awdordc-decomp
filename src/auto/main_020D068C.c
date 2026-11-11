@@ -69,13 +69,13 @@ M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 }
 #pragma opt_propagation reset
 s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
- s32 func_020a8204();
- s32 func_020a86f8();
- u16 temp_r0,var_r6;
- var_r6=0;
- if(func_020a8204()!=0)var_r6=func_020a86f8(arg0,D068CLow(arg1),0,D068CFlag(arg1));
- temp_r0=func_020a86f8(arg0,D068CLow(arg1),1,D068CFlag(arg1));
- return var_r6!=0 || temp_r0!=0;
+s32 func_020a8204();
+s32 func_020a86f8();
+u16 temp_r0,var_r6;
+var_r6=0;
+if(func_020a8204(arg0)!=0)var_r6=func_020a86f8(arg0,(s32)D068CLow(arg1),0,(s32)D068CFlag(arg1));
+temp_r0=func_020a86f8(arg0,(s32)D068CLow(arg1),1,(s32)D068CFlag(arg1));
+return var_r6!=0 || temp_r0!=0;
 }
 #pragma opt_common_subs reset
 s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {

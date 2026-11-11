@@ -410,7 +410,18 @@ OS_RestoreInterrupts(irq);return 3;
 
 s32 func_02027c84(void){s32 s=OS_DisableInterrupts();s32 r=0;void *p=(void *)gSession;if(p)r=M2C_FIELD(p,s32 *,0x2260);OS_RestoreInterrupts(s);return r;}
 
-u32 WFC_SetStatusBits(u32 arg){u32 old;u32 v=arg;s32 s=OS_DisableInterrupts();u32 mask=0;void *p=(void *)gSession;old=M2C_FIELD(p+0x2000,u32 *,0x264);if(!p){OS_RestoreInterrupts(s);return 0;}if(v&0x8000){mask|=0x3ffe;if(!(v&0x3ffe))v|=0xa082;}if(v&0x20000)mask|=0x10000;if(v&0x80000)mask|=0x40000;if(v&0x200000)mask|=0x100000;if(v&0x800000)mask|=0x400000;M2C_FIELD(p+0x2000,u32 *,0x264)=v|(old&~mask);OS_RestoreInterrupts(s);return old;}
+u32 WFC_SetStatusBits(u32 v){
+u32 old; s32 s=OS_DisableInterrupts();u32 mask=0;void *p=(void *)gSession;
+old=M2C_FIELD(p+0x2000,volatile u32 *,0x264);
+if(!p){OS_RestoreInterrupts(s);return 0;}
+if(v&0x8000){mask=0x3ffe|mask;if(!(v&0x3ffe))v=0xa082|v;}
+if(v&0x20000)mask|=0x10000;
+if(v&0x80000)mask|=0x40000;
+if(v&0x200000)mask|=0x100000;
+if(v&0x800000)mask|=0x400000;
+M2C_FIELD(p+0x2000,u32 *,0x264)=v|(old&~mask);
+OS_RestoreInterrupts(s);return old;
+}
 
 s32 func_02027d50(void) {
     extern s32 gSession;

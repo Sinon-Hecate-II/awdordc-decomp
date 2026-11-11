@@ -133,8 +133,7 @@ void func_ov001_0216a230(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 #pragma scheduling off
 s32 func_ov001_0216a2e0(s32 base,s32 w,s32 h,s32 stride,s32 tile,s32 pal) {
 u16 v;s32 x,y;u16 *p;
-y=0;
-pal=(u32)pal<<28;
+pal=(u32)pal<<28;y=0;
 if(h<=0)return base;
 do{p=(u16 *)base;x=0;if(w>0){do{v=tile|((u32)pal>>16);x++;tile++;*p++=v;}while(x<w);}y++;base+=stride*2;}while(y<h);
 return base;
@@ -368,10 +367,10 @@ s32 func_ov001_0216ac04(void *arg0) {
 
 #pragma optimize_for_size on
 s32 func_ov001_0216ace0(void *arg0,s32 arg1) {
- s32 n=M2C_FIELD(arg0,s8 *,4); u32 byte=M2C_FIELD(arg0,u8 *,5); s32 shift; u32 value=(u32)0; u8 *p;
- if(n>=arg1) {shift=n-arg1; value=(byte)>>(shift); M2C_FIELD(arg0,s8 *,4)=shift; goto done;}
- p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<(shift));
- done: return value & (0xff>>(8-arg1));
+ s32 n=M2C_FIELD(arg0,s8 *,4); u32 byte=M2C_FIELD(arg0,u8 *,5); s32 shift; u32 value; u8 *p;
+ if(n>=arg1) {shift=n-arg1; value=byte>>shift; M2C_FIELD(arg0,s8 *,4)=shift; } else {
+ p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<shift);
+ } return value & (0xff>>(8-arg1));
 }
 u16 func_ov001_0216ad40(u16 **arg0) {
 u16 *p=*arg0;

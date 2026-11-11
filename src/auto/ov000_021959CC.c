@@ -432,7 +432,10 @@ void func_ov000_021963f8(void) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov000_02196430(s16 *arg0) {
+/* Picks the destination the selected AI unit moves to, dispatched on the unit's
+   AI state (MAP_UNIT_AI_STATE low nibble); writes the target tile to outPos and
+   returns 0 when no destination could be chosen. */
+s32 func_ov000_02196430(s16 *outPos) {
     s32 func_ov000_02194ab8(s16 *);
     s32 HasEnemyPlayer(void);
     s32 func_ov000_021954dc(s16 *);
@@ -449,48 +452,48 @@ s32 func_ov000_02196430(s16 *arg0) {
 
     u8 *map;
     u8 *unit;
-    u32 key;
+    u32 aiState;
 
     map = (u8 *)*gCurrentMap;
-    unit = (u8 *)*(void **)(map + 0x52d0);
-    key = ((struct Nib *)(unit + 0x0b))->lo;
+    unit = (u8 *)*(void **)(map + MAP_CURSOR_UNIT);
+    aiState = ((struct Nib *)(unit + MAP_UNIT_AI_STATE))->lo;
 
-    switch (key) {
+    switch (aiState) {
     case 0:
     case 1:
-        if (func_ov000_02194ab8(arg0) == 0) {
+        if (func_ov000_02194ab8(outPos) == 0) {
             return 0;
         }
         break;
     case 2:
         if (HasEnemyPlayer() == 1) {
-            if (func_ov000_021954dc(arg0) == 0) {
+            if (func_ov000_021954dc(outPos) == 0) {
                 return 0;
             }
         } else {
-            if (func_ov000_02194ab8(arg0) == 0) {
+            if (func_ov000_02194ab8(outPos) == 0) {
                 return 0;
             }
         }
         break;
     case 3:
-        if (func_ov000_02195574(arg0) == 0) {
+        if (func_ov000_02195574(outPos) == 0) {
             return 0;
         }
         break;
     case 4:
-        if (SelectPropertyDestination(arg0) == 0) {
+        if (SelectPropertyDestination(outPos) == 0) {
             return 0;
         }
         break;
     case 5: {
-        u16 player = *(u16 *)(map + 0x52a4);
+        u16 player = *(u16 *)(map + MAP_CURRENT_PLAYER);
         if (func_020d243c(player) == 1) {
-            if (func_ov000_02195f1c(arg0) == 0) {
+            if (func_ov000_02195f1c(outPos) == 0) {
                 return 0;
             }
         } else {
-            if (SelectPropertyDestination(arg0) == 0) {
+            if (SelectPropertyDestination(outPos) == 0) {
                 return 0;
             }
         }
@@ -498,26 +501,26 @@ s32 func_ov000_02196430(s16 *arg0) {
     }
     case 7:
     case 9:
-        if (func_ov000_02196084(arg0) == 0) {
+        if (func_ov000_02196084(outPos) == 0) {
             return 0;
         }
         break;
     case 8:
-        if (func_ov000_021961d4(arg0) == 0) {
+        if (func_ov000_021961d4(outPos) == 0) {
             return 0;
         }
         break;
     case 6:
-        arg0[0] = (s16)unit[1];
-        arg0[1] = (s16)(((u8 *)*(void **)(((u8 *)*gCurrentMap) + 0x52d0))[2]);
+        outPos[0] = (s16)unit[MAP_UNIT_X];
+        outPos[1] = (s16)(((u8 *)*(void **)(((u8 *)*gCurrentMap) + MAP_CURSOR_UNIT))[MAP_UNIT_Y]);
         break;
     case 10:
         if (func_ov000_02196330() == 1) {
-            if (func_ov000_02196398(arg0) == 0) {
+            if (func_ov000_02196398(outPos) == 0) {
                 return 0;
             }
         } else {
-            if (func_ov000_02194ab8(arg0) == 0) {
+            if (func_ov000_02194ab8(outPos) == 0) {
                 return 0;
             }
         }

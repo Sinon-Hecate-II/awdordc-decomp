@@ -1,12 +1,13 @@
 /* 23 functions from 0x02045D94 to 0x02046D38 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}MI_CpuCopy8((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {
+if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}MI_CpuCopy8((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
-s32 func_02045e70(u16 *a) { s32 func_020465c4(s32,s32,M2C_UNK); extern M2C_UNK data_0213db28; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&data_0213db28,s32 *,8)=(*a<<3)-1024;return 1; }
+s32 func_02045e70(u16 *a) {  extern M2C_UNK data_0213db28; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&data_0213db28,s32 *,8)=(*a<<3)-1024;return 1; }
 
 s32 func_02045eb4(M2C_UNK arg0) {
-    s32 func_020465c4(s32, M2C_UNK, M2C_UNK);
+
     extern M2C_UNK data_0213db28;
     if (func_020465c4(M2C_FIELD(&data_0213db28, s32 *, 8), 0x400, arg0) != 0) {
         return 1;
@@ -160,7 +161,12 @@ case 7:return 1;
 fail:return state;
 }
 #pragma opt_propagation reset
-s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) { M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; DC_InvalidateRange(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788); loop: if(func_02046158(1,arg0,(u16)arg1,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
+s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) {
+M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788;
+register u16 len;
+DC_InvalidateRange(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788);
+len=(u16)arg1;
+loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
 void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK func_020067c4(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);func_020067c4(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 

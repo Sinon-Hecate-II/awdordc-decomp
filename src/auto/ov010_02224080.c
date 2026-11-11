@@ -232,15 +232,15 @@ M2C_UNK func_ov010_0222458c(s32 arg0) {
  func_ov010_022244cc(&data_ov010_0222d8f0,sp0);
 }
 
+#pragma opt_propagation off
 void func_ov010_022245cc(void *arg0,s32 arg1) {
-u32 i; u32 zero; u8 *ptr;
-extern M2C_UNK gLinkConfig;
+register u32 i; register u8 zero; u8 *ptr; extern M2C_UNK gLinkConfig;
 ptr=arg0;i=6;zero=0;
 do {ptr[0]=zero;ptr[1]=zero;ptr[2]=zero;ptr[3]=zero;ptr+=4;}while(--i);
 M2C_FIELD(arg0,s32 *,0)=M2C_FIELD(&gLinkConfig,s32 *,0x10);
-M2C_FIELD(arg0,s32 *,0xc)=i;M2C_FIELD(arg0,s8 *,4)=arg1;
+M2C_FIELD(arg0,s32 *,0xc)=0;M2C_FIELD(arg0,s8 *,4)=arg1;
 }
-
+#pragma opt_propagation reset
 s32 func_ov010_02224614(void *arg0,void *arg1) {
  s32 func_0204431c(u8,void *,u32);
  if(M2C_FIELD(arg1,u8 *,4)==0xff && M2C_FIELD(arg1,u8 *,6)==4) {
@@ -278,21 +278,20 @@ return v;
 
 s32 func_ov010_02224820(void *a){extern M2C_UNK data_ov010_0222d8b4;void *p=M2C_FIELD(&data_ov010_0222d8b4,void **,20);while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,s32 *,12)==2&&a!=p)return 0;p=M2C_FIELD(p,void **,20);}return 1;}
 
-#pragma opt_peephole off
+#pragma opt_propagation off
 s32 func_ov010_0222486c(void *a,void *b){
-extern M2C_UNK gLinkConfig;
-extern s8 data_ov010_0222be9e[]; extern s8 data_ov010_0222bee0[];
-s32 i=M2C_FIELD(b,u8*,6);s8 *t;s32 v;s32 row;
+extern M2C_UNK gLinkConfig; extern s8 data_ov010_0222be9e[]; extern s8 data_ov010_0222bee0[];
+s32 i=M2C_FIELD(b,u8*,6);s8 *t;s8 v;u32 row;
 if(M2C_FIELD(b,u8*,4)==0)i+=5;
 if(i<0||i>=11)i=-1;
 if(i<0)return -1;
 t=M2C_FIELD(&gLinkConfig,s32*,16)==1?data_ov010_0222be9e:data_ov010_0222bee0;
-row=M2C_FIELD(a,s32*,12); v=((s8 (*)[11])t)[row][i];
+row=M2C_FIELD(a,u32*,12);v=*(i+(t+row*(u32)11));
 if(v==-1)return 1;
 if(v==-2)return 0;
 M2C_FIELD(a,s32*,12)=v;return 1;
 }
-#pragma opt_peephole reset
+#pragma opt_propagation reset
 s32 *func_ov010_022248f4(u8 a){
 extern M2C_UNK gLinkConfig;extern M2C_UNK data_ov010_0222d8b4;extern M2C_UNK data_ov010_0222d8f0;
 void *p=M2C_FIELD(&data_ov010_0222d8b4,void **,20);
@@ -431,20 +430,22 @@ OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));return r;
 
 void Link_FreePacket(void *p){extern M2C_UNK data_ov010_0222d908;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&data_ov010_0222d908,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&data_ov010_0222d908,void **,4);M2C_FIELD(&data_ov010_0222d908,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));}
 
-#pragma opt_common_subs off
+#pragma optimization_level 3
+#pragma peephole off
 void func_ov010_02224f28(void) {
-    extern M2C_UNK data_ov010_0222c02c;
-    s32 i;
-    for (i = 0; i < 4; i++) {
-        data_ov010_0222d920[i] = 0x1000000;
-    }
-    data_ov010_0222d914[1] = 0;
-    data_ov010_0222d914[0] = 0;
-    M2C_FIELD(&data_ov010_0222c02c, s32 *, 0) = 0;
-    M2C_FIELD(&data_ov010_0222c02c, s32 *, 4) = 0;
-    data_ov010_0222d914[2] = 0;
+extern M2C_UNK data_ov010_0222c02c;
+s32 i;
+for(i=0;i<4;i++)data_ov010_0222d920[i]=0x1000000;
+data_ov010_0222d914[1]=0;
+data_ov010_0222d914[0]=0;
+M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=0;
+M2C_FIELD(&data_ov010_0222c02c,s32 *,4)=0;
+data_ov010_0222d914[2]=0;
 }
+#pragma scheduling reset
 #pragma opt_common_subs reset
+#pragma peephole reset
+#pragma optimization_level 4
 void func_ov010_02224f74(s32 arg0) {
     M2C_UNK MI_CpuCopy8(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_ov010_0222c02c;

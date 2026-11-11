@@ -66,7 +66,7 @@ s32 func_0206e2e4(u8 *p,s32 i) {
  i--; if(M2C_FIELD(p+i,u8 *,5)&1)return 1; return -1;
 }
 
-#pragma opt_dead_code off
+#pragma optimization_level 3
 void func_0206e350(u8 *p,s32 n) {
  u8 *start=p+5; u8 *q=start+n-1;
  for(;;) {
@@ -74,9 +74,8 @@ void func_0206e350(u8 *p,s32 n) {
  if(q==start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; return; }
  *q--=0;
  }
- __builtin_unreachable();
 }
-#pragma opt_dead_code reset
+#pragma optimization_level 4
 void func_0206e39c(void) {
 
 }

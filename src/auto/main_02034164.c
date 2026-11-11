@@ -160,7 +160,20 @@ s32 func_02034864(s32 arg0) {
     return var_r0;
 }
 
-s32 func_02034870(void *arg0,void *arg1,s32 arg2){extern M2C_UNK data_020fb690;s32 (*fn)(M2C_UNK *,s32)=M2C_FIELD(arg0,s32 (**)(M2C_UNK *,s32),0x1010);s32 v;if(!arg2)return 0;v=fn(&data_020fb690,arg2);M2C_FIELD(arg1,s32 *,0)=v;if(!v)return 0;M2C_FIELD(arg1,s32 *,4)=v;M2C_FIELD(arg1,s32 *,12)=arg2;v=M2C_FIELD(arg1,s32 *,0)+arg2;M2C_FIELD(arg1,s32 *,8)=v;return (v!=0);}
+s32 func_02034870(void *arg0,void *arg1,s32 arg2) {
+extern M2C_UNK data_020fb690;
+s32 (*fn)(M2C_UNK *,s32)=M2C_FIELD(arg0,s32 (**)(M2C_UNK *,s32),0x1010);
+s32 v;
+if(!arg2)return 0;
+v=fn(&data_020fb690,arg2);
+M2C_FIELD(arg1,s32 *,0)=v;
+if(!v)return 0;
+M2C_FIELD(arg1,s32 *,4)=v;
+M2C_FIELD(arg1,s32 *,12)=arg2;
+v=M2C_FIELD(arg1,s32 *,0)+arg2;
+M2C_FIELD(arg1,s32 *,8)=v;
+return (v!=0);
+}
 
 void func_020348c8(void *arg0,s32 *arg1) {
 M2C_UNK MI_CpuFill8(void *,s32,s32); extern M2C_UNK data_020fb6a4;
@@ -264,9 +277,17 @@ return 1;
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 FindHttpHeader(void *a,s32 b){s32 StringCompare(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(StringCompare(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
-#pragma optimize_ifs off
-s32 ReadHttpHeader(void *a,s32 b,u8 *c,u32 d){s32 FindHttpHeader(void *,s32);s32 StringLength(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=FindHttpHeader(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,StringLength(p),c,d);if(n==-1)return n;if((u32)n>=d)return n;c[n]=0;return n;}
-#pragma optimize_ifs reset
+#pragma opt_propagation off
+s32 ReadHttpHeader(void *a,s32 b,u8 *c,u32 d){
+s32 FindHttpHeader(void *,s32);s32 StringLength(s32);s32 func_0203739c(s32,s32,u8 *,u32);
+s32 p=FindHttpHeader(a,b),n;
+if(!p)return 0;
+n=func_0203739c(p,StringLength(p),c,d);
+if(n==-1)return n;
+if((u32)n>=d)return n;
+c[n]=0;return n;
+}
+#pragma opt_propagation reset
 s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 FindHttpHeader(void *,s32);s32 StringLength(s32);void StringCopy(void *,s32);s32 p=FindHttpHeader(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;StringCopy(c,p);return 1;}
 
 void func_02034fe4(void *arg0, void *arg1, s32 arg2) {

@@ -28,10 +28,10 @@ u16 func_02006f8c(void) {
     return data_0212dfb4;
 }
 
-#pragma optimization_level 2
+#pragma opt_propagation off
 void func_02006f9c(void) {
 void func_02005154(u32,void (*)(void),u32); extern u16 data_0212dfb4;
-M2C_FIELD(&data_0212dfb4,u64 *,8)++;
+++M2C_FIELD(&data_0212dfb4,u64 *,8);
 if (M2C_FIELD(&data_0212dfb4,s32 *,4)) {
 *(volatile u16 *)0x04000102=0;
 *(volatile u16 *)0x04000100=0;
@@ -40,7 +40,7 @@ M2C_FIELD(&data_0212dfb4,s32 *,4)=0;
 }
 func_02005154(0,func_02006f9c,0);
 }
-#pragma optimization_level reset
+#pragma opt_propagation reset
 u64 GetSystemTick(void) {
     u32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(u32);
@@ -59,27 +59,21 @@ u16 func_020070a4(void) {
     return *(u16 *)0x04000100;
 }
 
-#pragma opt_if-conversion off
+#pragma opt_if_conversion off
 void func_020070b4(void *arg0) {
- void func_02005154(u32, void (*)(void), u32);
- s32 func_020073c0(s32);
- void func_020051c8(u32);
- u64 now = GetSystemTick();
- s64 delta;
- u32 timer;
- *(volatile u16 *)0x04000106 = 0;
- delta = M2C_FIELD(arg0, s64 *, 0xC) - now;
- func_02005154(1, (void (*)(void))func_020073c0, 0);
- timer = 0;
- if (delta < 0) {
-   timer = 0xFFFE;
- } else if (delta < 0x10000) {
-   timer = (u16)~(u32)delta;
- }
- *(volatile u16 *)0x04000104 = timer;
- *(volatile u16 *)0x04000106 = 0xC1;
- func_020051c8(0x10);
+void func_02005154(u32, void (*)(void), u32); s32 func_020073c0(s32); void func_020051c8(u32);
+u64 now=GetSystemTick(); s64 delta; u16 timer;
+*(volatile u16 *)0x04000106=0;
+delta=M2C_FIELD(arg0,s64*,0xc)-now;
+func_02005154(1,(void(*)(void))func_020073c0,0);
+timer=0;
+if(delta<0)timer=0xfffe;
+else if(delta<0x10000)timer=(u16)~(u32)delta;
+*(volatile u16 *)0x04000104=timer;
+*(volatile u16 *)0x04000106=0xc1;
+func_020051c8(0x10);
 }
+#pragma opt_if_conversion reset
 void func_02007140(void) {
  void func_02006ef8(s32);
  M2C_UNK func_020051f8(M2C_UNK);

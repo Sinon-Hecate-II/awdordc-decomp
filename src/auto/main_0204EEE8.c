@@ -181,7 +181,10 @@ if(p) { s32 n=*p; if(n>arg2) *p=n-1; }
 return 1;
 }
 
-s32 func_0204fb50(void **a,s32 b) {
+/* Removes operation `opId` from the session: appends the removal fields to the
+   outgoing message, frees the operation's shared buffers, unlinks it from the
+   callback table and decrements the session's operation counter. */
+s32 func_0204fb50(void **connection,s32 opId) {
 void gpiAppendStringField(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_0204fb2c(void *,void *,s32);
 s32 func_02055b84(void **,s32,void **);
@@ -191,25 +194,25 @@ M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 M2C_UNK gpiFree(s32);
 void AssertFailed(void *,void *,void *,s32);
 extern M2C_UNK data_020fde60,data_020fde74,data_020fdda0,data_020fde80,data_020fddc4,data_020fde90,data_020fde9c,data_020fdd84,data_020fdea8;
-void *p=*a,*q; s32 n;
-if(!func_02055b84(a,b,&q)){gpiSetErrorString(a,&data_020fde60);return 2;}
-gpiAppendStringField(a,p+0x1f4,&data_020fde74);
-gpiAppendStringField(a,p+0x1f4,&data_020fdda0);
-gpiAppendIntField(a,p+0x1f4,M2C_FIELD(p,s32 *,0x198));
-gpiAppendStringField(a,p+0x1f4,&data_020fde80);
-gpiAppendIntField(a,p+0x1f4,M2C_FIELD(q,s32 *,0));
-gpiAppendStringField(a,p+0x1f4,&data_020fddc4);
-if(M2C_FIELD(q,void **,8)){
-n=M2C_FIELD(M2C_FIELD(q,void **,8),s32 *,0);
-if(n<0)AssertFailed(&data_020fde90,&data_020fde9c,&data_020fdd84,0x1fd);
-gpiFree(M2C_FIELD(M2C_FIELD(q,void **,8),s32 *,8));
-M2C_FIELD(M2C_FIELD(q,void **,8),s32 *,8)=0;
-gpiFree(M2C_FIELD(M2C_FIELD(q,void **,8),s32 *,12));
-M2C_FIELD(M2C_FIELD(q,void **,8),s32 *,12)=0;
-gpiFree(M2C_FIELD(q,s32 *,8));M2C_FIELD(q,s32 *,8)=0;
-if(func_02055d6c(q))func_02055bf4(a,q);
-if(--M2C_FIELD(p,s32 *,0x430)<0)AssertFailed(&data_020fdea8,&data_020fde9c,&data_020fdd84,0x204);
-func_02055cd0(a,func_0204fb2c,n);
+void *session=*connection,*op; s32 refCount;
+if(!func_02055b84(connection,opId,&op)){gpiSetErrorString(connection,&data_020fde60);return 2;}
+gpiAppendStringField(connection,session+0x1f4,&data_020fde74);
+gpiAppendStringField(connection,session+0x1f4,&data_020fdda0);
+gpiAppendIntField(connection,session+0x1f4,M2C_FIELD(session,s32 *,0x198));
+gpiAppendStringField(connection,session+0x1f4,&data_020fde80);
+gpiAppendIntField(connection,session+0x1f4,M2C_FIELD(op,s32 *,0));
+gpiAppendStringField(connection,session+0x1f4,&data_020fddc4);
+if(M2C_FIELD(op,void **,8)){
+refCount=M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,0);
+if(refCount<0)AssertFailed(&data_020fde90,&data_020fde9c,&data_020fdd84,0x1fd);
+gpiFree(M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,8));
+M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,8)=0;
+gpiFree(M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,12));
+M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,12)=0;
+gpiFree(M2C_FIELD(op,s32 *,8));M2C_FIELD(op,s32 *,8)=0;
+if(func_02055d6c(op))func_02055bf4(connection,op);
+if(--M2C_FIELD(session,s32 *,0x430)<0)AssertFailed(&data_020fdea8,&data_020fde9c,&data_020fdd84,0x204);
+func_02055cd0(connection,func_0204fb2c,refCount);
 }
 return 0;
 }

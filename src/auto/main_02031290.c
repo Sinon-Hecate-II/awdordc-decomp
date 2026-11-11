@@ -211,13 +211,31 @@ s32 func_02031670(s32 arg0) {
 
 #pragma opt_strength_reduction off
 void func_020316c4(void *arg0) {
-void func_020218f4(M2C_UNK *,M2C_UNK *);s32 func_0202f5ac(u8);s32 func_0203161c(void *);
-s32 sp4,sp0;u8 *p=arg0;u8 c0;u32 sum;
-if(p[0xd0d]>=6)return;
-p+=func_0202f5ac(p[0xd0d])<<8;
-c0=p[0xc0];sum=p[0xcb]+(p[0xca]+(p[0xc8]+p[0xc9]));
-if(c0)return;if(!sum)return;
-sp4=func_0203161c(p+0xc8);sp0=func_0203161c(p+0xcc);func_020218f4(&sp4,&sp0);
+    void func_020218f4(M2C_UNK *, M2C_UNK *);
+    s32 func_0202f5ac(u8);
+    s32 func_0203161c(void *);
+    s32 sp4;
+    s32 sp0;
+    u8 *p;
+    u8 c0;
+    u32 sum;
+
+    p = (u8 *) arg0;
+    if (M2C_FIELD(p, u8 *, 0xD0D) >= 6) {
+        return;
+    }
+    p += func_0202f5ac(M2C_FIELD(p, u8 *, 0xD0D)) << 8;
+    c0 = M2C_FIELD(p, u8 *, 0xC0);
+    sum = M2C_FIELD(p, u8 *, 0xC8) + M2C_FIELD(p, u8 *, 0xC9) + M2C_FIELD(p, u8 *, 0xCA) + M2C_FIELD(p, u8 *, 0xCB);
+    if (c0 != 0) {
+        return;
+    }
+    if (sum == 0) {
+        return;
+    }
+    sp4 = func_0203161c(p + 0xC8);
+    sp0 = func_0203161c(p + 0xCC);
+    func_020218f4(&sp4, &sp0);
 }
 #pragma opt_strength_reduction reset
 s32 func_0203174c(M2C_UNK arg0) {
@@ -634,40 +652,36 @@ u64 func_02032024(void *arg0)
   return result;
 }
 #pragma opt_strength_reduction reset
-void func_020320ac(s32 arg0, s32 arg1, s32 arg2, char *arg3) {
-    extern u8 data_020fb2c4[];
-    u32 lo = (u32)arg0;
-    u32 hi = (u32)arg1;
-    s32 count = (arg2 + 4) / 5;
-    s32 i;
-
-    for (i = 0; i < count; i++) {
-        arg3[count - 1 - i] = (char)data_020fb2c4[lo & 0x1F];
-        lo = (lo >> 5) | (hi << 27);
-        hi >>= 5;
-    }
-    arg3[count] = 0;
+void func_020320ac(u64 value, s32 arg2, char *arg3) {
+ extern u8 data_020fb2c4[];
+ char *end;
+ s32 c;
+ s32 i;
+ s8 *table=(s8 *)data_020fb2c4;
+ s32 count=(arg2+4)/5;
+ i=0;
+ if(count>0) {
+ end=arg3+count;
+ end--;
+ do {
+ c=table[value&31];
+ *(end-i)=c;
+ value>>=5;
+ i++;
+ }while(i<count);
+ }
+ arg3[count]=0;
 }
 
 void func_0203211c(void *arg0, u32 arg1, void *arg2) {
-    u64 func_02031d90(void *);
-    s32 func_02031db0(void *);
-    void func_020320ac(s32, s32, s32, char *);
-    M2C_UNK func_0200567c(M2C_UNK, M2C_UNK, M2C_UNK *, ...);
-    extern M2C_UNK data_020fb2e8;
-    char sp29[0x40];
-    char sp14[0x20];
-    u64 v;
-
-    v = func_02031d90(arg0);
-    func_020320ac((s32)v, (s32)(v >> 32), 0x2B, sp29);
-    func_020320ac(func_02031db0(arg0), 0, 0x20, sp14);
-    func_0200567c((M2C_UNK)arg2, 0x15, &data_020fb2e8, sp29,
-                   (s32)((arg1 >> 24) & 0xFF),
-                   (s32)((arg1 >> 16) & 0xFF),
-                   (s32)((arg1 >> 8) & 0xFF),
-                   (s32)(arg1 & 0xFF),
-                   sp14);
+u64 func_02031d90(void *); s32 func_02031db0(void *);
+void func_020320ac(u64,s32,char *);
+M2C_UNK func_0200567c(M2C_UNK,M2C_UNK,M2C_UNK *,...);
+extern M2C_UNK data_020fb2e8;
+char sp29[21]; char sp14[21];
+func_020320ac(func_02031d90(arg0),43,sp29);
+func_020320ac((u64)(u32)func_02031db0(arg0),32,sp14);
+func_0200567c((M2C_UNK)arg2,21,&data_020fb2e8,sp29,(arg1>>24)&255,(arg1>>16)&255,(arg1>>8)&255,arg1&255,sp14);
 }
 
 void func_020321ac(void *arg0, s32 arg1) {

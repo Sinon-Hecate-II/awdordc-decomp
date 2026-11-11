@@ -132,18 +132,18 @@ double func_0206f818(double x, s32 n) {
  return ScaleDoubleByExp(x,exponent);
 }
 
-#pragma scheduling off
+#pragma opt_if_conversion off
 s32 func_0206f844(u8 *a,u8 *b) {
  u32 c,d;
- volatile u8 *t = data_020eac40;
  do {
- c=*a++; c=(u8)((s32)c<0?c:((s32)c<128?t[c]:c));
- d=*b++; d=(u8)((s32)d<0?d:((s32)d<128?t[d]:d));
+ c=*a++; c=(u8)((s32)c<0?c:((s32)c<128?data_020eac40[c]:c));
+ d=*b++; d=(u8)((s32)d<0?d:((s32)d<128?data_020eac40[d]:d));
  if(c<d)return -1;
  if(c>d)return 1;
  }while(c);
  return 0;
 }
+#pragma opt_if_conversion reset
 void func_0206f8ac(void) {
     M2C_UNK func_0206f844();
     func_0206f844();

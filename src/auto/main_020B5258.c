@@ -186,38 +186,40 @@ void func_020b578c(void *arg0) {
 }
 
 #pragma scheduling off
-void func_020b57ac(void *arg0) {
-    s32 x = M2C_FIELD(arg0, s32 *, 0x38);
-    s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
-    void *base;
-    u16 row;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + y * 2);
-    *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + y * 2);
-    *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + y * 2);
-    *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
-    *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
-    *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
-    *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
-    *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
-    *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
-    base = (void *)*gCurrentMap;
-    row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
-    *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
+/* Adds the tile-graphic offset 0x60 to the 3x3 block of map cells that ends at the
+   effect object's tile (x, y) - columns x-1..x+1, rows y-2..y - then refreshes the map. */
+void func_020b57ac(void *obj) {
+    s32 x = M2C_FIELD(obj, s32 *, 0x38);
+    s32 y = M2C_FIELD(obj, s32 *, 0x3C);
+    void *map;
+    u16 rowOffset;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + y * 2);
+    *(u16 *)((char *)map + 0xA10 + ((x - 1) + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + y * 2);
+    *(u16 *)((char *)map + 0xA10 + (x + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + y * 2);
+    *(u16 *)((char *)map + 0xA10 + ((x + 1) + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 1) * 2);
+    *(u16 *)((char *)map + 0xA10 + ((x - 1) + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 1) * 2);
+    *(u16 *)((char *)map + 0xA10 + (x + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 1) * 2);
+    *(u16 *)((char *)map + 0xA10 + ((x + 1) + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 2) * 2);
+    *(u16 *)((char *)map + 0xA10 + ((x - 1) + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 2) * 2);
+    *(u16 *)((char *)map + 0xA10 + (x + rowOffset) * 2) += 0x60;
+    map = (void *)*gCurrentMap;
+    rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 2) * 2);
+    *(u16 *)((char *)map + 0xA10 + ((x + 1) + rowOffset) * 2) += 0x60;
     func_020cfd28();
 }
 #pragma scheduling reset

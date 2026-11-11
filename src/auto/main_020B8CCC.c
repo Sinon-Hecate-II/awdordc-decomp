@@ -269,10 +269,10 @@ M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 void func_020b9b48(s32 a,s32 b,s32 c) {
 M2C_UNK func_020b22a4(s32,s32,M2C_UNK *,s32);
 extern u8 data_0215d858[];extern M2C_UNK data_02129150;
-s32 i; s32 x,y;
+s32 i; s32 y; register s32 x;
 Unk020BChoice *p;
-x=(a+1)<<3;
-y=(b+1)<<3;
+x=a+1; x<<=3;
+b++; y=b<<3;
 p=(Unk020BChoice *)data_0215d858;
 i=0;
 do {

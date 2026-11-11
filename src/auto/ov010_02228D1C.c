@@ -534,37 +534,25 @@ s32 func_ov010_02229850(void) {
 }
 
 extern struct QueueNode *data_ov010_0222ef88;
-unsigned int func_ov010_022298a0(unsigned int index)
-{
-    extern struct QueueNode *data_ov010_0222ef88;
-    struct QueueNode **entry;
-    unsigned short oldIme;
-    unsigned short tempIme;
-    unsigned int result;
-
-    oldIme = *(volatile unsigned short *)0x04000208;
-    *(volatile unsigned short *)0x04000208 = 0;
-    entry = (struct QueueNode **)((unsigned char *)&data_ov010_0222ef88 + index * 12);
-    if (*entry == 0) {
-        (void)*(volatile unsigned short *)0x04000208;
-        *(volatile unsigned short *)0x04000208 = oldIme;
-        return 0;
-    }
-    tempIme = *(volatile unsigned short *)0x04000208;
-    *(volatile unsigned short *)0x04000208 = 0;
-    result = 0;
-    if (*entry == 0) {
-        tempIme = *(volatile unsigned short *)0x04000208;
-        *(volatile unsigned short *)0x04000208 = tempIme;
-    } else {
-        result = *(volatile unsigned short *)0x04000208;
-        result = (*entry)->size;
-        *(volatile unsigned short *)0x04000208 = tempIme;
-    }
-    result = result + 12;
-    (void)*(volatile unsigned short *)0x04000208;
-    *(volatile unsigned short *)0x04000208 = oldIme;
-    return result;
+unsigned int func_ov010_022298a0(unsigned int index) {
+extern struct QueueNode *data_ov010_0222ef88;
+struct QueueNode **entry;
+unsigned int oldIme,tempIme;
+void *oldPtr=&oldIme; void *tempPtr=&tempIme;
+unsigned int result;
+oldIme=*(volatile unsigned short *)0x04000208;
+*(volatile unsigned short *)0x04000208=0;
+entry=(struct QueueNode **)((unsigned char *)&data_ov010_0222ef88+index*12);
+if(*entry==0){(void)*(volatile unsigned short *)0x04000208;*(volatile unsigned short *)0x04000208=oldIme;return 0;}
+tempIme=*(volatile unsigned short *)0x04000208;
+*(volatile unsigned short *)0x04000208=0;
+result=0;
+if(*entry==0){(void)*(volatile unsigned short *)0x04000208;*(volatile unsigned short *)0x04000208=tempIme;}
+else{result=*(volatile unsigned short *)0x04000208;result=(*entry)->size;*(volatile unsigned short *)0x04000208=tempIme;}
+result+=12;
+(void)*(volatile unsigned short *)0x04000208;
+*(volatile unsigned short *)0x04000208=oldIme;
+(void)oldPtr;(void)tempPtr;return result;
 }
 
 s32 func_ov010_02229920(s32 a, void *b) {

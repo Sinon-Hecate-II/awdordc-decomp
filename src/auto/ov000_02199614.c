@@ -202,12 +202,12 @@ return;
 #pragma opt_lifetimes off
 void func_ov000_02199ce0(void) {
 void func_02085348(void *,s32);
-extern u8 gAiCommand[];
+extern u8 data_ov000_021df7d0[];
 extern u8 data_02156e50[];
 s32 i;
 u8 *s;
 u8 *d;
-s=gAiCommand;
+s=data_ov000_021df7d0;
 d=data_02156e50;
 d[0]=s[0]; d[2]=s[2]; d[3]=s[3]; d[4]=s[4]; d[5]=s[5]; d[1]=s[1];
 *(s32 *)(d+8)=*(s32 *)(s+8);

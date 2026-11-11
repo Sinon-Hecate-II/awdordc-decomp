@@ -371,7 +371,6 @@ s32 func_ov001_02184170(void **arg0) {
     extern u8 data_ov001_0218fb64[];
     extern s32 data_ov001_02193e00;
     s8 *r8;
-    s32 result;
     s32 r6;
     s32 r7;
 
@@ -379,14 +378,12 @@ s32 func_ov001_02184170(void **arg0) {
     *arg0 = (void *)r8;
     r6 = 0;
     r7 = 0;
-    do {
-        result=func_0206527c((M2C_UNK)(r8 + 0x20), (M2C_UNK)data_ov001_0218fb64, 6);
-        r7++;
-        if (result != 0) {
+    for (r7 = 0; r7 < 20; r7++) {
+        if (func_0206527c((M2C_UNK)(r8 + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
             r6 = r6 + 1;
         }
         r8 = r8 + 0x2a;
-    } while(r7<20);
+    }
     return r6;
 }
 

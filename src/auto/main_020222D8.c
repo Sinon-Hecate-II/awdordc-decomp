@@ -55,21 +55,18 @@ while((c=*p)!=0x2e && c!=0)p++;
 return p-start;
 }
 
-s32 func_02022a78(s8 *p, s8 *q) {
-    s32 a, b, c, d;
-    do {
-        while ((d = *p++) == (c = *q++)) {
-            if (d == 0) return 0;
-        }
-        if (c != 0x2a) return 1;
-        p--;
-        a = func_02022a54(p);
-        b = func_02022a54(q);
-        if (b > a) return 1;
-        p += a - b;
-    } while (1);
+#pragma optimization_level 4
+s32 func_02022a78(s8 *p,s8 *q) {
+s32 a,b,c,d;
+again:
+while((d=*p++)==(c=*q++)) { if(d==0)return 0; }
+if(c!=0x2a)return 1;
+p--;a=func_02022a54(p);b=func_02022a54(q);
+if(b>a)return 1;
+p+=a-b;
+goto again;
 }
-
+#pragma optimization_level reset
 void func_02022ae4(void *a, u8 *b) {
 s32 func_020222d8(void *,u8 **,s32,s32,s32);
 void func_0200ef4c(s32 *);

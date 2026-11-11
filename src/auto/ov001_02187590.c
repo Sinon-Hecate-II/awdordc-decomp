@@ -17,7 +17,13 @@ u16 Ov001_GetLinkStatus(void) {
 }
 
 #pragma common_subs off
-u16 Ov001_GetLinkInfo(s32 arg0){extern s16 *data_ov001_02193e1c;extern u16 *data_ov001_02190c68[];s16 *q=data_ov001_02193e1c;data_ov001_02190c68[0]=(u16*)(q+1);data_ov001_02190c68[1]=(u16*)(q+2);data_ov001_02190c68[2]=(u16*)(q+3);data_ov001_02190c68[3]=(u16*)(q+4);data_ov001_02190c68[4]=(u16*)(q+5);data_ov001_02190c68[5]=(u16*)(q+6);return *data_ov001_02190c68[arg0];}
+u16 Ov001_GetLinkInfo(s32 arg0) {
+extern s16 *data_ov001_02193e1c;extern u16 *data_ov001_02190c68[];
+s16 *q=data_ov001_02193e1c;u16 **table=data_ov001_02190c68;
+table[0]=(u16*)(q+1);table[1]=(u16*)(q+2);table[2]=(u16*)(q+3);
+table[3]=(u16*)(q+4);table[4]=(u16*)(q+5);table[5]=(u16*)(q+6);
+return *(u16 *)M2C_FIELD(data_ov001_02190c68,s32 *,arg0*4);
+}
 #pragma scheduling off
 s32 func_ov001_02187934(s32 arg0) {
     void *OS_DisableInterrupts(s32);

@@ -99,17 +99,15 @@ M2C_FIELD(a,s32 *,0x800)+=n;
 void RefreshLocalIps(void) {
 void *func_02049584(void);
 void *p=func_02049584();
-volatile u8 *s;
-u8 x,y;
-s32 i;
-if(!p)return;
-gLocalIpCount=0;
-for(i=0;i<5;) {
+s32 i;volatile u8 *s;u32 x,y;
+
+if(!p)return;gLocalIpCount=0;
+i=0;do{
 s=M2C_FIELD(p,u8 ***,12)[i];if(!s)return;
 x=s[0];y=s[1];gLocalIps[i][0]=x;gLocalIps[i][1]=y;
 x=s[2];y=s[3];gLocalIps[i][2]=x;gLocalIps[i][3]=y;
 gLocalIpCount=++i;
-}
+}while(i<5);
 }
 #pragma opt_common_subs reset
 s32 ResolveHostAddress(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&StringCompare(a,data_020ffa44)){p=ghiResolveHostname(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}

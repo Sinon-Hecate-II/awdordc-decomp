@@ -288,6 +288,10 @@ u16 Ov001_ReadInputCode(void) {
     return M2C_FIELD((u8 *)ptr + 0x100, u16 *, 0x44);
 }
 
+/* Loads the DWC utility data from "rom:/dwc/utility.bin" into the DWC utility
+   state: opens the file, reads its two header words, opens the "dwc" archive
+   through the registered callbacks, allocates and reads the data block, then
+   sets the file directory to "dwc:/". */
 void func_ov001_02189ad0(void) {
     s32 func_ov001_0218b6f8(s32, s32);
     void InitFileRequest(void *);
@@ -312,50 +316,50 @@ void func_ov001_02189ad0(void) {
     s32 func_ov001_02189d70(void *, M2C_UNK, s32,s32);
     s32 func_ov001_02189dc0(void);
 
-    u8 file[0x48];
-    u8 name[0x80];
+    u8 request[0x48];
+    u8 dirName[0x80];
     u32 hi[2],lo[2];
-    s32 r4;
-    void *buf;
-    s32 size;
+    s32 fileSize;
+    void *data;
+    s32 dataSize;
 
     data_ov001_02193e2c = (void *)func_ov001_0218b6f8(0xE8, 4);
-    InitFileRequest(file);
-    if (!func_0200ba54(file, data_ov001_02191794)) {
+    InitFileRequest(request);
+    if (!func_0200ba54(request, data_ov001_02191794)) {
         func_02007958();
     }
     M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4) = (u16)func_0200558c();
-    r4 = *(s32 *)(file + 0x24);
-    FileRead(file, hi, 8);
-    FileRead(file, lo, 8);
-    func_0200ba9c(file);
+    fileSize = *(s32 *)(request + 0x24);
+    FileRead(request, hi, 8);
+    FileRead(request, lo, 8);
+    func_0200ba9c(request);
     func_0200b118((u8 *)data_ov001_02193e2c + 0x88);
     if (!func_0200b184((u8 *)data_ov001_02193e2c + 0x88, data_ov001_0218fd04, 3)) {
         func_02007958();
     }
     func_0200b6a8((u8 *)data_ov001_02193e2c + 0x88, (s32)func_ov001_02189d0c, 0x602);
-    if (!func_0200b2bc((u8 *)data_ov001_02193e2c + 0x88, r4, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
+    if (!func_0200b2bc((u8 *)data_ov001_02193e2c + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
         func_02007958();
     }
-    size = func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
-    buf = (void *)func_ov001_0218b6f8(size, 4);
-    *(void **)data_ov001_02193e2c = buf;
-    func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, size);
+    dataSize = func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
+    data = (void *)func_ov001_0218b6f8(dataSize, 4);
+    *(void **)data_ov001_02193e2c = data;
+    func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, dataSize);
     M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84) = (s32)func_ov001_0218a698(0x20, (s32)((u8 *)data_ov001_02193e2c + 4), 4);
-    func_0200563c(name, data_ov001_021917ac, data_ov001_0218fd04);
-    SetFileDirectory(name);
+    func_0200563c(dirName, data_ov001_021917ac, data_ov001_0218fd04);
+    SetFileDirectory(dirName);
 }
 
 void func_ov001_02189c80(void) {
 extern void *data_ov001_021917b4[2];
 extern void *data_ov001_02193e2c;
-void SetFileDirectory(void *);
+void func_0200bc5c(void *);
 void func_0200b510(void *);
 void func_0200b32c(void *);
 void func_0200b238(void *);
 void func_020055f4(u16);
 void func_ov001_0218b71c(void *);
-SetFileDirectory(data_ov001_021917b4);
+func_0200bc5c(data_ov001_021917b4);
 func_0200b510((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
 func_0200b238((u8 *)data_ov001_02193e2c+0x88);

@@ -525,9 +525,9 @@ func_020943a8(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
 func_02095fd4();func_02094798();func_020d4704();
 offset=index*24;
 base=(u8 *)&data_02157fe8;
-*(s32 *)(base+offset)=arg0;
+*(void **)(base+offset)=(void *)arg0;
 *(s32 *)((u8 *)&data_02157ff0+offset)=0;
-*(s32 *)((u8 *)&data_02157fec+offset)=arg0;
+*(void **)((u8 *)&data_02157fec+offset)=(void *)arg0;
 *(u16 *)((u8 *)&data_02157ff4+offset)=0;
 return base+offset;
 }

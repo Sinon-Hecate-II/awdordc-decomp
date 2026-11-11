@@ -74,38 +74,43 @@ void func_020abbcc(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_
 
 void func_020abbe4(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_UNK data_02126b94;func_01ffa860(&data_02126b94,M2C_FIELD(arg0,u16 *,110));}
 
+/* Advance one frame of a two-axis easing animation: when its target coordinate
+   (+0x10/+0x11) changes, latch it and restart; ease +0xA from +8 towards 0xA0 or
+   back to 0 depending on the direction flag (+0x12), and after 8 easing frames
+   plus a 4-frame hold snap the saved coordinate (+0xC/+0xD) to the target,
+   toggle direction and set +0x13 unless already at the end value (0x63). */
 void func_020abbfc(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    s32 var_r0;
-    s32 var_r2;
-    u16 temp_r0_2;
-    u16 temp_r0_3;
-    u8 temp_r0;
-    u8 temp_r3;
+    s32 atStart;
+    s32 matching;
+    u16 frame;
+    u16 holdTimer;
+    u8 forward;
+    u8 targetX;
 
-    var_r2 = 0;
+    matching = 0;
     M2C_FIELD(arg0, s8 *, 0x13) = 0;
-    temp_r3 = M2C_FIELD(arg0, u8 *, 0x10);
-    if ((M2C_FIELD(arg0, u8 *, 0xE) == temp_r3) && (M2C_FIELD(arg0, u8 *, 0xF) == M2C_FIELD(arg0, u8 *, 0x11))) {
-        var_r2 = 1;
+    targetX = M2C_FIELD(arg0, u8 *, 0x10);
+    if ((M2C_FIELD(arg0, u8 *, 0xE) == targetX) && (M2C_FIELD(arg0, u8 *, 0xF) == M2C_FIELD(arg0, u8 *, 0x11))) {
+        matching = 1;
     }
-    if (!(var_r2 & 0xFF)) {
-        M2C_FIELD(arg0, u8 *, 0xE) = temp_r3;
+    if (!(matching & 0xFF)) {
+        M2C_FIELD(arg0, u8 *, 0xE) = targetX;
         M2C_FIELD(arg0, u8 *, 0xF) = (u8) M2C_FIELD(arg0, u8 *, 0x11);
         if (M2C_FIELD(arg0, u16 *, 6) == 0) {
             if ((M2C_FIELD(arg0, u8 *, 0xE) == M2C_FIELD(arg0, u8 *, 0xC)) && (M2C_FIELD(arg0, u8 *, 0xF) == M2C_FIELD(arg0, u8 *, 0xD))) {
-                var_r0 = 1;
+                atStart = 1;
             } else {
-                var_r0 = 0;
+                atStart = 0;
             }
-            temp_r0 = M2C_FIELD(arg0, u8 *, 0x12);
-            if (var_r0 & 0xFF) {
-                if (temp_r0 == 0) {
+            forward = M2C_FIELD(arg0, u8 *, 0x12);
+            if (atStart & 0xFF) {
+                if (forward == 0) {
                     M2C_FIELD(arg0, s16 *, 8) = (s16) M2C_FIELD(arg0, s16 *, 0xA);
                     M2C_FIELD(arg0, u16 *, 4) = 0U;
                     M2C_FIELD(arg0, u8 *, 0x12) = 1U;
                 }
-            } else if (temp_r0 == 1) {
+            } else if (forward == 1) {
                 M2C_FIELD(arg0, s16 *, 8) = (s16) M2C_FIELD(arg0, s16 *, 0xA);
                 M2C_FIELD(arg0, u16 *, 4) = 0U;
                 M2C_FIELD(arg0, u8 *, 0x12) = 0U;
@@ -121,14 +126,14 @@ void func_020abbfc(void *arg0) {
     } else {
         M2C_FIELD(arg0, s16 *, 0xA) = EaseInterpolate(4, M2C_FIELD(arg0, s16 *, 8), 0, M2C_FIELD(arg0, u16 *, 4), 8);
     }
-    temp_r0_2 = M2C_FIELD(arg0, u16 *, 4);
-    if (temp_r0_2 == 8) {
+    frame = M2C_FIELD(arg0, u16 *, 4);
+    if (frame == 8) {
         if (M2C_FIELD(arg0, u8 *, 0x12) != 0) {
             return;
         }
-        temp_r0_3 = M2C_FIELD(arg0, u16 *, 6);
-        if ((s32) temp_r0_3 < 4) {
-            M2C_FIELD(arg0, u16 *, 6) = (u16) (temp_r0_3 + 1);
+        holdTimer = M2C_FIELD(arg0, u16 *, 6);
+        if ((s32) holdTimer < 4) {
+            M2C_FIELD(arg0, u16 *, 6) = (u16) (holdTimer + 1);
             return;
         }
         M2C_FIELD(arg0, u8 *, 0xC) = (u8) M2C_FIELD(arg0, u8 *, 0xE);
@@ -143,7 +148,7 @@ void func_020abbfc(void *arg0) {
         M2C_FIELD(arg0, u8 *, 0x12) = 1U;
         return;
     }
-    M2C_FIELD(arg0, u16 *, 4) = (u16) (temp_r0_2 + 1);
+    M2C_FIELD(arg0, u16 *, 4) = (u16) (frame + 1);
 }
 
 void *func_020abdac(void *arg0) {

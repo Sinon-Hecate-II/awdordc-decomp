@@ -353,23 +353,19 @@ s32 func_02010590(void) {
     return func_0200fdec();
 }
 
-s32 func_0201059c(void *arg0) {
- extern void *data_0212fde0;
- void MI_CpuCopy8(void *, void *, u32);
- void *p = &data_0212fde0;
- u32 base = M2C_FIELD(p, volatile u32 *, 0x1c) & ~0x1ff;
- if (base == M2C_FIELD(arg0, u32 *, 8)) {
-  u32 offset = M2C_FIELD(p, volatile u32 *, 0x1c) - base;
-  u32 size = 0x200 - offset;
-  u32 a,b,c;
-  if (size > M2C_FIELD(p, u32 *, 0x24)) size = M2C_FIELD(p, u32 *, 0x24);
-  MI_CpuCopy8((u8 *)arg0 + 0x20 + offset, M2C_FIELD(p, void **, 0x20), size);
-  a=M2C_FIELD(p,volatile u32 *,0x1c)+size; b=M2C_FIELD(p,volatile u32 *,0x20)+size; c=M2C_FIELD(p,volatile u32 *,0x24)-size;
-  M2C_FIELD(p,volatile u32 *,0x1c)=a; M2C_FIELD(p,volatile u32 *,0x20)=b; M2C_FIELD(p,volatile u32 *,0x24)=c;
- }
- return M2C_FIELD(p, u32 *, 0x24) != 0;
+#pragma optimization_level 3
+s32 func_0201059c(void *arg0){
+extern void *data_0212fde0; void MI_CpuCopy8(void *,void *,u32);
+void *p=&data_0212fde0; u32 base=M2C_FIELD(p,volatile u32*,0x1c)&~0x1ff;
+if(base==M2C_FIELD(arg0,u32*,8)){
+u32 offset=M2C_FIELD(p,volatile u32*,0x1c)-base;u32 size=0x200-offset;s32 a,b,c;
+if(size>M2C_FIELD(p,u32*,0x24))size=M2C_FIELD(p,u32*,0x24);
+MI_CpuCopy8((u8*)arg0+0x20+offset,M2C_FIELD(p,void**,0x20),size);
+a=M2C_FIELD(p,volatile s32*,0x1c)+(s32)size;b=M2C_FIELD(p,volatile s32*,0x20)+(s32)size;c=M2C_FIELD(p,volatile s32*,0x24)-(s32)size;
+M2C_FIELD(p,u32*,0x1c)=a;M2C_FIELD(p,u32*,0x20)=b;M2C_FIELD(p,u32*,0x24)=c;
+}return M2C_FIELD(p,volatile u32*,0x24)!=0;
 }
-
+#pragma optimization_level 4
 void func_02010628(u32 arg0,u32 arg1) {
  volatile u8 *p=(volatile u8 *)0x040001A1;
  while (*(volatile u32 *)0x040001A4 & 0x80000000) {}
@@ -378,17 +374,16 @@ void func_02010628(u32 arg0,u32 arg1) {
  p[11]=arg1>>24; p[12]=arg1>>16; p[13]=arg1>>8; p[14]=arg1;
 }
 
+#pragma opt_propagation off
 void func_02010688(void) {
- extern void *data_0212fde0;
- extern u32 data_02130420[];
+ extern void *data_0212fde0; extern u32 data_02130420[];
  void func_02008538(u32,void *,u32,u32);
- u32 *p=(u32 *)&data_0212fde0;
- u32 value = data_02130420[1];
+ u32 *p=(u32 *)&data_0212fde0; u32 *q=data_02130420;
  func_02008538(p[10],(void *)0x04100010,p[8],512);
  func_02010628((p[7]>>8)|0xB7000000,p[7]<<24);
- *(volatile u32 *)0x040001A4 = value;
+ *(volatile u32 *)0x040001A4 = q[1];
 }
-
+#pragma opt_propagation on
 void func_020106dc(void) {
     s32 func_02007ca4(s32);
     void func_020051f8(s32);

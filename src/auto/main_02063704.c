@@ -289,13 +289,13 @@ void func_02063f90(void) {
 #pragma opt_strength_reduction off
 s32 func_02063fa8(void){
 s32 func_020649a8(s32);extern u8 data_021001cc[];
-u8 *p=data_021001cc;u8 *base=p;s32 result=0;s32 i=1;s32 zero=result;
-do{ s32 v;u32 a;v=M2C_FIELD(p,s32*,4);a=(u32)(v<<22)>>29;
-if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32(*)(void*,u32,u32))func_020649a8)(p,b,a))result=-1;}
-if(i>=3)p=(u8*)0;else{ s32 off=i*0x4c;i++;p=(u8*)&data_021001cc+off;}
-}while(p != (u8*)0);
-return result;
-}
+u8 *p; s32 result; s32 i; u8 *base; s32 zero; s32 off;
+p=data_021001cc;result=0;i=1;zero=result;base=data_021001cc;
+do{u32 a; u32 v=M2C_FIELD(p,u32*,4);a=(u32)(v<<22)>>29;
+if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))func_020649a8)(p,b,a))result=-1;}
+if(i<3){off=i*76;i++;p=base+off;}else p=0;
+}while(p);
+return result;}
 #pragma opt_strength_reduction reset
 
 #pragma opt_strength_reduction off
@@ -373,7 +373,7 @@ s32 func_0206411c(void *arg0, M2C_UNK *arg1, M2C_UNK arg2) {
     return 0;
 }
 
-#pragma opt_propagation off
+#pragma scheduling off
 s32 func_020641a8(void *arg0,M2C_UNK *arg1){
 void func_020640e4(M2C_UNK,M2C_UNK*);void func_020640ec(void*);
 s32 n=M2C_FIELD(arg0,s32*,0x24)-M2C_FIELD(arg0,s32*,0x1c);s32 result;
@@ -383,11 +383,11 @@ if((((u32)M2C_FIELD(arg0,s32*,4)<<19)>>31)==0)func_020640e4(M2C_FIELD(arg0,M2C_U
 result=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK,M2C_UNK,M2C_UNK*,M2C_UNK),0x40)(M2C_FIELD(arg0,s32*,0),M2C_FIELD(arg0,s32*,0x1c),&M2C_FIELD(arg0,s32*,0x28),M2C_FIELD(arg0,s32*,0x48));
 if(arg1)*arg1=M2C_FIELD(arg0,s32*,0x28);
 if(result)return result;
-M2C_FIELD(arg0,s32*,0x18)+=M2C_FIELD(arg0,s32*,0x28);
+M2C_FIELD(arg0,s32*,0x18)+=*(volatile s32 *)((u8 *)arg0+0x28);
 func_020640ec(arg0);
 }return 0;
 }
-#pragma opt_propagation reset
+#pragma scheduling reset
 s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_02006680(void *);
     M2C_UNK func_02006564();

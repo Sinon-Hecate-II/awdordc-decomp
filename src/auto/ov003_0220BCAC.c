@@ -1,5 +1,6 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
+
 #pragma push
 #pragma opt_propagation off
 static inline void SetSliderPosition(void *p,s16 value) {
@@ -145,21 +146,16 @@ void func_ov003_0220c0e8(void *arg0) {
 
 #pragma opt_propagation off
 void func_ov003_0220c10c(void *arg0) {
- void func_ov003_0220c0e8(void *);
- void *q = **(void ***)((u8 *)arg0 + 0x5c);
- s32 v;
- u8 idx, b;
- volatile u8 k;
- if(q) v=*(u16 *)((u8 *)q+8); else v=-1;
- k=*(u8 *)(*(u8 **)((u8 *)arg0+0x3c)+15);
- idx=v-11;
- b=0;
- if ((u8)(k==8)) { if(idx==0) b=1; }
- if(b==0) {
-
- if ((u8)((u8)(k==8) && idx==1)) func_ov003_0220c0e8(arg0);
-}
- end:;
+void func_ov003_0220c0e8(void *);
+void *q=**(void ***)((u8 *)arg0+0x5c);
+s32 v;
+u8 idx,k,b;
+if(q)v=*(u16 *)((u8 *)q+8);else v=-1;
+k=*(u8 *)(*(u8 **)((u8 *)arg0+0x3c)+15);
+idx=v-11;
+b=0;
+if((u8)(k==8))b|=(idx==0);
+if(b || (u8)((u8)(k==8) && idx==1))func_ov003_0220c0e8(arg0);
 }
 #pragma opt_propagation reset
 

@@ -1,5 +1,9 @@
 /* 17 functions from 0x020B7138 to 0x020B8078 (main), found by ds-decomp. */
 #include "common.h"
+void *GetLocalizedFileName(void *);
+void func_0208c5fc(void *,s32,s32);
+void func_0208bddc(void *,void *,s32,s32,s32);
+M2C_UNK PlaySoundEffect(s32);
 static inline void LoadPalette7464(u32 value) { extern void *gCur3DSpriteEngine; void func_01ff85b8(s32,u16,s32); func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),(u16)value,0x6124); }
 typedef struct { u8 pad[0x48]; u32 mode:10; u32 duration:11; u32 frame:11; } FadeTask;
 typedef struct { u8 pad[0x44]; u32 tile:16; u32 flags:16; } SpriteTile;
@@ -266,11 +270,10 @@ extern "C" void func_020b7b54(void) {
 void func_020b7bbc(void) {
 void *func_0208c528(M2C_UNK); void func_020b78c4(void *); void func_020b7b54(void);
 extern M2C_UNK data_02128ffc,data_02129004;
-u32 p; u32 resource;
+void *p; void *resource;
 p=func_0208c528(7);
 func_0208c5fc(GetLocalizedFileName(&data_02128ffc),0x6B80,11);
-resource=GetLocalizedFileName(&data_02129004);
-func_0208bddc(p,resource,0x6B80,11,0);
+func_0208bddc(p,GetLocalizedFileName(&data_02129004),0x6B80,11,0);
 M2C_FIELD(p,s32 *,0x44)|=0x380000;
 M2C_FIELD(p,void (**)(void *),0x6C)=func_020b78c4;
 M2C_FIELD(p,void (**)(void),0x70)=func_020b7b54;
@@ -360,17 +363,17 @@ extern "C" void func_020b7ef0(void) {
 #pragma cplusplus off
 
 s32 func_020b7f58(void) {
-    M2C_UNK func_0208bddc(s32, s32, s32, M2C_UNK, s32);
+    void func_0208bddc(void *,void *,s32,s32,s32);
     s32 func_0208c54c();
-    M2C_UNK func_0208c5fc(s32, s32, M2C_UNK);
-    s32 GetLocalizedFileName(M2C_UNK *);
+    void func_0208c5fc(void *,s32,s32);
+    void *GetLocalizedFileName(void *);
     extern M2C_UNK data_0212900c;
     extern M2C_UNK data_0212901c;
     s32 temp_r4;
 
     temp_r4 = func_0208c54c();
     func_0208c5fc(GetLocalizedFileName(&data_0212900c), 0x6B80, 0xB);
-    func_0208bddc(temp_r4, GetLocalizedFileName(&data_0212901c), 0x6B80, 0xB, 0);
+    func_0208bddc((void *)temp_r4, GetLocalizedFileName(&data_0212901c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 
@@ -381,7 +384,7 @@ s32 func_020b7fb8(void) {
 
     temp_r4 = func_0208c54c();
     func_0208c5fc(GetLocalizedFileName(&data_0212902c), 0x6B80, 0xB);
-    func_0208bddc(temp_r4, GetLocalizedFileName(&data_0212903c), 0x6B80, 0xB, 0);
+    func_0208bddc((void *)temp_r4, GetLocalizedFileName(&data_0212903c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 
@@ -392,7 +395,7 @@ s32 func_020b8018(void) {
 
     temp_r4 = func_0208c54c();
     func_0208c5fc(GetLocalizedFileName(&data_0212904c), 0x6B80, 0xB);
-    func_0208bddc(temp_r4, GetLocalizedFileName(&data_0212905c), 0x6B80, 0xB, 0);
+    func_0208bddc((void *)temp_r4, GetLocalizedFileName(&data_0212905c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 

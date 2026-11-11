@@ -70,19 +70,19 @@ void func_020c13a8(M2C_UNK arg0) {
 }
 
 M2C_UNK func_020c13c0(M2C_UNK arg0,s32 arg1) {
- extern void **gCurrentMap;
- s32 index=0,y=0,x,row,width,height;
- void *base=*gCurrentMap;
- height = M2C_FIELD(base,volatile u16 *,0x5146);
- width = M2C_FIELD(base,volatile u16 *,0x5144);
+ extern void **data_027e0058;
+ s32 index=0,y=index,x,row;
+ void *base=*data_027e0058;
+ s32 height=M2C_FIELD(base,volatile u16 *,0x5146);
+ s32 width=M2C_FIELD(base,volatile u16 *,0x5144);
  height=(((height+1)&~1)>>1)<<4;
  width=(width+1)&~1;
  if(height<=0) return;
- width>>=1;
  row=0;
+ width>>=1;
  do {
- for(x=0;width>x;x++) { ((u16 *)arg0)[row+x]=arg1+index++; }
- row+=32; y+=16;
+ for(x=0;x<width;x++) { ((u16 *)arg0)[row+x]=arg1+index++; }
+ y+=16; row+=32;
  } while(y<height);
 }
 
