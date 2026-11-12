@@ -372,8 +372,10 @@ if(func_020a8164((s32)unit,(s32)(base+idx*14)))func_020a7f18(unit,1);
 done:;
 }
 
+#pragma push
+#pragma peephole on
 void func_020a8050(void *p,s16 *xy,s32 unused,s8 *dir){void func_020a7f48(void *,s32,s32,s32);s32 x=xy[0],y=xy[1];func_020a7f48(p,x,y,1);for(;;){switch(*dir++){case 0:x--;break;case 1:x++;break;case 3:y--;break;case 2:y++;break;case -1:case 4:case 10:return;}func_020a7f48(p,x,y,1);}}
-
+#pragma pop
 u8 func_020a80fc(s32 arg0, s32 arg1) {
     s32 temp_r4;
     u8 var_r0;

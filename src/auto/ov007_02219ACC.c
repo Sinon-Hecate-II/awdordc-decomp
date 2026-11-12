@@ -210,8 +210,8 @@ void func_ov007_0221a160(void) {
     void OpenNarcArchive(M2C_UNK);
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK, M2C_UNK);
     void LoadFileToSpriteBuffer(M2C_UNK, s32, s32);
-    s32 func_01ff9c34(s32);
-    void func_01ff85b8(M2C_UNK, u16, s32);
+    s32 Get3DSpriteLayerSize(s32);
+    void AddToU16Array(M2C_UNK, u16, s32);
     void DrawMapPreview(M2C_UNK, M2C_UNK);
     void func_020af04c(s32, s32, s32);
     void func_02099450(s32, s32, s32);
@@ -295,8 +295,8 @@ void func_ov007_0221a160(void) {
 
     {
         u16 w = *M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-        s32 sh = func_01ff9c34(w & 7);
-        func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), (u16)sh, 0x2000);
+        s32 sh = Get3DSpriteLayerSize(w & 7);
+        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), (u16)sh, 0x2000);
     }
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);

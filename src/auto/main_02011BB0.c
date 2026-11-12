@@ -389,7 +389,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     return rc;
 }
 
-void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void func_02007e54();PacketParams_02012a64 x;func_02007e54(0,&x,16);x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.a=f;x.b=f;x.d=g;if(j && f){x.c=f;x.flags|=4;} func_020128f4(a,b,c,d,e,&x);}
+void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void func_02007e54();PacketParams_02012a64 x;func_02007e54(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} func_020128f4(a,b,c,d,e,&x);}
 
 void func_02012b08(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f){
 void func_02007e54();s32 func_020128f4(s32,s32,s32,s32,u16,void *);u32 x[4];

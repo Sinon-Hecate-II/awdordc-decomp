@@ -3,7 +3,7 @@
 
 #pragma opt_common_subs off
 void func_01ff9ed0(void){
-s32 func_01ff9c34(u8,s32);void func_02007ef4(void*,s32,s32);void func_01ff9eac(void*,s32,s32,s32);
+s32 Get3DSpriteLayerSize(u8,s32);void func_02007ef4(void*,s32,s32);void func_01ff9eac(void*,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub;extern u16 *g3DSpriteBankMain;
 s32 saved=gCur3DSpriteEngine,j=0,i=0,size;u32 base;void *p;u8 same,flag;
 do{
@@ -14,7 +14,7 @@ for(j=0;j<4;j++){
 p=(void*)gCur3DSpriteEngine;
 if((M2C_FIELD(p,u8*,0x46)&(1<<j)) && !(M2C_FIELD(p,u8*,0x47)&(1<<j))){
 flag=(s32)p==g3DSpriteEngineMain;
-size=func_01ff9c34((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
+size=Get3DSpriteLayerSize((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
 {
 s32 dest;
 if(flag)dest=((u32)(g3DSpriteBankMain[1]<<29)>>29)<<16;else dest=0;

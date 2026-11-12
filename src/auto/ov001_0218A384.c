@@ -434,38 +434,19 @@ void func_ov001_0218af70(s32 arg0) {
     func_ov001_0218af0c((0x30 * arg0) + (data_ov001_02193e40 + 0x610));
 }
 
-void func_ov001_0218af94(void *arg0, s32 x, s32 y, s32 b, s32 arg4, s32 arg5) {
-    M2C_UNK func_ov001_0216a8ac(void *, s32, s32, s32, s32, s32, TextDirection);
-    char spC = 0;
-    char spD = 0;
-    unsigned char temp_ip;
-    temp_ip = M2C_FIELD(M2C_FIELD(*M2C_FIELD(arg0, void ***, 0x1C), void **, 8), u8 *, 7);
-    switch (temp_ip) {
-    default:
-        break;
-    case 0:
-    case 7:
-        spC = 1;
-        break;
-    case 1:
-    case 2:
-        spD = 1;
-        break;
-    case 3:
-    case 4:
-        spC = -1;
-        break;
-    case 5:
-    case 6:
-        spD = -1;
-        break;
-    }
-    {
-        TextDirection dir;
-        dir.x = spC;
-        dir.y = spD;
-        func_ov001_0216a8ac(arg0 + 0x18, x, y, b, arg4, arg5, dir);
-    }
+void func_ov001_0218af94(void *arg0,s32 x,s32 y,s32 b,s32 arg4,s32 arg5) {
+M2C_UNK func_ov001_0216a8ac(void *,s32,s32,s32,s32,s32,TextDirection);
+void **p=M2C_FIELD(arg0,void ***,0x1c);
+TextDirection dir={0,0};
+u8 type=M2C_FIELD(M2C_FIELD(*p,void **,8),u8 *,7);
+switch(type){
+case 0: case 7:dir.x=1;break;
+case 1: case 2:dir.y=1;break;
+case 3: case 4:dir.x=-1;break;
+case 5: case 6:dir.y=-1;break;
+default:break;
+}
+func_ov001_0216a8ac(arg0+0x18,x,y,b,arg4,arg5,dir);
 }
 
 void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {
@@ -478,30 +459,21 @@ void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32
 void func_ov001_0218b080(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, s32 arg6) {
     s32 func_ov001_02169154(void **a, u32 b);
     void *func_ov001_0216919c(void **a, u32 b);
-    void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5);
+    void func_ov001_0218b044(void *, s32, s32, s32, u16, s32);
     extern M2C_UNK data_ov001_02193e40;
-
-    void *entry;
+    void **entry;
     s32 id;
     void *p;
-    s32 a1 = arg1;
-    u16 *q = arg5;
-
-    entry = (void *)((u8 *)data_ov001_02193e40 + arg6 * 8);
-    while (*q != 0) {
-        id = func_ov001_02169154((void **)entry, (u32)*q);
-        if (id == 0xffff) {
-            void *r0 = *(void **)entry;
-            id = (s32)M2C_FIELD(r0, u16 *, 2);
-        }
-        p = func_ov001_0216919c((void **)entry, (u32)id);
-        {
-            s32 sb = (signed char)M2C_FIELD(p, s8 *, 2);
-            func_ov001_0218b044(arg0, a1 + ((arg4 - sb) >> 1), arg2, arg3, *q, arg6);
-        }
-        q++;
-        a1 += arg4;
-    }
+    if (*arg5 == 0) return;
+    do {
+        entry = (void **)((u8 *)data_ov001_02193e40 + arg6 * 8);
+        id = func_ov001_02169154(entry, *arg5);
+        if (id == 0xffff) id = M2C_FIELD(*entry, u16 *, 2);
+        p = func_ov001_0216919c(entry, id);
+        func_ov001_0218b044(arg0, arg1 + ((arg4 - M2C_FIELD(p, s8 *, 2)) >> 1), arg2, arg3, *arg5, arg6);
+        arg5++;
+        arg1 += arg4;
+    } while (*arg5);
 }
 
 void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {

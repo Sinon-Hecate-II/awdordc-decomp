@@ -25,9 +25,9 @@ b=(u32)(tiles+offset);
 M2C_FIELD((void *)b,u16 *,a)=c;
 }
 #pragma opt_lifetimes reset
-s32 func_020ae7cc(s32 arg0) {
-    extern M2C_UNK data_020f4d30;
-    return (0x14 * arg0) + (s32) &data_020f4d30;
+s32 GetWallpaperFileSet(s32 arg0) {
+    extern M2C_UNK gWallpaperFileSets;
+    return (0x14 * arg0) + (s32) &gWallpaperFileSets;
 }
 
 void func_020ae7e0(void) {
@@ -43,15 +43,15 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     void StringFormat(void *, void *, ...);
     void SetFileDirectory(void *);
-    void func_02082134(s32, s32);
+    void SetLayerSize(s32, s32);
     void OpenNarcArchive(void *);
     void LoadNarcFileDecompressed(void *, s32);
-    void func_02081578(void *, void *);
-    s32 func_01ff9c34(u8, s32);
-    void func_01ff85b8(void *, u16, u16);
+    void LoadNarcFileRaw(void *, void *);
+    s32 Get3DSpriteLayerSize(u8, s32);
+    void AddToU16Array(void *, u16, u16);
     void CloseNarcArchive(void);
     extern void *gCur3DSpriteEngine;
-    extern char data_02127eac[], data_02127eb8[], data_02127ec0[], data_02127ec8[], data_02127ed0[];
+    extern char sWallpaperDirectory[], sWallpaperNarcFormat[], sWallpaperCgFormat[], sWallpaperScFormat[], sWallpaperClFormat[];
 
     void *r6 = arg0;
     s32 r5 = arg1;
@@ -64,25 +64,25 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     } else {
         StringFormat(sp100, *(void **)(*(void **)((char *)r6 + 0x38)));
     }
-    func_02082134(r5, *(u8 *)((char *)*(void **)((char *)r6 + 0x38) + 4));
-    SetFileDirectory(data_02127eac);
-    StringFormat(sp0, data_02127eb8, sp100);
+    SetLayerSize(r5, *(u8 *)((char *)*(void **)((char *)r6 + 0x38) + 4));
+    SetFileDirectory(sWallpaperDirectory);
+    StringFormat(sp0, sWallpaperNarcFormat, sp100);
     OpenNarcArchive(sp0);
-    StringFormat(sp0, data_02127ec0, sp100);
+    StringFormat(sp0, sWallpaperCgFormat, sp100);
     LoadNarcFileDecompressed(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0xc));
-    StringFormat(sp0, data_02127ec8, sp100);
+    StringFormat(sp0, sWallpaperScFormat, sp100);
     LoadNarcFileDecompressed(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20));
-    StringFormat(sp0, data_02127ed0, sp100);
-    func_02081578(sp0, (void *)((char *)*(void **)((char *)gCur3DSpriteEngine + 0x30) + (r4 << 5)));
+    StringFormat(sp0, sWallpaperClFormat, sp100);
+    LoadNarcFileRaw(sp0, (void *)((char *)*(void **)((char *)gCur3DSpriteEngine + 0x30) + (r4 << 5)));
     {
         void *e0 = *(void **)gCur3DSpriteEngine;
         u8 low = (u8)(((u32)(*(u16 *)e0 << 29)) >> 29);
-        s32 vv = func_01ff9c34(low, r5);
+        s32 vv = Get3DSpriteLayerSize(low, r5);
         s32 sz = SpriteTileSize(r4);
         u16 vv16 = vv;
         u16 sz16 = (u16)(sz & 0xffff);
         void *ptr = *(void **)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20);
-        func_01ff85b8(ptr, vv16, sz16);
+        AddToU16Array(ptr, vv16, sz16);
     }
     CloseNarcArchive();
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x10;
@@ -93,7 +93,7 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     extern M2C_UNK data_02127e4c, data_02127e40;
     void *func_01ffa3dc(M2C_UNK *, s32);
-    M2C_UNK func_020ae7cc(s32);
+    M2C_UNK GetWallpaperFileSet(s32);
     /* func_020aebb8 is defined above. */
     void *saved = gCur3DSpriteEngine;
     void *p;
@@ -104,7 +104,7 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     if (p) {
         M2C_FIELD(p, void **, 0) = &data_02127e40;
         M2C_FIELD(p, u8 *, 0x34) = e;
-        M2C_FIELD(p, s32 *, 0x38) = func_020ae7cc(e);
+        M2C_FIELD(p, s32 *, 0x38) = GetWallpaperFileSet(e);
         M2C_FIELD(p, u8 *, 0x3c) = a;
         M2C_FIELD(p, u8 *, 0x3d) = b;
         {
@@ -127,7 +127,7 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     if (p) {
         M2C_FIELD(p, void **, 0) = &data_02127e40;
         M2C_FIELD(p, u8 *, 0x34) = e;
-        M2C_FIELD(p, s32 *, 0x38) = func_020ae7cc(e);
+        M2C_FIELD(p, s32 *, 0x38) = GetWallpaperFileSet(e);
         M2C_FIELD(p, u8 *, 0x44) = c;
         M2C_FIELD(p, u8 *, 0x45) = d;
         {
@@ -160,7 +160,7 @@ if(p) {
 void *saved2;
 M2C_FIELD(p,void **,0)=&data_02127e40;
 M2C_FIELD(p,u8 *,0x34)=c;
-M2C_FIELD(p,s32 *,0x38)=func_020ae7cc(c);
+M2C_FIELD(p,s32 *,0x38)=GetWallpaperFileSet(c);
 M2C_FIELD(p,u8 *,0x3c)=a;
 M2C_FIELD(p,u8 *,0x3d)=b;
 M2C_FIELD(p,s16 *,0x3e)=M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0x10);
@@ -183,7 +183,7 @@ p=func_01ffa3dc(&data_02127e4c,1);
 if(p) {void *saved2;
 M2C_FIELD(p,void **,0)=&data_02127e40;
 M2C_FIELD(p,u8 *,0x34)=c;
-M2C_FIELD(p,s32 *,0x38)=func_020ae7cc(c);
+M2C_FIELD(p,s32 *,0x38)=GetWallpaperFileSet(c);
 M2C_FIELD(p,u8 *,0x44)=a; M2C_FIELD(p,u8 *,0x45)=b;
 M2C_FIELD(p,s16 *,0x46)=M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0x10)+M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0xa);
 M2C_FIELD(p,s16 *,0x48)=M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0x12)+M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0xa);

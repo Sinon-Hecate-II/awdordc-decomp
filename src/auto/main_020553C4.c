@@ -317,40 +317,25 @@ s32 gpiStartProfileSearch(void **connection, void *search) {
 }
 
 s32 gpiCreateSearchData(M2C_UNK arg0, void **arg1, s32 arg2) {
-    void *gpiMalloc(M2C_UNK);
-    M2C_UNK gpiSetErrorString(M2C_UNK, M2C_UNK *);
-    M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK gGpiSearchMsgOutOfMemory;
-    void *temp_r0;
-    void *temp_r0_2;
-    s32 zero;
-
-    temp_r0 = gpiMalloc(0x144);
-    if (temp_r0 == NULL) {
-        gpiSetErrorString(arg0, &gGpiSearchMsgOutOfMemory);
-        return 1;
-    }
-    zero = 0;
-    func_02065210(temp_r0, zero, 0x144);
-    M2C_FIELD(temp_r0, s32 *, 0) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 4) = -1;
-    M2C_FIELD(temp_r0, s32 *, 8) = zero;
-    M2C_FIELD(temp_r0, s32 *, 0x10) = zero;
-    M2C_FIELD(temp_r0, s32 *, 0x14) = zero;
-    M2C_FIELD(temp_r0, s32 *, 0xC) = zero;
-    M2C_FIELD(temp_r0, s32 *, 0x20) = zero;
-    M2C_FIELD(temp_r0, s32 *, 0x24) = zero;
-    M2C_FIELD(temp_r0, s32 *, 0x1C) = 0x1000;
-    temp_r0_2 = gpiMalloc(0x1001);
-    M2C_FIELD(temp_r0, void **, 0x18) = temp_r0_2;
-    if (temp_r0_2 == NULL) {
-        gpiSetErrorString(arg0, &gGpiSearchMsgOutOfMemory);
-        return 1;
-    }
-    M2C_FIELD(temp_r0, s32 *, 0x13C) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x140) = 0;
-    *arg1 = temp_r0;
-    return 0;
+void *gpiMalloc(M2C_UNK); M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *); M2C_UNK func_02065210(void *,M2C_UNK,M2C_UNK); extern M2C_UNK gGpiSearchMsgOutOfMemory;
+void *p,*buf; s32 n;
+p=gpiMalloc(0x144);
+if(!p){gpiSetErrorString(arg0,&gGpiSearchMsgOutOfMemory);return 1;}
+func_02065210(p,0,0x144);
+M2C_FIELD(p,s32 *,0)=arg2;
+M2C_FIELD(p,s32 *,4)=-1;
+M2C_FIELD(p,s32 *,8)=0;
+M2C_FIELD(p,s32 *,0x10)=0;
+M2C_FIELD(p,s32 *,0x14)=0;
+M2C_FIELD(p,s32 *,0xc)=0;
+M2C_FIELD(p,s32 *,0x20)=0;
+M2C_FIELD(p,volatile s32 *,0x24)=0;
+n=0x1000;
+M2C_FIELD(p,s32 *,0x1c)=n;
+buf=gpiMalloc(n+1);
+M2C_FIELD(p,void **,0x18)=buf;
+if(!buf){gpiSetErrorString(arg0,&gGpiSearchMsgOutOfMemory);return 1;}
+M2C_FIELD(p,s32 *,0x13c)=0; M2C_FIELD(p,s32 *,0x140)=0; *arg1=p; return 0;
 }
 
 s32 gpiStartSearch(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {

@@ -535,6 +535,21 @@ enum {
 #define MATCH_SESSION_DIRTY        0x1D /* u8 player list changed */
 #define MATCH_SESSION_STATE        0x1E /* u8 match-setup step */
 
+/* The multiboot match work area (gMbWork = gMbState.work, 0x7D00 bytes): the
+ * buffer commands are serialized into, the per-player slot states and the 16
+ * records of players grouped together for one battle. */
+#define MB_WORK_SIZE        0x7D00 /* bytes cleared when the match state is torn down */
+#define MB_CMD_BUFFER       0x0000 /* outgoing command record, written by SerializeCommand */
+#define MB_PLAYER_STATE     0x14E4 /* s32 per-player state, 4 bytes each, indexed from 1 */
+#define MB_PLAYER_STATE_GROUPED 5 /* the player has joined a group; the group's battle can start */
+#define MB_PLAYER_GROUP     0x1525 /* s8 per-player group id, 1 byte each, indexed from 1 */
+#define MB_GROUP_STARTED    0x1524 /* u8 nonzero once the players have been grouped */
+#define MB_GROUPS           0x1788 /* 16 group records, MB_GROUP_STRIDE bytes each */
+#define MB_GROUP_STRIDE     0x5D4
+#define MB_GROUP_UNIT_DATA  0x0000 /* 0xE4-byte unit roster sent when the group's battle starts */
+#define MB_GROUP_UNIT_COUNT 0x5C4  /* u16 players/units in the group */
+#define MB_GROUP_ACTIVE     0x5CA  /* u8 nonzero while the group record is in use */
+
 /* A GPI player-info result (the buffer handed to a gpiGetInfo callback). */
 #define GPI_INFO_STATUS    0x00 /* s32 0 = ok, nonzero = error/status */
 #define GPI_INFO_PLAYER_ID 0x04 /* s32 player/profile id */

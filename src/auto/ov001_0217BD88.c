@@ -272,26 +272,24 @@ void func_ov001_0217c6b8(void) {
     Ov001_SetStepCallback(&func_ov001_0217c900);
 }
 
-#pragma opt_common_subs on
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_ov001_0217c744(void) {
-    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern void *data_ov001_02193da4;
-    extern M2C_UNK data_ov001_021907d0, func_02004160, InitMapListScreen;
-    s32 sp0;
-    func_ov001_02171cf8();
-    func_ov001_0218c104(M2C_FIELD(data_ov001_02193da4, s32 *, 4));
-    func_ov001_0218af70(0);
-    Ov001_LoadAsset(&data_ov001_021907d0, &func_02004160);
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x15);
-    func_ov001_02175db4(&sp0, 0);
-    if (sp0 >= 3) sp0 += 1;
-    func_ov001_02175d64(2, 1);
-    func_ov001_02175da0(0, sp0 + 3);
-    Ov001_SetStepCallback(&InitMapListScreen);
-    func_ov001_0218b71c(&data_ov001_02193da4);
+M2C_UNK Ov001_LoadAsset(M2C_UNK *,M2C_UNK *);
+extern void *data_ov001_02193da4;
+extern M2C_UNK data_ov001_021907d0,func_02004160,InitMapListScreen;
+s32 sp0;void *state;
+func_ov001_02171cf8();
+state=data_ov001_02193da4;func_ov001_0218c104(M2C_FIELD(state,s32 *,4));
+func_ov001_0218af70(0);Ov001_LoadAsset(&data_ov001_021907d0,&func_02004160);
+func_ov001_0218b368(1,1);func_ov001_0218b368(0,0x15);
+func_ov001_02175db4(&sp0,0);if(sp0>=3)sp0++;
+func_ov001_02175d64(2,1);func_ov001_02175da0(0,sp0+3);
+Ov001_SetStepCallback(&InitMapListScreen);
+func_ov001_0218b71c((u8*)&data_ov001_02193da4);
 }
 #pragma opt_common_subs reset
+#pragma opt_propagation reset
 M2C_UNK func_ov001_0217c7e8(void){
  extern void *data_ov001_02193da4; extern const u16 data_ov001_0218f848[]; extern M2C_UNK data_ov001_0218f888;
  void func_ov001_0218b1ec(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);

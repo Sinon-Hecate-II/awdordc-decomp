@@ -154,7 +154,7 @@ s32 func_0201579c(s32 arg0, s32 arg1) {
     s32 func_0201871c();
     M2C_UNK func_02018738(void *);
     extern u8 data_02131184;
-    extern void *data_02136c4c;
+    extern void *gMbWork;
     u8 var_r4;
     u8 var_r6;
     s32 temp_r2;
@@ -168,13 +168,13 @@ s32 func_0201579c(s32 arg0, s32 arg1) {
         OS_RestoreInterrupts(temp_r5);
         return 0;
     }
-    if ((s32) (M2C_FIELD(data_02136c4c, u8 *, 0x1524) + 1) > 0x10) {
+    if ((s32) (M2C_FIELD(gMbWork, u8 *, 0x1524) + 1) > 0x10) {
         OS_RestoreInterrupts(temp_r5);
         return 0;
     }
     var_r6 = 0;
 loop_5:
-    temp_r2 = (var_r6 * 0x5D4) + (s32) data_02136c4c;
+    temp_r2 = (var_r6 * 0x5D4) + (s32) gMbWork;
     if (M2C_FIELD(temp_r2, s32 *, 0x1D40) == arg0) {
         OS_RestoreInterrupts(temp_r5);
         return 0;
@@ -191,30 +191,30 @@ block_10:
             return 0;
         }
         temp_r6 = var_r4 * 0x5D4;
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D40) = arg0;
-        temp_r9 = data_02136c4c + 0x1788 + temp_r6;
+        M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D40) = arg0;
+        temp_r9 = gMbWork + 0x1788 + temp_r6;
         func_02015a2c(temp_r9, arg1);
         MI_CpuCopy8(arg0 + 0x1C, temp_r9 + 0xC4, 0x20);
-        if (func_02015c18(data_02136c4c + 0x1D2C + temp_r6, temp_r9) == 0) {
+        if (func_02015c18(gMbWork + 0x1D2C + temp_r6, temp_r9) == 0) {
             OS_RestoreInterrupts(temp_r5);
             return 0;
         }
-        func_02015f94(data_02136c4c + 0x186C + temp_r6, arg0, data_02136c4c + 0x1300);
-        M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D21) = var_r4;
-        func_020161bc(data_02136c4c + 0x186C + temp_r6);
+        func_02015f94(gMbWork + 0x186C + temp_r6, arg0, gMbWork + 0x1300);
+        M2C_FIELD((gMbWork + temp_r6), u8 *, 0x1D21) = var_r4;
+        func_020161bc(gMbWork + 0x186C + temp_r6);
         sequence=data_02131184;
-        M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D1F) = sequence;
-        M2C_FIELD((data_02136c4c + temp_r6), s16 *, 0x1D4E) = 1;
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D44) = arg1;
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D54) = (s32) (arg1 + 0x1E8);
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D58) = (s32) (arg1 + 0x258);
+        M2C_FIELD((gMbWork + temp_r6), u8 *, 0x1D1F) = sequence;
+        M2C_FIELD((gMbWork + temp_r6), s16 *, 0x1D4E) = 1;
+        M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D44) = arg1;
+        M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D54) = (s32) (arg1 + 0x1E8);
+        M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D58) = (s32) (arg1 + 0x258);
         data_02131184 = sequence+1;
-        if ((M2C_FIELD(M2C_FIELD((data_02136c4c + temp_r6), void **, 0x1D54), s32 *, 0x6C) != 0) && (func_0201871c() == 0)) {
-            func_02018738(data_02136c4c + 0x7CE0);
-            func_0201869c(data_02136c4c + 0x74E0, 0x800);
+        if ((M2C_FIELD(M2C_FIELD((gMbWork + temp_r6), void **, 0x1D54), s32 *, 0x6C) != 0) && (func_0201871c() == 0)) {
+            func_02018738(gMbWork + 0x7CE0);
+            func_0201869c(gMbWork + 0x74E0, 0x800);
         }
-        M2C_FIELD((data_02136c4c + temp_r6), s8 *, 0x1D52) = 1;
-        M2C_FIELD(data_02136c4c, u8 *, 0x1524) = (u8) (M2C_FIELD(data_02136c4c, u8 *, 0x1524) + 1);
+        M2C_FIELD((gMbWork + temp_r6), s8 *, 0x1D52) = 1;
+        M2C_FIELD(gMbWork, u8 *, 0x1524) = (u8) (M2C_FIELD(gMbWork, u8 *, 0x1524) + 1);
         OS_RestoreInterrupts(temp_r5);
         return 1;
     }

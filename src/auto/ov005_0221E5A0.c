@@ -53,19 +53,19 @@ saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eac),M2C_FIELD(gCur3DSpriteEngine,s32 *,20));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220ecc),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220f0c),M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+1280);
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+0x500,0x100,0x2000);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+0x500,0x100,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 LoadDecompressedFileTo(data_ov005_02220e8c,M2C_FIELD(gCur3DSpriteEngine,s32 *,28)+0x7300);
 LoadFileToSpriteBuffer(data_ov005_02220e3c,0x380,0x20);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_02082134(2,2); Clear3DSpriteLayer(2);
+SetLayerSize(2,2); Clear3DSpriteLayer(2);
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e6c),M2C_FIELD(gCur3DSpriteEngine,s32 *,20));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e4c),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220edc),M2C_FIELD(gCur3DSpriteEngine,s32 *,36));
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,36),0x100,0x2000);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,36),0x100,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved; CloseNarcArchive();
@@ -117,7 +117,7 @@ if(v==0) { LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e5c),M2
  } else { LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
  }
 CloseNarcArchive();
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(p,u8 *,0x58)=1;
 }

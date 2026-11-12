@@ -111,7 +111,7 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
 }
 
 void func_ov000_02175740(void *arg0) {
-    M2C_UNK func_01ff85b8(s32, s32, s32);
+    M2C_UNK AddToU16Array(s32, s32, s32);
     M2C_UNK func_0207c780(M2C_UNK *, s32);
     M2C_UNK func_02080860(s32, s32, s32, u16, s32);
     M2C_UNK func_020808dc(s32, s32, s32, s32);
@@ -156,7 +156,7 @@ void func_ov000_02175740(void *arg0) {
         break;
     }
     func_0207c780(gfxTable, gfx);
-    func_01ff85b8(gfx, 0x800, 0x180);
+    AddToU16Array(gfx, 0x800, 0x180);
     func_020808dc(gfx, 0x20, 0x18, 0xB);
     if (M2C_FIELD(&data_ov000_021ae2d0, u32 *, M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 8) * 0xC) == 1) {
         func_02080860(gfx + 0x220, 4, 1, 0x304, 0xB);
@@ -257,7 +257,7 @@ temp=func_020e34bc(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 
 Clear3DSpriteLayer(0);
 switch(GetInfoWindowMode()){case 0:table=&data_ov000_021c2e50;break;case 1:table=&data_ov000_021c2bb0;break;case 2:table=&data_ov000_021c2680;break;case 3:table=&data_ov000_021c23ec;break;case 4:table=&data_ov000_021c2918;break;case 5:table=&data_ov000_021c2158;break;default:table=&data_ov000_021c2e50;break;}
 func_0207c780(table,temp);func_02080a14(base,16,2,temp+0x520);
-for(i=0,step=0;i<2;i++,step+=32)func_01ff85b8(base+step*2,32,384);
+for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
 func_020808dc(base,16,2,11);func_020e35cc(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){
 if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2e0,11);

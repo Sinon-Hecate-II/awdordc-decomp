@@ -185,7 +185,7 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
     extern u8 gEffectTable;
     void func_02082098(s32, s32);
     void func_02082104(s32, s32);
-    void func_02082134(s32, s32);
+    void SetLayerSize(s32, s32);
     s32 i;
     if (*p & 1) {
         func_02082098(2, 0);
@@ -194,9 +194,9 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
         func_02082104(3, 14);
         i = M2C_FIELD(&gPlayerSettings, u8 *, 1);
         if (M2C_FIELD(M2C_FIELD(&gEffectTable, void **, i * 24), u8 *, 0x3D) != 2) {
-            func_02082134(3, 1);
+            SetLayerSize(3, 1);
         } else {
-            func_02082134(3, 0);
+            SetLayerSize(3, 0);
         }
     } else {
         func_02082098(2, 2);
@@ -209,9 +209,9 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
             i = 0;
         }
         if (M2C_FIELD(M2C_FIELD(&gEffectTable, void **, i * 24), u8 *, 0x3D) != 2) {
-            func_02082134(3, 1);
+            SetLayerSize(3, 1);
         } else {
-            func_02082134(3, 0);
+            SetLayerSize(3, 0);
         }
     }
 }
@@ -248,7 +248,7 @@ void func_ov002_021e3c84(void) {
     func_ov002_021e3b7c(&data_ov002_021f3014);
 }
 
-void func_ov002_021e3c98(s32 *arg0) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void func_02082104(s32,s32);void func_02082134(s32,s32);void func_0209cce4(s32,s32);
+void func_ov002_021e3c98(s32 *arg0) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void func_02082104(s32,s32);void SetLayerSize(s32,s32);void func_0209cce4(s32,s32);
 extern volatile u16 *data_027e00c0;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
 func_020033e0();func_020033f4();
 data_027e00c0[0]=(u16)((data_027e00c0[0]&~0x7)|0x3);
@@ -262,7 +262,7 @@ data_027e00c0[1]=(u16)(data_027e00c0[1]&~0x100);
 {u32 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 data_027e00c0[6]=(u16)((data_027e00c0[6]&~0x3C)|0x4);
 data_027e00c0[6]=(u16)(data_027e00c0[6]|0x80);
-func_02082104(3,0);func_02082134(3,1);gCur3DSpriteEngine=old;}
+func_02082104(3,0);SetLayerSize(3,1);gCur3DSpriteEngine=old;}
 *arg0=0;
 func_0209cce4((s32)func_ov002_021e3c5c,2);
 func_0209cce4((s32)func_ov002_021e3c70,7);

@@ -20,13 +20,13 @@ if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;
 if(b==1)base=0x06000000;else base=0x06200000;
 func_02082098(arg0,(u8)arg1->f0);
 func_02082104(arg0,(u8)arg1->f4);
-func_02082134(arg0,(u8)arg1->f9);
+SetLayerSize(arg0,(u8)arg1->f9);
 ((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f0=arg1->f11;
 ((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f7=arg1->f13;
 ((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f13=arg1->f14;
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine+arg0,s32 *,0xc),0x40);
 Clear3DSpriteLayer(arg0);
-v=func_01ff9c34((u8)((SpriteHead *)*gCur3DSpriteEngine)->f0,arg0);
+v=Get3DSpriteLayerSize((u8)((SpriteHead *)*gCur3DSpriteEngine)->f0,arg0);
 src=base+((u32)((volatile SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f8<<11);
 func_02007ef4(M2C_FIELD(gCur3DSpriteEngine+arg0,volatile s32 *,0x20),src,v);
 }

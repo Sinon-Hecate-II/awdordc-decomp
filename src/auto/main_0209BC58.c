@@ -186,31 +186,7 @@ void func_0209c048(s32 arg0, s32 arg1, s32 arg2, u32 arg3, u16 arg4, u16 arg5) {
     } while (var_r3 != 0);
 }
 
-void func_0209c0bc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
-    u16 var_r2;
-
-    arg0 = arg2 + (arg0 * 2) + (arg1 << 6);
-    var_r2 = 0x10;
-    switch (arg3) {
-    case 0x47:
-        var_r2 += 0x1A;
-        break;
-    case 0x2B:
-        var_r2 += 0x14;
-        break;
-    case 0x2D:
-        var_r2 += 0x16;
-        break;
-    case 0x3D:
-        var_r2 += 0x18;
-        break;
-    }
-    if (arg5 == 3) {
-        var_r2 += 0x1C;
-    }
-    *(s16 *)arg0 = (s16)(var_r2 | arg4);
-    *(s16 *)((u8 *)arg0 + 0x40) = (s16)((var_r2 + 1) | arg4);
-}
+void func_0209c0bc(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,u16 arg5) { u16 var_r2;arg0=arg2+arg0*2+(arg1<<6);var_r2=0x10;switch(arg3){case 0x2b:var_r2+=0x14;break;case 0x2d:var_r2+=0x16;break;case 0x3d:var_r2+=0x18;break;case 0x47:var_r2+=0x1a;break;}if(arg5==3)var_r2+=0x1c;*(s16*)arg0=(s16)(var_r2|arg4);*(s16*)((u8*)arg0+0x40)=(s16)((var_r2+1)|arg4);}
 
 s32 func_0209c168(void *arg0, s32 arg1) {
     s32 sum;

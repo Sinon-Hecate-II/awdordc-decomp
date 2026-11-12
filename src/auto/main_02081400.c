@@ -73,7 +73,7 @@ void func_02081568(void) {
     func_02080c00();
 }
 
-s32 func_02081578(void *arg0, void *arg1) {
+s32 LoadNarcFileRaw(void *arg0, void *arg1) {
     return func_02080c50(BuildNarcPath(arg0), arg1);
 }
 
@@ -552,7 +552,7 @@ u32 old=M2C_FIELD(p,u16 *,index);
 M2C_FIELD(p,u16 *,index)=(old&~0x1f00)|(bits>>19);
 }
 
-void func_02082134(s32 arg0, u32 arg1) {
+void SetLayerSize(s32 arg0, u32 arg1) {
     extern void *gCur3DSpriteEngine;
     u32 index = arg0 * 2;
     void *engine = gCur3DSpriteEngine;

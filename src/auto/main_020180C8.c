@@ -392,7 +392,7 @@ void func_02018960(s32 arg0) {
     M2C_FIELD((u8 *)base + idx * 4, u32 *, 0x1E0) = 0;
 }
 
-void *func_020189a4(void *arg0, void *arg1) {
+void *SerializeCommand(void *arg0, void *arg1) {
 u8 *p=arg1;
 *p++=M2C_FIELD(arg0,u8 *,0);
 switch(M2C_FIELD(arg0,u8 *,0)) {

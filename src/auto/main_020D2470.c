@@ -231,61 +231,37 @@ s32 func_020d2a00(s32 arg0) {
     return 1;
 }
 
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
 s32 func_020d2a6c(s32 arg0) {
-    extern s32 *gCurrentMap;
-    extern s8 data_ov000_021b5580[];
-    u8 *base;
-    u16 ycount;
-    u16 xcount;
-    s32 y;
-    s32 x;
-    u8 byte;
-    s8 chk;
-    u8 *p;
-    u16 val;
-
-    base = (u8 *)*gCurrentMap;
-    ycount = M2C_FIELD(base, u16 *, 0x5146);
-    if ((s32)ycount <= 0) {
-        return 1;
-    }
-    xcount = M2C_FIELD(base, u16 *, 0x5144);
-    for (y = 0; y < (s32)ycount; y++) {
-        if ((s32)xcount <= 0) {
-            continue;
-        }
-        val = M2C_FIELD(base + y * 2, u16 *, 0x3758);
-        p = base + val;
-        for (x = 0; x < (s32)xcount; x++) {
-            byte = M2C_FIELD(p, u8 *, 0x1420);
-            if (((byte & 0xE0) >> 5) == (u8)arg0) {
-                chk = data_ov000_021b5580[byte & 0x1F];
-                if (chk != 0) {
-                    return 0;
-                }
-            }
-            p++;
-        }
-    }
-    return 1;
+extern s32 *gCurrentMap;extern s8 data_ov000_021b5580[];
+s32 y=0;u8 *dims; s32 x,width;u8 *p;s32 byte;u8 *base=(u8*)*gCurrentMap; dims=base+0x5100;
+if(y<M2C_FIELD(dims,u16 *,0x46)){
+width=M2C_FIELD(dims,u16 *,0x44);{s32 zero=0;
+do {
+x=zero;
+if(x<width){
+p=base+M2C_FIELD(base+(y<<1),u16 *,0x3758);
+do {
+byte=M2C_FIELD(p,u8 *,0x1420);
+if(arg0==((byte&0xe0)>>5) && data_ov000_021b5580[byte&31]!=0)return 0;
+x++;p++;
+}while(x<width);
 }
-
-void func_020d2b10(s32 arg0, s32 arg1) {
-    extern s32 *gCurrentMap;
-    s32 IsPlayerHuman(s32);
-    void func_02091c54(s32, s32);
-
-    do {
-        if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
-            break;
-        }
-        func_02091c54(0xB, arg1);
-        *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C)) -= arg1;
-        *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) += arg1;
-        if (*((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) > 0x3B9AC9FF) {
-            *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) = 0x3B9AC9FF;
-        }
-    } while (0);
+y++;
+}while(y<M2C_FIELD(base,u16 *,0x5146));
+}
+}return 1;
+}
+#pragma opt_common_subs reset
+#pragma opt_strength_reduction reset
+void func_020d2b10(s32 arg0,s32 arg1) {
+extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); void func_02091c54(s32,s32);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c54(11,arg1);
+*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c))-=arg1;
+*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c)+1)+=arg1;
+if(*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c)+1)>0x3b9ac9ff)
+*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c)+1)=0x3b9ac9ff;
 }
 
 void func_020d2bc0(s32 arg0, s32 arg1) {

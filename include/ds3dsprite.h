@@ -33,10 +33,11 @@ typedef struct DS3DSpriteBank {
 typedef struct DS3DSpriteEngine {
     void *bank;        /* +0x00 the sprite bank of this engine */
     void *sprites;     /* +0x04 the 3D sprite list of this engine */
-    u8   filler_08[0x14];
+    u32  filler_08;    /* +0x08 */
+    u32  layerVram[4]; /* +0x0C VRAM address each layer's texture is decompressed to */
     u32  textureAddr;  /* +0x1C */
-    u8   filler_20[0x10];
-    void *oamBuffer;   /* +0x30 0x400 bytes of 3D sprite OAM entries */
+    void *layerTiles[4]; /* +0x20 RAM buffer holding each layer's tile data */
+    void *oamBuffer;   /* +0x30 0x400-byte OBJ palette shadow: 32 palettes of 0x20 bytes */
     u16 *oamEntries;   /* +0x34 */
     u16 *spriteSrc;    /* +0x38 */
     s16  offsetX;      /* +0x3C */
@@ -44,7 +45,8 @@ typedef struct DS3DSpriteEngine {
     s16  filler_40;
     s16  filler_42;
     s16  filler_44;
-    s16  filler_46;
+    u8   layerDirty;   /* +0x46 bit i: layer i's data changed, bit 4: the palette changed */
+    u8   filler_47;
     u8   count;        /* +0x48 number of 3D sprites in use */
     u8   filler_49;
     u8   index;        /* +0x4A */
@@ -56,6 +58,20 @@ typedef struct DS3DSpriteEngine {
     void *filler_50;
     void *filler_54;
 } DS3DSpriteEngine;
+
+/* One entry of gWallpaperFileSets: the files of a wallpaper in one language. */
+typedef struct WallpaperFileSet {
+    const char *name;  /* +0x00 base name of the set's files, e.g. "wallp_bmap_s" */
+    u8   sizeCode;     /* +0x04 tile size class, see SetLayerSize */
+    u8   filler_05[5];
+    s16  screenGap;    /* +0x0A added to both offsets on the second screen */
+    u32  filler_0C;
+    s16  offsetA;      /* +0x10 copied to the wallpaper object */
+    s16  offsetB;      /* +0x12 copied to the wallpaper object */
+} WallpaperFileSet;
+
+/* DS3DSpriteEngine::layerDirty bit of the OBJ palette shadow. */
+#define DS3D_DIRTY_PALETTE 0x10
 
 /* Control word of a 3D sprite object (at object+0x44). */
 typedef struct SpriteFlags {

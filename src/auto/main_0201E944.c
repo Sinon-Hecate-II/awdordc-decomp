@@ -431,20 +431,13 @@ s32 func_0201f338(s32 arg0, s32 arg1) {
     return func_0201f2a8(func_0201f230(arg0), arg1);
 }
 
-void func_0201f350(s32 arg0) {
-s32 p,old,v;
-for(;;){
-func_020064d0(arg0,&p,1);
-if(!p)return;
-v=M2C_FIELD(p,s32 (**)(s32),0)(p);
+void func_0201f350(s32 arg0) { s32 p,old,v; loop: func_020064d0(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
 old=OS_DisableInterrupts();
 func_02006130();
 func_02006390(arg0,0,0);
 if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
 if(M2C_FIELD(p,s32*,8))func_020062fc(M2C_FIELD(p,s32*,8),v,0);
-func_0201f210(p);func_02006164();OS_RestoreInterrupts(old);
-}
-}
+func_0201f210(p);func_02006164();OS_RestoreInterrupts(old); goto loop; done: return; }
 
 s32 func_0201f400(void) {
     s32 func_0201f1d0(M2C_UNK *, s32, M2C_UNK);

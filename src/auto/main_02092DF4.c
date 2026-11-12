@@ -360,18 +360,16 @@ if(index)func_020935ec((u8 *)base+0x59a4+index*14,M2C_FIELD(p,s32 *,4));
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-s32 func_0209375c(void *arg0){
-extern void **data_027e0058;
-extern u16 gPlayerUnitIdBase[];
+s32 func_0209375c(void *arg0) {
+extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
 void *p=M2C_FIELD(arg0,void **,4);
-void *found=0;
-s32 i;
-void *entry; u8 (*entries)[14]; u32 kind;
-for(i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;i++){
-entries=(void *)((u8 *)*data_027e0058+0x59a4);
+s32 start=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)];
+void *found=0; s32 i; void *entry; u8 (*entries)[14]; u32 kind;
+for(i=start+1;i<start+0x33;i++){
+entries=(void *)((u8 *)*gCurrentMap+0x59a4);
 entry=entries[i];
 kind=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;
-if(kind && (!M2C_FIELD(p,s16 *,10)||kind==M2C_FIELD(p,s16 *,10))){found=entry;break;}
+if(kind && (!M2C_FIELD(p,s16 *,10)||kind==M2C_FIELD(p,s16 *,10))){found=(u8 *)*gCurrentMap+0x59a4+i*14;break;}
 }
 if(found)func_020935ec(found,M2C_FIELD(p,s32 *,4));
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;

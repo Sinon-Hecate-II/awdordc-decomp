@@ -64,21 +64,21 @@ void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
 }
 
 s32 func_02015c18(void *a,void *b) {
-extern void *data_02136c4c;
+extern void *gMbWork;
 u32 func_020722fc(u32,u32);
 s32 func_02015e44(u32,u32,u32);
 void *entries;u16 *counts=a+12;u32 sum=0;u8 i;
 if(!b)return 0;
 for(i=0;i<3;i++){((u32 *)a)[i]=sum;sum+=M2C_FIELD(b+i*16,u32 *,0x14);}
 counts[0]=0;entries=b+12;
-for(i=0;i<3;i++){void *e=entries+i*16;u32 block=M2C_FIELD(data_02136c4c,u32 *,0x1318);u32 n=M2C_FIELD(e,u32 *,8);u16 end=counts[i]+(u16)func_020722fc(n+block-1,block);
+for(i=0;i<3;i++){void *e=entries+i*16;u32 block=M2C_FIELD(gMbWork,u32 *,0x1318);u32 n=M2C_FIELD(e,u32 *,8);u16 end=counts[i]+(u16)func_020722fc(n+block-1,block);
 if(!func_02015e44(i,M2C_FIELD(e,u32 *,4),n))return 0;
 if(i<2)counts[i+1]=end;else M2C_FIELD(a,u16 *,0x12)=end;
 }return 1;
 }
 
 s32 func_02015ce4(void *out,void *a,u32 index,void *b) {
- extern void *data_02136c4c;
+ extern void *gMbWork;
  s8 i;u32 offset;void *entry;
  if(index>=M2C_FIELD(a,u16 *,0x12))return 0;
  i=2;
@@ -89,10 +89,10 @@ loop:
 found:
  if(i<0)return 0;
  offset=index-((u16 *)(a+0xC))[i];
- offset=offset*M2C_FIELD(data_02136c4c,u32 *,0x1318);
+ offset=offset*M2C_FIELD(gMbWork,u32 *,0x1318);
  entry=b+0xC+i*16;
  M2C_FIELD(out,u32 *,4)=M2C_FIELD(entry,u32 *,8)-offset;
- if(M2C_FIELD(out,u32 *,4)>M2C_FIELD(data_02136c4c,u32 *,0x1318))M2C_FIELD(out,u32 *,4)=M2C_FIELD(data_02136c4c,u32 *,0x1318);
+ if(M2C_FIELD(out,u32 *,4)>M2C_FIELD(gMbWork,u32 *,0x1318))M2C_FIELD(out,u32 *,4)=M2C_FIELD(gMbWork,u32 *,0x1318);
  M2C_FIELD(out,u32 *,8)=offset+M2C_FIELD(a+i*4,u32 *,0);
  M2C_FIELD(out,u32 *,0)=offset+M2C_FIELD(entry,u32 *,0);
  M2C_FIELD(out,u8 *,0xC)=i;return 1;
@@ -132,7 +132,7 @@ s32 func_02015e44(u32 a, u32 p, u32 n) {
  return 0;
 }
 
-void func_02015f10(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void SendMatchPacket(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK DC_FlushRange(M2C_UNK, s32);
     M2C_UNK func_02006804();
     M2C_UNK func_020182b0(M2C_UNK, s32, M2C_UNK);

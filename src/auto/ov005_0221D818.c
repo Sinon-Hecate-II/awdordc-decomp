@@ -213,14 +213,14 @@ void func_ov005_0221e22c(M2C_UNK parent) {
 }
 /* Initializes ov005's scene state when the system is ready and the global mode is not state 1. */
 void func_ov005_0221e468(M2C_UNK arg0) {
-    M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK AddToU16Array(s32, M2C_UNK, M2C_UNK);
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_02082134(M2C_UNK, M2C_UNK);
+    M2C_UNK SetLayerSize(M2C_UNK, M2C_UNK);
     s32 func_020cd1e4();
     s32 GetLocalizedFileName(M2C_UNK *);
     extern u16 gMapConfig;
@@ -255,14 +255,14 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     SetFileDirectory(&data_ov005_02220a2c);
     savedPtr = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_02082134(2, 1);
+    SetLayerSize(2, 1);
     Clear3DSpriteLayer(2);
     GetLocalizedFileName(&data_ov005_02220ebc);
     OpenNarcArchive();
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov005_02220a90), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov005_02220e30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
     CloseNarcArchive();
-    func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x800, 0x2000);
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x800, 0x2000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     gCur3DSpriteEngine = savedPtr;
     M2C_FIELD(result, s32 *, 0x34) = 0;

@@ -221,7 +221,7 @@ tile=(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x20)+offset*2+0x340;
 func_02080a14(tile,4,8,(u8 *)buffer+offset*2);
 j=0;row=0;
 do{
-func_01ff85b8((u8 *)tile+row*2,8,1);
+AddToU16Array((u8 *)tile+row*2,8,1);
 row+=32;j++;
 }while(j<8);
 func_020808dc(tile,4,8,(u16)(i+1));

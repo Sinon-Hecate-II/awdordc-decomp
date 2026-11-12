@@ -8,7 +8,7 @@ void func_020b9c8c(u8 *arg0) {
  void func_020cfd28(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
- void func_01ff85b8(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
+ void AddToU16Array(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
  void PlaySoundEffect(s32); void func_020b9558(u8); void func_020c0fac(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK data_021291f0; extern M2C_UNK data_021291f8;
@@ -32,7 +32,7 @@ void func_020b9c8c(u8 *arg0) {
  LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212921c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
  LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_0212922c),0xc0,0x20);
  CloseNarcArchive();
- func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
+ AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_020b9bec(); func_020b9c40();
  PlaySoundEffect(0x10017);

@@ -99,35 +99,23 @@ p=data_ov001_0218c9e4+y*8+x*2;
 value.a=p[0]; value.b=p[1];
 func_ov001_0216a030(arg0,arg1,arg2,arg3,arg4,(s32)&data_ov001_0218c9d8,*(s32*)&value);
 }
-void func_ov001_0216a230(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u32 arg7) {
-    M2C_UNK func_ov001_0216a2e0(s32, s32, s32, s32, s32, s32);
-    s32 endX, endY, tile, y, row, col, x;
-    u16 *p;
-    u32 palette;
-    y = arg4;
-    tile = arg6;
-    if (arg5 <= 32) {
-        func_ov001_0216a2e0(arg0 + (arg5 * y + arg3) * 2, arg1, arg2, arg5, tile, arg7);
-        return;
-    }
-    endY = y + arg2;
-    endX = arg3 + arg1;
-    palette = arg7 << 28;
-    if (y >= endY) return;
-    do {
-        row = y < 32 ? y : y + 32;
-        x = arg3;
-        p = (u16 *)(arg0 + (row << 6));
-        if (arg3 < endX) {
-            do {
-                col = x < 32 ? x : x + 0x3E0;
-                p[col] = tile | (palette >> 16);
-                x++;
-                tile++;
-            } while (x < endX);
-        }
-        y++;
-    } while (y < endY);
+void func_ov001_0216a230(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,u32 arg7) {
+M2C_UNK func_ov001_0216a2e0(s32,s32,s32,s32,s32,s32);
+s32 endX,endY,tile,y,row,col,x; u16 *p; u32 palette;
+y=arg4;tile=arg6;
+if(arg5<=32){func_ov001_0216a2e0(arg0+(arg5*y+arg3)*2,arg1,arg2,arg5,tile,arg7);return;}
+endY=y+arg2;endX=arg3+arg1;
+palette=arg7<<28;
+if(y>=endY)return;
+do{
+row=y<32?y:y+32;x=arg3;p=(u16 *)(arg0+(row<<6));
+if(arg3<endX)do{
+col=x<32?x:x+0x3e0;
+*(volatile u16 *)&p[col]=tile|(palette>>16);
+x++;tile++;
+}while(x<endX);
+y++;
+}while(y<endY);
 }
 
 #pragma scheduling off

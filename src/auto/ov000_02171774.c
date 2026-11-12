@@ -18,7 +18,7 @@ void func_ov000_02171774(void *p) {
  extern u8 data_ov000_021b8d60[],data_ov000_021b8d68[],data_ov000_021b8d7c[],data_ov000_021b8d8c[],data_ov000_021b8d9c[],data_ov000_021b8dac[],data_ov000_021b8db4[],data_ov000_021b8dc4[],data_ov000_021b8dd4[],data_ov000_021b8de4[];
  void *GetLocalizedFileName(void*);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
  void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
- s32 func_01ff9c34(u8,s32);void func_01ff85b8(void*,u16,s32);
+ s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
  void func_02007ef4(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
  void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void func_020c0fac(void*);
@@ -31,8 +31,8 @@ void func_ov000_02171774(void *p) {
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b8d8c),M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28));
  LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_ov000_021b8d9c),96,32);
  CloseNarcArchive();
- {u16 v=func_01ff9c34((u8)((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0)<<29)>>29),2);
- func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
+ {u16 v=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0)<<29)>>29),2);
+ AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
  i=1;k=140;do{
   if(IsPlayerPresent(i)){
    a=M2C_FIELD((u8*)*gCurrentMap+k,u8*,0x67cb);

@@ -2,7 +2,7 @@
 #include "common.h"
 
 void func_ov005_02218fd0(void *arg0) {
-    M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK AddToU16Array(s32, M2C_UNK, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
@@ -298,7 +298,7 @@ void func_ov005_02218fd0(void *arg0) {
     LoadNarcFileDecompressed(&data_ov005_0222108c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
     LoadNarcFileToSpriteBuffer(&data_ov005_0222109c, 0x120, 0xE0);
     CloseNarcArchive();
-    func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     LoadDecompressedFileTo(&data_ov005_022210ac, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3700);
     LoadFileToSpriteBuffer(&data_ov005_022210b8, 0x3C0, 0x20);
@@ -312,7 +312,7 @@ void func_ov005_02218fd0(void *arg0) {
     LoadNarcFileDecompressed(&data_ov005_022210f0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
     LoadNarcFileToSpriteBuffer(&data_ov005_02221100, 0x120, 0xC0);
     CloseNarcArchive();
-    func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     if (M2C_FIELD(*data_027e0058, u16 *, 0x5142) == 0xBA) {
         var_r0_4 = 1;
@@ -447,7 +447,7 @@ if(M2C_FIELD(p,s32 *,0x3c)==16){
 M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,u8 *,0x44)=0;
 SetFileDirectory(sResultDir);
 LoadDecompressedFileTo(sResultBackgroundFile,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;func_01ffa6fc(p);
 }

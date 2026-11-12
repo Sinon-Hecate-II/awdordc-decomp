@@ -27,7 +27,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void func_020a92bc(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void func_01ff85b8(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void SetFileDirectory(void *);void func_020a92bc(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -101,7 +101,7 @@ StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
 StringAppend(path,sClExt);
 func_020815d4(path,*(void **)(screen+76),0,128);
 CloseNarcArchive();
-func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);
+AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
 Clear3DSpriteLayer(1);
 

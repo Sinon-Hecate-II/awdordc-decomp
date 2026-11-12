@@ -60,24 +60,24 @@ return 0;
 }
 
 u16 func_ov001_02187a30(u8 *arg0) {
- extern s16 *data_ov001_02193e1c;
- u8 *base;
- u16 i;
- s32 offset;
- u8 *entry;
- i = 1;
- base = (u8 *)data_ov001_02193e1c + 0x24;
- do {
- if ((u16)data_ov001_02193e1c[1] & (1 << i)) {
- offset = (i - 1) * 0x1E;
- entry = base + offset;
- if (arg0[0] == entry[0] && arg0[1] == entry[1] && arg0[2] == entry[2] && arg0[3] == entry[3] && arg0[4] == entry[4] && arg0[5] == entry[5]) {
- return M2C_FIELD((u8 *)data_ov001_02193e1c + offset, u16 *, 0x2A);
- }
- }
- i++;
- } while ((u32)i < 2);
- return 0;
+    extern s16 *data_ov001_02193e1c;
+    u8 *base;
+    u16 i;
+    s32 offset;
+    u8 *entry;
+    i = 1;
+    base = (u8 *)data_ov001_02193e1c + 0x24;
+    do {
+        if ((u16)data_ov001_02193e1c[1] & (1 << i)) {
+            offset = (i - 1) * 0x1E;
+            entry = base + offset;
+            if (arg0[0] == entry[0] && arg0[1] == entry[1] && arg0[2] == entry[2] && arg0[3] == entry[3] && arg0[4] == entry[4] && arg0[5] == entry[5]) {
+                return M2C_FIELD((u8 *)data_ov001_02193e1c + offset, u16 *, 0x2A);
+            }
+        }
+        i++;
+    } while ((u32)i < 2);
+    return 0;
 }
 
 void func_ov001_02187ad8(void *arg0) {

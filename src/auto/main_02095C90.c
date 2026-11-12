@@ -18,8 +18,8 @@ void InitTelopWindow(void *telop) {
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, M2C_UNK);
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     void CloseNarcArchive(void);
-    M2C_UNK func_01ff9c34(M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ff85b8(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Get3DSpriteLayerSize(M2C_UNK, M2C_UNK);
+    M2C_UNK AddToU16Array(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020af1c0(M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
@@ -68,8 +68,8 @@ void InitTelopWindow(void *telop) {
     LoadNarcFileDecompressed(&sTelopScFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     LoadNarcFileToSpriteBuffer(&sTelopClFile, 0x20, 0x20);
     CloseNarcArchive();
-    func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20),
-                  (u16)func_01ff9c34((u8)((u32)(*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 0),
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20),
+                  (u16)Get3DSpriteLayerSize((u8)((u32)(*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 0),
                   0x1000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1;

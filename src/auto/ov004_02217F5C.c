@@ -4,8 +4,8 @@ typedef struct { u16 a, b, c, d, e, f; } Ov004DisplayConfig;
 
 #pragma opt_instruction_scheduling off
 void func_ov004_02217f5c(void *arg0) {
-    M2C_UNK func_01ff85b8(s32, u16, s32);
-    s32 func_01ff9c34(u8, M2C_UNK);
+    M2C_UNK AddToU16Array(s32, u16, s32);
+    s32 Get3DSpriteLayerSize(u8, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
@@ -184,7 +184,7 @@ void func_ov004_02217f5c(void *arg0) {
     LoadNarcFileDecompressed(&data_ov004_0223c648, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
     LoadNarcFileToSpriteBuffer(&data_ov004_0223c618, 0x1E0, 0x20);
     CloseNarcArchive();
-    func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16) func_01ff9c34((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 1), 0xF001);
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16) Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 1), 0xF001);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     func_020a9a30(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
     temp_r0_3 = func_020ab1c4(arg0);

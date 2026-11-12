@@ -731,7 +731,7 @@ func_020140c4 kind:function(arm,size=0x4a0) addr:0x020140c4
 func_02014564 kind:function(arm,size=0x4e4) addr:0x02014564
 func_02014a48 kind:function(arm,size=0xac) addr:0x02014a48
 func_02014af4 kind:function(arm,size=0x40) addr:0x02014af4
-func_02014b34 kind:function(arm,size=0x198) addr:0x02014b34
+StartGroupBattle kind:function(arm,size=0x198) addr:0x02014b34
 func_02014ccc kind:function(arm,size=0xa0) addr:0x02014ccc
 func_02014d6c kind:function(arm,size=0x29c) addr:0x02014d6c
 func_02015008 kind:function(arm,size=0x180) addr:0x02015008
@@ -749,7 +749,7 @@ func_02015c18 kind:function(arm,size=0xcc) addr:0x02015c18
 func_02015ce4 kind:function(arm,size=0xb4) addr:0x02015ce4
 func_02015d98 kind:function(arm,size=0xac) addr:0x02015d98
 func_02015e44 kind:function(arm,size=0xcc) addr:0x02015e44
-func_02015f10 kind:function(arm,size=0x38) addr:0x02015f10
+SendMatchPacket kind:function(arm,size=0x38) addr:0x02015f10
 func_02015f48 kind:function(arm,size=0x4c) addr:0x02015f48
 func_02015f94 kind:function(arm,size=0xf0) addr:0x02015f94
 func_02016084 kind:function(arm,size=0xa0) addr:0x02016084
@@ -804,7 +804,7 @@ func_020188c8 kind:function(arm,size=0x48) addr:0x020188c8
 func_02018910 kind:function(arm,size=0x30) addr:0x02018910
 func_02018940 kind:function(arm,size=0x20) addr:0x02018940
 func_02018960 kind:function(arm,size=0x44) addr:0x02018960
-func_020189a4 kind:function(arm,size=0x84) addr:0x020189a4
+SerializeCommand kind:function(arm,size=0x84) addr:0x020189a4
 func_02018a28 kind:function(arm,size=0x11c) addr:0x02018a28
 func_02018b44 kind:function(arm,size=0x8c) addr:0x02018b44
 func_02018bd0 kind:function(arm,size=0x54) addr:0x02018bd0
@@ -3100,7 +3100,7 @@ func_020814ac kind:function(arm,size=0x38) addr:0x020814ac
 OpenNarcArchive kind:function(arm,size=0x44) addr:0x020814e4
 CloseNarcArchive kind:function(arm,size=0x40) addr:0x02081528
 func_02081568 kind:function(arm,size=0x10) addr:0x02081568
-func_02081578 kind:function(arm,size=0x18) addr:0x02081578
+LoadNarcFileRaw kind:function(arm,size=0x18) addr:0x02081578
 LoadNarcFileDecompressed kind:function(arm,size=0x18) addr:0x02081590
 func_020815a8 kind:function(arm,size=0x14) addr:0x020815a8
 func_020815bc kind:function(arm,size=0x18) addr:0x020815bc
@@ -3151,7 +3151,7 @@ func_02082078 kind:function(arm,size=0x10) addr:0x02082078
 func_02082088 kind:function(arm,size=0x10) addr:0x02082088
 func_02082098 kind:function(arm,size=0x6c) addr:0x02082098
 func_02082104 kind:function(arm,size=0x30) addr:0x02082104
-func_02082134 kind:function(arm,size=0x30) addr:0x02082134
+SetLayerSize kind:function(arm,size=0x30) addr:0x02082134
 func_02082164 kind:function(arm,size=0x154) addr:0x02082164
 func_020822b8 kind:function(arm,size=0x74) addr:0x020822b8
 func_0208232c kind:function(arm,size=0x14) addr:0x0208232c
@@ -4710,7 +4710,7 @@ func_020ae6bc kind:function(arm,size=0x6c) addr:0x020ae6bc
 func_020ae728 kind:function(arm,size=0x40) addr:0x020ae728
 func_020ae768 kind:function(arm,size=0x3c) addr:0x020ae768
 func_020ae7a4 kind:function(arm,size=0x28) addr:0x020ae7a4
-func_020ae7cc kind:function(arm,size=0x14) addr:0x020ae7cc
+GetWallpaperFileSet kind:function(arm,size=0x14) addr:0x020ae7cc
 func_020ae7e0 kind:function(arm,size=0xc) addr:0x020ae7e0
 func_020ae7ec kind:function(arm,size=0x3cc) addr:0x020ae7ec
 func_020aebb8 kind:function(arm,size=0x198) addr:0x020aebb8
@@ -6519,7 +6519,7 @@ data_020f4aa0 kind:data(any) addr:0x020f4aa0
 data_020f4aac kind:data(any) addr:0x020f4aac
 data_020f4ab8 kind:data(any) addr:0x020f4ab8
 data_020f4d1c kind:data(any) addr:0x020f4d1c
-data_020f4d30 kind:data(any) addr:0x020f4d30
+gWallpaperFileSets kind:data(any) addr:0x020f4d30
 gCOAssetNames kind:data(any) addr:0x020f4dd0
 data_020f4df4 kind:data(any) addr:0x020f4df4
 data_020f4e08 kind:data(any) addr:0x020f4e08
@@ -6557,7 +6557,7 @@ data_020f5508 kind:data(any) addr:0x020f5508
 data_020f550c kind:data(any) addr:0x020f550c
 data_020f553c kind:data(any) addr:0x020f553c
 data_020f5540 kind:data(any) addr:0x020f5540
-data_020f5544 kind:data(any) addr:0x020f5544
+gGroupStartCursor kind:data(any) addr:0x020f5544
 data_020f5548 kind:data(any) addr:0x020f5548
 data_020f554c kind:data(any) addr:0x020f554c
 gMbParam kind:data(any) addr:0x020f5550
@@ -10009,11 +10009,11 @@ data_02127e2c kind:data(any) addr:0x02127e2c
 data_02127e40 kind:data(any) addr:0x02127e40
 data_02127e4c kind:data(any) addr:0x02127e4c
 data_02127e7c kind:data(any) addr:0x02127e7c
-data_02127eac kind:data(any) addr:0x02127eac
-data_02127eb8 kind:data(any) addr:0x02127eb8
-data_02127ec0 kind:data(any) addr:0x02127ec0
-data_02127ec8 kind:data(any) addr:0x02127ec8
-data_02127ed0 kind:data(any) addr:0x02127ed0
+sWallpaperDirectory kind:data(any) addr:0x02127eac
+sWallpaperNarcFormat kind:data(any) addr:0x02127eb8
+sWallpaperCgFormat kind:data(any) addr:0x02127ec0
+sWallpaperScFormat kind:data(any) addr:0x02127ec8
+sWallpaperClFormat kind:data(any) addr:0x02127ed0
 data_02127ed8 kind:data(any) addr:0x02127ed8
 data_02127ee0 kind:data(any) addr:0x02127ee0
 data_02127f08 kind:data(any) addr:0x02127f08
@@ -10747,7 +10747,7 @@ data_02132420 kind:bss addr:0x02132420
 data_02132438 kind:bss addr:0x02132438
 data_02136001 kind:bss addr:0x02136001
 gMbState kind:bss addr:0x02136c40
-data_02136c4c kind:bss addr:0x02136c4c
+gMbWork kind:bss addr:0x02136c4c
 data_02136c60 kind:bss addr:0x02136c60
 data_02136c80 kind:bss addr:0x02136c80
 data_02136c84 kind:bss addr:0x02136c84

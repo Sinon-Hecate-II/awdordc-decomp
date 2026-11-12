@@ -1,31 +1,35 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02014b34(u16 arg0) {
- s32 func_020189a4(s8 *,void *);s32 func_02015f10(s32,u16,s32);
- extern u8 data_020f5544;extern void *data_02136c4c;
+/* Start the battle of the next player group that has joined players: cycle to the
+ * group after the one started last, send that group's unit roster (command 3) to its
+ * members and return the send result, or 21 when no group has players yet.
+ * The playerMask argument is unused: the mask is rebuilt from the player states. */
+s32 StartGroupBattle(u16 playerMask) {
+ s32 SerializeCommand(s8 *,void *);s32 SendMatchPacket(s32,u16,s32);
+ extern u8 gGroupStartCursor;extern void *gMbWork;
  M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,M2C_UNK);
- void *base;u8 packet[6];u8 counts[16];s32 ptr;s8 selected=-1;u16 idx,idx2,mask=0;u8 tries,candidate;s8 owner;
- MI_CpuFill8((s32)counts,0,16);base=data_02136c4c;
+ void *work;u8 command[6];u8 members[16];s32 writePos;s8 group=-1;u16 idx,idx2,mask=0;u8 tries,candidate;s8 owner;
+ MI_CpuFill8((s32)members,0,16);work=gMbWork;
  for(idx=1;idx<=15;idx++){
- if(M2C_FIELD(base+idx*4,s32 *,0x14e4)==5){
- owner=M2C_FIELD(base+idx,s8 *,0x1525);counts[owner]++;
+ if(M2C_FIELD(work+idx*4,s32 *,MB_PLAYER_STATE)==MB_PLAYER_STATE_GROUPED){
+ owner=M2C_FIELD(work+idx,s8 *,MB_PLAYER_GROUP);members[owner]++;
  }}
- candidate=data_020f5544;
+ candidate=gGroupStartCursor;
  for(tries=0;tries<16;tries++){
  candidate=(candidate+1)%16;
- if(M2C_FIELD(base+candidate*0x5d4,u8 *,0x1d52)&&counts[candidate]){
- selected=candidate;break;
+ if(M2C_FIELD(work+MB_GROUPS+candidate*MB_GROUP_STRIDE,u8 *,MB_GROUP_ACTIVE)&&members[candidate]){
+ group=candidate;break;
  }}
- if(selected==-1)return 21;
- data_020f5544=selected;
+ if(group==-1)return 21;
+ gGroupStartCursor=group;
  for(idx2=1;idx2<=15;idx2++){
- if(M2C_FIELD(base+idx2*4,s32 *,0x14e4)==5 && selected==M2C_FIELD(base+idx2,s8 *,0x1525))mask|=1<<idx2;
+ if(M2C_FIELD(work+idx2*4,s32 *,MB_PLAYER_STATE)==MB_PLAYER_STATE_GROUPED && group==M2C_FIELD(work+idx2,s8 *,MB_PLAYER_GROUP))mask|=1<<idx2;
  }
- packet[0]=3;*(s16 *)(packet+2)=selected;
- ptr=func_020189a4((s8 *)packet,base);
- if(ptr)MI_CpuCopy8((s32)(data_02136c4c+0x1788+selected*0x5d4),ptr,0xe4);
- return func_02015f10(0xea,mask,(s32)data_02136c4c);
+ command[0]=3;*(s16 *)(command+2)=group;
+ writePos=SerializeCommand((s8 *)command,work);
+ if(writePos)MI_CpuCopy8((s32)(gMbWork+MB_GROUPS+group*MB_GROUP_STRIDE),writePos,0xe4);
+ return SendMatchPacket(0xea,mask,(s32)gMbWork);
 }
 
 void func_02014ccc(void *arg0) {
@@ -51,15 +55,15 @@ void func_02014ccc(void *arg0) {
 #pragma push
 #pragma opt_common_subs off
 s32 func_02014d6c(void) {
-    extern void *data_02136c4c;
+    extern void *gMbWork;
     void func_02015188(s32);
     s32 func_02015ce4(void *,void *,u16,void *);
-    s32 func_020189a4(s8 *,void *);
+    s32 SerializeCommand(s8 *,void *);
     s32 func_020184ec(void *,u32,s32,u32);
     s32 func_0201874c(void *);
     void func_02007958(void);
     void func_02018764(void *,void (*)(void *),s32,s32);
-    s32 func_02015f10(s32,u16,s32);
+    s32 SendMatchPacket(s32,u16,s32);
     u8 packet[8];
     u32 output[4];
     u8 tries,candidate;
@@ -80,25 +84,25 @@ s32 func_02014d6c(void) {
     void *interior;
     u32 position;
     u32 previous;
-    if (!M2C_FIELD(data_02136c4c,u8 *,0x1524)) return 21;
+    if (!M2C_FIELD(gMbWork,u8 *,0x1524)) return 21;
     for (tries=0;tries<16;tries++) {
-        M2C_FIELD(data_02136c4c,u8 *,0x1525)=(M2C_FIELD(data_02136c4c,u8 *,0x1525)+1)%16;
-        base=data_02136c4c;
+        M2C_FIELD(gMbWork,u8 *,0x1525)=(M2C_FIELD(gMbWork,u8 *,0x1525)+1)%16;
+        base=gMbWork;
         candidate=M2C_FIELD(base,u8 *,0x1525);
         loopEntry=base+candidate*0x5d4;
         if (M2C_FIELD(loopEntry,u8 *,0x1d52) && M2C_FIELD(loopEntry,u16 *,0x1d4c)) break;
     }
     if (tries==16) return 21;
     func_02015188(candidate);
-    base=data_02136c4c;
+    base=gMbWork;
     i=M2C_FIELD(base,u8 *,0x1525);
     if (!func_02015ce4(output,base+0x1d2c+i*0x5d4,M2C_FIELD(base+i*0x5d4,u16 *,0x1d48),base+0x1788+i*0x5d4)) return 21;
-    base=data_02136c4c;
+    base=gMbWork;
     packet[0]=4;
     *(u16 *)(packet+2)=M2C_FIELD(base,u8 *,0x1525);
     *(u16 *)(packet+4)=M2C_FIELD(base+M2C_FIELD(base,u8 *,0x1525)*0x5d4,u16 *,0x1d48);
-    command=func_020189a4((s8 *)packet,base);
-    base=data_02136c4c;
+    command=SerializeCommand((s8 *)packet,base);
+    base=gMbWork;
     entry=base+M2C_FIELD(base,u8 *,0x1525)*0x5d4;
     bank=((u8 *)output)[12];
     position=output[2];
@@ -109,7 +113,7 @@ s32 func_02014d6c(void) {
     buffer=M2C_FIELD(interior,void **,0xd54);
     size=output[1];
     if (!func_020184ec(buffer,offset,command,size)) {
-        task=data_02136c4c+0x7ce0;
+        task=gMbWork+0x7ce0;
         if (!func_0201874c(task)) {
             if (M2C_FIELD(buffer,u32 *,0)) M2C_FIELD(buffer,u32 *,0)--;
             else {
@@ -131,18 +135,18 @@ s32 func_02014d6c(void) {
         }
         return 21;
     }
-    base=data_02136c4c;
-    return func_02015f10(output[1]+6,M2C_FIELD(base+M2C_FIELD(base,u8 *,0x1525)*0x5d4,u16 *,0x1d4c),(s32)base);
+    base=gMbWork;
+    return SendMatchPacket(output[1]+6,M2C_FIELD(base+M2C_FIELD(base,u8 *,0x1525)*0x5d4,u16 *,0x1d4c),(s32)base);
 }
 #pragma pop
 /* Select units by state into priority groups, then dispatch the matching network action. */
 void func_02015008(void) {
-extern void *data_02136c4c;
-void func_02007df8(s32,void *,s32); s32 func_02014af4(s32,u16); s32 func_02014b34(u16); s32 func_02014d6c(void);
+extern void *gMbWork;
+void func_02007df8(s32,void *,s32); s32 func_02014af4(s32,u16); s32 StartGroupBattle(u16); s32 func_02014d6c(void);
 u16 masks[5];u16 i; s32 result;
 func_02007df8(0,masks,10);
 for(i=1;i<=15;i++){
-switch(M2C_FIELD((u8 *)data_02136c4c+4*i,s32 *,0x14e4)){
+switch(M2C_FIELD((u8 *)gMbWork+4*i,s32 *,0x14e4)){
 case 2:masks[0]|=1<<i;break;
 case 5:masks[1]|=1<<i;break;
 case 4:masks[2]|=1<<i;break;
@@ -154,17 +158,17 @@ if(masks[3])result=func_02014af4(5,masks[3]);
 else if(masks[0])result=func_02014af4(1,masks[0]);
 else if(masks[4])result=func_02014af4(6,masks[4]);
 else if(masks[2])result=func_02014af4(2,masks[2]);
-else if(masks[1])result=func_02014b34(masks[1]);
+else if(masks[1])result=StartGroupBattle(masks[1]);
 else result=func_02014d6c();
 if(result==21)func_02014af4(0,0xffff);
 }
 
 void func_02015188(s32 arg0) {
  extern s32 data_02131180;
-    extern void *data_02136c4c;
+    extern void *gMbWork;
  u16 a,b; void *base;
  if(!(data_02131180 & (1<<arg0)))return;
- base=(void *)(arg0*0x5d4+data_02136c4c);
+ base=(void *)(arg0*0x5d4+gMbWork);
  if(M2C_FIELD(base,u8 *,0x1d52)!=0 && M2C_FIELD(base,u16 *,0x1d4c)!=0){
  a=M2C_FIELD(base+0x1d00,u16 *,0x48); b=M2C_FIELD(base,u16 *,0x1d4a);
  if((u32)b<=(u32)a && (s32)a<=b+2){M2C_FIELD(base+0x1d00,u16 *,0x48)=a+1;return;}

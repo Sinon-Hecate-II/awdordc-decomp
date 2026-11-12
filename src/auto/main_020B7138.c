@@ -4,7 +4,7 @@ void *GetLocalizedFileName(void *);
 void func_0208c5fc(void *,s32,s32);
 void func_0208bddc(void *,void *,s32,s32,s32);
 M2C_UNK PlaySoundEffect(s32);
-static inline void LoadPalette7464(u32 value) { extern void *gCur3DSpriteEngine; void func_01ff85b8(s32,u16,s32); func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),(u16)value,0x6124); }
+static inline void LoadPalette7464(u32 value) { extern void *gCur3DSpriteEngine; void AddToU16Array(s32,u16,s32); AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),(u16)value,0x6124); }
 typedef struct { u8 pad[0x48]; u32 mode:10; u32 duration:11; u32 frame:11; } FadeTask;
 typedef struct { u8 pad[0x44]; u32 tile:16; u32 flags:16; } SpriteTile;
 
@@ -105,7 +105,7 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 func_01ff9c34(u8,s32);void func_01ff85b8(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
+s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
@@ -116,7 +116,7 @@ SetFileDirectory(data_02128fb8);GetLocalizedFileName(data_02128fc0);OpenNarcArch
 LoadNarcFileDecompressed(GetLocalizedFileName(data_02128fcc),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
 LoadNarcFileDecompressed(GetLocalizedFileName(data_02128fd4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
 LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_02128fdc),192,32);CloseNarcArchive();
-palette=func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);{void *engine=gCur3DSpriteEngine;u32 value=palette;func_01ff85b8(M2C_FIELD(engine,s32 *,0x28),value,0x6124);}
+palette=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);{void *engine=gCur3DSpriteEngine;u32 value=palette;AddToU16Array(M2C_FIELD(engine,s32 *,0x28),value,0x6124);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=0;
 M2C_FIELD(a,void **,0x38)=func_020ab1c4(a);func_020aab24(M2C_FIELD(a,void **,0x38),1,0x120,3,1);

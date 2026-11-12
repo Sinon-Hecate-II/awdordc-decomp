@@ -108,7 +108,20 @@ SendIpFragment(payload,remaining1,firstData,remaining2,dstIp,fragOffset);
 }
 
 #pragma opt_common_subs off
-void func_0201b338(void *a,u32 b,void *c){u32 ChecksumAccumulate(void *,u32,u32);s32 ChecksumFinalize(s32);void SendIpPacket(void *,u32,void *,u32,u32,u8);extern M2C_UNK gSocketManager,gNetStack;void *p;u16 id;s32 sum;p=(void *)M2C_FIELD(c,u32 *,0x4c);M2C_FIELD(p,u16 *,0x22)=8;id=M2C_FIELD(&gNetStack,u16 *,4);M2C_FIELD(p,u16 *,0x26)=M2C_FIELD(&gSocketManager,u32 *,4);M2C_FIELD(p,u16 *,0x24)=0;M2C_FIELD(c,u16 *,10)=id;M2C_FIELD(&gNetStack,u16 *,4)=id+1;M2C_FIELD(p,u16 *,0x28)=id;sum=ChecksumAccumulate((u8 *)p+0x22,8,0);sum=ChecksumAccumulate(a,b,sum);sum=ChecksumFinalize((u16)sum);M2C_FIELD(p,u16 *,0x24)=(sum>>8)|(sum<<8);SendIpPacket((u8 *)p+0x22,8,a,b,M2C_FIELD(c,u32 *,0x1c),1);}
+void func_0201b338(void *a,u32 b,void *c) {
+u32 ChecksumAccumulate(void *,u32,u32); s32 ChecksumFinalize(s32); void SendIpPacket(void *,u32,void *,u32,u32,u8); extern M2C_UNK gSocketManager,gNetStack;
+void *p=(void *)M2C_FIELD(c,u32 *,0x4c); u16 id; s32 sum;
+M2C_FIELD(p,u16 *,0x22)=8;
+M2C_FIELD(p,u16 *,0x26)=M2C_FIELD(&gSocketManager,u32 *,4);
+id=M2C_FIELD(&gNetStack,u16 *,4);
+M2C_FIELD(p,u16 *,0x24)=0;
+M2C_FIELD(c,u16 *,10)=id;
+M2C_FIELD(&gNetStack,u16 *,4)++;
+M2C_FIELD(p,u16 *,0x28)=id;
+sum=ChecksumAccumulate((u8 *)p+0x22,8,0); sum=ChecksumAccumulate(a,b,sum); sum=ChecksumFinalize((u16)sum);
+M2C_FIELD(p,u16 *,0x24)=(sum>>8)|(sum<<8);
+SendIpPacket((u8 *)p+0x22,8,a,b,M2C_FIELD(c,u32 *,0x1c),1);
+}
 #pragma opt_common_subs reset
 void func_0201b3e8(void *arg0,s32 arg1,void *arg2) {
 u32 ChecksumAccumulate(void *,u32,u32);s32 ChecksumFinalize(s32);void SendIpPacket(void *,u32,void *,u32,u32,u8);

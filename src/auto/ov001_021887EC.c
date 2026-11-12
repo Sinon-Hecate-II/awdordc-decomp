@@ -197,7 +197,7 @@ func_ov001_0218730c();return 1;
 
 void func_ov001_02188f40(void) {
     s32 func_ov001_02188ec4(void);
-    s32 func_ov001_02189318(void);
+    void func_ov001_02189318(void);
     void func_ov001_021893c0(void);
     void Ov001_UpdateLinkState(void);
     void func_ov001_0218959c(void);
@@ -373,47 +373,7 @@ void func_ov001_02189308(void) {
     func_02013e98(1);
 }
 
-s32 func_ov001_02189318(void) {
-    extern M2C_UNK data_ov001_02193e20;
-    s32 temp_r0 = Ov001_GetTaskStep();
-    switch (temp_r0) {
-        case 0:
-        case 3:
-        case 5:
-        case 6:
-        case 7:
-            break;
-        case 1:
-        case 2:
-            func_ov001_021883a8();
-            break;
-        case 4:
-            func_ov001_02188614();
-            break;
-        case 8:
-            {
-                u8 *temp_r2 = (u8 *)M2C_FIELD(&data_ov001_02193e20, void **, 0);
-                *(u16 *)(temp_r2 + 0x64a) = func_ov001_02188614();
-                *(s32 *)(temp_r2 + 0xa98) = 0;
-                temp_r2[0xa90] = 3;
-            }
-            break;
-        case 9:
-            {
-                u8 *temp_r0_2 = (u8 *)M2C_FIELD(&data_ov001_02193e20, void **, 0);
-                *(s32 *)(temp_r0_2 + 0xa98) = 0;
-                temp_r0_2[0xa90] = 3;
-            }
-            break;
-        case 10:
-            func_ov001_02188b04();
-            break;
-        case 11:
-            func_02007958();
-            break;
-    }
-    return 0;
-}
+void func_ov001_02189318(void) { M2C_UNK func_02007958(); extern void *gOv001ProfileState; s32 value; switch(Ov001_GetTaskStep()) { case 1: func_ov001_021883a8(); return; case 7: value=func_ov001_02188614(); M2C_FIELD(gOv001ProfileState,u16 *,0x64a)=value; M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 0: M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 9: func_ov001_02188b04();return; case 3: break; default: func_02007958();return; } }
 
 void func_ov001_021893c0(void) {
     M2C_UNK func_ov001_02186e80(s32, u16);

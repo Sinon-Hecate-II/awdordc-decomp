@@ -147,7 +147,7 @@ void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void);
 void LoadNarcFileDecompressed(void *,void *);
 void CloseNarcArchive(void);
-void func_01ff85b8(void *,s32,s32);
+void AddToU16Array(void *,s32,s32);
 void PlaySoundEffect(s32);
 void *FindObjectByClass(void *);
 void func_02087db8(void *,s32);
@@ -236,7 +236,7 @@ void func_ov005_0221d160(void *arg0){
         else
             LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         CloseNarcArchive();
-        func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
+        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
     }
@@ -250,7 +250,7 @@ void func_ov005_0221d160(void *arg0){
         else
             LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         CloseNarcArchive();
-        func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
+        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
     }

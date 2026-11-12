@@ -318,30 +318,23 @@ void func_ov009_02222a00(M2C_UNK arg0, M2C_UNK arg1) {
     func_02013dac(arg0, 3, 0x11, arg1, 0x1E);
 }
 
+s32 __clz(u32);
+s32 __cntlz(u32);
+s32 _CountLeadingZeros(u32);
+s32 __builtin_clz(u32);
+#pragma intrinsic(__builtin_clz)
 s16 func_ov009_02222a20(s32 arg0) {
-    u32 CountBits();
-    u32 func_ov009_02222440();
-    s32 __builtin_clz(u32);
-    s16 result = 0;
-    u32 temp = CountBits();
-    s32 n;
-    u16 count;
-    s32 i;
-    if (temp == 1) {
-        n = 0x20 - __builtin_clz(~arg0 & (arg0 - 1));
-        result = n + 1;
-    } else if (temp > 1U) {
-        count = (temp * (func_ov009_02222440() & 0xFF)) >> 8;
-        for (i = 0; i < 0x10; i++) {
-            if ((arg0 & (1 << i)) != 0 && count-- == 0) {
-                result = i + 1;
-                break;
-            }
-        }
-    }
-    return result;
+u32 CountBits();u32 func_ov009_02222440();s32 __builtin_clz(u32);
+s16 result=0;u32 temp=CountBits();s32 n;u16 count;s32 i;
+if(temp==1){n=0x20-__builtin_clz(~arg0&(arg0-1));result=n+1;}
+else if(temp>1U){
+count=(temp*(func_ov009_02222440()&255))>>8;
+i=result;goto test;
+loop: {if((arg0&(1<<i))!=0 && count--==0){result=i+1;goto done;}i++;}
+test:if(i<16)goto loop;
 }
-
+done:return result;
+}
 s32 func_ov009_02222ac4(void) {
     s32 func_020122ec(M2C_UNK *, M2C_UNK *);
     void SignalLinkError();

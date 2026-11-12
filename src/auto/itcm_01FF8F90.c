@@ -299,7 +299,7 @@ u8 a,b,c;
 switch(arg0){case 1:if(arg1==3)a=1;else a=0;return a;case 2:if((u32)(u8)(arg1+0xfe)<=1)b=1;else b=0;return b;case 4:if(arg1==2)c=1;else c=0;return c;default:return 0;}
 }
 
-s32 func_01ff9c34(u8 arg0, s32 arg1) {
+s32 Get3DSpriteLayerSize(u8 arg0, s32 arg1) {
     extern u16 **gCur3DSpriteEngine;
     extern s32 data_01ff9b50[];
     extern s32 data_01ff9b60[];
@@ -313,22 +313,22 @@ s32 func_01ff9c34(u8 arg0, s32 arg1) {
 }
 
 void Clear3DSpriteLayer(u8 arg0) {
-    s32 func_01ff9c34(u8, s32);
+    s32 Get3DSpriteLayerSize(u8, s32);
     M2C_UNK func_02007e98(M2C_UNK, s32, s32);
     extern u16 **gCur3DSpriteEngine;
-    func_02007e98(0, M2C_FIELD(&gCur3DSpriteEngine[arg0], s32 *, 0x20), func_01ff9c34((u8)(((u32)(**gCur3DSpriteEngine << 0x1D) >> 0x1D)), arg0));
+    func_02007e98(0, M2C_FIELD(&gCur3DSpriteEngine[arg0], s32 *, 0x20), Get3DSpriteLayerSize((u8)(((u32)(**gCur3DSpriteEngine << 0x1D) >> 0x1D)), arg0));
 }
 
 void func_01ff9d38(s32 arg0) {
     extern u16 *g3DSpriteBankMain;
     extern s32 g3DSpriteEngineMain;
-    func_02007e98(0, M2C_FIELD((g3DSpriteEngineMain + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*g3DSpriteBankMain << 0x1D) >> 0x1D), arg0));
+    func_02007e98(0, M2C_FIELD((g3DSpriteEngineMain + (arg0 * 4)), s32 *, 0x20), Get3DSpriteLayerSize((u8) ((u32) (*g3DSpriteBankMain << 0x1D) >> 0x1D), arg0));
 }
 
 void func_01ff9d88(s32 arg0) {
     extern u16 *data_027e00c0;
     extern s32 g3DSpriteEngineSub;
-    func_02007e98(0, M2C_FIELD((g3DSpriteEngineSub + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*data_027e00c0 << 0x1D) >> 0x1D), arg0));
+    func_02007e98(0, M2C_FIELD((g3DSpriteEngineSub + (arg0 * 4)), s32 *, 0x20), Get3DSpriteLayerSize((u8) ((u32) (*data_027e00c0 << 0x1D) >> 0x1D), arg0));
 }
 
 #pragma opt_propagation off

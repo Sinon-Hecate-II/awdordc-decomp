@@ -5,19 +5,7 @@ typedef struct { u32 value, threshold; } A564Entry;
 extern const A77cTable data_ov000_021aabb0;
 
 #pragma opt_strength_reduction off
-void func_ov000_02169f94(void *p) {
-s32 func_020a7298(u8,u8);
-void func_ov000_0216a1ac(void *);
-void PlaySoundAtTile(s32,s32,s32);
-extern s32 *data_027e0058;extern M2C_UNK data_ov000_021aec98;
-s32 idx,mode,x,y;
-idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*data_027e0058+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd));
-x=M2C_FIELD(p,s16 *,0x4c)+8;
-y=M2C_FIELD(p,s16 *,0x4e)+8;
-mode=*(s32 *)((u8 *)&data_ov000_021aec98+idx*20);
-x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;
-switch(mode){case 0:return;case 0x8000:func_ov000_0216a1ac(p);return;case 0x4000:func_02090034(0);return;default:PlaySoundAtTile(mode,x,y);return;}
-}
+void func_ov000_02169f94(void *p) { s32 func_020a7298(u8,u8); void func_ov000_0216a1ac(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK data_ov000_021aec98;s32 idx,mode,x,y;idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&data_ov000_021aec98+idx*20)){case 0:break;case 0x8000:func_ov000_0216a1ac(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
 #pragma opt_strength_reduction reset
 void func_ov000_0216a2b8(void *);
 void func_ov000_0216a040(void *p) {
