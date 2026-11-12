@@ -42,7 +42,7 @@ s32 func_0207c368(u8 *arg0, s32 arg1) {
 }
 
 void func_0207c39c(void *arg0) {
-    M2C_UNK func_02007ef4(s32, s32, s32);
+    M2C_UNK MI_CpuCopy32(s32, s32, s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 flags = M2C_FIELD(arg0, s32 *, 0x40);
     s32 src = M2C_FIELD(arg0, s32 *, 0x38);
@@ -50,10 +50,10 @@ void func_0207c39c(void *arg0) {
     if (flags & 3) {
         MI_CpuCopy8(src, dst, flags);
     } else {
-        func_02007ef4(src, dst, flags);
+        MI_CpuCopy32(src, dst, flags);
     }
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_0207c3dc(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -76,14 +76,14 @@ void func_0207c42c(void *arg0) {
     M2C_UNK func_02004b54();
     M2C_UNK func_02004bb0(s32, s32, s32);
     M2C_UNK func_02004cf0();
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     func_02004b54();
     func_02004bb0(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
     func_02004cf0();
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
         return;
     }
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_0207c464(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -109,7 +109,7 @@ void func_0207c4b4(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
         return;
     }
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_0207c4ec(void *arg0) {
@@ -134,7 +134,7 @@ void func_0207c4ec(void *arg0) {
     }
     func_02002e3c(mode);
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_0207c55c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -174,7 +174,7 @@ void func_0207c5d0(void *arg0) {
         func_02004a58();
     }
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_0207c650(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
@@ -210,7 +210,7 @@ void func_0207c6a8(void *arg0) {
         func_02004b14();
     }
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_0207c728(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
@@ -228,14 +228,14 @@ void func_0207c728(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
 }
 
 void func_0207c780(void *arg0, u32 arg1) {
-    M2C_UNK func_02007ef4(s32, s32, s32);
+    M2C_UNK MI_CpuCopy32(s32, s32, s32);
     extern void (*data_02101448[])();
     void (*func)();
     u8 index = (s32)(M2C_FIELD(arg0, u8 *, 0) & 0xF0) >> 3;
     if (arg1 < 0x04000000U) index++;
     func = data_02101448[index];
     if (func == NULL) {
-        func_02007ef4((s32)arg0, arg1, M2C_FIELD(arg0, u32 *, 0) >> 8);
+        MI_CpuCopy32((s32)arg0, arg1, M2C_FIELD(arg0, u32 *, 0) >> 8);
         return;
     }
     func(arg0, arg1);

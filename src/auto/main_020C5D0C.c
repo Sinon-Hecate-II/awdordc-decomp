@@ -16,8 +16,8 @@ typedef struct {
 
 s32 func_020c5d0c(void) {
     s32 func_020cd6d4();
-    extern u8 data_02168f0c;
-    if ((data_02168f0c == 0) && (func_020cd6d4() != 0)) {
+    extern u8 gBattleEndState;
+    if ((gBattleEndState == 0) && (func_020cd6d4() != 0)) {
         return 0;
     }
     return 2;
@@ -25,8 +25,8 @@ s32 func_020c5d0c(void) {
 
 s32 func_020c5d3c(void) {
     s32 func_020cd6fc();
-    extern u8 data_02168f0c;
-    if ((data_02168f0c == 0) && (func_020cd6fc() != 0)) {
+    extern u8 gBattleEndState;
+    if ((gBattleEndState == 0) && (func_020cd6fc() != 0)) {
         return 0;
     }
     return 2;
@@ -35,10 +35,10 @@ s32 func_020c5d3c(void) {
 u8 func_020c5d6c(void) {
     s32 IsUnitAvailable();
     M2C_UNK func_020befd8();
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
     u8 var_r0;
 
-    if (data_02168f0c != 0) {
+    if (gBattleEndState != 0) {
         return 2;
     }
     func_020befd8();
@@ -103,7 +103,7 @@ s32 func_020c5e60(void) {
     };
     s32 func_020a88e8(u16);
     s32 IsPlayerPresent(s32);
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
     extern void **gCurrentMap;
     s32 var_r4;
     s32 var_r5;
@@ -112,7 +112,7 @@ s32 func_020c5e60(void) {
     if (func_020a88e8(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) != 0) {
         return 2;
     }
-    if (data_02168f0c != 0) {
+    if (gBattleEndState != 0) {
         return 2;
     }
     var_r4 = 1;
@@ -515,10 +515,10 @@ void func_020c69f8(void) {
 void func_020c6a10(void) {
     M2C_UNK func_020844f8();
     M2C_UNK func_020bbb08();
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
     func_020c0784();
     func_020bbb08();
-    if (data_02168f0c == 0) {
+    if (gBattleEndState == 0) {
         return;
     }
     func_020844f8();

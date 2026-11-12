@@ -8,7 +8,7 @@ void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     temp_r0 = func_02080e30(arg0, 0);
     DC_FlushRange(temp_r0, arg2);
     func_0207da60(temp_r0, arg1, arg2);
-    func_020e35cc(temp_r0);
+    HeapFreeBlock(temp_r0);
 }
 
 void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -28,7 +28,7 @@ void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 
     temp_r0 = func_02080e30(arg0, 0);
     func_020807e4(temp_r0, arg1, arg2, arg3);
-    func_020e35cc(temp_r0);
+    HeapFreeBlock(temp_r0);
 }
 
 void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -36,7 +36,7 @@ void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 
     temp_r0 = func_02081070(arg0, 0);
     func_020807e4(temp_r0, arg1, arg2, arg3);
-    func_020e35cc(temp_r0);
+    HeapFreeBlock(temp_r0);
 }
 
 u8 OpenNarcArchive(M2C_UNK arg0) {
@@ -62,7 +62,7 @@ void CloseNarcArchive(void) {
         return;
     }
     func_0202a940(&data_0214c0e4);
-    func_020e35cc(data_0214c0e0);
+    HeapFreeBlock(data_0214c0e0);
     data_0214c0e0 = 0;
 }
 
@@ -495,21 +495,21 @@ void func_02082000(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u
 void func_02082014(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u8 *,2)=0;}
 
 void MemAlloc(void) {
-    M2C_UNK func_020e34bc();
-    func_020e34bc();
+    M2C_UNK HeapAllocBlock();
+    HeapAllocBlock();
 }
 
 void MemAllocArray(void) {
-    func_020e34bc();
+    HeapAllocBlock();
 }
 
 void MemFree(void) {
-    M2C_UNK func_020e35cc();
-    func_020e35cc();
+    M2C_UNK HeapFreeBlock();
+    HeapFreeBlock();
 }
 
 void MemFreeArray(void) {
-    func_020e35cc();
+    HeapFreeBlock();
 }
 
 void func_02082058(void) {
@@ -530,7 +530,7 @@ u8 func_02082078(void) {
 
 u16 func_02082088(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,u16 *,0x1a);}
 
-void func_02082098(u32 arg0,u32 arg1) {
+void Set3DSpriteLayerBank(u32 arg0,u32 arg1) {
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
 u8 b; u32 base; u32 index; void *engine; u32 bits; u16 *p; u32 old;
 if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;
@@ -542,7 +542,7 @@ bits=arg1<<28; old=*(u16 *)((u8 *)p+index);
 *(u16 *)((u8 *)p+index)=(old&~0x3c)|(bits>>26);
 }
 
-void func_02082104(u32 arg0,u32 arg1) {
+void Set3DSpriteLayerPalette(u32 arg0,u32 arg1) {
 extern void *gCur3DSpriteEngine;
 u32 index=arg0*2;
 void *engine=gCur3DSpriteEngine;
@@ -572,7 +572,7 @@ void func_02082164(u8 *arg0) {
     s32 i;
     void func_0208259c(void);
     void func_02082700(void);
-    void func_02082340(s32, void *);
+    void Configure3DSpriteLayer(s32, void *);
 
     r4 = arg0;
 
@@ -617,7 +617,7 @@ void func_02082164(u8 *arg0) {
 
     r4 += 4;
     for (i = 0; i < 4; i++) {
-        func_02082340(i, r4);
+        Configure3DSpriteLayer(i, r4);
         r4 += 2;
     }
 }

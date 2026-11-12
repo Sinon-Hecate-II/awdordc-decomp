@@ -1,5 +1,6 @@
 /* 30 functions from 0x020C7CD0 to 0x020C8CBC (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 bytes[6]; u16 value; u32 year:8,month:6,day:6,hour:6,minute:6; u32 second:6,code:12,rest:14; u32 tail; } CompareRecord;
 typedef struct { u8 low:6, state:2; u8 pad[7]; u16 x:6,y:6,rest:4; u8 unkA; u8 kind:4, high:4; } RestoredUnit;
 static inline void RestoreKind(RestoredUnit *p,u8 v) {p->kind=v;}
@@ -9,65 +10,69 @@ static inline void RestoreState(RestoredUnit *p,u8 v) {p->state=v;}
 typedef struct { u8 pad0[0xa10]; u16 tiles[0x508]; u8 cells[0x2338]; u16 rows[0xcf6]; u16 width,height; } Map8484;
 typedef union {u32 word; struct {u32 low:10;u32 kind:5;u32 gap:3;u32 mode:4;u32 high:10;} bits; struct {u32 x:5,y:5,kind:5,owner:3,mode:4,state:2,unused:8;} fields;} PackedEntry;
 
-void func_020c7cd0(void *arg0, void *arg1) {
-    void *func_020e34bc(s32);
-    void func_02007ef4(void *, void *, s32);
-    void func_02007e98(s32, s32, s32);
-    void func_020e35cc(void *);
-    struct W4 { s32 a[4]; };
-    struct W5 { s32 a[5]; };
-    struct P2 { u8 a; u8 b; };
+/* Expands a compact saved map record into the runtime map record: copies the
+ * shared header and the terrain cells, then moves the packed unit entries from
+ * +0x1E4 to +0x3D8. The source may be the destination, so a temporary copy of
+ * the saved record is taken first in that case. */
+void ExpandMapRecord(void *arg0, void *arg1) {
+    void *HeapAllocBlock(s32);
+    void MI_CpuCopy32(void *, void *, s32);
+    void MI_CpuFill32(s32, s32, s32);
+    void HeapFreeBlock(void *);
+    struct MapRecordSettings { s32 a[4]; };
+    struct MapRecordStamp { s32 a[5]; };
+    struct PlayerIdPair { u8 a; u8 b; };
     u32 n;
-    u8 *q;
-    u8 *p;
+    u8 *dp;
+    u8 *sp;
     u8 *src;
     u8 *dst;
     s32 i;
 
     src = arg0;
     if (arg0 == arg1) {
-        src = func_020e34bc(0x2AC);
-        func_02007ef4(arg0, src, 0x2AC);
+        src = HeapAllocBlock(MAP_RECORD_SAVE_SIZE);
+        MI_CpuCopy32(arg0, src, MAP_RECORD_SAVE_SIZE);
     }
     dst = arg1;
-    func_02007e98(0, (s32)dst, 0x6F8);
-    *(s32 *)dst = *(s32 *)src;
-    dst[4] = src[4];
-    dst[5] = src[5];
-    p = src + 6;
-    q = dst + 6;
+    MI_CpuFill32(0, (s32)dst, MAP_RECORD_SIZE);
+    ((MapRecordHeader *)dst)->magic = ((MapRecordHeader *)src)->magic;
+    ((MapRecordHeader *)dst)->width = ((MapRecordHeader *)src)->width;
+    ((MapRecordHeader *)dst)->height = ((MapRecordHeader *)src)->height;
+    sp = src + 6;
+    dp = dst + 6;
     n = 16;
     do {
-        u8 c0 = p[0];
-        u8 c1 = p[1];
-        p += 2;
-        q[0] = c0;
-        q[1] = c1;
-        q += 2;
+        u8 c0 = sp[0];
+        u8 c1 = sp[1];
+        sp += 2;
+        dp[0] = c0;
+        dp[1] = c1;
+        dp += 2;
     } while (--n);
-    q[0] = p[0];
-    dst[0x27] = src[0x27];
-    *(struct P2 *)(dst + 0x28) = *(struct P2 *)(src + 0x28);
-    *(struct P2 *)(dst + 0x2A) = *(struct P2 *)(src + 0x2A);
-    dst[0x2C] = src[0x2C];
-    dst[0x2D] = src[0x2D];
-    dst[0x2E] = src[0x2E];
-    dst[0x2F] = src[0x2F];
-    *(struct W4 *)(dst + 0x30) = *(struct W4 *)(src + 0x30);
-    p = src + 0x40;
+    dp[0] = sp[0];
+    ((MapRecordHeader *)dst)->playerCount = ((MapRecordHeader *)src)->playerCount;
+    *(struct PlayerIdPair *)(dst + 0x28) = *(struct PlayerIdPair *)(src + 0x28);
+    *(struct PlayerIdPair *)(dst + 0x2A) = *(struct PlayerIdPair *)(src + 0x2A);
+    ((MapRecordHeader *)dst)->playerIds[4] = ((MapRecordHeader *)src)->playerIds[4];
+    ((MapRecordHeader *)dst)->propertyCount = ((MapRecordHeader *)src)->propertyCount;
+    ((MapRecordHeader *)dst)->unitsPerPlayer = ((MapRecordHeader *)src)->unitsPerPlayer;
+    ((MapRecordHeader *)dst)->unitCount = ((MapRecordHeader *)src)->unitCount;
+    *(struct MapRecordSettings *)(dst + 0x30) = *(struct MapRecordSettings *)(src + 0x30);
+    sp = src + 0x40;
     {
-        struct W5 *sp = (struct W5 *)p;
-        struct W5 *dp = (struct W5 *)(dst + 0x40);
-        *dp = *sp;
+        struct MapRecordStamp *srcStamp = (struct MapRecordStamp *)sp;
+        struct MapRecordStamp *dstStamp = (struct MapRecordStamp *)(dst + 0x40);
+        *dstStamp = *srcStamp;
     }
     i = 0;
-    for (; i < (s32)src[4] * (s32)src[5]; i++)
+    for (; i < (s32)((MapRecordHeader *)src)->width * (s32)((MapRecordHeader *)src)->height; i++)
         dst[0x54 + i] = src[0x54 + i];
     i = 0;
-    for (; i < src[0x2F]; i++)
-        ((s32 *)dst)[i + 0xF6] = ((s32 *)src)[i + 0x79];
+    for (; i < ((MapRecordHeader *)src)->unitCount; i++)
+        ((s32 *)dst)[i + MAP_RECORD_UNITS / 4] = ((s32 *)src)[i + MAP_RECORD_SAVE_UNITS / 4];
     if (arg0 == arg1)
-        func_020e35cc(src);
+        HeapFreeBlock(src);
 }
 
 s32 func_020c7e58(s32 arg0) {
@@ -278,7 +283,7 @@ s32 func_020c857c(M2C_UNK arg0) {
     s32 GetMapRecordBuffer();
     s32 LoadMapRecord(M2C_UNK, s32);
     M2C_UNK func_020cf2c8();
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     s32 temp_r0;
 
     temp_r0 = GetMapRecordBuffer();
@@ -288,11 +293,11 @@ s32 func_020c857c(M2C_UNK arg0) {
     ApplyMapRecord(temp_r0);
     func_020c82cc(temp_r0);
     func_020cf2c8();
-    func_020cfd28();
+    RefreshMapView();
     return 1;
 }
 
-s32 LoadMapRecord(s32 a,s32 b){u8 func_020c8664(s32,s32);void func_02007e98(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;func_02007e98(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(func_020c8664(a,b))r=1;else r=0;return r;}
+s32 LoadMapRecord(s32 a,s32 b){u8 func_020c8664(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(func_020c8664(a,b))r=1;else r=0;return r;}
 
 s32 func_020c8624(s32 a,s32 b) {
  s32 func_020c7a3c(s32); void func_020be438(s32,s32,s32);
@@ -327,11 +332,11 @@ void func_020c86a8(void *p) {
 
 void func_020c879c(void *arg0){
 extern void **gCurrentMap;extern s8 gTerrainPropertyFlags[];
-void func_02007e98(s32,s32,s32);void StringCopy(void *,void *);s32 GetPlayerTeam(s32);s32 GetPlayerIdForSlot(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
+void MI_CpuFill32(s32,s32,s32);void StringCopy(void *,void *);s32 GetPlayerTeam(s32);s32 GetPlayerIdForSlot(s32);void MI_CpuCopy32(void *,void *,s32);void func_020c86a8(void *);void *GetMapSettings(void);
 u8 counts[6];u8 *out=arg0;
 u8 *cursor=out+0x54;
 u16 i;
-func_02007e98(0,(s32)out,0x6f8);*(u32 *)out=0x20070731;
+MI_CpuFill32(0,(s32)out,0x6f8);*(u32 *)out=0x20070731;
 StringCopy(out+6,(u8 *)*gCurrentMap+0x5120);
 out[4]=((Map8484 *)*gCurrentMap)->width;out[5]=((Map8484 *)*gCurrentMap)->height;
 {s32 y,x;
@@ -368,7 +373,7 @@ out[0x2f]=used;
 }
 i=0;do{if(counts[0]<counts[i])counts[0]=counts[i];i++;}while(i<5);
 out[0x2d]=counts[5];out[0x2e]=counts[0]+1;
-func_02007ef4(func_020bfa74(),out+0x30,16);func_020c86a8(out);
+MI_CpuCopy32(GetMapSettings(),out+0x30,16);func_020c86a8(out);
 }
 
 /* Returns 1 if the two save/checkpoint record blobs compare equal field-by-field. */

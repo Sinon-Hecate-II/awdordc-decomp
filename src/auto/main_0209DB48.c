@@ -193,11 +193,11 @@ void func_0209dfe4(void *arg0) {
 }
 
 void func_0209e008(void *arg0) {
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     M2C_UNK (*temp_r0)();
 
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x34));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
     temp_r0 = M2C_FIELD(arg0, M2C_UNK (**)(), 0x3C);
     if (temp_r0 == NULL) {
         return;
@@ -211,15 +211,15 @@ void func_0209e034(void *arg0) {
 
 void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     void **func_01ffa3dc(M2C_UNK *, s32);
-    s32 func_020e34bc(u32);
+    s32 HeapAllocBlock(u32);
     void func_01ffa8bc(void *, s32);
     void func_02005ac0(s32, void (*)(void *), void *, s32, u32, s32);
     void TaskWake(s32);
     extern M2C_UNK data_0211f7dc;
     void *p;
     p = func_01ffa3dc(&data_0211f7dc, 3);
-    M2C_FIELD(p, s32 *, 0x34) = func_020e34bc(0xC0);
-    M2C_FIELD(p, s32 *, 0x38) = func_020e34bc(arg2);
+    M2C_FIELD(p, s32 *, 0x34) = HeapAllocBlock(0xC0);
+    M2C_FIELD(p, s32 *, 0x38) = HeapAllocBlock(arg2);
     M2C_FIELD(p, s32 *, 0x3C) = arg4;
     func_01ffa8bc(p, arg1);
     M2C_FIELD(p, s32 *, 0x40) = arg0;

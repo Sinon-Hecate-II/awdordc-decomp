@@ -152,10 +152,10 @@ M2C_UNK func_ov000_02185c20(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 IsWithinAttackRange(u8 *a,u8 *b,s32 c){
- s32 func_0206409c(s32); s32 GetUnitMoveRange(s32,u32); extern void **gCurrentMap;
+ s32 Abs(s32); s32 GetUnitMoveRange(s32,u32); extern void **gCurrentMap;
  s32 dist,n;
- dist=func_0206409c(a[1]-b[1]);
- dist+=func_0206409c(a[2]-b[2]);
+ dist=Abs(a[1]-b[1]);
+ dist+=Abs(a[2]-b[2]);
  if(b){if(!b)n=0;else n=((s32)b-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
  if(dist>c+(GetUnitMoveRange(n,(u32)(b[0]<<26)>>26)+1))return 0;return 1;
 }
@@ -170,7 +170,7 @@ void MarkPlayerThreatsToUnit(u8 player, s32 target) {
  s32 GetUnitDamagePercent(u32,u32);
  s32 GetUnitMoveRange(s32,u32);
  void FloodFillUnitRange(s32,s32,s32,s32,s32);
- void func_01ffb9c4(s32);
+ void MarkAdjacentCells(s32);
  s32 slot,value,x,y,existing;
  u8 *unit, *q=(u8 *)target;
  M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=player;
@@ -185,7 +185,7 @@ void MarkPlayerThreatsToUnit(u8 player, s32 target) {
  if(unit){if(unit == 0)value=0;else value=((s32)unit-(s32)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/14;value=(value>>6)+1;}else value=0;
  value=GetUnitMoveRange(value,(u32)(unit[0]<<26)>>26);
  FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,value,12);
- func_01ffb9c4(0x6f);
+ MarkAdjacentCells(0x6f);
  if(M2C_FIELD(((s8 **)((u8 *)*gCurrentMap+MAP_GRID))[q[2]],s8 *,q[1])<0)continue;
  func_ov000_02185c20(q[1],q[2]);
  for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){

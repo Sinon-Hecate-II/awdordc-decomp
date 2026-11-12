@@ -117,8 +117,8 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
 }
 
 void func_ov010_02227f14(void) {
- s32 func_02038eb0(u8 **); s32 func_ov010_02229a08(void); void func_020445cc(u32,void *,s32); extern M2C_UNK data_ov010_0222eee0;
- u8 *list; s32 n=func_02038eb0(&list); s32 i; u32 id; u32 index;
+ s32 GetActiveConnectionList(u8 **); s32 func_ov010_02229a08(void); void func_020445cc(u32,void *,s32); extern M2C_UNK data_ov010_0222eee0;
+ u8 *list; s32 n=GetActiveConnectionList(&list); s32 i; u32 id; u32 index;
  for(i=0;i<n;i++){id=list[i];if(id!=func_ov010_02229a08()){if(id<(u32)func_ov010_02229a08())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&data_ov010_0222eee0,u8 **,0x3c)+index*0x5a0,0x5a0);}}
 }
 
@@ -494,7 +494,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
 
     void *func_0208206c(void);
     void func_ov010_022269dc(void *, void *);
-    void func_02007e98(s32, void *, s32);
+    void MI_CpuFill32(s32, void *, s32);
     void func_ov010_02228a38(void *);
     void *func_ov010_02228a48(void *);
     extern M2C_UNK data_ov010_0222c2f8, data_ov010_0222c3d0;
@@ -552,7 +552,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;
         M2C_FIELD(obj,s32 *,0x34)=0;
-        func_02007e98(0,(u8 *)obj+0x38,0x10);
+        MI_CpuFill32(0,(u8 *)obj+0x38,0x10);
     }
     obj=func_01ffa3dc(&data_ov010_0222c330,3);
     if(obj) {

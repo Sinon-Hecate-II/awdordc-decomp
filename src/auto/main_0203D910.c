@@ -417,15 +417,15 @@ return func_0203af50(6,sp0,0);
 
 void func_0203e4e0(void) {
     M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020427f4();
-    M2C_UNK func_02044258(M2C_UNK);
+    M2C_UNK ClearSessionPlayers();
+    M2C_UNK SetActiveConnection(M2C_UNK);
     extern M2C_UNK gConnectionMgr;
-    func_02044258(0);
+    SetActiveConnection(0);
     if (M2C_FIELD(&gConnectionMgr, s32 *, 8) != 0) {
         HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
         M2C_FIELD(&gConnectionMgr, s32 *, 8) = 0;
     }
-    func_020427f4();
+    ClearSessionPlayers();
     if (M2C_FIELD(&gConnectionMgr, s32 *, 0) != 0) {
         HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 0), 0);
         M2C_FIELD(&gConnectionMgr, s32 *, 0) = 0;
@@ -445,8 +445,8 @@ s32 func_0203e558(void) {
 /* Reset matchmaking context: mode 2 preserves a session, copying byte 0xD to 0x14 and
    selecting state 0x01 (mode 3) or 0x0A (mode 2); mode 1 keeps mode but selects state
    0x03 (mode 0) or 0x04 (mode 1); mode 0 clears mode callbacks too. */
-void func_0203e570(s32 resetMode) {
-    M2C_UNK func_02007df8(M2C_UNK, s32, M2C_UNK);
+void ResetConnection(s32 resetMode) {
+    M2C_UNK FillU16(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     s16 RandomBelow(M2C_UNK);
@@ -523,11 +523,11 @@ void func_0203e570(s32 resetMode) {
     M2C_FIELD(GetConnection(), s32 *, 0x208) = 0;
     M2C_FIELD(GetConnection(), s32 *, 0x2F0) = 0;
     func_02007e54(0, GetConnection() + 0x24, 0x80);
-    func_02007df8(0, GetConnection() + 0xA4, 0x40);
+    FillU16(0, GetConnection() + 0xA4, 0x40);
     func_02007e54(0, GetConnection() + 0xF4, 0x80);
     func_02007e54(0, GetConnection() + 0x194, 0xC);
     func_02007e54(0, GetConnection() + 0x210, 0x80);
-    func_02007df8(0, GetConnection() + 0x290, 0x40);
+    FillU16(0, GetConnection() + 0x290, 0x40);
     MI_CpuFill8(GetConnection() + 0x2D0, 0, 0x20);
     func_02007e54(0, GetConnection() + 0x348, 0x84);
     if (resetMode == 1) {

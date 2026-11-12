@@ -134,7 +134,7 @@ void func_020e4688(void) {
     void func_01ff873c(void);
     void func_01ff87e4(void);
     M2C_UNK func_01ff9b38();
-    void func_01ff9ed0(void);
+    void Update3DSpriteVram(void);
     void func_01ffa13c(int);
     void func_01ffa5b8(void);
     void func_0200d248(void *);
@@ -158,7 +158,7 @@ void func_020e4688(void) {
         func_01ffa13c(2);
         func_01ffa5b8();
         func_01ff9b38();
-        func_01ff9ed0();
+        Update3DSpriteVram();
         func_01ff873c();
         data_027e15b4 = 1;
     } else {
@@ -467,9 +467,9 @@ void func_020e4c64(void) {
     M2C_FIELD(&data_02168fec, s32 *, 4) = func_02081070(&data_0212da20, 1);
 }
 
-void func_020e4ca0(void) {M2C_UNK func_020e35cc(s32);extern M2C_UNK data_02168fec;u32 n=M2C_FIELD(&data_02168fec,u8 *,0)-1;M2C_FIELD(&data_02168fec,u8 *,0)=n;if(n&255)return;func_020e35cc(M2C_FIELD(&data_02168fec,s32 *,4));M2C_FIELD(&data_02168fec,s32 *,4)=0;}
+void func_020e4ca0(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_02168fec;u32 n=M2C_FIELD(&data_02168fec,u8 *,0)-1;M2C_FIELD(&data_02168fec,u8 *,0)=n;if(n&255)return;HeapFreeBlock(M2C_FIELD(&data_02168fec,s32 *,4));M2C_FIELD(&data_02168fec,s32 *,4)=0;}
 
-void func_020e4cd8(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK func_02007ef4();extern M2C_UNK data_02168fec;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&data_02168fec,u32 *,4)+index*128;func_02007ef4(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
+void func_020e4cd8(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK data_02168fec;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&data_02168fec,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
 
 s8 func_020e4d80(void *arg0) {
     s8 func_01ffa6fc(void *);

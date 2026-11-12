@@ -201,7 +201,7 @@ void func_020be130(void *arg0) {
     s32 func_02076208();
     M2C_UNK func_02076244();
     M2C_UNK GetLocalizedText(s32);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x54);
@@ -212,7 +212,7 @@ void func_020be130(void *arg0) {
     if (temp_r4 == 0) {
         return;
     }
-    func_020e35cc(temp_r4);
+    HeapFreeBlock(temp_r4);
 }
 
 void func_020be168(M2C_UNK arg0) {
@@ -240,11 +240,11 @@ u8 func_020be1a8(void) {
 }
 
 void func_020be1dc(s32 arg0) {
-void *func_02076228(void);s32 func_02076234(void);
+void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
 M2C_UNK func_02076010(s32,s32);M2C_UNK func_02076180(u16);
 u8 *p,*best;s32 n,i,id;
 switch(arg0){case 2:case 3:case 4:func_02076010(arg0,1);return;}
-p=func_02076228();best=0;n=func_02076234();i=0;
+p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){if(!IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4))) goto next;}best=p;}next:i++;p+=40;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return;
@@ -264,43 +264,43 @@ void func_020be2f8(M2C_UNK arg0) {
 }
 
 u8 func_020be324(s32 arg0,M2C_UNK arg1){
-void *func_02076228(void);s32 func_02076234(void);s32 func_020761c0(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK GetLocalizedText(s32);M2C_UNK func_02076244();
+void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);s32 LoadSaveRecord(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK GetLocalizedText(s32);M2C_UNK func_02076244();
 u8 *p,*best;s32 n,i,id; s32 better; u32 high;u32 b,a;u8 result;
-p=func_02076228();best=0;n=func_02076234();i=0;
+p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));
 if(!better)goto next;
 }best=p;}next:i++;p+=40;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return 0;
-result=func_020761c0(id,arg1);
+result=LoadSaveRecord(id,arg1);
 if(func_02076208()){GetLocalizedText(0xc000034d);func_02076244();}
 return result;
 }
 
 void func_020be438(s32 a,s32 b,s32 c) {
- s32 func_020e34bc(s32);
+ s32 HeapAllocBlock(s32);
  s32 v=0;
  func_020be1dc(a);
  func_020be2e0(b,c,(u8)a);
- if(a!=4) {v=func_020e34bc(0x6000);func_020be2f8(v);}
+ if(a!=4) {v=HeapAllocBlock(0x6000);func_020be2f8(v);}
  func_02076198();
  func_020be188(v);
 }
 
 void func_020be488(s32 a) {
-    s32 func_020e34bc(s32);
+    s32 HeapAllocBlock(s32);
     s32 v=0;
     func_020be1dc(a);
     if(a!=4) {
-        v=func_020e34bc(0x6000);
+        v=HeapAllocBlock(0x6000);
         func_020be2f8(v);
     }
     func_02076198();
     func_020be188(v);
 }
 
-s32 func_020be4c0(s32 arg0) { void *func_02076228(void); s32 func_02076234(void); u8 *p,*best; s32 n,i,better,id;u32 b,a,high;
-p=func_02076228();best=0;n=func_02076234();i=0;
+s32 func_020be4c0(s32 arg0) { void *GetSaveRecordList(void); s32 GetSaveRecordCount(void); u8 *p,*best; s32 n,i,better,id;u32 b,a,high;
+p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){a=M2C_FIELD(p,u32 *,4);b=M2C_FIELD(best,u32 *,4);high=a&0xffff0000;
 if(high==0xffff0000 && !(b&0xffff0000) && b!=0)better=0;
 else if(high==0 && (b&0xffff0000)==0xffff0000 && a!=0)better=1;

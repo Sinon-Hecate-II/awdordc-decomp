@@ -38,15 +38,15 @@ void func_02008f60(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
 
 s32 func_02008f88(int a,int b,int c,int d,int e){void *func_02009210(int);void *p=func_02009210(1);if(!p)return (s32)p;M2C_FIELD(p,s32 *,4)=a;M2C_FIELD(p,s32 *,8)=b;M2C_FIELD(p,s32 *,12)=c;M2C_FIELD(p,s32 *,16)=d;M2C_FIELD(p,s32 *,20)=e;return func_02009298(p);}
 
-void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;func_0200654c(&data_0212e004);func_0200902c();func_0200973c();}
+void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;InitMutex(&data_0212e004);func_0200902c();func_0200973c();}
 
 void func_02009004(void) {
-    M2C_UNK func_02006564(M2C_UNK *);
+    M2C_UNK LockMutex(M2C_UNK *);
     extern M2C_UNK data_0212e004;
-    func_02006564(&data_0212e004);
+    LockMutex(&data_0212e004);
 }
 
-void func_02009018(void){M2C_UNK func_020065e8(M2C_UNK *);extern M2C_UNK data_0212e004;func_020065e8(&data_0212e004);}
+void func_02009018(void){M2C_UNK UnlockMutex(M2C_UNK *);extern M2C_UNK data_0212e004;UnlockMutex(&data_0212e004);}
 
 #pragma opt_strength_reduction off
 #pragma peephole off

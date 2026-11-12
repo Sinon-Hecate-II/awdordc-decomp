@@ -137,13 +137,13 @@ s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     return var_r4;
 }
 
-void func_0203c110(s32 arg0,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
+void InitConnection(s32 arg0,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
 void *GetConnection(void);s32 SetConnectionState(s32);
-void func_02044258(s32);void func_020427f4(void);void func_0203e570(s32);
+void SetActiveConnection(s32);void ClearSessionPlayers(void);void ResetConnection(s32);
 void MI_CpuFill8(void *,s32,s32);
 extern M2C_UNK gConnectionMgr;
 void *p;
-func_02044258(arg0);
+SetActiveConnection(arg0);
 M2C_FIELD(GetConnection(),s32 *,0)=a;
 M2C_FIELD(GetConnection(),s32 *,4)=b;
 M2C_FIELD(GetConnection(),s32 *,8)=c;
@@ -172,11 +172,11 @@ M2C_FIELD(GetConnection(),s32 *,1148)=0;
 M2C_FIELD(GetConnection(),s32 *,1152)=0;
 p=GetConnection();
 M2C_FIELD(p,s32 *,0x174)=0;M2C_FIELD(p,s32 *,0x178)=0;
-func_020427f4();
+ClearSessionPlayers();
 M2C_FIELD(&gConnectionMgr,u8 *,0x1c)=0;
 M2C_FIELD(&gConnectionMgr,u8 *,0x1d)=0;
 M2C_FIELD(&gConnectionMgr,u16 *,0x1e)=0;
-func_0203e570(0);
+ResetConnection(0);
 }
 
 s32 StartQr2Reporting(s32 arg0){

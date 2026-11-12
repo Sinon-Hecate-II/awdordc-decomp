@@ -46,7 +46,7 @@ s32 func_0204bad4(void *arg0) {
     void *func_02048558(s32, s32, s32);
     void *Vector_GetItem(s32, s32);
     s32 func_0204b9b8(void *);
-    void func_020486f8(void *, void *);
+    void Vector_AddItem(void *, void *);
     void func_0204ba68(void *);
     void func_0204861c(s32);
     s32 func_0204b958(void *);
@@ -93,7 +93,7 @@ s32 func_0204bad4(void *arg0) {
             M2C_FIELD(arg0, s32 *, 0x140) = 0;
             return 0;
         }
-        func_020486f8(M2C_FIELD(arg0, s32 *, 0x140), buf);
+        Vector_AddItem(M2C_FIELD(arg0, s32 *, 0x140), buf);
     }
     if (Vector_GetCount(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0)) != Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x140))) {
         AssertFailed(&data_020fd454, &sGhttpPostFile, &data_020fd1fc, 0x2b1);

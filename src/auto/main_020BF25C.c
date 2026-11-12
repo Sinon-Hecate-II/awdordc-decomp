@@ -1,5 +1,6 @@
 /* 35 functions from 0x020BF25C to 0x020C0254 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern char data_0215e5e4[], data_0215dba4[];
 extern char data_021295c4[], data_021295d0[], data_021295d8[], data_021295dc[], data_021295e4[], data_021295ec[], data_021295f4[], data_021295f8[], data_021295fc[], data_02129604[];
 static inline int SaveRangeA(s32 n) { int b=0; if(n>=0xa1) b=(n<0xbb); return b!=0; }
@@ -191,7 +192,7 @@ extern M2C_UNK data_0215d9ec;
 return (u8 *)&data_0215d9ec+((a-5)<<3);
 }
 
-M2C_UNK *func_020bfa74(void) {
+M2C_UNK *GetMapSettings(void) {
     extern M2C_UNK data_0215da0c;
     return &data_0215da0c;
 }
@@ -200,7 +201,7 @@ void func_020bfa80(u16 *arg0) {
 extern M2C_UNK data_0211faf4;
 SaveInit *p=(SaveInit *)arg0;
 s32 i;
-if(!p) p=(SaveInit *)func_020bfa74();
+if(!p) p=(SaveInit *)GetMapSettings();
 p->a=0; p->b=0; p->c=0; p->d=0; p->e=0; p->f=0; p->g=0;
 p->j=0; p->k=1000; p->h=2; p->l=1;
 for(i=0;i<4;i++){
@@ -212,7 +213,7 @@ else p->entries[i].mode=2;
 }
 
 void func_020bfb74(void *a) {
-if (!a) a=func_020bfa74();
+if (!a) a=GetMapSettings();
 M2C_FIELD(&data_0215d890,SavePair *,0)=M2C_FIELD(a,SavePair *,0);
 M2C_FIELD(&data_0215d890,SavePair *,4)=M2C_FIELD(a,SavePair *,4);
 M2C_FIELD(&data_0215d890,u32 *,8)=M2C_FIELD(a,u32 *,8);
@@ -220,7 +221,7 @@ M2C_FIELD(&data_0215d890,u32 *,12)=M2C_FIELD(a,u32 *,12);
 }
 
 void func_020bfbc0(void *a) {
-if (!a) a=func_020bfa74();
+if (!a) a=GetMapSettings();
 M2C_FIELD(a,SavePair *,0)=M2C_FIELD(&data_0215d890,SavePair *,0);
 M2C_FIELD(a,SavePair *,4)=M2C_FIELD(&data_0215d890,SavePair *,4);
 M2C_FIELD(a,u32 *,8)=M2C_FIELD(&data_0215d890,u32 *,8);
@@ -279,7 +280,7 @@ void func_020bfda8(void *arg0) {
 
     var_r5 = arg0;
     if (var_r5 == NULL) {
-        var_r5 = func_020bfa74();
+        var_r5 = GetMapSettings();
     }
     func_020bfa80(var_r5);
     temp_r0 = func_020bfc0c();
@@ -299,7 +300,7 @@ void func_020bfda8(void *arg0) {
 
 void func_020bfebc(void *p) {
  extern void **gCurrentMap; extern u8 gMapConfig[];
- if(!p)p=func_020bfa74();
+ if(!p)p=GetMapSettings();
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294963201U)|((u32)(M2C_FIELD(*gCurrentMap,u16 *,20802)<<21)>>20);
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294963199U)|((u32)(M2C_FIELD(*gCurrentMap,u8 *,20822)<<31)>>19);
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294909951U)|((u32)(M2C_FIELD(*gCurrentMap,u8 *,20827)<<29)>>16);
@@ -313,24 +314,26 @@ M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&~0x80000000)|((((u32)(M2C_FIELD(gMa
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~1)|(((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<25)>>31)&1);
 }
 
-void func_020c002c(void *arg0) {
-M2C_UNK *func_020bfa74(void); extern void **gCurrentMap; extern u8 gMapConfig[];
-u32 count;
-if(!arg0)arg0=func_020bfa74();
-count=(M2C_FIELD(arg0,u32*,8)<<20)>>21;
-if(count) M2C_FIELD(*gCurrentMap,u16*,0x5142)=count;
-M2C_FIELD(*gCurrentMap,u8*,0x5156)=(M2C_FIELD(arg0,u32*,8)<<19)>>31;
-M2C_FIELD(*gCurrentMap,u8*,0x5158)=(M2C_FIELD(arg0,u32*,8)<<16)>>29;
-M2C_FIELD(*gCurrentMap,u8*,0x515a)=(M2C_FIELD(arg0,u32*,8)<<16)>>29;
-M2C_FIELD(*gCurrentMap,u8*,0x515b)=(M2C_FIELD(arg0,u32*,8)<<16)>>29;
-M2C_FIELD(*gCurrentMap,u8*,0x5159)=(M2C_FIELD(arg0,u32*,8)<<15)>>31;
-M2C_FIELD(*gCurrentMap,u8*,0x5157)=(M2C_FIELD(arg0,u32*,8)<<11)>>28;
-gMapConfig[3]=(M2C_FIELD(arg0,u32*,8)<<4)>>25;
-M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x38)|((u32)((u16)(M2C_FIELD(arg0,u32*,8)>>28)<<29)>>26);
-M2C_FIELD(gMapConfig,u32*,8)=(u32)(M2C_FIELD(arg0,s32*,12)<<15)>>15;
-M2C_FIELD(gMapConfig,u16*,6)=(M2C_FIELD(arg0,u32*,12)<<1)>>18;
-M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x100)|((u32)((u16)(M2C_FIELD(arg0,u32*,12)>>31)<<31)>>23);
-M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x40)|((u32)((u16)((u32)(M2C_FIELD(arg0,s32*,8)<<31)>>31)<<31)>>25);
+/* Apply a packed settings record (map id, fog, weather, tileset and the value
+ * limits) to the current battle map and to gMapConfig. */
+void MapSettings_Apply(void *arg0) {
+M2C_UNK *GetMapSettings(void); extern void **gCurrentMap; extern u8 gMapConfig[];
+u32 mapId;
+if(!arg0)arg0=GetMapSettings();
+mapId=(((MapSettings *)arg0)->rules<<20)>>21;
+if(mapId) M2C_FIELD(*gCurrentMap,u16*,MAP_ID)=mapId;
+M2C_FIELD(*gCurrentMap,u8*,MAP_FOG)=(((MapSettings *)arg0)->rules<<19)>>31;
+M2C_FIELD(*gCurrentMap,u8*,MAP_WEATHER)=(((MapSettings *)arg0)->rules<<16)>>29;
+M2C_FIELD(*gCurrentMap,u8*,MAP_WEATHER_START)=(((MapSettings *)arg0)->rules<<16)>>29;
+M2C_FIELD(*gCurrentMap,u8*,MAP_WEATHER_RESET)=(((MapSettings *)arg0)->rules<<16)>>29;
+M2C_FIELD(*gCurrentMap,u8*,MAP_WEATHER_MODE)=(((MapSettings *)arg0)->rules<<15)>>31;
+M2C_FIELD(*gCurrentMap,u8*,MAP_TILESET)=(((MapSettings *)arg0)->rules<<11)>>28;
+gMapConfig[3]=(((MapSettings *)arg0)->rules<<4)>>25;
+M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x38)|((u32)((u16)(((MapSettings *)arg0)->rules>>28)<<29)>>26);
+M2C_FIELD(gMapConfig,u32*,8)=(u32)((s32)((MapSettings *)arg0)->values<<15)>>15;
+M2C_FIELD(gMapConfig,u16*,6)=(((MapSettings *)arg0)->values<<1)>>18;
+M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x100)|((u32)((u16)(((MapSettings *)arg0)->values>>31)<<31)>>23);
+M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x40)|((u32)((u16)((u32)((s32)((MapSettings *)arg0)->rules<<31)>>31)<<31)>>25);
 }
 
 void func_020c01bc(M2C_UNK arg0) {

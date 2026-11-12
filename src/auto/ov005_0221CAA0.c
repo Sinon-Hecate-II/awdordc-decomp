@@ -119,7 +119,7 @@ func_020aad18(M2C_FIELD(FindObjectByClass(data_ov005_02220d50),s32*,0x3c));
 func_020aad18(M2C_FIELD(FindObjectByClass(data_ov005_02220d50),s32*,0x40));
 i=0;
 if(func_020cfb94()>0){y=79;do{
-func_02087d18(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
+AddSpriteCell(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
 i++;y+=20;
 }while(i<func_020cfb94());}
 func_02087f00(M2C_FIELD(arg0,void**,0x34),3);

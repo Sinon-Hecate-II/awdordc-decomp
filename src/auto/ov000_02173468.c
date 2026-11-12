@@ -156,8 +156,8 @@ void *func_ov000_02173f30(void *arg0) {
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 void func_ov000_02173f78(void *arg0) {
-    M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02007ef4(s32, s32, s32);
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(s32, s32, s32);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02080c50(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -248,7 +248,7 @@ register s32 temp_r9;
     ((EngineFlags_02173f78 *)gCur3DSpriteEngine)->bg1 = 1;
     ((EngineFlags_02173f78 *)gCur3DSpriteEngine)->bg2 = 1;
     func_020af19c(3, 0xE);
-    func_02007e98(0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), 0x40);
+    MI_CpuFill32(0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), 0x40);
     var_r8 = 0;
     do {
         temp_r9 = ((var_r8 + 1) * 0x8C) + ((s32)*gCurrentMap + 0x67A4);
@@ -279,7 +279,7 @@ register s32 temp_r9;
     temp_r5 = func_020a7290() << 5;
     temp_r4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0xE0;
     tiles = func_020a7278();
-    func_02007ef4(tiles, temp_r4 + 0x3000, temp_r5);
+    MI_CpuCopy32(tiles, temp_r4 + 0x3000, temp_r5);
     CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov000_021b8ee8, 0, 0x80);
     LoadFileToSpriteBuffer(&data_ov000_021b8ef4, 0x160, 0x20);

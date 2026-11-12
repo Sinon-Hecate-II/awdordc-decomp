@@ -21,7 +21,7 @@ s32 IsCarrierUnitKind(s32);
 s32 GetUnitAttackClass(s32);
 s32 GetUnitMoveRange(s32,s32);
 s32 FloodFillUnitRange(s32,s32,s32,s32,s32);
-void func_01ffb9c4(s32);
+void MarkAdjacentCells(s32);
 s32 tileX,tileY;
 s32 unitId,influence;
 UnkStruct_ov000_021A860C *unit;
@@ -47,7 +47,7 @@ if(!GetUnitAttackClass(unit->unk0)){
 if(unit){if(!unit)id=0;else id=unit-(UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS);owner=(id>>6)+1;}else owner=0;
 owner=GetUnitMoveRange(owner,unit->unk0);
 FloodFillUnitRange(((u8 *)unit)[1],((u8 *)unit)[2],unit->unk0,owner,1);
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 for(tileY=0;tileY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);tileY++){
 for(tileX=0;tileX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);tileX++){
 map=(u8 *)*gCurrentMap;
@@ -230,7 +230,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     extern M2C_UNK data_ov000_021df604;
     extern u8 data_ov000_021df7dc[];
     extern u8 gAiCommand[];
-    extern u8 data_02168f0c[];
+    extern u8 gBattleEndState[];
 
     u8 *unit;
     s32 result;
@@ -270,7 +270,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         ((volatile u8 *)state)[0x12] = ((u32)(unit[10]<<25)>>25)-result;
         ((volatile u8 *)state)[0x13] = 1;
 
-    if (*(volatile u8 *)data_02168f0c != 0) {
+    if (*(volatile u8 *)gBattleEndState != 0) {
         func_ov000_02199ce0();
     }
     func_02072b10(&data_ov000_021df604, 1);
@@ -290,7 +290,7 @@ void func_ov000_02199f50(s32 a, s32 b, s32 c, s32 d) {
     extern s32 *gCurrentMap;
     extern u8 data_ov000_021df7dc[];
     extern u8 gAiCommand[];
-    extern u8 data_02168f0c[];
+    extern u8 gBattleEndState[];
     func_02084464((u8 *)*gCurrentMap + 0x5388, data_ov000_021df7dc);
     gAiCommand[1] = (u8)b;
     *(s32 *)(gAiCommand + 8) = func_0207c2e0();
@@ -307,7 +307,7 @@ void func_ov000_02199f50(s32 a, s32 b, s32 c, s32 d) {
         volatile u8 *_u = (volatile u8 *)*(s32 *)((u8 *)*gCurrentMap + 0x52d0);
         gAiCommand[0x12] = (((u32)_u[0xa] << 25) >> 25) - _r;
     }
-    if (data_02168f0c[0] != 0) {
+    if (gBattleEndState[0] != 0) {
         func_02084568(a, b, c, d);
     }
 }

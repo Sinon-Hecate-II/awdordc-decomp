@@ -14,8 +14,8 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_02061090(void *, s32, u16);
     s32 func_02061168();
     M2C_UNK func_02061a38(void *, s32);
-    s32 func_02061ac8(void *, s32, u16);
-    s32 func_02061bc8(void *, s32);
+    s32 SBServerListFindByAddress(void *, s32, u16);
+    s32 SBServerListGetServerAt(void *, s32);
     M2C_UNK func_020629bc(void *, M2C_UNK, s32, s32 *, u16 *);
     s32 gpiProcessPlayerRecord(void *, s32, M2C_UNK, s32, s32);
     s32 entry;
@@ -27,7 +27,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
         return 4;
     }
     func_020629bc(arg0, arg1, arg2, &count, &kind);
-    found = func_02061ac8(arg0, count, kind);
+    found = SBServerListFindByAddress(arg0, count, kind);
     if (found == -1) {
         entry = func_02061090(arg0, count, kind);
         if (func_02061168() != 0) {
@@ -35,7 +35,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
         }
         goto apply;
     }
-    entry = func_02061bc8(arg0, found);
+    entry = SBServerListGetServerAt(arg0, found);
 apply:
     if (gpiProcessPlayerRecord(arg0, entry, arg1, arg2, 0) < 0) {
         return 4;
@@ -53,7 +53,7 @@ s32 func_020637fc(void *arg0) {
     M2C_UNK func_02061efc(void *);
     s32 func_0206325c(void *, u8 *, s32);
     s32 GpiHandleRecordList(void *, u8 *, s32);
-    s32 func_020634f4(void *, u8 *, s32);
+    s32 GpiHandleServerInfoResponse(void *, u8 *, s32);
     s32 func_02063678(M2C_UNK, u8 *, s32);
     void AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void func_020651c4(void *, void *, s32);
@@ -92,7 +92,7 @@ s32 func_020637fc(void *arg0) {
             result = func_02063678(arg0, buf + 3, size - 3);
             break;
         case 5:
-            result = func_020634f4(arg0, buf + 3, size - 3);
+            result = GpiHandleServerInfoResponse(arg0, buf + 3, size - 3);
             break;
         case 6:
             result = GpiHandleRecordList(arg0, buf + 3, size - 3);
@@ -196,12 +196,12 @@ void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 extern s32 data_0213e4b4[];
 s32 func_02063c88(void *arg0) {
 s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
-s32 func_02061ac8(void *,s32,u16); s32 func_02061090(void *,s32,u16); s32 func_02061168(void);
+s32 SBServerListFindByAddress(void *,s32,u16); s32 func_02061090(void *,s32,u16); s32 func_02061168(void);
 void gpiPlayerSetFlags(s32,s32); s32 func_02061a38(void *,s32); u32 GetTickCountMs(void); void func_020496b8(s32);
 u8 buf[0x5dc]; u16 addr[4]; s32 len=8; s32 entry;
 while(func_02049534(M2C_FIELD(arg0,s32 *,0x4b0))) {
 if(func_020497e0(M2C_FIELD(arg0,s32 *,0x4b0),buf,0x5db,0,addr,&len)!=-1 &&
-func_02061ac8(arg0,*(s32 *)(addr+2),addr[1])==-1) {
+SBServerListFindByAddress(arg0,*(s32 *)(addr+2),addr[1])==-1) {
 entry=func_02061090(arg0,*(s32 *)(addr+2),addr[1]); if(func_02061168())return 5;
 gpiPlayerSetFlags(entry,17);func_02061a38(arg0,entry);
 }}
@@ -255,7 +255,7 @@ void func_02063e1c(M2C_UNK arg0) {
 
 #pragma opt_common_subs off
 M2C_UNK func_02063e68(M2C_UNK arg0){
-s32 func_02006680(void*);M2C_UNK func_02006564();M2C_UNK func_020065e8();
+s32 func_02006680(void*);M2C_UNK LockMutex();M2C_UNK UnlockMutex();
 M2C_UNK func_020649a8(s32);M2C_UNK func_020746f0(void);
 extern u8 data_0213e61c[];extern M2C_UNK gSocketManager,data_0213e4c4,data_0213e4d4;
 extern s32 data_0213e5d4[],data_0213e5f8[];
@@ -265,7 +265,7 @@ data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),s32*,108);data_02
 }else if((thread=M2C_FIELD(&gSocketManager,void**,4),owner=data_0213e5d4[0],owner==M2C_FIELD(thread,s32*,108))){
 data_0213e5f8[0]++;
 }else{
-func_02006564(data_0213e61c);
+LockMutex(data_0213e61c);
 data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),s32*,108);data_0213e5f8[0]=1;
 }
 while(M2C_FIELD(&data_0213e4c4,s32*,8)>0){
@@ -273,7 +273,7 @@ n=M2C_FIELD(&data_0213e4c4,s32*,8)-1;
 cb=((M2C_UNK (**)(void))&data_0213e4d4)[n];
 M2C_FIELD(&data_0213e4c4,s32*,8)=n;cb();
 }
-if(--data_0213e5f8[0]==0)func_020065e8(data_0213e61c);
+if(--data_0213e5f8[0]==0)UnlockMutex(data_0213e61c);
 if(M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)){
 M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)();M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)=0;
 }
@@ -314,7 +314,7 @@ return result;
 #pragma peephole reset
 #pragma opt_strength_reduction reset
 
-s32 func_0206409c(s32 arg0) {
+s32 Abs(s32 arg0) {
     s32 var_r0;
 
     var_r0 = arg0;
@@ -390,8 +390,8 @@ func_020640ec(arg0);
 #pragma scheduling reset
 s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_02006680(void *);
-    M2C_UNK func_02006564();
-    M2C_UNK func_020065e8();
+    M2C_UNK LockMutex();
+    M2C_UNK UnlockMutex();
     s32 func_0206433c(u16 *, s32, s32, void *);
     extern u8 data_021001cc[];
     extern u8 data_0213e61c[];
@@ -418,7 +418,7 @@ s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
                owner == M2C_FIELD(thread, s32 *, 0x6C))) {
         data_0213e5f8[n]++;
     } else {
-        func_02006564(data_0213e61c + n * 24);
+        LockMutex(data_0213e61c + n * 24);
         data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
         data_0213e5f8[n] = 1;
     }
@@ -426,7 +426,7 @@ s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     result = func_0206433c(arg0, arg1, arg2, arg3);
 
     if (--data_0213e5f8[n] == 0) {
-        func_020065e8(data_0213e61c + n * 24);
+        UnlockMutex(data_0213e61c + n * 24);
     }
 
     return result;

@@ -346,7 +346,7 @@ void func_020897b8(void) {
 }
 
 void func_020897e8(void) {
-    M2C_UNK func_01ff9ed0();
+    M2C_UNK Update3DSpriteVram();
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 func_020ae22c(M2C_UNK);
     s32 func_020ae3e0(s32, s32, u8, u8);
@@ -361,7 +361,7 @@ void func_020897e8(void) {
     temp_r4 = func_020ae22c(0xF);
     temp_r4_2 = func_020ae3e0(temp_r4, func_020ae22c(0x10), var_r0, (u8)(0x20 - var_r0));
     func_0208e0f0(0x1400, 1, func_020ae22c(0xD), temp_r4_2);
-    func_01ff9ed0();
+    Update3DSpriteVram();
 }
 
 void func_0208989c(s32 arg0) {
@@ -491,44 +491,44 @@ void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
 #pragma opt_common_subs off
 M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  s32 StringLength(s32);
- s32 func_020e34bc(s32);
+ s32 HeapAllocBlock(s32);
  void StringCopy(s32,s32);
  void StringAppend(s32,s32);
  void func_02089c34(void *,s32);
  register s32 p; register s32 len;
  if(!arg1)return;
  if(!M2C_FIELD(arg0,s32 *,0x64)) {
- M2C_FIELD(arg0,s32 *,0x64)=func_020e34bc(StringLength(arg1)+1);
+ M2C_FIELD(arg0,s32 *,0x64)=HeapAllocBlock(StringLength(arg1)+1);
  StringCopy(M2C_FIELD(arg0,s32 *,0x64),arg1);
  } else {
  len=StringLength(M2C_FIELD(arg0,s32 *,0x64));
- p=func_020e34bc(len+StringLength(arg1)+1);
+ p=HeapAllocBlock(len+StringLength(arg1)+1);
  StringCopy(p,M2C_FIELD(arg0,s32 *,0x64));StringAppend(p,arg1);
  func_02089bdc(arg0);M2C_FIELD(arg0,s32 *,0x64)=p;
  }
- M2C_FIELD(arg0,s32 *,0x68)=func_020e34bc(8);
- M2C_FIELD(arg0,s32 *,0x6C)=func_020e34bc(8);
+ M2C_FIELD(arg0,s32 *,0x68)=HeapAllocBlock(8);
+ M2C_FIELD(arg0,s32 *,0x6C)=HeapAllocBlock(8);
  func_02089c34((void *)arg0,M2C_FIELD(arg0,s32 *,0x64));
 }
 #pragma opt_common_subs reset
 M2C_UNK func_02089bdc(void *arg0) {
-    s32 func_020e35cc(s32);
+    s32 HeapFreeBlock(s32);
     s32 p;
     p = *(volatile s32 *)((s8 *)arg0 + 0x64);
     if (p != 0) {
-        func_020e35cc(p);
+        HeapFreeBlock(p);
     }
     p = 0;
     *(volatile s32 *)((s8 *)arg0 + 0x64) = p;
     p = *(volatile s32 *)((s8 *)arg0 + 0x68);
     if (p != 0) {
-        func_020e35cc(p);
+        HeapFreeBlock(p);
     }
     p = 0;
     *(volatile s32 *)((s8 *)arg0 + 0x68) = p;
     p = *(volatile s32 *)((s8 *)arg0 + 0x6C);
     if (p != 0) {
-        func_020e35cc(p);
+        HeapFreeBlock(p);
     }
     p = 0;
     *(volatile s32 *)((s8 *)arg0 + 0x6C) = p;

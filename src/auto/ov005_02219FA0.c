@@ -172,7 +172,7 @@ void func_ov005_0221a598(void *arg0) {
 void func_ov005_0221a688(void *arg) {
     M2C_UNK PlaySoundEffect(s32);
     void *CreateSpriteObject(void *, void *);
-    void func_02007ef4(void *, void *, s32);
+    void MI_CpuCopy32(void *, void *, s32);
     extern Ov005ModeBits gMapConfig;
     extern u8 data_0215c334[];
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub;
@@ -198,7 +198,7 @@ void func_ov005_0221a688(void *arg) {
         M2C_FIELD(obj, s32 *, 0x60) = 2;
         M2C_FIELD(obj, s32 *, 0x64) = 16;
         M2C_FIELD(obj, void **, 0x54) = (char *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x30) + 0x340;
-        func_02007ef4(M2C_FIELD(obj, void **, 0x54), (char *)obj + 0x34, 32);
+        MI_CpuCopy32(M2C_FIELD(obj, void **, 0x54), (char *)obj + 0x34, 32);
         M2C_FIELD(obj, s32 *, 0x5c) = 0;
     }
     obj = CreateSpriteObject(&data_ov005_02220aa8, arg);
@@ -208,7 +208,7 @@ void func_ov005_0221a688(void *arg) {
         M2C_FIELD(obj, s32 *, 0x60) = 2;
         M2C_FIELD(obj, s32 *, 0x64) = 16;
         M2C_FIELD(obj, void **, 0x54) = (char *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x30) + 0x380;
-        func_02007ef4(M2C_FIELD(obj, void **, 0x54), (char *)obj + 0x34, 32);
+        MI_CpuCopy32(M2C_FIELD(obj, void **, 0x54), (char *)obj + 0x34, 32);
         M2C_FIELD(obj, s32 *, 0x5c) = 0;
     }
     gCur3DSpriteEngine = saved;

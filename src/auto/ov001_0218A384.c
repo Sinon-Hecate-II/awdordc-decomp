@@ -23,7 +23,7 @@ set_obj_xy(p,i,xy[1]+dx,xy[0]+dy);
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_0218a474(M2C_UNK arg0, s32 arg1, s32 arg2) {
+void Ov001_SetSpritePalette(M2C_UNK arg0, s32 arg1, s32 arg2) {
 u8 *entries=M2C_FIELD(arg0,u8 **,8);
 s32 i;
 if(arg1>=0) {
@@ -55,7 +55,7 @@ void func_ov001_0218a534(u8 arg0) {
  ((s32 *)&data_ov001_02193e34)[arg0] = 0;
 }
 
-void func_ov001_0218a55c(s32 arg0, s32 arg1, s32 arg2) {
+void Ov001_LoadSpriteObjLayout(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
 void func_02007e54(u32,void *,s32);
 void func_02007e20(const void *,void *,u32);
@@ -74,24 +74,24 @@ func_02007e20(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
 }
 
 s32 func_ov001_0218a5f0(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_ov001_0218a55c(M2C_UNK, M2C_UNK, s32);
+    void Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
     s32 func_ov001_0218c0e4();
     s32 temp_r0;
 
     temp_r0 = func_ov001_0218c0e4();
-    func_ov001_0218a55c(arg0, arg1, temp_r0);
+    Ov001_LoadSpriteObjLayout(arg0, arg1, temp_r0);
     return temp_r0;
 }
 
 M2C_UNK func_ov001_0218a61c(s32 arg0,s32 arg1,s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
 M2C_UNK func_ov001_0218a070(s32,s32,s32);
-s32 func_ov001_0218a24c(s32,s32);
-void func_ov001_0218a55c(s32,s32,s32);
+s32 Ov001_GetSpriteObjEntry(s32,s32);
+void Ov001_LoadSpriteObjLayout(s32,s32,s32);
 void *base=((M2C_UNK **)&data_ov001_02193e34)[arg0];
 u16 count=*(u16 *)((u8 *)base+arg1*8);
 M2C_UNK t=func_ov001_0218a070(arg0,count,arg2);
-func_ov001_0218a55c(arg0,arg1,func_ov001_0218a24c(t,0));
+Ov001_LoadSpriteObjLayout(arg0,arg1,Ov001_GetSpriteObjEntry(t,0));
 return t;
 }
 
@@ -421,9 +421,9 @@ M2C_UNK func_ov001_0218af0c(s32 arg0) {
     M2C_UNK temp_r0;
     func_ov001_0218c94c(1, M2C_FIELD((void *)arg0, M2C_UNK *, 0x2C));
     if (arg0 == (M2C_UNK)data_ov001_02193e40 + 0x610) {
-        temp_r0 = func_02007df8(0, func_02003834(), 0x6000);
+        temp_r0 = FillU16(0, func_02003834(), 0x6000);
     } else {
-        temp_r0 = func_02007df8(0, func_02003834(), 0x3000);
+        temp_r0 = FillU16(0, func_02003834(), 0x3000);
     }
     return func_ov001_0218b71c((u8 *)arg0 + 0x28);
 }
@@ -514,16 +514,16 @@ M2C_FIELD(M2C_FIELD(arg0,void **,0x14),void (**)(void *,s32),4)(arg0,arg1);
 
 void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_ov001_0216a398(s32, u8, u8, M2C_UNK, s32, s32, s32, s32);
-          s32 func_ov001_0218a24c(s32, s32);
+          s32 Ov001_GetSpriteObjEntry(s32, s32);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a304(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_0218a474(M2C_UNK, M2C_UNK, s32);
+    void Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, s32);
     s32 temp_r5;
 
-    temp_r5 = func_ov001_0218a24c(arg3, 0);
+    temp_r5 = Ov001_GetSpriteObjEntry(arg3, 0);
     func_ov001_0218a260(arg3, -1, 0, 0);
     func_ov001_0218a304(arg3, -1, 0, 0xF);
-    func_ov001_0218a474(arg3, -1, arg4);
+    Ov001_SetSpritePalette(arg3, -1, arg4);
     func_ov001_0216a398(temp_r5, M2C_FIELD(arg0, u8 *, 0x2E), M2C_FIELD(arg0, u8 *, 0x2F), arg1, arg2, 0, (s32) M2C_FIELD(arg0, u16 *, 0x2C), 2);
 }
 

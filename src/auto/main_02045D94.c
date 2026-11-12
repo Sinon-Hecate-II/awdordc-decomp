@@ -210,7 +210,7 @@ M2C_UNK *func_02046878(void) {
 
 s32 func_02046884(void *arg0) {
     void func_02046d0c(s32, s32);
-    void func_02007df8(s32, s32, s32);
+    void FillU16(s32, s32, s32);
     s32 MI_CpuCopy8(M2C_UNK, M2C_UNK *, M2C_UNK);
 
     s32 stk[4];
@@ -314,7 +314,7 @@ s32 func_02046884(void *arg0) {
         func_02046d0c((s32)r8, 2);
     }
     if (stk[3] == 0) {
-        func_02007df8((s32)((u8 *)r8 + 0x300), 0, 0x100);
+        FillU16((s32)((u8 *)r8 + 0x300), 0, 0x100);
     }
 
     {
@@ -381,8 +381,8 @@ block_13:
     return 1;
 }
 
-s32 func_02046c8c(s32 a) { void func_02007df8(s32,s32,s32); void func_02046ebc(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 sp0[20];s32 i;void *p;register u8 *q;register u32 fill=255;func_02007df8(0,a,1024);i=0;do{q=(u8 *)(a+((u32)i<<8));M2C_FIELD(q,u8 *,0xe7)=fill;i++;}while(i<3);func_02046ebc(sp0);p=func_020467b8(sp0);i=0;do{MI_CpuCopy8((s32)p,(M2C_UNK *)(a+240),14);i++;a+=256;}while(i<2);return 0;}
+s32 func_02046c8c(s32 a) { void FillU16(s32,s32,s32); void func_02046ebc(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 sp0[20];s32 i;void *p;register u8 *q;register u32 fill=255;FillU16(0,a,1024);i=0;do{q=(u8 *)(a+((u32)i<<8));M2C_FIELD(q,u8 *,0xe7)=fill;i++;}while(i<3);func_02046ebc(sp0);p=func_020467b8(sp0);i=0;do{MI_CpuCopy8((s32)p,(M2C_UNK *)(a+240),14);i++;a+=256;}while(i<2);return 0;}
 
 #pragma opt_common_subs off
-void func_02046d0c(s32 a,s32 b) { void func_02007df8(s32,s32,s32); func_02007df8(0,a+(b<<8),256); M2C_FIELD(a+(b<<8),u8 *,0xe7)=255; }
+void func_02046d0c(s32 a,s32 b) { void FillU16(s32,s32,s32); FillU16(0,a+(b<<8),256); M2C_FIELD(a+(b<<8),u8 *,0xe7)=255; }
 #pragma opt_common_subs reset

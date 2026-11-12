@@ -126,10 +126,10 @@ return 0;
 }
 
 s32 func_02022e08(u8 *arg0,s32 arg1,s32 arg2) {
-extern u16 data_020faffc[];
+extern u16 gTlsCipherSuites[];
 u32 i=0;
 do {
-if(func_02022dbc(arg0,arg1,arg2,data_020faffc[i]))return data_020faffc[i];
+if(func_02022dbc(arg0,arg1,arg2,gTlsCipherSuites[i]))return gTlsCipherSuites[i];
 i++;
 }while(i<2);
 return 0;

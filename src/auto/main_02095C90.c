@@ -330,7 +330,7 @@ block_8:
 
 void func_0209643c(void){
 extern s32 *gCurrentMap;
-s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
+s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5142);
 s32 p,i;Unit964 *unit; s32 off;
 if(id>=225&&id<425){
@@ -344,7 +344,7 @@ if(!func_020a8b2c(id))return;
 SetFileDirectory((M2C_UNK *)data_02102ee4);
 p=func_02080e30(func_020a8b2c(id),1);
 func_0209670c(p,0);
-func_020e35cc(p);
+HeapFreeBlock(p);
 }
 if(!((u32)(gMapConfig[0]<<23)>>31)){
 i=1;off=14;
@@ -357,20 +357,20 @@ if(unit!=GetPlayerSelectedUnit())unit->owner=0;
 ++i;off+=14;
 }while(i<256);
 }
-func_020cfd28();
+RefreshMapView();
 }
 
 void func_0209656c(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_02080e30(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209670c(s32, M2C_UNK);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK data_02102eec;
     s32 temp_r0;
 
     SetFileDirectory(&data_02102eec);
     temp_r0 = func_02080e30(arg0, 1);
     func_0209670c(temp_r0, arg1);
-    func_020e35cc(temp_r0);
+    HeapFreeBlock(temp_r0);
 }
 

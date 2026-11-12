@@ -7,29 +7,29 @@ typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x
 #pragma push
 #pragma opt_common_subs off
 void func_020756a4(void *a) {
-void *func_020e34bc(s32);void func_020e35cc(void *);s32 func_02074920(void *);void func_02007ef4(void *,void *,s32);s32 func_020746fc(void *,void *);s32 func_0200558c(void);void MI_CpuCopy8(void *,void *);
+void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 func_02074920(void *);void MI_CpuCopy32(void *,void *,s32);s32 func_020746fc(void *,void *);s32 func_0200558c(void);void MI_CpuCopy8(void *,void *);
 s32 i,state;u8 *p; s32 shift;u8 byte;u32 mask;u8 *out;u16 id;u8 ok;u32 seq;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1)return;
 for(i=0;i<256;i++){
 p=(u8 *)a+(i>>2);shift=(i&3)*2;byte=M2C_FIELD(p,u8 *,0xc0c);state=(byte>>shift)&3;
 switch(state){case 2:mask=-1^(3<<shift);byte&=mask;state=(u8)byte;M2C_FIELD(p,u8 *,0xc0c)=(1<<shift)|state;break;case 1:M2C_FIELD(p,u8 *,0xc0c)=byte&(-1^(3<<shift));break;}
 }
-out=func_020e34bc(256);i=M2C_FIELD(a,s32 *,0xc00);
+out=HeapAllocBlock(256);i=M2C_FIELD(a,s32 *,0xc00);
 if(i!=-1){p=(u8 *)a+0xc0c;shift=(i&3)*2;p[i>>2]=(u8)(p[i>>2]&(-1^(3<<shift)))|(1<<shift);}
 seq=++M2C_FIELD(a,u32 *,0xc08);if(seq==0)++M2C_FIELD(a,u32 *,0xc08);
 M2C_FIELD(a,s32 *,0xc00)=func_02074920(a);M2C_FIELD(a,s32 *,0xc04)=0;
 i=M2C_FIELD(a,s32 *,0xc00);p=(u8 *)a+0xc0c;shift=(i&3)*2;p[i>>2]=(u8)(p[i>>2]&(-1^(3<<shift)))|(3<<shift);
 M2C_FIELD(out,u32 *,0)=0x32777364;
 if(M2C_FIELD(a,s32 *,0xc04)==0)M2C_FIELD(out,u32 *,8)=M2C_FIELD((u8 *)a+M2C_FIELD(a,s32 *,0xc00)*12,u32 *,0)+1;
-M2C_FIELD(out,u16 *,12)=0x54;func_02007ef4((u8 *)a+0xc0c,out+20,64);
+M2C_FIELD(out,u16 *,12)=0x54;MI_CpuCopy32((u8 *)a+0xc0c,out+20,64);
 out[14]=1;out[15]=1;seq=M2C_FIELD(a,u32 *,0xc08);M2C_FIELD(out,u16 *,16)=seq;M2C_FIELD(out,u16 *,18)=seq>>16;
 M2C_FIELD(out,s32 *,4)=func_020746fc(a,out);
 id=func_0200558c();func_0200fe5c(id);
 func_0201033c(out,(M2C_FIELD(a,s32 *,0xc00)<<10)+(M2C_FIELD(a,s32 *,0xc04)<<8),M2C_FIELD(out,u16 *,12),0,0,1,7,10,2);
 ok=func_02010584()!=0;func_0200fe6c(id);func_020055f4(id);
-if(!ok){M2C_FIELD(a,u8 *,0x2052)=1;func_020e35cc(out);return;}
+if(!ok){M2C_FIELD(a,u8 *,0x2052)=1;HeapFreeBlock(out);return;}
 if(M2C_FIELD(a,s32 *,0xc04)==0)MI_CpuCopy8(out+8,(u8 *)a+M2C_FIELD(a,s32 *,0xc00)*12);
-func_020e35cc(out);M2C_FIELD(a,u8 *,0x2051)=0;
+HeapFreeBlock(out);M2C_FIELD(a,u8 *,0x2051)=0;
 }
 #pragma pop
 void func_02075938(void *arg0,s32 arg1) {
@@ -119,7 +119,7 @@ func_02074b84((void*)p+0xc4c);
 }
 
 M2C_UNK func_02075cbc(M2C_UNK *p,M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 type){
-M2C_UNK *func_02076228(void);s32 func_02076234(void);
+M2C_UNK *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
 u8 *q=(u8 *)p+0x2054; u32 seq=0,i,n; s32 found=0;u8 *best,*entry;s32 j,cmp;u32 x,y;
 if(!((Queue02075 *)p)->active||((Queue02075 *)p)->state==1)return;
 if(type){
@@ -128,7 +128,7 @@ for(i=0;i<n;i++,q+=20){
 if(q[15]==1 && q[14]==type){seq=M2C_FIELD(q,u32 *,16)+1;if(!seq)seq++;found=1;}
 }
 if(!found){
-entry=(u8 *)func_02076228();best=0;n=func_02076234();
+entry=(u8 *)GetSaveRecordList();best=0;n=GetSaveRecordCount();
 for(j=0;j<(s32)n;j++,entry+=40){
 if(type==entry[2]){
 if(best){
@@ -195,11 +195,11 @@ void func_02075fd8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 
 void func_02076010(s32 type,s32 max){
 void func_02076180(M2C_UNK);
-M2C_UNK *func_02076228(void);s32 func_02076234(void);
-void *func_020e34bc(s32);void func_020e35cc(void *);
+M2C_UNK *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
+void *HeapAllocBlock(s32);void HeapFreeBlock(void *);
 s32 count;u8 **items;s32 best,n,i,k,j,cmp;u8 *p;u32 b,a;
-p=(u8 *)func_02076228();n=func_02076234();
-count=0;items=func_020e34bc((max+1)*4);
+p=(u8 *)GetSaveRecordList();n=GetSaveRecordCount();
+count=0;items=HeapAllocBlock((max+1)*4);
 for(i=0;i<n;i++,p+=40){
 if(type==p[2]){
 if(count<max){items[count]=p;count=count+1;continue;}
@@ -217,7 +217,7 @@ func_02076180(M2C_FIELD(items[best],u16 *,0));
 for(;best<count;best++)items[best]=items[best+1];
 }
 }
-if(items)func_020e35cc(items);
+if(items)HeapFreeBlock(items);
 }
 
 void func_02076180(M2C_UNK arg0) {
@@ -227,13 +227,13 @@ void func_02076180(M2C_UNK arg0) {
 
 void func_02076198(void){func_0209e044(func_02075ee8,1,0x400,0x11,0);}
 
-void func_020761c0(M2C_UNK arg0, M2C_UNK arg1) {
+void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020759e8(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213ea18;
     func_020759e8(&data_0213ea18, arg0, arg1);
 }
 
-void func_020761e0(M2C_UNK arg0) {
+void GetSaveRecordSize(M2C_UNK arg0) {
     extern M2C_UNK data_0213ea18;
     func_02075b58(&data_0213ea18, arg0);
 }
@@ -249,16 +249,16 @@ u8 func_02076208(void) {
 
 u8 func_02076218(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,u8*,0x53);}
 
-M2C_UNK *func_02076228(void) {
+M2C_UNK *GetSaveRecordList(void) {
     extern M2C_UNK data_0213f664;
     return &data_0213f664;
 }
 
-s32 func_02076234(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,s32*,0x4c);}
+s32 GetSaveRecordCount(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,s32*,0x4c);}
 
 void func_02076244(M2C_UNK arg0) {
     M2C_UNK func_01ff9b38();
-    M2C_UNK func_01ff9ed0();
+    M2C_UNK Update3DSpriteVram();
     M2C_UNK GX_TurnOnDisplay();
     M2C_UNK func_02008ef0(M2C_UNK);
     M2C_UNK func_020092d0(M2C_UNK);
@@ -396,7 +396,7 @@ void func_02076244(M2C_UNK arg0) {
     M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) | 1);
     M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) | 1);
     func_01ff9b38();
-    func_01ff9ed0();
+    Update3DSpriteVram();
 loop_6:
     if ((s32) *(u16 *)0x04000006 < 0xC0) {
         goto loop_6;

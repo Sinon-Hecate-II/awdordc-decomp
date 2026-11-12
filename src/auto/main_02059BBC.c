@@ -8,7 +8,7 @@ u8 *func_02059bbc(void *out_, void *in_)
   s32 StringLength(s32);
   s32 func_02059a04(s8 *);
   s32 Rand(void);
-  s32 func_0206409c(s32);
+  s32 Abs(s32);
   extern s8 data_020ff548[];
   s8 *in = in_;
   u8 *out = out_;
@@ -47,7 +47,7 @@ u8 *func_02059bbc(void *out_, void *in_)
       b = (s32) (func_020720f0(prev * step, n) >> 32);
       a = data_020ff548[a];
       b = data_020ff548[b];
-      v = (func_0206409c(b ^ ((u8 *) in)[(a + (i * v)) % 32]) % 93) + 33;
+      v = (Abs(b ^ ((u8 *) in)[(a + (i * v)) % 32]) % 93) + 33;
     }
     *((u8 *) (((u32) out) + ((u32) i))) = v;
     step += 0x4647;

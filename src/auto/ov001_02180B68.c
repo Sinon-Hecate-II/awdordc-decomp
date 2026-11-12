@@ -166,7 +166,7 @@ void func_ov001_02180eb4(void) {
     s32 func_ov001_02184868(void);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
-    void func_ov001_0218a474(s32, s32, s32);
+    void Ov001_SetSpritePalette(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
     extern u16 data_ov001_0218f9ea[];
     extern u8 data_ov001_0218f9c8[];
@@ -188,7 +188,7 @@ void func_ov001_02180eb4(void) {
             -1,
             data_ov001_0218f9ea[(i + 3) * 2],
             data_ov001_0218f9ea[(i + 3) * 2 + 1]);
-        func_ov001_0218a474(
+        Ov001_SetSpritePalette(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
             -1, 3);
 
@@ -200,7 +200,7 @@ second:
             -1,
             data_ov001_0218f9ea[i * 2],
             data_ov001_0218f9ea[i * 2 + 1]);
-        func_ov001_0218a474(
+        Ov001_SetSpritePalette(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
             -1, 3);
 
@@ -445,30 +445,30 @@ if(direction==OV001_DIR_LEFT) ((Ov001MenuRegion *)&gOv001MenuRegion)->index=5; e
 } if(changed){Ov001_PlaySound(8);Ov001_UpdateMenuCursor();}}
 
 void func_ov001_02181794(void) {
-    s32 func_ov001_0218a24c(s32, s32);
+    s32 Ov001_GetSpriteObjEntry(s32, s32);
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
-    void func_ov001_0218a474(s32, s32, s32);
-    void func_ov001_0218a55c(s32, s32, s32);
+    void Ov001_SetSpritePalette(s32, s32, s32);
+    void Ov001_LoadSpriteObjLayout(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
     extern u16 data_ov001_0218f9ea[];
     extern u16 data_ov001_0218f9ec[];
     s32 temp_r3;
     s32 temp_r4;
     temp_r4 = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) - 4;
-    func_ov001_0218a55c(0, 0x32, func_ov001_0218a24c(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), 0));
+    Ov001_LoadSpriteObjLayout(0, 0x32, Ov001_GetSpriteObjEntry(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), 0));
     temp_r3 = (temp_r4 + 3) * 2;
     Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, data_ov001_0218f9ea[temp_r3], data_ov001_0218f9ec[temp_r3]);
-    func_ov001_0218a474(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, 3);
+    Ov001_SetSpritePalette(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, 3);
 }
 
 void func_ov001_02181824(void) {
 s32 func_ov001_02186648(void);
 M2C_UNK Ov001_PlaySound(s32);
 void func_ov001_02184c70(s32);
-s32 func_ov001_0218a24c(s32,s32);
-void func_ov001_0218a55c(s32,s32,s32);
+s32 Ov001_GetSpriteObjEntry(s32,s32);
+void Ov001_LoadSpriteObjLayout(s32,s32,s32);
 void Ov001_MoveSpriteLayout(s32,s32,u16,u16);
-void func_ov001_0218a474(s32,s32,s32);
+void Ov001_SetSpritePalette(s32,s32,s32);
 void func_ov001_0218a1cc(s32);
 M2C_UNK func_ov001_02186604();
 void func_ov001_02181990(void);
@@ -477,17 +477,17 @@ switch(func_ov001_02186648()) {
 case 1:
 Ov001_PlaySound(14);
 func_ov001_02184c70(i);
-func_ov001_0218a55c(0,86,func_ov001_0218a24c(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),0));
+Ov001_LoadSpriteObjLayout(0,86,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),0));
 Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,data_ov001_0218f9ea[i*2],data_ov001_0218f9ec[i*2]);
-func_ov001_0218a474(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,3);
+Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,3);
 func_ov001_0218a1cc(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16));
 M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16)=0;
 break;
 case 0:
 Ov001_PlaySound(7);
-func_ov001_0218a55c(0,17,func_ov001_0218a24c(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),0));
+Ov001_LoadSpriteObjLayout(0,17,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),0));
 Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,data_ov001_0218f9ea[(i+3)*2],data_ov001_0218f9ec[(i+3)*2]);
-func_ov001_0218a474(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,3);
+Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,3);
 break;
 default:return;
 }

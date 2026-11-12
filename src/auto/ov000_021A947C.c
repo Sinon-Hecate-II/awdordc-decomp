@@ -138,11 +138,11 @@ s32 IsCaptureKind(s32 a) {
 }
 
 s32 GetUnitAttackClass(s32 arg0) {
-    s32 func_020a7bd4(void);
+    s32 GetUnitKindMaxAttackRange(void);
     s32 temp_r0;
 
     (void)arg0;
-    temp_r0 = func_020a7bd4();
+    temp_r0 = GetUnitKindMaxAttackRange();
     if (temp_r0 > 1) {
         return 1;
     }
@@ -155,7 +155,7 @@ s32 GetUnitAttackClass(s32 arg0) {
 s32 func_ov000_021a9904(s32 arg0) {
     s32 temp_r0;
 
-    temp_r0 = func_020a7bd4();
+    temp_r0 = GetUnitKindMaxAttackRange();
     if (arg0 == 0x19) {
         return 2;
     }
@@ -191,7 +191,7 @@ s32 func_ov000_021a99dc(u8 *arg0) {
 }
 
 /* Returns 1 if the unit's terrain unit table permits passing through the given map cell. */
-u8 func_ov000_021a9a28(s32 unitKind, s32 mapX, s32 mapY) {
+u8 CanUnitKindStandAt(s32 unitKind, s32 mapX, s32 mapY) {
     extern void **gCurrentMap;
     extern u8 gUnitKindStats[];
     extern u8 gMovementTypeTable[];

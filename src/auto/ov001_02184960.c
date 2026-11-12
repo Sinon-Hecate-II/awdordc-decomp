@@ -102,9 +102,9 @@ s32 func_ov001_02184c60(void) {
 void func_ov001_02184c70(s32 a) {void func_ov001_02184d5c(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;func_ov001_02184d5c(a);}
 
 void func_ov001_02184cac(void) {
-void func_02007df8(s32,s32,s32);void func_02046ebc(void *);void *func_020467b8(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void func_ov001_02184d5c(s32);extern s32 gSaveData;
+void FillU16(s32,s32,s32);void func_02046ebc(void *);void *func_020467b8(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void func_ov001_02184d5c(s32);extern s32 gSaveData;
 u8 buf[20];register s32 i;void *p;register u8 *q;register u32 fill=255;s32 offset;
-func_02007df8(0,gSaveData,1024);
+FillU16(0,gSaveData,1024);
 i=0;do{q=(u8 *)(gSaveData+((u32)i<<8));q[0xe7]=fill;i++;}while(i<3);
 func_02046ebc(buf);p=func_020467b8(buf);
 i=0;offset=0;do{MI_CpuCopy8(p,(void *)(gSaveData+offset+0xf0),14);i++;offset+=256;}while(i<2);
@@ -193,7 +193,7 @@ void func_ov001_021850ac(void) {
 
 void func_ov001_021850b8(s32 a){
 extern M2C_UNK data_ov001_02193e0c;extern u8 data_ov001_0218fbb4[];extern u8 data_ov001_0218fbc3[];extern const u16 data_ov001_0218fbd2[];
-s32 func_ov001_0218b6f8(s32,s32);s32 func_ov001_0218a61c();void func_ov001_0218a474();void Ov001_MoveSpriteLayout();void func_ov001_0218a304();void func_ov001_021851b4();s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);void func_ov001_02185b60();
+s32 func_ov001_0218b6f8(s32,s32);s32 func_ov001_0218a61c();void Ov001_SetSpritePalette();void Ov001_MoveSpriteLayout();void func_ov001_0218a304();void func_ov001_021851b4();s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);void func_ov001_02185b60();
 u8 *q;
 s32 i;
 u8 *p;
@@ -201,7 +201,7 @@ M2C_FIELD(&data_ov001_02193e0c,s32 *,4)=func_ov001_0218b6f8(28,4);
 p=data_ov001_0218fbb4+a*5;q=data_ov001_0218fbc3+a*5;
 for(i=0;i<5;i++){
 ((s32 *)M2C_FIELD(&data_ov001_02193e0c,void **,4))[i]=func_ov001_0218a61c(1,*p++,1);
-func_ov001_0218a474(((s32 *)M2C_FIELD(&data_ov001_02193e0c,void **,4))[i],-1,0);
+Ov001_SetSpritePalette(((s32 *)M2C_FIELD(&data_ov001_02193e0c,void **,4))[i],-1,0);
 Ov001_MoveSpriteLayout(((s32 *)M2C_FIELD(&data_ov001_02193e0c,void **,4))[i],-1,-42,((const u16 (*)[2])data_ov001_0218fbd2)[i][1]);
 func_ov001_0218a304(((s32 *)M2C_FIELD(&data_ov001_02193e0c,void **,4))[i],-1,0,*q++);
 }
@@ -279,13 +279,13 @@ void func_ov001_0218560c(void){ s32 func_ov001_0218c884(s32,void (*)(),s32,s32);
 
 void func_ov001_0218564c(s32 arg0) {
 extern u8 data_ov001_0218fbb4[],data_ov001_0218fbc3[];extern const u16 data_ov001_0218fbd2[];extern M2C_UNK data_ov001_02193e0c;
-s32 func_ov001_0218a24c();void func_ov001_0218a55c();void func_ov001_0218a474();void Ov001_MoveSpriteLayout();void func_ov001_0218a304();void func_ov001_02185b60();
+s32 Ov001_GetSpriteObjEntry();void Ov001_LoadSpriteObjLayout();void Ov001_SetSpritePalette();void Ov001_MoveSpriteLayout();void func_ov001_0218a304();void func_ov001_02185b60();
 s32 i,t;u8 *p,*q;
 p=data_ov001_0218fbb4+arg0*5;q=data_ov001_0218fbc3+arg0*5;
 i=0;do{
-t=func_ov001_0218a24c(((s32*)M2C_FIELD(&data_ov001_02193e0c,void**,4))[i],0);
-func_ov001_0218a55c(1,*p,t);p+=2;
-func_ov001_0218a474(((s32*)M2C_FIELD(&data_ov001_02193e0c,void**,4))[i],-1,0);
+t=Ov001_GetSpriteObjEntry(((s32*)M2C_FIELD(&data_ov001_02193e0c,void**,4))[i],0);
+Ov001_LoadSpriteObjLayout(1,*p,t);p+=2;
+Ov001_SetSpritePalette(((s32*)M2C_FIELD(&data_ov001_02193e0c,void**,4))[i],-1,0);
 Ov001_MoveSpriteLayout(((s32*)M2C_FIELD(&data_ov001_02193e0c,void**,4))[i],-1,((const u16(*)[2])data_ov001_0218fbd2)[i][0],((const u16(*)[2])data_ov001_0218fbd2)[i][1]);
 func_ov001_0218a304(((s32*)M2C_FIELD(&data_ov001_02193e0c,void**,4))[i],-1,0,*q);q+=2;
 i+=2;}while(i<5);func_ov001_02185b60(arg0);

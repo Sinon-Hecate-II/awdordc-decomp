@@ -233,74 +233,77 @@ mark:
 }
 
 #pragma opt_common_subs off
-void func_ov006_02215950(u8 *arg0) {
-    M2C_UNK func_020b1c60(u8);
-    void func_ov006_02215ae0(void *);
+/* D-pad navigation for the digit keys of the friend-code entry keypad: steps the
+ * focused key by one key (three per keypad row, wrapping at the row ends) and,
+ * on the initial press of up or down, jumps to the clear, cancel or confirm key. */
+void FriendCodeKeypad_MoveDigitSelection(u8 *arg0) {
+    M2C_UNK FocusSpriteSlotById(u8);
+    void FriendCodeKeypad_EnterDigit(void *);
     extern void *gKeyState;
-    u16 temp_r1;
-    u16 temp_r2;
-    u8 var_r3;
-    u8 temp_ip;
+    u16 pressed;
+    u16 repeat;
+    u8 target;
+    u8 key;
 
-    temp_ip = *arg0;
-    temp_r2 = M2C_FIELD(gKeyState, u16 *, 0);
-    var_r3 = temp_ip;
-    temp_r1 = M2C_FIELD(gKeyState, u16 *, 2);
-    if (temp_r2 & 1) {
-        func_ov006_02215ae0(arg0);
+    key = *arg0;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);
+    target = key;
+    repeat = M2C_FIELD(gKeyState, u16 *, 2);
+    if (pressed & KEY_A) {
+        FriendCodeKeypad_EnterDigit(arg0);
         return;
     }
-    if (temp_r1 & 0x40) {
-        switch (temp_ip) {
+    if (repeat & KEY_UP) {
+        switch (key) {
         case 0:
-            if (temp_r1 == temp_r2) {
-                var_r3 = 0xC;
+            if (repeat == pressed) {
+                target = FRIEND_CODE_KEYPAD_CANCEL;
             }
             break;
         case 1:
         case 2:
-            if (temp_r1 == temp_r2) {
-                var_r3 = 0xD;
+            if (repeat == pressed) {
+                target = FRIEND_CODE_KEYPAD_CONFIRM;
             }
             break;
         default:
-            var_r3 = (u8)(temp_ip - 3);
+            target = (u8)(key - FRIEND_CODE_KEYPAD_COLUMNS);
             break;
         }
-        if (var_r3 < 10) {
+        if (target < FRIEND_CODE_KEYPAD_CLEAR) {
             goto middle;
         }
         goto done;
-    } else if (temp_r1 & 0x80) {
-        switch (temp_ip) {
+    } else if (repeat & KEY_DOWN) {
+        switch (key) {
         case 9:
-            var_r3 = 0xC;
+            target = FRIEND_CODE_KEYPAD_CANCEL;
             break;
         case 7:
         case 8:
-            var_r3 = 0xA;
+            target = FRIEND_CODE_KEYPAD_CLEAR;
             break;
         default:
-            var_r3 = (u8)(temp_ip + 3);
+            target = (u8)(key + FRIEND_CODE_KEYPAD_COLUMNS);
             break;
         }
-        if (var_r3 >= 10) {
+        if (target >= FRIEND_CODE_KEYPAD_CLEAR) {
             goto done;
         }
     }
 middle:
-    if (temp_r1 & 0x20) {
-        switch (var_r3) {
+    if (repeat & KEY_LEFT) {
+        switch (target) {
         case 9:
-            if (temp_r1 == temp_r2) {
-                var_r3 = 0xA;
+            if (repeat == pressed) {
+                target = FRIEND_CODE_KEYPAD_CLEAR;
             }
             break;
         case 0:
         case 3:
         case 6:
-            if (temp_r1 == temp_r2) {
-                var_r3 = (u8)(var_r3 + 2);
+            if (repeat == pressed) {
+                target = (u8)(target + 2);
             }
             break;
         default:
@@ -310,21 +313,21 @@ middle:
         case 5:
         case 7:
         case 8:
-            var_r3 = (u8)(var_r3 - 1);
+            target = (u8)(target - 1);
             break;
         }
-    } else if (temp_r1 & 0x10) {
-        switch (var_r3) {
+    } else if (repeat & KEY_RIGHT) {
+        switch (target) {
         case 9:
-            if (temp_r1 == temp_r2) {
-                var_r3 = 0xA;
+            if (repeat == pressed) {
+                target = FRIEND_CODE_KEYPAD_CLEAR;
             }
             break;
         case 2:
         case 5:
         case 8:
-            if (temp_r1 == temp_r2) {
-                var_r3 = (u8)(var_r3 - 2);
+            if (repeat == pressed) {
+                target = (u8)(target - 2);
             }
             break;
         default:
@@ -334,17 +337,17 @@ middle:
         case 4:
         case 6:
         case 7:
-            var_r3 = (u8)(var_r3 + 1);
+            target = (u8)(target + 1);
             break;
         }
     }
 done:
-    if (temp_ip != var_r3) {
-        func_020b1c60(var_r3);
+    if (key != target) {
+        FocusSpriteSlotById(target);
     }
 }
 #pragma opt_common_subs reset
-void func_ov006_02215ae0(void *arg0) {
+void FriendCodeKeypad_EnterDigit(void *arg0) {
     s8 *temp_r0;
     M2C_UNK PlaySoundEffect(s32);
     s8 temp_r3;
@@ -375,7 +378,7 @@ void func_ov006_02215b78(void) {
 }
 
 void func_ov006_02215b84(u8 *arg0) {
-    M2C_UNK func_020b1c60(u8);
+    M2C_UNK FocusSpriteSlotById(u8);
     M2C_UNK func_ov006_02215c6c();
     extern void *gKeyState;
     u16 key0;
@@ -446,7 +449,7 @@ L:
     }
 done:
     if (*arg0 != value) {
-        func_020b1c60(value);
+        FocusSpriteSlotById(value);
     }
 }
 
@@ -487,7 +490,7 @@ void func_ov006_02215dd8(void) {
 }
 
 void func_ov006_02215de4(u8 *arg0) {
-    M2C_UNK func_020b1c60(u8);
+    M2C_UNK FocusSpriteSlotById(u8);
     M2C_UNK ConfirmFriendCode();
     extern void *gKeyState;
     u16 temp_r1;
@@ -559,7 +562,7 @@ L:
     }
 done:
     if (temp_ip != var_r3) {
-        func_020b1c60(var_r3);
+        FocusSpriteSlotById(var_r3);
     }
 }
 
@@ -600,7 +603,7 @@ extern u16 **g3DSpriteEngineMain;
 #pragma optimization_level 2
 void func_ov006_0221619c(void *arg0) {
 M2C_UNK func_0208df84(s16,s16,s32,s32,s32,s32);
-s32 GetSpriteAnimValue(s32);M2C_UNK func_020a92bc(void *,s32);M2C_UNK func_020a94fc(void *);M2C_UNK func_020b1c44(s32,s32);
+s32 GetSpriteAnimValue(s32);M2C_UNK SetTextSpriteValue(void *,s32);M2C_UNK DrawTextSprite(void *);M2C_UNK func_020b1c44(s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;extern s8 gFriendCodeInput[];
 u16 **saved;u16 neg;s32 i,x,y,reset;void *p;s32 offset;
 offset=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x48));
@@ -615,8 +618,8 @@ i=0;x=60;y=12;
 if(gFriendCodeInput[0]){reset=x;do{
 if(i==6){y+=24;x=reset;}
 p=M2C_FIELD(arg0,void **,0x44);M2C_FIELD(p,u16 *,6)=offset+x;M2C_FIELD(p,u16 *,8)=y;
-func_020a92bc(M2C_FIELD(arg0,void **,0x44),gFriendCodeInput[i]-48);
-func_020a94fc(M2C_FIELD(arg0,void **,0x44));i++;x+=24;
+SetTextSpriteValue(M2C_FIELD(arg0,void **,0x44),gFriendCodeInput[i]-48);
+DrawTextSprite(M2C_FIELD(arg0,void **,0x44));i++;x+=24;
 }while(gFriendCodeInput[i]);}
 gCur3DSpriteEngine=saved;
 }

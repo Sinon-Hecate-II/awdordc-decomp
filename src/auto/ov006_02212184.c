@@ -11,13 +11,13 @@ int GetSpriteAnimValue(void *);
 int Modulo(int,int);
 void Clear3DSpriteLayer(int);
 int func_020b3960(void *,s16);
-void func_020a92bc(void *,int);
-void func_020a94fc(void *);
+void SetTextSpriteValue(void *,int);
+void DrawTextSprite(void *);
 void *func_020c52ec(int);
 u16 *func_020c53ac(int);
 u64 func_020c5430(void *);
 void func_020c5498(char *,u64);
-void func_02007df8(int,void *,int);
+void FillU16(int,void *,int);
 void func_02007e20(void *,void *,int);
 void MI_CpuCopy8(void *,void *,int);
 void func_02019e64(void *,int,void *,int,int);
@@ -70,16 +70,16 @@ if(func_020b3960(M2C_FIELD(p,void **,0x4c),(s16)i)) {
 if(i+1<10) {
 engine=M2C_FIELD(p,u8 **,0x40);
 M2C_FIELD(engine,s16 *,6)=left; M2C_FIELD(engine,s16 *,8)=offset+ytop+6;
-func_020a92bc(M2C_FIELD(p,void **,0x40),0);
+SetTextSpriteValue(M2C_FIELD(p,void **,0x40),0);
 engine=M2C_FIELD(p,u8 **,0x40);engine[40]=(engine[40]&~0xe0)|0x40;
-func_020a94fc(M2C_FIELD(p,void **,0x40));
+DrawTextSprite(M2C_FIELD(p,void **,0x40));
 }
 engine=M2C_FIELD(p,u8 **,0x40);M2C_FIELD(engine,s16 *,6)=right;M2C_FIELD(engine,s16 *,8)=offset+ytop+6;
-func_020a92bc(M2C_FIELD(p,void **,0x40),i+1);
-engine=M2C_FIELD(p,u8 **,0x40);engine[40]=(engine[40]&~0xe0)|0x40;func_020a94fc(M2C_FIELD(p,void **,0x40));
+SetTextSpriteValue(M2C_FIELD(p,void **,0x40),i+1);
+engine=M2C_FIELD(p,u8 **,0x40);engine[40]=(engine[40]&~0xe0)|0x40;DrawTextSprite(M2C_FIELD(p,void **,0x40));
 ty=((s16)chartop)>>3;
 item=func_020c52ec(i);
-func_02007df8(0,text,26);
+FillU16(0,text,26);
 if(item) {
 u16 *custom=func_020c53ac(i);
 if(custom[0]) func_02007e20(custom,text,26);
@@ -105,12 +105,12 @@ i=M2C_FIELD(record,s16 *,8)+1;
 engine=M2C_FIELD(p,u8 **,0x40);engine[40]&=~0xe0;
 if((u32)i<10) {
 engine=M2C_FIELD(p,u8 **,0x40);M2C_FIELD(engine,s16 *,6)=x+214;M2C_FIELD(engine,s16 *,8)=12;
-func_020a92bc(M2C_FIELD(p,void **,0x40),0);func_020a94fc(M2C_FIELD(p,void **,0x40));
+SetTextSpriteValue(M2C_FIELD(p,void **,0x40),0);DrawTextSprite(M2C_FIELD(p,void **,0x40));
 }
 engine=M2C_FIELD(p,u8 **,0x40);M2C_FIELD(engine,s16 *,6)=x+222;M2C_FIELD(engine,s16 *,8)=12;
-func_020a92bc(M2C_FIELD(p,void **,0x40),i);func_020a94fc(M2C_FIELD(p,void **,0x40));
+SetTextSpriteValue(M2C_FIELD(p,void **,0x40),i);DrawTextSprite(M2C_FIELD(p,void **,0x40));
 engine=M2C_FIELD(p,u8 **,0x40);M2C_FIELD(engine,s16 *,6)=x+248;M2C_FIELD(engine,s16 *,8)=12;
-func_020a92bc(M2C_FIELD(p,void **,0x40),60);func_020a94fc(M2C_FIELD(p,void **,0x40));
+SetTextSpriteValue(M2C_FIELD(p,void **,0x40),60);DrawTextSprite(M2C_FIELD(p,void **,0x40));
 record=M2C_FIELD(p,u8 **,0x4c);
 a=M2C_FIELD(record,s16 *,10)<<12;b=record[4];c=M2C_FIELD(record,s16 *,18);d=record[7];
 e=func_02001fb4(0x72000,a);
@@ -196,8 +196,8 @@ xx=60;yy=108;
 for(i=0;digits[i];i++) {
 if(i==6){xx=60;yy+=24;}
 engine=M2C_FIELD(p,u8 **,0x44);M2C_FIELD(engine,s16 *,6)=x+xx;M2C_FIELD(engine,s16 *,8)=yy;
-func_020a92bc(M2C_FIELD(p,void **,0x44),(s8)digits[i]-48);
-func_020a94fc(M2C_FIELD(p,void **,0x44));xx+=24;
+SetTextSpriteValue(M2C_FIELD(p,void **,0x44),(s8)digits[i]-48);
+DrawTextSprite(M2C_FIELD(p,void **,0x44));xx+=24;
 }
 }
 gCur3DSpriteEngine=save;

@@ -58,7 +58,7 @@ gAiCommandState[5]=func_ov000_021a89a4(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 #pragma opt_strength_reduction off
 void func_ov000_0217f96c(void *arg0) {
 extern void **gCurrentMap;
-void SelectMapLayer(void*); void func_01ffc2e8(void*); void func_01ffb9c4(s32);
+void SelectMapLayer(void*); void func_01ffc2e8(void*); void MarkAdjacentCells(s32);
 s32 func_020d27a4(s32,s32); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16*);
 s32 func_ov000_02176e28(s32,s16*); s32 HasBetterAttackerNearby(void*);
 void SetMapCursor(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
@@ -78,7 +78,7 @@ if(M2C_FIELD(map+ay*4,s8**,0x52e8)[ax]>=0 && M2C_FIELD(map+ax+M2C_FIELD(map+ay*2
 M2C_FIELD(map+ay*4,s8**,0x52e8)[ax]=-1;
 }
 }
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++)
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
 map=*gCurrentMap;

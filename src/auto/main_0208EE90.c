@@ -234,7 +234,7 @@ void func_02088724(void);
 void func_02037854(s32);
 void *func_020e3580(s32,s32);
 void func_ov001_0217589c(void *,s32,s32);
-M2C_UNK func_020e35cc();
+M2C_UNK HeapFreeBlock();
 void func_0208859c(void);
 void func_02088634(void);
 void func_0208fba0(void);
@@ -252,7 +252,7 @@ func_02037854(2);
 p=func_020e3580(0x40000,0x20);
 if(func_0208f5e8()==0) func_ov001_0217589c(p,func_0208f5e8(),0x10);
 else func_ov001_0217589c(p,func_0208f5e8(),0);
-func_020e35cc(p);
+HeapFreeBlock(p);
 func_0208859c();
 func_02088634();
 func_0208fba0();
@@ -538,7 +538,7 @@ void func_0208fc50(void){
 void func_0208fce8(void) {
     M2C_UNK func_0202ac70(M2C_UNK);
     M2C_UNK func_0202c51c(s32);
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     extern M2C_UNK data_02157830;
     if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
         return;
@@ -549,7 +549,7 @@ void func_0208fce8(void) {
     if (M2C_FIELD(&data_02157830, s32 *, 0x14) == 0) {
         return;
     }
-    func_020e35cc();
+    HeapFreeBlock();
     M2C_FIELD(&data_02157830, s32 *, 0x14) = 0;
 }
 

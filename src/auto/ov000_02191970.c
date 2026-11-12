@@ -20,7 +20,7 @@ void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,u32,s32,s32);
 s32 func_ov000_021a89a4(void*);s32 CanKindAttack(u32,u32);
 s32 GetUnitMoveRange(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
-s32 IsAllyUnitAtCell(s16,s16);s32 func_ov000_021a9a28(u32,s32,s32);
+s32 IsAllyUnitAtCell(s16,s16);s32 CanUnitKindStandAt(u32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);s32 IsTerrainOnUnitTeam(u32,u32);
 void SetMapCursor(s16,s16,s32,s32,s32);void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,candidateX=-1,candidateY=-1;
@@ -62,7 +62,7 @@ for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8**,0x52e8),s8*,x)<0||
 CELL(x,y,0x2338)<0||IsAllyUnitAtCell(x,y)!=0||
-!func_ov000_021a9a28(KIND(SEL),x,y)||func_ov000_021a9860(x,y)==1)continue;
+!CanUnitKindStandAt(KIND(SEL),x,y)||func_ov000_021a9860(x,y)==1)continue;
 if(IsTerrainOnUnitTeam(M2C_FIELD(MAP,u8*,0x52d4),TILE(x,y))==1&&gTerrainPropertyType[TILE(x,y)&31]!=0)continue;
 d=CELL(x,y,0x2338);
 if(((u32)(M2C_FIELD(unit,u16*,8)<<26)>>26)!=63){

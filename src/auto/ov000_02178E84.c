@@ -152,7 +152,7 @@ if(((u32)(M2C_FIELD(arg0,u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(gAiSettings,u8 *,
 value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 }
 #pragma opt_propagation reset
-s32 func_ov000_02179be0(u8 *arg0,void *arg1,u32 arg2) {
+s32 GetAiUnitRange(u8 *arg0,void *arg1,u32 arg2) {
 s32 IsFootUnitKind(u32);
 extern void **data_027e0058;
 extern u8 gUnitKindFlags[];
@@ -172,7 +172,7 @@ value*=scale;if(value>110)value=110;return value;
 }
 
 s32 func_ov000_02179ce4(u8 *arg0) {
-    s32 func_ov000_02179be0(u8 *, void *, u32);
+    s32 GetAiUnitRange(u8 *, void *, u32);
     extern void **gCurrentMap;
     s32 result;
     u32 value;
@@ -183,14 +183,14 @@ s32 func_ov000_02179ce4(u8 *arg0) {
     value = (u32)(*arg0 << 26) >> 26;
     if (value == 0) return 0x6E;
     M2C_FIELD(base, u8 **, 0x2D0) = arg0;
-    result = (func_ov000_02179be0(arg0, base, value) * 3) >> 2;
+    result = (GetAiUnitRange(arg0, base, value) * 3) >> 2;
     M2C_FIELD(*gCurrentMap, u8 **, 0x52D0) = saved;
     return result;
 }
 
 void func_ov000_02179d3c(M2C_UNK arg0) {
 M2C_UNK FloodFillUnitRange(u8,u8,u32,M2C_UNK,s32);
-M2C_UNK func_01ffb9c4(s8);
+M2C_UNK MarkAdjacentCells(s8);
 s32 GetUnitAttackRangeMax(void *);
 s32 GetUnitMoveRange(u16,s32);
 s32 GetUnitAttackClass(void);
@@ -204,6 +204,6 @@ if(((u32)(M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,0)<<26)>>26)==21)
 n=GetUnitMoveRange(M2C_FIELD(base,u16 *,0x52A4),17)+1;
 else if(GetUnitAttackClass()==1)n=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,0x52D0));
 else n=gUnitMinAttackRange[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26)*0x70];
-i=0;if(n<=0)return;do{func_01ffb9c4((s8)(i+0x6F));i++;}while(i<n);
+i=0;if(n<=0)return;do{MarkAdjacentCells((s8)(i+0x6F));i++;}while(i<n);
 }
 

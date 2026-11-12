@@ -217,27 +217,27 @@ void func_ov003_021f1af8(s32 arg0) {
 }
 
 void func_ov003_021f1b38(s32 arg0, s32 arg1) {
-    M2C_UNK func_02082340();
+    M2C_UNK Configure3DSpriteLayer();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     extern s32 data_ov003_0220fc88[2][4];
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_02082340();
+    Configure3DSpriteLayer();
     gCur3DSpriteEngine = temp_r4;
     M2C_FIELD(&data_ov003_0220fc88, s32 *, arg0 * 4) = arg1;
 }
 
 void func_ov003_021f1b7c(s32 arg0, s32 arg1) {
-    M2C_UNK func_02082340();
+    M2C_UNK Configure3DSpriteLayer();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_0220fc98;
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_02082340();
+    Configure3DSpriteLayer();
     gCur3DSpriteEngine = temp_r4;
     M2C_FIELD(&data_ov003_0220fc98, s32 *, arg0 * 4) = arg1;
 }

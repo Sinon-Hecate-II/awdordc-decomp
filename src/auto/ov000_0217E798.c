@@ -69,7 +69,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     s32 IsAllyUnitAtCell(s16, s16);
     void BuildThreatMapAgainstKind14(void);
     void func_01ffc2e8(void *);
-    void func_01ffb9c4(s32);
+    void MarkAdjacentCells(s32);
     u8 *map;
     u8 *sel;
     u8 *p;
@@ -141,7 +141,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                     if (range < dist) continue;
                     if (gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 7) {
                         func_01ffc2e8(p);
-                        func_01ffb9c4(0x6f);
+                        MarkAdjacentCells(0x6f);
                         if (M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8), s8 *, x) < 0) continue;
                     }
                 }

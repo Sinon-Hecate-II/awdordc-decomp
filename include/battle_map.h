@@ -22,6 +22,38 @@ typedef struct BattleMapUnit {
     u8 nextCarried;  /* +0x0D id of the next unit in the carry chain */
 } BattleMapUnit;
 
+/* The head of a unit record read through bitfields: the kind is the low six bits
+ * of the first byte and the owner the top two, followed by the tile position.
+ * Sized like BattleMapUnit so it can index the record array directly. */
+typedef struct BattleMapUnitHead {
+    u8 kind:6;    /* +0x00 unit kind */
+    u8 owner:2;   /* +0x00 owner (player) */
+    u8 x;         /* +0x01 tile x */
+    u8 y;         /* +0x02 tile y */
+    u8 rest[11];  /* +0x03 rest of the 14-byte record */
+} BattleMapUnitHead;
+
+/* The stat block built for a battle-map unit: seven signed stat values at
+ * +0x00..+0x06 and two signed word stats at +0x08 and +0x0A.  The unit-info
+ * window reads the values through the func_020a26xx accessors. */
+typedef struct UnitStatBlock {
+    s8  stat[7]; /* +0x00 */
+    s8  pad;     /* +0x07 */
+    s16 value8;  /* +0x08 */
+    s16 valueA;  /* +0x0A */
+} UnitStatBlock;
+
+/* One commander's bonus record in the commander bonus table, 0x48 bytes: the
+ * stat bonuses every unit of the commander gets, then per-unit-kind
+ * availability flags.  The table is indexed by commander id. */
+typedef struct CommanderBonus {
+    UnitStatBlock base;      /* +0x00 stat bonuses applied to the commander's units */
+    u8  unk0C[5];            /* +0x0C */
+    s8  canDeploy[27];       /* +0x11 nonzero when the commander may deploy that unit kind */
+    s8  canUse[27];          /* +0x2C nonzero when the commander may use that unit kind */
+    u8  pad47;               /* +0x47 */
+} CommanderBonus;
+
 typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8 pad3[0x1a0];s8 *grid[64]; } Map16E8;
 
 /* One side of a battle, copied from its BattleMapUnit at MAP_BATTLE_ATTACKER or
@@ -76,6 +108,11 @@ enum {
 #define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 #define MAP_TILESET         0x5157 /* u8 battle-setting/tileset index, selects the terrain tileset bank */
+#define MAP_FOG             0x5156 /* u8 nonzero when fog of war hides distant units */
+#define MAP_WEATHER         0x5158 /* u8 current weather (0 clear, 1 rain, 2 snow, 3 sandstorm) */
+#define MAP_WEATHER_MODE    0x5159 /* u8 nonzero when the weather may change by itself */
+#define MAP_WEATHER_START   0x515a /* u8 weather when the battle starts */
+#define MAP_WEATHER_RESET   0x515b /* u8 weather the battle returns to after a change */
 #define MAP_ID              0x5142 /* u16 map id, key into the per-map data records */
 #define MAP_PLAYER_COUNT    0x5141 /* u8 number of players the map has (1..4) */
 #define MAP_NAME            0x5120 /* char[] the map's display name */
@@ -86,8 +123,43 @@ enum {
 #define MAP_TILE_TERRAIN    0x6a60 /* u8 per tile id: terrain kind/owner byte the cell gets */
 #define MAP_TERRAIN_KIND_MASK  0x1f /* terrain byte: terrain kind */
 #define MAP_TERRAIN_OWNER_MASK 0xe0 /* terrain byte: owner bits (player << 5) */
+
+/* Terrain kinds the map code names directly; the tileset's MAP_TILE_TERRAIN
+ * table maps each tile id to one of these packed values. */
+#define MAP_TERRAIN_PLAIN      1    /* plain ground */
+#define MAP_TERRAIN_WASTELAND  8    /* barren ground a destroyed owned property leaves */
+#define MAP_TERRAIN_IMPACT     0x1c /* destructible impact feature; its cell becomes a crater */
+
+/* Remaining HP of destructible terrain (low seven bits, 0 where there is none). */
+#define MAP_CELL_TERRAIN_HP    0x539c /* u8 per cell */
+
+/* Tile ids the impact blast writes into the current tileset bank. */
+#define MAP_TILE_WASTELAND     3
+#define MAP_TILE_BLAST_GROUND  4
+#define MAP_TILE_BLAST_CRATER  5
+
+/* Reach of the impact blast: the movement range of a pseudo unit kind, searched
+ * with an effectively unlimited movement-cost budget. */
+#define IMPACT_BLAST_MOVE_KIND   0x1d
+#define IMPACT_BLAST_MOVE_BUDGET 110
 #define MAP_UNIT_RECORDS    0x59a4 /* 256 unit records of 14 bytes */
 #define MAP_UNIT_STRIDE     14     /* bytes per unit record */
+
+/* Packed per-map settings, saved with a slot and copied into the battle map and
+ * gMapConfig by ApplyMapSettings. */
+typedef struct MapSettings {
+    u8  pad00[8];
+    u32 rules;   /* +0x08: packed map id and rule bits, MAP_SETTINGS_* */
+    u32 values;  /* +0x0C: packed value limits */
+} MapSettings;
+
+#define MAP_SETTINGS_MAP_ID        0x00000FFE /* bits 1..11: map id */
+#define MAP_SETTINGS_FOG           0x00001000 /* bit 12: fog of war */
+#define MAP_SETTINGS_WEATHER       0x0000E000 /* bits 13..15: starting weather */
+#define MAP_SETTINGS_WEATHER_MODE  0x00010000 /* bit 16: weather may change by itself */
+#define MAP_SETTINGS_TILESET       0x001E0000 /* bits 17..20: battle-setting/tileset index */
+#define MAP_SETTINGS_SETTING       0x0FE00000 /* bits 21..27: additional battle setting */
+#define MAP_SETTINGS_FLAGS         0x70000000 /* bits 28..30: config flags */
 
 /* Offsets within a unit record (see BattleMapUnit). */
 #define MAP_UNIT_KIND       0x00 /* u8 kind in the low six bits, owner in the top two */
@@ -105,6 +177,10 @@ enum {
 #define MAP_UNIT_AI_STATE   0x0B /* u8 low nibble AI step; bit 5 held while a move target is assigned */
 #define MAP_UNIT_AI_STATE_MASK 0x0F /* low nibble of MAP_UNIT_AI_STATE */
 #define MAP_UNIT_KIND_MASK  0x3F /* low six bits of MAP_UNIT_KIND: the kind, the owner is above */
+
+/* Per-unit flag bits in MAP_UNIT_FLAGS. */
+#define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
+#define UNIT_FLAG_REPAIR_TMP 0x8000 /* scratch bit marking a repair neighbour during the repair pass */
 
 /* The two battle-participant scratch records, 0x20 bytes each: the side that
  * starts the fight at MAP_BATTLE_ATTACKER, its opponent at MAP_BATTLE_DEFENDER.
@@ -147,6 +223,41 @@ enum {
 #define MAP_TEAM_A_PLAYER  0x52b8 /* s16 id of the player team A's army belongs to */
 #define MAP_TEAM_B_PLAYER  0x52ba /* s16 id of the player team B's army belongs to */
 
+/* gCurrentMap[1] is the map-view controller: it owns the scroll task and gets
+ * a callback run each time a scroll pan finishes. */
+#define MAPVIEW_SCROLL_DONE 0x1c /* void (*)(void): run when a view pan reaches its target */
+
+/* A map-view panning animation, one of the view controller's sprite tasks.  It
+ * pans the view from the position saved at start (+0x34/+0x36) to the target
+ * (+0x38/+0x3a) along whichever axis has the larger delta, using a per-frame
+ * speed ramp indexed by the countdown at +0x40. */
+typedef struct MapScrollAnim {
+    u8  pad00[0x34];
+    s16 startX;    /* +0x34 view x when the pan started */
+    s16 startY;    /* +0x36 view y when the pan started */
+    s16 targetX;   /* +0x38 destination view x */
+    s16 targetY;   /* +0x3a destination view y */
+    s16 deltaX;    /* +0x3c targetX - startX */
+    s16 deltaY;    /* +0x3e targetY - startY */
+    u16 remaining; /* +0x40 index of the current speed step, counts down */
+    u16 accum;     /* +0x42 cells travelled so far, times the major-axis sign */
+} MapScrollAnim;
+
+/* Battle outcome for one player, returned by GetPlayerResult. */
+enum {
+    BATTLE_RESULT_NONE = 0,
+    BATTLE_RESULT_WIN  = 1,
+    BATTLE_RESULT_LOSE = 2,
+    BATTLE_RESULT_DRAW = 3
+};
+
+/* Battle-end state (gBattleEndState): byte 0 is non-zero once the battle has
+ * finished, bytes 1 and 2 are the end conditions, byte 3 qualifies byte 2. */
+#define BATTLE_END_ENDED 0
+#define BATTLE_END_FLAG1 1
+#define BATTLE_END_FLAG2 2
+#define BATTLE_END_FLAG3 3
+
 /* Player control kind (PLAYER_CONTROL_OFF). */
 enum {
     PLAYER_CONTROL_NONE  = 0, /* no player here */
@@ -177,5 +288,39 @@ enum {
 /* Map ids in this range are campaign maps with a full 0x6f8-byte record. */
 #define MAP_ID_CAMPAIGN_FIRST 0xE1
 #define MAP_ID_CAMPAIGN_END   0x1A9 /* one past the last campaign map */
+
+/* A saved map record. The 0x54-byte header is shared by the compact saved form
+ * (0x2AC bytes: a 20x20 terrain area with the packed unit entries after it at
+ * +0x1E4) and the expanded runtime form (0x6F8 bytes: a 30x30 terrain area with
+ * the unit entries at +0x3D8). */
+typedef struct MapRecordHeader {
+    u32 magic;          /* +0x00 MAP_RECORD_MAGIC */
+    u8  width;          /* +0x04 map width in cells */
+    u8  height;         /* +0x05 map height in cells */
+    char name[0x21];    /* +0x06 map name, NUL terminated */
+    u8  playerCount;    /* +0x27 players on the map, 255 = none */
+    u8  playerIds[5];   /* +0x28 player id of each player slot */
+    u8  propertyCount;  /* +0x2D terrain cells carrying a property flag */
+    u8  unitsPerPlayer; /* +0x2E one more than the largest army's unit count */
+    u8  unitCount;      /* +0x2F packed unit entries in the record */
+    u8  settings[0x10]; /* +0x30 map settings block */
+    u8  stamp[0x14];    /* +0x40 date, checksum and console id stamp */
+} MapRecordHeader;
+
+#define MAP_RECORD_MAGIC       0x20070731
+#define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */
+#define MAP_RECORD_SIZE        0x6F8 /* expanded runtime record */
+#define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */
+#define MAP_RECORD_UNITS       0x3D8 /* packed unit entries in the runtime record */
+
+/* The task that fades the battle map in when the map view opens: MapFadeInStep
+ * (main_020CBACC.c) bumps fadeTimer each frame while the map is drawn. */
+typedef struct MapViewTask {
+    u8  pad0[0x34];
+    s16 fadeTimer; /* +0x34 fade-in frame counter */
+    s16 viewX;     /* +0x36 saved map view scroll x (MAP_VIEW_X) */
+    s16 viewY;     /* +0x38 saved map view scroll y (MAP_VIEW_Y) */
+    s16 unk3A;     /* +0x3A */
+} MapViewTask;
 
 #endif

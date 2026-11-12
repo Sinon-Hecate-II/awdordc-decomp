@@ -48,7 +48,7 @@ obj->frame=(u16)frame;obj->phase=0;
 void HistoryMenu_HandleDPad(u8 *selected){
     extern void *gHistoryMenu;extern u16 *gKeyState;
     void *HistoryTabAt(s32);s32 HistoryScrollUp(void);s32 HistoryScrollDown(void);s32 HistoryPageUp(void);s32 HistoryPageDown(void);
-    s32 func_020b20e0(s32);void func_020b1c60(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
+    s32 func_020b20e0(s32);void FocusSpriteSlotById(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
     s32 row = *selected;
     HistoryMenuTab *tab = (HistoryMenuTab *)HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1));
     s32 lastRow = tab->count - 7;
@@ -84,7 +84,7 @@ void HistoryMenu_HandleDPad(u8 *selected){
         if (delta && row == *selected) PlaySoundEffect(0x10019);
     } else return;
 done:
-    if (row != *selected) func_020b1c60(row);
+    if (row != *selected) FocusSpriteSlotById(row);
     M2C_FIELD(gHistoryMenu, u8 *, 2) = row;
     func_ov005_02211a8c();
 }
@@ -102,11 +102,11 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *func_020e34bc(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
+void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
-gHistoryMenu=func_020e34bc(100);
+gHistoryMenu=HeapAllocBlock(100);
 func_02082c84();GX_SetBankForBG(1);func_02002968(2);func_02003124(4);func_020031cc(8);
 M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
@@ -136,18 +136,18 @@ LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpr
 CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_0208ca2c(0x1000,1,func_020ae22c(9),2);
-n=func_020a7290()<<5;dst=M2C_FIELD(g3DSpriteEngineMain,void **,0x10);p=func_020a7278();func_02007ef4(p,(u8 *)dst+0x1980,n);
+n=func_020a7290()<<5;dst=M2C_FIELD(g3DSpriteEngineMain,void **,0x10);p=func_020a7278();MI_CpuCopy32(p,(u8 *)dst+0x1980,n);
 func_01ff9e44(func_020a72e8(1),0x60,0x80);
 OpenNarcArchive(&data_ov005_02220394);
 LoadNarcFileDecompressed(&data_ov005_022203a4,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1880);
 LoadNarcFileDecompressed(&data_ov005_022203b8,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1900);
 LoadNarcFileToSpriteBuffer(&data_ov005_022203cc,0x40,0x20);CloseNarcArchive();func_02091d4c(1);
 func_0208ca2c(0x2800,6,func_020ae22c(12),2);func_020aeebc(3,15,6);
-func_020e3058((u8 *)gHistoryMenu+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
-func_020e3058((u8 *)gHistoryMenu+0x54,0xa0,0,14,0x188,3,0x200,arg0,0);
-func_020e3058((u8 *)gHistoryMenu+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);
-func_020e3058((u8 *)gHistoryMenu+0x5c,0x82,0x9b,11,0x198,3,-1,arg0,0);
-func_020e3058((u8 *)gHistoryMenu+0x60,0xe0,0xa0,2,0x1a0,3,2,arg0,0);
+CreateMenuTextSprite((u8 *)gHistoryMenu+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
+CreateMenuTextSprite((u8 *)gHistoryMenu+0x54,0xa0,0,14,0x188,3,0x200,arg0,0);
+CreateMenuTextSprite((u8 *)gHistoryMenu+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);
+CreateMenuTextSprite((u8 *)gHistoryMenu+0x5c,0x82,0x9b,11,0x198,3,-1,arg0,0);
+CreateMenuTextSprite((u8 *)gHistoryMenu+0x60,0xe0,0xa0,2,0x1a0,3,2,arg0,0);
 p=M2C_FIELD(gHistoryMenu,void **,0x58);SetMenuAnimFrame(p,((MenuAnimSprite *)p)->base+2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&b);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 16;}
@@ -174,7 +174,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;func_02091d4c(9);
 OpenNarcArchive(&data_ov005_02220424);
 LoadNarcFileDecompressed(&data_ov005_02220434,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1400);
 LoadNarcFileToSpriteBuffer(&data_ov005_02220444,0x300,0x20);CloseNarcArchive();
-func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,void **,0xc),0x20);
+MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,void **,0xc),0x20);
 OpenNarcArchive(&data_ov005_02220454);
 LoadNarcFileDecompressed(&data_ov005_02220464,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0xc)+0x20);
 LoadNarcFileToSpriteBuffer(&data_ov005_02220474,0x20,0x100);CloseNarcArchive();
@@ -344,13 +344,13 @@ void func_ov005_02214094(void) {
     M2C_UNK func_020af1e4();
     M2C_UNK func_020842d4();
     M2C_UNK func_020b2178();
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     extern void *gHistoryMenu;
     func_020af1e4();
     func_020842d4();
     func_020b2178();
     if (gHistoryMenu == NULL) return;
-    func_020e35cc();
+    HeapFreeBlock();
     gHistoryMenu = NULL;
 }
 

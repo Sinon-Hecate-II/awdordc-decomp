@@ -6,7 +6,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK func_020a9188(void *, M2C_UNK);
-    M2C_UNK func_020a92bc(void *, M2C_UNK);
+    M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     extern M2C_UNK data_02102174;
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_02156cdc;
@@ -108,7 +108,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         M2C_FIELD(temp_r0_3, s8 *, 0x16) = 2;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x50), s8 *, 0x14) = 8;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x50), s8 *, 0x17) = 8;
-        func_020a92bc(M2C_FIELD(temp_r0, void **, 0x50), 0);
+        SetTextSpriteValue(M2C_FIELD(temp_r0, void **, 0x50), 0);
         temp_r2_2 = M2C_FIELD(temp_r0, void **, 0x50);
         M2C_FIELD(temp_r2_2, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r2_2, u8 *, 0x20) & ~0xE0) | 0x40);
         temp_r2_3 = M2C_FIELD(temp_r0, void **, 0x50);
@@ -133,7 +133,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         M2C_FIELD(temp_r0_4, s8 *, 0x16) = 2;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x54), s8 *, 0x14) = 8;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x54), s8 *, 0x17) = 8;
-        func_020a92bc(M2C_FIELD(temp_r0, void **, 0x54), 0);
+        SetTextSpriteValue(M2C_FIELD(temp_r0, void **, 0x54), 0);
         temp_r5_2 = M2C_FIELD(temp_r0, void **, 0x54);
         M2C_FIELD(temp_r5_2, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r5_2, u8 *, 0x20) & ~0xE0) | 0x40);
         temp_r5_3 = M2C_FIELD(temp_r0, void **, 0x54);
@@ -168,7 +168,7 @@ void *func_ov003_021ff7d4(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
-    void func_020e35cc(s32);
+    void HeapFreeBlock(s32);
     void func_ov003_021f140c(s32);
     void func_ov003_021f1920(void);
     void func_ov003_021f1a58(void);
@@ -184,7 +184,7 @@ void *func_ov003_021ff7d4(void *obj) {
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
-        func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
@@ -233,7 +233,7 @@ void *func_ov003_021ff9dc(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
-    void func_020e35cc(s32);
+    void HeapFreeBlock(s32);
     void func_ov003_021f140c(s32);
     void func_ov003_021f1920(void);
     void func_ov003_021f1a58(void);
@@ -249,7 +249,7 @@ void *func_ov003_021ff9dc(void *obj) {
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
-        func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
@@ -299,7 +299,7 @@ void *func_ov003_021ffbec(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
-    void func_020e35cc(s32);
+    void HeapFreeBlock(s32);
     void func_ov003_021f140c(s32);
     void func_020af1e4(void);
     void func_ov003_021f1a58(void);
@@ -315,7 +315,7 @@ void *func_ov003_021ffbec(void *obj) {
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
-        func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
@@ -364,7 +364,7 @@ void *func_ov003_021ffdf4(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
-    void func_020e35cc(s32);
+    void HeapFreeBlock(s32);
     void func_ov003_021f140c(s32);
     void func_020af1e4(void);
     void func_ov003_021f1a58(void);
@@ -380,7 +380,7 @@ void *func_ov003_021ffdf4(void *obj) {
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
-        func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
@@ -432,7 +432,7 @@ void *Ov003Object_Destructor(Ov003Object *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
-    void func_020e35cc(s32);
+    void HeapFreeBlock(s32);
     void func_ov003_021f140c(s32);
     void func_020af1e4(void);
     void func_ov003_021f1a58(void);
@@ -444,7 +444,7 @@ void *Ov003Object_Destructor(Ov003Object *obj) {
     obj->iface = &data_ov003_02210130;
     sub = obj->sub70;
     if (sub != NULL) {
-        func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
     child = obj->child44;

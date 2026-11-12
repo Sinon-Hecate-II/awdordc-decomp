@@ -458,14 +458,14 @@ void func_02037c10(void) {
 }
 
 s32 func_02037c1c(void) {
-    u32 func_020364f4(void);
+    u32 UpdateWfcHttpConnection(void);
     u32 func_0202f248(void);
     void SetNetError(s32, s32);
     u32 n;
     s32 dummy;
     (void)dummy;
 
-    switch (func_020364f4()) {
+    switch (UpdateWfcHttpConnection()) {
     case 0: return 1;
     case 1: return 2;
     case 2:

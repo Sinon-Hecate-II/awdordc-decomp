@@ -20,7 +20,7 @@ void func_ov000_02171774(void *p) {
  void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
  s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
- void func_02007ef4(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
+ void MI_CpuCopy32(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
  void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void func_020c0fac(void*);
  void *old=gCur3DSpriteEngine;
  s32 k;void *object=p;s32 i,idx,a,b,pal,t;void *dst;
@@ -40,7 +40,7 @@ void func_ov000_02171774(void *p) {
    idx=i-1;t=idx<<3;
    func_02080a14((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x80,8,6,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x680);
    dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+((idx*4+0x35c)<<5);
-   func_02007ef4(func_ov000_0216ce10(a),dst,0x80);
+   MI_CpuCopy32(func_ov000_0216ce10(a),dst,0x80);
    pal=(idx+0x1b)<<5;
    func_01ff9e44(func_ov000_0216ce84(b),pal,32);
    if(IsPlayerActive(i))M2C_FIELD((u8*)object+i,u8*,0x34)=1;
@@ -56,7 +56,7 @@ void func_ov000_02171774(void *p) {
  LoadDecompressedFileTo(GetLocalizedFileName(data_ov000_021b8dd4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x8600);
  LoadFileToSpriteBuffer(data_ov000_021b8de4,0x340,32);
  dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240;
- func_02007ef4((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x340,dst,32);
+ MI_CpuCopy32((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x340,dst,32);
  func_020ae528((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240);
  func_020c0fac(object);gCur3DSpriteEngine=old;
 }
@@ -64,7 +64,7 @@ void func_ov000_02171774(void *p) {
 #pragma opt_strength_reduction off
 void func_ov000_02171a68(void *arg0) {
 s32 IsPlayerPresent(s32); s32 IsPlayerCpu(s32); s32 func_ov000_02171768(s32);
-void func_020a947c(void *,u32); void func_020a92bc(void *,s32); void func_020a94fc(void *);
+void func_020a947c(void *,u32); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
 void AddSprite(u16,u8,u16,void *,s32);
 extern void *g3DSpriteEngineMain,*gCur3DSpriteEngine; extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],data_02101f1c[],gMapConfig[];
@@ -85,10 +85,10 @@ if(!IsPlayerCpu(i)) tile=idx*16+0x3a0; else tile=0x3e0;
 AddSprite((u16)(idx*64+4),23,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)(pal<<12)),data_02101f1c,11);
 AddSprite((u16)(idx*64),40,(u16)((0x3ff&((unit*16+0x3f0)>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)(pal<<12)),data_02101f1c,11);
 }}
-if(M2C_FIELD(*gCurrentMap,u8 *,0x5156)){tile=func_ov000_02171768(0);AddSprite(0,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else{tile=func_ov000_02171768(1);AddSprite(0,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}if(M2C_FIELD(*gCurrentMap,u8 *,0x5159)==1){tile=func_ov000_02171768(10);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else switch(M2C_FIELD(*gCurrentMap,u8 *,0x515b)){case 0: tile=func_ov000_02171768(6);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 1: tile=func_ov000_02171768(8);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2: tile=func_ov000_02171768(7);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3: tile=func_ov000_02171768(9);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)){case 1: tile=func_ov000_02171768(4);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2: tile=func_ov000_02171768(5);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3: tile=func_ov000_02171768(3);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;default:tile=func_ov000_02171768(2);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}func_020a92bc(sp,gMapConfig[3]);M2C_FIELD(sp,s16 *,6)=224;M2C_FIELD(sp,s16 *,8)=104;
-if(!gMapConfig[3]){sp[32]=((u8)((sp[32]&~1)|1)&~30)|20;func_020a94fc(sp);sp[32]&=~1;}else func_020a94fc(sp);
-func_020a92bc(sp,M2C_FIELD(gMapConfig,s32 *,8));M2C_FIELD(sp,s16 *,6)=32;M2C_FIELD(sp,s16 *,8)=144;func_020a94fc(sp);
-func_020a92bc(sp,M2C_FIELD(gMapConfig,u16 *,6));M2C_FIELD(sp,s16 *,6)=96;M2C_FIELD(sp,s16 *,8)=144;func_020a94fc(sp);
+if(M2C_FIELD(*gCurrentMap,u8 *,0x5156)){tile=func_ov000_02171768(0);AddSprite(0,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else{tile=func_ov000_02171768(1);AddSprite(0,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}if(M2C_FIELD(*gCurrentMap,u8 *,0x5159)==1){tile=func_ov000_02171768(10);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else switch(M2C_FIELD(*gCurrentMap,u8 *,0x515b)){case 0: tile=func_ov000_02171768(6);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 1: tile=func_ov000_02171768(8);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2: tile=func_ov000_02171768(7);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3: tile=func_ov000_02171768(9);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)){case 1: tile=func_ov000_02171768(4);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2: tile=func_ov000_02171768(5);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3: tile=func_ov000_02171768(3);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;default:tile=func_ov000_02171768(2);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}SetTextSpriteValue(sp,gMapConfig[3]);M2C_FIELD(sp,s16 *,6)=224;M2C_FIELD(sp,s16 *,8)=104;
+if(!gMapConfig[3]){sp[32]=((u8)((sp[32]&~1)|1)&~30)|20;DrawTextSprite(sp);sp[32]&=~1;}else DrawTextSprite(sp);
+SetTextSpriteValue(sp,M2C_FIELD(gMapConfig,s32 *,8));M2C_FIELD(sp,s16 *,6)=32;M2C_FIELD(sp,s16 *,8)=144;DrawTextSprite(sp);
+SetTextSpriteValue(sp,M2C_FIELD(gMapConfig,u16 *,6));M2C_FIELD(sp,s16 *,6)=96;M2C_FIELD(sp,s16 *,8)=144;DrawTextSprite(sp);
 switch((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<26)>>29){case 0:tile=func_ov000_02171768(11);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 1:tile=func_ov000_02171768(12);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2:tile=func_ov000_02171768(13);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3:tile=func_ov000_02171768(14);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}if((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<23)>>31){tile=func_ov000_02171768(0);AddSprite(192,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else{tile=func_ov000_02171768(1);AddSprite(192,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}gCur3DSpriteEngine=saved;}
 #pragma opt_strength_reduction reset
 void func_ov000_021723bc(void) {

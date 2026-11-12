@@ -60,57 +60,60 @@ s32 func_0204183c(s32 *p,u32 n) {
  }return 1;
 }
 
-void func_020418c4(void) {
+/* Tear down the online connection: forget the matchmaking target, announce that
+   our slot is leaving when a peer session is running, release the NAT
+   negotiation session and finally close the connection. */
+void DisconnectConnection(void) {
     void *GetConnection(void);
-    void func_02041a4c(void);
+    void CloseConnection(void);
     s32 func_02041b0c(void);
     M2C_UNK func_0205afec(s32);
     void func_0205df50(s32);
     s32 func_02040dc8(M2C_UNK);
     s32 func_0204084c(void);
 
-    M2C_FIELD(GetConnection(), s32 *, 0x20c) = 0;
-    if (M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 2) {
-        func_02041a4c();
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_TARGET_ID) = 0;
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 2) {
+        CloseConnection();
         return;
     }
-    M2C_FIELD(GetConnection(), u8 *, 0x1a9) = 1;
-    if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 3) {
-        M2C_FIELD(GetConnection(), u8 *, 0x1a9) = 1;
-        if (M2C_FIELD(GetConnection(), u8 *, 0xd) != 0) {
-            func_0205afec(*M2C_FIELD(GetConnection(), s32 **, 0x4));
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_BUSY) = 1;
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3) {
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_BUSY) = 1;
+        if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
+            func_0205afec(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
         } else {
-            func_02040dc8(M2C_FIELD(GetConnection(), s32 *, 0xf4));
+            func_02040dc8(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
             if (((s32 (*)())func_0204084c)() != 0) return;
         }
-        func_02041a4c();
+        CloseConnection();
         return;
     }
-    if (M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 4 ||
-        M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 5 ||
-        M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 6 ||
-        M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 7 ||
-        M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 0xb ||
-        M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 0xc) {
-        if (M2C_FIELD(GetConnection(), s32 *, 0x204) != 0) {
-            func_02040dc8(M2C_FIELD(GetConnection(), s32 *, 0xf4));
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 4 ||
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 5 ||
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 6 ||
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 7 ||
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xb ||
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xc) {
+        if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_JOIN_PEER) != 0) {
+            func_02040dc8(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
             if (((s32 (*)())func_0204084c)() != 0) return;
         }
         func_02041b0c();
         if (((s32 (*)())func_0204084c)() != 0) return;
     }
-    if (M2C_FIELD(GetConnection(), s32 *, 0x19c) != 0) {
-        func_0205df50(M2C_FIELD(GetConnection(), s32 *, 0x19c));
-        M2C_FIELD(GetConnection(), s32 *, 0x19c) = 0;
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) != 0) {
+        func_0205df50(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG));
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) = 0;
     }
-    if (M2C_FIELD(GetConnection(), u8 *, 0xd) != 0) {
-        M2C_FIELD(GetConnection(), u8 *, 0x1a9) = 1;
-        func_0205afec(*M2C_FIELD(GetConnection(), s32 **, 0x4));
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_BUSY) = 1;
+        func_0205afec(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
     }
-    func_02041a4c();
+    CloseConnection();
 }
 
-void func_02041a4c(void) {
+void CloseConnection(void) {
  extern s32 sEmptyString;
  s32 func_02042f94(); s32 func_0203aeb4();
  s32 a,b,c; void *p;
@@ -149,8 +152,8 @@ return r;
 void func_02041be0(s32 refresh) {
     s32 func_0203aeb4(); s32 func_02043008();
     s32 b,c; void *p;
-    if(refresh==0){func_02041a4c();return;}
-    func_0203e570();
+    if(refresh==0){CloseConnection();return;}
+    ResetConnection();
     if(M2C_FIELD(GetConnection(),u8*,0x15)==2 || M2C_FIELD(GetConnection(),u8*,0x15)==3) {
         b=M2C_FIELD(GetConnection(),s32*,0x20c)==0;
         p=GetConnection();

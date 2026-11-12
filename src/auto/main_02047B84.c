@@ -365,7 +365,7 @@ if(b<0||b>=M2C_FIELD(a,s32 *,0))return 0;
 return M2C_FIELD(a,s32 *,20)+M2C_FIELD(a,s32 *,8)*b;
 }
 
-void func_020486f8(s32 *arg0, M2C_UNK arg1) {
+void Vector_AddItem(s32 *arg0, M2C_UNK arg1) {
     M2C_UNK func_02048744(s32 *, M2C_UNK, s32);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fcc10;

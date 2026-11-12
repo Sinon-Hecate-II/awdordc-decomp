@@ -368,12 +368,12 @@ s32 func_0209943c(s32 arg0) {
 
 M2C_UNK func_02099450(s32 a,s32 b,s32 c){
  extern void *gCur3DSpriteEngine;extern M2C_UNK data_0211e9dc,data_0211f0dc;
- void func_02007ef4(void*,void*,s32);
+ void MI_CpuCopy32(void*,void*,s32);
  void *p=M2C_FIELD(gCur3DSpriteEngine,void**,0x50);
  M2C_FIELD(p,u16*,0x300)=b+100;M2C_FIELD(p,u8*,0)=1;M2C_FIELD(p,u8*,0x302)=a;
  switch(c){
- case 0:func_02007ef4(&data_0211e9dc,(u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,12)+((b+16)<<5),0x700);break;
- case 1:func_02007ef4(&data_0211f0dc,(u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,12)+((b+16)<<5),0x700);break;
+ case 0:MI_CpuCopy32(&data_0211e9dc,(u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,12)+((b+16)<<5),0x700);break;
+ case 1:MI_CpuCopy32(&data_0211f0dc,(u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,12)+((b+16)<<5),0x700);break;
  }
 }
 

@@ -7,7 +7,7 @@ static inline u32 aaeb0State(void *p) {
     return (q != 0) ? M2C_FIELD((void *) q, u16 *, 8) : 0xFFFFFFFF;
 }
 static inline void *allocAAB(void) {
-void *MemAlloc(s32); s32 func_020e34bc(s32); s32 MI_CpuFill8(s32,s32,s32);
+void *MemAlloc(s32); s32 HeapAllocBlock(s32); s32 MI_CpuFill8(s32,s32,s32);
     void *temp_r0;
     s32 temp_r0_2;
     temp_r0 = MemAlloc(0x24);
@@ -24,7 +24,7 @@ void *MemAlloc(s32); s32 func_020e34bc(s32); s32 MI_CpuFill8(s32,s32,s32);
         M2C_FIELD(temp_r0, s8 *, 0xC) = -1;
         M2C_FIELD(temp_r0, s8 *, 0xE) = 0;
         M2C_FIELD(temp_r0, u8 *, 0xF) = 0xFF;
-        temp_r0_2 = func_020e34bc(0xC);
+        temp_r0_2 = HeapAllocBlock(0xC);
         M2C_FIELD(temp_r0, s32 *, 0x14) = temp_r0_2;
         MI_CpuFill8(temp_r0_2, 0, 0xC);
     }
@@ -156,7 +156,7 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, u32, s32);
     void func_020aad18(void *);
     s32 func_020aae78(void *);
-    s32 func_020e34bc(M2C_UNK);
+    s32 HeapAllocBlock(M2C_UNK);
     extern void *gCur3DSpriteEngine;
     void *temp_r0;
     s32 temp_r0_2;
@@ -204,7 +204,7 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
         M2C_FIELD(temp_r0, s8 *, 0xC) = -1;
         M2C_FIELD(temp_r0, s8 *, 0xE) = 0;
         M2C_FIELD(temp_r0, u8 *, 0xF) = 0xFF;
-        temp_r0_2 = func_020e34bc(0xC);
+        temp_r0_2 = HeapAllocBlock(0xC);
         M2C_FIELD(temp_r0, s32 *, 0x14) = temp_r0_2;
         MI_CpuFill8(temp_r0_2, 0, 0xC);
     }
@@ -223,7 +223,7 @@ void MenuSpriteUpdate(void *arg0) {
 
 /* Updates the sprite entry for a unit: updates an existing slot when one is present, otherwise allocates a new one. */
 void func_020aad18(void *unit) {
-    void func_02087d18(void *, s16, s16, u16, u16, s32, u16);
+    void AddSpriteCell(void *, s16, s16, u16, u16, s32, u16);
     void func_02087d84(void *, s32, s32, s32, u16, u16);
     u32 func_020aae10(void *);
     u32 func_020aae44(void *);
@@ -255,7 +255,7 @@ void func_020aad18(void *unit) {
     width = func_020aae10(unit);
     height = func_020aae44(unit);
     extra = func_020aae94(unit);
-    func_02087d18(M2C_FIELD(unit, void **, 0x64), x, y, width, height, 1, (u16)extra);
+    AddSpriteCell(M2C_FIELD(unit, void **, 0x64), x, y, width, height, 1, (u16)extra);
 }
 
 u32 func_020aae10(void *arg0) {

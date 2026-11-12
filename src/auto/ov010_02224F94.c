@@ -106,9 +106,9 @@ void func_ov010_02225288(void) {
 }
 
 void func_ov010_02225304(M2C_UNK arg0, M2C_UNK arg1) {
-M2C_UNK func_02007ef4(M2C_UNK,M2C_UNK *,M2C_UNK);
+M2C_UNK MI_CpuCopy32(M2C_UNK,M2C_UNK *,M2C_UNK);
 extern M2C_UNK data_ov010_0222d974;
-func_02007ef4(arg0,&data_ov010_0222d974,arg1);
+MI_CpuCopy32(arg0,&data_ov010_0222d974,arg1);
 }
 
 void func_ov010_0222531c(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK arg2, M2C_UNK arg3) {

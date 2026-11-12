@@ -82,16 +82,16 @@ void func_ov005_02215360(s16 arg0) {
 }
 
 void func_ov005_022153d4(u8 *arg0) {
- M2C_UNK func_020b1c60(s32);
+ M2C_UNK FocusSpriteSlotById(s32);
  extern M2C_UNK data_ov005_02221304;
  s32 value = M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x94);
  if (value == *arg0) return;
- func_020b1c60(value);
+ FocusSpriteSlotById(value);
 }
 
 void func_ov005_022153fc(u8 *a) {
     s32 func_020b20e0(s32);
-    M2C_UNK func_020b1c60(s32);
+    M2C_UNK FocusSpriteSlotById(s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_ov005_02214148(void);
     s32 func_ov005_022141cc(void);
@@ -152,7 +152,7 @@ void func_ov005_022153fc(u8 *a) {
     }
 
 done:
-    if (n != *a) func_020b1c60(n);
+    if (n != *a) FocusSpriteSlotById(n);
     M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x94) = n;
 }
 
@@ -171,7 +171,7 @@ void func_ov005_022155c0(u8 *arg0) {
 
 void func_ov005_022155e8(u8 *arg0) {
  s32 func_ov005_022140f8(s32);
- void func_ov005_022148f0(s32);
+ void RecordsMenu_DrawList(s32);
  void func_ov005_02214e18(s32);
  extern M2C_UNK data_ov005_02221304;
  u8 *flags;
@@ -179,7 +179,7 @@ void func_ov005_022155e8(u8 *arg0) {
  if (!func_ov005_022140f8(i)) return;
  flags=((UnkOv005Selection *)M2C_FIELD(&data_ov005_02221304,void **,8))->unk_0xa2;
  flags[i] = flags[i] == 0 ? 1 : 0;
- func_ov005_022148f0(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x96));
+ RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x96));
  func_ov005_02214e18(-1);
 }
 

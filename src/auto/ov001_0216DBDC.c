@@ -151,9 +151,9 @@ OS_RestoreInterrupts(t);return 0;
 void func_ov001_0216e288(s32 a,s32 b,s32 c) {
 extern M2C_UNK data_ov001_02192824,data_ov001_02192790;
 if(b && c>0){
-func_02006564(&data_ov001_02192824);
+LockMutex(&data_ov001_02192824);
 M2C_FIELD(&data_ov001_02192790,void (**)(s32),12)(b);
-func_020065e8(&data_ov001_02192824);
+UnlockMutex(&data_ov001_02192824);
 }
 }
 

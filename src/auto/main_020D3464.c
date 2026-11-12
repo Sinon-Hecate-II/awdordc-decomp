@@ -646,14 +646,14 @@ void func_020d422c(void) {
     M2C_UNK func_020d1c58();
     M2C_UNK func_020d1ce0();
     M2C_UNK func_020a23c4();
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     void func_020d427c(void);
     extern void **gCurrentMap;
     func_020a3498(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4));
     func_020d1c58();
     func_020d1ce0();
     func_020a23c4();
-    func_020cfd28();
+    RefreshMapView();
     func_020d427c();
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 4;
 }

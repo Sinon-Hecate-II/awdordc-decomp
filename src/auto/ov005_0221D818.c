@@ -156,7 +156,7 @@ void func_ov005_0221e214(void) {
 #pragma opt_strength_reduction off
 /* Creates the results medal sprites on both screens and seeds the surrounding effects. */
 void func_ov005_0221e22c(M2C_UNK parent) {
-    s32 func_020cd1e4(void);
+    s32 DidPlayerWin(void);
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     void *func_02090eb8(M2C_UNK *, s32, s32, s32, u16, s32, void *);
@@ -170,7 +170,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     void *medalDisplay, *savedEngine;
     s32 i, x, y, isOtherMode;
 
-    if (!func_020cd1e4()) return;
+    if (!DidPlayerWin()) return;
     medalDisplay = CreateSpriteObject(&data_ov005_02220db8, parent);
     if (medalDisplay) {
         M2C_FIELD(medalDisplay, void **, 0) = &data_ov005_02220f90;
@@ -221,7 +221,7 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK SetLayerSize(M2C_UNK, M2C_UNK);
-    s32 func_020cd1e4();
+    s32 DidPlayerWin();
     s32 GetLocalizedFileName(M2C_UNK *);
     extern u16 gMapConfig;
     extern void *g3DSpriteEngineMain;
@@ -236,7 +236,7 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     void *result;
     void *savedPtr;
 
-    if (func_020cd1e4() == 0) {
+    if (DidPlayerWin() == 0) {
         return;
     }
     if (((u32) (gMapConfig << 0x1D) >> 0x1D) != 1) {

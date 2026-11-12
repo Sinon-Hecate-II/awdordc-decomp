@@ -7,36 +7,39 @@ static inline u8 E9638IsFF(u8 v) { return v==255; }
 static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
 #include "coordinate_bits.h"
 
-void func_ov003_021e9638(SpriteGroup9638 *self,void *arg) {
+/* Create the waypoint panel's sprites: the panel's main 3D sprite, one sprite
+   per waypoint slot (12) and one label sprite per slot plus a trailing label,
+   all allocated on the sub engine. */
+void CreateWaypointPanelSprites(SpriteGroup9638 *group,void *panel) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;extern u8 data_ov003_0220f896[];
 void *func_020993d4(void *);void *func_0208931c(void *);void func_020990d4(void *,s32,u16);void func_020991f4(void *,s32);void func_02088da8(void *);s32 func_02098588(s32);void func_020990fc(void *,s32,s32,s32);
-void *old=gCur3DSpriteEngine;s32 i;
+void *savedEngine=gCur3DSpriteEngine;s32 slot;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-self->main=func_020993d4(arg);
-func_020990d4(self->main,0x4400,1);
-func_020991f4(self->main,1);
-M2C_FIELD(self->main,u16 *,0x3c)=0x400;
-func_02088da8(self->main);
+group->main=func_020993d4(panel);
+func_020990d4(group->main,0x4400,1);
+func_020991f4(group->main,1);
+M2C_FIELD(group->main,u16 *,0x3c)=0x400;
+func_02088da8(group->main);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-for(i=0;i<12;i++){
-self->sprites[i]=func_020993d4(arg);
-func_020990d4(self->sprites[i],0x5c00+i*2*func_02098588(0),(u16)i);
-func_020990fc(self->sprites[i],i+1,0,0);
-func_020991f4(self->sprites[i],1);
-M2C_FIELD(self->sprites[i],u16 *,0x3c)=0x400;
-func_02088da8(self->sprites[i]);
-self->labels[i]=func_0208931c(arg);
-M2C_FIELD(self->labels[i],void **,0x44)=data_ov003_0220f896;
-M2C_FIELD(self->labels[i],u16 *,0x3e)=0x540;
-M2C_FIELD(self->labels[i],u16 *,0x3c)=0x800;
-func_02088da8(self->labels[i]);
+for(slot=0;slot<12;slot++){
+group->sprites[slot]=func_020993d4(panel);
+func_020990d4(group->sprites[slot],0x5c00+slot*2*func_02098588(0),(u16)slot);
+func_020990fc(group->sprites[slot],slot+1,0,0);
+func_020991f4(group->sprites[slot],1);
+M2C_FIELD(group->sprites[slot],u16 *,0x3c)=0x400;
+func_02088da8(group->sprites[slot]);
+group->labels[slot]=func_0208931c(panel);
+M2C_FIELD(group->labels[slot],void **,0x44)=data_ov003_0220f896;
+M2C_FIELD(group->labels[slot],u16 *,0x3e)=0x540;
+M2C_FIELD(group->labels[slot],u16 *,0x3c)=0x800;
+func_02088da8(group->labels[slot]);
 }
-self->last=func_0208931c(arg);
-M2C_FIELD(self->last,void **,0x44)=data_ov003_0220f896;
-M2C_FIELD(self->last,u16 *,0x3e)=0x560;
-M2C_FIELD(self->last,u16 *,0x3c)=0x800;
-func_02088da8(self->last);
-gCur3DSpriteEngine=old;
+group->last=func_0208931c(panel);
+M2C_FIELD(group->last,void **,0x44)=data_ov003_0220f896;
+M2C_FIELD(group->last,u16 *,0x3e)=0x560;
+M2C_FIELD(group->last,u16 *,0x3c)=0x800;
+func_02088da8(group->last);
+gCur3DSpriteEngine=savedEngine;
 }
 
 void func_ov003_021e97bc(void *p,s16 x,s16 y,s32 a,s32 b) { E9638Set(p,x,y,a,b); }

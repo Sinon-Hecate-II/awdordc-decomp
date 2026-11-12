@@ -17,7 +17,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     extern M2C_UNK data_ov005_02221218, data_ov005_02221224, gFrameCounter;
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02007ef4(void *, void *, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(void *, void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(M2C_UNK);
     M2C_UNK func_01ffa6fc(void *);
     s32 r5 = 0;
@@ -35,7 +35,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
                 M2C_FIELD(o0, s32 *, 0x60) = 2;
                 M2C_FIELD(o0, s32 *, 0x64) = 0x10;
                 M2C_FIELD(o0, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2c0;
-                func_02007ef4(M2C_FIELD(o0, void **, 0x54), (void *)((char *)o0 + 0x34), 0x20);
+                MI_CpuCopy32(M2C_FIELD(o0, void **, 0x54), (void *)((char *)o0 + 0x34), 0x20);
                 M2C_FIELD(o0, s32 *, 0x5c) = 0;
                 r5 = 1;
             } else r6 = 1;
@@ -54,7 +54,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
                 M2C_FIELD(o1, s32 *, 0x60) = 2;
                 M2C_FIELD(o1, s32 *, 0x64) = 0x10;
                 M2C_FIELD(o1, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2e0;
-                func_02007ef4(M2C_FIELD(o1, void **, 0x54), (void *)((char *)o1 + 0x34), 0x20);
+                MI_CpuCopy32(M2C_FIELD(o1, void **, 0x54), (void *)((char *)o1 + 0x34), 0x20);
                 M2C_FIELD(o1, s32 *, 0x5c) = 0;
                 r5 = 1;
             } else r6 = 1;
@@ -73,7 +73,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
                 M2C_FIELD(o2, s32 *, 0x60) = 2;
                 M2C_FIELD(o2, s32 *, 0x64) = 0x10;
                 M2C_FIELD(o2, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300;
-                func_02007ef4(M2C_FIELD(o2, void **, 0x54), (void *)((char *)o2 + 0x34), 0x20);
+                MI_CpuCopy32(M2C_FIELD(o2, void **, 0x54), (void *)((char *)o2 + 0x34), 0x20);
                 M2C_FIELD(o2, s32 *, 0x5c) = 0;
                 r5 = 1;
             } else r6 = 1;
@@ -94,7 +94,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
             M2C_FIELD(o, s32 *, 0x60) = 2;
             M2C_FIELD(o, s32 *, 0x64) = 0x10;
             M2C_FIELD(o, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x320;
-            func_02007ef4(M2C_FIELD(o, void **, 0x54), (void *)((char *)o + 0x34), 0x20);
+            MI_CpuCopy32(M2C_FIELD(o, void **, 0x54), (void *)((char *)o + 0x34), 0x20);
             M2C_FIELD(o, s32 *, 0x5c) = 0;
             func_01ffa6fc(arg0);
         }
@@ -354,7 +354,7 @@ void func_ov005_0221b854(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_01ffa730(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_020cd1e4();
+    s32 DidPlayerWin();
     extern M2C_UNK data_0215c334;
     extern M2C_UNK data_0215c340;
     extern u16 **data_027e01d8;
@@ -392,7 +392,7 @@ void func_ov005_0221b854(void *arg0) {
     u16 *temp_r1_9;
     u16 *temp_r2;
 
-    if (func_020cd1e4() == 0) {
+    if (DidPlayerWin() == 0) {
         var_r0 = 0;
     } else if (*(&data_0215c340 + (M2C_FIELD(&data_0215c334, u8 *, 4) * 0xC)) == 0) {
         var_r0 = 0;

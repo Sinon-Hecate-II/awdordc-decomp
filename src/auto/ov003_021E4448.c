@@ -28,14 +28,14 @@ void func_ov003_021e450c(void) {
 }
 
 void func_ov003_021e4510(void *arg0) {
-s32 func_020c8cbc(void *);void func_ov003_021f2588(void);void *func_020e34bc(s32);void func_02007ef4(void *,void *,u32);void func_020e35cc(void *);
+s32 func_020c8cbc(void *);void func_ov003_021f2588(void);void *HeapAllocBlock(s32);void MI_CpuCopy32(void *,void *,u32);void HeapFreeBlock(void *);
 u8 changed=0;u8 *p;u8 k;u8 *copy;u8 i,j;u8 *dest;u32 off;
 for(k=0;k<5;k++){p=M2C_FIELD(arg0,u8 **,0x6c)+k*0x6f8;if((u16)func_020c8cbc(p)){p[0x27]=0;func_ov003_021f2588();changed=1;}}
 if(!changed)return;
-copy=func_020e34bc(0x22d8);func_02007ef4(M2C_FIELD(arg0,void **,0x6c),copy,0x22d8);
-for(j=0,i=0;i<5;i++){p=copy+i*0x6f8;off=j*0x6f8;dest=M2C_FIELD(arg0,u8 **,0x6c);if(p[0x27]){func_02007ef4(p,dest+off,0x6f8);j++;}}
+copy=HeapAllocBlock(0x22d8);MI_CpuCopy32(M2C_FIELD(arg0,void **,0x6c),copy,0x22d8);
+for(j=0,i=0;i<5;i++){p=copy+i*0x6f8;off=j*0x6f8;dest=M2C_FIELD(arg0,u8 **,0x6c);if(p[0x27]){MI_CpuCopy32(p,dest+off,0x6f8);j++;}}
 while(j<5){M2C_FIELD(M2C_FIELD(arg0,u8 **,0x6c)+j*0x6f8,u8 *,0x27)=0;j++;}
-func_020e35cc(copy);
+HeapFreeBlock(copy);
 }
 
 void func_ov003_021e4610(void **arg0) {
@@ -196,8 +196,8 @@ void func_ov003_021e4908(void *arg0) {
     void func_ov003_021f13ec(M2C_UNK *);
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK *);
     void *MemAlloc(s32);
-    M2C_UNK func_020a92bc(M2C_UNK *);
-    void *func_020e34bc(s32);
+    M2C_UNK SetTextSpriteValue(M2C_UNK *);
+    void *HeapAllocBlock(s32);
     void func_02091c20(s32, s32);
 
     extern M2C_UNK data_02102174;
@@ -357,7 +357,7 @@ void func_ov003_021e4908(void *arg0) {
         q[0x16] = 2;
         q[0x14] = 8;
         q[0x17] = 8;
-        func_020a92bc(q);
+        SetTextSpriteValue(q);
         q[0x20] = (unsigned char)((q[0x20] & ~0xE0) | 0x40);
         q[0x28] = (unsigned char)((q[0x28] & ~0xE0) | 0x20);
     }
@@ -388,15 +388,15 @@ void func_ov003_021e4908(void *arg0) {
         q[0x16] = 2;
         q[0x14] = 8;
         q[0x17] = 8;
-        func_020a92bc(q);
+        SetTextSpriteValue(q);
         q[0x20] = (unsigned char)((q[0x20] & ~0xE0) | 0x40);
         q[0x28] = (unsigned char)(q[0x28] & ~0xE0);
         *(u16 *)(q + 0x12) = 0x270;
         q[0x21] = 0x9;
     }
 
-    *(void **)(bp + 0x68) = func_020e34bc((s32)&gHeapObjectVTable);
-    *(void **)(bp + 0x6c) = func_020e34bc((s32)&gHeapObjectVTable);
+    *(void **)(bp + 0x68) = HeapAllocBlock((s32)&gHeapObjectVTable);
+    *(void **)(bp + 0x6c) = HeapAllocBlock((s32)&gHeapObjectVTable);
     func_02091c20(0x22, 0x1);
 }
 
@@ -405,7 +405,7 @@ void *func_ov003_021e4d2c(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK func_020c127c();
     M2C_UNK func_020c8e40();
-    void func_020e35cc(void *);
+    void HeapFreeBlock(void *);
     extern M2C_UNK data_ov003_0220f4b4;
     extern M2C_UNK data_ov003_0220f4e0;
     M2C_UNK func_ov003_021f140c(s32);
@@ -459,10 +459,10 @@ void *func_ov003_021e4d2c(void *arg0) {
     func_ov003_021f140c(4);
     func_020c127c();
     if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
-        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x68));
+        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x68));
     }
     if (M2C_FIELD(arg0, s32 *, 0x6C) != 0) {
-        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x6C));
+        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x6C));
     }
     return arg0;
 }
@@ -496,7 +496,7 @@ void *func_ov003_021e4eb8(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK func_020c127c();
     M2C_UNK func_020c8e40();
-    void func_020e35cc(void *);
+    void HeapFreeBlock(void *);
     extern M2C_UNK data_ov003_0220f4b4;
     extern M2C_UNK data_ov003_0220f4e0;
     M2C_UNK func_ov003_021f140c(s32);
@@ -550,10 +550,10 @@ void *func_ov003_021e4eb8(void *arg0) {
     func_ov003_021f140c(4);
     func_020c127c();
     if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
-        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x68));
+        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x68));
     }
     if (M2C_FIELD(arg0, s32 *, 0x6C) != 0) {
-        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x6C));
+        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x6C));
     }
     MemFree(arg0);
     return arg0;

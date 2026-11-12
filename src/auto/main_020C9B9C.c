@@ -53,7 +53,7 @@ extern void **gCurrentMap;
 extern u16 data_ov000_021aeee8[];
 extern s8 gTerrainPropertyFlags[];
 void func_0207ab84(s32,s32,u8); void func_0207ac54(s32,s32,s32);
-void func_020cf2c8(void);void func_020cfd28(void);void func_020d2470(void);
+void func_020cf2c8(void);void RefreshMapView(void);void func_020d2470(void);
 u32 player; u16 i; u8 x,y; s32 kind,unit; u8 *map,*p,*rec,*tile;u32 old; u16 *rows; s32 row;
 if(M2C_FIELD(arg0,s16 *,0x6e)!=2) player=0;
 else {
@@ -100,7 +100,7 @@ func_0207ab84(x,y,(u8)data_ov000_021aeee8[player]);
 }
 }
 }
-func_020cfd28();func_020cf2c8();func_020d2470();
+RefreshMapView();func_020cf2c8();func_020d2470();
 M2C_FIELD(arg0,s16 *,0x70)=1;
 }
 #pragma pop

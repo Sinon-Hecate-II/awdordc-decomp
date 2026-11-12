@@ -120,15 +120,15 @@ void func_0202de1c(void *arg0, s32 arg1) {
 }
 
 void func_0202de74(void *arg0) {
-    M2C_UNK func_02006564(M2C_UNK *);
-    M2C_UNK func_020065e8(M2C_UNK *);
+    M2C_UNK LockMutex(M2C_UNK *);
+    M2C_UNK UnlockMutex(M2C_UNK *);
     M2C_UNK Sound_StopIfPlaying(void *);
     M2C_UNK func_0202df0c(void *);
     extern M2C_UNK data_0213c290;
     extern M2C_UNK data_0213c908;
-    func_02006564(&data_0213c908);
+    LockMutex(&data_0213c908);
     if (M2C_FIELD(&data_0213c290, s32 *, 4) != 0) {
-        func_02006564(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
+        LockMutex(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
     }
     if (((s32) (M2C_FIELD(arg0, s32 *, 0x110) << 0x1E) >> 0x1F) != 0) {
         Sound_StopIfPlaying(arg0);
@@ -137,11 +137,11 @@ void func_0202de74(void *arg0) {
         M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x170)(arg0);
     }
     func_0202df0c(arg0);
-    func_020065e8(&data_0213c908);
+    UnlockMutex(&data_0213c908);
     if (M2C_FIELD(&data_0213c290, s32 *, 4) == 0) {
         return;
     }
-    func_020065e8(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
+    UnlockMutex(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
 }
 
 M2C_UNK func_0202df0c(void *arg0) {
@@ -181,12 +181,12 @@ void Sound_ReleaseChannel(void *arg0) {
 void func_0202dfcc(void *arg0, s32 arg1) {
     M2C_UNK func_02005ac0(void *, M2C_UNK *, void *, s32, s32, s32);
     M2C_UNK TaskWake(void *);
-    M2C_UNK func_0200654c(void *);
+    M2C_UNK InitMutex(void *);
     M2C_UNK func_02029c30(void *, M2C_UNK);
     extern M2C_UNK func_0202ee30;
     func_02005ac0(arg0, &func_0202ee30, arg0, arg0 + 0x4C0, 0x400, arg1);
     func_02029c30(arg0 + 0x4E0, 0);
-    func_0200654c(arg0 + 0x4C8);
+    InitMutex(arg0 + 0x4C8);
     M2C_FIELD(arg0, s32 *, 0x4C4) = 0;
     M2C_FIELD(arg0, s32 *, 0x4C0) = 0;
     TaskWake(arg0);
@@ -248,19 +248,19 @@ void func_0202e12c(M2C_UNK arg0) {
 }
 
 void func_0202e158(s32 arg0,s32 arg1,void *arg2) {
-M2C_UNK func_02006564(M2C_UNK *); M2C_UNK func_020065e8(M2C_UNK *); M2C_UNK func_0202b544();
+M2C_UNK LockMutex(M2C_UNK *); M2C_UNK UnlockMutex(M2C_UNK *); M2C_UNK func_0202b544();
 extern M2C_UNK data_0213c290; extern M2C_UNK data_0213c908;
 if(arg0!=M2C_FIELD(arg2,s32 *,0x12c)) return;
-func_02006564(&data_0213c908);
-if(M2C_FIELD(&data_0213c290,s32 *,4)) func_02006564(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
+LockMutex(&data_0213c908);
+if(M2C_FIELD(&data_0213c290,s32 *,4)) LockMutex(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
 func_0202de74(arg2);
 M2C_FIELD(arg2,s32 *,0x12c)=0; M2C_FIELD(arg2,s32 *,0x130)=0; M2C_FIELD(arg2,u8 *,0x124)=0;
 if(M2C_FIELD(arg2,s32 *,0x120)>0) {
 func_0202b544(arg2); M2C_FIELD(arg2,s32 *,0x120)=0;
 }
-func_020065e8(&data_0213c908);
+UnlockMutex(&data_0213c908);
 if(!M2C_FIELD(&data_0213c290,s32 *,4)) return;
-func_020065e8(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
+UnlockMutex(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
 }
 
 void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *arg4) {

@@ -199,13 +199,13 @@ end:
 s32 gpiSendQueuedMessages(void **arg0,void *arg1){
 s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32);
 M2C_UNK func_0204890c(s32,s32);
-s32 gpiSendBufferedData(void **,s32,void *,s32 *,s32,M2C_UNK *);
+s32 gpiSendFromBuffer(void **,s32,void *,s32 *,s32,M2C_UNK *);
 extern M2C_UNK data_020febb0;
 s32 sp8; void *p; s32 result;
 if(M2C_FIELD(arg1,s32 *,0x30))return 0;
 while(Vector_GetCount(M2C_FIELD(arg1,s32 *,0x38))){
 p=Vector_GetItem(M2C_FIELD(arg1,s32 *,0x38),0);
-result=gpiSendBufferedData(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
+result=gpiSendFromBuffer(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
 if(sp8 || result){M2C_FIELD(arg1,s32 *,0)=0x6a;return 0;}
 if(M2C_FIELD(p,s32 *,12)!=M2C_FIELD(p,s32 *,8))break;
 func_0204890c(M2C_FIELD(arg1,s32 *,0x38),0);
@@ -222,7 +222,7 @@ s32 gpiProcessPeer(void **gpi, void *peer) {
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK gpiSendMessageToPlayer(void **, s32, M2C_UNK, M2C_UNK *);
     s32 gpiReceiveData(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
-    s32 gpiSendBufferedData(void **, s32, void *, s32 *, s32, M2C_UNK *);
+    s32 gpiSendFromBuffer(void **, s32, void *, s32 *, s32, M2C_UNK *);
     s32 gpiReadMessageFromPeer(void **, void *, s32 *, s32 *, s32 *);
     M2C_UNK gpiConsumeReadBuffer(void **, void *);
     s32 gpiAddCallback(void **, CallbackPair, void *, s32, s32);
@@ -248,7 +248,7 @@ s32 gpiProcessPeer(void **gpi, void *peer) {
 
     conn = *gpi;
     if (M2C_FIELD(peer, s32 *, 0x30) != 0) {
-        sendResult = gpiSendBufferedData(gpi, M2C_FIELD(peer, s32 *, 8), peer + 0x28, &ioStatus, 1, &data_020febb0);
+        sendResult = gpiSendFromBuffer(gpi, M2C_FIELD(peer, s32 *, 8), peer + 0x28, &ioStatus, 1, &data_020febb0);
         if ((ioStatus == 0) && (sendResult == 0)) {
             goto block_5;
         }

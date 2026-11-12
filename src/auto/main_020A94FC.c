@@ -3,12 +3,12 @@
 
 #pragma opt_common_subs off
 #pragma opt_propagation off
-void func_020a94fc(void *arg0) {
+void DrawTextSprite(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern u8 gSpriteDesc16x16[], gSpriteDesc8x8[];
     s16 func_020a93e4(void *, s32);
     s32 func_020a8c54(s32, s32, s32, s32);
-    M2C_UNK func_020a92bc(void *, s32);
+    M2C_UNK SetTextSpriteValue(void *, s32);
     void AddSprite(s32, s32, s32, s32, s32);
     register s32 saved, i;
     register u8 *p = arg0;
@@ -21,13 +21,13 @@ void func_020a94fc(void *arg0) {
     }
     if ((u32)(p[0x20] << 31) >> 31) {
         saved = *(s32 *)(p + 0x1c);
-        func_020a92bc(p, 0);
+        SetTextSpriteValue(p, 0);
         x = func_020a93e4(p, 0);
         AddSprite((u16)(x & 0x1ff), *(s16 *)(p+8) & 0xff,
             (u16)((0x3ff & (((s32)((u32)(p[0x20]<<27)>>28)*p[0x16]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17)>>30))) |
             ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
             (s32)gSpriteDesc16x16, (u32)(p[0x28]<<27)>>27);
-        func_020a92bc(p, saved);
+        SetTextSpriteValue(p, saved);
         return;
     }
     if (p[0x29]) p[0xa] = p[0x29];
@@ -52,13 +52,13 @@ void func_020a94fc(void *arg0) {
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
 void func_020a9774(void *arg0, s16 arg1, s16 arg2, s8 arg3, s32 arg4) {
-    M2C_UNK func_020a92bc(void *, s32);
-    void func_020a94fc(void *);
+    M2C_UNK SetTextSpriteValue(void *, s32);
+    void DrawTextSprite(void *);
     M2C_FIELD(arg0, s16 *, 6) = arg1;
     M2C_FIELD(arg0, s16 *, 8) = arg2;
     M2C_FIELD(arg0, s8 *, 0x21) = arg3;
-    func_020a92bc(arg0, arg4);
-    func_020a94fc(arg0);
+    SetTextSpriteValue(arg0, arg4);
+    DrawTextSprite(arg0);
 }
 
 M2C_UNK func_020a979c(void *arg0, s16 arg1, s16 arg2) {

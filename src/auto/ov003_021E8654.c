@@ -1,5 +1,6 @@
 /* 9 functions from 0x021E8654 to 0x021E9638 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
 
 extern u16 data_ov003_0220f890;
 extern u16 data_ov003_0220f892;
@@ -24,36 +25,40 @@ extern u8 data_ov003_0220fc38[];
 extern u8 data_ov003_0220fc50[];
 extern u8 data_ov003_0220fc60[];
 
-void StepCounter(void *p,s32 delta,s32 force){
-s32 InRange(s16,s16,s16);
-s32 next=delta+M2C_FIELD(p,s32*,4);
-if(InRange((s16)next,(s16)M2C_FIELD(p,s32*,12),(s16)M2C_FIELD(p,s32*,8))||force){
-M2C_FIELD(p,s32*,4)=next;
-if(M2C_FIELD(p,u8*,20)){
-while(M2C_FIELD(p,s32*,4)>M2C_FIELD(p,s32*,8))
-M2C_FIELD(p,s32*,4)-=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
-while(M2C_FIELD(p,s32*,4)<M2C_FIELD(p,s32*,12))
-M2C_FIELD(p,s32*,4)+=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
-}else{
-s32 x=M2C_FIELD(p,s32*,4),hi=M2C_FIELD(p,s32*,8);
-if(x<=hi){hi=M2C_FIELD(p,s32*,12);if(x>=hi)hi=x;}
-M2C_FIELD(p,s32*,4)=hi;
-}
-}else{
-s32 x=M2C_FIELD(p,s32*,8);
-if(next<=x){x=M2C_FIELD(p,s32*,12);if(next>=x)x=next;}
-M2C_FIELD(p,s32*,4)=x;
-if(M2C_FIELD(p,u8*,20)){
-while(M2C_FIELD(p,s32*,4)>M2C_FIELD(p,s32*,8))
-M2C_FIELD(p,s32*,4)-=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
-while(M2C_FIELD(p,s32*,4)<M2C_FIELD(p,s32*,12))
-M2C_FIELD(p,s32*,4)+=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
-}else{
-s32 x=M2C_FIELD(p,s32*,4),hi=M2C_FIELD(p,s32*,8);
-if(x<=hi){hi=M2C_FIELD(p,s32*,12);if(x>=hi)hi=x;}
-M2C_FIELD(p,s32*,4)=hi;
-}
-}
+/* Advances an options-menu counter by delta: the new value is kept when it lands
+   in [minimum,maximum] (compared as 16-bit) or when force is set, otherwise the
+   counter moves to the bound it overshot; afterwards the value either wraps
+   around the range (when the wrap flag is set) or clamps into it. */
+void StepCounter(OptionCounter *p, s32 delta, s32 force) {
+    s32 InRange(s16,s16,s16);
+    s32 next = delta + p->value;
+    if (InRange((s16)next, (s16)p->minimum, (s16)p->maximum) || force) {
+        p->value = next;
+        if (p->wrap) {
+            while (p->value > p->maximum)
+                p->value -= p->maximum - p->minimum + 1;
+            while (p->value < p->minimum)
+                p->value += p->maximum - p->minimum + 1;
+        } else {
+            s32 x = p->value, hi = p->maximum;
+            if (x <= hi) { hi = p->minimum; if (x >= hi) hi = x; }
+            p->value = hi;
+        }
+    } else {
+        s32 x = p->maximum;
+        if (next <= x) { x = p->minimum; if (next >= x) x = next; }
+        p->value = x;
+        if (p->wrap) {
+            while (p->value > p->maximum)
+                p->value -= p->maximum - p->minimum + 1;
+            while (p->value < p->minimum)
+                p->value += p->maximum - p->minimum + 1;
+        } else {
+            s32 x = p->value, hi = p->maximum;
+            if (x <= hi) { hi = p->minimum; if (x >= hi) hi = x; }
+            p->value = hi;
+        }
+    }
 }
 
 void func_ov003_021e87d0(void *arg0, s16 arg1, s16 arg2) {
@@ -130,7 +135,7 @@ void func_ov003_021e8958(void *arg0) {
     void func_ov003_021f1b7c(s32, void *);
     void func_01ff9b38(void);
     void func_ov003_021e771c(void *, void *);
-    void func_ov003_021e9638(void *, void *);
+    void CreateWaypointPanelSprites(void *, void *);
     void *func_020896f0(void *);
     void func_020893f4(void *, s32, s32);
     void func_ov003_021e97bc(void *, s32, s32, s32, s32);
@@ -170,7 +175,7 @@ void func_ov003_021e8958(void *arg0) {
     void *GetLocalizedFileName(void *);
     void *func_02080e30(void *, s32);
     void func_0207c780(void *, s32);
-    void func_020e35cc(void *);
+    void HeapFreeBlock(void *);
     void LoadDecompressedFileTo(void *, s32);
     void LoadFileToSpriteBuffer(void *, s32, s32);
     void func_ov003_021ea2ac(void);
@@ -193,7 +198,7 @@ void func_ov003_021e8958(void *arg0) {
     func_01ff9b38();
     func_ov003_021e771c(M2C_FIELD(arg0, void **, 0x6c), arg0);
     func_ov003_021e8f98(M2C_FIELD(arg0, void **, 0x64), arg0);
-    func_ov003_021e9638(M2C_FIELD(arg0, void **, 0x68), arg0);
+    CreateWaypointPanelSprites(M2C_FIELD(arg0, void **, 0x68), arg0);
     M2C_FIELD(arg0, void **, 0x58) = func_020896f0(arg0);
     func_020893f4(M2C_FIELD(arg0, void **, 0x58), 0xb000, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x58), 0xa, 0x10, 0x38, 0x38);
@@ -266,10 +271,10 @@ void func_ov003_021e8958(void *arg0) {
     func_0207c780(h + 0x92c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xc000);
     func_0207c780(h + 0x67c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xc400);
     func_0207c780(h + 0x9c8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xd000);
-    func_020e35cc(h);
+    HeapFreeBlock(h);
     h = func_02080e30(GetLocalizedFileName(data_ov003_0220fbac), 1);
     func_0207c780(h + 0x92c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xcc00);
-    func_020e35cc(h);
+    HeapFreeBlock(h);
     LoadDecompressedFileTo(data_ov003_0220fbc0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xbc00);
     LoadFileToSpriteBuffer(data_ov003_0220fbd0, 0x300, 0x40);
     func_ov003_021ea2ac();
@@ -285,7 +290,7 @@ void func_ov003_021e8958(void *arg0) {
     SetFileDirectory(data_ov003_0220fc30);
     h = func_02080e30(GetLocalizedFileName(data_ov003_0220fc38), 1);
     func_0207c780(h, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x2800);
-    func_020e35cc(h);
+    HeapFreeBlock(h);
     LoadDecompressedFileTo(data_ov003_0220fc50, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x2c00);
     LoadFileToSpriteBuffer(data_ov003_0220fc60, 0x2c0, 0x20);
     func_ov003_021ea2ac();

@@ -23,6 +23,7 @@
 /* Layout of one unit-kind record in gUnitKindStats. */
 #define UNIT_KIND_STATS_SIZE   112 /* bytes per unit kind */
 #define UNIT_KIND_STATS_MOVE   0x08 /* u8 base movement range */
+#define UNIT_KIND_STATS_MAX_RANGE 0x09 /* u8 maximum attack range: 0 cannot attack, 1 direct, above 1 indirect */
 #define UNIT_KIND_STATS_MIN_RANGE 0x0C /* u8 minimum attack range (1 = direct unit) */
 #define UNIT_KIND_STATS_FLAGS  0x13 /* u8 unit-kind capability flags (used by the AI targeting/movement checks) */
 #define UNIT_KIND_STATS_MOVETYPE 0x12 /* u8 movement type: first index of the terrain movement-cost row (gMovementTypeTable) */

@@ -17,7 +17,7 @@ extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc3
 extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
 void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
 s32 func_ov007_02211ffc(s32);s32 func_ov007_02211f00(void);s32 func_ov007_02211f40(void);s32 func_ov007_0221204c(void);
-void func_020c1acc(s32,s32,s32,s32);void func_020a92bc(void*,s32);void func_020a94fc(void*);
+void func_020c1acc(s32,s32,s32,s32);void SetTextSpriteValue(void*,s32);void DrawTextSprite(void*);
 void DrawTileRow(u16,u8,u16,u16,s32);s32 func_ov007_0221216c(s32);
 u8 sp[44];void *saved;s32 i,x,tile,mode,width,height;
 saved=gCur3DSpriteEngine;
@@ -52,10 +52,10 @@ func_020a9774(sp,0x78,0x92,4,99-func_ov007_0221204c());
 break;
 }
 M2C_FIELD(sp,u16 *,18)=0x14c;sp[33]=3;
-func_020a92bc(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c2));
-M2C_FIELD(sp,s16 *,6)=0x1e;M2C_FIELD(sp,s16 *,8)=0xb5;func_020a94fc(sp);
-func_020a92bc(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
-M2C_FIELD(sp,s16 *,6)=0x47;M2C_FIELD(sp,s16 *,8)=0xb5;func_020a94fc(sp);
+SetTextSpriteValue(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c2));
+M2C_FIELD(sp,s16 *,6)=0x1e;M2C_FIELD(sp,s16 *,8)=0xb5;DrawTextSprite(sp);
+SetTextSpriteValue(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
+M2C_FIELD(sp,s16 *,6)=0x47;M2C_FIELD(sp,s16 *,8)=0xb5;DrawTextSprite(sp);
 DrawTileRow((u16)((((0x70-data_ov007_02221e08)>>1)+6)&0x1ff),0xff,(u16)data_ov007_02221e08,(u16)((0x3ff&(0x1cc>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xe000),15);
 if(func_ov007_0221216c(-1)!=0){
 if((gFrameCounter&63)<48){AddSprite(192,180,(u16)((0x3ff&(396>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(13<<12)),data_027e00b4,15);}

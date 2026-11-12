@@ -237,9 +237,9 @@ if(!func_02006680(data_0213e61c+24*n)){
 data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;
 }else if((thread=M2C_FIELD(&gSocketManager,void **,4), owner=data_0213e5d4[n], owner==M2C_FIELD(thread,s32 *,0x6c))){
 data_0213e5f8[n]++;
-}else{func_02006564(data_0213e61c+24*n);data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;}
+}else{LockMutex(data_0213e61c+24*n);data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;}
 result=func_02064b50(p);
-if(--data_0213e5f8[n]==0)func_020065e8(data_0213e61c+24*n);
+if(--data_0213e5f8[n]==0)UnlockMutex(data_0213e61c+24*n);
 return result;
 }
 
@@ -273,19 +273,19 @@ return 0;
 }
 
 s32 func_02064ed0(void *p, s32 pos, s32 mode) {
-s32 func_02006680(void *); M2C_UNK func_02006564(); M2C_UNK func_020065e8();
+s32 func_02006680(void *); M2C_UNK LockMutex(); M2C_UNK UnlockMutex();
 s32 n, result, owner; void *thread;
 if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
 if(func_02006680(data_0213e61c+n*24)==0) {
 data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
 data_0213e5f8[n]=1;
 }else if((thread=M2C_FIELD(&gSocketManager,void **,4),owner=data_0213e5d4[n],owner==M2C_FIELD(thread,s32 *,108))) {data_0213e5f8[n]++;}
-else{func_02006564(data_0213e61c+n*24);
+else{LockMutex(data_0213e61c+n*24);
 data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
 data_0213e5f8[n]=1;
 }
 result=func_02064ce8(p,pos,mode);
-if(--data_0213e5f8[n]==0)func_020065e8(data_0213e61c+n*24);
+if(--data_0213e5f8[n]==0)UnlockMutex(data_0213e61c+n*24);
 return result;
 }
 

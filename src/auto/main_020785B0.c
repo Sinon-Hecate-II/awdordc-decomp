@@ -232,7 +232,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     s32 func_020d2850(s32, u16, s32);
     s32 HasUnitActed(void *);
     s32 IsUnitSelected(void *);
-    s32 func_020a7d50(void *);
+    s32 IsUnitMarkedForRepair(void *);
     void RenderUnitSprite(Vec3 *, RenderUnit *, s32, s32, s32, u8);
     extern s32 *gCurrentMap;
 
@@ -270,7 +270,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     }
     if (HasUnitActed((void *)unit)) flags |= 0x200;
     if (IsUnitSelected((void *)unit)) flags |= 0x400;
-    if (func_020a7d50((void *)unit)) flags |= 0x800;
+    if (IsUnitMarkedForRepair((void *)unit)) flags |= 0x800;
 
     vecx = (x * 16 + 8) * 48;
     vecy = (y * 16 + 16) * 48;

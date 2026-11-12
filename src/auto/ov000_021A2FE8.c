@@ -49,7 +49,7 @@ retry:
  unit=(UnkStruct_ov000_021A860C *)((u8*)*gCurrentMap+MAP_UNIT_RECORDS)+unitId;
  if(!IsUnitOnCurrentTeam(unitId)){
  if(!IsFootUnitKind(unit->unk0)){
- if(!func_020a7bd4(unit->unk0))goto next;
+ if(!GetUnitKindMaxAttackRange(unit->unk0))goto next;
  goto reject;
  }
  }else if(IsCurrentPlayerUnit((s16)unitId)==1){
@@ -105,7 +105,7 @@ M2C_FIELD(&gAiCommand,u8 *,6)=13;
 CommitAiAction(r);return 1;
 }
 
-u8 func_ov000_021a3484(s32 a) {
+u8 IsKind24TerrainPassable(s32 a) {
 extern M2C_UNK gUnitKindStats;
 extern M2C_UNK gMovementCostTable;
 u8 result;
@@ -117,31 +117,47 @@ return result;
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_021a34bc(s32 arg0){
-extern void **gCurrentMap;
-u8 func_ov000_021a3484(s32);
-s32 y,x; s8 value;void *base=*gCurrentMap;
-y=0;
-if(y>=M2C_FIELD(base,u16*,0x5146))return;
-value=arg0;
-do {
-for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++){
-s8 *cell=M2C_FIELD((u8 *)base+y*4,s8 **,0x52e8)+x;
-if(*cell>=0 && arg0!=*cell && func_ov000_021a3484(M2C_FIELD((u8 *)base+x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758),u8 *,0x1420))){
-if(x!=0){cell=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)+x; if(cell[-1]<0)cell[-1]=value;}
-base=*gCurrentMap;
-if(x!=M2C_FIELD(base,u16*,0x5144)-1){
-cell=M2C_FIELD((u8 *)base+y*4,s8 **,0x52e8)+x;
-if(cell[1]<0)cell[1]=value;
-}
-if(y!=0){cell=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e4);if(cell[x]<0)cell[x]=value;}
-base=*gCurrentMap;
-if(y!=M2C_FIELD(base,u16*,0x5146)-1){cell=M2C_FIELD((u8 *)base+y*4,s8 **,0x52ec);if(cell[x]<0)cell[x]=value;}
-}
-base=*gCurrentMap;
-}
-y++;
-}while(y<M2C_FIELD(base,u16*,0x5146));
+/* Walks the movement grid of the current map and, for every reachable cell whose
+ * terrain unit kind 24 can cross, gives its still-negative (out-of-range)
+ * orthogonal neighbours the given grid marker. */
+void MarkAdjacentCellsForKind24(s32 marker) {
+    extern void **gCurrentMap;
+    u8 IsKind24TerrainPassable(s32);
+    s32 y, x;
+    s8 value;
+    void *base = *gCurrentMap;
+
+    y = 0;
+    if (y >= M2C_FIELD(base, u16 *, MAP_HEIGHT)) return;
+    value = marker;
+    do {
+        for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
+            s8 *cell = M2C_FIELD((u8 *)base + y * 4, s8 **, MAP_GRID) + x;
+            if (*cell >= 0 && marker != *cell &&
+                IsKind24TerrainPassable(M2C_FIELD((u8 *)base + x + M2C_FIELD((u8 *)base + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
+                if (x != 0) {
+                    cell = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID) + x;
+                    if (cell[-1] < 0) cell[-1] = value;
+                }
+                base = *gCurrentMap;
+                if (x != M2C_FIELD(base, u16 *, MAP_WIDTH) - 1) {
+                    cell = M2C_FIELD((u8 *)base + y * 4, s8 **, MAP_GRID) + x;
+                    if (cell[1] < 0) cell[1] = value;
+                }
+                if (y != 0) {
+                    cell = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID - 4);
+                    if (cell[x] < 0) cell[x] = value;
+                }
+                base = *gCurrentMap;
+                if (y != M2C_FIELD(base, u16 *, MAP_HEIGHT) - 1) {
+                    cell = M2C_FIELD((u8 *)base + y * 4, s8 **, MAP_GRID + 4);
+                    if (cell[x] < 0) cell[x] = value;
+                }
+            }
+            base = *gCurrentMap;
+        }
+        y++;
+    } while (y < M2C_FIELD(base, u16 *, MAP_HEIGHT));
 }
 #pragma pop
 s32 func_ov000_021a3644(s32 arg0) {
@@ -215,7 +231,7 @@ if(id==-1){ResetAiTargetCandidates();return 0;}
 record=gAiTargetCandidates+12*id;
 FloodFillUnitRange(record[0],record[1],2,110,0);
 for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16*,0x52a4),24);i++)
-func_ov000_021a34bc((u8)(i+111));
+MarkAdjacentCellsForKind24((u8)(i+111));
 c7=0;c8=0;c11=0;c18=0;y=0;c14=0;flag=0;
 base=*gCurrentMap;
 { s32 h=M2C_FIELD(base,u16*,0x5146); }

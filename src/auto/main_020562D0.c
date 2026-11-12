@@ -65,7 +65,7 @@ extern char data_020ff1e8[];
 #pragma push
 #pragma opt_lifetimes off
 s32 func_020562d0(void *a,void *b) {
-s32 gpiSendBufferedData(void*,s32,void*,void*,s32,void*);
+s32 gpiSendFromBuffer(void*,s32,void*,void*,s32,void*);
 s32 func_0205835c(void*,s32,s32*);
 void gpiAppendStringField(void*,void*,void*);
 void gpiAppendIntField(void*,void*,s32);
@@ -82,7 +82,7 @@ ProtocolCallback callback1,callback2,callback3,callback4,callback5,callback6,cal
 char name[512],value[512];s32 response[4];void *entry,*item,*array;u32 count; s32 code,extra;
 loop=M2C_FIELD(b,s32*,8)!=0;
 again:
-result=gpiSendBufferedData(a,M2C_FIELD(request,s32*,4),request+24,&status,1,&data_020fef90);
+result=gpiSendFromBuffer(a,M2C_FIELD(request,s32*,4),request+24,&status,1,&data_020fef90);
 if(result)return result;
 if(M2C_FIELD(b,s32*,20)==1){
 result=func_0205835c(a,M2C_FIELD(request,s32*,4),&kind);if(result)return result;

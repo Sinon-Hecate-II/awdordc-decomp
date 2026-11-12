@@ -92,30 +92,32 @@ void func_ov003_021f9b30(void *arg0) {
     func_ov003_021f92f4(arg0, 0);
 }
 
-void func_ov003_021f9e50(void *arg0,s16 arg1,s16 arg2){
+/* Redraw the 3x3 icon grid at (baseX, baseY): for each of the eight slots look up
+ * its count and draw the matching 16x32 tile plus the count in front of it. */
+void Ov003_DrawIconGrid(void *arg0,s16 arg1,s16 arg2){
 void AddSprite(u16,u8,u16,void *,s32);s32 Divide(s32,s32);s32 Modulo(s32,s32);
-void func_020a92bc(void *,s16);void func_020a94fc(void *);s32 func_020c1980(void *,s32,s32);s32 func_ov003_02200ae8(u8);
+void SetTextSpriteValue(void *,s16);void DrawTextSprite(void *);s32 GetUnitCategoryCount(void *,s32,s32);s32 GetIconGridRecordIndex(u8);
 extern u8 gSpriteDesc16x32[];extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;
-s32 sp14,sp10,spC,sp8,sp4; s16 x,y,value;void *p; s32 i,palette,tile;u16 **old;
-sp4=arg1;
+s32 xMask,tileMask,allIndex,baseY,baseX; s16 x,y,count;void *p; s32 i,palette,tile;u16 **savedEngine;
+baseX=arg1;
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3a)=-arg1;
-i=0;tile=0x210;sp8=arg2;
+i=0;tile=0x210;baseY=arg2;
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x42)=0;
-spC=-1;sp14=0x1ff;sp10=0x3ff;
+allIndex=-1;xMask=0x1ff;tileMask=0x3ff;
 do{
-x=Modulo(i,3)*22+sp4;
-y=Divide(i,3)*28+sp8;
+x=Modulo(i,3)*22+baseX;
+y=Divide(i,3)*28+baseY;
 p=M2C_FIELD(arg0,void **,0x44);
-value=func_020c1980((u8 *)p+0x1830,func_ov003_02200ae8(i),spC);
-if(value){
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_020a92bc(M2C_FIELD(arg0,void **,0x54),value);
+count=GetUnitCategoryCount((u8 *)p+0x1830,GetIconGridRecordIndex(i),allIndex);
+if(count){
+savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
+SetTextSpriteValue(M2C_FIELD(arg0,void **,0x54),count);
 p=M2C_FIELD(arg0,void **,0x54);
 M2C_FIELD(p,s16 *,6)=x+20;M2C_FIELD(p,s16 *,8)=y+102;
-func_020a94fc(M2C_FIELD(arg0,void **,0x54));gCur3DSpriteEngine=old;
+DrawTextSprite(M2C_FIELD(arg0,void **,0x54));gCur3DSpriteEngine=savedEngine;
 }
-palette=value?7:8;
-AddSprite((x+4)&sp14,y+78,(sp10&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|(u16)(palette<<12)|0x400,gSpriteDesc16x32,17);
+palette=count?7:8;
+AddSprite((x+4)&xMask,y+78,(tileMask&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|(u16)(palette<<12)|0x400,gSpriteDesc16x32,17);
 tile+=8;i++;
 }while(i<8);
 }

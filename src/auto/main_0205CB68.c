@@ -61,7 +61,7 @@ if(res)return *res;return 0;
 #pragma scheduling off
 s32 func_0205ccd8(void **a, char *b, s32 c, s32 d, s32 e) {
 void func_0204926c(void);
-s32 func_0205d588(char *,s32 *,u16 *);
+s32 gt2StringToAddress(char *,s32 *,u16 *);
 M2C_UNK gpiMalloc(s32);
 void func_02065210(void *,s32,s32);
 s32 func_02048c84(s32,s32,s32,void *,void *,s32);
@@ -81,7 +81,7 @@ s32 swapped;
 func_0204926c();
 if(d==0)d=0x10000;
 if(c==0)c=0x10000;
-if(!func_0205d588(b,&addr,&port))return 4;
+if(!gt2StringToAddress(b,&addr,&port))return 4;
 p=(void *)gpiMalloc(0x44);
 if(!p)return 1;
 func_02065210(p,0,0x44);
@@ -394,7 +394,10 @@ return p;
 }
 
 #pragma opt_common_subs off
-s32 func_0205d588(char *a, s32 *b, u16 *c) {
+/* GameSpy GT2 gt2StringToAddress: split "host:port" into a 32-bit IPv4 address
+   (resolving the host when it is not a dotted quad) and a 16-bit port.  Returns
+   1 when the string was parsed, 0 otherwise. */
+s32 gt2StringToAddress(char *string, s32 *ipOut, u16 *portOut) {
     char *StringFindChar(char *, s32);
     M2C_UNK AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void MemCopy(void *, const void *, s32);
@@ -402,70 +405,70 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
     s32 func_020498e4(void *);
     void *ghiResolveHostname(void *);
     extern u16 gCharClassTable[];
-    extern char data_020ff858[];
-    extern char data_020ff878[];
-    extern char data_020ff834[];
-    char buf[0x104];
-    char *r8;
-    s32 *r7;
-    u16 *r6;
-    s32 r5;
-    s32 r4;
+    extern char sAssertLenHostLenMax[];
+    extern char sGt2UtilityFile[];
+    extern char sGt2StringToAddressFunc[];
+    char hostBuf[0x104];
+    char *host;
+    s32 *ip;
+    u16 *port;
+    s32 portValue;
+    s32 ipValue;
 
-    r8 = a;
-    r7 = b;
-    r6 = c;
-    if (r8 == 0 || *r8 == 0) { r4 = 0; r5 = r4; } else {
-        char *colon = StringFindChar(r8, ':');
-        r5 = (s32)colon;
-        if (colon == 0) { r5 = 0; } else {
-            if (colon == r8) { r8 = 0; r4 = 0; } else {
-                s32 r9 = (s32)colon - (s32)r8;
-                if (r9 >= 0x100) {
-                    AssertFailed((M2C_UNK)data_020ff858, (M2C_UNK)data_020ff878, (M2C_UNK)data_020ff834, 0x81);
+    host = string;
+    ip = ipOut;
+    port = portOut;
+    if (host == 0 || *host == 0) { ipValue = 0; portValue = ipValue; } else {
+        char *colon = StringFindChar(host, ':');
+        portValue = (s32)colon;
+        if (colon == 0) { portValue = 0; } else {
+            if (colon == host) { host = 0; ipValue = 0; } else {
+                s32 len = (s32)colon - (s32)host;
+                if (len >= 0x100) {
+                    AssertFailed((M2C_UNK)sAssertLenHostLenMax, (M2C_UNK)sGt2UtilityFile, (M2C_UNK)sGt2StringToAddressFunc, 0x81);
                 }
-                    MemCopy(buf, r8, r9);
-                    r8 = buf;
-                    buf[r9] = 0;
+                    MemCopy(hostBuf, host, len);
+                    host = hostBuf;
+                    hostBuf[len] = 0;
             }
                 {
-                    char *r3 = colon + 1;
-                    signed char ch = *r3;
+                    char *p = colon + 1;
+                    signed char ch = *p;
                     while (ch != 0) {
-                        s32 v = (ch < 0 || ch >= 0x80) ? 0 : gCharClassTable[ch] & 8;
-                        if (v == 0) return 0;
-                        r3++;
-                        ch = *r3;
+                        s32 digit = (ch < 0 || ch >= 0x80) ? 0 : gCharClassTable[ch] & 8;
+                        if (digit == 0) return 0;
+                        p++;
+                        ch = *p;
                     }
                 }
             {
-                s32 rr = ParseInt((char *)(r5 + 1));
-                if (rr < 0 || rr > 0xffff) {
+                s32 value = ParseInt((char *)(portValue + 1));
+                if (value < 0 || value > 0xffff) {
                     return 0;
                 }
-                r5 = (u16)rr;
+                portValue = (u16)value;
             }
         }
-        if (r8 != 0) {
-            r4 = func_020498e4(r8);
-            if (r4 == -1) {
-                void *t = ghiResolveHostname(r8);
-                if (t == 0) {
+        if (host != 0) {
+            ipValue = func_020498e4(host);
+            if (ipValue == -1) {
+                void *hostent = ghiResolveHostname(host);
+                if (hostent == 0) {
                     return 0;
                 }
                 {
-                    void *q = *(void **)((char *)t + 0xc);
-                    void *rrr = *(void **)((char *)q + 0);
-                    r4 = *(s32 *)((char *)rrr + 0);
+                    void *addrList = *(void **)((char *)hostent + 0xc);
+                    void *addr = *(void **)((char *)addrList + 0);
+                    ipValue = *(s32 *)((char *)addr + 0);
                 }
             }
         }
     }
-    if (r7 != 0) {
-        *r7 = r4;
+    if (ip != 0) {
+        *ip = ipValue;
     }
-    if (r6 != 0) {
-        *r6 = (u16)r5;
+    if (port != 0) {
+        *port = (u16)portValue;
     }
     return 1;
 }
@@ -512,7 +515,7 @@ s32 func_02048558(s32,s32,void (*)(void *));
 s32 func_02048688(s32); s32 *func_02048690(s32,s32);
 s32 handle=M2C_FIELD(&data_0213e144,s32 *,16); s32 data[16]={0};
 if(!handle)M2C_FIELD(&data_0213e144,s32 *,16)=func_02048558(64,4,func_0205d7c4);
-func_020486f8(M2C_FIELD(&data_0213e144,s32 *,16),data);
+Vector_AddItem(M2C_FIELD(&data_0213e144,s32 *,16),data);
 return func_02048690(M2C_FIELD(&data_0213e144,s32 *,16),func_02048688(M2C_FIELD(&data_0213e144,s32 *,16))-1);
 }
 

@@ -22,7 +22,7 @@ return result;
 /* Initialize the map scene: load map data, fill tile slots, and center the viewport. */
 void func_ov007_0221c534(void) {
 M2C_UNK func_0207b754(u32,u32); M2C_UNK func_020cf498(s16,s16);
-M2C_UNK func_020cfd28(); M2C_UNK func_ov007_022121b0();
+M2C_UNK RefreshMapView(); M2C_UNK func_ov007_022121b0();
 M2C_UNK func_ov007_022121d4(M2C_UNK); M2C_UNK func_ov007_0221ab68();
 extern void **gCurrentMap;
 M2C_UNK func_020c857c(M2C_UNK); M2C_UNK GetSlotForPlayerId(M2C_UNK);
@@ -35,7 +35,7 @@ slot1=GetSlotForPlayerId(1);slot2=GetSlotForPlayerId(2);slot3=GetSlotForPlayerId
 RemapUnitGroups(slot1,slot2,slot3,GetSlotForPlayerId(4));
 slot1b=GetSlotForPlayerId(1);slot2b=GetSlotForPlayerId(2);slot3b=GetSlotForPlayerId(3);
 Map_ReassignPropertyOwners(slot1b,slot2b,slot3b,GetSlotForPlayerId(4));
-ResetPlayerOrder(); func_020cfd28(); func_ov007_022121b0(); func_ov007_0221ab68();
+ResetPlayerOrder(); RefreshMapView(); func_ov007_022121b0(); func_ov007_0221ab68();
 state=*gCurrentMap;
 viewX=(u32)M2C_FIELD(state,u16 *,0x5144)>>1;
 viewY=(u32)M2C_FIELD(state,u16 *,0x5146)>>1;
@@ -50,7 +50,7 @@ void func_ov007_0221c630(void) {
 
 void func_ov007_0221c648(M2C_UNK arg0) {
     M2C_UNK func_020bfebc(M2C_UNK);
-    M2C_UNK func_020c002c(s32);
+    M2C_UNK MapSettings_Apply(s32);
     s32 func_020c7e98(M2C_UNK);
     s32 func_020c7eb8();
     M2C_UNK func_020c857c(M2C_UNK);
@@ -73,7 +73,7 @@ void func_ov007_0221c648(M2C_UNK arg0) {
     }
     temp_r4 = func_020c7e98(arg0);
     func_020c857c(arg0);
-    func_020c002c(temp_r4);
+    MapSettings_Apply(temp_r4);
     func_020bfebc(0);
     temp_r6 = GetSlotForPlayerId(1);
     temp_r5 = GetSlotForPlayerId(2);
@@ -96,7 +96,7 @@ extern void *g3DSpriteEngineSub;
 extern u32 data_ov007_0222076c;
 extern u32 data_ov007_02220ab8;
 s32 func_020b212c(void);
-void func_02007ef4(const void*,void*,u32);
+void MI_CpuCopy32(const void*,void*,u32);
 void func_02019424(void*,u32);
 int func_02099ae8(void*);
 int func_0209c268(void*);
@@ -123,7 +123,7 @@ table=M2C_FIELD(state,u32 * *,0x34);
 if(func_020194e0(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+150])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 text=table[index+150];}
 if(M2C_FIELD(state,s8 *,0x3c)>=16){SetTextIndex(state,oldIndex);ok=0;goto checked;}
-func_02007ef4(gMapEditObjectList,copy,0x44);
+MI_CpuCopy32(gMapEditObjectList,copy,0x44);
 copy[M2C_FIELD(state,s8 *,0x3c)]=0;
 func_02019424(copy+M2C_FIELD(state,s8 *,0x3c),text);
 width=0;cursor=copy;
@@ -187,7 +187,7 @@ PlaySoundEffect(0x10011);
 }
 
 void func_ov007_0221ce9c(u8 *arg0) {
-M2C_UNK func_020b1c60(u8);
+M2C_UNK FocusSpriteSlotById(u8);
 extern void *gKeyState;
 u16 held,pressed;
 u8 current,old;
@@ -227,7 +227,7 @@ case 102:current=103;break;
 }
 done:
 if(old==current)return;
-func_020b1c60(current);
+FocusSpriteSlotById(current);
 }
 
 void func_ov007_0221cfe8(void) {

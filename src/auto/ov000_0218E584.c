@@ -98,13 +98,13 @@ u8 *selected,*unit;
 u16 row;
 u8 id;
 s32 func_ov000_02177f24(s32,s32,s16 *);
-void func_01ffb9c4(s8);
+void MarkAdjacentCells(s8);
 extern u8 gUnitKindStats[];
 
 bestX=-1;bestY=bestX;best=bestX+0x8000;
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 FloodFillUnitRange(selected[1],selected[2],((UnitKind18e584*)selected)->kind,0x6e,1);
-func_01ffb9c4(0x6f);
+MarkAdjacentCells(0x6f);
 
 for(y=0;y<M2C_FIELD(((u8*)*gCurrentMap),u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(((u8*)*gCurrentMap),u16*,0x5144);x++){
@@ -220,7 +220,7 @@ void func_ov000_0218ef40(void) {
     s32 func_ov000_02177f24(s32, s32, s16 *);
     void SetMapCursor(u32, u32, u32, u32, u32);
     void BuildUnitMoveRange(void *);
-    void func_01ffb9c4(s8);
+    void MarkAdjacentCells(s8);
     extern void **gCurrentMap;
 
     s8 *gridRow;
@@ -242,7 +242,7 @@ void func_ov000_0218ef40(void) {
 
     map=*gCurrentMap;
     BuildUnitMoveRange(*(void **)((u8 *)map + 0x52D0));
-    func_01ffb9c4(0x6f);
+    MarkAdjacentCells(0x6f);
 
     map=*gCurrentMap;
     y=0;
@@ -290,11 +290,11 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
 extern void **gCurrentMap; extern void *gAiCommandState;
-s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void func_01ffb9c4(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
+s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
 if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
 BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 u8 *map=*gCurrentMap; s32 tile;

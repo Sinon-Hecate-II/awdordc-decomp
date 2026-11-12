@@ -5,7 +5,7 @@ typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x
 
 void func_020b9c8c(u8 *arg0) {
  void func_020994e0(s32); void func_02091cd0(void); void func_020c0a88(void);
- void func_020cfd28(void); void SetFileDirectory(void *);
+ void RefreshMapView(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
  void AddToU16Array(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
@@ -20,7 +20,7 @@ void func_020b9c8c(u8 *arg0) {
  func_020c0a88();
  callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);
  if(callback)callback();
- func_020cfd28();
+ RefreshMapView();
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=0;
  M2C_FIELD(arg0,u16 *,0x34)=0;

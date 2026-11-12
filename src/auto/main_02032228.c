@@ -237,10 +237,10 @@ return 0;
 }
 
 void func_020329d0(void) {
-M2C_UNK func_0200654c(void *); M2C_UNK func_02005ac0(void *,void (*)(void),void *,void *,s32,s32);
+M2C_UNK InitMutex(void *); M2C_UNK func_02005ac0(void *,void (*)(void),void *,void *,s32,s32);
 s32 func_02005d90(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
 extern M2C_UNK gNasConnection; extern M2C_UNK data_0213d11c;
-func_0200654c(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+InitMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=0;
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384)!=0 && func_02005d90(M2C_FIELD(&gNasConnection,void **,8)+0x1318)==0)return;
 func_02005ac0(M2C_FIELD(&gNasConnection,void **,8)+0x1318,NasConnectTask,&data_0213d11c,M2C_FIELD(&gNasConnection,void **,8)+0x1000,0x1000,0x10);
@@ -248,12 +248,12 @@ TaskWake(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
 }
 
 void func_02032a84(void) {
-M2C_UNK func_02006564(void *); M2C_UNK func_020065e8(void *); M2C_UNK func_02033f3c(s32); M2C_UNK func_02005d60(void *);
+M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *); M2C_UNK func_02033f3c(s32); M2C_UNK func_02005d60(void *);
 extern M2C_UNK gNasConnection;
 if(!M2C_FIELD(&gNasConnection,void **,8))return;
-func_02006564(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+LockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=1;
-func_020065e8(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))func_02033f3c(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
 if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384))return;
 func_02005d60(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
@@ -279,13 +279,13 @@ void func_02032b68(void) {
 }
 
 s32 func_02032b98(void) {
-M2C_UNK func_02006564(void *); M2C_UNK func_020065e8(void *);
+M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *);
 extern M2C_UNK gNasConnection;
 s32 result;
 if (!M2C_FIELD(&gNasConnection,void **,8)) return 22;
-func_02006564(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+LockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 result=M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004);
-func_020065e8(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 return result;
 }
 
@@ -335,8 +335,8 @@ return 0;
 void NasConnectTask(void) {
 extern M2C_UNK gNasConnection;
 M2C_UNK func_02005d60(void *);
-M2C_UNK func_02006564(void *);
-M2C_UNK func_020065e8(void *);
+M2C_UNK LockMutex(void *);
+M2C_UNK UnlockMutex(void *);
 u64 GetSystemTick(void);
 M2C_UNK func_02006030(M2C_UNK);
 u64 func_02072088(u64,u64);
@@ -413,16 +413,16 @@ for (;;) {
     if (elapsedMs < 0x1388ULL) {
         for (;;) {
             conn = M2C_FIELD(&gNasConnection, void **, 8);
-            func_02006564((u8 *)conn + 0x13d8);
+            LockMutex((u8 *)conn + 0x13d8);
             conn = M2C_FIELD(&gNasConnection, void **, 8);
             if (*(M2C_UNK *)((u8 *)conn + 0x13f0) == 1) {
                 *(M2C_UNK *)((u8 *)conn + 0x1008) = 0x4e84;
                 conn = M2C_FIELD(&gNasConnection, void **, 8);
-                func_020065e8((u8 *)conn + 0x13d8);
+                UnlockMutex((u8 *)conn + 0x13d8);
                 func_0203367c(0x14);
                 return;
             }
-            func_020065e8((u8 *)conn + 0x13d8);
+            UnlockMutex((u8 *)conn + 0x13d8);
             func_02006030(0x1388);
             nowTick2 = GetSystemTick();
             elapsedTicks = nowTick2 - startTick;
@@ -437,7 +437,7 @@ for (;;) {
     func_02034480((M2C_UNK)stream);
 
     conn = M2C_FIELD(&gNasConnection, void **, 8);
-    func_02006564((u8 *)conn + 0x13d8);
+    LockMutex((u8 *)conn + 0x13d8);
     result = func_02032c74(reinit);
     conn2 = M2C_FIELD(&gNasConnection, void **, 8);
     *(M2C_UNK *)((u8 *)conn2 + 0x1000 + 4) = result;
@@ -445,10 +445,10 @@ for (;;) {
     if (*(M2C_UNK *)((u8 *)conn2 + 0x1000 + 4) != 0) {
         *(M2C_UNK *)((u8 *)conn2 + 0x1008) = 0x4e84;
         conn2 = M2C_FIELD(&gNasConnection, void **, 8);
-        func_020065e8((u8 *)conn2 + 0x13d8);
+        UnlockMutex((u8 *)conn2 + 0x13d8);
         return;
     }
-    func_020065e8((u8 *)conn2 + 0x13d8);
+    UnlockMutex((u8 *)conn2 + 0x13d8);
 }
 }
 

@@ -42,7 +42,7 @@ extern u8 data_ov003_022109ec[];
 extern u8 gMapSelectVTable[];
 extern u32 data_02101fd8;
 void *MemAllocArray(int);
-void *func_020e34bc(int);
+void *HeapAllocBlock(int);
 void MI_CpuFill8(void *, int, int);
 void func_020a9218(void *);
 void func_020a9188(void *, int);
@@ -180,7 +180,7 @@ if(q) {
 M2C_FIELD(q,u16 *,0x10)=30; q[0x12]=0;
 M2C_FIELD(q,u32 *,0)=0; M2C_FIELD(q,u32 *,4)=0;
 M2C_FIELD(q,s8 *,8)=-1;M2C_FIELD(q,s8 *,9)=-1;M2C_FIELD(q,s8 *,10)=-1;M2C_FIELD(q,s8 *,11)=-1;q[13]=255;M2C_FIELD(q,s8 *,12)=-1;q[14]=0;q[15]=255;
-M2C_FIELD(q,void **,0x14)=func_020e34bc(0x168);
+M2C_FIELD(q,void **,0x14)=HeapAllocBlock(0x168);
 MI_CpuFill8(M2C_FIELD(q,void **,0x14),0,0x168);
 }
 M2C_FIELD(p,u8 **,0x5c)=q;

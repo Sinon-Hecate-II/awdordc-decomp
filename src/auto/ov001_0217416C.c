@@ -13,7 +13,7 @@ void func_ov001_0217416c(void) {
     M2C_UNK func_ov001_0218a5f0();
     M2C_UNK func_ov001_0218a61c();
     M2C_UNK func_ov001_0218a260();
-    M2C_UNK func_ov001_0218a474();
+    M2C_UNK Ov001_SetSpritePalette();
     M2C_UNK func_ov001_0218ac04();
     M2C_UNK func_ov001_0218a070();
     M2C_UNK func_ov001_02174f68();
@@ -83,7 +83,7 @@ void func_ov001_0217416c(void) {
         void *q2 = (void*)func_ov001_0218a61c(0, b2, 1);
         M2C_FIELD(p, void**, 0x40 + r10*4) = q2;
         func_ov001_0218a260(q2, -1, 0x200, 0);
-        func_ov001_0218a474(q2, 3);
+        Ov001_SetSpritePalette(q2, 3);
         r10++;
     }
 
@@ -107,7 +107,7 @@ void func_ov001_0217416c(void) {
     q = (void*)func_ov001_0218a61c(0, -1, 2);
     M2C_FIELD(p, void**, 0x58) = q;
     func_ov001_0218a260(q, -1, 0x200, 0);
-    func_ov001_0218a474(q, 2);
+    Ov001_SetSpritePalette(q, 2);
 
     x = (void*)func_ov001_0218c884(0, 0, 0, 0x78);
     M2C_FIELD(p, void**, 0x5c) = x;

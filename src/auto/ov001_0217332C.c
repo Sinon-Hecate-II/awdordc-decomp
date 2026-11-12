@@ -6,7 +6,7 @@ typedef struct { s32 x; u32 y; } Position;
 
 void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
 void func_ov001_0217385c(s32 arg0, s32 arg1);
-s32 *func_ov001_0218a24c(s32 arg0, s32 arg1);
+s32 *Ov001_GetSpriteObjEntry(s32 arg0, s32 arg1);
 void func_ov001_0218c924(void *arg0, void *arg1);
 extern void *gOv001MenuState;
 extern u8 data_ov001_0218f314[];
@@ -151,10 +151,10 @@ func_ov001_0218a304(M2C_FIELD(gOv001MenuState+(arg0-0x33)*4,s32 *,0xfc),-1,0,dat
 #pragma scheduling reset
 #pragma opt_common_subs reset
 void func_ov001_02173924(void) {
-    s32 *func_ov001_0218a24c(s32, s32);
+    s32 *Ov001_GetSpriteObjEntry(s32, s32);
     M2C_UNK Ov001_MoveSpriteLayout(s32, M2C_UNK, u16, u16);
-    M2C_UNK func_ov001_0218a474(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a55c(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Ov001_SetSpritePalette(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
     extern void *gOv001MenuState;
     extern u16 data_ov001_0218f428[];
     extern u16 data_ov001_0218f42a[];
@@ -182,8 +182,8 @@ void func_ov001_02173924(void) {
         var_r4 = 0x40;
         break;
     }
-    func_ov001_0218a55c(0, var_r4, func_ov001_0218a24c(M2C_FIELD(gOv001MenuState, s32 *, 0x114), 0));
-    func_ov001_0218a474(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, 2);
+    Ov001_LoadSpriteObjLayout(0, var_r4, Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001MenuState, s32 *, 0x114), 0));
+    Ov001_SetSpritePalette(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, 2);
     temp_ip = M2C_FIELD(gOv001MenuState, s8 *, 0x121) * 2;
     Ov001_MoveSpriteLayout(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, data_ov001_0218f428[temp_ip], data_ov001_0218f42a[temp_ip]);
 }
@@ -214,7 +214,7 @@ void func_ov001_02173e38(void *arg0) {
     Position pos;
     s32 bits;
 
-    bits = *func_ov001_0218a24c(M2C_FIELD(gOv001MenuState, s32 *, 0xFC), 0);
+    bits = *Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001MenuState, s32 *, 0xFC), 0);
     pos.x = (u8)bits + 0xC;
     pos.y = (u32)(bits & 0x01FF0000) >> 0x10;
     func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 4, pos.x, pos.y);

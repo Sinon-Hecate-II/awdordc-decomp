@@ -189,13 +189,13 @@ void func_ov000_0218dda4(void) {
 void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 
-M2C_UNK BuildUnitMoveRange(s32);void func_01ffb9c4(s8);s32 GetUnitAttackClass(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
+M2C_UNK BuildUnitMoveRange(s32);void MarkAdjacentCells(s8);s32 GetUnitAttackClass(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
 extern void **gCurrentMap;extern void *gAiCommandState;
 s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
 bestY=-1;bestScore=0;bestX=-1;temp=0;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
 if(GetUnitAttackClass((u32)(selected[0]<<26)>>26))return;
-BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,s32 *,0x52d0));func_01ffb9c4(111);
+BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,s32 *,0x52d0));MarkAdjacentCells(111);
 map=*gCurrentMap;
 for(y=0;y<M2C_FIELD(map,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(map,u16 *,0x5144);){

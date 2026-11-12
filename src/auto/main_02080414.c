@@ -176,12 +176,12 @@ void func_02080b38(u16 *p,u32 w,s32 h){
 void func_02080bd4(void) {
     M2C_UNK func_0200b74c(M2C_UNK);
     s32 func_0200beec(s32, s32);
-    s32 func_020e34bc();
+    s32 HeapAllocBlock();
     s32 temp_r4;
 
     func_0200b74c(-1);
     temp_r4 = func_0200beec(0, 0);
-    func_0200beec(func_020e34bc(), temp_r4);
+    func_0200beec(HeapAllocBlock(), temp_r4);
 }
 
 s32 func_02080c00(void *a) {
@@ -229,7 +229,7 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
     int func_0200ba9c(void *);
     int func_02007958(void);
     int func_020e34f4(s32);
-    int func_020e35cc(s32);
+    int HeapFreeBlock(s32);
     u32 func_0207c7d8(void *, void *, u32);
     s32 func_0207c860(void *, void *, s32);
 
@@ -284,7 +284,7 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
     }
 
     func_0200ba9c(file);
-    func_020e35cc((int)r8);
+    HeapFreeBlock((int)r8);
     return (s32)r11;
 }
 
@@ -306,7 +306,7 @@ void *func_02080e30(void *arg0, int arg1) {
     a = (int)sp0[9];
     total = b - a;
     if (arg1 != 0) {
-        buf = (void *)func_020e34bc(total);
+        buf = (void *)HeapAllocBlock(total);
     } else {
         buf = (void *)func_020e34f4(total);
     }
@@ -329,25 +329,25 @@ void *func_02080e30(void *arg0, int arg1) {
 }
 
 s32 func_02080efc(s32 path,s32 mode,s32 sizeOut) {
-s32 func_020e34f4(s32);s32 func_020e34bc();s32 func_020e35cc(s32);
+s32 func_020e34f4(s32);s32 HeapAllocBlock();s32 HeapFreeBlock(s32);
 s32 InitFileRequest(void *);s32 func_0200ba54(void *,void *);s32 FileRead(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
 s32 func_0207c7cc(void *);u32 func_0207c7d8(void *, void *, u32);s32 func_0207c860(void *,void *,s32);
 u32 file[18];u8 ctx[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
-if(mode)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)func_020e34bc(0x2000);
+if(mode)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)HeapAllocBlock(0x2000);
 InitFileRequest(file);
 if(!func_0200ba54(file,(void *)path)){func_02007958();return 0;}
 total=file[10]-file[9];chunk=total<0x2000?total:0x2000;
 if(FileRead(file,buf,chunk)!=chunk){func_02007958();return 0;}
 read+=chunk;
 size=func_0207c7cc(buf);
-if(mode)output=func_020e34bc(size);else output=func_020e34f4(size);
+if(mode)output=HeapAllocBlock(size);else output=func_020e34f4(size);
 func_0207c7d8(ctx,buf,(void *)output);
 if(func_0207c860(ctx,buf+4,chunk-4)>0) { u32 next; do {
 next=total-read;if(next>=0x2000)next=0x2000;
 if(FileRead(file,buf,next)!=next){func_02007958();return 0;}
 read+=next;
 }while(func_0207c860(ctx,buf,next)>0); }
-func_0200ba9c(file);func_020e35cc((s32)buf);if(sizeOut)*(s32 *)sizeOut=size;
+func_0200ba9c(file);HeapFreeBlock((s32)buf);if(sizeOut)*(s32 *)sizeOut=size;
 return output;
 }
 
@@ -380,7 +380,7 @@ s32 func_02081128(M2C_UNK a,M2C_UNK b) {
  s32 func_02081080(M2C_UNK,s32,M2C_UNK,M2C_UNK);s32 func_020e34f4(M2C_UNK);
  s32 p=func_020e34f4(b);
  if(func_02081080(a,p,0,b))return p;
- func_020e35cc(p);return 0;
+ HeapFreeBlock(p);return 0;
 }
 
 s32 LoadFileToSpriteBuffer(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
@@ -404,7 +404,7 @@ s32 func_020811b8(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
  if(gCur3DSpriteEngine==g3DSpriteEngineMain) var_r0=1; else var_r0=0;
  if(var_r0 & 0xFF) {func_0200478c();func_0200482c(temp_r0,arg2+(arg1<<13),arg3);func_0200489c();}
  else {func_020049dc();func_020049f4(temp_r0,arg2+(arg1<<13),arg3);func_02004a58();}
- func_020e35cc(temp_r0); return 1;
+ HeapFreeBlock(temp_r0); return 1;
 }
 
 s32 func_02081254(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -431,7 +431,7 @@ s32 func_020812a4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
  if(gCur3DSpriteEngine==g3DSpriteEngineMain) var_r0=1; else var_r0=0;
  if(var_r0 & 0xFF) {func_020048e4();func_0200492c(temp_r0,arg2+(arg1<<13),arg3);func_02004998();}
  else {func_02004a98();func_02004ab0(temp_r0,arg2+(arg1<<13),arg3);func_02004b14();}
- func_020e35cc(temp_r0); return 1;
+ HeapFreeBlock(temp_r0); return 1;
 }
 
 s32 func_02081340(M2C_UNK a,s32 b,M2C_UNK c,M2C_UNK d) {
@@ -443,14 +443,14 @@ s32 func_02081340(M2C_UNK a,s32 b,M2C_UNK c,M2C_UNK d) {
 
 s32 func_02081384(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0207da34(s32, M2C_UNK, s32);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     s32 sp0;
     s32 temp_r0;
 
     temp_r0 = func_02080efc(arg0, 0, &sp0);
     DC_FlushRange(temp_r0, sp0);
     func_0207da34(temp_r0, arg1, sp0);
-    func_020e35cc(temp_r0);
+    HeapFreeBlock(temp_r0);
     return sp0;
 }
 

@@ -37,7 +37,7 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 s32 func_020e352c(s32, s32);
 #pragma push
 #pragma opt_common_subs on
-s32 func_020e34bc(s32 arg0) {
+s32 HeapAllocBlock(s32 arg0) {
  volatile u32 saved; u16 old; u32 s; s32 result;
  old=*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=0;saved=old;
  result=func_020e352c(arg0,8);s=saved;(void)*(volatile u16*)0x04000208;*(volatile u16*)0x04000208=s;return result;
@@ -91,7 +91,7 @@ s32 func_020e3580(s32 arg0,s32 arg1) {
  return result;
 }
 #pragma opt_propagation reset
-void func_020e35cc(s32 arg0) {
+void HeapFreeBlock(s32 arg0) {
  void func_0202a498(s32, s32);
  extern s32 data_02168fe4;
  volatile u32 saved;
@@ -696,24 +696,24 @@ void func_020e4304(void) {
 }
 
 void *func_020e4318(void *arg0) {
-    void func_020e35cc();
+    void HeapFreeBlock();
     void MemFree(void *);
     extern M2C_UNK data_0212da10;
 
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212da10;
     if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
-        func_020e35cc();
+        HeapFreeBlock();
     }
     MemFree(arg0);
     return arg0;
 }
 
 void *func_020e434c(void *arg0) {
-    void func_020e35cc();
+    void HeapFreeBlock();
     extern M2C_UNK data_0212da10;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212da10;
     if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
-        func_020e35cc();
+        HeapFreeBlock();
     }
     return arg0;
 }
@@ -731,7 +731,7 @@ void func_020e4378(void) {
     M2C_UNK func_02006c7c();
     M2C_UNK func_02006f14();
     M2C_UNK func_02007140();
-    M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_0200e2f8();
     extern s32 data_020f5204;
     u16 *p;
@@ -747,12 +747,12 @@ void func_020e4378(void) {
     *(s32 *)0x04001000 &= ~0x10000;
     func_0200e2f8();
     func_02003104(0x1FF);
-    func_02007e98(0, 0x6800000, 0xA4000);
+    MI_CpuFill32(0, 0x6800000, 0xA4000);
     func_020035f8();
-    func_02007e98(0xC0, 0x7000000, 0x400);
-    func_02007e98(0, 0x5000000, 0x400);
-    func_02007e98(0xC0, 0x7000400, 0x400);
-    func_02007e98(0, 0x5000400, 0x400);
+    MI_CpuFill32(0xC0, 0x7000000, 0x400);
+    MI_CpuFill32(0, 0x5000000, 0x400);
+    MI_CpuFill32(0xC0, 0x7000400, 0x400);
+    MI_CpuFill32(0, 0x5000400, 0x400);
     p = (u16 *)0x04000204;
     q = p + 0x80;
     p[0] |= 0x8000;

@@ -204,7 +204,7 @@ s32 func_020c1878(u8 *dst) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_020c1980(s32 offset,u8 *base,s32 index) {
+s32 GetUnitCategoryCount(s32 offset,u8 *base,s32 index) {
  s32 sum=0;
  if(index<0) {
  base=(u8 *)offset+ (s32)base;

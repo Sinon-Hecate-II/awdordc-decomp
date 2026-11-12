@@ -20,7 +20,7 @@ extern const SetupNames data_020f4e08;
 extern u8 data_0212a464[],data_0212a46c[],data_0212a478[],data_0212a484[],data_0212a490[],data_0212a49c[];
 extern u8 data_0212a4a8[],data_0212a4b4[],data_0212a4c0[],data_0212a4cc[],data_0212a4d8[],data_0212a4f0[];
 s32 GetLocalizedFileName(void *);
-void *func_020e34bc(s32);
+void *HeapAllocBlock(s32);
 char buf[96]; SetupNames names; SetupColors colors;
 void *map=*gCurrentMap;
 void *unit=(u8*)map+0x67a4+M2C_FIELD(map,u16*,0x52a4)*140;
@@ -31,7 +31,7 @@ names=data_020f4e08;
 colors.bytes[0]=data_020f4df4.bytes[0];colors.bytes[1]=data_020f4df4.bytes[1];colors.bytes[2]=data_020f4df4.bytes[2];colors.bytes[3]=b3;colors.bytes[4]=b4;colors.bytes[5]=b5;kind=kindWord;
 colors.half[0]=data_020f4df4.half[0];colors.half[1]=data_020f4df4.half[1];colors.half[2]=data_020f4df4.half[2];colors.half[3]=data_020f4df4.half[3];colors.half[4]=data_020f4df4.half[4];colors.half[5]=data_020f4df4.half[5];
 
-data_02164094=func_020e34bc(40);
+data_02164094=HeapAllocBlock(40);
 M2C_FIELD(data_02164094,s32*,0)=0;
 M2C_FIELD(data_02164094,u32*,0x10)=0xc3200000;
 M2C_FIELD(data_02164094,s16*,0x14)=0;
@@ -106,7 +106,7 @@ StringFormat(buf,data_0212a4cc,color);
 OpenNarcArchive(GetLocalizedFileName(data_0212a4d8));
 LoadNarcFileDecompressed(GetLocalizedFileName(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
 CloseNarcArchive();
-func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
+MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
 func_020985b0(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
 func_02098a34(M2C_FIELD(data_02164094,s16*,8),8,3,0,0);
 func_020985b0(M2C_FIELD(data_02164094,s16*,8),11,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+0x7840);
@@ -126,7 +126,7 @@ if(M2C_FIELD(data_02164094,s32*,0)>=250)M2C_FIELD(data_02164094,s32*,0)=250;
 if(M2C_FIELD(data_02164094,s32*,4)<64)return;func_01ffa6fc(arg0);}
 
 void func_020c46b4(void) {
- M2C_UNK func_020e35cc(void *);
+ M2C_UNK HeapFreeBlock(void *);
  extern void *data_02164094;
  extern u16 **gCur3DSpriteEngine;
  extern u16 **g3DSpriteEngineSub;
@@ -135,7 +135,7 @@ void func_020c46b4(void) {
  u16 * volatile sp4;
  u16 * volatile sp0;
  if (data_02164094 != 0) {
-  func_020e35cc(data_02164094);
+  HeapFreeBlock(data_02164094);
   data_02164094 = 0;
  }
  old = gCur3DSpriteEngine;
@@ -294,7 +294,7 @@ M2C_UNK *func_020c4acc(void) {
 }
 
 s32 func_020c4ad8(s32 *arg0) {
-    M2C_UNK func_02007df8(M2C_UNK, void *, M2C_UNK);
+    M2C_UNK FillU16(M2C_UNK, void *, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     register s32 var_r8;
     register void *var_r9;
@@ -306,7 +306,7 @@ s32 func_020c4ad8(s32 *arg0) {
     var_r8 = 0;
     var_r9 = (u8*)var_r10 + 0x2D4;
     do {
-        func_02007df8(0, var_r9, 0x1A);
+        FillU16(0, var_r9, 0x1A);
         M2C_FIELD(var_r10, s16 *, 0x2EE) = 0;
         M2C_FIELD(var_r10, s16 *, 0x2F0) = 0;
         M2C_FIELD(var_r10, s16 *, 0x2F2) = 0;

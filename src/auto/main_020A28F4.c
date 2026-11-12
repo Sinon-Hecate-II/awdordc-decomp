@@ -45,7 +45,7 @@ s32 func_020a29e4(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_0211fbfd;
     extern s8 data_0211fbf2;
     s32 func_020a27b8(s32, s32);
-    s32 func_020a7bd4(s32);
+    s32 GetUnitKindMaxAttackRange(s32);
     s32 index;
 
     index = func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
@@ -56,7 +56,7 @@ s32 func_020a29e4(s32 arg0, s32 arg1, s32 arg2) {
     if (!*(s8 *)(arg0 + ((s32)&data_0211fbfd + index))) {
         return 0;
     }
-    if (func_020a7bd4(arg0) < 2) {
+    if (GetUnitKindMaxAttackRange(arg0) < 2) {
         return 0;
     }
     return M2C_FIELD(&data_0211fbf2, s8 *, index);
@@ -115,7 +115,7 @@ void func_020a2c68(void *a){extern s32 *gCurrentMap;extern u8 data_021261c4[];s3
  * animates the sprite (drawing it only when its cell is in the visible-cell
  * bitmap), then moves the view's slot and frame counters on. */
 void UpdatePlayerUnitView(void *view) {
-void func_020cfd28(void);
+void RefreshMapView(void);
 extern s32 *gCurrentMap;
 extern u8 gMovementCostTable[], data_021261c8[];
 s32 player, spriteSet, armyId;
@@ -166,7 +166,7 @@ M2C_FIELD(view,s16 *,0x70)++;
 }
 if(M2C_FIELD(view,s16 *,0x70)==51)func_01ffa6fc(view);
 M2C_FIELD(view,s16 *,0x6c)++;
-func_020cfd28();
+RefreshMapView();
 }
 
 void func_020a2f28(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
@@ -379,12 +379,12 @@ s32 func_020a363c(s32 a){
  s32 func_020a3460(s32);
  void func_020a338c(s32,s32);
  void func_020a23c4(void);
- void func_020cfd28(void);
+ void RefreshMapView(void);
  M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x38)=0;
  M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x40)=0;
  func_020a338c(a,func_020a3460(a));
  func_020a23c4();
- func_020cfd28();
+ RefreshMapView();
 }
 
 s32 func_020a3684(s32 a, s32 b) {

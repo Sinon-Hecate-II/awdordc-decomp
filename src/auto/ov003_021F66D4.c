@@ -74,7 +74,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     s16 func_ov003_021f3fa0(s32, s32, s32);
     s32 Divide(s32, s32);
     void func_ov003_021f9fe0(void *, s32, s32);
-    void func_ov003_021f9e50(void *, s32, s32);
+    void Ov003_DrawIconGrid(void *, s32, s32);
     void func_ov003_021fad10(void *, s32, s32);
     s16 temp_r4;
     s16 temp_r5;
@@ -475,7 +475,7 @@ L5:
         }
     }
     func_ov003_021f9fe0(arg0, temp_var, 0);
-    func_ov003_021f9e50(arg0, temp_var, 0);
+    Ov003_DrawIconGrid(arg0, temp_var, 0);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3E) = (s16) (-0x2C - temp_var);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x46) = (s16) g3DSpriteEngineSub;
     gCur3DSpriteEngine = old;

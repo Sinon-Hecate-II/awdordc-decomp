@@ -30,11 +30,11 @@ void func_ov003_021f40a8(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern u8 data_ov003_022100f4[16];
-    void *func_020e34bc(s32);
+    void *HeapAllocBlock(s32);
     void MI_CpuFill8(void *,s32,s32);
     s32 Modulo(s32,s32);
     s32 Divide(s32,s32);
-    void func_02087d18(void *,s16,s16,s32,s32,u16,s32);
+    void AddSpriteCell(void *,s16,s16,s32,s32,u16,s32);
     void *func_020ab1c4(void *);
     void func_020aab24(void *,s32,s32,s32,s32);
     void func_02088e84(void *,s32,s32,s32,s32);
@@ -278,13 +278,13 @@ M2C_FIELD(o, u8 *, 13) = 255;
 M2C_FIELD(o, u8 *, 12) = -1;
 M2C_FIELD(o, u8 *, 14) = 0;
 M2C_FIELD(o, u8 *, 15) = 255;
-n=(s16)n*12; M2C_FIELD(o,void **,20)=func_020e34bc(n); MI_CpuFill8(M2C_FIELD(o,void **,20),0,n);
+n=(s16)n*12; M2C_FIELD(o,void **,20)=HeapAllocBlock(n); MI_CpuFill8(M2C_FIELD(o,void **,20),0,n);
 }
 M2C_FIELD(arg0,void **,0x70)=o;
 for(i=0; i<(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,6)*M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8));i++){
  n=M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8);
  x=Modulo(i,n); y=Divide(i,n);
- func_02087d18(M2C_FIELD(arg0,void **,0x70),(s16)(x*120+6),(s16)(y*16+40),120,16,(u16)(i+10),14);
+ AddSpriteCell(M2C_FIELD(arg0,void **,0x70),(s16)(x*120+6),(s16)(y*16+40),120,16,(u16)(i+10),14);
 }
 p=M2C_FIELD(arg0,void **,0x68);
 M2C_FIELD(p,void **,0)=func_020ab1c4(arg0);func_020aab24(M2C_FIELD(p,void **,0),1,320,3,1);{void *sprite=M2C_FIELD(p,void **,0);func_02088e84(sprite,192,160,192,192);if ((u8)(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)) {s16 sy=M2C_FIELD(sprite,s16 *,0x52),sx=M2C_FIELD(sprite,s16 *,0x50);s32 w=func_020aae10(sprite);s32 h=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)w,(u16)h);}}func_02088da8(M2C_FIELD(p,void **,0));

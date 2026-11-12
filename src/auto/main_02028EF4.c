@@ -1,5 +1,6 @@
 /* 37 functions from 0x02028EF4 to 0x02029E98 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 typedef struct ListLinks { void *next; void *prev; } ListLinks;
 
@@ -115,9 +116,9 @@ void func_02028ef4(void *arg0) {
 }
 
 void func_02029220(void) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *func_02027d50(void); void MI_CpuFill8(void *,s32,s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *GetSession(void); void MI_CpuFill8(void *,s32,s32);
 s32 state; void *base; void *p; void *ptr; s32 val;
-state=OS_DisableInterrupts(); base=func_02027d50();
+state=OS_DisableInterrupts(); base=GetSession();
 if (!base) { OS_RestoreInterrupts(state); return; }
 p=(s8*)base+0x2000; ptr=M2C_FIELD(p,void**,0x270);
 if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) MI_CpuFill8(ptr,0,val); }
@@ -127,7 +128,7 @@ OS_RestoreInterrupts(state);
 s32 func_02029274(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void *func_02027d50(void);
+    void *GetSession(void);
     s32 state;
     void *base;
     void *r0;
@@ -135,7 +136,7 @@ s32 func_02029274(void) {
     s32 result;
 
     state = OS_DisableInterrupts();
-    base = func_02027d50();
+    base = GetSession();
     result = 0;
     if (base == NULL) {
         OS_RestoreInterrupts(state);
@@ -156,9 +157,9 @@ s32 func_02029274(void) {
 #pragma push
 #pragma opt_common_subs off
 s32 func_020292cc(s32 arg0) {
- s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *func_02027d50(void);
+ s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *GetSession(void);
  s32 state; void *base; u8 flag; s32 result;
- state=OS_DisableInterrupts(); base=func_02027d50();
+ state=OS_DisableInterrupts(); base=GetSession();
  if(base==NULL){OS_RestoreInterrupts(state);return 0;}
  flag=M2C_FIELD(base,u8 *,0x226a);
  if(arg0!=0){result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=1;}
@@ -169,14 +170,14 @@ s32 func_020292cc(s32 arg0) {
 s32 func_02029348(void *arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void *func_02027d50(void);
+    void *GetSession(void);
     void *func_02029594(void *);
     s32 state;
     void *base;
     void *result;
 
     state = OS_DisableInterrupts();
-    base = func_02027d50();
+    base = GetSession();
     if (base == NULL) {
         OS_RestoreInterrupts(state);
         return 0;
@@ -190,21 +191,21 @@ s32 func_02029348(void *arg0) {
 }
 
 void func_020293a0(void *arg0,s32 arg1){
-void *func_02027d50(void);void *func_02029528(s32);void *func_0202942c(void);s32 func_020294f8(void);void func_020295e4(void*);void func_02007ef4(void*,void*,u32);
+void *GetSession(void);void *func_02029528(s32);void *func_0202942c(void);s32 func_020294f8(void);void func_020295e4(void*);void MI_CpuCopy32(void*,void*,u32);
 void *base;void *node;
-base=func_02027d50();if(!base)return;
+base=GetSession();if(!base)return;
 if(M2C_FIELD(base,u8*,0x226a)||M2C_FIELD(arg0,u16*,0x3c))return;
 node=func_02029528((s32)arg0+4);
 if(!node)node=func_0202942c();
 if(!node && M2C_FIELD(base,u32*,0x2278)==1)node=(void*)func_020294f8();
 if(!node)return;
 M2C_FIELD(node,u16*,2)=arg1;
-func_02007ef4(arg0,(u8*)node+0x10,0xc0);func_020295e4(node);
+MI_CpuCopy32(arg0,(u8*)node+0x10,0xc0);func_020295e4(node);
 }
 
 #pragma opt_strength_reduction off
 void *func_0202942c(void) {
-    void *func_02027d50(void);
+    void *GetSession(void);
     void *base;
     void *p2000;
     void *hdr;
@@ -216,7 +217,7 @@ void *func_0202942c(void) {
     void *slot;
     void *prev;
 
-    base = func_02027d50();
+    base = GetSession();
     p2000 = (void *)((s8 *)base + 0x2000);
     hdr = M2C_FIELD(p2000, void **, 0x270);
     if (hdr != 0) goto have_hdr;
@@ -262,11 +263,11 @@ found:
 }
 #pragma opt_strength_reduction on
 s32 func_020294f8(void) {
-    void *func_02027d50();
+    void *GetSession();
     void *temp_r0;
     void *temp_r1;
 
-    temp_r0 = func_02027d50();
+    temp_r0 = GetSession();
     temp_r1 = M2C_FIELD(temp_r0, void **, 0x2270);
     if ((temp_r1 != NULL) && ((u32) M2C_FIELD(temp_r0, u32 *, 0x2274) > 0xCU)) {
         return M2C_FIELD(temp_r1, s32 *, 4);
@@ -281,7 +282,7 @@ void *func_02029528(s32 arg0) {
     void *temp_r1;
     void *var_r4;
 
-    temp_r0 = func_02027d50();
+    temp_r0 = GetSession();
     temp_r0_2 = temp_r0 + 0x2000;
     var_r4 = NULL;
     temp_r1 = M2C_FIELD(temp_r0, void **, 0x2270);
@@ -304,7 +305,7 @@ loop_5:
 }
 
 void *func_02029594(void *arg0) {
- void *base=func_02027d50(); void *block=(u8 *)base+0x2000; void *head=M2C_FIELD(block,void **,0x270); void *p=0;
+ void *base=GetSession(); void *block=(u8 *)base+0x2000; void *head=M2C_FIELD(block,void **,0x270); void *p=0;
  if(head!=0 && M2C_FIELD(block,u32 *,0x274)>12){p=M2C_FIELD(head,void **,4);if(p!=0){do {if(M2C_FIELD(p,void **,4)==arg0)break;p=M2C_FIELD(p,void **,12);}while(p!=0);}}
  return p;
 }
@@ -320,7 +321,7 @@ void func_020295e4(void *arg0) {
     void *var_r3;
     register void *temp_r0_2;
 
-    temp_r0 = func_02027d50();
+    temp_r0 = GetSession();
     temp_r1 = temp_r0 + 0x2000;
     temp_r0_2 = M2C_FIELD(temp_r0, void **, 0x2270);
     if ((arg0 != NULL) && (temp_r0_2 != NULL)) {
@@ -370,45 +371,45 @@ loop_7:
 }
 
 void func_020296a0(void) {
-    void func_0200654c(void *);
-    extern M2C_UNK data_02138e50;
-    extern M2C_UNK data_02138e5c;
+    void InitMutex(void *);
+    extern M2C_UNK gWfcSendState;
+    extern M2C_UNK gWfcSendLock;
 
-    if (M2C_FIELD(&data_02138e50, u8 *, 0) != 0) {
+    if (M2C_FIELD(&gWfcSendState, u8 *, 0) != 0) {
         return;
     }
-    M2C_FIELD(&data_02138e50, u8 *, 0) = 1;
-    M2C_FIELD(&data_02138e50, u32 *, 0x24) = 0;
-    M2C_FIELD(&data_02138e50, u32 *, 0x8) = 0;
-    M2C_FIELD(&data_02138e50, u32 *, 0x4) = 0;
-    func_0200654c(&data_02138e5c);
+    M2C_FIELD(&gWfcSendState, u8 *, 0) = 1;
+    M2C_FIELD(&gWfcSendState, u32 *, 0x24) = 0;
+    M2C_FIELD(&gWfcSendState, u32 *, 0x8) = 0;
+    M2C_FIELD(&gWfcSendState, u32 *, 0x4) = 0;
+    InitMutex(&gWfcSendLock);
 }
 
 void func_020296e0(void *arg0) {
-    extern M2C_UNK data_02138e50;
-    if (M2C_FIELD(&data_02138e50, M2C_UNK (**)(void *, void *, void *, u16), 0x28) == NULL) {
+    extern M2C_UNK gWfcSendState;
+    if (M2C_FIELD(&gWfcSendState, M2C_UNK (**)(void *, void *, void *, u16), 0x28) == NULL) {
         return;
     }
-    M2C_FIELD(&data_02138e50, M2C_UNK (**)(void *, void *, void *, u16), 0x28)(arg0 + 0x1E, arg0 + 0x18, arg0 + 0x2C, M2C_FIELD(arg0, u16 *, 6));
+    M2C_FIELD(&gWfcSendState, M2C_UNK (**)(void *, void *, void *, u16), 0x28)(arg0 + 0x1E, arg0 + 0x18, arg0 + 0x2C, M2C_FIELD(arg0, u16 *, 6));
 }
 
 #pragma opt_common_subs off
 void func_02029714(void) {
-s32 func_02027d50(void);s32 func_02029a24(void *);s32 func_02012e74(s32,void *,void *,u32);void func_02029a10(void);s32 func_02029a74(M2C_UNK *);extern M2C_UNK data_02138e5c;
+s32 GetSession(void);s32 func_02029a24(void *);s32 WFC_SubmitRequest(s32,void *,void *,u32);void func_02029a10(void);s32 func_02029a74(M2C_UNK *);extern M2C_UNK gWfcSendLock;
 s32 res; void *ptr; void *base;
-base=(void *)func_02027d50();if(!base)return;
+base=(void *)GetSession();if(!base)return;
 ptr=(s8 *)base+0x2000;
 res=((s32 *)ptr)[0x98];
 if(res!=9)return;
 if(M2C_FIELD(ptr,u8 *,0x26b)==1)return;
-if(!func_02029a24(&data_02138e5c))return;
-res=func_02012e74((s32)func_02029a10,(s8 *)base+0x2144,(s8 *)base+0xf00,0);
+if(!func_02029a24(&gWfcSendLock))return;
+res=WFC_SubmitRequest((s32)func_02029a10,(s8 *)base+0x2144,(s8 *)base+0xf00,0);
 if(res==2)return;
-func_02029a74(&data_02138e5c);
+func_02029a74(&gWfcSendLock);
 }
 #pragma opt_common_subs reset
 void *func_02029784(void) {
-    s32 func_02027d50(void);
+    s32 GetSession(void);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void *temp_r4;
@@ -416,7 +417,7 @@ void *func_02029784(void) {
     s32 state;
 
     var_r5 = NULL;
-    temp_r4 = (void *)func_02027d50();
+    temp_r4 = (void *)GetSession();
     state = OS_DisableInterrupts();
     if ((temp_r4 != NULL) && (M2C_FIELD(temp_r4, s32 *, 0x2260) == 9) && (M2C_FIELD(temp_r4, u8 *, 0x226B) == 0)) {
         var_r5 = (void *)((char *)temp_r4 + 0x2144);
@@ -428,7 +429,7 @@ void *func_02029784(void) {
 void *func_020297c8(u16 *arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02027d50(void);
+    s32 GetSession(void);
 
     s32 r6;
     void *r7;
@@ -437,7 +438,7 @@ void *func_020297c8(u16 *arg0) {
 
     r7 = (void *)0;
     r4 = 0;
-    r6 = func_02027d50();
+    r6 = GetSession();
     state = OS_DisableInterrupts();
     if (r6 != 0) {
         if (M2C_FIELD(r6, s32 *, 0x2000 + 0x260) == 9) {
@@ -457,59 +458,63 @@ void *func_020297c8(u16 *arg0) {
 void func_02029828(s32 arg0) {
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
-extern M2C_UNK data_02138e50;
+extern M2C_UNK gWfcSendState;
 s32 state=OS_DisableInterrupts();
-M2C_FIELD(&data_02138e50,s32 *,0x28)=arg0;
+M2C_FIELD(&gWfcSendState,s32 *,0x28)=arg0;
 OS_RestoreInterrupts(state);
 }
 
 #pragma opt_if-conversion off
-s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Sends a packet through the WFC layer: copies the first data block and the
+ * optional second block into the session's send buffer, starts the transfer and
+ * sleeps until the completion callback reports the result. Returns the packet
+ * length, or a negative error code. */
+s32 WFC_SendPacket(void *destAddr, void *data, s32 dataLen, s32 extra, s32 extraLen) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02027d50(void);
-    void func_02006564(void *);
-    void func_020065e8(void *);
+    s32 GetSession(void);
+    void LockMutex(void *);
+    void UnlockMutex(void *);
     void MI_CpuCopy8(void *, void *, s32);
-    s32 func_02012e74(s32, void *, void *, u32);
+    s32 WFC_SubmitRequest(s32, void *, void *, u32);
     void OS_SleepThread(void *);
-    void func_020299d0(void *);
-    extern M2C_UNK data_02138e5c;
-    extern M2C_UNK data_02138e54;
-    extern M2C_UNK data_02138e50;
+    void WFC_OnSendComplete(void *);
+    extern M2C_UNK gWfcSendLock;
+    extern M2C_UNK gWfcSendThread;
+    extern M2C_UNK gWfcSendState;
 
-    s32 state;
-    s32 r6;
-    s32 base2;
-    s32 res;
-    s32 val;
+    s32 irqState;
+    s32 work;
+    s32 session;
+    s32 result;
+    s32 status;
 
-    r6 = arg3;
-    state = OS_DisableInterrupts();
-    if (func_02027d50() == 0) {
-        OS_RestoreInterrupts(state);
+    work = extra;
+    irqState = OS_DisableInterrupts();
+    if (GetSession() == 0) {
+        OS_RestoreInterrupts(irqState);
         return -1;
     }
-    func_02006564(&data_02138e5c);
-    base2 = func_02027d50();
-    if (base2 == 0) {
-        func_020065e8(&data_02138e5c);
-        OS_RestoreInterrupts(state);
+    LockMutex(&gWfcSendLock);
+    session = GetSession();
+    if (session == 0) {
+        UnlockMutex(&gWfcSendLock);
+        OS_RestoreInterrupts(irqState);
         return -1;
     }
-    if (M2C_FIELD((void *)base2, s32 *, 0x2260) != 9 ||
-        M2C_FIELD((void *)base2, u8 *, 0x226b) == 1) {
-        func_020065e8(&data_02138e5c);
-        OS_RestoreInterrupts(state);
+    if (M2C_FIELD((void *)session, s32 *, WFC_SESSION_STATE) != 9 ||
+        M2C_FIELD((void *)session, u8 *, WFC_SESSION_ABORT) == 1) {
+        UnlockMutex(&gWfcSendLock);
+        OS_RestoreInterrupts(irqState);
         return -4;
     }
-    MI_CpuCopy8(arg1, (void *)(base2 + 0xf00), arg2);
-    if (arg4 > 0) {
-        MI_CpuCopy8(r6, (void *)(base2 + 0xf00 + arg2), arg4);
+    MI_CpuCopy8(data, (void *)(session + WFC_SESSION_SEND_BUFFER), dataLen);
+    if (extraLen > 0) {
+        MI_CpuCopy8(work, (void *)(session + WFC_SESSION_SEND_BUFFER + dataLen), extraLen);
     }
-    r6 = arg2 + arg4;
-    res = func_02012e74((s32)func_020299d0, arg0, (void *)(base2 + 0xf00), (u32)(u16)r6);
-    switch (res) {
+    work = dataLen + extraLen;
+    result = WFC_SubmitRequest((s32)WFC_OnSendComplete, destAddr, (void *)(session + WFC_SESSION_SEND_BUFFER), (u32)(u16)work);
+    switch (result) {
         case 2:
             break;
         case 0:
@@ -521,38 +526,38 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
         case 7:
         case 8:
         default:
-            func_020065e8(&data_02138e5c);
-            OS_RestoreInterrupts(state);
+            UnlockMutex(&gWfcSendLock);
+            OS_RestoreInterrupts(irqState);
             return -5;
     }
-    OS_SleepThread(&data_02138e54);
-    val = M2C_FIELD(&data_02138e50, s32 *, 0x24);
-    switch(val) {
-    case 0: break;
+    OS_SleepThread(&gWfcSendThread);
+    status = ((WfcSendState *)&gWfcSendState)->result;
+    switch (status) {
+    case WFC_SEND_OK: break;
     case 1:
     default:
-        func_020065e8(&data_02138e5c);
-        OS_RestoreInterrupts(state);
+        UnlockMutex(&gWfcSendLock);
+        OS_RestoreInterrupts(irqState);
         return -5;
     }
-    func_020065e8(&data_02138e5c);
-    OS_RestoreInterrupts(state);
-    return r6;
+    UnlockMutex(&gWfcSendLock);
+    OS_RestoreInterrupts(irqState);
+    return work;
 }
 #pragma opt_if-conversion reset
-void func_020299d0(void *arg0) {
+void WFC_OnSendComplete(void *arg0) {
 void func_020281f8(void); void OS_WakeupThread(void *);
-extern M2C_UNK data_02138e50; extern M2C_UNK data_02138e54;
+extern M2C_UNK gWfcSendState; extern M2C_UNK gWfcSendThread;
 if(M2C_FIELD(arg0,u16 *,0)!=0x12) return;
-M2C_FIELD(&data_02138e50,u32 *,0x24)=M2C_FIELD(arg0,u16 *,2);
+M2C_FIELD(&gWfcSendState,u32 *,0x24)=M2C_FIELD(arg0,u16 *,2);
 if(M2C_FIELD(arg0,u16 *,2)==0) func_020281f8();
-OS_WakeupThread(&data_02138e54);
+OS_WakeupThread(&gWfcSendThread);
 }
 
 void func_02029a10(void) {
     M2C_UNK func_02029a74(M2C_UNK *);
-    extern M2C_UNK data_02138e5c;
-    func_02029a74(&data_02138e5c);
+    extern M2C_UNK gWfcSendLock;
+    func_02029a74(&gWfcSendLock);
 }
 
 s32 func_02029a24(void *arg0) {
@@ -604,14 +609,14 @@ s32 func_02029aac(s32 a, s32 b) {
 s32 func_02029ad8(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02027d50(void);
+    s32 GetSession(void);
     s32 func_02029b9c(void);
     s32 temp_r4;
     s32 var_r5;
     s32 temp_r0;
 
     temp_r4 = OS_DisableInterrupts();
-    temp_r0 = func_02027d50();
+    temp_r0 = GetSession();
     var_r5 = 0;
     if (temp_r0 != 0) {
         if (M2C_FIELD(temp_r0, s32 *, 0x2260) == 9) {

@@ -555,7 +555,7 @@ void func_ov001_0218a1cc(void *arg0) {
     func_ov001_0218a6f4(M2C_FIELD(((var_r4 * 0x228) + data_ov001_02193e30), s32 *, 0x224), arg0);
 }
 
-s32 func_ov001_0218a24c(void *arg0, s32 arg1) {
+s32 Ov001_GetSpriteObjEntry(void *arg0, s32 arg1) {
     return M2C_FIELD(arg0, s32 *, 8) + (arg1 * 8);
 }
 

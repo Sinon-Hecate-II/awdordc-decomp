@@ -51,11 +51,11 @@ for(;i<arg0->count;i++) arg0->entries[i].active=0;
 }
 
 void func_02074a7c(List_02074920 *arg0,u16 a,u8 b,s32 c,void *data) {
-void func_02007ef4(void *,void *,u32); void func_02007e98(s32,void *,u32);
+void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32);
 u32 n=arg0->count; Entry_02074920 *p;
 if(n>=128) return;
 p=&arg0->entries[n]; p->id=a; p->kind=b; p->active=1; p->value=c;
-if(data) func_02007ef4(data,p->data,32); else func_02007e98(0,p->data,32);
+if(data) MI_CpuCopy32(data,p->data,32); else MI_CpuFill32(0,p->data,32);
 arg0->count++;
 }
 
@@ -175,11 +175,11 @@ func_0200fe6c(low); func_020055f4(low); return result;
 }
 
 void func_02074dec(s32 arg0){
-void *func_020e34bc(u32);void func_020e35cc(void *);s32 func_0200558c(void);void func_020055f4(u8);void func_0200fe5c(u16);void func_0200fe6c(u8);
+void *HeapAllocBlock(u32);void HeapFreeBlock(void *);s32 func_0200558c(void);void func_020055f4(u8);void func_0200fe5c(u16);void func_0200fe6c(u8);
 s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 func_02074734(void *,void *);s32 func_020747c8(void *,void *);s32 func_020747ec(void *,u16);
-void func_02007ef4(void *,void *,u32);void func_02007e98(s32,void *,u32);void MI_CpuFill8(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
+void MI_CpuCopy32(void *,void *,u32);void MI_CpuFill32(s32,void *,u32);void MI_CpuFill8(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
 u8 *a=(u8 *)arg0;s32 selected;u8 *p;u8 *buf;u8 low;u32 stamp;s32 page;s32 i;u16 id;u8 ok0,ok1,ok2,ok;s32 off,off20,off256;u32 value,old; s32 newer;u8 rank; s32 shift;u32 *count;u16 invalid=65535;s32 mask;
-buf=func_020e34bc(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
+buf=HeapAllocBlock(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
 id=func_0200558c();low=id;i=0;p=a;off=0;off20=20;off256=256;
 for(;i<256;p+=12,off+=1024,off256+=1024,off20+=1024,i++){
 func_0200fe5c(low);ok0=func_0201033c(off,(s32 *)buf,20,0,0,0,6,1,0)!=0;func_0200fe6c(low);
@@ -188,7 +188,7 @@ if(!func_02074734(a,buf))goto empty;
 func_0200fe5c(low);ok1=func_0201033c(off20,(s32 *)(buf+20),M2C_FIELD(buf,u16*,12)-20,0,0,0,6,1,0)!=0;func_0200fe6c(low);
 if(ok1 == 0){a[0x2052]=1;goto empty;}
 if(!func_020747c8(a,buf))goto empty;
-func_02007ef4(buf+8,p,12);
+MI_CpuCopy32(buf+8,p,12);
 if(buf[14]==1){
 value=M2C_FIELD(buf,u16*,16)|(M2C_FIELD(buf,u16*,18)<<16);
 if(selected!=-1){
@@ -202,14 +202,14 @@ stamp=value;page=0;selected=i;
 func_0200fe5c(low);ok2=func_0201033c(off256,(s32 *)(buf+256),768,0,0,0,6,1,0)!=0;func_0200fe6c(low);
 if(!ok2)a[0x2052]=1;
 }continue;
-empty:func_02007e98(0,p,12);
+empty:MI_CpuFill32(0,p,12);
 }
 if(selected==-1){a[0x2051]=1;M2C_FIELD((unsigned short)a,s32*,0xc00)=-1;M2C_FIELD(a,s32*,0xc04)=-1;M2C_FIELD(a,s32*,0xc08)=0;MI_CpuFill8(a+0xc0c,0,64);goto fail;}
 goto found;
-fail:func_020055f4(low);func_020e35cc(buf);return;
+fail:func_020055f4(low);HeapFreeBlock(buf);return;
 found:a[0x2051]=0;func_0200fe5c(low);ok=func_0201033c((selected<<10)+(page<<8),(s32 *)buf,256,0,0,0,6,1,0)!=0;func_0200fe6c(low);
 if(ok==1){M2C_FIELD(a,s32*,0xc00)=selected;M2C_FIELD(a,s32*,0xc04)=page;M2C_FIELD(a,u32*,0xc08)=stamp;MI_CpuCopy8(buf+20,a+0xc0c,64);}else{a[0x2052]=1;goto fail;}
-func_020055f4(low);func_020e35cc(buf);
+func_020055f4(low);HeapFreeBlock(buf);
 mask=invalid-65536;for(i=0,p=a;i<256;i++,p+=12){rank=(a[0xc0c+(i>>2)]>>((i&3)*2))&3;if(rank==3&&p[6]==0){a[0xc0c+(i>>2)]&=(mask^(3<<((i&3)*2)));a[0x2053]=1;}}
 count=(u32 *)(a+0x204c);M2C_FIELD(a,u32*,0x204c)=0;mask=invalid-65536;
 for(i=0,p=a,off20=20;i<256;off20+=1024,i++,p+=12){
@@ -220,19 +220,19 @@ M2C_FIELD(a+M2C_FIELD(a,u32*,0x204c)*40,u16*,0xc4c)=i;
 M2C_FIELD(a+M2C_FIELD(a,u32*,0x204c)*40,u8*,0xc4e)=p[6];
 M2C_FIELD(a+M2C_FIELD(a,u32*,0x204c)*40,u8*,0xc4f)=0;
 func_0200fe5c(low);ok=func_0201033c(off20,(s32 *)(((u8 *)((List_02074920 *)(a+0xc4c))->entries+M2C_FIELD(a,u32*,0x204c)*40)+4),36,0,0,0,6,1,0)!=0;func_0200fe6c(low);
-if(ok == 0){a[0x2052]=1;func_02007e98(0,((u8 *)((List_02074920 *)(a+0xc4c))->entries+M2C_FIELD(a,u32*,0x204c)*40)+4,36);}
+if(ok == 0){a[0x2052]=1;MI_CpuFill32(0,((u8 *)((List_02074920 *)(a+0xc4c))->entries+M2C_FIELD(a,u32*,0x204c)*40)+4,36);}
 *count=*count+1;
 }func_02074b84((List_02074920 *)(a+0xc4c));return;
 }
 
 /* Write a ranked list of entries to a save buffer. */
 void func_020753f8(void *a, void *b, void *c, s32 d, u8 e, u32 f) {
-void *func_020e34bc(u32); void func_020e35cc(void *); s32 func_0200558c(void); void func_020055f4(u8); void func_0200fe5c(u16); void func_0200fe6c(u8);
-void func_02007ef4(void *,void *,u32); void func_02007e98(s32,void *,u32); void MI_CpuCopy8(void *,void *,u32);
+void *HeapAllocBlock(u32); void HeapFreeBlock(void *); s32 func_0200558c(void); void func_020055f4(u8); void func_0200fe5c(u16); void func_0200fe6c(u8);
+void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32); void MI_CpuCopy8(void *,void *,u32);
 u32 func_020746fc(void *,void *); s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 func_02010584(void);
 u8 *p; s32 idx; u16 prev; s32 mask; u16 id; u8 ok; u32 n;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1||!e)return;
-p=func_020e34bc(0x400); prev=0xffff; idx=func_02074920(a);
+p=HeapAllocBlock(0x400); prev=0xffff; idx=func_02074920(a);
 func_02074a7c((List_02074920 *)((u8 *)a+0xc4c),(u16)idx,e,f,c);
 id=func_0200558c();
 mask=prev-0x10000;
@@ -245,13 +245,13 @@ if(prev==0xffff){
 n=d+0x38; if(n>0x400)n=0x400; M2C_FIELD(p,u16 *,12)=n;
 d-=M2C_FIELD(p,u16 *,12)-0x38;
 M2C_FIELD(p,u32 *,20)=f;
-if(c)func_02007ef4(c,p+24,32);else func_02007e98(0,p+24,32);
-func_02007ef4(b,p+0x38,M2C_FIELD(p,u16 *,12)-(s32)((p+0x38)-p));
+if(c)MI_CpuCopy32(c,p+24,32);else MI_CpuFill32(0,p+24,32);
+MI_CpuCopy32(b,p+0x38,M2C_FIELD(p,u16 *,12)-(s32)((p+0x38)-p));
 b=(u8 *)b+(M2C_FIELD(p,u16 *,12)-(s32)((p+0x38)-p));
 }else{
 n=d+0x14;if(n>0x400)n=0x400;M2C_FIELD(p,u16 *,12)=n;
 d-=M2C_FIELD(p,u16 *,12)-0x14;
-func_02007ef4(b,p+0x14,M2C_FIELD(p,u16 *,12)-0x14);
+MI_CpuCopy32(b,p+0x14,M2C_FIELD(p,u16 *,12)-0x14);
 b=(u8 *)b+(M2C_FIELD(p,u16 *,12)-0x14);
 }
 M2C_FIELD(p,u8 *,14)=e;M2C_FIELD(p,u8 *,15)=1;M2C_FIELD(p,u16 *,16)=prev;
@@ -264,6 +264,6 @@ if(!ok){M2C_FIELD((u8 *)a+0x2000,u8 *,0x52)=1;break;}
 MI_CpuCopy8(p+8,(u8 *)a+idx*12,12);
 prev=idx;idx=M2C_FIELD(p,u16 *,18);
 }
-((void(*)(u32))func_020055f4)(id);func_020e35cc(p);
+((void(*)(u32))func_020055f4)(id);HeapFreeBlock(p);
 }
 

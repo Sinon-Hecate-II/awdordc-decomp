@@ -307,7 +307,7 @@ void func_ov001_02183fa0(void) {
 #pragma pool_constants reset
 #pragma opt_common_subs reset
 s32 func_ov001_02183fd4(void) {
-    s32 func_02007df8(s32, void *, s32);
+    s32 FillU16(s32, void *, s32);
     s32 func_02012218(void *, void (*)(void), s32);
     s32 func_02011af8(void *);
     u16 func_02011e98(void);
@@ -318,7 +318,7 @@ s32 func_ov001_02183fd4(void) {
     typedef struct { u32 w[17]; } Blk;
     s32 *ptr = (s32 *)&data_ov001_02193e00;
 
-    func_02007df8(0, (u8 *)(*ptr) + 0x1300, 0x348);
+    FillU16(0, (u8 *)(*ptr) + 0x1300, 0x348);
     if (func_02012218((void *)(*ptr), (void (*)(void))func_ov001_021841cc, 3) != 2) return 0;
     func_02011af8((void *)((u8 *)(*ptr) + 0x168c));
     {

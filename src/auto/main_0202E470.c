@@ -39,8 +39,8 @@ void func_0202ee2c(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 void func_0202e470(void *arg0) {
-    void func_02006564(void *);
-    void func_020065e8(void *);
+    void LockMutex(void *);
+    void UnlockMutex(void *);
     M2C_UNK DC_FlushRange(s32, u32);
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     M2C_UNK func_0202e32c(void *);
@@ -214,7 +214,7 @@ loop_35:
                 var_r4_2 = var_r1_3;
                 if (spC < (s32) M2C_FIELD(sp3C, u8 *, 0xC2)) {
                     if (M2C_FIELD(sp3C, u8 *, 0xC0) == 2) {
-                        func_02006564(&data_0213c2a8);
+                        LockMutex(&data_0213c2a8);
                         var_r1_3 = M2C_FIELD(&data_0213c290, u8 **, 8);
                     }
                     if (M2C_FIELD(sp3C, s32 (**)(void *, u8 *, u32, s32), 0x16C)(sp3C, var_r1_3, sp18, (spC * sp2C) + sp24) != sp18) {
@@ -223,7 +223,7 @@ loop_35:
                         sp20 = 0;
                         sp38 = 0;
                         if (M2C_FIELD(sp3C, u8 *, 0xC0) == 2) {
-                            func_020065e8(&data_0213c2a8);
+                            UnlockMutex(&data_0213c2a8);
                         }
                     } else {
                         if (M2C_FIELD(sp3C, u8 *, 0xC0) == 2) {
@@ -255,7 +255,7 @@ loop_35:
                             if (var_r1_4 < sp14) {
                                 M2C_FIELD(var_r4_2,s16 *,0)=Decode470(var_r5,*var_r0&15);
                             }
-                            func_020065e8(&data_0213c2a8);
+                            UnlockMutex(&data_0213c2a8);
                         }
                         goto block_118;
                     }
@@ -385,12 +385,12 @@ void func_0202ee2c(void) {
 
 #pragma opt_common_subs off
 void func_0202ee30(void *arg0) {
- void OS_SleepThread(void *); void func_02006564(void *); void func_020065e8(void *); void *func_0202e09c(void *); void func_0202e470(void *); void func_0202e12c(void *);
+ void OS_SleepThread(void *); void LockMutex(void *); void UnlockMutex(void *); void *func_0202e09c(void *); void func_0202e470(void *); void func_0202e12c(void *);
  char *base=(char *)arg0+0xC8; char *p;
  for (;;) { OS_SleepThread(arg0+0x4C0); for (;;) {
- func_02006564(base+0x400); p=func_0202e09c(arg0+0x4E0);
- if(p == 0){func_020065e8(base+0x400);break;}
- func_0202e470(p);func_0202e12c(p);func_020065e8(base+0x400);
+ LockMutex(base+0x400); p=func_0202e09c(arg0+0x4E0);
+ if(p == 0){UnlockMutex(base+0x400);break;}
+ func_0202e470(p);func_0202e12c(p);UnlockMutex(base+0x400);
  }}
 }
 #pragma opt_common_subs reset

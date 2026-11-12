@@ -31,7 +31,7 @@ void func_ov007_0221e004(void) {
 M2C_UNK MapEditorTypeCharacter(void *arg0) {
 extern u32 gGlyphDakuten, gGlyphHandakuten;
 extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-void func_02007ef4(const void*,void*,u32);
+void MI_CpuCopy32(const void*,void*,u32);
 void func_02019424(void*,u32);
 int func_02099ae8(void*); int func_0209c268(s32*);
 void func_020b269c(void);
@@ -65,7 +65,7 @@ dialog=func_0208b564(editor);func_020899cc(dialog,2,0x2800,0x46000012);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
 gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
 }
-func_02007ef4(&gMapEditObjectList,line,0x44);
+MI_CpuCopy32(&gMapEditObjectList,line,0x44);
 line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
 func_02019424(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
 width=0;glyphPtr=line;
@@ -77,7 +77,7 @@ dialog=func_0208b564(editor);func_020899cc(dialog,2,0x2800,0x46000013);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
 gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
 }
-func_02007ef4(line,&gMapEditObjectList,0x44);
+MI_CpuCopy32(line,&gMapEditObjectList,0x44);
 SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)+1);
 return PlaySoundEffect(0x1000d);
 }
@@ -85,7 +85,7 @@ return PlaySoundEffect(0x1000d);
 void func_ov007_0221e568(u8 *arg0) {
     M2C_UNK Divide(u8, M2C_UNK);
     M2C_UNK Modulo(u8, M2C_UNK);
-    M2C_UNK func_020b1c60(u8);
+    M2C_UNK FocusSpriteSlotById(u8);
     extern u16 *gKeyState;
     M2C_UNK MapEditorTypeCharacter(void *arg0);
     extern u8 data_ov007_0221f5a4[];
@@ -147,7 +147,7 @@ block_15:
     if (*ptr == var_r7) {
         return;
     }
-    func_020b1c60(var_r7);
+    FocusSpriteSlotById(var_r7);
 }
 
 void func_ov007_0221e6bc(void) {
@@ -155,25 +155,62 @@ void func_ov007_0221e6bc(void) {
     PlaySoundEffect(0x10019);
 }
 
-void func_ov007_0221e6d0(void *arg0) {
-extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-extern s16 data_ov007_02220dd0[],data_ov007_02220d58[],data_ov007_02220d80[],data_ov007_02220da8[];
-void *func_020b22a4(s32,s32,void*,s32);
-void func_020b1c78(s32); void func_020b2158(s32);
-void func_02087d18(s32,s16,s16,s32,s32,u16,s32);
-void *saved=gCur3DSpriteEngine;
-s16 *table; s32 y, x, k, a, b, c; u8 i;
-gCur3DSpriteEngine=g3DSpriteEngineMain;
-y=0; k=0; table=data_ov007_02220dd0;
-do { x=0; do {
-void *p=func_020b22a4(x*table[2],y*table[3],table,k);
-x++; M2C_FIELD(p,void**,0x10)=arg0; k++;
-} while(x<15); y++; } while(y<5);
-a=0; table=data_ov007_02220d58; do {void *p=func_020b22a4(a*table[2],0,table,a+100); a++; M2C_FIELD(p,void**,0x10)=arg0;} while(a<3);
-b=0; table=data_ov007_02220d80; do {void *p=func_020b22a4(b*table[2],0,table,b+103); b++; M2C_FIELD(p,void**,0x10)=arg0;} while(b<2);
-c=0; table=data_ov007_02220da8; do {void *p=func_020b22a4(c*table[2],0,table,c+105); c++; M2C_FIELD(p,void**,0x10)=arg0;} while(c<2);
-gCur3DSpriteEngine=saved;func_020b1c78(0);func_020b2158(0);
-for(i=0;i<17;i++) func_02087d18(M2C_FIELD(arg0,s32*,0x38),(s16)(i*8+16),16,8,16,i,14);
+/* Creates the sprite slots of the map editor's glyph keyboard: a 15x5 grid of
+ * glyph keys (ids 0..74) followed by three groups of wider key cells (ids
+ * 100..106), each tagged with the editor object.  Finally draws the 17-cell
+ * text line that sits above the keyboard. */
+void MapEditorInitGlyphKeyboard(void *editor) {
+    extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
+    extern EditorCellDesc gMapEditorGlyphGridCells[], gMapEditorButtonCells1[], gMapEditorButtonCells2[], gMapEditorButtonCells3[];
+    void *func_020b22a4(s32, s32, void *, s32);
+    void func_020b1c78(s32);
+    void func_020b2158(s32);
+    void AddSpriteCell(s32, s16, s16, s32, s32, u16, s32);
+    void *saved = gCur3DSpriteEngine;
+    EditorCellDesc *desc;
+    s32 row, col, id, a, b, c;
+    u8 i;
+
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    row = 0;
+    id = 0;
+    desc = gMapEditorGlyphGridCells;
+    do {
+        col = 0;
+        do {
+            void *p = func_020b22a4(col * desc->width, row * desc->height, desc, id);
+            col++;
+            M2C_FIELD(p, void **, 0x10) = editor;
+            id++;
+        } while (col < 15);
+        row++;
+    } while (row < 5);
+    a = 0;
+    desc = gMapEditorButtonCells1;
+    do {
+        void *p = func_020b22a4(a * desc->width, 0, desc, a + 100);
+        a++;
+        M2C_FIELD(p, void **, 0x10) = editor;
+    } while (a < 3);
+    b = 0;
+    desc = gMapEditorButtonCells2;
+    do {
+        void *p = func_020b22a4(b * desc->width, 0, desc, b + 103);
+        b++;
+        M2C_FIELD(p, void **, 0x10) = editor;
+    } while (b < 2);
+    c = 0;
+    desc = gMapEditorButtonCells3;
+    do {
+        void *p = func_020b22a4(c * desc->width, 0, desc, c + 105);
+        c++;
+        M2C_FIELD(p, void **, 0x10) = editor;
+    } while (c < 2);
+    gCur3DSpriteEngine = saved;
+    func_020b1c78(0);
+    func_020b2158(0);
+    for (i = 0; i < 17; i++)
+        AddSpriteCell(M2C_FIELD(editor, s32 *, 0x38), (s16)(i * 8 + 16), 16, 8, 16, i, 14);
 }
 
 void func_ov007_0221e85c(void *arg0) {
@@ -198,7 +235,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02091d4c(M2C_UNK);
-    M2C_UNK func_020a92bc(void *, M2C_UNK);
+    M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020ae22c(M2C_UNK);
     M2C_UNK func_020aeebc(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -235,7 +272,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x16) = 2;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x14) = 8;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x17) = 8;
-    func_020a92bc(M2C_FIELD(arg0, void **, 0x44), 0);
+    SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x44), 0);
     temp_r1 = M2C_FIELD(arg0, void **, 0x44);
     M2C_FIELD(temp_r1, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r1, u8 *, 0x20) & ~0xE0) | 0x40);
     temp_lr = M2C_FIELD(arg0, void **, 0x44);

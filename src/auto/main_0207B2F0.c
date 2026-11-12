@@ -548,7 +548,7 @@ void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02004cf0();
     M2C_UNK func_02004d3c();
     M2C_UNK func_02004ddc();
-    M2C_UNK func_02007ef4(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0207c780(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02101468;
     extern M2C_UNK data_02101488;
@@ -556,7 +556,7 @@ void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
     func_0207c780(&data_02101488, arg0);
     func_02004cf0();
     func_02004d3c();
-    func_02007ef4(&data_02101468, arg1, 0x20);
+    MI_CpuCopy32(&data_02101468, arg1, 0x20);
     func_02004ddc();
 }
 

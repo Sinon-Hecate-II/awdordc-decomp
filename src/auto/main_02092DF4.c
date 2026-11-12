@@ -431,7 +431,7 @@ s32 y=M2C_FIELD(p,s16 *,10);
 s32 x=M2C_FIELD(p,s16 *,8);
 void *base=*gCurrentMap;
 u8 id=M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758)),u8 *,0x508);
-if(id) {func_020cfd28(func_020a6718(id));}
+if(id) {RefreshMapView(func_020a6718(id));}
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
@@ -447,7 +447,7 @@ func_020a6718(i);p=M2C_FIELD(arg0,void **,4);
 if(M2C_FIELD(p,s32 *,12)!=0)break;
 }
 }
-func_020cfd28();
+RefreshMapView();
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 

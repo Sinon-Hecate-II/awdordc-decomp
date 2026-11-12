@@ -6,7 +6,7 @@ void func_0200fc58(void) {
     extern void *data_0212fde0;
     extern void *data_0212fd80;
     extern u32 data_02130400[];
-    void func_02007e98(M2C_UNK, M2C_UNK, M2C_UNK);
+    void MI_CpuFill32(M2C_UNK, M2C_UNK, M2C_UNK);
     void DC_FlushRange(void *, u32);
     void MI_CpuCopy8(void *, void *, u32);
     void func_02005ac0(void *, void *, s32, u8 *, u32, s32);
@@ -25,7 +25,7 @@ void func_0200fc58(void) {
     *(s32 *)((u8 *)base + 0x18) = 0;
     *(void **)((u8 *)base + 0x0) = &data_0212fd80;
 
-    func_02007e98(0, &data_0212fd80, 0x60);
+    MI_CpuFill32(0, &data_0212fd80, 0x60);
     DC_FlushRange(&data_0212fd80, 0x60);
 
     *(s32 *)((u8 *)base + 0x118) = -1;

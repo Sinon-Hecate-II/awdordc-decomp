@@ -176,7 +176,7 @@ void func_02087c6c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u16 f) {
 }
 
 #pragma opt_strength_reduction off
-void func_02087d18(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
+void AddSpriteCell(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
  u16 *q=M2C_FIELD(p,u16 **,0x14); s32 i; s32 n=M2C_FIELD(p,u16 *,0x10);
  for(i=0;i<n;i++,q+=6) {
  if(q[5]==0) {

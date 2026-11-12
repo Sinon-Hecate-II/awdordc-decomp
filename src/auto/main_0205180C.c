@@ -155,7 +155,7 @@ void gpiDisconnect(void **arg0, s32 arg1) {
             gpiAppendIntField(arg0, (char *)temp_r4 + 0x1F4, *(s32 *)((char *)temp_r4 + 0x198));
             gpiAppendStringField(arg0, (char *)temp_r4 + 0x1F4, &gGsKeyFinal);
         }
-        gpiSendBufferedData(arg0, *(s32 *)((char *)temp_r4 + 0x1D4), (char *)temp_r4 + 0x1F4, &sp8, 1, &data_020fe67c);
+        gpiSendFromBuffer(arg0, *(s32 *)((char *)temp_r4 + 0x1D4), (char *)temp_r4 + 0x1F4, &sp8, 1, &data_020fe67c);
         temp_r0 = *(s32 *)((char *)temp_r4 + 0x1D4);
         if (temp_r0 != -1) {
             func_020496cc(temp_r0, 2);

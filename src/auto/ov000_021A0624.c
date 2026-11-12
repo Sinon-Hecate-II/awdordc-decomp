@@ -125,7 +125,7 @@ return total*func_ov000_021a0aec(arg0,arg1,(u32)(M2C_FIELD(arg2,u8 *,0)<<26)>>26
 s32 BuildAiTargetGroups(void) {
     void FloodFillUnitRange(s32,s32,s32,s32,s32);
     s32 IsUnitOnCurrentTeam(s32);
-    s32 func_020a7bd4(s32);
+    s32 GetUnitKindMaxAttackRange(s32);
     s32 IsFootUnitKind();
     s32 IsCurrentPlayerUnit(s16);
     s32 func_ov000_021a43e8();
@@ -169,7 +169,7 @@ s32 BuildAiTargetGroups(void) {
                     if(unitId) {
                         unit=(UnkStruct_ov000_021A860C *)(base+0x59a4+unitId*14);
                         if(IsUnitOnCurrentTeam(unitId)==1) {
-                            if(func_020a7bd4(unit->unk0)) group[0]--;
+                            if(GetUnitKindMaxAttackRange(unit->unk0)) group[0]--;
                             if(IsFootUnitKind(unit->unk0) && unit->unk6>=61) group[3]=(group[3]&~1)|1;
                             if ((unit->unk0==6 && unit->unkB!=5) || unit->unk0==14) {
                                 if(unit->unk6>=61) typeFlags|=1;

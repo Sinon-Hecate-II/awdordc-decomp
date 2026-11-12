@@ -218,7 +218,7 @@ void func_ov000_021759b8(s32 *arg0) {
 }
 
 void func_ov000_02175ed8(void *arg0) {
-    M2C_UNK func_02007ef4(s32, s32);
+    M2C_UNK MI_CpuCopy32(s32, s32);
     s32 func_020e3438(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -232,12 +232,12 @@ void func_ov000_02175ed8(void *arg0) {
     temp_r6 = data_ov000_021deb46[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x4)];
     if (temp_r6 != -1) {
         source=func_020e3438(3);
-        func_02007ef4(source + temp_r6 * 0x4E0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2880);
+        MI_CpuCopy32(source + temp_r6 * 0x4E0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2880);
     }
     source=func_020e3438(4);
-    func_02007ef4(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x58), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2D60);
+    MI_CpuCopy32(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x58), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2D60);
     source=func_020e3438(4);
-    func_02007ef4(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x5C), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F20);
+    MI_CpuCopy32(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x5C), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F20);
     gCur3DSpriteEngine = temp_r4;
 }
 #pragma opt_strength_reduction off
@@ -245,7 +245,7 @@ void func_ov000_02175ed8(void *arg0) {
  * for the window's current mode, uploads the gauge tiles, then draws the stat
  * bar and number, the unit-type icon and the team-coloured tiles for `entry`. */
 void Ov000Info_DrawUnitPanel(void *entry){
-M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 func_020e34bc(s32); void func_020e35cc(s32); void Clear3DSpriteLayer(s32); u32 GetInfoWindowMode();
+M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 HeapAllocBlock(s32); void HeapFreeBlock(s32); void Clear3DSpriteLayer(s32); u32 GetInfoWindowMode();
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
 extern M2C_UNK data_ov000_021c2e50,data_ov000_021c2bb0,data_ov000_021c2680,data_ov000_021c23ec,data_ov000_021c2918,data_ov000_021c2158;
 extern u16 data_ov000_021deb10[]; extern u8 data_ov000_021ae2a0[]; extern s8 data_ov000_021dede4[];
@@ -253,12 +253,12 @@ Tiles75a20 first; TeamTiles75a20 second; void *saved; u16 tile; s32 temp; s32 i,
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 gfx=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28);
 tile=(u16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
-temp=func_020e34bc(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
+temp=HeapAllocBlock(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
 Clear3DSpriteLayer(0);
 switch(GetInfoWindowMode()){case 0:table=&data_ov000_021c2e50;break;case 1:table=&data_ov000_021c2bb0;break;case 2:table=&data_ov000_021c2680;break;case 3:table=&data_ov000_021c23ec;break;case 4:table=&data_ov000_021c2918;break;case 5:table=&data_ov000_021c2158;break;default:table=&data_ov000_021c2e50;break;}
 func_0207c780(table,temp);func_02080a14(base,16,2,temp+0x520);
 for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
-func_020808dc(base,16,2,11);func_020e35cc(temp);
+func_020808dc(base,16,2,11);HeapFreeBlock(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){
 if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2e0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);

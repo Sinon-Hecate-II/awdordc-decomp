@@ -146,23 +146,23 @@ void func_020e5740(void) {
 }
 
 M2C_UNK **func_020e57b4(M2C_UNK **arg0) {
- M2C_UNK func_020e35cc();
+ M2C_UNK HeapFreeBlock();
  M2C_UNK MemFree(M2C_UNK **);
  extern M2C_UNK data_0212dba0;
  extern s32 data_02168ff4;
  *arg0 = &data_0212dba0;
- if (data_02168ff4 != 0) func_020e35cc();
+ if (data_02168ff4 != 0) HeapFreeBlock();
  MemFree(arg0);
  return arg0;
 }
 
 M2C_UNK **func_020e57f0(M2C_UNK **arg0) {
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     extern M2C_UNK data_0212dba0;
     extern s32 data_02168ff4;
     *arg0 = &data_0212dba0;
     if (data_02168ff4 != 0) {
-        func_020e35cc();
+        HeapFreeBlock();
     }
     return arg0;
 }

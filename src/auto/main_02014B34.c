@@ -142,9 +142,9 @@ s32 func_02014d6c(void) {
 /* Select units by state into priority groups, then dispatch the matching network action. */
 void func_02015008(void) {
 extern void *gMbWork;
-void func_02007df8(s32,void *,s32); s32 func_02014af4(s32,u16); s32 StartGroupBattle(u16); s32 func_02014d6c(void);
+void FillU16(s32,void *,s32); s32 func_02014af4(s32,u16); s32 StartGroupBattle(u16); s32 func_02014d6c(void);
 u16 masks[5];u16 i; s32 result;
-func_02007df8(0,masks,10);
+FillU16(0,masks,10);
 for(i=1;i<=15;i++){
 switch(M2C_FIELD((u8 *)gMbWork+4*i,s32 *,0x14e4)){
 case 2:masks[0]|=1<<i;break;

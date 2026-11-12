@@ -332,7 +332,7 @@ void func_02077ebc(void) {
 }
 
 void func_02078068(void) {
-    M2C_UNK func_02007e98(M2C_UNK, void *, M2C_UNK);
+    M2C_UNK MI_CpuFill32(M2C_UNK, void *, M2C_UNK);
     u8 *GetPlayerSelectedUnit(s32);
     s32 func_020a334c(s32);
     s32 func_020d0468(s32, s32, s32);
@@ -354,7 +354,7 @@ void func_02078068(void) {
     selected = *(u16 *)(base + 0x52A4);
     width = *(u16 *)(base + 0x5144);
     height = *(u16 *)(base + 0x5146);
-    func_02007e98(0, data_02141008, 0x780);
+    MI_CpuFill32(0, data_02141008, 0x780);
     unit = GetPlayerSelectedUnit(selected);
     if (unit == 0) {
         return;

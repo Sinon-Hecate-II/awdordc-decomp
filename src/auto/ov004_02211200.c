@@ -33,13 +33,13 @@ void func_ov004_02211260(void) {
 void func_ov004_0221126c(M2C_UNK arg0) {
     M2C_UNK func_020834c4();
     M2C_UNK func_0208874c();
-    s32 func_020cd1e4();
+    s32 DidPlayerWin();
     s32 func_020e4b54();
     M2C_UNK func_ov004_02227ecc_unk(M2C_UNK);
     if (IsDialogActive() != 0) {
         return;
     }
-    if ((func_020cd1e4() != 0) && (func_020e4b54() != 0)) {
+    if ((DidPlayerWin() != 0) && (func_020e4b54() != 0)) {
         func_0208874c();
         func_ov004_02227ecc_unk(arg0);
         func_020834c4();

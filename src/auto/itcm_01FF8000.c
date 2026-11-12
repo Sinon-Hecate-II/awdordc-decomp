@@ -142,11 +142,11 @@ void func_01ff8554(s32 a, s32 b, s32 c, s32 d) {
 void AddToU16Array(u16 *p,s32 size,s32 add){u16 n=size>>1;u16 *q;u16 v;if(!n)return;do{q=p;v=*p++;*q=v+add;n--;}while(n);}
 
 void func_01ff85ec(void) {
-    M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x48) = 0;
     M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x4A) = 0;
-    func_02007e98(0xC0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x34), 0x400);
+    MI_CpuFill32(0xC0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x34), 0x400);
 }
 
 void func_01ff8624(s32 start, s32 end) {
@@ -190,7 +190,7 @@ void func_01ff873c(void) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
-    void func_02007ef4(void *, void *, s32);
+    void MI_CpuCopy32(void *, void *, s32);
     void func_01ff8624(s32, s32);
     void func_01ff85ec(void);
     void *saved = gCur3DSpriteEngine;
@@ -207,7 +207,7 @@ void func_01ff873c(void) {
         } else {
             dest = (void *)0x7000400;
         }
-        func_02007ef4(M2C_FIELD(p, void **, 0x34), dest, 0x400);
+        MI_CpuCopy32(M2C_FIELD(p, void **, 0x34), dest, 0x400);
         func_01ff8624(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48), 0);
         func_01ff85ec();
         i++;

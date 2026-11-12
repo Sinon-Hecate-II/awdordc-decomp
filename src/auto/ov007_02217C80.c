@@ -5,11 +5,11 @@ typedef struct MenuList007 { s32 first, second; s8 a,b,c,d,e; u8 alpha, flag, al
 #pragma push
 #pragma opt_propagation on
 static inline MenuList007 *InitMenuList007(MenuList007 *p, s32 count) {
- void *func_020e34bc(s32); void MI_CpuFill8(void *,s32,s32);
+ void *HeapAllocBlock(s32); void MI_CpuFill8(void *,s32,s32);
  s32 size=count*12;
  p->count=count;p->flag2=0;p->first=0;p->second=0;
  p->a=-1;p->b=-1;p->c=-1;p->d=-1;p->alpha=255;p->e=-1;p->flag=0;p->alpha2=255;
- p->buffer=func_020e34bc(size);MI_CpuFill8(p->buffer,0,size);
+ p->buffer=HeapAllocBlock(size);MI_CpuFill8(p->buffer,0,size);
  return p;
 }
 #pragma pop
@@ -404,12 +404,12 @@ void func_ov007_0221863c(void *arg0) {
     s32 func_ov007_02217c50(void *);
     void *MemAlloc(s32);
     M2C_UNK MemFree(void *);
-    M2C_UNK func_02087d18(M2C_UNK, s16, s16, s32, s32, s32, s32);
-    void *func_020e34bc(s32);
+    M2C_UNK AddSpriteCell(M2C_UNK, s16, s16, s32, s32, s32, s32);
+    void *HeapAllocBlock(s32);
     void MI_CpuFill8(void *, s32, s32);
-    void func_02007ef4(void *, void *, s32);
+    void MI_CpuCopy32(void *, void *, s32);
     void func_01ff9e44(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     s32 func_ov000_0216cda4(s32);
     void *func_ov000_0216cdcc(s32);
     void *func_ov000_0216cdec(s32, s32);
@@ -428,13 +428,13 @@ void func_ov007_0221863c(void *arg0) {
 
     r4 = M2C_FIELD(arg0, void **, 0x58);
     if (r4 != NULL) {
-        func_020e35cc(M2C_FIELD(r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(r4, s32 *, 0x14));
         MemFree(r4);
         M2C_FIELD(arg0, void **, 0x58) = NULL;
     }
     r4 = M2C_FIELD(arg0, void **, 0x5C);
     if (r4 != NULL) {
-        func_020e35cc(M2C_FIELD(r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(r4, s32 *, 0x14));
         MemFree(r4);
     }
     M2C_FIELD(arg0, void **, 0x5C) = NULL;
@@ -466,11 +466,11 @@ void func_ov007_0221863c(void *arg0) {
             s32 v0=func_ov000_0216cda4(table[0]);
             void *v1=func_ov000_0216cdcc(table[0]);
             void *v2=func_ov000_0216cdec(table[0],id);
-            func_02007ef4(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x100);
-            func_02007ef4((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+8)*32,0x200);
+            MI_CpuCopy32(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x100);
+            MI_CpuCopy32((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+8)*32,0x200);
             offset+=0x300; tile+=0x18;
             func_01ff9e44((s32)v2,((u8)table[3]+0x16)*32,0x20);
-            func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
+            AddSpriteCell((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
         table+=5;i++;
         } while(table[0]>=0);
         }
@@ -487,10 +487,10 @@ void func_ov007_0221863c(void *arg0) {
             variant=M2C_FIELD((u8 *)*gCurrentMap+i*140+0x6000,u8 *,0x7cd);
             v0=func_ov000_0216cd4c(table[0]);
             v1=GetUnitIconTiles(table[0],variant);
-            func_02007ef4(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x80);
-            func_02007ef4((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+4)*32,0x100);
+            MI_CpuCopy32(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x80);
+            MI_CpuCopy32((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+4)*32,0x100);
             offset+=0x180; tile+=12;
-            func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)j,14);
+            AddSpriteCell((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)j,14);
         table+=5;j++;
         } while(table[0]>=0);
         }
@@ -502,7 +502,7 @@ void func_ov007_0221863c(void *arg0) {
     if(func_ov007_02217c50(arg0)>0) {
         offset=8;
         do {
-        func_02087d18((s32)M2C_FIELD(arg0,void **,0x5c),(s16)offset,140,16,16,(u16)i,14);
+        AddSpriteCell((s32)M2C_FIELD(arg0,void **,0x5c),(s16)offset,140,16,16,(u16)i,14);
         i++;offset+=24;
         } while(i<func_ov007_02217c50(arg0));
     }
@@ -513,20 +513,20 @@ void func_ov007_0221863c(void *arg0) {
 void func_ov007_02218a60(void *arg0) {
     M2C_UNK MemFree(void *);
     M2C_UNK func_020a40c0(u8);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern void **gCurrentMap;
     void *temp_r4;
     void *temp_r4_2;
 
     temp_r4 = M2C_FIELD(arg0, void **, 0x58);
     if (temp_r4 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
         MemFree(temp_r4);
     }
     M2C_FIELD(arg0, void **, 0x58) = NULL;
     temp_r4_2 = M2C_FIELD(arg0, void **, 0x5C);
     if (temp_r4_2 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4_2, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4_2, s32 *, 0x14));
         MemFree(temp_r4_2);
     }
     M2C_FIELD(arg0, void **, 0x5C) = NULL;

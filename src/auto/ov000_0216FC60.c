@@ -35,7 +35,7 @@ void ScrollListNavigate(u8 *selection) {
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListDrawTabs(void *);
     s32 func_020b20e0(s32);
-    void *func_020b1c60(s32);
+    void *FocusSpriteSlotById(s32);
     s32 ScrollListScrollUp(void *);
     s16 ScrollListPageUp(void *);
     s32 ScrollListScrollDown(void *);
@@ -110,7 +110,7 @@ void ScrollListNavigate(u8 *selection) {
         }
     }
 done:
-    if (selected != *selection) selection = (u8 *) func_020b1c60(selected);
+    if (selected != *selection) selection = (u8 *) FocusSpriteSlotById(selected);
     if (gKeyState->repeat & KEY_L) {
         if (list->tab == 0) list->tab = 3;
         else list->tab = list->tab - 1;
@@ -185,7 +185,7 @@ void *GetScrollList(void) {
 void func_ov000_02170110(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02080c50(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -199,9 +199,9 @@ void func_ov000_02170110(void *arg0) {
     s32 func_020a8b3c(u8);
     s32 func_020ae22c(M2C_UNK);
     M2C_UNK func_020c0fac(void *);
-    M2C_UNK func_020e3058(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, void *, s32);
+    M2C_UNK CreateMenuTextSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, void *, s32);
     s32 GetLocalizedFileName(M2C_UNK *);
-    s32 func_020e34bc(M2C_UNK);
+    s32 HeapAllocBlock(M2C_UNK);
     s32 func_ov000_0216ce10(u8);
     s32 func_ov000_0216ce84(u8);
     s16 func_ov000_0216ec1c();
@@ -238,7 +238,7 @@ void func_ov000_02170110(void *arg0) {
         t();
     }
     func_020994e0(0);
-    M2C_FIELD(&data_ov000_021df5e4, s32 *, 4) = func_020e34bc(0x40);
+    M2C_FIELD(&data_ov000_021df5e4, s32 *, 4) = HeapAllocBlock(0x40);
     M2C_FIELD(arg0, s16 *, 0x3C) = func_ov000_0216ec1c();
     M2C_FIELD(arg0, s16 *, 0x34) = 0;
     M2C_FIELD(arg0, s16 *, 0x36) = 0;
@@ -259,13 +259,13 @@ void func_ov000_02170110(void *arg0) {
     CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov000_021b8b58, 0xC0, 0x20);
     ScrollListDrawTabs(arg0);
-    func_020e3058(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);
-    func_020e3058(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, zero);
+    CreateMenuTextSprite(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);
+    CreateMenuTextSprite(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, zero);
     func_020c0fac(arg0);
     func_02080c50(&data_ov000_021b8b64, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x7780);
     LoadFileToSpriteBuffer(&data_ov000_021b8b78, 0x380, 0x20);
     p = (void *) (M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x3880);
-    func_02007ef4(func_ov000_0216ce10(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
+    MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
     func_01ff9e44(func_ov000_0216ce84(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
     func_0208ca2c(0x6B80, 0xB, func_020ae22c(0xC), 2);
     func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), func_020a8b3c(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
@@ -390,8 +390,8 @@ void func_ov000_021703e8(void *arg0) {
 #pragma opt_common_subs off
 void func_ov000_0217074c(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_020cfd28();
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK RefreshMapView();
+    M2C_UNK HeapFreeBlock(s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021df5e4;
@@ -403,12 +403,12 @@ void func_ov000_0217074c(void) {
     next2 = *(void *volatile *)&g3DSpriteEngineMain;
     value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
     gCur3DSpriteEngine = next2;
-    func_020e35cc(value);
+    HeapFreeBlock(value);
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
-    func_020cfd28();
+    RefreshMapView();
     gCur3DSpriteEngine = temp_r4;
 }
 #pragma opt_common_subs reset

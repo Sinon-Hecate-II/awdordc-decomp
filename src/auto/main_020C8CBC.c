@@ -44,7 +44,7 @@ s32 n=GetMapRecordBuffer(),v,b;u32 c;void *p;func_020c79f8();p=func_020c7a08();b
 if(a>=225) b=(a<425);c=(b==0)?0:1;if(!c)return 0;
 v=func_020c8018(a);if(!func_020be324((u8)(v+9),n))return 0;
 if(!func_0207c368(p+6,33))return 0;
-func_02007ef4(p,data_02164d64+v*84,84,M2C_FIELD(p,u32 *,56)&=0xfffff001);
+MI_CpuCopy32(p,data_02164d64+v*84,84,M2C_FIELD(p,u32 *,56)&=0xfffff001);
 return 1;
 }
 
@@ -94,7 +94,7 @@ void func_020c8ea0(void *arg0) {
 
 #pragma optimization_level 2
 void func_020c8ed4(M2C_UNK arg0) { M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; func_01ffa3dc(&data_0212b07c,arg0); }
-s32 func_020c8eec(void) { s32 func_02007e98(s32,void *,s32); extern u8 data_02164d64[]; return func_02007e98(0,data_02164d64,0x41a0); }
+s32 func_020c8eec(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 data_02164d64[]; return MI_CpuFill32(0,data_02164d64,0x41a0); }
 
 s32 func_020c8f0c(s16 *dst,u8 *src) {
 s32 func_02019e64(s16 *,s32 *,u8 *,s32 *,s32); s32 func_02099ae8(u8 *); s32 func_02099b00(u8 *);

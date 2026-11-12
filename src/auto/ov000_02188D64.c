@@ -198,13 +198,13 @@ return 1;
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
  extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *gAiCommandState;
- void FloodFillUnitRange();void func_01ffb9c4();s32 CanKindAttack();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
+ void FloodFillUnitRange();void MarkAdjacentCells();s32 CanKindAttack();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
  unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
  FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
- func_01ffb9c4(111);
+ MarkAdjacentCells(111);
  map=*gCurrentMap;
  index=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
  if(index<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51){offset=index*14;do{

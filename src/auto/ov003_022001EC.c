@@ -32,7 +32,7 @@ void *DestroyOv003Object(Ov003Object *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
-    void func_020e35cc(s32);
+    void HeapFreeBlock(s32);
     void func_ov003_021f140c(s32);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     void *sub;
@@ -42,7 +42,7 @@ void *DestroyOv003Object(Ov003Object *obj) {
     obj->iface = &data_ov003_02210130;
     sub = obj->sub70;
     if (sub != NULL) {
-        func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
     child = obj->child44;
@@ -180,7 +180,7 @@ void func_ov003_022006dc(s32 arg0) {
     void SetPlayerIdForSlot(s32, s32);
     void func_020a232c(s32, s32);
     void func_020a2204(s32);
-    void func_02007e98(s32, void *, s32);
+    void MI_CpuFill32(s32, void *, s32);
     s8 func_020a2370(s32);
     s32 func_020a22fc(s32);
     s32 func_ov003_02200808(u32);
@@ -208,7 +208,7 @@ void func_ov003_022006dc(s32 arg0) {
         func_020a232c(4, 4);
     }
     func_020a2204(0);
-    func_02007e98(0, sp, 0x24);
+    MI_CpuFill32(0, sp, 0x24);
     r5 = 0;
     do {
         r6 = sp + r5;
@@ -249,7 +249,7 @@ s32 n=GetMapPlayerCount(arg1);s32 r;
 switch(arg0){case 1:return 3;case 3:return n+2;case 4:return 0;case 5:return 1;case 6:return 2;case 2:return n+5;case 7:case 8:case 9:case 10:case 11:if(!func_020c7ef4(arg1))return 13;r=func_020c80a4(arg1)?n+8:n+12;return (u16)r;default:case 0:break;}return 0;
 }
 
-s32 func_ov003_02200ae8(u32 a){switch(a){case 0:return 0;case 1:return 1;case 2:return 2;case 3:return 3;case 4:return 4;case 5:return 7;case 6:return 9;case 7:return 8;default:return -1;}}
+s32 GetIconGridRecordIndex(u32 a){switch(a){case 0:return 0;case 1:return 1;case 2:return 2;case 3:return 3;case 4:return 4;case 5:return 7;case 6:return 9;case 7:return 8;default:return -1;}}
 
 s32 func_ov003_02200b5c(u32 a){switch(a){case 0:return 15;case 1:return 16;case 2:return 17;case 3:return 18;case 4:return 19;case 5:return 22;case 6:return 23;case 7:return 24;default:return -1;}}
 

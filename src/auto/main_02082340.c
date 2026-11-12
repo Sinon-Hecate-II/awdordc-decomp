@@ -3,32 +3,45 @@
 #include "ds3dsprite.h"
 typedef struct { u8 entries[0x1800];u8 count; } Lists020830;
 
-/* Halfword attribute describing one 3D sprite tile; names are the bit offsets. */
+/* Packed attributes of one 3D sprite layer, as passed to Configure3DSpriteLayer.
+ * Field names are the bit offsets: f0 texture VRAM bank (4 bits), f4 palette
+ * (5), f9 layer size class (2), f11 two tile-map type bits the layer copies,
+ * then f13/f14 single flag bits; f15 is unused. */
 typedef struct { u16 f0:4; u16 f4:5; u16 f9:2; u16 f11:2; u16 f13:1; u16 f14:1; u16 f15:1; } SpriteAttr;
-/* Tile map entry the 3D sprite engine keeps for every sprite; names are the bit offsets. */
+/* Tile-map entry the 3D sprite engine keeps for every layer; names are the bit
+ * offsets. f2 is the texture VRAM bank, f8 the palette index and f14 the size
+ * class; f0/f6/f7/f13 are type and flag bits. */
 typedef struct { u16 f0:2; u16 f2:4; u16 f6:1; u16 f7:1; u16 f8:5; u16 f13:1; u16 f14:2; } SpriteTile;
-/* The engine's first entry has its own layout. */
+/* The engine's first entry has its own layout: f0 is the bank mode. */
 typedef struct { u16 f0:3; u16 f3:13; } SpriteHead;
 
 #pragma scheduling off
-void func_02082340(s32 arg0,SpriteAttr *arg1){
-void func_02007e98(s32,s32,s32);
-void func_02007ef4(s32,s32,s32);
-extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain;
-u8 b;u32 base;s32 v;u32 src;
-if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;
-if(b==1)base=0x06000000;else base=0x06200000;
-func_02082098(arg0,(u8)arg1->f0);
-func_02082104(arg0,(u8)arg1->f4);
-SetLayerSize(arg0,(u8)arg1->f9);
-((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f0=arg1->f11;
-((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f7=arg1->f13;
-((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f13=arg1->f14;
-func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine+arg0,s32 *,0xc),0x40);
-Clear3DSpriteLayer(arg0);
-v=Get3DSpriteLayerSize((u8)((SpriteHead *)*gCur3DSpriteEngine)->f0,arg0);
-src=base+((u32)((volatile SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f8<<11);
-func_02007ef4(M2C_FIELD(gCur3DSpriteEngine+arg0,volatile s32 *,0x20),src,v);
+/* Configures one 3D sprite layer from its packed attribute word: texture VRAM
+ * bank, palette, size class and tile-map flags, then uploads the layer's tile
+ * buffer to the layer's VRAM window. */
+void Configure3DSpriteLayer(s32 layer, SpriteAttr *attr) {
+    void MI_CpuFill32(s32, s32, s32);
+    void MI_CpuCopy32(s32, s32, s32);
+    extern void **gCur3DSpriteEngine;
+    extern void **g3DSpriteEngineMain;
+    u8 onMain;
+    u32 vramBase;
+    s32 size;
+    u32 src;
+
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) onMain = 1; else onMain = 0;
+    if (onMain == 1) vramBase = 0x06000000; else vramBase = 0x06200000;
+    Set3DSpriteLayerBank(layer, (u8)attr->f0);
+    Set3DSpriteLayerPalette(layer, (u8)attr->f4);
+    SetLayerSize(layer, (u8)attr->f9);
+    ((SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f0 = attr->f11;
+    ((SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f7 = attr->f13;
+    ((SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f13 = attr->f14;
+    MI_CpuFill32(0, M2C_FIELD(gCur3DSpriteEngine + layer, s32 *, 0xc), 0x40);
+    Clear3DSpriteLayer(layer);
+    size = Get3DSpriteLayerSize((u8)((SpriteHead *)*gCur3DSpriteEngine)->f0, layer);
+    src = vramBase + ((u32)((volatile SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f8 << 11);
+    MI_CpuCopy32(M2C_FIELD(gCur3DSpriteEngine + layer, volatile s32 *, 0x20), src, size);
 }
 #pragma scheduling on
 void func_020824cc(void) {
@@ -246,7 +259,7 @@ void func_02082cb4(void) {
    offset fields, clear its OAM buffer and per-engine offsets, then install the
    two engines' sprite list pointers. */
 void func_02082d08(void) {
-    void func_02007e98(s32, s32, s32);
+    void MI_CpuFill32(s32, s32, s32);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
     extern void *g3DSpriteBankMain;
@@ -272,7 +285,7 @@ void func_02082d08(void) {
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->oamEntries = (u16 *)data_0214e8dc;
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->spriteSrc = (u16 *)data_0214e0dc;
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->sprites = (void *)data_0214d2dc;
-    func_02007e98(0, (s32)((DS3DSpriteEngine *)g3DSpriteEngineMain)->oamBuffer, 0x400);
+    MI_CpuFill32(0, (s32)((DS3DSpriteEngine *)g3DSpriteEngineMain)->oamBuffer, 0x400);
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->offsetX = 0;
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->offsetY = 0;
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_40 = 0;
@@ -285,7 +298,7 @@ void func_02082d08(void) {
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamEntries = (u16 *)data_0214e4dc;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->spriteSrc = (u16 *)data_0214dcdc;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->sprites = (void *)data_0214c8dc;
-    func_02007e98(0, (s32)((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamBuffer, 0x400);
+    MI_CpuFill32(0, (s32)((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamBuffer, 0x400);
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->offsetX = 0;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->offsetY = 0;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_40 = 0;

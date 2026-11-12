@@ -84,11 +84,11 @@ M2C_UNK func_ov000_0216dd0c(void) {
 void func_ov000_0216e054(void) {
     extern void *data_ov000_021df5e0;
     M2C_UNK func_ov000_0216cee8(void);
-    M2C_UNK func_020b1c60(u8);
+    M2C_UNK FocusSpriteSlotById(u8);
     M2C_UNK func_ov000_0216cefc(void);
     M2C_UNK func_ov000_0216dd0c(void);
     func_ov000_0216cee8();
-    func_020b1c60(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xD));
+    FocusSpriteSlotById(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xD));
     func_ov000_0216cefc();
     M2C_FIELD(data_ov000_021df5e0, u8 *, 0x11) = 1 - M2C_FIELD(data_ov000_021df5e0, u8 *, 0x11);
     M2C_FIELD(data_ov000_021df5e0, s16 *, 0x14) = -1;

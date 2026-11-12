@@ -112,7 +112,7 @@ void func_ov001_0217a0d4(void) {
 #pragma opt_common_subs off
 void func_ov001_0217a17c(void) {
 void *func_ov001_0218a5f0(M2C_UNK, M2C_UNK);
-void func_ov001_0218a55c(M2C_UNK, M2C_UNK, M2C_UNK);
+void Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, M2C_UNK);
 extern M2C_UNK gMapSelectState;
 extern u8 data_ov001_0218f814[];
 extern u8 data_ov001_0218f818[];
@@ -128,11 +128,11 @@ if (cnt > 0) {
     } while (i < cnt);
 }
 for (i = 0; (u32)i < 3; i++) {
-func_ov001_0218a55c(0, (M2C_UNK)data_ov001_0218f814[i], ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4]);
+Ov001_LoadSpriteObjLayout(0, (M2C_UNK)data_ov001_0218f814[i], ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4]);
 ((u16 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4)))[0x21 + i] = *(u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4] + 4) & 0x3ff;
 }
 for (i = 0; (u32)i < 4; i++) {
-func_ov001_0218a55c(0, (M2C_UNK)data_ov001_0218f818[i], ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9]);
+Ov001_LoadSpriteObjLayout(0, (M2C_UNK)data_ov001_0218f818[i], ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9]);
 ((u16 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4)))[0x24 + i] = *(u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9] + 4) & 0x3ff;
 }
 for (i = 0; i < cnt; i++) {

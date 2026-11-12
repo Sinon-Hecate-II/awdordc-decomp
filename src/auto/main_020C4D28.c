@@ -57,10 +57,10 @@ void func_020c4dd0(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 void func_020c4de4(void *arg0) {
     M2C_UNK MI_CpuFill8(void *, s32, s32);
-    void *func_02076228(void);
-    s32 func_02076234(void);
-    s32 func_020761e0(u16);
-    s32 func_020761c0(u16, void *);
+    void *GetSaveRecordList(void);
+    s32 GetSaveRecordCount(void);
+    s32 GetSaveRecordSize(u16);
+    s32 LoadSaveRecord(u16, void *);
     typedef struct { s32 v[4]; } SaveDate;
     typedef struct { s32 v[3]; } SaveTime;
     extern const SaveDate data_020f4e48;
@@ -74,9 +74,9 @@ void func_020c4de4(void *arg0) {
     SaveTime d;
     SaveDate c;
 
-    p = func_02076228();
+    p = GetSaveRecordList();
     best = 0;
-    n = func_02076234();
+    n = GetSaveRecordCount();
     i = 0;
     if (n > 0) {
         do {
@@ -97,8 +97,8 @@ void func_020c4de4(void *arg0) {
         } while (i < n);
     }
     if (best) id = *(u16 *)best; else id = -1;
-    if (id != -1 && func_020761e0((u16)id) == 0x90) {
-        func_020761c0((u16)id, M2C_FIELD(arg0, void **, 0x34));
+    if (id != -1 && GetSaveRecordSize((u16)id) == 0x90) {
+        LoadSaveRecord((u16)id, M2C_FIELD(arg0, void **, 0x34));
         if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), s32 *, 0) == 0x07090600) {
             return;
         }
@@ -172,23 +172,26 @@ void func_020c5030(s32 arg0, s32 arg1) {
     }
 }
 
-void func_020c509c(void *arg0){
-M2C_UNK func_02007df8(s32,s32,s32);M2C_UNK MI_CpuFill8(void *,s32,s32);s32 func_020761c0(u16,void *);s32 func_020761e0(u16);
-void *func_02076228(void);s32 func_02076234(void);
-u8 *p,*best;s32 n,i,id,better;s32 j;void *dest,*base;
-p=func_02076228();best=0;n=func_02076234();i=0;
-if(n>0)do{if(p[2]==3){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));if(!better)goto next;}best=p;}next:i++;p+=40;}while(i<n);
+/* Restores the newest type-3 battle save into the save buffer at obj+0x34, or,
+ * when there is no complete one, fills in an empty block: the magic word, 60
+ * cleared slot summaries and 60 cleared slot records. */
+void LoadOrInitBattleSave(void *obj){
+M2C_UNK FillU16(s32,s32,s32);M2C_UNK MI_CpuFill8(void *,s32,s32);s32 LoadSaveRecord(u16,void *);s32 GetSaveRecordSize(u16);
+void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
+u8 *p,*best;s32 n,i,id,isNewer;s32 slot;void *slotRecord,*block;
+p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
+if(n>0)do{if(p[SAVE_RECORD_TYPE]==SAVE_TYPE_BATTLE){if(best){isNewer=IsNewerValue(M2C_FIELD(best,u32 *,SAVE_RECORD_TIME),M2C_FIELD(p,u32 *,SAVE_RECORD_TIME));if(!isNewer)goto next;}best=p;}next:i++;p+=SAVE_RECORD_STRIDE;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
-if(id!=-1 && func_020761e0((u16)id)==0xc34){
-func_020761c0((u16)id,M2C_FIELD(arg0,void **,52));
-if(M2C_FIELD(M2C_FIELD(arg0,void **,52),s32 *,0)==0x07090600)return;
+if(id!=-1 && GetSaveRecordSize((u16)id)==SAVE_BLOCK_SIZE){
+LoadSaveRecord((u16)id,M2C_FIELD(obj,void **,0x34));
+if(M2C_FIELD(M2C_FIELD(obj,void **,0x34),s32 *,0)==SAVE_BLOCK_MAGIC)return;
 }
-base=M2C_FIELD(arg0,void **,52);*(s32 *)base=0x07090600;MI_CpuFill8(base+4,0,0x2d0);
-j=0;dest=base+0x2d4;
-do{func_02007df8(0,dest,26);
-M2C_FIELD(base,s16 *,0x2ee)=0;M2C_FIELD(base,s16 *,0x2f0)=0;M2C_FIELD(base,s16 *,0x2f2)=0;
-M2C_FIELD(base,s8 *,0x2f4)=-1;M2C_FIELD(base,s8 *,0x2f5)=-2;j++;M2C_FIELD(base,s8 *,0x2f6)=-2;dest+=40;base+=40;
-}while(j<60);
+block=M2C_FIELD(obj,void **,0x34);*(s32 *)block=SAVE_BLOCK_MAGIC;MI_CpuFill8(block+SAVE_SUMMARIES_OFFSET,0,SAVE_SLOT_COUNT*SAVE_SLOT_SUMMARY_SIZE);
+slot=0;slotRecord=block+SAVE_RECORDS_OFFSET;
+do{FillU16(0,slotRecord,26);
+M2C_FIELD(block,s16 *,0x2ee)=0;M2C_FIELD(block,s16 *,0x2f0)=0;M2C_FIELD(block,s16 *,0x2f2)=0;
+M2C_FIELD(block,s8 *,0x2f4)=-1;M2C_FIELD(block,s8 *,0x2f5)=-2;slot++;M2C_FIELD(block,s8 *,0x2f6)=-2;slotRecord+=SAVE_SLOT_RECORD_SIZE;block+=SAVE_SLOT_RECORD_SIZE;
+}while(slot<SAVE_SLOT_COUNT);
 }
 
 void func_020c5230(M2C_UNK arg0) {
@@ -369,7 +372,7 @@ return result;
 }
 
 s32 func_020c5574(s32 arg0, M2C_UNK arg1) {
-M2C_UNK func_02007df8(M2C_UNK,s32,M2C_UNK);
+M2C_UNK FillU16(M2C_UNK,s32,M2C_UNK);
 M2C_UNK MI_CpuCopy8(M2C_UNK,s32,u32);
 s32 func_020c54b8(void);s32 func_020c54e8(M2C_UNK);s32 func_020c4b60(void);
 void *p;
@@ -377,7 +380,7 @@ if(func_020c54b8()==0)return -1;
 if(func_020c54e8(arg1)!=0)return -1;
 p=(void*)func_020c4b60();if(!p)return -1;
 MI_CpuCopy8(arg1,p+4+arg0*12,12);
-{ s32 offset=arg0*0x28;func_02007df8(0,p+0x2d4+offset,0x1a);
+{ s32 offset=arg0*0x28;FillU16(0,p+0x2d4+offset,0x1a);
 {void *q=p+offset;
 M2C_FIELD(q,s16 *,0x2ee)=0;M2C_FIELD(q,s16 *,0x2f0)=0;M2C_FIELD(q,s16 *,0x2f2)=0;
 M2C_FIELD(q,s8 *,0x2f4)=-1;M2C_FIELD(q,s8 *,0x2f5)=-2;M2C_FIELD(q,s8 *,0x2f6)=-2;}}
@@ -413,7 +416,7 @@ p=func_020c52ec(arg0);
 if(p && func_02032380(p)) {
 func_0203a910(p);
 off=arg0*0x28;
-func_02007df8(result,base+0x2d4+off,0x1a);
+FillU16(result,base+0x2d4+off,0x1a);
 p=base+off;
 M2C_FIELD(p,s16 *,0x2ee)=result;
 M2C_FIELD(p,s16 *,0x2f0)=result;
@@ -676,16 +679,16 @@ s32 func_020c5cac(void) {
 }
 
 s32 func_020c5cd4(void) {
-    extern u8 data_02168f0c;
-    if (data_02168f0c != 0) {
+    extern u8 gBattleEndState;
+    if (gBattleEndState != 0) {
         return 0;
     }
     return 2;
 }
 
 s32 func_020c5cf0(void) {
-extern u8 data_02168f0c;
-if(data_02168f0c) return 2;
+extern u8 gBattleEndState;
+if(gBattleEndState) return 2;
 return 0;
 }
 

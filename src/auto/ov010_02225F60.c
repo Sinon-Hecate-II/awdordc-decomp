@@ -123,11 +123,11 @@ s32 AllocAlignedBuffer() {
 }
 
 void FreeBuffer(s32 arg0) {
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     if (arg0 == 0) {
         return;
     }
-    func_020e35cc();
+    HeapFreeBlock();
 }
 
 M2C_UNK func_ov010_02226114(M2C_UNK arg0) {
@@ -503,9 +503,9 @@ void func_ov010_022268f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 M2C_UNK func_ov010_02226908(M2C_UNK arg0, s32 arg1, s32 arg2) {
- M2C_UNK func_020e35cc();
+ M2C_UNK HeapFreeBlock();
  if(arg1 == 0) return;
- func_020e35cc(arg1);
+ HeapFreeBlock(arg1);
 }
 
 void func_ov010_02226920(void *arg0) {
@@ -573,7 +573,7 @@ extern "C" s32 func_ov010_02226be8(s32 a) {
 }
 #pragma cplusplus off
 void func_ov010_02226c68(void *arg0) {
-s32 func_02001fb4(s32,s32);s32 Divide(s32,s32);s32 func_02038f34(u8);void func_02038438(void);
+s32 func_02001fb4(s32,s32);s32 Divide(s32,s32);s32 IsConnectionActive(u8);void func_02038438(void);
 s32 func_ov010_02226be8(s32);void func_ov010_02227bc8(u8);void func_ov010_0222972c(s32,void *,s32,u16);s32 func_ov010_02229a08(void);s32 func_ov010_02229a24(void);
 s32 t,n,limit,raw;u16 mask;u8 i;
 t=func_02001fb4(0x3e8000,0x3c000);
@@ -588,7 +588,7 @@ M2C_FIELD(arg0,s32 *,0x34)=0;
 }
 limit=Divide(0x1b7740,1000);i=0;
 do{
-if(func_02038f34(i)){
+if(IsConnectionActive(i)){
 {void *entry=arg0+i*4;n=M2C_FIELD(entry,s32 *,0x38)+1;M2C_FIELD(entry,s32 *,0x38)=n;}
 if(n>limit){func_ov010_02227bc8(i);((s32 *)(arg0+0x38))[i]=0;}
 }else ((s32 *)(arg0+0x38))[i]=0;

@@ -286,10 +286,10 @@ void func_ov005_022119d8(void) {
 void func_ov005_022119e4(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 func_020c80ec(u16);
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
     extern void **gCurrentMap;
     extern M2C_UNK data_ov005_022200a0;
-    if (data_02168f0c != 0) {
+    if (gBattleEndState != 0) {
         return;
     }
     if (func_020c80ec(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) == 0) {

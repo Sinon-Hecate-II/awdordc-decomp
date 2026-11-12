@@ -24,8 +24,8 @@ int func_ov003_02200a18(int,int);
 int func_020a8958(int);
 int func_020830a8(int);
 int func_020a8a84(int);
-void func_020a92bc(void *,int);
-void func_020a94fc(void *);
+void SetTextSpriteValue(void *,int);
+void DrawTextSprite(void *);
 int func_ov003_021f400c(void);
 int IsLinkSessionActive(void);
 void *func_020c7e88(int);
@@ -88,12 +88,12 @@ index=(s16)((s16)M2C_FIELD(M2C_FIELD(p,void **,76),s32 *,20)+1);
 }else if(Unk021F9FE0Eq(mode,1)) index=func_020a8a84(M2C_FIELD(p,u16 *,60));
 mode=(u32)(p[59]<<28)>>28;
 if(!Unk021F9FE0Eq(mode,5)){
-func_020a92bc(M2C_FIELD(p,void **,80),index);
+SetTextSpriteValue(M2C_FIELD(p,void **,80),index);
 q=M2C_FIELD(p,u8 **,80);q[40]&=~224;
 q=M2C_FIELD(p,u8 **,80);M2C_FIELD(q,s16 *,6)=b+36;M2C_FIELD(q,s16 *,8)=28;
 M2C_FIELD(M2C_FIELD(p,void **,80),u16 *,18)=600;
 M2C_FIELD(p,u8 **,80)[33]=9;
-func_020a94fc(M2C_FIELD(p,void **,80));
+DrawTextSprite(M2C_FIELD(p,void **,80));
 }
 
 mode=(u32)(p[59]<<28)>>28;
@@ -116,15 +116,15 @@ AddSprite(drawX,40,(u16)(((tile>>shift)&1023)|(paletteBits>>16)|0x800),gSpriteDe
 case 1:
 v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<6)>>23;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
-func_020a92bc(M2C_FIELD(p,void **,84),v);
+SetTextSpriteValue(M2C_FIELD(p,void **,84),v);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=59;
-func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
+DrawTextSprite(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 case 2:
 v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<15)>>22;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
-func_020a92bc(M2C_FIELD(p,void **,84),v);
+SetTextSpriteValue(M2C_FIELD(p,void **,84),v);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=69;
-func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
+DrawTextSprite(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 }
 }
 }
@@ -140,9 +140,9 @@ case 0:break;
 case 1:
 glyph=((u32)M2C_FIELD(r,u32 *,12)<<4)>>22;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
-func_020a92bc(M2C_FIELD(p,void **,84),glyph);
+SetTextSpriteValue(M2C_FIELD(p,void **,84),glyph);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=59;
-func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
+DrawTextSprite(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 case 2:
 M2C_FIELD(p,u8 **,84)[41]=2;
 for(j=0;j<3;j++){
@@ -164,9 +164,9 @@ else if(j==2)glyph=(u32)(M2C_FIELD(r,s32 *,8)<<24)>>24;
 break;
 }
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
-func_020a92bc(M2C_FIELD(p,void **,84),(s16)glyph);
+SetTextSpriteValue(M2C_FIELD(p,void **,84),(s16)glyph);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=j*22+b+20;M2C_FIELD(q,s16 *,8)=69;
-func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;
+DrawTextSprite(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;
 }
 M2C_FIELD(p,u8 **,84)[41]=0;break;
 }

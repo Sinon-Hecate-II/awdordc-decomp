@@ -61,12 +61,12 @@ return 0;
 }
 #pragma opt_common_subs off
 void func_0203367c(s32 arg0) {
-    M2C_UNK func_02006564(s32);
-    M2C_UNK func_020065e8(void *);
+    M2C_UNK LockMutex(s32);
+    M2C_UNK UnlockMutex(void *);
     extern M2C_UNK gNasConnection;
-    func_02006564(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
+    LockMutex(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
     M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, 0x1004) = arg0;
-    func_020065e8(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
+    UnlockMutex(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
 }
 
 void func_020336c0(s32 arg0) {
@@ -243,13 +243,13 @@ void func_02033e80(void *arg0, s32 arg1) {
     void func_02005ac0(void *, void *, void *, void *, s32, s32);
     s32 func_02005d90(void *);
     void TaskWake(void *);
-    void func_0200654c(void *);
+    void InitMutex(void *);
     extern s32 data_0213d134;
     extern u8 func_02034164[];
     s32 var_r1;
     M2C_FIELD(arg0,s32 *,0x1c10)=0;
-    func_0200654c(arg0+0x1bf8);
-    func_0200654c(arg0+0x1a18);
+    InitMutex(arg0+0x1bf8);
+    InitMutex(arg0+0x1a18);
     if(M2C_FIELD(arg0,s32 *,0x1018)==1) data_0213d134=1; else data_0213d134=0;
     if(M2C_FIELD(arg0,s32 *,0x1ba4)!=0 && func_02005d90(arg0+0x1b38)==0) return;
     func_02005ac0(arg0+0x1b38,func_02034164,arg0,arg0+0x1000,0x1000,arg1);
@@ -261,9 +261,9 @@ void func_02033f3c(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x1000) != 0xFF) {
         return;
     }
-    func_02006564(arg0 + 0x1BF8);
+    LockMutex(arg0 + 0x1BF8);
     M2C_FIELD(arg0, s32 *, 0x1C10) = 1;
-    func_020065e8(arg0 + 0x1BF8);
+    UnlockMutex(arg0 + 0x1BF8);
     if (M2C_FIELD(arg0, s32 *, 0x1BA4) == 0) {
         return;
     }
@@ -278,11 +278,11 @@ s32 func_02033f98(void *arg0) {
         func_02007888(arg0+0x19d4);
         func_020241f0(arg0+0x19d4,0x20);
     }
-    func_02006564(arg0+0x1bf8);
+    LockMutex(arg0+0x1bf8);
     if(M2C_FIELD(arg0,s32 *,0x1c10)==1) {
-        func_020065e8(arg0+0x1bf8); return 0;
+        UnlockMutex(arg0+0x1bf8); return 0;
     }
-    func_020065e8(arg0+0x1bf8);
+    UnlockMutex(arg0+0x1bf8);
     func_02006030(10);
     return 1;
 }
@@ -310,17 +310,17 @@ s8 ch;void *hdr; s8 *p,*end; s32 len; s8 *q;
 p=M2C_FIELD(a,s8 **,0x1a08);hdr=(u8 *)a+0x1a08;
 if(StringFind((s32)p,data_020fb59c)==0)return 0;
 p=(s8 *)(StringFind((s32)p,data_020fb59c)+4);
-func_02006564(a+0x1a18);
+LockMutex(a+0x1a18);
 M2C_FIELD(a,s32 *,0x1a34)=M2C_FIELD(hdr,s8 **,4)-p;
-func_020065e8(a+0x1a18);
+UnlockMutex(a+0x1a18);
 q=(s8 *)StringFind(M2C_FIELD(hdr,s32 *,0),&data_020fb5b8);
 if(q==NULL)return 1;
 len=StringLength(&data_020fb5b8);
 end=(s8 *)StringFind((s32)(q+len),&data_020fb5cc);
 ch=*end;*end=0;
-func_02006564(a+0x1a18);
+LockMutex(a+0x1a18);
 M2C_FIELD(a,s32 *,0x1a30)=ParseInt(q+len);
-func_020065e8(a+0x1a18);
+UnlockMutex(a+0x1a18);
 *end=ch;return 1;
 }
 

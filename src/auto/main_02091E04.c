@@ -420,9 +420,9 @@ s32 func_020925e4(void *arg0) {
 
 s32 func_02092608(void *arg0) {
 extern void **gCurrentMap;
-s32 func_020a6658(s32,s32,s32,s32);void func_020cfd28(s32);
+s32 func_020a6658(s32,s32,s32,s32);void RefreshMapView(s32);
 void *p=M2C_FIELD(arg0,void **,4);
-func_020cfd28(func_020a6658(M2C_FIELD(p,s16 *,8),M2C_FIELD(p,s16 *,10),M2C_FIELD(p,s32 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
+RefreshMapView(func_020a6658(M2C_FIELD(p,s16 *,8),M2C_FIELD(p,s16 *,10),M2C_FIELD(p,s32 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
@@ -449,32 +449,35 @@ do {if(i!=n)func_020947d0((u8 *)&data_02157fe8+i*24);i++;}while(i<8);
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
-s32 func_020926f8(s32 arg0) {
+/* Open a full-screen message box showing the localized text `textId`: reset the
+ * text and sprite engines, then create the message sprite on each screen the
+ * current 3D-sprite target requires. Returns 1 when the text could not be set up. */
+s32 ShowMessageText(s32 textId) {
  s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
  s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
  u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 func_02091f18(s32);
- s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
+ s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK func_0209707c(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
- s32 saved; void *old; s32 r10,r9; void *r8,*r7,*r6,*r5ptr,*tmp,*result; u32 sp8;
- saved=GetLocalizedText(arg0);
+ s32 text; void *savedEngine; s32 screen,style; void *managerA,*managerB,*layerA,*layerB,*layerC,*sprite; u32 attr;
+ text=GetLocalizedText(textId);
  func_02099e10(); func_020943e0(); Reset3DSpriteEngines();
- if(func_02099dcc(saved)==0){func_02095ff8(3);} if(func_0209600c()!=0)goto abort;
- old=gCur3DSpriteEngine;
- for(r10=0;r10<2;r10++){
- if(r10==0)gCur3DSpriteEngine=g3DSpriteEngineMain;else gCur3DSpriteEngine=g3DSpriteEngineSub;
+ if(func_02099dcc(text)==0){func_02095ff8(3);} if(func_0209600c()!=0)goto abort;
+ savedEngine=gCur3DSpriteEngine;
+ for(screen=0;screen<2;screen++){
+ if(screen==0)gCur3DSpriteEngine=g3DSpriteEngineMain;else gCur3DSpriteEngine=g3DSpriteEngineSub;
  if(Get3DSpriteTarget()==0 && gCur3DSpriteEngine!=g3DSpriteEngineMain)goto next;
  if(Get3DSpriteTarget()==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)goto next;
- if(Get3DSpriteTarget()==3 && gCur3DSpriteEngine!=old)goto next;
- r9=func_02091e70(2); r8=(void *)Get3DSpriteManager();r7=(void *)Get3DSpriteManager();
- r6=(void *)func_02091f18(2);r5ptr=(void *)func_02091f18(2);tmp=(void *)func_02091f18(2);
- sp8=M2C_FIELD(r5ptr,u8 *,6);sp8=sp8<<28;sp8=sp8>>16;
- result=(void *)func_0209bd60((s16)r9,1,M2C_FIELD(r8,u8 *,0x4c),
- M2C_FIELD((u8 *)gCur3DSpriteEngine+(M2C_FIELD(r7,u8 *,0x4c)<<2),u32 *,12),
- M2C_FIELD(r6,u32 *,0),saved,(u16)sp8,M2C_FIELD(tmp,u16 *,4));
+ if(Get3DSpriteTarget()==3 && gCur3DSpriteEngine!=savedEngine)goto next;
+ style=func_02091e70(2); managerA=(void *)Get3DSpriteManager();managerB=(void *)Get3DSpriteManager();
+ layerA=(void *)func_02091f18(2);layerB=(void *)func_02091f18(2);layerC=(void *)func_02091f18(2);
+ attr=M2C_FIELD(layerB,u8 *,6);attr=attr<<28;attr=attr>>16;
+ sprite=(void *)CreateMessageSprite((s16)style,1,M2C_FIELD(managerA,u8 *,0x4c),
+ M2C_FIELD((u8 *)gCur3DSpriteEngine+(M2C_FIELD(managerB,u8 *,0x4c)<<2),u32 *,12),
+ M2C_FIELD(layerA,u32 *,0),text,(u16)attr,M2C_FIELD(layerC,u16 *,4));
  next:;
  }
- gCur3DSpriteEngine=old;M2C_FIELD(result,void (**)(void),0x50)=(void(*)(void))func_0209707c;
+ gCur3DSpriteEngine=savedEngine;M2C_FIELD(sprite,void (**)(void),0x50)=(void(*)(void))func_0209707c;
  return 0;
 abort: return 1;
 }
@@ -493,8 +496,8 @@ void func_020928a0(void *arg0) {
 }
 
 s32 func_020928bc(M2C_UNK arg0,s32 arg1) {
-s32 func_020926f8(s32);void func_020928a0(void *);
-s32 v=func_020926f8(arg1);
+s32 ShowMessageText(s32);void func_020928a0(void *);
+s32 v=ShowMessageText(arg1);
 if(v==0)M2C_FIELD(arg0,void (**)(void *),8)=func_020928a0;
 M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }

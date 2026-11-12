@@ -291,7 +291,7 @@ base=*gCurrentMap;
 }
 }
 
-void func_01ffb9c4(s8 arg0){
+void MarkAdjacentCells(s8 arg0){
 extern void **gCurrentMap;
 s32 y,x;void *base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){

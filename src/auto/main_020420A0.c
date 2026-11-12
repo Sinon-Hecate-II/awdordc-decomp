@@ -176,7 +176,7 @@ s32 UpdateConnectionSyncTimers(void) {
 #pragma opt_strength_reduction reset
 u8 func_020427b4(void){extern u8 gSessionPlayers[];u8 i=0;do{if(gSessionPlayers[i*12]==0)return i+100;i++;}while(i<154);return 0;}
 
-void func_020427f4(void){extern u8 gSessionPlayers[];void HeapFree(s32,s32,s32);void func_02007e54(s32,void *,s32);s32 i=0;u8 *p=gSessionPlayers;do{if(M2C_FIELD(p,s32 *,4))HeapFree(4,M2C_FIELD(p,s32 *,4),0);i++;p+=12;}while(i<154);func_02007e54(0,gSessionPlayers,0x738);}
+void ClearSessionPlayers(void){extern u8 gSessionPlayers[];void HeapFree(s32,s32,s32);void func_02007e54(s32,void *,s32);s32 i=0;u8 *p=gSessionPlayers;do{if(M2C_FIELD(p,s32 *,4))HeapFree(4,M2C_FIELD(p,s32 *,4),0);i++;p+=12;}while(i<154);func_02007e54(0,gSessionPlayers,0x738);}
 
 u8 func_0204284c(void){void *GetConnection(void);u8 i=0;s32 j;do{for(j=0;j<=M2C_FIELD(GetConnection(),u8 *,20);j++){if(i==M2C_FIELD((u8 *)GetConnection()+j,u8 *,0x2d0))break;}if(j>M2C_FIELD(GetConnection(),u8 *,20))break;i++;}while(i<32);return i;}
 

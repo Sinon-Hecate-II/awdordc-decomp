@@ -7,7 +7,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_0207c780(s32, s32);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -36,7 +36,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK func_020ae528(s32);
     M2C_UNK DrawMapPreview(s32, s32, M2C_UNK, M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     M2C_UNK func_020e4cd8(s32, s32, s32, M2C_UNK, s32, s32, s32);
     M2C_UNK func_ov000_0216a30c(s32, s32, M2C_UNK);
     M2C_UNK func_ov000_0216a470();
@@ -193,7 +193,7 @@ void func_ov003_021e5118(void *arg0) {
     func_0208ca2c(0x5100, 0xA, func_020ae22c(0xA), 1);
     temp_r0_3 = func_02080e30(GetLocalizedFileName(&data_ov003_0220f868), 1);
     func_0207c780(temp_r0_3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
-    func_020e35cc(temp_r0_3);
+    HeapFreeBlock(temp_r0_3);
     LoadFileToSpriteBuffer(&data_ov003_0220f87c, 0x2C0, 0x20);
     func_020a9a30(1, 0, 4, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x6500);
     func_020a9a30(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x360);
@@ -203,7 +203,7 @@ void func_ov003_021e5118(void *arg0) {
     var_r4 = 0;
     do {
         temp_r8 = M2C_FIELD(data_027e01d8, s32 *, 0x1C) + ((u32) (((var_r4 * 8) + 0x210) << 0x10) >> 0xB);
-        func_02007ef4(func_ov000_0216cdcc(func_ov003_02200b5c(var_r4)), temp_r8, 0x100);
+        MI_CpuCopy32(func_ov000_0216cdcc(func_ov003_02200b5c(var_r4)), temp_r8, 0x100);
         var_r4 += 1;
     } while ((u32) var_r4 <= 7U);
     func_01ff9e44(func_ov000_0216cdec(0xF, 0), 0x2E0, 0x20);
@@ -213,9 +213,9 @@ void func_ov003_021e5118(void *arg0) {
     data_027e01d8 = temp_r5_2;
 }
 
-void func_ov003_021e5c98(void *,s16,s16);
+void Ov003_DrawUnitCategoryGrid(void *,s16,s16);
 void func_ov003_021e583c(void *a) {
-void AddSprite(u16,u8,u16,void *,s32);void UpdateSpriteAnimation(s32);s16 GetSpriteAnimValue(s32);void func_020a94fc(void *);void func_ov000_0216a374(u16,s32,u16,s32);s32 func_ov003_021e50e0(s16,s32,s32,s32);void func_ov003_021e5e24(void *,s16,s16);
+void AddSprite(u16,u8,u16,void *,s32);void UpdateSpriteAnimation(s32);s16 GetSpriteAnimValue(s32);void DrawTextSprite(void *);void func_ov000_0216a374(u16,s32,u16,s32);s32 func_ov003_021e50e0(s16,s32,s32,s32);void func_ov003_021e5e24(void *,s16,s16);
 extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern u8 gSpriteDesc16x16[],data_027e00ac[],data_ov003_0220f61c[];
 u16 **old; s32 i; s16 pos; s32 x,scroll; s16 scroll2;u16 neg;
 if(!M2C_FIELD(a,u8 *,0x39))return;
@@ -226,13 +226,13 @@ M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x3e)=neg;
 i=0;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x46)=0;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=neg;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
 M2C_FIELD(M2C_FIELD(a,void **,0x58),s16 *,6)=scroll+0xab;
-if(M2C_FIELD(M2C_FIELD(a,void **,0x58),s32 *,0x1c))func_020a94fc(M2C_FIELD(a,void **,0x58));
+if(M2C_FIELD(M2C_FIELD(a,void **,0x58),s32 *,0x1c))DrawTextSprite(M2C_FIELD(a,void **,0x58));
 else {x=0xab;do {pos=x;if(func_ov003_021e50e0(pos,0x80,0x20,0x20))AddSprite((scroll+pos)&0x1ff,0x80,(u16)((0x3ff&(0x2ec>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x8000),data_027e00ac,11);x+=0x22;i++;}while(i<2);}
 AddSprite((scroll+0xc5)&0x1ff,0x8e,(u16)((0x3ff&(0x288>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x6000),gSpriteDesc16x16,11);
 AddSprite(0,(u8)(u32)GetSpriteAnimValue(M2C_FIELD(a,s32 *,0x44)),(u16)((0x3ff&(0x28c>>((**gCur3DSpriteEngine>>13)&3)))|0x8c00),data_ov003_0220f61c,11);
 func_ov000_0216a374((scroll+0x30)&0x1ff,0x38,(u16)((0x3ff&(0x2fc>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x9000),11);
 gCur3DSpriteEngine=g3DSpriteEngineSub;scroll2=GetSpriteAnimValue(M2C_FIELD(a,s32 *,0x3c));
-func_ov003_021e5e24(a,scroll2,0);func_ov003_021e5c98(a,scroll2,0);
+func_ov003_021e5e24(a,scroll2,0);Ov003_DrawUnitCategoryGrid(a,scroll2,0);
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3e)=-44-scroll2;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x46)=0xffe9;gCur3DSpriteEngine=old;
 }
 
@@ -296,31 +296,55 @@ void func_ov003_021e5c8c(void) {
     func_01ffa6fc();
 }
 
-void func_ov003_021e5c98(void *arg0,s16 arg1,s16 arg2){
-void AddSprite(u16,u8,u16,void *,s32);s32 Divide(s32,s32);s32 Modulo(s32,s32);
-void func_020a92bc(void *,s16);void func_020a94fc(void *);s32 func_020c1980(void *,s32,s32);s32 func_ov003_02200ae8(u8);
-extern u8 gSpriteDesc16x32[];extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;
-s32 sp14,sp10,spC,sp8,sp4; s16 x,y,value;void *p; s32 i,palette,tile;u16 **old;
-sp4=arg1;
-M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3a)=-arg1;
-i=0;tile=0x210;sp8=arg2;
-M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x42)=0;
-spC=-1;sp14=0x1ff;sp10=0x3ff;
-do{
-x=Modulo(i,3)*22+sp4;
-y=Divide(i,3)*28+sp8;
-p=M2C_FIELD(arg0,void **,0x68);
-value=func_020c1980((u8 *)p+4,func_ov003_02200ae8(i),spC);
-if(value){
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_020a92bc(M2C_FIELD(arg0,void **,0x50),value);
-p=M2C_FIELD(arg0,void **,0x50);
-M2C_FIELD(p,s16 *,6)=x+20;M2C_FIELD(p,s16 *,8)=y+102;
-func_020a94fc(M2C_FIELD(arg0,void **,0x50));gCur3DSpriteEngine=old;
-}
-palette=value?7:8;
-AddSprite((x+4)&sp14,y+78,(sp10&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|(u16)(palette<<12)|0x400,gSpriteDesc16x32,17);
-tile+=8;i++;
-}while(i<8);
+/* Draws the eight unit-category icons of the ov003 map-info screen in a
+ * three-column grid and prints, in front of each icon, how many units of that
+ * category are on the current map (summed over all player bands). */
+void Ov003_DrawUnitCategoryGrid(void *arg0, s16 arg1, s16 arg2) {
+    void AddSprite(u16, u8, u16, void *, s32);
+    s32 Divide(s32, s32);
+    s32 Modulo(s32, s32);
+    void SetTextSpriteValue(void *, s16);
+    void DrawTextSprite(void *);
+    s32 GetUnitCategoryCount(void *, s32, s32);
+    s32 GetIconGridRecordIndex(u8);
+    extern u8 gSpriteDesc16x32[];
+    extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineSub;
+    s32 xMask, tileMask, allPlayers, baseY, baseX;
+    s16 x, y, count;
+    void *ptr;
+    s32 i, palette, tile;
+    u16 **savedEngine;
+
+    baseX = arg1;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x3A) = -arg1;
+    i = 0;
+    tile = 0x210;
+    baseY = arg2;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
+    allPlayers = -1;
+    xMask = 0x1FF;
+    tileMask = 0x3FF;
+    do {
+        x = Modulo(i, 3) * 22 + baseX;
+        y = Divide(i, 3) * 28 + baseY;
+        ptr = M2C_FIELD(arg0, u8 **, OV003_UNIT_COUNT_GRID);
+        count = GetUnitCategoryCount((u8 *)ptr + 4, GetIconGridRecordIndex(i), allPlayers);
+        if (count) {
+            savedEngine = gCur3DSpriteEngine;
+            gCur3DSpriteEngine = g3DSpriteEngineSub;
+            SetTextSpriteValue(M2C_FIELD(arg0, void **, OV003_UNIT_COUNT_TEXT), count);
+            ptr = M2C_FIELD(arg0, void **, OV003_UNIT_COUNT_TEXT);
+            M2C_FIELD(ptr, s16 *, 6) = x + 20;
+            M2C_FIELD(ptr, s16 *, 8) = y + 102;
+            DrawTextSprite(M2C_FIELD(arg0, void **, OV003_UNIT_COUNT_TEXT));
+            gCur3DSpriteEngine = savedEngine;
+        }
+        palette = count ? 7 : 8;
+        AddSprite((x + 4) & xMask, y + 78,
+            (tileMask & (tile >> ((u32)(**gCur3DSpriteEngine << 17) >> 30))) | (u16)(palette << 12) | 0x400,
+            gSpriteDesc16x32, 17);
+        tile += 8;
+        i++;
+    } while (i < 8);
 }
 

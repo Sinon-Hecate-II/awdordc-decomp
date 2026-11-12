@@ -191,7 +191,7 @@ void *func_ov005_0221fdb0(void *arg0) {
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220f54;
     temp_r4 = M2C_FIELD(arg0, void **, 0x34);
     if (temp_r4 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
         MemFree(temp_r4);
     }
     MemFree(arg0);
@@ -205,7 +205,7 @@ void *func_ov005_0221fdf0(void *arg0) {
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220f54;
     temp_r4 = M2C_FIELD(arg0, void **, 0x34);
     if (temp_r4 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
         MemFree(temp_r4);
     }
     return arg0;
@@ -304,7 +304,7 @@ void *func_ov005_0221ff98(void *arg0) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK data_ov005_02220fe0;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220fe0;
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x34));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
     MemFree(arg0);
     return arg0;
 }
@@ -312,7 +312,7 @@ void *func_ov005_0221ff98(void *arg0) {
 void *func_ov005_0221ffc4(void *arg0) {
     extern M2C_UNK data_ov005_02220fe0;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220fe0;
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x34));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
     return arg0;
 }
 

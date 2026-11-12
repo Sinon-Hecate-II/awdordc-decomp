@@ -379,7 +379,7 @@ extern void *gKeyState;
 s32 old=*arg1; s32 value=old; u16 keys=M2C_FIELD(gKeyState,u16 *,2);
 if(keys&0x40) {if(old==0){if(keys!=M2C_FIELD(gKeyState,u16 *,0))return;value=M2C_FIELD(arg0,u8 *,0x4d);}value--;}
 else if(keys&0x80){if(old==M2C_FIELD(arg0,u8 *,0x4d)-1){if(keys!=M2C_FIELD(gKeyState,u16 *,0))return;value=-1;}value++;}
-if(value!=old){func_020b1c60(value);M2C_FIELD(arg0,u8 *,0x4e)=value;}
+if(value!=old){FocusSpriteSlotById(value);M2C_FIELD(arg0,u8 *,0x4e)=value;}
 else if(M2C_FIELD(gKeyState,u16 *,0)&1)func_020b2e14(arg1);
 else if(M2C_FIELD(gKeyState,u16 *,0)&2)func_020b2e2c();
 }
@@ -428,7 +428,7 @@ M2C_UNK func_020c0e94(void *p) {
 extern M2C_UNK data_02129608;
 void *func_020b22a4(s32,s32,M2C_UNK *,s32);
 s32 func_0207c1b4(s32); s32 func_0207c1d8(s32);
-M2C_UNK func_020b1c60(); M2C_UNK func_020b204c();
+M2C_UNK FocusSpriteSlotById(); M2C_UNK func_020b204c();
 s32 i,y; y=0; i=y;
 for(;i<M2C_FIELD(p,u8 *,0x4d);i++) {
 void *q=func_020b22a4(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56)+y*8,&data_02129608,i);
@@ -437,7 +437,7 @@ s32 h=func_0207c1d8(i);
 M2C_FIELD(q,s16 *,0x18)=w;M2C_FIELD(q,s16 *,0x1a)=h;
 M2C_FIELD(q,void **,0x10)=p;y+=h>>3;
 }
-func_020b1c60(M2C_FIELD(p,u8 *,0x4e));func_020b204c();
+FocusSpriteSlotById(M2C_FIELD(p,u8 *,0x4e));func_020b204c();
 }
 
 void func_020c0f18(void) {

@@ -1,5 +1,6 @@
 /* 39 functions from 0x020A1944 to 0x020A28F4 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 id:8; u16 index:4; u16 mode:4; } SaveInitEntry;
 
 s32 func_020a1944(s32 arg0) {
@@ -16,12 +17,12 @@ s32 func_020a1944(s32 arg0) {
 }
 
 void func_020a196c(void) {
- s32 func_020cd2f8(void); s32 func_020a1da0(s32); s32 func_020a1e44(s32); s32 func_020a1f88(s32);
+ s32 GetWinningPlayer(void); s32 func_020a1da0(s32); s32 func_020a1e44(s32); s32 func_020a1f88(s32);
  s32 func_020a1d74(s32); void func_020a1a0c(void); void func_020a1adc(void);
  extern M2C_UNK gSpriteAnimConfig;
  s32 i, bits, mask;
  s32 value;
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14) = func_020cd2f8();
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14) = GetWinningPlayer();
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x10) = func_020a1da0(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x11) = func_020a1e44(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x12) = func_020a1f88(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
@@ -55,7 +56,7 @@ void func_020a1a0c(void) {
     ctr[14] = 0;
     for (j = 1; j < 5; j++) {
         if (!IsPlayerPresent(j)) continue;
-        switch (func_020cce64(j)) {
+        switch (GetPlayerResult(j)) {
         case 1: {
             u8 idx = ctr[12];
             ctr[12] = idx + 1;
@@ -217,11 +218,11 @@ s32 func_020a1f88(s32 player) {
 
 void func_020a2148(u16 *arg0) {
  s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
- u16 *func_020bfa74(void); void func_020bfa80(u16 *); void func_020bfebc(u16 *);
+ u16 *GetMapSettings(void); void func_020bfa80(u16 *); void func_020bfebc(u16 *);
  s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 GetPlayerTeam(s32);
  s32 i; u16 *p; u16 value;
  p=arg0;
- if(p==0) p=func_020bfa74();
+ if(p==0) p=GetMapSettings();
  if(IsLinkSessionActive()!=0) return;
  if(func_020cd6d4()!=0) return;
  func_020bfa80(p); func_020bfebc(p);
@@ -236,9 +237,9 @@ void func_020a2148(u16 *arg0) {
 }
 
 void func_020a2204(u16 *arg0) {
-u16 *func_020bfa74(void);
+u16 *GetMapSettings(void);
 s32 func_020cd6d4(void);
-void func_020c002c(u16 *);
+void MapSettings_Apply(u16 *);
 s32 IsLinkSessionActive(void);
 u32 func_020bf894(s32);
 void func_020a230c(s32,s32);
@@ -255,11 +256,11 @@ s32 r8;
 s32 idx;
 s32 r9;
 if(arg0==0){
-p=func_020bfa74(); arg0=p;
+p=GetMapSettings(); arg0=p;
 }
 p=arg0;
 if(func_020cd6d4()!=0) return;
-func_020c002c(p);
+MapSettings_Apply(p);
 for(idx=1;idx<5;idx++){
 func_020a230c(idx,0);
 func_020a232c(idx,idx);
@@ -363,64 +364,69 @@ void func_020a23c4(void) {
 }
 
 #pragma opt_propagation off
-s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+/* Builds the stat block `out` for the battle-map unit `unit` standing at tile
+ * (x, y).  It starts empty and then applies the bonuses of the commander that
+ * owns the unit, which count only for unit kinds the commander may deploy; a
+ * unit that cannot attack loses its attack stat.  Returns 0 for an off-map
+ * tile, 1 otherwise. */
+s32 BuildUnitStatBlock(void *out, void *unit, s32 x, s32 y) {
     s32 GetUnitOwner(void *);
     u8 *GetPlayerSelectedUnit(s32);
     s32 GetPlayerCommanderId(s32);
     s32 func_020d0468(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020a7bd4(s32);
-    extern u8 data_0211fbec[];
-    s32 idx;
+    s32 GetUnitKindMaxAttackRange(s32);
+    extern CommanderBonus gCommanderBonusTable[];
+    UnitStatBlock *stats = (UnitStatBlock *)out;
+    s32 owner;
     u32 kind;
-    s32 ret;
+    s32 commander;
 
-    M2C_FIELD(arg0, s8 *, 0x0) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1) = 0;
-    M2C_FIELD(arg0, s8 *, 0x2) = 0;
-    M2C_FIELD(arg0, s8 *, 0x3) = 0;
-    M2C_FIELD(arg0, s8 *, 0x4) = 0;
-    M2C_FIELD(arg0, s8 *, 0x5) = 0;
-    M2C_FIELD(arg0, s8 *, 0x6) = 0;
-    M2C_FIELD(arg0, s16 *, 0x8) = 0;
-    M2C_FIELD(arg0, s16 *, 0xA) = 0;
+    stats->stat[0] = 0;
+    stats->stat[1] = 0;
+    stats->stat[2] = 0;
+    stats->stat[3] = 0;
+    stats->stat[4] = 0;
+    stats->stat[5] = 0;
+    stats->stat[6] = 0;
+    stats->value8 = 0;
+    stats->valueA = 0;
 
-    if (arg2 < 0 || arg3 < 0) { return 0; }
+    if (x < 0 || y < 0) { return 0; }
 
-    idx = GetUnitOwner(arg1);
-    if (GetPlayerSelectedUnit(idx) == (u8 *)arg1) {
-        ret = GetPlayerCommanderId(idx);
+    owner = GetUnitOwner(unit);
+    if (GetPlayerSelectedUnit(owner) == (u8 *)unit) {
+        commander = GetPlayerCommanderId(owner);
     } else {
-        ret = func_020d0468(idx, arg2, arg3);
+        commander = func_020d0468(owner, x, y);
     }
 
-    kind = M2C_FIELD(arg1, u8 *, 0x0) << 26;
+    kind = M2C_FIELD(unit, u8 *, 0x0) << 26;
 kind = kind >> 26;
-    if (ret != -1) {
+    if (commander != -1) {
 
-    M2C_FIELD(arg0, s16 *, 0x8) = M2C_FIELD(arg0, s16 *, 0x8) + 10;
-    M2C_FIELD(arg0, s16 *, 0xA) = M2C_FIELD(arg0, s16 *, 0xA) + 10;
+    stats->value8 = stats->value8 + 10;
+    stats->valueA = stats->valueA + 10;
 
     {
-        s8 *base = (s8 *)data_0211fbec + ret * 0x48;
-        s8 *probe = base + kind;
-        if (probe[0x11] != 0) {
-            M2C_FIELD(arg0, s8 *, 0x0) = M2C_FIELD(arg0, s8 *, 0x0) + base[0x0];
-            M2C_FIELD(arg0, s8 *, 0x1) = M2C_FIELD(arg0, s8 *, 0x1) + base[0x1];
-            M2C_FIELD(arg0, s8 *, 0x2) = M2C_FIELD(arg0, s8 *, 0x2) + base[0x2];
-            M2C_FIELD(arg0, s8 *, 0x3) = M2C_FIELD(arg0, s8 *, 0x3) + base[0x3];
-            M2C_FIELD(arg0, s8 *, 0x4) = M2C_FIELD(arg0, s8 *, 0x4) + base[0x4];
-            M2C_FIELD(arg0, s8 *, 0x5) = M2C_FIELD(arg0, s8 *, 0x5) + base[0x5];
-            M2C_FIELD(arg0, s8 *, 0x6) = M2C_FIELD(arg0, s8 *, 0x6) + base[0x6];
-            M2C_FIELD(arg0, s16 *, 0x8) = M2C_FIELD(arg0, s16 *, 0x8) + M2C_FIELD(base, s16 *, 0x8);
-            M2C_FIELD(arg0, s16 *, 0xA) = M2C_FIELD(arg0, s16 *, 0xA) + M2C_FIELD(base, s16 *, 0xA);
+        CommanderBonus *bonus = &gCommanderBonusTable[commander];
+        if (bonus->canDeploy[kind] != 0) {
+            stats->stat[0] = stats->stat[0] + bonus->base.stat[0];
+            stats->stat[1] = stats->stat[1] + bonus->base.stat[1];
+            stats->stat[2] = stats->stat[2] + bonus->base.stat[2];
+            stats->stat[3] = stats->stat[3] + bonus->base.stat[3];
+            stats->stat[4] = stats->stat[4] + bonus->base.stat[4];
+            stats->stat[5] = stats->stat[5] + bonus->base.stat[5];
+            stats->stat[6] = stats->stat[6] + bonus->base.stat[6];
+            stats->value8 = stats->value8 + bonus->base.value8;
+            stats->valueA = stats->valueA + bonus->base.valueA;
         }
     }
 
-    if (func_020a7bd4(kind) == 0) {
-        M2C_FIELD(arg0, s16 *, 0x8) = 0;
+    if (GetUnitKindMaxAttackRange(kind) == 0) {
+        stats->value8 = 0;
     }
-    if (func_020a7bd4(kind) < 2) {
-        M2C_FIELD(arg0, s8 *, 0x6) = 0;
+    if (GetUnitKindMaxAttackRange(kind) < 2) {
+        stats->stat[6] = 0;
     }
     }
     return 1;
@@ -432,65 +438,65 @@ s32 func_020a25bc(s32 arg0, s32 arg1) {
 }
 
 s32 func_020a25d8(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s16 *, 8);
 }
 
 s32 func_020a2608(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s16 *, 10);
 }
 
 s32 func_020a2638(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 3);
 }
 
 s32 func_020a2668(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 4);
 }
 
 s32 func_020a2698(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 2);
 }
 
 s32 func_020a26c8(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 6);
 }
 
 s32 func_020a26f8(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 5);
 }
 
 s32 func_020a2728(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 0);
 }
 
 s32 func_020a2758(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a242c(void *, void *, s32, s32);
+ s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
- func_020a242c(data, (void*)arg0, arg1, arg2);
+ BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
  return M2C_FIELD(data, s8 *, 1);
 }
 
@@ -538,14 +544,14 @@ s32 func_020a2868(s32 arg0,s32 arg1,s32 arg2) {
 extern s32 *gCurrentMap;
 extern M2C_UNK data_0211fbfd;
 extern s16 data_0211fbf4;
-s32 func_020a7bd4(s32);
+s32 GetUnitKindMaxAttackRange(s32);
 s32 index;
 s32 result;
 index=func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap+arg1*0x8C,s32 *,0x6810)<<24)>>24),arg2);
 if(index==-1)return 0;
 index*=0x48;
 if(!*(s8 *)(arg0+((s32)&data_0211fbfd+index)))return 0;
-if(func_020a7bd4(arg0) == 0) result = 0;
+if(GetUnitKindMaxAttackRange(arg0) == 0) result = 0;
 else result = M2C_FIELD(&data_0211fbf4,s16 *,index);
 return result;
 }

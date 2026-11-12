@@ -184,7 +184,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*data_ov000_021df5e0;
 void *saved=gCur3DSpriteEngine;s32 tile;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 tile=M2C_FIELD(data_ov000_021df5e0,u8 *,17)?1:13;
-func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
+MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
 func_020985b0(M2C_FIELD(data_ov000_021df5e0,u8 *,15),0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+(tile<<6));
 func_02098a34(M2C_FIELD(data_ov000_021df5e0,u8 *,15),0,2,M2C_FIELD(data_ov000_021df5e0,u8 *,17),0);
 func_02098844(0,1,21,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),(u16)tile,M2C_FIELD(data_ov000_021df5e0,u8 *,17),1);
@@ -200,7 +200,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*data_ov000_021df5e0;
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(M2C_FIELD(data_ov000_021df5e0,u8 *,14)) {
-func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
+MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
 func_020985b0(M2C_FIELD(data_ov000_021df5e0,u8 *,15),8,M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+64);
 func_02098a34(M2C_FIELD(data_ov000_021df5e0,u8 *,15),8,2,0,0);
 func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),1,0,0);
@@ -214,7 +214,7 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_ov000_0216d130(void) {
-    M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
@@ -241,20 +241,20 @@ void func_ov000_0216d130(void) {
         CloseNarcArchive();
         func_ov000_0216cee8();
     } else {
-        func_02007e98(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
+        MI_CpuFill32(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
     }
     gCur3DSpriteEngine = temp_r4;
 }
 
 void func_ov000_0216d1c8(void) {
- void func_02007ef4(void *,s32,s32);
+ void MI_CpuCopy32(void *,s32,s32);
  void func_01ff9e44(void *,s32,s32);
  extern void *data_ov000_021df5e0;
  extern s32 *gCurrentMap;
  extern void *g3DSpriteEngineSub;
  s32 p = *gCurrentMap + 0x67a4 + M2C_FIELD(data_ov000_021df5e0,u8 *,M2C_FIELD(data_ov000_021df5e0,u8 *,13))*140;
  s32 dest = M2C_FIELD(g3DSpriteEngineSub,volatile s32 *,28);
- func_02007ef4(func_ov000_0216ce10(M2C_FIELD(p,u8 *,39)),dest+0x3000,128);
+ MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(p,u8 *,39)),dest+0x3000,128);
  func_01ff9e44(func_ov000_0216ce84(M2C_FIELD(p,u8 *,29)),0x2e0,32);
 }
 

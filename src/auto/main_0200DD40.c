@@ -200,7 +200,7 @@ void func_0200e2b8(s32 arg0) {
 }
 
 void func_0200e2f8(void) {
-    M2C_UNK func_0200654c(M2C_UNK *);
+    M2C_UNK InitMutex(M2C_UNK *);
     M2C_UNK func_02009d34();
     M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
     s32 func_02009e8c(M2C_UNK,M2C_UNK);
@@ -217,7 +217,7 @@ void func_0200e2f8(void) {
     do {} while(func_02009e8c(8,1)==0);
     func_02009e40(8,&func_0200e39c);
     for(i=0;i<5;i++) ((u16 (*)[4])&data_0212fd0c)[i][0]=0;
-    func_0200654c(&data_0212fcf4);
+    InitMutex(&data_0212fcf4);
     M2C_FIELD(&data_0212fccc,s32 *,0x10)=*(s32 *)0x027FFC3C;
 }
 

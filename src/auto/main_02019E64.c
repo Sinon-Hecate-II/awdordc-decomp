@@ -175,7 +175,7 @@ void func_0201a26c(void *arg0) {
     void func_0201cfdc(void);
     void func_0201dd08(void);
     extern s32 gNetStack;
-    extern s32 data_02137778;
+    extern s32 gLocalMacAddress;
     extern s32 data_020faf74;
     extern s32 data_021374f8;
     extern s32 data_02138ac0;
@@ -244,7 +244,7 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
         state = state * M2C_FIELD((u8 *)&gNetStack, unsigned long long *, 0x70) + M2C_FIELD((u8 *)&gNetStack, unsigned long long *, 0x78);
         M2C_FIELD((u8 *)&gNetStack, unsigned long long *, 0x68) = state;
         M2C_FIELD((u8 *)&gNetStack, u16 *, 8) = (u16)((u32)(((state >> 32) * 0xf88) >> 32) + 0x400);
-        GetMacAddress((s32)&data_02137778);
+        GetMacAddress((s32)&gLocalMacAddress);
     }
 
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;
@@ -322,7 +322,7 @@ s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M
 
 s32 func_0201a7f8(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 
-void func_0201a824(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 func_02029848(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=func_02029848(a,a+6,b-6,c,d)<0;}
+void func_0201a824(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 WFC_SendPacket(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=WFC_SendPacket(a,a+6,b-6,c,d)<0;}
 
 /* Append a link-layer frame to the network stack's transmit ring.  The record
  * is [u16 length][6-byte destination][6-byte source][frame+6 ..], where the
@@ -411,11 +411,11 @@ void func_0201ab8c(void){
     OS_RestoreInterrupts(key);
 }
 #pragma opt_strength_reduction reset
-s32 func_0201abd0(s32 a){extern M2C_UNK gNetStack,data_02137778,data_020faf78,data_02137310,data_0213731a;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);u64 GetSystemTick(void);s32 irq=OS_DisableInterrupts();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&gNetStack,s32 *,0x50))r=&data_02137778;else if(func_0201a728(a)||func_0201a764(a))r=&data_020faf78;else{p=(u8 *)&data_02137310;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=GetSystemTick()>>16;M2C_FIELD(&data_0213731a,u16 *,i*12)=a;r=(u8 *)&data_02137310+i*12+4;break;}}}OS_RestoreInterrupts(irq);return (s32)r;}
+s32 func_0201abd0(s32 a){extern M2C_UNK gNetStack,gLocalMacAddress,data_020faf78,data_02137310,data_0213731a;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);u64 GetSystemTick(void);s32 irq=OS_DisableInterrupts();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&gNetStack,s32 *,0x50))r=&gLocalMacAddress;else if(func_0201a728(a)||func_0201a764(a))r=&data_020faf78;else{p=(u8 *)&data_02137310;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=GetSystemTick()>>16;M2C_FIELD(&data_0213731a,u16 *,i*12)=a;r=(u8 *)&data_02137310+i*12+4;break;}}}OS_RestoreInterrupts(irq);return (s32)r;}
 
 /* Build and send a 42-byte ARP-style announcement packet for `nodeId`, swapping byte order in the id fields. */
 void func_0201aca0(s32 nodeId) {
-    extern M2C_UNK data_02137778;
+    extern M2C_UNK gLocalMacAddress;
     extern M2C_UNK gNetStack;
     void MI_CpuFill8(void *, s32, s32);
     void MI_CpuCopy8(void *, void *, s32);
@@ -427,13 +427,13 @@ void func_0201aca0(s32 nodeId) {
     u32 own;
     MI_CpuFill8(&packet, 0, 42);
     MI_CpuFill8(packet.dest, 255, 6);
-    MI_CpuCopy8(&data_02137778, packet.src, 6);
+    MI_CpuCopy8(&gLocalMacAddress, packet.src, 6);
     packet.type = 0x608;
     packet.hw = 1;
     packet.proto = 8;
     packet.sizes = 0x406;
     packet.op = 1;
-    MI_CpuCopy8(&data_02137778, packet.sender, 6);
+    MI_CpuCopy8(&gLocalMacAddress, packet.sender, 6);
     own = M2C_FIELD(&gNetStack, u32 *, 80);
     hi = (u16)(own >> 16);
     lo = (u16)own;

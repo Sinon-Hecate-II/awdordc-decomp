@@ -584,11 +584,11 @@ void func_02085d7c(void *arg0) {
 
 s32 func_02085d90(void *arg0, M2C_UNK arg1, u16 arg2, s16 arg3) {
     M2C_UNK MI_CpuCopy8();
-    void *func_020e34bc(M2C_UNK);
+    void *HeapAllocBlock(M2C_UNK);
     void *temp_r0;
     void *temp_r0_2;
 
-    temp_r0 = func_020e34bc(0x28);
+    temp_r0 = HeapAllocBlock(0x28);
     if (temp_r0 == NULL) {
         return 0;
     }
@@ -608,7 +608,7 @@ s32 func_02085d90(void *arg0, M2C_UNK arg1, u16 arg2, s16 arg3) {
 }
 
 s32 func_02085df8(s32 a,s32 b,s32 c) {
-    void func_020e35cc(void *);
+    void HeapFreeBlock(void *);
     s32 len;
     void *p;
     p=M2C_FIELD(a,void **,0);
@@ -618,16 +618,16 @@ s32 func_02085df8(s32 a,s32 b,s32 c) {
     MI_CpuCopy8(p,b,len);
     M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0x24);
     if(!M2C_FIELD(a,void **,0)) M2C_FIELD(a,s32 *,4)=0;
-    func_020e35cc(p);
+    HeapFreeBlock(p);
     return len;
 }
 
 void func_02085e50(void *a) {
-    void func_020e35cc(void *);
+    void HeapFreeBlock(void *);
     void *p;
     while((p=M2C_FIELD(a,void **,0))!=NULL) {
         M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0x24);
-        func_020e35cc(p);
+        HeapFreeBlock(p);
     }
     M2C_FIELD(a,s32 *,4)=0;
     M2C_FIELD(a,void **,0)=NULL;

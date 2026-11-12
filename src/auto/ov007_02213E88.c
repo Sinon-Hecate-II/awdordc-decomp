@@ -174,13 +174,13 @@ void func_ov007_022142d4(void) {
 void func_ov007_022142ec(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_020c0adc();
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     extern void *gCur3DSpriteEngine;
     func_020c0adc();
     func_020c0784();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    func_020cfd28();
+    RefreshMapView();
     func_ov007_022142d4();
 }
 
@@ -193,22 +193,22 @@ void func_ov007_02214324(M2C_UNK arg0) {
 
 void func_ov007_02214354(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_0221f820;
     func_020c0784();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    func_020cfd28();
+    RefreshMapView();
     func_01ffa3dc(&data_ov007_0221f820, 7);
 }
 
 void func_ov007_02214394(void) {
     M2C_UNK func_020885fc();
-    M2C_UNK func_020c002c(M2C_UNK);
+    M2C_UNK MapSettings_Apply(M2C_UNK);
     func_020885fc();
-    func_020c002c(0);
+    MapSettings_Apply(0);
 }
 
 void func_ov007_022143a8(void) {
@@ -239,7 +239,7 @@ void func_ov007_022143f0(void) {
 void func_ov007_0221440c(void) {
     M2C_UNK func_020bfa80(M2C_UNK);
     func_020bfa80(0);
-    func_020c002c(0);
+    MapSettings_Apply(0);
     func_ov007_022121d4(1);
 }
 
@@ -264,7 +264,7 @@ u8 func_ov007_02214448(void) {
 
 void func_ov007_0221446c(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     M2C_UNK func_02086720(M2C_UNK);
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
@@ -272,7 +272,7 @@ void func_ov007_0221446c(void) {
     func_020c0784();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    func_020cfd28();
+    RefreshMapView();
     if (func_ov007_022121c4() != 0) {
         func_02086720(0x46000006);
     } else {
@@ -567,7 +567,7 @@ s32 Map_MinDistanceThreshold(s32 arg0) {
     return Divide((s32) (arg0 * var_r5), func_0207ca08(0x3840000));
 }
 
-void func_ov007_02214d88(void) {
+void Map_RandomScaledValue(void) {
     M2C_UNK Map_MinDistanceThreshold();
     M2C_UNK RandomIntRange();
     RandomIntRange();

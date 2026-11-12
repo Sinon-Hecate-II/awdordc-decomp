@@ -129,7 +129,7 @@ s32 gpiHandleServerData(void *ctx) {
         gGpiMsgOutOfMemory[], gGpiMsgNoOperation[], gGpiKeyBm[], gGpiKeyKa[], gGpiMsgUnsolicited[],
         gGpiMsgServerClosed[];
     void func_02052e18(void *, void *);
-    s32 gpiSendBufferedData(void *, s32, void *, s32 *, s32, void *);
+    s32 gpiSendFromBuffer(void *, s32, void *, s32 *, s32, void *);
     s32 gpiReceiveData(void *, s32, void *, s32 *, s32 *, void *);
     void gpiSetError(void *, s32, void *);
     void gpiCallErrorCallback(void *, s32, s32);
@@ -155,7 +155,7 @@ s32 gpiHandleServerData(void *ctx) {
 
     do {
         func_02052e18(ctx, conn + 0x1f4);
-        result = gpiSendBufferedData(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1f4, &connectionClosed, 1, gGpiConnTag);
+        result = gpiSendFromBuffer(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1f4, &connectionClosed, 1, gGpiConnTag);
         if (result) return result;
         result = gpiReceiveData(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1dc, &lineLen, &connectionClosed, gGpiConnTag);
         if (result) {

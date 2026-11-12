@@ -99,7 +99,7 @@ void func_ov000_0219b3c8(void) {
  * range layer (a mech, kind 2, is only taken within two tiles). Returns the
  * unit id, or 0 when there is no candidate. */
 s32 SelectTransportTarget(s32 actX, s32 actY) {
- void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);void func_01ffb9c4(s32);
+ void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);void MarkAdjacentCells(s32);
  s32 CanKindAttack(s32,s32); s32 ManhattanDistance(s16,s16,s16,s16);
  extern u8 gAiRangeLayer[],gUnitKindStats[],gMovementCostTable[];
  extern u16 gPlayerUnitIdBase[];
@@ -110,7 +110,7 @@ s32 SelectTransportTarget(s32 actX, s32 actY) {
  /* kind 1's movement type selects the infantry cost row */
  costs=M2C_FIELD(gMovementCostTable,s8 **,0x64)+gUnitKindStats[0x82]*32;
  FloodFillUnitRange(x,y,1,3-costs[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&31],1);
- func_01ffb9c4(0x6f);
+ MarkAdjacentCells(0x6f);
  SelectMapLayer((u8 *)*gCurrentMap+MAP_CELL_ORDER);
  for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+0x33;i++) {
  u8 *unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;

@@ -172,7 +172,7 @@ u32 func_02017984(void){u8 buf[6];s32 i;u32 sum;u8 *p;GetMacAddress(buf);i=0;p=&
 #pragma opt_common_subs off
 s32 func_020179ec(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     void func_02007e54(s32, void *, s32);
-    void func_02007df8(s32, void *, s32);
+    void FillU16(s32, void *, s32);
     void MI_CpuCopy8(void *, void *, s32);
     u16 func_02012084(void);
     s32 OS_DisableInterrupts(void);
@@ -202,7 +202,7 @@ s32 func_020179ec(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     M2C_FIELD(&gMbState, u32 *, 8) = a;
     M2C_FIELD(&gMbState, u32 *, 0xc) = b;
     func_02007e54(0, (void *)a, 0x1e00);
-    func_02007df8(0, (void *)b, 0x1340);
+    FillU16(0, (void *)b, 0x1340);
     i = 0;
     d = (u16 *)(a + 0x530);
     if ((n = arg1[1]) > i) {
@@ -299,7 +299,7 @@ func_020168a0(); return 0;
 s32 MultiBoot_Init(s32 reason) {
     s32 OS_DisableInterrupts(void);
     s32 OS_RestoreInterrupts(s32);
-    void func_02007df8(s32, void *, s32);
+    void FillU16(s32, void *, s32);
     void func_02013e70(s32);
     void func_02018910(s32);
     void func_02018940(void *);
@@ -324,7 +324,7 @@ s32 MultiBoot_Init(s32 reason) {
 
     {
         s32 r6 = M2C_FIELD(base + 0x1000, s32 *, 0x4E4);
-        func_02007df8(0, base + 0x1340, 0x69C0);
+        FillU16(0, base + 0x1340, 0x69C0);
         func_02013e70(r6);
     }
 
@@ -344,7 +344,7 @@ s32 MultiBoot_Init(s32 reason) {
 
     M2C_FIELD(gMbState.work + 0x1000, u8 *, 0x524) = 0;
 
-    func_02007df8(0, gMbState.work + 0x1788, 0x5D40);
+    FillU16(0, gMbState.work + 0x1788, 0x5D40);
 
     MI_CpuFill8(gMbState.work + 0x1754, 0, 0x1E);
 

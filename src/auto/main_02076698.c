@@ -64,19 +64,19 @@ s32 func_02076860(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_0207688c(void) {
-    M2C_UNK func_02007e98(M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK *, s32);
     extern M2C_UNK data_02141008;
     extern M2C_UNK data_02141788;
     extern M2C_UNK gMapCellCodes;
     extern M2C_UNK data_02142688;
     extern M2C_UNK data_02142ebc;
     extern M2C_UNK data_02143dbc;
-    func_02007e98(0, &data_02142688, 0x834);
-    func_02007e98(0, &gMapCellCodes, 0x900);
-    func_02007e98(0, &data_02141788, 0x900);
-    func_02007e98(0, &data_02141008, 0x900);
-    func_02007e98(0, &data_02142ebc, 0x1200);
-    func_02007e98(0, &data_02143dbc, 0x1200);
+    MI_CpuFill32(0, &data_02142688, 0x834);
+    MI_CpuFill32(0, &gMapCellCodes, 0x900);
+    MI_CpuFill32(0, &data_02141788, 0x900);
+    MI_CpuFill32(0, &data_02141008, 0x900);
+    MI_CpuFill32(0, &data_02142ebc, 0x1200);
+    MI_CpuFill32(0, &data_02143dbc, 0x1200);
 }
 
 #pragma opt_propagation off

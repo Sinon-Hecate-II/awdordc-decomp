@@ -23,7 +23,7 @@ void func_ov001_02175880(void); void func_ov001_02175890(void);
 MenuRecord rec;
 data_ov001_02193d24.ptr=func_ov001_0218b6f8(0x26c,4);
 data_ov001_02193d24.state=0;
-func_02007df8(0,&rec,0x104);
+FillU16(0,&rec,0x104);
 rec.kind=0x50; rec.size=12;
 MI_CpuCopy8(data_ov001_0218f6e8,rec.text);
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0)=3;

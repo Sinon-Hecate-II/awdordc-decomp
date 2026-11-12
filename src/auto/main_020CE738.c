@@ -94,7 +94,7 @@ void ResetBattleMap(void) {
     void func_020d47b0(void);
     void ResetMapUnits(void);
     void func_020a45cc(void);
-    void func_02007e98(s32, void *, s32);
+    void MI_CpuFill32(s32, void *, s32);
     void func_0207688c(void);
     extern u16 data_02156e4c;
     s32 i;
@@ -133,7 +133,7 @@ void ResetBattleMap(void) {
     ResetMapUnits();
     func_020a45cc();
 
-    func_02007e98(0, *gCurrentMap, 0x5120);
+    MI_CpuFill32(0, *gCurrentMap, 0x5120);
 
     func_0207688c();
 }

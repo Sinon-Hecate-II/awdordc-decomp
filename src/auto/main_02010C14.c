@@ -334,7 +334,7 @@ s32 func_02011a20(s32 arg0, void (*callback)(void *), s32 arg2) {
 
 s32 func_02011af8(s32 arg0) {
     M2C_UNK DC_InvalidateRange(s32, M2C_UNK);
-    M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     s32 temp_r0;
     void *temp_r4;
 
@@ -347,7 +347,7 @@ s32 func_02011af8(s32 arg0) {
         return 6;
     }
     DC_InvalidateRange(M2C_FIELD(temp_r4, s32 *, 4), 0x7D0);
-    func_02007ef4(M2C_FIELD(temp_r4, s32 *, 4), arg0, 0x7D0);
+    MI_CpuCopy32(M2C_FIELD(temp_r4, s32 *, 4), arg0, 0x7D0);
     return 0;
 }
 

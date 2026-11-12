@@ -3,7 +3,7 @@
 #include "mapedit.h"
 typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 static inline void *InitOv007Text(void *child) {
- s32 func_020e34bc(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
+ s32 HeapAllocBlock(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
     if (child != NULL) {
         M2C_FIELD(child, s16 *, 0x10) = 0x11;
         M2C_FIELD(child, s8 *, 0x12) = 0;
@@ -17,7 +17,7 @@ static inline void *InitOv007Text(void *child) {
         M2C_FIELD(child, s8 *, 0xC) = -1;
         M2C_FIELD(child, s8 *, 0xE) = 0;
         M2C_FIELD(child, u8 *, 0xF) = 0xFF;
-        M2C_FIELD(child, s32 *, 0x14) = func_020e34bc(0xCC);
+        M2C_FIELD(child, s32 *, 0x14) = HeapAllocBlock(0xCC);
         MI_CpuFill8(M2C_FIELD(child, void **, 0x14), 0, 0xCC);
     }
 
@@ -39,7 +39,7 @@ void MapEditListInput(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_02088044(void *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020b1c60(M2C_UNK);
+    M2C_UNK FocusSpriteSlotById(M2C_UNK);
     s32 func_020e32e8(M2C_UNK *);
     extern void *gKeyState;
     extern void *g3DSpriteEngineMain;
@@ -75,11 +75,11 @@ void MapEditListInput(void *arg0) {
     keyPressed = M2C_FIELD(gKeyState, u16 *, 0);
     keyRepeat = M2C_FIELD(gKeyState, u16 *, 2);
     if (keyPressed & 2) {
-        func_020b1c60(0x69);
+        FocusSpriteSlotById(0x69);
         return;
     }
     if (keyPressed & 8) {
-        func_020b1c60(0x6A);
+        FocusSpriteSlotById(0x6A);
         return;
     }
     if (keyPressed & 0x400) {
@@ -232,8 +232,8 @@ void func_ov007_0221f22c(void) {
 }
 
 void func_ov007_0221f238(void) {
-    M2C_UNK func_ov007_0221e6d0();
-    func_ov007_0221e6d0();
+    M2C_UNK MapEditorInitGlyphKeyboard();
+    MapEditorInitGlyphKeyboard();
 }
 
 void func_ov007_0221f244(void) {
@@ -255,14 +255,14 @@ void func_ov007_0221f264(void) {
  * glyph list and create the label and panel children. */
 void CreateMapEditList(u8 *name) {
     void *CreateSpriteObject(M2C_UNK *);
-    M2C_UNK func_02007e98(M2C_UNK, M2C_UNK *, M2C_UNK);
+    M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(u8 *, M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     s32 func_02099ae8(u8 *);
     s32 func_02099b00(u8 *);
     s32 GetLanguage();
-    s32 func_020e34bc(M2C_UNK);
+    s32 HeapAllocBlock(M2C_UNK);
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gMapEditListTemplate;
     extern M2C_UNK gSoftKeyLayoutUs;
@@ -296,7 +296,7 @@ void CreateMapEditList(u8 *name) {
     M2C_FIELD(widget, s16 *, 0x40) = -0x8000;
     M2C_FIELD(widget, void **, 0x44) = NULL;
     gMapEditRecords = p;
-    func_02007e98(0, &gMapEditObjectList, 0x44);
+    MI_CpuFill32(0, &gMapEditObjectList, 0x44);
     dst = &gMapEditObjectList;
     i = 0;
     while ((*p != 0) && (i < 0x10U)) {
@@ -336,7 +336,7 @@ void CreateMapEditList(u8 *name) {
 
 void *func_ov007_0221f458(void *arg0) {
     M2C_UNK MemFree(void *);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK gMapEditListVTable;
     void *temp_r4;
     void *temp_r0;
@@ -344,7 +344,7 @@ void *func_ov007_0221f458(void *arg0) {
     M2C_FIELD(arg0, void **, 0) = &gMapEditListVTable;
     temp_r4 = M2C_FIELD(arg0, void **, 0x38);
     if (temp_r4 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
         MemFree(temp_r4);
     }
     temp_r0 = M2C_FIELD(arg0, void **, 0x44);
@@ -357,7 +357,7 @@ void *func_ov007_0221f458(void *arg0) {
 
 void *func_ov007_0221f4b0(void *arg0) {
     M2C_UNK MemFree(void *);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK gMapEditListVTable;
     void *temp_r4;
     void *temp_r0;
@@ -365,7 +365,7 @@ void *func_ov007_0221f4b0(void *arg0) {
     M2C_FIELD(arg0, void **, 0) = &gMapEditListVTable;
     temp_r4 = M2C_FIELD(arg0, void **, 0x38);
     if (temp_r4 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
         MemFree(temp_r4);
     }
     temp_r0 = M2C_FIELD(arg0, void **, 0x44);

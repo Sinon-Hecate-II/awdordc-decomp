@@ -169,14 +169,14 @@ u16 func_020a7bbc(s32 arg0) {
  return *(u16 *)(data_ov000_021b5c00 + arg0 * 0x70);
 }
 
-u8 func_020a7bd4(s32 arg0) {
+u8 GetUnitKindMaxAttackRange(s32 arg0) {
  extern u8 data_ov000_021b5c09[];
  return data_ov000_021b5c09[arg0 * 0x70];
 }
 
 void func_020a7bec(void) {
-    u8 func_020a7bd4();
-    func_020a7bd4();
+    u8 GetUnitKindMaxAttackRange();
+    GetUnitKindMaxAttackRange();
 }
 
 u8 func_020a7bf8(s32 arg0) {
@@ -284,7 +284,7 @@ u8 func_020a7d38(void *arg0) {
     return var_r0;
 }
 
-u8 func_020a7d50(void *arg0) {
+u8 IsUnitMarkedForRepair(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u16 *, 4) & 0x100) {

@@ -42,13 +42,13 @@ void func_ov006_02218200(void *entity) {
         SetSpriteAnimation(entity, 2);
         return;
     }
-    func_020c7cd0(sub + 0x10, curId);
+    ExpandMapRecord(sub + 0x10, curId);
     if (!func_020c7a3c(curId)) {
         SetSpriteAnimation(entity, 3);
         return;
     }
     func_ov006_02217cfc(M2C_FIELD(sub, s32 *, 8));
-    func_02007ef4(curId, prevId, 0x54);
+    MI_CpuCopy32(curId, prevId, 0x54);
     func_020d47d0();
 }
 

@@ -1,5 +1,6 @@
 /* 4 functions from 0x0217D86C to 0x0217E798 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6, flags:2; u8 x,y,pad; u16 status; u16 hp:7, other:4, cargo:5; u16 tx:6, ty:6, top:4; u8 a; u8 ammo:4, b:4; u8 c,d; } Unit7DE;
 typedef struct { u8 x,y,type,z,cost,other; u8 rest[6]; } Candidate7DE;
 typedef struct { u8 kind:6; u8 flags:2; u8 x,y; u8 rest[11]; } Unit7DC;
@@ -107,35 +108,38 @@ s32 func_ov000_0217d86c(void) {
 }
 #pragma opt_strength_reduction reset
 #pragma opt_lifetimes reset
-s32 func_ov000_0217dcd0(void){
+/* Returns 1 when an enemy unit of kind 22 stands inside the reachable area of
+ * the cursor unit (kind 23), which the AI uses to bias its attack scoring.
+ * The map grid is left pointing at the order layer on the way out. */
+s32 CursorUnitReachesEnemyKind22(void){
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 void SelectMapLayer(void *);
-s32 func_ov000_02179be0(void);
+s32 GetAiUnitRange(void);
 void FloodFillUnitRange(s32,s32,s32,s32,s32);
-void func_01ffb9c4(s8);
+void MarkAdjacentCells(s8);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
-u8 *unit;
-s32 p,end,i;
+u8 *cursorUnit;
+s32 player,endId,unitId;
 u32 kind;
-if(((u32)(**(u8 **)((u8 *)*gCurrentMap+0x52d0)<<26)>>26)!=23)return 0;
-SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-FloodFillUnitRange(unit[1],unit[2],((Unit7DC *)unit)->kind,func_ov000_02179be0(),1);
-func_01ffb9c4(0x6f);
-for(p=1;p<5;p++){
-if(!IsPlayerActive(p))continue;
-if(IsSameTeam(*(u16 *)((u8 *)*gCurrentMap+0x52a4),p)==1)continue;
-i=gPlayerUnitIdBase[p]+1;end=gPlayerUnitIdBase[p]+0x33;
-for(;i<end;i++){
-Unit7DC *entry=&((Unit7DC *)((u8 *)*gCurrentMap+0x59a4))[i];
+if(((u32)(**(u8 **)((u8 *)*gCurrentMap+MAP_CURSOR_UNIT)<<26)>>26)!=23)return 0;
+SelectMapLayer((u8 *)*gCurrentMap+MAP_CELL_SCORE);
+cursorUnit=*(u8 **)((u8 *)*gCurrentMap+MAP_CURSOR_UNIT);
+FloodFillUnitRange(cursorUnit[1],cursorUnit[2],((BattleMapUnitHead *)cursorUnit)->kind,GetAiUnitRange(),1);
+MarkAdjacentCells(0x6f);
+for(player=1;player<5;player++){
+if(!IsPlayerActive(player))continue;
+if(IsSameTeam(*(u16 *)((u8 *)*gCurrentMap+MAP_CURRENT_PLAYER),player)==1)continue;
+unitId=gPlayerUnitIdBase[player]+1;endId=gPlayerUnitIdBase[player]+0x33;
+for(;unitId<endId;unitId++){
+BattleMapUnitHead *entry=&((BattleMapUnitHead *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[unitId];
 kind=entry->kind;
-if(kind && kind==22 && (*(s8 **)((u8 *)*gCurrentMap+0x52e8+entry->y*4))[entry->x]>=0){
-SelectMapLayer((u8 *)*gCurrentMap+0x1e30);return 1;
+if(kind && kind==22 && (*(s8 **)((u8 *)*gCurrentMap+MAP_GRID+entry->y*4))[entry->x]>=0){
+SelectMapLayer((u8 *)*gCurrentMap+MAP_CELL_ORDER);return 1;
 }
 }}
-SelectMapLayer((u8 *)*gCurrentMap+0x1e30);return 0;
+SelectMapLayer((u8 *)*gCurrentMap+MAP_CELL_ORDER);return 0;
 }
 
 #pragma opt_strength_reduction on
@@ -152,7 +156,7 @@ s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
 s32 IsTerrainOnUnitTeam(s16,u8);
 s32 IsFootUnitKind(s32);
-s32 func_ov000_021a9a28(s32);
+s32 CanUnitKindStandAt(s32);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 void func_ov000_0217a59c(s32,s32,s32,s32);
 s32 rowY=y;
@@ -212,7 +216,7 @@ if(!unit->kind||unit->kind!=*wanted)continue;
 score=M2C_FIELD((u8 *)*gCurrentMap+(unit->x)+M2C_FIELD((u8 *)*gCurrentMap+(unit->y*2),u16 *,0x3758),s8 *,0x2338);
 if(score<0||(unit->status&8))continue;
 if(unit->kind==19){
-if(!unit->c&&func_ov000_021a9a28(19))continue;
+if(!unit->c&&CanUnitKindStandAt(19))continue;
 score=M2C_FIELD((u8 *)*gCurrentMap+(unit->x)+M2C_FIELD((u8 *)*gCurrentMap+(unit->y*2),u16 *,0x3758),s8 *,0x2338)+1;
 if(out->other>=score)out->other=score;
 }else if(out->other>=score)out->other=score;

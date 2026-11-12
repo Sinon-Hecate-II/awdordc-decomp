@@ -42,7 +42,7 @@ DrawFrameBorder(248,(v>>12)+40,2,t,((pal+0xa3)&(pal>>((u32)(M2C_FIELD(M2C_FIELD(
 gCur3DSpriteEngine=old;
 }
 #pragma optimization_level 4
-void func_020b90d8(void) {M2C_UNK Clear3DSpriteLayer(M2C_UNK,s32);void func_020cfd28();void func_020d472c();extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;void *old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;((M2C_UNK (*)())Clear3DSpriteLayer)(1);((M2C_UNK (*)())Clear3DSpriteLayer)(2);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;func_020cfd28();func_020d472c();gCur3DSpriteEngine=old;}
+void func_020b90d8(void) {M2C_UNK Clear3DSpriteLayer(M2C_UNK,s32);void RefreshMapView();void func_020d472c();extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;void *old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;((M2C_UNK (*)())Clear3DSpriteLayer)(1);((M2C_UNK (*)())Clear3DSpriteLayer)(2);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;RefreshMapView();func_020d472c();gCur3DSpriteEngine=old;}
 
 void func_020b9140(s32 arg0) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
@@ -116,7 +116,7 @@ void func_020b9558(u8 a) {s32 func_020d2d38(s32,s32);void func_020b916c(s32,s32,
 void func_020b95cc(u8 *p) {
 extern u16 *gKeyState;
 extern s32 data_0215d850;
-void func_020b1c60(s32),func_020b2e14(void *),func_020b2e2c(void);
+void FocusSpriteSlotById(s32),func_020b2e14(void *),func_020b2e2c(void);
 u16 *keys=gKeyState;
 s32 n=*p;
 u32 repeat=keys[1];
@@ -135,7 +135,7 @@ if((repeat&32)&&n>=7)n-=7;
 if((repeat&16)&&n<7)n+=7;
 max--;if(n>=max)n=max;
 }
-func_020b1c60(n);
+FocusSpriteSlotById(n);
 if(gKeyState[0]&1) {func_020b2e14(p);return;}
 if(gKeyState[0]&2)func_020b2e2c();
 }

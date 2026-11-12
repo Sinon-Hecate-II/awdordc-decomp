@@ -113,7 +113,7 @@ void InitScreenTransition(M2C_UNK a0) {
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void SetScreenTransitionDone(void);
     void SetScreenTransitionEnabled(s32);
-    M2C_UNK func_020e34bc(M2C_UNK);
+    M2C_UNK HeapAllocBlock(M2C_UNK);
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
 
     extern u16 **gCur3DSpriteEngine;
@@ -150,7 +150,7 @@ void InitScreenTransition(M2C_UNK a0) {
     ((u8 *)*gCur3DSpriteEngine)[0x52] = 0;
     ((u8 *)*gCur3DSpriteEngine)[0x53] = 0;
 
-    gScreenTransition = (s32)func_020e34bc(0xc);
+    gScreenTransition = (s32)HeapAllocBlock(0xc);
     MI_CpuFill8((M2C_UNK)gScreenTransition, 0, 0xc);
 
     *(s16 *)((char *)gScreenTransition + 2) = (s16)M2C_FIELD(a0, s32 *, 0x5c);
@@ -174,10 +174,10 @@ void InitScreenTransition(M2C_UNK a0) {
 }
 #pragma pop
 void func_020adc20(void) {
- void func_020e35cc(s32);
+ void HeapFreeBlock(s32);
  extern s32 gScreenTransition;
  if(gScreenTransition!=0) {
- func_020e35cc(gScreenTransition);
+ HeapFreeBlock(gScreenTransition);
  gScreenTransition=0;
  }
 }

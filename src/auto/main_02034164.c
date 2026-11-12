@@ -306,7 +306,7 @@ return;
 }
 
 s32 func_0203506c(Callbacks3506c *cb) {
- M2C_UNK func_0200654c(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK func_02035304();
+ M2C_UNK InitMutex(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK func_02035304();
  void *(*alloc)(void *,int)=cb->alloc; void *p;
  if(M2C_FIELD(&gWfcNet,void **,0))return 4;
  p=alloc(&data_020fb7dc,0x11f4); M2C_FIELD(&gWfcNet,void **,0)=p;
@@ -318,7 +318,7 @@ s32 func_0203506c(Callbacks3506c *cb) {
  p=alloc(&data_020fb7f0,0x1c14);M2C_FIELD(&gWfcNet,void **,20)=p;
  if(!p)return 4;
  M2C_FIELD(&gWfcNet,int *,4)=0;
- func_0200654c((u8 *)M2C_FIELD(&gWfcNet,void **,0)+0x11dc);
+ InitMutex((u8 *)M2C_FIELD(&gWfcNet,void **,0)+0x11dc);
  func_02035304();return 0;
 }
 

@@ -13,7 +13,7 @@ s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out;
 u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
-s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_ov000_021a9a28(s32,s32,s32); s32 SelectTransportTarget(s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
+s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 CanUnitKindStandAt(s32,s32,s32); s32 SelectTransportTarget(s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
 count=0;out=&gAiTargetCandidates;
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 
@@ -92,7 +92,7 @@ kind=M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758),u8 *,0x1420)&31
 if(data_ov000_021b5500[kind])goto nextOwn;
 }
 if(data_ov000_021df41c[pass]==13||((u32)(unit[0]<<26)>>26)==19){
-if(!unit[12]&&func_ov000_021a9a28(19,unit[1],unit[2]))goto nextOwn;
+if(!unit[12]&&CanUnitKindStandAt(19,unit[1],unit[2]))goto nextOwn;
 out[7]=SelectTransportTarget(unit[1],unit[2]);
 if((s8)out[7]==0)goto nextOwn;
 map=*gCurrentMap;cost=1+M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758),s8 *,0x2338);
@@ -118,7 +118,7 @@ if(!kind||kind!=data_ov000_021df41c[pass])continue;
 row=M2C_FIELD(map+enemyUnit[2]*2,u16 *,0x3758);cost=M2C_FIELD(map+enemyUnit[1]+row,s8 *,0x2338);
 if(cost<0||(M2C_FIELD(enemyUnit,u16 *,4)&8))continue;
 if(kind==19){
-if(!enemyUnit[12]&&func_ov000_021a9a28(19,enemyUnit[1],enemyUnit[2]))continue;
+if(!enemyUnit[12]&&CanUnitKindStandAt(19,enemyUnit[1],enemyUnit[2]))continue;
 map=*gCurrentMap;cost=1+M2C_FIELD(map+enemyUnit[1]+M2C_FIELD(map+enemyUnit[2]*2,u16 *,0x3758),s8 *,0x2338);
 if(out[5]<cost)continue;out[5]=cost;
 }else {if(out[5]<cost)continue;out[5]=cost;}
@@ -168,7 +168,7 @@ extern u16 gMapConfig;
 extern void **gCurrentMap;
 
 extern u8 *gAiCommandState;
-extern u8 data_02168f0c[8];
+extern u8 gBattleEndState[8];
 
 void func_ov000_0219c444(void){extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];s32 found=0,i;void *base=*gCurrentMap;u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];u8 *p;u32 type;for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){p=((u8 (*)[14])(base+0x59a4))[i];type=(u32)(p[0]<<26)>>26;if(type!=0&&(u8)(type+255)<=2&&((u32)(p[11]<<28)>>28)==0){found=1;break;}}if(!found)return;while(func_ov000_0219b848()){} }
 
@@ -210,7 +210,7 @@ void func_ov000_0219c774(void) {
     func_ov000_0219a0e0();
     func_020bbb08();
     gAiCommandState[0] = 0;
-    if (data_02168f0c[0] != 0) {
+    if (gBattleEndState[0] != 0) {
         func_020844f8();
     }
 }

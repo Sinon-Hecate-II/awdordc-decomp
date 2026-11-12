@@ -1,5 +1,6 @@
 /* 17 functions from 0x02094D8C to 0x02095C90 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct SpriteControl094df0 { u16 mode:3; u16 rest:13; } SpriteControl094df0;
 typedef struct SpriteBuffer094df0 { u8 bytes[1]; } SpriteBuffer094df0;
 static inline u8 IsMain094df0(void) { extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain; u8 value; if(gCur3DSpriteEngine==g3DSpriteEngineMain)value=1;else value=0; return value; }
@@ -36,7 +37,7 @@ void func_02094dac(void) {
 
 #pragma inline_depth(2)
 void func_02094df0(s32 arg0, s32 arg1, s32 arg2) {
-u8 func_02091dc4(s32);
+u8 Get3DSpriteScreenMode(s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 extern M2C_UNK data_02102d0c;
 s32 saved, i, bank, engine;
@@ -85,7 +86,7 @@ break;
 M2C_FIELD(*(s32*)gCur3DSpriteEngine+(u8)arg1*2,u16*,0x38)=0;
 M2C_FIELD(*(s32*)gCur3DSpriteEngine+(u8)arg1*2,u16*,0x40)=0;
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1<<arg1;
-switch((u8)func_02091dc4(((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain))!=1)){
+switch((u8)Get3DSpriteScreenMode(((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain))!=1)){
 case 0:p20=*(u16**)gCur3DSpriteEngine;*p20=*p20|0x10;break;
 case 1:p1c=*(u16**)gCur3DSpriteEngine;*p1c=*p1c|0x20;break;
 case 2:p18=*(u16**)gCur3DSpriteEngine;*p18=*p18|0x40;break;
@@ -212,8 +213,8 @@ u8 func_0209546c(void) {
 }
 
 void func_02095490(void *arg0) {
-    u8 func_02091dc4(s32);
-    s32 func_02091ddc(s32);
+    u8 Get3DSpriteScreenMode(s32);
+    s32 GetOther3DSpriteScreenMode(s32);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
     unsigned int saved;
     register u8 mode;
@@ -241,8 +242,8 @@ void func_02095490(void *arg0) {
     u16 *volatile sp4;
     u16 *volatile sp0;
 
-    mode = func_02091dc4(M2C_FIELD(arg0, s32 *, 0x5C));
-    type = (u8)func_02091ddc(M2C_FIELD(arg0, s32 *, 0x5C));
+    mode = Get3DSpriteScreenMode(M2C_FIELD(arg0, s32 *, 0x5C));
+    type = (u8)GetOther3DSpriteScreenMode(M2C_FIELD(arg0, s32 *, 0x5C));
     saved = gCur3DSpriteEngine;
     i = 0;
     do {
@@ -328,12 +329,12 @@ end:
 
 #pragma push
 void func_0209583c(void *arg0){
-u8 func_02091dc4(s32);s32 func_02091ddc(s32);
+u8 Get3DSpriteScreenMode(s32);s32 GetOther3DSpriteScreenMode(s32);
 M2C_UNK func_020943f4(s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
 s32 old,newv;s32 saved,engine;s32 i;
-old=func_02091dc4(M2C_FIELD(arg0,s32 *,0x5c));
-newv=func_02091ddc(M2C_FIELD(arg0,s32 *,0x5c));
+old=Get3DSpriteScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
+newv=GetOther3DSpriteScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
 saved=gCur3DSpriteEngine;old=(u8)old;newv=(u8)newv;
 for(i=0;i<2;i++){
 if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
@@ -360,50 +361,57 @@ gCur3DSpriteEngine=saved;
 func_020943f4(M2C_FIELD(arg0,s32 *,0x5c));
 }
 #pragma pop
-void func_02095ad0(u8 *p){
-u8 func_02091dc4(s32);
-s32 func_02091ddc(s32);
-s32 EaseInterpolate(s32,s32,s32,s32,s32);
-void DeleteSpriteObject(void *);
-extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-u16 *volatile a;
-u16 *volatile b;
-s32 mode,screen;
-u32 first;
-u8 second;
-s32 saved,engine;
-s32 i;
-mode=func_02091dc4(*(s32 *)(p+92));
-func_02091ddc(*(s32 *)(p+92));
-(*(s32 *)(p+100))++;
-second=EaseInterpolate(0,0,16,*(s32 *)(p+100),*(s32 *)(p+96));
-saved=gCur3DSpriteEngine;
-first=16-second;
-i=0;
-do{
-if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
-gCur3DSpriteEngine=engine;
-screen=*(s32 *)(p+92);
-if(screen==0 && engine!=g3DSpriteEngineMain)goto next;
-if(screen==1 && engine!=g3DSpriteEngineSub)goto next;
-if(screen==3 && engine!=saved)goto next;
-switch(mode){
-case 2:
-a=(u16 *)(*(u8 **)engine+18);*a=(*a&~0xc0)|0x40;
-(*(u8 **)gCur3DSpriteEngine)[81]=first;
-(*(u8 **)gCur3DSpriteEngine)[82]=second;
-break;
-case 3:
-b=(u16 *)(*(u8 **)engine+18);*b=(*b&~0xc0)|0x40;
-(*(u8 **)gCur3DSpriteEngine)[81]=second;
-(*(u8 **)gCur3DSpriteEngine)[82]=first;
-break;
-}
-next:i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
-if(*(s32 *)(p+100)<*(s32 *)(p+96))return;
-DeleteSpriteObject(p);
+/* Advances a 3D sprite screen split by one frame: eases the two halves apart,
+ * writes the split rows into the engine's bank for every screen the object
+ * affects, and deletes the object once the split has run its full length. */
+void Update3DSpriteSplit(DS3DSpriteSplit *split) {
+    u8 Get3DSpriteScreenMode(s32);
+    s32 GetOther3DSpriteScreenMode(s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
+    void DeleteSpriteObject(void *);
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
+    u16 *volatile attrA;
+    u16 *volatile attrB;
+    s32 mode, screen;
+    u32 topRows;
+    u8 bottomRows;
+    s32 saved, engine;
+    s32 i;
+
+    mode = Get3DSpriteScreenMode(split->screen);
+    GetOther3DSpriteScreenMode(split->screen);
+    split->elapsed++;
+    bottomRows = EaseInterpolate(0, 0, 16, split->elapsed, split->length);
+    saved = gCur3DSpriteEngine;
+    topRows = 16 - bottomRows;
+    i = 0;
+    do {
+        if (i == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        screen = split->screen;
+        if (screen == 0 && engine != g3DSpriteEngineMain) goto next;
+        if (screen == 1 && engine != g3DSpriteEngineSub) goto next;
+        if (screen == 3 && engine != saved) goto next;
+        switch (mode) {
+        case 2:
+            attrA = (u16 *)(*(u8 **)engine + 18);
+            *attrA = (*attrA & ~0xC0) | 0x40;
+            ((DS3DSpriteBank *)(*(void **)gCur3DSpriteEngine))->rowsAbove = topRows;
+            ((DS3DSpriteBank *)(*(void **)gCur3DSpriteEngine))->rowsBelow = bottomRows;
+            break;
+        case 3:
+            attrB = (u16 *)(*(u8 **)engine + 18);
+            *attrB = (*attrB & ~0xC0) | 0x40;
+            ((DS3DSpriteBank *)(*(void **)gCur3DSpriteEngine))->rowsAbove = bottomRows;
+            ((DS3DSpriteBank *)(*(void **)gCur3DSpriteEngine))->rowsBelow = topRows;
+            break;
+        }
+next:
+        i++;
+    } while (i < 2);
+    gCur3DSpriteEngine = saved;
+    if (split->elapsed < split->length) return;
+    DeleteSpriteObject(split);
 }
 
 void func_02095c58(s32 arg0, s32 arg1, M2C_UNK arg2) {

@@ -18,14 +18,14 @@ void func_ov005_0221bb70(M2C_UNK arg0) {
     M2C_UNK func_01ffa730(M2C_UNK);
     s32 func_02097e84();
     void *func_0209bccc(s32, s32, s32, s32, s32, s32);
-    s32 func_020cd1e4();
+    s32 DidPlayerWin();
     M2C_UNK func_ov005_02218e54();
     s32 func_ov005_02218f50();
     extern M2C_UNK data_0215c334;
     extern M2C_UNK data_0215c340;
     s32 enabled;
     void *object;
-    if (func_020cd1e4() == 0) enabled = 0;
+    if (DidPlayerWin() == 0) enabled = 0;
     else if (M2C_FIELD(&data_0215c340, u16 *, M2C_FIELD(&data_0215c334, u8 *, 4) * 12) == 0) enabled = 0;
     else enabled = 1;
     if (enabled == 0) {
@@ -159,7 +159,7 @@ DeleteSpriteObject(arg0);
 #pragma opt_strength_reduction off
 #pragma opt_lifetimes off
 int func_ov005_0221c150(void *arg0) {
-s32 func_020cd1e4(void);
+s32 DidPlayerWin(void);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
 void AddSprite(u16,u8,u16,void *,s32);
 extern M2C_UNK data_0215c334,data_0215c340,gSpriteAnimConfig,data_02101f4c,data_02101f1c;
@@ -167,7 +167,7 @@ extern void *gCur3DSpriteEngine;
 extern void **gCurrentMap;
 s32 enabled,i,y,id,offset,x,x2,k;
 u8 *p;
-if(!func_020cd1e4())enabled=0;
+if(!DidPlayerWin())enabled=0;
 else if(M2C_FIELD(&data_0215c340,u16 *,M2C_FIELD(&data_0215c334,u8 *,4)*12)==0)enabled=0;
 else enabled=1;
 if(!enabled) return;

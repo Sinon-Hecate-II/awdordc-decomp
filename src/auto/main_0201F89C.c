@@ -46,8 +46,8 @@ s32 func_0201f89c(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0201f96c(void *arg0) {
-    M2C_UNK func_02006564(s32);
-    M2C_UNK func_020065e8(void *);
+    M2C_UNK LockMutex(s32);
+    M2C_UNK UnlockMutex(void *);
     M2C_UNK func_0201d190(u16, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d2b8();
     s32 func_0201d3e4(u16 *, M2C_UNK *);
@@ -59,7 +59,7 @@ s32 func_0201f96c(void *arg0) {
 
     temp_r4 = M2C_FIELD(arg0, void **, 4);
     temp_r5 = M2C_FIELD(temp_r4, void **, 0x64);
-    func_02006564(temp_r5 + 0xE0);
+    LockMutex(temp_r5 + 0xE0);
     func_0201d190(M2C_FIELD(arg0, u16 *, 0x10), 0, 0);
     func_0201d2b8();
     M2C_FIELD(temp_r5, s32 *, 0xF8) = 0;
@@ -67,7 +67,7 @@ s32 func_0201f96c(void *arg0) {
     *M2C_FIELD(arg0, u16 **, 0x14) = sp0;
     *M2C_FIELD(arg0, s32 **, 0x18) = temp_r0;
     M2C_FIELD(temp_r4, s16 *, 0x70) = (s16) (M2C_FIELD(temp_r4, s16 *, 0x70) | 4);
-    func_020065e8(temp_r5 + 0xE0);
+    UnlockMutex(temp_r5 + 0xE0);
     return 0;
 }
 
@@ -134,19 +134,19 @@ return func_0201f318(arg0,p);
 s32 func_0201fb94(void *arg0) {
 s32 func_0201d3a4(); void *p,*q;s32 v;s8 t;
 p=M2C_FIELD(arg0,void **,4);v=0;q=M2C_FIELD(p,void **,0x64);
-func_02006564(q+0xe0);
+LockMutex(q+0xe0);
 func_0201d190(M2C_FIELD(arg0,u16 *,0x10),M2C_FIELD(arg0,u16 *,0x12),M2C_FIELD(arg0,s32 *,0x14));
 M2C_FIELD(q,s32 *,0xf8)=v;t=M2C_FIELD(arg0,s8 *,12);
 if(t==0 || t==4)v=func_0201d3a4();
-func_020065e8(q+0xe0);
+UnlockMutex(q+0xe0);
 if(v){M2C_FIELD(p,volatile s16 *,0x70)|=0x40;return -76;}
 M2C_FIELD(p,volatile s16 *,0x70)|=4;return 0;
 }
 
 #pragma optimization_level 2
 s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
-    s32 func_02006564();
-    s32 func_020065e8();
+    s32 LockMutex();
+    s32 UnlockMutex();
     s32 func_02006680();
     s32 func_02007580();
     s32 func_0201fd60(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
@@ -192,10 +192,10 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
             return -6;
         }
     } else {
-        func_02006564(temp_r4 + 0xE0);
+        LockMutex(temp_r4 + 0xE0);
     }
     var_r5 = func_0201fd60(arg0, arg1, arg2, arg3, arg4, var_r5, arg5);
-    func_020065e8(temp_r4 + 0xE0);
+    UnlockMutex(temp_r4 + 0xE0);
     return var_r5;
 }
 #pragma optimization_level reset
@@ -524,11 +524,11 @@ s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
         }
         var_ip = 0;
     } else {
-        func_02006564(temp_r4 + 0xE0);
+        LockMutex(temp_r4 + 0xE0);
         var_ip = 1;
     }
     temp_r5 = func_0202058c(arg0, arg1, arg2, arg3, arg4, var_ip);
-    func_020065e8(temp_r4 + 0xE0);
+    UnlockMutex(temp_r4 + 0xE0);
     return temp_r5;
 }
 

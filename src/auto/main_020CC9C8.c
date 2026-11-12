@@ -101,9 +101,9 @@ void func_020ccdc0(M2C_UNK arg0) {
 
 void func_020ccdd8(s32 arg0) {
     void CreateSpriteObject(void *, s32);
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
     extern M2C_UNK data_0212b7ec;
-    if (data_02168f0c == 0) return;
+    if (gBattleEndState == 0) return;
     CreateSpriteObject(&data_0212b7ec, arg0);
 }
 
@@ -112,10 +112,10 @@ void func_020cce04(s32 arg0) {
     void func_0209c8d4(void);
     void SetSpriteAnimation(s32, s32);
     u8 func_020cd6d4(void);
-    u8 func_020cd28c(void);
+    u8 DidPlayerLose(void);
     func_020a196c();
     func_0209c8d4();
-    if (func_020cd6d4() && func_020cd28c()) {
+    if (func_020cd6d4() && DidPlayerLose()) {
         SetSpriteAnimation(arg0, 1);
     } else {
         SetSpriteAnimation(arg0, 0);
@@ -128,37 +128,40 @@ void func_020cce4c(void) {
     func_01ffa3dc(&data_0212b894, 7);
 }
 
-s32 func_020cce64(s32 player) {
-extern s32 *gCurrentMap; extern u8 data_02168f0c;
-s32 IsPlayerPresent(s32);s32 IsPlayerHuman(s32);s32 IsPlayerActive(s32);s32 func_02084614(void);s32 func_02084aa0(s32);
-s32 total=0, yes=0,no=0;u8 team=M2C_FIELD((u8*)*gCurrentMap+player*140,u8*,0x67ca);s32 active,i,off;
-if(!IsPlayerPresent(player))return 0;
-if((&data_02168f0c)[0]){
+/* Returns a player's battle outcome (BATTLE_RESULT_*): handles the link-battle
+ * end conditions from the battle-end state first, otherwise counts the players
+ * still active and compares armies to decide win/lose/draw. */
+s32 GetPlayerResult(s32 player) {
+extern s32 *gCurrentMap; extern u8 gBattleEndState;
+s32 IsPlayerPresent(s32);s32 IsPlayerHuman(s32);s32 IsPlayerActive(s32);s32 GetLinkMode(void);s32 IsOverlayEventSet(s32);
+s32 totalCount=0, activeCount=0,inactiveCount=0;u8 army=M2C_FIELD((u8*)*gCurrentMap+player*MAP_PLAYER_STRIDE,u8*,PLAYER_ARMY_OFF);s32 active,i,off;
+if(!IsPlayerPresent(player))return BATTLE_RESULT_NONE;
+if((&gBattleEndState)[BATTLE_END_ENDED]){
 active=1;for(i=1;i<5;i++)if(IsPlayerHuman(i))active=i;
-if(func_02084614()==1){if((&data_02168f0c)[1])return 3;if((&data_02168f0c)[2])return 3;}
-if(func_02084614()==2){
+if(GetLinkMode()==1){if((&gBattleEndState)[BATTLE_END_FLAG1])return BATTLE_RESULT_DRAW;if((&gBattleEndState)[BATTLE_END_FLAG2])return BATTLE_RESULT_DRAW;}
+if(GetLinkMode()==2){
 if(active==player){
-if((&data_02168f0c)[1])return 2;
-if((&data_02168f0c)[2]){
-if(!(&data_02168f0c)[3])return 2;
-{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(IsPlayerPresent(j)&&func_02084aa0(j-1)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 2;}
-}return 1;
+if((&gBattleEndState)[BATTLE_END_FLAG1])return BATTLE_RESULT_LOSE;
+if((&gBattleEndState)[BATTLE_END_FLAG2]){
+if(!(&gBattleEndState)[BATTLE_END_FLAG3])return BATTLE_RESULT_LOSE;
+{s32 other,otherStep;for(other=1,otherStep=MAP_PLAYER_STRIDE;other<5;other++,otherStep+=MAP_PLAYER_STRIDE)if(IsPlayerPresent(other)&&IsOverlayEventSet(other-1)){if(army==M2C_FIELD((u8*)*gCurrentMap+otherStep,u8*,PLAYER_ARMY_OFF))return BATTLE_RESULT_LOSE;}
+}return BATTLE_RESULT_WIN;
 }
 }else{
-if((&data_02168f0c)[1]){if(team!=M2C_FIELD((u8*)*gCurrentMap+active*140,u8*,0x67ca))return 1;return 2;}
-if((&data_02168f0c)[2]){
-if(!(&data_02168f0c)[3]){if(team!=M2C_FIELD((u8*)*gCurrentMap+active*140,u8*,0x67ca))return 1;return 2;}
-if(func_02084aa0(player-1))return 2;
-{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(IsPlayerPresent(j)&&func_02084aa0(j-1)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 2;}
-}return 1;
+if((&gBattleEndState)[BATTLE_END_FLAG1]){if(army!=M2C_FIELD((u8*)*gCurrentMap+active*MAP_PLAYER_STRIDE,u8*,PLAYER_ARMY_OFF))return BATTLE_RESULT_WIN;return BATTLE_RESULT_LOSE;}
+if((&gBattleEndState)[BATTLE_END_FLAG2]){
+if(!(&gBattleEndState)[BATTLE_END_FLAG3]){if(army!=M2C_FIELD((u8*)*gCurrentMap+active*MAP_PLAYER_STRIDE,u8*,PLAYER_ARMY_OFF))return BATTLE_RESULT_WIN;return BATTLE_RESULT_LOSE;}
+if(IsOverlayEventSet(player-1))return BATTLE_RESULT_LOSE;
+{s32 other,otherStep;for(other=1,otherStep=MAP_PLAYER_STRIDE;other<5;other++,otherStep+=MAP_PLAYER_STRIDE)if(IsPlayerPresent(other)&&IsOverlayEventSet(other-1)){if(army==M2C_FIELD((u8*)*gCurrentMap+otherStep,u8*,PLAYER_ARMY_OFF))return BATTLE_RESULT_LOSE;}
+}return BATTLE_RESULT_WIN;
 }
 }
 }
 }
-for(i=1;i<5;i++)if(IsPlayerPresent(i)){if(IsPlayerActive(i))yes++;else no++;total++;}
-if(yes==total)return 3;if(no==total)return 3;
-{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(IsPlayerPresent(j)&&IsPlayerActive(j)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 1;}
-}return 2;
+for(i=1;i<5;i++)if(IsPlayerPresent(i)){if(IsPlayerActive(i))activeCount++;else inactiveCount++;totalCount++;}
+if(activeCount==totalCount)return BATTLE_RESULT_DRAW;if(inactiveCount==totalCount)return BATTLE_RESULT_DRAW;
+{s32 other,otherStep;for(other=1,otherStep=MAP_PLAYER_STRIDE;other<5;other++,otherStep+=MAP_PLAYER_STRIDE)if(IsPlayerPresent(other)&&IsPlayerActive(other)){if(army==M2C_FIELD((u8*)*gCurrentMap+otherStep,u8*,PLAYER_ARMY_OFF))return BATTLE_RESULT_WIN;}
+}return BATTLE_RESULT_LOSE;
 }
 
 s32 func_020cd164(s32 arg0, s32 arg1) {
@@ -169,10 +172,10 @@ s32 func_020cd164(s32 arg0, s32 arg1) {
     if (arg0 == arg1) return 0;
     base = *gCurrentMap + 0x67A4;
     if (M2C_FIELD(arg0 * 0x8C + base, u8 *, 0x26) == M2C_FIELD(arg1 * 0x8C + base, u8 *, 0x26)) return 0;
-    return func_020cce64(arg0);
+    return GetPlayerResult(arg0);
 }
 
-s32 func_020cd1e4(void) {
+s32 DidPlayerWin(void) {
     s32 IsPlayerHuman(s32);
     s32 var_r4;
     s32 var_r4_2;
@@ -180,21 +183,21 @@ s32 func_020cd1e4(void) {
 
     var_r4 = 1;
 loop_1:
-    if ((IsPlayerHuman(var_r4) != 0) && (func_020cce64(var_r4) == 1)) {
+    if ((IsPlayerHuman(var_r4) != 0) && (GetPlayerResult(var_r4) == 1)) {
         return 1;
     }
     var_r4 += 1;
     if (var_r4 >= 5) {
         var_r4_2 = 1;
 loop_6:
-        if ((IsPlayerHuman(var_r4_2) != 0) && (func_020cce64(var_r4_2) == 2)) {
+        if ((IsPlayerHuman(var_r4_2) != 0) && (GetPlayerResult(var_r4_2) == 2)) {
             return 0;
         }
         var_r4_2 += 1;
         if (var_r4_2 >= 5) {
             var_r4_3 = 1;
 loop_11:
-            if ((IsPlayerPresent(var_r4_3) != 0) && (func_020cce64(var_r4_3) == 1)) {
+            if ((IsPlayerPresent(var_r4_3) != 0) && (GetPlayerResult(var_r4_3) == 1)) {
                 return 1;
             }
             var_r4_3 += 1;
@@ -208,15 +211,15 @@ loop_11:
     goto loop_1;
 }
 
-u8 func_020cd28c(void) {
-    s32 func_020cd2b8();
-    s32 func_020cd1e4();
+u8 DidPlayerLose(void) {
+    s32 IsBattleDraw();
+    s32 DidPlayerWin();
     u8 var_r0;
 
-    if (func_020cd2b8() != 0) {
+    if (IsBattleDraw() != 0) {
         return 0U;
     }
-    if (func_020cd1e4() == 0) {
+    if (DidPlayerWin() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -224,14 +227,14 @@ u8 func_020cd28c(void) {
     return var_r0;
 }
 
-s32 func_020cd2b8(void) {
-    s32 func_020cce64(s32);
+s32 IsBattleDraw(void) {
+    s32 GetPlayerResult(s32);
     s32 IsPlayerPresent(s32);
     s32 var_r4;
 
     var_r4 = 1;
 loop_1:
-    if ((IsPlayerPresent(var_r4) != 0) && (func_020cce64(var_r4) == 3)) {
+    if ((IsPlayerPresent(var_r4) != 0) && (GetPlayerResult(var_r4) == 3)) {
         return 1;
     }
     var_r4 += 1;
@@ -241,19 +244,19 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020cd2f8(void){
-extern u8 data_02168f0c;extern s32 *gCurrentMap;s32 i;
-if(!data_02168f0c && func_020cce64(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==1)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-for(i=1;i<5;i++)if(IsPlayerHuman(i) && func_020cce64(i)==1)return i;
-for(i=1;i<5;i++)if(IsPlayerPresent(i) && func_020cce64(i)==1)return i;
+s32 GetWinningPlayer(void){
+extern u8 gBattleEndState;extern s32 *gCurrentMap;s32 i;
+if(!gBattleEndState && GetPlayerResult(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==1)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
+for(i=1;i<5;i++)if(IsPlayerHuman(i) && GetPlayerResult(i)==1)return i;
+for(i=1;i<5;i++)if(IsPlayerPresent(i) && GetPlayerResult(i)==1)return i;
 return 0;
 }
 
-s32 func_020cd3bc(void){
-extern u8 data_02168f0c;extern s32 *gCurrentMap;s32 i;
-if(!data_02168f0c && func_020cce64(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==2)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-for(i=1;i<5;i++)if(IsPlayerHuman(i) && func_020cce64(i)==2)return i;
-for(i=1;i<5;i++)if(IsPlayerPresent(i) && func_020cce64(i)==2)return i;
+s32 GetLosingPlayer(void){
+extern u8 gBattleEndState;extern s32 *gCurrentMap;s32 i;
+if(!gBattleEndState && GetPlayerResult(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==2)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
+for(i=1;i<5;i++)if(IsPlayerHuman(i) && GetPlayerResult(i)==2)return i;
+for(i=1;i<5;i++)if(IsPlayerPresent(i) && GetPlayerResult(i)==2)return i;
 return 0;
 }
 

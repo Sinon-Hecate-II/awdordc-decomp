@@ -255,12 +255,12 @@ s32 func_0208c49c(void *arg0) {
     void Sprite_ClearHandle(s32 *);
     s32 func_02094770();
     M2C_UNK func_020d472c();
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     s32 (*temp_r1)(void *);
     s32 var_r0;
     if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x4C));
-    if (M2C_FIELD(arg0, s32 *, 0x50) != 0) func_020e35cc(M2C_FIELD(arg0, s32 *, 0x50));
-    if (M2C_FIELD(arg0, s32 *, 0x54) != 0) func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
+    if (M2C_FIELD(arg0, s32 *, 0x50) != 0) HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
+    if (M2C_FIELD(arg0, s32 *, 0x54) != 0) HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
     var_r0 = (u32)(M2C_FIELD(arg0, u32 *, 0x44) << 12) >> 31;
     if (var_r0 != 0) {
         func_020d472c();

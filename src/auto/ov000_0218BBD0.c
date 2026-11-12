@@ -16,7 +16,7 @@ int func_ov000_0218bbd0(void *arg0) {
     extern void *gAiCommandState;
     extern u8 *gAiUnitTypeTuning;
     void BuildUnitMoveRange(void *);
-    void func_01ffb9c4(int);
+    void MarkAdjacentCells(int);
     s32 IsUnitSelected(void *);
     s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
@@ -144,7 +144,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     extern void *gAiCommandState;
     extern u8 *gAiUnitTypeTuning;
     void BuildUnitMoveRange(void *);
-    void func_01ffb9c4(int);
+    void MarkAdjacentCells(int);
     s32 IsUnitSelected(void *);
     s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
@@ -174,7 +174,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     if (IsUnitSelected(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
     BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
     for (i = 0; i < GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)); i++)
-        func_01ffb9c4((s8)(i + 0x6f));
+        MarkAdjacentCells((s8)(i + 0x6f));
 
     for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {

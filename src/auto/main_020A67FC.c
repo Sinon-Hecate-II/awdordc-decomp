@@ -13,7 +13,7 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
     void func_020d2b10(u16, s32);
     s32 IsPlayerHuman(u16);
     void func_02091c20(s32, s32);
-    void func_020cfd28(void);
+    void RefreshMapView(void);
     extern void **gCurrentMap;
     s32 r, cost;u16 id;
     void *p;
@@ -30,7 +30,7 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
         func_02091c20(c + 0x28, 1);
     }
-    func_020cfd28();
+    RefreshMapView();
     return r;
 }
 
@@ -57,7 +57,7 @@ void func_020a694c(void) {
 
 }
 
-void func_020a6950(s32 arg0, s32 arg1) {
+void MarkRepairNeighbour(s32 arg0, s32 arg1) {
     extern void **gCurrentMap;
     void *base;
     void *p;
@@ -71,28 +71,32 @@ void func_020a6950(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_common_subs off
-void func_020a69bc(void){
-s32 func_020a7d50(void *);s32 GetUnitOwner(void *);
-s32 a,i,b,x,y;UnkStruct_ov000_021A860C *p,*first,*last;
-for(a=1;a<256;a++){
-first=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[a];
-if(first->unk0)M2C_FIELD(first,u16 *,4)&=~0x8000;
-}
+/* Turn-start repair pass: clears the repair-neighbour scratch bit on every unit,
+ * then for every unit flagged for repair that the current player owns heals one
+ * HP (never below one) and marks its four orthogonal neighbours; finally folds
+ * the neighbour marks into the repair flag. */
+void ApplyTurnRepairs(void){
+s32 IsUnitMarkedForRepair(void *);s32 GetUnitOwner(void *);
+s32 i,j,k,x,y;UnkStruct_ov000_021A860C *unit,*first,*last;
 for(i=1;i<256;i++){
-p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-if(p->unk0 && func_020a7d50(p)){
-x=M2C_FIELD(p,u8 *,1);y=M2C_FIELD(p,u8 *,2);
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==GetUnitOwner(p)){
-if(p->unk6>10)p->unk6-=10;else p->unk6=1;
+first=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[i];
+if(first->unk0)M2C_FIELD(first,u16 *,MAP_UNIT_FLAGS)&=~UNIT_FLAG_REPAIR_TMP;
 }
-func_020a6950(x-1,y);func_020a6950(x+1,y);func_020a6950(x,y-1);func_020a6950(x,y+1);
+for(j=1;j<256;j++){
+unit=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[j];
+if(unit->unk0 && IsUnitMarkedForRepair(unit)){
+x=M2C_FIELD(unit,u8 *,1);y=M2C_FIELD(unit,u8 *,2);
+if(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)==GetUnitOwner(unit)){
+if(unit->unk6>10)unit->unk6-=10;else unit->unk6=1;
+}
+MarkRepairNeighbour(x-1,y);MarkRepairNeighbour(x+1,y);MarkRepairNeighbour(x,y-1);MarkRepairNeighbour(x,y+1);
 }
 }
-for(b=1;b<256;b++){
-last=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[b];
+for(k=1;k<256;k++){
+last=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[k];
 if(last->unk0){
-if(M2C_FIELD(last,u16 *,4)&0x8000)M2C_FIELD(last,u16 *,4)|=0x100;
-M2C_FIELD(last,u16 *,4)&=~0x8000;
+if(M2C_FIELD(last,u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_REPAIR_TMP)M2C_FIELD(last,u16 *,MAP_UNIT_FLAGS)|=UNIT_FLAG_REPAIR;
+M2C_FIELD(last,u16 *,MAP_UNIT_FLAGS)&=~UNIT_FLAG_REPAIR_TMP;
 }
 }
 }
@@ -129,11 +133,11 @@ void SpawnUnitSprite(s32 arg0, void *unused) {
     M2C_FIELD(CreateSpriteObject(&data_02120670), s32 *, 0x54) = arg0;
 }
 
-void func_020a6c00(void *p){u8 *func_020e34bc(s32);u8 *bits;s32 x; s32 y; s32 base; u32 pos;M2C_FIELD(p,s32 *,0x5c)=1;M2C_FIELD(p,s32 *,0x60)=1;bits=func_020e34bc(0xa1);M2C_FIELD(p,u8 **,0x54)=bits;base=*gCurrentMap;for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){pos=x+M2C_FIELD((base+((u32)y<<1)),u16 *,0x3758);bits[pos>>3]&=((1<<(pos&7)) ^ -1);base=*gCurrentMap;}}}
+void func_020a6c00(void *p){u8 *HeapAllocBlock(s32);u8 *bits;s32 x; s32 y; s32 base; u32 pos;M2C_FIELD(p,s32 *,0x5c)=1;M2C_FIELD(p,s32 *,0x60)=1;bits=HeapAllocBlock(0xa1);M2C_FIELD(p,u8 **,0x54)=bits;base=*gCurrentMap;for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){pos=x+M2C_FIELD((base+((u32)y<<1)),u16 *,0x3758);bits[pos>>3]&=((1<<(pos&7)) ^ -1);base=*gCurrentMap;}}}
 
 void func_020a6cbc(void *arg0) {
-    M2C_UNK func_020e35cc(s32);
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
+    M2C_UNK HeapFreeBlock(s32);
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
 void ApplyAreaDamageEffect(void *effect){
@@ -327,7 +331,7 @@ return penalty+(cap+bonus);
 
 s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
 
-s32 GetUnitAttackRangeMax(u8 *p){s32 func_020a7bd4(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=func_020a7bd4((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
+s32 GetUnitAttackRangeMax(u8 *p){s32 GetUnitKindMaxAttackRange(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=GetUnitKindMaxAttackRange((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
 
 s32 func_020a7714(void *arg0) {
     s32 func_020a26c8(void *, u8, u8);

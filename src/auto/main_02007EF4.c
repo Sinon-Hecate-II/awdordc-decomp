@@ -5,7 +5,7 @@ typedef struct { u32 v[8]; } Copy32;
 typedef struct { u32 v[1]; } Copy4;
 typedef struct { u32 x, y, z; } CopyV3;
 
-void func_02007ef4(u8 *src, u8 *dst, u32 size) {
+void MI_CpuCopy32(u8 *src, u8 *dst, u32 size) {
     u8 *end = dst + size;
     u8 *end32 = dst + ((size >> 5) << 5);
     while (dst < end32) {

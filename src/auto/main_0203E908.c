@@ -7,7 +7,7 @@ typedef M2C_UNK (*fmt_fn_t)(M2C_UNK, s32, M2C_UNK, M2C_UNK, s32, M2C_UNK);
 
 
 void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
-    void func_0203e570(s32);
+    void ResetConnection(s32);
     void *GetConnection(void);
     void func_0205fdbc(s32, s8 *);
     extern M2C_UNK sDwcKeyPid;
@@ -15,7 +15,7 @@ void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
     extern M2C_UNK sDwcKeyMResv;
     extern M2C_UNK sDwcKeyMVer;
     extern M2C_UNK sDwcKeyEval;
-    func_0203e570(0);
+    ResetConnection(0);
     M2C_FIELD(GetConnection(), u8 *, 0x15) = arg0;
     M2C_FIELD(GetConnection(), u8 *, 0x16) = arg1;
     M2C_FIELD(GetConnection(), s32 *, 0x464) = arg2;
@@ -32,7 +32,7 @@ void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
 void func_0203e9b0(void) {
     M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_0203bd0c();
-    M2C_UNK func_020427f4();
+    M2C_UNK ClearSessionPlayers();
     void *GetConnection();
     M2C_UNK SetConnectionState(M2C_UNK);
     M2C_UNK func_020614b0(s32);
@@ -54,7 +54,7 @@ void func_0203e9b0(void) {
         HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
         M2C_FIELD(&gConnectionMgr, s32 *, 8) = 0;
     }
-    func_020427f4();
+    ClearSessionPlayers();
     M2C_FIELD(GetConnection(), s8 *, 0x18) = 1;
 }
 

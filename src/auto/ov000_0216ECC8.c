@@ -23,10 +23,10 @@ extern u16 gPlayerUnitIdBase[];
 extern s8 data_ov000_021aab79[];
 extern M2C_UNK data_ov000_021df5e4;
 extern u32 gUnitKindStats[];
-void *func_020e34bc(s32);void func_020e35cc(void *);
+void *HeapAllocBlock(s32);void HeapFreeBlock(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 Divide(s32,s32);
 s32 n=0,i,j,k,l,out,t,v,h,idx,z;
-u8 *tmp=func_020e34bc(64),*p,*q,*map,*attr;
+u8 *tmp=HeapAllocBlock(64),*p,*q,*map,*attr;
 s8 *order=data_ov000_021aab79;
 for(t=1;t<27;t++,order++){
 for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){
@@ -98,7 +98,7 @@ break;
 }
 }
 }
-func_020e35cc(tmp);
+HeapFreeBlock(tmp);
 }
 
 #pragma push

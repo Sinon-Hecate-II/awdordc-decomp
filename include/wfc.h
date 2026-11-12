@@ -35,6 +35,22 @@ enum {
 #define WFC_SESSION_ABORT    0x226B /* u8 link failed / session has to shut down */
 #define WFC_SESSION_REQUEST  0x226C /* u32 queued send request: kind in the low 2 bits, buffer at +0x2270/+0x2274, field at +0x2278, callback at +0x227C */
 #define WFC_SESSION_SUBSTATE 0x2280 /* u16 substep reported with the state */
+#define WFC_SESSION_SEND_BUFFER 0xF00 /* byte buffer the sender fills before sending */
+
+/* State of the asynchronous send path (gSendState): the sender holds gSendLock,
+ * assembles the packet in the session's buffer, starts the transfer and sleeps
+ * on gSendThread until the completion callback stores the result here. */
+typedef struct WfcSendState {
+    u8  initialized;   /* +0x00 nonzero once the path has been set up */
+    u8  pad01[3];
+    u32 request;       /* +0x04 */
+    u32 flags;         /* +0x08 */
+    u8  pad0C[0x18];
+    s32 result;        /* +0x24 result of the last send, WFC_SEND_OK when done */
+    void (*callback)(void *, void *, void *, u16); /* +0x28 completion hook */
+} WfcSendState;
+
+#define WFC_SEND_OK 0 /* WfcSendState::result after a successful send */
 
 /* The local player's connection data (0xC0 bytes). It is filled from the
  * connection-setup screen, copied into the session when a match is started,

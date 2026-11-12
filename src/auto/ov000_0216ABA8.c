@@ -115,11 +115,11 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_0209b5e4(s32, s32);
     s32 func_0209c268();
     s8 GetSpriteAnimValue(s32);
-    M2C_UNK func_020a92bc(void *, s32);
+    M2C_UNK SetTextSpriteValue(void *, s32);
     s32 GetCurrentMapName();
     s32 GetLanguage();
     s32 GetLocalizedFileName(M2C_UNK *);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK gMapConfig;
     extern s32 *gCurrentMap;
     extern void *g3DSpriteEngineMain;
@@ -162,7 +162,7 @@ void func_ov000_0216b194(void *arg0) {
     } else {
         var_r1 = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
     }
-    func_020a92bc(M2C_FIELD(arg0, void **, 0x40), var_r1);
+    SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x40), var_r1);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x20) = (u8) ((M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x20) & ~0xE0) | 0x20);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -207,7 +207,7 @@ void func_ov000_0216b194(void *arg0) {
     CloseNarcArchive();
     temp_r0_18 = func_02080e30(&data_ov000_021b86e0, 1);
     func_01ff9e44(temp_r0_18 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0x360, 0x20);
-    func_020e35cc(temp_r0_18);
+    HeapFreeBlock(temp_r0_18);
     func_0209b59c(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
     temp_r6_5 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
     func_0209b5e4(temp_r6_5 + 0x8FC0, GetCurrentMapName());
@@ -305,7 +305,7 @@ block_24:
     func_020808dc(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
     temp_r0_23 = func_02080e30(&data_ov000_021b8708, 1);
     func_01ff9e44(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
-    func_020e35cc(temp_r0_23);
+    HeapFreeBlock(temp_r0_23);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3E) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x46) = 0;

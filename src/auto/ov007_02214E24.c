@@ -52,7 +52,7 @@ y++;row+=30;
 }return found!=0;
 }
 
-s32 func_ov007_02214ff8(s32 x,s32 y,s32 value){
+s32 Map_CountTileNeighbors(s32 x,s32 y,s32 value){
 s32 count;
 if(((s8*)gMapMarkerGrid+y*30)[x])return 0;
 count=0;
@@ -63,7 +63,7 @@ if(y+1>=M2C_FIELD(*gCurrentMap,u16*,0x5146) || value==((Map14E24*)*gCurrentMap)-
 return count;
 }
 
-s32 func_ov007_02215128(s32 value,s32 mode){
+s32 Map_RollTerrainGrowth(s32 value,s32 mode){
 s32 RandomIntRange(s32,s32);s32 n;
 switch(mode){
 case 32:
@@ -248,7 +248,7 @@ for(clearY=y-1;clearY<=y+1;clearY++)for(clearX=x-1;clearX<=x+1;clearX++)Map_SetC
 return Map_PlaceSideBase(x,y,side,radius,distance);
 }
 #pragma opt_common_subs reset
-s32 func_ov007_02215bc4(s32 *x,s32 *y,s32 value) {
+s32 Map_PickRandomTileOfValue(s32 *x,s32 *y,s32 value) {
  s32 RandomIntRange(s32,s32);
  extern s32 *gCurrentMap;
  s32 n=0;

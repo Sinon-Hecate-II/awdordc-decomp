@@ -229,10 +229,10 @@ void func_020985b0(s32 unused,s32 a,s32 b){s32 func_02098034();s32 func_02098278
 
 #pragma opt_strength_reduction off
 void func_020985f0(s32 src,s32 dst,u32 w,u32 h,u8 half){
-void func_02007ef4(s32,s32,u32);
+void MI_CpuCopy32(s32,s32,u32);
 s32 y0,col0,tile0,row0,width0,height0,x0;
 s32 tile1,width1,height1,y1,x1,row1;
-if(w<=1){func_02007ef4(src,dst,(half?32:64)*(w*h));return;}
+if(w<=1){MI_CpuCopy32(src,dst,(half?32:64)*(w*h));return;}
 if(half){
 height0=(u16)(h*8);
 y0=0;if(height0<=0)return;
@@ -258,11 +258,11 @@ y1++;row1+=width1;
 s32 func_0209871c(s32 unused,s32 type,s32 dst){
 s32 func_02098034();s32 func_02098588(s32);void LoadDecompressedFileTo(s32,s32);M2C_UNK SetFileDirectory(s32);
 void func_020985f0(s32,s32,u32,u32,u8);
-s32 func_020e34bc(void);M2C_UNK func_020e35cc(s32);
+s32 HeapAllocBlock(void);M2C_UNK HeapFreeBlock(s32);
 s32 size,x,y,buf,i0,off0,n0,off1,n1,i1;
 x=func_02098034();y=func_02098278(type);size=0;
 if(x){
-size=func_02098588(type);buf=func_020e34bc();SetFileDirectory(x);LoadDecompressedFileTo(y,buf);
+size=func_02098588(type);buf=HeapAllocBlock();SetFileDirectory(x);LoadDecompressedFileTo(y,buf);
 switch(type){
 case 0:
 i0=0;n0=size>>8;
@@ -271,7 +271,7 @@ case 2:case 3:case 4:
 i1=0;n1=size>>8;
 if(n1>0){off1=0;do{func_020985f0(buf+(off1<<6),dst+(off1<<6),1,4,0);i1++;off1+=4;}while(i1<n1);}break;
 }
-func_020e35cc(buf);
+HeapFreeBlock(buf);
 }return size;
 }
 /* Fills a tile-map rectangle for the given layout index, optionally mirroring it. */

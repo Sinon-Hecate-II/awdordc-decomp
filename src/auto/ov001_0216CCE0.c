@@ -175,8 +175,8 @@ void func_ov001_0216cf98(s32 arg0, void *arg1) {
 }
 
 void func_ov001_0216d02c(s32 *arg0, void *arg1) {
-    void func_02007df8(s32, void *, s32);
-    func_02007df8(0, arg1 + 12, 32);
+    void FillU16(s32, void *, s32);
+    FillU16(0, arg1 + 12, 32);
     M2C_FIELD(arg1, u16 *, 10) = *arg0;
     MI_CpuCopy8((s32)(arg0 + 1), (s32)(arg1 + 12), M2C_FIELD(arg1, u16 *, 10));
 }

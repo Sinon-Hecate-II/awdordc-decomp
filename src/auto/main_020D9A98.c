@@ -94,8 +94,8 @@ M2C_FIELD(temp_r4,u16*,0x48)=temp_r3&~1;
 M2C_FIELD(temp_r4,u16*,0x48)=M2C_FIELD(temp_r4,u16*,0x48)|2;
 PlaySoundEffect(0x1000D); func_01ffa6fc(temp_r4);}
 
-void func_020d9ee4(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020d9ee4(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
 #pragma scheduling off
 void func_020d9f40(void *arg0) {
@@ -147,8 +147,8 @@ void func_020da008(void *arg0) {
     func_01ffa6fc(temp_r4);
 }
 
-void func_020da0a0(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40)var_r0=temp_r3-1;else if((temp_r1&0x80)&&(temp_r2&0x80))var_r0=0; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020da0a0(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40)var_r0=temp_r3-1;else if((temp_r1&0x80)&&(temp_r2&0x80))var_r0=0; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
 // Draws two 5-step progress bars (levels x/y growing by 5) onto a UI screen, then marks it dirty.
 void func_020da0ec(void *a) {
@@ -197,8 +197,8 @@ void func_020da1e8(void *arg0) {
     }
 }
 
-void func_020da22c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020da22c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
 void func_020da2a0(void *a) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
@@ -244,13 +244,13 @@ void func_020da3c8(void *arg0) {
     }
 }
 
-void func_020da40c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020da40c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
 void func_020da480(void *arg0) {
     M2C_UNK ResetPlayerMask(void);
     M2C_UNK func_02086330(void);
-    M2C_UNK func_02082340(M2C_UNK, void *);
+    M2C_UNK Configure3DSpriteLayer(M2C_UNK, void *);
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK SetFileDirectory(void *);
@@ -298,8 +298,8 @@ void func_020da480(void *arg0) {
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
 
-    func_02082340(1, data_0212c5f2);
-    func_02082340(0, data_0212c5f0);
+    Configure3DSpriteLayer(1, data_0212c5f2);
+    Configure3DSpriteLayer(0, data_0212c5f0);
 
     st = *gCur3DSpriteEngine;
     pcl = (u16 *)st;

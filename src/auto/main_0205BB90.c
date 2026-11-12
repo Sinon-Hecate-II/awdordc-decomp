@@ -248,7 +248,7 @@ s32 func_0205c344(void *conn) {
     }
 }
 
-s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));func_020486f8(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
+s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Vector_AddItem(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
 
 s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     extern M2C_UNK gGt2Magic;

@@ -13,7 +13,7 @@ s32 value=M2C_FIELD(gOv005MenuState,s16 *,0x10);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(func_020bf894(M2C_FIELD(gOv005MenuState,s16 *,0x10))) {
-func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc),0x40);
+MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc),0x40);
 func_020985b0(value,8,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc)+0x40);
 func_02098a34(value,8,2,0,0);
 func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),1,0,0);
@@ -33,7 +33,7 @@ void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_020bf894(M2C_FIELD(gOv005MenuState,s16 *,0x10)))
 func_02098d78(value,0x8380,6);
-else func_02007e98(0,M2C_FIELD(g3DSpriteEngineMain,s32 *,0x1c)+0x8380,0x20);
+else MI_CpuFill32(0,M2C_FIELD(g3DSpriteEngineMain,s32 *,0x1c)+0x8380,0x20);
 gCur3DSpriteEngine=saved;
 M2C_FIELD(gOv005MenuState,s16 *,0x18)=-1;
 }
@@ -104,7 +104,7 @@ else if(keys&0x20)value=old-1;
 else if(keys&0x10)value=old+1;
 if(value<0)value+=12;
 if(value>11)value-=12;
-if(value!=old)func_020b1c60(value);
+if(value!=old)FocusSpriteSlotById(value);
 M2C_FIELD(gOv005MenuState,s16 *,0xe)=value;
 M2C_FIELD(gOv005MenuState,s16 *,0x10)=M2C_FIELD(gOv005MenuState,s16 *,0xe)+1;
 }
@@ -125,7 +125,7 @@ if(keys&0x20) {if(old<=0) {if(M2C_FIELD(gKeyState,u16 *,0)&0x20)value=old-1;}els
 else if(keys&0x10) {if(old>=3) {if(M2C_FIELD(gKeyState,u16 *,0)&0x10)value=old+1;}else value=old+1;}
 if(value<0)value=3;
 if(value>3)value=0;
-if(value!=old)func_020b1c60(value);
+if(value!=old)FocusSpriteSlotById(value);
 func_ov005_02217334(value);
 }
 

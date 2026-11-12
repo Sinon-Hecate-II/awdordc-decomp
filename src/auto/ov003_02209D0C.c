@@ -156,14 +156,14 @@ M2C_UNK SetFileDirectory(M2C_UNK *);
 M2C_UNK func_0207c780(s32,s32);
 s32 func_02080e30(s32,s32);
 s32 GetLocalizedFileName(s32);
-M2C_UNK func_020e35cc(s32);
+M2C_UNK HeapFreeBlock(s32);
 extern void *g3DSpriteEngineSub;
 extern M2C_UNK data_ov003_0220f240, data_ov003_0221118c, data_ov003_0221119c;
 s32 temp_r0;
 SetFileDirectory(&data_ov003_0221118c);
 temp_r0=func_02080e30(GetLocalizedFileName((s32)&data_ov003_0221119c),1);
 func_0207c780(temp_r0+M2C_FIELD(&data_ov003_0220f240,s32 *,arg1*16),M2C_FIELD(g3DSpriteEngineSub,s32 *,0x14));
-func_020e35cc(temp_r0);
+HeapFreeBlock(temp_r0);
 }
 
 void func_ov003_0220a658(void *arg0, s32 arg1) {
@@ -172,14 +172,14 @@ void func_ov003_0220a658(void *arg0, s32 arg1) {
     M2C_UNK func_0207c780(s32, s32);
     s32 func_02080e30(s32, s32);
     s32 GetLocalizedFileName(s32);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK data_ov003_0220f244;
     s32 temp_r4;
     temp_r4 = func_02080e30(GetLocalizedFileName(M2C_FIELD(&data_ov003_0220f244, s32 *, arg1 * 0x10)), 1);
     func_02004b54();
     func_0207c780(temp_r4, 0x06800000);
     func_02004cf0();
-    func_020e35cc(temp_r4);
+    HeapFreeBlock(temp_r4);
 }
 
 void Ov003_SetRowAnimation(void *arg0, s8 arg1) {

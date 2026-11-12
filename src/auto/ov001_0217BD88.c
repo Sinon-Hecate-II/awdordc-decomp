@@ -8,24 +8,35 @@ extern const u16 data_ov001_0218f848[];
 extern void *data_ov001_02193da4;
 extern u32 data_ov001_02190770;
 
+/* Decides whether the name just entered on the ov001 name-entry screen is
+ * acceptable: entry mode 0 accepts any non-empty name; otherwise only certain
+ * lengths pass, and the 10, 26 and 32-character forms (a code) must be all
+ * hexadecimal.  A rejected attempt plays the error sound. */
 s32 IsNameEntryValid(void) {
-    s32 a,b,len,i;
-    u8 *p;
+    s32 mode, variant, length, i;
+    u8 *text;
     extern void *gNameEntryState;
-    func_ov001_02175db4(&a,&b);
-    if(b==1) func_ov001_02171c24(0x35,-1,0);
-    func_ov001_02175db4(&a,&b);
-    if(a==0) return M2C_FIELD(gNameEntryState,u8 *,8)!=0;
-    if(b==1 && M2C_FIELD(gNameEntryState,u8 *,8)==0) return 0;
-    len=StringLengthUpTo((u8 *)gNameEntryState+8,32);
-    switch(len){
-    case 0:case 5:case 13:case 16:return 1;
-    case 10:case 26:case 32:
-        for(i=0;i<len;i++){
-            u8 c;
-            p=(u8 *)gNameEntryState;
-            c=p[i+8];
-            if((c>='0'&&c<='9')||(c>='A'&&c<='F')||(c>='a'&&c<='f'))continue;
+
+    func_ov001_02175db4(&mode, &variant);
+    if (variant == 1) func_ov001_02171c24(0x35, -1, 0);
+    func_ov001_02175db4(&mode, &variant);
+    if (mode == 0) return M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_TEXT) != 0;
+    if (variant == 1 && M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_TEXT) == 0) return 0;
+    length = StringLengthUpTo((u8 *)gNameEntryState + NAME_ENTRY_TEXT, NAME_ENTRY_MAX_LENGTH);
+    switch (length) {
+    case 0:
+    case 5:
+    case 13:
+    case 16:
+        return 1;
+    case 10:
+    case 26:
+    case 32:
+        for (i = 0; i < length; i++) {
+            u8 ch;
+            text = (u8 *)gNameEntryState;
+            ch = text[i + NAME_ENTRY_TEXT];
+            if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f')) continue;
             return 0;
         }
         return 1;

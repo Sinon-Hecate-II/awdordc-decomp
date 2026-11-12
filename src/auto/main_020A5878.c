@@ -340,7 +340,7 @@ void *func_020a660c(s32 a,s32 b,s32 c,s32 d){void *func_020d2dcc(s32);void func_
 
 void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *func_020a660c(s32,s32,s32,s32);u8 *p=func_020a660c((s16)a,(s16)b,(s16)c,d);u8 v;if(!p)return 0;v=M2C_FIELD((u8 *)*gCurrentMap+d*0x8c,u8 *,0x67d6);p[0]=(p[0]&~0xc0)|((u32)(v<<30)>>24);M2C_FIELD(p,u16 *,4)|=1;if(c==22)M2C_FIELD(p,u16 *,4)|=32;return p;}
 
-void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *func_020a660c(s32,s32,s32,s32);void func_020cfd28(void *);void *p=func_020a660c((s16)a,(s16)b,(s16)c,d);if(!p)return 0;func_020cfd28(p);return p;}
+void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *func_020a660c(s32,s32,s32,s32);void RefreshMapView(void *);void *p=func_020a660c((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
 
 void func_020a6718(M2C_UNK arg0) {
     void func_020a6738(M2C_UNK, M2C_UNK);

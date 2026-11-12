@@ -463,11 +463,11 @@ void func_0203bd0c(void) {
 
 s32 func_0203bd34(void) {
     s32 func_0203bd54();
-    M2C_UNK func_020418c4();
+    M2C_UNK DisconnectConnection();
     if (func_0203bd54() == 0) {
         return 0;
     }
-    func_020418c4();
+    DisconnectConnection();
     return 1;
 }
 

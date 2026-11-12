@@ -1,5 +1,6 @@
 /* 20 functions from 0x0207A3B0 to 0x0207B2F0 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 #pragma push
 #pragma opt_propagation off
@@ -353,7 +354,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
 
 void func_0207ab24(s32 arg0, s32 arg1) {
  M2C_UNK func_0207ab84(s32,s32,u8);
- M2C_UNK func_020cfd28(void);
+ M2C_UNK RefreshMapView(void);
  M2C_UNK func_020cf2c8(void);
  M2C_UNK func_020d2470(void);
  extern void *gCurrentMap;
@@ -367,7 +368,7 @@ void func_0207ab24(s32 arg0, s32 arg1) {
  temp_r3_2 = M2C_FIELD(temp_r3,u16 *,0x52a6) + (temp_lr[temp_ip] & 0x1f);
  temp_lr[temp_ip] = temp_r3_2;
  func_0207ab84(arg0,arg1,(u8)(temp_r3_2 & 0xe0));
- func_020cfd28();
+ RefreshMapView();
  func_020cf2c8();
  func_020d2470();
 }
@@ -458,7 +459,7 @@ void func_0207ad30(s32 value) {
 }
 
 void func_0207ae2c(void *arg0) {
-    void *func_020e34bc(s32);
+    void *HeapAllocBlock(s32);
     extern void *gCurrentMap;
 
     void *map;
@@ -477,7 +478,7 @@ void func_0207ae2c(void *arg0) {
     selX = M2C_FIELD((u8 *)map + 0x52d0, u8 *, 1);
     selY = M2C_FIELD((u8 *)map + 0x52d0, u8 *, 2);
 
-    alloc = func_020e34bc(0x660);
+    alloc = HeapAllocBlock(0x660);
     M2C_FIELD(arg0, void **, 0x54) = alloc;
     M2C_FIELD(arg0, s16 *, 0x6c) = 0;
     M2C_FIELD(arg0, s16 *, 0x6e) = 0;
@@ -518,8 +519,8 @@ void func_0207ae2c(void *arg0) {
 }
 
 void func_0207af6c(void *arg0) {
-    M2C_UNK func_020e35cc(s32);
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
+    M2C_UNK HeapFreeBlock(s32);
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
 void func_0207af7c(void *arg0){
@@ -548,10 +549,10 @@ void func_0207b040(void) {
  func_0207a768();
 }
 
-void func_0207b058(void *arg0) {
-    s32 func_0206409c(s32);
+void InitMapScrollAnimation(void *arg0) {
+    s32 Abs(s32);
     extern void *gCurrentMap;
-    extern u8 data_02144ce0[];
+    extern u8 gMapScrollSpeedRamp[];
 
     u16 rem;
     u16 counter;
@@ -562,10 +563,10 @@ void func_0207b058(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x38) - M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148));
     M2C_FIELD(arg0, s16 *, 0x3e) = (s16)(M2C_FIELD(arg0, s16 *, 0x3a) - M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514a));
 
-    if (func_0206409c(M2C_FIELD(arg0, s16 *, 0x3c)) > func_0206409c(M2C_FIELD(arg0, s16 *, 0x3e))) {
-        rem = (u16)func_0206409c(M2C_FIELD(arg0, s16 *, 0x3c));
+    if (Abs(M2C_FIELD(arg0, s16 *, 0x3c)) > Abs(M2C_FIELD(arg0, s16 *, 0x3e))) {
+        rem = (u16)Abs(M2C_FIELD(arg0, s16 *, 0x3c));
     } else {
-        rem = (u16)func_0206409c(M2C_FIELD(arg0, s16 *, 0x3e));
+        rem = (u16)Abs(M2C_FIELD(arg0, s16 *, 0x3e));
     }
 
     M2C_FIELD(arg0, s16 *, 0x40) = 0;
@@ -576,22 +577,27 @@ void func_0207b058(void *arg0) {
             break;
         }
         rem = (u16)diff;
-        data_02144ce0[M2C_FIELD(arg0, u16 *, 0x40)] = (u8)counter;
+        gMapScrollSpeedRamp[M2C_FIELD(arg0, u16 *, 0x40)] = (u8)counter;
         if (counter < 8) {
             counter = (u16)(counter + 1);
         }
         M2C_FIELD(arg0, s16 *, 0x40) = (s16)(M2C_FIELD(arg0, u16 *, 0x40) + 1);
     }
-    data_02144ce0[M2C_FIELD(arg0, u16 *, 0x40)] = (u8)rem;
+    gMapScrollSpeedRamp[M2C_FIELD(arg0, u16 *, 0x40)] = (u8)rem;
     M2C_FIELD(arg0, s16 *, 0x42) = 0;
 }
 
-void func_0207b164(void *arg0) {
-    extern u8 data_02144ce0[];
-    s32 func_0206409c(s32);
+/* Advances the map-scroll pan one frame: adds the current speed step to the
+ * travelled distance, interpolates the view along whichever axis has the larger
+ * delta, stores the new view scroll, and when the countdown reaches zero snaps
+ * to the target, frees the task and runs the view's scroll-done callback. */
+void StepMapScrollAnimation(void *task) {
+    extern u8 gMapScrollSpeedRamp[];
+    s32 Abs(s32);
     s32 func_020720f0(s32, s32);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     extern void *gCurrentMap;
+    MapScrollAnim *pan = (MapScrollAnim *)task;
 
     void (*cb)(void);
     s32 fixedX;
@@ -599,42 +605,42 @@ void func_0207b164(void *arg0) {
     s32 accum;
     s32 signMajor;
 
-    if (func_0206409c(M2C_FIELD(arg0, s16 *, 0x3c)) > func_0206409c(M2C_FIELD(arg0, s16 *, 0x3e))) {
-        M2C_FIELD(arg0, u16 *, 0x42) = (u16)(M2C_FIELD(arg0, u16 *, 0x42) + data_02144ce0[M2C_FIELD(arg0, u16 *, 0x40)]);
-        if (M2C_FIELD(arg0, s16 *, 0x3c) > 0) {
+    if (Abs(pan->deltaX) > Abs(pan->deltaY)) {
+        pan->accum = (u16)(pan->accum + gMapScrollSpeedRamp[pan->remaining]);
+        if (pan->deltaX > 0) {
             signMajor = 1;
         } else {
-            signMajor = -(M2C_FIELD(arg0, s16 *, 0x3c) < 0);
+            signMajor = -(pan->deltaX < 0);
         }
-        accum = (s32)M2C_FIELD(arg0, u16 *, 0x42) * signMajor;
-        fixedX = (M2C_FIELD(arg0, s16 *, 0x34) + accum) << 16;
-        fixedY = accum * func_020720f0(M2C_FIELD(arg0, s16 *, 0x3e) << 16, M2C_FIELD(arg0, s16 *, 0x3c)) + (M2C_FIELD(arg0, s16 *, 0x36) << 16);
+        accum = (s32)pan->accum * signMajor;
+        fixedX = (pan->startX + accum) << 16;
+        fixedY = accum * func_020720f0(pan->deltaY << 16, pan->deltaX) + (pan->startY << 16);
     } else {
-        M2C_FIELD(arg0, u16 *, 0x42) = (u16)(M2C_FIELD(arg0, u16 *, 0x42) + data_02144ce0[M2C_FIELD(arg0, u16 *, 0x40)]);
-        if (M2C_FIELD(arg0, s16 *, 0x3e) > 0) {
+        pan->accum = (u16)(pan->accum + gMapScrollSpeedRamp[pan->remaining]);
+        if (pan->deltaY > 0) {
             signMajor = 1;
         } else {
-            signMajor = -(M2C_FIELD(arg0, s16 *, 0x3e) < 0);
+            signMajor = -(pan->deltaY < 0);
         }
-        accum = (s32)M2C_FIELD(arg0, u16 *, 0x42) * signMajor;
-        fixedX = accum * func_020720f0(M2C_FIELD(arg0, s16 *, 0x3c) << 16, M2C_FIELD(arg0, s16 *, 0x3e)) + (M2C_FIELD(arg0, s16 *, 0x34) << 16);
-        fixedY = (M2C_FIELD(arg0, s16 *, 0x36) + accum) << 16;
+        accum = (s32)pan->accum * signMajor;
+        fixedX = accum * func_020720f0(pan->deltaX << 16, pan->deltaY) + (pan->startX << 16);
+        fixedY = (pan->startY + accum) << 16;
     }
 
-    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148) =
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_X) =
         fixedX / 65536;
 
-    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514a) =
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_Y) =
         fixedY / 65536;
 
-    if (M2C_FIELD(arg0, u16 *, 0x40) != 0) {
-        M2C_FIELD(arg0, u16 *, 0x40) = (u16)(M2C_FIELD(arg0, u16 *, 0x40) - 1);
+    if (pan->remaining != 0) {
+        pan->remaining = (u16)(pan->remaining - 1);
     } else {
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148) = M2C_FIELD(arg0, s16 *, 0x38);
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514a) = M2C_FIELD(arg0, s16 *, 0x3a);
-        DeleteSpriteObject(arg0);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_X) = pan->targetX;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_Y) = pan->targetY;
+        DeleteSpriteObject(task);
         }
-    cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x1c);
+    cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_SCROLL_DONE);
         if (cb != NULL) {
             cb();
         }

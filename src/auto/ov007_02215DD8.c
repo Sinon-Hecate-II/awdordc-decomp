@@ -79,9 +79,9 @@ loop:
     goto loop;
 }
 
-void func_ov007_02216118(s32 arg0, s32 arg1) {
-    s32 func_ov007_02214ff8(s32, s32, s32);
-    s32 func_ov007_02215128(s32, s32);
+void Map_GrowTerrain(s32 arg0, s32 arg1) {
+    s32 Map_CountTileNeighbors(s32, s32, s32);
+    s32 Map_RollTerrainGrowth(s32, s32);
     s32 Map_SetCellTile(s32, s32, s32);
     s32 Map_MarkUnitsMoved(void);
     extern void **gCurrentMap;
@@ -103,8 +103,8 @@ loop_outer:
             if (M2C_FIELD(r0, u16 *, 0x5144) > 0) {
                 do {
                     if (row[r6] == 0 && arg1 == M2C_FIELD((r0 + ((r6 + M2C_FIELD((r0 + r7 * 2), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) {
-                        s32 cnt = func_ov007_02214ff8(r6, r7, arg0);
-                        if (func_ov007_02215128(cnt, arg0) != 1) {
+                        s32 cnt = Map_CountTileNeighbors(r6, r7, arg0);
+                        if (Map_RollTerrainGrowth(cnt, arg0) != 1) {
                             row[r6] = 1;
                         } else {
                             Map_SetCellTile(r6, r7, arg0);
@@ -205,19 +205,22 @@ else{for(;x1<=x0;x1++)((u8 (*)[30])gMapMarkerGrid)[bend][x1]=2;}
 }
 }
 
-void func_ov007_02216a74(void) {
+/* Scatters a few small clusters of wasteland (tile 3) over the plain map:
+   picks a random plain cell, paints it and its four orthogonal neighbours
+   with wasteland, then lets Map_GrowTerrain expand the patches. */
+void Map_GenerateWastelandTerrain(void) {
 s32 Map_InitMarkerGrid(void);
-s32 func_ov007_02214d88(s32,s32);
-s32 func_ov007_02215bc4(s32*,s32*,s32);
+s32 Map_RandomScaledValue(s32,s32);
+s32 Map_PickRandomTileOfValue(s32*,s32*,s32);
 s32 Map_SetCellTile(s32,s32,s32);
 s32 Map_MarkUnitsMoved(void);
 extern void **gCurrentMap;
 extern u8 gMapMarkerGrid[];
-s32 x,y,i,n;
+s32 x,y,i,patchCount;
 Map_InitMarkerGrid();
-n=func_ov007_02214d88(2,8);
-for(i=0;i<n;i++){
-if(!func_ov007_02215bc4(&x,&y,1)) break;
+patchCount=Map_RandomScaledValue(2,8);
+for(i=0;i<patchCount;i++){
+if(!Map_PickRandomTileOfValue(&x,&y,1)) break;
 Map_SetCellTile(x,y,3);
 (gMapMarkerGrid + y*30)[x]=2;
 if(x-1>=0){Map_SetCellTile(x-1,y,3);(gMapMarkerGrid + y*30)[x-1]=2;}
@@ -225,21 +228,21 @@ if(y-1>=0){Map_SetCellTile(x,y-1,3);(gMapMarkerGrid + y*30)[x-30]=2;}
 if(x+1<M2C_FIELD(*gCurrentMap,u16*,0x5144)){Map_SetCellTile(x+1,y,3);(gMapMarkerGrid + y*30)[x+1]=2;}
 if(y+1<M2C_FIELD(*gCurrentMap,u16*,0x5146)){Map_SetCellTile(x,y+1,3);(gMapMarkerGrid + y*30)[x+30]=2;}
 }
-Map_MarkUnitsMoved();func_ov007_02216118(3,1);
+Map_MarkUnitsMoved();Map_GrowTerrain(3,1);
 }
 
 void func_ov007_02216bf4(void) {
-s32 Map_InitMarkerGrid(void);s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215bc4(s32 *,s32 *,s32);s32 Map_SetCellTile(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void func_ov007_02216118(s32,s32);
+s32 Map_InitMarkerGrid(void);s32 Map_RandomScaledValue(s32,s32);s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);s32 Map_SetCellTile(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void Map_GrowTerrain(s32,s32);
 extern u8 gMapMarkerGrid[];
 s32 x,y,i,n;
-Map_InitMarkerGrid();n=func_ov007_02214d88(8,12);
+Map_InitMarkerGrid();n=Map_RandomScaledValue(8,12);
 i=0;
 if(n>0){do{
-if(!func_ov007_02215bc4(&x,&y,1))break;
+if(!Map_PickRandomTileOfValue(&x,&y,1))break;
 Map_SetCellTile(x,y,32);
 *(gMapMarkerGrid+y*30+x)=2;
 i++;
 }while(i<n);}
-Map_MarkUnitsMoved();func_ov007_02216118(32,1);
+Map_MarkUnitsMoved();Map_GrowTerrain(32,1);
 }
 

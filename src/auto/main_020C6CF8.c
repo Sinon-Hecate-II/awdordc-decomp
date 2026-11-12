@@ -418,64 +418,69 @@ checksum=M2C_FIELD(p,u16 *,0x46);
 return (u8)(checksum==func_020c7a24((s32)p));
 }
 
-void func_020c7b48(void *arg0, void *arg1) {
-    void *func_020e34bc(s32);
-    void func_02007ef4(void *, void *, s32);
-    void func_02007e98(M2C_UNK, void *, M2C_UNK);
-    void func_020e35cc(void *);
-    struct W4 { s32 a[4]; };
-    struct W5 { s32 a[5]; };
-    struct P2 { u8 a; u8 b; };
+/* Packs a runtime map record into its compact saved form: copies the shared
+   header and terrain cells, then moves the packed unit entries from
+   MAP_RECORD_UNITS down to MAP_RECORD_SAVE_UNITS.  The source may be the
+   destination, so a temporary copy of the runtime record is taken first in
+   that case. */
+void PackMapRecord(void *arg0, void *arg1) {
+    void *HeapAllocBlock(s32);
+    void MI_CpuCopy32(void *, void *, s32);
+    void MI_CpuFill32(M2C_UNK, void *, M2C_UNK);
+    void HeapFreeBlock(void *);
+    struct MapRecordSettings { s32 a[4]; };
+    struct MapRecordStamp { s32 a[5]; };
+    struct PlayerIdPair { u8 a; u8 b; };
     u32 n;
-    u8 *q;
-    u8 *p;
+    u8 *dp;
+    u8 *sp;
     u8 *src;
     u8 *dst;
     s32 i;
 
     src = arg0;
     if (arg0 == arg1) {
-        src = func_020e34bc(0x6F8);
-        func_02007ef4(arg0, src, 0x6F8);
+        src = HeapAllocBlock(MAP_RECORD_SIZE);
+        MI_CpuCopy32(arg0, src, MAP_RECORD_SIZE);
     }
     dst = arg1;
-    func_02007e98(0, dst, 0x2AC);
-    *(s32 *)dst = *(s32 *)src;
-    dst[4] = src[4];
-    dst[5] = src[5];
-    p = src + 6;
-    q = dst + 6;
+    MI_CpuFill32(0, dst, MAP_RECORD_SAVE_SIZE);
+    ((MapRecordHeader *)dst)->magic = ((MapRecordHeader *)src)->magic;
+    ((MapRecordHeader *)dst)->width = ((MapRecordHeader *)src)->width;
+    ((MapRecordHeader *)dst)->height = ((MapRecordHeader *)src)->height;
+    sp = src + 6;
+    dp = dst + 6;
     n = 16;
     do {
-        u8 c0 = p[0];
-        u8 c1 = p[1];
-        p += 2;
-        q[0] = c0;
-        q[1] = c1;
-        q += 2;
+        u8 c0 = sp[0];
+        u8 c1 = sp[1];
+        sp += 2;
+        dp[0] = c0;
+        dp[1] = c1;
+        dp += 2;
     } while (--n);
-    q[0] = p[0];
-    dst[0x27] = src[0x27];
-    *(struct P2 *)(dst + 0x28) = *(struct P2 *)(src + 0x28);
-    *(struct P2 *)(dst + 0x2A) = *(struct P2 *)(src + 0x2A);
-    dst[0x2C] = src[0x2C];
-    dst[0x2D] = src[0x2D];
-    dst[0x2E] = src[0x2E];
-    dst[0x2F] = src[0x2F];
-    *(struct W4 *)(dst + 0x30) = *(struct W4 *)(src + 0x30);
-    p = src + 0x40;
+    dp[0] = sp[0];
+    ((MapRecordHeader *)dst)->playerCount = ((MapRecordHeader *)src)->playerCount;
+    *(struct PlayerIdPair *)(dst + 0x28) = *(struct PlayerIdPair *)(src + 0x28);
+    *(struct PlayerIdPair *)(dst + 0x2A) = *(struct PlayerIdPair *)(src + 0x2A);
+    ((MapRecordHeader *)dst)->playerIds[4] = ((MapRecordHeader *)src)->playerIds[4];
+    ((MapRecordHeader *)dst)->propertyCount = ((MapRecordHeader *)src)->propertyCount;
+    ((MapRecordHeader *)dst)->unitsPerPlayer = ((MapRecordHeader *)src)->unitsPerPlayer;
+    ((MapRecordHeader *)dst)->unitCount = ((MapRecordHeader *)src)->unitCount;
+    *(struct MapRecordSettings *)(dst + 0x30) = *(struct MapRecordSettings *)(src + 0x30);
+    sp = src + 0x40;
     {
-        struct W5 *sp = (struct W5 *)p;
-        struct W5 *dp = (struct W5 *)(dst + 0x40);
-        *dp = *sp;
+        struct MapRecordStamp *srcStamp = (struct MapRecordStamp *)sp;
+        struct MapRecordStamp *dstStamp = (struct MapRecordStamp *)(dst + 0x40);
+        *dstStamp = *srcStamp;
     }
     i = 0;
-    for (; i < (s32)src[4] * (s32)src[5]; i++)
+    for (; i < (s32)((MapRecordHeader *)src)->width * (s32)((MapRecordHeader *)src)->height; i++)
         dst[0x54 + i] = src[0x54 + i];
     i = 0;
-    for (; i < src[0x2F]; i++)
-        ((s32 *)dst)[i + 0x79] = ((s32 *)src)[i + 0xF6];
+    for (; i < ((MapRecordHeader *)src)->unitCount; i++)
+        ((s32 *)dst)[i + MAP_RECORD_SAVE_UNITS / 4] = ((s32 *)src)[i + MAP_RECORD_UNITS / 4];
     if (arg0 == arg1)
-        func_020e35cc(src);
+        HeapFreeBlock(src);
 }
 

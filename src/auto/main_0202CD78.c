@@ -381,7 +381,7 @@ func_0202b0bc(v,f+M2C_FIELD(f,s32*,0x18),M2C_FIELD(entry,s32*,0),local);
 }
 
 void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0200654c(M2C_UNK *);
+    M2C_UNK InitMutex(M2C_UNK *);
     M2C_UNK InitFileRequest(s32);
     M2C_UNK func_02029c30(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02029c74(M2C_UNK *, s32);
@@ -412,7 +412,7 @@ loop_4:
         var_r9 += 1;
         goto loop_4;
     }
-    func_0200654c(&data_0213c2a8);
+    InitMutex(&data_0213c2a8);
     var_r5 = 0;
     M2C_FIELD(&data_0213c290, M2C_UNK **, 8) = &data_0213cf00;
 loop_7:

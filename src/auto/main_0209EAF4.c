@@ -33,7 +33,7 @@ M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);
 M2C_FIELD(p,s32 *,0x60)=a;M2C_FIELD(p,s32 *,0x34)=0;M2C_FIELD(p,s32 *,0x38)=x;M2C_FIELD(p,s32 *,0x3c)=y;
 }
 
-void func_0209ebe0(void *p){extern M2C_UNK data_02168f0c;extern void **gCurrentMap;u32 v;if(M2C_FIELD(&data_02168f0c,u8 *,0)){if(M2C_FIELD(&data_02168f0c,u8 *,0))v=M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=19;else v=0;if(!(v&255))return;}func_0207b764(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
+void func_0209ebe0(void *p){extern M2C_UNK gBattleEndState;extern void **gCurrentMap;u32 v;if(M2C_FIELD(&gBattleEndState,u8 *,0)){if(M2C_FIELD(&gBattleEndState,u8 *,0))v=M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=19;else v=0;if(!(v&255))return;}func_0207b764(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
 
 void func_0209ec44(void *p) {
 extern void **gCurrentMap;
@@ -177,8 +177,8 @@ void func_0209f278(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gC
 
 void func_0209f2a8(void) {
     M2C_UNK func_020d468c();
-    M2C_UNK func_020cfd28();
-    func_020cfd28();
+    M2C_UNK RefreshMapView();
+    RefreshMapView();
     func_020d468c();
 }
 
@@ -375,11 +375,11 @@ void ResetPlayerSetupTables(void) {
 }
 
 void func_0209f858(void) {
-    extern M2C_UNK data_02168f0c;
-    M2C_FIELD(&data_02168f0c, s8 *, 0) = 0;
-    M2C_FIELD(&data_02168f0c, s8 *, 1) = 0;
-    M2C_FIELD(&data_02168f0c, s8 *, 2) = 0;
-    M2C_FIELD(&data_02168f0c, s8 *, 3) = 1;
+    extern M2C_UNK gBattleEndState;
+    M2C_FIELD(&gBattleEndState, s8 *, 0) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, 1) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, 2) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, 3) = 1;
 }
 
 void func_0209f87c(void){extern MapConfigRecord gMapConfig;extern void **gCurrentMap;gMapConfig.flags=(gMapConfig.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;ResetPlayerSetupTables();func_0209f858();}

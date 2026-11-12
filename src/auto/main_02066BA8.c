@@ -176,13 +176,13 @@ M2C_FIELD(data_0213e5f8,s32 *,12)=1;
 }else if(M2C_FIELD(data_0213e5d4,s32 *,12)==M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c)){
 M2C_FIELD(data_0213e5f8,s32 *,12)=M2C_FIELD(data_0213e5f8,s32 *,12)+1;
 }else{
-func_02006564(data_0213e664);
+LockMutex(data_0213e664);
 M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
 M2C_FIELD(data_0213e5f8,s32 *,12)=1;
 }
 args=(char *)(((u32)&format&~3U)+4);
 result=func_02066ba8(func_020673cc,data_02100218,format,args);
-if(--M2C_FIELD(data_0213e5f8,s32 *,12)==0)func_020065e8(data_0213e664);
+if(--M2C_FIELD(data_0213e5f8,s32 *,12)==0)UnlockMutex(data_0213e664);
 return result;
 }
 

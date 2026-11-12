@@ -9,7 +9,7 @@ s32 GetUnitMaxAttackRange(s32,s32);
 s32 IsUnitVisibleAtCell(s32,s32,s16,s16);
 s32 func_020a85c8(s32);
 void FloodFillUnitRange(s32,s32,s32,s32,s32);
-void func_01ffb9c4(s8);
+void MarkAdjacentCells(s8);
 static inline s8 MapCost(s32 x,s32 y) { return M2C_FIELD(*gCurrentMap+y*4,s8**,0x52e8)[x]; }
 static inline u8 *MapCell(s32 x,s32 y) { return *gCurrentMap + x + M2C_FIELD(*gCurrentMap+y*2,u16*,0x3758); }
 static inline u8 *CurrentMap(void) { return *gCurrentMap; }
@@ -49,7 +49,7 @@ if(f==1)return;
 if(g==1 && d*GetUnitDamagePercent(c,((UnitKindBits*)unit)->kind)>=4500)return;
 if ((((UnitKindBits*)unit)->kind)==25 && !(((UnitAmmoBits*)(unit+6))->ammo)) return;
 FloodFillUnitRange(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 for(directY=0;directY<MapHeight();directY++) for(directX=0;directX<MapWidth();directX++){
 map=*gCurrentMap;
 if(M2C_FIELD(map+directY*4,s8**,0x52e8)[directX]<0)continue;
@@ -77,7 +77,7 @@ if(!(u8)(M2C_FIELD(map+((u32)idx>>3),u8*,0x5160)&(1<<(idx&7))) && (flags&7))retu
 if(func_020a85c8(((UnitKindBits*)unit)->kind)){
 s32 specialX,specialY;
 FloodFillUnitRange(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
-for(specialX=0;specialX<GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);specialX++)func_01ffb9c4((s8)(specialX+111));
+for(specialX=0;specialX<GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);specialX++)MarkAdjacentCells((s8)(specialX+111));
 for(specialY=0;specialY<MapHeight();specialY++) for(specialX=0;specialX<MapWidth();specialX++){
 map=*gCurrentMap;
 if(M2C_FIELD(map+specialY*4,s8**,0x52e8)[specialX]<0)continue;

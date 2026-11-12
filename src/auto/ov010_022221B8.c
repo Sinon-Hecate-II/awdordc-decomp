@@ -164,7 +164,7 @@ M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
 #pragma opt_common_subs off
 s32 func_ov010_022227b0(void *src,s32 len){
 extern M2C_UNK data_ov010_0222c960; extern void *data_ov010_0222c98c[];extern u8 gLinkPacketBuffers[];
-void func_02007ef4(void *,void *,s32);s64 GetSystemTick(void);s32 func_02072088(s64,s32,s32);
+void MI_CpuCopy32(void *,void *,s32);s64 GetSystemTick(void);s32 func_02072088(s64,s32,s32);
 s32 found=0; s32 off;u8 *p;u16 n;s32 mode;u32 magic=0x5f564354;
 if(len!=M2C_FIELD(&data_ov010_0222c960,s32 *,0x24))return found;
 if(!M2C_FIELD(&data_ov010_0222c960,s32 *,0x20))return found;
@@ -174,7 +174,7 @@ if(M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)&1){magic=0x5f564354;off=0;}else{m
 p=gLinkPacketBuffers+off;
 mode=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
 M2C_FIELD(p,u32 *,0)=magic;
-if(mode>=2)func_02007ef4(src,p+16,len);else func_02007ef4(src,p+12,len);
+if(mode>=2)MI_CpuCopy32(src,p+16,len);else MI_CpuCopy32(src,p+12,len);
 n=M2C_FIELD(&data_ov010_0222c960,u16 *,0);
 M2C_FIELD(p,u8 *,4)=64;
 M2C_FIELD(&data_ov010_0222c960,u16 *,0)=n+1;
@@ -194,7 +194,7 @@ s32 Link_GetQueueCount(s32);
 s64 GetSystemTick(void);
 void *Link_PeekPacket(s32);
 s32 Link_AdvancePacket(void *,void *);
-void func_02007ef4(void *,void *,s32);
+void MI_CpuCopy32(void *,void *,s32);
 void Link_FreePacket(void *);
 extern u8 gLinkChannelStates[];
 s32 count;
@@ -210,7 +210,7 @@ if(!packet)goto empty;
 if(M2C_FIELD(packet,u64 *,0x46c)>now+0x34){
 if(M2C_FIELD(packet,s32 *,0x45c)==0 && M2C_FIELD(state,void **,0x3c)!=0){
 M2C_FIELD(state,s32 *,0x20)++;
-func_02007ef4(M2C_FIELD(M2C_FIELD(state,void **,0x3c),void **,0x474),dst,size);
+MI_CpuCopy32(M2C_FIELD(M2C_FIELD(state,void **,0x3c),void **,0x474),dst,size);
 Link_FreePacket(M2C_FIELD(state,void **,0x3c));
 M2C_FIELD(state,void **,0x3c)=0;
 if(flag)*flag|=1<<M2C_FIELD(packet,u8 *,0x10);
@@ -240,7 +240,7 @@ u32 z=t-x;
 M2C_FIELD(state,u32 *,0x28)=t;
 z-=M2C_FIELD(state,u32 *,0x28);
 {u32 smooth=t+(z>>4);M2C_FIELD(state,u32 *,0x2c)=smooth;M2C_FIELD(state,u32 *,0)=smooth;}
-func_02007ef4(M2C_FIELD(packet,void **,0x474),dst,size);
+MI_CpuCopy32(M2C_FIELD(packet,void **,0x474),dst,size);
 Link_AdvancePacket(state,packet);
 if(flag)*flag|=1<<M2C_FIELD(packet,u8 *,0x10);
 return 1;
@@ -257,7 +257,7 @@ return 0;
 s32 func_ov010_02222b0c(void *p,s32 size,s32 *out){
 s32 Link_PullChannelPacket(void*,s32,u32,s32*);
 void func_ov010_02225558(void*,void*,void*,s32);
-void func_02007e98(s32,void*,s32);
+void MI_CpuFill32(s32,void*,s32);
 void func_ov010_02225304(void*,s32);
 extern s32 data_ov010_0222c960;
 extern u8 data_ov010_0222cb54[];
@@ -275,8 +275,8 @@ else for(;j<3;j++){
 if(Link_PullChannelPacket(data_ov010_0222cb54,size,j,out)==1)
 func_ov010_02225558(p,data_ov010_0222cb54,p,size);
 }
-}else func_02007e98(0,p,size);
-}else{func_02007e98(0,p,size);result=0;}
+}else MI_CpuFill32(0,p,size);
+}else{MI_CpuFill32(0,p,size);result=0;}
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0x18))func_ov010_02225304(p,size);
 return result;
 }

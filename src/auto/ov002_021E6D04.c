@@ -15,7 +15,7 @@ return ready ? 1 : 0;
 }
 
 void func_ov002_021e6d04(void *arg0) {
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     s32 var_r9;
     void *var_r10;
 
@@ -23,27 +23,27 @@ void func_ov002_021e6d04(void *arg0) {
     var_r10 = arg0;
     do {
         if (M2C_FIELD(var_r10, s32 *, 0) != 0) {
-            func_020e35cc();
+            HeapFreeBlock();
             M2C_FIELD(var_r10, s32 *, 0) = 0;
         }
         if (M2C_FIELD(var_r10, s32 *, 4) != 0) {
-            func_020e35cc();
+            HeapFreeBlock();
             M2C_FIELD(var_r10, s32 *, 4) = 0;
         }
         if (M2C_FIELD(var_r10, s32 *, 8) != 0) {
-            func_020e35cc();
+            HeapFreeBlock();
             M2C_FIELD(var_r10, s32 *, 8) = 0;
         }
         if (M2C_FIELD(var_r10, s32 *, 0xC) != 0) {
-            func_020e35cc();
+            HeapFreeBlock();
             M2C_FIELD(var_r10, s32 *, 0xC) = 0;
         }
         if (M2C_FIELD(var_r10, s32 *, 0x10) != 0) {
-            func_020e35cc();
+            HeapFreeBlock();
             M2C_FIELD(var_r10, s32 *, 0x10) = 0;
         }
         if (M2C_FIELD(var_r10, s32 *, 0x14) != 0) {
-            func_020e35cc();
+            HeapFreeBlock();
             M2C_FIELD(var_r10, s32 *, 0x14) = 0;
         }
         var_r9 += 1;

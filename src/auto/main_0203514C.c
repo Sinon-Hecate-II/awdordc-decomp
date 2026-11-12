@@ -20,13 +20,13 @@ void func_02035244(void) {
 }
 
 s32 func_020352ac(void) {
-    M2C_UNK func_02006564(void *);
-    M2C_UNK func_020065e8(void *);
+    M2C_UNK LockMutex(void *);
+    M2C_UNK UnlockMutex(void *);
     extern void *gWfcNet;
     s32 result;
-    func_02006564(gWfcNet + 0x11DC);
+    LockMutex(gWfcNet + 0x11DC);
     result = M2C_FIELD(gWfcNet, s32 *, 0x1000);
-    func_020065e8(gWfcNet + 0x11DC);
+    UnlockMutex(gWfcNet + 0x11DC);
     return result;
 }
 

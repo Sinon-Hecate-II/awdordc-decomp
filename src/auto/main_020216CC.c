@@ -224,7 +224,7 @@ i++;q+=92;
 OS_RestoreInterrupts(old);
 }
 
-void func_02021e7c(void *p,s32 a,s32 b) {
+void TlsRestoreSession(void *p,s32 a,s32 b) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); 
 void MI_CpuCopy8(void *,void *,u32);u64 GetSystemTick(void);
 extern M2C_UNK data_02138cc8;
@@ -281,18 +281,18 @@ func_0200ef4c(a);func_0200eff8(b);return MakeTime(a,b)+0x386d4380;
 }
 
 void func_020220a8(s32 arg0) {
-    extern M2C_UNK data_020faffc;
-    M2C_FIELD(&data_020faffc, s32 *, 4) = arg0;
+    extern M2C_UNK gTlsCipherSuites;
+    M2C_FIELD(&gTlsCipherSuites, s32 *, 4) = arg0;
 }
 
 s32 BoostThreadPriority(void) {
 s32 func_02006028(void *); void func_02005f80(s32,u32);
-extern M2C_UNK data_020faffc, gSocketManager;
+extern M2C_UNK gTlsCipherSuites, gSocketManager;
 void *p; s32 x;
-if(M2C_FIELD(&data_020faffc,u32 *,4)>=32)return -1;
+if(M2C_FIELD(&gTlsCipherSuites,u32 *,4)>=32)return -1;
 p=M2C_FIELD(&gSocketManager,void **,4);
 x=func_02006028(p);
-func_02005f80((s32)p,M2C_FIELD(&data_020faffc,u32 *,4));
+func_02005f80((s32)p,M2C_FIELD(&gTlsCipherSuites,u32 *,4));
 return x;
 }
 

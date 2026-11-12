@@ -4,13 +4,13 @@
 
 void func_020b160c(void){
 s32 func_020a7290(void);void *func_020a7278(void);void *func_020a7284(void);
-M2C_UNK func_02007ef4(M2C_UNK *,s32,M2C_UNK);void func_01ff9e44(void *,s32,s32);void func_020c09c0(s32);
+M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);void func_01ff9e44(void *,s32,s32);void func_020c09c0(s32);
 extern void *gCur3DSpriteEngine;extern void *gCurrentMap;extern u8 data_02120a20[];
 s32 n;void *p;
 n=func_020a7290()<<5;p=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10);
-func_02007ef4(func_020a7278(),p+0x25c0,n);
+MI_CpuCopy32(func_020a7278(),p+0x25c0,n);
 p=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10)+0x4e0;
-func_02007ef4(func_020a7284(),p+0x3000,0x3c0);
+MI_CpuCopy32(func_020a7284(),p+0x3000,0x3c0);
 func_01ff9e44(data_02120a20+(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,26701)-1)*32,384,32);
 func_01ff9e44(data_02120a20+(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,26841)-1)*32,416,32);
 func_01ff9e44(data_02120a20+(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,26981)-1)*32,448,32);
@@ -37,27 +37,27 @@ void func_020b172c(void) {
 }
 
 void func_020b1770(void) {
-    M2C_UNK func_02007ef4(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy32(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_020f3ca0;
     extern void *gCur3DSpriteEngine;
-    func_02007ef4(&data_020f3ca0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC) + 0x2480, 0xA0);
+    MI_CpuCopy32(&data_020f3ca0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC) + 0x2480, 0xA0);
 }
 
 void func_020b179c(void) {
- M2C_UNK func_02007ef4(M2C_UNK *,s32,M2C_UNK);
+ M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);
  M2C_UNK func_020c0a88();
  extern void *gCur3DSpriteEngine;
  void *p; s32 src; M2C_UNK *dst;
  p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x10); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x24);
- func_02007ef4(dst,src,0x800);
+ MI_CpuCopy32(dst,src,0x800);
  p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x14); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x28);
- func_02007ef4(dst,src,0x800); func_020c0a88();
+ MI_CpuCopy32(dst,src,0x800); func_020c0a88();
 }
 
 void func_020b17dc(void) {
     M2C_UNK func_0207a768();
-    M2C_UNK func_020cfd28();
-    func_020cfd28();
+    M2C_UNK RefreshMapView();
+    RefreshMapView();
     func_0207a768();
 }
 
@@ -241,18 +241,18 @@ M2C_FIELD(gSpriteSlotManager,s16 *,0x20)=a;
 M2C_FIELD(gSpriteSlotManager,s16 *,0x22)=b;
 }
 
-s32 func_020b1c60(s32 arg0) {
+s32 FocusSpriteSlotById(s32 arg0) {
     s32 func_020b20e0(void);
     M2C_UNK func_020b1ca0(u8 *, s32);
     func_020b1ca0((u8 *)func_020b20e0(), arg0);
 }
 
 s32 func_020b1c78(void) {
-    s32 func_020b1c60();
+    s32 FocusSpriteSlotById();
     void func_020b204c();
     s32 temp_r4;
 
-    temp_r4 = func_020b1c60();
+    temp_r4 = FocusSpriteSlotById();
     func_020b204c();
     return temp_r4;
 }
@@ -283,7 +283,7 @@ extern void *gSpriteSlotManager, *gTouchState, *gCur3DSpriteEngine;
 s32 func_020b20e0();
 void func_0208df84(s16,s16,s16,s16,u16,s32);
 void *p,*q; s32 x,y,r,b,d,v,n,out; s32 force; u16 flags;
-func_020b1c60(M2C_FIELD(gSpriteSlotManager,u8 *,8));
+FocusSpriteSlotById(M2C_FIELD(gSpriteSlotManager,u8 *,8));
 if (!func_020b1bb0()) return;
 p=gSpriteSlotManager; q=M2C_FIELD(p,void **,12);
 x=M2C_FIELD(q,s16 *,20);y=M2C_FIELD(q,s16 *,22);

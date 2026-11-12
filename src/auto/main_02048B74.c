@@ -135,14 +135,14 @@ return sum;
 void func_02048eac(void *p,s32 a) {
 extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd2c;
 s32 func_020489e4(s32,s32,s32,s32,s32);
-M2C_UNK func_020486f8(s32,s32);
+M2C_UNK Vector_AddItem(s32,s32);
 M2C_UNK func_02048964(s32,s32,s32);
 s32 i,n;
 if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd2c,0x71);
 if(!p)return;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
 n=func_020489e4(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
-if(n==-1)func_020486f8(M2C_FIELD(p,s32 **,0)[i],a);
+if(n==-1)Vector_AddItem(M2C_FIELD(p,s32 **,0)[i],a);
 else func_02048964(M2C_FIELD(p,s32 **,0)[i],a,n);
 }
 

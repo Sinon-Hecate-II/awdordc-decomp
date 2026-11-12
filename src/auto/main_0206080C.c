@@ -516,8 +516,8 @@ s32 func_02061750(void *arg0){
 }
 
 void SBServerListGetServer(s32 arg0) {
-    M2C_UNK func_02061bc8(s32);
-    func_02061bc8(arg0 + 0x4C);
+    M2C_UNK SBServerListGetServerAt(s32);
+    SBServerListGetServerAt(arg0 + 0x4C);
 }
 
 void SBServerListGetCount(s32 arg0) {

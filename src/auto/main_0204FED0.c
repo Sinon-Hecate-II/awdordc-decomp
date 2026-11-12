@@ -44,7 +44,7 @@ return 0;
 
 s32 func_0204fff8(M2C_UNK arg0, void *arg1, s8 arg2, M2C_UNK arg3) {
     s32 Vector_GetCount(s32);
-    s32 func_0204fcfc(M2C_UNK, void *, s8);
+    s32 gpiAppendChar(M2C_UNK, void *, s8);
     s32 gpiSendOrBufferChar(M2C_UNK, s32, s8 *, M2C_UNK, M2C_UNK *, s32 *, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fdef8;
@@ -67,7 +67,7 @@ s32 func_0204fff8(M2C_UNK arg0, void *arg1, s8 arg2, M2C_UNK arg3) {
             return 0;
         }
     }
-    return func_0204fcfc(arg0, arg1 + 0x28, arg2);
+    return gpiAppendChar(arg0, arg1 + 0x28, arg2);
 }
 
 s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s32 stringLen) {
@@ -220,41 +220,45 @@ s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRe
     return 0;
 }
 
-s32 gpiSendBufferedData(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5) {
+/* GameSpy gpi send: flush as much of the peer's queued send buffer as the socket
+   accepts, then either compact the buffer or advance its position past the sent
+   bytes, and record the new [pos, len) range.  *outBuffered is set when the
+   socket would block.  Returns 0, or a socket error code. */
+s32 gpiSendFromBuffer(s32 connection,s32 sock,void *buffer,s32 *outBuffered,s32 compact,s32 tag) {
  s32 AssertFailed(s32 *,s32 *,s32 *,s32);
  s32 func_020651c4(s32,s32,s32);
- extern s32 data_020fdee4,data_020fdf5c,gGpiBufferFileName,data_020fe0e0,data_020fe0ec,data_020fe0f8;
- s32 sp18,sp14;
+ extern s32 sAssertOutputBufferNotNull,sGpiSendFromBufferName,gGpiBufferFileName,sAssertLenNonNeg,sAssertPosNonNeg,sAssertPosLeLen;
+ s32 wouldBlock,sentNow;
  s32 done;
- void *buffer;
+ GPISendBuffer *buf;
  s32 result;
  s32 remaining;
- s32 end;
+ s32 len;
  s32 *out;
  s32 data;
- s32 start;
- buffer=arg2;out=arg3;
- if(!arg2)AssertFailed(&data_020fdf5c,&gGpiBufferFileName,&data_020fdee4,0x1b9);
+ s32 pos;
+ buf=buffer;out=outBuffered;
+ if(!buffer)AssertFailed(&sAssertOutputBufferNotNull,&gGpiBufferFileName,&sGpiSendFromBufferName,0x1b9);
  done=0;
- end=M2C_FIELD(buffer,s32 *,8);
- start=M2C_FIELD(buffer,s32 *,12);
- data=M2C_FIELD(buffer,s32 *,0);
- remaining=end-start;
+ len=buf->len;
+ pos=buf->pos;
+ data=(s32)buf->data;
+ remaining=len-pos;
  if(!remaining)return 0;
  do {
- result=gpiSendOrBufferChar(arg0,arg1,(s8 *)(data+(start+done)),remaining,&sp18,&sp14,(s32 *)arg5);
+ result=gpiSendOrBufferChar(connection,sock,(s8 *)(data+(pos+done)),remaining,&wouldBlock,&sentNow,(s32 *)tag);
  if(result)return result;
- if(sp14){remaining-=sp14;done+=sp14;}
- }while(sp14 && remaining);
- if(arg4) {
- if(done>0){func_020651c4(data,data+done,remaining+1);end-=done;}
- }else start+=done;
- if(end<0)AssertFailed(&data_020fe0e0,&gGpiBufferFileName,&data_020fdee4,0x1de);
- if(start<0)AssertFailed(&data_020fe0ec,&gGpiBufferFileName,&data_020fdee4,0x1df);
- if(start>end)AssertFailed(&data_020fe0f8,&gGpiBufferFileName,&data_020fdee4,0x1e0);
- M2C_FIELD(buffer,s32 *,8)=end;
- M2C_FIELD(buffer,s32 *,12)=start;
- if(out)*out=sp18;
+ if(sentNow){remaining-=sentNow;done+=sentNow;}
+ }while(sentNow && remaining);
+ if(compact) {
+ if(done>0){func_020651c4(data,data+done,remaining+1);len-=done;}
+ }else pos+=done;
+ if(len<0)AssertFailed(&sAssertLenNonNeg,&gGpiBufferFileName,&sGpiSendFromBufferName,0x1de);
+ if(pos<0)AssertFailed(&sAssertPosNonNeg,&gGpiBufferFileName,&sGpiSendFromBufferName,0x1df);
+ if(pos>len)AssertFailed(&sAssertPosLeLen,&gGpiBufferFileName,&sGpiSendFromBufferName,0x1e0);
+ buf->len=len;
+ buf->pos=pos;
+ if(out)*out=wouldBlock;
  return 0;
 }
 

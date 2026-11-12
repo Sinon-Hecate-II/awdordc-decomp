@@ -69,7 +69,7 @@ func_02085348(data_02156e50,20);
 #pragma opt_common_subs reset
 void func_02084568(s32 a,s32 b,s32 c,s32 d){void func_02085348(void *,s32);u8 *q=(u8 *)&data_02156e4c;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];func_02084464((u8 *)*p+0x5388,data_02156e5c);func_02085348(data_02156e50,20);}
 
-s32 func_02084614(void) {
+s32 GetLinkMode(void) {
     s32 func_0208858c(M2C_UNK);
     if (func_0208858c(9) != 0) {
         return 1;
@@ -336,7 +336,7 @@ s32 GetOverlayEventFlags(void) {
     }
 }
 
-s32 func_02084aa0(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a)))r=0;return r;}
+s32 IsOverlayEventSet(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a)))r=0;return r;}
 
 s32 func_02084ac0(M2C_UNK arg0) {
     s32 func_ov009_02224070(M2C_UNK);
@@ -641,7 +641,7 @@ void func_02085000(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 temp_r0;
 
     func_02085c4c();
-    temp_r0 = func_02084614();
+    temp_r0 = GetLinkMode();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_0222617c(arg0, arg1, arg2);
@@ -729,7 +729,7 @@ func_01ff883c(M2C_FIELD(p,s32 *,0x34)&511,M2C_FIELD(p,s32 *,0x38),((tile>>shift)
 }
 }
 
-s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *func_01ffa3dc(void *,s32);extern M2C_UNK data_02102088;s32 r;void *p=func_01ffa3dc(&data_02102088,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;M2C_FIELD(p,u16 *,0x3c)=c;M2C_FIELD(p,u16 *,0x3e)=d;r=func_02084614();switch(r){case 1:r=M2C_FIELD(p,u16 *,0x3c)+0x10;M2C_FIELD(p,u16 *,0x3c)=r;break;case 2:default:break;}return r;}
+s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *func_01ffa3dc(void *,s32);extern M2C_UNK data_02102088;s32 r;void *p=func_01ffa3dc(&data_02102088,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;M2C_FIELD(p,u16 *,0x3c)=c;M2C_FIELD(p,u16 *,0x3e)=d;r=GetLinkMode();switch(r){case 1:r=M2C_FIELD(p,u16 *,0x3c)+0x10;M2C_FIELD(p,u16 *,0x3c)=r;break;case 2:default:break;}return r;}
 
 void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02085238(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);

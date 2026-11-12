@@ -27,7 +27,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void func_020a92bc(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -53,7 +53,7 @@ M2C_FIELD(*(void **)(screen+60),u16*,18)=860;
 M2C_FIELD(*(void **)(screen+60),u8*,22)=16;
 M2C_FIELD(*(void **)(screen+60),u8*,20)=32;
 M2C_FIELD(*(void **)(screen+60),u8*,23)=24;
-func_020a92bc(*(void **)(screen+60),20);
+SetTextSpriteValue(*(void **)(screen+60),20);
 M2C_FIELD(*(void **)(screen+60),u8*,33)=11;
 M2C_FIELD(*(void **)(screen+60),u8*,32)=(M2C_FIELD(*(void **)(screen+60),u8*,32)&~224)|32;
 M2C_FIELD(*(void **)(screen+60),void **,36)=data_02129778;
@@ -76,7 +76,7 @@ func_0207c780(objectRes,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x6b80);
 func_0207c780(objectRes+0x3c0,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x7f80);
 if(screen[54]==0)func_0207c780(objectRes+0x478,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);else func_0207c780(objectRes+0x690,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);
 func_0207c780(objectRes+0x92c,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8480);
-func_020e35cc(objectRes);
+HeapFreeBlock(objectRes);
 LoadDecompressedFileTo(sOccupationPlateFile,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x9d80);
 LoadFileToSpriteBuffer(sOccupationCommonFile,0x360,64);
 Clear3DSpriteLayer(2);
@@ -125,7 +125,7 @@ void DrawOccupationScreen(u8 *panel){
 void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void func_01ff9e44(void *,s32,s32);
 s32 GetCOFaceIndex(s32); s32 func_020ae354(s32,s32,u8,u8);
 void BlendPalette(void *,s32,u8,u8,s32); s32 Divide(s32,s32);
-void SetSpriteQuad(s32,s16,s16,s16,s16); void func_020a92bc(void *,s32); void func_020a94fc(void *);
+void SetSpriteQuad(s32,s16,s16,s16,s16); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
 void AddSprite(s32,u16,u16,void *,s32); s32 GetCOPaletteOffset(s32); s32 GetCOPortraitOffset(s32);
 s32 scratch,scaleB,scaleC,scaleD,sine,cosine,q0,q1,q2,q3; u8 fade,row; s16 spriteY;
 if(!panel[0x35])return;
@@ -145,7 +145,7 @@ scaleB=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void *
 scaleC=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); scaleD=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72)))));
 q0=Divide(cosine<<4,scaleD);q1=Divide((-sine)<<4,scaleC);q2=Divide(sine<<4,scaleB);q3=Divide(cosine<<4,scratch);
 SetSpriteQuad(0,q0,q1,q2,q3);
-if(((FlagsC253c *)(panel+80))->flag0){func_020a92bc(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}func_020a94fc(*(void **)(panel+60));}
+if(((FlagsC253c *)(panel+80))->flag0){SetTextSpriteValue(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}DrawTextSprite(*(void **)(panel+60));}
 if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc32x16,11);
 if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e00b4,11);
 scratch=GetCOPaletteOffset((*(u8 **)(panel+64))[1]);

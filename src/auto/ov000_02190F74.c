@@ -4,7 +4,7 @@
 extern void **gCurrentMap;
 extern u8 *gAiCommandState;
 void BuildUnitMoveRange(void *);
-void func_01ffb9c4(int);
+void MarkAdjacentCells(int);
 int func_020d27a4(int,int);
 int IsFootUnitKind(int);int GetUnitAttackClass(int);
 int func_ov000_021a8a88(void *);
@@ -137,7 +137,7 @@ void func_ov000_0219137c(void){
  Map1911 *map;Unit1911 *unit;
  s16 position[2];
  BuildUnitMoveRange(((Map1911 *)*gCurrentMap)->selected);
- func_01ffb9c4(111);
+ MarkAdjacentCells(111);
  for(y=0;y<((Map1911 *)*gCurrentMap)->height;y++){
  for(x=0;x<((Map1911 *)*gCurrentMap)->width;x++){
  int distance;

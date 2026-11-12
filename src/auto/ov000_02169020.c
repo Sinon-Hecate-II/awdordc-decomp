@@ -52,7 +52,7 @@ s32 IsPlayerHuman(u32);
 void func_02091c20(s32,s32);
 void func_ov000_02169740(void *);
 void func_ov000_021696f8(void *);
-void func_020cfd28(void);
+void RefreshMapView(void);
 void func_ov000_0216a040(void *);
 void func_02091700(s32,s32);
 extern s32 *gCurrentMap;
@@ -70,7 +70,7 @@ func_020c98d8(M2C_FIELD(p,s16*,0x4c)>>4,M2C_FIELD(p,s16*,0x4e)>>4,0);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,0x52a4)))func_02091c20(14,1);
 break;
 case 4:func_ov000_02169740(p);break;
-case -1:func_ov000_021696f8(p);func_020cfd28();break;
+case -1:func_ov000_021696f8(p);RefreshMapView();break;
 case 0:case 1:case 2:case 3:
 func_ov000_0216a040(p);
 if(command!=M2C_FIELD(p,s8*,0x44)){
@@ -191,14 +191,14 @@ void func_ov000_02169518(s32 arg0) {
 
 void func_ov000_02169540(void *p, s32 arg1){
 s32 func_020a7d38(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
-extern u8 data_02168f0c[];
+extern u8 gBattleEndState[];
 s32 func_ov000_021697a0(volatile s8 *);s32 func_ov000_02169940(s8 *);int func_ov000_02169854(int,int,const signed char *);void func_ov000_02169804(void *,void *);void func_ov000_02169f88(void);
 s8 *path=(s8*)arg1;
 s32 x=M2C_FIELD(p,s16 *,0x4c)/16,y=M2C_FIELD(p,s16 *,0x4e)/16;u8 ok;
 if(func_ov000_021697a0(path)==0 && func_ov000_02169940(path)==0)return;
 M2C_FIELD(p,u8 *,0x40)=0;M2C_FIELD(p,u8 *,0x41)=4;M2C_FIELD(p,u8 *,0x46)=1;
-if(data_02168f0c[0]){
-if(data_02168f0c[0]){if(M2C_FIELD((void*)*gCurrentMap,u16 *,0x52b0)!=19)ok=1;else ok=0;}else ok=0;
+if(gBattleEndState[0]){
+if(gBattleEndState[0]){if(M2C_FIELD((void*)*gCurrentMap,u16 *,0x52b0)!=19)ok=1;else ok=0;}else ok=0;
 if(!(ok&255))M2C_FIELD(p,u8 *,0x46)=0;
 }
 if(!func_ov000_02169854(x,y,path))M2C_FIELD(p,u8 *,0x46)=0;
@@ -437,11 +437,11 @@ func_0207c55c(data_02120a20+(M2C_FIELD(player,u8 *,0x1d)-1)*32,a,32,0);
 
 void func_ov000_02169cd4(void *arg0) {
     void Sprite_ClearHandle(s32 *);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x34));
     Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x38));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x50));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
 }
 
 s32 func_ov000_02169d00(M2C_UNK arg0) {

@@ -128,7 +128,7 @@ void func_ov003_021e3714(void *arg0) {
     u8 func_ov003_021e1500(s32, s32, s32);
     s32 Modulo(s32, s32);
     void *func_020be120(void);
-    void func_02007ef4(void *, void *, u32);
+    void MI_CpuCopy32(void *, void *, u32);
     void ResetBattleMap(void);
     void func_020cf278(s32);
     void LoadBattleMap(s32);
@@ -171,11 +171,11 @@ void func_ov003_021e3714(void *arg0) {
     if (*(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 6) >= 5) {
         src=func_020be120();
         offset=index * 0x6f8;
-        func_02007ef4((u8 *)M2C_FIELD(arg0,void **,0x6c) + offset, src, 0x6f8);
+        MI_CpuCopy32((u8 *)M2C_FIELD(arg0,void **,0x6c) + offset, src, 0x6f8);
     } else {
         src=func_020be120();
         offset=index * 0x6f8;
-        func_02007ef4((u8 *)M2C_FIELD(arg0,void **,0x68) + offset, src, 0x6f8);
+        MI_CpuCopy32((u8 *)M2C_FIELD(arg0,void **,0x68) + offset, src, 0x6f8);
     }
 
     ResetBattleMap();
@@ -216,57 +216,60 @@ void func_ov003_021e3714(void *arg0) {
     func_020c1878((u8 *)p5c + 0x1C);
 }
 #pragma pop
-void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
+/* Draws the map-preview panel's unit-category grid: eight cells in a
+ * three-column layout, each showing a category icon and, when that category has
+ * units on the map, how many.  `originX`/`originY` slide the panel into place. */
+void Ov003_DrawPreviewUnitCategoryGrid(void *panel, s16 originX, s16 originY) {
     s32 Divide(s32, s32);
     s32 Modulo(s32, s32);
-    void func_020a92bc(void *, s32);
-    void func_020a94fc(void *);
-    s32 func_020c1980(void *, s32, s32);
-    s32 func_ov003_02200ae8(u8);
+    void SetTextSpriteValue(void *, s32);
+    void DrawTextSprite(void *);
+    s32 GetUnitCategoryCount(void *, s32, s32);
+    s32 GetIconGridRecordIndex(u8);
     void AddSprite(u16, u8, u16, void *, s32);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
     extern u8 gSpriteDesc16x32[];
-    s32 sp14, sp10, spC, sp8, sp4;
-    s16 x, y, value;
-    void *p;
-    s32 i, palette, tile;
-    u16 **old;
+    s32 xMask, tileMask, allBands, baseY, baseX;
+    s16 cellX, cellY, count;
+    void *ptr;
+    s32 cell, palette, tile;
+    u16 **savedEngine;
 
-    sp4 = arg1;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x3A) = (s16)(0 - arg1);
-    i = 0;
+    baseX = originX;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x3A) = (s16)(0 - originX);
+    cell = 0;
     tile = 0x210;
-    sp8 = arg2;
+    baseY = originY;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
-    spC = -1;
-    sp14 = 0x1FF;
-    sp10 = 0x3FF;
+    allBands = -1;
+    xMask = 0x1FF;
+    tileMask = 0x3FF;
     do {
-        x = (s16)(Modulo(i, 3) * 0x16 + sp4);
-        y = (s16)(Divide(i, 3) * 0x1C + sp8);
-        p = M2C_FIELD(arg0, void **, 0x5C);
-        value = (s16)func_020c1980((void *)((char *)p + 0x1C), func_ov003_02200ae8((u8)i), spC);
-        if (value != 0) {
-            old = gCur3DSpriteEngine;
+        cellX = (s16)(Modulo(cell, 3) * 0x16 + baseX);
+        cellY = (s16)(Divide(cell, 3) * 0x1C + baseY);
+        ptr = M2C_FIELD(panel, void **, OV003_PREVIEW_UNIT_GRID);
+        count = (s16)GetUnitCategoryCount((void *)((char *)ptr + 0x1C), GetIconGridRecordIndex((u8)cell), allBands);
+        if (count != 0) {
+            savedEngine = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineSub;
-            func_020a92bc(M2C_FIELD(arg0, void **, 0x54), value);
-            p = M2C_FIELD(arg0, void **, 0x54);
-            M2C_FIELD(p, s16 *, 6) = (s16)(x + 0x14);
-            M2C_FIELD(p, s16 *, 8) = (s16)(y + 0x66);
-            func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
-            gCur3DSpriteEngine = old;
+            SetTextSpriteValue(M2C_FIELD(panel, void **, OV003_PREVIEW_UNIT_TEXT), count);
+            ptr = M2C_FIELD(panel, void **, OV003_PREVIEW_UNIT_TEXT);
+            M2C_FIELD(ptr, s16 *, 6) = (s16)(cellX + 0x14);
+            M2C_FIELD(ptr, s16 *, 8) = (s16)(cellY + 0x66);
+            DrawTextSprite(M2C_FIELD(panel, void **, OV003_PREVIEW_UNIT_TEXT));
+            gCur3DSpriteEngine = savedEngine;
         }
-        palette = (value != 0) ? 7 : 8;
-        AddSprite((u16)((x + 4) & sp14),
-                      (u8)(y + 0x4E),
-                      (u16)(((sp10 & (tile >> ((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1E))) |
+        palette = (count != 0) ? 7 : 8;
+        AddSprite((u16)((cellX + 4) & xMask),
+                      (u8)(cellY + 0x4E),
+                      (u16)(((tileMask & (tile >> ((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1E))) |
                              (u16)(palette << 0xC)) | 0x400),
                       gSpriteDesc16x32,
                       0x11);
         tile += 8;
-        i++;
-    } while (i < 8);
+        cell++;
+    } while (cell < 8);
 }
 
 #pragma opt_common_subs off
@@ -279,8 +282,8 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     void AddSprite(u16, u8, u16, void *, s32);
     s32 func_ov003_02200a18(s32, u16);
     s32 Modulo(s32, s32);
-    void func_020a92bc(void *, s32);
-    void func_020a94fc(void *);
+    void SetTextSpriteValue(void *, s32);
+    void DrawTextSprite(void *);
     void DrawFrameBorder(s16, s16, s16, s16, s32, s32, s32);
     void *func_020c7e88(s32);
     extern u16 **gCur3DSpriteEngine;
@@ -356,14 +359,14 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     color = (0x3ff & (tile >> shift)) | 0x9800;
     AddSprite((u16)((arg1 + 3) & 0x1ff), 0x15, (u16)color, &gSpriteDesc16x16, 0x11);
 
-    func_020a92bc(M2C_FIELD(arg0, void **, 0x50), (s16)(Modulo(M2C_FIELD(M2C_FIELD(arg0,void**,0x48),u8*,6), 5) + 1));
+    SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x50), (s16)(Modulo(M2C_FIELD(M2C_FIELD(arg0,void**,0x48),u8*,6), 5) + 1));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x28) &= ~0xe0;
     p54=M2C_FIELD(arg0,void**,0x50);
     M2C_FIELD(p54,s16*,6)=(s16)(arg1+0x24);
     M2C_FIELD(p54,s16*,8)=0x1c;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 0x12) = 0x258;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x21) = 9;
-    func_020a94fc(M2C_FIELD(arg0, void **, 0x50));
+    DrawTextSprite(M2C_FIELD(arg0, void **, 0x50));
 
     p = func_020c7e88(value);
     id40 = arg1 + 0x40;
@@ -374,11 +377,11 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
             saved = (u16 *)gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineSub;
             r6 = (s32)((u32)(word << 4) >> 0x16);
-            func_020a92bc(M2C_FIELD(arg0, void **, 0x54), r6);
+            SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x54), r6);
             p54 = M2C_FIELD(arg0, void **, 0x54);
             M2C_FIELD(p54, s16 *, 6) = (s16)id40;
             M2C_FIELD(p54, s16 *, 8) = 0x3b;
-            func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
+            DrawTextSprite(M2C_FIELD(arg0, void **, 0x54));
             gCur3DSpriteEngine = (u16 **)saved;
             break;
         case 1:
@@ -393,11 +396,11 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
                     r6 = M2C_FIELD(p,PreviewItemFields*,8).high;
                 }
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                func_020a92bc(M2C_FIELD(arg0, void **, 0x54), (s16)r6);
+                SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x54), (s16)r6);
                 p54=M2C_FIELD(arg0,void**,0x54);
                 M2C_FIELD(p54,s16*,6)=(s16)(arg1+j*0x16+0x14);
                 M2C_FIELD(p54,s16*,8)=0x45;
-                func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
+                DrawTextSprite(M2C_FIELD(arg0, void **, 0x54));
                 gCur3DSpriteEngine = (u16 **)saved;
             }
             M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), u8 *, 0x29) = 0;
@@ -414,7 +417,7 @@ u32 func_ov003_021f2780(s32,s32);
 u32 func_ov003_021f2574(void);
 s32 func_ov003_02200a18(s32,u16);
 s32 Modulo(s32,s32);
-void func_020a92bc(void*,s32);
+void SetTextSpriteValue(void*,s32);
 extern u16 **gCur3DSpriteEngine;
 extern M2C_UNK gSpriteDesc16x16;
 s32 px,layer,mask,py,headerX;
@@ -457,14 +460,14 @@ do{
 if(i==0)id=M2C_FIELD(M2C_FIELD(arg0,s32*,0x5c)+j*2,u16*,8);else id=j+0x113;
 top=arg2+(j<<4);
 offset=Modulo(j*2,32);
-func_020a92bc(M2C_FIELD(arg0,void**,0x50),(s16)(j+1));
+SetTextSpriteValue(M2C_FIELD(arg0,void**,0x50),(s16)(j+1));
 p=M2C_FIELD(arg0,void**,0x50);
 M2C_FIELD(p,u8*,0x28)=(M2C_FIELD(p,u8*,0x28)&~0xe0)|0x20;
 p=M2C_FIELD(arg0,void**,0x50);
 M2C_FIELD(p,s16*,6)=px;M2C_FIELD(p,s16*,8)=top+5;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x50),s16*,0x12)=0x21c;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x21)=8;
-func_020a94fc(M2C_FIELD(arg0,void**,0x50));
+DrawTextSprite(M2C_FIELD(arg0,void**,0x50));
 tile=(u16)(func_ov003_02200a18(7,id)*4+0x234);
 AddSprite(py,(u8)(top-2),(u16)((mask&((s32)tile>>((EngineBits3ff8*)*gCur3DSpriteEngine)->shift))|0x8800),&gSpriteDesc16x16,17);
 if(i==0)record=M2C_FIELD(arg0,s32*,0x68);else record=M2C_FIELD(arg0,s32*,0x6c);
@@ -487,12 +490,12 @@ case 1:headerX=(s16)hx1;n=5;break;
 case 2:headerX=(s16)hx2;n=func_ov003_021f2574();p=M2C_FIELD(arg0,void**,0x6c);total2=0;k2=0;do{if(M2C_FIELD((u8*)p+k2*0x6f8,u8*,0x27))total2++;k2++;}while(k2<5);if(n>=total2)n=total2;break;
 case 3:headerX=(s16)hx3;n=5;break;
 }
-func_020a92bc(M2C_FIELD(arg0,void**,0x50),n);
+SetTextSpriteValue(M2C_FIELD(arg0,void**,0x50),n);
 p=M2C_FIELD(arg0,void**,0x50);M2C_FIELD(p,u8*,0x28)&=~0xe0;
 p=M2C_FIELD(arg0,void**,0x50);M2C_FIELD(p,s16*,6)=headerX;M2C_FIELD(p,s16*,8)=headerY;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x50),s16*,0x12)=0x21c;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x21)=8;
-func_020a94fc(M2C_FIELD(arg0,void**,0x50));
+DrawTextSprite(M2C_FIELD(arg0,void**,0x50));
 h=(u8)(h+1);
 }while(h<4);
 }

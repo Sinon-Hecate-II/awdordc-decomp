@@ -92,7 +92,7 @@ void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s
 void *func_02090f0c(void *arg0) {
     M2C_UNK func_02090894();
     M2C_UNK func_02090c7c();
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     M2C_UNK MemFree();
     extern M2C_UNK data_021029cc;
     M2C_UNK (*temp_r1)(void *);
@@ -109,13 +109,13 @@ void *func_02090f0c(void *arg0) {
         temp_r1(arg0);
     }
     if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
-        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x40));
+        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x40));
     }
     MemFree(arg0);
     return arg0;
 }
 
-void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK func_02090c7c();M2C_UNK func_020e35cc(s32);extern M2C_UNK data_021029cc;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&data_021029cc;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))func_02090c7c();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))func_020e35cc(M2C_FIELD(a,s32 *,0x40));return a;}
+void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK func_02090c7c();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_021029cc;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&data_021029cc;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))func_02090c7c();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
 
 #pragma opt_propagation off
 void func_02090fdc(void *arg0) {
@@ -740,18 +740,18 @@ u8 Get3DSpriteCount(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x48);
 }
 
-u8 func_02091dc4(s32 arg0) {
+u8 Get3DSpriteScreenMode(s32 arg0) {
     M2C_UNK *Get3DSpriteManager(void);
     M2C_UNK *base = Get3DSpriteManager();
     return M2C_FIELD((char *)base + arg0, u8 *, 0x44);
 }
 
-s32 func_02091ddc(M2C_UNK arg0) {
-    u8 func_02091dc4(M2C_UNK);
-    if (func_02091dc4(arg0) == 0x2) {
+s32 GetOther3DSpriteScreenMode(M2C_UNK arg0) {
+    u8 Get3DSpriteScreenMode(M2C_UNK);
+    if (Get3DSpriteScreenMode(arg0) == 0x2) {
         return 0x3;
     }
-    func_02091dc4(arg0);
+    Get3DSpriteScreenMode(arg0);
     return 0x2;
 }
 

@@ -1,5 +1,6 @@
 /* 58 functions from 0x02029E98 to 0x0202AE00 (main), found by ds-decomp. */
 #include "common.h"
+#include "exp_heap.h"
 typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 
 M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
@@ -28,13 +29,13 @@ M2C_UNK func_02029f14(void *arg0) {
     func_02029d7c(func_02029e70(arg0), arg0);
 }
 
-void func_02029f2c(void *arg0, void *arg1) {
+void GetBlockRange(void *arg0, void *arg1) {
     s32 temp_r3 = (s32)(arg1 + 0x10);
     M2C_FIELD(arg0, s32 *, 0) = (s32) (arg1 - (u16) (((s32) M2C_FIELD(arg1, u16 *, 2) >> 8) & 0x7F));
     M2C_FIELD(arg0, s32 *, 4) = M2C_FIELD(arg1, s32 *, 4) + temp_r3;
 }
 
-void *func_02029f58(void *arg0, void *arg1) {
+void *UnlinkBlock(void *arg0, void *arg1) {
     void *temp_r1;
     void *temp_r2;
 
@@ -53,7 +54,7 @@ void *func_02029f58(void *arg0, void *arg1) {
     return temp_r2;
 }
 
-void *func_02029f80(void *arg0, void *arg1, void *arg2) {
+void *InsertBlock(void *arg0, void *arg1, void *arg2) {
     void *var_r3;
 
     M2C_FIELD(arg1, void **, 8) = arg2;
@@ -73,7 +74,7 @@ void *func_02029f80(void *arg0, void *arg1, void *arg2) {
     return arg1;
 }
 
-void *func_02029fb0(void *arg0, s16 arg1) {
+void *InitBlock(void *arg0, s16 arg1) {
     void *p = M2C_FIELD(arg0, void **, 0);
     M2C_FIELD(p, s16 *, 0) = arg1;
     M2C_FIELD(p, s16 *, 2) = 0;
@@ -84,7 +85,7 @@ void *func_02029fb0(void *arg0, s16 arg1) {
 }
 
 void *func_02029fdc(void *arg0, M2C_UNK arg1, s32 arg2) {
-    void *func_02029fb0(void *, s16);
+    void *InitBlock(void *, s16);
     struct Flags { u16 flag:1; u16 rest:15; };
     s32 range[2];
     void *p;
@@ -94,7 +95,7 @@ void *func_02029fdc(void *arg0, M2C_UNK arg1, s32 arg2) {
     M2C_FIELD(arg0, struct Flags *, 0x36).flag = 0;
     range[0] = M2C_FIELD(arg0, s32 *, 0x18);
     range[1] = M2C_FIELD(arg0, s32 *, 0x1c);
-    p = func_02029fb0(range, 0x4652);
+    p = InitBlock(range, 0x4652);
     M2C_FIELD(arg0, void **, 0x24) = p;
     M2C_FIELD(arg0, void **, 0x28) = p;
     M2C_FIELD(arg0, s32 *, 0x2c) = 0;
@@ -102,61 +103,67 @@ void *func_02029fdc(void *arg0, M2C_UNK arg1, s32 arg2) {
     return arg0;
 }
 
-s32 func_0202a050(void *arg0, void *arg1, s32 arg2, s32 arg3, u16 arg4) {
-    void func_02029f2c(void *, void *);
-    void *func_02029fb0(void *, s16);
-    void *func_02029f58(void *, void *);
-    void *func_02029f80(void *, void *, void *);
+/* Carves an allocation of `size` bytes at `address` out of the free heap block
+ * `block`: unlinks the block, turns the free space in front of and behind the
+ * allocation back into free blocks (absorbing a remainder too small to hold a
+ * header), clears the payload when the heap asks for it, and links the new used
+ * block in front of the heap's used-list anchor.  `fromTail` marks the block as
+ * tail-allocated.  Returns the payload address. */
+s32 AllocFromBlock(void *freeList, void *block, s32 address, s32 size, u16 fromTail) {
+    void GetBlockRange(void *, void *);
+    void *InitBlock(void *, s16);
+    void *UnlinkBlock(void *, void *);
+    void *InsertBlock(void *, void *, void *);
     M2C_UNK func_02007e54(M2C_UNK, u32, s32);
-    s32 a[2];
-    s32 b[2];
-    s32 c[2];
+    HeapRange front;
+    HeapRange back;
+    HeapRange used;
     void *node;
-    void *p;
-    s32 temp_r3;
-    s32 temp_r5;
-    s32 diff;
-    s32 end;
-    u16 lo;
+    void *usedBlock;
+    s32 blockEnd;
+    s32 blockHeader;
+    s32 gap;
+    s32 allocStart;
+    u16 heapTag;
 
-    func_02029f2c(a, arg1);
-    temp_r3 = a[1];
-    temp_r5 = arg2 - 0x10;
-    a[1] = temp_r5;
-    b[1] = temp_r3;
-    b[0] = arg3 + arg2;
-    node = func_02029f58(arg0, arg1);
-    if ((u32)(a[1] - a[0]) < 0x14U) {
-        a[1] = a[0];
+    GetBlockRange(&front, block);
+    blockEnd = (s32)front.end;
+    blockHeader = address - 0x10;
+    front.end = (u8 *)blockHeader;
+    back.end = (u8 *)blockEnd;
+    back.start = (u8 *)(size + address);
+    node = UnlinkBlock(freeList, block);
+    if ((u32)(front.end - front.start) < 0x14U) {
+        front.end = front.start;
     } else {
-        node = func_02029f80(arg0, func_02029fb0(a, 0x4652), node);
+        node = InsertBlock(freeList, InitBlock(&front, HEAP_BLOCK_FREE), node);
     }
-    if ((u32)(b[1] - b[0]) < 0x14U) {
-        b[0] = b[1];
+    if ((u32)(back.end - back.start) < 0x14U) {
+        back.start = back.end;
     } else {
-        node = func_02029f80(arg0, func_02029fb0(b, 0x4652), node);
+        node = InsertBlock(freeList, InitBlock(&back, HEAP_BLOCK_FREE), node);
     }
-    diff = b[0] - a[1];
-    if ((u8)M2C_FIELD(arg0, s32 *, -4) & 1) {
-        func_02007e54(0, (u32)a[1], diff);
+    gap = (s32)back.start - (s32)front.end;
+    if ((u8)M2C_FIELD(freeList, s32 *, -4) & 1) {
+        func_02007e54(0, (u32)front.end, gap);
     }
-    c[0] = temp_r5;
-    c[1] = b[0];
-    p = func_02029fb0(c, 0x5544);
-    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) & ~0x8000);
-    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) | (u16)(arg4 << 15));
-    end = a[1];
-    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) & ~0x7F00);
-    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) | ((((u16)((u32)p - end)) & 0x7F) << 8));
-    lo = (u8)M2C_FIELD(arg0, u16 *, 0x10);
-    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) & ~0xFF);
-    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) | lo);
-    func_02029f80((void *)((char *)arg0 + 8), p, M2C_FIELD(arg0, s32 *, 0xC));
-    return arg2;
+    used.start = (u8 *)blockHeader;
+    used.end = back.start;
+    usedBlock = InitBlock(&used, HEAP_BLOCK_USED);
+    M2C_FIELD(usedBlock, u16 *, 2) = (u16)(M2C_FIELD(usedBlock, u16 *, 2) & ~HEAP_BLOCK_ATTR_FROM_TAIL);
+    M2C_FIELD(usedBlock, u16 *, 2) = (u16)(M2C_FIELD(usedBlock, u16 *, 2) | (u16)(fromTail << 15));
+    allocStart = (s32)front.end;
+    M2C_FIELD(usedBlock, u16 *, 2) = (u16)(M2C_FIELD(usedBlock, u16 *, 2) & ~HEAP_BLOCK_ATTR_OFFSET);
+    M2C_FIELD(usedBlock, u16 *, 2) = (u16)(M2C_FIELD(usedBlock, u16 *, 2) | ((((u16)((u32)usedBlock - allocStart)) & 0x7F) << 8));
+    heapTag = (u8)M2C_FIELD(freeList, u16 *, 0x10);
+    M2C_FIELD(usedBlock, u16 *, 2) = (u16)(M2C_FIELD(usedBlock, u16 *, 2) & ~HEAP_BLOCK_ATTR_TAG);
+    M2C_FIELD(usedBlock, u16 *, 2) = (u16)(M2C_FIELD(usedBlock, u16 *, 2) | heapTag);
+    InsertBlock((void *)((char *)freeList + 8), usedBlock, M2C_FIELD(freeList, s32 *, 0xC));
+    return address;
 }
 
 s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_0202a050(void *, void *, s32, s32, u16);
+    s32 AllocFromBlock(void *, void *, s32, s32, u16);
     s32 base, aligned;
     s32 first;
     void *node;
@@ -182,11 +189,11 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
         node = M2C_FIELD(node, void **, 12);
     }
     if (chosen == NULL) return 0;
-    return func_0202a050(arg0 + 0x24, chosen, address, arg1, 0);
+    return AllocFromBlock(arg0 + 0x24, chosen, address, arg1, 0);
 }
 
 s32 func_0202a284(void *arg0, s32 arg1, s32 arg2) {
-s32 func_0202a050(void *, void *, s32, s32, u16);
+s32 AllocFromBlock(void *, void *, s32, s32, u16);
 s32 base,aligned,first; void *node; u32 size,best; void *chosen; s32 address;
 node=M2C_FIELD(arg0,void **,0x28);
 if((u16)(M2C_FIELD(arg0,u16 *,0x36)&1)==0) first=1;else first=0;
@@ -202,7 +209,7 @@ if(first || size==arg1)break;
 node=M2C_FIELD(node,void **,8);
 }
 if(chosen==NULL)return 0;
-return func_0202a050(arg0+0x24,chosen,address,arg1,1);
+return AllocFromBlock(arg0+0x24,chosen,address,arg1,1);
 }
 
 s32 func_0202a334(void *arg0, HeapRange *arg1) {
@@ -215,16 +222,16 @@ else {
 if(p==arg1->end) {
 size=M2C_FIELD(p,u32 *,4);
 range.end=(u8 *)(size+(u32)(p+16));
-func_02029f58(arg0,p);
+UnlinkBlock(arg0,p);
 }
 break;
 }
 }
 if(prev!=0 && (u8 *)(M2C_FIELD(prev,u32 *,4)+(u32)((u8 *)prev+16))==arg1->start){
-range.start=prev;prev=func_02029f58(arg0,prev);
+range.start=prev;prev=UnlinkBlock(arg0,prev);
 }
 if((u32)(range.end-range.start)<16) return 0;
-func_02029f80(arg0,func_02029fb0(&range,0x4652),prev);
+InsertBlock(arg0,InitBlock(&range,0x4652),prev);
 return 1;
 }
 
@@ -248,15 +255,15 @@ s32 func_0202a468(void *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_0202a498(s32 arg0, s32 arg1) {
-    void func_02029f2c(void *, void *);
-    void *func_02029f58(void *, void *);
+    void GetBlockRange(void *, void *);
+    void *UnlinkBlock(void *, void *);
     s32 func_0202a334(void *, HeapRange *);
     s32 temp_r4;
     s32 sp0[2];
 
     temp_r4 = arg1 - 0x10;
-    func_02029f2c(sp0, (void *)temp_r4);
-    func_02029f58((void *)(arg0 + 0x2C), (void *)temp_r4);
+    GetBlockRange(sp0, (void *)temp_r4);
+    UnlinkBlock((void *)(arg0 + 0x2C), (void *)temp_r4);
     func_0202a334((void *)(arg0 + 0x24), (HeapRange *)sp0);
 }
 
@@ -378,9 +385,9 @@ void func_0202a6b0(void *arg0, s32 arg1) {
 
 #pragma opt_propagation off
 s32 func_0202a6dc(void *arg0, M2C_UNK arg1) {
- s32 func_0206409c(M2C_UNK);
+ s32 Abs(M2C_UNK);
  s32 t; u32 value,end,mask;
- t=func_0206409c(arg1)-1;
+ t=Abs(arg1)-1;
  value=M2C_FIELD(arg0,u32 *,0x24);
  mask=~t;
  t+=value;

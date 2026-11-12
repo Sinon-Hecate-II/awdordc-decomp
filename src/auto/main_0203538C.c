@@ -143,10 +143,10 @@ if(first)freefn(data_020fb944,first,0);if(second)freefn(data_020fb950,second,0);
 }
 #pragma optimization_level reset
 void func_02036290(s32 arg0) {
-    M2C_UNK func_02006564(void *);
-    M2C_UNK func_020065e8(void *);
+    M2C_UNK LockMutex(void *);
+    M2C_UNK UnlockMutex(void *);
     extern void *gWfcNet;
-    func_02006564(gWfcNet + 0x11DC);
+    LockMutex(gWfcNet + 0x11DC);
     M2C_FIELD(gWfcNet, s32 *, 0x1000) = arg0;
-    func_020065e8(gWfcNet + 0x11DC);
+    UnlockMutex(gWfcNet + 0x11DC);
 }

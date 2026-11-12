@@ -86,11 +86,11 @@ void func_ov000_0219e848(void) {
 
 s32 func_ov000_0219e8d0(void) {
     s32 func_0208485c();
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
     extern u16 data_02156e4c;
     extern void **gCurrentMap;
     void *temp_r3;
-    if (data_02168f0c == 0) {
+    if (gBattleEndState == 0) {
         return 0;
     }
     if (func_0208485c() != 0) {
@@ -174,7 +174,7 @@ s32 func_ov000_0219e9f4(void) {
     extern s8 *gAiCommandState;
     extern void **gCurrentMap;
     extern u8 data_ov000_021df7dc[];
-    extern u8 data_02168f0c;
+    extern u8 gBattleEndState;
 
     u8 *G0 = gAiCommand;
     void *map;
@@ -284,7 +284,7 @@ s32 func_ov000_0219e9f4(void) {
         ((u8 *)map)[0x52d6] = unitId;
     }
 
-    if (*(u16 *)((u8 *)map + 0x52b0) == 0x0e && data_02168f0c != 0) {
+    if (*(u16 *)((u8 *)map + 0x52b0) == 0x0e && gBattleEndState != 0) {
         func_0208485c();
     }
 
@@ -332,7 +332,7 @@ final_visibility:
 s32 func_ov000_0219efa4(void) {
     void func_020d61f0(void);
     void *func_ov000_0216939c(void *);
-    void func_020cfd28(void);
+    void RefreshMapView(void);
     void func_020844a0(u8 *, u8 *);
     s32 ResolvePathAttack(s32, s32, s32, void *, s32);
     s32 func_020d1a1c(s32);
@@ -346,7 +346,7 @@ s32 func_ov000_0219efa4(void) {
 
     func_020d61f0();
     func_ov000_0216939c(*(void **)((u8 *)*gCurrentMap + 0x52d0));
-    func_020cfd28();
+    RefreshMapView();
     func_020844a0(data_ov000_021df7dc, (u8 *)*gCurrentMap + 0x5388);
     result = ResolvePathAttack(
         *(s16 *)((u8 *)*gCurrentMap + 0x52d8),
@@ -372,7 +372,7 @@ s32 func_ov000_0219f0d8(void) {
     void func_020cf498(s32, s32);
     void func_020babfc(s32, s32, void *);
     void func_020ce630(s32, s32, void *);
-    void func_020cfd28(void);
+    void RefreshMapView(void);
     void func_020bbc2c(s32);
     void BattleUpdateUnitCursor(void);
     void func_ov000_0219f3fc(void);
@@ -413,7 +413,7 @@ s32 func_ov000_0219f0d8(void) {
             func_020babfc(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
             func_020ce630(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
         }
-        func_020cfd28();
+        RefreshMapView();
         break;
     }
 

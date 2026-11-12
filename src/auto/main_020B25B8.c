@@ -1,5 +1,6 @@
 /* 24 functions from 0x020B25B8 to 0x020B34F8 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_grid.h"
 
 void func_020b25b8(void){
 u8 func_020b2714(void);void func_020b2d5c(void*);
@@ -273,43 +274,47 @@ if(a+M2C_FIELD(p,s16 *,4)>=x && b+M2C_FIELD(p,s16 *,6)>=y)return 1;
 return 0;
 }
 
-void *CreateSpriteGrid(void *arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5, u8 arg6) {
+/* Builds the scrolling sprite grid widget in `grid`: a rows x columns raster of
+ * cells, each cellWidth x cellHeight pixels, the first at (baseX, baseY), with
+ * the cell's tile index running down the columns.  The cell block is allocated
+ * and cleared here; the caller sets the item count and fills the cells. */
+void *CreateSpriteGrid(void *grid, u8 rows, u8 columns, u8 cellWidth, u8 cellHeight, u8 baseX, u8 baseY) {
 void MI_CpuFill8(void *,s32,u32);
-void func_02087d18(void *,s16,s16,u32,u32,u32,u32);
-void *func_020e34bc(u32);
-extern u32 data_021286a4[];
-s32 size,n; u8 y; u8 x; u32 a=arg1,b=arg5,c; void *p;
-M2C_FIELD(arg0,void **,0)=data_021286a4;
-M2C_FIELD(arg0,u8 *,4)=a;
-M2C_FIELD(arg0,u8 *,5)=arg2;
-M2C_FIELD(arg0,u8 *,6)=arg3;
-M2C_FIELD(arg0,u8 *,7)=arg4;
-M2C_FIELD(arg0,s16 *,8)=0;
-M2C_FIELD(arg0,s16 *,10)=0;
-M2C_FIELD(arg0,s16 *,12)=0;
-M2C_FIELD(arg0,s16 *,14)=-32768;
-M2C_FIELD(arg0,s16 *,16)=-32768;
-n=a*arg2;size=n*12;
-M2C_FIELD(arg0,s16 *,18)=0;
-M2C_FIELD(arg0,s16 *,20)=b;
-M2C_FIELD(arg0,s16 *,22)=arg6;
-M2C_FIELD(arg0,u16 *,40)=n;
-M2C_FIELD(arg0,u8 *,42)=0;
-M2C_FIELD(arg0,u32 *,24)=0;
-c=arg6;
-M2C_FIELD(arg0,u32 *,28)=0;
-M2C_FIELD(arg0,s8 *,32)=-1;
-M2C_FIELD(arg0,s8 *,33)=-1;
-M2C_FIELD(arg0,s8 *,34)=-1;
-M2C_FIELD(arg0,s8 *,35)=-1;
-M2C_FIELD(arg0,u8 *,37)=255;
-M2C_FIELD(arg0,s8 *,36)=-1;
-M2C_FIELD(arg0,u8 *,38)=0;
-M2C_FIELD(arg0,u8 *,39)=255;
-p=func_020e34bc(size);M2C_FIELD(arg0,void **,44)=p;
-MI_CpuFill8(M2C_FIELD(arg0,void **,44),0,size);
-for(y=0;y<a;y=(u8)(y+1))for(x=0;x<arg2;x++)func_02087d18((u8*)arg0+24,(s16)(x*arg3+b),(s16)(y*arg4+c),arg3,arg4,(u16)(x+y*arg2),14);
-return arg0;
+void AddSpriteCell(void *,s16,s16,u32,u32,u32,u32);
+void *HeapAllocBlock(u32);
+extern u32 gSpriteGridVTable[];
+s32 cellsSize,cellCount; u8 row; u8 col; u32 rasterRows=rows,leftX=baseX,topY; void *cells;
+M2C_FIELD(grid,void **,SPRITE_GRID_VTABLE)=gSpriteGridVTable;
+M2C_FIELD(grid,u8 *,SPRITE_GRID_ROWS)=rasterRows;
+M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS)=columns;
+M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_WIDTH)=cellWidth;
+M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_HEIGHT)=cellHeight;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)=0;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_ITEM_COUNT)=0;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)=0;
+M2C_FIELD(grid,s16 *,14)=-32768;
+M2C_FIELD(grid,s16 *,16)=-32768;
+cellCount=rasterRows*columns;cellsSize=cellCount*12;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)=0;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_BASE_X)=leftX;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_BASE_Y)=baseY;
+M2C_FIELD(grid,u16 *,SPRITE_GRID_CELLS+SPRITE_CELL_LIST_CAPACITY)=cellCount;
+M2C_FIELD(grid,u8 *,SPRITE_GRID_CELLS+SPRITE_CELL_LIST_USED)=0;
+M2C_FIELD(grid,u32 *,24)=0;
+topY=baseY;
+M2C_FIELD(grid,u32 *,28)=0;
+M2C_FIELD(grid,s8 *,32)=-1;
+M2C_FIELD(grid,s8 *,33)=-1;
+M2C_FIELD(grid,s8 *,34)=-1;
+M2C_FIELD(grid,s8 *,35)=-1;
+M2C_FIELD(grid,u8 *,37)=255;
+M2C_FIELD(grid,s8 *,36)=-1;
+M2C_FIELD(grid,u8 *,38)=0;
+M2C_FIELD(grid,u8 *,39)=255;
+cells=HeapAllocBlock(cellsSize);M2C_FIELD(grid,void **,SPRITE_GRID_CELLS+SPRITE_CELL_LIST_CELLS)=cells;
+MI_CpuFill8(M2C_FIELD(grid,void **,SPRITE_GRID_CELLS+SPRITE_CELL_LIST_CELLS),0,cellsSize);
+for(row=0;row<rasterRows;row=(u8)(row+1))for(col=0;col<columns;col++)AddSpriteCell((u8*)grid+SPRITE_GRID_CELLS,(s16)(col*cellWidth+leftX),(s16)(row*cellHeight+topY),cellWidth,cellHeight,(u16)(col+row*columns),14);
+return grid;
 }
 
 void func_020b3038(void *arg0, s32 arg1) {

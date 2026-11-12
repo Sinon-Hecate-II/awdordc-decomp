@@ -1,6 +1,7 @@
 /* 39 functions from 0x020CBACC to 0x020CC9C8 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 static inline s32 visibleCB(void *p,s32 x,s32 y) {
 u32 n;
 if (M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3)&2)return 1;
@@ -48,7 +49,7 @@ void func_020cbc20(void *arg0) {
  if (!p) n=0;
  else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
  func_020a6728(n);
- func_020cfd28();
+ RefreshMapView();
 }
 #pragma opt_common_subs reset
 void func_020cbc88(void *arg0) {
@@ -178,10 +179,13 @@ void func_020cc08c(void) {
     func_01ffa3dc(&data_0212b4ec, 7);
 }
 
-void func_020cc0a4(u8 *p){
+/* Sets up the map-view screen: resets the map view, saves the scroll position on
+ * the task and starts its fade, draws the map preview and its name, centres the
+ * sprite quad and enters map-view mode. */
+void InitMapView(MapViewTask *p){
 extern void **gCurrentMap;
 extern void *gCur3DSpriteEngine;
-s32 func_020cfd28(void);
+s32 RefreshMapView(void);
 void DrawMapPreview(s32,s32,s32,s32);
 void SetFrameRect(s32,s32,s32,s32);
 void Reset3DSpriteEngineState(void);
@@ -190,25 +194,25 @@ void func_02091d4c(s32);
 s32 GetMapName(s32);
 void DrawTextLine(s32,s32,s32,s32,s32,s32);
 s32 x,y;
-func_020cfd28();
-*(s16 *)(p+52)=0;
-*(s16 *)(p+54)=*(s16 *)((u8 *)*gCurrentMap+0x5148);
-*(s16 *)(p+56)=*(s16 *)((u8 *)*gCurrentMap+0x514a);
-*(s16 *)(p+58)=0;
-DrawMapPreview(*(s32 *)((u8 *)gCur3DSpriteEngine+16),*(s32 *)((u8 *)gCur3DSpriteEngine+36),1,2);
-((u8 *)gCur3DSpriteEngine)[70]|=2;
-y=-((192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1);
-x=-((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1);
-*(s16 *)(*(u8 **)gCur3DSpriteEngine+58)=x;
-*(s16 *)(*(u8 **)gCur3DSpriteEngine+66)=y;
-SetFrameRect((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1,(192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1,0x35c,11);
+RefreshMapView();
+p->fadeTimer=0;
+p->viewX=M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X);
+p->viewY=M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y);
+p->unk3A=0;
+DrawMapPreview((s32)((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerVram[1],(s32)((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerTiles[1],1,2);
+((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerDirty|=2;
+y=-((192-(M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)<<2))>>1);
+x=-((256-(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<<2))>>1);
+((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->corner[1]=x;
+((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->corner[5]=y;
+SetFrameRect((256-(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<<2))>>1,(192-(M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)<<2))>>1,0x35c,11);
 Reset3DSpriteEngineState();
 Reset3DSpriteBankState();
 func_02091d4c(0);
-*(s16 *)(*(u8 **)gCur3DSpriteEngine+60)=0;
-*(s16 *)(*(u8 **)gCur3DSpriteEngine+68)=0;
-DrawTextLine(1,0,2,GetMapName(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
-*(s16 *)((u8 *)*gCurrentMap+0x52b4)=9;
+((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->corner[2]=0;
+((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->corner[6]=0;
+DrawTextLine(1,0,2,GetMapName(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)),0,16);
+M2C_FIELD(*gCurrentMap,s16 *,MAP_MODE)=9;
 }
 
 /* Advance the map fade-in one frame: bump the fade timer at +0x34, copy half
@@ -284,9 +288,9 @@ void func_020cc430(void *arg0) {
 void func_020cc490(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_020c127c();
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     extern void *gCur3DSpriteEngine;
-    func_020cfd28();
+    RefreshMapView();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     Clear3DSpriteLayer(2);

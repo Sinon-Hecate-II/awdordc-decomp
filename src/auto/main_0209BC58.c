@@ -40,11 +40,11 @@ void func_0209bccc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16
 
 void func_0209bd0c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
 s32 GetLocalizedText(s32);
-s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
-func_0209bd60(a,b,c,d,e,GetLocalizedText(f),g,h);
+s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
+CreateMessageSprite(a,b,c,d,e,GetLocalizedText(f),g,h);
 }
 
-s32 func_0209bd60(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
+s32 CreateMessageSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
     s32 func_01ffa3dc(M2C_UNK *, s32);
     M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
     extern M2C_UNK data_02103328;
@@ -517,7 +517,7 @@ void func_0209c8d4(void) {
     s32 func_020a1944();
     M2C_UNK func_020bf814(u16);
     s32 func_020bf894(s32);
-    s32 func_020cd1e4();
+    s32 DidPlayerWin();
     s32 func_020d1afc();
     s32 func_020d1b40();
     s32 func_020e4b54();
@@ -557,7 +557,7 @@ void func_0209c8d4(void) {
     } while (var_r7 < 0xF);
     if (IsLinkSessionActive() == 0) {
         func_02086844(temp_r8, 1);
-        if (func_020cd1e4() != 0) {
+        if (DidPlayerWin() != 0) {
             if ((func_020d1afc() != 0) && (func_020d1b40() == 0)) {
                 func_02091c20(0x1A, 1);
                 func_02086878(temp_r8, 1);

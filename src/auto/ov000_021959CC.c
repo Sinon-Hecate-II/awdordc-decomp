@@ -239,7 +239,7 @@ void func_ov000_0219604c(void) {
 }
 
 s32 func_ov000_02196084(s16 *arg0) {
-    void func_ov000_02179be0(void);
+    void GetAiUnitRange(void);
     void func_ov000_02179d3c(void);
     s32 FindAttackPosition(s16 *);
     extern void **gCurrentMap;
@@ -250,7 +250,7 @@ s32 func_ov000_02196084(s16 *arg0) {
     s8 cell;
     s16 sp0[2];
 
-    func_ov000_02179be0();
+    GetAiUnitRange();
     func_ov000_02179d3c();
 
     map = (u8 *)*gCurrentMap;
@@ -397,13 +397,13 @@ loop_1:
 }
 
 s32 func_ov000_02196398(s16 *arg0) {
-    void func_ov000_02179be0();
+    void GetAiUnitRange();
     void func_ov000_02179d3c();
     s32 func_ov000_021786a8(s16 *);
     s32 FindAttackPosition(s16 *);
     s16 sp0[2];
 
-    func_ov000_02179be0();
+    GetAiUnitRange();
     func_ov000_02179d3c();
     if (func_ov000_021786a8(sp0) == 0) {
         return 0;
@@ -537,14 +537,14 @@ s32 func_ov000_02196430(s16 *outPos) {
 void SelectPropertyAttackDestination(void) {
 extern void **gCurrentMap; extern u8 **gAiCommandState;
 s32 GetUnitAttackClass(u32); s32 GetUnitAttackRangeMax(void *);
-void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
+void GetAiUnitRange(void); void func_ov000_02179d3c(void);
 s32 IsTerrainOnUnitTeam(s32,u8); s32 func_ov000_0217d000(u32,s32);
 s32 FindAttackPosition(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
 s32 attackLimit; s32 terrain; s32 bestCost=0x7fff; s32 y,x; s16 target[2];
 if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind)==1)
 attackLimit=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(gAiCommandState,u8 *,5);
 else attackLimit=0;
-func_ov000_02179be0(); func_ov000_02179d3c();
+GetAiUnitRange(); func_ov000_02179d3c();
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
 if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]<0)continue;
@@ -568,12 +568,12 @@ PlanMoveDestination(target[0],target[1]);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
-s32 CanKindAttack(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
+s32 CanKindAttack(u32,u32); void GetAiUnitRange(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **gAiCommandState;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<29)>>29)&4))return;
 if(!CanKindAttack(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
-func_ov000_02179be0();func_ov000_02179d3c();
+GetAiUnitRange();func_ov000_02179d3c();
 base=*gCurrentMap;
 y=0; if((s32)M2C_FIELD(base,u16 *,0x5146)>0) do {
 cols=M2C_FIELD(base,u16 *,0x5144);

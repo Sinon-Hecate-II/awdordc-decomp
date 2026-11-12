@@ -405,7 +405,7 @@ M2C_FIELD(p+0x2000,u32 *,0x264)=v|(old&~mask);
 OS_RestoreInterrupts(s);return old;
 }
 
-s32 func_02027d50(void) {
+s32 GetSession(void) {
     extern s32 gSession;
     return gSession;
 }

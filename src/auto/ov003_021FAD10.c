@@ -22,8 +22,8 @@ void ClearTileRect(void *,s32,s32);
 u8 func_ov003_021f269c(void *,void *,u16);
 void func_ov003_021fac2c(u16,u16,s16,s16,s32);
 s32 func_ov003_021f3f0c(s16,s32,s32);
-void func_020a92bc(void *,s16);
-void func_020a94fc(void *);
+void SetTextSpriteValue(void *,s16);
+void DrawTextSprite(void *);
 s32 func_ov003_02200a18(u8,u16);
 void AddSprite(u16,u8,u16,void *,s32);
 s32 func_ov003_021f2654(void);
@@ -88,14 +88,14 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  func_ov003_021fac2c((u16)i,item,(s16)tx,(s16)ty,8);}
  }
  if(!func_ov003_021f3f0c((s16)py,24,152)||i>M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18))continue;
- func_020a92bc(M2C_FIELD(arg0,void **,0x50),(s16)(i+1));
+ SetTextSpriteValue(M2C_FIELD(arg0,void **,0x50),(s16)(i+1));
  p=M2C_FIELD(arg0,void **,0x50);
  M2C_FIELD(p,u8 *,0x28)=(M2C_FIELD(p,u8 *,0x28)&~0xe0)|0x20;
  p=M2C_FIELD(arg0,void **,0x50);
  M2C_FIELD(p,s16 *,6)=px+34;M2C_FIELD(p,s16 *,8)=py+5;
  M2C_FIELD(M2C_FIELD(arg0,void **,0x50),s16 *,0x12)=1024;
  M2C_FIELD(M2C_FIELD(arg0,void **,0x50),u8 *,0x21)=8;
- func_020a94fc(M2C_FIELD(arg0,void **,0x50));
+ DrawTextSprite(M2C_FIELD(arg0,void **,0x50));
  p=(u8*)M2C_FIELD(arg0,void **,0x44)+((u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4)<<9);
  {u16 tile=(u16)(func_ov003_02200a18(M2C_FIELD(p,u8 *,0x22c),Ov003DrawItem(arg0,i))*4+0x418);
  AddSprite((u16)((px+3)&0x1ff),(u8)(py-2),(u16)(((tile>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0x8800),gSpriteDesc16x16,17);}
@@ -143,16 +143,16 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  }
  mode=M2C_FIELD(arg0,Ov003DrawNibble *,0x3b).low;
  if((u8)(mode==0)||(u8)(mode==2)||(u8)(mode==3)||(u8)(mode==6)||(u8)(mode==7)||(u8)(mode==8)){
- func_020a92bc(M2C_FIELD(arg0,void **,0x50),(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18)+1));
+ SetTextSpriteValue(M2C_FIELD(arg0,void **,0x50),(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18)+1));
  p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,u8 *,0x28)&=~0xe0;
  p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,6)=arg1+241;M2C_FIELD(p,s16 *,8)=arg2-12;
  M2C_FIELD(M2C_FIELD(arg0,void **,0x50),s16 *,0x12)=1024;M2C_FIELD(M2C_FIELD(arg0,void **,0x50),u8 *,0x21)=8;
- func_020a94fc(M2C_FIELD(arg0,void **,0x50));
- func_020a92bc(M2C_FIELD(arg0,void **,0x50),(s16)((s16)M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x14)+1));
+ DrawTextSprite(M2C_FIELD(arg0,void **,0x50));
+ SetTextSpriteValue(M2C_FIELD(arg0,void **,0x50),(s16)((s16)M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x14)+1));
  p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,u8 *,0x28)&=~0xe0;
  p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,6)=arg1+217;M2C_FIELD(p,s16 *,8)=arg2-12;
  M2C_FIELD(M2C_FIELD(arg0,void **,0x50),s16 *,0x12)=1024;M2C_FIELD(M2C_FIELD(arg0,void **,0x50),u8 *,0x21)=8;
- func_020a94fc(M2C_FIELD(arg0,void **,0x50));
+ DrawTextSprite(M2C_FIELD(arg0,void **,0x50));
  }else if((u8)(mode==4)){
  u8 a; s16 x0=(s16)(arg1+17),x1=(s16)(arg1+33),x2=(s16)(arg1+217),x3=(s16)(arg1+233),yy=(s16)(arg2-12);
  for(a=0;a<4;a++){
@@ -163,11 +163,11 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  case 2:xx=x2;p=M2C_FIELD(arg0,void **,0x44);num=func_ov003_021f2780((u8*)p+4,(u8*)p+18);if(!(u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
  case 3:xx=x3;num=5;if(!(u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
  }
- func_020a92bc(M2C_FIELD(arg0,void **,0x50),num);
+ SetTextSpriteValue(M2C_FIELD(arg0,void **,0x50),num);
  p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,u8 *,0x28)&=~0xe0;
  p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,6)=xx;M2C_FIELD(p,s16 *,8)=yy;
  M2C_FIELD(M2C_FIELD(arg0,void **,0x50),s16 *,0x12)=1024;M2C_FIELD(M2C_FIELD(arg0,void **,0x50),u8 *,0x21)=color;
- func_020a94fc(M2C_FIELD(arg0,void **,0x50));
+ DrawTextSprite(M2C_FIELD(arg0,void **,0x50));
  }}
 {s16 xx=(s16)(arg1+90),yy=(s16)(arg2+116);void *q=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,24);
 func_02088e84(q,xx,yy,xx,yy);

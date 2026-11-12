@@ -204,14 +204,14 @@ M2C_FIELD(arg0,s16 *,16)=(y+M2C_FIELD(arg0,s16 *,16)+1)>>1;
 
 void *func_020b3b4c(void *arg0) {
     M2C_UNK MemFree(void *);
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x2C));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x2C));
     MemFree(arg0);
     return arg0;
 }
 
 void *func_020b3b6c(void *arg0) {
-    M2C_UNK func_020e35cc(s32);
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x2C));
+    M2C_UNK HeapFreeBlock(s32);
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x2C));
     return arg0;
 }
 

@@ -162,15 +162,15 @@ void func_ov001_0218c4c0(void) {
 void func_ov001_0218c5b8(void) {
     M2C_UNK func_02003104(s32);
     M2C_UNK func_020035f8();
-    M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     func_02003104(0x1F3);
-    func_02007e98(0, 0x06800000, 0x40000);
-    func_02007e98(0, 0x06880000, 0x24000);
+    MI_CpuFill32(0, 0x06800000, 0x40000);
+    MI_CpuFill32(0, 0x06880000, 0x24000);
     func_020035f8();
-    func_02007e98(0x200, 0x07000000, 0x400);
-    func_02007e98(0, 0x05000000, 0x400);
-    func_02007e98(0x200, 0x07000400, 0x400);
-    func_02007e98(0, 0x05000400, 0x400);
+    MI_CpuFill32(0x200, 0x07000000, 0x400);
+    MI_CpuFill32(0, 0x05000000, 0x400);
+    MI_CpuFill32(0x200, 0x07000400, 0x400);
+    MI_CpuFill32(0, 0x05000400, 0x400);
 }
 
 void func_ov001_0218c63c(void) {

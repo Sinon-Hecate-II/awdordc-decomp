@@ -140,6 +140,8 @@ enum {
 #define TLS_RANDOM_A       0x34  /* u8[32] one handshake random */
 #define TLS_RANDOM_B       0x54  /* u8[32] the other handshake random */
 #define TLS_KEY_BLOCK      0x74  /* per-direction MAC secrets and RC4 keys derived by TlsInitRecordKeys */
+#define TLS_SESSION_CACHED 0x30  /* u8 nonzero when a cached session was restored for the peer */
+#define TLS_SESSION_ID     0x74  /* u8[32] session id echoed in a ClientHello; the key block reuses it later */
 #define TLS_SERVER_SIDE    0x454 /* u8 nonzero when this endpoint uses the server-side role */
 #define TLS_CLIENT_CERT_REQUESTED 0x5ac /* u8 set once a CertificateRequest was received */
 #define TLS_PENDING_RECORD 0x824 /* void * record buffer being reassembled */
@@ -201,6 +203,18 @@ typedef struct MapSelectScreen {
 #define MAP_SELECT_ROW_TEXT_KEY 0x0C /* s32 localized-text key in the object a row points at */
 #define MAP_SELECT_BLINK        0x04 /* flags38 bit toggled on every label redraw */
 
+/* ov003 map-info screen: the unit-category count grid filled by
+ * func_020c1878 (5 player bands of 12 unit categories, the grid starting at
+ * +4 of the block) and the text sprite that prints one category's total. */
+#define OV003_UNIT_COUNT_GRID 0x68 /* u8 *: 5x12 per-category unit counts, grid at +4 */
+#define OV003_UNIT_COUNT_TEXT 0x50 /* void *: text sprite for a category's total */
+
+/* ov003 map-preview panel: the unit-category count block (its grid starts at
+ * +0x1C and holds one 12-byte record per player band) and the text sprite that
+ * prints one category's total. */
+#define OV003_PREVIEW_UNIT_GRID 0x5C /* u8 *: per-category unit counts, grid at +0x1C */
+#define OV003_PREVIEW_UNIT_TEXT 0x54 /* void *: text sprite for a category's count */
+
 /* ov001 map-select list screen: the object pointed at by gMapSelectState+4.
  * It holds two rows of label sprites and a table of 42-byte map entries. */
 #define MAPSELECT_ENTRIES       0x00 /* void *: map entry table */
@@ -238,6 +252,34 @@ typedef struct HistoryMenu {
     void *sprite5C;     /* +0x5C: list-down arrow */
     void *sprite60;     /* +0x60 */
 } HistoryMenu;          /* 0x64 bytes */
+
+/* ov005 records/achievements screen: the object at data_ov005_02221304+8.
+ * Three tabs (tab) each list one record group; the list scrolls six rows at a
+ * time and a row is only selectable when its enabled[] flag is set. */
+typedef struct RecordsScreen {
+    u16 flags;           /* +0x00 */
+    u16 pad02;
+    u8  pad04[0x82];
+    s16 fadeTop;         /* +0x86: fade-out timer of the main screen */
+    s16 fadeBottom;      /* +0x88: fade-out timer of the sub screen */
+    s8  actionMode;      /* +0x8A: mode argument of the pending action */
+    u8  pad8B;
+    s16 lastHighlight;   /* +0x8C: highlighted record the cursor last moved from */
+    s16 highlighted;     /* +0x8E: highlighted record, -1 when none */
+    s16 pending;         /* +0x90: record a pending action applies to, -1 when none */
+    s16 tab;             /* +0x92: record group shown (0..2) */
+    s16 cursorRow;       /* +0x94: cursor row inside the visible window */
+    s16 scrollGoal;      /* +0x96: scroll position the list is animating to */
+    s16 scroll;          /* +0x98: top visible row */
+    s16 count;           /* +0x9A: number of records */
+    s16 selectable;      /* +0x9C: number of enabled records */
+    s16 stepAnim;        /* +0x9E: one scroll step is being animated */
+    s16 actionTimer;     /* +0xA0: countdown before a pending action runs */
+    u8  enabled[0x40];   /* +0xA2: per-record enabled flag */
+    s16 listCursor;      /* +0xE2: cursor into the shuffled enabled list */
+    s16 listCount;       /* +0xE4: number of entries in that list */
+    s16 list[1];         /* +0xE6: shuffled record indices */
+} RecordsScreen;
 
 /* One entry of the records/achievements table (gRecordTable): 3 groups of 39
  * entries of 0x30 bytes.  The entry names the thing a record counts and the
@@ -289,6 +331,29 @@ typedef struct KeyState {
     u8 repeatDelay;  /* +0x0C: auto-repeat delay counter */
     u8 repeatRate;   /* +0x0D: auto-repeat rate counter */
 } KeyState;
+
+/* A scalar tween evaluated by GetSpriteAnimValue and advanced by
+ * UpdateSpriteAnimation (the anim script runner fills it in). */
+typedef struct SpriteTween {
+    u8  mode;       /* +0x00: interpolation curve, SPRITE_TWEEN_* */
+    u8  done;       /* +0x01 nonzero: stop advancing */
+    u16 current;    /* +0x02 frames elapsed */
+    u16 start;      /* +0x04 value current is reset to */
+    u16 step;       /* +0x06 frames added per update */
+    s16 base;       /* +0x08 constant offset added to the curve */
+    s16 amplitude;  /* +0x0A curve amplitude */
+    s16 duration;   /* +0x0C frames of the fade */
+    s16 from;       /* +0x0E start value */
+    s16 to;         /* +0x10 end value */
+} SpriteTween;
+
+enum {
+    SPRITE_TWEEN_SINE = 0,     /* base + amplitude * sin(current) */
+    SPRITE_TWEEN_LINEAR = 1,   /* from -> to, linear */
+    SPRITE_TWEEN_CONSTANT = 2, /* from * amplitude, current ignored */
+    SPRITE_TWEEN_EASE_IN = 3,  /* from -> to, quadratic ease-in */
+    SPRITE_TWEEN_EASE_OUT = 4  /* from -> to, quadratic ease-out */
+};
 
 /* Streaming voice state (the ov010 gStreamVoiceState object).  The voice reads from
  * two sample buffers that the stream callback refills. */
@@ -393,6 +458,7 @@ enum {
 enum {
     GPI_PEER_STATE_CREATED     = 100, /* allocated, no challenge answered yet */
     GPI_PEER_STATE_CHALLENGED  = 101, /* challenge sent, awaiting the answer */
+    GPI_PEER_STATE_CONNECTING  = 103, /* socket opened, awaiting the TCP connect */
     GPI_PEER_STATE_WAITING     = 104, /* waiting for the peer's \auth\ reply */
     GPI_PEER_STATE_CONNECTED   = 105, /* ready: relay game data messages */
     GPI_PEER_STATE_ERROR       = 106  /* failed; the peer is torn down */
@@ -414,6 +480,16 @@ typedef struct GPIBuffer {
     s32   size; /* +0x04 allocated bytes */
     s32   len;  /* +0x08 bytes used */
 } GPIBuffer;
+
+/* GameSpy gpi send buffer (the peer field at +0x28): storage, its allocated
+ * size, the number of bytes queued and the offset of the first byte that has
+ * not been sent yet. */
+typedef struct GPISendBuffer {
+    void *data; /* +0x00 storage */
+    s32   size; /* +0x04 allocated bytes */
+    s32   len;  /* +0x08 bytes queued */
+    s32   pos;  /* +0x0C offset of the first unsent byte */
+} GPISendBuffer;
 
 /* A queued GameSpy gpi callback (gpiCallback.c).  gpiCallCallback invokes
  * callback.callback(connection, arg, callback.param) and then frees arg
@@ -515,6 +591,11 @@ enum {
 #define CONN_SESSION_PEER_IPS     0x210 /* s32 per slot: peer IPv4 address */
 #define CONN_SESSION_PEER_PORTS   0x290 /* u16 per slot: peer port */
 #define CONN_SESSION_PLAYER_MASK  0x2F0 /* u32 bitmask of player slots that are present */
+#define CONN_SESSION_MODE         0x15  /* u8 connection mode (0/1 joining, 2/3 serving) */
+#define CONN_SESSION_BUSY         0x1A9 /* u8 nonzero while a connection change is in progress */
+#define CONN_SESSION_NATNEG       0x19C /* s32 NAT negotiation session to free on teardown, 0 when none */
+#define CONN_SESSION_JOIN_PEER    0x204 /* s32 player id a join request is outstanding to, 0 when none */
+#define CONN_SESSION_TARGET_ID    0x20C /* s32 player id of the matchmaking target, 0 when none */
 
 /* Connection session fields used while GameSpy QR2 server reporting runs. */
 #define CONN_SESSION_GT2_SOCKET   0x04  /* GameSpy GT2 socket wrapper (handle at +0, local port at +8) */
@@ -627,6 +708,23 @@ enum {
 #define SAVE_NAME_RAW       0x04  /* name was copied raw instead of hex-decoded */
 #define SAVE_NAME_FLAGS_MASK 0xfc /* remaining flag bits */
 
+/* The card battle-save block (SAVE_BLOCK_SIZE bytes): a magic word, then 60
+ * 12-byte slot summaries and 60 40-byte slot records.  The save manager scans
+ * SAVE_RECORD_STRIDE-byte directory records to find the newest one of a type. */
+#define SAVE_BLOCK_MAGIC        0x07090600 /* first word of an initialised save block */
+#define SAVE_BLOCK_SIZE         0xC34      /* bytes of a complete battle save */
+#define SAVE_SLOT_COUNT         60         /* slot summaries/records in a block */
+#define SAVE_SLOT_SUMMARY_SIZE  12         /* bytes per slot summary */
+#define SAVE_SLOT_RECORD_SIZE   0x28       /* bytes per slot record */
+#define SAVE_SUMMARIES_OFFSET   4          /* first slot summary */
+#define SAVE_RECORDS_OFFSET     0x2d4      /* first slot record */
+#define SAVE_RECORD_STRIDE      0x28       /* bytes per save-directory record */
+#define SAVE_RECORD_ID          0          /* u16 slot id inside a directory record */
+#define SAVE_RECORD_TYPE        2          /* u8 save type inside a directory record */
+#define SAVE_RECORD_TIME        4          /* u32 timestamp inside a directory record */
+#define SAVE_TYPE_PLAYER        2          /* player/profile save */
+#define SAVE_TYPE_BATTLE        3          /* battle save */
+
 /* Kinds of 4-byte connection notice sent by SendConnectionPacket(kind, slot). */
 enum {
     CONN_NOTICE_PLAYER_SLOT = 2, /* claim a player slot (last-player flag, slot, id) */
@@ -714,6 +812,26 @@ typedef struct LinkChannelState {
 #define MAPEDIT_DAKUTEN_VARIANTS  0x12c /* byte offset of the voiced block */
 #define MAPEDIT_HANDAKUTEN_VARIANTS 0x258 /* byte offset of the semi-voiced block */
 
+/* One cell template of the map editor's glyph keyboard: the offset and size a
+ * cell gets plus the fields copied into its sprite slot, and the handlers run
+ * for it.  The glyph layout uses one template per key. */
+typedef struct EditorCellDesc {
+    s16 offsetX;     /* +0x00 added to the cell's x */
+    s16 offsetY;     /* +0x02 added to the cell's y */
+    s16 width;       /* +0x04 sprite width, also the per-column x step */
+    s16 height;      /* +0x06 sprite height, also the per-row y step */
+    s16 unk08;       /* +0x08 */
+    s16 unk0A;       /* +0x0A */
+    s16 unk0C;       /* +0x0C */
+    s16 unk0E;       /* +0x0E */
+    void *handler10; /* +0x10 */
+    void *handler14; /* +0x14 */
+    void *handler18; /* +0x18 */
+    void *handler1C; /* +0x1C */
+    void *handler20; /* +0x20 */
+    void *handler24; /* +0x24 */
+} EditorCellDesc;    /* 0x28 bytes */
+
 /* One field of an RSA key: a big-endian byte string and its length. */
 typedef struct RsaKeyPart {
     s32 length;    /* +0x00 number of bytes in bytes[] */
@@ -767,10 +885,26 @@ typedef struct Ov001KeyboardState {
     u8 deleteBuzzed; /* +0x125 invalid-delete buzz already played while B is held */
 } Ov001KeyboardState;
 
+/* The two-bar icon row shared by the ov001 screens (gOv001IconRow): each page
+ * id picks the pair of wide bar sprites that slide in; tapping a bar selects it
+ * for a moment before the row restores itself. */
+typedef struct Ov001IconRow {
+    void *bars[2];    /* +0x00 the two option bar sprites */
+    void *backdrop;   /* +0x08 wide background bar sprite */
+    s32 introTimer;   /* +0x0C timer staging the slide-in */
+    s32 selectTimer;  /* +0x10 timer that ends a touch selection */
+    u16 introDelay;   /* +0x14 frames of the intro still to run */
+    s8 selected;      /* +0x16 selected bar, -1 none, -2 not ready */
+    u8 page;          /* +0x17 page id, indexes the icon-row tables */
+    u8 inputLocked;   /* +0x18 nonzero: the row is moving, touch is ignored */
+    u8 active;        /* +0x19 nonzero once the row is in use */
+} Ov001IconRow;
+
 /* State of the ov001 name-entry screen (gNameEntryState): its entered text and
  * the position word of its cursor sprite. */
 #define NAME_ENTRY_CURSOR  0x04 /* s32 * cursor sprite's position/attribute word */
 #define NAME_ENTRY_TEXT    0x08 /* u8[33] entered text, NUL-terminated */
+#define NAME_ENTRY_MAX_LENGTH 32 /* u8 characters that fit in NAME_ENTRY_TEXT (plus its NUL) */
 #define NAME_ENTRY_LENGTH  0x29 /* u8 number of characters entered */
 #define NAME_ENTRY_RESULT  0x2a /* u8 result: 0 cancelled, 1 accepted, 2 rejected */
 
@@ -890,6 +1024,15 @@ typedef struct FriendCodeEntry {
     void *grid;          /* +0x4C sprite-grid widget */
 } FriendCodeEntry;
 
+/* Key ids of the friend-code entry keypad. The ten digit keys are ids 0-9,
+ * laid out three per row (7 8 9 / 4 5 6 / 1 2 3 / 0); the remaining keys
+ * follow. */
+#define FRIEND_CODE_KEYPAD_COLUMNS 3
+#define FRIEND_CODE_KEYPAD_CLEAR   10 /* 'C': erase the whole code */
+#define FRIEND_CODE_KEYPAD_DELETE  11 /* 'B': erase the last entered digit */
+#define FRIEND_CODE_KEYPAD_CANCEL  12 /* 'N': leave the code unchanged */
+#define FRIEND_CODE_KEYPAD_CONFIRM 13 /* 'Y': submit the code */
+
 /* ov007 map generator's 30-column scratch marker grid (gMapMarkerGrid). */
 #define MAP_MARKER_STRIDE 30
 #define MAP_MARKER_RESERVED 1 /* cell reserved by the map border or a structure */
@@ -1007,6 +1150,84 @@ typedef struct Ov001PlayerRecord {
     char text[40];    /* +0x08: team name or extra text */
     char name[4][64]; /* +0x30: up to four player names */
 } Ov001PlayerRecord;  /* 0x130 bytes */
+
+/* Multiplayer data-transfer manager (the pointer at gTransferManager): one
+ * 0x30-byte slot per player connection, each used to trickle one outgoing
+ * buffer and gather one incoming buffer over several frames. */
+typedef struct TransferSlot {
+    s32  outData;       /* +0x00: outgoing buffer being sent */
+    void *inData;       /* +0x04: incoming buffer */
+    s32  inSize;        /* +0x08: capacity of inData */
+    s32  outSent;       /* +0x0C: bytes of outData already sent */
+    s32  inReceived;    /* +0x10: bytes of inData already received */
+    s32  outSize;       /* +0x14: size of outData */
+    s32  inExpected;    /* +0x18: total bytes expected to arrive */
+    u8   sending;       /* +0x1C: an outgoing transfer is in progress */
+    u8   state;         /* +0x1D: transfer state */
+    u8   prevState;     /* +0x1E: state restored when the transfer ends */
+    u8   pad1F[3];
+    u16  kind;          /* +0x22: transfer kind (1..4) */
+    u64  lastTick;      /* +0x24: GetSystemTick() of the last send */
+    u32  timeoutMs;     /* +0x2C: idle timeout in milliseconds */
+} TransferSlot;         /* 0x30 bytes */
+
+#define TRANSFER_SLOT_COUNT    32    /* identity bits, one slot each */
+#define TRANSFER_DEFAULT_CHUNK 0x5B9 /* default bytes sent per frame */
+#define TICKS_TO_MS_DIVISOR    0x82EA /* ((GetSystemTick delta) << 6) / this = ms */
+
+typedef struct TransferManager {
+    TransferSlot slots[TRANSFER_SLOT_COUNT];          /* +0x000 */
+    void (*onSent)(s32 size, s32 id);                 /* +0x600: outgoing transfer done */
+    void (*onReceived)(s32 id, void *buf, s32 size);  /* +0x604: incoming buffer complete */
+    void (*onTimeout)(s32 id);                        /* +0x608: idle timeout elapsed */
+    void (*onError)(s32 id, s32 error);               /* +0x60C */
+    u16  chunkSize;                                   /* +0x610: bytes sent per frame */
+    u8   pad612[2];
+} TransferManager;      /* 0x614 bytes */
+
+/* ov010 voice-chat link protocol: one context per peer exchange plus the
+ * handshake state of the exchange currently being served. */
+typedef struct VoiceLinkContext {
+    s32 valid;                       /* +0x00: nonzero while the context is in use */
+    u8  peerId;                      /* +0x04: player id of the peer */
+    u8  pad05[3];
+    u32 peerMask;                    /* +0x08: peers this exchange covers */
+    s32 step;                        /* +0x0C: row of the protocol sequence table */
+    u32 pad10;                       /* +0x10 */
+    struct VoiceLinkContext *next;   /* +0x14: free/active list link */
+} VoiceLinkContext;                  /* 0x18 bytes */
+
+typedef struct VoiceLinkState {
+    s32 unk00;                       /* +0x00 */
+    u32 peerMask;                    /* +0x04: connected peers, one bit each */
+    u64 lastActivity;                /* +0x08: GetSystemTick() of the last exchange */
+    VoiceLinkContext *freeList;      /* +0x10: idle contexts */
+    VoiceLinkContext *activeList;    /* +0x14: contexts in use */
+    u64 (*getTick)(void);            /* +0x18 */
+    u32 randMul;                     /* +0x1C */
+    u32 randAdd;                     /* +0x20 */
+    u8  pad24[0x18];
+    s32 sessionState;                /* +0x3C: 0 idle, 2 exchange active */
+    u8  peerId;                      /* +0x40: peer being served */
+    u8  peerFlag;                    /* +0x41 */
+    u8  pad42[2];
+    u32 peerMask2;                   /* +0x44 */
+    s32 substate;                    /* +0x48 */
+} VoiceLinkState;
+
+/* Header of a voice-chat link packet (magic 0x5F564354). */
+typedef struct VoiceLinkPacket {
+    u32 magic;      /* +0x00: 0x5F564354 */
+    u8  kind;       /* +0x04: packet kind, 0/0xFF are control packets */
+    u8  headerSize; /* +0x05: 16 */
+    u8  subtype;    /* +0x06: handshake step within the kind */
+    u8  pad07;
+    u8  sender;     /* +0x08: player id that sent the packet */
+    u8  target;     /* +0x09: player id it is for */
+    u8  flag;       /* +0x0A */
+    u8  peerId;     /* +0x0B */
+    u32 sequence;   /* +0x0C */
+} VoiceLinkPacket;  /* 0x10 bytes */
 
 #endif
 

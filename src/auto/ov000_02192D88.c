@@ -7,9 +7,9 @@ int func_ov000_02192d88(void){
 extern void **gCurrentMap;
 extern u16 *gAiCommandState;
 extern s8 gTerrainPropertyType[32];
-void BuildUnitMoveRange(void); void func_01ffb9c4(s32);
+void BuildUnitMoveRange(void); void MarkAdjacentCells(s32);
 s32 IsAllyUnitAtCell(s16,s16); u8 IsPropertyTerrain(s32);
-s32 func_ov000_021a9860(s32,s32); s32 func_ov000_02178518(s32,s32,s16 *);
+s32 func_ov000_021a9860(s32,s32); s32 FindBestAdjacentDestination(s32,s32,s16 *);
 s32 func_ov000_0217bdb4(s32,s32);s32 func_ov000_0217bd44(s32,s32,s32,s32);
 s32 SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 IsTerrainOnUnitTeam(s32,s32);
@@ -21,14 +21,14 @@ id=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,12);
 unit=(u8 *)*gCurrentMap+0x59a4+id*14;
 bx=-1;by=bx;px=bx;py=bx;tx=bx;ty=bx;best=bx;tie=0x7fff;
 if(!id)return;
-BuildUnitMoveRange();func_01ffb9c4(0x6f);
+BuildUnitMoveRange();MarkAdjacentCells(0x6f);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
 if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
 if(IsPropertyTerrain(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
 if(!func_ov000_021a9860(x,y))continue;
-if(!func_ov000_02178518(x,y,pos))continue;
+if(!FindBestAdjacentDestination(x,y,pos))continue;
 if(M2C_FIELD(*gCurrentMap,u8 *,0x6c63+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x1928)*6) && !(gAiCommandState[4]&0x20)){
 if(func_ov000_0217bdb4(x,y)==1)continue;
 }
@@ -50,7 +50,7 @@ for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
 if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
 if(IsPropertyTerrain(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
-if(!func_ov000_02178518(x,y,pos))continue;
+if(!FindBestAdjacentDestination(x,y,pos))continue;
 kind=(u32)(unit[0]<<26)>>26;
 switch(kind){
 case 1:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x80))continue;

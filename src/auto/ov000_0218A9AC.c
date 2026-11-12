@@ -18,7 +18,7 @@ void SetMapCursor(int, int, int, int, int);
 void SelectAttackMoveDestination(void) {
     s32 func_ov000_021a9740(void *, s32);
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
-    void func_01ffb9c4(s8);
+    void MarkAdjacentCells(s8);
     s32 func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_0217aa2c(s32, s32);
@@ -46,7 +46,7 @@ void SelectAttackMoveDestination(void) {
             ((UnitKind0218 *)unit)->kind,
             0x6e,
             1);
-        func_01ffb9c4(0x6f);
+        MarkAdjacentCells(0x6f);
     }
 
     for (y = 0; y < *(u16 *)((u8 *)*gCurrentMap + MAP_HEIGHT); y++) {

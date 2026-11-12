@@ -217,14 +217,14 @@ void func_020d8914(void) {
 
 void func_020d8928(void) {
     s32 IsLinkSessionActive();
-    extern M2C_UNK data_02168f0c;
+    extern M2C_UNK gBattleEndState;
     if (IsLinkSessionActive() == 0) {
         return;
     }
-    M2C_FIELD(&data_02168f0c, s8 *, 0) = 1;
-    M2C_FIELD(&data_02168f0c, s8 *, 1) = 0;
-    M2C_FIELD(&data_02168f0c, s8 *, 2) = 0;
-    M2C_FIELD(&data_02168f0c, s8 *, 3) = 1;
+    M2C_FIELD(&gBattleEndState, s8 *, 0) = 1;
+    M2C_FIELD(&gBattleEndState, s8 *, 1) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, 2) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, 3) = 1;
 }
 
 M2C_UNK func_020d895c(void) {

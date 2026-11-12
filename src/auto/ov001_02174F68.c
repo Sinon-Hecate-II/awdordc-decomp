@@ -67,10 +67,10 @@ func_ov001_0218a304(M2C_FIELD((u8 *)gOv001Keypad+(arg0-12)*4,s32 *,0x40),-1,0,da
 }
 
 void Ov001KeypadCommitKey(void) {
-    s32 func_ov001_0218a24c(s32, M2C_UNK);
+    s32 Ov001_GetSpriteObjEntry(s32, M2C_UNK);
     M2C_UNK Ov001_MoveSpriteLayout(s32, M2C_UNK, u16, u16);
-    M2C_UNK func_ov001_0218a474(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a55c(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Ov001_SetSpritePalette(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
     extern u16 data_ov001_0218f66a[];
     extern u16 data_ov001_0218f66c[];
     extern void *gOv001Keypad;
@@ -78,8 +78,8 @@ void Ov001KeypadCommitKey(void) {
     s32 temp_ip;
     if (M2C_FIELD(gOv001Keypad, s8 *, 0x63) <= 0xB) var_r4 = 0x44;
     else var_r4 = 0x45;
-    func_ov001_0218a55c(0, var_r4, func_ov001_0218a24c(M2C_FIELD(gOv001Keypad, s32 *, 0x58), 0));
-    func_ov001_0218a474(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, 2);
+    Ov001_LoadSpriteObjLayout(0, var_r4, Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, 0x58), 0));
+    Ov001_SetSpritePalette(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, 2);
     temp_ip = M2C_FIELD(gOv001Keypad, s8 *, 0x63) * 2;
     Ov001_MoveSpriteLayout(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, data_ov001_0218f66a[temp_ip], data_ov001_0218f66c[temp_ip]);
 }
@@ -116,7 +116,7 @@ void func_ov001_021753c8(M2C_UNK arg0) {
     extern void *gOv001Keypad;
     Position pos;
     s32 bits;
-    bits = *(s32 *)func_ov001_0218a24c(M2C_FIELD(gOv001Keypad, s32 *, 0x40), 0);
+    bits = *(s32 *)Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, 0x40), 0);
     pos.y = (u32)(bits & 0x01ff0000) >> 16;
     pos.x = (u8)bits + 12;
     ((void(*)(s32,s32,u32))func_ov001_02174f68)(4, pos.x, pos.y);

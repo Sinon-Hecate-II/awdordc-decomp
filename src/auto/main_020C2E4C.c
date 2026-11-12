@@ -10,7 +10,7 @@
 void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy, u8 value0, u8 value1) {
     void *func_01ffa3dc(M2C_UNK *, s32);
     void *MemAlloc(u32);
-    void *func_020e34bc(u32);
+    void *HeapAllocBlock(u32);
     extern M2C_UNK gBattleEffectPool;
     extern M2C_UNK data_02129890;
     extern M2C_UNK gHeapObjectVTable;
@@ -103,7 +103,7 @@ void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 un
             M2C_FIELD(block, u16 *, 2) = M2C_FIELD(block, u16 *, 4);
         }
         M2C_FIELD(effect, void **, 0x48) = block;
-        block = func_020e34bc(0x100);
+        block = HeapAllocBlock(0x100);
         M2C_FIELD(effect, void **, 0x4c) = block;
     }
     M2C_FIELD(effect, u8 *, 0x36) = 0;
@@ -130,7 +130,7 @@ u8 func_020c306c(void) {
 void CreateBattleEffect(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy, u8 value0, u8 value1) {
     void *func_01ffa3dc(M2C_UNK *, s32);
     void *MemAlloc(u32);
-    void *func_020e34bc(u32);
+    void *HeapAllocBlock(u32);
     extern M2C_UNK gBattleEffectPool;
     extern M2C_UNK data_02129890;
     extern M2C_UNK gHeapObjectVTable;
@@ -223,7 +223,7 @@ void CreateBattleEffect(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy,
             M2C_FIELD(block, u16 *, 2) = M2C_FIELD(block, u16 *, 4);
         }
         M2C_FIELD(effect, void **, 0x48) = block;
-        block = func_020e34bc(0x100);
+        block = HeapAllocBlock(0x100);
         M2C_FIELD(effect, void **, 0x4c) = block;
     }
     M2C_FIELD(effect, u8 *, 0x36) = 1;
@@ -246,7 +246,7 @@ void func_020c32bc(void) {
 
 void *func_020c32e4(void *arg0) {
     M2C_UNK MemFree();
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     extern M2C_UNK gOccupationEffectVTable;
     void *p;
     M2C_FIELD(arg0, void **, 0) = &gOccupationEffectVTable;
@@ -261,7 +261,7 @@ void *func_020c32e4(void *arg0) {
     p = M2C_FIELD(arg0, void **, 0x48);
     if (p != NULL) MemFree(p);
     p = M2C_FIELD(arg0, void **, 0x4C);
-    if (p != NULL) func_020e35cc(p);
+    if (p != NULL) HeapFreeBlock(p);
     MemFree(arg0);
     return arg0;
 }
@@ -274,7 +274,7 @@ s32 func_020c3360(s32 arg0) {
 
 void *func_020c3374(void *arg0) {
     M2C_UNK MemFree();
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     extern M2C_UNK gOccupationEffectVTable;
     void *p;
     M2C_FIELD(arg0, void **, 0) = &gOccupationEffectVTable;
@@ -289,7 +289,7 @@ void *func_020c3374(void *arg0) {
     p = M2C_FIELD(arg0, void **, 0x48);
     if (p != NULL) MemFree(p);
     p = M2C_FIELD(arg0, void **, 0x4C);
-    if (p != NULL) func_020e35cc(p);
+    if (p != NULL) HeapFreeBlock(p);
     
     return arg0;
 }

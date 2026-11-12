@@ -555,7 +555,7 @@ s32 func_0209d750(void *arg0) {
 
 s32 func_0209d790(void *arg0) {
     s32 func_020866fc(s32);
-    M2C_UNK func_020926f8(s32);
+    M2C_UNK ShowMessageText(s32);
     M2C_UNK func_02092888(void *);
     M2C_UNK func_020945f8();
     s32 temp_r4;
@@ -563,7 +563,7 @@ s32 func_0209d790(void *arg0) {
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4);
     if (func_020866fc(temp_r4) != 0) {
         func_020945f8();
-        func_020926f8(temp_r4);
+        ShowMessageText(temp_r4);
         func_02092888(arg0);
     }
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);

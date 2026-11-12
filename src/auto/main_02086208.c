@@ -211,9 +211,9 @@ void func_02086608(u8 arg0) {
 }
 
 void func_02086658(u8 arg0) {
- void func_020e35cc(s32);
+ void HeapFreeBlock(s32);
  extern M2C_UNK data_02157678[];
- func_020e35cc(((s32 *)&data_02157678)[arg0]);
+ HeapFreeBlock(((s32 *)&data_02157678)[arg0]);
  ((s32 *)&data_02157678)[arg0] = 0;
 }
 

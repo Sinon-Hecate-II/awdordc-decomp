@@ -169,7 +169,7 @@ void func_02062e28(void *arg0, s32 arg1) {
 }
 
 s32 func_02062e30(void *a){
-s32 func_02048558(s32,s32,s32);s32 Vector_GetCount(s32);void func_020486f8(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void func_020651c4(void *,void *,s32);
+s32 func_02048558(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void func_020651c4(void *,void *,s32);
 extern s32 data_0213e4b4;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
@@ -192,7 +192,7 @@ M2C_FIELD(a,s32 *,0x5c8)=2;M2C_FIELD(a,s32 *,0x484)=-1;
 case 2:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;i=p[0];M2C_FIELD(a,s32 *,0x484)=i;r=func_02048558(8,i,0);M2C_FIELD(a,s32 *,8)=r;if(!r)return 5;p++;n--;}
 while(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8))){
-if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=func_02061cb4(a,p+1);func_020486f8(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
+if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=func_02061cb4(a,p+1);Vector_AddItem(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
 }
 if(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8)))break;
 M2C_FIELD(a,s32 *,0x5c8)=3;M2C_FIELD(a,s32 *,0x484)=-1;
@@ -216,7 +216,7 @@ M2C_FIELD(a,s32 *,0x80)=n;return 0;
 }
 
 s32 func_0206325c(void *a,u8 *p,s32 n) {
- s32 func_02048558(s32,s32,s32); void func_020486f8(s32,s32*); s32 func_02061cb4(void*,void*); s32 BoundedStringLength(s8*,s32); void func_02062670(void*);
+ s32 func_02048558(s32,s32,s32); void Vector_AddItem(s32,s32*); s32 func_02061cb4(void*,void*); s32 BoundedStringLength(s8*,s32); void func_02062670(void*);
  s32 entry[2]; s32 i,count,len;
  n--;count=*p++;
  if(M2C_FIELD(a,s32*,8))func_02062670(a);
@@ -227,7 +227,7 @@ s32 func_0206325c(void *a,u8 *p,s32 n) {
  len=BoundedStringLength((s8*)p+1,n-1);
  if(len==-1)return 4;
  entry[1]=*p;entry[0]=func_02061cb4(a,p+1);
- func_020486f8(M2C_FIELD(a,s32*,8),entry);
+ Vector_AddItem(M2C_FIELD(a,s32*,8),entry);
  p+=len+1;n-=len+1;
  }
  return 0;
@@ -301,72 +301,76 @@ s32 GpiHandleRecordList(void *gpi, u8 *data, s32 size) {
     return 0;
 }
 
-s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
-    s32 func_02061ac8(M2C_UNK, s32, u16);
-    s32 func_02061bc8(void *,s32);
+/* Handle an incoming GPI server-info reply (message type 5): find the server it
+   refers to by address and port, read the 32-bit value and the list of
+   NUL-terminated strings that follow, then hand them to the server-info callback
+   (at +0x48c).  Returns 4 on a malformed message, 0 otherwise. */
+s32 GpiHandleServerInfoResponse(void *gpi, u8 *data, s32 size) {
+    s32 SBServerListFindByAddress(M2C_UNK, s32, u16);
+    s32 SBServerListGetServerAt(void *,s32);
     s32 BoundedStringLength(s8 *, s32);
 
-    u8 *h0,*hx; register u8 *h1;
-    u32 sp10;
-    u16 hdr1;
-    s32 hdr0;
-    void *sp14[16];
-    s32 found;
-    s32 val;
+    u8 *ipBytes,*valueBytes; register u8 *portBytes;
+    u32 value;
+    u16 port;
+    s32 ip;
+    void *strings[16];
+    s32 index;
+    s32 server;
 
-    s32 max;
-    s32 count;
+    s32 declaredCount;
+    s32 actualCount;
 
     s32 userdata;
-    void (*fp)(void *, s32, u32, s32, void *, s32);
+    void (*callback)(void *, s32, u32, s32, void *, s32);
 
-    if (arg2 < 0xb) {
+    if (size < 0xb) {
         return 4;
     }
 
-    h0=(u8 *)&hdr0; h1=(u8 *)&hdr1;
-    *(volatile PairBytes *)h0=*(PairBytes *)arg1;
-    { u8 lo=arg1[2],hi=arg1[3]; h0[3]=hi; h0[2]=lo; }
-    { u8 hi=arg1[5],lo=arg1[4]; h1[1]=hi; h1[0]=lo; }
+    ipBytes=(u8 *)&ip; portBytes=(u8 *)&port;
+    *(volatile PairBytes *)ipBytes=*(PairBytes *)data;
+    { u8 lo=data[2],hi=data[3]; ipBytes[3]=hi; ipBytes[2]=lo; }
+    { u8 hi=data[5],lo=data[4]; portBytes[1]=hi; portBytes[0]=lo; }
 
-    found = func_02061ac8(arg0, (s32)hdr0, (s32)hdr1);
-    if (found == -1) {
+    index = SBServerListFindByAddress(gpi, (s32)ip, (s32)port);
+    if (index == -1) {
         return 0;
     }
 
-    val = func_02061bc8(arg0,found);
+    server = SBServerListGetServerAt(gpi,index);
 
-    hx=(u8 *)&sp10;
-    *(volatile PairBytes *)hx=*(PairBytes *)(arg1+6);
-    *((volatile PairBytes *)hx+1)=*(PairBytes *)(arg1+8);
-    { u32 a=(sp10<<24)&0xff000000u; u32 b=(sp10<<8)&0xff0000u; u32 c=(sp10>>24)&255; u32 d=(sp10>>8)&0xff00u; sp10=a|(b|(c|d)); }
+    valueBytes=(u8 *)&value;
+    *(volatile PairBytes *)valueBytes=*(PairBytes *)(data+6);
+    *((volatile PairBytes *)valueBytes+1)=*(PairBytes *)(data+8);
+    { u32 a=(value<<24)&0xff000000u; u32 b=(value<<8)&0xff0000u; u32 c=(value>>24)&255; u32 d=(value>>8)&0xff00u; value=a|(b|(c|d)); }
 
-    max = arg1[10];
-    arg1 += 0xb;
-    arg2 -= 0xb;
-    count = 0;
+    declaredCount = data[10];
+    data += 0xb;
+    size -= 0xb;
+    actualCount = 0;
 
-    while(count < max && count < 16) {
+    while(actualCount < declaredCount && actualCount < 16) {
         s32 k;
-        if(arg2 < 1) break;
-        k=BoundedStringLength((s8 *)arg1,arg2);
+        if(size < 1) break;
+        k=BoundedStringLength((s8 *)data,size);
         if(k == -1)return 4;
-        sp14[count]=arg1;
-        arg1+=k; arg2-=k; count++;
+        strings[actualCount]=data;
+        data+=k; size-=k; actualCount++;
     }
 
-    fp = *(void (**)(void *, s32, u32, s32, void *, s32))((u8 *)arg0 + 0x48c);
-    if (fp == 0) {
+    callback = *(void (**)(void *, s32, u32, s32, void *, s32))((u8 *)gpi + 0x48c);
+    if (callback == 0) {
         return 0;
     }
-    userdata = *(s32 *)((u8 *)arg0 + 0x494);
-    fp(arg0, val, sp10, count, sp14, userdata);
+    userdata = *(s32 *)((u8 *)gpi + 0x494);
+    callback(gpi, server, value, actualCount, strings, userdata);
     return 0;
 }
 
 #pragma scheduling off
 s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
-    s32 func_02061ac8(M2C_UNK, s32, u16);
+    s32 SBServerListFindByAddress(M2C_UNK, s32, u16);
     M2C_UNK func_02061b6c(M2C_UNK);
     s32 sp4;
     u16 sp0;
@@ -393,7 +397,7 @@ s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
             s32 saved = sp4;
             rc[0] = a4;
             rc[1] = a5;
-            if (func_02061ac8(arg0, saved, sp0) == -1) {
+            if (SBServerListFindByAddress(arg0, saved, sp0) == -1) {
                 return 0;
             }
         }

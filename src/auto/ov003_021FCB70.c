@@ -461,7 +461,7 @@ void func_ov003_021fd488(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK func_020a9188(void *, M2C_UNK);
-    M2C_UNK func_020a92bc(void *, M2C_UNK);
+    M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     extern M2C_UNK data_02102174;
     extern M2C_UNK gHeapObjectVTable;
@@ -563,7 +563,7 @@ void func_ov003_021fd488(M2C_UNK arg0) {
         M2C_FIELD(temp_r0_3, s8 *, 0x16) = 2;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x50), s8 *, 0x14) = 8;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x50), s8 *, 0x17) = 8;
-        func_020a92bc(M2C_FIELD(temp_r0, void **, 0x50), 0);
+        SetTextSpriteValue(M2C_FIELD(temp_r0, void **, 0x50), 0);
         temp_r2_2 = M2C_FIELD(temp_r0, void **, 0x50);
         M2C_FIELD(temp_r2_2, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r2_2, u8 *, 0x20) & ~0xE0) | 0x40);
         temp_r2_3 = M2C_FIELD(temp_r0, void **, 0x50);
@@ -588,7 +588,7 @@ void func_ov003_021fd488(M2C_UNK arg0) {
         M2C_FIELD(temp_r0_4, s8 *, 0x16) = 2;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x54), s8 *, 0x14) = 8;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x54), s8 *, 0x17) = 8;
-        func_020a92bc(M2C_FIELD(temp_r0, void **, 0x54), 0);
+        SetTextSpriteValue(M2C_FIELD(temp_r0, void **, 0x54), 0);
         temp_r5_2 = M2C_FIELD(temp_r0, void **, 0x54);
         M2C_FIELD(temp_r5_2, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r5_2, u8 *, 0x20) & ~0xE0) | 0x40);
         temp_r5_3 = M2C_FIELD(temp_r0, void **, 0x54);

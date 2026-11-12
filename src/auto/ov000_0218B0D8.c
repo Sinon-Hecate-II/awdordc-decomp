@@ -19,7 +19,7 @@ int func_ov000_0218b0d8(void *arg0) {
  int y,x;
  s16 pos[2];
  u8 *map, *unit;
- if(func_ov000_0217dcd0()==1) flags|=0x100000;
+ if(CursorUnitReachesEnemyKind22()==1) flags|=0x100000;
  map=*gCurrentMap;
  unit=M2C_FIELD(map,u8 **,0x52d0);
  if(IsUnitSelected(unit)) flags|=0x400000;
@@ -48,7 +48,7 @@ int func_ov000_0218b0d8(void *arg0) {
  if(hits >= (total>>2)) flags|=0x200000;
  }
  }
- func_01ffb9c4(111);
+ MarkAdjacentCells(111);
 
  for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++) {
  for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++) {

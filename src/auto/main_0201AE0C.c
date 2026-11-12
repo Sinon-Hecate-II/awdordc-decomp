@@ -36,7 +36,7 @@ M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
 s32 func_0201a704(u32); s32 func_0201a764(u32);
 M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK *func_0201abd0(void); M2C_UNK *func_0201ad9c(s32);
-extern M2C_UNK data_02137778;
+extern M2C_UNK gLocalMacAddress;
 M2C_UNK *p; s32 n;
 M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);
 if(!func_0201a764(ip)){
@@ -53,7 +53,7 @@ M2C_FIELD(a,u8 *,-11)=(ip>>16)&127;
 M2C_FIELD(a,u8 *,-10)=ip>>8;
 M2C_FIELD(a,u8 *,-9)=ip;
 }
-MI_CpuCopy8(&data_02137778,(u8 *)a-8,6);
+MI_CpuCopy8(&gLocalMacAddress,(u8 *)a-8,6);
 func_0201a824((u8 *)a-14,b+14,c,d);
 }
 #pragma scheduling on
@@ -62,7 +62,7 @@ s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
 M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
 s32 Checksum(u8*,s32);s32 func_0201a764(u32);
 M2C_UNK NetStackQueuePacket(void*,void*,void*,s32,s32,s32);
-extern M2C_UNK gNetStack,gLinkHeaderTemplate,data_02137778;
+extern M2C_UNK gNetStack,gLinkHeaderTemplate,gLocalMacAddress;
 u16 len,ident;s32 sum,t;
 len=b+20+d;ident=id;
 M2C_FIELD(a,u16*,-18)=((s32)len>>8)|(len<<8);
@@ -74,7 +74,7 @@ if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80))func_0201af48(a-20,b+20,c
 if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80)){if(!func_0201a764(ip))return;}
 MI_CpuCopy8(&gLinkHeaderTemplate,a-28,8);
 t=OS_DisableInterrupts();
-NetStackQueuePacket(&data_02137778,&data_02137778,a-28,b+28,c,d);
+NetStackQueuePacket(&gLocalMacAddress,&gLocalMacAddress,a-28,b+28,c,d);
 OS_RestoreInterrupts(t);
 }
 
@@ -184,29 +184,29 @@ void func_0201b798(void *arg0) {
     M2C_UNK MI_CpuCopy8(M2C_UNK *, void *, M2C_UNK);
     M2C_UNK func_0201a824(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNetStack;
-    extern M2C_UNK data_02137778;
+    extern M2C_UNK gLocalMacAddress;
     u16 temp_ip;
     u16 temp_ip_2;
 
     M2C_FIELD(arg0, s16 *, 6) = 0x200;
     MI_CpuCopy8(arg0 + 8, arg0 + 0x12, 0xA);
-    MI_CpuCopy8(&data_02137778, arg0 + 8, 6);
+    MI_CpuCopy8(&gLocalMacAddress, arg0 + 8, 6);
     temp_ip = (u16) ((u32) M2C_FIELD(&gNetStack, u32 *, 0x50) >> 0x10);
     M2C_FIELD(arg0, s16 *, 0xE) = (s16) ((temp_ip >> 8) | (temp_ip << 8));
     temp_ip_2 = (u16) M2C_FIELD(&gNetStack, u32 *, 0x50);
     M2C_FIELD(arg0, s16 *, 0x10) = (s16) ((temp_ip_2 >> 8) | (temp_ip_2 << 8));
     MI_CpuCopy8(arg0 + 0x12, arg0 - 0xE, 6);
-    MI_CpuCopy8(&data_02137778, arg0 - 8, 6);
+    MI_CpuCopy8(&gLocalMacAddress, arg0 - 8, 6);
     func_0201a824(arg0 - 0xE, 0x2A, 0, 0);
 }
 
 #pragma optimization_level 2
 #pragma opt_common_subs off
 void func_0201b840(void *arg0,u32 arg1) {
-s32 func_0201a7f8(void *,void *);extern M2C_UNK gNetStack,data_02137778;
+s32 func_0201a7f8(void *,void *);extern M2C_UNK gNetStack,gLocalMacAddress;
 u16 op,a,b,c,d,t;u32 src,dst,own;s32 same,local;
 if(arg1<28)return;
-if(func_0201a7f8(arg0+8,&data_02137778)&&M2C_FIELD(&gNetStack,u32 *,80)) {
+if(func_0201a7f8(arg0+8,&gLocalMacAddress)&&M2C_FIELD(&gNetStack,u32 *,80)) {
 if(M2C_FIELD(arg0,u16 *,0)==0x100&&M2C_FIELD(arg0,u16 *,2)==8&&M2C_FIELD(arg0,u16 *,4)==0x406) {
 t=M2C_FIELD(arg0,u16 *,6);op=((s32)t>>8)|(t<<8);
 if(op!=1&&op!=2)return;

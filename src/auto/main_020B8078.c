@@ -1,5 +1,6 @@
 /* 20 functions from 0x020B8078 to 0x020B8CCC (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 extern u8 data_021290b4[40];
 extern void *gCur3DSpriteEngine;
@@ -9,72 +10,70 @@ extern u8 data_02129120[16];
 extern u8 data_02129130[16];
 extern u8 data_02129140[16];
 
-void func_020b8078(void *arg0) {
-    extern void **gCurrentMap;
-    M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    s32 func_020abe90(M2C_UNK);
-    void *func_020b7f58(M2C_UNK);
-    void *func_020b7fb8(M2C_UNK);
-    void *func_020b8018(M2C_UNK);
-    s32 func_020cd1e4();
-    s32 func_020cd28c();
-    s32 func_020cd2b8();
-    s32 func_020cd2f8();
-    s32 func_020cd3bc();
-    extern M2C_UNK data_0212906c;
-    extern M2C_UNK data_02129074;
-    extern M2C_UNK data_02129084;
-    extern M2C_UNK data_02129094;
-    extern M2C_UNK data_021290a4;
-    extern M2C_UNK func_020b7c4c;
-    extern M2C_UNK func_020b7c5c;
-    extern M2C_UNK func_020b7ef0;
-    register void *var_r4 asm("r4");
-    register u8 var_r5 asm("r5");
-    u8 temp_r0;
-
-    var_r4 = NULL;
-    var_r5 = (u8) M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
-    if (func_020abe90(3) == 1) {
-        return;
-    }
-    if (func_020cd1e4() != 0) {
-        var_r4 = func_020b7f58(arg0);
-        var_r5 = (u8) func_020cd2f8();
-    } else if (func_020cd28c() != 0) {
-        var_r4 = func_020b7fb8(arg0);
-        var_r5 = (u8) func_020cd3bc();
-    } else if (func_020cd2b8() != 0) {
-        var_r4 = func_020b8018(arg0);
-    }
-    if (var_r4 == NULL) {
-        return;
-    }
-    M2C_FIELD(var_r4, s32 *, 0x34) = 0x80;
-    M2C_FIELD(var_r4, s32 *, 0x38) = 0x60;
-    M2C_FIELD(var_r4, s32 *, 0x3C) = 0;
-    M2C_FIELD(var_r4, s32 *, 0x44) = (s32) (M2C_FIELD(var_r4, s32 *, 0x44) | 0x300000);
-    M2C_FIELD(var_r4, M2C_UNK **, 0x68) = &func_020b7c4c;
-    M2C_FIELD(var_r4, M2C_UNK **, 0x6C) = &func_020b7c5c;
-    M2C_FIELD(var_r4, M2C_UNK **, 0x70) = &func_020b7ef0;
-    SetFileDirectory(&data_0212906c);
-    temp_r0 = M2C_FIELD(((var_r5 * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C1);
-    switch (temp_r0) {
-    case 1:
-        LoadFileToSpriteBuffer(&data_02129074, 0x360, 0x20);
-        return;
-    case 2:
-        LoadFileToSpriteBuffer(&data_02129084, 0x360, 0x20);
-        return;
-    case 3:
-        LoadFileToSpriteBuffer(&data_02129094, 0x360, 0x20);
-        return;
-    case 4:
-        LoadFileToSpriteBuffer(&data_021290a4, 0x360, 0x20);
-        return;
-    }
-    return;
+/* Spawns the end-of-battle "map clear" transition for the relevant side: picks the
+ * winning, losing or drawn variant, positions the sprite and wires its fade
+ * callbacks, then loads the army-specific mapclear0..3 sprite file. */
+void SpawnMapClearEffect(void *arg0){
+extern void **gCurrentMap;
+M2C_UNK SetFileDirectory(M2C_UNK *);
+M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
+s32 func_020abe90(M2C_UNK);
+void *CreateMapClearWinObject(M2C_UNK);
+void *CreateMapClearLoseObject(M2C_UNK);
+void *CreateMapClearDrawObject(M2C_UNK);
+s32 DidPlayerWin(void);
+s32 DidPlayerLose(void);
+s32 IsBattleDraw(void);
+s32 GetWinningPlayer(void);
+s32 GetLosingPlayer(void);
+extern M2C_UNK data_0212906c;
+extern M2C_UNK data_02129074;
+extern M2C_UNK data_02129084;
+extern M2C_UNK data_02129094;
+extern M2C_UNK data_021290a4;
+extern M2C_UNK func_020b7c4c;
+extern M2C_UNK func_020b7c5c;
+extern M2C_UNK func_020b7ef0;
+register void *effect asm("r4");
+register u8 player asm("r5");
+u8 armyIndex;
+effect=NULL;
+player=(u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER);
+if(func_020abe90(3)==1)return;
+if(DidPlayerWin()!=0){
+effect=CreateMapClearWinObject(arg0);
+player=(u8)GetWinningPlayer();
+}else if(DidPlayerLose()!=0){
+effect=CreateMapClearLoseObject(arg0);
+player=(u8)GetLosingPlayer();
+}else if(IsBattleDraw()!=0){
+effect=CreateMapClearDrawObject(arg0);
+}
+if(effect==NULL)return;
+M2C_FIELD(effect,s32 *,0x34)=0x80;
+M2C_FIELD(effect,s32 *,0x38)=0x60;
+M2C_FIELD(effect,s32 *,0x3C)=0;
+M2C_FIELD(effect,s32 *,0x44)=(s32)(M2C_FIELD(effect,s32 *,0x44)|0x300000);
+M2C_FIELD(effect,M2C_UNK **,0x68)=&func_020b7c4c;
+M2C_FIELD(effect,M2C_UNK **,0x6C)=&func_020b7c5c;
+M2C_FIELD(effect,M2C_UNK **,0x70)=&func_020b7ef0;
+SetFileDirectory(&data_0212906c);
+armyIndex=M2C_FIELD((u8 *)*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF);
+switch(armyIndex){
+case 1:
+LoadFileToSpriteBuffer(&data_02129074,0x360,0x20);
+return;
+case 2:
+LoadFileToSpriteBuffer(&data_02129084,0x360,0x20);
+return;
+case 3:
+LoadFileToSpriteBuffer(&data_02129094,0x360,0x20);
+return;
+case 4:
+LoadFileToSpriteBuffer(&data_021290a4,0x360,0x20);
+return;
+}
+return;
 }
 
 void func_020b8208(void *arg0) {
@@ -287,14 +286,14 @@ void func_020b8778(void) {
     func_020b8740();
 }
 
-void func_020b8788(u8 *a){void *func_020b895c(void);s32 func_020b20e0(s32);void func_020b1c60(s32);extern u16 *gKeyState;void *p=func_020b895c();s32 max=M2C_FIELD(p,s16 *,0x42)-6;s32 n=*a;s32 pos=M2C_FIELD(p,s16 *,0x40);if(max<0)max=0;
+void func_020b8788(u8 *a){void *func_020b895c(void);s32 func_020b20e0(s32);void FocusSpriteSlotById(s32);extern u16 *gKeyState;void *p=func_020b895c();s32 max=M2C_FIELD(p,s16 *,0x42)-6;s32 n=*a;s32 pos=M2C_FIELD(p,s16 *,0x40);if(max<0)max=0;
 if(pos==0&&n==0){if(gKeyState[0]&64){M2C_FIELD(p,s16 *,0x40)=max;n=5;goto done;}}
 else if(gKeyState[1]&64){if(n>=2)n--;else if(!func_020b8694(p)&&n>0)n--;goto done;}
 if(pos==max&&n==5){if(gKeyState[0]&128){n=0;M2C_FIELD(p,s16 *,0x40)=n;goto done;}}
 else if(gKeyState[1]&128){if(n<4){if(func_020b20e0(n+1))n++;}else if(!func_020b86e4(p)){if(func_020b20e0(n+1))n++;}goto done;}
 if(gKeyState[1]&32){n-=func_020b86b4(p)+6;if(n<0)n=0;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
 else if(gKeyState[1]&16){n+=6-func_020b870c(p);if(n>=6)n=5;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
-done:if(n!=*a)func_020b1c60(n);M2C_FIELD(p,s16 *,0x3a)=n;}
+done:if(n!=*a)FocusSpriteSlotById(n);M2C_FIELD(p,s16 *,0x3a)=n;}
 
 void func_020b88f8(u8 *arg0) {
     void *func_020b895c(void);
@@ -347,7 +346,7 @@ void func_020b8970(void *arg0) {
     void func_020b8910(void);
     void func_020c0fac(void *);
     s32 func_020cd6fc(void);
-    void func_020e3058(void *, s32, s32, s32, s32, s32, s32, void *, s32);
+    void CreateMenuTextSprite(void *, s32, s32, s32, s32, s32, s32, void *, s32);
     void *GetLocalizedFileName(void *);
     void *temp_r4;
     void *temp_r5;
@@ -391,9 +390,9 @@ void func_020b8970(void *arg0) {
     LoadDecompressedFileTo(GetLocalizedFileName(data_02129130), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
     LoadFileToSpriteBuffer((M2C_UNK *) data_02129140, 0xc0, 0x20);
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 0x20, 0x18, 6);
-    func_020e3058((u8 *) arg0 + 0x48, 0x5e, 0x8b, 0xa, 0x39c, 3, -1, arg0, 1);
-    func_020e3058((u8 *) arg0 + 0x4c, 0x82, 0x8b, 0xb, 0x3a4, 3, -1, arg0, 0);
-    func_020e3058((u8 *) arg0 + 0x50, 0xc0, 0xa0, 0, 0x3ac, 3, 1, arg0, 0);
+    CreateMenuTextSprite((u8 *) arg0 + 0x48, 0x5e, 0x8b, 0xa, 0x39c, 3, -1, arg0, 1);
+    CreateMenuTextSprite((u8 *) arg0 + 0x4c, 0x82, 0x8b, 0xb, 0x3a4, 3, -1, arg0, 0);
+    CreateMenuTextSprite((u8 *) arg0 + 0x50, 0xc0, 0xa0, 0, 0x3ac, 3, 1, arg0, 0);
     temp_r5 = M2C_FIELD(arg0, void **, 0x50);
     func_02088e84(temp_r5, 0xc0, 0xa0, 0x100, 0xa0);
     if ((u8) (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0)) {

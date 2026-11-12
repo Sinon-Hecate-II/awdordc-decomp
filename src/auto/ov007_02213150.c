@@ -113,13 +113,13 @@ void func_ov007_0221336c(void) {
 
 void func_ov007_02213378(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     M2C_UNK func_ov007_022121b0();
     M2C_UNK func_ov007_022121d4(M2C_UNK);
     M2C_UNK FillMapTerrain(s32);
     M2C_UNK func_ov007_0221ab68();
     FillMapTerrain(M2C_FIELD(arg0, s32 *, 0x5C));
-    func_020cfd28();
+    RefreshMapView();
     func_ov007_022121b0();
     func_ov007_0221ab68();
     func_ov007_022121d4(1);
@@ -167,7 +167,7 @@ void func_ov007_02213458(void) {
     M2C_UNK func_020c0adc();
     M2C_UNK func_020c0784();
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     s32 func_020c0b9c();
     M2C_UNK func_020c0634(M2C_UNK *, s32, s32, u16, s32);
     extern void *gCur3DSpriteEngine;
@@ -176,7 +176,7 @@ void func_ov007_02213458(void) {
     func_020c0784();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
-    func_020cfd28();
+    RefreshMapView();
     func_020c0634(&data_ov007_0221fa40, 0x60, 0x30, (u16)func_020c0b9c(), 0x50);
 }
 
@@ -187,7 +187,7 @@ void func_ov007_022134b4(void *arg0) {
     extern void **gCurrentMap;
     void *p;
     LoadMapFromExport(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
-    func_020cfd28();
+    RefreshMapView();
     func_ov007_022121b0();
     func_ov007_0221ab68();
     func_ov007_022121d4(1);
@@ -258,7 +258,7 @@ void func_ov007_02213cf4(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }
 
-/* Configures the 3D sprite engine for the requested unit selection mode (arg0->0x3c, 0 or 1), then draws a tile-selection panel sprite via func_020a94fc. */
+/* Configures the 3D sprite engine for the requested unit selection mode (arg0->0x3c, 0 or 1), then draws a tile-selection panel sprite via DrawTextSprite. */
 void func_ov007_02213d1c(void *obj) {
     void *func_02089714(void);
     extern u8 gHeapObjectVTable[];
@@ -292,13 +292,13 @@ void func_ov007_02213d1c(void *obj) {
     M2C_FIELD(sp, u8 *, 0x21) = 11;
     M2C_FIELD(sp, u8 *, 0x28) = ((u8)(M2C_FIELD(sp, u8 *, 0x28) & ~0xe0) & ~0x1f) | 0x11;
     func_020a947c(sp, 3);
-    func_020a92bc(sp, M2C_FIELD(obj, s32 *, 0x34));
+    SetTextSpriteValue(sp, M2C_FIELD(obj, s32 *, 0x34));
     M2C_FIELD(sp, s16 *, 6) = 0x75;
     M2C_FIELD(sp, s16 *, 8) = 0x60;
-    func_020a94fc(sp);
-    func_020a92bc(sp, M2C_FIELD(obj, s32 *, 0x38));
+    DrawTextSprite(sp);
+    SetTextSpriteValue(sp, M2C_FIELD(obj, s32 *, 0x38));
     M2C_FIELD(sp, s16 *, 6) = 0xa5;
     M2C_FIELD(sp, s16 *, 8) = 0x60;
-    func_020a94fc(sp);
+    DrawTextSprite(sp);
 }
 

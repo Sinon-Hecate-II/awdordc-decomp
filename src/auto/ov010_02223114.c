@@ -400,20 +400,20 @@ return func_ov010_022243b0(a);
 }
 
 s32 func_ov010_02223ef0(void *arg0) {
-    extern M2C_UNK data_ov010_0222d8b4;
-    extern M2C_UNK data_ov010_0222d8f0;
+    extern M2C_UNK gVoiceLinkState;
+    extern M2C_UNK gVoiceLinkContext;
     extern M2C_UNK gLinkConfig;
     void *var_ip;
     void *var_lr;
 
     var_ip = NULL;
-    var_lr = M2C_FIELD(&data_ov010_0222d8b4, void **, 0x14);
+    var_lr = M2C_FIELD(&gVoiceLinkState, void **, 0x14);
     if (arg0 == NULL) {
         return 0;
     }
     if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) {
-        if (arg0 == &data_ov010_0222d8f0) {
-            M2C_FIELD(&data_ov010_0222d8b4, s32 *, 0x3C) = 0;
+        if (arg0 == &gVoiceLinkContext) {
+            M2C_FIELD(&gVoiceLinkState, s32 *, 0x3C) = 0;
         }
         return 1;
     }
@@ -426,13 +426,13 @@ s32 func_ov010_02223ef0(void *arg0) {
             } else {
                 temp_r2 = M2C_FIELD(var_lr, void **, 0x14);
                 if (temp_r2 != NULL) {
-                    M2C_FIELD(&data_ov010_0222d8b4, void **, 0x14) = temp_r2;
+                    M2C_FIELD(&gVoiceLinkState, void **, 0x14) = temp_r2;
                 } else {
-                    M2C_FIELD(&data_ov010_0222d8b4, void **, 0x14) = NULL;
+                    M2C_FIELD(&gVoiceLinkState, void **, 0x14) = NULL;
                 }
             }
-            M2C_FIELD(arg0, void **, 0x14) = M2C_FIELD(&data_ov010_0222d8b4, void **, 0x10);
-            M2C_FIELD(&data_ov010_0222d8b4, void **, 0x10) = arg0;
+            M2C_FIELD(arg0, void **, 0x14) = M2C_FIELD(&gVoiceLinkState, void **, 0x10);
+            M2C_FIELD(&gVoiceLinkState, void **, 0x10) = arg0;
             return 1;
         }
         var_ip = var_lr;

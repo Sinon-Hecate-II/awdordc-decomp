@@ -79,7 +79,7 @@ func_ov000_0219c874(n);
 
 void func_ov000_0219cb98(void) {
     void func_ov000_0219c874(s32);
-    s8 func_020a7bd4(u32);
+    s8 GetUnitKindMaxAttackRange(u32);
     extern s32 *gCurrentMap;
     extern u8 data_ov000_021df824;
     extern s8 data_ov000_021df868;
@@ -94,7 +94,7 @@ void func_ov000_0219cb98(void) {
 loop_1:
     temp_r1 = *var_r5;
     if (temp_r1 != 0) {
-        *var_r6 = func_020a7bd4((u32) (M2C_FIELD(((temp_r1 * 0xE) + *gCurrentMap), u8 *, 0x59A4) << 0x1A) >> 0x1A);
+        *var_r6 = GetUnitKindMaxAttackRange((u32) (M2C_FIELD(((temp_r1 * 0xE) + *gCurrentMap), u8 *, 0x59A4) << 0x1A) >> 0x1A);
         var_r6 += 1;
         ++var_r5;
         ++var_r4;

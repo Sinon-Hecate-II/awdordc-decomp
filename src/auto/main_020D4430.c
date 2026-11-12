@@ -27,7 +27,7 @@ func_0207b764(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
 if(func_0207b7c4())return;
 func_020a2b84(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-func_020cbdbc();func_020a3b58();func_020a694c();func_020a69bc();func_020cfd28();
+func_020cbdbc();func_020a3b58();func_020a694c();ApplyTurnRepairs();RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
 
@@ -90,7 +90,7 @@ void func_020d482c(void) {
             inRange = mapId < 425;
         if (inRange) {
             dst = func_020c7e6c(225);
-            func_02007ef4(func_020c7e6c(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)), dst, 84);
+            MI_CpuCopy32(func_020c7e6c(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)), dst, 84);
             M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 225;
         }
         if (func_02084830())
@@ -122,12 +122,12 @@ void func_020d4948(void) {
     func_01ffa3dc(&data_0212be74, 7);
 }
 
-void func_020d4960(void *arg0){extern M2C_UNK data_02168f0c; void *func_02084cc0(void *); void func_02086330(void *); if(M2C_FIELD(&data_02168f0c,u8*,0)==0)return;func_02086330(func_02084cc0(arg0));}
+void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084cc0(void *); void func_02086330(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;func_02086330(func_02084cc0(arg0));}
 
 void func_020d4984(void) {
     M2C_UNK func_02088634();
     M2C_UNK func_0209f858();
-    s32 func_020cd1e4();
+    s32 DidPlayerWin();
     M2C_UNK func_020cd5ac();
     M2C_UNK func_020d887c();
     M2C_UNK func_020d88ac();
@@ -135,14 +135,14 @@ void func_020d4984(void) {
     M2C_UNK func_020d8cc8();
     s32 func_020e4b54();
     extern s32 data_0215d8a0;
-    extern M2C_UNK data_02168f0c;
+    extern M2C_UNK gBattleEndState;
     extern u16 gMapConfig;
     u32 temp_r0;
 
     temp_r0 = (u32) (gMapConfig << 0x1D) >> 0x1D;
     switch ((u8) temp_r0) {                         /* irregular */
     case 0:
-        if ((func_020cd1e4() != 0) && (func_020e4b54() != 0) && (((u32) (data_0215d8a0 << 8) >> 0x18) == 1)) {
+        if ((DidPlayerWin() != 0) && (func_020e4b54() != 0) && (((u32) (data_0215d8a0 << 8) >> 0x18) == 1)) {
             func_020d88ac();
             return;
         }
@@ -150,8 +150,8 @@ void func_020d4984(void) {
         func_020cd5ac();
         return;
     case 1:
-        if (M2C_FIELD(&data_02168f0c, u8 *, 0) != 0) {
-            if ((M2C_FIELD(&data_02168f0c, u8 *, 1) != 0) || ((M2C_FIELD(&data_02168f0c, u8 *, 2) != 0) && (M2C_FIELD(&data_02168f0c, u8 *, 3) == 0))) {
+        if (M2C_FIELD(&gBattleEndState, u8 *, 0) != 0) {
+            if ((M2C_FIELD(&gBattleEndState, u8 *, 1) != 0) || ((M2C_FIELD(&gBattleEndState, u8 *, 2) != 0) && (M2C_FIELD(&gBattleEndState, u8 *, 3) == 0))) {
                 func_020d887c();
             } else {
                 func_020d895c();
@@ -215,7 +215,7 @@ int func_020d4b30() {
 
 int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();func_02090034(1,10);func_02090034(2,10);}
 
-M2C_UNK func_020d4bd4(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();func_02091cd0();func_020d4b30();func_020cfd28();}
+M2C_UNK func_020d4bd4(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();func_02091cd0();func_020d4b30();RefreshMapView();}
 
 void func_020d4c08(void) {
     M2C_UNK func_020d4ba4();
@@ -276,7 +276,7 @@ void *func_020d4cd4(void) {
     return func_01ffa860(&data_0212bd84, 0xFF03);
 }
 
-void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,data_02168f0c; s32 func_01ffa810(s32);M2C_UNK func_01ffa3dc();void func_01ffa8bc(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=func_01ffa3dc(&data_0212bd84,4);func_01ffa8bc(p,0xff03);func_020d4cc8((void*)p);func_01ffa8bc(func_01ffa3dc(&data_0212bdb4,6),0xff03);func_01ffa8bc(func_01ffa3dc(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&data_02168f0c,u8*,0))func_020852a8();}
+void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,gBattleEndState; s32 func_01ffa810(s32);M2C_UNK func_01ffa3dc();void func_01ffa8bc(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=func_01ffa3dc(&data_0212bd84,4);func_01ffa8bc(p,0xff03);func_020d4cc8((void*)p);func_01ffa8bc(func_01ffa3dc(&data_0212bdb4,6),0xff03);func_01ffa8bc(func_01ffa3dc(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&gBattleEndState,u8*,0))func_020852a8();}
 
 int func_020d4d78(void){s32 func_01ffa810(s32);void *func_0209cce4(void (*)(void *),int);if(!func_01ffa810(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
 
@@ -389,7 +389,7 @@ void UpdateAimingCursor(void) {
  map=M2C_FIELD(map,void**,MAP_CURSOR_UNIT);
  M2C_FIELD(map,u16*,MAP_UNIT_FLAGS)|=0xa;
  }
- func_020cfd28();func_0207a768();func_0207b040();
+ RefreshMapView();func_0207a768();func_0207b040();
  M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)=0;
  func_01ffa9e4(data_0211fbc4);
  PlaySoundEffect(0x1000f);

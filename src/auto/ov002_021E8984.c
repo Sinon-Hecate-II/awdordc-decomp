@@ -54,14 +54,14 @@ func_ov002_021e4b94(arg0);
 }
 #pragma scheduling on
 void func_ov002_021e8ca4(void *arg0) {
-void func_020e35cc(void *);
+void HeapFreeBlock(void *);
 void DestroyUnitModel(void *);
 s32 i=0;
 do {
 if(M2C_FIELD((u32)arg0+(i<<2),void **,8)!=0) {
 DestroyUnitModel(M2C_FIELD((u32)arg0+(i<<2),void **,8));
 if(M2C_FIELD((u32)arg0+(i<<2),void **,8)!=0) {
-func_020e35cc(M2C_FIELD((u32)arg0+(i<<2),void **,8));
+HeapFreeBlock(M2C_FIELD((u32)arg0+(i<<2),void **,8));
 M2C_FIELD((u32)arg0+(i<<2),void **,8)=0;
 }
 }
@@ -180,51 +180,51 @@ node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void *
 /* Recursively free a unit model object's three child lists and the model node itself. */
 void DestroyUnitModel(void *model) {
 void FreeModelList1(void *,void *); void FreeModelList2(void *,void *); void FreeModelList3(void *,void *);
-void FreeModelNode(void *); void func_ov002_021e3f28(void *); void func_020e35cc(void *);
+void FreeModelNode(void *); void func_ov002_021e3f28(void *); void HeapFreeBlock(void *);
 void *node,*child;
 node=M2C_FIELD(model,void **,88);if(node!=0){child=M2C_FIELD(node,void **,4);if(child!=0){if(M2C_FIELD(child,void **,4)!=0)FreeModelList1((u8*)model+84,M2C_FIELD(child,void **,4));
 if(M2C_FIELD(child,void **,0)!=0)FreeModelNode(M2C_FIELD(child,void **,0));
-if(M2C_FIELD(child,void **,0)!=0){func_020e35cc(M2C_FIELD(child,void **,0));M2C_FIELD(child,void **,0)=0;}
-if(M2C_FIELD(child,void **,4)!=0){func_020e35cc(M2C_FIELD(child,void **,4));M2C_FIELD(child,void **,4)=0;}
+if(M2C_FIELD(child,void **,0)!=0){HeapFreeBlock(M2C_FIELD(child,void **,0));M2C_FIELD(child,void **,0)=0;}
+if(M2C_FIELD(child,void **,4)!=0){HeapFreeBlock(M2C_FIELD(child,void **,4));M2C_FIELD(child,void **,4)=0;}
 }
 if(M2C_FIELD(node,void **,0)!=0)FreeModelNode(M2C_FIELD(node,void **,0));
-if(M2C_FIELD(node,void **,0)!=0){func_020e35cc(M2C_FIELD(node,void **,0));M2C_FIELD(node,void **,0)=0;}
-if(M2C_FIELD(node,void **,4)!=0){func_020e35cc(M2C_FIELD(node,void **,4));M2C_FIELD(node,void **,4)=0;}
+if(M2C_FIELD(node,void **,0)!=0){HeapFreeBlock(M2C_FIELD(node,void **,0));M2C_FIELD(node,void **,0)=0;}
+if(M2C_FIELD(node,void **,4)!=0){HeapFreeBlock(M2C_FIELD(node,void **,4));M2C_FIELD(node,void **,4)=0;}
 }
 if(M2C_FIELD(model,void **,84)!=0)FreeModelNode(M2C_FIELD(model,void **,84));
-if(M2C_FIELD(model,void **,84)!=0){func_020e35cc(M2C_FIELD(model,void **,84));M2C_FIELD(model,void **,84)=0;}
-if(M2C_FIELD(model,void **,88)!=0){func_020e35cc(M2C_FIELD(model,void **,88));M2C_FIELD(model,void **,88)=0;}
+if(M2C_FIELD(model,void **,84)!=0){HeapFreeBlock(M2C_FIELD(model,void **,84));M2C_FIELD(model,void **,84)=0;}
+if(M2C_FIELD(model,void **,88)!=0){HeapFreeBlock(M2C_FIELD(model,void **,88));M2C_FIELD(model,void **,88)=0;}
 node=M2C_FIELD(model,void **,96);if(node!=0){child=M2C_FIELD(node,void **,4);if(child!=0){if(M2C_FIELD(child,void **,4)!=0)FreeModelList2((u8*)model+92,M2C_FIELD(child,void **,4));
 if(M2C_FIELD(child,void **,0)!=0)FreeModelNode(M2C_FIELD(child,void **,0));
-if(M2C_FIELD(child,void **,0)!=0){func_020e35cc(M2C_FIELD(child,void **,0));M2C_FIELD(child,void **,0)=0;}
-if(M2C_FIELD(child,void **,4)!=0){func_020e35cc(M2C_FIELD(child,void **,4));M2C_FIELD(child,void **,4)=0;}
+if(M2C_FIELD(child,void **,0)!=0){HeapFreeBlock(M2C_FIELD(child,void **,0));M2C_FIELD(child,void **,0)=0;}
+if(M2C_FIELD(child,void **,4)!=0){HeapFreeBlock(M2C_FIELD(child,void **,4));M2C_FIELD(child,void **,4)=0;}
 }
 if(M2C_FIELD(node,void **,0)!=0)FreeModelNode(M2C_FIELD(node,void **,0));
-if(M2C_FIELD(node,void **,0)!=0){func_020e35cc(M2C_FIELD(node,void **,0));M2C_FIELD(node,void **,0)=0;}
-if(M2C_FIELD(node,void **,4)!=0){func_020e35cc(M2C_FIELD(node,void **,4));M2C_FIELD(node,void **,4)=0;}
+if(M2C_FIELD(node,void **,0)!=0){HeapFreeBlock(M2C_FIELD(node,void **,0));M2C_FIELD(node,void **,0)=0;}
+if(M2C_FIELD(node,void **,4)!=0){HeapFreeBlock(M2C_FIELD(node,void **,4));M2C_FIELD(node,void **,4)=0;}
 }
 if(M2C_FIELD(model,void **,92)!=0)FreeModelNode(M2C_FIELD(model,void **,92));
-if(M2C_FIELD(model,void **,92)!=0){func_020e35cc(M2C_FIELD(model,void **,92));M2C_FIELD(model,void **,92)=0;}
-if(M2C_FIELD(model,void **,96)!=0){func_020e35cc(M2C_FIELD(model,void **,96));M2C_FIELD(model,void **,96)=0;}
+if(M2C_FIELD(model,void **,92)!=0){HeapFreeBlock(M2C_FIELD(model,void **,92));M2C_FIELD(model,void **,92)=0;}
+if(M2C_FIELD(model,void **,96)!=0){HeapFreeBlock(M2C_FIELD(model,void **,96));M2C_FIELD(model,void **,96)=0;}
 node=M2C_FIELD(model,void **,104);if(node!=0){child=M2C_FIELD(node,void **,4);if(child!=0){if(M2C_FIELD(child,void **,4)!=0)FreeModelList3((u8*)model+100,M2C_FIELD(child,void **,4));
 if(M2C_FIELD(child,void **,0)!=0)func_ov002_021e3f28(M2C_FIELD(child,void **,0));
-if(M2C_FIELD(child,void **,0)!=0){func_020e35cc(M2C_FIELD(child,void **,0));M2C_FIELD(child,void **,0)=0;}
-if(M2C_FIELD(child,void **,4)!=0){func_020e35cc(M2C_FIELD(child,void **,4));M2C_FIELD(child,void **,4)=0;}
+if(M2C_FIELD(child,void **,0)!=0){HeapFreeBlock(M2C_FIELD(child,void **,0));M2C_FIELD(child,void **,0)=0;}
+if(M2C_FIELD(child,void **,4)!=0){HeapFreeBlock(M2C_FIELD(child,void **,4));M2C_FIELD(child,void **,4)=0;}
 }
 if(M2C_FIELD(node,void **,0)!=0)func_ov002_021e3f28(M2C_FIELD(node,void **,0));
-if(M2C_FIELD(node,void **,0)!=0){func_020e35cc(M2C_FIELD(node,void **,0));M2C_FIELD(node,void **,0)=0;}
-if(M2C_FIELD(node,void **,4)!=0){func_020e35cc(M2C_FIELD(node,void **,4));M2C_FIELD(node,void **,4)=0;}
+if(M2C_FIELD(node,void **,0)!=0){HeapFreeBlock(M2C_FIELD(node,void **,0));M2C_FIELD(node,void **,0)=0;}
+if(M2C_FIELD(node,void **,4)!=0){HeapFreeBlock(M2C_FIELD(node,void **,4));M2C_FIELD(node,void **,4)=0;}
 }
 if(M2C_FIELD(model,void **,100)!=0)func_ov002_021e3f28(M2C_FIELD(model,void **,100));
-if(M2C_FIELD(model,void **,100)!=0){func_020e35cc(M2C_FIELD(model,void **,100));M2C_FIELD(model,void **,100)=0;}
-if(M2C_FIELD(model,void **,104)!=0){func_020e35cc(M2C_FIELD(model,void **,104));M2C_FIELD(model,void **,104)=0;}
+if(M2C_FIELD(model,void **,100)!=0){HeapFreeBlock(M2C_FIELD(model,void **,100));M2C_FIELD(model,void **,100)=0;}
+if(M2C_FIELD(model,void **,104)!=0){HeapFreeBlock(M2C_FIELD(model,void **,104));M2C_FIELD(model,void **,104)=0;}
 FreeModelNode(model);
 }
 
 /* Recursively tear down a node's right chain, cleaning up its left children. */
 void FreeModelList2(void *owner, void *node) {
 void FreeModelNode(void *);
-void func_020e35cc(void *);
+void HeapFreeBlock(void *);
 void *right;
 void *rightRight;
 right = M2C_FIELD(node, void **, 4);
@@ -233,22 +233,22 @@ rightRight = M2C_FIELD(right, void **, 4);
 if (rightRight != NULL) {
 if (M2C_FIELD(rightRight, void **, 4) != NULL) FreeModelList2(owner, M2C_FIELD(rightRight, void **, 4));
 if (M2C_FIELD(rightRight, void **, 0) != NULL) FreeModelNode(M2C_FIELD(rightRight, void **, 0));
-if (M2C_FIELD(rightRight, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
-if (M2C_FIELD(rightRight, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
+if (M2C_FIELD(rightRight, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
+if (M2C_FIELD(rightRight, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
 }
 if (M2C_FIELD(right, void **, 0) != NULL) FreeModelNode(M2C_FIELD(right, void **, 0));
-if (M2C_FIELD(right, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
-if (M2C_FIELD(right, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
+if (M2C_FIELD(right, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
+if (M2C_FIELD(right, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
 }
 if (M2C_FIELD(node, void **, 0) != NULL) FreeModelNode(M2C_FIELD(node, void **, 0));
-if (M2C_FIELD(node, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 0)); M2C_FIELD(node, void **, 0) = NULL; }
-if (M2C_FIELD(node, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 4)); M2C_FIELD(node, void **, 4) = NULL; }
+if (M2C_FIELD(node, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **, 0)); M2C_FIELD(node, void **, 0) = NULL; }
+if (M2C_FIELD(node, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **, 4)); M2C_FIELD(node, void **, 4) = NULL; }
 }
 
 /* Recursively tear down a node's right chain, cleaning its left children via the no-op sibling handler. */
 void FreeModelList3(void *owner, void *node) {
 void func_ov002_021e3f28(void *);
-void func_020e35cc(void *);
+void HeapFreeBlock(void *);
 void *right;
 void *rightRight;
 right = M2C_FIELD(node, void **, 4);
@@ -257,16 +257,16 @@ rightRight = M2C_FIELD(right, void **, 4);
 if (rightRight != NULL) {
 if (M2C_FIELD(rightRight, void **, 4) != NULL) FreeModelList3(owner, M2C_FIELD(rightRight, void **, 4));
 if (M2C_FIELD(rightRight, void **, 0) != NULL) func_ov002_021e3f28(M2C_FIELD(rightRight, void **, 0));
-if (M2C_FIELD(rightRight, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
-if (M2C_FIELD(rightRight, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
+if (M2C_FIELD(rightRight, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
+if (M2C_FIELD(rightRight, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
 }
 if (M2C_FIELD(right, void **, 0) != NULL) func_ov002_021e3f28(M2C_FIELD(right, void **, 0));
-if (M2C_FIELD(right, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
-if (M2C_FIELD(right, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
+if (M2C_FIELD(right, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
+if (M2C_FIELD(right, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
 }
 if (M2C_FIELD(node, void **, 0) != NULL) func_ov002_021e3f28(M2C_FIELD(node, void **, 0));
-if (M2C_FIELD(node, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 0)); M2C_FIELD(node, void **, 0) = NULL; }
-if (M2C_FIELD(node, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 4)); M2C_FIELD(node, void **, 4) = NULL; }
+if (M2C_FIELD(node, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **, 0)); M2C_FIELD(node, void **, 0) = NULL; }
+if (M2C_FIELD(node, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **, 4)); M2C_FIELD(node, void **, 4) = NULL; }
 }
 
 /* Update a unit's animation/movement state. mode 0 picks the idle/frame slot from

@@ -76,13 +76,13 @@ void func_020b6168(void *arg0) {
 
 /* Step the screen-transition down-counter (func_020b524c -> func_0208c6fc, which
  * fires CloseNarcArchive once the counter wraps to zero), then finalize the current
- * map view and run its registered callbacks (func_020cfd28 -> func_020d0270 +
+ * map view and run its registered callbacks (RefreshMapView -> func_020d0270 +
  * func_020cfd38). */
 void func_020b6320(void) {
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     M2C_UNK func_020b524c();
     func_020b524c();
-    func_020cfd28();
+    RefreshMapView();
 }
 
 /* Spawn a path-marker task at tile (x, y) with the given range and tile index,
@@ -254,13 +254,13 @@ void func_020b6718(void *arg0) {
 
 void func_020b6794(void *arg0) {
     M2C_UNK MarkThreatBitmap(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
-    M2C_UNK func_020cfd28(void);
+    M2C_UNK RefreshMapView(void);
     extern void **gCurrentMap;
     void **m = gCurrentMap;
     void *p = arg0;
     u8 v = (u8)M2C_FIELD(*m, u16 *, 0x52A4);
     MarkThreatBitmap(M2C_FIELD(p, s16 *, 0x44), M2C_FIELD(p, s16 *, 0x46), 2, 1, v, 2);
-    func_020cfd28();
+    RefreshMapView();
 }
 
 void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {

@@ -28,9 +28,9 @@ void CloseNarcArchive();
 void LoadFileToSpriteBuffer();
 void SetFileDirectory();
 void func_0207c780();
-M2C_UNK func_020e35cc();
+M2C_UNK HeapFreeBlock();
 void func_02098b94();
-void func_020e3058();
+void CreateMenuTextSprite();
 void func_0208ca2c();
 void func_020aeebc();
 void func_020a9a30(s32,s32,u8,void *);
@@ -38,7 +38,7 @@ void func_0208b758();
 void func_02088f1c();
 void func_020e3004();
 void SetOv005FileDirectory(void);
-void *func_020e34bc(int);
+void *HeapAllocBlock(int);
 void *GetLocalizedFileName(void *);
 void *func_02080e30(void *,int);
 int func_020ae22c(int);
@@ -76,7 +76,7 @@ u16 * volatile v8;
 u16 * volatile v9;
 u16 * volatile v10;
 u16 * volatile v11;
-func_02086608(10); gOv005MenuState=func_020e34bc(60);func_02082c84();
+func_02086608(10); gOv005MenuState=HeapAllocBlock(60);func_02082c84();
 GX_SetBankForBG(1);func_02002968(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_02002bb8(32);func_0200323c(128);func_020032bc(256);
 M2C_FIELD(gOv005MenuState,u8 *,0)=0; M2C_FIELD(gOv005MenuState,s16 *,4)=0; M2C_FIELD(gOv005MenuState,s16 *,2)=M2C_FIELD(gOv005MenuState,s16 *,4);M2C_FIELD(gOv005MenuState,s16 *,14)=0;M2C_FIELD(gOv005MenuState,s16 *,12)=M2C_FIELD(gOv005MenuState,s16 *,14);M2C_FIELD(gOv005MenuState,s16 *,18)=0;M2C_FIELD(gOv005MenuState,s16 *,20)=0;M2C_FIELD(gOv005MenuState,s16 *,16)=M2C_FIELD(gOv005MenuState,s16 *,14)+1;M2C_FIELD(gOv005MenuState,s16 *,6)=0;M2C_FIELD(gOv005MenuState,s16 *,22)=12;M2C_FIELD(gOv005MenuState,s16 *,24)=0;M2C_FIELD(gOv005MenuState,s16 *,8)=0;M2C_FIELD(gOv005MenuState,s16 *,10)=256;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&first);
@@ -95,14 +95,14 @@ OpenNarcArchive(GetLocalizedFileName(data_ov005_02220908));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_0222091c),M2C_FIELD(g3DSpriteEngineMain,void * *,20));
 LoadNarcFileToBuffer(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpriteEngineMain,void * *,40),0,0);CloseNarcArchive();
 LoadFileToSpriteBuffer(data_ov005_02220944,0,32);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;SetFileDirectory(data_ov005_02220958);
-p=func_02080e30(data_ov005_02220960,1);func_0207c780((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);func_020e35cc(p);
+p=func_02080e30(data_ov005_02220960,1);func_0207c780((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
 LoadFileToSpriteBuffer(data_ov005_02220978,0x2e0,32);
 for(i=0,j=0;i<12;i++,j+=12)func_02098b94((s16)(i+1),0,0x9380+(j<<6),(u16)i);
 SetOv005FileDirectory();
-func_020e3058((char*)gOv005MenuState+36,192,160,1,0x35c,3,1,arg0,1);
-func_020e3058((char*)gOv005MenuState+40,224,160,2,0x36c,3,2,arg0,0);
+CreateMenuTextSprite((char*)gOv005MenuState+36,192,160,1,0x35c,3,1,arg0,1);
+CreateMenuTextSprite((char*)gOv005MenuState+40,224,160,2,0x36c,3,2,arg0,0);
 {Pos180 pos={{43,44,45,46}};
-for(i=0,j=0x37c,k=14,m=0;i<4;i++,j+=36,k+=60,m+=4)func_020e3058((char*)gOv005MenuState+44+m,M2C_FIELD(gOv005MenuState,s16 *,10)+k,90,pos.h[i]&255,j,3,-1,arg0,0);
+for(i=0,j=0x37c,k=14,m=0;i<4;i++,j+=36,k+=60,m+=4)CreateMenuTextSprite((char*)gOv005MenuState+44+m,M2C_FIELD(gOv005MenuState,s16 *,10)+k,90,pos.h[i]&255,j,3,-1,arg0,0);
 }
 func_0208ca2c(4096,1,func_020ae22c(9),2);func_020aeebc(3,15,6);
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&second);
@@ -241,10 +241,10 @@ void func_ov005_02218db4(M2C_UNK arg0) {
 }
 
 void func_ov005_02218dfc(void) {
- M2C_UNK func_020af1e4(); M2C_UNK func_020842d4(); M2C_UNK func_020b2178(); M2C_UNK func_020e35cc(); M2C_UNK func_02086658(s32);
+ M2C_UNK func_020af1e4(); M2C_UNK func_020842d4(); M2C_UNK func_020b2178(); M2C_UNK HeapFreeBlock(); M2C_UNK func_02086658(s32);
  extern void *gOv005MenuState;
  func_020af1e4(); func_020842d4(); func_020b2178();
- if(gOv005MenuState) {func_020e35cc(); gOv005MenuState=0;}
+ if(gOv005MenuState) {HeapFreeBlock(); gOv005MenuState=0;}
  func_02086658(10);
 }
 
@@ -255,9 +255,9 @@ void func_ov005_02218e3c(M2C_UNK arg0) {
 }
 
 u32 func_ov005_02218e54(void) {
- s32 func_020cd1e4(); extern void **gCurrentMap; extern u8 data_ov005_02221024[]; extern u8 data_0215c334[]; extern u16 data_0215c340[];
+ s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 data_ov005_02221024[]; extern u8 data_0215c334[]; extern u16 data_0215c340[];
  s32 a,b; u16 x;
- if(func_020cd1e4()) {
+ if(DidPlayerWin()) {
  a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
  if((u32)x>=0xa1U && (u32)x<0xbbU) a=1;
  if(a) b=1; else b=0;
@@ -267,9 +267,9 @@ u32 func_ov005_02218e54(void) {
 }
 
 u32 func_ov005_02218edc(void) {
- s32 func_020cd1e4(); extern void **gCurrentMap; extern u8 data_ov005_02221024[];
+ s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 data_ov005_02221024[];
  s32 a,b; u16 x;
- if(func_020cd1e4()) {
+ if(DidPlayerWin()) {
  a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
  if((u32)x>=0xa1U && (u32)x<0xbbU) a=1;
  if(a) b=1; else b=0;

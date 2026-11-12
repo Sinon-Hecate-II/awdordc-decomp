@@ -181,7 +181,7 @@ goto retry;
 s32 func_02024b94(void *arg0) {
  void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void TlsInitRecordKeys(void *);s32 TlsReadRecord(void *);void func_020244c0(void *);void TlsSendHandshake(void *);s32 func_02024a6c(void *);
  void *p=M2C_FIELD(arg0,void **,12);s32 state;
- func_02024618(arg0);
+ TlsSendClientHello(arg0);
  do {
  state=TlsReadRecord(arg0);
  if(state==9)return 1;
@@ -412,37 +412,39 @@ void func_02025188(s8 arg0) {
 }
 #include "common.h"
 #pragma opt_common_subs off
-s32 func_02024618(void *p){
-
+/* Build and send the client's TLS ClientHello: a fresh random (time + 28 random
+ * bytes), an optional cached session id, the supported cipher suites and the
+ * handshake record header; the transcript hash is updated on the way. */
+s32 TlsSendClientHello(void *p){
 u32 GetUnixTime(void);
 void GenerateRandomBytes(void *,s32);
 M2C_UNK MI_CpuCopy8(s32,void *,u32);
-void func_02021e7c(void *,s32,u16);
+void TlsRestoreSession(void *,s32,u16);
 M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *);
 void TlsUpdateHandshakeHash(void *,void *,s32);
-extern u16 data_020faffc[];
+extern u16 gTlsCipherSuites[];
 
 u8 *q=M2C_FIELD(p,u8 **,12),*buf,*cursor;
 u32 rnd,i;
 s32 len,n;
 
 buf=gAlloc(152);
-if(!buf){q[0x455]=9;
+if(!buf){q[TLS_STATE]=TLS_STATE_ERROR;
 return 9;
 }
 buf[9]=3;
 buf[10]=0;
 rnd=GetUnixTime();
-q[0x34]=rnd>>24;
-q[0x35]=rnd>>16;
-q[0x36]=rnd>>8;
-q[0x37]=rnd;
+q[TLS_RANDOM_A]=rnd>>24;
+q[TLS_RANDOM_A+1]=rnd>>16;
+q[TLS_RANDOM_A+2]=rnd>>8;
+q[TLS_RANDOM_A+3]=rnd;
 
 GenerateRandomBytes(q+0x38,28);
-MI_CpuCopy8((s32)(q+0x34),buf+11,32);
-func_02021e7c(q,M2C_FIELD(p,s32 *,0x1c),M2C_FIELD(p,u16 *,0x18));
+MI_CpuCopy8((s32)(q+TLS_RANDOM_A),buf+11,32);
+TlsRestoreSession(q,M2C_FIELD(p,s32 *,0x1c),M2C_FIELD(p,u16 *,0x18));
 
-if(q[0x30]){buf[0x2b]=32;MI_CpuCopy8((s32)(q+0x74),buf+0x2c,32);cursor=buf+0x4c;}
+if(q[TLS_SESSION_CACHED]){buf[0x2b]=32;MI_CpuCopy8((s32)(q+TLS_SESSION_ID),buf+0x2c,32);cursor=buf+0x4c;}
 else{buf[0x2b]=0;cursor=buf+0x2c;}
 cursor[0]=0;
 cursor[1]=4;
@@ -450,8 +452,8 @@ cursor+=2;
 
 for(i=0;
 i<2;
-i++){cursor[0]=data_020faffc[i]>>8;
-cursor[1]=data_020faffc[i];
+i++){cursor[0]=gTlsCipherSuites[i]>>8;
+cursor[1]=gTlsCipherSuites[i];
 cursor+=2;
 }
 cursor[0]=1;

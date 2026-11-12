@@ -9,23 +9,26 @@ void GetWfcProfile(void *);
 s32 func_02045d94(void *, s32);
 s32 func_02046ebc(void *);
 
-u64 func_02046d38(u32 a,u32 b,u32 c,u32 d){
-void MI_CpuCopy8(u8 *,u8 *,u32);extern u8 data_020ea944[];extern u8 data_020ea94c[];
-union { u64 value; u8 bytes[8]; } packed;u8 tmp[8];s32 i;u8 *p;u8 *q;u8 *order;
-packed.value=((u64)d&3) | (((u64)c&1)<<2) | (((u64)b&0xffffff)<<3) | (((u64)a&0xffff)<<27);
-p=packed.bytes;
+/* Encode a WFC profile code: pack the 16-bit seed, the 24-bit MAC address and
+   the flag bits together, then obfuscate the bytes with a fixed XOR, a nibble
+   substitution and a byte permutation. */
+u64 EncodeWfcProfileCode(u32 seed,u32 mac,u32 flag,u32 type){
+void MI_CpuCopy8(u8 *,u8 *,u32);extern u8 sWfcCodeByteOrder[];extern u8 sWfcCodeNibbleMap[];
+union { u64 value; u8 bytes[8]; } code;u8 scrambled[8];s32 i;u8 *p;u8 *q;u8 *order;
+code.value=((u64)type&3) | (((u64)flag&1)<<2) | (((u64)mac&0xffffff)<<3) | (((u64)seed&0xffff)<<27);
+p=code.bytes;
 for(i=0;i<6;i++){*p^=0xd6;p++;}
-p=packed.bytes;
-for(i=0;i<5;i++){u8 x=*p;*p++=(data_020ea94c[(x>>4)&15]<<4)|data_020ea94c[x&15];}
-MI_CpuCopy8(packed.bytes,tmp,8);
-q=tmp;order=data_020ea944;
-for(i=0;i<5;i++)packed.bytes[*order++]=*q++;
-packed.bytes[5]&=7;packed.bytes[7]=0;packed.bytes[6]=0;
-packed.value<<=1;
-packed.bytes[0]|=(packed.bytes[5]>>3)&1;
-p=packed.bytes;for(i=0;i<6;i++){*p^=0x67;p++;}
-packed.bytes[7]=0;packed.bytes[6]=0;packed.bytes[5]&=7;
-return packed.value;
+p=code.bytes;
+for(i=0;i<5;i++){u8 x=*p;*p++=(sWfcCodeNibbleMap[(x>>4)&15]<<4)|sWfcCodeNibbleMap[x&15];}
+MI_CpuCopy8(code.bytes,scrambled,8);
+q=scrambled;order=sWfcCodeByteOrder;
+for(i=0;i<5;i++)code.bytes[*order++]=*q++;
+code.bytes[5]&=7;code.bytes[7]=0;code.bytes[6]=0;
+code.value<<=1;
+code.bytes[0]|=(code.bytes[5]>>3)&1;
+p=code.bytes;for(i=0;i<6;i++){*p^=0x67;p++;}
+code.bytes[7]=0;code.bytes[6]=0;code.bytes[5]&=7;
+return code.value;
 }
 
 #pragma opt_common_subs on
@@ -49,13 +52,13 @@ if(*(u16 *)(p+0x12)==0){
 while(*(u64 *)(p+8)==0){
 state=state*0x5d588b65+0x269ec3;while(state==0)state=state*0x5d588b65+0x269ec3;
 *(u16 *)(p+0x12)=state;
-*(u64 *)(p+8)=func_02046d38(*(u16 *)(p+0x12),mac,flag,0);
+*(u64 *)(p+8)=EncodeWfcProfileCode(*(u16 *)(p+0x12),mac,flag,0);
 }
 }else {
 *(u64 *)(p+8)=0;
 while(*(u64 *)(p+8)==0){
 *(u16 *)(p+0x12)+=1;
-*(u64 *)(p+8)=func_02046d38(*(u16 *)(p+0x12),mac,flag,0);
+*(u64 *)(p+8)=EncodeWfcProfileCode(*(u16 *)(p+0x12),mac,flag,0);
 }
 }
 return 1;
@@ -75,7 +78,7 @@ s32 func_0204712c(void *arg0) {
     u16 func_02006f8c(void);
     void GetMacAddress(void *);
     u64 GetSystemTick(void);
-    u64 func_02046d38(u32, u32, u32, u32);
+    u64 EncodeWfcProfileCode(u32, u32, u32, u32);
 
     u8 *p;
     u8 sp[0x24];
@@ -120,7 +123,7 @@ register u32 tmp4, tmp3;
         while (r9 == 0 || *(u16 *)(p + 0x12) == (u16)r9)
             r9 = r9 * mult + inc;
         *(u16 *)(p + 0x12) = (u16)r9;
-        *(u64 *)(p + 8) = func_02046d38(*(u16 *)(p + 0x12), r8, flag, 0);
+        *(u64 *)(p + 8) = EncodeWfcProfileCode(*(u16 *)(p + 0x12), r8, flag, 0);
     }
     return 1;
 }

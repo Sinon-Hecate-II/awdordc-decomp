@@ -253,7 +253,7 @@ cb(a,b);
 
 void func_ov010_02227c5c(s32 arg0, s32 arg1, s32 arg2) {
 void *func_020c4b60(void);
-void func_02007df8(s32,void *,s32);
+void FillU16(s32,void *,s32);
 extern M2C_UNK data_ov010_0222eee0;
 Ov010State *base;
 s32 offset;
@@ -263,7 +263,7 @@ offset=arg0*40;
 M2C_FIELD((u8 *)base+0x2ee,u16 *,arg1*40)+=M2C_FIELD((u8 *)base+offset,u16 *,0x2ee);
 M2C_FIELD((u8 *)base+0x2f0,u16 *,arg1*40)+=M2C_FIELD((u8 *)base+offset,u16 *,0x2f0);
 M2C_FIELD((u8 *)base+0x2f2,u16 *,arg1*40)+=M2C_FIELD((u8 *)base+offset,u16 *,0x2f2);
-func_02007df8(0,base->entries[arg0].bytes,26);
+FillU16(0,base->entries[arg0].bytes,26);
 base->entries[arg0].count0=0;
 base->entries[arg0].count1=0;
 base->entries[arg0].count2=0;

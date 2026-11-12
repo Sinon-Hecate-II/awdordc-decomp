@@ -3,7 +3,7 @@
 
 s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
 void FillMapLayer(s8);
-s32 func_01ffb9c4(s8);
+s32 MarkAdjacentCells(s8);
 void MI_CpuFill8(void *, s32, s32);
 s32 Divide(s32, s32);
 s32 func_020a85c8(u32);
@@ -382,7 +382,7 @@ void func_ov000_02181c88(void) {
                         var_r0_3 = 0;
                     }
                     FloodFillUnitRange(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_3, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 0);
-                    func_01ffb9c4(0x6F);
+                    MarkAdjacentCells(0x6F);
                     var_r2 = 0;
                     var_r6_4 = *gCurrentMap;
                     var_r1 = (u32) M2C_FIELD(var_r6_4, u16 *, 0x5146);
@@ -436,7 +436,7 @@ void func_ov000_02181c88(void) {
                 FloodFillUnitRange(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_4, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 1);
                 var_r9_2 = 0;
                 if (IsUnitOnCurrentTeam(sp3C) != 0) {
-                    for(var_r9_2=0;var_r9_2<GetUnitMaxAttackRange(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26)-1;var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
+                    for(var_r9_2=0;var_r9_2<GetUnitMaxAttackRange(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26)-1;var_r9_2++) {MarkAdjacentCells((s8)(var_r9_2+0x6f));}
 
                     var_r3_6 = 0;
                     var_r7_2 = *gCurrentMap;
@@ -470,7 +470,7 @@ void func_ov000_02181c88(void) {
                         } while (var_r3_6 < (s32) M2C_FIELD(var_r7_2, u16 *, 0x5146));
                     }
                 } else {
-                    for(var_r9_2=0;var_r9_2<GetUnitMaxAttackRange(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26);var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
+                    for(var_r9_2=0;var_r9_2<GetUnitMaxAttackRange(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26);var_r9_2++) {MarkAdjacentCells((s8)(var_r9_2+0x6f));}
 
                     var_r2_4 = 0;
                     var_r6_6 = *gCurrentMap;

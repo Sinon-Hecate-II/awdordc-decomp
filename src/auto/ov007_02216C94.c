@@ -6,14 +6,14 @@ typedef struct MapScan { u8 pad0[0xa10]; u16 cells[0x16a4]; u16 rows[0xcf6]; u16
 
 /* Pick two well-separated interior locations for the two sides (first and second headquarters/spawn points). */
 void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
-    s32 func_ov007_02214d88(s32 low, s32 high);
+    s32 Map_RandomScaledValue(s32 low, s32 high);
     s32 Map_PickRandomInteriorTile(s32 *x, s32 *y, s32 tileValue, void *avoidPoint);
     MapPoint Map_PlaceSideBase(s32 x, s32 y, s32 side, s32 radius, s32 distance);
     MapPoint func_ov007_02215a0c(s32 side, s32 radius, s32 distance);
 
     s32 x, y;
-    s32 radius = func_ov007_02214d88(2, 4);
-    s32 distance = func_ov007_02214d88(1, 3);
+    s32 radius = Map_RandomScaledValue(2, 4);
+    s32 distance = Map_RandomScaledValue(1, 3);
 
     if (Map_PickRandomInteriorTile(&x, &y, 1, 0) == 1) {
         MapPoint placed = Map_PlaceSideBase(x, y, 1, radius, distance);
@@ -32,7 +32,7 @@ void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
 }
 
 M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UNK *out_b, M2C_UNK *out_c) {
-    s32 func_ov007_02214d88(s32, s32);
+    s32 Map_RandomScaledValue(s32, s32);
     s32 func_ov007_02215e94(s32 *, s32 *, s32, void *, s32);
     s32 func_ov007_02215f6c(s32 *, s32 *, s32, s16 *, s16 *, s32);
     M2C_UNK Map_SetCellTile(s32, s32, s32);
@@ -48,11 +48,11 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
     count = 0;
     for (mode = 0; mode < 5; mode++) {
         switch (mode) {
-            case 0: count = func_ov007_02214d88(0, 5); break;
-            case 1: count = func_ov007_02214d88(3, 5); break;
-            case 2: count = func_ov007_02214d88(3, 7); break;
-            case 3: count = func_ov007_02214d88(0, 5); break;
-            case 4: count = func_ov007_02214d88(0, 3); break;
+            case 0: count = Map_RandomScaledValue(0, 5); break;
+            case 1: count = Map_RandomScaledValue(3, 5); break;
+            case 2: count = Map_RandomScaledValue(3, 7); break;
+            case 3: count = Map_RandomScaledValue(0, 5); break;
+            case 4: count = Map_RandomScaledValue(0, 3); break;
         }
         saved = 0;
         if (count <= 0) continue;
@@ -249,37 +249,37 @@ M2C_UNK func_ov007_02217598(M2C_UNK *a,M2C_UNK *b){
 }
 
 M2C_UNK func_ov007_02217608(void) {
- s32 func_ov007_02214d88(s32,s32);
- s32 func_ov007_02215bc4(s32 *,s32 *,s32);
+ s32 Map_RandomScaledValue(s32,s32);
+ s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
- n=func_ov007_02214d88(20,40);
+ n=Map_RandomScaledValue(20,40);
  for(i=0;i<n;i++){
- if(func_ov007_02215bc4(&sp4,&sp0,1)==0)return;
+ if(Map_PickRandomTileOfValue(&sp4,&sp0,1)==0)return;
  Map_SetCellTile(sp4,sp0,33);
  }
 }
 
 M2C_UNK func_ov007_02217680(void) {
- s32 func_ov007_02214d88(s32,s32);
- s32 func_ov007_02215bc4(s32 *,s32 *,s32);
+ s32 Map_RandomScaledValue(s32,s32);
+ s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
- n=func_ov007_02214d88(5,20);
+ n=Map_RandomScaledValue(5,20);
  for(i=0;i<n;i++){
- if(func_ov007_02215bc4(&sp4,&sp0,1)==0)return;
+ if(Map_PickRandomTileOfValue(&sp4,&sp0,1)==0)return;
  Map_SetCellTile(sp4,sp0,385);
  }
 }
 
 M2C_UNK func_ov007_022176fc(void) {
- s32 func_ov007_02214d88(s32,s32);
- s32 func_ov007_02215bc4(s32 *,s32 *,s32);
+ s32 Map_RandomScaledValue(s32,s32);
+ s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
- n=func_ov007_02214d88(20,40);
+ n=Map_RandomScaledValue(20,40);
  for(i=0;i<n;i++){
- if(func_ov007_02215bc4(&sp4,&sp0,1)==0)return;
+ if(Map_PickRandomTileOfValue(&sp4,&sp0,1)==0)return;
  Map_SetCellTile(sp4,sp0,2);
  }
 }
@@ -288,7 +288,7 @@ M2C_UNK func_ov007_022176fc(void) {
 void func_ov007_02217774(void) {
     extern void **gCurrentMap;
     s32 Map_ScoreNeighborPattern(s32 x, s32 y);
-    s32 func_ov007_02215128(s32 count, s32 mode);
+    s32 Map_RollTerrainGrowth(s32 count, s32 mode);
     M2C_UNK Map_SetCellTile(s32 x, s32 y, s32 value);
     s32 x, y, openNeighborCount;
     MapScan *map;
@@ -297,7 +297,7 @@ void func_ov007_02217774(void) {
         for (x = 0; x < (s32)map->width; x++) {
             if (map->cells[x + map->rows[y]] == 3) {
                 openNeighborCount = Map_ScoreNeighborPattern(x, y);
-                if (openNeighborCount != -1 && func_ov007_02215128(openNeighborCount, 34))
+                if (openNeighborCount != -1 && Map_RollTerrainGrowth(openNeighborCount, 34))
                     Map_SetCellTile(x, y, 34);
             }
             map = *gCurrentMap;
@@ -315,11 +315,11 @@ void func_ov007_02217774(void) {
 }
 
 M2C_UNK func_ov007_022178f4(void) {
- s32 func_ov007_02214d88(s32,s32);
+ s32 Map_RandomScaledValue(s32,s32);
  s32 func_ov007_02215dd8(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
- n=func_ov007_02214d88(5,10);
+ n=Map_RandomScaledValue(5,10);
  for(i=0;i<n;i++){
  if(func_ov007_02215dd8(&sp4,&sp0,3)==0)return;
  Map_SetCellTile(sp4,sp0,360);
@@ -327,24 +327,24 @@ M2C_UNK func_ov007_022178f4(void) {
 }
 
 M2C_UNK func_ov007_0221796c(void) {
- s32 func_ov007_02214d88(s32,s32);
+ s32 Map_RandomScaledValue(s32,s32);
  s32 func_ov007_02215dd8(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
- n=func_ov007_02214d88(5,10);
+ n=Map_RandomScaledValue(5,10);
  for(i=0;i<n;i++){
  if(func_ov007_02215dd8(&sp4,&sp0,3)==0)return;
  Map_SetCellTile(sp4,sp0,39);
  }
 }
 
-M2C_UNK func_ov007_022179e4(void){s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215dd8(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);s32 sp4,sp0,i,n;n=func_ov007_02214d88(8,15);for(i=0;i<n;i++){if(!func_ov007_02215dd8(&sp4,&sp0,3))return;Map_SetCellTile(sp4,sp0,7);}}
+M2C_UNK func_ov007_022179e4(void){s32 Map_RandomScaledValue(s32,s32);s32 func_ov007_02215dd8(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);s32 sp4,sp0,i,n;n=Map_RandomScaledValue(8,15);for(i=0;i<n;i++){if(!func_ov007_02215dd8(&sp4,&sp0,3))return;Map_SetCellTile(sp4,sp0,7);}}
 
 /* Fill every tile of the current map with type 1, then populate enemies, items and other map content. */
 void func_ov007_02217a5c(void) {
     M2C_UNK func_0207c240();
     M2C_UNK Map_SetCellTile(s32, s32, M2C_UNK);
-    M2C_UNK func_ov007_02216a74();
+    M2C_UNK Map_GenerateWastelandTerrain();
     M2C_UNK func_ov007_02216bf4();
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     void Map_GeneratePaths(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
@@ -381,7 +381,7 @@ void func_ov007_02217a5c(void) {
             y += 1;
         } while (y < (s32) M2C_FIELD(map, u16 *, 0x5146));
     }
-    func_ov007_02216a74();
+    Map_GenerateWastelandTerrain();
     func_ov007_02216bf4();
     func_ov007_02216c94(&sp14, &sp10);
     func_ov007_02216e08(&sp14, &sp10, &spC, &sp8, &sp4);

@@ -111,15 +111,15 @@ void func_020619c0(void *arg0, s32 arg1, s32 arg2, u32 arg3) {
 }
 
 void func_02061a38(void *arg0, s32 arg1) {
-    M2C_UNK func_020486f8(s32, s32 *);
+    M2C_UNK Vector_AddItem(s32, s32 *);
 
-    func_020486f8(M2C_FIELD(arg0, s32 *, 4), &arg1);
+    Vector_AddItem(M2C_FIELD(arg0, s32 *, 4), &arg1);
     M2C_FIELD(arg0, M2C_UNK (**)(void *, s32, s32, s32), 0x488)(arg0, 0, arg1, M2C_FIELD(arg0, s32 *, 0x494));
 }
 
 s32 func_02061a74(void *a,s32 b){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 n,i;n=Vector_GetCount(M2C_FIELD(a,s32 *,4));for(i=0;i<n;i++){if(b==*Vector_GetItem(M2C_FIELD(a,s32 *,4),i))return i;}return -1;}
 
-s32 func_02061ac8(void *a,s32 b,s32 c){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 SBServerGetIp(s32);s32 func_02060c70(s32);s32 n,p,i;n=Vector_GetCount(M2C_FIELD(a,s32 *,4));for(i=0;i<n;i++){p=*Vector_GetItem(M2C_FIELD(a,s32 *,4),i);if(b==SBServerGetIp(p)&&c==func_02060c70(p))return i;}return -1;}
+s32 SBServerListFindByAddress(void *a,s32 b,s32 c){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 SBServerGetIp(s32);s32 func_02060c70(s32);s32 n,p,i;n=Vector_GetCount(M2C_FIELD(a,s32 *,4));for(i=0;i<n;i++){p=*Vector_GetItem(M2C_FIELD(a,s32 *,4),i);if(b==SBServerGetIp(p)&&c==func_02060c70(p))return i;}return -1;}
 
 void func_02061b38(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,s32 *,0x5d0);if(!p)func_02060cbc(b,0);else func_02060cbc(b,p);M2C_FIELD(a,s32 *,0x5d0)=b;}
 
@@ -137,7 +137,7 @@ void func_02061bb8(void *arg0) {
     Vector_GetCount(M2C_FIELD(arg0, s32 *, 4));
 }
 
-s32 func_02061bc8(void *arg0) {
+s32 SBServerListGetServerAt(void *arg0) {
     s32 *Vector_GetItem(s32);
     return *Vector_GetItem(M2C_FIELD(arg0, s32 *, 4));
 }

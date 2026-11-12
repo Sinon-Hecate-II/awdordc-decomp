@@ -139,7 +139,7 @@ if(M2C_FIELD(arg0,s32 *,0x58)&255) return;
 x=GetObjectTileX(arg0);
 func_020b5314(a,x,GetObjectTileY(arg0));
 if(b) func_020a6728(c); else func_020a6718(c);
-func_020cfd28();
+RefreshMapView();
 M2C_FIELD(arg0,s32 *,0x58)=1; func_020ca484(); func_ov000_0216ab2c();
 }
 
@@ -220,7 +220,7 @@ void func_020b57ac(void *obj) {
     map = (void *)*gCurrentMap;
     rowOffset = *(u16 *)((char *)map + 0x3758 + (y - 2) * 2);
     *(u16 *)((char *)map + 0xA10 + ((x + 1) + rowOffset) * 2) += 0x60;
-    func_020cfd28();
+    RefreshMapView();
 }
 #pragma scheduling reset
 void func_020b5964(s32 a,s32 b) {
@@ -348,7 +348,7 @@ void func_020b59c0(void *arg0) {
         break;
     }
     func_020a4a68();
-    func_020cfd28();
+    RefreshMapView();
 }
 
 void func_020b5d94(u8 *arg0,s32 arg1) {
@@ -362,11 +362,11 @@ void func_020b5dc0(void *arg0) {
 }
 
 void func_020b5de0(void *arg0) {
-    M2C_UNK func_020a17c0(s32, s32);
+    M2C_UNK ApplyTerrainBlast(s32, s32);
     M2C_UNK func_020cf2c8();
-    M2C_UNK func_020cfd28();
-    func_020a17c0(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
-    func_020cfd28();
+    M2C_UNK RefreshMapView();
+    ApplyTerrainBlast(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
+    RefreshMapView();
     func_020cf2c8();
 }
 
@@ -436,7 +436,7 @@ void func_020b5f74(s32 arg0, s32 arg1) {
         temp_r3 = *gCurrentMap;
         M2C_FIELD((temp_r3 + ((arg0 + M2C_FIELD((temp_r3 + (arg1 * 2)), u16 *, 0x3758)) * 2)), s16 *, 0xA10) = 0x1A0;
     }
-    func_020cfd28();
+    RefreshMapView();
 }
 
 void func_020b5fec(void *arg0) {

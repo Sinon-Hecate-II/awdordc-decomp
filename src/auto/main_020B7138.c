@@ -105,12 +105,12 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
+s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void MI_CpuCopy32(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
 M2C_FIELD(a,s32 *,0x34)=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x7380,func_020a8b3c(icon));
-func_02091d4c(0x1d);base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2b80;q=func_ov000_0216ce10(icon);func_02007ef4(q,base+0x4000,128);
+func_02091d4c(0x1d);base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2b80;q=func_ov000_0216ce10(icon);MI_CpuCopy32(q,base+0x4000,128);
 func_01ff9e44(func_ov000_0216ce84(kind),0x360,32);
 SetFileDirectory(data_02128fb8);GetLocalizedFileName(data_02128fc0);OpenNarcArchive();
 LoadNarcFileDecompressed(GetLocalizedFileName(data_02128fcc),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
@@ -362,7 +362,7 @@ extern "C" void func_020b7ef0(void) {
 }
 #pragma cplusplus off
 
-s32 func_020b7f58(void) {
+s32 CreateMapClearWinObject(void) {
     void func_0208bddc(void *,void *,s32,s32,s32);
     s32 func_0208c54c();
     void func_0208c5fc(void *,s32,s32);
@@ -377,7 +377,7 @@ s32 func_020b7f58(void) {
     return temp_r4;
 }
 
-s32 func_020b7fb8(void) {
+s32 CreateMapClearLoseObject(void) {
     extern M2C_UNK data_0212902c;
     extern M2C_UNK data_0212903c;
     s32 temp_r4;
@@ -388,7 +388,7 @@ s32 func_020b7fb8(void) {
     return temp_r4;
 }
 
-s32 func_020b8018(void) {
+s32 CreateMapClearDrawObject(void) {
     extern M2C_UNK data_0212904c;
     extern M2C_UNK data_0212905c;
     s32 temp_r4;

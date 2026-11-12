@@ -218,7 +218,7 @@ void func_ov007_0221a160(void) {
     void func_02091d4c(s32);
     void func_020a9a30(s32, s32, s32, M2C_UNK);
     M2C_UNK func_ov000_0216ce10(s32);
-    void func_02007ef4(M2C_UNK, M2C_UNK, s32);
+    void MI_CpuCopy32(M2C_UNK, M2C_UNK, s32);
     void func_020c1a9c(s32, s32);
     void func_020ae528(void *);
     void func_ov007_0221ab68(void);
@@ -315,7 +315,7 @@ void func_ov007_0221a160(void) {
     base = 0x158;
     for (i = 0; i < 4; i++) {
         M2C_UNK ret = func_ov000_0216ce10(i + 1);
-        func_02007ef4(ret, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((base + i * 4) << 5), 0x80);
+        MI_CpuCopy32(ret, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((base + i * 4) << 5), 0x80);
     }
 
     func_020c1a9c(0x80, 1);

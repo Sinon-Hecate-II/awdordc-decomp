@@ -39,69 +39,73 @@ if(timeout>0)((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->deadline=Get
 else ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->deadline=GetSystemTick()+0x17f898;
 return 1;}
 
-s32 func_020364f4(void) {
+/* Advance the WFC HTTP connection test: time out a stalled attempt, poll the
+   connect, send the request or read the status line, and free the connection
+   when it is done. Returns 0 while running, the connection's result when it is
+   freed, or 4 when there is no connection to update. */
+s32 UpdateWfcHttpConnection(void) {
     u64 GetSystemTick(void);
     s32 func_02021558(M2C_UNK, void *);
     M2C_UNK func_02021750(s32, s32);
     M2C_UNK func_0202175c(s32);
-    void func_0203667c(void);
-    void func_02036718(void);
+    void SendWfcHttpRequest(void);
+    void ReceiveWfcHttpResponse(void);
     M2C_UNK HeapFree(s32, M2C_UNK *, s32);
     extern M2C_UNK gWfcNet;
 
-    void *p;
+    WfcHttpConnection *p;
     s32 r;
 
-    p = M2C_FIELD(&gWfcNet, void **, 0x10);
-    if (p == 0 || M2C_FIELD(p, s32 *, 0x38) == 0) {
+    p = M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10);
+    if (p == 0 || p->state == WFC_HTTP_IDLE) {
         return 4;
     }
 
-    if (M2C_FIELD(p, s32 *, 0x3c) == 0) {
-        if (M2C_FIELD(p, u64 *, 0x40) != 0 && M2C_FIELD(p, u64 *, 0x40) < GetSystemTick()) {
-            M2C_FIELD(p, s32 *, 0x3c) = 2;
-            M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38) = 3;
-            func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0), 2);
-            func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0));
+    if (p->result == 0) {
+        if (p->deadline != 0 && p->deadline < GetSystemTick()) {
+            p->result = 2;
+            ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state = WFC_HTTP_DONE;
+            func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
+            func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
         }
     }
 
-    switch (M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38)) {
-    case 1:
-        r = func_02021558(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0),
+    switch (((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state) {
+    case WFC_HTTP_CONNECTING:
+        r = func_02021558(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket,
                           (char *)M2C_FIELD(&gWfcNet, void **, 0x10) + 4);
         if (r < 0 && r != -26) {
-            M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c) = 3;
-            M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38) = 3;
-            func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0), 2);
-            func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0));
+            ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->result = 3;
+            ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state = WFC_HTTP_DONE;
+            func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
+            func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
             return 0;
         }
-        func_0203667c();
+        SendWfcHttpRequest();
         return 0;
-    case 2:
-        func_02036718();
+    case WFC_HTTP_RECEIVING:
+        ReceiveWfcHttpResponse();
         return 0;
-    case 3:
-        r = M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c);
+    case WFC_HTTP_DONE:
+        r = ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->result;
         HeapFree(0, M2C_FIELD(&gWfcNet, void **, 0x10), 0);
         M2C_FIELD(&gWfcNet, void **, 0x10) = 0;
         return r;
     default:
-        M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c) = 3;
-        M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38) = 3;
-        func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0), 2);
-        func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0));
+        ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->result = 3;
+        ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state = WFC_HTTP_DONE;
+        func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
+        func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
         return 0;
     }
 }
 
-void func_0203667c(void) {
+void SendWfcHttpRequest(void) {
  s32 func_02021688(s32,M2C_UNK *,s32); M2C_UNK func_02021750(s32,s32); M2C_UNK func_0202175c(s32); s32 StringLength(M2C_UNK *);
- extern M2C_UNK data_020fb968; extern M2C_UNK gWfcNet;
+ extern M2C_UNK sWfcConnTestRequest; extern M2C_UNK gWfcNet;
  s32 x;
- x=StringLength(&data_020fb968);
- x=func_02021688(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),&data_020fb968,x);
+ x=StringLength(&sWfcConnTestRequest);
+ x=func_02021688(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),&sWfcConnTestRequest,x);
  if(x==-56) return;
  if(x<=0) {
  M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,60)=2;
@@ -113,9 +117,9 @@ void func_0203667c(void) {
  M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)=0;
 }
 
-void func_02036718(void) {
+void ReceiveWfcHttpResponse(void) {
 s32 func_020215b4(s32,void *,s32);M2C_UNK func_02021750(s32,s32);M2C_UNK func_0202175c(s32);s32 StringCompareN(void *,void *,s32);
-extern M2C_UNK gWfcNet,data_020fb99c;
+extern M2C_UNK gWfcNet,sWfcHttpOkStatus;
 s32 r,i;void *p; s8 *scan;
 p=M2C_FIELD(&gWfcNet,void **,16);
 r=func_020215b4(M2C_FIELD(p,s32 *,0),p+20+M2C_FIELD(p,s32 *,52),32-M2C_FIELD(p,s32 *,52));
@@ -127,7 +131,7 @@ p=M2C_FIELD(&gWfcNet,void **,16);
 for(i=0,scan=p;scan[20]!=32&&i<32;scan++,i++);
 i++;
 if(i>=32)M2C_FIELD(p,s32 *,60)=2;
-else if(StringCompareN(p+20+i,&data_020fb99c,3)!=0)M2C_FIELD(p,s32 *,60)=2;
+else if(StringCompareN(p+20+i,&sWfcHttpOkStatus,3)!=0)M2C_FIELD(p,s32 *,60)=2;
 else M2C_FIELD(p,s32 *,60)=1;
 M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
 func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);

@@ -31,11 +31,11 @@ func_0205ac6c((void *)a);func_0205cb4c(a);func_0205a29c(a,0);func_0205d164(a);
 }
 
 void func_0205ac6c(void *p,...) {
-void func_02048f54(s32,void **);void func_020486f8(s32,void **);
+void func_02048f54(s32,void **);void Vector_AddItem(s32,void **);
 if(M2C_FIELD(p,s32 *,12)==7)return;
 M2C_FIELD(p,s32 *,12)=7;
 func_02048f54(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,12),&p);
-func_020486f8(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,16),&p);
+Vector_AddItem(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,16),&p);
 }
 
 void func_0205acc8(void *p) {
@@ -91,9 +91,9 @@ void func_0205adc0(void) {
 }
 
 s32 func_0205adcc(s32 a,void **b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
-void func_02049260(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 func_0205d588(s32,u32 *,u16 *);
+void func_02049260(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 gt2StringToAddress(s32,u32 *,u16 *);
 void *p;u32 ip;u16 port;s32 result,done;
-if(!func_0205d588(c,&ip,&port)||!ip||!port)return 4;
+if(!gt2StringToAddress(c,&ip,&port)||!ip||!port)return 4;
 if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))&0xe0000000)==0xe0000000)return 4;
 result=func_0205a830(a,&p);if(result)return result;
 M2C_FIELD(p,s32 *,32)=f;

@@ -557,14 +557,14 @@ s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK func_02005ac0(s32, M2C_UNK *, s32, s32, s32, s32);
     M2C_UNK TaskWake(s32);
     M2C_UNK func_020062d4(s32, s32, s32);
-    M2C_UNK func_0200654c(s32);
+    M2C_UNK InitMutex(s32);
     s32 func_0201f598(void *);
     void func_0201f350();
     s32 temp_r4;
 
     temp_r4 = func_0201f598(arg2);
     func_020062d4(arg1, arg0, M2C_FIELD(arg2, u8 *, 3));
-    func_0200654c(arg1 + 0xE0);
+    InitMutex(arg1 + 0xE0);
     func_02005ac0(arg1 + 0x20, (M2C_UNK *)&func_0201f350, arg1, arg0 + temp_r4, (s32) M2C_FIELD(arg2, u16 *, 0), (s32) M2C_FIELD(arg2, u8 *, 2));
     TaskWake(arg1 + 0x20);
     return arg0 + temp_r4;

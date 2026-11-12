@@ -1,5 +1,7 @@
 /* 14 functions from 0x0201DB20 to 0x0201E944 (main), found by ds-decomp. */
 #include "common.h"
+#include "dhcp.h"
+#include "tcp_socket.h"
 static inline u32 NextPacketRandom(void) {
  extern M2C_UNK gNetStack;
  M2C_FIELD(&gNetStack,u64*,0x68)=M2C_FIELD(&gNetStack,u64*,0x70)*M2C_FIELD(&gNetStack,u64*,0x68)+M2C_FIELD(&gNetStack,u64*,0x78);
@@ -7,7 +9,7 @@ static inline u32 NextPacketRandom(void) {
 }
 static inline u16 PacketSwap(u16 x) { return (x>>8)|(x<<8); }
 static inline void PacketPut32(u8 *p,u32 x) { *(u16*)p=PacketSwap(x>>16); *(u16*)(p+2)=PacketSwap(x); }
-static inline void PacketAddress(u8 *p) { extern M2C_UNK data_02137778; void MI_CpuCopy8(s32,u8*,s32); MI_CpuCopy8((s32)&data_02137778,p,6); }
+static inline void PacketAddress(u8 *p) { extern M2C_UNK gLocalMacAddress; void MI_CpuCopy8(s32,u8*,s32); MI_CpuCopy8((s32)&gLocalMacAddress,p,6); }
 
 u32 func_0201db20(s32 a, s32 b) {
     extern M2C_UNK gSocketManager;
@@ -178,21 +180,46 @@ epilogue:
 }
 
 #pragma opt_common_subs off
-u8 *func_0201e078(u8 *p,s32 kind,s32 out) {
-extern M2C_UNK gNetStack; extern M2C_UNK data_02137778; extern M2C_UNK data_020faf8c;
-M2C_UNK MI_CpuFill8(s32,M2C_UNK,s32); void MI_CpuCopy8(s32,u8*,s32);
-u32 value; u16 hi,lo;
-MI_CpuFill8((s32)p,0,236); *(u16*)p=0x101;p[2]=6;
-value=NextPacketRandom();if(out)*(u32*)out=value;
-*(u16*)(p+4)=PacketSwap(value>>16);*(u16*)(p+6)=PacketSwap(value);
-*(u16*)(p+12)=PacketSwap(M2C_FIELD(&gNetStack,u32*,0x50)>>16);
-*(u16*)(p+14)=PacketSwap(M2C_FIELD(&gNetStack,u32*,0x50));
-MI_CpuCopy8((s32)&data_02137778,p+0x1c,6);
-*(u16*)(p+0xec)=0x8263;*(u16*)(p+0xee)=0x6353;*(u16*)(p+0xf0)=0x135;
-p[0xf2]=kind;p[0xf3]=0x3d;p[0xf4]=7;p[0xf5]=1;
-MI_CpuCopy8((s32)&data_02137778,p+0xf6,6);
-p[0xfc]=12;p[0xfd]=10;MI_CpuCopy8((s32)&data_020faf8c,p+0xfe,10);
-p[0x108]=0x37;p[0x109]=3;p[0x10a]=1;p[0x10b]=3;p[0x10c]=6;return p+0x10d;
+/* Builds a BOOTP/DHCP request packet at `packet`: a fixed header carrying a
+ * fresh transaction id (also returned through `xidOut`), the local MAC address
+ * as the client hardware address, and the options that follow the magic cookie
+ * (message type `msgType`, client identifier, host name and the parameter
+ * request list).  Returns the address just past the options. */
+u8 *BuildDhcpPacket(u8 *packet, s32 msgType, s32 xidOut) {
+    extern M2C_UNK gNetStack;
+    extern M2C_UNK gLocalMacAddress;
+    extern M2C_UNK gDhcpHostName;
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
+    void MI_CpuCopy8(s32, u8 *, s32);
+    u32 xid;
+
+    MI_CpuFill8((s32)packet, 0, DHCP_OFF_OPTIONS);
+    *(u16 *)packet = 0x101;
+    packet[DHCP_OFF_HLEN] = 6;
+    xid = NextPacketRandom();
+    if (xidOut) *(u32 *)xidOut = xid;
+    *(u16 *)(packet + DHCP_OFF_XID) = PacketSwap(xid >> 16);
+    *(u16 *)(packet + DHCP_OFF_XID + 2) = PacketSwap(xid);
+    *(u16 *)(packet + DHCP_OFF_CIADDR) = PacketSwap(M2C_FIELD(&gNetStack, u32 *, NETSTACK_LOCAL_IP) >> 16);
+    *(u16 *)(packet + DHCP_OFF_CIADDR + 2) = PacketSwap(M2C_FIELD(&gNetStack, u32 *, NETSTACK_LOCAL_IP));
+    MI_CpuCopy8((s32)&gLocalMacAddress, packet + DHCP_OFF_CHADDR, DHCP_HWADDR_LEN);
+    *(u16 *)(packet + DHCP_OFF_OPTIONS) = DHCP_MAGIC_W0;
+    *(u16 *)(packet + DHCP_OFF_OPTIONS + 2) = DHCP_MAGIC_W1;
+    *(u16 *)(packet + DHCP_OFF_OPTIONS + 4) = 0x0135;
+    packet[0xf2] = msgType;
+    packet[0xf3] = DHCP_OPT_CLIENT_ID;
+    packet[0xf4] = 7;
+    packet[0xf5] = 1;
+    MI_CpuCopy8((s32)&gLocalMacAddress, packet + 0xf6, DHCP_HWADDR_LEN);
+    packet[0xfc] = DHCP_OPT_HOSTNAME;
+    packet[0xfd] = 10;
+    MI_CpuCopy8((s32)&gDhcpHostName, packet + 0xfe, 10);
+    packet[0x108] = DHCP_OPT_PARAM_REQ;
+    packet[0x109] = 3;
+    packet[0x10a] = DHCP_OPT_SUBNET;
+    packet[0x10b] = DHCP_OPT_ROUTER;
+    packet[0x10c] = DHCP_OPT_DNS;
+    return packet + 0x10d;
 }
 #pragma opt_common_subs reset
 s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
@@ -211,9 +238,9 @@ s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
 
 s32 func_0201e238(void) {
 extern M2C_UNK gNetStack; extern u8 data_021377e6[];
-u8 *func_0201e078(u8 *,s32,s32);
+u8 *BuildDhcpPacket(u8 *,s32,s32);
 u8 *p; s32 result; s32 base=(s32)data_021377e6;
-p=func_0201e078((u8 *)base,1,(s32)&result);
+p=BuildDhcpPacket((u8 *)base,1,(s32)&result);
 if(M2C_FIELD(&gNetStack,u32 *,0x34)) {
 p[0]=0x32; p[1]=4;
 p[2]=(u16)(M2C_FIELD(&gNetStack,u32 *,0x34)>>16)>>8;
@@ -230,9 +257,9 @@ return result;
 
 s32 func_0201e2fc(s32 a){
 extern M2C_UNK gNetStack;extern u8 data_021377e6[];
-u8 *func_0201e078(u8 *,s32,s32);
+u8 *BuildDhcpPacket(u8 *,s32,s32);
 u8 *p;u16 hi,lo;s32 result;s32 base=(s32)data_021377e6;
-p=func_0201e078((u8 *)base,3,(s32)&result);
+p=BuildDhcpPacket((u8 *)base,3,(s32)&result);
 if(a==0){
 p[0]=0x32;p[1]=4;
 hi=M2C_FIELD(&gNetStack,u32 *,0x34)>>16;p[2]=hi>>8;
@@ -261,7 +288,7 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
     s32 func_0201a7f8(u16 *, u16 *);
     void func_0201d70c(s32);
     extern M2C_UNK gNetStack;
-    extern M2C_UNK data_02137778;
+    extern M2C_UNK gLocalMacAddress;
 
     s32 slots[2];
     u32 timer;
@@ -297,7 +324,7 @@ top_loop:
         t0 = *(u16 *)(q + 4);
         t1 = *(u16 *)(q + 6);
         if (((((u32)PacketSwap(t0)) << 16) | (u32)PacketSwap(t1)) != (u32)slots[0]) goto fail;
-        if (func_0201a7f8((u16 *)&data_02137778, (u16 *)(q + 0x1C)) != 0) goto fail;
+        if (func_0201a7f8((u16 *)&gLocalMacAddress, (u16 *)(q + 0x1C)) != 0) goto fail;
         if (q[0xEC] != 0x63 || q[0xED] != 0x82 || q[0xEE] != 0x53 || q[0xEF] != 0x63) goto fail;
 
         combo = ((u32)q[0x10] << 24) | ((u32)q[0x11] << 16) | ((u32)q[0x12] << 8) | (u32)q[0x13];
@@ -453,13 +480,13 @@ loop_4:
 void func_0201e8a8(void) {
  extern M2C_UNK gNetStack;
  extern u8 data_021377e6[];
- u8 *func_0201e078(u8 *,s32,s32);
+ u8 *BuildDhcpPacket(u8 *,s32,s32);
  s32 p; s32 base;
  func_0201d1f0();
  func_0201d164();
  func_0201d190(0x44,0x43,M2C_FIELD(&gNetStack,s32 *,0x20));
  base=(s32)data_021377e6;
- p=(s32)func_0201e078((u8 *)base,7,0);
+ p=(s32)BuildDhcpPacket((u8 *)base,7,0);
  M2C_FIELD(p,u8 *,0)=0xff; p++;
  p=func_0201e204(0,300,(s32)p,p-base);
  func_0201db20((s32)base,p-base);

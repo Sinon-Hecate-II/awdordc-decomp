@@ -8,8 +8,8 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     void func_0207a3b0(s32, u32, u16, u8, s32, u16, s32, s32, s32, s32, s32);
     s32 Divide(s32, M2C_UNK);
     void *GetLocalizedText(s32);
-    s32 func_02091dc4(M2C_UNK);
-    s32 func_02091ddc(M2C_UNK);
+    s32 Get3DSpriteScreenMode(M2C_UNK);
+    s32 GetOther3DSpriteScreenMode(M2C_UNK);
     M2C_UNK func_020943bc(s32);
     M2C_UNK func_02094410(s32);
     M2C_UNK func_02094a74();
@@ -425,16 +425,16 @@ loop_1:
                 default:
                     break;
                 case 0:
-                    func_02094df0(0, func_02091dc4(0), temp_r8);
+                    func_02094df0(0, Get3DSpriteScreenMode(0), temp_r8);
                     break;
                 case 1:
-                    func_02094df0(1, func_02091dc4(1), temp_r8);
+                    func_02094df0(1, Get3DSpriteScreenMode(1), temp_r8);
                     break;
                 case 2:
-                    func_02094df0(0, func_02091ddc(0), temp_r8);
+                    func_02094df0(0, GetOther3DSpriteScreenMode(0), temp_r8);
                     break;
                 case 3:
-                    func_02094df0(1, func_02091ddc(1), temp_r8);
+                    func_02094df0(1, GetOther3DSpriteScreenMode(1), temp_r8);
                     break;
                 case 4:
                     func_02095c58(0, temp_r8, arg0);

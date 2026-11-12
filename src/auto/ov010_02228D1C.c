@@ -578,8 +578,8 @@ return M2C_FIELD(b,s32 *,8)+12;
 }
 
 s32 func_ov010_02229a08(void) {
-    s32 func_02038e94();
-    return func_02038e94();
+    s32 GetLocalPlayerId();
+    return GetLocalPlayerId();
 }
 
 u8 func_ov010_02229a14(void) {

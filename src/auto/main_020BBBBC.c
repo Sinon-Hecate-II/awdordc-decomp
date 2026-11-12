@@ -25,7 +25,7 @@ void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
 void func_020bbc2c(M2C_UNK arg0) {
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020a348c(M2C_UNK);
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     s32 IsPlayerHuman(u16);
     extern s32 *gCurrentMap;
 
@@ -33,7 +33,7 @@ void func_020bbc2c(M2C_UNK arg0) {
         func_02091c20(6, 1);
     }
     func_020a348c(arg0);
-    func_020cfd28();
+    RefreshMapView();
 }
 
 void func_020bbc74(void *arg0) {

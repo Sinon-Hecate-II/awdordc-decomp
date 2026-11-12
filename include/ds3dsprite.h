@@ -102,6 +102,16 @@ enum {
     EASE_OUT_CUBIC = 5
 };
 
+/* A 3D sprite screen-split transition object: the two halves of a screen's 3D
+ * sprite are moved apart over a number of frames and the object then deletes
+ * itself. Only the fields the split animation uses are known. */
+typedef struct DS3DSpriteSplit {
+    u8  pad00[0x5C];
+    s32 screen;   /* +0x5C engine that shows the split: 0 main, 1 sub, 3 the active one */
+    s32 length;   /* +0x60 frames the split takes */
+    s32 elapsed;  /* +0x64 frames elapsed so far */
+} DS3DSpriteSplit;
+
 /* State of the screen-change split transition (gScreenTransition, 12 bytes). */
 typedef struct ScreenTransition {
     s16 flags;  /* +0x00 TRANSITION_* */

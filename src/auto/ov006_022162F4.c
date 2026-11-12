@@ -10,7 +10,7 @@ void func_ov006_022162f4(void *arg0) {
     M2C_UNK func_02088044(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK UpdateSpriteAnimation(void *);
-    M2C_UNK func_020b1c60(M2C_UNK);
+    M2C_UNK FocusSpriteSlotById(M2C_UNK);
     extern s8 gFriendCodeInput[];
     extern u16 *gKeyState;
     register void *p asm("r6") = arg0;
@@ -37,7 +37,7 @@ void func_ov006_022162f4(void *arg0) {
     temp_r0 = gKeyState[0];
     temp_r1 = gKeyState[1];
     if (temp_r0 & 2) {
-        func_020b1c60(0xC);
+        FocusSpriteSlotById(0xC);
         return;
     }
     if (temp_r0 & 0x400) {
@@ -80,7 +80,7 @@ void func_ov006_022162f4(void *arg0) {
         return;
     }
     if (temp_r0 & 8) {
-        func_020b1c60(0xD);
+        FocusSpriteSlotById(0xD);
         return;
     }
     if (temp_r1 & 0x200) {
@@ -141,7 +141,7 @@ void func_ov006_0221661c(void *spriteList) {
     void *func_020b22a4(u8, u8, void *, s32);
     void func_020b1c78(s32);
     void func_020b2158(s32);
-    void func_02087d18(s32, s16, s16, s32, s32, u16, s32);
+    void AddSpriteCell(s32, s16, s16, s32, s32, u16, s32);
     void *savedEngine = gCur3DSpriteEngine;
     s32 i, j, k;
     u8 x, y;
@@ -158,7 +158,7 @@ void func_ov006_0221661c(void *spriteList) {
     func_020b2158(0);
     for (y = 0; y < 2; y++)
         for (x = 0; x < 6; x++)
-            func_02087d18(M2C_FIELD(spriteList, s32 *, 0x40), (s16)(x * 24 + 56), (s16)(y * 24 + 8), 24, 24, (u16)(x + y * 6), 14);
+            AddSpriteCell(M2C_FIELD(spriteList, s32 *, 0x40), (s16)(x * 24 + 56), (s16)(y * 24 + 8), 24, 24, (u16)(x + y * 6), 14);
 }
 
 void func_ov006_0221679c(void *arg0) {
@@ -214,7 +214,7 @@ void func_ov006_02216c24(s32 selectedUnit) {
     void *CreateSpriteObject(void *, s32);
     void MI_CpuFill8(void *, s32, u32);
     void *MemAlloc(u32);
-    void *func_020e34bc(u32);
+    void *HeapAllocBlock(u32);
     extern M2C_UNK gHeapObjectVTable, data_ov006_022187f0, data_ov006_022188f8;
     void *obj, *child;
 
@@ -241,7 +241,7 @@ void func_ov006_02216c24(s32 selectedUnit) {
         M2C_FIELD(child, s8 *, 0xc) = -1;
         M2C_FIELD(child, u8 *, 0xe) = 0;
         M2C_FIELD(child, u8 *, 0xf) = 0xff;
-        M2C_FIELD(child, void **, 0x14) = func_020e34bc(0x90);
+        M2C_FIELD(child, void **, 0x14) = HeapAllocBlock(0x90);
         MI_CpuFill8(M2C_FIELD(child, void **, 0x14), 0, 0x90);
     }
     M2C_FIELD(obj, void **, 0x40) = child;
@@ -283,14 +283,14 @@ void func_ov006_02216c24(s32 selectedUnit) {
 
 void *func_ov006_02216da4(void *arg0) {
  M2C_UNK MemFree(void *);
- M2C_UNK func_020e35cc(s32);
+ M2C_UNK HeapFreeBlock(s32);
  extern M2C_UNK data_ov006_022188f8;
  void *temp_r4;
  void *temp_r0;
  M2C_FIELD(arg0, void **, 0) = &data_ov006_022188f8;
  temp_r4 = M2C_FIELD(arg0, void **, 0x40);
  if (temp_r4 != NULL) {
- func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+ HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
  MemFree(temp_r4);
  }
  temp_r0 = M2C_FIELD(arg0, void **, 0x44);
@@ -305,14 +305,14 @@ void *func_ov006_02216da4(void *arg0) {
 
 void *func_ov006_02216e0c(void *arg0) {
  M2C_UNK MemFree(void *);
- M2C_UNK func_020e35cc(s32);
+ M2C_UNK HeapFreeBlock(s32);
  extern M2C_UNK data_ov006_022188f8;
  void *temp_r4;
  void *temp_r0;
  M2C_FIELD(arg0, void **, 0) = &data_ov006_022188f8;
  temp_r4 = M2C_FIELD(arg0, void **, 0x40);
  if (temp_r4 != NULL) {
- func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+ HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
  MemFree(temp_r4);
  }
  temp_r0 = M2C_FIELD(arg0, void **, 0x44);
@@ -368,15 +368,15 @@ void func_ov006_02216f30(void) {
 }
 
 void func_ov006_02216f5c(void *arg0) {
- M2C_UNK func_02007e98(M2C_UNK,s32,s32);
- M2C_UNK func_02007ef4(s32,s32,s32);
+ M2C_UNK MI_CpuFill32(M2C_UNK,s32,s32);
+ M2C_UNK MI_CpuCopy32(s32,s32,s32);
  M2C_UNK func_02085724(void *,s32,s32,void *);
  M2C_UNK func_020c8e40();
  s32 base; u8 n;
  func_020c8e40();
- func_02007e98(0,M2C_FIELD(arg0,s32 *,0x38)+0x1068,0x3138);
+ MI_CpuFill32(0,M2C_FIELD(arg0,s32 *,0x38)+0x1068,0x3138);
  n=M2C_FIELD(arg0,u8 *,0x4c);
- if(n) { base=M2C_FIELD(arg0,s32 *,0x38); func_02007ef4(base,(s32)((s32 (*)[21])base+n*0x32),0x1068); }
+ if(n) { base=M2C_FIELD(arg0,s32 *,0x38); MI_CpuCopy32(base,(s32)((s32 (*)[21])base+n*0x32),0x1068); }
  func_02085724(arg0+0x3c,M2C_FIELD(arg0+M2C_FIELD(arg0,u8 *,0x4c)*4,s32 *,0x3c),0x1068,arg0);
 }
 
@@ -400,22 +400,22 @@ void func_ov006_02216fd0(void *arg0) {
 }
 
 void func_ov006_02217078(void *arg0) {
- void *func_020bfa74();
+ void *GetMapSettings();
  M2C_UNK func_0208547c(s32,s32,void *);
  M2C_UNK func_0208559c(s32,s32,void *);
- if(M2C_FIELD(arg0,u8 *,0x4c)==0) { func_0208547c((s32)func_020bfa74(),0x10,arg0); return; }
- func_0208559c((s32)func_020bfa74(),0x10,arg0);
+ if(M2C_FIELD(arg0,u8 *,0x4c)==0) { func_0208547c((s32)GetMapSettings(),0x10,arg0); return; }
+ func_0208559c((s32)GetMapSettings(),0x10,arg0);
 }
 
 void func_ov006_022170b4(void *arg0) {
-    void *func_020bfa74();
-    M2C_UNK func_020c002c(M2C_UNK);
+    void *GetMapSettings();
+    M2C_UNK MapSettings_Apply(M2C_UNK);
     M2C_UNK LoadBattleMap(u32);
-    LoadBattleMap((u32) (M2C_FIELD(func_020bfa74(), s32 *, 8) << 0x14) >> 0x15);
+    LoadBattleMap((u32) (M2C_FIELD(GetMapSettings(), s32 *, 8) << 0x14) >> 0x15);
     if (M2C_FIELD(arg0, u8 *, 0x4C) == 0) {
         return;
     }
-    func_020c002c(0);
+    MapSettings_Apply(0);
 }
 
 void func_ov006_022170e8(void *arg0) {

@@ -161,7 +161,7 @@ void func_020e0480(void) {
 
 /* Processes two current-entity slots, creating objects for an entity when slot conditions allow. */
 void func_020e048c(void *entity) {
-    M2C_UNK func_02007df8(M2C_UNK, M2C_UNK *, M2C_UNK);
+    M2C_UNK FillU16(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK func_020899cc(void *, s32, s32, s32);
     M2C_UNK func_0208af20();
     void *func_0208b520(void *);
@@ -190,7 +190,7 @@ void func_020e048c(void *entity) {
         ++i;
     } while (2 > i);
     gCur3DSpriteEngine = savedEntity;
-    func_02007df8(0, &data_02168f74, 8);
+    FillU16(0, &data_02168f74, 8);
     func_02084ea0(0x434c4353, entity);
 }
 

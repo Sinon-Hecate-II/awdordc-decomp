@@ -238,7 +238,7 @@ PlaySoundEffect(0x1001d);
 void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK func_0208fb54(s32, M2C_UNK, M2C_UNK, s32);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     u8 func_ov007_02211f90(void);
     u8 func_ov007_02211fa0(void);
     void func_ov007_022121b0(void);
@@ -251,7 +251,7 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     temp_r0 = func_ov007_0221b56c(arg1, arg2, temp_r4, func_ov007_02211fa0());
     switch (temp_r0) {
     case 1:
-        func_020cfd28();
+        RefreshMapView();
         func_ov007_022121b0();
         func_ov007_0221ab4c();
         func_ov007_022121d4(1);
@@ -565,9 +565,9 @@ void func_ov007_0221200c(void) {
 }
 
 s32 func_ov007_0221202c(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020c1980(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK GetUnitCategoryCount(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov007_02221a0a;
-    return func_020c1980(&data_ov007_02221a0a, arg0, arg1);
+    return GetUnitCategoryCount(&data_ov007_02221a0a, arg0, arg1);
 }
 
 u8 func_ov007_0221204c(void) {

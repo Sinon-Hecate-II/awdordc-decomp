@@ -309,7 +309,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK func_ov009_022224e0(void);
     void *func_01ffa3dc(M2C_UNK, M2C_UNK);
-    void func_02007e98(s32, void *, s32);
+    void MI_CpuFill32(s32, void *, s32);
     void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
@@ -414,7 +414,7 @@ test:
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
         M2C_FIELD(ptr, u16 *, 0x34) = 0;
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
-        func_02007e98(0, (u8 *)ptr + 0x3c, 0x10);
+        MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
     }
     ptr = func_01ffa3dc((s32)&data_ov009_02226638, 3);
     if (ptr != 0) {
@@ -458,7 +458,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK func_ov009_022224e0(void);
     void *func_01ffa3dc(M2C_UNK, M2C_UNK);
-    void func_02007e98(s32, void *, s32);
+    void MI_CpuFill32(s32, void *, s32);
     void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
@@ -543,7 +543,7 @@ test:
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
         M2C_FIELD(ptr, u16 *, 0x34) = 0;
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
-        func_02007e98(0, (u8 *)ptr + 0x3c, 0x10);
+        MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
     }
     ptr = func_01ffa3dc((s32)&data_ov009_02226638, 3);
     if (ptr != 0) {

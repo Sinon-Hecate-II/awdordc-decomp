@@ -6,7 +6,12 @@ typedef struct Unk020553C4 { u8 pad[0x428]; s32 handle, unk42c, unk430; } Unk020
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
 static inline void InitSocketAddress(s32 *p) { s32 addr=(s32)p; M2C_FIELD(addr,s32 *,0)=0; M2C_FIELD(addr,s32 *,4)=0; }
 
-s32 func_020553c4(M2C_UNK arg0, void *arg1) {
+/* Starts the TCP connection to a gpi peer: looks the peer's address record up
+ * by profile id, opens a non-blocking stream socket, fills in the socket
+ * address (IPv4 address and port) from the record, and connects.  On failure it
+ * reports the error and returns 3 (1 when the error came from the connect); on
+ * success the peer moves to GPI_PEER_STATE_CONNECTING and it returns 0. */
+s32 gpiPeerBeginConnect(M2C_UNK connection, void *peer) {
     s32 ghiSetNonBlocking(s32, M2C_UNK);
     s32 ghiSocket(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 ghiConnect(s32, UnkSocketAddress *, u8);
@@ -15,65 +20,68 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
     M2C_UNK func_02055124(s32);
     void gpiSetError(void **, s32, M2C_UNK);
     s32 gpiSetErrorString(M2C_UNK, M2C_UNK *);
-    extern M2C_UNK data_020feb6c;
-    extern M2C_UNK data_020fecb0;
-    extern M2C_UNK data_020fecd8;
-    extern M2C_UNK data_020fed0c;
-    s32 addr[2]; s32 node;
-    s32 *qp;
+    extern M2C_UNK gGpiErrorConnectPeer;
+    extern M2C_UNK gGpiErrorCreateSocket;
+    extern M2C_UNK gGpiErrorSetNonBlocking;
+    extern M2C_UNK gGpiErrorConnectSocket;
+    s32 socketAddress[2];
+    s32 peerRecord;
+    s32 *record;
 
-    if (func_02055b84(arg0, M2C_FIELD(arg1, s32 *, 0xc), &node) == 0) {
-        gpiSetErrorString(arg0, &data_020feb6c);
+    if (func_02055b84(connection, M2C_FIELD(peer, s32 *, 0xc), &peerRecord) == 0) {
+        gpiSetErrorString(connection, &gGpiErrorConnectPeer);
         return 3;
     }
-    M2C_FIELD(arg1, s32 *, 0x8) = ghiSocket(2, 1, 0);
-    if (M2C_FIELD(arg1, s32 *, 0x8) == -1) {
-        gpiSetError(arg0, 5, &data_020fecb0);
-        gpiCallErrorCallback(arg0, 3, 0);
+    M2C_FIELD(peer, s32 *, 0x8) = ghiSocket(2, 1, 0);
+    if (M2C_FIELD(peer, s32 *, 0x8) == -1) {
+        gpiSetError(connection, 5, &gGpiErrorCreateSocket);
+        gpiCallErrorCallback(connection, 3, 0);
         return 3;
     }
-    if (ghiSetNonBlocking(M2C_FIELD(arg1, s32 *, 0x8), 0) == 0) {
-        gpiSetError(arg0, 5, &data_020fecd8);
-        gpiCallErrorCallback(arg0, 3, 0);
+    if (ghiSetNonBlocking(M2C_FIELD(peer, s32 *, 0x8), 0) == 0) {
+        gpiSetError(connection, 5, &gGpiErrorSetNonBlocking);
+        gpiCallErrorCallback(connection, 3, 0);
         return 3;
     }
-    func_02055124(M2C_FIELD(arg1, s32 *, 0x8));
-    InitSocketAddress(addr);
-    *((u8 *)addr + 1) = 2;
-    qp = (s32 *)node;
-    addr[1] = M2C_FIELD(M2C_FIELD(qp,void **,8),s32 *,0x10);
-    *((s16 *)addr + 1) = (s16) M2C_FIELD(M2C_FIELD(qp,void **,8),s32 *,0x14);
-    if (ghiConnect(M2C_FIELD(arg1, s32 *, 0x8), (UnkSocketAddress *)addr, 8) == -1) {
-        s32 r = ghiGetLastSocketError(M2C_FIELD(arg1, s32 *, 0x8));
-        if ((r != -6) && (r != -0x1a) && (r != -0x4c)) {
-            gpiSetError(arg0, 5, &data_020fed0c);
-            gpiCallErrorCallback(arg0, 3, 1);
+    func_02055124(M2C_FIELD(peer, s32 *, 0x8));
+    InitSocketAddress(socketAddress);
+    *((u8 *)socketAddress + 1) = 2;
+    record = (s32 *)peerRecord;
+    socketAddress[1] = M2C_FIELD(M2C_FIELD(record, void **, 8), s32 *, 0x10);
+    *((s16 *)socketAddress + 1) = (s16) M2C_FIELD(M2C_FIELD(record, void **, 8), s32 *, 0x14);
+    if (ghiConnect(M2C_FIELD(peer, s32 *, 0x8), (UnkSocketAddress *)socketAddress, 8) == -1) {
+        s32 socketError = ghiGetLastSocketError(M2C_FIELD(peer, s32 *, 0x8));
+        if ((socketError != -6) && (socketError != -0x1a) && (socketError != -0x4c)) {
+            gpiSetError(connection, 5, &gGpiErrorConnectSocket);
+            gpiCallErrorCallback(connection, 3, 1);
             return 3;
         }
     }
-    M2C_FIELD(arg1, s32 *, 0x0) = 0x67;
+    M2C_FIELD(peer, s32 *, 0x0) = GPI_PEER_STATE_CONNECTING;
     return 0;
 }
 
 #pragma opt_dead_code off
-s32 func_02055550(s32 ctx,void *p,s32 a,s32 str) {
-s32 StringLength(s32 *);s32 gpiAppendStringField();s32 gpiAppendIntField();s32 gpiAppendStringToBufferLen();s32 func_0204fcfc();s32 gpiGetTime(s32);
-extern s32 data_020fec7c,data_020fec0c,data_020fead4,data_020fed34,data_020fed44,data_020fed48,data_020fed50;
-s32 buf[6];s32 len,r;
-if(!p)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020fead4,0x340);
-if(!str)AssertFailed(&data_020fed34,&data_020fec0c,&data_020fead4,0x341);
-len=StringLength((s32 *)str);
-Init55550(buf);buf[4]=a;
-r=gpiAppendStringField(ctx,buf,&data_020fed44);if(r)return r;
-r=gpiAppendIntField(ctx,buf,a);if(r)return r;
-r=gpiAppendStringField(ctx,buf,&data_020fed48);if(r)return r;
-r=gpiAppendIntField(ctx,buf,len);if(r)return r;
-r=gpiAppendStringField(ctx,buf,&data_020fed50);if(r)return r;
-buf[5]=buf[2];
-r=gpiAppendStringToBufferLen(ctx,buf,str,len);if(r)return r;
-r=func_0204fcfc(ctx,buf,0);if(r)return r;
-func_020486f8(M2C_FIELD(p,s32 *,0x38),buf);
-M2C_FIELD(p,s32 *,16)=gpiGetTime(0)+300;
+/* Builds a gpiPeer "\\m\\<id>\\len\\<len>\\msg\\\n<message>" record into a buffer
+ * and queues it on the peer's message vector, then arms the peer's send timeout. */
+s32 gpiPeerAddMessage(s32 connection,void *peer,s32 id,s32 message) {
+s32 StringLength(s32 *);s32 gpiAppendStringField();s32 gpiAppendIntField();s32 gpiAppendStringToBufferLen();s32 gpiAppendChar();s32 gpiGetTime(s32);
+extern s32 data_020fec7c,data_020fec0c,data_020fead4,data_020fed34,gGpiMsgTag,gGpiLenTag,gGpiMsgBodyTag;
+s32 buffer[6];s32 len,result;
+if(!peer)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020fead4,0x340);
+if(!message)AssertFailed(&data_020fed34,&data_020fec0c,&data_020fead4,0x341);
+len=StringLength((s32 *)message);
+Init55550(buffer);buffer[4]=id;
+result=gpiAppendStringField(connection,buffer,&gGpiMsgTag);if(result)return result;
+result=gpiAppendIntField(connection,buffer,id);if(result)return result;
+result=gpiAppendStringField(connection,buffer,&gGpiLenTag);if(result)return result;
+result=gpiAppendIntField(connection,buffer,len);if(result)return result;
+result=gpiAppendStringField(connection,buffer,&gGpiMsgBodyTag);if(result)return result;
+buffer[5]=buffer[2];
+result=gpiAppendStringToBufferLen(connection,buffer,message,len);if(result)return result;
+result=gpiAppendChar(connection,buffer,0);if(result)return result;
+Vector_AddItem(M2C_FIELD(peer,s32 *,0x38),buffer);
+M2C_FIELD(peer,s32 *,16)=gpiGetTime(0)+300;
 return 0;
 }
 void func_020556e0(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {

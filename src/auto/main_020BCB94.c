@@ -98,7 +98,7 @@ void func_020bcee4(void *arg0) {
     M2C_UNK func_020a34a8(s32);
     M2C_UNK func_020a34f4(s32);
     M2C_UNK func_020c0a88();
-    M2C_UNK func_020cfd28();
+    M2C_UNK RefreshMapView();
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
@@ -106,7 +106,7 @@ void func_020bcee4(void *arg0) {
     func_020a34f4(temp_r4);
     func_020a33f0(temp_r4, 0);
     func_020c0a88();
-    func_020cfd28();
+    RefreshMapView();
 }
 
 void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}

@@ -7,7 +7,7 @@ typedef struct { u8 kind:6; u8 flags:2; } UnitKind1955;
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling off
 int func_ov000_02194ab8(short *arg0) {
-void func_ov000_02179be0(void);
+void GetAiUnitRange(void);
 void func_ov000_02179d3c(void);
 s32 GetUnitAttackClass(s32);
 s32 GetUnitAttackRangeMax(void *);
@@ -21,7 +21,7 @@ s32 IsFootUnitKind(s32);
 s32 IsTerrainOnUnitTeam(s32,s32);
 s32 func_ov000_0217d000(s32,s32);
 void func_01ffc2e8(void *);
-void func_01ffb9c4(s32);
+void MarkAdjacentCells(s32);
 s32 func_ov000_021a89a4(void *);
 s32 FindAttackPosition(s16 *);
 s32 RandomIntRange(s32,s32);
@@ -36,7 +36,7 @@ volatile u16 posMid[2],posLow[2];
 s32 offset;
 s32 threshold,team,id,value,cost,kind,x,y,terrain,index,xx,yy,x0,y0,x1,y1,sum,delta;
 u8 *map,*unit,*selected;
-func_ov000_02179be0();
+GetAiUnitRange();
 func_ov000_02179d3c();
 if(!(M2C_FIELD(gAiCommandState,u16 *,8)&32)&&GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1){
 threshold=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(gAiCommandState,u8 *,5);
@@ -102,7 +102,7 @@ map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
 if(((UnitKind1955 *)selected)->kind==23){
 index=M2C_FIELD(map+(posHigh[1])*2,u16 *,0x3758)+posHigh[0];id=M2C_FIELD(map+index,u8 *,0x508);unit=map+0x59a4+id*14;
 if(id&&!((u32)(unit[11]<<25)>>31)&&((UnitKind1955 *)unit)->kind==22&&(M2C_FIELD(unit,u16 *,4)&32)&&!(M2C_FIELD(unit,u16 *,4)&64)){
-func_01ffc2e8(selected);func_01ffb9c4(111);
+func_01ffc2e8(selected);MarkAdjacentCells(111);
 map=*gCurrentMap;x=posHigh[0];y=posHigh[1];
 high=M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x];
 if(high>=0){
@@ -174,13 +174,13 @@ void func_ov000_021954a4(void) {
 }
 
 s32 func_ov000_021954dc(s16 *arg0) {
-    void func_ov000_02179be0();
+    void GetAiUnitRange();
     void func_ov000_02179d3c();
     s32 func_ov000_021786a8(s16 *);
     s32 FindAttackPosition(s16 *);
     s16 sp0[2];
 
-    func_ov000_02179be0();
+    GetAiUnitRange();
     func_ov000_02179d3c();
     if (func_ov000_021786a8(sp0) == 0) {
         return 0;
@@ -211,7 +211,7 @@ void func_ov000_0219553c(void) {
 #pragma opt_strength_reduction off
 s32 func_ov000_02195574(s16 *out) {
 s32 GetUnitAttackClass(s32);
-void func_ov000_02179be0(void);
+void GetAiUnitRange(void);
 void func_ov000_02179d3c(void);
 s32 GetTerrainPropertyFlagsAt(s32,s32);
 s32 func_ov000_0217bc34(s32,s32,s32,s32);
@@ -222,7 +222,7 @@ s32 best=0x7fff;
 s16 cand[2];
 s32 x,y,kind;
 kind=GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1?2:1;
-func_ov000_02179be0();
+GetAiUnitRange();
 func_ov000_02179d3c();
 for(y=0;y<*(u16 *)((u8 *)*gCurrentMap+0x5146);y++){
 for(x=0;x<*(u16 *)((u8 *)*gCurrentMap+0x5144);x++){

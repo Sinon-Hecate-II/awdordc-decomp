@@ -305,45 +305,47 @@ u16 func_020a8f4c(s32 arg0) {
 
 void UpdateSpriteAnimation(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}
 
+/* Evaluate a sprite tween at its current time: mode selects the curve, base and
+ * amplitude shape the value between from and to over duration. */
 s16 GetSpriteAnimValue(void *arg0) {
     s32 Divide();
-    extern M2C_UNK gSinCosTable;
-    s16 temp_ip;
-    s16 temp_ip_2;
-    s16 var_r0;
-    s32 temp_r3_2;
-    u16 temp_r3;
-    u8 temp_r0;
+    extern s16 gSinCosTable[];
+    s16 duration;
+    s16 duration2;
+    s16 value;
+    s32 remaining;
+    u16 current;
+    u8 mode;
 
-    temp_r0 = M2C_FIELD(arg0, u8 *, 0);
-    switch (temp_r0) {
-    case 1:
-        if (M2C_FIELD(arg0, s16 *, 0xC) == 0) {
-            var_r0 = M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0x10) * M2C_FIELD(arg0, s16 *, 0xA));
+    mode = ((SpriteTween *)arg0)->mode;
+    switch (mode) {
+    case SPRITE_TWEEN_LINEAR:
+        if (((SpriteTween *)arg0)->duration == 0) {
+            value = ((SpriteTween *)arg0)->base + (((SpriteTween *)arg0)->to * ((SpriteTween *)arg0)->amplitude);
         } else {
-            var_r0 = (M2C_FIELD(arg0, s16 *, 0xA) * Divide(M2C_FIELD(arg0, u16 *, 2) * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE)), M2C_FIELD(arg0, s16 *, 0xC))) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE));
+            value = (((SpriteTween *)arg0)->amplitude * Divide(((SpriteTween *)arg0)->current * (((SpriteTween *)arg0)->to - ((SpriteTween *)arg0)->from), ((SpriteTween *)arg0)->duration)) + (((SpriteTween *)arg0)->base + ((SpriteTween *)arg0)->from);
         }
-        return var_r0;
-    case 3:
-        temp_ip = M2C_FIELD(arg0, s16 *, 0xC);
-        if (temp_ip == 0) {
-            return (s16) (M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0x10) * M2C_FIELD(arg0, s16 *, 0xA)));
+        return value;
+    case SPRITE_TWEEN_EASE_IN:
+        duration = ((SpriteTween *)arg0)->duration;
+        if (duration == 0) {
+            return (s16) (((SpriteTween *)arg0)->base + (((SpriteTween *)arg0)->to * ((SpriteTween *)arg0)->amplitude));
         }
-        temp_r3 = M2C_FIELD(arg0, u16 *, 2);
-        return (s16) ((M2C_FIELD(arg0, s16 *, 0xA) * Divide(temp_r3 * (temp_r3 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip * temp_ip)) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE)));
-    case 4:
-        temp_ip_2 = M2C_FIELD(arg0, s16 *, 0xC);
-        temp_r3_2 = temp_ip_2 - M2C_FIELD(arg0, u16 *, 2);
-        return (s16) ((M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0x10)) - (M2C_FIELD(arg0, s16 *, 0xA) * Divide(temp_r3_2 * (temp_r3_2 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip_2 * temp_ip_2)));
-    case 0: {
-        u16 u = M2C_FIELD(arg0, u16 *, 2);
-        s16 a = M2C_FIELD(arg0, s16 *, 0xA);
-        s16 base = M2C_FIELD(arg0, s16 *, 8);
-        s16 val = *(s16 *)((s8 *)&gSinCosTable + ((s32)(u >> 4) << 2));
+        current = ((SpriteTween *)arg0)->current;
+        return (s16) ((((SpriteTween *)arg0)->amplitude * Divide(current * (current * (((SpriteTween *)arg0)->to - ((SpriteTween *)arg0)->from)), duration * duration)) + (((SpriteTween *)arg0)->base + ((SpriteTween *)arg0)->from));
+    case SPRITE_TWEEN_EASE_OUT:
+        duration2 = ((SpriteTween *)arg0)->duration;
+        remaining = duration2 - ((SpriteTween *)arg0)->current;
+        return (s16) ((((SpriteTween *)arg0)->base + ((SpriteTween *)arg0)->to) - (((SpriteTween *)arg0)->amplitude * Divide(remaining * (remaining * (((SpriteTween *)arg0)->to - ((SpriteTween *)arg0)->from)), duration2 * duration2)));
+    case SPRITE_TWEEN_SINE: {
+        u16 u = ((SpriteTween *)arg0)->current;
+        s16 a = ((SpriteTween *)arg0)->amplitude;
+        s16 base = ((SpriteTween *)arg0)->base;
+        s16 val = gSinCosTable[(u >> 4) * 2];
         return (s16)(base + (a * val * 0x10 >> 0x10));
     }
-    case 2:
-        return (s16) (M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0xE) * M2C_FIELD(arg0, s16 *, 0xA)));
+    case SPRITE_TWEEN_CONSTANT:
+        return (s16) (((SpriteTween *)arg0)->base + (((SpriteTween *)arg0)->from * ((SpriteTween *)arg0)->amplitude));
     }
     return 0;
 }
@@ -402,7 +404,7 @@ break;
 }
 }
 
-void func_020a92bc(void *arg0,s32 arg1) {
+void SetTextSpriteValue(void *arg0,s32 arg1) {
  M2C_UNK MI_CpuFill8(s32,s32,s32);
  s32 Modulo(s32,s32);
  s32 func_0207cb5c(s32,s32);

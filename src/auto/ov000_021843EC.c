@@ -24,7 +24,7 @@ void MI_CpuFill8(void *,int,int);
 int func_020d27a4(int,int);
 int GetUnitMoveRange(int,int);
 void SelectMapLayer(void *);
-void func_01ffb9c4(s8);
+void MarkAdjacentCells(s8);
 void func_ov000_021843ec(s32 a,s32 b,s32 c) {
 int x;
 u8 *map=*gCurrentMap,*selected,*attrs;
@@ -109,7 +109,7 @@ else dst[yy*((Map851B8 *)*gCurrentMap)->width]+=2;
 if(attrs[19]&16){
 SelectMapLayer((u8 *)*gCurrentMap+0x2338);
 FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26),0);
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 map=*gCurrentMap;
 for(sy=0;sy<((Map851B8 *)map)->height;sy++){
 dst=(s8 *)gAiRangeLayer;width=((Map851B8 *)map)->width;

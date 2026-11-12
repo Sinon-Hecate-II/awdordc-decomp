@@ -75,12 +75,12 @@ void func_ov006_02217464(M2C_UNK arg0) {
 }
 
 void func_ov006_0221747c(void *arg0) {
-    s32 func_020e34bc(s32);
+    s32 HeapAllocBlock(s32);
     M2C_UNK func_020e36dc(void *);
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
-    M2C_FIELD(arg0, s32 *, 0x3C) = func_020e34bc(0x80);
-    M2C_FIELD(arg0, s32 *, 0x48) = func_020e34bc(0x6F8);
-    M2C_FIELD(arg0, s32 *, 0x4C) = func_020e34bc(0x2AC);
+    M2C_FIELD(arg0, s32 *, 0x3C) = HeapAllocBlock(0x80);
+    M2C_FIELD(arg0, s32 *, 0x48) = HeapAllocBlock(0x6F8);
+    M2C_FIELD(arg0, s32 *, 0x4C) = HeapAllocBlock(0x2AC);
     func_020e36dc(arg0);
     func_02086608(4);
     func_02089728();
@@ -89,9 +89,9 @@ void func_ov006_0221747c(void *arg0) {
 
 void func_ov006_022174d0(void *arg0) {
     func_020e36f4();
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x3C));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x48));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x4C));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x3C));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x48));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
     func_02086658(4);
     func_02089740();
 }
@@ -136,8 +136,8 @@ M2C_FIELD(&data_ov006_02218e20,s32 *,8)=1;
 void func_ov006_0221762c(void *arg0) {
     M2C_UNK func_020c47e4(M2C_UNK);
     M2C_UNK LoadMapRecord(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020c7b48(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020c7cd0(M2C_UNK, M2C_UNK);
+    M2C_UNK PackMapRecord(M2C_UNK, M2C_UNK);
+    M2C_UNK ExpandMapRecord(M2C_UNK, M2C_UNK);
     s32 func_02084cf8(void);
     s32 func_020c7a3c(M2C_UNK);
     void func_020e3788(M2C_UNK, s32, M2C_UNK, M2C_UNK);
@@ -162,8 +162,8 @@ void func_ov006_0221762c(void *arg0) {
 
     func_020c47e4((M2C_UNK)c);
     LoadMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
-    func_020c7b48(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
-    func_020c7cd0(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
+    PackMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
+    ExpandMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     cell[0x14] = (u32)func_02084cf8();
 
     cell[0x12] = (cell[0x12] & ~0xFFU) | (c[0] & 0xFFU);
@@ -220,8 +220,8 @@ void func_ov006_02217840(M2C_UNK arg0) {
 
 void func_ov006_02217858(void *arg0) {
 s32 func_020c7eb8(s32);
-M2C_FIELD(arg0,s32 *,0x4c)=func_020e34bc(0x1ea0);
-M2C_FIELD(arg0,s32 *,0x50)=func_020e34bc(0x45b0);
+M2C_FIELD(arg0,s32 *,0x4c)=HeapAllocBlock(0x1ea0);
+M2C_FIELD(arg0,s32 *,0x50)=HeapAllocBlock(0x45b0);
 M2C_FIELD(arg0,s32 *,0x54)=0;
 func_020e36dc(arg0); func_02086608(4); func_02089728(); func_020d47f0();
 if(func_020c7eb8(M2C_FIELD(arg0,s32 *,0x34))){
@@ -232,13 +232,13 @@ switch(M2C_FIELD(arg0,s32 *,0x38)){case 0:func_02086720(0x46000020);return;case 
 }
 
 void func_ov006_0221791c(void *arg0) {
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     M2C_UNK func_020e36f4();
     func_020e36f4();
     func_02086658(4);
     func_02089740();
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x4C));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x50));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
 }
 
 void func_ov006_02217948(void *arg0) {
@@ -266,7 +266,7 @@ void func_ov006_022179b4(void *arg0) {
     s32 NextRandomValue();
     u64 func_020720f0(s32, s32);
     s32 func_020c7a3c(s32);
-    M2C_UNK func_020c7cd0(s32, s32);
+    M2C_UNK ExpandMapRecord(s32, s32);
     s32 func_020c8c6c(void *);
     s32 func_020c8cbc(s32);
     s32 func_02084cf8();
@@ -294,7 +294,7 @@ void func_ov006_022179b4(void *arg0) {
         do {
             temp_r4 = M2C_FIELD(arg0, s32 *, 0x50);
             temp_r11 = M2C_FIELD(arg0, s32 *, 0x4C) + var_r8;
-            func_020c7cd0(temp_r11 + 0x10, temp_r4 + var_r9);
+            ExpandMapRecord(temp_r11 + 0x10, temp_r4 + var_r9);
             temp_r7 = M2C_FIELD(temp_r11, s32 *, 4);
             if (temp_r7 == func_02084cf8()) {
                 var_r0 = 1;
@@ -435,11 +435,11 @@ void func_ov006_02217cfc(s32 arg0) {
 s32 func_ov006_02217d0c(void) {extern s32 data_ov006_02218e2c;return (data_ov006_02218e2c*10)>>8;}
 
 void func_ov006_02217d28(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x54) = func_020e34bc(0x1EA0);
-    M2C_FIELD(arg0, s32 *, 0x44) = func_020e34bc(0x28);
-    M2C_FIELD(arg0, s32 *, 0x48) = func_020e34bc(0x14);
-    M2C_FIELD(arg0, s32 *, 0x4C) = func_020e34bc(0xA);
-    M2C_FIELD(arg0, s32 *, 0x50) = func_020e34bc(6);
+    M2C_FIELD(arg0, s32 *, 0x54) = HeapAllocBlock(0x1EA0);
+    M2C_FIELD(arg0, s32 *, 0x44) = HeapAllocBlock(0x28);
+    M2C_FIELD(arg0, s32 *, 0x48) = HeapAllocBlock(0x14);
+    M2C_FIELD(arg0, s32 *, 0x4C) = HeapAllocBlock(0xA);
+    M2C_FIELD(arg0, s32 *, 0x50) = HeapAllocBlock(6);
     M2C_FIELD(arg0, s8 *, 0x3B) = 0;
     func_020e36dc(arg0);
     func_02086608(4);
@@ -449,11 +449,11 @@ void func_ov006_02217d28(void *arg0) {
 }
 
 void func_ov006_02217d9c(void *arg0) {
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x44));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x48));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x4C));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x50));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x44));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x48));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
     func_020e36f4(arg0);
     func_02086658(4);
     func_02089740();

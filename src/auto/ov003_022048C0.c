@@ -55,8 +55,8 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     s32 Modulo(u8, M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
-    M2C_UNK func_020a92bc(void *, s32);
-    M2C_UNK func_020a94fc(void *);
+    M2C_UNK SetTextSpriteValue(void *, s32);
+    M2C_UNK DrawTextSprite(void *);
     u16 func_020aae10(void *);
     u16 func_020aae44(void *);
     s32 func_ov003_02200c64(u8, M2C_UNK, M2C_UNK);
@@ -160,7 +160,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
             func_02087d84(M2C_FIELD(temp_r9_2, void **, 0x64), 1, (s32) temp_r10_4, (s32) temp_r11_2, (s32) temp_r8_4, (s32) func_020aae44(temp_r9_2));
         }
         if (func_ov003_02200c64(var_r4, 3, 5) != 0) {
-            func_020a92bc(M2C_FIELD(arg0, void **, 0x54), M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC));
+            SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x54), M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC));
             temp_r1_2 = M2C_FIELD(arg0, void **, 0x54);
             M2C_FIELD(temp_r1_2, s16 *, 6) = (s16) (temp_r6 + 0x1B);
             M2C_FIELD(temp_r1_2, s16 *, 8) = temp_r5;
@@ -176,10 +176,10 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
                 temp_r1_3 = (M2C_FIELD(temp_r5_2, u8 *, 0x20) & ~1) | 1;
                 M2C_FIELD(temp_r5_2, u8 *, 0x20) = temp_r1_3;
                 M2C_FIELD(temp_r5_2, u8 *, 0x20) = (u8) ((temp_r1_3 & ~0x1E) | 0x14);
-                func_020a94fc(temp_r5_2);
+                DrawTextSprite(temp_r5_2);
                 M2C_FIELD(temp_r5_2, u8 *, 0x20) = (u8) (M2C_FIELD(temp_r5_2, u8 *, 0x20) & ~1);
             } else {
-                func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
+                DrawTextSprite(M2C_FIELD(arg0, void **, 0x54));
             }
         } else {
             AddSprite((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (func_ov003_02200cec(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);

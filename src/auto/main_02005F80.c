@@ -278,14 +278,14 @@ s32 func_020064d0(void *arg0, s32 *arg1, s32 arg2) {
     return 1;
 }
 
-void func_0200654c(void *arg0) {
+void InitMutex(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 8) = 0;
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
 }
 
-void func_02006564(void *arg0) {
+void LockMutex(void *arg0) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -318,7 +318,7 @@ void func_02006564(void *arg0) {
     OS_RestoreInterrupts(state);
 }
 
-void func_020065e8(void *arg0) {
+void UnlockMutex(void *arg0) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_WakeupThread(void *);

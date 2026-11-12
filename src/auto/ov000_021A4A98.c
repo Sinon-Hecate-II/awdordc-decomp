@@ -13,7 +13,7 @@ static inline s32 UnitOwnerA4e08(u8 *p){return p?(UnitIndexA4e08(p)>>6)+1:0;}
 #pragma opt_strength_reduction off
 s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     void FloodFillUnitRange(s32, s32, s32, s32, s32);
-    void func_01ffb9c4(s8);
+    void MarkAdjacentCells(s8);
     s32 IsUnitOnCurrentTeam(s32);
     s32 GetTerrainPropertyFlagsAt(s32, s32);
     s32 func_ov000_021a43c4(void);
@@ -40,7 +40,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     s32 ret;
 
     FloodFillUnitRange(arg0, arg1, 7, 0x6e, 0);
-    func_01ffb9c4(0x6f);
+    MarkAdjacentCells(0x6f);
 
     inner = *gCurrentMap;
     if (*(s16 *)((u8 *)inner + 0x5146) <= 0) goto tail;
@@ -133,7 +133,7 @@ s32 func_ov000_021a4dc4(void) {
 #pragma opt_strength_reduction off
 s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
 s32 GetUnitMoveRange(s32,u32);void FloodFillUnitRange(s32,s32,s32,s32,s32);
-void func_01ffb9c4(s8);s32 IsUnitOnCurrentTeam(s32);
+void MarkAdjacentCells(s8);s32 IsUnitOnCurrentTeam(s32);
 s32 GetUnitDamagePercent(u32,s32);s32 Divide(s32,s32);
 s32 GetUnitMaxAttackRange(s32,u32);s32 func_020a85c8(u32);
 s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,y,minX,minY,maxX,maxY,distance,value;u32 range;
@@ -161,7 +161,7 @@ if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(gUnitKindStats[kind*1
 
 M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
 value=Divide(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 if(kind!=14)sum+=value;else if(value>max)max=value;continue;
@@ -172,7 +172,7 @@ if((((gUnitKindStats[kind*112+19]&16)||kind==22||kind==25)&&KIND(unit)==23)||
 
 M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
-func_01ffb9c4(111);
+MarkAdjacentCells(111);
 if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
 value=Divide(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 if(kind==15&&KIND(unit)==6)value>>=1;sum+=value;continue;
@@ -195,7 +195,7 @@ return sum+max;
  * influence layer across every valid cell unless the acting player already has a
  * type-23 marker on the map. */
 void MarkPlayerInfluence(u8 player){
-void FloodFillUnitRange(s32,s32,s32,s32,s32);void func_01ffb9c4(s8);s32 GetUnitMoveRange(s32,u32);s32 IsUnitOnCurrentTeam(s32);
+void FloodFillUnitRange(s32,s32,s32,s32,s32);void MarkAdjacentCells(s8);s32 GetUnitMoveRange(s32,u32);s32 IsUnitOnCurrentTeam(s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 unitId,unitOffset; s32 scanX,scanY;u8 *unit;u8 *otherUnit;s32 x,y;void *base;s32 unitIndex,owner;u32 kind;
 M2C_FIELD(*gCurrentMap,u16*,0x52b6)=player;
@@ -204,7 +204,7 @@ do{
 base=*gCurrentMap;unit=(u8*)(base+0x59a4)+unitOffset;
 kind=(u32)(unit[0]<<26)>>26;if(!kind)goto next;if(kind!=22)goto next;
 if(unit){unitIndex=unit?((s32)(unit-(u8*)(base+0x59a4)))/14:0;owner=(unitIndex>>6)+1;}else owner=0;
-FloodFillUnitRange(unit[1],unit[2],23,GetUnitMoveRange(owner,kind),33);func_01ffb9c4(111);
+FloodFillUnitRange(unit[1],unit[2],23,GetUnitMoveRange(owner,kind),33);MarkAdjacentCells(111);
 base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++,base=*gCurrentMap){

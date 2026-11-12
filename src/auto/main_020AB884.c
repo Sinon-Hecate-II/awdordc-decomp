@@ -156,19 +156,19 @@ void *func_020abdac(void *arg0) {
  void *p;
  M2C_FIELD(arg0,M2C_UNK **,0)=&data_02126be4;
  p=M2C_FIELD(arg0,void **,0x64);
- if(p!=NULL) {func_020e35cc(M2C_FIELD(p,s32 *,0x14));MemFree(p);}
+ if(p!=NULL) {HeapFreeBlock(M2C_FIELD(p,s32 *,0x14));MemFree(p);}
  MemFree(arg0);return arg0;
 }
 
 void *func_020abdec(void *arg0) {
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK data_02126be4;
     void *temp_r4;
 
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02126be4;
     temp_r4 = M2C_FIELD(arg0, void **, 0x64);
     if (temp_r4 != NULL) {
-        func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
+        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
         MemFree(temp_r4);
     }
     return arg0;

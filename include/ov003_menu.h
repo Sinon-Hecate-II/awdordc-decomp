@@ -30,4 +30,17 @@ enum {
     MENU_ENTRY_SUBMENU = 3  /* open the row's submenu */
 };
 
+/* A value counter inside an ov003 options-menu entry. StepCounter is handed the
+ * address of the entry's flag byte; the value, maximum and minimum sit at
+ * +0x04/+0x08/+0x0C from there and the wrap flag at +0x14 (callers in
+ * ov003_021EBEC0.c / ov003_021ED8F0.c pass an entry + 0x14). */
+typedef struct OptionCounter {
+    s32 filler_00;  /* +0x00 */
+    s32 value;      /* +0x04 current value */
+    s32 maximum;    /* +0x08 upper bound of the range */
+    s32 minimum;    /* +0x0C lower bound of the range */
+    s32 filler_10;  /* +0x10 */
+    u8  wrap;       /* +0x14 nonzero: wrap around [minimum,maximum], else clamp */
+} OptionCounter;
+
 #endif

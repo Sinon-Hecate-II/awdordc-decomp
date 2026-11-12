@@ -58,11 +58,11 @@ s32 func_ov009_0222132c(s32 size,s32 align) {
 }
 
 void func_ov009_02221338(s32 arg0, s32 arg1) {
-    M2C_UNK func_020e35cc();
+    M2C_UNK HeapFreeBlock();
     if (arg0 == 0) {
         return;
     }
-    func_020e35cc();
+    HeapFreeBlock();
 }
 
 void func_ov009_0222134c(void *arg0) {

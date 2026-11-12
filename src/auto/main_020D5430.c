@@ -7,7 +7,7 @@ void func_020d5430(void) {
  func_020cf850(0x1001a);func_0207a7a4(1,4);MoveMapCursorToTarget(1);
  if(!func_020bcac0())return;
  if(!func_020bd650())return;
- func_020bd104();func_ov000_021696d4();func_020cfd28();func_0207a768();
+ func_020bd104();func_ov000_021696d4();RefreshMapView();func_0207a768();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }
 
@@ -97,7 +97,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
     func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 52);
     if (cb) cb();
-    func_020cfd28();
+    RefreshMapView();
     func_020d5554(x, y);
 finish:
     func_0207a748(1);
@@ -123,7 +123,7 @@ if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(
 func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
-func_020cfd28();
+RefreshMapView();
 func_020d5554(x,y);
 func_0209fb70();
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)>>6)+1;
@@ -160,7 +160,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 56); if (cb) cb();
-    func_020cfd28();
+    RefreshMapView();
     unit = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT);
     func_020d5554(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
     func_0209fb70();
@@ -304,7 +304,7 @@ void func_020d6208(void) {
             return;
         }
         func_020d61f0();
-        func_020cfd28();
+        RefreshMapView();
         if (data_02168f24 != 0) {
             func_ov000_021696d4();
             M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x52b4) = 0;

@@ -368,29 +368,29 @@ void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
 }
 
 void func_0209b4a8(M2C_UNK arg0,M2C_UNK arg1,u16 arg2){
-s32 func_020e34bc(); M2C_UNK func_020e35cc(s32);void func_02007ef4(M2C_UNK,M2C_UNK,u32);
+s32 HeapAllocBlock(); M2C_UNK HeapFreeBlock(s32);void MI_CpuCopy32(M2C_UNK,M2C_UNK,u32);
 s32 i,count; M2C_UNK buf;u8 *src,*dst;
 src=(u8 *)arg0;dst=(u8 *)arg1;
-buf=func_020e34bc(256);
+buf=HeapAllocBlock(256);
 count=(((s32)arg2+7)>>3)+3;count>>=2;
 i=0;if(count>0)do{
-func_02007ef4(src,buf,256);
-func_02007ef4(buf,dst,32);
-func_02007ef4((u8 *)buf+64,dst+32,32);
-func_02007ef4((u8 *)buf+128,dst+64,32);
-func_02007ef4((u8 *)buf+192,dst+96,32);
-func_02007ef4((u8 *)buf+32,dst+128,32);
-func_02007ef4((u8 *)buf+96,dst+160,32);
-func_02007ef4((u8 *)buf+160,dst+192,32);
-func_02007ef4((u8 *)buf+224,dst+224,32);
+MI_CpuCopy32(src,buf,256);
+MI_CpuCopy32(buf,dst,32);
+MI_CpuCopy32((u8 *)buf+64,dst+32,32);
+MI_CpuCopy32((u8 *)buf+128,dst+64,32);
+MI_CpuCopy32((u8 *)buf+192,dst+96,32);
+MI_CpuCopy32((u8 *)buf+32,dst+128,32);
+MI_CpuCopy32((u8 *)buf+96,dst+160,32);
+MI_CpuCopy32((u8 *)buf+160,dst+192,32);
+MI_CpuCopy32((u8 *)buf+224,dst+224,32);
 src+=256;dst+=256;
 i++;}while(i<count);
-func_020e35cc((s32)buf);
+HeapFreeBlock((s32)buf);
 }
 
 void func_0209b59c(M2C_UNK arg0, s32 arg1) {
-    M2C_UNK func_02007e98(M2C_UNK, M2C_UNK, s32);
-    func_02007e98(0, arg0, ((s32) (((s32) (arg1 + 7) >> 3) + 3) >> 2) << 8);
+    M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK, s32);
+    MI_CpuFill32(0, arg0, ((s32) (((s32) (arg1 + 7) >> 3) + 3) >> 2) << 8);
 }
 
 void func_0209b5c4(M2C_UNK arg0, M2C_UNK arg1) {
@@ -400,12 +400,12 @@ void func_0209b5c4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_0209b5e4(M2C_UNK a,s32 b) {
- s32 func_0209c454(s32,M2C_UNK); s32 func_020e34bc(); void func_0209b4a8(s32,s32,u16); M2C_UNK func_020e35cc(s32);
+ s32 func_0209c454(s32,M2C_UNK); s32 HeapAllocBlock(); void func_0209b4a8(s32,s32,u16); M2C_UNK HeapFreeBlock(s32);
  s32 n,p;
  n=func_0209c454(b,0);
  if((((((n+7)>>3)+3)>>2)<<8)>0) {
- p=func_020e34bc(); func_0209b59c(p,n); func_0209b370(0,0,4,p,0,b,0,0,0);
- func_0209b4a8(p,a,(u16)n); func_020e35cc(p);
+ p=HeapAllocBlock(); func_0209b59c(p,n); func_0209b370(0,0,4,p,0,b,0,0,0);
+ func_0209b4a8(p,a,(u16)n); HeapFreeBlock(p);
  }
  return n;
 }
@@ -441,9 +441,9 @@ if(cells>=1)DrawSpritePairPriority(curX,curY,tile,gSpriteDesc8x8,priority);
 #pragma pop
 void func_0209b8c0(void *arg0) {
     void func_0209b4a8(s32, s32, u16);
-    M2C_UNK func_020e35cc(s32);
+    M2C_UNK HeapFreeBlock(s32);
     func_0209b4a8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), (u16) M2C_FIELD(arg0, s32 *, 0x3C));
-    func_020e35cc(M2C_FIELD(arg0, s32 *, 0x34));
+    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
 void func_0209b8ec(s32 arg0, s32 arg1, s32 arg2) {
@@ -460,13 +460,13 @@ void func_0209b8ec(s32 arg0, s32 arg1, s32 arg2) {
 s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
     M2C_UNK func_0209b370(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
     s32 func_0209c454(s32, M2C_UNK);
-    s32 func_020e34bc();
+    s32 HeapAllocBlock();
     s32 temp_r0;
     s32 temp_r0_2;
 
     temp_r0 = func_0209c454(arg1, 0);
     if ((s32) (((s32) (((s32) (temp_r0 + 7) >> 3) + 3) >> 2) << 8) > 0) {
-        temp_r0_2 = func_020e34bc();
+        temp_r0_2 = HeapAllocBlock();
         func_0209b59c(temp_r0_2, temp_r0);
         func_0209b370(0, 0, 4, temp_r0_2, 0, arg1, 0, 0, 0);
         func_0209b8ec(temp_r0_2, arg0, temp_r0);

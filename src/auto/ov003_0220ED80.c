@@ -3,7 +3,7 @@
 
 void MemFree(void *arg0);
 void MemFreeArray(void *arg0);
-void func_020e35cc(void *arg0);
+void HeapFreeBlock(void *arg0);
 void DeleteSpriteObject(void *arg0);
 void func_020af71c(void);
 typedef void (*VFn)(void *);
@@ -63,7 +63,7 @@ for(i=0;i<6;i++) {
     obj = M2C_FIELD(self, void **, 0x5C);
     if (obj != NULL) {
         void *buffer = M2C_FIELD(obj, void **, 0x14);
-        func_020e35cc(buffer);
+        HeapFreeBlock(buffer);
         MemFree(obj);
     }
 

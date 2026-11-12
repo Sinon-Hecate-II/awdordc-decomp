@@ -285,7 +285,7 @@ s32 func_ov001_02183098(void) {
 
 void func_ov001_021830b8(void) {
     M2C_UNK func_02007740(u8 *);
-    M2C_UNK func_02007df8(M2C_UNK, u8 *, s32);
+    M2C_UNK FillU16(M2C_UNK, u8 *, s32);
     M2C_UNK func_02007e20(u8 *, u8 *, s32);
     M2C_UNK func_ov001_021713c4(M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
@@ -305,7 +305,7 @@ void func_ov001_021830b8(void) {
     func_ov001_02172250(8);
     func_ov001_02171dd0(2);
     func_02007740(&sp[0x16]);
-    func_02007df8(0, &sp[0], 0x16);
+    FillU16(0, &sp[0], 0x16);
     func_02007e20(&sp[0x1A], &sp[0], M2C_FIELD(sp, u16 *, 0x30) * 2);
     func_ov001_02171ecc(&sp[0], 0x28);
     func_ov001_021713c4(0);
@@ -530,7 +530,7 @@ void func_ov001_0218362c(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218327c);
 }
 
-void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *func_ov001_0218b6f8(s32,s32);void func_02007ef4(void *,void *,s32);s32 func_ov001_0218c884(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=func_ov001_0218b6f8(0x608,4);data_ov001_02193df0=p;func_02007ef4(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=func_ov001_0218c884(1,func_ov001_02183790,0,120);}
+void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *func_ov001_0218b6f8(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 func_ov001_0218c884(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=func_ov001_0218b6f8(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=func_ov001_0218c884(1,func_ov001_02183790,0,120);}
 
 #pragma opt_propagation off
 void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *data_ov001_02193dfc;void func_ov001_0218c94c(s32,s32);void func_ov001_0218b71c(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);func_ov001_0218b71c(&data_ov001_02193dfc-3);}
@@ -581,7 +581,7 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     void func_ov001_0218b2bc(s32, s32, void *);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_MoveSpriteLayout(M2C_UNK, s32, s32, s32);
-    void func_ov001_0218a474(M2C_UNK, s32, s32);
+    void Ov001_SetSpritePalette(M2C_UNK, s32, s32);
     s32 func_ov001_0218c884(s32, void (*)(), s32, s32);
     void func_ov001_02183a20(void);
 
@@ -597,7 +597,7 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     t = func_ov001_0218a61c(0, data_ov001_0218fb58[a], 1);
     *(M2C_UNK *)data_ov001_02193dfc = t;
     Ov001_MoveSpriteLayout(*(M2C_UNK *)data_ov001_02193dfc, -1, c, d + e);
-    func_ov001_0218a474(*(M2C_UNK *)data_ov001_02193dfc, -1, 1);
+    Ov001_SetSpritePalette(*(M2C_UNK *)data_ov001_02193dfc, -1, 1);
     *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = func_ov001_0218c884(0, func_ov001_02183a20, 0, 0x80);
 }
 

@@ -8,7 +8,7 @@ static inline void *GetCandidateMapState(void) { extern void **gCurrentMap; retu
 #pragma opt_lifetimes off
 s32 func_ov000_021a3dac(void) {
  s32 func_ov000_021a6264(s32);void ResetAiTargetCandidates(void);
- void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void func_ov000_021a34bc(u8);
+ void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void MarkAdjacentCellsForKind24(u8);
  s32 GetTerrainPropertyFlagsAt(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 IsCaptureKind(s32);
  s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void CommitAiAction(s32);
  extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 gUnitKindStats[];extern M2C_UNK gAiCommand;
@@ -24,7 +24,7 @@ s32 func_ov000_021a3dac(void) {
  if(index==-1){ResetAiTargetCandidates();return 0;}
  candidate=gAiTargetCandidates+index*12;
  FloodFillUnitRange(candidate[0],candidate[1],2,110,0);
- for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),24);i++)func_ov000_021a34bc((u8)(i+111));
+ for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),24);i++)MarkAdjacentCellsForKind24((u8)(i+111));
  combat=0;capture=0;carrier=0;armed=0;y=0;other=0;transport=0;flag=0;map=GetCandidateMapState();
  for(;y<M2C_FIELD(map,u16 *,0x5146);y++){
  for(x=0;x<M2C_FIELD(map,u16 *,0x5144);){

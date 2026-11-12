@@ -525,40 +525,45 @@ if(count)*dst++=count;
 }
 
 #pragma opt_strength_reduction off
-void func_020a17c0(s32 arg0, s32 arg1) {
+/* Applies the terrain change of an impact blast centred on tile (x, y): every
+ * cell within the blast's reach becomes plain ground, an owned property caught
+ * in it becomes wasteland, and an impact-feature cell becomes a crater.  The
+ * reach is the movement range of the impact's pseudo unit kind; a map record
+ * that contains an impact tile replays the same blast when the map is loaded. */
+void ApplyTerrainBlast(s32 x, s32 y) {
     M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
-    s32 y;
-    s32 x;
-    u8 *base;
+    s32 row;
+    s32 col;
+    u8 *map;
 
-    base = (u8 *)*gCurrentMap;
-    SelectMapLayer(base + 0x1E30);
-    FloodFillUnitRange(arg0, arg1, 0x1D, 0x6E, 0);
+    map = (u8 *)*gCurrentMap;
+    SelectMapLayer(map + MAP_CELL_ORDER);
+    FloodFillUnitRange(x, y, IMPACT_BLAST_MOVE_KIND, IMPACT_BLAST_MOVE_BUDGET, 0);
 
-    base = (u8 *)*gCurrentMap;
-    for (y = 0; y < M2C_FIELD(base, u16 *, 0x5146); y++) {
-        base = (u8 *)*gCurrentMap;
-        for (x = 0; x < M2C_FIELD(base, u16 *, 0x5144); x++) {
-            if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, 0x52E8), s8 *, x) >= 0) {
-                u16 off = M2C_FIELD(base + (y << 1), u16 *, 0x3758);
-                u8 cell = M2C_FIELD(off + (base + x), u8 *, 0x1420);
-                if (((cell & 0xE0) >> 5) != 0) {
-                    M2C_FIELD(base + (x + off) * 2 + 0xA00, u16 *, 0x10) = 3;
-                    base = (u8 *)*gCurrentMap;
-                    M2C_FIELD(M2C_FIELD(base + (y << 1),u16 *,0x3758) + (base + x), u8 *, 0x1420) = 8;
+    map = (u8 *)*gCurrentMap;
+    for (row = 0; row < M2C_FIELD(map, u16 *, MAP_HEIGHT); row++) {
+        map = (u8 *)*gCurrentMap;
+        for (col = 0; col < M2C_FIELD(map, u16 *, MAP_WIDTH); col++) {
+            if (M2C_FIELD(M2C_FIELD(map + (row << 2), s8 **, MAP_GRID), s8 *, col) >= 0) {
+                u16 rowOffset = M2C_FIELD(map + (row << 1), u16 *, MAP_ROW_OFFSETS);
+                u8 terrain = M2C_FIELD(rowOffset + (map + col), u8 *, MAP_CELL_TERRAIN);
+                if (((terrain & MAP_TERRAIN_OWNER_MASK) >> 5) != 0) {
+                    M2C_FIELD(map + (col + rowOffset) * 2, u16 *, MAP_CELL_TILE_ID) = MAP_TILE_WASTELAND;
+                    map = (u8 *)*gCurrentMap;
+                    M2C_FIELD(M2C_FIELD(map + (row << 1), u16 *, MAP_ROW_OFFSETS) + (map + col), u8 *, MAP_CELL_TERRAIN) = MAP_TERRAIN_WASTELAND;
                 } else {
-                    if (cell == 0x1C) {
-                        M2C_FIELD(base + (x + off) * 2 + 0xA00, u16 *, 0x10) = 5;
+                    if (terrain == MAP_TERRAIN_IMPACT) {
+                        M2C_FIELD(map + (col + rowOffset) * 2, u16 *, MAP_CELL_TILE_ID) = MAP_TILE_BLAST_CRATER;
                     } else {
-                        M2C_FIELD(base + (x + off) * 2 + 0xA00, u16 *, 0x10) = 4;
+                        M2C_FIELD(map + (col + rowOffset) * 2, u16 *, MAP_CELL_TILE_ID) = MAP_TILE_BLAST_GROUND;
                     }
-                    base = (u8 *)*gCurrentMap;
-                    M2C_FIELD(M2C_FIELD(base + (y << 1),u16 *,0x3758) + (base + x), u8 *, 0x1420) = 1;
+                    map = (u8 *)*gCurrentMap;
+                    M2C_FIELD(M2C_FIELD(map + (row << 1), u16 *, MAP_ROW_OFFSETS) + (map + col), u8 *, MAP_CELL_TERRAIN) = MAP_TERRAIN_PLAIN;
                 }
             }
-            base = (u8 *)*gCurrentMap;
+            map = (u8 *)*gCurrentMap;
         }
     }
 }

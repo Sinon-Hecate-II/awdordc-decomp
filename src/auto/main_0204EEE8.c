@@ -125,8 +125,8 @@ s32 func_0205528c(void);
 s32 func_02055b84(void **,s32,void **);
 s32 func_020552e0(void **,s32,s32);
 s32 func_02055360(void **,s32);
-s32 func_020553c4(void **,s32);
-s32 func_02055550(void **,s32,s32,void *);
+s32 gpiPeerBeginConnect(void **,s32);
+s32 gpiPeerAddMessage(void **,s32,s32,void *);
 void *p; s32 v,r;
 v=func_0205528c();
 if(!v) {
@@ -134,9 +134,9 @@ if(!func_02055b84(a,b,&p) || !M2C_FIELD(p,void **,8) || !M2C_FIELD(M2C_FIELD(p,v
 v=func_020552e0(a,b,1);
 if(!v) return 1;
 if(!M2C_FIELD(p,s32 *,0x18)) {r=func_02055360(a,v);if(r)return r;}
-else {r=func_020553c4(a,v);if(r)return r;}
+else {r=gpiPeerBeginConnect(a,v);if(r)return r;}
 }
-r=func_02055550(a,v,c,d);if(!r)return 0;return r;
+r=gpiPeerAddMessage(a,v,c,d);if(!r)return 0;return r;
 }
 
 s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
@@ -217,15 +217,15 @@ func_02055cd0(connection,func_0204fb2c,refCount);
 return 0;
 }
 
-s32 func_0204fcfc(void **a,void *b,s32 c) {
-extern char data_020fdf5c[],gGpiBufferFileName[],data_020fdf0c[];
+s32 gpiAppendChar(void **a,void *b,s32 c) {
+extern char sAssertOutputBufferNotNull[],gGpiBufferFileName[],data_020fdf0c[];
 extern M2C_UNK gGpiRecvOutOfMemory;
 void AssertFailed(void *,void *,void *,s32);
 void *gpiRealloc(void *,s32);
 M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 s32 len,cap;
 u8 *p;
-if(!b) AssertFailed(data_020fdf5c,gGpiBufferFileName,data_020fdf0c,0x25);
+if(!b) AssertFailed(sAssertOutputBufferNotNull,gGpiBufferFileName,data_020fdf0c,0x25);
 len=M2C_FIELD(b,s32 *,8);
 p=M2C_FIELD(b,u8 **,0);
 cap=M2C_FIELD(b,s32 *,4);
@@ -243,7 +243,7 @@ return 0;
 }
 
 s32 gpiAppendStringToBufferLen(void **a,void *b,void *s,s32 n) {
-extern char data_020fdf90[],gGpiBufferFileName[],data_020fdf40[],data_020fdfa0[],data_020fdf5c[];
+extern char data_020fdf90[],gGpiBufferFileName[],data_020fdf40[],data_020fdfa0[],sAssertOutputBufferNotNull[];
 extern M2C_UNK gGpiRecvOutOfMemory;
 void AssertFailed(void *,void *,void *,s32);
 void *gpiRealloc(void *,s32);
@@ -251,7 +251,7 @@ M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 s32 len,cap; u8 *p;
 if(!s)AssertFailed(data_020fdf90,gGpiBufferFileName,data_020fdf40,0x51);
 if(n<0)AssertFailed(data_020fdfa0,gGpiBufferFileName,data_020fdf40,0x52);
-if(!b)AssertFailed(data_020fdf5c,gGpiBufferFileName,data_020fdf40,0x53);
+if(!b)AssertFailed(sAssertOutputBufferNotNull,gGpiBufferFileName,data_020fdf40,0x53);
 if(!s)return 0;
 len=M2C_FIELD(b,s32 *,8);cap=M2C_FIELD(b,s32 *,4);p=M2C_FIELD(b,u8 **,0);
 if(cap-len<n){cap+=n<0x800?0x800:n;p=gpiRealloc(p,cap+1);if(!p){gpiSetErrorString(a,&gGpiRecvOutOfMemory);return 1;}}

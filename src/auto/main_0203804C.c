@@ -17,7 +17,7 @@ void func_02039b9c(void);
 void func_02039478(void);
 void func_02039be4(void *,void *,void *,s32,s32,void *,void *,s32);
 void func_0203a9dc(void *,void *,void *,s32,s32);
-void func_0203c110(void *,void *,void *,void *,void *,void *,s32,s32);
+void InitConnection(void *,void *,void *,void *,void *,void *,s32,s32);
 void func_02044708(void *);
 u32 len;
 gNetSession=session;
@@ -42,7 +42,7 @@ M2C_FIELD(gNetSession,s32 *,112)=0;M2C_FIELD(gNetSession,s32 *,116)=0;M2C_FIELD(
 ResetPlayerSlots();
 func_02039be4((u8 *)gNetSession+0x98,config,(u8 *)gNetSession+0x1c,gameId,M2C_FIELD(config,s32 *,0x24),(u8 *)gNetSession+0x2e,func_02039478,0);
 func_0203a9dc((u8 *)gNetSession+0x318,(u8 *)gNetSession+0x1c,(u8 *)gNetSession+0x2e,userData,timeout);
-func_0203c110((u8 *)gNetSession+0x374,(u8 *)gNetSession+0x1c,gNetSession,(u8 *)gNetSession+4,gSessionGameName,gSessionGamePassword,userData,timeout);
+InitConnection((u8 *)gNetSession+0x374,(u8 *)gNetSession+0x1c,gNetSession,(u8 *)gNetSession+4,gSessionGameName,gSessionGamePassword,userData,timeout);
 func_02044708((u8 *)gNetSession+0x7f8);
 if((u32)StringLength(gameName)>=0x100)len=255;else len=StringLength(gameName);
 MI_CpuCopy8(gameName,gSessionGameName,len);
@@ -117,7 +117,7 @@ void func_02038438(void) {
     void func_02039db4(s32, s32);
     void func_0203aabc(void);
     void func_0203cb38(s32);
-    void func_020447c0(void);
+    void UpdateTransferSlots(void);
     s32 func_0204db04(s32, s32, s32);
     s32 func_0204db84(void *, s32, s32, s32);
     void Qr2_DestroyConnection(void *);
@@ -158,7 +158,7 @@ void func_02038438(void) {
         func_0203aabc();
         break;
     case 6:
-        func_020447c0();
+        UpdateTransferSlots();
         func_0203aabc();
         if (M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 2 || M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 3) func_0203cb38(1);
         else if (M2C_FIELD(gNetSession, s32 *, 0) != 0) func_0203cb38(0);
@@ -176,7 +176,7 @@ void func_02038438(void) {
 s32 func_02038688(u16 *text,s32 unused,s32 a,s32 b){
 extern void *gNetSession;
 s32 HasNetError(void); u32 Utf16StringLength(u16 *);
-void func_02007df8(s32,void *,s32); void func_02007e20(void *,void *,s32);
+void FillU16(s32,void *,s32); void func_02007e20(void *,void *,s32);
 s32 func_02037a0c(void);void func_02039db4(s32,s32);void SetNetState(s32);void InitServiceAvailabilityQuery(s32);
 u32 n;
 if(!text)return 0;
@@ -185,7 +185,7 @@ M2C_FIELD(gNetSession,s32 *,112)=a;
 M2C_FIELD(gNetSession,s32 *,116)=b;
 if(!text || !*text)n=0;
 else{
-func_02007df8(0,(u8 *)gNetSession+46,52);
+FillU16(0,(u8 *)gNetSession+46,52);
 if(Utf16StringLength(text)>25)n=25;else n=Utf16StringLength(text);
 func_02007e20(text,(u8 *)gNetSession+46,n*2);
 }
@@ -321,7 +321,7 @@ s32 func_02038de4(s32 a){extern void *gNetSession;s32 HasNetError(void);void *Fi
 
 s32 func_02038e4c(void){extern void *gNetSession;s32 func_0203e2c4(void);s32 func_0203e2a4(void);if(!gNetSession)return 0;if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e2c4()+1;return func_0203e2a4()+1;}
 
-u8 func_02038e94(void) {
+u8 GetLocalPlayerId(void) {
     extern void *gNetSession;
     if (gNetSession != NULL) {
         return M2C_FIELD(gNetSession, u8 *, 0x2C);
@@ -329,11 +329,11 @@ u8 func_02038e94(void) {
     return 0U;
 }
 
-s32 func_02038eb0(s32 *a){extern void *gNetSession;s32 func_0203e36c(s32 *);s32 func_0203e338(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e36c(a);return func_0203e338(a);}
+s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 func_0203e36c(s32 *);s32 func_0203e338(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e36c(a);return func_0203e338(a);}
 
-s32 func_02038f00(void){extern void *gNetSession;s32 func_02038eb0(s32 *);s32 func_02039284(s32,s32);s32 a,b;if(!gNetSession)return 0;b=func_02038eb0(&a);return func_02039284(a,b);}
+s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 func_02039284(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return func_02039284(a,b);}
 
-s32 func_02038f34(s32 a){extern void *gNetSession;s32 func_020391b8(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return func_020391b8(a);}
+s32 IsConnectionActive(s32 a){extern void *gNetSession;s32 func_020391b8(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return func_020391b8(a);}
 
 s32 func_02038f6c(void) {
     extern void *gNetSession;

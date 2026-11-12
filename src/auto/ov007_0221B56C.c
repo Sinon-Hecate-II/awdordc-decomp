@@ -237,10 +237,10 @@ void CopyUnitGroup(u8 *a,s32 b) {
 
 void RemapUnitGroups(s32 a,s32 b,s32 c,s32 d){
 extern s32 *data_027e0058;
-void *func_020e34bc(u32); void func_020e35cc(void *);
+void *HeapAllocBlock(u32); void HeapFreeBlock(void *);
 u8 *buf; s32 i,off; u8 *t;
 if(a==1&&b==2&&c==3&&d==4)return;
-buf=func_020e34bc(0xE00);i=0;off=0;t=buf;
+buf=HeapAllocBlock(0xE00);i=0;off=0;t=buf;
 do{u8 *s=(u8 *)(*data_027e0058+0x59A4);u8 *p=s+off;u32 x,y;
 i++;
 t[0]=s[off];t[1]=p[1];t[2]=p[2];
@@ -253,7 +253,7 @@ if(a!=1)CopyUnitGroup(buf+((a-1)<<6)*14,1);
 if(b!=2)CopyUnitGroup(buf+((b-1)<<6)*14,2);
 if(c!=3)CopyUnitGroup(buf+((c-1)<<6)*14,3);
 if(d!=4)CopyUnitGroup(buf+((d-1)<<6)*14,4);
-func_020e35cc(buf);
+HeapFreeBlock(buf);
 }
 
 #pragma optimization_level 4

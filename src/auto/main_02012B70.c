@@ -63,7 +63,7 @@ if(arg2<16) return 6; if(!arg1) return 6;
 func_020067c4(arg1,arg2); func_020112b4(17,arg0); r=((s32 (*)(s32,s32,void *,u32))func_02011324)(17,2,arg1,arg2); if(!r) r=2; return r;
 }
 
-s32 func_02012e74(s32 arg0,void *arg1,void *arg2,u32 arg3) {
+s32 WFC_SubmitRequest(s32 arg0,void *arg1,void *arg2,u32 arg3) {
  void *func_02011440(); s32 func_020114b4(s32,s32); s32 DC_InvalidateRange(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32); void MI_CpuCopy8(void *,void *,u32);
  u32 buf[2]; void *p; s32 r;
  p=func_02011440();r=func_020114b4(1,11);if(r)return r;
@@ -109,13 +109,13 @@ s32 func_02012f40(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 s32 func_02012fac(s32 buffer,s32 channel,s32 flags,s32 count,s32 option) {
 s32 func_020114b4();s32 func_02011934(void);s32 func_02011994(void);
-void func_02007e98(s32,void *,s32);s32 CountBits(s32);s32 func_02011a20(u16,s32,s32);
+void MI_CpuFill32(s32,void *,s32);s32 CountBits(s32);s32 func_02011a20(u16,s32,s32);
 void func_02013668(void *);void func_02013794(void *);void func_02013590(void *);
 s32 mode,mask=1,result,i,opt;u32 bits;u16 *p;u8 *block;
 result=func_020114b4(2,9,10);if(result)return result;
 if(!buffer)return 6;if((u32)channel>=16)return 6;if(!flags)return 6;
 mode=func_02011934();if(!mode)mask=func_02011994();
-func_02007e98(0,(void *)buffer,0x820);
+MI_CpuFill32(0,(void *)buffer,0x820);
 p=(u16 *)(buffer+0x800);
 p[4]=0;p[5]=0;p[6]=0;p[8]=count;p[11]=channel;p[7]=0;
 bits=flags|(1<<mode);
@@ -316,7 +316,7 @@ break;
 }
 
 void func_02013888(void *p,u32 index,void *src) {
- void func_02007e20(void *,void *,u32);void func_02007df8(s32,void *,u32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
+ void func_02007e20(void *,void *,u32);void FillU16(s32,void *,u32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
  u16 mask=1<<index; u16 slot; void *dst; s32 irq;
  if(!(M2C_FIELD(p,u16 *,0x80e)&mask))return;
  slot=M2C_FIELD(p,u16 *,0x808);
@@ -327,7 +327,7 @@ void func_02013888(void *p,u32 index,void *src) {
  }
  dst=(void *)func_02013afc(p,M2C_FIELD(p,u16 *,0x80e),(s32)&((u16 (*)[256])p)[slot][2],index);
  if(src)func_02007e20(src,dst,M2C_FIELD(p,u16 *,0x810));
- else func_02007df8(0,dst,M2C_FIELD(p,u16 *,0x810));
+ else FillU16(0,dst,M2C_FIELD(p,u16 *,0x810));
  irq=OS_DisableInterrupts();
  M2C_FIELD(p,u16 *,slot<<9)&=~mask;
  ((u16 (*)[256])((u8 *)p+2))[slot][0]|=mask;
@@ -336,13 +336,13 @@ void func_02013888(void *p,u32 index,void *src) {
 
 void func_02013954(void *p,s32 flag) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 func_02011994(void);
-void func_02007df8(s32,void *,u32);
+void FillU16(s32,void *,u32);
 s32 irq=OS_DisableInterrupts();s32 clear,next,old,mask,r;
 if(((u16 (*)[256])p)[M2C_FIELD(p,u16 *,0x808)][0]==0){
 mask=func_02011994();
 old=M2C_FIELD(p,u16 *,0x808);next=(old+1)&3;
 if(M2C_FIELD(p,u16 *,0x818)==1)clear=(next+1)&3;else clear=next;
-func_02007df8(0,p+(clear<<9),512);
+FillU16(0,p+(clear<<9),512);
 ((u16 (*)[256])p)[clear][0]=M2C_FIELD(p,u16 *,0x80e)&(mask|1);
 M2C_FIELD(p,u16 *,0x808)=next;
 ((u16 (*)[256])p)[old][0]=M2C_FIELD(p,u16 *,0x80e);
