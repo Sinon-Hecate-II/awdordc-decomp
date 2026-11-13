@@ -136,7 +136,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     u32 RandomBelow(u32);
     u16 GT2SocketPort(void *);
     s32 GT2SocketHandle(s32);
-    s32 func_0203f058(u8, s32, s32, u16, s32 *, s32);
+    s32 SendConnectionCommand(u8, s32, s32, u16, s32 *, s32);
     s32 func_0203ef9c(void *);
     void func_02043e10(s32,s32,s32,void *);
     s32 index, deferred, result;
@@ -190,7 +190,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
             s = GetConnection();
             first = SBServerGetIp((s32 *)data);
             second = SBServerGetPort((void *)data);
-            value = func_0203f058(6, M2C_FIELD(s + index * 4, s32 *, 0xf4), first, second, tempData, 2);
+            value = SendConnectionCommand(6, M2C_FIELD(s + index * 4, s32 *, 0xf4), first, second, tempData, 2);
             M2C_FIELD(GetConnection(), u8 *, 0x3cd) = 0;
             if (value) {
                 return 2;
@@ -262,7 +262,7 @@ loop_4:
    hand it to the binary packet path (func_0203f20c) or format it as a text
    message and pass it to the connection's send callback; for commands 2, 6, 8
    and 9 record the command, peer, port, payload and time so it can be resent. */
-s32 func_0203f058(u8 command, s32 peerId, s32 address, u16 port, s32 *values, s32 count) {
+s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *values, s32 count) {
     void func_0203f31c(M2C_UNK,s32,M2C_UNK,u8 *);
     s32 func_0203f20c(s32,s32,s32,s32,s32);
     void func_02007e70(s32,void *,s32);

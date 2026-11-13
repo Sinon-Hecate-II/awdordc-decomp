@@ -12,7 +12,7 @@ extern u32 g3DSpriteEngineSub;
 extern u16 data_ov003_0220feac[64];
 extern void *gCur3DSpriteEngine;
 
-void *func_020c7e6c(int);
+void *GetMapRecord(int);
 int func_020a8b2c(int);
 int func_020c7eb8(int);
 int func_ov003_02200968(int);
@@ -28,7 +28,7 @@ void SetTextSpriteValue(void *,int);
 void DrawTextSprite(void *);
 int func_ov003_021f400c(void);
 int IsLinkSessionActive(void);
-void *func_020c7e88(int);
+void *GetMapRecordStamp(int);
 u8 GetLanguage(void);
 void func_ov003_021f9fe0(s32 a,s32 b,s32 c) {
 u8 *p=(u8 *)a,*q,*r;int mode,id;int flag=0;int flag2=0;int dx=0,icon,index;
@@ -42,7 +42,7 @@ n=Unk021F9FE0PageIndex(r);
 q=M2C_FIELD(p,u8 **,68)+n*512;
 id=M2C_FIELD(q+(u16)v*2,u16 *,46);
 }else id=M2C_FIELD(p,u16 *,60);
-if((u32)id>=225 && (u32)id<425) {q=func_020c7e6c(id);if(q[47])flag=1;if(Unk021F9FE0Bit(q))flag2=1;}
+if((u32)id>=225 && (u32)id<425) {q=GetMapRecord(id);if(q[47])flag=1;if(Unk021F9FE0Bit(q))flag2=1;}
 else if(func_020a8b2c(id))flag=1;
 if(flag){
 if(flag2)dx=-64;
@@ -133,7 +133,7 @@ if(!(Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021
 flag=0;
 if(id>=225 && id<425 &&func_020c7eb8(id)==0)flag=1;
 if((u8)flag)return;
-r=func_020c7e88(id);x=b+64;
+r=GetMapRecordStamp(id);x=b+64;
 for(i=0;i<3;i++){
 switch(i){
 case 0:break;

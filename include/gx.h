@@ -52,6 +52,11 @@ enum {
 #define VRAM_CR_MAIN_BG(ofs) ((u8)(0x81 | ((ofs) << 3)))
 /* A bank control value for a run of main-engine 3D texture banks. */
 #define VRAM_CR_MAIN_TEX(ofs) ((u8)(0x83 | ((ofs) << 3)))
+/* A bank control value for the 3D texture extended palette, which the original
+ * keeps in the top two texture slots. */
+#define VRAM_CR_TEXPLTT(ofs) VRAM_CR_MAIN_TEX(2 + (ofs))
+/* DISP3DCNT bit that switches the 3D texture extended palette on. */
+#define DISP3DCNT_TEXPLTT 0x4000
 /* A bank control value for a run of main-engine OBJ (sprite) banks. */
 #define VRAM_CR_MAIN_OBJ(ofs) ((u8)(0x82 | ((ofs) << 3)))
 
@@ -60,5 +65,6 @@ enum {
 #define VRAM_BANKS_BG      0x02 /* banks assigned to the main engine background */
 #define VRAM_BANKS_OBJ     0x04 /* banks assigned to the main engine OBJ (sprite) area */
 #define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
+#define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
 
 #endif

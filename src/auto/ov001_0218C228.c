@@ -8,7 +8,7 @@ RuntimeRangeNode *func_ov001_0218c228(s32 n,s32 size,s32 forward,s32 *out) {
 s32 func_ov001_0218a74c(s32);
 s32 func_020051f8(s32);
 void func_020051c8(s32);
-void func_02007958(void);
+void SystemHalt(void);
 void func_ov001_0218bf84(void *,void *);
 extern s32 data_ov001_02193e6c;
 RuntimeRangeNode *node,*p;
@@ -29,7 +29,7 @@ break;
 }
 p=next;
 } while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c));
-if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c)) func_02007958();
+if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c)) SystemHalt();
 } else {
 p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].tail;
 if(p!=&((RuntimeRangePool *)data_ov001_02193e6c)[n].head) do {
@@ -42,7 +42,7 @@ break;
 }
 p=prev;
 } while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180));
-if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180)) func_02007958();
+if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180)) SystemHalt();
 }
 *out=node->start;
 func_020051c8(old);
@@ -122,7 +122,7 @@ void func_ov001_0218c4c0(void) {
     void func_02002bb8(s32);
     void GX_SetBankForTex(s32);
     void func_02002e3c(s32);
-    void func_02002f24(s32);
+    void GX_SetBankForTexExtPltt(s32);
     void func_02003124(s32);
     void func_020031cc(s32);
     void func_0200323c(s32);
@@ -140,7 +140,7 @@ void func_ov001_0218c4c0(void) {
     func_02002bb8(data_ov001_02193e70[3]);
     GX_SetBankForTex(data_ov001_02193e70[4]);
     func_02002e3c(data_ov001_02193e70[5]);
-    func_02002f24(data_ov001_02193e70[6]);
+    GX_SetBankForTexExtPltt(data_ov001_02193e70[6]);
     func_02003124(data_ov001_02193e70[7]);
     func_020031cc(data_ov001_02193e70[8]);
     func_0200323c(data_ov001_02193e70[9]);

@@ -1,5 +1,6 @@
 /* 32 functions from 0x020B6168 to 0x020B7138 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 
 void func_020b6168(void *arg0) {
@@ -304,19 +305,23 @@ M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(base+(a+M2C_FIELD(base+b*2,u16 *,0x3758)),u8 *
 M2C_FIELD(p,s32 *,0x34)=0;return p;
 }
 
-s32 func_020b695c(s32 i, s32 a, s32 b) {
-s32 func_0209f8d4(void); void *GetTargetPosition(s32);
+/* Applies the pending damage held by the battle map's target list to every
+ * target from index `firstTarget` on: damages the unit on each target tile,
+ * pops a "damage" sprite over it, marks the tile, then shakes the screen and
+ * plays the explosion sound at the average target position. */
+s32 ApplyPendingDamageToTargets(s32 firstTarget, s32 graphicOffset, s32 tileIndex) {
+s32 GetTargetCount(void); void *GetTargetPosition(s32);
 s32 func_020b5134(M2C_UNK *,s32,s32,s32,s32,s32,void *);
 s32 Divide(s32,s32);
-extern void **gCurrentMap; extern M2C_UNK data_02128ef4;
+extern void **gCurrentMap; extern M2C_UNK gDamageSpriteName;
 s32 n=0, sx=0, sy=0; s32 x,y;
-for (;i<func_0209f8d4();i++) {
-u16 id=M2C_FIELD(GetTargetPosition(i),u16 *,0);
-u8 *u=(u8 *)*gCurrentMap+0x59a4+id*14;
-void *p=GetTargetPosition(i);
-x=u[1]; y=u[2];
-DamageUnitAtTile(x,y,M2C_FIELD(p,u16 *,2));
-M2C_FIELD((void *)func_020b5134(&data_02128ef4,x,y,16,a,b,(void *)7),s32 *,0x3c)=0x8c1;
+for (;firstTarget<GetTargetCount();firstTarget++) {
+u16 id=M2C_FIELD(GetTargetPosition(firstTarget),u16 *,0);
+u8 *unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+id*MAP_UNIT_STRIDE;
+MapTargetEntry *target=GetTargetPosition(firstTarget);
+x=unit[MAP_UNIT_X]; y=unit[MAP_UNIT_Y];
+DamageUnitAtTile(x,y,target->value);
+M2C_FIELD((void *)func_020b5134(&gDamageSpriteName,x,y,16,graphicOffset,tileIndex,(void *)7),s32 *,0x3c)=0x8c1;
 func_02076910(x,y);
 sx+=x; sy+=y; n++;
 }
@@ -326,10 +331,10 @@ else func_0208facc(0x6d);
 }
 
 s32 func_020b6a9c(s16 start) {
-s32 func_0209f8d4(void); void *GetTargetPosition(s32);s32 func_020720f0(s32,s32);
+s32 GetTargetCount(void); void *GetTargetPosition(s32);s32 func_020720f0(s32,s32);
 extern void **gCurrentMap;
 s32 x=0,y=0,n=0,i=start;void *p;u16 id;
-for(;i<func_0209f8d4();i++){id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;x+=M2C_FIELD(p,u8 *,1);y+=M2C_FIELD(p,u8 *,2);n++;}
+for(;i<GetTargetCount();i++){id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;x+=M2C_FIELD(p,u8 *,1);y+=M2C_FIELD(p,u8 *,2);n++;}
 if(n>0)func_0207b774(func_020720f0(x,n),func_020720f0(y,n));
 }
 
@@ -344,20 +349,20 @@ PlaySoundAtTile(0xfc,a,t);
 }
 
 s32 ApplyPendingDamage(void *p) {
-s32 func_020b695c(s32,s32,s32);
+s32 ApplyPendingDamageToTargets(s32,s32,s32);
 s32 b=M2C_FIELD(p,s32 *,0x64);
 s32 a=M2C_FIELD(p,s32 *,0x58);
 if(!b)return a;
-func_020b695c(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
+ApplyPendingDamageToTargets(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
 }
 
 void func_020b6bac(void *arg0) {
-s32 func_0209f8d4(void);void *GetTargetPosition(s32);
+s32 GetTargetCount(void);void *GetTargetPosition(s32);
 void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
 extern void **gCurrentMap;extern M2C_UNK data_02128efc;
 s32 v,n,i;void *p,*q;
 i=M2C_FIELD(arg0,s32 *,0x58);v=M2C_FIELD(arg0,s32 *,0x5c);n=0;
-for(;i<func_0209f8d4();i++){u16 id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;
+for(;i<GetTargetCount();i++){u16 id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;
 q=func_020b5188(&data_02128efc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),16,v,0,arg0);
 M2C_FIELD(q,u32 *,0x48)=(M2C_FIELD(q,u32 *,0x48)&~1023)|((u8)n&1023);
 M2C_FIELD(q,void (**)(void *),0x6c)=func_020b6b40;n+=8;}
@@ -463,8 +468,8 @@ void func_020b70b0(void *arg0) {
 
 void func_020b710c(void *arg0) {
     s32 func_020b5200(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020b695c(s32, s32, M2C_UNK);
+    M2C_UNK ApplyPendingDamageToTargets(s32, s32, M2C_UNK);
     extern M2C_UNK data_02128f8c;
-    func_020b695c(M2C_FIELD(arg0, s32 *, 0x44), func_020b5200(&data_02128f8c, 8), 8);
+    ApplyPendingDamageToTargets(M2C_FIELD(arg0, s32 *, 0x44), func_020b5200(&data_02128f8c, 8), 8);
 }
 

@@ -18,7 +18,7 @@ void func_ov003_021eccd4(void *arg0) {
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_02088ff4(s32);
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s16 GetSpriteAnimValue(void *);
     s32 func_020aae10(void *);
@@ -204,13 +204,13 @@ void func_ov003_021eccd4(void *arg0) {
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
                 if (InRange((u8) temp_r0_3, 0, 3) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
                 } else if (InRange((u8) temp_r0_3, 4, 7) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
                 } else if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
                 } else if (InRange((u8) temp_r0_3, 0x15, 0x18) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
                 } else if ((u8) temp_r0_3 == 0x19) {
                     temp_r0_4 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
                     if (temp_r0_4 == 0) {
@@ -219,7 +219,7 @@ void func_ov003_021eccd4(void *arg0) {
                         var_r1_2 = 0;
                     }
                     if (var_r1_2 & 0xFF) {
-                        func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
+                        SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
                     } else {
                         if (temp_r0_4 == 1) {
                             var_r0_6 = 1;
@@ -227,7 +227,7 @@ void func_ov003_021eccd4(void *arg0) {
                             var_r0_6 = 0;
                         }
                         if (var_r0_6 & 0xFF) {
-                            func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
+                            SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
                         }
                     }
                 }
@@ -250,7 +250,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     M2C_UNK func_02088d94(void *);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02089438(void *);
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
@@ -328,13 +328,13 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
         if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
             temp_r0_2 = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
             if (InRange((u8) temp_r0_2, 0, 3) != 0) {
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
             } else if (InRange((u8) temp_r0_2, 4, 7) != 0) {
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
             } else if (InRange((u8) temp_r0_2, 8, 0x14) != 0) {
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
             } else if (InRange((u8) temp_r0_2, 0x15, 0x18) != 0) {
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
             } else if ((u8) temp_r0_2 == 0x19) {
                 temp_r0_3 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
                 if (temp_r0_3 == 0) {
@@ -343,7 +343,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
                     var_r1 = 0;
                 }
                 if (var_r1 & 0xFF) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
                 } else {
                     if (temp_r0_3 == 1) {
                         var_r0_2 = 1;
@@ -351,7 +351,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
                         var_r0_2 = 0;
                     }
                     if (var_r0_2 & 0xFF) {
-                        func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
+                        SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
                     }
                 }
             }

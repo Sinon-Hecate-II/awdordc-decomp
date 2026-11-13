@@ -1,5 +1,6 @@
 /* 9 functions from 0x0221C534 to 0x0221D008 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "mapedit.h"
 
 extern u32 gMapEditObjectList[];
 int func_020194e0(const void*,const void*);
@@ -98,10 +99,10 @@ extern u32 data_ov007_02220ab8;
 s32 func_020b212c(void);
 void MI_CpuCopy32(const void*,void*,u32);
 void func_02019424(void*,u32);
-int func_02099ae8(void*);
+int IsLeadByte(void*);
 int MeasureStringWidth(void*);
 int func_020b2e78(u16,u16,void*);
-M2C_UNK func_020808dc(s32,s32,s32,s32);
+M2C_UNK SetTileRectPalette(s32,s32,s32,s32);
 void *old,*state;u32 pressed; s16 rect[4];u32 copy[17];s32 screen,kind,index,i,width,oldIndex;u32 text,*table,*cursor;u8 ok;
 pressed=M2C_FIELD(gKeyState,u16 *,6)&1;old=gCur3DSpriteEngine;state=M2C_FIELD(self,void * *,0x10);
 for(screen=0;screen<2;screen++){
@@ -127,12 +128,12 @@ MI_CpuCopy32(gMapEditObjectList,copy,0x44);
 copy[M2C_FIELD(state,s8 *,0x3c)]=0;
 func_02019424(copy+M2C_FIELD(state,s8 *,0x3c),text);
 width=0;cursor=copy;
-if(*cursor){do{if(!func_02099ae8(cursor)&&width)width++;width+=MeasureStringWidth(cursor);cursor++;}while(*cursor);}
+if(*cursor){do{if(!IsLeadByte(cursor)&&width)width++;width+=MeasureStringWidth(cursor);cursor++;}while(*cursor);}
 width=(s16)width;SetTextIndex(state,oldIndex);ok=width<=64;
 }
 checked:
-if(!ok){func_020808dc((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),6);}else{
-if((M2C_FIELD(gTouchState,u8 *,0x12)&&func_020b2e78(M2C_FIELD(gTouchState,u16 *,0),M2C_FIELD(gTouchState,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==func_020b212c()&&pressed)){func_020808dc((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{func_020808dc((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
+if(!ok){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),6);}else{
+if((M2C_FIELD(gTouchState,u8 *,0x12)&&func_020b2e78(M2C_FIELD(gTouchState,u16 *,0),M2C_FIELD(gTouchState,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==func_020b212c()&&pressed)){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }
@@ -144,13 +145,16 @@ void func_ov007_0221cd5c(void) {
     func_ov007_0221c718();
 }
 
-void ApplySoftKeyLayout(void *arg0) {
+/* Show the map editor's softkey bar in the region the softkey button selected: store that
+ * region's layout table in the editor list, then load its softkey_<region>.sc graphics into
+ * the 3D sprite layer, refresh the bar and play the click. */
+void ApplySoftKeyLayout(void *softKey) {
 M2C_UNK SetFileDirectory(M2C_UNK *);
-M2C_UNK func_020808dc(s32,s32,s32,s32);
+M2C_UNK SetTileRectPalette(s32,s32,s32,s32);
 M2C_UNK OpenNarcArchive();
 M2C_UNK CloseNarcArchive();
 M2C_UNK LoadNarcFileDecompressed(s32,s32);
-s32 func_020e32e8(M2C_UNK *);
+s32 GetLocalizedFileNameDefault(M2C_UNK *);
 M2C_UNK PlaySoundEffect(s32);
 extern void *g3DSpriteEngineMain;
 extern void *gCur3DSpriteEngine;
@@ -160,29 +164,29 @@ extern M2C_UNK gSoftKeyNarcName;
 extern M2C_UNK gSoftKeyEuFileName;
 extern M2C_UNK gSoftKeyUsFileName;
 extern M2C_UNK gSoftKeyJpFileName;
-s32 kind;
-void *p;
-void *saved;
-s32 old;
-kind=M2C_FIELD(arg0,u8 *,0);
-p=M2C_FIELD(arg0,void **,0x10);
-old=M2C_FIELD(p,s32 *,0x34);
-if((s32)kind>=100 && (s32)kind<103) M2C_FIELD(p,s32 *,0x34)=gSoftKeyLayouts[kind-100];
-if(old==M2C_FIELD(p,s32 *,0x34))return;
+s32 mode;
+void *list;
+void *savedEngine;
+s32 oldLayout;
+mode=M2C_FIELD(softKey,u8 *,0);
+list=M2C_FIELD(softKey,void **,0x10);
+oldLayout=M2C_FIELD(list,s32 *,0x34);
+if((s32)mode>=SOFTKEY_MODE_US && (s32)mode<SOFTKEY_MODE_JP+1) M2C_FIELD(list,s32 *,0x34)=gSoftKeyLayouts[mode-SOFTKEY_MODE_US];
+if(oldLayout==M2C_FIELD(list,s32 *,0x34))return;
 SetFileDirectory(&gMapEditPath);
-saved=gCur3DSpriteEngine;
+savedEngine=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_020e32e8(&gSoftKeyNarcName);
+GetLocalizedFileNameDefault(&gSoftKeyNarcName);
 OpenNarcArchive();
-switch(kind){
-case 102:LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyJpFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
-case 100:LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyUsFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
-case 101:LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyEuFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+switch(mode){
+case SOFTKEY_MODE_JP:LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gSoftKeyJpFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case SOFTKEY_MODE_US:LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gSoftKeyUsFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case SOFTKEY_MODE_EU:LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gSoftKeyEuFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
 }
 CloseNarcArchive();
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),32,24,5);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-gCur3DSpriteEngine=saved;
+gCur3DSpriteEngine=savedEngine;
 PlaySoundEffect(0x10011);
 }
 

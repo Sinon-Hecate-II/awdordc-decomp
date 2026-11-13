@@ -527,13 +527,13 @@ void func_02006644(void *);
 void func_02005858(void *);
 void OS_WakeupThread(void *);
 void func_02006164(void);
-void func_02007958(void);
+void SystemHalt(void);
 void func_02005eac(void);
 void *p=*M2C_FIELD(&data_0212dc80,void ***,8);
 func_02006130();func_02006644(p);
 if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
 M2C_FIELD(p,s32 *,100)=2;
-OS_WakeupThread(p+156);func_02006164();func_02005eac();func_02007958();
+OS_WakeupThread(p+156);func_02006164();func_02005eac();SystemHalt();
 }
 
 void func_02005ccc(void *p){

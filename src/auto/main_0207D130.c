@@ -113,15 +113,17 @@ s32 func_0207d774(s32 arg0) {
     }
 }
 
-void func_0207d820(s32 *v,s32 *m,s32 *out){
-s32 y=v[1],x=v[0],z=v[2],w;
-out[0]=(s32)(((s64)x*m[0]+(s64)y*m[4]+(s64)z*m[8])>>12);out[0]+=m[12];
-out[1]=(s32)(((s64)x*m[1]+(s64)y*m[5]+(s64)z*m[9])>>12);out[1]+=m[13];
-out[2]=(s32)(((s64)x*m[2]+(s64)y*m[6]+(s64)z*m[10])>>12);out[2]+=m[14];
-w=(s32)(((s64)x*m[3]+(s64)y*m[7]+(s64)z*m[11])>>12);w+=m[15];
-out[0]=((s64)out[0]<<12)/w;
-out[1]=((s64)out[1]<<12)/w;
-out[2]=((s64)out[2]<<12)/w;
+/* Transform the 3D point `position` by the 4x4 fixed-point matrix `matrix`,
+   then perspective-divide the result by its w component into `projected`. */
+void ProjectPoint(s32 *position,s32 *matrix,s32 *projected){
+s32 py=position[1],px=position[0],pz=position[2],pw;
+projected[0]=(s32)(((s64)px*matrix[0]+(s64)py*matrix[4]+(s64)pz*matrix[8])>>12);projected[0]+=matrix[12];
+projected[1]=(s32)(((s64)px*matrix[1]+(s64)py*matrix[5]+(s64)pz*matrix[9])>>12);projected[1]+=matrix[13];
+projected[2]=(s32)(((s64)px*matrix[2]+(s64)py*matrix[6]+(s64)pz*matrix[10])>>12);projected[2]+=matrix[14];
+pw=(s32)(((s64)px*matrix[3]+(s64)py*matrix[7]+(s64)pz*matrix[11])>>12);pw+=matrix[15];
+projected[0]=((s64)projected[0]<<12)/pw;
+projected[1]=((s64)projected[1]<<12)/pw;
+projected[2]=((s64)projected[2]<<12)/pw;
 }
 
 void func_0207d95c(M2C_UNK *arg0) {
@@ -149,10 +151,10 @@ void func_0207d990(s32 arg0, void *arg1, void *arg2) {
 
 void func_0207da34(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02004b54();
-    M2C_UNK func_02004bb0(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadTextureBankBlock(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02004cf0();
     func_02004b54();
-    func_02004bb0(arg0, arg1, arg2);
+    LoadTextureBankBlock(arg0, arg1, arg2);
     func_02004cf0();
 }
 
@@ -196,7 +198,7 @@ data_0214c0c0[0]=base;
 func_02002e3c(state);
 }
 
-void func_0207db18(u8 arg0) { switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)) {
+void SetTerrainTileset(u8 arg0) { switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)) {
 case 4: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ec6bc;break;
 case 5: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ecabc;break;
 case 6: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ecebc;break;
@@ -206,7 +208,7 @@ case 9: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020edabc;break;
 default:M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ec2bc;break;
 } gTerrainTileset=arg0; }
 
-u8 func_0207dbfc(void) {
+u8 GetTerrainTileset(void) {
     extern u8 gTerrainTileset;
     return gTerrainTileset;
 }

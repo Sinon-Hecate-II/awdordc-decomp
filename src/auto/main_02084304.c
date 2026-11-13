@@ -217,7 +217,7 @@ s32 func_02084890(void) {
     }
 }
 
-s32 func_020848c4(void) {
+s32 GetLocalPlayerIdForOverlay(void) {
     s32 func_ov009_02225450();
     s32 func_ov010_02229a08();
     s32 temp_r0;
@@ -474,7 +474,7 @@ void func_02084cc0(M2C_UNK arg0) {
     }
 }
 
-s32 func_02084cf8(void){void *func_ov010_02229b00(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(func_ov010_02229b00(),s32 *,0x1c);return v;}
+s32 GetOnlineLocalPlayerId(void){void *func_ov010_02229b00(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(func_ov010_02229b00(),s32 *,0x1c);return v;}
 
 void func_02084d1c(s32 arg0) {
     s32 GetActiveOverlay();

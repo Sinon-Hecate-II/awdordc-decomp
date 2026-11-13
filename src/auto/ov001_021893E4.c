@@ -295,11 +295,11 @@ u16 Ov001_ReadInputCode(void) {
 void func_ov001_02189ad0(void) {
     s32 func_ov001_0218b6f8(s32, s32);
     void InitFileRequest(void *);
-    s32 func_0200ba54(void *, void *);
-    void func_02007958(void);
+    s32 OpenFileRequest(void *, void *);
+    void SystemHalt(void);
     s32 func_0200558c(void);
     void FileRead(void *, void *, s32);
-    void func_0200ba9c(void *);
+    void CloseFileRequest(void *);
     void func_0200b118(void *);
     s32 func_0200b184(void *, void *, s32);
     void func_0200b6a8(void *, s32, s32);
@@ -325,21 +325,21 @@ void func_ov001_02189ad0(void) {
 
     data_ov001_02193e2c = (void *)func_ov001_0218b6f8(0xE8, 4);
     InitFileRequest(request);
-    if (!func_0200ba54(request, data_ov001_02191794)) {
-        func_02007958();
+    if (!OpenFileRequest(request, data_ov001_02191794)) {
+        SystemHalt();
     }
     M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4) = (u16)func_0200558c();
     fileSize = *(s32 *)(request + 0x24);
     FileRead(request, hi, 8);
     FileRead(request, lo, 8);
-    func_0200ba9c(request);
+    CloseFileRequest(request);
     func_0200b118((u8 *)data_ov001_02193e2c + 0x88);
     if (!func_0200b184((u8 *)data_ov001_02193e2c + 0x88, data_ov001_0218fd04, 3)) {
-        func_02007958();
+        SystemHalt();
     }
     func_0200b6a8((u8 *)data_ov001_02193e2c + 0x88, (s32)func_ov001_02189d0c, 0x602);
     if (!func_0200b2bc((u8 *)data_ov001_02193e2c + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
-        func_02007958();
+        SystemHalt();
     }
     dataSize = func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
     data = (void *)func_ov001_0218b6f8(dataSize, 4);
@@ -407,15 +407,15 @@ s32 func_ov001_02189dc0(void) {
 }
 
 void *Ov001_LoadFile(void *arg0,u32 *arg1,s32 arg2){
-s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 func_0200ba54(void *,void *);void func_02007958(void);void FileRead(void *,void *,s32);void func_0200ba9c(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
+s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 OpenFileRequest(void *,void *);void SystemHalt(void);void FileRead(void *,void *,s32);void CloseFileRequest(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
 extern void *data_ov001_02193e2c;extern s32 data_ov001_021917bc;
 void *buf;u32 work[18];u32 size;s32 align;void *out;
 func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c,s32*,0x84));
-InitFileRequest(work);if(!func_0200ba54(work,arg0))func_02007958();
+InitFileRequest(work);if(!OpenFileRequest(work,arg0))SystemHalt();
 size=work[10]-work[9];if(arg1)*arg1=size;
 if(func_ov001_02189ef0(arg0,(s32)&data_ov001_021917bc,2))align=-4;else align=arg2;
 buf=(void *)func_ov001_0218b6f8(size,align);
-FileRead(work,buf,size);func_0200ba9c(work);
+FileRead(work,buf,size);CloseFileRequest(work);
 if(align>0)return buf;
 size=*(u32 *)buf>>8;if(arg1)*arg1=size;
 out=(void *)func_ov001_0218b6f8(size,arg2);func_020081d0(buf,out);func_ov001_0218b71c(&buf);return out;
@@ -466,7 +466,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     s32 func_ov001_0218a74c(s32);
     s32 func_020051f8(s32);
     void func_020051c8(s32);
-    void func_02007958(void);
+    void SystemHalt(void);
     void func_ov001_0218bf84(void *, void *);
     extern s32 data_ov001_02193e30;
     s32 idx = in_idx;
@@ -502,7 +502,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
             } while (next != bound);
         }
         if (cur == bound) {
-            func_02007958();
+            SystemHalt();
         }
     } else {
         bound = (A070Node *)(data_ov001_02193e30 + off + 0x210);
@@ -522,7 +522,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
             } while (prev != headBound);
         }
         if (cur == headBound) {
-            func_02007958();
+            SystemHalt();
         }
     }
     func_020051c8(state);

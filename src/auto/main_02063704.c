@@ -57,7 +57,7 @@ s32 func_020637fc(void *arg0) {
     s32 func_02063678(M2C_UNK, u8 *, s32);
     void AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void MemMove(void *, void *, s32);
-    extern u8 data_021001b4[], data_0210012c[], data_021000d8[];
+    extern u8 data_021001b4[], sSbFileName[], data_021000d8[];
     s32 result = 0;
     s32 zero = 0;
     u16 size;
@@ -99,7 +99,7 @@ s32 func_020637fc(void *arg0) {
             break;
         }
         if ((M2C_FIELD(arg0, s32 *, 0x80) -= size) < 0) {
-            AssertFailed((M2C_UNK) data_021001b4, (M2C_UNK) data_0210012c, (M2C_UNK) data_021000d8, 0x5B4);
+            AssertFailed((M2C_UNK) data_021001b4, (M2C_UNK) sSbFileName, (M2C_UNK) data_021000d8, 0x5B4);
         }
         if (M2C_FIELD(arg0, s32 *, 0x80) != 0 && M2C_FIELD(arg0, u8 **, 0x7C) != NULL) {
             MemMove(M2C_FIELD(arg0, u8 **, 0x7C), M2C_FIELD(arg0, u8 **, 0x7C) + size,
@@ -231,10 +231,10 @@ s32 func_02063dac(void *arg0) {
 }
 
 M2C_UNK func_02063df8(void) {
-    M2C_UNK func_02068b04(M2C_UNK);
+    M2C_UNK InvokeSocketCallback(M2C_UNK);
     void func_02063e1c(M2C_UNK);
     extern M2C_UNK data_0213e4c4;
-    func_02068b04(1);
+    InvokeSocketCallback(1);
     M2C_FIELD(&data_0213e4c4, s32 *, 0xC) = 1;
     func_02063e1c(1);
 }

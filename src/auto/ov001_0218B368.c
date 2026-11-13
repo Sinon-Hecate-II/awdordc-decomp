@@ -99,9 +99,9 @@ void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
 
 void func_ov001_0218b648(s32 a){
 M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
-s32 func_0202a424(s32,s32,s32);void func_02007958(void);extern s32 data_ov001_02193e44;
+s32 func_0202a424(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;
 MI_CpuFill8(a,0,0x40000);data_ov001_02193e44=func_0202a424(a,0x40000,0);
-if(data_ov001_02193e44==0)func_02007958();
+if(data_ov001_02193e44==0)SystemHalt();
 }
 
 void func_ov001_0218b688(void) {
@@ -112,9 +112,9 @@ void func_ov001_0218b688(void) {
 }
 
 s32 func_ov001_0218b6ac(s32 a,s32 b){
-s32 func_020051f8(s32);void func_020051c8(s32);s32 func_0202a468(s32,s32,s32);void func_02007958(void);extern s32 data_ov001_02193e44;s32 result,saved;
+s32 func_020051f8(s32);void func_020051c8(s32);s32 func_0202a468(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;s32 result,saved;
 saved=func_020051f8(1);result=func_0202a468(data_ov001_02193e44,a,b);
-if(!result)func_02007958();func_020051c8(saved);return result;
+if(!result)SystemHalt();func_020051c8(saved);return result;
 }
 
 s32 func_ov001_0218b6f8(M2C_UNK arg0) {
@@ -152,11 +152,11 @@ void func_ov001_0218b79c(void) {
 extern M2C_UNK data_ov001_02193e48;
 s32 buf[2];
 M2C_FIELD(&data_ov001_02193e48,s32 *,4)=((s32 (*)())func_ov001_0218b6f8)(0x3a,4);
-if(func_0200d5bc(buf)==0)func_02007958();
+if(func_0200d5bc(buf)==0)SystemHalt();
 func_0200d650(buf);
 func_0200d85c(0,4,M2C_FIELD(&data_ov001_02193e48,s32 *,4),5);
 func_0200dd14(2);
-if(func_0200dd2c(2)!=0)func_02007958();
+if(func_0200dd2c(2)!=0)SystemHalt();
 func_ov001_0218b850();
 }
 

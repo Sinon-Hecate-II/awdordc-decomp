@@ -50,7 +50,7 @@ void func_020d5868(void) {
  void *GetTargetPosition(s32);
  extern void *gCurrentMap;
  s32 i=0;
- for(;i<func_0209f8d4();i++) {
+ for(;i<GetTargetCount();i++) {
  void *p=GetTargetPosition(i);
  void *base=M2C_FIELD(gCurrentMap,void **,0);
  u8 **rows=(u8 **)((u8 *)base+0x52e8);

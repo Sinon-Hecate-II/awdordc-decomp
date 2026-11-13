@@ -104,7 +104,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   void InitFileRequest(void *);
   s32 func_0200b99c(void *, s32, u32, u32, s32);
   s32 FileRead(void *, void *, s32);
-  void func_0200ba9c(void *);
+  void CloseFileRequest(void *);
   s32 func_0200b9e4(void *, Unk0200FilePair);
   u32 work[18];
   Unk0200FilePair pair;
@@ -135,10 +135,10 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   }
   if (FileRead(work, arg0, 32) != 32)
   {
-    func_0200ba9c(work);
+    CloseFileRequest(work);
     return 0;
   }
-  func_0200ba9c(work);
+  CloseFileRequest(work);
   arg0[8] = arg1;
   func_0200bf64((u32 *) (&pair), arg0);
   if (!func_0200b9e4(work, pair))
@@ -147,12 +147,12 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   }
   arg0[9] = work[9];
   arg0[10] = work[10] - work[9];
-  func_0200ba9c(work);
+  CloseFileRequest(work);
   return 1;
 }
 #pragma scheduling reset
 s32 func_0200c084(u32 *arg0,s32 arg1,u32 arg2) {
-void InitFileRequest(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200ba9c(void *);void MI_CpuCopy8();
+void InitFileRequest(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void CloseFileRequest(void *);void MI_CpuCopy8();
 extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
 u32 work[18];Unk0200FilePair pair;u32 *p;
 p=arg1==0?data_0212fc04:data_0212fc0c;
@@ -161,7 +161,7 @@ if(p[1]<=(arg2<<5))return 0;
 MI_CpuCopy8(p[0]+(arg2<<5),arg0,32);
 arg0[8]=arg1;InitFileRequest(work);func_0200bf64((u32 *)&pair,arg0);
 if(!func_0200b9e4(work,pair))return 0;
-arg0[9]=work[9];arg0[10]=work[10]-work[9];func_0200ba9c(work);return 1;
+arg0[9]=work[9];arg0[10]=work[10]-work[9];CloseFileRequest(work);return 1;
 }
 return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
 }
@@ -182,7 +182,7 @@ void func_0200c214(void *arg0) {
     u32 func_0200bf0c(void *);
     s32 HmacSha1Verify(u32, s32, s32);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
-    void func_02007958(void);
+    void SystemHalt(void);
     void func_02000970(s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     extern u8 data_0212dbac[];
@@ -214,7 +214,7 @@ void func_0200c214(void *arg0) {
                 p = start + idx * 20;
                 if (HmacSha1Verify((u32)p, M2C_FIELD(r5, s32 *, 4), r4) == 0) {
                     MI_CpuFill8(M2C_FIELD(r5, s32 *, 4), 0, r4);
-                    func_02007958();
+                    SystemHalt();
                     return;
                 }
             }

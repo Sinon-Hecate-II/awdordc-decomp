@@ -1,5 +1,6 @@
 /* 39 functions from 0x02020738 to 0x020216CC (main), found by ds-decomp. */
 #include "common.h"
+#include "net_socket.h"
 
 
 s32 func_020210b8(void);
@@ -7,7 +8,7 @@ s32 func_020210b8(void);
 s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16 tag, s32 fallback, s32 mode) {
     /* Queue a (possibly wrapped) send from connection's circular buffer and remember how much was taken. */
     u16 func_0201d04c();
-    s32 func_020208ac(void *);
+    s32 SocketSendTask(void *);
     s32 func_0201f1d0(void *, s32, s32);
     s32 func_0201f328(s32, s32);
     s32 MI_CpuCopy8(s32, s32, s32);
@@ -21,7 +22,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
     curBuffer = buffer;
     ctx = M2C_FIELD(connection, void **, 0x68);
 
-    entry = (void *)func_0201f1d0(func_020208ac, M2C_FIELD(ctx, s32 *, 0x10c), mode);
+    entry = (void *)func_0201f1d0(SocketSendTask, M2C_FIELD(ctx, s32 *, 0x10c), mode);
     if (!entry) return -33;
 
     if ((mode & 1) && M2C_FIELD(connection, s8 *, 0x73) != 1)
@@ -71,49 +72,54 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
     return byteCount;
 }
 
-s32 func_020208ac(void *arg0) {
+/* Send task for one queued send: while the socket may still write, pull a piece
+ * of the queued data out of the send ring (skipping the link/IP/transport header
+ * in the outgoing packet buffer) and hand it to the link, repeating until no more
+ * is queued or the link rejects it.  The ring's read position is then advanced to
+ * where the queueing finished and producers waiting for space are woken. */
+s32 SocketSendTask(void *request) {
  void OS_WakeupThread(s32);
  M2C_UNK func_0201d190(u16,u16,s32);
  s32 func_0201db20(s32,s32);
  s32 func_0201d4c0();
- s32 sent,base,yes,length,valid,valid2;void *object; void *context;u32 total;s32 header;
- s8 type,type2,type3;
- object=M2C_FIELD(arg0,void **,4);
+ s32 sent,sendBuffer,isStream,maxChunk,valid,read;void *socket; void *sendConn;u32 total;s32 headerSize;
+ s8 state,state2,state3;
+ socket=M2C_FIELD(request,void **,4);
  total=0;
- type=M2C_FIELD(object,s8 *,0x73);valid=1;
- context=M2C_FIELD(object,void **,0x68);
- if(type && type!=4)valid=0;
- if(!valid || (M2C_FIELD(object,s16 *,0x70)&4)) {
- s32 flag=M2C_FIELD(arg0,s32 *,0x28);
- if(flag)func_0201d190(M2C_FIELD(arg0,u16 *,0x24),M2C_FIELD(arg0,u16 *,0x26),flag);
- type2=M2C_FIELD(object,s8 *,0x73);yes=1;
- base=M2C_FIELD(object,s32 *,0x4c);
- if(type2 && type2!=4)yes=0;
- if(yes)header=54;else header=42;
- if(type2 && type2!=4)length=M2C_FIELD(object,s32 *,0x48)-header;
- else length=func_020209dc(M2C_FIELD(object,s32 *,0x48)-header);
+ state=M2C_FIELD(socket,s8 *,SOCK_STATE);valid=1;
+ sendConn=M2C_FIELD(socket,void **,SOCK_TX_CONN);
+ if(state && state!=4)valid=0;
+ if(!valid || (M2C_FIELD(socket,s16 *,SOCK_FLAGS)&4)) {
+ s32 destAddr=M2C_FIELD(request,s32 *,0x28);
+ if(destAddr)func_0201d190(M2C_FIELD(request,u16 *,0x24),M2C_FIELD(request,u16 *,0x26),destAddr);
+ state2=M2C_FIELD(socket,s8 *,SOCK_STATE);isStream=1;
+ sendBuffer=M2C_FIELD(socket,s32 *,SOCK_TX_BUF);
+ if(state2 && state2!=4)isStream=0;
+ if(isStream)headerSize=SOCK_TX_HDR_STREAM;else headerSize=SOCK_TX_HDR_DGRAM;
+ if(state2 && state2!=4)maxChunk=M2C_FIELD(socket,s32 *,SOCK_TX_SIZE)-headerSize;
+ else maxChunk=GetMaxSendChunk(M2C_FIELD(socket,s32 *,SOCK_TX_SIZE)-headerSize);
  loop:
- valid2=func_02020a80(base+header,length,arg0);
- if(valid2>0) {
- sent=func_0201db20(base+header,valid2);
+ read=ReadSendRequest(sendBuffer+headerSize,maxChunk,request);
+ if(read>0) {
+ sent=func_0201db20(sendBuffer+headerSize,read);
  if(sent<=0) {
- type3=M2C_FIELD(object,s8 *,0x73);valid=1;
- if(type3 && type3!=4)valid=0;
+ state3=M2C_FIELD(socket,s8 *,SOCK_STATE);valid=1;
+ if(state3 && state3!=4)valid=0;
  if(valid){
- M2C_FIELD(object,s16 *,0x70)&=~14;
- M2C_FIELD(object,s16 *,0x70)|=128;
+ M2C_FIELD(socket,s16 *,SOCK_FLAGS)&=~14;
+ M2C_FIELD(socket,s16 *,SOCK_FLAGS)|=128;
  func_0201d4c0();
  }
  total=-76;
  }else{total+=sent;goto loop;}
  }
  }else total=-76;
- M2C_FIELD(context,u16 *,0x102)=M2C_FIELD(arg0,u16 *,0x20);
- OS_WakeupThread((s32)context+0x104);
+ M2C_FIELD(sendConn,u16 *,SEND_RING_READ)=M2C_FIELD(request,u16 *,0x20);
+ OS_WakeupThread((s32)sendConn+SEND_RING_WAIT);
  return total;
 }
 
-s32 func_020209dc(s32 arg0) {
+s32 GetMaxSendChunk(s32 arg0) {
     s32 func_020720f0(s32, s32);
     extern M2C_UNK gSocketManager;
     extern M2C_UNK data_02138ad0;
@@ -147,7 +153,7 @@ s32 func_020209dc(s32 arg0) {
     return arg0;
 }
 
-s32 func_02020a80(s32 arg0, s32 arg1, void *arg2) {
+s32 ReadSendRequest(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 temp_r0;
     s32 var_r4;

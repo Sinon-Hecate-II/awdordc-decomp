@@ -78,7 +78,7 @@ void func_ov001_0217def8(void) {
 #pragma opt_strength_reduction off
 void func_ov001_0217df44(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
-extern M2C_UNK func_02004160,func_ov001_0217b444,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,func_ov001_02180d44,func_ov001_02181a84;
+extern M2C_UNK func_02004160,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,func_ov001_02180d44,func_ov001_02181a84;
 s32 func_ov001_0218a800(s32);
 void *GetCurrentMapRecord(void);
 s32 func_02046014(void *);
@@ -99,15 +99,15 @@ func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
 *(volatile u32*)0x04000010=0;*(volatile u32*)0x04000018=0;
 *(volatile u16*)0x0400000c=(*(volatile u16*)0x0400000c&0x43)|0xe10;
 switch((u32)M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)){
-case 0:case 1:func_ov001_02175da0();func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_0217b444);break;
+case 0:case 1:Ov001_SetNameEntryMode();func_ov001_02175d64(2,0);Ov001_SetStepCallback(&InitNameEntryScreen);break;
 case 4:case 5:case 6:case 9:case 10:
 n=M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)-4;
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)>=9)n-=2;
-func_ov001_02175d64(2,0);func_ov001_02175da0(n,0);Ov001_SetStepCallback(&func_ov001_0217bf84);break;
+func_ov001_02175d64(2,0);Ov001_SetNameEntryMode(n,0);Ov001_SetStepCallback(&func_ov001_0217bf84);break;
 case 11:p=GetCurrentMapRecord();p[0xd0]=func_02046014(p+0xf0);
 if(p[0xf5]){MI_CpuFill8(p+0xc0,0,4);MI_CpuFill8(p+0xc4,0,4);MI_CpuFill8(p+0xf0,0,4);p[0xd0]=0;}
 if(p[0xf6])MI_CpuFill8(p+0xc8,0,8);
-func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
+func_ov001_02175d64(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
 case 12:func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
 case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02180d44);}
 else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);func_ov001_02175d64(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;

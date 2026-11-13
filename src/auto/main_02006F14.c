@@ -152,9 +152,9 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     }
 }
 void func_020072cc(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
- M2C_UNK func_02007958(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_020071a0();
+ M2C_UNK SystemHalt(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_020071a0();
  u32 state; u64 time;
- if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)func_02007958();
+ if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)SystemHalt();
  state=OS_DisableInterrupts();
  M2C_FIELD(arg0,s32 *,0x1c)=0;
  M2C_FIELD(arg0,s32 *,0x20)=0;
@@ -320,10 +320,10 @@ void func_020075b4(void) {
 }
 
 void func_02007608(s32 arg0,s32 arg1) {
-M2C_UNK func_02007958();
+M2C_UNK SystemHalt();
 extern M2C_UNK data_0212dfe4;
 if(((u32)((arg1&0x7F00)<<8)>>16)==0x10) {M2C_FIELD(&data_0212dfe4,s16 *,0)=1;return;}
-func_02007958();
+SystemHalt();
 }
 
 void func_0200763c(s32 arg0) {
@@ -339,13 +339,13 @@ void func_02007668(s32 arg0) {
     void func_02005228(s32);
     u16 func_0200558c(void);
     void func_0200763c(s32);
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     void func_02007ca4(s32);
     u16 func_0200fe24(u16);
 
     if (*(u16 *)0x027FFC40 == 2) {
         u16 x;
-        func_02007958();
+        SystemHalt();
         x = func_0200558c();
         func_0200fe24((u16)(x << 16 >> 16));
         func_02007ca4(0);
@@ -452,7 +452,7 @@ void func_02007888(void *out_arg) {
     out[7] = (u32)c | (u32)d | ((u32)e << 16);
 }
 
-s32 func_02007958(void) {
+s32 SystemHalt(void) {
  u32 OS_DisableInterrupts(void); void func_02007968(void);
  for (;;) { OS_DisableInterrupts(); func_02007968(); }
 }
@@ -577,7 +577,7 @@ void func_02007ca4(s32 a) {
 }
 
 void func_02007d20(s32 arg0, s32 arg1) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     s32 i;
     s32 *ptr;
     s32 temp_r0;
@@ -595,7 +595,7 @@ void func_02007d20(s32 arg0, s32 arg1) {
                 } else if ((temp_r0_2 != 0x18000000) && (temp_r0_2 != 0x20000000) && (temp_r0_2 != 0x28000000) && (temp_r0_2 != 0x30000000) && (temp_r0_2 != 0x38000000) && (temp_r0_2 != 0x08000000) && (temp_r0_2 != 0x10000000)) {
 
                 } else {
-                    func_02007958();
+                    SystemHalt();
                 }
             }
         }
@@ -605,7 +605,7 @@ void func_02007d20(s32 arg0, s32 arg1) {
 }
 
 void func_02007da4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     s32 var_r1;
     u32 temp_ip;
     u32 temp_r0;
@@ -627,7 +627,7 @@ void func_02007da4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if ((temp_ip != 0x04000000) && (temp_ip < 0x08000000U) && (temp_r0 != 0x04000000) && (temp_r0 < 0x08000000U)) {
         return;
     }
-    func_02007958();
+    SystemHalt();
 }
 
 void CpuFill(u32 value, s32 dest, s32 size) {

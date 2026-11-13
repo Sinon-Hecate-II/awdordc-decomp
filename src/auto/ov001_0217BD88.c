@@ -17,9 +17,9 @@ s32 IsNameEntryValid(void) {
     u8 *text;
     extern void *gNameEntryState;
 
-    func_ov001_02175db4(&mode, &variant);
+    Ov001_GetNameEntryMode(&mode, &variant);
     if (variant == 1) func_ov001_02171c24(0x35, -1, 0);
-    func_ov001_02175db4(&mode, &variant);
+    Ov001_GetNameEntryMode(&mode, &variant);
     if (mode == 0) return M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_TEXT) != 0;
     if (variant == 1 && M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_TEXT) == 0) return 0;
     length = StringLengthUpTo((u8 *)gNameEntryState + NAME_ENTRY_TEXT, NAME_ENTRY_MAX_LENGTH);
@@ -72,14 +72,14 @@ void func_ov001_0217bf40(void) {
 }
 
 void func_ov001_0217bf84(void) {
-void *func_ov001_0218b6f8(s32,s32);s32 func_ov001_02175db4(s32*,s32);
+void *func_ov001_0218b6f8(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
 void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217c0f8(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
 CodeHandlers handlers=data_ov001_0218f860;
 u8 choices[5]={((u8*)data_ov001_0218f848)[8],((u8*)data_ov001_0218f848)[9],((u8*)data_ov001_0218f848)[10],((u8*)data_ov001_0218f848)[11],((u8*)data_ov001_0218f848)[12]};
 s32 a;void *p;
 data_ov001_02193da4=func_ov001_0218b6f8(24,4);
-func_ov001_02175db4(&a,0);
+Ov001_GetNameEntryMode(&a,0);
 handlers.handlers[a](data_ov001_02193da4+8);
 p=data_ov001_02193da4;
 if(ByteCompareN(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
@@ -294,8 +294,8 @@ func_ov001_02171cf8();
 state=data_ov001_02193da4;func_ov001_0218c104(M2C_FIELD(state,s32 *,4));
 func_ov001_0218af70(0);Ov001_LoadAsset(&data_ov001_021907d0,&func_02004160);
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,0x15);
-func_ov001_02175db4(&sp0,0);if(sp0>=3)sp0++;
-func_ov001_02175d64(2,1);func_ov001_02175da0(0,sp0+3);
+Ov001_GetNameEntryMode(&sp0,0);if(sp0>=3)sp0++;
+func_ov001_02175d64(2,1);Ov001_SetNameEntryMode(0,sp0+3);
 Ov001_SetStepCallback(&InitMapListScreen);
 func_ov001_0218b71c((u8*)&data_ov001_02193da4);
 }
@@ -341,7 +341,7 @@ void func_ov001_0217c900(void) {
 }
 
 void func_ov001_0217c95c(void) {
- s32 func_ov001_0218665c(); M2C_UNK func_ov001_02175db4(s32 *,s32);
+ s32 func_ov001_0218665c(); M2C_UNK Ov001_GetNameEntryMode(s32 *,s32);
  extern void *data_ov001_02193da4; 
  CodeHandlers table=data_ov001_0218f874; s32 index; s32 *p;
  if(func_ov001_0218665c()) return;
@@ -349,7 +349,7 @@ void func_ov001_0217c95c(void) {
  p=M2C_FIELD(data_ov001_02193da4,s32 **,4); *p &=0xc1fffcff;
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217c208); return;
  }
- func_ov001_02175db4(&index,0);
+ Ov001_GetNameEntryMode(&index,0);
  table.handlers[index]((u8 *)data_ov001_02193da4+8);
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217c744);
 }
@@ -373,7 +373,7 @@ s32 IsCodeEntryValid(void) {
 extern const u16 data_ov001_0218f848[];
 extern void *data_ov001_02193da4;
 void func_ov001_02184ec4(void *,void *);
-s32 func_ov001_02175db4(s32 *,s32);
+s32 Ov001_GetNameEntryMode(s32 *,s32);
 s32 func_0204612c(void *);
 u8 maxDigits[4]="255"; s32 entryMode; u8 code[4]; u8 *group; s32 bit,groupIndex,seenZero; u8 *base;
 const u8 *src=(const u8 *)data_ov001_0218f848;
@@ -384,7 +384,7 @@ if(*group==32) continue;
 for(bit=0;bit<3;bit++){if(group[bit]>maxDigits[bit])return 0;if(group[bit]<maxDigits[bit])break;}
 }
 func_ov001_02184ec4((u8 *)data_ov001_02193da4+8,code);
-func_ov001_02175db4(&entryMode,0);
+Ov001_GetNameEntryMode(&entryMode,0);
 if(entryMode==1){seenZero=0;for(groupIndex=0;groupIndex<4;groupIndex++){for(bit=0;bit<8;bit++){if(seenZero){if(code[groupIndex]&(1<<(7-bit)))return 0;}else if(!(code[groupIndex]&(1<<(7-bit))))seenZero=1;}}return 1;}
 return func_0204612c(code)!=0;
 }

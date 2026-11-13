@@ -169,14 +169,14 @@ void func_ov001_02171694(void){
 
 #pragma thumb off
 
-s8 func_ov001_021716c4(void) {
+s8 Ov001_GetIconRowSelection(void) {
     extern void *gOv001IconRow;
     return M2C_FIELD(gOv001IconRow, s8 *, 0x16);
 }
 
 void func_ov001_021716d8(s8 a){if(M2C_FIELD(gOv001IconRow,s8 *,0x16)==-1)M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 
-void func_ov001_021716f8(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
+void Ov001_SetIconRowSelection(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 
 s32 func_ov001_0217170c(void){if(gOv001IconRow==NULL)return 1;if(M2C_FIELD(gOv001IconRow,u8 *,0x19)==0)return 1;return 0;}
 

@@ -6,7 +6,7 @@ void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(
 void *func_0208b564(void*);s32 func_ov003_021f1894(void);void func_020899cc(void*,s32,s32,s32);void func_0208ae88(void*,s32);
 void func_ov003_021e161c(void*);void func_ov003_021e1530(void*,u8);void func_ov003_021e3714(void*);
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
-s32 func_020aae44(void*);s32 func_020aae10(void*);void func_0208b758(void*,s32);
+s32 func_020aae44(void*);s32 func_020aae10(void*);void SetTextById(void*,s32);
 typedef struct {u8 low:2,toggle:2,mode:2,pending:1,high:1;} HandlerFlags;
 typedef struct {u8 frame:4,enabled:1,high:3;} ButtonFlags;
 typedef struct {u32 width:9,height:9,tile:8,high:6;} HandlerGeometry;
@@ -28,9 +28,9 @@ void *sprite=M2C_FIELD(M2C_FIELD(p,u8**,0x48),void**,0x38);s32 h=func_020aae44(s
 M2C_FIELD(cursor,s16*,0x34)=x+2;M2C_FIELD(cursor,s16*,0x36)=y+2;
 M2C_FIELD(cursor,u32*,0x40)=(((M2C_FIELD(cursor,u32*,0x40)&~511)|((w-4)&511))&0xfffc01ff)|((u32)(h<<23)>>14);
 switch((u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,u8**,0x48),u8**,0x38),u16*,0x2e)){
-case 0:case 1:case 2:case 3:case 4:func_0208b758(M2C_FIELD(p,void**,0x58),0x47000019);break;
-case 5:case 6:case 7:case 8:case 9:func_0208b758(M2C_FIELD(p,void**,0x58),0x4700001a);break;
-case 10:func_0208b758(M2C_FIELD(p,void**,0x58),0x4700001b);break;
+case 0:case 1:case 2:case 3:case 4:SetTextById(M2C_FIELD(p,void**,0x58),0x47000019);break;
+case 5:case 6:case 7:case 8:case 9:SetTextById(M2C_FIELD(p,void**,0x58),0x4700001a);break;
+case 10:SetTextById(M2C_FIELD(p,void**,0x58),0x4700001b);break;
 }}
 
 

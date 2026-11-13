@@ -262,50 +262,55 @@ s32 gpiSendFromBuffer(s32 connection,s32 sock,void *buffer,s32 *outBuffered,s32 
  return 0;
 }
 
-s32 gpiReadMessageFromPeer(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3, s32 *arg4) {
+/* Read one complete gpi message out of a peer's receive buffer: locate the
+ * "\msg\" end-of-header marker, parse the \m\ (message type) and \len\
+ * (message length) fields, and return the message body and length, advancing
+ * the buffer's read position. Returns 0 when no complete message is ready (and
+ * sets *messageOut to NULL), or 3 for a malformed message. */
+s32 gpiReadMessageFromPeer(M2C_UNK connection, GPIBuffer *buf, s8 **messageOut, s32 *messageType, s32 *messageLength) {
     s8 *StringFindChar(M2C_UNK, M2C_UNK);
     s32 StringCompareN(s32, M2C_UNK *, s32);
     s32 GetStringField(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
     s32 ParseInt(M2C_UNK *);
-    extern M2C_UNK data_020fe104;
-    extern M2C_UNK data_020fe10c;
-    extern M2C_UNK data_020fe110;
-    M2C_UNK sp0[4];
-    s8 *temp_r0;
-    s32 temp;
-    s32 *arg4sp;
+    extern M2C_UNK gGpiKeyMsg;
+    extern M2C_UNK gGpiKeyM;
+    extern M2C_UNK gGpiKeyLen;
+    M2C_UNK field[4];
+    s8 *lineEnd;
+    s32 bodyLen;
+    s32 *lengthOut;
 
     (void)connection;
-    *arg2 = NULL;
-    arg4sp = arg4;
-    if (M2C_FIELD(arg1, s32 *, 8) < 5) {
+    *messageOut = NULL;
+    lengthOut = messageLength;
+    if (buf->len < 5) {
         return 0;
     }
-    temp_r0 = StringFindChar(M2C_FIELD(arg1, M2C_UNK *, 0), 0xA);
-    if (temp_r0 == NULL) {
+    lineEnd = StringFindChar((M2C_UNK)buf->data, 0xA);
+    if (lineEnd == NULL) {
         goto done;
     }
-    if (StringCompareN((s32)(temp_r0 - 5), &data_020fe104, 5) != 0) {
+    if (StringCompareN((s32)(lineEnd - 5), &gGpiKeyMsg, 5) != 0) {
         return 3;
     }
-    *temp_r0 = 0;
-    if (GetStringField(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe10c, sp0, 0x10) == 0) {
+    *lineEnd = 0;
+    if (GetStringField((M2C_UNK)buf->data, &gGpiKeyM, field, 0x10) == 0) {
         return 3;
     }
-    *arg3 = ParseInt(sp0);
-    if (GetStringField(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe110, sp0, 0x10) == 0) {
+    *messageType = ParseInt(field);
+    if (GetStringField((M2C_UNK)buf->data, &gGpiKeyLen, field, 0x10) == 0) {
         return 3;
     }
-    temp = ParseInt(sp0);
-    if (M2C_FIELD(arg1, s32 *, 8) > (temp + 1 + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)))) {
-        if (temp_r0[temp + 1] != 0) {
+    bodyLen = ParseInt(field);
+    if (buf->len > (bodyLen + 1 + (lineEnd - (s8 *)buf->data))) {
+        if (lineEnd[bodyLen + 1] != 0) {
             return 3;
         }
-        *arg2 = temp_r0 + 1;
-        *arg4sp = temp;
-        M2C_FIELD(arg1, s32 *, 0xC) = (temp + 1) + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)) + 1;
+        *messageOut = lineEnd + 1;
+        *lengthOut = bodyLen;
+        buf->pos = (bodyLen + 1) + (lineEnd - (s8 *)buf->data) + 1;
     } else {
-        *temp_r0 = 0xA;
+        *lineEnd = 0xA;
     }
 done:
     return 0;

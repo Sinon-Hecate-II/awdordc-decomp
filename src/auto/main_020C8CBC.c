@@ -5,14 +5,14 @@ static inline u64 Pack_020c91ac(u64 x, u64 y, u64 z, u32 w) {
 }
 
 s32 func_020c8cbc(M2C_UNK arg0) {
-    s32 func_020c7e6c(s32);
+    s32 GetMapRecord(s32);
     s32 func_020c7eb8(s32);
-    s32 func_020c8b0c(M2C_UNK, s32);
+    s32 MapRecordsMatch(M2C_UNK, s32);
     s32 var_r4;
 
     var_r4 = 0;
 loop_1:
-    if ((func_020c7eb8(var_r4 + 0xE1) != 0) && (func_020c8b0c(arg0, func_020c7e6c(var_r4 + 0xE1)) != 0)) {
+    if ((func_020c7eb8(var_r4 + 0xE1) != 0) && (MapRecordsMatch(arg0, GetMapRecord(var_r4 + 0xE1)) != 0)) {
         return var_r4 + 0xE1;
     }
     var_r4 += 1;
@@ -96,33 +96,37 @@ void func_020c8ea0(void *arg0) {
 void func_020c8ed4(M2C_UNK arg0) { M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; func_01ffa3dc(&data_0212b07c,arg0); }
 s32 func_020c8eec(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 data_02164d64[]; return MI_CpuFill32(0,data_02164d64,0x41a0); }
 
-s32 func_020c8f0c(s16 *dst,u8 *src) {
-s32 func_02019e64(s16 *,s32 *,u8 *,s32 *,s32); s32 func_02099ae8(u8 *); s32 func_02099b00(u8 *);
-s32 out; s32 in; s32 n=0; s32 good; s32 result; s32 len; s8 c; u8 ch;
+/* Decodes a game text string into the font's glyph codes: ordinary characters go
+ * through the shared text decoder, while the 0x1F escape supplies a raw glyph code
+ * (with 0x8C/0x9C remapped). Returns the number of glyphs written, or -1 when the
+ * decoder fails. */
+s32 ConvertTextToGlyphs(s16 *dst,u8 *src) {
+s32 func_02019e64(s16 *,s32 *,u8 *,s32 *,s32); s32 IsLeadByte(u8 *); s32 IsGlyphEscape(u8 *);
+s32 out; s32 in; s32 count=0; s32 isDouble; s32 result; s32 charLen; s8 trail; u8 code;
 if(*src) { do {
-if(func_02099b00(src)) {
-ch=src[1];
-switch(ch) {
+if(IsGlyphEscape(src)) {
+code=src[1];
+switch(code) {
 case 0x8c:*dst=0x152;break;
 case 0x9c:*dst=0x153;break;
-default:*dst=ch;break;
+default:*dst=code;break;
 }
 src+=2;
 } else {
-good=0;
+isDouble=0;
 if((u32)((src[0]^0x20)-0xa1)<0x3c) {
-c=(s8)src[1]; if(c!=0x7f && (u8)(c-0x40)<=0xbc) good=1;
+trail=(s8)src[1]; if(trail!=0x7f && (u8)(trail-0x40)<=0xbc) isDouble=1;
 }
-if(good) len=2;else len=1;
-in=len;
+if(isDouble) charLen=2;else charLen=1;
+in=charLen;
 out=1;
 if(func_02019e64(dst,&out,src,&in,0)==0) result=out;else result=-1;
 if(result<0) return -1;
-if(func_02099ae8(src)) src+=2;else src++;
+if(IsLeadByte(src)) src+=2;else src++;
 }
-dst++;n++;
+dst++;count++;
 } while(*src); }
-*dst=0;return n;
+*dst=0;return count;
 }
 
 #pragma optimization_level reset
@@ -202,10 +206,10 @@ void func_020c9190(s32 arg0) {
 
 #pragma opt_instruction_scheduling off
 u64 func_020c91ac(s32 a) {
-s32 func_020c7eb8(s32); void *func_020c7e88(s32);
+s32 func_020c7eb8(s32); void *GetMapRecordStamp(s32);
 void *p; s32 v;
 if (!func_020c7eb8(a)) return 0;
-p=func_020c7e88(a); v=M2C_FIELD(p,s32 *,0x10);
+p=GetMapRecordStamp(a); v=M2C_FIELD(p,s32 *,0x10);
 if (!v) return 0;
 return ((u64)(u16)~v<<36) | ((u64)(s32)M2C_FIELD(p,u16 *,6)<<20) | ((u64)(s32)(u16)(~v>>16)<<4) | ((M2C_FIELD(p,u32 *,0xc)<<14>>20)&15);
 }
@@ -222,11 +226,11 @@ return (u16)((a>>20)&0xffff);
  * and draw it into the text sprite of `owner` at vertical position `y`. Returns
  * 0 when the map has no valid record. */
 s32 DrawMapCode(s32 mapIndex,s32 y,s32 owner) {
-void *func_020c7e88(s32); void *func_0208b564(s32);
+void *GetMapRecordStamp(s32); void *func_0208b564(s32);
 void StringFormat(void *,const void *,...); void func_020899fc(void *,s32,s32,void *);
 extern char sMapCodeFormat[];
 u64 code=func_020c91ac(mapIndex), mid, top; s32 group3,group2,group1,group0; char buf[64]; void *sprite;
-func_020c7e88(mapIndex);
+GetMapRecordStamp(mapIndex);
 if(!code)return 0;
 mid=code/10000; top=mid/10000;
 func_020c9244(code);func_020c9268(code);

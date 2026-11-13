@@ -104,7 +104,7 @@ void func_ov000_021769dc(void *arg0) {
 }
 
 void func_ov000_02176a0c(M2C_UNK arg0) {
-    M2C_UNK func_ov000_02175740(M2C_UNK);
+    M2C_UNK DrawInfoPanelBackdrop(M2C_UNK);
     M2C_UNK func_ov000_021759b8(M2C_UNK);
     M2C_UNK Ov000Info_DrawUnitPanel(M2C_UNK);
     extern void *g3DSpriteEngineSub;
@@ -114,7 +114,7 @@ void func_ov000_02176a0c(M2C_UNK arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x38) = 2;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x40) = 1;
-    func_ov000_02175740(arg0);
+    DrawInfoPanelBackdrop(arg0);
     func_ov000_021759b8(arg0);
     Ov000Info_DrawUnitPanel(arg0);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
@@ -124,7 +124,7 @@ void func_ov000_02176a0c(M2C_UNK arg0) {
 }
 
 void func_ov000_02176a9c(M2C_UNK arg0) {
-    M2C_UNK func_ov000_02175740();
+    M2C_UNK DrawInfoPanelBackdrop();
     M2C_UNK Ov000Info_DrawUnitPanel(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -132,7 +132,7 @@ void func_ov000_02176a9c(M2C_UNK arg0) {
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_ov000_02175740();
+    DrawInfoPanelBackdrop();
     Ov000Info_DrawUnitPanel(arg0);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);

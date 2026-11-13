@@ -73,8 +73,8 @@ s32 DrawTextStep(void *arg0) {
     s32 func_020999b8(void *);
     s32 func_020999e8(void *);
     M2C_UNK func_02099a30(void *);
-    s32 func_02099ae8(void *);
-    s32 func_02099b00(void *);
+    s32 IsLeadByte(void *);
+    s32 IsGlyphEscape(void *);
     u32 func_02099e6c(void *, s32);
     M2C_UNK func_0209ac6c(void *, s32);
     s32 func_0209c168(void *, s32);
@@ -99,8 +99,8 @@ main_loop:
             return 1;
         default:
         case 1:
-            temp_r7 = func_02099ae8(st->cursor);
-            temp_r8 = func_02099b00(st->cursor);
+            temp_r7 = IsLeadByte(st->cursor);
+            temp_r8 = IsGlyphEscape(st->cursor);
             if (func_020999b8(st) == 0) {
                 if (st->flags & 0x2) {
                     func_02099a30(st);

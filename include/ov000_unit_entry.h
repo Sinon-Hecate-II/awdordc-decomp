@@ -1,6 +1,10 @@
 #ifndef OV000_UNIT_ENTRY_H
 #define OV000_UNIT_ENTRY_H
 #include "common.h"
+/* Overlay of one 14-byte battle-map unit record (BattleMapUnit in battle_map.h)
+ * with the bitfields the unit/join/AI code reads: kind and owner in the first
+ * byte, the tile position, health in the low seven bits of +0x06, the AI
+ * action-state nibble at +0x0B and the carried-unit ids at +0x0C. */
 typedef struct {
     u8 unk0 : 6;      /* +0x00 kind of the unit */
     u8 unk0_6 : 2;    /* +0x00 owner/extra bits */

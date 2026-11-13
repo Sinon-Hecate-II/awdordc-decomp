@@ -317,7 +317,7 @@ extern s32 gHistoryMenu, g3DSpriteEngineSub;
 extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov005_02220270;
 s32 GetRecordDefinition(s32,s32); s32 GetRecordTier(s32,s32);
-void func_0208b758(s32,s32); void func_0208b698(s32,void *);
+void SetTextById(s32,s32); void func_0208b698(s32,void *);
 s32 q, index, old;
 s32 p=gHistoryMenu;
 s32 table = HistoryTabAt(M2C_FIELD(p,s8 *,1));
@@ -328,7 +328,7 @@ index = GetRecordTier(M2C_FIELD(gHistoryMenu,s8 *,1), a+b);
 old = gCur3DSpriteEngine;
 gCur3DSpriteEngine = g3DSpriteEngineSub;
 if (func_ov005_02211a54(M2C_FIELD(gHistoryMenu,s8 *,1),a+b)==0)
-func_0208b758(M2C_FIELD(gHistoryMenu,s32 *,0x48),M2C_FIELD(q+index*4,s32 *,0x1c));
+SetTextById(M2C_FIELD(gHistoryMenu,s32 *,0x48),M2C_FIELD(q+index*4,s32 *,0x1c));
 else func_0208b698(M2C_FIELD(gHistoryMenu,s32 *,0x48),&data_ov005_02220270);
 gCur3DSpriteEngine = old;
 }

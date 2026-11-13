@@ -74,11 +74,11 @@ void func_0207c3dc(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void func_0207c42c(void *arg0) {
     M2C_UNK func_02004b54();
-    M2C_UNK func_02004bb0(s32, s32, s32);
+    M2C_UNK LoadTextureBankBlock(s32, s32, s32);
     M2C_UNK func_02004cf0();
     M2C_UNK HeapFreeBlock(s32);
     func_02004b54();
-    func_02004bb0(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+    LoadTextureBankBlock(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
     func_02004cf0();
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
         return;

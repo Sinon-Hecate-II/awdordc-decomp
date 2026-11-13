@@ -1,5 +1,6 @@
 /* 57 functions from 0x0206080C to 0x020617BC (main), found by ds-decomp. */
 #include "common.h"
+#include "sb_serverlist.h"
 typedef struct { u16 count; char buf[128]; } Packet60E;
 typedef struct { u8 a,b; } Pair60E;
 static inline void CopyPair60E(u8 *d,const u8 *s) { *(Pair60E *)d=*(const Pair60E *)s; }
@@ -57,7 +58,7 @@ void func_020608dc(void *arg0) {
     M2C_FIELD(arg0, M2C_UNK (**)(void *, s32, s32, M2C_UNK), 0x44)(arg0, 2, 0, M2C_FIELD(arg0, M2C_UNK *, 0x48));
 }
 
-void func_0206093c(void *arg0, u8 arg1) {
+void AddServerListField(void *arg0, u8 arg1) {
     s32 temp_r3;
 
     temp_r3 = M2C_FIELD(arg0, s32 *, 0x40);
@@ -95,9 +96,9 @@ void func_020609ac(s32 *arg0) {
 
 s32 func_020609bc(void) {
     extern M2C_UNK data_0213e4b0;
-    s32 func_02048c84(s32, s32, s32, void *, void *, void *);
+    s32 TableNew2(s32, s32, s32, void *, void *, void *);
     if (M2C_FIELD(&data_0213e4b0, s32 *, 8) == 0) {
-        M2C_FIELD(&data_0213e4b0, s32 *, 8) = func_02048c84(8, 0x64, 2, func_02060988, func_02060998, func_020609ac);
+        M2C_FIELD(&data_0213e4b0, s32 *, 8) = TableNew2(8, 0x64, 2, func_02060988, func_02060998, func_020609ac);
     }
     return M2C_FIELD(&data_0213e4b0, s32 *, 8);
 }
@@ -314,10 +315,10 @@ s32 SBServerGetPing(void *arg0) {
 
 void *func_02061090(s32 arg0,s32 arg1,s32 arg2){
  void *gpiMalloc(s32);M2C_UNK gpiFree(s32);
- s32 func_02048c84(s32,s32,s32,void *,void *,void *);
+ s32 TableNew2(s32,s32,s32,void *,void *,void *);
  void *temp_r0=gpiMalloc(0x24);
  if(!temp_r0)return 0;
- M2C_FIELD(temp_r0,s32 *,0x18)=func_02048c84(8,8,4,func_02061064,func_02061074,func_02061040);
+ M2C_FIELD(temp_r0,s32 *,0x18)=TableNew2(8,8,4,func_02061064,func_02061074,func_02061040);
  if(!M2C_FIELD(temp_r0,s32 *,0x18)){gpiFree((s32)temp_r0);return 0;}
  M2C_FIELD(temp_r0,u8 *,0x14)=0;M2C_FIELD(temp_r0,u8 *,0x15)=0;
  M2C_FIELD(temp_r0,s32 *,0x20)=0;M2C_FIELD(temp_r0,s32 *,0x1c)=0;
@@ -407,7 +408,7 @@ void func_0206133c(s32 arg0,s32 arg1,void *arg2,void *arg3){
 void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     void *gpiMalloc(s32);
     M2C_UNK func_02060398(void *, s32, s32, s32, M2C_UNK *, void *);
-    M2C_UNK func_02061dd0(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, M2C_UNK *, void *);
+    M2C_UNK SBServerListInit(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, M2C_UNK *, void *);
     extern s32 gDnsQueryState;
     void Qr2ServerEventCallback(void *,u32,void *,void *);
     void func_0206133c(s32, s32, void *, void *);
@@ -423,7 +424,7 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     M2C_FIELD(obj, s32 *, 0x630) = arg7;
     M2C_FIELD(obj, s32 *, 0x634) = arg8;
     M2C_FIELD(obj, s32 *, 0x624) = 0;
-    func_02061dd0(obj + 0x4C, arg0, arg1, arg2, arg3, arg6, (M2C_UNK *)&Qr2ServerEventCallback, obj);
+    SBServerListInit(obj + 0x4C, arg0, arg1, arg2, arg3, arg6, (M2C_UNK *)&Qr2ServerEventCallback, obj);
     func_02060398(obj, arg4, arg5, arg6, (M2C_UNK *)&func_0206133c, obj);
     return obj;
 }
@@ -436,29 +437,33 @@ void func_020614b0(s32 arg0) {
     gpiFree(arg0);
 }
 
-s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
- extern char *gQr2KeyNames[]; extern char data_0210008c[];
+/* Start a QR2 server-list query: build the filter string from the given key ids
+ * (each key's name prefixed by a backslash), remember which fields were asked for,
+ * then connect and send the query.  Unless `async` is set, wait out the query by
+ * sleeping and stepping the list until it finishes or fails. */
+s32 SBServerListQuery(s32 serverList,s32 async,s32 disconnect,s32 fieldIds,s32 fieldCount,s32 fields,s32 queryFlags,s32 maxServers){
+ extern char *gQr2KeyNames[]; extern char sQr2FilterFormat[];
  s32 StringLength(const char *); s32 StringFormat(void *,void *,...);
- s32 SBServerListConnectAndQuery(s32,char *,s32,s32,s32); void func_02049260(s32);
- char buf[256]={0}; s32 len=0,i; char *p; s32 result;
- M2C_FIELD(a,s32 *,0x620)=c;
- M2C_FIELD(a,s32 *,0x40)=0;
- for(i=0;i<e;i++){
- p=gQr2KeyNames[*(u8 *)(d+(u32)i)];
- if(len+StringLength(p)+1>=256)break;
- len+=StringFormat(buf+len,data_0210008c,p);
- func_0206093c((void *)a,*(u8 *)(d+(u32)i));
+ s32 SBServerListConnectAndQuery(s32,char *,s32,s32,s32); void gpiSleep(s32);
+ char filter[256]={0}; s32 filterLen=0,keyIndex; char *keyName; s32 result;
+ M2C_FIELD(serverList,s32 *,SB_LIST_DISCONNECT)=disconnect;
+ M2C_FIELD(serverList,s32 *,SB_LIST_FIELD_COUNT)=0;
+ for(keyIndex=0;keyIndex<fieldCount;keyIndex++){
+ keyName=gQr2KeyNames[*(u8 *)(fieldIds+(u32)keyIndex)];
+ if(filterLen+StringLength(keyName)+1>=256)break;
+ filterLen+=StringFormat(filter+filterLen,sQr2FilterFormat,keyName);
+ AddServerListField((void *)serverList,*(u8 *)(fieldIds+(u32)keyIndex));
  }
- result=SBServerListConnectAndQuery(a+0x4c,buf,f,g,h);
+ result=SBServerListConnectAndQuery(serverList+0x4c,filter,fields,queryFlags,maxServers);
  if(result)return result;
- if(!b){
+ if(!async){
  goto check;
  loop:
- func_02049260(10);
- result=func_02061704(a);
+ gpiSleep(10);
+ result=SBServerListThink(serverList);
  check:
- if(M2C_FIELD(a,s32 *,0x4c)==3)goto loop;
- if(M2C_FIELD(a,s32 *,0x10)<=0)return result;
+ if(M2C_FIELD(serverList,s32 *,SB_LIST_QUERY)==SB_LIST_STATE_QUERYING)goto loop;
+ if(M2C_FIELD(serverList,s32 *,SB_LIST_PENDING)<=0)return result;
  if(result==0)goto loop;
  }
  return result;
@@ -466,7 +471,7 @@ s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
 
 void SendToPlayerList(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
 
- func_020614d4(a,b,c,d,e,f,128,g);
+ SBServerListQuery(a,b,c,d,e,f,128,g);
 }
 
 void func_02061638(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
@@ -487,7 +492,7 @@ void SBServerListRemoveServer(s32 arg0){
  func_02061b6c(arg0+0x4c,n);
 }
 
-s32 func_02061704(s32 arg0) {
+s32 SBServerListThink(s32 arg0) {
     s32 func_02063dac(s32);
 
     func_020608dc((void *) arg0);

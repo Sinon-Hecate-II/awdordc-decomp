@@ -201,10 +201,10 @@ M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
 s32 FindSpriteSlotById(s32);
 void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
-M2C_UNK func_020808dc(s32,s32,u16,u16);
+M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
 M2C_UNK func_020b1c44(s32,s32);
-M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
+M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
 s32 row, rowX, bar;
@@ -251,7 +251,7 @@ if (selectedRow) {
     bar = 0;
     do {
         if (M2C_FIELD(selectedRow, u8 *, 0) != bar) barColor = 5; else barColor = 6;
-        func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (barX << 6), 30, (u16)(barEnd - barX), (u16)barColor);
+        SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (barX << 6), 30, (u16)(barEnd - barX), (u16)barColor);
         bar++;
         barX = (s16)(barX + 5);
         barEnd = (s16)(barEnd + 5);
@@ -275,7 +275,7 @@ func_02088f1c(sprite);
 sprite = M2C_FIELD(entity, void **, 0x58);
 func_020dcc00(sprite);
 M2C_FIELD(sprite,u8 *,0x5a)=0;
-func_0208b758(M2C_FIELD(entity, void **, 0x64), 0x44000010);
+SetTextById(M2C_FIELD(entity, void **, 0x64), 0x44000010);
 func_02088f1c(M2C_FIELD(entity, void **, 0x64));
 if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
     s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68));
@@ -317,10 +317,10 @@ M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
 s32 FindSpriteSlotById(s32);
 void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
-M2C_UNK func_020808dc(s32,s32,u16,u16);
+M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
 M2C_UNK func_020b1c44(s32,s32);
-M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
+M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
 s32 row, rowX, bar;
@@ -367,7 +367,7 @@ if (selectedRow) {
     bar = 0;
     do {
         if (M2C_FIELD(selectedRow, u8 *, 0) != bar) barColor = 5; else barColor = 6;
-        func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (barX << 6), 30, (u16)(barEnd - barX), (u16)barColor);
+        SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (barX << 6), 30, (u16)(barEnd - barX), (u16)barColor);
         bar++;
         barX = (s16)(barX + 5);
         barEnd = (s16)(barEnd + 5);
@@ -391,7 +391,7 @@ func_02088f1c(sprite);
 sprite = M2C_FIELD(entity, void **, 0x58);
 func_020dcc00(sprite);
 M2C_FIELD(sprite,u8 *,0x5a)=0;
-func_0208b758(M2C_FIELD(entity, void **, 0x64), 0x44000010);
+SetTextById(M2C_FIELD(entity, void **, 0x64), 0x44000010);
 func_02088f1c(M2C_FIELD(entity, void **, 0x64));
 if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
     s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68));

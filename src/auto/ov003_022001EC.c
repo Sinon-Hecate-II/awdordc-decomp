@@ -341,7 +341,7 @@ u16 func_ov003_02200cec(u32 a, u16 b) {
     return (u16)(b << 4);
 }
 
-s32 func_ov003_02200d80(s32 a, s32 b) {
+s32 Ov003_GetEntryValueTextId(s32 a, s32 b) {
     extern s32 data_ov003_022104a4[], data_ov003_022104b4[], data_ov003_02210494[];
     switch (a) {
     case 1:

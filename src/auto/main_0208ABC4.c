@@ -338,7 +338,7 @@ M2C_FIELD(arg0,s16 *,0x5a)=0;M2C_FIELD(arg0,u8 *,0x5c)=0;
 gCur3DSpriteEngine=old;
 }
 
-void func_0208b758(M2C_UNK arg0, M2C_UNK arg1) {
+void SetTextById(M2C_UNK arg0, M2C_UNK arg1) {
     s32 GetLocalizedText(M2C_UNK);
     func_0208b698(arg0, GetLocalizedText(arg1));
 }

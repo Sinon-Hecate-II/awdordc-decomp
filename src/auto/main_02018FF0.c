@@ -90,7 +90,7 @@ void func_02018ff0(void) {
 void func_020191e4(s32 a,s32 b) {
 extern s16 data_02136c9c;
 if((b&63)==1){data_02136c9c=1;return;}
-func_02007958();
+SystemHalt();
 }
 
 void func_02019210(s32 a,s32 b) {
@@ -105,14 +105,14 @@ if(result)func_0201926c();
 M2C_FIELD(&data_02136ca0,s32 *,12)=1;
 return;
 }
-func_02007958();
+SystemHalt();
 }
 
 void func_0201926c(void) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     M2C_UNK func_02018ea4(M2C_UNK);
     func_02018ea4(2);
-    func_02007958();
+    SystemHalt();
 }
 
 void func_02019280(void) {

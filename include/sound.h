@@ -41,4 +41,7 @@
 #define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): restart the voices for a sound */
 #define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
 
+/* An id field of a sound-archive record meaning "no file/entry". */
+#define SOUND_FILE_NONE 0xFFFF
+
 #endif

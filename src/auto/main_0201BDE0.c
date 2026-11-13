@@ -57,26 +57,33 @@ void TcpSendFinAck(M2C_UNK arg0, M2C_UNK arg1) {
     func_0201bee4(arg0, 0x11, arg1);
 }
 
-M2C_UNK TcpSendReset(M2C_UNK a,M2C_UNK b,s32 c,M2C_UNK d){
-extern M2C_UNK data_021373d4,data_02137390,gNetStack;
+/* Reply to an unacceptable TCP segment with a reset.  The reset is built in the
+ * stack's global reset connection gTcpResetConn (which gTcpResetSocket and
+ * gNetStack's peer address alias): its ports are the offending segment's ports
+ * swapped and its destination address is the packet's source.  A segment that
+ * carried ACK is answered with a bare RST whose sequence is the segment's
+ * acknowledgement number; any other segment gets a RST|ACK that acknowledges
+ * the segment's sequence number plus its length (plus one for SYN or FIN). */
+M2C_UNK TcpSendReset(M2C_UNK ipHeader,M2C_UNK seg,s32 len,M2C_UNK arg){
+extern M2C_UNK gTcpResetSocket,gTcpResetConn,gNetStack;
 void MI_CpuFill8(void *,s32,s32);
-u16 e,f,g,h,i,j,k,l; s32 n;void *p=&data_021373d4;
-MI_CpuFill8(p,0,100);
-e=M2C_FIELD(b,u16 *,2);M2C_FIELD(&data_02137390,u16 *,78)=((s32)e>>8)|(e<<8);
-f=M2C_FIELD(b,u16 *,0);M2C_FIELD(&data_02137390,u16 *,92)=((s32)f>>8)|(f<<8);
-g=M2C_FIELD(a,u16 *,14);h=M2C_FIELD(a,u16 *,12);
-M2C_FIELD(&gNetStack,u32 *,352)=((u16)(((s32)h>>8)|(h<<8))<<16)|(u16)(((s32)g>>8)|(g<<8));
-if(M2C_FIELD(b,u8 *,13)&16){
-i=M2C_FIELD(b,u16 *,10);j=M2C_FIELD(b,u16 *,8);
-M2C_FIELD(p,u32 *,40)=((u16)(((s32)j>>8)|(j<<8))<<16)|(u16)(((s32)i>>8)|(i<<8));
-func_0201bee4((s32)p,4,d);return;
+u16 dstPort,srcPort,ipSrcLo,ipSrcHi,ackLo,ackHi,seqLo,seqHi; s32 ackNum;void *conn=&gTcpResetConn;
+MI_CpuFill8(conn,0,100);
+dstPort=M2C_FIELD(seg,u16 *,2);M2C_FIELD(&gTcpResetSocket,u16 *,78)=((s32)dstPort>>8)|(dstPort<<8);
+srcPort=M2C_FIELD(seg,u16 *,0);M2C_FIELD(&gTcpResetSocket,u16 *,92)=((s32)srcPort>>8)|(srcPort<<8);
+ipSrcLo=M2C_FIELD(ipHeader,u16 *,14);ipSrcHi=M2C_FIELD(ipHeader,u16 *,12);
+M2C_FIELD(&gNetStack,u32 *,352)=((u16)(((s32)ipSrcHi>>8)|(ipSrcHi<<8))<<16)|(u16)(((s32)ipSrcLo>>8)|(ipSrcLo<<8));
+if(M2C_FIELD(seg,u8 *,13)&16){
+ackLo=M2C_FIELD(seg,u16 *,10);ackHi=M2C_FIELD(seg,u16 *,8);
+M2C_FIELD(conn,u32 *,TCP_CONN_SEND_SEQ)=((u16)(((s32)ackHi>>8)|(ackHi<<8))<<16)|(u16)(((s32)ackLo>>8)|(ackLo<<8));
+func_0201bee4((s32)conn,4,arg);return;
 }
-M2C_FIELD(p,s32 *,40)=0;
-k=M2C_FIELD(b,u16 *,6);l=M2C_FIELD(b,u16 *,4);
-n=c+(((u16)(((s32)l>>8)|(l<<8))<<16)|(u16)(((s32)k>>8)|(k<<8)));
-M2C_FIELD(p,s32 *,36)=n;
-if(M2C_FIELD(b,u8 *,13)&3)M2C_FIELD(p,s32 *,36)=n+1;
-func_0201bee4((s32)p,20,d);
+M2C_FIELD(conn,s32 *,TCP_CONN_SEND_SEQ)=0;
+seqLo=M2C_FIELD(seg,u16 *,6);seqHi=M2C_FIELD(seg,u16 *,4);
+ackNum=len+(((u16)(((s32)seqHi>>8)|(seqHi<<8))<<16)|(u16)(((s32)seqLo>>8)|(seqLo<<8)));
+M2C_FIELD(conn,s32 *,TCP_CONN_ACK_NUM)=ackNum;
+if(M2C_FIELD(seg,u8 *,13)&3)M2C_FIELD(conn,s32 *,TCP_CONN_ACK_NUM)=ackNum+1;
+func_0201bee4((s32)conn,20,arg);
 }
 
 M2C_UNK func_0201c0bc(void *arg0,void *arg1,void *arg2){u64 GetSystemTick(void);u16 a,b,c,d,e,f,g;u64 t;

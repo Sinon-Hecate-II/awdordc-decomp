@@ -158,14 +158,14 @@ u8 CanDoAiAction01(s32 arg0, s32 arg1) {
 
 s32 func_ov000_021885c8(void) {
     s32 IsPlayerActive(s32);
-    s32 func_020d243c(s32);
+    s32 PlayerHasHq(s32);
     s32 IsSameTeam(u16, s32);
     extern void **gCurrentMap;
     s32 i, offset;
     void *base, *entry;
     if (func_ov000_02187e50() == 1) return 0;
     for (i = 1, offset = 0x8C; i < 5; i++, offset += 0x8C) {
-        if (IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) && func_020d243c(i)) {
+        if (IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) && PlayerHasHq(i)) {
             base = *gCurrentMap;
             entry = (u8 *)base + offset;
             if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, 0x67D0) << 25) >> 23), s8 **, 0x52E8), s8 *, M2C_FIELD(entry, u8 *, 0x67CF) & 0x7F) > 0) return 1;
@@ -255,12 +255,12 @@ void CanDoAiAction34(s32 arg0, s32 arg1) {
 }
 
 u8 func_ov000_02188850(void) {
-    s32 func_020d243c(s32);
+    s32 PlayerHasHq(s32);
     extern void **gCurrentMap;
     void *base, *entry;
     u8 result;
     if (func_ov000_02187e50() == 1) return 0;
-    if (func_020d243c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) return 0;
+    if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) return 0;
     base = *gCurrentMap;
     entry = (u8 *)base + 0x67A4 + M2C_FIELD(base, u16 *, 0x52A4) * 0x8C;
     if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, 0x2C) << 25) >> 23), s8 **, 0x52E8), s8 *, M2C_FIELD(entry, u8 *, 0x2B) & 0x7F) > 0) result = 1;

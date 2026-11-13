@@ -80,8 +80,8 @@ M2C_UNK func_020a979c(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0xE) = M2C_FIELD(arg0, s16 *, 0xA) - M2C_FIELD(arg0, s16 *, 0x16);
 }
 
-void func_020a97f8(void *arg0) {
-    s32 func_020a8c8c(s16, s16, s16, s16, s32, s32);
+void ScrollBar_HandleThumbTouch(void *arg0) {
+    s32 IsPointInRect(s16, s16, s16, s16, s32, s32);
     M2C_UNK func_020a979c(void *, s16, s16);
     extern void *gTouchState;
     s16 temp_r4;
@@ -97,7 +97,7 @@ void func_020a97f8(void *arg0) {
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         temp_lr = M2C_FIELD(arg0, u8 *, 0x11);
         temp_ip = M2C_FIELD(arg0, u8 *, 0x10);
-        if (func_020a8c8c(temp_r4, temp_r5, (s16) (M2C_FIELD(arg0, s16 *, 8) - ((s32) temp_ip >> 1)), (s16) (M2C_FIELD(arg0, s16 *, 0xA) - ((s32) temp_lr >> 1)), (s32) temp_ip, (s32) temp_lr) != 0) {
+        if (IsPointInRect(temp_r4, temp_r5, (s16) (M2C_FIELD(arg0, s16 *, 8) - ((s32) temp_ip >> 1)), (s16) (M2C_FIELD(arg0, s16 *, 0xA) - ((s32) temp_lr >> 1)), (s32) temp_ip, (s32) temp_lr) != 0) {
             M2C_FIELD(arg0, u8 *, 6) = 1U;
         }
     }
@@ -110,24 +110,29 @@ void func_020a97f8(void *arg0) {
     func_020a979c(arg0, temp_r4, temp_r5);
 }
 
-void func_020a98c4(void *arg0) {
+/* Touch handling for a scrollbar: first lets the thumb itself be dragged (via
+ * ScrollBar_HandleThumbTouch), then, when the thumb is not being dragged and a
+ * touch starts inside the track, grabs the thumb, moves it under the stylus and
+ * maps its offset back to the scroll value; releases the grab when the touch
+ * ends. */
+void ScrollBar_HandleTouch(void *bar) {
 extern void *gTouchState;
 s32 Divide(s32,s32);
-s32 func_020a8c8c(s16,s16,s16,s16,s32,s32);
-void *child; s16 x,y; s32 n,d,k;
-if(M2C_FIELD(arg0,u8 *,5)==0)return;
-func_020a97f8(M2C_FIELD(arg0,void **,0x1c));
-child=M2C_FIELD(arg0,void **,0x1c);
-if(M2C_FIELD(child,u8 *,6)!=0){k=M2C_FIELD(child,s16 *,0xc); n=M2C_FIELD(arg0,s16 *,0x16)-M2C_FIELD(arg0,s16 *,0x14); d=(s16)(M2C_FIELD(child,s16 *,0x14)-M2C_FIELD(child,s16 *,0x12)); M2C_FIELD(arg0,s16 *,0x12)=Divide(n*k,d); return;}
-x=M2C_FIELD(gTouchState,s16 *,0);y=M2C_FIELD(gTouchState,s16 *,2);
-if(M2C_FIELD(gTouchState,u8 *,0x14)!=0){
-if(func_020a8c8c(x,y,M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,s16 *,0xa),M2C_FIELD(arg0,u8 *,0xc),M2C_FIELD(arg0,u8 *,0xd))!=0)M2C_FIELD(arg0,u8 *,6)=1;
+s32 IsPointInRect(s16,s16,s16,s16,s32,s32);
+void *thumb; s16 touchX,touchY; s32 valueRange,trackLength,offset;
+if(M2C_FIELD(bar,u8 *,5)==0)return;
+ScrollBar_HandleThumbTouch(M2C_FIELD(bar,void **,0x1c));
+thumb=M2C_FIELD(bar,void **,0x1c);
+if(M2C_FIELD(thumb,u8 *,6)!=0){offset=M2C_FIELD(thumb,s16 *,0xc); valueRange=M2C_FIELD(bar,s16 *,0x16)-M2C_FIELD(bar,s16 *,0x14); trackLength=(s16)(M2C_FIELD(thumb,s16 *,0x14)-M2C_FIELD(thumb,s16 *,0x12)); M2C_FIELD(bar,s16 *,0x12)=Divide(valueRange*offset,trackLength); return;}
+touchX=M2C_FIELD(gTouchState,s16 *,TOUCH_CUR_X);touchY=M2C_FIELD(gTouchState,s16 *,TOUCH_CUR_Y);
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED)!=0){
+if(IsPointInRect(touchX,touchY,M2C_FIELD(bar,s16 *,8),M2C_FIELD(bar,s16 *,0xa),M2C_FIELD(bar,u8 *,0xc),M2C_FIELD(bar,u8 *,0xd))!=0)M2C_FIELD(bar,u8 *,6)=1;
 }
-if(M2C_FIELD(arg0,u8 *,6)==0)return;
-func_020a979c(M2C_FIELD(arg0,void **,0x1c),x,y);
-child=M2C_FIELD(arg0,void **,0x1c);
-k=M2C_FIELD(child,s16 *,0xc); n=M2C_FIELD(arg0,s16 *,0x16)-M2C_FIELD(arg0,s16 *,0x14); d=(s16)(M2C_FIELD(child,s16 *,0x14)-M2C_FIELD(child,s16 *,0x12)); M2C_FIELD(arg0,s16 *,0x12)=Divide(n*k,d);
-if(M2C_FIELD(gTouchState,u8 *,0x16)!=0)M2C_FIELD(arg0,u8 *,6)=0;
+if(M2C_FIELD(bar,u8 *,6)==0)return;
+func_020a979c(M2C_FIELD(bar,void **,0x1c),touchX,touchY);
+thumb=M2C_FIELD(bar,void **,0x1c);
+offset=M2C_FIELD(thumb,s16 *,0xc); valueRange=M2C_FIELD(bar,s16 *,0x16)-M2C_FIELD(bar,s16 *,0x14); trackLength=(s16)(M2C_FIELD(thumb,s16 *,0x14)-M2C_FIELD(thumb,s16 *,0x12)); M2C_FIELD(bar,s16 *,0x12)=Divide(valueRange*offset,trackLength);
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_RELEASED)!=0)M2C_FIELD(bar,u8 *,6)=0;
 }
 
 void func_020a99f4(void *arg0) {

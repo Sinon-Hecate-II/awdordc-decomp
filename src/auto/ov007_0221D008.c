@@ -6,7 +6,7 @@ void func_ov007_0221d008(u8 *arg0) {
     M2C_UNK MI_CpuCopy32(s32 *, s8 *, M2C_UNK);
     M2C_UNK func_02019424(s32 *, M2C_UNK);
     s32 func_020194e0(s32 *, M2C_UNK *);
-    s32 func_02099ae8(s32 *);
+    s32 IsLeadByte(s32 *);
     s32 MeasureStringWidth(s32 *);
     M2C_UNK SetSpriteAnimation(s32, M2C_UNK);
     M2C_UNK func_020899cc(void *, M2C_UNK, M2C_UNK, s32);
@@ -79,7 +79,7 @@ if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gM
 MI_CpuCopy32(&gMapEditObjectList,(s8 *)scratch,0x44);
 scratch[*phase]=0;
 func_02019424(&scratch[*phase],(s32)value);
-{s32 *node; u32 count=0; node=scratch; if(*node){do{if(func_02099ae8(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
+{s32 *node; u32 count=0; node=scratch; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
 if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; SetSpriteAnimation((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
 }
 MI_CpuCopy32(scratch,(s8 *)&gMapEditObjectList,0x44);
@@ -105,7 +105,7 @@ if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gM
 MI_CpuCopy32(&gMapEditObjectList,(s8 *)padding,0x44);
 padding[*phase]=0;
 func_02019424(&padding[*phase],(s32)value);
-{s32 *node; u32 count=0; node=padding; if(*node){do{if(func_02099ae8(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
+{s32 *node; u32 count=0; node=padding; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
 if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; SetSpriteAnimation((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
 }
 MI_CpuCopy32(padding,(s8 *)&gMapEditObjectList,0x44);
@@ -175,8 +175,8 @@ void MapEditTextActionInput(void *arg0) {
     s32 func_020194e0(s32 *, M2C_UNK *);
     M2C_UNK func_020899cc(void *, M2C_UNK, M2C_UNK, s32);
     void *func_0208b564(s32);
-    s32 func_02099ae8(s32 *);
-    s32 func_02099b00(s32 *);
+    s32 IsLeadByte(s32 *);
+    s32 IsGlyphEscape(s32 *);
     M2C_UNK func_020b269c();
     M2C_UNK func_020d47d0();
     M2C_UNK func_020d47f0();
@@ -234,7 +234,7 @@ loop_9:
                 dest = M2C_FIELD(&gMapEditRecords, s8 **, 0);
                 i = 0;
                 while ((*srcGlyphs != 0) && (i < 0x10U)) {
-                    if ((func_02099ae8(srcGlyphs) != 0) || (func_02099b00(srcGlyphs) != 0)) {
+                    if ((IsLeadByte(srcGlyphs) != 0) || (IsGlyphEscape(srcGlyphs) != 0)) {
                         MI_CpuCopy8(srcGlyphs, dest, 2);
                         dest += 2;
                     } else {

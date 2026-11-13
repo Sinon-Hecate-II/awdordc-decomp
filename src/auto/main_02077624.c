@@ -270,7 +270,7 @@ void func_02077eb8(void) {
 /* Loads and prepares the animation/texture data tables used at startup. */
 void func_02077ebc(void) {
     M2C_UNK func_02004b54();
-    M2C_UNK func_02004bb0(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK LoadTextureBankBlock(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_02004cf0();
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02081384(M2C_UNK *, s32);
@@ -303,12 +303,12 @@ void func_02077ebc(void) {
     func_02004b54();
     i = 0;
     do {
-        func_02004bb0(&data_02144cbc, i + 0x329A0, 0x20);
+        LoadTextureBankBlock(&data_02144cbc, i + 0x329A0, 0x20);
         i += 0x20;
     } while (i < 0xD660);
     j = 0;
     do {
-        func_02004bb0(&data_02144cbc, j + 0x30D20, 0x20);
+        LoadTextureBankBlock(&data_02144cbc, j + 0x30D20, 0x20);
         j += 0x20;
     } while (j < 0x1800);
     func_02004cf0();

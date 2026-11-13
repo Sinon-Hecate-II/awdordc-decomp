@@ -24,8 +24,8 @@ static inline void ResetAnim(void *anim) {M2C_FIELD(anim,u16*,0xe)=0;M2C_FIELD(a
 
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 extern u8 data_ov003_0220f500[],data_ov003_0220f508[],data_ov003_0220f518[],data_ov003_0220f530[],data_ov003_0220f544[],data_ov003_0220f560[],data_ov003_0220f574[],data_ov003_0220f584[],data_ov003_0220f59c[],data_ov003_0220f5a4[],data_ov003_0220f5b4[],data_ov003_0220f5cc[],data_ov003_0220f5e0[],data_ov003_0220f5f4[];
-void func_ov003_021e3714(void*);void func_0208b758(void*,s32);void SetFileDirectory(void*);void Clear3DSpriteLayer(s32);
-void *GetLocalizedFileName(void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void func_020808dc(void*,s32,s32,s32);
+void func_ov003_021e3714(void*);void SetTextById(void*,s32);void SetFileDirectory(void*);void Clear3DSpriteLayer(s32);
+void *GetLocalizedFileName(void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void SetTileRectPalette(void*,s32,s32,s32);
 void func_020a9a30(s32,s32,s32,void*);void func_02091d4c(s32);void func_02091d6c(s32,s32);
 void *func_02080e30(void*,s32);void func_0207c780(void*,void*);void HeapFreeBlock(void*);
 void DrawMapPreview(void*,void*,s32,s32);void *func_020ae22c(s32);void func_0208ca2c(s32,s32,void*,s32);
@@ -90,20 +90,20 @@ sprite=M2C_FIELD(M2C_FIELD(p,u8**,0x48),u8**,0x38);ch=func_020aae44(sprite)-4;cw
 q=M2C_FIELD(p,u8**,0x4c);M2C_FIELD(q,s16*,0x34)=M2C_FIELD(sprite,s16*,0x34)+2;M2C_FIELD(q,s16*,0x36)=M2C_FIELD(sprite,s16*,0x36)+2;
 M2C_FIELD(q,u32*,0x40)=((M2C_FIELD(q,u32*,0x40)&~511)|(cw&511))&0xfffc01ff|((u32)(ch<<23)>>14);func_02089438(M2C_FIELD(p,void**,0x4c));
 switch((u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,u8**,0x48),u8**,0x38),u16*,0x2e)){
-case 0:case 1:case 2:case 3:case 4:func_0208b758(M2C_FIELD(p,void**,0x58),0x47000019);break;
-case 5:case 6:case 7:case 8:case 9:func_0208b758(M2C_FIELD(p,void**,0x58),0x4700001a);break;
-case 10:func_0208b758(M2C_FIELD(p,void**,0x58),0x4700001b);break;
+case 0:case 1:case 2:case 3:case 4:SetTextById(M2C_FIELD(p,void**,0x58),0x47000019);break;
+case 5:case 6:case 7:case 8:case 9:SetTextById(M2C_FIELD(p,void**,0x58),0x4700001a);break;
+case 10:SetTextById(M2C_FIELD(p,void**,0x58),0x4700001b);break;
 }
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 SetFileDirectory(data_ov003_0220f500);Clear3DSpriteLayer(1);
 data=GetLocalizedFileName(data_ov003_0220f508);LoadDecompressedFileTo(data,M2C_FIELD(gCur3DSpriteEngine,void**,0x10));
 data=GetLocalizedFileName(data_ov003_0220f518);LoadDecompressedFileTo(data,M2C_FIELD(gCur3DSpriteEngine,void**,0x24));
 LoadFileToSpriteBuffer(data_ov003_0220f530,160,32);
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void**,0x24),32,32,5);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void**,0x24),32,32,5);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 Clear3DSpriteLayer(3);func_020a9a30(3,0,0,M2C_FIELD(gCur3DSpriteEngine,void**,0x18));
 LoadDecompressedFileTo(data_ov003_0220f544,M2C_FIELD(gCur3DSpriteEngine,void**,0x2c));
 func_020a9a30(3,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+192);
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void**,0x2c),32,32,6);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void**,0x2c),32,32,6);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 Clear3DSpriteLayer(0);func_02091d4c(7);func_02091d6c(8,0);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
 data=func_02080e30(GetLocalizedFileName(data_ov003_0220f560),1);
 func_0207c780(data,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x2b80);
@@ -117,7 +117,7 @@ gCur3DSpriteEngine=g3DSpriteEngineSub;
 SetFileDirectory(data_ov003_0220f59c);
 data=GetLocalizedFileName(data_ov003_0220f5a4);LoadDecompressedFileTo(data,M2C_FIELD(gCur3DSpriteEngine,void**,0x10));
 data=GetLocalizedFileName(data_ov003_0220f5b4);LoadDecompressedFileTo(data,M2C_FIELD(gCur3DSpriteEngine,void**,0x24));
-LoadFileToSpriteBuffer(data_ov003_0220f5cc,224,32);func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void**,0x24),32,32,7);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
+LoadFileToSpriteBuffer(data_ov003_0220f5cc,224,32);SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void**,0x24),32,32,7);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 func_02091d4c(9);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine,void**,0xc),M2C_FIELD(gCur3DSpriteEngine,void**,0x20),((MenuModeBits*)(p+0x60))->mode*322+1,5);
 ((MenuModeBits*)(p+0x60))->mode=(u8)(((MenuModeBits*)(p+0x60))->mode==0);

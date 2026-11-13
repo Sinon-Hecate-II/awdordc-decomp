@@ -6,7 +6,7 @@ void func_020d8bb4(void) {
 M2C_UNK func_0208349c(u32);
 s32 IsUnitAvailable();
 s32 func_020bf054(s32,s32);
-M2C_UNK func_020ceec8();
+M2C_UNK LoadMapTileset();
 s32 func_020d8b84(s32);
 s32 func_020e4b28(s32);
 extern M2C_UNK data_0215d9b8;
@@ -18,7 +18,7 @@ flags=gMapConfig;
 mode=M2C_FIELD(&data_0215d9b8,u16 *,6)&15;
 gMapConfig=(flags&~7)|3;
 func_0208349c(mode);
-func_020ceec8();
+LoadMapTileset();
 i=0;p=&data_02168f2c;
 do {i++;*p=0;p+=1;}while(i<59);
 k=0;
@@ -768,8 +768,8 @@ void func_020d9960(void) {
 }
 
 void func_020d996c(void) {
-    M2C_UNK func_020e05c4();
-    func_020e05c4();
+    M2C_UNK RefreshLinkPlayerSprites();
+    RefreshLinkPlayerSprites();
 }
 
 void func_020d9978(void) {

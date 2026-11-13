@@ -195,9 +195,9 @@ func_ov001_02171494 kind:function(arm,size=0x3c) addr:0x02171494
 func_ov001_021714d0 kind:function(arm,size=0xcc) addr:0x021714d0
 func_ov001_0217159c kind:function(arm,size=0xf8) addr:0x0217159c
 func_ov001_02171694 kind:function(arm,size=0x30) addr:0x02171694
-func_ov001_021716c4 kind:function(arm,size=0x14) addr:0x021716c4
+Ov001_GetIconRowSelection kind:function(arm,size=0x14) addr:0x021716c4
 func_ov001_021716d8 kind:function(arm,size=0x20) addr:0x021716d8
-func_ov001_021716f8 kind:function(arm,size=0x14) addr:0x021716f8
+Ov001_SetIconRowSelection kind:function(arm,size=0x14) addr:0x021716f8
 func_ov001_0217170c kind:function(arm,size=0x2c) addr:0x0217170c
 func_ov001_02171738 kind:function(arm,size=0x18) addr:0x02171738
 func_ov001_02171750 kind:function(arm,size=0x18) addr:0x02171750
@@ -303,8 +303,8 @@ func_ov001_02175d04 kind:function(arm,size=0x50) addr:0x02175d04
 Ov001_SetStepCallback kind:function(arm,size=0x10) addr:0x02175d54
 func_ov001_02175d64 kind:function(arm,size=0x14) addr:0x02175d64
 func_ov001_02175d78 kind:function(arm,size=0x28) addr:0x02175d78
-func_ov001_02175da0 kind:function(arm,size=0x14) addr:0x02175da0
-func_ov001_02175db4 kind:function(arm,size=0x28) addr:0x02175db4
+Ov001_SetNameEntryMode kind:function(arm,size=0x14) addr:0x02175da0
+Ov001_GetNameEntryMode kind:function(arm,size=0x28) addr:0x02175db4
 Ov001_GetLanguage kind:function(arm,size=0x10) addr:0x02175ddc
 Ov001_GetScreenLayout kind:function(arm,size=0x18) addr:0x02175dec
 Ov001_HasOptionFlag kind:function(arm,size=0x1c) addr:0x02175e04
@@ -551,7 +551,7 @@ func_ov001_0217b33c kind:function(arm,size=0x84) addr:0x0217b33c
 func_ov001_0217b3c0 kind:function(arm,size=0x30) addr:0x0217b3c0
 func_ov001_0217b3f0 kind:function(arm,size=0x2c) addr:0x0217b3f0
 func_ov001_0217b41c kind:function(arm,size=0x28) addr:0x0217b41c
-func_ov001_0217b444 kind:function(arm,size=0x134) addr:0x0217b444
+InitNameEntryScreen kind:function(arm,size=0x134) addr:0x0217b444
 func_ov001_0217b578 kind:function(arm,size=0xbc) addr:0x0217b578
 func_ov001_0217b634 kind:function(arm,size=0x54) addr:0x0217b634
 func_ov001_0217b688 kind:function(arm,size=0x7c) addr:0x0217b688
@@ -735,7 +735,7 @@ func_ov001_0218104c kind:function(arm,size=0x34) addr:0x0218104c
 func_ov001_02181080 kind:function(arm,size=0x14) addr:0x02181080
 func_ov001_02181094 kind:function(arm,size=0xf4) addr:0x02181094
 func_ov001_02181188 kind:function(arm,size=0x4) addr:0x02181188
-func_ov001_0218118c kind:function(arm,size=0x134) addr:0x0218118c
+Ov001_HandleRegionMenuChoice kind:function(arm,size=0x134) addr:0x0218118c
 func_ov001_021812c0 kind:function(arm,size=0x3c) addr:0x021812c0
 func_ov001_021812fc kind:function(arm,size=0x84) addr:0x021812fc
 Ov001_FinishRegionMenu kind:function(arm,size=0x1a4) addr:0x02181380
@@ -756,7 +756,7 @@ func_ov001_02181ee4 kind:function(arm,size=0x4) addr:0x02181ee4
 func_ov001_02181ee8 kind:function(arm,size=0x54) addr:0x02181ee8
 func_ov001_02181f3c kind:function(arm,size=0x20) addr:0x02181f3c
 func_ov001_02181f5c kind:function(arm,size=0x64) addr:0x02181f5c
-func_ov001_02181fc0 kind:function(arm,size=0x130) addr:0x02181fc0
+Ov001_MenuConfirm kind:function(arm,size=0x130) addr:0x02181fc0
 func_ov001_021820f0 kind:function(arm,size=0xf4) addr:0x021820f0
 func_ov001_021821e4 kind:function(arm,size=0x58) addr:0x021821e4
 func_ov001_0218223c kind:function(arm,size=0x8c) addr:0x0218223c
@@ -925,7 +925,7 @@ func_ov001_02185e90 kind:function(arm,size=0x18) addr:0x02185e90
 func_ov001_02185ea8 kind:function(arm,size=0x90) addr:0x02185ea8
 func_ov001_02185f38 kind:function(arm,size=0x158) addr:0x02185f38
 func_ov001_02186090 kind:function(arm,size=0x10c) addr:0x02186090
-func_ov001_0218619c kind:function(arm,size=0x13c) addr:0x0218619c
+Ov001_ReportConnectionState kind:function(arm,size=0x13c) addr:0x0218619c
 func_ov001_021862d8 kind:function(arm,size=0x32c) addr:0x021862d8
 func_ov001_02186604 kind:function(arm,size=0x44) addr:0x02186604
 func_ov001_02186648 kind:function(arm,size=0x14) addr:0x02186648
@@ -1288,7 +1288,7 @@ data_ov001_0218fbb0 kind:data(any) addr:0x0218fbb0
 data_ov001_0218fbb4 kind:data(any) addr:0x0218fbb4
 data_ov001_0218fbc3 kind:data(any) addr:0x0218fbc3
 data_ov001_0218fbd2 kind:data(any) addr:0x0218fbd2
-data_ov001_0218fbe8 kind:data(any) addr:0x0218fbe8
+gWfcEmptySlotId kind:data(any) addr:0x0218fbe8
 data_ov001_0218fbf0 kind:data(any) addr:0x0218fbf0
 data_ov001_0218fbfc kind:data(any) addr:0x0218fbfc
 data_ov001_0218fc40 kind:data(any) addr:0x0218fc40
@@ -1676,7 +1676,7 @@ gSaveData kind:bss addr:0x02193e04
 data_ov001_02193e08 kind:bss addr:0x02193e08
 data_ov001_02193e0c kind:bss addr:0x02193e0c
 data_ov001_02193e10 kind:bss addr:0x02193e10
-data_ov001_02193e14 kind:bss addr:0x02193e14
+gOv001ConnectionState kind:bss addr:0x02193e14
 gOv001RegionMenu kind:bss addr:0x02193e18
 data_ov001_02193e1c kind:bss addr:0x02193e1c
 data_ov001_02193e20 kind:bss addr:0x02193e20

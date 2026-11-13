@@ -157,8 +157,8 @@ return 0;
 void func_0209f184(void *p){extern void **gCurrentMap;void *q=M2C_FIELD(p,void **,0x34);u8 *base;if(!func_0209f0a0(M2C_FIELD(*gCurrentMap,s32 *,0x52d0),q)){base=*gCurrentMap;func_ov002_021e85b0(M2C_FIELD(base,s32 *,0x52d0),q,base+0x6eb8,base+0x6ed8);}else{base=*gCurrentMap;func_ov002_021e85b0(q,M2C_FIELD(base,s32 *,0x52d0),base+0x6ed8,base+0x6eb8);}func_ov002_021e15f4(p);}
 
 void func_0209f220(void) {
-    extern void *data_027e00c0;
-    M2C_FIELD(data_027e00c0, s8 *, 0x50) = 0;
+    extern void *g3DSpriteBankSub;
+    M2C_FIELD(g3DSpriteBankSub, s8 *, 0x50) = 0;
 }
 
 void func_0209f238(void){extern void **gCurrentMap;void func_ov000_0216a97c(s32,s32);u8 *p=(u8 *)*gCurrentMap+0x6000;func_ov000_0216a97c(M2C_FIELD(p,s32 *,0xeb8),M2C_FIELD(p,s32 *,0xed8));}
@@ -389,7 +389,7 @@ void func_0209f8c0(void) {
     M2C_FIELD(&data_0215be00, s32 *, 8) = 0;
 }
 
-s32 func_0209f8d4(void) {
+s32 GetTargetCount(void) {
     extern M2C_UNK data_0215be00;
     return M2C_FIELD(&data_0215be00, s32 *, 8);
 }

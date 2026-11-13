@@ -33,14 +33,14 @@ return child;
    the list towards the selected entry. */
 void MapEditListInput(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_02088044(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK FocusSpriteSlotById(M2C_UNK);
-    s32 func_020e32e8(M2C_UNK *);
+    s32 GetLocalizedFileNameDefault(M2C_UNK *);
     extern void *gKeyState;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -149,21 +149,21 @@ loop_25:
         SetFileDirectory(&gMapEditPath);
         savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        func_020e32e8(&gSoftKeyNarcName);
+        GetLocalizedFileNameDefault(&gSoftKeyNarcName);
         OpenNarcArchive();
         switch (mode) {                           /* switch 2; irregular */
         case SOFTKEY_MODE_JP:                     /* switch 2 */
-            LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyJpFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gSoftKeyJpFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             break;
         case SOFTKEY_MODE_US:                     /* switch 2 */
-            LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyUsFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gSoftKeyUsFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             break;
         case SOFTKEY_MODE_EU:                     /* switch 2 */
-            LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyEuFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gSoftKeyEuFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             break;
         }
         CloseNarcArchive();
-        func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
+        SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         gCur3DSpriteEngine = savedEngine;
         PlaySoundEffect(0x10011);
@@ -259,8 +259,8 @@ void CreateMapEditList(u8 *name) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(u8 *, M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
-    s32 func_02099ae8(u8 *);
-    s32 func_02099b00(u8 *);
+    s32 IsLeadByte(u8 *);
+    s32 IsGlyphEscape(u8 *);
     s32 GetLanguage();
     s32 HeapAllocBlock(M2C_UNK);
     extern M2C_UNK gHeapObjectVTable;
@@ -300,7 +300,7 @@ void CreateMapEditList(u8 *name) {
     dst = &gMapEditObjectList;
     i = 0;
     while ((*p != 0) && (i < 0x10U)) {
-        if ((func_02099ae8(p) != 0) || (func_02099b00(p) != 0)) {
+        if ((IsLeadByte(p) != 0) || (IsGlyphEscape(p) != 0)) {
             MI_CpuCopy8(p, dst, 2);
             p += 2;
         } else {

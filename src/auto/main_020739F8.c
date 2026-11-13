@@ -573,56 +573,60 @@ if(M2C_FIELD(arg1,s32 *,4)==func_020746fc(arg0,arg1))result=1;else result=0;
 return result;
 }
 
-s32 func_020747ec(s32 arg0, s32 arg1) {
-    s32 temp_r3;
-    s32 var_ip;
-    s32 var_r3;
-    s32 off;
-    s32 quot;
-    s32 off2;
-    s32 quot2;
-    u16 temp_r2;
-    u16 temp_r2_2;
+/* Check that a save-list record's link chain is consistent: walk its forward (+0x08)
+ * and backward (+0x0A) links, and at each step require the linked record to point back
+ * at the record it came from, be in use (rank 3), and share the record's kind (+0x06).
+ * Returns 1 when the whole chain is consistent, 0 on a cycle or a bad link. */
+s32 IsNodeChainValid(s32 table, s32 index) {
+    s32 start;
+    s32 cur;
+    s32 fwd;
+    s32 fwdOff;
+    s32 fwdIndex;
+    s32 bwdOff;
+    s32 bwdIndex;
+    u16 fwdLink;
+    u16 bwdLink;
 
-    var_ip = (arg1 * 0xC) + arg0;
-    var_r3 = var_ip;
+    cur = (index * 0xC) + table;
+    fwd = cur;
 loop_1:
-    temp_r2 = M2C_FIELD(var_r3, u16 *, 8);
-    if (temp_r2 != 0xFFFF) {
-        if (temp_r2 == arg1) {
+    fwdLink = M2C_FIELD(fwd, u16 *, 8);
+    if (fwdLink != 0xFFFF) {
+        if (fwdLink == index) {
             return 0;
         }
-        if ((((s32) M2C_FIELD((arg0 + ((s32) temp_r2 >> 2)), u8 *, 0xC0C) >> ((u32) (temp_r2 << 0x1E) >> 0x1D)) & 3) != 3) {
+        if ((((s32) M2C_FIELD((table + ((s32) fwdLink >> 2)), u8 *, 0xC0C) >> ((u32) (fwdLink << 0x1E) >> 0x1D)) & 3) != 3) {
             return 0;
         }
-        off = var_r3 - arg0;
-        quot = off / 12;
-        var_r3 = (temp_r2 * 0xC) + arg0;
-        if (M2C_FIELD(var_r3, u16 *, 0xA) != (u16) quot) {
+        fwdOff = fwd - table;
+        fwdIndex = fwdOff / 12;
+        fwd = (fwdLink * 0xC) + table;
+        if (M2C_FIELD(fwd, u16 *, 0xA) != (u16) fwdIndex) {
             return 0;
         }
-        if (M2C_FIELD(var_r3, u8 *, 6) != M2C_FIELD(var_ip, u8 *, 6)) {
+        if (M2C_FIELD(fwd, u8 *, 6) != M2C_FIELD(cur, u8 *, 6)) {
             return 0;
         }
         goto loop_1;
     }
-    temp_r3 = var_ip;
+    start = cur;
 loop_11:
-    temp_r2_2 = M2C_FIELD(var_ip, u16 *, 0xA);
-    if (temp_r2_2 != 0xFFFF) {
-        if (temp_r2_2 == arg1) {
+    bwdLink = M2C_FIELD(cur, u16 *, 0xA);
+    if (bwdLink != 0xFFFF) {
+        if (bwdLink == index) {
             return 0;
         }
-        if ((((s32) M2C_FIELD((arg0 + ((s32) temp_r2_2 >> 2)), u8 *, 0xC0C) >> ((u32) (temp_r2_2 << 0x1E) >> 0x1D)) & 3) != 3) {
+        if ((((s32) M2C_FIELD((table + ((s32) bwdLink >> 2)), u8 *, 0xC0C) >> ((u32) (bwdLink << 0x1E) >> 0x1D)) & 3) != 3) {
             return 0;
         }
-        off2 = var_ip - arg0;
-        quot2 = off2 / 12;
-        var_ip = (temp_r2_2 * 0xC) + arg0;
-        if (M2C_FIELD(var_ip, u16 *, 8) != (u16) quot2) {
+        bwdOff = cur - table;
+        bwdIndex = bwdOff / 12;
+        cur = (bwdLink * 0xC) + table;
+        if (M2C_FIELD(cur, u16 *, 8) != (u16) bwdIndex) {
             return 0;
         }
-        if (M2C_FIELD(var_ip, u8 *, 6) != M2C_FIELD(temp_r3, u8 *, 6)) {
+        if (M2C_FIELD(cur, u8 *, 6) != M2C_FIELD(start, u8 *, 6)) {
             return 0;
         }
         goto loop_11;

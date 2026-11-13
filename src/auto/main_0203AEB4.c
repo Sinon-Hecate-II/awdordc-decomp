@@ -74,7 +74,7 @@ void func_0203b128(void) {
  * one step of the session update and stops early when a request is pending. */
 void SyncSessionPlayerConnections(M2C_UNK *arg0,s32 playerCount){
 extern M2C_UNK gMatchSessionMgr;
-s32 func_0204e184(void *,s32 *);s32 func_0204e1b4(void *,s32,s32);s32 func_0204e3b0(void *,s32);
+s32 func_0204e184(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 func_0204e3b0(void *,s32);
 u32 ReportNetError();s32 GetSessionPlayerId(s32);s32 IsPlayerRecordJoined(void *);void AssignPlayerRecordId(void *,s32);void MarkPlayerRecordJoined(void *);
 s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);
 s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,s32);void FormatPlayerNasId(s32,void *,void *);
@@ -84,7 +84,7 @@ if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1e)){
 ReportNetError(func_0204e184(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),&remoteCount));
 #pragma opt_loop_invariants off
 for(remoteIndex=0;remoteIndex<remoteCount;remoteIndex++){
-ReportNetError(func_0204e1b4(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),remoteIndex,(s32)buddyInfo));
+ReportNetError(gpGetBuddyStatus(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),remoteIndex,(s32)buddyInfo));
 for(slot=0;slot<playerCount;slot++){
 if((s32)buddyInfo[0]==GetSessionPlayerId(slot)){
 if(!IsPlayerRecordJoined(a+slot*12)){
@@ -210,14 +210,14 @@ s32 DropSessionPlayer(s32 a) {
 s32 func_0203b63c(s32 arg0,s32 arg1) {
 extern M2C_UNK gMatchSessionMgr;
 s32 func_0203a660(void); s32 GetLocalPlayerInfo(void); s32 GetPlayerRecordId(s32,s32);
-s32 func_0204e2f4(void *,s32,s32 *); s32 func_0204e1b4(void *,s32,s32);
+s32 func_0204e2f4(void *,s32,s32 *); s32 gpGetBuddyStatus(void *,s32,s32);
 void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
 s32 b=arg1; s32 a=arg0; s32 out=0;
 if(!p||!func_0203a660())return 0;
 a=GetPlayerRecordId(GetLocalPlayerInfo(),a);
 if(a>0)if(func_0204e2f4(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),a,&out))return 0;
 if(a<=0||out==-1)return 0;
-return (u32)func_0204e1b4(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),out,b) <= 0;
+return (u32)gpGetBuddyStatus(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),out,b) <= 0;
 }
 
 u32 ReportNetError(u32 a,u32 unused,u32 off){void func_0203accc(u32,u32);u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}func_0203accc(code,off+0xfffeeaa8);return ret;}

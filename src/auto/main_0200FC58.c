@@ -61,11 +61,11 @@ s32 func_0200fd68(void) {
 }
 
 void func_0200fd78(void) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     if (func_0200fd68() != 0) {
         return;
     }
-    func_02007958();
+    SystemHalt();
 }
 
 void func_0200fd90(s32 arg0) {
@@ -313,10 +313,10 @@ s32 func_02010438(void) {
 
 s32 func_0201044c(s32 arg0) {
 extern void *data_0212fde0;extern M2C_UNK gSocketManager;
-void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(void *);void OS_WakeupThread(void *);void TaskWake(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK func_02007958();
+void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(void *);void OS_WakeupThread(void *);void TaskWake(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK SystemHalt();
 void *p=&data_0212fde0; s32 state,state2;s32 value;void (*callback)(s32);
 func_02000b9c(0x2000bc4);
-if(arg0==0)func_02007958();
+if(arg0==0)SystemHalt();
 func_0200fd78();
 state=OS_DisableInterrupts();
 while(M2C_FIELD(p,u32 *,0x114)&4)OS_SleepThread(p+0x10c);

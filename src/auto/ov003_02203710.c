@@ -11,20 +11,20 @@ M2C_FIELD(cursor,s16*,0x34)=x;M2C_FIELD(cursor,s16*,0x36)=y;
 M2C_FIELD(cursor,u32*,0x40)=((M2C_FIELD(cursor,u32*,0x40)&~511)|(w&511))&0xfffc01ff | ((u32)(h<<23)>>14);
 }
 static inline void MenuDescribe(void *p) {
-s32 func_ov003_02200d80(s32,u8);void func_0208b758(void*,s32);
+s32 Ov003_GetEntryValueTextId(s32,u8);void SetTextById(void*,s32);
 void *ctx=M2C_FIELD(p,void**,0x44);
 s32 kind=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 s32 value=M2C_FIELD(ctx+kind*24,s32*,12);
 switch(kind){
-case 0:func_0208b758(M2C_FIELD(p,void**,0x58),0x47000000);break;
-case 1:func_0208b758(M2C_FIELD(p,void**,0x58),func_ov003_02200d80(kind,value&255));break;
-case 2:func_0208b758(M2C_FIELD(p,void**,0x58),func_ov003_02200d80(kind,value&255));break;
-case 3:func_0208b758(M2C_FIELD(p,void**,0x58),0x4700000b);break;
-case 4:func_0208b758(M2C_FIELD(p,void**,0x58),0x47000014);break;
-case 5:func_0208b758(M2C_FIELD(p,void**,0x58),0x4700000a);break;
-case 6:func_0208b758(M2C_FIELD(p,void**,0x58),func_ov003_02200d80(kind,value&255));break;
-case 7:func_0208b758(M2C_FIELD(p,void**,0x58),0x47000015);break;
-case 8:func_0208b758(M2C_FIELD(p,void**,0x58),0x47000018);break;
+case 0:SetTextById(M2C_FIELD(p,void**,0x58),0x47000000);break;
+case 1:SetTextById(M2C_FIELD(p,void**,0x58),Ov003_GetEntryValueTextId(kind,value&255));break;
+case 2:SetTextById(M2C_FIELD(p,void**,0x58),Ov003_GetEntryValueTextId(kind,value&255));break;
+case 3:SetTextById(M2C_FIELD(p,void**,0x58),0x4700000b);break;
+case 4:SetTextById(M2C_FIELD(p,void**,0x58),0x47000014);break;
+case 5:SetTextById(M2C_FIELD(p,void**,0x58),0x4700000a);break;
+case 6:SetTextById(M2C_FIELD(p,void**,0x58),Ov003_GetEntryValueTextId(kind,value&255));break;
+case 7:SetTextById(M2C_FIELD(p,void**,0x58),0x47000015);break;
+case 8:SetTextById(M2C_FIELD(p,void**,0x58),0x47000018);break;
 }
 }
 static inline void MenuAnimate(void *p){

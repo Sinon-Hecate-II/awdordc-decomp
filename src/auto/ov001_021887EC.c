@@ -11,12 +11,12 @@ extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
 /* Initialize the active map state pointed to by the global from the allocated buffer p and the config a. */
 
 void func_ov001_021887ec(void *arg0) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     if (M2C_FIELD(arg0, u16 *, 2) != 8) {
         return;
     }
     func_ov001_02187b14(9);
-    func_02007958();
+    SystemHalt();
 }
 
 s32 func_ov001_0218880c(void) {
@@ -41,7 +41,7 @@ s32 func_ov001_021888a8(s32 a,s32 b,s32 c){
 s32 func_ov001_02187bb0();
 do{
 if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,64)!=1){
-func_02007958();
+SystemHalt();
 }
 }while(0);
 M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,4772)=384;M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,4768)=224;
@@ -118,7 +118,7 @@ s32 func_ov001_02188c28(void){
 extern M2C_UNK data_ov001_02193e20;
 extern M2C_UNK func_ov001_02188344;
 s32 func_020122ac(void *);
-if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,0x40)!=1)func_02007958();
+if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,0x40)!=1)SystemHalt();
 func_ov001_02187b14(3);
 if(func_020122ac(&func_ov001_02188344)==2)return 1;
 func_ov001_02187b14(9);return 0;
@@ -373,7 +373,7 @@ void func_ov001_02189308(void) {
     func_02013e98(1);
 }
 
-void func_ov001_02189318(void) { M2C_UNK func_02007958(); extern void *gOv001ProfileState; s32 value; switch(Ov001_GetTaskStep()) { case 1: func_ov001_021883a8(); return; case 7: value=func_ov001_02188614(); M2C_FIELD(gOv001ProfileState,u16 *,0x64a)=value; M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 0: M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 9: func_ov001_02188b04();return; case 3: break; default: func_02007958();return; } }
+void func_ov001_02189318(void) { M2C_UNK SystemHalt(); extern void *gOv001ProfileState; s32 value; switch(Ov001_GetTaskStep()) { case 1: func_ov001_021883a8(); return; case 7: value=func_ov001_02188614(); M2C_FIELD(gOv001ProfileState,u16 *,0x64a)=value; M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 0: M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 9: func_ov001_02188b04();return; case 3: break; default: SystemHalt();return; } }
 
 void func_ov001_021893c0(void) {
     M2C_UNK func_ov001_02186e80(s32, u16);

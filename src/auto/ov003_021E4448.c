@@ -202,8 +202,8 @@ void func_ov003_021e4908(void *arg0) {
 
     extern M2C_UNK data_02102174;
     extern M2C_UNK data_ov003_0220f48c;
-    extern M2C_UNK data_ov003_0220f4b4;
-    extern M2C_UNK data_ov003_0220f4e0;
+    extern M2C_UNK gOv003SceneViewVTable;
+    extern M2C_UNK gOv003SceneViewIfaceVTable;
     extern M2C_UNK data_ov003_0220f46c;
     extern M2C_UNK data_ov003_0220f45c;
     extern M2C_UNK data_ov003_0220f47c;
@@ -221,8 +221,8 @@ void func_ov003_021e4908(void *arg0) {
     }
 
     *(void **)r4 = &data_ov003_0220f48c;
-    *(void **)((char *)r4 + 0x34) = &data_ov003_0220f4b4;
-    *(void **)r4 = &data_ov003_0220f4e0;
+    *(void **)((char *)r4 + 0x34) = &gOv003SceneViewVTable;
+    *(void **)r4 = &gOv003SceneViewIfaceVTable;
     *(void **)((char *)r4 + 0x34) = &data_02102174;
 
     bp = (unsigned char *)r4;
@@ -254,7 +254,7 @@ void func_ov003_021e4908(void *arg0) {
 
     p = MemAlloc(0x58);
     if (p) {
-        *(void **)p = &data_ov003_0220f4e0;
+        *(void **)p = &gOv003SceneViewIfaceVTable;
         *(void **)((char *)p + 4) = &data_ov003_0220f46c;
         for (i = 0; i < 5; i++) {
             *(u16 *)((char *)p + i * 2 + 0x12) = 0xFFFF;
@@ -406,8 +406,8 @@ void *func_ov003_021e4d2c(void *arg0) {
     M2C_UNK func_020c127c();
     M2C_UNK func_020c8e40();
     void HeapFreeBlock(void *);
-    extern M2C_UNK data_ov003_0220f4b4;
-    extern M2C_UNK data_ov003_0220f4e0;
+    extern M2C_UNK gOv003SceneViewVTable;
+    extern M2C_UNK gOv003SceneViewIfaceVTable;
     M2C_UNK SetOv003SceneState(s32);
     void **temp_r0;
     void **temp_r0_2;
@@ -415,8 +415,8 @@ void *func_ov003_021e4d2c(void *arg0) {
     void **temp_r0_4;
     void *temp_r5;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220f4b4;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_0220f4e0;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gOv003SceneViewVTable;
+    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &gOv003SceneViewIfaceVTable;
     func_020c8e40();
     temp_r0 = M2C_FIELD(arg0, void ***, 0x5C);
     if (temp_r0 != NULL) {
@@ -491,72 +491,75 @@ M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
     return arg0;
 }
 
-void *func_ov003_021e4eb8(void *arg0) {
+/* Destructor of the ov003 battle-scene object: resets its two vtables, releases
+ * the text sprites, child objects, sprite arrays and map-record buffers it owns,
+ * then frees the object itself. */
+void *DestroyOv003SceneView(void *obj) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     M2C_UNK func_020c127c();
     M2C_UNK func_020c8e40();
     void HeapFreeBlock(void *);
-    extern M2C_UNK data_ov003_0220f4b4;
-    extern M2C_UNK data_ov003_0220f4e0;
+    extern M2C_UNK gOv003SceneViewVTable;
+    extern M2C_UNK gOv003SceneViewIfaceVTable;
     M2C_UNK SetOv003SceneState(s32);
-    void **temp_r0;
-    void **temp_r0_2;
-    void **temp_r0_3;
-    void **temp_r0_4;
-    void *temp_r5;
+    void **child5C;
+    void **child48;
+    void **child50;
+    void **child54;
+    void *spritePair;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220f4b4;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_0220f4e0;
+    M2C_FIELD(obj, M2C_UNK **, 0) = &gOv003SceneViewVTable;
+    M2C_FIELD(obj, M2C_UNK **, 0x34) = &gOv003SceneViewIfaceVTable;
     func_020c8e40();
-    temp_r0 = M2C_FIELD(arg0, void ***, 0x5C);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    child5C = M2C_FIELD(obj, void ***, 0x5C);
+    if (child5C != NULL) {
+        M2C_FIELD(*child5C, void (**)(void *), 4)(child5C);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x3C) != 0) {
         MemFree();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x40) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x40) != 0) {
         MemFree();
     }
-    temp_r5 = M2C_FIELD(arg0, void **, 0x44);
-    if (temp_r5 != NULL) {
-        if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
+    spritePair = M2C_FIELD(obj, void **, 0x44);
+    if (spritePair != NULL) {
+        if (M2C_FIELD(spritePair, s32 *, 0) != 0) {
             DeleteSpriteObject();
         }
-        if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
+        if (M2C_FIELD(spritePair, s32 *, 4) != 0) {
             DeleteSpriteObject();
         }
-        MemFree(temp_r5);
+        MemFree(spritePair);
     }
-    temp_r0_2 = M2C_FIELD(arg0, void ***, 0x48);
-    if (temp_r0_2 != NULL) {
-        M2C_FIELD(*temp_r0_2, void (**)(void *), 4)(temp_r0_2);
+    child48 = M2C_FIELD(obj, void ***, 0x48);
+    if (child48 != NULL) {
+        M2C_FIELD(*child48, void (**)(void *), 4)(child48);
     }
-    temp_r0_3 = M2C_FIELD(arg0, void ***, 0x50);
-    if (temp_r0_3 != NULL) {
-        M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
+    child50 = M2C_FIELD(obj, void ***, 0x50);
+    if (child50 != NULL) {
+        M2C_FIELD(*child50, void (**)(void *), 4)(child50);
     }
-    temp_r0_4 = M2C_FIELD(arg0, void ***, 0x54);
-    if (temp_r0_4 != NULL) {
-        M2C_FIELD(*temp_r0_4, void (**)(void *), 4)(temp_r0_4);
+    child54 = M2C_FIELD(obj, void ***, 0x54);
+    if (child54 != NULL) {
+        M2C_FIELD(*child54, void (**)(void *), 4)(child54);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x4C) != 0) {
         DeleteSpriteObject();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x58) != 0) {
         DeleteSpriteObject();
     }
     SetOv003SceneState(4);
     func_020c127c();
-    if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
-        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x68));
+    if (M2C_FIELD(obj, s32 *, 0x68) != 0) {
+        HeapFreeBlock(M2C_FIELD(obj, s32 *, 0x68));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x6C) != 0) {
-        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x6C));
+    if (M2C_FIELD(obj, s32 *, 0x6C) != 0) {
+        HeapFreeBlock(M2C_FIELD(obj, s32 *, 0x6C));
     }
-    MemFree(arg0);
-    return arg0;
+    MemFree(obj);
+    return obj;
 }
 
 M2C_UNK **func_ov003_021e4fec(M2C_UNK **arg0) {
@@ -598,8 +601,8 @@ s32 func_ov003_021e504c(s32 arg0) {
 #pragma peephole off
 #pragma interworking off
 void func_ov003_021e5060(s32 arg0) {
-    void *func_ov003_021e4eb8(void *);
-    func_ov003_021e4eb8(arg0 + 0xFFFFFFCC);
+    void *DestroyOv003SceneView(void *);
+    DestroyOv003SceneView(arg0 + 0xFFFFFFCC);
 }
 #pragma interworking reset
 #pragma peephole reset

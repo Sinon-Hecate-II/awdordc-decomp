@@ -708,13 +708,13 @@ ret:
 #pragma pop
 s32 func_0201da4c(s32 a,s32 b,s32 c,s32 d){
 extern M2C_UNK gSocketManager;extern M2C_UNK gNetStack;
-void func_0201b3e8(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 func_02024f9c(s32,s32,s32,s32,void *);s32 TcpSendData(s32,s32,s32,s32,void *);
+void UdpSendSegment(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 TlsSendAppData(s32,s32,s32,s32,void *);s32 TcpSendData(s32,s32,s32,s32,void *);
 void *p; s32 result;
 p=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),void **,0xa4);
 if(p!=0){
-if(M2C_FIELD(p,u8 *,8)==10){if(b)func_0201b3e8(a,b,p);if(d)func_0201b3e8(c,d,p);result=b+d;}
+if(M2C_FIELD(p,u8 *,8)==10){if(b)UdpSendSegment(a,b,p);if(d)UdpSendSegment(c,d,p);result=b+d;}
 else if(M2C_FIELD(p,u8 *,8)==11){if(b)func_0201b338(a,b,p);if(d)func_0201b338(c,d,p);result=b+d;}
-else if(M2C_FIELD(p,u8 *,9))result=func_02024f9c(a,b,c,d,p);
+else if(M2C_FIELD(p,u8 *,9))result=TlsSendAppData(a,b,c,d,p);
 else result=TcpSendData(a,b,c,d,p);
 if(M2C_FIELD(&gNetStack,u8 *,0)==0)return result;
 }return 0;

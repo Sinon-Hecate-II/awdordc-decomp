@@ -156,7 +156,7 @@ void BuildArmyInfoWindow(void) {
     extern M2C_UNK data_ov000_021b8500;
     extern M2C_UNK data_ov000_021b853c;
     extern M2C_UNK data_ov000_021b8578;
-    extern M2C_UNK data_ov000_021b8690;
+    extern M2C_UNK gArmyInfoWindowVTable;
     s8 detailed;
     u16 currentPlayer;
     void *mapPtr;
@@ -182,7 +182,7 @@ void BuildArmyInfoWindow(void) {
         return;
     }
     detailed = 0;
-    M2C_FIELD(window, M2C_UNK **, 0) = &data_ov000_021b8690;
+    M2C_FIELD(window, M2C_UNK **, 0) = &gArmyInfoWindowVTable;
     M2C_FIELD(window, s16 *, 0x34) = 0;
     M2C_FIELD(window, s8 *, 0x36) = 0;
     M2C_FIELD(window, s16 *, 0x38) = 0x100;

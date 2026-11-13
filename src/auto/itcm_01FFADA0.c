@@ -291,24 +291,26 @@ base=*gCurrentMap;
 }
 }
 
-void MarkAdjacentCells(s8 arg0){
+/* Paint `mark` onto every still-unvisited (negative) orthogonal neighbour of a
+   cell that already holds a non-negative value other than `mark` itself. */
+void MarkAdjacentCells(s8 mark){
 extern void **gCurrentMap;
-s32 y,x;void *base=*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++){
-s8 *cell=((s8**)base)[y+0x14ba]+x;
-if(*cell>=0 && arg0!=*cell){
-if(x!=0 && cell[-1]<0)cell[-1]=arg0;
-base=*gCurrentMap;
-if(x!=M2C_FIELD(base,u16*,0x5144)-1){
-cell=((s8**)base)[y+0x14ba]+x;
-if(cell[1]<0)cell[1]=arg0;
+s32 y,x;void *map=*gCurrentMap;
+for(y=0;y<M2C_FIELD(map,u16*,0x5146);y++){
+for(x=0;x<M2C_FIELD(map,u16*,0x5144);x++){
+s8 *cell=((s8**)map)[y+0x14ba]+x;
+if(*cell>=0 && mark!=*cell){
+if(x!=0 && cell[-1]<0)cell[-1]=mark;
+map=*gCurrentMap;
+if(x!=M2C_FIELD(map,u16*,0x5144)-1){
+cell=((s8**)map)[y+0x14ba]+x;
+if(cell[1]<0)cell[1]=mark;
 }
-if(y!=0){cell=((s8**)*gCurrentMap)[y+0x14b9];if(cell[x]<0)cell[x]=arg0;}
-base=*gCurrentMap;
-if(y!=M2C_FIELD(base,u16*,0x5146)-1){cell=((s8**)base)[y+0x14bb];if(cell[x]<0)cell[x]=arg0;}
+if(y!=0){cell=((s8**)*gCurrentMap)[y+0x14b9];if(cell[x]<0)cell[x]=mark;}
+map=*gCurrentMap;
+if(y!=M2C_FIELD(map,u16*,0x5146)-1){cell=((s8**)map)[y+0x14bb];if(cell[x]<0)cell[x]=mark;}
 }
-base=*gCurrentMap;
+map=*gCurrentMap;
 }
 }
 }

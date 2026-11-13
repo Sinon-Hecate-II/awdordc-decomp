@@ -41,11 +41,11 @@ void func_02018254(s16 arg0) {
 }
 
 s32 func_02018264(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4) {
-    s32 func_02012c28(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    s32 WFC_SendChannelData(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     void func_02018438(M2C_UNK, s32);
     s32 temp_r0;
 
-    temp_r0 = func_02012c28(arg0, 0, arg1, arg2, (s32) arg4, 1, 3);
+    temp_r0 = WFC_SendChannelData(arg0, 0, arg1, arg2, (s32) arg4, 1, 3);
     func_02018438(0xF, temp_r0);
     return temp_r0;
 }
@@ -116,11 +116,11 @@ void func_02018470(M2C_UNK arg0) {
 }
 
 void func_02018484(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 OS_DisableInterrupts();void OS_RestoreInterrupts(s32);void func_02007958();
+s32 OS_DisableInterrupts();void OS_RestoreInterrupts(s32);void SystemHalt();
 u32 end; s32 saved; u32 p;
 saved=OS_DisableInterrupts();p=arg0+0x30;end=arg0+0x70;
 for(;;){
-if(p>=end)func_02007958();
+if(p>=end)SystemHalt();
 if(M2C_FIELD(p,s32 *,12)==0){
 M2C_FIELD(p,s32 *,0)=arg1;M2C_FIELD(p,s32 *,4)=arg2;M2C_FIELD(p,s32 *,8)=arg3;M2C_FIELD(p,s32 *,12)=arg4;break;
 }

@@ -86,7 +86,7 @@ s32 func_0201a09c(u8 *r0) {
 
 void func_0201a134(s32 arg0) {
     extern M2C_UNK gNetStack;
-    extern M2C_UNK data_02137310;
+    extern M2C_UNK gArpCache;
     extern M2C_UNK gSocketManager;
     extern M2C_UNK data_021375b8;
     void MI_CpuFill8(void *, s32, s32);
@@ -112,7 +112,7 @@ void func_0201a134(s32 arg0) {
     if (old == 0) {
         return;
     }
-    MI_CpuFill8(&data_02137310, 0, 0x60);
+    MI_CpuFill8(&gArpCache, 0, 0x60);
     node = M2C_FIELD(&gSocketManager, void **, 0x08);
     while (node != 0) {
         sub = M2C_FIELD(node, void **, 0xA4);
@@ -305,20 +305,20 @@ void Checksum(M2C_UNK arg0, M2C_UNK arg1) {
 
 s32 IsTransportChecksumBad(u8 *a,s32 b,u8 *c,u32 d){u32 r;r=ChecksumAccumulate(c+12,8,ChecksumAccumulate(a,b,d));r+=b;if(r&0x10000)r=(u16)(r+1);return r!=65535;}
 
-s32 func_0201a6c4(s32 a){extern M2C_UNK gNetStack;s32 r=1;if(a!=-1&&a!=0x7f000001){s32 mask=M2C_FIELD(&gNetStack,s32 *,28);if((a&mask)!=(M2C_FIELD(&gNetStack,s32 *,80)&mask))r=0;}return r;}
+s32 IsLocalSubnetAddress(s32 a){extern M2C_UNK gNetStack;s32 r=1;if(a!=-1&&a!=0x7f000001){s32 mask=M2C_FIELD(&gNetStack,s32 *,28);if((a&mask)!=(M2C_FIELD(&gNetStack,s32 *,80)&mask))r=0;}return r;}
 
-s32 func_0201a704(s32 a){s32 func_0201a6c4(s32);extern M2C_UNK gNetStack;if(!func_0201a6c4(a))a=M2C_FIELD(&gNetStack,s32 *,44);return a;}
+s32 func_0201a704(s32 a){s32 IsLocalSubnetAddress(s32);extern M2C_UNK gNetStack;if(!IsLocalSubnetAddress(a))a=M2C_FIELD(&gNetStack,s32 *,44);return a;}
 
-s32 func_0201a728(s32 a){extern M2C_UNK gNetStack;s32 r=0;if(func_0201a6c4(a)){s32 m=~M2C_FIELD(&gNetStack,s32 *,28);if(m==(m&a))r=1;}return r;}
+s32 func_0201a728(s32 a){extern M2C_UNK gNetStack;s32 r=0;if(IsLocalSubnetAddress(a)){s32 m=~M2C_FIELD(&gNetStack,s32 *,28);if(m==(m&a))r=1;}return r;}
 
-s32 func_0201a764(s32 arg0) {
+s32 IsMulticastAddress(s32 arg0) {
     if ((arg0 & 0xF0000000) == 0xE0000000) {
         return 1;
     }
     return 0;
 }
 
-s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M2C_FIELD(&gNetStack,s32 *,80);if(own!=0&&a!=own)u=0;if(!u&&a!=0x7f000001)t=0;if(!t&&!func_0201a728(a))s=0;if(!s&&!func_0201a764(a))r=0;return r;}
+s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M2C_FIELD(&gNetStack,s32 *,80);if(own!=0&&a!=own)u=0;if(!u&&a!=0x7f000001)t=0;if(!t&&!func_0201a728(a))s=0;if(!s&&!IsMulticastAddress(a))r=0;return r;}
 
 s32 MacAddressesDiffer(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 
@@ -411,7 +411,7 @@ void func_0201ab8c(void){
     OS_RestoreInterrupts(key);
 }
 #pragma opt_strength_reduction reset
-s32 func_0201abd0(s32 a){extern M2C_UNK gNetStack,gLocalMacAddress,data_020faf78,data_02137310,data_0213731a;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);u64 GetSystemTick(void);s32 irq=OS_DisableInterrupts();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&gNetStack,s32 *,0x50))r=&gLocalMacAddress;else if(func_0201a728(a)||func_0201a764(a))r=&data_020faf78;else{p=(u8 *)&data_02137310;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=GetSystemTick()>>16;M2C_FIELD(&data_0213731a,u16 *,i*12)=a;r=(u8 *)&data_02137310+i*12+4;break;}}}OS_RestoreInterrupts(irq);return (s32)r;}
+s32 func_0201abd0(s32 a){extern M2C_UNK gNetStack,gLocalMacAddress,data_020faf78,gArpCache,gArpCacheAge;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);u64 GetSystemTick(void);s32 irq=OS_DisableInterrupts();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&gNetStack,s32 *,0x50))r=&gLocalMacAddress;else if(func_0201a728(a)||IsMulticastAddress(a))r=&data_020faf78;else{p=(u8 *)&gArpCache;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=GetSystemTick()>>16;M2C_FIELD(&gArpCacheAge,u16 *,i*12)=a;r=(u8 *)&gArpCache+i*12+4;break;}}}OS_RestoreInterrupts(irq);return (s32)r;}
 
 /* Build and send a 42-byte ARP-style announcement packet for `nodeId`, swapping byte order in the id fields. */
 void func_0201aca0(s32 nodeId) {

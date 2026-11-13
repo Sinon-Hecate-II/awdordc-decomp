@@ -1,6 +1,7 @@
 /* 23 functions from 0x020CAB8C to 0x020CBACC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 /* A map unit record. tail[4] and tail[5] (offsets 12,13) hold the indices of
  * the units a transport is carrying; the number of slots is the unit kind's
  * cargo count (gUnitKindCargoCount[kind]). */
@@ -161,20 +162,24 @@ void func_020cb018(s16 arg0) {
     M2C_FIELD(func_01ffa3dc(&data_0212b374, 7), s16 *, 0x70) = arg0;
 }
 
-s32 func_020cb038(void *arg0,s32 arg1){
+/* Refills a unit's ammo one point at a time up to its kind's maximum, accumulating
+   the cost of each point and returning the total.  When pay is set each point is
+   paid for out of the current player's funds (stopping when they run short); when it
+   is clear the per-point value is just the unit's health bracket. */
+s32 RefillUnitAmmo(void *unit,s32 pay){
 s32 Divide(s32,s32); M2C_UNK func_020d2b10(s32,u16);
 extern void **gCurrentMap; extern u16 data_ov000_021b5c02[];extern M2C_UNK gUnitKindStats;
-u8 *tab;s32 sum=0;u16 cost;u32 n=(u32)(M2C_FIELD(arg0,u16 *,6)<<25);u16 h,idx;void *map;
-if(arg1){n >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112)*(n?Divide(n-1,10)+1:sum);
-}else {n >>=25;cost=n?Divide(n-1,10)+1:sum;}
+u8 *tab;s32 total=0;u16 cost;u32 health=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25);u16 ammoWord,player;void *map;
+if(pay){health >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE)*(health?Divide(health-1,10)+1:total);
+}else {health >>=25;cost=health?Divide(health-1,10)+1:total;}
 tab=(u8 *)&gUnitKindStats;
 loop:
-if(((u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28)!=tab[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112+9]){
-if(arg1){map=*gCurrentMap;idx=M2C_FIELD(map,u16 *,0x52a4);if(M2C_FIELD((u8*)map+idx*140,s32 *,0x67a4)>=(s32)cost){func_020d2b10(idx,cost);goto update;}}
-else{update:h=M2C_FIELD(arg0,u16 *,6);sum+=cost;M2C_FIELD(arg0,u16 *,6)=(h&~0x780)|((u32)((u16)(((u32)(h<<21)>>28)+1)<<28)>>21);goto loop;}}
-return sum;}
+if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)<<21)>>28)!=tab[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_AMMO]){
+if(pay){map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);if(M2C_FIELD((u8*)map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF)>=(s32)cost){func_020d2b10(player,cost);goto update;}}
+else{update:ammoWord=M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO);total+=cost;M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)=(ammoWord&~0x780)|((u32)((u16)(((u32)(ammoWord<<21)>>28)+1)<<28)>>21);goto loop;}}
+return total;}
 
-s32 func_020cb170(void *arg0, s32 arg1) {
+s32 RefillUnitFuel(void *arg0, s32 arg1) {
     s32 Divide(s32, M2C_UNK);
     M2C_UNK func_020d2b10(s32, u16);
     extern void **gCurrentMap;
@@ -268,8 +273,8 @@ extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;extern u8 gUnitKindCargo
 u8 cargo;u8 *records;u8 slot;u8 *cursor;u8 cargoIndex;s32 cost; s32 value;cost=0;value=0;slot=0;
 if((u32)slot<(u32)gUnitKindCargoCount[((u32)(unit[0]<<26)>>26)*112]){
 do{cursor=unit+slot;cargoIndex=cursor[12];if(cargoIndex){
-cost+=func_020cb038((u8 *)*gCurrentMap+0x59a4+cargoIndex*14,0);
-cost+=func_020cb170((u8 *)*gCurrentMap+0x59a4+cursor[12]*14,0);
+cost+=RefillUnitAmmo((u8 *)*gCurrentMap+0x59a4+cargoIndex*14,0);
+cost+=RefillUnitFuel((u8 *)*gCurrentMap+0x59a4+cursor[12]*14,0);
 if(((u32)(unit[0]<<26)>>26)==21){cargo=cursor[12];records=(u8 *)*gCurrentMap+0x59a4;value+=LevelUpUnit(records+cargo*14,func_020a7558(unit),1);}
 }slot++;}while(slot<((u8 *)&gUnitKindStats)[((u32)(unit[0]<<26)>>26)*112+0x60]);}
 if(value)return func_020c98d8(unit[1],unit[2],1);
@@ -280,11 +285,11 @@ return func_020c98d8(unit[1],unit[2],2);
 u8 func_020cb6a4(void *arg0) {
 s32 func_020a8604(u32);
 u8 func_020c98d8(u8,u8,s32);
-s32 func_020cb038(void *,s32);
-s32 func_020cb170(void *,s32);
+s32 RefillUnitAmmo(void *,s32);
+s32 RefillUnitFuel(void *,s32);
 s32 n=0;
-if(func_020a8604((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==0) n+=func_020cb038(arg0,0);
-n+=func_020cb170(arg0,0);
+if(func_020a8604((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==0) n+=RefillUnitAmmo(arg0,0);
+n+=RefillUnitFuel(arg0,0);
 if(n==0) return n;
 return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
 }
@@ -358,9 +363,9 @@ terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_T
 table=M2C_FIELD((u8 *)&gUnitKindStats+kind*112,s8 **,0x58);
 if(table[terrain]){
 if(!func_020a8604(kind)){
-a+=func_020cb038(unit,0);
+a+=RefillUnitAmmo(unit,0);
 }
-a+=func_020cb170(unit,0);
+a+=RefillUnitFuel(unit,0);
 b+=LevelUpUnit(unit,func_020a7558(unit),1);
 }
 }

@@ -160,7 +160,7 @@ found:
     case 2:
         if(M2C_FIELD(event,u16 *,2)){M2C_FIELD(base+0x500,u16 *,0x26)=0;M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;}func_020168f0(event);return;
     case 21: if(func_02016840())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
-    case 128: switch((s32)M2C_FIELD(event,u16 *,4)){case 22:func_02007958();return;case 23:return;}return;
+    case 128: switch((s32)M2C_FIELD(event,u16 *,4)){case 22:SystemHalt();return;case 23:return;}return;
     default: M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
     }
 }
@@ -395,5 +395,5 @@ void func_02017fec(void) {
 
 s32 func_02017ff8(void){s32 t;u32 v=1;t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50d))func_020168f0(0);else if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),s32 *,0x5e4)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=v;v=func_0201871c();if(v){func_020188c8(func_02017fec);v=0;}else v=func_02017fb4();}OS_RestoreInterrupts(t);return v;}
 #pragma pop
-void func_0201808c(void){s32 t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320))func_02007958();func_02017ff8();OS_RestoreInterrupts(t);}
+void func_0201808c(void){s32 t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320))SystemHalt();func_02017ff8();OS_RestoreInterrupts(t);}
 

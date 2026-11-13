@@ -79,7 +79,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain; extern M2C_UNK gRecordsMen
 s32 func_ov005_022140f8(s32); void *func_020ad570(s32);
 void func_0209c048(s32,s16,void *,s32,s32,s32);
 void func_0209b2dc(s32,s16,s32,u32,s32,s32,u16);
-void func_02080860(void *,s32,s32,u16,s32);
+void FillTileRect(void *,s32,s32,u16,s32);
 s32 mode; u32 color; s32 barTile; void *saved; u16 iconTile;
 barTile=(row+1)*50+0x134;saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -90,7 +90,7 @@ if(RECORDS_SCREEN->highlighted==record)mode=9;else mode=0;
 func_0209c048(3,(s16)(row+3),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),record+1,0x2000,mode);
 func_0209b2dc(5,(s16)(row+3),1,color,0x2000,mode,(u16)barTile);
 iconTile=RECORDS_SCREEN->enabled[record]?0x124:0x128;
-func_02080860((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x38+(row+3)*64,2,2,iconTile,0);
+FillTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x38+(row+3)*64,2,2,iconTile,0);
 gCur3DSpriteEngine=saved;
 }
 

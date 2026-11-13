@@ -164,15 +164,15 @@ void func_020883bc(void) {
 M2C_UNK func_020883f0(M2C_UNK a) {
 extern M2C_UNK data_021577b4,data_0210259c;
 s32 func_0200c084(void *,s32,s32);void InitFileRequest(void *);void func_0200bf64(void *,void *);
-s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200bf28(void *);s32 FileRead(void *,void *,s32);void func_0200ba9c(void *);void func_0200c214(void *);M2C_UNK func_020e349c(void);
+s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200bf28(void *);s32 FileRead(void *,void *,s32);void CloseFileRequest(void *);void func_0200c214(void *);M2C_UNK func_020e349c(void);
 Unk0200FilePair pair;u32 info[11];u32 file[18];s32 size;u8 *dest; s32 offset,n; u32 flag;
 flag=((u8 *)&data_021577b4)[a]; if(flag==1)return flag;
 if(!func_0200c084(info,0,((s32 *)&data_0210259c)[a]))return;
 InitFileRequest(file);func_0200bf64(&pair,info);
 if(!func_0200b9e4(file,pair))return;
 func_0200bf28(info);size=file[10]-file[9];dest=(u8 *)info[1];
-for(offset=0;offset<size;offset+=0x2800){n=size-offset;if(n>=0x2800)n=0x2800;if(n!=FileRead(file,dest+offset,n)){func_0200ba9c(file);return;}}
-func_0200ba9c(file);func_0200c214(info);((u8 *)&data_021577b4)[a]=1;func_020e349c();
+for(offset=0;offset<size;offset+=0x2800){n=size-offset;if(n>=0x2800)n=0x2800;if(n!=FileRead(file,dest+offset,n)){CloseFileRequest(file);return;}}
+CloseFileRequest(file);func_0200c214(info);((u8 *)&data_021577b4)[a]=1;func_020e349c();
 }
 
 void func_020884f8(u8 a){s32 func_0200c408(M2C_UNK,s32);M2C_UNK func_020e349c();extern M2C_UNK data_0210259c,data_021577b4;

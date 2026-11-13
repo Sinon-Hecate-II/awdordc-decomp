@@ -23,11 +23,11 @@ void func_ov001_02180b8c(void) {
 }
 
 void func_ov001_02180b90(void) {
-    s32 func_ov001_021716c4(void);
+    s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK func_ov001_0218508c();
     void func_ov001_02180bbc(void);
-    if (func_ov001_021716c4() != 0) return;
+    if (Ov001_GetIconRowSelection() != 0) return;
     func_ov001_0218508c();
     Ov001_PlaySound(7);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180bbc);
@@ -61,7 +61,7 @@ void func_ov001_02180c2c(void) {
     s32 func_ov001_0217170c();
     M2C_UNK func_ov001_02171cf8();
     M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175da0(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183fa0();
     s32 func_ov001_021840d4();
     void *GetCurrentMapRecord();
@@ -96,7 +96,7 @@ void func_ov001_02180c2c(void) {
         return;
     }
     func_ov001_02175d64(0, 1);
-    func_ov001_02175da0(0, 0);
+    Ov001_SetNameEntryMode(0, 0);
     Ov001_SetStepCallback(&func_ov001_02179ea8);
 }
 
@@ -232,11 +232,11 @@ void func_ov001_02181010(void) {
 }
 
 void func_ov001_0218104c(void) {
-    s32 func_ov001_021716c4(void);
+    s32 Ov001_GetIconRowSelection(void);
     s32 func_ov001_02185714(void);
     M2C_UNK func_ov001_02171738();
     void func_ov001_02181080(void);
-    if (func_ov001_021716c4() == -2) return;
+    if (Ov001_GetIconRowSelection() == -2) return;
     if (func_ov001_02185714() == 1) return;
     func_ov001_02171738();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181080);
@@ -245,10 +245,10 @@ void func_ov001_0218104c(void) {
 void func_ov001_02181080(void) {
     void func_ov001_02181094(void);
     void func_ov001_02181188(void);
-    void func_ov001_0218118c(void);
+    void Ov001_HandleRegionMenuChoice(void);
     func_ov001_02181094();
     func_ov001_02181188();
-    func_ov001_0218118c();
+    Ov001_HandleRegionMenuChoice();
 }
 
 /* Scan the seven candidate regions; activate the first matching one, otherwise handle button fallbacks. */
@@ -300,18 +300,21 @@ void func_ov001_02181188(void) {
 
 }
 
-void func_ov001_0218118c(void) {
-s32 func_ov001_021716c4(void),Ov001_GetScreenLayout(void),Ov001_GetLanguage(void);
+/* Acts on the ov001 icon row's selection on the region menu: the left bar goes
+ * back (or advances the layout-dependent step), the right bar confirms the
+ * highlighted region, opening its map list or starting a new game when full. */
+void Ov001_HandleRegionMenuChoice(void) {
+s32 Ov001_GetIconRowSelection(void),Ov001_GetScreenLayout(void),Ov001_GetLanguage(void);
 s32 func_ov001_02184868();
-M2C_UNK Ov001_PlaySound(s32),func_ov001_021716f8(s32),func_ov001_02171750(void);
+M2C_UNK Ov001_PlaySound(s32),Ov001_SetIconRowSelection(s32),func_ov001_02171750(void);
 M2C_UNK func_ov001_021862d8(s32,s32,s32,s32,s32);
 M2C_UNK func_ov001_02184880(u8);
 void func_ov001_02181794(void),func_ov001_021819b4(void),func_ov001_021812c0(void);
 extern s8 data_ov001_0218fa74[];
 extern M2C_UNK func_ov001_02176578,func_ov001_02181824;
-u8 n;
-s32 index, frame;
-switch(func_ov001_021716c4()) {
+u8 region;
+s32 record, languageFrame;
+switch(Ov001_GetIconRowSelection()) {
 case 0:
 switch(Ov001_GetScreenLayout()) {
 case 0: Ov001_PlaySound(7); M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)=2; break;
@@ -319,16 +322,16 @@ case 1: func_ov001_02171750(); Ov001_SetStepCallback(&func_ov001_02176578); retu
 } goto done;
 case 1:
 M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)=1;
-n=M2C_FIELD(&gOv001MenuRegion,u8 *,0);
-if(n>=4) {
-index=n-4;
-if(func_ov001_02184868(index)==255) {Ov001_PlaySound(9);func_ov001_021716f8(-1);return;}
+region=M2C_FIELD(&gOv001MenuRegion,u8 *,0);
+if(region>=4) {
+record=region-4;
+if(func_ov001_02184868(record)==255) {Ov001_PlaySound(9);Ov001_SetIconRowSelection(-1);return;}
 Ov001_PlaySound(6);
-frame = data_ov001_0218fa74[Ov001_GetLanguage()];
-func_ov001_021862d8(70,0,1,frame,index+1);
+languageFrame = data_ov001_0218fa74[Ov001_GetLanguage()];
+func_ov001_021862d8(70,0,1,languageFrame,record+1);
 func_ov001_02181794();func_ov001_02171750();Ov001_SetStepCallback(&func_ov001_02181824);return;
 }
-if(n<=2)func_ov001_02184880(n);
+if(region<=2)func_ov001_02184880(region);
 Ov001_PlaySound(6);func_ov001_021819b4();
 done:
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021812c0);
@@ -390,7 +393,7 @@ func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_021768b8);
 case 0:case 1:case 2:
 func_ov001_02175d64(2,0);
 if(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_ov001_02181a84);
-else{func_ov001_02175da0(0,0);func_ov001_0217f72c(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
+else{Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
 case 3:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
 }
 func_ov001_0218b71c(&data_ov001_02193dd0);

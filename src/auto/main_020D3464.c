@@ -407,7 +407,7 @@ void func_020d3b24(void) {
 }
 
 void func_020d3cec(void) {
-    M2C_UNK func_020ceec8();
+    M2C_UNK LoadMapTileset();
     M2C_UNK func_020e3320();
     M2C_UNK func_020e3344();
     extern s32 data_0211fb58;
@@ -415,14 +415,14 @@ void func_020d3cec(void) {
     extern s32 gSelectionQueue;
     gSelectionQueue = data_0211fb58;
     data_0215be00 = data_0211fb58;
-    func_020ceec8();
+    LoadMapTileset();
     func_020e3320();
     func_020e3344();
 }
 
 void func_020d3d24(void) {
     M2C_UNK ResetBattleMap();
-    M2C_UNK func_020ceec8();
+    M2C_UNK LoadMapTileset();
     M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK func_020ceea8();
     M2C_UNK func_020a23c4();
@@ -432,7 +432,7 @@ void func_020d3d24(void) {
     M2C_UNK func_020d1ce0();
     extern void **gCurrentMap;
     ResetBattleMap();
-    func_020ceec8();
+    LoadMapTileset();
     LoadBattleMap(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     func_020ceea8();
     func_020a23c4();
@@ -444,7 +444,7 @@ void func_020d3d24(void) {
 
 void func_020d3d68(void) {
     u8 *GetPlayerSelectedUnit(s32);
-    s32 func_020d243c(s32);
+    s32 PlayerHasHq(s32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     void *base;
@@ -473,7 +473,7 @@ void func_020d3d68(void) {
             r5 = M2C_FIELD(p, u8 *, 1);
             r6 = M2C_FIELD(p, u8 *, 2);
         } else {
-            if (func_020d243c(r4) != 0) {
+            if (PlayerHasHq(r4) != 0) {
                 base = *gCurrentMap;
                 r5 = M2C_FIELD((u8 *)base + r7, u8 *, 0x67CF) & 0x7F;
                 r6 = M2C_FIELD((u8 *)base + r7, u8 *, 0x67D0) & 0x7F;

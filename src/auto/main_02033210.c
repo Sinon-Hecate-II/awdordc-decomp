@@ -89,7 +89,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     void func_02007740(void *);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetLocalTime(s32, s32);
-    void func_02007958(void);
+    void SystemHalt(void);
     void *func_02029784(void);
     void *func_020297c8(void *);
     void DC_InvalidateRange(void *, s32);
@@ -123,11 +123,11 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
         func_0200567c((void *)((u8 *)arg0 + 0xe), 7, gFmtU03, region);
     }
     if (*(u8 *)0x027FFE0C == 0) {
-        func_02007958();
+        SystemHalt();
     }
     MI_CpuCopy8((void *)0x027FFE0C, (void *)((u8 *)arg0 + 0x15), 4);
     if (*(u8 *)0x027FFE10 == 0) {
-        func_02007958();
+        SystemHalt();
     }
     MI_CpuCopy8((void *)0x027FFE10, (void *)((u8 *)arg0 + 0x1a), 2);
     *((u8 *)arg0 + 0x1d) = 0x30;
@@ -273,10 +273,10 @@ void func_02033f3c(void *arg0) {
 s32 func_02033f98(void *arg0) {
     void func_02006030(s32);
     void func_02007888(void *);
-    void func_020241f0(void *,s32);
+    void Random_AddEntropy(void *,s32);
     if(M2C_FIELD(arg0,s32 *,0x1130)==1) {
         func_02007888(arg0+0x19d4);
-        func_020241f0(arg0+0x19d4,0x20);
+        Random_AddEntropy(arg0+0x19d4,0x20);
     }
     LockMutex(arg0+0x1bf8);
     if(M2C_FIELD(arg0,s32 *,0x1c10)==1) {

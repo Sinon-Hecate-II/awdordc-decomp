@@ -28,6 +28,11 @@ struct FSFileRequest {
 #define FS_REQ_WANT_DIR  0x40 /* s32 nonzero when the path must name a directory */
 #define FS_REQ_OUT       0x44 /* void * receives the resolved directory or file entry */
 
+/* Scratch fields the directory-read command (3) keeps in the request. */
+#define FS_REQ_DIR_INDEX  0x26 /* u16 index handed to the next short entry */
+#define FS_REQ_DIR_OFFSET 0x28 /* u32 stream offset of the next entry */
+#define FS_REQ_DIR_SKIP   0x34 /* s32 nonzero to skip the entry's name */
+
 /* Request flags at FSFileRequest::flags. */
 #define FS_REQ_QUEUED    0x00000002 /* still queued, dropped by a cancel */
 #define FS_REQ_COMPLETED 0x00000004 /* wake the caller waiting at +0x18 */
@@ -71,16 +76,11 @@ typedef struct ResourceArchive {
     void *objectBlock;  /* +0x8C loaded object table section */
 } ResourceArchive;
 
-/* A filesystem directory entry: the 12-byte record kept in FS_REQ_DIR_BLOCK and
- * gFileCurrentDirectory, describing the directory a path is resolved against.
- * file is the FSFile (or registered device) that owns the directory. */
-typedef struct FSDirectoryEntry {
-    u32 file;  /* +0x00 FSFile * of the file/device */
-    u16 unk04; /* +0x04 */
-    u16 unk06; /* +0x06 */
-    u32 unk08; /* +0x08 */
-} FSDirectoryEntry;
-
-extern FSDirectoryEntry gFileCurrentDirectory;
+/* A byte position in an open file's stream. FileStreamRead reads from it and
+ * advances the offset by the number of bytes read. */
+typedef struct FSStreamPos {
+    void *file;   /* +0x00 the FSFile to read from */
+    s32   offset; /* +0x04 byte offset of the next read */
+} FSStreamPos;
 
 #endif

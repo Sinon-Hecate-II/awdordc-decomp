@@ -104,7 +104,7 @@ s32 func_ov000_0216b15c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
     s32 func_02080e30(M2C_UNK *, M2C_UNK);
     M2C_UNK OpenNarcArchive();
@@ -302,7 +302,7 @@ block_24:
         }
         LoadDecompressedFileTo(data_ov000_021b83c4[var_r3_2], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
     }
-    func_020808dc(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
+    SetTileRectPalette(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
     temp_r0_23 = func_02080e30(&data_ov000_021b8708, 1);
     func_01ff9e44(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
     HeapFreeBlock(temp_r0_23);

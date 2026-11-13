@@ -34,6 +34,6 @@ M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x10a)=1;
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x10c)=-1;
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x10e)=-1;
 GetMacAddress((char *)data_ov001_02193d24.ptr+0x110);
-if(func_ov001_0216d088(func_ov001_02175880,func_ov001_02175890))func_02007958();
+if(func_ov001_0216d088(func_ov001_02175880,func_ov001_02175890))SystemHalt();
 }
 

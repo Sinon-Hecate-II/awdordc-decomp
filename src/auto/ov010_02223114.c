@@ -392,14 +392,14 @@ s32 func_ov010_02223a40(void *arg0, void *arg1, u32 arg2) {
 s32 func_ov010_02223b18(void *arg0, void *arg1) { (void)arg0; (void)arg1; return 0; }
 
 s32 func_ov010_02223ec8(s32 a) {
-s32 func_ov010_022243b0(s32);
+s32 VoiceLink_AllocContext(s32);
 extern s32 gLinkConfig;
 s32 state=M2C_FIELD(&gLinkConfig,s32 *,0x10);
 if(state==0 || state==2) return 0;
-return func_ov010_022243b0(a);
+return VoiceLink_AllocContext(a);
 }
 
-s32 func_ov010_02223ef0(void *arg0) {
+s32 VoiceLink_ReleaseContext(void *arg0) {
     extern M2C_UNK gVoiceLinkState;
     extern M2C_UNK gVoiceLinkContext;
     extern M2C_UNK gLinkConfig;

@@ -46,7 +46,7 @@ void func_ov003_021ee8b8(void *arg0) {
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_02088ff4(s32);
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s16 GetSpriteAnimValue(void *);
     
@@ -93,7 +93,7 @@ void func_ov003_021ee8b8(void *arg0) {
 
     void *func_02084e64(void);
     void *func_02084e24(int);
-    int func_020848c4(void);
+    int GetLocalPlayerIdForOverlay(void);
     u32 GetReadyPlayerMask(void);
     void *packet;
     int local, enabled, ready, offset;
@@ -111,7 +111,7 @@ void func_ov003_021ee8b8(void *arg0) {
     if (!func_02084d3c(sp0, 0x24)) return;
     packet=func_02084e64();
     if (!packet) return;
-    local=func_020848c4();
+    local=GetLocalPlayerIdForOverlay();
     p=M2C_FIELD(arg0,void **,0x6c);
     count=M2C_FIELD(p,s8 *,4);
     enabled=(u32)(M2C_FIELD(arg0,u8 *,0x3a)<<31)>>31;
@@ -130,7 +130,7 @@ void func_ov003_021ee8b8(void *arg0) {
     }while(i<M2C_FIELD(p,s8 *,4));
     if((u8)((((u32)M2C_FIELD(arg0,u8 *,0x39)<<28)>>30)==0)){
         p=M2C_FIELD(arg0,void **,0x6c);
-        player=func_020848c4();
+        player=GetLocalPlayerIdForOverlay();
         playerCount=M2C_FIELD(p,u8 *,4);
         for(j=0;j<playerCount;j++)if(player==M2C_FIELD(p+j,u8 *,0x74)){player=(s8)j;goto foundPlayer;}
         player=-1;
@@ -235,13 +235,13 @@ foundPlayer:
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
                 if (InRange((u8) temp_r0_3, 0, 3) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
                 } else if (InRange((u8) temp_r0_3, 4, 7) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
                 } else if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
                 } else if (InRange((u8) temp_r0_3, 0x15, 0x18) != 0) {
-                    func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
+                    SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
                 } else if ((u8) temp_r0_3 == 0x19) {
                     temp_r0_4 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
                     if (temp_r0_4 == 0) {
@@ -250,7 +250,7 @@ foundPlayer:
                         var_r1_2 = 0;
                     }
                     if (var_r1_2 & 0xFF) {
-                        func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
+                        SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
                     } else {
                         if (temp_r0_4 == 1) {
                             var_r0_6 = 1;
@@ -258,7 +258,7 @@ foundPlayer:
                             var_r0_6 = 0;
                         }
                         if (var_r0_6 & 0xFF) {
-                            func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
+                            SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
                         }
                     }
                 }

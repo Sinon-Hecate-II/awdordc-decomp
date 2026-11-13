@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 void func_020d4f4c(void);
-void func_020d5304(void);
+void UpdateUnitSelectCursor(void);
 void UpdateAimingCursor(void);
 
 void func_020d4430(void){extern void **gCurrentMap;if((s32)M2C_FIELD(*gCurrentMap,u16*,0x52a2)>1)func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_ov000_0216a86c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=6;}
@@ -75,7 +75,7 @@ u8 func_020d4810(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u
 void func_020d482c(void) {
     extern void **gCurrentMap;
     extern u16 gMapConfig;
-    void *func_020c7e6c(s32);
+    void *GetMapRecord(s32);
     s32 func_020a89a4(s32);
     void *dst;
     u32 mapId;
@@ -89,8 +89,8 @@ void func_020d482c(void) {
         if (mapId >= 225)
             inRange = mapId < 425;
         if (inRange) {
-            dst = func_020c7e6c(225);
-            MI_CpuCopy32(func_020c7e6c(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)), dst, 84);
+            dst = GetMapRecord(225);
+            MI_CpuCopy32(GetMapRecord(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)), dst, 84);
             M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 225;
         }
         if (func_02084830())
@@ -105,12 +105,12 @@ void func_020d4928(void) {
     M2C_UNK func_020d9394();
     M2C_UNK func_020d4b30();
     M2C_UNK func_020d3d68();
-    M2C_UNK func_0209643c();
+    M2C_UNK LoadCurrentMap();
     M2C_UNK func_020d4ae8();
     M2C_UNK func_020b1ae0();
     func_020b1ae0();
     func_020d4ae8();
-    func_0209643c();
+    LoadCurrentMap();
     func_020d3d68();
     func_020d4b30();
     func_020d9394();
@@ -295,7 +295,7 @@ u8 func_020d4dac(void) {
 u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
 
 void func_020d5068(void);
-void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:func_020d5304();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
+void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:UpdateUnitSelectCursor();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
 
 int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(IsDialogActive())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
 
@@ -399,35 +399,39 @@ void UpdateAimingCursor(void) {
  DrawUnitInfoPanel(2);
 }
 
-void func_020d52d0(void){extern void **gCurrentMap;func_020b2268();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
+void CloseAimingCursor(void){extern void **gCurrentMap;func_020b2268();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
 
-void func_020d5304(void) {
+/* Aim-cursor handler for battle-map mode 3: shows the cursor over the aimed tile
+   and, when that tile holds one of the current player's ready units, on confirm
+   records command 0x10 for that unit and points the map cursor at it; B cancels,
+   R opens the map menu and X closes it. */
+void UpdateUnitSelectCursor(void) {
 extern void **gCurrentMap;
-s32 func_020ba980(s32,s32);
+s32 IsSelectableUnitAt(s32,s32);
 s32 func_020bcaf0(void);
 s32 func_020bdd18(void);
 s32 valid, keys;
-u32 index;
-void *state;
+u32 unitId;
+void *map;
 keys=0;
 func_020cf828(0x1001a);
 func_0207a7a4(1,4);
-valid=func_020ba980(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
+valid=IsSelectableUnitAt(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 if(valid) MoveMapCursorToTarget(4); else MoveMapCursorToTarget(5);
 if(!func_020d4dd0()) return;
 keys |= func_020bcaf0();
 keys |= func_020bdd18();
-if(keys&0x20) {func_020d52d0();return;}
+if(keys&0x20) {CloseAimingCursor();return;}
 if(keys&0x100) {CreateMapMenu();return;}
 if(keys&0x40) {func_020d8fa0();return;}
 if(keys&0x10) {
 if(valid) {
-state=*gCurrentMap;
-index=M2C_FIELD(state,u8 *,M2C_FIELD(state,s16 *,0x52c2)+M2C_FIELD((u8 *)state+M2C_FIELD(state,s16 *,0x52c4)*2,u16 *,0x3758));
-func_ov000_02199f50(0x10,index,0,0);
-M2C_FIELD(*gCurrentMap,void **,0x52d0)=(u8 *)state+0x59a4+index*14;
+map=*gCurrentMap;
+unitId=M2C_FIELD(map,u8 *,M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8 *)map+M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_Y)*2,u16 *,MAP_ROW_OFFSETS));
+func_ov000_02199f50(0x10,unitId,0,0);
+M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT)=(u8 *)map+MAP_UNIT_RECORDS+unitId*MAP_UNIT_STRIDE;
 func_ov000_0219fd54();
-} else func_020d52d0();
+} else CloseAimingCursor();
 }
 }
 

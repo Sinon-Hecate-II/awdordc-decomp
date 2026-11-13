@@ -70,14 +70,14 @@ void func_ov007_02219c58(s32 a,s32 b,s32 c,s32 d) {
 extern s32 gCur3DSpriteEngine;
 void ClearTileRect(void *,s32,s32);
 void func_0209c048(s16,s16,void *,s32,s32,s32);
-void func_020808dc(void *,s32,s32,u16);
+void SetTileRectPalette(void *,s32,s32,u16);
 s32 tile=c+4;
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x20)+a*2+(b+1)*64,2,2);
 if(d>0) {
 func_0209c048(a+1,b+1,M2C_FIELD(gCur3DSpriteEngine,void **,0x20),d,0x1000,0);
 tile+=5;
 }
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+a*2+b*64,2,3,(u16)tile);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+a*2+b*64,2,3,(u16)tile);
 }
 
 #pragma opt_strength_reduction off
@@ -88,7 +88,7 @@ void func_ov007_02219d10(void){
     DMA dirty bits (0x46 |= 2,2,1) before restoring the current engine. */
  extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
  s32 func_ov007_0221202c(s32,s32);u8 func_ov007_02211f00(void);
- void func_020808dc(void *,s32,s32,u16);
+ void SetTileRectPalette(void *,s32,s32,u16);
  s32 savedEngine,row,rowStart;
  savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
  row=0;rowStart=2;do{
@@ -104,12 +104,12 @@ void func_ov007_02219d10(void){
  }while(row<5);
  switch(func_ov007_02211f00()){
  case 0:
- func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x480,8,4,3);
- func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x490,8,4,2);
+ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x480,8,4,3);
+ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x490,8,4,2);
  break;
  case 1:
- func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x480,8,4,2);
- func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x490,8,4,3);
+ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x480,8,4,2);
+ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x490,8,4,3);
  break;
  }
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;

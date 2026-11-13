@@ -52,34 +52,39 @@ y++;row+=30;
 }return found!=0;
 }
 
-s32 Map_CountTileNeighbors(s32 x,s32 y,s32 value){
+/* Count how many of the four orthogonal neighbours of a cell are `tile`, or 0 when the
+ * cell is already marked in the generator's marker grid. */
+s32 Map_CountTileNeighbors(s32 x,s32 y,s32 tile){
 s32 count;
-if(((s8*)gMapMarkerGrid+y*30)[x])return 0;
+if(((s8*)gMapMarkerGrid+y*MAP_MARKER_STRIDE)[x])return 0;
 count=0;
-if(x-1<0 || value==((Map14E24*)*gCurrentMap)->cells[x-1+((Map14E24*)*gCurrentMap)->rows[y]])count++;
-if(y-1<0 || value==((Map14E24*)*gCurrentMap)->cells[x+((Map14E24*)*gCurrentMap)->rows[y-1]])count++;
-if(x+1>=M2C_FIELD(*gCurrentMap,u16*,0x5144) || value==((Map14E24*)*gCurrentMap)->cells[x+1+((Map14E24*)*gCurrentMap)->rows[y]])count++;
-if(y+1>=M2C_FIELD(*gCurrentMap,u16*,0x5146) || value==((Map14E24*)*gCurrentMap)->cells[x+((Map14E24*)*gCurrentMap)->rows[y+1]])count++;
+if(x-1<0 || tile==((Map14E24*)*gCurrentMap)->cells[x-1+((Map14E24*)*gCurrentMap)->rows[y]])count++;
+if(y-1<0 || tile==((Map14E24*)*gCurrentMap)->cells[x+((Map14E24*)*gCurrentMap)->rows[y-1]])count++;
+if(x+1>=M2C_FIELD(*gCurrentMap,u16*,0x5144) || tile==((Map14E24*)*gCurrentMap)->cells[x+1+((Map14E24*)*gCurrentMap)->rows[y]])count++;
+if(y+1>=M2C_FIELD(*gCurrentMap,u16*,0x5146) || tile==((Map14E24*)*gCurrentMap)->cells[x+((Map14E24*)*gCurrentMap)->rows[y+1]])count++;
 return count;
 }
 
-s32 Map_RollTerrainGrowth(s32 value,s32 mode){
-s32 RandomIntRange(s32,s32);s32 n;
-switch(mode){
+/* Whether a tile of terrain kind `terrainId` grows to its next stage: roll a die
+ * sized for that kind and succeed (1) when the roll is at or below the stage's
+ * threshold, so later stages are more likely; stage 0 never grows. */
+s32 Map_RollTerrainGrowth(s32 stage,s32 terrainId){
+s32 RandomIntRange(s32,s32);s32 roll;
+switch(terrainId){
 case 32:
-if(!value)break;
-n=RandomIntRange(1,8);
-switch(value){case 0:break;case 1:value=2;break;case 2:value=3;break;case 3:value=3;break;case 4:value=5;break;}
-if(n<=value)return 1;break;
+if(!stage)break;
+roll=RandomIntRange(1,8);
+switch(stage){case 0:break;case 1:stage=2;break;case 2:stage=3;break;case 3:stage=3;break;case 4:stage=5;break;}
+if(roll<=stage)return 1;break;
 case 3:
-if(!value)break;
-n=RandomIntRange(1,6);
-switch(value){case 0:break;case 1:value=2;break;case 2:value=4;break;case 3:value=5;break;case 4:value=6;break;}
-if(n<=value)return 1;break;
+if(!stage)break;
+roll=RandomIntRange(1,6);
+switch(stage){case 0:break;case 1:stage=2;break;case 2:stage=4;break;case 3:stage=5;break;case 4:stage=6;break;}
+if(roll<=stage)return 1;break;
 case 34:
-n=RandomIntRange(1,4);
-switch(value){case 0:value=1;break;case 1:value=3;break;case 2:value=4;break;}
-if(n<=value)return 1;break;
+roll=RandomIntRange(1,4);
+switch(stage){case 0:stage=1;break;case 1:stage=3;break;case 2:stage=4;break;}
+if(roll<=stage)return 1;break;
 }
 return 0;
 }

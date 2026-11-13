@@ -395,7 +395,7 @@ case 3:default:WFC_SetState(11);OS_RestoreInterrupts(irq);return 7;
 OS_RestoreInterrupts(irq);return 3;
 }
 
-s32 func_02027c84(void){s32 s=OS_DisableInterrupts();s32 r=0;void *p=(void *)gSession;if(p)r=M2C_FIELD(p,s32 *,0x2260);OS_RestoreInterrupts(s);return r;}
+s32 Wfc_GetLinkState(void){s32 s=OS_DisableInterrupts();s32 r=0;void *p=(void *)gSession;if(p)r=M2C_FIELD(p,s32 *,0x2260);OS_RestoreInterrupts(s);return r;}
 
 u32 WFC_SetStatusBits(u32 v){
 u32 old; s32 s=OS_DisableInterrupts();u32 mask=0;void *p=(void *)gSession;

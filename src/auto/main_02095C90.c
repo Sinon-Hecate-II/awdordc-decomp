@@ -1,6 +1,6 @@
 /* 28 functions from 0x02095C90 to 0x02096C7C (main), found by ds-decomp. */
 #include "common.h"
-typedef struct { u16 unk0, unk2, unk4, unk6; } Unk0209Rect;
+#include "battle_map.h"
 typedef struct { u8 kind:6; u8 owner:2; u8 rest[13]; } Unit964;
 extern u8 data_02102ee4[];
 extern u16 gMapConfig[];
@@ -191,7 +191,7 @@ void func_020960b4(void) {
     func_0209cce4(&func_020949f8, 5);
 }
 
-void func_020960cc(s32 arg0, s32 arg1, void *arg2) {
+void LayerOffsetToPixel(s32 arg0, s32 arg1, void *arg2) {
     s32 Divide(s32, M2C_UNK);
     s32 temp_r0;
 
@@ -201,18 +201,18 @@ void func_020960cc(s32 arg0, s32 arg1, void *arg2) {
 }
 
 void func_020960fc(void *arg0) {
-M2C_UNK func_02091e50(void);
+M2C_UNK GetMenuCursor(void);
 void func_02097c50(s32,s32,s32);
 extern void *gCur3DSpriteEngine;
 s16 pos[2];
-func_020960cc(M2C_FIELD(arg0,s32 *,0x4c),M2C_FIELD((u8 *)gCur3DSpriteEngine+M2C_FIELD(arg0,u8 *,0x40)*4,s32 *,0x20),pos);
-func_02097c50(func_02091e50(),pos[0]+M2C_FIELD(arg0,s16 *,0x4a),pos[1]);
+LayerOffsetToPixel(M2C_FIELD(arg0,s32 *,0x4c),M2C_FIELD((u8 *)gCur3DSpriteEngine+M2C_FIELD(arg0,u8 *,0x40)*4,s32 *,0x20),pos);
+func_02097c50(GetMenuCursor(),pos[0]+M2C_FIELD(arg0,s16 *,0x4a),pos[1]);
 }
 
 void func_0209614c(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_02091e50();
+    M2C_UNK GetMenuCursor();
     M2C_UNK func_02097cb8();
     s32 func_0209dc48();
     s32 func_0209dd54();
@@ -228,37 +228,40 @@ void func_0209614c(void *arg0) {
         return;
     }
     PlaySoundEffect(0x10012);
-    func_02091e50();
+    GetMenuCursor();
     func_02097cb8();
     M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
     func_01ffa6fc(arg0);
 }
 
-M2C_UNK func_020961b8(void *p) {
-s32 func_02091e50(void);
-void func_0209de6c(s32,Unk0209Rect);
+/* Lay out the two-state widget p: turn the address of its selected-half tile in the
+ * widget's layer into a screen position, store the two 32x16 half rectangles (slots 1
+ * and 2) and move the menu cursor to the half p->0x34 selects. */
+M2C_UNK LayoutToggleWidget(void *p) {
+s32 GetMenuCursor(void);
+void SetWidgetRect(s32,WidgetRect);
 void func_02097c84(s32,s32,s32);
 extern void *gCur3DSpriteEngine;
-s32 cursor=func_02091e50();
-s32 x=0,y=0;
+s32 cursor=GetMenuCursor();
+s32 selX=0,selY=0;
 s16 pos[2];
-Unk0209Rect a,b;
-func_020960cc(M2C_FIELD(p,s32 *,0x4c),M2C_FIELD(gCur3DSpriteEngine+M2C_FIELD(p,u8 *,0x40)*4,s32 *,0x20),pos);
-a.unk2=pos[1];a.unk4=32;a.unk6=16;
+WidgetRect leftHalf,rightHalf;
+LayerOffsetToPixel(M2C_FIELD(p,s32 *,0x4c),M2C_FIELD(gCur3DSpriteEngine+M2C_FIELD(p,u8 *,0x40)*4,s32 *,0x20),pos);
+leftHalf.y=pos[1];leftHalf.w=32;leftHalf.h=16;
 pos[0]+=M2C_FIELD(p,s16 *,0x4a);
-a.unk0=pos[0];
-func_0209de6c(1,a);
-b.unk0=pos[0]+32;b.unk2=pos[1];b.unk4=32;b.unk6=16;
-func_0209de6c(2,b);
-switch(M2C_FIELD(p,s16 *,0x34)) {case 0:x=pos[0];y=pos[1];break;case 1:x=pos[0]+32;y=pos[1];break;}
-func_02097c84(cursor,x,y);
+leftHalf.x=pos[0];
+SetWidgetRect(1,leftHalf);
+rightHalf.x=pos[0]+32;rightHalf.y=pos[1];rightHalf.w=32;rightHalf.h=16;
+SetWidgetRect(2,rightHalf);
+switch(M2C_FIELD(p,s16 *,0x34)) {case 0:selX=pos[0];selY=pos[1];break;case 1:selX=pos[0]+32;selY=pos[1];break;}
+func_02097c84(cursor,selX,selY);
 }
 
 void func_020962ec(void *arg0) {
-    M2C_UNK func_020961b8(void *);
+    M2C_UNK LayoutToggleWidget(void *);
     M2C_UNK func_0209bfdc(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     func_0209bfdc(0, 0, M2C_FIELD(arg0, s32 *, 0x4C), 0xC0000321, (s32) M2C_FIELD(arg0, u16 *, 0x48), 0);
-    func_020961b8(arg0);
+    LayoutToggleWidget(arg0);
     M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
 }
 
@@ -268,9 +271,9 @@ void func_02096334(void *arg0) {
     s32 func_0209def8(void);
     M2C_UNK func_020d47d0(void);
     M2C_UNK func_020d47f0(void);
-    M2C_UNK func_020961b8(void *);
+    M2C_UNK LayoutToggleWidget(void *);
     M2C_UNK PlaySoundEffect(M2C_UNK);
-    M2C_UNK func_02091e50(void);
+    M2C_UNK GetMenuCursor(void);
     M2C_UNK func_02097cb8(void);
     M2C_UNK func_01ffa6fc(void *);
 
@@ -286,7 +289,7 @@ void func_02096334(void *arg0) {
     if (temp_r1 != 0) {
         if ((temp_r1 == 1) && (temp_r5 & 4)) {
             M2C_FIELD(arg0, s16 *, 0x34) = 0;
-            func_020961b8(arg0);
+            LayoutToggleWidget(arg0);
             PlaySoundEffect(0x10010);
             return;
         }
@@ -294,13 +297,13 @@ void func_02096334(void *arg0) {
     }
     if (temp_r5 & 8) {
         M2C_FIELD(arg0, s16 *, 0x34) = 1;
-        func_020961b8(arg0);
+        LayoutToggleWidget(arg0);
         PlaySoundEffect(0x10010);
         return;
     }
     if (temp_r5 & 0x20) {
         M2C_FIELD(arg0, s16 *, 0x34) = 1;
-        func_020961b8(arg0);
+        LayoutToggleWidget(arg0);
     }
 block_8:
     if (temp_r5 & 0x10) {
@@ -321,19 +324,24 @@ block_8:
         func_020d47f0();
         break;
     }
-    func_02091e50();
+    GetMenuCursor();
     func_02097cb8();
     func_02097bac(3);
     M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
     func_01ffa6fc(arg0);
 }
 
-void func_0209643c(void){
+/* Loads the current map: campaign/arena maps (id in
+ * [MAP_ID_CAMPAIGN_FIRST, MAP_ID_CAMPAIGN_END)) come from the built-in map
+ * records, any other id is read from a "/dispos" file.  When the low config flag
+ * is clear, every placed unit keeps only the owner of the player's selected
+ * unit, then the map view is refreshed. */
+void LoadCurrentMap(void){
 extern s32 *gCurrentMap;
 s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
-s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5142);
-s32 p,i;Unit964 *unit; s32 off;
-if(id>=225&&id<425){
+s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID);
+s32 p,i;BattleMapUnitHead *unit; s32 off;
+if(id>=MAP_ID_CAMPAIGN_FIRST&&id<MAP_ID_CAMPAIGN_END){
 p=GetMapRecordBuffer();
 if(!IsLinkSessionActive()){
 if(!LoadMapRecord(id,p))return;
@@ -347,15 +355,15 @@ func_0209670c(p,0);
 HeapFreeBlock(p);
 }
 if(!((u32)(gMapConfig[0]<<23)>>31)){
-i=1;off=14;
+i=1;off=MAP_UNIT_STRIDE;
 do{
-unit=(Unit964 *)((u8 *)*gCurrentMap+0x59a4+off);
+unit=(BattleMapUnitHead *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS+off);
 if(unit->kind&&unit->owner){
 GetUnitOwner(unit);
 if(unit!=GetPlayerSelectedUnit())unit->owner=0;
 }
-++i;off+=14;
-}while(i<256);
+++i;off+=MAP_UNIT_STRIDE;
+}while(i<MAP_UNIT_COUNT);
 }
 RefreshMapView();
 }

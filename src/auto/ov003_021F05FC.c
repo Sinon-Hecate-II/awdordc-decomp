@@ -203,7 +203,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
  * and per-player settings, but keeps the object itself alive. */
 M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     M2C_UNK IsLinkSessionActive();
-    M2C_UNK func_020848c4();
+    M2C_UNK GetLocalPlayerIdForOverlay();
     void func_020850dc();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
@@ -232,7 +232,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x74);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x74) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -252,7 +252,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x75);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x75) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -272,7 +272,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x76);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x76) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -292,7 +292,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x77);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x77) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -411,7 +411,7 @@ M2C_UNK **func_ov003_021f0e30(M2C_UNK **arg0) {
  * allocation and the object itself. */
 M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     M2C_UNK IsLinkSessionActive();
-    M2C_UNK func_020848c4();
+    M2C_UNK GetLocalPlayerIdForOverlay();
     void func_020850dc();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
@@ -440,7 +440,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x74);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x74) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -460,7 +460,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x75);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x75) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -480,7 +480,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x76);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x76) + 3) & 0xff);
             } else {
                 playerState = 1;
@@ -500,7 +500,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
         if (controlMode == 1) {
             if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x77);
-                if (playerId == func_020848c4()) playerState = 1;
+                if (playerId == GetLocalPlayerIdForOverlay()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x77) + 3) & 0xff);
             } else {
                 playerState = 1;

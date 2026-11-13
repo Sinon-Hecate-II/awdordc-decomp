@@ -176,7 +176,7 @@ func_0200fe6c(low); func_020055f4(low); return result;
 
 void func_02074dec(s32 arg0){
 void *HeapAllocBlock(u32);void HeapFreeBlock(void *);s32 func_0200558c(void);void func_020055f4(u8);void func_0200fe5c(u16);void func_0200fe6c(u8);
-s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 func_02074734(void *,void *);s32 func_020747c8(void *,void *);s32 func_020747ec(void *,u16);
+s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 func_02074734(void *,void *);s32 func_020747c8(void *,void *);s32 IsNodeChainValid(void *,u16);
 void MI_CpuCopy32(void *,void *,u32);void MI_CpuFill32(s32,void *,u32);void MI_CpuFill8(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
 u8 *a=(u8 *)arg0;s32 selected;u8 *p;u8 *buf;u8 low;u32 stamp;s32 page;s32 i;u16 id;u8 ok0,ok1,ok2,ok;s32 off,off20,off256;u32 value,old; s32 newer;u8 rank; s32 shift;u32 *count;u16 invalid=65535;s32 mask;
 buf=HeapAllocBlock(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
@@ -214,7 +214,7 @@ mask=invalid-65536;for(i=0,p=a;i<256;i++,p+=12){rank=(a[0xc0c+(i>>2)]>>((i&3)*2)
 count=(u32 *)(a+0x204c);M2C_FIELD(a,u32*,0x204c)=0;mask=invalid-65536;
 for(i=0,p=a,off20=20;i<256;off20+=1024,i++,p+=12){
 shift=(i&3)*2;if(((a[0xc0c+(i>>2)]>>shift)&3)!=3||p[6]==1)continue;
-if(!func_020747ec((unsigned)a,(u16)i)){a[0xc0c+(i>>2)]&=(mask^(3<<shift));a[0x2053]=1;continue;}
+if(!IsNodeChainValid((unsigned)a,(u16)i)){a[0xc0c+(i>>2)]&=(mask^(3<<shift));a[0x2053]=1;continue;}
 if(M2C_FIELD(p,u16*,8)!=65535)continue;
 M2C_FIELD(a+M2C_FIELD(a,u32*,0x204c)*40,u16*,0xc4c)=i;
 M2C_FIELD(a+M2C_FIELD(a,u32*,0x204c)*40,u8*,0xc4e)=p[6];

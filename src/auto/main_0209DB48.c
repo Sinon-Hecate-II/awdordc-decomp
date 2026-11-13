@@ -123,7 +123,7 @@ s32 func_0209dde0(void) {
     return 0;
 }
 
-void func_0209de6c(s32 arg0, Unk0209Rect arg1) {
+void SetWidgetRect(s32 arg0, Unk0209Rect arg1) {
     extern Unk0209Rect data_0215bde8[];
     Unk0209Rect *rect;
     rect = &data_0215bde8[arg0];

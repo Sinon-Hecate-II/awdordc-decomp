@@ -447,7 +447,7 @@ void *func_ov006_02217164(void) {
     return FindObjectByClass(&data_ov006_02218918);
 }
 
-void func_ov006_02217178(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
+void func_ov006_02217178(M2C_UNK arg0) {s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
 u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
@@ -455,7 +455,7 @@ if(p) {
 M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=1;
 M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
-M2C_FIELD(p,s8 *,0x4c)=func_020848c4();
+M2C_FIELD(p,s8 *,0x4c)=GetLocalPlayerIdForOverlay();
 M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
 M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
 i=0;
@@ -467,7 +467,7 @@ i++;
 }
 }
 
-void func_ov006_02217214(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
+void func_ov006_02217214(M2C_UNK arg0) {s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
 u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
@@ -475,7 +475,7 @@ if(p) {
 M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=2;
 M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
-M2C_FIELD(p,s8 *,0x4c)=func_020848c4();
+M2C_FIELD(p,s8 *,0x4c)=GetLocalPlayerIdForOverlay();
 M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
 M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
 i=0;

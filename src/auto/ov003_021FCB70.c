@@ -370,10 +370,10 @@ u8 func_ov003_021fd270(void *arg0) {
 
 /* Clears the low state bits of an entity, switches it to state 4 handling, and updates its display lists/palette. */
 void func_ov003_021fd2d0(void *entity) {
-    M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_020893a8(s32, s32, M2C_UNK, s32);
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTextById(s32, s32);
     s32 func_020ae22c(M2C_UNK);
     M2C_UNK SetMenuPanelState(void *, M2C_UNK);
     M2C_UNK func_ov006_02217840(void *);
@@ -418,12 +418,12 @@ void func_ov003_021fd2d0(void *entity) {
         return;
     }
     M2C_FIELD(entity, u8 *, 0x3E) = (u8) (M2C_FIELD(entity, u8 *, 0x3E) & ~7);
-    func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 3, 7);
+    SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 3, 7);
     if (((u32) (M2C_FIELD(entity, u8 *, 0x3E) << 0x18) >> 0x1F) != 0) {
         SetMenuPanelState(entity, 4);
     }
-    func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x10, 3, 6);
-    func_0208b758(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 4), 0x4700001D);
+    SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x10, 3, 6);
+    SetTextById(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 4), 0x4700001D);
     func_02088ff4(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 8));
     func_020893a8(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 0), 0x8B80, 1, func_020ae22c(0x11));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);

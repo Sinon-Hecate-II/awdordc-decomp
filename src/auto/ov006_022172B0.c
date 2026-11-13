@@ -3,7 +3,7 @@
 typedef struct { s32 v[4]; } Ov006Date;
 extern const Ov006Date data_ov006_02218394;
 
-void func_ov006_022172b0(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
+void func_ov006_022172b0(M2C_UNK arg0) {s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
 u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
@@ -11,7 +11,7 @@ if(p) {
 M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=3;
 M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
-M2C_FIELD(p,s8 *,0x4c)=func_020848c4();
+M2C_FIELD(p,s8 *,0x4c)=GetLocalPlayerIdForOverlay();
 M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
 M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
 i=0;
@@ -23,7 +23,7 @@ i++;
 }
 }
 
-void func_ov006_0221734c(M2C_UNK arg0,s32 arg1,s32 arg2) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
+void func_ov006_0221734c(M2C_UNK arg0,s32 arg1,s32 arg2) {s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
 u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
@@ -31,7 +31,7 @@ if(p) {
 M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=4;
 M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
-M2C_FIELD(p,s8 *,0x4c)=func_020848c4();
+M2C_FIELD(p,s8 *,0x4c)=GetLocalPlayerIdForOverlay();
 M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
 M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
 i=0;
@@ -98,9 +98,9 @@ void func_ov006_022174d0(void *arg0) {
 
 void func_ov006_02217504(void *arg0) {
     M2C_UNK func_02084f2c(void *, M2C_UNK, M2C_UNK, void *, void *, void *);
-    M2C_UNK func_020c8f0c(s32, s32);
+    M2C_UNK ConvertTextToGlyphs(s32, s32);
     s32 GetMapName(u16);
-    func_020c8f0c(M2C_FIELD(arg0, s32 *, 0x3C), GetMapName((u16) M2C_FIELD(arg0, s32 *, 0x34)));
+    ConvertTextToGlyphs(M2C_FIELD(arg0, s32 *, 0x3C), GetMapName((u16) M2C_FIELD(arg0, s32 *, 0x34)));
     func_02084f2c(arg0 + 0x3C, 1, 0, arg0 + 0x40, arg0 + 0x44, arg0);
 }
 
@@ -138,7 +138,7 @@ void func_ov006_0221762c(void *arg0) {
     M2C_UNK LoadMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK PackMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK ExpandMapRecord(M2C_UNK, M2C_UNK);
-    s32 func_02084cf8(void);
+    s32 GetOnlineLocalPlayerId(void);
     s32 func_020c7a3c(M2C_UNK);
     void func_020e3788(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
@@ -164,7 +164,7 @@ void func_ov006_0221762c(void *arg0) {
     LoadMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     PackMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
     ExpandMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
-    cell[0x14] = (u32)func_02084cf8();
+    cell[0x14] = (u32)GetOnlineLocalPlayerId();
 
     cell[0x12] = (cell[0x12] & ~0xFFU) | (c[0] & 0xFFU);
     cell[0x12] = (cell[0x12] & ~0x3F00U) | ((c[1] << 26) >> 18);
@@ -267,9 +267,9 @@ void func_ov006_022179b4(void *arg0) {
     u64 func_020720f0(s32, s32);
     s32 func_020c7a3c(s32);
     M2C_UNK ExpandMapRecord(s32, s32);
-    s32 func_020c8c6c(void *);
+    s32 IsLocalMacAddress(void *);
     s32 func_020c8cbc(s32);
-    s32 func_02084cf8();
+    s32 GetOnlineLocalPlayerId();
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 var_r6;   /* hit mask */
     s32 var_r5;   /* loop index */
@@ -296,9 +296,9 @@ void func_ov006_022179b4(void *arg0) {
             temp_r11 = M2C_FIELD(arg0, s32 *, 0x4C) + var_r8;
             ExpandMapRecord(temp_r11 + 0x10, temp_r4 + var_r9);
             temp_r7 = M2C_FIELD(temp_r11, s32 *, 4);
-            if (temp_r7 == func_02084cf8()) {
+            if (temp_r7 == GetOnlineLocalPlayerId()) {
                 var_r0 = 1;
-            } else if (func_020c8c6c(temp_r11 + 0x50) != 0) {
+            } else if (IsLocalMacAddress(temp_r11 + 0x50) != 0) {
                 var_r0 = 1;
             } else {
                 var_r0 = 0;
@@ -460,7 +460,7 @@ void func_ov006_02217d9c(void *arg0) {
 }
 
 void func_ov006_02217de4(void *arg0) {
-    s32 func_02084cf8();
+    s32 GetOnlineLocalPlayerId();
     s32 temp_r0_3;
     u8 temp_r0_2;
     void *temp_r0;
@@ -471,7 +471,7 @@ void func_ov006_02217de4(void *arg0) {
     temp_r0_2 = M2C_FIELD(arg0, u8 *, 0x3B);
     switch (temp_r0_2) {                            /* irregular */
     case 1:
-        temp_r0_3 = func_02084cf8();
+        temp_r0_3 = GetOnlineLocalPlayerId();
         M2C_FIELD(temp_r0, s32 *, 0x60) = temp_r0_3;
         M2C_FIELD(temp_r0, s32 *, 0x64) = (s32) (temp_r0_3 >> 0x1F);
         M2C_FIELD(temp_r0, s32 *, 0x5C) = 9;
@@ -498,22 +498,22 @@ case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); 
 }}
 
 void func_ov006_02217f20(void *arg0) {
-    s32 func_02084cf8();
+    s32 GetOnlineLocalPlayerId();
     s32 func_02086980(s32);
-    void *func_020c7e88(s32);
+    void *GetMapRecordStamp(s32);
     s32 j, i;
     for (j = 0; j < 10; j++) {
         M2C_FIELD(arg0, s32 **, 0x44)[j] = 0;
         M2C_FIELD(arg0, u16 **, 0x48)[j] = 0;
         M2C_FIELD(arg0, u8 **, 0x4c)[j] = 0;
     }
-    M2C_FIELD(arg0, s32 **, 0x44)[0] = func_02084cf8();
+    M2C_FIELD(arg0, s32 **, 0x44)[0] = GetOnlineLocalPlayerId();
     M2C_FIELD(arg0, u32 *, 0x34) = 1;
     M2C_FIELD(arg0, u8 *, 0x38) = 1;
     for (j = 0; j < 50; j++) {
         if (func_02086980(j)) {
             i = j + 0xe1;
-            M2C_FIELD(arg0, s32 **, 0x44)[M2C_FIELD(arg0, u32 *, 0x34)] = M2C_FIELD(func_020c7e88(i), volatile s32 *, 0x10);
+            M2C_FIELD(arg0, s32 **, 0x44)[M2C_FIELD(arg0, u32 *, 0x34)] = M2C_FIELD(GetMapRecordStamp(i), volatile s32 *, 0x10);
             M2C_FIELD(arg0, u16 **, 0x48)[M2C_FIELD(arg0, u32 *, 0x34)] = (u16)i;
             M2C_FIELD(arg0, u32 *, 0x34)++;
             M2C_FIELD(arg0, u8 *, 0x38)++;
@@ -523,36 +523,40 @@ void func_ov006_02217f20(void *arg0) {
     func_020e3f88(M2C_FIELD(arg0, void **, 0x44), M2C_FIELD(arg0, s32 *, 0x54), (u8 *)arg0 + 0x34, arg0);
 }
 
-void func_ov006_02217ff8(void *a){
-void *func_020c7e6c(s32);void *func_020c7e88(s32);s32 func_02084cf8(void);s32 func_020c8c6c(void *);s32 func_020c8b0c(void *,void *);
-void *entry,*info;s32 j,owner,off,i,id,flag;void *q;
-i=0;M2C_FIELD(a,u8 *,0x39)=0;M2C_FIELD(a,u8 *,0x3a)=0;
-if((s32)M2C_FIELD(a,u8 *,0x38)<=0)return;
+/* Fill the object's status/joinable arrays for an online game list: for each candidate map
+ * id, find a saved entry that is not this console's own and whose recorded settings match the
+ * map record, marking the id joinable (1) or rejected (2) and collecting up to three
+ * joinable ids. */
+void BuildJoinableMapList(void *list){
+void *GetMapRecord(s32);void *GetMapRecordStamp(s32);s32 GetOnlineLocalPlayerId(void);s32 IsLocalMacAddress(void *);s32 MapRecordsMatch(void *,void *);
+void *entry,*stamp;s32 j,owner,offset,i,id,isLocalEntry;void *record;
+i=0;M2C_FIELD(list,u8 *,0x39)=0;M2C_FIELD(list,u8 *,0x3a)=0;
+if((s32)M2C_FIELD(list,u8 *,0x38)<=0)return;
 do{
-id=M2C_FIELD(a,u16 **,0x48)[i];q=func_020c7e6c(id);info=func_020c7e88(id);
+id=M2C_FIELD(list,u16 **,0x48)[i];record=GetMapRecord(id);stamp=GetMapRecordStamp(id);
 j=0;
-if((u32)j<M2C_FIELD(a,u32 *,0x34)){do{off=j*0x310;
-entry=M2C_FIELD(a,u8 **,0x54)+off;
+if((u32)j<M2C_FIELD(list,u32 *,0x34)){do{offset=j*0x310;
+entry=M2C_FIELD(list,u8 **,0x54)+offset;
 owner=M2C_FIELD(entry,s32 *,4);
-if(owner==func_02084cf8())flag=1;else flag=func_020c8c6c(entry+0x50)!=0;
-if(flag==0 && M2C_FIELD(info,s32 *,0x10)==M2C_FIELD(entry,s32 *,0x60)){
-if(func_020c8b0c(q,entry+0x10)==0)M2C_FIELD(a,u8 **,0x4c)[i]=2;
-else{M2C_FIELD(a,u8 **,0x4c)[i]=1;M2C_FIELD(a,u16 **,0x50)[M2C_FIELD(a,u8 *,0x39)]=id;M2C_FIELD(a,u8 *,0x39)++;}
+if(owner==GetOnlineLocalPlayerId())isLocalEntry=1;else isLocalEntry=IsLocalMacAddress(entry+0x50)!=0;
+if(isLocalEntry==0 && M2C_FIELD(stamp,s32 *,0x10)==M2C_FIELD(entry,s32 *,0x60)){
+if(MapRecordsMatch(record,entry+0x10)==0)M2C_FIELD(list,u8 **,0x4c)[i]=2;
+else{M2C_FIELD(list,u8 **,0x4c)[i]=1;M2C_FIELD(list,u16 **,0x50)[M2C_FIELD(list,u8 *,0x39)]=id;M2C_FIELD(list,u8 *,0x39)++;}
 break;
 }
 j++;
-}while((u32)j<M2C_FIELD(a,u32 *,0x34));}
-if(M2C_FIELD(a,u8 *,0x39)>=3)return;
+}while((u32)j<M2C_FIELD(list,u32 *,0x34));}
+if(M2C_FIELD(list,u8 *,0x39)>=3)return;
 i++;
-}while(i<(s32)M2C_FIELD(a,u8 *,0x38));
+}while(i<(s32)M2C_FIELD(list,u8 *,0x38));
 }
 
 void func_ov006_02218128(void *p) {
-void *func_020c7e88(s32); u32 i; u16 id; void *q; u32 flags; void *out; s32 value;
+void *GetMapRecordStamp(s32); u32 i; u16 id; void *q; u32 flags; void *out; s32 value;
 i=M2C_FIELD(p,u8 *,0x3a);
 if(i>=M2C_FIELD(p,u8 *,0x39)){func_01ffa6fc(p);return;}
 M2C_FIELD(p,u8 *,0x3a)=i+1;
-id=M2C_FIELD(p,u16 **,0x50)[i]; func_020c7e6c(id); q=func_020c7e88(id);
+id=M2C_FIELD(p,u16 **,0x50)[i]; GetMapRecord(id); q=GetMapRecordStamp(id);
 flags=(M2C_FIELD(q,u32 *,0xc)>>29)<<8;
 value=M2C_FIELD(q,s32 *,0x10); out=p+0x58;
 if(M2C_FIELD(p,u8 *,0x3a)==M2C_FIELD(p,u8 *,0x39)) func_020e40e0(value,flags,out,p);

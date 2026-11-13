@@ -322,7 +322,7 @@ M2C_UNK *GetLocalizedFileName(s32 arg0) {
     return &data_02168f90;
 }
 
-M2C_UNK *func_020e32e8(s32 arg0) {
+M2C_UNK *GetLocalizedFileNameDefault(s32 arg0) {
  M2C_UNK *r;
  u8 old;
  old=((s32 (*)(void))GetLanguage)();

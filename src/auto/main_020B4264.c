@@ -9,7 +9,7 @@
 typedef struct { u32 w0; u32 w1; u32 w2; u32 w3; } MapQuad;
 
 s32 func_020b4264(u8 *arg0) {
-    void func_020ceec8(void);
+    void LoadMapTileset(void);
     s32 GetMapPlayerCount(s32);
     s32 GetMapName(s32);
     void StringCopy(u8 *, s32);
@@ -104,7 +104,7 @@ s32 func_020b4264(u8 *arg0) {
     M2C_FIELD(&gMapConfig, u16 *, 6) = M2C_FIELD(arg0, u16 *, 0x22);
     M2C_FIELD(&gMapConfig, u32 *, 8) = M2C_FIELD(arg0, u32 *, 0x24);
     M2C_FIELD(&gMapConfig, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0x28);
-    func_020ceec8();
+    LoadMapTileset();
     dst = MAPBASE;
     M2C_FIELD(dst, u8 *, 0x5141) = GetMapPlayerCount(M2C_FIELD(dst, u16 *, 0x5142));
     dst = MAPBASE;

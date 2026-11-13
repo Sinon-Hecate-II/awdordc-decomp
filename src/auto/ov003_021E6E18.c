@@ -2,14 +2,14 @@
 #include "common.h"
 s32 func_ov003_021e6cfc(void);
 s32 func_ov003_021e6d28(void);
-s32 func_020848c4(void);
+s32 GetLocalPlayerIdForOverlay(void);
 s32 IsWaypointOptionValid(s32);
 static inline u8 SlotOwner(void *p, s32 i) {return M2C_FIELD(p+i,u8 *,0x74);}
 static inline u8 SlotEmpty(void *p,s32 i) {u8 result;if(SlotOwner(p,i)==255)result=1;else result=0;return result;}
 static inline void SetSlotValue(void *p,u8 v) {
 u8 owner;
-if(func_ov003_021e6cfc()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=func_020848c4() && !SlotEmpty(p,M2C_FIELD(p,u8 *,7)))goto store;}
-if(func_ov003_021e6d28()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=func_020848c4())goto store;}
+if(func_ov003_021e6cfc()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=GetLocalPlayerIdForOverlay() && !SlotEmpty(p,M2C_FIELD(p,u8 *,7)))goto store;}
+if(func_ov003_021e6d28()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=GetLocalPlayerIdForOverlay())goto store;}
 if(!IsWaypointOptionValid(v))return;
 store:
 M2C_FIELD(p+M2C_FIELD(p,u8 *,7),u8 *,10)=v;M2C_FIELD(p,u8 *,8)=v;
@@ -70,7 +70,7 @@ s32 IsWaypointOptionValid(s32 arg0) {
  * slot, or scroll the map view. The selected action is then passed to the
  * display refresh (func_01ffa810) and stored as the list's current handle. */
 void HandleWaypointInput(void *arg0,int action){
-s32 func_ov003_021e6cfc(void);s32 func_ov003_021e6d28(void);s32 func_020848c4(void);s32 IsLinkSessionActive(void);
+s32 func_ov003_021e6cfc(void);s32 func_ov003_021e6d28(void);s32 GetLocalPlayerIdForOverlay(void);s32 IsLinkSessionActive(void);
 s32 func_01ffa810(s32);
 u8 *list=arg0;
 switch((u32)action){
@@ -82,9 +82,9 @@ case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:ca
 if(IsLinkSessionActive()){
 s32 canUseSlot;u8 slot=list[7];
 if(!IsLinkSessionActive())canUseSlot=0;
-else {u8 *owners=list+0x74;u8 owner=owners[slot];if(owner==func_020848c4())canUseSlot=1;else if(func_ov003_021e6cfc() && ((u8)(owners[slot]==255)))canUseSlot=1;else canUseSlot=0;}
+else {u8 *owners=list+0x74;u8 owner=owners[slot];if(owner==GetLocalPlayerIdForOverlay())canUseSlot=1;else if(func_ov003_021e6cfc() && ((u8)(owners[slot]==255)))canUseSlot=1;else canUseSlot=0;}
 if(!canUseSlot){
-s32 playerId=func_020848c4();u8 i; s32 foundSlot;
+s32 playerId=GetLocalPlayerIdForOverlay();u8 i; s32 foundSlot;
 for(i=0;i<list[4];i++){if(playerId==M2C_FIELD(list+i,u8 *,0x74)){foundSlot=(s8)i;goto found_slot;}}
 foundSlot=-1;
 found_slot:SelectSlot(list,foundSlot);
@@ -120,7 +120,7 @@ u8 GetWaypointSlotIndex(void *arg0) {
 
 s32 IsWaypointSlotLocalPlayer(s32 arg0, s32 arg1) {
     s32 IsLinkSessionActive();
-    s32 func_020848c4();
+    s32 GetLocalPlayerIdForOverlay();
     s32 func_ov003_021e6cfc();
     u8 *temp_r4;
     u8 temp_r5;
@@ -128,7 +128,7 @@ s32 IsWaypointSlotLocalPlayer(s32 arg0, s32 arg1) {
     if (IsLinkSessionActive() == 0) return 0;
     temp_r4 = (u8 *)(arg0 + 0x74);
     temp_r5 = temp_r4[arg1];
-    if (temp_r5 == func_020848c4()) return 1;
+    if (temp_r5 == GetLocalPlayerIdForOverlay()) return 1;
     if (func_ov003_021e6cfc() != 0) {
         if (temp_r4[arg1] == 0xFF) var_r0 = 1;
         else var_r0 = 0;

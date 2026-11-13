@@ -255,10 +255,10 @@ void func_020a3088(M2C_UNK arg0) {
 }
 
 void func_020a309c(M2C_UNK arg0) {
-    M2C_UNK func_020cb038(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020cb170(M2C_UNK, M2C_UNK);
-    func_020cb038(arg0, 0);
-    func_020cb170(arg0, 0);
+    M2C_UNK RefillUnitAmmo(M2C_UNK, M2C_UNK);
+    M2C_UNK RefillUnitFuel(M2C_UNK, M2C_UNK);
+    RefillUnitAmmo(arg0, 0);
+    RefillUnitFuel(arg0, 0);
 }
 
 void func_020a30bc(void) {

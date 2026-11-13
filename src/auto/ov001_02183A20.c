@@ -390,7 +390,7 @@ s32 func_ov001_02184170(void **arg0) {
 void func_ov001_021841cc(u16 *p) {
     s32 func_ov001_021840a0(void);
     void func_ov001_02184230(u16 *);
-    void func_02007958(u16 *);
+    void SystemHalt(u16 *);
     extern s32 data_ov001_02193e00;
     u8 *q;
 
@@ -408,7 +408,7 @@ void func_ov001_021841cc(u16 *p) {
                 func_ov001_021840a0();
                 break;
             default:
-                func_02007958(p);
+                SystemHalt(p);
                 break;
         }
     }

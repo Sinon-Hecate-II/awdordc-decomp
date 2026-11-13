@@ -1,8 +1,8 @@
 /* 23 functions from 0x02045D94 to 0x02046D38 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {
-if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}MI_CpuCopy8((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void SystemHalt(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {
+if(!func_020465c4(b,256,(s32)a)){SystemHalt();return 0;}MI_CpuCopy8((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
 s32 func_02045e70(u16 *a) {  extern M2C_UNK data_0213db28; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&data_0213db28,s32 *,8)=(*a<<3)-1024;return 1; }
 

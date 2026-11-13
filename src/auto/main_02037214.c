@@ -346,7 +346,7 @@ s32 func_02037954(void) {
 void func_02037994(void) {
     extern void *data_0213d1dc;
     s32 func_0202f10c(void);
-    s32 func_02027c84(void);
+    s32 Wfc_GetLinkState(void);
     s32 dummy = 0;
     (void)dummy;
     if (!data_0213d1dc) return;
@@ -355,7 +355,7 @@ void func_02037994(void) {
         return;
     }
     if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 4 && M2C_FIELD(data_0213d1dc, u16 *, 6) != 0) {
-        if (func_02027c84() != 9) {
+        if (Wfc_GetLinkState() != 9) {
             M2C_FIELD(data_0213d1dc, u16 *, 6) = 0;
             M2C_FIELD(data_0213d1dc, u16 *, 4) = 6;
         }
@@ -486,7 +486,7 @@ s32 func_02037c90(void) {
     return gNasConnection;
 }
 
-s32 func_02037ca0(s32 a,s32 b){
+s32 GetServerTime(s32 a,s32 b){
 extern s32 gServerTimeSync;extern s64 gServerTimeNow,gServerTimeOffset;
 s32 GetLocalTime(s32,s32);s64 MakeTime(s32,s32);void func_0200f9c4(s32,s32);
 s64 t,d;

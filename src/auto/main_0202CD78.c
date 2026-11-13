@@ -335,7 +335,7 @@ return func_0202d610(arg0,arg1,arg2,arg3,p,h,arg4,arg5);
 s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) {
     void *func_0202b018(void *, s32, s32);
     void *func_0202b158(s32, void *);
-    s32 func_0202caa0(void *, s32, s32, s32, s32 *);
+    s32 LoadSoundBank(void *, s32, s32, s32, s32 *);
     s32 func_0202c9bc(s32, s32, s32, s32, s32 *);
     void func_0202b0b0(void *);
     void func_0202b0bc(void *, void *, s32);
@@ -355,7 +355,7 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     p = func_0202b158(arg1, handle);
     slot4 = 0;
     slot8 = 0;
-    if (func_0202caa0((void *)arg2, 6, (s32)p, 0, &slot4) != 0) {
+    if (LoadSoundBank((void *)arg2, 6, (s32)p, 0, &slot4) != 0) {
         func_0202b0b0(handle);
         return 0;
     }
@@ -371,11 +371,11 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
 }
 
 s32 func_0202d610(s32 a,s32 b,s32 c,s32 d,void *e,s32 f,s32 g,s32 h){
-void *func_0202b018(void*,s32,s32);void *func_0202b158(s32,void*);s32 func_0202caa0();void func_0202b0b0();void func_0202b0bc();void func_0202add4();
+void *func_0202b018(void*,s32,s32);void *func_0202b158(s32,void*);s32 LoadSoundBank();void func_0202b0b0();void func_0202b0bc();void func_0202add4();
 void func_0202acf0(void*,s8);void func_0202ad30(void*,s32);register u8 *entry=e;s32 local; void *v=func_0202b018((void*)a,b,d);void *t;
 if(!v)return 0;
 t=func_0202b158(b,v);
-if(func_0202caa0(c,6,t,0,&local)){func_0202b0b0(v);return 0;}
+if(LoadSoundBank(c,6,t,0,&local)){func_0202b0b0(v);return 0;}
 func_0202b0bc(v,f+M2C_FIELD(f,s32*,0x18),M2C_FIELD(entry,s32*,0),local);
 ((void(*)(void*,s32))func_0202acf0)((void*)a,M2C_FIELD(entry,u8*,6));func_0202ad30((void*)a,M2C_FIELD(entry,u8*,7));func_0202add4(a,g,h);return 1;
 }

@@ -10,7 +10,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_0207c780(s32, s32);
-    M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02080944(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
     s32 func_02080e30(M2C_UNK *, M2C_UNK);
@@ -157,7 +157,7 @@ void func_ov003_021e5118(void *arg0) {
     LoadDecompressedFileTo(&data_ov003_0220f7dc, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x5100);
     LoadDecompressedFileTo(&data_ov003_0220f7ec, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x5D80);
     LoadDecompressedFileTo(&data_ov003_0220f7fc, M2C_FIELD(data_027e01d8, s32 *, 0x2C));
-    func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x18, 5);
+    SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x18, 5);
     LoadFileToSpriteBuffer(&data_ov003_0220f810, 0x300, 0x20);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     func_020a9a30(1, 0, 3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3680);
@@ -184,7 +184,7 @@ void func_ov003_021e5118(void *arg0) {
     LoadDecompressedFileTo(&data_ov003_0220f82c, M2C_FIELD(data_027e01d8, s32 *, 0x10));
     LoadDecompressedFileTo(&data_ov003_0220f83c, M2C_FIELD(data_027e01d8, s32 *, 0x24));
     LoadFileToSpriteBuffer(&data_ov003_0220f854, 0xE0, 0x20);
-    func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x24), 0x20, 0x20, 7);
+    SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x24), 0x20, 0x20, 7);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
     func_02091d4c(9);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);

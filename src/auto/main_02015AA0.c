@@ -7,7 +7,7 @@ typedef struct PacketSource165 { u8 pad[0x358]; u8 field358,pad359; u16 field35a
 
 /* Builds a MemoryDescriptor describing a resource chunk: validates that src lies in a valid memory range, then either describes it in place (case 0) or copies it into the pool (case 1); case 2 is a fixed loader region. */
 void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
-    s32 func_02007958(void);
+    s32 SystemHalt(void);
     s32 bad, copy;
     s32 start;
     u32 size, end;
@@ -25,7 +25,7 @@ void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
                 return;
             }
         }
-        func_02007958();
+        SystemHalt();
         return;
     case 1:
         start = M2C_FIELD(srcInfo, u32 *, 0x38);
@@ -42,7 +42,7 @@ void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
             if (end <= 0x380f000) copy = 1;
             else bad = 1;
         } else bad = 1;
-        if (bad == 1) func_02007958();
+        if (bad == 1) SystemHalt();
         M2C_FIELD(out, u32 *, 8) = M2C_FIELD(srcInfo, u32 *, 0x3c);
         M2C_FIELD(out, u32 *, 4) = M2C_FIELD(srcInfo, u32 *, 0x38);
         if (copy == 0) M2C_FIELD(out, u32 *, 0) = M2C_FIELD(out, u32 *, 4);
@@ -187,15 +187,15 @@ void func_02015f94(void *dest, void *src, s32 extra) {
 }
 
 s32 func_02016084(s32 arg0,void *arg1,s32 arg2) {
-void InitFileRequest(void *);s32 func_0200ba54(void *,s32);
-void func_0200ba9c(void *);void FileRead(void *,void *,s32);
+void InitFileRequest(void *);s32 OpenFileRequest(void *,s32);
+void CloseFileRequest(void *);void FileRead(void *,void *,s32);
 u32 file[18];s32 size=arg2?0x200:0x20;
 if(arg2)arg1+=0x20;
 if(!arg0)return 0;
 InitFileRequest(file);
-if(!func_0200ba54(file,arg0))return 0;
-if(size!=file[10]-file[9]) {func_0200ba9c(file);return 0;}
-FileRead(file,arg1,size);func_0200ba9c(file);return 1;
+if(!OpenFileRequest(file,arg0))return 0;
+if(size!=file[10]-file[9]) {CloseFileRequest(file);return 0;}
+FileRead(file,arg1,size);CloseFileRequest(file);return 1;
 }
 
 void func_02016124(void *arg0,s32 arg1,s32 arg2,s16 arg3) {

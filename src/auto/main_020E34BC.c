@@ -245,7 +245,7 @@ void func_020e3870(void *arg0) {
 void *func_020e38f0(void *arg0, s32 arg1, s32 arg2) {
     void *func_01ffa444(void *, s32);
     s32 func_020e34f4(s32);
-    s32 func_02084cf8(void);
+    s32 GetOnlineLocalPlayerId(void);
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d870;
@@ -265,7 +265,7 @@ void *func_020e38f0(void *arg0, s32 arg1, s32 arg2) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = arg1;
         M2C_FIELD(temp_r0, s32 *, 0x44) = func_020e34f4(0x100);
         M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
-        sp0 = func_02084cf8();
+        sp0 = GetOnlineLocalPlayerId();
         func_02007e70((s32)&sp0, (void *)M2C_FIELD(temp_r0, s32 *, 0x44), M2C_FIELD(temp_r0, s32 *, 0x38) * 4);
         temp_r2 = M2C_FIELD(temp_r0, s32 *, 0x38);
         CpuFill(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
@@ -285,7 +285,7 @@ void func_020e39d8(void *list) {
     s32 func_ov010_0222681c(void);
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
-    s32 func_02084cf8(void);
+    s32 GetOnlineLocalPlayerId(void);
     void MI_CpuCopy8(s32, void *, s32);
     extern s32 data_0212d744;
     s32 entry[7];
@@ -306,7 +306,7 @@ void func_020e39d8(void *list) {
     node = M2C_FIELD(list, u8 **, 0x34);
 
     for (; i < total; i++) {
-        if (func_ov010_022267b0(i, entry) != 0 && entry[1] != func_02084cf8()) {
+        if (func_ov010_022267b0(i, entry) != 0 && entry[1] != GetOnlineLocalPlayerId()) {
             M2C_FIELD(node, s32 *, 0) = entry[0];
             M2C_FIELD(node, s32 *, 0x4) = entry[1];
             M2C_FIELD(node, s32 *, 0x8) = entry[2];
@@ -387,7 +387,7 @@ void func_020e3bf0(void *list) {
     s32 func_ov010_0222681c(void);
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
-    s32 func_02084cf8(void);
+    s32 GetOnlineLocalPlayerId(void);
     void MI_CpuCopy8(s32, void *, s32);
     extern s32 data_0212d744;
     s32 entry[7];
@@ -408,7 +408,7 @@ void func_020e3bf0(void *list) {
     node = M2C_FIELD(list, u8 **, 0x34);
 
     for (; i < total; i++) {
-        if (func_ov010_022267b0(i, entry) != 0 && entry[1] != func_02084cf8()) {
+        if (func_ov010_022267b0(i, entry) != 0 && entry[1] != GetOnlineLocalPlayerId()) {
             M2C_FIELD(node, s32 *, 0) = entry[0];
             M2C_FIELD(node, s32 *, 0x4) = entry[1];
             M2C_FIELD(node, s32 *, 0x8) = entry[2];

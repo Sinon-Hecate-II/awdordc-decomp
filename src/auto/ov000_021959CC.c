@@ -1,6 +1,7 @@
 /* 15 functions from 0x021959CC to 0x0219694C (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 kind:6; u8 flags:2; } UnitKind959;
 
 #pragma opt_propagation off
@@ -179,57 +180,61 @@ void func_ov000_02195ea4(void) {
     PlanMoveDestination(sp0[0],sp0[1]);
 }
 
-s32 func_ov000_02195f1c(s16 *arg0) {
-    s32 func_020d243c(u16);
+/* Return-to-HQ destination for the selected AI unit (AI state 5): marks the unit's
+   movement range and, when the current player has an HQ and the unit can reach it,
+   writes the HQ tile to `out` and returns 1; otherwise returns 0.  Kinds whose flag
+   0x20 is set are excluded. */
+s32 SelectHqDestination(s16 *out) {
+    s32 PlayerHasHq(u16);
     s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
 
     u8 *map;
-    u8 *unit8;
+    u8 *unit;
     u16 player;
     u8 *entry;
     s8 *grid;
-    s8 cell;
+    s8 gridValue;
 
     map = (u8 *)*gCurrentMap;
-    unit8 = (u8 *)*(void **)(map + 0x52d0);
-    if (gUnitKindFlags[((u32)(unit8[0] << 26) >> 26) * 0x70] & 0x20) {
+    unit = (u8 *)*(void **)(map + MAP_CURSOR_UNIT);
+    if (gUnitKindFlags[((u32)(unit[MAP_UNIT_KIND] << 26) >> 26) * UNIT_KIND_STATS_SIZE] & 0x20) {
         return 0;
     }
-    if (func_020d243c(*(u16 *)(map + 0x52a4)) == 0) {
+    if (PlayerHasHq(*(u16 *)(map + MAP_CURRENT_PLAYER)) == 0) {
         return 0;
     }
 
     map = (u8 *)*gCurrentMap;
-    unit8 = (u8 *)*(void **)(map + 0x52d0);
-    FloodFillUnitRange(unit8[1], unit8[2], (u32)(unit8[0] << 26) >> 26, 0x6e, 0);
+    unit = (u8 *)*(void **)(map + MAP_CURSOR_UNIT);
+    FloodFillUnitRange(unit[MAP_UNIT_X], unit[MAP_UNIT_Y], (u32)(unit[MAP_UNIT_KIND] << 26) >> 26, 0x6e, 0);
 
     map = (u8 *)*gCurrentMap;
-    player = *(u16 *)(map + 0x52a4);
-    entry = map + 0x67a4 + player * 0x8c;
-    grid = *(s8 **)(map + ((u32)(entry[0x2c] << 25) >> 23) + 0x52e8);
-    cell = grid[entry[0x2b] & 0x7f];
-    if (cell < 0) {
+    player = *(u16 *)(map + MAP_CURRENT_PLAYER);
+    entry = map + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+    grid = *(s8 **)(map + ((u32)(entry[PLAYER_REC_HQ_Y] << 25) >> 23) + MAP_GRID);
+    gridValue = grid[entry[PLAYER_REC_HQ_X] & 0x7f];
+    if (gridValue < 0) {
         return 0;
     }
-    arg0[0] = (s16)(entry[0x2b] & 0x7f);
+    out[0] = (s16)(entry[PLAYER_REC_HQ_X] & 0x7f);
 
     map = (u8 *)*gCurrentMap;
-    player = *(u16 *)(map + 0x52a4);
-    entry = map + 0x67a4 + player * 0x8c;
-    arg0[1] = (s16)(entry[0x2c] & 0x7f);
+    player = *(u16 *)(map + MAP_CURRENT_PLAYER);
+    entry = map + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+    out[1] = (s16)(entry[PLAYER_REC_HQ_Y] & 0x7f);
 
     return 1;
 }
 
 void func_ov000_0219604c(void) {
-    s32 func_ov000_02195f1c(s16 *);
+    s32 SelectHqDestination(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
-    if (func_ov000_02195f1c(sp0) == 0) {
+    if (SelectHqDestination(sp0) == 0) {
         return;
     }
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
@@ -441,8 +446,8 @@ s32 func_ov000_02196430(s16 *outPos) {
     s32 func_ov000_021954dc(s16 *);
     s32 func_ov000_02195574(s16 *);
     s32 SelectPropertyDestination(s16 *);
-    s32 func_020d243c(u16);
-    s32 func_ov000_02195f1c(s16 *);
+    s32 PlayerHasHq(u16);
+    s32 SelectHqDestination(s16 *);
     s32 func_ov000_02196084(s16 *);
     s32 func_ov000_021961d4(s16 *);
     s32 func_ov000_02196330(void);
@@ -488,8 +493,8 @@ s32 func_ov000_02196430(s16 *outPos) {
         break;
     case 5: {
         u16 player = *(u16 *)(map + MAP_CURRENT_PLAYER);
-        if (func_020d243c(player) == 1) {
-            if (func_ov000_02195f1c(outPos) == 0) {
+        if (PlayerHasHq(player) == 1) {
+            if (SelectHqDestination(outPos) == 0) {
                 return 0;
             }
         } else {

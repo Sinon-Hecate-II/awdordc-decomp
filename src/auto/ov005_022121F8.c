@@ -20,7 +20,7 @@ s16 HistoryPageDown(void) {
 
 #pragma opt_strength_reduction off
 void func_ov005_02212244(s32 arg0,s32 arg1) {
- M2C_UNK func_02080860(s32,s32,s32,u16,s32);
+ M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
  void *saved;
@@ -32,7 +32,7 @@ void func_ov005_02212244(s32 arg0,s32 arg1) {
  x=0x18;
  do {
  if(i<arg1) tile=0xC4; else tile=0xC8;
- func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+x*2+((arg0<<5)*2),2,2,(u16)tile,2);
+ FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+x*2+((arg0<<5)*2),2,2,(u16)tile,2);
  i++;
  x+=2;
  }while(i<3);
@@ -100,7 +100,7 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
 }
 
 void func_ov005_02212624(s32 arg0,M2C_UNK arg1) {
-M2C_UNK func_02080860(s32,s32,s32,u16,s32);
+M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
 M2C_UNK func_0209b26c(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
 M2C_UNK func_0209b2dc(M2C_UNK,s16,M2C_UNK,M2C_UNK,s32,s32,s32);
 M2C_UNK func_0209b3e8(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
@@ -114,7 +114,7 @@ void *p;u32 money;s32 t,last;u32 saved;
 p=GetRecordDefinition(1);money=GetRecordValue(1,arg1);t=GetRecordTier(1,arg1);
 last=arg1;arg1=(arg0+1)*46+0x144;saved=(u32)gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_ov005_02211a54(1,last)==0){
-func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
+FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
 func_0209b3e8(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
@@ -124,7 +124,7 @@ func_ov005_02212244(arg0+5,t);gCur3DSpriteEngine=(void *)saved;
 
 #pragma opt_common_subs on
 void func_ov005_022127b4(s32 arg0,s32 arg1){
-M2C_UNK func_02080860(s32,s32,s32,u16,s32);
+M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
 M2C_UNK func_0209b26c(s32,s16,s32,s32,s32,s32);
 M2C_UNK func_0209b2dc(s32,s16,s32,s32,s32,s32,s32);
 M2C_UNK func_0209b3e8(s32,s16,s32,u32,s32,s32);
@@ -138,7 +138,7 @@ p=GetRecordDefinition(2);value=GetRecordValue(2,arg1);status=GetRecordTier(2,arg
 position=(arg0+1)*46+0x144;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(!func_ov005_02211a54(2,index)){
-func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
+FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
 func_0209b3e8(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
@@ -224,7 +224,7 @@ do{
 AddToU16Array((u8 *)tile+row*2,8,1);
 row+=32;j++;
 }while(j<8);
-func_020808dc(tile,4,8,(u16)(i+1));
+SetTileRectPalette(tile,4,8,(u16)(i+1));
 }
 i++;offset+=4;
 }while(i<8);

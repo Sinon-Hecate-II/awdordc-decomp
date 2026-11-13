@@ -2,7 +2,7 @@
 #include "common.h"
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
 void HandleWaypointInput(void*,u8);s32 InRange(s16,s16,s16);void PlaySoundEffect(s32);
-s32 func_020aae44(void*);s32 func_020aae10(void*);s16 func_ov003_022004a8(u8);void func_0208b758(void*,s32);
+s32 func_020aae44(void*);s32 func_020aae10(void*);s16 func_ov003_022004a8(u8);void SetTextById(void*,s32);
 typedef struct {u8 low:2,mode:2,state:4;} OptionsFlags;
 typedef struct {u8 enabled:1,other:7;} OptionsBits;
 void StepCounter(void*,s32,s32);void StepCounterDown(void*,u8,s32);void func_ov003_021e8354(void*,u8,s32);
@@ -42,14 +42,14 @@ static inline void RefreshOptionText(void *p){
 u8 index;
 if(((OptionsBits*)((u8*)p+0x3a))->enabled){
 index=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e);
-if(InRange(index,0,3))func_0208b758(M2C_FIELD(p,void**,0x54),0x47000011);
-else if(InRange(index,4,7))func_0208b758(M2C_FIELD(p,void**,0x54),0x47000012);
-else if(InRange(index,8,20))func_0208b758(M2C_FIELD(p,void**,0x54),0x47000011);
-else if(InRange(index,21,24))func_0208b758(M2C_FIELD(p,void**,0x54),0x47000010);
+if(InRange(index,0,3))SetTextById(M2C_FIELD(p,void**,0x54),0x47000011);
+else if(InRange(index,4,7))SetTextById(M2C_FIELD(p,void**,0x54),0x47000012);
+else if(InRange(index,8,20))SetTextById(M2C_FIELD(p,void**,0x54),0x47000011);
+else if(InRange(index,21,24))SetTextById(M2C_FIELD(p,void**,0x54),0x47000010);
 else if(index==25){
 u8 zero=((OptionsFlags*)((u8*)p+0x39))->mode==0;
-if(zero)func_0208b758(M2C_FIELD(p,void**,0x54),0x47000016);
-else{u8 one=((OptionsFlags*)((u8*)p+0x39))->mode==1;if(one)func_0208b758(M2C_FIELD(p,void**,0x54),0x47000017);}
+if(zero)SetTextById(M2C_FIELD(p,void**,0x54),0x47000016);
+else{u8 one=((OptionsFlags*)((u8*)p+0x39))->mode==1;if(one)SetTextById(M2C_FIELD(p,void**,0x54),0x47000017);}
 }}
 }
 static inline void CopyOptionPosition(u8 *menu,u8 *position){u8 y=menu[8],x=menu[7];position[16]=x;position[17]=y;}

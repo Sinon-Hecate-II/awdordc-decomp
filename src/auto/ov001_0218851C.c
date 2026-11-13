@@ -31,7 +31,7 @@ s32 func_ov001_02188614(void) {
 extern M2C_UNK data_ov001_02193e20;
 extern M2C_UNK data_ov001_021916b4;
 s32 func_ov001_0218868c(u16);
-if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,0x40)!=7) func_02007958();
+if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,0x40)!=7) SystemHalt();
 func_ov001_02187b14(1);
 M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,0x5C)=func_ov001_0218868c(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,0x60));
 if(M2C_FIELD(&data_ov001_02193e20,void (**)(s32,void *,s32),0))

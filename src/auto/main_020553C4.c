@@ -275,7 +275,7 @@ if(p && M2C_FIELD(arg2,s32 *,0)==*p){M2C_FIELD(arg2,void **,4)=arg1;return 0;}
 return 1;
 }
 
-s32 func_02055d3c(void **arg0, s32 arg1) {
+s32 gpiGetBuddyStatusByIndex(void **arg0, s32 arg1) {
 s32 data[2]; data[0]=arg1;data[1]=0;
 func_02055cd0(arg0,func_02055d10,data);return data[1];
 }

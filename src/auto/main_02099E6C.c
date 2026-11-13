@@ -40,8 +40,8 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     s32 func_02099a0c(void *);
     M2C_UNK func_02099a6c(void *);
     M2C_UNK func_02099ac4(void *);
-    s32 func_02099ae8();
-    s32 func_02099b00(void *);
+    s32 IsLeadByte();
+    s32 IsGlyphEscape(void *);
     M2C_UNK StopTextObject(void *);
     M2C_UNK func_0209c418(void *);
     M2C_UNK func_0209c428(void *);
@@ -473,7 +473,7 @@ loop_1:
         var_r4 = sp1C;
         if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) != 0x1E) {
             do {
-                if ((func_02099ae8() != 0) || (func_02099b00(M2C_FIELD(arg0, void **, 0x34)) != 0)) {
+                if ((IsLeadByte() != 0) || (IsGlyphEscape(M2C_FIELD(arg0, void **, 0x34)) != 0)) {
                     M2C_FIELD(var_r4,u8 *,0)=*M2C_FIELD(arg0,u8 **,0x34)++;
                     M2C_FIELD(var_r4,u8 *,1)=*M2C_FIELD(arg0,u8 **,0x34)++;
                     var_r4 += 2;

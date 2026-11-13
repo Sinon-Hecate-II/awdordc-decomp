@@ -35,6 +35,11 @@ typedef s32 M2C_UNK32;
 #define M2C_OVERFLOW(a) (0)
 typedef struct { s32 fd; s16 events; s16 revents; } PollFd;
 
+/* A 16-bit pixel rectangle (position and size) handed to the sprite widget code. */
+typedef struct WidgetRect {
+    u16 x, y, w, h;
+} WidgetRect;
+
 /* TCP segment header on the wire (all multi-byte fields big-endian). */
 typedef struct TcpSegment {
     u16 srcPort;    /* +0x00 */
@@ -101,6 +106,13 @@ enum TcpState {
     TCP_STATE_TIME_WAIT = 9
 };
 
+/* Fields of the connection/socket object TcpSendSegment builds a segment from
+ * (and TcpSendReset assembles a reset in).  The ports and destination address
+ * are stored in host order; the sequence and acknowledgement numbers are the
+ * raw 32-bit values that go on the wire. */
+#define TCP_CONN_ACK_NUM  0x24 /* u32 acknowledgement number to send */
+#define TCP_CONN_SEND_SEQ 0x28 /* u32 next send sequence number */
+
 /* Description of a hash used by Hmac for keyed hashing (HMAC): the digest and
  * block sizes, the hash state it works on and its three entry points.  The
  * game's SHA1 one is gSha1HashDescriptor. */
@@ -164,8 +176,14 @@ enum {
 /* TLS record content types (the first byte of a record). */
 enum {
     TLS_CONTENT_CHANGE_CIPHER_SPEC = 20,
-    TLS_CONTENT_HANDSHAKE          = 22
+    TLS_CONTENT_HANDSHAKE          = 22,
+    TLS_CONTENT_APPLICATION_DATA   = 23
 };
+
+/* Application data is split across records no larger than this; each record
+ * needs TLS_APP_RECORD_OVERHEAD extra bytes for its header and SHA1 MAC. */
+#define TLS_APP_CHUNK_MAX       0xB4F
+#define TLS_APP_RECORD_OVERHEAD 0x19
 
 /* TLS handshake message type of the Finished message. */
 #define TLS_HANDSHAKE_FINISHED 20
@@ -524,12 +542,15 @@ enum {
     GPI_MSG_GAME_DATA_LAST  = 208
 };
 
-/* GameSpy gpi receive buffer (the connection field at +0x1DC): storage, the
- * allocated size and the number of bytes currently held. */
+/* GameSpy gpi receive buffer (the connection field at +0x1DC, and a peer's
+ * message buffer at peer + 0x18): storage, the allocated size, the number of
+ * bytes currently held and, for a peer buffer, the read position of the next
+ * message. */
 typedef struct GPIBuffer {
     void *data; /* +0x00 storage */
     s32   size; /* +0x04 allocated bytes */
     s32   len;  /* +0x08 bytes used */
+    s32   pos;  /* +0x0C read position of the next message (peer buffers only) */
 } GPIBuffer;
 
 /* GameSpy gpi send buffer (the peer field at +0x28): storage, its allocated
@@ -644,6 +665,7 @@ enum {
 #define CONN_SESSION_PLAYER_MASK  0x2F0 /* u32 bitmask of player slots that are present */
 #define CONN_SESSION_MODE         0x15  /* u8 connection mode (0/1 joining, 2/3 serving) */
 #define CONN_SESSION_BUSY         0x1A9 /* u8 nonzero while a connection change is in progress */
+#define CONN_SESSION_TEARDOWN     0x1A8 /* u8 nonzero while peers are being removed or the session torn down */
 #define CONN_SESSION_NATNEG       0x19C /* s32 NAT negotiation session to free on teardown, 0 when none */
 #define CONN_SESSION_JOIN_PEER    0x204 /* s32 player id a join request is outstanding to, 0 when none */
 #define CONN_SESSION_TARGET_ID    0x20C /* s32 player id of the matchmaking target, 0 when none */
@@ -709,16 +731,35 @@ typedef struct NetError {
     s32 detail; /* +0x04 error parameter */
 } NetError;
 
-/* A match player's info record (0x210 bytes), filled by func_0204e1b4. The
- * key/value string holds the player's fields, e.g. "SCM=1/SCN=2/". */
+/* A match player's info record (0x210 bytes), filled by gpGetBuddyStatus from
+ * the GameSpy buddy list (gp.c's GPBuddyStatus). The key/value string holds the
+ * player's fields, e.g. "SCM=1/SCN=2/". */
 typedef struct MatchPlayerInfo {
-    s32 kind;          /* +0x00 */
+    s32 profileId;     /* +0x00 the buddy's GameSpy profile id */
     s32 status;        /* +0x04 6 = a valid player record */
-    u8  fields[0x100]; /* +0x08 key/value string */
-    u8  name[0x100];   /* +0x108 display name */
-    s32 unk208;        /* +0x208 */
-    s32 unk20C;        /* +0x20C */
+    u8  fields[0x100]; /* +0x08 key/value status string */
+    u8  name[0x100];   /* +0x108 location/display name */
+    u32 ipAddr;        /* +0x208 advertised IPv4 address */
+    s32 port;          /* +0x20C advertised port */
 } MatchPlayerInfo;     /* 0x210 bytes */
+
+/* A GameSpy buddy-list record (keyed by profile id) and its details: the
+ * buddy's position in the list, presence status, two owned strings and the
+ * advertised address. Built by gpiBuddy.c, read by gpGetBuddyStatus. */
+typedef struct GpiBuddyStatusDetails {
+    s32  index;          /* +0x00 position in the buddy list */
+    s32  status;         /* +0x04 presence status */
+    s8  *statusString;   /* +0x08 owned key/value status string */
+    s8  *locationString; /* +0x0C owned location string */
+    u32  ipAddr;         /* +0x10 advertised IPv4 address */
+    s32  port;           /* +0x14 advertised port */
+} GpiBuddyStatusDetails;
+
+typedef struct GpiBuddyStatus {
+    s32 profileId;                  /* +0x00 the buddy's profile id */
+    s32 unk04;                      /* +0x04 */
+    GpiBuddyStatusDetails *details; /* +0x08 */
+} GpiBuddyStatus;
 
 /* Per-slot peer record (gPlayerPeers[slot], 8 bytes): the connection slot the
  * player came in on and the peer id assigned to it in the match. */
@@ -962,6 +1003,7 @@ typedef struct Ov001IconRow {
 
 /* State of the ov001 name-entry screen (gNameEntryState): its entered text and
  * the position word of its cursor sprite. */
+#define NAME_ENTRY_PANEL   0x00 /* text panel that draws the entered text */
 #define NAME_ENTRY_CURSOR  0x04 /* s32 * cursor sprite's position/attribute word */
 #define NAME_ENTRY_TEXT    0x08 /* u8[33] entered text, NUL-terminated */
 #define NAME_ENTRY_MAX_LENGTH 32 /* u8 characters that fit in NAME_ENTRY_TEXT (plus its NUL) */
@@ -1306,6 +1348,13 @@ typedef struct VoiceLinkPacket {
     u8  peerId;     /* +0x0B */
     u32 sequence;   /* +0x0C */
 } VoiceLinkPacket;  /* 0x10 bytes */
+
+/* Result of serving one voice-chat link packet: the reply type to send back
+ * (0 = no reply) and the context the reply belongs to. */
+typedef struct VoiceLinkReply {
+    s32 type;                  /* +0x00 reply packet type, 0 = no reply */
+    VoiceLinkContext *context; /* +0x04 exchange the reply belongs to */
+} VoiceLinkReply;
 
 /* ov001 bitmap-font text subsystem (ov001_02169020.c / ov001_02169E3C.c).
  * Ov001TextState is what the text-drawing entry points take; Ov001Font wraps a

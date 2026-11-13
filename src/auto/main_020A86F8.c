@@ -6,7 +6,7 @@ typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 extern const Table020a8b3c data_020f49e0;
 
 s32 CalculateUnitDamage(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
- s32 func_020a736c(void *, u8, u8);
+ s32 GetUnitDamageBonus(void *, u8, u8);
  s32 GetWeaponDamagePercent(u32, s32, s32, s32);
  s32 Divide();
  s32 temp_r0;
@@ -14,7 +14,7 @@ s32 CalculateUnitDamage(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 var_r0;
  s32 temp_r5;
  temp_r4 = (u32)(arg0[0] << 26) >> 26;
- temp_r5 = func_020a736c(arg0, arg0[1], arg0[2]) + 100;
+ temp_r5 = GetUnitDamageBonus(arg0, arg0[1], arg0[2]) + 100;
  temp_r0 = GetWeaponDamagePercent(temp_r4, arg1, arg2, arg3);
  if (temp_r0 == 0) return 0;
  var_r0 = Divide(temp_r5 * temp_r0, 100);
@@ -235,7 +235,7 @@ s32 func_020a8c54(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-s32 func_020a8c8c(s32 a,s32 b,s32 c,s32 d,s16 e,s16 f){if(a<c || c+e<a)return 0;if(b<d || d+f<b)return 0;return 1;}
+s32 IsPointInRect(s32 a,s32 b,s32 c,s32 d,s16 e,s16 f){if(a<c || c+e<a)return 0;if(b<d || d+f<b)return 0;return 1;}
 
 u32 func_020a8cc0(u32 arg0) {
     u32 var_r1;
@@ -290,17 +290,17 @@ s32 func_020a8e28(s32 arg0, s32 arg1) {
 
 void func_020a8e3c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 i,s32 j){void func_0208718c();void func_020871a8(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;px=a-(func_020a8ce4(d,g)>>1);py=b-(func_020a8ce4(e,h)>>1);x=func_020a8ce4(d,g);y=func_020a8ce4(e,h);if(i!=256)x=func_020a8ce4(x,i);if(j!=256)y=func_020a8ce4(y,j);func_0208718c();func_020871a8(px,py,c,x,y,(u16)f);}
 
-u8 func_020a8ef8(s32 a){s32 func_020848c4();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=func_020848c4();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
+u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
 
 u16 func_020a8f4c(s32 arg0) {
     M2C_UNK IsLinkSessionActive();
-    s32 func_020848c4();
+    s32 GetLocalPlayerIdForOverlay();
     u8 func_020a8ef8(s32);
     IsLinkSessionActive();
     if (func_020a8ef8(arg0) == 0) {
         return 0xFFFFU;
     }
-    return (u16) (arg0 - (func_020848c4() * 0x32));
+    return (u16) (arg0 - (GetLocalPlayerIdForOverlay() * 0x32));
 }
 
 void UpdateSpriteAnimation(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}

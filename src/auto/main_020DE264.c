@@ -38,7 +38,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void func_0208e7ec(s32, s32);
     void func_02088f1c(void *);
     void func_02088da8(void *);
-    void func_0208b758(void *, u32);
+    void SetTextById(void *, u32);
     s32 GetSpriteAnimValue(void *);
     void func_ov010_02228d48(s32, s32, s32, s32, s32, s32, s32);
     extern void *gCur3DSpriteEngine;
@@ -91,7 +91,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
 
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
     func_02088da8(M2C_FIELD((void *)setup, void **, 0x60));
-    func_0208b758(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
+    SetTextById(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
 
     if (GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68)) != 0) {
@@ -159,7 +159,7 @@ void func_020de610(void) {
  * menu sprites, then registers the scene's ov010 update callbacks. */
 M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
 void Clear3DSpriteLayer(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void OpenNarcArchive(void *); void LoadNarcFileDecompressed(void *,void *); void CloseNarcArchive(void); void func_02080944(void *,s32,s32,s32);
-void func_02088f1c(void *); void func_02088da8(void *); void func_0208b758(void *,u32); s32 GetSpriteAnimValue(void *);
+void func_02088f1c(void *); void func_02088da8(void *); void SetTextById(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2PScreen;
@@ -184,7 +184,7 @@ sprite=M2C_FIELD(setup,void **,0x54);
 SetupSetFrame(sprite,(u16)(((SetupSprite *)sprite)->baseFrame+2),0);
 func_02088f1c(M2C_FIELD(setup,void **,0x58));
 func_02088da8(M2C_FIELD(setup,void **,0x60));
-func_0208b758(M2C_FIELD(setup,void **,0x64),0x44000011);
+SetTextById(M2C_FIELD(setup,void **,0x64),0x44000011);
 func_02088f1c(M2C_FIELD(setup,void **,0x64));
 if(GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68))) {
 animValue=GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68));
@@ -236,7 +236,7 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     void func_02080944(void *, s32, s32, s32);
     void func_02088f1c(void *);
     void func_02088da8(void *);
-    void func_0208b758(void *, u32);
+    void SetTextById(void *, u32);
     s32 GetSpriteAnimValue(void *);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
@@ -289,7 +289,7 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
 
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
     func_02088da8(M2C_FIELD((void *)setup, void **, 0x60));
-    func_0208b758(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
+    SetTextById(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
 
     if (GetSpriteAnimValue(M2C_FIELD((void *)setup, void **, 0x68)) != 0) {
@@ -368,7 +368,7 @@ u32 CountBits(void);
 u32 func_ov009_02225470(void);
 void func_02088f1c(void*);
 void func_02088ff4(void*);
-void func_0208b758(void*,u32);
+void SetTextById(void*,u32);
 u32 GetReadyPlayerMask(void);
 void func_ov009_02224064(void);
 void func_ov009_02224c34(int);
@@ -467,11 +467,11 @@ p=M2C_FIELD(self,void * *,0x54);
 
 if(v>=2){if(!SetupIsActive(p)){SetupSetFrame(p,((SetupSprite*)p)->baseFrame,0);
 func_02088f1c(M2C_FIELD(self,void * *,0x54));
-func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000012);
+SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
 else if(SetupIsActive(p)){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+2,0);
 func_02088ff4(M2C_FIELD(self,void * *,0x54));
-func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000011);
+SetTextById(M2C_FIELD(self,void * *,0x64),0x44000011);
 }
 p=M2C_FIELD(self,void * *,0x54);
 if(!SetupIsActive(p))return;
@@ -499,10 +499,10 @@ v=func_ov009_02225470();
 p=M2C_FIELD(self,void * *,0x60);
 
 if(v>=2){if(!func_020890b8(p)&&!func_02089064(M2C_FIELD(self,void * *,0x60))){func_02088f1c(M2C_FIELD(self,void * *,0x60));
-func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000012);
+SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
 else if(!func_020890b8(p)&&func_02089064(M2C_FIELD(self,void * *,0x60))){func_02088ff4(M2C_FIELD(self,void * *,0x60));
-func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000011);
+SetTextById(M2C_FIELD(self,void * *,0x64),0x44000011);
 }
 p=func_ov009_02224070(0);
 if(!p||(M2C_FIELD(p,u8 *,0x16)&2))return;

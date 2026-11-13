@@ -244,10 +244,10 @@ s32 HasEnemyPlayer(void) {
  extern void **gCurrentMap;
  s32 IsPlayerActive(s32);
  s32 IsSameTeam(u16,s32);
- s32 func_020d243c(s32);
+ s32 PlayerHasHq(s32);
  s32 i=1;
 loop:
- if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)==0 && func_020d243c(i)==1)return 1;
+ if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)==0 && PlayerHasHq(i)==1)return 1;
  i++;
  if(i>=5)return 0;
  goto loop;

@@ -2,6 +2,20 @@
 #include "common.h"
 static inline u8 flagsDD(u32 mode,u32 enabled) { return enabled?(u8)(mode|16):(u8)mode; }
 
+/* A transfer request handed to StartArm7Transfer: the type selects the ARM7
+ * transfer mode, then the 32-byte-aligned source and destination, the byte size
+ * (at least 1024) and a flag; user1/user2 are handed back to the completion
+ * callback registered in gArm7Transfer. */
+typedef struct Arm7TransferDesc {
+    u32 type;  /* +0x00 transfer type (0..5) */
+    u32 src;   /* +0x04 source address, a multiple of 32 */
+    u32 dst;   /* +0x08 destination address, a multiple of 32 */
+    u32 size;  /* +0x0C byte count, at least 1024 */
+    u32 flag;  /* +0x10 nonzero to set bit 16 of the mode word */
+    u32 user1; /* +0x14 value passed to the callback */
+    u32 user2; /* +0x18 callback argument */
+} Arm7TransferDesc;
+
 void func_0200dd40(void) {
     M2C_UNK func_02009d34();
     M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);

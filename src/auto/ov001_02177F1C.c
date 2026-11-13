@@ -187,10 +187,10 @@ void func_ov001_0217830c(void) {
 }
 
 void func_ov001_02178338(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171738();
     extern M2C_UNK func_ov001_02178360;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     func_ov001_02171738();
@@ -220,10 +220,10 @@ void func_ov001_02178394(void) {
 }
 
 void func_ov001_02178398(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_021783c0(void);
-    if (func_ov001_021716c4() != 0) return;
+    if (Ov001_GetIconRowSelection() != 0) return;
     Ov001_PlaySound(6);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021783c0);
 }
@@ -291,10 +291,10 @@ void func_ov001_0217851c(void) {
 }
 
 void func_ov001_02178558(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171738();
     extern M2C_UNK func_ov001_02178580;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     func_ov001_02171738();
@@ -322,10 +322,10 @@ void func_ov001_021785b4(void) {
 }
 
 void func_ov001_021785b8(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_021785e0(void);
-    if (func_ov001_021716c4() != 0) return;
+    if (Ov001_GetIconRowSelection() != 0) return;
     Ov001_PlaySound(6);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021785e0);
 }
@@ -412,10 +412,10 @@ void func_ov001_021787a8(void) {
 }
 
 void func_ov001_021787d4(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171738();
     extern M2C_UNK func_ov001_021787fc;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     func_ov001_02171738();
@@ -448,7 +448,7 @@ void func_ov001_02178848(void) {
 void func_ov001_0217884c(void) {
     extern u8 data_ov001_02193d78;
     void func_ov001_0217889c(void);
-    switch (func_ov001_021716c4()) {
+    switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
@@ -638,7 +638,7 @@ void func_ov001_02178ce4(void) {
 
 void func_ov001_02178d20(void) {
     extern M2C_UNK func_ov001_02178d54;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     if (func_ov001_021760d4() == 0) {
@@ -672,11 +672,11 @@ void func_ov001_02178da0(void) {
 }
 
 void func_ov001_02178da4(void) {
-    s32 func_ov001_021716c4(void);
+    s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(s32);
     extern s8 data_ov001_02193d80;
     extern M2C_UNK func_ov001_02178dfc;
-    switch (func_ov001_021716c4()) {
+    switch (Ov001_GetIconRowSelection()) {
     case 1:
         M2C_FIELD(&data_ov001_02193d80, u8 *, 1) = 1;
         Ov001_PlaySound(6);

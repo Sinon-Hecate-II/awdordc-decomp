@@ -72,7 +72,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     void func_02088da8(void *);
     s32 func_02088f1c(s32);
     s32 func_02088ff4(s32);
-    u32 func_0208b758(s32, s32);
+    u32 SetTextById(s32, s32);
     s16 GetSpriteAnimValue(void *);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
@@ -193,17 +193,17 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     }
     temp_r0_3 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
     if (InRange((u8) temp_r0_3, 0, 3) != 0) {
-        return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
     }
     if (InRange((u8) temp_r0_3, 4, 7) != 0) {
-        return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
+        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
     }
     if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
-        return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
+        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
     }
     temp_r0 = InRange((u8) temp_r0_3, 0x15, 0x18);
     if (temp_r0 != 0) {
-        return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
+        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
     }
     if ((u8) temp_r0_3 != 0x19) {
         return temp_r0;
@@ -215,7 +215,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
         var_r1 = 0;
     }
     if (var_r1 & 0xFF) {
-        return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
+        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
     }
     if (temp_r0_4 == 1) {
         var_r0 = 1;
@@ -225,7 +225,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     if (!(var_r0 & 0xFF)) {
         return var_r0;
     }
-    return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
+    return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
 }
 
 u8 func_ov003_021e9c08(void *arg0) {
@@ -278,23 +278,26 @@ u8 func_ov003_021e9ce0(void *arg0) {
     return var_r0;
 }
 
-void SetWaypointPanelState(void *p,s32 mode){
+/* Switches the waypoint panel to a state (0 idle, 1..3 animations): stores the
+ * state nibble and panel flags, enables the panel's own sprite layer in state 1
+ * and shows or hides the trailing label sprite depending on the state. */
+void SetWaypointPanelState(void *panel,s32 state){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
 void func_ov003_022006b0(s32,u8); void func_02089438(void*); void func_02088d94(void*); void func_02088da8(void*);
-void *old;
-M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~0xf0)|((u32)((u8)mode<<28)>>24);
-M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~0x70)|0x10;
-if(E9638Mode(p,1)){
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_ov003_022006b0(25,M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
-M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;gCur3DSpriteEngine=old;
+void *savedEngine;
+M2C_FIELD(panel,u8*,0x39)=(M2C_FIELD(panel,u8*,0x39)&~0xf0)|((u32)((u8)state<<28)>>24);
+M2C_FIELD(panel,u8*,0x3a)=(M2C_FIELD(panel,u8*,0x3a)&~0x70)|0x10;
+if(E9638Mode(panel,1)){
+savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
+func_ov003_022006b0(25,M2C_FIELD(M2C_FIELD(panel,void**,0x6c),u8*,7));
+M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;gCur3DSpriteEngine=savedEngine;
 }
-if(E9638Mode(p,1)||E9638Mode(p,3))M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=0;
-else M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;
-if(E9638Mode(p,2)){
-void *q=M2C_FIELD(p,void**,0x6c);M2C_FIELD(q,u8*,9)=M2C_FIELD(q,u8*,8);
-func_02089438(M2C_FIELD(p,void**,0x5c));func_02088d94(M2C_FIELD(p,void**,0x5c));
-}else func_02088da8(M2C_FIELD(p,void**,0x5c));
+if(E9638Mode(panel,1)||E9638Mode(panel,3))M2C_FIELD(M2C_FIELD(panel,void**,0x58),u8*,0x59)=0;
+else M2C_FIELD(M2C_FIELD(panel,void**,0x58),u8*,0x59)=1;
+if(E9638Mode(panel,2)){
+void *waypoints=M2C_FIELD(panel,void**,0x6c);M2C_FIELD(waypoints,u8*,9)=M2C_FIELD(waypoints,u8*,8);
+func_02089438(M2C_FIELD(panel,void**,0x5c));func_02088d94(M2C_FIELD(panel,void**,0x5c));
+}else func_02088da8(M2C_FIELD(panel,void**,0x5c));
 }
 
 u8 func_ov003_021e9e2c(void *arg0) {

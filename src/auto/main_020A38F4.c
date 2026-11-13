@@ -107,33 +107,35 @@ particle=0;particleOffset=particle;
 do{M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_SPRITE)=0;particle++;particleOffset+=MAP_EFFECT_PARTICLE_STRIDE;}while(particle<MAP_EFFECT_PARTICLE_COUNT);
 }
 
+/* Sets up the rain weather effect: loads the particle sprites and palette, then
+ * scatters the 32 falling particles at random positions with their drift pattern. */
 void InitRainEffects(void){
 void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 NextRandomValue(void);
-extern u8 data_0212054c[],data_02120558[],data_02120568[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
-s16 i; s32 offset;
-SetFileDirectory(data_0212054c);
-LoadDecompressedFileTo(data_02120558,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
-LoadFileToSpriteBuffer(data_02120568,0x2c0,32);
-i=0;offset=0;
+extern u8 sRainDir[],sRainCgName[],sRainClName[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
+s16 particle; s32 particleOffset;
+SetFileDirectory(sRainDir);
+LoadDecompressedFileTo(sRainCgName,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(sRainClName,0x2c0,32);
+particle=0;particleOffset=0;
 do{
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,2)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=sWeatherParticlePatterns[(i%16)*3];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=sWeatherParticlePatterns[(i%16)*3+1];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=sWeatherParticlePatterns[(i%16)*3+2];
-i++;offset+=12;
-}while(i<32);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_X)=(NextRandomValue()%255)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_Y)=(NextRandomValue()%255)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_DX)=sWeatherParticlePatterns[(particle%16)*3];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_DY)=sWeatherParticlePatterns[(particle%16)*3+1];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_SPRITE)=sWeatherParticlePatterns[(particle%16)*3+2];
+particle++;particleOffset+=MAP_EFFECT_PARTICLE_STRIDE;
+}while(particle<MAP_EFFECT_PARTICLE_COUNT);
 }
 
 /* Sets up the snow weather effect: loads the snow particle sprites and scatters
  * the 32 falling particles at random positions with a sideways drift. */
 void InitSnowEffects(void){
 void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 NextRandomValue(void);
-extern u8 data_02120574[],data_02120580[],data_02120590[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
+extern u8 sSnowDir[],sSnowCgName[],sSnowClName[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
 s16 i; s32 offset;
-SetFileDirectory(data_02120574);
-LoadDecompressedFileTo(data_02120580,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
-LoadFileToSpriteBuffer(data_02120590,0x2c0,32);
+SetFileDirectory(sSnowDir);
+LoadDecompressedFileTo(sSnowCgName,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(sSnowClName,0x2c0,32);
 i=0;offset=0;
 do{
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,MAP_EFFECT_PARTICLE_X)=(NextRandomValue()%255)<<8;
@@ -145,22 +147,24 @@ i++;offset+=MAP_EFFECT_PARTICLE_STRIDE;
 }while(i<MAP_EFFECT_PARTICLE_COUNT);
 }
 
+/* Sets up the sandstorm weather effect: loads the sand particle sprites and scatters
+ * the 32 drifting particles at random positions with a fast sideways drift. */
 void InitSandstormEffects(void){
 void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 NextRandomValue(void);
-extern u8 data_0212059c[],data_021205a8[],data_021205bc[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
-s32 i; s32 offset;
-SetFileDirectory(data_0212059c);
-LoadDecompressedFileTo(data_021205a8,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
-LoadFileToSpriteBuffer(data_021205bc,0x2c0,32);
-i=0;offset=0;
+extern u8 sBmapFsDir[],sStormCgName[],sStormClName[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
+s32 particle; s32 particleOffset;
+SetFileDirectory(sBmapFsDir);
+LoadDecompressedFileTo(sStormCgName,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(sStormClName,0x2c0,32);
+particle=0;particleOffset=0;
 do{
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,2)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=sWeatherParticlePatterns[(i%16)*3]*20;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=sWeatherParticlePatterns[(i%16)*3+1];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=sWeatherParticlePatterns[(i%16)*3+2];
-i++;offset+=12;
-}while(i<32);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_X)=(NextRandomValue()%255)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_Y)=(NextRandomValue()%255)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_DX)=sWeatherParticlePatterns[(particle%16)*3]*20;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_DY)=sWeatherParticlePatterns[(particle%16)*3+1];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_SPRITE)=sWeatherParticlePatterns[(particle%16)*3+2];
+particle++;particleOffset+=MAP_EFFECT_PARTICLE_STRIDE;
+}while(particle<MAP_EFFECT_PARTICLE_COUNT);
 }
 
 void ApplyWeatherEffects(u32 a) {

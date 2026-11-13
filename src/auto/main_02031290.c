@@ -5,7 +5,7 @@ M2C_UNK func_0202f48c(M2C_UNK);
 
 /* Dispatch the next state depending on the current game mode. */
 s32 func_02031290(void) {
-    s32 func_02027c84();
+    s32 Wfc_GetLinkState();
     s32 Wfc_GetSessionState();
     s32 func_020313f0(void *);
     s32 func_0203152c();
@@ -16,7 +16,7 @@ s32 func_02031290(void) {
 
     state = Wfc_GetSessionState();
     ctx = (void *)func_0202f48c(0x10);
-    if (func_02027c84() == 9) {
+    if (Wfc_GetLinkState() == 9) {
         tmp = state - 0xA;
         switch (tmp) {                          /* switch 1 */
         default:                                /* switch 1 */

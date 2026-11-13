@@ -234,7 +234,7 @@ void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 /* Validates a font resource (magic 'NFTR'-ish, version >= 1.00) and relocates its
    internal pointers; on success returns 1 and writes a pointer to its FINF section into *outFinf. */
 s32 func_ov001_0216aab0(void *font, void **outFinf) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     s32 func_ov001_02169020(void *, s32);
     M2C_UNK func_ov001_0216ac04(void *);
     s32 temp_r0;
@@ -301,7 +301,7 @@ s32 func_ov001_0216aab0(void *font, void **outFinf) {
             validV100c = 0;
         }
         if (validV100c == 0) {
-            func_02007958();
+            SystemHalt();
         }
         backwardCompat = 1;
     }

@@ -196,21 +196,25 @@ void func_ov001_0217b41c(void) {
     Ov001_SetStepCallback(&func_ov001_0217a3a8);
 }
 
-void func_ov001_0217b444(void) {
+/* Sets up the ov001 name-entry screen: gets its state block, loads the saved
+ * name (when the current mode has one), picks the on-screen keyboard and message
+ * for the mode, creates the text panel and cursor sprite and installs the first
+ * step callback. */
+void InitNameEntryScreen(void) {
 extern void *data_ov001_0218f81c; extern void *gNameEntryState;
-void *func_ov001_0218b6f8(s32,s32);void func_ov001_02175db4(s32 *,s32);
+void *func_ov001_0218b6f8(s32,s32);void Ov001_GetNameEntryMode(s32 *,s32);
 s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217b634(void);
-u8 choices[2]={M2C_FIELD(&data_ov001_0218f81c,u8 *,0),M2C_FIELD(&data_ov001_0218f81c,u8 *,1)};s32 a,b;
+u8 modeMessages[2]={M2C_FIELD(&data_ov001_0218f81c,u8 *,0),M2C_FIELD(&data_ov001_0218f81c,u8 *,1)};s32 mode,variant;
 gNameEntryState=func_ov001_0218b6f8(44,4);
-func_ov001_02175db4(&a,(s32)&b);
-if(a==0) {func_ov001_021846f8(gNameEntryState+8); M2C_FIELD(gNameEntryState,u8 *,41)=StringLengthUpTo(gNameEntryState+8,32);}
-func_ov001_0217b578();func_ov001_02172250(a+9);
-if(b==1)func_ov001_02171c24(53,-1,0);else func_ov001_02171c24(choices[a],-1,0);
+Ov001_GetNameEntryMode(&mode,(s32)&variant);
+if(mode==0) {func_ov001_021846f8((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
+func_ov001_0217b578();func_ov001_02172250(mode+9);
+if(variant==1)func_ov001_02171c24(53,-1,0);else func_ov001_02171c24(modeMessages[mode],-1,0);
 func_ov001_02171dd0(2);
-M2C_FIELD(gNameEntryState,void **,0)=CreateTextPanel(0,0);
-M2C_FIELD(gNameEntryState,void **,4)=func_ov001_0218a5f0(0,62);
-M2C_FIELD(M2C_FIELD(gNameEntryState,void **,4),u16 *,4)=(M2C_FIELD(M2C_FIELD(gNameEntryState,void **,4),u16 *,4)&~0xc00)|0xc00;
+M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_PANEL)=CreateTextPanel(0,0);
+M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR)=func_ov001_0218a5f0(0,62);
+M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)=(M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)&~0xc00)|0xc00;
 UpdateNameEntryCursor();RedrawNameEntryText();Ov001_SetStepCallback((s32 *)func_ov001_0217b634);
 }
 
@@ -350,7 +354,7 @@ void func_ov001_0217b914(void) {
 
 void func_ov001_0217b944(void) {
     s32 func_ov001_02172894();
-    void func_ov001_02175db4(s32 *, s32);
+    void Ov001_GetNameEntryMode(s32 *, s32);
     M2C_UNK func_ov001_021862d8(s32, s32, s32, s32, s32);
     extern void *data_ov001_0218f81c;
     extern void *gNameEntryState;
@@ -374,7 +378,7 @@ void func_ov001_0217b944(void) {
         Ov001_SetStepCallback(&func_ov001_0217bf14);
         return;
     }
-    func_ov001_02175db4(0, &sp4);
+    Ov001_GetNameEntryMode(0, &sp4);
     func_ov001_021862d8(sp8[sp4], 2, 1, -1, 0);
     Ov001_SetStepCallback(&func_ov001_0217bc7c);
 }
@@ -387,9 +391,9 @@ void func_ov001_0217ba1c(void) {
     M2C_UNK func_ov001_0218c104(M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     void func_ov001_0218b368(s32, s32);
-    void func_ov001_02175db4(s32 *, s32);
+    void Ov001_GetNameEntryMode(s32 *, s32);
     void func_ov001_02175d64(s32, s32);
-    void func_ov001_02175da0(s32, s32);
+    void Ov001_SetNameEntryMode(s32, s32);
     s32 Ov001_SetStepCallback(s32 *);
     M2C_UNK func_ov001_0218b71c(M2C_UNK *);
     extern void *gNameEntryState;
@@ -406,19 +410,19 @@ void func_ov001_0217ba1c(void) {
     Ov001_LoadAsset((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&func_02004160);
     func_ov001_0218b368(1, 1);
     func_ov001_0218b368(0, 0x15);
-    func_ov001_02175db4(&sp4, &sp0);
+    Ov001_GetNameEntryMode(&sp4, &sp0);
     if (sp0 == 0) {
         func_ov001_02175d64(2, 1);
-        func_ov001_02175da0(0, sp4);
+        Ov001_SetNameEntryMode(0, sp4);
         Ov001_SetStepCallback((s32 *)InitMapListScreen);
     } else {
         if (M2C_FIELD(gNameEntryState, u8 *, 0x2A) == 0) {
             func_ov001_02175d64(0, 1);
-            func_ov001_02175da0(1, 0);
+            Ov001_SetNameEntryMode(1, 0);
             Ov001_SetStepCallback((s32 *)func_ov001_02179ea8);
         } else {
             func_ov001_02175d64(0, 0);
-            func_ov001_02175da0(0, 1);
+            Ov001_SetNameEntryMode(0, 1);
             Ov001_SetStepCallback((s32 *)func_ov001_021828ac);
         }
     }
@@ -481,7 +485,7 @@ void func_ov001_0217bc7c(void) {
 void func_ov001_0217bcd8(void) {
     s32 func_ov001_0218665c(void);
     s32 Ov001_SetStepCallback(s32 *);
-    void func_ov001_02175db4(s32 *, s32);
+    void Ov001_GetNameEntryMode(s32 *, s32);
     void func_ov001_0217b688(void);
     void func_ov001_0217ba1c(void);
     extern void *data_ov001_0218f81c;
@@ -500,7 +504,7 @@ void func_ov001_0217bcd8(void) {
         Ov001_SetStepCallback((s32 *)func_ov001_0217b688);
         return;
     }
-    func_ov001_02175db4(&index, 0);
+    Ov001_GetNameEntryMode(&index, 0);
     ((void (*)(void *))entries[index])((u8 *)gNameEntryState + 8);
     Ov001_SetStepCallback((s32 *)func_ov001_0217ba1c);
 }

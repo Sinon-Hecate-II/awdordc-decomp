@@ -34,7 +34,7 @@ void CreateMenuTextSprite();
 void func_0208ca2c();
 void func_020aeebc();
 void func_020a9a30(s32,s32,u8,void *);
-void func_0208b758();
+void SetTextById();
 void func_02088f1c();
 void func_020e3004();
 void SetOv005FileDirectory(void);
@@ -126,7 +126,7 @@ func_020a9a30(2,0,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,28)+0x3000);
 func_020a9a30(2,2,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,48)+0x2e0);
 M2C_FIELD(sprite,u32 *,68)=func_020aaf74(sprite);M2C_FIELD(sprite,u16 *,62)=0x180;M2C_FIELD(sprite,u32 *,64)=(M2C_FIELD(sprite,u32 *,64)&~0x3fc0000)|0x5c0000;M2C_FIELD(sprite,u16 *,60)=0xc00;
 M2C_FIELD(gOv005MenuState,void * *,28)=func_0208bc24(arg0);M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u16 *,62)=0x200;M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)=(M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)&~0x3fc0000)|0x200000;
-func_0208b758(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);func_02088f1c(M2C_FIELD(gOv005MenuState,void * *,28));func_020e3004();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
+SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);func_02088f1c(M2C_FIELD(gOv005MenuState,void * *,28));func_020e3004();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
 func_ov005_022174f4();func_ov005_02217440();func_020aef7c(3,15,6);gCur3DSpriteEngine=saved;func_020b1b3c();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
 }
 #pragma opt_strength_reduction reset
@@ -186,7 +186,7 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
  * detail page. */
 void Ov005ListMenuInput(M2C_UNK arg0){
 u32 func_020719d4(s32);u32 func_02071a64(u32,u32);u32 func_02071564(u32,u32);u32 func_02070f24(u32,u32);s32 func_020719a0(u32);
-M2C_UNK func_ov005_02217f6c();M2C_UNK func_020b1c78(s16);void func_01ffa6fc(s32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);s32 func_020bf894(s16);void func_0208b758(void *,u32);s16 func_020bf8cc(s16);void func_ov005_02217334(s16);
+M2C_UNK func_ov005_02217f6c();M2C_UNK func_020b1c78(s16);void func_01ffa6fc(s32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);s32 func_020bf894(s16);void SetTextById(void *,u32);s16 func_020bf8cc(s16);void func_ov005_02217334(s16);
 extern void *gOv005MenuState;extern u16 *gKeyState;
 void *menu=gOv005MenuState;s32 animTimer=M2C_FIELD(menu,s16 *,OV005_MENU_ANIM);u32 eased;
 eased=func_02071a64(OV005_FLOAT_NEG256,func_020719d4(animTimer));eased=func_02071a64(eased,func_020719d4(animTimer));eased=func_02071564(eased,func_020719d4(OV005_MENU_ANIM_FRAMES_SQ));M2C_FIELD(menu,s16 *,OV005_MENU_SLIDE_OUT)=func_020719a0(eased);
@@ -195,7 +195,7 @@ if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){func_ov005_02217f6c();fu
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)>0)return;
 if(*gKeyState&2){func_01ffa6fc(arg0);func_020b2178();PlaySoundEffect(0x1000f);return;}
 if((*gKeyState&1) && func_020bf894(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX))){
-func_0208b758(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000001);
+SetTextById(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000001);
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)=OV005_PAGE_DETAIL;M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)=OV005_MENU_ANIM_FRAMES;
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED)=func_020bf8cc(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX));
 func_ov005_02217334(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));func_020b2178();PlaySoundEffect(0x10016);
@@ -209,7 +209,7 @@ func_ov005_02217334(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));func_
 void Ov005DetailMenuInput(M2C_UNK arg0){
 extern void *gOv005MenuState;extern u16 *gKeyState;
 u32 func_020719d4(s32);u32 func_02071a64(u32,u32);u32 func_02071564(u32,u32);u32 func_02070f24(u32,u32);s32 func_020719a0(u32);
-void Ov005AddDetailSprites(void);M2C_UNK func_020b1c78(s16);void func_020bf8fc(s32,s32);void Ov005DrawEntryList(s32);void func_0208b758(void *,u32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);
+void Ov005AddDetailSprites(void);M2C_UNK func_020b1c78(s16);void func_020bf8fc(s32,s32);void Ov005DrawEntryList(s32);void SetTextById(void *,u32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);
 void *menu=gOv005MenuState;s32 animTimer=M2C_FIELD(menu,s16 *,OV005_MENU_ANIM);u32 eased;
 eased=func_02071a64(OV005_FLOAT_256,func_020719d4(animTimer));eased=func_02071a64(eased,func_020719d4(animTimer));eased=func_02071564(eased,func_020719d4(OV005_MENU_ANIM_FRAMES_SQ));
 M2C_FIELD(menu,s16 *,OV005_MENU_SLIDE_OUT)=func_020719a0(func_02070f24(OV005_FLOAT_NEG256,eased));
@@ -220,14 +220,14 @@ if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)>0)return;
 if(*gKeyState&2){
 func_020bf8fc(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX),M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));
 Ov005DrawEntryList(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX));
-func_0208b758(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000000);
+SetTextById(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000000);
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)=OV005_PAGE_LIST;M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)=OV005_MENU_ANIM_FRAMES;
 func_020b2178();PlaySoundEffect(0x1000f);return;
 }
 if(*gKeyState&1){
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED)!=M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION))M2C_FIELD(gOv005MenuState,u8 *,OV005_MENU_CHANGED)=1;
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED)=M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION);
-func_0208b758(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000000);
+SetTextById(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000000);
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)=OV005_PAGE_LIST;M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)=OV005_MENU_ANIM_FRAMES;
 func_020b2178();PlaySoundEffect(0x10016);
 }

@@ -80,21 +80,21 @@ s32 func_020c7e58(s32 arg0) {
     return (0x54 * arg0) + (s32) &data_02164d64;
 }
 
-s32 func_020c7e6c(a)
+s32 GetMapRecord(a)
 s32 a;
 {
  extern M2C_UNK data_02164d64;
  return (s32)&data_02164d64+0x54*func_020c8018(a);
 }
 
-s32 func_020c7e88(a)
+s32 GetMapRecordStamp(a)
 s32 a; {
-    s32 func_020c7e6c();
-    return func_020c7e6c() + 0x40;
+    s32 GetMapRecord();
+    return GetMapRecord() + 0x40;
 }
 
 s32 func_020c7e98(void) {
-    return func_020c7e6c() + 0x30;
+    return GetMapRecord() + 0x30;
 }
 
 s32 func_020c7ea8(a)
@@ -132,7 +132,7 @@ u8 IsCampaignMapAvailable(s32 a) {
  if(!func_020c7ef4(a))return 0;
  if(!func_020c80a4(a))return 0;
  if(!func_02086960(a))return 0;
- p=func_020c7e6c(a);
+ p=GetMapRecord(a);
  if(M2C_FIELD(p,u8 *,4)>10)return 0;
  if(M2C_FIELD(p,u8 *,5)>10)return 0;
  return M2C_FIELD(p,u8 *,0x2F)<=50;
@@ -143,7 +143,7 @@ s32 func_020c7fe4(M2C_UNK arg0) {
     s32 func_020c8020(M2C_UNK);
     s32 temp_r4;
 
-    temp_r4 = func_020c7e6c();
+    temp_r4 = GetMapRecord();
     if (func_020c8020(arg0) != 0) {
         return temp_r4 + 6;
     }
@@ -155,7 +155,7 @@ s32 func_020c8018(s32 arg0) {
 }
 
 s32 func_020c8020(s32 a) {
- s32 p=func_020c7e6c(a); s32 r;
+ s32 p=GetMapRecord(a); s32 r;
  if(M2C_FIELD(p,u32 *,0)!=0x20070731)return 0;
  if(M2C_FIELD(p,u8 *,6)==0)r=0;
  else r=M2C_FIELD(p,u8 *,0x27);
@@ -177,17 +177,17 @@ s32 func_020c8054(s32 arg0) {
 }
 
 s32 func_020c80a4(s32 a) {
- s32 func_020c8c6c(s32);
+ s32 IsLocalMacAddress(s32);
  if(a<0xe1||a>=0x1a9)return 0;
  if(!func_020c7eb8(a))return 0;
- return func_020c8c6c(func_020c7e88(a));
+ return IsLocalMacAddress(GetMapRecordStamp(a));
 }
 
 u8 func_020c80ec(s32 a) {
  s32 func_02086980(s32);
  s32 p,q; u8 r;
  if(a>=0xe1&&a<0x1a9) {
- p=func_020c7e88(a);q=func_020c8018(a);
+ p=GetMapRecordStamp(a);q=func_020c8018(a);
  if(!func_020c7eb8(a))return 0;
  if(func_020c80a4(a))return 0;
  if(func_02086980(q))return 0;
@@ -306,7 +306,7 @@ s32 func_020c8624(s32 a,s32 b) {
  func_020be438(p,b,0x6f8);return 1;
 }
 
-u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 func_020c8b0c(u8 *,u8 *);s32 p=func_020c7e6c(a);u8 r;if(!func_020c7a3c(b))return 0;if(func_020c8b0c(b,p))r=1;else r=0;return r;}
+u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 MapRecordsMatch(u8 *,u8 *);s32 p=GetMapRecord(a);u8 r;if(!func_020c7a3c(b))return 0;if(MapRecordsMatch(b,p))r=1;else r=0;return r;}
 
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
@@ -377,7 +377,7 @@ MI_CpuCopy32(GetMapSettings(),out+0x30,16);func_020c86a8(out);
 }
 
 /* Returns 1 if the two save/checkpoint record blobs compare equal field-by-field. */
-u8 func_020c8b0c(u8 *lhs, u8 *rhs) {
+u8 MapRecordsMatch(u8 *lhs, u8 *rhs) {
     s32 i;
     CompareRecord *p;
     CompareRecord *q;
@@ -428,7 +428,7 @@ u8 func_020c8b0c(u8 *lhs, u8 *rhs) {
     return (u8)(p->tail == q->tail);
 }
 
-s32 func_020c8c6c(s32 a) {
+s32 IsLocalMacAddress(s32 a) {
  void GetMacAddress(void *);
  u8 buf[6]; s32 i;
  GetMacAddress(buf);

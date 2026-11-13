@@ -194,7 +194,7 @@ void Ov003_SetRowAnimation(void *arg0, s8 arg1) {
  * reconfigures the list for the chosen entry, and when the timer expires it
  * redraws the label and window for that entry. */
 u32 func_ov003_0220a6bc(void *screen) {
-M2C_UNK func_020c01ec(void *);M2C_UNK DrawMapSelectLabel(void *);u32 func_ov003_02208034(void *);M2C_UNK RequestMenuMode(void *,M2C_UNK);
+M2C_UNK func_020c01ec(void *);M2C_UNK DrawMapSelectLabel(void *);u32 UpdateMapSelectLabelTransform(void *);M2C_UNK RequestMenuMode(void *,M2C_UNK);
 extern M2C_UNK data_0215d9b8;
 u8 timer;u32 active,isPending; s32 modeIsZero,kindIs8,remaining;void *p;
 timer=M2C_FIELD(screen,u8 *,0x34);active=timer!=0?1:0;if(!(active&255))return active;
@@ -213,7 +213,7 @@ RequestMenuMode(screen,0);func_020c01ec(screen);M2C_FIELD(screen,u8 *,0x38)&=~12
 }}}
 if(M2C_FIELD(screen,u8 *,0x34)==10){M2C_FIELD(screen,u8 *,0x38)=(M2C_FIELD(screen,u8 *,0x38)&~1)|1;func_ov003_02209d0c(screen,M2C_FIELD(M2C_FIELD(screen,void **,0x3c),u8 *,17));M2C_FIELD(M2C_FIELD(screen,void **,0x50),u8 *,1)=0;}
 remaining=M2C_FIELD(screen,u8 *,0x34)-1;M2C_FIELD(screen,u8 *,0x34)=remaining;active=(remaining&255)?1:0;if(active&255)return active;
-DrawMapSelectLabel(screen);return func_ov003_02208034(screen);
+DrawMapSelectLabel(screen);return UpdateMapSelectLabelTransform(screen);
 }
 
 void func_ov003_0220a864(M2C_UNK arg0) { (void)arg0; }

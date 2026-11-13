@@ -5,7 +5,7 @@ void func_02041e44(void);
 
 void func_020411dc(s32 arg0){
 extern s32 sEmptyString;extern u8 gConnectionMgr[];
-s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 func_0203f058();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void func_0203e410(void);s32 func_02042f94(void);void ResetSessionList(s32);
+s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void func_0203e410(void);s32 func_02042f94(void);void ResetSessionList(s32);
 s32 n=3,update=0; s32 values[5];s32 b,c;u8 *a,*d,*e,*f,*g,*h;s32 i;
 switch(arg0){
 case 0:
@@ -33,11 +33,11 @@ else if(M2C_FIELD(GetConnection(),u8*,21)==1){TryConnectToPeer(1,0,0);if(M2C_FIE
 if(M2C_FIELD(GetConnection(),u8*,21)!=2)update=1;
 }
 if(M2C_FIELD(GetConnection(),s32*,416)!=16){a=GetConnection();d=GetConnection();e=GetConnection();f=GetConnection();g=GetConnection();h=GetConnection();
-func_0203f058(8,M2C_FIELD(a+M2C_FIELD(d,u8*,13)*4,s32*,244),M2C_FIELD(e+M2C_FIELD(f,u8*,13)*4,s32*,36),M2C_FIELD(g+M2C_FIELD(h,u8*,13)*2,u16*,164),values,n);
+SendConnectionCommand(8,M2C_FIELD(a+M2C_FIELD(d,u8*,13)*4,s32*,244),M2C_FIELD(e+M2C_FIELD(f,u8*,13)*4,s32*,36),M2C_FIELD(g+M2C_FIELD(h,u8*,13)*2,u16*,164),values,n);
 if(func_0204084c())return;M2C_FIELD(GetConnection(),u8*,973)=0;}break;
 case 1:SetConnectionState(1);if(M2C_FIELD(GetConnection(),u8*,21)==3){a=GetConnection();d=GetConnection();M2C_FIELD(a,s32*,524)=M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13)*4,s32*,244);}update=1;break;
 case 2:SetConnectionState(1);if(M2C_FIELD(GetConnection(),u8*,21)==0||M2C_FIELD(GetConnection(),u8*,21)==1){M2C_FIELD(GetConnection(),u8*,23)=1;a=GetConnection();M2C_FIELD(a,s32*,32)=M2C_FIELD(GetConnection(),s32*,512);}
-func_02042ad0();if(M2C_FIELD(GetConnection(),u8*,13)>1){a=GetConnection();d=GetConnection();e=GetConnection();f=GetConnection();g=GetConnection();func_0203f058(9,M2C_FIELD(a,s32*,244),M2C_FIELD(d,s32*,36),M2C_FIELD(e,u16*,164),f+244+(M2C_FIELD(g,u8*,13)-1)*4,1);if(func_0204084c())return;}break;
+func_02042ad0();if(M2C_FIELD(GetConnection(),u8*,13)>1){a=GetConnection();d=GetConnection();e=GetConnection();f=GetConnection();g=GetConnection();SendConnectionCommand(9,M2C_FIELD(a,s32*,244),M2C_FIELD(d,s32*,36),M2C_FIELD(e,u16*,164),f+244+(M2C_FIELD(g,u8*,13)-1)*4,1);if(func_0204084c())return;}break;
 case 3:SetConnectionState(1);func_02042ad0();M2C_FIELD(GetConnection(),s32*,524)=0;update=1;break;
 case 4:if(M2C_FIELD(GetConnection(),u8*,21)!=2)SetGpiStatus(2,&sEmptyString,0);
 b=M2C_FIELD(GetConnection(),s32*,524)==0;a=GetConnection();c=func_0203aeb4(M2C_FIELD(GetConnection(),s32*,524));d=GetConnection();
@@ -129,7 +129,7 @@ void CloseConnection(void) {
 }
 
 s32 func_02041b0c(void) {
-s32 func_0203f058();
+s32 SendConnectionCommand();
 s32 r=0;
 s32 local=0;
 void *a,*b,*c,*d;
@@ -140,7 +140,7 @@ a=GetConnection();
 b=GetConnection();
 c=GetConnection();
 d=GetConnection();
-r=func_0203f058(12,M2C_FIELD(a,s32*,0x20),M2C_FIELD((u8*)b+4*(M2C_FIELD(c,u8*,0xd)+1),s32*,0x24),M2C_FIELD((u8*)d+2*(M2C_FIELD(GetConnection(),u8*,0xd)+1),u16*,0xa4),&local,1);
+r=SendConnectionCommand(12,M2C_FIELD(a,s32*,0x20),M2C_FIELD((u8*)b+4*(M2C_FIELD(c,u8*,0xd)+1),s32*,0x24),M2C_FIELD((u8*)d+2*(M2C_FIELD(GetConnection(),u8*,0xd)+1),u16*,0xa4),&local,1);
 M2C_FIELD(GetConnection(),u8*,0x17)=0;
 M2C_FIELD(GetConnection(),s32*,0x20)=0;
 }
@@ -209,21 +209,24 @@ void func_02041e44(void) {
     M2C_FIELD(GetConnection(), s8 *, 0x1A8) = 0;
 }
 
-s32 func_02041e74(u32 mask) {
-s32 func_0203f058(); s32 func_0204084c(); s32 func_02042a08();
-s32 other[32],selected[32]; s32 n=0,m=0; register s32 i; s32 r;
-for(i=1;i<=M2C_FIELD(GetConnection(),u8*,0xd);i++){
-if(mask & (1<<M2C_FIELD((u8*)GetConnection()+i,u8*,0x2d0))){
-selected[m]=M2C_FIELD((u8*)GetConnection()+((u32)i<<2),s32*,0xf4);m++;
-}else {other[n]=M2C_FIELD((u8*)GetConnection()+((u32)i<<2),s32*,0xf4);n++;}
+/* Keep only the connected peers whose slot is in `mask`: send the updated peer
+ * list to each kept peer, then disconnect the peers that were left out.
+ * Returns 0 when a send fails. */
+s32 PruneConnectionPeers(u32 mask) {
+s32 SendConnectionCommand(); s32 func_0204084c(); s32 FindPeerSlot(); s32 DisconnectPeerSlot();
+s32 dropPeers[32],keepPeers[32]; s32 dropCount=0,keepCount=0; register s32 i; s32 slot;
+for(i=1;i<=M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT);i++){
+if(mask & (1<<M2C_FIELD((u8*)GetConnection()+i,u8*,CONN_SESSION_PEER_SLOTS))){
+keepPeers[keepCount]=M2C_FIELD((u8*)GetConnection()+((u32)i<<2),s32*,CONN_SESSION_PEER_IDS);keepCount++;
+}else {dropPeers[dropCount]=M2C_FIELD((u8*)GetConnection()+((u32)i<<2),s32*,CONN_SESSION_PEER_IDS);dropCount++;}
 }
-for(i=0;i<m;i++){
-func_0203f058(16,selected[i],0,0,other,n);
+for(i=0;i<keepCount;i++){
+SendConnectionCommand(16,keepPeers[i],0,0,dropPeers,dropCount);
 if(func_0204084c())return 0;
 }
-M2C_FIELD(GetConnection(),u8*,0x1a8)=2;
-for(i=0;i<n;i++){r=func_02042a08(other[i],0);if(r!=255)func_02038de4();}
-M2C_FIELD(GetConnection(),u8*,0x1a8)=0;
+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_TEARDOWN)=2;
+for(i=0;i<dropCount;i++){slot=FindPeerSlot(dropPeers[i],0);if(slot!=255)DisconnectPeerSlot(slot);}
+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_TEARDOWN)=0;
 return 1;
 }
 

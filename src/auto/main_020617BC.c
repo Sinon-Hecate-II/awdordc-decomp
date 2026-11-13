@@ -1,5 +1,6 @@
 /* 33 functions from 0x020617BC to 0x02062770 (main), found by ds-decomp. */
 #include "common.h"
+#include "sb_serverlist.h"
 typedef struct Addr617BC { u8 len, family; u16 port; u32 addr; } Addr617BC;
 typedef struct Bytes617BC { u8 b[4]; } Bytes617BC;
 typedef struct Pair617BC { u8 b[2]; } Pair617BC;
@@ -12,7 +13,7 @@ u8 hi=src[1],lo=src[0];dst[1]=hi;dst[0]=lo;
 static inline void CopyPair617BC(u8 *d,u8 *s) { *(Pair617BC *)d=*(Pair617BC *)s; }
 static inline void Copy617BC(u8 *d,u8 *s) { *(Bytes617BC *)d=*(Bytes617BC *)s; }
 extern u8 data_02100120[];
-extern u8 data_0210012c[];
+extern u8 sSbFileName[];
 extern u8 data_02100094[];
 extern void *data_02100090;
 extern s32 data_0213e4b4[2];
@@ -62,12 +63,12 @@ s32 func_020618f0(s32 *arg0, s32 *arg1) {
     s32 func_02060afc(s32, s32, M2C_UNK *);
     s32 StringCompare(s32, s32);
     extern void *data_0213e4bc;
-    extern M2C_UNK data_0210011c;
+    extern M2C_UNK sSbEmptyString;
     s32 temp_r4;
     s32 var_r0;
 
-    temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c);
-    var_r0 = StringCompare(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c));
+    temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString);
+    var_r0 = StringCompare(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString));
     if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
         var_r0 = -var_r0;
     }
@@ -78,12 +79,12 @@ s32 func_02061958(s32 *arg0, s32 *arg1) {
     s32 func_02060afc(s32, s32, M2C_UNK *);
     s32 func_0206f8ac(s32, s32);
     extern void *data_0213e4bc;
-    extern M2C_UNK data_0210011c;
+    extern M2C_UNK sSbEmptyString;
     s32 temp_r4;
     s32 var_r0;
 
-    temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c);
-    var_r0 = func_0206f8ac(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c));
+    temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString);
+    var_r0 = func_0206f8ac(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString));
     if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
         var_r0 = -var_r0;
     }
@@ -192,25 +193,29 @@ func_02048eac(func_020609bc(a),pair);
 return pair[0];
 }
 
-void func_02061d24(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,data_0210012c,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
+void func_02061d24(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,sSbFileName,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
 
 s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
 
-void func_02061dd0(void *p,void *a,void *b,void *c,s32 d,s32 force,s32 cb,s32 userdata){
-extern u8 data_0210013c[],data_021000c4[],data_0210014c[];extern s32 gDnsQueryState[];extern M2C_UNK data_0210011c;
+/* GameSpy SBServerListInit: initialise a server-list object with its game name,
+   secret key and version strings plus the callback and instance, and clear the
+   query state.  Does nothing when `force` is clear and the DNS/network layer is
+   not ready, so a list is only created while networking is up. */
+void SBServerListInit(void *list,void *gameName,void *secretKey,void *gameVersion,s32 queryPort,s32 force,s32 callback,s32 instance){
+extern u8 sSbAssertSlistNotNull[],sSbServerListInitName[],sSbAssertCallbackNotNull[];extern s32 gDnsQueryState[];extern M2C_UNK sSbEmptyString;
 void AssertFailed(void*,void*,void*,s32);s32 func_020609bc(s32);void StringCopy(void*,void*);void func_02062e28(void*,void*);s32 GetTickCountMs(void);void SetRandSeed(s32);void func_0204926c(void);
-if(!p)AssertFailed(data_0210013c,data_0210012c,data_021000c4,0x11c);
+if(!list)AssertFailed(sSbAssertSlistNotNull,sSbFileName,sSbServerListInitName,0x11c);
 if(!force && gDnsQueryState[0]!=1)return;
-M2C_FIELD(p,s32*,0)=1;func_02061c8c(p);func_020609bc((s32)p);
-StringCopy((u8*)p+0xc,a);StringCopy((u8*)p+0x30,b);StringCopy((u8*)p+0x54,c);
-M2C_FIELD(p,s32*,0x488)=cb;M2C_FIELD(p,s32*,0x48c)=0;
-if(!cb)AssertFailed(data_0210014c,data_0210012c,data_021000c4,0x132);
-M2C_FIELD(p,s32*,0x494)=userdata;M2C_FIELD(p,void**,0x498)=&data_0210011c;
-M2C_FIELD(p,s32*,0x4a0)=0;M2C_FIELD(p,s32*,0x4b0)=-1;
-M2C_FIELD(p,s32*,0x7c)=0;M2C_FIELD(p,s32*,0x80)=0;M2C_FIELD(p,s32*,8)=0;
-M2C_FIELD(p,s32*,0x484)=-1;M2C_FIELD(p,s32*,0x480)=0;
-M2C_FIELD(p,s32*,0x4a4)=0;M2C_FIELD(p,s32*,0x4b8)=d;
-func_02062e28(p,&data_0210011c);M2C_FIELD(p,s32*,0x5cc)=0;
+M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;func_02061c8c(list);func_020609bc((s32)list);
+StringCopy((u8*)list+SB_SLIST_GAMENAME,gameName);StringCopy((u8*)list+SB_SLIST_SECRETKEY,secretKey);StringCopy((u8*)list+SB_SLIST_GAMEVERSION,gameVersion);
+M2C_FIELD(list,s32*,SB_SLIST_CALLBACK)=callback;M2C_FIELD(list,s32*,0x48c)=0;
+if(!callback)AssertFailed(sSbAssertCallbackNotNull,sSbFileName,sSbServerListInitName,0x132);
+M2C_FIELD(list,s32*,SB_SLIST_INSTANCE)=instance;M2C_FIELD(list,void**,SB_SLIST_SORT_FIELD)=&sSbEmptyString;
+M2C_FIELD(list,s32*,0x4a0)=0;M2C_FIELD(list,s32*,SB_SLIST_SOCKET)=-1;
+M2C_FIELD(list,s32*,0x7c)=0;M2C_FIELD(list,s32*,0x80)=0;M2C_FIELD(list,s32*,8)=0;
+M2C_FIELD(list,s32*,0x484)=-1;M2C_FIELD(list,s32*,0x480)=0;
+M2C_FIELD(list,s32*,0x4a4)=0;M2C_FIELD(list,s32*,SB_SLIST_QUERY_PORT)=queryPort;
+func_02062e28(list,&sSbEmptyString);M2C_FIELD(list,s32*,0x5cc)=0;
 SetRandSeed(GetTickCountMs());func_0204926c();
 }
 
@@ -247,13 +252,13 @@ func_020496b8(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
 void AppendString(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     M2C_UNK MemCopy(s32, M2C_UNK *, s32);
     s32 StringLength(M2C_UNK *);
-    extern M2C_UNK data_0210011c;
+    extern M2C_UNK sSbEmptyString;
     M2C_UNK *var_r7;
     s32 temp_r5;
 
     var_r7 = arg1;
     if (var_r7 == NULL) {
-        var_r7 = &data_0210011c;
+        var_r7 = &sSbEmptyString;
     }
     temp_r5 = StringLength(var_r7) + 1;
     MemCopy(*arg0, var_r7, temp_r5);
@@ -325,11 +330,11 @@ block_6:
    protocol header, game id, host names, session key, requested fields, filter, query
    flags and (for flag 0x80) the maximum server count; allocate the receive buffer. */
 s32 SBServerListConnectAndQuery(void *slist, M2C_UNK filter, M2C_UNK fields, M2C_UNK queryFlags, s32 maxServers) {
-extern u8 data_0210017c[],data_02100100[];extern M2C_UNK data_0210011c;
+extern u8 data_0210017c[],data_02100100[];extern M2C_UNK sSbEmptyString;
 void AssertFailed(void*,void*,void*,s32);s32 StringLength(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 gpiMalloc(s32);
 u8 packet[768];s32 length;u8 *out;u16 beLength;u8 *lenBytes,*packetBytes;s32 err;
-if(M2C_FIELD(slist,s32*,0)!=1)AssertFailed(data_0210017c,data_0210012c,data_02100100,0x20a);
-if(!filter)filter=(s32)&data_0210011c;if(!fields)fields=(s32)&data_0210011c;
+if(M2C_FIELD(slist,s32*,0)!=1)AssertFailed(data_0210017c,sSbFileName,data_02100100,0x20a);
+if(!filter)filter=(s32)&sSbEmptyString;if(!fields)fields=(s32)&sSbEmptyString;
 if((u32)StringLength((M2C_UNK*)filter)>256)return 6;if((u32)StringLength((M2C_UNK*)fields)>256)return 6;
 err=SBServerListOpenConnection(slist);if(err)return err;
 M2C_FIELD(slist,s32*,0x5c4)=queryFlags;GenerateSessionKey(slist);

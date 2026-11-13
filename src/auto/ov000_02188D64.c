@@ -12,7 +12,7 @@ void SelectCarriedUnitAction(void) {
     extern u8 *gAiCommandState;
     s32 IsFootUnitKind(s32);
     s32 HasEnemyPlayer(void);
-    s32 func_020d243c(u16);
+    s32 PlayerHasHq(u16);
     void func_ov000_02188370(void);
     void func_ov000_021884e4(void);
     void func_ov000_02188688(void);
@@ -43,7 +43,7 @@ void SelectCarriedUnitAction(void) {
     case 0: case 1: func_ov000_021884e4(); break;
     case 2: if (HasEnemyPlayer() == 1) func_ov000_02188688(); else func_ov000_021884e4(); break;
     case 3: case 4: func_ov000_02188790(); break;
-    case 5: if (func_020d243c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) func_ov000_021888ec(); else func_ov000_02188790(); break;
+    case 5: if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) func_ov000_021888ec(); else func_ov000_02188790(); break;
     case 7: case 8: case 9: func_ov000_02188a38(); break;
     }
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 64) {

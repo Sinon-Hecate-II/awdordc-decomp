@@ -25,7 +25,7 @@ void func_02091e44(void) {
     func_02091e14();
 }
 
-s8 func_02091e50(void) {
+s8 GetMenuCursor(void) {
     s32 Get3DSpriteCount();
     if (Get3DSpriteCount() == 2) {
         return 2;
@@ -75,7 +75,7 @@ s32 func_02091f18(s32 arg0) {
 
     var_r4 = arg0;
     if (var_r4 == 3) {
-        var_r4 = func_02091e50();
+        var_r4 = GetMenuCursor();
     }
     return (var_r4 * 0xC) + Get3DSpriteManager();
 }

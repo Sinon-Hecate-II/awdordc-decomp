@@ -63,37 +63,41 @@ s32 func_02048bf8(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(s32, M
 }
 
 void func_02048c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
-    M2C_UNK func_02048c84(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_02048c84(arg0, arg1, 4, arg2, arg3, arg4);
+    M2C_UNK TableNew2(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    TableNew2(arg0, arg1, 4, arg2, arg3, arg4);
 }
 
-M2C_UNK func_02048c84(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, M2C_UNK arg5) {
+/* GameSpy hashtable.c TableNew2: allocates a table of nBuckets bucket vectors
+   (each an empty vector of elemSize-byte elements) and stores the caller's hash
+   and comparison callbacks.  Table layout: +0x00 buckets, +0x04 count,
+   +0x08 userData, +0x0C hashFn, +0x10 compFn. */
+M2C_UNK TableNew2(M2C_UNK elemSize, M2C_UNK nBuckets, M2C_UNK bucketSize, M2C_UNK hashFn, s32 compFn, M2C_UNK userData) {
     extern M2C_UNK data_020fcd7c, data_020fcd84, data_020fcd14, data_020fcd90, data_020fcd98, data_020fcda4, data_020fcdb0, data_020fcdb8;
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK gpiMalloc(s32);
     M2C_UNK func_02048558(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK var_r4;
+    M2C_UNK table;
     s32 i;
-    if (arg3 == 0) AssertFailed(&data_020fcd7c, &data_020fcd84, &data_020fcd14, 0x38);
-    if (arg4 == 0) AssertFailed(&data_020fcd90, &data_020fcd84, &data_020fcd14, 0x39);
-    if (arg0 == 0) AssertFailed(&data_020fcd98, &data_020fcd84, &data_020fcd14, 0x3a);
-    if (arg1 == 0) AssertFailed(&data_020fcda4, &data_020fcd84, &data_020fcd14, 0x3b);
-    var_r4 = gpiMalloc(0x14);
-    if (var_r4 == 0) AssertFailed(&data_020fcdb0, &data_020fcd84, &data_020fcd14, 0x3e);
-    M2C_FIELD(var_r4, M2C_UNK **, 0) = (M2C_UNK *)gpiMalloc((s32)arg1 * 4);
-    if (M2C_FIELD(var_r4, M2C_UNK **, 0) == 0) AssertFailed(&data_020fcdb8, &data_020fcd84, &data_020fcd14, 0x41);
+    if (hashFn == 0) AssertFailed(&data_020fcd7c, &data_020fcd84, &data_020fcd14, 0x38);
+    if (compFn == 0) AssertFailed(&data_020fcd90, &data_020fcd84, &data_020fcd14, 0x39);
+    if (elemSize == 0) AssertFailed(&data_020fcd98, &data_020fcd84, &data_020fcd14, 0x3a);
+    if (nBuckets == 0) AssertFailed(&data_020fcda4, &data_020fcd84, &data_020fcd14, 0x3b);
+    table = gpiMalloc(0x14);
+    if (table == 0) AssertFailed(&data_020fcdb0, &data_020fcd84, &data_020fcd14, 0x3e);
+    M2C_FIELD(table, M2C_UNK **, 0) = (M2C_UNK *)gpiMalloc((s32)nBuckets * 4);
+    if (M2C_FIELD(table, M2C_UNK **, 0) == 0) AssertFailed(&data_020fcdb8, &data_020fcd84, &data_020fcd14, 0x41);
     i = 0;
-    if ((s32)arg1 <= 0) goto done;
+    if ((s32)nBuckets <= 0) goto done;
     do {
-        M2C_FIELD(var_r4, M2C_UNK **, 0)[i] = func_02048558(arg0, arg2, arg5);
+        M2C_FIELD(table, M2C_UNK **, 0)[i] = func_02048558(elemSize, bucketSize, userData);
         i++;
-    } while (i < (s32)arg1);
+    } while (i < (s32)nBuckets);
 done:
-    M2C_FIELD(var_r4, s32 *, 4) = (s32)arg1;
-    M2C_FIELD(var_r4, M2C_UNK *, 8) = arg5;
-    M2C_FIELD(var_r4, M2C_UNK *, 0x10) = arg4;
-    M2C_FIELD(var_r4, M2C_UNK *, 0xc) = arg3;
-    return var_r4;
+    M2C_FIELD(table, s32 *, 4) = (s32)nBuckets;
+    M2C_FIELD(table, M2C_UNK *, 8) = userData;
+    M2C_FIELD(table, M2C_UNK *, 0x10) = compFn;
+    M2C_FIELD(table, M2C_UNK *, 0xc) = hashFn;
+    return table;
 }
 
 void func_02048dc4(s32 **arg0) {
@@ -194,7 +198,7 @@ void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);fun
 
 unsigned long long GetTickCountMs(void){int func_02006f8c(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
 
-void func_02049260(void) {
+void gpiSleep(void) {
     M2C_UNK func_02006030();
     func_02006030();
 }
@@ -467,7 +471,7 @@ void SeedRandom(s32 arg0) {
 
 s32 RandomRange(s32 a,s32 b){s32 n=b-a;s32 result;if(n==0)return a;result=func_020499c0();result%=n;return result+a;}
 
-void func_02049a20(signed char *src,unsigned char *dst,int n) {
+void Base64PackGroup(signed char *src,unsigned char *dst,int n) {
 unsigned char b[3]; int i;
 for(i=0;i<n;i++)b[i]=src[i];
 for(;i<3;i++)b[i]=0;

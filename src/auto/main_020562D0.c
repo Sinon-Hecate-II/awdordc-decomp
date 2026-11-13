@@ -362,6 +362,6 @@ else AssertFailed(data_020ff0c4,gGpiSearchSourceFile,data_020fee0c,0x52a);
 M2C_FIELD(request,s32*,0x140)=1;loop=0;
 }
 }
-if(loop){func_02049260(10);goto again;}return 0;
+if(loop){gpiSleep(10);goto again;}return 0;
 }
 #pragma pop

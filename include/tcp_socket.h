@@ -41,10 +41,32 @@
 #define ARP_OPCODE_REQUEST 1
 #define ARP_OPCODE_REPLY   2
 
+/* The IPv4 ARP cache (gArpCache): ARP_CACHE_COUNT entries mapping an address to
+ * the hardware address learned for it, with the tick it was last refreshed. */
+#define ARP_CACHE_COUNT   8
+#define ARP_CACHE_STRIDE  0x0C
+#define ARP_CACHE_ADDR    0x00 /* u32 IPv4 address, host order */
+#define ARP_CACHE_MAC     0x04 /* u8[6] hardware address */
+#define ARP_CACHE_AGE     0x0A /* u16 tick the entry was last refreshed (GetSystemTick >> 16) */
+
 /* IPv4 fragmentation: at most 1480 payload bytes per fragment, the fragment
  * offset counts 8-byte units, and the more-fragments flag is 0x2000. */
 #define IP_MAX_FRAGMENT_PAYLOAD 1480
 #define IP_FRAGMENT_UNIT        8
 #define IP_FLAG_MOREFRAGMENTS   0x2000
+
+/* IPv4 protocol numbers used by the transport senders. */
+#define IP_PROTO_ICMP 1
+#define IP_PROTO_UDP  17
+#define IP_PSEUDO_HEADER_SIZE 12 /* source/dest address, zero+protocol, transport length */
+#define UDP_HEADER_SIZE 8
+
+/* Fields of the datagram/stream socket object (gSocketManager->...+0xA4) the
+ * transport senders share. */
+#define SOCK_KIND        0x08 /* u8 socket kind: 10 = UDP, 11 = ICMP, else a TCP stream */
+#define SOCK_LOCAL_PORT  0x0A /* u16 local (source) port */
+#define SOCK_REMOTE_PORT 0x18 /* u16 remote (destination) port */
+#define SOCK_REMOTE_IP   0x1C /* u32 remote IPv4 address, host order */
+#define SOCK_SEND_BUFFER 0x4C /* void *send buffer; its +0x22 is where the transport header starts */
 
 #endif

@@ -227,9 +227,9 @@ void func_ov001_02179420(void) {
 }
 
 void func_ov001_0217944c(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     extern M2C_UNK func_ov001_02179470;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_02179470);
@@ -265,7 +265,7 @@ void func_ov001_021794c0(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK func_ov001_0218508c();
     extern M2C_UNK func_ov001_021794ec;
-    if (func_ov001_021716c4() != 0) {
+    if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
     func_ov001_0218508c();
@@ -416,7 +416,7 @@ void func_ov001_021798b0(void) {
     void func_ov001_02179bd0(void);
     extern M2C_UNK func_ov001_021798f8;
     extern u8 data_ov001_02193d8c;
-    if (func_ov001_021716c4() == -2) return;
+    if (Ov001_GetIconRowSelection() == -2) return;
     M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = func_ov001_0218c884(1, &func_ov001_02179bd0, 0, 0x78);
     Ov001_SetStepCallback(&func_ov001_021798f8);
 }
@@ -482,7 +482,7 @@ void func_ov001_02179a04(void) {
 void func_ov001_02179a08(void) {
     extern u8 data_ov001_02193d8c;
     extern M2C_UNK func_ov001_02179c84;
-    if (func_ov001_021716c4() != 0) return;
+    if (Ov001_GetIconRowSelection() != 0) return;
     if (M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) == 0) return;
     func_ov001_0218c92c(1, M2C_FIELD(&data_ov001_02193d8c, s32 *, 4));
     M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = 0;
@@ -666,7 +666,7 @@ void func_ov001_02179dc8(void) {
 void func_ov001_02179e04(void) {
     M2C_UNK func_ov001_02171cf8();
     M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175da0(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021828ac;
@@ -681,7 +681,7 @@ void func_ov001_02179e04(void) {
     func_ov001_0218b368(1, 1);
     func_ov001_0218b368(0, 0x15);
     func_ov001_02175d64(0, 0);
-    func_ov001_02175da0(0, 1);
+    Ov001_SetNameEntryMode(0, 1);
     Ov001_SetStepCallback(&func_ov001_021828ac);
 }
 

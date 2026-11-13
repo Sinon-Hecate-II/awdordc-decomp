@@ -707,14 +707,14 @@ void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
 /* Builds a battle action entry for the given slot and submits it. */
 void func_02094c90(s32 slot, s32 arg1) {
  extern s32 gCur3DSpriteEngine;
- s32 func_0209600c(); s32 func_020979a4(); s32 func_02091e50(); s32 func_02091e70();
+ s32 func_0209600c(); s32 func_020979a4(); s32 GetMenuCursor(); s32 func_02091e70();
  void *func_02091f18(s32);
  s32 value; void *ptrA,*ptrB,*ptrC,*ptrD;
  if(func_0209600c()!=0)return;
  if(func_020979a4(slot)!=1)return;
- func_02097cb8(func_02091e50());
- if(func_02091e50()<0)return;
- if(func_02091e50()>=3)return;
+ func_02097cb8(GetMenuCursor());
+ if(GetMenuCursor()<0)return;
+ if(GetMenuCursor()>=3)return;
  value=func_02091e70(3);
  ptrA=Get3DSpriteManager();ptrB=Get3DSpriteManager();ptrC=func_02091f18(3);ptrD=func_02091f18(3);
  func_0209bee0(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(func_02091f18(3),u16*,4));

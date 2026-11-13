@@ -52,7 +52,7 @@ void func_020d9d5c(void *arg0) {
 /* Draw four 5-wide progress bars (level rows 1/6/11/16) onto the UI screen,
    mark it dirty, then update the cached entry id if it changed. */
 void func_020d9d80(void *entry) {
-    M2C_UNK func_020808dc(u16 *, s32, s32, u32);
+    M2C_UNK SetTileRectPalette(u16 *, s32, s32, u32);
     M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
@@ -70,7 +70,7 @@ void func_020d9d80(void *entry) {
     levelEnd = 5;
     i = 0;
     do {
-        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 2 + (col << 6)),
+        SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 2 + (col << 6)),
                       0x1e,
                       (s32)(u16)(levelEnd - col),
                       (u32)(u16)(M2C_FIELD(entry, u8 *, 0) != i ? 5 : 6));
@@ -99,7 +99,7 @@ temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_
 
 #pragma scheduling off
 void func_020d9f40(void *arg0) {
- M2C_UNK func_020808dc(u16 *,s32,s32,u32);
+ M2C_UNK SetTileRectPalette(u16 *,s32,s32,u32);
  M2C_UNK PlaySoundEffect(s32);
  extern void **gCur3DSpriteEngine;
  extern void **g3DSpriteEngineMain;
@@ -108,7 +108,7 @@ void func_020d9f40(void *arg0) {
  saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
  col=1; end=5; i=0;
  do {
- func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x20)+2+(col<<6)),30,(u16)(end-col),5);
+ SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x20)+2+(col<<6)),30,(u16)(end-col),5);
  {s32 nextCol=col+5; s32 nextEnd=end+5; i++; col=(s16)nextCol; end=(s16)nextEnd;}
  }while(i<4);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
@@ -152,7 +152,7 @@ temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_
 
 // Draws two 5-step progress bars (levels x/y growing by 5) onto a UI screen, then marks it dirty.
 void func_020da0ec(void *a) {
-    M2C_UNK func_020808dc(u16 *, s32, s32, u32);
+    M2C_UNK SetTileRectPalette(u16 *, s32, s32, u32);
     M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     void *p = M2C_FIELD(a, void **, 0x10);
@@ -163,7 +163,7 @@ void func_020da0ec(void *a) {
     y = 14;
     i = 0;
     do {
-        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 8 + (x << 6)),
+        SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 8 + (x << 6)),
                       24,
                       (u16)(y - x),
                       (u16)(M2C_FIELD(a, u8 *, 0) != i ? 7 : 8));
@@ -201,7 +201,7 @@ void func_020da22c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeySta
 temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
 void func_020da2a0(void *a) {
-    M2C_UNK func_020808dc(u16 *, s32, s32, u32);
+    M2C_UNK SetTileRectPalette(u16 *, s32, s32, u32);
     M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     s32 GetActiveOverlay(void);void *func_ov010_02229b00(void); s32 state; void *p;
@@ -212,7 +212,7 @@ void func_020da2a0(void *a) {
     y = 14;
     i = 0;
     do {
-        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 8 + (x << 6)),
+        SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 8 + (x << 6)),
                       24,
                       (u16)(y - x),
                       (u16)(M2C_FIELD(a, u8 *, 0) != i ? 7 : 8));

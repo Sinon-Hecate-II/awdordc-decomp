@@ -541,7 +541,7 @@ case 1: func_ov000_0218053c(); return;
 case 2: if(HasEnemyPlayer()==1)func_ov000_021805a0(); else func_ov000_021804d4(); return;
 case 3: func_ov000_02180608(); return;
 case 4: func_ov000_02180670(); return;
-case 5: if(func_020d243c(M2C_FIELD(state,u16 *,0x52a4))==1)func_ov000_021806d8(); else func_ov000_02180670(); return;
+case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)func_ov000_021806d8(); else func_ov000_02180670(); return;
 case 7: func_ov000_02180778(); return;
 case 8: func_ov000_021807d8(); return;
 case 9: func_ov000_02180838(); return;
@@ -576,7 +576,7 @@ void func_ov000_02181470(void) {
     case 2: if (HasEnemyPlayer() == 1) func_ov000_02180a28(); else func_ov000_02180934(); return;
     case 3: func_ov000_02180aa4(); return;
     case 4: func_ov000_02180b20(); return;
-    case 5: if (func_020d243c(M2C_FIELD(state, u16 *, 0x52a4)) == 1) func_ov000_02180b9c(); else func_ov000_02180b20(); return;
+    case 5: if (PlayerHasHq(M2C_FIELD(state, u16 *, 0x52a4)) == 1) func_ov000_02180b9c(); else func_ov000_02180b20(); return;
     case 6: func_ov000_02180c10(); return;
     case 7: func_ov000_02180c74(); return;
     case 8: func_ov000_02180ce8(); return;

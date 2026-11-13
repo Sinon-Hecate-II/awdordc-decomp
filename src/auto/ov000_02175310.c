@@ -110,59 +110,62 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     }
 }
 
-void func_ov000_02175740(void *arg0) {
+/* Draws the info window panel backdrop: decompresses the graphics set for the
+   window's current mode into the sub engine's tile buffer, recolours it, and adds
+   the two extra unit-type icons when the entry's stat index asks for them. */
+void DrawInfoPanelBackdrop(void *entry) {
     M2C_UNK AddToU16Array(s32, s32, s32);
     M2C_UNK func_0207c780(M2C_UNK *, s32);
-    M2C_UNK func_02080860(s32, s32, s32, u16, s32);
-    M2C_UNK func_020808dc(s32, s32, s32, s32);
+    M2C_UNK FillTileRect(s32, s32, s32, u16, s32);
+    M2C_UNK SetTileRectPalette(s32, s32, s32, s32);
     u32 GetInfoWindowMode();
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021ae2d0;
-    extern M2C_UNK data_ov000_021c2158;
-    extern M2C_UNK data_ov000_021c23ec;
-    extern M2C_UNK data_ov000_021c2680;
-    extern M2C_UNK data_ov000_021c2918;
-    extern M2C_UNK data_ov000_021c2bb0;
-    extern M2C_UNK data_ov000_021c2e50;
-    void *saved;
-    s32 gfx;
-    M2C_UNK *gfxTable;
+    extern M2C_UNK gInfoPanelGfx5;
+    extern M2C_UNK gInfoPanelGfx3;
+    extern M2C_UNK gInfoPanelGfx2;
+    extern M2C_UNK gInfoPanelGfx4;
+    extern M2C_UNK gInfoPanelGfx1;
+    extern M2C_UNK gInfoPanelGfx0;
+    void *savedEngine;
+    s32 panelTiles;
+    M2C_UNK *gfxRes;
 
-    gfx = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28);
-    saved = gCur3DSpriteEngine;
+    panelTiles = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28);
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     switch (GetInfoWindowMode()) {
     case 0:
-        gfxTable = &data_ov000_021c2e50;
+        gfxRes = &gInfoPanelGfx0;
         break;
     case 1:
-        gfxTable = &data_ov000_021c2bb0;
+        gfxRes = &gInfoPanelGfx1;
         break;
     case 2:
-        gfxTable = &data_ov000_021c2680;
+        gfxRes = &gInfoPanelGfx2;
         break;
     case 3:
-        gfxTable = &data_ov000_021c23ec;
+        gfxRes = &gInfoPanelGfx3;
         break;
     case 4:
-        gfxTable = &data_ov000_021c2918;
+        gfxRes = &gInfoPanelGfx4;
         break;
     case 5:
-        gfxTable = &data_ov000_021c2158;
+        gfxRes = &gInfoPanelGfx5;
         break;
     default:
-        gfxTable = &data_ov000_021c2e50;
+        gfxRes = &gInfoPanelGfx0;
         break;
     }
-    func_0207c780(gfxTable, gfx);
-    AddToU16Array(gfx, 0x800, 0x180);
-    func_020808dc(gfx, 0x20, 0x18, 0xB);
-    if (M2C_FIELD(&data_ov000_021ae2d0, u32 *, M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 8) * 0xC) == 1) {
-        func_02080860(gfx + 0x220, 4, 1, 0x304, 0xB);
-        func_02080860(gfx + 0x260, 4, 1, 0x324, 0xB);
+    func_0207c780(gfxRes, panelTiles);
+    AddToU16Array(panelTiles, 0x800, 0x180);
+    SetTileRectPalette(panelTiles, 0x20, 0x18, 0xB);
+    if (M2C_FIELD(&data_ov000_021ae2d0, u32 *, M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 8) * 0xC) == 1) {
+        FillTileRect(panelTiles + 0x220, 4, 1, 0x304, 0xB);
+        FillTileRect(panelTiles + 0x260, 4, 1, 0x324, 0xB);
     }
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_02175878(void *arg0) {
@@ -205,7 +208,7 @@ void func_ov000_02175878(void *arg0) {
 }
 
 void func_ov000_021759b8(s32 *arg0) {
-    M2C_UNK func_02080860(s32, s32, s32, u16, s32);
+    M2C_UNK FillTileRect(s32, s32, s32, u16, s32);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *saved;
@@ -213,7 +216,7 @@ void func_ov000_021759b8(s32 *arg0) {
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     base = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x24);
-    func_02080860(base + 0xC6, 9, 9, (u16)(*arg0 ? 0x52 : 1), 0xC);
+    FillTileRect(base + 0xC6, 9, 9, (u16)(*arg0 ? 0x52 : 1), 0xC);
     gCur3DSpriteEngine = saved;
 }
 
@@ -245,9 +248,9 @@ void func_ov000_02175ed8(void *arg0) {
  * for the window's current mode, uploads the gauge tiles, then draws the stat
  * bar and number, the unit-type icon and the team-coloured tiles for `entry`. */
 void Ov000Info_DrawUnitPanel(void *entry){
-M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 HeapAllocBlock(s32); void HeapFreeBlock(s32); void Clear3DSpriteLayer(s32); u32 GetInfoWindowMode();
+M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK FillTileRect(s32,s32,s32,u16,s32); s32 HeapAllocBlock(s32); void HeapFreeBlock(s32); void Clear3DSpriteLayer(s32); u32 GetInfoWindowMode();
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
-extern M2C_UNK data_ov000_021c2e50,data_ov000_021c2bb0,data_ov000_021c2680,data_ov000_021c23ec,data_ov000_021c2918,data_ov000_021c2158;
+extern M2C_UNK gInfoPanelGfx0,gInfoPanelGfx1,gInfoPanelGfx2,gInfoPanelGfx3,gInfoPanelGfx4,gInfoPanelGfx5;
 extern u16 data_ov000_021deb10[]; extern u8 data_ov000_021ae2a0[]; extern s8 data_ov000_021dede4[];
 Tiles75a20 first; TeamTiles75a20 second; void *saved; u16 tile; s32 temp; s32 i,base; s16 index; s32 gfx,step; M2C_UNK *table;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -255,29 +258,29 @@ gfx=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28);
 tile=(u16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
 temp=HeapAllocBlock(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
 Clear3DSpriteLayer(0);
-switch(GetInfoWindowMode()){case 0:table=&data_ov000_021c2e50;break;case 1:table=&data_ov000_021c2bb0;break;case 2:table=&data_ov000_021c2680;break;case 3:table=&data_ov000_021c23ec;break;case 4:table=&data_ov000_021c2918;break;case 5:table=&data_ov000_021c2158;break;default:table=&data_ov000_021c2e50;break;}
+switch(GetInfoWindowMode()){case 0:table=&gInfoPanelGfx0;break;case 1:table=&gInfoPanelGfx1;break;case 2:table=&gInfoPanelGfx2;break;case 3:table=&gInfoPanelGfx3;break;case 4:table=&gInfoPanelGfx4;break;case 5:table=&gInfoPanelGfx5;break;default:table=&gInfoPanelGfx0;break;}
 func_0207c780(table,temp);func_02080a14(base,16,2,temp+0x520);
 for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
-func_020808dc(base,16,2,11);HeapFreeBlock(temp);
+SetTileRectPalette(base,16,2,11);HeapFreeBlock(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){
-if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2e0,11);
+if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2e0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,12)>=0){
-if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2c0,11);
+if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2c0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x49)){
-if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2a0,11);
+if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2a0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else ClearTileRect(base,16,2);
-if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c))func_02080860(gfx+32,3,1,tile,11);
+if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c))FillTileRect(gfx+32,3,1,tile,11);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,32)>0){
-if(M2C_FIELD(entry,s32 *,8)<40){func_02080860(gfx+38,3,1,0x28c,11);func_02080860(gfx+44,2,1,0x292,11);}else func_02080860(gfx+38,3,1,0x28c,11);}
+if(M2C_FIELD(entry,s32 *,8)<40){FillTileRect(gfx+38,3,1,0x28c,11);FillTileRect(gfx+44,2,1,0x292,11);}else FillTileRect(gfx+38,3,1,0x28c,11);}
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,36)>0){
-if(M2C_FIELD(entry,s32 *,8)<40){func_02080860(gfx+48,3,1,0x28f,11);func_02080860(gfx+54,2,1,0x292,11);}else func_02080860(gfx+48,3,1,0x28f,11);}
+if(M2C_FIELD(entry,s32 *,8)<40){FillTileRect(gfx+48,3,1,0x28f,11);FillTileRect(gfx+54,2,1,0x292,11);}else FillTileRect(gfx+48,3,1,0x28f,11);}
 first=data_ov000_021ae2b2;
-func_02080860(gfx+0x308,4,1,(u16)(first.v[M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x54)]*4+0x260),11);
+FillTileRect(gfx+0x308,4,1,(u16)(first.v[M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x54)]*4+0x260),11);
 second=*(TeamTiles75a20 *)(data_ov000_021ae2a0+6);
-func_02080860(gfx+0x314,4,1,(u16)(second.v[data_ov000_021dede4[M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,4)]]*4+0x240),11);
+FillTileRect(gfx+0x314,4,1,(u16)(second.v[data_ov000_021dede4[M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,4)]]*4+0x240),11);
 gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction reset

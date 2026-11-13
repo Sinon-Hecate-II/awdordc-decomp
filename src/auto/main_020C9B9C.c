@@ -283,7 +283,7 @@ void func_020ca4c0(void) {
 
 void func_020ca4fc(void *arg0) {
     void PlaySoundEffect(s32);
-    s16 func_0209f8d4(void);
+    s16 GetTargetCount(void);
     void *GetTargetPosition(s16);
     void func_020cbdbc(void);
     extern void **gCurrentMap;
@@ -292,7 +292,7 @@ void func_020ca4fc(void *arg0) {
     void *temp_r0;
     void *temp_r1;
     M2C_FIELD(arg0, s16 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6E) = func_0209f8d4();
+    M2C_FIELD(arg0, s16 *, 0x6E) = GetTargetCount();
     temp_r1 = *gCurrentMap;
     temp_r4 = M2C_FIELD(temp_r1, s16 *, 0x52C2);
     temp_r5 = M2C_FIELD(temp_r1, s16 *, 0x52C4);
@@ -402,7 +402,7 @@ void func_020ca77c(M2C_UNK arg0) {
 #pragma opt_propagation off
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
-void func_0209f8c0(void);void FillMapLayer(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void PlaySoundEffect(s32);
+void func_0209f8c0(void);void FillMapLayer(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
 s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
 func_0209f8c0();FillMapLayer(-1);
@@ -423,7 +423,7 @@ func_0209f8f8(x,y,0,0);
 M2C_FIELD((u8*)*gCurrentMap+y*4,u8 **,0x52e8)[x]=1;
 }
 }}
-M2C_FIELD(arg0,s16*,0x6e)=func_0209f8d4();
+M2C_FIELD(arg0,s16*,0x6e)=GetTargetCount();
 PlaySoundEffect(0x10019);
 M2C_FIELD(*gCurrentMap,s16*,0x52c2)=M2C_FIELD(*gCurrentMap,s16*,0x52dc);
 M2C_FIELD(*gCurrentMap,s16*,0x52c4)=M2C_FIELD(*gCurrentMap,s16*,0x52de);

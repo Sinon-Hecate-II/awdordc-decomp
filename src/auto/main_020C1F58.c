@@ -27,7 +27,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -111,7 +111,7 @@ LoadNarcFileDecompressed(sFrameCgFile,M2C_FIELD(gCur3DSpriteEngine,void **,16));
 LoadNarcFileDecompressed(sFrameScFile,M2C_FIELD(gCur3DSpriteEngine,void **,36));
 LoadNarcFileToSpriteBuffer(sFrameClFile,32,32);
 CloseNarcArchive();
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
 gCur3DSpriteEngine=savedEngine;
 screen[53]=1;

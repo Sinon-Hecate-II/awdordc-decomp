@@ -14,7 +14,7 @@ gSpriteDesc16x8 kind:data(any) addr:0x027e00a4
 gSpriteDesc32x32 kind:data(any) addr:0x027e00ac
 gSpriteDesc64x32 kind:data(any) addr:0x027e00b4
 g3DSpriteBankMain kind:data(any) addr:0x027e00bc
-data_027e00c0 kind:data(any) addr:0x027e00c0
+g3DSpriteBankSub kind:data(any) addr:0x027e00c0
 g3DSpriteEngineSub kind:data(any) addr:0x027e00c4
 g3DSpriteEngineMain kind:data(any) addr:0x027e00c8
 gMoveSearchState kind:data(any) addr:0x027e00cc

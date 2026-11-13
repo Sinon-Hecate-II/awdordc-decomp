@@ -233,7 +233,7 @@ s32 func_02085674(u32 a,void *b) {
 
 void func_02085724(s32 a,s32 b,s32 c,s32 d) {
     void *func_01ffa444(M2C_UNK *,M2C_UNK);
-    s32 func_020848c4(void);
+    s32 GetLocalPlayerIdForOverlay(void);
     extern M2C_UNK data_0210212c, data_0210219c;
     void *p=func_01ffa444(&data_0210212c,d);
     if(!p) return;
@@ -242,7 +242,7 @@ void func_02085724(s32 a,s32 b,s32 c,s32 d) {
     M2C_FIELD(p,s32 *,0x38)=a;
     M2C_FIELD(p,s32 *,0x3c)=b;
     M2C_FIELD(p,s32 *,0x40)=c;
-    M2C_FIELD(p,u16 *,0x44)=1<<func_020848c4();
+    M2C_FIELD(p,u16 *,0x44)=1<<GetLocalPlayerIdForOverlay();
 }
 
 #pragma push

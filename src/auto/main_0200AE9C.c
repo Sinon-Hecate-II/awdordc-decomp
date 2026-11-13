@@ -1,5 +1,6 @@
 /* 35 functions from 0x0200AE9C to 0x0200BDA4 (main), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 typedef struct { u32 words[3]; } Unk032Record;
 typedef struct FileLink { struct FileLink *prev,*next; } FileLink;
 static inline void UnlinkFileRequest(FileLink *a) {
@@ -170,7 +171,7 @@ extern M2C_UNK func_0200ac70;
 void InitFileRequest(void *);
 s32 func_0200b99c(void *,s32,s32,s32,s32);
 s32 FileRead(s32,s32,s32);
-s32 func_0200ba9c(void *);
+s32 CloseFileRequest(void *);
 M2C_UNK MI_CpuFill8(void *,M2C_UNK,M2C_UNK);
 u8 file[0x48];u32 required,p;
 required=(M2C_FIELD(a,u32 *,0x30)+M2C_FIELD(a,u32 *,0x38)+63)&~31;
@@ -179,13 +180,13 @@ p=(memory+31)&~31;
 InitFileRequest(file);
 if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x2c),M2C_FIELD(a,s32 *,0x2c)+M2C_FIELD(a,s32 *,0x30),-1)){
 if(FileRead((s32)file,p,M2C_FIELD(a,s32 *,0x30))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x30));
-func_0200ba9c(file);
+CloseFileRequest(file);
 }
 M2C_FIELD(a,u32 *,0x2c)=p;
 p+=M2C_FIELD(a,u32 *,0x30);
 if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x34),M2C_FIELD(a,s32 *,0x34)+M2C_FIELD(a,s32 *,0x38),-1)){
 if(FileRead((s32)file,p,M2C_FIELD(a,s32 *,0x38))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x38));
-func_0200ba9c(file);
+CloseFileRequest(file);
 }
 M2C_FIELD(a,u32 *,0x34)=p;
 M2C_FIELD(a,u32 *,0x44)=memory;
@@ -248,31 +249,35 @@ void InitFileRequest(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
 }
 
-s32 SubmitPathRequest(void *a,s32 b,s32 c,s32 d) {
+/* Submits a path-resolution request (file command 4): fills in the directory
+ * record the path starts from (the current directory, or the device named
+ * "name:"), stores the rest of the path and the caller's output slot and lets
+ * the filesystem queue resolve it. */
+s32 SubmitPathRequest(void *request,s32 pathArg,s32 out,s32 outDir) {
 extern Unk032Record gFileCurrentDirectory;
 s32 SubmitFileRequest(void *,s32);
-u8 *path=(u8 *)b;Unk032Record rec; s32 i,flag;void *p;
-if(*path==47||*path==92){
+u8 *path=(u8 *)pathArg;Unk032Record rec; s32 i,flag;void *file;
+if(*path=='/'||*path=='\\'){
 M2C_FIELD(&rec,u16 *,4)=0;
 rec.words[0]=gFileCurrentDirectory.words[0];rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;path++;
 }else{
 rec=gFileCurrentDirectory;
 for(i=0;i<=3;i++){
 u8 ch=path[i];
-if(ch==0||ch==47||ch==92)break;
-if(ch==58){
-p=(void *)func_0200b144((s32)path,i);if(!p)return 0;
-flag=TestFileFlag(p,2);if(flag==0)return 0;
-rec.words[0]=(u32)p;rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;M2C_FIELD(&rec,u16 *,4)=0;
-path+=i+1;if(*path==47||*path==92)path++;break;
+if(ch==0||ch=='/'||ch=='\\')break;
+if(ch==':'){
+file=(void *)func_0200b144((s32)path,i);if(!file)return 0;
+flag=TestFileFlag(file,2);if(flag==0)return 0;
+rec.words[0]=(u32)file;rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;M2C_FIELD(&rec,u16 *,4)=0;
+path+=i+1;if(*path=='/'||*path=='\\')path++;break;
 }
 }
 }
-M2C_FIELD(a,u32 *,8)=rec.words[0];M2C_FIELD(a,u8 **,0x3c)=path;
-M2C_FIELD(a,Unk032Record *,0x30)=rec;
-if(d!=0){M2C_FIELD(a,s32 *,0x40)=1;M2C_FIELD(a,s32 *,0x44)=d;}
-else{M2C_FIELD(a,s32 *,0x40)=0;M2C_FIELD(a,s32 *,0x44)=c;}
-return SubmitFileRequest(a,4);
+M2C_FIELD(request,u32 *,FS_REQ_FILE)=rec.words[0];M2C_FIELD(request,u8 **,FS_REQ_PATH)=path;
+M2C_FIELD(request,Unk032Record *,FS_REQ_DIR_BLOCK)=rec;
+if(outDir!=0){M2C_FIELD(request,s32 *,FS_REQ_WANT_DIR)=1;M2C_FIELD(request,s32 *,FS_REQ_OUT)=outDir;}
+else{M2C_FIELD(request,s32 *,FS_REQ_WANT_DIR)=0;M2C_FIELD(request,s32 *,FS_REQ_OUT)=out;}
+return SubmitFileRequest(request,4);
 }
 
 M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
@@ -316,9 +321,9 @@ s32 func_0200b99c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 s32 func_0200b9e4(s32 a,Unk02BDFileRange b){if(!b.words[0])return 0;M2C_FIELD(a,u32 *,8)=b.words[0];M2C_FIELD(a,u32 *,48)=b.words[0];M2C_FIELD(a,u32 *,52)=M2C_FIELD(&b,volatile u32 *,4);if(!SubmitFileRequest((void *)a,6))return 0;M2C_FIELD(a,s32 *,12)=(M2C_FIELD(a,s32 *,12)|16)&~32;return 1;}
 
-s32 func_0200ba54(s32 a){s32 func_0200b9e4(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&func_0200b9e4(a,v))return 1;return 0;}
+s32 OpenFileRequest(s32 a){s32 func_0200b9e4(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&func_0200b9e4(a,v))return 1;return 0;}
 
-s32 func_0200ba9c(void *arg0) {
+s32 CloseFileRequest(void *arg0) {
     s32 SubmitFileRequest(void *, M2C_UNK);
     if (SubmitFileRequest(arg0, 8) == 0) {
         return 0;

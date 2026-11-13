@@ -177,14 +177,14 @@ RuntimeZero14 zero={0};
 *(RuntimeZero14 *)data_ov001_02193e1c=zero;
 }
 M2C_FIELD(data_ov001_02193e1c,void **,0x1b140)=(u8 *)data_ov001_02193e1c+0x10040;
-if(func_020179ec(M2C_FIELD(data_ov001_02193e1c,void **,0x1b140),&profile,a,b,2))func_02007958();
+if(func_020179ec(M2C_FIELD(data_ov001_02193e1c,void **,0x1b140),&profile,a,b,2))SystemHalt();
 func_02017c40(256,1);
 func_02013e70(func_ov001_02187590);
 func_ov001_021878b4(1);
 }
 
 void func_ov001_02186fa0(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     s32 func_02017f90(M2C_UNK);
     s32 func_ov001_02186fe8(M2C_UNK);
     func_ov001_021878b4(2);
@@ -195,11 +195,11 @@ void func_ov001_02186fa0(M2C_UNK arg0, M2C_UNK arg1) {
     if (func_ov001_02186fe8(arg0) != 0) {
         return;
     }
-    func_02007958();
+    SystemHalt();
 }
 
 s32 func_ov001_02186fe8(M2C_UNK arg0) {
-s32 func_0200ba54(void *,s32);
+s32 OpenFileRequest(void *,s32);
 s32 func_02015248(void *);
 s32 func_020152c8(void *,void *,s32);
 s32 func_0201579c(M2C_UNK,void *);
@@ -209,7 +209,7 @@ s32 result=0;
 if(M2C_FIELD(arg0,s32 *,0)==0) p=0;
 else {
 InitFileRequest(file);
-if(!func_0200ba54(file,M2C_FIELD(arg0,s32 *,0))) return 0;
+if(!OpenFileRequest(file,M2C_FIELD(arg0,s32 *,0))) return 0;
 p=file;
 }
 if(func_02015248(p)) {
@@ -218,7 +218,7 @@ if(M2C_FIELD(data_ov001_02193e1c,void **,0x1b144) &&
 func_020152c8(p,M2C_FIELD(data_ov001_02193e1c,void **,0x1b144),0x10000) &&
 func_0201579c(arg0,M2C_FIELD(data_ov001_02193e1c,void **,0x1b144))) result=1;
 }
-if(p==file)func_0200ba9c(file);
+if(p==file)CloseFileRequest(file);
 return result;
 }
 

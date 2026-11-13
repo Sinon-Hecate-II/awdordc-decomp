@@ -33,7 +33,7 @@ extern u32 gGlyphDakuten, gGlyphHandakuten;
 extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 void MI_CpuCopy32(const void*,void*,u32);
 void func_02019424(void*,u32);
-int func_02099ae8(void*); int MeasureStringWidth(s32*);
+int IsLeadByte(void*); int MeasureStringWidth(s32*);
 void func_020b269c(void);
 void *func_0208b564(void*);
 void func_020899cc(void*,s32,s32,u32);
@@ -69,7 +69,7 @@ MI_CpuCopy32(&gMapEditObjectList,line,0x44);
 line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
 func_02019424(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
 width=0;glyphPtr=line;
-if(*glyphPtr){do{if(!func_02099ae8(glyphPtr)&&width)width++;width+=MeasureStringWidth((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
+if(*glyphPtr){do{if(!IsLeadByte(glyphPtr)&&width)width++;width+=MeasureStringWidth((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
 if(width>64){
 SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -226,7 +226,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
@@ -239,7 +239,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020ae22c(M2C_UNK);
     M2C_UNK func_020aeebc(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020e32e8(M2C_UNK *);
+    M2C_UNK GetLocalizedFileNameDefault(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
     extern M2C_UNK gSoftKeyLayouts;
@@ -314,8 +314,8 @@ void func_ov007_0221e878(void *arg0) {
     func_01ff9dd8(0);
     func_01ff9dd8(3);
     SetFileDirectory(&data_ov007_02221980);
-    LoadDecompressedFileTo(func_020e32e8(&data_ov007_0222198c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
-    func_020e32e8(&data_ov007_02221998);
+    LoadDecompressedFileTo(GetLocalizedFileNameDefault(&data_ov007_0222198c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
+    GetLocalizedFileNameDefault(&data_ov007_02221998);
     OpenNarcArchive();
     var_r2 = 0;
 loop_1:
@@ -331,18 +331,18 @@ loop_1:
     }
     switch (var_r0) {                               /* irregular */
     case 0x66:
-        LoadNarcFileDecompressed(func_020e32e8(&data_ov007_022219a8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&data_ov007_022219a8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     case 0x64:
-        LoadNarcFileDecompressed(func_020e32e8(&data_ov007_022219b8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&data_ov007_022219b8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     case 0x65:
-        LoadNarcFileDecompressed(func_020e32e8(&data_ov007_022219c8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&data_ov007_022219c8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     }
     CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov007_022219d8, 0xA0, 0x60);
-    func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
+    SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
     func_02091d4c(4);
     func_02091d4c(0x17);
     func_020aeebc(2, 0xF, 6);

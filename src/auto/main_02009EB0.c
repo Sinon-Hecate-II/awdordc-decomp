@@ -117,7 +117,7 @@ done:
 
 s32 CompareNamesNoCase(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
 
-s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
+s32 FileStreamRead(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_SleepThread(void *);
     M2C_UNK OS_RestoreInterrupts(s32);
@@ -191,7 +191,7 @@ void *q=M2C_FIELD(p,void **,8);
 u32 out[2], in[2]; s32 r; u32 *v=(u32 *)((u8 *)p+0x30);
 in[0]=(u32)q;
 in[1]=M2C_FIELD(q,u32 *,0x34)+(M2C_FIELD(v,u16 *,4)<<3);
-r=func_0200a28c(in,(M2C_UNK)out,8);
+r=FileStreamRead(in,(M2C_UNK)out,8);
 if(!r){
 *(UnkA3Block *)((u8 *)p+0x20)=*(UnkA3Block *)v;
 if(!M2C_FIELD(v,u16 *,6)&&!v[2]){
@@ -203,29 +203,33 @@ M2C_FIELD(p,u32 *,0x2c)=M2C_FIELD(out,u16 *,6)&0xfff;
 return r;
 }
 
-s32 func_0200a470(void *p){
-void *q=M2C_FIELD(p,void **,0x30);
-u32 in[2];u8 header;u16 extra;s32 r;
-in[0]=M2C_FIELD(p,u32 *,8);in[1]=M2C_FIELD(p,u32 *,0x28);
-r=func_0200a28c(in,(M2C_UNK)&header,1);if(r)return r;
-M2C_FIELD(q,u32 *,0x10)=header&127;
-M2C_FIELD(q,u32 *,12)=(header>>7)&1;
-if(!M2C_FIELD(q,u32 *,0x10))return 1;
-if(!M2C_FIELD(p,u32 *,0x34)){
-r=func_0200a28c(in,(M2C_UNK)((u8*)q+20),M2C_FIELD(q,u32 *,0x10));if(r)return r;
-((u8*)q+M2C_FIELD(q,u32 *,0x10))[20]=0;
-}else in[1]+=M2C_FIELD(q,u32 *,0x10);
-if(M2C_FIELD(q,u32 *,12)){
-r=func_0200a28c(in,(M2C_UNK)&extra,2);if(r)return r;
-M2C_FIELD(q,u32 *,0)=M2C_FIELD(p,u32 *,8);
-M2C_FIELD(q,u16 *,4)=extra&0xfff;
-M2C_FIELD(q,u16 *,6)=0;M2C_FIELD(q,u32 *,8)=0;
+/* Read the next directory entry from the request's stream into the entry at
+ * request+0x30: a header byte packs the name length and a flag, then the name
+ * (or a skip), then either a two-byte id or the next short entry index.
+ * Nonzero means the directory is exhausted. */
+s32 ReadDirectoryEntry(void *request){
+PathEntry *entry=M2C_FIELD(request,PathEntry **,0x30);
+FSStreamPos pos;u8 header;u16 extra;s32 r;
+pos.file=M2C_FIELD(request,void **,8);pos.offset=M2C_FIELD(request,u32 *,0x28);
+r=FileStreamRead(&pos,(M2C_UNK)&header,1);if(r)return r;
+entry->length=header&127;
+entry->kind=(header>>7)&1;
+if(!entry->length)return 1;
+if(!M2C_FIELD(request,u32 *,FS_REQ_DIR_SKIP)){
+r=FileStreamRead(&pos,(M2C_UNK)entry->name,entry->length);if(r)return r;
+entry->name[entry->length]=0;
+}else pos.offset+=entry->length;
+if(entry->kind){
+r=FileStreamRead(&pos,(M2C_UNK)&extra,2);if(r)return r;
+M2C_FIELD(entry,u32 *,0)=M2C_FIELD(request,u32 *,8);
+M2C_FIELD(entry,u16 *,4)=extra&0xfff;
+M2C_FIELD(entry,u16 *,6)=0;M2C_FIELD(entry,u32 *,8)=0;
 }else{
-M2C_FIELD(q,u32 *,0)=M2C_FIELD(p,u32 *,8);
-M2C_FIELD(q,u32 *,4)=M2C_FIELD(p,u16 *,0x26);
-M2C_FIELD(p,u16 *,0x26)+=1;
+M2C_FIELD(entry,u32 *,0)=M2C_FIELD(request,u32 *,8);
+M2C_FIELD(entry,u32 *,4)=M2C_FIELD(request,u16 *,FS_REQ_DIR_INDEX);
+M2C_FIELD(request,u16 *,FS_REQ_DIR_INDEX)+=1;
 }
-M2C_FIELD(p,u32 *,0x28)=in[1];return r;
+M2C_FIELD(request,u32 *,FS_REQ_DIR_OFFSET)=pos.offset;return r;
 }
 
 /* Resolves the path at request+0x3c one component at a time (handling "." and
@@ -306,7 +310,7 @@ s32 func_0200ab2c(void *p) {
 void *q=M2C_FIELD(p,void **,8); u32 n=M2C_FIELD(p,u32 *,0x34); u32 off=(n<<3); u32 out[2],in[2]; s32 r;
 if(off>=M2C_FIELD(q,u32 *,0x30)) return 1;
 in[0]=(u32)q; in[1]=M2C_FIELD(q,u32 *,0x2c)+off;
-r=func_0200a28c(in,(M2C_UNK)out,8); if(r)return r;
+r=FileStreamRead(in,(M2C_UNK)out,8); if(r)return r;
 M2C_FIELD(p,u32 *,0x30)=out[0]; M2C_FIELD(p,u32 *,0x34)=out[1]; M2C_FIELD(p,u32 *,0x38)=n;
 return ExecuteFileCommand(p,7);
 }

@@ -2,23 +2,25 @@
 #include "common.h"
 #include "ghttp.h"
 
+/* Encode len bytes of src as base64 into dst (NUL-terminated), using the alphabet
+   selected by mode: 1 = "[]_", 2 = URL-safe "-_", anything else = standard "+/". */
 void Base64Encode(u8 *src,s8 *dst,s32 len,s32 mode){
-void func_02049a20(u8 *,s8 *,s32);
-extern const s8 data_020ea970[],data_020ea974[],data_020ea978[];
-const s8 *table; s8 *start=dst,*pad; s32 left=len,rem;
-switch(mode){case 1:table=data_020ea970;break;case 2:table=data_020ea974;break;default:table=data_020ea978;break;}
-while(left>0){func_02049a20(src,dst,left<3?left:3);left-=3;dst+=4;src+=3;}
+void Base64PackGroup(u8 *,s8 *,s32);
+extern const s8 gBase64AlphabetBracket[],gBase64AlphabetUrlSafe[],gBase64AlphabetStandard[];
+const s8 *alphabet; s8 *start=dst,*pad; s32 left=len,rem;
+switch(mode){case 1:alphabet=gBase64AlphabetBracket;break;case 2:alphabet=gBase64AlphabetUrlSafe;break;default:alphabet=gBase64AlphabetStandard;break;}
+while(left>0){Base64PackGroup(src,dst,left<3?left:3);left-=3;dst+=4;src+=3;}
 rem=len%3;pad=dst;
 if(rem==1)pad=dst-2;else if(rem==2)pad=dst-1;
 *dst=0;
 while(dst>start){
 --dst;
-if(dst>=pad)*dst=table[2];
+if(dst>=pad)*dst=alphabet[2];
 else if(*dst<=25)*dst+=65;
 else if(*dst<=51)*dst+=71;
 else if(*dst<=61)*dst-=4;
-else if(*dst==62)*dst=table[0];
-else if(*dst==63)*dst=table[1];
+else if(*dst==62)*dst=alphabet[0];
+else if(*dst==63)*dst=alphabet[1];
 }
 }
 

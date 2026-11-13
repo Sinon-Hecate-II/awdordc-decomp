@@ -340,66 +340,70 @@ s32 func_02024f20(void *arg0) {
     return 0;
 }
 
-s32 func_02024f9c(s32 arg0, u32 arg1, s32 arg2, s32 arg3, void *arg4) {
+/* Sends application data as one or more TLS records: takes up to `src1Len`
+ * bytes from src1 first, then `src2Len` bytes from src2, splits them into
+ * TLS_APP_CHUNK_MAX-byte records, appends each record's MAC and sends it.
+ * Returns the number of payload bytes sent (0 on a short send/allocation). */
+s32 TlsSendAppData(s32 src1, u32 src1Len, s32 src2, s32 src2Len, void *transport) {
     M2C_UNK MI_CpuCopy8(s32, void *, u32);
     M2C_UNK TcpSendData(s8 *, s32, M2C_UNK, M2C_UNK, void *);
     s32 TlsAppendRecordMac(void *, s8 *);
     extern void *(*gAlloc)(s32);
     extern void (*gFree[])(void *);
-    void *temp_r0;
-    s32 var_r5;
-    s32 var_r6;
-    s32 var_r7;
-    s32 var_r8;
-    u32 var_r9;
-    s32 var_r10;
-    u32 temp_r11;
-    s32 temp_r0_2;
-    void *sp8;
-    s32 sp4;
+    void *record;
+    s32 remaining;
+    s32 chunk;
+    s32 fromSrc1;
+    s32 src2Pos;
+    u32 src1Left;
+    s32 src1Pos;
+    u32 fromSrc2;
+    s32 recordLen;
+    void *channel;
+    s32 sent;
 
-    var_r9 = arg1;
-    var_r10 = arg0;
-    sp8 = M2C_FIELD(arg4, void **, 0xC);
-    var_r8 = arg2;
-    var_r5 = var_r9 + arg3;
-    sp4 = 0;
+    src1Left = src1Len;
+    src1Pos = src1;
+    channel = M2C_FIELD(transport, void **, 0xC);
+    src2Pos = src2;
+    remaining = src1Left + src2Len;
+    sent = 0;
 loop_1:
-    if (var_r5 > 0xB4F) {
-        var_r6 = 0xB4F;
+    if (remaining > TLS_APP_CHUNK_MAX) {
+        chunk = TLS_APP_CHUNK_MAX;
     } else {
-        var_r6 = var_r5;
+        chunk = remaining;
     }
-    temp_r0 = gAlloc(var_r6 + 0x19);
-    if (temp_r0 != 0) {
-        if (var_r9 >= (u32) var_r6) {
-            var_r7 = var_r6;
+    record = gAlloc(chunk + TLS_APP_RECORD_OVERHEAD);
+    if (record != 0) {
+        if (src1Left >= (u32) chunk) {
+            fromSrc1 = chunk;
         } else {
-            var_r7 = (s32) var_r9;
+            fromSrc1 = (s32) src1Left;
         }
-        temp_r11 = var_r6 - var_r7;
-        MI_CpuCopy8(var_r10, (s8 *)temp_r0 + 5, (u32) var_r7);
-        var_r10 += var_r7;
-        var_r9 -= var_r7;
-        MI_CpuCopy8(var_r8, (s8 *)temp_r0 + 5 + var_r7, temp_r11);
-        M2C_FIELD(temp_r0, s8 *, 0) = 0x17;
-        M2C_FIELD(temp_r0, s8 *, 1) = 3;
-        M2C_FIELD(temp_r0, s8 *, 2) = 0;
-        M2C_FIELD(temp_r0, s8 *, 3) = (s8) (var_r6 >> 8);
-        var_r8 += temp_r11;
-        M2C_FIELD(temp_r0, s8 *, 4) = (s8) var_r6;
-        temp_r0_2 = TlsAppendRecordMac(sp8, (s8 *)temp_r0);
-        if ((u32)TcpSendData((s8 *)temp_r0, temp_r0_2, 0, 0, arg4) < (u32)temp_r0_2) {
-            var_r6 = 0;
+        fromSrc2 = chunk - fromSrc1;
+        MI_CpuCopy8(src1Pos, (s8 *)record + 5, (u32) fromSrc1);
+        src1Pos += fromSrc1;
+        src1Left -= fromSrc1;
+        MI_CpuCopy8(src2Pos, (s8 *)record + 5 + fromSrc1, fromSrc2);
+        M2C_FIELD(record, s8 *, 0) = TLS_CONTENT_APPLICATION_DATA;
+        M2C_FIELD(record, s8 *, 1) = 3;
+        M2C_FIELD(record, s8 *, 2) = 0;
+        M2C_FIELD(record, s8 *, 3) = (s8) (chunk >> 8);
+        src2Pos += fromSrc2;
+        M2C_FIELD(record, s8 *, 4) = (s8) chunk;
+        recordLen = TlsAppendRecordMac(channel, (s8 *)record);
+        if ((u32)TcpSendData((s8 *)record, recordLen, 0, 0, transport) < (u32)recordLen) {
+            chunk = 0;
         }
-        gFree[0](temp_r0);
-        var_r5 -= var_r6;
-        sp4 += var_r6;
-        if ((var_r5 != 0) && (var_r6 != 0)) {
+        gFree[0](record);
+        remaining -= chunk;
+        sent += chunk;
+        if ((remaining != 0) && (chunk != 0)) {
             goto loop_1;
         }
     }
-    return sp4;
+    return sent;
 }
 
 void func_020250d0(void *arg0) { M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *); s32 TlsAppendRecordMac(void *,s8 *); s8 a[28]; void *p=M2C_FIELD(arg0,void **,12); if(M2C_FIELD(p,u8 *,0x455)==8) { a[0]=21;a[1]=3;a[2]=0;a[3]=0;a[4]=2;a[5]=1;a[6]=0; TcpSendData(a,TlsAppendRecordMac(p,a),0,0,arg0); } M2C_FIELD(p,u8 *,0x455)=0; }

@@ -13,7 +13,7 @@ void func_ov001_02179e74(void) {
 void func_ov001_02179ea8(void) {
     extern M2C_UNK gMapSelectState;
     M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175db4(M2C_UNK *, M2C_UNK);
+    M2C_UNK Ov001_GetNameEntryMode(M2C_UNK *, M2C_UNK);
     M2C_UNK func_ov001_02184170(M2C_UNK);
     void InitMapSelectGraphics(void);
     void func_ov001_021722ac(void);
@@ -31,7 +31,7 @@ void func_ov001_02179ea8(void) {
     s32 temp;
 
     M2C_FIELD(&gMapSelectState, void **, 4) = func_ov001_0218b6f8((M2C_UNK)0x5c, (M2C_UNK)4);
-    func_ov001_02175db4(&temp, 0);
+    Ov001_GetNameEntryMode(&temp, 0);
     if (temp == 0) {
         M2C_FIELD(&gMapSelectState, u8 *, 0) = 0;
         M2C_FIELD(&gMapSelectState, u16 *, 2) = 0;
@@ -174,10 +174,10 @@ void func_ov001_0217a344(void) {
 }
 
 void func_ov001_0217a380(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171738();
     extern M2C_UNK func_ov001_0217a3a8;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     func_ov001_02171738();
@@ -293,7 +293,7 @@ void MapSelectList_HandleInput(void) {
 }
 
 void func_ov001_0217a880(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171750();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_0217b3c0(void);
@@ -309,7 +309,7 @@ void func_ov001_0217a880(void) {
     map = M2C_FIELD(&gMapSelectState, void **, 4);
     if (M2C_FIELD(map, M2C_UNK *, 0x38) != 0) return;
     if (M2C_FIELD(map, u8 *, 0x57) != 0) return;
-    r = func_ov001_021716c4();
+    r = Ov001_GetIconRowSelection();
     switch (r) {
     case 0:
         Ov001_PlaySound(7);
@@ -384,7 +384,7 @@ void func_ov001_0217a9ac(void) {
  * the match, or the cancel path. */
 void MapSelectList_Leave(void) {
 extern s32 gMapSelectState,data_ov001_02193d9c;
-extern s32 func_ov001_02181a84,func_ov001_02180860,func_ov001_0217b444,func_ov001_021828ac;
+extern s32 func_ov001_02181a84,func_ov001_02180860,InitNameEntryScreen,func_ov001_021828ac;
 s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);void *GetCurrentMapRecord(void);
 s32 i; void *obj;
 if(func_ov001_0218a800(1))return;
@@ -411,9 +411,9 @@ func_ov001_02184498(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,
 func_ov001_02175d64(0,0);
 obj=M2C_FIELD(&gMapSelectState,void **,4);
 if(M2C_FIELD(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE,u8 *,MAPSELECT_ENTRY_FLAG)){
-func_ov001_02175d64(0,1);func_ov001_02175da0(1,1);Ov001_SetStepCallback(&func_ov001_0217b444);
+func_ov001_02175d64(0,1);Ov001_SetNameEntryMode(1,1);Ov001_SetStepCallback(&InitNameEntryScreen);
 }else{
-func_ov001_02175d64(0,1);func_ov001_02175da0(0,1);Ov001_SetStepCallback(&func_ov001_021828ac);
+func_ov001_02175d64(0,1);Ov001_SetNameEntryMode(0,1);Ov001_SetStepCallback(&func_ov001_021828ac);
 }
 }
 func_ov001_0218b71c(&data_ov001_02193d9c);

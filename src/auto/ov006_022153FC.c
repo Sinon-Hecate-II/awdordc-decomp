@@ -164,7 +164,7 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
     extern void *gTouchState;
     M2C_UNK func_020b2e78(M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_020b212c(void);
-    void func_020808dc(void *, M2C_UNK, M2C_UNK, M2C_UNK);
+    void SetTileRectPalette(void *, M2C_UNK, M2C_UNK, M2C_UNK);
 
     u16 **saved;
     u16 **cur;
@@ -209,7 +209,7 @@ draw2:
         ptr = (void *)((char *)base +
             (*(s16 *)((char *)arg0 + 0x14) >> 3) * 2 +
             (*(s16 *)((char *)arg0 + 0x16) >> 3) * 64);
-        func_020808dc(ptr,
+        SetTileRectPalette(ptr,
             (u16)(M2C_FIELD(arg0, s16 *, 0x18) >> 3),
             (u16)(M2C_FIELD(arg0, s16 *, 0x1a) >> 3),
             2);
@@ -220,7 +220,7 @@ draw0:
         ptr = (void *)((char *)base +
             (*(s16 *)((char *)arg0 + 0x14) >> 3) * 2 +
             (*(s16 *)((char *)arg0 + 0x16) >> 3) * 64);
-        func_020808dc(ptr,
+        SetTileRectPalette(ptr,
             (u16)(M2C_FIELD(arg0, s16 *, 0x18) >> 3),
             (u16)(M2C_FIELD(arg0, s16 *, 0x1a) >> 3),
             0);

@@ -40,12 +40,12 @@ u8 func_ov003_02202e94(s32 arg0, s32 arg1) {
 void func_ov003_02202ec0(void *arg0, u32 arg1) {
     s32 Divide(u8, M2C_UNK);
     s32 Modulo(u8, M2C_UNK);
-    M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    s32 func_ov003_02200d80(u8, u8);
+    s32 Ov003_GetEntryValueTextId(u8, u8);
     M2C_UNK func_ov003_02200dc8();
     extern void *data_027e01d8;
     s32 temp_r2_2;
@@ -95,31 +95,31 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
             default:
                 break;
             case 0:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), 0x47000000);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), 0x47000000);
                 break;
             case 1:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), func_ov003_02200d80((u8) temp_r0, (u8) temp_r2_2));
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), Ov003_GetEntryValueTextId((u8) temp_r0, (u8) temp_r2_2));
                 break;
             case 2:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), func_ov003_02200d80((u8) temp_r0, (u8) temp_r2_2));
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), Ov003_GetEntryValueTextId((u8) temp_r0, (u8) temp_r2_2));
                 break;
             case 3:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), 0x4700000B);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), 0x4700000B);
                 break;
             case 4:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), 0x47000014);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), 0x47000014);
                 break;
             case 5:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), 0x4700000A);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), 0x4700000A);
                 break;
             case 6:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), func_ov003_02200d80((u8) temp_r0, (u8) temp_r2_2));
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), Ov003_GetEntryValueTextId((u8) temp_r0, (u8) temp_r2_2));
                 break;
             case 7:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), 0x47000015);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), 0x47000015);
                 break;
             case 8:
-                func_0208b758(M2C_FIELD(arg0, s32 *, 0x58), 0x47000018);
+                SetTextById(M2C_FIELD(arg0, s32 *, 0x58), 0x47000018);
                 break;
             }
         }
@@ -144,7 +144,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
                 var_r1_2 = 1;
             }
             M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = var_r1_2;
-            func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 0);
+            SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 0);
             if (M2C_FIELD(arg0, u8 *, 0x39) == 1) {
                 var_r0_3 = 1;
             } else {
@@ -153,7 +153,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
             if (var_r0_3 & 0xFF) {
                 temp_r0_3 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
                 temp_r4_3 = Modulo((u8) temp_r0_3, 4);
-                func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((Divide((u8) temp_r0_3, 4) * 0x120) + ((temp_r4_3 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
+                SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((Divide((u8) temp_r0_3, 4) * 0x120) + ((temp_r4_3 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
             }
             M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
             return;
@@ -177,7 +177,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
             var_r1_3 = 1;
         }
         M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = var_r1_3;
-        func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 0);
+        SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 0);
         if (M2C_FIELD(arg0, u8 *, 0x39) == 1) {
             var_r0_6 = 1;
         } else {
@@ -186,7 +186,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
         if (var_r0_6 & 0xFF) {
             temp_r0_4 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
             temp_r4_4 = Modulo((u8) temp_r0_4, 4);
-            func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((Divide((u8) temp_r0_4, 4) * 0x120) + ((temp_r4_4 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
+            SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((Divide((u8) temp_r0_4, 4) * 0x120) + ((temp_r4_4 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
         }
         M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
         return;
@@ -246,12 +246,12 @@ void func_ov003_02203280(void *arg0) {
 void func_ov003_02203368(void *arg0,u32 arg1) {
 s32 Divide(u8, M2C_UNK);
 s32 Modulo(u8, M2C_UNK);
-M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-M2C_UNK func_0208b758(s32, s32);
+M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+M2C_UNK SetTextById(s32, s32);
 M2C_UNK PlaySoundEffect(s32);
 s32 func_020aae10(void *);
 s32 func_020aae44(void *);
-s32 func_ov003_02200d80(u8, u8);
+s32 Ov003_GetEntryValueTextId(u8, u8);
 M2C_UNK func_ov003_02200dc8(void *,u32);
 extern void *gCur3DSpriteEngine;
 void *r5 = arg0;
@@ -294,15 +294,15 @@ temp_r0 = (u8) M2C_FIELD(M2C_FIELD(temp_r2, void **, 0x10C), u16 *, 0x2E);
 temp_r2_2 = M2C_FIELD((((u8) temp_r0 * 0x18) + (s32) temp_r2), s32 *, 0xC);
 switch (temp_r0) {
 default: break;
-case 0: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x47000000); break;
-case 1: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), func_ov003_02200d80(temp_r0, (u8) temp_r2_2)); break;
-case 2: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), func_ov003_02200d80(temp_r0, (u8) temp_r2_2)); break;
-case 3: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x4700000B); break;
-case 4: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x47000014); break;
-case 5: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x4700000A); break;
-case 6: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), func_ov003_02200d80(temp_r0, (u8) temp_r2_2)); break;
-case 7: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x47000015); break;
-case 8: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x47000018); break;
+case 0: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000000); break;
+case 1: SetTextById(M2C_FIELD(r5, s32 *, 0x58), Ov003_GetEntryValueTextId(temp_r0, (u8) temp_r2_2)); break;
+case 2: SetTextById(M2C_FIELD(r5, s32 *, 0x58), Ov003_GetEntryValueTextId(temp_r0, (u8) temp_r2_2)); break;
+case 3: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x4700000B); break;
+case 4: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000014); break;
+case 5: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x4700000A); break;
+case 6: SetTextById(M2C_FIELD(r5, s32 *, 0x58), Ov003_GetEntryValueTextId(temp_r0, (u8) temp_r2_2)); break;
+case 7: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000015); break;
+case 8: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000018); break;
 }
 }
 }
@@ -312,14 +312,14 @@ if (M2C_FIELD(r5,u8 *,0x39) == 1) var_r0_2 = 1;
 temp_r1=M2C_FIELD(r5,void **,0x4c);
 var_r1=1;if(var_r0_2&0xff)var_r1=0;
 M2C_FIELD(temp_r1,s8 *,0x59)=var_r1;
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
 if (M2C_FIELD(r5, u8 *, 0x39) == 1) var_r0_3 = 1; else var_r0_3 = 0;
 if (var_r0_3 & 0xFF) {
 temp_r0_2 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
 temp_r4_3 = Modulo(temp_r0_2, 4);
 temp_r2_2=Divide(temp_r0_2,4);
 temp_r4_3=temp_r4_3*8+0x60;
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_3)<<16)>>15),8,8,1);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_3)<<16)>>15),8,8,1);
 }
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
 }

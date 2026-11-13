@@ -13,7 +13,7 @@ void func_ov003_021f40a8(void *arg0) {
     void func_02089438(void *);
     void func_02088da8(void *);
     void *func_0208bc24(void *);
-    void func_0208b758(void *, s32);
+    void SetTextById(void *, s32);
     void func_02088f1c(void *);
     void func_ov003_021f14a0(void);
     void func_ov006_02217464(void *);
@@ -81,15 +81,15 @@ void func_ov003_021f40a8(void *arg0) {
     func_02088da8(o);
     gCur3DSpriteEngine = saved;
     if ((u8)(OV3KIND(arg0) == 4)) {
-        func_0208b758(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x4700001d);
+        SetTextById(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x4700001d);
     } else if ((u8)(OV3KIND(arg0) == 6)) {
-        func_0208b758(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000025);
+        SetTextById(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000025);
     } else if ((u8)(OV3KIND(arg0) == 7)) {
-        func_0208b758(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000026);
+        SetTextById(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000026);
     } else if ((u8)(OV3KIND(arg0) == 8)) {
-        func_0208b758(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000027);
+        SetTextById(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000027);
     } else {
-        func_0208b758(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000013);
+        SetTextById(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000013);
     }
     func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4));
     if ((u8)(OV3KIND(arg0) == 4)) {

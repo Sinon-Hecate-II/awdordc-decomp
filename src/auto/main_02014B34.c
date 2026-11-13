@@ -36,7 +36,7 @@ void func_02014ccc(void *arg0) {
  s32 func_0200b144(void *,s32);
  void InitFileRequest(void *);
  s32 func_0200b99c(void *,s32,s32,s32,s32);
- void func_0200ba9c(void *);
+ void CloseFileRequest(void *);
  s32 FileRead(void *,s32,s32);
  u32 sp4[18];
  s32 val;
@@ -46,7 +46,7 @@ void func_02014ccc(void *arg0) {
  val=M2C_FIELD(a,s32 *,0);
  if(func_0200b99c(sp4,func_0200b144(b+16,M2C_FIELD(b,s32 *,0x14)),val,val+M2C_FIELD(a,s32 *,4),-1)!=0){
  if(M2C_FIELD(a,s32 *,4)==FileRead(sp4,M2C_FIELD(a,s32 *,8),M2C_FIELD(a,s32 *,4))) M2C_FIELD(a,s32 *,12)=2;
- func_0200ba9c(sp4);
+ CloseFileRequest(sp4);
  }
  if(M2C_FIELD(a,s32 *,12)==2)return;
  M2C_FIELD(a,s32 *,0)=0; M2C_FIELD(a,s32 *,12)=2;
@@ -61,7 +61,7 @@ s32 func_02014d6c(void) {
     s32 SerializeCommand(s8 *,void *);
     s32 func_020184ec(void *,u32,s32,u32);
     s32 func_0201874c(void *);
-    void func_02007958(void);
+    void SystemHalt(void);
     void func_02018764(void *,void (*)(void *),s32,s32);
     s32 SendMatchPacket(s32,u16,s32);
     u8 packet[8];
@@ -124,7 +124,7 @@ s32 func_02014d6c(void) {
                         if (!best || M2C_FIELD(best,u32 *,0)>records[j][0]) best=records[j];
                     }
                 }
-                if (!best) func_02007958();
+                if (!best) SystemHalt();
                 M2C_FIELD(buffer,u32 *,0)=2;
                 M2C_FIELD(best,s32 *,12)=1;
                 M2C_FIELD(best,u32 *,0)=offset&~31;

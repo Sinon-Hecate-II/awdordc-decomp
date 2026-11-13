@@ -107,11 +107,11 @@ s32 func_0207b648(s32 arg0, s32 arg1, s32 arg2) {
 
 void func_0207b6d0(void) {
     s32 IsPlayerActive(s32);
-    s32 func_020d243c(s32);
+    s32 PlayerHasHq(s32);
     extern void *gCurrentMap;
     u32 x, y;
     void *p;
-    if (IsPlayerActive(1) != 0 && func_020d243c(1) != 0) {
+    if (IsPlayerActive(1) != 0 && PlayerHasHq(1) != 0) {
         p = M2C_FIELD(gCurrentMap, void **, 0);
         x = M2C_FIELD(p, u8 *, 0x685B) & 0x7F;
         y = M2C_FIELD(p, u8 *, 0x685C) & 0x7F;

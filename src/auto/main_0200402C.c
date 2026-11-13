@@ -407,50 +407,53 @@ void func_02004b54(void) {
  M2C_FIELD(&data_0212dbfc,s32 *,0x1c)=c<<12;
 }
 
-void func_02004bb0(M2C_UNK arg0, u32 arg1, u32 arg2) {
+/* Copy `size` bytes from `src` to the texture-bank region at byte `offset`.
+   The region may span two physical banks (base2 != 0); a block that crosses the
+   split is written to both, with the large head done by DMA when available. */
+void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     extern s32 data_020f5204;
     extern M2C_UNK data_0212dbfc;
 
-    M2C_UNK *p = &data_0212dbfc;
-    s32 field18 = M2C_FIELD(p, s32 *, 0x18);
-    u32 r12 = arg1;
-    u32 r6 = arg2;
-    M2C_UNK r7 = arg0;
-    s32 offset;
-    s32 field1c;
+    M2C_UNK *bank = &data_0212dbfc;
+    s32 base2 = M2C_FIELD(bank, s32 *, 0x18);
+    u32 ofs = offset;
+    u32 n = size;
+    M2C_UNK p = src;
+    s32 dst;
+    s32 split;
 
-    if (field18 == 0) {
-        offset = M2C_FIELD(p, s32 *, 0x4) + (s32)r12;
+    if (base2 == 0) {
+        dst = M2C_FIELD(bank, s32 *, 0x4) + (s32)ofs;
     } else {
-        field1c = M2C_FIELD(p, s32 *, 0x1c);
-        if (r12 + r6 < (u32)field1c) {
-            offset = M2C_FIELD(p, s32 *, 0x4) + (s32)r12;
-        } else if (r12 >= (u32)field1c) {
-            offset = field18 + (s32)r12 - field1c;
+        split = M2C_FIELD(bank, s32 *, 0x1c);
+        if (ofs + n < (u32)split) {
+            dst = M2C_FIELD(bank, s32 *, 0x4) + (s32)ofs;
+        } else if (ofs >= (u32)split) {
+            dst = base2 + (s32)ofs - split;
         } else {
-            u32 r5 = (u32)field1c - r12;
-            s32 base = M2C_FIELD(p, s32 *, 0x4);
-            if (data_020f5204 != -1 && r5 > 0x30U) {
-                func_02007a04(data_020f5204, r7, base + (s32)r12, r5);
+            u32 head = (u32)split - ofs;
+            s32 base = M2C_FIELD(bank, s32 *, 0x4);
+            if (data_020f5204 != -1 && head > 0x30U) {
+                func_02007a04(data_020f5204, p, base + (s32)ofs, head);
             } else {
-                func_02007e70(r7, base + (s32)r12, r5);
+                func_02007e70(p, base + (s32)ofs, head);
             }
             if (data_020f5204 != -1) {
-                func_02007ba4(data_020f5204, r7 + (M2C_UNK)r5, field18, r6 - r5, 0, 0);
+                func_02007ba4(data_020f5204, p + (M2C_UNK)head, base2, n - head, 0, 0);
             } else {
-                func_02007e70(r7 + (M2C_UNK)r5, field18, r6 - r5);
+                func_02007e70(p + (M2C_UNK)head, base2, n - head);
             }
             return;
         }
     }
 
     if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, r7, offset, r6, 0, 0);
+        func_02007ba4(data_020f5204, p, dst, n, 0, 0);
     } else {
-        func_02007e70(r7, offset, r6);
+        func_02007e70(p, dst, n);
     }
 }
 

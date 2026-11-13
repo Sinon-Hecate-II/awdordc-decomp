@@ -239,23 +239,26 @@ resOfs=M2C_FIELD(unit,u8 *,140)*100;
 func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f3028,s32 *,resOfs),M2C_FIELD(data_ov002_021f3038,u16 *,resOfs),M2C_FIELD(data_ov002_021f304b+resOfs,u8 *,M2C_FIELD(unit,u8 *,141)*8),0);
 }
 
-void func_ov002_021ea37c(void *arg0) {
+/* Builds a unit's action-animation node for effects carrying the extended
+   resource set: places it at the effect's second position set (no variant
+   offset) and assigns this node's own resource tables. */
+void SetupUnitActionNodeEx(void *unit) {
 void *MemAlloc(s32);void func_ov002_021e16bc(void *,u8,u8);void func_ov002_021e16dc(void *,s32,u16,u8,s32);void SetEffectNodeTranslation(void *,s16,s16,s16);void SetEffectScale(void *,u32);
 extern u8 data_ov002_021ea704[],data_ov002_021f302c[],data_ov002_021f303a[],data_ov002_021f304c[],gEffectTable[];
-void *p,*q,*lr;u32 v;s32 off;
-if(!M2C_FIELD(data_ov002_021f302c,s32 *,M2C_FIELD(arg0,u8 *,140)*100))return;
-if(M2C_FIELD(arg0,void **,84)){
+void *p,*q;EffectConfig *cfg;u32 scale;s32 resOfs;
+if(!M2C_FIELD(data_ov002_021f302c,s32 *,M2C_FIELD(unit,u8 *,140)*100))return;
+if(M2C_FIELD(unit,void **,84)){
 p=MemAlloc(8);if(p){M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;}
-M2C_FIELD(p,void **,0)=M2C_FIELD(arg0,void **,84);M2C_FIELD(p,void **,4)=M2C_FIELD(arg0,void **,88);M2C_FIELD(arg0,void **,88)=p;}
-M2C_FIELD(arg0,void **,84)=((p=MemAlloc(84)) ? init_021ea37c(p):p);
-q=M2C_FIELD(arg0,void **,84);
-func_ov002_021e16bc(q,M2C_FIELD(arg0,u8 *,140),M2C_FIELD(arg0,u8 *,141));
-lr=M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(arg0,u8 *,140)*24),void **,40);
-v=(u32)((M2C_FIELD(lr,u16 *,134)*M2C_FIELD(lr,u16 *,204))<<8)>>16;
-SetEffectNodeTranslation(q,M2C_FIELD(lr,s16 *,128),M2C_FIELD(lr,s16 *,130),M2C_FIELD(lr,s16 *,132));
-SetEffectScale(q,v);
-off=M2C_FIELD(arg0,u8 *,140)*100;
-func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f302c,s32 *,off),M2C_FIELD(data_ov002_021f303a,u16 *,off),M2C_FIELD(data_ov002_021f304c+off,u8 *,M2C_FIELD(arg0,u8 *,141)*8),0);
+M2C_FIELD(p,void **,0)=M2C_FIELD(unit,void **,84);M2C_FIELD(p,void **,4)=M2C_FIELD(unit,void **,88);M2C_FIELD(unit,void **,88)=p;}
+M2C_FIELD(unit,void **,84)=((p=MemAlloc(84)) ? init_021ea37c(p):p);
+q=M2C_FIELD(unit,void **,84);
+func_ov002_021e16bc(q,M2C_FIELD(unit,u8 *,140),M2C_FIELD(unit,u8 *,141));
+cfg=((EffectSet *)M2C_FIELD(gEffectTable,void **,M2C_FIELD(unit,u8 *,140)*24))->config;
+scale=(u32)((cfg->scale2*cfg->textureScale)<<8)>>16;
+SetEffectNodeTranslation(q,cfg->pos2X,cfg->pos2Y,cfg->pos2Z);
+SetEffectScale(q,scale);
+resOfs=M2C_FIELD(unit,u8 *,140)*100;
+func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f302c,s32 *,resOfs),M2C_FIELD(data_ov002_021f303a,u16 *,resOfs),M2C_FIELD(data_ov002_021f304c+resOfs,u8 *,M2C_FIELD(unit,u8 *,141)*8),0);
 }
 
 void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {

@@ -276,7 +276,7 @@ void func_ov002_021e97d8(void *unit, s32 mode, s32 value, s32 flag) {
 void func_ov002_021e173c(void *, u8);
 void SetupUnitMoveNode(void *, s32);
 void SetupUnitActionNode(void *, s32);
-void func_ov002_021ea37c(void *);
+void SetupUnitActionNodeEx(void *);
 void func_ov002_021ea4bc(void *, s16, s16);
 extern u8 gEffectTable[], gEffectDefaultVariant[], data_ov002_021f314e[];
 s32 off;
@@ -291,7 +291,7 @@ SetupUnitMoveNode(unit, -1); return;
 case 2:
 if (flag == 0) { SetupUnitActionNode(unit, value); return; }
 func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3b));
-if (data_ov002_021f314e[M2C_FIELD(unit, u8 *, 0x8c) * 44]) func_ov002_021ea37c(unit); else SetupUnitActionNode(unit, -1);
+if (data_ov002_021f314e[M2C_FIELD(unit, u8 *, 0x8c) * 44]) SetupUnitActionNodeEx(unit); else SetupUnitActionNode(unit, -1);
 if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) == 0) func_ov002_021e9008(unit, 0x800, -0x800); else func_ov002_021ea4bc(unit, 0, 0);
 if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) != 2) return;
 func_ov002_021e9008(unit, 0x200, 0x100); M2C_FIELD(unit, s32 *, 0x80) = -1; return;

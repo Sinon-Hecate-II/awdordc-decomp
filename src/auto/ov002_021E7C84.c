@@ -194,7 +194,7 @@ u8 func_ov002_021e80a4(s32 arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     extern void **gCurrentMap;
-    s32 func_ov000_0216ca8c(u8, u8);
+    s32 GetCellTerrainId(u8, u8);
     s32 IsUnitSelected(void *);
     void IsCellInPlayerMoveRange(s32, u8, u8);
     s32 func_020a27f8(s32, s32);
@@ -274,9 +274,9 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     M2C_FIELD(a+r5,u8 *,0xe) = (u8)*(s16 *)((u8 *)r6 + 0xe);
     M2C_FIELD(a+r5,u8 *,0xf) = (u8)(((unsigned)r7[0] << 24) >> 30);
     (a+0x10)[r5] = (u8)*(s16 *)((u8 *)r6 + 0x4);
-    r0 = func_ov000_0216ca8c(r7[1], r7[2]);
+    r0 = GetCellTerrainId(r7[1], r7[2]);
     if (r0 == 0x28) (a+0x10)[r5] = 0x1b;
-    r0 = func_ov000_0216ca8c(r7[1], r7[2]);
+    r0 = GetCellTerrainId(r7[1], r7[2]);
     if (r0 == 0x29) (a+0x10)[r5] = 0x1c;
     r2v = *(s16 *)((u8 *)r6 + 0x6);
     r4v = r2v / 10;

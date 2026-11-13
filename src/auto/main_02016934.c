@@ -14,7 +14,7 @@ void *func_020122ac(void *);
 void *func_02012a64(void *, int, int, void *, int, int, int, int, int, int, int);
 void func_02018438(int, void *);
 void func_0200758c(int);
-void func_02007958(void);
+void SystemHalt(void);
 void func_02011a20(int,int,int);
 void func_020119dc(int);
 
@@ -74,7 +74,7 @@ case 16:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(29
 case 17:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(31,arg0);return;
 case 18:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(32,arg0);return;
 case 19:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(33,arg0);return;
-case 22:func_02007958();return;
+case 22:SystemHalt();return;
 case 23:break;
 }break;
 default:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);return;

@@ -107,12 +107,12 @@ s32 h=a[1]; register s32 w=a[0]; register u16 *p=(u16 *)(a+2); s32 x,y;
 for(y=0;y<h;y++)for(x=0;x<w;x++) b[y*32+x]=v+*p++;
 }
 #pragma opt_common_subs on
-void func_02080860(u16 *p,s32 w,s32 h,u32 tile,u16 pal) {
+void FillTileRect(u16 *p,s32 w,s32 h,u32 tile,u16 pal) {
  s32 x,y; u16 v=(tile&0x3ff)|((pal&15)<<12);
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=v++;
 }
 
-void func_020808dc(u16 *p,s32 w,s32 h,u32 pal) {
+void SetTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
  s32 x,y;
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=(p[y*32+x]&0xfff)|((pal&15)<<12);
 }
@@ -185,11 +185,11 @@ void func_02080bd4(void) {
 }
 
 s32 func_02080c00(void *a) {
- void InitFileRequest(void *);s32 func_0200ba54(void *,void *);void func_0200ba9c(void *);
+ void InitFileRequest(void *);s32 OpenFileRequest(void *,void *);void CloseFileRequest(void *);
  s32 buf[18];s32 n;
  InitFileRequest(buf);
- if(!func_0200ba54(buf,a))return 0;
- n=buf[10]-buf[9];func_0200ba9c(buf);return n;
+ if(!OpenFileRequest(buf,a))return 0;
+ n=buf[10]-buf[9];CloseFileRequest(buf);return n;
 }
 
 int func_02080c50(int arg0, int arg1) {
@@ -199,8 +199,8 @@ int func_02080c50(int arg0, int arg1) {
     int var_9;
 
     InitFileRequest(sp0);
-    if (func_0200ba54(sp0, arg0) == 0) {
-        func_02007958();
+    if (OpenFileRequest(sp0, arg0) == 0) {
+        SystemHalt();
         return 0;
     }
     var_8 = (int)sp0[10] - (int)sp0[9];
@@ -212,80 +212,83 @@ int func_02080c50(int arg0, int arg1) {
                 var_9 = 0x2800;
             }
             if (FileRead(sp0, arg1 + var_7, var_9) != var_9) {
-                func_02007958();
+                SystemHalt();
                 return 0;
             }
             var_7 += var_9;
         } while (var_8 - var_7 != 0);
     }
-    func_0200ba9c(sp0);
+    CloseFileRequest(sp0);
     return var_8;
 }
 
-s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
+/* Read the compressed file at `path` in 0x2000-byte chunks and decompress it to the
+ * address `dest` (which selects RAM or VRAM).  Returns the decompressed size, or 0
+ * after halting the system if a read fails. */
+s32 LoadDecompressedFileTo(void *path, s32 dest) {
     int InitFileRequest(void *);
-    int func_0200ba54(void *, void *);
+    int OpenFileRequest(void *, void *);
     int FileRead(void *, void *, s32);
-    int func_0200ba9c(void *);
-    int func_02007958(void);
+    int CloseFileRequest(void *);
+    int SystemHalt(void);
     int func_020e34f4(s32);
     int HeapFreeBlock(s32);
     u32 InitDecompress(void *, void *, u32);
     s32 DecompressChunk(void *, void *, s32);
 
-    int file[18];
-    u8 ctx[0x220];
+    int req[18];
+    u8 decoder[0x220];
 
-    s32 r7 = 0;
-    void *r8;
-    u32 r9;
-    u32 r4;
-    u32 r11;
-    u32 r10;
-    int r6;
+    s32 read = 0;
+    void *buf;
+    u32 fileSize;
+    u32 chunk;
+    u32 size;
+    u32 next;
+    int maxChunk;
 
-    r8 = (void *)func_020e34f4(0x2000);
+    buf = (void *)func_020e34f4(0x2000);
 
-    InitFileRequest(file);
-    if (func_0200ba54(file, arg0) == 0) {
-        func_02007958();
-        return r7;
+    InitFileRequest(req);
+    if (OpenFileRequest(req, path) == 0) {
+        SystemHalt();
+        return read;
     }
 
-    r9 = (u32)(file[10] - file[9]);
+    fileSize = (u32)(req[10] - req[9]);
 
-    if (r9 < 0x2000U) {
-        r4 = r9;
+    if (fileSize < 0x2000U) {
+        chunk = fileSize;
     } else {
-        r4 = 0x2000U;
+        chunk = 0x2000U;
     }
 
-    if (FileRead(file, r8, (s32)r4) != (s32)r4) {
-        func_02007958();
+    if (FileRead(req, buf, (s32)chunk) != (s32)chunk) {
+        SystemHalt();
         return 0;
     }
 
-    r7 += (s32)r4;
-    r11 = InitDecompress(ctx, r8, (u32)arg1);
+    read += (s32)chunk;
+    size = InitDecompress(decoder, buf, (u32)dest);
 
-    if (DecompressChunk(ctx, (void *)((char *)r8 + 4), (s32)r4 - 4) > 0) {
+    if (DecompressChunk(decoder, (void *)((char *)buf + 4), (s32)chunk - 4) > 0) {
         do {
-            r6 = 0x2000;
-            r10 = r9 - (u32)r7;
-            if (r10 >= 0x2000U) {
-                r10 = (u32)r6;
+            maxChunk = 0x2000;
+            next = fileSize - (u32)read;
+            if (next >= 0x2000U) {
+                next = (u32)maxChunk;
             }
-            if (FileRead(file, r8, (s32)r10) != (s32)r10) {
-                func_02007958();
+            if (FileRead(req, buf, (s32)next) != (s32)next) {
+                SystemHalt();
                 return 0;
             }
-            r7 += (s32)r10;
-        } while (DecompressChunk(ctx, r8, (s32)r10) > 0);
+            read += (s32)next;
+        } while (DecompressChunk(decoder, buf, (s32)next) > 0);
     }
 
-    func_0200ba9c(file);
-    HeapFreeBlock((int)r8);
-    return (s32)r11;
+    CloseFileRequest(req);
+    HeapFreeBlock((int)buf);
+    return (s32)size;
 }
 
 void *func_02080e30(void *arg0, int arg1) {
@@ -298,8 +301,8 @@ void *func_02080e30(void *arg0, int arg1) {
     int b;
 
     InitFileRequest(sp0);
-    if (func_0200ba54(sp0, arg0) == 0) {
-        func_02007958();
+    if (OpenFileRequest(sp0, arg0) == 0) {
+        SystemHalt();
         return 0;
     }
     b = (int)sp0[10];
@@ -318,13 +321,13 @@ void *func_02080e30(void *arg0, int arg1) {
                 chunk = 0x2800;
             }
             if (FileRead(sp0, (void *)((char *)buf + off), chunk) != chunk) {
-                func_02007958();
+                SystemHalt();
                 return 0;
             }
             off += chunk;
         } while (total - off != 0);
     }
-    func_0200ba9c(sp0);
+    CloseFileRequest(sp0);
     return buf;
 }
 
@@ -334,24 +337,24 @@ void *func_02080e30(void *arg0, int arg1) {
    of the temporary block heap. */
 s32 LoadDecompressedFileBuffer(s32 path,s32 persistent,s32 outSize) {
 s32 func_020e34f4(s32);s32 HeapAllocBlock();s32 HeapFreeBlock(s32);
-s32 InitFileRequest(void *);s32 func_0200ba54(void *,void *);s32 FileRead(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
+s32 InitFileRequest(void *);s32 OpenFileRequest(void *,void *);s32 FileRead(void *,void *,s32);s32 CloseFileRequest(void *);s32 SystemHalt(void);
 s32 GetDecompressedSize(void *);u32 InitDecompress(void *, void *, u32);s32 DecompressChunk(void *,void *,s32);
 u32 req[18];u8 decoder[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
 if(persistent)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)HeapAllocBlock(0x2000);
 InitFileRequest(req);
-if(!func_0200ba54(req,(void *)path)){func_02007958();return 0;}
+if(!OpenFileRequest(req,(void *)path)){SystemHalt();return 0;}
 total=req[10]-req[9];chunk=total<0x2000?total:0x2000;
-if(FileRead(req,buf,chunk)!=chunk){func_02007958();return 0;}
+if(FileRead(req,buf,chunk)!=chunk){SystemHalt();return 0;}
 read+=chunk;
 size=GetDecompressedSize(buf);
 if(persistent)output=HeapAllocBlock(size);else output=func_020e34f4(size);
 InitDecompress(decoder,buf,(void *)output);
 if(DecompressChunk(decoder,buf+4,chunk-4)>0) { u32 next; do {
 next=total-read;if(next>=0x2000)next=0x2000;
-if(FileRead(req,buf,next)!=next){func_02007958();return 0;}
+if(FileRead(req,buf,next)!=next){SystemHalt();return 0;}
 read+=next;
 }while(DecompressChunk(decoder,buf,next)>0); }
-func_0200ba9c(req);HeapFreeBlock((s32)buf);if(outSize)*(s32 *)outSize=size;
+CloseFileRequest(req);HeapFreeBlock((s32)buf);if(outSize)*(s32 *)outSize=size;
 return output;
 }
 
@@ -364,19 +367,19 @@ int func_02081080(int arg0, int arg1, int arg2, int arg3) {
     void *sp0[18];
 
     InitFileRequest(sp0);
-    if (func_0200ba54(sp0, arg0) == 0) {
-        func_02007958();
+    if (OpenFileRequest(sp0, arg0) == 0) {
+        SystemHalt();
         return 0;
     }
     if (FileSeek(sp0, arg2, 0) == 0) {
-        func_02007958();
+        SystemHalt();
         return 0;
     }
     if (FileRead(sp0, arg1, arg3) != arg3) {
-        func_02007958();
+        SystemHalt();
         return 0;
     }
-    func_0200ba9c(sp0);
+    CloseFileRequest(sp0);
     return 1;
 }
 

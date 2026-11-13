@@ -738,8 +738,8 @@ void func_ov010_02228c88(M2C_UNK arg0) {
 }
 
 void func_ov010_02228cbc(void) {
-    M2C_UNK func_02038de4();
-    func_02038de4();
+    M2C_UNK DisconnectPeerSlot();
+    DisconnectPeerSlot();
 }
 
 void func_ov010_02228cc8(void) {

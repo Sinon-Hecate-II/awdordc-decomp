@@ -1,6 +1,6 @@
 /* 13 functions from 0x02062770 to 0x02063704 (main), found by ds-decomp. */
 #include "common.h"
-extern s32 data_0210019c, data_0210012c;
+extern s32 data_0210019c, sSbFileName;
 extern u8 data_021000b4[16];
 typedef struct { u8 lo, hi; } PairBytes;
 static inline void copy633(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes *)src; *((PairBytes *)dst+1)=*((PairBytes *)src+1); }
@@ -65,7 +65,7 @@ s32 func_020628c0(M2C_UNK context, void *data, s32 n) {
  p += k; n -= k;
  }
  break;
- default: AssertFailed(&data_0210019c, &data_0210012c, data_021000b4, 0x317); return 0;
+ default: AssertFailed(&data_0210019c, &sSbFileName, data_021000b4, 0x317); return 0;
  }
  if (n < 0) return 0;
  }
@@ -209,7 +209,7 @@ do{r=func_02062cf8(a,p,n);if(r==-2)return 5;if(r==-1){M2C_FIELD(a,s32 *,0x5c8)=5
 p+=r;n-=r;if(!M2C_FIELD(a,void **,0x7c))r=0;
 }while(r);break;
 }
-if(n<0)AssertFailed(&data_021001a8,&data_0210012c,&data_021000ec,0x4af);
+if(n<0)AssertFailed(&data_021001a8,&sSbFileName,&data_021000ec,0x4af);
 buffer=M2C_FIELD(a,u8 **,0x7c);if(!buffer)return 0;
 if(n)MemMove(buffer,p,n);
 M2C_FIELD(a,s32 *,0x80)=n;return 0;

@@ -155,7 +155,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK IsLinkSessionActive(void);
-    M2C_UNK func_0208b758(void *, s32);
+    M2C_UNK SetTextById(void *, s32);
     M2C_UNK IsWaypointOptionValid(u8);
     M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021e6cfc(void);
@@ -275,20 +275,20 @@ void func_ov003_021efb74(void *arg0) {
     r4x = (u8)(val16 & 0xff);
 
     if (InRange((s32)r4x, 0, 3) != 0) {
-        func_0208b758(M2C_FIELD(r7, void **, 0x54), 0x47000011);
+        SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000011);
     } else if (InRange((s32)r4x, 4, 7) != 0) {
-        func_0208b758(M2C_FIELD(r7, void **, 0x54), 0x47000012);
+        SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000012);
     } else if (InRange((s32)r4x, 8, 0x14) != 0) {
-        func_0208b758(M2C_FIELD(r7, void **, 0x54), 0x47000011);
+        SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000011);
     } else if (InRange((s32)r4x, 0x15, 0x18) != 0) {
-        func_0208b758(M2C_FIELD(r7, void **, 0x54), 0x47000010);
+        SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000010);
     } else if (r4x == 0x19) {
         byte39 = M2C_FIELD(r7, u8 *, 0x39);
         cond3 = (u8)(((u32)byte39 << 0x1c) >> 0x1e);
         if (cond3 == 0) {
-            func_0208b758(M2C_FIELD(r7, void **, 0x54), 0x47000016);
+            SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000016);
         } else if (cond3 == 1) {
-            func_0208b758(M2C_FIELD(r7, void **, 0x54), 0x47000017);
+            SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000017);
         }
     }
 
@@ -354,7 +354,7 @@ void func_ov003_021f0010(void) {
 }
 
 void func_ov003_021f0014(void *arg0) {
-s32 IsLinkSessionActive(); s32 func_020848c4(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void SetOv003SceneState(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
+s32 IsLinkSessionActive(); s32 GetLocalPlayerIdForOverlay(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void SetOv003SceneState(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
 u8 buf[0x24]; s32 v;
 if (!IsLinkSessionActive()) return;
 if (((u32)(M2C_FIELD(arg0,u8 *,0x39)<<31)>>31)==1) v=1; else v=0;
@@ -362,7 +362,7 @@ if (!(v&255)) return;
 func_ov003_022006dc(0); func_ov003_021f152c(1); SetOv003SceneState(1); func_ov006_022172b0(arg0);
 if (!func_ov003_021e6d28()) return;
 if (!func_02084d3c(buf,0x24)) return;
-buf[13]=func_ov003_02200808((u8)func_020a22fc(func_020848c4()+1));
+buf[13]=func_ov003_02200808((u8)func_020a22fc(GetLocalPlayerIdForOverlay()+1));
 func_02084d88(buf,0x24); func_02084e74();
 }
 

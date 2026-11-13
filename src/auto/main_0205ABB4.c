@@ -91,7 +91,7 @@ void func_0205adc0(void) {
 }
 
 s32 func_0205adcc(s32 a,void **b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
-void func_02049260(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 gt2StringToAddress(s32,u32 *,u16 *);
+void gpiSleep(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 gt2StringToAddress(s32,u32 *,u16 *);
 void *p;u32 ip;u16 port;s32 result,done;
 if(!gt2StringToAddress(c,&ip,&port)||!ip||!port)return 4;
 if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))&0xe0000000)==0xe0000000)return 4;
@@ -100,7 +100,7 @@ M2C_FIELD(p,s32 *,32)=f;
 result=func_0205a890(p,d,e,g);if(result){func_0205d164((s32)p);return result;}
 if(!h){if(b)*b=p;return 0;}
 M2C_FIELD(p,s32 *,36)++;
-do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)func_02049260(1);}while(!done);
+do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)gpiSleep(1);}while(!done);
 M2C_FIELD(p,s32 *,36)--;
 if(M2C_FIELD(p,s32 *,12)==5)*b=p;
 return M2C_FIELD(p,s32 *,24);

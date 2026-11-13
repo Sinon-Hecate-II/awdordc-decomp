@@ -38,22 +38,22 @@ s32 func_ov010_02224080(void *arg0, s32 arg1, void *arg2, u32 arg3) {
 }
 
 s32 func_ov010_02224138(s32 arg0, s32 arg1) {
-    s32 func_ov010_02224460(void *, s32);
+    s32 VoiceLink_SendPacket(void *, s32);
     extern M2C_UNK gLinkConfig;
     if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) return -3;
-    return func_ov010_02224460(arg0, arg1);
+    return VoiceLink_SendPacket(arg0, arg1);
 }
 
 #pragma opt_strength_reduction off
 s32 func_ov010_0222415c(void *p){
-extern M2C_UNK gVoiceLinkState,gVoiceLinkContext,data_ov010_0222d8d8,gLinkConfig;
+extern M2C_UNK gVoiceLinkState,gVoiceLinkContext,gVoiceLinkScratchContext,gLinkConfig;
 void MI_CpuFill8(void*,s32,u32);u64 GetSystemTick(void);
 u32 i,offset;void *pool=M2C_FIELD(p,void**,0);
 if(!pool||!M2C_FIELD(p,u32*,4)||M2C_FIELD(p,u32*,4)>8)return 0;
 M2C_FIELD(&gVoiceLinkState,void**,16)=M2C_FIELD(p,void**,0);
 MI_CpuFill8(pool,0,M2C_FIELD(p,u32*,4)*24);
 MI_CpuFill8(&gVoiceLinkContext,0,24);
-MI_CpuFill8(&data_ov010_0222d8d8,0,24);
+MI_CpuFill8(&gVoiceLinkScratchContext,0,24);
 i=0;
 if(M2C_FIELD(p,u32*,4)-1){offset=0;do{
 M2C_FIELD(M2C_FIELD(&gVoiceLinkState,u8**,16)+offset,void**,20)=M2C_FIELD(&gVoiceLinkState,u8**,16)+ (++i)*24;
@@ -111,7 +111,7 @@ void func_ov010_02224288(void) {
 }
 
 s32 func_ov010_02224334(s32 arg0, void *arg1, s32 arg2, M2C_UNK arg3) {
-    s32 func_ov010_02224974(void *, M2C_UNK);
+    s32 VoiceLink_HandlePeerPacket(void *, M2C_UNK);
     s32 VoiceLink_HandleControlPacket(void *, M2C_UNK);
     s32 func_ov010_02224c40(void *, M2C_UNK);
     extern M2C_UNK gLinkConfig;
@@ -126,20 +126,20 @@ s32 func_ov010_02224334(s32 arg0, void *arg1, s32 arg2, M2C_UNK arg3) {
         return func_ov010_02224c40(arg1, arg3);
     }
     if (M2C_FIELD(&gLinkConfig, s32 *, 0xC) == 0) {
-        return func_ov010_02224974(arg1, arg3);
+        return VoiceLink_HandlePeerPacket(arg1, arg3);
     }
     return VoiceLink_HandleControlPacket(arg1, arg3);
 }
 
-void *func_ov010_022243b0(u32 arg0) {
-void func_ov010_022245cc(); extern M2C_UNK gLinkConfig,gVoiceLinkState;
+void *VoiceLink_AllocContext(u32 arg0) {
+void VoiceLink_InitContext(); extern M2C_UNK gLinkConfig,gVoiceLinkState;
 void *p;
 if(arg0>=32)return 0;
 if(arg0==M2C_FIELD(&gLinkConfig,u8 *,0))return 0;
 p=M2C_FIELD(&gVoiceLinkState,void **,16);
 if(!p)return 0;
 M2C_FIELD(&gVoiceLinkState,void **,16)=M2C_FIELD(p,void **,20);
-func_ov010_022245cc(p,arg0);
+VoiceLink_InitContext(p,arg0);
 M2C_FIELD(p,void **,20)=M2C_FIELD(&gVoiceLinkState,void **,20);
 M2C_FIELD(&gVoiceLinkState,void **,20)=p;
 return p;
@@ -161,7 +161,7 @@ s32 func_ov010_0222441c(void *arg0, M2C_UNK arg1) {
     return -4;
 }
 
-s32 func_ov010_02224460(void *arg0,s32 arg1) {
+s32 VoiceLink_SendPacket(void *arg0,s32 arg1) {
  u8 sp0[0x10]; s32 result;
  s32 func_ov010_02224614(void *,void *);
  result=func_ov010_02224080(arg0,arg1,sp0,0x10);
@@ -233,7 +233,7 @@ M2C_UNK VoiceLink_SendControl(s32 arg0) {
 }
 
 #pragma opt_propagation off
-void func_ov010_022245cc(void *arg0,s32 arg1) {
+void VoiceLink_InitContext(void *arg0,s32 arg1) {
 register u32 i; register u8 zero; u8 *ptr; extern M2C_UNK gLinkConfig;
 ptr=arg0;i=6;zero=0;
 do {ptr[0]=zero;ptr[1]=zero;ptr[2]=zero;ptr[3]=zero;ptr+=4;}while(--i);
@@ -258,7 +258,7 @@ M2C_UNK func_ov010_02224700(void *a,void *b,u8 c){extern M2C_UNK gLinkConfig;M2C
 s32 VoiceLink_AdvanceStep(void *a, void *b) {
 extern M2C_UNK gLinkConfig;
 extern s8 data_ov010_0222bf22[],data_ov010_0222be5c[];
-s32 func_ov010_02224460(void *,s32);
+s32 VoiceLink_SendPacket(void *,s32);
 s32 i=M2C_FIELD(b,u8 *,6);
 s8 v;
 s8 *t;
@@ -268,8 +268,8 @@ if(i<0)return -1;
 t=M2C_FIELD(&gLinkConfig,s32 *,16)==1?data_ov010_0222bf22:data_ov010_0222be5c;
 v=*(i+(M2C_FIELD(a,u32 *,12)*11U+t));
 switch(v) {
-case -2: func_ov010_02224460(a,1); M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,s32 *,0)=0;return v;
-case -3: func_ov010_02224460(a,3); M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,s32 *,0)=0;return v;
+case -2: VoiceLink_SendPacket(a,1); M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,s32 *,0)=0;return v;
+case -3: VoiceLink_SendPacket(a,3); M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,s32 *,0)=0;return v;
 case -1: break;
 default: break;
 }
@@ -292,7 +292,7 @@ if(v==-2)return 0;
 M2C_FIELD(a,s32*,12)=v;return 1;
 }
 #pragma opt_propagation reset
-s32 *func_ov010_022248f4(u8 a){
+s32 *VoiceLink_FindContext(u8 a){
 extern M2C_UNK gLinkConfig;extern M2C_UNK gVoiceLinkState;extern M2C_UNK gVoiceLinkContext;
 void *p=M2C_FIELD(&gVoiceLinkState,void **,20);
 if(M2C_FIELD(&gLinkConfig,s32 *,16)==2){
@@ -301,29 +301,35 @@ return 0;}
 while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,u8 *,4)==a)return p;p=M2C_FIELD(p,void **,20);}return 0;
 }
 
-s32 func_ov010_02224974(void *a, M2C_UNK b) {
-void func_ov010_02223ef0(void *);
-extern M2C_UNK data_ov010_0222d8d8;
-void *p,*q; s32 n,m;
-if(M2C_FIELD(a,u8*,4)==255){
-if(M2C_FIELD(a,u8*,6)==4)return func_ov010_02224cb8(a,(void*)b);
-if(M2C_FIELD(a,u8*,6)==3)return 0;
+/* Serve a voice-chat peer packet: dispatch it to the exchange context of its
+ * sender (starting one when there is none), advance the handshake and fill the
+ * reply with the reply type and the context. Returns nonzero when there is a
+ * reply to send. */
+s32 VoiceLink_HandlePeerPacket(void *packet, M2C_UNK reply) {
+void VoiceLink_ReleaseContext(void *);
+extern M2C_UNK gVoiceLinkScratchContext;
+VoiceLinkPacket *pkt=packet;
+VoiceLinkReply *out=(VoiceLinkReply *)reply;
+void *link,*context; s32 step,step2;
+if(pkt->kind==255){
+if(pkt->subtype==4)return VoiceLink_HandleConnectPacket(packet,(void*)reply);
+if(pkt->subtype==3)return 0;
 }
-p=func_ov010_022248f4(M2C_FIELD(a,u8*,8));
-if(p){
-n=VoiceLink_AdvanceStep(p,a);
-if(n!=-2){if(n==-1)return 0;}else{M2C_FIELD(b,s32*,0)=12;M2C_FIELD(p,s32*,0)=0;M2C_FIELD(b,void**,4)=p;return 1;
+link=VoiceLink_FindContext(pkt->sender);
+if(link){
+step=VoiceLink_AdvanceStep(link,packet);
+if(step!=-2){if(step==-1)return 0;}else{out->type=12;((VoiceLinkContext *)link)->valid=0;out->context=(VoiceLinkContext *)link;return 1;
 }
-M2C_FIELD(b,s32*,0)=VoiceLink_GetReplyType(a,p);
-M2C_FIELD(b,void**,4)=p;M2C_FIELD(p,s32*,12)=n;
-return M2C_FIELD(b,s32*,0)!=0;
+out->type=VoiceLink_GetReplyType(packet,(u8*)link);
+out->context=(VoiceLinkContext *)link;((VoiceLinkContext *)link)->step=step;
+return out->type!=0;
 }
-q=func_ov010_022243b0(M2C_FIELD(a,u8*,8));
-if(!q){func_ov010_022245cc(&data_ov010_0222d8d8,M2C_FIELD(a,u8*,8));func_ov010_02224460(&data_ov010_0222d8d8,3);return 0;}
-m=VoiceLink_AdvanceStep(q,a);
-if((u32)(m+2)<=1){func_ov010_02223ef0(q);return 0;}
-M2C_FIELD(b,s32*,0)=VoiceLink_GetReplyType(a,q);M2C_FIELD(b,void**,4)=q;M2C_FIELD(q,s32*,12)=m;
-return M2C_FIELD(b,s32*,0)!=0;
+context=VoiceLink_AllocContext(pkt->sender);
+if(!context){VoiceLink_InitContext(&gVoiceLinkScratchContext,pkt->sender);VoiceLink_SendPacket(&gVoiceLinkScratchContext,3);return 0;}
+step2=VoiceLink_AdvanceStep(context,packet);
+if((u32)(step2+2)<=1){VoiceLink_ReleaseContext(context);return 0;}
+out->type=VoiceLink_GetReplyType(packet,(u8*)context);out->context=(VoiceLinkContext *)context;((VoiceLinkContext *)context)->step=step2;
+return out->type!=0;
 }
 
 /* Serve a voice-chat control packet: match it to the active exchange (or start
@@ -359,15 +365,15 @@ return 1;
 }
 
 s32 func_ov010_02224c40(void *arg0, M2C_UNK arg1) {
-void func_ov010_022245cc();extern M2C_UNK data_ov010_0222d8d8;
+void VoiceLink_InitContext();extern M2C_UNK gVoiceLinkScratchContext;
 s32 *p;
 if(M2C_FIELD(arg0,u8 *,4)==255 && M2C_FIELD(arg0,u8 *,6)==4)return 0;
-p=func_ov010_022248f4(M2C_FIELD(arg0,u8 *,8));
-if(p){M2C_FIELD(arg1,s32 *,0)=2;M2C_FIELD(arg1,s32 **,4)=p;*p=0;func_ov010_02224460(p,2);return 1;}
-func_ov010_022245cc(&data_ov010_0222d8d8,M2C_FIELD(arg0,u8 *,8));func_ov010_02224460(&data_ov010_0222d8d8,2);return 0;
+p=VoiceLink_FindContext(M2C_FIELD(arg0,u8 *,8));
+if(p){M2C_FIELD(arg1,s32 *,0)=2;M2C_FIELD(arg1,s32 **,4)=p;*p=0;VoiceLink_SendPacket(p,2);return 1;}
+VoiceLink_InitContext(&gVoiceLinkScratchContext,M2C_FIELD(arg0,u8 *,8));VoiceLink_SendPacket(&gVoiceLinkScratchContext,2);return 0;
 }
 
-s32 func_ov010_02224cb8(void *p,void *out){
+s32 VoiceLink_HandleConnectPacket(void *p,void *out){
 extern M2C_UNK gLinkConfig,gVoiceLinkState,gVoiceLinkContext;
 if(M2C_FIELD(&gLinkConfig,s32*,16)!=2)return 0;
 if(M2C_FIELD(&gLinkConfig,u8*,1)!=M2C_FIELD(p,u8*,8))return 0;

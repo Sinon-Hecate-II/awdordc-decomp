@@ -1,8 +1,8 @@
 /* 4 functions from 0x02099B18 to 0x02099E6C (main), found by ds-decomp. */
 #include "common.h"
 
-u8 func_02099ae8(u8 *arg0);
-u8 func_02099b00(u8 *arg0);
+u8 IsLeadByte(u8 *arg0);
+u8 IsGlyphEscape(u8 *arg0);
 #pragma opt_propagation off
 s32 func_02099b18(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     u8 *data = (u8 *)arg0;
@@ -73,10 +73,10 @@ s32 func_02099b18(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
                 step = base + 2;
                 break;
             default: {
-                u8 func_02099ae8(u8 *);
-                u8 func_02099b00(u8 *);
-                if (func_02099ae8(data)) step += 2;
-                else if (func_02099b00(data)) step += 2;
+                u8 IsLeadByte(u8 *);
+                u8 IsGlyphEscape(u8 *);
+                if (IsLeadByte(data)) step += 2;
+                else if (IsGlyphEscape(data)) step += 2;
                 else step++;
                 goto advance;
             }

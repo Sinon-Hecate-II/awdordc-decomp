@@ -153,7 +153,7 @@ u8 func_0203095c(void) {
     M2C_UNK func_020276b0();
     M2C_UNK func_02027958();
     M2C_UNK WFC_ProcessLinkState();
-    u32 func_02027c84();
+    u32 Wfc_GetLinkState();
     void *func_0202f48c(M2C_UNK);
     M2C_UNK func_0202f558(M2C_UNK);
     M2C_UNK func_02030b98(u8);
@@ -163,7 +163,7 @@ u8 func_0203095c(void) {
 
     state = func_0202f48c(0x10);
     result = 9;
-    mode = func_02027c84();
+    mode = Wfc_GetLinkState();
     switch (mode) {
     default:
         break;
@@ -198,7 +198,7 @@ u8 func_0203095c(void) {
 s32 func_02030a38(void) {
     void *func_0202f48c(s32);
     s32 Wfc_GetSessionState(void);
-    u32 func_02027c84(void);
+    u32 Wfc_GetLinkState(void);
     s32 func_02030c78(void *);
     s32 func_02030cc8(void *);
     s32 func_02030db4(void *);
@@ -210,7 +210,7 @@ s32 func_02030a38(void) {
 
     ctx = func_0202f48c(0x10);
     state = Wfc_GetSessionState();
-    val = func_02027c84();
+    val = Wfc_GetLinkState();
     if (state == 2 && val == 3) {
         state = func_02030c78(ctx);
     } else if (state == 6) {
@@ -399,12 +399,12 @@ s32 func_02031184(void *arg0) {
 void func_020311e4(s32 a,s32 b,s32 c,s32 d){void func_02027518(s32,s32,s32);extern M2C_UNK data_020ea860;if(c>12)c=12;func_02027518(a,b,d|M2C_FIELD(&data_020ea860,s32 *,c*4));}
 
 s32 func_02031208(void) {
- u32 func_02027c84(void);
+ u32 Wfc_GetLinkState(void);
  void *func_0202f48c(s32);
  s32 WFC_ConnectStep(s32 *,void *);
  s32 func_0202f558(s32);
  extern M2C_UNK func_0202fc10;
- s32 v[4];s32 r=func_02027c84();void *p=func_0202f48c(16);
+ s32 v[4];s32 r=Wfc_GetLinkState();void *p=func_0202f48c(16);
  if(r==1){
  v[0]=M2C_FIELD(p,u8 *,0xd0a);v[1]=0;v[2]=0;v[3]=0;
  func_02030554(0);

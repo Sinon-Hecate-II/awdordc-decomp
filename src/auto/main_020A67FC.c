@@ -194,17 +194,20 @@ void func_020a6fcc(void) {
 #pragma scheduling off
 s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=gUnitKindCargoCount[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
 #pragma scheduling reset
-s32 CanUnitsJoin(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
+/* Whether `unit` may join (merge with) `target`: same unit kind and owner, neither
+   is already carrying a unit, the target has lost HP (so the merge actually heals)
+   and the two are not both the currently selected unit. */
+s32 CanUnitsJoin(UnkStruct_ov000_021A860C *unit,UnkStruct_ov000_021A860C *target){
 s32 Divide(s32,s32);s32 IsUnitSelected(void *);
-s32 x,y,h;
-if(a->unk0!=b->unk0)return 0;
-if(b)x=((u8 *)b-((u8 *)*gCurrentMap+0x59a4))/14;else x=0;
-if(a)y=((u8 *)a-((u8 *)*gCurrentMap+0x59a4))/14;else y=0;
-if((y&0xc0)!=(x&0xc0))return 0;
-if(a->unkC[0]||b->unkC[0])return 0;
-h=unitHealth7074(b);
-if(h==10)return 0;
-if(IsUnitSelected(a)&&IsUnitSelected(b))return 0;
+s32 targetIndex,unitIndex,health;
+if(unit->unk0!=target->unk0)return 0;
+if(target)targetIndex=((u8 *)target-((u8 *)*gCurrentMap+0x59a4))/14;else targetIndex=0;
+if(unit)unitIndex=((u8 *)unit-((u8 *)*gCurrentMap+0x59a4))/14;else unitIndex=0;
+if((unitIndex&0xc0)!=(targetIndex&0xc0))return 0;
+if(unit->unkC[0]||target->unkC[0])return 0;
+health=unitHealth7074(target);
+if(health==10)return 0;
+if(IsUnitSelected(unit)&&IsUnitSelected(target))return 0;
 return 1;
 }
 
@@ -273,18 +276,21 @@ u32 func_020a735c(u8 *arg0) {
     return (u32) (*arg0 << 0x1A) >> 0x1A;
 }
 
-s32 func_020a736c(u8 *p,s32 x,s32 y){
+/* Damage-percentage bonus of `unit` attacking from tile (x,y): the owner's
+   power bonus, -30 in a sandstorm unless that player's sprite state is 10, then
+   the unit's weapon bonus and its stat-block bonus.  0 for excluded kinds. */
+s32 GetUnitDamageBonus(u8 *unit,s32 x,s32 y){
 s32 func_020a8560(u32);s32 func_020a881c(s32);s32 func_020a87ec(void *);s32 func_020a25d8(void *,s32,s32);
-s32 sum=0,n;
-if(func_020a8560((u32)(p[0]<<26)>>26))return sum;
-if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
-sum+=func_020a881c(n);
-if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
-if(((Bits020a8c10 *)((u8 *)*gCurrentMap+n*140+0x6810))->value!=10){
-if(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==3)sum-=30;
+s32 bonus=0,owner;
+if(func_020a8560((u32)(unit[0]<<26)>>26))return bonus;
+if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14;owner=(owner>>6)+1;}else owner=0;
+bonus+=func_020a881c(owner);
+if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14;owner=(owner>>6)+1;}else owner=0;
+if(((Bits020a8c10 *)((u8 *)*gCurrentMap+owner*140+0x6810))->value!=10){
+if(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==3)bonus-=30;
 }
-sum+=func_020a87ec(p);
-return sum+func_020a25d8(p,x,y);
+bonus+=func_020a87ec(unit);
+return bonus+func_020a25d8(unit,x,y);
 }
 
 s32 func_020a74a8(u8 *p,s32 a,s32 b){s32 func_020a8560(u32);s32 func_020a8844(s32);s32 func_020a8804(void *);s32 func_020a2608(void *,s32,s32);s32 result=0,n;if(func_020a8560((u32)(p[0]<<26)>>26))return result;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;result+=func_020a8844(n);result+=func_020a8804(p);return result+func_020a2608(p,a,b);}

@@ -64,7 +64,7 @@ void func_0204926c(void);
 s32 gt2StringToAddress(char *,s32 *,u16 *);
 M2C_UNK gpiMalloc(s32);
 void MemSet(void *,s32,s32);
-s32 func_02048c84(s32,s32,s32,void *,void *,s32);
+s32 TableNew2(s32,s32,s32,void *,void *,s32);
 s32 func_02048558(s32,s32,void (*)(void *));
 s32 gpiFree(void *);
 M2C_UNK func_02048dc4(s32);
@@ -89,7 +89,7 @@ M2C_FIELD(p,s32 *,0)=-1;
 M2C_FIELD(p,s32 *,0x3c)=d;
 M2C_FIELD(p,s32 *,0x38)=c;
 M2C_FIELD(p,s32 *,0x24)=e;
-M2C_FIELD(p,s32 *,0xc)=func_02048c84(4,0x20,2,func_0205cc3c,func_0205cc5c,0);
+M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,func_0205cc3c,func_0205cc5c,0);
 if(!M2C_FIELD(p,s32 *,0xc)){gpiFree(p);return 1;}
 M2C_FIELD(p,s32 *,0x10)=func_02048558(4,4,(void (*)(void *))func_0205cc90);
 if(!M2C_FIELD(p,s32 *,0x10)){func_02048dc4(M2C_FIELD(p,s32 *,0xc));gpiFree(p);return 1;}

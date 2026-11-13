@@ -19,6 +19,25 @@
 #define CONN_RECV_THREAD 0x10c /* OSThreadQueue the reader sleeps on */
 #define CONN_RECV_HOLD   0xfe  /* s8 nonzero while a caller peeks, so recv keeps the record */
 
+/* A socket also holds a second raw connection at +0x68, used for sending.  Its
+ * outgoing packet goes in a buffer described by {size at SOCK_TX_SIZE, pointer
+ * at SOCK_TX_BUF}; only the bytes past the link/IP/transport header are payload. */
+#define SOCK_STATE    0x73 /* s8 socket state: 0/4 = duplex, 1/2 = one-directional */
+#define SOCK_TX_CONN  0x68 /* void *raw send connection that outgoing data is queued on */
+#define SOCK_TX_SIZE  0x48 /* s32 bytes in the outgoing packet buffer */
+#define SOCK_TX_BUF   0x4c /* u8 *outgoing packet buffer */
+#define SOCK_TX_HDR_STREAM 0x36 /* link + IPv4 + TCP header in front of a stream payload */
+#define SOCK_TX_HDR_DGRAM  0x2a /* link + IPv4 + UDP header in front of a datagram payload */
+
+/* Send-side raw connection (socket + SOCK_TX_CONN): a single-producer ring the
+ * send task drains.  It is empty when the write and read positions are equal. */
+#define SEND_RING_SIZE  0xf8 /* u32 ring capacity in bytes */
+#define SEND_RING_BUF   0xfc /* u8 *ring data */
+#define SEND_RING_WRITE 0x100 /* u16 position the producer writes at */
+#define SEND_RING_READ  0x102 /* u16 position the consumer reads at */
+#define SEND_RING_WAIT  0x104 /* OSThreadQueue producers sleep on when the ring is full */
+#define SEND_RING_OWNER 0x10c /* void *socket that owns this connection */
+
 /* One queued received record: a 0xC-byte header followed by its payload. */
 #define REC_NEXT 0x00 /* void *next record, NULL at the tail */
 #define REC_LEN  0x04 /* u16 payload bytes */

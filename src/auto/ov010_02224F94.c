@@ -567,17 +567,17 @@ func_0200e868(0);
 void func_ov010_02225e10(s32 a) {
 extern s32 data_ov010_0222ee70;
 void func_ov010_022226fc(s32);
-void func_ov010_02223ef0(s32);
+void VoiceLink_ReleaseContext(s32);
 if(a==M2C_FIELD(&data_ov010_0222ee70,s32 *,4)){
 func_ov010_022226fc(a);
-func_ov010_02223ef0(a);
+VoiceLink_ReleaseContext(a);
 M2C_FIELD(&data_ov010_0222ee70,s32 *,4)=0;
-}else func_ov010_02223ef0(a);
+}else VoiceLink_ReleaseContext(a);
 }
 
 void func_ov010_02225e50(u32 arg1, s32 arg2) {
     M2C_UNK func_ov010_022225c4(s32);
-    void func_ov010_02223ef0(s32);
+    void VoiceLink_ReleaseContext(s32);
     s32 func_ov010_02224138(s32, M2C_UNK);
     void func_ov010_02225e10(s32);
     extern M2C_UNK data_ov010_0222ee70;
@@ -587,11 +587,11 @@ void func_ov010_02225e50(u32 arg1, s32 arg2) {
     case 1:
         if (M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) != 0) {
             func_ov010_02224138(arg2, 3);
-            func_ov010_02223ef0(arg2);
+            VoiceLink_ReleaseContext(arg2);
             return;
         }
         if (func_ov010_02224138(arg2, 0) != 0) {
-            func_ov010_02223ef0(arg2);
+            VoiceLink_ReleaseContext(arg2);
             return;
         }
         M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) = arg2;

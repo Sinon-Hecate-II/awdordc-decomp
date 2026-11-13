@@ -206,31 +206,34 @@ s32 func_0204e184(void **arg0,volatile s32 *arg1) {
  return 0;
 }
 
-s32 func_0204e1b4(void **p,s32 index,void *out){
- void *func_02055d3c(void **,s32);
+/* Copies the GameSpy buddy at `index` into `status`: the buddy's profile id,
+ * presence status, its status and location strings and advertised address.
+ * Returns 0 on success, 2 on a bad argument or a disconnected connection. */
+s32 gpGetBuddyStatus(void **connection,s32 index,MatchPlayerInfo *status){
+ void *gpiGetBuddyStatusByIndex(void **,s32);
  void StringCopyN(void *,s8 *,s32);
  void gpiSetErrorString(void **,void *);
  void AssertFailed(void *,void *,void *,s32);
  void MemSet(void *,s32,s32);
- extern M2C_UNK data_020fda10,data_020fdac4,data_020fdad4,data_020fdae4,data_020fdaf0;
- void *q,*entry,*details; s8 *text; s32 count;
- if(!p || !(q=*p))return 2;
- if(M2C_FIELD(q,s32 *,0x108)){MemSet(out,0,0x210);return 0;}
- if(!out){gpiSetErrorString(p,&data_020fdac4);return 2;}
- count=M2C_FIELD(q,s32 *,0x430);
- if(index<0 || index>=count){gpiSetErrorString(p,&data_020fdad4);return 2;}
- entry=func_02055d3c(p,index);
- if(!entry){gpiSetErrorString(p,&data_020fdad4);return 2;}
- details=M2C_FIELD(entry,void **,8);
- if(!details)AssertFailed(&data_020fdae4,&data_020fdaf0,&data_020fda10,0x5cf);
- M2C_FIELD(out,s32 *,0)=M2C_FIELD(entry,s32 *,0);
- M2C_FIELD(out,s32 *,4)=M2C_FIELD(details,s32 *,4);
- text=M2C_FIELD(details,s8 **,8);
- if(!text)*text=0;else StringCopyN((u8 *)out+8,text,256);
- text=M2C_FIELD(details,s8 **,12);
- if(!text)*text=0;else StringCopyN((u8 *)out+0x108,text,256);
- M2C_FIELD(out,s32 *,0x208)=M2C_FIELD(details,s32 *,0x10);
- M2C_FIELD(out,s32 *,0x20c)=M2C_FIELD(details,s32 *,0x14);
+ extern M2C_UNK gGpiGetBuddyStatusName,gGpiMsgInvalidStatus,gGpiMsgInvalidIndex,gGpiAssertBuddyStatus,gGpiGpFileName;
+ void *session; GpiBuddyStatus *buddy; GpiBuddyStatusDetails *details; s8 *string; s32 count;
+ if(!connection || !(session=*connection))return 2;
+ if(M2C_FIELD(session,s32 *,0x108)){MemSet(status,0,0x210);return 0;}
+ if(!status){gpiSetErrorString(connection,&gGpiMsgInvalidStatus);return 2;}
+ count=M2C_FIELD(session,s32 *,0x430);
+ if(index<0 || index>=count){gpiSetErrorString(connection,&gGpiMsgInvalidIndex);return 2;}
+ buddy=gpiGetBuddyStatusByIndex(connection,index);
+ if(!buddy){gpiSetErrorString(connection,&gGpiMsgInvalidIndex);return 2;}
+ details=buddy->details;
+ if(!details)AssertFailed(&gGpiAssertBuddyStatus,&gGpiGpFileName,&gGpiGetBuddyStatusName,0x5cf);
+ status->profileId=buddy->profileId;
+ status->status=details->status;
+ string=details->statusString;
+ if(!string)*string=0;else StringCopyN(status->fields,string,256);
+ string=details->locationString;
+ if(!string)*string=0;else StringCopyN(status->name,string,256);
+ status->ipAddr=details->ipAddr;
+ status->port=details->port;
  return 0;
 }
 

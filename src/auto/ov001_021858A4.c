@@ -1,5 +1,6 @@
 /* 20 functions from 0x021858A4 to 0x021867AC (ov001), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 typedef struct InitBlock68 { u32 words[17]; } InitBlock68;
 
 void func_ov001_02185f38(u16 *);
@@ -106,13 +107,13 @@ s32 func_02011af8(void *);u16 func_02011e98(void);void func_02007740(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 func_ov001_02185d78(void);
 M2C_UNK func_ov001_0218c884(M2C_UNK,void (*)(void),M2C_UNK,M2C_UNK);
 M2C_UNK func_ov001_0218b71c(M2C_UNK);
-void func_ov001_02185ea8();void func_ov001_0218619c();
-extern void *data_ov001_02193e14;extern const u8 data_ov001_0218fbfc[],data_ov001_0218fbf0[];
+void func_ov001_02185ea8();void Ov001_ReportConnectionState();
+extern void *gOv001ConnectionState;extern const u8 data_ov001_0218fbfc[],data_ov001_0218fbf0[];
 u8 buf[0x54];void *p;u64 ts;void **state;
-data_ov001_02193e14=func_ov001_0218b6f8(0x1ba0,0x20);
-M2C_FIELD(data_ov001_02193e14,s32 *,0x1370)=arg0;
+gOv001ConnectionState=func_ov001_0218b6f8(0x1ba0,0x20);
+M2C_FIELD(gOv001ConnectionState,s32 *,0x1370)=arg0;
 ts=GetSystemTick();
-state=&data_ov001_02193e14;
+state=&gOv001ConnectionState;
 p=*state;
 M2C_FIELD(p,u32 *,0x1b88)=(u32)ts;M2C_FIELD(p,u32 *,0x1b8c)=(u32)(ts>>32);
 if(func_02012218((M2C_UNK)*state,(M2C_UNK)func_ov001_02185ea8,3)==2){
@@ -124,24 +125,24 @@ p=*state;
 *(InitBlock68 *)((u8 *)p+0x1374)=*(const InitBlock68 *)data_ov001_0218fbfc;
 {void *base=(u8 *)p+0xf00;p=(u8 *)p+0x1000;M2C_FIELD(p,void **,0x374)=base;}
 }
-M2C_FIELD(data_ov001_02193e14,u16 *,0x137c)=func_02011e98();
+M2C_FIELD(gOv001ConnectionState,u16 *,0x137c)=func_02011e98();
 func_02007740(buf);
-MI_CpuCopy8((void *)data_ov001_0218fbf0,(u8 *)data_ov001_02193e14+0x1388,8);
-M2C_FIELD(data_ov001_02193e14,u8 *,0x1391)=1;
-MI_CpuCopy8(buf+4,(u8 *)data_ov001_02193e14+0x1394,M2C_FIELD(buf,u16 *,0x1a)<<1);
+MI_CpuCopy8((void *)data_ov001_0218fbf0,(u8 *)gOv001ConnectionState+0x1388,8);
+M2C_FIELD(gOv001ConnectionState,u8 *,0x1391)=1;
+MI_CpuCopy8(buf+4,(u8 *)gOv001ConnectionState+0x1394,M2C_FIELD(buf,u16 *,0x1a)<<1);
 if(func_ov001_02185d78()){
-M2C_FIELD(data_ov001_02193e14,M2C_UNK *,0x1b90)=func_ov001_0218c884(0,func_ov001_0218619c,0,0x78);
+M2C_FIELD(gOv001ConnectionState,M2C_UNK *,0x1b90)=func_ov001_0218c884(0,Ov001_ReportConnectionState,0,0x78);
 return 1;
 }
 }
-func_ov001_0218b71c((M2C_UNK)&data_ov001_02193e14);return 0;
+func_ov001_0218b71c((M2C_UNK)&gOv001ConnectionState);return 0;
 }
 
 s32 func_ov001_02185d78(void) {
     s32 WFC_SendRequestPacket(void (*)(void), void *);
     void func_ov001_02185ea8();
-    extern void *data_ov001_02193e14;
-    if (WFC_SendRequestPacket(func_ov001_02185ea8, (s8 *)data_ov001_02193e14 + 0x1374) == 2) {
+    extern void *gOv001ConnectionState;
+    if (WFC_SendRequestPacket(func_ov001_02185ea8, (s8 *)gOv001ConnectionState + 0x1374) == 2) {
         return 1;
     }
     return 0;
@@ -154,52 +155,52 @@ s32 func_ov001_02185dac(void) {
     void func_ov001_02185ea8(u16 *);
     void func_ov001_0218c94c(s32);
     M2C_UNK func_ov001_0218b71c(M2C_UNK);
-    extern void *data_ov001_02193e14;
+    extern void *gOv001ConnectionState;
 
-    *(u8 *)((s8 *)data_ov001_02193e14 + 0x1b94) = 1;
-    func_02011af8((s8 *)data_ov001_02193e14 + 0x13b8);
-    if (*(u16 *)((s8 *)data_ov001_02193e14 + 0x13b8) != 2) {
+    *(u8 *)((s8 *)gOv001ConnectionState + 0x1b94) = 1;
+    func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
+    if (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2) {
         if (func_02012274((void (*)(void))func_ov001_02185ea8) != 2) {
             return 0;
         }
         do {
-            func_02011af8((s8 *)data_ov001_02193e14 + 0x13b8);
-        } while (*(u16 *)((s8 *)data_ov001_02193e14 + 0x13b8) != 2);
+            func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
+        } while (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2);
     }
     if (func_020122ac((void (*)(void))func_ov001_02185ea8) != 2) {
         return 0;
     }
-    if (*((s32 *)((s8 *)data_ov001_02193e14 + 0x1b90)) != 0) {
+    if (*((s32 *)((s8 *)gOv001ConnectionState + 0x1b90)) != 0) {
         func_ov001_0218c94c(0);
     }
-    if (*((u8 *)((s8 *)data_ov001_02193e14 + 0x1b94)) == 2) {
-        func_ov001_0218b71c((M2C_UNK)(void *)(&data_ov001_02193e14));
+    if (*((u8 *)((s8 *)gOv001ConnectionState + 0x1b94)) == 2) {
+        func_ov001_0218b71c((M2C_UNK)(void *)(&gOv001ConnectionState));
     }
     return 1;
 }
 
 void func_ov001_02185e90(s32 arg0) {
-    extern void *data_ov001_02193e14;
-    M2C_FIELD(data_ov001_02193e14, s32 *, 0x1370) = arg0;
+    extern void *gOv001ConnectionState;
+    M2C_FIELD(gOv001ConnectionState, s32 *, 0x1370) = arg0;
 }
 
 void func_ov001_02185ea8(u16 *p) {
-extern void *data_ov001_02193e14;u32 v;void *q;
-if(p[1])return;q=data_ov001_02193e14;
+extern void *gOv001ConnectionState;u32 v;void *q;
+if(p[1])return;q=gOv001ConnectionState;
 v=M2C_FIELD(q,u8 *,0x1b94);
 if(v){if(p[0]==2)M2C_FIELD(q,u8 *,0x1b94)=2;return;}
 v=p[0];if(v!=38)return;
 v=p[4];switch(v){case 5:if(M2C_FIELD(q,u8 *,0x1b96))func_ov001_02186090(p);else func_ov001_02185f38(p);func_ov001_02185d78();break;
-case 4:func_ov001_02185d78();break;default:func_02007958(p);break;}
+case 4:func_ov001_02185d78();break;default:SystemHalt(p);break;}
 }
 
 void func_ov001_02185f38(u16 *arg0) {
     void DC_InvalidateRange(void *, s32);
     s32 ByteCompareN(void *, const void *, s32);
     void MI_CpuCopy8(void *, void *, s32);
-    extern void *data_ov001_02193e14;
+    extern void *gOv001ConnectionState;
     extern const u8 data_ov001_0218fbf0[];
-    extern const u8 data_ov001_0218fbe8[];
+    extern const u8 gWfcEmptySlotId[];
     u8 *rec;
     s32 k;
     u8 *slot;
@@ -210,7 +211,7 @@ void func_ov001_02185f38(u16 *arg0) {
         rec = ((void **)arg0)[4 + j];
         DC_InvalidateRange(rec, 0xC0);
         if (ByteCompareN(rec + 0xC, data_ov001_0218fbf0, 8) != 0) continue;
-        base = data_ov001_02193e14;
+        base = gOv001ConnectionState;
         slot = base + 0x1300;
         for (k = 0; k < 16; k++) {
             if (ByteCompareN(rec + 4, slot, 6) == 0) {
@@ -225,9 +226,9 @@ void func_ov001_02185f38(u16 *arg0) {
         }
         slot = base + 0x1300;
         for (k = 0; k < 16; k++) {
-            if (ByteCompareN(slot, data_ov001_0218fbe8, 6) == 0) {
+            if (ByteCompareN(slot, gWfcEmptySlotId, 6) == 0) {
                 MI_CpuCopy8(rec + 4, base + 0x1300 + k * 7, 6);
-                *(u8 *)((u8 *)data_ov001_02193e14 + k * 7 + 0x1306) = (rec[0x15] & 1) ? 1 : 0;
+                *(u8 *)((u8 *)gOv001ConnectionState + k * 7 + 0x1306) = (rec[0x15] & 1) ? 1 : 0;
                 break;
             }
             slot += 7;
@@ -239,11 +240,11 @@ void func_ov001_02185f38(u16 *arg0) {
 void func_ov001_02186090(u16 *arg0) {
     void DC_InvalidateRange(void *, s32);
     s32 ByteCompareN(void *, const void *, s32);
-    extern void *data_ov001_02193e14;
+    extern void *gOv001ConnectionState;
     extern const u8 data_ov001_0218fbf0[];
     extern M2C_UNK data_ov001_0219174c;
 
-    void *g = data_ov001_02193e14;
+    void *g = gOv001ConnectionState;
     if (*((u8 *)g + 0x1B95) != 0) {
         void (*cb)(s32, void *) = *(void (**)(s32, void *))( (u8 *)g + 0x1370);
         if (cb != 0) {
@@ -291,56 +292,60 @@ void func_ov001_02186090(u16 *arg0) {
     }
 }
 
-void func_ov001_0218619c(s32 arg0) {
+/* Connection-watch timer callback: once the watch delay after the connection
+ * started has passed, scan the 16 player slots and report the final state
+ * (none, all online, or mixed) through the status callback, then stop the
+ * timer and mark the watch done. */
+void Ov001_ReportConnectionState(s32 arg0) {
     u64 GetSystemTick(void);
     s32 ByteCompareN(void *, const void *, s32);
     M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
-    extern void *data_ov001_02193e14;
-    extern const u8 data_ov001_0218fbe8[];
+    extern void *gOv001ConnectionState;
+    extern const u8 gWfcEmptySlotId[];
     u64 now;
     s32 i;
-    s32 hasOn;
-    s32 hasOff;
-    u8 *rec;
-    u8 *flag;
-    u8 *base;
+    s32 hasOnline;
+    s32 hasOffline;
+    u8 *slotId;
+    u8 *slot;
+    u8 *state;
 
     now = GetSystemTick();
-    base = data_ov001_02193e14;
-    if (now < M2C_FIELD(base, u64 *, 0x1B88) + 0x17F898) {
+    state = gOv001ConnectionState;
+    if (now < M2C_FIELD(state, u64 *, WFC_CONN_WATCH_START) + 0x17F898) {
         return;
     }
-    hasOff = 0;
-    hasOn = 0;
+    hasOffline = 0;
+    hasOnline = 0;
     i = 0;
-    flag = base;
-    rec = base + 0x1300;
-    for (; i < 16; i++) {
-        if (ByteCompareN(rec, data_ov001_0218fbe8, 6) != 0) {
-            if (M2C_FIELD(flag, u8 *, 0x1306) != 0) {
-                hasOn = 1;
+    slot = state;
+    slotId = state + WFC_CONN_SLOTS;
+    for (; i < WFC_CONN_SLOT_COUNT; i++) {
+        if (ByteCompareN(slotId, gWfcEmptySlotId, 6) != 0) {
+            if (M2C_FIELD(slot, u8 *, WFC_CONN_SLOTS + WFC_CONN_SLOT_ONLINE) != 0) {
+                hasOnline = 1;
             } else {
-                hasOff = 1;
+                hasOffline = 1;
             }
         }
-        rec += 7;
-        flag += 7;
+        slotId += WFC_CONN_SLOT_STRIDE;
+        slot += WFC_CONN_SLOT_STRIDE;
     }
-    if (hasOn && hasOff) {
-        if (M2C_FIELD(base, void **, 0x1370) != NULL) {
-            ((void (*)(s32)) M2C_FIELD(base, void **, 0x1370))(2);
+    if (hasOnline && hasOffline) {
+        if (M2C_FIELD(state, void **, WFC_CONN_STATUS_CB) != NULL) {
+            ((void (*)(s32)) M2C_FIELD(state, void **, WFC_CONN_STATUS_CB))(WFC_CONN_STATUS_MIXED);
         }
-    } else if (hasOn) {
-        if (M2C_FIELD(base, void **, 0x1370) != NULL) {
-            ((void (*)(s32)) M2C_FIELD(base, void **, 0x1370))(1);
+    } else if (hasOnline) {
+        if (M2C_FIELD(state, void **, WFC_CONN_STATUS_CB) != NULL) {
+            ((void (*)(s32)) M2C_FIELD(state, void **, WFC_CONN_STATUS_CB))(WFC_CONN_STATUS_ONLINE);
         }
-    } else if (!hasOff) {
-        if (M2C_FIELD(base, void **, 0x1370) != NULL) {
-            ((void (*)(s32)) M2C_FIELD(base, void **, 0x1370))(0);
+    } else if (!hasOffline) {
+        if (M2C_FIELD(state, void **, WFC_CONN_STATUS_CB) != NULL) {
+            ((void (*)(s32)) M2C_FIELD(state, void **, WFC_CONN_STATUS_CB))(WFC_CONN_STATUS_NONE);
         }
     }
-    M2C_FIELD(data_ov001_02193e14, s32 *, 0x1B90) = 0;
-    M2C_FIELD(data_ov001_02193e14, u8 *, 0x1B96) = 1;
+    M2C_FIELD(gOv001ConnectionState, s32 *, WFC_CONN_WATCH_TIMER) = 0;
+    M2C_FIELD(gOv001ConnectionState, u8 *, WFC_CONN_WATCH_DONE) = 1;
     func_ov001_0218c92c(0, arg0);
 }
 

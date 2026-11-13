@@ -403,7 +403,7 @@ s32 func_0209776c(s32 arg0) {
     s32 *func_02091f18();
     s32 func_02091f08(void);
     void func_02091d4c(M2C_UNK);
-    s32 func_02091e50(void);
+    s32 GetMenuCursor(void);
     void func_020943a8(s32);
     void *temp_r4;
     s32 var_r6;
@@ -430,7 +430,7 @@ s32 func_0209776c(s32 arg0) {
         temp_r5 = func_02091f18(arg0);
         M2C_FIELD(temp_r5, u16 *, 0x8) = (u16) func_02091f08();
         func_02091d4c(M2C_FIELD(temp_r5, u8 *, 0x6));
-        if (func_02091e50() < 0) {
+        if (GetMenuCursor() < 0) {
             func_020943a8(arg0);
         }
         return 1;

@@ -33,7 +33,7 @@ func_ov003_021e4908 kind:function(arm,size=0x424) addr:0x021e4908
 func_ov003_021e4d2c kind:function(arm,size=0x12c) addr:0x021e4d2c
 func_ov003_021e4e58 kind:function(arm,size=0x14) addr:0x021e4e58
 func_ov003_021e4e6c kind:function(arm,size=0x4c) addr:0x021e4e6c
-func_ov003_021e4eb8 kind:function(arm,size=0x134) addr:0x021e4eb8
+DestroyOv003SceneView kind:function(arm,size=0x134) addr:0x021e4eb8
 func_ov003_021e4fec kind:function(arm,size=0x44) addr:0x021e4fec
 func_ov003_021e5030 kind:function(arm,size=0x4) addr:0x021e5030
 func_ov003_021e5034 kind:function(arm,size=0x14) addr:0x021e5034
@@ -414,7 +414,7 @@ func_ov003_02200c7c kind:function(arm,size=0x2c) addr:0x02200c7c
 func_ov003_02200ca8 kind:function(arm,size=0x2c) addr:0x02200ca8
 func_ov003_02200cd4 kind:function(arm,size=0x18) addr:0x02200cd4
 func_ov003_02200cec kind:function(arm,size=0x94) addr:0x02200cec
-func_ov003_02200d80 kind:function(arm,size=0x48) addr:0x02200d80
+Ov003_GetEntryValueTextId kind:function(arm,size=0x48) addr:0x02200d80
 func_ov003_02200dc8 kind:function(arm,size=0x54) addr:0x02200dc8
 func_ov003_02200e1c kind:function(arm,size=0xc8) addr:0x02200e1c
 func_ov003_02200ee4 kind:function(arm,size=0x61c) addr:0x02200ee4
@@ -428,7 +428,7 @@ func_ov003_022020e0 kind:function(arm,size=0xe0) addr:0x022020e0
 func_ov003_022021c0 kind:function(arm,size=0x18) addr:0x022021c0
 func_ov003_022021d8 kind:function(arm,size=0x10) addr:0x022021d8
 func_ov003_022021e8 kind:function(arm,size=0x6c) addr:0x022021e8
-func_ov003_02202254 kind:function(arm,size=0x12c) addr:0x02202254
+Ov003_UpdateSelectedEntryText kind:function(arm,size=0x12c) addr:0x02202254
 func_ov003_02202380 kind:function(arm,size=0x8) addr:0x02202380
 func_ov003_02202388 kind:function(arm,size=0x8) addr:0x02202388
 func_ov003_02202390 kind:function(arm,size=0x8) addr:0x02202390
@@ -467,7 +467,7 @@ func_ov003_0220501c kind:function(arm,size=0x3e4) addr:0x0220501c
 func_ov003_02205400 kind:function(arm,size=0x14) addr:0x02205400
 func_ov003_02205414 kind:function(arm,size=0xc) addr:0x02205414
 func_ov003_02205420 kind:function(arm,size=0x14) addr:0x02205420
-func_ov003_02205434 kind:function(arm,size=0x130) addr:0x02205434
+SetupSceneObjectDisplay kind:function(arm,size=0x130) addr:0x02205434
 func_ov003_02205564 kind:function(arm,size=0xc) addr:0x02205564
 func_ov003_02205570 kind:function(arm,size=0x14) addr:0x02205570
 func_ov003_02205584 kind:function(arm,size=0xb4) addr:0x02205584
@@ -570,7 +570,7 @@ func_ov003_02207c7c kind:function(arm,size=0x1bc) addr:0x02207c7c
 func_ov003_02207e38 kind:function(arm,size=0x48) addr:0x02207e38
 DrawMapSelectLabel kind:function(arm,size=0x19c) addr:0x02207e80
 func_ov003_0220801c kind:function(arm,size=0x18) addr:0x0220801c
-func_ov003_02208034 kind:function(arm,size=0x134) addr:0x02208034
+UpdateMapSelectLabelTransform kind:function(arm,size=0x134) addr:0x02208034
 func_ov003_02208168 kind:function(arm,size=0x124) addr:0x02208168
 Ov003_RefreshListRowAnimations kind:function(arm,size=0x264) addr:0x0220828c
 func_ov003_022084f0 kind:function(arm,size=0x7c) addr:0x022084f0
@@ -645,8 +645,8 @@ data_ov003_0220f45c kind:data(any) addr:0x0220f45c
 data_ov003_0220f46c kind:data(any) addr:0x0220f46c
 data_ov003_0220f47c kind:data(any) addr:0x0220f47c
 data_ov003_0220f48c kind:data(any) addr:0x0220f48c
-data_ov003_0220f4b4 kind:data(any) addr:0x0220f4b4
-data_ov003_0220f4e0 kind:data(any) addr:0x0220f4e0
+gOv003SceneViewVTable kind:data(any) addr:0x0220f4b4
+gOv003SceneViewIfaceVTable kind:data(any) addr:0x0220f4e0
 data_ov003_0220f500 kind:data(any) addr:0x0220f500
 data_ov003_0220f508 kind:data(any) addr:0x0220f508
 data_ov003_0220f518 kind:data(any) addr:0x0220f518

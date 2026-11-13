@@ -2,44 +2,47 @@
 #include "common.h"
 #include "tcp_socket.h"
 
-void UpdateArpCache(void *a,u32 ip,s32 create){
-u64 GetSystemTick(void);s32 func_0201a6c4(u32);s32 func_0201a764(u32);
+/* Updates the ARP cache for `ip`: refreshes the entry if the address is already
+ * cached, otherwise (when `create`) stores `mac` in a free entry, or the oldest
+ * one. Local, off-subnet and multicast addresses are ignored. */
+void UpdateArpCache(void *mac,u32 ip,s32 create){
+u64 GetSystemTick(void);s32 IsLocalSubnetAddress(u32);s32 IsMulticastAddress(u32);
 M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
-extern M2C_UNK gNetStack,data_02137310,data_0213731a;
-u16 now;u32 i,best;u8 *p;s32 age,off;s32 delta;
-if(ip==0x7f000001 || ip==M2C_FIELD(&gNetStack,u32*,80))return;
-if(!func_0201a6c4(ip))return;
-if(func_0201a764(ip))return;
+extern M2C_UNK gNetStack,gArpCache,gArpCacheAge;
+u16 now;u32 i,best;u8 *entry;s32 age,off;s32 delta;
+if(ip==0x7f000001 || ip==M2C_FIELD(&gNetStack,u32*,NETSTACK_LOCAL_IP))return;
+if(!IsLocalSubnetAddress(ip))return;
+if(IsMulticastAddress(ip))return;
 now=GetSystemTick()>>16;
-p=(u8*)&data_02137310;
-for(i=0;i<8;i++,p+=12){
-if(ip==M2C_FIELD(p,u32*,0)){
-off=i*12;M2C_FIELD(&data_0213731a,u16*,off)=now;
-MI_CpuCopy8(a,(u8*)&data_02137310+off+4,6);return;
+entry=(u8*)&gArpCache;
+for(i=0;i<ARP_CACHE_COUNT;i++,entry+=ARP_CACHE_STRIDE){
+if(ip==M2C_FIELD(entry,u32*,ARP_CACHE_ADDR)){
+off=i*ARP_CACHE_STRIDE;M2C_FIELD(&gArpCacheAge,u16*,off)=now;
+MI_CpuCopy8(mac,(u8*)&gArpCache+off+ARP_CACHE_MAC,6);return;
 }}
 if(!create)return;
-age=0;p=(u8*)&data_02137310;best=0;i=0;
+age=0;entry=(u8*)&gArpCache;best=0;i=0;
 do{
-if(!M2C_FIELD(p,u32*,0)){best=i;break;}
-delta=now-M2C_FIELD(p,u16*,10);p+=12;
+if(!M2C_FIELD(entry,u32*,ARP_CACHE_ADDR)){best=i;break;}
+delta=now-M2C_FIELD(entry,u16*,ARP_CACHE_AGE);entry+=ARP_CACHE_STRIDE;
 if(age<(s16)delta){best=i;age=(u16)delta;}
 i++;
-}while(i<8);
-off=best*12;M2C_FIELD(&data_02137310,u32*,off)=ip;
-MI_CpuCopy8(a,(u8*)&data_02137310+off+4,6);
-M2C_FIELD(&data_0213731a,u16*,off)=now;
+}while(i<ARP_CACHE_COUNT);
+off=best*ARP_CACHE_STRIDE;M2C_FIELD(&gArpCache,u32*,off)=ip;
+MI_CpuCopy8(mac,(u8*)&gArpCache+off+ARP_CACHE_MAC,6);
+M2C_FIELD(&gArpCacheAge,u16*,off)=now;
 }
 
 #pragma scheduling off
 void func_0201af48(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
 M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
-s32 func_0201a704(u32); s32 func_0201a764(u32);
+s32 func_0201a704(u32); s32 IsMulticastAddress(u32);
 M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK *func_0201abd0(void); M2C_UNK *func_0201ad9c(s32);
 extern M2C_UNK gLocalMacAddress;
 M2C_UNK *p; s32 n;
 M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);
-if(!func_0201a764(ip)){
+if(!IsMulticastAddress(ip)){
 n=func_0201a704(ip);if(!n)return;
 p=func_0201abd0();
 if(!p)p=func_0201ad9c(n);
@@ -60,7 +63,7 @@ func_0201a824((u8 *)a-14,b+14,c,d);
 void SendIpFragment(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
 M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
-s32 Checksum(u8*,s32);s32 func_0201a764(u32);
+s32 Checksum(u8*,s32);s32 IsMulticastAddress(u32);
 M2C_UNK NetStackQueuePacket(void*,void*,void*,s32,s32,s32);
 extern M2C_UNK gNetStack,gLinkHeaderTemplate,gLocalMacAddress;
 u16 len,ident;s32 sum,t;
@@ -71,7 +74,7 @@ M2C_FIELD(a,u16*,-10)=0;
 sum=Checksum(a-20,20);
 M2C_FIELD(a,u16*,-10)=(sum>>8)|(sum<<8);
 if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80))func_0201af48(a-20,b+20,c,d,ip,0x800);
-if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80)){if(!func_0201a764(ip))return;}
+if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80)){if(!IsMulticastAddress(ip))return;}
 MI_CpuCopy8(&gLinkHeaderTemplate,a-28,8);
 t=OS_DisableInterrupts();
 NetStackQueuePacket(&gLocalMacAddress,&gLocalMacAddress,a-28,b+28,c,d);
@@ -123,27 +126,31 @@ M2C_FIELD(p,u16 *,0x24)=(sum>>8)|(sum<<8);
 SendIpPacket((u8 *)p+0x22,8,a,b,M2C_FIELD(c,u32 *,0x1c),1);
 }
 #pragma opt_common_subs reset
-void func_0201b3e8(void *arg0,s32 arg1,void *arg2) {
+/* Builds and sends one UDP datagram on `conn`: writes the 12-byte IPv4
+ * pseudo-header followed by the 8-byte UDP header (local and remote port,
+ * length and checksum), checksums the header together with the payload and
+ * hands both to SendIpPacket with protocol 17. */
+void UdpSendSegment(void *payload,s32 dataLen,void *conn) {
 u32 ChecksumAccumulate(void *,u32,u32);s32 ChecksumFinalize(s32);void SendIpPacket(void *,u32,void *,u32,u32,u8);
 extern M2C_UNK gNetStack;
-void *base=M2C_FIELD(arg2,void **,0x4c);void *p=base+0x22;u16 a,b,c,d,len; s32 sum;
-a=M2C_FIELD(&gNetStack,u32 *,0x50)>>16;
+void *base=M2C_FIELD(conn,void **,SOCK_SEND_BUFFER);void *p=base+0x22;u16 a,b,c,d,len; s32 sum;
+a=M2C_FIELD(&gNetStack,u32 *,NETSTACK_LOCAL_IP)>>16;
 M2C_FIELD(p,u16 *,-12)=((s32)a>>8)|(a<<8);
-b=M2C_FIELD(&gNetStack,u32 *,0x50);
+b=M2C_FIELD(&gNetStack,u32 *,NETSTACK_LOCAL_IP);
 M2C_FIELD(p,u16 *,-10)=((s32)b>>8)|(b<<8);
-c=M2C_FIELD(arg2,u32 *,0x1c)>>16;
+c=M2C_FIELD(conn,u32 *,SOCK_REMOTE_IP)>>16;
 M2C_FIELD(p,u16 *,-8)=((s32)c>>8)|(c<<8);
-d=M2C_FIELD(arg2,u32 *,0x1c);
+d=M2C_FIELD(conn,u32 *,SOCK_REMOTE_IP);
 M2C_FIELD(p,u16 *,-6)=((s32)d>>8)|(d<<8);
-M2C_FIELD(p,u16 *,-4)=0x1100;
-len=arg1+8;M2C_FIELD(p,u16 *,4)=((s32)len>>8)|(len<<8);
+M2C_FIELD(p,u16 *,-4)=IP_PROTO_UDP<<8;
+len=dataLen+UDP_HEADER_SIZE;M2C_FIELD(p,u16 *,4)=((s32)len>>8)|(len<<8);
 M2C_FIELD(p,u16 *,-2)=M2C_FIELD(p,u16 *,4);
-a=M2C_FIELD(arg2,u16 *,0x18);M2C_FIELD(p,u16 *,2)=((s32)a>>8)|(a<<8);
-b=M2C_FIELD(arg2,u16 *,0xa);M2C_FIELD(base,u16 *,0x22)=((s32)b>>8)|(b<<8);
+a=M2C_FIELD(conn,u16 *,SOCK_REMOTE_PORT);M2C_FIELD(p,u16 *,2)=((s32)a>>8)|(a<<8);
+b=M2C_FIELD(conn,u16 *,SOCK_LOCAL_PORT);M2C_FIELD(base,u16 *,0x22)=((s32)b>>8)|(b<<8);
 M2C_FIELD(p,u16 *,6)=0;
-sum=ChecksumAccumulate(p-12,20,0);sum=ChecksumAccumulate(arg0,arg1,sum);
+sum=ChecksumAccumulate(p-12,IP_PSEUDO_HEADER_SIZE+UDP_HEADER_SIZE,0);sum=ChecksumAccumulate(payload,dataLen,sum);
 sum=ChecksumFinalize((u16)sum);M2C_FIELD(p,u16 *,6)=(sum>>8)|(sum<<8);
-SendIpPacket(p,8,arg0,arg1,M2C_FIELD(arg2,u32 *,0x1c),17);
+SendIpPacket(p,UDP_HEADER_SIZE,payload,dataLen,M2C_FIELD(conn,u32 *,SOCK_REMOTE_IP),IP_PROTO_UDP);
 }
 
 /* Build and send one TCP segment for a connection: fill in the TCP header (adding the MSS

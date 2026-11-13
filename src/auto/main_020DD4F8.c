@@ -296,7 +296,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_02088da8(s32);
     M2C_UNK func_02088f1c(s32);
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTextById(s32, s32);
     s16 GetSpriteAnimValue(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
     s32 func_ov009_0222429c();
@@ -355,7 +355,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_FIELD(titleSprite, s8 *, 0x5A) = 0;
     func_02088f1c((s32)menu->backSprite);
     func_02088da8((s32)menu->panelSprite);
-    func_0208b758((s32)menu->unitSprite, 0x44000011);
+    SetTextById((s32)menu->unitSprite, 0x44000011);
     func_02088f1c((s32)menu->unitSprite);
     if (GetSpriteAnimValue(menu->animSprite) != 0) {
         id=GetSpriteAnimValue(menu->animSprite);

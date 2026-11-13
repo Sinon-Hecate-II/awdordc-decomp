@@ -179,7 +179,7 @@ void func_ov003_021e8958(void *arg0) {
     void LoadDecompressedFileTo(void *, s32);
     void LoadFileToSpriteBuffer(void *, s32, s32);
     void func_ov003_021ea2ac(void);
-    void func_020808dc(s32, s32, s32, s32);
+    void SetTileRectPalette(s32, s32, s32, s32);
     void func_02091d4c(s32);
     s32 t1;
     s32 t2;
@@ -284,7 +284,7 @@ void func_ov003_021e8958(void *arg0) {
     LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_0220fbec), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xc));
     LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_0220fc00), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     LoadFileToSpriteBuffer(data_ov003_0220fc1c, 0, 0x20);
-    func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x20, 0);
+    SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x20, 0);
     func_ov003_021ea134(0);
     func_02091d4c(2);
     SetFileDirectory(data_ov003_0220fc30);

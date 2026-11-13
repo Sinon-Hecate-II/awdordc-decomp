@@ -59,7 +59,7 @@ void func_020022d8(void) {
  * is installed, gGxInitTables+4 == -1) and sets both engines' BG2/BG3 affine
  * matrices to identity (0x100 = 1.0 in 8.8 fixed point). */
 void GX_InitDisplay(void) {
-void GX_ResetBankState(void); s32 func_0200558c(void); void func_02007958(void); void DmaFill(s32,void *,s32,s32); void CpuFill(s32,void *,s32);
+void GX_ResetBankState(void); s32 func_0200558c(void); void SystemHalt(void); void DmaFill(s32,void *,s32,s32); void CpuFill(s32,void *,s32);
 extern s16 data_0212dbc0; extern s16 data_020f5200;
 s32 resourceId;
 *(volatile u16 *)0x4000304 |= 0x8000;                      /* POWCNT1: LCD on */
@@ -68,7 +68,7 @@ s32 resourceId;
 GX_ResetBankState();
 while(M2C_FIELD(&data_0212dbc0,u16 *,2)==0) {
 resourceId=func_0200558c();
-if(resourceId==-3) func_02007958();                        /* no id free: hang */
+if(resourceId==-3) SystemHalt();                        /* no id free: hang */
 M2C_FIELD(&data_0212dbc0,u16 *,2)=resourceId;
 }
 *(volatile u16 *)0x4000004=0;                              /* DISPSTAT */
@@ -378,19 +378,22 @@ void func_02002e3c(s32 a) {
     GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
 }
 
-void func_02002f24(u32 a) {
+/* Assign VRAM banks A/B/C/D to the 3D texture extended palette: a two-bank run
+ * takes the top two palette slots, a single bank the last one, the palette is
+ * switched on and the banks it no longer uses are released. */
+void GX_SetBankForTexExtPltt(u32 banks) {
 extern M2C_UNK gVramBankState;
-M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,12))&~a;
-M2C_FIELD(&gVramBankState,u16 *,12)=a;
-switch(a) {
-case 3: *(volatile u8 *)0x4000240=0x93;
-case 2: *(volatile u8 *)0x4000241=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
-case 12: *(volatile u8 *)0x4000242=0x93;
-case 8: *(volatile u8 *)0x4000243=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
-case 0: *(volatile u16 *)0x4000060&=~0x4000;break;
-case 1: *(volatile u8 *)0x4000240=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
-case 4: *(volatile u8 *)0x4000242=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
+M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)=(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)|M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_TEX_EXTPLTT))&~banks;
+M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_TEX_EXTPLTT)=banks;
+switch(banks) {
+case VRAM_BANK_A|VRAM_BANK_B: REG_VRAM_A_CR=VRAM_CR_TEXPLTT(0);
+case VRAM_BANK_B: REG_VRAM_B_CR=VRAM_CR_TEXPLTT(1); REG_DISP3DCNT|=DISP3DCNT_TEXPLTT;break;
+case VRAM_BANK_C|VRAM_BANK_D: REG_VRAM_C_CR=VRAM_CR_TEXPLTT(0);
+case VRAM_BANK_D: REG_VRAM_D_CR=VRAM_CR_TEXPLTT(1); REG_DISP3DCNT|=DISP3DCNT_TEXPLTT;break;
+case 0: REG_DISP3DCNT&=~DISP3DCNT_TEXPLTT;break;
+case VRAM_BANK_A: REG_VRAM_A_CR=VRAM_CR_TEXPLTT(1); REG_DISP3DCNT|=DISP3DCNT_TEXPLTT;break;
+case VRAM_BANK_C: REG_VRAM_C_CR=VRAM_CR_TEXPLTT(1); REG_DISP3DCNT|=DISP3DCNT_TEXPLTT;break;
 }
-GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
+GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING));
 }
 

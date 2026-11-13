@@ -195,13 +195,13 @@ gAiState[14]=best[0];gAiState[15]=best[1];return 1;
 /* Plan a special-unit action if no conflicting units exist, a target is available, and the player can afford it. */
 s32 func_ov000_021a2db8(void) {
  void FloodFillUnitRange(s32,s32,s32,s32,s32);
- s32 func_020d243c(u16); s32 func_020d2d18(u16,u8);
+ s32 PlayerHasHq(u16); s32 func_020d2d18(u16,u8);
  s32 func_ov000_0217bc84(s32,s32,s32);
  void CommitAiAction(s32); s32 func_ov000_021a6d4c(void);
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  extern void *gAiCommandState; extern u8 gAiCommand[];
  s32 unitIndex,choice; u32 unitKind; u8 *unit; void *map; void *lastMap; u16 player;
- if(!func_020d243c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
+ if(!PlayerHasHq(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  map=*gCurrentMap;
  unitIndex=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
  if(unitIndex<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51){

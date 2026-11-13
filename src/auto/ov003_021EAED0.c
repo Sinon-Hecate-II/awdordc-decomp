@@ -8,12 +8,12 @@ void func_ov003_021eaed0(void *arg0) {
 }
 
 u8 func_ov003_021eba24(void *arg0) {
- s32 func_020848c4();
+ s32 GetLocalPlayerIdForOverlay();
  s32 value;
  u8 i;
  u8 count;
  s8 result;
- value=func_020848c4();
+ value=GetLocalPlayerIdForOverlay();
  count=M2C_FIELD(arg0,u8 *,4);
  for(i=0;(u32)i<(u32)count;i++) {
   if(value==M2C_FIELD(arg0+i,u8 *,0x74)) {result=(s8)i; goto done;}

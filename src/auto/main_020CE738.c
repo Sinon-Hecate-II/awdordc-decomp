@@ -1,7 +1,7 @@
 /* 16 functions from 0x020CE738 to 0x020CF69C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-extern u8 data_0212bcd4[],data_0212bce0[],data_0212bcf0[],data_0212bd04[],data_0212bd14[],data_0212bd28[],data_0212bd38[],data_0212bd48[];
+extern u8 gTilesetDir[],sTilesetDoomPnl[],sTilesetCliffPnl[],sTilesetRuinPnl[],sTilesetFlowerPnl[],sTilesetUraPnl[],sTilesetOwlPnl[],sTilesetNormalPnl[];
 
 #pragma opt_strength_reduction off
 /* Rebuild the danger-zone bitmaps: mark every unit's threat range and, for
@@ -224,24 +224,27 @@ void func_020ceea8(void) {
     func_020a15f8();
 }
 
-void func_020ceec8(void) {
+/* Load the current map's terrain tileset: when its tileset kind differs from the one
+ * loaded, decompress that kind's ds2map_<kind>.pnl palette onto the map's tile table
+ * and switch the terrain tile lookup over to it. */
+void LoadMapTileset(void) {
 extern void **gCurrentMap;
-s32 func_0207dbfc(void);void SetFileDirectory(void*);void LoadDecompressedFileTo(void*,void*);void func_0207db18(u8);
-u8 *p=(u8*)*gCurrentMap+0x5120;
-s32 value=func_0207dbfc();
-if(value==p[0x37])return;
+s32 GetTerrainTileset(void);void SetFileDirectory(void*);void LoadDecompressedFileTo(void*,void*);void SetTerrainTileset(u8);
+u8 *p=(u8*)*gCurrentMap+MAP_NAME;
+s32 loadedTileset=GetTerrainTileset();
+if(loadedTileset==p[MAP_TILESET-MAP_NAME])return;
 p=(u8*)*gCurrentMap+0xa60;
-SetFileDirectory(data_0212bcd4);
-switch(M2C_FIELD(*gCurrentMap,u8*,0x5157)){
-case 4:LoadDecompressedFileTo(data_0212bce0,p+0x6000);break;
-case 5:LoadDecompressedFileTo(data_0212bcf0,p+0x6000);break;
-case 6:LoadDecompressedFileTo(data_0212bd04,p+0x6000);break;
-case 7:LoadDecompressedFileTo(data_0212bd14,p+0x6000);break;
-case 8:LoadDecompressedFileTo(data_0212bd28,p+0x6000);break;
-case 9:LoadDecompressedFileTo(data_0212bd38,p+0x6000);break;
-default:LoadDecompressedFileTo(data_0212bd48,p+0x6000);break;
+SetFileDirectory(gTilesetDir);
+switch(M2C_FIELD(*gCurrentMap,u8*,MAP_TILESET)){
+case 4:LoadDecompressedFileTo(sTilesetDoomPnl,p+0x6000);break;
+case 5:LoadDecompressedFileTo(sTilesetCliffPnl,p+0x6000);break;
+case 6:LoadDecompressedFileTo(sTilesetRuinPnl,p+0x6000);break;
+case 7:LoadDecompressedFileTo(sTilesetFlowerPnl,p+0x6000);break;
+case 8:LoadDecompressedFileTo(sTilesetUraPnl,p+0x6000);break;
+case 9:LoadDecompressedFileTo(sTilesetOwlPnl,p+0x6000);break;
+default:LoadDecompressedFileTo(sTilesetNormalPnl,p+0x6000);break;
 }
-func_0207db18(M2C_FIELD(*gCurrentMap,u8*,0x5157));
+SetTerrainTileset(M2C_FIELD(*gCurrentMap,u8*,MAP_TILESET));
 }
 
 #pragma opt_strength_reduction off
@@ -331,11 +334,11 @@ void LoadBattleMap(s32 id)
 }
 #pragma opt_strength_reduction reset
 void func_020cf278(s32 arg0) {
-s32 MapData_GetTileset(s32); void func_020ceec8(void);
+s32 MapData_GetTileset(s32); void LoadMapTileset(void);
 extern void **gCurrentMap;
 u8 old=M2C_FIELD(*gCurrentMap,u8 *,0x5157);
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=MapData_GetTileset(arg0);
-func_020ceec8();
+LoadMapTileset();
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
 }
 

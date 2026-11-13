@@ -250,12 +250,12 @@ void func_02079c6c(s32 arg0, s32 arg1) {
 #pragma opt_common_subs off
 void func_02079c90(s32 arg0,s32 arg1,s32 *arg2) {
 s32 Divide(s32,s32);
-M2C_UNK func_0207d820(Vec3 *,void *);
+M2C_UNK ProjectPoint(Vec3 *,void *);
 extern s32 *gCurrentMap;
 Vec3 pos; void *base;
 base=(void *)(*gCurrentMap+0x6EF8);
 pos.x=arg0;pos.y=arg1;pos.z=0;
-func_0207d820(&pos,base+0x70);
+ProjectPoint(&pos,base+0x70);
 arg2[0]=Divide((arg2[0]+0x1000)<<8,0x2000);
 arg2[1]=Divide((0x1000-arg2[1])*0xC0,0x2000);
 }

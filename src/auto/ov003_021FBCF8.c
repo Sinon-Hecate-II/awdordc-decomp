@@ -252,7 +252,7 @@ void func_ov003_021fc26c(void *arg0) {
  void func_020d47d0(void);
  void func_ov003_021f2848(void *);
  s32 func_ov003_021f4038(void);
- void *func_020c7e6c(u16);
+ void *GetMapRecord(u16);
  void MapSettings_Apply(void *);
  void func_ov003_021fc820(void *);
  void func_ov003_021fc95c(void *);
@@ -341,8 +341,8 @@ void func_ov003_021fc26c(void *arg0) {
  if(PanelModeIs(arg0,4)) func_ov003_021f2848((u8 *)M2C_FIELD(arg0,void **,0x44)+4);
  else if(func_ov003_021f4038()) func_ov003_021fc820(arg0);
  if(PanelModeIs(arg0,0) && selected>=0xe1 && selected<0x1a9) {
-  if((u32)(M2C_FIELD(func_020c7e6c(selected),u32 *,0x38)<<31)>>31)
-   MapSettings_Apply((u8 *)func_020c7e6c(selected)+0x30);
+  if((u32)(M2C_FIELD(GetMapRecord(selected),u32 *,0x38)<<31)>>31)
+   MapSettings_Apply((u8 *)GetMapRecord(selected)+0x30);
  }
 }
 #pragma opt_strength_reduction reset

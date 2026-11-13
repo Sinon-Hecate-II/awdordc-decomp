@@ -471,38 +471,43 @@ s32 TlsReadRecord(void *transport) {
     return M2C_FIELD(channel, u8 *, TLS_STATE);
 }
 
+/* Generates len bytes of cryptographically mixed random data: the 20-byte SHA1
+ * entropy pool is re-hashed (with interrupts disabled) whenever the current
+ * digest runs out, the new digest is folded back into the pool with a
+ * big-endian carry add, and zero bytes are skipped so the stream never stalls.
+ * On first use the pool is seeded from a 64-bit multiply-add state. */
 void GenerateRandomBytes(u8 *dst,s32 len){
-M2C_UNK SHA1_Init(void*);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK SHA1_Update();void func_02026134(void*,void*);void func_020241f0(M2C_UNK*,s32);
-extern s8 gTlsRandomState;extern u64 data_021372f8[3];extern M2C_UNK data_02138e38;extern u8 data_02138e4b;
-u8 ctx[92],hash[20];u32 seed; s32 out,index,state,j;u32 carry,total;u8 *p,*q;
-if(!*(u8*)&gTlsRandomState){data_021372f8[0]=data_021372f8[1]*data_021372f8[0]+data_021372f8[2];seed=data_021372f8[0]>>32;func_020241f0((M2C_UNK*)&seed,4);}
-out=0;index=20;
-while(out<len){
+M2C_UNK SHA1_Init(void*);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK SHA1_Update();void func_02026134(void*,void*);void Random_AddEntropy(M2C_UNK*,s32);
+extern s8 gTlsRandomState;extern u64 gRandomSeedState[3];extern M2C_UNK gRandomEntropyPool;extern u8 gRandomEntropyPoolEnd;
+u8 sha1Ctx[92],digest[20];u32 seed; s32 written,index,irq,j;u32 carry,total;u8 *poolPtr,*digestPtr;
+if(!*(u8*)&gTlsRandomState){gRandomSeedState[0]=gRandomSeedState[1]*gRandomSeedState[0]+gRandomSeedState[2];seed=gRandomSeedState[0]>>32;Random_AddEntropy((M2C_UNK*)&seed,4);}
+written=0;index=20;
+while(written<len){
 if(index==20){
-SHA1_Init(ctx);state=OS_DisableInterrupts();SHA1_Update(ctx,&data_02138e38,20);func_02026134(ctx,hash);
-carry=1;j=19;p=&data_02138e4b;q=hash+19;
-for(;j>=0;j--){total=carry+(*p+*q--);*p--=total;carry=total>>8;}
-seed=total;OS_RestoreInterrupts(state);index=0;
+SHA1_Init(sha1Ctx);irq=OS_DisableInterrupts();SHA1_Update(sha1Ctx,&gRandomEntropyPool,20);func_02026134(sha1Ctx,digest);
+carry=1;j=19;poolPtr=&gRandomEntropyPoolEnd;digestPtr=digest+19;
+for(;j>=0;j--){total=carry+(*poolPtr+*digestPtr--);*poolPtr--=total;carry=total>>8;}
+seed=total;OS_RestoreInterrupts(irq);index=0;
 }
-{u8 c=hash[index++];if(c)dst[out++]=c;}
+{u8 c=digest[index++];if(c)dst[written++]=c;}
 }
 }
 
-void func_020241f0(M2C_UNK *p,s32 n) {
+void Random_AddEntropy(M2C_UNK *p,s32 n) {
  s32 OS_DisableInterrupts(void);
  M2C_UNK OS_RestoreInterrupts(s32);
  M2C_UNK SHA1_Init(void *);
  M2C_UNK SHA1_Update();
  M2C_UNK SHA1_Final(void *,void *);
  extern s8 gTlsRandomState;
- extern M2C_UNK data_02138e38;
+ extern M2C_UNK gRandomEntropyPool;
  u8 buf[0x5C];
  s32 state;
  SHA1_Init(buf);
  state=OS_DisableInterrupts();
- SHA1_Update(buf,&data_02138e38,20);
+ SHA1_Update(buf,&gRandomEntropyPool,20);
  SHA1_Update(buf,p,n);
- SHA1_Final(buf,&data_02138e38);
+ SHA1_Final(buf,&gRandomEntropyPool);
  OS_RestoreInterrupts(state);
  gTlsRandomState=1;
 }

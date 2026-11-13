@@ -128,14 +128,14 @@ void func_ov001_0218a6f4(void *arg0, s32 arg1) {
     u8 func_020020c4(s32, u16);
     M2C_UNK func_020051c8(s32);
     s32 func_020051f8(M2C_UNK);
-    M2C_UNK func_02007958();
+    M2C_UNK SystemHalt();
     s32 temp_r6;
     u8 temp_r0;
 
     temp_r6 = func_020051f8(1);
     temp_r0 = func_020020c4(M2C_FIELD(arg0, u8 *, 3) + 1, M2C_FIELD(arg0, u16 *, 0));
     if (temp_r0 == M2C_FIELD(arg0, u8 *, 2)) {
-        func_02007958();
+        SystemHalt();
     }
     M2C_FIELD((arg0 + (M2C_FIELD(arg0, u8 *, 3) * 4)), s32 *, 4) = arg1;
     M2C_FIELD(arg0, u8 *, 3) = temp_r0;

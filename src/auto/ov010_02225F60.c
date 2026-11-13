@@ -86,7 +86,7 @@ void TickVoiceStream(void) {
 
 s32 func_ov010_02226060(s32 arg0) {
     s32 func_ov010_02223ec8(s32);
-    void func_ov010_02223ef0(s32);
+    void VoiceLink_ReleaseContext(s32);
     s32 func_ov010_0222405c(s32, s32);
     extern M2C_UNK data_ov010_0222ee70;
     s32 temp_r4;
@@ -94,7 +94,7 @@ s32 func_ov010_02226060(s32 arg0) {
         temp_r4 = func_ov010_02223ec8(arg0);
         if (temp_r4 == 0) return 0;
         if (func_ov010_0222405c(temp_r4, 0) != 0) {
-            func_ov010_02223ef0(temp_r4);
+            VoiceLink_ReleaseContext(temp_r4);
             return 0;
         }
         M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) = temp_r4;
@@ -130,11 +130,11 @@ void FreeBuffer(s32 arg0) {
     HeapFreeBlock();
 }
 
-M2C_UNK func_ov010_02226114(M2C_UNK arg0) {
-    s32 func_ov010_022261f4(void);
-    extern s32 data_ov010_0222eec8;
-    func_ov010_022261f4();
-    data_ov010_0222eec8 = arg0;
+M2C_UNK SetWebRequestError(M2C_UNK arg0) {
+    s32 GetWebRequestError(void);
+    extern s32 gWebRequestError;
+    GetWebRequestError();
+    gWebRequestError = arg0;
 }
 
 void func_ov010_02226130(void) {
@@ -147,7 +147,7 @@ s32 func_ov010_0222613c(void) {
     void func_ov010_02226204();
     u8 *func_020c4acc();
     s32 RegisterWebRequest(M2C_UNK *, u8 *);
-    M2C_UNK func_ov010_02226114(M2C_UNK);
+    M2C_UNK SetWebRequestError(M2C_UNK);
     M2C_UNK **func_01ffa3dc(M2C_UNK *, s32);
     void func_ov010_02228298(M2C_UNK);
     extern M2C_UNK data_ov010_0222c0e8;
@@ -181,7 +181,7 @@ s32 func_ov010_0222613c(void) {
         break;
     }
     if ((temp_r0 != 0) && (temp_r0 != 3)) {
-        func_ov010_02226114(temp_r0);
+        SetWebRequestError(temp_r0);
     } else {
         temp_r0_2 = func_01ffa3dc(&data_ov010_0222c0c0, 3);
         if (temp_r0_2 != NULL) {
@@ -192,24 +192,24 @@ s32 func_ov010_0222613c(void) {
     return var_r4;
 }
 
-s32 func_ov010_022261f4(void) {
-    extern s32 data_ov010_0222eec8;
-    return data_ov010_0222eec8;
+s32 GetWebRequestError(void) {
+    extern s32 gWebRequestError;
+    return gWebRequestError;
 }
 
 void func_ov010_02226204(void) {
-    M2C_UNK func_ov010_02226114(M2C_UNK);
-    func_ov010_02226114(0);
+    M2C_UNK SetWebRequestError(M2C_UNK);
+    SetWebRequestError(0);
 }
 
 s32 func_ov010_02226214(s32 a,s32 b,s32 c,s32 d,s32 e){
-s32 func_02037ca0(M2C_UNK *,M2C_UNK *); s64 func_020c4858(s32,M2C_UNK *,M2C_UNK *); s32 func_02085c18(); u32 func_0204563c(s32,s32,s32,s32,s32);
+s32 GetServerTime(M2C_UNK *,M2C_UNK *); s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *); s32 func_02085c18(); u32 func_0204563c(s32,s32,s32,s32,s32);
 M2C_UNK date[4]; M2C_UNK time[3]; s32 result; u32 status;
 result=1;
-if(func_02037ca0(date,time)!=0)func_020c4858(func_02085c18(),date,time);
+if(GetServerTime(date,time)!=0)GetElapsedSeconds(func_02085c18(),date,time);
 status=func_0204563c(a,b,c,d,e);
 switch(status){default:break;case 1:result=0;break;case 7:result=0;break;case 2:result=0;break;case 8:result=0;break;case 9:result=0;break;}
-if(status!=0)func_ov010_02226114(status);
+if(status!=0)SetWebRequestError(status);
 return result;
 }
 
@@ -251,18 +251,18 @@ s32 func_ov010_02226334(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 
 }
 
 s32 func_ov010_02226364(void) {
-    s32 func_02037ca0(M2C_UNK *, M2C_UNK *);
-    s64 func_020c4858(s32, M2C_UNK *, M2C_UNK *);
+    s32 GetServerTime(M2C_UNK *, M2C_UNK *);
+    s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
     s32 func_02085c18();
     M2C_UNK date[4];
     M2C_UNK time[3];
     s64 temp;
     s32 res;
 
-    if (func_02037ca0(date, time) == 0) {
+    if (GetServerTime(date, time) == 0) {
         temp = 0;
     } else {
-        temp = func_020c4858(func_02085c18(), date, time);
+        temp = GetElapsedSeconds(func_02085c18(), date, time);
     }
     res = 0;
     if (temp >= 0x3C) {
@@ -271,16 +271,18 @@ s32 func_ov010_02226364(void) {
     return res;
 }
 
-s32 func_ov010_022263b0(u32 a,s32 b,s32 c,s32 *d){
-s32 func_02037ca0(M2C_UNK *,M2C_UNK *);s64 func_020c4858(s32,M2C_UNK *,M2C_UNK *);s32 func_02085c3c(void);u32 SendWebGetRequest(u32,s32,s32,s32 *);
-M2C_UNK date[4];M2C_UNK time[3];s32 result;u32 status;
-result=1;
-if(func_02037ca0(date,time)!=0)func_020c4858(func_02085c3c(),date,time);
-switch(a){case 0:*d=8;break;case 1:*d=12;break;case 2:case 4:case 5:*d=12;break;case 3:*d=0x10c;break;case 6:*d=16;break;default:return 0;}
-status=SendWebGetRequest(a,b,c,d);
-switch(status){default:break;case 1:result=0;break;case 7:result=0;break;case 2:result=0;break;case 8:result=0;break;case 9:result=0;break;}
-if(status!=0)func_ov010_02226114(status);
-return result;
+/* Fills the request payload's kind marker for `kind`, submits it as a web GET
+ * request, and records any error status. Returns 0 when the kind is unknown. */
+s32 SendWebGetForKind(u32 kind,s32 playerId,s32 field2,s32 *payload){
+s32 GetServerTime(M2C_UNK *,M2C_UNK *);s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *);s32 func_02085c3c(void);u32 SendWebGetRequest(u32,s32,s32,s32 *);
+M2C_UNK date[4];M2C_UNK time[3];s32 ok;u32 status;
+ok=1;
+if(GetServerTime(date,time)!=0)GetElapsedSeconds(func_02085c3c(),date,time);
+switch(kind){case 0:*payload=8;break;case 1:*payload=12;break;case 2:case 4:case 5:*payload=12;break;case 3:*payload=0x10c;break;case 6:*payload=16;break;default:return 0;}
+status=SendWebGetRequest(kind,playerId,field2,payload);
+switch(status){default:break;case 1:ok=0;break;case 7:ok=0;break;case 2:ok=0;break;case 8:ok=0;break;case 9:ok=0;break;}
+if(status!=0)SetWebRequestError(status);
+return ok;
 }
 
 s32 func_ov010_022264e4(void) {
@@ -312,25 +314,25 @@ s32 func_ov010_022264e4(void) {
 
 s32 func_ov010_02226538(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
-    s32 func_ov010_022263b0();
+    s32 SendWebGetForKind();
     extern M2C_UNK data_ov010_0222c0a0;
-    if (func_ov010_022263b0() == 0) return 0;
+    if (SendWebGetForKind() == 0) return 0;
     return CreateSpriteObject(&data_ov010_0222c0a0, arg4);
 }
 
 s32 func_ov010_02226560(void) {
-    s32 func_02037ca0(M2C_UNK *, M2C_UNK *);
-    s64 func_020c4858(s32, M2C_UNK *, M2C_UNK *);
+    s32 GetServerTime(M2C_UNK *, M2C_UNK *);
+    s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
     s32 func_02085c3c();
     M2C_UNK date[4];
     M2C_UNK time[3];
     s64 temp;
     s32 res;
 
-    if (func_02037ca0(date, time) == 0) {
+    if (GetServerTime(date, time) == 0) {
         temp = 0;
     } else {
-        temp = func_020c4858(func_02085c3c(), date, time);
+        temp = GetElapsedSeconds(func_02085c3c(), date, time);
     }
     res = 0;
     if (temp >= 0x3C) {
@@ -340,13 +342,13 @@ s32 func_ov010_02226560(void) {
 }
 
 s32 func_ov010_022265ac(s32 a,s32 b,s32 c,s32 d){
-s32 func_02037ca0(M2C_UNK *,M2C_UNK *); s64 func_020c4858(s32,M2C_UNK *,M2C_UNK *); s32 func_02085c18(); u32 func_02045934(s32,s32,s32,s32);
+s32 GetServerTime(M2C_UNK *,M2C_UNK *); s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *); s32 func_02085c18(); u32 func_02045934(s32,s32,s32,s32);
 M2C_UNK time[3]; M2C_UNK date[4]; s32 result; u32 status;
 result=1;
-if(func_02037ca0(date,time)!=0)func_020c4858(func_02085c18(),date,time);
+if(GetServerTime(date,time)!=0)GetElapsedSeconds(func_02085c18(),date,time);
 status=func_02045934(a,b,c,d);
 switch(status){default:break;case 1:result=0;break;case 7:result=0;break;case 2:result=0;break;case 8:result=0;break;case 9:result=0;break;}
-if(status!=0)func_ov010_02226114(status);
+if(status!=0)SetWebRequestError(status);
 return result;
 }
 
@@ -385,18 +387,18 @@ s32 func_ov010_022266c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 s32 func_ov010_022266ec(void) {
-    s32 func_02037ca0(M2C_UNK *, M2C_UNK *);
-    s64 func_020c4858(s32, M2C_UNK *, M2C_UNK *);
+    s32 GetServerTime(M2C_UNK *, M2C_UNK *);
+    s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
     s32 func_02085c18();
     M2C_UNK time[3];
     M2C_UNK date[4];
     s64 temp;
     s32 res;
 
-    if (func_02037ca0(date, time) == 0) {
+    if (GetServerTime(date, time) == 0) {
         temp = 0;
     } else {
-        temp = func_020c4858(func_02085c18(), date, time);
+        temp = GetElapsedSeconds(func_02085c18(), date, time);
     }
     res = 0;
     if (temp >= 0x3C) {
@@ -423,7 +425,7 @@ s32 func_ov010_02226744(void) {
  case 16: break;
  case 17: break;
  }
- if(temp_r0 != 0) func_ov010_02226114(temp_r0);
+ if(temp_r0 != 0) SetWebRequestError(temp_r0);
  return var_r4;
 }
 
@@ -440,7 +442,7 @@ s32 func_ov010_022267b0(M2C_UNK arg0, M2C_UNK arg1) {
  case 16: break;
  case 17: break;
  }
- if(temp_r0 != 0) func_ov010_02226114(temp_r0);
+ if(temp_r0 != 0) SetWebRequestError(temp_r0);
  return var_r4;
 }
 
@@ -457,7 +459,7 @@ s32 func_ov010_0222681c(void) {
  case 16: break;
  case 17: break;
  }
- if(temp_r0 != 0) func_ov010_02226114(temp_r0);
+ if(temp_r0 != 0) SetWebRequestError(temp_r0);
  return var_r4;
 }
 
@@ -481,7 +483,7 @@ s32 func_ov010_02226888(void) {
     }
     func_01ffa9e4(&data_ov010_0222c0c0);
     if (temp_r0 != 0) {
-        func_ov010_02226114(temp_r0);
+        SetWebRequestError(temp_r0);
     }
     func_ov010_022282d4(5);
     return var_r5;

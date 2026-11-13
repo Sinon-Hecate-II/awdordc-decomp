@@ -1,5 +1,6 @@
 /* 13 functions from 0x02207A54 to 0x0220856C (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 static inline void ResetSlot(void *p, u16 value) {
 M2C_FIELD(p,s32 *,8)=M2C_FIELD(p,s32 *,4);
 M2C_FIELD(p,u16 *,12)=value;
@@ -237,60 +238,60 @@ u8 func_ov003_0220801c(void *arg0) {
     return var_r0;
 }
 
-void func_ov003_02208034(void *arg0) {
+/* Builds the map-select label's 3D-sprite transform on the sub-screen engine:
+ * reads the two label tween channels (1.0 when the label is idle), shows or
+ * hides its layer from whether both are non-zero, and writes the scale transform
+ * into the bank's second matrix. */
+void UpdateMapSelectLabelTransform(void *arg0) {
     M2C_UNK Build3DSpriteTransform(s32 *, u16 *);
     s32 GetSpriteAnimValue(s32);
     extern u16 **g3DSpriteEngineSub;
     extern u16 **gCur3DSpriteEngine;
-    s32 block[5];
-    u16 * sp4;
-    u16 * sp0;
-    s32 var_r0;
-    s32 var_r0_3;
-    u16 **temp_r4;
-    u16 *temp_r1;
-    u16 *temp_r1_2;
-    u16 *var_r1;
-    u16 temp_r0;
-    u16 temp_r5;
-    s32 var_r0_2;
-    s32 var_r0_4;
-    u16 var_r2;
+    DS3DSpriteTransform transform;
+    u16 * bankClear;
+    u16 * bankSet;
+    s32 flagA;
+    s32 flagB;
+    u16 **savedEngine;
+    u16 scaleY;
+    u16 scaleX;
+    s32 valueX;
+    s32 valueY;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
-        var_r0 = 1;
+        flagA = 1;
     } else {
-        var_r0 = 0;
+        flagA = 0;
     }
-    if (!(var_r0 & 0xFF)) {
-        var_r0_2 = 0x100;
+    if (!(flagA & 0xFF)) {
+        valueX = 0x100;
     } else {
-        var_r0_2 = GetSpriteAnimValue(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x18));
+        valueX = GetSpriteAnimValue(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x18));
     }
-    temp_r5 = var_r0_2;
+    scaleX = valueX;
     if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
-        var_r0_3 = 1;
+        flagB = 1;
     } else {
-        var_r0_3 = 0;
+        flagB = 0;
     }
-    if (!(var_r0_3 & 0xFF)) {
-        var_r0_4 = 0x100;
+    if (!(flagB & 0xFF)) {
+        valueY = 0x100;
     } else {
-        var_r0_4 = GetSpriteAnimValue(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x1C));
+        valueY = GetSpriteAnimValue(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x1C));
     }
-    temp_r0 = var_r0_4;
-    if(temp_r5==0 || temp_r0==0){sp4=*gCur3DSpriteEngine;*(*(u16 * volatile *)&sp4) = *(*(u16 * volatile *)&sp4) & ~0x80;}else{sp0=*gCur3DSpriteEngine;*(*(u16 * volatile *)&sp0) = *(*(u16 * volatile *)&sp0) | 0x80;}
-    M2C_FIELD(block,u16 *,14) = temp_r0;
-    M2C_FIELD(block,s32 *,0) = 0x80;
-    M2C_FIELD(block,s32 *,4) = 0x88;
-    M2C_FIELD(block,u16 *,12) = temp_r5;
-    M2C_FIELD(block,s16 *,16) = 0;
-    M2C_FIELD(block,s16 *,8) = 0x80;
-    M2C_FIELD(block,s16 *,10) = 0x88;
-    Build3DSpriteTransform(block, (u16 *)((u8 *)*gCur3DSpriteEngine + 0x24));
-    gCur3DSpriteEngine = temp_r4;
+    scaleY = valueY;
+    if(scaleX==0 || scaleY==0){bankClear=*gCur3DSpriteEngine;*(*(u16 * volatile *)&bankClear) = *(*(u16 * volatile *)&bankClear) & ~DS3D_BANK_MODE3;}else{bankSet=*gCur3DSpriteEngine;*(*(u16 * volatile *)&bankSet) = *(*(u16 * volatile *)&bankSet) | DS3D_BANK_MODE3;}
+    transform.scaleY = scaleY;
+    transform.x = 0x80;
+    transform.y = 0x88;
+    transform.scaleX = scaleX;
+    transform.angle = 0;
+    transform.mapX = 0x80;
+    transform.mapY = 0x88;
+    Build3DSpriteTransform((s32 *)&transform, (u16 *)((u8 *)*gCur3DSpriteEngine + 0x24));
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov003_02208168(void *a){s32 off,i;void *p;i=0;
@@ -359,7 +360,7 @@ void Ov003_RefreshListRowAnimations(void *arg0, s32 arg1, s32 arg2) {
 #pragma pop
 void func_ov003_022084f0(void *arg0) {
     M2C_UNK func_020a91a8(s32);
-    void func_ov003_02208034(void *);
+    void UpdateMapSelectLabelTransform(void *);
     void *temp_r6;
     void *var_r5;
     s32 var_r4;
@@ -380,6 +381,6 @@ void func_ov003_022084f0(void *arg0) {
     }
     func_020a91a8(M2C_FIELD(M2C_FIELD(var_r5, void **, 0x4C), s32 *, 0x18));
     func_020a91a8(M2C_FIELD(M2C_FIELD(var_r5, void **, 0x4C), s32 *, 0x1C));
-    func_ov003_02208034(var_r5);
+    UpdateMapSelectLabelTransform(var_r5);
 }
 

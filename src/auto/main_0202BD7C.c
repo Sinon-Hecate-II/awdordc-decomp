@@ -1,6 +1,7 @@
 /* 43 functions from 0x0202BD7C to 0x0202CD78 (main), found by ds-decomp. */
 #include "common.h"
 #include "fs.h"
+#include "sound.h"
 typedef struct { u32 id:24; u32 flags:8; } Unk0202PackedId;
 
 /* Load a resource archive: read its 0x30-byte header, then allocate and read
@@ -91,9 +92,9 @@ void *func_0202c03c(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCur
 
 void *func_0202c0a0(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0xc);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c104(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x10);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *GetSoundBankRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x10);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c168(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x14);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *GetWaveArchiveRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x14);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
 void *func_0202c1cc(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x24);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
@@ -290,8 +291,8 @@ s32 func_0202c848(void) {
 s32 func_0202c860(M2C_UNK arg0,M2C_UNK arg1){s32 func_0202ca40(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);if(func_0202ca40(arg0,255,arg1,1,0)==0)return 1;return 0;}
 
 s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_0202caa0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    if (func_0202caa0(arg0, 0xFF, arg1, 1, 0) == 0) {
+    s32 LoadSoundBank(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    if (LoadSoundBank(arg0, 0xFF, arg1, 1, 0) == 0) {
         return 1;
     }
     return 0;
@@ -307,8 +308,8 @@ do{
 switch(M2C_FIELD(p,u8 *,0)){
 case 0:r=func_0202c9bc(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
 case 3:r=func_0202ca40(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
-case 1:r=func_0202caa0(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
-case 2:r=func_0202cbe0(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 1:r=LoadSoundBank(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 2:r=LoadWaveArchive(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
 }
 i++;p+=8;
 }while(i<M2C_FIELD(base,u32 *,0));
@@ -317,10 +318,10 @@ return 0;
 }
 
 s32 func_0202c9bc(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
-s32 func_0202caa0(s32,s32,s32,s32,s32);
+s32 LoadSoundBank(s32,s32,s32,s32,s32);
 void *p=func_0202c03c(a);s32 r;
 if(!p)return 2;
-r=func_0202caa0(M2C_FIELD(p,u16 *,4),flags,b,c,0);if(r)return r;
+r=LoadSoundBank(M2C_FIELD(p,u16 *,4),flags,b,c,0);if(r)return r;
 a=M2C_FIELD(p,s32 *,0);
 if(flags&1){r=func_0202cd0c(a,b,c);if(!r)return 6;}else r=func_0202c444(a);
 if(out)*out=r;return 0;
@@ -335,29 +336,33 @@ if(flags&8){r=func_0202cd78(a,b,c);if(!r)return 7;}else r=func_0202c444(a);
 if(out)*(s32 *)out=r;return 0;
 }
 
-s32 func_0202caa0(s32 a,s32 flags,s32 b,s32 c,s32 out) {
+/* Loads a sound-archive bank: resolves its bank record, loads the bank file
+ * itself (or reuses the already loaded object) and then each of the up to four
+ * wave archives the bank references.  Returns 0 or a nonzero error code
+ * (4 = no bank record, 5 = no wave archive record, 8/9 = load failed). */
+s32 LoadSoundBank(s32 bankId,s32 flags,s32 pool,s32 create,s32 out) {
 s32 func_0202cde4(s32,s32,s32);s32 func_0202d1d4(s32,s32,s32,s32,s32);
-void *p;void *q;s32 object;s32 i;s32 bit;s32 result;s32 child;
-p=func_0202c104(a);if(!p)return 4;
-if(flags&2){object=func_0202cde4(M2C_FIELD(p,s32 *,0),b,c);if(!object)return 8;}
-else object=func_0202c444(M2C_FIELD(p,u32 *,0));
-bit=flags&4;
+void *bankRecord;void *waveRecord;s32 bank;s32 i;s32 loadWaveArchives;s32 result;s32 waveObject;
+bankRecord=GetSoundBankRecord(bankId);if(!bankRecord)return 4;
+if(flags&2){bank=func_0202cde4(M2C_FIELD(bankRecord,s32 *,0),pool,create);if(!bank)return 8;}
+else bank=func_0202c444(M2C_FIELD(bankRecord,u32 *,0));
+loadWaveArchives=flags&4;
 for(i=0;i<4;i++){
-if(((u16 *)p)[i+2]==65535)continue;
-q=func_0202c168(((u16 *)p)[i+2]);if(!q)return 5;
-result=func_0202cbe0(((u16 *)p)[i+2],flags,b,c,&child);if(result)return result;
-if(((Unk0202PackedId *)q)->flags&1 && bit){
-if(!func_0202d1d4(child,object,i,((Unk0202PackedId *)q)->id,b))return 9;
+if(((u16 *)bankRecord)[i+2]==SOUND_FILE_NONE)continue;
+waveRecord=GetWaveArchiveRecord(((u16 *)bankRecord)[i+2]);if(!waveRecord)return 5;
+result=LoadWaveArchive(((u16 *)bankRecord)[i+2],flags,pool,create,&waveObject);if(result)return result;
+if(((Unk0202PackedId *)waveRecord)->flags&1 && loadWaveArchives){
+if(!func_0202d1d4(waveObject,bank,i,((Unk0202PackedId *)waveRecord)->id,pool))return 9;
 }
-if(object&&child)func_02009940(object,i,child);
+if(bank&&waveObject)func_02009940(bank,i,waveObject);
 }
-if(out)*(s32 *)out=object;
+if(out)*(s32 *)out=bank;
 return 0;
 }
 
-s32 func_0202cbe0(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
+s32 LoadWaveArchive(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
 s32 func_0202ce50(u32,s32,s32);s32 func_0202cebc(u32,s32,s32);
-Unk0202PackedId *p=func_0202c168(a);s32 r;
+Unk0202PackedId *p=GetWaveArchiveRecord(a);s32 r;
 if(!p)return 5;
 if(flags&4){if(p->flags&1)r=func_0202cebc(p->id,b,c);else r=func_0202ce50(p->id,b,c);if(!r)return 9;}else r=func_0202c444(p->id);
 if(out)*out=r;return 0;

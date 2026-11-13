@@ -188,7 +188,7 @@ report:
 ((TouchState *)&data_0212fc70)->flags3a&=~(1<<command);
 if(((TouchState *)&data_0212fc70)->callback)((TouchState *)&data_0212fc70)->callback(command,(u8)status,0);
 return;
-default:func_02007958();return;
+default:SystemHalt();return;
 }
 }
 #pragma pop

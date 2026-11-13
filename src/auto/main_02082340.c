@@ -194,10 +194,10 @@ M2C_FIELD(out,s32 *,8)=M2C_FIELD(out,s16 *,0)*a+M2C_FIELD(out,s16 *,2)*b+(x<<8);
 M2C_FIELD(out,s32 *,12)=M2C_FIELD(out,s16 *,4)*a+M2C_FIELD(out,s16 *,6)*b+(y<<8);
 }
 void func_02082b78(void){
-extern void *g3DSpriteBankMain;extern void *data_027e00c0;
+extern void *g3DSpriteBankMain;extern void *g3DSpriteBankSub;
 extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineSub;extern void **g3DSpriteEngineMain;
 u16 *volatile a;u16 *volatile b;void **old;s32 i;
-M2C_FIELD(g3DSpriteBankMain,s32*,0x34)=1;M2C_FIELD(data_027e00c0,s32*,0x34)=1;
+M2C_FIELD(g3DSpriteBankMain,s32*,0x34)=1;M2C_FIELD(g3DSpriteBankSub,s32*,0x34)=1;
 M2C_FIELD(g3DSpriteBankMain,u16*,4)=(M2C_FIELD(g3DSpriteBankMain,u16*,4)&~1)|1;
 M2C_FIELD(g3DSpriteBankMain,u16*,4)&=~2;
 M2C_FIELD(g3DSpriteBankMain,u16*,4)&=~4;
@@ -266,7 +266,7 @@ void func_02082d08(void) {
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
     extern void *g3DSpriteBankMain;
-    extern void *data_027e00c0;
+    extern void *g3DSpriteBankSub;
     extern void **g3DSpriteEngineSub;
     extern u8 data_027e068c[];
     extern u8 data_0214e8dc[];
@@ -295,7 +295,7 @@ void func_02082d08(void) {
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_42 = 0;
     ((DS3DSpriteEngine *)g3DSpriteEngineMain)->filler_44 = 0;
 
-    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->bank = data_027e00c0;
+    ((DS3DSpriteEngine *)g3DSpriteEngineSub)->bank = g3DSpriteBankSub;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->textureAddr = 0x06600000;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamBuffer = (void *)data_027e028c;
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->oamEntries = (u16 *)data_0214e4dc;

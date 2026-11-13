@@ -182,15 +182,15 @@ s32 func_020c4798(void) {
 
 void func_020c47e4(s32 *arg0) {
  s32 GetActiveOverlay(void);
- s32 func_02037ca0(s32 *,s32 *);
+ s32 GetServerTime(s32 *,s32 *);
  s32 a[4];s32 b[3];
  if(GetActiveOverlay()!=2)return;
- if(!func_02037ca0(a,b))return;
+ if(!GetServerTime(a,b))return;
  arg0[0]=a[0];arg0[1]=a[1];arg0[2]=a[2];arg0[3]=a[3];
  arg0[4]=b[0];arg0[5]=b[1];arg0[6]=b[2];
 }
 
-long long func_020c4858(s32 arg0,s32 arg1,s32 arg2) {
+long long GetElapsedSeconds(s32 arg0,s32 arg1,s32 arg2) {
  long long MakeTime(s32,s32);
  long long t=MakeTime(arg0,arg0+16);
  return MakeTime(arg1,arg2)-t;

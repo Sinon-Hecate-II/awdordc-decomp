@@ -93,6 +93,26 @@ typedef struct WfcSendState {
 #define WFC_MATCH_FLAG_COUNT   0x1d20 /* s32 * count of flagged players output */
 #define WFC_MATCH_PLAYER_COUNT 0x1d24 /* s32 number of players the request asked about */
 
+/* The ov001 Wi-Fi connection state (gOv001ConnectionState, 0x1ba0 bytes, allocated by
+ * func_ov001_02185bf4): the roster of the players seen on the connection, the
+ * status callback and the watch timer that reports the final state once. */
+#define WFC_CONN_SLOTS        0x1300 /* 16 player slots, WFC_CONN_SLOT_STRIDE bytes each */
+#define WFC_CONN_SLOT_COUNT   16     /* slots in WFC_CONN_SLOTS */
+#define WFC_CONN_SLOT_STRIDE  7      /* bytes per slot */
+#define WFC_CONN_SLOT_ID      0x00   /* 6-byte player id, all zero when the slot is free */
+#define WFC_CONN_SLOT_ONLINE  0x06   /* u8 nonzero while the player is online */
+#define WFC_CONN_STATUS_CB    0x1370 /* void (*)(s32 status): WFC_CONN_STATUS_* */
+#define WFC_CONN_WATCH_START  0x1B88 /* u64 tick the connection watch began at */
+#define WFC_CONN_WATCH_TIMER  0x1B90 /* s32 handle of the watch timer, 0 when stopped */
+#define WFC_CONN_WATCH_DONE   0x1B96 /* u8 set once the watch has reported the state */
+
+/* Status the connection watch reports (WFC_CONN_STATUS_CB argument). */
+enum {
+    WFC_CONN_STATUS_NONE   = 0, /* no player is on the connection */
+    WFC_CONN_STATUS_ONLINE = 1, /* every present player is online */
+    WFC_CONN_STATUS_MIXED  = 2  /* some present players are offline */
+};
+
 /* Layout of the RFC-1123 Date header the server sends:
  * "Www, DD Mmm YYYY hh:mm:ss GMT" (29 characters, field boundaries below). */
 #define HTTP_DATE_DAY_SPACE   7  /* ' ' before the day-of-month */
@@ -156,6 +176,13 @@ enum {
 #define WFC_ENTRY_ID           0x01 /* u8 friend id returned to the caller */
 #define WFC_ENTRY_CODE_LEN     0x03 /* u8 length of the row's code */
 #define WFC_ENTRY_CODE         0x04 /* u8[] code bytes */
+
+#define WFC_STATE_CONN_FLAGS   0xD0B /* u8: bits 2-3 connection status, bits 4-5 mode, high nibble attempts */
+#define WFC_STATE_CONN_EVENT   0xD14 /* u8 outcome of the friend connection: 1 cancelled, 2/3/4 results */
+#define WFC_STATE_CONN_RETRY   0xD15 /* u8 friend-connection attempts made, wraps at 3 */
+#define WFC_STATE_RECORD_RESULT 0x444 /* u8 per friend record, stride 4: the record's connection result */
+#define WFC_STATE_TIMER        0xCB0 /* u64 tick the friend connection started at */
+#define WFC_STATE_CMD_BUFFER   0xCB8 /* outgoing command/settings block built by func_020300e8 (0x52 bytes) */
 
 #define WFC_STATE_RECORDS      0x470 /* friend records, WFC_RECORD_STRIDE bytes each */
 #define WFC_RECORD_STRIDE      0xC0

@@ -210,16 +210,16 @@ s32 func_0209c168(void *arg0, s32 arg1) {
 }
 
 s32 MeasureGlyphWidth(u8 *arg0, s32 *arg1) {
-    u8 func_02099ae8(u8 *);
-    u8 func_02099b00(u8 *);
+    u8 IsLeadByte(u8 *);
+    u8 IsGlyphEscape(u8 *);
     extern u8 gGlyphWidthTable[256];
 
     if (arg0 != NULL) {
-        if (func_02099ae8(arg0)) {
+        if (IsLeadByte(arg0)) {
             *arg1 += 8;
             return 2;
         }
-        if (func_02099b00(arg0)) {
+        if (IsGlyphEscape(arg0)) {
             if (*arg1 != 0) {
                 *arg1 += 1;
             }

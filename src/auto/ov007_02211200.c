@@ -32,7 +32,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- func_020ceec8();func_02086608(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
+ LoadMapTileset();func_02086608(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
  func_ov007_0221c648(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();

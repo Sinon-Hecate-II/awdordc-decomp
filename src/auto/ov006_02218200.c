@@ -5,8 +5,8 @@
 void func_ov006_02218200(void *entity) {
     s32 GetMapRecordBuffer();
     s32 func_020c7e58(s32);
-    s32 func_02084cf8();
-    s32 func_020c8c6c(void *);
+    s32 GetOnlineLocalPlayerId();
+    s32 IsLocalMacAddress(void *);
     s32 func_020c7a3c(s32);
     void *sub = M2C_FIELD(entity, void **, 0x54);
     s32 curId = GetMapRecordBuffer();
@@ -31,9 +31,9 @@ void func_ov006_02218200(void *entity) {
         return;
     }
     value = M2C_FIELD(sub, s32 *, 4);
-    if (value == func_02084cf8()) {
+    if (value == GetOnlineLocalPlayerId()) {
         ok = 1;
-    } else if (func_020c8c6c(sub + 0x50)) {
+    } else if (IsLocalMacAddress(sub + 0x50)) {
         ok = 1;
     } else {
         ok = 0;

@@ -222,26 +222,29 @@ func_0209b32c(19,(s16)(n+3),1,GetLocalizedText(func_ov000_0216a7d4(func_02084ba8
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;return 1;
 }
 #pragma pop
-void func_ov000_02171468(u8 *p){
+/* Loads the player-name entry screen: opens the username archive, uploads its
+   graphics and sprite layer, and sets the screen's per-player "needs a name"
+   flags (screen[0x34+i]) from func_ov000_0217122c. */
+void LoadUsernameScreen(u8 *screen){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK data_ov000_021b8ce8,data_ov000_021b8cf0,data_ov000_021b8d00,data_ov000_021b8d0c;
+extern M2C_UNK sUsernameDir,sUsernameNarcName,sUsernameCgName,sUsernameClName;
 void func_020e4c64(void);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 s32 func_ov000_0217122c(s32);void CloseNarcArchive(void);void func_02091d4c(s32);
 s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void func_020c0fac(void *);
-void *old=gCur3DSpriteEngine;s32 i;
+void *oldEngine=gCur3DSpriteEngine;s32 i;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_020e4c64();SetFileDirectory(&data_ov000_021b8ce8);
-OpenNarcArchive(GetLocalizedFileName(&data_ov000_021b8cf0));
-LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8d00),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
-LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_ov000_021b8d0c),0x60,0x20);
-for(i=1;i<5;i++){if(func_ov000_0217122c(i))p[0x34+i]=1;else p[0x34+i]=0;}
+func_020e4c64();SetFileDirectory(&sUsernameDir);
+OpenNarcArchive(GetLocalizedFileName(&sUsernameNarcName));
+LoadNarcFileDecompressed(GetLocalizedFileName(&sUsernameCgName),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
+LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&sUsernameClName),0x60,0x20);
+for(i=1;i<5;i++){if(func_ov000_0217122c(i))screen[0x34+i]=1;else screen[0x34+i]=0;}
 CloseNarcArchive();func_02091d4c(0);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2),0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=3;
-func_020c0fac(p);gCur3DSpriteEngine=old;
+func_020c0fac(screen);gCur3DSpriteEngine=oldEngine;
 }
 
 void func_ov000_021715a4(u8 *p){

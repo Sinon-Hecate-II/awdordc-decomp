@@ -344,8 +344,8 @@ s32 func_0202ed18(void *arg0, s32 arg1) {
 }
 
 void func_0202ed8c(s32 arg0) {
-    M2C_UNK func_0200ba9c(s32);
-    func_0200ba9c(arg0 + 0x5C);
+    M2C_UNK CloseFileRequest(s32);
+    CloseFileRequest(arg0 + 0x5C);
 }
 
 void func_0202ed9c(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {

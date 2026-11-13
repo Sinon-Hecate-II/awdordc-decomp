@@ -1,39 +1,47 @@
 /* 25 functions from 0x0216C7F0 to 0x0216D2B4 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ov000_ui.h"
+#include "battle_map.h"
 
-void *func_ov000_0216c7f0(void *p){
-extern M2C_UNK data_ov000_021b8690;
+/* Deleting destructor of the army info window: restore its base vtable, destroy
+ * the stat panel through its own vtable, free each of the seven icon animations
+ * (its frame table first) and then the window itself. */
+void *DeleteArmyInfoWindow(void *window){
+extern M2C_UNK gArmyInfoWindowVTable;
 void MemFree(void *);
-void *q;
-M2C_FIELD(p,void **,0)=&data_ov000_021b8690;
-q=M2C_FIELD(p,void **,0x40);
-if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
-q=M2C_FIELD(p,void **,0x44);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x48);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x4c);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x50);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x54);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x58);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x5c);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-MemFree(p);
-return p;
+void *icon;
+M2C_FIELD(window,void **,0)=&gArmyInfoWindowVTable;
+icon=M2C_FIELD(window,void **,ARMY_INFO_PANEL);
+if(icon)M2C_FIELD(M2C_FIELD(icon,void **,0),void (**)(void *),4)(icon);
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x00);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x04);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x08);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x0c);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x10);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x14);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x18);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+MemFree(window);
+return window;
 }
 
-void *func_ov000_0216c928(void *p){
-extern M2C_UNK data_ov000_021b8690;
+/* Non-deleting destructor of the army info window: restores the base vtable,
+ * destroys the stat panel through its own vtable and frees each of the seven
+ * icon animations (its frame table first), leaving the window itself allocated. */
+void *ArmyInfoWindow_Destruct(void *window){
+extern M2C_UNK gArmyInfoWindowVTable;
 void MemFree(void *);
-void *q;
-M2C_FIELD(p,void **,0)=&data_ov000_021b8690;
-q=M2C_FIELD(p,void **,0x40);
-if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
-q=M2C_FIELD(p,void **,0x44);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x48);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x4c);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x50);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x54);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x58);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-q=M2C_FIELD(p,void **,0x5c);if(q){if(M2C_FIELD(q,void **,0))MemFree(M2C_FIELD(q,void **,0));MemFree(q);}
-return p;
+void *icon;
+M2C_FIELD(window,void **,0)=&gArmyInfoWindowVTable;
+icon=M2C_FIELD(window,void **,ARMY_INFO_PANEL);
+if(icon)M2C_FIELD(M2C_FIELD(icon,void **,0),void (**)(void *),4)(icon);
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x00);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x04);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x08);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x0c);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x10);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x14);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x18);if(icon){if(M2C_FIELD(icon,void **,0))MemFree(M2C_FIELD(icon,void **,0));MemFree(icon);}
+return window;
 }
 
 s32 func_ov000_0216ca58(s32 arg0, s32 arg1) {
@@ -44,20 +52,23 @@ s32 func_ov000_0216ca58(s32 arg0, s32 arg1) {
     return M2C_FIELD((temp_r2 + (arg0 + M2C_FIELD((temp_r2 + (arg1 * 2)), u16 *, 0x3758))), u8 *, 0x1420) & 0x1F;
 }
 
-s32 func_ov000_0216ca8c(s32 x,s32 y){
+/* Maps the cell at (x,y) to the detailed terrain id the info window shows: certain
+   tilesets turn impact/plain tiles into their own ids (32..41), otherwise the raw
+   terrain kind is returned. */
+s32 GetCellTerrainId(s32 x,s32 y){
 extern s32 *gCurrentMap;
 void *func_020a45f8(s32,s32);
-s32 type,index,p; void *unit; p=*gCurrentMap;
-index=x+M2C_FIELD(p+y*2,u16 *,0x3758);
-type=M2C_FIELD(p+index,u8 *,0x1420)&31;
-switch(M2C_FIELD(p,u8 *,0x5157)){
-case 0:if(type==29)return 32;break;
-case 4:if(type==29)return 38;if(type==4)return 39;break;
-case 8:if(type==29)return 37;if(type==2)return 36;break;
-case 9:if(type!=29)break;unit=func_020a45f8(x,y);if(unit){u32 kind=((u32)M2C_FIELD(unit,u16 *,2)<<22)>>28;if(kind==6)return 34;if(kind==7)return 35;}return 33;
+s32 terrainKind,cellIndex,map; void *feature; map=*gCurrentMap;
+cellIndex=x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS);
+terrainKind=M2C_FIELD(map+cellIndex,u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK;
+switch(M2C_FIELD(map,u8 *,MAP_TILESET)){
+case 0:if(terrainKind==29)return 32;break;
+case 4:if(terrainKind==29)return 38;if(terrainKind==4)return 39;break;
+case 8:if(terrainKind==29)return 37;if(terrainKind==2)return 36;break;
+case 9:if(terrainKind!=29)break;feature=func_020a45f8(x,y);if(feature){u32 kind=((u32)M2C_FIELD(feature,u16 *,2)<<22)>>28;if(kind==6)return 34;if(kind==7)return 35;}return 33;
 }
-if(type==1){switch(M2C_FIELD(p+index*2,u16 *,0xa10)){case 4:return 40;case 5:return 41;}}
-return type;
+if(terrainKind==1){switch(M2C_FIELD(map+cellIndex*2,u16 *,MAP_CELL_TILE_ID)){case 4:return 40;case 5:return 41;}}
+return terrainKind;
 }
 
 s32 func_ov000_0216cbc4(s32 arg0) {

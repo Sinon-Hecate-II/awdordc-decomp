@@ -9,7 +9,7 @@ typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
  * runs the panel's state machine. */
 void Ov000_InfoWindow_Update(Ov000MenuState *menu) {
 extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *gOv000InfoWindow; extern u8 data_021291b0[];
-int func_020d4ea8(void); int FindObjectByClass(void *); s32 func_ov000_0216ca8c(s32,s32);
+int func_020d4ea8(void); int FindObjectByClass(void *); s32 GetCellTerrainId(s32,s32);
 void Ov000_InfoWindow_SetUnitFlags(void *); void Ov000_InfoWindow_ClearUnitFlags(void *); void Ov000_InfoWindow_ShowTerrain(void *,s32); void Ov000_InfoWindow_OpenCell(void *,s32,s32);
 void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void func_ov000_021751b4(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
 s32 x=M2C_FIELD(*gCurrentMap,s16 *,0x52c2), y=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
@@ -63,7 +63,7 @@ if(selected && M2C_FIELD(selected,u8 *,1)==x && M2C_FIELD(selected,u8 *,2)==y)oc
 }
 if(occupant && ((u32)(M2C_FIELD(occupant,u8 *,0)<<26)>>26)==0)unit=0; else unit=occupant;
 }
-terrain=func_ov000_0216ca8c(x,y);
+terrain=GetCellTerrainId(x,y);
 if(unit){menu->hasUnit=1;Ov000_InfoWindow_OpenCell(gOv000InfoWindow,(s32)unit,terrain);}
 else {menu->hasUnit=0;Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow,terrain);}
 }
@@ -149,38 +149,41 @@ void Ov000_InfoWindow_ShowTerrain(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0xC) = 2;
 }
 
-void func_ov000_02174ab4(void *arg0) {
+/* Confirm action of the map info window: toggles the panel under the cursor
+ * between the terrain description and the statistics of the unit standing on
+ * the cell (bit 0x8000 of the global flags forces the terrain panel). */
+void Ov000_InfoWindow_TogglePanel(void *menu) {
 extern void **gCurrentMap;
 extern Ov000Flags data_0215d9b8;
 extern Ov000MenuState *gOv000InfoWindow;
-s32 func_ov000_0216ca8c(s32,s32);
+s32 GetCellTerrainId(s32,s32);
 void *unit;
-void *base=*gCurrentMap;
-s32 x=M2C_FIELD(base,s16 *,0x52c2);
-s32 y=M2C_FIELD(base,s16 *,0x52c4);
-u32 index=x+((u16 *)((u8 *)base+0x3758))[y];
-unit=(u8 *)base+0x59a4+((u8 *)base)[index]*14;
-if(!(u8)(M2C_FIELD((u8 *)base+(index>>3),u8 *,0x5201)&(1<<(index&7)))) unit=0;
+void *map=*gCurrentMap;
+s32 cellX=M2C_FIELD(map,s16 *,0x52c2);
+s32 cellY=M2C_FIELD(map,s16 *,0x52c4);
+u32 cell=cellX+((u16 *)((u8 *)map+0x3758))[cellY];
+unit=(u8 *)map+0x59a4+((u8 *)map)[cell]*14;
+if(!(u8)(M2C_FIELD((u8 *)map+(cell>>3),u8 *,0x5201)&(1<<(cell&7)))) unit=0;
 else {
 if(unit==0 || ((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0){
-void *other=M2C_FIELD(base,void **,0x52d0);
-if(other!=0 && M2C_FIELD(other,u8 *,1)==x && M2C_FIELD(other,u8 *,2)==y)unit=other;
+void *selectedUnit=M2C_FIELD(map,void **,0x52d0);
+if(selectedUnit!=0 && M2C_FIELD(selectedUnit,u8 *,1)==cellX && M2C_FIELD(selectedUnit,u8 *,2)==cellY)unit=selectedUnit;
 }
 if(unit && ((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0)unit=0;
 }
-index=func_ov000_0216ca8c(x,y);
-switch(M2C_FIELD(arg0,s32 *,8)){
+cell=GetCellTerrainId(cellX,cellY);
+switch(M2C_FIELD(menu,s32 *,8)){
 case 2: case 3: {
 u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
-void *state=gOv000InfoWindow;
+void *window=gOv000InfoWindow;
 M2C_FIELD(&data_0215d9b8,u16 *,6)=flags & ~0x8000;
-Ov000_InfoWindow_OpenCell(state,(s32)unit,index);
+Ov000_InfoWindow_OpenCell(window,(s32)unit,cell);
 break; }
 case 4: {
 u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
-void *state=gOv000InfoWindow;
+void *window=gOv000InfoWindow;
 M2C_FIELD(&data_0215d9b8,u16 *,6)=flags | 0x8000;
-Ov000_InfoWindow_ShowTerrain(state,index);
+Ov000_InfoWindow_ShowTerrain(window,cell);
 break; }
 }
 }
@@ -275,10 +278,10 @@ s32 func_ov000_02174d50(void) {
 }
 
 s32 func_ov000_02174d78(void) {
-    void func_ov000_02174ab4(void *);
+    void Ov000_InfoWindow_TogglePanel(void *);
     extern Ov000MenuState *gOv000InfoWindow;
     if (func_ov000_02174c0c() == 0) return 0;
-    func_ov000_02174ab4(gOv000InfoWindow);
+    Ov000_InfoWindow_TogglePanel(gOv000InfoWindow);
     return 1;
 }
 

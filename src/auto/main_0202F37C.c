@@ -308,7 +308,7 @@ void func_0202fc10(void *arg0) {
 
 s32 func_0202fc9c(void) {
     s32 func_0202fce0();
-    s32 func_0202fdd8();
+    s32 Wfc_UpdateFriendConnection();
     s32 var_r4;
 
     var_r4 = Wfc_GetSessionState();
@@ -318,7 +318,7 @@ s32 func_0202fc9c(void) {
         var_r4 = func_0202fce0();
         break;
     case 8:
-        var_r4 = func_0202fdd8();
+        var_r4 = Wfc_UpdateFriendConnection();
         break;
     }
     return var_r4;
@@ -345,23 +345,29 @@ M2C_FIELD(p,u8 *,0xD15)=0;M2C_FIELD(p,u8 *,0xD14)=0;return 8;
 }
 
 #pragma dont_inline on
-s32 func_020300b0(void *);
-s32 func_0202fdd8(u8 *p) {
-u32 func_02027c84(); s32 func_020300b0(void *); s32 func_020300cc(void *);
+s32 Wfc_GetConnectFlags(void *);
+/* One step of the WFC friend-connection phase (state 8): while the link is up it
+ * hands the selected friend record and the outgoing command buffer to
+ * WFC_StartConnection, retrying up to three times; a reported outcome (event
+ * 1/2/3) either clears the pending connection flags or stores the record's
+ * result and finishes the step; when the link has dropped (state 9) it stamps
+ * the start time and advances. */
+s32 Wfc_UpdateFriendConnection(u8 *wfc) {
+u32 Wfc_GetLinkState(); s32 Wfc_GetConnectFlags(void *); s32 Wfc_GetConnectModeFlags(void *);
 void WFC_StartConnection(void *,void *,s32); unsigned long long GetSystemTick(void);
-s32 state=func_02027c84(p); s32 off; u8 *base; s32 flags; base=p+0x470; off=(s16)p[0xd13]*(s16)192;
+s32 state=Wfc_GetLinkState(wfc); s32 off; u8 *base; s32 flags; base=wfc+WFC_STATE_RECORDS; off=(s16)wfc[WFC_STATE_RECORD_INDEX]*(s16)WFC_RECORD_STRIDE;
 if(state==3) {
-{ s32 (*getFlags)(void *)=func_020300b0; flags=getFlags(p); }
-p[0xd15]++;
-if(p[0xd15]>3){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=1;return 9;}
-if(p[0xd15]!=1) {
-if(p[0xd14]==1)p[0xd0b]&=~12;
-else if(p[0xd14]==2){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=3;return 9;}
-else if(p[0xd14]==3){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=4;return 9;}
-else if(p[0xd15]==3)p[0xd0b]&=~12;
+{ s32 (*getFlags)(void *)=Wfc_GetConnectFlags; flags=getFlags(wfc); }
+wfc[WFC_STATE_CONN_RETRY]++;
+if(wfc[WFC_STATE_CONN_RETRY]>3){wfc[WFC_STATE_CONN_RETRY]=0;M2C_FIELD(wfc+wfc[WFC_STATE_RECORD_INDEX]*4,u8 *,WFC_STATE_RECORD_RESULT)=1;return 9;}
+if(wfc[WFC_STATE_CONN_RETRY]!=1) {
+if(wfc[WFC_STATE_CONN_EVENT]==1)wfc[WFC_STATE_CONN_FLAGS]&=~12;
+else if(wfc[WFC_STATE_CONN_EVENT]==2){wfc[WFC_STATE_CONN_RETRY]=0;M2C_FIELD(wfc+wfc[WFC_STATE_RECORD_INDEX]*4,u8 *,WFC_STATE_RECORD_RESULT)=3;return 9;}
+else if(wfc[WFC_STATE_CONN_EVENT]==3){wfc[WFC_STATE_CONN_RETRY]=0;M2C_FIELD(wfc+wfc[WFC_STATE_RECORD_INDEX]*4,u8 *,WFC_STATE_RECORD_RESULT)=4;return 9;}
+else if(wfc[WFC_STATE_CONN_RETRY]==3)wfc[WFC_STATE_CONN_FLAGS]&=~12;
 }
-WFC_StartConnection(base+off,p+0xcb8,flags|func_020300cc(p));
-} else if(state==9) {p[0xd15]=0;M2C_FIELD(p,unsigned long long *,0xcb0)=GetSystemTick();return 10;}
+WFC_StartConnection(base+off,wfc+WFC_STATE_CMD_BUFFER,flags|Wfc_GetConnectModeFlags(wfc));
+} else if(state==9) {wfc[WFC_STATE_CONN_RETRY]=0;M2C_FIELD(wfc,unsigned long long *,WFC_STATE_TIMER)=GetSystemTick();return 10;}
 return 8;
 }
 
@@ -454,14 +460,14 @@ u8 Wfc_ResolveFriendSelection(void *arg0) {
 }
 
 #pragma dont_inline reset
-s32 func_020300b0(void *arg0) {
+s32 Wfc_GetConnectFlags(void *arg0) {
     if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x1E) >> 0x1E) == 1) {
         return 0x30000;
     }
     return 0x20000;
 }
 
-s32 func_020300cc(void *arg0) {
+s32 Wfc_GetConnectModeFlags(void *arg0) {
     if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x1C) >> 0x1E) == 1) {
         return 0xC0000;
     }
@@ -508,8 +514,8 @@ s32 func_02030264(void) {
  void func_020276b0(void);
  void func_02027958(void);
  void WFC_ProcessLinkState(void);
- u32 func_02027c84(void);
- switch(func_02027c84()) {
+ u32 Wfc_GetLinkState(void);
+ switch(Wfc_GetLinkState()) {
  case 0:return 1;
  case 1:func_020271cc();break;
  case 3:func_02027428();break;

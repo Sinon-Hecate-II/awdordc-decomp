@@ -182,7 +182,7 @@ s32 gpiHandleServerData(void *ctx) {
     s32 StringCompareN(void *, void *, s32);
     s32 func_0204eee8(void *, void *);
     s32 func_02054520(void *);
-    void func_02049260(s32);
+    void gpiSleep(s32);
 
     void *operation;
     s32 lineLen, connectionClosed = 0, result, id, again;
@@ -246,7 +246,7 @@ s32 gpiHandleServerData(void *ctx) {
             return 0;
         }
         again = func_02054520(ctx);
-        if (again) func_02049260(10);
+        if (again) gpiSleep(10);
     } while (again);
     return 0;
 }
@@ -256,7 +256,7 @@ s32 gpiHandleServerData(void *ctx) {
    search and pending-operation queues, and flushes finished callbacks; a nonzero
    error code is returned to stop. */
 s32 gpiThink(void **connection, s32 waitId) {
-    void func_02049260(s32); s32 gpiHandleServerData(void *); s32 func_02050ad4(void **,s32);
+    void gpiSleep(s32); s32 gpiHandleServerData(void *); s32 func_02050ad4(void **,s32);
     s32 func_02051ed0(void **); void gpiFinishOperation(void **); void func_02054484(void **,void *);
     s32 func_020544d4(void **,void **,s32); s32 func_0205519c(void **);
     s32 gpiProcessSearches(void **); s32 gpiDisconnect(void **,s32);
@@ -274,7 +274,7 @@ s32 gpiThink(void **connection, s32 waitId) {
         do {
             result=func_02051ed0(connection);
             if(result==0 && waitId && M2C_FIELD(session,u32 *,0x1d8)==1)keepPolling=1;else keepPolling=0;
-            if(keepPolling)func_02049260(10);
+            if(keepPolling)gpiSleep(10);
         }while(keepPolling);
         if(result) {
             if(func_020544d4(connection,&next,1))M2C_FIELD(next,s32 *,0x1c)=4;

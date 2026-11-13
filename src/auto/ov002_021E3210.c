@@ -1,5 +1,6 @@
 /* 21 functions from 0x021E3210 to 0x021E41AC (ov002), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_ov002_021e3210(void *arg0) {
     (void)arg0;
@@ -230,50 +231,55 @@ AddSprite((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),gSpriteDesc64x64,0);
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction on
-void func_ov002_021e3c5c(void) {
+void SwapBattleScreen(void) {
     M2C_UNK func_ov002_021e39e8(M2C_UNK *);
     extern M2C_UNK data_ov002_021f3014;
     func_ov002_021e39e8(&data_ov002_021f3014);
 }
 
-void func_ov002_021e3c70(void) {
+void UpdateBattleSpriteLayers(void) {
     M2C_UNK func_ov002_021e3a7c(M2C_UNK *);
     extern M2C_UNK data_ov002_021f3014;
     func_ov002_021e3a7c(&data_ov002_021f3014);
 }
 
-void func_ov002_021e3c84(void) {
+void DrawBattleSpriteGrid(void) {
 
     extern M2C_UNK data_ov002_021f3014;
     func_ov002_021e3b7c(&data_ov002_021f3014);
 }
 
-void func_ov002_021e3c98(s32 *arg0) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void SetLayerSize(s32,s32);void func_0209cce4(s32,s32);
-extern volatile u16 *data_027e00c0;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
+/* Prepare the battle screen's 3D-sprite overlay: clear the two shared VRAM banks,
+ * put the sub screen's sprite bank into mode 3, reset its layer tile fields and
+ * palettes, then install the three per-frame callbacks that swap the two screen
+ * halves, reconfigure the layers and draw the sprite grid.  `phase` is the half
+ * currently shown. */
+void InitBattleSpriteScene(s32 *phase) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void SetLayerSize(s32,s32);void func_0209cce4(s32,s32);
+extern volatile u16 *g3DSpriteBankSub;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
 func_020033e0();func_020033f4();
-data_027e00c0[0]=(u16)((data_027e00c0[0]&~0x7)|0x3);
-data_027e00c0[0]=(u16)(data_027e00c0[0]&~0x10);
-data_027e00c0[0]=(u16)(data_027e00c0[0]&~0x20);
-data_027e00c0[0]=(u16)(data_027e00c0[0]&~0x40);
-data_027e00c0[0]=(u16)(data_027e00c0[0]|0x80);
-data_027e00c0[0]=(u16)(data_027e00c0[0]|0x100);
-data_027e00c0[1]=(u16)((data_027e00c0[1]&~0xC0)|0x40);
-data_027e00c0[1]=(u16)(data_027e00c0[1]&~0x100);
-{u32 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-data_027e00c0[6]=(u16)((data_027e00c0[6]&~0x3C)|0x4);
-data_027e00c0[6]=(u16)(data_027e00c0[6]|0x80);
-Set3DSpriteLayerPalette(3,0);SetLayerSize(3,1);gCur3DSpriteEngine=old;}
-*arg0=0;
-func_0209cce4((s32)func_ov002_021e3c5c,2);
-func_0209cce4((s32)func_ov002_021e3c70,7);
-func_0209cce4((s32)func_ov002_021e3c84,9);
+g3DSpriteBankSub[0]=(u16)((g3DSpriteBankSub[0]&~0x7)|0x3);
+g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]&~DS3D_BANK_MODE0);
+g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]&~DS3D_BANK_MODE1);
+g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]&~DS3D_BANK_MODE2);
+g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]|DS3D_BANK_MODE3);
+g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]|DS3D_BANK_MODE4);
+g3DSpriteBankSub[1]=(u16)((g3DSpriteBankSub[1]&~0xC0)|0x40);
+g3DSpriteBankSub[1]=(u16)(g3DSpriteBankSub[1]&~0x100);
+{u32 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
+g3DSpriteBankSub[6]=(u16)((g3DSpriteBankSub[6]&~0x3C)|0x4);
+g3DSpriteBankSub[6]=(u16)(g3DSpriteBankSub[6]|0x80);
+Set3DSpriteLayerPalette(3,0);SetLayerSize(3,1);gCur3DSpriteEngine=savedEngine;}
+*phase=0;
+func_0209cce4((s32)SwapBattleScreen,2);
+func_0209cce4((s32)UpdateBattleSpriteLayers,7);
+func_0209cce4((s32)DrawBattleSpriteGrid,9);
 }
 
 void func_ov002_021e3dd4(void) {
     M2C_UNK func_0209cd00(void (*)(void));
-    func_0209cd00(func_ov002_021e3c5c);
-    func_0209cd00(func_ov002_021e3c70);
-    func_0209cd00(func_ov002_021e3c84);
+    func_0209cd00(SwapBattleScreen);
+    func_0209cd00(UpdateBattleSpriteLayers);
+    func_0209cd00(DrawBattleSpriteGrid);
 }
 
 s32 func_ov002_021e3e00(s32 *arg0) {

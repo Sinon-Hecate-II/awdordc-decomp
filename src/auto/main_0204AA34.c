@@ -317,7 +317,7 @@ s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post,
     s32 ghiInitFixedBuffer(void *, void *, void *, s32);
     s32 ghiInitBuffer(void *, void *, s32, s32);
     s32 func_0204bad4(void *);
-    void func_02049260(s32);
+    void gpiSleep(s32);
     void *connection;
     s32 bufferInitialized;
 
@@ -365,7 +365,7 @@ s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post,
     }
     if (blocking) {
         if (!func_0204b210(connection)) do {
-            func_02049260(10);
+            gpiSleep(10);
         } while (!func_0204b210(connection));
         return 0;
     }

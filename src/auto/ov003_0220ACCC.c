@@ -102,8 +102,8 @@ else PlaySoundEffect(0x1001d);
 } active=0;
 }
 if(i!=func_ov003_02207c5c(a)){func_02087ec0(M2C_FIELD(a,void **,0x5c),(s16)(i+11));PlaySoundEffect(0x10010);}
-func_020a98c4(M2C_FIELD(a,void **,0x60));
-if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60)))func_020a98c4(M2C_FIELD(a,void **,0x64));
+ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x60));
+if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60)))ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x64));
 if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_0220b7fc(a,func_ov003_02207c5c(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),11);
 if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!func_ov003_0220b8ac(a,func_ov003_02207c5c(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),12);
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))func_02088044(M2C_FIELD(a,void **,0x5c));

@@ -5,7 +5,11 @@
 static inline s32 DistanceBAAE0(s32 x,s32 y,s32 xx,s32 yy) { s32 d=0; if(x-xx>0)d+=x-xx;else d+=xx-x; if(y-yy>0)d+=y-yy;else d+=yy-y; return d; }
 typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x196c]; u16 width,height; u8 pad5148[0x85c]; u8 units[256][14]; } MapBAAE0;
 
-void func_020b9c8c(u8 *arg0) {
+/* Load the unit-production menu over the current battle map: run the map/screen
+ * setup, reset the sprite bank's split corners, pull the menu's graphics
+ * (menu_seisan) from its archive into the sprite engine's texture, tile-buffer
+ * and palette areas, lay out the unit list and refresh the screen object. */
+void LoadProductionMenuScreen(u8 *screen) {
  void func_020994e0(s32); void func_02091cd0(void); void func_020c0a88(void);
  void RefreshMapView(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
@@ -13,33 +17,33 @@ void func_020b9c8c(u8 *arg0) {
  void AddToU16Array(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
  void PlaySoundEffect(s32); void func_020b9558(u8); void func_020c0fac(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
- extern M2C_UNK data_021291f0; extern M2C_UNK data_021291f8;
- extern M2C_UNK data_0212920c; extern M2C_UNK data_0212921c; extern M2C_UNK data_0212922c;
+ extern M2C_UNK sProductionMenuDir; extern M2C_UNK sProductionMenuNarcName;
+ extern M2C_UNK sProductionMenuCgName; extern M2C_UNK sProductionMenuScName; extern M2C_UNK sProductionMenuClName;
  extern u8 data_0215d850[];
- void (*callback)(void);
+ void (*mapCallback)(void);
  func_020994e0(0);
  func_02091cd0();
  func_020c0a88();
- callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);
- if(callback)callback();
+ mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);
+ if(mapCallback)mapCallback();
  RefreshMapView();
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=0;
- M2C_FIELD(arg0,u16 *,0x34)=0;
- M2C_FIELD(arg0,u16 *,0x36)=0;
- SetFileDirectory(&data_021291f0);
- GetLocalizedFileName(&data_021291f8);
+ M2C_FIELD(screen,u16 *,0x34)=0;
+ M2C_FIELD(screen,u16 *,0x36)=0;
+ SetFileDirectory(&sProductionMenuDir);
+ GetLocalizedFileName(&sProductionMenuNarcName);
  OpenNarcArchive();
- LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212920c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
- LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212921c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
- LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_0212922c),0xc0,0x20);
+ LoadNarcFileDecompressed(GetLocalizedFileName(&sProductionMenuCgName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
+ LoadNarcFileDecompressed(GetLocalizedFileName(&sProductionMenuScName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
+ LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&sProductionMenuClName),0xc0,0x20);
  CloseNarcArchive();
  AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_020b9bec(); func_020b9c40();
  PlaySoundEffect(0x10017);
  func_020b9558(data_0215d850[8]);
- func_020c0fac(arg0);
+ func_020c0fac(screen);
 }
 
 void func_020b9dc8(void) {
@@ -307,7 +311,7 @@ s32 GetTerrainPropertyFlagsAt(s32 a,s32 b) {
  return gTerrainPropertyFlags[t&31];
 }
 
-u8 func_020ba980(s32 a,s32 b) {
+u8 IsSelectableUnitAt(s32 a,s32 b) {
  extern void **data_027e0058;
  u8 *p; s32 v; u8 result;
  if(a<0||b<0)goto fail;

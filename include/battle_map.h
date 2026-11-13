@@ -173,6 +173,7 @@ enum {
 #define MAP_UNIT_STRIDE     14     /* bytes per unit record */
 #define MAP_UNIT_COUNT      256    /* unit records in MAP_UNIT_RECORDS */
 #define MAP_UNIT_GROUP_SIZE 64     /* records per player slot; a record's owner (player << 6) picks its group */
+#define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
 /* The map's property-cell list, rebuilt by func_020cf2c8: one 6-byte record per
  * property (or kind 0x18 special) cell, ended by a 0xff terrain kind. */
@@ -212,6 +213,7 @@ typedef struct MapSettings {
 #define MAP_UNIT_FLAGS      0x04 /* u16 per-unit flags */
 #define MAP_UNIT_HEALTH     0x06 /* u16 health in the low seven bits */
 #define MAP_UNIT_AMMO       0x06 /* u16: ammo in bits 7..10 (health in bits 0..6) */
+#define MAP_UNIT_FACING     0x06 /* u16: facing direction in bits 11..15, nonzero once the unit is placed */
 #define MAP_UNIT_FUEL       0x0A /* u8 fuel in the low seven bits */
 #define MAP_UNIT_CARRIED    0x0C /* u8 first carried unit, 0 if none */
 #define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
@@ -223,6 +225,17 @@ typedef struct MapSettings {
 #define MAP_UNIT_AI_STATE   0x0B /* u8 low nibble AI step; bit 5 held while a move target is assigned */
 #define MAP_UNIT_AI_STATE_MASK 0x0F /* low nibble of MAP_UNIT_AI_STATE */
 #define MAP_UNIT_KIND_MASK  0x3F /* low six bits of MAP_UNIT_KIND: the kind, the owner is above */
+
+/* One entry of the battle map's target list: the unit on a cell (0 when the
+ * cell holds none), a value that is the damage to deal when the cell holds a
+ * unit or the visibility value when it does not, and the cell's position.  The
+ * cursor code (main_0209F990.c) builds the list; GetTargetPosition walks it. */
+typedef struct MapTargetEntry {
+    u16 id;    /* +0x00 unit id on the cell, 0 when there is none */
+    u16 value; /* +0x02 damage to deal, or the cell's visibility value */
+    s16 x;     /* +0x04 tile x */
+    s16 y;     /* +0x06 tile y */
+} MapTargetEntry;
 
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
 #define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
@@ -266,6 +279,8 @@ typedef struct MapSettings {
 #define PLAYER_REC_ARMY_STATE 0x27 /* u8 per-player army state shown by the army info window */
 #define PLAYER_REC_TURN_TIME 0x88 /* u32 elapsed turn time in frames (0 when untimed) */
 #define PLAYER_REC_AI_MODE    0x2A /* u8 AI behaviour mode (0..3) */
+#define PLAYER_REC_HQ_X       0x2B /* u8 HQ tile x in the low seven bits; bit 7 set when the player has no HQ */
+#define PLAYER_REC_HQ_Y       0x2C /* u8 HQ tile y in the low seven bits */
 /* Battle-rating accumulators of a player record, updated as fights resolve. */
 #define PLAYER_REC_DAMAGE_DEALT  0x74 /* s32 total damage this player's attacks dealt */
 #define PLAYER_REC_ATTACK_COUNT  0x78 /* s32 number of attacks this player made */

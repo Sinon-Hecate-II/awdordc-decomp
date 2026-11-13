@@ -277,7 +277,7 @@ void Ov003_DrawPreviewUnitCategoryGrid(void *panel, s16 originX, s16 originY) {
 #pragma opt_strength_reduction on
 void func_ov003_021e3aec(void *arg0, s32 arg1) {
     u8 func_ov003_021e1500(s32, s32, s32);
-    void *func_020c7e6c(s32);
+    void *GetMapRecord(s32);
     s32 func_ov003_02200968(s32);
     void AddSprite(u16, u8, u16, void *, s32);
     s32 func_ov003_02200a18(s32, u16);
@@ -285,7 +285,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     void SetTextSpriteValue(void *, s32);
     void DrawTextSprite(void *);
     void DrawFrameBorder(s16, s16, s16, s16, s32, s32, s32);
-    void *func_020c7e88(s32);
+    void *GetMapRecordStamp(s32);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
     extern u8 data_ov003_0220f34c[];
@@ -316,7 +316,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
         value = (u16)(id + 0x10e);
     }
 
-    p = func_020c7e6c(value);
+    p = GetMapRecord(value);
     if (M2C_FIELD(p, u8 *, 0x2f) != 0) flag = 1;
     if (M2C_FIELD(p,PreviewItemStatus*,0x38).enabled) bit = 1;
 
@@ -368,7 +368,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x21) = 9;
     DrawTextSprite(M2C_FIELD(arg0, void **, 0x50));
 
-    p = func_020c7e88(value);
+    p = GetMapRecordStamp(value);
     id40 = arg1 + 0x40;
     for (i = 0; i < 2; i = (u8)(i + 1)) {
         switch (i) {

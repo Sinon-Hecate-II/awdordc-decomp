@@ -404,10 +404,10 @@ void func_ov001_0217fa6c(void) {
 }
 
 void func_ov001_0217fa98(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171738();
     extern M2C_UNK func_ov001_0217fac0;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     func_ov001_02171738();
@@ -448,7 +448,7 @@ void func_ov001_0217fb1c(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK func_ov001_0218508c();
     extern M2C_UNK func_ov001_0217fb48;
-    if (func_ov001_021716c4() != 0) {
+    if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
     func_ov001_0218508c();

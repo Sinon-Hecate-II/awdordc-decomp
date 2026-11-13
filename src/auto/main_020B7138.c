@@ -28,7 +28,7 @@ void UpdateBeamEffect(void *task) {
     M2C_UNK func_0207b774(u32, u32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, u32, u32);
     s32 func_020b5200(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020b695c(s32, s32, M2C_UNK);
+    M2C_UNK ApplyPendingDamageToTargets(s32, s32, M2C_UNK);
     extern void **gCurrentMap;
     extern M2C_UNK data_02128f94;
     u32 y;
@@ -75,7 +75,7 @@ loop_15:
         break;
     }
     func_0207b774(x, y);
-    func_020b695c(spawnIndex, func_020b5200(&data_02128f94, 8), 8);
+    ApplyPendingDamageToTargets(spawnIndex, func_020b5200(&data_02128f94, 8), 8);
 }
 
 /* Spawns the beam attack effect on a tile: a beam sprite whose task extends it

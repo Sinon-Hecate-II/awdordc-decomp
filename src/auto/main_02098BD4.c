@@ -592,7 +592,7 @@ void func_02099ac4(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 2);
 }
 
-u8 func_02099ae8(u8 *arg0) {
+u8 IsLeadByte(u8 *arg0) {
     u8 var_r0;
 
     if (*arg0 & 0x80) {
@@ -603,7 +603,7 @@ u8 func_02099ae8(u8 *arg0) {
     return var_r0;
 }
 
-u8 func_02099b00(u8 *arg0) {
+u8 IsGlyphEscape(u8 *arg0) {
     u8 var_r0;
 
     if (*arg0 == 0x1F) {

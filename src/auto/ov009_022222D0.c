@@ -168,7 +168,7 @@ void func_ov009_022226b8(void *arg0) {
     if(M2C_FIELD(arg0,u16 *,2)==8) {
         SignalLinkEvent();
         SetLinkPhase(8);
-        func_02007958();
+        SystemHalt();
     }
     switch((u32)(M2C_FIELD(arg0,u16 *,4)-0x10)) {
     case 1: case 2: case 3: case 4: case 5: case 6: case 7: break;

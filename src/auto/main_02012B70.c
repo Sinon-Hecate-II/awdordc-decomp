@@ -28,16 +28,19 @@ u32 buf[7];
 CpuFill(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; func_02012b70(arg0,buf);
 }
 
-s32 func_02012c28(s32 a,s32 b,void *buf,u32 len,u16 c,u16 d,u16 e) {
+/* Queue a WFC data-send event for `len` bytes at `buf`: refuse when the link is
+   not up or not ready, when the buffer is null, oversized, empty or the link's
+   own receive buffer, write the buffer back to memory, then post the event. */
+s32 WFC_SendChannelData(s32 a,s32 b,void *buf,u32 len,u16 c,u16 d,u16 e) {
 void *func_02011440(void);s32 func_020114b4(s32,s32);s32 DC_InvalidateRange(s32,s32);void func_020067c4(void *,u32);s32 func_02011324(s32,s32);
-u16 ready=1;void *p=M2C_FIELD(func_02011440(),void **,4);s32 r;
+u16 ready=1;void *link=M2C_FIELD(func_02011440(),void **,4);s32 r;
 r=((s32 (*)(s32,s32,s32))func_020114b4)(2,9,10);if(r)return r;
-DC_InvalidateRange((s32)p+0x3c,2);DC_InvalidateRange((s32)p+0x188,2);
-if(M2C_FIELD(p,u16 *,0x188)==0){
-DC_InvalidateRange((s32)p+0x182,2);ready=M2C_FIELD(p,u16 *,0x182);DC_InvalidateRange((s32)p+0x86,2);
+DC_InvalidateRange((s32)link+0x3c,2);DC_InvalidateRange((s32)link+0x188,2);
+if(M2C_FIELD(link,u16 *,0x188)==0){
+DC_InvalidateRange((s32)link+0x182,2);ready=M2C_FIELD(link,u16 *,0x182);DC_InvalidateRange((s32)link+0x86,2);
 }
 if(!buf)return 6;if(!ready)return 7;
-DC_InvalidateRange((s32)p+0x7c,2);if(buf==M2C_FIELD(p,void **,0x7c))return 6;
+DC_InvalidateRange((s32)link+0x7c,2);if(buf==M2C_FIELD(link,void **,0x7c))return 6;
 if(len>512)return 6;if(len==0)return 6;
 func_020067c4(buf,len);
 r=((s32 (*)(s32,s32,void *,u32,u16,u16,u16,s32,s32))func_02011324)(15,7,buf,len,c,d,e,a,b);
@@ -132,7 +135,7 @@ p=(u16 *)(buffer+0x800);
 block=(u8 *)buffer;
 for(i=0;i<(p[12]==1?2:1);i++){
 p[4]=(p[4]+1)&3;
-result=func_02012c28((s32)func_02013590,buffer,block,p[10],(u16)(p[7]&mask),p[11],1);
+result=WFC_SendChannelData((s32)func_02013590,buffer,block,p[10],(u16)(p[7]&mask),p[11],1);
 if(result==7){*(u16 *)(buffer+i*2+0x800)=0xffff;p[5]=(p[5]+1)&3;}
 else if(result!=0&&result!=2){((u16 *)(buffer+0x800))[14]=5;return 1;}
 block+=512;
@@ -161,7 +164,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     s32 func_020114b4(s32, s32);
     s32 func_02011934(void);
     s32 func_02011994(void);
-    s32 func_02012c28(s32, s32, void *, u32, u16, u16, u16);
+    s32 WFC_SendChannelData(s32, s32, void *, u32, u16, u16, u16);
     void func_02007e20(void *, void *, u32);
     void func_02013888(void *, u32, void *);
     void WFC_PostReceive(void *, s32);
@@ -194,7 +197,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
         if (state == 4) {
             M2C_FIELD(r10, u16 *, 0x81c) = 1;
             r6 = (M2C_FIELD(r10, u16 *, 0x808) + 3) & 3;
-            ret = func_02012c28((s32)func_02013590, r10, (void *)(r10 + (r6 << 9)), M2C_FIELD(r10, u16 *, 0x814), (u16)(M2C_FIELD(r10, u16 *, 0x80e) & r4), M2C_FIELD(r10, u16 *, 0x816), 1);
+            ret = WFC_SendChannelData((s32)func_02013590, r10, (void *)(r10 + (r6 << 9)), M2C_FIELD(r10, u16 *, 0x814), (u16)(M2C_FIELD(r10, u16 *, 0x80e) & r4), M2C_FIELD(r10, u16 *, 0x816), 1);
             if (ret == 7) {
                 M2C_FIELD((void *)(r10 + (r6 << 1)), u16 *, 0x800) = 0xffff;
                 M2C_FIELD(r10, u16 *, 0x80a) = (u16)((M2C_FIELD(r10, u16 *, 0x80a) + 1) & 3);
@@ -239,7 +242,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
         if (r6 != 0) {
             slot = (u16 *)(r10 + (M2C_FIELD(r10, u16 *, 0x80a) << 9));
             func_02007e20(r9, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810));
-            ret = func_02012c28((s32)func_02013590, r10, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810), M2C_FIELD(r10, u16 *, 0x80e), M2C_FIELD(r10, u16 *, 0x816), 1);
+            ret = WFC_SendChannelData((s32)func_02013590, r10, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810), M2C_FIELD(r10, u16 *, 0x80e), M2C_FIELD(r10, u16 *, 0x816), 1);
             M2C_FIELD(r10, u16 *, 0x80a) = (u16)((M2C_FIELD(r10, u16 *, 0x80a) + 1) & 3);
             if (ret != 0 && ret != 2) {
                 M2C_FIELD(r10, u16 *, 0x81c) = 5;
@@ -358,7 +361,7 @@ void WFC_PostReceive(void *state, s32 dropSelf) {
         ((u16 (*)[256])state)[curSlot][0] = M2C_FIELD(state, u16 *, 0x80e);
         if (dropSelf == 1) ((u16 (*)[256])state)[curSlot][0] &= ~1;
         OS_RestoreInterrupts(savedIrq);
-        result = func_02012c28((s32)func_02013590, (s32)state, state + (curSlot << 9), M2C_FIELD(state, u16 *, 0x814), (u16)(M2C_FIELD(state, u16 *, 0x80e) & peerMask), M2C_FIELD(state, u16 *, 0x816), 1);
+        result = WFC_SendChannelData((s32)func_02013590, (s32)state, state + (curSlot << 9), M2C_FIELD(state, u16 *, 0x814), (u16)(M2C_FIELD(state, u16 *, 0x80e) & peerMask), M2C_FIELD(state, u16 *, 0x816), 1);
         if (result == 7) {
             M2C_FIELD(state + curSlot * 2, u16 *, 0x800) = 0xffff;
             M2C_FIELD(state, u16 *, 0x80a) = (M2C_FIELD(state, u16 *, 0x80a) + 1) & 3;

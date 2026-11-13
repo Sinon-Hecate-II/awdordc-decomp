@@ -258,7 +258,12 @@ void StringScanf(s32 arg0, s32 arg1, ...) {
  func_02068a88((s8 *)arg0,arg1,(s32)args);
 }
 
-s32 func_02068b04(s32 arg0) {
+/* Takes (and clears) the one-shot socket-event handler registered for id (1..7)
+ * under the callback table's lock slot (slot 7 of the socket lock arrays, whose
+ * recursion is tracked so the lock is only released at the outermost call) and
+ * runs it with the id.  Id 1 with no handler is a no-op; another id with no
+ * handler flushes the pending callback queue instead. */
+s32 InvokeSocketCallback(s32 id) {
 M2C_UNK LockMutex(M2C_UNK *);
 M2C_UNK UnlockMutex(M2C_UNK *);
 s32 func_02006680(M2C_UNK *);
@@ -266,31 +271,31 @@ M2C_UNK func_02063e1c(M2C_UNK);
 extern M2C_UNK gSocketManager;
 extern M2C_UNK data_0213e5d4;
 extern s32 data_0213e5f8[9];
-extern M2C_UNK data_0213e6c4;
-extern M2C_UNK data_0213e9f8;
+extern M2C_UNK gSocketCallbackLock;
+extern M2C_UNK gSocketCallbacks;
 M2C_UNK (*cb)(s32);
 s32 n;
-if(arg0<1 || arg0>7) return -1;
-if(func_02006680(&data_0213e6c4)==0) {
+if(id<1 || id>7) return -1;
+if(func_02006680(&gSocketCallbackLock)==0) {
 M2C_FIELD(&data_0213e5d4,s32 *,0x1c)=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);
 data_0213e5f8[7]=1;
 } else if(M2C_FIELD(&data_0213e5d4,s32 *,0x1c)==M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c)) {
 n=data_0213e5f8[7]+1;
 data_0213e5f8[7]=n;
 } else {
-LockMutex(&data_0213e6c4);
+LockMutex(&gSocketCallbackLock);
 M2C_FIELD(&data_0213e5d4,s32 *,0x1c)=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);
 data_0213e5f8[7]=1;
 }
-n=arg0-1;
-cb=((M2C_UNK (**)(s32))&data_0213e9f8)[n];
-if(cb!=(M2C_UNK (*)(s32))1) ((M2C_UNK (**)(s32))&data_0213e9f8)[n]=0;
+n=id-1;
+cb=((M2C_UNK (**)(s32))&gSocketCallbacks)[n];
+if(cb!=(M2C_UNK (*)(s32))1) ((M2C_UNK (**)(s32))&gSocketCallbacks)[n]=0;
 n=data_0213e5f8[7]-1;
 data_0213e5f8[7]=n;
-if(n==0) UnlockMutex(&data_0213e6c4);
-if(cb==(M2C_UNK (*)(s32))1 || (cb==0 && arg0==1)) return 0;
+if(n==0) UnlockMutex(&gSocketCallbackLock);
+if(cb==(M2C_UNK (*)(s32))1 || (cb==0 && id==1)) return 0;
 if(cb==0) func_02063e1c(0);
-cb(arg0);
+cb(id);
 return 0;
 }
 

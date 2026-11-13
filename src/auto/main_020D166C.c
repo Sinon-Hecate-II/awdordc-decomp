@@ -409,5 +409,5 @@ player++;playerOffset+=140;
 }while(player<5);func_020d33c4();
 }
 #pragma pop
-s32 func_020d243c(s32 a){extern void **gCurrentMap;return (u8)((((u8 *)*gCurrentMap+a*0x8c)[0x67cf]&0x80)==0);}
+s32 PlayerHasHq(s32 a){extern void **gCurrentMap;return (u8)((((u8 *)*gCurrentMap+a*0x8c)[0x67cf]&0x80)==0);}
 

@@ -304,14 +304,14 @@ void func_020bb458(void) {
 
 void func_020bb5c0(void *arg0) {
     M2C_UNK func_020c98d8(s32, s32, M2C_UNK);
-    M2C_UNK func_020cb038(s32, M2C_UNK);
-    M2C_UNK func_020cb170(s32, M2C_UNK);
+    M2C_UNK RefillUnitAmmo(s32, M2C_UNK);
+    M2C_UNK RefillUnitFuel(s32, M2C_UNK);
     M2C_UNK LevelUpUnit(s32, M2C_UNK, M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x54);
-    func_020cb038(temp_r4, 0);
-    func_020cb170(temp_r4, 0);
+    RefillUnitAmmo(temp_r4, 0);
+    RefillUnitFuel(temp_r4, 0);
     LevelUpUnit(temp_r4, 1, 1);
     func_020c98d8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 1);
 }

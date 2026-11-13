@@ -31,7 +31,7 @@ void func_ov003_021ebfcc(void *p) {
  void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
  void func_02088d94(void*); void func_02088da8(void*); void func_02088f1c(s32); void func_02088ff4(s32);
- s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 func_020aae44(void*); s32 func_020aae10(void*); s16 func_ov003_022004a8(u8); s32 func_0208b758(s32,s32); s32 InRange(u8,s32,s32);
+ s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 func_020aae44(void*); s32 func_020aae10(void*); s16 func_ov003_022004a8(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
  if(IsLinkSessionActive()){
@@ -71,20 +71,20 @@ void func_ov003_021ebfcc(void *p) {
  M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=func_ov003_022004a8(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
  if(!((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))return;
  state=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e);
- if(InRange(state,0,3)){func_0208b758(M2C_FIELD(p,s32*,0x54),0x47000011);return;}
- if(InRange(state,4,7)){func_0208b758(M2C_FIELD(p,s32*,0x54),0x47000012);return;}
- if(InRange(state,8,20)){func_0208b758(M2C_FIELD(p,s32*,0x54),0x47000011);return;}
- if(InRange(state,21,24)){func_0208b758(M2C_FIELD(p,s32*,0x54),0x47000010);return;}
+ if(InRange(state,0,3)){SetTextById(M2C_FIELD(p,s32*,0x54),0x47000011);return;}
+ if(InRange(state,4,7)){SetTextById(M2C_FIELD(p,s32*,0x54),0x47000012);return;}
+ if(InRange(state,8,20)){SetTextById(M2C_FIELD(p,s32*,0x54),0x47000011);return;}
+ if(InRange(state,21,24)){SetTextById(M2C_FIELD(p,s32*,0x54),0x47000010);return;}
  if(state!=25)return;
  mode=(u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30;flag=mode==0;
- if(flag){func_0208b758(M2C_FIELD(p,s32*,0x54),0x47000016);return;}
- flag=mode==1;if(flag)func_0208b758(M2C_FIELD(p,s32*,0x54),0x47000017);
+ if(flag){SetTextById(M2C_FIELD(p,s32*,0x54),0x47000016);return;}
+ flag=mode==1;if(flag)SetTextById(M2C_FIELD(p,s32*,0x54),0x47000017);
 } else {void *self=p;M2C_FIELD(M2C_FIELD(self,void**,0),void(**)(void*),0x20)(self);}
 }
 #pragma pop
 
 void func_ov003_021ec4e4(u8 *p) {
-s32 func_020848c4(void);
+s32 GetLocalPlayerIdForOverlay(void);
 s32 func_ov003_021e6cfc(void);
 s32 func_ov003_021e6d28(void);
 s32 IsWaypointOptionValid(u8);
@@ -92,13 +92,13 @@ u8 v=p[9];
 u8 t;
 if(func_ov003_021e6cfc()!=0) {
 t=(p+p[7])[0x74];
-if(t!=func_020848c4()) {
+if(t!=GetLocalPlayerIdForOverlay()) {
 if((u8)((p+p[7])[0x74]==255)==0)goto update;
 }
 }
 if(func_ov003_021e6d28()!=0) {
 t=(p+p[7])[0x74];
-if(t!=func_020848c4())goto update;
+if(t!=GetLocalPlayerIdForOverlay())goto update;
 }
 if(IsWaypointOptionValid(v)==0)return;
 update:
@@ -112,7 +112,7 @@ p[8]=v;
  * the selection changed, refreshes the option cursor, its info text and the
  * saved cursor position. */
 void UpdateWaypointSelection(void *panel, s32 action) {
-    M2C_UNK func_0208b758(s32, s32);
+    M2C_UNK SetTextById(s32, s32);
     void PlaySoundEffect(u32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
@@ -152,13 +152,13 @@ void UpdateWaypointSelection(void *panel, s32 action) {
     if (((u32) (M2C_FIELD(panel, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
         selection = M2C_FIELD(M2C_FIELD(M2C_FIELD(panel, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
         if (InRange((u8) selection, 0, 3) != 0) {
-            func_0208b758(M2C_FIELD(panel, s32 *, 0x54), 0x47000011);
+            SetTextById(M2C_FIELD(panel, s32 *, 0x54), 0x47000011);
         } else if (InRange((u8) selection, 4, 7) != 0) {
-            func_0208b758(M2C_FIELD(panel, s32 *, 0x54), 0x47000012);
+            SetTextById(M2C_FIELD(panel, s32 *, 0x54), 0x47000012);
         } else if (InRange((u8) selection, 8, 0x14) != 0) {
-            func_0208b758(M2C_FIELD(panel, s32 *, 0x54), 0x47000011);
+            SetTextById(M2C_FIELD(panel, s32 *, 0x54), 0x47000011);
         } else if (InRange((u8) selection, 0x15, 0x18) != 0) {
-            func_0208b758(M2C_FIELD(panel, s32 *, 0x54), 0x47000010);
+            SetTextById(M2C_FIELD(panel, s32 *, 0x54), 0x47000010);
         } else if ((u8) selection == 0x19) {
             mode = (u32) (M2C_FIELD(panel, u8 *, 0x39) << 0x1C) >> 0x1E;
             if (mode == 0) {
@@ -167,7 +167,7 @@ void UpdateWaypointSelection(void *panel, s32 action) {
                 isMode0 = 0;
             }
             if (isMode0 & 0xFF) {
-                func_0208b758(M2C_FIELD(panel, s32 *, 0x54), 0x47000016);
+                SetTextById(M2C_FIELD(panel, s32 *, 0x54), 0x47000016);
             } else {
                 if (mode == 1) {
                     isMode1 = 1;
@@ -175,7 +175,7 @@ void UpdateWaypointSelection(void *panel, s32 action) {
                     isMode1 = 0;
                 }
                 if (isMode1 & 0xFF) {
-                    func_0208b758(M2C_FIELD(panel, s32 *, 0x54), 0x47000017);
+                    SetTextById(M2C_FIELD(panel, s32 *, 0x54), 0x47000017);
                 }
             }
         }

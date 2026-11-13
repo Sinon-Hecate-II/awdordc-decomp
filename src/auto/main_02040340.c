@@ -44,7 +44,7 @@ return result;
 
 #pragma opt_strength_reduction off
 s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
-    s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
+    s32 SendConnectionCommand(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     void *GetConnection(void);
     void func_0205ea70(s32);
     u8 func_0204284c(void);
@@ -77,7 +77,7 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     for (i = loc[1] - loc[1] + 1; i <= (s32)M2C_FIELD(GetConnection(), u8 *, 0x14); i++) {
         p = GetConnection();
         q = GetConnection();
-        r = func_0203f058(7, M2C_FIELD((u8 *)p + (i << 2), s32 *, 0xf4), M2C_FIELD((u8 *)q + (i << 2), s32 *, 0x24), M2C_FIELD((u8 *)GetConnection() + (i << 1), u16 *, 0xa4), (s32)loc, 2);
+        r = SendConnectionCommand(7, M2C_FIELD((u8 *)p + (i << 2), s32 *, 0xf4), M2C_FIELD((u8 *)q + (i << 2), s32 *, 0x24), M2C_FIELD((u8 *)GetConnection() + (i << 1), u16 *, 0xa4), (s32)loc, 2);
         if (r) return r;
     }
     ResetConnectionSync(1);
@@ -103,7 +103,7 @@ func_02042f94(arg0);
    session's target slot - from the Wi-Fi server list in server mode, else from
    the previous session - and sends the connection request. */
 s32 SendJoinRequest(s32 peerId, s32 force) {
-    s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
+    s32 SendConnectionCommand(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     u64 GetSystemTick(void);
     void *GetConnection(void);
     s32 SBServerListGetServer(s32, M2C_UNK);
@@ -151,7 +151,7 @@ s32 SendJoinRequest(s32 peerId, s32 force) {
     fields[0] = M2C_FIELD(GetConnection(), u8 *, 0x15);
     session2 = GetConnection();
     session = GetConnection();
-    return func_0203f058(requestType, peerId, M2C_FIELD(session2, s32 *, 0x24), M2C_FIELD(session, u16 *, 0xa4), (s32) &fields[0], fieldCount);
+    return SendConnectionCommand(requestType, peerId, M2C_FIELD(session2, s32 *, 0x24), M2C_FIELD(session, u16 *, 0xa4), (s32) &fields[0], fieldCount);
 }
 
 /* Scans the connection's peer records from the current cursor for the next
@@ -161,7 +161,7 @@ s32 SendJoinRequest(s32 peerId, s32 force) {
 s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 GetPlayerRecordId(void *, void *);
     s32 func_0204e2f4(void **, s32, s32 *);
-    s32 func_0204e1b4(void **, s32, void *);
+    s32 gpGetBuddyStatus(void **, s32, void *);
     s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
     s32 func_0206abd8(void *, s32, s32);
     s32 GetLocalPlayerInfo(void);
@@ -231,7 +231,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
             continue;
         }
         resA = func_0204e2f4((void **)M2C_FIELD(GetConnection(), void **, 0), peerId, &fields[1]);
-        resB = func_0204e1b4((void **)M2C_FIELD(GetConnection(), void **, 0), fields[1], &info[2]);
+        resB = gpGetBuddyStatus((void **)M2C_FIELD(GetConnection(), void **, 0), fields[1], &info[2]);
         if ((resA | resB) != 0 || info[3] != 4) {
             continue;
         }
@@ -273,13 +273,13 @@ s32 func_02040cf0(M2C_UNK arg0) {
 }
 
 s32 func_02040dc8(M2C_UNK arg0) {
-    s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
+    s32 SendConnectionCommand(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     void *GetConnection();
     s32 temp_r4;
     void *temp_r4_2;
 
     temp_r4_2 = GetConnection();
-    temp_r4 = func_0203f058(5, arg0, M2C_FIELD(temp_r4_2, s32 *, 0x24), M2C_FIELD(GetConnection(), u16 *, 0xA4), 0, 0);
+    temp_r4 = SendConnectionCommand(5, arg0, M2C_FIELD(temp_r4_2, s32 *, 0x24), M2C_FIELD(GetConnection(), u16 *, 0xA4), 0, 0);
     M2C_FIELD(GetConnection(), s32 *, 0x204) = 0;
     return temp_r4;
 }
@@ -406,10 +406,10 @@ s32 func_02041038(void) {
 #pragma opt_strength_reduction off
 s32 func_020410f8(void) {
  s32 i,r; void *a,*b,*c,*d;
- s32 func_0203f058(M2C_UNK,M2C_UNK,s32,u16,s32,s32); void func_0205afec(s32); 
+ s32 SendConnectionCommand(M2C_UNK,M2C_UNK,s32,u16,s32,s32); void func_0205afec(s32); 
  for(i=1;i<=M2C_FIELD(GetConnection(),u8*,0xd);i++){
  a=GetConnection();b=GetConnection();c=GetConnection();d=GetConnection();
- r=func_0203f058(10,M2C_FIELD((u8*)a+(i<<2),s32*,0xf4),M2C_FIELD((u8*)b+(int)i*4,s32*,0x24),M2C_FIELD((u8*)c+(i<<1),u16*,0xa4),(s32)((u8*)d+0x348),M2C_FIELD(GetConnection(),s32*,0x348)+1);
+ r=SendConnectionCommand(10,M2C_FIELD((u8*)a+(i<<2),s32*,0xf4),M2C_FIELD((u8*)b+(int)i*4,s32*,0x24),M2C_FIELD((u8*)c+(i<<1),u16*,0xa4),(s32)((u8*)d+0x348),M2C_FIELD(GetConnection(),s32*,0x348)+1);
  if(r)return r;
  }
  M2C_FIELD(GetConnection(),u8*,0x17)=0;

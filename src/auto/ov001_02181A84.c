@@ -123,10 +123,10 @@ void func_ov001_02181ce8(void) {
 }
 
 void func_ov001_02181d24(void) {
-    s32 func_ov001_021716c4();
+    s32 Ov001_GetIconRowSelection();
     M2C_UNK func_ov001_02171738();
     extern M2C_UNK func_ov001_02181d4c;
-    if (func_ov001_021716c4() == -2) {
+    if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     func_ov001_02171738();
@@ -204,12 +204,12 @@ void func_ov001_02181ee4(void) {
 }
 
 void func_ov001_02181ee8(void) {
-    s32 func_ov001_021716c4(void);
+    s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_021821e4(void);
     void func_ov001_02181f3c(void);
     extern M2C_UNK data_ov001_02193dd4;
-    switch (func_ov001_021716c4()) {
+    switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
@@ -234,7 +234,7 @@ void func_ov001_02181f3c(void) {
 void func_ov001_02181f5c(void) {
     M2C_UNK func_ov001_02171694();
     extern M2C_UNK data_ov001_02193dd4;
-    extern M2C_UNK func_ov001_02181fc0;
+    extern M2C_UNK Ov001_MenuConfirm;
     if (func_ov001_0218a800(1) != 0) {
         return;
     }
@@ -243,10 +243,15 @@ void func_ov001_02181f5c(void) {
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x14, 8);
-    Ov001_SetStepCallback(&func_ov001_02181fc0);
+    Ov001_SetStepCallback(&Ov001_MenuConfirm);
 }
 
-void func_ov001_02181fc0(void){
+/* Confirm/exit step of the ov001 icon menu: once the closing animation and the
+ * icon row have settled, tears the screen down (frees its loaded file), starts
+ * the fade and hands control to the step function of the chosen entry - a play
+ * mode, the region menu (when the menu flag is set) or the map-list/name-entry
+ * path (case 3). */
+void Ov001_MenuConfirm(void){
 extern M2C_UNK data_ov001_02193dd4;
 extern M2C_UNK func_ov001_02180d44,func_ov001_02180860,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
 s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);
@@ -260,7 +265,7 @@ switch(M2C_FIELD(&data_ov001_02193dd4,s8 *,1)){
 case 0:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02180860);return;
 case 1:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02179718);return;
 case 2:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_021803ec);return;
-case 3:func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);func_ov001_0217f72c(1);Ov001_SetStepCallback(&InitMapListScreen);return;
+case 3:func_ov001_02175d64(2,0);Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(1);Ov001_SetStepCallback(&InitMapListScreen);return;
 }
 }
 
@@ -339,7 +344,7 @@ void func_ov001_0218223c(void) {
 
     data_ov001_02193ddc = 0;
     func_ov001_021822c8();
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 0) {
         func_ov001_02171c24(0x31, -1, 0);
     }
@@ -379,14 +384,14 @@ void func_ov001_02182370(void) {
 
     temp_r4 = GetCurrentMapRecord();
     func_02007e70(data_ov001_0218fb40, sp4, 0xC);
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 2) {
         sp4[10] = 4;
     } else {
         sp4[10] = M2C_FIELD(temp_r4, u8 *, 0xF4) + 1;
     }
     if (WFC_Init(sp4) == 0) {
-        func_02007958();
+        SystemHalt();
     }
     if (sp0 == 0) {
         func_0202f2c8(M2C_FIELD(temp_r4, u8 *, 0xF4), temp_r4);
@@ -399,7 +404,7 @@ void func_ov001_02182408(void) {
     s32 sp0;
     func_ov001_0218a824(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 0) {
         func_ov001_0218a824(2, 1, 1, 8);
         func_ov001_0218b314(1, 1);
@@ -564,12 +569,12 @@ void func_ov001_0218273c(void) {
 }
 
 void func_ov001_02182740(void) {
-    M2C_UNK func_ov001_02175db4(M2C_UNK, s32 *);
+    M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     M2C_UNK func_ov001_0218560c();
     extern M2C_UNK func_ov001_02182798;
     s32 sp0;
 
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 != 0) {
         func_ov001_0218560c();
     }
@@ -581,7 +586,7 @@ void func_ov001_02182740(void) {
 void func_ov001_02182798(void) {
     M2C_UNK func_ov001_02171cf8();
     M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175da0(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     s32 func_ov001_02185b34();
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
@@ -603,9 +608,9 @@ void func_ov001_02182798(void) {
     func_ov001_0218b368(1, 1);
     func_ov001_0218b368(0, 0x15);
     func_ov001_02175d64(2, 1);
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 0) {
-        func_ov001_02175da0(0, 0);
+        Ov001_SetNameEntryMode(0, 0);
         Ov001_SetStepCallback(&InitMapListScreen);
         return;
     }
@@ -619,7 +624,7 @@ void func_ov001_0218283c(void) {
     s32 sp0;
     s32 temp_r0;
     if ((u32)++data_ov001_02193de0 < 0xB4U) return;
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     temp_r0 = Ov001_GetScreenLayout();
     if ((temp_r0 != 0) && (temp_r0 == 1) && (sp0 != 0)) {
         Ov001_SetStepCallback(&func_ov001_02176578);
@@ -637,7 +642,7 @@ void func_ov001_021828ac(void) {
     void func_ov001_02182970(void);
     s32 sp0;
     func_ov001_02183fa0();
-    func_ov001_02175db4(0, &sp0);
+    Ov001_GetNameEntryMode(0, &sp0);
     func_ov001_02182904();
     func_ov001_02171c24(0x31, -1, 0);
     if (sp0 != 2) func_ov001_021722ac();
@@ -674,7 +679,7 @@ void func_ov001_021829c4(void) {
     s32 index;
     if (func_ov001_0218a800(1) != 0) return;
     if (func_ov001_0218a800(0) != 0) return;
-    func_ov001_02175db4(0, &index);
+    Ov001_GetNameEntryMode(0, &index);
     func_ov001_021862d8(table.values[index], 1, 1, -1, 0);
     Ov001_SetStepCallback(&func_ov001_02182a4c);
 }
