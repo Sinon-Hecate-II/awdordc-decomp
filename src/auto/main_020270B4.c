@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 extern s32 gSession;
-void func_02027e80(s32, void *, s32);
+void WFC_FillRequest(s32, void *, s32);
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
 void WFC_SetState(s32);
@@ -162,23 +162,28 @@ s32 func_02027428(void) {
     }
 }
 
-void func_02027518(s32 a,s32 b){s32 func_020276b0(void); s32 func_02027538(); if(a==0 || b==0)func_020276b0();else func_02027538();}
+void func_02027518(s32 a,s32 b){s32 func_020276b0(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)func_020276b0();else WFC_SubmitMatchRequest();}
 
 void WFC_ProcessCallback(void);
-s32 func_02027538(s32 a,s32 b,s32 c){
+/* Fills the local player's match request from the friend code, name and status
+ * bits and submits it: in the connected state it flushes the request buffer and
+ * sends the packet, while in the waiting states it only stages the request.
+ * Returns the shared WFC progress code (3 = sent, 1 = wrong session state,
+ * 4/7 = send result). */
+s32 WFC_SubmitMatchRequest(s32 friendCode,s32 playerName,s32 statusBits){
 s32 s=OS_DisableInterrupts();void *p=(void *)gSession;
 if(!p){OS_RestoreInterrupts(s);return 1;}
-switch(M2C_FIELD(p,s32 *,0x2260)){
-case 5:func_02027e80(a,b,c);OS_RestoreInterrupts(s);return 2;
-case 6:func_02027e80(a,b,c);OS_RestoreInterrupts(s);return 0;
+switch(M2C_FIELD(p,s32 *,WFC_SESSION_STATE)){
+case 5:WFC_FillRequest(friendCode,playerName,statusBits);OS_RestoreInterrupts(s);return 2;
+case 6:WFC_FillRequest(friendCode,playerName,statusBits);OS_RestoreInterrupts(s);return 0;
 default:OS_RestoreInterrupts(s);return 1;
 case 3:break;
 }
-func_02027e80(a,b,c);
-DC_InvalidateRange(M2C_FIELD((void *)gSession,s32 *,0x2288),M2C_FIELD((void *)gSession,u16 *,0x228c));
-M2C_FIELD((void *)gSession,s32 *,0x2284)++;
-switch(func_020125b0((M2C_UNK)WFC_ProcessCallback,gSession+0x2288)){
-case 2:WFC_SetState(5);M2C_FIELD((void *)gSession,u16 *,0x2280)=3;break;
+WFC_FillRequest(friendCode,playerName,statusBits);
+DC_InvalidateRange(M2C_FIELD((void *)gSession,s32 *,WFC_SESSION_PACKET_BUFFER),M2C_FIELD((void *)gSession,u16 *,WFC_SESSION_PACKET_SIZE));
+M2C_FIELD((void *)gSession,s32 *,WFC_SESSION_SEND_COUNT)++;
+switch(WFC_SendRequestPacket((M2C_UNK)WFC_ProcessCallback,gSession+WFC_SESSION_PACKET)){
+case 2:WFC_SetState(5);M2C_FIELD((void *)gSession,u16 *,WFC_SESSION_SUBSTATE)=3;break;
 case 8:OS_RestoreInterrupts(s);return 4;
 case 3:default:WFC_SetState(11);OS_RestoreInterrupts(s);return 7;
 }
@@ -433,7 +438,7 @@ void WFC_SetRequest(void *a, s32 b) {
     M2C_FIELD((void *)gSession, u32 *, 0x227c) = b;
 }
 
-void func_02027e80(s32 a, void *b, s32 c) {
+void WFC_FillRequest(s32 a, void *b, s32 c) {
     u32 WFC_SetStatusBits(u32);
     u16 func_02028038(s32);
     u16 func_02011e98(void);

@@ -117,7 +117,7 @@ void func_ov001_0218c4c0(void) {
     void func_ov001_0218c5b8(void);
     void func_0200ec24(s32);
     void GX_SetBankForBG(s32);
-    void func_02002968(s32);
+    void GX_SetBankForOBJ(s32);
     void func_02002ab8(s32);
     void func_02002bb8(s32);
     void GX_SetBankForTex(s32);
@@ -135,7 +135,7 @@ void func_ov001_0218c4c0(void) {
     func_02003620();
     func_ov001_0218c5b8();
     GX_SetBankForBG(data_ov001_02193e70[0]);
-    func_02002968(data_ov001_02193e70[1]);
+    GX_SetBankForOBJ(data_ov001_02193e70[1]);
     func_02002ab8(data_ov001_02193e70[2]);
     func_02002bb8(data_ov001_02193e70[3]);
     GX_SetBankForTex(data_ov001_02193e70[4]);

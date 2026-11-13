@@ -123,7 +123,7 @@ s32 func_ov001_0216cec8(s32 arg0) {
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
 
-u16 func_ov001_0216cef0(s32 arg0) {
+u16 Ov001SwapEndian16(s32 arg0) {
     return (u16) ((u8) (arg0 >> 8) | (0xFF00 & (arg0 << 8)));
 }
 

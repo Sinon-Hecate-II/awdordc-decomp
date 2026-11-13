@@ -72,7 +72,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
     if (entry) {
         SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
         FillMapLayer(-1);
-        if (func_020a5364(entry, 64, 1)) {
+        if (DrawOrderTargetArea(entry, 64, 1)) {
             cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 52);
             if (cb) cb();
             goto finish;
@@ -137,7 +137,7 @@ func_020a06a0(menuMode);
 func_01ffa3dc(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
 DrawUnitInfoPanel(2);
-if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER)))func_02091c20(21,1);
+if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(21,1);
 return 1;
 }
 

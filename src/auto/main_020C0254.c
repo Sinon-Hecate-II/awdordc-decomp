@@ -255,24 +255,28 @@ void func_020c0784(void) {
     func_01ffa9e4(&data_02129630);
 }
 
-void func_020c079c(s32 x,s32 y,s32 w,s32 h,s32 dst,s32 pal,u8 striped){
+/* Stamps a filled window frame into the 32-column tile map `tilemap`: the frame
+ * tiles along the border (one corner tile mirrored by the flip bits at each
+ * corner) and the interior fill, in the plain or striped window style. Each cell
+ * holds the tile id plus the palette in bits 12-15. */
+void DrawFrameTiles(s32 x,s32 y,s32 w,s32 h,s32 tilemap,s32 pal,u8 striped){
 s32 col,row,t;
 for(row=y;row<y+h;row++){
 for(col=x;col<x+w;col++){
-if(col==x+w-1){if(row==y+h-1)t=0xc01;else if(row==y)t=0x401;else t=0x403;}
-else if(col==x){if(row==y+h-1)t=0x801;else if(row==y)t=1;else t=3;}
-else if(striped){if(row==y+h-1)t=0x802;else if(row==y)t=6;else if((row-y)&1)t=5;else t=4;}
-else {if(row==y+h-1)t=0x802;else if(row==y)t=2;else t=5;}
-((u16 *)dst)[row*32+col]=t+((pal&15)<<12);
+if(col==x+w-1){if(row==y+h-1)t=FRAME_TILE_FLIP_H|FRAME_TILE_FLIP_V|FRAME_TILE_CORNER;else if(row==y)t=FRAME_TILE_FLIP_H|FRAME_TILE_CORNER;else t=FRAME_TILE_FLIP_H|FRAME_TILE_EDGE_V;}
+else if(col==x){if(row==y+h-1)t=FRAME_TILE_FLIP_V|FRAME_TILE_CORNER;else if(row==y)t=FRAME_TILE_CORNER;else t=FRAME_TILE_EDGE_V;}
+else if(striped){if(row==y+h-1)t=FRAME_TILE_FLIP_V|FRAME_TILE_EDGE_H;else if(row==y)t=FRAME_TILE_EDGE_H_ALT;else if((row-y)&1)t=FRAME_TILE_FILL;else t=FRAME_TILE_STRIPE;}
+else {if(row==y+h-1)t=FRAME_TILE_FLIP_V|FRAME_TILE_EDGE_H;else if(row==y)t=FRAME_TILE_EDGE_H;else t=FRAME_TILE_FILL;}
+((u16 *)tilemap)[row*32+col]=t+((pal&15)<<12);
 }
 }
 }
 
 void func_020c08f8(s32 a,s32 b,s32 c,s32 d,u8 e) {
 extern s32 gCur3DSpriteEngine; extern void *gCurrentMap;
-void func_020c079c(s32,s32,s32,s32,s32,s32,u8);
+void DrawFrameTiles(s32,s32,s32,s32,s32,s32,u8);
 void (*cb)(void);
-func_020c079c(a,b,c,d,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),3,e);
+DrawFrameTiles(a,b,c,d,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),3,e);
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x48);
 if(cb)cb();
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;

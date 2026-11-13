@@ -455,46 +455,50 @@ void SetSpriteQuad(s32 a,s16 b,s16 c,s16 d,s16 e) {
  ((s16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x34))[n+15]=e;
 }
 
-void *func_01ff8e44(s32 a, s32 b) {
+/* Returns the 3D sprite quad template for a width x height sprite among the
+ * fixed OAM size classes (8 to 64 pixels per side), or NULL when the size has
+ * no template.  A template is a SpriteQuadTemplate: one quad and its three OAM
+ * attribute words. */
+void *GetSpriteDescForSize(s32 width, s32 height) {
     extern u8 gSpriteDesc8x8[8];
-    extern u8 data_027e006c[8];
-    extern u8 data_027e009c[8];
+    extern u8 gSpriteDesc8x16[8];
+    extern u8 gSpriteDesc8x32[8];
     extern u8 gSpriteDesc16x8[8];
     extern u8 gSpriteDesc16x16[8];
     extern u8 gSpriteDesc16x32[8];
-    extern u8 data_027e007c[8];
+    extern u8 gSpriteDesc32x8[8];
     extern u8 gSpriteDesc32x16[8];
-    extern u8 data_027e00ac[8];
-    extern u8 data_027e0094[8];
-    extern u8 data_027e00b4[8];
+    extern u8 gSpriteDesc32x32[8];
+    extern u8 gSpriteDesc32x64[8];
+    extern u8 gSpriteDesc64x32[8];
     extern u8 gSpriteDesc64x64[8];
 
-    switch (a) {
+    switch (width) {
     case 0x08:
-        switch (b) {
+        switch (height) {
         case 0x08: return gSpriteDesc8x8;
-        case 0x10: return data_027e006c;
-        case 0x20: return data_027e009c;
+        case 0x10: return gSpriteDesc8x16;
+        case 0x20: return gSpriteDesc8x32;
         }
         break;
     case 0x10:
-        switch (b) {
+        switch (height) {
         case 0x08: return gSpriteDesc16x8;
         case 0x10: return gSpriteDesc16x16;
         case 0x20: return gSpriteDesc16x32;
         }
         break;
     case 0x20:
-        switch (b) {
-        case 0x08: return data_027e007c;
+        switch (height) {
+        case 0x08: return gSpriteDesc32x8;
         case 0x10: return gSpriteDesc32x16;
-        case 0x20: return data_027e00ac;
-        case 0x40: return data_027e0094;
+        case 0x20: return gSpriteDesc32x32;
+        case 0x40: return gSpriteDesc32x64;
         }
         break;
     case 0x40:
-        switch (b) {
-        case 0x20: return data_027e00b4;
+        switch (height) {
+        case 0x20: return gSpriteDesc64x32;
         case 0x40: return gSpriteDesc64x64;
         }
         break;

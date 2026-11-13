@@ -512,7 +512,7 @@ void func_ov007_0221863c(void *arg0) {
 #pragma opt_propagation reset
 void func_ov007_02218a60(void *arg0) {
     M2C_UNK MemFree(void *);
-    M2C_UNK func_020a40c0(u8);
+    M2C_UNK ApplyWeatherEffects(u8);
     M2C_UNK HeapFreeBlock(s32);
     extern void **gCurrentMap;
     void *temp_r4;
@@ -530,5 +530,5 @@ void func_ov007_02218a60(void *arg0) {
         MemFree(temp_r4_2);
     }
     M2C_FIELD(arg0, void **, 0x5C) = NULL;
-    func_020a40c0(M2C_FIELD(*gCurrentMap, u8 *, 0x5158));
+    ApplyWeatherEffects(M2C_FIELD(*gCurrentMap, u8 *, 0x5158));
 }

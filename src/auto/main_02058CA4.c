@@ -3,39 +3,43 @@
 typedef struct ByteBlock16 { u8 bytes[16]; } ByteBlock16;
 
 #pragma opt_common_subs off
-s32 func_02058ca4(void){
-extern M2C_UNK data_020ff43c,data_0213dce0;
+/* Reads whatever the gpi info socket has pending into the module's receive
+ * buffer (growing it as needed), then splits the buffer on \final\ and
+ * dispatches each complete message; the unprocessed remainder is moved to the
+ * front. Returns 0 when the connection is unusable, 1 otherwise. */
+s32 gpiInfoReadSocket(void) {
+extern M2C_UNK gGpiInfoState,gGpiInfoSocket;
 void *gpiRealloc(void *,s32);s32 ghiRecv(s32,void *,s32,s32);
-void func_02058c14(void);s32 func_020593c0(s8 *,s32);void func_020651c4(void *,void *,s32);
-s32 n,used,cap;void *h,*g;
-if(M2C_FIELD(&data_020ff43c,s32 *,0)==-1)return 0;
-if(M2C_FIELD(&data_0213dce0,s32 *,16)!=5)return 0;
-if(func_02058f28(M2C_FIELD(&data_020ff43c,s32 *,0)))do{g=&data_0213dce0;h=&data_020ff43c;
-if(M2C_FIELD(g,s32 *,44)-M2C_FIELD(g,s32 *,0)<128){
-cap=M2C_FIELD(g,s32 *,44);if(cap<256)M2C_FIELD(g,s32 *,44)=256;else M2C_FIELD(g,s32 *,44)=cap*2;
-M2C_FIELD(g,void **,12)=gpiRealloc(M2C_FIELD(g,void **,12),M2C_FIELD(g,s32 *,44)+1);
-if(!M2C_FIELD(g,void **,12))return 0;
+void gpiInfoCloseSocket(void);s32 gpiInfoProcessRecvData(s8 *,s32);void MemMove(void *,void *,s32);
+s32 received,used,capacity;void *socketRef,*state;
+if(M2C_FIELD(&gGpiInfoSocket,s32 *,0)==-1)return 0;
+if(M2C_FIELD(&gGpiInfoState,s32 *,16)!=5)return 0;
+if(SocketHasPendingData(M2C_FIELD(&gGpiInfoSocket,s32 *,0)))do{state=&gGpiInfoState;socketRef=&gGpiInfoSocket;
+if(M2C_FIELD(state,s32 *,44)-M2C_FIELD(state,s32 *,0)<128){
+capacity=M2C_FIELD(state,s32 *,44);if(capacity<256)M2C_FIELD(state,s32 *,44)=256;else M2C_FIELD(state,s32 *,44)=capacity*2;
+M2C_FIELD(state,void **,12)=gpiRealloc(M2C_FIELD(state,void **,12),M2C_FIELD(state,s32 *,44)+1);
+if(!M2C_FIELD(state,void **,12))return 0;
 }
-used=M2C_FIELD(g,s32 *,0);
-n=ghiRecv(M2C_FIELD(h,s32 *,0),M2C_FIELD(g,u8 **,12)+used,M2C_FIELD(g,s32 *,44)-used,0);
-if(n<=0){func_02058c14();return 0;}
-M2C_FIELD(g,s32 *,0)+=n;
-M2C_FIELD(g,u8 **,12)[M2C_FIELD(g,s32 *,0)]=0;
-used=func_020593c0(M2C_FIELD(g,s8 **,12),M2C_FIELD(g,s32 *,0));
-if(used==M2C_FIELD(g,s32 *,0))M2C_FIELD(g,s32 *,0)=0;
-else{func_020651c4(M2C_FIELD(g,void **,12),M2C_FIELD(g,u8 **,12)+used,M2C_FIELD(g,s32 *,0)-used);M2C_FIELD(g,s32 *,0)-=used;}
-}while(func_02058f28(M2C_FIELD(h,s32 *,0)));
-if(M2C_FIELD(&data_020ff43c,s32 *,0)==-1)return 0;else return 1;
+used=M2C_FIELD(state,s32 *,0);
+received=ghiRecv(M2C_FIELD(socketRef,s32 *,0),M2C_FIELD(state,u8 **,12)+used,M2C_FIELD(state,s32 *,44)-used,0);
+if(received<=0){gpiInfoCloseSocket();return 0;}
+M2C_FIELD(state,s32 *,0)+=received;
+M2C_FIELD(state,u8 **,12)[M2C_FIELD(state,s32 *,0)]=0;
+used=gpiInfoProcessRecvData(M2C_FIELD(state,s8 **,12),M2C_FIELD(state,s32 *,0));
+if(used==M2C_FIELD(state,s32 *,0))M2C_FIELD(state,s32 *,0)=0;
+else{MemMove(M2C_FIELD(state,void **,12),M2C_FIELD(state,u8 **,12)+used,M2C_FIELD(state,s32 *,0)-used);M2C_FIELD(state,s32 *,0)-=used;}
+}while(SocketHasPendingData(M2C_FIELD(socketRef,s32 *,0)));
+if(M2C_FIELD(&gGpiInfoSocket,s32 *,0)==-1)return 0;else return 1;
 }
 #pragma opt_common_subs reset
 void func_02058df4(s8 *arg0, s32 arg1) {
-    extern M2C_UNK data_020ff43c;
+    extern M2C_UNK gGpiInfoSocket;
     s32 i;
     s8 *p;
-    p = M2C_FIELD(&data_020ff43c, s8 **, 8);
+    p = M2C_FIELD(&gGpiInfoSocket, s8 **, 8);
     for (i = 0; i < arg1; i++) {
         arg0[i] ^= *p;
-        if (*++p == 0) p = M2C_FIELD(&data_020ff43c, s8 **, 8);
+        if (*++p == 0) p = M2C_FIELD(&gGpiInfoSocket, s8 **, 8);
     }
 }
 
@@ -45,7 +49,7 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     s32 StringLength(s8 *);
     extern const u8 data_020eab2f[];
     extern s8 data_020ff4ac[];
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     extern u8 data_0213dd10[];
     s8 sp0[0x100];
     u32 count;
@@ -61,16 +65,16 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     dst = sp0;
     count = 0x80;
     do { u8 a = src[0]; u8 b = src[1]; src += 2; dst[0] = a; dst[1] = b; dst += 2; count -= 1; } while (count != 0);
-    t = M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24);
+    t = M2C_FIELD(&gGpiInfoState, volatile s32 *, 0x24);
     t ^= 1;
-    M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) = t;
+    M2C_FIELD(&gGpiInfoState, volatile s32 *, 0x24) = t;
     StringAppend(sp0, arg1);
     StringAppend(sp0, data_020ff4ac);
     p = StringFind((s8 *)arg0, sp0);
     if (p == 0) return 0;
     n = StringLength(sp0);
     str = p + n;
-    base = (s8 *)data_0213dd10 + (M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) << 8);
+    base = (s8 *)data_0213dd10 + (M2C_FIELD(&gGpiInfoState, volatile s32 *, 0x24) << 8);
     dst = base;
     while (*str != 0 && *str != 0x5c) *dst++ = *str++;
     *dst = 0;
@@ -89,7 +93,7 @@ M2C_UNK *func_02058f10(void *arg0, M2C_UNK *arg1) {
     return var_r0;
 }
 
-s32 func_02058f28(s32 a) {
+s32 SocketHasPendingData(s32 a) {
     s32 func_02049534(s32);
     return func_02049534(a);
 }
@@ -107,12 +111,12 @@ s8 *func_02058f34(s8 *arg0, s32 arg1) {
 s32 func_02058f9c(s32 arg0, s32 arg1, s32 arg2) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem();
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     s32 i;
     s32 *p;
-    if (M2C_FIELD(&data_0213dce0, s32 *, 4) == 0) return -1;
-    for (i = 0; i < Vector_GetCount(M2C_FIELD(&data_0213dce0, s32 *, 4)); i++) {
-        p = Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), i);
+    if (M2C_FIELD(&gGpiInfoState, s32 *, 4) == 0) return -1;
+    for (i = 0; i < Vector_GetCount(M2C_FIELD(&gGpiInfoState, s32 *, 4)); i++) {
+        p = Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), i);
         if (p[0] == arg0 && p[1] == arg1 && p[2] == arg2) return i;
     }
     return -1;
@@ -125,7 +129,7 @@ void func_02059020(void *arg0) {
     extern M2C_UNK data_020ff4b0;
     extern M2C_UNK data_020ff4b8;
     extern M2C_UNK data_020ff4bc;
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     s32 var_r1;
     s32 temp_r0;
     s32 temp_r4;
@@ -139,7 +143,7 @@ void func_02059020(void *arg0) {
     if (temp_r0 == -1) {
         return;
     }
-    M2C_FIELD(Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), temp_r0), s32 *, 8) = temp_r5;
+    M2C_FIELD(Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), temp_r0), s32 *, 8) = temp_r5;
     if (temp_r5 > 0) {
         var_r1 = 1;
     } else {
@@ -154,7 +158,7 @@ void func_020590d0(void *arg0) {
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4c4;
     extern M2C_UNK data_020ff4b8;
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     s32 var_r1;
     s32 temp_r0;
     s32 temp_r4;
@@ -164,7 +168,7 @@ void func_020590d0(void *arg0) {
     if (temp_r0 == -1) {
         return;
     }
-    M2C_FIELD(Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), temp_r0), s32 *, 8) = temp_r4;
+    M2C_FIELD(Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), temp_r0), s32 *, 8) = temp_r4;
     if (temp_r4 > 0) {
         var_r1 = 1;
     } else {
@@ -233,9 +237,9 @@ void func_020592d8(s8 *arg0, s32 arg1) {
     func_02059240(arg0, arg1);
 }
 
-s32 func_020593c0(s8 *arg0, s32 arg1) {
+s32 gpiInfoProcessRecvData(s8 *arg0, s32 arg1) {
  void func_020592d8(s8 *, s32);
- extern M2C_UNK data_020ff43c, data_020ff488;
+ extern M2C_UNK gGpiInfoSocket, data_020ff488;
  s8 *end;
  s32 original;
  s32 length;
@@ -243,7 +247,7 @@ s32 func_020593c0(s8 *arg0, s32 arg1) {
  end = func_02058f34(arg0, arg1);
  while (arg1 > 0 && end != NULL) {
  length = end - arg0;
- M2C_FIELD(&data_020ff43c, M2C_UNK **, 8) = &data_020ff488;
+ M2C_FIELD(&gGpiInfoSocket, M2C_UNK **, 8) = &data_020ff488;
  func_02058df4(arg0, length);
  func_020592d8(arg0, length);
  arg1 -= length + 7;
@@ -257,14 +261,14 @@ s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
     void func_0204890c(s32 *, s32);
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     s32 *p;
     s32 *cb;
 
     if (arg0 < 0) {
     }
-    else if (arg0 < Vector_GetCount(M2C_FIELD(&data_0213dce0, s32 *, 4))) {
-        p = Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), arg0);
+    else if (arg0 < Vector_GetCount(M2C_FIELD(&gGpiInfoState, s32 *, 4))) {
+        p = Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), arg0);
         cb = M2C_FIELD(p, s32 *, 0x18);
         if (cb != NULL) {
             s32 type = M2C_FIELD(p, s32 *, 0);
@@ -295,39 +299,39 @@ s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                     break;
             }
         }
-        func_0204890c(M2C_FIELD(&data_0213dce0, s32 *, 4), arg0);
+        func_0204890c(M2C_FIELD(&gGpiInfoState, s32 *, 4), arg0);
     }
 }
 
 #pragma opt_common_subs on
 void func_0205954c(void) {
     s32 Vector_GetCount(s32); void func_0204861c(s32); void func_02058df4(s8 *, s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
-    extern M2C_UNK data_0213dce0, data_020ff498, data_020ff43c;
+    extern M2C_UNK gGpiInfoState, data_020ff498, gGpiInfoSocket;
     extern const u8 data_020ea9ac[];
     ByteBlock16 buf1, buf0; s32 i;
-    if (!M2C_FIELD(&data_0213dce0,s32 *,4)) return;
-    i=Vector_GetCount(M2C_FIELD(&data_0213dce0,s32 *,4))-1;
+    if (!M2C_FIELD(&gGpiInfoState,s32 *,4)) return;
+    i=Vector_GetCount(M2C_FIELD(&gGpiInfoState,s32 *,4))-1;
     if(i>=0) {
         buf0=*(const ByteBlock16 *)data_020ea9ac;
         do {
             buf1=buf0;
-            M2C_FIELD(&data_020ff43c,M2C_UNK **,8)=&data_020ff498;
+            M2C_FIELD(&gGpiInfoSocket,M2C_UNK **,8)=&data_020ff498;
             func_02058df4((s8 *)&buf1,15);
             func_02059448(i,0,0,(s32)&buf1,0);
         } while(--i>=0);
     }
-    func_0204861c(M2C_FIELD(&data_0213dce0,s32 *,4));
-    M2C_FIELD(&data_0213dce0,s32 *,4)=0;
+    func_0204861c(M2C_FIELD(&gGpiInfoState,s32 *,4));
+    M2C_FIELD(&gGpiInfoState,s32 *,4)=0;
 }
 #pragma opt_common_subs off
 s32 func_02059640(void *arg0, s32 arg1) {
     s32 *Vector_GetItem(s32, s32);
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     void *var_r0;
 
     var_r0 = arg0;
     if (var_r0 == NULL) {
-        var_r0 = M2C_FIELD(&data_0213dce0, void **, 0x28);
+        var_r0 = M2C_FIELD(&gGpiInfoState, void **, 0x28);
     }
     if (var_r0 == NULL) {
         return arg1;
@@ -337,20 +341,20 @@ s32 func_02059640(void *arg0, s32 arg1) {
 
 s32 func_02059670(void *arg0, s32 arg1) {
  s32 *Vector_GetItem(s32, s32);
- extern M2C_UNK data_0213dce0;
+ extern M2C_UNK gGpiInfoState;
  void *var_r0;
  var_r0 = arg0;
- if (var_r0 == NULL) var_r0 = M2C_FIELD(&data_0213dce0, void **, 0x28);
+ if (var_r0 == NULL) var_r0 = M2C_FIELD(&gGpiInfoState, void **, 0x28);
  if (var_r0 == NULL) return arg1;
  return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x1c), arg1);
 }
 
 M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
  s32 *func_02058658(s32, void *, s32, M2C_UNK *);
- extern M2C_UNK data_0213dce0;
+ extern M2C_UNK gGpiInfoState;
  s32 *result;
  void *obj = arg0;
- if (obj == NULL) obj = M2C_FIELD(&data_0213dce0, void **, 0x28);
+ if (obj == NULL) obj = M2C_FIELD(&gGpiInfoState, void **, 0x28);
  if (obj == NULL) result = &arg3;
  else {
  result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, &arg3);
@@ -361,10 +365,10 @@ M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 ar
 
 s64 func_02059708(void *arg0, void *arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
  s32 *func_02058658(s32, void *, s32, M2C_UNK *);
- extern M2C_UNK data_0213dce0;
+ extern M2C_UNK gGpiInfoState;
  s32 *result;
  void *obj = arg0;
- if (obj == NULL) obj = M2C_FIELD(&data_0213dce0, void **, 0x28);
+ if (obj == NULL) obj = M2C_FIELD(&gGpiInfoState, void **, 0x28);
  if (obj == NULL) result = (s32 *)&arg3;
  else {
  result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, (s32 *)&arg3);
@@ -375,10 +379,10 @@ s64 func_02059708(void *arg0, void *arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
 
 s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     s32 *func_02058658(s32, void *, s32, M2C_UNK *);
-    extern M2C_UNK data_0213dce0;
+    extern M2C_UNK gGpiInfoState;
     s32 result;
     void *obj = arg0;
-    if (obj == NULL) obj = M2C_FIELD(&data_0213dce0, void **, 0x28);
+    if (obj == NULL) obj = M2C_FIELD(&gGpiInfoState, void **, 0x28);
     if (obj == NULL) return arg3;
     result = ((s32 (*)(s32, void *, M2C_UNK))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, arg3);
     if (result != 0) return result;

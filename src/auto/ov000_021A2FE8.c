@@ -9,6 +9,7 @@ typedef struct {
 } UnkState_021a36e4;
 #include "ov000_unit_entry.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 #pragma push
 #pragma opt_strength_reduction off
@@ -72,20 +73,23 @@ reject:
 }
 #pragma pop
 
-s32 func_ov000_021a3210(void){
+/* Decide whether the AI builds a transport now: the unit must be affordable and
+   before the tuning block's last transport turn, an existing transport move wins,
+   and otherwise the transport count must be below its share of the infantry. */
+s32 TryBuildTransport(void){
 s32 Divide(s32,s32);s32 func_020d2d18(u16,s32);
 void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiCommandState;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
-void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
-if(func_020d2d18(id,19)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
-if(M2C_FIELD(gAiCommandState,u8 *,6)==1){n=M2C_FIELD(gAiSettings,u8 *,19);if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;}
-if(PlanTransportAction()==1)return 1;r=FindAiTargetByCost(2);if(r==-1){r=FindAiTargetOfType(2);if(r==-1)return 0;}
-v=CountPlayerUnitsOfKind(19);
-n=M2C_FIELD(gAiState,u8 *,8);if(!n)return 0;
-if(Divide(v*100,n)<M2C_FIELD(gAiSettings,u8 *,11)){
-M2C_FIELD(&gAiCommand,u8 *,6)=19;
+void *map=*gCurrentMap;u16 playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);s32 targetIndex,unused,transportCount;u8 unitCount;
+if(func_020d2d18(playerId,UNIT_KIND_TRANSPORT)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
+if(M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_TARGET_AREAS)==1){unitCount=M2C_FIELD(gAiSettings,u8 *,AI_SETTING_TRANSPORT_LAST_TURN);if(unitCount && M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)>unitCount)return 0;}
+if(PlanTransportAction()==1)return 1;targetIndex=FindAiTargetByCost(2);if(targetIndex==-1){targetIndex=FindAiTargetOfType(2);if(targetIndex==-1)return 0;}
+transportCount=CountPlayerUnitsOfKind(UNIT_KIND_TRANSPORT);
+unitCount=M2C_FIELD(gAiState,u8 *,AI_STATE_INFANTRY_MECH);if(!unitCount)return 0;
+if(Divide(transportCount*100,unitCount)<M2C_FIELD(gAiSettings,u8 *,AI_SETTING_TRANSPORT_PERCENT)){
+M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=UNIT_KIND_TRANSPORT;
 }else{return 0;}
-CommitAiAction(r);return 1;
+CommitAiAction(targetIndex);return 1;
 }
 
 s32 func_ov000_021a3364(void){

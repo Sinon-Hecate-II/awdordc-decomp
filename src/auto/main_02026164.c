@@ -241,7 +241,7 @@ u64 func_020267e0(void *arg0) {
 #pragma scheduling off
 void BigNumDivMod(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
 M2C_UNK MI_CpuCopy8(s32,s32,s32);
-M2C_UNK func_020651c4(M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK MemMove(M2C_UNK,M2C_UNK,M2C_UNK);
 u64 func_02072088(u64,u64);
 s32 i;u32 digit;u16 *q,*r;s32 nb,na,bytes;u64 divisor;
 q=work+n;r=q+n;
@@ -256,7 +256,7 @@ if(nb>2){bytes=nb*2;divisor=func_020267cc(b+nb-1);}
 else if(nb>1){bytes=nb*2;divisor=((u64(*)(volatile u16 *))func_020267bc)(b+nb-1);}
 else {bytes=nb*2;divisor=func_020267b0(b+nb-1);}
 if(i<n) do {
-func_020651c4((s32)(q+1),(s32)q,(n*2-1)*2);
+MemMove((s32)(q+1),(s32)q,(n*2-1)*2);
 digit=func_02072088(func_020267e0((u8 *)r+bytes),divisor);
 if(digit>65535)digit=65535;
 again:
@@ -380,7 +380,7 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
   s32 func_020264ec(u16 *, u16 *, s32);
   void BigNumMul(u16 *, u16 *, u16 *, s32);
       void func_0202667c(u16 *, u16 *, s32);
-  M2C_UNK func_020651c4(M2C_UNK, M2C_UNK, M2C_UNK);
+  M2C_UNK MemMove(M2C_UNK, M2C_UNK, M2C_UNK);
   MI_CpuCopy8((s32) arg0, (s32) arg1, arg3 * 2);
   if (arg2 == 1)
   {
@@ -396,7 +396,7 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
   MI_CpuFill8((u8 *) (arg7 + arg4), 0, (u32) arg2);
   BigNumMul(arg8, arg7, arg5, arg3);
   BigNumAdd(arg0, arg0, arg8, arg3);
-  func_020651c4((s32) arg0, (s32) (arg0 + arg4), (arg3 - arg4) * 2);
+  MemMove((s32) arg0, (s32) (arg0 + arg4), (arg3 - arg4) * 2);
   MI_CpuFill8((u8 *) ((arg0 + arg3) - arg4), 0, (u32) (arg4 * 2));
   switch (func_020264ec(arg0, arg5, arg3))
   {

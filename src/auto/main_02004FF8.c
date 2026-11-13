@@ -148,7 +148,7 @@ void func_02005254(void) {
 #pragma opt_propagation reset
 void func_02005288(void) {
 extern s32 data_0212dc7c;
-void WaitByLoop(s32); void func_020053a0(s32,s32,s32);void func_02005424(s32,s32,s32);void func_02007e54(s32,void *,s32);
+void WaitByLoop(s32); void func_020053a0(s32,s32,s32);void func_02005424(s32,s32,s32);void CpuFill(s32,void *,s32);
 volatile u8 *p=(volatile u8 *)0x027ffff0;
 if(data_0212dc7c)return;
 *(volatile s32 *)p=0;
@@ -157,7 +157,7 @@ func_020053a0(0x7e,0x027ffff0,0);
 while(*(volatile u16 *)(p+6))WaitByLoop(0x400);
 *(volatile s32 *)0x027fffb0=-1;
 *(volatile s32 *)0x027fffb4=0xffff0000;
-func_02007e54(0,(void *)0x027fffc0,0x28);
+CpuFill(0,(void *)0x027fffc0,0x28);
 *(volatile u16 *)0x04000204|=0x800;
 *(volatile u16 *)0x04000204|=0x80;
 func_02005424(0x7e,0x027ffff0,0);
@@ -461,7 +461,7 @@ s32 func_02005ab0(void) {
 void func_02005ac0(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 void func_020061a0(); void func_02006198();
-void func_02007e54(s32,void *,s32); void func_02005bbc(void);
+void CpuFill(s32,void *,s32); void func_02005bbc(void);
 s32 state; s32 id; u8 *base;
 state=OS_DisableInterrupts();
 id=func_020056b0();
@@ -479,13 +479,13 @@ M2C_FIELD(obj,s32 *,0x9c)=M2C_FIELD(obj,s32 *,0xa0)=0;
 func_020061a0(obj,callback,buf-4);
 M2C_FIELD(obj,s32 *,4)=owner;
 M2C_FIELD(obj,void (**)(void),0x3c)=func_02005bbc;
-func_02007e54(0,base+4,bufLen-8);
+CpuFill(0,base+4,bufLen-8);
 M2C_FIELD(obj,s32 *,0x8c)=M2C_FIELD(obj,s32 *,0x88)=M2C_FIELD(obj,s32 *,0x84)=0;
 func_02006198(obj,0);
 M2C_FIELD(obj,s32 *,0x78)=0;
 M2C_FIELD(obj,s32 *,0x80)=0;
 M2C_FIELD(obj,s32 *,0x7c)=0;
-func_02007e54(0,(u8 *)obj+0xa4,12);
+CpuFill(0,(u8 *)obj+0xa4,12);
 M2C_FIELD(obj,s32 *,0xb0)=0;
 OS_RestoreInterrupts(state);
 }

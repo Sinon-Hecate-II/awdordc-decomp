@@ -6,7 +6,7 @@ typedef struct SendPacket { u8 tag[4]; s32 kind; s8 command; u8 length; u16 id; 
 typedef M2C_UNK (*fmt_fn_t)(M2C_UNK, s32, M2C_UNK, M2C_UNK, s32, M2C_UNK);
 
 
-void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
+void BeginMatchmakingSession(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
     void ResetConnection(s32);
     void *GetConnection(void);
     void func_0205fdbc(s32, s8 *);

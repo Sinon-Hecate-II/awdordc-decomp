@@ -22,7 +22,7 @@ if(mode==3 && bank!=saved)goto next;
 switch(M2C_FIELD(arg0,s32 *,0x34)){
 case 0:M2C_FIELD(M2C_FIELD(bank,void **,0),s8 *,0x50)=neg;break;
 case 1:M2C_FIELD(M2C_FIELD(bank,void **,0),s8 *,0x50)=pos;break;
-case 2:func_020abfcc(M2C_FIELD(arg0,u16 *,0x3a)-M2C_FIELD(arg0,u16 *,0x38));break;
+case 2:UpdateSplitTransition(M2C_FIELD(arg0,u16 *,0x3a)-M2C_FIELD(arg0,u16 *,0x38));break;
 }
 if(M2C_FIELD(arg0,u16 *,0x38)>=M2C_FIELD(arg0,u16 *,0x3a)){
 func_020aca8c((u8)M2C_FIELD(arg0,s32 *,0x34));

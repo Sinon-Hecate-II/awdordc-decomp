@@ -419,7 +419,7 @@ void func_02053f18(void *arg0) {
 
 s32 gpiFinishOperation(void **arg0, void *arg1) {
     void *gpiMalloc(s32);
-    void func_02065210(void *, s32, s32);
+    void MemSet(void *, s32, s32);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
     s32 gpiAddCallback(void **, RequestPair534, void *, void *, s32);
@@ -457,7 +457,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
                 }
-                func_02065210(buffer, 0, 0x20);
+                MemSet(buffer, 0, 0x20);
                 M2C_FIELD(buffer, s32 *, 0x00) = M2C_FIELD(operation, s32 *, 0x1C);
                 if (M2C_FIELD(base, s32 *, 0x418) == 0x201) {
                     M2C_FIELD(buffer, s32 *, 0x04) = M2C_FIELD(base, s32 *, 0x1A0);
@@ -491,7 +491,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
                 }
-                func_02065210(buffer, 0, 0x204);
+                MemSet(buffer, 0, 0x204);
                 M2C_FIELD(buffer, s32 *, 0x00) = M2C_FIELD(operation, s32 *, 0x1C);
                 result = gpiAddCallback(arg0, pair, buffer, operation, 0);
                 if (result != 0) {

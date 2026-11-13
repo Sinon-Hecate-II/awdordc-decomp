@@ -51,7 +51,7 @@ M2C_FIELD(slot,u16 *,4)=0;*done=1;return freeSlot+14;
 void func_0201ce18(u8 *arg0, s32 arg1) {
     s32 Checksum(u8 *, u32);
     s32 func_0201a778(void);
-    M2C_UNK func_0201ae0c(void *, M2C_UNK, s32);
+    M2C_UNK UpdateArpCache(void *, M2C_UNK, s32);
     M2C_UNK func_0201bb88(void *, u8 *, M2C_UNK);
     M2C_UNK func_0201c820(void *, void *, s32);
     M2C_UNK UdpReceiveDatagram(void *, void *, s32);
@@ -87,7 +87,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         if (M2C_FIELD(&gNetStack, s32 *, 0x50) == (s32)dataA) {
             dataB = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0xC) >> 8) | (M2C_FIELD(arg0, u16 *, 0xC) << 8)) << 16) |
                     (u16)((M2C_FIELD(arg0, u16 *, 0xE) >> 8) | (M2C_FIELD(arg0, u16 *, 0xE) << 8));
-            func_0201ae0c(arg0 - 8, dataB, 1);
+            UpdateArpCache(arg0 - 8, dataB, 1);
         }
     }
 
@@ -131,7 +131,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
 void func_0201cfdc(void) {
     u8 *func_0201aacc(s32 *);
     void func_0201ce18(u8 *, s32);
-    void func_0201b840(u8 *, s32);
+    void HandleArpPacket(u8 *, s32);
     void func_0201ab8c(void);
 
     s32 size;
@@ -149,7 +149,7 @@ void func_0201cfdc(void) {
         if (magic == 0x800) {
             func_0201ce18(buf + 0xE, size - 0xE);
         } else if (magic == 0x806) {
-            func_0201b840(buf + 0xE, size - 0xE);
+            HandleArpPacket(buf + 0xE, size - 0xE);
             func_0201ab8c();
         }
     }
@@ -497,13 +497,13 @@ fail:
 
 void ConsumeReceivedData(u32 arg0, void *arg1) {
 M2C_UNK OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(M2C_UNK);
-M2C_UNK func_020651c4(M2C_UNK,M2C_UNK); M2C_UNK TcpSendAck(void *,M2C_UNK);
+M2C_UNK MemMove(M2C_UNK,M2C_UNK); M2C_UNK TcpSendAck(void *,M2C_UNK);
 u8 kind; u32 flag; u32 left; M2C_UNK irq;
 irq=OS_DisableInterrupts();
 left=M2C_FIELD(arg1,u32*,0x44); flag=0;
 if(left==M2C_FIELD(arg1,u32*,0x3c) && arg0!=0) flag=1;
 if(arg0>=left) M2C_FIELD(arg1,u32*,0x44)=0;
-else {s32 base=M2C_FIELD(arg1,s32*,0x40);M2C_FIELD(arg1,u32*,0x44)=left-arg0;func_020651c4(base,base+arg0);}
+else {s32 base=M2C_FIELD(arg1,s32*,0x40);M2C_FIELD(arg1,u32*,0x44)=left-arg0;MemMove(base,base+arg0);}
 { M2C_UNK saved = irq; OS_RestoreInterrupts(saved); }
 kind=M2C_FIELD(arg1,u8*,8);
 if(kind!=0xa && kind!=0xb){

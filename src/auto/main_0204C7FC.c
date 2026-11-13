@@ -82,26 +82,29 @@ void ghiDoConnect(GHIConnection *connection) {
     InvokeRequestCallback(connection, 0, 0);
 }
 
-void func_0204ca4c(void *a){
+/* Runs the connected step (state 2) of a ghttp request: rejects an https URL when
+   no encryptor is configured with result 17, starts the installed encryptor,
+   flushes whatever is still buffered, then reads the reply into a 1 KiB buffer. */
+void ghiProcessConnected(GHIConnection *connection){
 s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK sUrlSchemeHttps,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
 u8 buf[1024];s32 size;
-if(!M2C_FIELD(a,s32 *,0x168)){
-if(!StringCompareN(M2C_FIELD(a,void **,0x14),&sUrlSchemeHttps,8)){
-M2C_FIELD(a,s32 *,0xfc)=1;M2C_FIELD(a,s32 *,0x38)=17;return;
+if(!M2C_FIELD(connection,s32 *,0x168)){
+if(!StringCompareN(connection->url,&sUrlSchemeHttps,8)){
+connection->completed=1;connection->result=17;return;
 }
-M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;
+connection->state=3;InvokeRequestCallback(connection,0,0);return;
 }
-if(M2C_FIELD(a,s32 *,0x170)){M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;}
-if(!M2C_FIELD(a,s32 *,0x16c)&& M2C_FIELD(a,s32 (**)(void *,void *),0x174)(a,(u8 *)a+0x164)==3){
+if(connection->encryptorFlag){connection->state=3;InvokeRequestCallback(connection,0,0);return;}
+if(!connection->encryptor&& connection->encryptorProcess(connection,(u8 *)connection+0x164)==3){
 AssertFailed(&gGhttpAssertZero,&gGhttpProcessFileName,&data_020fd804,0x146);return;
 }
-if(M2C_FIELD(a,s32 *,0x60)>=M2C_FIELD(a,s32 *,0x5c))goto done;
-if(!SendBufferedData(a))return;
-if(M2C_FIELD(a,s32 *,0x60)<M2C_FIELD(a,s32 *,0x5c))return;
-ResetBuffer((u8 *)a+0x50);
-done:size=1024;func_0204a740(a,buf,&size);
+if(connection->buffer.pos>=connection->buffer.len)goto done;
+if(!SendBufferedData(connection))return;
+if(connection->buffer.pos<connection->buffer.len)return;
+ResetBuffer((u8 *)connection+0x50);
+done:size=1024;func_0204a740(connection,buf,&size);
 }
 
 #pragma push
@@ -223,24 +226,29 @@ void func_0204ceb8(void *arg0) {
     InvokeRequestCallback(arg0, 0, 0);
 }
 
-s32 func_0204cf38(void *a){
-extern M2C_UNK gGhttpAssertConnection,gGhttpProcessFileName,data_020fd7e0,data_020fd968,data_020fd988;
+/* Parse the "HTTP/x.y NNN" status line at the start of the request's read
+ * buffer: scan the version and status code, note where the reason phrase
+ * begins, and store them on the connection; a line that will not parse fails
+ * the request. */
+s32 ghiParseStatus(void *a){
+GHIConnection *connection=a;
+extern M2C_UNK gGhttpAssertConnection,gGhttpProcessFileName,gGhiParseStatusName,gGhttpAssertRecvBufferLen,sStatusLineFormat;
 extern u16 gCharClassTable[];
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 s32 StringScanf(void *,M2C_UNK *,...);
-s32 major,minor,status,pos,n,ch;
-if(!a)AssertFailed(&gGhttpAssertConnection,&gGhttpProcessFileName,&data_020fd7e0,590);
-if(M2C_FIELD(a,s32 *,128)<=0)AssertFailed(&data_020fd968,&gGhttpProcessFileName,&data_020fd7e0,591);
-n=StringScanf(M2C_FIELD(a,void **,120),&data_020fd988,&major,&minor,&status,&pos);
-while((ch=M2C_FIELD(M2C_FIELD(a,void **,120),s8 *,pos))!=0 && char_space(ch))pos++;
-if(n!=3 || major<1 || status<100 || status>=600){
-M2C_FIELD(a,s32 *,252)=1;M2C_FIELD(a,s32 *,56)=7;return 0;
+s32 majorVersion,minorVersion,statusCode,pos,scanned,ch;
+if(!connection)AssertFailed(&gGhttpAssertConnection,&gGhttpProcessFileName,&gGhiParseStatusName,590);
+if(connection->readBuffer.len<=0)AssertFailed(&gGhttpAssertRecvBufferLen,&gGhttpProcessFileName,&gGhiParseStatusName,591);
+scanned=StringScanf(connection->readBuffer.data,&sStatusLineFormat,&majorVersion,&minorVersion,&statusCode,&pos);
+while((ch=((s8 *)connection->readBuffer.data)[pos])!=0 && char_space(ch))pos++;
+if(scanned!=3 || majorVersion<1 || statusCode<100 || statusCode>=600){
+connection->completed=1;connection->result=7;return 0;
 }
-M2C_FIELD(a,s32 *,228)=major;M2C_FIELD(a,s32 *,232)=minor;M2C_FIELD(a,s32 *,236)=status;M2C_FIELD(a,s32 *,240)=pos;return 1;
+connection->httpMajor=majorVersion;connection->httpMinor=minorVersion;connection->statusCode=statusCode;connection->statusLinePos=pos;return 1;
 }
 
 void func_0204d084(void *a){
-s32 func_0204a740(void *,void *,s32 *);s32 ghiAppendDataToBuffer();s32 func_0204cf38(void *);
+s32 func_0204a740(void *,void *,s32 *);s32 ghiAppendDataToBuffer();s32 ghiParseStatus(void *);
 s32 ghiGetLastSocketError(s32);u8 *StringFind(s32,M2C_UNK *);
 extern M2C_UNK sHttpCrlf;
 u8 buf[1024];s32 len=1024; s32 n,off;u8 *p;
@@ -252,7 +260,7 @@ p=StringFind(M2C_FIELD(a,s32 *,120),&sHttpCrlf);
 if(p){
 *p=0;off=p-M2C_FIELD(a,u8 **,120);
 M2C_FIELD(a,s32 *,248)=off+1;
-if(!func_0204cf38(a))return;
+if(!ghiParseStatus(a))return;
 M2C_FIELD(a,s32 *,132)=off+2;
 M2C_FIELD(a,s32 *,16)=7;
 InvokeRequestCallback(a,0,0);return;

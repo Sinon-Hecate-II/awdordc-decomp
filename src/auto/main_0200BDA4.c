@@ -399,43 +399,46 @@ void Sha1Init(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
 }
 
-void Sha1Update(void *arg0, void *arg1, u32 arg2) {
+/* Feed more message bytes to a SHA1 context: advance the 64-bit bit counter,
+   fill and compress any pending block, compress whole blocks straight from the
+   source when it is word aligned, then buffer the remainder. */
+void Sha1Update(void *ctx, void *data, u32 length) {
     void MI_CpuCopy8(void *, void *, u32);
     extern void (*gSha1Transform)(void *, void *, u32);
-    u8 *buf;
+    u8 *block;
     u32 size;
     void *src;
     u32 pending;
     u32 full;
     s32 remaining;
 
-    size = arg2;
-    src = arg1;
-    buf = (u8 *)arg0 + 0x20;
+    size = length;
+    src = data;
+    block = ((Sha1Context *)ctx)->block;
     if (size == 0) {
         return;
     }
     {
-        u32 lo = M2C_FIELD(arg0, u32 *, 0x14);
+        u32 lo = ((Sha1Context *)ctx)->bitCountLo;
         u32 newlo = lo + (size << 3);
         if (newlo < lo) {
-            M2C_FIELD(arg0, u32 *, 0x18) = M2C_FIELD(arg0, u32 *, 0x18) + 1;
+            ((Sha1Context *)ctx)->bitCountHi = ((Sha1Context *)ctx)->bitCountHi + 1;
         }
-        M2C_FIELD(arg0, u32 *, 0x18) = M2C_FIELD(arg0, u32 *, 0x18) + (size >> 29);
-        M2C_FIELD(arg0, u32 *, 0x14) = newlo;
+        ((Sha1Context *)ctx)->bitCountHi = ((Sha1Context *)ctx)->bitCountHi + (size >> 29);
+        ((Sha1Context *)ctx)->bitCountLo = newlo;
     }
-    pending = M2C_FIELD(arg0, u32 *, 0x1C);
+    pending = ((Sha1Context *)ctx)->bufferBytes;
     if (pending != 0) {
         if (pending + size >= 0x40U) {
             u32 take = 0x40U - pending;
-            MI_CpuCopy8(src, buf + pending, take);
+            MI_CpuCopy8(src, block + pending, take);
             size = size - take;
             src = (u8 *)src + take;
-            gSha1Transform(arg0, buf, 0x40);
-            M2C_FIELD(arg0, u32 *, 0x1C) = 0;
+            gSha1Transform(ctx, block, 0x40);
+            ((Sha1Context *)ctx)->bufferBytes = 0;
         } else {
-            MI_CpuCopy8(src, buf + pending, size);
-            M2C_FIELD(arg0, u32 *, 0x1C) = M2C_FIELD(arg0, u32 *, 0x1C) + size;
+            MI_CpuCopy8(src, block + pending, size);
+            ((Sha1Context *)ctx)->bufferBytes = ((Sha1Context *)ctx)->bufferBytes + size;
             return;
         }
     }
@@ -443,23 +446,23 @@ void Sha1Update(void *arg0, void *arg1, u32 arg2) {
         full = size & ~0x3fU;
         size = size - full;
         if (((u32)src & 3U) == 0U) {
-            gSha1Transform(arg0, src, full);
+            gSha1Transform(ctx, src, full);
             src = (u8 *)src + full;
         } else {
             remaining = full;
             do {
-                MI_CpuCopy8(src, buf, 0x40);
+                MI_CpuCopy8(src, block, 0x40);
                 src = (u8 *)src + 0x40;
-                gSha1Transform(arg0, buf, 0x40);
+                gSha1Transform(ctx, block, 0x40);
                 remaining = remaining - 0x40;
             } while (remaining > 0);
         }
     }
-    M2C_FIELD(arg0, u32 *, 0x1C) = size;
+    ((Sha1Context *)ctx)->bufferBytes = size;
     if (size == 0) {
         return;
     }
-    MI_CpuCopy8(src, buf, size);
+    MI_CpuCopy8(src, block, size);
 }
 
 #pragma opt_propagation off
@@ -471,7 +474,7 @@ void Sha1Update(void *arg0, void *arg1, u32 arg2) {
  * big-endian digest to digest. */
 void SHA1_Finalize(void *ctx, void *digest) {
     extern void (*gSha1Transform)(void *, void *, u32);
-    void func_02007e54(u32, void *, s32);
+    void CpuFill(u32, void *, s32);
     register u32 *words;
     register u8 *block;
     u8 *digestOut;
@@ -554,7 +557,7 @@ void SHA1_Finalize(void *ctx, void *digest) {
     digestOut[19] = (u8)state4;
 
     *(u32 *)((u8 *)ctx + 0x1c) = 0;
-    func_02007e54(0, (void *)&ctx, 4);
+    CpuFill(0, (void *)&ctx, 4);
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset

@@ -158,9 +158,9 @@ s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 }
 #pragma scheduling reset
 void func_0205df50(void) {
- void *func_0205d75c(void);
+ void *FindNatNegPeer(void);
  void func_020496b8(s32);
- void *p=func_0205d75c();
+ void *p=FindNatNegPeer();
  if(p==NULL)return;
  if(M2C_FIELD(p,s32 *,0)!=-1) func_020496b8(M2C_FIELD(p,s32 *,0));
  M2C_FIELD(p,s32 *,0)=-1;
@@ -246,7 +246,7 @@ M2C_UNK func_0205e1bc(void *arg0, M2C_UNK arg1) {
  (void)packet;
 }
 
-void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
+void NatNeg_HandleConnectPing(void *arg0, void *arg1, M2C_UNK arg2) {
     void func_0205dc78(void *);
     M2C_UNK func_0205e1bc(void *, M2C_UNK);
     s32 var_r0; u16 temp_r2; u8 temp_r1;
@@ -267,7 +267,7 @@ void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
     func_0205dc78(arg0);
 }
 
-void func_0205e344(void *arg0, void *arg1, void *arg2) {
+void NatNeg_HandleConnectPong(void *arg0, void *arg1, void *arg2) {
     s32 GetTickCountMs();
     void func_0205dc78(void *);
     s32 temp_r1;
@@ -303,7 +303,7 @@ void func_0205e344(void *arg0, void *arg1, void *arg2) {
     func_0205dc78(arg0);
 }
 
-void func_0205e40c(void *arg0, void *arg1, void *arg2) {
+void NatNeg_HandleInitAndErt(void *arg0, void *arg1, void *arg2) {
     M2C_UNK GetTickCountMs(void);
     void func_0205d944(s32, s32, u16, void *, s32);
     u8 temp_r1;
@@ -352,31 +352,34 @@ void func_0205e40c(void *arg0, void *arg1, void *arg2) {
     }
 }
 
-void HandleNatNegPacket(u8 *packet,s32 length,M2C_UNK arg2) {
-s32 func_0205d920(M2C_UNK);
-void *func_0205d75c(void);
-u32 a[5];
-u32 b[6];
+/* Dispatches one received NAT-negotiation packet: checks the magic, copies the
+   packet into a local 20- or 21-byte buffer according to its kind, looks the peer
+   up by the (byte-swapped) source address and hands it to that kind's handler. */
+void HandleNatNegPacket(u8 *packet,s32 length,M2C_UNK fromAddress) {
+s32 IsNatNegPacket(M2C_UNK);
+void *FindNatNegPeer(void);
+u32 buf20[5];
+u32 buf21[6];
 s32 kind;
-u32 ip;
-void *p;
-if(!func_0205d920((M2C_UNK)packet))return;
+u32 sourceIp;
+void *peer;
+if(!IsNatNegPacket((M2C_UNK)packet))return;
 kind=packet[7];
-if(kind==5||kind==7){
+if(kind==NATNEG_KIND_CONNECT_PING||kind==NATNEG_KIND_CONNECT_PONG){
 if(length<20)return;
-*(NetworkPacket20Bytes *)a=*(NetworkPacket20Bytes *)packet;
-ip=*(u32 *)((u8 *)a+8);
-p=((void *(*)(u32))func_0205d75c)(((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000));
-if(!p)return;
-if(kind==5)func_0205e288(p,&a,arg2);
-else func_0205e344(p,&a,arg2);
+*(NetworkPacket20Bytes *)buf20=*(NetworkPacket20Bytes *)packet;
+sourceIp=*(u32 *)((u8 *)buf20+8);
+peer=((void *(*)(u32))FindNatNegPeer)(((sourceIp>>24)&255)|((sourceIp>>8)&0xff00)|((sourceIp<<8)&0xff0000)|((sourceIp<<24)&0xff000000));
+if(!peer)return;
+if(kind==NATNEG_KIND_CONNECT_PING)NatNeg_HandleConnectPing(peer,&buf20,fromAddress);
+else NatNeg_HandleConnectPong(peer,&buf20,fromAddress);
 }else{
 if(length<21)return;
-*(NetworkPacket21Bytes *)b=*(NetworkPacket21Bytes *)packet;
-ip=*(u32 *)((u8 *)b+8);
-p=((void *(*)(u32))func_0205d75c)(((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000));
-if(!p)return;
-func_0205e40c(p,&b,arg2);
+*(NetworkPacket21Bytes *)buf21=*(NetworkPacket21Bytes *)packet;
+sourceIp=*(u32 *)((u8 *)buf21+8);
+peer=((void *(*)(u32))FindNatNegPeer)(((sourceIp>>24)&255)|((sourceIp>>8)&0xff00)|((sourceIp<<8)&0xff0000)|((sourceIp<<24)&0xff000000));
+if(!peer)return;
+NatNeg_HandleInitAndErt(peer,&buf21,fromAddress);
 }
 }
 

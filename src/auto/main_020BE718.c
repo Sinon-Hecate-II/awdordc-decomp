@@ -8,7 +8,7 @@ static inline u32 dateHour(PackedDate *p) { return p->hour; }
 static inline u32 dateMinute(PackedDate *p) { return p->minute; }
 
 void func_020be718(void *arg0) {
-    extern M2C_UNK data_0215d890;
+    extern M2C_UNK gGameSettings;
     extern M2C_UNK data_0215d990;
     extern M2C_UNK data_0215d9c0;
     extern M2C_UNK data_0215d9d0;
@@ -28,7 +28,7 @@ void func_020be718(void *arg0) {
     extern M2C_UNK data_021577ad;
 
     {
-        M2C_UNK *r1 = &data_0215d890;
+        M2C_UNK *r1 = &gGameSettings;
         u8 *lr = (u8 *)arg0;
         M2C_FIELD(lr, M2C_UNK *, 0x98) = M2C_FIELD(r1, M2C_UNK *, 0x128);
         M2C_FIELD(lr, u8 *, 0x9c) = M2C_FIELD(r1, u8 *, 0x12c);
@@ -148,7 +148,7 @@ void func_020be718(void *arg0) {
 }
 
 void func_020beabc(M2C_UNK *arg0) {
-    extern M2C_UNK data_0215d890;
+    extern M2C_UNK gGameSettings;
     extern M2C_UNK data_0215d990;
     extern M2C_UNK data_0215d9c0;
     extern M2C_UNK data_0215d9e0;
@@ -167,10 +167,10 @@ void func_020beabc(M2C_UNK *arg0) {
     extern M2C_UNK data_021577ad;
     void func_020e4b24(void);
     u8 *p = (u8 *)arg0;
-    u32 *g0 = (u32 *)&data_0215d890;
-    M2C_FIELD(&data_0215d890, u32 *, 0x128) = *(u32 *)(p + 0x98);
-    M2C_FIELD(&data_0215d890, u8 *, 0x12c) = p[0x9c];
-    M2C_FIELD(&data_0215d890, u8 *, 0x12d) = p[0x9d];
+    u32 *g0 = (u32 *)&gGameSettings;
+    M2C_FIELD(&gGameSettings, u32 *, 0x128) = *(u32 *)(p + 0x98);
+    M2C_FIELD(&gGameSettings, u8 *, 0x12c) = p[0x9c];
+    M2C_FIELD(&gGameSettings, u8 *, 0x12d) = p[0x9d];
     M2C_FIELD(&data_0215d990, u16 *, 0x2e) = *(u16 *)(p + 0x9e);
     {
         u16 *s = (u16 *)(p + 0xa0);
@@ -384,7 +384,7 @@ void func_020bef44(void) {
 
 s32 func_020befd8(void) {
     s32 IsLinkSessionActive();
-    extern M2C_UNK data_0215d890;
+    extern M2C_UNK gGameSettings;
     extern u16 gMapConfig;
     s32 var_r4;
     u32 temp_r0;
@@ -396,7 +396,7 @@ s32 func_020befd8(void) {
     temp_r0 = (u32) (gMapConfig << 0x1D) >> 0x1D;
     switch ((u8) temp_r0) {                         /* irregular */
     case 0:
-        var_r4 = func_020bf054(0, (u32) (M2C_FIELD(&data_0215d890, s32 *, 0x10) << 0x1C) >> 0x1C);
+        var_r4 = func_020bf054(0, (u32) (M2C_FIELD(&gGameSettings, s32 *, 0x10) << 0x1C) >> 0x1C);
         break;
     case 1:
         var_r4 = func_020bf054(1, 0U);
@@ -439,13 +439,30 @@ s32 func_020bf0dc(s32 arg0, s32 arg1) {
     }
 }
 
-void func_020bf10c(s8 *arg0,void *arg1) {
-M2C_UNK StringFormat(); u32 GetLanguage();
-extern u8 data_0212956c[],data_0212958c[],data_021295a8[];
-switch(GetLanguage()){
-case 0:StringFormat(arg0,data_0212956c,dateYear(arg1),dateMonth(arg1),dateDay(arg1),dateHour(arg1),dateMinute(arg1));return;
-case 1:StringFormat(arg0,data_0212958c,dateMonth(arg1),dateDay(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
-case 2:case 3:case 4:case 5:StringFormat(arg0,data_021295a8,dateDay(arg1),dateMonth(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
-default:*arg0=0;return;
-}}
+/* Writes a save record's packed date/time (the bit-packed word at +4) into
+ * `out`, using the date order of the console's language: year/month/day
+ * (Japanese), month/day/year (American) or day/month/year (European). */
+void FormatDateTime(s8 *out, void *date) {
+    M2C_UNK StringFormat();
+    u32 GetLanguage();
+    extern u8 gDateTimeFormatYMD[], gDateTimeFormatMDY[], gDateTimeFormatDMY[];
+
+    switch (GetLanguage()) {
+    case 0:
+        StringFormat(out, gDateTimeFormatYMD, dateYear(date), dateMonth(date), dateDay(date), dateHour(date), dateMinute(date));
+        return;
+    case 1:
+        StringFormat(out, gDateTimeFormatMDY, dateMonth(date), dateDay(date), dateYear(date), dateHour(date), dateMinute(date));
+        return;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        StringFormat(out, gDateTimeFormatDMY, dateDay(date), dateMonth(date), dateYear(date), dateHour(date), dateMinute(date));
+        return;
+    default:
+        *out = 0;
+        return;
+    }
+}
 

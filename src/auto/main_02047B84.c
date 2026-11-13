@@ -27,10 +27,10 @@ s32 BuildWebGetRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     extern M2C_UNK sWebEmptySuffix;
     extern M2C_UNK sWebRequestFormat;
     M2C_UNK StringFormat();
-s32 func_02047370(void *);
+s32 Base64EncodedLength(void *);
 void HeapFree(s32,s32,s32);
 void *HeapAlloc(s32,s32);
-s32 func_0204760c(void *,void *,s32,void *,s32);
+s32 EncodeWfcRequestBody(void *,void *,s32,void *,s32);
 s32 StringLength(M2C_UNK);
 void *func_0206f8b8(void *,void *,s32);
 
@@ -56,7 +56,7 @@ void *func_0206f8b8(void *,void *,s32);
         HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
     }
-    r5 = func_02047370((u8 *)*(void **)arg4+0x18);
+    r5 = Base64EncodedLength((u8 *)*(void **)arg4+0x18);
     len_cb1c = StringLength(&sWebParamData);
     lengths[0] = StringLength(&sWebHashPlaceholder);
     lengths[1] = StringLength(&sWebParamHash);
@@ -91,7 +91,7 @@ void *func_0206f8b8(void *,void *,s32);
     arr[2] = (u32)arg1;
     arr[3] = (u32)arg0;
     arr[4] = (u32)*(u32 *)arg4;
-    res = func_0204760c(M2C_FIELD(&gWebRequestState, void **, 0x5c), arr, 0x14, (u8 *)arg4+4, *(s32 *)arg4);
+    res = EncodeWfcRequestBody(M2C_FIELD(&gWebRequestState, void **, 0x5c), arr, 0x14, (u8 *)arg4+4, *(s32 *)arg4);
     if (res == 2) {
         HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
@@ -107,10 +107,10 @@ void *func_0206f8b8(void *,void *,s32);
 #pragma push
 #pragma optimization_level 2
 s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
-    s32 func_02047370(void *);
+    s32 Base64EncodedLength(void *);
     void HeapFree(s32, s32, s32);
     void *HeapAlloc(s32, s32);
-    s32 func_0204760c(void *, void *, s32, void *, s32);
+    s32 EncodeWfcRequestBody(void *, void *, s32, void *, s32);
     s32 StringLength(M2C_UNK);
     void *func_0206f8b8(void *, void *, s32);
     M2C_UNK StringFormat();
@@ -135,7 +135,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
         HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
     }
-    r6 = func_02047370((void *)0x14);
+    r6 = Base64EncodedLength((void *)0x14);
 
     len_cb1c = StringLength((M2C_UNK)&sWebParamData);
     len_cb24 = StringLength((M2C_UNK)&sWebHashPlaceholder);
@@ -173,7 +173,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
     arr[2] = (u32)x;
     arr[3] = (u32)b;
 
-    res = func_0204760c(M2C_FIELD(&gWebRequestState, void **, 0x5c), arr, 0x10, 0, 0);
+    res = EncodeWfcRequestBody(M2C_FIELD(&gWebRequestState, void **, 0x5c), arr, 0x10, 0, 0);
     if (res == 2) {
         HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
@@ -381,17 +381,17 @@ void Vector_AddItem(s32 *arg0, M2C_UNK arg1) {
 }
 
 s32 func_02048744(s32 *a,s32 b,s32 c) {
-s32 AssertFailed();s32 func_020651c4();s32 n,p,t;
+s32 AssertFailed();s32 MemMove();s32 n,p,t;
 if(c<0||c>a[0])AssertFailed(&data_020fcce4,&data_020fcca4,&data_020fcc3c,0xa7);
 if(a[0]==a[1])func_020484dc(a);
 t=a[0]+1;n=t-1;a[0]=t;
-if(c<n){p=Vector_GetItem(a,c+1);func_020651c4(p,Vector_GetItem(a,c),a[2]*(n-c));}
+if(c<n){p=Vector_GetItem(a,c+1);MemMove(p,Vector_GetItem(a,c),a[2]*(n-c));}
 func_02048534(a,b,c);
 }
 
 void func_020487fc(s32 *a,s32 b,s32 c){s32 AssertFailed();s32 func_02048bf8(s32,s32,s32,s32,s32,s32 *);s32 func_020720f0(s32,s32);s32 x,r;if(!c)AssertFailed(&data_020fcd04,&data_020fcca4,&data_020fcc70,0xb7);r=func_02048bf8(b,a[5],a[0],a[2],c,&x);func_02048744(a,b,func_020720f0(r-a[5],a[2]));}
 
-s32 func_0204887c(s32 *a,s32 b){s32 AssertFailed();s32 func_020651c4(s32,s32,s32);s32 n,p,q;if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&data_020fcca4,&data_020fcc1c,0xc0);n=a[0]-1;if(b<n){p=Vector_GetItem(a,b);q=Vector_GetItem(a,b+1);func_020651c4(p,q,a[2]*(n-b));}return --a[0];}
+s32 func_0204887c(s32 *a,s32 b){s32 AssertFailed();s32 MemMove(s32,s32,s32);s32 n,p,q;if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&data_020fcca4,&data_020fcc1c,0xc0);n=a[0]-1;if(b<n){p=Vector_GetItem(a,b);q=Vector_GetItem(a,b+1);MemMove(p,q,a[2]*(n-b));}return --a[0];}
 
 void func_0204890c(s32 *a,s32 b) {
 s32 func_0204887c();s32 AssertFailed();

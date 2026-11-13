@@ -33,7 +33,7 @@ extern u32 gGlyphDakuten, gGlyphHandakuten;
 extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 void MI_CpuCopy32(const void*,void*,u32);
 void func_02019424(void*,u32);
-int func_02099ae8(void*); int func_0209c268(s32*);
+int func_02099ae8(void*); int MeasureStringWidth(s32*);
 void func_020b269c(void);
 void *func_0208b564(void*);
 void func_020899cc(void*,s32,s32,u32);
@@ -69,7 +69,7 @@ MI_CpuCopy32(&gMapEditObjectList,line,0x44);
 line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
 func_02019424(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
 width=0;glyphPtr=line;
-if(*glyphPtr){do{if(!func_02099ae8(glyphPtr)&&width)width++;width+=func_0209c268((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
+if(*glyphPtr){do{if(!func_02099ae8(glyphPtr)&&width)width++;width+=MeasureStringWidth((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
 if(width>64){
 SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -357,8 +357,8 @@ loop_1:
 }
 
 void func_ov007_0221ec34(void) {
-    M2C_UNK func_020af1f8();
-    func_020af1f8();
+    M2C_UNK DeleteMainWallpaperSprites();
+    DeleteMainWallpaperSprites();
 }
 
 extern u16 **g3DSpriteEngineMain;
@@ -368,7 +368,7 @@ void func_ov007_0221ec40(void *arg0) {
     M2C_UNK func_0208df84(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
     u16 func_0209b5e4(s32, M2C_UNK *);
     M2C_UNK DrawTileRow(u16, M2C_UNK, u16, u16, s32);
-    s32 func_0209c268(M2C_UNK *);
+    s32 MeasureStringWidth(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
     extern M2C_UNK gMapEditRecords;
@@ -390,7 +390,7 @@ void func_ov007_0221ec40(void *arg0) {
         var_r10 = &gMapEditObjectList;
         do {
             temp_r5 = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
-            DrawTileRow((u16) (var_r6 + ((u32) (8 - func_0209c268(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
+            DrawTileRow((u16) (var_r6 + ((u32) (8 - MeasureStringWidth(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
             var_r8 = (s32) (u16) (var_r8 + (((u32) (((u32) (temp_r5 + 7) >> 3) + 3) >> 2) << 8));
             var_r9 = var_r9 + 1;
             var_r6 = var_r6 + 8;

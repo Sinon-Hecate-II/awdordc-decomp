@@ -153,7 +153,7 @@ u8 func_020a7b24(s32 arg0) {
  return data_ov000_021b5c04[arg0 * 0x70];
 }
 
-s32 func_020a7b3c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+s32 ComputeUnitMoveRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
  s32 func_020a296c(s32, s32, s32);
  extern u8 data_ov000_021b5c04[];
  extern void **gCurrentMap;
@@ -184,7 +184,7 @@ u8 func_020a7bf8(s32 arg0) {
  return gUnitMinAttackRange[arg0 * 0x70];
 }
 
-s32 func_020a7c10(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+s32 ComputeUnitMaxAttackRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
  s32 func_020a29e4(s32, s32, s32);
  extern u8 data_ov000_021b5c09[];
  s32 var_r4;
@@ -194,13 +194,13 @@ s32 func_020a7c10(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
 }
 
 s32 func_020a7c50(u32 arg0) {
- extern u8 data_ov000_021b5c0a[];
- return data_ov000_021b5c0a[arg0 * 0x70];
+ extern u8 gUnitKindMaxFuel[];
+ return gUnitKindMaxFuel[arg0 * 0x70];
 }
 
 s32 func_020a7c68(u32 arg0) {
- extern u8 data_ov000_021b5c05[];
- return data_ov000_021b5c05[arg0 * 0x70];
+ extern u8 gUnitKindMaxAmmo[];
+ return gUnitKindMaxAmmo[arg0 * 0x70];
 }
 
 s32 func_020a7c80(arg0)
@@ -327,7 +327,7 @@ u8 func_020a7dc4(void *arg0) {
 u8 func_020a7e08(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}
 
 void func_020a7e3c(s32 arg0,s32 arg1){
-s32 func_020a3550(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void func_02091c20(s32,s32);
+s32 func_020a3550(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void AddRecordValue(s32,s32);
 extern void **gCurrentMap;
 s32 idx;u8 *base,*entry;
 if(!arg0)return;
@@ -342,7 +342,7 @@ if(arg1){
 func_020a3550(idx,0);func_020a3128(idx);
 }
 if(!IsPlayerHuman(idx))return;
-func_02091c20(28,1);
+AddRecordValue(28,1);
 }
 
 void func_020a7f18(void *p,u32 a){u16 v=M2C_FIELD(p,u16 *,6); a=(u16)a; M2C_FIELD(p,u16 *,6)=(v&~0xf800)|((a<<27)>>16);}

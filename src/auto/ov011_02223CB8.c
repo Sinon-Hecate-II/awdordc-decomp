@@ -319,7 +319,7 @@ void func_ov011_02224aac(void *entry, s32 command) {
     s32 EaseInterpolate(s32, s32, s32, u16, s32);
     void func_ov011_022216d8(void *, s32, s32, s32);
     void func_ov011_02222830(void *, s32, s32, s32, s32);
-    void func_ov011_02223b70(void *, s32, s32);
+    void G3_SetSpriteTransformScale(void *, s32, s32);
     switch (command) {
     case 0:
         func_ov011_022216d8(entry, 11, 0, 2);
@@ -331,8 +331,8 @@ void func_ov011_02224aac(void *entry, s32 command) {
         func_ov011_02222830(entry, 2, 3, 2, (u16)EaseInterpolate(0, 16, 0, M2C_FIELD(entry, u16 *, 0x34), 0x154));
         return;
     case 5:
-        func_ov011_02223b70(entry, 0, 2);
-        func_ov011_02223b70(entry, 0, 3);
+        G3_SetSpriteTransformScale(entry, 0, 2);
+        G3_SetSpriteTransformScale(entry, 0, 3);
         return;
     }
 }

@@ -4,7 +4,7 @@
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 #include "ov000_unit_entry.h"
 static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 Divide(s32,s32);s32 h=p->unk6;if(h==0)return 0;return Divide(h-1,10)+1; }
-extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],data_ov000_021b5c5c[],data_ov000_021b5c5d[];
+extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],gUnitKindCargoCount[],data_ov000_021b5c5d[];
 extern void **gCurrentMap;
 
 s32 ProduceUnit(s32 a, s32 b, s32 c) {
@@ -12,7 +12,7 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
     s32 func_020a6658(s32, s32, s32);
     void func_020d2b10(u16, s32);
     s32 IsPlayerHuman(u16);
-    void func_02091c20(s32, s32);
+    void AddRecordValue(s32, s32);
     void RefreshMapView(void);
     extern void **gCurrentMap;
     s32 r, cost;u16 id;
@@ -28,7 +28,7 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
     if (!r) return 0;
     func_020d2b10(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), cost);
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
-        func_02091c20(c + 0x28, 1);
+        AddRecordValue(c + 0x28, 1);
     }
     RefreshMapView();
     return r;
@@ -192,7 +192,7 @@ void func_020a6fcc(void) {
 }
 
 #pragma scheduling off
-s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=data_ov000_021b5c5c[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
+s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=gUnitKindCargoCount[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
 #pragma scheduling reset
 s32 CanUnitsJoin(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
 s32 Divide(s32,s32);s32 IsUnitSelected(void *);

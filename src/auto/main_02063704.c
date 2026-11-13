@@ -56,7 +56,7 @@ s32 func_020637fc(void *arg0) {
     s32 GpiHandleServerInfoResponse(void *, u8 *, s32);
     s32 func_02063678(M2C_UNK, u8 *, s32);
     void AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    void func_020651c4(void *, void *, s32);
+    void MemMove(void *, void *, s32);
     extern u8 data_021001b4[], data_0210012c[], data_021000d8[];
     s32 result = 0;
     s32 zero = 0;
@@ -102,7 +102,7 @@ s32 func_020637fc(void *arg0) {
             AssertFailed((M2C_UNK) data_021001b4, (M2C_UNK) data_0210012c, (M2C_UNK) data_021000d8, 0x5B4);
         }
         if (M2C_FIELD(arg0, s32 *, 0x80) != 0 && M2C_FIELD(arg0, u8 **, 0x7C) != NULL) {
-            func_020651c4(M2C_FIELD(arg0, u8 **, 0x7C), M2C_FIELD(arg0, u8 **, 0x7C) + size,
+            MemMove(M2C_FIELD(arg0, u8 **, 0x7C), M2C_FIELD(arg0, u8 **, 0x7C) + size,
                           M2C_FIELD(arg0, s32 *, 0x80));
         }
         if (result != 0) {
@@ -388,7 +388,7 @@ func_020640ec(arg0);
 }return 0;
 }
 #pragma scheduling reset
-s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
+s32 ReadFileData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_02006680(void *);
     M2C_UNK LockMutex();
     M2C_UNK UnlockMutex();

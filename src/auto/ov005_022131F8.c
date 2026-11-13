@@ -48,7 +48,7 @@ obj->frame=(u16)frame;obj->phase=0;
 void HistoryMenu_HandleDPad(u8 *selected){
     extern void *gHistoryMenu;extern u16 *gKeyState;
     void *HistoryTabAt(s32);s32 HistoryScrollUp(void);s32 HistoryScrollDown(void);s32 HistoryPageUp(void);s32 HistoryPageDown(void);
-    s32 func_020b20e0(s32);void FocusSpriteSlotById(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
+    s32 FindSpriteSlotById(s32);void FocusSpriteSlotById(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
     s32 row = *selected;
     HistoryMenuTab *tab = (HistoryMenuTab *)HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1));
     s32 lastRow = tab->count - 7;
@@ -66,9 +66,9 @@ void HistoryMenu_HandleDPad(u8 *selected){
         if (gKeyState[0] & KEY_DOWN) { row = 0; tab->cursor = row; goto done; }
     } else if (gKeyState[1] & KEY_DOWN) {
         if (row < 5) {
-            if (func_020b20e0(row + 1)) row++;
+            if (FindSpriteSlotById(row + 1)) row++;
         } else if (!HistoryScrollDown()) {
-            if (func_020b20e0(row + 1)) row++;
+            if (FindSpriteSlotById(row + 1)) row++;
         }
         goto done;
     }
@@ -107,7 +107,7 @@ MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
 gHistoryMenu=HeapAllocBlock(100);
-func_02082c84();GX_SetBankForBG(1);func_02002968(2);func_02003124(4);func_020031cc(8);
+func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);
 M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)func_ov005_02211c24(j);
@@ -368,39 +368,39 @@ void func_ov005_022140e4(void) {
 
 s32 func_ov005_022140f8(s32 arg0) {
     s32 func_020ad658(s32);
-    extern M2C_UNK data_ov005_02221304;
-    if (*M2C_FIELD(&data_ov005_02221304, u16 **, 8) & 2) return 1;
+    extern M2C_UNK gRecordsMenuState;
+    if (*M2C_FIELD(&gRecordsMenuState, u16 **, 8) & 2) return 1;
     return func_020ad658(arg0);
 }
 
 s32 func_ov005_02214120(s32 arg0) {
     s32 func_020ad61c(s32);
-    extern M2C_UNK data_ov005_02221304;
-    if (*M2C_FIELD(&data_ov005_02221304, u16 **, 8) & 2) return 1;
+    extern M2C_UNK gRecordsMenuState;
+    if (*M2C_FIELD(&gRecordsMenuState, u16 **, 8) & 2) return 1;
     return func_020ad61c(arg0);
 }
 
 s32 func_ov005_02214148(void) {
-    extern M2C_UNK data_ov005_02221304;
+    extern M2C_UNK gRecordsMenuState;
     s16 temp_r1;
 
-    temp_r1 = M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98);
+    temp_r1 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98);
     if (temp_r1 == 0) {
         return 0;
     }
-    M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) = (s16) (temp_r1 - 1);
+    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = (s16) (temp_r1 - 1);
     PlaySoundEffect(0x10019);
     return 1;
 }
 
 s16 func_ov005_02214184(void) {
-    extern M2C_UNK data_ov005_02221304;
+    extern M2C_UNK gRecordsMenuState;
     s16 temp_r3;
-    temp_r3 = M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98);
-    M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) = (s16)(temp_r3 - 6);
-    if (M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) < 0) {
-        M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) = 0;
+    temp_r3 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98);
+    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = (s16)(temp_r3 - 6);
+    if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) < 0) {
+        M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = 0;
     }
-    return (s16)(M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) - temp_r3);
+    return (s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) - temp_r3);
 }
 

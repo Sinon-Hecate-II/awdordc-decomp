@@ -52,11 +52,11 @@ s32 FindFreePlayerSlot(void) {
 }
 
 void ResetPlayerSlots(void) {
-    M2C_UNK func_02007e54(M2C_UNK, M2C_UNK *, M2C_UNK);
+    M2C_UNK CpuFill(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK gPlayerConnections;
     extern M2C_UNK gPlayerPeers;
-    func_02007e54(0, &gPlayerConnections, 0x80);
-    func_02007e54(0, &gPlayerPeers, 0x100);
+    CpuFill(0, &gPlayerConnections, 0x80);
+    CpuFill(0, &gPlayerPeers, 0x100);
 }
 
 void *GetPlayerConnectionSlot(s32 arg0) {
@@ -241,25 +241,28 @@ void func_02039698(s32 unused, void *arg1) {
     }
 }
 
-void func_020396d0(s32 a,void *b,s32 c){
-extern char data_020fc89c[],data_020fc8a4[];extern void *gNetSession;
+/* Handles the "GPCM<version>vMAT<...>" session info message: gives up on any
+   other message, checks the version number is 3 and the MAT prefix, then hands
+   the MAT payload to the command parser. */
+void HandleGpcmMatMessage(s32 conn,void *info,s32 arg){
+extern char sGpcmPrefix[],sMatPrefix[];extern void *gNetSession;
 s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
 void func_0203db94(s32,s32,char *);
-char buf[12]={0};char *p=M2C_FIELD(b,char **,8);u32 n;
-if(func_0203ad70(a,b,c))return;
-if(ByteCompareN(p,data_020fc89c,StringLength(data_020fc89c)))return;
-p+=StringLength(data_020fc89c);
-n=StringFindChar(p,'v')-p;
-func_02068d18(buf,p,n);
-if(n>10)return;
-if(func_0206abd8(buf,0,10)!=3)return;
-p+=n+1;
-if(ByteCompareN(p,data_020fc8a4,StringLength(data_020fc8a4)))return;
+char versionText[12]={0};char *text=M2C_FIELD(info,char **,8);u32 len;
+if(func_0203ad70(conn,info,arg))return;
+if(ByteCompareN(text,sGpcmPrefix,StringLength(sGpcmPrefix)))return;
+text+=StringLength(sGpcmPrefix);
+len=StringFindChar(text,'v')-text;
+func_02068d18(versionText,text,len);
+if(len>10)return;
+if(func_0206abd8(versionText,0,10)!=3)return;
+text+=len+1;
+if(ByteCompareN(text,sMatPrefix,StringLength(sMatPrefix)))return;
 if(M2C_FIELD(gNetSession,s32 *,0x24)!=5){
 if(M2C_FIELD(gNetSession,s32 *,0x24)!=6)return;
 if(M2C_FIELD(gNetSession,volatile u8 *,0x389)!=2&&M2C_FIELD(gNetSession,volatile u8 *,0x389)!=3)return;
 }
-func_0203db94(a,M2C_FIELD(b,s32 *,0),p+StringLength(data_020fc8a4));
+func_0203db94(conn,M2C_FIELD(info,s32 *,0),text+StringLength(sMatPrefix));
 }
 
 void func_02039838(void) {
@@ -281,7 +284,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK func_0203e410();
     M2C_UNK func_0203e064();
     s32 RemoveConnectionPeer();
-    M2C_UNK func_0203af50();
+    M2C_UNK SetGpiStatus();
     M2C_UNK func_0205ea70();
     M2C_UNK func_0203aeb4();
     M2C_UNK func_0203bd0c();
@@ -407,12 +410,12 @@ void func_02039844(s32 arg0, s32 arg1) {
                 func_0203e410();
             } else {
                 if (M2C_FIELD(base, u8 *, 0x381) == 0) {
-                    func_0203af50(1, (s32)&gEmptyString, 0);
+                    SetGpiStatus(1, (s32)&gEmptyString, 0);
                 }
             }
         } else {
             if (M2C_FIELD(base, u8 *, 0x381) == 0) {
-                func_0203af50(1, (s32)&gEmptyString, 0);
+                SetGpiStatus(1, (s32)&gEmptyString, 0);
             }
         }
     }

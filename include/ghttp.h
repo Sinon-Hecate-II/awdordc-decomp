@@ -49,7 +49,13 @@ typedef struct GHIConnection {
     GHIBuffer readBuffer;     /* +0x74: body bytes read from the socket */
     GHIBuffer decryptBuffer;  /* +0x98: body bytes the encryptor works on */
     GHIBuffer bodyBuffer;     /* +0xBC: caller body buffer, or growable when none */
-    u8   padE0[0x1C];
+    u8   padE0[0x04];
+    s32  httpMajor;       /* +0xE4: major HTTP version from the status line */
+    s32  httpMinor;       /* +0xE8: minor HTTP version from the status line */
+    s32  statusCode;      /* +0xEC: HTTP status code */
+    s32  statusLinePos;   /* +0xF0: status-line offset the parse stopped at */
+    s32  padF4;           /* +0xF4 */
+    s32  statusLineLength;/* +0xF8: bytes of the status line including its CR */
     s32 completed;        /* +0xFC: nonzero once the request has finished */
     s32 bytesReceived;    /* +0x100: body bytes delivered so far */
     s32 contentLength;    /* +0x104: expected body length, 0 when unknown */

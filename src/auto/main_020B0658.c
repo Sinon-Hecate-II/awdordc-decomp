@@ -229,7 +229,7 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK func_0208168c(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020a40c0();
+    M2C_UNK ApplyWeatherEffects();
     extern M2C_UNK data_02128064;
     extern M2C_UNK data_02128070;
     extern M2C_UNK data_02128080;
@@ -322,7 +322,7 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
     extern M2C_UNK data_02128670;
     extern M2C_UNK data_02128680;
     u32 mode = arg0;
-    func_020a40c0();
+    ApplyWeatherEffects();
     SetFileDirectory(&data_02128064);
     switch (arg1) {
     case 0:

@@ -156,7 +156,7 @@ void SetupEntityDisplay(void *entity) {
     }
     func_02088d94(M2C_FIELD(partsC, void **, 4));
     M2C_FIELD(entity, u8 *, 0x3B) = (u8) (M2C_FIELD(entity, u8 *, 0x3B) | 0x20);
-    func_ov003_021f140c(1);
+    SetOv003SceneState(1);
     state = (u32) (M2C_FIELD(entity, u8 *, 0x3B) << 0x1C) >> 0x1C;
     if (state == 0) {
         isState0 = 1;
@@ -311,7 +311,7 @@ void func_ov003_021fd1e4(void) {
 
 void func_ov003_021fd1f0(void *arg0) {
     s32 IsLinkSessionActive();
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f152c(M2C_UNK);
     s32 func_ov003_021f153c();
     M2C_UNK func_ov003_022006dc(M2C_UNK);
@@ -333,7 +333,7 @@ void func_ov003_021fd1f0(void *arg0) {
         return;
     }
     func_ov003_021f152c(1);
-    func_ov003_021f140c(1);
+    SetOv003SceneState(1);
     func_ov003_022006dc(1);
     func_ov006_02217178(arg0);
 }

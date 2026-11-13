@@ -81,7 +81,7 @@ extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce28;
 if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce28,0x9b);
 if(!p || !p[1])return;
 if(!p[7])gpiFree(p[1]);
-func_02065210(p,0,0x24);
+MemSet(p,0,0x24);
 }
 
 /* Append data to a GHIBuffer, growing it if needed; when the buffer is encrypted
@@ -306,7 +306,7 @@ void ghiUnlockMutex(void) {
 }
 
 s32 func_0204a618(void *arg0) {
-M2C_UNK func_020651c4(s32,s32,s32);
+M2C_UNK MemMove(s32,s32,s32);
 s32 spC; s32 sp8; s32 ip,r3,result,left,used,p,inPtr,outPtr;
 spC=0;sp8=0;
 loop:
@@ -327,7 +327,7 @@ left=M2C_FIELD(arg0,s32 *,0xa4)-used;
 if(!left)ResetBuffer((u8*)arg0+0x98);
 else {
 p=M2C_FIELD(arg0,s32 *,0x9c);
-func_020651c4(p,p+used,left);
+MemMove(p,p+used,left);
 M2C_FIELD(arg0,s32 *,0xa8)=0;
 M2C_FIELD(arg0,s32 *,0xa4)=left;
 }

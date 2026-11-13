@@ -212,11 +212,11 @@ void func_ov000_0218eea8(void) {
 }
 
 /* AI: builds the cursor unit's move range, scans the map for the reachable
- * enemy it should attack (validated by func_020ba510, target flag set, lowest
+ * enemy it should attack (validated by IsSupplyTargetAt, target flag set, lowest
  * health), resolves a firing tile with func_ov000_02177f24, then clears the
  * target flag and moves the cursor onto that tile (mode 6). */
 void func_ov000_0218ef40(void) {
-    s32 func_020ba510(s32, s32);
+    s32 IsSupplyTargetAt(s32, s32);
     s32 func_ov000_02177f24(s32, s32, s16 *);
     void SetMapCursor(u32, u32, u32, u32, u32);
     void BuildUnitMoveRange(void *);
@@ -259,7 +259,7 @@ inner_top:
     kind = (u32)(*((u8 *)unit)<<26)>>26;
     if (kind == 0) goto next_cell;
     if (unit == *(void **)((u8 *)map + 0x52D0)) goto next_cell;
-    ok = func_020ba510(x, y);
+    ok = IsSupplyTargetAt(x, y);
     if (ok == 0) goto next_cell;
     flags = *(u16 *)((u8 *)unit + 8);
     if ((((u32)flags << 18) >> 30) != 1) goto next_cell;

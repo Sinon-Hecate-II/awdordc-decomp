@@ -187,7 +187,7 @@ for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
 SelectMapLayer((void *)*gCurrentMap + 0x1e30);
 }
 
-void func_ov000_0219c5d4(void){for(;;){switch(*gAiCommandState){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
+void func_ov000_0219c5d4(void){for(;;){switch(*gAiCommandState){case 0:BeginAiTurn();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
 
 s32 func_ov000_0219c680(void){switch(*gAiCommandState){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
 

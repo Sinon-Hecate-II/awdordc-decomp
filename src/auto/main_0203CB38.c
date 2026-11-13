@@ -5,7 +5,7 @@ extern u8 gNatNegMagic[8];
 extern char data_020fc920[12];
 extern char data_020fc92c[12];
 extern char data_020fc938[24];
-void func_02007e54(int, void *, int);
+void CpuFill(int, void *, int);
 void *GetConnection(void);
 void HandleNatNegPacket(void *, int, void *);
 void func_0205f83c(int, void *, int, void *);
@@ -17,7 +17,7 @@ s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
     UnkPacket packet;
     u8 c;
     if (!arg4 || !arg3) return 0;
-    func_02007e54(0,&packet,8);
+    CpuFill(0,&packet,8);
     packet.b=2;
     packet.c=(u8)(arg2>>8)|((arg2<<8)&0xff00);
     packet.d=arg1;

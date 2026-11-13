@@ -33,6 +33,16 @@
 #define NATNEG_PEER_SEND        0x38 /* void (*send)(s32 kind, s32 socket, void *packet, s32 data) */
 #define NATNEG_PEER_SEND_DATA   0x3C /* s32 data passed to both callbacks */
 
+/* NatNeg packet kinds (the byte at packet+7). */
+#define NATNEG_KIND_INIT         0x00 /* peer asks its partner to start negotiating */
+#define NATNEG_KIND_INIT_ACK     0x01 /* one of the three responses to NN_INIT */
+#define NATNEG_KIND_ERT_TEST     0x02 /* round-trip test request */
+#define NATNEG_KIND_ERT_ACK      0x03 /* round-trip test response */
+#define NATNEG_KIND_STATE_UPDATE 0x04 /* negotiation state update */
+#define NATNEG_KIND_CONNECT_PING 0x05 /* connect request to the peer behind its NAT */
+#define NATNEG_KIND_CONNECT_ACK  0x06 /* connect request acknowledged */
+#define NATNEG_KIND_CONNECT_PONG 0x07 /* reply to a connect ping */
+
 /* NatNegPeer state machine steps (NATNEG_PEER_STATE). */
 enum {
     NATNEG_STATE_START   = 0, /* send the initial requests */

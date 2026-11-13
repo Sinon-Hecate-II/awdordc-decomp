@@ -10,7 +10,11 @@ typedef struct EffectConfig {
     s16 posY;          /* +0x7A */
     s16 posZ;          /* +0x7C */
     u16 scale;         /* +0x7E scaled by textureScale */
-    u8 pad80[0x18];
+    s16 pos2X;         /* +0x80 position of the effect's second node */
+    s16 pos2Y;         /* +0x82 */
+    s16 pos2Z;         /* +0x84 */
+    u16 scale2;        /* +0x86 scaled by textureScale */
+    s16 transform2[8]; /* +0x88 transform of the effect's second node */
     s16 transform[8];  /* +0x98 affine/colour values copied to the node */
     u8 padA8[0x08];
     s16 variantOfs[7][2]; /* +0xB0 x/y offset of each variant */

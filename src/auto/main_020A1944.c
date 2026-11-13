@@ -17,14 +17,14 @@ s32 func_020a1944(s32 arg0) {
 }
 
 void func_020a196c(void) {
- s32 GetWinningPlayer(void); s32 func_020a1da0(s32); s32 func_020a1e44(s32); s32 func_020a1f88(s32);
+ s32 GetWinningPlayer(void); s32 func_020a1da0(s32); s32 GetPowerRating(s32); s32 func_020a1f88(s32);
  s32 func_020a1d74(s32); void func_020a1a0c(void); void func_020a1adc(void);
  extern M2C_UNK gSpriteAnimConfig;
  s32 i, bits, mask;
  s32 value;
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14) = GetWinningPlayer();
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x10) = func_020a1da0(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x11) = func_020a1e44(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x11) = GetPowerRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x12) = func_020a1f88(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
  M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16) = func_020a1d74(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x13) = func_020a1944(M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16));
@@ -147,29 +147,47 @@ s32 func_020a1da0(s32 arg0) {
  return result;
 }
 
-s32 func_020a1e44(s32 player) {
-extern s32 *gCurrentMap;extern u16 gMapConfig;
-s32 IsPlayerActive(s32);s32 func_0207c9c8(s32,s32);
-s32 a,b,c,i,result;void *p,*q;
-if(!IsPlayerActive(player))return 0;
-if((u32)(gMapConfig<<29)>>29==0){
-a=0;b=0;c=0;
-for(i=1,p=(u8 *)*gCurrentMap+140;i<5;p=(u8 *)p+140,i++){
-if(!M2C_FIELD(p,u8 *,0x67c2))continue;
-q=(u8 *)*gCurrentMap+i*140;
-{u32 team=M2C_FIELD((u8 *)*gCurrentMap+player*140,u8 *,0x67ca);if(team!=M2C_FIELD(q,u8 *,0x67ca))continue;}
-if(a+M2C_FIELD(q,s32 *,0x6818)>=0xfffffff||b+M2C_FIELD(q,s32 *,0x681c)>=0xfffffff)continue;
-a+=M2C_FIELD(q,s32 *,0x6818);b+=M2C_FIELD(q,s32 *,0x681c);c+=M2C_FIELD(q,s32 *,0x6824);
-}
-}else{
-p=(u8 *)*gCurrentMap+0x67a4+player*140;
-a=M2C_FIELD(p,s32 *,0x74);b=M2C_FIELD(p,s32 *,0x78);c=M2C_FIELD(p,s32 *,0x80);
-}
-if(!b)return 0;
-result=func_0207c9c8((c*100+a)*2,b)-100;
-if(result>=100)result=((result-100)>>1)+100;
-if(result<0)result=0;if(result>150)result=150;
-return result;
+/* The power battle rating (0..150) for a winning player: 100 plus twice the
+ * average damage per attack. In the team mode (gMapConfig mode 0) the figures
+ * of every player on the same army are summed, otherwise only the player's own
+ * record is used. */
+s32 GetPowerRating(s32 player) {
+    extern s32 *gCurrentMap;
+    extern u16 gMapConfig;
+    s32 IsPlayerActive(s32);
+    s32 func_0207c9c8(s32, s32);
+    s32 damageDealt, attacks, battles, i, result;
+    void *p, *q;
+
+    if (!IsPlayerActive(player)) return 0;
+    if ((u32)(gMapConfig << 29) >> 29 == 0) {
+        damageDealt = 0;
+        attacks = 0;
+        battles = 0;
+        for (i = 1, p = (u8 *)*gCurrentMap + MAP_PLAYER_STRIDE; i < 5; p = (u8 *)p + MAP_PLAYER_STRIDE, i++) {
+            if (!M2C_FIELD(p, u8 *, PLAYER_CONTROL_OFF)) continue;
+            q = (u8 *)*gCurrentMap + i * MAP_PLAYER_STRIDE;
+            {
+                u32 team = M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, u8 *, PLAYER_ARMY_OFF);
+                if (team != M2C_FIELD(q, u8 *, PLAYER_ARMY_OFF)) continue;
+            }
+            if (damageDealt + M2C_FIELD(q, s32 *, PLAYER_DAMAGE_DEALT_OFF) >= 0xfffffff || attacks + M2C_FIELD(q, s32 *, PLAYER_ATTACK_COUNT_OFF) >= 0xfffffff) continue;
+            damageDealt += M2C_FIELD(q, s32 *, PLAYER_DAMAGE_DEALT_OFF);
+            attacks += M2C_FIELD(q, s32 *, PLAYER_ATTACK_COUNT_OFF);
+            battles += M2C_FIELD(q, s32 *, PLAYER_BATTLE_COUNT_OFF);
+        }
+    } else {
+        p = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+        damageDealt = M2C_FIELD(p, s32 *, PLAYER_REC_DAMAGE_DEALT);
+        attacks = M2C_FIELD(p, s32 *, PLAYER_REC_ATTACK_COUNT);
+        battles = M2C_FIELD(p, s32 *, PLAYER_REC_BATTLE_COUNT);
+    }
+    if (!attacks) return 0;
+    result = func_0207c9c8((battles * 100 + damageDealt) * 2, attacks) - 100;
+    if (result >= 100) result = ((result - 100) >> 1) + 100;
+    if (result < 0) result = 0;
+    if (result > 150) result = 150;
+    return result;
 }
 
 s32 func_020a1f88(s32 player) {
@@ -218,14 +236,14 @@ s32 func_020a1f88(s32 player) {
 
 void func_020a2148(u16 *arg0) {
  s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
- u16 *GetMapSettings(void); void func_020bfa80(u16 *); void func_020bfebc(u16 *);
+ u16 *GetMapSettings(void); void func_020bfa80(u16 *); void MapSettings_Capture(u16 *);
  s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 GetPlayerTeam(s32);
  s32 i; u16 *p; u16 value;
  p=arg0;
  if(p==0) p=GetMapSettings();
  if(IsLinkSessionActive()!=0) return;
  if(func_020cd6d4()!=0) return;
- func_020bfa80(p); func_020bfebc(p);
+ func_020bfa80(p); MapSettings_Capture(p);
  i=0;
  do {
  *p=(*p & ~0xff) | (u8)(u16)func_020a22fc(i+1);

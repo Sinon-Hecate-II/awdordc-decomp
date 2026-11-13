@@ -279,14 +279,14 @@ s32 func_020c6554(void) {
 
 s32 func_020c6604(void){
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c05[];
+extern u8 gUnitKindMaxAmmo[];
 void *base; UnkStruct_020C5D0C *p; u16 idx;
 if(func_020a85f0(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->unk0)==0)return 2;
 base=*gCurrentMap;
 p=M2C_FIELD(base,UnkStruct_020C5D0C **,0x52d0);
 if(M2C_FIELD(p,u8 *,13))return 2;
 if(M2C_FIELD(base,s16 *,0x52dc)!=M2C_FIELD(base,s16 *,0x52d8)||M2C_FIELD(base,s16 *,0x52de)!=M2C_FIELD(base,s16 *,0x52da))return 2;
-if(data_ov000_021b5c05[p->unk0*0x70] && p->unk6_7==0)return 2;
+if(gUnitKindMaxAmmo[p->unk0*0x70] && p->unk6_7==0)return 2;
 idx=M2C_FIELD(base,u16 *,0x52a4);
 if(func_020d2d38(idx,17)>M2C_FIELD(base+idx*0x8c,s32 *,0x67a4))return 2;
 if(func_020d2dcc(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==0)return 2;

@@ -136,25 +136,28 @@ finalOff=M2C_FIELD(arg0,u8 *,0x8C)*100;
 SetEffectNodeResource(q,M2C_FIELD(gEffectNodeResource,s32 *,finalOff),M2C_FIELD(data_ov002_021f3034,u16 *,finalOff),(data_ov002_021f3048+finalOff)[M2C_FIELD(arg0,u8 *,0x8D)*8],0);
 }
 #pragma opt_common_subs reset
-void func_ov002_021e9e0c(void *arg0,s32 arg1) {
+/* Rebuilds the unit's move-pose sprite node: moves the old node onto a free
+   list, allocates a fresh 0x54-byte node, then configures its translation,
+   scale and resource from the current effect's pose and 100-byte record. */
+void SetupUnitMoveNode(void *unit,s32 variant) {
 void *MemAlloc(s32);void func_ov002_021e16bc(void *,u8,u8);void func_ov002_021e16dc(void *,s32,u16,u8,s32);void SetEffectNodeTranslation(void *,s16,s16,s16);void SetEffectScale(void *,u32);
 extern u8 data_ov002_021ea704[],data_ov002_021f3024[],data_ov002_021f3036[],data_ov002_021f3049[],gEffectTable[];
-void *p,*q,*lr,*t;u32 v;s32 off;s16 x,y;
-if(!M2C_FIELD(data_ov002_021f3024,s32 *,M2C_FIELD(arg0,u8 *,140)*100))return;
-if(M2C_FIELD(arg0,void **,84)){
+void *p,*q,*cfg,*pose;u32 scale;s32 resOfs;s16 x,y;
+if(!M2C_FIELD(data_ov002_021f3024,s32 *,M2C_FIELD(unit,u8 *,140)*100))return;
+if(M2C_FIELD(unit,void **,84)){
 p=MemAlloc(8);if(p){M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;}
-M2C_FIELD(p,void **,0)=M2C_FIELD(arg0,void **,84);M2C_FIELD(p,void **,4)=M2C_FIELD(arg0,void **,88);M2C_FIELD(arg0,void **,88)=p;}
-M2C_FIELD(arg0,void **,84)=((p=MemAlloc(84)) ? init_021ea37c(p):p);
-q=M2C_FIELD(arg0,void **,84);
-func_ov002_021e16bc(q,M2C_FIELD(arg0,u8 *,140),M2C_FIELD(arg0,u8 *,141));
-lr=M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(arg0,u8 *,140)*24),void **,40);
-x=M2C_FIELD(lr,s16 *,120);y=M2C_FIELD(lr,s16 *,122);
-if(arg1!=-1){t=lr+arg1*4;x+=M2C_FIELD(t,s16 *,176);y+=M2C_FIELD(t,s16 *,178);}
-v=(u32)((M2C_FIELD(lr,u16 *,126)*M2C_FIELD(lr,u16 *,204))<<8)>>16;
-SetEffectNodeTranslation(q,x,y,M2C_FIELD(lr,s16 *,124));
-SetEffectScale(q,v);
-off=M2C_FIELD(arg0,u8 *,140)*100;
-func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f3024,s32 *,off),M2C_FIELD(data_ov002_021f3036,u16 *,off),M2C_FIELD(data_ov002_021f3049+off,u8 *,M2C_FIELD(arg0,u8 *,141)*8),0);
+M2C_FIELD(p,void **,0)=M2C_FIELD(unit,void **,84);M2C_FIELD(p,void **,4)=M2C_FIELD(unit,void **,88);M2C_FIELD(unit,void **,88)=p;}
+M2C_FIELD(unit,void **,84)=((p=MemAlloc(84)) ? init_021ea37c(p):p);
+q=M2C_FIELD(unit,void **,84);
+func_ov002_021e16bc(q,M2C_FIELD(unit,u8 *,140),M2C_FIELD(unit,u8 *,141));
+cfg=M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(unit,u8 *,140)*24),void **,40);
+x=M2C_FIELD(cfg,s16 *,120);y=M2C_FIELD(cfg,s16 *,122);
+if(variant!=-1){pose=cfg+variant*4;x+=M2C_FIELD(pose,s16 *,176);y+=M2C_FIELD(pose,s16 *,178);}
+scale=(u32)((M2C_FIELD(cfg,u16 *,126)*M2C_FIELD(cfg,u16 *,204))<<8)>>16;
+SetEffectNodeTranslation(q,x,y,M2C_FIELD(cfg,s16 *,124));
+SetEffectScale(q,scale);
+resOfs=M2C_FIELD(unit,u8 *,140)*100;
+func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f3024,s32 *,resOfs),M2C_FIELD(data_ov002_021f3036,u16 *,resOfs),M2C_FIELD(data_ov002_021f3049+resOfs,u8 *,M2C_FIELD(unit,u8 *,141)*8),0);
 }
 
 #pragma opt_propagation off
@@ -212,25 +215,28 @@ SetEffectNodeResource(node,M2C_FIELD(gEffectNodeResource,s32 *,alt5*100),M2C_FIE
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-void func_ov002_021ea208(void *arg0,s32 arg1) {
+/* Sets up the unit's action (attack) effect node from the effect's second
+ * position set, shifting it by the chosen variant's x/y offset, and links the
+ * new node in front of the one it replaces. */
+void SetupUnitActionNode(void *unit,s32 variant) {
 void *MemAlloc(s32);void func_ov002_021e16bc(void *,u8,u8);void func_ov002_021e16dc(void *,s32,u16,u8,s32);void SetEffectNodeTranslation(void *,s16,s16,s16);void SetEffectScale(void *,u32);
 extern u8 data_ov002_021ea704[],data_ov002_021f3028[],data_ov002_021f3038[],data_ov002_021f304b[],gEffectTable[];
-void *p,*q,*lr,*t;u32 v;s32 off;s16 x,y;
-if(!M2C_FIELD(data_ov002_021f3028,s32 *,M2C_FIELD(arg0,u8 *,140)*100))return;
-if(M2C_FIELD(arg0,void **,84)){
+void *p,*q,*pose;EffectConfig *cfg;u32 scale;s32 resOfs;s16 x,y;
+if(!M2C_FIELD(data_ov002_021f3028,s32 *,M2C_FIELD(unit,u8 *,140)*100))return;
+if(M2C_FIELD(unit,void **,84)){
 p=MemAlloc(8);if(p){M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;}
-M2C_FIELD(p,void **,0)=M2C_FIELD(arg0,void **,84);M2C_FIELD(p,void **,4)=M2C_FIELD(arg0,void **,88);M2C_FIELD(arg0,void **,88)=p;}
-M2C_FIELD(arg0,void **,84)=((p=MemAlloc(84)) ? init_021ea37c(p):p);
-q=M2C_FIELD(arg0,void **,84);
-func_ov002_021e16bc(q,M2C_FIELD(arg0,u8 *,140),M2C_FIELD(arg0,u8 *,141));
-lr=M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(arg0,u8 *,140)*24),void **,40);
-x=M2C_FIELD(lr,s16 *,128);y=M2C_FIELD(lr,s16 *,130);
-if(arg1!=-1){t=lr+arg1*4;x+=M2C_FIELD(t,s16 *,176);y+=M2C_FIELD(t,s16 *,178);}
-v=(u32)((M2C_FIELD(lr,u16 *,134)*M2C_FIELD(lr,u16 *,204))<<8)>>16;
-SetEffectNodeTranslation(q,x,y,M2C_FIELD(lr,s16 *,132));
-SetEffectScale(q,v);
-off=M2C_FIELD(arg0,u8 *,140)*100;
-func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f3028,s32 *,off),M2C_FIELD(data_ov002_021f3038,u16 *,off),M2C_FIELD(data_ov002_021f304b+off,u8 *,M2C_FIELD(arg0,u8 *,141)*8),0);
+M2C_FIELD(p,void **,0)=M2C_FIELD(unit,void **,84);M2C_FIELD(p,void **,4)=M2C_FIELD(unit,void **,88);M2C_FIELD(unit,void **,88)=p;}
+M2C_FIELD(unit,void **,84)=((p=MemAlloc(84)) ? init_021ea37c(p):p);
+q=M2C_FIELD(unit,void **,84);
+func_ov002_021e16bc(q,M2C_FIELD(unit,u8 *,140),M2C_FIELD(unit,u8 *,141));
+cfg=((EffectSet *)M2C_FIELD(gEffectTable,void **,M2C_FIELD(unit,u8 *,140)*24))->config;
+x=cfg->pos2X;y=cfg->pos2Y;
+if(variant!=-1){pose=(u8 *)cfg+variant*4;x+=M2C_FIELD(pose,s16 *,176);y+=M2C_FIELD(pose,s16 *,178);}
+scale=(u32)((cfg->scale2*cfg->textureScale)<<8)>>16;
+SetEffectNodeTranslation(q,x,y,cfg->pos2Z);
+SetEffectScale(q,scale);
+resOfs=M2C_FIELD(unit,u8 *,140)*100;
+func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f3028,s32 *,resOfs),M2C_FIELD(data_ov002_021f3038,u16 *,resOfs),M2C_FIELD(data_ov002_021f304b+resOfs,u8 *,M2C_FIELD(unit,u8 *,141)*8),0);
 }
 
 void func_ov002_021ea37c(void *arg0) {

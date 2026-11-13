@@ -29,7 +29,7 @@ s32 func_020bcc04(void) {
     return 0x20;
 }
 
-s32 func_020bcc34(void) {
+s32 GetMapCursorKeyAction(void) {
     extern void *gKeyState;
     u16 temp_r0;
 

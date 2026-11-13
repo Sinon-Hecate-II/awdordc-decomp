@@ -2,7 +2,7 @@
 #include "common.h"
 #include "tcp_socket.h"
 
-void func_0201ae0c(void *a,u32 ip,s32 create){
+void UpdateArpCache(void *a,u32 ip,s32 create){
 u64 GetSystemTick(void);s32 func_0201a6c4(u32);s32 func_0201a764(u32);
 M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
 extern M2C_UNK gNetStack,data_02137310,data_0213731a;
@@ -180,7 +180,7 @@ SendIpPacket(seg,hdrLen,payload,dataLen,M2C_FIELD(conn,u32 *,28),6);
 M2C_FIELD(conn,u32 *,40)+=dataLen;if(flags&3)M2C_FIELD(conn,u32 *,40)+=1;
 }
 
-void func_0201b798(void *arg0) {
+void SendArpReply(void *arg0) {
     M2C_UNK MI_CpuCopy8(M2C_UNK *, void *, M2C_UNK);
     M2C_UNK func_0201a824(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNetStack;
@@ -202,25 +202,41 @@ void func_0201b798(void *arg0) {
 
 #pragma optimization_level 2
 #pragma opt_common_subs off
-void func_0201b840(void *arg0,u32 arg1) {
-s32 func_0201a7f8(void *,void *);extern M2C_UNK gNetStack,gLocalMacAddress;
-u16 op,a,b,c,d,t;u32 src,dst,own;s32 same,local;
-if(arg1<28)return;
-if(func_0201a7f8(arg0+8,&gLocalMacAddress)&&M2C_FIELD(&gNetStack,u32 *,80)) {
-if(M2C_FIELD(arg0,u16 *,0)==0x100&&M2C_FIELD(arg0,u16 *,2)==8&&M2C_FIELD(arg0,u16 *,4)==0x406) {
-t=M2C_FIELD(arg0,u16 *,6);op=((s32)t>>8)|(t<<8);
-if(op!=1&&op!=2)return;
-a=M2C_FIELD(arg0,u16 *,16);b=M2C_FIELD(arg0,u16 *,14);
-c=M2C_FIELD(arg0,u16 *,26);d=M2C_FIELD(arg0,u16 *,24);
-src=((u16)(((s32)b>>8)|(b<<8))<<16)|(u16)(((s32)a>>8)|(a<<8));
-own=M2C_FIELD(&gNetStack,u32 *,80);same=src==own;
-dst=((u16)(((s32)d>>8)|(d<<8))<<16)|(u16)(((s32)c>>8)|(c<<8));
-local=own==dst;
-if(!same)func_0201ae0c(arg0+8,src,local);
-if(op==1&&local){func_0201b798(arg0);return;}
-if(op==2&&local&&same)M2C_FIELD(&gNetStack,u8 *,1)=1;
+/* Handle a received ARP packet `frame` of `len` bytes that is not our own: if
+ * it is a well-formed IPv4 ARP packet, learn the sender in the ARP cache,
+ * answer a request addressed to our local address with a reply, and mark the
+ * link ARP-resolved when the reply announcing our address arrives. */
+void HandleArpPacket(void *frame, u32 len) {
+    s32 MacAddressesDiffer(void *, void *);
+    extern M2C_UNK gNetStack, gLocalMacAddress;
+    u16 opcode, senderIpLo, senderIpHi, targetIpLo, targetIpHi, rawOpcode;
+    u32 srcIp, dstIp, localIp;
+    s32 isSelf, isTarget;
+
+    if (len < ARP_PACKET_SIZE) return;
+    if (MacAddressesDiffer((u8 *)frame + ARP_SENDER_MAC, &gLocalMacAddress) && M2C_FIELD(&gNetStack, u32 *, NETSTACK_LOCAL_IP)) {
+        if (M2C_FIELD(frame, u16 *, ARP_HTYPE) == 0x100 && M2C_FIELD(frame, u16 *, ARP_PTYPE) == 8 && M2C_FIELD(frame, u16 *, ARP_HLEN) == 0x406) {
+            rawOpcode = M2C_FIELD(frame, u16 *, ARP_OPCODE);
+            opcode = ((s32)rawOpcode >> 8) | (rawOpcode << 8);
+            if (opcode != ARP_OPCODE_REQUEST && opcode != ARP_OPCODE_REPLY) return;
+            senderIpLo = M2C_FIELD(frame, u16 *, ARP_SENDER_IP + 2);
+            senderIpHi = M2C_FIELD(frame, u16 *, ARP_SENDER_IP);
+            targetIpLo = M2C_FIELD(frame, u16 *, ARP_TARGET_IP + 2);
+            targetIpHi = M2C_FIELD(frame, u16 *, ARP_TARGET_IP);
+            srcIp = ((u16)(((s32)senderIpHi >> 8) | (senderIpHi << 8)) << 16) | (u16)(((s32)senderIpLo >> 8) | (senderIpLo << 8));
+            localIp = M2C_FIELD(&gNetStack, u32 *, NETSTACK_LOCAL_IP);
+            isSelf = srcIp == localIp;
+            dstIp = ((u16)(((s32)targetIpHi >> 8) | (targetIpHi << 8)) << 16) | (u16)(((s32)targetIpLo >> 8) | (targetIpLo << 8));
+            isTarget = localIp == dstIp;
+            if (!isSelf) UpdateArpCache((u8 *)frame + ARP_SENDER_MAC, srcIp, isTarget);
+            if (opcode == ARP_OPCODE_REQUEST && isTarget) {
+                SendArpReply(frame);
+                return;
+            }
+            if (opcode == ARP_OPCODE_REPLY && isTarget && isSelf) M2C_FIELD(&gNetStack, u8 *, NETSTACK_ARP_RESOLVED) = 1;
+        }
+    }
 }
-}}
 #pragma opt_common_subs reset
 #pragma optimization_level 4
 M2C_UNK func_0201b984(void *arg0,u8 *arg1,s32 arg2){

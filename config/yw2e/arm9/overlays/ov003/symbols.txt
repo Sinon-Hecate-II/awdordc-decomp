@@ -223,7 +223,7 @@ func_ov003_021f13a8 kind:function(arm,size=0x10) addr:0x021f13a8
 func_ov003_021f13b8 kind:function(arm,size=0x10) addr:0x021f13b8
 func_ov003_021f13c8 kind:function(arm,size=0x24) addr:0x021f13c8
 func_ov003_021f13ec kind:function(arm,size=0x20) addr:0x021f13ec
-func_ov003_021f140c kind:function(arm,size=0x10) addr:0x021f140c
+SetOv003SceneState kind:function(arm,size=0x10) addr:0x021f140c
 func_ov003_021f141c kind:function(arm,size=0x10) addr:0x021f141c
 func_ov003_021f142c kind:function(arm,size=0x1c) addr:0x021f142c
 func_ov003_021f1448 kind:function(arm,size=0x1c) addr:0x021f1448
@@ -479,10 +479,10 @@ func_ov003_022056a4 kind:function(arm,size=0xc) addr:0x022056a4
 func_ov003_022056b0 kind:function(arm,size=0xc) addr:0x022056b0
 func_ov003_022056bc kind:function(arm,size=0x314) addr:0x022056bc
 func_ov003_022059d0 kind:function(arm,size=0x318) addr:0x022059d0
-func_ov003_02205ce8 kind:function(arm,size=0x14c) addr:0x02205ce8
+ShutdownOv003SceneObject kind:function(arm,size=0x14c) addr:0x02205ce8
 func_ov003_02205e34 kind:function(arm,size=0x60) addr:0x02205e34
 func_ov003_02205e94 kind:function(arm,size=0x94) addr:0x02205e94
-func_ov003_02205f28 kind:function(arm,size=0x154) addr:0x02205f28
+DestroyOv003SceneObject kind:function(arm,size=0x154) addr:0x02205f28
 func_ov003_0220607c kind:function(arm,size=0x58) addr:0x0220607c
 func_ov003_022060d4 kind:function(arm,size=0x8c) addr:0x022060d4
 func_ov003_02206160 kind:function(arm,size=0x14) addr:0x02206160
@@ -883,7 +883,7 @@ data_ov003_02211178 kind:data(any) addr:0x02211178
 sTextPassThroughFormat kind:data(any) addr:0x02211188
 data_ov003_0221118c kind:data(any) addr:0x0221118c
 data_ov003_0221119c kind:data(any) addr:0x0221119c
-data_ov003_022111c0 kind:bss addr:0x022111c0
+gOv003SceneState kind:bss addr:0x022111c0
 data_ov003_022111d4 kind:bss addr:0x022111d4
 data_ov003_022111de kind:bss addr:0x022111de
 data_ov003_022111e8 kind:bss addr:0x022111e8

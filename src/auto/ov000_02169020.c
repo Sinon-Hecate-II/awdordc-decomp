@@ -1,5 +1,7 @@
 /* 44 functions from 0x02169020 to 0x02169F94 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_unit_move.h"
 
 static inline s8 ReadMovementCommand(void *p) {
     return ((s8 *)p + 0x58)[M2C_FIELD(p,u8*,0x40)++];
@@ -49,7 +51,7 @@ void func_ov000_02169070(void *p) {
 void func_ov000_02169138(void *p) {
 void func_020c98d8(s32,s32,s32);
 s32 IsPlayerHuman(u32);
-void func_02091c20(s32,s32);
+void AddRecordValue(s32,s32);
 void func_ov000_02169740(void *);
 void func_ov000_021696f8(void *);
 void RefreshMapView(void);
@@ -67,7 +69,7 @@ M2C_FIELD(p,u8*,0x41)=3;break;
 case 10:
 M2C_FIELD(p,u8*,0x41)=5;
 func_020c98d8(M2C_FIELD(p,s16*,0x4c)>>4,M2C_FIELD(p,s16*,0x4e)>>4,0);
-if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,0x52a4)))func_02091c20(14,1);
+if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,0x52a4)))AddRecordValue(14,1);
 break;
 case 4:func_ov000_02169740(p);break;
 case -1:func_ov000_021696f8(p);RefreshMapView();break;
@@ -181,41 +183,47 @@ s32 func_ov000_021694e8(s32 arg0) {
     return 0;
 }
 
-void func_ov000_02169518(s32 arg0) {
- void func_ov000_02169540(void *,s32);
+void BeginUnitMove(s32 arg0) {
+ void StartUnitMove(void *,s32);
  extern M2C_UNK data_ov000_021ae988;
  void *p=(void *)FindObjectByClass(&data_ov000_021ae988);
  if(!p)return;
- func_ov000_02169540(p,arg0);
+ StartUnitMove(p,arg0);
 }
 
-void func_ov000_02169540(void *p, s32 arg1){
+/* Starts moving the controller's unit along the movement command stream
+ * `commands`: validates the path, marks the move active, scrolls the view onto
+ * the unit, records the distance for a human player, copies the commands into
+ * the controller and runs the first step.  The move is cancelled when the battle
+ * has ended, the path is blocked, the unit is in the state that forbids moving,
+ * or a dialog is up. */
+void StartUnitMove(void *move, s32 commands){
 s32 func_020a7d38(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
 extern u8 gBattleEndState[];
-s32 func_ov000_021697a0(volatile s8 *);s32 func_ov000_02169940(s8 *);int func_ov000_02169854(int,int,const signed char *);void func_ov000_02169804(void *,void *);void func_ov000_02169f88(void);
-s8 *path=(s8*)arg1;
-s32 x=M2C_FIELD(p,s16 *,0x4c)/16,y=M2C_FIELD(p,s16 *,0x4e)/16;u8 ok;
-if(func_ov000_021697a0(path)==0 && func_ov000_02169940(path)==0)return;
-M2C_FIELD(p,u8 *,0x40)=0;M2C_FIELD(p,u8 *,0x41)=4;M2C_FIELD(p,u8 *,0x46)=1;
+s32 CountMovePathSteps(volatile s8 *);s32 MovePathEndsInAttack(s8 *);int IsMovePathValid(int,int,const signed char *);void CopyMovePath(void *,void *);void StepUnitMove(void);
+s8 *path=(s8*)commands;
+s32 x=M2C_FIELD(move,s16 *,UNIT_MOVE_X)/16,y=M2C_FIELD(move,s16 *,UNIT_MOVE_Y)/16;u8 ok;
+if(CountMovePathSteps(path)==0 && MovePathEndsInAttack(path)==0)return;
+M2C_FIELD(move,u8 *,UNIT_MOVE_COMMAND)=0;M2C_FIELD(move,u8 *,UNIT_MOVE_STATE)=4;M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=1;
 if(gBattleEndState[0]){
 if(gBattleEndState[0]){if(M2C_FIELD((void*)*gCurrentMap,u16 *,0x52b0)!=19)ok=1;else ok=0;}else ok=0;
-if(!(ok&255))M2C_FIELD(p,u8 *,0x46)=0;
+if(!(ok&255))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 }
-if(!func_ov000_02169854(x,y,path))M2C_FIELD(p,u8 *,0x46)=0;
-if(M2C_FIELD(p,void **,0x3c) && func_020a7d38(M2C_FIELD(p,void **,0x3c)) && !func_020a7d68(M2C_FIELD(p,void **,0x3c)))M2C_FIELD(p,u8 *,0x46)=0;
-if(IsDialogActive())M2C_FIELD(p,u8 *,0x46)=0;
-if(M2C_FIELD(p,u8 *,0x46))func_0207b764(x,y);
-if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16 *,0x52a4)))func_02091c20(15,func_ov000_021697a0(path));
-func_ov000_02169804(path,(u8*)p+0x58);
+if(!IsMovePathValid(x,y,path))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
+if(M2C_FIELD(move,void **,UNIT_MOVE_UNIT) && func_020a7d38(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)) && !func_020a7d68(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
+if(IsDialogActive())M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
+if(M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE))func_0207b764(x,y);
+if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(15,CountMovePathSteps(path));
+CopyMovePath(path,(u8*)move+UNIT_MOVE_COMMANDS);
 func_020d4790();
-((void(*)(void*))func_ov000_02169f88)(p);
+((void(*)(void*))StepUnitMove)(move);
 }
 
 void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
- void func_ov000_02169540(void *,s32);
+ void StartUnitMove(void *,s32);
  void *p=func_ov000_021694b0(a,b,c,d);
  if(!p)return 0;
- func_ov000_02169540(p,e);
+ StartUnitMove(p,e);
  return p;
 }
 
@@ -266,7 +274,7 @@ s32 func_ov000_0216975c(void) {
  return -1;
 }
 
-s32 func_ov000_021697a0(volatile s8 *p) {
+s32 CountMovePathSteps(volatile s8 *p) {
  s32 count=0;
 loop:
  switch(*p++) {
@@ -281,7 +289,7 @@ void func_ov000_02169800(void) {
 
 }
 
-void func_ov000_02169804(void *arg0, void *arg1)
+void CopyMovePath(void *arg0, void *arg1)
 {
   s8 *src = arg0;
   s8 *dst = arg1;
@@ -321,7 +329,7 @@ void func_ov000_02169850(void) {
 }
 
 extern u32* D_027E0058;
-int func_ov000_02169854(int x,int y,const signed char *cmd) {
+int IsMovePathValid(int x,int y,const signed char *cmd) {
 u8 *map=(u8 *)*gCurrentMap;
 u32 pos;
 if(*(u8 *)(map+*(u16 *)(map+0x52a4)*140+0x67c3)&2)return 1;
@@ -340,7 +348,7 @@ case 3:y--;break;
 }
 }
 
-s32 func_ov000_02169940(s8 *p) {
+s32 MovePathEndsInAttack(s8 *p) {
  loop: switch(*p++) {
  case 9: p++; goto loop;
  case -1: case 4: return 0;
@@ -384,7 +392,7 @@ void func_ov000_02169a28(void *p) {
 
 s32 func_ov000_02169ae4(void *p) {
     s32 func_020a5d8c(s32, s32, s32);
-    void func_ov000_02169d74(s32, s32);
+    void ScrollMapViewToPoint(s32, s32);
     s32 cx;
     s32 cy;
     u8 *base;
@@ -408,7 +416,7 @@ s32 func_ov000_02169ae4(void *p) {
         }
     }
     if (M2C_FIELD(p, u8 *, 0x41) == 2 && M2C_FIELD(p, u8 *, 0x46) != 0) {
-        func_ov000_02169d74(M2C_FIELD(p, s16 *, 0x4C), M2C_FIELD(p, s16 *, 0x4E));
+        ScrollMapViewToPoint(M2C_FIELD(p, s16 *, 0x4C), M2C_FIELD(p, s16 *, 0x4E));
     }
     return r;
 }
@@ -471,27 +479,30 @@ s32 func_ov000_02169d64(void *arg0) {
 
 #pragma push
 #pragma opt_common_subs off
-void func_ov000_02169d74(s32 x,s32 y){
-s32 func_0207d0b8(void);s32 func_0207d0d4(void);
-s32 w=func_0207d0b8(),h=func_0207d0d4();
-s16 nx=10000,ny=10000;
-void *map=M2C_FIELD(gCurrentMap,void **,0);s16 ox=M2C_FIELD(map,s16 *,0x5148),oy; s32 dx=x-ox,dy;void (*cb)(void);
-if(dx<16)nx=x-16;
-if(dx>((w-2)<<4))nx=x-((w-2)<<4);
-oy=M2C_FIELD(map,s16 *,0x514a);dy=y-oy;
-if(dy<16)ny=y-16;
-if(dy>((h-2)<<4))ny=y-((h-2)<<4);
-if(nx==10000 && ny==10000)return;
-if(nx==10000)nx=ox;
-else if(nx<0)nx=0;
-else if(nx>((M2C_FIELD(map,u16 *,0x5144)-w)<<4))nx=(M2C_FIELD(map,u16 *,0x5144)-w)<<4;
-if(ny==10000)ny=oy;
-else if(ny<0)ny=0;
-else if(ny>((M2C_FIELD(map,u16 *,0x5146)-h)<<4))ny=(M2C_FIELD(map,u16 *,0x5146)-h)<<4;
-M2C_FIELD(map,s16 *,0x5148)=nx;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x514a)=ny;
-cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);
-if(cb)cb();
+/* Pans the map view so the point (x, y), in 1/16-cell units, stays on screen:
+ * a point within one cell of the view edge scrolls the view to put it one cell
+ * in (two cells from the far edge), and the result is clamped to the map. */
+void ScrollMapViewToPoint(s32 x,s32 y){
+s32 GetMapViewWidth(void);s32 GetMapViewHeight(void);
+s32 viewW=GetMapViewWidth(),viewH=GetMapViewHeight();
+s16 scrollX=MAP_VIEW_NO_SCROLL,scrollY=MAP_VIEW_NO_SCROLL;
+void *map=M2C_FIELD(gCurrentMap,void **,0);s16 viewX=M2C_FIELD(map,s16 *,MAP_VIEW_X),viewY; s32 dx=x-viewX,dy;void (*scrollDone)(void);
+if(dx<MAP_VIEW_MARGIN)scrollX=x-MAP_VIEW_MARGIN;
+if(dx>((viewW-2)<<4))scrollX=x-((viewW-2)<<4);
+viewY=M2C_FIELD(map,s16 *,MAP_VIEW_Y);dy=y-viewY;
+if(dy<MAP_VIEW_MARGIN)scrollY=y-MAP_VIEW_MARGIN;
+if(dy>((viewH-2)<<4))scrollY=y-((viewH-2)<<4);
+if(scrollX==MAP_VIEW_NO_SCROLL && scrollY==MAP_VIEW_NO_SCROLL)return;
+if(scrollX==MAP_VIEW_NO_SCROLL)scrollX=viewX;
+else if(scrollX<0)scrollX=0;
+else if(scrollX>((M2C_FIELD(map,u16 *,MAP_WIDTH)-viewW)<<4))scrollX=(M2C_FIELD(map,u16 *,MAP_WIDTH)-viewW)<<4;
+if(scrollY==MAP_VIEW_NO_SCROLL)scrollY=viewY;
+else if(scrollY<0)scrollY=0;
+else if(scrollY>((M2C_FIELD(map,u16 *,MAP_HEIGHT)-viewH)<<4))scrollY=(M2C_FIELD(map,u16 *,MAP_HEIGHT)-viewH)<<4;
+M2C_FIELD(map,s16 *,MAP_VIEW_X)=scrollX;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,MAP_VIEW_Y)=scrollY;
+scrollDone=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),MAPVIEW_SCROLL_DONE);
+if(scrollDone)scrollDone();
 }
 #pragma pop
 s32 func_ov000_02169ec0(M2C_UNK p) {
@@ -518,7 +529,7 @@ s32 func_ov000_02169f64(u8 arg0) {
  return M2C_FIELD(&data_ov000_021aec8c,s32 *,func_020a7298(arg0,1)*20);
 }
 
-void func_ov000_02169f88(void) {
+void StepUnitMove(void) {
     M2C_UNK func_ov000_0216a1ac();
     func_ov000_0216a1ac();
 }

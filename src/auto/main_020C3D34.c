@@ -383,7 +383,7 @@ void func_020c4bdc(s32 arg0) {
 void func_020c4bf8(void *arg0) {
     extern M2C_UNK data_0212a6a4;
     func_020c4bdc(M2C_FIELD(arg0, s32 *, 0x34));
-    func_02076010(2, 1);
+    PruneSaveRecords(2, 1);
     func_02075fd8(M2C_FIELD(arg0, s32 *, 0x34), &data_0212a6a4, 0x90, 2);
     func_02076198();
 }
@@ -423,10 +423,10 @@ void func_020c4cdc(M2C_UNK arg0) {
 
 void func_020c4cf0(void *arg0) {
     M2C_UNK func_02075fd8(s32, M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK func_02076010(M2C_UNK, M2C_UNK);
+    M2C_UNK PruneSaveRecords(M2C_UNK, M2C_UNK);
     M2C_UNK func_02076198();
     extern M2C_UNK data_0212a6b4;
-    func_02076010(3, 1);
+    PruneSaveRecords(3, 1);
     func_02075fd8(M2C_FIELD(arg0, s32 *, 0x34), &data_0212a6b4, 0xC34, 3);
     func_02076198();
 }

@@ -295,7 +295,7 @@ return;normal:func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),6,7);
 
 void func_020d1174(u8 *a) {
 extern s32 *gCurrentMap;
-func_02091c20(((u32)(a[0]<<26)>>26)+0x43,1);
+AddRecordValue(((u32)(a[0]<<26)>>26)+0x43,1);
 if(a[12])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[12]*14);
 if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
 }

@@ -6,9 +6,9 @@ extern u8 gUnitKindFlags[];
 extern u32 gUnitKindStats[];
 extern void *gAiCommandState;
 static inline s32 ov000_visibility_radius(void){
-s32 func_020a33c4(u16);s32 func_020a7b3c(s32,u8,u16,s32,s32);
+s32 func_020a33c4(u16);s32 ComputeUnitMoveRange(s32,u8,u16,s32,s32);
 s32 bonus=func_020a33c4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-return func_020a7b3c(24,M2C_FIELD(gAiCommandState,u8 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),bonus,0);
+return ComputeUnitMoveRange(24,M2C_FIELD(gAiCommandState,u8 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),bonus,0);
 }
 static inline s32 ov000_scan_distance(s32 x,s32 y,s32 cx,s32 cy){
 s32 d=0,dx=cx-x,dy=cy-y;

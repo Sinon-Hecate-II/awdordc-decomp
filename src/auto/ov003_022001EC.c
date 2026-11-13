@@ -33,7 +33,7 @@ void *DestroyOv003Object(Ov003Object *obj) {
     void MemFree(void *);
     void func_020c127c(void);
     void HeapFreeBlock(s32);
-    void func_ov003_021f140c(s32);
+    void SetOv003SceneState(s32);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     void *sub;
     void *child;
@@ -81,7 +81,7 @@ void *DestroyOv003Object(Ov003Object *obj) {
         if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));
         MemFree(sub);
     }
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
     func_020c127c();
     MemFree(obj);
     return obj;

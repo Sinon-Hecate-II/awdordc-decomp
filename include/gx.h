@@ -16,6 +16,24 @@
 /* 3D display control. */
 #define REG_DISP3DCNT (*(volatile u16 *)0x04000060)
 
+/* Geometry engine command ports.  Writing a command's parameters to these
+ * FIFO ports queues the command; see GBATEK's GX command list. */
+#define REG_GX_COLOR      (*(volatile u32 *)0x04000480)
+#define REG_GX_VTX_16     (*(volatile u32 *)0x0400048C)
+#define REG_GX_BEGIN_VTXS (*(volatile u32 *)0x04000500)
+#define REG_GX_END_VTXS   (*(volatile u32 *)0x04000504)
+
+/* GX_BEGIN_VTXS primitive types. */
+enum {
+    GX_PRIM_TRIANGLES = 0,
+    GX_PRIM_QUADS = 1,
+    GX_PRIM_TRIANGLE_STRIP = 2,
+    GX_PRIM_QUAD_STRIP = 3
+};
+
+/* Opaque white in the GX 15-bit BGR555 colour format. */
+#define GX_RGB_WHITE 0x7FFF
+
 /* One bit per VRAM bank in the allocator's masks. */
 enum {
     VRAM_BANK_A = 0x001,
@@ -34,10 +52,13 @@ enum {
 #define VRAM_CR_MAIN_BG(ofs) ((u8)(0x81 | ((ofs) << 3)))
 /* A bank control value for a run of main-engine 3D texture banks. */
 #define VRAM_CR_MAIN_TEX(ofs) ((u8)(0x83 | ((ofs) << 3)))
+/* A bank control value for a run of main-engine OBJ (sprite) banks. */
+#define VRAM_CR_MAIN_OBJ(ofs) ((u8)(0x82 | ((ofs) << 3)))
 
 /* Field offsets of the allocator state (gVramBankState). */
 #define VRAM_BANKS_PENDING 0x00 /* banks released by the last change, set back to 0x80 */
 #define VRAM_BANKS_BG      0x02 /* banks assigned to the main engine background */
+#define VRAM_BANKS_OBJ     0x04 /* banks assigned to the main engine OBJ (sprite) area */
 #define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
 
 #endif

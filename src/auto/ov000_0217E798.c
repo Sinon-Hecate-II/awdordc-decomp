@@ -56,9 +56,9 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
 void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     extern void **gCurrentMap;
     extern u8 gUnitKindStats[];
-    extern u8 data_ov000_021b5c0a[];
+    extern u8 gUnitKindMaxFuel[];
     extern u8 gMovementCostTable[];
-    s32 func_020ba510(s32, s32);
+    s32 IsSupplyTargetAt(s32, s32);
     s32 GetTerrainPropertyFlagsAt(s32, s32);
     s32 func_020d27a4(s32, s32);
     s32 IsCaptureTargetAt(void *, s32, s32);
@@ -166,7 +166,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         for (yy = minY; yy <= maxY; yy++) {
             for (xx = minX; xx <= maxX; xx++) {
                 if (tileDistance(x, y, xx, yy) != 1) continue;
-                if (func_020ba510(xx, yy) != 0) n++;
+                if (IsSupplyTargetAt(xx, yy) != 0) n++;
             }
         }
         if (n == 0) return;
@@ -175,7 +175,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     case 23:
         if (sel[0xc] == 0) return;
         p = (u8 *)map + 0x59a4 + sel[0xc] * 14;
-        if (data_ov000_021b5c0a[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
+        if (gUnitKindMaxFuel[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
         BuildThreatMapAgainstKind14();
         map = *gCurrentMap;
         minX = x - 1; if (minX < 0) minX = 0;
@@ -206,7 +206,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         sel = M2C_FIELD(map, u8 **, 0x52d0);
         if (sel[0xd] == 0) return;
         p = (u8 *)map + 0x59a4 + sel[0xd] * 14;
-        if (data_ov000_021b5c0a[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
+        if (gUnitKindMaxFuel[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
         minX = x - 1; if (minX < 0) minX = 0;
         minY = y - 1; if (minY < 0) minY = 0;
         maxX = M2C_FIELD(map, u16 *, 0x5144) - 1;

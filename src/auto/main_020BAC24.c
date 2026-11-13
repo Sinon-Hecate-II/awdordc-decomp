@@ -104,7 +104,7 @@ void func_020bb110(void) {
     M2C_UNK func_020baa64();
     M2C_UNK func_020baaac();
     M2C_UNK IsPlayerHuman(u16);
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cd5d8();
     M2C_UNK CreateBattleEffectPending(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020c32bc(M2C_UNK);
@@ -149,13 +149,13 @@ void func_020bb110(void) {
         if (t2 == 0) {
             pl = M2C_FIELD(map, u16 *, 0x52A4);
             if (IsPlayerHuman(pl) != 0) {
-                func_02091c20(9, 1);
+                AddRecordValue(9, 1);
             }
         }
         if (r4 == 20) {
             pl = M2C_FIELD(map, u16 *, 0x52A4);
             if (IsPlayerHuman(pl) != 0) {
-                func_02091c20(10, 1);
+                AddRecordValue(10, 1);
             }
         }
     }
@@ -250,7 +250,7 @@ void func_020bb110(void) {
 
 void func_020bb458(void) {
     s32 IsPlayerHuman(u16);
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK func_020baa64(void);
     M2C_UNK func_020babfc(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020ce630(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -260,7 +260,7 @@ void func_020bb458(void) {
     u8 *unit;
 
     if (IsPlayerHuman(M2C_FIELD(*data_027e0058, u16 *, 0x52A4)) != 0) {
-        func_02091c20(0x13, 1);
+        AddRecordValue(0x13, 1);
     }
     unit = (u8 *)*data_027e0058 + 0x59A4 +
         ((u8 *)*data_027e0058)[
@@ -306,25 +306,25 @@ void func_020bb5c0(void *arg0) {
     M2C_UNK func_020c98d8(s32, s32, M2C_UNK);
     M2C_UNK func_020cb038(s32, M2C_UNK);
     M2C_UNK func_020cb170(s32, M2C_UNK);
-    M2C_UNK func_020cb254(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK LevelUpUnit(s32, M2C_UNK, M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x54);
     func_020cb038(temp_r4, 0);
     func_020cb170(temp_r4, 0);
-    func_020cb254(temp_r4, 1, 1);
+    LevelUpUnit(temp_r4, 1, 1);
     func_020c98d8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 1);
 }
 
 void func_020bb608(s32 arg0) {
     M2C_UNK IsPlayerHuman(u16);
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     extern s32 data_0215be0c;
     extern s16 data_0212923c[];
 
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
-        func_02091c20(0x14, 1);
+        AddRecordValue(0x14, 1);
         {
             u8 *sel;
             u8 kind;
@@ -372,21 +372,21 @@ void func_020bb768(void) {
 }
 
 void func_020bbac8(void) {
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cb8cc(M2C_UNK);
     s32 IsPlayerHuman(u16);
     extern void **gCurrentMap;
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
-        func_02091c20(0x10, 1);
+        AddRecordValue(0x10, 1);
     }
     func_020cb8cc(0);
 }
 
 void func_020bbb08(void) {
- M2C_UNK func_020a39f8(); M2C_UNK func_0207c2e0(); M2C_UNK func_020a6fcc();
+ M2C_UNK RollNextWeather(); M2C_UNK func_0207c2e0(); M2C_UNK func_020a6fcc();
  extern void **gCurrentMap; extern u8 data_02156e50[];
  u8 *p = (u8 *)*gCurrentMap + 0x5120;
- p[0x3a] = func_020a39f8();
+ p[0x3a] = RollNextWeather();
  *(u32 *)(data_02156e50+8) = func_0207c2e0();
  M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d1)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
  M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d2)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);

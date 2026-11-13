@@ -65,7 +65,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     M2C_UNK func_020bfa80(M2C_UNK);
     M2C_UNK func_020bfb74(M2C_UNK);
     u32 func_020d886c();
-    void func_ov003_021f140c(s32);
+    void SetOv003SceneState(s32);
     M2C_UNK func_ov003_021f1480(s32);
     extern M2C_UNK data_ov003_0220fca8;
     extern M2C_UNK data_ov003_0220fcdc;
@@ -118,7 +118,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, s8 *, 0x45) = 0;
         M2C_FIELD(temp_r0, s8 *, 0x46) = 0;
         M2C_FIELD(temp_r0, s8 *, 0x47) = 1;
-        func_ov003_021f140c(4);
+        SetOv003SceneState(4);
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x38) = MemAlloc(6);
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = MemAlloc(0xC);
         temp_r0_2 = MemAlloc(0xC);
@@ -313,7 +313,7 @@ void *func_ov003_021f3cec(void *obj) {
     extern void **gCurrentMap;
     s32 GetMapRecordBuffer(void);
     void func_020c8664(u16, s32);
-    void func_ov003_021f140c(s32);
+    void SetOv003SceneState(s32);
     s32 func_ov003_021f1608(void);
     void func_ov003_021f1858(void);
     void func_ov003_021f18a4(void);
@@ -347,7 +347,7 @@ void *func_ov003_021f3cec(void *obj) {
             break;
     }
     if (mode_result) {
-        func_ov003_021f140c(4);
+        SetOv003SceneState(4);
     } else {
         if (!func_ov003_021f1608()) {
             func_ov003_021f1858();
@@ -379,7 +379,7 @@ void *func_ov003_021f3e08(void *obj) {
     extern void **gCurrentMap;
     s32 GetMapRecordBuffer(void);
     void func_020c8664(u16, s32);
-    void func_ov003_021f140c(s32);
+    void SetOv003SceneState(s32);
     s32 func_ov003_021f1608(void);
     void func_ov003_021f1858(void);
     void func_ov003_021f18a4(void);
@@ -413,7 +413,7 @@ void *func_ov003_021f3e08(void *obj) {
             break;
     }
     if (mode_result) {
-        func_ov003_021f140c(4);
+        SetOv003SceneState(4);
     } else {
         if (!func_ov003_021f1608()) {
             func_ov003_021f1858();

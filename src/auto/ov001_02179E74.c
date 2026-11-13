@@ -15,7 +15,7 @@ void func_ov001_02179ea8(void) {
     M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02175db4(M2C_UNK *, M2C_UNK);
     M2C_UNK func_ov001_02184170(M2C_UNK);
-    void func_ov001_02179f80(void);
+    void InitMapSelectGraphics(void);
     void func_ov001_021722ac(void);
     M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_02171dd0(M2C_UNK);
@@ -38,7 +38,7 @@ void func_ov001_02179ea8(void) {
     }
         M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x51) =
             (u8)func_ov001_02184170(M2C_FIELD(&gMapSelectState, void **, 4));
-        func_ov001_02179f80();
+        InitMapSelectGraphics();
         func_ov001_021722ac();
         func_ov001_02171c24((M2C_UNK)0x34, (M2C_UNK)(0x34 - 0x35), (M2C_UNK)0);
         func_ov001_02171dd0((M2C_UNK)2);
@@ -52,28 +52,32 @@ void func_ov001_02179ea8(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a2f0);
 }
 
-void func_ov001_02179f80(void) {
+/* Set up the map-select screen's graphics: load the list-background tilemap and
+ * the step-31 background tiles into VRAM, upload the tilemap, then point the
+ * layered background control registers at the new layers. */
+void InitMapSelectGraphics(void) {
     s32 Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183694(M2C_UNK);
     M2C_UNK func_ov001_02183720(void);
-    extern M2C_UNK data_ov001_0218f7ab;
-    extern M2C_UNK data_ov001_0218f795;
-    extern M2C_UNK data_ov001_021906e8;
+    extern M2C_UNK sXb4ApListBackNscPath;
+    extern M2C_UNK sYbBgStep31NclPath;
+    extern M2C_UNK sJb4ApListNscPath;
     extern M2C_UNK func_020044ec;
     extern M2C_UNK gMapSelectState;
-    typedef struct { u8 bytes[25]; } Buf25;
-    typedef struct { u8 bytes[22]; } Buf22;
-    Buf25 buf25 = *(Buf25 *)&data_ov001_0218f7ab;
-    Buf22 buf22 = *(Buf22 *)&data_ov001_0218f795;
-    Ov001_LoadAsset(&data_ov001_021906e8, &func_020044ec);
+    typedef struct { u8 bytes[25]; } ListBackPath;
+    typedef struct { u8 bytes[22]; } BgStep31Path;
+    ListBackPath listBackPath = *(ListBackPath *)&sXb4ApListBackNscPath;
+    BgStep31Path bgStep31Path = *(BgStep31Path *)&sYbBgStep31NclPath;
+    Ov001_LoadAsset(&sJb4ApListNscPath, &func_020044ec);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4) =
-        Ov001_LoadFile(Ov001_LocalizePath(&buf25), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath(&listBackPath), 0, 4);
     func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4));
     func_ov001_02183720();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8) =
-        Ov001_LoadFile(Ov001_LocalizePath(&buf22), 0, 4);
+        Ov001_LoadFile(Ov001_LocalizePath(&bgStep31Path), 0, 4);
+    /* sub BG0/BG1 and main BG0/BG1: 256-colour tiled layers */
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x04000008, u16 *, 0) = (M2C_FIELD((void *)0x04000008, u16 *, 0) & ~3) | 3;
@@ -191,7 +195,7 @@ MapSelectList_PollInput();MapSelectList_HandleInput();(func_ov001_0217a880)();
 void MapSelectList_PollInput(void) {
 extern M2C_UNK gMapSelectState; extern u8 gTouchScreenRect[],gMapSelectRowRects[];
 s32 TouchRectPressed(void *);s32 TouchRectHeld(void *);s32 KeyPressed(s32);s32 KeyHeld(s32);s32 KeyReleased(s32);
-void func_ov001_021716d8(s32);void func_ov001_0217b130(void);M2C_UNK Ov001_PlaySound(s32);void func_ov001_02183a08(void);void func_ov001_0217b33c(void);void func_ov001_0217b2c8(void);void func_ov001_0217b17c(s32);
+void func_ov001_021716d8(s32);void func_ov001_0217b130(void);M2C_UNK Ov001_PlaySound(s32);void func_ov001_02183a08(void);void func_ov001_0217b33c(void);void func_ov001_0217b2c8(void);void MapSelectList_MoveCursor(s32);
 u8 *heldRect; s32 row; s32 index; u8 *pressedRect;
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)||M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57))return;
 if(TouchRectPressed(gTouchScreenRect)){
@@ -214,9 +218,9 @@ if(KeyHeld(KEY_L)){func_ov001_0217b33c();return;}
 if(KeyReleased(KEY_L)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
 if(KeyHeld(KEY_R)){func_ov001_0217b2c8();return;}
 if(KeyReleased(KEY_R)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
-if(KeyHeld(KEY_UP)){func_ov001_0217b17c(1);return;}
+if(KeyHeld(KEY_UP)){MapSelectList_MoveCursor(1);return;}
 if(KeyReleased(KEY_UP)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
-if(KeyHeld(KEY_DOWN)){func_ov001_0217b17c(3);return;}
+if(KeyHeld(KEY_DOWN)){MapSelectList_MoveCursor(3);return;}
 if(KeyReleased(KEY_DOWN)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0; }
 }
 
@@ -416,7 +420,7 @@ func_ov001_0218b71c(&data_ov001_02193d9c);
 }
 void func_ov001_0217ac18(void) {
     s32 func_02002088(s32, u16);
-          void func_ov001_0217acc0(s32, s32);
+          void MapSelectList_DrawMapName(s32, s32);
     M2C_UNK func_ov001_0217ae38(s32, s32);
     M2C_UNK func_ov001_0217aec4();
     M2C_UNK func_ov001_0218b1ec(M2C_UNK, M2C_UNK);
@@ -437,7 +441,7 @@ void func_ov001_0217ac18(void) {
     var_r6 = 0;
     if (var_r4 > 0) {
         do {
-            func_ov001_0217acc0(var_r5, var_r6);
+            MapSelectList_DrawMapName(var_r5, var_r6);
             var_r6 += 1;
             var_r5 += 1;
         } while (var_r6 < var_r4);
@@ -454,33 +458,36 @@ void func_ov001_0217ac18(void) {
     func_ov001_0217aec4();
 }
 
-void func_ov001_0217acc0(s32 arg0, s32 arg1) {
+/* Draws the name of the map at list position `index` on row `row` of the
+   map-select list: up to 16 characters on the first line and, when the name is
+   longer, the next 16 on a second line 12 pixels below. */
+void MapSelectList_DrawMapName(s32 index, s32 row) {
 extern M2C_UNK gMapSelectState;
 s32 StringLengthUpTo(u8 *,s32);
 M2C_UNK MI_CpuFill8(void *,s32,s32);
-M2C_UNK func_ov001_0218b080(void *,s32,s32,s32,s32,u16 *,s32);
+M2C_UNK DrawTextRun(void *,s32,s32,s32,s32,u16 *,s32);
 u16 buf[17];
-s32 offset=arg0*42;
-s32 len=StringLengthUpTo(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 **,0)+offset,32);
-s32 y=arg1*28;
+s32 offset=index*MAPSELECT_ENTRY_SIZE;
+s32 len=StringLengthUpTo(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 **,MAPSELECT_ENTRIES)+offset,32);
+s32 y=row*28;
 s32 n,i;
 void *ctx;
-if(arg0>=M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 *,0x51))return;
+if(index>=M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 *,MAPSELECT_COUNT))return;
 if(len<=16)y+=6;
 MI_CpuFill8(buf,0,34);
 n=len<=16?len:16;
 i=0;
 if(n>0){ctx=M2C_FIELD(&gMapSelectState, void **, 4);
-do {buf[i]=M2C_FIELD(ctx,u8 **,0)[offset+i];}while(++i<n);
+do {buf[i]=M2C_FIELD(ctx,u8 **,MAPSELECT_ENTRIES)[offset+i];}while(++i<n);
 }
-func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),void **,12),10,y,2,10,buf,1);
+DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),void **,MAPSELECT_TEXT_PANEL),10,y,2,10,buf,1);
 if(len<=16)return;
 MI_CpuFill8(buf,0,34);
 len-=16;
-arg0=0;
+index=0;
 if(len>0){ctx=M2C_FIELD(&gMapSelectState, void **, 4);
-do {buf[arg0]=M2C_FIELD(ctx,u8 **,0)[offset+arg0+16];}while(++arg0<len);
+do {buf[index]=M2C_FIELD(ctx,u8 **,MAPSELECT_ENTRIES)[offset+index+16];}while(++index<len);
 }
-func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),void **,12),10,y+12,2,10,buf,1);
+DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),void **,MAPSELECT_TEXT_PANEL),10,y+12,2,10,buf,1);
 }
 

@@ -88,7 +88,7 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
 }
 #pragma pop
 void G3_SubmitSpriteQuad(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s16 arg4) {
-void func_02082a8c(void *, void *);
+void Build3DSpriteTransform(void *, void *);
 ContextTemplate temp = data_ov011_02227f3c;
 void *saved; void *p; s32 i;
 ((s16 *)&temp)[4]=arg3; ((s16 *)&temp)[5]=(s16)arg4;
@@ -97,7 +97,7 @@ do {
 if(i==0)p=g3DSpriteEngineMain; else p=g3DSpriteEngineSub;
 gCur3DSpriteEngine=p;
 if((arg1!=0 || p==g3DSpriteEngineMain) && (arg1!=1 || p==g3DSpriteEngineSub) && (arg1!=3 || p==saved)) {
-switch(arg2) {case 2: func_02082a8c(&temp,(u8 *)*(void **)p+0x14); break; case 3: func_02082a8c(&temp,(u8 *)*(void **)p+0x24); break;}
+switch(arg2) {case 2: Build3DSpriteTransform(&temp,(u8 *)*(void **)p+0x14); break; case 3: Build3DSpriteTransform(&temp,(u8 *)*(void **)p+0x24); break;}
 }
 i++;
 }while(i<2);

@@ -165,10 +165,10 @@ void func_ov001_02187cc4(void *arg0) {
 
 s32 func_ov001_02187cfc(void) {
 extern M2C_UNK data_ov001_02193e20;
-extern M2C_UNK func_ov001_02187d60;
+extern M2C_UNK HandleChildIndicate;
 s32 func_02012474(void *);
 if((u32)(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,0x40)-4)<=2) return 1;
-if(func_02012474(&func_ov001_02187d60)!=2) {func_ov001_02187b90();return 0;}
+if(func_02012474(&HandleChildIndicate)!=2) {func_ov001_02187b90();return 0;}
 M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),u16 *,0x50)=0;
 M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),u16 *,0x52)=1;
 return 1;
@@ -176,46 +176,50 @@ return 1;
 
 #pragma push
 #pragma opt_propagation off
-void func_ov001_02187d60(void *arg0) {
+/* Callback for the DWC child-connection indications: marks or clears the child's
+   bit in the connection bitmap as it connects (kind 7) or disconnects (kind 9),
+   handling the transport's request callback on connect and advancing the state on
+   the other indication kinds. */
+void HandleChildIndicate(void *event) {
 extern M2C_UNK data_ov001_02193e20;
 extern M2C_UNK data_ov001_0219159c,data_ov001_021915c8,data_ov001_021915f4;
 s32 func_ov001_02187b90();
 s32 func_0201280c(void (*)(void *),s32);
-register s32 index;
-u16 mask;
-register void (*log)();
-register s32 kind;
-s32 result;
-index=M2C_FIELD(arg0,u16 *,0x10);
-mask=(u16)(1U<<index);
-result=M2C_FIELD(arg0,u16 *,2);
-if(result){
-((s32 (*)(s32))func_ov001_02187b90)(result);func_ov001_02187b14(9);return;
+register s32 childId;
+u16 childMask;
+register void (*logCallback)();
+register s32 indicateKind;
+s32 error;
+childId=M2C_FIELD(event,u16 *,0x10);
+childMask=(u16)(1U<<childId);
+error=M2C_FIELD(event,u16 *,2);
+if(error){
+((s32 (*)(s32))func_ov001_02187b90)(error);func_ov001_02187b14(9);return;
 }
-kind=M2C_FIELD(arg0,u16 *,8);
-switch(kind){
+indicateKind=M2C_FIELD(event,u16 *,8);
+switch(indicateKind){
 case 7:
-log=M2C_FIELD(&data_ov001_02193e20,void (**)(),0);
-if(log)log(0x8000000,&data_ov001_0219159c,index);
-if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 (**)(void *),0x4c)&& !M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 (**)(void *),0x4c)(arg0)){
-result=func_0201280c(0,M2C_FIELD(arg0,u16 *,0x10));
-if(result==2)return;
+logCallback=M2C_FIELD(&data_ov001_02193e20,void (**)(),0);
+if(logCallback)logCallback(0x8000000,&data_ov001_0219159c,childId);
+if(M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 (**)(void *),0x4c)&& !M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 (**)(void *),0x4c)(event)){
+error=func_0201280c(0,M2C_FIELD(event,u16 *,0x10));
+if(error==2)return;
 func_ov001_02187b90();func_ov001_02187b14(9);return;
 }
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),u16 *,0x52)|=mask;
+M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),u16 *,0x52)|=childMask;
 break;
 case 9:
-log=M2C_FIELD(&data_ov001_02193e20,void (**)(),0);
-if(log)log(0x8000000,&data_ov001_021915c8,index);
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),u16 *,0x52)&=~mask;
+logCallback=M2C_FIELD(&data_ov001_02193e20,void (**)(),0);
+if(logCallback)logCallback(0x8000000,&data_ov001_021915c8,childId);
+M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),u16 *,0x52)&=~childMask;
 break;
 case 0:
 if(func_ov001_02187ed0()==0)func_ov001_02187b14(9);
 break;
 case 2:break;
 default:
-log=M2C_FIELD(&data_ov001_02193e20,void (**)(),0);
-if(log)((void (*)(s32,void *,s32))log)(0x8000000,&data_ov001_021915f4,kind);
+logCallback=M2C_FIELD(&data_ov001_02193e20,void (**)(),0);
+if(logCallback)((void (*)(s32,void *,s32))logCallback)(0x8000000,&data_ov001_021915f4,indicateKind);
 break;
 }
 }

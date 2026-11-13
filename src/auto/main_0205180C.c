@@ -22,7 +22,7 @@ M2C_UNK Md5Hex(char *,s32,char *);
 s32 ByteCompareN(void *,void *,s32);
 s32 *func_02055aa0(void **,s32);
 void *gpiMalloc(s32);
-void func_02065210(void *,s32,s32);
+void MemSet(void *,s32,s32);
 void StringCopyN(void *,void *,s32);
 s32 gpiAddCallback(void **,Callback518,void *,void *,s32);
 M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
@@ -88,7 +88,7 @@ callback=*(Callback518 *)((char *)b+12);
 if(callback.function){
 q=gpiMalloc(32);
 if(!q){gpiSetErrorString((M2C_UNK)a,&data_020fe424);return 1;}
-func_02065210(q,0,32);
+MemSet(q,0,32);
 M2C_FIELD(q,s32 *,4)=M2C_FIELD(p,s32 *,0x1a0);M2C_FIELD(q,s32 *,0)=0;
 StringCopyN((char *)q+8,work.token,21);
 result=gpiAddCallback(a,callback,q,b,0);

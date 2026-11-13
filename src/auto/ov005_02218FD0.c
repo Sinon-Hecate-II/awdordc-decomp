@@ -4,7 +4,7 @@
 void func_ov005_02218fd0(void *arg0) {
     M2C_UNK AddToU16Array(s32, M2C_UNK, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
-    M2C_UNK func_02002968(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02002bb8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
@@ -133,7 +133,7 @@ void func_ov005_02218fd0(void *arg0) {
 
     func_02082c84();
     GX_SetBankForBG(1);
-    func_02002968(2);
+    GX_SetBankForOBJ(2);
     func_02003124(4);
     func_020031cc(8);
     func_02002ab8(0x40);
@@ -455,7 +455,7 @@ func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;func_01ffa6fc
 
 void func_ov005_02219d98(void *arg0) {
 M2C_UNK AddSprite(u16,u16,u16,void *,s32);
-extern s32 gCur3DSpriteEngine; extern s32 data_027e00b4;
+extern s32 gCur3DSpriteEngine; extern s32 gSpriteDesc64x32;
 s32 val; s32 y; s32 i; s32 x; u16 t; u32 bits; s32 mask=511,mask2=1023,base=440;
 if(!M2C_FIELD(arg0,u8 *,0x44))return;
 val=M2C_FIELD(arg0,s32 *,0x40);
@@ -464,7 +464,7 @@ for(i=0;i<4;i++){
 x=i*64;
 t=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0);
 bits=((u32)t<<17)>>30;
-AddSprite((u16)(x&mask),y,(u16)((mask2&(base>>bits))|0xec00),&data_027e00b4,0);
+AddSprite((u16)(x&mask),y,(u16)((mask2&(base>>bits))|0xec00),&gSpriteDesc64x32,0);
 }
 }
 

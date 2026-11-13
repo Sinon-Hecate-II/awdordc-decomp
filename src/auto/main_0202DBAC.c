@@ -1,5 +1,6 @@
 /* 14 functions from 0x0202DBAC to 0x0202E470 (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 void func_0202de74(void *);
 void Sound_ReleaseChannel(void *);
 void func_0202e12c(M2C_UNK);
@@ -330,50 +331,53 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
     OS_WakeupThread((void *)((u8 *)base + 0x4c0));
 }
 
-void func_0202e32c(void *arg0) {
-    void *self = arg0;
+/* Asks the player's segment callback for the next streamed segment, looks the
+ * returned sound id up in the archive, restarts the voices with it and
+ * recomputes the samples left.  Gives up if the callback or the sound is
+ * missing, or if the restart changed the sound kind or the sample rate. */
+void Sound_RequestNextSegment(void *player) {
     s32 *func_0202c1cc(s32);
     M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
     u64 func_02072088(u64, u64);
-    s32 *temp;
-    u8 temp_r6;
-    u16 temp_r7;
-    s32 sp[4];
+    s32 *sample;
+    u8 oldType;
+    u16 oldRate;
+    s32 segment[4];
 
-    sp[2] = M2C_FIELD(self, s32 *, 0x148);
-    sp[3] = M2C_FIELD(self, s32 *, 0x144);
-    sp[0] = M2C_FIELD(self, s32 *, 0x144);
-    sp[1] = 0;
-    if (M2C_FIELD(self, s32 (**)(M2C_UNK, s32 *, s32 *, s32), 0x13C)(0, &sp[2], &sp[0], M2C_FIELD(self, s32 *, 0x140)) == 0) {
+    segment[2] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SEGMENT_END);
+    segment[3] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SOUND_ID);
+    segment[0] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SOUND_ID);
+    segment[1] = 0;
+    if (M2C_FIELD(player, s32 (**)(M2C_UNK, s32 *, s32 *, s32), SOUND_HANDLE_SEGMENT_CB)(0, &segment[2], &segment[0], M2C_FIELD(player, s32 *, SOUND_HANDLE_SEGMENT_ARG)) == 0) {
         return;
     }
-    temp = func_0202c1cc(sp[0]);
-    if (temp == 0) {
+    sample = func_0202c1cc(segment[0]);
+    if (sample == 0) {
         return;
     }
-    temp_r6 = M2C_FIELD(self, u8 *, 0xC0);
-    temp_r7 = M2C_FIELD(self, u16 *, 0xC4);
-    M2C_FIELD(self, M2C_UNK (**)(void *), 0x168)(self);
-    Sound_SetPlayerCallbacks(self, *temp);
-    if (M2C_FIELD(self, s32 (**)(void *, s32), 0x164)(self, *temp) == 0) {
+    oldType = M2C_FIELD(player, u8 *, SOUND_HANDLE_TYPE);
+    oldRate = M2C_FIELD(player, u16 *, SOUND_HANDLE_RATE);
+    M2C_FIELD(player, M2C_UNK (**)(void *), SOUND_HANDLE_RELEASE_CB)(player);
+    Sound_SetPlayerCallbacks(player, *sample);
+    if (M2C_FIELD(player, s32 (**)(void *, s32), SOUND_HANDLE_START_CB)(player, *sample) == 0) {
         return;
     }
-    if (temp_r7 != M2C_FIELD(self, u16 *, 0xC4)) {
+    if (oldRate != M2C_FIELD(player, u16 *, SOUND_HANDLE_RATE)) {
         return;
     }
-    if (temp_r6 == 0 && M2C_FIELD(self, u8 *, 0xC0) != 0) {
+    if (oldType == 0 && M2C_FIELD(player, u8 *, SOUND_HANDLE_TYPE) != 0) {
         return;
     }
-    if (temp_r6 != 0 && M2C_FIELD(self, u8 *, 0xC0) == 0) {
+    if (oldType != 0 && M2C_FIELD(player, u8 *, SOUND_HANDLE_TYPE) == 0) {
         return;
     }
-    M2C_FIELD(self, s32 *, 0x144) = sp[0];
-    M2C_FIELD(self, s32 *, 0x160) = (s32)func_02072088((u64)(u32)M2C_FIELD(self, u16 *, 0xC4) * (u32)sp[1], 0x3E8ULL);
-    if (M2C_FIELD(self, s32 *, 0x160) != 0 && M2C_FIELD(self, u8 *, 0xC0) == 2) {
-        M2C_FIELD(self, s32 *, 0x110) = (M2C_FIELD(self, s32 *, 0x110) | 0x10);
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_SOUND_ID) = segment[0];
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLES_LEFT) = (s32)func_02072088((u64)(u32)M2C_FIELD(player, u16 *, SOUND_HANDLE_RATE) * (u32)segment[1], 0x3E8ULL);
+    if (M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLES_LEFT) != 0 && M2C_FIELD(player, u8 *, SOUND_HANDLE_TYPE) == 2) {
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) = (M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) | 0x10);
     } else {
-        M2C_FIELD(self, s32 *, 0x110) = (M2C_FIELD(self, s32 *, 0x110) & ~0x10);
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) = (M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) & ~0x10);
     }
-    M2C_FIELD(self, s32 *, 0x110) = (M2C_FIELD(self, s32 *, 0x110) & ~0x20);
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) = (M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) & ~0x20);
 }
 

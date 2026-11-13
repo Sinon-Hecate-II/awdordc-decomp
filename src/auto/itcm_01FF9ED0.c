@@ -1,5 +1,6 @@
 /* 47 functions from 0x01FF9ED0 to 0x01FFADA0 (itcm), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 #pragma opt_common_subs off
 void Update3DSpriteVram(void) {
@@ -72,7 +73,7 @@ u8 func_01ffa14c(u32 arg0) {
     return var_r0;
 }
 
-void func_01ffa160(void *arg0) {
+void Update3DSpriteState(void *arg0) {
     extern s32 data_01ffa068[];
     s16 *temp_r2;
 
@@ -204,7 +205,7 @@ s32 func_01ffa334(s32 a,s32 b,s32 c) {
  M2C_FIELD(p,u8 *,0x30)=0x18;
  if((u32)b<12)func_01ffa284(p,b);else func_01ffa2ac(p,(void *)b);
  old=gCur3DSpriteEngine;gCur3DSpriteEngine=c;
- func_01ffa160(p);
+ Update3DSpriteState(p);
  gCur3DSpriteEngine=old;
  M2C_FIELD(p,u8 *,0x30)&=~8;
  return (s32)p;
@@ -280,39 +281,47 @@ void func_01ffa4e8(void *p) {
 #pragma optimization_level 2
 void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; func_01ffa2cc(arg0);func_01ffa468(arg0);func_01ffa4e8(arg0);func_01ffa4a0(arg0); } while(0); }
 #pragma pop
-void func_01ffa5b8(void *p){
-extern u8 data_027e15b8,data_027e15b4;
-extern s32 gCur3DSpriteEngine;
-s32 old;
-void *next;
-if(!p)return;
-M2C_FIELD(p,u8*,0x30)|=0x20;
-next=M2C_FIELD(p,void**,0x24);
-if(next)func_01ffa5b8(next);
-M2C_FIELD(p,u8*,0x30)&=~0x20;
-if(M2C_FIELD(p,u8*,0x31)==0 && !(M2C_FIELD(p,u8*,0x30)&8)){
-if(M2C_FIELD(p,u8*,0x30)&16){
-if(data_027e15b8 && data_027e15b4)goto skip;
-M2C_FIELD(p,u8*,0x30)&=~16;
-}
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
-do{
-M2C_FIELD(p,u8*,0x30)&=~64;
-if(!M2C_FIELD(p,s32*,0x10))func_01ffa160(p);
-if(M2C_FIELD(p,s32*,0x10))((void(*)(void*))M2C_FIELD(p,s32*,0x10))(p);
-}while(M2C_FIELD(p,u8*,0x30)&64);
-M2C_FIELD(p,u8*,0x30)&=~64;
-gCur3DSpriteEngine=old;
-if(M2C_FIELD(p,u8*,0x30)&1)return;
-}
+/* One frame of a 3D sprite object tree: walk the sibling chain, then, unless the
+ * object has children, run its state update (or the UPDATE_CB override), point
+ * gCur3DSpriteEngine at its engine while doing so, run its draw callback and
+ * finally recurse into its children. */
+void Update3DSpriteObject(void *obj) {
+    extern u8 data_027e15b8, data_027e15b4;
+    extern s32 gCur3DSpriteEngine;
+    s32 savedEngine;
+    void *node;
+
+    if (!obj) return;
+    M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) |= DS3D_SPRITE_FLAG_VISITING;
+    node = M2C_FIELD(obj, void **, DS3D_SPRITE_NEXT);
+    if (node) Update3DSpriteObject(node);
+    M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) &= ~DS3D_SPRITE_FLAG_VISITING;
+    if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_CHILD_COUNT) == 0 && !(M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_INIT)) {
+        if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_NEW) {
+            if (data_027e15b8 && data_027e15b4) goto skip;
+            M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) &= ~DS3D_SPRITE_FLAG_NEW;
+        }
+        savedEngine = gCur3DSpriteEngine;
+        gCur3DSpriteEngine = M2C_FIELD(obj, s32 *, DS3D_SPRITE_ENGINE);
+        do {
+            M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) &= ~DS3D_SPRITE_FLAG_REPEAT;
+            if (!M2C_FIELD(obj, s32 *, DS3D_SPRITE_UPDATE_CB)) Update3DSpriteState(obj);
+            if (M2C_FIELD(obj, s32 *, DS3D_SPRITE_UPDATE_CB)) ((void (*)(void *))M2C_FIELD(obj, s32 *, DS3D_SPRITE_UPDATE_CB))(obj);
+        } while (M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_REPEAT);
+        M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) &= ~DS3D_SPRITE_FLAG_REPEAT;
+        gCur3DSpriteEngine = savedEngine;
+        if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_DEAD) return;
+    }
 skip:
-if(M2C_FIELD(p,s32*,0x14)){
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
-((void(*)(void*))M2C_FIELD(p,s32*,0x14))(p);
-gCur3DSpriteEngine=old;
-if(M2C_FIELD(p,u8*,0x30)&1)return;
-}
-next=M2C_FIELD(p,void**,0x1c);if(next)func_01ffa5b8(next);
+    if (M2C_FIELD(obj, s32 *, DS3D_SPRITE_DRAW_CB)) {
+        savedEngine = gCur3DSpriteEngine;
+        gCur3DSpriteEngine = M2C_FIELD(obj, s32 *, DS3D_SPRITE_ENGINE);
+        ((void (*)(void *))M2C_FIELD(obj, s32 *, DS3D_SPRITE_DRAW_CB))(obj);
+        gCur3DSpriteEngine = savedEngine;
+        if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_DEAD) return;
+    }
+    node = M2C_FIELD(obj, void **, DS3D_SPRITE_CHILD);
+    if (node) Update3DSpriteObject(node);
 }
 #pragma scheduling reset
 void func_01ffa6fc(void *arg0) {

@@ -132,7 +132,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
     s32 gpiAddOperation(void **, M2C_UNK, void *, void **, s32, s32, s32);
     M2C_UNK StringCopyN(void *, s8 *, M2C_UNK);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
-    M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK MemSet(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_020fe3fc;
     extern M2C_UNK data_020fe410;
     extern M2C_UNK data_020fe424;
@@ -171,7 +171,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
         gpiSetErrorString(conn, &data_020fe424);
         return 1;
     }
-    func_02065210(peer, 0, 0x308);
+    MemSet(peer, 0, 0x308);
     M2C_FIELD(peer, s32 *, 0x304) = newUser;
     if ((*peerNick != 0) && (*peerUniqNick != 0)) {
         StringCopyN(peer + 0xC2, peerNick, 0x100);

@@ -153,11 +153,11 @@ s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
 
 s32 func_020d2850(s32 arg0,s32 arg1,s32 arg2) {
 extern s32 *gCurrentMap;
-extern u8 data_ov000_021b5c5c[];
+extern u8 gUnitKindCargoCount[];
 void *base=*gCurrentMap;
 if(M2C_FIELD(base,u8 *,0x5156)!=0 || M2C_FIELD(base,u8 *,0x5158)==2) {
 if(!(M2C_FIELD((u8 *)base+arg2*0x8c,u8 *,0x67c3)&2)) {
-if(data_ov000_021b5c5c[arg0*0x70]!=0) return 1;
+if(gUnitKindCargoCount[arg0*0x70]!=0) return 1;
 }
 }
 return 0;
@@ -591,13 +591,13 @@ void func_020d33ec(void) {
 
 void func_020d3400(void){
 extern M2C_UNK gMapData; extern s32 *gCurrentMap;
-s32 IsTouchInputDisabled(void); s32 IsBattleEffectActive(void); void func_0209cbe4(void *);
+s32 IsTouchInputDisabled(void); s32 IsBattleEffectActive(void); void IncrementCounter(void *);
 u8 *p; s32 q;
 if(M2C_FIELD(&gMapData,s32 *,8)==0)return;
 if(IsTouchInputDisabled()!=0)return;
 if(IsBattleEffectActive()!=0)return;
 p=(u8 *)*gCurrentMap;
 q=(s32)p+0x67a4+M2C_FIELD(p,u16 *,0x52a4)*0x8c;
-func_0209cbe4((u8 *)q+0x84);
+IncrementCounter((u8 *)q+0x84);
 }
 

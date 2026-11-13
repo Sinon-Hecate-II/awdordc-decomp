@@ -194,7 +194,7 @@ response[1]++;
 response[3]=(s32)gpiRealloc((void*)response[3],response[1]*172);
 if(!response[3]){gpiSetErrorString(a,gGpiSearchMsgOutOfMemory);return 1;}
 entry=(void*)(response[3]+(response[1]-1)*172);
-func_02065210(entry,0,172);M2C_FIELD(entry,s32*,0)=ParseInt(value);
+MemSet(entry,0,172);M2C_FIELD(entry,s32*,0)=ParseInt(value);
 inner=0;token=previous;
 do{
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
@@ -262,7 +262,7 @@ if(!StringCompare(name,data_020ff188))done=1;
 else if(!StringCompare(name,data_020ff190)){
 count=M2C_FIELD(entry,s32*,8)+1;M2C_FIELD(entry,s32*,8)=count;
 array=gpiRealloc(M2C_FIELD(entry,void**,12),count*296);if(!array){gpiSetErrorString(a,gGpiSearchMsgOutOfMemory);return 1;}
-M2C_FIELD(entry,void**,12)=array;item=array+(count-1)*296;func_02065210(item,0,296);M2C_FIELD(item,s32*,36)=1;M2C_FIELD(item,s32*,0)=ParseInt(value);
+M2C_FIELD(entry,void**,12)=array;item=array+(count-1)*296;MemSet(item,0,296);M2C_FIELD(item,s32*,36)=1;M2C_FIELD(item,s32*,0)=ParseInt(value);
 inner=0;token=previous;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
 if(!StringCompare(name,data_020ff194))StringCopyN(item+40,value,256);
@@ -322,7 +322,7 @@ if(!StringCompare(name,data_020ff1c0))done=1;
 else if(!StringCompare(name,data_020ff1c8)){
 count=M2C_FIELD(entry,s32*,4);
 array=gpiRealloc(M2C_FIELD(entry,void**,8),(count+1)*172);if(!array){gpiSetErrorString(a,gGpiSearchMsgOutOfMemory);return 1;}
-M2C_FIELD(entry,void**,8)=array;item=array+count*172;func_02065210(item,0,172);M2C_FIELD(entry,s32*,4)=count+1;M2C_FIELD(item,s32*,0)=ParseInt(value);
+M2C_FIELD(entry,void**,8)=array;item=array+count*172;MemSet(item,0,172);M2C_FIELD(entry,s32*,4)=count+1;M2C_FIELD(item,s32*,0)=ParseInt(value);
 inner=0;token=previous;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
 if(!StringCompare(name,data_020ff11c))StringCopyN(item+4,value,31);

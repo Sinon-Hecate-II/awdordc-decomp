@@ -147,7 +147,7 @@ void func_0205586c(void *arg0) {
     M2C_FIELD(arg0, void **, 0x18) = NULL;
 }
 
-s32 func_020558e8(void **arg0) {
+s32 gpiCreateTimers(void **arg0) {
 s32 func_02048c5c();
 Unk020553C4 *p=*arg0;
 p->unk430=0;p->unk42c=0;
@@ -155,19 +155,22 @@ p->handle=func_02048c5c(28,4,func_02055848,func_0205585c,func_0205586c);
 return p->handle!=0;
 }
 
-s32 func_02055940(void **a,void *b,s32 c) {
+/* Handles a GameSpy GPI '\npr\' (new player) packet: after the shared header
+   check it reads the \profileid\ field and, if the player callback is set, queues
+   it with the profile id; the packet is otherwise ignored. */
+s32 gpiProcessNewPlayer(void **connection,void *request,s32 command) {
 s32 func_0205817c(void **,s32,s32);void gpiSetError(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
 s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
 s32 GetStringField(s32,void *,void *,s32);s32 ParseInt(void *);
-extern M2C_UNK data_020feda0,data_020feda8,data_020fedd8,data_020fede4;
-char buffer[16];Unk02050838Pair pair;s32 *p;s32 r;s32 value;
-if(func_0205817c(a,c,1))return 4;
-if(StringCompareN(c,&data_020feda0,5)){gpiSetError(a,1,(s32)&data_020feda8);gpiCallErrorCallback(a,3,1);return 3;}
-if(!GetStringField(c,&data_020fedd8,buffer,16)){gpiSetError(a,1,(s32)&data_020feda8);gpiCallErrorCallback(a,3,1);return 3;}
-value=ParseInt(buffer);
-pair=*(Unk02050838Pair *)((u8 *)b+12);
-if(pair.unk_0){p=gpiMalloc(8);if(!p){gpiSetErrorString((s32)a,(s32 *)&data_020fede4);return 1;}p[1]=value;p[0]=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
-func_02054484(a,b);return 0;
+extern M2C_UNK gGpiNewPlayerTag,gGpiMsgUnexpectedData,gGpiProfileIdKey,gGpiNewPlayerMsgOutOfMemory;
+char idText[16];Unk02050838Pair callback;s32 *data;s32 result;s32 profileId;
+if(func_0205817c(connection,command,1))return 4;
+if(StringCompareN(command,&gGpiNewPlayerTag,5)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
+if(!GetStringField(command,&gGpiProfileIdKey,idText,16)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
+profileId=ParseInt(idText);
+callback=*(Unk02050838Pair *)((u8 *)request+12);
+if(callback.unk_0){data=gpiMalloc(8);if(!data){gpiSetErrorString((s32)connection,(s32 *)&gGpiNewPlayerMsgOutOfMemory);return 1;}data[1]=profileId;data[0]=0;result=gpiAddCallback(connection,callback,data,request,0);if(result)return result;}
+func_02054484(connection,request);return 0;
 }
 
 s32 func_02055aa0(void **arg0, s32 arg1) {
@@ -325,11 +328,11 @@ s32 gpiStartProfileSearch(void **connection, void *search) {
 }
 
 s32 gpiCreateSearchData(M2C_UNK arg0, void **arg1, s32 arg2) {
-void *gpiMalloc(M2C_UNK); M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *); M2C_UNK func_02065210(void *,M2C_UNK,M2C_UNK); extern M2C_UNK gGpiSearchMsgOutOfMemory;
+void *gpiMalloc(M2C_UNK); M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *); M2C_UNK MemSet(void *,M2C_UNK,M2C_UNK); extern M2C_UNK gGpiSearchMsgOutOfMemory;
 void *p,*buf; s32 n;
 p=gpiMalloc(0x144);
 if(!p){gpiSetErrorString(arg0,&gGpiSearchMsgOutOfMemory);return 1;}
-func_02065210(p,0,0x144);
+MemSet(p,0,0x144);
 M2C_FIELD(p,s32 *,0)=arg2;
 M2C_FIELD(p,s32 *,4)=-1;
 M2C_FIELD(p,s32 *,8)=0;

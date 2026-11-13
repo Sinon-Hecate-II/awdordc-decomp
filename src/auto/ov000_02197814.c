@@ -32,7 +32,7 @@ void func_ov000_0219798c(void) {
 
 void func_ov000_02197990(void) {
     M2C_UNK SelectMapLayer(void *);
-    M2C_UNK func_020a5364(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawOrderTargetArea(void *, M2C_UNK, M2C_UNK);
     s32 IsSameTeam(u16, u32);
     s32 func_ov000_021973f8(u32);
     extern void **data_027e0058;
@@ -48,7 +48,7 @@ void func_ov000_02197990(void) {
     if (((u32) (M2C_FIELD(var_r6, u16 *, 2) << 0x16) >> 0x1C) != 0) {
         do {
             if ((M2C_FIELD(var_r6, s8 *, 6) == 1) && ((temp_r0 = M2C_FIELD(var_r6, u8 *, 5), (((u32) (temp_r0 << 0x1C) >> 0x1F) != 0)) || (temp_r1 = (u32) (temp_r0 << 0x1D) >> 0x1D, (temp_r1 == 0)) || (IsSameTeam(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), temp_r1) == 0))) {
-                func_020a5364(var_r6, -1, 0);
+                DrawOrderTargetArea(var_r6, -1, 0);
             }
             var_r6 += 8;
         } while (((u32) (M2C_FIELD(var_r6, u16 *, 2) << 0x16) >> 0x1C) != 0);

@@ -32,7 +32,7 @@ if(resource){size=LoadDecompressedFileTo(M2C_FIELD(resource,void **,0),0x6800000
 M2C_FIELD(country,u16 *,34)=tiles;resource=M2C_FIELD(M2C_FIELD(settings,void **,4),void **,36);if(resource){size=LoadDecompressedFileTo(M2C_FIELD(resource,void **,0),0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));}
 M2C_FIELD(country,u16 *,36)=tiles;resource=M2C_FIELD(M2C_FIELD(settings,void **,8),void **,16);if(resource){size=LoadDecompressedFileTo(resource,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));}
 M2C_FIELD(country,u16 *,38)=tiles;
-if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=func_ov002_021e4034(state);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=func_0209871c(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dc4);}
+if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=ComparePlayerGauges(state);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=func_0209871c(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dc4);}
 M2C_FIELD(country,u16 *,40)=tiles;
 if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=func_ov002_021e41ac(state,0);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=func_0209871c(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dcc);}
 func_02004cf0();func_02004d3c();

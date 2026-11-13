@@ -285,7 +285,7 @@ s32 func_02012484(M2C_UNK arg0) {
 s32 func_020124c4(s32 a,void *b){s32 func_020114b4();s32 func_020113d0(void *,s32);u32 packet[4];s32 r;u16 n;r=func_020114b4(3,2,3,5);if(r)return r;if(!b)return 6;if(!M2C_FIELD(b,u32 *,0))return 6;n=M2C_FIELD(b,u16 *,4);if(n<1U||n>14U)return 6;func_020112b4(10,a);M2C_FIELD(packet,u16 *,0)=10;M2C_FIELD(packet,u16 *,2)=M2C_FIELD(b,u16 *,4);M2C_FIELD(packet,u32 *,4)=M2C_FIELD(b,u32 *,0);M2C_FIELD(packet,u16 *,8)=M2C_FIELD(b,u16 *,6);M2C_FIELD(packet,u8 *,10)=M2C_FIELD(b,u8 *,8);M2C_FIELD(packet,u8 *,11)=M2C_FIELD(b,u8 *,9);M2C_FIELD(packet,u8 *,12)=M2C_FIELD(b,u8 *,10);M2C_FIELD(packet,u8 *,13)=M2C_FIELD(b,u8 *,11);M2C_FIELD(packet,u8 *,14)=M2C_FIELD(b,u8 *,12);M2C_FIELD(packet,u8 *,15)=M2C_FIELD(b,u8 *,13);r=func_020113d0(packet,16);if(!r)r=2;return r;}
 
 /* Wraps params into a packet and dispatches it to the host. */
-s32 func_020125b0(s32 sendCode, void *params) {
+s32 WFC_SendRequestPacket(s32 sendCode, void *params) {
 s32 func_020114b4();
 s32 func_020113d0(void *, s32);
 void MI_CpuCopy8(void *, void *, s32);
@@ -353,7 +353,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     s32 func_020114b4();
     void *func_02011440();
     void DC_InvalidateRange(void *, s32);
-    void func_02007e54(s32, void *, s32);
+    void CpuFill(s32, void *, s32);
     void func_02007e70(void *, void *, s32);
     s32 func_020113d0(void *, s32);
     s32 func_02011b44();
@@ -376,23 +376,23 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
         if ((s32)tag < func_02011b44()) return 6;
     }
     func_020112b4(14, index);
-    func_02007e54(0, packet, 64);
+    CpuFill(0, packet, 64);
     M2C_FIELD(packet, u16 *, 0) = 14;
     packet[1] = peer;
     packet[2] = (u32)payloadSize >> 1;
     packet[3] = param;
     packet[4] = tag;
-    func_02007e54(0, &packet[5], 28);
+    CpuFill(0, &packet[5], 28);
     func_02007e70(data, &packet[12], 16);
     rc = func_020113d0(packet, 64);
     if (!rc) rc = 2;
     return rc;
 }
 
-void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void func_02007e54();PacketParams_02012a64 x;func_02007e54(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} func_020128f4(a,b,c,d,e,&x);}
+void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void CpuFill();PacketParams_02012a64 x;CpuFill(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} func_020128f4(a,b,c,d,e,&x);}
 
 void func_02012b08(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f){
-void func_02007e54();s32 func_020128f4(s32,s32,s32,s32,u16,void *);u32 x[4];
-func_02007e54(0,x,16);x[0]=3;M2C_FIELD(x,u16 *,4)=f;M2C_FIELD(x,u16 *,6)=f;func_020128f4(a,b,c,d,e,x);
+void CpuFill();s32 func_020128f4(s32,s32,s32,s32,u16,void *);u32 x[4];
+CpuFill(0,x,16);x[0]=3;M2C_FIELD(x,u16 *,4)=f;M2C_FIELD(x,u16 *,6)=f;func_020128f4(a,b,c,d,e,x);
 }
 typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } Packet_02012a64;

@@ -406,7 +406,7 @@ void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_02088da8(s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020d47f0();
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f1be8();
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fd0(void *);
@@ -441,7 +441,7 @@ void func_ov003_02202cc4(void *arg0) {
         gMapConfig |= 0x2000;
     }
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
-    func_ov003_021f140c(2);
+    SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
     if (func_ov003_02200c7c() == 0) {

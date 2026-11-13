@@ -9,7 +9,7 @@ extern u16 gMapConfig[];
  * window and telop graphics, measure the message at telop+0x36, centre it and
  * queue the text for drawing, then hand the engine back to the caller. */
 void InitTelopWindow(void *telop) {
-    M2C_UNK func_0209c268(M2C_UNK);
+    M2C_UNK MeasureStringWidth(M2C_UNK);
     void func_02091d4c(M2C_UNK);
     void func_02096d0c(void);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -49,7 +49,7 @@ void InitTelopWindow(void *telop) {
     *statReg3 = *statReg3 | 0x80;
     statReg4 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *statReg4 = *statReg4 | 0x100;
-    M2C_FIELD(telop, u8 *, 0x35) = func_0209c268(telop + 0x36);
+    M2C_FIELD(telop, u8 *, 0x35) = MeasureStringWidth(telop + 0x36);
     func_02091d4c(0);
     centerDelta = 0 - (0x100 - M2C_FIELD(telop, u8 *, 0x35));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) =

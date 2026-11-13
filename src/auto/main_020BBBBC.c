@@ -4,7 +4,7 @@
 static inline s16 BC454Direction(s16 *p,s32 dir) { return p[dir*2]; }
 
 void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     void *func_01ffa444(M2C_UNK *, M2C_UNK);
     s32 IsPlayerHuman(u16);
     extern s32 *gCurrentMap;
@@ -12,7 +12,7 @@ void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
     void *temp_r0;
 
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
-        func_02091c20(0xD, 1);
+        AddRecordValue(0xD, 1);
     }
     temp_r0 = func_01ffa444(&data_0212b00c, arg4);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg0;
@@ -23,14 +23,14 @@ void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 void func_020bbc2c(M2C_UNK arg0) {
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK func_020a348c(M2C_UNK);
     M2C_UNK RefreshMapView();
     s32 IsPlayerHuman(u16);
     extern s32 *gCurrentMap;
 
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
-        func_02091c20(6, 1);
+        AddRecordValue(6, 1);
     }
     func_020a348c(arg0);
     RefreshMapView();
@@ -41,7 +41,7 @@ void func_020bbc74(void *arg0) {
     M2C_UNK func_020a8050(M2C_UNK *, s16 *, s16 *, M2C_UNK *);
     M2C_UNK func_020a83e4(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov000_0216939c(M2C_UNK *);
-    M2C_UNK func_ov000_02169518(M2C_UNK *);
+    M2C_UNK BeginUnitMove(M2C_UNK *);
     s16 arr1[2];
     s16 arr0[2];
     M2C_UNK buf[5];
@@ -50,7 +50,7 @@ void func_020bbc74(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, M2C_UNK **, 0x54);
     BuildMovePath(temp_r4, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), buf);
     func_ov000_0216939c(temp_r4);
-    func_ov000_02169518(buf);
+    BeginUnitMove(buf);
     arr1[0] = M2C_FIELD(temp_r4, u8 *, 1);
     arr1[1] = M2C_FIELD(temp_r4, u8 *, 2);
     func_020a83e4(temp_r4, buf);
@@ -93,18 +93,18 @@ void func_020bbd98(void) {
  v=M2C_FIELD(p,u16 *,6);
  n=(u16)(((u32)(v<<21)>>28)+65535);
  M2C_FIELD(p,u16 *,6)=(v&~0x780)|((n&15)<<7);
- if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(36,1);
+ if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))AddRecordValue(36,1);
 }
 
 void func_020bbe10(void){
-void func_020c98d8(u8,u8,s32); void SetPlayerSelectedUnit(u16,void *); s32 func_020d2d50(u16,u32); void func_020d2b10(u16,s32); M2C_UNK func_02091c20(M2C_UNK,M2C_UNK);
+void func_020c98d8(u8,u8,s32); void SetPlayerSelectedUnit(u16,void *); s32 func_020d2d50(u16,u32); void func_020d2b10(u16,s32); M2C_UNK AddRecordValue(M2C_UNK,M2C_UNK);
 extern s32 *gCurrentMap;
 void *p;
 p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
 func_020c98d8(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),3);
 SetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),M2C_FIELD(*gCurrentMap,void **,0x52d0));
 func_020d2b10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),func_020d2d50(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26));
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(27,1);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))AddRecordValue(27,1);
 }
 
 /* AI command 22: produce a kind-17 unit on the cursor unit's tile, chain it as
@@ -170,10 +170,10 @@ void func_020bc0e0(void) {
  * the cursor target cell to the matching edge of the visible window, clamps it
  * to the map and then steps it one cell along the direction. */
 void MoveMapCursorWithKeys(void) {
-s32 func_0207d0b8(void); s32 func_0207d0d4(void); void ClampCursorToMap(void);
+s32 GetMapViewWidth(void); s32 GetMapViewHeight(void); void ClampCursorToMap(void);
 extern s32 *gCurrentMap; extern void *gKeyState; extern s16 gDirectionStepX; extern s16 gDirectionStepY;
 s32 dir=(M2C_FIELD(gKeyState,u16 *,6)>>4)&15;
-s32 viewW=func_0207d0b8(), viewH=func_0207d0d4(), n;
+s32 viewW=GetMapViewWidth(), viewH=GetMapViewHeight(), n;
 if(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<viewW)viewW=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);
 if(M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)<viewH)viewH=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);
 if(((s16 (*)[2])&gDirectionStepX)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4)+1;
@@ -282,7 +282,7 @@ void MoveMapCursorByDirection(void *arg0) {
 s32 func_020bc910(void) {
     void func_020d549c(void *);
     void func_020c752c(void);
-    void func_020ccca0(void);
+    void CreateMapMenu(void);
     void func_020d8fa0(void);
     void *func_020d2e3c(u16);
     void PlaySoundEffect(void *);
@@ -307,7 +307,7 @@ s32 func_020bc910(void) {
         return 1;
     }
     if (flags & 0x100) {
-        func_020ccca0();
+        CreateMapMenu();
         return 1;
     }
     if (flags & 0x400) {

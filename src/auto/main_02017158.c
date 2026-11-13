@@ -171,7 +171,7 @@ u32 func_02017984(void){u8 buf[6];s32 i;u32 sum;u8 *p;GetMacAddress(buf);i=0;p=&
 
 #pragma opt_common_subs off
 s32 func_020179ec(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
-    void func_02007e54(s32, void *, s32);
+    void CpuFill(s32, void *, s32);
     void FillU16(s32, void *, s32);
     void MI_CpuCopy8(void *, void *, s32);
     u16 func_02012084(void);
@@ -201,7 +201,7 @@ s32 func_020179ec(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     M2C_FIELD(&gMbState, u16 *, 0) = arg4;
     M2C_FIELD(&gMbState, u32 *, 8) = a;
     M2C_FIELD(&gMbState, u32 *, 0xc) = b;
-    func_02007e54(0, (void *)a, 0x1e00);
+    CpuFill(0, (void *)a, 0x1e00);
     FillU16(0, (void *)b, 0x1340);
     i = 0;
     d = (u16 *)(a + 0x530);

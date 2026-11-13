@@ -35,4 +35,29 @@
 /* A query collects at most this many key ids before appending them. */
 #define QR2_KEY_LIST_SIZE 256
 
+/* Game-key ids answered by Qr2AppendGameKey.  Keys 8..52 report one connection
+ * field each (the CONN_SESSION_* offsets in common.h); 53/54 report constants;
+ * keys QR2_GAMEKEY_TABLE_BASE..QR2_GAMEKEY_TABLE_END-1 index the session player
+ * table below. */
+#define QR2_GAMEKEY_CONN_14    8   /* u8  connection +0x14 */
+#define QR2_GAMEKEY_CONN_16    10  /* u8  connection +0x16 */
+#define QR2_GAMEKEY_QR2_PARAM  50  /* s32 CONN_SESSION_QR2_PARAM */
+#define QR2_GAMEKEY_MODE       51  /* u8  CONN_SESSION_MODE */
+#define QR2_GAMEKEY_MATCH_ADDR 52  /* s32 CONN_SESSION_MATCH_ADDRESS */
+#define QR2_GAMEKEY_CONST_3    53  /* the constant 3 */
+#define QR2_GAMEKEY_CONST_1    54  /* the constant 1 */
+#define QR2_GAMEKEY_TABLE_BASE 100 /* first session player key */
+#define QR2_GAMEKEY_TABLE_END  254 /* one past the last session player key */
+
+/* The session player table (gSessionPlayers, plus the per-field symbols the
+ * decompiler split out of it): QR2_PLAYER_COUNT records of QR2_PLAYER_STRIDE
+ * bytes, keyed by the game-key ids above. */
+#define QR2_PLAYER_STRIDE    0x0C
+#define QR2_PLAYER_COUNT     154
+#define QR2_PLAYER_KEY       0x00 /* u8 key id (100..253), 0 = free */
+#define QR2_PLAYER_IS_STRING 0x01 /* u8 nonzero when the value is a string */
+#define QR2_PLAYER_FIELD_02  0x02 /* u16 */
+#define QR2_PLAYER_STRING    0x04 /* char *heap string for the key */
+#define QR2_PLAYER_VALUE     0x08 /* s32 value, or a pointer to one */
+
 #endif

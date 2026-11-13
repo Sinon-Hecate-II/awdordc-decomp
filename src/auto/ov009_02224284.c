@@ -208,7 +208,7 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     s32 func_ov009_02224718(s32);
     void func_02007e20(void *, void *, s32);
-    s32 func_02065210(s32, s32, s32);
+    s32 MemSet(s32, s32, s32);
     s32 func_ov009_02222f84(void);
     extern M2C_UNK gLinkState;
     extern M2C_UNK data_ov009_02226968;
@@ -239,7 +239,7 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
         value = (s32)(u8)M2C_FIELD(&gLinkSession, s32 *, 4);
         count = (s32)&data_ov009_0222696e - (s32)&data_ov009_02226968;
         if (count < 0) count = 0;
-        func_02065210((s32)&data_ov009_02226968, value, count);
+        MemSet((s32)&data_ov009_02226968, value, count);
     }
 
     y = M2C_FIELD(&gLinkSession, s32 *, 0x24);

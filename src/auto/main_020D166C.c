@@ -169,11 +169,11 @@ loop_1:
 }
 
 void func_020d1b80(void){
-void func_020bf85c(void);void func_02091c20(s32,s32);extern void **gCurrentMap;
+void func_020bf85c(void);void AddRecordValue(s32,s32);extern void **gCurrentMap;
 s32 active=func_020d1afc();s32 one=1;u8 *p;
 do {
 M2C_FIELD(*gCurrentMap,u16 *,0x52a4)++;
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==5){func_020bf85c();M2C_FIELD(*gCurrentMap,u16 *,0x52a4)=one;if(active)func_02091c20(one,one);}
+if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==5){func_020bf85c();M2C_FIELD(*gCurrentMap,u16 *,0x52a4)=one;if(active)AddRecordValue(one,one);}
 }while(!IsPlayerActive(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
 p=*gCurrentMap;M2C_FIELD(p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,s32 *,0x682c)=0;
 }

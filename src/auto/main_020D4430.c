@@ -98,7 +98,7 @@ void func_020d482c(void) {
     }
     func_020945f8();
     func_020a2148(0);
-    func_02091c20(25, 1);
+    AddRecordValue(25, 1);
 }
 
 void func_020d4928(void) {
@@ -316,7 +316,7 @@ if(func_020bc910()) return;
 if(func_020bd560()) return;
 break;
 case 0x10: func_020c752c(); return;
-case 0x100: func_020ccca0(); return;
+case 0x100: CreateMapMenu(); return;
 case 0x40: func_020d8fa0(); break;
 case 0x80: break;
 }
@@ -393,7 +393,7 @@ void UpdateAimingCursor(void) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)=0;
  func_01ffa9e4(data_0211fbc4);
  PlaySoundEffect(0x1000f);
- } else if(keys&0x100)func_020ccca0(); /* R menu */
+ } else if(keys&0x100)CreateMapMenu(); /* R menu */
  else if(keys&0x40)func_020d8fa0(); /* X close */
  }
  DrawUnitInfoPanel(2);
@@ -418,7 +418,7 @@ if(!func_020d4dd0()) return;
 keys |= func_020bcaf0();
 keys |= func_020bdd18();
 if(keys&0x20) {func_020d52d0();return;}
-if(keys&0x100) {func_020ccca0();return;}
+if(keys&0x100) {CreateMapMenu();return;}
 if(keys&0x40) {func_020d8fa0();return;}
 if(keys&0x10) {
 if(valid) {

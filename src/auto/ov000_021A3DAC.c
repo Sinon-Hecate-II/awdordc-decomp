@@ -94,7 +94,7 @@ M2C_FIELD(&gAiCommand,u8 *,6)=24;CommitAiAction(r);return 1;
 }
 
 u8 func_ov000_021a4320(void) {
-    s32 func_ov000_021a3210();
+    s32 TryBuildTransport();
     s32 func_ov000_021a3364();
     s32 func_ov000_021a3c84();
     s32 func_ov000_021a41f8();
@@ -106,7 +106,7 @@ u8 func_ov000_021a4320(void) {
     M2C_FIELD(gAiState, u8 *, 8) = CountPlayerUnitsOfKind(1);
     temp = CountPlayerUnitsOfKind(2);
     M2C_FIELD(gAiState, u8 *, 8) += temp;
-    if (func_ov000_021a3210() == 1) {
+    if (TryBuildTransport() == 1) {
         return 1U;
     }
     if (func_ov000_021a41f8() == 1) {

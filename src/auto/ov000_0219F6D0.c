@@ -105,12 +105,12 @@ return 0;
 
 s32 func_ov000_0219f968(void) {
 void BattleUpdateUnitCursor(void);
-void func_020cc66c(u8,u8);
+void CreateTargetCursor(u8,u8);
 void func_020bbbbc(u8,u8,u8,u8,s32);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
 BattleUpdateUnitCursor();
-func_020cc66c(gAiCommand[6],gAiCommand[7]);
+CreateTargetCursor(gAiCommand[6],gAiCommand[7]);
 func_020bbbbc(gAiCommand[2],gAiCommand[3],gAiCommand[6],gAiCommand[7],7);
 M2C_FIELD(gAiCommandState,s8 *,1)=5;
 return 0;
@@ -118,12 +118,12 @@ return 0;
 
 s32 func_ov000_0219f9c0(void) {
 void BattleUpdateUnitCursor(void);
-void func_020cc66c(u8,u8);
+void CreateTargetCursor(u8,u8);
 void func_020bbd98(u8,u8,s32);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
 BattleUpdateUnitCursor();
-func_020cc66c(gAiCommand[6],gAiCommand[7]);
+CreateTargetCursor(gAiCommand[6],gAiCommand[7]);
 func_020bbd98(gAiCommand[6],gAiCommand[7],0);
 M2C_FIELD(gAiCommandState,s8 *,1)=5;
 return 0;
@@ -191,31 +191,31 @@ func_020bb608(n);
 }}
 
 void func_ov000_0219fc64(void) {
-void func_020cbf94(u32);
+void SpawnRippleIn(u32);
 s32 IsPlayerHuman(u16);
-M2C_UNK func_02091c20(M2C_UNK,M2C_UNK);
+M2C_UNK AddRecordValue(M2C_UNK,M2C_UNK);
 extern void **gCurrentMap;
 void *p;
-func_020cbf94(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
+SpawnRippleIn(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
 p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 M2C_FIELD(p,u16 *,4)|=0x20;
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) func_02091c20(0x26,1);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) AddRecordValue(0x26,1);
 }
 
 void func_ov000_0219fcdc(void) {
-void func_020cbfa4(u32);
+void SpawnRippleOut(u32);
 s32 IsPlayerHuman(u16);
-M2C_UNK func_02091c20(M2C_UNK,M2C_UNK);
+M2C_UNK AddRecordValue(M2C_UNK,M2C_UNK);
 extern void **gCurrentMap;
 void *p;
-func_020cbfa4(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
+SpawnRippleOut(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
 p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 M2C_FIELD(p,u16 *,4)&=~0x20;
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) func_02091c20(0x25,1);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) AddRecordValue(0x25,1);
 }
 
 void func_ov000_0219fd54(void) {
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK func_020b576c(s32);
     s32 IsPlayerHuman(u16);
     s32 func_ov000_0216aa44(M2C_UNK, s32);
@@ -227,7 +227,7 @@ void func_ov000_0219fd54(void) {
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
         return;
     }
-    func_02091c20(0x11, 1);
+    AddRecordValue(0x11, 1);
 }
 
 void func_ov000_0219fdc8(void) {

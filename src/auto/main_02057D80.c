@@ -1,8 +1,8 @@
 /* 28 functions from 0x02057D80 to 0x02058CA4 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
-extern M2C_UNK data_020ff3ec, data_0213dce0;
-extern s32 data_020ff43c;
+extern M2C_UNK data_020ff3ec, gGpiInfoState;
+extern s32 gGpiInfoSocket;
 extern M2C_UNK data_0213dcd0, data_020ff410, data_020ff414, data_020ff3f4;
 
 /* Processes the pending searches queued on the connection: allocates a temporary list of matching search entries, runs each through gpiProcessSingleSearch, and removes finished ones. */
@@ -345,17 +345,17 @@ if(!a)AssertFailed(&data_020ff410,&data_020ff414,&data_020ff3ec,0x153);
 buf[0]=b;return func_02048ff8(M2C_FIELD(a,s32 *,0),buf);
 }
 
-void func_02058c14(void){
+void gpiInfoCloseSocket(void){
 void func_020496cc(s32,s32);void func_020496b8(s32);void func_0205954c(void);void gpiFree(void *);
-if(data_020ff43c!=-1){func_020496cc(data_020ff43c,2);func_020496b8(data_020ff43c);}
-data_020ff43c=-1;
+if(gGpiInfoSocket!=-1){func_020496cc(gGpiInfoSocket,2);func_020496b8(gGpiInfoSocket);}
+gGpiInfoSocket=-1;
 func_0205954c();
-if(M2C_FIELD(&data_0213dce0,void **,12)){gpiFree(M2C_FIELD(&data_0213dce0,void **,12));M2C_FIELD(&data_0213dce0,s32 *,12)=0;M2C_FIELD(&data_0213dce0,s32 *,44)=0;M2C_FIELD(&data_0213dce0,s32 *,0)=0;}
+if(M2C_FIELD(&gGpiInfoState,void **,12)){gpiFree(M2C_FIELD(&gGpiInfoState,void **,12));M2C_FIELD(&gGpiInfoState,s32 *,12)=0;M2C_FIELD(&gGpiInfoState,s32 *,44)=0;M2C_FIELD(&gGpiInfoState,s32 *,0)=0;}
 }
 
 s32 func_02058c84(void) {
-    extern s32 data_020ff43c;
-    if (data_020ff43c != -1) {
+    extern s32 gGpiInfoSocket;
+    if (gGpiInfoSocket != -1) {
         return 1;
     }
     return 0;

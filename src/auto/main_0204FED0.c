@@ -226,7 +226,7 @@ s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRe
    socket would block.  Returns 0, or a socket error code. */
 s32 gpiSendFromBuffer(s32 connection,s32 sock,void *buffer,s32 *outBuffered,s32 compact,s32 tag) {
  s32 AssertFailed(s32 *,s32 *,s32 *,s32);
- s32 func_020651c4(s32,s32,s32);
+ s32 MemMove(s32,s32,s32);
  extern s32 sAssertOutputBufferNotNull,sGpiSendFromBufferName,gGpiBufferFileName,sAssertLenNonNeg,sAssertPosNonNeg,sAssertPosLeLen;
  s32 wouldBlock,sentNow;
  s32 done;
@@ -251,7 +251,7 @@ s32 gpiSendFromBuffer(s32 connection,s32 sock,void *buffer,s32 *outBuffered,s32 
  if(sentNow){remaining-=sentNow;done+=sentNow;}
  }while(sentNow && remaining);
  if(compact) {
- if(done>0){func_020651c4(data,data+done,remaining+1);len-=done;}
+ if(done>0){MemMove(data,data+done,remaining+1);len-=done;}
  }else pos+=done;
  if(len<0)AssertFailed(&sAssertLenNonNeg,&gGpiBufferFileName,&sGpiSendFromBufferName,0x1de);
  if(pos<0)AssertFailed(&sAssertPosNonNeg,&gGpiBufferFileName,&sGpiSendFromBufferName,0x1df);
@@ -316,7 +316,7 @@ s32 n;
 if(!p || !M2C_FIELD(p,s32 *,0) || !M2C_FIELD(p,s32 *,12))return 0;
 n=M2C_FIELD(p,s32 *,8)-M2C_FIELD(p,s32 *,12);
 M2C_FIELD(p,s32 *,8)=n;
-if(n)func_020651c4(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,12),n);
+if(n)MemMove(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,12),n);
 M2C_FIELD(M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,8),u8 *,0)=0;
 M2C_FIELD(p,s32 *,12)=0;return 0;
 }

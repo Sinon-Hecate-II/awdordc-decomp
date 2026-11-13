@@ -47,7 +47,7 @@ void InitIntroScene(void *logo) {
     M2C_UNK GX_SetBankForBG(s32);
     M2C_UNK func_02003124(s32);
     M2C_UNK func_020031cc(s32);
-    M2C_UNK func_02002968(s32);
+    M2C_UNK GX_SetBankForOBJ(s32);
     M2C_UNK func_02002ab8(s32);
     M2C_UNK func_0200323c(s32);
     M2C_UNK func_020032bc(s32);
@@ -69,7 +69,7 @@ void InitIntroScene(void *logo) {
     GX_SetBankForBG(3);
     func_02003124(4);
     func_020031cc(8);
-    func_02002968(0x10);
+    GX_SetBankForOBJ(0x10);
     func_02002ab8(0x60);
     func_0200323c(0x80);
     func_020032bc(0x100);

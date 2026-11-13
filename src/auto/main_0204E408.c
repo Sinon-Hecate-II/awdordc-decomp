@@ -1,7 +1,30 @@
 /* 9 functions from 0x0204E408 to 0x0204EEE8 (main), found by ds-decomp. */
 #include "common.h"
-typedef struct InitPair4E { s32 first, second; } InitPair4E;
-typedef struct InitState4E { u8 pad[0x1a4]; InitPair4E pairs[6]; } InitState4E;
+typedef struct InitPair4E { s32 first; /* callback function */ s32 second; /* its parameter */ } InitPair4E;
+typedef struct GpiConnection {
+    u8  unk00;            /* +0x00 */
+    u8  pad01[0xFF];
+    s32 unk100;           /* +0x100 */
+    s32 unk104;           /* +0x104 */
+    s32 unk108;           /* +0x108 */
+    s32 unk10c;           /* +0x10C */
+    u8  pad110[0x94];
+    InitPair4E pairs[6];  /* +0x1A4 the six peer callbacks */
+    u8  pad1d4[0x244];
+    s32 timerSet;         /* +0x418 */
+    s32 unk41c;           /* +0x41C */
+    s32 unk420;           /* +0x420 */
+    s32 unk424;           /* +0x424 */
+    s32 timerHandle;      /* +0x428 handle of the start-up timer set */
+    s32 unk42c;           /* +0x42C */
+    s32 unk430;           /* +0x430 */
+    u8  pad434[0x2c];
+    void *unk460;         /* +0x460 owned memory block */
+    u8  pad464[8];
+    s32 peerCallback;     /* +0x46C callback run when a peer connects */
+    s32 peerCallbackData; /* +0x470 its data */
+} GpiConnection;
+typedef GpiConnection InitState4E;
 
 #pragma opt_common_subs off
 /* Builds a gpi set-status request on the session (status, sesskey, status string
@@ -94,9 +117,22 @@ if(arg2==0){gpiSetErrorString(arg0,&data_020fdb50);return 2;}
 return gpiSendMessageToPlayer(arg0,arg1,1,arg2);
 }
 
-s32 func_0204e6a8(void **a,s32 b,s32 c){void *gpiMalloc(s32);s32 func_020558e8(void **);s32 gpiResetConnection(void **);void func_0204e7f0(void **);void func_02065210(void *,s32,s32);void gpiLogMessage(void **,void *,...);extern u8 data_020fdb70[];InitState4E *p;s32 i,r;*a=0;p=gpiMalloc(0x490);if(!p)return 1;func_02065210(p,0,0x490);M2C_FIELD(p,u8 *,0)=0;M2C_FIELD(p,s32 *,0x418)=0;M2C_FIELD(p,s32 *,0x100)=1;M2C_FIELD(p,s32 *,0x104)=0;M2C_FIELD(p,s32 *,0x108)=0;M2C_FIELD(p,s32 *,0x10c)=0;M2C_FIELD(p,s32 *,0x46c)=b;M2C_FIELD(p,s32 *,0x470)=c;if(!func_020558e8((void **)&p)){gpiFree(p);p=0;return 1;}M2C_FIELD(p,s32 *,0x420)=0;for(i=0;i<6;i++){p->pairs[i].first=0;p->pairs[i].second=0;}M2C_FIELD(p,s32 *,0x460)=0;gpiLogMessage((void **)&p,data_020fdb70);r=gpiResetConnection((void **)&p);if(r){func_0204e7f0((void **)&p);return r;}func_0204926c();GetTickCountMs();SetRandSeed();*a=p;return 0;}
+/* Creates a GameSpy GPI connection: allocates and clears its state, stores the
+ * peer callback, creates the start-up timer set, clears the six peer callbacks
+ * and resets the connection. The connection is handed back through out; returns
+ * 0 on success, 1 when the allocation fails or a step errors out. */
+s32 gpiInitialize(void **out,s32 peerCallback,s32 peerCallbackData){
+void *gpiMalloc(s32);s32 gpiCreateTimers(void **);s32 gpiResetConnection(void **);void gpiFreeConnection(void **);void MemSet(void *,s32,s32);void gpiLogMessage(void **,void *,...);extern u8 gGpiLogInitialize[];
+GpiConnection *connection;s32 i,result;
+*out=0;connection=gpiMalloc(0x490);if(!connection)return 1;MemSet(connection,0,0x490);
+connection->unk00=0;connection->timerSet=0;connection->unk100=1;connection->unk104=0;connection->unk108=0;connection->unk10c=0;connection->peerCallback=peerCallback;connection->peerCallbackData=peerCallbackData;
+if(!gpiCreateTimers((void **)&connection)){gpiFree(connection);connection=0;return 1;}
+connection->unk420=0;for(i=0;i<6;i++){connection->pairs[i].first=0;connection->pairs[i].second=0;}
+connection->unk460=0;gpiLogMessage((void **)&connection,gGpiLogInitialize);
+result=gpiResetConnection((void **)&connection);if(result){gpiFreeConnection((void **)&connection);return result;}
+func_0204926c();GetTickCountMs();SetRandSeed();*out=connection;return 0;}
 
-void func_0204e7f0(void **arg0) {
+void gpiFreeConnection(void **arg0) {
     M2C_UNK gpiFree(void *);
     M2C_UNK func_02048dc4(s32);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
@@ -138,7 +174,7 @@ s32 gpiHandleServerData(void *ctx) {
     void *gpiRealloc(void *, s32);
     s32 gpiSetErrorString(void **, s32 *);
     void MemCopy(void *, void *, s32);
-    void func_020651c4(void *, void *, s32);
+    void MemMove(void *, void *, s32);
     s32 ParseInt(void *);
     s32 func_020544d4(void **, void **, s32);
     s32 func_0205455c(void *, s32, void *);
@@ -181,7 +217,7 @@ s32 gpiHandleServerData(void *ctx) {
             MemCopy(M2C_FIELD(conn, void **, 0x1ec), M2C_FIELD(conn, void **, 0x1dc), lineLen + 1);
             scan = messageEnd + 7;
             M2C_FIELD(conn, s32 *, 0x1e4) -= scan - M2C_FIELD(conn, u8 **, 0x1dc);
-            func_020651c4(M2C_FIELD(conn, void **, 0x1dc), scan, M2C_FIELD(conn, s32 *, 0x1e4) + 1);
+            MemMove(M2C_FIELD(conn, void **, 0x1dc), scan, M2C_FIELD(conn, s32 *, 0x1e4) + 1);
             scan = M2C_FIELD(conn, u8 **, 0x1ec);
             messageEnd = StringFind(scan, gGpiKeyId);
             if (messageEnd) {

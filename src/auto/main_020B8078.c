@@ -1,6 +1,7 @@
 /* 20 functions from 0x020B8078 to 0x020B8CCC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "menu_list.h"
 
 extern u8 data_021290b4[40];
 extern void *gCur3DSpriteEngine;
@@ -144,10 +145,10 @@ void func_020b834c(void *arg0) {
 }
 
 u8 func_020b846c(M2C_UNK arg0) {
-    void *func_020b895c(void);
+    void *GetMenuList(void);
     s32 func_02086a00(M2C_UNK);
     void *temp_r4;
-    temp_r4 = func_020b895c();
+    temp_r4 = GetMenuList();
     return (func_02086a00(arg0) != 0) || (M2C_FIELD(temp_r4, u8 *, 0x34) != 0);
 }
 
@@ -178,7 +179,7 @@ void func_020b84a0(s32 arg0, s32 arg1) {
     data_0215d84c += 0x24;
 }
 
-void func_020b8594(s32 arg0) {
+void RedrawListRows(s32 arg0) {
     M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
     void func_020b84a0(s32, s32);
     extern s32 data_0215d84c;
@@ -223,7 +224,7 @@ void func_020b8594(s32 arg0) {
     gCur3DSpriteEngine = temp_r4;
 }
 
-s32 func_020b8694(void *arg0) {
+s32 ScrollListUp(void *arg0) {
     s16 n = M2C_FIELD(arg0, s16 *, 0x40);
 
     if (n != 0) {
@@ -233,7 +234,7 @@ s32 func_020b8694(void *arg0) {
     return 0;
 }
 #pragma optimization_level 4
-s16 func_020b86b4(void *arg0) {
+s16 PageListUp(void *arg0) {
     s16 temp_r2;
     temp_r2 = M2C_FIELD(arg0, s16 *, 0x40);
     M2C_FIELD(arg0, s16 *, 0x40) = (s16)(temp_r2 - 6);
@@ -243,7 +244,7 @@ s16 func_020b86b4(void *arg0) {
     return (s16)(M2C_FIELD(arg0, s16 *, 0x40) - temp_r2);
 }
 
-s32 func_020b86e4(void *arg0) {
+s32 ScrollListDown(void *arg0) {
     s16 old = M2C_FIELD(arg0, s16 *, 0x40);
     if (old + 6 >= M2C_FIELD(arg0, s16 *, 0x42)) goto done;
     M2C_FIELD(arg0, s16 *, 0x40)++;
@@ -252,7 +253,7 @@ done:
     return 0;
 }
 
-s16 func_020b870c(void *arg0){
+s16 PageListDown(void *arg0){
 s16 old=M2C_FIELD(arg0,s16*,0x40);s32 max;
 M2C_FIELD(arg0,volatile s16*,0x40)=old+6;
 max=M2C_FIELD(arg0,volatile s16*,0x42)-6;
@@ -261,13 +262,13 @@ return M2C_FIELD(arg0,s16*,0x40)-old;
 }
 
 M2C_UNK func_020b8740(void) {
-    void *func_020b895c(void);
+    void *GetMenuList(void);
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
     M2C_UNK func_020b2268();
     void *temp_r4;
-    temp_r4 = func_020b895c();
+    temp_r4 = GetMenuList();
     PlaySoundEffect(0x10018);
     func_01ffa6fc(temp_r4);
     func_020b21a0();
@@ -286,25 +287,29 @@ void func_020b8778(void) {
     func_020b8740();
 }
 
-void func_020b8788(u8 *a){void *func_020b895c(void);s32 func_020b20e0(s32);void FocusSpriteSlotById(s32);extern u16 *gKeyState;void *p=func_020b895c();s32 max=M2C_FIELD(p,s16 *,0x42)-6;s32 n=*a;s32 pos=M2C_FIELD(p,s16 *,0x40);if(max<0)max=0;
-if(pos==0&&n==0){if(gKeyState[0]&64){M2C_FIELD(p,s16 *,0x40)=max;n=5;goto done;}}
-else if(gKeyState[1]&64){if(n>=2)n--;else if(!func_020b8694(p)&&n>0)n--;goto done;}
-if(pos==max&&n==5){if(gKeyState[0]&128){n=0;M2C_FIELD(p,s16 *,0x40)=n;goto done;}}
-else if(gKeyState[1]&128){if(n<4){if(func_020b20e0(n+1))n++;}else if(!func_020b86e4(p)){if(func_020b20e0(n+1))n++;}goto done;}
-if(gKeyState[1]&32){n-=func_020b86b4(p)+6;if(n<0)n=0;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
-else if(gKeyState[1]&16){n+=6-func_020b870c(p);if(n>=6)n=5;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
-done:if(n!=*a)FocusSpriteSlotById(n);M2C_FIELD(p,s16 *,0x3a)=n;}
+/* Key handler for the scrollable menu list: up/down move the selected row and
+ * scroll the window, a held up/down at either end wraps to the other end, and
+ * left/right page the list by six rows.  The focused row is written back to the
+ * list and its sprite slot is focused. */
+void HandleListCursorInput(u8 *selection){void *GetMenuList(void);s32 FindSpriteSlotById(s32);void FocusSpriteSlotById(s32);extern u16 *gKeyState;void *list=GetMenuList();s32 maxFirstRow=M2C_FIELD(list,s16 *,MENU_LIST_ROW_COUNT)-MENU_LIST_VISIBLE_ROWS;s32 row=*selection;s32 firstRow=M2C_FIELD(list,s16 *,MENU_LIST_FIRST_ROW);if(maxFirstRow<0)maxFirstRow=0;
+if(firstRow==0&&row==0){if(gKeyState[KEY_HELD]&KEY_UP){M2C_FIELD(list,s16 *,MENU_LIST_FIRST_ROW)=maxFirstRow;row=5;goto done;}}
+else if(gKeyState[KEY_PRESSED]&KEY_UP){if(row>=2)row--;else if(!ScrollListUp(list)&&row>0)row--;goto done;}
+if(firstRow==maxFirstRow&&row==5){if(gKeyState[KEY_HELD]&KEY_DOWN){row=0;M2C_FIELD(list,s16 *,MENU_LIST_FIRST_ROW)=row;goto done;}}
+else if(gKeyState[KEY_PRESSED]&KEY_DOWN){if(row<4){if(FindSpriteSlotById(row+1))row++;}else if(!ScrollListDown(list)){if(FindSpriteSlotById(row+1))row++;}goto done;}
+if(gKeyState[KEY_PRESSED]&KEY_LEFT){row-=PageListUp(list)+6;if(row<0)row=0;RedrawListRows(M2C_FIELD(list,s16 *,MENU_LIST_SCROLL_OFFSET));}
+else if(gKeyState[KEY_PRESSED]&KEY_RIGHT){row+=6-PageListDown(list);if(row>=6)row=5;RedrawListRows(M2C_FIELD(list,s16 *,MENU_LIST_SCROLL_OFFSET));}
+done:if(row!=*selection)FocusSpriteSlotById(row);M2C_FIELD(list,s16 *,MENU_LIST_ROW)=row;}
 
 void func_020b88f8(u8 *arg0) {
-    void *func_020b895c(void);
-    M2C_FIELD(func_020b895c(), s16 *, 0x3a) = *arg0;
+    void *GetMenuList(void);
+    M2C_FIELD(GetMenuList(), s16 *, 0x3a) = *arg0;
 }
 
 void func_020b8910(void) {
-    void *func_020b895c(void);
+    void *GetMenuList(void);
     s32 i;
     s32 y;
-    func_020b895c();
+    GetMenuList();
     i = 0;
     y = 0x27;
     do {
@@ -317,7 +322,7 @@ void func_020b8910(void) {
 
 #pragma optimization_level 2
 /* Returns the active instance registered under data_021290dc. */
-void *func_020b895c(void) {
+void *GetMenuList(void) {
     void *FindObjectByClass();
     extern M2C_UNK data_021290dc;
     return FindObjectByClass(&data_021290dc);
@@ -342,7 +347,7 @@ void func_020b8970(void *arg0) {
     s32 func_020aae44(void *);
     s32 func_020ae22c(s32);
     u8 func_020b846c(s32);
-    void func_020b8594(s32);
+    void RedrawListRows(s32);
     void func_020b8910(void);
     void func_020c0fac(void *);
     s32 func_020cd6fc(void);
@@ -408,7 +413,7 @@ void func_020b8970(void *arg0) {
     func_0209c048(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
     func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
     func_0209c048(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);
-    func_020b8594(M2C_FIELD(arg0, s16 *, 0x3e));
+    RedrawListRows(M2C_FIELD(arg0, s16 *, 0x3e));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
     func_020b8910();

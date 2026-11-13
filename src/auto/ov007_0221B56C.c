@@ -235,25 +235,29 @@ void CopyUnitGroup(u8 *a,s32 b) {
  }while(i<64);
 }
 
-void RemapUnitGroups(s32 a,s32 b,s32 c,s32 d){
-extern s32 *data_027e0058;
+/* Rearrange the map's four groups of 64 unit records: the group each parameter
+ * names is copied into the player slot its position denotes (group1 -> slot 1,
+ * group2 -> slot 2, ...). All records are stashed in a heap buffer first so a
+ * group can be moved onto one still needed; a group already in place stays. */
+void RemapUnitGroups(s32 group1,s32 group2,s32 group3,s32 group4){
+extern s32 *gCurrentMap;
 void *HeapAllocBlock(u32); void HeapFreeBlock(void *);
-u8 *buf; s32 i,off; u8 *t;
-if(a==1&&b==2&&c==3&&d==4)return;
-buf=HeapAllocBlock(0xE00);i=0;off=0;t=buf;
-do{u8 *s=(u8 *)(*data_027e0058+0x59A4);u8 *p=s+off;u32 x,y;
+u8 *backup; s32 i,off; u8 *t;
+if(group1==1&&group2==2&&group3==3&&group4==4)return;
+backup=HeapAllocBlock(MAP_UNIT_COUNT*MAP_UNIT_STRIDE);i=0;off=0;t=backup;
+do{u8 *s=(u8 *)(*gCurrentMap+MAP_UNIT_RECORDS);u8 *p=s+off;u32 x,y;
 i++;
 t[0]=s[off];t[1]=p[1];t[2]=p[2];
 M2C_FIELD(t,u16 *,4)=M2C_FIELD(p,u16 *,4);
 M2C_FIELD(t,u16 *,6)=M2C_FIELD(p,u16 *,6);
 M2C_FIELD(t,u16 *,8)=M2C_FIELD(p,u16 *,8);
-t[10]=p[10];t[11]=p[11];x=((volatile u8 *)p)[12];y=((volatile u8 *)p)[13];t[12]=x;t[13]=y;t+=14;off+=14;
-}while(i<256);
-if(a!=1)CopyUnitGroup(buf+((a-1)<<6)*14,1);
-if(b!=2)CopyUnitGroup(buf+((b-1)<<6)*14,2);
-if(c!=3)CopyUnitGroup(buf+((c-1)<<6)*14,3);
-if(d!=4)CopyUnitGroup(buf+((d-1)<<6)*14,4);
-HeapFreeBlock(buf);
+t[10]=p[10];t[11]=p[11];x=((volatile u8 *)p)[12];y=((volatile u8 *)p)[13];t[12]=x;t[13]=y;t+=MAP_UNIT_STRIDE;off+=MAP_UNIT_STRIDE;
+}while(i<MAP_UNIT_COUNT);
+if(group1!=1)CopyUnitGroup(backup+((group1-1)<<6)*MAP_UNIT_STRIDE,1);
+if(group2!=2)CopyUnitGroup(backup+((group2-1)<<6)*MAP_UNIT_STRIDE,2);
+if(group3!=3)CopyUnitGroup(backup+((group3-1)<<6)*MAP_UNIT_STRIDE,3);
+if(group4!=4)CopyUnitGroup(backup+((group4-1)<<6)*MAP_UNIT_STRIDE,4);
+HeapFreeBlock(backup);
 }
 
 #pragma optimization_level 4

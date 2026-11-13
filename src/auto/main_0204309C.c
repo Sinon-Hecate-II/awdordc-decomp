@@ -1,5 +1,6 @@
 /* 18 functions from 0x0204309C to 0x02043E10 (main), found by ds-decomp. */
 #include "common.h"
+#include "qr2.h"
 
 s32 ReportQr2Error(u32 ret){
 s32 func_02038f6c(void);
@@ -74,12 +75,12 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     s32 SetConnectionState();
     void func_020436d8();
     s32 EvaluateMatchmakingSessions();
-    s32 func_020438b4();
+    s32 SelectMatchmakingSession();
     s32 SBServerGetIntValue();
     u64 GetSystemTick(void);
     void func_020410f8();
     s32 func_0204084c();
-    void func_02040878();
+    void SendJoinRequest();
     void func_02040dc8();
     void TryConnectToPeer();
     s32 func_0203ecb0();
@@ -169,7 +170,7 @@ status2_done:
             break;
         case 5:
             EvaluateMatchmakingSessions(1);
-            func_020438b4();
+            SelectMatchmakingSession();
 
             while (1) {
                 count = SBServerListGetCount(arg0);
@@ -273,7 +274,11 @@ s32 EvaluateMatchmakingSessions(s32 sort) {
  if(removed && SBServerListGetCount(M2C_FIELD(GetConnection(),s32 *,0xe4))==0)return 0;
  return 1;
 }
-s32 func_020438b4(void) {
+/* Pick one of the browsed matchmaking sessions and promote it to the front of
+   the list: the highest dwc_eval is found, then one session is chosen at random
+   weighted towards the top of the sorted list (gMatchmakingSessionWeights) and
+   given an eval one above the previous best before the list is re-sorted. */
+s32 SelectMatchmakingSession(void) {
     void *GetConnection(void);
     s32 SBServerListGetCount(s32);
     s32 SBServerListGetServer(s32, s32);
@@ -282,72 +287,94 @@ s32 func_020438b4(void) {
     s32 SBServerListSort(s32, s32, void *, s32);
     s32 RandomBelow(s32);
     s32 func_020720f0(s32, s32);
-    extern s32 data_020ea928[];
+    extern s32 gMatchmakingSessionWeights[];
     extern char sDwcKeyEval[];
-    u32 rnd;
-    s32 best = 0;
-    s32 total = 0;
-    s32 n;
+    u32 roll;
+    s32 maxScore = 0;
+    s32 weightTotal = 0;
+    s32 count;
     s32 i;
-    s32 stack[6];
+    s32 cumulative[6];
     s32 prev;
-    s32 v;
-    s32 tmp;
+    s32 eval;
+    s32 scaled;
 
-    n = SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4));
-    if (n <= 1) return n;
+    count = SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4));
+    if (count <= 1) return count;
     i = 0;
     while (i < SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
-        v = SBServerGetIntValue((void *)SBServerListGetServer(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, -1);
-        if (v > best) best = v;
-        total += data_020ea928[i];
+        eval = SBServerGetIntValue((void *)SBServerListGetServer(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, -1);
+        if (eval > maxScore) maxScore = eval;
+        weightTotal += gMatchmakingSessionWeights[i];
         i++;
     }
-    rnd = RandomBelow(100);
+    roll = RandomBelow(100);
     i = 0;
     while (i < SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
         if (i == SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4)) - 1) break;
-        prev = (i > 0) ? stack[i - 1] : 0;
-        tmp = func_020720f0(data_020ea928[i] * 100, total);
-        stack[i] = tmp + prev;
-        if (rnd < (u32)stack[i]) break;
+        prev = (i > 0) ? cumulative[i - 1] : 0;
+        scaled = func_020720f0(gMatchmakingSessionWeights[i] * 100, weightTotal);
+        cumulative[i] = scaled + prev;
+        if (roll < (u32)cumulative[i]) break;
         i++;
     }
-    if (best < 0x7FFFFFFF) best++;
-    gpiPlayerSetInt((void *)SBServerListGetServer(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, best);
+    if (maxScore < 0x7FFFFFFF) maxScore++;
+    gpiPlayerSetInt((void *)SBServerListGetServer(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, maxScore);
     return SBServerListSort(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, sDwcKeyEval, 0);
 }
 
-void Qr2AppendGameKey(s32 a, void *b) {
+/* GameSpy QR2 append-key callback: append the value of game key `key` to the
+ * query buffer `query`.  The low keys report a field of the current connection;
+ * keys QR2_GAMEKEY_TABLE_BASE and up look the key up in the session player table
+ * and append its string or integer value. */
+void Qr2AppendGameKey(s32 key, void *query) {
     void *GetConnection(void);
     void Qr2AppendInt(void *, s32);
     void Qr2AppendString(void *, void *);
     extern u8 gSessionPlayers[];
-    extern u8 data_0213d3bd[];
-    extern void *data_0213d3c4[];
-    void *p;
-    s32 t;
-    s32 i;
-    s32 idx;
+    extern u8 gSessionPlayerIsString[];
+    extern void *gSessionPlayerValue[];
+    void *conn;
+    s32 index;
+    s32 offset;
 
-    switch(a) {
-case 8: p=GetConnection(); Qr2AppendInt(b,((u8 *)p)[0x14]); return;
-case 10: p=GetConnection(); Qr2AppendInt(b,((u8 *)p)[0x16]); return;
-case 50: p=GetConnection(); Qr2AppendInt(b,*(s32 *)((char *)p+0x200)); return;
-case 51: p=GetConnection(); Qr2AppendInt(b,((u8 *)p)[0x15]); return;
-case 52: p=GetConnection(); Qr2AppendInt(b,*(s32 *)((char *)p+0x20)); return;
-case 53:  Qr2AppendInt(b,3); return;
-case 54:  Qr2AppendInt(b,1); return;
+    switch (key) {
+    case QR2_GAMEKEY_CONN_14:
+        conn = GetConnection();
+        Qr2AppendInt(query, ((u8 *)conn)[0x14]);
+        return;
+    case QR2_GAMEKEY_CONN_16:
+        conn = GetConnection();
+        Qr2AppendInt(query, ((u8 *)conn)[0x16]);
+        return;
+    case QR2_GAMEKEY_QR2_PARAM:
+        conn = GetConnection();
+        Qr2AppendInt(query, *(s32 *)((char *)conn + CONN_SESSION_QR2_PARAM));
+        return;
+    case QR2_GAMEKEY_MODE:
+        conn = GetConnection();
+        Qr2AppendInt(query, ((u8 *)conn)[CONN_SESSION_MODE]);
+        return;
+    case QR2_GAMEKEY_MATCH_ADDR:
+        conn = GetConnection();
+        Qr2AppendInt(query, *(s32 *)((char *)conn + CONN_SESSION_MATCH_ADDRESS));
+        return;
+    case QR2_GAMEKEY_CONST_3:
+        Qr2AppendInt(query, 3);
+        return;
+    case QR2_GAMEKEY_CONST_1:
+        Qr2AppendInt(query, 1);
+        return;
     }
-    i = a - 100;
-    if (i < 0) return;
-    if (i >= 154) return;
-    idx = i * 12;
-    if (gSessionPlayers[idx] == 0) return;
-    if (data_0213d3bd[idx] != 0) {
-        Qr2AppendString(b, *(void **)((char *)data_0213d3c4 + idx));
+    index = key - QR2_GAMEKEY_TABLE_BASE;
+    if (index < 0) return;
+    if (index >= QR2_PLAYER_COUNT) return;
+    offset = index * QR2_PLAYER_STRIDE;
+    if (gSessionPlayers[offset] == 0) return;
+    if (gSessionPlayerIsString[offset] != 0) {
+        Qr2AppendString(query, *(void **)((char *)gSessionPlayerValue + offset));
     } else {
-        Qr2AppendInt(b, **(s32 **)((char *)data_0213d3c4 + idx));
+        Qr2AppendInt(query, **(s32 **)((char *)gSessionPlayerValue + offset));
     }
 }
 

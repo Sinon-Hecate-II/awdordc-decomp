@@ -133,7 +133,7 @@ void func_020472cc(Unk046State *p) { Unk046State s; GetWfcProfile(&s); *(u64 *)&
 
 s32 func_02047320(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
 
-u32 func_02047370(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
+u32 Base64EncodedLength(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
 
 void func_020473a8(void) {
 
@@ -210,43 +210,47 @@ error:
     M2C_FIELD(&gWebRequestState,s32 *,4)=1;
 }
 #pragma pop
-void func_020475b8(s32 arg0) {
-    extern s32 data_0213db80;
-    data_0213db80 = arg0 | (arg0 << 0x10);
+void WebPrngSeed(s32 arg0) {
+    extern s32 sWebPrngState;
+    sWebPrngState = arg0 | (arg0 << 0x10);
 }
 
-s32 func_020475cc(void) { extern M2C_UNK gWebRequestState; extern s32 data_0213db80; data_0213db80=(M2C_FIELD(&gWebRequestState,s32 *,0x44)*data_0213db80+M2C_FIELD(&gWebRequestState,s32 *,0x48))%M2C_FIELD(&gWebRequestState,s32 *,0x4c); return (data_0213db80>>16)&255; }
+s32 WebPrngNextByte(void) { extern M2C_UNK gWebRequestState; extern s32 sWebPrngState; sWebPrngState=(M2C_FIELD(&gWebRequestState,s32 *,0x44)*sWebPrngState+M2C_FIELD(&gWebRequestState,s32 *,0x48))%M2C_FIELD(&gWebRequestState,s32 *,0x4c); return (sWebPrngState>>16)&255; }
 
-s32 func_0204760c(u8 *arg0, u8 *arg1, u32 arg2, u8 *arg3, u32 arg4) {
+/* Builds a WFC request body in out: copies the header and payload into a
+ * scratch buffer, seeds the obfuscation PRNG with their byte sum, XORs the
+ * payload with it, prefixes the checksum word and base64-encodes the lot.
+ * Returns 2 when the scratch buffer cannot be allocated. */
+s32 EncodeWfcRequestBody(u8 *out, u8 *header, u32 headerLen, u8 *payload, u32 payloadLen) {
     extern M2C_UNK gWebRequestState;
-    u8 *p;
-    u32 sum;
-    u32 n;
-    s32 i, k, l;
+    u8 *data;
+    u32 checksum;
+    u32 totalLen;
+    s32 i, checksumIndex, encodeIndex;
     u8 *HeapAlloc(s32, s32);
-    void func_020475b8(s32);
-    s32 func_020475cc(void);
+    void WebPrngSeed(s32);
+    s32 WebPrngNextByte(void);
     void Base64Encode(u8 *, u8 *, s32, s32);
 
-    n = arg4 + arg2;
-    sum = 0;
-    p = HeapAlloc(0, n + 4);
-    if (p == 0) return 2;
-    for (i = 0; i < arg2; i++) p[i + 4] = arg1[i];
-    for (i = 0; i < arg4; i++) p[arg2 + i + 4] = arg3[i];
-    for (k = 0; k < n; k++) sum += p[k + 4];
-    func_020475b8(sum);
-    for (l = 0; l < n; l++) {
-        p[l + 4] ^= func_020475cc();
+    totalLen = payloadLen + headerLen;
+    checksum = 0;
+    data = HeapAlloc(0, totalLen + 4);
+    if (data == 0) return 2;
+    for (i = 0; i < headerLen; i++) data[i + 4] = header[i];
+    for (i = 0; i < payloadLen; i++) data[headerLen + i + 4] = payload[i];
+    for (checksumIndex = 0; checksumIndex < totalLen; checksumIndex++) checksum += data[checksumIndex + 4];
+    WebPrngSeed(checksum);
+    for (encodeIndex = 0; encodeIndex < totalLen; encodeIndex++) {
+        data[encodeIndex + 4] ^= WebPrngNextByte();
     }
-    sum ^= M2C_FIELD(&gWebRequestState, u32 *, 0x50);
-    p[0] = sum >> 24;
-    p[1] = sum >> 16;
-    p[2] = sum >> 8;
-    p[3] = sum;
-    Base64Encode(p, arg0, n + 4, 2);
-    HeapFree(0, (s32)p, 0);
-    arg0[func_02047370(n + 4)] = 0;
+    checksum ^= M2C_FIELD(&gWebRequestState, u32 *, WEB_REQ_CHECK_KEY);
+    data[0] = checksum >> 24;
+    data[1] = checksum >> 16;
+    data[2] = checksum >> 8;
+    data[3] = checksum;
+    Base64Encode(data, out, totalLen + 4, 2);
+    HeapFree(0, (s32)data, 0);
+    out[Base64EncodedLength(totalLen + 4)] = 0;
     return 0;
 }
 
@@ -347,7 +351,7 @@ s32 BuildWebPutRequest(s32 playerId, s32 sourceId, s32 field2, s32 field3, s32 p
         HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;
     }
-    dataBase64Len = func_02047370((u8 *)payloadSize+0x18);
+    dataBase64Len = Base64EncodedLength((u8 *)payloadSize+0x18);
     lenDataParam = StringLength(&sWebParamData);
     lenHashPlaceholder = StringLength(&sWebHashPlaceholder);
     lenHashParam = StringLength(sWebParamHash);
@@ -383,7 +387,7 @@ s32 BuildWebPutRequest(s32 playerId, s32 sourceId, s32 field2, s32 field3, s32 p
     header[3] = (u32)field3;
     header[4] = (u32)payloadSize;
 
-    encodeResult = func_0204760c(M2C_FIELD(&gWebRequestState, void **, 0x5c), header, 0x14, (void *)payload, (s32)payloadSize);
+    encodeResult = EncodeWfcRequestBody(M2C_FIELD(&gWebRequestState, void **, 0x5c), header, 0x14, (void *)payload, (s32)payloadSize);
     if (encodeResult == 2) {
         HeapFree(0, M2C_FIELD(&gWebRequestState, s32 *, 0x54), 0);
         M2C_FIELD(&gWebRequestState, s32 *, 0x54) = 0;

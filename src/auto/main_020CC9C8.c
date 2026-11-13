@@ -61,7 +61,7 @@ void func_020ccc94(void) {
     func_020d8804();
 }
 
-void func_020ccca0(void) {
+void CreateMapMenu(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b424;
     func_01ffa3dc(&data_0212b424, 7);

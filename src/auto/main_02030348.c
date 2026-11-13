@@ -18,7 +18,7 @@ s32 func_020303e4(void *arg0) {
 
 s32 func_02030400(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIELD(a,u8 *,0x14);if(t==3)r=0xffff3864-M2C_FIELD(a,u8 *,0x15);else if(t==4)r=-0xc800-M2C_FIELD(a,u8 *,0x15);else r=0xffff379c-M2C_FIELD(a,u8 *,0x15);}else if(t<13)r=0xffff34e0-M2C_FIELD(a,u8 *,0x15);else {r=M2C_FIELD(a,s32 *,0x10);if(r==0)r=0xffff3cb0-M2C_FIELD(a,u8 *,0x15);else if(r==-1)r=0xffff347c-M2C_FIELD(a,u8 *,0x15);else if(r==-2)r=0xffff3418-M2C_FIELD(a,u8 *,0x15);else if(r==-3)r=0xffff33b4-M2C_FIELD(a,u8 *,0x15);else if(r==-4)r=0xffff30f8-M2C_FIELD(a,u8 *,0x15);else if(r==-5)r=0xffff3094-M2C_FIELD(a,u8 *,0x15);else if(r==-6){r=0xffff3030-M2C_FIELD(a,u8 *,0x15);return r;}}return r;}
 
-s32 func_02030554(s32 a){void *func_0202f48c(s32);void func_02007e54(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 func_02030694(void *);u8 *p=func_0202f48c(16);switch(a){case 0:func_02007e54(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:func_02007e54(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=func_02030694(p);break;}return p[0xd10];}
+s32 func_02030554(s32 a){void *func_0202f48c(s32);void CpuFill(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 func_02030694(void *);u8 *p=func_0202f48c(16);switch(a){case 0:CpuFill(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:CpuFill(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=func_02030694(p);break;}return p[0xd10];}
 
 s32 Wfc_MatchFreespotCode(u8 *a){void *func_0202f48c(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(func_0202f48c(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
 
@@ -197,7 +197,7 @@ u8 func_0203095c(void) {
 
 s32 func_02030a38(void) {
     void *func_0202f48c(s32);
-    s32 func_0202f544(void);
+    s32 Wfc_GetSessionState(void);
     u32 func_02027c84(void);
     s32 func_02030c78(void *);
     s32 func_02030cc8(void *);
@@ -209,7 +209,7 @@ s32 func_02030a38(void) {
     u32 val;
 
     ctx = func_0202f48c(0x10);
-    state = func_0202f544();
+    state = Wfc_GetSessionState();
     val = func_02027c84();
     if (state == 2 && val == 3) {
         state = func_02030c78(ctx);
@@ -230,7 +230,7 @@ s32 func_02030a38(void) {
     return state;
 }
 
-void func_02030afc(u32 a){void *func_0202f48c(s32);u8 *p=func_0202f48c(16);u32 v;p+=0xd00;if(a>13)a=13;v=M2C_FIELD(p,u16 *,22);a--;M2C_FIELD(p,u16 *,22)=v|(1<<a);}
+void Wfc_MarkFriendId(u32 a){void *func_0202f48c(s32);u8 *p=func_0202f48c(16);u32 v;p+=0xd00;if(a>13)a=13;v=M2C_FIELD(p,u16 *,22);a--;M2C_FIELD(p,u16 *,22)=v|(1<<a);}
 
 s8 func_02030b30(s32 a) {
  void *func_0202f48c(s32);

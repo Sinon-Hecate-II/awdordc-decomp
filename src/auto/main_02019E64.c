@@ -320,7 +320,7 @@ s32 func_0201a764(s32 arg0) {
 
 s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M2C_FIELD(&gNetStack,s32 *,80);if(own!=0&&a!=own)u=0;if(!u&&a!=0x7f000001)t=0;if(!t&&!func_0201a728(a))s=0;if(!s&&!func_0201a764(a))r=0;return r;}
 
-s32 func_0201a7f8(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
+s32 MacAddressesDiffer(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 
 void func_0201a824(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 WFC_SendPacket(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=WFC_SendPacket(a,a+6,b-6,c,d)<0;}
 

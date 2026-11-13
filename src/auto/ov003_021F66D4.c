@@ -56,7 +56,7 @@ void func_ov003_021f6724(void *arg0) {
 #pragma opt_instruction_scheduling off
 void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-    extern u8 data_027e00b4[8];
+    extern u8 gSpriteDesc64x32[8];
     extern u8 data_ov003_0220fe00[28];
     extern u8 data_ov003_0220fdf2[14];
     void UpdateSpriteAnimation(void *);
@@ -312,7 +312,7 @@ L3:
         }
         if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
             var_r0 = 0xA0 - temp_r5;
-            AddSprite(0xC0, (u8) var_r0, (u16) (0xB000 | ((0x4CC >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), data_027e00b4, 0xB);
+            AddSprite(0xC0, (u8) var_r0, (u16) (0xB000 | ((0x4CC >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), gSpriteDesc64x32, 0xB);
         }
         if (arg0->state == 4) {
             cond = 1;

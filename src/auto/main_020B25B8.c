@@ -236,14 +236,14 @@ void AnimateSpriteSlot(void *context) {
 
 void func_020b2d5c(void *arg0) {
 M2C_UNK func_01ff883c(u16,u16,u16,s32);
-s32 func_01ff8e44(s16,s16);
+s32 GetSpriteDescForSize(s16,s16);
 extern u16 **gCur3DSpriteEngine;
 u32 a,b; s16 x,y; s32 flag;
 a=M2C_FIELD(arg0,u16 *,0x20); b=M2C_FIELD(arg0,u16 *,0x22);
 x=M2C_FIELD(arg0,s16 *,0x18); y=M2C_FIELD(arg0,s16 *,0x1a); flag=0;
 if(!SpriteSlotHasFlags(arg0,2))return;
 if(SpriteSlotHasFlags(arg0,0x800))flag=0x400;
-func_01ff883c((u16)(M2C_FIELD(arg0,s16 *,0x14)&0x1ff),(u16)((M2C_FIELD(arg0,s16 *,0x16)&0xff)|flag),(u16)((0x3ff&(a>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((b<<28)>>16)),func_01ff8e44(x,y));
+func_01ff883c((u16)(M2C_FIELD(arg0,s16 *,0x14)&0x1ff),(u16)((M2C_FIELD(arg0,s16 *,0x16)&0xff)|flag),(u16)((0x3ff&(a>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((b<<28)>>16)),GetSpriteDescForSize(x,y));
 }
 
 void func_020b2e14(void *p) {

@@ -8,12 +8,12 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 func_020b846c(s32);void func_020b8594(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void func_020b8694(void *);void func_020b86e4(void *);s32 func_02001fb4(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
+s32 func_020b846c(s32);void RedrawListRows(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 func_02001fb4(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
 t=M2C_FIELD(a,s16*,0x40)*2;v=M2C_FIELD(a,s16*,0x3e);
-if(v!=t){h=t-v;if(h<0)h=-h;step=h>>1;if(step==0)step=1;if(v>t)M2C_FIELD(a,s16*,0x3e)-=step;else M2C_FIELD(a,s16*,0x3e)+=step;M2C_FIELD(a,s16*,0x3c)=1;func_020b8594(M2C_FIELD(a,s16*,0x3e));}
+if(v!=t){h=t-v;if(h<0)h=-h;step=h>>1;if(step==0)step=1;if(v>t)M2C_FIELD(a,s16*,0x3e)-=step;else M2C_FIELD(a,s16*,0x3e)+=step;M2C_FIELD(a,s16*,0x3c)=1;RedrawListRows(M2C_FIELD(a,s16*,0x3e));}
 }else M2C_FIELD(a,s16*,0x3c)=0;
 if(M2C_FIELD(a,s16*,0x46)==0){
 if(func_020b846c(M2C_FIELD(a,s16*,0x38))){
@@ -29,8 +29,8 @@ p=M2C_FIELD(a,UiB8ccc**,0x48);if(M2C_FIELD(a,s16*,0x40)==0)p->tile=(u16)(p->mode
 p=M2C_FIELD(a,UiB8ccc**,0x4c);if(M2C_FIELD(a,s16*,0x40)==M2C_FIELD(a,s16*,0x42)-6)p->tile=(u16)(p->mode+2);else p->tile=(u16)p->mode;p->reset=0;
 if(*gKeyState&1){func_020b876c();return;}if(*gKeyState&2){func_020b8778();return;}
 MenuSpriteUpdate(M2C_FIELD(a,void**,0x48));MenuSpriteUpdate(M2C_FIELD(a,void**,0x4c));MenuSpriteUpdate(M2C_FIELD(a,void**,0x50));
-if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x48)))func_020b8694(a);
-if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x4c)))func_020b86e4(a);
+if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x48)))ScrollListUp(a);
+if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x4c)))ScrollListDown(a);
 if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x50))){func_020b876c();return;}
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 h=M2C_FIELD(a,s16*,0x42)<<12;pos=M2C_FIELD(a,s16*,0x40)<<12;

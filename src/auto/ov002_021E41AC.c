@@ -1,5 +1,6 @@
 /* 14 functions from 0x021E41AC to 0x021E4B94 (ov002), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 
 
 /* Compares two entries (index temp_r0 vs its counterpart) and returns 0/1/2. */
@@ -78,33 +79,36 @@ x=(u32)(u16)cc|((u32)(u16)dd<<16);
 *(volatile u32 *)0x4000480=0x7fff;
 }
 
-void func_ov002_021e447c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 z,s32 color,s32 flag) {
-s32 first,second,x,y;
-*(volatile u32 *)0x4000500=1;
-first=flag?0x7fff:color;
+/* Draws a horizontal-gradient quad from the four corners (tl, tr, bl, br):
+ * the left vertices get color and the right vertices white, or the reverse
+ * when flip is set (mirrored panels). */
+void DrawGradientQuad(s32 tlX,s32 tlY,s32 trX,s32 trY,s32 blX,s32 blY,s32 brX,s32 brY,s32 z,s32 color,s32 flip) {
+s32 leftColor,rightColor,xy,xy2;
+REG_GX_BEGIN_VTXS=GX_PRIM_QUADS;
+leftColor=flip?GX_RGB_WHITE:color;
 {
-s16 bb=(s16)b,aa=(s16)a,ff=(s16)f,ee=(s16)e,zz=(s16)z;
-*(volatile u32 *)0x4000480=(u16)first;
-x=(u32)(u16)aa|((u32)(u16)bb<<16);
-*(volatile u32 *)0x400048c=x;
-*(volatile u32 *)0x400048c=(u16)zz;
-y=(u32)(u16)ee|((u32)(u16)ff<<16);
-*(volatile u32 *)0x400048c=y;
-*(volatile u32 *)0x400048c=(u16)zz;
+s16 bb=(s16)tlY,aa=(s16)tlX,ff=(s16)blY,ee=(s16)blX,zz=(s16)z;
+REG_GX_COLOR=(u16)leftColor;
+xy=(u32)(u16)aa|((u32)(u16)bb<<16);
+REG_GX_VTX_16=xy;
+REG_GX_VTX_16=(u16)zz;
+xy2=(u32)(u16)ee|((u32)(u16)ff<<16);
+REG_GX_VTX_16=xy2;
+REG_GX_VTX_16=(u16)zz;
 }
-second=flag?color:0x7fff;
+rightColor=flip?color:GX_RGB_WHITE;
 {
-s16 hh=(s16)h,gg=(s16)g,dd=(s16)d,cc=(s16)c,zz=(s16)z;
-*(volatile u32 *)0x4000480=(u16)second;
-x=(u32)(u16)gg|((u32)(u16)hh<<16);
-*(volatile u32 *)0x400048c=x;
-*(volatile u32 *)0x400048c=(u16)zz;
-y=(u32)(u16)cc|((u32)(u16)dd<<16);
-*(volatile u32 *)0x400048c=y;
-*(volatile u32 *)0x400048c=(u16)zz;
+s16 hh=(s16)brY,gg=(s16)brX,dd=(s16)trY,cc=(s16)trX,zz=(s16)z;
+REG_GX_COLOR=(u16)rightColor;
+xy=(u32)(u16)gg|((u32)(u16)hh<<16);
+REG_GX_VTX_16=xy;
+REG_GX_VTX_16=(u16)zz;
+xy2=(u32)(u16)cc|((u32)(u16)dd<<16);
+REG_GX_VTX_16=xy2;
+REG_GX_VTX_16=(u16)zz;
 }
-*(volatile u32 *)0x4000504=0;
-*(volatile u32 *)0x4000480=0x7fff;
+REG_GX_END_VTXS=0;
+REG_GX_COLOR=GX_RGB_WHITE;
 }
 
 void func_ov002_021e45c0(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {

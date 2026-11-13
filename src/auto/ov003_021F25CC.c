@@ -353,7 +353,7 @@ void func_ov003_021f2e98(s32 entry) {
  void func_01ffa6fc(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
  s32 func_ov003_021f1bfc(void); void func_020d47d0(void); void func_020d47f0(void);
  void func_02086330(void); void func_02085054(s32,s32,s32);
- void func_ov003_021f140c(s32); s32 func_ov003_021f1608(void);
+ void SetOv003SceneState(s32); s32 func_ov003_021f1608(void);
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
  s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
@@ -380,14 +380,14 @@ void func_ov003_021f2e98(s32 entry) {
  if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {func_020d47d0();func_01ffa6fc(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
- if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) func_ov003_021f140c(4);
+ if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
  else {if(!func_ov003_021f1608()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
  if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {func_020d47f0();func_02086330();func_02085054(0,0x6e0,entry);func_01ffa6fc(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
- if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) func_ov003_021f140c(4);
+ if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
  else {if(!func_ov003_021f1608()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)--;return;
  }

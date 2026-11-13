@@ -13,12 +13,12 @@ void func_ov000_02187f7c(void) {
 }
 
 s32 func_ov000_021882c4(void) {
-    s32 func_ov000_02189f3c();
+    s32 CountUnusedCapturableProperties();
     s32 flag, count, current;
     if (func_ov000_02187e50() == 1) return 0;
     flag = func_ov000_0218a2f8();
     if (flag) count = func_ov000_02189e2c();
-    else count = func_ov000_02189f3c();
+    else count = CountUnusedCapturableProperties();
     if (count == 0) return 0;
     current = func_ov000_0218a230();
     if (flag == 0) {

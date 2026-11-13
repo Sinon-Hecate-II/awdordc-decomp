@@ -118,11 +118,11 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
     extern u8 data_02144cdc;
     extern u8 data_02100bac;
 
-    M2C_UNK func_0207d0b8(void);
-    M2C_UNK func_0207d0d4(void);
+    M2C_UNK GetMapViewWidth(void);
+    M2C_UNK GetMapViewHeight(void);
 
-    s32 r5 = func_0207d0b8();
-    s32 r0v = func_0207d0d4();
+    s32 r5 = GetMapViewWidth();
+    s32 r0v = GetMapViewHeight();
     void *r9 = M2C_FIELD(gCurrentMap, void **, 0);
     void *r8p = M2C_FIELD(gTouchState, void **, 0);
     s32 r12f = 0;

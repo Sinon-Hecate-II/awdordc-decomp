@@ -4,7 +4,7 @@
 typedef struct { u8 kind:6; u8 flags:2; } UnitKind0218;
 extern void **gCurrentMap;
 extern void *gAiCommandState;
-extern void (*data_ov000_021df654)(void);
+extern void (*gAiUnitAction)(void);
 void func_ov000_0217c3a4(void);
 void func_ov000_0218d040(int);
 void func_ov000_0218d908(void);
@@ -101,7 +101,7 @@ void func_ov000_0218b02c(void) {
     if (!(flags & 0x20)) {
         *(u16 *)((u8 *)gAiCommandState + 8) = flags | 0x20;
         func_ov000_02198c08();
-        data_ov000_021df654();
+        gAiUnitAction();
     }
     func_ov000_0217c3a4();
     p = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);

@@ -1,6 +1,6 @@
 /* 31 functions from 0x020BDA88 to 0x020BE718 (main), found by ds-decomp. */
 #include "common.h"
-extern M2C_UNK data_0215d890,data_0215d990,data_0215d9b8;
+extern M2C_UNK gGameSettings,data_0215d990,data_0215d9b8;
 typedef struct { s16 a,b,c,d; } EntryBE;
 
 static inline s32 IsNewerValue(u32 b, u32 a) {
@@ -93,7 +93,7 @@ s32 func_020bdd18(void) {
 }
 
 /* Update the selection cursor from the current stylus position and return any resulting action code. */
-s32 func_020bddd4(void) {
+s32 GetMapCursorTouchAction(void) {
     s32 IsTouchInputDisabled(void);
     s32 func_020bdef8(s32, s32);
     void DeleteTouchCursor(void);
@@ -179,9 +179,9 @@ void func_020be078(void) {
 }
 
 M2C_UNK func_020be0ac(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f) {
-s32 func_01ff8e44(s32,s32);M2C_UNK func_01ff883c(u16,u8,u16,s32);extern u16 **gCur3DSpriteEngine;
+s32 GetSpriteDescForSize(s32,s32);M2C_UNK func_01ff883c(u16,u8,u16,s32);extern u16 **gCur3DSpriteEngine;
 s32 v;u32 x;u32 shift;u32 flags;
-v=func_01ff8e44(c,d);
+v=GetSpriteDescForSize(c,d);
 x=a&511;b=(u8)b;
 shift=(u32)(**gCur3DSpriteEngine<<17)>>30;
 flags=e|((f>>shift)&1023);
@@ -241,14 +241,14 @@ u8 func_020be1a8(void) {
 
 void func_020be1dc(s32 arg0) {
 void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
-M2C_UNK func_02076010(s32,s32);M2C_UNK func_02076180(u16);
+M2C_UNK PruneSaveRecords(s32,s32);M2C_UNK DeleteSaveRecord(u16);
 u8 *p,*best;s32 n,i,id;
-switch(arg0){case 2:case 3:case 4:func_02076010(arg0,1);return;}
+switch(arg0){case 2:case 3:case 4:PruneSaveRecords(arg0,1);return;}
 p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){if(!IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4))) goto next;}best=p;}next:i++;p+=40;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return;
-func_02076180((u16)id);
+DeleteSaveRecord((u16)id);
 }
 
 void func_020be2e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -310,23 +310,27 @@ if(!better)goto next;
 if(best)id=*(u16 *)best;else id=-1;return id!=-1; }
 
 void func_020be59c(void) {
-    M2C_UNK func_02076010(s32, M2C_UNK);
+    M2C_UNK PruneSaveRecords(s32, M2C_UNK);
     M2C_UNK func_02076198();
     s32 var_r5;
 
     var_r5 = 4;
     do {
-        func_02076010(var_r5, 0);
+        PruneSaveRecords(var_r5, 0);
         var_r5 += 1;
     } while (var_r5 < 0x3B);
     func_02076198();
     func_020be188(0);
 }
 
-void func_020be5d0(void) {
+/* Restore the game settings to their defaults: mark the settings block valid,
+ * clear and re-stamp the option/zoom word, reset the army/unit option tables
+ * and the save records, set the default slot words and clear the per-slot
+ * setting words. Runs at startup and whenever the settings magic is missing. */
+void InitDefaultGameSettings(void) {
 M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK func_020bf8fc(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK func_020bfa80(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
-s32 i,j,k; s32 zero1,zero2;
-M2C_FIELD(&data_0215d890,s32 *,0x128)=0x20070810;
+s32 i,slot,entry; s32 flagOff,modeOff;
+M2C_FIELD(&gGameSettings,s32 *,0x128)=GAME_SETTINGS_MAGIC;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~15;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x70;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0xc00;
@@ -334,21 +338,21 @@ M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x3000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)|=0x4000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x8000;
 func_020bfa80(0);
-i=0;zero1=0;zero2=0;
-do{func_020bf8ac(i,zero1);func_020bf8fc(i,zero2);++i;}while(i<15);
+i=0;flagOff=0;modeOff=0;
+do{func_020bf8ac(i,flagOff);func_020bf8fc(i,modeOff);++i;}while(i<15);
 func_020bf814(0);func_020e47f8();func_020e49ec();func_02086b9c();func_02091bcc();
 M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|0x80;
 func_020bf9f0(95);func_020bfa30(95);
-j=0;
-M2C_FIELD(&data_0215d890,s32 *,0x140)=0;
-M2C_FIELD(&data_0215d890,s32 *,0x144)=1;
-M2C_FIELD(&data_0215d890,s32 *,0x148)=1;
-M2C_FIELD(&data_0215d890,s32 *,0x14c)=6;
-M2C_FIELD(&data_0215d890,s32 *,0x150)=0;
-M2C_FIELD(&data_0215d890,s32 *,0x154)=0;
-M2C_FIELD(&data_0215d890,s32 *,0x158)=0;
-do{M2C_FIELD((u8 *)&data_0215d9b8+(u32)j*8,s16 *,0x36)=0;++j;}while(j<4);
-k=0;
-do{M2C_FIELD((u8 *)&data_0215d9b8+(u32)k*2,s16 *,8)=0;++k;}while(k<4);
+slot=0;
+M2C_FIELD(&gGameSettings,s32 *,0x140)=0;
+M2C_FIELD(&gGameSettings,s32 *,0x144)=1;
+M2C_FIELD(&gGameSettings,s32 *,0x148)=1;
+M2C_FIELD(&gGameSettings,s32 *,0x14c)=6;
+M2C_FIELD(&gGameSettings,s32 *,0x150)=0;
+M2C_FIELD(&gGameSettings,s32 *,0x154)=0;
+M2C_FIELD(&gGameSettings,s32 *,0x158)=0;
+do{M2C_FIELD((u8 *)&data_0215d9b8+(u32)slot*8,s16 *,0x36)=0;++slot;}while(slot<4);
+entry=0;
+do{M2C_FIELD((u8 *)&data_0215d9b8+(u32)entry*2,s16 *,8)=0;++entry;}while(entry<4);
 }
 

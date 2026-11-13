@@ -25,6 +25,21 @@
 /* More gNetStack fields used by the IPv4 sender in main_0201AE0C. */
 #define NETSTACK_IP_ID    0x06 /* u16 IPv4 identification counter, bumped per packet */
 #define NETSTACK_LOCAL_IP 0x50 /* u32 local IPv4 address, host order */
+#define NETSTACK_ARP_RESOLVED 0x01 /* u8 set once an ARP reply announcing the local address arrives */
+
+/* ARP packet layout (RFC 826), as handled by HandleArpPacket in main_0201AE0C.
+ * The 16-bit fields are in network byte order in the buffer. */
+#define ARP_HTYPE     0x00 /* u16 hardware type, 1 = Ethernet */
+#define ARP_PTYPE     0x02 /* u16 protocol type, 0x0800 = IPv4 */
+#define ARP_HLEN      0x04 /* u8 hardware address length, 6, followed by plen 4 */
+#define ARP_OPCODE    0x06 /* u16 1 = request, 2 = reply */
+#define ARP_SENDER_MAC 0x08 /* u8[6] sender hardware address */
+#define ARP_SENDER_IP  0x0E /* u32 sender protocol address */
+#define ARP_TARGET_MAC 0x12 /* u8[6] target hardware address */
+#define ARP_TARGET_IP  0x18 /* u32 target protocol address */
+#define ARP_PACKET_SIZE 0x1C /* smallest ARP packet the handler accepts */
+#define ARP_OPCODE_REQUEST 1
+#define ARP_OPCODE_REPLY   2
 
 /* IPv4 fragmentation: at most 1480 payload bytes per fragment, the fragment
  * offset counts 8-byte units, and the more-fragments flag is 0x2000. */

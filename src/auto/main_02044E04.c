@@ -120,30 +120,34 @@ void HttpGetStart(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, 
     HttpRequestStart(arg0, arg1, arg2, 0, arg3, arg4, arg5);
 }
 
-s32 SetHttpError(s32 arg0) {
+/* Maps a ghttp result code (0 = success) to the game's network error pair
+ * (kind, detail): the detail starts from the base network error value and is
+ * shifted by a per-code offset, then the pair is recorded with SetNetError.
+ * Returns the result unchanged. */
+s32 SetHttpError(s32 result) {
 M2C_UNK SetNetError(M2C_UNK,s32);
-s32 a=7,b=0xfffe8130;
-if(!arg0)return 0;
-switch((u32)(arg0+7)){
-case 0:b-=0x320;break;
-case 1:b+=(u32)0xfffffcd6;break;
-case 2:b-=0x348;break;
-case 3:case 4:case 5:b-=0x334;break;
-case 6:b+=(u32)0xfffffcc2;break;
-case 8:case 26:b-=1;a=9;break;
-case 9:b-=0x348;break;
-case 10:b+=(u32)0xfffffcae;break;
-case 11:b-=0x1e;break;
-case 12:b-=0x32;break;
-case 13:case 18:case 19:b-=0x14;break;
-case 14:b-=0x35c;break;
-case 15:case 16:case 17:b+=(u32)0xfffffc9a;break;
-case 20:case 21:b-=0x370;break;
-case 22:b+=(u32)0xfffffc86;break;
-case 23:b-=0x384;break;
-case 24:b+=(u32)0xfffffc72;break;
+s32 errorKind=7,errorCode=0xfffe8130;
+if(!result)return 0;
+switch((u32)(result+7)){
+case 0:errorCode-=0x320;break;
+case 1:errorCode+=(u32)0xfffffcd6;break;
+case 2:errorCode-=0x348;break;
+case 3:case 4:case 5:errorCode-=0x334;break;
+case 6:errorCode+=(u32)0xfffffcc2;break;
+case 8:case 26:errorCode-=1;errorKind=9;break;
+case 9:errorCode-=0x348;break;
+case 10:errorCode+=(u32)0xfffffcae;break;
+case 11:errorCode-=0x1e;break;
+case 12:errorCode-=0x32;break;
+case 13:case 18:case 19:errorCode-=0x14;break;
+case 14:errorCode-=0x35c;break;
+case 15:case 16:case 17:errorCode+=(u32)0xfffffc9a;break;
+case 20:case 21:errorCode-=0x370;break;
+case 22:errorCode+=(u32)0xfffffc86;break;
+case 23:errorCode-=0x384;break;
+case 24:errorCode+=(u32)0xfffffc72;break;
 }
-SetNetError(a,b);return arg0;
+SetNetError(errorKind,errorCode);return result;
 }
 
 void *HttpRequestAlloc(CallbackRecord *src){void *HeapAlloc(s32,s32);extern M2C_UNK gHttpRequestList;void *p=HeapAlloc(4,28);if(!p)return 0;*(CallbackRecord *)p=*src;M2C_FIELD(p,s32 *,24)=0;M2C_FIELD(p,s32 *,16)=0;if(!M2C_FIELD(&gHttpRequestList,void **,0)){M2C_FIELD(&gHttpRequestList,void **,0)=p;return p;}else{M2C_FIELD(p,void **,24)=M2C_FIELD(&gHttpRequestList,void **,0);M2C_FIELD(&gHttpRequestList,void **,0)=p;}return p;}

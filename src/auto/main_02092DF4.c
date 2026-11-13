@@ -322,9 +322,9 @@ s32 func_020935bc(void *arg0) {
 
 void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_ov000_0216939c();
-    M2C_UNK func_ov000_02169540(s32, M2C_UNK);
+    M2C_UNK StartUnitMove(s32, M2C_UNK);
     M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
-    func_ov000_02169540(func_ov000_0216939c(), arg1);
+    StartUnitMove(func_ov000_0216939c(), arg1);
     func_ov000_02169998(arg0, arg1);
 }
 
@@ -332,7 +332,7 @@ void func_02093614(void *arg0, u8 arg1, u8 arg2) {
     M2C_UNK FloodFillUnitRange(u8, u8, u32, s32, s32);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
     s32 func_ov000_0216939c();
-    M2C_UNK func_ov000_02169540(M2C_UNK, M2C_UNK);
+    M2C_UNK StartUnitMove(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     u8 *r4 = arg0;
@@ -347,7 +347,7 @@ void func_02093614(void *arg0, u8 arg1, u8 arg2) {
     }
     *ptr = (signed char) -1;
     q = (void *) func_ov000_0216939c(r4);
-    func_ov000_02169540(q, (s32) *gCurrentMap + 0x5388);
+    StartUnitMove(q, (s32) *gCurrentMap + 0x5388);
     func_ov000_02169998(r4, (s32) *gCurrentMap + 0x5388);
 }
 

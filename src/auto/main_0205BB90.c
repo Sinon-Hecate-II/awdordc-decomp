@@ -5,52 +5,55 @@ typedef struct { s32 a,b; s16 c,pad; s32 d; } Unk05Record;
 typedef union { struct { s32 a,b; }; u64 whole; } Unk05Pair;
 Unk05Pair *Vector_GetItem(s32,s32);
 
-s32 func_0205bb90(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_0205b100(u16, s32);
+/* Handles one received GTI2 message in the small control format (types 0-7):
+ * acknowledges the peer's sequence, then dispatches the command when it is the
+ * next one expected, drops it when it is stale, or buffers it until its turn. */
+s32 gti2HandleSmallMessage(void *session, s32 command, s32 buf, s32 len) {
+    s32 Gt2CompareSequence(u16, s32);
     s32 func_0205b1b8(s32);
-    s32 func_0205b79c(void *, s32, s32, s32);
-    s32 func_0205b8b0(void *, s32, s32, s32, s32, s32 *);
-    s32 func_0205bae8(void *);
-    void func_0205bb68(void *);
-    s32 sp8;
-    s32 kind;
-    s32 result;
-    if (arg3 < 7) {
- if (func_0205b1a4(arg0)) result=1; else result=0;
- return result;
+    s32 Gt2DispatchCommand(void *, s32, s32, s32);
+    s32 Gt2QueuePendingCommand(void *, s32, s32, s32, s32, s32 *);
+    s32 Gt2DispatchPendingCommands(void *);
+    void Gt2NoteDataReceived(void *);
+    s32 queueError;
+    s32 sequence;
+    s32 ok;
+    if (len < 7) {
+ if (Gt2CloseConnection(session)) ok=1; else ok=0;
+ return ok;
 }
-    kind = func_0205b0cc(arg2, 3);
-    if (!func_0205b1e4((s32)arg0, func_0205b0cc(arg2, 5))) return 0;
-    if (kind == M2C_FIELD(arg0, u16 *, 0x66)) {
-        func_0205bb68(arg0);
-        if (!func_0205b79c(arg0,arg1,arg2+7,arg3-7)) return 0;
-        if (func_0205bae8(arg0)) result=1; else result=0;
- return result;
+    sequence = Gt2ReadShort(buf, 3);
+    if (!Gt2AckSentData((s32)session, Gt2ReadShort(buf, 5))) return 0;
+    if (sequence == M2C_FIELD(session, u16 *, GT2_RECV_SEQUENCE)) {
+        Gt2NoteDataReceived(session);
+        if (!Gt2DispatchCommand(session,command,buf+7,len-7)) return 0;
+        if (Gt2DispatchPendingCommands(session)) ok=1; else ok=0;
+ return ok;
     }
-    if (((s32 (*)(s32,s32))func_0205b100)(kind,M2C_FIELD(arg0,u16 *,0x66)) < 0) {
-        func_0205bb68(arg0);
+    if (((s32 (*)(s32,s32))Gt2CompareSequence)(sequence,M2C_FIELD(session,u16 *,GT2_RECV_SEQUENCE)) < 0) {
+        Gt2NoteDataReceived(session);
         return 1;
     }
-    if (!func_0205b8b0(arg0,arg1,kind,arg2+7,arg3-7,&sp8)) return 0;
-    if (sp8 && !func_0205b1b8((s32)arg0)) return 0;
+    if (!Gt2QueuePendingCommand(session,command,sequence,buf+7,len-7,&queueError)) return 0;
+    if (queueError && !func_0205b1b8((s32)session)) return 0;
     return 1;
 }
 
 s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_0205b0cc(M2C_UNK, M2C_UNK);
-    s32 func_0205b1a4();
-    s32 func_0205b1e4(M2C_UNK, s32);
+    s32 Gt2ReadShort(M2C_UNK, M2C_UNK);
+    s32 Gt2CloseConnection();
+    s32 Gt2AckSentData(M2C_UNK, s32);
     s32 var_r0;
 
     if (arg2 != 2) {
-        if (func_0205b1a4() != 0) {
+        if (Gt2CloseConnection() != 0) {
             var_r0 = 1;
         } else {
             var_r0 = 0;
         }
         return var_r0;
     }
-    if (func_0205b1e4(arg0, func_0205b0cc(arg1, 0)) != 0) {
+    if (Gt2AckSentData(arg0, Gt2ReadShort(arg1, 0)) != 0) {
         return 1;
     }
     return 0;
@@ -58,7 +61,7 @@ s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 
 s32 func_0205bd28(void *arg0, void *arg1, s32 arg2) {
     s32 Vector_GetCount(s32);
-    s32 func_0205b100(u16, s32);
+    s32 Gt2CompareSequence(u16, s32);
     s32 func_0205cbb4(void *, void *);
     s32 lo;
     s32 hi;
@@ -66,19 +69,19 @@ s32 func_0205bd28(void *arg0, void *arg1, s32 arg2) {
     s32 i;
     void *p;
 
-    lo = func_0205b0cc((s32)arg1, 0);
+    lo = Gt2ReadShort((s32)arg1, 0);
     if (arg2 == 2) {
         hi = lo;
     } else if (arg2 == 4) {
-        hi = func_0205b0cc((s32)arg1, 2);
+        hi = Gt2ReadShort((s32)arg1, 2);
     } else {
-        return func_0205b1a4(arg0) != 0;
+        return Gt2CloseConnection(arg0) != 0;
     }
     n = Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x60));
     for (i = 0; i < n; i++) {
         p = Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x60), i);
-        if ((func_0205b100(M2C_FIELD(p, u16 *, 8), lo) >= 0) &&
-            (func_0205b100(M2C_FIELD(p, u16 *, 8), hi) <= 0) &&
+        if ((Gt2CompareSequence(M2C_FIELD(p, u16 *, 8), lo) >= 0) &&
+            (Gt2CompareSequence(M2C_FIELD(p, u16 *, 8), hi) <= 0) &&
             (func_0205cbb4(arg0, p) == 0)) {
             return 0;
         }
@@ -128,7 +131,7 @@ s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 func_0205cb68(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
 void func_0205cb4c(void *);s32 func_0205b2e0(void *,void *,s32);
-s32 func_0205b1a4(); s32 func_0205bb90(void *,s32,s32,s32);s32 func_0205bedc(void *,s32,void *,s32);
+s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 func_0205bedc(void *,s32,void *,s32);
 extern M2C_UNK gGt2Magic;
 void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
 u8 *buf=message;
@@ -162,8 +165,8 @@ accepted3:return 1;
 if(isControl && len>=4 && !ByteCompareN(buf+2,&gGt2Magic,2)){buf+=2;len-=2;isControl=0;}
 if(!isControl)return func_0205b2e0(connection2,buf,len)!=0;
 msgType=buf[2];
-if(msgType<0)return func_0205b1a4(connection2)!=0;
-if(msgType<8)return func_0205bb90(connection2,msgType,(s32)buf,len)!=0;
+if(msgType<0)return Gt2CloseConnection(connection2)!=0;
+if(msgType<8)return gti2HandleSmallMessage(connection2,msgType,(s32)buf,len)!=0;
 return func_0205bedc(connection2,msgType,buf,len)!=0;
 }
 

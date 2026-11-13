@@ -237,7 +237,7 @@ void *func_0206fa14(void *arg0) {
 
 #pragma use_frame_pointer on
 void func_0206fa3c(StringStorage *self,u32 capacity) {
-u32 StringLength(void *);void *MemAllocArray(u32);void StringCopy(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *MemAlloc(u32);
+u32 StringLength(void *);void *MemAllocArray(u32);void StringCopy(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void MemMove(void *,void *,u32);void *MemAlloc(u32);
 u8 context[20]; u32 exception[3]; u8 zero; int large; u32 size,oldcap; u8 *buffer; int allocated; u8 *old;
 if(capacity>0x7ffffffeU) {
  exception[0]=(u32)data_02100888;
@@ -254,7 +254,7 @@ if(capacity+1<=11)capacity=11;else capacity=(capacity+16)&~15;
 if(capacity==oldcap)return;
 if(capacity==11){buffer=self->small.data;old=self->large.data;allocated=0;}
 else {if(capacity>oldcap)buffer=MemAlloc(capacity);else {buffer=MemAlloc(capacity);if(!buffer){func_02074000(context);return;}}old=large?self->large.data:self->small.data;allocated=1;}
-func_020651c4(buffer,old,size);buffer[size]=0;
+MemMove(buffer,old,size);buffer[size]=0;
 if(large)MemFree(old);
 self->large.flag=allocated & 1;
 if(!allocated)self->small.length=(u8)size;

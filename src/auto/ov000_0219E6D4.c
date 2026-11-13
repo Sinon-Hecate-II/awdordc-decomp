@@ -8,15 +8,15 @@ static inline s32 E6D4Check(u8 *p, s16 index) { u8 *q=p+0x59a4+E6D4Offset(index)
 
 void func_ov000_0219e6d4(void) {
  extern s8 *gAiCommandState;
- extern M2C_UNK *data_ov000_021df654;
- extern s8 *data_ov000_021df658;
- extern s8 data_ov000_021df824;
+ extern M2C_UNK *gAiUnitAction;
+ extern s8 *gAiUnitListCursor;
+ extern s8 gAiUnitList;
  extern M2C_UNK func_ov000_02183874;
- data_ov000_021df658 = &data_ov000_021df824;
- *data_ov000_021df658++ = 0x40;
- *data_ov000_021df658 = 0;
- data_ov000_021df658 = &data_ov000_021df824;
- data_ov000_021df654 = &func_ov000_02183874;
+ gAiUnitListCursor = &gAiUnitList;
+ *gAiUnitListCursor++ = 0x40;
+ *gAiUnitListCursor = 0;
+ gAiUnitListCursor = &gAiUnitList;
+ gAiUnitAction = &func_ov000_02183874;
  *gAiCommandState = 2;
 }
 
@@ -25,9 +25,9 @@ void func_ov000_0219e72c(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern s8 *gAiCommandState;
-    extern M2C_UNK *data_ov000_021df654;
-    extern s8 *data_ov000_021df658;
-    extern s8 data_ov000_021df824;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
     extern M2C_UNK func_ov000_02181b8c;
     s32 index;
     s32 stride;
@@ -37,7 +37,7 @@ void func_ov000_0219e72c(void) {
     void *table;
     void *obj;
 
-    data_ov000_021df658 = &data_ov000_021df824;
+    gAiUnitListCursor = &gAiUnitList;
     obj = *gCurrentMap;
     baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
     index = baseIndex + 1;
@@ -48,8 +48,8 @@ void func_ov000_0219e72c(void) {
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
                 if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && type == 5) {
-                    out = data_ov000_021df658;
-                    data_ov000_021df658 = out + 1;
+                    out = gAiUnitListCursor;
+                    gAiUnitListCursor = out + 1;
                     *out = index;
                 }
             }
@@ -58,9 +58,9 @@ void func_ov000_0219e72c(void) {
             stride += 14;
         } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
     }
-    *data_ov000_021df658 = 0;
-    data_ov000_021df658 = &data_ov000_021df824;
-    data_ov000_021df654 = &func_ov000_02181b8c;
+    *gAiUnitListCursor = 0;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &func_ov000_02181b8c;
     *gAiCommandState = 2;
 }
 

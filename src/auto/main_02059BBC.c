@@ -115,12 +115,12 @@ void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
 
 void func_02059e78(void *p,s32 a,s32 b) {
 extern M2C_UNK data_020ff644,data_020ff5f0,data_020ff580,data_020ff65c;
-void func_020651c4(s32,s32,s32);s32 start;
+void MemMove(s32,s32,s32);s32 start;
 if(a==-1)a=M2C_FIELD(p,s32 *,8)-b;
 if(a>M2C_FIELD(p,s32 *,8))AssertFailed(&data_020ff644,&data_020ff5f0,&data_020ff580,79);
 if(b>M2C_FIELD(p,s32 *,8)-a)AssertFailed(&data_020ff65c,&data_020ff5f0,&data_020ff580,80);
 start=M2C_FIELD(p,s32 *,0)+a;
-func_020651c4(start,start+b,M2C_FIELD(p,s32 *,8)-a-b);
+MemMove(start,start+b,M2C_FIELD(p,s32 *,8)-a-b);
 M2C_FIELD(p,s32 *,8)-=b;
 }
 

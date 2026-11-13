@@ -120,7 +120,7 @@ s32 func_ov000_02189248(u8 *arg0,s16 *out) {
 extern void **gCurrentMap;
 extern u8 *gAiCommandState;
 extern u8 gUnitKindStats[];
-s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
+s32 func_020a33c4(s32); s32 ComputeUnitMoveRange(s32,s32,s32,s32);
 void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
 s32 func_ov000_021a9084(s32); s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
@@ -132,7 +132,7 @@ u8 *selp;
 void *map;
 bestScore=0x7fff;
 bestCost=bestScore;
-score=func_020a7b3c((u32)(arg0[0]<<26)>>26,M2C_FIELD(gAiCommandState,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
+score=ComputeUnitMoveRange((u32)(arg0[0]<<26)>>26,M2C_FIELD(gAiCommandState,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
 BuildUnitMoveRange(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);

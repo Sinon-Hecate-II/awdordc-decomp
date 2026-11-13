@@ -250,8 +250,8 @@ u8 func_020a3060(u8 *arg0) {
 }
 
 void func_020a3088(M2C_UNK arg0) {
-    M2C_UNK func_020cb254(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020cb254(arg0, 3, 0);
+    M2C_UNK LevelUpUnit(M2C_UNK, M2C_UNK, M2C_UNK);
+    LevelUpUnit(arg0, 3, 0);
 }
 
 void func_020a309c(M2C_UNK arg0) {
@@ -438,7 +438,7 @@ void func_020a379c(void *a){extern s32 *gCurrentMap;void (*cb)(u8,u8);M2C_FIELD(
 void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:PlaySoundEffect(0xd4);return;case 1:PlaySoundEffect(0xd6);return;case 2:PlaySoundEffect(0xd5);return;case 3:PlaySoundEffect(0xd7);return;default:return;}}
 
 #pragma opt_instruction_scheduling off
-s32 func_020a3864(void) {
+s32 IsWeatherChangeDue(void) {
 extern s32 *gCurrentMap; s32 IsPlayerActive(s32);
 u8 *arr; s32 idx,value,i;
 arr=(u8*)(*gCurrentMap+0x515c);

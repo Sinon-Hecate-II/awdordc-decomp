@@ -445,7 +445,7 @@ void func_020b5fec(void *arg0) {
     M2C_UNK func_020b51dc();
     M2C_UNK func_020b5200(s32, M2C_UNK);
     M2C_UNK func_020b5240(s32);
-    M2C_UNK func_020cc66c(s16, s16);
+    M2C_UNK CreateTargetCursor(s16, s16);
     void *temp_r0;
 
     func_020b5240(arg0 + 0x34);
@@ -458,7 +458,7 @@ void func_020b5fec(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x4A) = 0x20;
     M2C_FIELD(arg0, s32 *, 0x54) = (s32) (M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) - 0x1E00);
     M2C_FIELD(arg0, s32 *, 0x58) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38);
-    func_020cc66c(M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    CreateTargetCursor(M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
 void func_020b607c(void *arg0) {

@@ -43,7 +43,7 @@ void func_0202e470(void *arg0) {
     void UnlockMutex(void *);
     M2C_UNK DC_FlushRange(s32, u32);
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
-    M2C_UNK func_0202e32c(void *);
+    M2C_UNK Sound_RequestNextSegment(void *);
     u32 func_020722fc(s32, u32);
     extern s8 data_020ea780[16];
     extern s16 data_020ea790[90];
@@ -287,7 +287,7 @@ block_118:
                 sp34 += sp1C;
                 sp30 -= sp1C;
                 if ((((s32) (M2C_FIELD(sp3C, s32 *, 0x110) << 0x1A) >> 0x1F) != 0) && (M2C_FIELD(sp3C, s32 *, 0x13C) != 0)) {
-                    func_0202e32c(sp3C);
+                    Sound_RequestNextSegment(sp3C);
                 }
             }
             if (sp30 != 0) {
@@ -450,11 +450,11 @@ s32 func_0202ef4c(void *arg0) {
  * session. Returns 1 on success, or 0 after tearing the resources down again
  * when the session cannot start. */
 s32 WFC_Init(void *params) {
-void func_02007e54(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 func_020270b4(void *,s32);void func_0202f37c(void);
+void CpuFill(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 func_020270b4(void *,s32);void func_0202f37c(void);
 extern M2C_UNK data_0213d100;
 void *block,*buffer;Config0202ef *config;s32 status;
 block=M2C_FIELD(params,void *(**)(s32,s32),0)(1,24);
-M2C_FIELD(&data_0213d100,void **,16)=block;func_02007e54(0,block,24);
+M2C_FIELD(&data_0213d100,void **,16)=block;CpuFill(0,block,24);
 block=M2C_FIELD(&data_0213d100,void **,16);
 M2C_FIELD(block,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(block,s32 *,4)=M2C_FIELD(params,s32 *,4);
 M2C_FIELD(block,u8 *,9)=1;M2C_FIELD(block,u8 *,22)=1;M2C_FIELD(block,u8 *,8)=1;
@@ -462,10 +462,10 @@ M2C_FIELD(&data_0213d100,s32 *,0)=func_0202f2f4(16,0xd18);
 M2C_FIELD(&data_0213d100,s32 *,4)=func_0202f2f4(2,0x2300);
 M2C_FIELD(&data_0213d100,s32 *,8)=func_0202f2f4(4,88);
 M2C_FIELD(&data_0213d100,s32 *,12)=func_0202f2f4(8,12);
-func_02007e54(0,M2C_FIELD(&data_0213d100,void **,0),0xd18);
-func_02007e54(0,M2C_FIELD(&data_0213d100,void **,4),0x2300);
-func_02007e54(0,M2C_FIELD(&data_0213d100,void **,8),88);
-func_02007e54(0,M2C_FIELD(&data_0213d100,void **,12),12);
+CpuFill(0,M2C_FIELD(&data_0213d100,void **,0),0xd18);
+CpuFill(0,M2C_FIELD(&data_0213d100,void **,4),0x2300);
+CpuFill(0,M2C_FIELD(&data_0213d100,void **,8),88);
+CpuFill(0,M2C_FIELD(&data_0213d100,void **,12),12);
 config=M2C_FIELD(&data_0213d100,Config0202ef **,0);
 config->a=M2C_FIELD(params,u8 *,8);config->b=M2C_FIELD(params,u8 *,9);
 buffer=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(buffer,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(buffer,s32 *,4)=M2C_FIELD(params,s32 *,4);M2C_FIELD(buffer,s32 *,8)=0;
@@ -476,12 +476,12 @@ if(status==1 || status>=4){func_0202f37c();return 0;}return 1;
 }
 
 s32 func_0202f10c(void) {
- u32 func_0202f544();
+ u32 Wfc_GetSessionState();
  u32 func_02031208(); u32 func_02030a38(); u32 func_0202fc9c();
  u32 func_0203095c(); u32 func_02031290(); u32 func_02030324();
  s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32);
  void func_0202f4e4(u32); s32 func_0202f5f4(); void func_0202f5bc();
- u32 n=func_0202f544(); s32 t;
+ u32 n=Wfc_GetSessionState(); s32 t;
  if(n==1)n=func_02031208();
  else if(n<7){t=OS_DisableInterrupts();n=func_02030a38();func_0202f4e4(n);OS_RestoreInterrupts(t);}
  else if(n<9)n=func_0202fc9c();
@@ -495,9 +495,9 @@ s32 func_0202f10c(void) {
 }
 
 s32 func_0202f1dc(void) {
- u32 func_0202f544();
+ u32 Wfc_GetSessionState();
  s32 func_02030348(u32);
- u32 n=func_0202f544();
+ u32 n=Wfc_GetSessionState();
  if(n<=1)return 0;
  if(n<7)return 1;
  if(n==9)return 4;
@@ -510,7 +510,7 @@ s32 func_0202f1dc(void) {
 }
 
 u8 func_0202f248(void) {
-    u32 func_0202f544();
+    u32 Wfc_GetSessionState();
     extern M2C_UNK gWfcManager;
     u32 temp_r0;
     u8 var_r4;
@@ -519,7 +519,7 @@ u8 func_0202f248(void) {
     if (M2C_FIELD(&gWfcManager, void **, 0x10) == NULL) {
         return 0xFFU;
     }
-    temp_r0 = func_0202f544();
+    temp_r0 = Wfc_GetSessionState();
     if ((temp_r0 >= 0xAU) && (temp_r0 <= 0x10U)) {
         var_r4 = M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17);
     }
@@ -527,11 +527,11 @@ u8 func_0202f248(void) {
 }
 
 s32 func_0202f28c(void) {
- u32 func_0202f544();
+ u32 Wfc_GetSessionState();
  void func_0202f37c(void);
  void func_020301dc(u8 *);
  void func_0202f4e4(u32);
- u8 n=func_0202f544();
+ u8 n=Wfc_GetSessionState();
  if(n==0 || n==18) {
  func_0202f37c(); return 1;
  }

@@ -63,7 +63,7 @@ s32 func_0205ccd8(void **a, char *b, s32 c, s32 d, s32 e) {
 void func_0204926c(void);
 s32 gt2StringToAddress(char *,s32 *,u16 *);
 M2C_UNK gpiMalloc(s32);
-void func_02065210(void *,s32,s32);
+void MemSet(void *,s32,s32);
 s32 func_02048c84(s32,s32,s32,void *,void *,s32);
 s32 func_02048558(s32,s32,void (*)(void *));
 s32 gpiFree(void *);
@@ -84,7 +84,7 @@ if(c==0)c=0x10000;
 if(!gt2StringToAddress(b,&addr,&port))return 4;
 p=(void *)gpiMalloc(0x44);
 if(!p)return 1;
-func_02065210(p,0,0x44);
+MemSet(p,0,0x44);
 M2C_FIELD(p,s32 *,0)=-1;
 M2C_FIELD(p,s32 *,0x3c)=d;
 M2C_FIELD(p,s32 *,0x38)=c;
@@ -133,7 +133,7 @@ void *func_0205cf44(void) {
 s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     s32 func_0205cca0(void *, s32, s32);
     void *func_0205cf44(void);
-    void func_02065210(void *, s32, s32);
+    void MemSet(void *, s32, s32);
     s32 GetTickCountMs(void);
     s32 func_02059cf8(void *, s32);
     s32 func_02048558(s32, s32, void (*)(void *));
@@ -154,7 +154,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
         goto fail;
     }
 
-    func_02065210(conn, 0, 0xA0);
+    MemSet(conn, 0, 0xA0);
     *(s32 *)conn = address;
     *(u16 *)((u8 *)conn + 4) = (u16)port;
     *(void **)((u8 *)conn + 8) = owner;
@@ -490,7 +490,7 @@ void func_0205d70c(M2C_UNK **arg0, s32 *arg1) {
     *arg1 = StringLength(temp_r2) + 1;
 }
 
-void *func_0205d75c(s32 a) {
+void *FindNatNegPeer(s32 a) {
 s32 Vector_GetCount(s32);
 s32 *Vector_GetItem(s32,s32);
 extern M2C_UNK gNatNegManager;
@@ -540,7 +540,7 @@ void func_0205d8f4(void) {
     M2C_FIELD(&gNatNegManager, s32 *, 0x10) = 0;
 }
 
-s32 func_0205d920(M2C_UNK arg0) {
+s32 IsNatNegPacket(M2C_UNK arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK gNatNegMagic;
     if (ByteCompareN(arg0, &gNatNegMagic, 6) == 0) {

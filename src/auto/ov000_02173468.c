@@ -22,7 +22,7 @@ void func_ov000_02174da4(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 gMapConfig[];
-extern u8 data_ov000_021b8dfc[],data_027e007c[],gSpriteDesc8x8[],data_02101f0c[],gSpriteDesc16x16[],data_02101f3c[],gSpriteDesc16x8[];
+extern u8 data_ov000_021b8dfc[],gSpriteDesc32x8[],gSpriteDesc8x8[],data_02101f0c[],gSpriteDesc16x16[],data_02101f3c[],gSpriteDesc16x8[];
 extern s8 data_ov000_021b56a0[],data_ov000_021b5600[],data_ov000_021b5680[],data_ov000_021b56e0[];
 
 StatsOrder1734 order;
@@ -37,7 +37,7 @@ temp=func_ov000_0217244c(arg0);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(!M2C_FIELD(arg0,u8 *,0x15)){
 if(func_ov000_021724b8(temp,M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0))!=-1)AddSprite(4,1,0xc144,data_ov000_021b8dfc,0);
-AddSprite(135,25,(u16)(((164-M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,4))&1023)|0x6000),data_027e007c,1);
+AddSprite(135,25,(u16)(((164-M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,4))&1023)|0x6000),gSpriteDesc32x8,1);
 if(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,8)){
 AddSprite(135,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,24)+128)&1023)|0x8000),gSpriteDesc8x8,1);
 AddSprite(143,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,20)+128)&1023)|0x8000),gSpriteDesc8x8,1);
@@ -48,8 +48,8 @@ a=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 b=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 c=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 base=(data_ov000_021b56a0[a]+2*data_ov000_021b5600[b]+3*data_ov000_021b5680[c])*4;
-AddSprite(136,45,(u16)(((base+192)&1023)|0x6000),data_027e007c,1);
-AddSprite(136,53,(u16)(((base+224)&1023)|0x6000),data_027e007c,1);
+AddSprite(136,45,(u16)(((base+192)&1023)|0x6000),gSpriteDesc32x8,1);
+AddSprite(136,53,(u16)(((base+224)&1023)|0x6000),gSpriteDesc32x8,1);
 {order=data_ov000_021ae280;
 for(line=73,i=0;i<8;i++,line+=10){
 a=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));

@@ -25,16 +25,16 @@ gpiFree(buffer);
 
 s32 func_0204db04(s32 arg0,s32 arg1,s32 arg2) {
  extern s32 gDnsQueryState;
- s32 func_0204e6a8(s32,s32,s32);
+ s32 gpiInitialize(s32,s32,s32);
  if(gDnsQueryState!=1) return 2;
  if(arg0==0) return 2;
- return func_0204e6a8(arg0,arg1,arg2);
+ return gpiInitialize(arg0,arg1,arg2);
 }
 
 void func_0204db34(s32 *arg0) {
- void func_0204e7f0(s32 *);
+ void gpiFreeConnection(s32 *);
  if (arg0==0 || *arg0==0) return;
- func_0204e7f0(arg0);
+ gpiFreeConnection(arg0);
 }
 
 s32 func_0204db50(void **arg0) {
@@ -211,11 +211,11 @@ s32 func_0204e1b4(void **p,s32 index,void *out){
  void StringCopyN(void *,s8 *,s32);
  void gpiSetErrorString(void **,void *);
  void AssertFailed(void *,void *,void *,s32);
- void func_02065210(void *,s32,s32);
+ void MemSet(void *,s32,s32);
  extern M2C_UNK data_020fda10,data_020fdac4,data_020fdad4,data_020fdae4,data_020fdaf0;
  void *q,*entry,*details; s8 *text; s32 count;
  if(!p || !(q=*p))return 2;
- if(M2C_FIELD(q,s32 *,0x108)){func_02065210(out,0,0x210);return 0;}
+ if(M2C_FIELD(q,s32 *,0x108)){MemSet(out,0,0x210);return 0;}
  if(!out){gpiSetErrorString(p,&data_020fdac4);return 2;}
  count=M2C_FIELD(q,s32 *,0x430);
  if(index<0 || index>=count){gpiSetErrorString(p,&data_020fdad4);return 2;}

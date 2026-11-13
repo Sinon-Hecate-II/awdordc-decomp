@@ -13,13 +13,13 @@ typedef struct { u8 kind:6; u8 flags:2; } UnkCBUnit;
 
 typedef struct { u8 unk_0 : 6; u8 unk_6 : 2; } Unk020cbc88;
 
-void func_020cbacc(void *a){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 func_020cb550(void *);s32 func_020cb430(void *);s32 func_020cb6a4(void *);M2C_UNK func_01ffa6fc(void *);
+void func_020cbacc(void *a){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 func_020cb430(void *);s32 func_020cb6a4(void *);M2C_UNK func_01ffa6fc(void *);
 u16 i;void *p,*q;u32 k;
 if(func_020c98b4(a))return;
 for(i=M2C_FIELD(a,u16 *,0x50);i<51;i++){
 p=*gCurrentMap;q=(u8 *)p+0x59a4+(M2C_FIELD(p,u16 *,0x52a8)+i)*14;
 k=((UnkCBUnit *)q)->kind;if(!k)continue;if(M2C_FIELD(q,u16 *,4)&8)continue;
-if(k==23||k==21){if(func_020cb550(q)){M2C_FIELD(a,u16 *,0x50)=i+1;break;}}
+if(k==23||k==21){if(MarkTransportCargo(q)){M2C_FIELD(a,u16 *,0x50)=i+1;break;}}
 if(func_020cb430(q)&&func_020cb6a4(q)){M2C_FIELD(a,u16 *,0x50)=i+1;break;}
 }if(i==51)func_01ffa6fc(a);
 }
@@ -110,33 +110,36 @@ M2C_FIELD(*gCurrentMap,u16 *,0x52e6)&=~3;
 func_020d8804();
 }
 
-void func_020cbe44(M2C_UNK a, M2C_UNK mode) {
+/* Spawn the ripple effect on the tile under the map cursor when that tile is
+ * visible and on screen: mode 0 uses the "ripple_in" sprite, mode 1 the
+ * "ripple_out" sprite, each with its own placement sound. */
+void SpawnRippleEffect(M2C_UNK unused, M2C_UNK mode) {
 extern void **gCurrentMap;
-extern u8 data_0212b7d4[],data_0212b7e0[];
+extern u8 sRippleInName[],sRippleOutName[];
 void *func_020b5134(void *,s32,s32,s32,s32,s32,s32);
 s32 func_020d0548(s32,s32);
-void *p=*gCurrentMap,*q; s32 x=M2C_FIELD(p,s16 *,0x52dc),y=M2C_FIELD(p,s16 *,0x52de); if(!visibleCB(p,x,y))return;
+void *map=*gCurrentMap,*sprite; s32 x=M2C_FIELD(map,s16 *,0x52dc),y=M2C_FIELD(map,s16 *,0x52de); if(!visibleCB(map,x,y))return;
 if(!func_020d0548(x,y))return;
 switch(mode){
 case 0:
-q=func_020b5134(data_0212b7d4,x,y,0,0,0,7);
-M2C_FIELD(q,u32 *,0x44)=(M2C_FIELD(q,u32 *,0x44)&~0x3000000)|0x2000000;
+sprite=func_020b5134(sRippleInName,x,y,0,0,0,7);
+M2C_FIELD(sprite,u32 *,0x44)=(M2C_FIELD(sprite,u32 *,0x44)&~0x3000000)|0x2000000;
 PlaySoundAtTile(0x84,x,y);break;
 case 1:
-q=func_020b5134(data_0212b7e0,x,y,0,0,0,7);
-M2C_FIELD(q,u32 *,0x44)=(M2C_FIELD(q,u32 *,0x44)&~0x3000000)|0x2000000;
+sprite=func_020b5134(sRippleOutName,x,y,0,0,0,7);
+M2C_FIELD(sprite,u32 *,0x44)=(M2C_FIELD(sprite,u32 *,0x44)&~0x3000000)|0x2000000;
 PlaySoundAtTile(0x85,x,y);break;
 }
 }
 
-void func_020cbf94(M2C_UNK arg0) {
-    void func_020cbe44(M2C_UNK, M2C_UNK);
-    func_020cbe44(arg0, 0);
+void SpawnRippleIn(M2C_UNK arg0) {
+    void SpawnRippleEffect(M2C_UNK, M2C_UNK);
+    SpawnRippleEffect(arg0, 0);
 }
 
-void func_020cbfa4(M2C_UNK arg0) {
-    void func_020cbe44(M2C_UNK, M2C_UNK);
-    func_020cbe44(arg0, 1);
+void SpawnRippleOut(M2C_UNK arg0) {
+    void SpawnRippleEffect(M2C_UNK, M2C_UNK);
+    SpawnRippleEffect(arg0, 1);
 }
 
 void func_020cbfb4(void) {
@@ -316,13 +319,13 @@ if(!M2C_FIELD(a,s16 *,0x34))func_01ffa6fc(a);
 
 void func_020cc584(void *a) {
 extern void **gCurrentMap;
-u32 func_0207d0b8(void);u32 func_0207d0d4(void);
+u32 GetMapViewWidth(void);u32 GetMapViewHeight(void);
 void *p;
 if(M2C_FIELD(a,s16 *,0x3a)) {
 p=(u8 *)*gCurrentMap+0x5120;
-M2C_FIELD(*gCurrentMap,u16 *,0x52c2)=(func_0207d0b8()>>1)+(M2C_FIELD(p,s16 *,0x28)>>4);
+M2C_FIELD(*gCurrentMap,u16 *,0x52c2)=(GetMapViewWidth()>>1)+(M2C_FIELD(p,s16 *,0x28)>>4);
 p=(u8 *)*gCurrentMap+0x5120;
-M2C_FIELD(*gCurrentMap,u16 *,0x52c4)=(func_0207d0d4()>>1)+(M2C_FIELD(p,s16 *,0x2a)>>4);
+M2C_FIELD(*gCurrentMap,u16 *,0x52c4)=(GetMapViewHeight()>>1)+(M2C_FIELD(p,s16 *,0x2a)>>4);
 func_020cbdbc();
 }
 Reset3DSpriteBankState();func_020c0a88();
@@ -340,7 +343,7 @@ void func_020cc644(void *arg0) {
     func_020cf674((s16) (M2C_FIELD(arg0, s32 *, 0x38) * 0x10), (s16) (M2C_FIELD(arg0, s32 *, 0x3C) * 0x10), 2);
 }
 
-void func_020cc66c(s32 a,s32 b) {
+void CreateTargetCursor(s32 a,s32 b) {
 extern M2C_UNK data_0212b1dc;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);void *p;
 if(FindObjectByClass(&data_0212b1dc))return;
 p=(void *)func_01ffa3dc(&data_0212b1dc,7);
@@ -356,7 +359,7 @@ void CancelMapCursorAnimation(void) {
 void func_020cc6b8(void){
 extern s32 data_0215be0c;extern void **gCurrentMap;
 s32 func_020d46cc(void);void func_020d46ac(void);void func_020c75cc(void);void func_020d468c(void);
-void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void func_02091c20(s32,s32);
+void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void AddRecordValue(s32,s32);
 void *p; s32 n;
 if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else func_020c75cc();return;}
 p=GetTargetPosition();
@@ -371,7 +374,7 @@ if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return;
 n=(M2C_FIELD(*gCurrentMap,s16 *,0x52dc)-M2C_FIELD(p,s16 *,4))+(M2C_FIELD(*gCurrentMap,s16 *,0x52de)-M2C_FIELD(p,s16 *,6));
 if(n<0)n=-n;
 if(n==0)return;
-if(n==1)func_02091c20(7,1);else func_02091c20(8,1);
+if(n==1)AddRecordValue(7,1);else AddRecordValue(8,1);
 }
 
 void func_020cc7e0(void) {

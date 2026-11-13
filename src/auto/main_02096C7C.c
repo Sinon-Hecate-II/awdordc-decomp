@@ -1,5 +1,6 @@
 /* 31 functions from 0x02096C7C to 0x02097C50 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_02096c7c(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_020c9b70();
@@ -41,7 +42,7 @@ void func_02096d0c(void) {
 
 void func_02096d5c(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
-    M2C_UNK func_02002968(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
@@ -50,7 +51,7 @@ void func_02096d5c(void) {
     M2C_UNK func_02082c84();
     func_02082c84();
     GX_SetBankForBG(1);
-    func_02002968(2);
+    GX_SetBankForOBJ(2);
     func_02003124(4);
     func_020031cc(8);
     func_02002ab8(0x10);
@@ -71,63 +72,69 @@ void func_02096dbc(void) {
     func_020b17ec();
 }
 
-void func_02096dc8(void) {
+/* Enables the five layers of the 3D-sprite engine(s) whose display target matches
+   the current selection (main, sub or the saved engine): configures the background
+   banks, then ORs the layer-enable bits (0x10..0x100) into each matching engine. */
+void EnableSpriteLayers(void) {
     void func_02096d5c(void);
     void func_02096d0c(void);
     M2C_UNK func_020aca8c(M2C_UNK);
     M2C_UNK func_01ff9e00(void);
     s32 func_02091e14(void);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
-    u16 *volatile p0, *volatile p1, *volatile p2, *volatile p3, *volatile p4;
-    void *saved;
-    s32 i;
+    u16 *volatile layer0, *volatile layer1, *volatile layer2, *volatile layer3, *volatile layer4;
+    void *savedEngine;
+    s32 engineIndex;
     func_02096d5c();
-    saved = gCur3DSpriteEngine;
-    i = 0;
+    savedEngine = gCur3DSpriteEngine;
+    engineIndex = 0;
     do {
-        gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        gCur3DSpriteEngine = (engineIndex == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
         if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
             (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
-            (func_02091e14() != 3 || gCur3DSpriteEngine == saved)) {
+            (func_02091e14() != 3 || gCur3DSpriteEngine == savedEngine)) {
             func_02096d0c();
-            p0 = *(u16 **)gCur3DSpriteEngine; *p0 = *p0 | 0x10;
-            p1 = *(u16 **)gCur3DSpriteEngine; *p1 = *p1 | 0x20;
-            p2 = *(u16 **)gCur3DSpriteEngine; *p2 = *p2 | 0x40;
-            p3 = *(u16 **)gCur3DSpriteEngine; *p3 = *p3 | 0x80;
-            p4 = *(u16 **)gCur3DSpriteEngine; *p4 = *p4 | 0x100;
+            layer0 = *(u16 **)gCur3DSpriteEngine; *layer0 = *layer0 | 0x10;
+            layer1 = *(u16 **)gCur3DSpriteEngine; *layer1 = *layer1 | 0x20;
+            layer2 = *(u16 **)gCur3DSpriteEngine; *layer2 = *layer2 | 0x40;
+            layer3 = *(u16 **)gCur3DSpriteEngine; *layer3 = *layer3 | 0x80;
+            layer4 = *(u16 **)gCur3DSpriteEngine; *layer4 = *layer4 | 0x100;
             func_020aca8c(3);
             func_01ff9e00();
         }
-        i++;
-    } while (i < 2);
-    gCur3DSpriteEngine = saved;
+        engineIndex++;
+    } while (engineIndex < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_02096f24(void) {
+/* Disables the 3D-sprite layers of the engine(s) matching the active screen
+   selection: configures the background banks, then clears the five layer mode
+   bits of the main and/or sub engine's sprite bank. */
+void DisableSpriteLayers(void) {
 M2C_UNK func_02082cb4();
 M2C_UNK func_0208232c();
 s32 func_02091e14();
 M2C_UNK func_020aca8c(M2C_UNK);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
-u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
-void *saved; s32 i;
+u16 *volatile layer0;u16 *volatile layer1;u16 *volatile layer2;u16 *volatile layer3;u16 *volatile layer4;
+void *savedEngine; s32 engineIndex;
 func_02082cb4();
-saved=gCur3DSpriteEngine;
-i=0;
+savedEngine=gCur3DSpriteEngine;
+engineIndex=0;
 do {
-gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-if((func_02091e14()!=0||gCur3DSpriteEngine==g3DSpriteEngineMain)&&(func_02091e14()!=1||gCur3DSpriteEngine==g3DSpriteEngineSub)&&(func_02091e14()!=3||gCur3DSpriteEngine==saved)){
+gCur3DSpriteEngine=engineIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
+if((func_02091e14()!=0||gCur3DSpriteEngine==g3DSpriteEngineMain)&&(func_02091e14()!=1||gCur3DSpriteEngine==g3DSpriteEngineSub)&&(func_02091e14()!=3||gCur3DSpriteEngine==savedEngine)){
 func_0208232c();
-p0=*(u16 **)gCur3DSpriteEngine;*p0=*p0&~16;
-p1=*(u16 **)gCur3DSpriteEngine;*p1=*p1&~32;
-p2=*(u16 **)gCur3DSpriteEngine;*p2=*p2&~64;
-p3=*(u16 **)gCur3DSpriteEngine;*p3=*p3&~128;
-p4=*(u16 **)gCur3DSpriteEngine;*p4=*p4&~256;
+layer0=*(u16 **)gCur3DSpriteEngine;*layer0=*layer0&~DS3D_BANK_MODE0;
+layer1=*(u16 **)gCur3DSpriteEngine;*layer1=*layer1&~DS3D_BANK_MODE1;
+layer2=*(u16 **)gCur3DSpriteEngine;*layer2=*layer2&~DS3D_BANK_MODE2;
+layer3=*(u16 **)gCur3DSpriteEngine;*layer3=*layer3&~DS3D_BANK_MODE3;
+layer4=*(u16 **)gCur3DSpriteEngine;*layer4=*layer4&~DS3D_BANK_MODE4;
 func_020aca8c(3);
 }
-++i;
-}while(i<2);
-gCur3DSpriteEngine=saved;
+++engineIndex;
+}while(engineIndex<2);
+gCur3DSpriteEngine=savedEngine;
 }
 
 void func_0209707c(void) {

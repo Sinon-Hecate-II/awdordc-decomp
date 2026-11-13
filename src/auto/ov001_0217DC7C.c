@@ -165,7 +165,7 @@ case 0:DrawMapInfoString(record+0x40,line);break;
 case 1:
 switch((u32)(record[0xe6]<<30)>>30){case 0:return;case 1:barLength=10;break;case 2:barLength=26;break;case 3:barLength=32;break;}
 if(((u32)(record[0xe6]<<24)>>26)==1)barLength/=2;
-MI_CpuFill8(text,0,33);func_02065210(text,42,barLength);DrawMapInfoString(text,line);break;
+MI_CpuFill8(text,0,33);MemSet(text,42,barLength);DrawMapInfoString(text,line);break;
 case 3:if(record[0xf5])return;DrawMapInfoDottedValue(record+0xc0,line);break;
 case 4:if(record[0xf5])return;DrawMapInfoDottedValue(record+0xf0,line);break;
 case 5:if(record[0xf5])return;DrawMapInfoDottedValue(record+0xc4,line);break;
@@ -326,35 +326,38 @@ void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(temp_r2, s32 *, 0) = (s32) ((M2C_FIELD(temp_r2, s32 *, 0) & 0xFE00FF00) | 0x01000000);
 }
 
-void DrawMapInfoString(u8 *arg0,s32 arg1){
+/* Draws a map name on the map-list info panel, wrapping onto a second line 12
+ * pixels below: up to 16 characters per line (a shorter name is centred one line
+ * further down), rendered through the panel's text context. */
+void DrawMapInfoString(u8 *text,s32 line){
 extern M2C_UNK gMapListState;
 s32 StringLengthUpTo(u8 *,s32);
 M2C_UNK MI_CpuFill8(void *,s32,s32);
-M2C_UNK func_ov001_0218b080(s32,s32,s32,s32,s32,M2C_UNK *,s32);
-u16 buf[17];s32 len,n,i,y;
-MI_CpuFill8(buf,0,0x22);
-len=StringLengthUpTo(arg0,32);
-n=len<=16?len:16;
-for(i=0;i<n;i++){if(arg0[i]==32)buf[i]=0xe01d;else buf[i]=arg0[i];}
-y=arg1*29+2;
-if(len<=16)y+=5;
-func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y,2,8,(M2C_UNK *)buf,1);
-if(len<=16)return;
-MI_CpuFill8(buf,0,0x22);
-len-=16;
-for(i=0;i<len;i++){if(arg0[i+16]==32)buf[i]=0xe01d;else buf[i]=arg0[i+16];}
-func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y+12,2,8,(M2C_UNK *)buf,1);
+M2C_UNK DrawTextRun(s32,s32,s32,s32,s32,M2C_UNK *,s32);
+u16 glyphs[17];s32 length,firstLen,i,y;
+MI_CpuFill8(glyphs,0,0x22);
+length=StringLengthUpTo(text,32);
+firstLen=length<=16?length:16;
+for(i=0;i<firstLen;i++){if(text[i]==32)glyphs[i]=KBD_KEY_SPACE;else glyphs[i]=text[i];}
+y=line*29+2;
+if(length<=16)y+=5;
+DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y,2,8,(M2C_UNK *)glyphs,1);
+if(length<=16)return;
+MI_CpuFill8(glyphs,0,0x22);
+length-=16;
+for(i=0;i<length;i++){if(text[i+16]==32)glyphs[i]=KBD_KEY_SPACE;else glyphs[i]=text[i+16];}
+DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y+12,2,8,(M2C_UNK *)glyphs,1);
 }
 
 void DrawMapInfoDottedValue(void *arg0, s32 arg1) {
     M2C_UNK StringFormatWide(M2C_UNK *, M2C_UNK, M2C_UNK *, u8, s32, s32, s32);
-    M2C_UNK func_ov001_0218b080(s32, M2C_UNK, s32, M2C_UNK, s32, M2C_UNK *, s32);
+    M2C_UNK DrawTextRun(s32, M2C_UNK, s32, M2C_UNK, s32, M2C_UNK *, s32);
     extern M2C_UNK data_ov001_02190874;
     extern M2C_UNK gMapListState;
     u8 spC[0x20];
 
     StringFormatWide(spC, 0x10, &data_ov001_02190874, M2C_FIELD(arg0, u8 *, 0), (s32) M2C_FIELD(arg0, u8 *, 1), (s32) M2C_FIELD(arg0, u8 *, 2), (s32) M2C_FIELD(arg0, u8 *, 3));
-    func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14), 0x5F, (arg1 * 0x1D) + 8, 2, 7, spC, 1);
+    DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14), 0x5F, (arg1 * 0x1D) + 8, 2, 7, spC, 1);
 }
 
 #pragma push

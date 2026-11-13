@@ -96,7 +96,7 @@ func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK
 void Ov001_SetupDisplay(void) {
     void GX_SetVBlankIrq(s32);
     void GX_SetBankForBG(s32);
-    void func_02002968(s32);
+    void GX_SetBankForOBJ(s32);
     void GX_ConfigureDisplay(s32, s32, s32);
     void GX_SetMasterBrightness(void *, s32);
     void GX_SetBlendControl(s32, s32, s32);
@@ -111,7 +111,7 @@ void Ov001_SetupDisplay(void) {
 
     GX_SetVBlankIrq(0);
     GX_SetBankForBG(1);
-    func_02002968(2);
+    GX_SetBankForOBJ(2);
     GX_ConfigureDisplay(1, 0, 0);
 
     *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0x1f00);

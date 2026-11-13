@@ -7,7 +7,12 @@ typedef struct Ov003Object {
     void *vtable;        /* +0x00 */
     u8  filler_04[0x30];
     void *iface;         /* +0x34 second vtable */
-    u8  filler_38[0x0C];
+    u8  field38;         /* +0x38 */
+    u8  field39;         /* +0x39 */
+    u8  flags3A;         /* +0x3A u8 flags: low 6 bits a state, bit 6, bit 7 */
+    u8  field3B;         /* +0x3B */
+    void *cursor3C;      /* +0x3C block freed by the destructors */
+    void *sprites40;     /* +0x40 block of 2 + 8 + 8 sprite handles */
     void *child44;       /* +0x44 child object */
     u8  filler_48[4];
     void *child4C;       /* +0x4C child object */

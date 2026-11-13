@@ -102,7 +102,7 @@ void TlsProcessClientKeyExchange(void *arg0, M2C_UNK arg1) {
     M2C_FIELD(arg0, s8 *, 0x455) = 5;
 }
 
-M2C_UNK func_02023520(void *arg0, void *arg1, s32 arg2) {
+M2C_UNK TlsComputeFinishedMd5(void *arg0, void *arg1, s32 arg2) {
     M2C_UNK MD5_Init();
     M2C_UNK MD5_Update();
     M2C_UNK MD5_Final();
@@ -125,7 +125,7 @@ M2C_UNK func_02023520(void *arg0, void *arg1, s32 arg2) {
     MD5_Final(arg0 + 0x3A4, arg1);
 }
 
-M2C_UNK func_020235fc(void *arg0, void *arg1, s32 arg2) {
+M2C_UNK TlsComputeFinishedSha1(void *arg0, void *arg1, s32 arg2) {
 M2C_UNK SHA1_Update(); M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK SHA1_Final(void *,void *); M2C_UNK SHA1_Init(void *);
 extern u8 data_020fb054[],data_020fb05c[];
 u8 sp0[40];
@@ -145,16 +145,16 @@ SHA1_Final(arg0+0x2ec,arg1);
 
 void TlsProcessFinished(void *p,void *q) {
  M2C_UNK MI_CpuCopy8(s32,s32,u32);
- M2C_UNK func_02023520(void *,void *,s32);
- M2C_UNK func_020235fc(void *,void *,s32);
+ M2C_UNK TlsComputeFinishedMd5(void *,void *,s32);
+ M2C_UNK TlsComputeFinishedSha1(void *,void *,s32);
  s32 ByteCompareN(void *,void *,s32);
  u8 buf[20];
  MI_CpuCopy8((s32)p+0x3A4,(s32)p+0x3FC,0x58);
- func_02023520(p,buf,1);
+ TlsComputeFinishedMd5(p,buf,1);
  MI_CpuCopy8((s32)p+0x3FC,(s32)p+0x3A4,0x58);
  if(ByteCompareN(q,buf,16)) { M2C_FIELD(p,s8 *,0x455)=9;return;}
  MI_CpuCopy8((s32)p+0x2EC,(s32)p+0x348,0x5C);
- func_020235fc(p,buf,1);
+ TlsComputeFinishedSha1(p,buf,1);
  MI_CpuCopy8((s32)p+0x348,(s32)p+0x2EC,0x5C);
  if(ByteCompareN(q+16,buf,20)) M2C_FIELD(p,s8 *,0x455)=9;
  else M2C_FIELD(p,s8 *,0x455)=6;

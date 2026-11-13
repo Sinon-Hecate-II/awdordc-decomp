@@ -93,7 +93,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     unsigned long long func_020720f0(s32, s32);
     s32 func_02091e14(void);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    void *func_02082a8c(void *, void *);
+    void *Build3DSpriteTransform(void *, void *);
     void func_0209dabc(s32, void *);
     void *func_0208931c(void);
     M2C_UNK func_02088f8c(void *, s32, s32, s32, s32, s32);
@@ -153,11 +153,11 @@ M2C_UNK func_ov004_02211374(void *arg0) {
         spblk.f0 = M2C_FIELD(arg0, s16 *, 0x4A) + M2C_FIELD(arg0, s16 *, 0x4E) + M2C_FIELD((void *)gCur3DSpriteEngine, s16 *, 0x3C);
         spblk.f1 = M2C_FIELD(arg0, s16 *, 0x4C) + M2C_FIELD(arg0, s16 *, 0x50) + M2C_FIELD((void *)gCur3DSpriteEngine, s16 *, 0x3E) + (spC >> 16);
 
-        func_02082a8c(&spblk, (void *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0) + 0x14);
+        Build3DSpriteTransform(&spblk, (void *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0) + 0x14);
 
         spblk.f0 = M2C_FIELD(arg0, s16 *, 0x4A);
         spblk.f1 = M2C_FIELD(arg0, s16 *, 0x4C);
-        func_02082a8c(&spblk, (void *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0) + 0x24);
+        Build3DSpriteTransform(&spblk, (void *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0) + 0x24);
 
         if (M2C_FIELD(arg0, u16 *, 0x44) > M2C_FIELD(arg0, u16 *, 0x42)) {
             M2C_FIELD(arg0, u16 *, 0x42) = M2C_FIELD(arg0, u16 *, 0x42) + 1;

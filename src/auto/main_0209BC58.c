@@ -209,10 +209,10 @@ s32 func_0209c168(void *arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_0209c1c0(u8 *arg0, s32 *arg1) {
+s32 MeasureGlyphWidth(u8 *arg0, s32 *arg1) {
     u8 func_02099ae8(u8 *);
     u8 func_02099b00(u8 *);
-    extern u8 data_ov000_021b7e7c[256];
+    extern u8 gGlyphWidthTable[256];
 
     if (arg0 != NULL) {
         if (func_02099ae8(arg0)) {
@@ -223,20 +223,20 @@ s32 func_0209c1c0(u8 *arg0, s32 *arg1) {
             if (*arg1 != 0) {
                 *arg1 += 1;
             }
-            *arg1 += data_ov000_021b7e7c[arg0[1]];
+            *arg1 += gGlyphWidthTable[arg0[1]];
             return 2;
         }
         if (*arg1 != 0) {
             *arg1 += 1;
         }
-        *arg1 += data_ov000_021b7e7c[arg0[0]];
+        *arg1 += gGlyphWidthTable[arg0[0]];
         return 1;
     }
     return 0;
 }
 
-s32 func_0209c268(u8 *arg0) {
-    s32 func_0209c1c0(u8 *, s32 *);
+s32 MeasureStringWidth(u8 *arg0) {
+    s32 MeasureGlyphWidth(u8 *, s32 *);
     s32 sp0;
     u8 *var_r5;
 
@@ -244,72 +244,78 @@ s32 func_0209c268(u8 *arg0) {
     sp0 = 0;
     if ((var_r5 != NULL) && (*var_r5 != 0)) {
         do {
-            var_r5 = &var_r5[func_0209c1c0(var_r5, &sp0)];
+            var_r5 = &var_r5[MeasureGlyphWidth(var_r5, &sp0)];
         } while (*var_r5 != 0);
     }
     return sp0;
 }
 
 s32 func_0209c2a8(void) {
-    s32 func_0209c2c4();
+    s32 MeasureMessageWidth();
     s32 temp_r1;
 
-    temp_r1 = func_0209c2c4() + 6;
+    temp_r1 = MeasureMessageWidth() + 6;
     return (s32) (temp_r1 + ((u32) (temp_r1 >> 2) >> 0x1D)) >> 3;
 }
 
-s32 func_0209c2c4(u8 *arg0) {
+/* Pixel width of a message string: walks it, honouring the message control
+ * codes (0x0B 0x80/0x81 and 0x08 are fixed 16px items, 0x0B 0x82/0x83 insert
+ * the current player's commander name, 0x16/0x17/0x1C/0x1D are two-byte codes
+ * with no width) and adding each glyph's advance. */
+s32 MeasureMessageWidth(u8 *text) {
     s32 GetLocalizedText(u32);
-    s32 func_0209c268(u8 *);
-    s32 func_0209c1c0(u8 *, s32 *);
+    s32 MeasureStringWidth(u8 *);
+    s32 MeasureGlyphWidth(u8 *, s32 *);
     extern u8 gMovementCostTable[];
     extern void **gCurrentMap;
-    s32 sp0;
-    u8 *r9;
+    s32 width;
+    u8 *cursor;
     u8 c;
 
-    sp0 = 0;
-    r9 = arg0;
-    c = *r9;
+    width = 0;
+    cursor = text;
+    c = *cursor;
     while (c != 0) {
         switch (c) {
         case 0xB:
-            switch (r9[1]) {
+            switch (cursor[1]) {
             case 0x80:
             case 0x81:
-                sp0 += 0x10;
-                r9 += 2;
+                width += 0x10;
+                cursor += 2;
                 break;
             case 0x82:
             case 0x83: {
                 u8 *map;
-                u16 sel;
+                u16 player;
+                /* the player record's commander id (low byte at +0x6C) picks
+                 * the commander data record, whose first word is its name */
                 map = (u8 *)*gCurrentMap;
-                sel = M2C_FIELD(map, u16 *, 0x52A4);
-                sp0 += func_0209c268((u8 *)GetLocalizedText(M2C_FIELD(gMovementCostTable + ((u32)(M2C_FIELD(map + (u32)sel * 0x8C, s32 *, 0x6810) << 24) >> 24) * 0x9C, u32 *, 0)));
-                r9 += 2;
+                player = M2C_FIELD(map, u16 *, 0x52A4);
+                width += MeasureStringWidth((u8 *)GetLocalizedText(M2C_FIELD(gMovementCostTable + ((u32)(M2C_FIELD(map + (u32)player * 0x8C, s32 *, 0x6810) << 24) >> 24) * 0x9C, u32 *, 0)));
+                cursor += 2;
                 break;
             }
             }
             break;
         case 0x8:
-            sp0 += 0x10;
-            r9 += 2;
+            width += 0x10;
+            cursor += 2;
             break;
         case 0x16:
         case 0x17:
         case 0x1C:
         case 0x1D:
-            r9 += 2;
+            cursor += 2;
             break;
         default:
-            r9 += func_0209c1c0(r9, &sp0);
+            cursor += MeasureGlyphWidth(cursor, &width);
             break;
         }
-        c = *r9;
+        c = *cursor;
     }
-    if (sp0 < 0) sp0 = 0;
-    return sp0;
+    if (width < 0) width = 0;
+    return width;
 }
 
 void func_0209c418(void *arg0) {
@@ -326,7 +332,7 @@ void func_0209c428(void *arg0) {
 }
 
 s32 func_0209c454(u8 *arg0,s32 arg1) {
-s32 func_0209c1c0(u8 *,s32 *);
+s32 MeasureGlyphWidth(u8 *,s32 *);
 s32 width; s32 zero;  s32 max=0;u8 *p=arg0; u8 c; width=0;
 if(!p)return 0;
 c=*p;
@@ -337,7 +343,7 @@ if(!arg1)return width;
 p++;if(width>max)max=width;width=zero;break;
 case 4:p++;break;
 case 22:case 23:case 28:case 29:p+=2;break;
-default:p+=func_0209c1c0(p,&width);break;
+default:p+=MeasureGlyphWidth(p,&width);break;
 }
 c=*p;
 }while(c);}
@@ -466,12 +472,12 @@ void func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
 
 void func_0209c764(s32 a,s32 b,s32 c,s32 d,s32 e) {
 void *func_0209c6d8(s32);
-s32 func_01ff8e44(s32,s32);
+s32 GetSpriteDescForSize(s32,s32);
 void AddSprite(s32,s32,s32,s32,s32);
 extern M2C_UNK gCur3DSpriteEngine;
 u8 *p=func_0209c6d8(a);
 u8 v=p[3];
-s32 sprite=func_01ff8e44((u32)(v<<28)>>25,((u32)(v<<24)>>28)<<3);
+s32 sprite=GetSpriteDescForSize((u32)(v<<28)>>25,((u32)(v<<24)>>28)<<3);
 if(sprite) {
 AddSprite(b,c,(u16)(d|(1023&(*(u16*)p>>((u32)(***(u16 ***)(&gCur3DSpriteEngine)<<17)>>30)))|((u32)(p[2]<<28)>>16)),sprite,e);
 }
@@ -513,7 +519,7 @@ void func_0209c8d4(void) {
     s32 IsLinkSessionActive();
     M2C_UNK func_02086844(u16, M2C_UNK);
     M2C_UNK func_02086878(u16, M2C_UNK);
-    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     s32 func_020a1944();
     M2C_UNK func_020bf814(u16);
     s32 func_020bf894(s32);
@@ -559,15 +565,15 @@ void func_0209c8d4(void) {
         func_02086844(temp_r8, 1);
         if (DidPlayerWin() != 0) {
             if ((func_020d1afc() != 0) && (func_020d1b40() == 0)) {
-                func_02091c20(0x1A, 1);
+                AddRecordValue(0x1A, 1);
                 func_02086878(temp_r8, 1);
             }
             switch (temp_r8) {                      /* switch 1; irregular */
             case 0xB1:                              /* switch 1 */
-                func_02091c20(0x1D, 1);
+                AddRecordValue(0x1D, 1);
                 break;
             case 0xBA:                              /* switch 1 */
-                func_02091c20(0x1E, 1);
+                AddRecordValue(0x1E, 1);
                 break;
             }
             if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
@@ -599,16 +605,16 @@ void func_0209c8d4(void) {
                 default:                            /* switch 2 */
                     break;
                 case 4:                             /* switch 2 */
-                    func_02091c20(2, 1);
+                    AddRecordValue(2, 1);
                     break;
                 case 3:                             /* switch 2 */
-                    func_02091c20(3, 1);
+                    AddRecordValue(3, 1);
                     break;
                 case 2:                             /* switch 2 */
-                    func_02091c20(4, 1);
+                    AddRecordValue(4, 1);
                     break;
                 case 1:                             /* switch 2 */
-                    func_02091c20(5, 1);
+                    AddRecordValue(5, 1);
                     break;
                 }
             }
@@ -626,16 +632,16 @@ void func_0209c8d4(void) {
     temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* switch 3; irregular */
     case 1:                                         /* switch 3 */
-        func_02091c20(0x21, 1);
+        AddRecordValue(0x21, 1);
         return;
     case 2:                                         /* switch 3 */
-        func_02091c20(0x20, 1);
+        AddRecordValue(0x20, 1);
         return;
     }
 }
 
 #pragma opt_propagation reset
-void func_0209cbe4(u32 *arg0) {
+void IncrementCounter(u32 *arg0) {
     u32 temp_r2;
 
     temp_r2 = *arg0 + 1;

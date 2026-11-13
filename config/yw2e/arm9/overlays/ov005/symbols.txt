@@ -50,7 +50,7 @@ RecordsMenu_DrawList kind:function(arm,size=0x194) addr:0x022148f0
 func_ov005_02214a84 kind:function(arm,size=0x114) addr:0x02214a84
 func_ov005_02214b98 kind:function(arm,size=0x144) addr:0x02214b98
 func_ov005_02214cdc kind:function(arm,size=0x13c) addr:0x02214cdc
-func_ov005_02214e18 kind:function(arm,size=0x168) addr:0x02214e18
+RecordsMenu_ShuffleList kind:function(arm,size=0x168) addr:0x02214e18
 func_ov005_02214f80 kind:function(arm,size=0x6c) addr:0x02214f80
 func_ov005_02214fec kind:function(arm,size=0xec) addr:0x02214fec
 func_ov005_022150d8 kind:function(arm,size=0x90) addr:0x022150d8
@@ -410,5 +410,5 @@ data_ov005_022212e4 kind:data(any) addr:0x022212e4
 data_ov005_022212f4 kind:data(any) addr:0x022212f4
 data_ov005_022212f8 kind:data(any) addr:0x022212f8
 gHistoryMenu kind:bss addr:0x02221300
-data_ov005_02221304 kind:bss addr:0x02221304
+gRecordsMenuState kind:bss addr:0x02221304
 gOv005MenuState kind:bss addr:0x02221310

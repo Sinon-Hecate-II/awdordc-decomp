@@ -248,15 +248,15 @@ void InitFileRequest(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
 }
 
-s32 func_0200b79c(void *a,s32 b,s32 c,s32 d) {
-extern Unk032Record data_0212fbec;
+s32 SubmitPathRequest(void *a,s32 b,s32 c,s32 d) {
+extern Unk032Record gFileCurrentDirectory;
 s32 SubmitFileRequest(void *,s32);
 u8 *path=(u8 *)b;Unk032Record rec; s32 i,flag;void *p;
 if(*path==47||*path==92){
 M2C_FIELD(&rec,u16 *,4)=0;
-rec.words[0]=data_0212fbec.words[0];rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;path++;
+rec.words[0]=gFileCurrentDirectory.words[0];rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;path++;
 }else{
-rec=data_0212fbec;
+rec=gFileCurrentDirectory;
 for(i=0;i<=3;i++){
 u8 ch=path[i];
 if(ch==0||ch==47||ch==92)break;
@@ -296,10 +296,10 @@ M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
 }
 
 s32 func_0200b95c(s32 a,s32 b) {
- s32 func_0200b79c(void *,s32,s32,s32);
+ s32 SubmitPathRequest(void *,s32,s32,s32);
  u8 v[0x48];
  InitFileRequest(v);
- return func_0200b79c(v,b,a,0)!=0;
+ return SubmitPathRequest(v,b,a,0)!=0;
 }
 
 s32 func_0200b99c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -340,7 +340,7 @@ s32 FileRead(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 s32 FileSeek(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile s32 *,36);break;case 1:b+=M2C_FIELD(a,volatile s32 *,44);break;case 2:b+=M2C_FIELD(a,volatile s32 *,40);break;default:return 0;}v=M2C_FIELD(a,volatile s32 *,36);if(b<v)b=v;v=M2C_FIELD(a,volatile s32 *,40);if(b>v)b=v;M2C_FIELD(a,s32 *,44)=b;return 1;}
 
-s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record data_0212fbec;InitFileRequest(buf);if(!func_0200b79c(buf,a,0,(s32)&v))return 0;data_0212fbec=v;return 1;}
+s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record gFileCurrentDirectory;InitFileRequest(buf);if(!SubmitPathRequest(buf,a,0,(s32)&v))return 0;gFileCurrentDirectory=v;return 1;}
 
 void func_0200bcb4(M2C_UNK arg0) {
     M2C_UNK func_0200b6c8(M2C_UNK, M2C_UNK);

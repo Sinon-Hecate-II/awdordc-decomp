@@ -13,10 +13,10 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     s32 StringCompare(void);
     M2C_UNK func_0205fdbc(s8, s32);
     extern u8 gSessionPlayers[];
-    extern u8 data_0213d3bd[];
+    extern u8 gSessionPlayerIsString[];
     extern u8 data_0213d3be[];
     extern u8 data_0213d3c0[];
-    extern u8 data_0213d3c4[];
+    extern u8 gSessionPlayerValue[];
     s32 var_r6 = arg1;
     s32 var_r5 = arg2;
     s8 var_r7 = arg0;
@@ -39,7 +39,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     }
     temp_r4 = (var_r7 - 0x64) * 0xC;
     gSessionPlayers[temp_r4] = var_r7;
-    data_0213d3bd[temp_r4] = 0;
+    gSessionPlayerIsString[temp_r4] = 0;
     *((u16 *)(data_0213d3be + temp_r4)) = 0;
     if (*((volatile s32 *)(data_0213d3c0 + temp_r4)) != 0) {
         HeapFree(4);
@@ -51,7 +51,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
         return 0;
     }
     StringCopy(temp_r0, var_r6);
-    *((volatile s32 *)(data_0213d3c4 + temp_r4)) = var_r5;
+    *((volatile s32 *)(gSessionPlayerValue + temp_r4)) = var_r5;
     func_0205fdbc(var_r7, *((volatile s32 *)(data_0213d3c0 + temp_r4)));
     return var_r7;
 }
@@ -66,10 +66,10 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     s32 StringCompare(void);
     M2C_UNK func_0205fdbc(s8, s32);
     extern u8 gSessionPlayers[];
-    extern u8 data_0213d3bd[];
+    extern u8 gSessionPlayerIsString[];
     extern u8 data_0213d3be[];
     extern u8 data_0213d3c0[];
-    extern u8 data_0213d3c4[];
+    extern u8 gSessionPlayerValue[];
     s32 var_r6;
     s32 var_r5;
     u32 var_r7;
@@ -98,7 +98,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     block_11:
         temp_r4 = (var_r7 - 0x64) * 0xC;
         gSessionPlayers[temp_r4] = (s8) var_r7;
-        data_0213d3bd[temp_r4] = 1;
+        gSessionPlayerIsString[temp_r4] = 1;
         *((u16 *)(data_0213d3be + temp_r4)) = 0;
         if (*((s32 *)(data_0213d3c0 + temp_r4)) != 0) {
             HeapFree(4);
@@ -111,7 +111,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
             return 0;
         }
         StringCopy(temp_r0, var_r6);
-        *((s32 *)(data_0213d3c4 + temp_r4)) = var_r5;
+        *((s32 *)(gSessionPlayerValue + temp_r4)) = var_r5;
         func_0205fdbc((s8) var_r7, *((s32 *)(var_r8 + temp_r4)));
         return (s8) var_r7;
     }
@@ -137,16 +137,20 @@ s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     return var_r4;
 }
 
-void InitConnection(s32 arg0,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
+/* Initialises the network connection object and makes it the active one: stores
+   the socket, session and session data pointers plus the game name, password,
+   user data and timeout, clears its state/counters/buffers, frees the cached
+   session player buffers and resets the match manager flags. */
+void InitConnection(s32 connection,s32 socket,s32 session,s32 sessionData,s32 gameName,s32 gamePassword,s32 userData,s32 timeout) {
 void *GetConnection(void);s32 SetConnectionState(s32);
 void SetActiveConnection(s32);void ClearSessionPlayers(void);void ResetConnection(s32);
 void MI_CpuFill8(void *,s32,s32);
 extern M2C_UNK gConnectionMgr;
-void *p;
-SetActiveConnection(arg0);
-M2C_FIELD(GetConnection(),s32 *,0)=a;
-M2C_FIELD(GetConnection(),s32 *,4)=b;
-M2C_FIELD(GetConnection(),s32 *,8)=c;
+void *conn;
+SetActiveConnection(connection);
+M2C_FIELD(GetConnection(),s32 *,0)=socket;
+M2C_FIELD(GetConnection(),s32 *,4)=session;
+M2C_FIELD(GetConnection(),s32 *,8)=sessionData;
 M2C_FIELD(GetConnection(),s32 *,16)=0;
 M2C_FIELD(GetConnection(),s32 *,28)=0;
 M2C_FIELD(GetConnection(),u16 *,26)=0;
@@ -158,10 +162,10 @@ M2C_FIELD(GetConnection(),u8 *,431)=0;
 M2C_FIELD(GetConnection(),u16 *,438)=0;
 M2C_FIELD(GetConnection(),s32 *,476)=0;
 M2C_FIELD(GetConnection(),s32 *,512)=0;
-M2C_FIELD(GetConnection(),s32 *,756)=d;
-M2C_FIELD(GetConnection(),s32 *,760)=e;
-M2C_FIELD(GetConnection(),s32 *,764)=f;
-M2C_FIELD(GetConnection(),s32 *,768)=g;
+M2C_FIELD(GetConnection(),s32 *,756)=gameName;
+M2C_FIELD(GetConnection(),s32 *,760)=gamePassword;
+M2C_FIELD(GetConnection(),s32 *,764)=userData;
+M2C_FIELD(GetConnection(),s32 *,768)=timeout;
 MI_CpuFill8((u8 *)GetConnection()+0x304,0,64);
 M2C_FIELD(GetConnection(),s32 *,836)=0;
 M2C_FIELD(GetConnection(),s32 *,1124)=0;
@@ -170,8 +174,8 @@ M2C_FIELD(GetConnection(),s32 *,1140)=0;
 M2C_FIELD(GetConnection(),s32 *,1144)=0;
 M2C_FIELD(GetConnection(),s32 *,1148)=0;
 M2C_FIELD(GetConnection(),s32 *,1152)=0;
-p=GetConnection();
-M2C_FIELD(p,s32 *,0x174)=0;M2C_FIELD(p,s32 *,0x178)=0;
+conn=GetConnection();
+M2C_FIELD(conn,s32 *,0x174)=0;M2C_FIELD(conn,s32 *,0x178)=0;
 ClearSessionPlayers();
 M2C_FIELD(&gConnectionMgr,u8 *,0x1c)=0;
 M2C_FIELD(&gConnectionMgr,u8 *,0x1d)=0;
@@ -212,7 +216,7 @@ return result;
  * event/result callbacks, create the peer connection and announce the match. */
 void StartHostMatch(s32 matchType,s32 playerList,s32 eventCallback,s32 eventData,s32 resultCallback,s32 resultData){
 void *GetConnection(void);s32 SetConnectionState(s32);
-s32 func_0203e908(s32,s32,M2C_UNK,M2C_UNK);
+s32 BeginMatchmakingSession(s32,s32,M2C_UNK,M2C_UNK);
 s32 FormatMatchmakingMessage(void*,s32,s32,s32);
 s32 StringLength(s32);s32 HeapAlloc(s32,s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK*,s32);
@@ -230,7 +234,7 @@ if(!value){func_0203dc38(9,0xfffec77f);return;}
 MI_CpuCopy8(playerList,value,len);
 ((u8*)M2C_FIELD(&gConnectionMgr,void**,8)+len)[-1]=0;
 }
-func_0203e908(0,matchType,eventCallback,eventData);
+BeginMatchmakingSession(0,matchType,eventCallback,eventData);
 M2C_FIELD(GetConnection(),s32*,0x474)=resultCallback;
 M2C_FIELD(GetConnection(),s32*,0x478)=resultData;
 SetConnectionState(2);
@@ -239,7 +243,7 @@ t=GetConnection();q=GetConnection();r=GetConnection();
 M2C_FIELD(t,s32*,0xe4)=func_020613dc(M2C_FIELD(q,s32*,0x2f4),M2C_FIELD(r,s32*,0x2f4),M2C_FIELD(GetConnection(),s32*,0x2f8),0,20,1,0,&func_020432d4,0);
 }
 if(!M2C_FIELD(GetConnection(),s32*,0xe4)&&func_02043008(5))return;
-func_0203af50(3,&sEmptyString,0);
+SetGpiStatus(3,&sEmptyString,0);
 if(func_02043008(SendMatchmakingParameter(M2C_FIELD(GetConnection(),s32*,0x200))))return;
 if(!M2C_FIELD(GetConnection(),s32*,16))StartQr2Reporting(M2C_FIELD(GetConnection(),s32*,512));
 ResetConnectionSync(0);
@@ -252,7 +256,7 @@ ResetConnectionSync(0);
 void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 eventCallback, s32 eventData, s32 resultCallback, s32 resultData) {
     void *GetConnection(void);
     s32 SetConnectionState(s32);
-    s32 func_0203e908(s32, s32, M2C_UNK, M2C_UNK);
+    s32 BeginMatchmakingSession(s32, s32, M2C_UNK, M2C_UNK);
     s32 MI_CpuCopy8(M2C_UNK, void *, s32);
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     s32 func_02043008(s32);
@@ -260,7 +264,7 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
     M2C_UNK func_0200567c(void *, s32, void *, s32);
     M2C_UNK func_02037d78(void *, void *, void *, s32);
     M2C_UNK func_02037db0(void *, void *, void *, s32);
-    M2C_UNK func_0203af50(M2C_UNK, M2C_UNK *, M2C_UNK);
+    M2C_UNK SetGpiStatus(M2C_UNK, M2C_UNK *, M2C_UNK);
     s32 func_02042f94(void);
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -272,7 +276,7 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
     s32 sp14[8];
     void *p, *q;
 
-    func_0203e908(1, matchType, eventCallback, eventData);
+    BeginMatchmakingSession(1, matchType, eventCallback, eventData);
     *((u8 *)((p = GetConnection())) + 0x1A6) = (u8)(flag ? 1 : 0);
     q = GetConnection();
     M2C_FIELD(q, s32 *, 0x474) = resultCallback;
@@ -319,7 +323,7 @@ error:
                 func_02037db0(&gKeyMDF, (flag != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
                 func_0200567c(sp34, 12, &data_020fc908, 3);
                 func_02037db0(&gKeyVER, sp34, sp14, 0x2F);
-                func_0203af50(4, sp14, 0);
+                SetGpiStatus(4, sp14, 0);
                 if (func_02042f94() != 0) {
                     goto done;
                 }
@@ -346,13 +350,13 @@ done:
 void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK func_0203e410();
-    M2C_UNK func_0203e908(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK BeginMatchmakingSession(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02042f94();
     M2C_UNK SetConnectionState(M2C_UNK);
     extern M2C_UNK gConnectionMgr;
     void *temp_r4;
 
-    func_0203e908(2, arg0, arg1, arg2);
+    BeginMatchmakingSession(2, arg0, arg1, arg2);
     M2C_FIELD(GetConnection(), s32 *, 0x46C) = arg3;
     M2C_FIELD(GetConnection(), s32 *, 0x470) = arg4;
     temp_r4 = GetConnection();
@@ -371,36 +375,39 @@ void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
     StartQr2Reporting(M2C_FIELD(GetConnection(), s32 *, 0x200));
 }
 
-void func_0203c920(s32 arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3,s32 arg4) {
+/* Join the match hosted by playerId: set up connection mode 3, store the player
+   and the result callback, create the QR2 server/browser, publish the
+   matchmaking status and send the join request. */
+void StartMatchWithPlayer(s32 playerId,M2C_UNK eventCallback,M2C_UNK eventData,s32 resultCallback,s32 resultData) {
 s32 GetConnection(void);
 s32 SetConnectionState(s32);
-s32 func_0203e908(s32,s32,M2C_UNK,M2C_UNK);
-M2C_UNK func_0203af50(M2C_UNK,M2C_UNK *,M2C_UNK);
+s32 BeginMatchmakingSession(s32,s32,M2C_UNK,M2C_UNK);
+M2C_UNK SetGpiStatus(M2C_UNK,M2C_UNK *,M2C_UNK);
 M2C_UNK func_0204084c(void);
-M2C_UNK func_02040878(s32,M2C_UNK);
+M2C_UNK SendJoinRequest(s32,M2C_UNK);
 s32 func_02043008(M2C_UNK);
 s32 func_02042f94(void);
 s32 StartQr2Reporting(s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK *,s32);
 extern M2C_UNK sEmptyString,func_020432d4;
 void *p,*q,*r,*t;
-func_0203e908(3,0,arg1,arg2);
-M2C_FIELD(GetConnection(),s32 *,0x46c)=arg3;
-M2C_FIELD(GetConnection(),s32 *,0x470)=arg4;
-M2C_FIELD(GetConnection(),u8 *,0x17)=1;
+BeginMatchmakingSession(3,0,eventCallback,eventData);
+M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_CALLBACK)=resultCallback;
+M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_CALLBACK_DATA)=resultData;
+M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ADDRESS_VALID)=1;
 p=GetConnection();
-M2C_FIELD(p,s32 *,0x20)=M2C_FIELD(GetConnection(),s32 *,0x200);
-M2C_FIELD(GetConnection(),s32 *,0xf4)=arg0;
+M2C_FIELD(p,s32 *,CONN_SESSION_MATCH_ADDRESS)=M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_PARAM);
+M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_IDS)=playerId;
 SetConnectionState(4);
-if(!M2C_FIELD(GetConnection(),s32 *,0xe4)){
+if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_SERVER_BROWSER)){
 t=GetConnection();q=GetConnection();r=GetConnection();
-M2C_FIELD(t,s32 *,0xe4)=func_020613dc(M2C_FIELD(q,s32 *,0x2f4),M2C_FIELD(r,s32 *,0x2f4),M2C_FIELD(GetConnection(),s32 *,0x2f8),0,20,1,0,&func_020432d4,0);
+M2C_FIELD(t,s32 *,CONN_SESSION_SERVER_BROWSER)=func_020613dc(M2C_FIELD(q,s32 *,CONN_SESSION_GAME_NAME),M2C_FIELD(r,s32 *,CONN_SESSION_GAME_NAME),M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PLAYER_NAME),0,20,1,0,&func_020432d4,0);
 }
-if(!M2C_FIELD(GetConnection(),s32 *,0xe4)&&func_02043008(5))return;
-func_0203af50(5,&sEmptyString,0);
+if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_SERVER_BROWSER)&&func_02043008(5))return;
+SetGpiStatus(5,&sEmptyString,0);
 if(func_02042f94())return;
-if(!M2C_FIELD(GetConnection(),s32 *,0x10)&&StartQr2Reporting(M2C_FIELD(GetConnection(),s32 *,0x200)))return;
-func_02040878(M2C_FIELD(GetConnection(),s32 *,0xf4),0);
+if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_RECORD)&&StartQr2Reporting(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_PARAM)))return;
+SendJoinRequest(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_IDS),0);
 if(func_0204084c())return;
 }
 

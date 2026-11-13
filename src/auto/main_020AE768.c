@@ -237,7 +237,7 @@ void func_020af1e4(void) {
     func_01ffa9e4(&data_02127e4c);
 }
 
-void func_020af1f8(void) {
+void DeleteMainWallpaperSprites(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK data_02127e4c;
 M2C_UNK func_01ffa9f8(M2C_UNK *);

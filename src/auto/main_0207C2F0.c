@@ -241,11 +241,11 @@ void func_0207c780(void *arg0, u32 arg1) {
     func(arg0, arg1);
 }
 
-u32 func_0207c7cc(u32 *arg0) {
+u32 GetDecompressedSize(u32 *arg0) {
     return (u32) *arg0 >> 8;
 }
 
-u32 func_0207c7d8(void *arg0, u32 *arg1, u32 arg2) {
+u32 InitDecompress(void *arg0, u32 *arg1, u32 arg2) {
     M2C_UNK func_020085ac(void *, u32, u32 *);
     M2C_UNK func_020085d4(void *, u32, u32 *);
     M2C_UNK func_02008604(void *, u32, u32 *);
@@ -274,7 +274,7 @@ u32 func_0207c7d8(void *arg0, u32 *arg1, u32 arg2) {
     return (u32) *arg1 >> 8;
 }
 
-s32 func_0207c860(void *arg0, u32 arg1, u32 arg2) {
+s32 DecompressChunk(void *arg0, u32 arg1, u32 arg2) {
     s32 func_0200864c(void *, u32, u32);
     s32 func_02008700(void *, u32, u32);
     s32 func_020087ec(void *, u32, u32);
@@ -515,12 +515,12 @@ M2C_UNK func_0207cfc0(M2C_UNK arg) {
     M2C_FIELD(p, u8 *, 13) = EaseInterpolate(0, ((u8 *)&colorA)[13], ((u8 *)&colorB)[13], t, 128);
 }
 
-u8 func_0207d0b8(void) {
+u8 GetMapViewWidth(void) {
     extern void **gCurrentMap;
     return M2C_FIELD(*gCurrentMap, u8 *, 0x6F04);
 }
 
-u8 func_0207d0d4(void) {
+u8 GetMapViewHeight(void) {
  extern void **gCurrentMap;
  return M2C_FIELD(*gCurrentMap, u8 *, 0x6F05);
 }

@@ -373,7 +373,7 @@ void GX_SetClearColor(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD((void *)0x04000350, s16 *, 4) = arg2;
 }
 
-void func_02003e24(void){extern s32 data_020f5204;s32 i; if(data_020f5204!=-1){func_02007ae0(data_020f5204,0x4000330,0,16,0,0);func_02007984(data_020f5204,0x4000360,0,96);}else{func_02007e54(0,0x4000330,16);func_02007e54(0,0x4000360,96);}i=0;do{i++;*(volatile s32 *)0x40004d0=0;}while(i<32);}
+void func_02003e24(void){extern s32 data_020f5204;s32 i; if(data_020f5204!=-1){func_02007ae0(data_020f5204,0x4000330,0,16,0,0);DmaFill(data_020f5204,0x4000360,0,96);}else{CpuFill(0,0x4000330,16);CpuFill(0,0x4000360,96);}i=0;do{i++;*(volatile s32 *)0x40004d0=0;}while(i<32);}
 
 void func_02003f24(s32 arg0) {
     *(s32 *)0x04000010 = arg0;

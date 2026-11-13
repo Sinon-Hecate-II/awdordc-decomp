@@ -57,7 +57,7 @@ void func_ov001_0218a534(u8 arg0) {
 
 void Ov001_LoadSpriteObjLayout(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
-void func_02007e54(u32,void *,s32);
+void CpuFill(u32,void *,s32);
 void func_02007e20(const void *,void *,u32);
 void func_02007e70(const void *,void *,s32);
 u8 *base=(u8 *)((M2C_UNK *)&data_ov001_02193e34)[arg0];
@@ -67,7 +67,7 @@ s32 offset=*(s32 *)(base+index+4);
 u8 *src=base+offset;
 u8 *dst=(u8 *)arg2;
 u8 sp[8]; s32 i;
-func_02007e54(0,sp,8);
+CpuFill(0,sp,8);
 for(i=0;i<(s32)count;i++){
 func_02007e20(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
 }
@@ -450,13 +450,13 @@ func_ov001_0216a8ac(arg0+0x18,x,y,b,arg4,arg5,dir);
 }
 
 void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {
-    M2C_UNK func_ov001_0216a058(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawTextGlyph(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193e40;
     M2C_UNK base = data_ov001_02193e40;
-    func_ov001_0216a058((M2C_UNK)arg0, (M2C_UNK)((u8 *)base + arg5 * 8), arg1, arg2, (M2C_UNK)arg3, (M2C_UNK)arg4);
+    DrawTextGlyph((M2C_UNK)arg0, (M2C_UNK)((u8 *)base + arg5 * 8), arg1, arg2, (M2C_UNK)arg3, (M2C_UNK)arg4);
 }
 
-void func_ov001_0218b080(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, s32 arg6) {
+void DrawTextRun(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, s32 arg6) {
     s32 func_ov001_02169154(void **a, u32 b);
     void *func_ov001_0216919c(void **a, u32 b);
     void func_ov001_0218b044(void *, s32, s32, s32, u16, s32);

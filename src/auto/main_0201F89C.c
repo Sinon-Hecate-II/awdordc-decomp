@@ -1,5 +1,6 @@
 /* 22 functions from 0x0201F89C to 0x02020738 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_socket.h"
 
 s32 func_0201f89c(void *arg0, s32 arg1, s32 arg2) {
     s32 func_020214a8();
@@ -200,14 +201,14 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
 }
 #pragma optimization_level reset
 s32 func_0201fd60(void *p,s32 b,s32 c,s32 d,s32 e,s32 f,s32 flags) {
- s32 func_02020220(void *,s32,s32,s32,s32,s32);
+ s32 SocketRecv(void *,s32,s32,s32,s32,s32);
  s32 func_0201fdfc(void *,s32,s32,s32,s32,s32);
  s32 func_02020188(void *);
  void *q=M2C_FIELD(p,void **,0x64);
  s32 enabled=(flags&2)!=0 && q!=0;
  s8 old;s32 result;
  if(enabled){old=M2C_FIELD(q,s8 *,0xFE);M2C_FIELD(q,s8 *,0xFE)=1;}
- if(M2C_FIELD(p,s8 *,0x73)==1)result=func_02020220(p,b,c,d,e,f);
+ if(M2C_FIELD(p,s8 *,0x73)==1)result=SocketRecv(p,b,c,d,e,f);
  else{result=func_0201fdfc(p,b,c,d,e,f);if(result>=0)func_02020188(p);}
  if(enabled)M2C_FIELD(q,s8 *,0xFE)=old;
  return result;
@@ -403,39 +404,44 @@ s32 func_020201e4(s32 p) {
  OS_RestoreInterrupts(irq);return value;
 }
 
-s32 func_02020220(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32); M2C_UNK OS_SleepThread(void *); s32 func_020214a8(); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,s32); extern s32 data_020faf98;
-void *ctx=M2C_FIELD(arg0,void **,0x64);
-s32 irq=OS_DisableInterrupts(M2C_FIELD(ctx,void **,0x104));
-void *node=M2C_FIELD(ctx,void **,0x104);
+/* Receive up to len bytes from a stream socket's queued receive records into
+ * buf, reporting the record's peer port and address when asked.  With the wait
+ * bit set in flags it sleeps until a record arrives; otherwise it fails with
+ * SOCK_WOULD_BLOCK.  The record is dequeued and freed unless the socket is
+ * being peeked at. */
+s32 SocketRecv(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 flags) {
+s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32); M2C_UNK OS_SleepThread(void *); s32 func_020214a8(); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,s32); extern s32 gNetAllocator;
+void *raw=M2C_FIELD(sock,void **,SOCK_RAW);
+s32 irq=OS_DisableInterrupts(M2C_FIELD(raw,void **,CONN_RECV_HEAD));
+void *rec=M2C_FIELD(raw,void **,CONN_RECV_HEAD);
 s32 result;
-if(node==0) {
-s32 flag=arg5&1;
+if(rec==0) {
+s32 wait=flags&1;
 do {
-if(!flag) {result=-6; break;}
+if(!wait) {result=SOCK_WOULD_BLOCK; break;}
 
-OS_SleepThread((char *)ctx+0x10c);
-if(func_020214a8(arg0) == 0) {
-s32 ok=0;
-if(arg0) ok=(M2C_FIELD(arg0,s16 *,0x70)&1)!=0;
-if(ok) goto next;
+OS_SleepThread((char *)raw+CONN_RECV_THREAD);
+if(func_020214a8(sock) == 0) {
+s32 ready=0;
+if(sock) ready=(M2C_FIELD(sock,s16 *,SOCK_FLAGS)&SOCK_FLAG_READY)!=0;
+if(ready) goto next;
 }
-result=-56; break;
+result=SOCK_ABORTED; break;
 next:
-node=M2C_FIELD(ctx,void **,0x104);
-} while(!node);
+rec=M2C_FIELD(raw,void **,CONN_RECV_HEAD);
+} while(!rec);
 }
-if(node) {
-if(arg2>M2C_FIELD(node,u16 *,4)) arg2=M2C_FIELD(node,u16 *,4);
-MI_CpuCopy8((char *)node+12,arg1,arg2);
-if(arg3) M2C_FIELD(arg3,u16 *,0)=M2C_FIELD(node,u16 *,6);
-if(arg4) M2C_FIELD(arg4,s32 *,0)=M2C_FIELD(node,s32 *,8);
-result=M2C_FIELD(node,u16 *,4);
-if(M2C_FIELD(ctx,s8 *,0xfe)==0) {
-M2C_FIELD(ctx,void **,0x104)=M2C_FIELD(node,void **,0);
-if(!M2C_FIELD(node,void **,0)) M2C_FIELD(ctx,void **,0x100)=0;
-((void (*)(void *))M2C_FIELD(data_020faf98,void **,0x1c))(node);
-M2C_FIELD(ctx,u16 *,0x108)-=result;
+if(rec) {
+if(len>M2C_FIELD(rec,u16 *,REC_LEN)) len=M2C_FIELD(rec,u16 *,REC_LEN);
+MI_CpuCopy8((char *)rec+REC_DATA,buf,len);
+if(peerPort) M2C_FIELD(peerPort,u16 *,0)=M2C_FIELD(rec,u16 *,REC_PORT);
+if(peerAddr) M2C_FIELD(peerAddr,s32 *,0)=M2C_FIELD(rec,s32 *,REC_ADDR);
+result=M2C_FIELD(rec,u16 *,REC_LEN);
+if(M2C_FIELD(raw,s8 *,CONN_RECV_HOLD)==0) {
+M2C_FIELD(raw,void **,CONN_RECV_HEAD)=M2C_FIELD(rec,void **,REC_NEXT);
+if(!M2C_FIELD(rec,void **,REC_NEXT)) M2C_FIELD(raw,void **,CONN_RECV_TAIL)=0;
+((void (*)(void *))M2C_FIELD(gNetAllocator,void **,NET_ALLOC_FREE))(rec);
+M2C_FIELD(raw,u16 *,CONN_RECV_COUNT)-=result;
 }
 }
 OS_RestoreInterrupts(irq);return result;
@@ -446,7 +452,7 @@ s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
     void OS_WakeupThread(void *);
-    extern s32 data_020faf98;
+    extern s32 gNetAllocator;
     extern M2C_UNK data_02138b24;
     void *temp_r4;
     void *temp_r0;
@@ -455,7 +461,7 @@ s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
     temp_r4 = M2C_FIELD(arg2, void **, 0x64);
     temp_r6 = OS_DisableInterrupts();
     if (M2C_FIELD(temp_r4, u16 *, 0x10A) >= (u32) (M2C_FIELD(temp_r4, u16 *, 0x108) + arg1)) {
-        temp_r0 = M2C_FIELD(data_020faf98, void *(**)(s32), 0x18)(arg1 + 0xC);
+        temp_r0 = M2C_FIELD(gNetAllocator, void *(**)(s32), 0x18)(arg1 + 0xC);
         if (temp_r0 != NULL) {
             M2C_FIELD(temp_r4, u16 *, 0x108) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x108) + arg1);
             M2C_FIELD(temp_r0, M2C_UNK **, 0) = NULL;

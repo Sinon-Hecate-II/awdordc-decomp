@@ -91,7 +91,7 @@ void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s
 
 void *func_02090f0c(void *arg0) {
     M2C_UNK func_02090894();
-    M2C_UNK func_02090c7c();
+    M2C_UNK Sprite_DestroyAuxList();
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK MemFree();
     extern M2C_UNK data_021029cc;
@@ -102,7 +102,7 @@ void *func_02090f0c(void *arg0) {
         func_02090894();
     }
     if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        func_02090c7c();
+        Sprite_DestroyAuxList();
     }
     temp_r1 = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x34);
     if (temp_r1 != NULL) {
@@ -115,7 +115,7 @@ void *func_02090f0c(void *arg0) {
     return arg0;
 }
 
-void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK func_02090c7c();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_021029cc;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&data_021029cc;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))func_02090c7c();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
+void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK Sprite_DestroyAuxList();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_021029cc;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&data_021029cc;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))Sprite_DestroyAuxList();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
 
 #pragma opt_propagation off
 void func_02090fdc(void *arg0) {
@@ -666,17 +666,17 @@ void func_02091bcc(void) {
 }
 
 void func_02091bf4(void) {
-    M2C_UNK func_0209cbe4(s32 *);
+    M2C_UNK IncrementCounter(s32 *);
     extern M2C_UNK data_0215d9b8;
     s32 sp0;
 
     sp0 = M2C_FIELD(&data_0215d9b8, s32 *, 0x74);
-    func_0209cbe4(&sp0);
+    IncrementCounter(&sp0);
     func_02091c88(0, sp0);
 }
 
 #pragma peephole off
-void func_02091c20(s32 index,s32 value) {
+void AddRecordValue(s32 index,s32 value) {
 extern u32 gRecordValues[];
 if(value+gRecordValues[index]<0xf423fU) { gRecordValues[index]=gRecordValues[index]+value; return; }
 gRecordValues[index]=0xf423fU;

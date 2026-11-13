@@ -10,7 +10,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     M2C_UNK func_020aae44(void *);
     M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_022004a8(u8);
-    extern M2C_UNK data_027e00b4;
+    extern M2C_UNK gSpriteDesc64x32;
     extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_0220f89e;
     s32 sp10;
@@ -123,7 +123,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             AddSprite((u16) (temp_r4_6 & 0x1FF), 0x78,
                           (u16) ((spC & (0x600 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) |
                                  (u16) (var_r1 << 0xC) | 0x800),
-                          &data_027e00b4, 0xB);
+                          &gSpriteDesc64x32, 0xB);
         }
         temp_r4_7 = temp_r9 - 4;
         if (func_ov003_021e6cc4(temp_r4_7, 0x80, 0x40, 0x10) != 0) {
@@ -162,7 +162,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK func_ov003_021e6d28(void);
     M2C_UNK InRange(s32, s32, s32);
     M2C_UNK func_ov003_021f153c(void);
-    void func_ov003_021f140c(s32);
+    void SetOv003SceneState(s32);
 
     void *r7 = arg0;
     void *r4;
@@ -292,7 +292,7 @@ void func_ov003_021efb74(void *arg0) {
         }
     }
 
-    func_ov003_021f140c(1);
+    SetOv003SceneState(1);
 }
 
 void func_ov003_021efe90(void) {
@@ -354,12 +354,12 @@ void func_ov003_021f0010(void) {
 }
 
 void func_ov003_021f0014(void *arg0) {
-s32 IsLinkSessionActive(); s32 func_020848c4(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void func_ov003_021f140c(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
+s32 IsLinkSessionActive(); s32 func_020848c4(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void SetOv003SceneState(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
 u8 buf[0x24]; s32 v;
 if (!IsLinkSessionActive()) return;
 if (((u32)(M2C_FIELD(arg0,u8 *,0x39)<<31)>>31)==1) v=1; else v=0;
 if (!(v&255)) return;
-func_ov003_022006dc(0); func_ov003_021f152c(1); func_ov003_021f140c(1); func_ov006_022172b0(arg0);
+func_ov003_022006dc(0); func_ov003_021f152c(1); SetOv003SceneState(1); func_ov006_022172b0(arg0);
 if (!func_ov003_021e6d28()) return;
 if (!func_02084d3c(buf,0x24)) return;
 buf[13]=func_ov003_02200808((u8)func_020a22fc(func_020848c4()+1));

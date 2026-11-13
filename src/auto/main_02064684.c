@@ -226,7 +226,7 @@ s32 func_02064b50(void *arg0) {
     return var_r0;
 }
 
-s32 func_02064bcc(void *p){
+s32 GetFilePosition(void *p){
 extern u8 data_021001cc[],data_02100218[],data_02100264[],data_0213e61c[];
 extern s32 data_0213e5d4[],data_0213e5f8[];
 extern M2C_UNK gSocketManager;
@@ -369,7 +369,7 @@ if(n) do {s8 c=*in++;--n;*p++=c;} while(n);
 return out;
 }
 
-void *func_020651c4(char *dst,char *src,u32 n) {
+void *MemMove(char *dst,char *src,u32 n) {
  if(src>=dst) {
  char *p=dst;
  if(n) { do { *p++=*src++; } while(--n); }
@@ -380,7 +380,7 @@ void *func_020651c4(char *dst,char *src,u32 n) {
  return dst;
 }
 
-s32 func_02065210(s32 arg0) {
+s32 MemSet(s32 arg0) {
     M2C_UNK func_020652bc();
     func_020652bc();
     return arg0;

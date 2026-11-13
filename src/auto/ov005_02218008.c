@@ -13,7 +13,7 @@ extern void *gOv005MenuState, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpr
 void func_02086608();
 void func_02082c84();
 void GX_SetBankForBG();
-void func_02002968();
+void GX_SetBankForOBJ();
 void func_02003124();
 void func_020031cc();
 void func_02002ab8();
@@ -77,7 +77,7 @@ u16 * volatile v9;
 u16 * volatile v10;
 u16 * volatile v11;
 func_02086608(10); gOv005MenuState=HeapAllocBlock(60);func_02082c84();
-GX_SetBankForBG(1);func_02002968(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_02002bb8(32);func_0200323c(128);func_020032bc(256);
+GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_02002bb8(32);func_0200323c(128);func_020032bc(256);
 M2C_FIELD(gOv005MenuState,u8 *,0)=0; M2C_FIELD(gOv005MenuState,s16 *,4)=0; M2C_FIELD(gOv005MenuState,s16 *,2)=M2C_FIELD(gOv005MenuState,s16 *,4);M2C_FIELD(gOv005MenuState,s16 *,14)=0;M2C_FIELD(gOv005MenuState,s16 *,12)=M2C_FIELD(gOv005MenuState,s16 *,14);M2C_FIELD(gOv005MenuState,s16 *,18)=0;M2C_FIELD(gOv005MenuState,s16 *,20)=0;M2C_FIELD(gOv005MenuState,s16 *,16)=M2C_FIELD(gOv005MenuState,s16 *,14)+1;M2C_FIELD(gOv005MenuState,s16 *,6)=0;M2C_FIELD(gOv005MenuState,s16 *,22)=12;M2C_FIELD(gOv005MenuState,s16 *,24)=0;M2C_FIELD(gOv005MenuState,s16 *,8)=0;M2C_FIELD(gOv005MenuState,s16 *,10)=256;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&first);
 v0=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v0 = *v0 &~ 16;

@@ -155,13 +155,13 @@ void func_ov004_022120c0(void *arg0) {
 
 /* Draws the two-digit day counter at (x, y): two 32x16 icon tiles from
  * gSpriteDesc32x16, then the tens and ones digits (tiles 22..31) from
- * data_027e006c, all shifted up by tileBase. */
+ * gSpriteDesc8x16, all shifted up by tileBase. */
 void func_ov004_022124e0(s32 x,s32 y,s32 tileBase,s32 value) {
-void AddSprite(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK gSpriteDesc32x16,data_027e006c;
+void AddSprite(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK gSpriteDesc32x16,gSpriteDesc8x16;
 AddSprite((u16)x,(u16)y,(u16)(tileBase+SpriteTile124(14)),&gSpriteDesc32x16,11);
 AddSprite((u16)(x+32),(u16)y,(u16)(tileBase+SpriteTile124(18)),&gSpriteDesc32x16,11);
-AddSprite((u16)(x+64),(u16)y,(u16)(tileBase+SpriteTile124(value/10+22)),&data_027e006c,11);
-AddSprite((u16)(x+72),(u16)y,(u16)(tileBase+SpriteTile124(value%10+22)),&data_027e006c,11);
+AddSprite((u16)(x+64),(u16)y,(u16)(tileBase+SpriteTile124(value/10+22)),&gSpriteDesc8x16,11);
+AddSprite((u16)(x+72),(u16)y,(u16)(tileBase+SpriteTile124(value%10+22)),&gSpriteDesc8x16,11);
 }
 
 /* Draws a horizontal bar of six 32x16 tiles at (x, y): tiles [0,4,8] then the

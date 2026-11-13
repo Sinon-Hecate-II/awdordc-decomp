@@ -379,7 +379,7 @@ void func_ov006_02215b78(void) {
 
 void func_ov006_02215b84(u8 *arg0) {
     M2C_UNK FocusSpriteSlotById(u8);
-    M2C_UNK func_ov006_02215c6c();
+    M2C_UNK FriendCodeKeypad_Erase();
     extern void *gKeyState;
     u16 key0;
     u16 keys;
@@ -391,7 +391,7 @@ void func_ov006_02215b84(u8 *arg0) {
     value = ip;
     keys = M2C_FIELD(gKeyState, u16 *, 2);
     if (key0 & 1) {
-        func_ov006_02215c6c();
+        FriendCodeKeypad_Erase();
         return;
     }
     if (keys & 0x40) {
@@ -454,26 +454,29 @@ done:
 }
 
 #pragma opt_common_subs off
-M2C_UNK func_ov006_02215c6c(void *arg0) {
+/* The friend-code keypad's clear and delete keys: CLEAR wipes the entered code
+ * and puts the cursor back at the start; DELETE removes the digit under the
+ * cursor (or the last one) and pulls the rest of the code left. */
+M2C_UNK FriendCodeKeypad_Erase(void *arg0) {
 void MI_CpuFill8(void *,s32,s32);s32 PlaySoundEffect(s32);
-u8 event=M2C_FIELD(arg0,u8 *,0);void *p=M2C_FIELD(arg0,void **,16);s32 i,j;s8 prev;s8 *q;
-switch(event) {
-case 10:MI_CpuFill8(gFriendCodeInput,0,13);M2C_FIELD(p,s8 *,56)=0;PlaySoundEffect(0x1000d);return;
-case 11:
-i=M2C_FIELD(p,s8 *,56);
-if(i>0) {
-if(i==11&&gFriendCodeInput[i])gFriendCodeInput[i]=0;
+u8 key=M2C_FIELD(arg0,u8 *,0);void *state=M2C_FIELD(arg0,void **,16);s32 cursor,shift;s8 prev;s8 *dst;
+switch(key) {
+case FRIEND_CODE_KEYPAD_CLEAR:MI_CpuFill8(gFriendCodeInput,0,13);M2C_FIELD(state,s8 *,FRIEND_CODE_CURSOR)=0;PlaySoundEffect(0x1000d);return;
+case FRIEND_CODE_KEYPAD_DELETE:
+cursor=M2C_FIELD(state,s8 *,FRIEND_CODE_CURSOR);
+if(cursor>0) {
+if(cursor==FRIEND_CODE_LENGTH-1&&gFriendCodeInput[cursor])gFriendCodeInput[cursor]=0;
 else {
-prev=i-1;
-if(prev>=0&&prev<12&&(gFriendCodeInput[prev]||(prev>0&&gFriendCodeInput[prev-1])))M2C_FIELD(p,s8 *,56)=prev;
-j=M2C_FIELD(p,s8 *,56);
-if(j<11){q=gFriendCodeInput+j;do {j++;*q=q[1];q++;}while(j<11);}
-gFriendCodeInput[11]=0;
+prev=cursor-1;
+if(prev>=0&&prev<FRIEND_CODE_LENGTH&&(gFriendCodeInput[prev]||(prev>0&&gFriendCodeInput[prev-1])))M2C_FIELD(state,s8 *,FRIEND_CODE_CURSOR)=prev;
+shift=M2C_FIELD(state,s8 *,FRIEND_CODE_CURSOR);
+if(shift<FRIEND_CODE_LENGTH-1){dst=gFriendCodeInput+shift;do {shift++;*dst=dst[1];dst++;}while(shift<FRIEND_CODE_LENGTH-1);}
+gFriendCodeInput[FRIEND_CODE_LENGTH-1]=0;
 }PlaySoundEffect(0x1000d);return;
 }
-if(i==0&&gFriendCodeInput[i]) {
-if(i<11){q=gFriendCodeInput+i;do{i++;*q=q[1];q++;}while(i<11);}
-gFriendCodeInput[11]=0;PlaySoundEffect(0x1000d);return;
+if(cursor==0&&gFriendCodeInput[cursor]) {
+if(cursor<FRIEND_CODE_LENGTH-1){dst=gFriendCodeInput+cursor;do{cursor++;*dst=dst[1];dst++;}while(cursor<FRIEND_CODE_LENGTH-1);}
+gFriendCodeInput[FRIEND_CODE_LENGTH-1]=0;PlaySoundEffect(0x1000d);return;
 }
 PlaySoundEffect(0x1001d);return;
 }

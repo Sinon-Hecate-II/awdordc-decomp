@@ -283,21 +283,24 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
 }
 
 #pragma scheduling on
-void RenderUnitSprite(Vec3 *arg0,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
+/* Draws the 3D unit sprite for `unit` at `origin`: picks the sprite variant from
+   the owner's army index plus the acted/selected flags, fills the shared render
+   context, draws the body and then the status icons on either side of it. */
+void RenderUnitSprite(Vec3 *origin,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
 s32 func_020a7298(s32,u8);s32 GetViewZoom(s32);s32 Divide(s32,s32);
 void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void func_020796b0(Vec3 *,UnitRenderContext *);
 extern s32 *gCurrentMap;
-Vec3 pos;UnitRenderContext ctx; s32 variant;
-pos=*arg0;
-variant=M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c1)-1;
-if(flags&0x200)variant+=4;
-if(flags&0x400)variant+=8;
+Vec3 pos;UnitRenderContext ctx; s32 spriteVariant;
+pos=*origin;
+spriteVariant=M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1;
+if(flags&0x200)spriteVariant+=4;
+if(flags&0x400)spriteVariant+=8;
 ctx.pos=pos;ctx.unit=unit;
-ctx.kind=func_020a7298(unit->kind,M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67cd));
-ctx.frame=GetViewZoom(*gCurrentMap+0x6ef8)<=0?16:24;
-ctx.variant=variant;ctx.flags=flags;
+ctx.kind=func_020a7298(unit->kind,M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
+ctx.frame=GetViewZoom(*gCurrentMap+MAP_VIEW_ZOOM)<=0?16:24;
+ctx.variant=spriteVariant;ctx.flags=flags;
 ctx.side=unit->side;
-ctx.color=M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67cc);
+ctx.color=M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_FLIP_OFF);
 ctx.extra=extra;ctx.mode=mode;
 ctx.hp=unit->hp==0?0:Divide(unit->hp-1,10)+1;
 func_020793f0(&ctx);pos.x-=192;DrawUnitStatusIcon(&pos,&ctx);pos.x+=384;func_020796b0(&pos,&ctx);

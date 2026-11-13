@@ -6,8 +6,8 @@ extern u8 data_ov000_021df7e4[64];
 extern u8 *gAiCommandState;
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5c05[];
-extern u8 data_ov000_021b5c0a[];
+extern u8 gUnitKindMaxAmmo[];
+extern u8 gUnitKindMaxFuel[];
 extern void *gAiSettings;
 extern void *gAiUnitTypeTuning;
 
@@ -50,13 +50,13 @@ if(IsUnitSelected() && ((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<50) {
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
 }
 a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
-if(data_ov000_021b5c05[a*0x70]) {
+if(gUnitKindMaxAmmo[a*0x70]) {
 b=(u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28;
 if(b==0 && func_020a8604(a,b)==0) {
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000; return;
 }
 }
-if((u8)Divide(((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25)*100,data_ov000_021b5c0a[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]) >= (u32)M2C_FIELD(gAiUnitTypeTuning,u8 *,3)) return;
+if((u8)Divide(((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25)*100,gUnitKindMaxFuel[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]) >= (u32)M2C_FIELD(gAiUnitTypeTuning,u8 *,3)) return;
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000;
 }
 
@@ -64,11 +64,11 @@ void func_ov000_0219a818(void *arg0) {
 s32 func_020a8604(u32,u32);
 u32 a,b;
 a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
-if(data_ov000_021b5c05[a*0x70]) {
+if(gUnitKindMaxAmmo[a*0x70]) {
 b=(u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28;
 if(b==0 && func_020a8604(a,b)==0) return;
 }
-if((s32)(data_ov000_021b5c0a[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]>>1)<(s32)((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25))
+if((s32)(gUnitKindMaxFuel[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]>>1)<(s32)((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25))
 M2C_FIELD(arg0,u16 *,8)&=~0x3000;
 }
 

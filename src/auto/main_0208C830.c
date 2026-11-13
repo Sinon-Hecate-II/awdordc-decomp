@@ -102,7 +102,7 @@ void func_0208ca2c(s32 arg0, s32 arg1, s16 arg2, s32 arg3) {
 void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern s16 gSinCosTable[];
     extern u8 data_020f35ba[];
-    extern u8 data_027e007c[];
+    extern u8 gSpriteDesc32x8[];
     extern u8 gSpriteDesc16x8[];
     extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
@@ -154,7 +154,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
             AddSprite((u16)((px & 0x1FF) | 0x3800),
                           (u16)(((y0 - 4) & 0xFF) | 0x300),
                           (u16)t,
-                          (void *)data_027e007c,
+                          (void *)gSpriteDesc32x8,
                           pri);
             px=(s16)(px+0x40); len=(s16)(len-0x40);
         }
@@ -163,7 +163,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AddSprite((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)t,
-                      (void *)data_027e007c,
+                      (void *)gSpriteDesc32x8,
                       pri);
         px=(s16)(px+0x20); len=(s16)(len-0x20);
     }
@@ -217,8 +217,8 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
 void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern s16 gSinCosTable[];
     extern u8 data_020f359e[];
-    extern u8 data_027e009c[];
-    extern u8 data_027e006c[];
+    extern u8 gSpriteDesc8x32[];
+    extern u8 gSpriteDesc8x16[];
     extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
     s32 Divide(s32, s32);
@@ -270,7 +270,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
             AACC((u16)((((px - 4) & 0x1FF)) | 0x3600),
                           (u16)((y0 & 0xFF) | 0x300),
                           t,
-                          (void *)data_027e009c,
+                          (void *)gSpriteDesc8x32,
                           pri);
             y0=(s16)(y0+0x40); len=(s16)(len-0x40);
         }
@@ -279,7 +279,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       t,
-                      (void *)data_027e009c,
+                      (void *)gSpriteDesc8x32,
                       pri);
         y0=(s16)(y0+0x20); len=(s16)(len-0x20);
     }
@@ -287,7 +287,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       t,
-                      (void *)data_027e006c,
+                      (void *)gSpriteDesc8x16,
                       pri);
         y0=(s16)(y0+0x10); len=(s16)(len-0x10);
     }

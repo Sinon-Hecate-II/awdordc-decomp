@@ -45,9 +45,9 @@ void Configure3DSpriteLayer(s32 layer, SpriteAttr *attr) {
 }
 #pragma scheduling on
 void func_020824cc(void) {
-    void func_02082a8c(void *, void *);
+    void Build3DSpriteTransform(void *, void *);
     extern void **gCur3DSpriteEngine;
-    extern u8 data_02101fc0[];
+    extern u8 sSpriteTransformDefault[];
     u16 * volatile sp4;
     u16 * volatile sp0;
 
@@ -63,26 +63,29 @@ void func_020824cc(void) {
     sp0 = (u16 *)*gCur3DSpriteEngine + 1;
     *sp0 = *sp0 & ~0x38;
 
-    func_02082a8c(data_02101fc0, (u8 *)*gCur3DSpriteEngine + 0x14);
-    func_02082a8c(data_02101fc0, (u8 *)*gCur3DSpriteEngine + 0x24);
+    Build3DSpriteTransform(sSpriteTransformDefault, (u8 *)*gCur3DSpriteEngine + 0x14);
+    Build3DSpriteTransform(sSpriteTransformDefault, (u8 *)*gCur3DSpriteEngine + 0x24);
 }
 
-void func_0208259c(void){
-void func_02082a8c(void *,void *);extern void **gCur3DSpriteEngine;extern u8 data_02101fc0[];
-u16 *volatile a;u16 *volatile b;u16 *volatile c;u16 *volatile d;u16 *volatile e;u16 *volatile f;u16 *volatile g;
-a=*gCur3DSpriteEngine;*a=*a&~0x10;
-b=*gCur3DSpriteEngine;*b=*b&~0x20;
-c=*gCur3DSpriteEngine;*c=*c&~0x40;
-d=*gCur3DSpriteEngine;*d=*d&~0x80;
-e=*gCur3DSpriteEngine;*e=*e&~0x100;
-M2C_FIELD(*gCur3DSpriteEngine,u16 *,6)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u16 *,8)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u16 *,10)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u16 *,12)=0;
-f=(u16 *)*gCur3DSpriteEngine+1;*f=*f&~7;
-g=(u16 *)*gCur3DSpriteEngine+1;*g=*g&~0x38;
-func_02082a8c(data_02101fc0,(u8 *)*gCur3DSpriteEngine+0x14);
-func_02082a8c(data_02101fc0,(u8 *)*gCur3DSpriteEngine+0x24);
+/* Reset the current 3D sprite engine's layer configuration: clear the five
+   screen-mode bits and the four layer attribute words, clear the low bits of the
+   bank mode word, and restore both layer transforms to the default. */
+void Reset3DSpriteLayers(void){
+void Build3DSpriteTransform(void *,void *);extern void **gCur3DSpriteEngine;extern u8 sSpriteTransformDefault[];
+u16 *volatile mode0;u16 *volatile mode1;u16 *volatile mode2;u16 *volatile mode3;u16 *volatile mode4;u16 *volatile bankMode;u16 *volatile bankMode2;
+mode0=*gCur3DSpriteEngine;*mode0=*mode0&~DS3D_BANK_MODE0;
+mode1=*gCur3DSpriteEngine;*mode1=*mode1&~DS3D_BANK_MODE1;
+mode2=*gCur3DSpriteEngine;*mode2=*mode2&~DS3D_BANK_MODE2;
+mode3=*gCur3DSpriteEngine;*mode3=*mode3&~DS3D_BANK_MODE3;
+mode4=*gCur3DSpriteEngine;*mode4=*mode4&~DS3D_BANK_MODE4;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,DS3D_BANK_LAYER_TILE0)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,DS3D_BANK_LAYER_TILE1)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,DS3D_BANK_LAYER_TILE2)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,DS3D_BANK_LAYER_TILE3)=0;
+bankMode=(u16 *)*gCur3DSpriteEngine+1;*bankMode=*bankMode&~7;
+bankMode2=(u16 *)*gCur3DSpriteEngine+1;*bankMode2=*bankMode2&~0x38;
+Build3DSpriteTransform(sSpriteTransformDefault,(u8 *)*gCur3DSpriteEngine+0x14);
+Build3DSpriteTransform(sSpriteTransformDefault,(u8 *)*gCur3DSpriteEngine+0x24);
 }
 
 void func_02082700(void) {
@@ -172,7 +175,7 @@ void Reset3DSpriteEngineState(void) {
 }
 
 #pragma scheduling off
-void func_02082a8c(void *arg0, void *arg1) {
+void Build3DSpriteTransform(void *arg0, void *arg1) {
 s32 Divide(s32,s16);
 extern s16 gSinCosTable[];
 void *out=arg1; void *in=arg0;
@@ -234,7 +237,7 @@ void func_02082c84(void) {
 
 void func_02082cb4(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
-    M2C_UNK func_02002968(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK func_02002e3c(M2C_UNK);
@@ -247,7 +250,7 @@ void func_02082cb4(void) {
     GX_SetBankForBG(2);
     func_02003124(4);
     func_020031cc(8);
-    func_02002968(0x10);
+    GX_SetBankForOBJ(0x10);
     func_02002e3c(0x20);
     func_02002ab8(0x40);
     func_0200323c(0x80);

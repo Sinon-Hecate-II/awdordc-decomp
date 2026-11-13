@@ -122,7 +122,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     void func_02009d34();
     s32 func_02009e8c(s32, s32);
     void DC_InvalidateRange();
-    void func_02007984();
+    void DmaFill();
     void func_020118f4(void);
     void func_020062d4();
     void func_020067c4();
@@ -161,7 +161,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         return 4;
     }
     DC_InvalidateRange(arg0, arg2);
-    func_02007984(arg1, arg0, 0, arg2);
+    DmaFill(arg1, arg0, 0, arg2);
     p = (void *)arg0;
     M2C_FIELD(&data_02130660, void **, 4) = p;
     M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0) = arg0 + 0x200;

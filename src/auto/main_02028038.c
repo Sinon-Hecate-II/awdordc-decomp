@@ -91,7 +91,7 @@ case 2:case 3:case 4:default:WFC_SetState(11);{u8 *session=gSession;WFC_Dispatch
 /* Handle a message from the WFC socket: advance the connection state machine and report the result. */
 void WFC_ProcessCallback(u16 *msg){
 extern void *gSession;
-void DC_InvalidateRange(s32,s32); void func_020293a0(s32,u16); u64 func_020722fc(s32,s32); s32 func_020125b0(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
+void DC_InvalidateRange(s32,s32); void func_020293a0(s32,u16); u64 func_020722fc(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
 s32 result=20,i,n;u32 bits;
 switch(msg[1]){
 case 0:
@@ -106,7 +106,7 @@ if((bits&0xc00000)==0xc00000){n=func_0202827c(bits&0x3ffe);if(n){s32 v=M2C_FIELD
 M2C_FIELD(gSession,u16 *,0x228e)=(1<<func_02028038((u16)(32-func_020282a8(msg[5]))))>>1;
 DC_InvalidateRange(M2C_FIELD(gSession,s32 *,0x2288),M2C_FIELD(gSession,u16 *,0x228c));
 M2C_FIELD(gSession,s32 *,0x2284)++;
-result=func_020125b0(WFC_ProcessCallback,(u8 *)gSession+0x2288);break;
+result=WFC_SendRequestPacket(WFC_ProcessCallback,(u8 *)gSession+0x2288);break;
 case 7:result=func_02012700(WFC_ProcessSendCallback);break;
 case 13:WFC_Finish();return;
 }

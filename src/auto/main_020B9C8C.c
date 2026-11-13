@@ -1,5 +1,7 @@
 /* 24 functions from 0x020B9C8C to 0x020BAC24 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 static inline s32 DistanceBAAE0(s32 x,s32 y,s32 xx,s32 yy) { s32 d=0; if(x-xx>0)d+=x-xx;else d+=xx-x; if(y-yy>0)d+=y-yy;else d+=yy-y; return d; }
 typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x196c]; u16 width,height; u8 pad5148[0x85c]; u8 units[256][14]; } MapBAAE0;
 
@@ -226,26 +228,33 @@ if(func_020d277c(a,base+offset))result=1;else result=0;
 return result;
 }
 
-s32 func_020ba510(s32 x,s32 y){
-extern void **gCurrentMap;
-extern u8 data_ov000_021b5c66[],data_ov000_021b5c05[],data_ov000_021b5c0a[];
-s32 func_020a8604(s32);
-u8 *p,*u; s32 n;
-if(x<0||y<0)goto fail;
-p=*gCurrentMap;
-if(x>=M2C_FIELD(p,u16 *,0x5144)||y>=M2C_FIELD(p,u16 *,0x5146))goto fail;
-goto valid;
-fail:return 0;
-valid:n=M2C_FIELD(p+(x+M2C_FIELD(p+y*2,u16 *,0x3758)),u8 *,0x508);
-if(!n)return 0;
-if((n&0xc0)!=M2C_FIELD(p,u16 *,0x52a8))return 0;
-u=p+0x59a4+n*14;
-if(u==M2C_FIELD(p,u8 **,0x52d0))return 0;
-if(!data_ov000_021b5c66[((u32)(u[0]<<26)>>26)*112])return 0;
-if(func_020a8604((u32)(u[0]<<26)>>26) || data_ov000_021b5c05[((u32)(u[0]<<26)>>26)*112]==((u32)(M2C_FIELD(u,u16 *,6)<<21)>>28)){
-if(data_ov000_021b5c0a[((u32)(u[0]<<26)>>26)*112]==((u32)(u[10]<<25)>>25))return 0;
-}
-return 1;
+/* True when the cell (x, y) holds a unit of the cursor's owner, other than the
+ * selected unit, that still needs resupply: its kind may be resupplied and it is
+ * low on ammo (transports only count fuel) or on fuel. */
+s32 IsSupplyTargetAt(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    extern u8 gUnitKindSupplyFlag[], gUnitKindMaxAmmo[], gUnitKindMaxFuel[];
+    s32 func_020a8604(s32);
+    u8 *map, *unit;
+    s32 unitId;
+
+    if (x < 0 || y < 0) goto fail;
+    map = *gCurrentMap;
+    if (x >= M2C_FIELD(map, u16 *, MAP_WIDTH) || y >= M2C_FIELD(map, u16 *, MAP_HEIGHT)) goto fail;
+    goto valid;
+fail:
+    return 0;
+valid:
+    unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
+    if (!unitId) return 0;
+    if ((unitId & 0xC0) != M2C_FIELD(map, u16 *, MAP_CURSOR_OWNER)) return 0;
+    unit = map + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+    if (unit == M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT)) return 0;
+    if (!gUnitKindSupplyFlag[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE]) return 0;
+    if (func_020a8604((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) || gUnitKindMaxAmmo[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE] == ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 21) >> 28)) {
+        if (gUnitKindMaxFuel[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE] == ((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL) << 25) >> 25)) return 0;
+    }
+    return 1;
 }
 
 s32 func_020ba654(s32 arg0,s32 x,s32 y,s32 slot){

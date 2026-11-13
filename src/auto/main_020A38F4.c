@@ -1,5 +1,6 @@
 /* 28 functions from 0x020A38F4 to 0x020A48EC (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct MapEffectParticle { u16 x, y, dx, dy, sprite, unkA; } MapEffectParticle;
 static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
  void func_01ff90e4(u8,u8,s32,void *);extern u8 data_021204a4[];
@@ -53,23 +54,26 @@ void func_020a39c0(M2C_UNK arg0) {
     M2C_FIELD(temp_r4, s16 *, 0x38) = 0;
 }
 
-s32 func_020a39f8(void){
+/* Decide the weather to announce for the next turn: manual weather (mode != 1)
+   falls back to the map's reset weather, random weather picks the next one using
+   the transition chances of the current weather. */
+s32 RollNextWeather(void){
 extern s32 *gCurrentMap;
-s32 NextRandomValue(void);s32 func_020a3864(void);
-s32 state=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,0x5158);
-s32 chance=NextRandomValue()%100;
-if(M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,0x5158)==M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,0x515b)){
-if(M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,0x5159)!=1)return state;
+s32 NextRandomValue(void);s32 IsWeatherChangeDue(void);
+s32 weather=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,MAP_WEATHER);
+s32 roll=NextRandomValue()%100;
+if(M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,MAP_WEATHER)==M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,MAP_WEATHER_RESET)){
+if(M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,MAP_WEATHER_MODE)!=1)return weather;
 }
-if(!func_020a3864())return state;
-if(M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,0x5159)!=1)state=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,0x515b);
-else switch(state){
-case 0:if(chance<70)state=0;else if(chance<80)state=2;else if(chance<90)state=1;else state=3;break;
-case 2:if(chance<30)state=0;else if(chance<60)state=2;else if(chance<80)state=1;else state=3;break;
-case 1:if(chance<30)state=0;else if(chance<50)state=2;else if(chance<80)state=1;else state=3;break;
-case 3:if(chance<30)state=0;else if(chance<50)state=2;else if(chance<70)state=1;else state=3;break;
+if(!IsWeatherChangeDue())return weather;
+if(M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,MAP_WEATHER_MODE)!=1)weather=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,0),u8*,MAP_WEATHER_RESET);
+else switch(weather){
+case 0:if(roll<70)weather=0;else if(roll<80)weather=2;else if(roll<90)weather=1;else weather=3;break;
+case 2:if(roll<30)weather=0;else if(roll<60)weather=2;else if(roll<80)weather=1;else weather=3;break;
+case 1:if(roll<30)weather=0;else if(roll<50)weather=2;else if(roll<80)weather=1;else weather=3;break;
+case 3:if(roll<30)weather=0;else if(roll<50)weather=2;else if(roll<70)weather=1;else weather=3;break;
 }
-return state;
+return weather;
 }
 
 void func_020a3b58(void) {
@@ -82,27 +86,30 @@ M2C_FIELD(p,u16 *,0x36)=M2C_FIELD(*gCurrentMap,u8 *,0x515a);
 M2C_FIELD(p,u16 *,0x38)=1;
 }
 
-void func_020a3bcc(void){
+/* Sets up the clear-weather map effects: the four drifting records get random
+ * positions and their drift velocities from data_020f3ba4, and all 32 weather
+ * particles are parked so none is drawn. */
+void InitClearWeatherEffects(void){
 extern s32 *gCurrentMap;extern s32 data_020f3ba4[];s32 NextRandomValue(void);
-s32 i; s32 offset,index,xmask,ymask;s32 offset2,j;
-xmask=M2C_FIELD(*gCurrentMap,u16 *,0x5144)>=32?1023:511;
-ymask=M2C_FIELD(*gCurrentMap,u16 *,0x5146)>=32?1023:511;
-i=0;offset=i;index=i;
+s32 drifter;s32 drifterOffset,driftIndex,xMask,yMask;s32 particleOffset,particle;
+xMask=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)>=32?1023:511;
+yMask=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)>=32?1023:511;
+drifter=0;drifterOffset=drifter;driftIndex=drifter;
 do{
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,s32 *,0x180)=(NextRandomValue()&xmask)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,s32 *,0x184)=(NextRandomValue()&ymask)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,s32 *,0x188)=data_020f3ba4[index];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,s32 *,0x18c)=data_020f3ba4[index+1];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0x190)=NextRandomValue()%255;
-offset+=20;index+=3;i++;
-}while(i<4);
-j=0;offset2=j;
-do{M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset2,u16 *,8)=0;j++;offset2+=12;}while(j<32);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+drifterOffset,s32 *,MAP_EFFECT_DRIFTERS+MAP_EFFECT_DRIFTER_X)=(NextRandomValue()&xMask)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+drifterOffset,s32 *,MAP_EFFECT_DRIFTERS+MAP_EFFECT_DRIFTER_Y)=(NextRandomValue()&yMask)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+drifterOffset,s32 *,MAP_EFFECT_DRIFTERS+MAP_EFFECT_DRIFTER_DX)=data_020f3ba4[driftIndex];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+drifterOffset,s32 *,MAP_EFFECT_DRIFTERS+MAP_EFFECT_DRIFTER_DY)=data_020f3ba4[driftIndex+1];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+drifterOffset,u16 *,MAP_EFFECT_DRIFTERS+MAP_EFFECT_DRIFTER_TIMER)=NextRandomValue()%255;
+drifterOffset+=MAP_EFFECT_DRIFTER_STRIDE;driftIndex+=3;drifter++;
+}while(drifter<MAP_EFFECT_DRIFTER_COUNT);
+particle=0;particleOffset=particle;
+do{M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+particleOffset,u16 *,MAP_EFFECT_PARTICLE_SPRITE)=0;particle++;particleOffset+=MAP_EFFECT_PARTICLE_STRIDE;}while(particle<MAP_EFFECT_PARTICLE_COUNT);
 }
 
-void func_020a3d10(void){
+void InitRainEffects(void){
 void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 NextRandomValue(void);
-extern u8 data_0212054c[],data_02120558[],data_02120568[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 data_020f3b44[];
+extern u8 data_0212054c[],data_02120558[],data_02120568[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
 s16 i; s32 offset;
 SetFileDirectory(data_0212054c);
 LoadDecompressedFileTo(data_02120558,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
@@ -111,34 +118,36 @@ i=0;offset=0;
 do{
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(NextRandomValue()%255)<<8;
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,2)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=data_020f3b44[(i%16)*3];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=data_020f3b44[(i%16)*3+1];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=data_020f3b44[(i%16)*3+2];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=sWeatherParticlePatterns[(i%16)*3];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=sWeatherParticlePatterns[(i%16)*3+1];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=sWeatherParticlePatterns[(i%16)*3+2];
 i++;offset+=12;
 }while(i<32);
 }
 
-void func_020a3e48(void){
+/* Sets up the snow weather effect: loads the snow particle sprites and scatters
+ * the 32 falling particles at random positions with a sideways drift. */
+void InitSnowEffects(void){
 void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 NextRandomValue(void);
-extern u8 data_02120574[],data_02120580[],data_02120590[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 data_020f3b44[];
+extern u8 data_02120574[],data_02120580[],data_02120590[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
 s16 i; s32 offset;
 SetFileDirectory(data_02120574);
 LoadDecompressedFileTo(data_02120580,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
 LoadFileToSpriteBuffer(data_02120590,0x2c0,32);
 i=0;offset=0;
 do{
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,2)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=data_020f3b44[(i%16)*3]*3;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=data_020f3b44[(i%16)*3+1]*8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=data_020f3b44[(i%16)*3+2];
-i++;offset+=12;
-}while(i<32);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,MAP_EFFECT_PARTICLE_X)=(NextRandomValue()%255)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,MAP_EFFECT_PARTICLE_Y)=(NextRandomValue()%255)<<8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,MAP_EFFECT_PARTICLE_DX)=sWeatherParticlePatterns[(i%16)*3]*3;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,MAP_EFFECT_PARTICLE_DY)=sWeatherParticlePatterns[(i%16)*3+1]*8;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,MAP_EFFECT_PARTICLE_SPRITE)=sWeatherParticlePatterns[(i%16)*3+2];
+i++;offset+=MAP_EFFECT_PARTICLE_STRIDE;
+}while(i<MAP_EFFECT_PARTICLE_COUNT);
 }
 
-void func_020a3f88(void){
+void InitSandstormEffects(void){
 void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 NextRandomValue(void);
-extern u8 data_0212059c[],data_021205a8[],data_021205bc[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 data_020f3b44[];
+extern u8 data_0212059c[],data_021205a8[],data_021205bc[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 sWeatherParticlePatterns[];
 s32 i; s32 offset;
 SetFileDirectory(data_0212059c);
 LoadDecompressedFileTo(data_021205a8,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
@@ -147,16 +156,16 @@ i=0;offset=0;
 do{
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(NextRandomValue()%255)<<8;
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,2)=(NextRandomValue()%255)<<8;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=data_020f3b44[(i%16)*3]*20;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=data_020f3b44[(i%16)*3+1];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=data_020f3b44[(i%16)*3+2];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,4)=sWeatherParticlePatterns[(i%16)*3]*20;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,6)=sWeatherParticlePatterns[(i%16)*3+1];
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,8)=sWeatherParticlePatterns[(i%16)*3+2];
 i++;offset+=12;
 }while(i<32);
 }
 
-void func_020a40c0(u32 a) {
-void func_020a3bcc(void);void func_020a3d10(void);void func_020a3e48(void);void func_020a3f88(void);
-switch(a){case 0:func_020a3bcc();return;case 1:func_020a3d10();return;case 2:func_020a3e48();return;case 3:func_020a3f88();return;default:return;}
+void ApplyWeatherEffects(u32 a) {
+void InitClearWeatherEffects(void);void InitRainEffects(void);void InitSnowEffects(void);void InitSandstormEffects(void);
+switch(a){case 0:InitClearWeatherEffects();return;case 1:InitRainEffects();return;case 2:InitSnowEffects();return;case 3:InitSandstormEffects();return;default:return;}
 }
 
 void func_020a4100(s32 a) {

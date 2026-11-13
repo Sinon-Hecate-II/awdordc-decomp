@@ -113,7 +113,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK func_0209b59c(s32, M2C_UNK);
     M2C_UNK func_0209b5e4(s32, s32);
-    s32 func_0209c268();
+    s32 MeasureStringWidth();
     s8 GetSpriteAnimValue(s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
     s32 GetCurrentMapName();
@@ -214,7 +214,7 @@ void func_ov000_0216b194(void *arg0) {
     func_02091d4c(0x12);
     M2C_FIELD(arg0, s16 *, 0x3E) = 0x20;
     GetCurrentMapName();
-    temp_r0_19 = func_0209c268();
+    temp_r0_19 = MeasureStringWidth();
     if ((s32) temp_r0_19 > 0x40) {
         M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (M2C_FIELD(arg0, s16 *, 0x3E) - (temp_r0_19 - 0x40));
     }

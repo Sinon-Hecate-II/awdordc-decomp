@@ -7,7 +7,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK AddToU16Array(s32, u16, s32);
     s32 Get3DSpriteLayerSize(u8, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
-    M2C_UNK func_02002968(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK func_02002e3c(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
@@ -116,7 +116,7 @@ void func_ov004_02217f5c(void *arg0) {
     func_02082c84();
     GX_SetBankForTex(3);
     GX_SetBankForBG(0x20);
-    func_02002968(0x10);
+    GX_SetBankForOBJ(0x10);
     func_02002e3c(0x40);
     func_02003124(4);
     func_020031cc(8);

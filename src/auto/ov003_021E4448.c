@@ -2,13 +2,13 @@
 #include "common.h"
 
 void func_ov003_021e4448(void *arg0){
-M2C_UNK func_ov003_021f2860(void *);M2C_UNK func_ov003_021f140c(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
+M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
 extern M2C_UNK data_ov003_0220f47c;
 struct {void *data;u16 buf0[5];u16 buf1[5];}local;
 u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
 local.data=&data_ov003_0220f47c;
 for(i=0;i<5;i++){local.buf1[i]=65535;local.buf0[i]=local.buf1[i];}
-func_ov003_021f2860(&local);func_ov003_021f140c(1);
+func_ov003_021f2860(&local);SetOv003SceneState(1);
 i=0;zero=i;block=&local;
 do{
 count=func_ov003_021f2780((M2C_UNK)block,local.buf0);
@@ -185,10 +185,10 @@ void func_ov003_021e48dc(void) {
 }
 
 void func_ov003_021e48e8(void *arg0) {
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f1bd4();
     func_ov003_021f1bd4();
-    func_ov003_021f140c(2);
+    SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
 }
 
@@ -198,7 +198,7 @@ void func_ov003_021e4908(void *arg0) {
     void *MemAlloc(s32);
     M2C_UNK SetTextSpriteValue(M2C_UNK *);
     void *HeapAllocBlock(s32);
-    void func_02091c20(s32, s32);
+    void AddRecordValue(s32, s32);
 
     extern M2C_UNK data_02102174;
     extern M2C_UNK data_ov003_0220f48c;
@@ -397,7 +397,7 @@ void func_ov003_021e4908(void *arg0) {
 
     *(void **)(bp + 0x68) = HeapAllocBlock((s32)&gHeapObjectVTable);
     *(void **)(bp + 0x6c) = HeapAllocBlock((s32)&gHeapObjectVTable);
-    func_02091c20(0x22, 0x1);
+    AddRecordValue(0x22, 0x1);
 }
 
 void *func_ov003_021e4d2c(void *arg0) {
@@ -408,7 +408,7 @@ void *func_ov003_021e4d2c(void *arg0) {
     void HeapFreeBlock(void *);
     extern M2C_UNK data_ov003_0220f4b4;
     extern M2C_UNK data_ov003_0220f4e0;
-    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK SetOv003SceneState(s32);
     void **temp_r0;
     void **temp_r0_2;
     void **temp_r0_3;
@@ -456,7 +456,7 @@ void *func_ov003_021e4d2c(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
         DeleteSpriteObject();
     }
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
     func_020c127c();
     if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
         HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x68));
@@ -499,7 +499,7 @@ void *func_ov003_021e4eb8(void *arg0) {
     void HeapFreeBlock(void *);
     extern M2C_UNK data_ov003_0220f4b4;
     extern M2C_UNK data_ov003_0220f4e0;
-    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK SetOv003SceneState(s32);
     void **temp_r0;
     void **temp_r0_2;
     void **temp_r0_3;
@@ -547,7 +547,7 @@ void *func_ov003_021e4eb8(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
         DeleteSpriteObject();
     }
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
     func_020c127c();
     if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
         HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x68));

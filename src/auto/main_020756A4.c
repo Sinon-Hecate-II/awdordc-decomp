@@ -52,27 +52,31 @@ if(var_r5!=0xffff){var_r4=var_r5*12+(s32)arg0;goto loop;}
 }
 
 #pragma opt_common_subs off
-s32 func_020759e8(M2C_UNK *p,s32 index,s32 dest) {
+/* Reads the save-block chain whose head is table entry `head` into `dest`: each
+   12-byte table entry names one 1KB archive block, whose payload (everything
+   past the 0x14- or 0x38-byte block header) is copied out before following the
+   entry's next index.  Returns the bytes copied, or 0 when a read failed. */
+s32 ReadSaveBlockChain(M2C_UNK *manager,s32 head,s32 dest) {
 s32 func_0200558c(void);
-void *entry; s32 start=dest; u8 ok=1; u16 id;
-if(M2C_FIELD(p,u8*,0x2050)==0)return 0;
-if(M2C_FIELD(p,u8*,0x2052)==1)return 0;
-id=func_0200558c();
-while(index!=0xffff){
-entry=(void*)p+index*12;
-func_0200fe5c(id);
+void *entry; s32 start=dest; u8 ok=1; u16 handle;
+if(M2C_FIELD(manager,u8*,0x2050)==0)return 0;
+if(M2C_FIELD(manager,u8*,0x2052)==1)return 0;
+handle=func_0200558c();
+while(head!=0xffff){
+entry=(void*)manager+head*12;
+func_0200fe5c(handle);
 if(M2C_FIELD(entry,u16*,8)==0xffff)
-func_0201033c((index<<10)+0x38,dest,M2C_FIELD(entry,u16*,4)-0x38,0,0,1,6,1,0);
+func_0201033c((head<<10)+0x38,dest,M2C_FIELD(entry,u16*,4)-0x38,0,0,1,6,1,0);
 else
-func_0201033c((index<<10)+0x14,dest,M2C_FIELD(entry,u16*,4)-0x14,0,0,1,6,1,0);
+func_0201033c((head<<10)+0x14,dest,M2C_FIELD(entry,u16*,4)-0x14,0,0,1,6,1,0);
 ok=func_02010584()!=0;
-func_0200fe6c(id);
-if(!ok){M2C_FIELD(p,u8*,0x2052)=1;break;}
-index=M2C_FIELD(entry,u16*,10);
+func_0200fe6c(handle);
+if(!ok){M2C_FIELD(manager,u8*,0x2052)=1;break;}
+head=M2C_FIELD(entry,u16*,10);
 if(M2C_FIELD(entry,u16*,8)==0xffff)dest+=M2C_FIELD(entry,u16*,4)-0x38;
 else dest+=M2C_FIELD(entry,u16*,4)-0x14;
 }
-func_020055f4(id);
+func_020055f4(handle);
 return ok?dest-start:0;
 }
 #pragma opt_common_subs reset
@@ -193,34 +197,38 @@ void func_02075fd8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     func_02075cbc(&data_0213ea18, arg0, arg1, arg2, arg3);
 }
 
-void func_02076010(s32 type,s32 max){
-void func_02076180(M2C_UNK);
+/* Deletes the oldest save-directory records of `type` so that at most `maxKeep`
+   of them remain: the records of that type are collected, and whenever one more
+   arrives than fits, the oldest (by timestamp, with the wraparound rule the save
+   manager uses elsewhere) is deleted and dropped from the array. */
+void PruneSaveRecords(s32 type,s32 maxKeep){
+void DeleteSaveRecord(M2C_UNK);
 M2C_UNK *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
 void *HeapAllocBlock(s32);void HeapFreeBlock(void *);
-s32 count;u8 **items;s32 best,n,i,k,j,cmp;u8 *p;u32 b,a;
+s32 kept;u8 **keptRecords;s32 oldest,n,i,scanCount,j,bestIsNewer;u8 *p;u32 newTime,bestTime;
 p=(u8 *)GetSaveRecordList();n=GetSaveRecordCount();
-count=0;items=HeapAllocBlock((max+1)*4);
-for(i=0;i<n;i++,p+=40){
-if(type==p[2]){
-if(count<max){items[count]=p;count=count+1;continue;}
-items[count]=p;
-best=0;
-k=count+1;
-for(j=1;j<k;j++){
-b=M2C_FIELD(items[j],u32 *,4);a=M2C_FIELD(items[best],u32 *,4);
-if((a&0xffff0000)==0xffff0000 && !(b&0xffff0000) && b!=0)cmp=0;
-else if(!(a&0xffff0000) && (b&0xffff0000)==0xffff0000 && a!=0)cmp=1;
-else cmp=a>b;
-if(cmp)best=j;
+kept=0;keptRecords=HeapAllocBlock((maxKeep+1)*4);
+for(i=0;i<n;i++,p+=SAVE_RECORD_STRIDE){
+if(type==p[SAVE_RECORD_TYPE]){
+if(kept<maxKeep){keptRecords[kept]=p;kept=kept+1;continue;}
+keptRecords[kept]=p;
+oldest=0;
+scanCount=kept+1;
+for(j=1;j<scanCount;j++){
+newTime=M2C_FIELD(keptRecords[j],u32 *,SAVE_RECORD_TIME);bestTime=M2C_FIELD(keptRecords[oldest],u32 *,SAVE_RECORD_TIME);
+if((bestTime&0xffff0000)==0xffff0000 && !(newTime&0xffff0000) && newTime!=0)bestIsNewer=0;
+else if(!(bestTime&0xffff0000) && (newTime&0xffff0000)==0xffff0000 && bestTime!=0)bestIsNewer=1;
+else bestIsNewer=bestTime>newTime;
+if(bestIsNewer)oldest=j;
 }
-func_02076180(M2C_FIELD(items[best],u16 *,0));
-for(;best<count;best++)items[best]=items[best+1];
+DeleteSaveRecord(M2C_FIELD(keptRecords[oldest],u16 *,SAVE_RECORD_ID));
+for(;oldest<kept;oldest++)keptRecords[oldest]=keptRecords[oldest+1];
 }
 }
-if(items)HeapFreeBlock(items);
+if(keptRecords)HeapFreeBlock(keptRecords);
 }
 
-void func_02076180(M2C_UNK arg0) {
+void DeleteSaveRecord(M2C_UNK arg0) {
     extern M2C_UNK data_0213ea18;
     func_02075e84(&data_0213ea18, arg0);
 }
@@ -228,9 +236,9 @@ void func_02076180(M2C_UNK arg0) {
 void func_02076198(void){func_0209e044(func_02075ee8,1,0x400,0x11,0);}
 
 void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020759e8(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK ReadSaveBlockChain(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213ea18;
-    func_020759e8(&data_0213ea18, arg0, arg1);
+    ReadSaveBlockChain(&data_0213ea18, arg0, arg1);
 }
 
 void GetSaveRecordSize(M2C_UNK arg0) {

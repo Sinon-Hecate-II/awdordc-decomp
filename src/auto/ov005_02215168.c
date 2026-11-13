@@ -12,14 +12,14 @@ void func_ov005_02215168(s16 arg0) {
  void func_ov005_022172d8(s32,s32);
  void func_ov005_02215278(s16);
  void func_ov005_02215360(s16);
- extern M2C_UNK data_ov005_02221304;
- switch (M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **,8),s16 *,0x92)) {
+ extern M2C_UNK gRecordsMenuState;
+ switch (M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **,8),s16 *,0x92)) {
  case 0:
- M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x8e)=arg0;
+ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=arg0;
  do {
  arg0++;
  if (*(s32 *)func_020ad570(arg0)==0) {
- arg0=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x8e);
+ arg0=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);
  break;
  }
  } while (!func_ov005_022140f8(arg0));
@@ -32,11 +32,11 @@ void func_ov005_02215168(s16 arg0) {
 void func_ov005_02215200(s16 arg0) {
  s32 func_ov005_022140f8(s32);
  void func_ov005_022172d8(s32,s32);
- extern M2C_UNK data_ov005_02221304;
+ extern M2C_UNK gRecordsMenuState;
  s16 i=arg0;
  do {
- if (--i < 0) i=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x9a)-1;
- if (func_ov005_022140f8(i) && M2C_FIELD((u8 *)M2C_FIELD(&data_ov005_02221304,void **,8)+i,u8 *,0xa2)==1) {
+ if (--i < 0) i=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a)-1;
+ if (func_ov005_022140f8(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
  func_ov005_022172d8(i,1); return;
  }
  } while (i!=arg0);
@@ -45,63 +45,63 @@ void func_ov005_02215200(s16 arg0) {
 void func_ov005_02215278(s16 arg0) {
  s32 func_ov005_022140f8(s32);
  void func_ov005_022172d8(s32,s32);
- extern M2C_UNK data_ov005_02221304;
+ extern M2C_UNK gRecordsMenuState;
  s16 i=arg0;
  do {
- if (++i >= M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x9a)) i=0;
- if (func_ov005_022140f8(i) && M2C_FIELD((u8 *)M2C_FIELD(&data_ov005_02221304,void **,8)+i,u8 *,0xa2)==1) {
+ if (++i >= M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a)) i=0;
+ if (func_ov005_022140f8(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
  func_ov005_022172d8(i,1); return;
  }
  } while (i!=arg0);
 }
 
 void func_ov005_022152ec(void) {
- void func_ov005_02214e18(s32);
+ void RecordsMenu_ShuffleList(s32);
  void func_ov005_022172d8(s32,s32);
- extern M2C_UNK data_ov005_02221304;
- if (M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe4)==0) return;
- M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2)--;
- if (M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2)<0) {
- func_ov005_02214e18(-1);
- M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2)=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe4)-1;
+ extern M2C_UNK gRecordsMenuState;
+ if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)==0) return;
+ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)--;
+ if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)<0) {
+ RecordsMenu_ShuffleList(-1);
+ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)-1;
  }
- func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&data_ov005_02221304,void **,8)+M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+ func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
 }
 
 void func_ov005_02215360(s16 arg0) {
- void func_ov005_02214e18(s32);
+ void RecordsMenu_ShuffleList(s32);
  void func_ov005_022172d8(s32,s32);
- extern M2C_UNK data_ov005_02221304;
- if (M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe4)==0) return;
- M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2)++;
- if (M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2)>=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe4)) {
- func_ov005_02214e18(-1);
- M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2)=0;
+ extern M2C_UNK gRecordsMenuState;
+ if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)==0) return;
+ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)++;
+ if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)>=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)) {
+ RecordsMenu_ShuffleList(-1);
+ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=0;
  }
- func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&data_ov005_02221304,void **,8)+M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+ func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
 }
 
 void func_ov005_022153d4(u8 *arg0) {
  M2C_UNK FocusSpriteSlotById(s32);
- extern M2C_UNK data_ov005_02221304;
- s32 value = M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x94);
+ extern M2C_UNK gRecordsMenuState;
+ s32 value = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x94);
  if (value == *arg0) return;
  FocusSpriteSlotById(value);
 }
 
 void func_ov005_022153fc(u8 *a) {
-    s32 func_020b20e0(s32);
+    s32 FindSpriteSlotById(s32);
     M2C_UNK FocusSpriteSlotById(s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_ov005_02214148(void);
     s32 func_ov005_022141cc(void);
     s16 func_ov005_02214184(void);
     s16 func_ov005_02214210(void);
-    extern M2C_UNK data_ov005_02221304;
+    extern M2C_UNK gRecordsMenuState;
     extern u16 *gKeyState;
 
     s32 max, pos, delta;
-    void *p = M2C_FIELD(&data_ov005_02221304, void **, 8);
+    void *p = M2C_FIELD(&gRecordsMenuState, void **, 8);
     s32 n = *a;
     max = M2C_FIELD(p, s16 *, 0x9a);
     pos = M2C_FIELD(p, s16 *, 0x98);
@@ -128,9 +128,9 @@ void func_ov005_022153fc(u8 *a) {
         }
     } else if (gKeyState[1] & 0x80) {
         if (n < 4) {
-            if (func_020b20e0(n + 1)) n++;
+            if (FindSpriteSlotById(n + 1)) n++;
         } else if (!func_ov005_022141cc()) {
-            if (func_020b20e0(n + 1)) n++;
+            if (FindSpriteSlotById(n + 1)) n++;
         }
         goto done;
     }
@@ -153,34 +153,34 @@ void func_ov005_022153fc(u8 *a) {
 
 done:
     if (n != *a) FocusSpriteSlotById(n);
-    M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x94) = n;
+    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x94) = n;
 }
 
 void func_ov005_02215594(u8 *arg0) {
  void func_ov005_02214fec(s16);
- extern M2C_UNK data_ov005_02221304;
- func_ov005_02214fec((s16)(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x98)+*arg0));
+ extern M2C_UNK gRecordsMenuState;
+ func_ov005_02214fec((s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0));
 }
 
 void func_ov005_022155c0(u8 *arg0) {
     M2C_UNK PlaySoundEffect(s32);
-    extern M2C_UNK data_ov005_02221304;
-    M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x94) = (s16) *arg0;
+    extern M2C_UNK gRecordsMenuState;
+    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x94) = (s16) *arg0;
     PlaySoundEffect(0x10019);
 }
 
 void func_ov005_022155e8(u8 *arg0) {
  s32 func_ov005_022140f8(s32);
  void RecordsMenu_DrawList(s32);
- void func_ov005_02214e18(s32);
- extern M2C_UNK data_ov005_02221304;
+ void RecordsMenu_ShuffleList(s32);
+ extern M2C_UNK gRecordsMenuState;
  u8 *flags;
- s32 i=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x98)+*arg0;
+ s32 i=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0;
  if (!func_ov005_022140f8(i)) return;
- flags=((UnkOv005Selection *)M2C_FIELD(&data_ov005_02221304,void **,8))->unk_0xa2;
+ flags=((UnkOv005Selection *)M2C_FIELD(&gRecordsMenuState,void **,8))->unk_0xa2;
  flags[i] = flags[i] == 0 ? 1 : 0;
- RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x96));
- func_ov005_02214e18(-1);
+ RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));
+ RecordsMenu_ShuffleList(-1);
 }
 
 void func_ov005_02215650(void) {

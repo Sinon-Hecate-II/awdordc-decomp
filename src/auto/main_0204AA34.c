@@ -41,7 +41,7 @@ s32 i, ok; GHIConnection *conn;
 ghiLockMutex(); i=ghiFindFreeConnection();
 if(i==-1){ghiUnlockMutex();return NULL;}
 conn=M2C_FIELD(&gGhiConnectionList,GHIConnection ***,4)[i];
-func_02065210(conn,0,0x184);
+MemSet(conn,0,0x184);
 M2C_FIELD(conn,volatile s32 *,0)=1;
 M2C_FIELD(conn,volatile s32 *,4)=i;
 {s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,8); M2C_FIELD(&gGhiConnectionList,s32 *,8)=old+1; conn->id=old;}
@@ -238,7 +238,7 @@ void func_0204b154(void *arg0) {
 
 void func_0204c738(void *);
 void ghiDoConnect(void *);
-void func_0204ca4c(void *);
+void ghiProcessConnected(void *);
 void ghiSendRequest(void *);
 void func_0204ce20(void *);
 void func_0204ceb8(void *);
@@ -259,7 +259,7 @@ s32 func_0204b210(void *operation) {
     M2C_FIELD(operation, s32 *, 0x12C) = 1;
     if (M2C_FIELD(operation, s32 *, 0x10) == 0) func_0204c738(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 1) ghiDoConnect(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 2) func_0204ca4c(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 2) ghiProcessConnected(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 3) ghiSendRequest(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 4) func_0204ce20(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);

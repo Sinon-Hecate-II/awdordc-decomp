@@ -22,7 +22,7 @@ void func_020e0f14(M2C_UNK arg0) {
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
     extern M2C_UNK data_0212d1e8;
-    extern M2C_UNK data_027e00b4;
+    extern M2C_UNK gSpriteDesc64x32;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -195,7 +195,7 @@ void func_020e0f14(M2C_UNK arg0) {
     temp_r1_7 = M2C_FIELD(temp_r0, void **, 0x60);
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
-    M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &data_027e00b4;
+    M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &gSpriteDesc64x32;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r0_4 = func_0208bc24(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
@@ -226,7 +226,7 @@ void func_020e147c(M2C_UNK arg0) {
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
     extern M2C_UNK data_0212d1e8;
-    extern M2C_UNK data_027e00b4;
+    extern M2C_UNK gSpriteDesc64x32;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -401,7 +401,7 @@ void func_020e147c(M2C_UNK arg0) {
     temp_r1_7 = M2C_FIELD(temp_r0, void **, 0x60);
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
-    M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &data_027e00b4;
+    M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &gSpriteDesc64x32;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r0_4 = func_0208bc24(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;

@@ -1,10 +1,10 @@
 /* 3 functions from 0x022231F8 to 0x02223CB8 (ov011), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 extern u16 gIntroRevealedTiles[];
 extern u16 gIntroStateDurations[];
 extern u8 data_02101f5c[],data_02101f0c[];
-typedef struct { s32 words[5]; } ContextTemplate;
-extern ContextTemplate data_ov011_02227f28;
+extern DS3DSpriteTransform data_ov011_02227f28;
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 
 /* Reveals the intro tile strip one tile at a time, fading the current tile in and
@@ -234,27 +234,30 @@ void func_ov011_02223764(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     ((M2C_UNK(*)(M2C_UNK,u8,s32,M2C_UNK,s32))G3_UpdateIntroTiles)(arg0, (u8)(arg2 | 0x80), 0x7FFF, 0x80, arg3);
 }
 
-void func_ov011_02223b70(s32 unused,s32 value,u32 mode) {
-void func_02082a8c(void*,void*);
-ContextTemplate temp=data_ov011_02227f28;
-void *saved,*p; s32 i;
-if(mode<2)return;
+/* Build the layer transform for bank matrix `matrix` (DS3D_MATRIX_A or
+ * DS3D_MATRIX_B) on both 3D sprite engines from the shared default transform; a
+ * nonzero `scale` (8.8 fixed point) replaces both axis scales. */
+void G3_SetSpriteTransformScale(s32 unused,s32 scale,u32 matrix) {
+void Build3DSpriteTransform(void*,void*);
+DS3DSpriteTransform transform=data_ov011_02227f28;
+void *saved,*engine; s32 i;
+if(matrix<DS3D_MATRIX_A)return;
 i=0;
-if(value==0){saved=gCur3DSpriteEngine;
+if(scale==0){saved=gCur3DSpriteEngine;
 do {
-if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
-gCur3DSpriteEngine=p;
-switch(mode){case 2:func_02082a8c(&temp,(u8*)*(void**)p+0x14);break;case 3:func_02082a8c(&temp,(u8*)*(void**)p+0x24);break;}
+if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
+gCur3DSpriteEngine=engine;
+switch(matrix){case DS3D_MATRIX_A:Build3DSpriteTransform(&transform,(u8*)*(void**)engine+0x14);break;case DS3D_MATRIX_B:Build3DSpriteTransform(&transform,(u8*)*(void**)engine+0x24);break;}
 i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;return;}
-((s16*)&temp)[7]=value;
-((s16*)&temp)[6]=((s16*)&temp)[7];
+transform.scaleY=scale;
+transform.scaleX=transform.scaleY;
 saved=gCur3DSpriteEngine;
 do {
-if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
-gCur3DSpriteEngine=p;
-switch(mode){case 2:func_02082a8c(&temp,(u8*)*(void**)p+0x14);break;case 3:func_02082a8c(&temp,(u8*)*(void**)p+0x24);break;}
+if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
+gCur3DSpriteEngine=engine;
+switch(matrix){case DS3D_MATRIX_A:Build3DSpriteTransform(&transform,(u8*)*(void**)engine+0x14);break;case DS3D_MATRIX_B:Build3DSpriteTransform(&transform,(u8*)*(void**)engine+0x24);break;}
 i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;

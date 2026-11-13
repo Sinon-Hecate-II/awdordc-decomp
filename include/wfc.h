@@ -26,6 +26,14 @@ enum {
     WFC_HTTP_DONE       = 3  /* finished, result holds the outcome */
 };
 
+/* WfcHttpConnection::result */
+#define WFC_HTTP_RESULT_PENDING 0 /* no outcome yet */
+#define WFC_HTTP_RESULT_OK      1 /* the status line answered 200 */
+#define WFC_HTTP_RESULT_ERROR   2 /* send failed, bad status line, or timed out */
+#define WFC_HTTP_RESULT_CONNECT 3 /* the TCP connect failed */
+
+#define WFC_HTTP_RESPONSE_SIZE 0x20 /* bytes of the status line being read */
+
 #define WFC_HTTP_PORT 80 /* the client talks HTTP */
 
 /* Session object (gSession) fields used by the WFC state machine in
@@ -36,6 +44,13 @@ enum {
 #define WFC_SESSION_REQUEST  0x226C /* u32 queued send request: kind in the low 2 bits, buffer at +0x2270/+0x2274, field at +0x2278, callback at +0x227C */
 #define WFC_SESSION_SUBSTATE 0x2280 /* u16 substep reported with the state */
 #define WFC_SESSION_SEND_BUFFER 0xF00 /* byte buffer the sender fills before sending */
+
+/* The outgoing match request descriptor: the buffer the packet is built in and
+ * its size come first, then the packet fields the request builder fills. */
+#define WFC_SESSION_PACKET        0x2288 /* descriptor base */
+#define WFC_SESSION_PACKET_BUFFER WFC_SESSION_PACKET /* void *buffer the packet is built in */
+#define WFC_SESSION_PACKET_SIZE   0x228c /* u16 bytes in the buffer */
+#define WFC_SESSION_SEND_COUNT    0x2284 /* s32 match requests submitted so far */
 
 /* State of the asynchronous send path (gSendState): the sender holds gSendLock,
  * assembles the packet in the session's buffer, starts the transfer and sleeps
@@ -128,7 +143,10 @@ enum {
 #define WFC_STATE_FLAGS        0xD0C /* u8: low nibble list mode, bits 6..7 friend selection mode */
 #define WFC_STATE_SELECT_MODE  0xC0  /* selection-mode bits of WFC_STATE_FLAGS */
 #define WFC_STATE_RESULT_ID    0xD0D /* u8 friend id the selection resolves to */
+#define WFC_STATE_WORK_INDEX   0xD0F /* u8 record/row the current friend message applies to */
+#define WFC_STATE_FRIEND_ID    0xD11 /* s8 friend id being processed, -1 = none */
 #define WFC_STATE_ENTRY_COUNT  0xD10 /* u8 number of friend-list rows */
+#define WFC_STATE_RECORD_COUNT 0xD12 /* u8 number of friend records in use */
 #define WFC_STATE_RECORD_INDEX 0xD13 /* u8 index of the selected friend record */
 
 #define WFC_STATE_ENTRIES      0x300 /* friend-list rows, WFC_ENTRY_STRIDE bytes each */

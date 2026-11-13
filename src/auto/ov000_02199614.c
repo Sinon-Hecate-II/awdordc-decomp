@@ -1,6 +1,7 @@
 /* 14 functions from 0x02199614 to 0x0219A584 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 #include "ov000_unit_entry.h"
 typedef struct { u16 value:7; } Field7;
 
@@ -90,13 +91,13 @@ s32 Modulo(s32, s32);
 s32 func_02072b04(void *);
 s32 func_ov000_021a89a4(void *);
 extern s32 *gCurrentMap;
-extern u8 *data_ov000_021df658;
+extern u8 *gAiUnitListCursor;
 extern u8 *gAiCommandState;
 extern u8 *gAiSettings;
 extern u8 *gAiUnitTypeTuning;
 extern u8 gAiCommand[];
 extern M2C_UNK data_ov000_021df604;
-extern void (*data_ov000_021df654)(void);
+extern void (*gAiUnitAction)(void);
 
 u8 state;
 u8 *cont;
@@ -110,7 +111,7 @@ s16 x, y;
 u16 row;
 s32 tmp;
 
-state = *data_ov000_021df658;
+state = *gAiUnitListCursor;
 if (state == 0) {
     gAiCommandState[0] = 1;
     return;
@@ -129,7 +130,7 @@ if (state == 0x40) {
     if (!(*(u16 *)(up + 4) & 0x1)) {
         kind = (u8)(up[0] & 0x3f);
         if (kind == 0) {
-            data_ov000_021df658++;
+            gAiUnitListCursor++;
             return;
         }
     }
@@ -171,16 +172,16 @@ if (state == 0x40) {
 }
 
 if (func_02072b04(&data_ov000_021df604) == 0) {
-    data_ov000_021df654();
+    gAiUnitAction();
 }
 if (gAiCommand[0x13] != 0) {
-    data_ov000_021df658++;
+    gAiUnitListCursor++;
     gAiCommandState[0] = 3;
     return;
 }
 cont = (u8 *)*gCurrentMap;
 base = *(u8 **)cont;
-state = *data_ov000_021df658;
+state = *gAiUnitListCursor;
 if (state != 0x40) {
     if (base[0x52d6] != 0) {
         up = *(u8 **)(base + 0x52d0);
@@ -195,7 +196,7 @@ if (state != 0x40) {
         base[ux + row] = s;
     }
 }
-data_ov000_021df658++;
+gAiUnitListCursor++;
 return;
 }
 
@@ -343,12 +344,16 @@ base=(u8 *)*gCurrentMap;
 }
 }
 }
-void func_ov000_0219a1f4(void) {
+/* Begins the AI's turn (the phase-0 handler of the AI command state machine):
+ * points the cursor at the acting player's first unit, resets the command state,
+ * runs the turn's setup steps (unit parameters, target areas, ...), and leaves
+ * the state machine in phase 1. */
+void BeginAiTurn(void) {
     void func_020c93cc(void);
     void SetupAiUnitParameters(u16);
     void func_ov000_0219a9b0(void);
     void func_ov000_0219a370(void);
-    void func_ov000_0219a418(void);
+    void MarkAiTargetAreas(void);
     void func_ov000_0219a618(void);
     void func_ov000_0219a6c8(void);
     void func_ov000_0219a584(void);
@@ -363,24 +368,24 @@ void func_ov000_0219a1f4(void) {
 
     {
         u8 *map = *(u8 **)gCurrentMap;
-        u16 val = *(u16 *)(map + 0x52a4);
-        map[0x52d4] = (u8)gPlayerUnitIdBase[val];
+        u16 player = *(u16 *)(map + MAP_CURRENT_PLAYER);
+        map[MAP_CURSOR_UNIT_ID] = (u8)gPlayerUnitIdBase[player];
     }
     {
         u8 *map = *(u8 **)gCurrentMap;
-        *(u8 **)(map + 0x52d0) = map + 0x59a4 + map[0x52d4] * 0xe;
+        *(u8 **)(map + MAP_CURSOR_UNIT) = map + MAP_UNIT_RECORDS + map[MAP_CURSOR_UNIT_ID] * 0xe;
     }
     func_020c93cc();
-    gAiCommandState[0xc] = (*(u8 **)gCurrentMap)[0x5158];
-    if ((*(u8 **)gCurrentMap)[0x5159] == 1) {
-        gAiCommandState[0xd] = 0;
+    gAiCommandState[AI_COMMAND_STATE_ATTACKER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
+    if ((*(u8 **)gCurrentMap)[MAP_WEATHER_MODE] == 1) {
+        gAiCommandState[AI_COMMAND_STATE_PLAYER] = 0;
     } else {
-        gAiCommandState[0xd] = (*(u8 **)gCurrentMap)[0x5158];
+        gAiCommandState[AI_COMMAND_STATE_PLAYER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
     }
-    SetupAiUnitParameters(*(u16 *)(*(u8 **)gCurrentMap + 0x52a4));
+    SetupAiUnitParameters(*(u16 *)(*(u8 **)gCurrentMap + MAP_CURRENT_PLAYER));
     func_ov000_0219a9b0();
     func_ov000_0219a370();
-    func_ov000_0219a418();
+    MarkAiTargetAreas();
     func_ov000_0219a618();
     func_ov000_0219a6c8();
     func_ov000_0219a584();
@@ -389,14 +394,14 @@ void func_ov000_0219a1f4(void) {
     func_ov000_0219a350();
     func_ov000_0219a8c4();
     if (func_ov000_021a9b84() == 1) {
-        gAiCommandState[0x7] |= 0x04;
+        gAiCommandState[AI_COMMAND_STATE_FLAGS] |= 0x04;
     } else {
-        gAiCommandState[0x7] &= ~0x04;
+        gAiCommandState[AI_COMMAND_STATE_FLAGS] &= ~0x04;
     }
-    gAiCommandState[0x7] |= 0x08;
+    gAiCommandState[AI_COMMAND_STATE_FLAGS] |= 0x08;
     gAiCommandState[0x2] = 0;
-    gAiCommandState[0x1] = 0;
-    gAiCommandState[0x0] = 1;
+    gAiCommandState[AI_COMMAND_STATE_STEP] = 0;
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = 1;
 }
 
 #pragma pop
@@ -432,35 +437,39 @@ return sum+1;
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_0219a418(void) {
+/* For every property cell in the map's property list: if the cell is not marked
+ * in the score layer yet, flood-fills a foot unit's movement range from it
+ * (using the order layer as scratch), marks every reached cell in the score
+ * layer, and counts the distinct target areas it found. */
+void MarkAiTargetAreas(void) {
 void SelectMapLayer(s32);
 void FillMapLayer(s32);
 M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 extern s32 *gCurrentMap;
 extern u8 *gAiCommandState;
-s32 count=0;
-u8 *p;
-s32 x,y;
-u8 *base;
-SelectMapLayer((s32)*gCurrentMap+0x2338);
-FillMapLayer(count);
-SelectMapLayer((s32)*gCurrentMap+0x1e30);
-base=(u8 *)*gCurrentMap;
-for(p=base+0x6c60;*p!=0xff;p+=6){
-if(M2C_FIELD(base+M2C_FIELD(p,u8 *,1)+M2C_FIELD(base+M2C_FIELD(p,u8 *,2)*2,u16 *,0x3758),s8 *,0x2338)==0){
-FloodFillUnitRange(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),1,0x6e,0);
-base=(u8 *)*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-if(M2C_FIELD(base+y*4,s8 **,0x52e8)[x]>=0){
-M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16 *,0x3758),u8 *,0x2338)=1;
+s32 areaCount=0;
+u8 *entry;
+s32 col,row;
+u8 *map;
+SelectMapLayer((s32)*gCurrentMap+MAP_CELL_SCORE);
+FillMapLayer(areaCount);
+SelectMapLayer((s32)*gCurrentMap+MAP_CELL_ORDER);
+map=(u8 *)*gCurrentMap;
+for(entry=map+MAP_PROPERTY_CELLS;*entry!=MAP_PROPERTY_END;entry+=MAP_PROPERTY_STRIDE){
+if(M2C_FIELD(map+M2C_FIELD(entry,u8 *,MAP_PROPERTY_X)+M2C_FIELD(map+M2C_FIELD(entry,u8 *,MAP_PROPERTY_Y)*2,u16 *,MAP_ROW_OFFSETS),s8 *,MAP_CELL_SCORE)==0){
+FloodFillUnitRange(M2C_FIELD(entry,u8 *,MAP_PROPERTY_X),M2C_FIELD(entry,u8 *,MAP_PROPERTY_Y),1,0x6e,0);
+map=(u8 *)*gCurrentMap;
+for(row=0;row<M2C_FIELD(map,u16 *,MAP_HEIGHT);row++){
+for(col=0;col<M2C_FIELD(map,u16 *,MAP_WIDTH);col++){
+if(M2C_FIELD(map+row*4,s8 **,MAP_GRID)[col]>=0){
+M2C_FIELD(map+col+M2C_FIELD(map+row*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_SCORE)=1;
 }
-base=(u8 *)*gCurrentMap;
-}
-}
-count++;
+map=(u8 *)*gCurrentMap;
 }
 }
-M2C_FIELD(gAiCommandState,u8 *,6)=count;
+areaCount++;
+}
+}
+M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_TARGET_AREAS)=areaCount;
 }
 #pragma pop

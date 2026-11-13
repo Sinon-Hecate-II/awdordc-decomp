@@ -182,7 +182,7 @@ s32 func_0209fd2c(void) {
 }
 
 s32 func_0209fe44(void) {
-    s32 func_020ba510(s32, s32);
+    s32 IsSupplyTargetAt(s32, s32);
     extern void *data_0215be00;
     extern M2C_UNK *gCurrentMap;
 
@@ -202,7 +202,7 @@ s32 func_0209fe44(void) {
 
         do {
             if (M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52E8), s8 *, x) < 0) goto next_cell;
-            if (func_020ba510(x, y) == 0) goto next_cell;
+            if (IsSupplyTargetAt(x, y) == 0) goto next_cell;
 
             *out = *(u8 *)((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, 0x3758 + y * 2) + x);
             out += 4;

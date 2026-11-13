@@ -14,13 +14,13 @@ extern unsigned char data_ov001_0219256a[118];
 
 #pragma thumb on
 int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
- int func_ov001_0216c098(); int func_ov001_0216cef0(unsigned short); int func_ov001_0216cec8(int);
+ int func_ov001_0216c098(); int Ov001SwapEndian16(unsigned short); int func_ov001_0216cec8(int);
  void func_ov001_0216b918(int); void Ov001MemClear(); int func_ov001_0216c400();
  unsigned char *r,*t;
  if(a!=1) {++*n;return a;}
  r=p+12;t=p+36;
  if(func_ov001_0216c098(q+8,r+16)<0) {++*n;return a;}
- if(func_ov001_0216cef0(*(unsigned short *)(t+2))==0) {++*n;return a;}
+ if(Ov001SwapEndian16(*(unsigned short *)(t+2))==0) {++*n;return a;}
  if(*t==7) {
  if(func_ov001_0216cec8(*(int *)(t+4))==-2) func_ov001_0216b918(20);
  else if(func_ov001_0216cec8(*(int *)(t+4))==-3) func_ov001_0216b918(21);
@@ -28,20 +28,20 @@ int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
  return -1;
  }
  Ov001MemClear(data_ov001_02191ec0,0,0x6a0);
- if(func_ov001_0216c400(0,t,func_ov001_0216cef0(*(unsigned short *)(r+10)),data_ov001_02191ec0,data_ov001_02191840)<0) {++*n;return a;}
+ if(func_ov001_0216c400(0,t,Ov001SwapEndian16(*(unsigned short *)(r+10)),data_ov001_02191ec0,data_ov001_02191840)<0) {++*n;return a;}
  if(!(*(int *)(gRoomState+48)&*(int *)(gRoomState+44))) return a;
  *n=0;return 2;
 }
 
 #pragma thumb on
 int func_ov001_0216bebc(int a,unsigned char *p,int *n,unsigned char *q) {
- int func_ov001_0216c098(); int func_ov001_0216cef0(unsigned short); int func_ov001_0216cec8(int); void func_ov001_0216b918(int);
+ int func_ov001_0216c098(); int Ov001SwapEndian16(unsigned short); int func_ov001_0216cec8(int); void func_ov001_0216b918(int);
  unsigned char *r,*t;
  if(a!=2) {++*n;return a;}
  r=p+12;t=p+36;
  if(func_ov001_0216c098(q+16,(int)r+16)<0) {++*n;return a;}
  if(*t!=7) {++*n;return a;}
- if(func_ov001_0216cef0(*(unsigned short *)(t+2))==0) {++*n;return a;}
+ if(Ov001SwapEndian16(*(unsigned short *)(t+2))==0) {++*n;return a;}
  if(func_ov001_0216cec8(*(int *)(t+4))==0) return 100;
  if(func_ov001_0216cec8(*(int *)(t+4))==-2) {func_ov001_0216b918(20);return -1;}
  if(func_ov001_0216cec8(*(int *)(t+4))==-3) {func_ov001_0216b918(21);return -1;}
@@ -50,7 +50,7 @@ int func_ov001_0216bebc(int a,unsigned char *p,int *n,unsigned char *q) {
 
 s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
     void Ov001MemClear();
-    int func_ov001_0216cef0(u16);
+    int Ov001SwapEndian16(u16);
     void Ov001MemCopy();
     int func_ov001_0216c1a0();
     int func_ov001_0216cec8();
@@ -71,7 +71,7 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
     r7 = r5 + 0x80;
     r4 = r6;
     for (;;) {
-    r2 = func_ov001_0216cef0(*(u16 *)((u8 *)r4 + 2));
+    r2 = Ov001SwapEndian16(*(u16 *)((u8 *)r4 + 2));
     if (r2 <= 0) {
         return -1;
     }
@@ -87,7 +87,7 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
             Ov001MemCopy(r5 + 0x100, (M2C_UNK)((u8 *)r4 + 6));
             break;
         case 3:
-            if (func_ov001_0216cef0(*(u8 *)((u8 *)r4 + 6)) <= 0) {
+            if (Ov001SwapEndian16(*(u8 *)((u8 *)r4 + 6)) <= 0) {
                 return -2;
             }
             break;
@@ -109,7 +109,7 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
         if (f == 0) {
             return 0;
         }
-        r4 = (M2C_UNK)((u8 *)r6 + func_ov001_0216cef0(f));
+        r4 = (M2C_UNK)((u8 *)r6 + Ov001SwapEndian16(f));
     }
 }
 
@@ -136,41 +136,47 @@ s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
 #pragma opt_lifetimes reset
 
 #pragma thumb on
-s32 func_ov001_0216c1c4(void *arg0,s32 arg1) {
-s32 func_ov001_0216cef0(u16);
+/* Walks the chunk list of one player's room data and copies its strings into
+ * the per-player record: the message string (chunk 0x15/0x25, up to 33 bytes
+ * with the last byte NUL) to +0x08, and four slots to +0x30/+0x70/+0xB0/+0xF0
+ * holding either a 5-byte (chunk 0x10-0x13) or a 13-byte (0x20-0x23) string;
+ * the slot length is stored at +0x04. Chunks chain through a big-endian offset
+ * at +0x04 of each chunk until it is zero. */
+s32 Ov001UnpackPlayerStrings(void *arg0,s32 arg1) {
+s32 Ov001SwapEndian16(u16);
 void Ov001MemCopy();
 u8 *p=(u8 *)arg0+6;
 u8 *out=(u8 *)arg1;
-u8 *base,*e,*d,*c,*b,*a;
+u8 *base,*text,*slot3,*slot2,*slot1,*slot0;
 u32 n;
-e=out;e=out+8;d=out;d=out+240;c=out;c=out+176;b=out;b=out+112;a=out+48;base=p;
+text=out;text=out+8;slot3=out;slot3=out+240;slot2=out;slot2=out+176;slot1=out;slot1=out+112;slot0=out+48;base=p;
 do {
-n=func_ov001_0216cef0(*(u16 *)(p+2));
+n=Ov001SwapEndian16(*(u16 *)(p+2));
 switch(*p){
 case 0x10:case 0x11:case 0x12:case 0x13:if(n>5)return -1;break;
 case 0x20:case 0x21:case 0x22:case 0x23:if(n>13)return -1;break;
 case 0x15:case 0x25:if(n>33)return -1;break;
 }
 switch(*p){
-case 0x10:case 0x20:Ov001MemCopy(a,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x11:case 0x21:Ov001MemCopy(b,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x12:case 0x22:Ov001MemCopy(c,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x13:case 0x23:Ov001MemCopy(d,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x15:case 0x25:if(n && p[n+5])return -1;Ov001MemCopy(e,p+6,n);break;
+case 0x10:case 0x20:Ov001MemCopy(slot0,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x11:case 0x21:Ov001MemCopy(slot1,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x12:case 0x22:Ov001MemCopy(slot2,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x13:case 0x23:Ov001MemCopy(slot3,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x15:case 0x25:if(n && p[n+5])return -1;Ov001MemCopy(text,p+6,n);break;
 default:return -1;
 }
 if(*(u16 *)(p+4)==0)break;
-p=base+func_ov001_0216cef0(*(u16 *)(p+4));
+p=base+Ov001SwapEndian16(*(u16 *)(p+4));
 }while(1);
 return 0;
 }
 
 #pragma thumb on
 int func_ov001_0216c318(void *p,int out) {
- int func_ov001_0216cef0(unsigned short); void Ov001MemCopy();
+ int Ov001SwapEndian16(unsigned short); void Ov001MemCopy();
  unsigned char *base=(unsigned char *)p+6,*r=base,*text=(unsigned char *)out+8,*data=(unsigned char *)out+48; unsigned int n; int kind;
  for (;;) {
-  n=func_ov001_0216cef0(*(unsigned short *)(r+2)); kind=*r;
+  n=Ov001SwapEndian16(*(unsigned short *)(r+2)); kind=*r;
   switch(kind) { case 0x30: case 0x40: if(n>64) return -1; break; case 0x35: case 0x45: if(n>33) return -1; break; }
   switch(kind) {
    case 0x30: case 0x40: Ov001MemCopy(data,r+6,n); *(int *)(out+4)=n; break;
@@ -178,15 +184,15 @@ int func_ov001_0216c318(void *p,int out) {
    default: return -1;
   }
   if (!*(unsigned short *)(r+4)) break;
-  r=base+func_ov001_0216cef0(*(unsigned short *)(r+4));
+  r=base+Ov001SwapEndian16(*(unsigned short *)(r+4));
  }
  return 0;
 }
 int func_ov001_0216c3d0(unsigned char *p, void *out) {
- int func_ov001_0216cef0(unsigned short);
+ int Ov001SwapEndian16(unsigned short);
  void Ov001MemCopy();
  unsigned char *q = p + 6;
- int n = func_ov001_0216cef0(*(unsigned short *)(q+2));
+ int n = Ov001SwapEndian16(*(unsigned short *)(q+2));
  if (n <= 0) return -1;
  if (*q != 0x70) return -1;
  Ov001MemCopy(out,q+6,n);
@@ -195,9 +201,9 @@ int func_ov001_0216c3d0(unsigned char *p, void *out) {
 
 #pragma thumb on
 s32 func_ov001_0216c400(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
-s32 func_ov001_0216c1c4(void *,s32);
+s32 Ov001UnpackPlayerStrings(void *,s32);
 s32 func_ov001_0216c318(void *,s32);
-s32 func_ov001_0216cef0(u16);
+s32 Ov001SwapEndian16(u16);
 s32 func_ov001_0216c3d0(u8 *,void *);
 s32 sp0=arg0;
 u8 *p=arg1;
@@ -211,13 +217,13 @@ if(rem<=0)return -2;
 search:
 q=p;
 if(q[0]!=data_ov001_0218fd40[sp0]){
-len=func_ov001_0216cef0(*(u16 *)(p+2))+4;
+len=Ov001SwapEndian16(*(u16 *)(p+2))+4;
 rem=rem-len;
 p=p+len;
 if(rem<=0)return -4;
 goto search;
 }
-remaining=func_ov001_0216cef0(*(u16 *)(q+2));
+remaining=Ov001SwapEndian16(*(u16 *)(q+2));
 base=sp4+0x350*sp0;
 sp8=arg4;
 spC=(sp0+3)<<7;
@@ -225,15 +231,15 @@ sp10=base;
 sp10=sp10+8;
 do {
 switch(q[0]){
-case 3:result=func_ov001_0216c1c4(q,sp10);flags|=1;break;
-case 4:result=func_ov001_0216c1c4(q,base+0x138);flags|=2;break;
+case 3:result=Ov001UnpackPlayerStrings(q,sp10);flags|=1;break;
+case 4:result=Ov001UnpackPlayerStrings(q,base+0x138);flags|=2;break;
 case 5:result=func_ov001_0216c318(q,base+0x268);flags|=4;break;
 case 6:result=func_ov001_0216c318(q,base+0x2d8);flags|=8;break;
 case 10:result=func_ov001_0216c3d0(q,(void *)(sp8+spC));break;
 default:result=-3;break;
 }
 if(result!=0)return result;
-len=func_ov001_0216cef0(*(u16 *)(q+2))+4;remaining=remaining-len;q=q+len;
+len=Ov001SwapEndian16(*(u16 *)(q+2))+4;remaining=remaining-len;q=q+len;
 }while(remaining>0);
 *(s32 *)(gRoomState+0x30)|=flags;
 return 0;

@@ -102,7 +102,7 @@ func_02042f94(arg0);
    present) it only arms the connect flag and timer; otherwise it fills the
    session's target slot - from the Wi-Fi server list in server mode, else from
    the previous session - and sends the connection request. */
-s32 func_02040878(s32 peerId, s32 force) {
+s32 SendJoinRequest(s32 peerId, s32 force) {
     s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     u64 GetSystemTick(void);
     void *GetConnection(void);
@@ -167,7 +167,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 GetLocalPlayerInfo(void);
     s32 func_02032398(void *);
     u64 GetSystemTick(void);
-    s32 func_02040878(s32, s32);
+    s32 SendJoinRequest(s32, s32);
     extern M2C_UNK gKeyFME;
     extern M2C_UNK gKeyMDF;
     extern M2C_UNK gKeyVER;
@@ -250,7 +250,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
         if (peerId == preferredPeer) {
             force = 1;
         }
-        return func_02040878(peerId, force);
+        return SendJoinRequest(peerId, force);
     }
 }
 

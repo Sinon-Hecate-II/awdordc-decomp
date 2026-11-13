@@ -230,8 +230,8 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
     int func_02007958(void);
     int func_020e34f4(s32);
     int HeapFreeBlock(s32);
-    u32 func_0207c7d8(void *, void *, u32);
-    s32 func_0207c860(void *, void *, s32);
+    u32 InitDecompress(void *, void *, u32);
+    s32 DecompressChunk(void *, void *, s32);
 
     int file[18];
     u8 ctx[0x220];
@@ -266,9 +266,9 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
     }
 
     r7 += (s32)r4;
-    r11 = func_0207c7d8(ctx, r8, (u32)arg1);
+    r11 = InitDecompress(ctx, r8, (u32)arg1);
 
-    if (func_0207c860(ctx, (void *)((char *)r8 + 4), (s32)r4 - 4) > 0) {
+    if (DecompressChunk(ctx, (void *)((char *)r8 + 4), (s32)r4 - 4) > 0) {
         do {
             r6 = 0x2000;
             r10 = r9 - (u32)r7;
@@ -280,7 +280,7 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
                 return 0;
             }
             r7 += (s32)r10;
-        } while (func_0207c860(ctx, r8, (s32)r10) > 0);
+        } while (DecompressChunk(ctx, r8, (s32)r10) > 0);
     }
 
     func_0200ba9c(file);
@@ -328,32 +328,36 @@ void *func_02080e30(void *arg0, int arg1) {
     return buf;
 }
 
-s32 func_02080efc(s32 path,s32 mode,s32 sizeOut) {
+/* Loads the compressed file at `path`, decompresses it into a freshly allocated
+   buffer and returns that buffer, writing the decompressed size through outSize.
+   A nonzero `persistent` takes the buffers from the permanent asset heap instead
+   of the temporary block heap. */
+s32 LoadDecompressedFileBuffer(s32 path,s32 persistent,s32 outSize) {
 s32 func_020e34f4(s32);s32 HeapAllocBlock();s32 HeapFreeBlock(s32);
 s32 InitFileRequest(void *);s32 func_0200ba54(void *,void *);s32 FileRead(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
-s32 func_0207c7cc(void *);u32 func_0207c7d8(void *, void *, u32);s32 func_0207c860(void *,void *,s32);
-u32 file[18];u8 ctx[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
-if(mode)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)HeapAllocBlock(0x2000);
-InitFileRequest(file);
-if(!func_0200ba54(file,(void *)path)){func_02007958();return 0;}
-total=file[10]-file[9];chunk=total<0x2000?total:0x2000;
-if(FileRead(file,buf,chunk)!=chunk){func_02007958();return 0;}
+s32 GetDecompressedSize(void *);u32 InitDecompress(void *, void *, u32);s32 DecompressChunk(void *,void *,s32);
+u32 req[18];u8 decoder[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
+if(persistent)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)HeapAllocBlock(0x2000);
+InitFileRequest(req);
+if(!func_0200ba54(req,(void *)path)){func_02007958();return 0;}
+total=req[10]-req[9];chunk=total<0x2000?total:0x2000;
+if(FileRead(req,buf,chunk)!=chunk){func_02007958();return 0;}
 read+=chunk;
-size=func_0207c7cc(buf);
-if(mode)output=HeapAllocBlock(size);else output=func_020e34f4(size);
-func_0207c7d8(ctx,buf,(void *)output);
-if(func_0207c860(ctx,buf+4,chunk-4)>0) { u32 next; do {
+size=GetDecompressedSize(buf);
+if(persistent)output=HeapAllocBlock(size);else output=func_020e34f4(size);
+InitDecompress(decoder,buf,(void *)output);
+if(DecompressChunk(decoder,buf+4,chunk-4)>0) { u32 next; do {
 next=total-read;if(next>=0x2000)next=0x2000;
-if(FileRead(file,buf,next)!=next){func_02007958();return 0;}
+if(FileRead(req,buf,next)!=next){func_02007958();return 0;}
 read+=next;
-}while(func_0207c860(ctx,buf,next)>0); }
-func_0200ba9c(file);HeapFreeBlock((s32)buf);if(sizeOut)*(s32 *)sizeOut=size;
+}while(DecompressChunk(decoder,buf,next)>0); }
+func_0200ba9c(req);HeapFreeBlock((s32)buf);if(outSize)*(s32 *)outSize=size;
 return output;
 }
 
 void func_02081070(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02080efc(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02080efc(arg0, arg1, 0);
+    M2C_UNK LoadDecompressedFileBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadDecompressedFileBuffer(arg0, arg1, 0);
 }
 
 int func_02081080(int arg0, int arg1, int arg2, int arg3) {
@@ -447,7 +451,7 @@ s32 func_02081384(M2C_UNK arg0, M2C_UNK arg1) {
     s32 sp0;
     s32 temp_r0;
 
-    temp_r0 = func_02080efc(arg0, 0, &sp0);
+    temp_r0 = LoadDecompressedFileBuffer(arg0, 0, &sp0);
     DC_FlushRange(temp_r0, sp0);
     func_0207da34(temp_r0, arg1, sp0);
     HeapFreeBlock(temp_r0);
@@ -460,7 +464,7 @@ s32 func_020813c4(M2C_UNK arg0, M2C_UNK arg1) {
     s32 sp0;
     s32 temp_r0;
 
-    temp_r0 = func_02080efc(arg0, 0, &sp0);
+    temp_r0 = LoadDecompressedFileBuffer(arg0, 0, &sp0);
     DC_FlushRange(temp_r0, sp0);
     func_0207c464(temp_r0, arg1, sp0, 1);
     return sp0;

@@ -304,7 +304,7 @@ s32 func_02020cf8(void *arg0) {
 
 /* Tear down an object: free its children, detach from queues, then free the object itself. */
 M2C_UNK func_02020d90(s32 obj) {
-extern void *data_020faf98;
+extern void *gNetAllocator;
 void func_02020e90(s32);
 void func_02021430(M2C_UNK);
 void func_02021490(M2C_UNK);
@@ -319,7 +319,7 @@ if(active){
 func_02020e90(M2C_FIELD(obj,s32*,0x68));func_02020e90(M2C_FIELD(obj,s32*,0x64));
 }else if(state==1){
 child=M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x104);
-while(child){next=M2C_FIELD(child,s32*,0); M2C_FIELD(data_020faf98,void (**)(s32),0x1c)(child);child=next;}
+while(child){next=M2C_FIELD(child,s32*,0); M2C_FIELD(gNetAllocator,void (**)(s32),0x1c)(child);child=next;}
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s16*,0x108)=0;
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x100)=0;
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x104)=0;
@@ -328,7 +328,7 @@ func_02020e90(M2C_FIELD(obj,s32*,0x64));
 }else if(state==2)func_02020e90(M2C_FIELD(obj,s32*,0x68));
 lock=OS_DisableInterrupts();
 func_02021430(obj);func_02021490(obj);
-M2C_FIELD(data_020faf98,void (**)(s32),0x1c)(obj);
+M2C_FIELD(gNetAllocator,void (**)(s32),0x1c)(obj);
 OS_RestoreInterrupts(lock);
 }
 
@@ -385,7 +385,7 @@ s32 func_02020f6c(void) {
     M2C_UNK func_0201a4f8(s32);
     M2C_UNK func_0201a508();
     s32 func_0201f160();
-    extern void *data_020faf98;
+    extern void *gNetAllocator;
     extern s32 data_021372e0;
     extern s32 data_02138ac4;
     extern M2C_UNK data_02138ad0;
@@ -398,10 +398,10 @@ s32 func_02020f6c(void) {
     if (temp_r4 >= 0) {
         func_0201a508();
         func_0201a4f8(0);
-        if (M2C_FIELD(data_020faf98, s32 *, 0x28) == 0) {
-            M2C_FIELD(data_020faf98, void (**)(s32), 0x1C)(M2C_FIELD(&data_02138ad0, s32 *, 0x1C));
+        if (M2C_FIELD(gNetAllocator, s32 *, 0x28) == 0) {
+            M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&data_02138ad0, s32 *, 0x1C));
         }
-        data_020faf98 = NULL;
+        gNetAllocator = NULL;
     }
     return temp_r4;
 }
@@ -461,12 +461,12 @@ s32 func_02021134(s32 arg0) {
     M2C_UNK func_0201d138(void *);
     M2C_UNK func_0201d14c();
     s32 func_0201ed20(s32);
-    extern void *data_020faf98;
+    extern void *gNetAllocator;
     u8 sp0[0x64];
     s32 temp_r4;
     s32 temp_r5;
     if (arg0 == 0) { return 0; }
-    temp_r4 = M2C_FIELD(data_020faf98, s32 (**)(M2C_UNK), 0x18)(0xFD0);
+    temp_r4 = M2C_FIELD(gNetAllocator, s32 (**)(M2C_UNK), 0x18)(0xFD0);
     if (temp_r4 == 0) { return 0; }
     MI_CpuFill8(sp0, 0, 0x64);
     M2C_FIELD(sp0, s32 *, 0x40) = temp_r4;
@@ -476,7 +476,7 @@ s32 func_02021134(s32 arg0) {
     func_0201d138(sp0);
     temp_r5 = func_0201ed20(arg0);
     func_0201d14c();
-    M2C_FIELD(data_020faf98, M2C_UNK (**)(s32), 0x1C)(temp_r4);
+    M2C_FIELD(gNetAllocator, M2C_UNK (**)(s32), 0x1C)(temp_r4);
     return temp_r5;
 }
 

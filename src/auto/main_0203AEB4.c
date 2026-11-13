@@ -19,7 +19,7 @@ void func_0203af18(void) {
  M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u64 *,0xC)=t;
 }
 
-s32 func_0203af50(s32 a,void *b,void *c) {
+s32 SetGpiStatus(s32 a,void *b,void *c) {
  extern M2C_UNK gMatchSessionMgr;
  s32 func_0203a660(void); s32 gpiSetStatusInfo(void *,s32,void *,void *);
  if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!func_0203a660())return 0;

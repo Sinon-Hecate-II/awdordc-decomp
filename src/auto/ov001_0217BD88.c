@@ -180,7 +180,7 @@ case 18:
 M2C_FIELD(data_ov001_02193da4,u8 *,21)=0;
 Ov001_PlaySound(7);Ov001_SetStepCallback((s32 *)&func_ov001_0217c66c);return;
 case 19:
-if(func_ov001_0217ca88()){
+if(IsCodeEntryValid()){
 Ov001_PlaySound(6);M2C_FIELD(data_ov001_02193da4,u8 *,21)=1;
 }else{
 M2C_FIELD(data_ov001_02193da4,u8 *,21)=2;Ov001_PlaySound(9);
@@ -364,24 +364,29 @@ void func_ov001_0217ca10(void) {
  func_ov001_0217c7e8();
 }
 
-s32 func_ov001_0217ca88(void) {
+/* Validate the four 3-digit groups just entered on the ov001 code-entry screen:
+ * each group must be a decimal number no greater than 255, then the groups are
+ * packed into four bytes and checked - mode 1 wants the 32-bit value's set bits
+ * to all sit together at the top, any other mode wants the first byte to be a
+ * valid text character. */
+s32 IsCodeEntryValid(void) {
 extern const u16 data_ov001_0218f848[];
 extern void *data_ov001_02193da4;
 void func_ov001_02184ec4(void *,void *);
 s32 func_ov001_02175db4(s32 *,s32);
 s32 func_0204612c(void *);
-u8 limit[4]="255"; s32 mode; u8 buf[4]; u8 *p; s32 j,i,zero; u8 *base;
+u8 maxDigits[4]="255"; s32 entryMode; u8 code[4]; u8 *group; s32 bit,groupIndex,seenZero; u8 *base;
 const u8 *src=(const u8 *)data_ov001_0218f848;
 
-for(i=0;i<4;i++){
-p=(u8 *)data_ov001_02193da4+8+i*3;
-if(*p==32) continue;
-for(j=0;j<3;j++){if(p[j]>limit[j])return 0;if(p[j]<limit[j])break;}
+for(groupIndex=0;groupIndex<4;groupIndex++){
+group=(u8 *)data_ov001_02193da4+8+groupIndex*3;
+if(*group==32) continue;
+for(bit=0;bit<3;bit++){if(group[bit]>maxDigits[bit])return 0;if(group[bit]<maxDigits[bit])break;}
 }
-func_ov001_02184ec4((u8 *)data_ov001_02193da4+8,buf);
-func_ov001_02175db4(&mode,0);
-if(mode==1){zero=0;for(i=0;i<4;i++){for(j=0;j<8;j++){if(zero){if(buf[i]&(1<<(7-j)))return 0;}else if(!(buf[i]&(1<<(7-j))))zero=1;}}return 1;}
-return func_0204612c(buf)!=0;
+func_ov001_02184ec4((u8 *)data_ov001_02193da4+8,code);
+func_ov001_02175db4(&entryMode,0);
+if(entryMode==1){seenZero=0;for(groupIndex=0;groupIndex<4;groupIndex++){for(bit=0;bit<8;bit++){if(seenZero){if(code[groupIndex]&(1<<(7-bit)))return 0;}else if(!(code[groupIndex]&(1<<(7-bit))))seenZero=1;}}return 1;}
+return func_0204612c(code)!=0;
 }
 
 void func_ov001_0217cbdc(void) {

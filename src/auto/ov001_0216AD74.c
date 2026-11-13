@@ -125,12 +125,12 @@ s32 func_ov001_0216bd08(s32,void *,s32 *,s32);
 s32 func_ov001_0216bde4(s32,void *,s32 *,s32);
 s32 func_ov001_0216bebc(s32,void *,s32 *,s32);
 s32 func_ov001_0216bf60(void *);
-u32 func_ov001_0216cef0(u16);
+u32 Ov001SwapEndian16(u16);
 void *p=(u8 *)b+12;
-if(func_ov001_0216cef0(M2C_FIELD(b,u16 *,12))<1U){++*c;return a;}
+if(Ov001SwapEndian16(M2C_FIELD(b,u16 *,12))<1U){++*c;return a;}
 if(M2C_FIELD(p,u8 *,15)!=17){++*c;return a;}
 if(func_ov001_0216bf60((u8 *)b+12)>0){++*c;return a;}
-switch(func_ov001_0216cef0(M2C_FIELD(p,u16 *,6))) {
+switch(Ov001SwapEndian16(M2C_FIELD(p,u16 *,6))) {
 case 0x1010:a=func_ov001_0216bd08(a,b,c,d);break;
 case 0x2010:a=func_ov001_0216bde4(a,b,c,d);break;
 case 0x3010:a=func_ov001_0216bebc(a,b,c,d);break;

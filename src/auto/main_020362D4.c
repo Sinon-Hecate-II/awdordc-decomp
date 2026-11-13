@@ -117,32 +117,45 @@ void SendWfcHttpRequest(void) {
  M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)=0;
 }
 
+/* Poll the WFC HTTP connection's response: receive the next chunk of the status
+ * line; once the buffer is full or the peer closed, find the space after the
+ * status code and mark the connection OK when the code is "200" and failed
+ * otherwise; then stop the socket and put the connection into the done state.
+ * A recv result of -6 (would block) just waits for the next poll. */
 void ReceiveWfcHttpResponse(void) {
-s32 func_020215b4(s32,void *,s32);M2C_UNK func_02021750(s32,s32);M2C_UNK func_0202175c(s32);s32 StringCompareN(void *,void *,s32);
-extern M2C_UNK gWfcNet,sWfcHttpOkStatus;
-s32 r,i;void *p; s8 *scan;
-p=M2C_FIELD(&gWfcNet,void **,16);
-r=func_020215b4(M2C_FIELD(p,s32 *,0),p+20+M2C_FIELD(p,s32 *,52),32-M2C_FIELD(p,s32 *,52));
-if(r==-6)return;
-if(r>=0) {
-M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)+=r;
-if(r==0||M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)>=32){
-p=M2C_FIELD(&gWfcNet,void **,16);
-for(i=0,scan=p;scan[20]!=32&&i<32;scan++,i++);
-i++;
-if(i>=32)M2C_FIELD(p,s32 *,60)=2;
-else if(StringCompareN(p+20+i,&sWfcHttpOkStatus,3)!=0)M2C_FIELD(p,s32 *,60)=2;
-else M2C_FIELD(p,s32 *,60)=1;
-M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
-func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);
-func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0));
-}
-}else{
-M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,60)=2;
-M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
-func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);
-func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0));
-}
+    s32 func_020215b4(s32, void *, s32);
+    M2C_UNK func_02021750(s32, s32);
+    M2C_UNK func_0202175c(s32);
+    s32 StringCompareN(void *, void *, s32);
+    extern M2C_UNK gWfcNet, sWfcHttpOkStatus;
+    WfcHttpConnection *conn;
+    s32 got, index;
+    s8 *scan;
+
+    conn = M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10);
+    got = func_020215b4(conn->socket, conn->response + conn->received, WFC_HTTP_RESPONSE_SIZE - conn->received);
+    if (got == -6) return;
+    if (got >= 0) {
+        M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->received += got;
+        if (got == 0 || M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->received >= WFC_HTTP_RESPONSE_SIZE) {
+            conn = M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10);
+            for (index = 0, scan = (s8 *)conn; scan[20] != 32 && index < WFC_HTTP_RESPONSE_SIZE; scan++, index++) {
+                ;
+            }
+            index++;
+            if (index >= WFC_HTTP_RESPONSE_SIZE) conn->result = WFC_HTTP_RESULT_ERROR;
+            else if (StringCompareN(conn->response + index, &sWfcHttpOkStatus, 3) != 0) conn->result = WFC_HTTP_RESULT_ERROR;
+            else conn->result = WFC_HTTP_RESULT_OK;
+            M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->state = WFC_HTTP_DONE;
+            func_02021750(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket, 2);
+            func_0202175c(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket);
+        }
+    } else {
+        M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->result = WFC_HTTP_RESULT_ERROR;
+        M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->state = WFC_HTTP_DONE;
+        func_02021750(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket, 2);
+        func_0202175c(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket);
+    }
 }
 
 /* Parses the server's RFC-1123 Date header and records the local clock, the

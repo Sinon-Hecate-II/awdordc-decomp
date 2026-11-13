@@ -333,11 +333,11 @@ s32 func_ov001_02183fd4(void) {
 }
 
 s32 func_ov001_021840a0(void) {
-    s32 func_020125b0(void (*)(void), void *);
+    s32 WFC_SendRequestPacket(void (*)(void), void *);
     void func_ov001_021841cc();
     extern s32 data_ov001_02193e00;
     void *base = (void *)data_ov001_02193e00;
-    if (func_020125b0(func_ov001_021841cc, (s8 *)base + 0x1648) == 2) {
+    if (WFC_SendRequestPacket(func_ov001_021841cc, (s8 *)base + 0x1648) == 2) {
         return 1;
     }
     return 0;

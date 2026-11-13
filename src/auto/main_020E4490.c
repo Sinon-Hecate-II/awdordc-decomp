@@ -107,22 +107,22 @@ void func_020b25b8(void);
 void func_0209db48(void);
 void func_0208f4f0(void);
 void func_01ffa13c(int);
-void func_01ffa5b8(void);
+void Update3DSpriteObject(void);
 void func_02004e60(int,int);
 if (!data_027e15b4) return;
 data_02168fe8=0;
 func_0208f4d8();
 gFrameCounter++;
 func_0208184c(); UpdateTouchInput(); func_02090390(); func_02081ee4();
-func_01ffa13c(3);func_01ffa5b8();
-func_01ffa13c(4);func_01ffa5b8();
-func_01ffa13c(5);func_01ffa5b8();
-func_01ffa13c(6);func_01ffa5b8();
-func_01ffa13c(7);func_01ffa5b8();
-func_01ffa13c(8);func_01ffa5b8();
+func_01ffa13c(3);Update3DSpriteObject();
+func_01ffa13c(4);Update3DSpriteObject();
+func_01ffa13c(5);Update3DSpriteObject();
+func_01ffa13c(6);Update3DSpriteObject();
+func_01ffa13c(7);Update3DSpriteObject();
+func_01ffa13c(8);Update3DSpriteObject();
 func_02091bf4();UpdateSpriteSlots();func_020b25b8();
-func_01ffa13c(9);func_01ffa5b8();
-func_01ffa13c(10);func_01ffa5b8();
+func_01ffa13c(9);Update3DSpriteObject();
+func_01ffa13c(10);Update3DSpriteObject();
 func_0209db48();
 if(data_02168fe8) data_02168fe8();
 data_027e15b4=0;
@@ -136,7 +136,7 @@ void func_020e4688(void) {
     M2C_UNK func_01ff9b38();
     void Update3DSpriteVram(void);
     void func_01ffa13c(int);
-    void func_01ffa5b8(void);
+    void Update3DSpriteObject(void);
     void func_0200d248(void *);
     void func_0200d288(void *);
     extern int data_027e0000;
@@ -150,13 +150,13 @@ void func_020e4688(void) {
     data_027e15c0 += 1;
     if (data_027e15b4 == 0) {
         func_01ffa13c(0);
-        func_01ffa5b8();
+        Update3DSpriteObject();
     }
     func_01ffa13c(1);
-    func_01ffa5b8();
+    Update3DSpriteObject();
     if (data_027e15b4 == 0) {
         func_01ffa13c(2);
-        func_01ffa5b8();
+        Update3DSpriteObject();
         func_01ff9b38();
         Update3DSpriteVram();
         func_01ff873c();
@@ -182,7 +182,7 @@ void func_020e476c(void) {
     M2C_UNK func_020abf94();
     M2C_UNK func_020aca8c(M2C_UNK);
     M2C_UNK func_020b1b3c();
-    M2C_UNK func_020be5d0();
+    M2C_UNK InitDefaultGameSettings();
     M2C_UNK func_020c8eec();
     M2C_UNK func_020d3cec();
     M2C_UNK func_ov000_02169368();
@@ -193,7 +193,7 @@ void func_020e476c(void) {
     s32 var_r1;
     s32 var_r9;
 
-    func_020be5d0();
+    InitDefaultGameSettings();
     func_020945f8();
     func_020b1b3c();
     func_020834c4();
@@ -539,7 +539,7 @@ void func_020e4eb0(void *arg0) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 data_02168ff4;
-    extern u8 data_027e00ac[];
+    extern u8 gSpriteDesc32x32[];
 
     u8 cond;
     u8 idx;
@@ -638,7 +638,7 @@ void func_020e4eb0(void *arg0) {
             base = eng[0];
             sh = ((u32)base[0] << 17) >> 30;
             arg2 = (u16)((fullmask & (scale >> sh)) | 0x6000);
-            AddSprite(a0, 0x28, arg2, (s32)data_027e00ac, kind);
+            AddSprite(a0, 0x28, arg2, (s32)gSpriteDesc32x32, kind);
 
             r9v = (r9v + 1) & 0xff;
             r8v = (s16)(r8v + 0x20);

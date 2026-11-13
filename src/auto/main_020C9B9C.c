@@ -133,7 +133,7 @@ void func_020c9e94(u16 arg0, u16 arg1) {
 }
 
 void func_020c9ebc(s32 arg0, s32 arg1) {
-    M2C_UNK func_02091c20(s32, s32);
+    M2C_UNK AddRecordValue(s32, s32);
     s32 IsPlayerHuman(s32);
     extern void **gCurrentMap;
     void *temp_r2;
@@ -143,13 +143,13 @@ void func_020c9ebc(s32 arg0, s32 arg1) {
     temp_lr = arg0 * 0x8C;
     M2C_FIELD((u8 *)temp_r2 + temp_lr, u16 *, 0x67BE) = M2C_FIELD(temp_r2, u16 *, 0x52A2);
     M2C_FIELD((u8 *)*gCurrentMap + temp_lr, s8 *, 0x67C0) = arg1;
-    if (IsPlayerHuman(arg0) != 0) func_02091c20(0x18, 1);
+    if (IsPlayerHuman(arg0) != 0) AddRecordValue(0x18, 1);
     current = M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
     if (current == arg0) return;
     if (IsPlayerHuman(current) == 0) return;
-    if (arg1 & 0x11) func_02091c20(0x17, 1);
+    if (arg1 & 0x11) AddRecordValue(0x17, 1);
     if (!(arg1 & 2)) return;
-    func_02091c20(0x16, 1);
+    AddRecordValue(0x16, 1);
 }
 
 void func_020c9f74(s32 arg0) {
@@ -318,8 +318,8 @@ void UpdateUnitSelectionMenu(void *dialog) {
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK func_0207b764(s16, s16);
     void *GetTargetPosition(s16);
-    M2C_UNK func_020cc66c(s16, s16);
-    s32 func_020ccca0(void);
+    M2C_UNK CreateTargetCursor(s16, s16);
+    s32 CreateMapMenu(void);
     void func_020d8fa0(void);
     void MoveSelectionWithKeys(void *, s16);
     void UpdateSelectionFromTouch(void *, s16);
@@ -363,12 +363,12 @@ void UpdateUnitSelectionMenu(void *dialog) {
         void *target;
         data_0215be0c = ((SelectionMenu *)dialog)->selection;
         target = GetTargetPosition(((SelectionMenu *)dialog)->selection);
-        func_020cc66c(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
+        CreateTargetCursor(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
         DeleteSpriteObject(dialog);
         return;
     }
     if (merged & 0x100) {
-        func_020ccca0();
+        CreateMapMenu();
         return;
     }
     if (merged & 0x40) {
@@ -433,16 +433,16 @@ M2C_FIELD(*gCurrentMap,s16*,0x52c4)=M2C_FIELD(*gCurrentMap,s16*,0x52de);
 void func_020caa34(void *dialog) {
     M2C_UNK func_020bdfdc(void);
     s32 func_020d4dd0(void);
-    s32 func_020bcc34(void);
-    s32 func_020bddd4(void);
+    s32 GetMapCursorKeyAction(void);
+    s32 GetMapCursorTouchAction(void);
     M2C_UNK func_0207b764(s16, s16);
     M2C_UNK func_01ffa6fc(void *);
     s32 func_0209f944(s16, s16);
     M2C_UNK func_020d468c(void);
-    M2C_UNK func_020cc66c(s16, s16);
+    M2C_UNK CreateTargetCursor(s16, s16);
     M2C_UNK func_ov000_02199f50(s32, u8, u8, u8);
     M2C_UNK DeleteSpriteObject(void *);
-    M2C_UNK func_020ccca0(void);
+    M2C_UNK CreateMapMenu(void);
     M2C_UNK func_020cf828(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
     M2C_UNK func_020cf69c(s32, s32);
@@ -453,8 +453,8 @@ void func_020caa34(void *dialog) {
 
     func_020bdfdc();
     if (func_020d4dd0() != 0) {
-        flags |= func_020bcc34();
-        flags |= func_020bddd4();
+        flags |= GetMapCursorKeyAction();
+        flags |= GetMapCursorTouchAction();
         if (flags & 0x20) {
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
@@ -468,7 +468,7 @@ void func_020caa34(void *dialog) {
             if (func_0209f944(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                                M2C_FIELD(*gCurrentMap, s16 *, 0x52C4)) != 0) {
                 func_020d468c();
-                func_020cc66c(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
+                CreateTargetCursor(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                               M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
                 func_ov000_02199f50(0x15,
                     M2C_FIELD(*gCurrentMap, u8 *, 0x52D4),
@@ -479,7 +479,7 @@ void func_020caa34(void *dialog) {
             }
         }
         if (flags & 0x100) {
-            func_020ccca0();
+            CreateMapMenu();
             return;
         }
     }

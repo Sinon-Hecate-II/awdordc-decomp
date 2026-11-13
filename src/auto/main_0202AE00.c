@@ -419,7 +419,7 @@ void func_0202bc1c(void){M2C_UNK func_02008cf0(s32,s32,s32,s32);s32 func_020094f
 
 #pragma opt_common_subs off
 void func_0202bc7c(void) {
-void func_02007e54(s32,s32,s32); void DC_FlushRange(s32,s32); M2C_UNK func_02008cc8();
+void CpuFill(s32,s32,s32); void DC_FlushRange(s32,s32); M2C_UNK func_02008cc8();
 extern M2C_UNK data_0213bc54,data_0213bc9c;
 AudioBufferState *p=(AudioBufferState *)&data_0213bc9c;
 s32 channel; register s32 dest,size;
@@ -427,8 +427,8 @@ if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;
 dest=p->buffer0;
 size=p->size;
 p->state=0;
-func_02007e54(0,dest,size);
-func_02007e54(0,p->buffer1,p->size);
+CpuFill(0,dest,size);
+CpuFill(0,p->buffer1,p->size);
 DC_FlushRange(p->buffer0,p->size);
 DC_FlushRange(p->buffer1,p->size);
 channel=p->channel;

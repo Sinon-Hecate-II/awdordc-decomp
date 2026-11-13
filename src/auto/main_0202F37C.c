@@ -41,7 +41,7 @@ void func_0202f4e4(u8 arg0) {
  }
 }
 
-u8 func_0202f544(void) {
+u8 Wfc_GetSessionState(void) {
     extern M2C_UNK gWfcManager;
     return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 9);
 }
@@ -52,7 +52,7 @@ void func_0202f558(s32 arg0) {
 
     temp_r0 = func_0202f48c(1);
     M2C_FIELD(temp_r0, s32 *, 0xC) = arg0;
-    M2C_FIELD(temp_r0, s8 *, 0xA) = func_0202f544();
+    M2C_FIELD(temp_r0, s8 *, 0xA) = Wfc_GetSessionState();
 }
 
 s32 func_0202f57c(void) {
@@ -101,37 +101,41 @@ s32 func_0202f5f4(void) {
  return 1;
 }
 
-void func_0202f694(s32 arg0) {
- void *a=(void *)arg0;
- void *func_0202f48c(s32); u8 func_0202f544(void);
- void func_02030afc(u16); s32 func_0202f894(void *,s32,void *); s32 func_0202f910(void *,void *);
- s32 func_0202f9a0(s32,void *,M2C_UNK,void *); void func_0202fb20(s32,s32);
- s32 result=-1; u8 v; void *p=func_0202f48c(16);
+/* Applies an incoming friend message to the WFC friend roster: depending on the
+   session state it either marks the friend id straight away (empty code) or
+   matches the code against the friend rows (state 3), the friend records (state 4)
+   or a single row (state 5), then updates and re-sorts the roster. */
+void Wfc_HandleFriendMessage(s32 arg0) {
+ void *msg=(void *)arg0;
+ void *func_0202f48c(s32); u8 Wfc_GetSessionState(void);
+ void Wfc_MarkFriendId(u16); s32 func_0202f894(void *,s32,void *); s32 func_0202f910(void *,void *);
+ s32 func_0202f9a0(s32,void *,M2C_UNK,void *); void Wfc_SortFriendRoster(s32,s32);
+ s32 result=-1; u8 friendId; void *wfc=func_0202f48c(16);
  M2C_FIELD(func_0202f48c(1),u8 *,11)=1;
- switch(func_0202f544()) {
+ switch(Wfc_GetSessionState()) {
  case 3:
- v=M2C_FIELD(p,u8 *,0xD11);
- if(M2C_FIELD(a,u16 *,10)==0 || M2C_FIELD(a,u8 *,12)==0) {func_02030afc(M2C_FIELD(a,u16 *,0x36));}
- else if(M2C_FIELD(a,u16 *,10)==1 || M2C_FIELD(a,u8 *,12)==32) {
- func_02030afc(M2C_FIELD(a,u16 *,0x36));
- result=func_0202f894(a,M2C_FIELD(p,u8 *,0xD10),p+0x300);
- }else result=func_0202f894(a,M2C_FIELD(p,u8 *,0xD10),p+0x300);
+ friendId=M2C_FIELD(wfc,u8 *,WFC_STATE_FRIEND_ID);
+ if(M2C_FIELD(msg,u16 *,10)==0 || M2C_FIELD(msg,u8 *,12)==0) {Wfc_MarkFriendId(M2C_FIELD(msg,u16 *,0x36));}
+ else if(M2C_FIELD(msg,u16 *,10)==1 || M2C_FIELD(msg,u8 *,12)==WFC_CODE_LEN_FRIEND) {
+ Wfc_MarkFriendId(M2C_FIELD(msg,u16 *,0x36));
+ result=func_0202f894(msg,M2C_FIELD(wfc,u8 *,WFC_STATE_ENTRY_COUNT),wfc+WFC_STATE_ENTRIES);
+ }else result=func_0202f894(msg,M2C_FIELD(wfc,u8 *,WFC_STATE_ENTRY_COUNT),wfc+WFC_STATE_ENTRIES);
  break;
  case 4:
- v=M2C_FIELD(p+M2C_FIELD(p,u8 *,0xD0F)*0xC0,u16 *,0x4A6)-1;
- result=func_0202f910(a,p);
- if(result>=0) M2C_FIELD(p+0x447+M2C_FIELD(p,u8 *,0xD0F)*4,u8 *,0)|=0x80;
+ friendId=M2C_FIELD(wfc+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*WFC_RECORD_STRIDE,u16 *,0x4A6)-1;
+ result=func_0202f910(msg,wfc);
+ if(result>=0) M2C_FIELD(wfc+0x447+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,0)|=0x80;
  break;
  case 5:
- v=M2C_FIELD(p,u8 *,0xD11);
- result=func_0202f894(a,1,p+0x300+M2C_FIELD(p,u8 *,0xD0F)*0x24);
+ friendId=M2C_FIELD(wfc,u8 *,WFC_STATE_FRIEND_ID);
+ result=func_0202f894(msg,1,wfc+WFC_STATE_ENTRIES+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE);
  if(result>=0) {
- s32 i=(s16)M2C_FIELD(p,u8 *,0xD0F)*(s16)0x24; void *q=p+0x300;
+ s32 i=(s16)M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*(s16)WFC_ENTRY_STRIDE; void *q=wfc+WFC_STATE_ENTRIES;
  M2C_FIELD(q+i,u8 *,0)=(M2C_FIELD(q+i,u8 *,0)&~15)|1;
  } break;
  default:return;
  }
- if(result>=0) func_0202fb20(func_0202f9a0(result,a,v,p),(s32)p);
+ if(result>=0) Wfc_SortFriendRoster(func_0202f9a0(result,msg,friendId,wfc),(s32)wfc);
 }
 
 s32 Wfc_MatchFriendCode(void *arg0) {
@@ -250,8 +254,8 @@ void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  func_02007e70(arg1,(s32)arg3+offset,0xC0);
 }
 #pragma opt_common_subs off
-void func_0202fb20(s32 arg0, s32 arg1) {
-    M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
+void Wfc_SortFriendRoster(s32 arg0, s32 arg1) {
+    M2C_UNK CpuFill(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e70(void *, s32, s32);
     u8 sp4[0xc0];
     M2C_UNK sp0;
@@ -283,12 +287,12 @@ loop_2:
             }
         }
     }
-    func_02007e54(0, temp_r7 + 0x28, 4);
-    func_02007e54(0, temp_r8 + 0x780, 0xC0);
+    CpuFill(0, temp_r7 + 0x28, 4);
+    CpuFill(0, temp_r8 + 0x780, 0xC0);
 }
 #pragma opt_common_subs reset
 void func_0202fc10(void *arg0) {
- void func_0202f694(s32);
+ void Wfc_HandleFriendMessage(s32);
  void *p=func_0202f48c(0x10);
  s16 type=M2C_FIELD(arg0,s16 *,0);
  if(type==5) {
@@ -299,7 +303,7 @@ void func_0202fc10(void *arg0) {
  case 17: M2C_FIELD(p,u8 *,0xD14)=3; return;
  default: M2C_FIELD(p,u8 *,0xD14)=4; return;
  }
- } else if(type==7) func_0202f694(M2C_FIELD(arg0,s32 *,4));
+ } else if(type==7) Wfc_HandleFriendMessage(M2C_FIELD(arg0,s32 *,4));
 }
 
 s32 func_0202fc9c(void) {
@@ -307,7 +311,7 @@ s32 func_0202fc9c(void) {
     s32 func_0202fdd8();
     s32 var_r4;
 
-    var_r4 = func_0202f544();
+    var_r4 = Wfc_GetSessionState();
     func_0202f48c(0x10);
     switch (var_r4) {                               /* irregular */
     case 7:

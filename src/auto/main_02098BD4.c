@@ -407,7 +407,7 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
     void StringCopy(M2C_UNK, M2C_UNK);
     s32 func_0209b370(s32, s32, s32, s32, s32, s32, u16, u16, u16);
     void func_020994f8(u16 *, s32, s32);
-    s32 func_0209c268(M2C_UNK);
+    s32 MeasureStringWidth(M2C_UNK);
 
     register void *obj;
     register s32 cursor;
@@ -453,7 +453,7 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
     func_0209b370((s32)(s16)arg0, (s32)(s16)arg1, 4, engineEntry,
                    arg2, (s32)arg3, (u16)arg4, (u16)arg5, *(u16 *)((u8 *)obj + 0x300));
 
-    funcResult = func_0209c268(arg3);
+    funcResult = MeasureStringWidth(arg3);
     width = (funcResult + 7) >> 3;
     arg0 = *(u16 *)((u8 *)obj + 0x300);
 
@@ -503,10 +503,10 @@ return width;
 #pragma scheduling on
 u8 func_02099818(s32 arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3) {
  M2C_UNK func_020996d0(s32,u8,M2C_UNK,M2C_UNK,s32);
- extern u8 data_ov000_021b7e7c[];
+ extern u8 gGlyphWidthTable[];
  extern s32 data_ov000_021b7f7c[];
- func_020996d0(data_ov000_021b7f7c[arg0],data_ov000_021b7e7c[arg0],arg1,arg2,arg3);
- return data_ov000_021b7e7c[arg0];
+ func_020996d0(data_ov000_021b7f7c[arg0],gGlyphWidthTable[arg0],arg1,arg2,arg3);
+ return gGlyphWidthTable[arg0];
 }
 
 #pragma opt_common_subs off

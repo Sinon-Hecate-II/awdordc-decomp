@@ -14,18 +14,18 @@ return bits;
 
 
 s32 func_02012b70(s32 arg0, void *arg1) {
-void *func_02011440(); s32 func_02011450(void *); s32 func_020112b4(s32,s32); void func_02007e54(s32,void *,s32); void func_02007e70(void *,void *,s32); s32 func_020113d0(void *,s32);
+void *func_02011440(); s32 func_02011450(void *); s32 func_020112b4(s32,s32); void CpuFill(s32,void *,s32); void func_02007e70(void *,void *,s32); s32 func_020113d0(void *,s32);
 u32 buf[8]; s32 r;
 r=func_02011450(func_02011440()); if(r) return r;
-func_020112b4(0x23,arg0); func_02007e54(0,buf,0x20);
+func_020112b4(0x23,arg0); CpuFill(0,buf,0x20);
 *(u16 *)buf=0x23; func_02007e70(arg1,&buf[1],0x1c);
 r=func_020113d0(buf,0x20); if(!r) r=2; return r;
 }
 
 void func_02012be4(s32 arg0, s16 arg1) {
-void func_02007e54(s32,void *,s32);
+void CpuFill(s32,void *,s32);
 u32 buf[7];
-func_02007e54(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; func_02012b70(arg0,buf);
+CpuFill(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; func_02012b70(arg0,buf);
 }
 
 s32 func_02012c28(s32 a,s32 b,void *buf,u32 len,u16 c,u16 d,u16 e) {
@@ -164,7 +164,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     s32 func_02012c28(s32, s32, void *, u32, u16, u16, u16);
     void func_02007e20(void *, void *, u32);
     void func_02013888(void *, u32, void *);
-    void func_02013954(void *, s32);
+    void WFC_PostReceive(void *, s32);
     void func_02013590(void *);
     s32 r5;
     s32 r4;
@@ -214,10 +214,10 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
             if (M2C_FIELD(r10, u16 *, 0x818) == 0 && r4 != 0 && M2C_FIELD((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x808) << 9)), u16 *, 0) == 1)
                 r11 = r5;
         }
-        func_02013954(r10, 0);
+        WFC_PostReceive(r10, 0);
         if (r5 != 0) {
             func_02013888(r10, 0, r9);
-            if (M2C_FIELD(r10, u16 *, 0x818) == 0) func_02013954(r10, r11);
+            if (M2C_FIELD(r10, u16 *, 0x818) == 0) WFC_PostReceive(r10, r11);
         }
     } else {
         r6 = 0;
@@ -274,21 +274,21 @@ void func_02013590(void *p) {
 
 void func_02013668(void *p) {
 void func_02013888(void *,u32,void *);
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02013954(void *,s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void WFC_PostReceive(void *,s32);
 void *q=M2C_FIELD(p,void **,0x1c);s32 bit,irq;u32 one=1;u16 slot;
 if(!q)return;
 if(M2C_FIELD(p,u16 *,2)==0) {
 switch((s32)M2C_FIELD(p,u16 *,4)) {
-case 21:func_02013888(q,M2C_FIELD(p,u16 *,0x12),M2C_FIELD(p,void **,12));func_02013954(q,0);break;
-case 7:func_02013954(q,0);break;
+case 21:func_02013888(q,M2C_FIELD(p,u16 *,0x12),M2C_FIELD(p,void **,12));WFC_PostReceive(q,0);break;
+case 7:WFC_PostReceive(q,0);break;
 case 25:break;
 case 9:case 26:
 bit=M2C_FIELD(p,u16 *,0x12);irq=OS_DisableInterrupts();
 slot=M2C_FIELD(q,u16 *,0x808);
 ((u16 (*)[256])q)[slot][0]&=~(one<<bit);
 if(M2C_FIELD(q,u16 *,0x818)==one){slot=(slot+1)&3;((u16 (*)[256])q)[slot][0]&=~(one<<bit);}
-OS_RestoreInterrupts(irq);func_02013954(q,0);
-if(M2C_FIELD(q,u16 *,0x818)==one)func_02013954(q,0);
+OS_RestoreInterrupts(irq);WFC_PostReceive(q,0);
+if(M2C_FIELD(q,u16 *,0x818)==one)WFC_PostReceive(q,0);
 break;
 }
 }else M2C_FIELD(q,u16 *,0x81c)=5;
@@ -334,25 +334,39 @@ void func_02013888(void *p,u32 index,void *src) {
  OS_RestoreInterrupts(irq);
 }
 
-void func_02013954(void *p,s32 flag) {
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 func_02011994(void);
-void FillU16(s32,void *,u32);
-s32 irq=OS_DisableInterrupts();s32 clear,next,old,mask,r;
-if(((u16 (*)[256])p)[M2C_FIELD(p,u16 *,0x808)][0]==0){
-mask=func_02011994();
-old=M2C_FIELD(p,u16 *,0x808);next=(old+1)&3;
-if(M2C_FIELD(p,u16 *,0x818)==1)clear=(next+1)&3;else clear=next;
-FillU16(0,p+(clear<<9),512);
-((u16 (*)[256])p)[clear][0]=M2C_FIELD(p,u16 *,0x80e)&(mask|1);
-M2C_FIELD(p,u16 *,0x808)=next;
-((u16 (*)[256])p)[old][0]=M2C_FIELD(p,u16 *,0x80e);
-if(flag==1)((u16 (*)[256])p)[old][0]&=~1;
-OS_RestoreInterrupts(irq);
-r=func_02012c28((s32)func_02013590,(s32)p,p+(old<<9),M2C_FIELD(p,u16 *,0x814),(u16)(M2C_FIELD(p,u16 *,0x80e)&mask),M2C_FIELD(p,u16 *,0x816),1);
-if(r==7){M2C_FIELD(p+old*2,u16 *,0x800)=0xffff;M2C_FIELD(p,u16 *,0x80a)=(M2C_FIELD(p,u16 *,0x80a)+1)&3;return;}
-if(r==0||r==2)return;
-M2C_FIELD(p,u16 *,0x81c)=5;
-}else OS_RestoreInterrupts(irq);
+/* Post the next slot of the WFC receive ring: when the slot currently being
+ * received into is still free, clear the next slot, mark the freed slot ready
+ * to be sent to every connected peer, advance the ring and submit a new
+ * receive on the freed slot. dropSelf clears the self bit so the slot is not
+ * looped back. */
+void WFC_PostReceive(void *state, s32 dropSelf) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 func_02011994(void);
+    void FillU16(s32, void *, u32);
+    s32 savedIrq = OS_DisableInterrupts();
+    s32 freeSlot, nextSlot, curSlot, peerMask, result;
+    if (((u16 (*)[256])state)[M2C_FIELD(state, u16 *, 0x808)][0] == 0) {
+        peerMask = func_02011994();
+        curSlot = M2C_FIELD(state, u16 *, 0x808);
+        nextSlot = (curSlot + 1) & 3;
+        if (M2C_FIELD(state, u16 *, 0x818) == 1) freeSlot = (nextSlot + 1) & 3;
+        else freeSlot = nextSlot;
+        FillU16(0, state + (freeSlot << 9), 512);
+        ((u16 (*)[256])state)[freeSlot][0] = M2C_FIELD(state, u16 *, 0x80e) & (peerMask | 1);
+        M2C_FIELD(state, u16 *, 0x808) = nextSlot;
+        ((u16 (*)[256])state)[curSlot][0] = M2C_FIELD(state, u16 *, 0x80e);
+        if (dropSelf == 1) ((u16 (*)[256])state)[curSlot][0] &= ~1;
+        OS_RestoreInterrupts(savedIrq);
+        result = func_02012c28((s32)func_02013590, (s32)state, state + (curSlot << 9), M2C_FIELD(state, u16 *, 0x814), (u16)(M2C_FIELD(state, u16 *, 0x80e) & peerMask), M2C_FIELD(state, u16 *, 0x816), 1);
+        if (result == 7) {
+            M2C_FIELD(state + curSlot * 2, u16 *, 0x800) = 0xffff;
+            M2C_FIELD(state, u16 *, 0x80a) = (M2C_FIELD(state, u16 *, 0x80a) + 1) & 3;
+            return;
+        }
+        if (result == 0 || result == 2) return;
+        M2C_FIELD(state, u16 *, 0x81c) = 5;
+    } else OS_RestoreInterrupts(savedIrq);
 }
 
 #pragma scheduling off

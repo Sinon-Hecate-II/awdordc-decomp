@@ -5,9 +5,9 @@ typedef struct { u16 pad:13, shift:2, last:1; } ModeC253c;
 extern void *gCur3DSpriteEngine;
 extern u8 gSinCosTable[];
 extern u8 gSpriteDesc32x16[];
-extern u8 data_027e00b4[];
+extern u8 gSpriteDesc64x32[];
 extern u8 data_02129780[];
-extern u8 data_027e007c[];
+extern u8 gSpriteDesc32x8[];
 
 /* Initialise the CO "occupation" cut-in: open the /occupation archive, set up the
  * 3D sprite object, load the CO's .narc/.cg/.sc/.cl portrait and frame textures,
@@ -147,12 +147,12 @@ q0=Divide(cosine<<4,scaleD);q1=Divide((-sine)<<4,scaleC);q2=Divide(sine<<4,scale
 SetSpriteQuad(0,q0,q1,q2,q3);
 if(((FlagsC253c *)(panel+80))->flag0){SetTextSpriteValue(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}DrawTextSprite(*(void **)(panel+60));}
 if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc32x16,11);
-if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e00b4,11);
+if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc64x32,11);
 scratch=GetCOPaletteOffset((*(u8 **)(panel+64))[1]);
 AddSprite(76,117,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_02129780,11);
 for(row=0;row<20;row++){spriteY=row*-4+130;
 if(row<panel[57])scratch=GetCOPortraitOffset((*(u8 **)(panel+64))[3]);else scratch=GetCOPortraitOffset((*(u8 **)(panel+64))[2]);
-if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xc000,data_027e007c,11);
+if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xc000,gSpriteDesc32x8,11);
 }
 }
 

@@ -114,6 +114,15 @@ typedef struct HashDescriptor {
     void (*final)(void *, void *);             /* +0x18 */
 } HashDescriptor;
 
+/* SHA1 state worked on by Sha1Init, Sha1Update and SHA1_Finalize (main_0200BDA4). */
+typedef struct Sha1Context {
+    u32 state[5];      /* +0x00 A, B, C, D, E */
+    u32 bitCountLo;    /* +0x14 low word of the processed bit count */
+    u32 bitCountHi;    /* +0x18 high word of the processed bit count */
+    u32 bufferBytes;   /* +0x1C bytes waiting in block */
+    u8  block[0x40];   /* +0x20 message block being filled */
+} Sha1Context; /* 0x60 bytes */
+
 /* TLS connection (the channel object the TLS record code passes around).  The
  * hash and RC4 states are embedded; the key fields point into the channel's key
  * block, and each direction's sequence number is an 8-byte big-endian counter. */
@@ -151,6 +160,21 @@ enum {
 #define TLS_STATE_ERROR    9     /* TLS_STATE value meaning the handshake failed */
 #define TLS_RECORD_HEADER  5     /* bytes of a TLS record header */
 #define TLS_MAX_RECORD     0x4800 /* largest accepted record body */
+
+/* TLS record content types (the first byte of a record). */
+enum {
+    TLS_CONTENT_CHANGE_CIPHER_SPEC = 20,
+    TLS_CONTENT_HANDSHAKE          = 22
+};
+
+/* TLS handshake message type of the Finished message. */
+#define TLS_HANDSHAKE_FINISHED 20
+
+/* Contexts of the handshake transcript (the running MD5/SHA1 hash of the
+ * handshake messages). TLS_MD5_CTX/TLS_SHA1_CTX above are the separate scratch
+ * contexts a record MAC is computed in. */
+#define TLS_TRANSCRIPT_MD5  0x3a4
+#define TLS_TRANSCRIPT_SHA1 0x2ec
 
 /* ov003 map-list menu entity: the mode nibble selects the map screen, and the
  * selected map id is read either from the paged list or from MAP_ID below. */
@@ -226,6 +250,29 @@ typedef struct MapSelectScreen {
 #define MAPSELECT_COUNT         0x51 /* u8 number of maps in the list */
 #define MAPSELECT_INDEX         0x52 /* u8 selected row */
 #define MAPSELECT_CHOSEN        0x54 /* u8 a map has been chosen */
+#define MAPSELECT_TEXT_PANEL    0x0C /* void *: panel the row names are drawn into */
+#define MAPSELECT_SCROLL_ANIM   0x38 /* s32 token of the running list-scroll animation */
+#define MAPSELECT_BUMP_LATCH    0x59 /* u8 set once the no-move sound played for a held key */
+
+/* The fields of gMapSelectState in front of that object. */
+#define MAPSELECT_STATE_CURSOR  0x00 /* u8 highlighted row (0..4) */
+#define MAPSELECT_STATE_SCROLL  0x02 /* u16 list scroll position, 0x1c units per row */
+#define MAPSELECT_STATE_OBJ     0x04 /* void *: the map-list object (MAPSELECT_*) */
+
+/* The in-memory game settings block. The word at +0x128 is stamped with this
+ * magic once the defaults have been filled in; code that reads the settings
+ * re-initialises them when the magic is missing. */
+#define GAME_SETTINGS_MAGIC 0x20070810
+
+/* NitroSDK NARC archive header and block tags. A block holds its tag at +0 and
+ * its byte size at +4; the header's u16 at +0x0C is the offset of the block
+ * list and the u16 at +0x0E is the block count. */
+#define NARC_MAGIC       0x4352414E /* "NARC" at +0x00 */
+#define NARC_BYTE_ORDER  0xFFFE     /* u16 at +0x04 */
+#define NARC_VERSION     0x0100     /* u16 at +0x06 */
+#define NARC_BLOCK_FAT   0x46415442 /* "BTAF": file allocation table */
+#define NARC_BLOCK_FNT   0x464E5442 /* "BTNF": file name table */
+#define NARC_BLOCK_IMAGE 0x46494D47 /* "GMIF": file image data */
 
 /* ov005 record/history menu: one scrolling list per tab (global gHistoryMenu). */
 typedef struct HistoryMenuTab {
@@ -253,7 +300,7 @@ typedef struct HistoryMenu {
     void *sprite60;     /* +0x60 */
 } HistoryMenu;          /* 0x64 bytes */
 
-/* ov005 records/achievements screen: the object at data_ov005_02221304+8.
+/* ov005 records/achievements screen: the object at gRecordsMenuState+8.
  * Three tabs (tab) each list one record group; the list scrolls six rows at a
  * time and a row is only selectable when its enabled[] flag is set. */
 typedef struct RecordsScreen {
@@ -416,6 +463,10 @@ enum {
     KEY_RIGHT = 0x0010, KEY_LEFT = 0x0020, KEY_UP = 0x0040, KEY_DOWN = 0x0080,
     KEY_R = 0x0100, KEY_L = 0x0200, KEY_X = 0x0400, KEY_Y = 0x0800
 };
+
+/* Entries of the KeyState masks (gKeyState). */
+#define KEY_HELD    0 /* u16 keys held this frame */
+#define KEY_PRESSED 1 /* u16 keys newly pressed this frame */
 
 /* ov000 unit-list menu object (singleton returned by GetScrollList). */
 typedef struct ScrollList {
@@ -596,9 +647,18 @@ enum {
 #define CONN_SESSION_NATNEG       0x19C /* s32 NAT negotiation session to free on teardown, 0 when none */
 #define CONN_SESSION_JOIN_PEER    0x204 /* s32 player id a join request is outstanding to, 0 when none */
 #define CONN_SESSION_TARGET_ID    0x20C /* s32 player id of the matchmaking target, 0 when none */
+#define CONN_SESSION_MATCH_ADDRESS 0x20 /* s32 address reported for the match (usually our QR2 parameter at 0x200) */
+#define CONN_SESSION_ADDRESS_VALID 0x17 /* u8 nonzero once MATCH_ADDRESS may be announced to the peer */
+#define CONN_SESSION_SERVER_BROWSER 0xE4 /* s32 GameSpy server-browser/QR2 object built by func_020613dc */
+#define CONN_SESSION_PEER_CALLBACK      0x46C /* s32 callback (slot, data) run when a peer joins while serving */
+#define CONN_SESSION_PEER_CALLBACK_DATA 0x470 /* s32 data passed to PEER_CALLBACK */
+#define CONN_SESSION_SCORE_CALLBACK     0x474 /* s32 callback (index, data) scoring browsed sessions */
+#define CONN_SESSION_SCORE_CALLBACK_DATA 0x478 /* s32 data passed to SCORE_CALLBACK */
 
 /* Connection session fields used while GameSpy QR2 server reporting runs. */
 #define CONN_SESSION_GT2_SOCKET   0x04  /* GameSpy GT2 socket wrapper (handle at +0, local port at +8) */
+/* GameSpy GTI2 transport session field used by the message handler. */
+#define GT2_RECV_SEQUENCE         0x66  /* u16 sequence number the next incoming command must carry */
 #define CONN_SESSION_QR2_RECORD   0x10  /* void *GameSpy QR2 connection record (see qr2.h) */
 #define CONN_SESSION_PUBLIC_PORT  0x1A  /* u16 port the master reported for this client */
 #define CONN_SESSION_PUBLIC_IP    0x1C  /* s32 IPv4 address the master reported for this client */
@@ -1033,6 +1093,12 @@ typedef struct FriendCodeEntry {
 #define FRIEND_CODE_KEYPAD_CANCEL  12 /* 'N': leave the code unchanged */
 #define FRIEND_CODE_KEYPAD_CONFIRM 13 /* 'Y': submit the code */
 
+/* A friend code has this many digits; gFriendCodeInput holds them plus a NUL. */
+#define FRIEND_CODE_LENGTH 12
+/* Digit cursor (0..FRIEND_CODE_LENGTH) of the friend-code entry state, the object
+ * the keypad handlers reach through the keypad event's +0x10 pointer. */
+#define FRIEND_CODE_CURSOR 0x38
+
 /* ov007 map generator's 30-column scratch marker grid (gMapMarkerGrid). */
 #define MAP_MARKER_STRIDE 30
 #define MAP_MARKER_RESERVED 1 /* cell reserved by the map border or a structure */
@@ -1044,6 +1110,18 @@ enum {
     FRAME_BORDER_INSIDE = 1,  /* frame drawn on the rectangle's own edge */
     FRAME_BORDER_OUTSIDE = 2  /* frame drawn one pixel outside the rectangle */
 };
+
+/* Window-frame tile ids stamped into a 32-column tile map by the frame-tile
+ * drawer (the tiles of the frame tileset loaded for the window). A tile cell holds the
+ * tile id in the low 10 bits plus the flip bits and the palette in bits 12-15. */
+#define FRAME_TILE_CORNER     1    /* outer corner; the other three are mirrored */
+#define FRAME_TILE_EDGE_H     2    /* horizontal (top/bottom) edge */
+#define FRAME_TILE_EDGE_V     3    /* vertical (left/right) edge */
+#define FRAME_TILE_STRIPE     4    /* striped style: shaded interior row */
+#define FRAME_TILE_FILL       5    /* interior fill */
+#define FRAME_TILE_EDGE_H_ALT 6    /* striped style: shaded top edge */
+#define FRAME_TILE_FLIP_H     0x400 /* mirror the tile horizontally */
+#define FRAME_TILE_FLIP_V     0x800 /* mirror the tile vertically */
 
 /* Display mode of a 3D sprite engine: bits 2..3 of its first halfword. */
 #define SPRITE_ENGINE_MODE(engine) (((u32)(*(u16 *)M2C_FIELD((engine), void **, 0)) << 17) >> 30)
@@ -1228,6 +1306,52 @@ typedef struct VoiceLinkPacket {
     u8  peerId;     /* +0x0B */
     u32 sequence;   /* +0x0C */
 } VoiceLinkPacket;  /* 0x10 bytes */
+
+/* ov001 bitmap-font text subsystem (ov001_02169020.c / ov001_02169E3C.c).
+ * Ov001TextState is what the text-drawing entry points take; Ov001Font wraps a
+ * parsed NFTR resource; Ov001FontResource is the data Ov001Font.resource points
+ * at, with the metrics and the section lists the glyph lookups walk. */
+#define OV001_TEXT_ALIGN_CENTER 0x400 /* DrawTextMultiline: centre each line in the block width */
+#define OV001_TEXT_ALIGN_RIGHT  0x800 /* DrawTextMultiline: right-align each line in the block width */
+
+typedef struct Ov001FontResource {
+    u8   unk00;         /* +0x00 */
+    s8   lineHeight;    /* +0x01: pixels a line advances */
+    u16  defaultChar;   /* +0x02: glyph index used for characters not in the font */
+    u8   pad04[4];
+    u8  *glyphRunTable; /* +0x08: per-glyph rotation/run records */
+    void *cmapList;     /* +0x0C: first CMAP record (func_ov001_0216919c) */
+    void *cwdhList;     /* +0x10: first CWDH record (func_ov001_02169154) */
+} Ov001FontResource;
+
+typedef struct Ov001Font {
+    Ov001FontResource *resource;    /* +0x00 */
+    s32 (*decodeChar)(s32 *cursor); /* +0x04: decode the next character of a text stream */
+} Ov001Font;
+
+typedef struct Ov001TextState {
+    void       *panel;         /* +0x00: text panel whose +0x14 callback blits one glyph */
+    Ov001Font  *font;          /* +0x04 */
+    s32         letterSpacing; /* +0x08: extra pixels added after each glyph */
+    s32         lineSpacing;   /* +0x0C: extra pixels between lines */
+} Ov001TextState;              /* 0x10 bytes */
+
+/* The Nintendo WFC web request state (gWebRequestState), used by the put.asp and
+ * get.asp request builders in main_02046D38/main_02047B84.  The request text is
+ * formatted into a heap buffer at WEB_REQ_BUFFER and its body is base64-encoded
+ * in place by EncodeWfcRequestBody. */
+#define WEB_REQ_PHASE        0x04 /* s32 request state-machine step */
+#define WEB_REQ_RESULT       0x08 /* s32 ghttp result of the last request */
+#define WEB_REQ_READY        0x0C /* s32 nonzero once the request API may be used */
+#define WEB_REQ_PRNG_MUL     0x44 /* s32 LCG multiplier for the body obfuscation */
+#define WEB_REQ_PRNG_ADD     0x48 /* s32 LCG increment */
+#define WEB_REQ_PRNG_MOD     0x4C /* s32 LCG modulus */
+#define WEB_REQ_CHECK_KEY    0x50 /* u32 key XORed into the body's byte-sum checksum */
+#define WEB_REQ_BUFFER       0x54 /* char * formatted request buffer */
+#define WEB_REQ_HASH_POS     0x58 /* char * position of the hash in the buffer */
+#define WEB_REQ_DATA_POS     0x5C /* char * position where the base64 body starts */
+#define WEB_REQ_PAYLOAD      0x60 /* void * payload of the last request */
+#define WEB_REQ_PAYLOAD_SIZE 0x64 /* s32 its size in bytes */
 
 #endif
 

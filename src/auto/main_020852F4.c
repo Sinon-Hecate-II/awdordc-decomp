@@ -249,7 +249,7 @@ void func_02085724(s32 a,s32 b,s32 c,s32 d) {
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
 void func_02085788(s32 arg0) {
-    M2C_UNK func_02065210(M2C_UNK *, u8, s32);
+    M2C_UNK MemSet(M2C_UNK *, u8, s32);
     s32 GetActiveOverlay();
     s32 func_020a2370(s32);
     M2C_UNK func_020c4cdc(s32);
@@ -340,7 +340,7 @@ loop_10:
         if (var_r2_2 < 0) {
             var_r2_2 = 0;
         }
-        func_02065210(&data_02157638, (u8) (s8) data_021020b8, var_r2_2);
+        MemSet(&data_02157638, (u8) (s8) data_021020b8, var_r2_2);
         out=(u8 *)&data_02157634;
         temp_r8 = func_ov010_02229a08();
         var_r9 = 0;

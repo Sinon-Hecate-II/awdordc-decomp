@@ -180,10 +180,10 @@ void func_0203dc18(void) {
 
 void func_0203dc38(s32 arg0,s32 arg1) {
  extern s32 sEmptyString;
- s32 func_0203aeb4(); void func_02041e44(); void SetNetError(s32,s32); s32 func_0203af50(s32,s32 *,s32); void func_0203e9b0();
+ s32 func_0203aeb4(); void func_02041e44(); void SetNetError(s32,s32); s32 SetGpiStatus(s32,s32 *,s32); void func_0203e9b0();
  s32 a,b,c; void *p;
  if(GetConnection()==0 || arg0==0) return;
- func_02041e44(); SetNetError(arg0,arg1); func_0203af50(1,&sEmptyString,0);
+ func_02041e44(); SetNetError(arg0,arg1); SetGpiStatus(1,&sEmptyString,0);
  a=M2C_FIELD(GetConnection(),u8 *,0x15)==2;
  b=M2C_FIELD(GetConnection(),s32 *,0x20c)==0;
  p=GetConnection();
@@ -402,7 +402,7 @@ i++;}while(i<=M2C_FIELD(GetConnection(),u8 *,14));}
 }
 
 s32 func_0203e410(void){
-M2C_UNK func_0200567c(void *,s32,void *,s32);M2C_UNK func_02037d78(void *,void *,void *,s32);M2C_UNK func_02037db0(void *,void *,void *,s32);s32 func_0203af50(s32,s32 *,s32);
+M2C_UNK func_0200567c(void *,s32,void *,s32);M2C_UNK func_02037d78(void *,void *,void *,s32);M2C_UNK func_02037db0(void *,void *,void *,s32);s32 SetGpiStatus(s32,s32 *,s32);
 extern M2C_UNK data_020fc908,gKeyVER,data_020fc950,data_020fc954;
 u8 sp20[12];s32 sp0[8];
 if(M2C_FIELD(GetConnection(),u8 *,21)!=2)return 0;
@@ -412,7 +412,7 @@ func_0200567c(sp20,12,&data_020fc908,M2C_FIELD(GetConnection(),u8 *,13)+1);
 func_02037db0(&data_020fc954,sp20,sp0,47);
 func_0200567c(sp20,12,&data_020fc908,3);
 func_02037db0(&gKeyVER,sp20,sp0,47);
-return func_0203af50(6,sp0,0);
+return SetGpiStatus(6,sp0,0);
 }
 
 void func_0203e4e0(void) {
@@ -447,7 +447,7 @@ s32 func_0203e558(void) {
    0x03 (mode 0) or 0x04 (mode 1); mode 0 clears mode callbacks too. */
 void ResetConnection(s32 resetMode) {
     M2C_UNK FillU16(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK CpuFill(M2C_UNK, s32, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     s16 RandomBelow(M2C_UNK);
     M2C_UNK SetConnectionState(M2C_UNK);
@@ -488,7 +488,7 @@ void ResetConnection(s32 resetMode) {
     temp_r0_4 = GetConnection();
     M2C_FIELD(temp_r0_4, s32 *, 0x1F0) = 0;
     M2C_FIELD(temp_r0_4, s32 *, 0x1F4) = 0;
-    func_02007e54(0, GetConnection() + 0x3CC, 0x98);
+    CpuFill(0, GetConnection() + 0x3CC, 0x98);
     if (resetMode == 2) {
         temp_r4 = GetConnection();
         M2C_FIELD(temp_r4, u8 *, 0x14) = (u8) M2C_FIELD(GetConnection(), u8 *, 0xD);
@@ -522,14 +522,14 @@ void ResetConnection(s32 resetMode) {
     M2C_FIELD(GetConnection(), s32 *, 0x204) = 0;
     M2C_FIELD(GetConnection(), s32 *, 0x208) = 0;
     M2C_FIELD(GetConnection(), s32 *, 0x2F0) = 0;
-    func_02007e54(0, GetConnection() + 0x24, 0x80);
+    CpuFill(0, GetConnection() + 0x24, 0x80);
     FillU16(0, GetConnection() + 0xA4, 0x40);
-    func_02007e54(0, GetConnection() + 0xF4, 0x80);
-    func_02007e54(0, GetConnection() + 0x194, 0xC);
-    func_02007e54(0, GetConnection() + 0x210, 0x80);
+    CpuFill(0, GetConnection() + 0xF4, 0x80);
+    CpuFill(0, GetConnection() + 0x194, 0xC);
+    CpuFill(0, GetConnection() + 0x210, 0x80);
     FillU16(0, GetConnection() + 0x290, 0x40);
     MI_CpuFill8(GetConnection() + 0x2D0, 0, 0x20);
-    func_02007e54(0, GetConnection() + 0x348, 0x84);
+    CpuFill(0, GetConnection() + 0x348, 0x84);
     if (resetMode == 1) {
         if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 0) {
             SetConnectionState(3);

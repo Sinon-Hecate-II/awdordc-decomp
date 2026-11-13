@@ -270,27 +270,32 @@ void func_020c7654(void) {
     M2C_FIELD(temp_r0_2, s16 *, 0x52C4) = (s16) M2C_FIELD(temp_r0_2, s16 *, 0x52DE);
 }
 
-void func_020c7688(void *a) {
+/* One frame of map-cursor input: A confirms the current target (spawns the
+ * target cursor and fires map event 19), B cancels the target back to the
+ * cursor tile, START opens the map menu and X runs the mode-specific action;
+ * with no action key the cursor keeps moving and the view keeps panning.
+ * Input is ignored while a dialog is up or the view is auto-scrolling. */
+void HandleMapCursorInput(void *a) {
 extern void **gCurrentMap;
-s32 IsDialogActive(void *); s32 func_020d4dd0(void); s32 func_020bcc34(void); s32 func_020bddd4(void);
+s32 IsDialogActive(void *); s32 func_020d4dd0(void); s32 GetMapCursorKeyAction(void); s32 GetMapCursorTouchAction(void);
 M2C_UNK func_020d468c(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
 M2C_UNK func_0207b764(s16,s16);
 u32 flags=0;
 if(IsDialogActive(a))return;
 func_020bdfdc();
 if(func_020d4dd0()){
-flags|=func_020bcc34();flags|=func_020bddd4();
+flags|=GetMapCursorKeyAction();flags|=GetMapCursorTouchAction();
 if(flags&16){
 func_020d468c();
-func_020cc66c(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
-func_ov000_02199f50(19,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),(u8)M2C_FIELD(*gCurrentMap,s16 *,0x52c2),(u8)M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
+CreateTargetCursor(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
+func_ov000_02199f50(19,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 func_01ffa6fc(a);return;}
 if(flags&32){
-M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=M2C_FIELD(*gCurrentMap,s16 *,0x52dc);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=M2C_FIELD(*gCurrentMap,s16 *,0x52de);
-func_0207b764(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X);
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y);
+func_0207b764(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 SetSpriteAnimation(a,0);func_01ffa6fc(a);return;}
-if(flags&256){func_020ccca0();return;}
+if(flags&256){CreateMapMenu();return;}
 if(flags&64){func_020d8fa0();return;}
 }
 func_020cf828(0x1001a);func_0207a7a4(1,4);func_020cf69c(2,10);

@@ -1,7 +1,7 @@
 /* 23 functions from 0x020A5878 to 0x020A67FC (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 kind:6; u8 owner:2; u8 x,y,unk3; u16 flags; u16 hp:7; u16 ammo:4; u16 unk6:5; u16 a:6; u16 b:6; u16 c:2; u16 d:2; u8 fuel:7; u8 flag:1; u8 e:4; u8 f:1; u8 g:1; u8 h:1; u8 i:1; u8 j,k; } Unit5B;
-extern u8 data_ov000_021b5c0a[], data_ov000_021b5c05[];
+extern u8 gUnitKindMaxFuel[], gUnitKindMaxAmmo[];
 extern s8 *data_ov000_021b5c58[];
 extern u8 gUnitKindFlags[];
 extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
@@ -320,8 +320,8 @@ M2C_FIELD(p,u8 *,10)=(u8)((b&~127)|n);
 }
 
 void func_020a64ec(void) {
-    M2C_UNK func_ov000_02169518();
-    func_ov000_02169518();
+    M2C_UNK BeginUnitMove();
+    BeginUnitMove();
 }
 
 #pragma scheduling off
@@ -329,8 +329,8 @@ void func_020a64f8(void *arg0,u8 kind) {
 Unit5B *p=arg0;
 p->kind=kind;p->owner=0;
 p->flags=0;p->hp=100;
-p->fuel=data_ov000_021b5c0a[kind*112];
-p->ammo=data_ov000_021b5c05[kind*112];
+p->fuel=gUnitKindMaxFuel[kind*112];
+p->ammo=gUnitKindMaxAmmo[kind*112];
 p->unk6=0;p->j=0;p->k=0;p->e=0;
 p->a=63;p->b=63;p->f=1;p->c=0;p->d=0;
 p->flag=0;p->g=0;p->h=0;p->i=0;

@@ -113,17 +113,17 @@ void func_ov003_021f1858(void) {
 }
 
 void func_ov003_021f1884(s16 arg0) {
-    extern u8 data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, s16 *, 8) = arg0;
+    extern u8 gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, s16 *, 8) = arg0;
 }
 
 u16 func_ov003_021f1894(void) {
-    extern u8 data_ov003_022111c0;
-    return M2C_FIELD(&data_ov003_022111c0, u16 *, 8);
+    extern u8 gOv003SceneState;
+    return M2C_FIELD(&gOv003SceneState, u16 *, 8);
 }
 
 void func_ov003_021f18a4(void) {
-    func_ov003_021f140c(3);
+    SetOv003SceneState(3);
 }
 
 void func_ov003_021f18b4(u8 *arg0) {
@@ -152,7 +152,7 @@ void func_ov003_021f1920(void) {
 
 void func_ov003_021f192c(void *a) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
-extern u8 data_ov003_022111c0;extern M2C_UNK gSceneLayerConfig;
+extern u8 gOv003SceneState;extern M2C_UNK gSceneLayerConfig;
 void *func_0208931c(s32);s32 func_020aaf74(void *);
 void func_020a9a30(s32,s32,s32,void *);
 s32 old=gCur3DSpriteEngine,current;void *p; s32 i=0;u8 mode;s32 k,n;u32 m;
@@ -163,7 +163,7 @@ if(mode==0&&current!=g3DSpriteEngineMain)continue;
 if(mode==1&&current!=g3DSpriteEngineSub)continue;
 if(mode==3&&current!=old)continue;
 p=func_0208931c(9);
-M2C_FIELD(&data_ov003_022111c0,void **,16)=p;
+M2C_FIELD(&gOv003SceneState,void **,16)=p;
 k=M2C_FIELD(a,u8 *,1);m=M2C_FIELD(a,u8 *,8);n=M2C_FIELD(a,u32 *,4);
 M2C_FIELD(p,u8 *,0x58)=k;
 func_020a9a30(2,0,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(n<<5));
@@ -179,8 +179,8 @@ M2C_FIELD(&gSceneLayerConfig,void **,0)=a;
 
 void func_ov003_021f1a58(void) {
     M2C_UNK DeleteSpriteObject(s32);
-    extern u8 data_ov003_022111c0;
-    DeleteSpriteObject(M2C_FIELD(&data_ov003_022111c0, s32 *, 0x10));
+    extern u8 gOv003SceneState;
+    DeleteSpriteObject(M2C_FIELD(&gOv003SceneState, s32 *, 0x10));
 }
 
 void func_ov003_021f1a70(void) {
@@ -243,23 +243,23 @@ void func_ov003_021f1b7c(s32 arg0, s32 arg1) {
 }
 
 void func_ov003_021f1bc0(void) {
-    extern u8 data_ov003_022111c0;
-    data_ov003_022111c0 = 0;
+    extern u8 gOv003SceneState;
+    gOv003SceneState = 0;
 }
 
 void func_ov003_021f1bd4(void) {
-    extern u8 data_ov003_022111c0;
-    data_ov003_022111c0 = 1;
+    extern u8 gOv003SceneState;
+    gOv003SceneState = 1;
 }
 
 void func_ov003_021f1be8(void) {
-    extern u8 data_ov003_022111c0;
-    data_ov003_022111c0 = 2;
+    extern u8 gOv003SceneState;
+    gOv003SceneState = 2;
 }
 
 u8 func_ov003_021f1bfc(void) {
-    extern u8 data_ov003_022111c0;
-    return data_ov003_022111c0;
+    extern u8 gOv003SceneState;
+    return gOv003SceneState;
 }
 
 /* Enables the configured BG0-BG3 layer (and disables the rest) on both the

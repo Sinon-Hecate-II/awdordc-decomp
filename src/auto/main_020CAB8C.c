@@ -1,6 +1,9 @@
 /* 23 functions from 0x020CAB8C to 0x020CBACC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+/* A map unit record. tail[4] and tail[5] (offsets 12,13) hold the indices of
+ * the units a transport is carrying; the number of slots is the unit kind's
+ * cargo count (gUnitKindCargoCount[kind]). */
 typedef struct UnitCB9 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 hp; u8 tail[6]; } UnitCB9;
 typedef struct UnitHealthCB { u8 pad[6]; u16 health:7; u16 flags:9; } UnitHealthCB;
 extern u8 data_0212b1b8[][4];
@@ -209,40 +212,43 @@ block_8:
 }
 
 #pragma opt_common_subs on
-s32 func_020cb254(void *p,s32 count,s32 pay){
+/* Add up to `levels` veteran levels to a unit, each worth 10 points of health
+ * and capped at level 10 (100 points). When charge is set each level costs the
+ * owning player the unit kind's cost; the total charged is returned. */
+s32 LevelUpUnit(void *unit,s32 levels,s32 charge){
 s32 GetUnitOwner(void);
 s32 func_020d2d18(s32,u32);
 s32 Divide(s32,s32);
 M2C_UNK func_020d2b10(s32,u16);
 extern void **gCurrentMap;
-s32 owner,total,health,level,offset;u16 cost,v;
-owner=GetUnitOwner();total=0;
-cost=func_020d2d18(owner,(u32)(M2C_FIELD(p,u8*,0)<<26)>>26);
-if(count){offset=owner*140;
+s32 owner,totalCost,health,level,ownerOffset;u16 cost,attr;
+owner=GetUnitOwner();totalCost=0;
+cost=func_020d2d18(owner,(u32)(M2C_FIELD(unit,u8*,0)<<26)>>26);
+if(levels){ownerOffset=owner*140;
 do{
-health=((UnitHealthCB*)p)->health;
+health=((UnitHealthCB*)unit)->health;
 if(!health)level=0;else level=Divide(health-1,10)+1;
 if(level==10)break;
-if(pay){
-if(M2C_FIELD(offset+(s32)*gCurrentMap,s32*,0x67a4)<(s32)cost)break;
-func_020d2b10(owner,cost);total+=cost;
+if(charge){
+if(M2C_FIELD(ownerOffset+(s32)*gCurrentMap,s32*,0x67a4)<(s32)cost)break;
+func_020d2b10(owner,cost);totalCost+=cost;
 }
-v=M2C_FIELD(p,u16*,6);
-M2C_FIELD(p,u16*,6)=(v&~127)|((u16)(((u32)(v<<25)>>25)+10)&127);
-if(((UnitHealthCB*)p)->health>100)((UnitHealthCB*)p)->health=100;
-}while(--count);
+attr=M2C_FIELD(unit,u16*,6);
+M2C_FIELD(unit,u16*,6)=(attr&~127)|((u16)(((u32)(attr<<25)>>25)+10)&127);
+if(((UnitHealthCB*)unit)->health>100)((UnitHealthCB*)unit)->health=100;
+}while(--levels);
 }
-health=((UnitHealthCB*)p)->health;
+health=((UnitHealthCB*)unit)->health;
 if(!health)level=0;else level=Divide(health-1,10)+1;
-((UnitHealthCB*)p)->health=(u16)(level*10);
-return total;
+((UnitHealthCB*)unit)->health=(u16)(level*10);
+return totalCost;
 }
 s32 func_020cb3a4(s32 a,s32 b){extern void **gCurrentMap;s32 func_020a7e08(void *);u8 *base=*gCurrentMap;u8 *start=base+0x59a4;u8 *p=start+(s16)base[a+((u16 *)(base+0x3758))[b]]*14;s32 index=p?(p-start)/14:0;if(M2C_FIELD(base,u16 *,0x52a8)==(index&0xc0) && func_020a7e08(p))return 1;return 0;}
 
 s32 func_020cb430(u8 *p) {
-extern u8 data_ov000_021b5c66[];
+extern u8 gUnitKindSupplyFlag[];
 extern void **gCurrentMap;
-if (!data_ov000_021b5c66[((u32)(p[0]<<26)>>26)*112]) return 0;
+if (!gUnitKindSupplyFlag[((u32)(p[0]<<26)>>26)*112]) return 0;
 if(p[1] && func_020cb3a4((s16)(p[1]-1),p[2]))return 1;
 if(p[2] && func_020cb3a4(p[1],(s16)(p[2]-1)))return 1;
 if(p[1]<M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1 && func_020cb3a4((s16)(p[1]+1),p[2]))return 1;
@@ -251,19 +257,24 @@ return 0;
 }
 
 #pragma opt_propagation off
-s32 func_020cb550(u8 *p){
-u8 func_020c98d8(u8,u8,s32);s32 func_020a7558(void *);s32 func_020cb254(void *,s32,s32);
-extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;extern u8 data_ov000_021b5c5c[];
-u8 j;u8 *base;u8 i;u8 *q;u8 n;s32 sum; s32 other;sum=0;other=0;i=0;
-if((u32)i<(u32)data_ov000_021b5c5c[((u32)(p[0]<<26)>>26)*112]){
-do{q=p+i;n=q[12];if(n){
-sum+=func_020cb038((u8 *)*gCurrentMap+0x59a4+n*14,0);
-sum+=func_020cb170((u8 *)*gCurrentMap+0x59a4+q[12]*14,0);
-if(((u32)(p[0]<<26)>>26)==21){j=q[12];base=(u8 *)*gCurrentMap+0x59a4;other+=func_020cb254(base+j*14,func_020a7558(p),1);}
-}i++;}while(i<((u8 *)&gUnitKindStats)[((u32)(p[0]<<26)>>26)*112+0x60]);}
-if(other)return func_020c98d8(p[1],p[2],1);
-if(!sum)return 0;
-return func_020c98d8(p[1],p[2],2);
+/* Mark a transport unit's cargo on the map: for every carried unit (its index
+ * kept in the record's last two bytes) add the cargo's cost and health value to
+ * the running totals, and for a kind-21 transport also total the funds of
+ * levelling that cargo up. Highlight the tile with mode 1 when the cargo has
+ * value, mode 2 when it only has cost, and nothing when it is empty. */
+s32 MarkTransportCargo(u8 *unit){
+u8 func_020c98d8(u8,u8,s32);s32 func_020a7558(void *);s32 LevelUpUnit(void *,s32,s32);
+extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;extern u8 gUnitKindCargoCount[];
+u8 cargo;u8 *records;u8 slot;u8 *cursor;u8 cargoIndex;s32 cost; s32 value;cost=0;value=0;slot=0;
+if((u32)slot<(u32)gUnitKindCargoCount[((u32)(unit[0]<<26)>>26)*112]){
+do{cursor=unit+slot;cargoIndex=cursor[12];if(cargoIndex){
+cost+=func_020cb038((u8 *)*gCurrentMap+0x59a4+cargoIndex*14,0);
+cost+=func_020cb170((u8 *)*gCurrentMap+0x59a4+cursor[12]*14,0);
+if(((u32)(unit[0]<<26)>>26)==21){cargo=cursor[12];records=(u8 *)*gCurrentMap+0x59a4;value+=LevelUpUnit(records+cargo*14,func_020a7558(unit),1);}
+}slot++;}while(slot<((u8 *)&gUnitKindStats)[((u32)(unit[0]<<26)>>26)*112+0x60]);}
+if(value)return func_020c98d8(unit[1],unit[2],1);
+if(!cost)return 0;
+return func_020c98d8(unit[1],unit[2],2);
 }
 #pragma opt_propagation reset
 u8 func_020cb6a4(void *arg0) {
@@ -280,11 +291,11 @@ return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
 
 #pragma opt_instruction_scheduling off
 void func_020cb704(void *a) {
-s32 func_020ba510(s32,s32); extern s32 data_0215be0c; extern void **gCurrentMap; extern u8 data_0212b1b8[][4];
+s32 IsSupplyTargetAt(s32,s32); extern s32 data_0215be0c; extern void **gCurrentMap; extern u8 data_0212b1b8[][4];
 u16 i=0; data_0215be0c=0;
 do {
 void *p=*gCurrentMap;
-s32 n=func_020ba510(M2C_FIELD(p,s16*,0x52dc)+(s8)data_0212b1b8[i][2],M2C_FIELD(p,s16*,0x52de)+(s8)data_0212b1b8[i][3]);
+s32 n=IsSupplyTargetAt(M2C_FIELD(p,s16*,0x52dc)+(s8)data_0212b1b8[i][2],M2C_FIELD(p,s16*,0x52de)+(s8)data_0212b1b8[i][3]);
 {u32 mask=data_0212b1b8[i][0]; data_0215be0c = (u32)data_0215be0c | mask*(u32)n;} i++;
 }while(i<4);
 M2C_FIELD(a,s16*,0x34)=0;
@@ -350,11 +361,11 @@ if(!func_020a8604(kind)){
 a+=func_020cb038(unit,0);
 }
 a+=func_020cb170(unit,0);
-b+=func_020cb254(unit,func_020a7558(unit),1);
+b+=LevelUpUnit(unit,func_020a7558(unit),1);
 }
 }
 n=func_020a2668(unit,unit->x,unit->y);
-if(n)b+=func_020cb254(unit,n,1);
+if(n)b+=LevelUpUnit(unit,n,1);
 if(a||b){
 if(b)func_020c98d8(unit->x,unit->y,1);
 else func_020c98d8(unit->x,unit->y,2);

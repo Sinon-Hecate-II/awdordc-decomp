@@ -1,5 +1,6 @@
 /* 24 functions from 0x020AB884 to 0x020AC7DC (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 #pragma opt_strength_reduction off
 /* Scroll update for a vertical list: once its opening animation ends, clamps the
@@ -223,40 +224,44 @@ void func_020abf94(void) {
  s32 i=0; do {func_020abe3c(i,1);func_020abee4(i,0);i++;}while(i<2);
 }
 
-void func_020abfcc(u16 arg0, u16 arg1) {
+/* Animates the screen-split transition from its frame/length: eases the
+ * horizontal and vertical progress (0..256 and 0..192) and writes the two split
+ * windows' bounds into the active engine's bank, clearing them once the split
+ * has fully opened. */
+void UpdateSplitTransition(u16 frame, u16 length) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void func_020aca8c(s32);
     extern s32 gCur3DSpriteEngine;
-    s32 a;
-    s32 c;
+    s32 hProgress;
+    s32 vProgress;
 
-    a = EaseInterpolate(0, 0, 0x100, arg0, arg1);
-    c = EaseInterpolate(0, 0, 0xc0, arg0, arg1);
-    if (a == 0 || c == 0) {
+    hProgress = EaseInterpolate(EASE_LINEAR, 0, 0x100, frame, length);
+    vProgress = EaseInterpolate(EASE_LINEAR, 0, 0xc0, frame, length);
+    if (hProgress == 0 || vProgress == 0) {
         func_020aca8c(2);
         return;
     }
-    if (a >= 0x100) {
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x48) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4a) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x49) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4b) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4c) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4e) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0;
+    if (hProgress >= 0x100) {
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_H) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_V) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_H + 1) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_V + 1) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_H) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_V) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_H + 1) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_V + 1) = 0;
     } else {
-        u8 b0 = (u8)((a + 0x100) >> 1);
-        u8 b2 = (u8)((0xc0 - c) >> 1);
-        u8 b3 = (u8)((c + 0xc0) >> 1);
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x48) = b0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4a) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x49) = (u8)((0x100 - a) >> 1);
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4b) = b2;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4c) = b0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4e) = b3;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = (u8)((0x100 - a) >> 1);
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0xc0;
+        u8 splitRight = (u8)((hProgress + 0x100) >> 1);
+        u8 splitTop = (u8)((0xc0 - vProgress) >> 1);
+        u8 splitBottom = (u8)((vProgress + 0xc0) >> 1);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_H) = splitRight;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_V) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_H + 1) = (u8)((0x100 - hProgress) >> 1);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW0_V + 1) = splitTop;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_H) = splitRight;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_V) = splitBottom;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_H + 1) = (u8)((0x100 - hProgress) >> 1);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_WINDOW1_V + 1) = 0xc0;
     }
 }
 
@@ -440,7 +445,7 @@ void func_020ac5e0(void *arg0) {
 
 void func_020ac65c(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    void func_020abfcc(u16, u16);
+    void UpdateSplitTransition(u16, u16);
     void func_020ac998(s32);
     void func_01ffa6fc(void *);
     void func_020ac598(s32);
@@ -478,7 +483,7 @@ void func_020ac65c(void *arg0) {
             M2C_FIELD(M2C_FIELD(bank, s32 *, 0), s8 *, 0x50) = val;
             break;
         case 2:
-            func_020abfcc(M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
+            UpdateSplitTransition(M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
             break;
         }
         if (M2C_FIELD(arg0, u16 *, 0x38) >= M2C_FIELD(arg0, u16 *, 0x3a)) {

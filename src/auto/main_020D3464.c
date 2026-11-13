@@ -1,45 +1,51 @@
 /* 30 functions from 0x020D3464 to 0x020D4430 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
-s32 func_020d3464(void) {
-    void func_0209cbe4(void *);
+/* Per-frame turn-timer step of the battle-map state machine, run from the state
+   dispatcher. While the map has a turn time limit it counts the current player's
+   elapsed turn frames in the states that advance a turn; once the limit is
+   reached it ends the turn (returns 1), and beeps once a second during the last
+   ten seconds. */
+s32 UpdateTurnTimer(void) {
+    void IncrementCounter(void *);
     void func_02081fd4(void);
     void PlaySoundEffect(s32);
     extern M2C_UNK gMapData;
     extern void **gCurrentMap;
 
-    if (M2C_FIELD(&gMapData, u16 *, 0x10) == 0) {
+    if (M2C_FIELD(&gMapData, u16 *, MAPDATA_TURN_TIME) == 0) {
         return 0;
     }
 
     {
         void *base = *gCurrentMap;
-        s32 idx = (s32)M2C_FIELD(base, u16 *, 0x52B0) - 13;
+        s32 step = (s32)M2C_FIELD(base, u16 *, MAP_STATE) - 13;
 
-        switch (idx) {
+        switch (step) {
         case 0:
         case 7: {
-            u16 i = M2C_FIELD(base, u16 *, 0x52A4);
+            u16 player = M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER);
             {
-                u8 *p = (u8 *)base + 0x67A4 + i * 0x8C;
-                func_0209cbe4(p + 0x88);
+                u8 *rec = (u8 *)base + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+                IncrementCounter(rec + PLAYER_REC_TURN_TIME);
             }
             {
-                u16 dataVal = M2C_FIELD(&gMapData, u16 *, 0x10);
+                u16 limit = M2C_FIELD(&gMapData, u16 *, MAPDATA_TURN_TIME);
                 void *b = *gCurrentMap;
-                u16 ii = M2C_FIELD(b, u16 *, 0x52A4);
-                u32 *pp = (u32 *)((u8 *)b + ii * 0x8C + 0x682C);
-                s32 delta = (s32)dataVal - (s32)*pp;
-                if (delta <= 0) {
+                u16 p2 = M2C_FIELD(b, u16 *, MAP_CURRENT_PLAYER);
+                u32 *elapsed = (u32 *)((u8 *)b + p2 * MAP_PLAYER_STRIDE + PLAYER_TURN_TIME_OFF);
+                s32 remaining = (s32)limit - (s32)*elapsed;
+                if (remaining <= 0) {
                     func_02081fd4();
                     b = *gCurrentMap;
-                    M2C_FIELD(b, u16 *, 0x52B0) = 0x15;
+                    M2C_FIELD(b, u16 *, MAP_STATE) = 21;
                     return 1;
                 }
-                if (delta > 0x258) {
+                if (remaining > 600) {
                     break;
                 }
-                if (delta % 60 != 0) {
+                if (remaining % 60 != 0) {
                     break;
                 }
                 PlaySoundEffect(0x126);
@@ -50,18 +56,18 @@ s32 func_020d3464(void) {
         case 11:
         case 12:
         case 13: {
-            u16 i = M2C_FIELD(base, u16 *, 0x52A4);
+            u16 player = M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER);
             {
-                u8 *p = (u8 *)base + 0x67A4 + i * 0x8C;
-                func_0209cbe4(p + 0x88);
+                u8 *rec = (u8 *)base + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+                IncrementCounter(rec + PLAYER_REC_TURN_TIME);
             }
             break;
         }
         case 6: {
-            u16 i = M2C_FIELD(base, u16 *, 0x52A4);
+            u16 player = M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER);
             {
-                u8 *p = (u8 *)base + 0x67A4 + i * 0x8C;
-                func_0209cbe4(p + 0x88);
+                u8 *rec = (u8 *)base + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+                IncrementCounter(rec + PLAYER_REC_TURN_TIME);
             }
             break;
         }
@@ -290,7 +296,7 @@ void func_020d3b18(void) {
 void func_020d3b24(void) {
     M2C_UNK func_020d3400();
     M2C_UNK HandleOverlayResult();
-    M2C_UNK func_020d3464();
+    M2C_UNK UpdateTurnTimer();
     M2C_UNK func_020d8db0();
     M2C_UNK func_020d46e8();
     M2C_UNK func_020d4774();
@@ -332,7 +338,7 @@ void func_020d3b24(void) {
     }
 
     if (HandleOverlayResult() != 0) return;
-    if (func_020d3464() != 0) return;
+    if (UpdateTurnTimer() != 0) return;
     if (func_020d8db0() != 0) return;
     if (func_020d46e8() != 0) return;
     if (func_020d4774() != 0) return;

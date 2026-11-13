@@ -22,7 +22,7 @@ static inline int Ov003PlayersReady(void) {
     return 1;
 }
 extern void ***gCur3DSpriteEngine;
-extern u8 data_ov003_0220f89e[],data_027e00b4[];
+extern u8 data_ov003_0220f89e[],gSpriteDesc64x32[];
 void AddSprite(u16,u16,u16,void *,int);
 void func_02098dc0(s16,int,u16,int);
 void func_02088e84(void *,s16,s32,s16,s32);
@@ -466,7 +466,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
         if ((var_r0_5 & 0xFF) && (var_r8 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7))) {
             temp_r5_3 = temp_r9 - 2;
             if (func_ov003_021e6cc4(temp_r5_3, 0x48, 0x40, 0x20) != 0) {
-                AddSprite((u16) (temp_r5_3 & 0x1FF), 0x48, (u16) ((sp2C & (0x680 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x9800), data_027e00b4, 0xB);
+                AddSprite((u16) (temp_r5_3 & 0x1FF), 0x48, (u16) ((sp2C & (0x680 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x9800), gSpriteDesc64x32, 0xB);
             }
         }
         if (IsLinkSessionActive() != 0) {
@@ -480,7 +480,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
                 var_r1 = 0;
             }
             if (M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x68) + var_r1), u8 *, 0x7C) != 0) {
-                AddSprite(temp_r4_5, sp20, (u16) ((sp30 & (0x520 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x8000), data_027e00b4, 0xB);
+                AddSprite(temp_r4_5, sp20, (u16) ((sp30 & (0x520 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x8000), gSpriteDesc64x32, 0xB);
             }
         }
         var_r8 += 1;

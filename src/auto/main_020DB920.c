@@ -172,7 +172,7 @@ M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
 s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
-s32 func_020b20e0(s32);
+s32 FindSpriteSlotById(s32);
 void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
 M2C_UNK func_020808dc(s32,s32,u16,u16);
 M2C_UNK PlaySoundEffect(s32), func_020b1c44(s32,s32);
@@ -201,7 +201,7 @@ func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 gCur3DSpriteEngine=saved;
 M2C_FIELD(arg0,u16 *,0x48)|=32;
-if(func_020b20e0(0)==0) test=1; else test=0;
+if(FindSpriteSlotById(0)==0) test=1; else test=0;
 if(test) {
 i=0; x=0;
 do {
@@ -265,7 +265,7 @@ void *arg0;
     s32 GetLocalizedFileName(void *);
     M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
     M2C_UNK LoadNarcFileDecompressed(s32,s32), func_02080944(s32,s32,s32,s32);
-    s32 func_020b20e0(s32);
+    s32 FindSpriteSlotById(s32);
     void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
     M2C_UNK func_020808dc(s32,s32,u16,u16);
     M2C_UNK PlaySoundEffect(s32), func_020b1c44(s32,s32);
@@ -296,7 +296,7 @@ void *arg0;
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
     gCur3DSpriteEngine=saved;
     M2C_FIELD(arg0,u16 *,0x48)|=32;
-    if(func_020b20e0(0)==0) test=1; else test=0;
+    if(FindSpriteSlotById(0)==0) test=1; else test=0;
     if(test) {
         i=0; x=0;
         do {

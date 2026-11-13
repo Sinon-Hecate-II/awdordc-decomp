@@ -1,5 +1,6 @@
 /* 12 functions from 0x02189A08 to 0x0218A9AC (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 low:14, high:2; } SelectedUnitFlagsA520;
 
 typedef struct {
@@ -14,7 +15,7 @@ typedef struct {
 
 void func_ov000_02189a08(void) {
     s32 func_020a33c4(s32);
-    s32 func_020a7b3c(s32, s32, s32, s32, s32);
+    s32 ComputeUnitMoveRange(s32, s32, s32, s32, s32);
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void SelectMapLayer(void *);
     s32 func_ov000_021a8eb0(s32, s32, s32);
@@ -52,7 +53,7 @@ void func_ov000_02189a08(void) {
 
     score = (s32)*gCurrentMap;
     bonus = func_020a33c4(*(u16 *)((u8 *)score + 0x52a4));
-    score = func_020a7b3c((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
+    score = ComputeUnitMoveRange((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
     sel = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
     FloodFillUnitRange(sel[1], sel[2], (u8)((u32)(sel[0] << 26) >> 26), 0x6e, 0);
 
@@ -95,7 +96,7 @@ void func_ov000_02189a08(void) {
     candScore = 0x7fff;
     SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
     bonus = func_020a33c4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
-    bonus2 = func_020a7b3c(7, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
+    bonus2 = ComputeUnitMoveRange(7, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
     FloodFillUnitRange(bestX, bestY, 7, 0x6e, 0);
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 
@@ -196,23 +197,37 @@ return n;
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_ov000_02189f3c(void){
-extern void **gCurrentMap;extern s8 data_ov000_021b54c0[];s32 IsTerrainOnUnitTeam(u8,u8);
-s32 n=0,x,y;void *base=*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-if(M2C_FIELD(M2C_FIELD(base+(y<<2),s8 **,0x52e8),s8 *,x)>=0){
-if(data_ov000_021b54c0[M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420)&31]!=0){
-if(IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420))==0){
-void *b=*gCurrentMap;
-void *cell=(b+x)+M2C_FIELD(b+(y<<1),u16 *,0x3758);
-if(M2C_FIELD(b+M2C_FIELD(cell,s8 *,0x1928)*6,u8 *,0x6c63)==0 || (M2C_FIELD(cell,u8 *,0x1420)&31)==15){
-if((M2C_FIELD(cell,u8 *,0x1420)&31)==15)n+=30;else n++;
-}
-}}}
-base=*gCurrentMap;
-}}
-return n;
+/* Scores the property cells the AI could still capture. It walks every map
+ * cell that is reachable (movement grid >= 0) and holds a property terrain
+ * kind (15..24), not owned by the unit's team. A cell counts when its property
+ * record has not been used yet (MAP_PROPERTY_COUNT == 0) or it is an HQ
+ * (kind 15). An HQ is worth 30 points, every other property 1. */
+s32 CountUnusedCapturableProperties(void) {
+    extern void **gCurrentMap;
+    extern s8 data_ov000_021b54c0[];
+    s32 IsTerrainOnUnitTeam(u8, u8);
+    s32 score = 0, x, y;
+    void *base = *gCurrentMap;
+
+    for (y = 0; y < M2C_FIELD(base, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
+            if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, MAP_GRID), s8 *, x) >= 0) {
+                if (data_ov000_021b54c0[M2C_FIELD(M2C_FIELD(base + (y << 1), u16 *, MAP_ROW_OFFSETS) + (base + x), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK] != 0) {
+                    if (IsTerrainOnUnitTeam(M2C_FIELD(base, u8 *, MAP_CURSOR_UNIT_ID), M2C_FIELD(M2C_FIELD(base + (y << 1), u16 *, MAP_ROW_OFFSETS) + (base + x), u8 *, MAP_CELL_TERRAIN)) == 0) {
+                        void *b = *gCurrentMap;
+                        void *cell = (b + x) + M2C_FIELD(b + (y << 1), u16 *, MAP_ROW_OFFSETS);
+                        if (M2C_FIELD(b + M2C_FIELD(cell, s8 *, MAP_CELL_PROPERTY_INDEX) * MAP_PROPERTY_STRIDE, u8 *, MAP_PROPERTY_CELLS + MAP_PROPERTY_COUNT) == 0
+                            || (M2C_FIELD(cell, u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) == 15) {
+                            if ((M2C_FIELD(cell, u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) == 15) score += 30;
+                            else score++;
+                        }
+                    }
+                }
+            }
+            base = *gCurrentMap;
+        }
+    }
+    return score;
 }
 #pragma pop
 

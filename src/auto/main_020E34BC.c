@@ -247,7 +247,7 @@ void *func_020e38f0(void *arg0, s32 arg1, s32 arg2) {
     s32 func_020e34f4(s32);
     s32 func_02084cf8(void);
     void func_02007e70(s32, void *, s32);
-    void func_02007e54(s32, s32, s32);
+    void CpuFill(s32, s32, s32);
     extern s32 data_0212d870;
     extern s32 data_0212da10;
     u32 base = (u32)arg0;
@@ -268,7 +268,7 @@ void *func_020e38f0(void *arg0, s32 arg1, s32 arg2) {
         sp0 = func_02084cf8();
         func_02007e70((s32)&sp0, (void *)M2C_FIELD(temp_r0, s32 *, 0x44), M2C_FIELD(temp_r0, s32 *, 0x38) * 4);
         temp_r2 = M2C_FIELD(temp_r0, s32 *, 0x38);
-        func_02007e54(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
+        CpuFill(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
         for (ptr = (u8 *)arg0; (u32)ptr < base + M2C_FIELD(temp_r0, s32 *, 0x38) * 0x310; ptr += 0x310) {
             M2C_FIELD(ptr, s32 *, 0x4) = -1;
             M2C_FIELD(ptr, s32 *, 0x8) = 0;
@@ -534,7 +534,7 @@ void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
     void *func_01ffa444(void *, s32);
     s32 func_020e34f4(s32);
     void func_02007e70(s32, void *, s32);
-    void func_02007e54(s32, s32, s32);
+    void CpuFill(s32, s32, s32);
     extern s32 data_0212d838;
     extern s32 data_0212da10;
     void *temp_r0;
@@ -552,7 +552,7 @@ void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
         M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
         func_02007e70(arg0, (void *)M2C_FIELD(temp_r0, s32 *, 0x44), M2C_FIELD(temp_r0, s32 *, 0x38) * 4);
         temp_r2 = M2C_FIELD(temp_r0, s32 *, 0x38);
-        func_02007e54(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
+        CpuFill(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
         for (ptr = (u8 *)arg1; (u32)ptr < (u32)arg1 + M2C_FIELD(temp_r0, s32 *, 0x38) * 0x310; ptr += 0x310) {
             M2C_FIELD(ptr, s32 *, 0x4) = -1;
             M2C_FIELD(ptr, s32 *, 0x8) = 0;
@@ -585,7 +585,7 @@ void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *func_01ffa444(void *, s32);
     s32 func_020e34f4(s32);
     void func_02007e70(s32, void *, s32);
-    void func_02007e54(s32, s32, s32);
+    void CpuFill(s32, s32, s32);
     extern s32 data_0212d8a8;
     extern s32 data_0212da10;
     void *temp_r0;
@@ -603,7 +603,7 @@ void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         M2C_FIELD(temp_r0, s32 *, 0x48) = arg1;
         func_02007e70((s32)&sp0, (void *)M2C_FIELD(temp_r0, s32 *, 0x44), M2C_FIELD(temp_r0, s32 *, 0x38) * 4);
         temp_r2 = M2C_FIELD(temp_r0, s32 *, 0x38);
-        func_02007e54(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
+        CpuFill(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
     }
     return temp_r0;
 }
@@ -612,7 +612,7 @@ void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *func_01ffa444(void *, s32);
     s32 func_020e34f4(s32);
     void func_02007e70(s32, void *, s32);
-    void func_02007e54(s32, s32, s32);
+    void CpuFill(s32, s32, s32);
     extern s32 data_0212d7d8;
     extern s32 data_0212da10;
     void *temp_r0;
@@ -630,7 +630,7 @@ void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         M2C_FIELD(temp_r0, s32 *, 0x48) = arg1;
         func_02007e70((s32)&sp0, (void *)M2C_FIELD(temp_r0, s32 *, 0x44), M2C_FIELD(temp_r0, s32 *, 0x38) * 4);
         temp_r2 = M2C_FIELD(temp_r0, s32 *, 0x38);
-        func_02007e54(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
+        CpuFill(0, M2C_FIELD(temp_r0, s32 *, 0x44) + temp_r2 * 4, (0x40 - temp_r2) * 4);
     }
     return temp_r0;
 }
@@ -721,7 +721,7 @@ void *func_020e434c(void *arg0) {
 /* Initialize graphics: clear VRAM, OAM and palettes, then enable the caches. */
 void func_020e4378(void) {
     M2C_UNK func_020022d8();
-    M2C_UNK func_020022dc();
+    M2C_UNK GX_InitDisplay();
     M2C_UNK func_02002490();
     M2C_UNK func_02003104(s32);
     M2C_UNK func_020035f8();
@@ -742,7 +742,7 @@ void func_020e4378(void) {
     func_02007140();
     func_020022d8();
     data_020f5204 = -1;
-    func_020022dc();
+    GX_InitDisplay();
     func_02002490();
     *(s32 *)0x04001000 &= ~0x10000;
     func_0200e2f8();

@@ -216,7 +216,7 @@ void func_ov003_021e5118(void *arg0) {
 void Ov003_DrawUnitCategoryGrid(void *,s16,s16);
 void func_ov003_021e583c(void *a) {
 void AddSprite(u16,u8,u16,void *,s32);void UpdateSpriteAnimation(s32);s16 GetSpriteAnimValue(s32);void DrawTextSprite(void *);void func_ov000_0216a374(u16,s32,u16,s32);s32 func_ov003_021e50e0(s16,s32,s32,s32);void func_ov003_021e5e24(void *,s16,s16);
-extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern u8 gSpriteDesc16x16[],data_027e00ac[],data_ov003_0220f61c[];
+extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern u8 gSpriteDesc16x16[],gSpriteDesc32x32[],data_ov003_0220f61c[];
 u16 **old; s32 i; s16 pos; s32 x,scroll; s16 scroll2;u16 neg;
 if(!M2C_FIELD(a,u8 *,0x39))return;
 UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x3c));UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x40));UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x44));
@@ -227,7 +227,7 @@ i=0;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x46)=0;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=neg;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
 M2C_FIELD(M2C_FIELD(a,void **,0x58),s16 *,6)=scroll+0xab;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),s32 *,0x1c))DrawTextSprite(M2C_FIELD(a,void **,0x58));
-else {x=0xab;do {pos=x;if(func_ov003_021e50e0(pos,0x80,0x20,0x20))AddSprite((scroll+pos)&0x1ff,0x80,(u16)((0x3ff&(0x2ec>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x8000),data_027e00ac,11);x+=0x22;i++;}while(i<2);}
+else {x=0xab;do {pos=x;if(func_ov003_021e50e0(pos,0x80,0x20,0x20))AddSprite((scroll+pos)&0x1ff,0x80,(u16)((0x3ff&(0x2ec>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x8000),gSpriteDesc32x32,11);x+=0x22;i++;}while(i<2);}
 AddSprite((scroll+0xc5)&0x1ff,0x8e,(u16)((0x3ff&(0x288>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x6000),gSpriteDesc16x16,11);
 AddSprite(0,(u8)(u32)GetSpriteAnimValue(M2C_FIELD(a,s32 *,0x44)),(u16)((0x3ff&(0x28c>>((**gCur3DSpriteEngine>>13)&3)))|0x8c00),data_ov003_0220f61c,11);
 func_ov000_0216a374((scroll+0x30)&0x1ff,0x38,(u16)((0x3ff&(0x2fc>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x9000),11);
@@ -285,8 +285,8 @@ void func_ov003_021e5b18(void *arg0) {
 }
 
 void func_ov003_021e5c68(void *arg0) {
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
-    func_ov003_021f140c(2);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
+    SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
 }

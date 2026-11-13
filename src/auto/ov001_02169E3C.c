@@ -61,7 +61,7 @@ void func_ov001_0216a030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     M2C_FIELD(arg0, s32 *, 0x10) = arg6;
 }
 
-s32 func_ov001_0216a058(s32 a,void *b,s32 x,s32 y,s32 c,s32 ch){
+s32 DrawTextGlyph(s32 a,void *b,s32 x,s32 y,s32 c,s32 ch){
 s32 func_ov001_02169154(void*,u16);void *func_ov001_0216919c(void*,s32);
 s32 n;void *pair[2];u8 *r;
 n=func_ov001_02169154(b,*(u16 *)&ch);
@@ -165,7 +165,7 @@ if(aw<(u32)w&&ah<(u32)h){n=func_ov001_0216a398(dst,w-aw,h-ah,x+aw*8,y+ah*8,mode,
 return count;
 }
 
-void func_ov001_0216a690(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 *arg5,TextDirection dir) {
+void DrawFontTextLine(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 *arg5,TextDirection dir) {
 
 s32 spC,sp8;
 s32 step,space;void *font;s32 (*next)(s32 *);s32 ch,x,y;
@@ -174,24 +174,27 @@ next=M2C_FIELD(font,s32 (**)(s32 *),4);
 x=arg1;y=arg2;sp8=arg3;
 ch=next(&spC);
 if(ch!=0){loop:
-if(ch!=10){step=space+func_ov001_0216a058(M2C_FIELD(arg0,s32 *,0),font,x,y,sp8,ch);x+=step*dir.x;y+=step*dir.y;ch=next(&spC);if(ch!=0)goto loop;}}
+if(ch!=10){step=space+DrawTextGlyph(M2C_FIELD(arg0,s32 *,0),font,x,y,sp8,ch);x+=step*dir.x;y+=step*dir.y;ch=next(&spC);if(ch!=0)goto loop;}}
 if(arg5==0)return;
 *arg5=ch==10?spC:0;
 }
 
-void func_ov001_0216a744(void *a,s32 bx,s32 by,s32 width,s32 color,s32 flags,s32 text,TextDirection dir){
-s32 func_ov001_021691e8(s32,s32,s32,s32);
-s32 line; s32 dx,dy,x,y,ox,oy,d,step; s32 baseX,baseY,c;
-step=M2C_FIELD(a,s32*,12)+M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void**,4),void**,0),s8*,1);
-dx=step*-dir.y;dy=step*dir.x;baseX=bx;baseY=by;line=text;c=color;
+/* Draws a multi-line string: each line is optionally centred or right-aligned
+   within blockWidth, and successive lines advance perpendicular to dir by the
+   font line height plus the state's line spacing. */
+void DrawTextMultiline(Ov001TextState *state, s32 x, s32 y, s32 blockWidth, s32 color, s32 flags, s32 text, TextDirection dir){
+s32 GetTextLineWidth(s32,s32,s32,s32);
+s32 line; s32 stepX,stepY,lineX,lineY,offsetX,offsetY,delta,lineStep; s32 startX,startY,curColor;
+lineStep=state->lineSpacing+state->font->resource->lineHeight;
+stepX=lineStep*-dir.y;stepY=lineStep*dir.x;startX=x;startY=y;line=text;curColor=color;
 if(!text)return;
-ox=0;oy=0;
+offsetX=0;offsetY=0;
 do{
-x=baseX+ox;y=baseY+oy;
-if(flags&0x800){d=width-func_ov001_021691e8(M2C_FIELD(a,s32*,4),M2C_FIELD(a,s32*,8),line,0);x+=d*dir.x;y+=d*dir.y;}
-else if(flags&0x400){d=(width+1)/2-(func_ov001_021691e8(M2C_FIELD(a,s32*,4),M2C_FIELD(a,s32*,8),line,0)+1)/2;x+=d*dir.x;y+=d*dir.y;}
-func_ov001_0216a690(a,x,y,c,line,&line,dir);
-ox+=dx;oy+=dy;
+lineX=startX+offsetX;lineY=startY+offsetY;
+if(flags&OV001_TEXT_ALIGN_RIGHT){delta=blockWidth-GetTextLineWidth((s32)state->font,state->letterSpacing,line,0);lineX+=delta*dir.x;lineY+=delta*dir.y;}
+else if(flags&OV001_TEXT_ALIGN_CENTER){delta=(blockWidth+1)/2-(GetTextLineWidth((s32)state->font,state->letterSpacing,line,0)+1)/2;lineX+=delta*dir.x;lineY+=delta*dir.y;}
+DrawFontTextLine(state,lineX,lineY,curColor,line,&line,dir);
+offsetX+=stepX;offsetY+=stepY;
 }while(line);
 }
 
@@ -206,7 +209,7 @@ if(flags&16){d=-(result.x+1)/2;x+=d*dir.x;y+=d*dir.y;}
 else if(flags&32){d=-result.x;x+=d*dir.x;y+=d*dir.y;}
 if(flags&2){d=-(result.y+1)/2;x+=d*-dir.y;y+=d*dir.x;}
 else if(flags&4){d=-result.y;x+=d*-dir.y;y+=d*dir.x;}
-func_ov001_0216a744(a,x,y,result.x,b,flags,text,dir);
+DrawTextMultiline(a,x,y,result.x,b,flags,text,dir);
 }
 #pragma opt_propagation reset
 void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, TextDirection dir) {
@@ -225,7 +228,7 @@ void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
         x += d * -dir.y;
         y += d * dir.x;
     }
-    func_ov001_0216a744(arg0, x, y, arg3, arg5, arg6, arg7, dir);
+    DrawTextMultiline(arg0, x, y, arg3, arg5, arg6, arg7, dir);
 }
 
 /* Validates a font resource (magic 'NFTR'-ish, version >= 1.00) and relocates its

@@ -138,10 +138,10 @@ func_ov001_0218b71c((M2C_UNK)&data_ov001_02193e14);return 0;
 }
 
 s32 func_ov001_02185d78(void) {
-    s32 func_020125b0(void (*)(void), void *);
+    s32 WFC_SendRequestPacket(void (*)(void), void *);
     void func_ov001_02185ea8();
     extern void *data_ov001_02193e14;
-    if (func_020125b0(func_ov001_02185ea8, (s8 *)data_ov001_02193e14 + 0x1374) == 2) {
+    if (WFC_SendRequestPacket(func_ov001_02185ea8, (s8 *)data_ov001_02193e14 + 0x1374) == 2) {
         return 1;
     }
     return 0;

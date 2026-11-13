@@ -206,7 +206,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
 }
 
 s32 func_02033ccc(void *p, InitConfig *cfg) {
-s32 func_02034534(void *); s32 func_02034870(void *,void *,s32); s32 func_020349b0(void *,s32);
+s32 func_02034534(void *); s32 func_02034870(void *,void *,s32); s32 HttpParseUrl(void *,s32);
 s32 (*alloc)(void *,s32)=(s32 (*)(void *,s32))cfg->words[3];
 MI_CpuFill8(p,0,0x1c14);
 M2C_FIELD(p,s32 *,0x1a30)=-1;M2C_FIELD(p,s32 *,0x1a34)=-1;
@@ -216,7 +216,7 @@ if(!M2C_FIELD(p,s32 *,0x19cc)){((InitState*)p)->status=1;return 1;}
 M2C_FIELD(p,s32 *,0x19d0)=alloc(data_020fb570,0x5ea);
 if(!M2C_FIELD(p,s32 *,0x19d0)){((InitState*)p)->status=1;return 1;}
 if(!func_02034870(p,p+0x1a08,M2C_FIELD(p,s32 *,0x100c))){((InitState*)p)->status=1;return 1;}
-if(!func_020349b0(p,cfg->words[0])){((InitState*)p)->status=1;return 1;}
+if(!HttpParseUrl(p,cfg->words[0])){((InitState*)p)->status=1;return 1;}
 ((InitState*)p)->status=func_02034534(p);
 if(!((InitState*)p)->status)((InitState*)p)->flag=255;
 return ((InitState*)p)->status;

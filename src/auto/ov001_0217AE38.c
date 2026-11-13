@@ -109,21 +109,26 @@ void func_ov001_0217b130(void) {
     func_ov001_02171fd8(index < 4 ? 2 : 3, data_ov001_0218f7ec[index * 4], data_ov001_0218f7f0[index * 4], data_ov001_0218f7ee[index * 4]);
 }
 
-void func_ov001_0217b17c(s32 a) {
+/* Map-select list D-pad handler: moves the highlighted row up (dir == 1) or
+ * down (dir == 3). At the top or bottom of the list it wraps the cursor or
+ * pages the list on (scheduling the scroll animation at MAPSELECT_SCROLL_ANIM),
+ * plays the cursor-move sound, or the no-move sound once per held key
+ * (MAPSELECT_BUMP_LATCH). */
+void MapSelectList_MoveCursor(s32 dir){
 void func_ov001_0217b33c(void);
 extern M2C_UNK gMapSelectState;
 s32 func_ov001_0218c884(s32,void (*)(s32),s32,s32);
-s32 ok=1;s32 n=M2C_FIELD(&gMapSelectState,u8 *,0);
-switch(n) {
-case 0: if(a==1) {if(!M2C_FIELD(&gMapSelectState,u16 *,2)) M2C_FIELD(&gMapSelectState,u8 *,0)=4;else {
+s32 moved=1;s32 row=M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR);
+switch(row) {
+case 0: if(dir==1) {if(!M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)) M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=4;else {
 Ov001_PlaySound(19);
-M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,56)=func_ov001_0218c884(0,func_ov001_0217af80,0,120);return;
-}} else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,81)>1)M2C_FIELD(&gMapSelectState,u8 *,0)=n+1;else ok=0;}break;
-case 1:case 2: if(a==1)M2C_FIELD(&gMapSelectState,u8 *,0)=n-1;else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,81)>(n+1))M2C_FIELD(&gMapSelectState,u8 *,0)=n+1;else ok=0;}break;
-case 3:if(a==1)M2C_FIELD(&gMapSelectState,u8 *,0)=n-1;else {func_ov001_0217b33c();return;}break;
-case 4:if(a==1)ok=0;else {M2C_FIELD(&gMapSelectState,u16 *,2)=0;M2C_FIELD(&gMapSelectState,u8 *,0)=0;func_ov001_0217ac18();func_ov001_021839e4(0);}break;
+M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELECT_SCROLL_ANIM)=func_ov001_0218c884(0,func_ov001_0217af80,0,120);return;
+}} else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
+case 1:case 2: if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>(row+1))M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
+case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {func_ov001_0217b33c();return;}break;
+case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;func_ov001_0217ac18();func_ov001_021839e4(0);}break;
 }
-if(!ok){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,89))return;Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,89)=1;return;}
+if(!moved){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH))return;Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH)=1;return;}
 Ov001_PlaySound(8);func_ov001_0217b130();
 }
 

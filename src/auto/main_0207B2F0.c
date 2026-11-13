@@ -27,8 +27,8 @@ void func_0207b754(M2C_UNK, M2C_UNK);
 #pragma push
 #pragma optimization_level 2
 s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
-    s32 func_0207d0b8(void);
-    s32 func_0207d0d4(void);
+    s32 GetMapViewWidth(void);
+    s32 GetMapViewHeight(void);
     void func_020cf498(s32, s32);
     extern void *gCurrentMap;
     s32 deltaX = 0;
@@ -37,8 +37,8 @@ s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
     s16 rawX = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5148);
     s32 tileX = rawX / 16;
     s32 tileY = rawY / 16;
-    s32 halfX = func_0207d0b8();
-    s32 halfY = func_0207d0d4();
+    s32 halfX = GetMapViewWidth();
+    s32 halfY = GetMapViewHeight();
     func_020cf498((s16)*px, (s16)*py);
     if (third != 0) {
         *px -= halfX >> 1;

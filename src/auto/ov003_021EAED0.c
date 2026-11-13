@@ -55,7 +55,7 @@ void func_ov003_021ebae0(void *arg0) {
     }
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x58));
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x5C));
-    func_ov003_021f140c(2);
+    SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
     if (func_ov003_021e6cfc() == 0) {
@@ -178,12 +178,12 @@ void func_ov003_021ebdf4(void *arg0) {
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6e40();
     M2C_UNK func_ov003_021e891c(void *);
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) & ~0x80);
     PlaySoundEffect(0x1000F);
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x58));
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x5C));
-    func_ov003_021f140c(2);
+    SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
     if (func_ov003_021e6cfc() == 0) {

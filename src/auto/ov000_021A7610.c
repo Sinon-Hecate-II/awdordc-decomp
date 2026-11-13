@@ -11,9 +11,9 @@ static inline s32 AiProduct(s32 factor, s32 value) { return factor * value; }
 #pragma optimization_level 0
 static inline s32 AiScale(s32 value,s32 kind) {
  extern u16 data_ov000_021e14aa[];
- s32 func_ov000_021a6f24(s32,s32,s32);
+ s32 ScaleAiDamageByRange(s32,s32,s32);
  value=AiProduct(data_ov000_021e14aa[kind],value);
- return func_ov000_021a6f24(value,kind,0);
+ return ScaleAiDamageByRange(value,kind,0);
 }
 #pragma optimization_level reset
 #pragma push
@@ -244,7 +244,7 @@ s32 SelectUnitForTargetCandidate(s32 candidateIndex) {
 void func_ov000_021a7610(void) {
 u8 func_ov000_021a7348(void); s32 func_ov000_021a6e5c(u8); s32 func_ov000_021a72c0(s32);
 s32 func_ov000_021a96f4(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
-s32 func_ov000_021a6f24(s32,s32,s32); s32 Divide(s32,s32);
+s32 ScaleAiDamageByRange(s32,s32,s32); s32 Divide(s32,s32);
 s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 func_020d2d18(u16,s32);
 extern u8 *gAiState; extern u32 gUnitKindScores[27];
 extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *gAiCommandState;
@@ -264,7 +264,7 @@ for(j=0;j<9;j++){
 if(values[j]==0)continue;
 if(data_ov000_021df598[j]==22)v=func_ov000_021a96f4(kind,data_ov000_021df598[j],0);
 else v=GetAttackDamage(kind,data_ov000_021df598[j],0);
-v=func_ov000_021a6f24(AiProduct(v,data_ov000_021e14aa[kind]),kind,0);
+v=ScaleAiDamageByRange(AiProduct(v,data_ov000_021e14aa[kind]),kind,0);
 if(gUnitKindStats[data_ov000_021df598[j]*112+19]&16){
 if(kind==6 && (gAiState[6]==2 || gAiState[6]==4))v>>=1;
 if(kind==23 && (gAiState[6]==1 || gAiState[6]==3))v>>=1;

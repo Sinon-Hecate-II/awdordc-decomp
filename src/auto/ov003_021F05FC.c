@@ -211,7 +211,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     void func_020a230c(M2C_UNK, M2C_UNK);
     void func_020a232c(M2C_UNK, M2C_UNK);
     void SetPlayerTeam(M2C_UNK, M2C_UNK);
-    void func_ov003_021f140c(s8);
+    void SetOv003SceneState(s8);
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
 
@@ -356,7 +356,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
         ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x6c));
     }
 
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
     return obj;
 }
 
@@ -419,7 +419,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     void func_020a230c(M2C_UNK, M2C_UNK);
     void func_020a232c(M2C_UNK, M2C_UNK);
     void SetPlayerTeam(M2C_UNK, M2C_UNK);
-    void func_ov003_021f140c(s8);
+    void SetOv003SceneState(s8);
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
 
@@ -566,7 +566,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
         ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x6c));
     }
 
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
 
     MemFree(obj);
     return obj;
@@ -627,28 +627,28 @@ void func_ov003_021f1348(s32 arg0) {
 
 s32 func_ov003_021f13c8(void) {
     s32 FindObjectByClass();
-    extern M2C_UNK data_ov003_022111c0;
-    if (M2C_FIELD(&data_ov003_022111c0, s32 *, 0xC) == 0) {
+    extern M2C_UNK gOv003SceneState;
+    if (M2C_FIELD(&gOv003SceneState, s32 *, 0xC) == 0) {
         return 0;
     }
     return FindObjectByClass();
 }
 
 void func_ov003_021f13ec(s32 arg0) {
-    void func_ov003_021f140c(s8);
-    extern M2C_UNK data_ov003_022111c0;
-    func_ov003_021f140c(0);
-    M2C_FIELD(&data_ov003_022111c0, s32 *, 0xC) = arg0;
+    void SetOv003SceneState(s8);
+    extern M2C_UNK gOv003SceneState;
+    SetOv003SceneState(0);
+    M2C_FIELD(&gOv003SceneState, s32 *, 0xC) = arg0;
 }
 
-void func_ov003_021f140c(s8 arg0) {
-    extern M2C_UNK data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, s8 *, 5) = arg0;
+void SetOv003SceneState(s8 arg0) {
+    extern M2C_UNK gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, s8 *, 5) = arg0;
 }
 
 u8 func_ov003_021f141c(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    return M2C_FIELD(&data_ov003_022111c0, u8 *, 5);
+    extern M2C_UNK gOv003SceneState;
+    return M2C_FIELD(&gOv003SceneState, u8 *, 5);
 }
 
 u8 func_ov003_021f142c(void) {
@@ -685,35 +685,35 @@ u8 func_ov003_021f1464(void) {
 }
 
 void func_ov003_021f1480(s8 arg0) {
-    extern M2C_UNK data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, s8 *, 6) = arg0;
+    extern M2C_UNK gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, s8 *, 6) = arg0;
 }
 
 u8 func_ov003_021f1490(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    return M2C_FIELD(&data_ov003_022111c0, u8 *, 6);
+    extern M2C_UNK gOv003SceneState;
+    return M2C_FIELD(&gOv003SceneState, u8 *, 6);
 }
 
 void func_ov003_021f14a0(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, u8 *, 1) = 1;
+    extern M2C_UNK gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, u8 *, 1) = 1;
 }
 
 void func_ov003_021f14b4(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, u8 *, 1) = 0;
+    extern M2C_UNK gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, u8 *, 1) = 0;
 }
 
 u8 func_ov003_021f14c8(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    return M2C_FIELD(&data_ov003_022111c0, u8 *, 1);
+    extern M2C_UNK gOv003SceneState;
+    return M2C_FIELD(&gOv003SceneState, u8 *, 1);
 }
 
 void func_ov003_021f14d8(s8 arg0, s8 arg1, s8 arg2) {
-    extern M2C_UNK data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, s8 *, 4) = arg0;
-    M2C_FIELD(&data_ov003_022111c0, s8 *, 2) = arg1;
-    M2C_FIELD(&data_ov003_022111c0, s8 *, 3) = arg2;
+    extern M2C_UNK gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, s8 *, 4) = arg0;
+    M2C_FIELD(&gOv003SceneState, s8 *, 2) = arg1;
+    M2C_FIELD(&gOv003SceneState, s8 *, 3) = arg2;
 }
 
 s32 func_ov003_021f14f0(s32 arg0) {
@@ -730,13 +730,13 @@ s32 func_ov003_021f14f0(s32 arg0) {
 }
 
 void func_ov003_021f152c(s8 arg0) {
-    extern M2C_UNK data_ov003_022111c0;
-    M2C_FIELD(&data_ov003_022111c0, s8 *, 4) = arg0;
+    extern M2C_UNK gOv003SceneState;
+    M2C_FIELD(&gOv003SceneState, s8 *, 4) = arg0;
 }
 
 s32 func_ov003_021f153c(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    switch (M2C_FIELD(&data_ov003_022111c0, u8 *, 4)) {
+    extern M2C_UNK gOv003SceneState;
+    switch (M2C_FIELD(&gOv003SceneState, u8 *, 4)) {
     case 0: return 0;
     case 1: return 0x100;
     case 2: return -0x100;
@@ -745,22 +745,22 @@ s32 func_ov003_021f153c(void) {
 }
 
 u8 func_ov003_021f1584(void) {
-extern M2C_UNK data_ov003_022111c0;
-return M2C_FIELD(&data_ov003_022111c0,u8 *,2);
+extern M2C_UNK gOv003SceneState;
+return M2C_FIELD(&gOv003SceneState,u8 *,2);
 }
 
 s32 func_ov003_021f1594(void) {
-extern M2C_UNK data_ov003_022111c0;
-return func_ov003_021f14f0(M2C_FIELD(&data_ov003_022111c0,u8 *,2));
+extern M2C_UNK gOv003SceneState;
+return func_ov003_021f14f0(M2C_FIELD(&gOv003SceneState,u8 *,2));
 }
 
 u8 func_ov003_021f15ac(void) {
-    extern M2C_UNK data_ov003_022111c0;
-    return M2C_FIELD(&data_ov003_022111c0, u8 *, 3);
+    extern M2C_UNK gOv003SceneState;
+    return M2C_FIELD(&gOv003SceneState, u8 *, 3);
 }
 
 s32 func_ov003_021f15bc(void) {
-extern M2C_UNK data_ov003_022111c0;
-return func_ov003_021f14f0(M2C_FIELD(&data_ov003_022111c0,u8 *,3));
+extern M2C_UNK gOv003SceneState;
+return func_ov003_021f14f0(M2C_FIELD(&gOv003SceneState,u8 *,3));
 }
 

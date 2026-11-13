@@ -23,6 +23,10 @@ struct FSFileRequest {
 #define FS_REQ_COMMAND 0x10 /* s32 command id */
 #define FS_REQ_RESULT  0x14 /* s32 result of the last command */
 #define FS_REQ_QUEUE   0x18 /* OSThreadQueue the caller waits on */
+#define FS_REQ_DIR_BLOCK 0x30 /* 12-byte directory entry the path resolves from */
+#define FS_REQ_PATH      0x3C /* u8 * rest of the path to resolve */
+#define FS_REQ_WANT_DIR  0x40 /* s32 nonzero when the path must name a directory */
+#define FS_REQ_OUT       0x44 /* void * receives the resolved directory or file entry */
 
 /* Request flags at FSFileRequest::flags. */
 #define FS_REQ_QUEUED    0x00000002 /* still queued, dropped by a cancel */
@@ -66,5 +70,17 @@ typedef struct ResourceArchive {
     void *extraBlock;   /* +0x88 loaded optional section */
     void *objectBlock;  /* +0x8C loaded object table section */
 } ResourceArchive;
+
+/* A filesystem directory entry: the 12-byte record kept in FS_REQ_DIR_BLOCK and
+ * gFileCurrentDirectory, describing the directory a path is resolved against.
+ * file is the FSFile (or registered device) that owns the directory. */
+typedef struct FSDirectoryEntry {
+    u32 file;  /* +0x00 FSFile * of the file/device */
+    u16 unk04; /* +0x04 */
+    u16 unk06; /* +0x06 */
+    u32 unk08; /* +0x08 */
+} FSDirectoryEntry;
+
+extern FSDirectoryEntry gFileCurrentDirectory;
 
 #endif

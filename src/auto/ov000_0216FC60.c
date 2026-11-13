@@ -34,7 +34,7 @@ void ScrollListNavigate(u8 *selection) {
     M2C_UNK ScrollListRebuild(s16, s16);
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListDrawTabs(void *);
-    s32 func_020b20e0(s32);
+    s32 FindSpriteSlotById(s32);
     void *FocusSpriteSlotById(s32);
     s32 ScrollListScrollUp(void *);
     s16 ScrollListPageUp(void *);
@@ -82,9 +82,9 @@ void ScrollListNavigate(u8 *selection) {
         }
     } else if (gKeyState->repeat & KEY_DOWN) {
         if (selected < 4) {
-            if (func_020b20e0(selected + 1)) selected++;
+            if (FindSpriteSlotById(selected + 1)) selected++;
         } else {
-            if (!ScrollListScrollDown(list) && func_020b20e0(selected + 1)) selected++;
+            if (!ScrollListScrollDown(list) && FindSpriteSlotById(selected + 1)) selected++;
         }
         goto done;
     }

@@ -238,7 +238,7 @@ u8 func_ov003_0220801c(void *arg0) {
 }
 
 void func_ov003_02208034(void *arg0) {
-    M2C_UNK func_02082a8c(s32 *, u16 *);
+    M2C_UNK Build3DSpriteTransform(s32 *, u16 *);
     s32 GetSpriteAnimValue(s32);
     extern u16 **g3DSpriteEngineSub;
     extern u16 **gCur3DSpriteEngine;
@@ -289,7 +289,7 @@ void func_ov003_02208034(void *arg0) {
     M2C_FIELD(block,s16 *,16) = 0;
     M2C_FIELD(block,s16 *,8) = 0x80;
     M2C_FIELD(block,s16 *,10) = 0x88;
-    func_02082a8c(block, (u16 *)((u8 *)*gCur3DSpriteEngine + 0x24));
+    Build3DSpriteTransform(block, (u16 *)((u8 *)*gCur3DSpriteEngine + 0x24));
     gCur3DSpriteEngine = temp_r4;
 }
 

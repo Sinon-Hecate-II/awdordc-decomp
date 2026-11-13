@@ -438,9 +438,9 @@ func_020d47f0();
 void func_ov003_021fc95c(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_02088da8(s32);
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     func_02088da8(*M2C_FIELD(arg0, s32 **, 0x6C));
-    func_ov003_021f140c(2);
+    SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
 }

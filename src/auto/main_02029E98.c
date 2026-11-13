@@ -114,7 +114,7 @@ s32 AllocFromBlock(void *freeList, void *block, s32 address, s32 size, u16 fromT
     void *InitBlock(void *, s16);
     void *UnlinkBlock(void *, void *);
     void *InsertBlock(void *, void *, void *);
-    M2C_UNK func_02007e54(M2C_UNK, u32, s32);
+    M2C_UNK CpuFill(M2C_UNK, u32, s32);
     HeapRange front;
     HeapRange back;
     HeapRange used;
@@ -145,7 +145,7 @@ s32 AllocFromBlock(void *freeList, void *block, s32 address, s32 size, u16 fromT
     }
     gap = (s32)back.start - (s32)front.end;
     if ((u8)M2C_FIELD(freeList, s32 *, -4) & 1) {
-        func_02007e54(0, (u32)front.end, gap);
+        CpuFill(0, (u32)front.end, gap);
     }
     used.start = (u8 *)blockHeader;
     used.end = back.start;
@@ -287,7 +287,7 @@ void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 void *func_0202a544(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02007e54(M2C_UNK, u32, s32);
+    M2C_UNK CpuFill(M2C_UNK, u32, s32);
     u32 f0;
     u32 r5;
     u32 r6;
@@ -301,14 +301,14 @@ void *func_0202a544(void *arg0, s32 arg1, s32 arg2) {
     }
     diff = r6 - f0;
     if (((u8)M2C_FIELD(arg0, s32 *, -4) & 0x1) != 0) {
-        func_02007e54(0, f0, (s32)diff);
+        CpuFill(0, f0, (s32)diff);
     }
     M2C_FIELD(arg0, u32 *, 0) = r6;
     return (void *)r5;
 }
 
 u32 func_0202a5a0(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02007e54(M2C_UNK, u32, s32);
+    M2C_UNK CpuFill(M2C_UNK, u32, s32);
     u32 temp_r3;
     u32 temp_r5;
     u32 diff;
@@ -320,7 +320,7 @@ u32 func_0202a5a0(void *arg0, s32 arg1, s32 arg2) {
     }
     diff = temp_r3 - temp_r5;
     if ((u8)M2C_FIELD(arg0, s32 *, -4) & 1) {
-        func_02007e54(0, temp_r5, diff);
+        CpuFill(0, temp_r5, diff);
     }
     M2C_FIELD(arg0, u32 *, 4) = temp_r5;
     return temp_r5;
@@ -450,59 +450,63 @@ s32 func_0202a7b4(void *arg0) {
     return 0;
 }
 
-s32 func_0202a7f8(void *arg0, M2C_UNK arg1, void *arg2) {
+/* Initialise a NARC archive handle from its loaded image: check the NARC
+ * header, find the file-allocation (BTAF), file-name (BTNF) and image (GMIF)
+ * blocks, register the handle under `name` and give it the block layout the
+ * file lookups use. Returns 0 on a bad archive or a failed registration. */
+s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     s32 func_0200b184(void *, M2C_UNK, s32);
     M2C_UNK func_0200b118(void *);
     s32 func_0200b2bc(void *, void *, s32, s32, s32, s32, s32, s32);
     s32 StringLength(M2C_UNK);
-    void *var_r7;
-    void *var_r8;
-    void *var_r9;
-    void *temp_r4;
-    s32 var_r0;
-    void *var_r1;
-    u16 temp_r2;
-    s32 temp_r10;
+    void *fat;
+    void *fnt;
+    void *image;
+    void *imageData;
+    s32 blockIndex;
+    void *block;
+    u16 blockCount;
+    s32 tag;
 
-    var_r7 = NULL;
-    var_r8 = NULL;
-    var_r9 = NULL;
-    if (func_0202a7b4(arg2) == 0) {
+    fat = NULL;
+    fnt = NULL;
+    image = NULL;
+    if (func_0202a7b4(data) == 0) {
         return 0;
     }
-    temp_r2 = M2C_FIELD(arg2, u16 *, 0xE);
-    var_r0 = 0;
-    var_r1 = arg2 + M2C_FIELD(arg2, u16 *, 0xC);
-    if ((s32) temp_r2 > 0) {
+    blockCount = M2C_FIELD(data, u16 *, 0xE);
+    blockIndex = 0;
+    block = data + M2C_FIELD(data, u16 *, 0xC);
+    if ((s32) blockCount > 0) {
         do {
-            temp_r10 = M2C_FIELD(var_r1, s32 *, 0);
-            switch (temp_r10) {
-            case 0x464E5442:
-                var_r8 = var_r1;
+            tag = M2C_FIELD(block, s32 *, 0);
+            switch (tag) {
+            case NARC_BLOCK_FNT:
+                fnt = block;
                 break;
-            case 0x46415442:
-                var_r7 = var_r1;
+            case NARC_BLOCK_FAT:
+                fat = block;
                 break;
-            case 0x46494D47:
-                var_r9 = var_r1;
+            case NARC_BLOCK_IMAGE:
+                image = block;
                 break;
             }
-            var_r0 += 1;
-            var_r1 += M2C_FIELD(var_r1, s32 *, 4);
-        } while (var_r0 < (s32) temp_r2);
+            blockIndex += 1;
+            block += M2C_FIELD(block, s32 *, 4);
+        } while (blockIndex < (s32) blockCount);
     }
-    func_0200b118(arg0);
-    M2C_FIELD(arg0, void **, 0x5C) = arg2;
-    M2C_FIELD(arg0, void **, 0x60) = var_r7;
-    temp_r4 = var_r9 + 8;
-    M2C_FIELD(arg0, void **, 0x64) = temp_r4;
-    if (func_0200b184(arg0, arg1, StringLength(arg1)) == 0) {
+    func_0200b118(archive);
+    M2C_FIELD(archive, void **, 0x5C) = data;
+    M2C_FIELD(archive, void **, 0x60) = fat;
+    imageData = image + 8;
+    M2C_FIELD(archive, void **, 0x64) = imageData;
+    if (func_0200b184(archive, name, StringLength(name)) == 0) {
         return 0;
     }
-    if (func_0200b2bc(arg0, temp_r4, (var_r7 + 0xC) - temp_r4, M2C_FIELD(var_r7, s32 *, 4) - 0xC, (var_r8 + 8) - temp_r4, M2C_FIELD(var_r8, s32 *, 4) - 8, 0, 0) != 0) {
+    if (func_0200b2bc(archive, imageData, (fat + 0xC) - imageData, M2C_FIELD(fat, s32 *, 4) - 0xC, (fnt + 8) - imageData, M2C_FIELD(fnt, s32 *, 4) - 8, 0, 0) != 0) {
         return 1;
     }
-    func_0200b238(arg0);
+    func_0200b238(archive);
     return 0;
 }
 

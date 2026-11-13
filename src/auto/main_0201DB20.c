@@ -13,7 +13,7 @@ static inline void PacketAddress(u8 *p) { extern M2C_UNK gLocalMacAddress; void 
 
 u32 func_0201db20(s32 a, s32 b) {
     extern M2C_UNK gSocketManager;
-    M2C_UNK func_020651c4(s32, s32, u32);
+    M2C_UNK MemMove(s32, s32, u32);
     void *p;
     u32 n, used;
     p = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
@@ -23,7 +23,7 @@ u32 func_0201db20(s32 a, s32 b) {
             used = func_0201da4c(M2C_FIELD(p, s32 *, 0x5C), n, a, b);
             n = M2C_FIELD(p, u32 *, 0x60);
             if (used < n) {
-                func_020651c4(M2C_FIELD(p, s32 *, 0x5C), M2C_FIELD(p, s32 *, 0x5C) + used, n - used);
+                MemMove(M2C_FIELD(p, s32 *, 0x5C), M2C_FIELD(p, s32 *, 0x5C) + used, n - used);
                 M2C_FIELD(p, u32 *, 0x60) -= used;
                 return 0;
             }
@@ -285,7 +285,7 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
     s32 func_0201dbb8(void);
     void func_0201a238(void);
     s32 func_0201d618(s32 *);
-    s32 func_0201a7f8(u16 *, u16 *);
+    s32 MacAddressesDiffer(u16 *, u16 *);
     void func_0201d70c(s32);
     extern M2C_UNK gNetStack;
     extern M2C_UNK gLocalMacAddress;
@@ -324,7 +324,7 @@ top_loop:
         t0 = *(u16 *)(q + 4);
         t1 = *(u16 *)(q + 6);
         if (((((u32)PacketSwap(t0)) << 16) | (u32)PacketSwap(t1)) != (u32)slots[0]) goto fail;
-        if (func_0201a7f8((u16 *)&gLocalMacAddress, (u16 *)(q + 0x1C)) != 0) goto fail;
+        if (MacAddressesDiffer((u16 *)&gLocalMacAddress, (u16 *)(q + 0x1C)) != 0) goto fail;
         if (q[0xEC] != 0x63 || q[0xED] != 0x82 || q[0xEE] != 0x53 || q[0xEF] != 0x63) goto fail;
 
         combo = ((u32)q[0x10] << 24) | ((u32)q[0x11] << 16) | ((u32)q[0x12] << 8) | (u32)q[0x13];

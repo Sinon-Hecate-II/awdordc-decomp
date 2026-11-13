@@ -5,9 +5,9 @@ void func_ov003_021e5e24(void *arg0, s32 arg1) {
 }
 
 M2C_UNK func_ov003_021e6204(M2C_UNK arg0) {
-    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK SetOv003SceneState(s32);
     M2C_UNK func_ov006_02218328(M2C_UNK);
-    func_ov003_021f140c(1);
+    SetOv003SceneState(1);
     return func_ov006_02218328(arg0);
 }
 
@@ -356,7 +356,7 @@ void *func_ov003_021e69d8(void *arg0) {
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_ov003_0220f720;
     extern M2C_UNK data_ov003_0220f74c;
-    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK SetOv003SceneState(s32);
     M2C_UNK MemFree();
     s32 *temp_r5;
     void **temp_r0;
@@ -408,7 +408,7 @@ void *func_ov003_021e69d8(void *arg0) {
         DeleteSpriteObject();
     }
     func_020c127c();
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
     func_020c8e40();
     return arg0;
 }
@@ -430,7 +430,7 @@ void *func_ov003_021e6b08(void *arg0) {
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_ov003_0220f720;
     extern M2C_UNK data_ov003_0220f74c;
-    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK SetOv003SceneState(s32);
     M2C_UNK MemFree();
     s32 *temp_r5;
     void **temp_r0;
@@ -482,7 +482,7 @@ void *func_ov003_021e6b08(void *arg0) {
         DeleteSpriteObject();
     }
     func_020c127c();
-    func_ov003_021f140c(4);
+    SetOv003SceneState(4);
     func_020c8e40();
     MemFree(arg0);
     return arg0;

@@ -71,7 +71,7 @@ s32 func_02054520(void **a) {
 
 void *func_0205455c(void **a,void *b,s32 c) {
  void *func_0205180c(void **,void *,s32);
- void *func_02055940(void **,void *,s32);
+ void *gpiProcessNewPlayer(void **,void *,s32);
  void *func_02052600(void **,void *,s32);
  void *func_02057ff8(void **,void *,s32);
  M2C_UNK gpiLogMessage(void **,M2C_UNK *,...);
@@ -79,7 +79,7 @@ void *func_0205455c(void **a,void *b,s32 c) {
  void *p=NULL;
  switch(M2C_FIELD(b,u32 *,0)) {
  case 0:p=func_0205180c(a,b,c);break;
- case 1:p=func_02055940(a,b,c);break;
+ case 1:p=gpiProcessNewPlayer(a,b,c);break;
  case 2:p=func_02052600(a,b,c);break;
  case 4:p=func_02057ff8(a,b,c);break;
  default:gpiLogMessage(a,&data_020fea6c,M2C_FIELD(b,u32 *,0));AssertFailed(&data_020fea48,&data_020fea00,&data_020fe9d8,326);break;
@@ -488,7 +488,7 @@ void *func_020552e0(void **a,s32 b,s32 c) {
  void *base=*a;
  void *p=gpiMalloc(64);
  if(!p)return NULL;
- func_02065210(p,0,64);
+ MemSet(p,0,64);
  M2C_FIELD(p,s32 *,0)=100;
  M2C_FIELD(p,s32 *,4)=c;
  M2C_FIELD(p,s32 *,8)=-1;

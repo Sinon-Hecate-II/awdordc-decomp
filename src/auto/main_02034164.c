@@ -12,9 +12,9 @@ s32 (*alloc)(M2C_UNK *, s32);
 M2C_UNK (*free)(M2C_UNK *, s32, s32);
 u8 pad1018[12];
 char url[256];
-s32 unk1124, unk1128;
-s32 unk112c, unk1130;
-u16 unk1134;
+s32 host, path;       /* parsed from url */
+s32 unk112c, useTls;  /* useTls: 0 = http, 1 = https */
+u16 port;             /* default 80 (http) or 443 (https) */
 u8 pad1136[0x896];
 s32 unk19cc, unk19d0;
 u8 pad19d4[0x24];
@@ -46,16 +46,16 @@ s32 func_02034870(void *,void *,s32);
 extern M2C_UNK data_020fb600;extern M2C_UNK data_020fb654;
 M2C_UNK *fmt; s32 a,n; u32 b; void *p=arg0->buffer;
 if(arg0->unk1008==0)fmt=&data_020fb600;else fmt=&data_020fb654;
-a=StringLength(arg0->unk1124);
+a=StringLength(arg0->host);
 b=StringLength((s32)fmt);
-if(func_02034870(arg0,(u8*)arg0 + 0x19f8,a+(s32)((b-4)+(u32)StringLength(arg0->unk1128))+0x400)!=1)return 1;
-n=func_0200567c(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,12),fmt,arg0->unk1128,arg0->unk1124);
+if(func_02034870(arg0,(u8*)arg0 + 0x19f8,a+(s32)((b-4)+(u32)StringLength(arg0->path))+0x400)!=1)return 1;
+n=func_0200567c(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,12),fmt,arg0->path,arg0->host);
 M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,4)+n;
 return 0;
 }
 
 s32 func_020345f4(Unk02034164 *obj,int a,int b) {
- void func_020651c4(void *,void *,int); char *StringFind(int,void *); int func_02034908(s32,void *,s32);
+ void MemMove(void *,void *,int); char *StringFind(int,void *); int func_02034908(s32,void *,s32);
  Buffer02034164 *buf=(Buffer02034164 *)obj->buffer;
  int n=StringLength(b); unsigned int fmt=StringLength((int)&data_020fb674);
  signed char save; char *p; int room;
@@ -64,7 +64,7 @@ s32 func_020345f4(Unk02034164 *obj,int a,int b) {
  if(n+1>room && func_02034908((int)obj,buf,n-room+1)==0)return 1;
  p=StringFind(buf->start,&data_020fb59c)+2;
  save=*p;
- func_020651c4(p+n,p,StringLength((int)p)+1);
+ MemMove(p+n,p,StringLength((int)p)+1);
  p[func_0200567c(p,n+1,&data_020fb674,a,b)]=save;
  buf->current+=n;return 0;
 }
@@ -186,47 +186,54 @@ MI_CpuFill8(arg1,0,16);
 s32 func_02034908(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C_UNK data_020fb6a4;void MI_CpuCopy8(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&data_020fb6b8,b[3]+c);if(!p)return 0;MI_CpuCopy8(b[0],p,b[3]);freep(&data_020fb6a4,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
 
 #pragma opt_common_subs off
-s32 func_020349b0(Unk02034164 *p,s32 text) {
+/* Parse "http[s]://host[:port][/path]" from urlText into the client: copy the
+ * URL into client->url, then split out the host, the optional port (default 80
+ * for http, 443 for https), the TLS flag and the path. Returns 1 on success. */
+s32 HttpParseUrl(Unk02034164 *client,s32 urlText) {
 void func_02068d18(s32,s32,s32);char *StringFind(int,void *);s32 ParseInt(char *);
-extern M2C_UNK data_020fb6c8,data_020fb6d0,data_020fb6dc,data_020fb6e0;
-char *port=0,*q,*path;u32 n;
-if((u32)StringLength(text)>=256)return 0;
-func_02068d18((s32)p->url,text,256);
-n=StringLength(text);
-if(n!=StringLength((s32)p->url))return 0;
-q=StringFind((s32)p->url,&data_020fb6c8);
-if(q){
-p->unk1124=(s32)(p->url+7);
-p->unk1130=0;p->unk1134=80;
+extern M2C_UNK sHttpSchemePrefix,sHttpsSchemePrefix,sPortSeparator,sPathSeparator;
+char *portStr=0,*match,*path;u32 len;
+if((u32)StringLength(urlText)>=256)return 0;
+func_02068d18((s32)client->url,urlText,256);
+len=StringLength(urlText);
+if(len!=StringLength((s32)client->url))return 0;
+match=StringFind((s32)client->url,&sHttpSchemePrefix);
+if(match){
+client->host=(s32)(client->url+7);
+client->useTls=0;client->port=80;
 }else{
-q=StringFind((s32)p->url,&data_020fb6d0);
-if(!q)return 0;
-p->unk1124=(s32)(q+8);
-p->unk1130=1;p->unk1134=443;
+match=StringFind((s32)client->url,&sHttpsSchemePrefix);
+if(!match)return 0;
+client->host=(s32)(match+8);
+client->useTls=1;client->port=443;
 }
-q=StringFind(p->unk1124,&data_020fb6dc);
-if(q){*q=0;port=q+1;}
-q=StringFind(p->unk1124,&data_020fb6e0);
-if(!q)p->unk1128=0;else{*q=0;p->unk1128=(s32)(q+1);}
-if(port)p->unk1134=ParseInt(port);
+match=StringFind(client->host,&sPortSeparator);
+if(match){*match=0;portStr=match+1;}
+match=StringFind(client->host,&sPathSeparator);
+if(!match)client->path=0;else{*match=0;client->path=(s32)(match+1);}
+if(portStr)client->port=ParseInt(portStr);
 return 1;
 }
 #pragma opt_common_subs reset
-s32 func_02034b04(Unk02034164 *obj,Buffer02034164 *buf,s32 a,s32 b) {
+/* Appends one name/value string pair to the HTTP header table: allocates and
+ * copies both strings into the next free slot, freeing whatever was allocated if
+ * either fails. Returns 1 when the pair was stored, 0 when the table is full or
+ * an allocation failed. */
+s32 HttpHeaders_Add(Unk02034164 *net,Buffer02034164 *table,s32 name,s32 value) {
 void StringCopy(void *,s32);
 extern M2C_UNK data_020fb6e4,data_020fb704,data_020fb724,data_020fb740;
-s32 (*alloc)(M2C_UNK *,s32)=obj->alloc;
-M2C_UNK (*free)(M2C_UNK *,s32,s32)=obj->free;
-if(buf->end>buf->current)return 0;
-((Pair02034164 *)buf->start)[buf->end].first=alloc(&data_020fb6e4,StringLength(a)+1);
-if(((Pair02034164 *)buf->start)[buf->end].first){
-((Pair02034164 *)buf->start)[buf->end].second=alloc(&data_020fb704,StringLength(b)+1);
-if(((Pair02034164 *)buf->start)[buf->end].second){
-StringCopy((void *)((Pair02034164 *)buf->start)[buf->end].first,a);
-StringCopy((void *)((Pair02034164 *)buf->start)[buf->end].second,b);
-buf->end++;return 1;}}
-if(((Pair02034164 *)buf->start)[buf->end].first){free(&data_020fb724,((Pair02034164 *)buf->start)[buf->end].first,0);((Pair02034164 *)buf->start)[buf->end].first=0;}
-if(((Pair02034164 *)buf->start)[buf->end].second){free(&data_020fb740,((Pair02034164 *)buf->start)[buf->end].second,0);((Pair02034164 *)buf->start)[buf->end].second=0;}
+s32 (*alloc)(M2C_UNK *,s32)=net->alloc;
+M2C_UNK (*free)(M2C_UNK *,s32,s32)=net->free;
+if(table->end>table->current)return 0;
+((Pair02034164 *)table->start)[table->end].first=alloc(&data_020fb6e4,StringLength(name)+1);
+if(((Pair02034164 *)table->start)[table->end].first){
+((Pair02034164 *)table->start)[table->end].second=alloc(&data_020fb704,StringLength(value)+1);
+if(((Pair02034164 *)table->start)[table->end].second){
+StringCopy((void *)((Pair02034164 *)table->start)[table->end].first,name);
+StringCopy((void *)((Pair02034164 *)table->start)[table->end].second,value);
+table->end++;return 1;}}
+if(((Pair02034164 *)table->start)[table->end].first){free(&data_020fb724,((Pair02034164 *)table->start)[table->end].first,0);((Pair02034164 *)table->start)[table->end].first=0;}
+if(((Pair02034164 *)table->start)[table->end].second){free(&data_020fb740,((Pair02034164 *)table->start)[table->end].second,0);((Pair02034164 *)table->start)[table->end].second=0;}
 return 0;
 }
 
@@ -243,7 +250,7 @@ end=base+4+StringLength((s32)(base+4));
 colon=StringFind(input,&data_020fb75c);
 if(!colon)return 0;
 save=colon[4];colon[4]='\0';
-result=func_02034b04(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(colon+1));
+result=HttpHeaders_Add(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(colon+1));
 colon[4]=save;
 if(result!=1)return 0;
 if(arg1==1 || StringCompareN((s32)(colon+1),&data_020fb76c,3)!=0)return 1;
@@ -256,7 +263,7 @@ save=*colon;*colon=0;value=colon+2;
 term=StringFind((s32)value,&data_020fb5cc);
 if(!term){*colon=save;break;}
 save2=*term;*term=0;
-if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;*term=save2;return 0;}
+if(HttpHeaders_Add(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;*term=save2;return 0;}
 result=StringLength((s32)value);
 *colon=save;*term=save2;p=value+result+2;
 }
@@ -267,7 +274,7 @@ save=*colon;*colon=0;value=colon+1;
 term=StringFind((s32)value,&data_020fb778);
 if(!term)term=StringFind((s32)value,&data_020fb5cc);
 if(term){save2=*term;*term=0;}
-if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;if(term)*term=save2;return 0;}
+if(HttpHeaders_Add(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;if(term)*term=save2;return 0;}
 result=StringLength((s32)value);*colon=save;p=value+result+1;if(term)*term=save2;
 }
 return 1;

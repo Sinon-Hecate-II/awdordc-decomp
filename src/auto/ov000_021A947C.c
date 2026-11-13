@@ -90,10 +90,10 @@ void func_ov000_021a96f4(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 s32 func_ov000_021a9740(void *arg0, M2C_UNK arg1) {
     s32 func_020a5ae0(M2C_UNK);
     s32 CalculateUnitDamage(void *, s32, M2C_UNK, M2C_UNK);
-    extern u8 data_ov000_021b5c05;
+    extern u8 gUnitKindMaxAmmo;
     s32 var_r0;
     s32 var_r5;
-    if ((*(&data_ov000_021b5c05 + (((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70)) != 0) && (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) == 0)) {
+    if ((*(&gUnitKindMaxAmmo + (((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70)) != 0) && (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) == 0)) {
         var_r5 = 0;
     } else {
         var_r5 = CalculateUnitDamage(arg0, func_020a5ae0(arg1), 0, 0);
@@ -109,17 +109,17 @@ void GetUnitDamagePercent(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void GetUnitMoveRange(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020a7b3c(M2C_UNK, u8, u16, s32, s32);
+    M2C_UNK ComputeUnitMoveRange(M2C_UNK, u8, u16, s32, s32);
     extern void **data_027e0058;
     extern void *gAiCommandState;
-    func_020a7b3c(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
+    ComputeUnitMoveRange(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
 void GetUnitMaxAttackRange(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020a7c10(M2C_UNK, u8, u16, s32, s32);
+    M2C_UNK ComputeUnitMaxAttackRange(M2C_UNK, u8, u16, s32, s32);
     extern void **data_027e0058;
     extern void *gAiCommandState;
-    func_020a7c10(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
+    ComputeUnitMaxAttackRange(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
 s32 func_ov000_021a9860(s32 a,s32 b) {
@@ -175,11 +175,11 @@ s32 CanKindAttack(s32 a,s32 b) {
 }
 
 u8 CanUnitAttackKind(u8 *arg0,s32 arg1) {
-extern u8 data_ov000_021b5c5c[];
+extern u8 gUnitKindCargoCount[];
 u32 a=(u32)(*arg0<<26)>>26; u8 result;
-if(!data_ov000_021b5c5c[a*0x70]) return 0;
+if(!gUnitKindCargoCount[a*0x70]) return 0;
 if(!CanKindAttack(a,arg1)) return 0;
-if(M2C_FIELD(arg0+(data_ov000_021b5c5c[((u32)(*arg0<<26)>>26)*0x70]-1),u8 *,12)==0) result=1;else result=0;
+if(M2C_FIELD(arg0+(gUnitKindCargoCount[((u32)(*arg0<<26)>>26)*0x70]-1),u8 *,12)==0) result=1;else result=0;
 return result;
 }
 

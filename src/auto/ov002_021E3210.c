@@ -351,37 +351,40 @@ void func_ov002_021e3f2c(void *arg0, s32 arg1) {
     }
 }
 
-s32 func_ov002_021e4034(void *arg0) {
+/* Compares the two versus-screen gauges. The low nibble of the state's byte 3
+   picks which 24-byte gauge record is "this" side; returns 2 when the other
+   side's gauge is far enough ahead (or both are low), 0 otherwise. */
+s32 ComparePlayerGauges(void *arg0) {
     extern u8 data_ov002_021f30fd[];
     extern u8 data_ov002_021f3104[];
     extern u8 data_ov002_021f3105[];
-    u32 i;
-    s32 j;
+    u32 slot;
+    s32 ofs;
     u8 alive;
-    s32 a;
+    s32 value;
 
-    j = ((u32)(M2C_FIELD(arg0, u8 *, 3) << 0x1C) >> 0x1C) * 0x18;
-    i = (u32)(M2C_FIELD(arg0, u8 *, 3) << 0x1C) >> 0x1C;
-    if (data_ov002_021f3105[j] == 0) {
+    ofs = ((u32)(M2C_FIELD(arg0, u8 *, 3) << 0x1C) >> 0x1C) * 0x18;
+    slot = (u32)(M2C_FIELD(arg0, u8 *, 3) << 0x1C) >> 0x1C;
+    if (data_ov002_021f3105[ofs] == 0) {
         return 0;
     }
-    alive = data_ov002_021f3104[j];
-    if (alive == 0 || data_ov002_021f3104[(i == 0 ? 1 : 0) * 0x18] == 0) {
+    alive = data_ov002_021f3104[ofs];
+    if (alive == 0 || data_ov002_021f3104[(slot == 0 ? 1 : 0) * 0x18] == 0) {
         if (alive != 0) {
             return 0;
         }
-        if ((data_ov002_021f30fd[j] + 9) / 10 >= (data_ov002_021f30fd[(i == 0 ? 1 : 0) * 0x18] + 9) / 10 + 3) {
+        if ((data_ov002_021f30fd[ofs] + 9) / 10 >= (data_ov002_021f30fd[(slot == 0 ? 1 : 0) * 0x18] + 9) / 10 + 3) {
             return 0;
         }
         return 2;
     }
-    a = (data_ov002_021f30fd[j] + 9) / 10;
-    if (a <= 4) {
-        if ((data_ov002_021f30fd[(i == 0 ? 1 : 0) * 0x18] + 9) / 10 <= 4) {
+    value = (data_ov002_021f30fd[ofs] + 9) / 10;
+    if (value <= 4) {
+        if ((data_ov002_021f30fd[(slot == 0 ? 1 : 0) * 0x18] + 9) / 10 <= 4) {
             return 2;
         }
     }
-    if (a + 4 <= (data_ov002_021f30fd[(i == 0 ? 1 : 0) * 0x18] + 9) / 10) {
+    if (value + 4 <= (data_ov002_021f30fd[(slot == 0 ? 1 : 0) * 0x18] + 9) / 10) {
         return 2;
     }
     return 0;

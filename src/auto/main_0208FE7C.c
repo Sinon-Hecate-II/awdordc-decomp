@@ -1,5 +1,6 @@
 /* 45 functions from 0x0208FE7C to 0x02090E0C (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_script.h"
 static inline void CallNodeMethod(void *node) {
     M2C_FIELD(*(void **)node, void (**)(void *), 0)(node);
 }
@@ -498,7 +499,7 @@ M2C_FIELD(arg0,s32 *,8)=0;
 M2C_FIELD(arg1,void **,0x38)=arg0;
 }
 
-void func_0209075c(void *arg0, void *arg1, s32 arg2) {
+void SpritePlayer_SpawnChild(void *arg0, void *arg1, s32 arg2) {
     s32 *temp_ip;
     s32 *temp_ip_2;
     void *temp_r2;
@@ -578,12 +579,12 @@ void func_02090830(void *arg0) {
 
 void func_02090894(void **arg0) {
     M2C_UNK MemFree(void **);
-    void func_02090a88(void *);
+    void SpritePlayer_AdvanceToCommand(void *);
     void **var_r4;
     void **temp_r5;
 
     var_r4 = arg0;
-    func_02090a88(arg0);
+    SpritePlayer_AdvanceToCommand(arg0);
     if (arg0 != NULL) {
         do {
             temp_r5 = M2C_FIELD(var_r4, void ***, 8);
@@ -603,7 +604,7 @@ void func_02090894(void **arg0) {
    into the next player in the list. */
 void func_020908dc(void *player) {
     void func_02090830(void *);
-    void func_0209075c(void *, void *, s32);
+    void SpritePlayer_SpawnChild(void *, void *, s32);
     void *MemAlloc(s32);
     u8 *cursor;
     u8 *entry;
@@ -645,7 +646,7 @@ void func_020908dc(void *player) {
                 if (M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), s16 *, 6) > 0) {
                     entry = MemAlloc(0x30);
                     if (entry != NULL) {
-                        func_0209075c(entry, player, M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), s16 *, 6) - 1);
+                        SpritePlayer_SpawnChild(entry, player, M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), s16 *, 6) - 1);
                     }
                     nextPlayer = M2C_FIELD(player, void **, 8);
                 }
@@ -677,69 +678,73 @@ done:
     }
 }
 
-void func_02090a88(void *arg0) {
-    void func_02090c7c(void *);
-    void func_0209075c(void *, void *, s32);
+/* Walk every script player in the list forward past its wait entries to the next
+ * control command, spawning the child players a SPRITE_SCRIPT_SPAWN command asks
+ * for; the owning sprite's auxiliary object list is released first.  Recurses
+ * into the next player in the list. */
+void SpritePlayer_AdvanceToCommand(void *player) {
+    void Sprite_DestroyAuxList(void *);
+    void SpritePlayer_SpawnChild(void *, void *, s32);
     void *MemAlloc(s32);
-    u8 *cur;
-    u8 *node;
+    u8 *cursor;
+    u8 *entry;
     void *next;
 
-    next = M2C_FIELD(arg0, void **, 8);
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0), s32 *, 0x3C) != 0) {
-        func_02090c7c((void *)M2C_FIELD(M2C_FIELD(arg0, void **, 0), s32 *, 0x3C));
+    next = M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
+    if (M2C_FIELD(M2C_FIELD(player, void **, SPRITE_PLAYER_OWNER), s32 *, SPRITE_OWNER_AUX_LIST) != 0) {
+        Sprite_DestroyAuxList((void *)M2C_FIELD(M2C_FIELD(player, void **, SPRITE_PLAYER_OWNER), s32 *, SPRITE_OWNER_AUX_LIST));
     }
     goto skip;
     for (;;) {
-        if (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), u8 *, 3) != 0) {
-            switch (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), u8 *, 2)) {
-            case 0:
-            case 1:
-            case 2:
+        if (M2C_FIELD(M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR), u8 *, SPRITE_ENTRY_KIND) != 0) {
+            switch (M2C_FIELD(M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR), u8 *, SPRITE_ENTRY_COMMAND)) {
+            case SPRITE_SCRIPT_STOP:
+            case SPRITE_SCRIPT_JUMP:
+            case SPRITE_SCRIPT_RETURN:
                 goto done;
-            case 3:
+            case SPRITE_SCRIPT_SKIP:
                 break;
-            case 4:
-                node = (u8 *)M2C_FIELD(arg0, s32 **, 0xC)
-                     + M2C_FIELD(M2C_FIELD(arg0, s32 **, 0xC) + M2C_FIELD(arg0, u8 *, 0x2C), s32 *, 4);
-                while (M2C_FIELD(node, u8 *, 3) == 0 || M2C_FIELD(node, u8 *, 2) != 0xFF) {
-                    if (M2C_FIELD(node, u8 *, 3) != 0 && M2C_FIELD(node, u8 *, 2) == 3
-                        && M2C_FIELD(node, s16 *, 6) == M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6)) {
-                        M2C_FIELD(arg0, void **, 0x10) = node;
+            case SPRITE_SCRIPT_SEARCH:
+                entry = (u8 *)M2C_FIELD(player, s32 **, SPRITE_PLAYER_SCRIPT)
+                     + M2C_FIELD(M2C_FIELD(player, s32 **, SPRITE_PLAYER_SCRIPT) + M2C_FIELD(player, u8 *, SPRITE_PLAYER_SLOT), s32 *, 4);
+                while (M2C_FIELD(entry, u8 *, SPRITE_ENTRY_KIND) == 0 || M2C_FIELD(entry, u8 *, SPRITE_ENTRY_COMMAND) != SPRITE_SCRIPT_LOOP) {
+                    if (M2C_FIELD(entry, u8 *, SPRITE_ENTRY_KIND) != 0 && M2C_FIELD(entry, u8 *, SPRITE_ENTRY_COMMAND) == SPRITE_SCRIPT_SKIP
+                        && M2C_FIELD(entry, s16 *, SPRITE_ENTRY_ARG) == M2C_FIELD(M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR), s16 *, SPRITE_ENTRY_ARG)) {
+                        M2C_FIELD(player, void **, SPRITE_PLAYER_CURSOR) = entry;
                         break;
                     }
-                    M2C_FIELD(arg0, u8 **, 0x10) = M2C_FIELD(arg0, u8 **, 0x10) + 0x10;
+                    M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR) = M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR) + SPRITE_ENTRY_SIZE;
                 }
                 goto skip;
-            case 0x10:
-                if (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) > 0) {
-                    node = MemAlloc(0x30);
-                    if (node != NULL) {
-                        func_0209075c(node, arg0, M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) - 1);
+            case SPRITE_SCRIPT_SPAWN:
+                if (M2C_FIELD(M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR), s16 *, SPRITE_ENTRY_ARG) > 0) {
+                    entry = MemAlloc(SPRITE_PLAYER_SIZE);
+                    if (entry != NULL) {
+                        SpritePlayer_SpawnChild(entry, player, M2C_FIELD(M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR), s16 *, SPRITE_ENTRY_ARG) - 1);
                     }
-                    next = M2C_FIELD(arg0, void **, 8);
+                    next = M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
                 }
                 break;
-            case 0xFF:
+            case SPRITE_SCRIPT_LOOP:
                 goto done;
             default:
                 break;
             }
         }
-        M2C_FIELD(arg0, u8 **, 0x10) = M2C_FIELD(arg0, u8 **, 0x10) + 0x10;
+        M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR) = M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR) + SPRITE_ENTRY_SIZE;
     skip:
-        cur = M2C_FIELD(arg0, u8 **, 0x10);
-        if (M2C_FIELD(cur, u8 *, 3) != 0 || M2C_FIELD(cur, u16 *, 0) == 0) {
+        cursor = M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR);
+        if (M2C_FIELD(cursor, u8 *, SPRITE_ENTRY_KIND) != 0 || M2C_FIELD(cursor, u16 *, SPRITE_ENTRY_WAIT) == 0) {
             goto after;
         }
-        M2C_FIELD(arg0, u8 **, 0x10) = cur + 0x10;
+        M2C_FIELD(player, u8 **, SPRITE_PLAYER_CURSOR) = cursor + SPRITE_ENTRY_SIZE;
         goto skip;
     after:
         ;
     }
 done:
     if (next != NULL) {
-        func_02090a88(next);
+        SpritePlayer_AdvanceToCommand(next);
     }
 }
 
@@ -776,7 +781,7 @@ void func_02090bd8(void *arg0) {
     }
 }
 
-void func_02090c7c(void *arg0) {
+void Sprite_DestroyAuxList(void *arg0) {
     void *var_r0;
     void *temp_r5;
     void *temp_r4;

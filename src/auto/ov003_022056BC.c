@@ -327,76 +327,82 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     }
     M2C_FIELD(temp_r0, ObjFlags3A *, 0x3A).b.lo = 1;
 }
-void *func_ov003_02205ce8(void *arg0) {
+/* Non-deleting destructor of a derived ov003 scene object (vtable slot 0):
+ * restores both of its vtables, frees its cursor blocks (+0x3C/+0x48), its
+ * sprite-handle block (+0x40: 2 + 8 + 8 handles) and its child objects
+ * (+0x44/+0x50/+0x54), deletes the remaining sprites, marks the scene finished
+ * and, for the wallpaper variant, deletes the wallpaper sprites.  The caller
+ * still owns obj. */
+void *ShutdownOv003SceneObject(void *obj) {
     M2C_UNK DeleteSpriteObject(void *);
-    M2C_UNK func_020af1f8(void);
+    M2C_UNK DeleteMainWallpaperSprites(void);
     M2C_UNK MemFree(void *);
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     extern M2C_UNK data_ov003_022108b4;
     extern M2C_UNK data_ov003_022108e0;
-    void *temp_r5;
-    void **temp_r0;
-    void **temp_r0_2;
-    void **temp_r0_3;
-    u8 var_r6;
-    s32 var_r0;
+    void *spriteBlock;
+    void **child50;
+    void **child44;
+    void **child54;
+    u8 i;
+    s32 usesWallpaper;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_022108b4;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_022108e0;
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        MemFree(M2C_FIELD(arg0, s32 *, 0x3C));
+    M2C_FIELD(obj, M2C_UNK **, 0) = &data_ov003_022108b4;
+    M2C_FIELD(obj, M2C_UNK **, 0x34) = &data_ov003_022108e0;
+    if (M2C_FIELD(obj, s32 *, 0x3C) != 0) {
+        MemFree(M2C_FIELD(obj, s32 *, 0x3C));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x48) != 0) {
-        MemFree(M2C_FIELD(arg0, s32 *, 0x48));
+    if (M2C_FIELD(obj, s32 *, 0x48) != 0) {
+        MemFree(M2C_FIELD(obj, s32 *, 0x48));
     }
-    temp_r5 = M2C_FIELD(arg0, void **, 0x40);
-    if (temp_r5 != NULL) {
-        if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
-            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 0));
+    spriteBlock = M2C_FIELD(obj, void **, 0x40);
+    if (spriteBlock != NULL) {
+        if (M2C_FIELD(spriteBlock, s32 *, 0) != 0) {
+            DeleteSpriteObject(M2C_FIELD(spriteBlock, s32 *, 0));
         }
-        if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
-            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 4));
+        if (M2C_FIELD(spriteBlock, s32 *, 4) != 0) {
+            DeleteSpriteObject(M2C_FIELD(spriteBlock, s32 *, 4));
         }
-        var_r6 = 0;
+        i = 0;
         do {
-            if (M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8) != 0) {
-                DeleteSpriteObject(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8));
+            if (M2C_FIELD(spriteBlock + (i * 4), s32 *, 8) != 0) {
+                DeleteSpriteObject(M2C_FIELD(spriteBlock + (i * 4), s32 *, 8));
             }
-            if (M2C_FIELD((u8 *)temp_r5 + ((s32)var_r6 << 2), s32 *, 0x28) != 0) {
-                DeleteSpriteObject(M2C_FIELD((u8 *)temp_r5 + ((s32)var_r6 << 2), s32 *, 0x28));
+            if (M2C_FIELD((u8 *)spriteBlock + ((s32)i << 2), s32 *, 0x28) != 0) {
+                DeleteSpriteObject(M2C_FIELD((u8 *)spriteBlock + ((s32)i << 2), s32 *, 0x28));
             }
-            var_r6 += 1;
-        } while (var_r6 < 8U);
-        MemFree(temp_r5);
+            i += 1;
+        } while (i < 8U);
+        MemFree(spriteBlock);
     }
-    temp_r0 = M2C_FIELD(arg0, void ***, 0x50);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    child50 = M2C_FIELD(obj, void ***, 0x50);
+    if (child50 != NULL) {
+        M2C_FIELD(*child50, void (**)(void *), 4)(child50);
     }
-    temp_r0_2 = M2C_FIELD(arg0, void ***, 0x44);
-    if (temp_r0_2 != NULL) {
-        M2C_FIELD(*temp_r0_2, void (**)(void *), 4)(temp_r0_2);
+    child44 = M2C_FIELD(obj, void ***, 0x44);
+    if (child44 != NULL) {
+        M2C_FIELD(*child44, void (**)(void *), 4)(child44);
     }
-    temp_r0_3 = M2C_FIELD(arg0, void ***, 0x54);
-    if (temp_r0_3 != NULL) {
-        M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
+    child54 = M2C_FIELD(obj, void ***, 0x54);
+    if (child54 != NULL) {
+        M2C_FIELD(*child54, void (**)(void *), 4)(child54);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
-        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x4C));
+    if (M2C_FIELD(obj, s32 *, 0x4C) != 0) {
+        DeleteSpriteObject(M2C_FIELD(obj, s32 *, 0x4C));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
-        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x58));
+    if (M2C_FIELD(obj, s32 *, 0x58) != 0) {
+        DeleteSpriteObject(M2C_FIELD(obj, s32 *, 0x58));
     }
-    func_ov003_021f140c(4);
-    if (((u32)(M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
-        var_r0 = 1;
+    SetOv003SceneState(4);
+    if (M2C_FIELD(obj, ObjFlags3A *, 0x3A).b.lo == 1) {
+        usesWallpaper = 1;
     } else {
-        var_r0 = 0;
+        usesWallpaper = 0;
     }
-    if (var_r0 & 0xFF) {
-        func_020af1f8();
+    if (usesWallpaper & 0xFF) {
+        DeleteMainWallpaperSprites();
     }
-    return arg0;
+    return obj;
 }
 
 M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
@@ -453,77 +459,81 @@ M2C_UNK **func_ov003_02205e94(M2C_UNK **arg0) {
 }
 
 #pragma opt_common_subs off
-void *func_ov003_02205f28(void *arg0) {
+/* Deleting destructor of an ov003 scene object (vtable slot 1): restores both
+ * of its vtables, frees its cursor structs (+0x3C/+0x48), its sprite-handle
+ * blocks (+0x40: 2 + 8 + 8 sprites, +0x44/+0x50/+0x54: child objects), deletes
+ * the remaining sprites, marks the scene finished and frees the object. */
+void *DestroyOv003SceneObject(void *obj) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020af1f8();
+    M2C_UNK DeleteMainWallpaperSprites();
     M2C_UNK MemFree();
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK SetOv003SceneState(M2C_UNK);
     extern M2C_UNK data_ov003_022108b4;
     extern M2C_UNK data_ov003_022108e0;
-    void *temp_r5;
-    void **temp_r0;
-    void **temp_r0_2;
-    void **temp_r0_3;
-    u8 var_r6;
-    s32 var_r0;
+    void *spriteBlock;
+    void **child50;
+    void **child44;
+    void **child54;
+    u8 i;
+    s32 usesWallpaper;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0x0) = &data_ov003_022108b4;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_022108e0;
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        MemFree(M2C_FIELD(arg0, s32 *, 0x3C));
+    M2C_FIELD(obj, M2C_UNK **, 0x0) = &data_ov003_022108b4;
+    M2C_FIELD(obj, M2C_UNK **, 0x34) = &data_ov003_022108e0;
+    if (M2C_FIELD(obj, s32 *, 0x3C) != 0) {
+        MemFree(M2C_FIELD(obj, s32 *, 0x3C));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x48) != 0) {
-        MemFree(M2C_FIELD(arg0, s32 *, 0x48));
+    if (M2C_FIELD(obj, s32 *, 0x48) != 0) {
+        MemFree(M2C_FIELD(obj, s32 *, 0x48));
     }
-    temp_r5 = M2C_FIELD(arg0, void **, 0x40);
-    if (temp_r5 != NULL) {
-        if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
-            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 0));
+    spriteBlock = M2C_FIELD(obj, void **, 0x40);
+    if (spriteBlock != NULL) {
+        if (M2C_FIELD(spriteBlock, s32 *, 0) != 0) {
+            DeleteSpriteObject(M2C_FIELD(spriteBlock, s32 *, 0));
         }
-        if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
-            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 4));
+        if (M2C_FIELD(spriteBlock, s32 *, 4) != 0) {
+            DeleteSpriteObject(M2C_FIELD(spriteBlock, s32 *, 4));
         }
-        var_r6 = 0;
+        i = 0;
         do {
-            if (M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8) != 0) {
-                DeleteSpriteObject(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8));
+            if (M2C_FIELD(spriteBlock + (i * 4), s32 *, 8) != 0) {
+                DeleteSpriteObject(M2C_FIELD(spriteBlock + (i * 4), s32 *, 8));
             }
-            if (M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 0x28) != 0) {
-                DeleteSpriteObject(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 0x28));
+            if (M2C_FIELD(spriteBlock + (i * 4), s32 *, 0x28) != 0) {
+                DeleteSpriteObject(M2C_FIELD(spriteBlock + (i * 4), s32 *, 0x28));
             }
-            ++var_r6;
-        } while (var_r6 < 8U);
-        MemFree(temp_r5);
+            ++i;
+        } while (i < 8U);
+        MemFree(spriteBlock);
     }
-    temp_r0 = M2C_FIELD(arg0, void ***, 0x50);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    child50 = M2C_FIELD(obj, void ***, 0x50);
+    if (child50 != NULL) {
+        M2C_FIELD(*child50, void (**)(void *), 4)(child50);
     }
-    temp_r0_2 = M2C_FIELD(arg0, void ***, 0x44);
-    if (temp_r0_2 != NULL) {
-        M2C_FIELD(*temp_r0_2, void (**)(void *), 4)(temp_r0_2);
+    child44 = M2C_FIELD(obj, void ***, 0x44);
+    if (child44 != NULL) {
+        M2C_FIELD(*child44, void (**)(void *), 4)(child44);
     }
-    temp_r0_3 = M2C_FIELD(arg0, void ***, 0x54);
-    if (temp_r0_3 != NULL) {
-        M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
+    child54 = M2C_FIELD(obj, void ***, 0x54);
+    if (child54 != NULL) {
+        M2C_FIELD(*child54, void (**)(void *), 4)(child54);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
-        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x4C));
+    if (M2C_FIELD(obj, s32 *, 0x4C) != 0) {
+        DeleteSpriteObject(M2C_FIELD(obj, s32 *, 0x4C));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
-        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x58));
+    if (M2C_FIELD(obj, s32 *, 0x58) != 0) {
+        DeleteSpriteObject(M2C_FIELD(obj, s32 *, 0x58));
     }
-    func_ov003_021f140c(4);
-    if (((u32)(M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
-        var_r0 = 1;
+    SetOv003SceneState(4);
+    if (M2C_FIELD(obj, ObjFlags3A *, 0x3A).b.lo == 1) {
+        usesWallpaper = 1;
     } else {
-        var_r0 = 0;
+        usesWallpaper = 0;
     }
-    if (var_r0 & 0xFF) {
-        func_020af1f8();
+    if (usesWallpaper & 0xFF) {
+        DeleteMainWallpaperSprites();
     }
-    MemFree(arg0);
-    return arg0;
+    MemFree(obj);
+    return obj;
 }
 #pragma opt_common_subs reset
 M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {

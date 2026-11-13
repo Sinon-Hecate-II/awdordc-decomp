@@ -5,7 +5,7 @@ typedef struct { u8 bytes[4]; } BCDCBytes;
 
 s32 func_0204b9b8(void *arg0) {
  M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
- s32 func_02064bcc(s32);
+ s32 GetFilePosition(s32);
  s32 func_02064ed0(s32,s32,s32);
  void func_02064ffc(s32);
  extern M2C_UNK data_020fd224, sAssertZero, sGhttpPostFile;
@@ -15,7 +15,7 @@ s32 func_0204b9b8(void *arg0) {
  if(state == 1) {
  if (!M2C_FIELD(arg0,s32 *,8)) return 0;
  if (func_02064ed0(M2C_FIELD(arg0,s32 *,8),0,2)) return 0;
- M2C_FIELD(arg0,s32 *,12)=func_02064bcc(M2C_FIELD(arg0,s32 *,8));
+ M2C_FIELD(arg0,s32 *,12)=GetFilePosition(M2C_FIELD(arg0,s32 *,8));
  if (M2C_FIELD(arg0,s32 *,12)==-1) return 0;
  func_02064ffc(M2C_FIELD(arg0,s32 *,8));
  } else if(state != 2) {
@@ -124,10 +124,10 @@ void func_0204bc64(void *arg0) {
 
 s32 ghiPostStringStateDoPosting(void *p,void *ctx) {
 s32 ghiSocketSend(); s8 *StringFindChar(s32,s32);
-extern s32 data_020fd4a8,sGhttpPostFile,data_020fd294,data_020fd4b8,data_020fd4e4;
+extern s32 sGhiPostStatePosNonNegative,sGhttpPostFile,data_020fd294,data_020fd4b8,data_020fd4e4;
 extern s8 data_020fd4f4[],data_020fd340[]; extern BCDCBytes data_020ea97c;
 BCDCBytes buf; register BCDCBytes *out; s32 i,ch; s8 *str; s32 hi,n,r;
-if(M2C_FIELD(p,s32 *,4)<0)AssertFailed(&data_020fd4a8,&sGhttpPostFile,&data_020fd294,0x2e7);
+if(M2C_FIELD(p,s32 *,4)<0)AssertFailed(&sGhiPostStatePosNonNegative,&sGhttpPostFile,&data_020fd294,0x2e7);
 if(M2C_FIELD(M2C_FIELD(p,void **,0),s32 *,12)==0)return 1;
 if(M2C_FIELD(p,s32 *,4)>=M2C_FIELD(M2C_FIELD(p,void **,0),s32 *,12))AssertFailed(&data_020fd4b8,&sGhttpPostFile,&data_020fd294,0x2ee);
 if(M2C_FIELD(M2C_FIELD(ctx,void **,0x13c),s32 *,12)==0 && M2C_FIELD(M2C_FIELD(p,void **,0),s32 *,16)!=0){
@@ -148,24 +148,27 @@ M2C_FIELD(p,s32 *,4)+=r;
 return r==n?1:2;
 }
 
+/* Upload a file-from-disk POST part: check the part read position, then read
+   the file in 4 KiB chunks and send each chunk until the whole part is sent.
+   Returns 0 on failure, 1 when the part is complete, 2 when more is pending. */
 s32 ghiPostFileDiskStateDoPosting(void *state,void *context){
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-s32 func_02064bcc(s32);
-s32 func_02064230(void *,s32,s32,s32);
+s32 GetFilePosition(s32);
+s32 ReadFileData(void *,s32,s32,s32);
 s32 ghiSendData(void *,void *,s32);
-extern M2C_UNK data_020fd4a8,sGhttpPostFile,data_020fd2b0,data_020fd508,data_020fd530;
+extern M2C_UNK sGhiPostStatePosNonNegative,sGhttpPostFile,sGhiPostDiskStateDoPostingName,sGhiPostStatePosBelowLength,sGhiPostStatePosAtFilePosition;
 u8 buf[4096];s32 n,result;
-if(M2C_FIELD(state,s32 *,4)<0)AssertFailed(&data_020fd4a8,&sGhttpPostFile,&data_020fd2b0,0x336);
-if(M2C_FIELD(state,s32 *,4)>=M2C_FIELD(state,s32 *,12))AssertFailed(&data_020fd508,&sGhttpPostFile,&data_020fd2b0,0x337);
-if(M2C_FIELD(state,s32 *,4)!=func_02064bcc(M2C_FIELD(state,s32 *,8)))AssertFailed(&data_020fd530,&sGhttpPostFile,&data_020fd2b0,0x338);
+if(((GHIPostState *)state)->pos<0)AssertFailed(&sGhiPostStatePosNonNegative,&sGhttpPostFile,&sGhiPostDiskStateDoPostingName,0x336);
+if(((GHIPostState *)state)->pos>=((GHIPostState *)state)->length)AssertFailed(&sGhiPostStatePosBelowLength,&sGhttpPostFile,&sGhiPostDiskStateDoPostingName,0x337);
+if(((GHIPostState *)state)->pos!=GetFilePosition((s32)((GHIPostState *)state)->file))AssertFailed(&sGhiPostStatePosAtFilePosition,&sGhttpPostFile,&sGhiPostDiskStateDoPostingName,0x338);
 do{
-n=func_02064230(buf,1,4096,M2C_FIELD(state,s32 *,8));
-if(n<=0){M2C_FIELD(context,s32 *,0xfc)=1;M2C_FIELD(context,s32 *,0x38)=14;return 0;}
-M2C_FIELD(state,s32 *,4)+=n;
-if(M2C_FIELD(state,s32 *,4)>M2C_FIELD(state,s32 *,12)){M2C_FIELD(context,s32 *,0xfc)=1;M2C_FIELD(context,s32 *,0x38)=14;return 0;}
+n=ReadFileData(buf,1,4096,(s32)((GHIPostState *)state)->file);
+if(n<=0){((GHIConnection *)context)->completed=1;((GHIConnection *)context)->result=14;return 0;}
+((GHIPostState *)state)->pos+=n;
+if(((GHIPostState *)state)->pos>((GHIPostState *)state)->length){((GHIConnection *)context)->completed=1;((GHIConnection *)context)->result=14;return 0;}
 result=ghiSendData(context,buf,n);
 if(result==0)return 0;
-if(M2C_FIELD(state,s32 *,4)==M2C_FIELD(state,s32 *,12))return 1;
+if(((GHIPostState *)state)->pos==((GHIPostState *)state)->length)return 1;
 }while(result==1);
 return 2;
 }
@@ -176,7 +179,7 @@ s32 ghiPostFileMemoryStateDoPosting(void *state, M2C_UNK context) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020fd2f0;
     extern M2C_UNK sGhttpPostFile;
-    extern M2C_UNK data_020fd4a8;
+    extern M2C_UNK sGhiPostStatePosNonNegative;
     extern M2C_UNK data_020fd568;
     s32 written;
     s32 total;
@@ -186,7 +189,7 @@ s32 ghiPostFileMemoryStateDoPosting(void *state, M2C_UNK context) {
     void *info;
 
     if ((s32) M2C_FIELD(state, s32 *, 4) < 0) {
-        AssertFailed(&data_020fd4a8, &sGhttpPostFile, &data_020fd2f0, 0x36E);
+        AssertFailed(&sGhiPostStatePosNonNegative, &sGhttpPostFile, &data_020fd2f0, 0x36E);
     }
     total = M2C_FIELD(M2C_FIELD(state, void **, 0), s32 *, 0xC);
     if (total == 0) {

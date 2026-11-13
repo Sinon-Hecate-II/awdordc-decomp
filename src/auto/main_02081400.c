@@ -40,13 +40,13 @@ void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 u8 OpenNarcArchive(M2C_UNK arg0) {
-    s32 func_0202a7f8(M2C_UNK *, M2C_UNK *, s32);
+    s32 InitNarcArchive(M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_02101e78;
     extern s32 data_0214c0e0;
     extern M2C_UNK data_0214c0e4;
     u8 var_r0;
     data_0214c0e0 = func_02080e30(arg0, 0);
-    if (func_0202a7f8(&data_0214c0e4, &data_02101e78, data_0214c0e0) != 0) {
+    if (InitNarcArchive(&data_0214c0e4, &data_02101e78, data_0214c0e0) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -570,13 +570,13 @@ void func_02082164(u8 *arg0) {
     u16 *p;
     u16 *q;
     s32 i;
-    void func_0208259c(void);
+    void Reset3DSpriteLayers(void);
     void func_02082700(void);
     void Configure3DSpriteLayer(s32, void *);
 
     r4 = arg0;
 
-    func_0208259c();
+    Reset3DSpriteLayers();
     func_02082700();
 
     p = *(u16 **)gCur3DSpriteEngine;

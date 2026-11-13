@@ -461,7 +461,7 @@ void func_02007974(s8 arg0) {
     *(s8 *)0x04000247 = arg0;
 }
 
-void func_02007984(s32 a,s32 b,u32 c,u32 n) {
+void DmaFill(s32 a,s32 b,u32 c,u32 n) {
  u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_01ff8554(s32,u32,s32,u32);
  volatile u32 *p; u32 state;
  if (!n) return;
@@ -630,7 +630,7 @@ void func_02007da4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_02007958();
 }
 
-void func_02007e54(u32 value, s32 dest, s32 size) {
+void CpuFill(u32 value, s32 dest, s32 size) {
  s32 end = dest + size;
  while (dest < end) { *(u32 *)dest = value; dest += 4; }
 }

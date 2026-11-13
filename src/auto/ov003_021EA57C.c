@@ -31,7 +31,7 @@ void func_ov003_021ea57c(void *arg0) {
     s32 func_ov003_022004d0();
     s32 func_ov003_022004f0(M2C_UNK);
     s32 func_ov003_022008b8(u8);
-    extern M2C_UNK data_027e00b4;
+    extern M2C_UNK gSpriteDesc64x32;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
     extern u16 **gCur3DSpriteEngine;
@@ -253,7 +253,7 @@ after_56:
         }
         if (var_r0_6 & 0xFF) {
             temp_r3_3 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x4C)) - 0x5E;
-            AddSprite(0xC0, (u8) (s16) (((temp_r3_3 << 5) / 98) + 0xA0), (u16) ((0x3FF & (0x660 >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0x8000), &data_027e00b4, 0xB);
+            AddSprite(0xC0, (u8) (s16) (((temp_r3_3 << 5) / 98) + 0xA0), (u16) ((0x3FF & (0x660 >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0x8000), &gSpriteDesc64x32, 0xB);
         }
     }
     if ((func_ov003_021e6e40() != 0) && (IsLinkSessionActive() != 0)) {

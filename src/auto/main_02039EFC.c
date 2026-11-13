@@ -6,7 +6,7 @@ typedef struct { u32 words[8]; } Record39;
 
 void NasConnectionResultCallback(M2C_UNK a,Record39 *b){
 extern M2C_UNK gNasLogin,data_020fc8a8,NasLoginInfoCallback;
-s32 func_0203af50(s32,s32,void *);s32 ReportNasError(void);s32 func_02038f88(void);s32 StartQr2Reporting(s32);
+s32 SetGpiStatus(s32,s32,void *);s32 ReportNasError(void);s32 func_02038f88(void);s32 StartQr2Reporting(s32);
 void func_02039db4(s32,s32);M2C_UNK gpiGetInfo(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
 void *p;
 M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,48)=0;
@@ -16,7 +16,7 @@ M2C_FIELD(p,Record39 *,0x260)=*b;
 if(M2C_FIELD(p,s32 *,4)==2){
 if(M2C_FIELD(M2C_FIELD(p,void **,28),u32 *,28)==b->words[1]){
 M2C_FIELD(p,s32 *,4)=5;
-func_0203af50(1,(s32)&data_020fc8a8,0);
+SetGpiStatus(1,(s32)&data_020fc8a8,0);
 if(ReportNasError())return;
 p=M2C_FIELD(&gNasLogin,void **,4);
 M2C_FIELD(p,void (**)(s32,u32,s32),20)(0,b->words[1],M2C_FIELD(p,s32 *,24));
@@ -236,13 +236,13 @@ return n;
 s32 func_0203a850(s32 a,s32 b) {
 extern M2C_UNK gMatchSessionMgr;
 s32 func_02037214(s32,s32,void *,s32);
-s32 func_0203af50(s32,s32,void *);
+s32 SetGpiStatus(s32,s32,void *);
 u8 buf[256];s32 n;
 if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!func_0203a660())return 0;
 n=func_02037214(a,b,buf,255);
 if(n==-1)return 0;
 buf[n]=0;
-return func_0203af50(-1,0,buf)==0;
+return SetGpiStatus(-1,0,buf)==0;
 }
 
 s32 func_0203a8dc(void) {
@@ -313,7 +313,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void**,8),s32*,88)=0;
 void func_0203aabc(void) {
 extern M2C_UNK gMatchSessionMgr;
 s32 HasNetError(void *); s32 func_0203b09c(void); s32 func_0203bcf8(s32); s32 func_02058c84(void);
-void func_02058ca4(void); void func_02058c14(void); void SyncSessionPlayerConnections(s32,s32); void func_0203b3c4(void);
+void gpiInfoReadSocket(void); void gpiInfoCloseSocket(void); void SyncSessionPlayerConnections(s32,s32); void func_0203b3c4(void);
 void *ctx,*child; u32 status;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(!ctx)return;
@@ -327,10 +327,10 @@ return;
 if(func_0203bcf8(M2C_FIELD(ctx,s32 *,0x18)) || func_02058c84()){
 M2C_FIELD(&gMatchSessionMgr,s32 *,0)=1;
 M2C_FIELD(&gMatchSessionMgr,s32 *,12)=0;
-func_02058ca4();
+gpiInfoReadSocket();
 M2C_FIELD(&gMatchSessionMgr,s32 *,0)=0;
 if(M2C_FIELD(&gMatchSessionMgr,s32 *,12)==1){
-M2C_FIELD(&gMatchSessionMgr,s32 *,12)=0;func_02058c14();
+M2C_FIELD(&gMatchSessionMgr,s32 *,12)=0;gpiInfoCloseSocket();
 }}
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 child=M2C_FIELD(ctx,void **,4);
