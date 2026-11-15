@@ -1,8 +1,163 @@
 /* 19 functions from 0x0204D5C0 to 0x0204E408 (main), found by ds-decomp. */
 #include "common.h"
 void gpiSetErrorString(void **,void *);
+static inline s32 char_space(s32 c) { extern u16 gCharClassTable[]; if(c<0 || c>=128) return 0; return gCharClassTable[c] & 256; }
 
-void func_0204d5c0(void *arg0) { }
+void func_0204d5c0(void *arg0) {
+    s32 gpiMalloc(s32);
+    void gpiFree(s32);
+    s32 ghiAppendDataToBuffer(void *, void *, s32);
+    s8 *StringFind(s32, void *);
+    void StringFormat(void *, void *, ...);
+    s32 StringLength(s32);
+    void MemMove(void *, void *, s32);
+    void ResetBuffer(void *);
+    void InvokeRequestCallback(void *, s32, s32);
+    s32 gpiStringDup(s8 *);
+    s32 StringCompareN(void *, void *, s32);
+    s32 ParseInt(s8 *);
+    s32 ghiGetLastSocketError(s32);
+    extern M2C_UNK data_020fd9bc, data_020fd9c4, data_020fd9c8, data_020fd9e4, data_020fd9f4, data_020ea988, data_020fd9d4;
+    s32 size;
+    s32 rcode;
+    s8 *data;
+    s32 pos;
+    s8 *headerEnd;
+    s8 *body;
+    s32 bodyLen;
+    s32 headerLen;
+    s32 statusClass;
+    s8 *contentLengthHeader;
+    s8 *value;
+    s8 *end;
+    s32 n;
+    s32 length;
+    s32 buffer;
+
+    buffer = gpiMalloc(0x1000);
+    if (buffer == 0) {
+        M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+        M2C_FIELD(arg0, s32 *, 0x38) = 1;
+        return;
+    }
+    size = 0x1000;
+    rcode = ghiReceiveData(arg0, (void *)buffer, &size);
+    if (rcode == 3) goto cleanup;
+    if (rcode == 1 && M2C_FIELD(arg0, s32 *, 0x84) == M2C_FIELD(arg0, s32 *, 0x80)) goto cleanup;
+    if (rcode == 0) {
+        if (!ghiAppendDataToBuffer((u8 *)arg0 + 0x74, (void *)buffer, size)) goto cleanup;
+    }
+    pos = M2C_FIELD(arg0, s32 *, 0x84);
+    data = M2C_FIELD(arg0, s8 **, 0x78);
+    M2C_FIELD(arg0, s32 *, 0xf4) = pos;
+    headerEnd = StringFind((s32)(data + pos), &data_020fd9bc);
+    if (!headerEnd) {
+        headerEnd = StringFind((s32)(data + pos), &data_020fd9c4);
+    }
+    if (headerEnd) {
+        headerEnd[2] = 0;
+        bodyLen = M2C_FIELD(arg0, s32 *, 0x80) - (s32)(headerEnd + 4 - M2C_FIELD(arg0, s8 **, 0x78));
+        M2C_FIELD(arg0, s32 *, 0x80) = (s32)(headerEnd + 2 - M2C_FIELD(arg0, s8 **, 0x78));
+        headerLen = (s32)(headerEnd + 2 - M2C_FIELD(arg0, s8 **, 0x78));
+        M2C_FIELD(arg0, s32 *, 0xf8) = headerLen;
+        M2C_FIELD(arg0, s32 *, 0x84) = headerLen;
+        body = headerEnd + 4;
+        statusClass = M2C_FIELD(arg0, s32 *, 0xec) / 100;
+        if (statusClass == 1) {
+            if (bodyLen != 0) {
+                MemMove(M2C_FIELD(arg0, s8 **, 0x78), body, bodyLen + 1);
+                M2C_FIELD(arg0, s32 *, 0x80) = bodyLen;
+                M2C_FIELD(arg0, s32 *, 0x84) = 0;
+            } else {
+                ResetBuffer((u8 *)arg0 + 0x74);
+            }
+            M2C_FIELD(arg0, s32 *, 0x10) = 6;
+            InvokeRequestCallback(arg0, 0, 0);
+            goto cleanup;
+        }
+        if (statusClass == 3) {
+            if (M2C_FIELD(arg0, s32 *, 0x10c) > 10) {
+                M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+                M2C_FIELD(arg0, s32 *, 0x38) = 0xb;
+                goto cleanup;
+            }
+            value = StringFind((s32)(data + pos), &data_020fd9c8);
+            if (value) {
+                value += 9;
+                while (char_space(*value)) value++;
+                end = value;
+                while (*end && !char_space(*end)) end++;
+                *end = 0;
+                if (*value == '/') {
+                    n = StringLength((s32)M2C_FIELD(arg0, s8 **, 0x18));
+                    length = StringLength((s32)value);
+                    M2C_FIELD(arg0, s32 *, 0x108) = gpiMalloc(n + 0xe + length);
+                    if (!M2C_FIELD(arg0, s32 *, 0x108)) {
+                        M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+                        M2C_FIELD(arg0, s32 *, 0x38) = 1;
+                    }
+                    StringFormat((void *)M2C_FIELD(arg0, s32 *, 0x108), &data_020fd9d4,
+                        M2C_FIELD(arg0, s32 *, 0x18), M2C_FIELD(arg0, u16 *, 0x20), value);
+                } else {
+                    M2C_FIELD(arg0, s32 *, 0x108) = gpiStringDup(value);
+                    if (!M2C_FIELD(arg0, s32 *, 0x108)) {
+                        M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+                        M2C_FIELD(arg0, s32 *, 0x38) = 1;
+                    }
+                }
+                goto cleanup;
+            }
+        }
+        contentLengthHeader = StringFind((s32)(data + pos), &data_020fd9e4);
+        if (contentLengthHeader) {
+            char maxLength[11] = "2147483647";
+            value = contentLengthHeader + 0x10;
+            end = value;
+            n = StringLength((s32)maxLength);
+            while (end && *end && *end != '\n' && *end != '\r' && *end != ' ') end++;
+            length = (s32)(end - value);
+            if (length > n) {
+                M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+                M2C_FIELD(arg0, s32 *, 0x38) = 0x10;
+                goto cleanup;
+            }
+            if (n == length && StringCompareN(value, maxLength, length) >= 0) {
+                M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+                M2C_FIELD(arg0, s32 *, 0x38) = 0x10;
+                goto cleanup;
+            }
+            M2C_FIELD(arg0, s32 *, 0x104) = ParseInt(value);
+        }
+        M2C_FIELD(arg0, s32 *, 0x110) = StringFind((s32)(data + pos), &data_020fd9f4) != 0;
+        if (M2C_FIELD(arg0, s32 *, 0x110)) {
+            M2C_FIELD(arg0, u8 *, 0x114) = 0;
+            M2C_FIELD(arg0, s32 *, 0x120) = 0;
+            M2C_FIELD(arg0, s32 *, 0x124) = 0;
+            M2C_FIELD(arg0, s32 *, 0x128) = 0;
+        }
+        n = M2C_FIELD(arg0, s32 *, 0xc) - 3;
+        if ((u32)n <= 1) {
+            M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+            goto cleanup;
+        }
+        M2C_FIELD(arg0, s32 *, 0x10) = 8;
+        if (contentLengthHeader) {
+            if (M2C_FIELD(arg0, s32 *, 0x104) == 0) {
+                M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+                goto cleanup;
+            }
+        }
+        if (bodyLen > 0) ghiProcessIncomingFileData(arg0, body, bodyLen);
+    } else {
+        if (rcode == 2) {
+            M2C_FIELD(arg0, s32 *, 0xfc) = 1;
+            M2C_FIELD(arg0, s32 *, 0x38) = 7;
+            M2C_FIELD(arg0, s32 *, 0x4c) = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
+        }
+    }
+cleanup:
+    gpiFree(buffer);
+}
 
 void func_0204da30(void *p){
 s32 gpiMalloc(s32);void gpiFree(s32);s32 GetTickCountMs();s32 ghiReceiveData(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);

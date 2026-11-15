@@ -89,11 +89,11 @@ void func_020b939c(void *arg0) {
     DeleteSpriteObject(arg0);
 }
 
-void func_020b93f4(void *a) {s32 func_020d2d38(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_020b916c(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void func_01ffa6fc(void *);extern void **gCurrentMap;
+void func_020b93f4(void *a) {s32 GetUnitBuildCostTimes10(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_020b916c(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void func_01ffa6fc(void *);extern void **gCurrentMap;
 s32 n,limit,total,base,delta,v,index;void *g;
 v=M2C_FIELD(a,s32 *,92);M2C_FIELD(a,s16 *,108)++;g=*gCurrentMap;n=M2C_FIELD(a,s16 *,108);limit=M2C_FIELD(a,s16 *,110);
 index=M2C_FIELD(g,u16 *,0x52a4);total=M2C_FIELD((u8 *)g+index*140,s32 *,0x67a4);
-base=func_020d2d38(index,v);delta=total-base;
+base=GetUnitBuildCostTimes10(index,v);delta=total-base;
 func_020b916c(0,1,EaseInterpolate(0,total,delta,n,limit),-base,delta);
 if((n&3)==1)PlaySoundEffect(0x10023);if(n<limit)return;func_01ffa6fc(a);
 }
@@ -111,37 +111,41 @@ void func_020b953c(s32 arg0, s32 arg1) {
     M2C_FIELD(CreateSpriteObject(&data_02129178), s32 *, 0x5C) = arg0;
 }
 
-void func_020b9558(u8 a) {s32 func_020d2d38(s32,s32);void func_020b916c(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=func_020d2d38(idx,a);func_020b916c(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
+void func_020b9558(u8 a) {s32 GetUnitBuildCostTimes10(s32,s32);void func_020b916c(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=GetUnitBuildCostTimes10(idx,a);func_020b916c(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
 
-void ProductionMenu_HandleInput(u8 *p) {
+void ProductionMenu_HandleInput(u8 *selection) {
 extern u16 *gKeyState;
 extern s32 gProductionMenuState;
-void FocusSpriteSlotById(s32),func_020b2e14(void *),func_020b2e2c(void);
-u16 *keys=gKeyState;
-s32 n=*p;
-u32 repeat=keys[1];
-s32 max;
-if(repeat&64) {
-if(n==0||n==7) {if(repeat==keys[0]) {n+=6;max=M2C_FIELD(&gProductionMenuState,s32 *,4)-1;if(n>=max)n=max;}}
-else n--;
+void FocusSpriteSlotById(s32),InvokeConfirmCallback(void *),InvokeCancelCallback(void);
+/* D-pad handler for the unit-production menu: moves the selected entry within the
+ * grid of buildable kinds (7 rows, wrapping top/bottom at the ends, left/right onto
+ * the other column), clamps it to the entry count, focuses its sprite slot, then
+ * confirms (A) or cancels (B). */
+u16 *keyState=gKeyState;
+s32 sel=*selection;
+u32 pressed=keyState[KEY_PRESSED];
+s32 count;
+if(pressed&KEY_UP) {
+if(sel==0||sel==7) {if(pressed==keyState[KEY_HELD]) {sel+=6;count=M2C_FIELD(&gProductionMenuState,s32 *,4)-1;if(sel>=count)sel=count;}}
+else sel--;
 }
-if(repeat&128) {
-if(n==6||n==13||n==M2C_FIELD(&gProductionMenuState,s32 *,4)-1) {if(repeat==keys[0]) {n-=6;if(n<0)n=0;}}
-else n++;
+if(pressed&KEY_DOWN) {
+if(sel==6||sel==13||sel==M2C_FIELD(&gProductionMenuState,s32 *,4)-1) {if(pressed==keyState[KEY_HELD]) {sel-=6;if(sel<0)sel=0;}}
+else sel++;
 }
-max=M2C_FIELD(&gProductionMenuState,s32 *,4);
-if(max>7) {
-if((repeat&32)&&n>=7)n-=7;
-if((repeat&16)&&n<7)n+=7;
-max--;if(n>=max)n=max;
+count=M2C_FIELD(&gProductionMenuState,s32 *,4);
+if(count>7) {
+if((pressed&KEY_LEFT)&&sel>=7)sel-=7;
+if((pressed&KEY_RIGHT)&&sel<7)sel+=7;
+count--;if(sel>=count)sel=count;
 }
-FocusSpriteSlotById(n);
-if(gKeyState[0]&1) {func_020b2e14(p);return;}
-if(gKeyState[0]&2)func_020b2e2c();
+FocusSpriteSlotById(sel);
+if(gKeyState[KEY_HELD]&KEY_A) {InvokeConfirmCallback(selection);return;}
+if(gKeyState[KEY_HELD]&KEY_B)InvokeCancelCallback();
 }
 
 void func_020b96e0(u8 *a) {
-    s32 func_020d2dcc(s32);
+    s32 FindFreeUnitRecord(s32);
     M2C_UNK PlaySoundEffect(s32);
     void func_02096b6c(u32);
     void *FindObjectByClass(M2C_UNK *);
@@ -157,7 +161,7 @@ void func_020b96e0(u8 *a) {
         PlaySoundEffect(0x1001d);
         return;
     }
-    if (!func_020d2dcc(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
+    if (!FindFreeUnitRecord(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
         PlaySoundEffect(0x1001d);
         func_02096b6c(0xc0000332);
     } else {
@@ -192,7 +196,7 @@ func_020b9874((s8)gProductionMenuState);func_01ffa3dc(&data_021291b0,7);
 
 void func_020b9874(s8 mask) {
     s32 func_020b9e20(s32, s32);
-    s32 func_020d2d38(s32, s32);
+    s32 GetUnitBuildCostTimes10(s32, s32);
     extern s8 data_ov000_021aab94[];
     extern u8 gUnitKindStats[];
     extern u8 data_0215d858[];
@@ -213,7 +217,7 @@ void func_020b9874(s8 mask) {
                 u16 idx = *(u16 *)((u8 *)g + 0x52a4);
                 if (func_020b9e20((s32)&((u8 *)g)[0x52a4], kind) != 0) {
                     void *g2 = *gp;
-                    s32 base = func_020d2d38(idx, kind);
+                    s32 base = GetUnitBuildCostTimes10(idx, kind);
                     s32 total = *(s32 *)((u8 *)g2 + idx * 0x8c + 0x67a4);
                     u8 flag = (total < base) ? 1 : 0;
                     buf[count * 2 + 1] = flag;
@@ -240,7 +244,7 @@ void func_020b99ac(s32 arg0,s32 arg1,s32 arg2) {
 M2C_UNK func_0209bfdc(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 void func_0209c048(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 M2C_UNK func_0207a61c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
-M2C_UNK func_020d2d38(M2C_UNK,M2C_UNK);
+M2C_UNK GetUnitBuildCostTimes10(M2C_UNK,M2C_UNK);
 extern u8 data_0215d858[],gUnitKindStats[];
 extern void *gCur3DSpriteEngine; extern void **gCurrentMap;
 s32 left; s32 right; s32 x;
@@ -255,7 +259,7 @@ kind=ptr[i*2]; if(!kind)break;
 if(*(i*2+ptr+1)){mode=3;color=256;}else{mode=0;color=M2C_FIELD(*gCurrentMap,u16*,0x52a8);}
 row=y+i*2;
 func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(gUnitKindStats,s32*,kind*112),0,mode);
-value=func_020d2d38(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
+value=GetUnitBuildCostTimes10(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
 func_0209c048(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
 func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);
 i++; } while(i<7);

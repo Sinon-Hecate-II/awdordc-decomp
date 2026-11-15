@@ -336,7 +336,7 @@ p->a=63;p->b=63;p->f=1;p->c=0;p->d=0;
 p->flag=0;p->g=0;p->h=0;p->i=0;
 }
 #pragma scheduling reset
-void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *func_020d2dcc(s32);void func_020a64f8(void *,u8);void func_020d3154(s32,s32);void *p=func_020d2dcc(d);if(!p)return 0;func_020a64f8(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
+void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *FindFreeUnitRecord(s32);void func_020a64f8(void *,u8);void func_020d3154(s32,s32);void *p=FindFreeUnitRecord(d);if(!p)return 0;func_020a64f8(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
 
 void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *CreateMapUnit(s32,s32,s32,s32);u8 *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);u8 v;if(!p)return 0;v=M2C_FIELD((u8 *)*gCurrentMap+d*0x8c,u8 *,0x67d6);p[0]=(p[0]&~0xc0)|((u32)(v<<30)>>24);M2C_FIELD(p,u16 *,4)|=1;if(c==22)M2C_FIELD(p,u16 *,4)|=32;return p;}
 

@@ -21,9 +21,14 @@ void func_020af79c(void) {
 }
 
 void func_020af7ac(void) {
-extern u8 data_0215c430[],data_0215c42c[];
-s32 i=0;u8 zero=i;volatile u8 *p=data_0215c430,*q=data_0215c42c;
-do { *p++=zero; *q++=zero; i++; } while(i<2);
+    extern u8 data_0215c430[], data_0215c42c[];
+    s32 i = 0;
+    u8 zero = i;
+    volatile u8 *p = data_0215c430, *q = data_0215c42c;
+    do {
+        *p++ = zero;
+        *q++ = (i++, zero);
+    } while (i < 2);
 }
 void func_020af7dc(void) {
     extern u8 data_0215c42c[];
@@ -137,7 +142,11 @@ func_02090034(arg0,arg1);
 
 void func_020afa00(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c430[];u32 n=*((u8 *)&gEffectDefaultVariant+a*24);void *p=*(void **)((u8 *)&gEffectTable+a*24);if(M2C_FIELD((u8 *)p+n,u8 *,0x3e)==1){if((data_0215c430)[a])return;(data_0215c430)[a]=4;}func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(p,void **,0x34)+n*4,s32 *,8));}
 
-void func_020afa64(s32 a){extern M2C_UNK gEffectTable;s32 b;if(a==0)b=1;else b=0;func_020af828(a,M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable+b*24),void **,0x34),s32 *,0x10));}
+void func_020afa64(s32 a) {
+    extern M2C_UNK gEffectTable;
+    s32 b = (a == 0) ? 1 : 0;
+    func_020af828(a, M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + b * 24), void **, 0x34), s32 *, 0x10));
+}
 
 void func_020afa98(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c42c[];s32 n;if(M2C_FIELD((u8 *)*(void **)((u8 *)&gEffectTable+(a==0?1:0)*24)+*((u8 *)&gEffectDefaultVariant+(a==0?1:0)*24),u8 *,0x3e)==1){if((data_0215c42c)[a])return;(data_0215c42c)[a]=4;n=1;}else n=0;func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),void **,0x34)+n*4,s32 *,0x14));}
 

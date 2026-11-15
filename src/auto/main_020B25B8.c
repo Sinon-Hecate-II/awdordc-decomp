@@ -246,12 +246,12 @@ if(SpriteSlotHasFlags(arg0,0x800))flag=0x400;
 func_01ff883c((u16)(M2C_FIELD(arg0,s16 *,0x14)&0x1ff),(u16)((M2C_FIELD(arg0,s16 *,0x16)&0xff)|flag),(u16)((0x3ff&(a>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((b<<28)>>16)),GetSpriteDescForSize(x,y));
 }
 
-void func_020b2e14(void *p) {
+void InvokeConfirmCallback(void *p) {
 void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x2c);
 if(!cb)return;cb(p);
 }
 
-void func_020b2e2c(void) {
+void InvokeCancelCallback(void) {
 s32 func_020b1bb0(void);
 extern void *gSpriteSlotManager;
 void *p; void (*cb)(void *);

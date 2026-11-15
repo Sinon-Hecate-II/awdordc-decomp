@@ -105,7 +105,7 @@ void func_ov009_02225438(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov009_02226490, arg0);
 }
 
-s32 func_ov009_02225450(void) {
+s32 GetLinkLocalPlayerId(void) {
     s32 func_02011934();
     return func_02011934() & 0xFF;
 }
@@ -133,11 +133,11 @@ u16 func_ov009_02225494(void) {
 }
 
 s32 func_ov009_022254a4(void) {
-    s32 func_ov009_02225450();
+    s32 GetLinkLocalPlayerId();
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 1;
     }
-    if (func_ov009_02225450() == 0) {
+    if (GetLinkLocalPlayerId() == 0) {
         return 1;
     }
     return 0;
@@ -147,7 +147,7 @@ s32 func_ov009_022254d8(void) {
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
-    if (func_ov009_02225450() != 0) {
+    if (GetLinkLocalPlayerId() != 0) {
         return 1;
     }
     return 0;
@@ -157,7 +157,7 @@ M2C_UNK func_ov009_0222550c(void *arg0, s32 arg1) {
     M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
     extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, s32 *, 0) = arg1;
-    M2C_FIELD(arg0, s16 *, 4) = 1 << func_ov009_02225450();
+    M2C_FIELD(arg0, s16 *, 4) = 1 << GetLinkLocalPlayerId();
     M2C_FIELD(&gLinkState, void **, 0x48) = arg0;
     if (func_ov009_022254a4() == 0) return;
     func_ov009_02224d9c(2, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
@@ -223,7 +223,7 @@ void *func_ov009_02225654(s32 arg0, M2C_UNK arg1) {
 M2C_UNK func_ov009_022256a4(s32 arg0) {
     s32 func_ov009_02223fbc();
     extern M2C_UNK gLinkState;
-    M2C_FIELD(arg0, u16 *, 2) = 1 << func_ov009_02225450();
+    M2C_FIELD(arg0, u16 *, 2) = 1 << GetLinkLocalPlayerId();
     M2C_FIELD(arg0, u8 *, 0) = func_ov009_02223fbc();
     M2C_FIELD(&gLinkState, s32 *, 0x20) = arg0;
 }
@@ -378,22 +378,22 @@ void func_ov009_0222598c(s32 arg0) {
  u16 mask;
  void *p;
  if (GetLinkPhase()!=4 && GetLinkPhase()!=5) {
- M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
+ M2C_FIELD(arg0, u16 *, 0)=1<<GetLinkLocalPlayerId();
  M2C_FIELD(&gLinkState, void **, 0x28)=NULL;
  return;
  }
  if(func_020c5400(buffer)) {
- M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
+ M2C_FIELD(arg0, u16 *, 0)=1<<GetLinkLocalPlayerId();
  M2C_FIELD(&gLinkState, void **, 0x28)=(void *)arg0;
  mask=0xFFFF;
- mask &= (-1 ^ (1U<<func_ov009_02225450()));
+ mask &= (-1 ^ (1U<<GetLinkLocalPlayerId()));
  if(!mask) return;
  MI_CpuFill8((s32)(buffer+12),0,26);
  p=(void *)func_0208206c();
  MI_CpuCopy8(p,buffer+12,func_02082088()*2);
  func_ov009_02224d9c(13,buffer,40,mask);
  } else {
- M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
+ M2C_FIELD(arg0, u16 *, 0)=1<<GetLinkLocalPlayerId();
  M2C_FIELD(&gLinkState, void **, 0x28)=NULL;
  }
 }

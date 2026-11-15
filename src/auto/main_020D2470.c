@@ -326,7 +326,7 @@ s32 GetUnitBuildCost(arg0, arg1)
     return Divide(t * 0x64, 0x64);
 }
 
-s32 func_020d2d38(void) {
+s32 GetUnitBuildCostTimes10(void) {
     return GetUnitBuildCost() * 0xA;
 }
 
@@ -361,7 +361,7 @@ void func_020d2d90(s32 arg0) {
     func_020d2bc0(arg0, M2C_FIELD(base + arg0 * 0x8C, s32 *, 0x6000 + 0x7AC));
 }
 
-s32 func_020d2dcc(s32 arg0) {
+s32 FindFreeUnitRecord(s32 arg0) {
     extern u16 gPlayerUnitIdBase[];
     extern s32 *gCurrentMap;
     s32 val;

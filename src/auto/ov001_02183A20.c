@@ -370,21 +370,22 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     extern u8 data_ov001_0218fb64[];
     extern s32 gWfcFriendRoster;
-    s8 *r8;
-    s32 r6;
-    s32 r7;
+    u8 *p;
+    u8 *pattern;
+    s32 count;
+    s32 i;
 
-    r8 = (s8 *)gWfcFriendRoster + 0x1300;
-    *arg0 = (void *)r8;
-    r6 = 0;
-    r7 = 0;
-    for (r7 = 0; r7 < 20; r7++) {
-        if (ByteCompareN((M2C_UNK)(r8 + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
-            r6 = r6 + 1;
+    p = (u8 *)gWfcFriendRoster + 0x1300;
+    *arg0 = p;
+    pattern = data_ov001_0218fb64;
+    count = 0;
+    for (i = 0; i < 20; i++) {
+        if (ByteCompareN(p + 0x20, pattern, 6) != 0) {
+            count = count + 1;
         }
-        r8 = r8 + 0x2a;
+        p = p + 0x2a;
     }
-    return r6;
+    return count;
 }
 
 void func_ov001_021841cc(u16 *p) {

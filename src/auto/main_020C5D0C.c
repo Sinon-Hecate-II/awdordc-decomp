@@ -1,5 +1,6 @@
 /* 54 functions from 0x020C5D0C to 0x020C6CF8 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct {
     u8 unk0 : 6;
@@ -277,19 +278,23 @@ s32 func_020c6554(void) {
  return 0;
 }
 
-s32 func_020c6604(void){
+/* Whether the unit under the cursor may deploy a unit: the unit must be a carrier
+   that has not moved and has no second carried unit, must have ammo if its kind
+   uses any, and its player must be able to afford the deployed unit's cost and
+   have a free unit record.  Returns 0 when the action is available, 2 when not. */
+s32 CanCarrierDeployUnit(void){
 extern void **gCurrentMap;
 extern u8 gUnitKindMaxAmmo[];
-void *base; UnkStruct_020C5D0C *p; u16 idx;
-if(func_020a85f0(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->unk0)==0)return 2;
-base=*gCurrentMap;
-p=M2C_FIELD(base,UnkStruct_020C5D0C **,0x52d0);
-if(M2C_FIELD(p,u8 *,13))return 2;
-if(M2C_FIELD(base,s16 *,0x52dc)!=M2C_FIELD(base,s16 *,0x52d8)||M2C_FIELD(base,s16 *,0x52de)!=M2C_FIELD(base,s16 *,0x52da))return 2;
-if(gUnitKindMaxAmmo[p->unk0*0x70] && p->unk6_7==0)return 2;
-idx=M2C_FIELD(base,u16 *,0x52a4);
-if(func_020d2d38(idx,17)>M2C_FIELD(base+idx*0x8c,s32 *,0x67a4))return 2;
-if(func_020d2dcc(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==0)return 2;
+void *map; UnkStruct_020C5D0C *unit; u16 player;
+if(IsUnitKindCarrier(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->unk0)==0)return 2;
+map=*gCurrentMap;
+unit=M2C_FIELD(map,UnkStruct_020C5D0C **,MAP_CURSOR_UNIT);
+if(M2C_FIELD(unit,u8 *,13))return 2;
+if(M2C_FIELD(map,s16 *,MAP_CURSOR_X)!=M2C_FIELD(map,s16 *,MAP_CURSOR_OLD_X)||M2C_FIELD(map,s16 *,MAP_CURSOR_Y)!=M2C_FIELD(map,s16 *,MAP_CURSOR_OLD_Y))return 2;
+if(gUnitKindMaxAmmo[unit->unk0*0x70] && unit->unk6_7==0)return 2;
+player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+if(GetUnitBuildCostTimes10(player,17)>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 2;
+if(FindFreeUnitRecord(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))==0)return 2;
 return 0;
 }
 

@@ -218,14 +218,14 @@ s32 func_02084890(void) {
 }
 
 s32 GetLocalPlayerIdForOverlay(void) {
-    s32 func_ov009_02225450();
+    s32 GetLinkLocalPlayerId();
     s32 func_ov010_02229a08();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02225450();
+        return GetLinkLocalPlayerId();
     case 2:
         return func_ov010_02229a08();
     default:

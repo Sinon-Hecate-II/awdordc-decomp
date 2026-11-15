@@ -17,7 +17,7 @@ s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_0208718c(void);
 void func_020871a8(s32,s32,s32,s32,s32,u16);
 void func_ov002_021e5974(s32 *,s32 *);
-void func_ov002_021e4368(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
+void DrawFlatQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawGradientQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 s32 func_ov002_021e4b68(void);
 void func_ov002_021e4728(s32,s32,s32,s32,s32);
@@ -36,8 +36,8 @@ if(data_ov002_021f3105[offset]){
 if(data_ov002_021f3106[offset]!=2){
 y=168-(s8)p[2];func_0208718c();a=91;b=82;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
-if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e4368(0,y,a,y,0,y+16,b,y+16,9,0);
-else func_ov002_021e4368(256-a,y,256,y,256-b,y+16,256,y+16,9,0);
+if(((u32)(p[3]<<28)>>28)==0)DrawFlatQuad(0,y,a,y,0,y+16,b,y+16,9,0);
+else DrawFlatQuad(256-a,y,256,y,256-b,y+16,256,y+16,9,0);
 y=169-(s8)p[2];func_0208718c();a=84;b=76;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+14,b,y+14,8,color,0);
@@ -51,8 +51,8 @@ else func_ov002_021e47b0(208,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)
 }else{
 y=154-(s8)p[2];func_0208718c();a=97;b=80;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
-if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e4368(0,y,a,y,0,y+30,b,y+30,9,0);
-else func_ov002_021e4368(256-a,y,256,y,256-b,y+30,256,y+30,9,0);
+if(((u32)(p[3]<<28)>>28)==0)DrawFlatQuad(0,y,a,y,0,y+30,b,y+30,9,0);
+else DrawFlatQuad(256-a,y,256,y,256-b,y+30,256,y+30,9,0);
 y=155-(s8)p[2];func_0208718c();a=90;b=74;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+28,b,y+28,8,color,0);

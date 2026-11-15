@@ -148,7 +148,7 @@ extern "C" void func_ov009_022224e0(void) {
 #pragma cplusplus off
 
 #pragma cplusplus on
-extern "C" s32 func_ov009_02222638(s32 arg0) {
+extern "C" s32 IsLinkPacketQueued(s32 arg0) {
 extern M2C_UNK gLinkState;
 Ov009InterruptGuard guard;
 void *node=M2C_FIELD(&gLinkState,void **,0x64);
@@ -401,7 +401,7 @@ SignalLinkError();return 0;
 }
 
 void func_ov009_02222f0c(void *arg0) {
- s8 func_ov009_02225450();
+ s8 GetLinkLocalPlayerId();
  extern M2C_UNK gLinkState;
  u16 state = M2C_FIELD(arg0,u16 *,2);
  if(state != 0) {
@@ -413,7 +413,7 @@ void func_ov009_02222f0c(void *arg0) {
  case 10:
  SetLinkPhase(4);
  M2C_FIELD(&gLinkState,u8 *,0x156) = M2C_FIELD(&gLinkState,u8 *,0x156) | 1;
- M2C_FIELD(&gLinkState,u8 *,0x157) = func_ov009_02225450();
+ M2C_FIELD(&gLinkState,u8 *,0x157) = GetLinkLocalPlayerId();
  func_ov009_02223fbc();
  return;
  case 11: return;

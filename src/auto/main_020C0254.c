@@ -384,8 +384,8 @@ s32 old=*arg1; s32 value=old; u16 keys=M2C_FIELD(gKeyState,u16 *,2);
 if(keys&0x40) {if(old==0){if(keys!=M2C_FIELD(gKeyState,u16 *,0))return;value=M2C_FIELD(arg0,u8 *,0x4d);}value--;}
 else if(keys&0x80){if(old==M2C_FIELD(arg0,u8 *,0x4d)-1){if(keys!=M2C_FIELD(gKeyState,u16 *,0))return;value=-1;}value++;}
 if(value!=old){FocusSpriteSlotById(value);M2C_FIELD(arg0,u8 *,0x4e)=value;}
-else if(M2C_FIELD(gKeyState,u16 *,0)&1)func_020b2e14(arg1);
-else if(M2C_FIELD(gKeyState,u16 *,0)&2)func_020b2e2c();
+else if(M2C_FIELD(gKeyState,u16 *,0)&1)InvokeConfirmCallback(arg1);
+else if(M2C_FIELD(gKeyState,u16 *,0)&2)InvokeCancelCallback();
 }
 
 void func_020c0d50(void *arg0) {

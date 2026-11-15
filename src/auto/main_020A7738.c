@@ -551,7 +551,7 @@ u8 IsCarrierUnitKind(s32 arg0) {
     return var_r0;
 }
 
-u8 func_020a85f0(s32 arg0) {
+u8 IsUnitKindCarrier(s32 arg0) {
     u8 var_r0;
 
     if (arg0 == 0x15) {

@@ -235,10 +235,11 @@ s8 *StringToLower(s8 *p) {
  s8 *q = p;
  s32 c = *p;
  if (c) do {
+   s32 d = c;
    if (c >= 0 && c < 128) {
-     c = ((u8 *)&data_020eac40)[c];
+     d = ((u8 *)&data_020eac40)[c];
    }
-   *p++ = c;
+   *p++ = d;
    c = *p;
  } while (c);
  return q;

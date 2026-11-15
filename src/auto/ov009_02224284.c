@@ -699,7 +699,7 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetLinkPhase(void);
     M2C_UNK func_ov009_022254a4(void);
     M2C_UNK GetConnectedPlayers(void);
-    M2C_UNK func_ov009_02225450(void);
+    M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
@@ -719,8 +719,8 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 0;
     }
     arg3 = arg3 & GetConnectedPlayers();
-    masked = (u16)(arg3 & (-1 ^ (1 << func_ov009_02225450())));
-    r5 = func_ov009_02225450();
+    masked = (u16)(arg3 & (-1 ^ (1 << GetLinkLocalPlayerId())));
+    r5 = GetLinkLocalPlayerId();
 
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -750,11 +750,11 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-s32 func_ov009_02224ec4(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 GetLinkPhase(void);
     s32 func_ov009_022254a4(void);
     s32 GetConnectedPlayers(void);
-    s32 func_ov009_02225450(void);
+    s32 GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
@@ -774,9 +774,9 @@ s32 func_ov009_02224ec4(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (func_ov009_022254a4() != 0) {
         arg3 = arg3 & GetConnectedPlayers();
     }
-    first = func_ov009_02225450();
+    first = GetLinkLocalPlayerId();
     masked = (u16)(arg3 & ((1 - 2) ^ (1 << first)));
-    r5 = func_ov009_02225450();
+    r5 = GetLinkLocalPlayerId();
 
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -809,7 +809,7 @@ s32 func_ov009_02224ec4(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
 s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) {
     M2C_UNK func_ov009_022254a4(void);
     M2C_UNK GetConnectedPlayers(void);
-    M2C_UNK func_ov009_02225450(void);
+    M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
@@ -823,7 +823,7 @@ s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 a
         return 0;
     }
     arg5 &= GetConnectedPlayers();
-    masked = (u16)(arg5 & ~(1 << func_ov009_02225450()));
+    masked = (u16)(arg5 & ~(1 << GetLinkLocalPlayerId()));
 
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;

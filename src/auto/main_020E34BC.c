@@ -51,9 +51,8 @@ s32 HeapAllocBlock(s32 arg0) {
  return result;
 }
 #pragma opt_common_subs reset
+s32 func_020e3580(s32, s32);
 s32 func_020e34f4(s32 arg0) {
-    s32 func_020e3580(s32, s32);
-    u32 s;
     volatile u32 saved;
     u16 old;
     s32 result;
@@ -61,9 +60,11 @@ s32 func_020e34f4(s32 arg0) {
     *(volatile u16 *)0x04000208 = 0;
     saved = old;
     result = func_020e3580(arg0, 8);
-    s = saved;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = s;
+    {
+        u32 s = saved;
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = s;
+    }
     return result;
 }
 

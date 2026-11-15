@@ -291,7 +291,7 @@ M2C_FIELD(path,s8 *,0x4e)=M2C_FIELD(path,s8 *,0x4d)-cost[M2C_FIELD(gUnitKindStat
 
 void func_020a01c0(s32 x,s32 y){
 extern void *gUnitMovePath;extern s32 *gCurrentMap;
-void *map; void *player;void *path;s32 i;s32 id;s32 weather;s32 kind;s32 terrain;s8 *cost;
+void *map; void *player;void *path;s8 i;u32 id;s32 weather;s32 kind;s32 terrain;s8 *cost;
 M2C_FIELD(gUnitMovePath,s8 *,0x5b)++;
 M2C_FIELD(gUnitMovePath+M2C_FIELD(gUnitMovePath,s8 *,0x5b),s8 *,0x36)=x;
 M2C_FIELD(gUnitMovePath+M2C_FIELD(gUnitMovePath,s8 *,0x5b),s8 *,0x42)=y;

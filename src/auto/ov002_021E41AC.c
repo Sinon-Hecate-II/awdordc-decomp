@@ -58,25 +58,27 @@ void func_ov002_021e42c4(u8 *p) {
  if(func_ov002_021e4b68() && p[5]) --p[5];
 }
 
-void func_ov002_021e4368(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 z,s32 color) {
+/* Draws a flat single-colour quad from its four corners at depth z, submitting
+   the vertices in perimeter order tl, bl, br, tr. */
+void DrawFlatQuad(s32 tlX,s32 tlY,s32 trX,s32 trY,s32 blX,s32 blY,s32 brX,s32 brY,s32 z,s32 color) {
 s32 x,y,w;
-s16 bb=(s16)b, aa=(s16)a, ff=(s16)f, ee=(s16)e, hh=(s16)h, gg=(s16)g, dd=(s16)d, cc=(s16)c;
-*(volatile u32 *)0x4000500=1;
-*(volatile u32 *)0x4000480=(u16)color;
+s16 bb=(s16)tlY, aa=(s16)tlX, ff=(s16)blY, ee=(s16)blX, hh=(s16)brY, gg=(s16)brX, dd=(s16)trY, cc=(s16)trX;
+REG_GX_BEGIN_VTXS=GX_PRIM_QUADS;
+REG_GX_COLOR=(u16)color;
 x=(u32)(u16)aa|((u32)(u16)bb<<16);
-*(volatile u32 *)0x400048c=x;
-*(volatile u32 *)0x400048c=(u16)(s16)z;
+REG_GX_VTX_16=x;
+REG_GX_VTX_16=(u16)(s16)z;
 y=(u32)(u16)ee|((u32)(u16)ff<<16);
-*(volatile u32 *)0x400048c=y;
-*(volatile u32 *)0x400048c=(u16)(s16)z;
+REG_GX_VTX_16=y;
+REG_GX_VTX_16=(u16)(s16)z;
 w=(u32)(u16)gg|((u32)(u16)hh<<16);
-*(volatile u32 *)0x400048c=w;
-*(volatile u32 *)0x400048c=(u16)(s16)z;
+REG_GX_VTX_16=w;
+REG_GX_VTX_16=(u16)(s16)z;
 x=(u32)(u16)cc|((u32)(u16)dd<<16);
-*(volatile u32 *)0x400048c=x;
-*(volatile u32 *)0x400048c=(u16)(s16)z;
-*(volatile u32 *)0x4000504=0;
-*(volatile u32 *)0x4000480=0x7fff;
+REG_GX_VTX_16=x;
+REG_GX_VTX_16=(u16)(s16)z;
+REG_GX_END_VTXS=0;
+REG_GX_COLOR=GX_RGB_WHITE;
 }
 
 /* Draws a horizontal-gradient quad from the four corners (tl, tr, bl, br):

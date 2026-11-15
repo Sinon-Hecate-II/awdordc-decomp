@@ -6,7 +6,7 @@ void func_ov009_02226214(M2C_UNK arg0) {
     s32 func_ov009_02224064();
     s32 func_ov009_022240ac();
     s32 GetLinkPhase();
-    M2C_UNK func_ov009_02225450();
+    M2C_UNK GetLinkLocalPlayerId();
     M2C_UNK func_ov009_022257ac(M2C_UNK);
     s32 temp_r4;
 
@@ -14,7 +14,7 @@ void func_ov009_02226214(M2C_UNK arg0) {
         return;
     }
     temp_r4 = func_ov009_02224064();
-    func_ov009_02225450();
+    GetLinkLocalPlayerId();
     if (ByteCompareN(temp_r4, func_ov009_022240ac(), 0x60) == 0) {
         return;
     }

@@ -586,14 +586,14 @@ void RunAiRole3Action(void) {
 
 void func_ov000_02181560(void) {
 extern void **gCurrentMap;
-s32 func_020d2dcc(u16);
+s32 FindFreeUnitRecord(u16);
 s32 GetUnitBuildCost(u16,s32);
 s32 func_ov000_02178e84(u8,u8);
 void *base,*unit;
 u16 player;
 s32 cost;u32 idx;
 if(func_ov000_02180410()!=0) return;
-if(func_020d2dcc(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==0)return;
+if(FindFreeUnitRecord(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==0)return;
 base=*gCurrentMap;player=M2C_FIELD(base,u16 *,0x52a4);
 cost=GetUnitBuildCost(player,17)*10;
 if(cost>M2C_FIELD((u8 *)base+player*0x8c,s32 *,0x67a4)) return;
