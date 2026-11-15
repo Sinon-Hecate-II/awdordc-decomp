@@ -1,6 +1,7 @@
 /* 12 functions from 0x02189A08 to 0x0218A9AC (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u16 low:14, high:2; } SelectedUnitFlagsA520;
 
 typedef struct {
@@ -323,28 +324,37 @@ u32 type=entry->unk0;
 if(type!=0 && !(entry->unk4&8) && (gUnitKindStats[type*0x70+0x13]&7) && ((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1)count++;
 }}}return count;}
 
-s32 func_ov000_0218a3fc(void){
-s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);s32 IsFootUnitKind(u32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
-s32 p,i;
-for(p=1;p<5;p++){
-if(IsPlayerActive(p)!=0){
-for(i=gPlayerUnitIdBase[p]+1;i<gPlayerUnitIdBase[p]+0x33;i++){
-UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap+0x59a4))[i];
-u32 type=entry->unk0;
-if(type!=0&&(gUnitKindStats[type*112+0x13]&7)&&((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1){
-if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)==0){
-if(IsFootUnitKind(entry->unk0)==0)goto success;
-goto next;
-}else{
-if(IsFootUnitKind(entry->unk0)==0)goto next;
-}
-success:return 1;
-}
-next:;
-}
-}}
-return 0;
+/* Whether some active player has a movable unit the AI cares about: an enemy
+ * non-foot unit (an attack target) or a friendly foot unit (a capture unit). */
+s32 AiHasAttackTargetOrFootUnit(void) {
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(u16, s32);
+    s32 IsFootUnitKind(u32);
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    extern u8 gUnitKindStats[];
+    s32 p, i;
+
+    for (p = 1; p < 5; p++) {
+        if (IsPlayerActive(p) != 0) {
+            for (i = gPlayerUnitIdBase[p] + 1; i < gPlayerUnitIdBase[p] + 0x33; i++) {
+                UnkStruct_ov000_02189A08 *entry = &((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[i];
+                u32 type = entry->unk0;
+                if (type != 0 && (gUnitKindStats[type * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_FLAGS] & 7) && ((s8 **)((u8 *)*gCurrentMap + MAP_GRID))[entry->unk2][entry->unk1] != -1) {
+                    if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), p) == 0) {
+                        if (IsFootUnitKind(entry->unk0) == 0) goto success;
+                        goto next;
+                    } else {
+                        if (IsFootUnitKind(entry->unk0) == 0) goto next;
+                    }
+                success:
+                    return 1;
+                }
+            next:;
+            }
+        }
+    }
+    return 0;
 }
 
 #pragma opt_propagation off

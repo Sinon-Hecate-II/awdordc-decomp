@@ -321,12 +321,12 @@ s32 func_ov001_0216d9d4(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&data_ov
 s32 func_ov001_0216da10(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_02027958();
+    s32 WFC_ProcessLinkStep();
     extern M2C_UNK data_ov001_02192740;
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    if ((M2C_FIELD(&data_ov001_02192740, s32 *, 0x18) == 7) && (func_02027958() == 3)) {
+    if ((M2C_FIELD(&data_ov001_02192740, s32 *, 0x18) == 7) && (WFC_ProcessLinkStep() == 3)) {
         M2C_FIELD(&data_ov001_02192740, s32 *, 0x18) = 4;
         OS_RestoreInterrupts(temp_r4);
         return 1;

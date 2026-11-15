@@ -2,30 +2,32 @@
 #include "common.h"
 #include "ghttp.h"
 
+/* Find a free connection slot, growing the connection table by four slots when all
+ * are in use; return the slot index, or -1 if growing the table fails. */
 s32 ghiFindFreeConnection(void) {
-extern M2C_UNK gGhiConnectionList,data_020fd068,data_020fd090,data_020fd014;
-s32 i, newCount, oldCount; void *p;
-for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) {
-if(M2C_FIELD(M2C_FIELD(&gGhiConnectionList,void ***,4)[i],s32 *,0)==0)return i;
+extern M2C_UNK gGhiConnectionList,ghiAssertNumConnectionsEqLen,ghiAssertFile,ghiAssertFuncFindFreeSlot;
+s32 slot, newLength, oldLength; void *slotPtr;
+for(slot=0;slot<M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_LENGTH);slot++) {
+if(M2C_FIELD(M2C_FIELD(&gGhiConnectionList,void ***,GHI_LIST_CONNECTIONS)[slot],s32 *,0)==0)return slot;
 }
-if(M2C_FIELD(&gGhiConnectionList,s32 *,0)!=M2C_FIELD(&gGhiConnectionList,s32 *,12))
-AssertFailed(&data_020fd068,&data_020fd090,&data_020fd014,0x33);
-oldCount=M2C_FIELD(&gGhiConnectionList,s32 *,12);
-newCount=oldCount+4;
-p=gpiRealloc(M2C_FIELD(&gGhiConnectionList,void **,4),newCount*4);
-if(p==NULL)return -1;
-M2C_FIELD(&gGhiConnectionList,void **,4)=p;
-for(i=oldCount;i<newCount;i++){
-M2C_FIELD(&gGhiConnectionList,void ***,4)[i]=gpiMalloc(0x184);
-p=M2C_FIELD(&gGhiConnectionList,void ***,4)[i];
-if(p==NULL){
-for(--i;i>=oldCount;--i)gpiFree(M2C_FIELD(&gGhiConnectionList,void ***,4)[i]);
+if(M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_NUM_CONNECTIONS)!=M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_LENGTH))
+AssertFailed(&ghiAssertNumConnectionsEqLen,&ghiAssertFile,&ghiAssertFuncFindFreeSlot,0x33);
+oldLength=M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_LENGTH);
+newLength=oldLength+GHI_CONNECTION_GROW_STEP;
+slotPtr=gpiRealloc(M2C_FIELD(&gGhiConnectionList,void **,GHI_LIST_CONNECTIONS),newLength*4);
+if(slotPtr==NULL)return -1;
+M2C_FIELD(&gGhiConnectionList,void **,GHI_LIST_CONNECTIONS)=slotPtr;
+for(slot=oldLength;slot<newLength;slot++){
+M2C_FIELD(&gGhiConnectionList,void ***,GHI_LIST_CONNECTIONS)[slot]=gpiMalloc(GHI_CONNECTION_SIZE);
+slotPtr=M2C_FIELD(&gGhiConnectionList,void ***,GHI_LIST_CONNECTIONS)[slot];
+if(slotPtr==NULL){
+for(--slot;slot>=oldLength;--slot)gpiFree(M2C_FIELD(&gGhiConnectionList,void ***,GHI_LIST_CONNECTIONS)[slot]);
 return -1;
 }
-M2C_FIELD(p,s32 *,0)=0;
+M2C_FIELD(slotPtr,s32 *,0)=0;
 }
-M2C_FIELD(&gGhiConnectionList,s32 *,12)=newCount;
-return oldCount;
+M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_LENGTH)=newLength;
+return oldLength;
 }
 
 #pragma push
@@ -96,17 +98,17 @@ ghiUnlockMutex();return conn;
 /* Release a connection slot: free the strings, buffers and socket it owns,
    run the encryptor cleanup and mark the slot free again. */
 s32 ghiFreeConnection(void *connection) {
-    extern M2C_UNK data_020fd0a4, data_020fd090, data_020fd024, data_020fd0b0, gGhiConnectionList, data_020fd0cc, data_020fd0f4;
+    extern M2C_UNK data_020fd0a4, ghiAssertFile, data_020fd024, data_020fd0b0, gGhiConnectionList, data_020fd0cc, data_020fd0f4;
     M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
     M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK func_020496b8(s32);
     void ghiFreeBuffer(void *); void func_0204bc64(void *);
     s32 func_0204b688(void *); void func_0204b690(s32 *);
     GHIConnection *conn = (GHIConnection *)connection;
 
-    if (!connection) AssertFailed(&data_020fd0a4, &data_020fd090, &data_020fd024, 0xb3);
-    if (conn->request < 0) AssertFailed(&data_020fd0b0, &data_020fd090, &data_020fd024, 0xb4);
-    if (conn->request >= ((GHIConnectionList *)&gGhiConnectionList)->length) AssertFailed(&data_020fd0cc, &data_020fd090, &data_020fd024, 0xb5);
-    if (!conn->inUse) AssertFailed(&data_020fd0f4, &data_020fd090, &data_020fd024, 0xb6);
+    if (!connection) AssertFailed(&data_020fd0a4, &ghiAssertFile, &data_020fd024, 0xb3);
+    if (conn->request < 0) AssertFailed(&data_020fd0b0, &ghiAssertFile, &data_020fd024, 0xb4);
+    if (conn->request >= ((GHIConnectionList *)&gGhiConnectionList)->length) AssertFailed(&data_020fd0cc, &ghiAssertFile, &data_020fd024, 0xb5);
+    if (!conn->inUse) AssertFailed(&data_020fd0f4, &ghiAssertFile, &data_020fd024, 0xb6);
     if (!connection) return 0;
     if (!conn->inUse) return 0;
     if (conn->request < 0) return 0;
@@ -141,11 +143,11 @@ s32 ghiFreeConnection(void *connection) {
 }
 
 void *func_0204aecc(s32 arg0) {
- extern M2C_UNK data_020fd108, data_020fd090, data_020fd050, data_020fd118, gGhiConnectionList;
+ extern M2C_UNK data_020fd108, ghiAssertFile, data_020fd050, data_020fd118, gGhiConnectionList;
  M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
  void *p;
- if(arg0<0) AssertFailed(&data_020fd108,&data_020fd090,&data_020fd050,0x101);
- if(arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) AssertFailed(&data_020fd118,&data_020fd090,&data_020fd050,0x102);
+ if(arg0<0) AssertFailed(&data_020fd108,&ghiAssertFile,&data_020fd050,0x101);
+ if(arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) AssertFailed(&data_020fd118,&ghiAssertFile,&data_020fd050,0x102);
  ghiLockMutex();
  if(arg0<0 || arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) {ghiUnlockMutex();return NULL;}
  p=M2C_FIELD(&gGhiConnectionList,void ***,4)[arg0];
@@ -172,14 +174,14 @@ void func_0204afd8(void *obj) {
     M2C_UNK func_020496cc(s32, M2C_UNK);
     M2C_UNK ResetBuffer(void *);
     extern M2C_UNK data_020fd038;
-    extern M2C_UNK data_020fd090;
+    extern M2C_UNK ghiAssertFile;
     extern M2C_UNK data_020fd0a4;
     extern M2C_UNK data_020fd134;
     if (obj == NULL) {
-        AssertFailed(&data_020fd0a4, &data_020fd090, &data_020fd038, 0x132);
+        AssertFailed(&data_020fd0a4, &ghiAssertFile, &data_020fd038, 0x132);
     }
     if (M2C_FIELD(obj, s32 *, 0x108) == 0) {
-        AssertFailed(&data_020fd134, &data_020fd090, &data_020fd038, 0x133);
+        AssertFailed(&data_020fd134, &ghiAssertFile, &data_020fd038, 0x133);
     }
     M2C_FIELD(obj, s32 *, 0x10) = 0;
     gpiFree(M2C_FIELD(obj, s32 *, 0x14));

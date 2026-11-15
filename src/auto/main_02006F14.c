@@ -327,10 +327,10 @@ SystemHalt();
 }
 
 void func_0200763c(s32 arg0) {
-    s32 func_02009eb0(M2C_UNK, s32, M2C_UNK);
+    s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
     do {
 
-    } while (func_02009eb0(0xC, arg0 << 8, 0) != 0);
+    } while (SendFifoMessage(0xC, arg0 << 8, 0) != 0);
 }
 
 void func_02007668(s32 arg0) {

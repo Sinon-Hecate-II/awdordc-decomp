@@ -20,6 +20,11 @@ typedef int BOOL;
 #define NULL ((void*)0)
 #endif
 
+/* Word-at-a-time C string helpers (StringCompare, StringCopy): a little-endian word
+ * holds a NUL byte when (word + STRING_ZERO_BIAS) & ~word & STRING_ZERO_MASK is set. */
+#define STRING_ZERO_BIAS 0xfefefeffu /* the word minus 0x01010101 */
+#define STRING_ZERO_MASK 0x80808080u /* the top bit of every byte */
+
 
 /* What machine drafts (m2c) use for what they can't tell yet: autopilot tries them as they are. */
 #ifndef M2C_DEFINES
@@ -34,6 +39,17 @@ typedef s32 M2C_UNK32;
 #define M2C_CARRY 0
 #define M2C_OVERFLOW(a) (0)
 typedef struct { s32 fd; s16 events; s16 revents; } PollFd;
+
+/* A GameSpy (gsi) recursive mutex, 24 bytes. The mutex remembers the thread
+ * object that holds it and how many times that thread took it. */
+typedef struct GsiMutex {
+    u32 unused00;       /* +0x00 */
+    u32 unused04;       /* +0x04 */
+    void *owner;        /* +0x08: thread object holding the mutex, NULL when free */
+    s32 count;          /* +0x0C: nesting depth for the owner */
+    u32 unused10;       /* +0x10 */
+    s32 waiters;        /* +0x14 */
+} GsiMutex;             /* 0x18 */
 
 /* A 16-bit pixel rectangle (position and size) handed to the sprite widget code. */
 typedef struct WidgetRect {
@@ -83,6 +99,8 @@ enum {
     SOCKET_STATE_UDP_LISTEN = 10,   /* unbound UDP socket waiting for a peer */
     SOCKET_STATE_UDP_CONNECTED = 11 /* UDP socket with its peer address set */
 };
+
+#define IP_PROTO_TCP 6 /* IPv4 protocol number of a TCP segment */
 
 /* TCP control flags (TcpSegment.flags, also used as the event kind). */
 enum {
@@ -323,8 +341,10 @@ typedef struct HistoryMenu {
  * time and a row is only selectable when its enabled[] flag is set. */
 typedef struct RecordsScreen {
     u16 flags;           /* +0x00 */
-    u16 pad02;
-    u8  pad04[0x82];
+    s16 fadeCursor;      /* +0x02: position in fadeList, -1 before the first step */
+    s16 fadeCount;       /* +0x04: number of entries in fadeList */
+    s16 fadeList[1];     /* +0x06: record order walked by RecordsMenu_AdvanceFadeRecord */
+    u8  pad08[0x7E];     /* +0x08 */
     s16 fadeTop;         /* +0x86: fade-out timer of the main screen */
     s16 fadeBottom;      /* +0x88: fade-out timer of the sub screen */
     s8  actionMode;      /* +0x8A: mode argument of the pending action */
@@ -485,6 +505,15 @@ enum {
 /* Entries of the KeyState masks (gKeyState). */
 #define KEY_HELD    0 /* u16 keys held this frame */
 #define KEY_PRESSED 1 /* u16 keys newly pressed this frame */
+
+/* The unit-production menu's state object (gProductionMenuState): the mask of unit-kind
+ * capability flags the selected base may build, the number of entries listed, then the
+ * entries themselves as 2-byte {kind, unaffordable} pairs (gProductionMenuState+0x08). */
+typedef struct ProductionMenuState {
+    s32 kindMask;    /* +0x00 mask of buildable unit-kind capability flags */
+    s32 count;       /* +0x04 number of entries in the buffer */
+    u8  entries[1];  /* +0x08 first of the {u8 kind; u8 unaffordable;} entries */
+} ProductionMenuState;
 
 /* ov000 unit-list menu object (singleton returned by GetScrollList). */
 typedef struct ScrollList {
@@ -713,6 +742,23 @@ enum {
 #define MB_GROUP_UNIT_COUNT 0x5C4  /* u16 players/units in the group */
 #define MB_GROUP_ACTIVE     0x5CA  /* u8 nonzero while the group record is in use */
 
+/* Assembly of the per-player info records received during multiboot match setup:
+ * each 30-byte record (player id, info block, group) is sent in command-7 packets
+ * carrying numbered fragments, and reassembled into one slot per player. */
+#define MB_RECORD_SIZE      0x1E  /* bytes in a finished player record */
+#define MB_RECORD_SLOT      0x20  /* bytes per player slot in the assembly buffer */
+#define MB_RECORD_MASK      0x1E0 /* byte offset of the per-player received-fragment bitmasks */
+typedef struct MbRecordRx {
+    u32 unk00;         /* +0x00 never read */
+    u8 *buffer;        /* +0x04 player slots, MB_RECORD_SLOT bytes each */
+    s32 fragmentSize;  /* +0x08 payload bytes carried by one fragment */
+    s32 fragmentCount; /* +0x0C fragments that make up a full record */
+    s32 recordSize;    /* +0x10 bytes per record */
+} MbRecordRx;
+/* The receive state itself is declared `extern M2C_UNK gMbRecordRx;` locally by
+ * each user; access its fields through this. */
+#define MB_RECORD_RX ((MbRecordRx *)&gMbRecordRx)
+
 /* A GPI player-info result (the buffer handed to a gpiGetInfo callback). */
 #define GPI_INFO_STATUS    0x00 /* s32 0 = ok, nonzero = error/status */
 #define GPI_INFO_PLAYER_ID 0x04 /* s32 player/profile id */
@@ -814,6 +860,12 @@ enum {
  * SAVE_RECORD_STRIDE-byte directory records to find the newest one of a type. */
 #define SAVE_BLOCK_MAGIC        0x07090600 /* first word of an initialised save block */
 #define SAVE_BLOCK_SIZE         0xC34      /* bytes of a complete battle save */
+
+/* The local player's profile save block (the object main_020C3D34's
+ * func_020c4acc returns): the save magic, a 0x40-byte profile-id block and then
+ * the profile's own fields. */
+#define PROFILE_ID_BLOCK      0x04 /* 0x40-byte profile-id block (func_020321ac) */
+#define PROFILE_ID_BLOCK_SIZE 0x40
 #define SAVE_SLOT_COUNT         60         /* slot summaries/records in a block */
 #define SAVE_SLOT_SUMMARY_SIZE  12         /* bytes per slot summary */
 #define SAVE_SLOT_RECORD_SIZE   0x28       /* bytes per slot record */
@@ -1006,6 +1058,18 @@ typedef struct Ov001IconRow {
 #define GX_BLDCNT_MAIN 0x04000050
 #define GX_BLDCNT_SUB  0x04001050
 
+/* Window range registers of the main engine; the sub engine's sit at +0x1000.
+ * WIN0 and WIN1 each have a horizontal and a vertical range, packed as high
+ * byte = first edge, low byte = second edge. */
+#define GX_WIN0H_MAIN 0x04000040
+#define GX_WIN0V_MAIN 0x04000042
+#define GX_WIN1H_MAIN 0x04000044
+#define GX_WIN1V_MAIN 0x04000046
+#define GX_WIN0H_SUB  0x04001040
+#define GX_WIN0V_SUB  0x04001042
+#define GX_WIN1H_SUB  0x04001044
+#define GX_WIN1V_SUB  0x04001046
+
 /* The ov001 screen-fade system (gOv001FadeStates points at two Ov001Fade, the
  * sub engine's then the main engine's). A fade task maps frames 0..duration to a
  * BLDY blend value; gOv001FadeTable holds the four fade modes as three parallel
@@ -1073,6 +1137,29 @@ enum {
 #define MENU_SPRITE_TIMER 0x5a /* s8 press timer, -1 = idle */
 #define MENU_SPRITE_OWNER 0x64 /* owner/controller object */
 
+/* Position and slide-animation fields of the 3D sprite actor animated by
+ * UpdateSpriteSlide: a current position, a slide origin and target, and a state
+ * byte that also holds the visible bit and the fade mode. */
+#define SPRITE_ACTOR_X           0x34 /* s16 current x */
+#define SPRITE_ACTOR_Y           0x36 /* s16 current y */
+#define SPRITE_ACTOR_STATE       0x48 /* u8: bit 0 visible, bits 4-5 fade mode, bits 6-7 slide mode */
+#define SPRITE_ACTOR_SLIDE_TIMER 0x4c /* u8 frames since the slide started */
+#define SPRITE_ACTOR_SLIDE_DELAY 0x4d /* u8 frames still to wait before sliding */
+#define SPRITE_ACTOR_SLIDE_LEN   0x4e /* u8 slide length in frames */
+#define SPRITE_ACTOR_SLIDE_BACK_LEN 0x4f /* u8 length of the reverse slide */
+#define SPRITE_ACTOR_TARGET_X    0x50 /* s16 slide destination x */
+#define SPRITE_ACTOR_TARGET_Y    0x52 /* s16 slide destination y */
+#define SPRITE_ACTOR_START_X     0x54 /* s16 slide origin x */
+#define SPRITE_ACTOR_START_Y     0x56 /* s16 slide origin y */
+
+/* Slide mode (SPRITE_ACTOR_STATE bits 6-7). */
+enum {
+    SPRITE_SLIDE_NONE    = 0,
+    SPRITE_SLIDE_FORWARD = 1, /* slide from the origin to the target */
+    SPRITE_SLIDE_SHOW    = 2, /* the same, showing the sprite when it starts */
+    SPRITE_SLIDE_REVERSE = 3  /* slide back to the origin, hiding the sprite when it arrives */
+};
+
 /* Work area of the movement flood fill (gMoveSearchState).  It starts with a
  * 32-entry terrain cost table, then the search limits, then two ping-pong
  * queues of 4-byte nodes (x, y, direction, accumulated cost). */
@@ -1082,6 +1169,19 @@ typedef struct MoveSearchNode {
     u8 dir;    /* +0x02 direction taken to reach the tile, 1 = start */
     u8 cost;   /* +0x03 accumulated movement cost */
 } MoveSearchNode; /* 4 bytes */
+
+/* MoveSearchNode::dir: the move that reached the tile. Expansion skips the
+ * reverse of the direction it arrived by; the seed expands all four. */
+enum {
+    MOVE_SEARCH_DIR_START = 1,
+    MOVE_SEARCH_DIR_UP    = 2,
+    MOVE_SEARCH_DIR_DOWN  = 3,
+    MOVE_SEARCH_DIR_LEFT  = 4,
+    MOVE_SEARCH_DIR_RIGHT = 5
+};
+
+/* The low bits of MOVE_SEARCH_MOVE_RANGE double as this flood fill's behaviour
+ * flags, read by func_01ffb114 (which units and terrains may be passed). */
 
 #define MOVE_SEARCH_TERRAIN_COST 0x00 /* s8[32] movement cost per terrain kind */
 #define MOVE_SEARCH_COST_LIMIT   0x20 /* s16 accumulated-cost limit */
@@ -1398,14 +1498,21 @@ typedef struct VoiceLinkReply {
 #define OV001_TEXT_ALIGN_CENTER 0x400 /* DrawTextMultiline: centre each line in the block width */
 #define OV001_TEXT_ALIGN_RIGHT  0x800 /* DrawTextMultiline: right-align each line in the block width */
 
+/* Anchor flags of the ov001 text-block placement: the horizontal flags move the
+ * block along the text direction, the vertical ones across it. */
+#define OV001_TEXT_ANCHOR_VCENTER 0x02 /* centre the block across the text direction */
+#define OV001_TEXT_ANCHOR_VBOTTOM 0x04 /* put the block's bottom edge at the anchor */
+#define OV001_TEXT_ANCHOR_HCENTER 0x10 /* centre the block along the text direction */
+#define OV001_TEXT_ANCHOR_HRIGHT  0x20 /* put the block's trailing edge at the anchor */
+
 typedef struct Ov001FontResource {
     u8   unk00;         /* +0x00 */
     s8   lineHeight;    /* +0x01: pixels a line advances */
     u16  defaultChar;   /* +0x02: glyph index used for characters not in the font */
     u8   pad04[4];
     u8  *glyphRunTable; /* +0x08: per-glyph rotation/run records */
-    void *cmapList;     /* +0x0C: first CMAP record (func_ov001_0216919c) */
-    void *cwdhList;     /* +0x10: first CWDH record (func_ov001_02169154) */
+    void *cwdhList;     /* +0x0C: first CWDH width record (GetFontGlyphMetric) */
+    void *cmapList;     /* +0x10: first CMAP record (GetFontGlyphIndex) */
 } Ov001FontResource;
 
 typedef struct Ov001Font {
@@ -1413,8 +1520,34 @@ typedef struct Ov001Font {
     s32 (*decodeChar)(s32 *cursor); /* +0x04: decode the next character of a text stream */
 } Ov001Font;
 
+/* One glyph's width record (a CWDH entry, returned by GetFontGlyphMetric). */
+typedef struct Ov001GlyphMetric {
+    s8  left;    /* +0x00 pixels the glyph starts left of the pen */
+    u8  width;   /* +0x01 pixels the glyph covers */
+    s8  advance; /* +0x02 pixels the pen advances */
+} Ov001GlyphMetric;
+
+/* The pair a glyph draw hands to the panel's ops: the glyph's width record and
+ * its bitmap data inside the font's glyph run table. */
+typedef struct Ov001Glyph {
+    Ov001GlyphMetric *metric; /* +0x00 */
+    u8 *bitmap;               /* +0x04 */
+} Ov001Glyph;
+
+/* The drawing operations a text panel points at with Ov001TextPanel::ops. */
+typedef struct Ov001TextOps {
+    s32 (*drawGlyph)(void *panel, Ov001Font *font, s32 x, s32 y, s32 color, Ov001Glyph *glyph); /* +0x00 */
+    void (*unk04)(void *panel, s32 arg); /* +0x04 second operation (func_ov001_0218b1ec) */
+} Ov001TextOps;
+
+/* A text panel: the bitmap surface (CreateTextPanel) text is drawn into. */
+typedef struct Ov001TextPanel {
+    u8 pad00[0x14];
+    Ov001TextOps *ops; /* +0x14 drawing operations */
+} Ov001TextPanel;
+
 typedef struct Ov001TextState {
-    void       *panel;         /* +0x00: text panel whose +0x14 callback blits one glyph */
+    void       *panel;         /* +0x00: text panel whose ops blit one glyph */
     Ov001Font  *font;          /* +0x04 */
     s32         letterSpacing; /* +0x08: extra pixels added after each glyph */
     s32         lineSpacing;   /* +0x0C: extra pixels between lines */
@@ -1462,6 +1595,23 @@ typedef struct Ov001TextState {
 #define INTRO_STATE     0x38 /* u8 1 = opening, 2 = title, 3 = stage sequence */
 #define INTRO_STAGE     0x39 /* u8 index into gIntroStateDurations */
 #define INTRO_MODE      0x3C /* s32 presentation mode; 2 selects the alternate path */
+
+/* ARM7/ARM9 IPC FIFO: the message word and the status register the game's FIFO
+ * code (main_02008EF0, main_02009EB0) polls.  A word carries the index of the
+ * handler that receives it, a payload, and a request/reply bit. */
+#define REG_IPC_FIFO_CR   0x04000184 /* u16 control/status */
+#define REG_IPC_FIFO_SEND 0x04000188 /* u32 write the next outgoing message */
+#define REG_IPC_FIFO_RECV 0x04100000 /* u32 read the next incoming message */
+#define IPC_FIFO_SEND_FULL  0x0002 /* send FIFO full, no message can be posted */
+#define IPC_FIFO_RECV_EMPTY 0x0100 /* no message waiting in the receive FIFO */
+#define IPC_FIFO_ERROR      0x4000 /* FIFO error; write IPC_FIFO_CLEAR to recover */
+#define IPC_FIFO_CLEAR      0xc000 /* clear the error and re-enable the FIFO */
+
+typedef struct FifoMessage {
+    u32 tag:5;      /* bit 0: handler index, 0 when there is no message */
+    u32 reply:1;    /* bit 5: 0 = request, 1 = reply */
+    u32 payload:26; /* bits 6..31: message data */
+} FifoMessage;
 
 #endif
 

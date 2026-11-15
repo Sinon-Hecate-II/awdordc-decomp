@@ -1,5 +1,6 @@
 /* 34 functions from 0x02080414 to 0x02081400 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_02080414(void *arg0) {
  M2C_UNK func_01ffa6fc(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
@@ -31,35 +32,49 @@ void func_020804d0(void *arg0) {
  func_01ffa6fc(arg0);
 }
 
-void func_02080554(s16 mode,u16 scale,s32 x,s32 y) {
-s32 Divide(s32,s32);
-extern void *g3DSpriteEngineSub,*g3DSpriteEngineMain,*gCur3DSpriteEngine;
-s32 a=Divide(x*scale,100);
-s32 b=Divide(y*scale,100);
-switch(mode){
-case 0:
-M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3c)=a;
-M2C_FIELD(g3DSpriteEngineMain,s16 *,0x3c)=M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3c);
-M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3e)=b;
-M2C_FIELD(g3DSpriteEngineMain,s16 *,0x3e)=M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3e);break;
-case 1:M2C_FIELD(gCur3DSpriteEngine,s16 *,0x3c)=a;M2C_FIELD(gCur3DSpriteEngine,s16 *,0x3e)=b;break;
-case 2:M2C_FIELD(g3DSpriteEngineMain,s16 *,0x3c)=a;M2C_FIELD(g3DSpriteEngineMain,s16 *,0x3e)=b;break;
-case 3:M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3c)=a;M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3e)=b;break;
-case 4:
-M2C_FIELD(g3DSpriteEngineSub,s16 *,0x40)=a;
-M2C_FIELD(g3DSpriteEngineMain,s16 *,0x40)=M2C_FIELD(g3DSpriteEngineSub,s16 *,0x40);
-M2C_FIELD(g3DSpriteEngineSub,s16 *,0x42)=b;
-M2C_FIELD(g3DSpriteEngineMain,s16 *,0x42)=M2C_FIELD(g3DSpriteEngineSub,s16 *,0x42);break;
-}
+/* Moves the 3D sprite engine(s) selected by target to (x, y) scaled by scale
+ * percent: 0 moves both engines, 1 the current one, 2 the main one, 3 the sub
+ * one, and 4 moves both engines' second offset pair instead. */
+void Set3DSpriteOffset(s16 target, u16 scale, s32 x, s32 y) {
+    s32 Divide(s32, s32);
+    extern void *g3DSpriteEngineSub, *g3DSpriteEngineMain, *gCur3DSpriteEngine;
+    s32 scaledX = Divide(x * scale, 100);
+    s32 scaledY = Divide(y * scale, 100);
+    switch (target) {
+    case 0:
+        M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET_X) = scaledX;
+        M2C_FIELD(g3DSpriteEngineMain, s16 *, DS3D_OFFSET_X) = M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET_X);
+        M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET_Y) = scaledY;
+        M2C_FIELD(g3DSpriteEngineMain, s16 *, DS3D_OFFSET_Y) = M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET_Y);
+        break;
+    case 1:
+        M2C_FIELD(gCur3DSpriteEngine, s16 *, DS3D_OFFSET_X) = scaledX;
+        M2C_FIELD(gCur3DSpriteEngine, s16 *, DS3D_OFFSET_Y) = scaledY;
+        break;
+    case 2:
+        M2C_FIELD(g3DSpriteEngineMain, s16 *, DS3D_OFFSET_X) = scaledX;
+        M2C_FIELD(g3DSpriteEngineMain, s16 *, DS3D_OFFSET_Y) = scaledY;
+        break;
+    case 3:
+        M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET_X) = scaledX;
+        M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET_Y) = scaledY;
+        break;
+    case 4:
+        M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET2_X) = scaledX;
+        M2C_FIELD(g3DSpriteEngineMain, s16 *, DS3D_OFFSET2_X) = M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET2_X);
+        M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET2_Y) = scaledY;
+        M2C_FIELD(g3DSpriteEngineMain, s16 *, DS3D_OFFSET2_Y) = M2C_FIELD(g3DSpriteEngineSub, s16 *, DS3D_OFFSET2_Y);
+        break;
+    }
 }
 
 void func_0208066c(void *arg0) {
-    void func_02080554(s16, u16, M2C_UNK, M2C_UNK);
-    func_02080554(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
+    void Set3DSpriteOffset(s16, u16, M2C_UNK, M2C_UNK);
+    Set3DSpriteOffset(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
 }
 
 void func_0208068c(void *arg0) {
-    func_02080554(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
+    Set3DSpriteOffset(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
     M2C_FIELD(arg0, s32 *, 0x60) = 0;
 }
@@ -71,7 +86,7 @@ void func_020806b8(void *a) {
  M2C_FIELD(a,s32 *,0x5c)=0;
  if(M2C_FIELD(a,s16 *,0x4c)==-1){func_01ffa6fc(a);return;}
  }
- func_02080554(M2C_FIELD(a,s16 *,0x50),M2C_FIELD(a,u16 *,0x52),p[M2C_FIELD(a,s32 *,0x5c)][0],p[M2C_FIELD(a,s32 *,0x5c)][1]);
+ Set3DSpriteOffset(M2C_FIELD(a,s16 *,0x50),M2C_FIELD(a,u16 *,0x52),p[M2C_FIELD(a,s32 *,0x5c)][0],p[M2C_FIELD(a,s32 *,0x5c)][1]);
  M2C_FIELD(a,s32 *,0x5c)++;
  M2C_FIELD(a,s32 *,0x60)++;
  if(M2C_FIELD(a,s32 *,0x60)!=M2C_FIELD(a,s16 *,0x4c))return;
@@ -117,7 +132,7 @@ void SetTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=(p[y*32+x]&0xfff)|((pal&15)<<12);
 }
 
-void func_02080944(u16 *p,s32 w,s32 h,u32 pal) {
+void AddTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
  s32 x,y;u16 v;u32 low;
  for(y=0;y<h;y++)for(x=0;x<w;x++){
  v=p[y*32+x];low=v&0xfff;v^=low;v+=(pal&15)<<12;p[y*32+x]=low|v;

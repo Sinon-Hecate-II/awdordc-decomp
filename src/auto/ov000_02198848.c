@@ -60,7 +60,7 @@ void AddPlayerThreatInfluence(u8 player) {
             }
         }
         if (unit->kind == 0x16 && !(((u32)unit->tail[3] << 25) >> 31)) {
-            if (!func_020a600c((u16)i)) {
+            if (!IsUnitInSight((u16)i)) {
                 continue;
             }
         }
@@ -80,7 +80,7 @@ void AddPlayerThreatInfluence(u8 player) {
     }
 }
 
-void func_ov000_02198c08(void) {
+void ClearAiInfluenceMaps(void) {
     M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK func_ov000_0219c508(s32, M2C_UNK);
     extern s32 *gCurrentMap;
@@ -90,10 +90,10 @@ void func_ov000_02198c08(void) {
     MI_CpuFill8(&gAiInfluenceMap, 0, 0x508);
 }
 
-void func_ov000_02198c60(void) {
+void BuildAiInfluenceMaps(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
-    void func_ov000_02198c08(void);
+    void ClearAiInfluenceMaps(void);
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
     void AddPlayerThreatInfluence(u8);
@@ -116,7 +116,7 @@ void func_ov000_02198c60(void) {
     }
     state = (u8)((state & ~1) | 1);
     M2C_FIELD(gAiCommandState, u8 *, 7) = state;
-    func_ov000_02198c08();
+    ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
@@ -179,7 +179,7 @@ void BuildThreatMapAgainstKind14(void) {
     u16 saved;
     s32 i;
     saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
-    func_ov000_02198c08();
+    ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
@@ -303,7 +303,7 @@ void func_ov000_02199330(void) {
     u16 saved;
     s32 i;
     saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
-    func_ov000_02198c08();
+    ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
@@ -373,7 +373,7 @@ void BuildThreatMapAgainstKind6(void) {
     u16 saved;
     s32 i;
     saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
-    func_ov000_02198c08();
+    ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {

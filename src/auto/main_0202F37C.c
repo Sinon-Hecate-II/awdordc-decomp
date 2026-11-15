@@ -512,7 +512,7 @@ s32 func_02030264(void) {
  void func_020271cc(void);
  void func_02027428(void);
  void func_020276b0(void);
- void func_02027958(void);
+ void WFC_ProcessLinkStep(void);
  void WFC_ProcessLinkState(void);
  u32 Wfc_GetLinkState(void);
  switch(Wfc_GetLinkState()) {
@@ -520,7 +520,7 @@ s32 func_02030264(void) {
  case 1:func_020271cc();break;
  case 3:func_02027428();break;
  case 6:func_020276b0();break;
- case 9:func_02027958();break;
+ case 9:WFC_ProcessLinkStep();break;
  case 12:WFC_ProcessLinkState();break;
  case 11:func_0202f558(0);return -1;
  }

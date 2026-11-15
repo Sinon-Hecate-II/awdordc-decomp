@@ -3,7 +3,106 @@
 
 typedef struct UnkB454Bits { u32 value : 8; u32 rest : 24; } UnkB454Bits;
 
-M2C_UNK FloodFillUnitRange(M2C_UNK a0, M2C_UNK a1, M2C_UNK a2, M2C_UNK a3, M2C_UNK a4) { (void)a0;(void)a1;(void)a2;(void)a3;(void)a4; return 0; }
+/* Flood-fill the tiles a unit of `kind` at (x,y) can reach within the cost
+ * budget `value`: seed the two ping-pong search queues, write the accumulated
+ * cost into the map's per-cell score layer and expand each node into its
+ * neighbours. `moveRange` carries the search's behaviour flags. */
+void FloodFillUnitRange(s32 x, s32 y, s32 kind, s32 value, s32 moveRange) {
+    extern void **gCurrentMap;
+    extern s8 *gMoveSearchState;
+    extern s32 gMoveSearchCount;
+    extern s8 gMoveSearchBuffer;
+    extern void *gMoveSearchWrite;
+    extern void *gMoveSearchCurrent;
+    extern u8 gMovementTypeTable[];
+    void FillMapLayer(s8);
+    void func_01ffb454(s32);
+    void func_01ffb50c(s32);
+    void func_01ffb114(s32, s32, s32);
+    s32 func_020a85b8(s32);
+    s8 *base;
+    MoveSearchNode *node;
+
+    base = gMoveSearchState;
+    gMoveSearchCount = 0;
+    gMoveSearchBuffer = 0;
+    gMoveSearchWrite = base + MOVE_SEARCH_QUEUE_A;
+    gMoveSearchCurrent = base + MOVE_SEARCH_QUEUE_B;
+    M2C_FIELD(base, u16 *, MOVE_SEARCH_COST_LIMIT) = (u16)value;
+    M2C_FIELD(gMoveSearchState, u16 *, MOVE_SEARCH_MOVE_RANGE) = (u16)moveRange;
+
+    M2C_FIELD((u8 *)gMoveSearchState, u8 *, MOVE_SEARCH_MOVEMENT_TYPE) =
+        M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, 0x52b6) * 0x8c, u8 *, 0x67ca);
+
+    if (kind < 0x1b) {
+        if (func_020a85b8(kind)) {
+            M2C_FIELD(gMoveSearchState, s16 *, MOVE_SEARCH_MOVE_RANGE) &= ~0xd;
+        }
+        if (gMovementTypeTable[kind * 0x70] == 6) {
+            if (!(M2C_FIELD(gMoveSearchState, s16 *, MOVE_SEARCH_MOVE_RANGE) & 0x20)) {
+                M2C_FIELD(gMoveSearchState, s16 *, MOVE_SEARCH_MOVE_RANGE) |= 0x10;
+            }
+        }
+        FillMapLayer(-1);
+        func_01ffb454(kind);
+    } else {
+        FillMapLayer(-1);
+        func_01ffb50c(kind);
+    }
+
+    ((MoveSearchNode *)gMoveSearchWrite)->x = (u8)x;
+    ((MoveSearchNode *)gMoveSearchWrite)->y = (u8)y;
+    ((MoveSearchNode *)gMoveSearchWrite)->dir = MOVE_SEARCH_DIR_START;
+    ((MoveSearchNode *)gMoveSearchWrite)->cost = 0;
+    M2C_FIELD(*(u8 **)((u8 *)*gCurrentMap + 0x52e8 + y * 4), u8 *, x) = 0;
+    gMoveSearchWrite = (u8 *)gMoveSearchWrite + 4;
+    ((MoveSearchNode *)gMoveSearchWrite)->dir = 0;
+
+    for (;;) {
+        if (!gMoveSearchBuffer) {
+            base = gMoveSearchState;
+            gMoveSearchWrite = (u8 *)base + MOVE_SEARCH_QUEUE_B;
+            gMoveSearchCurrent = (u8 *)base + MOVE_SEARCH_QUEUE_A;
+            gMoveSearchBuffer = 1;
+            gMoveSearchCount = 0;
+        } else {
+            base = gMoveSearchState;
+            gMoveSearchWrite = (u8 *)base + MOVE_SEARCH_QUEUE_A;
+            gMoveSearchCurrent = (u8 *)base + MOVE_SEARCH_QUEUE_B;
+            gMoveSearchBuffer = 0;
+            gMoveSearchCount = 0;
+        }
+        node = gMoveSearchCurrent;
+        if (node->dir == 0) break;
+        while (node->dir != 0) {
+            switch (node->dir) {
+            case MOVE_SEARCH_DIR_START:
+                func_01ffb114(MOVE_SEARCH_DIR_UP, 0, 0xff); func_01ffb114(MOVE_SEARCH_DIR_DOWN, 0, 1);
+                func_01ffb114(MOVE_SEARCH_DIR_LEFT, 0xff, 0); func_01ffb114(MOVE_SEARCH_DIR_RIGHT, 1, 0);
+                break;
+            case MOVE_SEARCH_DIR_UP:
+                func_01ffb114(MOVE_SEARCH_DIR_UP, 0, 0xff); func_01ffb114(MOVE_SEARCH_DIR_LEFT, 0xff, 0);
+                func_01ffb114(MOVE_SEARCH_DIR_RIGHT, 1, 0);
+                break;
+            case MOVE_SEARCH_DIR_DOWN:
+                func_01ffb114(MOVE_SEARCH_DIR_DOWN, 0, 1); func_01ffb114(MOVE_SEARCH_DIR_LEFT, 0xff, 0);
+                func_01ffb114(MOVE_SEARCH_DIR_RIGHT, 1, 0);
+                break;
+            case MOVE_SEARCH_DIR_LEFT:
+                func_01ffb114(MOVE_SEARCH_DIR_UP, 0, 0xff); func_01ffb114(MOVE_SEARCH_DIR_DOWN, 0, 1);
+                func_01ffb114(MOVE_SEARCH_DIR_LEFT, 0xff, 0);
+                break;
+            case MOVE_SEARCH_DIR_RIGHT:
+                func_01ffb114(MOVE_SEARCH_DIR_UP, 0, 0xff); func_01ffb114(MOVE_SEARCH_DIR_DOWN, 0, 1);
+                func_01ffb114(MOVE_SEARCH_DIR_RIGHT, 1, 0);
+                break;
+            }
+            ((MoveSearchNode *)gMoveSearchWrite)->dir = 0;
+            gMoveSearchCurrent = (u8 *)gMoveSearchCurrent + 4;
+            node = gMoveSearchCurrent;
+        }
+    }
+}
 
 void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
     extern void *gMoveSearchCurrent;
@@ -166,7 +265,7 @@ gMoveSearchState[i]=(table+unit[0x12]*32)[i];
 }
 
 #pragma opt_peephole off
-void func_01ffb50c(void) {
+void func_01ffb50c(s32 arg0) {
 extern s8 data_ov000_021b54e0[];
 extern s8 *gMoveSearchState;
 s32 i;

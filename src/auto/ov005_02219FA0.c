@@ -3,32 +3,36 @@
 typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
 
 #pragma opt_strength_reduction off
-void func_ov005_02219fa0(s32 a, s32 b, s32 c) {
-void *FindObjectByClass(void *);
-void *func_01ffa3dc(void *,void *);
-s32 func_02090e0c(s32,u8,s32,s32,s32,s32,s32,void *);
-void func_ov005_02219e58(void *);
-extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-extern M2C_UNK data_ov005_02220d50,data_ov005_02220fa4,data_0211e058;
-void *obj;
-s32 i;
-void *parent;
-s32 saved,engine;
-parent=FindObjectByClass(&data_ov005_02220d50);
-obj=func_01ffa3dc(&data_0211e058,parent);
-if(!obj)return;
-M2C_FIELD(obj,void **,0)=&data_ov005_02220fa4;
-saved=gCur3DSpriteEngine;
-for(i=0;i<2;i++){
-if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
-gCur3DSpriteEngine=engine;
-M2C_FIELD((char *)obj+4*i,s32 *,0x34)=func_02090e0c(M2C_FIELD(parent,s32 *,0x34),(u8)c,0,0,(u16)((0x3ff & (0x178 >> ((u32)(**(u16 **)engine <<17)>>30)))|0xf000),0,0,obj);
-}
-gCur3DSpriteEngine=saved;
-M2C_FIELD(obj,s32 *,0x3c)=a;
-M2C_FIELD(obj,s32 *,0x40)=b;
-M2C_FIELD(obj,s32 *,0x44)=c;
-func_ov005_02219e58(obj);
+/* Spawn one spark of the results-screen celebration: create a spark effect object
+   under the result screen, give it a 3D sprite on each screen (its graphics picked
+   by `variant`), store its position, then let its per-frame handler take over. */
+void SpawnResultSpark(s32 x, s32 y, s32 variant) {
+    void *FindObjectByClass(void *);
+    void *func_01ffa3dc(void *, void *);
+    s32 func_02090e0c(s32, u8, s32, s32, s32, s32, s32, void *);
+    void func_ov005_02219e58(void *);
+    extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
+    extern M2C_UNK data_ov005_02220d50, data_ov005_02220fa4, data_0211e058;
+    void *spark;
+    s32 screen;
+    void *parent;
+    s32 savedEngine, engine;
+
+    parent = FindObjectByClass(&data_ov005_02220d50);
+    spark = func_01ffa3dc(&data_0211e058, parent);
+    if (!spark) return;
+    M2C_FIELD(spark, void **, 0) = &data_ov005_02220fa4;
+    savedEngine = gCur3DSpriteEngine;
+    for (screen = 0; screen < 2; screen++) {
+        if (screen == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        M2C_FIELD((char *)spark + 4 * screen, s32 *, 0x34) = func_02090e0c(M2C_FIELD(parent, s32 *, 0x34), (u8)variant, 0, 0, (u16)((0x3ff & (0x178 >> ((u32)(**(u16 **)engine << 17) >> 30))) | 0xf000), 0, 0, spark);
+    }
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(spark, s32 *, 0x3c) = x;
+    M2C_FIELD(spark, s32 *, 0x40) = y;
+    M2C_FIELD(spark, s32 *, 0x44) = variant;
+    func_ov005_02219e58(spark);
 }
 
 /* Draws the sprites of the medals being awarded.  Four flags at +0x44..+0x47

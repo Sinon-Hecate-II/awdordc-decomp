@@ -373,30 +373,33 @@ if(p){M2C_FIELD(arg1,s32 *,0)=2;M2C_FIELD(arg1,s32 **,4)=p;*p=0;VoiceLink_SendPa
 VoiceLink_InitContext(&gVoiceLinkScratchContext,M2C_FIELD(arg0,u8 *,8));VoiceLink_SendPacket(&gVoiceLinkScratchContext,2);return 0;
 }
 
-s32 VoiceLink_HandleConnectPacket(void *p,void *out){
+/* Serve a voice-chat connect packet: set the reply's type and context for the
+ * exchange (9/5 on a peer's connect, 7/6 on ours) and advance the link state's
+ * session/substate machine; a packet flag other than 0 or 1 is ignored. */
+s32 VoiceLink_HandleConnectPacket(void *packet,void *reply){
 extern M2C_UNK gLinkConfig,gVoiceLinkState,gVoiceLinkContext;
 if(M2C_FIELD(&gLinkConfig,s32*,16)!=2)return 0;
-if(M2C_FIELD(&gLinkConfig,u8*,1)!=M2C_FIELD(p,u8*,8))return 0;
-switch(M2C_FIELD(p,u8*,10)){
+if(M2C_FIELD(&gLinkConfig,u8*,1)!=M2C_FIELD(packet,u8*,8))return 0;
+switch(M2C_FIELD(packet,u8*,10)){
 case 0:
 if(!M2C_FIELD(&gVoiceLinkState,s32*,0x3c))return 0;
-if(M2C_FIELD(&gVoiceLinkState,s32*,0x48)==5||M2C_FIELD(&gVoiceLinkState,s32*,0x48)==2)M2C_FIELD(out,s32*,0)=9;
-else M2C_FIELD(out,s32*,0)=5;
+if(M2C_FIELD(&gVoiceLinkState,s32*,0x48)==5||M2C_FIELD(&gVoiceLinkState,s32*,0x48)==2)M2C_FIELD(reply,s32*,0)=9;
+else M2C_FIELD(reply,s32*,0)=5;
 M2C_FIELD(&gVoiceLinkState,s32*,0x3c)=0;
 M2C_FIELD(&gVoiceLinkState,s32*,0x48)=0;
-M2C_FIELD(out,void**,4)=&gVoiceLinkContext;
+M2C_FIELD(reply,void**,4)=&gVoiceLinkContext;
 break;
 case 1:
 M2C_FIELD(&gVoiceLinkState,s32*,0x3c)=2;
-if(M2C_FIELD(p,u8*,11)==M2C_FIELD(&gLinkConfig,u8*,0)){
-M2C_FIELD(&gVoiceLinkState,s32*,0x48)=2;M2C_FIELD(out,s32*,0)=7;
-M2C_FIELD(&gVoiceLinkState,u32*,0x44)=M2C_FIELD(p,u32*,12);
+if(M2C_FIELD(packet,u8*,11)==M2C_FIELD(&gLinkConfig,u8*,0)){
+M2C_FIELD(&gVoiceLinkState,s32*,0x48)=2;M2C_FIELD(reply,s32*,0)=7;
+M2C_FIELD(&gVoiceLinkState,u32*,0x44)=M2C_FIELD(packet,u32*,12);
 }else{
-M2C_FIELD(&gVoiceLinkState,s32*,0x48)=3;M2C_FIELD(out,s32*,0)=6;
-M2C_FIELD(&gVoiceLinkState,u32*,0x44)=M2C_FIELD(p,u8*,11)?1<<M2C_FIELD(p,u8*,11):1;
+M2C_FIELD(&gVoiceLinkState,s32*,0x48)=3;M2C_FIELD(reply,s32*,0)=6;
+M2C_FIELD(&gVoiceLinkState,u32*,0x44)=M2C_FIELD(packet,u8*,11)?1<<M2C_FIELD(packet,u8*,11):1;
 }
-M2C_FIELD(&gVoiceLinkState,u8*,0x41)=M2C_FIELD(p,u8*,11);
-M2C_FIELD(out,void**,4)=&gVoiceLinkContext;
+M2C_FIELD(&gVoiceLinkState,u8*,0x41)=M2C_FIELD(packet,u8*,11);
+M2C_FIELD(reply,void**,4)=&gVoiceLinkContext;
 break;
 default:return 0;
 }

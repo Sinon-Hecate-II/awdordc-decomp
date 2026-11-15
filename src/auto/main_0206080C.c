@@ -313,7 +313,7 @@ s32 SBServerGetPing(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x1C);
 }
 
-void *func_02061090(s32 arg0,s32 arg1,s32 arg2){
+void *SBServerNew(s32 arg0,s32 arg1,s32 arg2){
  void *gpiMalloc(s32);M2C_UNK gpiFree(s32);
  s32 TableNew2(s32,s32,s32,void *,void *,void *);
  void *temp_r0=gpiMalloc(0x24);

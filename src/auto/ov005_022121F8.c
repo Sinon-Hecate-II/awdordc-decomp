@@ -327,7 +327,7 @@ void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
 void *GetLocalizedText(s32);s32 MeasureStringWidth(void *);
 void DrawTileRow(u16,s16,s32,u16,s32);
-void func_ov000_0216a374(u16,u16,u16,s32);
+void AddSprite32x16(u16,u16,u16,s32);
 extern void *gHistoryMenu,*gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern u8 gSpriteDesc16x16[];
 s16 *p;void *saved;s32 total,amount,ratio,left,height,width;u16 attr; s32 text;
@@ -347,7 +347,7 @@ text=MeasureStringWidth(GetLocalizedText(M2C_FIELD(gHistoryMenu,s32 *,0x34)));
 DrawTileRow((u16)((252-text)&511),30,96,(u16)(((0xa4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
 text=MeasureStringWidth(GetLocalizedText(M2C_FIELD(gHistoryMenu,s32 *,0x38)));
 DrawTileRow((u16)((252-text)&511),54,96,(u16)(((0xbc >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
-func_ov000_0216a374(220,78,(u16)(((0xd4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x9000),0);
+AddSprite32x16(220,78,(u16)(((0xd4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x9000),0);
 gCur3DSpriteEngine=saved;
 }
 #pragma opt_common_subs reset

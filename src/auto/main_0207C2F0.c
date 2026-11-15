@@ -528,7 +528,7 @@ u8 GetMapViewHeight(void) {
  return M2C_FIELD(*gCurrentMap, u8 *, 0x6F05);
 }
 
-void func_0207d0f0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {
+void DrawSprite3DGeometry(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {
  M2C_UNK func_0207d130(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
  func_0207d130(arg0,arg1,arg2,arg3,arg4,arg5,arg6,0,0,0,0);
 }

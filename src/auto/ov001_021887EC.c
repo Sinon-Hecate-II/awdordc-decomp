@@ -376,7 +376,7 @@ void func_ov001_02189308(void) {
 void func_ov001_02189318(void) { M2C_UNK SystemHalt(); extern void *gOv001ProfileState; s32 value; switch(Ov001_GetTaskStep()) { case 1: func_ov001_021883a8(); return; case 7: value=func_ov001_02188614(); M2C_FIELD(gOv001ProfileState,u16 *,0x64a)=value; M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 0: M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 9: func_ov001_02188b04();return; case 3: break; default: SystemHalt();return; } }
 
 void func_ov001_021893c0(void) {
-    M2C_UNK func_ov001_02186e80(s32, u16);
+    M2C_UNK Ov001_StartDownloadPlay(s32, u16);
     extern void *gOv001ProfileState;
-    func_ov001_02186e80(M2C_FIELD(gOv001ProfileState, s32 *, 0xAC8), M2C_FIELD(gOv001ProfileState, u16 *, 0x648));
+    Ov001_StartDownloadPlay(M2C_FIELD(gOv001ProfileState, s32 *, 0xAC8), M2C_FIELD(gOv001ProfileState, u16 *, 0x648));
 }

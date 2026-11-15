@@ -9,7 +9,7 @@ extern u8 gMapConfig[16];
 /* Whether the cursor may be moved to tile (x,y): the cursor-owner guard, the
  * reachability grid and the unit standing on the tile are checked, then the
  * attack and join rules against the unit under the cursor. */
-s32 func_020d6398(s32 x,s32 y){
+s32 CanMoveCursorTo(s32 x,s32 y){
 extern void **gCurrentMap;
 s32 func_020a85b8(s32); u8 func_020ba790(s32,s32); s32 CanUnitsJoin(void*,void*); u8 IsSameTeam(s32,s32);
 u8 *map=*gCurrentMap;

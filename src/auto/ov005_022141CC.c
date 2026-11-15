@@ -119,35 +119,46 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
 
-void func_ov005_02214a84(s32 a) {
- extern M2C_UNK gRecordsMenuState;
- extern s16 data_ov005_02220572[],data_ov005_02220570[];
- void *p; s32 old,cur; s16 *list;
- if(!a)return;
- p=M2C_FIELD(&gRecordsMenuState,void **,8);
- if(M2C_FIELD(p,s16 *,0x86)!=0 || M2C_FIELD(p,s16 *,0x88)!=0)return;
- if(M2C_FIELD(p,s16 *,4)<=0)return;
- old=M2C_FIELD(p,s16 *,2); list=p+6;
- M2C_FIELD(p,s16 *,2)=old+1;
- p=M2C_FIELD(&gRecordsMenuState,void **,8);
- if(M2C_FIELD(p,s16 *,2)>=M2C_FIELD(p,s16 *,4))M2C_FIELD(p,s16 *,2)=0;
- p=M2C_FIELD(&gRecordsMenuState,void **,8);
- cur=M2C_FIELD(p,s16 *,2);
- if(old==-1) {if(data_ov005_02220572[list[cur]*2]!=-1)M2C_FIELD(p,s16 *,0x86)=16;}
- else if(data_ov005_02220572[list[old]*2]!=data_ov005_02220572[list[cur]*2])M2C_FIELD(p,s16 *,0x86)=16;
- if(data_ov005_02220570[list[old]*2]!=data_ov005_02220570[list[cur]*2]) M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x88)=16;
+/* Advance the records screen's fade list cursor and start the main and/or sub screen
+ * fade when the record it moves to has a different background id than the previous
+ * one.  Does nothing while a fade or a menu action is running. */
+void RecordsMenu_AdvanceFadeRecord(s32 enabled) {
+    extern M2C_UNK gRecordsMenuState;
+    extern s16 gRecordMainBgId[], gRecordSubBgId[];
+    RecordsScreen *screen;
+    s32 previous, current;
+    s16 *list;
+
+    if (!enabled) return;
+    screen = M2C_FIELD(&gRecordsMenuState, RecordsScreen **, 8);
+    if (screen->fadeTop != 0 || screen->fadeBottom != 0) return;
+    if (screen->fadeCount <= 0) return;
+    previous = screen->fadeCursor;
+    list = screen->fadeList;
+    screen->fadeCursor = previous + 1;
+    screen = M2C_FIELD(&gRecordsMenuState, RecordsScreen **, 8);
+    if (screen->fadeCursor >= screen->fadeCount) screen->fadeCursor = 0;
+    screen = M2C_FIELD(&gRecordsMenuState, RecordsScreen **, 8);
+    current = screen->fadeCursor;
+    if (previous == -1) {
+        if (gRecordMainBgId[list[current] * 2] != -1) screen->fadeTop = 16;
+    } else if (gRecordMainBgId[list[previous] * 2] != gRecordMainBgId[list[current] * 2]) {
+        screen->fadeTop = 16;
+    }
+    if (gRecordSubBgId[list[previous] * 2] != gRecordSubBgId[list[current] * 2])
+        ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, RecordsScreen **, 8))->fadeBottom = 16;
 }
 
 void func_ov005_02214b98(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gRecordsMenuState,data_ov005_02220658,data_ov005_02220670,data_ov005_02220688,data_ov005_022206a0,data_ov005_022206b8;
-extern s16 data_ov005_02220572[];
+extern s16 gRecordMainBgId[];
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void func_020816a4(void *,s32,s32,s32);void func_0208161c(void *,s32,s32,s32);
 void CloseNarcArchive(void);void SetFileDirectory(void *);void func_ov005_022140e4(void);
 void *func_020ad460(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
 void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&g3DSpriteEngineMain; void *p=M2C_FIELD(&gRecordsMenuState,void **,8);s32 id;
 gCur3DSpriteEngine=engine;
-if(M2C_FIELD(p,s16 *,2)==-1 || (id=data_ov005_02220572[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
+if(M2C_FIELD(p,s16 *,2)==-1 || (id=gRecordMainBgId[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
 OpenNarcArchive(&data_ov005_02220658);
 LoadNarcFileDecompressed(&data_ov005_02220670,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
 func_020816a4(&data_ov005_02220688,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c),0,0);
@@ -169,7 +180,7 @@ void func_ov005_02214cdc(void) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern M2C_UNK gRecordsMenuState, data_ov005_022206c0, data_ov005_022206d8, data_ov005_022206ec, data_ov005_02220700, data_ov005_02220714;
-    extern s16 data_ov005_02220570[];
+    extern s16 gRecordSubBgId[];
     void OpenNarcArchive(void *);
     void LoadNarcFileDecompressed(void *, s32);
     void func_020816a4(void *, s32, s32, s32);
@@ -195,7 +206,7 @@ void func_ov005_02214cdc(void) {
         func_0208161c(&data_ov005_02220700, 3, 0, 512);
         CloseNarcArchive();
     } else {
-        s32 id = data_ov005_02220570[M2C_FIELD(p + M2C_FIELD(p, s16 *, 2) * 2, s16 *, 6) * 2];
+        s32 id = gRecordSubBgId[M2C_FIELD(p + M2C_FIELD(p, s16 *, 2) * 2, s16 *, 6) * 2];
         SetFileDirectory(&data_ov005_02220714);
         OpenNarcArchive(func_020ad460(id));
         LoadNarcFileDecompressed(func_020ad4a0(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));

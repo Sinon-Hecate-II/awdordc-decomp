@@ -1,7 +1,7 @@
 /* 54 functions from 0x020D4430 to 0x020D5430 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-void func_020d4f4c(void);
+void UpdateMapCursor(void);
 void UpdateUnitSelectCursor(void);
 void UpdateAimingCursor(void);
 
@@ -295,18 +295,22 @@ u8 func_020d4dac(void) {
 u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
 
 void func_020d5068(void);
-void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:UpdateUnitSelectCursor();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
+void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:UpdateMapCursor();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:UpdateUnitSelectCursor();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
 
 int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(IsDialogActive())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
 
-void func_020d4f4c(void) {
+/* Battle-map cursor handler (cursor mode 0): plays the cursor sound when the
+ * touch cursor moved or was cancelled, moves the cursor, lets the state's touch
+ * handler consume the key, draws the unit-info panel and, on a cancel action,
+ * clears the unit selection. */
+void UpdateMapCursor(void) {
 s32 func_020d8f60(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 func_020bd560(void);
-s32 old, reset, notify, key;
-old=func_020d8f60();
-reset=0; notify=0;
+s32 hadSelection, cancelled, playSound, key;
+hadSelection=func_020d8f60();
+cancelled=0; playSound=0;
 key=func_020bd13c();
-switch(key) { case 0x1000: notify=1; break; case 0: reset=1; notify=1; break; }
-if(notify) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
+switch(key) { case 0x1000: playSound=1; break; case 0: cancelled=1; playSound=1; break; }
+if(playSound) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
 MoveMapCursorToTarget(0);
 if(func_020d4dd0()) {
 if(func_ov000_0216ab64(1)) return;
@@ -322,9 +326,9 @@ case 0x80: break;
 }
 }
 DrawUnitInfoPanel(0);
-if(!reset) return;
+if(!cancelled) return;
 func_020bdfa8(); func_020be078();
-if(!old) return;
+if(!hadSelection) return;
 func_020be044();
 }
 
@@ -354,7 +358,7 @@ void UpdateAimingCursor(void) {
  extern void **gCurrentMap;
  extern u8 data_0211fbc4[];
  u32 func_020bca68(void);
- u32 func_020bd684(void);
+ u32 GetTouchReleaseKeyAction(void);
  void *map;
  u32 keys;
  func_020cf850(0x1001a);
@@ -375,7 +379,7 @@ void UpdateAimingCursor(void) {
  if(func_020d4dd0()){
  keys=0;
  keys|=func_020bca68();
- keys|=func_020bd684();
+ keys|=GetTouchReleaseKeyAction();
  if(keys&0x10){ /* confirm the aimed tile */
  map=*gCurrentMap;
  MoveCursorTo(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y));

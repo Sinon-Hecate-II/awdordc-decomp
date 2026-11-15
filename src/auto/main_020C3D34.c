@@ -4,7 +4,7 @@ typedef struct { u8 bytes[6]; u16 half[6]; } SetupColors;
 typedef struct { u32 names[15]; } SetupNames;
 typedef struct { s32 v[4]; } SaveDate;
 typedef struct { s32 v[3]; } SaveTime;
-extern const SaveDate data_020f4e48;
+extern const SaveDate gDefaultProfileDate;
 static inline void SaveTime_Clear(SaveTime *p) { M2C_FIELD((u32)p,s32 *,0)=0; M2C_FIELD((u32)p,s32 *,4)=0; M2C_FIELD((u32)p,s32 *,8)=0; }
 static inline s32 SaveTime_Get1(SaveTime *p) { return p->v[1]; }
 static inline s32 SaveTime_Get2(SaveTime *p) { return p->v[2]; }
@@ -204,7 +204,7 @@ void func_020c488c(void *arg0) {
 
 void func_020c48b0(void *arg0) {
  if(func_020c4b6c(M2C_FIELD(arg0,s32*,0x34))==0) {
- func_020c4954(M2C_FIELD(arg0,s32*,0x34));
+ InitPlayerProfile(M2C_FIELD(arg0,s32*,0x34));
  func_020c4ad8(M2C_FIELD(arg0,s32 **,0x38));
  return;
  }
@@ -231,42 +231,47 @@ void func_020c4910(void) {
  M2C_FIELD(p,M2C_UNK **,0x38)=&data_02164128;
 }
 
-s32 func_020c4954(s32 arg0) {
+/* Initialise the local player's profile save block: the save magic, a cleared
+ * 0x40-byte profile-id block, the starting value at +0x50 and +0x54, and both
+ * profile stamps set to the default date with a zeroed time. The profile-id
+ * block is then filled in and its id strings formatted for the game id
+ * 0x5957324A ("YW2J"). */
+s32 InitPlayerProfile(s32 profile) {
 void func_020323a4(void *,u32);
 void func_0203287c(void *);
-SaveDate initial;
-SaveTime b;
-SaveDate a;
-SaveTime d;
-SaveDate c;
-M2C_FIELD(arg0,s32 *,0)=0x07090600;
-MI_CpuFill8(arg0+4,0,0x40);
-M2C_FIELD(arg0,s32 *,0x44)=0;
-M2C_FIELD(arg0,s32 *,0x48)=0;
-M2C_FIELD(arg0,s32 *,0x4c)=0;
-M2C_FIELD(arg0,s32 *,0x50)=0x5dc000;
-M2C_FIELD(arg0,s32 *,0x54)=0x5dc000;
-initial=data_020f4e48;
-a=initial;
-M2C_FIELD(arg0,s32 *,0x58)=a.v[0];
-M2C_FIELD(arg0,s32 *,0x5c)=a.v[1];
-M2C_FIELD(arg0,s32 *,0x60)=a.v[2];
-M2C_FIELD(arg0,s32 *,0x64)=a.v[3];
-SaveTime_Clear(&b);
-M2C_FIELD(arg0,s32 *,0x68)=0;
-M2C_FIELD(arg0,s32 *,0x6c)=b.v[1];
-M2C_FIELD(arg0,s32 *,0x70)=b.v[2];
-c=initial;
-M2C_FIELD(arg0,s32 *,0x74)=c.v[0];
-M2C_FIELD(arg0,s32 *,0x78)=c.v[1];
-M2C_FIELD(arg0,s32 *,0x7c)=c.v[2];
-M2C_FIELD(arg0,s32 *,0x80)=c.v[3];
-SaveTime_Clear(&d);
-M2C_FIELD(arg0,s32 *,0x84)=0;
-M2C_FIELD(arg0,s32 *,0x88)=d.v[1];
-M2C_FIELD(arg0,s32 *,0x8c)=d.v[2];
-func_020323a4((void *)(arg0+4),0x5957324a);
-func_0203287c((void *)(arg0+4));
+SaveDate defaultDate;
+SaveTime timeA;
+SaveDate dateA;
+SaveTime timeB;
+SaveDate dateB;
+M2C_FIELD(profile,s32 *,0)=SAVE_BLOCK_MAGIC;
+MI_CpuFill8(profile+PROFILE_ID_BLOCK,0,PROFILE_ID_BLOCK_SIZE);
+M2C_FIELD(profile,s32 *,0x44)=0;
+M2C_FIELD(profile,s32 *,0x48)=0;
+M2C_FIELD(profile,s32 *,0x4c)=0;
+M2C_FIELD(profile,s32 *,0x50)=0x5dc000;
+M2C_FIELD(profile,s32 *,0x54)=0x5dc000;
+defaultDate=gDefaultProfileDate;
+dateA=defaultDate;
+M2C_FIELD(profile,s32 *,0x58)=dateA.v[0];
+M2C_FIELD(profile,s32 *,0x5c)=dateA.v[1];
+M2C_FIELD(profile,s32 *,0x60)=dateA.v[2];
+M2C_FIELD(profile,s32 *,0x64)=dateA.v[3];
+SaveTime_Clear(&timeA);
+M2C_FIELD(profile,s32 *,0x68)=0;
+M2C_FIELD(profile,s32 *,0x6c)=timeA.v[1];
+M2C_FIELD(profile,s32 *,0x70)=timeA.v[2];
+dateB=defaultDate;
+M2C_FIELD(profile,s32 *,0x74)=dateB.v[0];
+M2C_FIELD(profile,s32 *,0x78)=dateB.v[1];
+M2C_FIELD(profile,s32 *,0x7c)=dateB.v[2];
+M2C_FIELD(profile,s32 *,0x80)=dateB.v[3];
+SaveTime_Clear(&timeB);
+M2C_FIELD(profile,s32 *,0x84)=0;
+M2C_FIELD(profile,s32 *,0x88)=timeB.v[1];
+M2C_FIELD(profile,s32 *,0x8c)=timeB.v[2];
+func_020323a4((void *)(profile+PROFILE_ID_BLOCK),0x5957324a);
+func_0203287c((void *)(profile+PROFILE_ID_BLOCK));
 return 1;
 }
 

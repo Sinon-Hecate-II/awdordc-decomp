@@ -59,22 +59,25 @@ p=*gCurrentMap;
 if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2)MarkThreatRanges();
 }
 
-void func_020cea28(void){
+/* Recompute the fog-of-war visibility of the units of the teams in play: reset
+ * the visibility bits of every active player's units, then mark the fogged enemy
+ * units that are in sight of the viewing team as visible. */
+void RefreshUnitVisibility(void){
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
-s32 func_020a600c(u16);
+s32 IsUnitInSight(u16);
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 player,i,id;u8 *unit;
 for(player=1;player<5;player++){
 if(IsPlayerActive(player)){
-for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+0x33;i++){
-unit=(u8*)*gCurrentMap+0x59a4+i*14;
+for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+MAP_UNIT_GROUP_SCAN;i++){
+unit=(u8*)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
 if(((u32)(unit[0]<<26)>>26)!=0){
-M2C_FIELD(unit,u16*,4)&=~0xc0;
-if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,0x52a4),player)&&(M2C_FIELD(unit,u16*,4)&0x20)){
-if(!unit)id=0;else id=((s32)unit-(s32)((u8*)*gCurrentMap+0x59a4))/14;
-if(func_020a600c((u16)id))M2C_FIELD(unit,u16*,4)|=0x40;
+M2C_FIELD(unit,u16*,MAP_UNIT_FLAGS)&=~UNIT_FLAG_FOG_MASK;
+if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)&&(M2C_FIELD(unit,u16*,MAP_UNIT_FLAGS)&UNIT_FLAG_FOG)){
+if(!unit)id=0;else id=((s32)unit-(s32)((u8*)*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;
+if(IsUnitInSight((u16)id))M2C_FIELD(unit,u16*,MAP_UNIT_FLAGS)|=UNIT_FLAG_VISIBLE;
 }
 }
 }

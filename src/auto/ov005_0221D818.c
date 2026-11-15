@@ -162,7 +162,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     void *func_02090eb8(M2C_UNK *, s32, s32, s32, u16, s32, void *);
     void func_ov005_0221a38c(void *);
     s32 RandomIntRange(s32, s32);
-    void func_ov005_02219fa0(s32, s32, s32);
+    void SpawnResultSpark(s32, s32, s32);
     extern M2C_UNK data_ov005_02220db8, data_ov005_02220f90, data_ov005_02220a4c, data_ov005_02220a78;
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
     extern u16 gMapConfig;
@@ -203,12 +203,12 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     for (i = 0; i < 8; i++) {
         x = RandomIntRange(-48, -16);
         y = RandomIntRange(288, 352);
-        func_ov005_02219fa0(x, y, RandomIntRange(0, 3));
+        SpawnResultSpark(x, y, RandomIntRange(0, 3));
     }
     for (i = 0; i < 16; i++) {
         x = RandomIntRange(-32, 128);
         y = RandomIntRange(400, 432);
-        func_ov005_02219fa0(x, y, RandomIntRange(0, 3));
+        SpawnResultSpark(x, y, RandomIntRange(0, 3));
     }
 }
 /* Initializes ov005's scene state when the system is ready and the global mode is not state 1. */

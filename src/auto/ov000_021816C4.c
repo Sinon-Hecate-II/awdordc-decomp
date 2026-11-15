@@ -1,5 +1,6 @@
 /* 9 functions from 0x021816C4 to 0x02181C88 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 /* Update the active state and dispatch the appropriate handler. */
 void RunAiRole2EmptyAction(void) {
@@ -13,7 +14,7 @@ void RunAiRole2EmptyAction(void) {
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 28) >> 28) == 6) {
         return;
     }
-    func_ov000_02198c60();
+    BuildAiInfluenceMaps();
     func_ov000_0218edd8();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0) << 26) >> 26) == 25) {
         func_ov000_0218ca94();
@@ -38,7 +39,7 @@ void func_ov000_021817c0(void) {
 extern void **gCurrentMap;
 if(func_ov000_02180410()!=0)return;
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==6)return;
-func_ov000_02198c60();
+BuildAiInfluenceMaps();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==8)func_ov000_021962f8();else func_ov000_0219234c();
 }
 
@@ -52,7 +53,7 @@ void func_ov000_02181838(void) {
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 28) >> 28) == 6) {
         return;
     }
-    func_ov000_02198c60();
+    BuildAiInfluenceMaps();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0) << 26) >> 26) == 25) {
         func_ov000_0218ca94();
     }
@@ -73,7 +74,7 @@ extern void *gAiCommandState;
 void *state;
 if(func_ov000_02180410()!=0){func_ov000_0218046c();return;}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==6)return;
-func_ov000_02198c60();
+BuildAiInfluenceMaps();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26)==25)func_ov000_0218ca94();
 state=*gCurrentMap;
 if(M2C_FIELD(state+M2C_FIELD(state,u16 *,0x52a4)*0x8c,u8 *,0x67ce))func_ov000_02186a18();
@@ -86,26 +87,50 @@ func_ov000_021935c4();
 func_ov000_0218b02c();
 }
 
-void func_ov000_02181a14(void) {
-extern void **gCurrentMap;
-void *p;
-if(func_ov000_02180410()!=0){func_ov000_0218046c();return;}
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)!=1)func_ov000_02198c60();else func_ov000_02198c08();
-p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-if(((u32)(M2C_FIELD(p,u8 *,11)<<28)>>28)==6){
-if(((u32)(M2C_FIELD(p,u8 *,0)<<26)>>26)==25)func_ov000_0218cfec();
-return;
-}
-if(((u32)(M2C_FIELD(p,u8 *,0)<<26)>>26)==24 && M2C_FIELD(p,u8 *,12)==0)func_ov000_0218edd8();else func_ov000_0218eea8();
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26)==25)func_ov000_0218ca94();
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==8){func_ov000_021962f8();func_ov000_0218b02c();return;}
-func_ov000_02189df4();func_ov000_0218b02c();
+/* Runs one step of the AI action of a role-5 unit: refreshes the influence maps
+   (or clears them on the first step), then chooses the acting unit's destination --
+   including the kind-24 pick-up and kind-25 attack steps -- and finishes the action. */
+void RunAiRole5Action(void) {
+    extern void **gCurrentMap;
+    void *unit;
+
+    if (func_ov000_02180410() != 0) {
+        func_ov000_0218046c();
+        return;
+    }
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) != 1) {
+        BuildAiInfluenceMaps();
+    } else {
+        ClearAiInfluenceMaps();
+    }
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 6) {
+        if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) == 25) {
+            func_ov000_0218cfec();
+        }
+        return;
+    }
+    if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) == 24 && M2C_FIELD(unit, u8 *, MAP_UNIT_CARRIED) == 0) {
+        func_ov000_0218edd8();
+    } else {
+        func_ov000_0218eea8();
+    }
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) == 25) {
+        func_ov000_0218ca94();
+    }
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
+        func_ov000_021962f8();
+        func_ov000_0218b02c();
+        return;
+    }
+    func_ov000_02189df4();
+    func_ov000_0218b02c();
 }
 
-void func_ov000_02181b34(void) {
+void RunAiSupplyAction(void) {
     M2C_UNK func_ov000_0218ef40();
-    M2C_UNK func_ov000_02198c08();
-    M2C_UNK func_ov000_02198c60();
+    M2C_UNK ClearAiInfluenceMaps();
+    M2C_UNK BuildAiInfluenceMaps();
     extern void **gCurrentMap;
     u32 temp_r0;
 
@@ -117,9 +142,9 @@ void func_ov000_02181b34(void) {
         return;
     }
     if (temp_r0 != 1) {
-        func_ov000_02198c60();
+        BuildAiInfluenceMaps();
     } else {
-        func_ov000_02198c08();
+        ClearAiInfluenceMaps();
     }
     func_ov000_0218ef40();
 }
@@ -150,7 +175,7 @@ extern void *gAiSettings;
 extern void *gAiCommandState;
 s32 (*callback)(void);
 if(func_ov000_02180410()!=0)return;
-func_ov000_02198c60();
+BuildAiInfluenceMaps();
 if(func_ov000_0218cb20()!=0)return;
 callback=M2C_FIELD(gAiSettings,s32 (**)(void),4);
 if(callback==NULL) {if(!func_ov000_021aa3bc())return;} else {if(!callback())return;}

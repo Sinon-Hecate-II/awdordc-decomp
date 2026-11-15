@@ -85,7 +85,7 @@ void func_ov000_02170ca0(void) {
 void LoadSituationScreen(void *object){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK sSituationDir,sSituationNarcName,sSituationCgName,sSituationScName,sSituationClName;
-void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_02080944(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020c0fac(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void MI_CpuCopy32(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
+void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020c0fac(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void MI_CpuCopy32(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
 void *oldEngine=gCur3DSpriteEngine;s32 i;void *dest;u8 *player;s32 tile,paletteOff;
 gCur3DSpriteEngine=g3DSpriteEngineMain;func_020994e0(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
@@ -93,7 +93,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=1;
 SetFileDirectory(&sSituationDir);OpenNarcArchive(GetLocalizedFileName(&sSituationNarcName));
 LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationCgName),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
 LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationScName),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
-func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);CloseNarcArchive();LoadFileToSpriteBuffer(&sSituationClName,192,32);func_020c0fac(object);
+AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);CloseNarcArchive();LoadFileToSpriteBuffer(&sSituationClName,192,32);func_020c0fac(object);
 i=0;if(func_020cfb94()>0){tile=0x35c;do{
 player=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+(i+1)*MAP_PLAYER_STRIDE;dest=(u8 *)M2C_FIELD(g3DSpriteEngineMain,void * volatile *,0x1c)+(tile<<5);
 MI_CpuCopy32(func_ov000_0216ce10(player[PLAYER_REC_ARMY_STATE]),dest,128);
@@ -247,21 +247,24 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=3;
 func_020c0fac(screen);gCur3DSpriteEngine=oldEngine;
 }
 
-void func_ov000_021715a4(u8 *p){
+/* Draw the username entry rows set up by LoadUsernameScreen: for each player slot
+ * flagged in screen[0x34+slot], add the 32x16 name-field sprite and the 16x16
+ * player icon beside it. */
+void DrawUsernameRows(u8 *screen){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gSpriteDesc16x16;
-void func_ov000_0216a374(s32,u16,u16,s32);
+void AddSprite32x16(s32,u16,u16,s32);
 void AddSprite(s32,s32,u16,void *,s32);
-void *old=gCur3DSpriteEngine;s32 i;
+void *oldEngine=gCur3DSpriteEngine;s32 slot;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-for(i=1;i<5;i++){
-if(p[0x34+i]){
-s32 n=i-1;
-func_ov000_0216a374(0x42,(u16)((n*40+21)&511),(u16)(((n*12+0x35c)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0xb000),11);
-AddSprite(8,(n*40+14)&255,(u16)(((n*12+0x364)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|(u16)((n+12)<<12)),&gSpriteDesc16x16,11);
+for(slot=1;slot<5;slot++){
+if(screen[0x34+slot]){
+s32 row=slot-1;
+AddSprite32x16(0x42,(u16)((row*40+21)&511),(u16)(((row*12+0x35c)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0xb000),11);
+AddSprite(8,(row*40+14)&255,(u16)(((row*12+0x364)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|(u16)((row+12)<<12)),&gSpriteDesc16x16,11);
 }
 }
-gCur3DSpriteEngine=old;
+gCur3DSpriteEngine=oldEngine;
 }
 
 void func_ov000_021716c0(void) {

@@ -7,20 +7,20 @@ void func_ov001_02187590(void *a, s32 b, void *c) {
     (void)a; (void)b; (void)c; (void)x;
 }
 
-void func_ov001_021878b4(s16 arg0) {
-    extern s16 *data_ov001_02193e1c;
-    *data_ov001_02193e1c = arg0;
+void Ov001_SetLinkStatus(s16 arg0) {
+    extern s16 *gOv001LinkWork;
+    *gOv001LinkWork = arg0;
 }
 
 u16 Ov001_GetLinkStatus(void) {
-    extern s16 *data_ov001_02193e1c;
-    return *(u16 *)data_ov001_02193e1c;
+    extern s16 *gOv001LinkWork;
+    return *(u16 *)gOv001LinkWork;
 }
 
 #pragma common_subs off
 u16 Ov001_GetLinkInfo(s32 arg0) {
-extern s16 *data_ov001_02193e1c;extern u16 *data_ov001_02190c68[];
-s16 *q=data_ov001_02193e1c;u16 **table=data_ov001_02190c68;
+extern s16 *gOv001LinkWork;extern u16 *data_ov001_02190c68[];
+s16 *q=gOv001LinkWork;u16 **table=data_ov001_02190c68;
 table[0]=(u16*)(q+1);table[1]=(u16*)(q+2);table[2]=(u16*)(q+3);
 table[3]=(u16*)(q+4);table[4]=(u16*)(q+5);table[5]=(u16*)(q+6);
 return *(u16 *)M2C_FIELD(data_ov001_02190c68,s32 *,arg0*4);
@@ -30,13 +30,13 @@ s32 func_ov001_02187934(s32 arg0) {
     void *OS_DisableInterrupts(s32);
     void OS_RestoreInterrupts(void *);
     s32 MI_CpuCopy8(void *, void *, s32);
-    extern s16 *data_ov001_02193e1c;
+    extern s16 *gOv001LinkWork;
     u16 buf[7];
     s16 *gp;
     u16 mask;
     void *r;
     r = OS_DisableInterrupts(arg0);
-    gp = data_ov001_02193e1c;
+    gp = gOv001LinkWork;
     mask = 1 << arg0;
     if (!((u16)gp[1] & mask)) {
         OS_RestoreInterrupts(r);
@@ -53,27 +53,27 @@ s32 func_ov001_02187934(s32 arg0) {
 }
 #pragma scheduling reset
 s32 func_ov001_021879fc(s32 arg0) {
-extern s16 *data_ov001_02193e1c;
-if(((u16)data_ov001_02193e1c[1] & (1<<arg0)) !=0) {
-return (arg0-1)*30+(s32)((u8 *)data_ov001_02193e1c+14);
+extern s16 *gOv001LinkWork;
+if(((u16)gOv001LinkWork[1] & (1<<arg0)) !=0) {
+return (arg0-1)*30+(s32)((u8 *)gOv001LinkWork+14);
 }
 return 0;
 }
 
 u16 func_ov001_02187a30(u8 *arg0) {
-    extern s16 *data_ov001_02193e1c;
+    extern s16 *gOv001LinkWork;
     u8 *base;
     u16 i;
     s32 offset;
     u8 *entry;
     i = 1;
-    base = (u8 *)data_ov001_02193e1c + 0x24;
+    base = (u8 *)gOv001LinkWork + 0x24;
     do {
-        if ((u16)data_ov001_02193e1c[1] & (1 << i)) {
+        if ((u16)gOv001LinkWork[1] & (1 << i)) {
             offset = (i - 1) * 0x1E;
             entry = base + offset;
             if (arg0[0] == entry[0] && arg0[1] == entry[1] && arg0[2] == entry[2] && arg0[3] == entry[3] && arg0[4] == entry[4] && arg0[5] == entry[5]) {
-                return M2C_FIELD((u8 *)data_ov001_02193e1c + offset, u16 *, 0x2A);
+                return M2C_FIELD((u8 *)gOv001LinkWork + offset, u16 *, 0x2A);
             }
         }
         i++;

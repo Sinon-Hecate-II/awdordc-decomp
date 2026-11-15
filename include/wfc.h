@@ -36,13 +36,17 @@ enum {
 
 #define WFC_HTTP_PORT 80 /* the client talks HTTP */
 
-/* Session object (gSession) fields used by the WFC state machine in
+/* Session object (gWfcSession) fields used by the WFC state machine in
  * main_020270B4. The values stored in the state field are the ones passed to
  * WFC_SetState (1..13); 11 is the error state and 13 the finished state. */
 #define WFC_SESSION_STATE    0x2260 /* s32 connection state */
+#define WFC_SESSION_STATUS   0x2264 /* u32 status bits, set by WFC_SetStatusBits */
 #define WFC_SESSION_ABORT    0x226B /* u8 link failed / session has to shut down */
 #define WFC_SESSION_REQUEST  0x226C /* u32 queued send request: kind in the low 2 bits, buffer at +0x2270/+0x2274, field at +0x2278, callback at +0x227C */
 #define WFC_SESSION_SUBSTATE 0x2280 /* u16 substep reported with the state */
+#define WFC_SESSION_ERROR    0x2282 /* u16 error code of the last link request */
+#define WFC_SESSION_TIMER    0x22CC /* timer list the state steps are scheduled through */
+#define WFC_SESSION_RESULT   0x22F8 /* u16 result value of the last link request */
 #define WFC_SESSION_SEND_BUFFER 0xF00 /* byte buffer the sender fills before sending */
 
 /* The outgoing match request descriptor: the buffer the packet is built in and
@@ -197,7 +201,7 @@ enum {
 
 /* The NAS connection block (the object gNasConnection holds at field +8,
  * NAS_CONNECTION_SIZE bytes): the NASC HTTP login an online request runs,
- * allocated by CreateNasConnection with the request descriptor's allocator. It
+ * allocated from the request descriptor's allocator. It
  * carries the outcome, the status block the caller copies out (Nas_GetResult),
  * the request descriptor, the network handle the HTTP runs on and the task that
  * drives it. */
@@ -213,7 +217,7 @@ enum {
 /* Status the connection reports at NAS_CONN_STATUS: 0x4E00 plus the NAS code. */
 #define NAS_STATUS_IDLE 0x4E84
 
-/* The request descriptor a caller hands to CreateNasConnection (0x48 bytes).
+/* The request descriptor for a NAS connection (0x48 bytes).
  * StartNasRequest fills it: the UTF-16 request name, a payload name at +0x34
  * and the alloc/free pair at +0x40/+0x44 used to allocate the connection. */
 typedef struct NasRequest {

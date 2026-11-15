@@ -233,7 +233,7 @@ return 1;
 /* Prepare and send a 4-byte notification packet (type 2 or 3) about a player slot, then timestamp the connection state. */
 void SendConnectionPacket(s8 arg0, s32 arg1) {
     u64 GetSystemTick(void);
-    void func_0204433c(s32, s8, void *, s32);
+    void SendTransfer(s32, s8, void *, s32);
     u8 buf[4];
     u8 i;
     void *p;
@@ -257,7 +257,7 @@ void SendConnectionPacket(s8 arg0, s32 arg1) {
         buf[1] = (s32)M2C_FIELD(GetConnection(), u16 *, 0x1b0) >> 8;
         break;
     }
-    func_0204433c(arg1, arg0, buf, 4);
+    SendTransfer(arg1, arg0, buf, 4);
     p = GetConnection();
     M2C_FIELD(p, u64 *, 0x1e0) = GetSystemTick();
 }

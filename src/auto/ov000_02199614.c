@@ -74,7 +74,7 @@ void func_ov000_021998f0(void) {
     u16 saved;
     s32 i;
     saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
-    func_ov000_02198c08();
+    ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
@@ -89,7 +89,7 @@ void func_ov000_0219997c(void) {
 s32 NextRandomValue(void);
 s32 Modulo(s32, s32);
 s32 func_02072b04(void *);
-s32 func_ov000_021a89a4(void *);
+s32 GetAiUnitMoveRange(void *);
 extern s32 *gCurrentMap;
 extern u8 *gAiUnitListCursor;
 extern u8 *gAiCommandState;
@@ -168,7 +168,7 @@ if (state == 0x40) {
     tmp = Modulo(tmp, 0x64);
     gAiCommandState[3] = (u8)tmp;
     up = *(u8 **)(base + 0x52d0);
-    gAiCommandState[5] = (u8)func_ov000_021a89a4(up);
+    gAiCommandState[5] = (u8)GetAiUnitMoveRange(up);
 }
 
 if (func_02072b04(&data_ov000_021df604) == 0) {

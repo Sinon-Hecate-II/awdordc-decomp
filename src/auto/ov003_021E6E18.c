@@ -53,7 +53,7 @@ s32 GetWaypointOptionTextId(s32 arg0) {
 }
 
 s32 IsWaypointOptionValid(s32 arg0) {
-    s32 func_020bf894();
+    s32 IsCoUnlocked();
     M2C_UNK GetWaypointOptionIcon(s32);
     if (arg0 == 0xC) {
         return 1;
@@ -62,7 +62,7 @@ s32 IsWaypointOptionValid(s32 arg0) {
         return 0;
     }
     GetWaypointOptionIcon(arg0);
-    return func_020bf894();
+    return IsCoUnlocked();
 }
 
 /* Handle one input action on the waypoint/segment cursor menu: move the cursor

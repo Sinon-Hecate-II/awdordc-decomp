@@ -116,12 +116,12 @@ void func_ov005_0221727c(void) {
 
 void func_ov005_022172a0(void) {
     void func_ov005_02214f80(s16);
-    void func_ov005_02214a84(u8);
+    void RecordsMenu_AdvanceFadeRecord(u8);
     extern M2C_UNK gRecordsMenuState;
     s16 val = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x90);
     func_ov005_02214f80(val);
     M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x90) = -1;
-    func_ov005_02214a84((u8) M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), u8 *, 0x8A));
+    RecordsMenu_AdvanceFadeRecord((u8) M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), u8 *, 0x8A));
 }
 
 void func_ov005_022172d8(s16 arg0, s8 arg1) {
@@ -196,7 +196,7 @@ void func_ov005_02217440(void) {
     void func_020e3004();
     void *func_020e3018(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
-    u32 func_020bf894(s32);
+    u32 IsCoUnlocked(s32);
     void SetOv005FileDirectory(void);
     extern u8 *gOv005MenuState;
     extern void *gCur3DSpriteEngine;
@@ -208,7 +208,7 @@ void func_ov005_02217440(void) {
     temp_r5 = func_020e3018(M2C_FIELD(gOv005MenuState, s16 *, 0x10));
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (func_020bf894(M2C_FIELD(gOv005MenuState, s16 *, 0x10))) {
+    if (IsCoUnlocked(M2C_FIELD(gOv005MenuState, s16 *, 0x10))) {
         func_020e3004();
         GetLocalizedFileName(&data_ov005_022208f4);
         OpenNarcArchive();

@@ -248,17 +248,20 @@ if(!health)level=0;else level=Divide(health-1,10)+1;
 ((UnitHealthCB*)unit)->health=(u16)(level*10);
 return totalCost;
 }
-s32 func_020cb3a4(s32 a,s32 b){extern void **gCurrentMap;s32 func_020a7e08(void *);u8 *base=*gCurrentMap;u8 *start=base+0x59a4;u8 *p=start+(s16)base[a+((u16 *)(base+0x3758))[b]]*14;s32 index=p?(p-start)/14:0;if(M2C_FIELD(base,u16 *,0x52a8)==(index&0xc0) && func_020a7e08(p))return 1;return 0;}
+s32 IsAllySupplyUnitAtCell(s32 a,s32 b){extern void **gCurrentMap;s32 func_020a7e08(void *);u8 *base=*gCurrentMap;u8 *start=base+0x59a4;u8 *p=start+(s16)base[a+((u16 *)(base+0x3758))[b]]*14;s32 index=p?(p-start)/14:0;if(M2C_FIELD(base,u16 *,0x52a8)==(index&0xc0) && func_020a7e08(p))return 1;return 0;}
 
-s32 func_020cb430(u8 *p) {
-extern u8 gUnitKindSupplyFlag[];
-extern void **gCurrentMap;
-if (!gUnitKindSupplyFlag[((u32)(p[0]<<26)>>26)*112]) return 0;
-if(p[1] && func_020cb3a4((s16)(p[1]-1),p[2]))return 1;
-if(p[2] && func_020cb3a4(p[1],(s16)(p[2]-1)))return 1;
-if(p[1]<M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1 && func_020cb3a4((s16)(p[1]+1),p[2]))return 1;
-if(p[2]<M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1 && func_020cb3a4(p[1],(s16)(p[2]+1)))return 1;
-return 0;
+/* Whether unit `unit` can be supplied where it stands: its kind must be
+ * supplyable and one of its four orthogonal neighbours inside the map must hold
+ * a friendly supply unit. */
+s32 CanBeSupplied(u8 *unit) {
+    extern u8 gUnitKindSupplyFlag[];
+    extern void **gCurrentMap;
+    if (!gUnitKindSupplyFlag[((u32)(unit[MAP_UNIT_KIND] << 26) >> 26) * UNIT_KIND_STATS_SIZE]) return 0;
+    if (unit[MAP_UNIT_X] && IsAllySupplyUnitAtCell((s16)(unit[MAP_UNIT_X] - 1), unit[MAP_UNIT_Y])) return 1;
+    if (unit[MAP_UNIT_Y] && IsAllySupplyUnitAtCell(unit[MAP_UNIT_X], (s16)(unit[MAP_UNIT_Y] - 1))) return 1;
+    if (unit[MAP_UNIT_X] < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) - 1 && IsAllySupplyUnitAtCell((s16)(unit[MAP_UNIT_X] + 1), unit[MAP_UNIT_Y])) return 1;
+    if (unit[MAP_UNIT_Y] < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT) - 1 && IsAllySupplyUnitAtCell(unit[MAP_UNIT_X], (s16)(unit[MAP_UNIT_Y] + 1))) return 1;
+    return 0;
 }
 
 #pragma opt_propagation off

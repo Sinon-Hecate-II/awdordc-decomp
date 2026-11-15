@@ -31,6 +31,12 @@
 #define SB_SLIST_INSTANCE    0x494 /* void *instance passed to SB_SLIST_CALLBACK */
 #define SB_SLIST_SORT_FIELD  0x498 /* char[] key the server list is sorted on */
 #define SB_SLIST_SORT_DESC   0x49c /* s32 nonzero to sort descending */
+#define SB_SLIST_START_TICK  0x4b4 /* u32 GetTickCountMs() the 2 s collection window starts at */
+
+/* Events the list reports through SB_SLIST_CALLBACK:
+ * (list, event, server, SB_SLIST_INSTANCE). */
+#define SB_LIST_EVENT_SERVER_ADDED   0 /* a server was added to the list */
+#define SB_LIST_EVENT_QUERY_COMPLETE 3 /* the running query finished */
 
 /* SB_SLIST_STATE values. */
 #define SB_SLIST_STATE_IDLE     1 /* disconnected, ready for a new query */

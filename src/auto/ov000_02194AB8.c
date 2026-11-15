@@ -14,7 +14,7 @@ s32 GetUnitAttackRangeMax(void *);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(s32,s32);
 s32 IsUnitVisibleAtCell(s32,s32,s32,s32);
-s32 func_020a600c(u16);
+s32 IsUnitInSight(u16);
 s32 func_ov000_021a96f4(s32,s32,s32);
 s32 GetAttackDamage(s32,s32,s32);
 s32 IsFootUnitKind(s32);
@@ -22,7 +22,7 @@ s32 IsTerrainOnUnitTeam(s32,s32);
 s32 func_ov000_0217d000(s32,s32);
 void func_01ffc2e8(void *);
 void MarkAdjacentCells(s32);
-s32 func_ov000_021a89a4(void *);
+s32 GetAiUnitMoveRange(void *);
 s32 FindAttackPosition(s16 *);
 s32 RandomIntRange(s32,s32);
 extern void **gCurrentMap;
@@ -54,7 +54,7 @@ if(M2C_FIELD(unit,u16 *,4)&8)continue;
 x=unit[1];y=unit[2];
 if(M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x]<0)continue;
 if(!((u32)(unit[11]<<25)>>31)&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16 *,0x52a4),kind,x,y))continue;
-if(((UnitKind1955 *)unit)->kind==22&&(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind!=23&&!func_020a600c((u16)id))continue;
+if(((UnitKind1955 *)unit)->kind==22&&(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind!=23&&!IsUnitInSight((u16)id))continue;
 if(M2C_FIELD(unit,u16 *,4)&32){
 if(!func_ov000_021a96f4((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,((UnitKind1955 *)unit)->kind,0))continue;
 }
@@ -117,7 +117,7 @@ if(sum<1)continue;if(sum>1)continue;
 {cost=M2C_FIELD(*gCurrentMap+(yy)*4,s8 **,0x52e8)[xx];
 if(cost>=0&&cost<=110&&high<=cost)high=cost;}
 }}
-if(high==-1)high=func_ov000_021a89a4(M2C_FIELD(map,void **,0x52d0));
+if(high==-1)high=GetAiUnitMoveRange(M2C_FIELD(map,void **,0x52d0));
 }
 map=*gCurrentMap;x=posHigh[0];y=posHigh[1];
 x0=x-3;if(x0<0)x0=0;y0=y-3;if(y0<0)y0=0;

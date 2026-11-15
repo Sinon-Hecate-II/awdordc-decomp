@@ -1,12 +1,14 @@
 /* 17 functions from 0x021A3DAC to 0x021A4A98 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "ov000_unit_entry.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 static inline void *GetCandidateMapState(void) { extern void **gCurrentMap; return *gCurrentMap; }
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_lifetimes off
-s32 func_ov000_021a3dac(void) {
+s32 PlanUnitKind24Action(void) {
  s32 func_ov000_021a6264(s32);void ResetAiTargetCandidates(void);
  void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void MarkAdjacentCellsForKind24(u8);
  s32 GetTerrainPropertyFlagsAt(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 IsCaptureKind(s32);
@@ -75,29 +77,32 @@ s32 func_ov000_021a3dac(void) {
 #pragma opt_lifetimes reset
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-s32 func_ov000_021a41f8(void){
-s32 GetUnitBuildCost(u16,s32);u8 HasAiBuildFlag(s32);s32 func_ov000_021a3dac(void);
+/* Decide whether the AI builds a kind-24 unit now: the build flag must be set and
+ * the unit affordable, an existing kind-24 action wins, and otherwise a target
+ * must exist with enough ready combat units waiting for the empty kind-24 units. */
+s32 TryBuildKind24Unit(void){
+s32 GetUnitBuildCost(u16,s32);u8 HasAiBuildFlag(s32);s32 PlanUnitKind24Action(void);
 s32 func_ov000_021a6264(s32);s32 FindAiTargetOfType(s32);u8 CountPlayerUnitsOfKind(s32);
 s32 CountReadyCombatUnits(void);s32 CountReadyCaptureUnits(void);s32 CountEmptyUnitsOfKind(s32);
 void CommitAiAction(s32);
 extern void **gCurrentMap;extern M2C_UNK gAiCommand;
-void *p;u16 id;s32 a,r,n,x,y,z;
-if(!HasAiBuildFlag(2))return 0;
-p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);
-if(GetUnitBuildCost(id,24)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
-if(func_ov000_021a3dac()==1)return 1;
-r=func_ov000_021a6264(3);if(r==-1){r=FindAiTargetOfType(3);if(r==-1)return 0;}
-a=CountPlayerUnitsOfKind(24);n=CountReadyCombatUnits();
-if(!n){if(CountReadyCaptureUnits()<=1)return 0;}
-if(a){y=CountEmptyUnitsOfKind(24)+1;x=CountEmptyUnitsOfKind(25);z=CountReadyCaptureUnits()-x*2;if(z<0)z=0;if(n+z<y*4)return 0;}
-M2C_FIELD(&gAiCommand,u8 *,6)=24;CommitAiAction(r);return 1;
+void *map;u16 playerId;s32 availableUnits,targetIndex,readyCombat,kind25Empty,kind24Empty,capacity;
+if(!HasAiBuildFlag(AI_BUILD_FLAG_UNIT_24))return 0;
+map=*gCurrentMap;playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+if(GetUnitBuildCost(playerId,24)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
+if(PlanUnitKind24Action()==1)return 1;
+targetIndex=func_ov000_021a6264(3);if(targetIndex==-1){targetIndex=FindAiTargetOfType(3);if(targetIndex==-1)return 0;}
+availableUnits=CountPlayerUnitsOfKind(24);readyCombat=CountReadyCombatUnits();
+if(!readyCombat){if(CountReadyCaptureUnits()<=1)return 0;}
+if(availableUnits){kind24Empty=CountEmptyUnitsOfKind(24)+1;kind25Empty=CountEmptyUnitsOfKind(25);capacity=CountReadyCaptureUnits()-kind25Empty*2;if(capacity<0)capacity=0;if(readyCombat+capacity<kind24Empty*4)return 0;}
+M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=24;CommitAiAction(targetIndex);return 1;
 }
 
 u8 func_ov000_021a4320(void) {
     s32 TryBuildTransport();
-    s32 func_ov000_021a3364();
+    s32 TryBuildUnitKind13();
     s32 TryBuildUnitKind25();
-    s32 func_ov000_021a41f8();
+    s32 TryBuildKind24Unit();
     u8 CountPlayerUnitsOfKind(s32);
     extern void *gAiState;
     u8 var_r0;
@@ -109,13 +114,13 @@ u8 func_ov000_021a4320(void) {
     if (TryBuildTransport() == 1) {
         return 1U;
     }
-    if (func_ov000_021a41f8() == 1) {
+    if (TryBuildKind24Unit() == 1) {
         return 1U;
     }
     if (TryBuildUnitKind25() == 1) {
         return 1U;
     }
-    if (func_ov000_021a3364() == 1) {
+    if (TryBuildUnitKind13() == 1) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

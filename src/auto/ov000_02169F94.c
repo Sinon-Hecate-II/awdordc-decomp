@@ -76,7 +76,7 @@ void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {
     LoadFileToSpriteBuffer(&data_ov000_021b7e6c, (arg2 + 0x10) << 5, 0x20);
 }
 
-void func_ov000_0216a374(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void AddSprite32x16(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK AddSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
     extern M2C_UNK gSpriteDesc32x16;
     AddSprite(arg0, arg1, arg2, &gSpriteDesc32x16, arg3);

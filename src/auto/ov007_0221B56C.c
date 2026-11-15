@@ -4,36 +4,40 @@
 
 typedef struct { u8 pad[11]; u8 low : 4; u8 high : 4; } Unk_0221BC18;
 
-s32 func_ov007_0221b6c8();
-s32 func_ov007_0221b704(s32,s32);
-void func_ov007_0221b688(s32,s32);
-s32 func_ov007_0221b56c(s32 a,s32 b,s32 c,s32 d) {
+s32 Map_GetCellTerrainKind();
+s32 Map_GetCellTerrainOwner(s32,s32);
+void Map_RefreshCellTile(s32,s32);
+/* Map editor: tries to paint the selected tile `newTile`/`newDir` at cell
+ * (x, y).  It only succeeds when Map_CanPlaceTile allows it, the tile kind is
+ * placeable and the flood fill of the connected same-terrain region works; on
+ * success every cell is refreshed and 1 is returned. */
+s32 Map_TryPaintTile(s32 x,s32 y,s32 newTile,s32 newDir) {
 extern s32 *gCurrentMap;
 s32 Map_CanPlaceTile(s32,s32,s32,s32);
 s32 func_020c1a80(s32);
 s32 func_ov007_0221b2cc(s32,s32,s32,s32,s32,s32);
-s32 e=func_ov007_0221b6c8(a,b),f=func_ov007_0221b704(a,b);
-s32 r=Map_CanPlaceTile(a,b,c,d); s32 x,y;
+s32 oldTile=Map_GetCellTerrainKind(x,y),oldDir=Map_GetCellTerrainOwner(x,y);
+s32 r=Map_CanPlaceTile(x,y,newTile,newDir); s32 cellX,cellY;
 if(r!=1)return r;
-if(func_020c1a80(c))return 0;
-if(func_ov007_0221b2cc(a,b,c,d,e,f)){
-for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++)
-for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++)func_ov007_0221b688(x,y);
+if(func_020c1a80(newTile))return 0;
+if(func_ov007_0221b2cc(x,y,newTile,newDir,oldTile,oldDir)){
+for(cellY=0;cellY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);cellY++)
+for(cellX=0;cellX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);cellX++)Map_RefreshCellTile(cellX,cellY);
 return 1;
 }
 return 0;
 }
 
-void func_ov007_0221b688(M2C_UNK arg0, M2C_UNK arg1) {
+void Map_RefreshCellTile(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK Map_SetTileAndRefresh(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_ov007_0221ad24(M2C_UNK, M2C_UNK, s32);
-    if (func_ov007_0221ad24(arg0, arg1, func_ov007_0221b6c8()) != 0) {
+    if (func_ov007_0221ad24(arg0, arg1, Map_GetCellTerrainKind()) != 0) {
         return;
     }
     Map_SetTileAndRefresh(arg0, arg1, 8, 3);
 }
 
-s32 func_ov007_0221b6c8(s32 arg0, s32 arg1) {
+s32 Map_GetCellTerrainKind(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 temp_r2;
     s32 var_r0;
@@ -46,7 +50,7 @@ s32 func_ov007_0221b6c8(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 func_ov007_0221b704(s32 a,s32 b) {
+s32 Map_GetCellTerrainOwner(s32 a,s32 b) {
  extern s32 *gCurrentMap; extern s8 gTerrainPropertyFlags[];
  s32 p=*gCurrentMap;
  s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420);
@@ -361,7 +365,7 @@ void StartNextMap(void *p) {
     void func_020c8d50(s32);
     void ResetPlayerOrder(void);
     void AssignPlayerTeams(void);
-    void func_ov007_022121d4(s32);
+    void MapEditor_SetMapModified(s32);
     void func_01ffa6fc(void *);
     s32 id1,id2,id3,id4;
     if(func_020be1a8())return;
@@ -375,7 +379,7 @@ void StartNextMap(void *p) {
     RemapUnitGroups(id1,id2,id3,id4);
     id1=GetSlotForPlayerId(1);id2=GetSlotForPlayerId(2);id3=GetSlotForPlayerId(3);id4=GetSlotForPlayerId(4);
     Map_ReassignPropertyOwners(id1,id2,id3,id4);
-    ResetPlayerOrder();AssignPlayerTeams();func_ov007_022121d4(0);
+    ResetPlayerOrder();AssignPlayerTeams();MapEditor_SetMapModified(0);
     if(M2C_FIELD(p,s16 *,0x6c)){if(M2C_FIELD(p,s32 *,0x5c)<50)return;func_01ffa6fc(p);return;}func_01ffa6fc(p);
 }
 

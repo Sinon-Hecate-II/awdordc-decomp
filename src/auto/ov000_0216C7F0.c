@@ -96,11 +96,11 @@ s32 func_ov000_0216cc4c(s32 arg0, s32 arg1) {
 }
 
 s32 func_ov000_0216cc84(s32 arg0, s32 arg1) {
- s32 func_020d05f4(s32,s32,s32);
+ s32 GetTerrainDefenseScore(s32,s32,s32);
  s32 Divide(s32,s32);
  extern s32 *gCurrentMap;
  s32 base = *gCurrentMap;
- s32 result = Divide(func_020d05f4(M2C_FIELD(base,u16 *,0x52A4),0,M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1*2,u16 *,0x3758)),u8 *,0x1420)&31),10);
+ s32 result = Divide(GetTerrainDefenseScore(M2C_FIELD(base,u16 *,0x52A4),0,M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1*2,u16 *,0x3758)),u8 *,0x1420)&31),10);
  if(result>4) return 4;
  if(result<0) return 0;
  return result;

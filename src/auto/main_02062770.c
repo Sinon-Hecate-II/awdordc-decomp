@@ -120,9 +120,9 @@ return totalSize-size;
 
 /* Validates an encoded data block and, if valid, decodes it. */
 s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
-    s32 func_02061090(M2C_UNK, s32, u16);
+    s32 SBServerNew(M2C_UNK, s32, u16);
     s32 func_02061168();
-    M2C_UNK func_02061a38(M2C_UNK, s32);
+    M2C_UNK SBServerListAddServer(M2C_UNK, s32);
     s32 func_02062810(u8);
     s32 func_0206283c(void *, s32);
     s32 func_020628c0(M2C_UNK, void *, s32);
@@ -155,12 +155,12 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
         return -1;
     }
     func_020629bc(context, data, size, &sp8, &sp4);
-    handle = func_02061090(context, sp8, sp4);
+    handle = SBServerNew(context, sp8, sp4);
     if (func_02061168() != 0) {
         return -2;
     }
     result = gpiProcessPlayerRecord(context, handle, data, size, 1);
-    func_02061a38(context, handle);
+    SBServerListAddServer(context, handle);
     return result;
 }
 

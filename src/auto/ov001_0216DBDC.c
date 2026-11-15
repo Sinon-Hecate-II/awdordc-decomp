@@ -6,7 +6,7 @@ typedef struct { volatile s32 count; s32 index; } ScanCounters;
 
 s32 func_ov001_0216dee8(void) {
     s32 func_02027518(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02027958();
+    s32 WFC_ProcessLinkStep();
     M2C_UNK WFC_ConnectStep(void *, void (*)(void));
     void func_ov001_0216dbdc(void);
     extern M2C_UNK data_ov001_02192790;
@@ -16,7 +16,7 @@ s32 func_ov001_0216dee8(void) {
         if (func_02027518(0, 0, 0) != 3) return 0;
         break;
     case 7:
-        if (func_02027958() != 3) return 0;
+        if (WFC_ProcessLinkStep() != 3) return 0;
         break;
     case 1:
         if (WFC_ConnectStep(M2C_FIELD(&data_ov001_02192790, void **, 0x8), func_ov001_0216dbdc) != 3) return 0;
@@ -66,12 +66,12 @@ loop_2:
 s32 func_ov001_0216e07c(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_02027958();
+    s32 WFC_ProcessLinkStep();
     extern M2C_UNK data_ov001_02192790;
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    if ((M2C_FIELD(&data_ov001_02192790, s32 *, 0x2C) == 7) && (func_02027958() == 3)) {
+    if ((M2C_FIELD(&data_ov001_02192790, s32 *, 0x2C) == 7) && (WFC_ProcessLinkStep() == 3)) {
         M2C_FIELD(&data_ov001_02192790, s32 *, 0x2C) = 4;
         OS_RestoreInterrupts(temp_r4);
         return 1;
@@ -138,7 +138,7 @@ M2C_FIELD(M2C_FIELD(&data_ov001_02192790,s32 *,8),s32 *,12)=0;
 M2C_FIELD(M2C_FIELD(&data_ov001_02192790,s32 *,8),s32 *,0)=3;
 data_ov001_02192810=a;
 if(M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)==0){
-if(func_020270b4(M2C_FIELD(&data_ov001_02192790,s32 *,0x3c),0x2300)){OS_RestoreInterrupts(t);return 0;}
+if(WFC_InitSession(M2C_FIELD(&data_ov001_02192790,s32 *,0x3c),0x2300)){OS_RestoreInterrupts(t);return 0;}
 M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)=1;
 }
 if(M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)==1){

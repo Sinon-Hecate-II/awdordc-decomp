@@ -1,7 +1,7 @@
 /* 39 functions from 0x020CF69C to 0x020D068C (main), found by ds-decomp. */
 #include "common.h"
 extern u8 data_0212bd5c[];
-extern s8 data_ov000_021b5560[];
+extern s8 gTerrainDefenseStars[];
 extern s8 data_ov000_021b5580[];
 extern s8 data_ov000_021b5580[];
 extern s32 *gCurrentMap;
@@ -476,11 +476,11 @@ u8 func_020d0590(s32 arg0) {
  return result;
 }
 
-s32 func_020d05f4(s32 a,s32 b,s32 c){
+s32 GetTerrainDefenseScore(s32 a,s32 b,s32 c){
 s32 func_020a857c(s32);
 s32 n;
 if(func_020a857c(b))return 0;
-n=(s16)data_ov000_021b5560[c]*(s16)10+M2C_FIELD((void *)*gCurrentMap+a*0x8C,s8 *,0x67C8);
+n=(s16)gTerrainDefenseStars[c]*(s16)10+M2C_FIELD((void *)*gCurrentMap+a*0x8C,s8 *,0x67C8);
 if(n<0)n=0;
 return n;
 }
@@ -489,7 +489,7 @@ s32 GetTerrainMoveCost(s32 arg0,s32 arg1,s32 arg2) {
  s32 func_020a857c(s32);
  s32 value;
  if(func_020a857c(arg1)!=0) return 0;
- value=data_ov000_021b5560[arg2]*10;
+ value=gTerrainDefenseStars[arg2]*10;
  if(value<0) value=0;
  return value;
 }

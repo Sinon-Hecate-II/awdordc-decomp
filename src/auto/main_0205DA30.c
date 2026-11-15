@@ -12,17 +12,22 @@ typedef struct { NetworkAddress6 address; u8 type, length; u32 ip; u8 reserved, 
 extern NetworkAddress6 gNatNegMagic;
 
 #pragma opt_propagation off
-void func_0205dc78(void *arg0) {
+/* Build and send a NAT-negotiation connect-pong packet (kind 7) to the peer: the
+ * six magic bytes, the packet type, the peer's address, its remote address and
+ * byte-swapped port and its flag/mode bytes. The peer's deadline is pushed out
+ * by 700 ms, its retry budget is set to 12 and its second flag is set when the
+ * first one is. The register-bound locals reproduce the original allocation. */
+void NatNeg_SendConnectPong(void *peer) {
     void func_0205d944(s32, s32, u16, void *, s32);
     s32 GetTickCountMs(void);
     extern NetworkAddress6 gNatNegMagic;
-    u8 sp04[0x14];
+    u8 packet[0x14];
 
     register u8 *pr1 asm("r1") = (u8 *)&gNatNegMagic;
     register s32 vr2 asm("r2");
     register u8 vr7 asm("r7");
     register u8 vr6 asm("r6");
-    register u8 *vr8 asm("r8") = sp04;
+    register u8 *vr8 asm("r8") = packet;
     register u8 vr5 asm("r5");
     register u8 vlr asm("lr");
     register u8 vr12 asm("r12");
@@ -35,7 +40,7 @@ void func_0205dc78(void *arg0) {
     vlr = pr1[3];
     vr12 = pr1[4];
     vr3 = pr1[5];
-    vr4 = arg0;
+    vr4 = peer;
 
     *vr8 = vr7;
     vr8[1] = vr6;
@@ -44,37 +49,37 @@ void func_0205dc78(void *arg0) {
     vr8[4] = vr12;
     vr2 = 2;
     pr1 = (u8 *)7;
-    sp04[6] = (u8)vr2;
-    sp04[7] = (u8)pr1;
+    packet[6] = (u8)vr2;
+    packet[7] = (u8)pr1;
     vr8[5] = vr3;
 
     {
-        u32 ip = M2C_FIELD(vr4, u32 *, 8);
-        *(u32 *)(sp04 + 8) =
+        u32 ip = M2C_FIELD(vr4, u32 *, NATNEG_PEER_ADDRESS);
+        *(u32 *)(packet + 8) =
             ((ip >> 24) & 0xFFU) |
             ((ip >> 8) & 0xFF00U) |
             ((ip << 8) & 0xFF0000U) |
             ((ip << 24) & 0xFF000000U);
     }
-    *(u32 *)(sp04 + 12) = M2C_FIELD(vr4, u32 *, 0x2C);
+    *(u32 *)(packet + 12) = M2C_FIELD(vr4, u32 *, NATNEG_PEER_REMOTE_IP);
     {
-        u16 port = M2C_FIELD(vr4, u16 *, 0x30);
-        *(u16 *)(sp04 + 16) = (u16)((((s32)port >> 8) & 0xFF) | ((port << 8) & 0xFF00));
+        u16 port = M2C_FIELD(vr4, u16 *, NATNEG_PEER_REMOTE_PORT);
+        *(u16 *)(packet + 16) = (u16)((((s32)port >> 8) & 0xFF) | ((port << 8) & 0xFF00));
     }
-    sp04[18] = M2C_FIELD(vr4, u8 *, 0x32);
-    sp04[19] = (M2C_FIELD(vr4, s32 *, 0x10) != 2) ? 1 : 0;
+    packet[18] = M2C_FIELD(vr4, u8 *, NATNEG_PEER_FLAG32);
+    packet[19] = (M2C_FIELD(vr4, s32 *, NATNEG_PEER_STATE) != 2) ? 1 : 0;
 
     {
-        s32 val = M2C_FIELD(vr4, s32 *, 4);
+        s32 val = M2C_FIELD(vr4, s32 *, NATNEG_PEER_SOCKET2);
         if (val == -1) {
-            val = M2C_FIELD(vr4, s32 *, 0);
+            val = M2C_FIELD(vr4, s32 *, NATNEG_PEER_SOCKET);
         }
-        func_0205d944(val, M2C_FIELD(vr4, s32 *, 0x2C), M2C_FIELD(vr4, u16 *, 0x30), sp04, 0x14);
+        func_0205d944(val, M2C_FIELD(vr4, s32 *, NATNEG_PEER_REMOTE_IP), M2C_FIELD(vr4, u16 *, NATNEG_PEER_REMOTE_PORT), packet, 0x14);
     }
-    M2C_FIELD(vr4, s32 *, 0x28) = GetTickCountMs() + 0x2BC;
-    M2C_FIELD(vr4, s32 *, 0x24) = 0xC;
-    if (M2C_FIELD(vr4, u8 *, 0x32) != 0) {
-        M2C_FIELD(vr4, s8 *, 0x33) = 1;
+    M2C_FIELD(vr4, s32 *, NATNEG_PEER_DEADLINE) = GetTickCountMs() + 0x2BC;
+    M2C_FIELD(vr4, s32 *, NATNEG_PEER_MAX_RETRIES) = 0xC;
+    if (M2C_FIELD(vr4, u8 *, NATNEG_PEER_FLAG32) != 0) {
+        M2C_FIELD(vr4, s8 *, NATNEG_PEER_FLAG33) = 1;
     }
 }
 #pragma opt_propagation reset
@@ -170,7 +175,7 @@ void func_0205df50(void) {
 /* Polls one NAT-negotiation peer: drains its socket, retries the current step
    when the deadline passes, and releases the peer on completion or timeout. */
 void UpdateNatNegPeer(void *peer) {
-s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void func_0205dc78(void *);
+s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void NatNeg_SendConnectPong(void *);
 extern u8 gNatNegRecvBuffer[];
 u8 address[8]; s32 size=8; u8 reply[8]; s32 n;
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_DONE){func_0205d88c(peer);return;}
@@ -188,7 +193,7 @@ M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(2,-1,0,M2C_FIE
 ((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }else{
 M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)++;
-if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START)((void (*)(void *))func_0205da30)(peer);else func_0205dc78(peer);
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START)((void (*)(void *))func_0205da30)(peer);else NatNeg_SendConnectPong(peer);
 }
 }
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_REPORT && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
@@ -247,7 +252,7 @@ M2C_UNK func_0205e1bc(void *arg0, M2C_UNK arg1) {
 }
 
 void NatNeg_HandleConnectPing(void *arg0, void *arg1, M2C_UNK arg2) {
-    void func_0205dc78(void *);
+    void NatNeg_SendConnectPong(void *);
     M2C_UNK func_0205e1bc(void *, M2C_UNK);
     s32 var_r0; u16 temp_r2; u8 temp_r1;
     (void)arg2;
@@ -264,12 +269,12 @@ void NatNeg_HandleConnectPing(void *arg0, void *arg1, M2C_UNK arg2) {
     M2C_FIELD(arg0, s16 *, 0x30) = (s16)(((u8)(temp_r2 >> 8)) | ((temp_r2 << 8) & 0xFF00));
     M2C_FIELD(arg0, s32 *, 0x10) = 2; M2C_FIELD(arg0, s32 *, 0x20) = 0;
     M2C_FIELD(arg0, M2C_UNK (**)(s32, s32), 0x34)(2, M2C_FIELD(arg0, s32 *, 0x3C));
-    func_0205dc78(arg0);
+    NatNeg_SendConnectPong(arg0);
 }
 
 void NatNeg_HandleConnectPong(void *arg0, void *arg1, void *arg2) {
     s32 GetTickCountMs();
-    void func_0205dc78(void *);
+    void NatNeg_SendConnectPong(void *);
     s32 temp_r1;
     u16 temp_r3;
 
@@ -281,12 +286,12 @@ void NatNeg_HandleConnectPong(void *arg0, void *arg1, void *arg2) {
     M2C_FIELD(arg0, s16 *, 0x30) = (s16) ((u8) ((s32) temp_r3 >> 8) | ((temp_r3 << 8) & 0xFF00));
     M2C_FIELD(arg0, s8 *, 0x32) = 1;
     if (M2C_FIELD(arg1, u8 *, 0x12) == 0) {
-        func_0205dc78(arg0);
+        NatNeg_SendConnectPong(arg0);
         return;
     }
     if (M2C_FIELD(arg0, s32 *, 0x10) == 2) {
         if (M2C_FIELD(arg0, u8 *, 0x33) == 0) {
-            func_0205dc78(arg0);
+            NatNeg_SendConnectPong(arg0);
         }
         M2C_FIELD(arg0, s32 *, 0x10) = 3;
         M2C_FIELD(arg0, s32 *, 0x28) = (s32) (GetTickCountMs() + 0x1388);
@@ -300,7 +305,7 @@ void NatNeg_HandleConnectPong(void *arg0, void *arg1, void *arg2) {
     if (M2C_FIELD(arg1, u8 *, 0x13) != 0) {
         return;
     }
-    func_0205dc78(arg0);
+    NatNeg_SendConnectPong(arg0);
 }
 
 void NatNeg_HandleInitAndErt(void *arg0, void *arg1, void *arg2) {

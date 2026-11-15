@@ -20,14 +20,11 @@ void func_020af79c(void) {
     func_02090480(0);
 }
 
-#pragma push
-#pragma scheduling off
 void func_020af7ac(void) {
 extern u8 data_0215c430[],data_0215c42c[];
 s32 i=0;u8 zero=i;volatile u8 *p=data_0215c430,*q=data_0215c42c;
-do { *p++=zero; i++; *q++=zero; } while(i<2);
+do { *p++=zero; *q++=zero; i++; } while(i<2);
 }
-#pragma pop
 void func_020af7dc(void) {
     extern u8 data_0215c42c[];
     extern u8 data_0215c430[];
@@ -281,7 +278,7 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
 void func_020affac(s32 x,s32 y){
 s32 func_0207b9f4(s32,s32);
 s32 GetViewZoom(s32);
-void func_02091248(s32);
+void SetSpritePaletteIndex(s32);
 void func_020afc44(s32,s32,s32,void *,s32,s32,s32);
 void func_0209107c(void *,s32,s32,VecAff *,s32,s32,s32,s32,s32);
 extern s32 *gCurrentMap;
@@ -291,7 +288,7 @@ n=func_0207b9f4(x+8,y+8);
 mode=GetViewZoom(*gCurrentMap+0x6ef8)<=0?16:24;
 if(mode==16){a=0x21000;b=data_021213e0;c=0x30000;}
 else {a=0x21980;b=data_02122d08;c=0x20000;}
-func_02091248(31);
+SetSpritePaletteIndex(31);
 if(n>19){func_020afc44(x+8,y+8,n-19,b,a,0x1440,c);return;}
 v.x=(x+8)*48;v.y=(y+8)*48;v.z=0x8a1;
 func_0209107c(b,n,gFrameCounter,&v,a,0x1440,c,0,0);

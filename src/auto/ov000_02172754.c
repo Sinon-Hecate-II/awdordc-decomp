@@ -25,7 +25,7 @@ void func_ov000_02172754(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void **gCurrentMap;
-    extern s8 data_ov000_021b5560[32];
+    extern s8 gTerrainDefenseStars[32];
 
     void *saved;
     s32 *p18;
@@ -55,7 +55,7 @@ void func_ov000_02172754(void *arg0) {
         p18[3] = rem - q * 0xa;
         p18[2] = val;
     }
-    p18[1] = data_ov000_021b5560[func_ov000_0216cbc4(p18[0])];
+    p18[1] = gTerrainDefenseStars[func_ov000_0216cbc4(p18[0])];
 
     changed = 0;
     i = 0;

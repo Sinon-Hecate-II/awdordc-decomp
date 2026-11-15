@@ -171,9 +171,9 @@ void func_020891fc(void *arg0)
 
 M2C_UNK func_020892f0(void *arg0, s32 arg1) {
  void func_02088964(void *,s32);
- M2C_UNK func_02088c78(M2C_UNK);
+ M2C_UNK UpdateSpriteSlide(M2C_UNK);
  void func_020887ec(void *);
- func_02088964(arg0,arg1);func_02088c78((M2C_UNK)arg0);func_020887ec(arg0);
+ func_02088964(arg0,arg1);UpdateSpriteSlide((M2C_UNK)arg0);func_020887ec(arg0);
 }
 
 void func_02089310(void) {

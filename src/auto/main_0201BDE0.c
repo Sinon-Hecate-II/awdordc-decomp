@@ -111,7 +111,7 @@ s32 func_0201c1a8(s32 a,s32 b,s32 c) {
  return 0;
 }
 
-void func_0201c230(void *arg0, void *arg1, s32 arg2) {
+void TcpProcessSyn(void *arg0, void *arg1, s32 arg2) {
 s32 func_0201bb68(s32,s32);s32 func_0201c1a8(s32,s32,s32);void *func_0201bc58();M2C_UNK func_0201c0bc();M2C_UNK TaskYield();
 u16 a,b,c,d;u32 p0,p1;void *r;
 a=M2C_FIELD(arg0,u16 *,0x12);b=M2C_FIELD(arg0,u16 *,0x10);c=M2C_FIELD(arg0,u16 *,0xe);d=M2C_FIELD(arg0,u16 *,0xc);
@@ -121,7 +121,7 @@ r=func_0201bc58(arg0,arg1);if(r){func_0201c0bc(arg0,arg1,r);return;}TaskYield();
 }
 
 /* Build a response packet from a received request and mark it ready. */
-void func_0201c308(s32 a,void *b,s32 c) {
+void TcpProcessSynAck(s32 a,void *b,s32 c) {
 void *p=TcpFindConnection(a,(s32)b);u16 d,e,f,g,h;
 if(!p || M2C_FIELD(p,u8 *,8)!=2){TcpSendReset(a,b,c,0);return;}
 TaskYield();
@@ -261,7 +261,7 @@ void TcpProcessAck(void *net, void *seg, s32 len) {
   TaskYield();
 }
 
-void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
+void TcpProcessFin(s32 arg0, s32 arg1, s32 arg2) {
     void *TcpFindConnection(s32, s32);
     void TcpSendAck(M2C_UNK, M2C_UNK);
     void TcpSendFinAck(M2C_UNK, M2C_UNK);
@@ -298,7 +298,7 @@ void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void func_0201c7e4(s32 a,s32 b) {
+void TcpProcessReset(s32 a,s32 b) {
     M2C_UNK TaskWake(s32);
     M2C_UNK TaskYield();
     void *TcpFindConnection();
@@ -317,21 +317,23 @@ void func_0201c7e4(s32 a,s32 b) {
     TaskWake(M2C_FIELD(temp_r0, s32 *, 0));
 }
 
-void func_0201c820(void *a,void *b,s32 c){
+/* Dispatch one received TCP segment: verify its checksum, subtract the header
+ * length from the payload length, then hand it to the handler for its flags. */
+void TcpReceiveSegment(void *ipHeader,void *seg,s32 length){
 s32 IsTransportChecksumBad(void *,s32,void *,s32);
 void TcpProcessAck(void *,void *,s32);
-s32 t,kind;u8 flags;
-if(IsTransportChecksumBad(b,c,a,6))return;
-t=M2C_FIELD(b,u8 *,12)&240;
-flags=M2C_FIELD(b,u8 *,13);
+s32 headerLength,kind;u8 flags;
+if(IsTransportChecksumBad(seg,length,ipHeader,IP_PROTO_TCP))return;
+headerLength=M2C_FIELD(seg,u8 *,12)&240;
+flags=M2C_FIELD(seg,u8 *,13);
 kind=flags&23;
-c-=(t/4);
+length-=(headerLength/4);
 switch(kind){
-case 2:if(flags&40)return;func_0201c230(a,b,c);return;
-case 18:if(flags&40)return;func_0201c308(a,b,c);return;
-case 17:case 16:TcpProcessAck(a,b,c);return;
-case 1:func_0201c718((s32)a,(s32)b,c);return;
-default:if(flags&4){func_0201c7e4((s32)a,(s32)b);return;}TcpSendReset(a,b,c,0);return;
+case TCP_FLAG_SYN:if(flags&(TCP_FLAG_PSH|TCP_FLAG_URG))return;TcpProcessSyn(ipHeader,seg,length);return;
+case (TCP_FLAG_SYN|TCP_FLAG_ACK):if(flags&(TCP_FLAG_PSH|TCP_FLAG_URG))return;TcpProcessSynAck((s32)ipHeader,seg,length);return;
+case (TCP_FLAG_FIN|TCP_FLAG_ACK):case TCP_FLAG_ACK:TcpProcessAck(ipHeader,seg,length);return;
+case TCP_FLAG_FIN:TcpProcessFin((s32)ipHeader,(s32)seg,length);return;
+default:if(flags&TCP_FLAG_RST){TcpProcessReset((s32)ipHeader,(s32)seg);return;}TcpSendReset(ipHeader,seg,length,0);return;
 }
 }
 

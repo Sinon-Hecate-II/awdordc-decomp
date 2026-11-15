@@ -148,17 +148,21 @@ s32 func_02059f18(void *arg0) {
     return 1;
 }
 
-s32 func_02059fb4(void *p,void *q,s32 a,s32 b,s32 c,s32 d,s32 e){
+/* GameSpy GT2's gti2ConnectAttemptCallback: pass an incoming connect attempt (ip, port,
+ * latency, message, length) to the socket's connect-attempt callback, keeping the socket
+ * and connection callback counts; when the socket was asked to close and this was its
+ * last callback, free it. Returns 1, or 0 once the socket has been freed. */
+s32 func_02059fb4(void *socket,void *connection,s32 ip,s32 port,s32 latency,s32 message,s32 length){
 extern int data_020ff78c,data_020ff77c,data_020ff738;
-if(!p||!q)AssertFailed(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
-if(!p||!q)return 1;
-if(!M2C_FIELD(p,void **,0x20))return 1;
-if(!e||!d){d=0;e=0;}
-M2C_FIELD(p,s32 *,0x1c)++;
-M2C_FIELD(q,s32 *,0x24)++;
-((void (*)(void *,void *,s32,s32,s32,s32,s32))M2C_FIELD(p,void **,0x20))(p,q,a,b,c,d,e);
-M2C_FIELD(p,s32 *,0x1c)--;M2C_FIELD(q,s32 *,0x24)--;
-if(M2C_FIELD(p,s32 *,0x14)&&!M2C_FIELD(p,s32 *,0x1c)){func_0205cef8(p);return 0;}
+if(!socket||!connection)AssertFailed(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
+if(!socket||!connection)return 1;
+if(!M2C_FIELD(socket,void **,0x20))return 1;
+if(!length||!message){message=0;length=0;}
+M2C_FIELD(socket,s32 *,0x1c)++;
+M2C_FIELD(connection,s32 *,0x24)++;
+((void (*)(void *,void *,s32,s32,s32,s32,s32))M2C_FIELD(socket,void **,0x20))(socket,connection,ip,port,latency,message,length);
+M2C_FIELD(socket,s32 *,0x1c)--;M2C_FIELD(connection,s32 *,0x24)--;
+if(M2C_FIELD(socket,s32 *,0x14)&&!M2C_FIELD(socket,s32 *,0x1c)){func_0205cef8(socket);return 0;}
 return 1;
 }
 
@@ -345,12 +349,12 @@ s32 func_0205a830(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2Creat
 s32 func_0205a860(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
 
 s32 func_0205a890(void *p,s32 a,s32 b,Unk0205Copy *q,...) {
-s32 func_0205d70c(s32 *,s32 *);void func_02059aa0(void *);u8 *func_02059bbc(void *,void *);void func_0205c694(void *,void *);
+s32 func_0205d70c(s32 *,s32 *);void gti2GetChallenge(void *);u8 *func_02059bbc(void *,void *);void func_0205c694(void *,void *);
 s32 local[8];s32 r;
 func_0205d70c(&a,&b);
 if(b>0){r=gpiMalloc(b);M2C_FIELD(p,s32 *,0x38)=r;if(!r)return 1;MemCopy(r,a,b);M2C_FIELD(p,s32 *,0x3c)=b;}
 if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q;
-func_02059aa0(local);func_02059bbc((u8 *)p+0x68,local);func_0205c694(p,local);M2C_FIELD(p,s32 *,12)=0;return 0;
+gti2GetChallenge(local);func_02059bbc((u8 *)p+0x68,local);func_0205c694(p,local);M2C_FIELD(p,s32 *,12)=0;return 0;
 }
 
 s32 func_0205a938(void *p,Unk0205Copy *q) {

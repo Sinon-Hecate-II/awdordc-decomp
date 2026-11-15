@@ -15,7 +15,7 @@ void func_020be718(void *arg0) {
     extern M2C_UNK data_0215d9e0;
     extern M2C_UNK data_0215d9ec;
     extern M2C_UNK data_0215da0c;
-    extern M2C_UNK data_0215da1c;
+    extern M2C_UNK gCoUnlocked;
     extern M2C_UNK gRecordValues;
     extern M2C_UNK data_0215dba4;
     extern M2C_UNK data_0215771c;
@@ -67,7 +67,7 @@ void func_020be718(void *arg0) {
     }
     {
         u8 *r12 = (u8 *)arg0 + 0xfc;
-        u8 *r5 = (u8 *)&data_0215da1c;
+        u8 *r5 = (u8 *)&gCoUnlocked;
         int i;
         for (i=0;i<7;i++) { r12[i*2]=r5[i*2]; r12[i*2+1]=r5[i*2+1]; }
         r12[14] = r5[14];
@@ -154,7 +154,7 @@ void func_020beabc(M2C_UNK *arg0) {
     extern M2C_UNK data_0215d9e0;
     extern M2C_UNK data_0215d9ec;
     extern M2C_UNK data_0215da0c;
-    extern M2C_UNK data_0215da1c;
+    extern M2C_UNK gCoUnlocked;
     extern M2C_UNK gRecordValues;
     extern M2C_UNK data_0215dba4;
     extern M2C_UNK data_0215771c;
@@ -202,7 +202,7 @@ void func_020beabc(M2C_UNK *arg0) {
     }
     {
         u32 *s = (u32 *)(p + 0xec);
-        u32 *d = (u32 *)&data_0215da1c;
+        u32 *d = (u32 *)&gCoUnlocked;
         s32 i;
         for (i = 4; i; i--) *d++ = *s++;
     }

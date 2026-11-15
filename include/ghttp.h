@@ -99,6 +99,15 @@ typedef struct GHIConnectionList {
     s32 length;                  /* +0x0C: number of slots allocated */
 } GHIConnectionList;
 
+/* Offsets of the GHIConnectionList members, for code that still addresses the
+ * global as a byte buffer. */
+#define GHI_LIST_NUM_CONNECTIONS 0x00 /* GHIConnectionList.numConnections */
+#define GHI_LIST_CONNECTIONS     0x04 /* GHIConnectionList.connections */
+#define GHI_LIST_NEXT_ID         0x08 /* GHIConnectionList.nextId */
+#define GHI_LIST_LENGTH          0x0C /* GHIConnectionList.length */
+#define GHI_CONNECTION_SIZE      0x184 /* bytes of one GHIConnection slot */
+#define GHI_CONNECTION_GROW_STEP 4   /* slots added when the table is full */
+
 /* Offsets of the POST upload state inside GHIConnection, for code that still
  * addresses the connection as a byte buffer. */
 #define GHI_RESULT        0x38  /* GHIConnection.result */

@@ -399,8 +399,8 @@ s32 func_0200f6fc(void) {
 }
 
 s32 func_0200f70c(s32 arg0) {
-    s32 func_02009eb0(M2C_UNK, s32, M2C_UNK);
-    if (func_02009eb0(5, (arg0 << 8) & 0x7F00, 0) < 0) {
+    s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
+    if (SendFifoMessage(5, (arg0 << 8) & 0x7F00, 0) < 0) {
         return 0;
     }
     return 1;

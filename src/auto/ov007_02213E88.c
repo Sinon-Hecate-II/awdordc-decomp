@@ -1,7 +1,6 @@
 /* 30 functions from 0x02213E88 to 0x02214E24 (ov007), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-typedef struct { u8 kind:6; u8 flags:2; u8 pad[13]; } MapUnit145F8;
 typedef struct { u8 pad[11]; u8 kind : 4; u8 flags : 4; } MapEntry14718;
 
 void func_ov007_02213e88(void *cursor) {
@@ -188,7 +187,7 @@ void func_ov007_02214324(M2C_UNK arg0) {
     M2C_UNK CreateMapEditList(s32, M2C_UNK);
     extern s32 *gCurrentMap;
     CreateMapEditList(*gCurrentMap + 0x5120, arg0);
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
 }
 
 void func_ov007_02214354(void) {
@@ -213,9 +212,9 @@ void func_ov007_02214394(void) {
 
 void func_ov007_022143a8(void) {
     M2C_UNK func_ov003_022059d0();
-    M2C_UNK func_ov007_022121d4(M2C_UNK);
+    M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     func_ov003_022059d0();
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
 }
 
 void func_ov007_022143bc(void) {
@@ -240,7 +239,7 @@ void func_ov007_0221440c(void) {
     M2C_UNK func_020bfa80(M2C_UNK);
     func_020bfa80(0);
     MapSettings_Apply(0);
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
 }
 
 void func_ov007_0221442c(void) {
@@ -273,7 +272,7 @@ void func_ov007_0221446c(void) {
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     RefreshMapView();
-    if (func_ov007_022121c4() != 0) {
+    if (MapEditor_IsMapModified() != 0) {
         func_02086720(0x46000006);
     } else {
         func_02086720(0x46000005);
@@ -298,55 +297,66 @@ void func_ov007_022144ec(void) {
 }
 
 void func_ov007_0221450c(void) {
-    M2C_UNK func_ov007_022121d4(M2C_UNK);
+    M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK func_020c0784();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) (M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF);
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
     func_020c0784();
 }
 
 void func_ov007_02214544(void) {
-    M2C_UNK func_ov007_022121d4(M2C_UNK);
+    M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK func_020c0784();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x1);
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
     func_020c0784();
 }
 
 void func_ov007_02214580(void) {
-    M2C_UNK func_ov007_022121d4(M2C_UNK);
+    M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK func_020c0784();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x8);
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
     func_020c0784();
 }
 
 void func_ov007_022145bc(void) {
-    M2C_UNK func_ov007_022121d4(M2C_UNK);
+    M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK func_020c0784();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x6);
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
     func_020c0784();
 }
 
-void func_ov007_022145f8(void) {
-extern s32 *gCurrentMap;extern u16 gPlayerUnitIdBase[];
-s32 GetUnitOwner(void *);
-s32 i; MapUnit145F8 *p;
-p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-if(p->flags==3)p->flags=0;
-else {
-for(i=gPlayerUnitIdBase[GetUnitOwner(p)]+1;i<gPlayerUnitIdBase[GetUnitOwner(M2C_FIELD(*gCurrentMap,void **,0x52d0))]+51;i++){
-p=(MapUnit145F8 *)((u8 *)*gCurrentMap+0x59a4)+i;
-if(p->kind)p->flags=0;
-}
-((MapUnit145F8 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->flags=3;
-}
-func_ov007_022121d4(1);func_020c0784();
+/* Marks the unit under the cursor: the marker is the unit's owner bits (value 3).
+ * Clears it from the other units of that unit's player group and sets it on this
+ * one; if this unit is already marked, just clears it.  Refreshes the editor's
+ * unit palette and plays the feedback sound afterwards. */
+void MapEditor_MarkCursorUnit(void) {
+    extern s32 *gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 GetUnitOwner(void *);
+    s32 i;
+    BattleMapUnitHead *unit;
+
+    unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    if (unit->owner == 3) {
+        unit->owner = 0;
+    } else {
+        for (i = gPlayerUnitIdBase[GetUnitOwner(unit)] + 1;
+             i < gPlayerUnitIdBase[GetUnitOwner(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT))] + MAP_UNIT_GROUP_SCAN;
+             i++) {
+            unit = (BattleMapUnitHead *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS) + i;
+            if (unit->kind) unit->owner = 0;
+        }
+        ((BattleMapUnitHead *)M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT))->owner = 3;
+    }
+    MapEditor_SetMapModified(1);
+    func_020c0784();
 }
 
 void func_ov007_0221470c(void) {
@@ -466,7 +476,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK BuildMapRowOffsets(void);
     s32 func_0207f460(u8);
     void *CreateMapUnit(s16, s16, s16, s32);
-    void func_ov007_0221b688(M2C_UNK, M2C_UNK);
+    void Map_RefreshCellTile(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cf2c8(void);
     extern s32 *gCurrentMap;
 
@@ -535,7 +545,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     if (width > 0) {
         lastY = height - 1;
         do {
-            func_ov007_0221b688(mapX, lastY);
+            Map_RefreshCellTile(mapX, lastY);
             mapX++;
         } while(mapX<width);
     }
@@ -543,7 +553,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     if (height > 0) {
         lastX = width - 1;
         do {
-            func_ov007_0221b688(lastX, mapY);
+            Map_RefreshCellTile(lastX, mapY);
             mapY++;
         } while(mapY<height);
     }

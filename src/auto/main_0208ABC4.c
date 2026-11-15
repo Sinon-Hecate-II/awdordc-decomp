@@ -381,7 +381,7 @@ void func_0208b868(void *arg0) {
 }
 
 void func_0208b878(void) {
-    M2C_UNK func_02088c78();
-    func_02088c78();
+    M2C_UNK UpdateSpriteSlide();
+    UpdateSpriteSlide();
 }
 

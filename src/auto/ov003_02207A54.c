@@ -294,15 +294,23 @@ void UpdateMapSelectLabelTransform(void *arg0) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov003_02208168(void *a){s32 off,i;void *p;i=0;
-if((s32)*M2C_FIELD(a,u8 **,0x44)>0){do{off=i*36;
-ResetSlot(M2C_FIELD(M2C_FIELD(a,u8 **,0x48)+off,void **,24),0);
-ResetSlot(M2C_FIELD(M2C_FIELD(a,u8 **,0x48)+off,void **,28),0);
-ResetSlot(M2C_FIELD(M2C_FIELD(a,u8 **,0x48)+off,void **,32),0);
-i++;
-}while(i<(s32)*M2C_FIELD(a,u8 **,0x44));}
-ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,24),0);
-ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,28),0);
+/* Reset the three animation slots of every map-select preview row, and the two
+   slots of the label's shared animation pair, ready for the new selection. */
+void Ov003_ResetListRowAnimations(void *screen) {
+    s32 rowOffset;
+    s32 row;
+    row = 0;
+    if ((s32)*M2C_FIELD(screen, u8 **, 0x44) > 0) {
+        do {
+            rowOffset = row * MAP_SELECT_ROW_STRIDE;
+            ResetSlot(M2C_FIELD(M2C_FIELD(screen, u8 **, 0x48) + rowOffset, void **, 0x18), 0);
+            ResetSlot(M2C_FIELD(M2C_FIELD(screen, u8 **, 0x48) + rowOffset, void **, 0x1C), 0);
+            ResetSlot(M2C_FIELD(M2C_FIELD(screen, u8 **, 0x48) + rowOffset, void **, 0x20), 0);
+            row++;
+        } while (row < (s32)*M2C_FIELD(screen, u8 **, 0x44));
+    }
+    ResetSlot(M2C_FIELD(M2C_FIELD(screen, void **, 0x4C), void **, 0x18), 0);
+    ResetSlot(M2C_FIELD(M2C_FIELD(screen, void **, 0x4C), void **, 0x1C), 0);
 }
 
 #pragma push
@@ -313,7 +321,7 @@ void Ov003_RefreshListRowAnimations(void *arg0, s32 arg1, s32 arg2) {
     s32 off;
     void *base;
 
-    func_ov003_02208168(arg0);
+    Ov003_ResetListRowAnimations(arg0);
     switch (arg1) {
     case 0:
     case 5:

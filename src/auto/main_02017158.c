@@ -170,7 +170,7 @@ found:
 u32 func_02017984(void){u8 buf[6];s32 i;u32 sum;u8 *p;GetMacAddress(buf);i=0;p=&buf[i];sum=0;do{sum+=*p++;i++;}while(i<6);return ((sum+*(u32 *)0x27ffc3c)*7)%20;}
 
 #pragma opt_common_subs off
-s32 func_020179ec(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
+s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     void CpuFill(s32, void *, s32);
     void FillU16(s32, void *, s32);
     void MI_CpuCopy8(void *, void *, s32);

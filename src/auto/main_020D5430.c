@@ -7,7 +7,7 @@ void func_020d5430(void) {
  func_020cf850(0x1001a);func_0207a7a4(1,4);MoveMapCursorToTarget(1);
  if(!func_020bcac0())return;
  if(!func_020bd650())return;
- func_020bd104();func_ov000_021696d4();RefreshMapView();func_0207a768();
+ HideTouchCursor();func_ov000_021696d4();RefreshMapView();func_0207a768();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }
 
@@ -181,7 +181,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
    cursor state (4 = move, 5 = onto a unit), then redraw. */
 void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK PlaySoundEffect();
-    M2C_UNK func_020d6398(s32, s32);
+    M2C_UNK CanMoveCursorTo(s32, s32);
     M2C_UNK func_0207a768();
     M2C_UNK func_020a0964();
     M2C_UNK func_020d468c();
@@ -209,7 +209,7 @@ void MoveCursorTo(s32 x, s32 y) {
         if (cell > 0x6e) {
             occupied = 1;
         } else {
-            if (func_020d6398(x, y) == 0) {
+            if (CanMoveCursorTo(x, y) == 0) {
                 PlaySoundEffect(0x1001d);
                 return;
             }

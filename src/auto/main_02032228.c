@@ -3,7 +3,6 @@
 #include "wfc.h"
 
 typedef struct { u32 words[3]; } Unk032Record;
-typedef struct { u32 words[18]; } Unk032Callbacks;
 
 void func_02032228(void *arg0) {
 void func_02007888(u32 *); void func_020472cc(void *); void func_02031dd4(void *,u32,u32); void func_02031dfc(void *,u32); void func_02031e94(void *,s32);
@@ -210,34 +209,40 @@ void func_0203289c(s32 arg0) {
     gNasServer = arg0;
 }
 
-s32 func_020328ac(Unk032Callbacks *arg,s32 value){
+/* Create the NAS client's connection block for a login request. Fails with 2 if
+ * a connection is already open or its allocation fails; otherwise allocates and
+ * zeroes NAS_CONNECTION_SIZE bytes with the request's allocator, remembers the
+ * network handle, copies the request descriptor in, resets the status block to
+ * NAS_STATUS_IDLE, runs the first connect step (its result goes to
+ * NAS_CONN_RESULT) and spawns the task that drives the rest. */
+s32 CreateNasConnection(NasRequest *request,s32 handle){
 M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 NasConnect(s32);
-void func_020329d0(void);
-extern M2C_UNK gNasConnection,data_020fb33c;
+void NasStartTask(void);
+extern M2C_UNK gNasConnection,gAllocTagDwcAuth;
 void *p;
 void *(*alloc)(void *,s32);
-alloc=M2C_FIELD(arg,void *(**)(void *,s32),0x40);
+alloc=M2C_FIELD(request,void *(**)(void *,s32),0x40);
 if(M2C_FIELD(&gNasConnection,void **,8))return 2;
-M2C_FIELD(&gNasConnection,void **,8)=alloc(&data_020fb33c,0x13f4);
+M2C_FIELD(&gNasConnection,void **,8)=alloc(&gAllocTagDwcAuth,NAS_CONNECTION_SIZE);
 if(!M2C_FIELD(&gNasConnection,void **,8))return 2;
-MI_CpuFill8((s32)M2C_FIELD(&gNasConnection,void **,8),0,0x13f4);
-M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314)=value;
+MI_CpuFill8((s32)M2C_FIELD(&gNasConnection,void **,8),0,NAS_CONNECTION_SIZE);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_HANDLE)=handle;
 M2C_FIELD(&gNasConnection,s32 *,0)=0;
-MI_CpuFill8((s32)(M2C_FIELD(&gNasConnection,void **,8)+0x1008),0,0x1c4);
-M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1008)=0x4e84;
+MI_CpuFill8((s32)(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_STATUS),0,NAS_CONN_STATUS_SIZE);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_STATUS)=NAS_STATUS_IDLE;
 p=M2C_FIELD(&gNasConnection,void **,8);
-M2C_FIELD(p,Unk032Callbacks *,0x11cc)=*arg;
+M2C_FIELD(p,NasRequest *,NAS_CONN_REQUEST)=*request;
 M2C_FIELD(p,u16 *,0x11fe)=0;
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8 *,0x120b)=0;
-M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=NasConnect(1);
-if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_RESULT)=NasConnect(1);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_RESULT))return M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_RESULT);
 M2C_FIELD(&gNasConnection,s32 *,4)=0;
-func_020329d0();
+NasStartTask();
 return 0;
 }
 
-void func_020329d0(void) {
+void NasStartTask(void) {
 M2C_UNK InitMutex(void *); M2C_UNK func_02005ac0(void *,void (*)(void),void *,void *,s32,s32);
 s32 func_02005d90(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
 extern M2C_UNK gNasConnection; extern M2C_UNK data_0213d11c;
@@ -315,12 +320,12 @@ void func_02032be4(void *arg0) {
 
 s32 NasConnect(s32 arg0){
 extern M2C_UNK gNasServer,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
-s32 StringCompare(void *,void *);s32 func_02033ccc(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
+s32 StringCompare(void *,void *);s32 HttpClientInit(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
 if(StringCompare(M2C_FIELD(&gNasServer,void **,0),&data_020fb35c))M2C_FIELD(&gNasServer,s32 *,20)=1;
 { void *p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(&gNasServer,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);
 M2C_FIELD(&gNasServer,s32 *,16)=M2C_FIELD(p,s32 *,0x1210);
-if(func_02033ccc(M2C_FIELD(p,void **,0x1314),(const void *)&gNasServer))return 4;
+if(HttpClientInit(M2C_FIELD(p,void **,0x1314),(const void *)&gNasServer))return 4;
 }
 if(arg0==1)GetWfcProfile(&data_0213d120);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x1200,(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x11cc);

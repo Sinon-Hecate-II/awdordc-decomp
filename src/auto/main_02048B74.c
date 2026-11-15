@@ -229,13 +229,14 @@ s32 gpiStringDup(s32 arg0) {
 
 #pragma push
 #pragma optimization_level 2
+#pragma opt_if_conversion off
 s8 *StringToLower(s8 *p) {
  extern M2C_UNK data_020eac40;
  s8 *q = p;
  s32 c = *p;
  if (c) do {
-   if (c >= 0) {
-     c = c < 128 ? ((u8 *)&data_020eac40)[c] : c;
+   if (c >= 0 && c < 128) {
+     c = ((u8 *)&data_020eac40)[c];
    }
    *p++ = c;
    c = *p;
@@ -459,14 +460,8 @@ s32 func_020499c0(void) { extern s32 data_020fcdd4; s32 func_02049974(s32); retu
 
 void SeedRandom(s32 arg0) {
     extern s32 data_020fcdd4;
-    s32 var_r1;
 
-    if (arg0 != 0) {
-        var_r1 = arg0 & ~0x80000000;
-    } else {
-        var_r1 = 1;
-    }
-    data_020fcdd4 = var_r1;
+    data_020fcdd4 = arg0 ? (arg0 & ~0x80000000) : 1;
 }
 
 s32 RandomRange(s32 a,s32 b){s32 n=b-a;s32 result;if(n==0)return a;result=func_020499c0();result%=n;return result+a;}

@@ -183,10 +183,10 @@ if(a==17){void (*cb)(s32,s32,s32)=M2C_FIELD(gMbWork,void (**)(s32,s32,s32),0x14e
 #pragma opt_scheduling on
 #pragma opt_common_subs on
 void func_02014564(void *arg0,u16 n) {
-void *func_02018a28(); void MI_CpuCopy8(); u16 func_02015204(); extern s32 gMbWork; extern s32 data_02131180;
+void *MultiBoot_DecodePacket(); void MI_CpuCopy8(); u16 func_02015204(); extern s32 gMbWork; extern s32 data_02131180;
 s32 state; u8 *p; u32 group; u8 count,i; u8 header[20]; u8 packet[32];
 if(!n)return; if(n>15)return;
-p=func_02018a28((u8 *)arg0+10,header,n);
+p=MultiBoot_DecodePacket((u8 *)arg0+10,header,n);
 state=M2C_FIELD(gMbWork+((u32)n-1)*4,s32 *,0x14e8);
 switch(header[0]){
 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 11: break;

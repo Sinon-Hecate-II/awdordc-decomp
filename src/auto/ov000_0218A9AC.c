@@ -8,7 +8,7 @@ extern void (*gAiUnitAction)(void);
 void func_ov000_0217c3a4(void);
 void func_ov000_0218d040(int);
 void func_ov000_0218d908(void);
-void func_ov000_02198c08(void);
+void ClearAiInfluenceMaps(void);
 void SetMapCursor(int, int, int, int, int);
 
 #pragma opt_strength_reduction off
@@ -100,7 +100,7 @@ void func_ov000_0218b02c(void) {
     flags = *(u16 *)((u8 *)gAiCommandState + 8);
     if (!(flags & 0x20)) {
         *(u16 *)((u8 *)gAiCommandState + 8) = flags | 0x20;
-        func_ov000_02198c08();
+        ClearAiInfluenceMaps();
         gAiUnitAction();
     }
     func_ov000_0217c3a4();

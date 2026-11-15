@@ -20,6 +20,12 @@
 
 #define SPRITE_FLAG_FRAME_SET    0x01 /* a frame has been selected */
 #define SPRITE_FLAG_OFFSET_TABLE 0x02 /* SPRITE_DATA_BASE entries are byte offsets, not pointers */
+#define SPRITE_FLAG_CHILD_POS    0x04 /* position is relative to the parent/engine origin */
+#define SPRITE_FLAG_GEOMETRY_PARAM 0x08 /* handed to DrawSprite3DGeometry as its last argument */
+#define SPRITE_FLAG_PALETTE_FIXED 0x10 /* use SetSpritePaletteBase instead of the object's palette */
+#define SPRITE_FLAG_PALETTE_CYCLE 0x20 /* cycle the palette through gSpritePaletteCycle */
+#define SPRITE_FLAG_DEFER        0x40 /* skip this frame's draw, then clear the bit */
+#define SPRITE_PALETTE_CYCLE_LEN 22 /* entries in gSpritePaletteCycle */
 
 /* Script commands (the second u16 of a zero-duration entry). */
 #define SPRITE_CMD_LOOP    0xFF

@@ -447,30 +447,35 @@ void Init3DSpriteDisplay(void) {
     func_020af1c0(3, 15);
 }
 
-s32 func_020b501c(s32 p,s32 a,s32 x,s32 y,s32 rawFlags,s32 b,s32 c){
-s32 func_02077700(void);u32 flags=*(u16 *)&rawFlags;u16 tile;s32 saved=*(volatile s32 *)&c;
+/* Places the map sprite object created from `kind` at map cell (x, y) and has the
+ * sprite loader draw its tile: flags bit 5 says the coordinates are already in
+ * pixels, bits 0..1 choose the orientation, bit 3 selects the runtime control
+ * value at +0x40, bit 6 clears control bit 0x80000, and bit 4 picks the sprite
+ * bank passed to the loader. */
+s32 PlaceMapSprite(s32 sprite,s32 kind,s32 x,s32 y,s32 rawFlags,s32 base,s32 tileIndex){
+s32 func_02077700(void);u32 flags=*(u16 *)&rawFlags;u16 tile;s32 saved=*(volatile s32 *)&tileIndex;
 if(!(flags&32)){x<<=4;y<<=4;}
 switch(flags&3){
 case 1:x=(x+8)*48;y=(y+16)*48;break;
 case 0:x=(x+8)*48;y=(y+8)*48;break;
 case 2:x*=48;y*=48;break;
 }
-M2C_FIELD(p,s32 *,0x34)=x;M2C_FIELD(p,s32 *,0x38)=y;M2C_FIELD(p,s32 *,0x3c)=0x8b1;
-M2C_FIELD(p,s32 *,0x40)=flags&8?func_02077700():0x20000;
-if(flags&64)M2C_FIELD(p,u32 *,0x44)&=~0x80000;
-else M2C_FIELD(p,u32 *,0x44)|=0x80000;
+M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;M2C_FIELD(sprite,s32 *,0x3c)=0x8b1;
+M2C_FIELD(sprite,s32 *,0x40)=flags&8?func_02077700():0x20000;
+if(flags&64)M2C_FIELD(sprite,u32 *,0x44)&=~0x80000;
+else M2C_FIELD(sprite,u32 *,0x44)|=0x80000;
 tile=(u16)(saved+0xab);
-if(flags&16)func_0208bd2c(p,a,b+0x329a0,tile,0);
-else func_0208bd2c(p,a,b+0x329a0,tile,1);
+if(flags&16)func_0208bd2c(sprite,kind,base+0x329a0,tile,0);
+else func_0208bd2c(sprite,kind,base+0x329a0,tile,1);
 }
 
 s32 func_020b5134(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
     s32 func_0208c528(s32);
-    M2C_UNK func_020b501c(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    M2C_UNK PlaceMapSprite(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     s32 temp_r0;
 
     temp_r0 = func_0208c528(arg6);
-    func_020b501c(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
+    PlaceMapSprite(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
     return temp_r0;
 }
 
@@ -479,7 +484,7 @@ s32 func_020b5188(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, 
     s32 temp_r0;
 
     temp_r0 = func_0208c54c(arg6);
-    func_020b501c(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
+    PlaceMapSprite(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
     return temp_r0;
 }
 

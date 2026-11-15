@@ -26,10 +26,10 @@ else if(*dst==63)*dst=alphabet[1];
 
 s32 ghiResizeBuffer(s32 *p,s32 n) {
 s32 gpiRealloc(s32,s32);
-extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce58,data_020fcedc;
+extern M2C_UNK sAssertBuffer,gGhttpBufferFileName,data_020fce58,sAssertSizeIncrement;
 s32 v,total;
-if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce58,0x20);
-if(n<=0)AssertFailed(&data_020fcedc,&data_020fcecc,&data_020fce58,0x21);
+if(!p)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&data_020fce58,0x20);
+if(n<=0)AssertFailed(&sAssertSizeIncrement,&gGhttpBufferFileName,&data_020fce58,0x21);
 if(!p)return 0;
 if(n<=0)return 0;
 total=p[2];total+=n;
@@ -38,29 +38,31 @@ if(!v)return 0;
 p[1]=v;p[2]=total;return 1;
 }
 
-s32 ghiInitBuffer(void *connection,s32 *buffer,s32 size,s32 grow) {
-extern M2C_UNK data_020fcef0,data_020fcecc,data_020fce38,data_020fcec4,data_020fcefc,data_020fcedc;
-if(!connection)AssertFailed(&data_020fcef0,&data_020fcecc,&data_020fce38,0x43);
-if(!buffer)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce38,0x44);
-if(size<=0)AssertFailed(&data_020fcefc,&data_020fcecc,&data_020fce38,0x45);
-if(grow<=0)AssertFailed(&data_020fcedc,&data_020fcecc,&data_020fce38,0x46);
+/* Initialise a GHIBuffer: record the owning connection and grow step, clear
+   the remaining fields, allocate the initial storage and start it empty. */
+s32 ghiInitBuffer(void *connection,GHIBuffer *buffer,s32 initialSize,s32 sizeIncrement) {
+extern M2C_UNK sAssertConnection,gGhttpBufferFileName,gGhiInitBufferName,sAssertBuffer,sAssertInitialSize,sAssertSizeIncrement;
+if(!connection)AssertFailed(&sAssertConnection,&gGhttpBufferFileName,&gGhiInitBufferName,0x43);
+if(!buffer)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&gGhiInitBufferName,0x44);
+if(initialSize<=0)AssertFailed(&sAssertInitialSize,&gGhttpBufferFileName,&gGhiInitBufferName,0x45);
+if(sizeIncrement<=0)AssertFailed(&sAssertSizeIncrement,&gGhttpBufferFileName,&gGhiInitBufferName,0x46);
 if(!connection)return 0;
 if(!buffer)return 0;
-if(size<=0)return 0;
-if(grow<=0)return 0;
-buffer[0]=(s32)connection;
-buffer[1]=0;buffer[2]=0;buffer[3]=0;buffer[4]=0;buffer[5]=grow;buffer[6]=0;buffer[7]=0;buffer[8]=0;
-if(!ghiResizeBuffer(buffer,size))return 0;
-*(u8*)buffer[1]=0;return 1;
+if(initialSize<=0)return 0;
+if(sizeIncrement<=0)return 0;
+buffer->connection=connection;
+buffer->data=0;buffer->size=0;buffer->len=0;buffer->pos=0;buffer->sizeIncrement=sizeIncrement;buffer->fixed=0;buffer->dontFree=0;buffer->encrypted=0;
+if(!ghiResizeBuffer((s32 *)buffer,initialSize))return 0;
+*(u8 *)buffer->data=0;return 1;
 }
 
 /* Initialize a fixed-size buffer wrapper with a connection, user storage and capacity. */
 s32 ghiInitFixedBuffer(void *connection, s32 *buffer, void *userBuffer, s32 size) {
-    extern M2C_UNK data_020fcef0, data_020fcecc, data_020fce68, data_020fcec4, data_020fcf0c, data_020fcf18;
-    if (!connection) AssertFailed(&data_020fcef0, &data_020fcecc, &data_020fce68, 0x74);
-    if (!buffer) AssertFailed(&data_020fcec4, &data_020fcecc, &data_020fce68, 0x75);
-    if (!userBuffer) AssertFailed(&data_020fcf0c, &data_020fcecc, &data_020fce68, 0x76);
-    if (size <= 0) AssertFailed(&data_020fcf18, &data_020fcecc, &data_020fce68, 0x77);
+    extern M2C_UNK sAssertConnection, gGhttpBufferFileName, data_020fce68, sAssertBuffer, data_020fcf0c, data_020fcf18;
+    if (!connection) AssertFailed(&sAssertConnection, &gGhttpBufferFileName, &data_020fce68, 0x74);
+    if (!buffer) AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &data_020fce68, 0x75);
+    if (!userBuffer) AssertFailed(&data_020fcf0c, &gGhttpBufferFileName, &data_020fce68, 0x76);
+    if (size <= 0) AssertFailed(&data_020fcf18, &gGhttpBufferFileName, &data_020fce68, 0x77);
     if (!connection) return 0;
     if (!buffer) return 0;
     if (!userBuffer) return 0;
@@ -79,8 +81,8 @@ s32 ghiInitFixedBuffer(void *connection, s32 *buffer, void *userBuffer, s32 size
 
 void ghiFreeBuffer(s32 *p) {
 void gpiFree(s32);
-extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce28;
-if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce28,0x9b);
+extern M2C_UNK sAssertBuffer,gGhttpBufferFileName,data_020fce28;
+if(!p)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&data_020fce28,0x9b);
 if(!p || !p[1])return;
 if(!p[7])gpiFree(p[1]);
 MemSet(p,0,0x24);
@@ -93,8 +95,8 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     s32 StringLength(s32);
     s32 ghiResizeBuffer(s32 *, s32);
     void MemCopy(void *, void *, s32);
-    extern M2C_UNK data_020fcec4;
-    extern M2C_UNK data_020fcecc;
+    extern M2C_UNK sAssertBuffer;
+    extern M2C_UNK gGhttpBufferFileName;
     extern M2C_UNK data_020fce94;
     extern M2C_UNK data_020fcf24;
     extern M2C_UNK data_020fcf2c;
@@ -104,9 +106,9 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     void *connection = buffer->connection;
     typedef s32 (*Cb)(void *, void *, void *, s32 *, s32, s32 *);
 
-    if (buffer == 0) AssertFailed(&data_020fcec4, &data_020fcecc, &data_020fce94, 0xb7);
-    if (data == 0) AssertFailed(&data_020fcf24, &data_020fcecc, &data_020fce94, 0xb8);
-    if (dataLen < 0) AssertFailed(&data_020fcf2c, &data_020fcecc, &data_020fce94, 0xb9);
+    if (buffer == 0) AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &data_020fce94, 0xb7);
+    if (data == 0) AssertFailed(&data_020fcf24, &gGhttpBufferFileName, &data_020fce94, 0xb8);
+    if (dataLen < 0) AssertFailed(&data_020fcf2c, &gGhttpBufferFileName, &data_020fce94, 0xb9);
     if (buffer == 0) return 0;
     if (data == 0) return 0;
     if (dataLen < 0) return 0;
@@ -119,7 +121,7 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
         s32 result;
         s32 room;
         if (M2C_FIELD(connection, s32 *, 0x168) == 0) {
-            AssertFailed(&data_020fcf3c, &data_020fcecc, &data_020fce94, 0xce);
+            AssertFailed(&data_020fcf3c, &gGhttpBufferFileName, &data_020fce94, 0xce);
         }
         do {
             u8 *dest;
@@ -186,9 +188,9 @@ s32 AppendHttpHeader(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
 
 s32 AppendChar(s32 p,s32 c) {
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
-extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce7c;
+extern M2C_UNK sAssertBuffer,gGhttpBufferFileName,data_020fce7c;
 u8 v=c;
-if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce7c,0x131);
+if(!p)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&data_020fce7c,0x131);
 if(!p)return 0;
 return ghiAppendDataToBuffer(p,(s32 *)&v,1);
 }
@@ -205,10 +207,10 @@ ghiAppendDataToBuffer(a,buf,0);
 void ResetBuffer(void *arg0) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fce48;
-    extern M2C_UNK data_020fcec4;
-    extern M2C_UNK data_020fcecc;
+    extern M2C_UNK sAssertBuffer;
+    extern M2C_UNK gGhttpBufferFileName;
     if (arg0 == NULL) {
-        AssertFailed(&data_020fcec4, &data_020fcecc, &data_020fce48, 0x16C);
+        AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &data_020fce48, 0x16C);
     }
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
     M2C_FIELD(arg0, s32 *, 0x10) = 0;
@@ -247,10 +249,10 @@ loop_1:
 }
 
 s32 func_0204a3dc(s32 *p,u8 *dst,s32 *len) {
-extern M2C_UNK data_020fcf84,data_020fcecc,data_020fceac,data_020fcf98;
+extern M2C_UNK data_020fcf84,gGhttpBufferFileName,data_020fceac,data_020fcf98;
 s32 n,left;
-if(!p)AssertFailed(&data_020fcf84,&data_020fcecc,&data_020fceac,0x1b7);
-if(!len)AssertFailed(&data_020fcf98,&data_020fcecc,&data_020fceac,0x1b8);
+if(!p)AssertFailed(&data_020fcf84,&gGhttpBufferFileName,&data_020fceac,0x1b7);
+if(!len)AssertFailed(&data_020fcf98,&gGhttpBufferFileName,&data_020fceac,0x1b8);
 n=*len;
 if(!n)return 0;
 left=p[3]-p[4];

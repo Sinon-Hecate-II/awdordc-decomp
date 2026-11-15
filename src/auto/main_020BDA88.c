@@ -51,13 +51,13 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
 }
 
 s32 func_020bdbf4(s32 arg0) {
-s32 IsTouchInputDisabled(void); void ScreenToMapPosition(u16,u16,s32 *); s32 Divide(s32,s32); void func_020bd104(void); s32 func_020caba4(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
+s32 IsTouchInputDisabled(void); void ScreenToMapPosition(u16,u16,s32 *); s32 Divide(s32,s32); void HideTouchCursor(void); s32 func_020caba4(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
 s32 coords[3];u16 x,y;s32 scaledX,scaledY,result;
 x=M2C_FIELD(gTouchState,u16 *,0);y=M2C_FIELD(gTouchState,u16 *,2);
 if(IsTouchInputDisabled()!=0)return 0;
 ScreenToMapPosition(x,y,coords);scaledX=Divide(coords[0],0x300);scaledY=Divide(coords[1],0x300);
 if(M2C_FIELD(gTouchState,u8 *,0x16)==0)return 0;
-if(scaledX==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&scaledY==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(func_020caba4(scaledX,scaledY,arg0)>=0)result=0x10;else result=0x20;}else result=0;return result;
+if(scaledX==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&scaledY==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){HideTouchCursor();if(func_020caba4(scaledX,scaledY,arg0)>=0)result=0x10;else result=0x20;}else result=0;return result;
 }
 
 s32 func_020bdcd0(void) {
@@ -75,7 +75,7 @@ s32 func_020bdcd0(void) {
 s32 func_020bdd18(void) {
  s32 IsTouchInputDisabled(void);
  void DeleteTouchCursor(void);
- void func_020bd104(void);
+ void HideTouchCursor(void);
  extern void *gTouchState;
  extern void **gCurrentMap;
  if (IsTouchInputDisabled()) return 0;
@@ -87,7 +87,7 @@ s32 func_020bdd18(void) {
  if (M2C_FIELD(gTouchState,u8 *,0x16) &&
  M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca) &&
  M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)) {
- func_020bd104(); return 16;
+ HideTouchCursor(); return 16;
  }
  return 0;
 }
@@ -97,7 +97,7 @@ s32 GetMapCursorTouchAction(void) {
     s32 IsTouchInputDisabled(void);
     s32 func_020bdef8(s32, s32);
     void DeleteTouchCursor(void);
-    void func_020bd104(void);
+    void HideTouchCursor(void);
     extern void *gTouchState;
     extern void **gCurrentMap;
 
@@ -116,7 +116,7 @@ s32 GetMapCursorTouchAction(void) {
     if (M2C_FIELD(gTouchState, u8 *, 0x16) &&
         M2C_FIELD(*gCurrentMap, s16 *, 0x52c2) == M2C_FIELD(*gCurrentMap, s16 *, 0x52ca) &&
         M2C_FIELD(*gCurrentMap, s16 *, 0x52c4) == M2C_FIELD(*gCurrentMap, s16 *, 0x52cc)) {
-        func_020bd104();
+        HideTouchCursor();
         return 16;
     }
     return 0;

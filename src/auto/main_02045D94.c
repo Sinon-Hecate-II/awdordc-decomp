@@ -83,7 +83,7 @@ s32 func_02046158(s32 arg0,s32 arg1,s32 arg2,s32 arg3){
 M2C_UNK DC_InvalidateRange(M2C_UNK,...);
 u64 GetSystemTick(void);
 u64 func_02072088(u64,u64);
-s32 func_02009eb0(s32,u32,s32);
+s32 SendFifoMessage(s32,u32,s32);
 extern M2C_UNK data_0213db28;
 extern u8 data_0213db60[];
 u32 c2,c1,c0,b3,b2,b1,b0,a6,a5,a4,a3,a2,a1,a0;
@@ -111,26 +111,26 @@ if(state==0){
 M2C_FIELD(&data_0213db28,s32*,4)=0;
 switch(arg0){
 case 1:
-if(func_02009eb0(4,a0,0)<0){state=0;break;}
-if(func_02009eb0(4,a1,0)<0){state=0;break;}
-if(func_02009eb0(4,a2,0)<0){state=0;break;}
-if(func_02009eb0(4,a3,0)<0){state=0;break;}
-if(func_02009eb0(4,a4,0)<0){state=0;break;}
-if(func_02009eb0(4,a5,0)<0)state=0;else state=1;break;
-case 2:if(func_02009eb0(4,a6,0)<0)state=0;else state=1;break;
+if(SendFifoMessage(4,a0,0)<0){state=0;break;}
+if(SendFifoMessage(4,a1,0)<0){state=0;break;}
+if(SendFifoMessage(4,a2,0)<0){state=0;break;}
+if(SendFifoMessage(4,a3,0)<0){state=0;break;}
+if(SendFifoMessage(4,a4,0)<0){state=0;break;}
+if(SendFifoMessage(4,a5,0)<0)state=0;else state=1;break;
+case 2:if(SendFifoMessage(4,a6,0)<0)state=0;else state=1;break;
 case 3:
-if(func_02009eb0(4,b0,0)<0){state=0;goto timer;}
-if(func_02009eb0(4,a1,0)<0){state=0;goto timer;}
-if(func_02009eb0(4,b1,0)<0){state=0;goto timer;}
-if(func_02009eb0(4,b2,0)<0){state=0;goto timer;}
-if(func_02009eb0(4,b3,0)<0)state=0;else state=1;
+if(SendFifoMessage(4,b0,0)<0){state=0;goto timer;}
+if(SendFifoMessage(4,a1,0)<0){state=0;goto timer;}
+if(SendFifoMessage(4,b1,0)<0){state=0;goto timer;}
+if(SendFifoMessage(4,b2,0)<0){state=0;goto timer;}
+if(SendFifoMessage(4,b3,0)<0)state=0;else state=1;
 timer:start=GetSystemTick();break;
 case 4:case 5:
-if(func_02009eb0(4,c0,0)<0){state=0;break;}
-if(func_02009eb0(4,c1,0)<0){state=0;break;}
-if(func_02009eb0(4,c2,0)<0)state=0;else state=1;break;
-case 6:if(func_02009eb0(4,0x3002d00,0)<0)state=0;else state=1;break;
-case 7:if(func_02009eb0(4,0x3002100,0)<0)state=0;else state=1;break;
+if(SendFifoMessage(4,c0,0)<0){state=0;break;}
+if(SendFifoMessage(4,c1,0)<0){state=0;break;}
+if(SendFifoMessage(4,c2,0)<0)state=0;else state=1;break;
+case 6:if(SendFifoMessage(4,0x3002d00,0)<0)state=0;else state=1;break;
+case 7:if(SendFifoMessage(4,0x3002100,0)<0)state=0;else state=1;break;
 }
 }else if(M2C_FIELD(&data_0213db28,s32*,4)==1){
 state=0;

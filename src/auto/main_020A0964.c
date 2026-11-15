@@ -20,7 +20,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     M2C_UNK func_020a061c(void);
     M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
     M2C_UNK NextRandomValue(void);
-    M2C_UNK func_020a0750(M2C_UNK, M2C_UNK);
+    M2C_UNK ScoreMoveCell(M2C_UNK, M2C_UNK);
 
     extern s32 *gCurrentMap;
     extern s32 gUnitMovePath;
@@ -92,7 +92,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
             if (manY < 0) manY = -manY;
             manhattan = manX + manY;
             if (manhattan < attr || manhattan > cap) continue;
-            score = func_020a0750(inner, outer);
+            score = ScoreMoveCell(inner, outer);
             if (score == 0) continue;
             if (score > best) {
                 best = score;
@@ -123,7 +123,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
             if (manY < 0) manY = -manY;
             manhattan = manX + manY;
             if (manhattan < attr || manhattan > cap) continue;
-            score = func_020a0750(inner, outer);
+            score = ScoreMoveCell(inner, outer);
             if (score == 0) continue;
             if (score > best2) {
                 best2 = score;

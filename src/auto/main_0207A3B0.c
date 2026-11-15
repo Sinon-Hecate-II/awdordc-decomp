@@ -528,7 +528,7 @@ s16 (*p)[4]=M2C_FIELD(arg0,void **,0x54);s16 i;
 if(M2C_FIELD(arg0,s16 *,0x6e)==8){func_0207a748(1);DeleteSpriteObject(arg0);return;}
 M2C_FIELD(arg0,s16 *,0x6e)++;
 if(M2C_FIELD(arg0,s16 *,0x6c)>204)return;
-func_02091230();
+SetSpritePaletteBase();
 for(i=0;i<M2C_FIELD(arg0,s16 *,0x6c);i++){
 p[i][0]+=p[i][2];
 p[i][1]+=p[i][3];

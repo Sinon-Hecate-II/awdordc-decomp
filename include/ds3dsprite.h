@@ -50,6 +50,14 @@
 #define DS3D_MATRIX_A 2 /* DS3DSpriteBank.matrixA, includes the screen offset */
 #define DS3D_MATRIX_B 3 /* DS3DSpriteBank.matrixB, relative to the screen offset */
 
+/* The engine's screen offsets (s16 at +0x3C/+0x3E) and its second offset pair
+ * (filler_40/filler_42), which is added to them when the sprite's size is
+ * measured. */
+#define DS3D_OFFSET_X  0x3C
+#define DS3D_OFFSET_Y  0x3E
+#define DS3D_OFFSET2_X 0x40
+#define DS3D_OFFSET2_Y 0x42
+
 /* Affine transform of the 3D sprite's layer grid, built by BuildSpriteTransform
  * from a DS3DSpriteTransform. The coefficients are 8.8 fixed point. */
 typedef struct DS3DSpriteMatrix {

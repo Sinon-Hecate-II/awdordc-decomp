@@ -255,12 +255,12 @@ return 1;
 }
 
 s32 func_0205b41c(void *a,void *b,s32 c) {
-void func_02059bbc(void *,void *);void func_02059aa0(void *);
+void func_02059bbc(void *,void *);void gti2GetChallenge(void *);
 s32 func_0205c6f4(void *,void *,void *);
 u8 x[32],y[32];
 if(M2C_FIELD(a,s32 *,12)!=2)return Gt2CloseConnection((s32)a)!=0;
 if(c<32)return Gt2CloseConnection((s32)a)!=0;
-func_02059bbc(x,b);func_02059aa0(y);func_02059bbc((u8 *)a+0x68,y);
+func_02059bbc(x,b);gti2GetChallenge(y);func_02059bbc((u8 *)a+0x68,y);
 if(!func_0205c6f4(a,x,y))return 0;
 M2C_FIELD(a,s32 *,12)=3;return 1;
 }
@@ -297,14 +297,13 @@ s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 func_0205cb4c();
 #pragma push
 #pragma opt_propagation off
 s32 func_0205b758(void *arg0) {
- s32 b;
- if(func_0205cb4c()==0)return 0;
- if(M2C_FIELD(arg0,s32*,12)!=6)goto nonzero;
- b=0;goto call;
- nonzero:b=1;
- call:
- if(func_0205b110(arg0,2,b)==0)return 0;
- return 1;
+    if (func_0205cb4c() == 0) {
+        return 0;
+    }
+    if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) == 6 ? 0 : 1) == 0) {
+        return 0;
+    }
+    return 1;
 }
 #pragma pop
 /* Increment the object's command counter and dispatch one of its commands (0-6). */

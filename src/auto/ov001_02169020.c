@@ -42,15 +42,15 @@ void func_ov001_02169130(void *arg0, M2C_UNK arg1) {
     M2C_FIELD(arg0, M2C_UNK **, 4) = &func_ov001_0216ad40;
 }
 
-s32 func_ov001_02169154(void **a,u32 b){s32 func_ov001_02169068(void *,u32);void *p=M2C_FIELD(*a,void **,16);while(p){if(M2C_FIELD(p,u16 *,0)<=b && b<=M2C_FIELD(p,u16 *,2))return func_ov001_02169068(p,b);p=M2C_FIELD(p,void **,8);}return 65535;}
+s32 GetFontGlyphIndex(void **a,u32 b){s32 func_ov001_02169068(void *,u32);void *p=M2C_FIELD(*a,void **,16);while(p){if(M2C_FIELD(p,u16 *,0)<=b && b<=M2C_FIELD(p,u16 *,2))return func_ov001_02169068(p,b);p=M2C_FIELD(p,void **,8);}return 65535;}
 
-void *func_ov001_0216919c(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD(base,void **,12);while(p){u16 lo=M2C_FIELD(p,u16 *,0);if(lo<=b && b<=M2C_FIELD(p,u16 *,2))return p+8+(b-lo)*3;p=M2C_FIELD(p,void **,4);}return base+4;}
+void *GetFontGlyphMetric(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD(base,void **,12);while(p){u16 lo=M2C_FIELD(p,u16 *,0);if(lo<=b && b<=M2C_FIELD(p,u16 *,2))return p+8+(b-lo)*3;p=M2C_FIELD(p,void **,4);}return base+4;}
 
-s32 GetTextLineWidth(void *a,s32 b,s32 arg2,s32 *d){s32 c=arg2;s32 width,ch,id;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);width=0;ch=f(&c);if(ch){do{if(ch==10)break;id=func_ov001_02169154(a,ch);if(id==65535)id=M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,2);width+=b+M2C_FIELD(func_ov001_0216919c(a,id),s8 *,2);ch=f(&c);}while(ch);}if(d)*d=ch==10?c:0;if(width>0)width-=b;return width;}
+s32 GetTextLineWidth(void *a,s32 b,s32 arg2,s32 *d){s32 c=arg2;s32 width,ch,id;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);width=0;ch=f(&c);if(ch){do{if(ch==10)break;id=GetFontGlyphIndex(a,ch);if(id==65535)id=M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,2);width+=b+M2C_FIELD(GetFontGlyphMetric(a,id),s8 *,2);ch=f(&c);}while(ch);}if(d)*d=ch==10?c:0;if(width>0)width-=b;return width;}
 
 s32 func_ov001_02169294(void *a,s32 b,s32 arg2){s32 c=arg2;s32 z[2]={0,0};s32 n,ch;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);n=1;ch=f(&c);while(ch){if(ch==10)n++;ch=f(&c);}return n*(b+M2C_FIELD(M2C_FIELD(a,void **,0),s8 *,1))-b;}
 
-void func_ov001_02169308(FontSize *out,void **a,s32 b,s32 c,s32 d){FontSize v={0,0};s32 n=1,w;while(d){w=GetTextLineWidth(a,b,d,&d);if(w>v.x)v.x=w;n++;}v.y=(n-1)*(c+M2C_FIELD(*a,s8 *,1))-c;*out=v;}
+void GetTextBlockSize(FontSize *out,void **a,s32 b,s32 c,s32 d){FontSize v={0,0};s32 n=1,w;while(d){w=GetTextLineWidth(a,b,d,&d);if(w>v.x)v.x=w;n++;}v.y=(n-1)*(c+M2C_FIELD(*a,s8 *,1))-c;*out=v;}
 
 #pragma intrinsic on
 u32 func_ov001_0216939c(u32 x,u32 y,s32 w,s32 h,s32 sx,s32 sy){

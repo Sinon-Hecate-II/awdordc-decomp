@@ -285,8 +285,8 @@ OS_RestoreInterrupts(interrupts);((TouchState *)&gTouchDriverState)->calibrated=
 
 #pragma opt_propagation off
 void func_0200d778(void) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02009eb0(s32,u32,s32);
-s32 t=OS_DisableInterrupts(); s32 ok=(func_02009eb0(6,0x3000000,0)>=0); u32 base;
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 SendFifoMessage(s32,u32,s32);
+s32 t=OS_DisableInterrupts(); s32 ok=(SendFifoMessage(6,0x3000000,0)>=0); u32 base;
 if(!ok) {OS_RestoreInterrupts(t);base=(u32)&gTouchDriverState;
 ((TouchState *)base)->flags38 = 1 | ((TouchState *)base)->flags38;
 if(((TouchState *)base)->callback)((TouchState *)base)->callback(0,4,0);
@@ -304,7 +304,7 @@ func_0200dd14(1);if(M2C_FIELD(&gTouchDriverState,u16 *,0x38)&1)return 1;
 void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02009eb0(s32, u32, s32);
+    s32 SendFifoMessage(s32, u32, s32);
     u32 i;
     s32 t;
     u8 ok;
@@ -320,10 +320,10 @@ void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
         ((u16 *)M2C_FIELD(&gTouchDriverState, s32 *, 0x14))[v * 4 + 2] = (u16)v;
     }
     t = OS_DisableInterrupts();
-    if (func_02009eb0(6, (arg1 & 0xff) | 0x100 | 0x2000000, 0) < 0) {
+    if (SendFifoMessage(6, (arg1 & 0xff) | 0x100 | 0x2000000, 0) < 0) {
         goto fail;
     }
-    ok = (func_02009eb0(6, arg0 | 0x10000 | 0x1000000, 0) >= 0);
+    ok = (SendFifoMessage(6, arg0 | 0x10000 | 0x1000000, 0) >= 0);
     if (ok) {
         goto okpath;
     }
@@ -342,8 +342,8 @@ okpath:
 }
 #pragma opt_instruction_scheduling reset
 void func_0200d95c(void) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02009eb0(s32,u32,s32);
-s32 t=OS_DisableInterrupts();s32 ok=(func_02009eb0(6,0x3000200,0)>=0);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 SendFifoMessage(s32,u32,s32);
+s32 t=OS_DisableInterrupts();s32 ok=(SendFifoMessage(6,0x3000200,0)>=0);
 if(ok==0) {OS_RestoreInterrupts(t);M2C_FIELD(&gTouchDriverState,u16 *,0x38)=4|M2C_FIELD(&gTouchDriverState,u16 *,0x38);
 if(M2C_FIELD(&gTouchDriverState,void (**)(s32,s32,s32),4))M2C_FIELD(&gTouchDriverState,void (**)(s32,s32,s32),4)(2,4,0);
 } else { M2C_FIELD(&gTouchDriverState,u16 *,0x3a)=4|M2C_FIELD(&gTouchDriverState,u16 *,0x3a);M2C_FIELD(&gTouchDriverState,u16 *,0x38)=~4&M2C_FIELD(&gTouchDriverState,u16 *,0x38);OS_RestoreInterrupts(t);}

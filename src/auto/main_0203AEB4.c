@@ -207,7 +207,7 @@ s32 DropSessionPlayer(s32 a) {
  ReportNetError(r); return r;
 }
 
-s32 func_0203b63c(s32 arg0,s32 arg1) {
+s32 FetchMatchPlayerInfo(s32 arg0,s32 arg1) {
 extern M2C_UNK gMatchSessionMgr;
 s32 func_0203a660(void); s32 GetLocalPlayerInfo(void); s32 GetPlayerRecordId(s32,s32);
 s32 func_0204e2f4(void *,s32,s32 *); s32 gpGetBuddyStatus(void *,s32,s32);

@@ -441,25 +441,28 @@ void func_02088964(void *arg0) {
     }
 }
 
-void func_02088c78(void *p) {
+/* Animate a shown 3D sprite actor's slide: count the frames of the current
+ * slide and ease its position from the slide origin to the target with an
+ * EASE_OUT_QUAD (4) curve, then finish the slide's show/hide step. */
+void UpdateSpriteSlide(void *p) {
 void Show3DSprite(void *);void Hide3DSprite(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 mode,n,t;
-mode=(u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30;
-if(!mode)return;
-n=1;t=0;
-if(M2C_FIELD(p,u8 *,0x4d)){M2C_FIELD(p,u8 *,0x4d)--;return;}
-if(M2C_FIELD(p,u8 *,0x4c)==0 && mode==2)Show3DSprite(p);
-M2C_FIELD(p,u8 *,0x4c)++;
-switch((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30){
-case 1:n=M2C_FIELD(p,u8 *,0x4e);t=M2C_FIELD(p,u8 *,0x4c);break;
-case 2:n=M2C_FIELD(p,u8 *,0x4e);t=M2C_FIELD(p,u8 *,0x4c);break;
-case 3:n=M2C_FIELD(p,u8 *,0x4f);t=n-M2C_FIELD(p,u8 *,0x4c);break;
+s32 slideMode,length,frame;
+slideMode=(u32)(M2C_FIELD(p,u8 *,SPRITE_ACTOR_STATE)<<24)>>30;
+if(!slideMode)return;
+length=1;frame=0;
+if(M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_DELAY)){M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_DELAY)--;return;}
+if(M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_TIMER)==0 && slideMode==SPRITE_SLIDE_SHOW)Show3DSprite(p);
+M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_TIMER)++;
+switch((u32)(M2C_FIELD(p,u8 *,SPRITE_ACTOR_STATE)<<24)>>30){
+case SPRITE_SLIDE_FORWARD:length=M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_LEN);frame=M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_TIMER);break;
+case SPRITE_SLIDE_SHOW:length=M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_LEN);frame=M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_TIMER);break;
+case SPRITE_SLIDE_REVERSE:length=M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_BACK_LEN);frame=length-M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_TIMER);break;
 }
-M2C_FIELD(p,s16 *,0x34)=EaseInterpolate(4,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x50),t,n);
-M2C_FIELD(p,s16 *,0x36)=EaseInterpolate(4,M2C_FIELD(p,s16 *,0x56),M2C_FIELD(p,s16 *,0x52),t,n);
-if(M2C_FIELD(p,u8 *,0x4c)<n)return;
-if(((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30)==3)Hide3DSprite(p);
-M2C_FIELD(p,u8 *,0x48)&=~0xc0;
+M2C_FIELD(p,s16 *,SPRITE_ACTOR_X)=EaseInterpolate(4,M2C_FIELD(p,s16 *,SPRITE_ACTOR_START_X),M2C_FIELD(p,s16 *,SPRITE_ACTOR_TARGET_X),frame,length);
+M2C_FIELD(p,s16 *,SPRITE_ACTOR_Y)=EaseInterpolate(4,M2C_FIELD(p,s16 *,SPRITE_ACTOR_START_Y),M2C_FIELD(p,s16 *,SPRITE_ACTOR_TARGET_Y),frame,length);
+if(M2C_FIELD(p,u8 *,SPRITE_ACTOR_SLIDE_TIMER)<length)return;
+if(((u32)(M2C_FIELD(p,u8 *,SPRITE_ACTOR_STATE)<<24)>>30)==SPRITE_SLIDE_REVERSE)Hide3DSprite(p);
+M2C_FIELD(p,u8 *,SPRITE_ACTOR_STATE)&=~0xc0;
 }
 
 void Show3DSprite(void *p){M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~1)|1;}

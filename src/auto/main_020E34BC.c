@@ -35,28 +35,36 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 
 
 s32 func_020e352c(s32, s32);
-#pragma push
-#pragma opt_common_subs on
+#pragma opt_common_subs off
 s32 HeapAllocBlock(s32 arg0) {
- volatile u32 saved; u16 old; u32 s; s32 result;
- old=*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=0;saved=old;
- result=func_020e352c(arg0,8);s=saved;(void)*(volatile u16*)0x04000208;*(volatile u16*)0x04000208=s;return result;
+ u32 s;
+ volatile u32 saved;
+ u16 old;
+ s32 result;
+ old = *(volatile u16 *)0x04000208;
+ *(volatile u16 *)0x04000208 = 0;
+ saved = old;
+ result = func_020e352c(arg0, 8);
+ s = saved;
+ (void)*(volatile u16 *)0x04000208;
+ *(volatile u16 *)0x04000208 = s;
+ return result;
 }
-#pragma pop
+#pragma opt_common_subs reset
 s32 func_020e34f4(s32 arg0) {
     s32 func_020e3580(s32, s32);
+    u32 s;
     volatile u32 saved;
     u16 old;
-    u32 s;
-
+    s32 result;
     old = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
     saved = old;
-    func_020e3580(arg0, 8);
+    result = func_020e3580(arg0, 8);
     s = saved;
     (void)*(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = s;
-    return s;
+    return result;
 }
 
 #pragma opt_common_subs reset

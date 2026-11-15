@@ -69,10 +69,10 @@ func_ov003_021e6444 kind:function(arm,size=0x2c) addr:0x021e6444
 func_ov003_021e6470 kind:function(arm,size=0xc) addr:0x021e6470
 func_ov003_021e647c kind:function(arm,size=0x2c) addr:0x021e647c
 func_ov003_021e64a8 kind:function(arm,size=0x530) addr:0x021e64a8
-func_ov003_021e69d8 kind:function(arm,size=0x118) addr:0x021e69d8
+Ov003Scene_Destructor kind:function(arm,size=0x118) addr:0x021e69d8
 func_ov003_021e6af0 kind:function(arm,size=0x14) addr:0x021e6af0
 func_ov003_021e6b04 kind:function(arm,size=0x4) addr:0x021e6b04
-func_ov003_021e6b08 kind:function(arm,size=0x120) addr:0x021e6b08
+DestroyOv003Scene kind:function(arm,size=0x120) addr:0x021e6b08
 func_ov003_021e6c28 kind:function(arm,size=0x4) addr:0x021e6c28
 func_ov003_021e6c2c kind:function(arm,size=0x10) addr:0x021e6c2c
 func_ov003_021e6c3c kind:function(arm,size=0x10) addr:0x021e6c3c
@@ -571,7 +571,7 @@ func_ov003_02207e38 kind:function(arm,size=0x48) addr:0x02207e38
 DrawMapSelectLabel kind:function(arm,size=0x19c) addr:0x02207e80
 func_ov003_0220801c kind:function(arm,size=0x18) addr:0x0220801c
 UpdateMapSelectLabelTransform kind:function(arm,size=0x134) addr:0x02208034
-func_ov003_02208168 kind:function(arm,size=0x124) addr:0x02208168
+Ov003_ResetListRowAnimations kind:function(arm,size=0x124) addr:0x02208168
 Ov003_RefreshListRowAnimations kind:function(arm,size=0x264) addr:0x0220828c
 func_ov003_022084f0 kind:function(arm,size=0x7c) addr:0x022084f0
 func_ov003_0220856c kind:function(arm,size=0xcec) addr:0x0220856c
@@ -672,8 +672,8 @@ data_ov003_0220f650 kind:data(any) addr:0x0220f650
 data_ov003_0220f6f8 kind:data(any) addr:0x0220f6f8
 data_ov003_0220f700 kind:data(any) addr:0x0220f700
 data_ov003_0220f710 kind:data(any) addr:0x0220f710
-data_ov003_0220f720 kind:data(any) addr:0x0220f720
-data_ov003_0220f74c kind:data(any) addr:0x0220f74c
+gOv003SceneVTable kind:data(any) addr:0x0220f720
+gOv003SceneIfaceVTable kind:data(any) addr:0x0220f74c
 data_ov003_0220f76c kind:data(any) addr:0x0220f76c
 data_ov003_0220f778 kind:data(any) addr:0x0220f778
 data_ov003_0220f780 kind:data(any) addr:0x0220f780

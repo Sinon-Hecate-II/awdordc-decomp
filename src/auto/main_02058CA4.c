@@ -457,27 +457,30 @@ if(++var_r4<32) goto loop_1;
 return 1;
 }
 
-u8 *func_02059aa0(u8 *arg0) {
+/* Fills `buffer` with a 32-character GameSpy GT2 auth challenge: printable
+ * random characters whose least-significant bit satisfies a running parity, so
+ * that the matching challenge check accepts the string. */
+u8 *gti2GetChallenge(u8 *buffer) {
  M2C_UNK AssertFailed();
  s32 Rand(void);
  void GetTickCountMs(void);
  void SetRandSeed(void);
- extern M2C_UNK data_020ff534;
- extern M2C_UNK data_020ff56c;
- extern M2C_UNK data_020ff574;
- s32 i; u32 parity; u8 *p; u32 a,b;
- if (arg0 == NULL) AssertFailed(&data_020ff56c, &data_020ff574, &data_020ff534, 0x2b);
+ extern M2C_UNK gGt2GetChallengeName;
+ extern M2C_UNK gGt2AssertBuffer;
+ extern M2C_UNK gGt2AuthFileName;
+ s32 i; u32 parity; u8 *cur; u32 prev,first;
+ if (buffer == NULL) AssertFailed(&gGt2AssertBuffer, &gGt2AuthFileName, &gGt2GetChallengeName, 0x2b);
  GetTickCountMs();
  SetRandSeed();
- arg0[0] = Rand() % 93 + 33;
+ buffer[0] = Rand() % 93 + 33;
  parity = 0;
  i = 1; do {
-  p = arg0 + i;
-  a = p[-1]; b = arg0[0];
-  { u32 x,y; if(a<b)x=1;else x=0; if(b<79)y=1;else y=0; parity=(b&1)^(parity^((i^a)&1)); parity^=y; parity^=x; }
-  p[0] = Rand() % 93 + 33;
-  if ((parity && !(p[0]&1)) || (!parity && (p[0]&1)==1)) p[0]++;
+  cur = buffer + i;
+  prev = cur[-1]; first = buffer[0];
+  { u32 prevLtFirst,firstLtO; if(prev<first)prevLtFirst=1;else prevLtFirst=0; if(first<79)firstLtO=1;else firstLtO=0; parity=(first&1)^(parity^((i^prev)&1)); parity^=firstLtO; parity^=prevLtFirst; }
+  cur[0] = Rand() % 93 + 33;
+  if ((parity && !(cur[0]&1)) || (!parity && (cur[0]&1)==1)) cur[0]++;
   i++; } while(i<0x20);
- return arg0;
+ return buffer;
 }
 

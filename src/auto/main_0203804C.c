@@ -110,7 +110,7 @@ void func_02038438(void) {
     void func_02039200(void);
     s32 HasNetError(void);
     s32 func_0204837c(void);
-    s32 func_020392b8(s32);
+    s32 ReportNetErrorForState(s32);
     void SetNetState(s32);
     void func_02039c68(void);
     void func_02039ca0(void);
@@ -129,11 +129,11 @@ void func_02038438(void) {
     case 1:
         switch (func_0204837c()) {
         case 1:
-            if (func_020392b8(func_0204db04((s32)gNetSession + 0x1c, M2C_FIELD(gNetSession, s32 *, 0xa0), 0))) return;
-            if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 0, (s32)&func_02039698, 0))) return;
-            if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 3, (s32)&HandleGpcmMatMessage, 0))) return;
-            if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 1, (s32)&func_0203ad24, 0))) return;
-            if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 2, (s32)&func_0203adcc, 0))) return;
+            if (ReportNetErrorForState(func_0204db04((s32)gNetSession + 0x1c, M2C_FIELD(gNetSession, s32 *, 0xa0), 0))) return;
+            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 0, (s32)&func_02039698, 0))) return;
+            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 3, (s32)&HandleGpcmMatMessage, 0))) return;
+            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 1, (s32)&func_0203ad24, 0))) return;
+            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 2, (s32)&func_0203adcc, 0))) return;
             SetNetState(2);
             func_02039c68();
             break;

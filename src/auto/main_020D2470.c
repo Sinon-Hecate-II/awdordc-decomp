@@ -284,11 +284,12 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
 #pragma push
 #pragma opt_propagation off
 s32 GetPlayerCommanderId(s32 arg0) {
- extern s32 *gCurrentMap; s32 func_020a27b8(s32,s32);
- s32 base,val,hi,lo;
- base=*gCurrentMap;val=M2C_FIELD(base+0x3a4+0x6400+arg0*0x8c,s32*,0x6c);
- hi=val<<20;lo=val<<24;arg0=(u32)lo>>24;
- return func_020a27b8(arg0,(u32)hi>>30);
+    extern s32 *gCurrentMap;
+    s32 func_020a27b8(s32, s32);
+    struct PlayerRec { u8 pad[0x6c]; u32 id:8; u32 unk:2; u32 flag:2; } *rec;
+
+    rec = (struct PlayerRec *)(*gCurrentMap + 0x3a4 + 0x6400 + arg0 * 0x8c);
+    return func_020a27b8(rec->id, rec->flag);
 }
 #pragma pop
 s32 func_020d2c58(s32 arg0) {

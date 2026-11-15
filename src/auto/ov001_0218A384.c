@@ -439,7 +439,7 @@ void func_ov001_0218af70(s32 arg0) {
 }
 
 void func_ov001_0218af94(void *arg0,s32 x,s32 y,s32 b,s32 arg4,s32 arg5) {
-M2C_UNK func_ov001_0216a8ac(void *,s32,s32,s32,s32,s32,TextDirection);
+M2C_UNK DrawAnchoredText(void *,s32,s32,s32,s32,s32,TextDirection);
 void **p=M2C_FIELD(arg0,void ***,0x1c);
 TextDirection dir={0,0};
 u8 type=M2C_FIELD(M2C_FIELD(*p,void **,8),u8 *,7);
@@ -450,7 +450,7 @@ case 3: case 4:dir.x=-1;break;
 case 5: case 6:dir.y=-1;break;
 default:break;
 }
-func_ov001_0216a8ac(arg0+0x18,x,y,b,arg4,arg5,dir);
+DrawAnchoredText(arg0+0x18,x,y,b,arg4,arg5,dir);
 }
 
 void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {
@@ -461,8 +461,8 @@ void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32
 }
 
 void DrawTextRun(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, s32 arg6) {
-    s32 func_ov001_02169154(void **a, u32 b);
-    void *func_ov001_0216919c(void **a, u32 b);
+    s32 GetFontGlyphIndex(void **a, u32 b);
+    void *GetFontGlyphMetric(void **a, u32 b);
     void func_ov001_0218b044(void *, s32, s32, s32, u16, s32);
     extern M2C_UNK data_ov001_02193e40;
     void **entry;
@@ -471,9 +471,9 @@ void DrawTextRun(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, 
     if (*arg5 == 0) return;
     do {
         entry = (void **)((u8 *)data_ov001_02193e40 + arg6 * 8);
-        id = func_ov001_02169154(entry, *arg5);
+        id = GetFontGlyphIndex(entry, *arg5);
         if (id == 0xffff) id = M2C_FIELD(*entry, u16 *, 2);
-        p = func_ov001_0216919c(entry, id);
+        p = GetFontGlyphMetric(entry, id);
         func_ov001_0218b044(arg0, arg1 + ((arg4 - M2C_FIELD(p, s8 *, 2)) >> 1), arg2, arg3, *arg5, arg6);
         arg5++;
         arg1 += arg4;

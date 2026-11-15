@@ -1,9 +1,13 @@
 /* 21 functions from 0x021867AC to 0x02187590 (ov001), found by ds-decomp. */
 #include "common.h"
-typedef struct { u16 value[7]; } RuntimeZero14;
-typedef struct { u8 low:4, high:4; u8 len; u16 name[10]; } RuntimeProfile;
-static inline void RuntimeClear14(RuntimeZero14 *p) { p->value[0]=0; p->value[1]=0; p->value[2]=0; p->value[3]=0; p->value[4]=0; p->value[5]=0; p->value[6]=0; }
-extern void *data_ov001_02193e1c;
+/* The ov001 wireless-link work header: the seven status words the link code
+ * (Ov001_GetLinkStatus and friends) clears when the link is set up. */
+typedef struct { u16 value[7]; } Ov001LinkHeader;
+/* The parent's owner info sent to the download-play children: a flags byte, the
+ * nickname length and the nickname. */
+typedef struct { u8 low:4, high:4; u8 len; u16 name[10]; } MbParentInfo;
+static inline void ClearLinkHeader(Ov001LinkHeader *p) { p->value[0]=0; p->value[1]=0; p->value[2]=0; p->value[3]=0; p->value[4]=0; p->value[5]=0; p->value[6]=0; }
+extern void *gOv001LinkWork;
 extern void *gOv001RegionMenu;
 extern const u8 data_ov001_0218fc66[], gOv001RegionItemSlot[];
 extern const u16 gOv001RegionItemPos[], data_ov001_0218fcce[];
@@ -152,44 +156,49 @@ void func_ov001_02186d90(s32 a) {
 #pragma opt_strength_reduction reset
 void func_ov001_02186e40(void *arg0) {
     M2C_UNK func_ov001_02187ad8(void *);
-    data_ov001_02193e1c = arg0;
+    gOv001LinkWork = arg0;
     func_ov001_02187ad8(arg0 + 0x1B160);
-    M2C_FIELD(data_ov001_02193e1c, s32 *, 0x1B140) = 0;
-    M2C_FIELD(data_ov001_02193e1c, s32 *, 0x1B144) = 0;
+    M2C_FIELD(gOv001LinkWork, s32 *, 0x1B140) = 0;
+    M2C_FIELD(gOv001LinkWork, s32 *, 0x1B144) = 0;
 }
 
-void func_ov001_02186e80(s32 a,s32 b) {
+/* Start the overlay's DS Download Play (multiboot) parent transfer: build the
+ * parent's owner info (flags and nickname) from the system owner record, clear
+ * the link work header, hand the transfer buffer at +0x10040 to the multiboot
+ * library - halting if it refuses - then set the library up and enter the link
+ * state machine. */
+void Ov001_StartDownloadPlay(s32 param,s32 programId){
 void func_02007740(void *);
 void MI_CpuCopy8(void *,void *,s32);
-s32 func_020179ec(void *,void *,s32,s32,s32);
+s32 MultiBoot_StartParent(void *,void *,s32,s32,s32);
 void func_02017c40(s32,s32);
 void func_02013e70(void (*)(void));
 void func_ov001_02187590(void);
-RuntimeProfile profile;
-u8 info[84];
-func_02007740(info);
-profile.low=info[1];
-profile.len=*(u16 *)(info+26);
-MI_CpuCopy8(info+4,profile.name,*(u16 *)(info+26)*2);
-profile.high=0;
+MbParentInfo parentInfo;
+u8 ownerInfo[84];
+func_02007740(ownerInfo);
+parentInfo.low=ownerInfo[1];
+parentInfo.len=*(u16 *)(ownerInfo+26);
+MI_CpuCopy8(ownerInfo+4,parentInfo.name,*(u16 *)(ownerInfo+26)*2);
+parentInfo.high=0;
 {
-RuntimeZero14 zero={0};
-*(RuntimeZero14 *)data_ov001_02193e1c=zero;
+Ov001LinkHeader zero={0};
+*(Ov001LinkHeader *)gOv001LinkWork=zero;
 }
-M2C_FIELD(data_ov001_02193e1c,void **,0x1b140)=(u8 *)data_ov001_02193e1c+0x10040;
-if(func_020179ec(M2C_FIELD(data_ov001_02193e1c,void **,0x1b140),&profile,a,b,2))SystemHalt();
+M2C_FIELD(gOv001LinkWork,void **,0x1b140)=(u8 *)gOv001LinkWork+0x10040;
+if(MultiBoot_StartParent(M2C_FIELD(gOv001LinkWork,void **,0x1b140),&parentInfo,param,programId,2))SystemHalt();
 func_02017c40(256,1);
 func_02013e70(func_ov001_02187590);
-func_ov001_021878b4(1);
+Ov001_SetLinkStatus(1);
 }
 
 void func_ov001_02186fa0(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SystemHalt();
     s32 func_02017f90(M2C_UNK);
     s32 func_ov001_02186fe8(M2C_UNK);
-    func_ov001_021878b4(2);
+    Ov001_SetLinkStatus(2);
     if (func_02017f90(arg1) != 0) {
-        func_ov001_021878b4(7);
+        Ov001_SetLinkStatus(7);
         return;
     }
     if (func_ov001_02186fe8(arg0) != 0) {
@@ -213,27 +222,27 @@ if(!OpenFileRequest(file,M2C_FIELD(arg0,s32 *,0))) return 0;
 p=file;
 }
 if(func_02015248(p)) {
-M2C_FIELD(data_ov001_02193e1c,void **,0x1b144)=(u8 *)data_ov001_02193e1c+0x2c;
-if(M2C_FIELD(data_ov001_02193e1c,void **,0x1b144) &&
-func_020152c8(p,M2C_FIELD(data_ov001_02193e1c,void **,0x1b144),0x10000) &&
-func_0201579c(arg0,M2C_FIELD(data_ov001_02193e1c,void **,0x1b144))) result=1;
+M2C_FIELD(gOv001LinkWork,void **,0x1b144)=(u8 *)gOv001LinkWork+0x2c;
+if(M2C_FIELD(gOv001LinkWork,void **,0x1b144) &&
+func_020152c8(p,M2C_FIELD(gOv001LinkWork,void **,0x1b144),0x10000) &&
+func_0201579c(arg0,M2C_FIELD(gOv001LinkWork,void **,0x1b144))) result=1;
 }
 if(p==file)CloseFileRequest(file);
 return result;
 }
 
 void func_ov001_021870bc(s32 a) {
-extern void *data_ov001_02193e1c;
+extern void *gOv001LinkWork;
 u16 mask; s32 state;
 if(func_02013f70(a,1))return;
 mask=~(1<<a);
 state=OS_DisableInterrupts();
-M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,8) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,10) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,12) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
 OS_RestoreInterrupts(state); func_020180c8(a);
 }
 
@@ -242,18 +251,18 @@ u16 mask; s32 state; s32 mask2;
 if(!func_02013f70(a,0)) {
 mask=~(1<<a);
 state=OS_DisableInterrupts();
-M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,8) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,10) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,12) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
 OS_RestoreInterrupts(state); func_020180c8(a);
 } else {
 state=OS_DisableInterrupts();
 mask2=~(1<<a);
-M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask2;
-M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask2;
+M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask2;
+M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask2;
 OS_RestoreInterrupts(state);
 }
 }
@@ -263,17 +272,17 @@ u16 mask; s32 state;
 if(!func_02013f70(a,2)) {
 mask=~(1<<a);
 state=OS_DisableInterrupts();
-M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,8) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,10) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,12) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
 OS_RestoreInterrupts(state); func_020180c8(a);
 } else {
 state=OS_DisableInterrupts();
-M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= ~(1<<a);
-M2C_FIELD(data_ov001_02193e1c,u16 *,8) |= 1<<a;
+M2C_FIELD(gOv001LinkWork,u16 *,6) &= ~(1<<a);
+M2C_FIELD(gOv001LinkWork,u16 *,8) |= 1<<a;
 OS_RestoreInterrupts(state);
 }
 }
@@ -281,18 +290,18 @@ OS_RestoreInterrupts(state);
 void func_ov001_0218730c(void) {
 u16 i,mask;
 s32 state;
-func_ov001_021878b4(3);
+Ov001_SetLinkStatus(3);
 for(i=1;i<16;i++) {
-if((M2C_FIELD(data_ov001_02193e1c,u16 *,2)&(1<<i)) && !(M2C_FIELD(data_ov001_02193e1c,u16 *,4)&(1<<i))) {
-if(!(M2C_FIELD(data_ov001_02193e1c,u16 *,6)&(1<<i))) {
+if((M2C_FIELD(gOv001LinkWork,u16 *,2)&(1<<i)) && !(M2C_FIELD(gOv001LinkWork,u16 *,4)&(1<<i))) {
+if(!(M2C_FIELD(gOv001LinkWork,u16 *,6)&(1<<i))) {
 mask=~(1<<i);
 state=OS_DisableInterrupts();
-M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,8) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,10) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,12) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
 OS_RestoreInterrupts(state); func_020180c8(i);
 } else func_ov001_02187234(i);
 }
@@ -302,9 +311,9 @@ OS_RestoreInterrupts(state); func_020180c8(i);
 s32 func_ov001_021873ec(void) {
 s32 func_02013f1c(u16);
 u16 i;
-if(M2C_FIELD(data_ov001_02193e1c,u16 *,2)==0)return 0;
+if(M2C_FIELD(gOv001LinkWork,u16 *,2)==0)return 0;
 for(i=1;i<16;i++){
-if(M2C_FIELD(data_ov001_02193e1c,u16 *,2)&(1<<i)){
+if(M2C_FIELD(gOv001LinkWork,u16 *,2)&(1<<i)){
 if(!func_02013f1c(i))return 0;
 }
 }
@@ -316,32 +325,32 @@ void func_ov001_02187454(void) {
 u16 i,mask,remainingPlayers=0;
 s32 savedState,ready;
 for(i=1;i<16;i++) {
-if(M2C_FIELD(data_ov001_02193e1c,u16 *,10)&(1<<i)) {
+if(M2C_FIELD(gOv001LinkWork,u16 *,10)&(1<<i)) {
 if(!func_02013f70(i,3)) {
 mask=~(1<<i);
 savedState=OS_DisableInterrupts();
-M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,8) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,10) &= mask;
-M2C_FIELD(data_ov001_02193e1c,u16 *,12) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
+M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
 OS_RestoreInterrupts(savedState); func_020180c8(i);
 } else remainingPlayers |= 1<<i;
 }
 }
-if(remainingPlayers==0)func_ov001_021878b4(7);
-else func_ov001_021878b4(4);
+if(remainingPlayers==0)Ov001_SetLinkStatus(7);
+else Ov001_SetLinkStatus(4);
 }
 
 void func_ov001_0218754c(void) {
-M2C_UNK func_0201808c();M2C_UNK func_ov001_021878b4(M2C_UNK);
-func_ov001_021878b4(6);func_0201808c();
+M2C_UNK func_0201808c();M2C_UNK Ov001_SetLinkStatus(M2C_UNK);
+Ov001_SetLinkStatus(6);func_0201808c();
 }
 
 void func_ov001_02187560(void) {
-    extern void *data_ov001_02193e1c;
-    if ((M2C_FIELD(data_ov001_02193e1c, u16 *, 0) == 4) && (M2C_FIELD(data_ov001_02193e1c, u16 *, 2) == M2C_FIELD(data_ov001_02193e1c, u16 *, 0xC))) {
+    extern void *gOv001LinkWork;
+    if ((M2C_FIELD(gOv001LinkWork, u16 *, 0) == 4) && (M2C_FIELD(gOv001LinkWork, u16 *, 2) == M2C_FIELD(gOv001LinkWork, u16 *, 0xC))) {
         func_0201808c();
     }
 }

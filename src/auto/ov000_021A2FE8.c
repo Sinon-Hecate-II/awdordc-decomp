@@ -92,21 +92,25 @@ M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=UNIT_KIND_TRANSPORT;
 CommitAiAction(targetIndex);return 1;
 }
 
-s32 func_ov000_021a3364(void){
+/* Decide whether the AI builds a kind-13 unit now: the unit must be affordable and
+   it must be before the tuning block's last kind-13 turn, a kind-13 action must
+   exist, and otherwise the kind-13/transport count must be below its share of the
+   AI's infantry and mech units. */
+s32 TryBuildUnitKind13(void){
 s32 Divide(s32,s32);s32 GetUnitBuildCost(u16,s32);
 void CommitAiAction(s32);s32 func_ov000_021a61cc(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
-void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
-if(GetUnitBuildCost(id,13)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
-n=M2C_FIELD(gAiSettings,u8 *,18);
-if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;
-r=func_ov000_021a61cc(1);if(r==-1)return 0;
-t=CountPlayerUnitsOfKind(13);v=t+CountPlayerUnitsOfKind(19);
-n=M2C_FIELD(gAiState,u8 *,8);if(!n)return 0;
-if(Divide(v*100,n)<M2C_FIELD(gAiSettings,u8 *,12)){
-M2C_FIELD(&gAiCommand,u8 *,6)=13;
+void *map=*gCurrentMap;u16 playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);s32 targetIndex,kind13Count,groupCount;u8 lastTurn;
+if(GetUnitBuildCost(playerId,13)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
+lastTurn=M2C_FIELD(gAiSettings,u8 *,AI_SETTING_UNIT13_LAST_TURN);
+if(lastTurn && M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)>lastTurn)return 0;
+targetIndex=func_ov000_021a61cc(1);if(targetIndex==-1)return 0;
+kind13Count=CountPlayerUnitsOfKind(13);groupCount=kind13Count+CountPlayerUnitsOfKind(UNIT_KIND_TRANSPORT);
+lastTurn=M2C_FIELD(gAiState,u8 *,AI_STATE_INFANTRY_MECH);if(!lastTurn)return 0;
+if(Divide(groupCount*100,lastTurn)<M2C_FIELD(gAiSettings,u8 *,AI_SETTING_UNIT13_PERCENT)){
+M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=13;
 }else{return 0;}
-CommitAiAction(r);return 1;
+CommitAiAction(targetIndex);return 1;
 }
 
 u8 IsKind24TerrainPassable(s32 a) {

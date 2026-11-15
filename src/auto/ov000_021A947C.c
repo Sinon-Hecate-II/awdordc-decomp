@@ -274,13 +274,13 @@ s32 func_ov000_021a9c90(s32 x,s32 y) {
 
 u8 IsAllyUnitAtCell(u32 arg0,s32 arg1) {
  extern void **gCurrentMap;
- s32 func_020a600c(u16);
+ s32 IsUnitInSight(u16);
  void *base=*gCurrentMap;
  u32 index=arg0+M2C_FIELD(base+arg1*2,u16 *,0x3758);
  s32 id;
  if((u8)(M2C_FIELD(base+(index>>3),u8 *,0x5160)&(1<<(index&7)))==0)return 0;
  id=M2C_FIELD(base+index,u8 *,0);
- if(id!=0)return func_020a600c((u16)(id & 0xFFFF))!=0;
+ if(id!=0)return IsUnitInSight((u16)(id & 0xFFFF))!=0;
  return 0;
 }
 

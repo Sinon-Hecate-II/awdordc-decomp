@@ -24,32 +24,35 @@ while((*p++=*b++)!=0);
 return a;
 }
 
+/* Compare two NUL-terminated strings: byte by byte until both pointers share an
+ * alignment, then a word at a time while no word of the first holds a NUL byte.
+ * Returns the difference of the first differing bytes, 0 when equal. */
 s32 StringCompare(u8 *a,u8 *b){
-u32 c,d,z; s32 diff,n;
-c=*a; diff=c-*b; if(diff)return diff;
-n=(u32)a&3;
-if(((u32)b&3)==n){
-if(n){
-if(!c)return 0;
-n=3-n;
-while(n){d=*++a;diff=d-*++b;if(diff)return diff;if(!d)return 0;n--;}
+u32 ca,cb,wb; s32 diff,align;
+ca=*a; diff=ca-*b; if(diff)return diff;
+align=(u32)a&3;
+if(((u32)b&3)==align){
+if(align){
+if(!ca)return 0;
+align=3-align;
+while(align){cb=*++a;diff=cb-*++b;if(diff)return diff;if(!cb)return 0;align--;}
 a++;b++;
 }
-c=*(u32 *)a;
-z=*(u32 *)b;
-if(!((c+0xfefefeff)&~c&0x80808080)){
-while(c==z){
-a+=4;b+=4;c=*(u32 *)a;z=*(u32 *)b;
-if((c+0xfefefeff)&0x80808080)goto bytes;
+ca=*(u32 *)a;
+wb=*(u32 *)b;
+if(!((ca+STRING_ZERO_BIAS)&~ca&STRING_ZERO_MASK)){
+while(ca==wb){
+a+=4;b+=4;ca=*(u32 *)a;wb=*(u32 *)b;
+if((ca+STRING_ZERO_BIAS)&STRING_ZERO_MASK)goto bytes;
 }
 a--;b--;goto next;
 }
 bytes:
-c=*a;diff=c-*b;if(diff)return diff;
+ca=*a;diff=ca-*b;if(diff)return diff;
 }
 next:
-if(!c)return 0;
-do{c=*++a;diff=c-*++b;if(diff)return diff;}while(c);
+if(!ca)return 0;
+do{ca=*++a;diff=ca-*++b;if(diff)return diff;}while(ca);
 return 0;
 }
 

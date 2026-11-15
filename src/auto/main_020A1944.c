@@ -259,7 +259,7 @@ u16 *GetMapSettings(void);
 s32 func_020cd6d4(void);
 void MapSettings_Apply(u16 *);
 s32 IsLinkSessionActive(void);
-u32 func_020bf894(s32);
+u32 IsCoUnlocked(s32);
 void func_020a230c(s32,s32);
 void func_020a232c(s32,s32);
 void SetPlayerTeam(s32,s32);
@@ -290,7 +290,7 @@ val=*p; r6=0; r9=i+1;
 low=((SaveInitEntry *)p)->id;
 r7=((SaveInitEntry *)p)->index;
 r8=((SaveInitEntry *)p)->mode;
-if(func_020bf894(low)) r6=((SaveInitEntry *)p)->id;
+if(IsCoUnlocked(low)) r6=((SaveInitEntry *)p)->id;
 if(IsLinkSessionActive()){
 r6=M2C_FIELD(&data_0211faf4,u8 *,r9); r7=r9; r8=0;
 }

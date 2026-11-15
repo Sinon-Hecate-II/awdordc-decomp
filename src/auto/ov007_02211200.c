@@ -10,7 +10,7 @@ void MapEditor_StartMap(void *editor) {
  extern u8 gMapNameFormat[];
  void func_ov007_02211ea4(s32);void func_ov007_02211f10(s32);
  void func_ov007_02211f60(s32);void func_ov007_02211f70(s32);void func_ov007_02211f80(s32);void func_ov007_02211fb0(s32);void func_ov007_02211fc0(s32);
- void func_ov007_022121b0(void);void func_ov007_022121d4(s32);void func_ov007_022121e4(void);
+ void func_ov007_022121b0(void);void MapEditor_SetMapModified(s32);void func_ov007_022121e4(void);
  void func_020cf498(s16,s16);
  void *map;
  s32 text;
@@ -42,7 +42,7 @@ void MapEditor_StartMap(void *editor) {
  centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
  func_020cf498((s16)centerX,(s16)centerY);func_0207b754(centerX,centerY);
  func_ov007_02211ea4(0);func_ov007_02211f10(0);func_ov007_02211f60(1);func_ov007_02211f70(1);func_ov007_02211f80(0);func_ov007_02211fb0(1);func_ov007_02211fc0(0);
- func_ov007_022121b0();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();func_ov007_022121d4(0);
+ func_ov007_022121b0();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
  M2C_FIELD(editor,u8*,0x34)=1;
  func_ov007_022121e4();
 }
@@ -93,7 +93,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov007_0221bc18(s32, s32, s32, s32, s32);
     M2C_UNK func_020cfe2c();
     void func_ov007_022121b0(void);
-    void func_ov007_022121d4(s32);
+    void MapEditor_SetMapModified(s32);
     M2C_UNK func_0208fb54(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 temp_r0;
@@ -106,7 +106,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     case 1:
         func_020cfe2c();
         func_ov007_022121b0();
-        func_ov007_022121d4(1);
+        MapEditor_SetMapModified(1);
         func_ov007_022114ac(arg0);
         func_0208fb54(0x119, arg1, arg2, 1);
         return;
@@ -151,7 +151,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov007_0221bcc0(s32, s32);
     M2C_UNK func_020cfe2c();
     void func_ov007_022121b0(void);
-    void func_ov007_022121d4(s32);
+    void MapEditor_SetMapModified(s32);
     M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
     M2C_UNK func_0208fb54(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -159,7 +159,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (func_ov007_0221bcc0(arg1, arg2) != 0) {
         func_020cfe2c();
         func_ov007_022121b0();
-        func_ov007_022121d4(1);
+        MapEditor_SetMapModified(1);
         func_ov007_022114ac(arg0);
         func_020b5134(&data_ov007_0221f680, arg1, arg2, 0x50, 0, 0, arg0);
         func_0208fb54(0x8A, arg1, arg2, 1);
@@ -183,10 +183,10 @@ void func_ov007_022116a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 
 void func_ov007_022116d4(M2C_UNK a,s32 x,s32 y,s32 sound){
 u8 func_ov007_02211f90();u8 func_ov007_02211fa0();s32 Map_PaintTile(s32,s32,s32,s32,s32);
-M2C_UNK func_020cfe2c();void func_ov007_022121b0(void);void func_ov007_022121d4(s32);M2C_UNK func_0208fb54(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
+M2C_UNK func_020cfe2c();void func_ov007_022121b0(void);void MapEditor_SetMapModified(s32);M2C_UNK func_0208fb54(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
 s32 kind=func_ov007_02211f90();s32 other=func_ov007_02211fa0();
 switch(Map_PaintTile(x,y,kind,other,1)){
-case 1:func_020cfe2c();func_ov007_022121b0();func_ov007_022121d4(1);func_ov007_022114ac(a);
+case 1:func_020cfe2c();func_ov007_022121b0();MapEditor_SetMapModified(1);func_ov007_022114ac(a);
 switch(kind){case 7:case 8:case 9:case 10:case 11:case 12:func_0208fb54(0x11a,x,y,1);break;
 default:func_0208fb54(0x119,x,y,1);break;}break;
 case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
@@ -199,12 +199,12 @@ void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     void func_ov007_02211fc0(s32);
     void func_ov007_022121b0(void);
     M2C_UNK func_ov007_0221ab4c();
-    s32 func_ov007_0221b6c8(M2C_UNK, M2C_UNK);
-    s32 func_ov007_0221b704(M2C_UNK, M2C_UNK);
+    s32 Map_GetCellTerrainKind(M2C_UNK, M2C_UNK);
+    s32 Map_GetCellTerrainOwner(M2C_UNK, M2C_UNK);
     s32 temp_r4;
     s32 temp_r5;
-    temp_r5 = func_ov007_0221b6c8(arg1, arg2);
-    temp_r4 = func_ov007_0221b704(arg1, arg2);
+    temp_r5 = Map_GetCellTerrainKind(arg1, arg2);
+    temp_r4 = Map_GetCellTerrainOwner(arg1, arg2);
     func_ov007_02211fb0(temp_r5);
     func_ov007_02211fc0(temp_r4);
     func_ov007_022121b0();
@@ -217,7 +217,7 @@ s32 func_ov007_0221b754(s32,s32);
 s32 Map_PaintTile(s32,s32,s32,s32,s32);
 M2C_UNK func_020cfe2c();
 void func_ov007_022121b0(void);
-void func_ov007_022121d4(s32);
+void MapEditor_SetMapModified(s32);
 M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,M2C_UNK);
 M2C_UNK func_0208fb54(s32,s32,s32,s32);
 M2C_UNK PlaySoundEffect(s32);
@@ -225,7 +225,7 @@ extern M2C_UNK data_ov007_0221f690;
 s32 n=1;
 if(func_ov007_0221b754(arg1,arg2))n=8;
 if(Map_PaintTile(arg1,arg2,n,0,1)==1) {
-func_020cfe2c();func_ov007_022121b0();func_ov007_022121d4(1);
+func_020cfe2c();func_ov007_022121b0();MapEditor_SetMapModified(1);
 func_ov007_022114ac(arg0);
 func_020b5134(&data_ov007_0221f690,arg1,arg2,0x50,0,0,arg0);
 func_0208fb54(0x8a,arg1,arg2,1);
@@ -242,19 +242,19 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     u8 func_ov007_02211f90(void);
     u8 func_ov007_02211fa0(void);
     void func_ov007_022121b0(void);
-    void func_ov007_022121d4(s32);
+    void MapEditor_SetMapModified(s32);
     M2C_UNK func_ov007_0221ab4c();
-    s32 func_ov007_0221b56c(M2C_UNK, M2C_UNK, s32, s32);
+    s32 Map_TryPaintTile(M2C_UNK, M2C_UNK, s32, s32);
     s32 temp_r0;
     s32 temp_r4;
     temp_r4 = func_ov007_02211f90();
-    temp_r0 = func_ov007_0221b56c(arg1, arg2, temp_r4, func_ov007_02211fa0());
+    temp_r0 = Map_TryPaintTile(arg1, arg2, temp_r4, func_ov007_02211fa0());
     switch (temp_r0) {
     case 1:
         RefreshMapView();
         func_ov007_022121b0();
         func_ov007_0221ab4c();
-        func_ov007_022121d4(1);
+        MapEditor_SetMapModified(1);
         func_0208fb54(0x11C, arg1, arg2, 1);
         return;
     case 0:
@@ -620,12 +620,12 @@ void func_ov007_022121b0(void) {
     AssignPlayerTeams();
 }
 
-u8 func_ov007_022121c4(void) {
+u8 MapEditor_IsMapModified(void) {
     extern u8 data_ov007_02221a00;
     return M2C_FIELD(&data_ov007_02221a00, u8 *, 5);
 }
 
-void func_ov007_022121d4(s32 arg0) {
+void MapEditor_SetMapModified(s32 arg0) {
     extern u8 data_ov007_02221a00;
     M2C_FIELD(&data_ov007_02221a00, u8 *, 5) = arg0;
 }

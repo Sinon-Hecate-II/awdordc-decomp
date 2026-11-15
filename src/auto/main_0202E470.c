@@ -450,7 +450,7 @@ s32 func_0202ef4c(void *arg0) {
  * session. Returns 1 on success, or 0 after tearing the resources down again
  * when the session cannot start. */
 s32 WFC_Init(void *params) {
-void CpuFill(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 func_020270b4(void *,s32);void func_0202f37c(void);
+void CpuFill(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 WFC_InitSession(void *,s32);void func_0202f37c(void);
 extern M2C_UNK data_0213d100;
 void *block,*buffer;Config0202ef *config;s32 status;
 block=M2C_FIELD(params,void *(**)(s32,s32),0)(1,24);
@@ -471,7 +471,7 @@ config->a=M2C_FIELD(params,u8 *,8);config->b=M2C_FIELD(params,u8 *,9);
 buffer=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(buffer,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(buffer,s32 *,4)=M2C_FIELD(params,s32 *,4);M2C_FIELD(buffer,s32 *,8)=0;
 config->c=M2C_FIELD(params,u8 *,10);config->d=M2C_FIELD(params,u8 *,11);
 func_02045c90();
-status=func_020270b4(M2C_FIELD(&data_0213d100,void **,4),0x2300);
+status=WFC_InitSession(M2C_FIELD(&data_0213d100,void **,4),0x2300);
 if(status==1 || status>=4){func_0202f37c();return 0;}return 1;
 }
 

@@ -2,62 +2,62 @@
 #include "common.h"
 #include "sprite.h"
 
-extern u8 data_020f362c[];
+extern u8 gSpritePaletteCycle[];
 static inline s32 spriteValid02091110(void *p) { if (p != 0 && *(s32 *)p != 0) return 1; return 0; }
 typedef struct SpriteLevels02091110 { u8 v[22]; } SpriteLevels02091110;
 
-void func_02091110(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
-    void func_02091230(void);
-    void func_02091248(s32);
+/* Apply the sprite's palette mode and submit its current 3D frame geometry,
+ * then draw the frame's parts once the animation has selected a frame. */
+void DrawSprite3DFrame(void *obj,s32 *pos,s32 attr,s32 extra) {
+    void SetSpritePaletteBase(void);
+    void SetSpritePaletteIndex(s32);
     s32 Modulo(s32, s32);
-    s32 func_0207d0f0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u8);
-    void func_0209177c(M2C_UNK);
-    void *obj;
-    M2C_UNK r6;
-    M2C_UNK r5;
-    M2C_UNK r4;
-    u8 b22;
-    u8 b21;
-    u8 and8;
+    s32 DrawSprite3DGeometry(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u8);
+    void DrawSprite3DParts(M2C_UNK);
+    M2C_UNK posArg;
+    M2C_UNK attrArg;
+    M2C_UNK extraArg;
+    u8 flags;
+    u8 palette;
+    u8 geometryParam;
 
-    r6 = arg1;
-    r5 = arg2;
-    r4 = arg3;
-    obj = arg0;
+    posArg = (M2C_UNK)pos;
+    attrArg = attr;
+    extraArg = extra;
     if (!spriteValid02091110(obj)) {
         return;
     }
-    b22 = M2C_FIELD(obj, u8 *, 0x22);
-    if (b22 & 0x40) {
-        M2C_FIELD(obj, u8 *, 0x22) = (u8)(b22 & ~0x40);
+    flags = M2C_FIELD(obj, u8 *, SPRITE_FLAGS);
+    if (flags & SPRITE_FLAG_DEFER) {
+        M2C_FIELD(obj, u8 *, SPRITE_FLAGS) = (u8)(flags & ~SPRITE_FLAG_DEFER);
     } else {
-        if (b22 & 0x10) {
-            b21 = M2C_FIELD(obj, u8 *, 0x21);
-            ((void (*)(s32))func_02091230)(b21);
-        } else if (b22 & 0x20) {
-            SpriteLevels02091110 buf = *(const SpriteLevels02091110 *)data_020f362c;
+        if (flags & SPRITE_FLAG_PALETTE_FIXED) {
+            palette = M2C_FIELD(obj, u8 *, SPRITE_PALETTE);
+            ((void (*)(s32))SetSpritePaletteBase)(palette);
+        } else if (flags & SPRITE_FLAG_PALETTE_CYCLE) {
+            SpriteLevels02091110 buf = *(const SpriteLevels02091110 *)gSpritePaletteCycle;
             {
-                s32 idx = (s32)(M2C_FIELD(obj, s16 *, 0x18) >> 2);
-                idx = Modulo(idx, 0x16);
-                func_02091248(buf.v[idx]);
+                s32 idx = (s32)(M2C_FIELD(obj, s16 *, SPRITE_TIMER) >> 2);
+                idx = Modulo(idx, SPRITE_PALETTE_CYCLE_LEN);
+                SetSpritePaletteIndex(buf.v[idx]);
             }
         } else {
-            b21 = M2C_FIELD(obj, u8 *, 0x21);
-            func_02091248(b21);
+            palette = M2C_FIELD(obj, u8 *, SPRITE_PALETTE);
+            SetSpritePaletteIndex(palette);
         }
-        b21 = M2C_FIELD(obj, u8 *, 0x21);
-        if (b21 != 0) {
-            and8 = (u8)(M2C_FIELD(obj, u8 *, 0x22) & 0x8);
-            func_0207d0f0(M2C_FIELD(obj, M2C_UNK *, 0x10), r6, M2C_FIELD(obj, M2C_UNK *, 0x28), M2C_FIELD(obj, M2C_UNK *, 0x2c), r5, r4, and8);
+        palette = M2C_FIELD(obj, u8 *, SPRITE_PALETTE);
+        if (palette != 0) {
+            geometryParam = (u8)(M2C_FIELD(obj, u8 *, SPRITE_FLAGS) & SPRITE_FLAG_GEOMETRY_PARAM);
+            DrawSprite3DGeometry(M2C_FIELD(obj, M2C_UNK *, SPRITE_FRAME), posArg, M2C_FIELD(obj, M2C_UNK *, 0x28), M2C_FIELD(obj, M2C_UNK *, 0x2c), attrArg, extraArg, geometryParam);
         }
     }
     if (M2C_FIELD(obj, s32 *, 0x30) == 0) {
         return;
     }
-    if (!(M2C_FIELD(obj, u8 *, 0x22) & 0x1)) {
+    if (!(M2C_FIELD(obj, u8 *, SPRITE_FLAGS) & SPRITE_FLAG_FRAME_SET)) {
         return;
     }
-    func_0209177c((M2C_UNK)obj);
+    DrawSprite3DParts((M2C_UNK)obj);
 }
 M2C_UNK func_02090e0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, s32 arg5, s32 arg6, s32 arg7) {
     extern M2C_UNK data_021029d8;
@@ -134,24 +134,24 @@ DeleteSpriteObject(arg0);
 #pragma opt_propagation reset
 void func_0209106c(void *a) {void Sprite_ClearHandle(s32 *);void (*fp)(s32 *)=Sprite_ClearHandle;fp(M2C_FIELD(a,s32 **,0x58));}
 s32 func_0209107c(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
-s32 func_02091af8(void *,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);
-s32 r=func_02091af8(a,b,c);if(r) {func_0207d0f0(r,d,e,f,g,h,i);return 1;}return 0;
+s32 func_02091af8(void *,s32,s32);s32 DrawSprite3DGeometry(s32,s32,s32,s32,s32,s32,u8);
+s32 r=func_02091af8(a,b,c);if(r) {DrawSprite3DGeometry(r,d,e,f,g,h,i);return 1;}return 0;
 }
 #pragma optimization_level reset
 M2C_UNK DrawSprite3D(void *arg0) {
-void func_02091110(); void Sprite_TickTimer(void *); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
+void DrawSprite3DFrame(); void Sprite_TickTimer(void *); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 s32 ok=(arg0!=0 && *(s32 *)arg0!=0);
 if(ok==0) return 0;
-((void (*)())func_02091110)(arg0); Sprite_TickTimer(arg0); return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
+((void (*)())DrawSprite3DFrame)(arg0); Sprite_TickTimer(arg0); return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
 }
 
-extern void func_02091110();
+extern void DrawSprite3DFrame();
 
-void func_02091230(void) {
+void SetSpritePaletteBase(void) {
     *(s32 *)0x040004A4 = 0x081E4080;
 }
 
-void func_02091248(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
+void SetSpritePaletteIndex(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
 #pragma optimization_level reset
 s32 func_02091270(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
             void func_02091954(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -184,7 +184,7 @@ s32 DrawSprite2D(s32 *arg0, s32 arg1, s32 arg2) {
 
 void func_020912ec(M2C_UNK a, M2C_UNK x, M2C_UNK y) {
 void func_02091570(M2C_UNK);
-void func_0209177c(M2C_UNK);
+void DrawSprite3DParts(M2C_UNK);
 void AddSprite(u16,u16,u16,s32,s32);
 extern void *gCur3DSpriteEngine;
 void *p=(void *)a;
@@ -196,7 +196,7 @@ flags=(M2C_FIELD(p,u8 *,0x23)&31)<<9;
 }
 v=M2C_FIELD(p,u32 *,0x28);
 AddSprite((u16)(x|flags),(u16)y,(u16)((v&0xfc00)|(((v&0x3ff)>>((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))&0x3ff)),M2C_FIELD(p,s32 *,0x10),M2C_FIELD(p,s8 *,0x20));
-if (M2C_FIELD(p,s32 *,0x30) && (M2C_FIELD(p,u8 *,0x22)&1)) func_0209177c(a);
+if (M2C_FIELD(p,s32 *,0x30) && (M2C_FIELD(p,u8 *,0x22)&1)) DrawSprite3DParts(a);
 }
 
 void Sprite_TickTimer(void *arg0) {
@@ -404,7 +404,7 @@ M2C_FIELD(arg0,void **,12)=tail;
 func_02091928(arg0);
 }
 
-void func_0209177c(M2C_UNK a) {
+void DrawSprite3DParts(M2C_UNK a) {
     void func_0207c3dc(s32, s32, s32, s32);
     void func_0207c464(s32, s32, s32, s32);
     extern u8 data_02102a10[];

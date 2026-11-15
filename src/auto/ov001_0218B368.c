@@ -41,7 +41,33 @@ if(a==1){volatile u32 *p=(volatile u32 *)0x04001000;u32 t=*p&0x1f00;*p=(*p&~0x1f
 {volatile u32 *p=(volatile u32 *)0x04000000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);}
 }
 
-void SetWindowRect(s32 a,s32 b,u16 *p){if(a==1){if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001042+4)=((y<<8)&0xff00)|(w&255);}}else{if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000042+4)=((y<<8)&0xff00)|(w&255);}}}
+/* Write a clip window rect into the selected display engine's window range
+ * registers: rect[0],rect[2] is one packed range and rect[1],rect[3] the other.
+ * `engine` picks the main (0) or sub (1) engine, `vertical` the horizontal (0)
+ * or vertical (1) range register pair. */
+void SetWindowRect(s32 engine, s32 vertical, u16 *rect) {
+    if (engine == 1) {
+        if (vertical == 0) {
+            u32 left = rect[0], top = rect[1], right = rect[2], bottom = rect[3];
+            *(volatile u16 *)GX_WIN0H_SUB = ((left << 8) & 0xff00) | (right & 255);
+            *(volatile u16 *)(GX_WIN0H_SUB + 4) = ((top << 8) & 0xff00) | (bottom & 255);
+        } else {
+            u32 left = rect[0], top = rect[1], right = rect[2], bottom = rect[3];
+            *(volatile u16 *)GX_WIN0V_SUB = ((left << 8) & 0xff00) | (right & 255);
+            *(volatile u16 *)(GX_WIN0V_SUB + 4) = ((top << 8) & 0xff00) | (bottom & 255);
+        }
+    } else {
+        if (vertical == 0) {
+            u32 left = rect[0], top = rect[1], right = rect[2], bottom = rect[3];
+            *(volatile u16 *)GX_WIN0H_MAIN = ((left << 8) & 0xff00) | (right & 255);
+            *(volatile u16 *)(GX_WIN0H_MAIN + 4) = ((top << 8) & 0xff00) | (bottom & 255);
+        } else {
+            u32 left = rect[0], top = rect[1], right = rect[2], bottom = rect[3];
+            *(volatile u16 *)GX_WIN0V_MAIN = ((left << 8) & 0xff00) | (right & 255);
+            *(volatile u16 *)(GX_WIN0V_MAIN + 4) = ((top << 8) & 0xff00) | (bottom & 255);
+        }
+    }
+}
 
 /* Set the window IN/OUT control register fields for the selected display engine. */
 void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {

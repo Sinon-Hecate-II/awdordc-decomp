@@ -44,11 +44,11 @@ void SetConnectionState(s32 arg0) {
 }
 
 void func_0204428c(M2C_UNK arg0) {
-    M2C_UNK func_0204429c(M2C_UNK, M2C_UNK);
-    func_0204429c(arg0, 1);
+    M2C_UNK CanStartTransfer(M2C_UNK, M2C_UNK);
+    CanStartTransfer(arg0, 1);
 }
 
-s32 func_0204429c(M2C_UNK arg0, s32 arg1) {
+s32 CanStartTransfer(M2C_UNK arg0, s32 arg1) {
     s32 HasNetError();
     s32 IsConnectionActive(M2C_UNK);
     s32 func_020391b8(M2C_UNK);
@@ -70,39 +70,42 @@ s32 func_0204429c(M2C_UNK arg0, s32 arg1) {
 }
 
 s32 func_0204431c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_0204433c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    return func_0204433c(1, arg0, arg1, arg2);
+    M2C_UNK SendTransfer(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    return SendTransfer(1, arg0, arg1, arg2);
 }
 
-s32 func_0204433c(s32 kind,s32 channel,s32 buffer,s32 size) {
+/* Start sending `size` bytes from `buffer` to `channel` as a transfer of `kind`:
+ * queue the outgoing buffer in the connection's slot, send the 8-byte header
+ * and as much of the payload as the link has room for. */
+s32 SendTransfer(s32 kind,s32 channel,s32 buffer,s32 size) {
 extern s32 gTransferManager;
 void *GetTransferSlot(s32);
-void func_0204467c(void *,s16,s32);
+void BuildTransferHeader(void *,s16,s32);
 void SendConnectionData(s32,s32,s32,s32);
-void *p;
-s32 n, total;
+TransferSlot *slot;
+s32 chunk, total;
 u32 header[2];
 void (*callback)(s32,s32);
-p=GetTransferSlot(channel);
-if(!func_0204429c(channel,kind)) return 0;
-M2C_FIELD(p,u8 *,0x1c)=1;
-M2C_FIELD(p,s32 *,0)=buffer;
-M2C_FIELD(p,s32 *,0xc)=0;
-M2C_FIELD(p,s32 *,0x14)=size;
-((void (*)(void *,s32,s32))func_0204467c)(header,kind,size);
+slot=GetTransferSlot(channel);
+if(!CanStartTransfer(channel,kind)) return 0;
+slot->sending=1;
+slot->outData=buffer;
+slot->outSent=0;
+slot->outSize=size;
+((void (*)(void *,s32,s32))BuildTransferHeader)(header,kind,size);
 SendConnectionData(channel,(s32)header,8,1);
-n=M2C_FIELD(gTransferManager,u16 *,0x610);
-if(size<=n)n=size;
-if(n>GetSendSpace(channel))return 1;
-SendConnectionData(channel,buffer,n,1);
-M2C_FIELD(p,s32 *,0xc)+=n;
-total=M2C_FIELD(p,s32 *,0x14);
-if(M2C_FIELD(p,s32 *,0xc)==total) {
-M2C_FIELD(p,u8 *,0x1c)=0;
-M2C_FIELD(p,s32 *,0)=0;
-M2C_FIELD(p,s32 *,0xc)=0;
-M2C_FIELD(p,s32 *,0x14)=0;
-callback=M2C_FIELD(gTransferManager,void (**)(s32,s32),0x600);
+chunk=((TransferManager *)gTransferManager)->chunkSize;
+if(size<=chunk)chunk=size;
+if(chunk>GetSendSpace(channel))return 1;
+SendConnectionData(channel,buffer,chunk,1);
+slot->outSent+=chunk;
+total=slot->outSize;
+if(slot->outSent==total) {
+slot->sending=0;
+slot->outData=0;
+slot->outSent=0;
+slot->outSize=0;
+callback=((TransferManager *)gTransferManager)->onSent;
 if(callback && kind==1) callback(total,channel);
 }
 return 1;
@@ -168,15 +171,15 @@ s32 func_02044638(s32 a){extern s32 gTransferManager;if(!gTransferManager)return
 
 s32 func_02044658(u16 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,u16 *,0x610)=a;return 1;}
 
-void func_0204467c(void *arg0, s16 arg1, s32 arg2) {
+void BuildTransferHeader(void *arg0, s16 arg1, s32 arg2) {
     M2C_UNK func_02068d18(s32, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fca34;
-    func_02068d18(arg0 + 6, &data_020fca34, 2);
+    extern M2C_UNK gTransferMagic;
+    func_02068d18(arg0 + 6, &gTransferMagic, 2);
     M2C_FIELD(arg0, s16 *, 4) = arg1;
     M2C_FIELD(arg0, s32 *, 0) = arg2;
 }
 
-u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 ByteCompareN(void *,void *,s32);extern M2C_UNK data_020fca34;u16 buf[4];MI_CpuCopy8(a,buf,8);if(ByteCompareN(&buf[3],&data_020fca34,2)==0)return buf[2];return 0;}
+u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 ByteCompareN(void *,void *,s32);extern M2C_UNK gTransferMagic;u16 buf[4];MI_CpuCopy8(a,buf,8);if(ByteCompareN(&buf[3],&gTransferMagic,2)==0)return buf[2];return 0;}
 
 s32 func_020446e8(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
 

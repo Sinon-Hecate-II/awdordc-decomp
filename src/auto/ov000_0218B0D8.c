@@ -28,8 +28,8 @@ int func_ov000_0218b0d8(void *arg0) {
  BuildUnitMoveRange(unit);
  map=*gCurrentMap;
  {
- AiPlayerB0 *player=(AiPlayerB0 *)(map+0x67a4)+M2C_FIELD(map,u16 *,0x52a4);
- if((player->mode==2||player->mode==3)&&(gUnitKindFlags[M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0*112]&23)) {
+ AiPlayerB0 *player=(AiPlayerB0 *)(map+0x67a4);
+ if((player[M2C_FIELD(map,u16 *,0x52a4)].mode==2||player[M2C_FIELD(map,u16 *,0x52a4)].mode==3)&&(gUnitKindFlags[M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0*112]&23)) {
  int hits=0,total=0;
  s8 *cost;
  for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++) {

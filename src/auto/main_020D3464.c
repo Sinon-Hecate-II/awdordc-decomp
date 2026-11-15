@@ -534,50 +534,53 @@ s32 func_020d3e94(void) {
     func_020c9b70();
 }
 
-s32 func_020d3f48(void) {
+/* True when the battle's active human players are split over different armies:
+ * a local (non-link) battle with fog or snow. Clears to the map's first state
+ * when the current player's record flag is set. */
+s32 HumanPlayersOnDifferentArmies(void) {
     M2C_UNK IsPlayerActive(s32);
     M2C_UNK IsPlayerHuman(s32);
     extern void **gCurrentMap;
     extern M2C_UNK gMapData;
-    u8 team;
+    u8 army;
     s32 count;
     s32 i;
     s32 off;
     void *base;
-    u16 idx;
+    u16 player;
     u8 v;
 
     base = *gCurrentMap;
-    idx = M2C_FIELD(base, u16 *, 0x52A4);
-    if (M2C_FIELD((u8 *)base + idx * 0x8C, u8 *, 0x67BD) != 0) {
-        M2C_FIELD(base, u16 *, 0x52B0) = 1;
+    player = M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER);
+    if (M2C_FIELD((u8 *)base + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + 0x19) != 0) {
+        M2C_FIELD(base, u16 *, MAP_STATE) = 1;
         return 0;
     }
     if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
         return 0;
     }
     base = *gCurrentMap;
-    if (M2C_FIELD(base, u8 *, 0x5156) == 0) {
-        if (M2C_FIELD(base, u8 *, 0x5158) != 2) {
+    if (M2C_FIELD(base, u8 *, MAP_FOG) == 0) {
+        if (M2C_FIELD(base, u8 *, MAP_WEATHER) != 2) {
             return 0;
         }
     }
-    team = 0;
-    count = team;
-    for (i = 1, off = 0x8C; i < 5; i++, off += 0x8C) {
+    army = 0;
+    count = army;
+    for (i = 1, off = MAP_PLAYER_STRIDE; i < 5; i++, off += MAP_PLAYER_STRIDE) {
         if (IsPlayerActive(i) != 0) {
             if (count == 0) {
                 if (IsPlayerHuman(i) != 0) {
                     base = *gCurrentMap;
-                    v = M2C_FIELD((u8 *)base + off, u8 *, 0x67CA);
+                    v = M2C_FIELD((u8 *)base + off, u8 *, MAP_PLAYER_STATES + PLAYER_REC_ARMY);
                     count++;
-                    team = v;
+                    army = v;
                 }
             } else {
                 if (IsPlayerHuman(i) != 0) {
                     base = *gCurrentMap;
-                    v = M2C_FIELD((u8 *)base + off, u8 *, 0x67CA);
-                    if (team != v) {
+                    v = M2C_FIELD((u8 *)base + off, u8 *, MAP_PLAYER_STATES + PLAYER_REC_ARMY);
+                    if (army != v) {
                         return 1;
                     }
                 }
@@ -637,12 +640,12 @@ same:
 }
 
 void func_020d41c4(void) {
- M2C_UNK func_020d1b80(); M2C_UNK func_020d3f48(); M2C_UNK func_020b78ac(); M2C_UNK func_020d4060(); void func_020d4110(void); extern void **gCurrentMap;
+ M2C_UNK func_020d1b80(); M2C_UNK HumanPlayersOnDifferentArmies(); M2C_UNK func_020b78ac(); M2C_UNK func_020d4060(); void func_020d4110(void); extern void **gCurrentMap;
  void (*cb)(void)=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x40);
  if(cb) cb();
  func_020d1b80();
  M2C_FIELD(*gCurrentMap,u16*,0x52B0)=3;
- if(func_020d3f48()!=0){func_020b78ac();return;}
+ if(HumanPlayersOnDifferentArmies()!=0){func_020b78ac();return;}
  if(func_020d4060()==0)return;
  func_020d4110();
 }

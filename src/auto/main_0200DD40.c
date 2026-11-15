@@ -143,33 +143,33 @@ if(cb){M2C_FIELD(&gArm7TransferState,s32 *,8)=0;cb(result,M2C_FIELD(&gArm7Transf
 }
 #pragma scheduling on
 s32 Arm7TransferSubmit(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
-    if (func_02009eb0(9, arg3 | 0x02004100, 0) < 0) {
+    if (SendFifoMessage(9, arg3 | 0x02004100, 0) < 0) {
         return 0;
     }
-    if (func_02009eb0(9, (arg0 >> 16) | 0x10000, 0) < 0) {
+    if (SendFifoMessage(9, (arg0 >> 16) | 0x10000, 0) < 0) {
         return 0;
     }
-    if (func_02009eb0(9, (u16)arg0 | 0x20000, 0) < 0) {
+    if (SendFifoMessage(9, (u16)arg0 | 0x20000, 0) < 0) {
         return 0;
     }
-    if (func_02009eb0(9, (arg1 >> 16) | 0x30000, 0) < 0) {
+    if (SendFifoMessage(9, (arg1 >> 16) | 0x30000, 0) < 0) {
         return 0;
     }
-    if (func_02009eb0(9, (u16)arg1 | 0x40000, 0) < 0) {
+    if (SendFifoMessage(9, (u16)arg1 | 0x40000, 0) < 0) {
         return 0;
     }
-    if (func_02009eb0(9, (arg2 >> 16) | 0x50000, 0) < 0) {
+    if (SendFifoMessage(9, (arg2 >> 16) | 0x50000, 0) < 0) {
         return 0;
     }
-    if (func_02009eb0(9, 0x01060000 | (u16)arg2, 0) >= 0) {
+    if (SendFifoMessage(9, 0x01060000 | (u16)arg2, 0) >= 0) {
         return 1;
     }
     return 0;
 }
 
 s32 func_0200e1e4(void) {
-    s32 func_02009eb0(M2C_UNK, s32, M2C_UNK);
-    if (func_02009eb0(9, 0x03004200, 0) >= 0) {
+    s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
+    if (SendFifoMessage(9, 0x03004200, 0) >= 0) {
         return 1;
     }
     return 0;
@@ -205,13 +205,13 @@ s32 func_0200e234(void) {
 
 void func_0200e270(void) {
     s32 func_02007574();
-    M2C_UNK func_02009f38();
+    M2C_UNK FifoReceiveHandler();
     extern M2C_UNK data_0212fccc;
     extern s32 data_0212fce4;
     s32 *status=&data_0212fce4;
     if(M2C_FIELD(&data_0212fccc,s32 *,0x18)==0) return;
     do {
-        if(func_02007574()==0x80) func_02009f38();
+        if(func_02007574()==0x80) FifoReceiveHandler();
     } while(*status!=0);
 }
 
@@ -472,7 +472,7 @@ return result;
 void func_0200e8f4(M2C_UNK arg0) {
     do {
 
-    } while (func_02009eb0(8, arg0, 0) != 0);
+    } while (SendFifoMessage(8, arg0, 0) != 0);
 }
 
 #pragma push

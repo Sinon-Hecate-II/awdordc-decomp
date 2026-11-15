@@ -11,7 +11,7 @@ void LoadNarcFileDecompressed(void *,s32);
 void CloseNarcArchive(void);
 void func_02081340(void *,s32,s32,s32);
 void SetTileRectPalette(s32,s32,s32,s32);
-void func_02080944(s32,s32,s32,s32);
+void AddTileRectPalette(s32,s32,s32,s32);
 s32 func_020a9a30(s32,s32,s32,s32);
 void func_02091d4c(s32);
 s32 GetUiColor(s32);
@@ -148,7 +148,7 @@ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218680),M2C_FIELD(gCu
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218690),M2C_FIELD(gCur3DSpriteEngine,s32 *,32));
 CloseNarcArchive();
 func_02081340(data_ov006_022186a4,160,0,64);
-func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,32),32,32,5);
+AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,32),32,32,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(1);
 func_01ff9dd8(1);func_02091d4c(7);
 a=2;w=(void *)gCur3DSpriteEngine;

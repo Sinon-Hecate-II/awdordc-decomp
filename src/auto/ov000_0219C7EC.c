@@ -79,7 +79,7 @@ p++;q++;n++;
 func_ov000_0219c874(n);
 }
 
-void func_ov000_0219cb98(void) {
+void ScoreAiUnitsByAttackRange(void) {
     void func_ov000_0219c874(s32);
     s8 GetUnitKindMaxAttackRange(u32);
     extern s32 *gCurrentMap;
@@ -123,7 +123,7 @@ loop: x=*p;if(x){a=x*14+(*gCurrentMap+0x59a4);*q=func_020a7824(a,M2C_FIELD(a,u8 
 func_ov000_0219c874(n);
 }
 
-void func_ov000_0219cd0c(void){
+void ScoreAiUnitsByProperty(void){
 void func_ov000_0219c7ec(s32);s32 func_ov000_021a9084(u8);
 extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
 s32 n,a;u8 *p;s8 *q;u8 x;u32 yv,xv; s32 xa,ya;
@@ -492,43 +492,55 @@ gAiUnitAction = &func_ov000_021812a8;
 *gAiCommandState = 2;
 }
 
-void func_ov000_0219d604(void) {
-extern s32 *gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-extern u8 gUnitKindStats[];
-extern s8 *gAiCommandState;
-extern M2C_UNK *gAiUnitAction;
-extern s8 *gAiUnitListCursor;
-extern u8 gAiUnitList;
-extern M2C_UNK func_ov000_021813a4;
-void ScoreAiUnitsByHp(void);
-void func_ov000_0219cb98(void);
-s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
-gAiUnitListCursor = &gAiUnitList;
-obj = *gCurrentMap;
-baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-index = baseIndex + 1;
-if (index < baseIndex + 0x33) {
-stride = index * 14;
-do {
-table = (u8 *)obj + 0x59A4;
-type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 3) {
-out = gAiUnitListCursor;
-gAiUnitListCursor = out + 1;
-*out = index;
-}}
-index++;
-obj = *gCurrentMap;
-stride += 14;
-} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
-}
-*gAiUnitListCursor = 0;
-gAiUnitListCursor = &gAiUnitList;
-ScoreAiUnitsByHp();
-func_ov000_0219cb98();
-gAiUnitAction = &func_ov000_021813a4;
-*gAiCommandState = 2;
+/* AI turn phase starter for role-3 units: collect the current player's ready
+   ones into gAiUnitList, order them by HP and then by their kind's maximum attack
+   range, install the role-3 action callback and move the AI command to phase 2. */
+void SelectAiRole3UnitByRange(void) {
+    extern s32 *gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    extern u8 gUnitKindStats[];
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern u8 gAiUnitList;
+    extern M2C_UNK func_ov000_021813a4;
+    void ScoreAiUnitsByHp(void);
+    void ScoreAiUnitsByAttackRange(void);
+    s32 index;
+    s32 stride;
+    s8 *out;
+    u16 baseIndex;
+    u32 type;
+    void *units;
+    void *map;
+
+    gAiUnitListCursor = (s8 *)&gAiUnitList;
+    map = *gCurrentMap;
+    baseIndex = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+    index = baseIndex + 1;
+    if (index < baseIndex + MAP_UNIT_GROUP_SCAN) {
+        stride = index * MAP_UNIT_STRIDE;
+        do {
+            units = (u8 *)map + MAP_UNIT_RECORDS;
+            type = (u32)(M2C_FIELD(units, u8 *, stride + MAP_UNIT_KIND) << 26) >> 26;
+            if (type != 0) {
+                if (!(M2C_FIELD((u8 *)units + stride, u16 *, MAP_UNIT_FLAGS) & 1)
+                    && gUnitKindStats[type * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 3) {
+                    out = gAiUnitListCursor;
+                    gAiUnitListCursor = out + 1;
+                    *out = index;
+                }
+            }
+            index++;
+            map = *gCurrentMap;
+            stride += MAP_UNIT_STRIDE;
+        } while (index < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
+    }
+    *gAiUnitListCursor = 0;
+    gAiUnitListCursor = (s8 *)&gAiUnitList;
+    ScoreAiUnitsByHp();
+    ScoreAiUnitsByAttackRange();
+    gAiUnitAction = &func_ov000_021813a4;
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 

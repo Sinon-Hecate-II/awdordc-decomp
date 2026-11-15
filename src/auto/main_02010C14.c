@@ -25,7 +25,7 @@ void DC_InvalidateRange(s32 *, s32);
 void func_02006804(void);
 void func_0200758c(s32);
 s32 func_02009e8c(s32, s32);
-s32 func_02009eb0(s32, s32, s32);
+s32 SendFifoMessage(s32, s32, s32);
 s32 OS_DisableInterrupts(void);
 M2C_UNK OS_RestoreInterrupts(s32);
 s32 count;
@@ -45,10 +45,10 @@ func_02006804();
 again:
 M2C_FIELD(dev, s32 **, 4) = packet;
 M2C_FIELD(dev, volatile s32 *, 0x114) = M2C_FIELD(dev, volatile s32 *, 0x114) | 32;
-do { } while (func_02009eb0(11, (s32)packet, 1) < 0);
+do { } while (SendFifoMessage(11, (s32)packet, 1) < 0);
 if (!packet) {
 pkt = M2C_FIELD(dev, s32 **, 0);
-do { } while (func_02009eb0(11, (s32)pkt, 1) < 0);
+do { } while (SendFifoMessage(11, (s32)pkt, 1) < 0);
 }
 savedIrq = OS_DisableInterrupts();
 while (M2C_FIELD(dev, volatile s32 *, 0x114) & 32) OS_SleepThread(0);
@@ -95,13 +95,13 @@ saved=OS_DisableInterrupts();((void (*)(s32,s32,s32))func_02010e94)(14,17,0);OS_
 
 void func_02010fe4(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK WaitByLoop(M2C_UNK);
-    s32 func_02009eb0(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_02009eb0(0xE, arg0, 0) == 0) {
+    s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
+    if (SendFifoMessage(0xE, arg0, 0) == 0) {
         return;
     }
     do {
         WaitByLoop(arg1);
-    } while (func_02009eb0(0xE, arg0, 0) != 0);
+    } while (SendFifoMessage(0xE, arg0, 0) != 0);
 }
 
 s32 func_02011034(s32 a,s32 b) {
@@ -219,13 +219,13 @@ u16 *func_020112cc(void) {
 }
 
 s32 func_02011324(u16 a,u16 n,...) {
-extern M2C_UNK data_02130668;s32 func_02009eb0();s32 func_020062fc();void func_020067c4();
-s32 *ap; s32 i,r; s32 count;u16 *p;p=func_020112cc();if(!p)return 8;*p=a;count=n;ap=(s32 *)((u32)&n&~3)+1;for(i=0;i<count;i++){ap++;((s32 *)p)[i+1]=ap[-1];}func_020067c4(p,256);r=func_02009eb0(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
+extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void func_020067c4();
+s32 *ap; s32 i,r; s32 count;u16 *p;p=func_020112cc();if(!p)return 8;*p=a;count=n;ap=(s32 *)((u32)&n&~3)+1;for(i=0;i<count;i++){ap++;((s32 *)p)[i+1]=ap[-1];}func_020067c4(p,256);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
 }
 
 s32 func_020113d0(void *a,s32 b) {
-extern M2C_UNK data_02130668;s32 func_02009eb0();s32 func_020062fc();void func_020067c4();void MI_CpuCopy8();
-u16 *p=func_020112cc();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);func_020067c4(p,b);r=func_02009eb0(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
+extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void func_020067c4();void MI_CpuCopy8();
+u16 *p=func_020112cc();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);func_020067c4(p,b);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
 }
 
 s32 func_02011440(void) {

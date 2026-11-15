@@ -119,24 +119,28 @@ if(n>0) { u32 bit=1; do {acc |= bit << (u32)src[i]; i++;}while((s32)i<n);}
 return acc;
 }
 
-s32 func_020392b8(s32 ret){
+/* Reports a failed network operation: translates the operation result `error`
+ * into a WFC error code and detail, adjusts the detail for the current session
+ * state, runs that state's handler and records the error globally.  Returns the
+ * operation result. */
+s32 ReportNetErrorForState(s32 error){
 extern void *gNetSession;
-u32 off,code;
-if(!ret)return 0;
-switch((u32)ret){
-case 1:code=9;off=code-10;break;
-case 2:code=9;off=code-11;break;
-case 3:code=6;off=code-16;break;
-case 4:code=6;off=code-26;break;
+u32 detail,errCode;
+if(!error)return 0;
+switch((u32)error){
+case 1:errCode=9;detail=errCode-10;break;
+case 2:errCode=9;detail=errCode-11;break;
+case 3:errCode=6;detail=errCode-16;break;
+case 4:errCode=6;detail=errCode-26;break;
 }
 switch(M2C_FIELD(gNetSession,u32 *,0x24)){
-case 1:off+=0xffff11b8;func_02039db4(code,off);break;
-case 2:off+=0xffff11b8;if(M2C_FIELD(gNetSession,s32 *,0x9c)<1)func_02039db4(code,off);break;
-case 5:off+=0xfffec398;func_0203dc38(code,off);break;
-case 4:off+=0xfffeeaa8;break;
-default:off+=0xfffe9c88;break;
+case 1:detail+=0xffff11b8;func_02039db4(errCode,detail);break;
+case 2:detail+=0xffff11b8;if(M2C_FIELD(gNetSession,s32 *,0x9c)<1)func_02039db4(errCode,detail);break;
+case 5:detail+=0xfffec398;func_0203dc38(errCode,detail);break;
+case 4:detail+=0xfffeeaa8;break;
+default:detail+=0xfffe9c88;break;
 }
-func_0203accc(code,off);return ret;
+func_0203accc(errCode,detail);return error;
 }
 
 u32 func_020393d4(u32 a, u32 unused, u32 off) {
@@ -232,12 +236,12 @@ void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
 }
 
 void func_02039698(s32 unused, void *arg1) {
-    M2C_UNK func_020392b8(M2C_UNK);
+    M2C_UNK ReportNetErrorForState(M2C_UNK);
     s32 temp_r1;
 
     temp_r1 = M2C_FIELD(arg1, s32 *, 4);
     if ((temp_r1 != 0x603) && (temp_r1 != 0x901) && (temp_r1 != 0xB01)) {
-        func_020392b8(3);
+        ReportNetErrorForState(3);
     }
 }
 

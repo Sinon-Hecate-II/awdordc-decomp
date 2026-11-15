@@ -17,7 +17,7 @@ extern s8 gTerrainPropertyType[];
 #pragma opt_strength_reduction off
 void func_ov000_02191970(void){
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,u32,s32,s32);
-s32 func_ov000_021a89a4(void*);s32 CanKindAttack(u32,u32);
+s32 GetAiUnitMoveRange(void*);s32 CanKindAttack(u32,u32);
 s32 GetUnitMoveRange(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
 s32 IsAllyUnitAtCell(s16,s16);s32 CanUnitKindStandAt(u32,s32,s32);
@@ -31,7 +31,7 @@ if(M2C_FIELD(SEL,u8*,12))return;
 SelectMapLayer(MAP+0x2338);
 FloodFillUnitRange(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,1);
 SelectMapLayer(MAP+0x1e30);
-limit=func_ov000_021a89a4(SEL)+1;
+limit=GetAiUnitMoveRange(SEL)+1;
 index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
 if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){
 offset=index*14;

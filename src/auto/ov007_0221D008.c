@@ -264,46 +264,50 @@ loop_9:
     }
 }
 
-void func_ov007_0221ded4(u8 *arg0) {
+/* D-pad cursor handler for the map editor's text-entry softkeys.  From the key
+ * cluster 105/106 up/down move to the row above (69/72) or below (9/12) and
+ * left/right walk out to 104/100; a direction only moves the focus on its
+ * initial press (auto-repeat would skip past).  A runs the focused slot's action. */
+void MapEditTextCursorInput(u8 *selection) {
 M2C_UNK FocusSpriteSlotById(u8);
 extern void *gKeyState;
-u16 held,pressed;
-u8 current,old;
-old=*arg0;
+u16 repeat,pressed;
+u8 slot,oldSlot;
+oldSlot=*selection;
 pressed=M2C_FIELD(gKeyState,u16 *,0);
-current=old;
-held=M2C_FIELD(gKeyState,u16 *,2);
-if(pressed&1){MapEditTextActionInput(arg0);return;}
-if(held&0x40){
-switch(old){
-case 105:if(held==pressed)current=69;break;
-case 106:if(held==pressed)current=72;break;
+slot=oldSlot;
+repeat=M2C_FIELD(gKeyState,u16 *,2);
+if(pressed&KEY_A){MapEditTextActionInput(selection);return;}
+if(repeat&KEY_UP){
+switch(oldSlot){
+case 105:if(repeat==pressed)slot=69;break;
+case 106:if(repeat==pressed)slot=72;break;
 }
-if(current>=105U){ if(current>106U){} else goto horizontal; }
-}else if(held&0x80){
-switch(old){
-case 105:if(held==pressed)current=9;break;
-case 106:if(held==pressed)current=12;break;
+if(slot>=105U){ if(slot>106U){} else goto horizontal; }
+}else if(repeat&KEY_DOWN){
+switch(oldSlot){
+case 105:if(repeat==pressed)slot=9;break;
+case 106:if(repeat==pressed)slot=12;break;
 }
-if(current>=105U && current<=106U)goto horizontal;
+if(slot>=105U && slot<=106U)goto horizontal;
 }else{
 horizontal:
-if(held&0x20){
-switch(current){
-case 106:current=105;break;
-case 105:current=104;break;
+if(repeat&KEY_LEFT){
+switch(slot){
+case 106:slot=105;break;
+case 105:slot=104;break;
 }
-if(current>=105U && current<=106U)goto done;
-}else if(held&0x10){
-switch(current){
-case 105:current=106;break;
-case 106:if(held==pressed)current=100;break;
+if(slot>=105U && slot<=106U)goto done;
+}else if(repeat&KEY_RIGHT){
+switch(slot){
+case 105:slot=106;break;
+case 106:if(repeat==pressed)slot=100;break;
 }
 }
 }
 done:
-if(old==current)return;
-FocusSpriteSlotById(current);
+if(oldSlot==slot)return;
+FocusSpriteSlotById(slot);
 }
 
 void func_ov007_0221dff0(void) {

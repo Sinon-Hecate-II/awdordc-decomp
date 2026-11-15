@@ -115,14 +115,14 @@ void func_ov007_02213378(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK RefreshMapView();
     M2C_UNK func_ov007_022121b0();
-    M2C_UNK func_ov007_022121d4(M2C_UNK);
+    M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK FillMapTerrain(s32);
     M2C_UNK func_ov007_0221ab68();
     FillMapTerrain(M2C_FIELD(arg0, s32 *, 0x5C));
     RefreshMapView();
     func_ov007_022121b0();
     func_ov007_0221ab68();
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
     PlaySoundEffect(0x11D);
 }
 
@@ -190,7 +190,7 @@ void func_ov007_022134b4(void *arg0) {
     RefreshMapView();
     func_ov007_022121b0();
     func_ov007_0221ab68();
-    func_ov007_022121d4(1);
+    MapEditor_SetMapModified(1);
     p = *gCurrentMap;
     func_0207b754((u32)M2C_FIELD(p, u16 *, 0x5144) >> 1, (u32)M2C_FIELD(p, u16 *, 0x5146) >> 1);
     func_0207cfc0((u8 *)*gCurrentMap + 0x6EF8);

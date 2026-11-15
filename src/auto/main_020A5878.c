@@ -201,7 +201,7 @@ void func_020a5f4c(s32 arg0) {
 #pragma opt_propagation reset
 s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitOnCurrentTeam(s32);u8 *p=(u8 *)*gCurrentMap;register u32 i=a+M2C_FIELD(p+b*2,u16 *,0x3758);u8 v=M2C_FIELD(p+i,u8 *,0x508);if(!v||!(u8)(M2C_FIELD(p+(i>>3),u8 *,0x5160)&(1<<(i&7))))return 0;if(!M2C_FIELD(p,u8 *,i)&&!(M2C_FIELD(p+v*14,u16 *,0x59a8)&4))return 0;return IsUnitOnCurrentTeam(v);}
 
-s32 func_020a600c(s32 arg0) {
+s32 IsUnitInSight(s32 arg0) {
     extern s32 *gCurrentMap;
     extern s16 gPlayerUnitIdBase[];
     s32 func_020a7d38(Unit5B *);

@@ -376,7 +376,7 @@ void func_ov000_02169a24(void) {
 
 void func_ov000_02169a28(void *p) {
  s32 GetViewZoom(void *);
- void func_02091248(s32);
+ void SetSpritePaletteIndex(s32);
  void DrawSprite3D(void *,s32 *,s32,s32);
  s32 v[3]; void *q; s32 n;
  u8 mode=GetViewZoom((void *)(*gCurrentMap+0x6EF8))<=0?0x10:0x18;
@@ -386,7 +386,7 @@ void func_ov000_02169a28(void *p) {
  v[0]=(M2C_FIELD(p,s16 *,0x4C)+8)*48;
  v[1]=(M2C_FIELD(p,s16 *,0x4E)+16)*48;
  v[2]=0x871;
- func_02091248(31);
+ SetSpritePaletteIndex(31);
  DrawSprite3D(q,v,n,0);
 }
 

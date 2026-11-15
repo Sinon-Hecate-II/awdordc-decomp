@@ -155,7 +155,7 @@ spriteSet=func_020a3460(player);
 armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
 ((void (*)(u8 *))M2C_FIELD(data_021261c8+armyId*156,s32 *,spriteSet*40))(unit);
 done:
-func_020bcc78(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),M2C_FIELD(view,s16 *,0x6c),func_020a3460(player),view);
+SpawnArmySpecialEffect(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),M2C_FIELD(view,s16 *,0x6c),func_020a3460(player),view);
 increment:
 M2C_FIELD(view,s16 *,0x70)++;
 break;

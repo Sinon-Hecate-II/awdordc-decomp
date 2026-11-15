@@ -53,7 +53,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
     s32 func_0201a778(void);
     M2C_UNK UpdateArpCache(void *, M2C_UNK, s32);
     M2C_UNK func_0201bb88(void *, u8 *, M2C_UNK);
-    M2C_UNK func_0201c820(void *, void *, s32);
+    M2C_UNK TcpReceiveSegment(void *, void *, s32);
     M2C_UNK UdpReceiveDatagram(void *, void *, s32);
     void *func_0201cb4c(void *, s32 *);
     extern M2C_UNK gNetStack;
@@ -118,7 +118,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
             if (type == 1) {
                 func_0201bb88(rp, (u8 *)ptr, val);
             } else if (type == 6) {
-                func_0201c820(rp, ptr, val);
+                TcpReceiveSegment(rp, ptr, val);
             }
         }
 

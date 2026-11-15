@@ -169,18 +169,21 @@ found++;if(found==1)return;
 if(!found)func_01ffa6fc(effect);
 }
 
+/* Turn start for the current player's units: clear the per-turn action bits on every
+ * unit that is not loaded in a transport, and clear bit 1 on the units carried by a
+ * carrier so they may act again after unloading. */
 void func_020a6eb0(void){
 extern u16 gPlayerUnitIdBase[];s32 IsCarrierUnitKind(u32);
 s32 i;UnkStruct_ov000_021A860C *p;u8 n;
-for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
-p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-if(p->unk0 && !(M2C_FIELD(p,u16 *,4)&8)){
-M2C_FIELD(p,u16 *,4)&=~0x81;
+for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_GROUP_SCAN;i++){
+p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[i];
+if(p->unk0 && !(M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED)){
+M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)&=~UNIT_FLAG_TURN_MASK;
 if(IsCarrierUnitKind(p->unk0)){
 n=p->unkC[0];
-if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[n],u16 *,4)&=~1;
+if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[n],u16 *,MAP_UNIT_FLAGS)&=~1;
 n=p->unkC[1];
-if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[n],u16 *,4)&=~1;
+if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[n],u16 *,MAP_UNIT_FLAGS)&=~1;
 }
 }
 }}

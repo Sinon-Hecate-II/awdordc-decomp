@@ -56,10 +56,10 @@ if(ReportNasError()) return; M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,4)=
 /* Starts an online/NAS request for source `b`, remembering the completion callback `a`.
  * Builds the 72-byte request descriptor (the request name, the payload name at +0x34 and
  * the alloc/free callbacks at +0x40/+0x44), allocates the NAS connection block and hands
- * the descriptor to func_020328ac. */
+ * the descriptor to CreateNasConnection. */
 void StartNasRequest(void *a,s32 b){
 extern M2C_UNK gNasLogin;
-u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 func_020322ec(void *); void func_02032228(void *); void FormatNasId(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 func_020376a4(s32,s32,s32); void HeapAlloc(void);void HeapFree(M2C_UNK,M2C_UNK,M2C_UNK);void func_020328ac(void *,s32);void MI_CpuFill8(void *,s32,s32);
+u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 func_020322ec(void *); void func_02032228(void *); void FormatNasId(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 func_020376a4(s32,s32,s32); void HeapAlloc(void);void HeapFree(M2C_UNK,M2C_UNK,M2C_UNK);void CreateNasConnection(void *,s32);void MI_CpuFill8(void *,s32,s32);
 u8 buf[72];void *p; s32 n;
 MI_CpuFill8(buf,0,72);M2C_FIELD(&gNasLogin,void **,8)=a;M2C_FIELD(&gNasLogin,s32 *,0)=b;
 if(func_02032370(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),void **,28))){
@@ -80,7 +80,7 @@ StringCopy(buf+0x34,(s32)((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x251));
 M2C_FIELD(buf,u32 *,64)=(u32)HeapAlloc;M2C_FIELD(buf,u32 *,68)=(u32)HeapFree;n=func_020376a4(0,0x1c14,4);
 M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,36)=n;
 M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),u64 *,40)=GetSystemTick();
-func_020328ac(buf,n);
+CreateNasConnection(buf,n);
 }
 
 #pragma opt_strength_reduction off
@@ -98,7 +98,7 @@ void func_0203a2b4(void) {
     void MI_CpuFill8(void *, s32, s32);
     s32 Utf16StringLength(s32);
     void MI_CpuCopy8(s32, void *, s32);
-    void func_020328ac(void *, M2C_UNK);
+    void CreateNasConnection(void *, M2C_UNK);
     void func_02039db4(s32, s32);
     void HeapAlloc(void);
     void NasConnectionResultCallback(M2C_UNK, Record39 *);
@@ -152,7 +152,7 @@ void func_0203a2b4(void) {
             *(M2C_UNK *)(buf + 0x40) = (M2C_UNK)HeapAlloc;
             context = M2C_FIELD(&gNasLogin,void **,4);
             *(M2C_UNK *)(buf + 0x44) = (M2C_UNK)HeapFree;
-            func_020328ac(buf, M2C_FIELD(context, M2C_UNK *, 0x24));
+            CreateNasConnection(buf, M2C_FIELD(context, M2C_UNK *, 0x24));
         }
     }
 }
@@ -199,34 +199,38 @@ s32 func_0203a660(void) {
 }
 
 void func_0203a68c(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0203a6a4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_0203a6a4(arg0, 0, 0, arg1);
+    M2C_UNK GetMatchPlayerInfo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    GetMatchPlayerInfo(arg0, 0, 0, arg1);
 }
 
-s32 func_0203a6a4(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d) {
-extern u8 data_020fc8ac[],data_020fc8b0[];
-s32 func_0203b63c(M2C_UNK,void *);
+/* Fetches the local player's match record (by `matchId`) and, when the record
+ * is valid, extracts the buddy's SCM and SCN key values into `scmOut`/`scnOut`
+ * and copies the player's display name into `nameOut`.  Returns the record's
+ * status (0 when there is no record). */
+s32 GetMatchPlayerInfo(M2C_UNK matchId,M2C_UNK scmOut,M2C_UNK scnOut,M2C_UNK nameOut) {
+extern u8 gBuddyKeySCM[],gBuddyKeySCN[];
+s32 FetchMatchPlayerInfo(M2C_UNK,void *);
 s32 ExtractKeyValue(void *,void *,void *,s32);
 s32 func_0206abd8(void *,void *,s32);
 void StringCopy(void *,M2C_UNK);
-u32 buf[132];u32 temp;
-if(func_0203b63c(a,buf)){
-if(buf[1]==6){
-if(b){if(ExtractKeyValue(data_020fc8ac,&temp,buf+2,47)<=0)*(u8 *)b=0;else *(u8 *)b=func_0206abd8(&temp,0,10);}
-if(c){if(ExtractKeyValue(data_020fc8b0,&temp,buf+2,47)<=0)*(u8 *)c=0;else *(u8 *)c=func_0206abd8(&temp,0,10);}
-}else{if(b)*(u8 *)b=0;if(c)*(u8 *)c=0;}
-if(d)StringCopy((void *)d,(M2C_UNK)(buf+66));
-return (u8)buf[1];
+MatchPlayerInfo info;u32 keyValue;
+if(FetchMatchPlayerInfo(matchId,&info)){
+if(info.status==6){
+if(scmOut){if(ExtractKeyValue(gBuddyKeySCM,&keyValue,info.fields,47)<=0)*(u8 *)scmOut=0;else *(u8 *)scmOut=func_0206abd8(&keyValue,0,10);}
+if(scnOut){if(ExtractKeyValue(gBuddyKeySCN,&keyValue,info.fields,47)<=0)*(u8 *)scnOut=0;else *(u8 *)scnOut=func_0206abd8(&keyValue,0,10);}
+}else{if(scmOut)*(u8 *)scmOut=0;if(scnOut)*(u8 *)scnOut=0;}
+if(nameOut)StringCopy((void *)nameOut,(M2C_UNK)info.name);
+return (u8)info.status;
 }
-if(b)*(u8 *)b=0;if(c)*(u8 *)c=0;return 0;
+if(scmOut)*(u8 *)scmOut=0;if(scnOut)*(u8 *)scnOut=0;return 0;
 }
 
 s32 func_0203a7c0(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 *e) {
-s32 func_0203a6a4(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
+s32 GetMatchPlayerInfo(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 s32 StringLength(void *);
 s32 func_0203739c(void *,s32,s32,s32);
 u8 buf[256];s32 n,v;
-n=func_0203a6a4(a,b,c,(s32)buf);
+n=GetMatchPlayerInfo(a,b,c,(s32)buf);
 if(!n){*e=-1;return n;}
 *e=func_0203739c(buf,StringLength(buf),0,0);
 if(!d || (v=*e)==-1)return n;func_0203739c(buf,StringLength(buf),d,v);

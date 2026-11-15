@@ -24,7 +24,7 @@ return result;
 void func_ov007_0221c534(void) {
 M2C_UNK func_0207b754(u32,u32); M2C_UNK func_020cf498(s16,s16);
 M2C_UNK RefreshMapView(); M2C_UNK func_ov007_022121b0();
-M2C_UNK func_ov007_022121d4(M2C_UNK); M2C_UNK func_ov007_0221ab68();
+M2C_UNK MapEditor_SetMapModified(M2C_UNK); M2C_UNK func_ov007_0221ab68();
 extern void **gCurrentMap;
 M2C_UNK func_020c857c(M2C_UNK); M2C_UNK GetSlotForPlayerId(M2C_UNK);
 M2C_UNK RemapUnitGroups(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
@@ -40,7 +40,7 @@ ResetPlayerOrder(); RefreshMapView(); func_ov007_022121b0(); func_ov007_0221ab68
 state=*gCurrentMap;
 viewX=(u32)M2C_FIELD(state,u16 *,0x5144)>>1;
 viewY=(u32)M2C_FIELD(state,u16 *,0x5146)>>1;
-func_020cf498((s16)viewX,(s16)viewY);func_0207b754(viewX,viewY);func_ov007_022121d4(0);
+func_020cf498((s16)viewX,(s16)viewY);func_0207b754(viewX,viewY);MapEditor_SetMapModified(0);
 }
 
 void func_ov007_0221c630(void) {

@@ -313,45 +313,51 @@ void func_ov000_0219de40(void) {
  *gAiCommandState = 2;
 }
 
-void func_ov000_0219de98(void) {
-extern void **gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-extern s8 *gAiCommandState;
-extern M2C_UNK *gAiUnitAction;
-extern s8 *gAiUnitListCursor;
-extern s8 gAiUnitList;
-extern M2C_UNK func_ov000_021816ac;
-s32 index,stride;
-s8 *out;
-u16 baseIndex;
-u32 type;
-void *table,*obj,*unit;
-gAiUnitListCursor=&gAiUnitList;
-obj=*gCurrentMap;
-baseIndex=gPlayerUnitIdBase[M2C_FIELD(obj,u16 *,0x52a4)];
-index=baseIndex+1;
-if(index<baseIndex+0x33) {
-stride=index*14;
-do {
-table=(u8 *)obj+0x59a4;
-unit=(u8 *)table+stride;
-type=(u32)(M2C_FIELD(table,u8 *,stride)<<26)>>26;
-if(type!=0) {
-if(!(M2C_FIELD(unit,u16 *,4)&1)&&type==13) {
-if(((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27)!=0) {
-out=gAiUnitListCursor;
-gAiUnitListCursor=out+1;
-*out=index;
-}
-}
-}
-index++;obj=*gCurrentMap;stride+=14;
-}while(index<gPlayerUnitIdBase[M2C_FIELD(obj,u16 *,0x52a4)]+0x33);
-}
-*gAiUnitListCursor=0;
-gAiUnitListCursor=&gAiUnitList;
-gAiUnitAction=&func_ov000_021816ac;
-*gAiCommandState=2;
+/* AI turn phase starter for kind-13 units: collect the current player's ready
+ * kind-13 units (not yet acted, with a facing set) into gAiUnitList, then install
+ * the kind-13 action callback. */
+void SelectAiKind13Unit(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK RunAiKind13Action;
+    s32 unitId, offset;
+    s8 *cursor;
+    u16 firstUnitId;
+    u32 kind;
+    void *units, *map, *unit;
+
+    gAiUnitListCursor = &gAiUnitList;
+    map = *gCurrentMap;
+    firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+    unitId = firstUnitId + 1;
+    if (unitId < firstUnitId + MAP_UNIT_GROUP_SCAN) {
+        offset = unitId * MAP_UNIT_STRIDE;
+        do {
+            units = (u8 *)map + MAP_UNIT_RECORDS;
+            unit = (u8 *)units + offset;
+            kind = (u32)(M2C_FIELD(units, u8 *, offset) << 26) >> 26;
+            if (kind != 0) {
+                if (!(M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & 1) && kind == 13) {
+                    if (((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_FACING) << 16) >> 27) != 0) {
+                        cursor = gAiUnitListCursor;
+                        gAiUnitListCursor = cursor + 1;
+                        *cursor = unitId;
+                    }
+                }
+            }
+            unitId++;
+            map = *gCurrentMap;
+            offset += MAP_UNIT_STRIDE;
+        } while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
+    }
+    *gAiUnitListCursor = 0;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &RunAiKind13Action;
+    *gAiCommandState = 2;
 }
 
 /* AI turn phase starter for role-2 units with an empty cargo slot: collect the
@@ -559,7 +565,10 @@ void func_ov000_0219e358(void) {
     *gAiCommandState = 2;
 }
 
-void func_ov000_0219e49c(void) {
+/* AI turn phase starter for units whose kind has AI role 5: collect the current
+ * player's ready role-5 units into gAiUnitList, score them by the property
+ * terrain they stand on, and install the role-5 action callback. */
+void SelectAiRole5Unit(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
@@ -567,37 +576,40 @@ extern s8 *gAiCommandState;
 extern M2C_UNK *gAiUnitAction;
 extern s8 *gAiUnitListCursor;
 extern s8 gAiUnitList;
-extern M2C_UNK func_ov000_02181a14;
-void func_ov000_0219cd0c(void);
-s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
+extern M2C_UNK RunAiRole5Action;
+void ScoreAiUnitsByProperty(void);
+s32 unitId; s32 offset; s8 *cursor; u16 firstUnitId; u32 kind; void *units; void *map;
 gAiUnitListCursor = &gAiUnitList;
-obj = *gCurrentMap;
-baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-index = baseIndex + 1;
-if (index < baseIndex + 0x33) {
-stride = index * 14;
+map = *gCurrentMap;
+firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+unitId = firstUnitId + 1;
+if (unitId < firstUnitId + MAP_UNIT_GROUP_SCAN) {
+offset = unitId * MAP_UNIT_STRIDE;
 do {
-table = (u8 *)obj + 0x59A4;
-type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 5) {
-out = gAiUnitListCursor;
-gAiUnitListCursor = out + 1;
-*out = index;
+units = (u8 *)map + MAP_UNIT_RECORDS;
+kind = (u32)(M2C_FIELD(units, u8 *, offset) << 26) >> 26;
+if (kind != 0) {
+if (!(M2C_FIELD((u8 *)units + offset, u16 *, MAP_UNIT_FLAGS) & 1) && gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 5) {
+cursor = gAiUnitListCursor;
+gAiUnitListCursor = cursor + 1;
+*cursor = unitId;
 }}
-index++;
-obj = *gCurrentMap;
-stride += 14;
-} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+unitId++;
+map = *gCurrentMap;
+offset += MAP_UNIT_STRIDE;
+} while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
 }
 *gAiUnitListCursor = 0;
 gAiUnitListCursor = &gAiUnitList;
-func_ov000_0219cd0c();
-gAiUnitAction = &func_ov000_02181a14;
+ScoreAiUnitsByProperty();
+gAiUnitAction = &RunAiRole5Action;
 *gAiCommandState = 2;
 }
 
-void func_ov000_0219e5b8(void) {
+/* AI turn phase starter for units whose kind can resupply others: collect the current
+ * player's ready supply units into gAiUnitList, order them by the property terrain they
+ * stand on, and install the supply action callback. */
+void SelectAiSupplyUnit(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
@@ -605,33 +617,33 @@ extern s8 *gAiCommandState;
 extern M2C_UNK *gAiUnitAction;
 extern s8 *gAiUnitListCursor;
 extern s8 gAiUnitList;
-extern M2C_UNK func_ov000_02181b34;
-void func_ov000_0219cd0c(void);
-s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
+extern M2C_UNK RunAiSupplyAction;
+void ScoreAiUnitsByProperty(void);
+s32 unitId; s32 offset; s8 *cursor; u16 firstUnitId; u32 kind; void *units; void *map;
 gAiUnitListCursor = &gAiUnitList;
-obj = *gCurrentMap;
-baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-index = baseIndex + 1;
-if (index < baseIndex + 0x33) {
-stride = index * 14;
+map = *gCurrentMap;
+firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+unitId = firstUnitId + 1;
+if (unitId < firstUnitId + MAP_UNIT_GROUP_SCAN) {
+offset = unitId * MAP_UNIT_STRIDE;
 do {
-table = (u8 *)obj + 0x59A4;
-type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x69] != 0) {
-out = gAiUnitListCursor;
-gAiUnitListCursor = out + 1;
-*out = index;
+units = (u8 *)map + MAP_UNIT_RECORDS;
+kind = (u32)(M2C_FIELD(units, u8 *, offset) << 26) >> 26;
+if (kind != 0) {
+if (!(M2C_FIELD((u8 *)units + offset, u16 *, MAP_UNIT_FLAGS) & 1) && gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_CAN_SUPPLY] != 0) {
+cursor = gAiUnitListCursor;
+gAiUnitListCursor = cursor + 1;
+*cursor = unitId;
 }}
-index++;
-obj = *gCurrentMap;
-stride += 14;
-} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+unitId++;
+map = *gCurrentMap;
+offset += MAP_UNIT_STRIDE;
+} while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
 }
 *gAiUnitListCursor = 0;
 gAiUnitListCursor = &gAiUnitList;
 
-gAiUnitAction = &func_ov000_02181b34;
+gAiUnitAction = &RunAiSupplyAction;
 *gAiCommandState = 2;
 }
 

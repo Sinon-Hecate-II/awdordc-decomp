@@ -109,23 +109,23 @@ void func_020bf85c(void) {
     }
 }
 
-u32 func_020bf894(s32 a) {
-extern M2C_UNK data_0215da1c;
-return (u32)(M2C_FIELD(&data_0215da1c,u8 *,a)<<31)>>31;
+u32 IsCoUnlocked(s32 a) {
+extern M2C_UNK gCoUnlocked;
+return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<31)>>31;
 }
 
-void func_020bf8ac(s32 a,s32 b){extern M2C_UNK data_0215da1c;u32 old=M2C_FIELD(&data_0215da1c,u8*,a); b&=1;M2C_FIELD(&data_0215da1c,u8*,a)=(old&~1)|b;}
+void func_020bf8ac(s32 a,s32 b){extern M2C_UNK gCoUnlocked;u32 old=M2C_FIELD(&gCoUnlocked,u8*,a); b&=1;M2C_FIELD(&gCoUnlocked,u8*,a)=(old&~1)|b;}
 
 u32 func_020bf8cc(s32 a) {
-extern M2C_UNK data_0215da1c;
+extern M2C_UNK gCoUnlocked;
 if(a==0||a>=15)return 0;
-return (u32)(M2C_FIELD(&data_0215da1c,u8 *,a)<<28)>>29;
+return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<28)>>29;
 }
 
 void func_020bf8fc(s32 a,s32 b) {
-extern M2C_UNK data_0215da1c;
+extern M2C_UNK gCoUnlocked;
 if(a==0)return;if(a>=15)return;
-((SaveFlags *)&data_0215da1c)[a].mode=(u8)b;
+((SaveFlags *)&gCoUnlocked)[a].mode=(u8)b;
 }
 
 void func_020bf930(M2C_UNK arg0) {

@@ -26,13 +26,13 @@ void func_020d0bf8(M2C_UNK);
 void func_020d0bac(void *,s32);
 
 void InitBattleUnit(void *p,s16 index) {
-s32 func_020d05f4(); s32 func_020a3518();
+s32 GetTerrainDefenseScore(); s32 func_020a3518();
 void *q,*m; register s32 stride=14;
 q=(void *)*gCurrentMap+0x59a4+index*stride;
 M2C_FIELD(p,void **,0)=q;
 m=(void *)*gCurrentMap;
 M2C_FIELD(p,s16 *,4)=M2C_FIELD(m+(M2C_FIELD(q,u8 *,1)+M2C_FIELD(m+M2C_FIELD(q,u8 *,2)*2,u16 *,0x3758)),u8 *,0x1420)&31;
-M2C_FIELD(p,s16 *,6)=func_020d05f4(D068COwner(M2C_FIELD(p,void **,0)),D068CLow(M2C_FIELD(p,void **,0)),M2C_FIELD(p,s16 *,4));
+M2C_FIELD(p,s16 *,6)=GetTerrainDefenseScore(D068COwner(M2C_FIELD(p,void **,0)),D068CLow(M2C_FIELD(p,void **,0)),M2C_FIELD(p,s16 *,4));
 M2C_FIELD(p,s16 *,8)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<25)>>25;
 M2C_FIELD(p,s16 *,10)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<21)>>28;
 M2C_FIELD(p,s16 *,12)=func_020a3518(D068COwner(M2C_FIELD(p,void **,0)));

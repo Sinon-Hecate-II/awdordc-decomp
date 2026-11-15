@@ -61,23 +61,28 @@ void func_ov001_0216a030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     M2C_FIELD(arg0, s32 *, 0x10) = arg6;
 }
 
-s32 DrawTextGlyph(s32 a,void *b,s32 x,s32 y,s32 c,s32 ch){
-s32 func_ov001_02169154(void*,u16);void *func_ov001_0216919c(void*,s32);
-s32 n;void *pair[2];u8 *r;
-n=func_ov001_02169154(b,*(u16 *)&ch);
-if(n==65535)n=M2C_FIELD(M2C_FIELD(b,void**,0),u16*,2);
-pair[0]=func_ov001_0216919c(b,n);
-r=M2C_FIELD(M2C_FIELD(b,void**,0),u8**,8);
-pair[1]=r+8+n*M2C_FIELD(r,u16*,2);
-r=M2C_FIELD(M2C_FIELD(b,void**,0),u8**,8);
-switch(r[7]){
-case 0:case 7:x+=M2C_FIELD(pair[0],s8*,0);break;
-case 1:case 2:x-=r[0];y+=M2C_FIELD(pair[0],s8*,0);break;
-case 3:case 4:x-=M2C_FIELD(pair[0],s8*,0)+M2C_FIELD(pair[0],u8*,1);y-=r[1];break;
-case 5:case 6:y-=M2C_FIELD(pair[0],s8*,0)+r[1];break;
+/* Draw one glyph of `font` at (x, y) in `color` on the panel and return the
+ * pixels the pen advances. Looks the character's glyph index up in the font's
+ * character map (falling back to the font's default glyph), takes its width
+ * record and its bitmap, shifts the origin for the glyph's rotation mode and
+ * hands the pair to the panel's glyph operation. */
+s32 DrawTextGlyph(Ov001TextPanel *panel,Ov001Font *font,s32 x,s32 y,s32 color,s32 ch){
+s32 GetFontGlyphIndex(void*,u16);Ov001GlyphMetric *GetFontGlyphMetric(void*,s32);
+s32 n;Ov001Glyph glyph;u8 *run;
+n=GetFontGlyphIndex(font,*(u16 *)&ch);
+if(n==65535)n=font->resource->defaultChar;
+glyph.metric=GetFontGlyphMetric(font,n);
+run=font->resource->glyphRunTable;
+glyph.bitmap=run+8+n*M2C_FIELD(run,u16*,2);
+run=font->resource->glyphRunTable;
+switch(run[7]){
+case 0:case 7:x+=glyph.metric->left;break;
+case 1:case 2:x-=run[0];y+=glyph.metric->left;break;
+case 3:case 4:x-=glyph.metric->left+glyph.metric->width;y-=run[1];break;
+case 5:case 6:y-=glyph.metric->left+run[1];break;
 }
-M2C_FIELD(M2C_FIELD(a,void**,20),void (**)(s32,void*,s32,s32,s32,void*),0)(a,b,x,y,c,pair);
-return M2C_FIELD(pair[0],s8*,2);
+panel->ops->drawGlyph(panel,font,x,y,color,&glyph);
+return glyph.metric->advance;
 }
 
 void func_ov001_0216a17c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -199,17 +204,22 @@ offsetX+=stepX;offsetY+=stepY;
 }
 
 #pragma opt_propagation off
-void func_ov001_0216a8ac(void *a,s32 x,s32 y,s32 b,s32 flags,s32 text,TextDirection dir){
-TextSize func_ov001_02169308(s32,s32,s32,s32);
+/* Draw a text block whose anchor is (x, y): measure the block, shift the anchor
+ * along the text direction for the horizontal anchor flags and across it for the
+ * vertical ones, then draw the lines with DrawTextMultiline. */
+void DrawAnchoredText(Ov001TextState *state, s32 x, s32 y, s32 color, s32 flags, s32 text, TextDirection dir) {
+    TextSize GetTextBlockSize(s32, s32, s32, s32);
+    TextSize result, tmp, size;
+    s32 d;
 
-TextSize result,tmp,size;s32 d;
-tmp=func_ov001_02169308(M2C_FIELD(a,s32*,4),M2C_FIELD(a,s32*,8),M2C_FIELD(a,s32*,12),text);
-size=tmp;result=size;
-if(flags&16){d=-(result.x+1)/2;x+=d*dir.x;y+=d*dir.y;}
-else if(flags&32){d=-result.x;x+=d*dir.x;y+=d*dir.y;}
-if(flags&2){d=-(result.y+1)/2;x+=d*-dir.y;y+=d*dir.x;}
-else if(flags&4){d=-result.y;x+=d*-dir.y;y+=d*dir.x;}
-DrawTextMultiline(a,x,y,result.x,b,flags,text,dir);
+    tmp = GetTextBlockSize(M2C_FIELD(state, s32 *, 4), M2C_FIELD(state, s32 *, 8), M2C_FIELD(state, s32 *, 12), text);
+    size = tmp;
+    result = size;
+    if (flags & OV001_TEXT_ANCHOR_HCENTER) { d = -(result.x + 1) / 2; x += d * dir.x; y += d * dir.y; }
+    else if (flags & OV001_TEXT_ANCHOR_HRIGHT) { d = -result.x; x += d * dir.x; y += d * dir.y; }
+    if (flags & OV001_TEXT_ANCHOR_VCENTER) { d = -(result.y + 1) / 2; x += d * -dir.y; y += d * dir.x; }
+    else if (flags & OV001_TEXT_ANCHOR_VBOTTOM) { d = -result.y; x += d * -dir.y; y += d * dir.x; }
+    DrawTextMultiline(state, x, y, result.x, color, flags, text, dir);
 }
 #pragma opt_propagation reset
 void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, TextDirection dir) {

@@ -111,7 +111,7 @@ void func_020619c0(void *arg0, s32 arg1, s32 arg2, u32 arg3) {
     func_020489c4(M2C_FIELD(arg0, s32 *, 4), var_r3);
 }
 
-void func_02061a38(void *arg0, s32 arg1) {
+void SBServerListAddServer(void *arg0, s32 arg1) {
     M2C_UNK Vector_AddItem(s32, s32 *);
 
     Vector_AddItem(M2C_FIELD(arg0, s32 *, 4), &arg1);

@@ -152,7 +152,7 @@ loop:
 /* Chooses the next result code based on the current mode of the shared state. */
 u8 func_0203095c(void) {
     M2C_UNK func_020276b0();
-    M2C_UNK func_02027958();
+    M2C_UNK WFC_ProcessLinkStep();
     M2C_UNK WFC_ProcessLinkState();
     u32 Wfc_GetLinkState();
     void *func_0202f48c(M2C_UNK);
@@ -181,7 +181,7 @@ u8 func_0203095c(void) {
         func_020276b0();
         break;
     case 9:
-        func_02027958();
+        WFC_ProcessLinkStep();
         break;
     case 12:
         WFC_ProcessLinkState();
@@ -203,7 +203,7 @@ s32 func_02030a38(void) {
     s32 func_02030c78(void *);
     s32 func_02030cc8(void *);
     s32 Wfc_SendFriendRecords(void *);
-    s32 func_02030edc(void *);
+    s32 Wfc_SendFriendEntries(void *);
     s32 func_020310c0(void *, s32);
     void *ctx;
     s32 state;
@@ -224,7 +224,7 @@ s32 func_02030a38(void) {
             } else if (state == 4) {
                 state = Wfc_SendFriendRecords(ctx);
             } else if (state == 5) {
-                state = func_02030edc(ctx);
+                state = Wfc_SendFriendEntries(ctx);
             }
         }
     }
@@ -310,18 +310,22 @@ offset=(s16)M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*(s16)WFC_RECORD_STRIDE;
 func_020311e4((s32)(state+0x474+offset),(s32)(state+0x47c+offset),M2C_FIELD(state+offset,u16 *,0x4a6)-1,0x300000);
 }return 4;}
 
-s32 func_02030edc(void *a){
+/* WFC friend-connection state 5: sends the friend-list entries one at a time,
+   clearing each entry's mark as it goes and advancing WFC_STATE_WORK_INDEX; at the
+   end of the list it picks the next friend with func_02030b30.  When no friend is
+   left it asks func_02030ffc for the next state.  Returns the state to use. */
+s32 Wfc_SendFriendEntries(void *state){
 void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 func_02072088(u64,u64);extern u8 data_020ea758[];
-if(func_02072088((GetSystemTick()-M2C_FIELD(a,u64 *,0xcb0))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(a+M2C_FIELD(a,u8 *,0xd0f)*36,u8 *,0x300)<<28)>>28 ==1){
-M2C_FIELD(a+0x300,u8 *,(s16)M2C_FIELD(a,u8 *,0xd0f)*(s16)36)&=~15;
-M2C_FIELD(a,u8 *,0xd0f)++;
-if(M2C_FIELD(a,u8 *,0xd10)<=M2C_FIELD(a,u8 *,0xd0f)){
-M2C_FIELD(a,u8 *,0xd15)++;M2C_FIELD(a,u8 *,0xd0f)=0;
-M2C_FIELD(a,s8 *,0xd11)=func_02030b30(M2C_FIELD(a,u8 *,0xd15));
+if(func_02072088((GetSystemTick()-M2C_FIELD(state,u64 *,WFC_STATE_TIMER))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE,u8 *,WFC_STATE_ENTRIES+WFC_ENTRY_FLAGS)<<28)>>28 ==1){
+M2C_FIELD(state+WFC_STATE_ENTRIES,u8 *,(s16)M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*(s16)WFC_ENTRY_STRIDE)&=~15;
+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)++;
+if(M2C_FIELD(state,u8 *,WFC_STATE_ENTRY_COUNT)<=M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)){
+M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY)++;M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)=0;
+M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID)=func_02030b30(M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY));
 }
-if(M2C_FIELD(a,s8 *,0xd11)<0){M2C_FIELD(a,u8 *,0xd15)=0;return func_02030ffc(a,5);}
-M2C_FIELD(a,u64 *,0xcb0)=GetSystemTick();
-func_020311e4((s32)data_020ea758,(s32)(a+0x304+M2C_FIELD(a,u8 *,0xd0f)*36),M2C_FIELD(a,s8 *,0xd11),0x300000);
+if(M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID)<0){M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY)=0;return func_02030ffc(state,5);}
+M2C_FIELD(state,u64 *,WFC_STATE_TIMER)=GetSystemTick();
+func_020311e4((s32)data_020ea758,(s32)(state+WFC_STATE_ENTRIES+WFC_ENTRY_CODE+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE),M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID),0x300000);
 }return 5;}
 
 s32 func_02030ffc(void *arg0, s32 arg1) {

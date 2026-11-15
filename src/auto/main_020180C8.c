@@ -364,31 +364,31 @@ void func_020188c8(M2C_UNK arg0) {
 }
 
 void func_02018910(s32 arg0) {
-    extern M2C_UNK data_02136c84;
+    extern M2C_UNK gMbRecordRx;
     s32 func_020720f0(s32, s32);
-    M2C_FIELD(&data_02136c84, s32 *, 8) = arg0 - 2;
-    M2C_FIELD(&data_02136c84, s32 *, 12) = func_020720f0(0x1E, arg0 - 2);
-    M2C_FIELD(&data_02136c84, s32 *, 16) = 0x1E;
+    M2C_FIELD(&gMbRecordRx, s32 *, 8) = arg0 - 2;
+    M2C_FIELD(&gMbRecordRx, s32 *, 12) = func_020720f0(0x1E, arg0 - 2);
+    M2C_FIELD(&gMbRecordRx, s32 *, 16) = 0x1E;
 }
 
 void func_02018940(s32 arg0) {
-    extern M2C_UNK data_02136c84;
-    M2C_FIELD(&data_02136c84, s32 *, 4) = arg0;
+    extern M2C_UNK gMbRecordRx;
+    M2C_FIELD(&gMbRecordRx, s32 *, 4) = arg0;
     MI_CpuFill8(arg0, 0, 0x21C);
 }
 
 void func_02018960(s32 arg0) {
-    extern M2C_UNK data_02136c84;
+    extern M2C_UNK gMbRecordRx;
     void *base;
     s32 idx;
     
-    base = M2C_FIELD(&data_02136c84, void **, 4);
+    base = M2C_FIELD(&gMbRecordRx, void **, 4);
     if (base == NULL) {
         return;
     }
     idx = arg0 - 1;
     MI_CpuFill8((void *)((u8 *)base + idx * 32), 0, 0x1E);
-    base = M2C_FIELD(&data_02136c84, void **, 4);
+    base = M2C_FIELD(&gMbRecordRx, void **, 4);
     M2C_FIELD((u8 *)base + idx * 4, u32 *, 0x1E0) = 0;
 }
 
@@ -408,78 +408,83 @@ case 1: case 2: case 3: case 5: case 6: break;
 return p;
 }
 
-void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
-    extern M2C_UNK data_02136c84;
-    s32 func_02018bd0(s32);
-    s32 func_02018b44(u8 *, s32);
+/* Decode one received multiboot command packet into `header`. A type-7 packet
+ * carries a numbered fragment of `player`'s MB_RECORD_SIZE-byte info record:
+ * accumulate it and return the finished record (0 while fragments are still
+ * missing). Types 8/9 copy the packet's embedded 16-bit value into the header
+ * and return a pointer to the packet payload. */
+void *MultiBoot_DecodePacket(u8 *packet, u8 *header, s32 player) {
+    extern M2C_UNK gMbRecordRx;
+    s32 MultiBoot_RecordComplete(s32);
+    s32 MultiBoot_StoreRecordFragment(u8 *, s32);
     void MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
 
-    s32 r4 = arg2;
-    u8 type = arg0[0];
+    s32 p = player;
+    u8 type = packet[0];
 
-    arg1[0] = type;
+    header[0] = type;
     switch (type) {
     case 7:
-        if (func_02018bd0(r4) != 0) {
-            return (void *)(M2C_FIELD(&data_02136c84, M2C_UNK *, 4) + (r4 - 1) * 32);
+        if (MultiBoot_RecordComplete(p) != 0) {
+            return (void *)(MB_RECORD_RX->buffer + (p - 1) * MB_RECORD_SLOT);
         }
         {
-            u8 v = arg0[1];
-            arg1[2] = v;
-            if (v > M2C_FIELD(&data_02136c84, s32 *, 0xC)) {
+            u8 fragment = packet[1];
+            header[2] = fragment;
+            if (fragment > MB_RECORD_RX->fragmentCount) {
                 return (void *)0;
             }
-            MI_CpuCopy8((M2C_UNK)(arg0 + 2), (M2C_UNK)(arg1 + 3), M2C_FIELD(&data_02136c84, s32 *, 8));
-            r4 = func_02018b44(arg1, r4);
+            MI_CpuCopy8((M2C_UNK)(packet + 2), (M2C_UNK)(header + 3), MB_RECORD_RX->fragmentSize);
+            p = MultiBoot_StoreRecordFragment(header, p);
         }
         break;
     case 8:
-        r4 = (s32)(arg0 + 3);
-        *(u16 *)(arg1 + 2) = arg0[1];
-        *(u16 *)(arg1 + 2) = (u16)(*(u16 *)(arg1 + 2) | ((arg0[2] << 8) & 0xFF00));
+        p = (s32)(packet + 3);
+        *(u16 *)(header + 2) = packet[1];
+        *(u16 *)(header + 2) = (u16)(*(u16 *)(header + 2) | ((packet[2] << 8) & 0xFF00));
         break;
     case 9:
-        r4 = (s32)(arg0 + 3);
-        *(u16 *)(arg1 + 2) = arg0[1];
-        *(u16 *)(arg1 + 2) = (u16)(*(u16 *)(arg1 + 2) | ((arg0[2] << 8) & 0xFF00));
-        MI_CpuCopy8((M2C_UNK)r4, (M2C_UNK)(arg1 + 4), M2C_FIELD(&data_02136c84, s32 *, 8));
-        r4 = r4 + M2C_FIELD(&data_02136c84, s32 *, 8);
+        p = (s32)(packet + 3);
+        *(u16 *)(header + 2) = packet[1];
+        *(u16 *)(header + 2) = (u16)(*(u16 *)(header + 2) | ((packet[2] << 8) & 0xFF00));
+        MI_CpuCopy8((M2C_UNK)p, (M2C_UNK)(header + 4), MB_RECORD_RX->fragmentSize);
+        p = p + MB_RECORD_RX->fragmentSize;
         break;
     default:
         return (void *)0;
     }
-    return (void *)r4;
+    return (void *)p;
 }
 
-s32 func_02018b44(u8 *arg0, s32 arg1) {
-    extern M2C_UNK data_02136c84;
+s32 MultiBoot_StoreRecordFragment(u8 *arg0, s32 arg1) {
+    extern M2C_UNK gMbRecordRx;
     void MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
-    s32 func_02018bd0(s32);
+    s32 MultiBoot_RecordComplete(s32);
 
     s32 r6 = arg1;
 
-    if (M2C_FIELD(&data_02136c84, u32 *, 0x4) == 0) return 0;
+    if (M2C_FIELD(&gMbRecordRx, u32 *, 0x4) == 0) return 0;
     {
         u8 type = arg0[2];
         s32 r4;
-        if (type > M2C_FIELD(&data_02136c84, s32 *, 0xC)) return 0;
+        if (type > M2C_FIELD(&gMbRecordRx, s32 *, 0xC)) return 0;
         r4 = arg1 - 1;
-        MI_CpuCopy8((M2C_UNK)(arg0 + 3), (M2C_UNK)(M2C_FIELD(&data_02136c84, u32 *, 0x4) + r4 * 32 + type * M2C_FIELD(&data_02136c84, s32 *, 0x8)), M2C_FIELD(&data_02136c84, s32 *, 0x8));
-        *((u32 *)((u8 *)M2C_FIELD(&data_02136c84, u32 *, 0x4) + 0x1E0 + r4 * 4)) |= (1U << type);
-        if (!func_02018bd0(r6)) return 0;
-        return (s32)(M2C_FIELD(&data_02136c84, M2C_UNK *, 0x4) + r4 * 32);
+        MI_CpuCopy8((M2C_UNK)(arg0 + 3), (M2C_UNK)(M2C_FIELD(&gMbRecordRx, u32 *, 0x4) + r4 * 32 + type * M2C_FIELD(&gMbRecordRx, s32 *, 0x8)), M2C_FIELD(&gMbRecordRx, s32 *, 0x8));
+        *((u32 *)((u8 *)M2C_FIELD(&gMbRecordRx, u32 *, 0x4) + 0x1E0 + r4 * 4)) |= (1U << type);
+        if (!MultiBoot_RecordComplete(r6)) return 0;
+        return (s32)(M2C_FIELD(&gMbRecordRx, M2C_UNK *, 0x4) + r4 * 32);
     }
 }
 
-s32 func_02018bd0(s32 arg0) {
-extern M2C_UNK data_02136c84;
+s32 MultiBoot_RecordComplete(s32 arg0) {
+extern M2C_UNK gMbRecordRx;
 u16 i;
 u32 word;
 s32 count;
 i=0;
-count=M2C_FIELD(&data_02136c84,s32 *,12);
+count=M2C_FIELD(&gMbRecordRx,s32 *,12);
 if(count>0) {
-word=M2C_FIELD(M2C_FIELD(&data_02136c84,s32 *,4)+(arg0-1)*4,u32 *,0x1e0);
+word=M2C_FIELD(M2C_FIELD(&gMbRecordRx,s32 *,4)+(arg0-1)*4,u32 *,0x1e0);
 do {
 if(!(word&(1u<<i)))return 0;
 i++;
@@ -607,13 +612,13 @@ void func_02018e80(M2C_UNK arg0, void *arg1) {
 
 void func_02018ea4(M2C_UNK arg0) {
     M2C_UNK WaitByLoop(M2C_UNK);
-    s32 func_02009eb0(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_02009eb0(0xD, arg0, 0) == 0) {
+    s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
+    if (SendFifoMessage(0xD, arg0, 0) == 0) {
         return;
     }
     do {
         WaitByLoop(1);
-    } while (func_02009eb0(0xD, arg0, 0) != 0);
+    } while (SendFifoMessage(0xD, arg0, 0) != 0);
 }
 
 void func_02018ef4(s32 arg0) {

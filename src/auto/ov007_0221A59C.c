@@ -126,9 +126,9 @@ func_ov007_0221bcc0(a,b);
 s32 Map_CanPlaceTile(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
     s32 func_ov007_0221ad24(M2C_UNK, M2C_UNK, s32);
     s32 func_ov007_0221b030(M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_ov007_0221b6c8();
-    s32 func_ov007_0221b704(M2C_UNK, M2C_UNK);
-    if ((arg2 == func_ov007_0221b6c8()) && (arg3 == func_ov007_0221b704(arg0, arg1))) {
+    s32 Map_GetCellTerrainKind();
+    s32 Map_GetCellTerrainOwner(M2C_UNK, M2C_UNK);
+    if ((arg2 == Map_GetCellTerrainKind()) && (arg3 == Map_GetCellTerrainOwner(arg0, arg1))) {
         return 2;
     }
     if (func_ov007_0221ad24(arg0, arg1, arg2) == 0) {
@@ -146,7 +146,7 @@ s32 func_ov007_0221ad24(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 
 s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_020c1a80(s32);
-    s32 func_ov007_0221b6c8(s32, s32);
+    s32 Map_GetCellTerrainKind(s32, s32);
     s32 func_ov007_0221202c(s32, s32);
     s32 func_ov007_0221204c(void);
     if (func_020c1a80(arg2) == 0) {
@@ -160,7 +160,7 @@ s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (func_ov007_0221204c() < 0x63) {
         goto ret1;
     }
-    if (func_020c1a80(func_ov007_0221b6c8(arg0, arg1)) == 0) {
+    if (func_020c1a80(Map_GetCellTerrainKind(arg0, arg1)) == 0) {
         return 0;
     }
 ret1:
@@ -176,7 +176,7 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     void func_0207843c(s32, s32, s32, s32);
     s32 Map_CanPlaceTile(s32, s32, s32, s32);
     void Map_SetTileAndRefresh(s32, s32, u16, u16);
-    void func_ov007_0221b688(s32, s32);
+    void Map_RefreshCellTile(s32, s32);
     s32 func_ov007_0221b754(s32, s32);
     s32 func_ov007_0221bad0(s32, s32);
     extern void **gCurrentMap;
@@ -230,7 +230,7 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
         if (nx >= 0 && ny >= 0) {
             void *map = *gCurrentMap;
             if (nx < (s32) M2C_FIELD(map, u16 *, 0x5144) && ny < (s32) M2C_FIELD(map, u16 *, 0x5146)) {
-                func_ov007_0221b688(nx, ny);
+                Map_RefreshCellTile(nx, ny);
             }
         }
         i++;
@@ -246,8 +246,8 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
 
 s32 func_ov007_0221b24c(s32 a,s32 b,s32 c,s32 d) {
 extern void **gCurrentMap;
-s32 func_ov007_0221b6c8();
-s32 func_ov007_0221b704(s32,s32);
+s32 Map_GetCellTerrainKind();
+s32 Map_GetCellTerrainOwner(s32,s32);
 void *p;
 if(a>=0 && b>=0) {
 p=*gCurrentMap;
@@ -255,8 +255,8 @@ if(a<M2C_FIELD(p,u16 *,0x5144)&&b<M2C_FIELD(p,u16 *,0x5146)) goto valid;
 }
 return 0;
 valid:
-if(c!=func_ov007_0221b6c8(a,b))return 0;
-return (u8)(d==func_ov007_0221b704(a,b));
+if(c!=Map_GetCellTerrainKind(a,b))return 0;
+return (u8)(d==Map_GetCellTerrainOwner(a,b));
 }
 
 /* Flood-fills a connected 30x30 region of tiles currently matching oldTile/oldDir,

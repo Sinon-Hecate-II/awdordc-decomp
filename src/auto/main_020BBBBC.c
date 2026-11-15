@@ -346,9 +346,9 @@ s32 func_020bc910(void) {
 
 s32 func_020bca68(void) {
  extern void *gKeyState;
- extern u8 data_02164d5d;
+ extern u8 gTouchConfirmFlag;
  u16 v=M2C_FIELD(gKeyState,u16 *,0);
- if(v&1){data_02164d5d=0;return 16;}
+ if(v&1){gTouchConfirmFlag=0;return 16;}
  if(v&2)return 32;
  if(v&256)return 256;
  if(v&1024)return 64;

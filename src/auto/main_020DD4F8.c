@@ -290,7 +290,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_02012084();
-    M2C_UNK func_02080944(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK AddTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
@@ -346,7 +346,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
         LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212d418), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     }
     CloseNarcArchive();
-    func_02080944(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x18, 5);
+    AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x18, 5);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     gCur3DSpriteEngine = savedEngine;
     menu->flags = (u16) (menu->flags | 0x20);

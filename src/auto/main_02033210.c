@@ -1,8 +1,13 @@
 /* 14 functions from 0x02033210 to 0x02034164 (main), found by ds-decomp. */
 #include "common.h"
-typedef struct InitConfig { s32 words[7]; } InitConfig;
-typedef struct InitState { u8 pad[0x1000]; u8 flag; u8 pad2[31]; s32 status; } InitState;
-extern u8 data_020fb558[], data_020fb570[];
+/* The 7-word options block HttpClientInit copies into the client: word 0 is the
+ * URL, word 3 the allocator (void *(*)(const char *name, u32 size)), word 4 the
+ * matching deallocator and word 6 a timeout in milliseconds. */
+typedef struct HttpClientOptions { s32 words[7]; } HttpClientOptions;
+/* Partial view of the HTTP client object: the state byte at +0x1000 (0xFF once
+ * the request has been queued) and the request status at +0x1020. */
+typedef struct HttpClientState { u8 pad[0x1000]; u8 flag; u8 pad2[31]; s32 status; } HttpClientState;
+extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 
 #pragma push
 #pragma opt_common_subs on
@@ -205,21 +210,25 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     return func_020345f4(arg0, data_020fb518, (u8 *)arg1 + 0x15) == 0;
 }
 
-s32 func_02033ccc(void *p, InitConfig *cfg) {
+/* Initialises the HTTP client object `client`: zeroes it, copies the options
+ * block, allocates the low-level receive/send buffers through the options'
+ * allocator, parses the request URL and starts the request state machine.
+ * Returns the request status (1 on an allocation or setup failure). */
+s32 HttpClientInit(void *client, HttpClientOptions *options) {
 s32 func_02034534(void *); s32 func_02034870(void *,void *,s32); s32 HttpParseUrl(void *,s32);
-s32 (*alloc)(void *,s32)=(s32 (*)(void *,s32))cfg->words[3];
-MI_CpuFill8(p,0,0x1c14);
-M2C_FIELD(p,s32 *,0x1a30)=-1;M2C_FIELD(p,s32 *,0x1a34)=-1;
-*(InitConfig *)(p+0x1004)=*cfg;
-M2C_FIELD(p,s32 *,0x19cc)=alloc(data_020fb558,0xb68);
-if(!M2C_FIELD(p,s32 *,0x19cc)){((InitState*)p)->status=1;return 1;}
-M2C_FIELD(p,s32 *,0x19d0)=alloc(data_020fb570,0x5ea);
-if(!M2C_FIELD(p,s32 *,0x19d0)){((InitState*)p)->status=1;return 1;}
-if(!func_02034870(p,p+0x1a08,M2C_FIELD(p,s32 *,0x100c))){((InitState*)p)->status=1;return 1;}
-if(!HttpParseUrl(p,cfg->words[0])){((InitState*)p)->status=1;return 1;}
-((InitState*)p)->status=func_02034534(p);
-if(!((InitState*)p)->status)((InitState*)p)->flag=255;
-return ((InitState*)p)->status;
+s32 (*alloc)(void *,s32)=(s32 (*)(void *,s32))options->words[3];
+MI_CpuFill8(client,0,0x1c14);
+M2C_FIELD(client,s32 *,0x1a30)=-1;M2C_FIELD(client,s32 *,0x1a34)=-1;
+*(HttpClientOptions *)(client+0x1004)=*options;
+M2C_FIELD(client,s32 *,0x19cc)=alloc(gHttpLowRecvBufName,0xb68);
+if(!M2C_FIELD(client,s32 *,0x19cc)){((HttpClientState*)client)->status=1;return 1;}
+M2C_FIELD(client,s32 *,0x19d0)=alloc(gHttpLowSendBufName,0x5ea);
+if(!M2C_FIELD(client,s32 *,0x19d0)){((HttpClientState*)client)->status=1;return 1;}
+if(!func_02034870(client,client+0x1a08,M2C_FIELD(client,s32 *,0x100c))){((HttpClientState*)client)->status=1;return 1;}
+if(!HttpParseUrl(client,options->words[0])){((HttpClientState*)client)->status=1;return 1;}
+((HttpClientState*)client)->status=func_02034534(client);
+if(!((HttpClientState*)client)->status)((HttpClientState*)client)->flag=255;
+return ((HttpClientState*)client)->status;
 }
 
 s32 func_02033de8(void *arg0) {

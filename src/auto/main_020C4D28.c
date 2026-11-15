@@ -63,7 +63,7 @@ void func_020c4de4(void *arg0) {
     s32 LoadSaveRecord(u16, void *);
     typedef struct { s32 v[4]; } SaveDate;
     typedef struct { s32 v[3]; } SaveTime;
-    extern const SaveDate data_020f4e48;
+    extern const SaveDate gDefaultProfileDate;
 #define SaveTime_Clear(p) do { M2C_FIELD((u32)(p), s32 *, 0) = 0; M2C_FIELD((u32)(p), s32 *, 4) = 0; M2C_FIELD((u32)(p), s32 *, 8) = 0; } while (0)
     u8 *p, *best;
     s32 n, i, id;
@@ -111,7 +111,7 @@ void func_020c4de4(void *arg0) {
     M2C_FIELD(base, s32 *, 0x4C) = 0;
     M2C_FIELD(base, s32 *, 0x50) = 0x5dc000;
     M2C_FIELD(base, s32 *, 0x54) = 0x5dc000;
-    initial = data_020f4e48;
+    initial = gDefaultProfileDate;
     a = initial;
     M2C_FIELD(base, s32 *, 0x58) = a.v[0];
     M2C_FIELD(base, s32 *, 0x5C) = a.v[1];

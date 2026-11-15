@@ -19,7 +19,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK sProductionMenuDir; extern M2C_UNK sProductionMenuNarcName;
  extern M2C_UNK sProductionMenuCgName; extern M2C_UNK sProductionMenuScName; extern M2C_UNK sProductionMenuClName;
- extern u8 data_0215d850[];
+ extern u8 gProductionMenuState[];
  void (*mapCallback)(void);
  func_020994e0(0);
  func_02091cd0();
@@ -42,7 +42,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_020b9bec(); func_020b9c40();
  PlaySoundEffect(0x10017);
- func_020b9558(data_0215d850[8]);
+ func_020b9558(gProductionMenuState[8]);
  func_020c0fac(screen);
 }
 
@@ -268,17 +268,20 @@ valid:
     return 1;
 }
 
+/* Check whether the unit carried in slot `slot` may be dropped at tile (x, y): the
+ * carried kind must have a legal direction there, and the tile must be allowed for a
+ * carrier of movement type 7 and enterable by the carried unit's own movement type. */
 s32 func_020ba654(s32 arg0,s32 x,s32 y,s32 slot){
 extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
 s32 GetUnitMoveDirections(s32,s32,s32);
-u8 *p=(u8 *)arg0,*base,*unit,*cargo=p+12;s32 kind,tile;s16 n;
-if(!GetUnitMoveDirections(x,y,cargo[slot]))return 0;
-base=*gCurrentMap;
-unit=base+0x59a4+(s16)cargo[slot]*(s16)14;
-if(gMovementTypeTable[((u32)(p[0]<<26)>>26)*112]==7){
-if(!data_ov000_021b54a0[M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31])return 0;
+u8 *carrier=(u8 *)arg0,*map,*cargoUnit,*cargoIds=carrier+12;s32 kind,tile;s16 n;
+if(!GetUnitMoveDirections(x,y,cargoIds[slot]))return 0;
+map=*gCurrentMap;
+cargoUnit=map+MAP_UNIT_RECORDS+(s16)cargoIds[slot]*(s16)MAP_UNIT_STRIDE;
+if(gMovementTypeTable[((u32)(carrier[0]<<26)>>26)*UNIT_KIND_STATS_SIZE]==7){
+if(!data_ov000_021b54a0[M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK])return 0;
 }
-if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(unit[0]<<26)>>26)*112]*32,s8 *,M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31)==-1)return 0;
+if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(cargoUnit[0]<<26)>>26)*UNIT_KIND_STATS_SIZE]*32,s8 *,M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)==-1)return 0;
 return 1;
 }
 

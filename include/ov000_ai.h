@@ -21,6 +21,7 @@
 /* Fields of the AI command state used while a unit's action is chosen. */
 #define AI_COMMAND_STATE_PHASE      0x00 /* u8 AI command phase (*gAiCommandState, dispatched by the AI state machine) */
 #define AI_COMMAND_STATE_STEP       0x01 /* u8 step within the current phase */
+#define AI_COMMAND_STATE_TIEBREAK   0x03 /* u8 random 0..99 chosen when an action starts, breaks score ties */
 #define AI_COMMAND_STATE_MOVE_RANGE 0x05 /* u8 movement range of the acting unit */
 #define AI_COMMAND_STATE_FLAGS      0x07 /* u8 AI action flags */
 #define AI_COMMAND_STATE_MODE       0x0A /* u16 bitfield word (3-bit fields at bits 3..5, 6..8, 9..11) */
@@ -44,6 +45,7 @@
 #define UNIT_KIND_STATS_FLAGS  0x13 /* u8 unit-kind capability flags (used by the AI targeting/movement checks) */
 #define UNIT_KIND_STATS_MOVETYPE 0x12 /* u8 movement type: first index of the terrain movement-cost row (gMovementTypeTable) */
 #define UNIT_KIND_STATS_AI_ROLE  0x14 /* u8 AI role category (1..6) the per-role turn phases select units by */
+#define UNIT_KIND_STATS_CAN_SUPPLY 0x69 /* u8 nonzero when the kind can resupply/repair adjacent units */
 #define UNIT_KIND_STATS_SUPPLY_FLAG 0x6A /* u8 nonzero when the kind can be resupplied */
 
 /* Unit kinds the AI code names directly. */
@@ -78,6 +80,8 @@
 
 /* The unit set's 12 header bytes are copied to gAiSettings+8 .. +19. */
 #define AI_SETTING_TRANSPORT_PERCENT   0x0B /* u8 wanted transports as a percentage of the infantry+mech count */
+#define AI_SETTING_UNIT13_PERCENT      0x0C /* u8 wanted kind-13 units as a percentage of the infantry+mech count */
+#define AI_SETTING_UNIT13_LAST_TURN    0x12 /* u8 last turn on which more kind-13 units are built */
 #define AI_SETTING_TRANSPORT_LAST_TURN 0x13 /* u8 last turn on which more transports are built */
 #define AI_SETTING_BUILD_FLAGS         0x11 /* u8 mask of the optional unit kinds the AI may build */
 #define AI_BUILD_FLAG_UNIT_25          0x01 /* the AI may build unit kind 25 */

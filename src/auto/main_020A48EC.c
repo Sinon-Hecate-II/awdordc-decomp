@@ -94,7 +94,7 @@ s32 GetOrderCenterOffsetY(void) {
 void SelectAreaOrderTargets(Unk020AEntry *order) {
 extern s32 *gCurrentMap;extern u8 gUnitKindStats[];
 void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb734(s32,s32,s32,s8);
-s32 IsSameTeam(s32,s32);s32 IsUnitVisibleAtCell(s32,s32,s32);s32 func_020a600c(s32);
+s32 IsSameTeam(s32,s32);s32 IsUnitVisibleAtCell(s32,s32,s32);s32 IsUnitInSight(s32);
 s32 centerX,centerY;
 u16 bestX,bestY;
 u8 *unit;
@@ -129,7 +129,7 @@ rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);
 unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);
 unit=(u8 *)(map+0x59a4+unitId*14);
 if(M2C_FIELD(unit,u16 *,4)&32)continue;
-if(!func_020a600c(unitId))continue;
+if(!IsUnitInSight(unitId))continue;
 score=M2C_FIELD(gUnitKindStats+((u32)(unit[0]<<26)>>26)*112,u16 *,4)*((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25);
 if(bestScore>score)continue;
 bestX=(u16)x;bestY=(u16)y;bestScore=score;

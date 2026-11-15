@@ -248,6 +248,16 @@ typedef struct MapTargetEntry {
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
 #define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
 #define UNIT_FLAG_REPAIR_TMP 0x8000 /* scratch bit marking a repair neighbour during the repair pass */
+#define UNIT_FLAG_LOADED     0x0008 /* unit is loaded in a transport (turn passes skip it) */
+#define UNIT_FLAG_TURN_MASK  0x0081 /* action bits cleared for every unit of the acting player at turn start */
+
+/* Per-unit fog-of-war bits in MAP_UNIT_FLAGS. At the start of a turn the two
+ * bits of UNIT_FLAG_FOG_MASK are cleared on every unit of a playing team and
+ * UNIT_FLAG_VISIBLE is set again on the fogged enemy units in sight of the
+ * viewing team (RefreshUnitVisibility). */
+#define UNIT_FLAG_FOG      0x0020 /* the unit stands in fog: the visibility pass rechecks it */
+#define UNIT_FLAG_VISIBLE  0x0040 /* the unit is in sight of the viewing team */
+#define UNIT_FLAG_FOG_MASK 0x00C0 /* the visibility bits the turn-start pass resets */
 
 /* The two battle-participant scratch records, 0x20 bytes each: the side that
  * starts the fight at MAP_BATTLE_ATTACKER, its opponent at MAP_BATTLE_DEFENDER.
@@ -257,6 +267,7 @@ typedef struct MapTargetEntry {
 #define MAP_BATTLE_STRIDE   0x20
 #define MAP_BATTLE_WINNER   0x6ed6 /* s16: side that wins the previewed battle, 0 = no preview */
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
+#define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
 #define MAP_CELL_ORDER      0x1e30 /* s8 per cell: working order/overlay layer */
 #define MAP_CELL_THREAT_DIRECT   0x2840 /* u8 per cell: threat from direct attackers */

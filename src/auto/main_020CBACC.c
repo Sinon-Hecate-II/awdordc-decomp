@@ -13,14 +13,14 @@ typedef struct { u8 kind:6; u8 flags:2; } UnkCBUnit;
 
 typedef struct { u8 unk_0 : 6; u8 unk_6 : 2; } Unk020cbc88;
 
-void func_020cbacc(void *a){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 func_020cb430(void *);s32 func_020cb6a4(void *);M2C_UNK func_01ffa6fc(void *);
+void func_020cbacc(void *a){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 func_020cb6a4(void *);M2C_UNK func_01ffa6fc(void *);
 u16 i;void *p,*q;u32 k;
 if(func_020c98b4(a))return;
 for(i=M2C_FIELD(a,u16 *,0x50);i<51;i++){
 p=*gCurrentMap;q=(u8 *)p+0x59a4+(M2C_FIELD(p,u16 *,0x52a8)+i)*14;
 k=((UnkCBUnit *)q)->kind;if(!k)continue;if(M2C_FIELD(q,u16 *,4)&8)continue;
 if(k==23||k==21){if(MarkTransportCargo(q)){M2C_FIELD(a,u16 *,0x50)=i+1;break;}}
-if(func_020cb430(q)&&func_020cb6a4(q)){M2C_FIELD(a,u16 *,0x50)=i+1;break;}
+if(CanBeSupplied(q)&&func_020cb6a4(q)){M2C_FIELD(a,u16 *,0x50)=i+1;break;}
 }if(i==51)func_01ffa6fc(a);
 }
 

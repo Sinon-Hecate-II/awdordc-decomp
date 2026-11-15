@@ -251,23 +251,32 @@ void ScrollListDrawRows(s32 mode) {
     gCur3DSpriteEngine = savedPtr;
 }
 
-void ScrollListDrawTabs(void *p){
-extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
-extern M2C_UNK data_ov000_021b8ac0,data_ov000_021b8ad0,data_ov000_021b8ae0,data_ov000_021b8af4,data_ov000_021b8b04,data_ov000_021b8b18;
-s32 GetLocalizedFileName(void *);void LoadNarcFileDecompressed(s32,s32);void func_02080944(s32,s32,s32,s32);
-void *saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=g3DSpriteEngineMain;
-SetFileDirectory(&data_ov000_021b8ac0);
-GetLocalizedFileName(&data_ov000_021b8ad0);OpenNarcArchive();
-switch(M2C_FIELD(p,s16 *,0x34)){
-case 0:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ae0),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 1:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8af4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 2:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8b04),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 3:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8b18),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-}
-CloseNarcArchive();func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),32,24,6);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-gCur3DSpriteEngine=saved;
+/* Load the sprite sheet of the unit list's selected sort tab: open the
+ * unitlist.narc archive under /info/unitlist, load that tab's .sc screen data
+ * into the main 3D sprite engine and mark its graphics dirty. */
+void ScrollListDrawTabs(ScrollList *list) {
+    extern void *gCur3DSpriteEngine;
+    extern void *g3DSpriteEngineMain;
+    extern M2C_UNK sUnitListDir, sUnitListNarcFile, sUnitListUnitScFile, sUnitListHpScFile, sUnitListFuelScFile, sUnitListBulletScFile;
+    s32 GetLocalizedFileName(void *);
+    void LoadNarcFileDecompressed(s32, s32);
+    void AddTileRectPalette(s32, s32, s32, s32);
+    void *saved = gCur3DSpriteEngine;
+
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    SetFileDirectory(&sUnitListDir);
+    GetLocalizedFileName(&sUnitListNarcFile);
+    OpenNarcArchive();
+    switch (list->tab) {
+    case 0: LoadNarcFileDecompressed(GetLocalizedFileName(&sUnitListUnitScFile), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28)); break;
+    case 1: LoadNarcFileDecompressed(GetLocalizedFileName(&sUnitListHpScFile), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28)); break;
+    case 2: LoadNarcFileDecompressed(GetLocalizedFileName(&sUnitListFuelScFile), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28)); break;
+    case 3: LoadNarcFileDecompressed(GetLocalizedFileName(&sUnitListBulletScFile), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28)); break;
+    }
+    CloseNarcArchive();
+    AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 32, 24, 6);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
+    gCur3DSpriteEngine = saved;
 }
 
 s32 ScrollListScrollUp(void *arg0) {

@@ -113,23 +113,23 @@ void func_020b953c(s32 arg0, s32 arg1) {
 
 void func_020b9558(u8 a) {s32 func_020d2d38(s32,s32);void func_020b916c(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=func_020d2d38(idx,a);func_020b916c(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
 
-void func_020b95cc(u8 *p) {
+void ProductionMenu_HandleInput(u8 *p) {
 extern u16 *gKeyState;
-extern s32 data_0215d850;
+extern s32 gProductionMenuState;
 void FocusSpriteSlotById(s32),func_020b2e14(void *),func_020b2e2c(void);
 u16 *keys=gKeyState;
 s32 n=*p;
 u32 repeat=keys[1];
 s32 max;
 if(repeat&64) {
-if(n==0||n==7) {if(repeat==keys[0]) {n+=6;max=M2C_FIELD(&data_0215d850,s32 *,4)-1;if(n>=max)n=max;}}
+if(n==0||n==7) {if(repeat==keys[0]) {n+=6;max=M2C_FIELD(&gProductionMenuState,s32 *,4)-1;if(n>=max)n=max;}}
 else n--;
 }
 if(repeat&128) {
-if(n==6||n==13||n==M2C_FIELD(&data_0215d850,s32 *,4)-1) {if(repeat==keys[0]) {n-=6;if(n<0)n=0;}}
+if(n==6||n==13||n==M2C_FIELD(&gProductionMenuState,s32 *,4)-1) {if(repeat==keys[0]) {n-=6;if(n<0)n=0;}}
 else n++;
 }
-max=M2C_FIELD(&data_0215d850,s32 *,4);
+max=M2C_FIELD(&gProductionMenuState,s32 *,4);
 if(max>7) {
 if((repeat&32)&&n>=7)n-=7;
 if((repeat&16)&&n<7)n+=7;
@@ -186,8 +186,8 @@ void func_020b979c(u8 *a) {
     PlaySoundEffect(0x10019);
 }
 
-void func_020b97c4(s32 a,s32 b) {void func_020b9874(s8);M2C_UNK func_01ffa3dc(M2C_UNK *,s32);extern void **gCurrentMap;extern M2C_UNK data_0215d850;extern M2C_UNK data_021291b0;u8 *g=*gCurrentMap;u32 type=M2C_FIELD(g+(a+M2C_FIELD(g+b*2,u16 *,0x3758)),u8 *,0x1420)&31;switch(type){case 15:case 16:case 17:data_0215d850=7;break;case 18:data_0215d850=16;break;case 19:data_0215d850=32;break;}
-func_020b9874((s8)data_0215d850);func_01ffa3dc(&data_021291b0,7);
+void func_020b97c4(s32 a,s32 b) {void func_020b9874(s8);M2C_UNK func_01ffa3dc(M2C_UNK *,s32);extern void **gCurrentMap;extern M2C_UNK gProductionMenuState;extern M2C_UNK data_021291b0;u8 *g=*gCurrentMap;u32 type=M2C_FIELD(g+(a+M2C_FIELD(g+b*2,u16 *,0x3758)),u8 *,0x1420)&31;switch(type){case 15:case 16:case 17:gProductionMenuState=7;break;case 18:gProductionMenuState=16;break;case 19:gProductionMenuState=32;break;}
+func_020b9874((s8)gProductionMenuState);func_01ffa3dc(&data_021291b0,7);
 }
 
 void func_020b9874(s8 mask) {
@@ -196,7 +196,7 @@ void func_020b9874(s8 mask) {
     extern s8 data_ov000_021aab94[];
     extern u8 gUnitKindStats[];
     extern u8 data_0215d858[];
-    extern M2C_UNK data_0215d850;
+    extern M2C_UNK gProductionMenuState;
     extern void **gCurrentMap;
 
     u8 *buf = data_0215d858;
@@ -224,7 +224,7 @@ void func_020b9874(s8 mask) {
             i++;
         } while (table[i] != -1);
     }
-    M2C_FIELD(&data_0215d850, s32 *, 4) = count;
+    M2C_FIELD(&gProductionMenuState, s32 *, 4) = count;
     buf[count * 2] = 0;
 }
 
@@ -284,7 +284,7 @@ i++;y+=16;
 #pragma opt_instruction_scheduling reset
 void func_020b9bac(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK func_020c08f8(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);func_020c08f8(a,b,16,16,1);func_020b99ac(a,b,c);}
 
-void func_020b9bec(void){void func_020b9b48(s32,s32,s32);void func_020b1c78(s32);extern M2C_UNK data_0215d850;if(M2C_FIELD(&data_0215d850,s32 *,4)<=7)func_020b9b48(8,4,0);else{func_020b9b48(0,4,0);func_020b9b48(16,4,7);}func_020b1c78(0);}
+void func_020b9bec(void){void func_020b9b48(s32,s32,s32);void func_020b1c78(s32);extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7)func_020b9b48(8,4,0);else{func_020b9b48(0,4,0);func_020b9b48(16,4,7);}func_020b1c78(0);}
 
-void func_020b9c40(void){extern M2C_UNK data_0215d850;if(M2C_FIELD(&data_0215d850,s32 *,4)<=7){func_020b9bac(8,4,0);return;}func_020b9bac(0,4,0);func_020b9bac(16,4,7);}
+void func_020b9c40(void){extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7){func_020b9bac(8,4,0);return;}func_020b9bac(0,4,0);func_020b9bac(16,4,7);}
 

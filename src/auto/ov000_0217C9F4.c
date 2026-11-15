@@ -195,7 +195,7 @@ void func_ov000_0217d3b8(s32 arg0) {
 void AssignUnitMoveTargets(void) {
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 IsFootUnitKind(u32);s32 func_ov000_02179b08(void *);void FloodFillUnitRange(s32,s32,u32,s32,s32);
-s32 func_ov000_021a9860(s32,s32);s32 func_ov000_021a89a4(void *);
+s32 func_ov000_021a9860(s32,s32);s32 GetAiUnitMoveRange(void *);
 s32 unitId,unitOffset,bestX,bestY,bestScore,x,y,value,tileId;Unit0217d428 *unit;u8 *rec;void *p;
 unitId=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
 if(unitId>=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
@@ -221,7 +221,7 @@ if(bestScore==32767)goto nextUnit;
 p=*gCurrentMap;tileId=M2C_FIELD((u8*)p+bestX+M2C_FIELD((u8*)p+bestY*2,u16*,0x3758),s8*,0x1928);
 ((Record0217d428*)((u8*)p+0x6c60))[tileId].count++;
 SetTarget0217d428(unit,bestX,bestY);
-if(bestScore<=func_ov000_021a89a4(unit))unit->active=0;
+if(bestScore<=GetAiUnitMoveRange(unit))unit->active=0;
 else unit->mode=1;
 nextUnit: unitId++;unitOffset+=14;
 }while(unitId<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);

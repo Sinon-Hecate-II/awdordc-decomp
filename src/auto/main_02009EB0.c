@@ -4,35 +4,74 @@
 static inline u32 LowerChar(u32 c) { c-=0x41; if(c<=25) return c+0x61;return c+0x41; }
 typedef struct { u32 a,b,c; } UnkA3Block;
 typedef struct { UnkA3Block block; u32 kind, length; u8 name[128]; } PathEntry;
-typedef struct { u32 a:5; u32 c:1; u32 b:26; } FifoWord;
+s32 SendFifoMessage(u32 tag,u32 payload,u32 reply) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    FifoMessage v;
+    s32 key;
+    v.tag=tag;v.reply=reply;v.payload=payload;
+    if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_ERROR) {
+        *(volatile u16 *)REG_IPC_FIFO_CR |= IPC_FIFO_CLEAR;
+        return -1;
+    }
+    key=OS_DisableInterrupts();
+    if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL) {
+        OS_RestoreInterrupts(key);
+        return -2;
+    }
+    *(volatile u32 *)REG_IPC_FIFO_SEND = *(u32 *)&v;
+    OS_RestoreInterrupts(key);
+    return 0;
+}
 
-s32 func_02009eb0(u32 a,u32 b,u32 c) { s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);FifoWord v; s32 key;v.a=a;v.c=c;v.b=b;if(*(volatile u16 *)0x04000184&0x4000){*(volatile u16 *)0x04000184|=0xc000;return -1;}key=OS_DisableInterrupts();if(*(volatile u16 *)0x04000184&2){OS_RestoreInterrupts(key);return -2;}*(volatile u32 *)0x04000188=*(u32 *)&v;OS_RestoreInterrupts(key);return 0;}
-
-void func_02009f38(void){
-s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);
-extern void (*data_0212fb68[])(u32,u32,u32);
-FifoWord v;s32 result,key;u32 tag;void (*cb)(u32,u32,u32);
-for(;;){
-if(*(volatile u16*)0x04000184&0x4000){*(volatile u16*)0x04000184|=0xc000;result=-3;}
-else{
-key=OS_DisableInterrupts();
-if(*(volatile u16*)0x04000184&0x100){OS_RestoreInterrupts(key);result=-4;}
-else{*(u32*)&v=*(volatile u32*)0x04100000;OS_RestoreInterrupts(key);result=0;}
-}
-if(result==-4)return;
-if(result==-3)continue;
-tag=v.a;if(!tag)continue;
-cb=data_0212fb68[tag];
-if(cb)cb(tag,v.b,v.c);
-else if(!v.c){
-v.c=1;
-if(*(volatile u16*)0x04000184&0x4000){*(volatile u16*)0x04000184|=0xc000;continue;}
-key=OS_DisableInterrupts();
-if(*(volatile u16*)0x04000184&2){OS_RestoreInterrupts(key);continue;}
-*(volatile u32*)0x04000188=*(u32*)&v;
-OS_RestoreInterrupts(key);
-}
-}
+/* IPC FIFO receive interrupt handler: drains the messages the ARM7 has sent.  A
+ * FIFO error is acknowledged and the drain retried, an empty receive FIFO ends
+ * the handler, and every message goes to the handler registered for its tag.  A
+ * request no one handles is acknowledged by posting it back with the reply bit set. */
+void FifoReceiveHandler(void) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    extern void (*gFifoMessageHandlers[])(u32, u32, u32);
+    FifoMessage v;
+    s32 result, key;
+    u32 tag;
+    void (*cb)(u32, u32, u32);
+    for (;;) {
+        if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_ERROR) {
+            *(volatile u16 *)REG_IPC_FIFO_CR |= IPC_FIFO_CLEAR;
+            result = -3;
+        } else {
+            key = OS_DisableInterrupts();
+            if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_RECV_EMPTY) {
+                OS_RestoreInterrupts(key);
+                result = -4;
+            } else {
+                *(u32 *)&v = *(volatile u32 *)REG_IPC_FIFO_RECV;
+                OS_RestoreInterrupts(key);
+                result = 0;
+            }
+        }
+        if (result == -4) return;
+        if (result == -3) continue;
+        tag = v.tag;
+        if (!tag) continue;
+        cb = gFifoMessageHandlers[tag];
+        if (cb) cb(tag, v.payload, v.reply);
+        else if (!v.reply) {
+            v.reply = 1;
+            if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_ERROR) {
+                *(volatile u16 *)REG_IPC_FIFO_CR |= IPC_FIFO_CLEAR;
+                continue;
+            }
+            key = OS_DisableInterrupts();
+            if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL) {
+                OS_RestoreInterrupts(key);
+                continue;
+            }
+            *(volatile u32 *)REG_IPC_FIFO_SEND = *(u32 *)&v;
+            OS_RestoreInterrupts(key);
+        }
+    }
 }
 
 void CompleteFileRequest(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 OS_WakeupThread(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;OS_WakeupThread((u8 *)p+24);OS_RestoreInterrupts(k);}

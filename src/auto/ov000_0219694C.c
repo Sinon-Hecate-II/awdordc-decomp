@@ -1,5 +1,6 @@
 /* 9 functions from 0x0219694C to 0x02197814 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct MapScan96 { u8 pad[0x24]; u16 width, height; } MapScan96;
 typedef struct KindScan96 { u8 pad[12]; u8 minRange; u8 rest[99]; } KindScan96;
 typedef struct UnitScan96 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 health:7; u16 status:4; u16 rest:5; } UnitScan96;
@@ -150,26 +151,35 @@ z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **
 if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);SetMapCursor(u3[1],u3[2],21,(u8)bx,(u8)by);
 }}
 #pragma opt_strength_reduction reset
-void func_ov000_021972e0(void) {
-extern void **gCurrentMap;
-void FloodFillUnitRange(s32,s32,s32,s32,s32);
-void PlanMoveDestination(s32,s32);
-Map972e0 *base; u8 *unit; s32 x, y, bestX, bestY, best;
-base=*gCurrentMap;
-unit=M2C_FIELD(base,u8 **,0x52d0);
-FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,0);
-base=*gCurrentMap;
-if (M2C_FIELD(M2C_FIELD(base,void **,0x52f8),s8 *,0)>=0) {PlanMoveDestination(0,4); return;}
-bestX=-1; best=32767;
-for(x=0;x<base->width;x++){
-for(y=0;y<base->height;y++){
-s32 v=*(s8 *)((u32)x+(u32)M2C_FIELD((void *)((u32)base+(u32)y*4),s8 **,0x52e8));
-if(v>=0 && v<=best){best=v;bestX=x;bestY=y;}
-}
-if(bestX!=-1)break;
-}
-if(bestX==-1)return;
-PlanMoveDestination(bestX,bestY);
+/* Flood-fill the cursor unit's movement range, then plan a move: prefer the
+ * reachable tile (0,4) when it is reachable, otherwise the lowest-cost tile of
+ * the leftmost reachable column. */
+void PlanAiUnitMove(void) {
+    extern void **gCurrentMap;
+    void FloodFillUnitRange(s32, s32, s32, s32, s32);
+    void PlanMoveDestination(s32, s32);
+    Map972e0 *base;
+    u8 *unit;
+    s32 x, y, bestX, bestY, best;
+
+    base = *gCurrentMap;
+    unit = M2C_FIELD(base, u8 **, MAP_CURSOR_UNIT);
+    FloodFillUnitRange(unit[1], unit[2], (u32)(unit[0] << 26) >> 26, 110, 0);
+    base = *gCurrentMap;
+    if (M2C_FIELD(M2C_FIELD(base, void **, 0x52f8), s8 *, 0) >= 0) {
+        PlanMoveDestination(0, 4);
+        return;
+    }
+    bestX = -1; best = 32767;
+    for (x = 0; x < base->width; x++) {
+        for (y = 0; y < base->height; y++) {
+            s32 v = *(s8 *)((u32)x + (u32)M2C_FIELD((void *)((u32)base + (u32)y * 4), s8 **, MAP_GRID));
+            if (v >= 0 && v <= best) { best = v; bestX = x; bestY = y; }
+        }
+        if (bestX != -1) break;
+    }
+    if (bestX == -1) return;
+    PlanMoveDestination(bestX, bestY);
 }
 
 u8 func_ov000_021973f8(void) {

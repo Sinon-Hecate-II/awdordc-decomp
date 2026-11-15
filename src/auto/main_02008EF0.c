@@ -5,8 +5,8 @@ typedef struct { u16 values[5]; } Unk02009B0CFields;
 typedef struct { u16 values[6]; } Unk02009B0CRecord;
 typedef struct Shared09d40 { u8 pad[0x388]; u32 value; } Shared09d40;
 extern u16 data_0212fb64;
-extern s32 data_0212fb68[32];
-void func_02009f38(void);
+extern s32 gFifoMessageHandlers[32];
+void FifoReceiveHandler(void);
 void func_0200902c(void);
 void func_0200962c(void);
 void *func_02009210(int);
@@ -147,7 +147,7 @@ p[3]=arg0;*arg0=0;return OS_RestoreInterrupts(s);
 s32 func_020092d0(s32 flags) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 s32 func_02009100(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
-s32 func_02009eb0(s32,M2C_UNK,s32); void func_0200968c(void);
+s32 SendFifoMessage(s32,M2C_UNK,s32); void func_0200968c(void);
 extern M2C_UNK data_0212e020; extern u8 data_0212e300[]; extern QueueNode09298 *data_0212e044[];
 s32 irq=OS_DisableInterrupts();
 
@@ -158,7 +158,7 @@ do {func_02009100(1);} while(((State09100*)&data_0212e020)->pending>=8);
 if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 DC_FlushRange((M2C_UNK)data_0212e300,0x1800);
-if(func_02009eb0(7,((State09100*)&data_0212e020)->unk8,0)<0){
+if(SendFifoMessage(7,((State09100*)&data_0212e020)->unk8,0)<0){
 u8 *buf;
 if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
 buf=data_0212e300;
@@ -172,7 +172,7 @@ if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 retry:
 if(((State09100*)&data_0212e020)->pending>=8)goto again;
-if(func_02009eb0(7,((State09100*)&data_0212e020)->unk8,0)<0)goto again;
+if(SendFifoMessage(7,((State09100*)&data_0212e020)->unk8,0)<0)goto again;
 }
 {
 
@@ -229,10 +229,10 @@ s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);
 void func_0200962c(void){M2C_UNK func_0200758c(M2C_UNK);s32 func_020096fc();M2C_UNK func_02009e40(M2C_UNK,M2C_UNK *);s32 func_02009e8c(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);func_02009e40(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(func_02009e8c(7,1))return;do{func_0200758c(100);}while(!func_02009e8c(7,1));}
 
 void func_0200968c(void) {
-    s32 func_02009eb0(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
     do {
 
-    } while (func_02009eb0(7, 0, 0) < 0);
+    } while (SendFifoMessage(7, 0, 0) < 0);
 }
 
 void *func_020096b4(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&data_0212e020,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&data_0212e020,void **,0)=next;if(!next)M2C_FIELD(&data_0212e020,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
@@ -409,9 +409,9 @@ s32 OS_DisableInterrupts(void);s32 state=OS_DisableInterrupts();int i,timeout,va
 if(!data_0212fb64){
 data_0212fb64=1;
 {Shared09d40 *p=(Shared09d40 *)0x027ffc00; p->value=0;}
-for(i=0;i<32;i++)data_0212fb68[i]=0;
+for(i=0;i<32;i++)gFifoMessageHandlers[i]=0;
 *(volatile u16 *)0x04000184=0xc408;
-func_02005228(0x40000);func_02004ff8(0x40000,func_02009f38);func_020051c8(0x40000);
+func_02005228(0x40000);func_02004ff8(0x40000,FifoReceiveHandler);func_020051c8(0x40000);
 stable=0;
 for(;;){value=*(volatile u16 *)0x04000180&15;
 *(volatile u16 *)0x04000180=value<<8;
@@ -427,9 +427,9 @@ return OS_RestoreInterrupts(state);
 }
 #pragma scheduling on
 s32 func_02009e40(s32 a,M2C_UNK *b){
-s32 OS_DisableInterrupts(void);extern s32 data_0212fb68[];
+s32 OS_DisableInterrupts(void);extern s32 gFifoMessageHandlers[];
 s32 s=OS_DisableInterrupts();s32 *base=(s32 *)0x027ffc00;
-data_0212fb68[a]=(s32)b;
+gFifoMessageHandlers[a]=(s32)b;
 if(b)base[226]|=1<<a;
 else base[226]&=~(1<<a);
 return OS_RestoreInterrupts(s);

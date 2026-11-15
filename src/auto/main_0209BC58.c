@@ -522,7 +522,7 @@ void func_0209c8d4(void) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     s32 func_020a1944();
     M2C_UNK func_020bf814(u16);
-    s32 func_020bf894(s32);
+    s32 IsCoUnlocked(s32);
     s32 DidPlayerWin();
     s32 func_020d1afc();
     s32 func_020d1b40();
@@ -553,7 +553,7 @@ void func_0209c8d4(void) {
     var_r7 = 0;
     temp_r9 = temp_r8 - 0xA1;
     do {
-        if (func_020bf894(var_r7) != 0) {
+        if (IsCoUnlocked(var_r7) != 0) {
             var_r0 = M2C_FIELD(&data_0215c334, s32 *, 8) | (1 << var_r7);
         } else {
             var_r0 = M2C_FIELD(&data_0215c334, s32 *, 8) & (-1 ^ (1 << var_r7));
@@ -622,7 +622,7 @@ void func_0209c8d4(void) {
     }
     var_r5 = 0;
     do {
-        if (!(M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r5)) && (func_020bf894(var_r5) != 0)) {
+        if (!(M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r5)) && (IsCoUnlocked(var_r5) != 0)) {
             M2C_FIELD(&data_0215c334, s32 *, 8) = (s32) (M2C_FIELD(&data_0215c334, s32 *, 8) | (1 << var_r5));
         } else {
             M2C_FIELD(&data_0215c334, s32 *, 8) = (s32) (M2C_FIELD(&data_0215c334, s32 *, 8) & (-1 ^ (1 << var_r5)));

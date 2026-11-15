@@ -141,13 +141,13 @@ return 0;
 }
 #pragma opt_propagation off
 s32 func_ov000_02179b08(void *arg0) {
-s32 func_ov000_021a89a4(void *);s32 IsFootUnitKind(u32);
+s32 GetAiUnitMoveRange(void *);s32 IsFootUnitKind(u32);
 extern u8 gUnitKindFlags[];extern void *gAiSettings;extern void *gAiCommandState;
 s32 value;u8 scale;u32 id;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<26)>>29)&4))return 110;
 id=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;if(!(gUnitKindFlags[id*0x70]&7))return 110;
 if((u32)(M2C_FIELD(arg0,u8 *,11)<<24)>>31)return 110;
-if(IsFootUnitKind(id)&&M2C_FIELD(gAiCommandState,u8 *,5)<4U)value=4;else value=func_ov000_021a89a4(arg0);
+if(IsFootUnitKind(id)&&M2C_FIELD(gAiCommandState,u8 *,5)<4U)value=4;else value=GetAiUnitMoveRange(arg0);
 if(((u32)(M2C_FIELD(arg0,u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(gAiSettings,u8 *,15);else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 }

@@ -31,13 +31,13 @@ s32 func_ov000_021882c4(void) {
 
 s32 func_ov000_02188338(void) {
     s32 func_ov000_0218a230();
-    s32 func_ov000_0218a3fc();
+    s32 AiHasAttackTargetOrFootUnit();
     s32 temp_r4;
     s32 var_r0;
     s32 var_r5;
 
     temp_r4 = func_ov000_02189e2c();
-    if (func_ov000_0218a3fc() == 0) {
+    if (AiHasAttackTargetOrFootUnit() == 0) {
         var_r5 = 0x80;
     } else {
         var_r5 = 0;

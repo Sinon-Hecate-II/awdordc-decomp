@@ -1,6 +1,7 @@
 /* 20 functions from 0x020B8078 to 0x020B8CCC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 #include "menu_list.h"
 
 extern u8 data_021290b4[40];
@@ -82,32 +83,36 @@ s16 *p=(s16 *)arg0;
 p[42]=0; p[41]=4;
 }
 
-void func_020b821c(void *arg0) {
+/* Per-frame callback of the map-clear effect that ramps its blend the other way
+   from UpdateMapClearFade: it steps the frame counter, sets the 3D sprite bank's
+   blend level along the 0 -> 4 easing curve with priority 3 and the attribute
+   mode bits cleared, then removes the effect once the duration is over. */
+void UpdateMapClearFadeIn(void *effect) {
     M2C_UNK DeleteSpriteObject(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
     M2C_UNK Reset3DSpriteBankState();
     extern void *g3DSpriteBankMain;
-    s8 temp_r4;
+    s8 blend;
 
-    M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
-    temp_r4 = EaseInterpolate(0, 0, 4, M2C_FIELD(arg0, s16 *, 0x54), (s32) M2C_FIELD(arg0, s16 *, 0x52));
+    M2C_FIELD(effect, s16 *, 0x54) = (s16) (M2C_FIELD(effect, s16 *, 0x54) + 1);
+    blend = EaseInterpolate(0, 0, 4, M2C_FIELD(effect, s16 *, 0x54), (s32) M2C_FIELD(effect, s16 *, 0x52));
     Reset3DSpriteBankState();
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0xC0) | 0xC0);
-    M2C_FIELD(g3DSpriteBankMain, s8 *, 0x53) = temp_r4;
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~1) | 1);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~2);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~4);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~8);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x10);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x100);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x200);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x400);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x800);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x1000);
-    if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0xC0) | 0xC0);
+    M2C_FIELD(g3DSpriteBankMain, s8 *, DS3D_BANK_BLEND) = blend;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~1) | 1);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~2);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~4);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~8);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x10);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x100);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x200);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x400);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x800);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x1000);
+    if ((s32) M2C_FIELD(effect, s16 *, 0x54) < (s32) M2C_FIELD(effect, s16 *, 0x52)) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(effect);
 }
 
 void func_020b8338(void *arg0) {
@@ -115,33 +120,36 @@ s16 *p=(s16 *)arg0;
 p[42]=0; p[41]=2;
 }
 
-void func_020b834c(void *arg0) {
+/* Per-frame callback of the map-clear effect: step its frame counter, set the 3D
+   sprite bank's blend level along the 4 -> 0 easing curve with priority 3 and the
+   attribute mode bits cleared, then remove the effect once the duration is over. */
+void UpdateMapClearFade(void *effect) {
     M2C_UNK DeleteSpriteObject(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
     M2C_UNK Reset3DSpriteBankState();
     extern void *g3DSpriteBankMain;
-    s8 temp_r4;
+    s8 blend;
 
-    M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
-    temp_r4 = EaseInterpolate(0, 4, 0, M2C_FIELD(arg0, s16 *, 0x54), (s32) M2C_FIELD(arg0, s16 *, 0x52));
+    M2C_FIELD(effect, s16 *, 0x54) = (s16) (M2C_FIELD(effect, s16 *, 0x54) + 1);
+    blend = EaseInterpolate(0, 4, 0, M2C_FIELD(effect, s16 *, 0x54), (s32) M2C_FIELD(effect, s16 *, 0x52));
     Reset3DSpriteBankState();
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0xC0) | 0xC0);
-    M2C_FIELD(g3DSpriteBankMain, s8 *, 0x53) = temp_r4;
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~1) | 1);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~2);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~4);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~8);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x10);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x100);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x200);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x400);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x800);
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x1000);
-    if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0xC0) | 0xC0);
+    M2C_FIELD(g3DSpriteBankMain, s8 *, DS3D_BANK_BLEND) = blend;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~1) | 1);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~2);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~4);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~8);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x10);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x100);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x200);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x400);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x800);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_OAMATTR) & ~0x1000);
+    if ((s32) M2C_FIELD(effect, s16 *, 0x54) < (s32) M2C_FIELD(effect, s16 *, 0x52)) {
         return;
     }
     Reset3DSpriteBankState();
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(effect);
 }
 
 u8 func_020b846c(M2C_UNK arg0) {
@@ -333,7 +341,7 @@ void func_020b8970(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     void Clear3DSpriteLayer(s32);
-    void func_02080944(void *, s32, s32, s32);
+    void AddTileRectPalette(void *, s32, s32, s32);
     void LoadDecompressedFileTo(void *, void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
     void func_02088e84(void *, s32, s32, s32, s32);
@@ -394,7 +402,7 @@ void func_020b8970(void *arg0) {
     LoadDecompressedFileTo(GetLocalizedFileName(data_02129120), M2C_FIELD(g3DSpriteEngineMain, void **, 0x14));
     LoadDecompressedFileTo(GetLocalizedFileName(data_02129130), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
     LoadFileToSpriteBuffer((M2C_UNK *) data_02129140, 0xc0, 0x20);
-    func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 0x20, 0x18, 6);
+    AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 0x20, 0x18, 6);
     CreateMenuTextSprite((u8 *) arg0 + 0x48, 0x5e, 0x8b, 0xa, 0x39c, 3, -1, arg0, 1);
     CreateMenuTextSprite((u8 *) arg0 + 0x4c, 0x82, 0x8b, 0xb, 0x3a4, 3, -1, arg0, 0);
     CreateMenuTextSprite((u8 *) arg0 + 0x50, 0xc0, 0xa0, 0, 0x3ac, 3, 1, arg0, 0);

@@ -1,8 +1,8 @@
 /* 23 functions from 0x02064684 to 0x0206536C (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
-extern u8 data_021001cc[], data_02100218[], data_02100264[], gFileLock[];
-extern s32 gFileLockOwner[], gFileLockCount[];
+extern u8 gStdinStream[], gStdoutStream[], gStderrStream[], gStreamMutexes[];
+extern s32 gStreamLockOwner[], gStreamLockDepth[];
 extern M2C_UNK gSocketManager;
 typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
@@ -206,7 +206,7 @@ char *func_02064ad4(s32 value, char *buffer, s32 radix) {
     return buffer;
 }
 #pragma opt_strength_reduction reset
-s32 func_02064b50(void *arg0) {
+s32 GetStreamPosition(void *arg0) {
     extern s32 gErrno;
     s32 var_r0;
     u32 temp_ip;
@@ -226,31 +226,36 @@ s32 func_02064b50(void *arg0) {
     return var_r0;
 }
 
-s32 GetFilePosition(void *p){
-extern u8 data_021001cc[],data_02100218[],data_02100264[],gFileLock[];
-extern s32 gFileLockOwner[],gFileLockCount[];
+/* Reports the current position of stream fp, under the same reentrant per-stream
+ * lock SetFilePosition uses: TryLockMutex takes it when free, the holding thread
+ * otherwise just bumps gStreamLockDepth, and a different thread blocks in
+ * LockMutex.  The lock is released when the outermost caller returns. */
+s32 GetFilePosition(void *fp) {
+extern u8 gStdinStream[], gStdoutStream[], gStderrStream[], gStreamMutexes[];
+extern s32 gStreamLockOwner[], gStreamLockDepth[];
 extern M2C_UNK gSocketManager;
-s32 TryLockMutex(void *);s32 func_02064b50(void *);
-s32 n,result,owner; void *thread;
-if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
-if(!TryLockMutex(gFileLock+24*n)){
-gFileLockOwner[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);gFileLockCount[n]=1;
-}else if((thread=M2C_FIELD(&gSocketManager,void **,4), owner=gFileLockOwner[n], owner==M2C_FIELD(thread,s32 *,0x6c))){
-gFileLockCount[n]++;
-}else{LockMutex(gFileLock+24*n);gFileLockOwner[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);gFileLockCount[n]=1;}
-result=func_02064b50(p);
-if(--gFileLockCount[n]==0)UnlockMutex(gFileLock+24*n);
-return result;
+s32 TryLockMutex(void *);
+s32 GetStreamPosition(void *);
+s32 lockIndex, position, owner; void *thread;
+if (fp == gStdinStream) lockIndex = 2; else if (fp == gStdoutStream) lockIndex = 3; else if (fp == gStderrStream) lockIndex = 4; else lockIndex = 5;
+if (!TryLockMutex(gStreamMutexes + 24 * lockIndex)) {
+gStreamLockOwner[lockIndex] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6c); gStreamLockDepth[lockIndex] = 1;
+} else if ((thread = M2C_FIELD(&gSocketManager, void **, 4), owner = gStreamLockOwner[lockIndex], owner == M2C_FIELD(thread, s32 *, 0x6c))) {
+gStreamLockDepth[lockIndex]++;
+} else { LockMutex(gStreamMutexes + 24 * lockIndex); gStreamLockOwner[lockIndex] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6c); gStreamLockDepth[lockIndex] = 1; }
+position = GetStreamPosition(fp);
+if (--gStreamLockDepth[lockIndex] == 0) UnlockMutex(gStreamMutexes + 24 * lockIndex);
+return position;
 }
 
 /* Sets/updates the transfer position, adjusting buffered stream state, and reports progress through the object's callback. */
 s32 func_02064ce8(void *stream, u32 position, s32 mode, ...) {
 s32 func_020641a8(void *, s32);
-s32 func_02064b50(void *);
+s32 GetStreamPosition(void *);
 extern s32 gErrno;
 if ((u8)((M2C_FIELD(stream,u32 *,4)<<22)>>29)!=1 || M2C_FIELD(stream,u8 *,13)!=0) { gErrno=40; return -1; }
 if (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==1 && func_020641a8(stream,0)!=0) { M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; gErrno=40; return -1; }
-if(mode==1){mode=0;position+=func_02064b50(stream);}
+if(mode==1){mode=0;position+=GetStreamPosition(stream);}
 if(mode!=2 && (M2C_FIELD(stream,u32 *,4)<<27)>>29 !=3 && (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29))-2<=1) {
 u32 current=position; u32 base;
 if(current>=M2C_FIELD(stream,u32 *,24)) goto clear;
@@ -275,22 +280,22 @@ return 0;
 /* Seeks stream fp to pos with fseek-style whence (0 = start, 1 = current,
  * 2 = end).  The seek runs under the stream's shared lock, which is taken
  * reentrantly (the holding thread and its nest count are kept in
- * gFileLockOwner/gFileLockCount) and released when the outermost caller is
+ * gStreamLockOwner/gStreamLockDepth) and released when the outermost caller is
  * done. */
 s32 SetFilePosition(void *fp, s32 pos, s32 whence) {
 s32 TryLockMutex(void *); M2C_UNK LockMutex(); M2C_UNK UnlockMutex();
 s32 lockIndex, result, owner; void *thread;
-if(fp==data_021001cc)lockIndex=2;else if(fp==data_02100218)lockIndex=3;else if(fp==data_02100264)lockIndex=4;else lockIndex=5;
-if(TryLockMutex(gFileLock+lockIndex*24)==0) {
-gFileLockOwner[lockIndex]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
-gFileLockCount[lockIndex]=1;
-}else if((thread=M2C_FIELD(&gSocketManager,void **,4),owner=gFileLockOwner[lockIndex],owner==M2C_FIELD(thread,s32 *,108))) {gFileLockCount[lockIndex]++;}
-else{LockMutex(gFileLock+lockIndex*24);
-gFileLockOwner[lockIndex]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
-gFileLockCount[lockIndex]=1;
+if(fp==gStdinStream)lockIndex=2;else if(fp==gStdoutStream)lockIndex=3;else if(fp==gStderrStream)lockIndex=4;else lockIndex=5;
+if(TryLockMutex(gStreamMutexes+lockIndex*24)==0) {
+gStreamLockOwner[lockIndex]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
+gStreamLockDepth[lockIndex]=1;
+}else if((thread=M2C_FIELD(&gSocketManager,void **,4),owner=gStreamLockOwner[lockIndex],owner==M2C_FIELD(thread,s32 *,108))) {gStreamLockDepth[lockIndex]++;}
+else{LockMutex(gStreamMutexes+lockIndex*24);
+gStreamLockOwner[lockIndex]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
+gStreamLockDepth[lockIndex]=1;
 }
 result=func_02064ce8(fp,pos,whence);
-if(--gFileLockCount[lockIndex]==0)UnlockMutex(gFileLock+lockIndex*24);
+if(--gStreamLockDepth[lockIndex]==0)UnlockMutex(gStreamMutexes+lockIndex*24);
 return result;
 }
 

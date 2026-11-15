@@ -1,4 +1,4 @@
-func_ov010_02221320 kind:function(arm,size=0x154) addr:0x02221320
+DecodeAdpcm4Bit kind:function(arm,size=0x154) addr:0x02221320
 func_ov010_02221474 kind:function(arm,size=0x18c) addr:0x02221474
 func_ov010_02221600 kind:function(arm,size=0x494) addr:0x02221600
 func_ov010_02221a94 kind:function(arm,size=0x50c) addr:0x02221a94
@@ -343,10 +343,10 @@ func_ov010_0222bc88 kind:function(arm,size=0x50) addr:0x0222bc88
 func_ov010_0222bcd8 kind:function(arm,size=0x4c) addr:0x0222bcd8
 func_ov010_0222bd24 kind:function(arm,size=0x18) addr:0x0222bd24
 func_ov010_0222bd3c kind:function(arm,size=0x20) addr:0x0222bd3c
-data_ov010_0222bd5c kind:data(any) addr:0x0222bd5c
-data_ov010_0222bd60 kind:data(any) addr:0x0222bd60
-data_ov010_0222bd68 kind:data(any) addr:0x0222bd68
-data_ov010_0222bd78 kind:data(any) addr:0x0222bd78
+gAdpcmIndexTable2 kind:data(any) addr:0x0222bd5c
+gAdpcmIndexTable3 kind:data(any) addr:0x0222bd60
+gAdpcmIndexTable4 kind:data(any) addr:0x0222bd68
+gAdpcmStepTable kind:data(any) addr:0x0222bd78
 data_ov010_0222be2c kind:data(any) addr:0x0222be2c
 data_ov010_0222be2d kind:data(any) addr:0x0222be2d
 data_ov010_0222be36 kind:data(any) addr:0x0222be36

@@ -85,7 +85,7 @@ u8 func_ov000_021a8984(s32 arg0) {
     return var_r0;
 }
 
-s32 func_ov000_021a89a4(UnkValue_021a89a4 *a) {
+s32 GetAiUnitMoveRange(UnkValue_021a89a4 *a) {
 extern void **gCurrentMap;
 s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 func_020a75b8(void *);
 s32 n=Divide(a->value,func_020a86f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
@@ -141,7 +141,7 @@ s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;
 s32 IsUnitOnCurrentTeam(s32);
 s32 IsUnitVisibleAtCell(u16,s32,s16,s16);
-s32 func_020a600c(u16);
+s32 IsUnitInSight(u16);
 s32 i; s32 right; s32 ny; s32 j; s32 dy; s32 left; s32 top; s32 bottom; s32 d;void *base;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
@@ -159,7 +159,7 @@ if(IsUnitOnCurrentTeam(d)==1)continue;
 if(!IsUnitVisibleAtCell(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,(s16)i,(s16)j))continue;
 base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
-if(func_020a600c(d))return 1;
+if(IsUnitInSight(d))return 1;
 }}
 return 0;
 }
@@ -286,5 +286,5 @@ s32 func_ov000_021a93a8(void) {
 
 s32 func_ov000_021a93b0(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 func_020ce0ec(u8,u8);void *p=*gCurrentMap;return func_020ce0ec(a,M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420));}
 
-s32 func_ov000_021a93ec(s32 a,s32 b){extern void **gCurrentMap;s32 func_020a600c(u16);void *p=*gCurrentMap;u32 n;u32 id=M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0);if(id&&!func_020a600c((u16)id))return 0;p=*gCurrentMap;n=a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758);return (u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,0x5160)&(1<<(n&7)))!=0;}
+s32 func_ov000_021a93ec(s32 a,s32 b){extern void **gCurrentMap;s32 IsUnitInSight(u16);void *p=*gCurrentMap;u32 n;u32 id=M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0);if(id&&!IsUnitInSight((u16)id))return 0;p=*gCurrentMap;n=a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758);return (u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,0x5160)&(1<<(n&7)))!=0;}
 

@@ -12,7 +12,7 @@ void func_02028ef4(void *arg0) {
     s32 func_02012740(M2C_UNK *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK WFC_DispatchEvent(M2C_UNK, void *, u16, s32);
     M2C_UNK WFC_SetState(M2C_UNK);
-    extern void *gSession;
+    extern void *gWfcSession;
     extern M2C_UNK WFC_OperationCallback;
     extern M2C_UNK func_0202899c;
     M2C_UNK var_r3;
@@ -26,9 +26,9 @@ void func_02028ef4(void *arg0) {
 
     if (M2C_FIELD(arg0, u16 *, 2) == 0) {
         var_r0 = 0;
-        M2C_FIELD(gSession, s8 *, 0x226B) = 0;
-        M2C_FIELD(gSession, s16 *, 0x2282) = 0;
-        temp_r1 = M2C_FIELD(gSession, u32 *, 0x2260);
+        M2C_FIELD(gWfcSession, s8 *, 0x226B) = 0;
+        M2C_FIELD(gWfcSession, s16 *, 0x2282) = 0;
+        temp_r1 = M2C_FIELD(gWfcSession, u32 *, 0x2260);
         switch (temp_r1) {
         default:
         case 0:
@@ -38,7 +38,7 @@ void func_02028ef4(void *arg0) {
         case 4:
         case 11:
             WFC_SetState(0xB);
-            WFC_DispatchEvent(7, NULL, (u16) M2C_FIELD(gSession, u32 *, 0x2260), 0x959);
+            WFC_DispatchEvent(7, NULL, (u16) M2C_FIELD(gWfcSession, u32 *, 0x2260), 0x959);
             return;
         case 5:
         case 6:
@@ -50,11 +50,11 @@ void func_02028ef4(void *arg0) {
             WFC_DispatchEvent(0, NULL, 0U, 0x8FB);
             return;
         case 8:
-            temp_r4 = M2C_FIELD(gSession, u16 *, 0x22F8);
-            M2C_FIELD(gSession, u16 *, 0x22F8) = 0U;
-            if ((temp_r4 == 0x12) && (temp_r3 = M2C_FIELD(gSession, u16 *, 0x2170), ((temp_r3 & 0x24) != 0x24))) {
-                M2C_FIELD(gSession, u16 *, 0x2170) = (u16) (temp_r3 | 0x24);
-                temp_r2 = M2C_FIELD(gSession, s32 *, 0x2264);
+            temp_r4 = M2C_FIELD(gWfcSession, u16 *, 0x22F8);
+            M2C_FIELD(gWfcSession, u16 *, 0x22F8) = 0U;
+            if ((temp_r4 == 0x12) && (temp_r3 = M2C_FIELD(gWfcSession, u16 *, 0x2170), ((temp_r3 & 0x24) != 0x24))) {
+                M2C_FIELD(gWfcSession, u16 *, 0x2170) = (u16) (temp_r3 | 0x24);
+                temp_r2 = M2C_FIELD(gWfcSession, s32 *, 0x2264);
                 if ((temp_r2 & 0xC0000) == 0xC0000) {
                     var_r0 = 1;
                 }
@@ -63,34 +63,34 @@ void func_02028ef4(void *arg0) {
                 } else {
                     var_r3 = 0;
                 }
-                temp_r0 = func_02012740(&func_0202899c, gSession + 0x2140, 0, var_r3, (s32) var_r0);
+                temp_r0 = func_02012740(&func_0202899c, gWfcSession + 0x2140, 0, var_r3, (s32) var_r0);
                 switch (temp_r0) {
                 case 2:
                     return;
                 case 8:
                     WFC_SetState(0xC);
-                    WFC_DispatchEvent(1, gSession + 0x2140, temp_r4, 0x91C);
+                    WFC_DispatchEvent(1, gWfcSession + 0x2140, temp_r4, 0x91C);
                     return;
                 default:
                 case 3:
                     WFC_SetState(0xB);
-                    WFC_DispatchEvent(7, gSession + 0x2140, temp_r4, 0x925);
+                    WFC_DispatchEvent(7, gWfcSession + 0x2140, temp_r4, 0x925);
                     return;
                 }
             } else {
                 WFC_SetState(3);
-                WFC_DispatchEvent(1, gSession + 0x2140, temp_r4, 0x92D);
+                WFC_DispatchEvent(1, gWfcSession + 0x2140, temp_r4, 0x92D);
                 return;
             }
             break;
         case 9:
         case 12:
             WFC_SetState(3);
-            WFC_DispatchEvent(0, gSession + 0x2140, 1U, 0x935);
+            WFC_DispatchEvent(0, gWfcSession + 0x2140, 1U, 0x935);
             return;
         case 10:
             WFC_SetState(3);
-            WFC_DispatchEvent(0, gSession + 0x2140, 0U, 0x93C);
+            WFC_DispatchEvent(0, gWfcSession + 0x2140, 0U, 0x93C);
             return;
         case 13:
             temp_r0_2 = func_020121d8(&WFC_OperationCallback);
@@ -370,7 +370,7 @@ loop_7:
     }
 }
 
-void func_020296a0(void) {
+void WFC_InitSendState(void) {
     void InitMutex(void *);
     extern M2C_UNK gWfcSendState;
     extern M2C_UNK gWfcSendLock;

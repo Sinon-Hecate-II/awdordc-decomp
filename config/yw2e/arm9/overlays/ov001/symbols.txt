@@ -1,11 +1,11 @@
 func_ov001_02169020 kind:function(arm,size=0x48) addr:0x02169020
 func_ov001_02169068 kind:function(arm,size=0xc8) addr:0x02169068
 func_ov001_02169130 kind:function(arm,size=0x24) addr:0x02169130
-func_ov001_02169154 kind:function(arm,size=0x48) addr:0x02169154
-func_ov001_0216919c kind:function(arm,size=0x4c) addr:0x0216919c
+GetFontGlyphIndex kind:function(arm,size=0x48) addr:0x02169154
+GetFontGlyphMetric kind:function(arm,size=0x4c) addr:0x0216919c
 GetTextLineWidth kind:function(arm,size=0xac) addr:0x021691e8
 func_ov001_02169294 kind:function(arm,size=0x74) addr:0x02169294
-func_ov001_02169308 kind:function(arm,size=0x94) addr:0x02169308
+GetTextBlockSize kind:function(arm,size=0x94) addr:0x02169308
 func_ov001_0216939c kind:function(arm,size=0xf8) addr:0x0216939c
 func_ov001_02169494 kind:function(arm,size=0x1c) addr:0x02169494
 func_ov001_021694b0 kind:function(arm,size=0x138) addr:0x021694b0
@@ -26,7 +26,7 @@ func_ov001_0216a33c kind:function(arm,size=0x5c) addr:0x0216a33c
 func_ov001_0216a398 kind:function(arm,size=0x2f8) addr:0x0216a398
 DrawFontTextLine kind:function(arm,size=0xb4) addr:0x0216a690
 DrawTextMultiline kind:function(arm,size=0x168) addr:0x0216a744
-func_ov001_0216a8ac kind:function(arm,size=0x124) addr:0x0216a8ac
+DrawAnchoredText kind:function(arm,size=0x124) addr:0x0216a8ac
 func_ov001_0216a9d0 kind:function(arm,size=0xe0) addr:0x0216a9d0
 func_ov001_0216aab0 kind:function(arm,size=0x154) addr:0x0216aab0
 func_ov001_0216ac04 kind:function(arm,size=0xdc) addr:0x0216ac04
@@ -942,7 +942,7 @@ func_ov001_02186ca4 kind:function(arm,size=0x90) addr:0x02186ca4
 func_ov001_02186d34 kind:function(arm,size=0x5c) addr:0x02186d34
 func_ov001_02186d90 kind:function(arm,size=0xb0) addr:0x02186d90
 func_ov001_02186e40 kind:function(arm,size=0x40) addr:0x02186e40
-func_ov001_02186e80 kind:function(arm,size=0x120) addr:0x02186e80
+Ov001_StartDownloadPlay kind:function(arm,size=0x120) addr:0x02186e80
 func_ov001_02186fa0 kind:function(arm,size=0x48) addr:0x02186fa0
 func_ov001_02186fe8 kind:function(arm,size=0xd4) addr:0x02186fe8
 func_ov001_021870bc kind:function(arm,size=0xa0) addr:0x021870bc
@@ -954,7 +954,7 @@ func_ov001_02187454 kind:function(arm,size=0xf8) addr:0x02187454
 func_ov001_0218754c kind:function(arm,size=0x14) addr:0x0218754c
 func_ov001_02187560 kind:function(arm,size=0x30) addr:0x02187560
 func_ov001_02187590 kind:function(arm,size=0x324) addr:0x02187590
-func_ov001_021878b4 kind:function(arm,size=0x14) addr:0x021878b4
+Ov001_SetLinkStatus kind:function(arm,size=0x14) addr:0x021878b4
 Ov001_GetLinkStatus kind:function(arm,size=0x14) addr:0x021878c8
 Ov001_GetLinkInfo kind:function(arm,size=0x58) addr:0x021878dc
 func_ov001_02187934 kind:function(arm,size=0xc8) addr:0x02187934
@@ -1678,7 +1678,7 @@ data_ov001_02193e0c kind:bss addr:0x02193e0c
 data_ov001_02193e10 kind:bss addr:0x02193e10
 gOv001ConnectionState kind:bss addr:0x02193e14
 gOv001RegionMenu kind:bss addr:0x02193e18
-data_ov001_02193e1c kind:bss addr:0x02193e1c
+gOv001LinkWork kind:bss addr:0x02193e1c
 gWhWork kind:bss addr:0x02193e20
 gOv001ProfileState kind:bss addr:0x02193e28
 data_ov001_02193e2c kind:bss addr:0x02193e2c

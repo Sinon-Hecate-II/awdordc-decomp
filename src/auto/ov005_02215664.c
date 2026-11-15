@@ -8,7 +8,7 @@ void func_02099450(s32,s32,s32);void func_ov005_02214b98(void);s32 GetUiColor(s3
 void CreateMenuTextSprite(void *,s32,s32,s32,s32,s32,s32,void *,s32);void func_ov005_02214cdc(s32);void *func_0208931c(void *);s32 func_020aaf74(void *);void func_020a9a30(s32,s32,s32,s32);void func_02091cd0(void);void RecordsMenu_DrawList(s32);
 
 extern const u16 data_ov005_02220030[];
-extern u8 gRecordsMenuState[],data_ov005_02220484[],data_ov005_02220570[];
+extern u8 gRecordsMenuState[],data_ov005_02220484[],gRecordSubBgId[];
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 void func_02086608(s32);void *HeapAllocBlock(s32);void func_02082c84(void);
 void GX_SetBankForBG(s32);void GX_SetBankForOBJ(s32);void func_02003124(s32);void func_020031cc(s32);void func_02002ab8(s32);void func_0200323c(s32);
@@ -26,7 +26,7 @@ M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,144)=-1;M2C_FIELD(M2C_FIELD
 M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,146)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,148)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,150)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,152)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,154)=func_020ad5dc();M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,158)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,156)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,160)=-1;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,226)=-1;
 for(i=0;i<M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,154);i++){if(!func_ov005_022140f8(i))M2C_FIELD(gRecordsMenuState,u8 **,8)[i+162]=0;else{M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,156)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,156)+1;M2C_FIELD(gRecordsMenuState,u8 **,8)[i+162]=1;}}
 M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,4)=0;
-i=0;if(M2C_FIELD(data_ov005_02220484,s16 *,236)!=-1)do{if(func_ov005_02214120(M2C_FIELD(data_ov005_02220570,s16 *,(u32)i*4))){M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8)+M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)*2,s16 *,6)=i;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,4)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)+1;}i++;}while(M2C_FIELD(data_ov005_02220570,s16 *,(u32)i*4)!=-1);
+i=0;if(M2C_FIELD(data_ov005_02220484,s16 *,236)!=-1)do{if(func_ov005_02214120(M2C_FIELD(gRecordSubBgId,s16 *,(u32)i*4))){M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8)+M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)*2,s16 *,6)=i;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,4)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)+1;}i++;}while(M2C_FIELD(gRecordSubBgId,s16 *,(u32)i*4)!=-1);
 for(i=0;i<M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)*2;i++){j=RandomIntRange(0,M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)-1);k=RandomIntRange(0,M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,4)-1);t=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8)+j*2,s16 *,6);M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8)+j*2,s16 *,6)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8)+k*2,s16 *,6);M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8)+k*2,s16 *,6)=t;}
 func_02090248(15);func_ov005_022140e4();
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&first);

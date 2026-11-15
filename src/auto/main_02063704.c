@@ -1,6 +1,7 @@
 /* 22 functions from 0x02063704 to 0x02064684 (main), found by ds-decomp. */
 #include "common.h"
 #include "tcp_socket.h"
+#include "sb_serverlist.h"
 typedef struct { u8 b[2]; } Bytes2;
 typedef struct { u8 b[4]; } Bytes4;
 static inline void Copy2(void *d,const void *s) { *(Bytes2 *)d=*(const Bytes2 *)s; }
@@ -12,9 +13,9 @@ typedef struct M2C_S_02063BD0 {
 
 /* Add (or update) an entry parsed from the input buffer. */
 s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_02061090(void *, s32, u16);
+    s32 SBServerNew(void *, s32, u16);
     s32 func_02061168();
-    M2C_UNK func_02061a38(void *, s32);
+    M2C_UNK SBServerListAddServer(void *, s32);
     s32 SBServerListFindByAddress(void *, s32, u16);
     s32 SBServerListGetServerAt(void *, s32);
     M2C_UNK func_020629bc(void *, M2C_UNK, s32, s32 *, u16 *);
@@ -30,7 +31,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
     func_020629bc(arg0, arg1, arg2, &count, &kind);
     found = SBServerListFindByAddress(arg0, count, kind);
     if (found == -1) {
-        entry = func_02061090(arg0, count, kind);
+        entry = SBServerNew(arg0, count, kind);
         if (func_02061168() != 0) {
             return 5;
         }
@@ -42,7 +43,7 @@ apply:
         return 4;
     }
     if (found == -1) {
-        func_02061a38(arg0, entry);
+        SBServerListAddServer(arg0, entry);
     }
     M2C_FIELD(arg0, M2C_UNK (**)(void *, M2C_UNK, s32, s32), 0x488)(arg0, 1, entry, M2C_FIELD(arg0, s32 *, 0x494));
     return 0;
@@ -195,26 +196,48 @@ void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 #pragma scheduling reset
 extern s32 data_0213e4b4[];
-s32 func_02063c88(void *arg0) {
-s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
-s32 SBServerListFindByAddress(void *,s32,u16); s32 func_02061090(void *,s32,u16); s32 func_02061168(void);
-void gpiPlayerSetFlags(s32,s32); s32 func_02061a38(void *,s32); u32 GetTickCountMs(void); void func_020496b8(s32);
-u8 buf[0x5dc]; u16 addr[4]; s32 len=8; s32 entry;
-while(func_02049534(M2C_FIELD(arg0,s32 *,0x4b0))) {
-if(func_020497e0(M2C_FIELD(arg0,s32 *,0x4b0),buf,0x5db,0,addr,&len)!=-1 &&
-SBServerListFindByAddress(arg0,*(s32 *)(addr+2),addr[1])==-1) {
-entry=func_02061090(arg0,*(s32 *)(addr+2),addr[1]); if(func_02061168())return 5;
-gpiPlayerSetFlags(entry,17);func_02061a38(arg0,entry);
-}}
-if(GetTickCountMs()-M2C_FIELD(arg0,u32 *,0x4b4)>2000) {
-func_020496b8(M2C_FIELD(arg0,s32 *,0x4b0));M2C_FIELD(arg0,s32 *,0x4b0)=-1;M2C_FIELD(arg0,s32 *,0)=1;
-M2C_FIELD(arg0,void (**)(void *,s32,s32,s32),0x488)(arg0,3,data_0213e4b4[0],M2C_FIELD(arg0,s32 *,0x494));
-}return 0; }
+/* Server-list state 0: collect the servers that announce themselves on the query
+   socket.  The sender of each announcement becomes a new list entry (flagged 0x11,
+   which notifies the callback); once the 2-second collection window is over the
+   socket is closed, the list goes idle and the callback is told the query finished. */
+s32 SBServerListProcessAdHocServers(void *list) {
+    s32 func_02049534(s32);
+    s32 func_020497e0(s32, void *, s32, s32, void *, s32 *);
+    s32 SBServerListFindByAddress(void *, s32, u16);
+    s32 SBServerNew(void *, s32, u16);
+    s32 func_02061168(void);
+    void gpiPlayerSetFlags(s32, s32);
+    s32 SBServerListAddServer(void *, s32);
+    u32 GetTickCountMs(void);
+    void func_020496b8(s32);
+    u8 packet[0x5dc];
+    u16 fromAddr[4];
+    s32 addrLen = 8;
+    s32 server;
+
+    while (func_02049534(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET))) {
+        if (func_020497e0(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET), packet, 0x5db, 0,
+                          fromAddr, &addrLen) != -1 &&
+            SBServerListFindByAddress(list, *(s32 *)(fromAddr + 2), fromAddr[1]) == -1) {
+            server = SBServerNew(list, *(s32 *)(fromAddr + 2), fromAddr[1]);
+            if (func_02061168()) return 5;
+            gpiPlayerSetFlags(server, 0x11);
+            SBServerListAddServer(list, server);
+        }
+    }
+    if (GetTickCountMs() - M2C_FIELD(list, u32 *, SB_SLIST_START_TICK) > 2000) {
+        func_020496b8(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET));
+        M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) = -1;
+        M2C_FIELD(list, s32 *, SB_SLIST_STATE) = SB_SLIST_STATE_IDLE;
+        M2C_FIELD(list, void (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_QUERY_COMPLETE, data_0213e4b4[0], M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
+    }
+    return 0;
+}
 
 s32 func_02063dac(void *arg0) {
     void func_02061bdc(void *);
     s32 func_020639c0(void *);
-    s32 func_02063c88(void *);
+    s32 SBServerListProcessAdHocServers(void *);
     s32 temp_r0;
 
     func_02061bdc(arg0);
@@ -224,7 +247,7 @@ s32 func_02063dac(void *arg0) {
     case 3:
         return func_020639c0(arg0);
     case 0:
-        return func_02063c88(arg0);
+        return SBServerListProcessAdHocServers(arg0);
     case 1:
     default:
         return 0;
@@ -262,25 +285,25 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
     M2C_UNK UnlockMutex();
     M2C_UNK CloseAllStreams(s32);
     M2C_UNK func_020746f0(void);
-    extern u8 gFileLock[];
+    extern u8 gStreamMutexes[];
     extern M2C_UNK gSocketManager, gSocketEventState, gSocketEventCallbacks;
-    extern s32 gFileLockOwner[], gFileLockCount[];
+    extern s32 gStreamLockOwner[], gStreamLockDepth[];
     s32 n;
     M2C_UNK (*cb)(void);
     void *thread;
     s32 owner;
 
-    if (!TryLockMutex(gFileLock)) {
-        gFileLockOwner[0] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        gFileLockCount[0] = 1;
+    if (!TryLockMutex(gStreamMutexes)) {
+        gStreamLockOwner[0] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gStreamLockDepth[0] = 1;
     } else if ((thread = M2C_FIELD(&gSocketManager, void **, 4),
-                owner = gFileLockOwner[0],
+                owner = gStreamLockOwner[0],
                 owner == M2C_FIELD(thread, s32 *, 0x6C))) {
-        gFileLockCount[0]++;
+        gStreamLockDepth[0]++;
     } else {
-        LockMutex(gFileLock);
-        gFileLockOwner[0] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        gFileLockCount[0] = 1;
+        LockMutex(gStreamMutexes);
+        gStreamLockOwner[0] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gStreamLockDepth[0] = 1;
     }
     while (M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_COUNT) > 0) {
         n = M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_COUNT) - 1;
@@ -288,8 +311,8 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
         M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_COUNT) = n;
         cb();
     }
-    if (--gFileLockCount[0] == 0) {
-        UnlockMutex(gFileLock);
+    if (--gStreamLockDepth[0] == 0) {
+        UnlockMutex(gStreamMutexes);
     }
     if (M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB)) {
         M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB)();
@@ -307,9 +330,9 @@ void func_02063f90(void) {
 
 #pragma opt_strength_reduction off
 s32 func_02063fa8(void){
-s32 CloseAllStreams(s32);extern u8 data_021001cc[];
+s32 CloseAllStreams(s32);extern u8 gStdinStream[];
 u8 *p; s32 result; s32 i; u8 *base; s32 zero; s32 off;
-p=data_021001cc;result=0;i=1;zero=result;base=data_021001cc;
+p=gStdinStream;result=0;i=1;zero=result;base=gStdinStream;
 do{u32 a; u32 v=M2C_FIELD(p,u32*,4);a=(u32)(v<<22)>>29;
 if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))CloseAllStreams)(p,b,a))result=-1;}
 if(i<3){off=i*76;i++;p=base+off;}else p=0;
@@ -321,12 +344,12 @@ return result;}
 #pragma peephole off
 s32 func_02064034(void) {
 s32 CloseAllStreams(s32);
-extern u8 data_021001cc[];
+extern u8 gStdinStream[];
 void *p; s32 result; s32 i; s32 offset;
-p=data_021001cc; result=0; i=1;
+p=gStdinStream; result=0; i=1;
 do {
 if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && CloseAllStreams((s32)p)) result=-1;
-if(i<3) {offset=i*0x4c; i++; p=data_021001cc+offset;} else p=NULL;
+if(i<3) {offset=i*0x4c; i++; p=gStdinStream+offset;} else p=NULL;
 }while(p);
 return result;
 }
@@ -412,40 +435,40 @@ s32 ReadFileData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     M2C_UNK LockMutex();
     M2C_UNK UnlockMutex();
     s32 func_0206433c(u16 *, s32, s32, void *);
-    extern u8 data_021001cc[];
-    extern u8 gFileLock[];
+    extern u8 gStdinStream[];
+    extern u8 gStreamMutexes[];
     extern M2C_UNK gSocketManager;
-    extern s32 gFileLockOwner[];
-    extern s32 gFileLockCount[];
+    extern s32 gStreamLockOwner[];
+    extern s32 gStreamLockDepth[];
 
     u32 n;
     s32 result;
     void *thread;
     s32 owner;
 
-    if (arg3 == (void *)data_021001cc) {
+    if (arg3 == (void *)gStdinStream) {
         n = 2;
     } else {
         n = 5;
     }
 
-    if (TryLockMutex(gFileLock + n * 24) == 0) {
-        gFileLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        gFileLockCount[n] = 1;
+    if (TryLockMutex(gStreamMutexes + n * 24) == 0) {
+        gStreamLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gStreamLockDepth[n] = 1;
     } else if ((thread = M2C_FIELD(&gSocketManager, void **, 4),
-               owner = gFileLockOwner[n],
+               owner = gStreamLockOwner[n],
                owner == M2C_FIELD(thread, s32 *, 0x6C))) {
-        gFileLockCount[n]++;
+        gStreamLockDepth[n]++;
     } else {
-        LockMutex(gFileLock + n * 24);
-        gFileLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        gFileLockCount[n] = 1;
+        LockMutex(gStreamMutexes + n * 24);
+        gStreamLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gStreamLockDepth[n] = 1;
     }
 
     result = func_0206433c(arg0, arg1, arg2, arg3);
 
-    if (--gFileLockCount[n] == 0) {
-        UnlockMutex(gFileLock + n * 24);
+    if (--gStreamLockDepth[n] == 0) {
+        UnlockMutex(gStreamMutexes + n * 24);
     }
 
     return result;

@@ -417,7 +417,52 @@ void func_020b6e58(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x56) = 0;
 }
 
-void StageAuroraEffect(void *a){s32 func_020b5200(M2C_UNK *,s32);s32 func_020b51f0(void);void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);void func_01ffa6fc(void *);extern M2C_UNK gAuroraAimSprite,gAuroraSmokeSprite,gAuroraDamageSprite,gAuroraSprite;void AuroraBombardTargets(void *);void UpdateAuroraEffect(void *);void ApplyAuroraPendingDamage(void);s32 n=M2C_FIELD(a,s16 *,0x56);s32 x,y,v;void *p;v=M2C_FIELD(a,s16 *,0x6c);x=M2C_FIELD(a,s32 *,0x38);y=M2C_FIELD(a,s32 *,0x3c);M2C_FIELD(a,s16 *,0x56)=n+1;switch(n){case 0:M2C_FIELD(a,s32 *,0x5c)=func_020b5200(&gAuroraAimSprite,0);break;case 1:M2C_FIELD(a,s32 *,0x60)=func_020b5200(&gAuroraSmokeSprite,1);break;case 2:M2C_FIELD(a,s32 *,0x64)=func_020b5200(&gAuroraDamageSprite,8);break;case 3:p=func_020b5188(&gAuroraSprite,x,y,1,func_020b51f0(),2,a);M2C_FIELD(p,s32 *,0x58)=v;M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(a,s32 *,0x5c);M2C_FIELD(p,s32 *,0x60)=M2C_FIELD(a,s32 *,0x60);M2C_FIELD(p,s32 *,0x64)=M2C_FIELD(a,s32 *,0x64);M2C_FIELD(p,u32 *,0x48)=(M2C_FIELD(p,u32 *,0x48)&~1023)|10;M2C_FIELD(p,void **,0x68)=AuroraBombardTargets;M2C_FIELD(p,void **,0x6c)=UpdateAuroraEffect;M2C_FIELD(p,void **,0x70)=ApplyAuroraPendingDamage;func_01ffa6fc(a);break;}}
+/* Advance the staged Aurora strike: the first three frames load the aim, smoke and
+ * damage sprite handles onto the staging object, then the fourth spawns the strike
+ * sprite, copies those handles and the power value onto it, wires up its bombard/
+ * update/apply callbacks and deletes the staging object. */
+void StageAuroraEffect(void *effect) {
+    s32 func_020b5200(M2C_UNK *, s32);
+    s32 func_020b51f0(void);
+    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    void func_01ffa6fc(void *);
+    extern M2C_UNK gAuroraAimSprite, gAuroraSmokeSprite, gAuroraDamageSprite, gAuroraSprite;
+    void AuroraBombardTargets(void *);
+    void UpdateAuroraEffect(void *);
+    void ApplyAuroraPendingDamage(void);
+
+    s32 stage = M2C_FIELD(effect, s16 *, 0x56);
+    s32 x, y, power;
+    void *strike;
+
+    power = M2C_FIELD(effect, s16 *, 0x6c);
+    x = M2C_FIELD(effect, s32 *, 0x38);
+    y = M2C_FIELD(effect, s32 *, 0x3c);
+    M2C_FIELD(effect, s16 *, 0x56) = stage + 1;
+    switch (stage) {
+    case 0:
+        M2C_FIELD(effect, s32 *, 0x5c) = func_020b5200(&gAuroraAimSprite, 0);
+        break;
+    case 1:
+        M2C_FIELD(effect, s32 *, 0x60) = func_020b5200(&gAuroraSmokeSprite, 1);
+        break;
+    case 2:
+        M2C_FIELD(effect, s32 *, 0x64) = func_020b5200(&gAuroraDamageSprite, 8);
+        break;
+    case 3:
+        strike = func_020b5188(&gAuroraSprite, x, y, 1, func_020b51f0(), 2, effect);
+        M2C_FIELD(strike, s32 *, 0x58) = power;
+        M2C_FIELD(strike, s32 *, 0x5c) = M2C_FIELD(effect, s32 *, 0x5c);
+        M2C_FIELD(strike, s32 *, 0x60) = M2C_FIELD(effect, s32 *, 0x60);
+        M2C_FIELD(strike, s32 *, 0x64) = M2C_FIELD(effect, s32 *, 0x64);
+        M2C_FIELD(strike, u32 *, 0x48) = (M2C_FIELD(strike, u32 *, 0x48) & ~1023) | 10;
+        M2C_FIELD(strike, void **, 0x68) = AuroraBombardTargets;
+        M2C_FIELD(strike, void **, 0x6c) = UpdateAuroraEffect;
+        M2C_FIELD(strike, void **, 0x70) = ApplyAuroraPendingDamage;
+        func_01ffa6fc(effect);
+        break;
+    }
+}
 
 void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
     M2C_UNK func_020b6a9c(s16);

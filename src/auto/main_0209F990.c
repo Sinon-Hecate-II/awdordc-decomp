@@ -1,5 +1,6 @@
 /* 17 functions from 0x0209F990 to 0x020A0964 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct PathPlayerId { u32 id:8; u32 rest:24; } PathPlayerId;
 typedef struct UnkCellBits { u8 pad[5]; u8 bits:3; u8 rest:5; } UnkCellBits;
 extern u16 gMapConfig;
@@ -445,27 +446,30 @@ void func_020a06a0(s32 arg0) {
  func_020a004c(0xffff,0xffff);func_020a0d18();
 }
 
-s32 func_020a0750(s32 x,s32 y){
+/* Score a cell as an AI move destination: 0 when the cell is invalid or has a unit,
+ * otherwise more for cells reached with less movement (and inside the player's move
+ * range), plus the terrain's defense score for the cursor unit. */
+s32 ScoreMoveCell(s32 x,s32 y){
 extern s32 *gCurrentMap;
-void *p; s32 v; u8 *unit; s32 cell; s32 owner; s32 kind; s32 terrain; s32 result=0;
-if(x<0||y<0||x>=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144)||y>=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146))return 0;
-p=(void *)*gCurrentMap;
-v=M2C_FIELD(M2C_FIELD(p+y*4,s8 **,0x52e8),s8 *,x);
-if(v<0||v>110)return 0;
-if(M2C_FIELD(p,u8 *,x+M2C_FIELD(p+y*2,u16 *,0x3758)))return result;
-result+=(110-v)<<8;
-result+=IsCellInPlayerMoveRange((M2C_FIELD(p,u8 *,0x52d4)>>6)+1,x,y)?64:0;
-p=(void *)*gCurrentMap;
-cell=x+M2C_FIELD(p+y*2,u16 *,0x3758);
-unit=M2C_FIELD(p,u8 **,0x52d0);
-owner=(M2C_FIELD(p,u8 *,0x52d4)>>6)+1;
-kind=(u32)(unit[0]<<26)>>26;
-terrain=M2C_FIELD(p+cell,u8 *,0x1420)&31;
-return result+func_020d05f4(owner,kind,terrain);
+void *map; s32 moveCost; u8 *cursorUnit; s32 cellOffset; s32 player; s32 kind; s32 terrain; s32 score=0;
+if(x<0||y<0||x>=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_WIDTH)||y>=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_HEIGHT))return 0;
+map=(void *)*gCurrentMap;
+moveCost=M2C_FIELD(M2C_FIELD(map+y*4,s8 **,MAP_GRID),s8 *,x);
+if(moveCost<0||moveCost>MAP_GRID_NO_UNIT_MAX)return 0;
+if(M2C_FIELD(map,u8 *,x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)))return score;
+score+=(MAP_GRID_NO_UNIT_MAX-moveCost)<<8;
+score+=IsCellInPlayerMoveRange((M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID)>>6)+1,x,y)?64:0;
+map=(void *)*gCurrentMap;
+cellOffset=x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS);
+cursorUnit=M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT);
+player=(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID)>>6)+1;
+kind=(u32)(cursorUnit[0]<<26)>>26;
+terrain=M2C_FIELD(map+cellOffset,u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK;
+return score+GetTerrainDefenseScore(player,kind,terrain);
 }
 
 s32 func_020a086c(s16 *arg0, s16 *arg1) {
-    s32 func_020a0750(s32, s32);
+    s32 ScoreMoveCell(s32, s32);
     s32 NextRandomValue(void);
     unsigned long long func_020720f0(s32, s32);
     extern s8 data_0211fbbc[];
@@ -477,7 +481,7 @@ s32 func_020a086c(s16 *arg0, s16 *arg1) {
     s32 off = 0;
     s32 scores[4];
     for (i = 0; i < 4; i++) {
-        s32 sc = func_020a0750(xv + (s32)data_0211fbbc[off], yv + (s32)data_0211fbbc[off + 1]);
+        s32 sc = ScoreMoveCell(xv + (s32)data_0211fbbc[off], yv + (s32)data_0211fbbc[off + 1]);
         scores[i] = sc;
         if (sc > best) { best = sc; tiecount = 0; }
         else if (sc == best) { tiecount++; }

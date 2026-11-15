@@ -4,9 +4,9 @@
 typedef struct UnkOv010Header { s16 unk0; u8 unk2; u8 unk3; } UnkOv010Header;
 
 static inline u8 Encode2BitSample(s16 sample,UnkOv010Header *state) {
- extern s16 data_ov010_0222bd78[];
- extern s8 data_ov010_0222bd5c[];
- s32 index=state->unk2,pred=state->unk0,step=data_ov010_0222bd78[index],diff=sample-pred,code;
+ extern s16 gAdpcmStepTable[];
+ extern s8 gAdpcmIndexTable2[];
+ s32 index=state->unk2,pred=state->unk0,step=gAdpcmStepTable[index],diff=sample-pred,code;
  if(diff<0){code=2;diff=-diff;}else code=0;
  if(diff>=step)code|=1;
  if(!(code&1))step=0;
@@ -14,7 +14,7 @@ static inline u8 Encode2BitSample(s16 sample,UnkOv010Header *state) {
  pred+=step;
  if(pred < -32768)pred=-32768;
  if(pred > 32767)pred=32767;
- index+=data_ov010_0222bd5c[code];
+ index+=gAdpcmIndexTable2[code];
  if(index<0)index=0;else if(index>88)index=88;
  state->unk0=pred;state->unk2=index;
  return code;
@@ -38,14 +38,14 @@ packed|=Encode2BitSample(in[3],arg3)<<6;
 void func_ov010_022223e8(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
 void func_ov010_02221fa0(void *,s32,s32,UnkOv010Header *);
 void func_ov010_02221600(void *,s32,s32,UnkOv010Header *);
-void func_ov010_02221320(void *,s32,s32,UnkOv010Header *);
+void DecodeAdpcm4Bit(void *,s32,s32,UnkOv010Header *);
 UnkOv010Header header;
 header.unk0=M2C_FIELD(arg0,s16 *,0);
 header.unk2=M2C_FIELD(arg0,u8 *,2);
 switch(arg3) {
 case 2: func_ov010_02221fa0((u8 *)arg0+4,arg1,arg2-4,&header); return;
 case 3: func_ov010_02221600((u8 *)arg0+4,arg1,arg2-4,&header); return;
-case 4: func_ov010_02221320((u8 *)arg0+4,arg1,arg2-4,&header); return;
+case 4: DecodeAdpcm4Bit((u8 *)arg0+4,arg1,arg2-4,&header); return;
 }
 }
 
@@ -254,31 +254,35 @@ if(M2C_FIELD(state,void **,0x3c)){Link_FreePacket(M2C_FIELD(state,void **,0x3c))
 return 0;
 }
 #pragma optimization_level reset
-s32 func_ov010_02222b0c(void *p,s32 size,s32 *out){
+/* Receive one link packet of packetSize bytes into buffer: try each of the three
+ * channels in turn; when one delivers, pull the other channels' queued packets into a
+ * scratch buffer and merge them into the same packet. `players` collects the bits of
+ * the players whose packets were used. Returns 1 when a packet was received. */
+s32 func_ov010_02222b0c(void *buffer,s32 packetSize,s32 *players){
 s32 Link_PullChannelPacket(void*,s32,u32,s32*);
 void func_ov010_02225558(void*,void*,void*,s32);
 void MI_CpuFill32(s32,void*,s32);
 void func_ov010_02225304(void*,s32);
 extern s32 data_ov010_0222c960;
 extern u8 data_ov010_0222cb54[];
-s32 result;u32 i,j;
-if(out)*out=0;
-result=0;
-if(size==M2C_FIELD(&data_ov010_0222c960,s32*,0x24)&&M2C_FIELD(&data_ov010_0222c960,s32*,0x20)){
-for(i=0;i<3;i++){
-if(Link_PullChannelPacket(p,size,i,out)==1){result=1;break;}
+s32 received;u32 channel,nextChannel;
+if(players)*players=0;
+received=0;
+if(packetSize==M2C_FIELD(&data_ov010_0222c960,s32*,0x24)&&M2C_FIELD(&data_ov010_0222c960,s32*,0x20)){
+for(channel=0;channel<3;channel++){
+if(Link_PullChannelPacket(buffer,packetSize,channel,players)==1){received=1;break;}
 }
-if(result){
-j=i+1;
-if(j==3)result=1;
-else for(;j<3;j++){
-if(Link_PullChannelPacket(data_ov010_0222cb54,size,j,out)==1)
-func_ov010_02225558(p,data_ov010_0222cb54,p,size);
+if(received){
+nextChannel=channel+1;
+if(nextChannel==3)received=1;
+else for(;nextChannel<3;nextChannel++){
+if(Link_PullChannelPacket(data_ov010_0222cb54,packetSize,nextChannel,players)==1)
+func_ov010_02225558(buffer,data_ov010_0222cb54,buffer,packetSize);
 }
-}else MI_CpuFill32(0,p,size);
-}else{MI_CpuFill32(0,p,size);result=0;}
-if(M2C_FIELD(&data_ov010_0222c960,s32*,0x18))func_ov010_02225304(p,size);
-return result;
+}else MI_CpuFill32(0,buffer,packetSize);
+}else{MI_CpuFill32(0,buffer,packetSize);received=0;}
+if(M2C_FIELD(&data_ov010_0222c960,s32*,0x18))func_ov010_02225304(buffer,packetSize);
+return received;
 }
 
 #pragma pop
