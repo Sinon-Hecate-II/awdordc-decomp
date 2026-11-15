@@ -96,7 +96,7 @@ data_ov000_021e1474[kind] += value >> 25;
 }
 
 s32 func_ov000_021a7e98(s32 arg0) {
-    s32 func_020d2d18(u16, M2C_UNK);
+    s32 GetUnitBuildCost(u16, M2C_UNK);
     s32 func_ov000_021a6c8c();
     s32 func_ov000_021a72c0(M2C_UNK);
     s32 func_ov000_021a8784(M2C_UNK);
@@ -107,7 +107,7 @@ s32 func_ov000_021a7e98(s32 arg0) {
     if (arg0) {
         temp_r4 = *gCurrentMap;
         temp_r5 = M2C_FIELD(temp_r4, u16 *, 0x52A4);
-        if ((s32) (func_020d2d18(temp_r5, 0x15) * 0xA) > M2C_FIELD(((temp_r5 * 0x8C) + temp_r4), s32 *, 0x67A4)) {
+        if ((s32) (GetUnitBuildCost(temp_r5, 0x15) * 0xA) > M2C_FIELD(((temp_r5 * 0x8C) + temp_r4), s32 *, 0x67A4)) {
             return -1;
         }
     }
@@ -123,7 +123,7 @@ s32 func_ov000_021a7e98(s32 arg0) {
 s32 func_ov000_021a7f1c(s32 arg0) {
 s32 FindAiTargetOfType(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
 s32 func_ov000_021a484c(s32,s32);s32 func_ov000_021a67f0(u8);s32 func_ov000_021a4980(s8,s32);
-void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 func_020d2d18(u16,s32);
+void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
 s32 func_ov000_021a49e0(s32);s32 func_ov000_021a881c(s32,s32);
 extern u8 gUnitKindInfo[],gUnitKindStats[],gUnitKindTargetClass[],gAiTargetCandidates[],gAiCommand[];
 extern u32 gUnitKindScores[];extern void **gCurrentMap;extern u8 *gAiState;
@@ -163,7 +163,7 @@ entry=gAiTargetCandidates+index*12;
 if(func_ov000_021a4e08(entry[0],entry[1],best)>=90){entry[3]=255;goto again;}
 func_ov000_021a0250();
 }
-cost=func_020d2d18(*(u16 *)((u8 *)*gCurrentMap+0x52a4),best)*10;
+cost=GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+0x52a4),best)*10;
 map=*gCurrentMap;price=(u16)cost;
 if(((AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4))->money<price){
 if(arg0==1 && func_ov000_021a49e0(price)==1){
@@ -177,10 +177,10 @@ other=func_ov000_021a7e98((u8)(*(s32 *)(gAiState+20)!=0));
 if(other!=-1){
 if(!*(s32 *)(gAiState+20)){
 map=*gCurrentMap;player=*(u16 *)(map+0x52a4);
-if(func_020d2d18(player,21)*10>((AiPlayer *)(map+0x67a4)+player)->money){
-if(arg0==1 && func_ov000_021a49e0(func_020d2d18(*(u16 *)((u8 *)*gCurrentMap+0x52a4),21)*10)==1){
+if(GetUnitBuildCost(player,21)*10>((AiPlayer *)(map+0x67a4)+player)->money){
+if(arg0==1 && func_ov000_021a49e0(GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+0x52a4),21)*10)==1){
 map=*gCurrentMap;state=gAiState;player=*(u16 *)(map+0x52a4);
-*(s32 *)(state+20)=func_020d2d18(player,21)*10-(((AiPlayer *)(map+0x67a4)+player)->income-*(s32 *)(state+16));goto retry;
+*(s32 *)(state+20)=GetUnitBuildCost(player,21)*10-(((AiPlayer *)(map+0x67a4)+player)->income-*(s32 *)(state+16));goto retry;
 }
 goto reserve;
 }}
@@ -211,7 +211,7 @@ gUnitKindScores[best]=0;func_ov000_021a0250();goto retry;
 s32 SelectUnitForTargetCandidate(s32 candidateIndex) {
  extern u8 gAiTargetCandidates[],gUnitKindInfo[],gUnitKindTargetClass[],gUnitKindStats[],gAiCommand[];
  extern u8 *gAiCommandState; extern u32 gUnitKindScores[];extern void **gCurrentMap;
- s32 GetUnitAttackClass(u8);s32 func_020d2d18(u16,s32);s32 func_ov000_021a4e08(u32,u32,s32);
+ s32 GetUnitAttackClass(u8);s32 GetUnitBuildCost(u16,s32);s32 func_ov000_021a4e08(u32,u32,s32);
  u8 *candidate=gAiTargetCandidates+candidateIndex*12;
  u32 bestScore; s32 retried=0; s32 bestKind,kind;u8 *kindInfo;u8 *map;AiPlayer *player;s32 buildCost;u32 indirect;s32 cost,money,offset;
  if(candidate[2]==3 && (((u32)(*(u16 *)(gAiCommandState+10)<<29)>>29)&2))return -1;
@@ -224,7 +224,7 @@ s32 SelectUnitForTargetCandidate(s32 candidateIndex) {
  }}
  if(bestKind==0)return -1;
  if(candidate[2]!=gUnitKindTargetClass[bestKind])goto reject;
- cost=func_020d2d18(*(u16 *)((u8 *)*gCurrentMap+MAP_CURRENT_PLAYER),bestKind)*10;
+ cost=GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+MAP_CURRENT_PLAYER),bestKind)*10;
  buildCost=(u16)cost;map=*gCurrentMap;player=(AiPlayer *)(map+MAP_PLAYER_STATES)+*(u16 *)(map+MAP_CURRENT_PLAYER);
  money=player->money;
  if(money<buildCost)goto reject;
@@ -245,7 +245,7 @@ void func_ov000_021a7610(void) {
 u8 func_ov000_021a7348(void); s32 func_ov000_021a6e5c(u8); s32 func_ov000_021a72c0(s32);
 s32 func_ov000_021a96f4(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
 s32 ScaleAiDamageByRange(s32,s32,s32); s32 Divide(s32,s32);
-s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 func_020d2d18(u16,s32);
+s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 GetUnitBuildCost(u16,s32);
 extern u8 *gAiState; extern u32 gUnitKindScores[27];
 extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *gAiCommandState;
 extern u8 data_ov000_021df598[]; extern u8 gUnitKindStats[]; extern void **gCurrentMap;
@@ -298,7 +298,7 @@ for(i=1;i<27;i++){
 if(!func_ov000_021a72c0((u8)i))continue;
 if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
 if(!GetAttackDamage(i,1,0))continue;
-gUnitKindScores[i]=func_020d2d18(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i);
+gUnitKindScores[i]=GetUnitBuildCost(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i);
 for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
 }
 }

@@ -307,55 +307,59 @@ void ghiUnlockMutex(void) {
 
 }
 
-s32 func_0204a618(void *arg0) {
+/* Run the connection's decryptor over the ciphertext left unread in the decrypt
+ * buffer, appending the plaintext to the read buffer.  When the decryptor fills
+ * the read buffer it is grown and the decrypt is retried; once most of the
+ * decrypt buffer has been consumed it is compacted.  Returns 0 on failure. */
+s32 ghiDecryptBuffer(GHIConnection *conn) {
 M2C_UNK MemMove(s32,s32,s32);
-s32 spC; s32 sp8; s32 ip,r3,result,left,used,p,inPtr,outPtr;
-spC=0;sp8=0;
+s32 inBytes; s32 outBytes; s32 decryptPos,readLen,result,used,remaining,data,inPtr,outPtr;
+inBytes=0; outBytes=0;
 loop:
-ip=M2C_FIELD(arg0,s32 *,0xa8);
-inPtr=M2C_FIELD(arg0,s32 *,0x9c);
-spC=M2C_FIELD(arg0,s32 *,0xa4)-ip;
-r3=M2C_FIELD(arg0,s32 *,0x80);
-outPtr=M2C_FIELD(arg0,s32 *,0x78);
-sp8=M2C_FIELD(arg0,s32 *,0x7c)-r3;
-result=M2C_FIELD(arg0,s32 (**)(void *,void *,s32,s32 *,s32,s32 *),0x180)(arg0,(u8*)arg0+0x164,inPtr+ip,&spC,outPtr+r3,&sp8);
-if(result==2 && !ghiResizeBuffer((s32*)((u8*)arg0+0x74),M2C_FIELD(arg0,s32 *,0x88)))return 0;
-if(result==2 && sp8==0)goto loop;
-M2C_FIELD(arg0,s32 *,0xa8)+=spC;
-M2C_FIELD(arg0,s32 *,0x80)+=sp8;
-used=M2C_FIELD(arg0,s32 *,0xa8);
+decryptPos=conn->decryptBuffer.pos;
+inPtr=(s32)conn->decryptBuffer.data;
+inBytes=conn->decryptBuffer.len-decryptPos;
+readLen=conn->readBuffer.len;
+outPtr=(s32)conn->readBuffer.data;
+outBytes=conn->readBuffer.size-readLen;
+result=conn->decryptor(conn,conn->encryptorState,inPtr+decryptPos,&inBytes,outPtr+readLen,&outBytes);
+if(result==GHI_DECRYPT_OUTPUT && !ghiResizeBuffer((s32 *)&conn->readBuffer,conn->readBuffer.sizeIncrement))return 0;
+if(result==GHI_DECRYPT_OUTPUT && outBytes==0)goto loop;
+conn->decryptBuffer.pos+=inBytes;
+conn->readBuffer.len+=outBytes;
+used=conn->decryptBuffer.pos;
 if(used>255){
-left=M2C_FIELD(arg0,s32 *,0xa4)-used;
-if(!left)ResetBuffer((u8*)arg0+0x98);
+remaining=conn->decryptBuffer.len-used;
+if(!remaining)ResetBuffer(&conn->decryptBuffer);
 else {
-p=M2C_FIELD(arg0,s32 *,0x9c);
-MemMove(p,p+used,left);
-M2C_FIELD(arg0,s32 *,0xa8)=0;
-M2C_FIELD(arg0,s32 *,0xa4)=left;
+data=(s32)conn->decryptBuffer.data;
+MemMove(data,data+used,remaining);
+conn->decryptBuffer.pos=0;
+conn->decryptBuffer.len=remaining;
 }
 }
-if(result!=3)return 1;
-M2C_FIELD(arg0,s32 *,0xfc)=1;
-M2C_FIELD(arg0,s32 *,0x38)=17;
+if(result!=GHI_DECRYPT_ERROR)return 1;
+conn->completed=1;
+conn->result=17;
 return 0;
 }
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_propagation off
-s32 func_0204a740(void *p,u8 *dst,s32 *len) {
+s32 ghiReceiveData(void *p,u8 *dst,s32 *len) {
 u32 GetTickCountMs(void);
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 s32 ghiRecv(s32,u8 *,s32,s32);
 
-extern s32 data_020fd00c[];
+extern s32 gGhiRecvTimeoutMs[];
 s32 r; s32 err; s32 n; u32 now; register s32 got; register s32 out;
 n=*len-1;
 if(M2C_FIELD(p,s32 *,0x134)){
 now=GetTickCountMs();
-if(now<M2C_FIELD(p,u32 *,0x138)+data_020fd00c[0])return 1;
+if(now<M2C_FIELD(p,u32 *,0x138)+gGhiRecvTimeoutMs[0])return 1;
 M2C_FIELD(p,u32 *,0x138)=now;
-if(n>=data_020fd00c[1])n=data_020fd00c[1];
+if(n>=gGhiRecvTimeoutMs[1])n=gGhiRecvTimeoutMs[1];
 }
 if(M2C_FIELD(p,s32 *,0x84)<M2C_FIELD(p,s32 *,0x80)){
 func_0204a3dc(p+0x74,dst,len);
@@ -375,7 +379,7 @@ M2C_FIELD(p,s32 *,0x4c)=err;M2C_FIELD(p,s32 *,0x130)=1;return 3;
 if(got==0){M2C_FIELD(p,s32 *,0x130)=1;return 2;}
 if(M2C_FIELD(p,s32 *,0x168)){
 if(!((s32 (*)(void *,u8 *))ghiAppendDataToBuffer)(p+0x98,dst))return 3;
-if(!func_0204a618(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=17;return 3;}
+if(!ghiDecryptBuffer(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=17;return 3;}
 if(M2C_FIELD(p,s32 *,0x80)-M2C_FIELD(p,s32 *,0x84)<=0){*dst=0;*len=0;return 1;}
 r=*len-1;
 if(!func_0204a3dc(p+0x74,dst,&r))return 3;

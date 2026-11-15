@@ -49,7 +49,7 @@ s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out=&gAiTargetCandidates+*gAiState*12;
 u8 *entry; u8 *unit; u8 *enemyUnit; s32 enemyPlayer,enemyIndex; u8 *candidate,*scan,*best; void *map; s32 player,index,count=0,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row; u8 funds; unsigned int penalty; u32 kind;
-s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
+s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 GetUnitBuildCost(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 if(!arg0 && (func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&8))return 0;
 entry=(u8 *)*gCurrentMap+0x6c60;
@@ -93,9 +93,9 @@ func_ov000_0217a59c(entry[1],entry[2],data_ov000_021df590[pass],110);
 allow=1;
 if(data_ov000_021df590[pass]==19){
 if(gAiState[7]+1>=50)allow=0;
-price=func_020d2d18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),data_ov000_021df590[pass]);
-price=(price+func_020d2d18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1))*10;
-}else price=func_020d2d18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),data_ov000_021df590[pass])*10;
+price=GetUnitBuildCost(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),data_ov000_021df590[pass]);
+price=(price+GetUnitBuildCost(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1))*10;
+}else price=GetUnitBuildCost(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),data_ov000_021df590[pass])*10;
 map=*gCurrentMap;
 candidate=map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;
 funds=M2C_FIELD(candidate,s32 *,0)>=price;
@@ -195,7 +195,7 @@ gAiState[14]=best[0];gAiState[15]=best[1];return 1;
 /* Plan a special-unit action if no conflicting units exist, a target is available, and the player can afford it. */
 s32 func_ov000_021a2db8(void) {
  void FloodFillUnitRange(s32,s32,s32,s32,s32);
- s32 PlayerHasHq(u16); s32 func_020d2d18(u16,u8);
+ s32 PlayerHasHq(u16); s32 GetUnitBuildCost(u16,u8);
  s32 func_ov000_0217bc84(s32,s32,s32);
  void CommitAiAction(s32); s32 func_ov000_021a6d4c(void);
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
@@ -224,6 +224,6 @@ s32 func_ov000_021a2db8(void) {
  if(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<23)>>29)&2)gAiCommand[6]=6;
  else gAiCommand[6]=7;
  lastMap=*gCurrentMap;player=M2C_FIELD(lastMap,u16 *,0x52a4);
- if(func_020d2d18(player,gAiCommand[6])*10>M2C_FIELD(lastMap+player*140,s32 *,0x67a4))return 0;
+ if(GetUnitBuildCost(player,gAiCommand[6])*10>M2C_FIELD(lastMap+player*140,s32 *,0x67a4))return 0;
  CommitAiAction(choice);return 1;
 }

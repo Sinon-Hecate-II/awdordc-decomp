@@ -11,7 +11,7 @@ static inline void E1E88Toggle(void *p, u8 v) { u8 a; if(v)a=0;else a=1; M2C_FIE
 void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     s32 IsLinkSessionActive();
     s32 GetReadyPlayerMask();
-    void func_02088da8(void *);
+    void Hide3DSprite(void *);
     void *func_0208931c(void *);
     void func_02098e04(void *, s32, s32);
     void func_02098e2c(void *, s32);
@@ -82,7 +82,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         sprite = ((void **) spriteSlots)[player + 1];
         *(u16 *) ((u8 *) sprite + 0x3C) = 0x800;
         sprite = ((void **) spriteSlots)[player + 1];
-        func_02088da8(sprite);
+        Hide3DSprite(sprite);
         sprite = func_0208931c(allocationGroup);
         ((void **) spriteSlots)[player + 5] = sprite;
         *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
@@ -97,7 +97,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         }
         *(u16 *) ((u8 *) ((void **) spriteSlots)[player + 5] + 0x3E) = (u32) (tileIndex << 5) >> 5;
         *(u16 *) ((u8 *) ((void **) spriteSlots)[player + 5] + 0x3C) = 0x6800;
-        func_02088da8(((void **) spriteSlots)[player + 5]);
+        Hide3DSprite(((void **) spriteSlots)[player + 5]);
         sprite = func_0208931c(allocationGroup);
         ((void **) spriteSlots)[player + 9] = sprite;
         *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
@@ -106,7 +106,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         sprite = ((void **) spriteSlots)[player + 9];
         *(u16 *) ((u8 *) sprite + 0x3C) = 0x6800;
         sprite = ((void **) spriteSlots)[player + 9];
-        func_02088da8(sprite);
+        Hide3DSprite(sprite);
         player++;
     } while (player < 4);
     gCur3DSpriteEngine = (void *) savedSpriteEngine;
@@ -228,9 +228,9 @@ void func_ov003_02202414(void *arg0) {
 
 void func_ov003_02202454(void *arg0){void *p;u8 i;
 p=M2C_FIELD(arg0,void**,0x40);
-func_02088da8(M2C_FIELD(p,s32*,0));func_02088da8(M2C_FIELD(p,s32*,4));
-for(i=0;(u32)i<8;i++){func_02088da8(((s32*)(p+8))[i]);func_02088da8(((s32*)(p+0x28))[i]);}
-func_02088da8(M2C_FIELD(arg0,s32*,0x4c));}
+Hide3DSprite(M2C_FIELD(p,s32*,0));Hide3DSprite(M2C_FIELD(p,s32*,4));
+for(i=0;(u32)i<8;i++){Hide3DSprite(((s32*)(p+8))[i]);Hide3DSprite(((s32*)(p+0x28))[i]);}
+Hide3DSprite(M2C_FIELD(arg0,s32*,0x4c));}
 
 void func_ov003_0220277c(void *arg0) {
     void func_ov003_02202b68(void *);
@@ -406,7 +406,7 @@ void func_ov003_02202bb0(void *p){
 
 void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    M2C_UNK func_02088da8(s32);
+    M2C_UNK Hide3DSprite(s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020d47f0();
     M2C_UNK SetOv003SceneState(M2C_UNK);
@@ -443,7 +443,7 @@ void func_ov003_02202cc4(void *arg0) {
         } while ((u32) var_r7 < 8U);
         gMapConfig |= 0x2000;
     }
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
+    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);

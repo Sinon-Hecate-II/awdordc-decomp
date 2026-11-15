@@ -150,8 +150,8 @@ void func_ov003_021efb60(void **arg0) {
 }
 
 void func_ov003_021efb74(void *arg0) {
-    M2C_UNK func_02088d94(s32);
-    M2C_UNK func_02088da8(s32);
+    M2C_UNK Show3DSprite(s32);
+    M2C_UNK Hide3DSprite(s32);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK IsLinkSessionActive(void);
@@ -190,21 +190,21 @@ void func_ov003_021efb74(void *arg0) {
     void *e;
     void *er;
 
-    func_02088d94(M2C_FIELD(r7, s32 *, 0x58));
+    Show3DSprite(M2C_FIELD(r7, s32 *, 0x58));
     r4 = M2C_FIELD(r7, void **, 0x68);
-    func_02088d94(M2C_FIELD(r4, s32 *, 0x78));
+    Show3DSprite(M2C_FIELD(r4, s32 *, 0x78));
 
     for (r5 = 0; r5 < 0xc; r5++) {
         e = (char *)r4 + r5 * 4;
         if (IsWaypointOptionValid((u8)r5) != 0) {
-            func_02088d94(M2C_FIELD(e, s32 *, 0x14));
+            Show3DSprite(M2C_FIELD(e, s32 *, 0x14));
         } else {
-            func_02088da8(M2C_FIELD(e, s32 *, 0x14));
+            Hide3DSprite(M2C_FIELD(e, s32 *, 0x14));
         }
-        func_02088d94(M2C_FIELD(e, s32 *, 0x44));
+        Show3DSprite(M2C_FIELD(e, s32 *, 0x44));
     }
 
-    func_02088d94(M2C_FIELD(r4, s32 *, 0x74));
+    Show3DSprite(M2C_FIELD(r4, s32 *, 0x74));
     _v = func_ov003_021f153c();
     r2 = M2C_FIELD(r7, void **, 0x3c);
     M2C_FIELD(r2, s16 *, 0xe) = (s16)_v;
@@ -225,16 +225,16 @@ void func_ov003_021efb74(void *arg0) {
             if (IsLinkSessionActive() == 0) {
                 if (r6 < r5u) {
                     er = (char *)r4 + r6 * 4;
-                    func_02088d94(M2C_FIELD(er, s32 *, 0x8));
-                    func_02088d94(M2C_FIELD(er, s32 *, 0x18));
-                    func_02088d94(M2C_FIELD(er, s32 *, 0x28));
-                    func_02088d94(M2C_FIELD(er, s32 *, 0x38));
+                    Show3DSprite(M2C_FIELD(er, s32 *, 0x8));
+                    Show3DSprite(M2C_FIELD(er, s32 *, 0x18));
+                    Show3DSprite(M2C_FIELD(er, s32 *, 0x28));
+                    Show3DSprite(M2C_FIELD(er, s32 *, 0x38));
                 }
             } else {
                 if (func_ov003_021e6cfc() != 0) {
                     er = (char *)r4 + r6 * 4;
-                    func_02088d94(M2C_FIELD(er, s32 *, 0x28));
-                    func_02088d94(M2C_FIELD(er, s32 *, 0x38));
+                    Show3DSprite(M2C_FIELD(er, s32 *, 0x28));
+                    Show3DSprite(M2C_FIELD(er, s32 *, 0x38));
                 }
             }
             r6 = (r6 + 1) & 0xff;
@@ -248,11 +248,11 @@ void func_ov003_021efb74(void *arg0) {
         r4b = M2C_FIELD(r7, void **, 0x64);
         for (r5b = 0; r5b < 4; r5b++) {
             er = (char *)r4b + r5b * 4;
-            func_02088da8(M2C_FIELD(er, s32 *, 0x8));
-            func_02088da8(M2C_FIELD(er, s32 *, 0x18));
+            Hide3DSprite(M2C_FIELD(er, s32 *, 0x8));
+            Hide3DSprite(M2C_FIELD(er, s32 *, 0x18));
         }
         if (func_ov003_021e6d28() != 0) {
-            func_02088da8(M2C_FIELD(r7, s32 *, 0x58));
+            Hide3DSprite(M2C_FIELD(r7, s32 *, 0x58));
             r4c = M2C_FIELD(r7, void **, 0x64);
             func_02088ff4(M2C_FIELD(r4c, s32 *, 0x0));
             func_02088ff4(M2C_FIELD(r4c, s32 *, 0x4));

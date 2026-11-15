@@ -1,5 +1,6 @@
 /* 22 functions from 0x02063704 to 0x02064684 (main), found by ds-decomp. */
 #include "common.h"
+#include "tcp_socket.h"
 typedef struct { u8 b[2]; } Bytes2;
 typedef struct { u8 b[4]; } Bytes4;
 static inline void Copy2(void *d,const void *s) { *(Bytes2 *)d=*(const Bytes2 *)s; }
@@ -233,51 +234,69 @@ s32 func_02063dac(void *arg0) {
 M2C_UNK func_02063df8(void) {
     M2C_UNK InvokeSocketCallback(M2C_UNK);
     void func_02063e1c(M2C_UNK);
-    extern M2C_UNK data_0213e4c4;
+    extern M2C_UNK gSocketEventState;
     InvokeSocketCallback(1);
-    M2C_FIELD(&data_0213e4c4, s32 *, 0xC) = 1;
+    M2C_FIELD(&gSocketEventState, s32 *, 0xC) = 1;
     func_02063e1c(1);
 }
 
 void func_02063e1c(M2C_UNK arg0) {
-    M2C_UNK func_02063e68(M2C_UNK);
+    M2C_UNK FlushSocketCallbacks(M2C_UNK);
     M2C_UNK func_02074074();
-    extern M2C_UNK data_0213e4c4;
-    if (M2C_FIELD(&data_0213e4c4, s32 *, 0xC) == 0) {
+    extern M2C_UNK gSocketEventState;
+    if (M2C_FIELD(&gSocketEventState, s32 *, 0xC) == 0) {
         func_02074074();
-        if (M2C_FIELD(&data_0213e4c4, M2C_UNK (**)(), 4) != NULL) {
-            M2C_FIELD(&data_0213e4c4, M2C_UNK (**)(), 4)();
-            M2C_FIELD(&data_0213e4c4, M2C_UNK (**)(), 4) = NULL;
+        if (M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), 4) != NULL) {
+            M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), 4)();
+            M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), 4) = NULL;
         }
     }
-    func_02063e68(arg0);
+    FlushSocketCallbacks(arg0);
 }
 
 #pragma opt_common_subs off
-M2C_UNK func_02063e68(M2C_UNK arg0){
-s32 func_02006680(void*);M2C_UNK LockMutex();M2C_UNK UnlockMutex();
-M2C_UNK func_020649a8(s32);M2C_UNK func_020746f0(void);
-extern u8 data_0213e61c[];extern M2C_UNK gSocketManager,data_0213e4c4,data_0213e4d4;
-extern s32 data_0213e5d4[],data_0213e5f8[];
-s32 n;M2C_UNK (*cb)(void);void *thread;s32 owner;
-if(!func_02006680(data_0213e61c)){
-data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),s32*,108);data_0213e5f8[0]=1;
-}else if((thread=M2C_FIELD(&gSocketManager,void**,4),owner=data_0213e5d4[0],owner==M2C_FIELD(thread,s32*,108))){
-data_0213e5f8[0]++;
-}else{
-LockMutex(data_0213e61c);
-data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),s32*,108);data_0213e5f8[0]=1;
-}
-while(M2C_FIELD(&data_0213e4c4,s32*,8)>0){
-n=M2C_FIELD(&data_0213e4c4,s32*,8)-1;
-cb=((M2C_UNK (**)(void))&data_0213e4d4)[n];
-M2C_FIELD(&data_0213e4c4,s32*,8)=n;cb();
-}
-if(--data_0213e5f8[0]==0)UnlockMutex(data_0213e61c);
-if(M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)){
-M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)();M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)=0;
-}
-func_020649a8(0);func_020746f0();
+/* Run the deferred socket callbacks (last queued first) and then finish network-stack teardown. */
+M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
+    s32 TryLockMutex(void *);
+    M2C_UNK LockMutex();
+    M2C_UNK UnlockMutex();
+    M2C_UNK CloseAllStreams(s32);
+    M2C_UNK func_020746f0(void);
+    extern u8 gFileLock[];
+    extern M2C_UNK gSocketManager, gSocketEventState, gSocketEventCallbacks;
+    extern s32 gFileLockOwner[], gFileLockCount[];
+    s32 n;
+    M2C_UNK (*cb)(void);
+    void *thread;
+    s32 owner;
+
+    if (!TryLockMutex(gFileLock)) {
+        gFileLockOwner[0] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gFileLockCount[0] = 1;
+    } else if ((thread = M2C_FIELD(&gSocketManager, void **, 4),
+                owner = gFileLockOwner[0],
+                owner == M2C_FIELD(thread, s32 *, 0x6C))) {
+        gFileLockCount[0]++;
+    } else {
+        LockMutex(gFileLock);
+        gFileLockOwner[0] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gFileLockCount[0] = 1;
+    }
+    while (M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_COUNT) > 0) {
+        n = M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_COUNT) - 1;
+        cb = ((M2C_UNK (**)(void)) &gSocketEventCallbacks)[n];
+        M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_COUNT) = n;
+        cb();
+    }
+    if (--gFileLockCount[0] == 0) {
+        UnlockMutex(gFileLock);
+    }
+    if (M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB)) {
+        M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB)();
+        M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB) = 0;
+    }
+    CloseAllStreams(0);
+    func_020746f0();
 }
 #pragma opt_common_subs reset
 void func_02063f90(void) {
@@ -288,11 +307,11 @@ void func_02063f90(void) {
 
 #pragma opt_strength_reduction off
 s32 func_02063fa8(void){
-s32 func_020649a8(s32);extern u8 data_021001cc[];
+s32 CloseAllStreams(s32);extern u8 data_021001cc[];
 u8 *p; s32 result; s32 i; u8 *base; s32 zero; s32 off;
 p=data_021001cc;result=0;i=1;zero=result;base=data_021001cc;
 do{u32 a; u32 v=M2C_FIELD(p,u32*,4);a=(u32)(v<<22)>>29;
-if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))func_020649a8)(p,b,a))result=-1;}
+if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))CloseAllStreams)(p,b,a))result=-1;}
 if(i<3){off=i*76;i++;p=base+off;}else p=0;
 }while(p);
 return result;}
@@ -301,12 +320,12 @@ return result;}
 #pragma opt_strength_reduction off
 #pragma peephole off
 s32 func_02064034(void) {
-s32 func_020649a8(s32);
+s32 CloseAllStreams(s32);
 extern u8 data_021001cc[];
 void *p; s32 result; s32 i; s32 offset;
 p=data_021001cc; result=0; i=1;
 do {
-if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && func_020649a8((s32)p)) result=-1;
+if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && CloseAllStreams((s32)p)) result=-1;
 if(i<3) {offset=i*0x4c; i++; p=data_021001cc+offset;} else p=NULL;
 }while(p);
 return result;
@@ -389,15 +408,15 @@ func_020640ec(arg0);
 }
 #pragma scheduling reset
 s32 ReadFileData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
-    s32 func_02006680(void *);
+    s32 TryLockMutex(void *);
     M2C_UNK LockMutex();
     M2C_UNK UnlockMutex();
     s32 func_0206433c(u16 *, s32, s32, void *);
     extern u8 data_021001cc[];
-    extern u8 data_0213e61c[];
+    extern u8 gFileLock[];
     extern M2C_UNK gSocketManager;
-    extern s32 data_0213e5d4[];
-    extern s32 data_0213e5f8[];
+    extern s32 gFileLockOwner[];
+    extern s32 gFileLockCount[];
 
     u32 n;
     s32 result;
@@ -410,23 +429,23 @@ s32 ReadFileData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
         n = 5;
     }
 
-    if (func_02006680(data_0213e61c + n * 24) == 0) {
-        data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        data_0213e5f8[n] = 1;
+    if (TryLockMutex(gFileLock + n * 24) == 0) {
+        gFileLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gFileLockCount[n] = 1;
     } else if ((thread = M2C_FIELD(&gSocketManager, void **, 4),
-               owner = data_0213e5d4[n],
+               owner = gFileLockOwner[n],
                owner == M2C_FIELD(thread, s32 *, 0x6C))) {
-        data_0213e5f8[n]++;
+        gFileLockCount[n]++;
     } else {
-        LockMutex(data_0213e61c + n * 24);
-        data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        data_0213e5f8[n] = 1;
+        LockMutex(gFileLock + n * 24);
+        gFileLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
+        gFileLockCount[n] = 1;
     }
 
     result = func_0206433c(arg0, arg1, arg2, arg3);
 
-    if (--data_0213e5f8[n] == 0) {
-        UnlockMutex(data_0213e61c + n * 24);
+    if (--gFileLockCount[n] == 0) {
+        UnlockMutex(gFileLock + n * 24);
     }
 
     return result;

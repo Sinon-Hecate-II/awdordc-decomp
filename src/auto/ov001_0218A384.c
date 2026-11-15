@@ -153,45 +153,45 @@ result=M2C_FIELD((u8*)arg0+(idx<<2),s32 *,4);}
 func_020051c8(saved);return result;
 }
 
-void func_ov001_0218a7a4(void) {
-    extern M2C_UNK data_ov001_02193e3c;
+void Ov001_InitFades(void) {
+    extern M2C_UNK gOv001FadeStates;
     void *func_ov001_0218b6f8(s32, M2C_UNK);
     void GX_SetBlendControl(M2C_UNK, s32, s32);
-    data_ov001_02193e3c = (M2C_UNK)func_ov001_0218b6f8(0x18, 4);
+    gOv001FadeStates = (M2C_UNK)func_ov001_0218b6f8(0x18, 4);
     GX_SetBlendControl(0x4000050, 0x3f, 0x10);
     GX_SetBlendControl(0x4001050, 0x3f, 0x10);
 }
 
-void func_ov001_0218a7ec(void) {
+void Ov001_FreeFades(void) {
     M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193e3c;
-    func_ov001_0218b71c(&data_ov001_02193e3c);
+    extern M2C_UNK gOv001FadeStates;
+    func_ov001_0218b71c(&gOv001FadeStates);
 }
 
-u8 func_ov001_0218a800(s32 arg0) {
-    extern M2C_UNK data_ov001_02193e3c;
+u8 Ov001_IsFadeActive(s32 arg0) {
+    extern M2C_UNK gOv001FadeStates;
     void *p;
     if (arg0 == 1) {
-        p = (void *)data_ov001_02193e3c;
+        p = (void *)gOv001FadeStates;
     } else {
-        p = (u8 *)data_ov001_02193e3c + 0xc;
+        p = (u8 *)gOv001FadeStates + 0xc;
     }
     return ((u8 *)p)[9];
 }
 
-s32 func_ov001_0218a824(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
-extern u8 data_ov001_0218fd08[];
-extern M2C_UNK data_ov001_02193e3c;
+s32 Ov001_StartFade(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
+extern u8 gOv001FadeTable[];
+extern M2C_UNK gOv001FadeStates;
 void GX_SetBlendControl(s32,s32,s32);
-void func_ov001_0218a8fc(M2C_UNK, void *);
+void Ov001_UpdateFade(M2C_UNK, void *);
 void *func_ov001_0218c884(s32,s32,void *,s32);
 s8 buf[4];
 void *p;
-buf[0]=data_ov001_0218fd08[8]; buf[1]=data_ov001_0218fd08[9]; buf[2]=data_ov001_0218fd08[10]; buf[3]=data_ov001_0218fd08[11];
-if(arg1==1) p=(void *)data_ov001_02193e3c; else p=(u8 *)data_ov001_02193e3c+12;
+buf[0]=gOv001FadeTable[8]; buf[1]=gOv001FadeTable[9]; buf[2]=gOv001FadeTable[10]; buf[3]=gOv001FadeTable[11];
+if(arg1==1) p=(void *)gOv001FadeStates; else p=(u8 *)gOv001FadeStates+12;
 if(M2C_FIELD(p,u8 *,9)) return 0;
 if(arg1==1) GX_SetBlendControl(0x4001050,arg2,buf[arg0]); else GX_SetBlendControl(0x4000050,arg2,buf[arg0]);
-M2C_FIELD(p,s32 *,0)=(s32)func_ov001_0218c884(1,(s32)func_ov001_0218a8fc,p,200);
+M2C_FIELD(p,s32 *,0)=(s32)func_ov001_0218c884(1,(s32)Ov001_UpdateFade,p,200);
 M2C_FIELD(p,u16 *,4)=0;
 M2C_FIELD(p,u8 *,8)=arg0;
 M2C_FIELD(p,u16 *,6)=arg3;
@@ -199,77 +199,81 @@ M2C_FIELD(p,u8 *,9)=1;
 return 1;
 }
 
-void func_ov001_0218a8fc(M2C_UNK arg0, void *arg1) {
+/* Task callback of one ov001 screen fade: advance its frame counter, map the
+ * progress to a BLDY blend value through the fade table and write it to the
+ * engine's blend register; when the duration is reached write the mode's end
+ * value, clear the fade and post the completion message. */
+void Ov001_UpdateFade(M2C_UNK task, void *fadeArg) {
     s32 func_02002088(s32, u16);
-    void func_02003a10(s32, s32);
-    void func_ov001_0218c92c(s32, s32);
-    extern u8 data_ov001_0218fd08[];
-    extern M2C_UNK data_ov001_02193e3c;
+    void GX_SetBlendY(s32, s32);
+    void Ov001_PostTaskMessage(s32, s32);
+    extern u8 gOv001FadeTable[];
+    extern M2C_UNK gOv001FadeStates;
 
-    u8 sp[8];
-    void *r4;
-    s32 val;
-    u16 h6;
-    s32 res;
-    u8 b;
-    u8 ib;
-    u8 *p4;
-    s16 hh;
-    u16 uh;
-    u8 r2;
+    u8 table[8];
+    Ov001Fade *fade;
+    s32 ramp;
+    u16 duration;
+    s32 value;
+    u8 mode;
+    u8 flags;
+    u8 *flagTable;
+    s16 elapsed;
+    u16 limit;
+    u8 endMode;
 
-    r4 = arg1;
+    fade = fadeArg;
 
-    sp[4] = data_ov001_0218fd08[4];
-    sp[5] = data_ov001_0218fd08[5];
-    sp[6] = data_ov001_0218fd08[6];
-    sp[7] = data_ov001_0218fd08[7];
-    sp[0] = data_ov001_0218fd08[0];
-    sp[1] = data_ov001_0218fd08[1];
-    sp[2] = data_ov001_0218fd08[2];
-    sp[3] = data_ov001_0218fd08[3];
+    table[4] = gOv001FadeTable[OV001_FADE_FLAGS + 0];
+    table[5] = gOv001FadeTable[OV001_FADE_FLAGS + 1];
+    table[6] = gOv001FadeTable[OV001_FADE_FLAGS + 2];
+    table[7] = gOv001FadeTable[OV001_FADE_FLAGS + 3];
+    table[0] = gOv001FadeTable[OV001_FADE_END_BLEND + 0];
+    table[1] = gOv001FadeTable[OV001_FADE_END_BLEND + 1];
+    table[2] = gOv001FadeTable[OV001_FADE_END_BLEND + 2];
+    table[3] = gOv001FadeTable[OV001_FADE_END_BLEND + 3];
 
-    *(s16 *)((u8 *)r4 + 4) = *(s16 *)((u8 *)r4 + 4) + 1;
-    val = (s32)*(s16 *)((u8 *)r4 + 4) << 4;
-    h6 = *(u16 *)((u8 *)r4 + 6);
-    res = func_02002088(val, h6);
+    fade->counter = fade->counter + 1;
+    ramp = (s32)fade->counter << 4;
+    duration = fade->duration;
+    value = func_02002088(ramp, duration);
 
-    b = *((u8 *)r4 + 8);
-    p4 = sp + 4;
-    ib = p4[b];
-    if (ib & 0x1) {
-        res = 0x10 - res;
+    mode = fade->mode;
+    flagTable = table + OV001_FADE_MODE_COUNT;
+    flags = flagTable[mode];
+    if (flags & OV001_FADE_INVERT) {
+        value = 0x10 - value;
     }
-    if (ib & 0x10) {
-        res = -res;
+    if (flags & OV001_FADE_NEGATE) {
+        value = -value;
     }
 
-    if (r4 == (void *)data_ov001_02193e3c) {
-        func_02003a10(0x4001050, res);
+    if (fade == (Ov001Fade *)gOv001FadeStates) {
+        GX_SetBlendY(GX_BLDCNT_SUB, value);
     } else {
-        func_02003a10(0x4000050, res);
+        GX_SetBlendY(GX_BLDCNT_MAIN, value);
     }
 
-    hh = *(s16 *)((u8 *)r4 + 4);
-    uh = *(u16 *)((u8 *)r4 + 6);
-    if (hh >= (s32)uh) {
-        r2 = *((u8 *)r4 + 8);
-        if (r4 == (void *)data_ov001_02193e3c) {
-            func_02003a10(0x4001050, (s32)(s8)sp[r2]);
+    elapsed = fade->counter;
+    limit = fade->duration;
+    if (elapsed >= (s32)limit) {
+        endMode = fade->mode;
+        if (fade == (Ov001Fade *)gOv001FadeStates) {
+            GX_SetBlendY(GX_BLDCNT_SUB, (s32)(s8)table[endMode]);
         } else {
-            func_02003a10(0x4000050, (s32)(s8)sp[r2]);
+            GX_SetBlendY(GX_BLDCNT_MAIN, (s32)(s8)table[endMode]);
         }
-        *((u8 *)r4 + 9) = 0;
-        func_ov001_0218c92c(1, (s32)arg0);
+        fade->active = 0;
+        Ov001_PostTaskMessage(1, (s32)task);
     }
 }
 
 s32 func_ov001_0218aa24(s32 arg0) {
     void *func_ov001_0218c884(s32, M2C_UNK, void *, s32);
     void func_ov001_0218aa7c(M2C_UNK, void *);
-    extern M2C_UNK data_ov001_02193e3c;
+    extern M2C_UNK gOv001FadeStates;
     s32 a = arg0;
-    void *r4 = (void *)data_ov001_02193e3c;
+    void *r4 = (void *)gOv001FadeStates;
     if (*((u8 *)r4 + 9) != 0) {
         return 0;
     }
@@ -281,13 +285,13 @@ s32 func_ov001_0218aa24(s32 arg0) {
 }
 
 void func_ov001_0218aa7c(M2C_UNK arg0, void *arg1) {
-    void func_ov001_0218c92c(M2C_UNK, M2C_UNK);
+    void Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
     M2C_FIELD(arg1, s16 *, 4) = (s16) (M2C_FIELD(arg1, s16 *, 4) + 1);
     if ((s32) M2C_FIELD(arg1, s16 *, 4) < (s32) M2C_FIELD(arg1, u16 *, 6)) {
         return;
     }
     M2C_FIELD(arg1, s8 *, 9) = 0;
-    func_ov001_0218c92c(1, arg0);
+    Ov001_PostTaskMessage(1, arg0);
 }
 
 void func_ov001_0218aab4(void) {

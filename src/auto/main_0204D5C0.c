@@ -5,12 +5,12 @@ void gpiSetErrorString(void **,void *);
 void func_0204d5c0(void *arg0) { }
 
 void func_0204da30(void *p){
-s32 gpiMalloc(s32);void gpiFree(s32);s32 GetTickCountMs();s32 func_0204a740(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);
+s32 gpiMalloc(s32);void gpiFree(s32);s32 GetTickCountMs();s32 ghiReceiveData(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);
 s32 size,buffer,status,n,start;u32 elapsed;
 start=GetTickCountMs();elapsed=0;buffer=gpiMalloc(0x2000);
 if(!buffer){M2C_FIELD(p,s32*,0xfc)=1;M2C_FIELD(p,s32*,0x38)=1;return;}
 while(!M2C_FIELD(p,s32*,0xfc) && elapsed<M2C_FIELD(p,u32*,0x158)){
-size=0x2000;status=func_0204a740(p,buffer,&size);
+size=0x2000;status=ghiReceiveData(p,buffer,&size);
 if(status==3 || status==1)break;
 if(status==2){
 M2C_FIELD(p,s32*,0xfc)=1;n=M2C_FIELD(p,s32*,0x104);

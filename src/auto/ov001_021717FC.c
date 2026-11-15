@@ -91,11 +91,11 @@ func_ov001_0218c924(a,(M2C_UNK *)func_ov001_02171aa8);
 #pragma optimize_for_size on
 void func_ov001_02171aa8(s32 a){
 extern void *gOv001IconRow;
-void func_ov001_0218c92c(s32,s32);
+void Ov001_PostTaskMessage(s32,s32);
 void func_ov001_0218a1cc(s32);
 s32 i;
-func_ov001_0218c92c(0,a);
-if(M2C_FIELD(gOv001IconRow,s32 *,16))func_ov001_0218c92c(0,M2C_FIELD(gOv001IconRow,s32 *,16));
+Ov001_PostTaskMessage(0,a);
+if(M2C_FIELD(gOv001IconRow,s32 *,16))Ov001_PostTaskMessage(0,M2C_FIELD(gOv001IconRow,s32 *,16));
 for(i=0;i<2;i++)if(((s32 *)gOv001IconRow)[i])func_ov001_0218a1cc(((s32 *)gOv001IconRow)[i]);
 func_ov001_0218a1cc(M2C_FIELD(gOv001IconRow,s32 *,8));
 func_ov001_0218b71c(&gOv001IconRow);
@@ -104,7 +104,7 @@ func_ov001_0218b71c(&gOv001IconRow);
 void Ov001_EndIconRowSelection(s32 a){
 extern void *gOv001IconRow;extern const u8 gOv001IconRowCount[],gOv001IconRowLayout[][2];
 s32 Ov001_GetSpriteObjEntry(s32,s32);void Ov001_LoadSpriteObjLayout(s32,s32,s32);void Ov001_SetSpritePalette(s32,s32,s32);
-void func_ov001_0218c92c(s32,s32);
+void Ov001_PostTaskMessage(s32,s32);
 s32 n,i,t;
 M2C_FIELD(gOv001IconRow,u16 *,20)++;
 if(M2C_FIELD(gOv001IconRow,u16 *,20)<16U)return;
@@ -117,7 +117,7 @@ Ov001_SetSpritePalette(((s32*)gOv001IconRow)[i],-1,1);
 func_ov001_02171768(168);
 M2C_FIELD(gOv001IconRow,u16 *,20)=0;
 M2C_FIELD(gOv001IconRow,s8 *,22)=-1;
-if(M2C_FIELD(gOv001IconRow,s32 *,16)){M2C_FIELD(gOv001IconRow,s32 *,16)=0;func_ov001_0218c92c(0,a);}
+if(M2C_FIELD(gOv001IconRow,s32 *,16)){M2C_FIELD(gOv001IconRow,s32 *,16)=0;Ov001_PostTaskMessage(0,a);}
 }
 
 void func_ov001_02171c10(void) {
@@ -252,7 +252,7 @@ Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[0],-1,b,d);
 Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[1],-1,c,d);
 }
 
-void func_ov001_02172094(s32 a,s32 b,s32 c,s32 d){
+void Ov001_LayoutChoiceFrame(s32 a,s32 b,s32 c,s32 d){
 extern s32 data_ov001_02193d10;
 s32 func_ov001_0218a61c(s32,s32,s32);void Ov001_SetSpritePalette(s32,s32,s32);void Ov001_MoveSpriteLayout(s32,s32,s32,s32);
 s32 j=6,i;func_ov001_02172184();
@@ -315,10 +315,10 @@ void func_ov001_021722c4(void) {
 
 void func_ov001_021722dc(s32 a) {
  void func_020043cc(s32,s32,s32);
- void func_ov001_0218c92c(s32,s32);
+ void Ov001_PostTaskMessage(s32,s32);
  DC_FlushRange(data_ov001_02193d14,192);
  func_020043cc(data_ov001_02193d14,0,192);
- func_ov001_0218c92c(1,a);
+ Ov001_PostTaskMessage(1,a);
 }
 
 void func_ov001_0217231c(s8 a) {

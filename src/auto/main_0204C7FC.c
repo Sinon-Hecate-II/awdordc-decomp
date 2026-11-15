@@ -86,7 +86,7 @@ void ghiDoConnect(GHIConnection *connection) {
    no encryptor is configured with result 17, starts the installed encryptor,
    flushes whatever is still buffered, then reads the reply into a 1 KiB buffer. */
 void ghiProcessConnected(GHIConnection *connection){
-s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
+s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK ghiReceiveData(void *,void *,s32 *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK sUrlSchemeHttps,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
 u8 buf[1024];s32 size;
@@ -104,7 +104,7 @@ if(connection->buffer.pos>=connection->buffer.len)goto done;
 if(!SendBufferedData(connection))return;
 if(connection->buffer.pos<connection->buffer.len)return;
 ResetBuffer((u8 *)connection+0x50);
-done:size=1024;func_0204a740(connection,buf,&size);
+done:size=1024;ghiReceiveData(connection,buf,&size);
 }
 
 #pragma push
@@ -247,28 +247,30 @@ connection->completed=1;connection->result=7;return 0;
 connection->httpMajor=majorVersion;connection->httpMinor=minorVersion;connection->statusCode=statusCode;connection->statusLinePos=pos;return 1;
 }
 
-void func_0204d084(void *a){
-s32 func_0204a740(void *,void *,s32 *);s32 ghiAppendDataToBuffer();s32 ghiParseStatus(void *);
-s32 ghiGetLastSocketError(s32);u8 *StringFind(s32,M2C_UNK *);
-extern M2C_UNK sHttpCrlf;
-u8 buf[1024];s32 len=1024; s32 n,off;u8 *p;
-n=func_0204a740(a,buf,&len);
-if(n==3)return;
-if(n==1 && M2C_FIELD(a,s32 *,132)==M2C_FIELD(a,s32 *,128))return;
-if(n==0 && !ghiAppendDataToBuffer((u8 *)a+116,buf,len))return;
-p=StringFind(M2C_FIELD(a,s32 *,120),&sHttpCrlf);
-if(p){
-*p=0;off=p-M2C_FIELD(a,u8 **,120);
-M2C_FIELD(a,s32 *,248)=off+1;
-if(!ghiParseStatus(a))return;
-M2C_FIELD(a,s32 *,132)=off+2;
-M2C_FIELD(a,s32 *,16)=7;
-InvokeRequestCallback(a,0,0);return;
-}
-if(n!=2)return;
-M2C_FIELD(a,s32 *,252)=1;
-M2C_FIELD(a,s32 *,56)=7;
-M2C_FIELD(a,s32 *,76)=ghiGetLastSocketError(M2C_FIELD(a,s32 *,72));
+/* Read and parse the HTTP response status line: receive the available bytes,
+ * find the end of the line, and hand the parsed status to the header step. */
+void ghiReceiveStatusLine(GHIConnection *connection){
+ s32 ghiReceiveData(void *,void *,s32 *);s32 ghiAppendDataToBuffer(void *,void *,s32);
+ s32 ghiParseStatus(void *);s32 ghiGetLastSocketError(s32);u8 *StringFind(s32,M2C_UNK *);
+ extern M2C_UNK sHttpCrlf;
+ u8 buf[1024];s32 len=1024; s32 recvResult,offset;u8 *crlf;
+ recvResult=ghiReceiveData(connection,buf,&len);
+ if(recvResult==GHI_RECV_ERROR)return;
+ if(recvResult==GHI_RECV_NO_DATA && connection->readBuffer.pos==connection->readBuffer.len)return;
+ if(recvResult==GHI_RECV_DATA && !ghiAppendDataToBuffer(&connection->readBuffer,buf,len))return;
+ crlf=StringFind((s32)connection->readBuffer.data,&sHttpCrlf);
+ if(crlf){
+ *crlf=0;offset=crlf-connection->readBuffer.data;
+ connection->statusLineLength=offset+1;
+ if(!ghiParseStatus(connection))return;
+ connection->readBuffer.pos=offset+2;
+ connection->state=GHI_STATE_RECEIVING_HEADERS;
+ InvokeRequestCallback(connection,0,0);return;
+ }
+ if(recvResult!=GHI_RECV_CLOSED)return;
+ connection->completed=1;
+ connection->result=7;
+ connection->lastSocketError=ghiGetLastSocketError(connection->socket);
 }
 
 s32 ghiDeliverFileData(void *arg0,s32 arg1,s32 arg2) {

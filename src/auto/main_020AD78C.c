@@ -400,8 +400,11 @@ void func_020ae20c(void) {
     func_01ffa9e4(&data_02127bc8);
 }
 
-s32 func_020ae22c(u32 arg0) {
-    switch (arg0) {
+/* Look up a UI colour id in the game's fixed 15-bit BGR555 theme palette:
+ * 0 is transparent, 1..7 are white and the six primary/secondary colours,
+ * and 8..18 are the extra shades used by the menus, text and map effects. */
+s32 GetUiColor(u32 colorId) {
+    switch (colorId) {
     case 0:
         return 0;
     case 1:
@@ -444,7 +447,7 @@ s32 func_020ae22c(u32 arg0) {
     return 0;
 }
 
-u16 func_020ae354(u32 arg0,u32 arg1,u32 arg2,u32 arg3) {
+u16 BlendRgb555_16(u32 arg0,u32 arg1,u32 arg2,u32 arg3) {
 u32 g1=(arg1&0x3e0)>>5;
 u32 r1=arg1&31;
 u32 b1=(arg1&0x7c00)>>10;
@@ -457,7 +460,7 @@ u16 b=(b0*arg2+b1*arg3)>>4;
 return (r&31)|((g&31)<<5)|((b&31)<<10);
 }
 
-u16 func_020ae3e0(s32 a,s32 b,s32 x,s32 y) {
+u16 BlendRgb555_32(s32 a,s32 b,s32 x,s32 y) {
 u32 bg=(b&0x3e0)>>5;
 u32 br=b&31;
 u32 bb=(b&0x7c00)>>10;
@@ -494,7 +497,7 @@ void func_020ae528(M2C_UNK arg0) {
     BlendPalette(arg0, 0, 8, 8, 0x20);
 }
 
-void BlendPalette(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=func_020ae354(*p,a,b,c);p++;}}
+void BlendPalette(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=BlendRgb555_16(*p,a,b,c);p++;}}
 
 u16 func_020ae5a0(u16 a) {
 u16 r=a&31,g=(a&0x3e0)>>5,b=(a&0x7c00)>>10;

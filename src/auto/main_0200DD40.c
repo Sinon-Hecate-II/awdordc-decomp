@@ -20,67 +20,87 @@ void func_0200dd40(void) {
     M2C_UNK func_02009d34();
     M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
     s32 func_02009e8c(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0212fcac;
+    extern M2C_UNK gArm7TransferState;
     void func_0200dfb8(s32,u32,s32);
-    if (M2C_FIELD(&data_0212fcac, u16 *, 0) != 0) return;
-    M2C_FIELD(&data_0212fcac, u16 *, 0) = 1;
-    M2C_FIELD(&data_0212fcac, s32 *, 4) = 0;
-    M2C_FIELD(&data_0212fcac, s32 *, 8) = 0;
+    if (M2C_FIELD(&gArm7TransferState, u16 *, 0) != 0) return;
+    M2C_FIELD(&gArm7TransferState, u16 *, 0) = 1;
+    M2C_FIELD(&gArm7TransferState, s32 *, 4) = 0;
+    M2C_FIELD(&gArm7TransferState, s32 *, 8) = 0;
     func_02009d34();
     do {} while (func_02009e8c(9, 1) == 0);
     *(s32 *)0x027FFF90 = 0;
     func_02009e40(9, (M2C_UNK *)&func_0200dfb8);
 }
 
-s32 func_0200ddb0(M2C_UNK a,void (*cb)(s32),s32 user) {
-extern M2C_UNK data_0212fcac;
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
-s32 func_0200e0e0(u32,u32,u32,u32);
-u32 *p=(u32 *)a;u32 mode;u32 flags; s32 state;
-if(p[1]&31)return 2;
-if(p[2]&31)return 2;
-if(!p[2])return 2;
-if(p[3]<1024)return 2;
-switch(p[0]){case 0:mode=0;break;case 1:mode=1;break;case 2:mode=2;break;case 3:mode=3;break;case 4:mode=5;break;case 5:mode=7;break;default:return 2;}
-flags=p[4]?(u8)(mode|16):(u8)mode;
-flags=(u8)flags;
-state=OS_DisableInterrupts();
-if(M2C_FIELD(&data_0212fcac,s32 *,4)){OS_RestoreInterrupts(state);return 1;}
-M2C_FIELD(&data_0212fcac,s32 *,4)=1;
-OS_RestoreInterrupts(state);
-M2C_FIELD(&data_0212fcac,void (**)(s32),8)=cb;
-M2C_FIELD(&data_0212fcac,s32 *,12)=user;
-M2C_FIELD(&data_0212fcac,u32 *,20)=p[5];
-M2C_FIELD(&data_0212fcac,u32 *,24)=p[6];
-if(func_0200e0e0(p[1],p[2],p[3],flags))return 0;return 3;
+/* Validate an ARM7 transfer descriptor and start it: the type picks the transfer
+ * mode, the flag sets bit 4 of the mode byte, and user1/user2 are kept for the
+ * progress callback.  cb(user) reports the result when the transfer finishes.
+ * Returns 0 started, 1 already busy, 2 malformed descriptor, 3 rejected. */
+s32 Arm7TransferStart(M2C_UNK a, void (*cb)(s32), s32 user) {
+    extern M2C_UNK gArm7TransferState;
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 Arm7TransferSubmit(u32, u32, u32, u32);
+    Arm7TransferDesc *desc = (Arm7TransferDesc *)a;
+    u32 mode;
+    u32 flags;
+    s32 state;
+    if (desc->src & 31) return 2;
+    if (desc->dst & 31) return 2;
+    if (!desc->dst) return 2;
+    if (desc->size < 1024) return 2;
+    switch (desc->type) {
+    case 0: mode = 0; break;
+    case 1: mode = 1; break;
+    case 2: mode = 2; break;
+    case 3: mode = 3; break;
+    case 4: mode = 5; break;
+    case 5: mode = 7; break;
+    default: return 2;
+    }
+    flags = desc->flag ? (u8)(mode | 16) : (u8)mode;
+    flags = (u8)flags;
+    state = OS_DisableInterrupts();
+    if (M2C_FIELD(&gArm7TransferState, s32 *, 4)) {
+        OS_RestoreInterrupts(state);
+        return 1;
+    }
+    M2C_FIELD(&gArm7TransferState, s32 *, 4) = 1;
+    OS_RestoreInterrupts(state);
+    M2C_FIELD(&gArm7TransferState, void (**)(s32), 8) = cb;
+    M2C_FIELD(&gArm7TransferState, s32 *, 12) = user;
+    M2C_FIELD(&gArm7TransferState, u32 *, 20) = desc->user1;
+    M2C_FIELD(&gArm7TransferState, u32 *, 24) = desc->user2;
+    if (Arm7TransferSubmit(desc->src, desc->dst, desc->size, flags)) return 0;
+    return 3;
 }
 
 s32 func_0200dedc(M2C_UNK arg0) {
-    s32 func_0200ddb0(M2C_UNK, void (*)(s32), s32);
+    s32 Arm7TransferStart(M2C_UNK, void (*)(s32), s32);
     void func_0200e20c(s32);
     s32 func_0200e21c(void);
-    extern M2C_UNK data_0212fcac;
+    extern M2C_UNK gArm7TransferState;
     s32 result;
-    result = func_0200ddb0(arg0, func_0200e20c, 0);
-    M2C_FIELD(&data_0212fcac, s32 *, 0x10) = result;
+    result = Arm7TransferStart(arg0, func_0200e20c, 0);
+    M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = result;
     if (result == 0) func_0200e21c();
-    return M2C_FIELD(&data_0212fcac, s32 *, 0x10);
+    return M2C_FIELD(&gArm7TransferState, s32 *, 0x10);
 }
 
 s32 func_0200df14(s32 arg0, s32 arg1) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212fcac;
+    extern M2C_UNK gArm7TransferState;
     s32 state;
     state = OS_DisableInterrupts();
-    if (M2C_FIELD(&data_0212fcac, s32 *, 4) != 0) {
+    if (M2C_FIELD(&gArm7TransferState, s32 *, 4) != 0) {
         OS_RestoreInterrupts(state);
         return 1;
     }
-    M2C_FIELD(&data_0212fcac, s32 *, 4) = 1;
+    M2C_FIELD(&gArm7TransferState, s32 *, 4) = 1;
     OS_RestoreInterrupts(state);
-    M2C_FIELD(&data_0212fcac, s32 *, 8) = arg0;
-    M2C_FIELD(&data_0212fcac, s32 *, 0xC) = arg1;
+    M2C_FIELD(&gArm7TransferState, s32 *, 8) = arg0;
+    M2C_FIELD(&gArm7TransferState, s32 *, 0xC) = arg1;
     if (func_0200e1e4() != 0) return 0;
     return 3;
 }
@@ -88,12 +108,12 @@ s32 func_0200df14(s32 arg0, s32 arg1) {
 s32 func_0200df70(void) {
     void func_0200e20c(s32);
     s32 func_0200e21c(void);
-    extern M2C_UNK data_0212fcac;
+    extern M2C_UNK gArm7TransferState;
     s32 result;
     result = func_0200df14((s32)func_0200e20c, 0);
-    M2C_FIELD(&data_0212fcac, s32 *, 0x10) = result;
+    M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = result;
     if (result == 0) func_0200e21c();
-    return M2C_FIELD(&data_0212fcac, s32 *, 0x10);
+    return M2C_FIELD(&gArm7TransferState, s32 *, 0x10);
 }
 
 s32 func_0200dfa8(void) {
@@ -102,27 +122,27 @@ s32 func_0200dfa8(void) {
 
 #pragma scheduling off
 void func_0200dfb8(s32 a,u32 b,s32 c){
-extern M2C_UNK data_0212fcac;
+extern M2C_UNK gArm7TransferState;
 void (*cb)(s32,s32);u32 cmd;u32 low;s32 result;
 if(c){
-if(M2C_FIELD(&data_0212fcac,s32 *,4))M2C_FIELD(&data_0212fcac,s32 *,4)=0;
-cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),8);
-if(cb){M2C_FIELD(&data_0212fcac,s32 *,8)=0;cb(6,M2C_FIELD(&data_0212fcac,s32 *,12));}
+if(M2C_FIELD(&gArm7TransferState,s32 *,4))M2C_FIELD(&gArm7TransferState,s32 *,4)=0;
+cb=M2C_FIELD(&gArm7TransferState,void (**)(s32,s32),8);
+if(cb){M2C_FIELD(&gArm7TransferState,s32 *,8)=0;cb(6,M2C_FIELD(&gArm7TransferState,s32 *,12));}
 }
 low=b&0xff; cmd=(b&0x7f00)>>8;
 switch(low){case 0:result=0;break;case 1:result=4;break;case 2:result=2;break;case 3:result=5;break;case 4:result=1;break;default:result=6;break;}
 if(cmd==81){
-cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),20);
-if(cb)cb(result,M2C_FIELD(&data_0212fcac,s32 *,24));
+cb=M2C_FIELD(&gArm7TransferState,void (**)(s32,s32),20);
+if(cb)cb(result,M2C_FIELD(&gArm7TransferState,s32 *,24));
 return;
 }
-if(cmd==64 && M2C_FIELD(&data_0212fcac,u16 **,28)) *M2C_FIELD(&data_0212fcac,u16 **,28)=*(volatile u16 *)0x027fff94;
-if(M2C_FIELD(&data_0212fcac,s32 *,4))M2C_FIELD(&data_0212fcac,s32 *,4)=0;
-cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),8);
-if(cb){M2C_FIELD(&data_0212fcac,s32 *,8)=0;cb(result,M2C_FIELD(&data_0212fcac,s32 *,12));}
+if(cmd==64 && M2C_FIELD(&gArm7TransferState,u16 **,28)) *M2C_FIELD(&gArm7TransferState,u16 **,28)=*(volatile u16 *)0x027fff94;
+if(M2C_FIELD(&gArm7TransferState,s32 *,4))M2C_FIELD(&gArm7TransferState,s32 *,4)=0;
+cb=M2C_FIELD(&gArm7TransferState,void (**)(s32,s32),8);
+if(cb){M2C_FIELD(&gArm7TransferState,s32 *,8)=0;cb(result,M2C_FIELD(&gArm7TransferState,s32 *,12));}
 }
 #pragma scheduling on
-s32 func_0200e0e0(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+s32 Arm7TransferSubmit(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     if (func_02009eb0(9, arg3 | 0x02004100, 0) < 0) {
         return 0;
     }
@@ -156,8 +176,8 @@ s32 func_0200e1e4(void) {
 }
 
 void func_0200e20c(s32 arg0) {
-    extern M2C_UNK data_0212fcac;
-    M2C_FIELD(&data_0212fcac, s32 *, 0x10) = arg0;
+    extern M2C_UNK gArm7TransferState;
+    M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = arg0;
 }
 
 s32 func_0200e21c(void) {

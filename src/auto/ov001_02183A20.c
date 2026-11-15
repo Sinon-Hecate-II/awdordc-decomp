@@ -92,7 +92,7 @@ void func_ov001_02183ba4(void) {
     void func_ov001_0218bd64(M2C_UNK *);
     void func_ov001_02183c74(s32);
     void func_ov001_02183f30(s32);
-    void func_ov001_0218508c(void);
+    void Ov001_StopSound(void);
     extern void *data_ov001_02193dfc;
     extern u8 data_ov001_0218fb5c[];
     extern u8 gTouchScreenRect[];
@@ -125,7 +125,7 @@ void func_ov001_02183ba4(void) {
             return;
         }
     }
-    func_ov001_0218508c();
+    Ov001_StopSound();
     M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1c) = 0;
     M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 3;
 }
@@ -289,18 +289,18 @@ void func_ov001_02183f30(s32 arg0) {
 
 void func_ov001_02183f6c(void) {
     s32 func_ov001_0218b6f8(s32, M2C_UNK);
-    extern s32 data_ov001_02193e00;
-    if (data_ov001_02193e00 != 0) {
+    extern s32 gWfcFriendRoster;
+    if (gWfcFriendRoster != 0) {
         return;
     }
-    data_ov001_02193e00 = func_ov001_0218b6f8(0x1E60, 0x20);
+    gWfcFriendRoster = func_ov001_0218b6f8(0x1E60, 0x20);
 }
 
 #pragma opt_common_subs off
 #pragma pool_constants off
 void func_ov001_02183fa0(void) {
- u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK data_ov001_02193e00; extern s32 gSaveData;
- if(*(volatile M2C_UNK *)&data_ov001_02193e00==0)return;
+ u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK gWfcFriendRoster; extern s32 gSaveData;
+ if(*(volatile M2C_UNK *)&gWfcFriendRoster==0)return;
  while(func_02011d58()!=0x8000){}
  func_ov001_0218b71c(&gSaveData-1);
 }
@@ -313,10 +313,10 @@ s32 func_ov001_02183fd4(void) {
     u16 func_02011e98(void);
     s32 func_ov001_021840a0(void);
     void func_ov001_021841cc();
-    extern s32 data_ov001_02193e00;
+    extern s32 gWfcFriendRoster;
     extern u32 data_ov001_0218fb6c[];
     typedef struct { u32 w[17]; } Blk;
-    s32 *ptr = (s32 *)&data_ov001_02193e00;
+    s32 *ptr = (s32 *)&gWfcFriendRoster;
 
     FillU16(0, (u8 *)(*ptr) + 0x1300, 0x348);
     if (func_02012218((void *)(*ptr), (void (*)(void))func_ov001_021841cc, 3) != 2) return 0;
@@ -326,7 +326,7 @@ s32 func_ov001_02183fd4(void) {
         if (*(u16 *)(base + 0x168c) == 2) {
             *(Blk *)(base + 0x1648) = *(const Blk *)data_ov001_0218fb6c;
             *(u8 **)(base + 0x1648) = base + 0xf00;
-            *(u16 *)((u8 *)(*(s32 *)&data_ov001_02193e00) + 0x1650) = func_02011e98();
+            *(u16 *)((u8 *)(*(s32 *)&gWfcFriendRoster) + 0x1650) = func_02011e98();
         }
     }
     return func_ov001_021840a0() ? 1 : 0;
@@ -335,8 +335,8 @@ s32 func_ov001_02183fd4(void) {
 s32 func_ov001_021840a0(void) {
     s32 WFC_SendRequestPacket(void (*)(void), void *);
     void func_ov001_021841cc();
-    extern s32 data_ov001_02193e00;
-    void *base = (void *)data_ov001_02193e00;
+    extern s32 gWfcFriendRoster;
+    void *base = (void *)gWfcFriendRoster;
     if (WFC_SendRequestPacket(func_ov001_021841cc, (s8 *)base + 0x1648) == 2) {
         return 1;
     }
@@ -348,17 +348,17 @@ s32 func_ov001_021840d4(void) {
     s32 func_02012274(void (*)(void));
     s32 func_020122ac(void (*)(void));
     void func_ov001_021841cc();
-    extern s32 data_ov001_02193e00;
+    extern s32 gWfcFriendRoster;
 
-    *(u8 *)((s8 *)data_ov001_02193e00 + 0x1e5c) = 1;
-    func_02011af8((void *)((s8 *)data_ov001_02193e00 + 0x168c));
-    if (*(u16 *)((s8 *)data_ov001_02193e00 + 0x168c) != 2) {
+    *(u8 *)((s8 *)gWfcFriendRoster + 0x1e5c) = 1;
+    func_02011af8((void *)((s8 *)gWfcFriendRoster + 0x168c));
+    if (*(u16 *)((s8 *)gWfcFriendRoster + 0x168c) != 2) {
         if (func_02012274(func_ov001_021841cc) != 2) {
             return 0;
         }
         do {
-            func_02011af8((void *)((s8 *)data_ov001_02193e00 + 0x168c));
-        } while (*(u16 *)((s8 *)data_ov001_02193e00 + 0x168c) != 2);
+            func_02011af8((void *)((s8 *)gWfcFriendRoster + 0x168c));
+        } while (*(u16 *)((s8 *)gWfcFriendRoster + 0x168c) != 2);
     }
     if (func_020122ac(func_ov001_021841cc) != 2) {
         return 0;
@@ -366,15 +366,15 @@ s32 func_ov001_021840d4(void) {
     return 1;
 }
 
-s32 func_ov001_02184170(void **arg0) {
+s32 Ov001_GetFriendSlots(void **arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     extern u8 data_ov001_0218fb64[];
-    extern s32 data_ov001_02193e00;
+    extern s32 gWfcFriendRoster;
     s8 *r8;
     s32 r6;
     s32 r7;
 
-    r8 = (s8 *)data_ov001_02193e00 + 0x1300;
+    r8 = (s8 *)gWfcFriendRoster + 0x1300;
     *arg0 = (void *)r8;
     r6 = 0;
     r7 = 0;
@@ -391,13 +391,13 @@ void func_ov001_021841cc(u16 *p) {
     s32 func_ov001_021840a0(void);
     void func_ov001_02184230(u16 *);
     void SystemHalt(u16 *);
-    extern s32 data_ov001_02193e00;
+    extern s32 gWfcFriendRoster;
     u8 *q;
 
     if (p[1]) {
         return;
     }
-    q = (u8 *)data_ov001_02193e00 + 0x1000;
+    q = (u8 *)gWfcFriendRoster + 0x1000;
     if (q[0xe5c] == 0 && p[0] == 0x26) {
         switch (p[4]) {
             case 5:
@@ -420,7 +420,7 @@ void func_ov001_02184230(u16 *arg0) {
     void MI_CpuCopy8(void *, void *, u32);
     s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     void func_02011f2c(M2C_UNK *, M2C_UNK *);
-    extern s32 data_ov001_02193e00;
+    extern s32 gWfcFriendRoster;
     extern u8 data_ov001_0218fb64[];
     extern u8 data_ov001_0218fb60[];
 
@@ -432,8 +432,8 @@ void func_ov001_02184230(u16 *arg0) {
     register u8 *record;
     Work work;
 
-    work.slots = (u8 *)data_ov001_02193e00 + 0x1300;
-    DC_InvalidateRange((u8 *)data_ov001_02193e00 + 0xf00, 0x400);
+    work.slots = (u8 *)gWfcFriendRoster + 0x1300;
+    DC_InvalidateRange((u8 *)gWfcFriendRoster + 0xf00, 0x400);
 
     i = 0;
     if ((s32)*(u16 *)((u8 *)arg0 + 0xe) <= 0) {

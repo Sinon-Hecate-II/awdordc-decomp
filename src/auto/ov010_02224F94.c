@@ -381,7 +381,7 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, 
     extern s32 data_ov010_0222edf8;
     void func_ov010_02225934(void);
     void MI_CpuFill8(void *, u32, u32);
-    void func_0200ddb0(void *, void *, u32);
+    void Arm7TransferStart(void *, void *, u32);
     s32 func_0200dfa8(void);
     void *func_ov010_02222b0c(void *, s32, s32);
     void func_ov010_022227b0(s32, s32);
@@ -406,7 +406,7 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, 
 
     if (M2C_FIELD(&gStreamVoiceState, s32 *, 4) != 0) {
         if (M2C_FIELD(&gStreamVoiceState, s32 *, 0x10) == 0) {
-            func_0200ddb0(&data_ov010_0222edf8, (void *)func_ov010_02225934, 0);
+            Arm7TransferStart(&data_ov010_0222edf8, (void *)func_ov010_02225934, 0);
             M2C_FIELD(&gStreamVoiceState, s32 *, 4) = 0;
         }
     }

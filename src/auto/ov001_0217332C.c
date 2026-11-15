@@ -274,7 +274,7 @@ void func_ov001_02174018(void *arg0) {
 
 void func_ov001_0217408c(int arg0){
 int i,j; unsigned int *ptr;
-func_ov001_0218c92c(0,arg0);
+Ov001_PostTaskMessage(0,arg0);
 for(i=0;i<3;i++){
 for(j=0;j<4;j++){
 ptr=(unsigned int *)gOv001MenuState;

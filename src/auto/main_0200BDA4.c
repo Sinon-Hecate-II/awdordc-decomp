@@ -55,9 +55,9 @@ void func_0200bda4(s32 arg0) {
 }
 
 void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0200b3ec(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadArchiveIndex(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0212fc14;
-    func_0200b3ec(&data_0212fc14, arg0, arg1);
+    LoadArchiveIndex(&data_0212fc14, arg0, arg1);
 }
 
 #pragma opt_strength_reduction off
@@ -102,7 +102,7 @@ void func_0200bf64(u32 *arg0,void *arg1) {
 s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7)
 {
   void InitFileRequest(void *);
-  s32 func_0200b99c(void *, s32, u32, u32, s32);
+  s32 OpenFileDirect(void *, s32, u32, u32, s32);
   s32 FileRead(void *, void *, s32);
   void CloseFileRequest(void *);
   s32 func_0200b9e4(void *, Unk0200FilePair);
@@ -129,7 +129,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   arg2++;
   arg2--;
   InitFileRequest(work);
-  if (new_var = !func_0200b99c(work, arg3, base + shifted, base + size, -(shifted = 1)))
+  if (new_var = !OpenFileDirect(work, arg3, base + shifted, base + size, -(shifted = 1)))
   {
     return 0;
   }

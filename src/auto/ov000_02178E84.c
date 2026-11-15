@@ -20,7 +20,7 @@ return d;
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02178e84(s32 arg0,s32 arg1) {
-s32 func_020d2d18(u16,u8);s32 IsTerrainOnUnitTeam(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(u32);s32 func_ov000_021a9318(s32,s32,s32);
+s32 GetUnitBuildCost(u16,u8);s32 IsTerrainOnUnitTeam(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(u32);s32 func_ov000_021a9318(s32,s32,s32);
 u8 *unit;void *map;u32 terrain,kind; s32 x,y,d,xmin,ymin,xmax,ymax,radius,width,scanX,scanY;u16 player;u8 *selected;void *snapshot;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 if(((u32)(unit[11]<<28)>>28)==6)return 1;
@@ -100,7 +100,7 @@ unit=map+0x59a4+selected[12]*14;
 if(((u32)(unit[0]<<26)>>26)==17)goto checkCurrent;
 }
 player=M2C_FIELD(map,u16 *,0x52a4);
-if(func_020d2d18(player,17)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4)){
+if(GetUnitBuildCost(player,17)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4)){
 map=*gCurrentMap;
 y=0;if(y<M2C_FIELD(map,u16 *,0x5146)){width=M2C_FIELD(map,u16 *,0x5144);
 do{for(x=0;x<width;x++){
@@ -114,7 +114,7 @@ checkCurrent:map=*gCurrentMap;
 terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
 if((terrain&31)==19&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6)){
 player=M2C_FIELD(map,u16 *,0x52a4);
-if(func_020d2d18(player,20)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4))return 0;
+if(GetUnitBuildCost(player,20)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4))return 0;
 }
 snapshot=*gCurrentMap;selected=M2C_FIELD(snapshot,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
 if(kind==24){

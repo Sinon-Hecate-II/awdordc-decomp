@@ -76,27 +76,27 @@ s32 func_ov000_021a3dac(void) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 s32 func_ov000_021a41f8(void){
-s32 func_020d2d18(u16,s32);u8 func_ov000_021a43a0(s32);s32 func_ov000_021a3dac(void);
+s32 GetUnitBuildCost(u16,s32);u8 HasAiBuildFlag(s32);s32 func_ov000_021a3dac(void);
 s32 func_ov000_021a6264(s32);s32 FindAiTargetOfType(s32);u8 CountPlayerUnitsOfKind(s32);
-s32 func_ov000_021a379c(void);s32 func_ov000_021a36e4(void);s32 func_ov000_021a3644(s32);
+s32 CountReadyCombatUnits(void);s32 CountReadyCaptureUnits(void);s32 CountEmptyUnitsOfKind(s32);
 void CommitAiAction(s32);
 extern void **gCurrentMap;extern M2C_UNK gAiCommand;
 void *p;u16 id;s32 a,r,n,x,y,z;
-if(!func_ov000_021a43a0(2))return 0;
+if(!HasAiBuildFlag(2))return 0;
 p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);
-if(func_020d2d18(id,24)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
+if(GetUnitBuildCost(id,24)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 if(func_ov000_021a3dac()==1)return 1;
 r=func_ov000_021a6264(3);if(r==-1){r=FindAiTargetOfType(3);if(r==-1)return 0;}
-a=CountPlayerUnitsOfKind(24);n=func_ov000_021a379c();
-if(!n){if(func_ov000_021a36e4()<=1)return 0;}
-if(a){y=func_ov000_021a3644(24)+1;x=func_ov000_021a3644(25);z=func_ov000_021a36e4()-x*2;if(z<0)z=0;if(n+z<y*4)return 0;}
+a=CountPlayerUnitsOfKind(24);n=CountReadyCombatUnits();
+if(!n){if(CountReadyCaptureUnits()<=1)return 0;}
+if(a){y=CountEmptyUnitsOfKind(24)+1;x=CountEmptyUnitsOfKind(25);z=CountReadyCaptureUnits()-x*2;if(z<0)z=0;if(n+z<y*4)return 0;}
 M2C_FIELD(&gAiCommand,u8 *,6)=24;CommitAiAction(r);return 1;
 }
 
 u8 func_ov000_021a4320(void) {
     s32 TryBuildTransport();
     s32 func_ov000_021a3364();
-    s32 func_ov000_021a3c84();
+    s32 TryBuildUnitKind25();
     s32 func_ov000_021a41f8();
     u8 CountPlayerUnitsOfKind(s32);
     extern void *gAiState;
@@ -112,7 +112,7 @@ u8 func_ov000_021a4320(void) {
     if (func_ov000_021a41f8() == 1) {
         return 1U;
     }
-    if (func_ov000_021a3c84() == 1) {
+    if (TryBuildUnitKind25() == 1) {
         return 1U;
     }
     if (func_ov000_021a3364() == 1) {
@@ -123,7 +123,7 @@ u8 func_ov000_021a4320(void) {
     return var_r0;
 }
 
-u8 func_ov000_021a43a0(s32 arg0) {
+u8 HasAiBuildFlag(s32 arg0) {
     extern void *gAiSettings;
     u8 var_r0;
 

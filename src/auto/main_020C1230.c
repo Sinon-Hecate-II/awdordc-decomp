@@ -227,23 +227,35 @@ u8 func_020c1a80(void) {
     return var_r0;
 }
 
-void func_020c1a9c(s32 a,s32 b){s32 func_020ae22c(s32); func_0208ca2c(a<<5,(u16)b,func_020ae22c(11),1);}
+void func_020c1a9c(s32 a,s32 b){s32 GetUiColor(s32); func_0208ca2c(a<<5,(u16)b,GetUiColor(11),1);}
 
-void func_020c1acc(s32 x,s32 y,s32 tile,s32 pal){
-void ScreenToMapPosition(s32,s32,s32 *);s32 Divide(s32,s32);
-void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
-extern s32 gCur3DSpriteEngine;
-s32 a[3],b[3];s32 xx,yy;
-ScreenToMapPosition(0,0,a);ScreenToMapPosition(256,192,b);
-a[0]=Divide(a[0]+24,192);a[1]=Divide(a[1]+24,192);
-b[0]=Divide(b[0]+24,192);b[1]=Divide(b[1]+24,192);
-xx=x+a[0];yy=y+a[1];
-DrawFrameBorder((s16)xx,(s16)yy,(s16)(x+b[0]-xx),(s16)(y+b[1]-yy),(u16)((tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|(u16)(pal<<12)),0,1);
+/* Draw the border of the frame rectangle whose top-left corner is (x, y): the
+ * screen corners (0,0) and (256,192) are mapped to frame-tile coordinates, and
+ * DrawFrameBorder stamps the rectangle they span in palette `pal` with tile id
+ * `tile`, its tile id packed with the palette and the engine's display mode. */
+void DrawFrameRectBorder(s32 x, s32 y, s32 tile, s32 pal) {
+    void ScreenToMapPosition(s32, s32, s32 *);
+    s32 Divide(s32, s32);
+    void DrawFrameBorder(s16, s16, s16, s16, s32, s32, s32);
+    extern s32 gCur3DSpriteEngine;
+    s32 topLeft[3], bottomRight[3];
+    s32 left, top;
+
+    ScreenToMapPosition(0, 0, topLeft);
+    ScreenToMapPosition(256, 192, bottomRight);
+    topLeft[0] = Divide(topLeft[0] + 24, 192);
+    topLeft[1] = Divide(topLeft[1] + 24, 192);
+    bottomRight[0] = Divide(bottomRight[0] + 24, 192);
+    bottomRight[1] = Divide(bottomRight[1] + 24, 192);
+    left = x + topLeft[0];
+    top = y + topLeft[1];
+    DrawFrameBorder((s16)left, (s16)top, (s16)(x + bottomRight[0] - left), (s16)(y + bottomRight[1] - top),
+        (u16)((tile >> SPRITE_ENGINE_MODE(gCur3DSpriteEngine) & 1023) | (u16)(pal << 12)), 0, FRAME_BORDER_INSIDE);
 }
 
 void func_020c1bf0(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))func_020c1a9c(M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
 
-void func_020c1c88(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))func_020c1acc(M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
+void func_020c1c88(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))DrawFrameRectBorder(M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
 
 void SetFrameRect(s32 a,s32 b,s32 c,s32 d) {
  void *func_01ffa3dc(void *,s32);
@@ -307,5 +319,5 @@ u16 GetCOPortraitOffset(u32 arg0) {
  return arg0*4+0x4ec;
 }
 
-s32 GetCOFaceIndex(u32 a) { s32 func_020ae22c(s32); switch(a){case 1:return func_020ae22c(2);case 2:return func_020ae22c(4);case 3:return func_020ae22c(5);case 4:return func_020ae22c(0);case 0:default:return 0;}}
+s32 GetCOFaceIndex(u32 a) { s32 GetUiColor(s32); switch(a){case 1:return GetUiColor(2);case 2:return GetUiColor(4);case 3:return GetUiColor(5);case 4:return GetUiColor(0);case 0:default:return 0;}}
 

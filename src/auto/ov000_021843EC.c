@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 gUnitKindFlags[],gUnitKindStats[];
-extern u8 gAiRangeBitmap[],data_ov000_021dfba8[],gAiRangeLayer[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
+extern u8 gAiRangeBitmap[],gAiIndirectRangeBitmap[],gAiRangeLayer[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
 extern u8 *gAiCommandState;
 static inline s32 Unk21843Index(u8 *unit) { if(unit==0)return 0;return (s32)(unit-((u8 *)*gCurrentMap+0x59a4))/14; }
 static inline s32 Unk21843Owner(u8 *unit) {if(unit!=0)return (Unk21843Index(unit)>>6)+1;return 0;}
@@ -49,7 +49,7 @@ selected=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
 if(!(gUnitKindFlags[kind*112]&16))return;
 if(Divide(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)return;
 map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
-if(!((u8)(data_ov000_021dfba8[idx>>3]&(1<<(idx&7)))))return;
+if(!((u8)(gAiIndirectRangeBitmap[idx>>3]&(1<<(idx&7)))))return;
 }
 FloodFillUnitRange(a,b,(u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26,gAiCommandState[5]*2,0);
 MI_CpuFill8(gAiRangeLayer,0,1288);
@@ -147,7 +147,7 @@ if((u8)(gAiRangeBitmap[idx>>3]&(1<<(idx&7))))data_ov000_021df9bc[idx>>3]|=1<<(id
 }
 if(postattrs[19]&16){
 idx=y*((Map851B8 *)*gCurrentMap)->width+x;
-if((u8)(data_ov000_021dfba8[idx>>3]&(1<<(idx&7))))data_ov000_021dfc4c[idx>>3]|=1<<(idx&7);
+if((u8)(gAiIndirectRangeBitmap[idx>>3]&(1<<(idx&7))))data_ov000_021dfc4c[idx>>3]|=1<<(idx&7);
 }
 }
 map=*gCurrentMap;width=((Map851B8 *)map)->width;

@@ -6,7 +6,7 @@ typedef struct { u8 bytes[4]; } BCDCBytes;
 s32 func_0204b9b8(void *arg0) {
  M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
  s32 GetFilePosition(s32);
- s32 func_02064ed0(s32,s32,s32);
+ s32 SetFilePosition(s32,s32,s32);
  void func_02064ffc(s32);
  extern M2C_UNK data_020fd224, sAssertZero, sGhttpPostFile;
  s32 state = *M2C_FIELD(arg0,s32 **,0);
@@ -14,7 +14,7 @@ s32 func_0204b9b8(void *arg0) {
  if(state == 0) goto success;
  if(state == 1) {
  if (!M2C_FIELD(arg0,s32 *,8)) return 0;
- if (func_02064ed0(M2C_FIELD(arg0,s32 *,8),0,2)) return 0;
+ if (SetFilePosition(M2C_FIELD(arg0,s32 *,8),0,2)) return 0;
  M2C_FIELD(arg0,s32 *,12)=GetFilePosition(M2C_FIELD(arg0,s32 *,8));
  if (M2C_FIELD(arg0,s32 *,12)==-1) return 0;
  func_02064ffc(M2C_FIELD(arg0,s32 *,8));

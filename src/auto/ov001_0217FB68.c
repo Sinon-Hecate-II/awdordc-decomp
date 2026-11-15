@@ -1,19 +1,20 @@
 /* 53 functions from 0x0217FB68 to 0x02180B68 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 void func_ov001_0217fb68(void) {
     extern u8 data_ov001_02193db8;
     extern M2C_UNK func_ov001_0217fbdc;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     if (data_ov001_02193db8 == 0) {
         func_ov001_02171694();
     }
     if (data_ov001_02193db8 == 0) {
-        func_ov001_0218a824(3, 1, 1, 8);
+        Ov001_StartFade(3, 1, 1, 8);
     }
-    func_ov001_0218a824(3, 0, 0x15, 8);
+    Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_0217fbdc);
 }
 
@@ -28,8 +29,8 @@ void func_ov001_0217fbdc(void) {
     extern u8 data_ov001_02193db8;
     extern M2C_UNK func_ov001_0217fd94;
     extern M2C_UNK func_ov001_02181a84;
-    if (func_ov001_0218a800(0) != 0) return;
-    if ((data_ov001_02193db8 == 0) && (func_ov001_0218a800(1) != 0)) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
+    if ((data_ov001_02193db8 == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (func_ov001_0217170c() == 0) return;
     func_ov001_02171494();
     func_ov001_0218af70(0);
@@ -51,9 +52,9 @@ void func_ov001_0217fbdc(void) {
 void func_ov001_0217fca4(void) {
     s32 func_ov001_0217645c(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_0218508c(void);
-    M2C_UNK func_ov001_021862d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_ov001_02171750(void);
+    M2C_UNK Ov001_StopSound(void);
+    M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Ov001_LockIconRow(void);
     extern u8 data_ov001_02193db8;
     extern M2C_UNK func_ov001_0217fb48;
     void func_ov001_0217fd28(void);
@@ -64,10 +65,10 @@ void func_ov001_0217fca4(void) {
         return;
     case 4:
         data_ov001_02193db8 = 0;
-        func_ov001_0218508c();
+        Ov001_StopSound();
         Ov001_PlaySound(9);
-        func_ov001_021862d8(0xD, 1, 1, -1, 0);
-        func_ov001_02171750();
+        Ov001_ShowMessage(0xD, 1, 1, -1, 0);
+        Ov001_LockIconRow();
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fd28);
         return;
     }
@@ -130,29 +131,29 @@ void func_ov001_0217fdd0(void) {
 }
 
 void func_ov001_0217fe50(void) {
-    M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217fe84;
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217fe84);
 }
 
 void func_ov001_0217fe84(void) {
     void func_ov001_0217feb0(void);
-    if (func_ov001_0218a800(0) != 0) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
     func_ov001_02171e20(1);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217feb0);
 }
 
 void func_ov001_0217feb0(void) {
     s32 Ov001_GetIconRowSelection();
-    M2C_UNK func_ov001_02171738();
+    M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_0217fed8;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
-    func_ov001_02171738();
+    Ov001_UnlockIconRow();
     Ov001_SetStepCallback(&func_ov001_0217fed8);
 }
 
@@ -170,16 +171,16 @@ void func_ov001_0217fed8(void) {
 }
 
 void func_ov001_0217fef8(void) {
-    M2C_UNK func_ov001_021716d8(M2C_UNK);
+    M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
     if (KeyPressed(2) != 0) {
-        func_ov001_021716d8(0);
+        Ov001_LatchIconRowSelection(0);
         return;
     }
     if (func_ov001_0217fd74() == 0) {
         return;
     }
-    func_ov001_021716d8(0);
+    Ov001_LatchIconRowSelection(0);
 }
 
 void func_ov001_0217ff30(void) {
@@ -188,22 +189,22 @@ void func_ov001_0217ff30(void) {
 
 void func_ov001_0217ff34(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_0218508c();
+    M2C_UNK Ov001_StopSound();
     extern M2C_UNK func_ov001_0217ff60;
     if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
-    func_ov001_0218508c();
+    Ov001_StopSound();
     Ov001_PlaySound(7);
     Ov001_SetStepCallback(&func_ov001_0217ff60);
 }
 
 void func_ov001_0217ff60(void) {
-    M2C_UNK func_ov001_02171750();
+    M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_0217ff80;
-    func_ov001_02171750();
+    Ov001_LockIconRow();
     func_ov001_0218aa24(8);
     Ov001_SetStepCallback(&func_ov001_0217ff80);
 }
@@ -212,14 +213,14 @@ void func_ov001_0217ff80(void) {
     M2C_UNK func_ov001_02171694();
     extern u8 data_ov001_02193dbc;
     extern M2C_UNK func_ov001_0217ffe4;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
     if (data_ov001_02193dbc == 0) {
-        func_ov001_0218a824(3, 1, 1, 8);
+        Ov001_StartFade(3, 1, 1, 8);
     }
-    func_ov001_0218a824(3, 0, 0x15, 8);
+    Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_0217ffe4);
 }
 
@@ -234,8 +235,8 @@ void func_ov001_0217ffe4(void) {
     extern u8 data_ov001_02193dbc;
     extern M2C_UNK func_ov001_021801c4;
     extern M2C_UNK func_ov001_02181a84;
-    if (func_ov001_0218a800(0) != 0) return;
-    if ((data_ov001_02193dbc == 0) && (func_ov001_0218a800(1) != 0)) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
+    if ((data_ov001_02193dbc == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (func_ov001_0217170c() == 0) return;
     func_ov001_02171494();
     func_ov001_0218af70(0);
@@ -254,12 +255,12 @@ void func_ov001_0217ffe4(void) {
 }
 
 void func_ov001_021800a0(void) {
-s32 func_ov001_0217645c(void); M2C_UNK Ov001_PlaySound(M2C_UNK); M2C_UNK func_ov001_0218508c(void); M2C_UNK func_ov001_02176518(void); M2C_UNK func_ov001_021862d8(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32); M2C_UNK func_ov001_02171750(void);
+s32 func_ov001_0217645c(void); M2C_UNK Ov001_PlaySound(M2C_UNK); M2C_UNK Ov001_StopSound(void); M2C_UNK func_ov001_02176518(void); M2C_UNK Ov001_ShowMessage(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32); M2C_UNK Ov001_LockIconRow(void);
 extern u8 data_ov001_02193dbc; void func_ov001_0217ff60(void); void func_ov001_02180178(void);
 switch(func_ov001_0217645c()){
-case 3: data_ov001_02193dbc=1;func_ov001_0218508c();func_ov001_02176518();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);return;
-case 4: data_ov001_02193dbc=0;func_ov001_0218508c();Ov001_PlaySound(9);func_ov001_021862d8(13,1,1,-1,0);func_ov001_02171750();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
-case 5: data_ov001_02193dbc=0;func_ov001_0218508c();Ov001_PlaySound(18);func_ov001_021862d8(14,1,1,-1,0);func_ov001_02171750();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
+case 3: data_ov001_02193dbc=1;Ov001_StopSound();func_ov001_02176518();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);return;
+case 4: data_ov001_02193dbc=0;Ov001_StopSound();Ov001_PlaySound(9);Ov001_ShowMessage(13,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
+case 5: data_ov001_02193dbc=0;Ov001_StopSound();Ov001_PlaySound(18);Ov001_ShowMessage(14,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
 }}
 
 void func_ov001_02180178(void) {
@@ -311,18 +312,18 @@ void func_ov001_02180200(void) {
 }
 
 void func_ov001_02180280(void) {
-    M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021802b4;
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_021802b4);
 }
 
 void func_ov001_021802b4(void) {
-    s32 func_ov001_0218a800(M2C_UNK);
+    s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_021802d8;
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_021802d8);
@@ -341,8 +342,8 @@ void func_ov001_021802e8(void) {
 
 void func_ov001_021802ec(void) {
     extern M2C_UNK func_ov001_02180328;
-    func_ov001_0218a824(3, 1, 1, 8);
-    func_ov001_0218a824(3, 0, 0x15, 8);
+    Ov001_StartFade(3, 1, 1, 8);
+    Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_02180328);
 }
 
@@ -353,10 +354,10 @@ void func_ov001_02180328(void) {
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021828ac;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     func_ov001_0218af70(0);
@@ -420,8 +421,8 @@ void func_ov001_02180448(void) {
 
 void func_ov001_021804f0(void) {
     extern M2C_UNK func_ov001_02180544;
-    func_ov001_0218a824(2, 1, 1, 8);
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 1, 1, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_02180544);
@@ -431,9 +432,9 @@ void func_ov001_02180544(void) {
 void func_ov001_02180584(void);
 M2C_UNK func_ov001_021763cc(void);
 M2C_UNK func_ov001_02171e20(M2C_UNK);
-s32 func_ov001_0218a800(s32);
-if(func_ov001_0218a800(1))return;
-if(func_ov001_0218a800(0))return;
+s32 Ov001_IsFadeActive(s32);
+if(Ov001_IsFadeActive(1))return;
+if(Ov001_IsFadeActive(0))return;
 func_ov001_021763cc();
 func_ov001_02171e20(1);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180584);
@@ -441,12 +442,12 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180584);
 
 void func_ov001_02180584(void) {
     s32 Ov001_GetIconRowSelection();
-    M2C_UNK func_ov001_02171738();
+    M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_021805ac;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
-    func_ov001_02171738();
+    Ov001_UnlockIconRow();
     Ov001_SetStepCallback(&func_ov001_021805ac);
 }
 
@@ -465,13 +466,13 @@ void func_ov001_021805ac(void) {
 
 void func_ov001_021805cc(void) {
     if (KeyPressed(2) != 0) {
-        func_ov001_021716d8(0);
+        Ov001_LatchIconRowSelection(0);
         return;
     }
     if (func_ov001_021803cc() == 0) {
         return;
     }
-    func_ov001_021716d8(0);
+    Ov001_LatchIconRowSelection(0);
 }
 
 void func_ov001_02180604(void) {
@@ -480,22 +481,22 @@ void func_ov001_02180604(void) {
 
 void func_ov001_02180608(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_0218508c();
+    M2C_UNK Ov001_StopSound();
     extern M2C_UNK func_ov001_02180634;
     if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
-    func_ov001_0218508c();
+    Ov001_StopSound();
     Ov001_PlaySound(7);
     Ov001_SetStepCallback(&func_ov001_02180634);
 }
 
 void func_ov001_02180634(void) {
-    M2C_UNK func_ov001_02171750();
+    M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_02180654;
-    func_ov001_02171750();
+    Ov001_LockIconRow();
     func_ov001_0218aa24(8);
     Ov001_SetStepCallback(&func_ov001_02180654);
 }
@@ -503,16 +504,16 @@ void func_ov001_02180634(void) {
 void func_ov001_02180654(void) {
     extern u8 data_ov001_02193dc4;
     extern M2C_UNK func_ov001_021806c8;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     if (data_ov001_02193dc4 == 0) {
         func_ov001_02171694();
     }
     if (data_ov001_02193dc4 == 0) {
-        func_ov001_0218a824(3, 1, 1, 8);
+        Ov001_StartFade(3, 1, 1, 8);
     }
-    func_ov001_0218a824(3, 0, 0x14, 8);
+    Ov001_StartFade(3, 0, 0x14, 8);
     Ov001_SetStepCallback(&func_ov001_021806c8);
 }
 
@@ -527,8 +528,8 @@ void func_ov001_021806c8(void) {
     extern u8 data_ov001_02193dc4;
     extern M2C_UNK func_ov001_0217f97c;
     extern M2C_UNK func_ov001_02181a84;
-    if (func_ov001_0218a800(0) != 0) return;
-    if ((data_ov001_02193dc4 == 0) && (func_ov001_0218a800(1) != 0)) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
+    if ((data_ov001_02193dc4 == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (func_ov001_0217170c() == 0) return;
     func_ov001_02171494();
     func_ov001_0218af70(0);
@@ -552,10 +553,10 @@ void func_ov001_02180790(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern void func_ov001_02180634(void);
     extern void func_ov001_02180814(void);
-    M2C_UNK func_ov001_0218508c(void);
+    M2C_UNK Ov001_StopSound(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_021862d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_ov001_02171750(void);
+    M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Ov001_LockIconRow(void);
     extern u8 data_ov001_02193dc4;
 
     switch (func_ov001_0217645c()) {
@@ -565,10 +566,10 @@ void func_ov001_02180790(void) {
         return;
     case 4:
         data_ov001_02193dc4 = 0;
-        func_ov001_0218508c();
+        Ov001_StopSound();
         Ov001_PlaySound(9);
-        func_ov001_021862d8(0xD, 1, 1, -1, 0);
-        func_ov001_02171750();
+        Ov001_ShowMessage(0xD, 1, 1, -1, 0);
+        Ov001_LockIconRow();
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180814);
         return;
     }
@@ -593,7 +594,7 @@ void func_ov001_02180840(void) {
 }
 
 void func_ov001_02180860(void) {
-extern u8 data_ov001_02193dc8;
+extern u8 gOv001FriendListState;
 extern M2C_UNK func_ov001_02180970;
 void func_ov001_021808c8(void);
 M2C_UNK func_ov001_02171c24(M2C_UNK,M2C_UNK,M2C_UNK);
@@ -601,8 +602,8 @@ M2C_UNK func_ov001_021722ac(void);
 M2C_UNK func_ov001_02171dd0(M2C_UNK);
 M2C_UNK func_ov001_02183f6c(void);
 M2C_UNK func_ov001_02183fd4(void);
-M2C_FIELD(&data_ov001_02193dc8,u16 *,2)=0;
-data_ov001_02193dc8=0;
+M2C_FIELD(&gOv001FriendListState,u16 *,2)=0;
+gOv001FriendListState=0;
 func_ov001_021808c8();
 func_ov001_02171c24(0x33,-1,0);
 func_ov001_021722ac();
@@ -631,8 +632,8 @@ void func_ov001_021808c8(void) {
 
 void func_ov001_02180970(void) {
     extern M2C_UNK func_ov001_021809c4;
-    func_ov001_0218a824(2, 1, 1, 8);
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 1, 1, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_021809c4);
@@ -641,10 +642,10 @@ void func_ov001_02180970(void) {
 void func_ov001_021809c4(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     extern M2C_UNK func_ov001_02180a00;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     func_ov001_02171e20(1);
@@ -653,49 +654,74 @@ void func_ov001_021809c4(void) {
 
 void func_ov001_02180a00(void) {
     s32 Ov001_GetIconRowSelection();
-    M2C_UNK func_ov001_02171738();
+    M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02180a28;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
-    func_ov001_02171738();
+    Ov001_UnlockIconRow();
     Ov001_SetStepCallback(&func_ov001_02180a28);
 }
 
 void func_ov001_02180a28(void) {
     M2C_UNK func_ov001_02180b90();
-    void func_ov001_02180a40(void);
+    void Ov001_CheckFriendList(void);
     func_ov001_02180b68();
     func_ov001_02180b8c();
     func_ov001_02180b90();
-    func_ov001_02180a40();
+    Ov001_CheckFriendList();
 }
 
-void func_ov001_02180a40(void){
-M2C_UNK func_ov001_0218508c(void);s32 func_ov001_02184170(void **);
-M2C_UNK func_ov001_021862d8(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);
-M2C_UNK Ov001_PlaySound(M2C_UNK);M2C_UNK func_ov001_02171750(void);
-extern u8 data_ov001_02193dc8;
-extern M2C_UNK func_ov001_02180cf8,func_ov001_02180bbc;
-void *records;s32 count,i;void *p;
-M2C_FIELD(&data_ov001_02193dc8,u16 *,2)=M2C_FIELD(&data_ov001_02193dc8,u16 *,2)+1;
-if(M2C_FIELD(&data_ov001_02193dc8,u16 *,2)<300)return;
-func_ov001_0218508c();
-count=func_ov001_02184170(&records);
-if(count==0){
-data_ov001_02193dc8=2;
-func_ov001_021862d8(15,1,1,-1,0);
-Ov001_PlaySound(18);func_ov001_02171750();Ov001_SetStepCallback(&func_ov001_02180cf8);return;
-}
-i=0;if(count>0){p=records;do{
-if(M2C_FIELD(p,u8 *,0x28)!=2)break;
-i++;p+=42;
-}while(i<count);}
-if(i==count){
-data_ov001_02193dc8=3;
-func_ov001_021862d8(14,1,1,-1,0);
-Ov001_PlaySound(18);func_ov001_02171750();Ov001_SetStepCallback(&func_ov001_02180cf8);return;
-}
-data_ov001_02193dc8=1;Ov001_PlaySound(15);Ov001_SetStepCallback(&func_ov001_02180bbc);
+/* Step callback of the Wi-Fi friend-list screen: after waiting for the roster
+ * fetch, show the "no friends" message or the "friend unavailable" message when
+ * no friend can be picked, otherwise continue to the friend selection.  Both
+ * message paths lock the icon row and run the message step func_ov001_02180cf8. */
+void Ov001_CheckFriendList(void) {
+    M2C_UNK Ov001_StopSound(void);
+    s32 Ov001_GetFriendSlots(void **);
+    M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
+    M2C_UNK Ov001_LockIconRow(void);
+    extern u8 gOv001FriendListState;
+    extern M2C_UNK func_ov001_02180cf8, func_ov001_02180bbc;
+    void *slots;
+    s32 friendCount;
+    s32 busyCount;
+    WfcFriendSlot *slot;
+
+    M2C_FIELD(&gOv001FriendListState, u16 *, OV001_FRIEND_LIST_TIMER) =
+        M2C_FIELD(&gOv001FriendListState, u16 *, OV001_FRIEND_LIST_TIMER) + 1;
+    if (M2C_FIELD(&gOv001FriendListState, u16 *, OV001_FRIEND_LIST_TIMER) < OV001_FRIEND_LIST_WAIT) return;
+
+    Ov001_StopSound();
+    friendCount = Ov001_GetFriendSlots(&slots);
+    if (friendCount == 0) {
+        M2C_FIELD(&gOv001FriendListState, u8 *, OV001_FRIEND_LIST_STATE) = OV001_FRIEND_LIST_EMPTY;
+        Ov001_ShowMessage(OV001_MSG_NO_FRIENDS, 1, 1, -1, 0);
+        Ov001_PlaySound(18);
+        Ov001_LockIconRow();
+        Ov001_SetStepCallback(&func_ov001_02180cf8);
+        return;
+    }
+    busyCount = 0;
+    if (friendCount > 0) {
+        slot = slots;
+        do {
+            if (slot->status != WFC_FRIEND_SLOT_UNAVAILABLE) break;
+            busyCount++;
+            slot++;
+        } while (busyCount < friendCount);
+    }
+    if (busyCount == friendCount) {
+        M2C_FIELD(&gOv001FriendListState, u8 *, OV001_FRIEND_LIST_STATE) = OV001_FRIEND_LIST_ALL_BUSY;
+        Ov001_ShowMessage(OV001_MSG_FRIEND_UNAVAILABLE, 1, 1, -1, 0);
+        Ov001_PlaySound(18);
+        Ov001_LockIconRow();
+        Ov001_SetStepCallback(&func_ov001_02180cf8);
+        return;
+    }
+    M2C_FIELD(&gOv001FriendListState, u8 *, OV001_FRIEND_LIST_STATE) = OV001_FRIEND_LIST_AVAILABLE;
+    Ov001_PlaySound(15);
+    Ov001_SetStepCallback(&func_ov001_02180bbc);
 }
 

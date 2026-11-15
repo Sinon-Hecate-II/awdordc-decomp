@@ -155,7 +155,7 @@ void func_02026484(u16 *dst, u16 *src, u32 borrow, s32 len) {
     }
 }
 
-s32 func_020264ec(u16 *a, u16 *b, s32 n) {
+s32 BigNumCmp(u16 *a, u16 *b, s32 n) {
     s32 i = n - 1;
     for (; i >= 0; i--) {
         if (a[i] > b[i]) return 1;
@@ -209,7 +209,7 @@ void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
     MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
 }
 
-void func_0202667c(u16 *dst,u16 *src,s32 n){
+void BigNumSquare(u16 *dst,u16 *src,s32 n){
 s32 m=BigNumLen(src,n); s32 i,k,j; u32 p;
 if(n>m*2)MI_CpuFill8((u8*)(dst+m*2),0,(n-m*2)*2);
 i=0;if(m>0){j=0;do{if(j>=n)break;p=(u32)src[i]*src[i];dst[j]=p;if(j==n-1)break;i++;dst[j+1]=p>>16;j+=2;}while(i<m);}
@@ -261,7 +261,7 @@ digit=func_02072088(func_020267e0((u8 *)r+bytes),divisor);
 if(digit>65535)digit=65535;
 again:
 func_02026604(work,b,(u16)digit,n);
-if(func_020264ec(r,work,n)<0){digit--;goto again;}
+if(BigNumCmp(r,work,n)<0){digit--;goto again;}
 BigNumSub(r,r,work,n);*q=digit;
 }while(++i<n);
 }
@@ -275,7 +275,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 BigNumLen(u16 *, s32);
     void BigNumMul(u16 *, u16 *, u16 *, s32);
-    void func_0202667c(u16 *, u16 *, s32);
+    void BigNumSquare(u16 *, u16 *, s32);
     void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
     extern u16 *(*gAlloc)(s32);
     extern void (*gFree)(void *);
@@ -305,7 +305,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     if ((u32)var_r6 < (u32)(arg3 * 16)) {
         temp_r11 = arg3 * 2;
         do {
-            func_0202667c(temp_r4, arg0, arg3);
+            BigNumSquare(temp_r4, arg0, arg3);
             MI_CpuCopy8((s32)temp_r4, (s32)arg0, temp_r11);
             if (arg4 != 0) {
                 BigNumDivMod(0, arg0, arg4, arg0, arg3, temp_r5);
@@ -371,41 +371,47 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     BigNumDivMod(0, p4, arg2, arg0, n, p6);
 }
 #pragma scheduling reset
-void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, u16 *arg6, u16 *arg7, u16 *arg8)
+/* One Montgomery multiplication step of BigNumModPow: form result = base * op
+ * (op is 1 to square base, 0 to keep base, otherwise a pointer to the other
+ * factor), then add montConst * modulus so the low t limbs cancel, shift those
+ * t limbs out and reduce the result modulo modulus. */
+void BigNumMontMul(u16 *result, u16 *base, s32 op, s32 n, s32 t, u16 *modulus, u16 *montConst, u16 *tmp, u16 *prod)
 {
   M2C_UNK MI_CpuFill8(u8 *, s32, u32);
   M2C_UNK MI_CpuCopy8(s32, s32, s32);
   void BigNumAdd(u16 *, u16 *, u16 *, s32);
   void BigNumSub(u16 *, u16 *, u16 *, s32);
-  s32 func_020264ec(u16 *, u16 *, s32);
+  s32 BigNumCmp(u16 *, u16 *, s32);
   void BigNumMul(u16 *, u16 *, u16 *, s32);
-      void func_0202667c(u16 *, u16 *, s32);
+  void BigNumSquare(u16 *, u16 *, s32);
   M2C_UNK MemMove(M2C_UNK, M2C_UNK, M2C_UNK);
-  MI_CpuCopy8((s32) arg0, (s32) arg1, arg3 * 2);
-  if (arg2 == 1)
+  s32 padBytes;
+
+  MI_CpuCopy8((s32) result, (s32) base, n * 2);
+  if (op == 1)
   {
-    func_0202667c(arg0, arg1, arg3);
+    BigNumSquare(result, base, n);
   }
   else
-    if (arg2 != 0)
+    if (op != 0)
   {
-    BigNumMul(arg0, arg1, (u16 *) arg2, arg3);
+    BigNumMul(result, base, (u16 *) op, n);
   }
-  BigNumMul(arg7, arg0, arg6, arg4);
-  arg2 = (arg3 - arg4) * 2;
-  MI_CpuFill8((u8 *) (arg7 + arg4), 0, (u32) arg2);
-  BigNumMul(arg8, arg7, arg5, arg3);
-  BigNumAdd(arg0, arg0, arg8, arg3);
-  MemMove((s32) arg0, (s32) (arg0 + arg4), (arg3 - arg4) * 2);
-  MI_CpuFill8((u8 *) ((arg0 + arg3) - arg4), 0, (u32) (arg4 * 2));
-  switch (func_020264ec(arg0, arg5, arg3))
+  BigNumMul(tmp, result, montConst, t);
+  padBytes = (n - t) * 2;
+  MI_CpuFill8((u8 *) (tmp + t), 0, (u32) padBytes);
+  BigNumMul(prod, tmp, modulus, n);
+  BigNumAdd(result, result, prod, n);
+  MemMove((s32) result, (s32) (result + t), (n - t) * 2);
+  MI_CpuFill8((u8 *) ((result + n) - t), 0, (u32) (t * 2));
+  switch (BigNumCmp(result, modulus, n))
   {
     case 0:
-      MI_CpuFill8((u8 *) arg0, 0, (u32) (arg3 * 2));
+      MI_CpuFill8((u8 *) result, 0, (u32) (n * 2));
       return;
 
     case 1:
-      BigNumSub(arg0, arg0, arg5, arg3);
+      BigNumSub(result, result, modulus, n);
       return;
 
   }
@@ -421,7 +427,7 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     void BigNumMul(u16 *, u16 *, u16 *, s32);
     void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
     void func_02026b70(u16 *, u16 *, u16 *, s32, u16 *);
-    void func_02026cbc(u16 *, u16 *, s32, s32, s32, u16 *, u16 *, u16 *, u16 *);
+    void BigNumMontMul(u16 *, u16 *, s32, s32, s32, u16 *, u16 *, u16 *, u16 *);
     extern u16 *(*gAlloc)(s32);
     extern void (*gFree)(void *);
 
@@ -465,17 +471,17 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     counter=0;
     if ((t << 4) != 0) {
         do {
-            func_02026cbc((u16 *)arg0, sp20, 1, n, t, (u16 *)arg4, r6, r7, r8);
+            BigNumMontMul((u16 *)arg0, sp20, 1, n, t, (u16 *)arg4, r6, r7, r8);
             {
                 u16 word = ((u16 *)arg2)[t - (counter >> 4) - 1];
                 if ((0x8000u >> (counter & 0x0F)) & word) {
-                    func_02026cbc((u16 *)arg0, sp20, (s32)sp24, n, t, (u16 *)arg4, r6, r7, r8);
+                    BigNumMontMul((u16 *)arg0, sp20, (s32)sp24, n, t, (u16 *)arg4, r6, r7, r8);
                 }
             }
         counter++;
         } while ((u32)counter < (u32)(t << 4));
     }
-    func_02026cbc((u16 *)arg0, sp20, 0, n, t, (u16 *)arg4, r6, r7, r8);
+    BigNumMontMul((u16 *)arg0, sp20, 0, n, t, (u16 *)arg4, r6, r7, r8);
 
     gFree(buf);
 }

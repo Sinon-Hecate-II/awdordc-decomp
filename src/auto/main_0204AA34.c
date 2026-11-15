@@ -242,7 +242,7 @@ void ghiProcessConnected(void *);
 void ghiSendRequest(void *);
 void func_0204ce20(void *);
 void func_0204ceb8(void *);
-void func_0204d084(void *);
+void ghiReceiveStatusLine(void *);
 void func_0204d5c0(void *);
 void func_0204da30(void *);
 /* Run one tick of an async operation/state machine: validate the handle, dispatch by its kind, then settle (signal completion and release the handle) unless it is still busy. */
@@ -263,7 +263,7 @@ s32 func_0204b210(void *operation) {
     if (M2C_FIELD(operation, s32 *, 0x10) == 3) ghiSendRequest(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 4) func_0204ce20(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 6) func_0204d084(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 6) ghiReceiveStatusLine(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 7) func_0204d5c0(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 8) func_0204da30(operation);
     if (M2C_FIELD(operation, s32 *, 0x108)) func_0204afd8(operation);
@@ -280,9 +280,9 @@ s32 func_0204b210(void *operation) {
 
 void func_0204b378(void) {
  M2C_UNK func_0204a608(); M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
- extern s32 data_020fd00c, data_020fd010, data_0213dcbc;
+ extern s32 gGhiRecvTimeoutMs, data_020fd010, data_0213dcbc;
  ghiLockMutex();
- if (++data_0213dcbc == 1) { func_0204a608(); data_020fd010=125; data_020fd00c=250; return; }
+ if (++data_0213dcbc == 1) { func_0204a608(); data_020fd010=125; gGhiRecvTimeoutMs=250; return; }
  ghiUnlockMutex();
 }
 

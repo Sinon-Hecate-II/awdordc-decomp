@@ -205,7 +205,7 @@ void func_ov003_02205420(void **arg0) {
  * slide offset, release the previous group and part-sprite handles, and remember that
  * the display is set up (bit 6 of the state byte) unless a link session owns it. */
 void SetupSceneObjectDisplay(void *entity) {
-M2C_UNK func_02088d94(s32);
+M2C_UNK Show3DSprite(s32);
 M2C_UNK func_02088f1c(s32);
 s16 func_ov003_021f153c();
 s32 func_ov003_02200ca8();
@@ -221,9 +221,9 @@ if((u8)(((u32)(M2C_FIELD(entity,u8 *,0x3a)<<26)>>26)==1)) offset=0;
 else {
 group=M2C_FIELD(entity,void **,0x50);
 for(i=0;i<4;i++){
-func_02088d94(((s32 *)group)[i+1]);
-func_02088d94(((s32 *)group)[i+5]);
-func_02088d94(((s32 *)group)[i+9]);
+Show3DSprite(((s32 *)group)[i+1]);
+Show3DSprite(((s32 *)group)[i+5]);
+Show3DSprite(((s32 *)group)[i+9]);
 }
 }
 first=M2C_FIELD(entity,void **,0x3c);
@@ -238,7 +238,7 @@ M2C_FIELD(second,s16 *,0xc)=12;
 M2C_FIELD(second,u16 *,2)=M2C_FIELD(second,u16 *,4);
 M2C_FIELD(entity,u8 *,0x3a)|=0x40;
 if(func_ov003_02200ca8())return;
-func_02088d94(M2C_FIELD(entity,s32 *,0x4c));
+Show3DSprite(M2C_FIELD(entity,s32 *,0x4c));
 parts=M2C_FIELD(entity,void **,0x40);
 func_02088f1c(((s32 *)parts)[0]);
 func_02088f1c(((s32 *)parts)[1]);

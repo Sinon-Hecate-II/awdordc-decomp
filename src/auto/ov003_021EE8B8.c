@@ -30,7 +30,7 @@ void func_02087d84(void *,int,s16,s16,u16,u16);
 u32 func_020aae10(void *);u32 func_020aae44(void *);
 int IsLinkSessionActive(void);
 s16 func_ov003_022004a8(u8);
-int func_ov003_022008b8(u8);
+int GetWaypointOptionIcon(u8);
 int func_ov003_021e6cc4(s16,int,int,int);
 int func_ov003_021e6e5c(void);
 
@@ -42,8 +42,8 @@ void func_ov003_021ee8b8(void *arg0) {
     s32 IsLinkSessionActive();
     s32 func_02084d3c(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02084d88(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02088d94(void *);
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Show3DSprite(void *);
+    M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK SetTextById(s32, s32);
@@ -156,15 +156,15 @@ foundPlayer:
             rawFlags=M2C_FIELD(arg0,u8 *,0x39)&~12;
             if((((u32)(u8)rawFlags<<28)>>30)==0)var_r0_4=1;else var_r0_4=0;
             M2C_FIELD(arg0,u8 *,0x39)=rawFlags;
-            if((var_r0_4&255)&&func_ov003_021e6d28()){func_02088d94(M2C_FIELD(arg0,void **,0x58));func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
+            if((var_r0_4&255)&&func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(arg0,void **,0x58));func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
             temp_r7 = (u8) Ov003PanelCount(M2C_FIELD(arg0,void **,0x6c));
             if (IsLinkSessionActive() == 0) {
                 var_r6 = 0;
                 do {
                     if (var_r6 < (u32) temp_r7) {
-                        func_02088d94(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 8));
-                        func_02088d94(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 0x18));
+                        Show3DSprite(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 8));
+                        Show3DSprite(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 0x18));
                     }
                     var_r6 = (u32) (u8) (var_r6 + 1);
                 } while (var_r6 < 4U);
@@ -191,14 +191,14 @@ foundPlayer:
             }
             if (var_r0_5 & 0xFF) {
                 if (func_ov003_021e6d28() != 0) {
-                    func_02088da8(M2C_FIELD(arg0, void **, 0x58));
+                    Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
                     func_02088ff4(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
                 }
                 temp_r6 = M2C_FIELD(arg0, void **, 0x64);
                 var_r4 = 0;
                 do {
-                    func_02088da8(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 8));
-                    func_02088da8(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 0x18));
+                    Hide3DSprite(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 8));
+                    Hide3DSprite(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 0x18));
                     var_r4 += 1;
                 } while ((u32) var_r4 < 4U);
                 temp_r4_5 = M2C_FIELD(arg0, void **, 0x48);
@@ -265,7 +265,7 @@ foundPlayer:
             }
             func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
             M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,0x59)=1;
-            if(func_ov003_021e6d28())func_02088d94(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
+            if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
             func_02084d88(sp0,0x24);return;
         }
     }
@@ -391,7 +391,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
     sp24 = 0x3FF;
     do {
         temp_r9 = spC + func_ov003_022004a8(var_r8);
-        temp_r2_2 = (func_ov003_022008b8(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA)) * 0x10) + 0x1F0;
+        temp_r2_2 = (GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA)) * 0x10) + 0x1F0;
         temp_r0_2 = temp_r9 - 4;
         sp10 = temp_r0_2;
         func_02098dc0((s16) temp_r0_2, 0, (u16) ((sp24 & (temp_r2_2 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7400), 0xA);

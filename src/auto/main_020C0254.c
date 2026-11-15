@@ -313,12 +313,12 @@ void func_020c0a1c(s32 arg0) {
 void func_020c0a3c(s32 arg0) {
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02091d4c(M2C_UNK);
-    s32 func_020ae22c(M2C_UNK);
+    s32 GetUiColor(M2C_UNK);
     extern s32 gCur3DSpriteEngine;
     func_020c0a04(M2C_FIELD((gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
     func_020c0a1c(3);
     func_02091d4c(0);
-    func_0208ca2c(0x1000, 1, func_020ae22c(9), 2);
+    func_0208ca2c(0x1000, 1, GetUiColor(9), 2);
 }
 
 void func_020c0a88(void) {

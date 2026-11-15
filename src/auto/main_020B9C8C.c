@@ -143,7 +143,7 @@ s32 func_020b9ec0(s32 unit, s32 facility) {
 }
 
 #pragma opt_common_subs off
-s32 func_020ba12c(s32 x,s32 y,s32 type,s32 mode) {
+s32 CanUnitKindEnterTile(s32 x,s32 y,s32 type,s32 mode) {
 extern void **gCurrentMap;
 extern u8 gMovementTypeTable[];
 extern M2C_UNK gMovementCostTable;
@@ -165,16 +165,23 @@ if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTabl
 return 1;
 }
 
-s32 func_020ba1fc(s32 x,s32 y,s32 n){
-extern void **gCurrentMap;s32 func_020c94ec(void);
-s32 off;u8 *base;s8 mask=0;
-if(!n)return mask;
-base=(u8 *)*gCurrentMap+0x59a4;off=n*14;
-if(!(func_020c94ec()&4)&&func_020ba12c(x-1,y,(u32)(base[off]<<26)>>26,1)==1)mask|=4;
-if(!(func_020c94ec()&8)&&func_020ba12c(x+1,y,(u32)(base[off]<<26)>>26,1)==1)mask|=8;
-if(!(func_020c94ec()&1)&&func_020ba12c(x,y-1,(u32)(base[off]<<26)>>26,1)==1)mask|=1;
-if(!(func_020c94ec()&2)&&func_020ba12c(x,y+1,(u32)(base[off]<<26)>>26,1)==1)mask|=2;
-return mask;
+/* Neighbour-tile mask for the unit in record `unitId` at (x, y): set each of the
+ * four directions' bit when the cell is free for the unit's kind and the player
+ * is not already holding that direction. */
+s32 GetUnitMoveDirections(s32 x, s32 y, s32 unitId) {
+    extern void **gCurrentMap;
+    s32 GetHeldMapDirections(void);
+    s32 off;
+    u8 *base;
+    s8 mask = 0;
+    if (!unitId) return mask;
+    base = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS;
+    off = unitId * MAP_UNIT_STRIDE;
+    if (!(GetHeldMapDirections() & MAP_DIR_LEFT) && CanUnitKindEnterTile(x - 1, y, (u32)(base[off] << 26) >> 26, 1) == 1) mask |= MAP_DIR_LEFT;
+    if (!(GetHeldMapDirections() & MAP_DIR_RIGHT) && CanUnitKindEnterTile(x + 1, y, (u32)(base[off] << 26) >> 26, 1) == 1) mask |= MAP_DIR_RIGHT;
+    if (!(GetHeldMapDirections() & MAP_DIR_UP) && CanUnitKindEnterTile(x, y - 1, (u32)(base[off] << 26) >> 26, 1) == 1) mask |= MAP_DIR_UP;
+    if (!(GetHeldMapDirections() & MAP_DIR_DOWN) && CanUnitKindEnterTile(x, y + 1, (u32)(base[off] << 26) >> 26, 1) == 1) mask |= MAP_DIR_DOWN;
+    return mask;
 }
 
 #pragma opt_common_subs reset
@@ -263,9 +270,9 @@ valid:
 
 s32 func_020ba654(s32 arg0,s32 x,s32 y,s32 slot){
 extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
-s32 func_020ba1fc(s32,s32,s32);
+s32 GetUnitMoveDirections(s32,s32,s32);
 u8 *p=(u8 *)arg0,*base,*unit,*cargo=p+12;s32 kind,tile;s16 n;
-if(!func_020ba1fc(x,y,cargo[slot]))return 0;
+if(!GetUnitMoveDirections(x,y,cargo[slot]))return 0;
 base=*gCurrentMap;
 unit=base+0x59a4+(s16)cargo[slot]*(s16)14;
 if(gMovementTypeTable[((u32)(p[0]<<26)>>26)*112]==7){

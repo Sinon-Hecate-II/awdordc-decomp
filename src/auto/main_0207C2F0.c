@@ -1,5 +1,6 @@
 /* 43 functions from 0x0207C2F0 to 0x0207D130 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct { s32 x,y,z; } Vec0207;
 extern Vec0207 data_020ebdb8;
 
@@ -341,27 +342,29 @@ s32 func_0207ca08(s32 arg0) {
     return *(volatile s32 *)0x040002B4;
 }
 
-s32 EaseInterpolate(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
-s32 t;
-if(arg4==0)return arg2;
-switch(arg0){
-case 0:return arg1+Divide(arg3*(arg2-arg1),arg4);
-case 1:return arg1+Divide((arg2-arg1)*(arg3*arg3),arg4*arg4);
-case 2:return arg1+Divide((arg2-arg1)*(arg3*(arg3*arg3)),arg4*(arg4*arg4));
-case 3:return arg1+Divide((arg2-arg1)*(arg3*(arg3*(arg3*arg3))),arg4*(arg4*(arg4*arg4)));
-case 4:t=arg4-arg3;return arg2-Divide((arg2-arg1)*(t*t),arg4*arg4);
-case 5:t=arg4-arg3;return arg2-Divide((arg2-arg1)*(t*(t*t)),arg4*(arg4*arg4));
+/* Eased interpolation from `from` to `to` after `elapsed` of `duration` frames:
+ * mode picks the curve, one of the EASE_* easing modes. */
+s32 EaseInterpolate(s32 mode,s32 from,s32 to,s32 elapsed,s32 duration) {
+s32 remaining;
+if(duration==0)return to;
+switch(mode){
+case EASE_LINEAR:return from+Divide(elapsed*(to-from),duration);
+case EASE_IN_QUAD:return from+Divide((to-from)*(elapsed*elapsed),duration*duration);
+case EASE_IN_CUBIC:return from+Divide((to-from)*(elapsed*(elapsed*elapsed)),duration*(duration*duration));
+case EASE_IN_QUART:return from+Divide((to-from)*(elapsed*(elapsed*(elapsed*elapsed))),duration*(duration*(duration*duration)));
+case EASE_OUT_QUAD:remaining=duration-elapsed;return to-Divide((to-from)*(remaining*remaining),duration*duration);
+case EASE_OUT_CUBIC:remaining=duration-elapsed;return to-Divide((to-from)*(remaining*(remaining*remaining)),duration*(duration*duration));
 default:return 0;
 }}
 
-s32 func_0207cb5c(s32 arg0, s32 arg1) {
+s32 IntPow(s32 arg0, s32 arg1) {
     if (arg1 < 0) {
         return 0;
     }
     if (arg1 == 0) {
         return 1;
     }
-    return arg0 * func_0207cb5c(arg0, arg1 - 1);
+    return arg0 * IntPow(arg0, arg1 - 1);
 }
 
 s32 func_0207cb88(s32 arg0) {

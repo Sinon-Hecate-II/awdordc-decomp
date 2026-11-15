@@ -404,28 +404,32 @@ break;
 }
 }
 
-void SetTextSpriteValue(void *arg0,s32 arg1) {
+/* Writes a number into a text sprite as decimal digit glyphs: clamps it to
+ * +/-999999, stores the clamped value, works out how many digits it needs, then
+ * fills TEXT_SPRITE_DIGITS least-significant first and records the count in
+ * TEXT_SPRITE_COUNT.  A zero just leaves the digits cleared. */
+void SetTextSpriteValue(void *sprite,s32 number) {
  M2C_UNK MI_CpuFill8(s32,s32,s32);
  s32 Modulo(s32,s32);
- s32 func_0207cb5c(s32,s32);
+ s32 IntPow(s32,s32);
  s32 Divide();
- s32 clamped, n, value, digit; u32 i;
- MI_CpuFill8((s32)arg0+11,0,6);
+ s32 clamped, count, magnitude, digit; u32 i;
+ MI_CpuFill8((s32)sprite+TEXT_SPRITE_DIGITS,0,6);
  clamped=0xf423f;
- if(arg1<=clamped) {if(arg1 < -clamped)clamped=-clamped;else clamped=arg1;}
- M2C_FIELD(arg0,s32 *,28)=clamped;
- for(n=1;n<=7;n++){
- value=M2C_FIELD(arg0,s32 *,28);
- if(value<0)value=-value;
- if(value<func_0207cb5c(10,n)){M2C_FIELD(arg0,u8 *,10)=n;break;}
+ if(number<=clamped) {if(number < -clamped)clamped=-clamped;else clamped=number;}
+ M2C_FIELD(sprite,s32 *,TEXT_SPRITE_VALUE)=clamped;
+ for(count=1;count<=7;count++){
+ magnitude=M2C_FIELD(sprite,s32 *,TEXT_SPRITE_VALUE);
+ if(magnitude<0)magnitude=-magnitude;
+ if(magnitude<IntPow(10,count)){M2C_FIELD(sprite,u8 *,TEXT_SPRITE_COUNT)=count;break;}
  }
- if(!arg1)return;
- for(i=0;(s32)i<M2C_FIELD(arg0,u8 *,10);i++) {
+ if(!number)return;
+ for(i=0;(s32)i<M2C_FIELD(sprite,u8 *,TEXT_SPRITE_COUNT);i++) {
  switch(i){
- case 0:M2C_FIELD(arg0+i,u8 *,11)=Modulo(M2C_FIELD(arg0,s32 *,28),10);break;
+ case 0:M2C_FIELD(sprite+i,u8 *,TEXT_SPRITE_DIGITS)=Modulo(M2C_FIELD(sprite,s32 *,TEXT_SPRITE_VALUE),10);break;
  case 1:case 2:case 3:case 4:case 5:
- digit=Modulo(M2C_FIELD(arg0,s32 *,28),func_0207cb5c(10,i+1));
- M2C_FIELD(arg0+i,u8 *,11)=Divide(digit,func_0207cb5c(10,i));break;
+ digit=Modulo(M2C_FIELD(sprite,s32 *,TEXT_SPRITE_VALUE),IntPow(10,i+1));
+ M2C_FIELD(sprite+i,u8 *,TEXT_SPRITE_DIGITS)=Divide(digit,IntPow(10,i));break;
  }
  }
 }

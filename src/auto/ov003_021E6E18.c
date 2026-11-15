@@ -45,7 +45,7 @@ s32 func_ov003_021e6e5c(void) {
     return 0;
 }
 
-s32 func_ov003_021e6e94(s32 arg0) {
+s32 GetWaypointOptionTextId(s32 arg0) {
     M2C_UNK InRange(s32, M2C_UNK, M2C_UNK);
     extern s32 data_ov003_0220f0c8[][2];
     InRange(arg0, 0, 0xD);
@@ -54,14 +54,14 @@ s32 func_ov003_021e6e94(s32 arg0) {
 
 s32 IsWaypointOptionValid(s32 arg0) {
     s32 func_020bf894();
-    M2C_UNK func_ov003_022008b8(s32);
+    M2C_UNK GetWaypointOptionIcon(s32);
     if (arg0 == 0xC) {
         return 1;
     }
     if ((func_ov003_021e6e40() != 0) && (arg0 == 0xB)) {
         return 0;
     }
-    func_ov003_022008b8(arg0);
+    GetWaypointOptionIcon(arg0);
     return func_020bf894();
 }
 

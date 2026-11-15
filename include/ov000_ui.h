@@ -17,6 +17,16 @@ typedef struct UiNodeVTable {
 #define ARMY_INFO_ICONS 0x44 /* void *[7] icon animations, four bytes apart */
 #define ARMY_INFO_ICON_COUNT 7
 
+/* The army/CO info window state (gArmyInfoState, 0x24 bytes, built by
+ * func_ov000_0216e178): per listed player a record index (+0x00), a CO face id
+ * (+0x04) and an army colour (+0x08), then the selection and face animation. */
+#define ARMY_INFO_COUNT     0x0C /* u8 players listed in the window */
+#define ARMY_INFO_SELECTED  0x0D /* u8 index of the selected player */
+#define ARMY_INFO_FACE_SUB  0x0E /* u8 selected player's CO face id on the sub screen, 0 = none */
+#define ARMY_INFO_FACE_MAIN 0x0F /* u8 selected player's CO face id drawn on the main screen */
+#define ARMY_INFO_FACE_PAGE 0x11 /* u8 alternate face page (0/1), toggled per redraw */
+#define ARMY_INFO_SLIDE     0x12 /* s16 slide-in offset, 0..12 */
+
 /* One icon animation: its frame table and the two animation templates it was
  * built from. */
 typedef struct ArmyInfoIcon {

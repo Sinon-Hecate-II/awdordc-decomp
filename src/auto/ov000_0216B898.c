@@ -1,6 +1,7 @@
 /* 10 functions from 0x0216B898 to 0x0216C7F0 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 typedef struct PanelInitFlags { unsigned char bit0:1; unsigned char mid:4; unsigned char high:3; } PanelInitFlags;
 extern void *gCur3DSpriteEngine;
 extern u8 data_ov000_021b8384[],data_ov000_021b83a0[],data_ov000_021b837c[],data_ov000_021b83d8[],data_ov000_021b8392[];
@@ -97,20 +98,24 @@ void func_ov000_0216c068(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x36) = 0;
 }
 
-void func_ov000_0216c09c(void){
+/* Enters the army info window's view of the map: runs the current map's view-setup
+ * callback, switches to the map screen mode, then reconfigures the 3D sprite bank
+ * for the info layout (clears the split sizes and blend level, sets the view
+ * flag bits). */
+void EnterArmyInfoView(void){
 extern void *gCurrentMap,*gCur3DSpriteEngine;
-void (*callback)(void);u16 *volatile v0;u16 *volatile v1;u16 *volatile v2;u16 *volatile v3;u16 *volatile v4;u16 *volatile v5;
-callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);if(callback)callback();
+void (*mapCallback)(void);u16 *volatile attr;u16 *volatile flag0;u16 *volatile flag1;u16 *volatile flag2;u16 *volatile flag3;u16 *volatile flag4;
+mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);if(mapCallback)mapCallback();
 func_020c0a88();
-v0=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v0=*v0&~0xc0;
+attr=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*attr=*attr&~0xc0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
-v1=*(u16 **)gCur3DSpriteEngine;*v1=*v1|0x10;
-v2=*(u16 **)gCur3DSpriteEngine;*v2=*v2|0x20;
-v3=*(u16 **)gCur3DSpriteEngine;*v3=*v3|0x40;
-v4=*(u16 **)gCur3DSpriteEngine;*v4=*v4|0x80;
-v5=*(u16 **)gCur3DSpriteEngine;*v5=*v5|0x100;
+flag0=*(u16 **)gCur3DSpriteEngine;*flag0=*flag0|0x10;
+flag1=*(u16 **)gCur3DSpriteEngine;*flag1=*flag1|0x20;
+flag2=*(u16 **)gCur3DSpriteEngine;*flag2=*flag2|0x40;
+flag3=*(u16 **)gCur3DSpriteEngine;*flag3=*flag3|0x80;
+flag4=*(u16 **)gCur3DSpriteEngine;*flag4=*flag4|0x100;
 }
 
 void func_ov000_0216c1c4(void) {
@@ -119,8 +124,8 @@ void func_ov000_0216c1c4(void) {
 }
 
 void func_ov000_0216c1d0(void) {
-    void func_ov000_0216c09c(void);
-    func_ov000_0216c09c();
+    void EnterArmyInfoView(void);
+    EnterArmyInfoView();
 }
 
 void func_ov000_0216c1dc(void) {

@@ -57,7 +57,7 @@ extern s32 data_ov001_02193e0c,data_ov001_02193e10;
 extern const u8 data_ov001_0218fbd2[];
 M2C_UNK func_ov001_0218a4d4(M2C_UNK,M2C_UNK,M2C_UNK *,M2C_UNK *);
 M2C_UNK Ov001_MoveSpriteLayout(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK func_ov001_0218c92c(M2C_UNK,M2C_UNK);
+M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK);
 M2C_UNK func_ov001_0218a1cc(M2C_UNK);
 M2C_UNK func_ov001_0218b71c(M2C_UNK);
 s32 pos[2],i;
@@ -66,7 +66,7 @@ pos[1]-=8;
 for(i=0;i<5;i++)Ov001_MoveSpriteLayout(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[i],-1,pos[1],M2C_FIELD(data_ov001_0218fbd2+i*4,u16 *,2));
 if(pos[1]>0x1d6)return;
 if(pos[1]<0x100)return;
-func_ov001_0218c92c(0,arg0);
+Ov001_PostTaskMessage(0,arg0);
 for(i=0;i<5;i++)func_ov001_0218a1cc(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[i]);
 func_ov001_0218b71c(&data_ov001_02193e10);
 }
@@ -97,7 +97,7 @@ void func_ov001_02185ba8(s32 arg0) {
     DC_FlushRange(data_ov001_02193e0c, 0x600);
     func_0200442c(data_ov001_02193e0c, 0, 0x600);
     Ov001_FreeFile(data_ov001_02193e0c);
-    func_ov001_0218c92c(1, arg0);
+    Ov001_PostTaskMessage(1, arg0);
 }
 
 s32 func_ov001_02185bf4(s32 arg0){
@@ -299,7 +299,7 @@ void func_ov001_02186090(u16 *arg0) {
 void Ov001_ReportConnectionState(s32 arg0) {
     u64 GetSystemTick(void);
     s32 ByteCompareN(void *, const void *, s32);
-    M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
     extern void *gOv001ConnectionState;
     extern const u8 gWfcEmptySlotId[];
     u64 now;
@@ -346,17 +346,17 @@ void Ov001_ReportConnectionState(s32 arg0) {
     }
     M2C_FIELD(gOv001ConnectionState, s32 *, WFC_CONN_WATCH_TIMER) = 0;
     M2C_FIELD(gOv001ConnectionState, u8 *, WFC_CONN_WATCH_DONE) = 1;
-    func_ov001_0218c92c(0, arg0);
+    Ov001_PostTaskMessage(0, arg0);
 }
 
-void func_ov001_021862d8(void *a, s32 b, void *c, s32 d, s32 e) {
+void Ov001_ShowMessage(void *a, s32 b, void *c, s32 d, s32 e) {
     volatile s32 x = 1;
     (void)a; (void)b; (void)c; (void)d; (void)e; (void)x;
 }
 
 void func_ov001_02186604(void) {
 extern void *gOv001RegionMenu;void func_ov001_02186c68();s32 func_ov001_0218c884(s32,void (*)(),s32,s32);
-func_ov001_0218c92c(0,M2C_FIELD(gOv001RegionMenu,s32 *,20));
+Ov001_PostTaskMessage(0,M2C_FIELD(gOv001RegionMenu,s32 *,20));
 M2C_FIELD(gOv001RegionMenu,s32 *,20)=func_ov001_0218c884(1,func_ov001_02186c68,0,120);
 }
 
@@ -376,7 +376,7 @@ s32 func_ov001_0218665c(void) {
 void func_ov001_02186678(s32 a) {
 extern void *gOv001RegionMenu;void func_ov001_021866d8();
 M2C_FIELD(gOv001RegionMenu,s8 *,26)--;
-func_02003a10(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
+GX_SetBlendY(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
 if(M2C_FIELD(gOv001RegionMenu,s8 *,26)<=-12)func_ov001_0218c924(a,func_ov001_021866d8);
 }
 
@@ -387,7 +387,7 @@ void func_ov001_021866d8(s32 arg0) {
     void func_ov001_02186908(void);
     void func_ov001_021867ac(void);
     M2C_UNK func_ov001_0218c884(M2C_UNK, void (*)(void), M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a4d4(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     s32 pos[2];
 
@@ -405,6 +405,6 @@ void func_ov001_021866d8(s32 arg0) {
         M2C_FIELD(gOv001RegionMenu, s32 *, 0x14) =
             (M2C_UNK)func_ov001_0218c884(0, (void (*)(void))func_ov001_021867ac, 0, 0x78);
     }
-    func_ov001_0218c92c(1, arg0);
+    Ov001_PostTaskMessage(1, arg0);
 }
 

@@ -52,7 +52,7 @@ void func_ov003_021e4630(void **arg0) {
 }
 
 void func_ov003_021e4644(void *arg0) {
-    M2C_UNK func_02088d94(s32);
+    M2C_UNK Show3DSprite(s32);
     M2C_UNK func_02088f1c(s32);
     void *temp_ip;
     void *temp_r1;
@@ -68,7 +68,7 @@ void func_ov003_021e4644(void *arg0) {
     M2C_FIELD(temp_r1, s16 *, 0x10) = 0;
     M2C_FIELD(temp_r1, s16 *, 0xC) = 0xC;
     M2C_FIELD(temp_r1, u16 *, 2) = (u16) M2C_FIELD(temp_r1, u16 *, 4);
-    func_02088d94(M2C_FIELD(arg0, s32 *, 0x4C));
+    Show3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
     func_02088f1c(M2C_FIELD(arg0, s32 *, 0x58));
     temp_r5 = M2C_FIELD(arg0, void **, 0x44);
     func_02088f1c(M2C_FIELD(temp_r5, s32 *, 0));
@@ -400,7 +400,11 @@ void func_ov003_021e4908(void *arg0) {
     AddRecordValue(0x22, 0x1);
 }
 
-void *func_ov003_021e4d2c(void *arg0) {
+/* Base (non-deleting) destructor of the ov003 battle-scene view: restores the
+ * base vtables and releases the sub-objects, sprite handles and map-record
+ * buffers it owns, then returns the object still allocated.  Its vtable
+ * neighbour DestroyOv003SceneView frees the object as well. */
+void *Ov003SceneView_Destructor(void *obj) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     M2C_UNK func_020c127c();
@@ -409,62 +413,62 @@ void *func_ov003_021e4d2c(void *arg0) {
     extern M2C_UNK gOv003SceneViewVTable;
     extern M2C_UNK gOv003SceneViewIfaceVTable;
     M2C_UNK SetOv003SceneState(s32);
-    void **temp_r0;
-    void **temp_r0_2;
-    void **temp_r0_3;
-    void **temp_r0_4;
-    void *temp_r5;
+    void **child5C;
+    void **child48;
+    void **child50;
+    void **child54;
+    void *spritePair;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gOv003SceneViewVTable;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &gOv003SceneViewIfaceVTable;
+    M2C_FIELD(obj, M2C_UNK **, 0) = &gOv003SceneViewVTable;
+    M2C_FIELD(obj, M2C_UNK **, 0x34) = &gOv003SceneViewIfaceVTable;
     func_020c8e40();
-    temp_r0 = M2C_FIELD(arg0, void ***, 0x5C);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    child5C = M2C_FIELD(obj, void ***, 0x5C);
+    if (child5C != NULL) {
+        M2C_FIELD(*child5C, void (**)(void *), 4)(child5C);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x3C) != 0) {
         MemFree();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x40) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x40) != 0) {
         MemFree();
     }
-    temp_r5 = M2C_FIELD(arg0, void **, 0x44);
-    if (temp_r5 != NULL) {
-        if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
+    spritePair = M2C_FIELD(obj, void **, 0x44);
+    if (spritePair != NULL) {
+        if (M2C_FIELD(spritePair, s32 *, 0) != 0) {
             DeleteSpriteObject();
         }
-        if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
+        if (M2C_FIELD(spritePair, s32 *, 4) != 0) {
             DeleteSpriteObject();
         }
-        MemFree(temp_r5);
+        MemFree(spritePair);
     }
-    temp_r0_2 = M2C_FIELD(arg0, void ***, 0x48);
-    if (temp_r0_2 != NULL) {
-        M2C_FIELD(*temp_r0_2, void (**)(void *), 4)(temp_r0_2);
+    child48 = M2C_FIELD(obj, void ***, 0x48);
+    if (child48 != NULL) {
+        M2C_FIELD(*child48, void (**)(void *), 4)(child48);
     }
-    temp_r0_3 = M2C_FIELD(arg0, void ***, 0x50);
-    if (temp_r0_3 != NULL) {
-        M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
+    child50 = M2C_FIELD(obj, void ***, 0x50);
+    if (child50 != NULL) {
+        M2C_FIELD(*child50, void (**)(void *), 4)(child50);
     }
-    temp_r0_4 = M2C_FIELD(arg0, void ***, 0x54);
-    if (temp_r0_4 != NULL) {
-        M2C_FIELD(*temp_r0_4, void (**)(void *), 4)(temp_r0_4);
+    child54 = M2C_FIELD(obj, void ***, 0x54);
+    if (child54 != NULL) {
+        M2C_FIELD(*child54, void (**)(void *), 4)(child54);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x4C) != 0) {
         DeleteSpriteObject();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
+    if (M2C_FIELD(obj, s32 *, 0x58) != 0) {
         DeleteSpriteObject();
     }
     SetOv003SceneState(4);
     func_020c127c();
-    if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
-        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x68));
+    if (M2C_FIELD(obj, s32 *, 0x68) != 0) {
+        HeapFreeBlock(M2C_FIELD(obj, s32 *, 0x68));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x6C) != 0) {
-        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x6C));
+    if (M2C_FIELD(obj, s32 *, 0x6C) != 0) {
+        HeapFreeBlock(M2C_FIELD(obj, s32 *, 0x6C));
     }
-    return arg0;
+    return obj;
 }
 
 s32 func_ov003_021e4e58(s32 arg0) {

@@ -313,7 +313,7 @@ void func_020d2cf0(M2C_UNK arg0) {
     func_020a25bc(temp_r4, func_020d2c58(arg0));
 }
 
-s32 func_020d2d18(arg0, arg1)
+s32 GetUnitBuildCost(arg0, arg1)
     u16 arg0;
     s32 arg1;
 {
@@ -326,12 +326,12 @@ s32 func_020d2d18(arg0, arg1)
 }
 
 s32 func_020d2d38(void) {
-    return func_020d2d18() * 0xA;
+    return GetUnitBuildCost() * 0xA;
 }
 
 s32 func_020d2d50(void) {
-    s32 func_020d2d18();
-    return func_020d2d18() * 5;
+    s32 GetUnitBuildCost();
+    return GetUnitBuildCost() * 5;
 }
 
 void func_020d2d60(M2C_UNK arg0) {

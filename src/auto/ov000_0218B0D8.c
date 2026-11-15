@@ -7,7 +7,7 @@ typedef struct { u8 pad[7]; u8 low:2; u8 enabled:1; u8 high:5; } AiFlagsB0;
 extern u8 **gCurrentMap;
 extern u8 gUnitKindFlags[];
 extern u8 gUnitKindStats[];
-extern u8 gAiRangeBitmap[], data_ov000_021dfba8[];
+extern u8 gAiRangeBitmap[], gAiIndirectRangeBitmap[];
 extern u8 *gAiCommandState, *gAiUnitTypeTuning;
 
 
@@ -40,7 +40,7 @@ int func_ov000_0218b0d8(void *arg0) {
  u32 n=x+y*M2C_FIELD(map,u16 *,0x5144);
  int attr=gUnitKindStats[M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0*112+19];
  if((attr&7)&&(u8)(gAiRangeBitmap[n>>3]&(1<<(n&7)))) hits++;
- if((attr&16)&&(u8)(data_ov000_021dfba8[n>>3]&(1<<(n&7)))) hits++;
+ if((attr&16)&&(u8)(gAiIndirectRangeBitmap[n>>3]&(1<<(n&7)))) hits++;
  total++;
  }
  }

@@ -207,7 +207,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     void func_020850dc();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_ov003_022008b8();
+    M2C_UNK GetWaypointOptionIcon();
     void func_020a230c(M2C_UNK, M2C_UNK);
     void func_020a232c(M2C_UNK, M2C_UNK);
     void SetPlayerTeam(M2C_UNK, M2C_UNK);
@@ -304,10 +304,10 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     SetPlayerTeam(4, playerState);
 
     // per-player army colours
-    func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
-    func_020a230c(2, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
-    func_020a230c(3, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
-    func_020a230c(4, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
+    func_020a230c(1, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
+    func_020a230c(2, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
+    func_020a230c(3, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
+    func_020a230c(4, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
 
     // per-player teams
     func_020a232c(1, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);
@@ -415,7 +415,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     void func_020850dc();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_ov003_022008b8();
+    M2C_UNK GetWaypointOptionIcon();
     void func_020a230c(M2C_UNK, M2C_UNK);
     void func_020a232c(M2C_UNK, M2C_UNK);
     void SetPlayerTeam(M2C_UNK, M2C_UNK);
@@ -512,10 +512,10 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     SetPlayerTeam(4, playerState);
 
     // per-player army colours
-    func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
-    func_020a230c(2, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
-    func_020a230c(3, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
-    func_020a230c(4, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
+    func_020a230c(1, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
+    func_020a230c(2, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
+    func_020a230c(3, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
+    func_020a230c(4, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
 
     // per-player teams
     func_020a232c(1, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);

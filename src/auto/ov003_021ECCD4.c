@@ -14,8 +14,8 @@ void func_ov003_021eccd4(void *arg0) {
     s32 IsLinkSessionActive();
     s32 func_02084d3c(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02084d88(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02088d94(void *);
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Show3DSprite(void *);
+    M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK SetTextById(s32, s32);
@@ -125,7 +125,7 @@ void func_ov003_021eccd4(void *arg0) {
             }
             M2C_FIELD(arg0, u8 *, 0x39) = temp_r1;
             if ((var_r0_4 & 0xFF) && (func_ov003_021e6d28() != 0)) {
-                func_02088d94(M2C_FIELD(arg0, void **, 0x58));
+                Show3DSprite(M2C_FIELD(arg0, void **, 0x58));
                 func_02088f1c(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
             }
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
@@ -134,8 +134,8 @@ void func_ov003_021eccd4(void *arg0) {
                 var_r6 = 0;
                 do {
                     if (var_r6 < temp_r7) {
-                        func_02088d94(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 8));
-                        func_02088d94(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 0x18));
+                        Show3DSprite(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 8));
+                        Show3DSprite(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 0x18));
                     }
                     var_r6 = (u32) (u8) (var_r6 + 1);
                 } while (var_r6 < 4U);
@@ -162,14 +162,14 @@ void func_ov003_021eccd4(void *arg0) {
             }
             if (var_r0_5 & 0xFF) {
                 if (func_ov003_021e6d28() != 0) {
-                    func_02088da8(M2C_FIELD(arg0, void **, 0x58));
+                    Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
                     func_02088ff4(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
                 }
                 temp_r6 = M2C_FIELD(arg0, void **, 0x64);
                 var_r4 = 0;
                 do {
-                    func_02088da8(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 8));
-                    func_02088da8(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 0x18));
+                    Hide3DSprite(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 8));
+                    Hide3DSprite(M2C_FIELD((temp_r6 + (var_r4 * 4)), void **, 0x18));
                     var_r4 += 1;
                 } while ((u32) var_r4 < 4U);
                 temp_r4_5 = M2C_FIELD(arg0, void **, 0x48);
@@ -247,8 +247,8 @@ void func_ov003_021eccd4(void *arg0) {
 #pragma opt_propagation off
 void func_ov003_021ed27c(void *arg0, u32 arg1) {
     s32 IsLinkSessionActive();
-    M2C_UNK func_02088d94(void *);
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Show3DSprite(void *);
+    M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02089438(void *);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -417,10 +417,10 @@ block_79:
             temp_r1_3 = M2C_FIELD(arg0, void **, 0x6C);
             M2C_FIELD(temp_r1_3, u8 *, 9) = (u8) M2C_FIELD(temp_r1_3, u8 *, 8);
             func_02089438(M2C_FIELD(arg0, void **, 0x5C));
-            func_02088d94(M2C_FIELD(arg0, void **, 0x5C));
+            Show3DSprite(M2C_FIELD(arg0, void **, 0x5C));
             return;
         }
-        func_02088da8(M2C_FIELD(arg0, void **, 0x5C));
+        Hide3DSprite(M2C_FIELD(arg0, void **, 0x5C));
         return;
     case 8:                                         /* switch 2 */
     case 9:                                         /* switch 2 */
@@ -478,10 +478,10 @@ block_100:
             temp_r1_4 = M2C_FIELD(arg0, void **, 0x6C);
             M2C_FIELD(temp_r1_4, u8 *, 9) = (u8) M2C_FIELD(temp_r1_4, u8 *, 8);
             func_02089438(M2C_FIELD(arg0, void **, 0x5C));
-            func_02088d94(M2C_FIELD(arg0, void **, 0x5C));
+            Show3DSprite(M2C_FIELD(arg0, void **, 0x5C));
             return;
         }
-        func_02088da8(M2C_FIELD(arg0, void **, 0x5C));
+        Hide3DSprite(M2C_FIELD(arg0, void **, 0x5C));
         return;
     case 21:                                        /* switch 2 */
     case 22:                                        /* switch 2 */
@@ -530,10 +530,10 @@ block_121:
             temp_r1_5 = M2C_FIELD(arg0, void **, 0x6C);
             M2C_FIELD(temp_r1_5, u8 *, 9) = (u8) M2C_FIELD(temp_r1_5, u8 *, 8);
             func_02089438(M2C_FIELD(arg0, void **, 0x5C));
-            func_02088d94(M2C_FIELD(arg0, void **, 0x5C));
+            Show3DSprite(M2C_FIELD(arg0, void **, 0x5C));
             return;
         }
-        func_02088da8(M2C_FIELD(arg0, void **, 0x5C));
+        Hide3DSprite(M2C_FIELD(arg0, void **, 0x5C));
         return;
     }
 }

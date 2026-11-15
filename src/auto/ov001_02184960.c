@@ -172,7 +172,7 @@ data_ov001_02193e08=func_ov001_0218b6f8(0x9c,4);
 M2C_FIELD(data_ov001_02193e08,s32 *,0x94)=Ov001_LoadFile(&data_ov001_02190b68,&local,32);
 func_0202a968();func_0202bf54(data_ov001_02193e08,M2C_FIELD(data_ov001_02193e08,s32 *,0x94));func_0202d294(0);func_0202acb0(data_ov001_02193e08+0x90);M2C_FIELD(data_ov001_02193e08,s32 *,0x98)=func_ov001_0218c884(0,func_ov001_021850ac,0,200);}
 
-void func_ov001_02184ff8(void){extern s32 data_ov001_02193e08;M2C_UNK func_ov001_0218c92c(s32,s32);M2C_UNK func_ov001_0218b71c(void *);func_ov001_0218c92c(0,M2C_FIELD(data_ov001_02193e08,s32 *,0x98));func_ov001_0218b71c((void *)0x02193e08);}
+void func_ov001_02184ff8(void){extern s32 data_ov001_02193e08;M2C_UNK Ov001_PostTaskMessage(s32,s32);M2C_UNK func_ov001_0218b71c(void *);Ov001_PostTaskMessage(0,M2C_FIELD(data_ov001_02193e08,s32 *,0x98));func_ov001_0218b71c((void *)0x02193e08);}
 
 void Ov001_PlaySound(s32 a){extern s32 data_ov001_02193e08;M2C_UNK func_0202d3e8(s32,s32,s32);func_0202d3e8(data_ov001_02193e08+0x90,0,a);}
 
@@ -184,7 +184,7 @@ void func_ov001_02185048(M2C_UNK arg0) {
 
 void func_ov001_02185068(s32 a,s32 b){extern s32 data_ov001_02193e08;M2C_UNK func_0202ad70(s32,s32,s32);func_0202ad70(data_ov001_02193e08+0x90,a,b);}
 
-void func_ov001_0218508c(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 data_ov001_02193e08;func_0202ac60(data_ov001_02193e08+0x90,0);}
+void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 data_ov001_02193e08;func_0202ac60(data_ov001_02193e08+0x90,0);}
 
 void func_ov001_021850ac(void) {
     M2C_UNK func_0202a9f0();
@@ -269,9 +269,9 @@ p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=176;handle=M2C_FIELD(p,s32 *,
 }
 #pragma scheduling reset
 void func_ov001_021855e4(s32 a) {
-    s32 func_ov001_0218c92c(s32, s32);
+    s32 Ov001_PostTaskMessage(s32, s32);
     extern M2C_UNK data_ov001_02193e0c;
-    func_ov001_0218c92c(0, a);
+    Ov001_PostTaskMessage(0, a);
     *(s32 *)((u8 *)*(void **)((u8 *)&data_ov001_02193e0c + 4) + 0x14) = 0;
 }
 #pragma opt_instruction_scheduling reset

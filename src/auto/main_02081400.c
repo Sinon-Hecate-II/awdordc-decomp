@@ -274,8 +274,8 @@ M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6) |= arg0;
 #pragma scheduling off
 void func_02081a48(void){
 extern M2C_UNK data_02101e84;
-void func_0200d544(void);s32 func_0200d5bc(u16 *);void func_0200d650(u16 *);
-u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;func_0200d650(a);}
+void func_0200d544(void);s32 func_0200d5bc(u16 *);void SetTouchCalibration(u16 *);
+u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;SetTouchCalibration(a);}
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x12)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x13)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x14)=0;
@@ -293,7 +293,7 @@ void UpdateTouchInput(void) {
     extern M2C_UNK data_0214c18c;
     void func_0200d778(void);
     s32 func_0200d80c(u16 *);
-    void func_0200dbf0(u16 *, u16 *);
+    void CalibrateTouchSample(u16 *, u16 *);
     u8 sample[0x10];
 
     M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_STARTED) = 0;
@@ -308,7 +308,7 @@ void UpdateTouchInput(void) {
     if (func_0200d80c((u16 *)(sample + 8)) != 0) {
         *(u16 *)(sample + 6) = 3;
     } else {
-    func_0200dbf0((u16 *)sample, (u16 *)(sample + 8));
+    CalibrateTouchSample((u16 *)sample, (u16 *)(sample + 8));
     }
     if (*(u16 *)(sample + 6) != 0) {
         goto invalid;

@@ -237,7 +237,7 @@ func_ov010_02229a50 kind:function(arm,size=0x14) addr:0x02229a50
 func_ov010_02229a64 kind:function(arm,size=0x10) addr:0x02229a64
 func_ov010_02229a74 kind:function(arm,size=0x20) addr:0x02229a74
 func_ov010_02229a94 kind:function(arm,size=0x6c) addr:0x02229a94
-func_ov010_02229b00 kind:function(arm,size=0xc) addr:0x02229b00
+GetLocalPlayerStatus kind:function(arm,size=0xc) addr:0x02229b00
 func_ov010_02229b0c kind:function(arm,size=0x3c) addr:0x02229b0c
 func_ov010_02229b48 kind:function(arm,size=0x14) addr:0x02229b48
 func_ov010_02229b5c kind:function(arm,size=0x34) addr:0x02229b5c
@@ -458,7 +458,7 @@ data_ov010_0222ef88 kind:bss addr:0x0222ef88
 data_ov010_0222ef8c kind:bss addr:0x0222ef8c
 data_ov010_0222ef90 kind:bss addr:0x0222ef90
 data_ov010_0222efb8 kind:bss addr:0x0222efb8
-data_ov010_0222efc0 kind:bss addr:0x0222efc0
+gLocalPlayerStatus kind:bss addr:0x0222efc0
 data_ov010_0222efec kind:bss addr:0x0222efec
 data_ov010_0222f02c kind:bss addr:0x0222f02c
 data_ov010_0222f1dc kind:bss addr:0x0222f1dc

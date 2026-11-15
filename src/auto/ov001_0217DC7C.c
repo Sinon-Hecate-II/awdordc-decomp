@@ -63,14 +63,14 @@ void func_ov001_0217ded8(void) {
 }
 
 void func_ov001_0217def8(void) {
-    s32 func_ov001_0218a800(M2C_UNK);
-    M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 Ov001_IsFadeActive(M2C_UNK);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217df44;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_0218a824(3, 1, 1, 8);
-    func_ov001_0218a824(3, 0, 0x1D, 8);
+    Ov001_StartFade(3, 1, 1, 8);
+    Ov001_StartFade(3, 0, 0x1D, 8);
     Ov001_SetStepCallback(&func_ov001_0217df44);
 }
 
@@ -79,12 +79,12 @@ void func_ov001_0217def8(void) {
 void func_ov001_0217df44(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
 extern M2C_UNK func_02004160,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,func_ov001_02180d44,func_ov001_02181a84;
-s32 func_ov001_0218a800(s32);
+s32 Ov001_IsFadeActive(s32);
 void *GetCurrentMapRecord(void);
 s32 func_02046014(void *);
 s32 i,n; u8 *p;
-if(func_ov001_0218a800(1))return;
-if(func_ov001_0218a800(0))return;
+if(Ov001_IsFadeActive(1))return;
+if(Ov001_IsFadeActive(0))return;
 func_ov001_0218c94c(0,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0));
 func_ov001_0218c94c(1,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,60));
 for(i=0;i<7;i++)func_ov001_0218c104(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,24));

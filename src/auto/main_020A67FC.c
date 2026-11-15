@@ -8,7 +8,7 @@ extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],gUnitKindCargoCount[],dat
 extern void **gCurrentMap;
 
 s32 ProduceUnit(s32 a, s32 b, s32 c) {
-    s32 func_020d2d18(u16, s32);
+    s32 GetUnitBuildCost(u16, s32);
     s32 func_020a6658(s32, s32, s32);
     void func_020d2b10(u16, s32);
     s32 IsPlayerHuman(u16);
@@ -18,7 +18,7 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
     s32 r, cost;u16 id;
     void *p;
 
-    cost = func_020d2d18(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), c) * 10;
+    cost = GetUnitBuildCost(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), c) * 10;
     p = *gCurrentMap;
     id = M2C_FIELD(p, u16 *, 0x52a4);
     if (M2C_FIELD((u8 *) p + 140u * id, s32 *, 0x67a4) < cost) {

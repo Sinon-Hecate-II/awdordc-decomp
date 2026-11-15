@@ -1001,6 +1001,41 @@ typedef struct Ov001IconRow {
     u8 active;        /* +0x19 nonzero once the row is in use */
 } Ov001IconRow;
 
+/* Blend control registers the ov001 screen fades write: the main engine's and
+ * the sub engine's BLDCNT, with BLDY at +4. */
+#define GX_BLDCNT_MAIN 0x04000050
+#define GX_BLDCNT_SUB  0x04001050
+
+/* The ov001 screen-fade system (gOv001FadeStates points at two Ov001Fade, the
+ * sub engine's then the main engine's). A fade task maps frames 0..duration to a
+ * BLDY blend value; gOv001FadeTable holds the four fade modes as three parallel
+ * arrays. A negative blend value makes GX_SetBlendY fade through the backdrop. */
+#define OV001_FADE_MODE_COUNT  4
+#define OV001_FADE_END_BLEND   0x0 /* s8[end] BLDY value once the fade completes */
+#define OV001_FADE_FLAGS       0x4 /* u8[end] OV001_FADE_* direction flags */
+#define OV001_FADE_START_BLEND 0x8 /* s8[end] BLDY value the fade starts from */
+
+/* A fade mode's flags (gOv001FadeTable + OV001_FADE_FLAGS + mode). */
+enum {
+    OV001_FADE_INVERT = 0x01, /* value = 16 - ramp, so 16 fades down to 0 */
+    OV001_FADE_NEGATE = 0x10  /* value = -value, fading through the backdrop */
+};
+
+/* One running screen fade (Ov001FadeStates::sub / ::main). */
+typedef struct Ov001Fade {
+    s32 task;      /* +0x00 task created for the fade, 0 when idle */
+    s16 counter;   /* +0x04 frames elapsed */
+    u16 duration;  /* +0x06 frames the fade runs */
+    u8  mode;      /* +0x08 index into gOv001FadeTable, 0..3 */
+    u8  active;    /* +0x09 nonzero while the fade runs */
+    u8  pad0A[2];  /* +0x0A */
+} Ov001Fade;       /* 0x0C bytes */
+
+typedef struct Ov001FadeStates {
+    Ov001Fade sub;  /* +0x00 fades the sub engine (GX_BLDCNT_SUB) */
+    Ov001Fade main; /* +0x0C fades the main engine (GX_BLDCNT_MAIN) */
+} Ov001FadeStates; /* 0x18 bytes */
+
 /* State of the ov001 name-entry screen (gNameEntryState): its entered text and
  * the position word of its cursor sprite. */
 #define NAME_ENTRY_PANEL   0x00 /* text panel that draws the entered text */
@@ -1401,6 +1436,32 @@ typedef struct Ov001TextState {
 #define WEB_REQ_DATA_POS     0x5C /* char * position where the base64 body starts */
 #define WEB_REQ_PAYLOAD      0x60 /* void * payload of the last request */
 #define WEB_REQ_PAYLOAD_SIZE 0x64 /* s32 its size in bytes */
+
+/* ov007 CO-power panel object (returned by GetPanelObject).  The panel keeps a
+ * flag per graphic variant and three values that the opening/closing animation
+ * eases between 0 and 256; the rest of the object is a set of sprite handles. */
+#define OV007_PANEL_VARIANT_A 0x34 /* u8: first panel variant in use */
+#define OV007_PANEL_VARIANT_B 0x35 /* u8: second panel variant in use */
+#define OV007_PANEL_ANIM0     0x3c /* u16: first eased value, 0..256 */
+#define OV007_PANEL_ANIM1     0x3e /* u16: second eased value, 0..256 */
+#define OV007_PANEL_ANIM2     0x40 /* u16: split-region eased value, 0..256 */
+#define OV007_PANEL_ANIM_FRAME 0x54 /* s16: frame counter of a panel animation driver object */
+
+/* A number/text sprite. DrawTextSprite (main_020A94FC) draws it as a row of glyph
+ * sprites and SetTextSpriteValue (main_020A86F8) fills in its numeric form. */
+#define TEXT_SPRITE_TYPE    0x04 /* u8: 0 = number sprite, 1 = text sprite */
+#define TEXT_SPRITE_X       0x08 /* s16: screen x of the first glyph */
+#define TEXT_SPRITE_COUNT   0x0A /* u8: number of digit glyphs to draw */
+#define TEXT_SPRITE_DIGITS  0x0B /* u8[6]: digit glyph indices, least significant first */
+#define TEXT_SPRITE_VALUE   0x1C /* s32: numeric value, clamped to +/-999999 */
+
+/* The ov011 opening-sequence state object, advanced by the ov011_02223CB8 code. */
+#define INTRO_TIMER     0x34 /* u16 frames spent in the current state */
+#define INTRO_SUBSTATE  0x36 /* u8 sub-state flag */
+#define INTRO_ANIM      0x37 /* u8 sprite animation currently playing */
+#define INTRO_STATE     0x38 /* u8 1 = opening, 2 = title, 3 = stage sequence */
+#define INTRO_STAGE     0x39 /* u8 index into gIntroStateDurations */
+#define INTRO_MODE      0x3C /* s32 presentation mode; 2 selects the alternate path */
 
 #endif
 

@@ -465,7 +465,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK func_020d1f2c(void);
     M2C_UNK BuildMapRowOffsets(void);
     s32 func_0207f460(u8);
-    void *func_020a660c(s16, s16, s16, s32);
+    void *CreateMapUnit(s16, s16, s16, s32);
     void func_ov007_0221b688(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cf2c8(void);
     extern s32 *gCurrentMap;
@@ -520,7 +520,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
         objParam=(u32)(objEntry<<17)>>27;
         objKind=(u32)(objEntry<<14)>>29;
         if(width>objX&&objY<height) {
-            obj=func_020a660c(objX,objY,objParam,objKind);
+            obj=CreateMapUnit(objX,objY,objParam,objKind);
             if(obj) {
                 objState=(u8)((M2C_FIELD(blockData,u32 *,0)<<10)>>28);
                 oldState=M2C_FIELD(obj,u8 *,11);

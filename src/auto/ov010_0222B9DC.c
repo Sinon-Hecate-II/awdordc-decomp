@@ -74,7 +74,7 @@ void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
 void func_ov010_0222bb18(M2C_UNK arg0) {
     s32 ByteCompareN(s32, s32, M2C_UNK);
     M2C_UNK func_ov010_02229a08();
-    s32 func_ov010_02229b00();
+    s32 GetLocalPlayerStatus();
     s32 func_ov010_02229b48();
     M2C_UNK func_ov010_02229eb4(M2C_UNK);
     s32 temp_r4;
@@ -82,7 +82,7 @@ void func_ov010_0222bb18(M2C_UNK arg0) {
     if (func_ov010_022282b4(3) == 0) {
         return;
     }
-    temp_r4 = func_ov010_02229b00();
+    temp_r4 = GetLocalPlayerStatus();
     func_ov010_02229a08();
     if (ByteCompareN(temp_r4, func_ov010_02229b48(), 0x6C) == 0) {
         return;

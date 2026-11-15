@@ -266,32 +266,32 @@ void StringScanf(s32 arg0, s32 arg1, ...) {
 s32 InvokeSocketCallback(s32 id) {
 M2C_UNK LockMutex(M2C_UNK *);
 M2C_UNK UnlockMutex(M2C_UNK *);
-s32 func_02006680(M2C_UNK *);
+s32 TryLockMutex(M2C_UNK *);
 M2C_UNK func_02063e1c(M2C_UNK);
 extern M2C_UNK gSocketManager;
-extern M2C_UNK data_0213e5d4;
-extern s32 data_0213e5f8[9];
+extern M2C_UNK gFileLockOwner;
+extern s32 gFileLockCount[9];
 extern M2C_UNK gSocketCallbackLock;
 extern M2C_UNK gSocketCallbacks;
 M2C_UNK (*cb)(s32);
 s32 n;
 if(id<1 || id>7) return -1;
-if(func_02006680(&gSocketCallbackLock)==0) {
-M2C_FIELD(&data_0213e5d4,s32 *,0x1c)=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);
-data_0213e5f8[7]=1;
-} else if(M2C_FIELD(&data_0213e5d4,s32 *,0x1c)==M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c)) {
-n=data_0213e5f8[7]+1;
-data_0213e5f8[7]=n;
+if(TryLockMutex(&gSocketCallbackLock)==0) {
+M2C_FIELD(&gFileLockOwner,s32 *,0x1c)=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);
+gFileLockCount[7]=1;
+} else if(M2C_FIELD(&gFileLockOwner,s32 *,0x1c)==M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c)) {
+n=gFileLockCount[7]+1;
+gFileLockCount[7]=n;
 } else {
 LockMutex(&gSocketCallbackLock);
-M2C_FIELD(&data_0213e5d4,s32 *,0x1c)=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);
-data_0213e5f8[7]=1;
+M2C_FIELD(&gFileLockOwner,s32 *,0x1c)=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);
+gFileLockCount[7]=1;
 }
 n=id-1;
 cb=((M2C_UNK (**)(s32))&gSocketCallbacks)[n];
 if(cb!=(M2C_UNK (*)(s32))1) ((M2C_UNK (**)(s32))&gSocketCallbacks)[n]=0;
-n=data_0213e5f8[7]-1;
-data_0213e5f8[7]=n;
+n=gFileLockCount[7]-1;
+gFileLockCount[7]=n;
 if(n==0) UnlockMutex(&gSocketCallbackLock);
 if(cb==(M2C_UNK (*)(s32))1 || (cb==0 && id==1)) return 0;
 if(cb==0) func_02063e1c(0);

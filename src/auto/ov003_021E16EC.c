@@ -6,7 +6,7 @@ u32 func_ov003_021f2574(void);u32 func_ov003_021f2560(void);
 void *func_020c7e58(u16);void MI_CpuCopy32(void*,void*,s32);
 void func_ov003_021f14a0(void);void func_01ff9b38(void);
 void *func_020ab1c4(void*);void func_020aab24(void*,s32,s32,s32,s32);
-void func_02088e84(void*,s32,s32,s32,s32);void func_02088da8(void*);
+void func_02088e84(void*,s32,s32,s32,s32);void Hide3DSprite(void*);
 s32 func_020aae10(void*);s32 func_020aae44(void*);void func_02087d84(void*,s32,s16,s16,u16,u16);
 void *func_0208bc24(void*);s32 Divide(s32,s32);s32 Modulo(s32,s32);
 void func_ov003_021e1530(void*,u8);void *func_020896f0(void*);void func_020893f4(void*,s32,s32);void func_02089438(void*);
@@ -28,7 +28,7 @@ void func_ov003_021e3714(void*);void SetTextById(void*,s32);void SetFileDirector
 void *GetLocalizedFileName(void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void SetTileRectPalette(void*,s32,s32,s32);
 void func_020a9a30(s32,s32,s32,void*);void func_02091d4c(s32);void func_02091d6c(s32,s32);
 void *func_02080e30(void*,s32);void func_0207c780(void*,void*);void HeapFreeBlock(void*);
-void DrawMapPreview(void*,void*,s32,s32);void *func_020ae22c(s32);void func_0208ca2c(s32,s32,void*,s32);
+void DrawMapPreview(void*,void*,s32,s32);void *GetUiColor(s32);void func_0208ca2c(s32,s32,void*,s32);
 u8 func_ov003_02200b5c(u8);void *func_ov000_0216cdcc(u8);void *func_ov000_0216cdec(s32,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
 static inline u8 *MenuButton(void *menu,s32 index) {return M2C_FIELD(menu+index*4,u8**,12);}
 static inline void SetupLayer(void *engine,s32 layer,s32 bank,s32 slot,s32 field,s32 offset){
@@ -50,9 +50,9 @@ for(i=0;i<VisibleEntries(p);i++)MI_CpuCopy32(M2C_FIELD(p,u8**,0x6c)+i*0x6f8,func
 func_ov003_021f14a0();func_01ff9b38();
 q=M2C_FIELD(p,u8**,0x44);
 M2C_FIELD(q,void**,0)=func_020ab1c4(p);func_020aab24(M2C_FIELD(q,void**,0),32,320,3,0);
-sprite=M2C_FIELD(q,u8**,0);func_02088e84(sprite,112,164,112,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}func_02088da8(M2C_FIELD(q,void**,0));
+sprite=M2C_FIELD(q,u8**,0);func_02088e84(sprite,112,164,112,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,0));
 M2C_FIELD(q,void**,4)=func_020ab1c4(p);func_020aab24(M2C_FIELD(q,void**,4),2,332,3,0);
-sprite=M2C_FIELD(q,u8**,4);func_02088e84(sprite,224,160,224,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}func_02088da8(M2C_FIELD(q,void**,4));
+sprite=M2C_FIELD(q,u8**,4);func_02088e84(sprite,224,160,224,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,4));
 M2C_FIELD(p,void**,0x58)=func_0208bc24(p);M2C_FIELD(M2C_FIELD(p,void**,0x58),u16*,0x3e)=876;
 sprite=M2C_FIELD(p,u8**,0x58);M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&~0x3fc0000)|0x300000;
 ResetAnim(M2C_FIELD(p,void**,0x3c));ResetAnim(M2C_FIELD(p,void**,0x40));
@@ -84,7 +84,7 @@ sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sp
 func_ov003_021e1530(menu,10);
 M2C_FIELD(p,void**,0x4c)=func_020896f0(p);func_020893f4(M2C_FIELD(p,void**,0x4c),0x4f00,1);sprite=M2C_FIELD(p,u8**,0x4c);
 M2C_FIELD(sprite,u16*,0x34)=112;M2C_FIELD(sprite,u16*,0x36)=164;M2C_FIELD(sprite,u32*,0x40)=((M2C_FIELD(sprite,u32*,0x40)&~511)|58)&0xfffc01ff|0x7400;
-func_02089438(M2C_FIELD(p,void**,0x4c));M2C_FIELD(M2C_FIELD(p,void**,0x4c),u8*,0x58)=1;func_02088da8(M2C_FIELD(p,void**,0x4c));
+func_02089438(M2C_FIELD(p,void**,0x4c));M2C_FIELD(M2C_FIELD(p,void**,0x4c),u8*,0x58)=1;Hide3DSprite(M2C_FIELD(p,void**,0x4c));
 func_ov003_021e3714(p);
 sprite=M2C_FIELD(M2C_FIELD(p,u8**,0x48),u8**,0x38);ch=func_020aae44(sprite)-4;cw=func_020aae10(sprite)-4;
 q=M2C_FIELD(p,u8**,0x4c);M2C_FIELD(q,s16*,0x34)=M2C_FIELD(sprite,s16*,0x34)+2;M2C_FIELD(q,s16*,0x36)=M2C_FIELD(sprite,s16*,0x36)+2;
@@ -122,7 +122,7 @@ func_02091d4c(9);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine,void**,0xc),M2C_FIELD(gCur3DSpriteEngine,void**,0x20),((MenuModeBits*)(p+0x60))->mode*322+1,5);
 ((MenuModeBits*)(p+0x60))->mode=(u8)(((MenuModeBits*)(p+0x60))->mode==0);
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
-func_0208ca2c(0x5100,10,func_020ae22c(10),1);
+func_0208ca2c(0x5100,10,GetUiColor(10),1);
 data=func_02080e30(GetLocalizedFileName(data_ov003_0220f5e0),1);func_0207c780(data,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x2800);HeapFreeBlock(data);
 LoadFileToSpriteBuffer(data_ov003_0220f5f4,0x2c0,32);
 func_020a9a30(1,0,4,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x6500);

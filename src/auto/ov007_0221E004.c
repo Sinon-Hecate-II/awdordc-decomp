@@ -237,7 +237,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020ae22c(M2C_UNK);
+    M2C_UNK GetUiColor(M2C_UNK);
     M2C_UNK func_020aeebc(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GetLocalizedFileNameDefault(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
@@ -351,7 +351,7 @@ loop_1:
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     func_020a9a30(1, 0, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x4A00);
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
-    func_0208ca2c(0x1000, 1, func_020ae22c(9), 2);
+    func_0208ca2c(0x1000, 1, GetUiColor(9), 2);
     gCur3DSpriteEngine = temp_r4;
     func_020b2178();
 }

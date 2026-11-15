@@ -13,10 +13,10 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
     s32 IsLinkSessionActive();
     s32 GetLocalizedText();
-    M2C_UNK func_02088d94(void *);
-    M2C_UNK func_02088da8(void *);
-    M2C_UNK func_02098844(M2C_UNK, s32, M2C_UNK, s32, u32, u32, s32);
-    M2C_UNK func_02098a34(s8, M2C_UNK, u8, u32, s32);
+    M2C_UNK Show3DSprite(void *);
+    M2C_UNK Hide3DSprite(void *);
+    M2C_UNK FillFaceTileMap(M2C_UNK, s32, M2C_UNK, s32, u32, u32, s32);
+    M2C_UNK LoadFacePalette(s8, M2C_UNK, u8, u32, s32);
     M2C_UNK func_020990fc(void *, s8, M2C_UNK, M2C_UNK);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK UpdateSpriteAnimation(s32);
@@ -25,12 +25,12 @@ void func_ov003_021ea57c(void *arg0) {
     s32 func_ov003_021e6cc4(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6d28();
     s32 func_ov003_021e6e40();
-    M2C_UNK func_ov003_021e6e94(s8);
+    M2C_UNK GetWaypointOptionTextId(s8);
     M2C_UNK func_ov003_021ef210(void *, s32, s32, M2C_UNK);
     M2C_UNK func_ov003_021ef758(void *, s32);
     s32 func_ov003_022004d0();
     s32 func_ov003_022004f0(M2C_UNK);
-    s32 func_ov003_022008b8(u8);
+    s32 GetWaypointOptionIcon(u8);
     extern M2C_UNK gSpriteDesc64x32;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
@@ -87,15 +87,15 @@ void func_ov003_021ea57c(void *arg0) {
         gCur3DSpriteEngine = g3DSpriteEngineSub;
         Clear3DSpriteLayer(3);
         temp_r5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0xF);
-        temp_r4 = func_ov003_022008b8((u8) temp_r5);
+        temp_r4 = GetWaypointOptionIcon((u8) temp_r5);
         if (temp_r4 == 0) {
-            func_02088da8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78));
+            Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78));
         } else {
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
-                func_02088d94(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78));
+                Show3DSprite(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78));
             }
             func_020990fc(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78), temp_r4, 8, 0);
-            func_ov003_021e6e94(temp_r5);
+            GetWaypointOptionTextId(temp_r5);
             DrawTextLine(1, 8, 3, GetLocalizedText(), 0x2000, (s32) (u16) ((((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1E) >> 0x1F) * 0xE0) + 1));
         }
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
@@ -123,11 +123,11 @@ void func_ov003_021ea57c(void *arg0) {
                 } else {
                     var_r7 = (s32) ((u32) (func_ov003_022004f0(2) << 0x10) >> 3) >> 0x10;
                 }
-                temp_r0_2 = func_ov003_022008b8(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
+                temp_r0_2 = GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (temp_r0_2 == 0) {
                     ClearTileRect(M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + ((var_r7 + 1) * 2), 7, 7);
                 } else {
-                    func_02098844(1, var_r7, 0, M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + 2, (u32) ((((s32) ((temp_r0_2 - 1) << 0x18) >> 0x11) + 2) << 0xF) >> 0x10, var_r9, 0);
+                    FillFaceTileMap(1, var_r7, 0, M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + 2, (u32) ((((s32) ((temp_r0_2 - 1) << 0x18) >> 0x11) + 2) << 0xF) >> 0x10, var_r9, 0);
                 }
                 var_r9 = (u32) (u8) (var_r9 + 1);
                 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | (1 << var_r0_2));
@@ -147,15 +147,15 @@ void func_ov003_021ea57c(void *arg0) {
                 if (var_r9 >= 2U) {
                     func_ov003_022004f0(2);
                 }
-                temp_r0_3 = func_ov003_022008b8(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
+                temp_r0_3 = GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (var_r9 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7)) goto zero_37;
                 var_r1=(((u32)(M2C_FIELD(arg0,u8 *,0x39)<<24)>>28)==2);
                 if (var_r1&255) goto one_37;
 zero_37:
-                if(temp_r0_3!=0) func_02098a34(temp_r0_3,1,var_r0_3,var_r9,0);
+                if(temp_r0_3!=0) LoadFacePalette(temp_r0_3,1,var_r0_3,var_r9,0);
                 goto after_37;
 one_37:
-                if(temp_r0_3!=0) func_02098a34(temp_r0_3,1,var_r0_3,var_r9,1);
+                if(temp_r0_3!=0) LoadFacePalette(temp_r0_3,1,var_r0_3,var_r9,1);
 after_37:
                 var_r9 = (u32) (u8) (var_r9 + 1);
             } while ((s32) var_r9 < (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4));
@@ -179,15 +179,15 @@ after_37:
                 if (var_r8 >= 2U) {
                     func_ov003_022004f0(2);
                 }
-                temp_r0_4 = func_ov003_022008b8(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA));
+                temp_r0_4 = GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA));
                 if (var_r8 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7)) goto zero_56;
                 var_r1_2=(((u32)(M2C_FIELD(arg0,u8 *,0x39)<<24)>>28)==2);
                 if (var_r1_2&255) goto one_56;
 zero_56:
-                if(temp_r0_4!=0) func_02098a34(temp_r0_4,1,var_r0_4,var_r8,0);
+                if(temp_r0_4!=0) LoadFacePalette(temp_r0_4,1,var_r0_4,var_r8,0);
                 goto after_56;
 one_56:
-                if(temp_r0_4!=0) func_02098a34(temp_r0_4,1,var_r0_4,var_r8,1);
+                if(temp_r0_4!=0) LoadFacePalette(temp_r0_4,1,var_r0_4,var_r8,1);
 after_56:
                 var_r8 = (u32) (u8) (var_r8 + 1);
             } while ((s32) var_r8 < (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4));

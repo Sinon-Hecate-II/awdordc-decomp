@@ -11,7 +11,7 @@ int EaseInterpolate(int,int,int,u16,int);
 void func_0208ffe4(int,int,int);
 void func_ov011_02224b9c(void *,int);
 void func_ov011_02224aac(void *,int);
-void func_ov011_0222491c(void *);
+void HandleIntroInput(void *);
 int PlaySoundEffect(int);
 int func_02090034(int,int);
 void func_01ffac9c(int,int,int,void *,int);
@@ -197,46 +197,49 @@ void func_ov011_022242dc(void *p) {
   G3_UpdateIntroTiles(p, 130, 0x7fff, 0x8052, colors.bytes + 15);
   break;
  }
- func_ov011_0222491c(p);
+ HandleIntroInput(p);
  M2C_FIELD(p, u16 *, 0x34)++;
 }
 
-void func_ov011_022247f4(void *p){
-void func_ov011_0222491c(void *);
+/* Advances the intro sequence's current state: the opening (1) and title (2)
+ * states run on fixed timer limits and the stage sequence (3) on
+ * gIntroStateDurations, then the input handler runs. */
+void UpdateIntroSequence(void *p){
+void HandleIntroInput(void *);
 extern const u16 gIntroStateDurations[];
-switch(M2C_FIELD(p,u8 *,0x38)){
+switch(M2C_FIELD(p,u8 *,INTRO_STATE)){
 case 1:
-M2C_FIELD(p,u16 *,0x34)++;
-if(M2C_FIELD(p,u16 *,0x34)>120){
-M2C_FIELD(p,u16 *,0x34)=32;
-M2C_FIELD(p,u8 *,0x38)++;
+M2C_FIELD(p,u16 *,INTRO_TIMER)++;
+if(M2C_FIELD(p,u16 *,INTRO_TIMER)>120){
+M2C_FIELD(p,u16 *,INTRO_TIMER)=32;
+M2C_FIELD(p,u8 *,INTRO_STATE)++;
 func_01ffa6fc(p);return;
 }break;
 case 2:
-M2C_FIELD(p,u16 *,0x34)++;
-if(M2C_FIELD(p,u8 *,0x36)){
-if(++M2C_FIELD(p,u8 *,0x36)>=1){
-M2C_FIELD(p,u8 *,0x36)=0;SetSpriteAnimation(p,4);
+M2C_FIELD(p,u16 *,INTRO_TIMER)++;
+if(M2C_FIELD(p,u8 *,INTRO_SUBSTATE)){
+if(++M2C_FIELD(p,u8 *,INTRO_SUBSTATE)>=1){
+M2C_FIELD(p,u8 *,INTRO_SUBSTATE)=0;SetSpriteAnimation(p,4);
 }return;
 }
-if(M2C_FIELD(p,u16 *,0x34)>=0x528){
-M2C_FIELD(p,u8 *,0x38)=3;
-M2C_FIELD(p,u8 *,0x39)=0;SetSpriteAnimation(p,3);
+if(M2C_FIELD(p,u16 *,INTRO_TIMER)>=0x528){
+M2C_FIELD(p,u8 *,INTRO_STATE)=3;
+M2C_FIELD(p,u8 *,INTRO_STAGE)=0;SetSpriteAnimation(p,3);
 }break;
 case 3:
-if(M2C_FIELD(p,u16 *,0x34)>gIntroStateDurations[M2C_FIELD(p,u8 *,0x39)]){
-if(M2C_FIELD(p,u8 *,0x39)>10){
-if(M2C_FIELD(p,s32 *,0x3c)==2)SetSpriteAnimation(p,4);
+if(M2C_FIELD(p,u16 *,INTRO_TIMER)>gIntroStateDurations[M2C_FIELD(p,u8 *,INTRO_STAGE)]){
+if(M2C_FIELD(p,u8 *,INTRO_STAGE)>10){
+if(M2C_FIELD(p,s32 *,INTRO_MODE)==2)SetSpriteAnimation(p,4);
 else SetSpriteAnimation(p,2);
 return;
 }
 func_01ffa6fc(p);return;
 }break;
 }
-func_ov011_0222491c(p);
+HandleIntroInput(p);
 }
 
-void func_ov011_0222491c(void *entry) {
+void HandleIntroInput(void *entry) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_02090034(M2C_UNK, M2C_UNK);

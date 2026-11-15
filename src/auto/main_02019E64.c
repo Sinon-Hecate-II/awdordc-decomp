@@ -322,7 +322,7 @@ s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M
 
 s32 MacAddressesDiffer(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 
-void func_0201a824(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 WFC_SendPacket(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=WFC_SendPacket(a,a+6,b-6,c,d)<0;}
+void SendLinkFrame(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 WFC_SendPacket(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=WFC_SendPacket(a,a+6,b-6,c,d)<0;}
 
 /* Append a link-layer frame to the network stack's transmit ring.  The record
  * is [u16 length][6-byte destination][6-byte source][frame+6 ..], where the
@@ -443,7 +443,7 @@ void func_0201aca0(s32 nodeId) {
     packet.slo = (lo >> 8) | (lo << 8);
     packet.thi = (ahi >> 8) | (ahi << 8);
     packet.tlo = (alo >> 8) | (alo << 8);
-    func_0201a824((u8 *)&packet, 42, 0, 0);
+    SendLinkFrame((u8 *)&packet, 42, 0, 0);
 }
 
 s32 func_0201ad9c(s32 a){void func_0201aca0(s32);void func_02006030(s32);s32 func_0201abd0(s32);extern M2C_UNK gNetStack;u32 i,j;s32 r;for(i=0;i<8;i++){func_0201aca0(a);for(j=0;j<20;j++){if(!M2C_FIELD(&gNetStack,s32 *,80))return 0;func_02006030(100);r=func_0201abd0(a);if(r)return r;}}return 0;}

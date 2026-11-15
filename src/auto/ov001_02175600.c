@@ -8,7 +8,7 @@ typedef struct { s32 x; u32 y; } Position;
 void func_ov001_02175600(int arg0) {
 extern void *gOv001Keypad;
 int i; unsigned int *ptr;
-func_ov001_0218c92c(0,arg0);
+Ov001_PostTaskMessage(0,arg0);
 for(i=0;i<4;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218a1cc(((void **)ptr)[i+0x12]);ptr=(unsigned int *)gOv001Keypad;func_ov001_0218ace0(((void **)ptr)[i]);}
 for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218a1cc(((void **)ptr)[i+0x10]);}
 for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218c104(((void **)ptr)[i+0xe]);}

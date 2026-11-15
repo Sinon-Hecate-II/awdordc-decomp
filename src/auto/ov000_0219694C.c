@@ -272,7 +272,7 @@ s32 func_ov000_021976ac(s32 x, s32 y, void *unit, u32 hp) {
     s32 ApplyHealthBonus(s32, void *, s32);
     s32 GetUnitAttackClass(u32);
     extern void **gCurrentMap;
-    extern u8 data_ov000_021e0a58[];
+    extern u8 gAiInfluenceMap[];
     void *base;
     s32 v, result, old;
     if (GetUnitAttackClass((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26)) {
@@ -287,7 +287,7 @@ s32 func_ov000_021976ac(s32 x, s32 y, void *unit, u32 hp) {
     old = M2C_FIELD((u8 *)base + (x + M2C_FIELD((u8 *)base + y * 2, u16 *, 0x3758)), u8 *, 0x2840);
     if (result == old) {
         result = ApplyHealthBonus(v, unit, hp);
-        old = data_ov000_021e0a58[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
+        old = gAiInfluenceMap[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
         if (result <= old) result = old;
         return result;
     }

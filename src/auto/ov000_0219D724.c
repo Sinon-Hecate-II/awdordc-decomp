@@ -3,7 +3,10 @@
 #include "battle_map.h"
 #include "ov000_ai.h"
 
-void func_ov000_0219d724(void) {
+/* AI turn phase starter for units whose kind has AI role 3: collect the current
+ * player's ready role-3 units into gAiUnitList, order them by movement range,
+ * put the chosen unit first and install the role-3 action callback. */
+void SelectAiRole3Unit(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
@@ -11,35 +14,35 @@ extern s8 *gAiCommandState;
 extern M2C_UNK *gAiUnitAction;
 extern s8 *gAiUnitListCursor;
 extern s8 gAiUnitList;
-extern M2C_UNK func_ov000_02181470;
-void ScoreAiUnitsByMoveRange(int);
+extern M2C_UNK RunAiRole3Action;
+void ScoreAiUnitsByMoveRange(s32);
 void MoveChosenAiUnitFirst(void);
-s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
+s32 unitId; s32 offset; s8 *cursor; u16 firstUnitId; u32 kind; void *units; void *map;
 gAiUnitListCursor = &gAiUnitList;
-obj = *gCurrentMap;
-baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-index = baseIndex + 1;
-if (index < baseIndex + 0x33) {
-stride = index * 14;
+map = *gCurrentMap;
+firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+unitId = firstUnitId + 1;
+if (unitId < firstUnitId + MAP_UNIT_GROUP_SCAN) {
+offset = unitId * MAP_UNIT_STRIDE;
 do {
-table = (u8 *)obj + 0x59A4;
-type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 3) {
-out = gAiUnitListCursor;
-gAiUnitListCursor = out + 1;
-*out = index;
+units = (u8 *)map + MAP_UNIT_RECORDS;
+kind = (u32)(M2C_FIELD(units, u8 *, offset) << 26) >> 26;
+if (kind != 0) {
+if (!(M2C_FIELD((u8 *)units + offset, u16 *, MAP_UNIT_FLAGS) & 1) && gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 3) {
+cursor = gAiUnitListCursor;
+gAiUnitListCursor = cursor + 1;
+*cursor = unitId;
 }}
-index++;
-obj = *gCurrentMap;
-stride += 14;
-} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+unitId++;
+map = *gCurrentMap;
+offset += MAP_UNIT_STRIDE;
+} while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
 }
 *gAiUnitListCursor = 0;
 gAiUnitListCursor = &gAiUnitList;
 ScoreAiUnitsByMoveRange(1);
 MoveChosenAiUnitFirst();
-gAiUnitAction = &func_ov000_02181470;
+gAiUnitAction = &RunAiRole3Action;
 *gAiCommandState = 2;
 }
 
@@ -351,7 +354,10 @@ gAiUnitAction=&func_ov000_021816ac;
 *gAiCommandState=2;
 }
 
-void func_ov000_0219dfac(void) {
+/* AI turn phase starter for role-2 units with an empty cargo slot: collect the
+ * current player's ready ones into gAiUnitList, order them by movement range and
+ * install the role-2 empty-cargo action callback. */
+void SelectAiRole2EmptyUnit(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
@@ -359,33 +365,33 @@ extern s8 *gAiCommandState;
 extern M2C_UNK *gAiUnitAction;
 extern s8 *gAiUnitListCursor;
 extern s8 gAiUnitList;
-extern M2C_UNK func_ov000_021816c4;
+extern M2C_UNK RunAiRole2EmptyAction;
 void ScoreAiUnitsByMoveRange(int);
-s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
+s32 unitId; s32 offset; s8 *cursor; u16 firstUnitId; u32 kind; void *units; void *map;
 gAiUnitListCursor = &gAiUnitList;
-obj = *gCurrentMap;
-baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-index = baseIndex + 1;
-if (index < baseIndex + 0x33) {
-stride = index * 14;
+map = *gCurrentMap;
+firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+unitId = firstUnitId + 1;
+if (unitId < firstUnitId + MAP_UNIT_GROUP_SCAN) {
+offset = unitId * MAP_UNIT_STRIDE;
 do {
-table = (u8 *)obj + 0x59A4;
-type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 2 && M2C_FIELD((u8 *)table + stride, u8 *, 0xC) == 0) {
-out = gAiUnitListCursor;
-gAiUnitListCursor = out + 1;
-*out = index;
+units = (u8 *)map + MAP_UNIT_RECORDS;
+kind = (u32)(M2C_FIELD(units, u8 *, offset) << 26) >> 26;
+if (kind != 0) {
+if (!(M2C_FIELD((u8 *)units + offset, u16 *, MAP_UNIT_FLAGS) & 1) && gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 2 && M2C_FIELD((u8 *)units + offset, u8 *, MAP_UNIT_CARRIED) == 0) {
+cursor = gAiUnitListCursor;
+gAiUnitListCursor = cursor + 1;
+*cursor = unitId;
 }}
-index++;
-obj = *gCurrentMap;
-stride += 14;
-} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+unitId++;
+map = *gCurrentMap;
+offset += MAP_UNIT_STRIDE;
+} while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
 }
 *gAiUnitListCursor = 0;
 gAiUnitListCursor = &gAiUnitList;
 ScoreAiUnitsByMoveRange(0);
-gAiUnitAction = &func_ov000_021816c4;
+gAiUnitAction = &RunAiRole2EmptyAction;
 *gAiCommandState = 2;
 }
 

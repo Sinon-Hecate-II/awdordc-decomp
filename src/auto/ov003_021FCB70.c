@@ -42,8 +42,8 @@ void func_ov003_021fcd30(void **arg0) {
  * that stay active. */
 void SetupEntityDisplay(void *entity) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02088d94(void *);
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Show3DSprite(void *);
+    M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02088f1c(void *);
     s32 func_020aae10(void *);
@@ -89,21 +89,21 @@ void SetupEntityDisplay(void *entity) {
     M2C_FIELD(second, u16 *, 2) = (u16) M2C_FIELD(second, u16 *, 4);
     parts = M2C_FIELD(entity, void **, 0x68);
     if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
-        func_02088da8(M2C_FIELD(parts, void **, 0));
-        func_02088da8(M2C_FIELD(parts, void **, 0xC));
-        func_02088da8(M2C_FIELD(parts, void **, 0x10));
-        func_02088da8(M2C_FIELD(parts, void **, 0x14));
+        Hide3DSprite(M2C_FIELD(parts, void **, 0));
+        Hide3DSprite(M2C_FIELD(parts, void **, 0xC));
+        Hide3DSprite(M2C_FIELD(parts, void **, 0x10));
+        Hide3DSprite(M2C_FIELD(parts, void **, 0x14));
     } else {
         func_02088f1c(M2C_FIELD(parts, void **, 0));
         func_02088f1c(M2C_FIELD(parts, void **, 0xC));
         func_02088f1c(M2C_FIELD(parts, void **, 0x10));
         func_02088f1c(M2C_FIELD(parts, void **, 0x14));
     }
-    func_02088d94(M2C_FIELD(parts, void **, 0x18));
+    Show3DSprite(M2C_FIELD(parts, void **, 0x18));
     part18 = M2C_FIELD(parts, void **, 0x18);
     M2C_FIELD(part18, s32 *, 0x40) = (s32) ((M2C_FIELD(part18, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(part18, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
     M2C_FIELD(part18, s8 *, 0x5A) = 0;
-    func_02088d94(M2C_FIELD(parts, void **, 0x1C));
+    Show3DSprite(M2C_FIELD(parts, void **, 0x1C));
     part1C = M2C_FIELD(parts, void **, 0x1C);
     isState2 = 0;
     M2C_FIELD(part1C, s32 *, 0x40) = (s32) ((M2C_FIELD(part1C, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(part1C, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
@@ -122,8 +122,8 @@ void SetupEntityDisplay(void *entity) {
         }
         if (!(isState4a & 0xFF)) {
             partsB = M2C_FIELD(entity, void **, 0x68);
-            func_02088da8(M2C_FIELD(partsB, void **, 0x10));
-            func_02088da8(M2C_FIELD(partsB, void **, 0x14));
+            Hide3DSprite(M2C_FIELD(partsB, void **, 0x10));
+            Hide3DSprite(M2C_FIELD(partsB, void **, 0x14));
         }
     }
     if (((u32) (M2C_FIELD(entity, u8 *, 0x3B) << 0x1C) >> 0x1C) == 4) {
@@ -134,7 +134,7 @@ void SetupEntityDisplay(void *entity) {
     if (isState4b & 0xFF) {
         func_02088f1c(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 0x24));
         func_02088f1c(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 4));
-        func_02088da8(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 0));
+        Hide3DSprite(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 0));
         part0 = M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 0);
         func_02088e84(part0, 0xC0, 0xC0, 0xC0, 0xC0);
         if (M2C_FIELD(M2C_FIELD(part0, void **, 0x64), u8 *, 0x12) != 0) {
@@ -150,11 +150,11 @@ void SetupEntityDisplay(void *entity) {
         }
     }
     partsC = M2C_FIELD(entity, void **, 0x6C);
-    func_02088d94(M2C_FIELD(partsC, void **, 0));
+    Show3DSprite(M2C_FIELD(partsC, void **, 0));
     if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
         M2C_FIELD(M2C_FIELD(partsC, void **, 0), s8 *, 0x59) = 0;
     }
-    func_02088d94(M2C_FIELD(partsC, void **, 4));
+    Show3DSprite(M2C_FIELD(partsC, void **, 4));
     M2C_FIELD(entity, u8 *, 0x3B) = (u8) (M2C_FIELD(entity, u8 *, 0x3B) | 0x20);
     SetOv003SceneState(1);
     state = (u32) (M2C_FIELD(entity, u8 *, 0x3B) << 0x1C) >> 0x1C;
@@ -374,7 +374,7 @@ void func_ov003_021fd2d0(void *entity) {
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_020893a8(s32, s32, M2C_UNK, s32);
     M2C_UNK SetTextById(s32, s32);
-    s32 func_020ae22c(M2C_UNK);
+    s32 GetUiColor(M2C_UNK);
     M2C_UNK SetMenuPanelState(void *, M2C_UNK);
     M2C_UNK func_ov006_02217840(void *);
     M2C_UNK func_ov006_02217c74(void *);
@@ -425,7 +425,7 @@ void func_ov003_021fd2d0(void *entity) {
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x10, 3, 6);
     SetTextById(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 4), 0x4700001D);
     func_02088ff4(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 8));
-    func_020893a8(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 0), 0x8B80, 1, func_020ae22c(0x11));
+    func_020893a8(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 0), 0x8B80, 1, GetUiColor(0x11));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }
 

@@ -34,10 +34,10 @@ M2C_FIELD(&gArpCacheAge,u16*,off)=now;
 }
 
 #pragma scheduling off
-void func_0201af48(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
+void SendEthernetFrame(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
 M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
 s32 func_0201a704(u32); s32 IsMulticastAddress(u32);
-M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK SendLinkFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK *func_0201abd0(void); M2C_UNK *func_0201ad9c(s32);
 extern M2C_UNK gLocalMacAddress;
 M2C_UNK *p; s32 n;
@@ -57,28 +57,31 @@ M2C_FIELD(a,u8 *,-10)=ip>>8;
 M2C_FIELD(a,u8 *,-9)=ip;
 }
 MI_CpuCopy8(&gLocalMacAddress,(u8 *)a-8,6);
-func_0201a824((u8 *)a-14,b+14,c,d);
+SendLinkFrame((u8 *)a-14,b+14,c,d);
 }
 #pragma scheduling on
-void SendIpFragment(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
+/* Finish the IPv4 header of one outgoing fragment (total length and
+ * flags/fragment offset), checksum it, then either send it on the link or,
+ * for loopback and multicast destinations, queue a copy on the local stack. */
+void SendIpFragment(void *payload,s32 payloadLen,void *extraData,s32 extraLen,u32 dstIp,s32 fragmentField){
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
 M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
 s32 Checksum(u8*,s32);s32 IsMulticastAddress(u32);
 M2C_UNK NetStackQueuePacket(void*,void*,void*,s32,s32,s32);
 extern M2C_UNK gNetStack,gLinkHeaderTemplate,gLocalMacAddress;
-u16 len,ident;s32 sum,t;
-len=b+20+d;ident=id;
-M2C_FIELD(a,u16*,-18)=((s32)len>>8)|(len<<8);
-M2C_FIELD(a,u16*,-14)=((s32)ident>>8)|(ident<<8);
-M2C_FIELD(a,u16*,-10)=0;
-sum=Checksum(a-20,20);
-M2C_FIELD(a,u16*,-10)=(sum>>8)|(sum<<8);
-if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80))func_0201af48(a-20,b+20,c,d,ip,0x800);
-if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80)){if(!IsMulticastAddress(ip))return;}
-MI_CpuCopy8(&gLinkHeaderTemplate,a-28,8);
-t=OS_DisableInterrupts();
-NetStackQueuePacket(&gLocalMacAddress,&gLocalMacAddress,a-28,b+28,c,d);
-OS_RestoreInterrupts(t);
+u16 totalLen,fragField;s32 sum,interrupts;
+totalLen=payloadLen+IP_HEADER_SIZE+extraLen;fragField=fragmentField;
+M2C_FIELD(payload,u16*,-IP_HEADER_SIZE+2)=((s32)totalLen>>8)|(totalLen<<8);
+M2C_FIELD(payload,u16*,-IP_HEADER_SIZE+6)=((s32)fragField>>8)|(fragField<<8);
+M2C_FIELD(payload,u16*,-IP_HEADER_SIZE+10)=0;
+sum=Checksum(payload-IP_HEADER_SIZE,IP_HEADER_SIZE);
+M2C_FIELD(payload,u16*,-IP_HEADER_SIZE+10)=(sum>>8)|(sum<<8);
+if(dstIp!=IP_LOOPBACK && dstIp!=M2C_FIELD(&gNetStack,u32*,NETSTACK_LOCAL_IP))SendEthernetFrame(payload-IP_HEADER_SIZE,payloadLen+IP_HEADER_SIZE,extraData,extraLen,dstIp,ETH_TYPE_IPV4);
+if(dstIp!=IP_LOOPBACK && dstIp!=M2C_FIELD(&gNetStack,u32*,NETSTACK_LOCAL_IP)){if(!IsMulticastAddress(dstIp))return;}
+MI_CpuCopy8(&gLinkHeaderTemplate,payload-(IP_HEADER_SIZE+LINK_HEADER_SIZE),LINK_HEADER_SIZE);
+interrupts=OS_DisableInterrupts();
+NetStackQueuePacket(&gLocalMacAddress,&gLocalMacAddress,payload-(IP_HEADER_SIZE+LINK_HEADER_SIZE),payloadLen+IP_HEADER_SIZE+LINK_HEADER_SIZE,extraData,extraLen);
+OS_RestoreInterrupts(interrupts);
 }
 
 /* Sends an IPv4 packet whose 20-byte header sits just before `payload`: fills
@@ -189,7 +192,7 @@ M2C_FIELD(conn,u32 *,40)+=dataLen;if(flags&3)M2C_FIELD(conn,u32 *,40)+=1;
 
 void SendArpReply(void *arg0) {
     M2C_UNK MI_CpuCopy8(M2C_UNK *, void *, M2C_UNK);
-    M2C_UNK func_0201a824(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SendLinkFrame(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNetStack;
     extern M2C_UNK gLocalMacAddress;
     u16 temp_ip;
@@ -204,7 +207,7 @@ void SendArpReply(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x10) = (s16) ((temp_ip_2 >> 8) | (temp_ip_2 << 8));
     MI_CpuCopy8(arg0 + 0x12, arg0 - 0xE, 6);
     MI_CpuCopy8(&gLocalMacAddress, arg0 - 8, 6);
-    func_0201a824(arg0 - 0xE, 0x2A, 0, 0);
+    SendLinkFrame(arg0 - 0xE, 0x2A, 0, 0);
 }
 
 #pragma optimization_level 2

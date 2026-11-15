@@ -3,46 +3,58 @@
 typedef struct { u16 id; u8 kind; u8 active; s32 value; u8 data[32]; } Entry_02074920;
 typedef struct { Entry_02074920 entries[128]; u32 count; } List_02074920;
 
-u16 func_02074920(void *arg0) {
-u8 *p;
-s32 i;
-s32 skip;
-u32 value;
-u16 best;
-u8 oldrank;
-u8 oldkind;
-u32 oldvalue;
+/* The save-chain table: 256 fixed 12-byte nodes plus a 2-bit rank for each
+ * node (0..2 = free with a reuse count, 3 = the node is in the chain). */
+#define NODE_COUNT       256
+#define NODE_STRIDE      12
+#define NODE_RANK_TABLE  0xC0C
+#define NODE_RANK_MASK   3
+#define NODE_RANK_IN_CHAIN 3
+#define NODE_KIND_CHAIN  1   /* node kind of a record that is in the chain */
+#define NODE_NONE        0xFFFF
+
+/* Pick the free node the save writer should use next: the lowest rank wins,
+ * then the oldest value, with kind-1 (chained) nodes avoided while free. */
+u16 FindFreeNode(void *table) {
+u8 *node;
+s32 nodeIndex;
+s32 keepOld;
+u32 nodeValue;
+u16 bestIndex;
+u8 bestRank;
+u8 bestKind;
+u32 bestValue;
 s32 rank;
-best=0xffff;
-p=arg0;
-for(i=0;i<256;i++,p+=12) {
-rank=(M2C_FIELD((u8 *)arg0+(i>>2),u8 *,0xc0c)>>((i&3)*2))&3;
+bestIndex=NODE_NONE;
+node=table;
+for(nodeIndex=0;nodeIndex<NODE_COUNT;nodeIndex++,node+=NODE_STRIDE) {
+rank=(M2C_FIELD((u8 *)table+(nodeIndex>>2),u8 *,NODE_RANK_TABLE)>>((nodeIndex&3)*2))&NODE_RANK_MASK;
 switch(rank) {
 case 0: case 1: case 2:
-if(best==0xffff) break;
-if(rank>oldrank)continue;
-if(rank<oldrank)break;
+if(bestIndex==NODE_NONE) break;
+if(rank>bestRank)continue;
+if(rank<bestRank)break;
 {
-u8 kind=M2C_FIELD(p,u8 *,6);
-if(kind!=oldkind && rank!=0) {
-if(kind==1)continue;
-if(oldkind==1)break;
+u8 nodeKind=M2C_FIELD(node,u8 *,6);
+if(nodeKind!=bestKind && rank!=0) {
+if(nodeKind==NODE_KIND_CHAIN)continue;
+if(bestKind==NODE_KIND_CHAIN)break;
 }
-value=M2C_FIELD(p,u32 *,0);
-if((value&0xffff0000)==0xffff0000 && !(oldvalue&0xffff0000) && oldvalue!=0)skip=0;
-else if(!(value&0xffff0000) && (oldvalue&0xffff0000)==0xffff0000 && value!=0)skip=1;
-else skip=value>oldvalue;
-if(skip)continue;
+nodeValue=M2C_FIELD(node,u32 *,0);
+if((nodeValue&0xffff0000)==0xffff0000 && !(bestValue&0xffff0000) && bestValue!=0)keepOld=0;
+else if(!(nodeValue&0xffff0000) && (bestValue&0xffff0000)==0xffff0000 && nodeValue!=0)keepOld=1;
+else keepOld=nodeValue>bestValue;
+if(keepOld)continue;
 }
 break;
-case 3: continue;
+case NODE_RANK_IN_CHAIN: continue;
 }
-oldrank=rank;
-best=i;
-oldvalue=M2C_FIELD(p,u32 *,0);
-oldkind=M2C_FIELD(p,u8 *,6);
+bestRank=rank;
+bestIndex=nodeIndex;
+bestValue=M2C_FIELD(node,u32 *,0);
+bestKind=M2C_FIELD(node,u8 *,6);
 }
-return best;
+return bestIndex;
 }
 
 void func_02074a48(List_02074920 *arg0) {
@@ -232,7 +244,7 @@ void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32); void MI
 u32 func_020746fc(void *,void *); s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 func_02010584(void);
 u8 *p; s32 idx; u16 prev; s32 mask; u16 id; u8 ok; u32 n;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1||!e)return;
-p=HeapAllocBlock(0x400); prev=0xffff; idx=func_02074920(a);
+p=HeapAllocBlock(0x400); prev=0xffff; idx=FindFreeNode(a);
 func_02074a7c((List_02074920 *)((u8 *)a+0xc4c),(u16)idx,e,f,c);
 id=func_0200558c();
 mask=prev-0x10000;
@@ -255,7 +267,7 @@ MI_CpuCopy32(b,p+0x14,M2C_FIELD(p,u16 *,12)-0x14);
 b=(u8 *)b+(M2C_FIELD(p,u16 *,12)-0x14);
 }
 M2C_FIELD(p,u8 *,14)=e;M2C_FIELD(p,u8 *,15)=1;M2C_FIELD(p,u16 *,16)=prev;
-M2C_FIELD(p,u16 *,18)=d?func_02074920(a):0xffff;
+M2C_FIELD(p,u16 *,18)=d?FindFreeNode(a):0xffff;
 M2C_FIELD(p,u32 *,4)=func_020746fc(a,p);
 func_0200fe5c(id);
 func_0201033c((s32)p,(s32 *)(idx<<10),M2C_FIELD(p,u16 *,12),0,0,1,7,10,2);

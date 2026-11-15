@@ -1,5 +1,6 @@
 /* 10 functions from 0x020C1F58 to 0x020C2E4C (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct { u8 flag0:1, flag1:1, flags:6; } FlagsC253c;
 typedef struct { u16 pad:13, shift:2, last:1; } ModeC253c;
 extern void *gCur3DSpriteEngine;
@@ -123,7 +124,7 @@ func_0207b764(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)g
  * queues the panel, gauge and ability sprites. */
 void DrawOccupationScreen(u8 *panel){
 void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void func_01ff9e44(void *,s32,s32);
-s32 GetCOFaceIndex(s32); s32 func_020ae354(s32,s32,u8,u8);
+s32 GetCOFaceIndex(s32); s32 BlendRgb555_16(s32,s32,u8,u8);
 void BlendPalette(void *,s32,u8,u8,s32); s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
 void AddSprite(s32,u16,u16,void *,s32); s32 GetCOPaletteOffset(s32); s32 GetCOPortraitOffset(s32);
@@ -137,7 +138,7 @@ UpdateSpriteAnimation(*(void **)(panel+68)); fade=GetSpriteAnimValue(*(void **)(
 func_01ff9e44(*(void **)(panel+76),64,128);
 scratch=GetCOFaceIndex((*(u8 **)(panel+64))[3]);
 if((*(u8 **)(panel+64))[2]==0)BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,scratch,16-fade,fade,128);
-else{q0=GetCOFaceIndex((*(u8 **)(panel+64))[2]);q0=func_020ae354(q0,scratch,16-fade*2,fade*2);BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,q0,11,5,128);}
+else{q0=GetCOFaceIndex((*(u8 **)(panel+64))[2]);q0=BlendRgb555_16(q0,scratch,16-fade*2,fade*2);BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,q0,11,5,128);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;
 UpdateSpriteAnimation(*(void **)(panel+72));
 scratch=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); cosine=((s16 *)gSinCosTable)[1];
@@ -208,19 +209,22 @@ void func_020c2ca0(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x35) = 0;
 }
 
-void func_020c2cec(void){
+/* Enters the CO occupation cut-in's view of the map: runs the map view's setup
+ * callback, then clears the 3D sprite bank's split windows and blend level and
+ * sets the bank's view flag bits for the cut-in layout. */
+void EnterOccupationView(void){
 extern void *gCurrentMap,*gCur3DSpriteEngine;
-void (*callback)(void);u16 *volatile v0;u16 *volatile v1;u16 *volatile v2;u16 *volatile v3;u16 *volatile v4;u16 *volatile v5;
-callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);if(callback)callback();
-v0=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v0=*v0&~0xc0;
-M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
-M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
-M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
-v1=*(u16 **)gCur3DSpriteEngine;*v1=*v1|0x10;
-v2=*(u16 **)gCur3DSpriteEngine;*v2=*v2|0x20;
-v3=*(u16 **)gCur3DSpriteEngine;*v3=*v3|0x40;
-v4=*(u16 **)gCur3DSpriteEngine;*v4=*v4|0x80;
-v5=*(u16 **)gCur3DSpriteEngine;*v5=*v5|0x100;
+void (*mapCallback)(void);u16 *volatile attr;u16 *volatile flag0;u16 *volatile flag1;u16 *volatile flag2;u16 *volatile flag3;u16 *volatile flag4;
+mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);if(mapCallback)mapCallback();
+attr=(u16 *)((u8 *)DS3D_BANK(gCur3DSpriteEngine)+DS3D_BANK_OAMATTR);*attr=*attr&~0xc0;
+M2C_FIELD(DS3D_BANK(gCur3DSpriteEngine),u8 *,DS3D_BANK_ROWS_ABOVE)=0;
+M2C_FIELD(DS3D_BANK(gCur3DSpriteEngine),u8 *,DS3D_BANK_ROWS_BELOW)=0;
+M2C_FIELD(DS3D_BANK(gCur3DSpriteEngine),u8 *,DS3D_BANK_BLEND)=0;
+flag0=(u16 *)DS3D_BANK(gCur3DSpriteEngine);*flag0=*flag0|DS3D_BANK_MODE0;
+flag1=(u16 *)DS3D_BANK(gCur3DSpriteEngine);*flag1=*flag1|DS3D_BANK_MODE1;
+flag2=(u16 *)DS3D_BANK(gCur3DSpriteEngine);*flag2=*flag2|DS3D_BANK_MODE2;
+flag3=(u16 *)DS3D_BANK(gCur3DSpriteEngine);*flag3=*flag3|DS3D_BANK_MODE3;
+flag4=(u16 *)DS3D_BANK(gCur3DSpriteEngine);*flag4=*flag4|DS3D_BANK_MODE4;
 }
 
 void func_020c2e10(void) {
@@ -229,8 +233,8 @@ void func_020c2e10(void) {
 }
 
 void func_020c2e1c(void) {
-    void func_020c2cec(void);
-    func_020c2cec();
+    void EnterOccupationView(void);
+    EnterOccupationView();
 }
 
 void func_020c2e28(void) {

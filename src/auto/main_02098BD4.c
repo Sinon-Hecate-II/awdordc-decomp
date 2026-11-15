@@ -40,10 +40,10 @@ M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    s32 func_02098034(M2C_UNK);
+    s32 GetFaceTexturePath(M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_02103274, data_02103280;
-    if (func_02098034(arg0) == 0) return;
+    if (GetFaceTexturePath(arg0) == 0) return;
     SetFileDirectory();
     OpenNarcArchive(&data_02103274);
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_02103280), arg1);
@@ -53,9 +53,9 @@ M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {
 M2C_UNK func_02098d48(M2C_UNK arg0, u16 arg1) {
     M2C_UNK SetFileDirectory();
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
-    s32 func_02098034(M2C_UNK);
+    s32 GetFaceTexturePath(M2C_UNK);
     extern M2C_UNK data_02103288;
-    if (func_02098034(arg0) == 0) return;
+    if (GetFaceTexturePath(arg0) == 0) return;
     SetFileDirectory();
     LoadFileToSpriteBuffer(&data_02103288, arg1 << 5, 0x20);
 }
@@ -82,10 +82,10 @@ void func_02098dc0(s32 arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 void func_02098e04(void *arg0, u32 arg1, s32 arg2) {
-    M2C_UNK func_02088da8();
+    M2C_UNK Hide3DSprite();
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    func_02088da8();
+    Hide3DSprite();
 }
 
 u8 func_02099014(void *);
@@ -208,13 +208,13 @@ void func_020990c0(void) {
 void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    func_02088da8();
+    Hide3DSprite();
 }
 
 void func_020990fc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 u8 GetFaceTileRow(s32);
 u8 func_02099320(void *);
-void func_020985b0(s32, s32, s32);
+void LoadFaceTexture(s32, s32, s32);
 void func_02098e2c(void *, s32);
 void func_02099204(void *);
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
@@ -233,7 +233,7 @@ mode = ((u32)M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29;
 if ((mode != 0 || v == g3DSpriteEngineMain) &&
 (mode != 1 || v == g3DSpriteEngineSub) &&
 (mode != 3 || v == old)) {
-func_020985b0(arg1, arg2, M2C_FIELD(v, s32 *, 0x1C) + (M2C_FIELD(arg0, u16 *, 0x3e) << 5));
+LoadFaceTexture(arg1, arg2, M2C_FIELD(v, s32 *, 0x1C) + (M2C_FIELD(arg0, u16 *, 0x3e) << 5));
 }
 i++;
 } while (i < 2);

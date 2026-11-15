@@ -304,22 +304,26 @@ if(M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x14)&&!M2C_FIELD(M2C_FIELD(p,void **,
 func_0205cef8(M2C_FIELD(p,void **,8));return 0;
 }return 1;}
 
-s32 func_0205a614(void *p,void *q,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){
-extern int data_020ff774,data_020ff77c,data_020ff680;
-void (*cb)(void *,void *,s32,s32,s32,s32,s32);
-if(!p)AssertFailed(&data_020ff774,&data_020ff77c,&data_020ff680,0x160);
-if(!p)return 1;
-if(f)cb=M2C_FIELD(p,void (**)(void *,void *,s32,s32,s32,s32,s32),0x28);
-else cb=M2C_FIELD(p,void (**)(void *,void *,s32,s32,s32,s32,s32),0x2c);
-if(!cb)return 1;
-if(!e||!d){e=0;d=0;}
-M2C_FIELD(p,s32 *,0x1c)++;
-if(q)M2C_FIELD(q,s32 *,0x24)++;
-cb(p,q,a,b,c,d,e);
-M2C_FIELD(p,s32 *,0x1c)--;
-if(q)M2C_FIELD(q,s32 *,0x24)--;
-if(M2C_FIELD(p,s32 *,0x14)&&!M2C_FIELD(p,s32 *,0x1c)){func_0205cef8(p);return 0;}
-return 1;}
+/* Invoke the GT2 socket's dump handler for a message being sent (send != 0) or
+ * received, keep the socket's and connection's callback refcounts, and free the
+ * socket when it was closed and the last callback has returned. */
+s32 gti2DumpCallback(void *socket, void *connection, s32 address, s32 port, s32 flags, s32 message, s32 length, s32 send) {
+    extern int data_020ff774, data_020ff77c, data_020ff680;
+    void (*dumpHandler)(void *, void *, s32, s32, s32, s32, s32);
+    if (!socket) AssertFailed(&data_020ff774, &data_020ff77c, &data_020ff680, 0x160);
+    if (!socket) return 1;
+    if (send) dumpHandler = M2C_FIELD(socket, void (**)(void *, void *, s32, s32, s32, s32, s32), 0x28);
+    else dumpHandler = M2C_FIELD(socket, void (**)(void *, void *, s32, s32, s32, s32, s32), 0x2c);
+    if (!dumpHandler) return 1;
+    if (!length || !message) { length = 0; message = 0; }
+    M2C_FIELD(socket, s32 *, 0x1c)++;
+    if (connection) M2C_FIELD(connection, s32 *, 0x24)++;
+    dumpHandler(socket, connection, address, port, flags, message, length);
+    M2C_FIELD(socket, s32 *, 0x1c)--;
+    if (connection) M2C_FIELD(connection, s32 *, 0x24)--;
+    if (M2C_FIELD(socket, s32 *, 0x14) && !M2C_FIELD(socket, s32 *, 0x1c)) { func_0205cef8(socket); return 0; }
+    return 1;
+}
 
 /* Invoke the "unrecognized message" callback with refcount tracking, releasing the owning handler when idle. */
 s32 gti2UnrecognizedMessageCallback(void *p,s32 a,s32 b,s32 c,s32 d,s32 *out){

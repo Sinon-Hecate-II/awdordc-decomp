@@ -125,7 +125,7 @@ s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(v
    the control-message handlers (small type < 8, large type >= 8). */
 s32 gti2HandleMessage(void *socket,void *message,s32 len,M2C_UNK address,M2C_UNK port) {
 void *func_0205cca0(void *,M2C_UNK,M2C_UNK);
-s32 func_0205a614(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
+s32 gti2DumpCallback(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
 s32 ByteCompareN(void *,M2C_UNK *,s32);
 s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 func_0205cb68(s32,s32,u16);
@@ -137,7 +137,7 @@ void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
 u8 *buf=message;
 connection=func_0205cca0(socket,address,port);
 if(M2C_FIELD(socket,s32*,0x2c)!=0){
-if(!func_0205a614(socket,connection,address,port,0,(s32)buf,len,0))return 0;
+if(!gti2DumpCallback(socket,connection,address,port,0,(s32)buf,len,0))return 0;
 }
 if(len>2 && !ByteCompareN(buf,&gGt2Magic,2))isControl=1;else isControl=0;
 if(connection==0){
@@ -173,14 +173,14 @@ return func_0205bedc(connection2,msgType,buf,len)!=0;
 /* Looks up the entry for the given connection/key; validates or refreshes it. */
 s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetTickCountMs();
-    s32 func_0205a614(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    s32 gti2DumpCallback(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
     void *func_0205cca0();
     void *entry;
 
     entry = func_0205cca0();
     if ((M2C_FIELD(conn, s32 *, 0x2C) != 0) &&
-        (func_0205a614(conn, entry, arg1, arg2, 1, 0, 0, 0) == 0)) {
+        (gti2DumpCallback(conn, entry, arg1, arg2, 1, 0, 0, 0) == 0)) {
         return 0;
     }
     if (entry == NULL) {

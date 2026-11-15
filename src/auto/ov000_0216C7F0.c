@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ov000_ui.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 
 /* Deleting destructor of the army info window: restore its base vtable, destroy
  * the stat panel through its own vtable, free each of the seven icon animations
@@ -184,39 +185,44 @@ void *func_ov000_0216ce84(u32 arg0) {
  }
 }
 
-void func_ov000_0216cee8(void) {
+void SetArmyInfoFileDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_ov000_021b8838;
     SetFileDirectory(&data_ov000_021b8838);
 }
 
-void func_ov000_0216cefc(void){
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*data_ov000_021df5e0;
+/* Reloads the selected army's CO face on the bottom screen: clears its VRAM
+ * area, loads the face texture and palette into the alternate face page, fills
+ * the 2x2 face tile map, positions the sprite bank and marks the layer dirty.
+ * The battle UI's file directory is restored before the engine pointer is put
+ * back. */
+void ArmyInfo_DrawFaceMain(void){
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*gArmyInfoState;
 void *saved=gCur3DSpriteEngine;s32 tile;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-tile=M2C_FIELD(data_ov000_021df5e0,u8 *,17)?1:13;
-MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
-func_020985b0(M2C_FIELD(data_ov000_021df5e0,u8 *,15),0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+(tile<<6));
-func_02098a34(M2C_FIELD(data_ov000_021df5e0,u8 *,15),0,2,M2C_FIELD(data_ov000_021df5e0,u8 *,17),0);
-func_02098844(0,1,21,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),(u16)tile,M2C_FIELD(data_ov000_021df5e0,u8 *,17),1);
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,56)=0xffff;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,64)=1;
-M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
-func_ov000_0216cee8();
+tile=M2C_FIELD(gArmyInfoState,u8 *,ARMY_INFO_FACE_PAGE)?1:13;
+MI_CpuFill32(0,DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[0],64);
+LoadFaceTexture(M2C_FIELD(gArmyInfoState,u8 *,ARMY_INFO_FACE_MAIN),0,DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[0]+(tile<<6));
+LoadFacePalette(M2C_FIELD(gArmyInfoState,u8 *,ARMY_INFO_FACE_MAIN),0,2,M2C_FIELD(gArmyInfoState,u8 *,ARMY_INFO_FACE_PAGE),0);
+FillFaceTileMap(0,1,21,(s32)DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[0],(u16)tile,M2C_FIELD(gArmyInfoState,u8 *,ARMY_INFO_FACE_PAGE),1);
+*(u16 *)&DS3D_BANK(gCur3DSpriteEngine)->corner[0]=0xffff;
+DS3D_BANK(gCur3DSpriteEngine)->corner[4]=1;
+DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty|=1;
+SetArmyInfoFileDirectory();
 gCur3DSpriteEngine=saved;
 }
 
-void func_ov000_0216d020(void) {
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*data_ov000_021df5e0;
+void ArmyInfo_DrawFaceSub(void) {
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*gArmyInfoState;
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-if(M2C_FIELD(data_ov000_021df5e0,u8 *,14)) {
+if(M2C_FIELD(gArmyInfoState,u8 *,14)) {
 MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
-func_020985b0(M2C_FIELD(data_ov000_021df5e0,u8 *,15),8,M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+64);
-func_02098a34(M2C_FIELD(data_ov000_021df5e0,u8 *,15),8,2,0,0);
-func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),1,0,0);
+LoadFaceTexture(M2C_FIELD(gArmyInfoState,u8 *,15),8,M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+64);
+LoadFacePalette(M2C_FIELD(gArmyInfoState,u8 *,15),8,2,0,0);
+FillFaceTileMap(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),1,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
-func_ov000_0216cee8();
+SetArmyInfoFileDirectory();
 }else{
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,32)+24,20,24);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
@@ -235,12 +241,12 @@ void func_ov000_0216d130(void) {
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021b884c;
-    extern void *data_ov000_021df5e0;
+    extern void *gArmyInfoState;
     M2C_UNK *temp_r5;
     s32 temp_z;
     void *temp_r4;
 
-    temp_r5 = func_020e3018(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xE));
+    temp_r5 = func_020e3018(M2C_FIELD(gArmyInfoState, u8 *, 0xE));
     temp_z = temp_r5 == NULL;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
@@ -250,7 +256,7 @@ void func_ov000_0216d130(void) {
         OpenNarcArchive();
         LoadNarcFileDecompressed(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
         CloseNarcArchive();
-        func_ov000_0216cee8();
+        SetArmyInfoFileDirectory();
     } else {
         MI_CpuFill32(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
     }
@@ -260,10 +266,10 @@ void func_ov000_0216d130(void) {
 void func_ov000_0216d1c8(void) {
  void MI_CpuCopy32(void *,s32,s32);
  void func_01ff9e44(void *,s32,s32);
- extern void *data_ov000_021df5e0;
+ extern void *gArmyInfoState;
  extern s32 *gCurrentMap;
  extern void *g3DSpriteEngineSub;
- s32 p = *gCurrentMap + 0x67a4 + M2C_FIELD(data_ov000_021df5e0,u8 *,M2C_FIELD(data_ov000_021df5e0,u8 *,13))*140;
+ s32 p = *gCurrentMap + 0x67a4 + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,13))*140;
  s32 dest = M2C_FIELD(g3DSpriteEngineSub,volatile s32 *,28);
  MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(p,u8 *,39)),dest+0x3000,128);
  func_01ff9e44(func_ov000_0216ce84(M2C_FIELD(p,u8 *,29)),0x2e0,32);
@@ -273,10 +279,10 @@ void func_ov000_0216d23c(void) {
  s32 func_020a8b3c(s32);
  void func_0209b59c(s32,s32);
  void func_0209b5e4(s32,s32);
- extern void *data_ov000_021df5e0;
+ extern void *gArmyInfoState;
  extern s32 *gCurrentMap;
  extern void *g3DSpriteEngineSub;
- s32 val=func_020a8b3c(M2C_FIELD(*gCurrentMap + M2C_FIELD(data_ov000_021df5e0,u8 *,M2C_FIELD(data_ov000_021df5e0,u8 *,13))*140,u8 *,0x67cb));
+ s32 val=func_020a8b3c(M2C_FIELD(*gCurrentMap + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,13))*140,u8 *,0x67cb));
  func_0209b59c(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,128);
  func_0209b5e4(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,val);
 }

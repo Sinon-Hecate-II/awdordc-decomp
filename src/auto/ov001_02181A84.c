@@ -10,7 +10,7 @@ void func_ov001_02181a84(void) {
     M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
-    M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK);
     extern M2C_UNK data_ov001_02193dd4;
     extern M2C_UNK data_ov001_0218fb38;
@@ -65,7 +65,7 @@ void func_ov001_02181a84(void) {
     r5 = rowByte * 8;
     r3p = (M2C_UNK)((u8 *)&data_ov001_0218fafc + r3 * 32);
 
-    func_ov001_02172094(
+    Ov001_LayoutChoiceFrame(
         *(u16 *)((u8 *)r12p + r5),
         *(u16 *)((u8 *)r1p + r5),
         *(u16 *)((u8 *)r2p + r5),
@@ -101,8 +101,8 @@ void func_ov001_02181ba8(void) {
 
 void func_ov001_02181c94(void) {
     extern M2C_UNK func_ov001_02181ce8;
-    func_ov001_0218a824(2, 1, 1, 8);
-    func_ov001_0218a824(2, 0, 0x14, 8);
+    Ov001_StartFade(2, 1, 1, 8);
+    Ov001_StartFade(2, 0, 0x14, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x14);
     Ov001_SetStepCallback(&func_ov001_02181ce8);
@@ -110,12 +110,12 @@ void func_ov001_02181c94(void) {
 
 void func_ov001_02181ce8(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
-    s32 func_ov001_0218a800(M2C_UNK);
+    s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_02181d24;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     func_ov001_02171e20(0);
@@ -124,12 +124,12 @@ void func_ov001_02181ce8(void) {
 
 void func_ov001_02181d24(void) {
     s32 Ov001_GetIconRowSelection();
-    M2C_UNK func_ov001_02171738();
+    M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02181d4c;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
-    func_ov001_02171738();
+    Ov001_UnlockIconRow();
     Ov001_SetStepCallback(&func_ov001_02181d4c);
 }
 
@@ -146,8 +146,8 @@ void func_ov001_02181d4c(void) {
 }
 
 void func_ov001_02181d60(void) {
-    M2C_UNK func_ov001_021716d8(M2C_UNK);
-    M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
+    M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
     void func_ov001_021820f0(M2C_UNK);
     s32 KeyPressed(s32);
@@ -169,7 +169,7 @@ void func_ov001_02181d60(void) {
     for (index = 0; index < 4; index++) {
         entry = (u8 *)&data_ov001_0218fab6 + Ov001_HasOptionFlag(1) * 32 + index * 8;
         if (TouchRectPressed(entry) != 0) {
-            func_ov001_021716d8(1);
+            Ov001_LatchIconRowSelection(1);
             M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = (s8)index;
             r6 = Ov001_HasOptionFlag(1);
             r5 = Ov001_HasOptionFlag(1);
@@ -181,7 +181,7 @@ void func_ov001_02181d60(void) {
             r2p = (M2C_UNK)((u8 *)&data_ov001_0218faf8 + r4 * 32);
             r5 = rowByte * 8;
             r3p = (M2C_UNK)((u8 *)&data_ov001_0218fafc + r3 * 32);
-            func_ov001_02172094(
+            Ov001_LayoutChoiceFrame(
                 *(u16 *)((u8 *)r12p + r5),
                 *(u16 *)((u8 *)r1p + r5),
                 *(u16 *)((u8 *)r2p + r5),
@@ -190,8 +190,8 @@ void func_ov001_02181d60(void) {
             return;
         }
     }
-    if (KeyPressed(1) != 0) { func_ov001_021716d8(1); return; }
-    if (KeyPressed(2) != 0) { func_ov001_021716d8(0); return; }
+    if (KeyPressed(1) != 0) { Ov001_LatchIconRowSelection(1); return; }
+    if (KeyPressed(2) != 0) { Ov001_LatchIconRowSelection(0); return; }
     if (KeyHeld(0x40) != 0) { func_ov001_021820f0(1); return; }
     if (KeyHeld(0x80) != 0) { func_ov001_021820f0(3); return; }
     if (KeyHeld(0x20) != 0) { func_ov001_021820f0(0); return; }
@@ -222,11 +222,11 @@ void func_ov001_02181ee8(void) {
 }
 
 void func_ov001_02181f3c(void) {
-    M2C_UNK func_ov001_02171750();
+    M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_02181f5c;
-    func_ov001_02171750();
+    Ov001_LockIconRow();
     func_ov001_0218aa24(8);
     Ov001_SetStepCallback(&func_ov001_02181f5c);
 }
@@ -235,14 +235,14 @@ void func_ov001_02181f5c(void) {
     M2C_UNK func_ov001_02171694();
     extern M2C_UNK data_ov001_02193dd4;
     extern M2C_UNK Ov001_MenuConfirm;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     if (M2C_FIELD(&data_ov001_02193dd4, u8 *, 2) != 0) {
         func_ov001_02171694();
     }
-    func_ov001_0218a824(3, 1, 1, 8);
-    func_ov001_0218a824(3, 0, 0x14, 8);
+    Ov001_StartFade(3, 1, 1, 8);
+    Ov001_StartFade(3, 0, 0x14, 8);
     Ov001_SetStepCallback(&Ov001_MenuConfirm);
 }
 
@@ -254,9 +254,9 @@ void func_ov001_02181f5c(void) {
 void Ov001_MenuConfirm(void){
 extern M2C_UNK data_ov001_02193dd4;
 extern M2C_UNK func_ov001_02180d44,func_ov001_02180860,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
-s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);
-if(func_ov001_0218a800(1))return;
-if(func_ov001_0218a800(0))return;
+s32 Ov001_IsFadeActive(s32);s32 func_ov001_0217170c(void);
+if(Ov001_IsFadeActive(1))return;
+if(Ov001_IsFadeActive(0))return;
 if(!func_ov001_0217170c())return;
 func_ov001_02172184();func_ov001_02171cf8();Ov001_FreeFile(M2C_FIELD(&data_ov001_02193dd4,void **,4));
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
@@ -272,7 +272,7 @@ case 3:func_ov001_02175d64(2,0);Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(
 void func_ov001_021820f0(M2C_UNK arg0) {
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193dd4;
     extern M2C_UNK data_ov001_0218fa96;
     extern M2C_UNK data_ov001_0218faf6;
@@ -316,7 +316,7 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     c = *(u16 *)((u8 *)&data_ov001_0218faf8 + temp_r4b * 32 + row);
     d = *(u16 *)((u8 *)&data_ov001_0218fafc + r3 * 32 + row);
 
-    func_ov001_02172094(a, b, c, d);
+    Ov001_LayoutChoiceFrame(a, b, c, d);
 }
 
 void func_ov001_021821e4(void) {
@@ -402,11 +402,11 @@ void func_ov001_02182370(void) {
 void func_ov001_02182408(void) {
     void func_ov001_02182474(void);
     s32 sp0;
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
     Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 0) {
-        func_ov001_0218a824(2, 1, 1, 8);
+        Ov001_StartFade(2, 1, 1, 8);
         func_ov001_0218b314(1, 1);
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182474);
@@ -414,10 +414,10 @@ void func_ov001_02182408(void) {
 
 void func_ov001_02182474(void) {
     extern M2C_UNK func_ov001_021824a8;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_021824a8);
@@ -445,16 +445,16 @@ void func_ov001_021824c4(void) {
 }
 
 void func_ov001_021824c8(void) {
-    M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021824f0;
-    func_ov001_0218a824(3, 0, 0x15, 8);
+    Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_021824f0);
 }
 
 void func_ov001_021824f0(void) {
-    s32 func_ov001_0218a800(M2C_UNK);
+    s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_02182514;
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_02182514);
@@ -495,7 +495,7 @@ void func_ov001_021825a8(s32 arg0) {
     s32 result = func_0202f10c();
     if (result == 0) return;
     func_ov001_021723d4();
-    func_ov001_0218508c();
+    Ov001_StopSound();
     if (result > 0) {
         data_ov001_02193ddc = 1;
         Ov001_PlaySound(0x11);
@@ -505,7 +505,7 @@ void func_ov001_021825a8(s32 arg0) {
         Ov001_PlaySound(0x12);
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021824c8);
-    func_ov001_0218c92c(0, arg0);
+    Ov001_PostTaskMessage(0, arg0);
 }
 
 void func_ov001_02182614(s32 arg0, s32 arg1) {
@@ -541,17 +541,17 @@ void func_ov001_02182668(void) {
 }
 
 void func_ov001_021826d4(void) {
-    M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_02182708;
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_02182708);
 }
 
 void func_ov001_02182708(void) {
     extern M2C_UNK func_ov001_0218272c;
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_0218272c);
@@ -578,8 +578,8 @@ void func_ov001_02182740(void) {
     if (sp0 != 0) {
         func_ov001_0218560c();
     }
-    func_ov001_0218a824(3, 1, 1, 8);
-    func_ov001_0218a824(3, 0, 0x15, 8);
+    Ov001_StartFade(3, 1, 1, 8);
+    Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_02182798);
 }
 
@@ -594,10 +594,10 @@ void func_ov001_02182798(void) {
     extern M2C_UNK InitMapListScreen;
     s32 sp0;
 
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (func_ov001_0218a800(0) != 0) {
+    if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     if (func_ov001_02185b34() == 0) {
@@ -663,8 +663,8 @@ void func_ov001_02182904(void) {
 
 void func_ov001_02182970(void) {
     extern M2C_UNK func_ov001_021829c4;
-    func_ov001_0218a824(2, 1, 1, 8);
-    func_ov001_0218a824(2, 0, 0x14, 8);
+    Ov001_StartFade(2, 1, 1, 8);
+    Ov001_StartFade(2, 0, 0x14, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x14);
     Ov001_SetStepCallback(&func_ov001_021829c4);
@@ -674,13 +674,13 @@ void func_ov001_021829c4(void) {
     struct Table { s32 values[3]; };
     extern struct Table data_ov001_0218fb4c;
     extern M2C_UNK func_ov001_02182a4c;
-    M2C_UNK func_ov001_021862d8(s32, s32, s32, s32, s32);
+    M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     struct Table table = data_ov001_0218fb4c;
     s32 index;
-    if (func_ov001_0218a800(1) != 0) return;
-    if (func_ov001_0218a800(0) != 0) return;
+    if (Ov001_IsFadeActive(1) != 0) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_GetNameEntryMode(0, &index);
-    func_ov001_021862d8(table.values[index], 1, 1, -1, 0);
+    Ov001_ShowMessage(table.values[index], 1, 1, -1, 0);
     Ov001_SetStepCallback(&func_ov001_02182a4c);
 }
 

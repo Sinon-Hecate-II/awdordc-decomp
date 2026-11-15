@@ -117,17 +117,17 @@ u8 func_0208ae88(Unk0208ABC4 *arg0, s32 arg1) {
 }
 
 void func_0208aebc(void *arg0) {
-    M2C_UNK func_02088da8();
+    M2C_UNK Hide3DSprite();
     M2C_UNK func_0208a6b0(void *);
     M2C_FIELD(arg0, s32 *, 0x58) = (s32) ((M2C_FIELD(arg0, s32 *, 0x58) & ~0x38) | 8);
     M2C_FIELD(arg0, u8 *, 0x48) = (u8) ((M2C_FIELD(arg0, u8 *, 0x48) & ~0x30) | 0x10);
     M2C_FIELD(arg0, s8 *, 0x4B) = 0;
     M2C_FIELD(arg0, s8 *, 0x4A) = 6;
     if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
-        func_02088da8();
+        Hide3DSprite();
     }
     if (M2C_FIELD(arg0, s32 *, 0x60) != 0) {
-        func_02088da8();
+        Hide3DSprite();
     }
     func_0208a6b0(arg0);
 }
@@ -147,17 +147,17 @@ void func_0208af20(void *arg0) {
         M2C_FIELD(arg0, s8 *, 0x4B) = 0;
         M2C_FIELD(arg0, s8 *, 0x4A) = 8;
         if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
-            func_02088da8();
+            Hide3DSprite();
         }
         if (M2C_FIELD(arg0, s32 *, 0x60) != 0) {
-            func_02088da8();
+            Hide3DSprite();
         }
     }
     func_0208a714(arg0);
 }
 
 void func_0208af98(void *p) {
- s32 EaseInterpolate(s32,s32,s32,s32,s32); void func_02088d94(void*);void func_02089c80(void*);s32 func_020890d4();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32); void Show3DSprite(void*);void func_02089c80(void*);s32 func_020890d4();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
  s32 bottom,right,tx,ty,j,maxw,i,depth,y,x,height,width; u8 alpha;u32 tile,mode,count;u16 frame;void *old,*engine; WindowControl0208 *volatile control;u8 *widths,*aligns;s32 w; u16 kind;
  frame=(u16)(0x1000|(0x3ff&(0xa0>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
  tile=M2C_FIELD(p,u16*,0x3e)<<5;
@@ -170,8 +170,8 @@ void func_0208af98(void *p) {
   if(M2C_FIELD(p,u8*,0x4b)>=M2C_FIELD(p,u8*,0x4a)){
    M2C_FIELD(p,u32*,0x58)=(M2C_FIELD(p,u32*,0x58)&~0x38)|0x10;
    M2C_FIELD(p,u8*,0x48)&=~0x30;
-   if(M2C_FIELD(p,void**,0x5c))func_02088d94(M2C_FIELD(p,void**,0x5c));
-   if(M2C_FIELD(p,void**,0x60))func_02088d94(M2C_FIELD(p,void**,0x60));
+   if(M2C_FIELD(p,void**,0x5c))Show3DSprite(M2C_FIELD(p,void**,0x5c));
+   if(M2C_FIELD(p,void**,0x60))Show3DSprite(M2C_FIELD(p,void**,0x60));
   }
   width=(EaseInterpolate(4,0,width,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a))+4)&~7;
   x+=((s32)(((WindowSize0208*)((u8*)p+0x40))->width)-width)/2;

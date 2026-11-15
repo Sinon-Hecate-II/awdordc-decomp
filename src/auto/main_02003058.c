@@ -240,7 +240,7 @@ void func_020039c8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
     M2C_FIELD(arg0, s16 *, 4) = (s16) arg5;
 }
 
-void func_02003a10(void *arg0, s32 arg1) {
+void GX_SetBlendY(void *arg0, s32 arg1) {
     s32 temp_r2;
     u16 temp_r3;
 

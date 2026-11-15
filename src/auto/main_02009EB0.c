@@ -341,7 +341,7 @@ s32 func_0200ac50(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     return 0;
 }
 
-s32 func_0200ac70(s32 a,s32 b,s32 c,s32 d){MI_CpuCopy8(c,b,d);return 0;}
+s32 ReadArchiveMemory(s32 a,s32 b,s32 c,s32 d){MI_CpuCopy8(c,b,d);return 0;}
 
 #pragma opt_common_subs off
 /* Picks the next pending request of a file after an operation finishes: drops

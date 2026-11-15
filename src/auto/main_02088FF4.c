@@ -14,13 +14,13 @@ extern M2C_UNK data_02102638;
 
 #pragma opt_common_subs off
 void func_02088ff4(void *p) {
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Hide3DSprite(void *);
     if (!M2C_FIELD(p, u8 *, 0x4F)) {
         M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x54);
         M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x56);
         M2C_FIELD(p, s8 *, 0x4D) = 0;
         M2C_FIELD(p, u8 *, 0x48) = (u8)(M2C_FIELD(p, u8 *, 0x48) & ~0xC0);
-        func_02088da8(p);
+        Hide3DSprite(p);
         return;
     }
     if ((((u32)M2C_FIELD(p, u8 *, 0x48) << 24) >> 30) == 3) {
@@ -234,8 +234,8 @@ void func_020893a8(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
 }
 
 M2C_UNK func_020893f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_020ae22c(M2C_UNK);
-    func_020893a8((void *)arg0, arg1, arg2, func_020ae22c(9));
+    s32 GetUiColor(M2C_UNK);
+    func_020893a8((void *)arg0, arg1, arg2, GetUiColor(9));
 }
 
 void func_02089424(M2C_UNK arg0) {
@@ -306,15 +306,15 @@ s32 func_02089714(void) {
 }
 
 void func_02089728(void) {
- M2C_UNK func_02088da8();
+ M2C_UNK Hide3DSprite();
  if (func_02089714() == 0) return;
- func_02088da8();
+ Hide3DSprite();
 }
 
 void func_02089740(void) {
- M2C_UNK func_02088d94();
+ M2C_UNK Show3DSprite();
  if (func_02089714() == 0) return;
- func_02088d94();
+ Show3DSprite();
 }
 
 u8 func_02089758(void *arg0) {
@@ -338,18 +338,18 @@ void func_020897a4(void) {
 
 void func_020897b8(void) {
     M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_020ae22c(M2C_UNK);
+    s32 GetUiColor(M2C_UNK);
     s32 temp_r4;
 
-    temp_r4 = func_020ae22c(0xD);
-    func_0208e0f0(0x1400, 1, temp_r4, func_020ae22c(0xE));
+    temp_r4 = GetUiColor(0xD);
+    func_0208e0f0(0x1400, 1, temp_r4, GetUiColor(0xE));
 }
 
 void func_020897e8(void) {
     M2C_UNK Update3DSpriteVram();
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    s32 func_020ae22c(M2C_UNK);
-    s32 func_020ae3e0(s32, s32, u8, u8);
+    s32 GetUiColor(M2C_UNK);
+    s32 BlendRgb555_32(s32, s32, u8, u8);
     M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
     extern volatile s32 data_027e15c0;
     s32 temp_r4;
@@ -358,9 +358,9 @@ void func_020897e8(void) {
     var_r0 = (u32)(data_027e15c0 & 0x1F) < 0x10U ?
         EaseInterpolate(0, 0, 0x20, data_027e15c0 & 0x1F, 0x10) :
         EaseInterpolate(0, 0x20, 0, (data_027e15c0 & 0x1F) - 0x10, 0x10);
-    temp_r4 = func_020ae22c(0xF);
-    temp_r4_2 = func_020ae3e0(temp_r4, func_020ae22c(0x10), var_r0, (u8)(0x20 - var_r0));
-    func_0208e0f0(0x1400, 1, func_020ae22c(0xD), temp_r4_2);
+    temp_r4 = GetUiColor(0xF);
+    temp_r4_2 = BlendRgb555_32(temp_r4, GetUiColor(0x10), var_r0, (u8)(0x20 - var_r0));
+    func_0208e0f0(0x1400, 1, GetUiColor(0xD), temp_r4_2);
     Update3DSpriteVram();
 }
 
@@ -431,7 +431,7 @@ M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
     extern s32 g3DSpriteEngineMain;
     extern s32 g3DSpriteEngineSub;
     u8 func_0208ae88(M2C_UNK, s32);
-    M2C_UNK func_020ae22c(s32);
+    M2C_UNK GetUiColor(s32);
     M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
     void func_02091c98(void);
     void func_02091d4c(s32);
@@ -468,8 +468,8 @@ M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
             M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~0xE0000000) | (low3 << 29);
             M2C_FIELD(entity, u8 *, 0x49) = (u8)tmp;
             func_0208ae88(entity, tmp + 0x62);
-            t1 = func_020ae22c(0xD);
-            t2 = func_020ae22c(0xE);
+            t1 = GetUiColor(0xD);
+            t2 = GetUiColor(0xE);
             func_0208e0f0(0x1400, 1, t1, t2);
             func_02091c98();
             func_02091d4c(0x12);

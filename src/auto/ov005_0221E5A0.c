@@ -217,7 +217,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, u16 *);
     M2C_UNK func_02082cb4();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02091cd0();
     M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -330,7 +330,7 @@ void func_ov005_0221f084(void *arg0) {
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x34), 1);
     func_020aad18(M2C_FIELD(arg0, void **, 0x34));
-    func_02088da8(M2C_FIELD(arg0, void **, 0x34));
+    Hide3DSprite(M2C_FIELD(arg0, void **, 0x34));
     data_027e01d8 = temp_r11;
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
 }

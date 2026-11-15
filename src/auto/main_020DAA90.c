@@ -334,7 +334,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
-    M2C_UNK func_ov010_02229b00(void);
+    M2C_UNK GetLocalPlayerStatus(void);
     s32 func_ov010_02229a38(void);
     s32 func_ov010_02229a40(void);
     u32 func_ov010_02229b0c(s32);
@@ -372,7 +372,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x38) = scroll;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
     x = (*(s32 *)0x027ffc3c & 1) * 0x180 + 0x124;
-    r5 = (s32)func_ov010_02229b00();
+    r5 = (s32)GetLocalPlayerStatus();
     r10 = func_ov010_02229a38();
     threshold = func_ov010_02229a40();
     ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x86), 0x14, 2);

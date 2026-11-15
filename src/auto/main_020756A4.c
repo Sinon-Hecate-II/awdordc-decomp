@@ -7,7 +7,7 @@ typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x
 #pragma push
 #pragma opt_common_subs off
 void func_020756a4(void *a) {
-void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 func_02074920(void *);void MI_CpuCopy32(void *,void *,s32);s32 func_020746fc(void *,void *);s32 func_0200558c(void);void MI_CpuCopy8(void *,void *);
+void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 FindFreeNode(void *);void MI_CpuCopy32(void *,void *,s32);s32 func_020746fc(void *,void *);s32 func_0200558c(void);void MI_CpuCopy8(void *,void *);
 s32 i,state;u8 *p; s32 shift;u8 byte;u32 mask;u8 *out;u16 id;u8 ok;u32 seq;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1)return;
 for(i=0;i<256;i++){
@@ -17,7 +17,7 @@ switch(state){case 2:mask=-1^(3<<shift);byte&=mask;state=(u8)byte;M2C_FIELD(p,u8
 out=HeapAllocBlock(256);i=M2C_FIELD(a,s32 *,0xc00);
 if(i!=-1){p=(u8 *)a+0xc0c;shift=(i&3)*2;p[i>>2]=(u8)(p[i>>2]&(-1^(3<<shift)))|(1<<shift);}
 seq=++M2C_FIELD(a,u32 *,0xc08);if(seq==0)++M2C_FIELD(a,u32 *,0xc08);
-M2C_FIELD(a,s32 *,0xc00)=func_02074920(a);M2C_FIELD(a,s32 *,0xc04)=0;
+M2C_FIELD(a,s32 *,0xc00)=FindFreeNode(a);M2C_FIELD(a,s32 *,0xc04)=0;
 i=M2C_FIELD(a,s32 *,0xc00);p=(u8 *)a+0xc0c;shift=(i&3)*2;p[i>>2]=(u8)(p[i>>2]&(-1^(3<<shift)))|(3<<shift);
 M2C_FIELD(out,u32 *,0)=0x32777364;
 if(M2C_FIELD(a,s32 *,0xc04)==0)M2C_FIELD(out,u32 *,8)=M2C_FIELD((u8 *)a+M2C_FIELD(a,s32 *,0xc00)*12,u32 *,0)+1;

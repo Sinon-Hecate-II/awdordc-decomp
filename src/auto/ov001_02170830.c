@@ -36,7 +36,7 @@ void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
  M2C_UNK p[22];func_ov001_0217073c(p);func_ov001_02170764(p,b,c);func_ov001_021707dc(a,p);
 }
 
-void func_ov001_02171128(void){u64 GetSystemTick(void);void func_02072088(u64,u64);func_02072088(GetSystemTick()<<6,0x82ea);}
+void WhGetTime(void){u64 GetSystemTick(void);void func_02072088(u64,u64);func_02072088(GetSystemTick()<<6,0x82ea);}
 
 #pragma thumb on
 s32 func_ov001_02171178(s8 *a, s32 b) {
@@ -69,7 +69,7 @@ if(data_ov001_02192790[14]>=1 && data_ov001_02192790[14]<=5)return -10;
 data_ov001_0218fde8[4]=b;data_ov001_02192790[14]=7;data_ov001_02192790[31]=c;((s32 (**)(s32))data_ov001_02192790)[1]=d;data_ov001_02192790[3]=e;data_ov001_0218fde8[2]=f;
 r=func_ov001_0216e34c(b);data_ov001_02192790[29]=1;if(r<0){data_ov001_02192790[30]=r;return r;}
 r=((s32 (**)(s32))data_ov001_02192790)[1](data_ov001_0218fde8[2]);data_ov001_02192790[12]=r;if(!r){data_ov001_02192790[30]=-1;return -1;}if(func_02005ab0()!=1){data_ov001_02192790[30]=-9;return -9;}
-func_02005ac0(data_ov001_0219283c,func_ov001_0216f78c,0,data_ov001_02192790[12]+(data_ov001_0218fde8[2]&~7),data_ov001_0218fde8[2],a);data_ov001_02192790[14]=1;data_ov001_0218fde8[3]=((s32 (*)(void))func_ov001_02171128)()+60000;data_ov001_02192790[4]=0;
+func_02005ac0(data_ov001_0219283c,func_ov001_0216f78c,0,data_ov001_02192790[12]+(data_ov001_0218fde8[2]&~7),data_ov001_0218fde8[2],a);data_ov001_02192790[14]=1;data_ov001_0218fde8[3]=((s32 (*)(void))WhGetTime)()+60000;data_ov001_02192790[4]=0;
 p=data_ov001_021928fc;i=58;do{*p++=0;}while(--i);
 func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;return 1;
 }
@@ -174,16 +174,16 @@ s8 Ov001_GetIconRowSelection(void) {
     return M2C_FIELD(gOv001IconRow, s8 *, 0x16);
 }
 
-void func_ov001_021716d8(s8 a){if(M2C_FIELD(gOv001IconRow,s8 *,0x16)==-1)M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
+void Ov001_LatchIconRowSelection(s8 a){if(M2C_FIELD(gOv001IconRow,s8 *,0x16)==-1)M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 
 void Ov001_SetIconRowSelection(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 
 s32 func_ov001_0217170c(void){if(gOv001IconRow==NULL)return 1;if(M2C_FIELD(gOv001IconRow,u8 *,0x19)==0)return 1;return 0;}
 
 #pragma thumb off
-void func_ov001_02171738(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,u8 *,0x18)=0;}
+void Ov001_UnlockIconRow(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,u8 *,0x18)=0;}
 
-void func_ov001_02171750(void){M2C_FIELD(gOv001IconRow,u8 *,0x18)=1;}
+void Ov001_LockIconRow(void){M2C_FIELD(gOv001IconRow,u8 *,0x18)=1;}
 
 void func_ov001_02171768(void *a){s32 n,i;n=gOv001IconRowCount[M2C_FIELD(gOv001IconRow,u8 *,0x17)];Ov001_MoveSpriteLayout(M2C_FIELD(gOv001IconRow,void **,8),-1,0,a);for(i=0;i<n;i++)Ov001_MoveSpriteLayout(((void **)gOv001IconRow)[i],-1,gOv001IconRowX[((const u8 (*)[2])gOv001IconRowSlot)[M2C_FIELD(gOv001IconRow,u8 *,0x17)][i]*2],(u8 *)a+4);}
 

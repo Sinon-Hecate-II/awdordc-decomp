@@ -62,7 +62,7 @@ void func_ov001_0217af80(s32 arg0) {
     func_ov001_021839f0();
     func_ov001_0217b130();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
-    func_ov001_0218c92c(0, arg0);
+    Ov001_PostTaskMessage(0, arg0);
 }
 
 void func_ov001_0217b03c(s32 arg0) {
@@ -84,7 +84,7 @@ void func_ov001_0217b03c(s32 arg0) {
     func_ov001_021839f0();
     func_ov001_0217b130();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
-    func_ov001_0218c92c(0, arg0);
+    Ov001_PostTaskMessage(0, arg0);
 }
 
 void func_ov001_0217b0d4(void) {
@@ -184,14 +184,14 @@ void func_ov001_0217b3f0(void) {
 }
 
 void func_ov001_0217b41c(void) {
-    M2C_UNK func_ov001_02171738();
+    M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK func_ov001_021839f0();
     s32 func_ov001_0218665c();
     extern M2C_UNK func_ov001_0217a3a8;
     if (func_ov001_0218665c() != 0) {
         return;
     }
-    func_ov001_02171738();
+    Ov001_UnlockIconRow();
     func_ov001_021839f0();
     Ov001_SetStepCallback(&func_ov001_0217a3a8);
 }
@@ -240,18 +240,18 @@ void func_ov001_0217b578(void) {
 }
 
 void func_ov001_0217b634(void) {
-    M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217b688;
-    func_ov001_0218a824(2, 1, 1, 8);
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 1, 1, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217b688);
 }
 
 void func_ov001_0217b688(void) {
-    s32 func_ov001_0218a800(s32);
+    s32 Ov001_IsFadeActive(s32);
     M2C_UNK func_ov001_021724c0(void);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_SetKeyboardCanDelete(s32);
@@ -259,8 +259,8 @@ void func_ov001_0217b688(void) {
     void func_ov001_0217b704(void);
     M2C_UNK Ov001_SetStepCallback();
     extern void *gNameEntryState;
-    if (func_ov001_0218a800(1) != 0) return;
-    if (func_ov001_0218a800(0) != 0) return;
+    if (Ov001_IsFadeActive(1) != 0) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
     func_ov001_021724c0();
     Ov001_PlaySound(0x14);
     if (M2C_FIELD(gNameEntryState, u8 *, 0x29) == 0) {
@@ -342,9 +342,9 @@ void func_ov001_0217b8f8(void) {
 
 void func_ov001_0217b914(void) {
     M2C_UNK func_ov001_02172824();
-    s32 func_ov001_0218a800(M2C_UNK);
+    s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_0217b944;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02172824();
@@ -355,7 +355,7 @@ void func_ov001_0217b914(void) {
 void func_ov001_0217b944(void) {
     s32 func_ov001_02172894();
     void Ov001_GetNameEntryMode(s32 *, s32);
-    M2C_UNK func_ov001_021862d8(s32, s32, s32, s32, s32);
+    M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     extern void *data_ov001_0218f81c;
     extern void *gNameEntryState;
     extern M2C_UNK func_ov001_0217ba1c;
@@ -374,12 +374,12 @@ void func_ov001_0217b944(void) {
         return;
     }
     if (temp_r0 == 2) {
-        func_ov001_021862d8(6, 3, 1, -1, 0);
+        Ov001_ShowMessage(6, 3, 1, -1, 0);
         Ov001_SetStepCallback(&func_ov001_0217bf14);
         return;
     }
     Ov001_GetNameEntryMode(0, &sp4);
-    func_ov001_021862d8(sp8[sp4], 2, 1, -1, 0);
+    Ov001_ShowMessage(sp8[sp4], 2, 1, -1, 0);
     Ov001_SetStepCallback(&func_ov001_0217bc7c);
 }
 

@@ -17,6 +17,13 @@
 /* Byte of the bank copied to the display blend register (0..31). */
 #define DS3D_BANK_BLEND 0x53
 
+/* The bank's OBJ attribute word (its priority is in bits 6..7). */
+#define DS3D_BANK_OAMATTR 0x12
+
+/* Rows of the bank's cell grid above/below the split point. */
+#define DS3D_BANK_ROWS_ABOVE 0x51
+#define DS3D_BANK_ROWS_BELOW 0x52
+
 /* DS3DSpriteBank::flags bits 4..8 select the active screen mode, one-hot: the
  * mode index Get3DSpriteScreenMode() returns. Reset3DSpriteLayers clears them. */
 #define DS3D_BANK_MODE0 0x0010
@@ -122,6 +129,11 @@ typedef struct DS3DSpriteEngine {
     void *filler_54;
 } DS3DSpriteEngine;
 
+/* The engine a gCur3DSpriteEngine / g3DSpriteEngineMain pointer refers to, and
+ * the sprite bank that engine owns (its first word). */
+#define DS3D_ENGINE(enginePtr) ((DS3DSpriteEngine *)(enginePtr))
+#define DS3D_BANK(enginePtr) ((DS3DSpriteBank *)(*(void **)(enginePtr)))
+
 /* One entry of gWallpaperFileSets: the files of a wallpaper in one language. */
 typedef struct WallpaperFileSet {
     const char *name;  /* +0x00 base name of the set's files, e.g. "wallp_bmap_s" */
@@ -219,5 +231,26 @@ enum {
 #define DS3D_SPRITE_FLAG_NEW        0x10 /* first update deferred until the screen is ready */
 #define DS3D_SPRITE_FLAG_VISITING   0x20 /* recursion guard: the object is being visited */
 #define DS3D_SPRITE_FLAG_REPEAT     0x40 /* the update asked to run again this frame */
+
+
+/* Palette fade fields a 3D sprite object gains when it is animated by
+ * UpdatePaletteFade (main_0208C830): the object fades the palette of its layer
+ * from `from` to `to` over `duration` frames.  The plain 3D sprite object
+ * fields (0x00..0x33) come first. */
+typedef struct DS3DSpritePaletteFade {
+    u8  pad00[0x34];
+    u8  palette;   /* +0x34 palette slot in the engine's OBJ palette shadow */
+    u8  flags;     /* +0x35 DS3D_FADE_* bits */
+    u8  timer;     /* +0x36 frames elapsed */
+    u8  duration;  /* +0x37 frames one fade takes */
+    u16 from[15];  /* +0x38 palette faded from */
+    u16 to[15];    /* +0x56 palette faded to */
+} DS3DSpritePaletteFade;
+
+/* DS3DSpritePaletteFade::flags */
+#define DS3D_FADE_ACTIVE   0x01 /* the fade is running */
+#define DS3D_FADE_FORWARD  0x02 /* fade towards `to`, otherwise towards `from` */
+#define DS3D_FADE_PINGPONG 0x04 /* reverse direction instead of stopping */
+#define DS3D_FADE_DELETE   0x08 /* delete the object once the fade has finished */
 
 #endif

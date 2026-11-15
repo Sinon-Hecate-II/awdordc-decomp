@@ -107,10 +107,10 @@ OpenNarcArchive(GetLocalizedFileName(data_0212a4d8));
 LoadNarcFileDecompressed(GetLocalizedFileName(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
 CloseNarcArchive();
 MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
-func_020985b0(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
-func_02098a34(M2C_FIELD(data_02164094,s16*,8),8,3,0,0);
-func_020985b0(M2C_FIELD(data_02164094,s16*,8),11,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+0x7840);
-func_02098a34(M2C_FIELD(data_02164094,s16*,8),11,3,1,0);
+LoadFaceTexture(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
+LoadFacePalette(M2C_FIELD(data_02164094,s16*,8),8,3,0,0);
+LoadFaceTexture(M2C_FIELD(data_02164094,s16*,8),11,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+0x7840);
+LoadFacePalette(M2C_FIELD(data_02164094,s16*,8),11,3,1,0);
 SetFileDirectory(data_0212a4f0);
 gCur3DSpriteEngine=old;
 }

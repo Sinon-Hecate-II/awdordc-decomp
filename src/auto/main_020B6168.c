@@ -356,7 +356,7 @@ if(!b)return a;
 ApplyPendingDamageToTargets(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
 }
 
-void func_020b6bac(void *arg0) {
+void AuroraBombardTargets(void *arg0) {
 s32 GetTargetCount(void);void *GetTargetPosition(s32);
 void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
 extern void **gCurrentMap;extern M2C_UNK data_02128efc;
@@ -406,7 +406,7 @@ void UpdateAuroraEffect(void *effect) {
     func_020b5134(&gAuroraSmokeName, tileX, tileY, 16, power, 1, effect);
 }
 #pragma opt_common_subs reset
-void func_020b6e4c(void) {
+void ApplyAuroraPendingDamage(void) {
     M2C_UNK ApplyPendingDamage();
     ApplyPendingDamage();
 }
@@ -417,7 +417,7 @@ void func_020b6e58(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x56) = 0;
 }
 
-void func_020b6e70(void *a){s32 func_020b5200(M2C_UNK *,s32);s32 func_020b51f0(void);void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);void func_01ffa6fc(void *);extern M2C_UNK data_02128f14,data_02128f20,data_02128f2c,data_02128f34;void func_020b6bac(void *);void UpdateAuroraEffect(void *);void func_020b6e4c(void);s32 n=M2C_FIELD(a,s16 *,0x56);s32 x,y,v;void *p;v=M2C_FIELD(a,s16 *,0x6c);x=M2C_FIELD(a,s32 *,0x38);y=M2C_FIELD(a,s32 *,0x3c);M2C_FIELD(a,s16 *,0x56)=n+1;switch(n){case 0:M2C_FIELD(a,s32 *,0x5c)=func_020b5200(&data_02128f14,0);break;case 1:M2C_FIELD(a,s32 *,0x60)=func_020b5200(&data_02128f20,1);break;case 2:M2C_FIELD(a,s32 *,0x64)=func_020b5200(&data_02128f2c,8);break;case 3:p=func_020b5188(&data_02128f34,x,y,1,func_020b51f0(),2,a);M2C_FIELD(p,s32 *,0x58)=v;M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(a,s32 *,0x5c);M2C_FIELD(p,s32 *,0x60)=M2C_FIELD(a,s32 *,0x60);M2C_FIELD(p,s32 *,0x64)=M2C_FIELD(a,s32 *,0x64);M2C_FIELD(p,u32 *,0x48)=(M2C_FIELD(p,u32 *,0x48)&~1023)|10;M2C_FIELD(p,void **,0x68)=func_020b6bac;M2C_FIELD(p,void **,0x6c)=UpdateAuroraEffect;M2C_FIELD(p,void **,0x70)=func_020b6e4c;func_01ffa6fc(a);break;}}
+void StageAuroraEffect(void *a){s32 func_020b5200(M2C_UNK *,s32);s32 func_020b51f0(void);void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);void func_01ffa6fc(void *);extern M2C_UNK gAuroraAimSprite,gAuroraSmokeSprite,gAuroraDamageSprite,gAuroraSprite;void AuroraBombardTargets(void *);void UpdateAuroraEffect(void *);void ApplyAuroraPendingDamage(void);s32 n=M2C_FIELD(a,s16 *,0x56);s32 x,y,v;void *p;v=M2C_FIELD(a,s16 *,0x6c);x=M2C_FIELD(a,s32 *,0x38);y=M2C_FIELD(a,s32 *,0x3c);M2C_FIELD(a,s16 *,0x56)=n+1;switch(n){case 0:M2C_FIELD(a,s32 *,0x5c)=func_020b5200(&gAuroraAimSprite,0);break;case 1:M2C_FIELD(a,s32 *,0x60)=func_020b5200(&gAuroraSmokeSprite,1);break;case 2:M2C_FIELD(a,s32 *,0x64)=func_020b5200(&gAuroraDamageSprite,8);break;case 3:p=func_020b5188(&gAuroraSprite,x,y,1,func_020b51f0(),2,a);M2C_FIELD(p,s32 *,0x58)=v;M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(a,s32 *,0x5c);M2C_FIELD(p,s32 *,0x60)=M2C_FIELD(a,s32 *,0x60);M2C_FIELD(p,s32 *,0x64)=M2C_FIELD(a,s32 *,0x64);M2C_FIELD(p,u32 *,0x48)=(M2C_FIELD(p,u32 *,0x48)&~1023)|10;M2C_FIELD(p,void **,0x68)=AuroraBombardTargets;M2C_FIELD(p,void **,0x6c)=UpdateAuroraEffect;M2C_FIELD(p,void **,0x70)=ApplyAuroraPendingDamage;func_01ffa6fc(a);break;}}
 
 void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
     M2C_UNK func_020b6a9c(s16);

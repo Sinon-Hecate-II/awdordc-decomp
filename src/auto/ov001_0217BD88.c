@@ -113,8 +113,8 @@ void func_ov001_0217c0f8(void) {
 
 void func_ov001_0217c1b4(void) {
     extern M2C_UNK func_ov001_0217c208;
-    func_ov001_0218a824(2, 1, 1, 8);
-    func_ov001_0218a824(2, 0, 0x15, 8);
+    Ov001_StartFade(2, 1, 1, 8);
+    Ov001_StartFade(2, 0, 0x15, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217c208);
@@ -124,8 +124,8 @@ void func_ov001_0217c208(void) {
     s32 func_ov001_0217c5d4(s32);
     extern M2C_UNK func_ov001_0217c294;
     extern void *data_ov001_02193da4;
-    if (func_ov001_0218a800(1) != 0) return;
-    if (func_ov001_0218a800(0) != 0) return;
+    if (Ov001_IsFadeActive(1) != 0) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
     func_ov001_0217416c();
     Ov001_PlaySound(0x14);
     if (M2C_FIELD(data_ov001_02193da4, u8 *, 0x14) == 0) {
@@ -250,9 +250,9 @@ void func_ov001_0217c66c(void) {
 
 void func_ov001_0217c688(void) {
     M2C_UNK func_ov001_021744a8();
-    s32 func_ov001_0218a800(M2C_UNK);
+    s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_0217c6b8;
-    if (func_ov001_0218a800(1) != 0) {
+    if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_021744a8();
@@ -262,7 +262,7 @@ void func_ov001_0217c688(void) {
 
 void func_ov001_0217c6b8(void) {
     s32 func_ov001_0217452c();
-    M2C_UNK func_ov001_021862d8(s32, s32, s32, s32, s32);
+    M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     extern void *data_ov001_02193da4;
     extern M2C_UNK func_ov001_0217c744;
     extern M2C_UNK func_ov001_0217c900;
@@ -275,11 +275,11 @@ void func_ov001_0217c6b8(void) {
         return;
     }
     if (state == 2) {
-        func_ov001_021862d8(6, 3, 1, -1, 0);
+        Ov001_ShowMessage(6, 3, 1, -1, 0);
         Ov001_SetStepCallback(&func_ov001_0217cbdc);
         return;
     }
-    func_ov001_021862d8(0x47, 2, 1, -1, 0);
+    Ov001_ShowMessage(0x47, 2, 1, -1, 0);
     Ov001_SetStepCallback(&func_ov001_0217c900);
 }
 

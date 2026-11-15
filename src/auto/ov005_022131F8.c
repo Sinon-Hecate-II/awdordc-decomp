@@ -102,7 +102,7 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
+void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
@@ -135,14 +135,14 @@ LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov005_02220368),M2C_FIELD(g3
 LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
 CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-func_0208ca2c(0x1000,1,func_020ae22c(9),2);
+func_0208ca2c(0x1000,1,GetUiColor(9),2);
 n=func_020a7290()<<5;dst=M2C_FIELD(g3DSpriteEngineMain,void **,0x10);p=func_020a7278();MI_CpuCopy32(p,(u8 *)dst+0x1980,n);
 func_01ff9e44(func_020a72e8(1),0x60,0x80);
 OpenNarcArchive(&data_ov005_02220394);
 LoadNarcFileDecompressed(&data_ov005_022203a4,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1880);
 LoadNarcFileDecompressed(&data_ov005_022203b8,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1900);
 LoadNarcFileToSpriteBuffer(&data_ov005_022203cc,0x40,0x20);CloseNarcArchive();func_02091d4c(1);
-func_0208ca2c(0x2800,6,func_020ae22c(12),2);func_020aeebc(3,15,6);
+func_0208ca2c(0x2800,6,GetUiColor(12),2);func_020aeebc(3,15,6);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x54,0xa0,0,14,0x188,3,0x200,arg0,0);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);

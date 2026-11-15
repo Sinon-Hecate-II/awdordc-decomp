@@ -13,7 +13,7 @@ void func_ov000_02172754(void *arg0) {
     s32 func_ov000_0216cbc4(s32);
     s32 func_020a86c4(s32, s32);
     s32 Divide(s32, s32);
-    void func_02098a34(s32, s32, s32, s32, u8);
+    void LoadFacePalette(s32, s32, s32, s32, u8);
     s32 func_020a334c(s32);
     s32 func_020a3594(M2C_UNK, M2C_UNK);
     s32 func_020719d4(s32);
@@ -79,7 +79,7 @@ void func_ov000_02172754(void *arg0) {
                 s32 r8v;
                 changed = 1;
                 rec6c = *(s32 *)((u8 *)rec + 0x6c);
-                func_02098a34((u8)(rec6c & 0xff), 0, 2, 0, (u8)8);
+                LoadFacePalette((u8)(rec6c & 0xff), 0, 2, 0, (u8)8);
                 r7 = *(s32 *)rec;
                 if (r7 >= 0 && r7 <= 0xf423f) {
                     if (r7 != *(s32 *)(rcd + 0x2c)) {
@@ -217,7 +217,7 @@ if(24<=M2C_FIELD(p,s32*,12))M2C_FIELD(p,s32*,12)=0;
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 void func_ov000_02172e90(void *arg0) {
-    M2C_UNK func_020ae354(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK BlendRgb555_16(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern u8 gArmyPaletteIndices[12];
 
     void *saved;
@@ -260,7 +260,7 @@ void func_ov000_02172e90(void *arg0) {
         tab += ((bufptr[mapByte] << 5)&~1);
 
         if (*(u8 *)((s8 *)rcd + 0x34) != 0) {
-            *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(*(u16*)(tab+0x1e), 0, 8, 8);
+            *(u16 *)((s8 *)p + 0x06) = (u16)BlendRgb555_16(*(u16*)(tab+0x1e), 0, 8, 8);
         } else {
             if (*(u8 *)((s8 *)rcd + 0x30) != 0) {
                 counter = *(s32 *)((s8 *)arg0 + 0x10);
@@ -284,7 +284,7 @@ void func_ov000_02172e90(void *arg0) {
             } else {
                 r3v = 0;
             }
-            *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(*(u16 *)(tab+0x1e), 0xffff, (16 - r3v) & 0xff, r3v);
+            *(u16 *)((s8 *)p + 0x06) = (u16)BlendRgb555_16(*(u16 *)(tab+0x1e), 0xffff, (16 - r3v) & 0xff, r3v);
         }
 
         i = i + 1;
@@ -314,7 +314,7 @@ gCur3DSpriteEngine=saved;
 void DrawPlayerArmyList(void *info) {
     M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK func_020807e4(s32, s32, u16, s32);
-    void func_02098844(u32, s32, s32, s32, u16, u16, u8);
+    void FillFaceTileMap(u32, s32, s32, s32, u16, u16, u8);
     u32 GetInfoWindowMode();
     extern u8 gArmyPaletteIndices[12];
     extern u16 gPlayerLabelTiles[4];
@@ -357,7 +357,7 @@ void DrawPlayerArmyList(void *info) {
             default: sprite = &gArmyIconSprite0; break;
             }
             func_020807e4((s32)sprite, dst, (u16)(M2C_FIELD(playerState, u8 *, PLAYER_REC_ARMY_STATE) << 5), paletteIndices[M2C_FIELD(playerState, u8 *, PLAYER_REC_ARMY_INDEX)]);
-            func_02098844(0, 0x1a, row, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), gPlayerLabelTiles[player], (u16)player, 0);
+            FillFaceTileMap(0, 0x1a, row, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), gPlayerLabelTiles[player], (u16)player, 0);
             rowOff += 0xa0;
             row += 5;
         }

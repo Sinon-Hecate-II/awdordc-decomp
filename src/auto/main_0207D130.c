@@ -139,13 +139,13 @@ void func_0207d95c(M2C_UNK *arg0) {
 
 void func_0207d990(s32 arg0, void *arg1, void *arg2) {
     M2C_UNK func_0200154c(s32, s32, s32, s32, s32);
-    M2C_UNK func_02001624(s32, s32, s32, s32, s32);
+    M2C_UNK MatrixScale44(s32, s32, s32, s32, s32);
     M2C_UNK func_02003fc8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     M2C_FIELD((void *)0x04000440, s32 *, 0) = 0;
     M2C_FIELD((void *)0x04000440, s32 *, 0x14) = 0;
     func_02003fc8(-0x1200, 0x1200, -0x1800, 0x1800, 0, 0x2000, 0x1000, 1, arg0);
     func_0200154c(arg0, arg0, M2C_FIELD(arg2, s32 *, 0), M2C_FIELD(arg2, s32 *, 4), M2C_FIELD(arg2, s32 *, 8));
-    func_02001624(arg0, arg0, M2C_FIELD(arg1, s32 *, 0), M2C_FIELD(arg1, s32 *, 4), M2C_FIELD(arg1, s32 *, 8));
+    MatrixScale44(arg0, arg0, M2C_FIELD(arg1, s32 *, 0), M2C_FIELD(arg1, s32 *, 4), M2C_FIELD(arg1, s32 *, 8));
     *(s32 *)0x0400044C = 0;
 }
 

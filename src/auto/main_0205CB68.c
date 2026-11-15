@@ -275,7 +275,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     s32 func_0205c244(void *, s32, s32);
     void func_0205d49c(void *);
     s32 func_0205cca0(void *, s32, s32);
-    s32 func_0205a614(void *, void *, s32, s32, s32, s32, s32, s32);
+    s32 gti2DumpCallback(void *, void *, s32, s32, s32, s32, s32, s32);
 
 
     s32 res;
@@ -318,7 +318,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
 
     {
         void *cca = (void *)func_0205cca0(p, arg1, arg2);
-        s32 t = func_0205a614(p, cca, arg1, arg2, 0, (s32)arg3, arg4, 1);
+        s32 t = gti2DumpCallback(p, cca, arg1, arg2, 0, (s32)arg3, arg4, 1);
         if (t == 0) {
             return 0;
         }

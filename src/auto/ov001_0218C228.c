@@ -281,7 +281,7 @@ void func_ov001_0218c924(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 8) = arg1;
 }
 
-void func_ov001_0218c92c(s32 n,u32 arg) {
+void Ov001_PostTaskMessage(s32 n,u32 arg) {
 M2C_UNK func_ov001_0218a6f4(s32,u32);
 extern s32 data_ov001_02193ea4;
 func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193ea4+(n<<6),s32 *,4),arg);

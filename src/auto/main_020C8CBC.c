@@ -277,7 +277,7 @@ if(M2C_FIELD(p+x,u8 *,0x508)) d=5;
 return d;
 }
 
-s32 func_020c94ec(void) { extern M2C_UNK data_0212b1b8;s32 v=0;if(func_020c9430(0))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(0)-1)*4);if(func_020c9430(1))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(1)-1)*4);return v;}
+s32 GetHeldMapDirections(void) { extern M2C_UNK data_0212b1b8;s32 v=0;if(func_020c9430(0))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(0)-1)*4);if(func_020c9430(1))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(1)-1)*4);return v;}
 
 s32 func_020c9550(s32 a) {
 s32 v=0;

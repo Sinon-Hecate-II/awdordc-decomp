@@ -188,13 +188,13 @@ func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
    alpha-blended quad, 6/7/8 are sprites (optionally rotated) and 9 calls the
    map's cell callback. */
 void DrawMapEffectEntry(void *arg0) {
-s32 func_020ae22c(s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 GetFacingOffset(s32);void func_020cf674(s16,s16,s32);
+s32 GetUiColor(s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 GetFacingOffset(s32);void func_020cf674(s16,s16,s32);
 MapRenderEntry *entry=arg0;u32 bits=M2C_FIELD(arg0,u16 *,2);s32 x=M2C_FIELD(arg0,u8 *,0),y=M2C_FIELD(arg0,u8 *,1);
 s32 offX=entry->dx,offY=entry->dy; s32 x0,y0,x1,y1,color; u32 alpha; s16 sx0,sy0,sx1,sy1;
 switch(entry->kind){
 case 3:
 x0=(x<<4)*48;y0=(y<<4)*48;x1=x0+offX*768;y1=y0+offY*768;
-color=func_020ae22c(M2C_FIELD(arg0,u8 *,4));
+color=GetUiColor(M2C_FIELD(arg0,u8 *,4));
 if(((*(volatile u32 *)&gFrameCounter)&63)<32)alpha=EaseInterpolate(4,2,12,(*(volatile u32 *)&gFrameCounter)&63,32);
 else alpha=EaseInterpolate(1,12,2,((*(volatile u32 *)&gFrameCounter)&63)-32,32);
 if(!(alpha=(u8)alpha))return;

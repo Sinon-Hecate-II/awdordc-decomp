@@ -2,7 +2,7 @@
 #include "common.h"
 s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
 
-extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],gUnitKindFlags[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],data_ov000_021dfba8[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
+extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],gUnitKindFlags[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],gAiIndirectRangeBitmap[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
 void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 func_ov000_021a9904(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 func_ov000_021a8a88(void *);
 static inline u8 Tile76(s32 x,s32 y,s32 offset){u8 *map=*gCurrentMap;return M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,offset);}
 static inline u8 Bit76(u8 *bits,s32 x,s32 y){u32 index=x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144);return bits[index>>3]&(1<<(index&7));}
@@ -47,10 +47,10 @@ passed:
 if(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<20)>>29)&1 && (arg0&0x200000)){
 if(GetUnitAttackClass(((u32)(b[0]<<26)>>26))!=1||((u32)(b[0]<<26)>>26)==26){
 attra=gUnitKindFlags[((u32)(a[0]<<26)>>26)*112];attr=attra&16;
-if(attr&&(gUnitKindFlags[((u32)(b[0]<<26)>>26)*112]&7)&&!Bit76(data_ov000_021dfba8,pos[0],pos[1])){if(cost>=gAiUnitTypeTuning[1])return 0;if(M2C_FIELD((u8 *)(*gCurrentMap)+(pos[0]+M2C_FIELD((u8 *)(*gCurrentMap)+pos[1]*2,u16 *,0x3758)),u8 *,0x2d48)>=gAiUnitTypeTuning[2])return 0;}
+if(attr&&(gUnitKindFlags[((u32)(b[0]<<26)>>26)*112]&7)&&!Bit76(gAiIndirectRangeBitmap,pos[0],pos[1])){if(cost>=gAiUnitTypeTuning[1])return 0;if(M2C_FIELD((u8 *)(*gCurrentMap)+(pos[0]+M2C_FIELD((u8 *)(*gCurrentMap)+pos[1]*2,u16 *,0x3758)),u8 *,0x2d48)>=gAiUnitTypeTuning[2])return 0;}
 attrb=gUnitKindFlags[((u32)(b[0]<<26)>>26)*112];
 if((attrb&7)&&Bit76(gAiRangeBitmap,pos[0],pos[1]))goto combat_check;
-if((attrb&16)&&Bit76(data_ov000_021dfba8,pos[0],pos[1]))goto combat_check;
+if((attrb&16)&&Bit76(gAiIndirectRangeBitmap,pos[0],pos[1]))goto combat_check;
 if((attra&7)&&Bit76(data_ov000_021df9bc,pos[0],pos[1]))goto combat_check;
 if(attr&&Bit76(data_ov000_021dfc4c,pos[0],pos[1]))goto combat_check;
 if(cost>=gAiUnitTypeTuning[1])return 0;

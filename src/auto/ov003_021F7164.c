@@ -22,7 +22,7 @@ M2C_FIELD(button,u8 *,0x5a)=12;
 
 static inline void ov003_menu_set_mode(u8 *p,s32 mode,s32 sound){
 void PlaySoundEffect(s32);void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
-void SetTextById(void *,s32);void func_02088f1c(void *);void func_02088ff4(void *);s32 func_020ae22c(s32);void func_020893a8(void *,s32,s32,s32);
+void SetTextById(void *,s32);void func_02088f1c(void *);void func_02088ff4(void *);s32 GetUiColor(s32);void func_020893a8(void *,s32,s32,s32);
 PlaySoundEffect(sound);p[0x3e]=(p[0x3e]&~7)|mode;
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,3,7);
 if((u32)(p[0x3e]<<24)>>31)SetMenuPanelState(p,mode?5:4);
@@ -38,7 +38,7 @@ func_02088f1c(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,4));
 M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,4),u8 *,0x4d)=8;
 func_02088ff4(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,8));
 }
-func_020893a8(M2C_FIELD(M2C_FIELD(p,void **,0x6c),void **,0),0x8b80,1,func_020ae22c(mode?18:17));
+func_020893a8(M2C_FIELD(M2C_FIELD(p,void **,0x6c),void **,0),0x8b80,1,GetUiColor(mode?18:17));
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }
 static inline void ov003_menu_back(void *p){
@@ -66,7 +66,7 @@ s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
 void ConfirmMapSelection(void *);void func_ov003_021f2808(void *,u16);void func_ov003_021f26c8(void *,void *,u16);
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
-void func_02088ff4(void *);void func_02088f1c(void *);s32 func_020ae22c(s32);void func_020893a8(void *,s32,s32,s32);
+void func_02088ff4(void *);void func_02088f1c(void *);s32 GetUiColor(s32);void func_020893a8(void *,s32,s32,s32);
 void func_020c9190(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void func_ov003_021fbcf8(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 func_ov003_021f4038(void);void func_ov003_021f91a4(void *);
 u8 *p=arg0;void **buttons;void *list,*button,*context;u16 held,down,selection;register u32 repeat;s32 active;u8 enable; s32 keyx,keyy,i,inputFlag;u32 mode; 
 if(ov003_menu_kind(p,1))return;

@@ -43,7 +43,7 @@ void func_ov001_02186c68(s32);
 M2C_FIELD(gOv001RegionMenu,s8 *,0x1b)=-1;
 M2C_FIELD(gOv001RegionMenu,u16 *,0x18)++;
 if(M2C_FIELD(gOv001RegionMenu,u16 *,0x18)<120U)return;
-func_ov001_0218c92c(0,arg0);
+Ov001_PostTaskMessage(0,arg0);
 M2C_FIELD(gOv001RegionMenu,s32 *,0x14)=func_ov001_0218c884(1,func_ov001_02186c68,0,120);
 }
 
@@ -131,7 +131,7 @@ void func_ov001_02186d34(s32 a) {
 extern void *gOv001RegionMenu;
 void func_ov001_02186d90();
 M2C_FIELD(gOv001RegionMenu,s8 *,26)++;
-func_02003a10(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
+GX_SetBlendY(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
 if(M2C_FIELD(gOv001RegionMenu,s8 *,26)>=0)func_ov001_0218c924(a,func_ov001_02186d90);
 }
 
@@ -146,7 +146,7 @@ void func_ov001_02186d90(s32 a) {
         if (((s32**)data_ov001_02193e18)[2 + i]) func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[2 + i]);
     }
     func_ov001_0218ace0(((s32**)data_ov001_02193e18)[4]);
-    func_ov001_0218c92c(1, a);
+    Ov001_PostTaskMessage(1, a);
     func_ov001_0218b71c((void*)0x02193e18);
 }
 #pragma opt_strength_reduction reset

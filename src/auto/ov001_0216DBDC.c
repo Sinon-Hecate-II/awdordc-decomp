@@ -107,7 +107,7 @@ s32 func_ov001_0216e0b4(void) {
     return 0;
 }
 
-s32 func_ov001_0216e10c(s32 a,s32 b,s32 c) {
+s32 WhStartConnection(s32 a,s32 b,s32 c) {
 extern M2C_UNK data_ov001_02192790;
 s32 t=OS_DisableInterrupts();
 M2C_FIELD(&data_ov001_02192790,s32 *,0x58)=c;
@@ -167,7 +167,7 @@ p=&data_ov001_02192814;
 do {i++;*p++=0;}while(i<4);OS_RestoreInterrupts(t);
 }
 
-void func_ov001_0216e310(s32 a,s32 unused) {
+void WhPushEvent(s32 a,s32 unused) {
 extern M2C_UNK data_ov001_02192790; extern s32 data_ov001_02192814;
 s32 old,next,tail;
 old=M2C_FIELD(&data_ov001_02192790,s32 *,0x68); tail=M2C_FIELD(&data_ov001_02192790,s32 *,0x6c); next=old+1;
@@ -178,15 +178,15 @@ if(next>=4) M2C_FIELD(&data_ov001_02192790,s32 *,0x68)=(a=0);
 }
 }
 
-void func_ov001_0216e340(M2C_UNK arg0) {
-    void func_ov001_0216e310(M2C_UNK, M2C_UNK);
-    func_ov001_0216e310(arg0, 0);
+void WhEventTimerCallback(M2C_UNK arg0) {
+    void WhPushEvent(M2C_UNK, M2C_UNK);
+    WhPushEvent(arg0, 0);
 }
 
 #pragma opt_propagation off
 s32 func_ov001_0216e34c(s32 a) {
 extern M2C_UNK data_ov001_02192790;
-s32 func_ov001_0216e2d8(void);
+s32 WhPopEvent(void);
 s32 active=1; s32 result; s32 x,y,r; s32 v=31;
 M2C_FIELD(&data_ov001_02192790,s32 *,0x70)=a;func_ov001_0216e2b0();
 x=a*0xd0;
@@ -195,9 +195,9 @@ M2C_FIELD(&data_ov001_02192790,s32 *,0x54)=r;
 if(!r)return -1;
 y=(r+v)&(v-0x3f);M2C_FIELD(&data_ov001_02192790,s32 *,0x40)=y;
 M2C_FIELD(&data_ov001_02192790,s32 *,0x5c)=(y+x+0x2490+v)&(v-0x3f);
-if(!func_ov001_0216e190((s32)func_ov001_0216e310,y,0))return -2;
-do {func_02006030(10);r=func_ov001_0216e2d8();
-while(r) { if(r==4 || r==5) {} else if(r==6) {active=0;result=1;} else {active=0;result=-2;} r=func_ov001_0216e2d8(); }
+if(!func_ov001_0216e190((s32)WhPushEvent,y,0))return -2;
+do {func_02006030(10);r=WhPopEvent();
+while(r) { if(r==4 || r==5) {} else if(r==6) {active=0;result=1;} else {active=0;result=-2;} r=WhPopEvent(); }
 }while(active);return result;
 }
 #pragma opt_propagation on
@@ -205,8 +205,8 @@ s32 func_ov001_0216e3f0(void) {
 extern M2C_UNK data_ov001_02192790;
 s32 r,again=1;
 if(func_ov001_0216e0b4()){
-do{func_02006030(10);r=func_ov001_0216e2d8();
-while(r){switch(r){case 4:case 5:break;case 20:again=0;break;default:again=0;break;}r=func_ov001_0216e2d8();}
+do{func_02006030(10);r=WhPopEvent();
+while(r){switch(r){case 4:case 5:break;case 20:again=0;break;default:again=0;break;}r=WhPopEvent();}
 }while(again);
 }
 if(M2C_FIELD(&data_ov001_02192790,s32 *,0x54)){
@@ -217,44 +217,72 @@ return 1;
 }
 
 #pragma thumb on
-s32 func_ov001_0216e448(void) {
- M2C_UNK func_02006030(s32);
- M2C_UNK func_02007190(void *);
- M2C_UNK func_020072cc(void *,s32,s32,void *,s32);
- M2C_UNK func_02007338(void *);
- s32 func_02021a90(void *);
- u32 func_ov001_02171128();
- extern M2C_UNK data_ov001_02192790,data_ov001_0218fde8,data_ov001_0218fdfc;
- u8 timer[44]; s32 active=1,result=-2; s32 p; s32 event;
- p=M2C_FIELD(&data_ov001_02192790,s32 *,0x5c)+M2C_FIELD(&data_ov001_02192790,s32 *,0x18)*192;
- if(!p)return 0;
- if(!func_ov001_0216e10c(p,0,0x30000))return -2;
- func_02007190(timer);
- func_020072cc(timer,0x3fec42,0,func_ov001_0216e340,18);
- do {
- if(func_ov001_02171128()>=M2C_FIELD(&data_ov001_0218fde8,u32 *,12)){result=-3;break;}
- if(M2C_FIELD(&data_ov001_02192790,s32 *,16)){result=-8;break;}
- func_02006030(10);
- while((event=func_ov001_0216e2d8())!=0) {
- switch(event) {
- case 12: active=0; result=1; break;
- case 13:
- if(M2C_FIELD(&data_ov001_02192790,s32 *,16)){active=0;result=-8;}
- else if(!func_ov001_0216e10c(p,0,0x30000))return result;
- break;
- case 4: case 5: case 18: case 19: break;
- default:active=0;break;
- }
- }
- }while(active);
- func_02007338(timer);
- while(func_ov001_0216e2d8()){}
- if(result>0) {
- M2C_FIELD(&data_ov001_02192790,s32 *,32)=1;
- if(func_02021a90(&data_ov001_0218fdfc)<0)result=-2;
- else M2C_FIELD(&data_ov001_02192790,s32 *,36)=1;
- }
- return result;
+/* Join the host selected by the last WH scan: connect to it, then pump the WH
+ * event queue until the join completes, is aborted or reaches the configured
+ * deadline; on success initialise the network config and mark the join ready. */
+s32 WhJoinSelectedHost(void) {
+    M2C_UNK func_02006030(s32);
+    M2C_UNK func_02007190(void *);
+    M2C_UNK func_020072cc(void *, s32, s32, void *, s32);
+    M2C_UNK func_02007338(void *);
+    s32 func_02021a90(void *);
+    u32 WhGetTime();
+    extern M2C_UNK data_ov001_02192790, data_ov001_0218fde8, data_ov001_0218fdfc;
+    u8 alarm[44];
+    s32 running = 1;
+    s32 result = -2;
+    s32 candidate;
+    s32 event;
+
+    candidate = M2C_FIELD(&data_ov001_02192790, s32 *, 0x5C)
+              + M2C_FIELD(&data_ov001_02192790, s32 *, 0x18) * 192;
+    if (!candidate) return 0;
+    if (!WhStartConnection(candidate, 0, 0x30000)) return -2;
+    func_02007190(alarm);
+    func_020072cc(alarm, 0x3fec42, 0, WhEventTimerCallback, 18);
+    do {
+        if (WhGetTime() >= M2C_FIELD(&data_ov001_0218fde8, u32 *, 12)) {
+            result = -3;
+            break;
+        }
+        if (M2C_FIELD(&data_ov001_02192790, s32 *, 16)) {
+            result = -8;
+            break;
+        }
+        func_02006030(10);
+        while ((event = WhPopEvent()) != 0) {
+            switch (event) {
+            case 12:
+                running = 0;
+                result = 1;
+                break;
+            case 13:
+                if (M2C_FIELD(&data_ov001_02192790, s32 *, 16)) {
+                    running = 0;
+                    result = -8;
+                } else if (!WhStartConnection(candidate, 0, 0x30000)) {
+                    return result;
+                }
+                break;
+            case 4:
+            case 5:
+            case 18:
+            case 19:
+                break;
+            default:
+                running = 0;
+                break;
+            }
+        }
+    } while (running);
+    func_02007338(alarm);
+    while (WhPopEvent()) {}
+    if (result > 0) {
+        M2C_FIELD(&data_ov001_02192790, s32 *, 32) = 1;
+        if (func_02021a90(&data_ov001_0218fdfc) < 0) result = -2;
+        else M2C_FIELD(&data_ov001_02192790, s32 *, 36) = 1;
+    }
+    return result;
 }
 
 #pragma opt_propagation off
@@ -268,9 +296,9 @@ s32 func_ov001_0216e79c(void) {
     M2C_UNK StringCopy(void *, void *);
     s32 func_ov001_0216df50(s32, s32);
     s32 func_ov001_0216df94(s32, s32, s32, s32);
-    s32 func_ov001_0216e2d8(void);
+    s32 WhPopEvent(void);
     s32 func_ov001_0216e5d0(void *, void *, s32 *);
-    u32 func_ov001_02171128();
+    u32 WhGetTime();
     void *func_ov001_02171144(s32, s32);
     M2C_UNK func_ov001_02171168(void *);
     M2C_UNK func_ov001_021711ac(u8 *, u8 *);
@@ -293,20 +321,20 @@ s32 func_ov001_0216e79c(void) {
     buf2 = func_ov001_02171144(1, size);
     if (buf2 == NULL) goto ret;
     for (n = 0; n < 30 && M2C_FIELD(&data_ov001_02192790, s32 *, 0x10) == 0; n++) {
-        if (func_ov001_02171128() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) goto process;
+        if (WhGetTime() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) goto process;
         if (func_ov001_0216df94(0, 0, 0, 0x30bffe) == 0) {
             result = -2;
             goto ret;
         }
         func_02007190(timer);
-        func_020072cc(timer, 0xffb10, 0, func_ov001_0216e340, 0x13);
+        func_020072cc(timer, 0xffb10, 0, WhEventTimerCallback, 0x13);
         again = 1;
         result = 0;
         do {
             func_02006030(10);
-            if (func_ov001_02171128() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) break;
+            if (WhGetTime() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) break;
             if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x10)) break;
-            event = func_ov001_0216e2d8();
+            event = WhPopEvent();
             while (event != 0) {
                 switch (event) {
                 case 19:
@@ -316,7 +344,7 @@ s32 func_ov001_0216e79c(void) {
                     m = func_ov001_0216df50(M2C_FIELD(&data_ov001_02192790, s32 *, 0x5c), M2C_FIELD(&data_ov001_02192790, s32 *, 0x70));
                     if (m > result) { result = m;
                     func_02007338(timer);
-                    func_020072cc(timer, 0xffb10, 0, func_ov001_0216e340, 0x13); }
+                    func_020072cc(timer, 0xffb10, 0, WhEventTimerCallback, 0x13); }
                     break;
                 case 10:
                     again = 0;
@@ -333,11 +361,11 @@ s32 func_ov001_0216e79c(void) {
                     again = 0;
                     break;
                 }
-                event = func_ov001_0216e2d8();
+                event = WhPopEvent();
             }
         } while (again);
         func_02007338(timer);
-        while (func_ov001_0216e2d8() != 0) {}
+        while (WhPopEvent() != 0) {}
         state=&data_ov001_02192790;
         if (M2C_FIELD(state, s32 *, 0x10)) break;
 process:
@@ -395,7 +423,7 @@ process:
         M2C_FIELD(&data_ov001_02192790, s32 *, 0x38) = 2;
         func_ov001_021713a8();
     }
-    if (n >= 30 || func_ov001_02171128() > (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) result = -3;
+    if (n >= 30 || WhGetTime() > (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) result = -3;
     else if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x10)) result = -8;
     else result = 1;
 ret:

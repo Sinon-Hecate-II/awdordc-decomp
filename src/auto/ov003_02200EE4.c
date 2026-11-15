@@ -47,16 +47,16 @@ s32 func_ov003_02202408();
 s32 func_ov003_022004f0();
 s32 func_020a22fc();
 s32 ClearTileRect();
-s32 func_020985b0();
-s32 func_02098844();
-s32 func_02098a34();
+s32 LoadFaceTexture();
+s32 FillFaceTileMap();
+s32 LoadFacePalette();
 s32 func_ov003_021ea27c();
 u8 func_ov003_02201500(void *);
 u8 func_ov003_0220151c(void *);
 void func_ov003_0220153c(s32,s32,s32,s32,u8);
 void func_ov003_02201620(void *,s32);
 void CreatePanelSprites(void *,s32);
-void func_02088da8(void *);
+void Hide3DSprite(void *);
 extern u8 data_ov003_02210456[];
 extern u8 data_ov003_02210454[];
 extern u8 data_ov003_02210458[];
@@ -112,7 +112,7 @@ func_020893f4(M2C_FIELD(p,void**,0x4c),0x2d80,1);
 func_ov003_021e97bc(M2C_FIELD(p,void**,0x4c),112,164,58,58);
 func_02089438(M2C_FIELD(p,void**,0x4c));
 func_ov003_021e97fc(M2C_FIELD(p,void**,0x4c),1);
-func_02088da8(M2C_FIELD(p,void**,0x4c));
+Hide3DSprite(M2C_FIELD(p,void**,0x4c));
 func_ov003_022020e0(p,0);func_ov003_022021e8(p);
 func_02089438(M2C_FIELD(p,void**,0x4c));Ov003_UpdateSelectedEntryText(p);
 func_ov003_02202380(M2C_FIELD(p,void**,0x54),0x18c);
@@ -161,9 +161,9 @@ if(character==0){
 ClearTileRect((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+(offset+1)*2,7,7);
 }else{
 slot=(i<<7)+2;
-func_020985b0(character,1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,12)+(slot<<5));
-func_02098844(1,offset,0,(u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+2,(u16)((u32)slot>>1),i,0);
-func_02098a34(character,1,side2,i,0);
+LoadFaceTexture(character,1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,12)+(slot<<5));
+FillFaceTileMap(1,offset,0,(u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+2,(u16)((u32)slot>>1),i,0);
+LoadFacePalette(character,1,side2,i,0);
 }
 }
 func_ov003_021ea134(0);func_ov003_021ea134(1);
@@ -403,7 +403,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
  * slot sprites (selection frame and icon) on the screen's sprite list. */
 void CreatePanelSprites(void *panel, s32 screen) {
     void *func_02087d84(void *, s32, s16, s16, s32, s32);
-    void func_02088da8(void *);
+    void Hide3DSprite(void *);
     void func_02088e84(void *, s32, s32, s32, s32);
     void func_020aab24(void *, s32, s32, s32, s32);
     u16 func_020aae10(void *);
@@ -447,7 +447,7 @@ void CreatePanelSprites(void *panel, s32 screen) {
         func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, spriteX, spriteY,
                       (s32)((u32)width << 16 >> 16), (s32)((u32)height << 16 >> 16));
     }
-    func_02088da8(M2C_FIELD(panel, void **, 0));
+    Hide3DSprite(M2C_FIELD(panel, void **, 0));
     M2C_FIELD(panel, void **, 4) = func_020ab1c4(screen);
     func_020aab24(M2C_FIELD(panel, void **, 4), 0x20, 0x140, 3, 0);
     sprite2 = M2C_FIELD(panel, void **, 4);
@@ -465,7 +465,7 @@ void CreatePanelSprites(void *panel, s32 screen) {
         func_02087d84(M2C_FIELD(sprite2, void **, 0x64), 1, spriteX2, spriteY2,
                       (s32)((u32)width2 << 16 >> 16), (s32)((u32)height2 << 16 >> 16));
     }
-    func_02088da8(M2C_FIELD(panel, void **, 4));
+    Hide3DSprite(M2C_FIELD(panel, void **, 4));
 
     slot = 0;
     constZeroB = slot;
@@ -478,11 +478,11 @@ void CreatePanelSprites(void *panel, s32 screen) {
         slotBase = (void *)((u8 *)panel + (slot * 4));
         M2C_FIELD((u8 *)panel + slot * 4, void **, 8) = newSprite;
         func_020aab24(M2C_FIELD((u8 *)panel + slot * 4, void **, 8), constStyle, constTile, constLayer, constZeroB);
-        func_02088da8(M2C_FIELD((u8 *)panel + slot * 4, void **, 8));
+        Hide3DSprite(M2C_FIELD((u8 *)panel + slot * 4, void **, 8));
         newSprite = func_020ab1c4(screen);
         M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28) = newSprite;
         func_020aab24(M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28), 9, 0x164, 3, constZeroA);
-        func_02088da8(M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28));
+        Hide3DSprite(M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28));
         slot += 1;
     } while ((u32)slot < 8U);
 }

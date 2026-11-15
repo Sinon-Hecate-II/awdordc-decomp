@@ -12,33 +12,33 @@ static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
    all allocated on the sub engine. */
 void CreateWaypointPanelSprites(SpriteGroup9638 *group,void *panel) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;extern u8 data_ov003_0220f896[];
-void *func_020993d4(void *);void *func_0208931c(void *);void func_020990d4(void *,s32,u16);void func_020991f4(void *,s32);void func_02088da8(void *);s32 func_02098588(s32);void func_020990fc(void *,s32,s32,s32);
+void *func_020993d4(void *);void *func_0208931c(void *);void func_020990d4(void *,s32,u16);void func_020991f4(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void func_020990fc(void *,s32,s32,s32);
 void *savedEngine=gCur3DSpriteEngine;s32 slot;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 group->main=func_020993d4(panel);
 func_020990d4(group->main,0x4400,1);
 func_020991f4(group->main,1);
 M2C_FIELD(group->main,u16 *,0x3c)=0x400;
-func_02088da8(group->main);
+Hide3DSprite(group->main);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(slot=0;slot<12;slot++){
 group->sprites[slot]=func_020993d4(panel);
-func_020990d4(group->sprites[slot],0x5c00+slot*2*func_02098588(0),(u16)slot);
+func_020990d4(group->sprites[slot],0x5c00+slot*2*GetFaceLayoutSize(0),(u16)slot);
 func_020990fc(group->sprites[slot],slot+1,0,0);
 func_020991f4(group->sprites[slot],1);
 M2C_FIELD(group->sprites[slot],u16 *,0x3c)=0x400;
-func_02088da8(group->sprites[slot]);
+Hide3DSprite(group->sprites[slot]);
 group->labels[slot]=func_0208931c(panel);
 M2C_FIELD(group->labels[slot],void **,0x44)=data_ov003_0220f896;
 M2C_FIELD(group->labels[slot],u16 *,0x3e)=0x540;
 M2C_FIELD(group->labels[slot],u16 *,0x3c)=0x800;
-func_02088da8(group->labels[slot]);
+Hide3DSprite(group->labels[slot]);
 }
 group->last=func_0208931c(panel);
 M2C_FIELD(group->last,void **,0x44)=data_ov003_0220f896;
 M2C_FIELD(group->last,u16 *,0x3e)=0x560;
 M2C_FIELD(group->last,u16 *,0x3c)=0x800;
-func_02088da8(group->last);
+Hide3DSprite(group->last);
 gCur3DSpriteEngine=savedEngine;
 }
 
@@ -68,8 +68,8 @@ void func_ov003_021e9830(void *arg0, s16 arg1) {
 }
 
 u32 func_ov003_021e984c(void *arg0, u8 arg1) {
-    void func_02088d94(void *);
-    void func_02088da8(void *);
+    void Show3DSprite(void *);
+    void Hide3DSprite(void *);
     s32 func_02088f1c(s32);
     s32 func_02088ff4(s32);
     u32 SetTextById(s32, s32);
@@ -114,7 +114,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     }
     M2C_FIELD(arg0, u8 *, 0x39) = temp_r1;
     if ((var_r0_2 & 0xFF) && (func_ov003_021e6d28() != 0)) {
-        func_02088d94(M2C_FIELD(arg0, void **, 0x58));
+        Show3DSprite(M2C_FIELD(arg0, void **, 0x58));
         func_02088f1c(*M2C_FIELD(arg0, s32 **, 0x64));
     }
     temp_r4 = (s8 *) M2C_FIELD(arg0, s32 **, 0x64);
@@ -123,8 +123,8 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
         var_r8 = 0;
         do {
             if (var_r8 < (u32)(u8)temp_r7) {
-                func_02088d94(M2C_FIELD(temp_r4 + (var_r8 * 4), void **, 8));
-                func_02088d94(M2C_FIELD(temp_r4 + (var_r8 * 4), void **, 0x18));
+                Show3DSprite(M2C_FIELD(temp_r4 + (var_r8 * 4), void **, 8));
+                Show3DSprite(M2C_FIELD(temp_r4 + (var_r8 * 4), void **, 0x18));
             }
             var_r8 = (u32) (u8) (var_r8 + 1);
         } while (var_r8 < 4U);
@@ -152,14 +152,14 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     }
     if (var_r0_3 & 0xFF) {
         if (func_ov003_021e6d28() != 0) {
-            func_02088da8(M2C_FIELD(arg0, void **, 0x58));
+            Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
             func_02088ff4(*M2C_FIELD(arg0, s32 **, 0x64));
         }
         temp_r4_5 = (s8 *) M2C_FIELD(arg0, s32 **, 0x64);
         var_r7 = 0;
         do {
-            func_02088da8(M2C_FIELD(temp_r4_5 + (var_r7 * 4), void **, 8));
-            func_02088da8(M2C_FIELD(temp_r4_5 + (var_r7 * 4), void **, 0x18));
+            Hide3DSprite(M2C_FIELD(temp_r4_5 + (var_r7 * 4), void **, 8));
+            Hide3DSprite(M2C_FIELD(temp_r4_5 + (var_r7 * 4), void **, 0x18));
             var_r7 += 1;
         } while ((u32) var_r7 < 4U);
         temp_r4_6 = M2C_FIELD(arg0, void **, 0x48);
@@ -283,7 +283,7 @@ u8 func_ov003_021e9ce0(void *arg0) {
  * and shows or hides the trailing label sprite depending on the state. */
 void SetWaypointPanelState(void *panel,s32 state){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
-void func_ov003_022006b0(s32,u8); void func_02089438(void*); void func_02088d94(void*); void func_02088da8(void*);
+void func_ov003_022006b0(s32,u8); void func_02089438(void*); void Show3DSprite(void*); void Hide3DSprite(void*);
 void *savedEngine;
 M2C_FIELD(panel,u8*,0x39)=(M2C_FIELD(panel,u8*,0x39)&~0xf0)|((u32)((u8)state<<28)>>24);
 M2C_FIELD(panel,u8*,0x3a)=(M2C_FIELD(panel,u8*,0x3a)&~0x70)|0x10;
@@ -296,8 +296,8 @@ if(E9638Mode(panel,1)||E9638Mode(panel,3))M2C_FIELD(M2C_FIELD(panel,void**,0x58)
 else M2C_FIELD(M2C_FIELD(panel,void**,0x58),u8*,0x59)=1;
 if(E9638Mode(panel,2)){
 void *waypoints=M2C_FIELD(panel,void**,0x6c);M2C_FIELD(waypoints,u8*,9)=M2C_FIELD(waypoints,u8*,8);
-func_02089438(M2C_FIELD(panel,void**,0x5c));func_02088d94(M2C_FIELD(panel,void**,0x5c));
-}else func_02088da8(M2C_FIELD(panel,void**,0x5c));
+func_02089438(M2C_FIELD(panel,void**,0x5c));Show3DSprite(M2C_FIELD(panel,void**,0x5c));
+}else Hide3DSprite(M2C_FIELD(panel,void**,0x5c));
 }
 
 u8 func_ov003_021e9e2c(void *arg0) {
@@ -345,8 +345,8 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
 #pragma opt_propagation off
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 func_ov003_022008b8(u8);
-void ClearTileRect(void*,s32,s32); void func_02098844(u32,s32,s32,s32,u32,u16,u8); void func_02098a34(s32,s32,s32,s32,u8);
+s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 GetWaypointOptionIcon(u8);
+void ClearTileRect(void*,s32,s32); void FillFaceTileMap(u32,s32,s32,s32,u32,u16,u8); void LoadFacePalette(s32,s32,s32,s32,u8);
 u8 i; void *old,*saved; s32 b; u8 a; s8 c; u16 v;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 old=gCur3DSpriteEngine;
@@ -354,12 +354,12 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 a=(Modulo(i,2)!=0);
 if(i<2)b=0;
 else b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
-c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
+c=(s8)GetWaypointOptionIcon(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(c==0){
 ClearTileRect((void*)((u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+(b+1)*2),7,7);
 }else{
 v=(u16)(((((s8)(c-1))<<7)+2)<<15>>16);
-func_02098844(1,b,0,(s32)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+2,((u32)((((s8)(c-1))<<7)+2)<<15>>16),i,0);
+FillFaceTileMap(1,b,0,(s32)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+2,((u32)((((s8)(c-1))<<7)+2)<<15>>16),i,0);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1<<a;
 gCur3DSpriteEngine=old;
@@ -369,11 +369,11 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 a=(Modulo(i,2)!=0);
 if(i>=2)func_ov003_022004f0(2);
-c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
+c=(s8)GetWaypointOptionIcon(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(i==M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7)||!E9638Mode(p,2)){
-if(c)func_02098a34(c,1,a,i,0);
+if(c)LoadFacePalette(c,1,a,i,0);
 }else{
-if(c)func_02098a34(c,1,a,i,1);
+if(c)LoadFacePalette(c,1,a,i,1);
 }
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
@@ -390,23 +390,25 @@ void func_ov003_021ea134(s32 arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | (1 << arg0));
 }
 
-void func_ov003_021ea154(void *p){
+/* Draw the selected waypoint option's icon and description on the sub engine,
+ * then flip the text palette colour for the next frame. */
+void DrawWaypointOption(void *p){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
-void Clear3DSpriteLayer(s32); s32 func_ov003_022008b8(u8); void func_02088da8(void*); void func_02088d94(void*); void func_020990fc(void*,s32,s32,s32); void *func_ov003_021e6e94(s32); void *GetLocalizedText(void*); void DrawTextLine(s32,s32,s32,void*,s32,u16);
-void *old; s8 id,n; u8 flag;
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
+void Clear3DSpriteLayer(s32); s32 GetWaypointOptionIcon(u8); void Hide3DSprite(void*); void Show3DSprite(void*); void func_020990fc(void*,s32,s32,s32); void *GetWaypointOptionTextId(s32); void *GetLocalizedText(void*); void DrawTextLine(s32,s32,s32,void*,s32,u16);
+void *savedEngine; s8 optionIndex,iconIndex; u8 paletteBit;
+savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 Clear3DSpriteLayer(3);
-id=M2C_FIELD(M2C_FIELD(p,void**,0x40),s8*,15);
-n=func_ov003_022008b8((u8)id);
-if(!n)func_02088da8(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
+optionIndex=M2C_FIELD(M2C_FIELD(p,void**,0x40),s8*,15);
+iconIndex=GetWaypointOptionIcon((u8)optionIndex);
+if(!iconIndex)Hide3DSprite(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
 else {
-if(((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))func_02088d94(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
-func_020990fc(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78),n,8,0);
-DrawTextLine(1,8,3,GetLocalizedText(func_ov003_021e6e94(id)),0x2000,(u16)(1+224*((u32)(M2C_FIELD(p,u8*,0x3a)<<30)>>31)));
+if(((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))Show3DSprite(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
+func_020990fc(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78),iconIndex,8,0);
+DrawTextLine(1,8,3,GetLocalizedText(GetWaypointOptionTextId(optionIndex)),0x2000,(u16)(1+224*((u32)(M2C_FIELD(p,u8*,0x3a)<<30)>>31)));
 }
-M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;gCur3DSpriteEngine=old;
-flag=E9638Toggle(p);
-M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~2)|((u32)(flag<<31)>>30);
+M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;gCur3DSpriteEngine=savedEngine;
+paletteBit=E9638Toggle(p);
+M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~2)|((u32)(paletteBit<<31)>>30);
 }
 
 void func_ov003_021ea27c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

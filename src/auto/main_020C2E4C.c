@@ -305,7 +305,7 @@ void func_020c33ec(void) {
     s32 func_02070f24(s32, s32);
     s16 func_020719a0(s32);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_02098844(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    M2C_UNK FillFaceTileMap(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02101f0c;
     extern void *data_02164094;
     extern void *g3DSpriteEngineSub;
@@ -398,7 +398,7 @@ void func_020c33ec(void) {
     if (temp_r0 < 0x37) {
         if (temp_r0 == 0) {
             Clear3DSpriteLayer(3);
-            func_02098844(8, 0xC, 0, M2C_FIELD(data_027e01d8, s32 *, 0x2C), 1, 0, 0);
+            FillFaceTileMap(8, 0xC, 0, M2C_FIELD(data_027e01d8, s32 *, 0x2C), 1, 0, 0);
             M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
             temp_r6 = M2C_FIELD(data_027e01d8, u16 **, 0);
             sp7C = temp_r6;
@@ -448,7 +448,7 @@ void func_020c33ec(void) {
     } else if (temp_r0 < 0x41) {
         if (temp_r0 == 0x37) {
             Clear3DSpriteLayer(3);
-            func_02098844(0xB, 0, 8, M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x1E1, 1, 0);
+            FillFaceTileMap(0xB, 0, 8, M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x1E1, 1, 0);
             M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
             temp_r3 = M2C_FIELD(data_027e01d8, u16 **, 0);
             sp54 = temp_r3;

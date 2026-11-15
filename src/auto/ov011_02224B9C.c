@@ -119,8 +119,8 @@ void func_ov011_02224f64(void) {
 }
 
 void func_ov011_02224f70(void) {
-    M2C_UNK func_ov011_022247f4();
-    func_ov011_022247f4();
+    M2C_UNK UpdateIntroSequence();
+    UpdateIntroSequence();
 }
 
 void func_ov011_02224f7c(void) {
@@ -168,9 +168,9 @@ void func_ov011_02225064(void *arg0) {
 }
 
 void func_ov011_02225074(M2C_UNK arg0) {
-    M2C_UNK func_ov011_0222491c();
+    M2C_UNK HandleIntroInput();
     M2C_UNK func_ov011_022224a8(M2C_UNK);
-    func_ov011_0222491c();
+    HandleIntroInput();
     func_ov011_022224a8(arg0);
 }
 

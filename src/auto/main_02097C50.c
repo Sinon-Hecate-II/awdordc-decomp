@@ -90,7 +90,7 @@ case 32:return 0x10029;
 default:return 0x10026;}}
 
 /* Returns the file path (as s32) of the character face texture for the given unit index, or 0 if that unit has no face. Indices map to /face/<name> strings: 0 null, 1 edo, 2 brown, 3 rin, 4 cat, 5 atory, 6 trak, 7 carlyle, 8 dita, 9 jig, 10 agat, 11 eriza, 12 mengel, 13 cole, 14 loot, 15 cat_nazo, 16 morit, 17 geral, 18 belie, 19 mayor, 20-24 sol_1..sol_5, 25-27 boy_1..boy_3, 28-30 man_1..man_3, 31-32 girl_1/girl_2, 33 system, 34 nazo. */
-s32 func_02098034(u32 unit){
+s32 GetFaceTexturePath(u32 unit){
 extern u8 data_0210302c[];
 extern u8 data_02103038[];
 extern u8 data_02103044[];
@@ -164,7 +164,7 @@ case 33:return (s32)data_021031cc;
 case 34:return (s32)data_021031dc;
 default:return 0;}}
 
-s32 func_02098278(s32 a){extern M2C_UNK data_021031e8,data_021031f0,data_021031fc,data_02103208,data_02103214,data_02103220,data_0210322c,data_02103238,data_02103244,data_02103250,data_0210325c,data_02103268;switch(a){case 0:return (s32)&data_021031e8;case 1:return (s32)&data_021031f0;case 2:return (s32)&data_021031fc;case 3:return (s32)&data_02103208;case 4:return (s32)&data_02103214;case 5:return (s32)&data_02103220;case 6:return (s32)&data_0210322c;case 7:return (s32)&data_02103238;case 8:return (s32)&data_02103244;case 9:return (s32)&data_02103250;case 10:return (s32)&data_0210325c;case 11:return (s32)&data_02103268;default:return 0;}}
+s32 GetFaceLayoutFile(s32 a){extern M2C_UNK data_021031e8,data_021031f0,data_021031fc,data_02103208,data_02103214,data_02103220,data_0210322c,data_02103238,data_02103244,data_02103250,data_0210325c,data_02103268;switch(a){case 0:return (s32)&data_021031e8;case 1:return (s32)&data_021031f0;case 2:return (s32)&data_021031fc;case 3:return (s32)&data_02103208;case 4:return (s32)&data_02103214;case 5:return (s32)&data_02103220;case 6:return (s32)&data_0210322c;case 7:return (s32)&data_02103238;case 8:return (s32)&data_02103244;case 9:return (s32)&data_02103250;case 10:return (s32)&data_0210325c;case 11:return (s32)&data_02103268;default:return 0;}}
 
 /* Returns a filename string from one of the face/skin filename tables based on a transformed index and type. */
 s32 func_0209834c(s32 index, s32 type) {
@@ -211,7 +211,7 @@ case 11: return 256;
 
 s32 func_020984e4(s32 a){switch((u32)a){case 0:return 16;case 1:return 56;case 2:return 64;case 3:return 64;case 4:return 64;case 5:return 48;case 6:return 48;case 7:return 48;case 8:return 192;case 9:return 192;case 10:return 192;case 11:return 64;default:return 0;}}
 
-s32 func_02098588(s32 arg0) {
+s32 GetFaceLayoutSize(s32 arg0) {
     s32 func_02098440();
     s32 func_020984e4(s32);
     s32 temp_r4;
@@ -225,10 +225,10 @@ s32 func_02098588(s32 arg0) {
     return var_r0;
 }
 
-void func_020985b0(s32 unused,s32 a,s32 b){s32 func_02098034();s32 func_02098278(s32);M2C_UNK SetFileDirectory(s32);void LoadDecompressedFileTo(s32,s32);s32 x,y;x=func_02098034();y=func_02098278(a);if(!x)return;SetFileDirectory(x);LoadDecompressedFileTo(y,b);}
+void LoadFaceTexture(s32 unused,s32 a,s32 b){s32 GetFaceTexturePath();s32 GetFaceLayoutFile(s32);M2C_UNK SetFileDirectory(s32);void LoadDecompressedFileTo(s32,s32);s32 x,y;x=GetFaceTexturePath();y=GetFaceLayoutFile(a);if(!x)return;SetFileDirectory(x);LoadDecompressedFileTo(y,b);}
 
 #pragma opt_strength_reduction off
-void func_020985f0(s32 src,s32 dst,u32 w,u32 h,u8 half){
+void CopyFaceTiles(s32 src,s32 dst,u32 w,u32 h,u8 half){
 void MI_CpuCopy32(s32,s32,u32);
 s32 y0,col0,tile0,row0,width0,height0,x0;
 s32 tile1,width1,height1,y1,x1,row1;
@@ -255,27 +255,62 @@ y1++;row1+=width1;
 }while(y1<height1);
 }
 }
-s32 func_0209871c(s32 unused,s32 type,s32 dst){
-s32 func_02098034();s32 func_02098588(s32);void LoadDecompressedFileTo(s32,s32);M2C_UNK SetFileDirectory(s32);
-void func_020985f0(s32,s32,u32,u32,u8);
-s32 HeapAllocBlock(void);M2C_UNK HeapFreeBlock(s32);
-s32 size,x,y,buf,i0,off0,n0,off1,n1,i1;
-x=func_02098034();y=func_02098278(type);size=0;
-if(x){
-size=func_02098588(type);buf=HeapAllocBlock();SetFileDirectory(x);LoadDecompressedFileTo(y,buf);
-switch(type){
-case 0:
-i0=0;n0=size>>8;
-if(n0>0){off0=0;do{func_020985f0(buf+(off0<<6),dst+(off0<<6),2,2,0);i0++;off0+=4;}while(i0<n0);}break;
-case 2:case 3:case 4:
-i1=0;n1=size>>8;
-if(n1>0){off1=0;do{func_020985f0(buf+(off1<<6),dst+(off1<<6),1,4,0);i1++;off1+=4;}while(i1<n1);}break;
-}
-HeapFreeBlock(buf);
-}return size;
+/* Loads a character's compressed face graphics and copies the tiles into the
+ * destination buffer as 2x2 blocks (plain face) or 1x4 blocks (the other layout
+ * types).  Returns the loaded size in bytes, or 0 when the character has no face. */
+s32 LoadFaceGraphics(s32 character, s32 type, s32 dst) {
+    s32 GetFaceTexturePath();
+    s32 GetFaceLayoutSize(s32);
+    void LoadDecompressedFileTo(s32, s32);
+    M2C_UNK SetFileDirectory(s32);
+    void CopyFaceTiles(s32, s32, u32, u32, u8);
+    s32 HeapAllocBlock(void);
+    M2C_UNK HeapFreeBlock(s32);
+
+    s32 size, faceDir, faceFile, buf, i0, off0, n0, off1, n1, i1;
+
+    faceDir = GetFaceTexturePath();
+    faceFile = GetFaceLayoutFile(type);
+    size = 0;
+    if (faceDir) {
+        size = GetFaceLayoutSize(type);
+        buf = HeapAllocBlock();
+        SetFileDirectory(faceDir);
+        LoadDecompressedFileTo(faceFile, buf);
+        switch (type) {
+        case 0:
+            i0 = 0;
+            n0 = size >> 8;
+            if (n0 > 0) {
+                off0 = 0;
+                do {
+                    CopyFaceTiles(buf + (off0 << 6), dst + (off0 << 6), 2, 2, 0);
+                    i0++;
+                    off0 += 4;
+                } while (i0 < n0);
+            }
+            break;
+        case 2:
+        case 3:
+        case 4:
+            i1 = 0;
+            n1 = size >> 8;
+            if (n1 > 0) {
+                off1 = 0;
+                do {
+                    CopyFaceTiles(buf + (off1 << 6), dst + (off1 << 6), 1, 4, 0);
+                    i1++;
+                    off1 += 4;
+                } while (i1 < n1);
+            }
+            break;
+        }
+        HeapFreeBlock(buf);
+    }
+    return size;
 }
 /* Fills a tile-map rectangle for the given layout index, optionally mirroring it. */
-void func_02098844(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, u16 palette, u8 mirror) {
+void FillFaceTileMap(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, u16 palette, u8 mirror) {
     s32 widthPx;
     M2C_UNK func_02080b38(s32, u16, u16);
     s32 heightPx;
@@ -356,19 +391,19 @@ void func_02098970(M2C_UNK arg0, s32 arg1, s32 arg2) {
     func_020ae728(arg0, arg2);
 }
 
-void func_02098a34(s32 a,s32 b,s32 c,s32 d,u8 e){s32 func_02098034();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=func_02098034();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,e,512);func_0207c650(q,c,off,512,1);}
+void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,e,512);func_0207c650(q,c,off,512,1);}
 
-void func_02098ac0(s32 a,s32 b,s32 c,s32 d){s32 func_02098034();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=func_02098034();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
+void func_02098ac0(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SetFileDirectory(s32);
     M2C_UNK func_02080c50(s32, M2C_UNK);
-    s32 func_02098034();
+    s32 GetFaceTexturePath();
     s32 func_0209834c(M2C_UNK, M2C_UNK);
     s32 temp_r4;
     s32 temp_r5;
 
-    temp_r5 = func_02098034();
+    temp_r5 = GetFaceTexturePath();
     temp_r4 = func_0209834c(arg0, arg1);
     if (temp_r5 == 0) {
         return;
@@ -378,10 +413,10 @@ void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_02098b94(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    void func_020985b0(M2C_UNK, M2C_UNK, s32);
+    void LoadFaceTexture(M2C_UNK, M2C_UNK, s32);
     void func_02098ac0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    func_020985b0(arg0, arg1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg2);
+    LoadFaceTexture(arg0, arg1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg2);
     func_02098ac0(arg0, arg1, arg3, 0);
 }
 

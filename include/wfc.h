@@ -113,6 +113,49 @@ enum {
     WFC_CONN_STATUS_MIXED  = 2  /* some present players are offline */
 };
 
+/* The friend roster the ov001 Wi-Fi screens fetch from the WFC server
+ * (gWfcFriendRoster, 0x1E60 bytes, allocated by func_ov001_02183f6c): the
+ * request packet plus the 20 friend slots the server's answer is parsed into. */
+#define WFC_FRIEND_ROSTER_SIZE 0x1E60
+#define WFC_FRIEND_SLOTS       0x1300 /* 20 slots, WFC_FRIEND_SLOT_STRIDE bytes each */
+#define WFC_FRIEND_SLOT_COUNT  20
+#define WFC_FRIEND_SLOT_STRIDE 0x2A
+
+/* One friend slot of the roster; the code is all zero while the slot is free
+ * (Ov001_GetFriendSlots counts the slots whose code is set). */
+typedef struct WfcFriendSlot {
+    u8  info[0x20]; /* +0x00 profile data copied from the server's reply */
+    u8  code[6];    /* +0x20 friend code, all zero when the slot is free */
+    u16 unk26;      /* +0x26 per-player value from the reply */
+    u8  status;     /* +0x28 one of WFC_FRIEND_SLOT_* */
+    u8  unk29;      /* +0x29 */
+} WfcFriendSlot;    /* 0x2A bytes */
+
+/* WfcFriendSlot::status */
+enum {
+    WFC_FRIEND_SLOT_EMPTY       = 0, /* no reply data for the slot */
+    WFC_FRIEND_SLOT_PRESENT     = 1, /* friend in the roster */
+    WFC_FRIEND_SLOT_UNAVAILABLE = 2  /* friend in the roster but cannot be picked */
+};
+
+/* State of the friend-list screen (gOv001FriendListState): a state byte and the
+ * frame timer of the roster wait, addressed at these offsets. */
+#define OV001_FRIEND_LIST_STATE 0x00 /* u8 one of OV001_FRIEND_LIST_* */
+#define OV001_FRIEND_LIST_TIMER 0x02 /* u16 frames spent waiting for the roster */
+
+enum {
+    OV001_FRIEND_LIST_PENDING   = 0, /* the roster has not been checked yet */
+    OV001_FRIEND_LIST_AVAILABLE = 1, /* at least one friend can be picked */
+    OV001_FRIEND_LIST_EMPTY     = 2, /* no friend in the roster */
+    OV001_FRIEND_LIST_ALL_BUSY  = 3  /* every friend is unavailable */
+};
+
+#define OV001_FRIEND_LIST_WAIT 300 /* frames the screen waits for the roster */
+
+/* Message ids Ov001_ShowMessage displays for the friend roster. */
+#define OV001_MSG_FRIEND_UNAVAILABLE 14
+#define OV001_MSG_NO_FRIENDS         15
+
 /* Layout of the RFC-1123 Date header the server sends:
  * "Www, DD Mmm YYYY hh:mm:ss GMT" (29 characters, field boundaries below). */
 #define HTTP_DATE_DAY_SPACE   7  /* ' ' before the day-of-month */
@@ -152,6 +195,35 @@ enum {
     NAS_STATE_DONE           = 5  /* logged in */
 };
 
+/* The NAS connection block (the object gNasConnection holds at field +8,
+ * NAS_CONNECTION_SIZE bytes): the NASC HTTP login an online request runs,
+ * allocated by CreateNasConnection with the request descriptor's allocator. It
+ * carries the outcome, the status block the caller copies out (Nas_GetResult),
+ * the request descriptor, the network handle the HTTP runs on and the task that
+ * drives it. */
+#define NAS_CONNECTION_SIZE  0x13F4
+#define NAS_CONN_RESULT      0x1004 /* s32 outcome of the connection attempt */
+#define NAS_CONN_STATUS      0x1008 /* s32 head of the status block */
+#define NAS_CONN_STATUS_SIZE 0x1C4  /* bytes of the status block shared with the caller */
+#define NAS_CONN_REQUEST     0x11CC /* NasRequest descriptor copied from the caller */
+#define NAS_CONN_HANDLE      0x1314 /* void *network handle the HTTP runs on */
+#define NAS_CONN_TASK        0x1318 /* task that drives the connection */
+#define NAS_CONN_MUTEX       0x13D8 /* mutex guarding the connection */
+
+/* Status the connection reports at NAS_CONN_STATUS: 0x4E00 plus the NAS code. */
+#define NAS_STATUS_IDLE 0x4E84
+
+/* The request descriptor a caller hands to CreateNasConnection (0x48 bytes).
+ * StartNasRequest fills it: the UTF-16 request name, a payload name at +0x34
+ * and the alloc/free pair at +0x40/+0x44 used to allocate the connection. */
+typedef struct NasRequest {
+    u8  name[0x32];    /* +0x00 request name, UTF-16, NUL terminated */
+    u16 flags;         /* +0x32 */
+    u8  payload[0x0C]; /* +0x34 payload name */
+    void *alloc;       /* +0x40 allocates the connection block */
+    void *free;        /* +0x44 frees it */
+} NasRequest;          /* 0x48 bytes */
+
 /* GpiInfoRecord fields used by the NAS login (the record is 0x204 bytes). */
 #define GPI_INFO_PROFILE_ID     0x004 /* s32 profile id echo */
 #define GPI_INFO_LASTNAME       0x08E /* char[31], also carries the game's id */
@@ -181,6 +253,7 @@ enum {
 #define WFC_STATE_CONN_EVENT   0xD14 /* u8 outcome of the friend connection: 1 cancelled, 2/3/4 results */
 #define WFC_STATE_CONN_RETRY   0xD15 /* u8 friend-connection attempts made, wraps at 3 */
 #define WFC_STATE_RECORD_RESULT 0x444 /* u8 per friend record, stride 4: the record's connection result */
+#define WFC_STATE_RECORD_FLAGS  0x447 /* u8 per friend record, stride 4: bit 7 marks the record as sent */
 #define WFC_STATE_TIMER        0xCB0 /* u64 tick the friend connection started at */
 #define WFC_STATE_CMD_BUFFER   0xCB8 /* outgoing command/settings block built by func_020300e8 (0x52 bytes) */
 

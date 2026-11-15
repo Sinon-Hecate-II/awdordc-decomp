@@ -264,13 +264,13 @@ for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
 SetTileRectPalette(base,16,2,11);HeapFreeBlock(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){
 if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2e0,11);
-func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
+FillFaceTileMap(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,12)>=0){
 if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2c0,11);
-func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
+FillFaceTileMap(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x49)){
 if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2a0,11);
-func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
+FillFaceTileMap(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else ClearTileRect(base,16,2);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c))FillTileRect(gfx+32,3,1,tile,11);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,32)>0){

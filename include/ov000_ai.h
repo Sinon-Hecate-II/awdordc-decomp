@@ -79,5 +79,8 @@
 /* The unit set's 12 header bytes are copied to gAiSettings+8 .. +19. */
 #define AI_SETTING_TRANSPORT_PERCENT   0x0B /* u8 wanted transports as a percentage of the infantry+mech count */
 #define AI_SETTING_TRANSPORT_LAST_TURN 0x13 /* u8 last turn on which more transports are built */
+#define AI_SETTING_BUILD_FLAGS         0x11 /* u8 mask of the optional unit kinds the AI may build */
+#define AI_BUILD_FLAG_UNIT_25          0x01 /* the AI may build unit kind 25 */
+#define AI_BUILD_FLAG_UNIT_24          0x02 /* the AI may build unit kind 24 */
 
 #endif

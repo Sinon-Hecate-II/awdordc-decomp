@@ -1,8 +1,8 @@
 /* 23 functions from 0x02064684 to 0x0206536C (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
-extern u8 data_021001cc[], data_02100218[], data_02100264[], data_0213e61c[];
-extern s32 data_0213e5d4[], data_0213e5f8[];
+extern u8 data_021001cc[], data_02100218[], data_02100264[], gFileLock[];
+extern s32 gFileLockOwner[], gFileLockCount[];
 extern M2C_UNK gSocketManager;
 typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
@@ -123,11 +123,11 @@ loop_21:
 }
 #pragma pop
 s32 func_02064934(void *arg0) {
-s32 func_020649a8(void *);
+s32 CloseAllStreams(void *);
 s32 a,b,result;
 if(!arg0)return -1;
 if(((u32)(M2C_FIELD(arg0,s32 *,4)<<22)>>29)==0)return 0;
-b=func_020649a8(arg0);
+b=CloseAllStreams(arg0);
 a=M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
 result=0;
 M2C_FIELD(arg0,volatile s32 *,4)&=~0x380;
@@ -137,7 +137,7 @@ if(b!=0||a!=0)result=1;
 return -result;
 }
 #pragma scheduling on
-s32 func_020649a8(void *arg0) {
+s32 CloseAllStreams(void *arg0) {
     s32 func_02064034();
     s32 func_020641a8(void *, M2C_UNK);
     s32 temp_r0;
@@ -227,19 +227,19 @@ s32 func_02064b50(void *arg0) {
 }
 
 s32 GetFilePosition(void *p){
-extern u8 data_021001cc[],data_02100218[],data_02100264[],data_0213e61c[];
-extern s32 data_0213e5d4[],data_0213e5f8[];
+extern u8 data_021001cc[],data_02100218[],data_02100264[],gFileLock[];
+extern s32 gFileLockOwner[],gFileLockCount[];
 extern M2C_UNK gSocketManager;
-s32 func_02006680(void *);s32 func_02064b50(void *);
+s32 TryLockMutex(void *);s32 func_02064b50(void *);
 s32 n,result,owner; void *thread;
 if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
-if(!func_02006680(data_0213e61c+24*n)){
-data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;
-}else if((thread=M2C_FIELD(&gSocketManager,void **,4), owner=data_0213e5d4[n], owner==M2C_FIELD(thread,s32 *,0x6c))){
-data_0213e5f8[n]++;
-}else{LockMutex(data_0213e61c+24*n);data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;}
+if(!TryLockMutex(gFileLock+24*n)){
+gFileLockOwner[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);gFileLockCount[n]=1;
+}else if((thread=M2C_FIELD(&gSocketManager,void **,4), owner=gFileLockOwner[n], owner==M2C_FIELD(thread,s32 *,0x6c))){
+gFileLockCount[n]++;
+}else{LockMutex(gFileLock+24*n);gFileLockOwner[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);gFileLockCount[n]=1;}
 result=func_02064b50(p);
-if(--data_0213e5f8[n]==0)UnlockMutex(data_0213e61c+24*n);
+if(--gFileLockCount[n]==0)UnlockMutex(gFileLock+24*n);
 return result;
 }
 
@@ -272,28 +272,33 @@ M2C_FIELD(stream,u8 *,12)=0;M2C_FIELD(stream,u32 *,24)=position;M2C_FIELD(stream
 return 0;
 }
 
-s32 func_02064ed0(void *p, s32 pos, s32 mode) {
-s32 func_02006680(void *); M2C_UNK LockMutex(); M2C_UNK UnlockMutex();
-s32 n, result, owner; void *thread;
-if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
-if(func_02006680(data_0213e61c+n*24)==0) {
-data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
-data_0213e5f8[n]=1;
-}else if((thread=M2C_FIELD(&gSocketManager,void **,4),owner=data_0213e5d4[n],owner==M2C_FIELD(thread,s32 *,108))) {data_0213e5f8[n]++;}
-else{LockMutex(data_0213e61c+n*24);
-data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
-data_0213e5f8[n]=1;
+/* Seeks stream fp to pos with fseek-style whence (0 = start, 1 = current,
+ * 2 = end).  The seek runs under the stream's shared lock, which is taken
+ * reentrantly (the holding thread and its nest count are kept in
+ * gFileLockOwner/gFileLockCount) and released when the outermost caller is
+ * done. */
+s32 SetFilePosition(void *fp, s32 pos, s32 whence) {
+s32 TryLockMutex(void *); M2C_UNK LockMutex(); M2C_UNK UnlockMutex();
+s32 lockIndex, result, owner; void *thread;
+if(fp==data_021001cc)lockIndex=2;else if(fp==data_02100218)lockIndex=3;else if(fp==data_02100264)lockIndex=4;else lockIndex=5;
+if(TryLockMutex(gFileLock+lockIndex*24)==0) {
+gFileLockOwner[lockIndex]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
+gFileLockCount[lockIndex]=1;
+}else if((thread=M2C_FIELD(&gSocketManager,void **,4),owner=gFileLockOwner[lockIndex],owner==M2C_FIELD(thread,s32 *,108))) {gFileLockCount[lockIndex]++;}
+else{LockMutex(gFileLock+lockIndex*24);
+gFileLockOwner[lockIndex]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
+gFileLockCount[lockIndex]=1;
 }
-result=func_02064ce8(p,pos,mode);
-if(--data_0213e5f8[n]==0)UnlockMutex(data_0213e61c+n*24);
+result=func_02064ce8(fp,pos,whence);
+if(--gFileLockCount[lockIndex]==0)UnlockMutex(gFileLock+lockIndex*24);
 return result;
 }
 
 #pragma opt_propagation off
 void func_02064ffc(void *arg0) {
-    M2C_UNK func_02064ed0(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK SetFilePosition(void *, M2C_UNK, M2C_UNK);
     M2C_FIELD(arg0, s8 *, 0xD) = 0;
-    func_02064ed0(arg0, 0, 0);
+    SetFilePosition(arg0, 0, 0);
     M2C_FIELD(arg0, s8 *, 0xD) = 0;
 }
 #pragma opt_propagation reset

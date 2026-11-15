@@ -167,13 +167,13 @@ void func_ov000_02173f78(void *arg0) {
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02091d4c(M2C_UNK);
-    M2C_UNK func_020985b0(u8, s32, s32);
-    M2C_UNK func_02098a34(u8, M2C_UNK, M2C_UNK, u16, s32);
+    M2C_UNK LoadFaceTexture(u8, s32, s32);
+    M2C_UNK LoadFacePalette(u8, M2C_UNK, M2C_UNK, u16, s32);
     s32 func_020a7278();
     s32 func_020a7290();
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020ad150(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020ae22c(M2C_UNK);
+    s32 GetUiColor(M2C_UNK);
     M2C_UNK func_020af19c(M2C_UNK, M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern void **gCurrentMap;
@@ -254,13 +254,13 @@ register s32 temp_r9;
         temp_r9 = ((var_r8 + 1) * 0x8C) + ((s32)*gCurrentMap + 0x67A4);
         if (M2C_FIELD(temp_r9, u8 *, 0x1E) != 0) {
             temp_r1 = ((PlayerUI_02173f78 *)temp_r9)->sprite;
-            func_020985b0(temp_r1, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC) + (M2C_FIELD(&data_ov000_021b8e48,u16 *,var_r8*2) << 6));
+            LoadFaceTexture(temp_r1, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC) + (M2C_FIELD(&data_ov000_021b8e48,u16 *,var_r8*2) << 6));
             if (M2C_FIELD(temp_r9, u8 *, 0x1C) != 0) {
                 var_r0 = 8;
             } else {
                 var_r0 = 0;
             }
-            func_02098a34(temp_r1, 0, 2, var_r8, (var_r0 & 0xFF));
+            LoadFacePalette(temp_r1, 0, 2, var_r8, (var_r0 & 0xFF));
         }
         var_r8 += 1;
     } while ((s32) var_r8 < 4);
@@ -269,7 +269,7 @@ register s32 temp_r9;
     OpenNarcArchive();
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8eb0), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14));
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ebc), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14) + 0x3000);
-    func_0208ca2c(0x800, 1, func_020ae22c(9), 2);
+    func_0208ca2c(0x800, 1, GetUiColor(9), 2);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
     func_020a9a30(1, 0, 0, tiles + 0x1000);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;

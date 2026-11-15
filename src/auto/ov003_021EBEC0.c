@@ -30,7 +30,7 @@ if(IsWaypointPanelIdle(p))func_ov003_021ebfcc(p);else SetWaypointPanelState(p,0)
 void func_ov003_021ebfcc(void *p) {
  void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
- void func_02088d94(void*); void func_02088da8(void*); void func_02088f1c(s32); void func_02088ff4(s32);
+ void Show3DSprite(void*); void Hide3DSprite(void*); void func_02088f1c(s32); void func_02088ff4(s32);
  s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 func_020aae44(void*); s32 func_020aae10(void*); s16 func_ov003_022004a8(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
@@ -50,16 +50,16 @@ void func_ov003_021ebfcc(void *p) {
  }
  if(((u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30)==1){
  {u8 v=M2C_FIELD(p,u8*,0x39)&~12;flag=((u32)(v<<28)>>30)==0;M2C_FIELD(p,u8*,0x39)=v;}
- if(flag && func_ov003_021e6d28()){func_02088d94(M2C_FIELD(p,void**,0x58));func_02088f1c(*M2C_FIELD(p,s32**,0x64));}
+ if(flag && func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(p,void**,0x58));func_02088f1c(*M2C_FIELD(p,s32**,0x64));}
  entries=M2C_FIELD(p,s32**,0x64);count=M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);n=count&255;
- if(!IsLinkSessionActive()){for(i=0;i<4;i++){if(i<n){func_02088d94((void*)entries[i+2]);func_02088d94((void*)entries[i+6]);}}}
+ if(!IsLinkSessionActive()){for(i=0;i<4;i++){if(i<n){Show3DSprite((void*)entries[i+2]);Show3DSprite((void*)entries[i+6]);}}}
  s=M2C_FIELD(p,void**,0x48);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=0;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  s=M2C_FIELD(p,void**,0x50);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=256;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  s=M2C_FIELD(p,void**,0x4c);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=192;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  flag=((u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30)==1;
  if(flag){
-  if(func_ov003_021e6d28()){func_02088da8(M2C_FIELD(p,void**,0x58));func_02088ff4(*M2C_FIELD(p,s32**,0x64));}
-  entries2=M2C_FIELD(p,s32**,0x64);for(j=0;j<4;j++){func_02088da8((void*)entries2[j+2]);func_02088da8((void*)entries2[j+6]);}
+  if(func_ov003_021e6d28()){Hide3DSprite(M2C_FIELD(p,void**,0x58));func_02088ff4(*M2C_FIELD(p,s32**,0x64));}
+  entries2=M2C_FIELD(p,s32**,0x64);for(j=0;j<4;j++){Hide3DSprite((void*)entries2[j+2]);Hide3DSprite((void*)entries2[j+6]);}
   s=M2C_FIELD(p,void**,0x48);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=-256;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
   s=M2C_FIELD(p,void**,0x50);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=0;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
   s=M2C_FIELD(p,void**,0x4c);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=94;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);

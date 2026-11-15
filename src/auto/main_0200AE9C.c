@@ -166,32 +166,37 @@ s32 func_0200b32c(void *a) {
  OS_RestoreInterrupts(irq);return 1;
 }
 
-u32 func_0200b3ec(void *a,u32 memory,u32 size){
-extern M2C_UNK func_0200ac70;
+/* Load an archive's FAT and FNT index tables from their positions in the file
+ * into `memory`, 32-byte aligned, FAT first then FNT. `required` is the aligned
+ * total both tables need; if it does not fit in `size` nothing is read and the
+ * caller only learns the size. On success the archive's table positions become
+ * those in the pool and its reads switch to the memory-backed read proc. */
+u32 LoadArchiveIndex(FSArchive *archive,u32 memory,u32 size){
+extern M2C_UNK ReadArchiveMemory;
 void InitFileRequest(void *);
-s32 func_0200b99c(void *,s32,s32,s32,s32);
+s32 OpenFileDirect(void *,s32,s32,s32,s32);
 s32 FileRead(s32,s32,s32);
 s32 CloseFileRequest(void *);
 M2C_UNK MI_CpuFill8(void *,M2C_UNK,M2C_UNK);
-u8 file[0x48];u32 required,p;
-required=(M2C_FIELD(a,u32 *,0x30)+M2C_FIELD(a,u32 *,0x38)+63)&~31;
+FSFileRequest request;u32 required,p;
+required=(archive->fatSize+archive->fntSize+63)&~31;
 if(required<=size){
 p=(memory+31)&~31;
-InitFileRequest(file);
-if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x2c),M2C_FIELD(a,s32 *,0x2c)+M2C_FIELD(a,s32 *,0x30),-1)){
-if(FileRead((s32)file,p,M2C_FIELD(a,s32 *,0x30))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x30));
-CloseFileRequest(file);
+InitFileRequest(&request);
+if(OpenFileDirect(&request,(s32)archive,archive->fatPos,archive->fatPos+archive->fatSize,-1)){
+if(FileRead((s32)&request,p,archive->fatSize)<0)MI_CpuFill8((void*)p,0,archive->fatSize);
+CloseFileRequest(&request);
 }
-M2C_FIELD(a,u32 *,0x2c)=p;
-p+=M2C_FIELD(a,u32 *,0x30);
-if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x34),M2C_FIELD(a,s32 *,0x34)+M2C_FIELD(a,s32 *,0x38),-1)){
-if(FileRead((s32)file,p,M2C_FIELD(a,s32 *,0x38))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x38));
-CloseFileRequest(file);
+archive->fatPos=p;
+p+=archive->fatSize;
+if(OpenFileDirect(&request,(s32)archive,archive->fntPos,archive->fntPos+archive->fntSize,-1)){
+if(FileRead((s32)&request,p,archive->fntSize)<0)MI_CpuFill8((void*)p,0,archive->fntSize);
+CloseFileRequest(&request);
 }
-M2C_FIELD(a,u32 *,0x34)=p;
-M2C_FIELD(a,u32 *,0x44)=memory;
-M2C_FIELD(a,void **,0x50)=&func_0200ac70;
-M2C_FIELD(a,u32 *,0x1c)|=4;
+archive->fntPos=p;
+archive->pool=(void *)memory;
+archive->proc=&ReadArchiveMemory;
+archive->state|=FS_ARCHIVE_IN_MEMORY;
 }
 return required;
 }
@@ -307,7 +312,7 @@ s32 func_0200b95c(s32 a,s32 b) {
  return SubmitPathRequest(v,b,a,0)!=0;
 }
 
-s32 func_0200b99c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 OpenFileDirect(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD(arg0, s32 *, 8) = arg1;
     M2C_FIELD(arg0, s32 *, 0x38) = arg4;
     M2C_FIELD(arg0, s32 *, 0x30) = arg2;

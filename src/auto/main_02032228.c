@@ -1,5 +1,6 @@
 /* 36 functions from 0x02032228 to 0x02033210 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 typedef struct { u32 words[3]; } Unk032Record;
 typedef struct { u32 words[18]; } Unk032Callbacks;
@@ -211,7 +212,7 @@ void func_0203289c(s32 arg0) {
 
 s32 func_020328ac(Unk032Callbacks *arg,s32 value){
 M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);
-s32 func_02032c74(s32);
+s32 NasConnect(s32);
 void func_020329d0(void);
 extern M2C_UNK gNasConnection,data_020fb33c;
 void *p;
@@ -229,7 +230,7 @@ p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(p,Unk032Callbacks *,0x11cc)=*arg;
 M2C_FIELD(p,u16 *,0x11fe)=0;
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8 *,0x120b)=0;
-M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_02032c74(1);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=NasConnect(1);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004);
 M2C_FIELD(&gNasConnection,s32 *,4)=0;
 func_020329d0();
@@ -312,7 +313,7 @@ void func_02032be4(void *arg0) {
     }
 }
 
-s32 func_02032c74(s32 arg0){
+s32 NasConnect(s32 arg0){
 extern M2C_UNK gNasServer,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
 s32 StringCompare(void *,void *);s32 func_02033ccc(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
 if(StringCompare(M2C_FIELD(&gNasServer,void **,0),&data_020fb35c))M2C_FIELD(&gNasServer,s32 *,20)=1;
@@ -343,7 +344,7 @@ u64 func_02072088(u64,u64);
 M2C_UNK func_0203367c(M2C_UNK);
 M2C_UNK Nas_UpdateRequest(void);
 M2C_UNK func_02034480(M2C_UNK);
-M2C_UNK func_02032c74(M2C_UNK);
+M2C_UNK NasConnect(M2C_UNK);
 
 M2C_UNK retryCount = 0;
 M2C_UNK reinit = 0;
@@ -438,7 +439,7 @@ for (;;) {
 
     conn = M2C_FIELD(&gNasConnection, void **, 8);
     LockMutex((u8 *)conn + 0x13d8);
-    result = func_02032c74(reinit);
+    result = NasConnect(reinit);
     conn2 = M2C_FIELD(&gNasConnection, void **, 8);
     *(M2C_UNK *)((u8 *)conn2 + 0x1000 + 4) = result;
     conn2 = M2C_FIELD(&gNasConnection, void **, 8);

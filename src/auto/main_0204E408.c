@@ -8,17 +8,40 @@ typedef struct GpiConnection {
     s32 unk104;           /* +0x104 */
     s32 unk108;           /* +0x108 */
     s32 unk10c;           /* +0x10C */
-    u8  pad110[0x94];
+    u8  unk110;           /* +0x110 */
+    u8  pad111[0x1E];
+    u8  unk12f;           /* +0x12F */
+    u8  pad130[0x14];
+    u8  unk144;           /* +0x144 */
+    u8  pad145[0x53];
+    s32 unk198;           /* +0x198 */
+    s32 unk19c;           /* +0x19C */
+    s32 unk1a0;           /* +0x1A0 */
     InitPair4E pairs[6];  /* +0x1A4 the six peer callbacks */
-    u8  pad1d4[0x244];
+    s32 socket;           /* +0x1D4 peer socket, -1 when not connected */
+    s32 state;            /* +0x1D8 connection state (0..4) */
+    GPIBuffer recvBuffer; /* +0x1DC messages received from the server */
+    void *msgBuffer;      /* +0x1EC parsed message */
+    s32 msgCapacity;      /* +0x1F0 its allocated size */
+    GPIBuffer sendBuffer; /* +0x1F4 queued outgoing request data */
+    s32 unk204;           /* +0x204 */
+    s32 pad208;           /* +0x208 */
+    s32 unk20c;           /* +0x20C */
+    s32 unk210;           /* +0x210 */
+    s32 cachedStatus;     /* +0x214 last status sent, -1 when none */
+    s8  statusString[0x100];   /* +0x218 */
+    s8  locationString[0x100]; /* +0x318 */
     s32 timerSet;         /* +0x418 */
     s32 unk41c;           /* +0x41C */
     s32 unk420;           /* +0x420 */
-    s32 unk424;           /* +0x424 */
+    s32 unk424;           /* +0x424 pending operation list */
     s32 timerHandle;      /* +0x428 handle of the start-up timer set */
     s32 unk42c;           /* +0x42C */
     s32 unk430;           /* +0x430 */
-    u8  pad434[0x2c];
+    s32 unk434;           /* +0x434 */
+    u8  pad438[8];
+    GPIBuffer unk440;     /* +0x440 */
+    GPIBuffer unk450;     /* +0x450 */
     void *unk460;         /* +0x460 owned memory block */
     u8  pad464[8];
     s32 peerCallback;     /* +0x46C callback run when a peer connects */
@@ -155,7 +178,29 @@ s32 func_0204e830(void *arg0, void *arg1) {
     return 1;
 }
 
-s32 gpiResetConnection(void **a){void func_02054484(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);void *p=*a;M2C_FIELD(p,s8 *,272)=0;M2C_FIELD(p,s8 *,303)=0;M2C_FIELD(p,s8 *,324)=0;M2C_FIELD(p,s32 *,468)=-1;M2C_FIELD(p,s32 *,472)=0;M2C_FIELD(p,s32 *,484)=0;M2C_FIELD(p,s32 *,488)=0;M2C_FIELD(p,s32 *,480)=0;gpiFree(M2C_FIELD(p,s32 *,476));M2C_FIELD(p,s32 *,476)=0;M2C_FIELD(p,s32 *,496)=0;gpiFree(M2C_FIELD(p,s32 *,492));M2C_FIELD(p,s32 *,492)=0;M2C_FIELD(p,s32 *,508)=0;M2C_FIELD(p,s32 *,512)=0;M2C_FIELD(p,s32 *,504)=0;gpiFree(M2C_FIELD(p,s32 *,500));M2C_FIELD(p,s32 *,500)=0;M2C_FIELD(p,s32 *,1096)=0;M2C_FIELD(p,s32 *,1100)=0;M2C_FIELD(p,s32 *,1092)=0;gpiFree(M2C_FIELD(p,s32 *,1088));M2C_FIELD(p,s32 *,1088)=0;M2C_FIELD(p,s32 *,1112)=0;M2C_FIELD(p,s32 *,1116)=0;M2C_FIELD(p,s32 *,1108)=0;gpiFree(M2C_FIELD(p,s32 *,1104));M2C_FIELD(p,s32 *,1104)=0;M2C_FIELD(p,s32 *,0x204)=-1;M2C_FIELD(p,s32 *,0x20c)=2;while(M2C_FIELD(p,s32 *,0x424))func_02054484(a,M2C_FIELD(p,s32 *,0x424));M2C_FIELD(p,s32 *,0x424)=0;M2C_FIELD(p,s32 *,0x430)=0;func_02055cd0(a,&func_0204e830);M2C_FIELD(p,s32 *,412)=0;M2C_FIELD(p,s32 *,416)=0;M2C_FIELD(p,s32 *,408)=0;M2C_FIELD(p,s32 *,528)=0;M2C_FIELD(p,s32 *,1052)=0;M2C_FIELD(p,s32 *,1076)=0;M2C_FIELD(p,s32 *,0x214)=-1;M2C_FIELD(p,s8 *,0x218)=0;M2C_FIELD(p,s8 *,0x318)=0;return 0;}
+/* Reset a gpi connection to its initial state: free its receive, message, send
+ * and two queue buffers, drop the pending operations and clear the cached status
+ * and location strings. */
+s32 gpiResetConnection(void **a){void func_02054484(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);GpiConnection *p=*a;
+p->unk110=0;p->unk12f=0;p->unk144=0;
+p->socket=-1;p->state=0;
+p->recvBuffer.len=0;p->recvBuffer.pos=0;p->recvBuffer.size=0;
+gpiFree(p->recvBuffer.data);p->recvBuffer.data=0;
+p->msgCapacity=0;
+gpiFree(p->msgBuffer);p->msgBuffer=0;
+p->sendBuffer.len=0;p->sendBuffer.pos=0;p->sendBuffer.size=0;
+gpiFree(p->sendBuffer.data);p->sendBuffer.data=0;
+p->unk440.len=0;p->unk440.pos=0;p->unk440.size=0;
+gpiFree(p->unk440.data);p->unk440.data=0;
+p->unk450.len=0;p->unk450.pos=0;p->unk450.size=0;
+gpiFree(p->unk450.data);p->unk450.data=0;
+p->unk204=-1;p->unk20c=2;
+while(p->unk424)func_02054484(a,p->unk424);
+p->unk424=0;p->unk430=0;
+func_02055cd0(a,&func_0204e830);
+p->unk19c=0;p->unk1a0=0;p->unk198=0;p->unk210=0;p->unk41c=0;p->unk434=0;
+p->cachedStatus=-1;p->statusString[0]=0;p->locationString[0]=0;
+return 0;}
 
 /* Reads whatever the server has sent, cuts the receive buffer at each "\final\"
  * terminator and dispatches every message: a message carrying "\id\" runs the

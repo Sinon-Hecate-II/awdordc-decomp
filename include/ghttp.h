@@ -85,7 +85,9 @@ typedef struct GHIConnection {
     s32  encryptorFlag;   /* +0x170 */
     s32  (*encryptorProcess)(void *connection, void *state); /* +0x174 */
     void (*encryptorCleanup)(void *connection, void *state); /* +0x178 */
-    u8   pad17C[0x08];
+    u8   pad17C[0x04];
+    s32  (*decryptor)(void *connection, void *state, s32 input, s32 *inputLen, s32 output, s32 *outputLen);
+                              /* +0x180: decrypts the decrypt buffer into the read buffer */
 } GHIConnection;
 
 /* The global table of connection slots; the original kept its four members as
@@ -112,6 +114,34 @@ typedef struct GHIConnectionList {
 #define GHI_POST_INDEX    0x144 /* GHIConnection.postIndex */
 #define GHI_POST_OFFSET   0x148 /* GHIConnection.postOffset */
 #define GHI_POST_LENGTH   0x14c /* GHIConnection.postLength */
+
+/* What ghiReceiveData answered for a read (main_02049AB8). */
+enum {
+    GHI_RECV_DATA    = 0, /* the read bytes are in the caller's buffer */
+    GHI_RECV_NO_DATA = 1, /* nothing yet: retry on the next tick */
+    GHI_RECV_CLOSED  = 2, /* the peer closed the connection */
+    GHI_RECV_ERROR   = 3  /* socket or decrypt error; the request has already failed */
+};
+
+/* Steps of the request state machine in GHIConnection.state; the dispatcher
+ * runs one step per tick. */
+enum {
+    GHI_STATE_HOST_LOOKUP       = 0, /* parse the URL and resolve the host */
+    GHI_STATE_CONNECTING        = 1, /* connect the socket and wait for it */
+    GHI_STATE_CONNECTED         = 2, /* start the encryptor and flush the request */
+    GHI_STATE_SENDING_REQUEST   = 3, /* write the request line and headers */
+    GHI_STATE_POSTING           = 4, /* upload the POST body */
+    GHI_STATE_WAITING           = 5, /* wait for the request to be sent */
+    GHI_STATE_RECEIVING_STATUS  = 6, /* read the response status line */
+    GHI_STATE_RECEIVING_HEADERS = 7, /* read the response headers */
+    GHI_STATE_RECEIVING_FILE    = 8  /* read the response body */
+};
+
+/* What the connection's decryptor (GHIConnection.decryptor) answers. */
+enum {
+    GHI_DECRYPT_OUTPUT = 2, /* the output buffer is full: grow it and retry */
+    GHI_DECRYPT_ERROR  = 3  /* decrypt failure; the request has failed */
+};
 
 /* States of the chunked-transfer decoder (GHIConnection.chunkState). */
 enum {

@@ -183,7 +183,7 @@ void func_02084824(void) {
     func_020847f4();
 }
 
-s32 func_02084830(void){void *func_ov010_02229b00(void);if(GetActiveOverlay()==2 && M2C_FIELD(func_ov010_02229b00(),s8 *,0x27)==0)return 1;return 0;}
+s32 func_02084830(void){void *GetLocalPlayerStatus(void);if(GetActiveOverlay()==2 && M2C_FIELD(GetLocalPlayerStatus(),s8 *,0x27)==0)return 1;return 0;}
 
 s32 func_0208485c(void) {
     s32 func_ov009_022254a4();
@@ -474,15 +474,15 @@ void func_02084cc0(M2C_UNK arg0) {
     }
 }
 
-s32 GetOnlineLocalPlayerId(void){void *func_ov010_02229b00(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(func_ov010_02229b00(),s32 *,0x1c);return v;}
+s32 GetOnlineLocalPlayerId(void){void *GetLocalPlayerStatus(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(GetLocalPlayerStatus(),s32 *,0x1c);return v;}
 
 void func_02084d1c(s32 arg0) {
     s32 GetActiveOverlay();
-    void *func_ov010_02229b00();
+    void *GetLocalPlayerStatus();
     if (GetActiveOverlay() != 2) {
         return;
     }
-    M2C_FIELD(func_ov010_02229b00(), s32 *, 0x1C) = arg0;
+    M2C_FIELD(GetLocalPlayerStatus(), s32 *, 0x1C) = arg0;
 }
 
 s32 func_02084d3c(M2C_UNK arg0, M2C_UNK arg1) {

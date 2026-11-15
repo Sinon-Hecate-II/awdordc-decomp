@@ -153,7 +153,7 @@ extern M2C_UNK data_ov001_02193e48;
 s32 buf[2];
 M2C_FIELD(&data_ov001_02193e48,s32 *,4)=((s32 (*)())func_ov001_0218b6f8)(0x3a,4);
 if(func_0200d5bc(buf)==0)SystemHalt();
-func_0200d650(buf);
+SetTouchCalibration(buf);
 func_0200d85c(0,4,M2C_FIELD(&data_ov001_02193e48,s32 *,4),5);
 func_0200dd14(2);
 if(func_0200dd2c(2)!=0)SystemHalt();
@@ -218,7 +218,7 @@ void func_ov001_0218b860(void) {
 
 void func_ov001_0218b964(void) {
 extern M2C_UNK data_ov001_02193e48;
-s32 func_020020c4(s32,s32); s32 func_0200d9f4(void);void func_0200dbf0(void *);void func_ov001_0218b2bc(u16,u16,void *);
+s32 func_020020c4(s32,s32); s32 func_0200d9f4(void);void CalibrateTouchSample(void *);void func_ov001_0218b2bc(u16,u16,void *);
 register s32 i,active,old,delta; register s32 index; u16 xy[4]; InputState *p; InputGlobal *g; u8 *sp;
 old=((InputGlobal *)&data_ov001_02193e48)->state->flags.active?1:0;
 active=0;index=func_0200d9f4();
@@ -228,7 +228,7 @@ for(i=active;i<4;) {
 sp=(u8 *)((InputGlobal *)&data_ov001_02193e48)->state->samples;
 sp+=index*8;
 if(M2C_FIELD(sp,u16 *,4)==1) if(M2C_FIELD(sp,u16 *,6)==0) {
-active=1;func_0200dbf0(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&data_ov001_02193e48)->state->field_0x28);break;
+active=1;CalibrateTouchSample(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&data_ov001_02193e48)->state->field_0x28);break;
 }
 i++;index=func_020020c4(index+4,5);
 }

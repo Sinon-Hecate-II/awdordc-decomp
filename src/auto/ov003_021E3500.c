@@ -10,7 +10,7 @@ typedef struct MenuBits3ff8 { u8 bank:2; u8 other:6; } MenuBits3ff8;
 typedef struct EngineBits3ff8 { u16 low:13; u16 shift:2; u16 high:1; } EngineBits3ff8;
 
 void func_ov003_021e3500(void *arg0) {
-    M2C_UNK func_02088da8(s32);
+    M2C_UNK Hide3DSprite(s32);
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
     M2C_UNK func_0208ae88(void *, M2C_UNK);
     void *func_0208b564(void *);
@@ -96,7 +96,7 @@ void func_ov003_021e3500(void *arg0) {
     }
     PlaySoundEffect(0x1000E);
     if (M2C_FIELD(r5, u8 *, 0x39) != 0) {
-        func_02088da8(M2C_FIELD(r5, s32 *, 0x4C));
+        Hide3DSprite(M2C_FIELD(r5, s32 *, 0x4C));
     }
     SetOv003SceneState(2);
     M2C_FIELD(r5, s8 *, 0x38) = 0;
@@ -105,12 +105,12 @@ void func_ov003_021e3500(void *arg0) {
 }
 
 void func_ov003_021e36cc(void *arg0) {
-    M2C_UNK func_02088da8(s32);
+    M2C_UNK Hide3DSprite(s32);
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f1bd4();
     func_ov003_021f1bd4();
     if (M2C_FIELD(arg0, u8 *, 0x39) != 0) {
-        func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
+        Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
     }
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;

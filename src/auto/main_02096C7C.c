@@ -187,7 +187,7 @@ void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_02099
 
 void func_02097280(s32 arg0) {
     M2C_UNK func_02088db8(void *, s32);
-    M2C_UNK func_02088d94(s32);
+    M2C_UNK Show3DSprite(s32);
     M2C_UNK func_02088ea8(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 func_020abe90(u8);
     void *temp_r0;
@@ -215,13 +215,13 @@ void func_02097280(s32 arg0) {
         func_02088db8(temp_r7, var_r8);
         break;
     }
-    func_02088d94(temp_r4);
+    Show3DSprite(temp_r4);
     func_0209e320(temp_r0);
 }
 
 void func_02097348(s32 arg0) {
     M2C_UNK func_02088f8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    M2C_UNK func_02088da8(s32);
+    M2C_UNK Hide3DSprite(s32);
     M2C_UNK func_02088e0c(void *, s32);
     s32 func_020abe90(u8);
     void *temp_r0;
@@ -249,7 +249,7 @@ void func_02097348(s32 arg0) {
         func_02088e0c(temp_r7, var_r8);
         break;
     }
-    func_02088da8(temp_r4);
+    Hide3DSprite(temp_r4);
     func_0209e320(temp_r0);
 }
 

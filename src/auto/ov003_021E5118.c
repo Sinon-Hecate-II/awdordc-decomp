@@ -21,7 +21,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     s32 func_0208206c();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02088da8(void *);
+    M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *func_0208bc24(void *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
@@ -32,7 +32,7 @@ void func_ov003_021e5118(void *arg0) {
     u16 func_020aae10(void *);
     u16 func_020aae44(void *);
     void *func_020ab1c4(void *);
-    s32 func_020ae22c(M2C_UNK);
+    s32 GetUiColor(M2C_UNK);
     M2C_UNK func_020ae528(s32);
     M2C_UNK DrawMapPreview(s32, s32, M2C_UNK, M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
@@ -119,7 +119,7 @@ void func_ov003_021e5118(void *arg0) {
         temp_r9 = func_020aae10(temp_r5);
         func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (s32) temp_r9, (s32) func_020aae44(temp_r5));
     }
-    func_02088da8(*temp_r4);
+    Hide3DSprite(*temp_r4);
     temp_r0 = func_0208bc24(arg0);
     M2C_FIELD(arg0, void **, 0x5C) = temp_r0;
     M2C_FIELD(temp_r0, s16 *, 0x3E) = 0x36C;
@@ -190,7 +190,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     DrawMapPreview(M2C_FIELD(data_027e01d8, s32 *, 0xC), M2C_FIELD(data_027e01d8, s32 *, 0x20), 1, 5);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);
-    func_0208ca2c(0x5100, 0xA, func_020ae22c(0xA), 1);
+    func_0208ca2c(0x5100, 0xA, GetUiColor(0xA), 1);
     temp_r0_3 = func_02080e30(GetLocalizedFileName(&data_ov003_0220f868), 1);
     func_0207c780(temp_r0_3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
     HeapFreeBlock(temp_r0_3);

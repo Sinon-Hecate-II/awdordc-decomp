@@ -53,8 +53,8 @@ void func_ov003_021ebae0(void *arg0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
     }
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x58));
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x5C));
+    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x58));
+    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x5C));
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
@@ -173,7 +173,7 @@ void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {
 
 void func_ov003_021ebdf4(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    M2C_UNK func_02088da8(s32);
+    M2C_UNK Hide3DSprite(s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6e40();
@@ -181,8 +181,8 @@ void func_ov003_021ebdf4(void *arg0) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) & ~0x80);
     PlaySoundEffect(0x1000F);
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x58));
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x5C));
+    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x58));
+    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x5C));
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);

@@ -1,7 +1,7 @@
 /* 1 function from 0x02197A8C to 0x02198848 (ov000), found by ds-decomp. */
 #include "common.h"
 extern u8 **gCurrentMap;
-extern u8 gUnitKindFlags[], gUnitKindStats[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
+extern u8 gUnitKindFlags[], gUnitKindStats[], data_ov000_021e0550[], gAiInfluenceMap[], data_ov000_021dfb04[], data_ov000_021dfa60[];
 s32 GetUnitAttackClass(s32);
 s32 GetUnitDamagePercent(s32,s32);
 s32 GetUnitMoveRange(s32,s32);
@@ -18,8 +18,8 @@ static inline u8 *InfluenceCell(u8 *base,s32 x,s32 y) { return base + x + y*MapW
 static inline u16 MapHeight(void) { return M2C_FIELD(*gCurrentMap,u16*,0x5146); }
 static inline void UpdateInfluence(s32 x,s32 y,s32 value) {
 u8 old=M2C_FIELD(MapCell(x,y),u8*,0x2840);
-if(value>old){*InfluenceCell(data_ov000_021e0a58,x,y)=old;M2C_FIELD(MapCell(x,y),u8*,0x2840)=value;}
-else if(value>*InfluenceCell(data_ov000_021e0a58,x,y))*InfluenceCell(data_ov000_021e0a58,x,y)=value;
+if(value>old){*InfluenceCell(gAiInfluenceMap,x,y)=old;M2C_FIELD(MapCell(x,y),u8*,0x2840)=value;}
+else if(value>*InfluenceCell(gAiInfluenceMap,x,y))*InfluenceCell(gAiInfluenceMap,x,y)=value;
 }
 typedef struct { u8 low:6; u8 hidden:1; u8 high:1; } UnitHiddenBits;
 static inline u32 UnitHidden(u8 *unit) { return ((UnitHiddenBits*)(unit+11))->hidden; }
@@ -63,10 +63,10 @@ if((gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((directY
 map=*gCurrentMap;
 
 if(b>M2C_FIELD(MapCell(directX,directY),u8*,0x2840)){
-(*InfluenceCell(data_ov000_021e0a58,directX,directY))=M2C_FIELD(MapCell(directX,directY),u8*,0x2840);
+(*InfluenceCell(gAiInfluenceMap,directX,directY))=M2C_FIELD(MapCell(directX,directY),u8*,0x2840);
 map=*gCurrentMap;
 M2C_FIELD(MapCell(directX,directY),u8*,0x2840)=b;
-}else if(b>(*InfluenceCell(data_ov000_021e0a58,directX,directY)))(*InfluenceCell(data_ov000_021e0a58,directX,directY))=b;
+}else if(b>(*InfluenceCell(gAiInfluenceMap,directX,directY)))(*InfluenceCell(gAiInfluenceMap,directX,directY))=b;
 }
 } else {
 if(!((UnitHiddenBits*)(unit+11))->hidden){
@@ -112,10 +112,10 @@ if((gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((y*MapWi
 map=*gCurrentMap;
 
 if(b>M2C_FIELD(MapCell(x,y),u8*,0x2840)){
-(*InfluenceCell(data_ov000_021e0a58,x,y))=M2C_FIELD(MapCell(x,y),u8*,0x2840);
+(*InfluenceCell(gAiInfluenceMap,x,y))=M2C_FIELD(MapCell(x,y),u8*,0x2840);
 map=*gCurrentMap;
 M2C_FIELD(MapCell(x,y),u8*,0x2840)=b;
-}else if(b>(*InfluenceCell(data_ov000_021e0a58,x,y)))(*InfluenceCell(data_ov000_021e0a58,x,y))=b;
+}else if(b>(*InfluenceCell(gAiInfluenceMap,x,y)))(*InfluenceCell(gAiInfluenceMap,x,y))=b;
 }else{
 map=*gCurrentMap;
 map=MapCell(x,y);value=map[0x2d48]+b;if(value>255)value=255;map[0x2d48]=value;

@@ -14,9 +14,9 @@ void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(func_020bf894(M2C_FIELD(gOv005MenuState,s16 *,0x10))) {
 MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc),0x40);
-func_020985b0(value,8,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc)+0x40);
-func_02098a34(value,8,2,0,0);
-func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),1,0,0);
+LoadFaceTexture(value,8,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc)+0x40);
+LoadFacePalette(value,8,2,0,0);
+FillFaceTileMap(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),1,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 SetOv005FileDirectory();
 }else{

@@ -77,11 +77,11 @@ reject:
    before the tuning block's last transport turn, an existing transport move wins,
    and otherwise the transport count must be below its share of the infantry. */
 s32 TryBuildTransport(void){
-s32 Divide(s32,s32);s32 func_020d2d18(u16,s32);
+s32 Divide(s32,s32);s32 GetUnitBuildCost(u16,s32);
 void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiCommandState;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
 void *map=*gCurrentMap;u16 playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);s32 targetIndex,unused,transportCount;u8 unitCount;
-if(func_020d2d18(playerId,UNIT_KIND_TRANSPORT)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
+if(GetUnitBuildCost(playerId,UNIT_KIND_TRANSPORT)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
 if(M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_TARGET_AREAS)==1){unitCount=M2C_FIELD(gAiSettings,u8 *,AI_SETTING_TRANSPORT_LAST_TURN);if(unitCount && M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)>unitCount)return 0;}
 if(PlanTransportAction()==1)return 1;targetIndex=FindAiTargetByCost(2);if(targetIndex==-1){targetIndex=FindAiTargetOfType(2);if(targetIndex==-1)return 0;}
 transportCount=CountPlayerUnitsOfKind(UNIT_KIND_TRANSPORT);
@@ -93,11 +93,11 @@ CommitAiAction(targetIndex);return 1;
 }
 
 s32 func_ov000_021a3364(void){
-s32 Divide(s32,s32);s32 func_020d2d18(u16,s32);
+s32 Divide(s32,s32);s32 GetUnitBuildCost(u16,s32);
 void CommitAiAction(s32);s32 func_ov000_021a61cc(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
 void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
-if(func_020d2d18(id,13)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
+if(GetUnitBuildCost(id,13)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 n=M2C_FIELD(gAiSettings,u8 *,18);
 if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;
 r=func_ov000_021a61cc(1);if(r==-1)return 0;
@@ -164,7 +164,7 @@ void MarkAdjacentCellsForKind24(s32 marker) {
     } while (y < M2C_FIELD(base, u16 *, MAP_HEIGHT));
 }
 #pragma pop
-s32 func_ov000_021a3644(s32 arg0) {
+s32 CountEmptyUnitsOfKind(s32 arg0) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 count=0;
@@ -179,7 +179,7 @@ if(type!=0 && type==arg0 && entry->unkC[0]==0) count++;
 return count;
 }
 
-s32 func_ov000_021a36e4(void) {
+s32 CountReadyCaptureUnits(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 IsCaptureKind(s32);
@@ -195,7 +195,7 @@ if(type!=0 && IsCaptureKind(type)!=0 && ((UnkState_021a36e4 *)entry)->state==2) 
 return count;
 }
 
-s32 func_ov000_021a379c(void) {
+s32 CountReadyCombatUnits(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 IsCaptureKind(s32);
@@ -214,7 +214,7 @@ return count;
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_lifetimes off
-s32 func_ov000_021a3854(void) {
+s32 PlanUnitKind25Action(void) {
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates[];
 extern M2C_UNK gUnitKindStats;
@@ -291,19 +291,22 @@ reject:
 record[3]=253;goto retry;
 }
 #pragma pop
-s32 func_ov000_021a3c84(void){
-s32 func_020d2d18(u16,s32);s32 func_ov000_021a43a0(s32);s32 func_ov000_021a3854(void);
-s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);void CommitAiAction(s32);
-extern void **gCurrentMap;extern M2C_UNK gAiCommand;
-void *p;u16 id;s32 r,a,b,n,x,y,z;
-if(!func_ov000_021a43a0(1))return 0;
-p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);
-if(func_020d2d18(id,25)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
-if(func_ov000_021a3854()==1)return 1;
-r=FindAiTargetByCost(3);if(r==-1){r=FindAiTargetOfType(3);if(r==-1)return 0;}
-a=CountPlayerUnitsOfKind(24);b=CountPlayerUnitsOfKind(25);
-n=func_ov000_021a36e4();if(!n)return 0;
-if(a+b){x=func_ov000_021a3644(24);y=func_ov000_021a3644(25)+1;z=x-(func_ov000_021a379c()>>2);if(z<0)z=0;if(n<(y+z)*4)return 0;}
-M2C_FIELD(&gAiCommand,u8 *,6)=25;CommitAiAction(r);return 1;
+/* Decide whether the AI builds a kind-25 unit now: the build flag must be set and
+ * the unit affordable, an existing kind-25 action wins, and otherwise a target
+ * must exist with enough ready capture units waiting for the empty units. */
+s32 TryBuildUnitKind25(void){
+ s32 GetUnitBuildCost(u16,s32);s32 HasAiBuildFlag(s32);s32 PlanUnitKind25Action(void);
+ s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);void CommitAiAction(s32);
+ extern void **gCurrentMap;extern M2C_UNK gAiCommand;
+ void *map;u16 playerId;s32 targetIndex,kind24Count,kind25Count,readyCapture,x,y,z;
+ if(!HasAiBuildFlag(AI_BUILD_FLAG_UNIT_25))return 0;
+ map=*gCurrentMap;playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+ if(GetUnitBuildCost(playerId,25)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
+ if(PlanUnitKind25Action()==1)return 1;
+ targetIndex=FindAiTargetByCost(3);if(targetIndex==-1){targetIndex=FindAiTargetOfType(3);if(targetIndex==-1)return 0;}
+ kind24Count=CountPlayerUnitsOfKind(24);kind25Count=CountPlayerUnitsOfKind(25);
+ readyCapture=CountReadyCaptureUnits();if(!readyCapture)return 0;
+ if(kind24Count+kind25Count){x=CountEmptyUnitsOfKind(24);y=CountEmptyUnitsOfKind(25)+1;z=x-(CountReadyCombatUnits()>>2);if(z<0)z=0;if(readyCapture<(y+z)*4)return 0;}
+ M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=25;CommitAiAction(targetIndex);return 1;
 }
 

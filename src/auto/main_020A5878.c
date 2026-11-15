@@ -296,13 +296,13 @@ s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitVisible(void *)
 /* Adds `amount`-scaled income to the funds of the player/commander that owns terrain entry `entry`, capped at 999999999, and notifies the funds display if applicable. */
 s32 func_020a6328(u8 *entry, s32 amount) {
 extern s32 *gCurrentMap;
-s32 func_020d2d18(s32,u32);
+s32 GetUnitBuildCost(s32,u32);
 s32 IsPlayerHuman(s32);
 s32 func_020cd728(void);
 void func_02091c54(s32,s32);
 s32 id, income;
 if(entry){if(!entry)id=0;else id=((s32)entry-(s32)((u8 *)*gCurrentMap+0x1a4+0x5800))/14;id=(id>>6)+1;}else id=0;
-income=amount*func_020d2d18(id,(u32)(entry[0]<<26)>>26);
+income=amount*GetUnitBuildCost(id,(u32)(entry[0]<<26)>>26);
 ((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money+=income;
 if(((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money>999999999)((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money=999999999;
 if(IsPlayerHuman(id)&&!func_020cd728())func_02091c54(12,income);
@@ -336,11 +336,11 @@ p->a=63;p->b=63;p->f=1;p->c=0;p->d=0;
 p->flag=0;p->g=0;p->h=0;p->i=0;
 }
 #pragma scheduling reset
-void *func_020a660c(s32 a,s32 b,s32 c,s32 d){void *func_020d2dcc(s32);void func_020a64f8(void *,u8);void func_020d3154(s32,s32);void *p=func_020d2dcc(d);if(!p)return 0;func_020a64f8(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
+void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *func_020d2dcc(s32);void func_020a64f8(void *,u8);void func_020d3154(s32,s32);void *p=func_020d2dcc(d);if(!p)return 0;func_020a64f8(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
 
-void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *func_020a660c(s32,s32,s32,s32);u8 *p=func_020a660c((s16)a,(s16)b,(s16)c,d);u8 v;if(!p)return 0;v=M2C_FIELD((u8 *)*gCurrentMap+d*0x8c,u8 *,0x67d6);p[0]=(p[0]&~0xc0)|((u32)(v<<30)>>24);M2C_FIELD(p,u16 *,4)|=1;if(c==22)M2C_FIELD(p,u16 *,4)|=32;return p;}
+void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *CreateMapUnit(s32,s32,s32,s32);u8 *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);u8 v;if(!p)return 0;v=M2C_FIELD((u8 *)*gCurrentMap+d*0x8c,u8 *,0x67d6);p[0]=(p[0]&~0xc0)|((u32)(v<<30)>>24);M2C_FIELD(p,u16 *,4)|=1;if(c==22)M2C_FIELD(p,u16 *,4)|=32;return p;}
 
-void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *func_020a660c(s32,s32,s32,s32);void RefreshMapView(void *);void *p=func_020a660c((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
+void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *CreateMapUnit(s32,s32,s32,s32);void RefreshMapView(void *);void *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
 
 void func_020a6718(M2C_UNK arg0) {
     void func_020a6738(M2C_UNK, M2C_UNK);

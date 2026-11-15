@@ -35,7 +35,7 @@ s32 StartGroupBattle(u16 playerMask) {
 void func_02014ccc(void *arg0) {
  s32 func_0200b144(void *,s32);
  void InitFileRequest(void *);
- s32 func_0200b99c(void *,s32,s32,s32,s32);
+ s32 OpenFileDirect(void *,s32,s32,s32,s32);
  void CloseFileRequest(void *);
  s32 FileRead(void *,s32,s32);
  u32 sp4[18];
@@ -44,7 +44,7 @@ void func_02014ccc(void *arg0) {
  b=M2C_FIELD(arg0,void **,0x14); a=M2C_FIELD(arg0,void **,0x10);
  InitFileRequest(sp4);
  val=M2C_FIELD(a,s32 *,0);
- if(func_0200b99c(sp4,func_0200b144(b+16,M2C_FIELD(b,s32 *,0x14)),val,val+M2C_FIELD(a,s32 *,4),-1)!=0){
+ if(OpenFileDirect(sp4,func_0200b144(b+16,M2C_FIELD(b,s32 *,0x14)),val,val+M2C_FIELD(a,s32 *,4),-1)!=0){
  if(M2C_FIELD(a,s32 *,4)==FileRead(sp4,M2C_FIELD(a,s32 *,8),M2C_FIELD(a,s32 *,4))) M2C_FIELD(a,s32 *,12)=2;
  CloseFileRequest(sp4);
  }

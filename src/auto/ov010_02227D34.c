@@ -74,7 +74,7 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
     void func_ov010_02227df8(void);
     void func_ov010_02227d34(s32, void *, char *, s32);
     extern M2C_UNK data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
 
     s32 var_r0;
  u32 flags;
@@ -91,7 +91,7 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
     flags = M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa);
  M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa) = flags | 1;
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0xfc) = arg1;
-    func_0203a850(&data_ov010_0222efc0, 0x6c);
+    func_0203a850(&gLocalPlayerStatus, 0x6c);
 
     func_02044618((s32)func_ov010_02227934);
     func_02044638((s32)func_ov010_02227954);
@@ -129,10 +129,10 @@ void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {
-s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 func_ov010_02229a08(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK data_ov010_0222eee0; extern M2C_UNK data_ov010_0222efc0;
+s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 func_ov010_02229a08(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK data_ov010_0222eee0; extern M2C_UNK gLocalPlayerStatus;
 s32 t; void (*cb)(s32,s32,s32);
 t=func_ov010_022282f8();t=(t!=0);
-if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfb)=func_ov010_02229a08();func_0203a850(&data_ov010_0222efc0,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
+if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfb)=func_ov010_02229a08();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
 cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
 }
 
@@ -147,7 +147,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     void func_ov010_02227f14(void);
     s32 func_ov010_02229a94(void);
     extern M2C_UNK data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
 
     s32 t;
 
@@ -159,7 +159,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
             func_ov010_02228298(3);
             M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfb) =
                 (u8)func_ov010_02229a08();
-            func_0203a850(&data_ov010_0222efc0, 0x6c);
+            func_0203a850(&gLocalPlayerStatus, 0x6c);
             func_ov010_02227f14();
             func_ov010_02229a94();
             goto callback_call;
@@ -460,7 +460,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     extern M2C_UNK data_ov010_0222f1dc;
     extern M2C_UNK data_ov010_0222c3f0;
     extern M2C_UNK data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
     extern M2C_UNK data_ov010_0222efec;
     extern M2C_UNK data_ov010_0222c128;
     extern M2C_UNK data_ov010_0222f02c;
@@ -523,7 +523,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     state=&data_ov010_0222eee0;
     M2C_FIELD(state,s32 *,0x18)=0;
     M2C_FIELD(state,s32 *,0x24)=0;
-    MI_CpuFill8(&data_ov010_0222efc0,0,0x1a);
+    MI_CpuFill8(&gLocalPlayerStatus,0,0x1a);
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0xfa)=0;
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0xfb)=-1;
     M2C_FIELD(&data_ov010_0222eee0,s32 *,0xfc)=-1;
@@ -541,13 +541,13 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
         (((Ov010Callback *)p)->*cc)();
     }
     dd=cc;
-    func_ov010_022269dc(&data_ov010_0222efc0,func_0208206c());
+    func_ov010_022269dc(&gLocalPlayerStatus,func_0208206c());
     func_ov000_0216a470();
     M2C_FIELD(&data_ov010_0222eee0,u8 *,0x104)=func_ov000_0216a564();
     M2C_FIELD(&data_ov010_0222eee0,u8 *,0x105)=func_ov000_0216a76c();
     M2C_FIELD(&data_ov010_0222eee0,u8 *,0x106)=func_ov000_0216a7c4();
     M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
-    func_02038688(&data_ov010_0222efc0,0,(void *)func_ov010_02227e20,0);
+    func_02038688(&gLocalPlayerStatus,0,(void *)func_ov010_02227e20,0);
     obj=func_01ffa3dc(&data_ov010_0222c160,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;

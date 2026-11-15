@@ -175,6 +175,14 @@ enum {
 #define MAP_UNIT_GROUP_SIZE 64     /* records per player slot; a record's owner (player << 6) picks its group */
 #define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
+/* One bit per neighbour direction of a map tile, as set in the cursor and unit
+ * move direction masks.  The direction table at data_0212b1b8 maps each cursor
+ * direction index to its bit and its (dx, dy) step in this encoding. */
+#define MAP_DIR_UP    1
+#define MAP_DIR_DOWN  2
+#define MAP_DIR_LEFT  4
+#define MAP_DIR_RIGHT 8
+
 /* The map's property-cell list, rebuilt by func_020cf2c8: one 6-byte record per
  * property (or kind 0x18 special) cell, ended by a 0xff terrain kind. */
 #define MAP_PROPERTY_CELLS  0x6c60 /* first record */

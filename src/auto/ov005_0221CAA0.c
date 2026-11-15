@@ -111,7 +111,7 @@ void ResultsScreenAnimate(void *arg0) {
 }
 
 void func_ov005_0221cff8(void *arg0) {
-void *FindObjectByClass(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 func_020ae22c();
+void *FindObjectByClass(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 GetUiColor();
 extern u8 data_ov005_02220d50[];
 s32 i,y;void *sprite,*p;u32 width,height;
 func_020aad18(M2C_FIELD(FindObjectByClass(data_ov005_02220d50),s32*,0x38));
@@ -124,7 +124,7 @@ i++;y+=20;
 }while(i<func_020cfb94());}
 func_02087f00(M2C_FIELD(arg0,void**,0x34),3);
 M2C_FIELD(arg0,void**,0x38)=func_020896f0(arg0);
-func_020893a8(M2C_FIELD(arg0,void**,0x38),4096,1,func_020ae22c(9));
+func_020893a8(M2C_FIELD(arg0,void**,0x38),4096,1,GetUiColor(9));
 sprite=M2C_FIELD(arg0,void**,0x38);p=*(void**)M2C_FIELD(arg0,void**,0x34);
 boxBounds(boxX(p)-1,boxY(p)-1,boxWidth(p)+2,boxHeight(p)+2,sprite);
 func_02089438(M2C_FIELD(arg0,void**,0x38));

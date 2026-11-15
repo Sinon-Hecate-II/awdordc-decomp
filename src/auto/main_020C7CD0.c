@@ -210,39 +210,41 @@ s32 func_020c818c(s32 a,s32 b) {
 
 s32 func_020c8214(void *p){extern M2C_UNK gUnitKindStats;s32 i;PackedEntry *q;for(i=0;i<M2C_FIELD(p,u8 *,0x2f);i++){q=(PackedEntry *)((u8 *)p+0x3d8)+i;if(M2C_FIELD((u8 *)&gUnitKindStats+q->bits.kind*112,u8 *,108)){switch(q->bits.mode){case 0:case 1:q->bits.mode=0;break;case 6:q->bits.mode=6;break;case 8:q->bits.mode=8;break;}}}}
 
-void func_020c82cc(s32 a) {
+/* Rebuild the battle-map units from a saved map record's packed entries, and
+ * reselect the saved unit for every player that had one. */
+void RestoreMapUnits(s32 record) {
 void ResetMapUnits(void);
-void *func_020a660c(s32,s32,s32,s32);
+void *CreateMapUnit(s32,s32,s32,s32);
 void SetPlayerSelectedUnit(s32,void *);
 extern void **gCurrentMap;
-s32 i,x,y,player,kind,state,z;
-u32 *src;
+s32 unitIndex,x,y,unitKind,owner,mode,state;
+u32 *entry;
 RestoredUnit *unit;
 ResetMapUnits();
-i=0;
-if(i>=M2C_FIELD(a,u8 *,0x2f))return;
-src=(u32 *)(a+0x3d8);
+unitIndex=0;
+if(unitIndex>=((MapRecordHeader *)record)->unitCount)return;
+entry=(u32 *)((u8 *)record+MAP_RECORD_UNITS);
 do {
-s32 v=*src;
-x=(u32)(v<<27)>>27;
-y=(u32)(v<<22)>>27;
-z=(u32)(v<<17)>>27;
-player=(u32)(v<<14)>>29;
-kind=(u32)(v<<10)>>28;
-state=(u32)(v<<8)>>30;
-unit=func_020a660c(x,y,z,player);
+s32 packed=*entry;
+x=(u32)(packed<<27)>>27;
+y=(u32)(packed<<22)>>27;
+unitKind=(u32)(packed<<17)>>27;
+owner=(u32)(packed<<14)>>29;
+mode=(u32)(packed<<10)>>28;
+state=(u32)(packed<<8)>>30;
+unit=CreateMapUnit(x,y,unitKind,owner);
 if(unit) {
-RestoreKind(unit,kind);
+RestoreKind(unit,mode);
 RestoreX(unit,x);
 RestoreY(unit,y);
 RestoreState(unit,state);
 if(state==3) {
-s32 v2=M2C_FIELD(*gCurrentMap+player*0x8c,s32 *,0x6810);
-if((u32)(v2<<24)>>24)SetPlayerSelectedUnit(player,unit);
+s32 playerRecord=M2C_FIELD((u8 *)*gCurrentMap+owner*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE);
+if((u32)(playerRecord<<24)>>24)SetPlayerSelectedUnit(owner,unit);
 }
 }
-i++;src++;
-}while(i<M2C_FIELD(a,u8 *,0x2f));
+unitIndex++;entry++;
+}while(unitIndex<((MapRecordHeader *)record)->unitCount);
 }
 
 void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void *);void SetPlayerIdForSlot(s32,s32);s32 i;u8 *base;StringCopy((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)SetPlayerIdForSlot(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
@@ -276,7 +278,7 @@ void func_020c8564(M2C_UNK arg0) {
     M2C_UNK func_020c8214();
 
     func_020c8214();
-    func_020c82cc(arg0);
+    RestoreMapUnits(arg0);
 }
 
 s32 func_020c857c(M2C_UNK arg0) {
@@ -291,7 +293,7 @@ s32 func_020c857c(M2C_UNK arg0) {
         return 0;
     }
     ApplyMapRecord(temp_r0);
-    func_020c82cc(temp_r0);
+    RestoreMapUnits(temp_r0);
     func_020cf2c8();
     RefreshMapView();
     return 1;

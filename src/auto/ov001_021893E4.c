@@ -304,7 +304,7 @@ void func_ov001_02189ad0(void) {
     s32 func_0200b184(void *, void *, s32);
     void func_0200b6a8(void *, s32, s32);
     s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
-    s32 func_0200b3ec(void *, s32, s32);
+    s32 LoadArchiveIndex(void *, s32, s32);
     s32 func_ov001_0218a698(s32, s32, s32);
     void func_0200563c(void *, void *, ...);
     void SetFileDirectory(void *);
@@ -341,10 +341,10 @@ void func_ov001_02189ad0(void) {
     if (!func_0200b2bc((u8 *)data_ov001_02193e2c + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
         SystemHalt();
     }
-    dataSize = func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
+    dataSize = LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
     data = (void *)func_ov001_0218b6f8(dataSize, 4);
     *(void **)data_ov001_02193e2c = data;
-    func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, dataSize);
+    LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, dataSize);
     M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84) = (s32)func_ov001_0218a698(0x20, (s32)((u8 *)data_ov001_02193e2c + 4), 4);
     func_0200563c(dirName, data_ov001_021917ac, data_ov001_0218fd04);
     SetFileDirectory(dirName);

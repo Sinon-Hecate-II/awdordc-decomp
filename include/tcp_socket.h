@@ -51,9 +51,13 @@
 
 /* IPv4 fragmentation: at most 1480 payload bytes per fragment, the fragment
  * offset counts 8-byte units, and the more-fragments flag is 0x2000. */
+#define IP_HEADER_SIZE          20
+#define LINK_HEADER_SIZE        8  /* link-layer header the stack prepends to a frame */
+#define IP_LOOPBACK             0x7F000001u /* 127.0.0.1 in host order */
 #define IP_MAX_FRAGMENT_PAYLOAD 1480
 #define IP_FRAGMENT_UNIT        8
 #define IP_FLAG_MOREFRAGMENTS   0x2000
+#define ETH_TYPE_IPV4           0x0800 /* Ethernet type of an IPv4 frame */
 
 /* IPv4 protocol numbers used by the transport senders. */
 #define IP_PROTO_ICMP 1
@@ -68,5 +72,15 @@
 #define SOCK_REMOTE_PORT 0x18 /* u16 remote (destination) port */
 #define SOCK_REMOTE_IP   0x1C /* u32 remote IPv4 address, host order */
 #define SOCK_SEND_BUFFER 0x4C /* void *send buffer; its +0x22 is where the transport header starts */
+
+/* Deferred socket callback machinery (gSocketEventState / gSocketEventCallbacks,
+ * formerly data_0213e4c4 / data_0213e4d4).  Network-stack code that must not run
+ * reentrantly registers a callback here; FlushSocketCallbacks runs the queue
+ * (count entries, last-to-first) once the network stack is idle and armed. */
+#define SOCK_EVENT_FLUSH_CB  0x00 /* void (*)(void) one-shot, run after the queued callbacks */
+#define SOCK_EVENT_IDLE_CB   0x04 /* void (*)(void) one-shot, run when the link comes back from idle */
+#define SOCK_EVENT_COUNT     0x08 /* s32 number of callbacks queued in gSocketEventCallbacks */
+#define SOCK_EVENT_ARMED     0x0C /* s32 nonzero once the network link is up (events may then flush) */
+#define SOCK_EVENT_QUEUE_LEN 64 /* callbacks gSocketEventCallbacks can hold */
 
 #endif

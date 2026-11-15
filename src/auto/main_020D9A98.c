@@ -5,7 +5,7 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void func_020d47d0(void);M2C_UNK ResetPlayerMask(void);M2C_UNK func_020d47f0(void);s32 func_ov010_022282b4(s32);void func_02086208(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
+void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void func_020d47d0(void);M2C_UNK ResetPlayerMask(void);M2C_UNK func_020d47f0(void);s32 func_ov010_022282b4(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 func_02084fc0(0);
@@ -16,7 +16,7 @@ func_02085414();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_F
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();func_020d47f0();}break;
 case 1:case 2:
 if(!func_ov010_022282b4(6)&&func_ov010_022282b4(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
-if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)func_02086208(7);
+if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)CreateVoiceChatWidget(7);
 func_02085414();func_02084eec(M2C_FIELD(a,s32 *,0x18));func_020d47d0();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();func_020d47f0();}break;
 }
@@ -200,11 +200,14 @@ void func_020da1e8(void *arg0) {
 void func_020da22c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
-void func_020da2a0(void *a) {
+/* Two-option menu entry: draws its two 5-step bars with the selected one in the
+   brighter palette, then mirrors the selection into bit 2 of the local player's
+   network status while the Wi-Fi overlay is up. Plays the cursor sound on a change. */
+void UpdateToggleOption(void *entry) {
     M2C_UNK SetTileRectPalette(u16 *, s32, s32, u32);
     M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-    s32 GetActiveOverlay(void);void *func_ov010_02229b00(void); s32 state; void *p;
+    s32 GetActiveOverlay(void); void *GetLocalPlayerStatus(void); s32 current; void *status;
     void **saved = gCur3DSpriteEngine;
     s32 i, x, y;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -215,14 +218,21 @@ void func_020da2a0(void *a) {
         SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 8 + (x << 6)),
                       24,
                       (u16)(y - x),
-                      (u16)(M2C_FIELD(a, u8 *, 0) != i ? 7 : 8));
+                      (u16)(M2C_FIELD(entry, u8 *, 0) != i ? 7 : 8));
         { s32 nx = x + 5; s32 ny = y + 5; i++; x = (s16)nx; y = (s16)ny; }
     } while (i < 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
     gCur3DSpriteEngine = saved;
-    if(GetActiveOverlay()==2) state=(M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4)?1:0;else state=0;
-    {s32 selected=M2C_FIELD(a,u8 *,0);if(selected==state)return;state=selected;}
-    if(GetActiveOverlay()==2){p=func_ov010_02229b00();if(state==1)M2C_FIELD(p,u8 *,0x1a)|=4;else M2C_FIELD(p,u8 *,0x1a)&=~4;}
+
+    if (GetActiveOverlay() == 2) current = (M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1a) & 4) ? 1 : 0;
+    else current = 0;
+    { s32 selected = M2C_FIELD(entry, u8 *, 0); if (selected == current) return; current = selected; }
+
+    if (GetActiveOverlay() == 2) {
+        status = GetLocalPlayerStatus();
+        if (current == 1) M2C_FIELD(status, u8 *, 0x1a) |= 4;
+        else M2C_FIELD(status, u8 *, 0x1a) &= ~4;
+    }
     PlaySoundEffect(0x10019);
 }
 
@@ -259,7 +269,7 @@ void func_020da480(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK, void *);
     M2C_UNK LoadFileToSpriteBuffer(void *, M2C_UNK, M2C_UNK);
     M2C_UNK CloseNarcArchive(void);
-    M2C_UNK func_020ae22c(M2C_UNK);
+    M2C_UNK GetUiColor(M2C_UNK);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK func_020d47f0(void);
@@ -342,7 +352,7 @@ void func_020da480(void *arg0) {
 
     LoadFileToSpriteBuffer(data_0212d234, 0x2c0, 0x20);
     CloseNarcArchive();
-    r0v = func_020ae22c(9);
+    r0v = GetUiColor(9);
     func_0208ca2c(0x1000, 1, r0v, 2);
 
     gCur3DSpriteEngine = g3DSpriteEngineSub;

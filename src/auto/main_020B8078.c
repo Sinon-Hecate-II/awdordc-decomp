@@ -345,7 +345,7 @@ void func_020b8970(void *arg0) {
     s32 func_020a8b78(void);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    s32 func_020ae22c(s32);
+    s32 GetUiColor(s32);
     u8 func_020b846c(s32);
     void RedrawListRows(s32);
     void func_020b8910(void);
@@ -409,7 +409,7 @@ void func_020b8970(void *arg0) {
     }
     func_02088f1c(M2C_FIELD(arg0, void **, 0x50));
     func_020c0fac(arg0);
-    func_0208ca2c((void *) 0x6b80, 0xb, func_020ae22c(0xc), 2);
+    func_0208ca2c((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
     func_0209c048(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
     func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
     func_0209c048(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);

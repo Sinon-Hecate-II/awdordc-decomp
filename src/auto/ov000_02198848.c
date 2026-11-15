@@ -84,10 +84,10 @@ void func_ov000_02198c08(void) {
     M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK func_ov000_0219c508(s32, M2C_UNK);
     extern s32 *gCurrentMap;
-    extern M2C_UNK data_ov000_021e0a58;
+    extern M2C_UNK gAiInfluenceMap;
     func_ov000_0219c508(*gCurrentMap + 0x2840, 0);
     func_ov000_0219c508(*gCurrentMap + 0x2D48, 0);
-    MI_CpuFill8(&data_ov000_021e0a58, 0, 0x508);
+    MI_CpuFill8(&gAiInfluenceMap, 0, 0x508);
 }
 
 void func_ov000_02198c60(void) {
@@ -99,7 +99,7 @@ void func_ov000_02198c60(void) {
     void AddPlayerThreatInfluence(u8);
     extern s32 *data_027e0058;
     extern void *gAiCommandState;
-    extern M2C_UNK data_ov000_021e0a58;
+    extern M2C_UNK gAiInfluenceMap;
     u8 state;
     u16 saved;
     s32 i;
@@ -135,7 +135,7 @@ void func_ov000_02198c60(void) {
         row = M2C_FIELD(*data_027e0058, u16 *, 0x3758 + yi * 2);
         M2C_FIELD(*data_027e0058, u8 *, 0x2D48 + xi + row) = 0;
         width = M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-        M2C_FIELD(data_ov000_021e0a58, u8 *, (s32)yi * (s32)width + (s32)xi) = 0;
+        M2C_FIELD(gAiInfluenceMap, u8 *, (s32)yi * (s32)width + (s32)xi) = 0;
     }
 
     M2C_FIELD(*data_027e0058, u16 *, 0x52B6) = saved;

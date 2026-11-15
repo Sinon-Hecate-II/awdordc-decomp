@@ -76,6 +76,35 @@ typedef struct ResourceArchive {
     void *objectBlock;  /* +0x8C loaded object table section */
 } ResourceArchive;
 
+/* A file archive handle (the game's main data pack and the overlay archives).
+ * The handle keeps the archive image in memory (+0x28) and the two index tables
+ * the file lookups walk - the file allocation table (FAT) and the file name
+ * table (FNT) - each as a byte position (+0x2C/+0x34) and byte size pair
+ * (+0x30/+0x38). Loading the index moves both tables off the file into a memory
+ * pool (+0x44, +0x2C/+0x34 become their addresses there) and switches the
+ * handle's read callback (+0x50) to a plain memory copy. */
+typedef struct FSArchive {
+    u8 pad00[0x1C];
+    u32 state;         /* +0x1C FS_ARCHIVE_* bits */
+    u8 pad20[0x08];    /* +0x20 */
+    void *image;       /* +0x28 archive image base in memory */
+    s32 fatPos;        /* +0x2C FAT byte position (file offset, then pool) */
+    s32 fatSize;       /* +0x30 FAT byte size */
+    s32 fntPos;        /* +0x34 FNT byte position (file offset, then pool) */
+    s32 fntSize;       /* +0x38 FNT byte size */
+    s32 fatBase;       /* +0x3C FAT base position */
+    s32 fntBase;       /* +0x40 FNT base position */
+    void *pool;        /* +0x44 pool the index tables were loaded into */
+    void *readProc;    /* +0x48 default read callback */
+    void *writeProc;   /* +0x4C default write callback */
+    void *proc;        /* +0x50 active read callback */
+} FSArchive;
+
+/* FSArchive::state bits. */
+#define FS_ARCHIVE_NAMED      1 /* registered under a name */
+#define FS_ARCHIVE_LAYOUT     2 /* FAT/FNT layout set by SetArchiveLayout */
+#define FS_ARCHIVE_IN_MEMORY  4 /* index tables loaded into memory */
+
 /* A byte position in an open file's stream. FileStreamRead reads from it and
  * advances the offset by the number of bytes read. */
 typedef struct FSStreamPos {

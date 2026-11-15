@@ -284,29 +284,34 @@ u8 IsAllyUnitAtCell(u32 arg0,s32 arg1) {
  return 0;
 }
 
-u32 CellMoveScore(s32 x,s32 y,s32 a,s32 b){
-extern void **gCurrentMap;
-extern u8 data_ov000_021e0a58[],gUnitKindFlags[],data_ov000_021dfb04[],gAiRangeBitmap[],data_ov000_021dfa60[],data_ov000_021dfba8[];
-void *base=*gCurrentMap;
-u32 row=M2C_FIELD(base+y*2,u16 *,0x3758);
-u8 *cell=(u8 *)base+(x+row);
-s32 d=M2C_FIELD(cell,u8 *,0x2d48);
-void *unit=M2C_FIELD(base,void **,0x52d0);
-s32 unitByte=M2C_FIELD(unit,u8 *,0);s32 kind=(u32)(unitByte<<26)>>26;
-s32 width=M2C_FIELD(base,u16 *,0x5144);u32 index=y*width+x;
-u8 flags=gUnitKindFlags[kind*112];
-u32 result=(data_ov000_021e0a58[index]+((a*M2C_FIELD(cell,u8 *,0x2840)+b*d)<<8))<<2;
-if(flags&7){
-s32 first=(u8)(data_ov000_021dfb04[index>>3]&(1<<(index&7)))==0?1:0;
-s32 second=(u8)((1<<(index&7))&gAiRangeBitmap[index>>3])!=0?0:2;
-result|=second|first;
-}
-if(flags&16){
-s32 first=(u8)(data_ov000_021dfa60[index>>3]&(1<<(index&7)))==0?1:0;
-s32 second=(u8)((1<<(index&7))&data_ov000_021dfba8[index>>3])!=0?0:2;
-result|=second|first;
-}
-return result;
+/* Score moving the selected unit onto tile (x, y): the cell's AI influence plus the
+ * weighted direct and indirect threat there, with bonus bits for a cell no ally's
+ * direct (bit 0) or indirect (bit 1) attack range covers. */
+u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
+    extern void **gCurrentMap;
+    extern u8 gAiInfluenceMap[], gUnitKindFlags[], data_ov000_021dfb04[], gAiRangeBitmap[], data_ov000_021dfa60[], gAiIndirectRangeBitmap[];
+    void *base = *gCurrentMap;
+    u32 row = M2C_FIELD(base + y * 2, u16 *, MAP_ROW_OFFSETS);
+    u8 *cell = (u8 *) base + (x + row);
+    s32 indirectThreat = M2C_FIELD(cell, u8 *, MAP_CELL_THREAT_INDIRECT);
+    void *unit = M2C_FIELD(base, void **, MAP_CURSOR_UNIT);
+    s32 unitByte = M2C_FIELD(unit, u8 *, MAP_UNIT_KIND);
+    s32 kind = (u32) (unitByte << 26) >> 26;
+    s32 width = M2C_FIELD(base, u16 *, MAP_WIDTH);
+    u32 index = y * width + x;
+    u8 flags = gUnitKindFlags[kind * 112];
+    u32 score = (gAiInfluenceMap[index] + ((directWeight * M2C_FIELD(cell, u8 *, MAP_CELL_THREAT_DIRECT) + indirectWeight * indirectThreat) << 8)) << 2;
+    if (flags & 7) {
+        s32 notCovered = (u8) (data_ov000_021dfb04[index >> 3] & (1 << (index & 7))) == 0 ? 1 : 0;
+        s32 outOfRange = (u8) ((1 << (index & 7)) & gAiRangeBitmap[index >> 3]) != 0 ? 0 : 2;
+        score |= outOfRange | notCovered;
+    }
+    if (flags & 16) {
+        s32 notCovered = (u8) (data_ov000_021dfa60[index >> 3] & (1 << (index & 7))) == 0 ? 1 : 0;
+        s32 outOfRange = (u8) ((1 << (index & 7)) & gAiIndirectRangeBitmap[index >> 3]) != 0 ? 0 : 2;
+        score |= outOfRange | notCovered;
+    }
+    return score;
 }
 
 /* Returns the id of the best unit the current player can still be ordered to

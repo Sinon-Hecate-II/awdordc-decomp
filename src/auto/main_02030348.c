@@ -1,5 +1,6 @@
 /* 27 functions from 0x02030348 to 0x02031290 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 s32 func_02030348(void){void *func_0202f48c(s32);s32 func_0202f57c(void);s32 func_02030400(void *);void *p; s32 r;p=func_0202f48c(1);r=func_0202f57c();if(r<4)return func_02030398(r);else if(r<5)return func_020303dc();else if(r==5)return func_020303e4(p);else return func_02030400(p);}
 
@@ -201,7 +202,7 @@ s32 func_02030a38(void) {
     u32 Wfc_GetLinkState(void);
     s32 func_02030c78(void *);
     s32 func_02030cc8(void *);
-    s32 func_02030db4(void *);
+    s32 Wfc_SendFriendRecords(void *);
     s32 func_02030edc(void *);
     s32 func_020310c0(void *, s32);
     void *ctx;
@@ -221,7 +222,7 @@ s32 func_02030a38(void) {
             if (state == 3) {
                 state = func_02030cc8(ctx);
             } else if (state == 4) {
-                state = func_02030db4(ctx);
+                state = Wfc_SendFriendRecords(ctx);
             } else if (state == 5) {
                 state = func_02030edc(ctx);
             }
@@ -289,18 +290,24 @@ s32 func_02030d6c(void *a) {
  return 3;
 }
 
-s32 func_02030db4(void *a){
-void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 func_02072088(u64,u64);s32 off;
-if(func_02072088((GetSystemTick()-M2C_FIELD(a,u64 *,0xcb0))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(a+M2C_FIELD(a,u8 *,0xd0f)*4,u8 *,0x447)<<24)>>31 ==1){
-M2C_FIELD(a+0x447,u8 *,M2C_FIELD(a,u8 *,0xd0f)*4)|=128;
-while(M2C_FIELD(a,u8 *,0xd0f)<M2C_FIELD(a,u8 *,0xd12)){
-if(!((u32)(M2C_FIELD(a+M2C_FIELD(a,u8 *,0xd0f)*4,u8 *,0x447)<<24)>>31))break;
-M2C_FIELD(a,u8 *,0xd0f)++;
+/* WFC friend-connection state 4: sends the friend records one at a time.  A
+ * record is sent once its slot is marked (bit 7 of its flag byte) or the send
+ * times out, walking WFC_STATE_WORK_INDEX forward; when every record is done it
+ * asks func_02030ffc for the next state.  Each record lives at
+ * WFC_STATE_RECORDS + index*WFC_RECORD_STRIDE and the code at +0xC is sent with
+ * the u16 at +0x36 (minus one) as the entry count.  Returns the state to use. */
+s32 Wfc_SendFriendRecords(void *state) {
+void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 func_02072088(u64,u64);s32 offset;
+if(func_02072088((GetSystemTick()-M2C_FIELD(state,u64 *,WFC_STATE_TIMER))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,WFC_STATE_RECORD_FLAGS)<<24)>>31 ==1){
+M2C_FIELD(state+WFC_STATE_RECORD_FLAGS,u8 *,M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4)|=128;
+while(M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)<M2C_FIELD(state,u8 *,WFC_STATE_RECORD_COUNT)){
+if(!((u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,WFC_STATE_RECORD_FLAGS)<<24)>>31))break;
+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)++;
 }
-if(M2C_FIELD(a,u8 *,0xd12)<=M2C_FIELD(a,u8 *,0xd0f)){M2C_FIELD(a,u8 *,0xd0f)=0;return func_02030ffc(a,4);}
-M2C_FIELD(a,u64 *,0xcb0)=GetSystemTick();
-off=(s16)M2C_FIELD(a,u8 *,0xd0f)*(s16)192;
-func_020311e4((s32)(a+0x474+off),(s32)(a+0x47c+off),M2C_FIELD(a+off,u16 *,0x4a6)-1,0x300000);
+if(M2C_FIELD(state,u8 *,WFC_STATE_RECORD_COUNT)<=M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)){M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)=0;return func_02030ffc(state,4);}
+M2C_FIELD(state,u64 *,WFC_STATE_TIMER)=GetSystemTick();
+offset=(s16)M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*(s16)WFC_RECORD_STRIDE;
+func_020311e4((s32)(state+0x474+offset),(s32)(state+0x47c+offset),M2C_FIELD(state+offset,u16 *,0x4a6)-1,0x300000);
 }return 4;}
 
 s32 func_02030edc(void *a){

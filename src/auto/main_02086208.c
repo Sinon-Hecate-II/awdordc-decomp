@@ -5,44 +5,62 @@ extern const Vec02086dfc data_020f3578, data_020f3584;
 extern void (*data_02168fe8)(void);
 extern u8 data_02157718[4];
 
-void func_02086208(s32 a){
-void *FindObjectByClass(M2C_UNK *);s16 Divide(s32,s32);s32 func_01ffa3dc(M2C_UNK *,s32);void *func_ov010_02229b00(void);void *MemAlloc(s32);
-extern M2C_UNK data_021021d0,data_021021c4;extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
-s32 saved;void *p;void *q;
+/* Push-to-talk voice-chat widget (same fields as the definition in main_020852F4). */
+typedef struct VoiceChatWidget {
+    u8  filler_00[0x34];
+    s16 x;               /* +0x34 */
+    s16 y;               /* +0x36 */
+    s32 enabled;         /* +0x38 nonzero while the widget is shown */
+    s32 initialized;     /* +0x3C set on the first update */
+    s32 lastVoice;       /* +0x40 last voice-data-ready value seen */
+    u8  filler_44[4];
+    s32 talkHeld;        /* +0x48 Y button was held last update */
+    u8  filler_4c[2];
+    s16 refreshTimer;    /* +0x4E cooldown before the fade may be re-targeted */
+    SpriteTween *anim;   /* +0x50 volume fade */
+} VoiceChatWidget;
+
+/* Create the push-to-talk voice-chat widget on the sub engine while the ov010
+ * overlay is active: place it, enable it from the local player's status and set
+ * up its volume fade in the neutral (127) position. */
+void CreateVoiceChatWidget(s32 mode){
+void *FindObjectByClass(M2C_UNK *);s16 Divide(s32,s32);s32 func_01ffa3dc(M2C_UNK *,s32);void *GetLocalPlayerStatus(void);void *MemAlloc(s32);
+extern M2C_UNK gVoiceChatWidgetClass,gVoiceChatWidgetVtbl;extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
+s32 saved;VoiceChatWidget *p;SpriteTween *q;
 if(GetActiveOverlay()!=2)return;
-if(FindObjectByClass(&data_021021d0))return;
+if(FindObjectByClass(&gVoiceChatWidgetClass))return;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-p=(void *)func_01ffa3dc(&data_021021d0,a);
+p=(VoiceChatWidget *)func_01ffa3dc(&gVoiceChatWidgetClass,mode);
 if(p){
-M2C_FIELD(p,void **,0)=&data_021021c4;
-M2C_FIELD(p,u16 *,0x34)=0xde;M2C_FIELD(p,u16 *,0x36)=1;
-M2C_FIELD(p,s32 *,0x38)=M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4;
-M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,s32 *,0x40)=0;M2C_FIELD(p,s32 *,0x44)=0;M2C_FIELD(p,s32 *,0x48)=0;
+M2C_FIELD(p,void **,0)=&gVoiceChatWidgetVtbl;
+p->x=0xde;p->y=1;
+p->enabled=M2C_FIELD(GetLocalPlayerStatus(),u8 *,0x1a)&4;
+p->initialized=0;p->lastVoice=0;M2C_FIELD(p,s32 *,0x44)=0;p->talkHeld=0;
 M2C_FIELD(p,u8 *,0x4c)=0;M2C_FIELD(p,u8 *,0x4d)=0;
-M2C_FIELD(p,u16 *,0x4e)=Divide(0x2bf20,1000);
-q=MemAlloc(18);
+p->refreshTimer=Divide(0x2bf20,1000);
+q=(SpriteTween *)MemAlloc(18);
 if(q){
-M2C_FIELD(q,u8 *,0)=1;M2C_FIELD(q,u8 *,1)=0;
-M2C_FIELD(q,u16 *,2)=0;M2C_FIELD(q,u16 *,4)=0;M2C_FIELD(q,u16 *,6)=1;M2C_FIELD(q,u16 *,8)=0;M2C_FIELD(q,u16 *,10)=1;M2C_FIELD(q,u16 *,12)=1;M2C_FIELD(q,u16 *,14)=0;M2C_FIELD(q,u16 *,16)=0;
+q->mode=1;q->done=0;
+q->current=0;q->start=0;q->step=1;q->base=0;q->amplitude=1;q->duration=1;q->from=0;q->to=0;
 M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,volatile u16 *,4);
 }
-M2C_FIELD(p,void **,0x50)=q;
-M2C_FIELD(q,u16 *,14)=127;M2C_FIELD(q,u16 *,16)=127;M2C_FIELD(q,u16 *,12)=0;M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,u16 *,4);
+p->anim=q;
+q->from=127;q->to=127;q->duration=0;q->current=q->start;
 }
 gCur3DSpriteEngine=saved;
 }
 
 void func_02086330(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
-    extern M2C_UNK data_021021d0;
-    func_01ffa9e4(&data_021021d0);
+    extern M2C_UNK gVoiceChatWidgetClass;
+    func_01ffa9e4(&gVoiceChatWidgetClass);
 }
 
 void func_02086344(void) {
     void *FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_021021d0;
+    extern M2C_UNK gVoiceChatWidgetClass;
     void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_021021d0);
+    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
     if (temp_r0 == 0) {
         return;
     }
@@ -52,9 +70,9 @@ void func_02086344(void) {
 
 void func_02086370(void) {
     void *FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_021021d0;
+    extern M2C_UNK gVoiceChatWidgetClass;
     void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_021021d0);
+    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
     if (temp_r0 == 0) {
         return;
     }
@@ -65,9 +83,9 @@ void func_02086370(void) {
 void func_0208639c(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_02091cd0(void *);
-    extern M2C_UNK data_021021d0;
+    extern M2C_UNK gVoiceChatWidgetClass;
     void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_021021d0);
+    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
     if (temp_r0 == 0) {
         return;
     }
@@ -78,9 +96,9 @@ void func_0208639c(void) {
 
 void func_020863cc(void) {
     void *FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_021021d0;
+    extern M2C_UNK gVoiceChatWidgetClass;
     void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_021021d0);
+    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, s8 *, 0x4C) = 0;
         M2C_FIELD(temp_r0, s8 *, 0x4D) = 0;
@@ -90,9 +108,9 @@ void func_020863cc(void) {
 void func_020863f0(void) {
     void *FindObjectByClass(M2C_UNK *);
     s16 Divide(s32, s32);
-    extern M2C_UNK data_021021d0;
+    extern M2C_UNK gVoiceChatWidgetClass;
     void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_021021d0);
+    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
     if (temp_r0 == NULL) {
         return;
     }
@@ -119,8 +137,8 @@ void *func_02086478(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK func_02090640(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209066c(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_021021c4;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021021c4;
+    extern M2C_UNK gVoiceChatWidgetVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
     if (M2C_FIELD(arg0, s32 *, 0x50) != 0) {
         MemFree();
     }
@@ -134,8 +152,8 @@ void *func_020864c4(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK func_02090640(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209066c(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_021021c4;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021021c4;
+    extern M2C_UNK gVoiceChatWidgetVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
     if (M2C_FIELD(arg0, s32 *, 0x50) != 0) {
         MemFree();
     }

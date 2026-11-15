@@ -11,7 +11,7 @@ s32 IsCarrierUnitKind(u32);
 s32 func_020d0164(s32, s32);
 s32 IsUnitOnCurrentTeam(s32);
 s32 func_020d280c(u16, u8, s32);
-s32 func_020d2d18(u16, s32);
+s32 GetUnitBuildCost(u16, s32);
 s32 func_ov000_0219c508(s32, s32);
 s32 GetUnitDamagePercent(u32, s32);
 s32 GetUnitMoveRange(s32, u32);
@@ -24,7 +24,7 @@ extern u8 data_ov000_021df918;
 extern u8 data_ov000_021df9bc;
 extern u8 data_ov000_021dfa60;
 extern u8 data_ov000_021dfb04;
-extern u8 data_ov000_021dfba8;
+extern u8 gAiIndirectRangeBitmap;
 extern u8 data_ov000_021dfc4c;
 extern u8 gAiRangeBitmap;
 extern u8 gAiRangeLayer;
@@ -274,7 +274,7 @@ void func_ov000_02181c88(void) {
     s8 *var_r9_4;
     
     MI_CpuFill8(&gAiRangeBitmap, 0, 0xA1);
-    MI_CpuFill8(&data_ov000_021dfba8, 0, 0xA1);
+    MI_CpuFill8(&gAiIndirectRangeBitmap, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021df918, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021dfb04, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021dfa60, 0, 0xA1);
@@ -942,7 +942,7 @@ void func_ov000_02181c88(void) {
         } while (temp_r0_11 < (s32) M2C_FIELD(var_r7_8, u16 *, 0x5146));
     }
     temp_r4_2 = M2C_FIELD(var_r7_8, u16 *, 0x52A4);
-    if ((s32) (func_020d2d18(temp_r4_2, 0xE) * 0xA) <= (s32) M2C_FIELD(((temp_r4_2 * 0x8C) + var_r7_8), s32 *, 0x67A4)) {
+    if ((s32) (GetUnitBuildCost(temp_r4_2, 0xE) * 0xA) <= (s32) M2C_FIELD(((temp_r4_2 * 0x8C) + var_r7_8), s32 *, 0x67A4)) {
         FillMapLayer(0);
         sp34 = 0;
         var_r5 = *gCurrentMap;
@@ -1095,7 +1095,7 @@ void func_ov000_02181c88(void) {
                 }
                 if (var_r10_6 >= var_ip) {
                     temp_r4_4 = (var_lr * M2C_FIELD((*sp28), u16 *, 0x5144)) + var_r2_9;
-                    M2C_FIELD((&data_ov000_021dfba8 + (temp_r4_4 >> 3)), u8 *, 0) = M2C_FIELD((&data_ov000_021dfba8 + (temp_r4_4 >> 3)), u8 *, 0) | (1 << (temp_r4_4 & 7));
+                    M2C_FIELD((&gAiIndirectRangeBitmap + (temp_r4_4 >> 3)), u8 *, 0) = M2C_FIELD((&gAiIndirectRangeBitmap + (temp_r4_4 >> 3)), u8 *, 0) | (1 << (temp_r4_4 & 7));
                 }
                 var_r2_9 += 1;
                 var_r0_33 = *sp28;

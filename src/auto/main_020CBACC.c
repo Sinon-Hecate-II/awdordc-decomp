@@ -356,25 +356,29 @@ void CancelMapCursorAnimation(void) {
     func_01ffa9e4(&data_0212b1dc);
 }
 
-void func_020cc6b8(void){
+/* Confirms the action on the battle map's current target: an empty cell queues a
+ * move command (kind 4) with the unit id, a cell holding a unit queues an attack
+ * command (kind 5) with the tile; a human player's cursor distance to the target
+ * then records one or two cursor-movement stats. */
+void SubmitCursorTarget(void){
 extern s32 data_0215be0c;extern void **gCurrentMap;
 s32 func_020d46cc(void);void func_020d46ac(void);void func_020c75cc(void);void func_020d468c(void);
 void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void AddRecordValue(s32,s32);
-void *p; s32 n;
+MapTargetEntry *target; s32 distance;
 if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else func_020c75cc();return;}
-p=GetTargetPosition();
-if(M2C_FIELD(p,u16 *,2)==0){
+target=(MapTargetEntry *)GetTargetPosition();
+if(target->value==0){
 func_020d468c();
-func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,u16 *,0)&255,0);
+func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->id&255,0);
 }else{
 func_020d468c();
-func_ov000_02199f50(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s16 *,4)&255,M2C_FIELD(p,s16 *,6)&255);
+func_ov000_02199f50(5,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->x&255,target->y&255);
 }
-if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return;
-n=(M2C_FIELD(*gCurrentMap,s16 *,0x52dc)-M2C_FIELD(p,s16 *,4))+(M2C_FIELD(*gCurrentMap,s16 *,0x52de)-M2C_FIELD(p,s16 *,6));
-if(n<0)n=-n;
-if(n==0)return;
-if(n==1)AddRecordValue(7,1);else AddRecordValue(8,1);
+if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return;
+distance=(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X)-target->x)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y)-target->y);
+if(distance<0)distance=-distance;
+if(distance==0)return;
+if(distance==1)AddRecordValue(7,1);else AddRecordValue(8,1);
 }
 
 void func_020cc7e0(void) {

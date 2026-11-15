@@ -17,7 +17,7 @@ void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 func_02088da8(void*); void func_020e4c64(void);
+void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
@@ -81,7 +81,7 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,vo
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
-func_0208b698(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);func_02088da8(M2C_FIELD(obj,void**,0x64));
+func_0208b698(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;func_020e4c64();
 }
 #pragma opt_propagation reset
@@ -90,7 +90,7 @@ void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 func_02088da8(void*); void func_020e4c64(void);
+void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *p; void *q; void *saved;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
@@ -154,7 +154,7 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,vo
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
-func_0208b698(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);func_02088da8(M2C_FIELD(obj,void**,0x64));
+func_0208b698(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;func_020e4c64();
 }
 
@@ -211,7 +211,7 @@ M2C_UNK *func_020e304c(void) {
  * -1 the sprite is also given that value to display. */
 void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 resourceId, u8 style, s32 value, s32 owner, u8 secondLayer) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02088d94(void *);
+    M2C_UNK Show3DSprite(void *);
     M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
     M2C_UNK func_020aab24(void *, M2C_UNK, s32, u8, s32);
     M2C_UNK func_020aad18(void *);
@@ -263,7 +263,7 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
         fw3 = func_020aae10(sprite);
         func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw2, fh2, (s32)(u16) fw3, (s32)(u16) func_020aae44(sprite));
     }
-    func_02088d94(*outSprite);
+    Show3DSprite(*outSprite);
     func_020aad18(*outSprite);
     if (value == -1) {
         return;

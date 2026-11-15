@@ -1,5 +1,6 @@
 /* 21 functions from 0x02218AD0 to 0x02219ACC (ov007), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 static inline s32 ov007_item_id(void *p) {
     void *q = M2C_FIELD(p, void **, 0);
@@ -417,7 +418,7 @@ M2C_UNK GetPanelObject(void) {
 }
 
 void func_ov007_02219444(void *arg0) {
-M2C_UNK GetPanelObject(void); void func_02088eec(void *,s32); void func_02088da8(void *);
+M2C_UNK GetPanelObject(void); void func_02088eec(void *,s32); void Hide3DSprite(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile sp0; u16 **old; void *r4;
 r4=(void *)GetPanelObject();
@@ -433,26 +434,29 @@ func_02088eec(M2C_FIELD(r4,void **,0x44),8);
 func_02088eec(M2C_FIELD(r4,void **,0x48),8);
 func_02088eec(M2C_FIELD(r4,void **,0x4c),8);
 }
-func_02088da8(M2C_FIELD(r4,void **,0x50));
-func_02088da8(M2C_FIELD(r4,void **,0x54));
+Hide3DSprite(M2C_FIELD(r4,void **,0x50));
+Hide3DSprite(M2C_FIELD(r4,void **,0x54));
 M2C_FIELD(arg0,u16 *,0x54)=0;
 }
 
-void func_ov007_0221950c(void *arg) {
+/* Panel-open animation step: ease the CO panel's three values from 0 to 256 over
+ * 8 frames, drive the main engine's sprite split while it opens, and delete the
+ * animation object once the 8 frames are up. */
+void UpdatePanelOpen(void *arg) {
 s32 EaseInterpolate(s32,s32,s32,s32,s32); void DeleteSpriteObject(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
-u16 * volatile sp4; u16 **old; void *r4; s32 v;
-r4=(void *)GetPanelObject();
+u16 * volatile attrReg; u16 **old; void *panel; s32 split;
+panel=(void *)GetPanelObject();
 M2C_FIELD(arg,s16 *,0x54)++;
-M2C_FIELD(r4,u16 *,0x3c)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
-M2C_FIELD(r4,u16 *,0x3e)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
-if(M2C_FIELD(r4,u8 *,0x34)) {
-M2C_FIELD(r4,u16 *,0x40)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
-v=EaseInterpolate(0,16,4,M2C_FIELD(arg,s16 *,0x54),8);
+M2C_FIELD(panel,u16 *,OV007_PANEL_ANIM0)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
+M2C_FIELD(panel,u16 *,OV007_PANEL_ANIM1)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
+if(M2C_FIELD(panel,u8 *,OV007_PANEL_VARIANT_A)) {
+M2C_FIELD(panel,u16 *,OV007_PANEL_ANIM2)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
+split=EaseInterpolate(0,16,4,M2C_FIELD(arg,s16 *,0x54),8);
 old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
-sp4=*g3DSpriteEngineMain+9; *sp4=(*sp4 & ~0xc0)|0x40;
+attrReg=*g3DSpriteEngineMain+9; *attrReg=(*attrReg & ~0xc0)|0x40;
 M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=v;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=split;
 gCur3DSpriteEngine=old;
 }
 if(M2C_FIELD(arg,s16 *,0x54)>=8) DeleteSpriteObject(arg);
@@ -460,7 +464,7 @@ if(M2C_FIELD(arg,s16 *,0x54)>=8) DeleteSpriteObject(arg);
 
 void func_ov007_02219634(void) {
     M2C_UNK GetPanelObject(void);
-    void func_02088d94(void *);
+    void Show3DSprite(void *);
     void func_02089438(void *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
@@ -479,8 +483,8 @@ void func_ov007_02219634(void) {
     *sp4 = (*sp4 & ~0x400);
     sp0 = *gCur3DSpriteEngine;
     *sp0 = (*sp0 & ~0x800);
-    func_02088d94(M2C_FIELD(r4, void **, 0x50));
-    func_02088d94(M2C_FIELD(r4, void **, 0x54));
+    Show3DSprite(M2C_FIELD(r4, void **, 0x50));
+    Show3DSprite(M2C_FIELD(r4, void **, 0x54));
     func_02089438(M2C_FIELD(r4, void **, 0x50));
     func_02089438(M2C_FIELD(r4, void **, 0x54));
     M2C_FIELD(r4, u8 *, 0x34) = 0;
@@ -491,7 +495,7 @@ void func_ov007_022196f4(void *arg0) { M2C_UNK CreateSpriteObject(M2C_UNK *, M2C
 
 void func_ov007_0221970c(void *arg) {
 M2C_UNK GetPanelObject(void);
-void func_02088fc4(void *, int); void func_02088da8(void *);
+void func_02088fc4(void *, int); void Hide3DSprite(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile sp0; u16 **old; void *r4;
 r4=(void *)GetPanelObject();
@@ -503,29 +507,33 @@ func_02088fc4(M2C_FIELD(r4,void **,0x44),6);
 func_02088fc4(M2C_FIELD(r4,void **,0x48),6);
 func_02088fc4(M2C_FIELD(r4,void **,0x4c),6);
 }
-func_02088da8(M2C_FIELD(r4,void **,0x50));
-func_02088da8(M2C_FIELD(r4,void **,0x54));
+Hide3DSprite(M2C_FIELD(r4,void **,0x50));
+Hide3DSprite(M2C_FIELD(r4,void **,0x54));
 M2C_FIELD(arg,u16 *,0x54)=0;
 }
 
-void func_ov007_022197d4(void *arg) {
+/* Per-frame driver of the ov007 CO-power panel's close animation: eases the
+ * panel's three row scales from full size down to zero over six frames, glides
+ * the 3D sprite bank's split down the sheet, and deletes the driver object once
+ * the animation is over. */
+void UpdatePanelClose(void *driver) {
 s32 EaseInterpolate(s32,s32,s32,s32,s32); void DeleteSpriteObject(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
-u16 * volatile sp4; u16 **old; void *r4; s32 v;
-r4=(void *)GetPanelObject();
-M2C_FIELD(arg,s16 *,0x54)++;
-M2C_FIELD(r4,u16 *,0x3c)=EaseInterpolate(4,256,0,M2C_FIELD(arg,s16 *,0x54),6);
-M2C_FIELD(r4,u16 *,0x3e)=EaseInterpolate(4,256,0,M2C_FIELD(arg,s16 *,0x54),6);
-if(M2C_FIELD(r4,u8 *,0x35)) {
-M2C_FIELD(r4,u16 *,0x40)=EaseInterpolate(4,256,0,M2C_FIELD(arg,s16 *,0x54),6);
-v=EaseInterpolate(0,4,16,M2C_FIELD(arg,s16 *,0x54),6);
-old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
-sp4=*g3DSpriteEngineMain+9; *sp4=(*sp4 & ~0xc0)|0x40;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=v;
-gCur3DSpriteEngine=old;
+u16 * volatile bankAttr; u16 **savedEngine; void *panel; s32 rowsBelow;
+panel=(void *)GetPanelObject();
+M2C_FIELD(driver,s16 *,OV007_PANEL_ANIM_FRAME)++;
+M2C_FIELD(panel,u16 *,OV007_PANEL_ANIM0)=EaseInterpolate(EASE_OUT_QUAD,256,0,M2C_FIELD(driver,s16 *,OV007_PANEL_ANIM_FRAME),6);
+M2C_FIELD(panel,u16 *,OV007_PANEL_ANIM1)=EaseInterpolate(EASE_OUT_QUAD,256,0,M2C_FIELD(driver,s16 *,OV007_PANEL_ANIM_FRAME),6);
+if(M2C_FIELD(panel,u8 *,OV007_PANEL_VARIANT_B)) {
+M2C_FIELD(panel,u16 *,OV007_PANEL_ANIM2)=EaseInterpolate(EASE_OUT_QUAD,256,0,M2C_FIELD(driver,s16 *,OV007_PANEL_ANIM_FRAME),6);
+rowsBelow=EaseInterpolate(EASE_LINEAR,4,16,M2C_FIELD(driver,s16 *,OV007_PANEL_ANIM_FRAME),6);
+savedEngine=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
+bankAttr=*g3DSpriteEngineMain+9; *bankAttr=(*bankAttr & ~0xc0)|0x40;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_ABOVE)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_BELOW)=rowsBelow;
+gCur3DSpriteEngine=savedEngine;
 }
-if(M2C_FIELD(arg,s16 *,0x54)>=6) DeleteSpriteObject(arg);
+if(M2C_FIELD(driver,s16 *,OV007_PANEL_ANIM_FRAME)>=6) DeleteSpriteObject(driver);
 }
 
 /* Applies the panel's 3D-sprite setup to the main engine: when the panel is visible
@@ -535,7 +543,7 @@ if(M2C_FIELD(arg,s16 *,0x54)>=6) DeleteSpriteObject(arg);
 void UpdatePanelDisplay(void) {
     M2C_UNK GetPanelObject(void);
     void Clear3DSpriteLayer(s32);
-    void func_02088d94(void *);
+    void Show3DSprite(void *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
     u16 * volatile attrReg;
@@ -571,8 +579,8 @@ void UpdatePanelDisplay(void) {
     } else {
         savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        func_02088d94(M2C_FIELD(panel, void **, 0x50));
-        func_02088d94(M2C_FIELD(panel, void **, 0x54));
+        Show3DSprite(M2C_FIELD(panel, void **, 0x50));
+        Show3DSprite(M2C_FIELD(panel, void **, 0x54));
         bankD = *gCur3DSpriteEngine;
         *bankD = *bankD & ~0x200;
         bankE = *gCur3DSpriteEngine;

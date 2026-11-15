@@ -148,7 +148,7 @@ M2C_FIELD(p,volatile s16 *,0x70)|=4;return 0;
 s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     s32 LockMutex();
     s32 UnlockMutex();
-    s32 func_02006680();
+    s32 TryLockMutex();
     s32 func_02007580();
     s32 func_0201fd60(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     s32 func_020214a8();
@@ -189,7 +189,7 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
     }
     temp_r4 = M2C_FIELD(arg0, void **, 0x64);
     if (!(var_r5 & 1)) {
-        if (func_02006680(temp_r4 + 0xE0) == 0) {
+        if (TryLockMutex(temp_r4 + 0xE0) == 0) {
             return -6;
         }
     } else {
@@ -494,7 +494,7 @@ s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
 
 s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_020214a8();
-    s32 func_02006680(s32);
+    s32 TryLockMutex(s32);
     s32 func_0202058c(void *, s32, s32, s32, s32, s32);
     s32 temp_r4;
     s32 temp_r5;
@@ -525,7 +525,7 @@ s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     }
     temp_r4 = (s32) M2C_FIELD(arg0, void **, 0x68);
     if (!(arg5 & 4) && M2C_FIELD(arg0, s8 *, 0x72) == 0) {
-        if (func_02006680(temp_r4 + 0xE0) == 0) {
+        if (TryLockMutex(temp_r4 + 0xE0) == 0) {
             return -6;
         }
         var_ip = 0;

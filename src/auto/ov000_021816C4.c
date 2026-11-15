@@ -2,7 +2,7 @@
 #include "common.h"
 
 /* Update the active state and dispatch the appropriate handler. */
-void func_ov000_021816c4(void) {
+void RunAiRole2EmptyAction(void) {
     extern void **gCurrentMap;
     void *state;
 

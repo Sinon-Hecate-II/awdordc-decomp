@@ -389,7 +389,7 @@ M2C_FIELD(p,s32 *,0x5c)++;
 v=EaseInterpolate(0,0,16,M2C_FIELD(p,s32 *,0x5c),M2C_FIELD(p,s32 *,0x60));
 a=(u8)(16-v);b=(u8)v;
 for(i=0;i<16;i++){
-M2C_FIELD(p,u16 **,0x54)[i]=func_020ae354(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32 *,0x58),a,b);
+M2C_FIELD(p,u16 **,0x54)[i]=BlendRgb555_16(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32 *,0x58),a,b);
 }
 M2C_FIELD(data_027e01d8,u8 *,0x46)|=16;
 if(M2C_FIELD(p,s32 *,0x5c)==M2C_FIELD(p,s32 *,0x60)){
@@ -407,7 +407,7 @@ M2C_FIELD(p,s32 *,0x5c)++;
 v=EaseInterpolate(0,16,0,M2C_FIELD(p,s32 *,0x5c),M2C_FIELD(p,s32 *,0x64));
 a=(u8)(16-v);b=(u8)v;
 i=0; do {
-M2C_FIELD(p,u16 **,0x54)[i]=func_020ae354(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32 *,0x58),a,b);
+M2C_FIELD(p,u16 **,0x54)[i]=BlendRgb555_16(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32 *,0x58),a,b);
 i++; }while(i<16);
 M2C_FIELD(data_027e01d8,u8 *,0x46)|=16;
 if(M2C_FIELD(p,s32 *,0x5c)==M2C_FIELD(p,s32 *,0x64)){

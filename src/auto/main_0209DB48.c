@@ -266,11 +266,11 @@ void func_0209e158(s32 arg0) {
 }
 
 void func_0209e184(void *arg0, s8 arg1, u32 arg2, s32 arg3) {
-    M2C_UNK func_02088da8();
+    M2C_UNK Hide3DSprite();
     M2C_FIELD(arg0, s8 *, 0x5A) = arg1;
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 >> 5);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg3 << 0x18) >> 6));
-    func_02088da8();
+    Hide3DSprite();
 }
 
 void func_0209e1b0(void *arg0) {
@@ -359,7 +359,7 @@ loop_1:
 void func_0209e320(void *arg0) {
     extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
     extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
-    s32 func_02089064(void*);s32 func_02099014(void*);s32 func_020ae354(s32,s32,s32,s32);
+    s32 func_02089064(void*);s32 func_02099014(void*);s32 BlendRgb555_16(s32,s32,s32,s32);
     void func_020ae528(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
     s32 i;
     u8 *pal;
@@ -380,8 +380,8 @@ void func_0209e320(void *arg0) {
             func_0209e158((u16)(((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16));
             pal=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+(((((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16)<<5)&~1);
             c0=M2C_FIELD(pal,u16*,0x16);c1=M2C_FIELD(pal,u16*,0x18);c2=M2C_FIELD(pal,u16*,0x1a);
-            if(a[0x59]){if(func_02089064(a))c0=c1;}else c1=func_020ae354(c1,0,8,8);
-            if(b[0x59]){if(func_02089064(b))c0=c2;}else c2=func_020ae354(c2,0,8,8);
+            if(a[0x59]){if(func_02089064(a))c0=c1;}else c1=BlendRgb555_16(c1,0,8,8);
+            if(b[0x59]){if(func_02089064(b))c0=c2;}else c2=BlendRgb555_16(c2,0,8,8);
             M2C_FIELD(pal,u16*,6)=c1;M2C_FIELD(pal,u16*,8)=c2;M2C_FIELD(pal,u16*,10)=c0;
             if(!p[0x59])func_020ae528(pal);
             M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;

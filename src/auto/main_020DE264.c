@@ -37,7 +37,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void func_02080944(void *, s32, s32, s32);
     void func_0208e7ec(s32, s32);
     void func_02088f1c(void *);
-    void func_02088da8(void *);
+    void Hide3DSprite(void *);
     void SetTextById(void *, u32);
     s32 GetSpriteAnimValue(void *);
     void func_ov010_02228d48(s32, s32, s32, s32, s32, s32, s32);
@@ -90,7 +90,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     SetupSetFrame(ptr,(u16)(((SetupSprite*)ptr)->baseFrame+2),0);
 
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
-    func_02088da8(M2C_FIELD((void *)setup, void **, 0x60));
+    Hide3DSprite(M2C_FIELD((void *)setup, void **, 0x60));
     SetTextById(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
 
@@ -119,9 +119,9 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
 }
 
 s32 func_020de50c(s32 arg0, void *arg1) {
-s32 func_0203c0b0(s32,s32 *,s32); void *func_ov010_02229b00(void); extern M2C_UNK data_0212c5d8;
+s32 func_0203c0b0(s32,s32 *,s32); void *GetLocalPlayerStatus(void); extern M2C_UNK data_0212c5d8;
 s32 saved,a,n,v; register s32 d; s32 t; void *p;
-p=func_ov010_02229b00();
+p=GetLocalPlayerStatus();
 if(!(M2C_FIELD(p,u8 *,0x1a)&2)) return -1;
 saved=M2C_FIELD(p,s32 *,0x20);
 d=(saved>>12)-(func_0203c0b0(arg0,&data_0212c5d8,0x5dc000)>>12);
@@ -137,10 +137,10 @@ return v;
 
 s32 func_020de5b0(M2C_UNK arg0) {
     M2C_UNK func_0203c0b0(M2C_UNK, M2C_UNK *, s32);
-    void *func_ov010_02229b00();
+    void *GetLocalPlayerStatus();
     extern M2C_UNK data_0212c5e0;
     extern M2C_UNK data_0212c5d0;
-    if (!(M2C_FIELD(func_ov010_02229b00(), u8 *, 0x1A) & 2)) {
+    if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1A) & 2)) {
         return -1;
     }
     if (func_0203c0b0(arg0, &data_0212c5e0, 1) != 1) {
@@ -159,7 +159,7 @@ void func_020de610(void) {
  * menu sprites, then registers the scene's ov010 update callbacks. */
 M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
 void Clear3DSpriteLayer(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void OpenNarcArchive(void *); void LoadNarcFileDecompressed(void *,void *); void CloseNarcArchive(void); void func_02080944(void *,s32,s32,s32);
-void func_02088f1c(void *); void func_02088da8(void *); void SetTextById(void *,u32); s32 GetSpriteAnimValue(void *);
+void func_02088f1c(void *); void Hide3DSprite(void *); void SetTextById(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2PScreen;
@@ -183,7 +183,7 @@ M2C_FIELD(setup,u16 *,0x48)|=0x20;
 sprite=M2C_FIELD(setup,void **,0x54);
 SetupSetFrame(sprite,(u16)(((SetupSprite *)sprite)->baseFrame+2),0);
 func_02088f1c(M2C_FIELD(setup,void **,0x58));
-func_02088da8(M2C_FIELD(setup,void **,0x60));
+Hide3DSprite(M2C_FIELD(setup,void **,0x60));
 SetTextById(M2C_FIELD(setup,void **,0x64),0x44000011);
 func_02088f1c(M2C_FIELD(setup,void **,0x64));
 if(GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68))) {
@@ -212,9 +212,9 @@ void func_020de868(s32 arg0, s32 arg1, void *arg2) {
 
 s32 func_020de884(M2C_UNK arg0) {
     M2C_UNK func_0203c0b0(M2C_UNK, M2C_UNK *, s32);
-    void *func_ov010_02229b00();
+    void *GetLocalPlayerStatus();
     extern M2C_UNK data_0212c5c8;
-    if (!(M2C_FIELD(func_ov010_02229b00(), u8 *, 0x1A) & 2)) {
+    if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1A) & 2)) {
         return -1;
     }
     func_0203c0b0(arg0, &data_0212c5c8, 0x5DC000);
@@ -235,7 +235,7 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     void CloseNarcArchive(void);
     void func_02080944(void *, s32, s32, s32);
     void func_02088f1c(void *);
-    void func_02088da8(void *);
+    void Hide3DSprite(void *);
     void SetTextById(void *, u32);
     s32 GetSpriteAnimValue(void *);
     extern void *gCur3DSpriteEngine;
@@ -288,7 +288,7 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     M2C_FIELD(sprite, u8 *, 0x5a) = 0;
 
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
-    func_02088da8(M2C_FIELD((void *)setup, void **, 0x60));
+    Hide3DSprite(M2C_FIELD((void *)setup, void **, 0x60));
     SetTextById(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
     func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
 

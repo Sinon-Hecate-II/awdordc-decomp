@@ -166,23 +166,23 @@ s32 func_020673f8(void *arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0206743c(s32 format, ...) {
-extern u8 data_02100218[],data_0213e664[],data_0213e5d4[],data_0213e5f8[],gSocketManager[];
-s32 func_0206ad4c(void *,s32);s32 func_02006680(void *);u32 func_02066ba8();
+extern u8 data_02100218[],data_0213e664[],gFileLockOwner[],gFileLockCount[],gSocketManager[];
+s32 func_0206ad4c(void *,s32);s32 TryLockMutex(void *);u32 func_02066ba8();
 s32 result;char *args;
 if(func_0206ad4c(data_02100218,-1)>=0)return -1;
-if(!func_02006680(data_0213e664)){
-M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
-M2C_FIELD(data_0213e5f8,s32 *,12)=1;
-}else if(M2C_FIELD(data_0213e5d4,s32 *,12)==M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c)){
-M2C_FIELD(data_0213e5f8,s32 *,12)=M2C_FIELD(data_0213e5f8,s32 *,12)+1;
+if(!TryLockMutex(data_0213e664)){
+M2C_FIELD(gFileLockOwner,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
+M2C_FIELD(gFileLockCount,s32 *,12)=1;
+}else if(M2C_FIELD(gFileLockOwner,s32 *,12)==M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c)){
+M2C_FIELD(gFileLockCount,s32 *,12)=M2C_FIELD(gFileLockCount,s32 *,12)+1;
 }else{
 LockMutex(data_0213e664);
-M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
-M2C_FIELD(data_0213e5f8,s32 *,12)=1;
+M2C_FIELD(gFileLockOwner,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
+M2C_FIELD(gFileLockCount,s32 *,12)=1;
 }
 args=(char *)(((u32)&format&~3U)+4);
 result=func_02066ba8(func_020673cc,data_02100218,format,args);
-if(--M2C_FIELD(data_0213e5f8,s32 *,12)==0)UnlockMutex(data_0213e664);
+if(--M2C_FIELD(gFileLockCount,s32 *,12)==0)UnlockMutex(data_0213e664);
 return result;
 }
 

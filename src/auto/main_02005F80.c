@@ -359,7 +359,7 @@ void func_02006644(void *arg0) {
     } while (M2C_FIELD(arg0, s32 *, 0x88) != 0);
 }
 
-s32 func_02006680(void *arg0) {
+s32 TryLockMutex(void *arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void func_020066f4(void *, void *);

@@ -78,7 +78,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     extern M2C_UNK data_ov010_0222f02c;
     extern u8 data_ov010_0222f1dc[];
     extern u16 data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
     extern M2C_UNK data_ov010_0222c404;
     extern M2C_UNK data_ov010_0222c414;
     extern M2C_UNK data_ov010_0222c41c;
@@ -120,7 +120,7 @@ volatile Ov010CallbackFn d;
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x100) = M2C_FIELD(func_020c4acc(), s32 *, 0x54);
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa) = 2 | M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa);
-    func_0203a850(&data_ov010_0222efc0, 0x6c);
+    func_0203a850(&gLocalPlayerStatus, 0x6c);
 
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x30) = (s32)M2C_FIELD(&data_ov010_0222eee0, s8 *, 0x107);
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x5c) = (s32)M2C_FIELD(&data_ov010_0222eee0, s8 *, 0x108);
@@ -173,7 +173,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     extern M2C_UNK data_ov010_0222f02c;
     extern u8 data_ov010_0222f1dc[];
     extern u16 data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
     extern M2C_UNK data_ov010_0222c490;
     extern M2C_UNK data_ov010_0222c4a0;
     extern M2C_UNK data_ov010_0222c4a8;
@@ -215,7 +215,7 @@ volatile Ov010CallbackFn d;
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x100) = M2C_FIELD(func_020c4acc(), s32 *, 0x54);
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa) = 2 | M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa);
-    func_0203a850(&data_ov010_0222efc0, 0x6c);
+    func_0203a850(&gLocalPlayerStatus, 0x6c);
 
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x30) = (s32)M2C_FIELD(&data_ov010_0222eee0, s8 *, 0x107);
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x5c) = (s32)M2C_FIELD(&data_ov010_0222eee0, s8 *, 0x108);
@@ -252,7 +252,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  extern M2C_UNK data_ov010_0222f02c;
  extern u8 data_ov010_0222f1dc[];
  extern u16 data_ov010_0222eee0;
- extern M2C_UNK data_ov010_0222efc0;
+ extern M2C_UNK gLocalPlayerStatus;
  Ov010CallbackFn a,b,c,d;
  u8 *p;
  func_ov010_02226a88();
@@ -276,7 +276,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0x106)=func_ov000_0216a7c4();
  M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=M2C_FIELD(func_020c4acc(),s32 *,0x54);
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa)|=2;
- func_0203a850(&data_ov010_0222efc0,0x6c);
+ func_0203a850(&gLocalPlayerStatus,0x6c);
  func_02038a84(arg1&255,func_ov010_0222807c,arg3,func_ov010_0222815c,arg5);
 }
 extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
@@ -298,7 +298,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  extern M2C_UNK data_ov010_0222f02c;
  extern u8 data_ov010_0222f1dc[];
  extern u16 data_ov010_0222eee0;
- extern M2C_UNK data_ov010_0222efc0;
+ extern M2C_UNK gLocalPlayerStatus;
  Ov010CallbackFn c,a,b,d;
  u8 *p;
  func_ov010_02226a88();
@@ -322,7 +322,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0x106)=func_ov000_0216a7c4();
  M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=M2C_FIELD(func_020c4acc(),s32 *,0x54);
 M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa)=2|M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa);
-func_0203a850(&data_ov010_0222efc0,0x6c);
+func_0203a850(&gLocalPlayerStatus,0x6c);
 StartMatch(arg1,(void *)func_ov010_0222807c,arg3,(void *)func_ov010_0222815c,arg5);
 }
 #pragma cplusplus off
@@ -392,10 +392,10 @@ s32 func_ov010_022294ec(void) {
     M2C_UNK func_0203a850(M2C_UNK *, s32);
     s32 func_0203bd34();
     extern u16 data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
     if (func_ov010_022294e0() == 0) return 0;
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xFA) = M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xFA) & ~2;
-    func_0203a850(&data_ov010_0222efc0, 0x6C);
+    func_0203a850(&gLocalPlayerStatus, 0x6C);
     return func_0203bd34();
 }
 
@@ -403,10 +403,10 @@ void func_ov010_0222952c(void) {
     M2C_UNK func_0203a850(M2C_UNK *, s32);
     void func_0203bda0(void *, s32);
     extern u16 data_ov010_0222eee0;
-    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK gLocalPlayerStatus;
     void func_ov010_0222817c(void);
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xFA) = M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xFA) & ~2;
-    func_0203a850(&data_ov010_0222efc0, 0x6C);
+    func_0203a850(&gLocalPlayerStatus, 0x6C);
     func_0203bda0(&func_ov010_0222817c, 0);
 }
 
@@ -613,25 +613,25 @@ u16 func_ov010_02229a64(void) {
 
 void func_ov010_02229a74(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_ov010_022269f8(M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov010_0222efc0;
-    func_ov010_022269f8(&data_ov010_0222efc0, arg0, arg1);
+    extern M2C_UNK gLocalPlayerStatus;
+    func_ov010_022269f8(&gLocalPlayerStatus, arg0, arg1);
 }
 
 s32 func_ov010_02229a94(void) {
-extern M2C_UNK data_ov010_0222efc0;
+extern M2C_UNK gLocalPlayerStatus;
 if(func_ov010_022282b4(2)) {
-if(!func_0203a850(&data_ov010_0222efc0,0x6c))return 0;
+if(!func_0203a850(&gLocalPlayerStatus,0x6c))return 0;
 }
 if(func_ov010_022282b4(3)) {
-func_ov010_02227f88(func_ov010_02229a08(),&data_ov010_0222efc0);
-func_ov010_02229608(7,&data_ov010_0222efc0,0x6c,0xffff);
+func_ov010_02227f88(func_ov010_02229a08(),&gLocalPlayerStatus);
+func_ov010_02229608(7,&gLocalPlayerStatus,0x6c,0xffff);
 }
 return 1;
 }
 
-M2C_UNK *func_ov010_02229b00(void) {
-    extern M2C_UNK data_ov010_0222efc0;
-    return &data_ov010_0222efc0;
+M2C_UNK *GetLocalPlayerStatus(void) {
+    extern M2C_UNK gLocalPlayerStatus;
+    return &gLocalPlayerStatus;
 }
 
 s32 func_ov010_02229b0c(s32 a) {
@@ -652,7 +652,7 @@ s32 func_ov010_02229b5c(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_ov010_02229b00();
+    temp_r0 = GetLocalPlayerStatus();
     if (temp_r0 == 0) {
         return 0;
     }
