@@ -47,6 +47,7 @@ src/auto/ov001_02174F68.c:
     .text start:0x02174f68 end:0x02175600
 
 src/auto/ov001_02175600.c:
+    complete
     .text start:0x02175600 end:0x021757d0
 
 src/auto/ov001_021757D0.c:
@@ -109,6 +110,7 @@ src/auto/ov001_021858A4.c:
     .text start:0x021858a4 end:0x021867ac
 
 src/auto/ov001_021867AC.c:
+    complete
     .text start:0x021867ac end:0x02187590
 
 src/auto/ov001_02187590.c:

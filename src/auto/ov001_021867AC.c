@@ -140,18 +140,22 @@ if(M2C_FIELD(gOv001RegionMenu,s8 *,26)>=0)func_ov001_0218c924(a,func_ov001_02186
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_02186d90(s32 a) {
-    extern void *data_ov001_02193e18; extern u8 data_ov001_0218fcfc[];
+void func_ov001_02186d90(s32 taskId) {
+    extern void *gOv001RegionMenu;
+    extern u8 gOv001RegionItemCount[];
+
     s32 i;
     *(volatile u32 *)0x4000000 &= ~0xe000;
-    func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[0]);
-    func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[1]);
-    for (i = 0; i < data_ov001_0218fcfc[((u8*)data_ov001_02193e18)[0x1c]]; i++) {
-        if (((s32**)data_ov001_02193e18)[2 + i]) func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[2 + i]);
+    func_ov001_0218a1cc(((s32 **)gOv001RegionMenu)[0]);
+    func_ov001_0218a1cc(((s32 **)gOv001RegionMenu)[1]);
+    for (i = 0; i < gOv001RegionItemCount[((u8 *)gOv001RegionMenu)[0x1c]]; i++) {
+        if (((s32 **)gOv001RegionMenu)[2 + i]) {
+            func_ov001_0218a1cc(((s32 **)gOv001RegionMenu)[2 + i]);
+        }
     }
-    func_ov001_0218ace0(((s32**)data_ov001_02193e18)[4]);
-    Ov001_PostTaskMessage(1, a);
-    func_ov001_0218b71c((void*)0x02193e18);
+    func_ov001_0218ace0(((s32 **)gOv001RegionMenu)[4]);
+    Ov001_PostTaskMessage(1, taskId);
+    func_ov001_0218b71c((void *)0x02193e18);
 }
 #pragma opt_strength_reduction reset
 void func_ov001_02186e40(void *arg0) {

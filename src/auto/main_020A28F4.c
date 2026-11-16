@@ -333,7 +333,26 @@ void func_020a3498(M2C_UNK arg0) {
 }
 
 #pragma opt_common_subs off
-void func_020a34a8(s32 a){u32 v;u32 n;extern s32 *gCurrentMap;s32 p;p=*gCurrentMap;p+=0x3a4;p+=0x6400;p+=a*0x8c;v=*(u32*)(p+0x6c);n=(v<<14)>>28;if(n>=10)return;*(u32*)(p+0x6c)=(v&~0x3c000)|(((n+1)<<28)>>14);}
+#pragma push
+#pragma opt_propagation off
+void func_020a34a8(s32 recordIndex) {
+    extern s32 *gCurrentMap;
+    u32 packedFlags;
+    u32 count;
+    s32 record;
+
+    record = *gCurrentMap;
+    record += 0x3a4;
+    record += 0x6400;
+    record += recordIndex * 0x8c;
+    packedFlags = *(u32 *)(record + 0x6c);
+    count = (packedFlags << 14) >> 28;
+    if (count >= 10) {
+        return;
+    }
+    *(u32 *)(record + 0x6c) = (packedFlags & ~0x3c000) | (((count + 1) << 28) >> 14);
+}
+#pragma pop
 #pragma opt_common_subs reset
 void func_020a34f4(M2C_UNK arg0) {
     s32 func_020a3594(M2C_UNK, M2C_UNK);

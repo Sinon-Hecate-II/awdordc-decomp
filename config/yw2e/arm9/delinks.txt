@@ -581,6 +581,7 @@ src/auto/main_020A1944.c:
     .text start:0x020a1944 end:0x020a28f4
 
 src/auto/main_020A28F4.c:
+    complete
     .text start:0x020a28f4 end:0x020a38f4
 
 src/auto/main_020A38F4.c:
