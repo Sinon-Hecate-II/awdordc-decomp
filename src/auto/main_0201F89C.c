@@ -447,48 +447,52 @@ M2C_FIELD(raw,u16 *,CONN_RECV_COUNT)-=result;
 OS_RestoreInterrupts(irq);return result;
 }
 
-s32 SocketQueueReceivedData(void *arg0, s16 arg1, void *arg2) {
+/* Data-arrival callback for a stream socket: wrap the received payload in a
+ * record (header REC_LEN/REC_PORT/REC_ADDR, then the data), append it to the
+ * raw connection's receive queue unless it is full or the allocation fails,
+ * update the socket's peer and local port, then wake the reader. */
+s32 SocketQueueReceivedData(void *data, s16 len, void *sock) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
     void OS_WakeupThread(void *);
     extern s32 gNetAllocator;
     extern M2C_UNK gSocketRecvStats;
-    void *temp_r4;
-    void *temp_r0;
-    s32 temp_r6;
+    void *raw;
+    void *rec;
+    s32 irq;
 
-    temp_r4 = M2C_FIELD(arg2, void **, 0x64);
-    temp_r6 = OS_DisableInterrupts();
-    if (M2C_FIELD(temp_r4, u16 *, 0x10A) >= (u32) (M2C_FIELD(temp_r4, u16 *, 0x108) + arg1)) {
-        temp_r0 = M2C_FIELD(gNetAllocator, void *(**)(s32), 0x18)(arg1 + 0xC);
-        if (temp_r0 != NULL) {
-            M2C_FIELD(temp_r4, u16 *, 0x108) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x108) + arg1);
-            M2C_FIELD(temp_r0, M2C_UNK **, 0) = NULL;
-            M2C_FIELD(temp_r0, s16 *, 4) = arg1;
-            M2C_FIELD(temp_r0, u16 *, 6) = M2C_FIELD(arg2, u16 *, 0x18);
-            M2C_FIELD(temp_r0, s32 *, 8) = M2C_FIELD(arg2, s32 *, 0x1C);
-            MI_CpuCopy8(arg0, (char *) temp_r0 + 0xC, arg1);
-            if (M2C_FIELD(temp_r4, void *volatile *, 0x100) != NULL) {
-                *(M2C_UNK **) M2C_FIELD(temp_r4, void *volatile *, 0x100) = temp_r0;
+    raw = M2C_FIELD(sock, void **, SOCK_RAW);
+    irq = OS_DisableInterrupts();
+    if (M2C_FIELD(raw, u16 *, CONN_RECV_LIMIT) >= (u32) (M2C_FIELD(raw, u16 *, CONN_RECV_COUNT) + len)) {
+        rec = M2C_FIELD(gNetAllocator, void *(**)(s32), NET_ALLOC_ALLOC)(len + REC_DATA);
+        if (rec != NULL) {
+            M2C_FIELD(raw, u16 *, CONN_RECV_COUNT) = (u16) (M2C_FIELD(raw, u16 *, CONN_RECV_COUNT) + len);
+            M2C_FIELD(rec, M2C_UNK **, REC_NEXT) = NULL;
+            M2C_FIELD(rec, s16 *, REC_LEN) = len;
+            M2C_FIELD(rec, u16 *, REC_PORT) = M2C_FIELD(sock, u16 *, SOCK_PEER_PORT);
+            M2C_FIELD(rec, s32 *, REC_ADDR) = M2C_FIELD(sock, s32 *, SOCK_PEER_ADDR);
+            MI_CpuCopy8(data, (char *) rec + REC_DATA, len);
+            if (M2C_FIELD(raw, void *volatile *, CONN_RECV_TAIL) != NULL) {
+                *(M2C_UNK **) M2C_FIELD(raw, void *volatile *, CONN_RECV_TAIL) = rec;
             }
-            M2C_FIELD(temp_r4, void **, 0x100) = temp_r0;
-            if (M2C_FIELD(temp_r4, void **, 0x104) == NULL) {
-                M2C_FIELD(temp_r4, void **, 0x104) = temp_r0;
+            M2C_FIELD(raw, void **, CONN_RECV_TAIL) = rec;
+            if (M2C_FIELD(raw, void **, CONN_RECV_HEAD) == NULL) {
+                M2C_FIELD(raw, void **, CONN_RECV_HEAD) = rec;
             }
         } else {
-            M2C_FIELD(&gSocketRecvStats, s32 *, 0) = (s32) (M2C_FIELD(&gSocketRecvStats, s32 *, 0) + 1);
+            M2C_FIELD(&gSocketRecvStats, s32 *, RECV_STAT_NO_MEMORY) = (s32) (M2C_FIELD(&gSocketRecvStats, s32 *, RECV_STAT_NO_MEMORY) + 1);
         }
     } else {
-        M2C_FIELD(&gSocketRecvStats, s32 *, 4) = (s32) (M2C_FIELD(&gSocketRecvStats, s32 *, 4) + 1);
+        M2C_FIELD(&gSocketRecvStats, s32 *, RECV_STAT_QUEUE_FULL) = (s32) (M2C_FIELD(&gSocketRecvStats, s32 *, RECV_STAT_QUEUE_FULL) + 1);
     }
-    if (M2C_FIELD(arg2, u16 *, 0x74) == 0) {
-        M2C_FIELD(arg2, u16 *, 0x74) = (u16) M2C_FIELD(arg2, u16 *, 0xA);
+    if (M2C_FIELD(sock, u16 *, SOCK_RECV_PORT) == 0) {
+        M2C_FIELD(sock, u16 *, SOCK_RECV_PORT) = (u16) M2C_FIELD(sock, u16 *, SOCK_LINK_PORT);
     }
-    M2C_FIELD(arg2, u16 *, 0x18) = (u16) M2C_FIELD(arg2, u16 *, 0x1A);
-    M2C_FIELD(arg2, s32 *, 0x1C) = M2C_FIELD(arg2, s32 *, 0x20);
-    OS_WakeupThread((char *) temp_r4 + 0x10C);
-    OS_RestoreInterrupts(temp_r6);
+    M2C_FIELD(sock, u16 *, SOCK_PEER_PORT) = (u16) M2C_FIELD(sock, u16 *, SOCK_NEXT_PEER_PORT);
+    M2C_FIELD(sock, s32 *, SOCK_PEER_ADDR) = M2C_FIELD(sock, s32 *, SOCK_NEXT_PEER_ADDR);
+    OS_WakeupThread((char *) raw + CONN_RECV_THREAD);
+    OS_RestoreInterrupts(irq);
     return 1;
 }
 

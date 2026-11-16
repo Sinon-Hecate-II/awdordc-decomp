@@ -202,11 +202,11 @@ void func_ov001_0217b41c(void) {
  * step callback. */
 void InitNameEntryScreen(void) {
 extern void *data_ov001_0218f81c; extern void *gNameEntryState;
-void *func_ov001_0218b6f8(s32,s32);void Ov001_GetNameEntryMode(s32 *,s32);
+void *Ov001_Alloc(s32,s32);void Ov001_GetNameEntryMode(s32 *,s32);
 s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217b634(void);
 u8 modeMessages[2]={M2C_FIELD(&data_ov001_0218f81c,u8 *,0),M2C_FIELD(&data_ov001_0218f81c,u8 *,1)};s32 mode,variant;
-gNameEntryState=func_ov001_0218b6f8(44,4);
+gNameEntryState=Ov001_Alloc(44,4);
 Ov001_GetNameEntryMode(&mode,(s32)&variant);
 if(mode==0) {func_ov001_021846f8((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
 func_ov001_0217b578();func_ov001_02172250(mode+9);

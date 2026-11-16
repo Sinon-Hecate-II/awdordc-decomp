@@ -223,13 +223,13 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
     void BuildUnitMoveRange(void *);
     void func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
-    s32 func_02084464(void *, void *);
-    s32 func_0207c2e0(void);
+    s32 UnpackCursorPath(void *, void *);
+    s32 GetRandomSeed(void);
     s32 func_020a641c(s32, s32);
     void func_ov000_02199ce0(void);
     extern s32 *gCurrentMap;
     extern M2C_UNK data_ov000_021df604;
-    extern u8 data_ov000_021df7dc[];
+    extern u8 gCommandPath[];
     extern u8 gAiCommand[];
     extern u8 gBattleEndState[];
 
@@ -251,11 +251,11 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         BuildUnitMoveRange(unit);
     }
         func_01ffc4b8(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
-        func_02084464(((u8 *)*gCurrentMap) + 0x5388, data_ov000_021df7dc);
+        UnpackCursorPath(((u8 *)*gCurrentMap) + 0x5388, gCommandPath);
 
         gAiCommand[1] = ((u8 *)*gCurrentMap)[0x52D4];
 
-        *(s32 *)(gAiCommand + 8) = func_0207c2e0();
+        *(s32 *)(gAiCommand + 8) = GetRandomSeed();
 
         gAiCommand[4] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52D8));
         gAiCommand[5] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52DA));
@@ -283,33 +283,37 @@ void func_ov000_02199f38(void) {
     func_02072b10(&data_ov000_021df604, 1);
 }
 
-void func_ov000_02199f50(s32 a, s32 b, s32 c, s32 d) {
-    s32 func_02084464(void *, void *);
-    s32 func_0207c2e0(void);
+/* Copies the cursor state into the battle command record gAiCommand: the actor
+ * and command kind, the cursor and the tile it moved from, the two command
+ * parameters and the random seed, plus the fuel the actor has left after the
+ * move.  When the battle has ended the finished record is sent over the link. */
+void SetBattleCommand(s32 kind, s32 actor, s32 arg, s32 argY) {
+    s32 UnpackCursorPath(void *, void *);
+    s32 GetRandomSeed(void);
     s32 func_020a641c(s32, s32);
-    void func_02084568(s32, s32, s32, s32);
+    void SendBattleCommandPacket(s32, s32, s32, s32);
     extern s32 *gCurrentMap;
-    extern u8 data_ov000_021df7dc[];
+    extern u8 gCommandPath[];
     extern u8 gAiCommand[];
     extern u8 gBattleEndState[];
-    func_02084464((u8 *)*gCurrentMap + 0x5388, data_ov000_021df7dc);
-    gAiCommand[1] = (u8)b;
-    *(s32 *)(gAiCommand + 8) = func_0207c2e0();
-    gAiCommand[0] = (u8)a;
-    gAiCommand[2] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52dc);
-    gAiCommand[3] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52de);
-    gAiCommand[4] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52d8);
-    gAiCommand[5] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52da);
-    gAiCommand[6] = (u8)c;
-    gAiCommand[7] = (u8)d;
-    if (*(s32 *)((u8 *)*gCurrentMap + 0x52d0) != 0) {
-        s32 _r = func_020a641c(*(s32 *)((u8 *)*gCurrentMap + 0x52d0),
-                                (u8)*((u8 *)*gCurrentMap + 0x52d5));
-        volatile u8 *_u = (volatile u8 *)*(s32 *)((u8 *)*gCurrentMap + 0x52d0);
-        gAiCommand[0x12] = (((u32)_u[0xa] << 25) >> 25) - _r;
+    UnpackCursorPath((u8 *)*gCurrentMap + MAP_CURSOR_PATH, gCommandPath);
+    gAiCommand[AI_COMMAND_ACTOR] = (u8)actor;
+    *(s32 *)(gAiCommand + AI_COMMAND_SEED) = GetRandomSeed();
+    gAiCommand[AI_COMMAND_KIND] = (u8)kind;
+    gAiCommand[AI_COMMAND_CURSOR_X] = (u8)*(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_X);
+    gAiCommand[AI_COMMAND_CURSOR_Y] = (u8)*(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_Y);
+    gAiCommand[AI_COMMAND_OLD_X] = (u8)*(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_OLD_X);
+    gAiCommand[AI_COMMAND_OLD_Y] = (u8)*(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_OLD_Y);
+    gAiCommand[AI_COMMAND_UNIT] = (u8)arg;
+    gAiCommand[AI_COMMAND_ARG_Y] = (u8)argY;
+    if (*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT) != 0) {
+        s32 fuelCost = func_020a641c(*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT),
+                                     (u8)*((u8 *)*gCurrentMap + MAP_CURSOR_DIR));
+        volatile u8 *actingUnit = (volatile u8 *)*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
+        gAiCommand[AI_COMMAND_FUEL_LEFT] = (((u32)actingUnit[0xa] << 25) >> 25) - fuelCost;
     }
-    if (gBattleEndState[0] != 0) {
-        func_02084568(a, b, c, d);
+    if (gBattleEndState[0] != BATTLE_END_ENDED) {
+        SendBattleCommandPacket(kind, actor, arg, argY);
     }
 }
 

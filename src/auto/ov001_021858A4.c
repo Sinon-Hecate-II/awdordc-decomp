@@ -101,7 +101,7 @@ void func_ov001_02185ba8(s32 arg0) {
 }
 
 s32 func_ov001_02185bf4(s32 arg0){
-void *func_ov001_0218b6f8(s32,s32);u64 GetSystemTick(void);
+void *Ov001_Alloc(s32,s32);u64 GetSystemTick(void);
 s32 func_02012218(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_02011af8(void *);u16 func_02011e98(void);void func_02007740(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 func_ov001_02185d78(void);
@@ -110,7 +110,7 @@ M2C_UNK func_ov001_0218b71c(M2C_UNK);
 void func_ov001_02185ea8();void Ov001_ReportConnectionState();
 extern void *gOv001ConnectionState;extern const u8 data_ov001_0218fbfc[],data_ov001_0218fbf0[];
 u8 buf[0x54];void *p;u64 ts;void **state;
-gOv001ConnectionState=func_ov001_0218b6f8(0x1ba0,0x20);
+gOv001ConnectionState=Ov001_Alloc(0x1ba0,0x20);
 M2C_FIELD(gOv001ConnectionState,s32 *,0x1370)=arg0;
 ts=GetSystemTick();
 state=&gOv001ConnectionState;

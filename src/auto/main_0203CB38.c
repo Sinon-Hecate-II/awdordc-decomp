@@ -12,7 +12,7 @@ void func_0205f83c(int, void *, int, void *);
 int ByteCompareN(void *, void *, int);
 
 extern u8 gConnectionMgr[];
-void func_02043e10(s32,s32,s32,void *);
+void OnPeerConnect(s32,s32,s32,void *);
 s32 SBServerListThink(s32);
 s32 func_020614b0(s32);
 s32 func_02061750(s32);
@@ -173,7 +173,7 @@ void func_0203cb38(void *arg0) {
         if(M2C_FIELD(GetConnection(),u64 *,0x184)) {
             now=GetSystemTick();
             if(func_02072088((now-M2C_FIELD(GetConnection(),u64 *,0x184))<<6,0x82ea)>10000)
-                func_02043e10(1,0,0,(u8 *)GetConnection()+0x194);
+                OnPeerConnect(1,0,0,(u8 *)GetConnection()+0x194);
         }
     }
     if(M2C_FIELD(GetConnection(),s32 *,0xe4)) {

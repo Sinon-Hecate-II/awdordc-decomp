@@ -226,7 +226,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     s32 func_020a7d80(void *);
     s32 func_020a7dc4(void *);
     s32 func_020a8604(s32);
-    s32 func_020a7d38(void *);
+    s32 IsUnitSubmerged(void *);
     s32 UnitHasFacing(void *);
     s32 UnitHasCargo(void *);
     s32 func_020d2850(s32, u16, s32);
@@ -257,7 +257,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
         if (func_020a8604(kind)) flags |= 0x8;
         else flags |= 0x4;
     }
-    if (func_020a7d38((void *)unit)) flags |= 0x20;
+    if (IsUnitSubmerged((void *)unit)) flags |= 0x20;
     {
         u8 side = *(u8 *)((u8 *)*gCurrentMap + (player) * MAP_PLAYER_STRIDE + PLAYER_SIDE_OFF);
         if (!(side & SIDE_TEAM_B)) flags |= 0x1;

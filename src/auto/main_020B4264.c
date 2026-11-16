@@ -246,8 +246,8 @@ s32 func_020b4264(u8 *arg0) {
     func_020a16a8(arg0 + 0x1194);
 }
 
-void func_020b4a44(void *arg0){s32 func_0207c2e0(); extern u8 data_02157718;extern M2C_UNK data_02168f68;s32 i;u8 *p;u8 v;
-M2C_FIELD(arg0,s32 *,0)=func_0207c2e0();p=&data_02157718;i=0;do{v=*p++;M2C_FIELD(arg0+i,u8 *,4)=v;i++;}while(i<4);
+void func_020b4a44(void *arg0){s32 GetRandomSeed(); extern u8 data_02157718;extern M2C_UNK data_02168f68;s32 i;u8 *p;u8 v;
+M2C_FIELD(arg0,s32 *,0)=GetRandomSeed();p=&data_02157718;i=0;do{v=*p++;M2C_FIELD(arg0+i,u8 *,4)=v;i++;}while(i<4);
 M2C_FIELD(arg0,s16 *,8)=M2C_FIELD(&data_02168f68,s16 *,0);
 M2C_FIELD(arg0,s16 *,10)=M2C_FIELD(&data_02168f68,s16 *,2);
 M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(&data_02168f68,s16 *,4);

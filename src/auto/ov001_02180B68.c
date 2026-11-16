@@ -122,7 +122,7 @@ void func_ov001_02180d24(void) {
 }
 
 void func_ov001_02180d44(void) {
-    void *func_ov001_0218b6f8(s32, s32);
+    void *Ov001_Alloc(s32, s32);
     void func_ov001_02180da4(void);
     void func_ov001_02180eb4(void);
     void Ov001_UpdateMenuCursor(void);
@@ -132,7 +132,7 @@ void func_ov001_02180d44(void) {
     void func_ov001_02171dd0(s32);
     extern M2C_UNK gOv001MenuRegion;
     void *temp_r0;
-    temp_r0 = func_ov001_0218b6f8(0x20, 4);
+    temp_r0 = Ov001_Alloc(0x20, 4);
     M2C_FIELD(&gOv001MenuRegion, void **, 4) = temp_r0;
     M2C_FIELD(temp_r0, u8 *, 0x1D) = 0;
     func_ov001_02180da4();

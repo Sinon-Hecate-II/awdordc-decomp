@@ -138,7 +138,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     s32 GT2SocketHandle(s32);
     s32 SendConnectionCommand(u8, s32, s32, u16, s32 *, s32);
     s32 func_0203ef9c(void *);
-    void func_02043e10(s32,s32,s32,void *);
+    void OnPeerConnect(s32,s32,s32,void *);
     s32 index, deferred, result;
     u8 *session;
     s32 tempData[2];
@@ -215,7 +215,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
         result = func_0203ef9c((u8 *)GetConnection() + 0x194);
     } else {
         value = GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4));
-        func_02043e10(0, value, 0, (u8 *)GetConnection() + 0x194);
+        OnPeerConnect(0, value, 0, (u8 *)GetConnection() + 0x194);
         session = GetConnection();
         M2C_FIELD(session, s32 *, 0x18c) = 0;
         M2C_FIELD(session, s32 *, 0x190) = 0;
@@ -230,7 +230,7 @@ s32 func_0203ef9c(void *arg0) {
     s32 func_0205de88(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
     M2C_UNK func_02061690(s32, s32, u16, s32);
     extern M2C_UNK func_02043e0c;
-    void func_02043e10(s32,s32,s32,void *);
+    void OnPeerConnect(s32,s32,s32,void *);
     s32 temp_r0;
     s32 var_r6;
     void *temp_r4;
@@ -244,7 +244,7 @@ s32 func_0203ef9c(void *arg0) {
     }
     var_r6 = 0;
 loop_4:
-    temp_r0 = func_0205de88(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4)), M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, u8 *, 0), &func_02043e0c, (M2C_UNK *)&func_02043e10, arg0);
+    temp_r0 = func_0205de88(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4)), M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, u8 *, 0), &func_02043e0c, (M2C_UNK *)&OnPeerConnect, arg0);
     if (temp_r0 == 0) {
         return temp_r0;
     }

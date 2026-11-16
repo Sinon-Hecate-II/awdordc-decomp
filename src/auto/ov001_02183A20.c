@@ -288,12 +288,12 @@ void func_ov001_02183f30(s32 arg0) {
 }
 
 void func_ov001_02183f6c(void) {
-    s32 func_ov001_0218b6f8(s32, M2C_UNK);
+    s32 Ov001_Alloc(s32, M2C_UNK);
     extern s32 gWfcFriendRoster;
     if (gWfcFriendRoster != 0) {
         return;
     }
-    gWfcFriendRoster = func_ov001_0218b6f8(0x1E60, 0x20);
+    gWfcFriendRoster = Ov001_Alloc(0x1E60, 0x20);
 }
 
 #pragma opt_common_subs off
@@ -515,12 +515,12 @@ void func_ov001_02184230(u16 *arg0) {
 }
 #pragma scheduling reset
 void func_ov001_02184404(void) {
-    s32 func_ov001_0218b6f8(s32, M2C_UNK);
+    s32 Ov001_Alloc(s32, M2C_UNK);
     void func_02076710(u16 *, u32);
     s32 func_02045eb4(M2C_UNK);
     extern s32 gSaveData;
 
-    gSaveData = func_ov001_0218b6f8(0x6f8, 0x20);
+    gSaveData = Ov001_Alloc(0x6f8, 0x20);
     func_02076710((u16 *)(gSaveData + 0x4f8), 0xa001);
     func_02045eb4((M2C_UNK)gSaveData);
 }

@@ -1,8 +1,10 @@
 /* 23 functions from 0x020A5878 to 0x020A67FC (main), found by ds-decomp. */
 #include "common.h"
-typedef struct { u8 kind:6; u8 owner:2; u8 x,y,unk3; u16 flags; u16 hp:7; u16 ammo:4; u16 unk6:5; u16 a:6; u16 b:6; u16 c:2; u16 d:2; u8 fuel:7; u8 flag:1; u8 e:4; u8 f:1; u8 g:1; u8 h:1; u8 i:1; u8 j,k; } Unit5B;
+#include "battle_map.h"
+#include "ov000_ai.h"
+typedef BattleMapUnitHead Unit5B; /* the battle-map unit record as these routines read it */
 extern u8 gUnitKindMaxFuel[], gUnitKindMaxAmmo[];
-extern s8 *data_ov000_021b5c58[];
+extern s8 *gUnitKindFuelCost[];
 extern u8 gUnitKindFlags[];
 extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
 
@@ -88,26 +90,28 @@ s32 func_020a5ae0(u32 arg0) {
     return var_r1;
 }
 
-s32 func_020a5b2c(Unit5B *p) {
+/* Spend a unit's turn-start fuel: the per-terrain cost of its kind, five for a
+ * submerged submarine, and report when a sea or air kind has just run dry. */
+s32 ChargeUnitTurnFuel(BattleMapUnitHead *unit) {
     extern s32 *gCurrentMap;
-    s32 func_020a7d38(Unit5B *);
-    u8 *base = (u8 *)*gCurrentMap;
-    s32 kind = p->kind;
-    s32 idx = M2C_FIELD(base + (p->x + M2C_FIELD(base + p->y * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31;
-    s32 cost = (s8)(*(s8 **)((u8 *)data_ov000_021b5c58 + kind * 112))[idx];
-    if (!func_020a5c40((u8 *)p)) return 0;
-    if (func_020a7d38(p) && p->kind == 22) cost = 5;
+    s32 IsUnitSubmerged(Unit5B *);
+    u8 *map = (u8 *)*gCurrentMap;
+    s32 kind = unit->kind;
+    s32 terrain = M2C_FIELD(map + (unit->x + M2C_FIELD(map + unit->y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+    s32 cost = (s8)(*(s8 **)((u8 *)gUnitKindFuelCost + kind * UNIT_KIND_STATS_SIZE))[terrain];
+    if (!CanUnitSpendTurnFuel((u8 *)unit)) return 0;
+    if (IsUnitSubmerged(unit) && unit->kind == UNIT_KIND_SUBMARINE) cost = UNIT_KIND_SUBMARINE_FUEL;
     if (cost < 0) cost = 0;
     {
-        u8 fuel = p->fuel;
-        if (fuel <= cost) p->fuel = 0;
-        else p->fuel = (u8)(fuel - cost);
+        u8 fuel = unit->fuel;
+        if (fuel <= cost) unit->fuel = 0;
+        else unit->fuel = (u8)(fuel - cost);
     }
-    if (!p->fuel && (gUnitKindFlags[p->kind * 112] & 48)) return 1;
+    if (!unit->fuel && (gUnitKindFlags[unit->kind * UNIT_KIND_STATS_SIZE] & UNIT_KIND_FLAGS_FUEL_CRITICAL)) return 1;
     return 0;
 }
 
-s32 func_020a5c40(u8 *p){
+s32 CanUnitSpendTurnFuel(u8 *p){
 extern s32 *gCurrentMap;
 extern u8 data_ov000_021b5c67[];
 s32 IsSameTeam(u16,s32);
@@ -133,7 +137,7 @@ u8 func_020a5d2c(s32 a,s32 b){extern s32 *gCurrentMap;u8 *p=(u8 *)*gCurrentMap;s
 #pragma opt_dead_code reset
 s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
     extern s32 *gCurrentMap;
-    s32 func_020a7d38(Unit5B *);
+    s32 IsUnitSubmerged(Unit5B *);
     u8 func_020a5d2c(s32, s32);
     s32 r4;
     s32 r6 = arg1;
@@ -149,7 +153,7 @@ s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
     if (arg0 == 0) {
         return 1;
     }
-    if (!func_020a7d38((Unit5B *)arg0)) {
+    if (!IsUnitSubmerged((Unit5B *)arg0)) {
         return 1;
     }
     if (*((u8 *)*gCurrentMap + ((r7 >> 6) + 1) * 0x8c + 0x67c3) & 0x2) {
@@ -204,7 +208,7 @@ s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitOnCurrentTeam(s
 s32 IsUnitInSight(s32 arg0) {
     extern s32 *gCurrentMap;
     extern s16 gPlayerUnitIdBase[];
-    s32 func_020a7d38(Unit5B *);
+    s32 IsUnitSubmerged(Unit5B *);
     s32 IsUnitOnCurrentTeam(s32);
     s32 IsTerrainOnUnitTeam(s32, s32);
     s32 func_020a5f80(s32, s32);
@@ -217,7 +221,7 @@ s32 IsUnitInSight(s32 arg0) {
     if (unit == 0) {
         return 1;
     }
-    if (!func_020a7d38(unit)) {
+    if (!IsUnitSubmerged(unit)) {
         return 1;
     }
     if (unit->flags & 0x40) {
@@ -325,18 +329,22 @@ void func_020a64ec(void) {
 }
 
 #pragma scheduling off
-void func_020a64f8(void *arg0,u8 kind) {
-Unit5B *p=arg0;
-p->kind=kind;p->owner=0;
-p->flags=0;p->hp=100;
-p->fuel=gUnitKindMaxFuel[kind*112];
-p->ammo=gUnitKindMaxAmmo[kind*112];
-p->unk6=0;p->j=0;p->k=0;p->e=0;
-p->a=63;p->b=63;p->f=1;p->c=0;p->d=0;
-p->flag=0;p->g=0;p->h=0;p->i=0;
+/* Initialise a freshly allocated map unit record: clear its flags, AI targets
+ * and carried-unit chain, give it full health and fill its fuel and ammo from
+ * the unit-kind tables. */
+void InitUnitRecord(void *arg0, u8 kind) {
+    BattleMapUnitHead *unit = (BattleMapUnitHead *)arg0;
+    unit->kind = kind; unit->owner = 0;
+    unit->flags = 0; unit->health = 100;
+    unit->fuel = gUnitKindMaxFuel[kind * UNIT_KIND_STATS_SIZE];
+    unit->ammo = gUnitKindMaxAmmo[kind * UNIT_KIND_STATS_SIZE];
+    unit->facing = 0; unit->firstCarried = 0; unit->nextCarried = 0; unit->aiState = 0;
+    unit->targetX = MAP_UNIT_TARGET_NONE; unit->targetY = MAP_UNIT_TARGET_NONE;
+    unit->unkB4 = 1; unit->unk8_12 = 0; unit->unk8_14 = 0;
+    unit->unkA_7 = 0; unit->unkB5 = 0; unit->unkB6 = 0; unit->unkB7 = 0;
 }
 #pragma scheduling reset
-void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *FindFreeUnitRecord(s32);void func_020a64f8(void *,u8);void func_020d3154(s32,s32);void *p=FindFreeUnitRecord(d);if(!p)return 0;func_020a64f8(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
+void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *FindFreeUnitRecord(s32);void InitUnitRecord(void *,u8);void func_020d3154(s32,s32);void *p=FindFreeUnitRecord(d);if(!p)return 0;InitUnitRecord(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
 
 void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *CreateMapUnit(s32,s32,s32,s32);u8 *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);u8 v;if(!p)return 0;v=M2C_FIELD((u8 *)*gCurrentMap+d*0x8c,u8 *,0x67d6);p[0]=(p[0]&~0xc0)|((u32)(v<<30)>>24);M2C_FIELD(p,u16 *,4)|=1;if(c==22)M2C_FIELD(p,u16 *,4)|=32;return p;}
 

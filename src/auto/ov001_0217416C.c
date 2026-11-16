@@ -9,7 +9,7 @@ void func_ov001_0217416c(void) {
     extern u8 data_ov001_0218f628[];
     extern u8 func_ov001_02174548[];
     extern void *gOv001Keypad;
-    M2C_UNK func_ov001_0218b6f8();
+    M2C_UNK Ov001_Alloc();
     M2C_UNK func_ov001_0218a5f0();
     M2C_UNK func_ov001_0218a61c();
     M2C_UNK func_ov001_0218a260();
@@ -48,7 +48,7 @@ void func_ov001_0217416c(void) {
     sp20 = 0x1c;
     sp22 = 0x14;
 
-    p = (void*)func_ov001_0218b6f8(0x6c, 0x4);
+    p = (void*)Ov001_Alloc(0x6c, 0x4);
     gOv001Keypad = p;
     M2C_FIELD(p, u8*, 0x60) = 0x1f;
     M2C_FIELD(p, u8*, 0x63) = 0;

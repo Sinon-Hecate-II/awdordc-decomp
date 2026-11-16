@@ -432,7 +432,7 @@ if(keys&0x10) {
 if(valid) {
 map=*gCurrentMap;
 unitId=M2C_FIELD(map,u8 *,M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8 *)map+M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_Y)*2,u16 *,MAP_ROW_OFFSETS));
-func_ov000_02199f50(0x10,unitId,0,0);
+SetBattleCommand(0x10,unitId,0,0);
 M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT)=(u8 *)map+MAP_UNIT_RECORDS+unitId*MAP_UNIT_STRIDE;
 func_ov000_0219fd54();
 } else CloseAimingCursor();

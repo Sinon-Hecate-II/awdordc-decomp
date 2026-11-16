@@ -140,7 +140,7 @@ void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
  gpiPlayerSetString(a,b,(M2C_UNK *)buf);
 }
 
-s32 func_02060afc(void *arg0,s32 arg1,s32 arg2){
+s32 SBServerGetStringValue(void *arg0,s32 arg1,s32 arg2){
  void *func_02048ff8(s32,s32 *);
  M2C_UNK AssertFailed(void *,void *,void *,s32);
  extern M2C_UNK data_02100064,data_0210006c,data_02100048;
@@ -159,7 +159,7 @@ s32 SBServerGetIntValue(void *arg0,s32 arg1,s32 arg2){
  s8 *p,*q; u8 c; s32 v;
  if(!arg0)return arg2;
  if(!StringCompare(arg1,&data_02100078))return SBServerGetPing(arg0);
- p=(s8 *)func_02060afc(arg0,arg1,0);
+ p=(s8 *)SBServerGetStringValue(arg0,arg1,0);
  if(!p)return arg2;
  if(*p!='-')q=p;else q=p+1;
  c=*(u8 *)q;
@@ -171,7 +171,7 @@ s32 SBServerGetIntValue(void *arg0,s32 arg1,s32 arg2){
 
 double func_02060c10(void *arg0,s32 arg1,double arg2){
  double func_0206a374(s32);
- s32 p=func_02060afc(arg0,arg1,0);
+ s32 p=SBServerGetStringValue(arg0,arg1,0);
  if(p)arg2=func_0206a374(p);
  return arg2;
 }
@@ -526,8 +526,8 @@ void SBServerListGetServer(s32 arg0) {
 }
 
 void SBServerListGetCount(s32 arg0) {
-    M2C_UNK func_02061bb8(s32);
-    func_02061bb8(arg0 + 0x4C);
+    M2C_UNK SBServerListGetServerCount(s32);
+    SBServerListGetServerCount(arg0 + 0x4C);
 }
 
 void SBServerListSort(s32 arg0) {

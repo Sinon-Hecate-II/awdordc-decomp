@@ -4,10 +4,13 @@ void MI_CpuCopy8(void *,void *,s32);
 s32 GetConnection(void);
 void SetConnectionState(s32);
 
-/* GameSpy GT2 connection callback: with an outgoing connection request (status 0) it
- * sends the connection command and arms the peer timers; with a reply it advances the
- * handshake, retries or tears the attempt down, reporting through the connection state. */
-void func_02043e10(s32 status, s32 socket, void *peer, void *request)
+/* Peer socket-connect callback: event 0 (re)starts the connect to the peer
+   described by addr (address at +4, port at +2) and gives it a session slot; a
+   nonzero event is the connect's error or timeout code.  On success the session
+   advances (func_02040e1c); otherwise the attempt is retried while its retry
+   budget lasts, and the peer is dropped when it fails.  attempt is the
+   connection's in-flight connect record. */
+void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *attempt)
 {
     M2C_UNK func_02040e1c(M2C_UNK);
     s32 func_0200567c(void *, s32, void *, s32);
@@ -22,45 +25,45 @@ void func_02043e10(s32 status, s32 socket, void *peer, void *request)
     extern M2C_UNK data_020fc908;
 
     u8 buf[12];
-    void *connection;
-    void *peerConn;
-    void *portConn;
+    void *sessionA;
+    void *sessionB;
+    void *sessionC;
     s32 kind;
     s32 res;
     s32 slot;
     u16 port;
 
-    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) != 6 && M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) != 0xb) {
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) != 6 && M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) != 0xB) {
         return;
     }
-    if (request == 0) {
+    if (attempt == 0) {
         return;
     }
-    if (status == 0) {
-        M2C_FIELD(request, s32 *, 8) = 0;
+    if (event == 0) {
+        attempt->natNeg = 0;
         M2C_FIELD(GetConnection(), u8 *, 0x14)++;
         slot = M2C_FIELD(GetConnection(), u8 *, 0x14);
-        if (M2C_FIELD(request, u8 *, 0) != 0) {
-            M2C_FIELD(GetConnection() + slot * 4, s32 *, CONN_SESSION_PEER_IPS) = M2C_FIELD(peer, s32 *, 4);
-            port = M2C_FIELD(peer, u16 *, 2);
+        if (attempt->isJoin != 0) {
+            M2C_FIELD(GetConnection() + slot * 4, s32 *, CONN_SESSION_PEER_IPS) = addr->address;
+            port = addr->port;
             M2C_FIELD(GetConnection() + slot * 2, u16 *, CONN_SESSION_PEER_PORTS) = (u16)((u8)((s32)port >> 8) | ((port << 8) & 0xFF00));
-            M2C_FIELD(GetConnection(), u8 *, 0x17c) = 0;
-            M2C_FIELD(GetConnection(), s32 *, 0x180) = 0;
-            connection = GetConnection();
-            M2C_FIELD(connection, s32 *, 0x184) = 0;
-            M2C_FIELD(connection, s32 *, 0x188) = 0;
-            if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xb) {
-                SetConnectionState(0xc);
+            M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TARGET_NOTICES) = 0;
+            M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_CONNECT_TARGET) = 0;
+            sessionA = GetConnection();
+            M2C_FIELD(sessionA, s32 *, CONN_SESSION_JOIN_TICK) = 0;
+            M2C_FIELD(sessionA, s32 *, 0x188) = 0;
+            if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xB) {
+                SetConnectionState(0xC);
             } else {
                 SetConnectionState(7);
             }
-            M2C_FIELD(GetConnection(), u8 *, 0xc) = 0;
+            M2C_FIELD(GetConnection(), u8 *, 0xC) = 0;
             func_0200567c(buf, 12, &data_020fc908, M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_PARAM));
-            connection = GetConnection();
-            peerConn = GetConnection();
-            portConn = GetConnection();
-            res = func_0205d4d8(M2C_FIELD(peerConn + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(portConn + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
-            res = func_0205adcc(*M2C_FIELD(connection, s32 **, 4), 0, res, buf, -1, 5000, M2C_FIELD(GetConnection(), s32 *, 8), 0);
+            sessionA = GetConnection();
+            sessionB = GetConnection();
+            sessionC = GetConnection();
+            res = func_0205d4d8(M2C_FIELD(sessionB + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(sessionC + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
+            res = func_0205adcc(*M2C_FIELD(sessionA, s32 **, 4), 0, res, buf, -1, 5000, M2C_FIELD(GetConnection(), s32 *, 8), 0);
             if (res == 1) {
                 func_02043230();
                 return;
@@ -73,58 +76,58 @@ void func_02043e10(s32 status, s32 socket, void *peer, void *request)
             }
             return;
         } else {
-            if (peer != 0) {
+            if (addr != 0) {
                 res = slot - 1;
-                M2C_FIELD(GetConnection() + res * 4, s32 *, CONN_SESSION_PEER_IPS) = M2C_FIELD(peer, s32 *, 4);
-                port = M2C_FIELD(peer, u16 *, 2);
+                M2C_FIELD(GetConnection() + res * 4, s32 *, CONN_SESSION_PEER_IPS) = addr->address;
+                port = addr->port;
                 M2C_FIELD(GetConnection() + res * 2, u16 *, CONN_SESSION_PEER_PORTS) = (u16)((u8)((s32)port >> 8) | ((port << 8) & 0xFF00));
             }
-            connection = GetConnection();
-            M2C_FIELD(connection, u64 *, 0x18c) = GetSystemTick();
+            sessionA = GetConnection();
+            M2C_FIELD(sessionA, u64 *, CONN_SESSION_CONNECT_TICK) = GetSystemTick();
             SetConnectionState(7);
             return;
         }
     } else {
-        if (M2C_FIELD(request, s32 *, 8) == 0) {
+        if (attempt->natNeg == 0) {
             return;
         }
-        kind = func_020431e0(status);
+        kind = func_020431e0(event);
         if (kind != 2 && kind != 1) {
             return;
         }
-        if (M2C_FIELD(request, u8 *, 0) == 0) {
-            if (kind == 1 || (kind == 2 && M2C_FIELD(request, u8 *, 1) >= 1)) {
-                M2C_FIELD(request, s32 *, 8) = 0;
+        if (attempt->isJoin == 0) {
+            if (kind == 1 || (kind == 2 && attempt->retries >= 1)) {
+                attempt->natNeg = 0;
                 if (func_020441e8(0) == 0) {
                     return;
                 }
-                connection = GetConnection();
-                peerConn = GetConnection();
-                if (func_02041038(M2C_FIELD(connection + M2C_FIELD(peerConn, u8 *, CONN_SESSION_PLAYER_COUNT) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+                sessionA = GetConnection();
+                sessionB = GetConnection();
+                if (func_02041038(M2C_FIELD(sessionA + M2C_FIELD(sessionB, u8 *, CONN_SESSION_PLAYER_COUNT) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
                     return;
                 }
                 return;
             } else {
-                M2C_FIELD(request, u8 *, 1)++;
-                func_0203ef9c(request);
+                attempt->retries++;
+                func_0203ef9c(attempt);
                 if (func_02043184() == 0) {
                     return;
                 }
                 return;
             }
         } else {
-            connection = GetConnection();
-            M2C_FIELD(connection, u64 *, 0x184) = GetSystemTick();
+            sessionA = GetConnection();
+            M2C_FIELD(sessionA, u64 *, CONN_SESSION_JOIN_TICK) = GetSystemTick();
             if (kind != 1) {
                 if (kind != 2) {
                     return;
                 }
-                if (M2C_FIELD(GetConnection(), u8 *, 0x17c) < 1) {
+                if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TARGET_NOTICES) < 1) {
                     return;
                 }
             }
         }
-        M2C_FIELD(request, s32 *, 8) = 0;
+        attempt->natNeg = 0;
         if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3 || M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 2) {
             if (func_020441e8(1) == 0) {
                 return;
@@ -134,14 +137,14 @@ void func_02043e10(s32 status, s32 socket, void *peer, void *request)
                 return;
             }
         }
-        M2C_FIELD(GetConnection(), u8 *, 0x17c) = 0;
-        M2C_FIELD(GetConnection(), s32 *, 0x180) = 0;
-        connection = GetConnection();
-        M2C_FIELD(connection, s32 *, 0x184) = 0;
-        M2C_FIELD(connection, s32 *, 0x188) = 0;
-        connection = GetConnection();
-        peerConn = GetConnection();
-        if (func_02040e1c(M2C_FIELD(connection + (M2C_FIELD(peerConn, u8 *, CONN_SESSION_PLAYER_COUNT) + 1) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TARGET_NOTICES) = 0;
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_CONNECT_TARGET) = 0;
+        sessionA = GetConnection();
+        M2C_FIELD(sessionA, s32 *, CONN_SESSION_JOIN_TICK) = 0;
+        M2C_FIELD(sessionA, s32 *, 0x188) = 0;
+        sessionA = GetConnection();
+        sessionB = GetConnection();
+        if (func_02040e1c(M2C_FIELD(sessionA + (M2C_FIELD(sessionB, u8 *, CONN_SESSION_PLAYER_COUNT) + 1) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
             return;
         }
         return;

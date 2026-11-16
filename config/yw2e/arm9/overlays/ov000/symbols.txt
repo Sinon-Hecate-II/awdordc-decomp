@@ -516,7 +516,7 @@ func_ov000_0219997c kind:function(arm,size=0x364) addr:0x0219997c
 func_ov000_02199ce0 kind:function(arm,size=0x94) addr:0x02199ce0
 SetMapCursor kind:function(arm,size=0x1c4) addr:0x02199d74
 func_ov000_02199f38 kind:function(arm,size=0x18) addr:0x02199f38
-func_ov000_02199f50 kind:function(arm,size=0x114) addr:0x02199f50
+SetBattleCommand kind:function(arm,size=0x114) addr:0x02199f50
 func_ov000_0219a064 kind:function(arm,size=0x7c) addr:0x0219a064
 func_ov000_0219a0e0 kind:function(arm,size=0x114) addr:0x0219a0e0
 BeginAiTurn kind:function(arm,size=0x15c) addr:0x0219a1f4
@@ -1484,7 +1484,7 @@ data_ov000_021b5c11 kind:data(any) addr:0x021b5c11
 data_ov000_021b5c12 kind:data(any) addr:0x021b5c12
 data_ov000_021b5c13 kind:data(any) addr:0x021b5c13
 data_ov000_021b5c54 kind:data(any) addr:0x021b5c54
-data_ov000_021b5c58 kind:data(any) addr:0x021b5c58
+gUnitKindFuelCost kind:data(any) addr:0x021b5c58
 gUnitKindCargoCount kind:data(any) addr:0x021b5c5c
 data_ov000_021b5c5d kind:data(any) addr:0x021b5c5d
 data_ov000_021b5c5e kind:data(any) addr:0x021b5c5e
@@ -1977,7 +1977,7 @@ data_ov000_021df66c kind:bss addr:0x021df66c
 data_ov000_021df684 kind:bss addr:0x021df684
 gAiCommand kind:bss addr:0x021df7d0
 data_ov000_021df7d6 kind:bss addr:0x021df7d6
-data_ov000_021df7dc kind:bss addr:0x021df7dc
+gCommandPath kind:bss addr:0x021df7dc
 data_ov000_021df7e4 kind:bss addr:0x021df7e4
 gAiUnitList kind:bss addr:0x021df824
 gAiUnitScores kind:bss addr:0x021df868

@@ -198,7 +198,7 @@ void BeginUnitMove(s32 arg0) {
  * has ended, the path is blocked, the unit is in the state that forbids moving,
  * or a dialog is up. */
 void StartUnitMove(void *move, s32 commands){
-s32 func_020a7d38(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
+s32 IsUnitSubmerged(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
 extern u8 gBattleEndState[];
 s32 CountMovePathSteps(volatile s8 *);s32 MovePathEndsInAttack(s8 *);int IsMovePathValid(int,int,const signed char *);void CopyMovePath(void *,void *);void StepUnitMove(void);
 s8 *path=(s8*)commands;
@@ -210,7 +210,7 @@ if(gBattleEndState[0]){if(M2C_FIELD((void*)*gCurrentMap,u16 *,0x52b0)!=19)ok=1;e
 if(!(ok&255))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 }
 if(!IsMovePathValid(x,y,path))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
-if(M2C_FIELD(move,void **,UNIT_MOVE_UNIT) && func_020a7d38(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)) && !func_020a7d68(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
+if(M2C_FIELD(move,void **,UNIT_MOVE_UNIT) && IsUnitSubmerged(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)) && !func_020a7d68(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 if(IsDialogActive())M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 if(M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE))func_0207b764(x,y);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(15,CountMovePathSteps(path));

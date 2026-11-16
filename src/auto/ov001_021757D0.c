@@ -36,8 +36,8 @@ s32 func_ov001_02175820(void) {
 }
 
 void func_ov001_02175880(M2C_UNK arg0) {
-    M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
-    func_ov001_0218b6f8(arg0, 0x20);
+    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
+    Ov001_Alloc(arg0, 0x20);
 }
 
 void func_ov001_02175890(void) {
@@ -81,12 +81,12 @@ return 1;
 #pragma scheduling reset
 void func_ov001_021759c4(void) {
 extern u8 data_ov001_02193d2c;
-M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK func_ov001_0218c40c(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK func_ov001_0218c678(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK Ov001_InitFades(); M2C_UNK func_ov001_0218b6f8(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
+M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK func_ov001_0218c40c(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
 M2C_UNK p;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
 if(!func_02006f8c())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
-func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK *,4));func_ov001_0218be2c();func_ov001_0218c678();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();p=func_ov001_0218b6f8(0x700,0x20);func_02046884();func_ov001_0218b71c(&p);
+func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();p=Ov001_Alloc(0x700,0x20);func_02046884();func_ov001_0218b71c(&p);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the
@@ -285,14 +285,14 @@ s32 func_ov001_02175e34(void) {
 }
 
 void func_ov001_02175e74(void) {
-    M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a698(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_QueueCreateFromBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193d4c;
     M2C_UNK val;
     M2C_UNK res;
-    val = func_ov001_0218b6f8(0x64, 0x4);
+    val = Ov001_Alloc(0x64, 0x4);
     data_ov001_02193d4c = val;
-    res = func_ov001_0218a698(0x8, val, 0xc);
+    res = Ov001_QueueCreateFromBuffer(0x8, val, 0xc);
     M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60) = res;
 }
 

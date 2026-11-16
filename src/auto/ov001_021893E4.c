@@ -293,7 +293,7 @@ u16 Ov001_ReadInputCode(void) {
    through the registered callbacks, allocates and reads the data block, then
    sets the file directory to "dwc:/". */
 void func_ov001_02189ad0(void) {
-    s32 func_ov001_0218b6f8(s32, s32);
+    s32 Ov001_Alloc(s32, s32);
     void InitFileRequest(void *);
     s32 OpenFileRequest(void *, void *);
     void SystemHalt(void);
@@ -305,7 +305,7 @@ void func_ov001_02189ad0(void) {
     void func_0200b6a8(void *, s32, s32);
     s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 LoadArchiveIndex(void *, s32, s32);
-    s32 func_ov001_0218a698(s32, s32, s32);
+    s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
     void func_0200563c(void *, void *, ...);
     void SetFileDirectory(void *);
     extern void *data_ov001_02193e2c;
@@ -323,7 +323,7 @@ void func_ov001_02189ad0(void) {
     void *data;
     s32 dataSize;
 
-    data_ov001_02193e2c = (void *)func_ov001_0218b6f8(0xE8, 4);
+    data_ov001_02193e2c = (void *)Ov001_Alloc(0xE8, 4);
     InitFileRequest(request);
     if (!OpenFileRequest(request, data_ov001_02191794)) {
         SystemHalt();
@@ -342,10 +342,10 @@ void func_ov001_02189ad0(void) {
         SystemHalt();
     }
     dataSize = LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
-    data = (void *)func_ov001_0218b6f8(dataSize, 4);
+    data = (void *)Ov001_Alloc(dataSize, 4);
     *(void **)data_ov001_02193e2c = data;
     LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, dataSize);
-    M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84) = (s32)func_ov001_0218a698(0x20, (s32)((u8 *)data_ov001_02193e2c + 4), 4);
+    M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84) = (s32)Ov001_QueueCreateFromBuffer(0x20, (s32)((u8 *)data_ov001_02193e2c + 4), 4);
     func_0200563c(dirName, data_ov001_021917ac, data_ov001_0218fd04);
     SetFileDirectory(dirName);
 }
@@ -407,18 +407,18 @@ s32 func_ov001_02189dc0(void) {
 }
 
 void *Ov001_LoadFile(void *arg0,u32 *arg1,s32 arg2){
-s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 OpenFileRequest(void *,void *);void SystemHalt(void);void FileRead(void *,void *,s32);void CloseFileRequest(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
+s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 OpenFileRequest(void *,void *);void SystemHalt(void);void FileRead(void *,void *,s32);void CloseFileRequest(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 Ov001_Alloc(s32,s32);
 extern void *data_ov001_02193e2c;extern s32 data_ov001_021917bc;
 void *buf;u32 work[18];u32 size;s32 align;void *out;
 func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c,s32*,0x84));
 InitFileRequest(work);if(!OpenFileRequest(work,arg0))SystemHalt();
 size=work[10]-work[9];if(arg1)*arg1=size;
 if(func_ov001_02189ef0(arg0,(s32)&data_ov001_021917bc,2))align=-4;else align=arg2;
-buf=(void *)func_ov001_0218b6f8(size,align);
+buf=(void *)Ov001_Alloc(size,align);
 FileRead(work,buf,size);CloseFileRequest(work);
 if(align>0)return buf;
 size=*(u32 *)buf>>8;if(arg1)*arg1=size;
-out=(void *)func_ov001_0218b6f8(size,arg2);func_020081d0(buf,out);func_ov001_0218b71c(&buf);return out;
+out=(void *)Ov001_Alloc(size,arg2);func_020081d0(buf,out);func_ov001_0218b71c(&buf);return out;
 }
 
 void Ov001_FreeFile(s32 arg0, ...) {
@@ -445,17 +445,17 @@ s32 func_ov001_02189ef0(void *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_ov001_02189f48(void) {
-s32 func_ov001_0218a698(s32,s32,s32);s32 func_ov001_0218b6f8(s32,s32);s32 func_ov001_0218bf04();M2C_UNK func_ov001_0218bfb4(s32,void *);M2C_UNK func_ov001_0218bfc4(s32,void *);s32 func_ov001_0218c150(s32,s32);
+s32 Ov001_QueueCreateFromBuffer(s32,s32,s32);s32 Ov001_Alloc(s32,s32);s32 Ov001_ListCreate();M2C_UNK Ov001_ListPushBack(s32,void *);M2C_UNK Ov001_ListPushFront(s32,void *);s32 func_ov001_0218c150(s32,s32);
 extern s32 data_ov001_02193e30;
 s32 i;void *p;
-data_ov001_02193e30=func_ov001_0218b6f8(0x450,4);
+data_ov001_02193e30=Ov001_Alloc(0x450,4);
 for(i=0;i<2;i++){
-M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x224)=func_ov001_0218a698(0x20,data_ov001_02193e30+i*0x228,0x10);
-M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x220)=func_ov001_0218bf04();
+M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x224)=Ov001_QueueCreateFromBuffer(0x20,data_ov001_02193e30+i*0x228,0x10);
+M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x220)=Ov001_ListCreate();
 M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x208)=func_ov001_0218c150(i,0x40);
 M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x218)=func_ov001_0218c150(i,0x7f)+8;
-p=(void *)(data_ov001_02193e30+i*0x228);func_ov001_0218bfc4(M2C_FIELD(p,s32*,0x220),p+0x200);
-p=(void *)(data_ov001_02193e30+i*0x228);func_ov001_0218bfb4(M2C_FIELD(p,s32*,0x220),p+0x210);
+p=(void *)(data_ov001_02193e30+i*0x228);Ov001_ListPushFront(M2C_FIELD(p,s32*,0x220),p+0x200);
+p=(void *)(data_ov001_02193e30+i*0x228);Ov001_ListPushBack(M2C_FIELD(p,s32*,0x220),p+0x210);
 }
 }
 

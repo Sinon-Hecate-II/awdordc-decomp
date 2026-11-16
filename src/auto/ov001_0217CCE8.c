@@ -141,7 +141,7 @@ void func_ov001_0217d260(s32 arg0) {
  * sprites and the two scroll callbacks, then start the input step. */
 void InitMapListScreen(void) {
     void *GetCurrentMapRecord(void);
-    void *func_ov001_0218b6f8(s32, s32);
+    void *Ov001_Alloc(s32, s32);
     extern M2C_UNK gMapListState;
     void func_ov001_0217d680(void);
     void InitMapListGraphics(void);
@@ -167,7 +167,7 @@ void InitMapListScreen(void) {
     void *sprite;
 
     profile = GetCurrentMapRecord();
-    M2C_FIELD(&gMapListState, void **, 8) = func_ov001_0218b6f8(0x48, 4);
+    M2C_FIELD(&gMapListState, void **, 8) = Ov001_Alloc(0x48, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = M2C_FIELD(profile, u8 *, 0xf6);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x42) = 0xc;
     func_ov001_0217d680();

@@ -14,12 +14,12 @@ s32 EaseInterpolate(s32, s32, s32, s32, s32);
 
 s32 NextRandomValue(void) {
     s32 Divide(s32, M2C_UNK);
-    extern s32 data_0214bfa8;
+    extern s32 gRandomSeed;
     s32 temp_r2;
     s32 temp_r4;
-    temp_r2 = (data_0214bfa8 * 4) + 2;
+    temp_r2 = (gRandomSeed * 4) + 2;
     temp_r4 = temp_r2 * (temp_r2 + 1);
-    return data_0214bfa8 = (temp_r4 + Divide(temp_r4 & ~0x80000000, 7)) & ~0x80000000;
+    return gRandomSeed = (temp_r4 + Divide(temp_r4 & ~0x80000000, 7)) & ~0x80000000;
 }
 
 s32 RandomIntRange(s32 arg0, s32 arg1) {

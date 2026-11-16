@@ -51,7 +51,7 @@ void func_0208441c(void) {
     func_0207a7a4(1, 4);
 }
 
-void func_02084464(u8 *a,u8 *b){s32 i=0,j=0;do{b[i]=((u32)(a[j]<<28)>>24)|(a[j+1]&15);j+=2;i++;}while(i<6);}
+void UnpackCursorPath(u8 *a,u8 *b){s32 i=0,j=0;do{b[i]=((u32)(a[j]<<28)>>24)|(a[j+1]&15);j+=2;i++;}while(i<6);}
 
 void func_020844a0(u8 *a,u8 *b){s32 i=0,j=0,v;do{v=(a[i]>>4)&15;if(v==15)b[j]=255;else b[j]=v;v=a[i]&15;if(v==15)b[j+1]=255;else b[j+1]=v;i++;j+=2;}while(i<6);}
 
@@ -67,7 +67,7 @@ do{dst[12]=M2C_FIELD((u8 *)*p+i,u8 *,0x515c);i++;dst++;}while((s32)i<4);
 func_02085348(data_02156e50,20);
 }
 #pragma opt_common_subs reset
-void func_02084568(s32 a,s32 b,s32 c,s32 d){void func_02085348(void *,s32);u8 *q=(u8 *)&data_02156e4c;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];func_02084464((u8 *)*p+0x5388,data_02156e5c);func_02085348(data_02156e50,20);}
+void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void func_02085348(void *,s32);u8 *q=(u8 *)&data_02156e4c;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];UnpackCursorPath((u8 *)*p+0x5388,data_02156e5c);func_02085348(data_02156e50,20);}
 
 s32 GetLinkMode(void) {
     s32 func_0208858c(M2C_UNK);

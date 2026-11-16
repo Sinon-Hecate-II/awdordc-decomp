@@ -17,11 +17,11 @@ func_ov001_0218b71c((void *)0x02193D20);
 }
 
 void func_ov001_021756c0(void){
-void *func_ov001_0218b6f8(s32,s32);
+void *Ov001_Alloc(s32,s32);
 extern char data_ov001_0218f6e8[];
 void func_ov001_02175880(void); void func_ov001_02175890(void);
 MenuRecord rec;
-data_ov001_02193d24.ptr=func_ov001_0218b6f8(0x26c,4);
+data_ov001_02193d24.ptr=Ov001_Alloc(0x26c,4);
 data_ov001_02193d24.state=0;
 FillU16(0,&rec,0x104);
 rec.kind=0x50; rec.size=12;

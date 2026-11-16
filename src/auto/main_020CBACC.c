@@ -82,11 +82,11 @@ void func_020cbcfc(void *arg0) {
 
 void func_020cbd08(void *a) {
 extern void **gCurrentMap;
-s32 func_020a5b2c(void *);M2C_UNK func_01ffa6fc(void *);
+s32 ChargeUnitTurnFuel(void *);M2C_UNK func_01ffa6fc(void *);
 while(M2C_FIELD(a,s16 *,0x6c)<51) {
 void *p=(u8 *)*gCurrentMap+0x59a4;
 s32 n=(M2C_FIELD(a,s16 *,0x6c)+M2C_FIELD(*gCurrentMap,u16 *,0x52a8))*14;
-if((((UnkCBUnit *)((u8 *)p+n))->kind)&&func_020a5b2c((u8 *)p+n)) {((void (*)(void *,void *))func_020cbce0)((u8 *)p+n,a);return;}
+if((((UnkCBUnit *)((u8 *)p+n))->kind)&&ChargeUnitTurnFuel((u8 *)p+n)) {((void (*)(void *,void *))func_020cbce0)((u8 *)p+n,a);return;}
 M2C_FIELD(a,s16 *,0x6c)++;
 }
 if(M2C_FIELD(a,s16 *,0x6c)>=51)func_01ffa6fc(a);
@@ -173,7 +173,7 @@ void func_020cc028(void) {
 void func_020cc050(void) {
 extern void **gCurrentMap;
 func_020d31f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1);
-func_ov000_02199f50(17,0,0,0);
+SetBattleCommand(17,0,0,0);
 }
 
 void func_020cc08c(void) {
@@ -369,10 +369,10 @@ if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else func_020c75cc();retu
 target=(MapTargetEntry *)GetTargetPosition();
 if(target->value==0){
 func_020d468c();
-func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->id&255,0);
+SetBattleCommand(4,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->id&255,0);
 }else{
 func_020d468c();
-func_ov000_02199f50(5,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->x&255,target->y&255);
+SetBattleCommand(5,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->x&255,target->y&255);
 }
 if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return;
 distance=(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X)-target->x)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y)-target->y);

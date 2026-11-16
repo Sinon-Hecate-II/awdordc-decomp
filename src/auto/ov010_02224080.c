@@ -45,28 +45,31 @@ s32 func_ov010_02224138(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov010_0222415c(void *p){
+/* Initialise the voice-chat link from its config: use the caller's context pool
+ * to build the state's free list, clear the working and scratch contexts, reset
+ * the link state and seed the link's LCG. */
+s32 VoiceLink_Init(VoiceLinkConfig *config) {
 extern M2C_UNK gVoiceLinkState,gVoiceLinkContext,gVoiceLinkScratchContext,gLinkConfig;
 void MI_CpuFill8(void*,s32,u32);u64 GetSystemTick(void);
-u32 i,offset;void *pool=M2C_FIELD(p,void**,0);
-if(!pool||!M2C_FIELD(p,u32*,4)||M2C_FIELD(p,u32*,4)>8)return 0;
-M2C_FIELD(&gVoiceLinkState,void**,16)=M2C_FIELD(p,void**,0);
-MI_CpuFill8(pool,0,M2C_FIELD(p,u32*,4)*24);
-MI_CpuFill8(&gVoiceLinkContext,0,24);
-MI_CpuFill8(&gVoiceLinkScratchContext,0,24);
+u32 i,offset;void *pool=config->contextPool;
+if(!pool||!config->contextCount||config->contextCount>VOICE_LINK_CONTEXT_MAX)return 0;
+((VoiceLinkState *)&gVoiceLinkState)->freeList=config->contextPool;
+MI_CpuFill8(pool,0,config->contextCount*sizeof(VoiceLinkContext));
+MI_CpuFill8(&gVoiceLinkContext,0,sizeof(VoiceLinkContext));
+MI_CpuFill8(&gVoiceLinkScratchContext,0,sizeof(VoiceLinkContext));
 i=0;
-if(M2C_FIELD(p,u32*,4)-1){offset=0;do{
-M2C_FIELD(M2C_FIELD(&gVoiceLinkState,u8**,16)+offset,void**,20)=M2C_FIELD(&gVoiceLinkState,u8**,16)+ (++i)*24;
-offset+=24;
-}while(i<M2C_FIELD(p,u32*,4)-1);}
-M2C_FIELD(M2C_FIELD(&gVoiceLinkState,u8**,16)+M2C_FIELD(p,u32*,4)*24,s32*,-4)=0;
-M2C_FIELD(&gVoiceLinkState,s32*,20)=0;
-M2C_FIELD(&gVoiceLinkState,s32*,4)=0;
-M2C_FIELD(&gVoiceLinkState,s32*,0)=0;
-M2C_FIELD(&gLinkConfig,s32*,20)=0;
-M2C_FIELD(&gVoiceLinkState,u64(**)(void),24)=GetSystemTick;
-M2C_FIELD(&gVoiceLinkState,u32*,28)=0x5d588b65;
-M2C_FIELD(&gVoiceLinkState,u32*,32)=0x269ec3;
+if(config->contextCount-1){offset=0;do{
+M2C_FIELD((u8 *)((VoiceLinkState *)&gVoiceLinkState)->freeList+offset,void**,0x14)=(u8 *)((VoiceLinkState *)&gVoiceLinkState)->freeList+ (++i)*sizeof(VoiceLinkContext);
+offset+=sizeof(VoiceLinkContext);
+}while(i<config->contextCount-1);}
+M2C_FIELD((u8 *)((VoiceLinkState *)&gVoiceLinkState)->freeList+config->contextCount*sizeof(VoiceLinkContext),s32*,-4)=0;
+((VoiceLinkState *)&gVoiceLinkState)->activeList=0;
+((VoiceLinkState *)&gVoiceLinkState)->peerMask=0;
+((VoiceLinkState *)&gVoiceLinkState)->unk00=0;
+M2C_FIELD(&gLinkConfig,s32*,0x14)=0;
+((VoiceLinkState *)&gVoiceLinkState)->getTick=GetSystemTick;
+((VoiceLinkState *)&gVoiceLinkState)->randMul=0x5d588b65;
+((VoiceLinkState *)&gVoiceLinkState)->randAdd=0x269ec3;
 return 1;
 }
 #pragma opt_strength_reduction reset
@@ -235,7 +238,7 @@ M2C_UNK VoiceLink_SendControl(s32 arg0) {
 #pragma opt_propagation off
 void VoiceLink_InitContext(void *arg0,s32 arg1) {
 register u32 i; register u8 zero; u8 *ptr; extern M2C_UNK gLinkConfig;
-ptr=arg0;i=6;zero=0;
+ptr=arg0;zero=0;i=6;
 do {ptr[0]=zero;ptr[1]=zero;ptr[2]=zero;ptr[3]=zero;ptr+=4;}while(--i);
 M2C_FIELD(arg0,s32 *,0)=M2C_FIELD(&gLinkConfig,s32 *,0x10);
 M2C_FIELD(arg0,s32 *,0xc)=0;M2C_FIELD(arg0,s8 *,4)=arg1;

@@ -12,7 +12,7 @@ void func_ov001_02179e74(void) {
 
 void func_ov001_02179ea8(void) {
     extern M2C_UNK gMapSelectState;
-    M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_GetNameEntryMode(M2C_UNK *, M2C_UNK);
     M2C_UNK Ov001_GetFriendSlots(M2C_UNK);
     void InitMapSelectGraphics(void);
@@ -30,7 +30,7 @@ void func_ov001_02179ea8(void) {
     void func_ov001_0217a2f0(void);
     s32 temp;
 
-    M2C_FIELD(&gMapSelectState, void **, 4) = func_ov001_0218b6f8((M2C_UNK)0x5c, (M2C_UNK)4);
+    M2C_FIELD(&gMapSelectState, void **, 4) = Ov001_Alloc((M2C_UNK)0x5c, (M2C_UNK)4);
     Ov001_GetNameEntryMode(&temp, 0);
     if (temp == 0) {
         M2C_FIELD(&gMapSelectState, u8 *, 0) = 0;

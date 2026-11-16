@@ -705,6 +705,28 @@ enum {
 #define CONN_SESSION_PEER_CALLBACK_DATA 0x470 /* s32 data passed to PEER_CALLBACK */
 #define CONN_SESSION_SCORE_CALLBACK     0x474 /* s32 callback (index, data) scoring browsed sessions */
 #define CONN_SESSION_SCORE_CALLBACK_DATA 0x478 /* s32 data passed to SCORE_CALLBACK */
+#define CONN_SESSION_TARGET_NOTICES  0x17C /* u8 QR2 state notices seen from the connect target */
+#define CONN_SESSION_CONNECT_TARGET  0x180 /* s32 peer id the outstanding connect targets */
+#define CONN_SESSION_JOIN_TICK       0x184 /* u64 time the outstanding join was opened */
+#define CONN_SESSION_CONNECT_TICK    0x18C /* u64 time the outgoing socket connect was started */
+
+/* The in-flight peer-connect record at GetConnection()+0x194 (0xC bytes): what
+ * the socket connect is for and how often it has been retried.  Its last word
+ * overlaps CONN_SESSION_NATNEG. */
+typedef struct ConnAttempt {
+    u8  isJoin;  /* +0x00 nonzero when the attempt is a join */
+    u8  retries; /* +0x01 connect retries so far */
+    u16 port;    /* +0x02 peer port */
+    s32 address; /* +0x04 peer IPv4 address */
+    s32 natNeg;  /* +0x08 NAT negotiation session reused by the connect, 0 when none */
+} ConnAttempt;
+
+/* A peer address handed to a connect: the IPv4 address at +4 and the port at +2. */
+typedef struct PeerAddress {
+    u16 unk00;   /* +0x00 */
+    u16 port;    /* +0x02 */
+    s32 address; /* +0x04 */
+} PeerAddress;
 
 /* Connection session fields used while GameSpy QR2 server reporting runs. */
 #define CONN_SESSION_GT2_SOCKET   0x04  /* GameSpy GT2 socket wrapper (handle at +0, local port at +8) */
@@ -847,13 +869,34 @@ enum {
 /* The ov001 save data (gSaveData, 0x6f8 bytes): four 0x100-byte save slots from
  * +0 and the working copy of the current slot at +0x400.  Name data lives at the
  * same slot-relative offsets the StorePlayerName helper uses on the working slot. */
-#define SAVE_PLAYER_NAMES   0x480 /* four 16-byte player-name fields in the working slot */
-#define SAVE_NAME_SIZE      0x10  /* bytes per stored name */
-#define SAVE_NAME_TEXT_MAX  0x20  /* longest name text accepted (hex or raw) */
-#define SAVE_NAME_FLAGS     0x4e6 /* u8: low 2 bits name-length class, high bits flags */
-#define SAVE_NAME_MODE_MASK 0x03  /* name-length class (0, 5, 13 or 16 bytes) */
-#define SAVE_NAME_RAW       0x04  /* name was copied raw instead of hex-decoded */
-#define SAVE_NAME_FLAGS_MASK 0xfc /* remaining flag bits */
+ #define SAVE_PLAYER_NAMES   0x480 /* four 16-byte player-name fields in the working slot */
+ #define SAVE_NAME_SIZE      0x10  /* bytes per stored name */
+ #define SAVE_NAME_TEXT_MAX  0x20  /* longest name text accepted (hex or raw) */
+ #define SAVE_NAME_FLAGS     0x4e6 /* u8: low 2 bits name-length class, high bits flags */
+ #define SAVE_NAME_MODE_MASK 0x03  /* name-length class (0, 5, 13 or 16 bytes) */
+ #define SAVE_NAME_RAW       0x04  /* name was copied raw instead of hex-decoded */
+ #define SAVE_NAME_FLAGS_MASK 0xfc /* remaining flag bits */
+
+ /* The rest of the working save slot (gSaveData + SAVE_WORK_SLOT).  The slot's
+  * own fields are at these offsets; +0x4f0..+0x4ff exist only in the working
+  * copy, the card slot stores a bit count of the code there instead. */
+ #define SAVE_WORK_SLOT      0x400 /* the 0x100-byte working copy of the current slot */
+ #define SAVE_MAP_NAME       0x440 /* u8[32]: the saved match's map name text */
+ #define SAVE_PLAYER_CODES   0x4c0 /* four 4-byte dotted values, one per player */
+ #define SAVE_CODE_BITS      0x4d0 /* u8: set-bit count of the slot's code */
+ #define SAVE_CO_NAMES       0x4d1 /* four 5-byte CO-name fields */
+ #define SAVE_SLOT_STATUS    0x4e7 /* u8: slot status (1/2 written, 0xFF erased) */
+ #define SAVE_CODE           0x4f0 /* 4-byte dotted map/verification code (working copy only) */
+ #define SAVE_SLOT_INDEX     0x4f4 /* u8: physical slot the working copy belongs to */
+ #define SAVE_EXTRA_EMPTY_A  0x4f5 /* u8: the +0xc0/+0xc4 codes are absent (cleared on commit) */
+ #define SAVE_EXTRA_EMPTY_B  0x4f6 /* u8: the +0xc8/+0xcc codes are absent (cleared on commit) */
+
+ /* The link-match setup sent before a saved battle (the 0xE8-byte state that
+  * func_ov001_02171394 copies out of the receive buffer): the map name, the
+  * name-length class shared by the four player names, and the name texts. */
+ #define MATCH_SETUP_MAP_NAME   0x00 /* u8[32]: map name text */
+ #define MATCH_SETUP_NAME_CLASS 0x20 /* s32: 1 = 5, 2 = 13, 3 = 16 bytes per name */
+ #define MATCH_SETUP_NAMES      0x28 /* u8[4][32]: player name texts */
 
 /* The card battle-save block (SAVE_BLOCK_SIZE bytes): a magic word, then 60
  * 12-byte slot summaries and 60 40-byte slot records.  The save manager scans
@@ -953,6 +996,12 @@ typedef struct LinkChannelState {
 
 #define LINK_CHANNEL_STRIDE 0x94
 #define LINK_CHANNEL_COUNT  3
+
+/* Fields of a link packet buffer while it sits in a channel's packet queue (the
+ * Link_* queue helpers): the doubly-linked list links and the ordering key. */
+#define LINK_PACKET_PREV 0x04 /* void *previous packet in the queue */
+#define LINK_PACKET_NEXT 0x08 /* void *next packet in the queue */
+#define LINK_PACKET_KEY  0x18 /* u32 ordering key the queue is kept sorted by */
 
 /* ov007 map editor text entry. The widget keeps a glyph layout table of three
  * blocks of MAPEDIT_GLYPH_COUNT entries: the base glyphs, then their voiced
@@ -1406,6 +1455,47 @@ typedef struct Ov001PlayerRecord {
     char name[4][64]; /* +0x30: up to four player names */
 } Ov001PlayerRecord;  /* 0x130 bytes */
 
+/* ov001 cooperative task system (gOv001Tasks): OV001_TASK_GROUP_COUNT groups,
+ * each with a node pool, a message queue and a priority-ordered list of
+ * pending callbacks bookended by two sentinel nodes. */
+#define OV001_TASK_GROUP_COUNT 2
+
+typedef struct Ov001ListNode {
+    struct Ov001ListNode *prev; /* +0x00 */
+    struct Ov001ListNode *next; /* +0x04 */
+} Ov001ListNode;                /* 0x08 bytes: a list anchor */
+
+typedef struct Ov001TaskList {
+    Ov001ListNode head;         /* +0x00: head.next is the first node */
+    Ov001ListNode tail;         /* +0x08: tail.prev is the last node */
+} Ov001TaskList;                /* 0x10 bytes */
+
+/* One scheduled callback; also the type of the sentinel nodes embedded in
+ * every Ov001Task. */
+typedef struct Ov001TaskNode {
+    struct Ov001TaskNode *prev;     /* +0x00 */
+    struct Ov001TaskNode *next;     /* +0x04 */
+    void (*callback)(void *, s32);  /* +0x08 */
+    s32  arg;                       /* +0x0C */
+    u8   priority;                  /* +0x10: lower runs first */
+    u8   ownsArg;                   /* +0x11: arg is an owned buffer, freed with the node */
+    u8   pad12[2];
+} Ov001TaskNode;                    /* 0x14 bytes */
+
+/* One task group: nodes are recycled through freeNodes, queued messages wait
+ * in pendingNodes, and pending callbacks sit in list in priority order. */
+typedef struct Ov001Task {
+    s32            freeNodes;    /* +0x00: queue of unused nodes */
+    s32            pendingNodes; /* +0x04: queue of nodes waiting to run */
+    Ov001TaskList *list;         /* +0x08: pending callbacks, head/tail sentinels below */
+    Ov001TaskNode  head;         /* +0x0C: sentinel, priority 0 */
+    Ov001TaskNode  tail;         /* +0x20: sentinel, priority 0xFF */
+    s32            nodeCount;    /* +0x34: nodes in the pool */
+    u8             enabled;      /* +0x38: nonzero while the group dispatches */
+    u8             pad39[3];
+    Ov001TaskNode *pool;         /* +0x3C: nodeCount nodes of this size */
+} Ov001Task;                     /* 0x40 bytes */
+
 /* Multiplayer data-transfer manager (the pointer at gTransferManager): one
  * 0x30-byte slot per player connection, each used to trickle one outgoing
  * buffer and gather one incoming buffer over several frames. */
@@ -1442,6 +1532,8 @@ typedef struct TransferManager {
 
 /* ov010 voice-chat link protocol: one context per peer exchange plus the
  * handshake state of the exchange currently being served. */
+#define VOICE_LINK_CONTEXT_MAX 8 /* exchange contexts a voice-chat link keeps */
+
 typedef struct VoiceLinkContext {
     s32 valid;                       /* +0x00: nonzero while the context is in use */
     u8  peerId;                      /* +0x04: player id of the peer */
@@ -1451,6 +1543,20 @@ typedef struct VoiceLinkContext {
     u32 pad10;                       /* +0x10 */
     struct VoiceLinkContext *next;   /* +0x14: free/active list link */
 } VoiceLinkContext;                  /* 0x18 bytes */
+
+/* What starts a voice-chat link (VoiceLink_Init): the caller's context and
+ * packet pools plus the connection kind and the link layer's callback. */
+typedef struct VoiceLinkConfig {
+    VoiceLinkContext *contextPool; /* +0x00: VOICE_LINK_CONTEXT_MAX contexts, 0x18 bytes each */
+    u32 contextCount;              /* +0x04: contexts in the pool (1..VOICE_LINK_CONTEXT_MAX) */
+    s32 kind;                      /* +0x08: connection kind (1..3) */
+    u8  localId;                   /* +0x0C: local player id (below 0x20) */
+    u8  pad0D[3];
+    void *packetPool;              /* +0x10: packet buffers, 0x478 bytes each */
+    u32 packetPoolSize;            /* +0x14: size of the packet pool in bytes */
+    void *callback;                /* +0x18: link layer's packet callback */
+    void *callbackArg;             /* +0x1C: argument for that callback */
+} VoiceLinkConfig;                 /* 0x20 bytes */
 
 typedef struct VoiceLinkState {
     s32 unk00;                       /* +0x00 */

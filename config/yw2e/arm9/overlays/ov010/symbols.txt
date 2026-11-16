@@ -34,7 +34,7 @@ func_ov010_02223624 kind:function(arm,size=0x30) addr:0x02223624
 func_ov010_02223654 kind:function(arm,size=0x48) addr:0x02223654
 func_ov010_0222369c kind:function(arm,size=0x48) addr:0x0222369c
 func_ov010_022236e4 kind:function(arm,size=0x80) addr:0x022236e4
-func_ov010_02223764 kind:function(arm,size=0x114) addr:0x02223764
+Link_InsertPacket kind:function(arm,size=0x114) addr:0x02223764
 Link_PeekPacket kind:function(arm,size=0x48) addr:0x02223878
 Link_PopPacket kind:function(arm,size=0x6c) addr:0x022238c0
 Link_GetQueueCount kind:function(arm,size=0x10) addr:0x0222392c
@@ -50,7 +50,7 @@ func_ov010_02223fac kind:function(arm,size=0xb0) addr:0x02223fac
 func_ov010_0222405c kind:function(arm,size=0x24) addr:0x0222405c
 func_ov010_02224080 kind:function(arm,size=0xb8) addr:0x02224080
 func_ov010_02224138 kind:function(arm,size=0x24) addr:0x02224138
-func_ov010_0222415c kind:function(arm,size=0x114) addr:0x0222415c
+VoiceLink_Init kind:function(arm,size=0x114) addr:0x0222415c
 func_ov010_02224270 kind:function(arm,size=0x18) addr:0x02224270
 func_ov010_02224288 kind:function(arm,size=0xac) addr:0x02224288
 func_ov010_02224334 kind:function(arm,size=0x7c) addr:0x02224334
@@ -422,10 +422,10 @@ gLinkPacketBuffers kind:bss addr:0x0222cfa0
 data_ov010_0222d6b8 kind:bss addr:0x0222d6b8 ambiguous
 data_ov010_0222d878 kind:bss addr:0x0222d878
 data_ov010_0222d880 kind:bss addr:0x0222d880
-data_ov010_0222d88c kind:bss addr:0x0222d88c
-data_ov010_0222d890 kind:bss addr:0x0222d890
-data_ov010_0222d89c kind:bss addr:0x0222d89c
-data_ov010_0222d8a8 kind:bss addr:0x0222d8a8
+gLinkQueueIrq kind:bss addr:0x0222d88c
+gLinkQueueHead kind:bss addr:0x0222d890
+gLinkQueueCount kind:bss addr:0x0222d89c
+gLinkQueueTail kind:bss addr:0x0222d8a8
 gVoiceLinkState kind:bss addr:0x0222d8b4
 gVoiceLinkScratchContext kind:bss addr:0x0222d8d8
 gVoiceLinkContext kind:bss addr:0x0222d8f0

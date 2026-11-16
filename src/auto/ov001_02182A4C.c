@@ -530,7 +530,7 @@ void func_ov001_0218362c(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218327c);
 }
 
-void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *func_ov001_0218b6f8(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 func_ov001_0218c884(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=func_ov001_0218b6f8(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=func_ov001_0218c884(1,func_ov001_02183790,0,120);}
+void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 func_ov001_0218c884(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=Ov001_Alloc(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=func_ov001_0218c884(1,func_ov001_02183790,0,120);}
 
 #pragma opt_propagation off
 void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *data_ov001_02193dfc;void func_ov001_0218c94c(s32,s32);void func_ov001_0218b71c(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);func_ov001_0218b71c(&data_ov001_02193dfc-3);}
@@ -577,7 +577,7 @@ func_02007e20(M2C_FIELD(&data_ov001_02193df0,s32 *,4),0x5000000,0x200);Ov001_Pos
 void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     extern void *data_ov001_02193dfc;
     extern u8 data_ov001_0218fb58[];
-    void *func_ov001_0218b6f8(s32, s32);
+    void *Ov001_Alloc(s32, s32);
     void func_ov001_0218b2bc(s32, s32, void *);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_MoveSpriteLayout(M2C_UNK, s32, s32, s32);
@@ -588,7 +588,7 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     void *p;
     M2C_UNK t;
 
-    p = func_ov001_0218b6f8(0x20, 0x4);
+    p = Ov001_Alloc(0x20, 0x4);
     data_ov001_02193dfc = p;
     *(u8 *)((char *)p + 0x1b) = (u8)a;
     *(u8 *)((char *)data_ov001_02193dfc + 0x19) = (u8)b;

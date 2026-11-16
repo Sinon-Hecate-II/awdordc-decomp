@@ -84,14 +84,13 @@ s32 func_0207044c(u32 r0, u32 r1) {
     u32 r12;
 
     sign = r1 & 0x80000000u;
-    exp = (r1 >> 20) & 0x7ffu;
+    exp = (r1 >> 20) & ~0x800u;
     if (exp == 0u) goto L8ac;
-    if (exp >= 2032u) goto L890;
-
-    if (exp < 0x380u) goto L8bc;
+    if ((exp << 21) >= 0xffe00000u) goto L890;
 
     r12 = exp - 0x380u;
-    if (r12 >= 0xffu) goto L92c;
+    if (exp <= 0x380u) goto L8bc;
+    if ((s32)r12 >= 0xff) goto L92c;
 
     r1 = r1 << 12;
     {
@@ -101,8 +100,8 @@ s32 func_0207044c(u32 r0, u32 r1) {
         if (lowshifted == 0u) goto ret;
         if ((lowshifted & 0x80000000u) == 0u) goto ret;
         t = lowshifted << 1;
-        if (t != 0u) r0 += 1u;
-        else if ((r0 & 1u) != 0u) r0 += 1u;
+        if (t == 0) t = r0 & 1;
+        if (t) r0++;
         goto ret;
     }
 
@@ -115,6 +114,7 @@ L8a4:
     r0 = 0x7fffffffu;
     goto ret;
 L8ac:
+    if ((r0 | (r1 << 12)) != 0) goto L924;
     r0 = sign;
     goto ret;
 L8bc:

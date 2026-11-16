@@ -327,7 +327,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
 void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
 extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);
-s32 func_020a7d38(void*);
+s32 IsUnitSubmerged(void*);
 
 p[1]=(a==M2C_FIELD(*data_027e0058,u8**,0x52d0));
 p[0]=!p[1];
@@ -339,8 +339,8 @@ default:p[3]=0;break;
 }
 func_ov002_021e80c8(p,0,a,c);
 func_ov002_021e80c8(p,1,b,d);
-SetBattleUnitAnimation(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,func_020a7d38(a));
-SetBattleUnitAnimation(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,func_020a7d38(b));
+SetBattleUnitAnimation(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,IsUnitSubmerged(a));
+SetBattleUnitAnimation(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,IsUnitSubmerged(b));
 }
 
 void func_ov002_021e85b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {

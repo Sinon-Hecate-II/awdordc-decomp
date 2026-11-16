@@ -884,8 +884,8 @@ func_ov001_021847e0 kind:function(arm,size=0x44) addr:0x021847e0
 func_ov001_02184824 kind:function(arm,size=0x44) addr:0x02184824
 func_ov001_02184868 kind:function(arm,size=0x18) addr:0x02184868
 func_ov001_02184880 kind:function(arm,size=0xe0) addr:0x02184880
-func_ov001_02184960 kind:function(arm,size=0xdc) addr:0x02184960
-func_ov001_02184a3c kind:function(arm,size=0x114) addr:0x02184a3c
+CommitSaveSlot kind:function(arm,size=0xdc) addr:0x02184960
+StoreLinkMatchSetup kind:function(arm,size=0x114) addr:0x02184a3c
 func_ov001_02184b50 kind:function(arm,size=0x110) addr:0x02184b50
 func_ov001_02184c60 kind:function(arm,size=0x10) addr:0x02184c60
 func_ov001_02184c70 kind:function(arm,size=0x3c) addr:0x02184c70
@@ -1050,8 +1050,8 @@ func_ov001_0218a534 kind:function(arm,size=0x28) addr:0x0218a534
 Ov001_LoadSpriteObjLayout kind:function(arm,size=0x94) addr:0x0218a55c
 func_ov001_0218a5f0 kind:function(arm,size=0x2c) addr:0x0218a5f0
 func_ov001_0218a61c kind:function(arm,size=0x48) addr:0x0218a61c
-func_ov001_0218a664 kind:function(arm,size=0x34) addr:0x0218a664
-func_ov001_0218a698 kind:function(arm,size=0x40) addr:0x0218a698
+Ov001_QueueCreate kind:function(arm,size=0x34) addr:0x0218a664
+Ov001_QueueCreateFromBuffer kind:function(arm,size=0x40) addr:0x0218a698
 func_ov001_0218a6d8 kind:function(arm,size=0x1c) addr:0x0218a6d8
 func_ov001_0218a6f4 kind:function(arm,size=0x58) addr:0x0218a6f4
 func_ov001_0218a74c kind:function(arm,size=0x58) addr:0x0218a74c
@@ -1087,7 +1087,7 @@ func_ov001_0218b4dc kind:function(arm,size=0x16c) addr:0x0218b4dc
 func_ov001_0218b648 kind:function(arm,size=0x40) addr:0x0218b648
 func_ov001_0218b688 kind:function(arm,size=0x24) addr:0x0218b688
 func_ov001_0218b6ac kind:function(arm,size=0x4c) addr:0x0218b6ac
-func_ov001_0218b6f8 kind:function(arm,size=0x24) addr:0x0218b6f8
+Ov001_Alloc kind:function(arm,size=0x24) addr:0x0218b6f8
 func_ov001_0218b71c kind:function(arm,size=0x44) addr:0x0218b71c
 func_ov001_0218b760 kind:function(arm,size=0x3c) addr:0x0218b760
 func_ov001_0218b79c kind:function(arm,size=0x7c) addr:0x0218b79c
@@ -1108,12 +1108,12 @@ func_ov001_0218bdb0 kind:function(arm,size=0x7c) addr:0x0218bdb0
 func_ov001_0218be2c kind:function(arm,size=0x74) addr:0x0218be2c
 func_ov001_0218bea0 kind:function(arm,size=0x3c) addr:0x0218bea0
 func_ov001_0218bedc kind:function(arm,size=0x28) addr:0x0218bedc
-func_ov001_0218bf04 kind:function(arm,size=0x2c) addr:0x0218bf04
+Ov001_ListCreate kind:function(arm,size=0x2c) addr:0x0218bf04
 func_ov001_0218bf30 kind:function(arm,size=0x1c) addr:0x0218bf30
 func_ov001_0218bf4c kind:function(arm,size=0x38) addr:0x0218bf4c
 func_ov001_0218bf84 kind:function(arm,size=0x30) addr:0x0218bf84
-func_ov001_0218bfb4 kind:function(arm,size=0x10) addr:0x0218bfb4
-func_ov001_0218bfc4 kind:function(arm,size=0x10) addr:0x0218bfc4
+Ov001_ListPushBack kind:function(arm,size=0x10) addr:0x0218bfb4
+Ov001_ListPushFront kind:function(arm,size=0x10) addr:0x0218bfc4
 func_ov001_0218bfd4 kind:function(arm,size=0x9c) addr:0x0218bfd4
 func_ov001_0218c070 kind:function(arm,size=0x48) addr:0x0218c070
 func_ov001_0218c0b8 kind:function(arm,size=0x2c) addr:0x0218c0b8
@@ -1129,7 +1129,7 @@ func_ov001_0218c4c0 kind:function(arm,size=0xf8) addr:0x0218c4c0
 func_ov001_0218c5b8 kind:function(arm,size=0x84) addr:0x0218c5b8
 func_ov001_0218c63c kind:function(arm,size=0x2c) addr:0x0218c63c
 func_ov001_0218c668 kind:function(arm,size=0x10) addr:0x0218c668
-func_ov001_0218c678 kind:function(arm,size=0x114) addr:0x0218c678
+Ov001_InitTasks kind:function(arm,size=0x114) addr:0x0218c678
 func_ov001_0218c78c kind:function(arm,size=0x48) addr:0x0218c78c
 func_ov001_0218c7d4 kind:function(arm,size=0xb0) addr:0x0218c7d4
 func_ov001_0218c884 kind:function(arm,size=0x14) addr:0x0218c884
@@ -1694,4 +1694,4 @@ data_ov001_02193e60 kind:bss addr:0x02193e60
 data_ov001_02193e68 kind:bss addr:0x02193e68
 data_ov001_02193e6c kind:bss addr:0x02193e6c
 data_ov001_02193e70 kind:bss addr:0x02193e70
-data_ov001_02193ea4 kind:bss addr:0x02193ea4
+gOv001Tasks kind:bss addr:0x02193ea4

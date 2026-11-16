@@ -6,21 +6,21 @@ typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 void func_020c6cf8(void) {
     M2C_UNK func_020d468c();
     M2C_UNK func_020c0784();
-    M2C_UNK func_ov000_02199f50(s32, u8, s32, s32);
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
     func_020c0784();
-    func_ov000_02199f50(0xA, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0xA, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
 void func_020c6d30(void) {
     M2C_UNK func_020d468c();
     M2C_UNK func_020c0784();
-    M2C_UNK func_ov000_02199f50(s32, u8, s32, s32);
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
     func_020c0784();
-    func_ov000_02199f50(0xB, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0xB, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
 void func_020c6d68(void) {
@@ -85,11 +85,11 @@ return value>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES)?2:0
 void func_020c6ffc(void) {
     M2C_UNK func_020d468c();
     M2C_UNK func_020c0784();
-    M2C_UNK func_ov000_02199f50(s32, u8, s32, s32);
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
     func_020c0784();
-    func_ov000_02199f50(0x16, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0x16, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
 s32 func_020c7034(void) {
@@ -112,11 +112,11 @@ s32 func_020c7034(void) {
 void func_020c70b4(void) {
     M2C_UNK func_020d468c();
     M2C_UNK func_020c0784();
-    M2C_UNK func_ov000_02199f50(s32, u8, s32, s32);
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
     func_020c0784();
-    func_ov000_02199f50(0xE, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0xE, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
 s32 func_020c70ec(void){
@@ -145,10 +145,10 @@ return func_020cccdc()!=0?0:2;
 }
 
 void func_020c727c(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784();
- func_ov000_02199f50(0x18,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+ SetBattleCommand(0x18,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c72b4(void) {
@@ -278,7 +278,7 @@ void func_020c7654(void) {
 void HandleMapCursorInput(void *a) {
 extern void **gCurrentMap;
 s32 IsDialogActive(void *); s32 func_020d4dd0(void); s32 GetMapCursorKeyAction(void); s32 GetMapCursorTouchAction(void);
-M2C_UNK func_020d468c(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+M2C_UNK func_020d468c(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
 M2C_UNK func_0207b764(s16,s16);
 u32 flags=0;
 if(IsDialogActive(a))return;
@@ -288,7 +288,7 @@ flags|=GetMapCursorKeyAction();flags|=GetMapCursorTouchAction();
 if(flags&16){
 func_020d468c();
 CreateTargetCursor(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
-func_ov000_02199f50(19,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
+SetBattleCommand(19,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 func_01ffa6fc(a);return;}
 if(flags&32){
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X);

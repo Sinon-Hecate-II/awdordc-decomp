@@ -298,11 +298,11 @@ void func_ov001_0217f72c(s8 arg0) {
 void func_ov001_0217f73c(void) {
     M2C_UNK func_ov001_021722ac();
     void func_ov001_0217f75c();
-    M2C_UNK func_ov001_02184960();
+    M2C_UNK CommitSaveSlot();
     extern M2C_UNK func_ov001_0217f7f0;
     func_ov001_0217f75c();
     func_ov001_021722ac();
-    func_ov001_02184960();
+    CommitSaveSlot();
     Ov001_SetStepCallback(&func_ov001_0217f7f0);
 }
 

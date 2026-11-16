@@ -15,9 +15,9 @@ typedef struct { s32 unk; Unk09Position *p; s32 count; } Unk09List;
 
 void func_0209eaf4(s32 x,s32 y,s32 a){
 extern void **gCurrentMap;extern M2C_UNK data_02156e50;extern M2C_UNK data_0211f87c;
-s32 func_0207c2e0(s32,s32,s32);void func_020d1690(u8,s32,void *);void *func_01ffa3dc(void *,s32);
+s32 GetRandomSeed(s32,s32,s32);void func_020d1690(u8,s32,void *);void *func_01ffa3dc(void *,s32);
 s32 base;void *p;s32 v,n;u32 b; s32 result;
-result=func_0207c2e0(x,y,a);
+result=GetRandomSeed(x,y,a);
 p=(void *)gCurrentMap;
 M2C_FIELD(&data_02156e50,s32 *,8)=result;
 base=M2C_FIELD((s32)p,s32 *,0);
@@ -92,7 +92,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
         return;
     }
 
-    M2C_FIELD(&data_02156e50, s32 *, 0x8) = func_0207c2e0();
+    M2C_FIELD(&data_02156e50, s32 *, 0x8) = GetRandomSeed();
     func_020d166c((u8)M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), arg0, (u8 *)*gCurrentMap + 0x52dc);
 
     {
@@ -182,9 +182,9 @@ void func_0209f2a8(void) {
     func_020d468c();
 }
 
-void func_0209f2b8(void *p){void *GetTargetPosition(s32);extern s32 data_0215be0c;extern void **gCurrentMap;void func_ov000_02199f50(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=GetTargetPosition(data_0215be0c);func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
+void func_0209f2b8(void *p){void *GetTargetPosition(s32);extern s32 data_0215be0c;extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=GetTargetPosition(data_0215be0c);SetBattleCommand(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
 
-void func_0209f314(void *p){extern void **gCurrentMap;void func_ov000_02199f50(s32,u8,s32,s32);func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;func_ov000_02199f50(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
+void func_0209f314(void *p){extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;SetBattleCommand(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
 
 void func_0209f360(void) {
     M2C_UNK func_ov000_0216a9bc(s32);

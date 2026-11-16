@@ -190,56 +190,58 @@ void func_ov001_0218c668(void) {
     func_0200eca8(1);
 }
 
-void func_ov001_0218c678(void) {
-    M2C_UNK func_ov001_0218b6f8(s32, s32);
-    M2C_UNK func_ov001_0218a698(s32, s32, s32);
-    M2C_UNK func_ov001_0218a664(s32);
-    M2C_UNK func_ov001_0218bf04();
-    void func_ov001_0218bfc4(s32, void *);
-    void func_ov001_0218bfb4(s32, void *);
-    extern s32 data_ov001_02193ea4;
+/* Task-group array behind the untyped gOv001Tasks slot; each access reloads
+ * the global, as the helpers may replace it. */
+#define OV001_TASKS ((Ov001Task *)gOv001Tasks)
+
+void Ov001_InitTasks(void) {
+    M2C_UNK Ov001_Alloc(s32, s32);
+    M2C_UNK Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    M2C_UNK Ov001_QueueCreate(s32);
+    Ov001TaskList *Ov001_ListCreate(void);
+    void Ov001_ListPushFront(Ov001TaskList *, Ov001TaskNode *);
+    void Ov001_ListPushBack(Ov001TaskList *, Ov001TaskNode *);
+    extern s32 gOv001Tasks;
     extern u8 data_ov001_0218fd28[];
     u8 *src;
     s32 i;
-    s32 off;
 
-    data_ov001_02193ea4 = func_ov001_0218b6f8(0x80, 4);
+    /* One 0x40-byte group per entry of the node-count table. */
+    gOv001Tasks = Ov001_Alloc(sizeof(Ov001Task) * OV001_TASK_GROUP_COUNT, 4);
     src = data_ov001_0218fd28;
     i = 0;
-    off = 0;
-    for (; i < 2; i++) {
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0x34) = *src;
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0x3C) = func_ov001_0218b6f8((u32)*src * 0x14, 4);
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0) = func_ov001_0218a698(*src, M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0x3C), 0x14);
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 4) = func_ov001_0218a664(*src++);
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 8) = func_ov001_0218bf04();
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), u8 *, 0x1C) = 0;
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), u8 *, 0x30) = 0xFF;
-        func_ov001_0218bfc4(M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 8), (u8 *) (data_ov001_02193ea4 + i * 0x40) + 0xC);
-        func_ov001_0218bfb4(M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 8), (u8 *) (data_ov001_02193ea4 + i * 0x40) + 0x20);
-    
-        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), u8 *, 0x38) = 1;
+    for (; i < OV001_TASK_GROUP_COUNT; i++) {
+        OV001_TASKS[i].nodeCount = *src;
+        OV001_TASKS[i].pool = (Ov001TaskNode *)Ov001_Alloc((u32)*src * sizeof(Ov001TaskNode), 4);
+        OV001_TASKS[i].freeNodes = Ov001_QueueCreateFromBuffer(*src, (s32)OV001_TASKS[i].pool, sizeof(Ov001TaskNode));
+        OV001_TASKS[i].pendingNodes = Ov001_QueueCreate(*src++);
+        OV001_TASKS[i].list = Ov001_ListCreate();
+        OV001_TASKS[i].head.priority = 0;
+        OV001_TASKS[i].tail.priority = 0xFF;
+        Ov001_ListPushFront(OV001_TASKS[i].list, &OV001_TASKS[i].head);
+        Ov001_ListPushBack(OV001_TASKS[i].list, &OV001_TASKS[i].tail);
+        OV001_TASKS[i].enabled = 1;
     }
 }
 
 void func_ov001_0218c78c(void) {
-void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void func_ov001_0218b71c(void *); extern s32 data_ov001_02193ea4; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)data_ov001_02193ea4)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)data_ov001_02193ea4)[i].a); } func_ov001_0218b71c(data_ov001_02193e70+13); }
+void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void func_ov001_0218b71c(void *); extern s32 gOv001Tasks; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } func_ov001_0218b71c(data_ov001_02193e70+13); }
 
 void func_ov001_0218c7d4(s32 n) {
 s32 func_ov001_0218a74c(s32);
 M2C_UNK func_ov001_0218c958();
-extern s32 data_ov001_02193ea4;
+extern s32 gOv001Tasks;
 void *node;
 s32 i; s32 offset;
-if(!M2C_FIELD(data_ov001_02193ea4+(n<<6),u8 *,0x38)) return;
-node=M2C_FIELD(data_ov001_02193ea4+(n<<6),void **,0x10);
-while(node!=(void *)(data_ov001_02193ea4+(n<<6)+0x20)) {
+if(!M2C_FIELD(gOv001Tasks+(n<<6),u8 *,0x38)) return;
+node=M2C_FIELD(gOv001Tasks+(n<<6),void **,0x10);
+while(node!=(void *)(gOv001Tasks+(n<<6)+0x20)) {
 M2C_FIELD(node,void (**)(void *,s32),8)(node,M2C_FIELD(node,s32 *,12));
 node=M2C_FIELD(node,void **,4);
 }
 offset=(s32)((u32)n*64);
-for(i=0;i<M2C_FIELD((s32)((u8 *)data_ov001_02193ea4+offset),s32 *,0x34);i++) {
-s32 p=func_ov001_0218a74c(M2C_FIELD((s32)((u8 *)data_ov001_02193ea4+offset),s32 *,4));
+for(i=0;i<M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,0x34);i++) {
+s32 p=func_ov001_0218a74c(M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,4));
 if(!p) return;
 func_ov001_0218c958(n,p);
 }
@@ -255,17 +257,17 @@ s32 func_ov001_0218a74c(s32);
 s32 func_020051f8(s32);
 void func_020051c8(s32);
 void func_ov001_0218bf84(void *,void *);
-extern s32 data_ov001_02193ea4;
+extern s32 gOv001Tasks;
 void *p;
 void *q;
 s32 saved;
-p=(void *)func_ov001_0218a74c(M2C_FIELD(data_ov001_02193ea4+(n<<6),s32 *,0));
+p=(void *)func_ov001_0218a74c(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0));
 M2C_FIELD(p,s32 *,8)=callback;
 M2C_FIELD(p,s32 *,12)=arg;
 M2C_FIELD(p,u8 *,16)=priority;
 M2C_FIELD(p,u8 *,17)=owns;
 saved=func_020051f8(1);
-q=M2C_FIELD(data_ov001_02193ea4+(n<<6),void **,16);
+q=M2C_FIELD(gOv001Tasks+(n<<6),void **,16);
 for(;;) {
 if((u32)priority<M2C_FIELD(q,u8 *,16)) {
 func_ov001_0218bf84(q,p);
@@ -283,8 +285,8 @@ void func_ov001_0218c924(void *arg0, s32 arg1) {
 
 void Ov001_PostTaskMessage(s32 n,u32 arg) {
 M2C_UNK func_ov001_0218a6f4(s32,u32);
-extern s32 data_ov001_02193ea4;
-func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193ea4+(n<<6),s32 *,4),arg);
+extern s32 gOv001Tasks;
+func_ov001_0218a6f4(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,4),arg);
 }
 
 void func_ov001_0218c94c(void) {
@@ -296,14 +298,14 @@ M2C_UNK func_ov001_0218c958(s32 n,void *p) {
 void func_ov001_0218b71c(void *);
 M2C_UNK func_ov001_0218bf4c();
 M2C_UNK func_ov001_0218a6f4(s32,u32);
-extern s32 data_ov001_02193ea4;
+extern s32 gOv001Tasks;
 if(M2C_FIELD(p,u8 *,17)) func_ov001_0218b71c((u8 *)p+12);
 func_ov001_0218bf4c(p);
-func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193ea4+(n<<6),s32 *,0),(u32)p);
+func_ov001_0218a6f4(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
 }
 
 void func_ov001_0218c99c(s32 arg0, s8 arg1) {
-    extern s32 data_ov001_02193ea4;
-    M2C_FIELD((data_ov001_02193ea4 + (arg0 << 6)), s8 *, 0x38) = arg1;
+    extern s32 gOv001Tasks;
+    M2C_FIELD((gOv001Tasks + (arg0 << 6)), s8 *, 0x38) = arg1;
 }
 

@@ -553,25 +553,25 @@ void func_020c6a64(void) {
 void func_020c6a74(void) {
  M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_020a15e4();
  s32 func_020c9430(s32); s32 func_020c9440(s32,s32,s32);
- M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  void *base; s32 a,b;
  func_020d468c(); func_020c0784();
  if(!func_020c9430(0) && !func_020c9430(1)) {
- func_ov000_02199f50(2,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0); return;
+ SetBattleCommand(2,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0); return;
  }
  func_020a15e4();
  base=*gCurrentMap;
  a=func_020c9440(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE),0);
  b=func_020c9440(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE),1);
- func_ov000_02199f50(8,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),(u8)a,(u8)b);
+ SetBattleCommand(8,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),(u8)a,(u8)b);
 }
 
 void func_020c6b30(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784();
- func_ov000_02199f50(3,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+ SetBattleCommand(3,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6b68(void) {
@@ -582,24 +582,24 @@ void func_020c6b68(void) {
 }
 
 void func_020c6b78(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784();
- func_ov000_02199f50(7,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+ SetBattleCommand(7,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6bb0(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784();
- func_ov000_02199f50(9,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+ SetBattleCommand(9,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6be8(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784();
- func_ov000_02199f50(6,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+ SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6c20(void) {
@@ -631,9 +631,9 @@ void func_020c6c88(void) {
 }
 
 void func_020c6cc0(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784();
- func_ov000_02199f50(0x17,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+ SetBattleCommand(0x17,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 

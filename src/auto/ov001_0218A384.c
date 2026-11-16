@@ -95,20 +95,20 @@ Ov001_LoadSpriteObjLayout(arg0,arg1,Ov001_GetSpriteObjEntry(t,0));
 return t;
 }
 
-void *func_ov001_0218a664(s32 arg0) {
-    void *func_ov001_0218b6f8(s32, M2C_UNK);
+void *Ov001_QueueCreate(s32 arg0) {
+    void *Ov001_Alloc(s32, M2C_UNK);
     void *temp_r0;
 
-    temp_r0 = func_ov001_0218b6f8(((arg0 + 1) * 4) + 8, 4);
+    temp_r0 = Ov001_Alloc(((arg0 + 1) * 4) + 8, 4);
     M2C_FIELD(temp_r0, s16 *, 0) = (s16) (arg0 + 1);
     M2C_FIELD(temp_r0, s8 *, 2) = 0;
     M2C_FIELD(temp_r0, s8 *, 3) = 0;
     return temp_r0;
 }
 
-void *func_ov001_0218a698(s32 arg0, s32 arg1, s32 arg2) {
-    void *func_ov001_0218a664(s32);
-    M2C_UNK *base = (M2C_UNK *)func_ov001_0218a664(arg0);
+void *Ov001_QueueCreateFromBuffer(s32 arg0, s32 arg1, s32 arg2) {
+    void *Ov001_QueueCreate(s32);
+    M2C_UNK *base = (M2C_UNK *)Ov001_QueueCreate(arg0);
     s32 i;
     s32 val = arg1;
     for (i = 0; i < arg0; i++) {
@@ -155,9 +155,9 @@ func_020051c8(saved);return result;
 
 void Ov001_InitFades(void) {
     extern M2C_UNK gOv001FadeStates;
-    void *func_ov001_0218b6f8(s32, M2C_UNK);
+    void *Ov001_Alloc(s32, M2C_UNK);
     void GX_SetBlendControl(M2C_UNK, s32, s32);
-    gOv001FadeStates = (M2C_UNK)func_ov001_0218b6f8(0x18, 4);
+    gOv001FadeStates = (M2C_UNK)Ov001_Alloc(0x18, 4);
     GX_SetBlendControl(0x4000050, 0x3f, 0x10);
     GX_SetBlendControl(0x4001050, 0x3f, 0x10);
 }
@@ -295,8 +295,8 @@ void func_ov001_0218aa7c(M2C_UNK arg0, void *arg1) {
 }
 
 void func_ov001_0218aab4(void) {
-    void *func_ov001_0218b6f8(s32, M2C_UNK);
-    void *func_ov001_0218a698(s32, s32, s32);
+    void *Ov001_Alloc(s32, M2C_UNK);
+    void *Ov001_QueueCreateFromBuffer(s32, s32, s32);
     s32 Ov001_GetLanguage(void);
     s32 Ov001_LoadFile(M2C_UNK, M2C_UNK *, M2C_UNK);
     void func_ov001_02169130(void *, M2C_UNK);
@@ -305,9 +305,9 @@ void func_ov001_0218aab4(void) {
     extern M2C_UNK data_ov001_021917c8;
     M2C_UNK p;
 
-    p = (M2C_UNK)func_ov001_0218b6f8(0x680, 4);
+    p = (M2C_UNK)Ov001_Alloc(0x680, 4);
     data_ov001_02193e40 = p;
-    M2C_FIELD((void *)data_ov001_02193e40, void **, 0x670) = func_ov001_0218a698(0x20, (s32)p + 0x10, 0x30);
+    M2C_FIELD((void *)data_ov001_02193e40, void **, 0x670) = Ov001_QueueCreateFromBuffer(0x20, (s32)p + 0x10, 0x30);
 
     if (Ov001_GetLanguage() == 6) {
         s32 i;
@@ -376,7 +376,7 @@ void func_ov001_0218ace0(M2C_UNK arg0) {
 
 #pragma opt_propagation off
 void *CreateTextPanel(s32 arg0,s32 arg1) {
-void *func_ov001_0218b6f8(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
+void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 func_02003684(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
 void func_ov001_0218b1ec(void*,s32); void *func_ov001_0218c884(s32,M2C_UNK,void*,s32); void func_ov001_0218ae84(M2C_UNK,void*);
@@ -385,7 +385,7 @@ void *base;
 void *p=(u8*)(void*)data_ov001_02193e40+0x610+arg0*0x30;
 u32 a=*(u16*)(data_ov001_0218fd1a+arg0*4);
 u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; u16 c; s32 zero;
-*(void**)((u8*)p+0x28)=func_ov001_0218b6f8((b*a)<<5,32);
+*(void**)((u8*)p+0x28)=Ov001_Alloc((b*a)<<5,32);
 if(arg0==1) { *(volatile u16*)0x4001008 &= ~0x40; *(volatile u16*)0x4001008=(*(volatile u16*)0x4001008&0x43)|0xc00; }
 else { *(volatile u16*)0x4000008 &= ~0x40; *(volatile u16*)0x4000008=(*(volatile u16*)0x4000008&0x43)|0xc00; }
 func_ov001_0216a17c(p,*(void**)((u8*)p+0x28),b,a,4);

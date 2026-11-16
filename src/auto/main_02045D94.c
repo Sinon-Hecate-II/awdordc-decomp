@@ -28,7 +28,7 @@ i++;a+=256;b+=256;}while(i<4); return func_0204671c()!=0;
 #pragma opt_strength_reduction reset
 void func_02045ffc(M2C_UNK a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db34; MI_CpuCopy8(a,&data_0213db34,14); }
 
-u8 func_02046014(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
+u8 CountSetBits(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
 
 #pragma opt_common_subs off
 void func_02046058(u8 arg0, M2C_UNK *arg1) {

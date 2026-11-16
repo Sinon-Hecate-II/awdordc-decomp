@@ -14,7 +14,7 @@ void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 #pragma opt_common_subs reset
 void func_ov001_02175f8c(void *arg0) {
-    s32 func_ov001_0218b6f8(s32, s32);
+    s32 Ov001_Alloc(s32, s32);
     s32 func_ov001_02175f48(M2C_UNK, u32);
     s32 func_ov001_02175e34(void);
     void func_ov001_02188c78(M2C_UNK, void *);
@@ -31,7 +31,7 @@ void func_ov001_02175f8c(void *arg0) {
         u8 pad[3];
     } Buf28;
     Buf28 buf;
-    data_ov001_02193d50 = (void *)func_ov001_0218b6f8(0x1E2A4, 0x20);
+    data_ov001_02193d50 = (void *)Ov001_Alloc(0x1E2A4, 0x20);
     M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E298) = (M2C_UNK)arg0;
     arg0 = 0;
     M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A0) = 0;
@@ -157,14 +157,14 @@ if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(2);return;
 tail:Ov001_PostTaskMessage(0,(M2C_UNK)arg0);func_ov001_0218b71c((M2C_UNK*)&data_ov001_02193d50);done:return;}
 #pragma pop
 void func_ov001_021763cc(void) {
-    s32 func_ov001_0218b6f8(s32, s32);
+    s32 Ov001_Alloc(s32, s32);
     s32 func_ov001_021711e0(s32, s32, void *, void *, void *, s32);
     void func_ov001_02176544(void *);
     void func_ov001_0217655c(s32);
     void func_ov001_0217656c(void);
     extern M2C_UNK data_ov001_02193d54;
     s32 v = 0xC;
-    data_ov001_02193d54 = func_ov001_0218b6f8(v, v - 0x10);
+    data_ov001_02193d54 = Ov001_Alloc(v, v - 0x10);
     if (func_ov001_021711e0(0xF, 0x40, func_ov001_02176544, func_ov001_0217655c, func_ov001_0217656c, 0x800) != 1) {
         SystemHalt();
     }
@@ -204,10 +204,10 @@ s32 func_ov001_0217645c(s32 arg0) {
 
 void func_ov001_02176518(void) {
  s32 func_ov001_02171394(void *);
- M2C_UNK func_ov001_02184a3c(void *);
+ M2C_UNK StoreLinkMatchSetup(void *);
  s32 state[58];
  if(func_ov001_02171394(state) != 1) SystemHalt();
- func_ov001_02184a3c(state);
+ StoreLinkMatchSetup(state);
 }
 
 void func_ov001_02176544(void *arg0) {
@@ -217,8 +217,8 @@ void func_ov001_02176544(void *arg0) {
 }
 
 void func_ov001_0217655c(M2C_UNK arg0) {
-    M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
-    func_ov001_0218b6f8(arg0, 0x20);
+    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
+    Ov001_Alloc(arg0, 0x20);
 }
 
 void func_ov001_0217656c(void) {

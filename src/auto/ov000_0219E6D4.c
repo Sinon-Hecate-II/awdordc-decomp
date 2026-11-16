@@ -166,14 +166,14 @@ s32 func_ov000_0219e9f4(void) {
     void func_020d61f0(void);
     s32 func_020d1a1c(s32);
     s32 func_0208485c(void);
-    u8 func_020a7d38(void *);
+    u8 IsUnitSubmerged(void *);
     u8 func_020a7d68(void *);
     s32 func_ov000_0219e8d0(void);
 
     extern u8 gAiCommand[];
     extern s8 *gAiCommandState;
     extern void **gCurrentMap;
-    extern u8 data_ov000_021df7dc[];
+    extern u8 gCommandPath[];
     extern u8 gBattleEndState;
 
     u8 *G0 = gAiCommand;
@@ -260,7 +260,7 @@ s32 func_ov000_0219e9f4(void) {
                 r4 = func_0207b764(sel[1], sel[2]);
             }
         }
-        func_020844a0(data_ov000_021df7dc, (u8 *)map + 0x5388);
+        func_020844a0(gCommandPath, (u8 *)map + 0x5388);
         func_020d61f0();
         gAiCommandState[1] = 2;
         if (r4 == 0) return 1;
@@ -317,7 +317,7 @@ final_visibility:
     if (r12 == 0) {
         return 0;
     }
-    if (!func_020a7d38(sel)) {
+    if (!IsUnitSubmerged(sel)) {
         return 0;
     }
     if (!func_020a7d68(sel)) {
@@ -336,10 +336,10 @@ s32 func_ov000_0219efa4(void) {
     void func_020844a0(u8 *, u8 *);
     s32 ResolvePathAttack(s32, s32, s32, void *, s32);
     s32 func_020d1a1c(s32);
-    void func_ov000_02199f50(s32, s32, s32, s32);
+    void SetBattleCommand(s32, s32, s32, s32);
     void func_020a64ec(void *);
     extern void **gCurrentMap;
-    extern u8 data_ov000_021df7dc[];
+    extern u8 gCommandPath[];
     extern u8 gAiCommand[];
 
     s32 result;
@@ -347,7 +347,7 @@ s32 func_ov000_0219efa4(void) {
     func_020d61f0();
     func_ov000_0216939c(*(void **)((u8 *)*gCurrentMap + 0x52d0));
     RefreshMapView();
-    func_020844a0(data_ov000_021df7dc, (u8 *)*gCurrentMap + 0x5388);
+    func_020844a0(gCommandPath, (u8 *)*gCurrentMap + 0x5388);
     result = ResolvePathAttack(
         *(s16 *)((u8 *)*gCurrentMap + 0x52d8),
         *(s16 *)((u8 *)*gCurrentMap + 0x52da),
@@ -356,9 +356,9 @@ s32 func_ov000_0219efa4(void) {
         4);
     if (result != 0) {
         if (func_020d1a1c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4)) != 0) {
-            func_ov000_02199f50(0xf, *(u8 *)((u8 *)*gCurrentMap + 0x52d4), 0, 0);
+            SetBattleCommand(0xf, *(u8 *)((u8 *)*gCurrentMap + 0x52d4), 0, 0);
         }
-        data_ov000_021df7dc[0] = 2;
+        gCommandPath[0] = 2;
     }
     func_020a64ec((u8 *)*gCurrentMap + 0x5388);
     *(u8 *)(*(void **)gAiCommand + 1) = 2;

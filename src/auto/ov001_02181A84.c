@@ -509,8 +509,8 @@ void func_ov001_021825a8(s32 arg0) {
 }
 
 void func_ov001_02182614(s32 arg0, s32 arg1) {
-    M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK);
-    func_ov001_0218b6f8(arg1, 0x20);
+    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
+    Ov001_Alloc(arg1, 0x20);
 }
 
 void func_ov001_02182628(s32 arg0, s32 arg1) {
@@ -637,7 +637,7 @@ void func_ov001_021828ac(void) {
     M2C_UNK func_ov001_02183fa0(void);
     M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_021722ac(void);
-    M2C_UNK func_ov001_02184960(void);
+    M2C_UNK CommitSaveSlot(void);
     void func_ov001_02182904(void);
     void func_ov001_02182970(void);
     s32 sp0;
@@ -646,7 +646,7 @@ void func_ov001_021828ac(void) {
     func_ov001_02182904();
     func_ov001_02171c24(0x31, -1, 0);
     if (sp0 != 2) func_ov001_021722ac();
-    if (sp0 == 1) func_ov001_02184960();
+    if (sp0 == 1) CommitSaveSlot();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182970);
 }
 

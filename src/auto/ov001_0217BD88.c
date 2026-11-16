@@ -72,13 +72,13 @@ void func_ov001_0217bf40(void) {
 }
 
 void func_ov001_0217bf84(void) {
-void *func_ov001_0218b6f8(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
+void *Ov001_Alloc(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
 void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217c0f8(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
 CodeHandlers handlers=data_ov001_0218f860;
 u8 choices[5]={((u8*)data_ov001_0218f848)[8],((u8*)data_ov001_0218f848)[9],((u8*)data_ov001_0218f848)[10],((u8*)data_ov001_0218f848)[11],((u8*)data_ov001_0218f848)[12]};
 s32 a;void *p;
-data_ov001_02193da4=func_ov001_0218b6f8(24,4);
+data_ov001_02193da4=Ov001_Alloc(24,4);
 Ov001_GetNameEntryMode(&a,0);
 handlers.handlers[a](data_ov001_02193da4+8);
 p=data_ov001_02193da4;

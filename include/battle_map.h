@@ -25,13 +25,30 @@ typedef struct BattleMapUnit {
 /* The head of a unit record read through bitfields: the kind is the low six bits
  * of the first byte and the owner the top two, followed by the tile position.
  * Sized like BattleMapUnit so it can index the record array directly. */
-typedef struct BattleMapUnitHead {
-    u8 kind:6;    /* +0x00 unit kind */
-    u8 owner:2;   /* +0x00 owner (player) */
-    u8 x;         /* +0x01 tile x */
-    u8 y;         /* +0x02 tile y */
-    u8 rest[11];  /* +0x03 rest of the 14-byte record */
-} BattleMapUnitHead;
+ typedef struct BattleMapUnitHead {
+     u8 kind:6;    /* +0x00 unit kind */
+     u8 owner:2;   /* +0x00 owner (player) */
+     u8 x;         /* +0x01 tile x */
+     u8 y;         /* +0x02 tile y */
+     u8 unk3;      /* +0x03 */
+     u16 flags;    /* +0x04 per-unit flags, UNIT_FLAG_* */
+     u16 health:7; /* +0x06 current HP (MAP_UNIT_HEALTH) */
+     u16 ammo:4;   /* +0x06 ammo in bits 7..10 (MAP_UNIT_AMMO) */
+     u16 facing:5; /* +0x06 facing direction in bits 11..15 (MAP_UNIT_FACING) */
+     u16 targetX:6;    /* +0x08 AI move target x, MAP_UNIT_TARGET_NONE when unset */
+     u16 targetY:6;    /* +0x08 AI move target y in bits 6..11 */
+     u16 unk8_12:2;    /* +0x08+12 */
+     u16 unk8_14:2;    /* +0x08+14 */
+     u8 fuel:7;    /* +0x0A fuel in the low seven bits (MAP_UNIT_FUEL) */
+     u8 unkA_7:1;  /* +0x0A+7 */
+     u8 aiState:4; /* +0x0B AI action step (MAP_UNIT_AI_STATE) */
+     u8 unkB4:1;   /* +0x0B+4 */
+     u8 unkB5:1;   /* +0x0B+5, held while a move target is assigned */
+     u8 unkB6:1;   /* +0x0B+6 */
+     u8 unkB7:1;   /* +0x0B+7 */
+     u8 firstCarried; /* +0x0C first carried unit, 0 if none */
+     u8 nextCarried;  /* +0x0D next unit in the carry chain, 0 if none */
+ } BattleMapUnitHead;
 
 /* The stat block built for a battle-map unit: seven signed stat values at
  * +0x00..+0x06 and two signed word stats at +0x08 and +0x0A.  The unit-info

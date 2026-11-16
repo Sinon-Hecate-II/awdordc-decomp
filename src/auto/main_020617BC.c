@@ -59,32 +59,34 @@ s32 func_02061818(s32 *arg0, s32 *arg1) {
     return -((float)var < 0.0f);
 }
 
-s32 func_020618f0(s32 *arg0, s32 *arg1) {
-    s32 func_02060afc(s32, s32, M2C_UNK *);
+/* Server-list sort callback for a string key: compare the two servers' values of
+ * the list's sort key, negated when the list sorts ascending. */
+s32 SBServerListCompareString(s32 *serverA, s32 *serverB) {
+    s32 SBServerGetStringValue(s32, s32, M2C_UNK *);
     s32 StringCompare(s32, s32);
     extern void *data_0213e4bc;
     extern M2C_UNK sSbEmptyString;
-    s32 temp_r4;
-    s32 var_r0;
+    s32 valueA;
+    s32 result;
 
-    temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString);
-    var_r0 = StringCompare(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString));
-    if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
-        var_r0 = -var_r0;
+    valueA = SBServerGetStringValue(*serverA, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString);
+    result = StringCompare(valueA, SBServerGetStringValue(*serverB, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString));
+    if (M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_DESC) == 0) {
+        result = -result;
     }
-    return var_r0;
+    return result;
 }
 
 s32 func_02061958(s32 *arg0, s32 *arg1) {
-    s32 func_02060afc(s32, s32, M2C_UNK *);
+    s32 SBServerGetStringValue(s32, s32, M2C_UNK *);
     s32 func_0206f8ac(s32, s32);
     extern void *data_0213e4bc;
     extern M2C_UNK sSbEmptyString;
     s32 temp_r4;
     s32 var_r0;
 
-    temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString);
-    var_r0 = func_0206f8ac(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString));
+    temp_r4 = SBServerGetStringValue(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString);
+    var_r0 = func_0206f8ac(temp_r4, SBServerGetStringValue(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString));
     if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
         var_r0 = -var_r0;
     }
@@ -101,7 +103,7 @@ void func_020619c0(void *arg0, s32 arg1, s32 arg2, u32 arg3) {
     switch (arg3) {
     case 0: var_r3 = func_020617bc; break;
     case 1: var_r3 = func_02061818; break;
-    case 2: var_r3 = func_020618f0; break;
+    case 2: var_r3 = SBServerListCompareString; break;
     case 3: var_r3 = func_02061958; break;
     default: var_r3 = func_02061958; break;
     }
@@ -133,11 +135,13 @@ func_0204890c(M2C_FIELD(a,s32 *,4),b);
 func_02061b38(a,p);
 }
 
-void func_02061bb8(void *arg0) {
-    M2C_UNK Vector_GetCount(s32);
-    Vector_GetCount(M2C_FIELD(arg0, s32 *, 4));
+#pragma scheduling off
+/* Number of servers found so far: the length of the list's server vector. */
+s32 SBServerListGetServerCount(void *list) {
+    s32 Vector_GetCount(s32);
+    return Vector_GetCount(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS));
 }
-
+#pragma scheduling reset
 s32 SBServerListGetServerAt(void *arg0) {
     s32 *Vector_GetItem(s32);
     return *Vector_GetItem(M2C_FIELD(arg0, s32 *, 4));
@@ -219,7 +223,7 @@ func_02062e28(list,&sSbEmptyString);M2C_FIELD(list,s32*,0x5cc)=0;
 SetRandSeed(GetTickCountMs());func_0204926c();
 }
 
-s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 StringCompareN(void *,void *,u32);void func_02062e28(void *,void *);void SBServerListDisconnect(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!StringCompareN(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));SBServerListDisconnect(a);}
+s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 StringCompareN(void *,void *,u32);void func_02062e28(void *,void *);s32 SBServerListDisconnect(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!StringCompareN(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));SBServerListDisconnect(a);}
 
 s32 func_02061fb8(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];

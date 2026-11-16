@@ -143,7 +143,7 @@ saved=func_020051f8(1);result=func_0202a468(data_ov001_02193e44,a,b);
 if(!result)SystemHalt();func_020051c8(saved);return result;
 }
 
-s32 func_ov001_0218b6f8(M2C_UNK arg0) {
+s32 Ov001_Alloc(M2C_UNK arg0) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     s32 func_ov001_0218b6ac();
     s32 temp_r0;
@@ -177,7 +177,7 @@ void func_ov001_0218b850(void);
 void func_ov001_0218b79c(void) {
 extern M2C_UNK data_ov001_02193e48;
 s32 buf[2];
-M2C_FIELD(&data_ov001_02193e48,s32 *,4)=((s32 (*)())func_ov001_0218b6f8)(0x3a,4);
+M2C_FIELD(&data_ov001_02193e48,s32 *,4)=((s32 (*)())Ov001_Alloc)(0x3a,4);
 if(func_0200d5bc(buf)==0)SystemHalt();
 SetTouchCalibration(buf);
 func_0200d85c(0,4,M2C_FIELD(&data_ov001_02193e48,s32 *,4),5);
@@ -366,7 +366,7 @@ void func_ov001_0218bedc(void) {
     M2C_FIELD(&data_027e0000, s32 *, 0x3FF8) = (s32) (M2C_FIELD(&data_027e0000, s32 *, 0x3FF8) | 1);
 }
 
-s32 func_ov001_0218bf04(void){s32 p=((s32 (*)(s32,s32))func_ov001_0218b6f8)(16,4);
+s32 Ov001_ListCreate(void){s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(16,4);
 M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(p,s32 *,4)=p+8;M2C_FIELD(p,s32 *,8)=p;M2C_FIELD(p,s32 *,12)=0;return p;}
 
 void func_ov001_0218bf30(s32 arg0, ...) {
@@ -379,20 +379,20 @@ void func_ov001_0218bf4c(ListLink *node){s32 func_020051f8(s32);void func_020051
 M2C_UNK func_ov001_0218bf84(a,b)
 s32 a; s32 b;{s32 func_020051f8(s32);s32 state=func_020051f8(1);ListLink *head=(ListLink *)a,*node=(ListLink *)b;head->prev->next=node;node->prev=head->prev;node->next=head;head->prev=node;func_020051c8(state);}
 
-void func_ov001_0218bfb4(s32 arg0) {
+void Ov001_ListPushBack(s32 arg0) {
     func_ov001_0218bf84(arg0 + 8);
 }
 
-void func_ov001_0218bfc4(void *arg0) {
+void Ov001_ListPushFront(void *arg0) {
     M2C_UNK func_ov001_0218bf84();
     func_ov001_0218bf84(M2C_FIELD(arg0, s32 *, 4));
 }
 
 void func_ov001_0218bfd4(void){
 void func_ov001_0218c070(void);
-extern s32 data_ov001_02193e68;void MI_CpuFill32(s32,s32,s32);s32 func_ov001_0218a698(s32,s32,s32);s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
-s32 i,offset; s32 p=((s32 (*)(s32,s32))func_ov001_0218b6f8)(0x80c,4);data_ov001_02193e68=p;MI_CpuFill32(0x200,p,0x800);
-for(i=0,offset=0;i<2;i++){s32 result=func_ov001_0218a698(0x40,data_ov001_02193e68+offset,8);offset+=0x400;((s32 *)data_ov001_02193e68)[i+0x200]=result;}
+extern s32 data_ov001_02193e68;void MI_CpuFill32(s32,s32,s32);s32 Ov001_QueueCreateFromBuffer(s32,s32,s32);s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
+s32 i,offset; s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(0x80c,4);data_ov001_02193e68=p;MI_CpuFill32(0x200,p,0x800);
+for(i=0,offset=0;i<2;i++){s32 result=Ov001_QueueCreateFromBuffer(0x40,data_ov001_02193e68+offset,8);offset+=0x400;((s32 *)data_ov001_02193e68)[i+0x200]=result;}
 M2C_FIELD(data_ov001_02193e68,s32 *,0x808)=func_ov001_0218c884(1,func_ov001_0218c070,0,200);
 }
 
@@ -430,14 +430,14 @@ s32 func_ov001_0218c150(s32 arg0, s32 arg1) {
 
 void func_ov001_0218c168(void){
 s32 i;
-data_ov001_02193e6c=((s32 (*)(s32,s32))func_ov001_0218b6f8)(0x340,4);
+data_ov001_02193e6c=((s32 (*)(s32,s32))Ov001_Alloc)(0x340,4);
 for(i=0;i<2;i++){
-M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x19c)=func_ov001_0218a698(0x20,data_ov001_02193e6c+i*0x1a0,12);
-M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198)=func_ov001_0218bf04();
+M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x19c)=Ov001_QueueCreateFromBuffer(0x20,data_ov001_02193e6c+i*0x1a0,12);
+M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198)=Ov001_ListCreate();
 M2C_FIELD(data_ov001_02193e6c+i*0x1a0,u16 *,0x188)=0x300;
 M2C_FIELD(data_ov001_02193e6c+i*0x1a0,u16 *,0x194)=0x400;
-((void (*)(s32,s32))func_ov001_0218bfc4)(M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198),data_ov001_02193e6c+i*0x1a0+0x180);
-((void (*)(s32,s32))func_ov001_0218bfb4)(M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198),data_ov001_02193e6c+i*0x1a0+0x18c);
+((void (*)(s32,s32))Ov001_ListPushFront)(M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198),data_ov001_02193e6c+i*0x1a0+0x180);
+((void (*)(s32,s32))Ov001_ListPushBack)(M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198),data_ov001_02193e6c+i*0x1a0+0x18c);
 }
 }
 

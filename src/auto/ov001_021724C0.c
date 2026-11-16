@@ -9,7 +9,7 @@ static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
 }
 
 void func_ov001_021724c0(void) {
-    M2C_UNK func_ov001_0218b6f8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a5f0(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -37,7 +37,7 @@ void func_ov001_021724c0(void) {
     s32 r8 = 0, r9 = 0;
     tmp[2] = 0; tmp[3] = 0; tmp[0] = 0; tmp[1] = 0;
     tmp[2] = 0x11; tmp[3] = 0x12;
-    q = func_ov001_0218b6f8(0x128, 4, 0x12, 0x11);
+    q = Ov001_Alloc(0x128, 4, 0x12, 0x11);
     gOv001MenuState = q;
     M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = 0xff;
     M2C_FIELD(gOv001MenuState, u8 *, 0x121) = 0;

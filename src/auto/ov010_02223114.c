@@ -9,7 +9,7 @@ s32 func_ov010_02223114(void) {
     M2C_UNK func_ov010_02223478(void *);
     void func_ov010_022235a4();
     M2C_UNK func_ov010_02223624(void *, void *, s32);
-    s32 func_ov010_02223764(void *, u8);
+    s32 Link_InsertPacket(void *, u8);
     M2C_UNK Link_FreePacket();
     s32 i;
     s32 type;
@@ -36,7 +36,7 @@ s32 func_ov010_02223114(void) {
             }
             M2C_FIELD(item, void **, 0x474) = (s8 *)item + 0x1C;
             func_ov010_02223478(item);
-            if (func_ov010_02223764(item, M2C_FIELD(item, u8 *, 0x11)) < 0) Link_FreePacket(item);
+            if (Link_InsertPacket(item, M2C_FIELD(item, u8 *, 0x11)) < 0) Link_FreePacket(item);
             i++;
         } while (i < count);
     }
@@ -194,10 +194,10 @@ s32 func_ov010_02223624(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)coun
 #pragma opt_strength_reduction reset
 void func_ov010_02223654(s32 arg0) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
-extern s32 data_ov010_0222d88c; extern s32 data_ov010_0222d890[]; extern s32 data_ov010_0222d89c[]; extern s32 data_ov010_0222d8a8[];
-s32 *a=data_ov010_0222d89c; s32 *b=data_ov010_0222d890; s32 v=OS_DisableInterrupts();
-data_ov010_0222d88c=v;
-data_ov010_0222d8a8[arg0]=0; b[arg0]=0; a[arg0]=0;
+extern s32 gLinkQueueIrq; extern s32 gLinkQueueHead[]; extern s32 gLinkQueueCount[]; extern s32 gLinkQueueTail[];
+s32 *a=gLinkQueueCount; s32 *b=gLinkQueueHead; s32 v=OS_DisableInterrupts();
+gLinkQueueIrq=v;
+gLinkQueueTail[arg0]=0; b[arg0]=0; a[arg0]=0;
 OS_RestoreInterrupts(v);
 }
 
@@ -205,7 +205,7 @@ void func_ov010_0222369c(s32 arg0) {
     void *Link_PeekPacket(s32);
     M2C_UNK Link_PopPacket(s32);
     M2C_UNK Link_FreePacket(void *);
-    extern s32 data_ov010_0222d89c[];
+    extern s32 gLinkQueueCount[];
     void *item;
     item = Link_PeekPacket(arg0);
     if (item != NULL) {
@@ -215,95 +215,99 @@ void func_ov010_0222369c(s32 arg0) {
             item = Link_PeekPacket(arg0);
         } while (item != NULL);
     }
-    data_ov010_0222d89c[arg0] = 0;
+    gLinkQueueCount[arg0] = 0;
 }
 
 void func_ov010_022236e4(void) {
  s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_UNK Link_FreePacket(void *);
- extern s32 data_ov010_0222d88c,data_ov010_0222d890[],data_ov010_0222d89c[];
+ extern s32 gLinkQueueIrq,gLinkQueueHead[],gLinkQueueCount[];
  s32 i;void *node;void *next;
- data_ov010_0222d88c=OS_DisableInterrupts();
+ gLinkQueueIrq=OS_DisableInterrupts();
  i=0;goto check;
- loop: node=(void *)data_ov010_0222d890[i];while(node){next=M2C_FIELD(node,void **,8);data_ov010_0222d890[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;Link_FreePacket(node);node=(void *)data_ov010_0222d890[i];}data_ov010_0222d89c[i]=0;i++;
+ loop: node=(void *)gLinkQueueHead[i];while(node){next=M2C_FIELD(node,void **,8);gLinkQueueHead[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;Link_FreePacket(node);node=(void *)gLinkQueueHead[i];}gLinkQueueCount[i]=0;i++;
  check:if(i<3)goto loop;
- OS_RestoreInterrupts(data_ov010_0222d88c);
+ OS_RestoreInterrupts(gLinkQueueIrq);
 }
 
 #pragma opt_common_subs off
-s32 func_ov010_02223764(void *p,u8 group){
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
-extern s32 data_ov010_0222d890[],data_ov010_0222d8a8[],data_ov010_0222d89c[];
-extern s32 data_ov010_0222d88c;
-void *q;
-if(!p)return -1;
-if(group>=3)return -1;
-data_ov010_0222d88c=OS_DisableInterrupts();
-if(!data_ov010_0222d890[group]){
-data_ov010_0222d890[group]=(s32)p;
-M2C_FIELD(p,s32*,4)=0;
-M2C_FIELD((void*)data_ov010_0222d890[group],s32*,8)=0;
-data_ov010_0222d8a8[group]=data_ov010_0222d890[group];
-}else{
-q=(void*)data_ov010_0222d8a8[group];
-while(q){
-if(M2C_FIELD(q,u32*,0x18)<M2C_FIELD(p,u32*,0x18)){
-M2C_FIELD(p,s32*,4)=(s32)q;
-M2C_FIELD(p,s32*,8)=M2C_FIELD(q,s32*,8);
-M2C_FIELD(q,s32*,8)=(s32)p;
-if(M2C_FIELD(p,s32*,8))M2C_FIELD((void*)M2C_FIELD(p,s32*,8),s32*,4)=(s32)p;
-if(q==(void*)data_ov010_0222d8a8[group])data_ov010_0222d8a8[group]=(s32)p;
-goto done;
-}
-q=(void*)M2C_FIELD(q,s32*,4);
-}
-M2C_FIELD(p,s32*,4)=0;
-M2C_FIELD(p,s32*,8)=data_ov010_0222d890[group];
-M2C_FIELD((void*)data_ov010_0222d890[group],s32*,4)=(s32)p;
-data_ov010_0222d890[group]=(s32)p;
-}
+/* Insert a packet into its channel's queue, kept sorted by LINK_PACKET_KEY so
+ * the oldest sequence is at the head, and return the new queue length; -1 when
+ * the packet is null or the channel invalid. */
+s32 Link_InsertPacket(void *packet, u8 channel) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    extern s32 gLinkQueueHead[], gLinkQueueTail[], gLinkQueueCount[];
+    extern s32 gLinkQueueIrq;
+    void *cursor;
+    if (!packet) return -1;
+    if (channel >= LINK_CHANNEL_COUNT) return -1;
+    gLinkQueueIrq = OS_DisableInterrupts();
+    if (!gLinkQueueHead[channel]) {
+        gLinkQueueHead[channel] = (s32)packet;
+        M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = 0;
+        M2C_FIELD((void *)gLinkQueueHead[channel], s32 *, LINK_PACKET_NEXT) = 0;
+        gLinkQueueTail[channel] = gLinkQueueHead[channel];
+    } else {
+        cursor = (void *)gLinkQueueTail[channel];
+        while (cursor) {
+            if (M2C_FIELD(cursor, u32 *, LINK_PACKET_KEY) < M2C_FIELD(packet, u32 *, LINK_PACKET_KEY)) {
+                M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = (s32)cursor;
+                M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT) = M2C_FIELD(cursor, s32 *, LINK_PACKET_NEXT);
+                M2C_FIELD(cursor, s32 *, LINK_PACKET_NEXT) = (s32)packet;
+                if (M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT)) M2C_FIELD((void *)M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT), s32 *, LINK_PACKET_PREV) = (s32)packet;
+                if (cursor == (void *)gLinkQueueTail[channel]) gLinkQueueTail[channel] = (s32)packet;
+                goto done;
+            }
+            cursor = (void *)M2C_FIELD(cursor, s32 *, LINK_PACKET_PREV);
+        }
+        M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = 0;
+        M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT) = gLinkQueueHead[channel];
+        M2C_FIELD((void *)gLinkQueueHead[channel], s32 *, LINK_PACKET_PREV) = (s32)packet;
+        gLinkQueueHead[channel] = (s32)packet;
+    }
 done:
-data_ov010_0222d89c[group]++;
-OS_RestoreInterrupts(data_ov010_0222d88c);
-return data_ov010_0222d89c[group];
+    gLinkQueueCount[channel]++;
+    OS_RestoreInterrupts(gLinkQueueIrq);
+    return gLinkQueueCount[channel];
 }
 void *Link_PeekPacket(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern s32 data_ov010_0222d88c;
-    extern s32 data_ov010_0222d890[];
-    data_ov010_0222d88c = OS_DisableInterrupts();
-    if (data_ov010_0222d890[arg0] != 0) {
-        OS_RestoreInterrupts(data_ov010_0222d88c);
-        return (void *)data_ov010_0222d890[arg0];
+    extern s32 gLinkQueueIrq;
+    extern s32 gLinkQueueHead[];
+    gLinkQueueIrq = OS_DisableInterrupts();
+    if (gLinkQueueHead[arg0] != 0) {
+        OS_RestoreInterrupts(gLinkQueueIrq);
+        return (void *)gLinkQueueHead[arg0];
     }
-    OS_RestoreInterrupts(data_ov010_0222d88c);
+    OS_RestoreInterrupts(gLinkQueueIrq);
     return NULL;
 }
 
 s32 Link_PopPacket(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern s32 data_ov010_0222d88c;
-    extern s32 data_ov010_0222d890[];
-    extern s32 data_ov010_0222d89c[];
+    extern s32 gLinkQueueIrq;
+    extern s32 gLinkQueueHead[];
+    extern s32 gLinkQueueCount[];
     void *temp;
-    data_ov010_0222d88c = OS_DisableInterrupts();
-    temp = (void *)data_ov010_0222d890[arg0];
+    gLinkQueueIrq = OS_DisableInterrupts();
+    temp = (void *)gLinkQueueHead[arg0];
     if (temp != NULL) {
         void *next = M2C_FIELD(temp, void **, 8);
-        data_ov010_0222d890[arg0] = (s32)next;
-        data_ov010_0222d89c[arg0] = data_ov010_0222d89c[arg0] - 1;
+        gLinkQueueHead[arg0] = (s32)next;
+        gLinkQueueCount[arg0] = gLinkQueueCount[arg0] - 1;
         if (next != NULL) {
             M2C_FIELD(next, s32 *, 4) = 0;
         }
     }
-    OS_RestoreInterrupts(data_ov010_0222d88c);
-    return data_ov010_0222d89c[arg0];
+    OS_RestoreInterrupts(gLinkQueueIrq);
+    return gLinkQueueCount[arg0];
 }
 
 s32 Link_GetQueueCount(s32 arg0) {
-    extern s32 data_ov010_0222d89c[];
-    return data_ov010_0222d89c[arg0];
+    extern s32 gLinkQueueCount[];
+    return gLinkQueueCount[arg0];
 }
 
 void func_ov010_0222393c(void *arg0, s32 arg1, s32 arg2) {

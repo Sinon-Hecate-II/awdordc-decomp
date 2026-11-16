@@ -273,7 +273,7 @@ u8 func_020a7d20(void *arg0) {
     return var_r0;
 }
 
-u8 func_020a7d38(void *arg0) {
+u8 IsUnitSubmerged(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u16 *, 4) & 0x20) {

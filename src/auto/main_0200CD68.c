@@ -135,13 +135,13 @@ void func_0200cfc8(u32 *state,const u8 *data,s32 len){
  p=W;
  for(i=0;i<64;i+=4){
  x=*(const u32 *)data;data+=4;
- x=((x&0xff00ff)>>8)|((x&0xff00ff)<<24)|(((x<<8)|(x>>24))&0xff00ff);
+ x=(((x>>8)|(x<<24))&0xff00ff00)|(((x<<8)|(x>>24))&0xff00ff);
  p[16]=x;*p++=x;
  t=0x5a827999+e+((a<<5)|(a>>27))+x+(((c^d)&b)^d);
  e=d;d=c;c=(b>>2)|(b<<30);b=a;a=t;
  }
  p=W;
- for(i=0;i<4;i++){
+ for(i=0;i<16;i+=4){
  x=(p[0]^p[2])^(p[8]^p[13]);x=(x<<1)|(x>>31);
  p[16]=x;*p++=x;
  t=x+e+0x5a827999+((a<<5)|(a>>27))+(((c^d)&b)^d);

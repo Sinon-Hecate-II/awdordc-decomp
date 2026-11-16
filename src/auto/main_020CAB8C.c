@@ -131,7 +131,7 @@ void func_020caf3c(void *arg0) {
     M2C_UNK func_020d468c();
     M2C_UNK func_020a15e4();
     u8 func_020c9440(s16, s16, s32);
-    M2C_UNK func_ov000_02199f50(s32, u8, u8, u8);
+    M2C_UNK SetBattleCommand(s32, u8, u8, u8);
     extern void **gCurrentMap;
     void *base;
     s32 a, b;
@@ -149,7 +149,7 @@ void func_020caf3c(void *arg0) {
     base = *gCurrentMap;
     a = func_020c9440(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), 0);
     b = func_020c9440(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), 1);
-    func_ov000_02199f50(8, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), (u8) a, (u8) b);
+    SetBattleCommand(8, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), (u8) a, (u8) b);
 }
 
 void func_020cb00c(void) {
@@ -310,7 +310,7 @@ M2C_FIELD(a,s16*,0x34)=0;
 }
 #pragma opt_instruction_scheduling reset
 void func_020cb78c(void *arg0){
-void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK func_ov000_02199f50(s32,u8,u8,u8);
+void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
 extern s32 data_0215be0c;extern void **gCurrentMap;
 s16 i;u8 *m;u8 *q;void *p;
 if(func_020c98b4())return;
@@ -321,7 +321,7 @@ if(!M2C_FIELD(arg0,s16 *,0x36)){
 p=*gCurrentMap;M2C_FIELD(p,s16 *,0x52c2)=M2C_FIELD(p,s16 *,0x52dc);
 p=*gCurrentMap;M2C_FIELD(p,s16 *,0x52c4)=M2C_FIELD(p,s16 *,0x52de);}
 DeleteSpriteObject(arg0);BattleUpdateUnitCursor();
-if(!M2C_FIELD(arg0,s16 *,0x36))func_ov000_02199f50(6,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),0,0);
+if(!M2C_FIELD(arg0,s16 *,0x36))SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),0,0);
 func_020d468c();
 return;
 }

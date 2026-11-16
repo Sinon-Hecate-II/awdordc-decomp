@@ -3,9 +3,9 @@
 typedef struct { u8 bytes[240]; } UnkOv001SaveBlock;
 typedef struct { u8 pad[0xe6]; u8 mode:2; u8 flags:6; u8 active; } SaveFlags84;
 
-void func_ov001_02184960(void) {
+void CommitSaveSlot(void) {
 M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32);
-s32 func_02046014(void *);void func_ov001_02184d5c(s32);extern s32 gSaveData;
+s32 CountSetBits(void *);void func_ov001_02184d5c(s32);extern s32 gSaveData;
 u8 *src,*dst;
 src=(u8 *)gSaveData+0x400;
 dst=(u8 *)(gSaveData+(src[244]<<8));
@@ -13,61 +13,63 @@ dst=(u8 *)(gSaveData+(src[244]<<8));
 if(src[245]){
 MI_CpuFill8(dst+192,0,4);MI_CpuFill8(dst+196,0,4);dst[208]=0;
 }else{
-MI_CpuCopy8(src+192,dst+192,4);MI_CpuCopy8(src+196,dst+196,4);dst[208]=func_02046014(src+240);
+MI_CpuCopy8(src+192,dst+192,4);MI_CpuCopy8(src+196,dst+196,4);dst[208]=CountSetBits(src+240);
 }
 if(src[246])MI_CpuFill8(dst+200,0,8);else MI_CpuCopy8(src+200,dst+200,8);
 func_ov001_02184d5c(src[244]);
 }
 
-void func_ov001_02184a3c(void *arg0) {
+/* Store a received link-match setup - the map name, the shared name-length
+ * class and four player names - into the working save slot and commit it. */
+void StoreLinkMatchSetup(u8 *setup) {
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     M2C_UNK MI_CpuCopy8(void *, void *, s32);
-    void func_ov001_02184960(void);
+    void CommitSaveSlot(void);
     extern s32 gSaveData;
     volatile u8 *base = (volatile u8 *)gSaveData;
-    s32 size;
+    s32 nameSize;
     s32 i;
     u8 *dst;
     u8 *src;
 
-    MI_CpuFill8((void *)(base + 0x400), 0, 0xef);
-    MI_CpuCopy8(arg0, (void *)(base + 0x440), 0x20);
-    switch (*(s32 *)((u8 *)arg0 + 0x20)) {
+    MI_CpuFill8((void *)(base + SAVE_WORK_SLOT), 0, 0xef);
+    MI_CpuCopy8(setup, (void *)(base + SAVE_MAP_NAME), SAVE_NAME_TEXT_MAX);
+    switch (*(s32 *)(setup + MATCH_SETUP_NAME_CLASS)) {
         case 1:
-            size = 5;
-            base[0x4e6] = (base[0x4e6] & ~3) | 1;
+            nameSize = 5;
+            base[SAVE_NAME_FLAGS] = (base[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK) | 1;
             break;
         case 2:
-            size = 0xd;
-            base[0x4e6] = (base[0x4e6] & ~3) | 2;
+            nameSize = 13;
+            base[SAVE_NAME_FLAGS] = (base[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK) | 2;
             break;
         case 3:
-            size = 0x10;
-            base[0x4e6] = (base[0x4e6] & ~3) | 3;
+            nameSize = 16;
+            base[SAVE_NAME_FLAGS] = (base[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK) | 3;
             break;
         default:
-            size = 0;
-            base[0x4e6] = base[0x4e6] & ~3;
+            nameSize = 0;
+            base[SAVE_NAME_FLAGS] = base[SAVE_NAME_FLAGS] & ~SAVE_NAME_MODE_MASK;
             break;
     }
     {
-        u8 b = base[0x4e6];
-        b &= ~0xfc;
-        base[0x4e6] = b;
+        u8 flags = base[SAVE_NAME_FLAGS];
+        flags &= ~SAVE_NAME_FLAGS_MASK;
+        base[SAVE_NAME_FLAGS] = flags;
     }
-    src = (u8 *)arg0 + 0x28;
-    dst = (u8 *)base + 0x480;
+    src = setup + MATCH_SETUP_NAMES;
+    dst = (u8 *)base + SAVE_PLAYER_NAMES;
     i = 0;
     for (; i < 4; i++) {
-        MI_CpuCopy8(src, dst, size);
-        dst += 0x10;
-        src += 0x20;
+        MI_CpuCopy8(src, dst, nameSize);
+        dst += SAVE_NAME_SIZE;
+        src += SAVE_NAME_TEXT_MAX;
     }
-    base[0x4e7] = 2;
-    MI_CpuFill8((void *)(base + 0x4f0), 0, 4);
-    base[0x4f5] = 1;
-    base[0x4f6] = 1;
-    func_ov001_02184960();
+    base[SAVE_SLOT_STATUS] = 2;
+    MI_CpuFill8((void *)(base + SAVE_CODE), 0, 4);
+    base[SAVE_EXTRA_EMPTY_A] = 1;
+    base[SAVE_EXTRA_EMPTY_B] = 1;
+    CommitSaveSlot();
 }
 
 void func_ov001_02184b50(u8 *src){
@@ -91,7 +93,7 @@ p[0xe6]=(flags&~3)|2;
 p[0xe6]&=~0xfc;
 MI_CpuFill8(p+0xf0,0,4);
 p[0xf5]=1;p[0xf6]=1;
-func_ov001_02184960();
+CommitSaveSlot();
 }
 
 s32 func_ov001_02184c60(void) {
@@ -118,7 +120,7 @@ void func_ov001_02184d5c(s32 a) {
  M2C_UNK MI_CpuFill8(void *, s32, s32);
  u16 func_02076838(void *, void *, s32);
  s32 func_02045ee0(s32, s32 *, s32);
- s32 func_ov001_0218b6f8(s32, s32);
+ s32 Ov001_Alloc(s32, s32);
  M2C_UNK func_ov001_0218b71c(void *);
  extern s32 gSaveData;
  s32 arr[4], ptr, one=1, value, flag=0, idx, off, v;
@@ -141,7 +143,7 @@ void func_ov001_02184d5c(s32 a) {
  u16 res=func_02076838((u8 *)gSaveData+0x4f8,(u8 *)gSaveData+off,254);
  *(u16 *)((u8 *)gSaveData+(idx<<8)+254)=res;
  } idx++; off+=256; }while(idx<4);
- ptr=func_ov001_0218b6f8(256,32);
+ ptr=Ov001_Alloc(256,32);
  func_02045ee0(gSaveData,arr,ptr);
  func_ov001_0218b71c(&ptr);
 }
@@ -167,8 +169,8 @@ s32 HexCharValue(u32 arg0) {
     return arg0 - 0x57;
 }
 
-void func_ov001_02184f68(void){void func_ov001_021850ac(void);extern s32 data_ov001_02193e08;extern M2C_UNK data_ov001_02190b68;s32 func_ov001_0218b6f8(s32,s32);s32 Ov001_LoadFile(void *,void *,s32);void func_0202a968(void);M2C_UNK func_0202bf54(s32,s32);M2C_UNK func_0202d294(s32);M2C_UNK func_0202acb0(s32);s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);s32 local;
-data_ov001_02193e08=func_ov001_0218b6f8(0x9c,4);
+void func_ov001_02184f68(void){void func_ov001_021850ac(void);extern s32 data_ov001_02193e08;extern M2C_UNK data_ov001_02190b68;s32 Ov001_Alloc(s32,s32);s32 Ov001_LoadFile(void *,void *,s32);void func_0202a968(void);M2C_UNK func_0202bf54(s32,s32);M2C_UNK func_0202d294(s32);M2C_UNK func_0202acb0(s32);s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);s32 local;
+data_ov001_02193e08=Ov001_Alloc(0x9c,4);
 M2C_FIELD(data_ov001_02193e08,s32 *,0x94)=Ov001_LoadFile(&data_ov001_02190b68,&local,32);
 func_0202a968();func_0202bf54(data_ov001_02193e08,M2C_FIELD(data_ov001_02193e08,s32 *,0x94));func_0202d294(0);func_0202acb0(data_ov001_02193e08+0x90);M2C_FIELD(data_ov001_02193e08,s32 *,0x98)=func_ov001_0218c884(0,func_ov001_021850ac,0,200);}
 
@@ -193,11 +195,11 @@ void func_ov001_021850ac(void) {
 
 void func_ov001_021850b8(s32 a){
 extern M2C_UNK data_ov001_02193e0c;extern u8 data_ov001_0218fbb4[];extern u8 data_ov001_0218fbc3[];extern const u16 data_ov001_0218fbd2[];
-s32 func_ov001_0218b6f8(s32,s32);s32 func_ov001_0218a61c();void Ov001_SetSpritePalette();void Ov001_MoveSpriteLayout();void func_ov001_0218a304();void func_ov001_021851b4();s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);void func_ov001_02185b60();
+s32 Ov001_Alloc(s32,s32);s32 func_ov001_0218a61c();void Ov001_SetSpritePalette();void Ov001_MoveSpriteLayout();void func_ov001_0218a304();void func_ov001_021851b4();s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);void func_ov001_02185b60();
 u8 *q;
 s32 i;
 u8 *p;
-M2C_FIELD(&data_ov001_02193e0c,s32 *,4)=func_ov001_0218b6f8(28,4);
+M2C_FIELD(&data_ov001_02193e0c,s32 *,4)=Ov001_Alloc(28,4);
 p=data_ov001_0218fbb4+a*5;q=data_ov001_0218fbc3+a*5;
 for(i=0;i<5;i++){
 ((s32 *)M2C_FIELD(&data_ov001_02193e0c,void **,4))[i]=func_ov001_0218a61c(1,*p++,1);

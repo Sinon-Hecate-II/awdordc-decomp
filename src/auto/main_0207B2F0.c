@@ -561,21 +561,21 @@ void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_0207c240(void) {
-s32 func_0200ef4c(void *); s32 func_0200eff8(void *); extern s32 data_0214bfa8;
+s32 func_0200ef4c(void *); s32 func_0200eff8(void *); extern s32 gRandomSeed;
 s32 date[4]; s32 time[3];
 if(func_0200ef4c(date)==0 && func_0200eff8(time)==0) {
-data_0214bfa8=((((date[0]*12+date[1])*30+date[2])*24+time[0])*60+time[1])*60+time[2];
+gRandomSeed=((((date[0]*12+date[1])*30+date[2])*24+time[0])*60+time[1])*60+time[2];
 return;
 }
-data_0214bfa8=0x12345678;
+gRandomSeed=0x12345678;
 }
 
 void func_0207c2d0(s32 arg0) {
-    extern s32 data_0214bfa8;
-    data_0214bfa8 = arg0;
+    extern s32 gRandomSeed;
+    gRandomSeed = arg0;
 }
 
-s32 func_0207c2e0(void) {
-    extern s32 data_0214bfa8;
-    return data_0214bfa8;
+s32 GetRandomSeed(void) {
+    extern s32 gRandomSeed;
+    return gRandomSeed;
 }

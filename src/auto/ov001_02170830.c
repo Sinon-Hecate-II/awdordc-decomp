@@ -77,10 +77,10 @@ func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;re
 void func_ov001_021714d0(void);
 #pragma thumb off
 void func_ov001_021713c4(s8 arg0) {
-s32 *func_ov001_0218a5f0(s32,s32); void *func_ov001_0218b6f8(s32,s32); s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
+s32 *func_ov001_0218a5f0(s32,s32); void *Ov001_Alloc(s32,s32); s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
 extern M2C_UNK data_ov001_0218f278; extern void *data_ov001_02193cc4;
 s32 *p,*q,*r; void *a; s8 v;
-a=func_ov001_0218b6f8(12,4);data_ov001_02193cc4=a;M2C_FIELD(a,s8 *,8)=arg0;
+a=Ov001_Alloc(12,4);data_ov001_02193cc4=a;M2C_FIELD(a,s8 *,8)=arg0;
 M2C_FIELD(data_ov001_02193cc4,s32 **,4)=func_ov001_0218a5f0(0,0x47);
 v=((u8 *)&data_ov001_0218f278)[arg0];
 p=M2C_FIELD(data_ov001_02193cc4,s32 **,4);
@@ -133,7 +133,7 @@ void func_ov001_021714d0(void) {
 void func_ov001_0217159c(s32 id) {
     extern const u8 gOv001IconRowLayout[];
     void func_ov001_02171768(void *);
-    void *func_ov001_0218b6f8(s32, s32);
+    void *Ov001_Alloc(s32, s32);
     void *func_ov001_0218a61c(s32, s32, s32);
     void Ov001_SetSpritePalette(void *, s32, s32);
     void func_ov001_021717fc(void);
@@ -141,7 +141,7 @@ void func_ov001_0217159c(s32 id) {
     s32 n, i;
     const u8 *p;
     n = gOv001IconRowCount[id];
-    gOv001IconRow = func_ov001_0218b6f8(28, 4);
+    gOv001IconRow = Ov001_Alloc(28, 4);
     M2C_FIELD(gOv001IconRow, s8 *, 22) = -2;
     M2C_FIELD(gOv001IconRow, u8 *, 23) = id;
     i = 0;

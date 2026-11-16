@@ -29,8 +29,17 @@
 #define AI_COMMAND_STATE_PLAYER     0x0D /* u8 player slot the AI is acting for */
 
 /* Fields of the command record gAiCommand (filled by the cursor code and the AI). */
-#define AI_COMMAND_KIND  0x00 /* u8 kind of the command */
-#define AI_COMMAND_UNIT  0x06 /* u8 unit the command acts on */
+#define AI_COMMAND_KIND    0x00 /* u8 kind of the command */
+#define AI_COMMAND_ACTOR   0x01 /* u8 id of the unit giving the command */
+#define AI_COMMAND_CURSOR_X 0x02 /* u8 cursor tile x when the command was given */
+#define AI_COMMAND_CURSOR_Y 0x03 /* u8 cursor tile y when the command was given */
+#define AI_COMMAND_OLD_X   0x04 /* u8 cursor tile x before the last move */
+#define AI_COMMAND_OLD_Y   0x05 /* u8 cursor tile y before the last move */
+#define AI_COMMAND_UNIT    0x06 /* u8 unit the command acts on */
+#define AI_COMMAND_ARG_Y   0x07 /* u8 second command parameter (target tile y) */
+#define AI_COMMAND_SEED    0x08 /* s32 random seed captured with the command */
+#define AI_COMMAND_FUEL_LEFT 0x12 /* u8 fuel the acting unit has left after the move */
+#define AI_COMMAND_READY   0x13 /* u8 set once the command record is complete */
 
 /* The army value is scaled by 3/2 and never goes below this floor. */
 #define AI_ARMY_VALUE_MIN      1000
@@ -47,11 +56,22 @@
 #define UNIT_KIND_STATS_AI_ROLE  0x14 /* u8 AI role category (1..6) the per-role turn phases select units by */
 #define UNIT_KIND_STATS_CAN_SUPPLY 0x69 /* u8 nonzero when the kind can resupply/repair adjacent units */
 #define UNIT_KIND_STATS_SUPPLY_FLAG 0x6A /* u8 nonzero when the kind can be resupplied */
+#define UNIT_KIND_STATS_CAPTURE_MASK 0x54 /* s8 *per terrain: nonzero when the kind may capture/enter that property */
+#define UNIT_KIND_STATS_FUEL_COST    0x58 /* s8 *per-terrain: fuel the kind spends per turn standing there (negative = cannot stand) */
+
+/* Bits of gUnitKindFlags, the +0x13 flag byte of a unit-kind record (indexed
+ * by kind * UNIT_KIND_STATS_SIZE).  The sea and air kinds are the ones that
+ * are lost when their fuel reaches zero. */
+#define UNIT_KIND_FLAGS_SEA  0x10 /* naval kind */
+#define UNIT_KIND_FLAGS_AIR  0x20 /* air kind */
+#define UNIT_KIND_FLAGS_FUEL_CRITICAL (UNIT_KIND_FLAGS_SEA | UNIT_KIND_FLAGS_AIR)
 
 /* Unit kinds the AI code names directly. */
 #define UNIT_KIND_INFANTRY  1
 #define UNIT_KIND_MECH      2
 #define UNIT_KIND_TRANSPORT 19
+#define UNIT_KIND_SUBMARINE 22 /* created submerged and charged 5 fuel a turn while submerged */
+#define UNIT_KIND_SUBMARINE_FUEL 5 /* fuel a submerged submarine spends per turn */
 
 /* An AI target candidate record, 12 bytes each. */
 #define AI_CANDIDATE_X        0x00 /* u8 tile x */

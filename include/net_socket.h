@@ -1,7 +1,7 @@
 /* The network-stack socket layer (main_0201F89C..main_02020738).  A socket
  * object holds a raw connection at +0x64; the raw connection keeps the records
  * that have arrived but not been read yet in a singly linked queue.  The
- * data-arrival callback appends a record and wakes the reader;
+ * data-arrival callback SocketQueueReceivedData appends a record and wakes the reader;
  * SocketRecv (was func_02020220) removes one. */
 #ifndef NET_SOCKET_H
 #define NET_SOCKET_H

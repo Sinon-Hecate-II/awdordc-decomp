@@ -224,8 +224,8 @@ s32 func_ov001_02171f88(void) {
 }
 
 void func_ov001_02171fa0(void) {
- s32 func_ov001_0218b6f8(s32,s32);
- data_ov001_02193d10=func_ov001_0218b6f8(16,4);
+ s32 Ov001_Alloc(s32,s32);
+ data_ov001_02193d10=Ov001_Alloc(16,4);
 }
 
 void func_ov001_02171fc0(void) {
@@ -280,7 +280,7 @@ void func_ov001_021721c4(void) {
  void func_0200460c(s32,s32,s32);
  void func_020043cc(s32,s32,s32);
  s32 Ov001_GetScreenLayout(void);
- data_ov001_02193d14=func_ov001_0218b6f8(192,4);
+ data_ov001_02193d14=Ov001_Alloc(192,4);
  Ov001_LoadAsset(data_ov001_021900e4,func_0200460c);
  switch(Ov001_GetScreenLayout()) {
  case 0: Ov001_LoadAsset(data_ov001_02190094[0],func_020043cc); return;
@@ -327,7 +327,7 @@ void func_ov001_0217231c(s8 a) {
  s32 *q;
  void *v;
  if(data_ov001_02193d18!=NULL) return;
- v=(void *)func_ov001_0218b6f8(12,4);
+ v=(void *)Ov001_Alloc(12,4);
  data_ov001_02193d18=v;
  M2C_FIELD(v,s8 *,8)=a;
  M2C_FIELD(data_ov001_02193d18,s32 **,0)=func_ov001_0218a5f0(0,data_ov001_0218f30c[a*4]);

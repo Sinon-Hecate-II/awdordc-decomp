@@ -8,6 +8,17 @@ static inline u32 NextPacketRandom(void) {
  return M2C_FIELD(&gNetStack,u64*,0x68)>>32;
 }
 static inline u16 PacketSwap(u16 x) { return (x>>8)|(x<<8); }
+static inline u32 PacketRead32(const u8 *p) {
+    u16 hi = (p[0] << 8) | p[1];
+    u16 lo = (p[2] << 8) | p[3];
+    return ((u32)hi << 16) | lo;
+}
+static inline s32 PacketTransactionMatches(const u16 *p, const u32 *expected) {
+    u16 lo = p[1];
+    u16 hi = p[0];
+    u32 actual = ((u32)PacketSwap(hi) << 16) | PacketSwap(lo);
+    return actual == *expected;
+}
 static inline void PacketPut32(u8 *p,u32 x) { *(u16*)p=PacketSwap(x>>16); *(u16*)(p+2)=PacketSwap(x); }
 static inline void PacketAddress(u8 *p) { extern M2C_UNK gLocalMacAddress; void MI_CpuCopy8(s32,u8*,s32); MI_CpuCopy8((s32)&gLocalMacAddress,p,6); }
 
@@ -124,19 +135,11 @@ void func_0201dd08(void) {
     void TaskWake(void *);
 
     s32 state;
-    s32 count;
-    s32 flag;
     u32 wait;
+    register s32 flag;
+    register s32 count;
     u32 tick;
-    s32 i;
-    void *node;
-    u8 *obj;
-    u8 *e;
 
-    state = 0;
-    count = 1;
-    flag = 1;
-    wait = 1;
     M2C_FIELD(&gNetStack, u32 *, 0x44) = 0;
     MI_CpuFill8((s32)data_02137370, 0, 0x64);
     M2C_FIELD(&gNetStack, s32 *, 0x11c) = 0x180;
@@ -144,119 +147,124 @@ void func_0201dd08(void) {
     M2C_FIELD(&gNetStack, s32 *, 0x128) = 0x180;
     M2C_FIELD(&gNetStack, void **, 0x12c) = data_021377bc;
     func_0201d138(data_02137370);
-    M2C_FIELD(&gNetStack, s32 *, 0xc) = 1;
-    func_02006030(0x3e8);
-
-loop:
-    if (M2C_FIELD(&gNetStack, u32 *, 0x44) != 0) goto done;
-    tick = (u32)(GetSystemTick() >> 16);
-    if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() == 0) {
-        func_0201a134(1);
-        count = 1;
-        wait = 1;
-        state = 0;
-    } else if (--wait == 0) {
-        if (M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) {
-            if (state == 0) {
-                func_0201dc68();
-                state = 1;
-            }
-        } else {
-            switch (state) {
-            case 0:
-                if (flag) {
-                    M2C_FIELD(&gNetStack, s32 *, 0xc) = 2;
-                    flag = 0;
-                }
-                if (func_0201e754()) {
-                    if (func_0201e7ac(&wait, 0)) {
-                        state = 1;
-                    } else {
+    count = 1;
+    flag = 1;
+    wait = M2C_FIELD(&gNetStack, s32 *, 0xc) = 1;
+    state = 0;
+    for (;;) {
+        func_02006030(0x3e8);
+        if (M2C_FIELD(&gNetStack, u32 *, 0x44) != 0) break;
+        tick = (u32)(GetSystemTick() >> 16);
+        if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() != 0) {
+            if (--wait == 0) {
+                if (M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) {
+                    if (state == 0) {
                         func_0201dc68();
-                        state = 3;
+                        state = 1;
                     }
                 } else {
-                    if (!func_0201e7ac(&wait, 1)) {
-                        if (wait < 0x3c) state = 2;
+                    switch (state) {
+                    case 0:
+                        if (flag) {
+                            M2C_FIELD(&gNetStack, s32 *, 0xc) = 2;
+                            flag = 0;
+                        }
+                        if (func_0201e754()) {
+                            if (func_0201e7ac(&wait, 0)) goto connected;
+                        }
+                        func_0201dc68();
+                        state = 3;
+                        break;
+                    connected:
+                        state = 1;
+                        break;
+                    case 1:
+                        if (!func_0201e7ac(&wait, 1)) {
+                            if (wait < 0x3c) state = 2;
+                        }
+                        break;
+                    case 2:
+                        if (func_0201e7ac(&wait, 2)) {
+                            state = 1;
+                        } else if (wait < 0x3c) {
+                            func_0201a134(3);
+                            count = 1;
+                            wait = 1;
+                            state = 0;
+                        }
+                        break;
+                    case 3:
+                        break;
                     }
                 }
-                break;
-            case 1:
-                if (!func_0201e7ac(&wait, 1)) {
-                    if (wait < 0x3c) state = 2;
+            }
+        } else {
+            func_0201a134(1);
+            count = 1;
+            wait = 1;
+            state = 0;
+        }
+        {
+            s32 i;
+            u8 *e = gArpCache;
+            for (i = 0; i < 8; i++, e += 0xc) {
+                if (M2C_FIELD(e, u32 *, 0) != 0) {
+                    if ((s16)(tick - M2C_FIELD(e, u16 *, 0xa)) > 0x3bd) {
+                        M2C_FIELD(e, u32 *, 0) = 0;
+                    }
                 }
-                break;
-            case 2:
-                if (func_0201e7ac(&wait, 2)) {
-                    state = 1;
-                } else if (wait < 0x3c) {
-                    func_0201a134(3);
-                    count = 1;
-                    wait = 1;
-                    state = 0;
-                }
-                break;
-            case 3:
-                break;
             }
         }
-    }
-    for (i = 0; i < 8; i++) {
-        e = gArpCache + i * 0xc;
-        if (M2C_FIELD(e, u32 *, 0) != 0) {
-            if ((s16)(tick - M2C_FIELD(e, u16 *, 0xa)) > 0x3bd) {
-                M2C_FIELD(e, u32 *, 0) = 0;
+        { s32 address = M2C_FIELD(&gNetStack, s32 *, 0x2c);
+        if (address != 0) {
+            if (--count == 0) {
+                func_0201aca0(address);
+                count = 0x69;
             }
         }
-    }
-    if (M2C_FIELD(&gNetStack, u32 *, 0x2c) != 0) {
-        if (--count == 0) {
-            func_0201aca0(M2C_FIELD(&gNetStack, s32 *, 0x2c));
-            count = 0x69;
         }
-    }
-    node = M2C_FIELD(&gSocketManager, void **, 8);
-    while (node) {
-        obj = M2C_FIELD(node, u8 **, 0xa4);
-        if (obj && M2C_FIELD(obj, u32 *, 0)) {
-            s32 kind = M2C_FIELD(obj, u8 *, 8);
-            if (kind == 3) {
-                if ((s32)(tick - M2C_FIELD(obj, u32 *, 0x10)) > 0x27) {
-                    M2C_FIELD(obj, u8 *, 8) = 1;
-                    M2C_FIELD(obj, u16 *, 0x18) = M2C_FIELD(obj, u16 *, 0x1a);
-                    M2C_FIELD(obj, u32 *, 0x1c) = M2C_FIELD(obj, u32 *, 0x20);
-                }
-            } else if (kind == 2) {
-                if ((s32)(tick - M2C_FIELD(obj, u32 *, 0x10)) > 0x27) {
-                    if (M2C_FIELD(obj, u32 *, 4) == 1) {
-                        M2C_FIELD(obj, u8 *, 8) = 0;
+        {
+            void *node = M2C_FIELD(&gSocketManager, void **, 8);
+            while (node) {
+                u8 *obj = M2C_FIELD(node, u8 **, 0xa4);
+                if (obj && M2C_FIELD(obj, u32 *, 0)) {
+                    s32 kind = M2C_FIELD(obj, u8 *, 8);
+                    if (kind == 3 && (s32)(tick - M2C_FIELD(obj, u32 *, 0x10)) > 0x27) {
+                            M2C_FIELD(obj, u8 *, 8) = 1;
+                            M2C_FIELD(obj, u16 *, 0x18) = M2C_FIELD(obj, u16 *, 0x1a);
+                            M2C_FIELD(obj, u32 *, 0x1c) = M2C_FIELD(obj, u32 *, 0x20);
+                    } else if (kind == 2 && (s32)(tick - M2C_FIELD(obj, u32 *, 0x10)) > 0x27) {
+                            if (M2C_FIELD(obj, u32 *, 4) == 1) {
+                                M2C_FIELD(obj, u8 *, 8) = 0;
+                                M2C_FIELD(obj, u32 *, 4) = 0;
+                                TaskWake(M2C_FIELD(obj, void **, 0));
+                            }
+                    } else if (kind != 4 && M2C_FIELD(obj, u32 *, 4) == 2) {
                         M2C_FIELD(obj, u32 *, 4) = 0;
                         TaskWake(M2C_FIELD(obj, void **, 0));
                     }
                 }
-            } else if (kind != 4 && M2C_FIELD(obj, u32 *, 4) == 2) {
-                M2C_FIELD(obj, u32 *, 4) = 0;
-                TaskWake(M2C_FIELD(obj, void **, 0));
+                node = M2C_FIELD(node, void **, 0x68);
             }
         }
-        node = M2C_FIELD(node, void **, 0x68);
-    }
-    for (i = 0; i < 8; i++) {
-        e = data_021375b8 + i * 0x38;
-        if (M2C_FIELD(e, u16 *, 4) != 0) {
-            if ((s32)(tick - M2C_FIELD(e, u32 *, 0x2c)) > 0xef) {
-                ((void (*)(u32))M2C_FIELD(&gNetStack, u32 *, 0x40))(M2C_FIELD(e, u32 *, 0x34));
-                M2C_FIELD(e, u16 *, 4) = 0;
+        {
+            u8 *e;
+            s32 i;
+            e = data_021375b8;
+            for (i = 0; i < 8; i++, e += 0x38) {
+                if (M2C_FIELD(e, u16 *, 4) != 0) {
+                    if ((s32)(tick - M2C_FIELD(e, u32 *, 0x2c)) > 0xef) {
+                        ((void (*)(u32))M2C_FIELD(&gNetStack, u32 *, 0x40))(M2C_FIELD(e, u32 *, 0x34));
+                        M2C_FIELD(e, u16 *, 4) = 0;
+                    }
+                }
             }
         }
+        func_020251b8(tick);
+        if (M2C_FIELD(&gNetStack, u32 *, 0x3c) != 0) {
+            ((void (*)(void))M2C_FIELD(&gNetStack, u32 *, 0x3c))();
+        }
     }
-    func_020251b8(tick);
-    if (M2C_FIELD(&gNetStack, u32 *, 0x3c) != 0) {
-        ((void (*)(void))M2C_FIELD(&gNetStack, u32 *, 0x3c))();
-    }
-    goto loop;
-
-done:
     if (!(M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) && state != 3) func_0201e8a8();
     func_0201d14c();
 }
@@ -318,6 +326,7 @@ s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
     return var_r5;
 }
 
+#pragma opt_common_subs off
 s32 func_0201e238(void) {
 extern M2C_UNK gNetStack; extern u8 data_021377e6[];
 u8 *BuildDhcpPacket(u8 *,s32,s32);
@@ -336,11 +345,11 @@ p=(u8 *)func_0201e204(0,300,(s32)p,(s32)p-base);
 func_0201db20(base,(s32)p-base);
 return result;
 }
-
+#pragma opt_common_subs off
 s32 func_0201e2fc(s32 a){
 extern M2C_UNK gNetStack;extern u8 data_021377e6[];
 u8 *BuildDhcpPacket(u8 *,s32,s32);
-u8 *p;u16 hi,lo;s32 result;s32 base=(s32)data_021377e6;
+u8 *p;u16 hi;s32 result;s32 base=(s32)data_021377e6;
 p=BuildDhcpPacket((u8 *)base,3,(s32)&result);
 if(a==0){
 p[0]=0x32;p[1]=4;
@@ -358,10 +367,9 @@ p+=12;
 *p++=255;
 p=(u8 *)func_0201e204(0,300,(s32)p,(s32)p-base);
 func_0201db20(base,(s32)p-base);
-lo=0;
 return result;
 }
-
+#pragma opt_common_subs off
 s32 func_0201e404(s32 arg0, s32 arg1) {
     u64 GetSystemTick(void);
     s32 func_0201dbb8(void);
@@ -375,20 +383,19 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
     s32 slots[2];
     u32 timer;
     s32 result;
-    u32 limit;
-    s32 *lenp;
+    s32 limit;
     s32 len;
-    u8 *q;
-    u8 *cur;
     u8 *endb;
+    u8 *cur;
+    u8 *q;
     u8 tag;
     u32 combo;
     u32 now;
     u8 flen;
     u16 t0, t1;
+    u32 xid;
 
     slots[0] = arg0;
-    lenp = &slots[1];
     limit = (arg1 + 1) * 15;
     timer = (u32)(GetSystemTick() >> 16);
     result = 0;
@@ -398,57 +405,62 @@ top_loop:
     if (func_0201dbb8() == 0) {
         func_0201a238();
     } else {
-        q = (u8 *)func_0201d618(lenp);
-        len = slots[1];
-        if (q == 0) goto fail;
-        if ((u32)len <= 0xF0) goto fail;
+        q = (u8 *)func_0201d618(&slots[1]);
+        if ((u32)slots[1] <= 0xF0) goto fail;
         if (q[0] != 2) goto fail;
-        t0 = *(u16 *)(q + 4);
-        t1 = *(u16 *)(q + 6);
-        if (((((u32)PacketSwap(t0)) << 16) | (u32)PacketSwap(t1)) != (u32)slots[0]) goto fail;
-        if (MacAddressesDiffer((u16 *)&gLocalMacAddress, (u16 *)(q + 0x1C)) != 0) goto fail;
-        if (q[0xEC] != 0x63 || q[0xED] != 0x82 || q[0xEE] != 0x53 || q[0xEF] != 0x63) goto fail;
+        if (!PacketTransactionMatches((u16 *)(q+4), (u32 *)slots)) goto fail;
+        if (MacAddressesDiffer((u16 *)(q + 0x1C), (u16 *)&gLocalMacAddress) != 0) goto fail;
 
-        combo = ((u32)q[0x10] << 24) | ((u32)q[0x11] << 16) | ((u32)q[0x12] << 8) | (u32)q[0x13];
+        combo = PacketRead32(q+0x10);
         result = 3;
+
         cur = q + 0xF0;
-        endb = q + len;
+        endb = q + slots[1];
+        if (q[0xEC] != 0x63 || q[0xED] != 0x82 || q[0xEE] != 0x53) goto fail;
+        cur = q + 0xF0;
+        if (q[0xEF] != 0x63) goto fail;
 
-        if (cur >= endb) goto fail;
-        tag = *cur++;
 
+        goto option_check;
         while (1) {
+            if (tag == 0) goto option_check;
             switch (tag) {
             case 0x01:
                 M2C_FIELD(&gNetStack, u32 *, 0x1C) =
-                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                    PacketRead32(cur+1);
                 break;
             case 0x03:
                 M2C_FIELD(&gNetStack, u32 *, 0x2C) =
-                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                    PacketRead32(cur+1);
                 break;
             case 0x06:
                 if (cur[0] < 8) {
                     M2C_FIELD(&gNetStack, u32 *, 0x64) = 0;
                 } else {
                     M2C_FIELD(&gNetStack, u32 *, 0x64) =
-                        ((u32)cur[5] << 24) | ((u32)cur[6] << 16) | ((u32)cur[7] << 8) | (u32)cur[8];
+                        PacketRead32(cur+5);
                 }
                 M2C_FIELD(&gNetStack, u32 *, 0x60) =
-                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                    PacketRead32(cur+1);
                 break;
             case 0x33:
-                if (cur[0] == 0x02) {
-                    result = 1;
-                    M2C_FIELD(&gNetStack, u32 *, 0x34) = combo;
-                } else if (cur[0] == 0x05) {
-                    result = 2;
-                    M2C_FIELD(&gNetStack, u32 *, 0x50) = combo;
-                }
+                M2C_FIELD(&gNetStack, u32 *, 0x4c) = PacketRead32(cur+1);
                 break;
             case 0x35:
+                switch (cur[1]) {
+                case 2:
+                    result = 1;
+                    M2C_FIELD(&gNetStack, u32 *, 0x34) = combo;
+                    break;
+                case 5:
+                    result = 2;
+                    M2C_FIELD(&gNetStack, u32 *, 0x50) = combo;
+                    break;
+                }
+                break;
+            case 0x36:
                 M2C_FIELD(&gNetStack, u32 *, 0x20) =
-                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                    PacketRead32(cur+1);
                 break;
             default:
                 break;
@@ -456,29 +468,25 @@ top_loop:
 
             flen = cur[0];
             cur += flen + 1;
+        option_check:
             if (cur >= endb) goto fail;
             tag = *cur++;
-
-            if (tag == 0xFF) {
-                func_0201d70c(slots[1]);
-                if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() == 0) goto final;
-                if (result != 0) goto final;
-                goto timer_check;
-            }
+            if (tag == 0xFF) goto fail;
         }
+        fail:
+        func_0201d70c(slots[1]);
     }
 
-fail:
-    result = 0;
-
 timer_check:
+    if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() == 0) goto final;
+    if (result != 0) goto final;
     now = (u32)(GetSystemTick() >> 16);
-    if ((u32)(now - timer) < limit) goto top_loop;
+    if ((s32)(now - timer) < limit) goto top_loop;
 
 final:
     return result;
 }
-
+#pragma opt_common_subs reset
 s32 func_0201e754(void) {
     M2C_UNK func_0201d164();
     M2C_UNK func_0201d190(M2C_UNK, M2C_UNK, M2C_UNK);

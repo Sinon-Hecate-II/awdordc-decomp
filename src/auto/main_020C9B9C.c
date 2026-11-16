@@ -440,7 +440,7 @@ void func_020caa34(void *dialog) {
     s32 func_0209f944(s16, s16);
     M2C_UNK func_020d468c(void);
     M2C_UNK CreateTargetCursor(s16, s16);
-    M2C_UNK func_ov000_02199f50(s32, u8, u8, u8);
+    M2C_UNK SetBattleCommand(s32, u8, u8, u8);
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK CreateMapMenu(void);
     M2C_UNK func_020cf828(M2C_UNK);
@@ -470,7 +470,7 @@ void func_020caa34(void *dialog) {
                 func_020d468c();
                 CreateTargetCursor(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                               M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
-                func_ov000_02199f50(0x15,
+                SetBattleCommand(0x15,
                     M2C_FIELD(*gCurrentMap, u8 *, 0x52D4),
                     (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                     (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));

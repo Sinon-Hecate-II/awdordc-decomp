@@ -486,7 +486,7 @@ void func_0209ea20(s32 arg0,s32 arg1,s32 arg2){
 void *func_020a4770();void **func_01ffa3dc(M2C_UNK *,s32);extern void **gCurrentMap;extern M2C_UNK data_02156e50,data_0211f87c;
 void *p,*q,*t; s32 a,b,tick;void **base; s32 *save;
 p=func_020a4770();if(!p){func_0209eaf4(arg0,arg1,arg2);return;}
-tick=func_0207c2e0();base=gCurrentMap;save=(s32 *)&data_02156e50;save[2]=tick;t=*base;
+tick=GetRandomSeed();base=gCurrentMap;save=(s32 *)&data_02156e50;save[2]=tick;t=*base;
 func_020d1690(M2C_FIELD(t,u8 *,0x52d4),(u32)(M2C_FIELD(p,u16 *,2)<<22)>>28,(u8 *)t+0x52dc);
 a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*gCurrentMap,s16 *,0x6ed4);if(a<b)M2C_FIELD(p,u8 *,4)=0;else M2C_FIELD(p,u8 *,4)=a-b;
 q=func_01ffa3dc(&data_0211f87c,7);M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);M2C_FIELD(q,s32 *,0x60)=arg2;M2C_FIELD(q,void **,0x34)=p;M2C_FIELD(q,s32 *,0x38)=arg0;M2C_FIELD(q,s32 *,0x3c)=arg1;
