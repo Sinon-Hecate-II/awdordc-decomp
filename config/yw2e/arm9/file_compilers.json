@@ -2,6 +2,8 @@
   "src/auto/itcm_01FF8F90.c": "2.0/sp1p7",
   "src/auto/itcm_01FF9E44.c": "2.0/sp2p4",
   "src/auto/itcm_01FF9ED0.c": "2.0/sp1p6",
+  "src/auto/itcm_01FFA068.c": "2.0/sp1p6",
+  "src/auto/itcm_01FFA13C.c": "2.0/sp1p6",
   "src/auto/main_02002030.c": "2.0/base",
   "src/auto/main_0200402C.c": "2.0/sp2p4",
   "src/auto/main_02004FF8.c": "2.0/sp1p7",

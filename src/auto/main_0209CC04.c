@@ -1,6 +1,8 @@
 /* 65 functions from 0x0209CC04 to 0x0209DB48 (main), found by ds-decomp. */
 #include "common.h"
 
+void DeleteSpriteObject(void *sprite);
+
 void func_0209cc04(void) {
  extern M2C_UNK data_021581a8;
  extern s32 data_021581ac[];
@@ -61,7 +63,6 @@ void func_0209cce4(s32 arg0) {
 }
 
 void func_0209cd00(s32 arg0) {
- M2C_UNK DeleteSpriteObject();
  extern M2C_UNK data_0211dff0;
  extern M2C_UNK data_021583e0;
  u8 *p;
@@ -75,17 +76,16 @@ void func_0209cd00(s32 arg0) {
  } while (i < 0x80);
 }
 
-s32 func_0209cd4c(void) {
-    M2C_UNK DeleteSpriteObject();
-    DeleteSpriteObject();
+s32 func_0209cd4c(void *sprite) {
+    DeleteSpriteObject(sprite);
     return 0;
 }
 
-s32 func_0209cd5c(void) {
+s32 func_0209cd5c(void *sprite) {
     return 0;
 }
 
-s32 func_0209cd64(void) {
+s32 func_0209cd64(void *sprite) {
     return 1;
 }
 

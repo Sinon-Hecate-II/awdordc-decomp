@@ -38,6 +38,7 @@ func_01ff9e44 kind:function(arm,size=0x34) addr:0x01ff9e44
 func_01ff9e78 kind:function(arm,size=0x34) addr:0x01ff9e78
 CopyToSpritePaletteVram kind:function(arm,size=0x24) addr:0x01ff9eac
 Update3DSpriteVram kind:function(arm,size=0x198) addr:0x01ff9ed0
+gSpriteStateHandlers kind:data(any) addr:0x01ffa068
 func_01ffa13c kind:function(arm,size=0x10) addr:0x01ffa13c
 func_01ffa14c kind:function(arm,size=0x14) addr:0x01ffa14c
 Update3DSpriteState kind:function(arm,size=0x8c) addr:0x01ffa160

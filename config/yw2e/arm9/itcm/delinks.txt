@@ -12,7 +12,16 @@ src/auto/itcm_01FF9E44.c:
     .text start:0x01ff9e44 end:0x01ff9ed0
 
 src/auto/itcm_01FF9ED0.c:
-    .text start:0x01ff9ed0 end:0x01ffada0
+    complete
+    .text start:0x01ff9ed0 end:0x01ffa068
+
+src/auto/itcm_01FFA068.c:
+    complete
+    .text start:0x01ffa068 end:0x01ffa13c
+
+src/auto/itcm_01FFA13C.c:
+    complete
+    .text start:0x01ffa13c end:0x01ffada0
 
 src/auto/itcm_01FFADA0.c:
     .text start:0x01ffada0 end:0x01ffbd90
