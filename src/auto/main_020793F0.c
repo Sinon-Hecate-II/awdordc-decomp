@@ -277,7 +277,7 @@ void func_02079d0c(s32 arg0, s32 arg1, s32 *arg2) {
 }
 
 #pragma opt_propagation off
-void func_02079db0(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     extern u8 gTerrainClassFlags[];
     extern M2C_UNK data_02140f70;
     extern u8 data_02142688[];

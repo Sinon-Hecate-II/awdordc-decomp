@@ -106,7 +106,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 #pragma opt_strength_reduction off
 void DrawMapEffectEntry(void*);
 void RenderUnitAt(s32,s32,s32,u8);
-void func_02079310(s32,s32,s32,s32,s32,s32,s32,s32);
+void Map_SubmitTerrainQuads(s32,s32,s32,s32,s32,s32,s32,s32);
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
@@ -155,7 +155,7 @@ visible=(u8)visible;
 if(!tile)continue;
 v1=(gMapCellCodes+x*40)[y];v2=(data_02141788+x*40)[y];
 counts[tile&31]++;
-func_02079310(x,y,a,b,tile,visible,v1,v2);
+Map_SubmitTerrainQuads(x,y,a,b,tile,visible,v1,v2);
 }
 func_020778cc(x0,y0,x1,y1);
 for(i=0;i<32;i++){
@@ -171,7 +171,7 @@ func_0207877c(1,0x108,counts[26]);func_0207877c(2,0x109,counts[27]);
 }
 #pragma pop
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
-void func_02004078(s32,s32); void func_02079db0(s32,s32,s32,s32,s32,s32);
+void func_02004078(s32,s32); void Map_SubmitCellQuads(s32,s32,s32,s32,s32,s32);
 s32 a,b,c,d,sn,cs; a=(gMapCellCodes+x*40)[y];b=(data_02141788+x*40)[y];
 *(volatile u32 *)0x4000444=0;
 if(angle){d=(y<<4)*48+0x180;c=(x<<4)*48+0x180;
@@ -180,7 +180,7 @@ cs=gSinCosTable[(angle>>4)*2+1];sn=gSinCosTable[(angle>>4)*2];
 func_02004078(sn,cs);
 *(volatile u32 *)0x4000470=-c;*(volatile u32 *)0x4000470=-d;*(volatile u32 *)0x4000470=0;}
 *(volatile u32 *)0x4000470=0;*(volatile u32 *)0x4000470=0x300;*(volatile u32 *)0x4000470=0;
-func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
+Map_SubmitCellQuads(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
 }
 
 #pragma push
@@ -307,12 +307,16 @@ ctx.extra=extra;ctx.mode=mode;
 ctx.hp=unit->hp==0?0:Divide(unit->hp-1,10)+1;
 func_020793f0(&ctx);pos.x-=192;DrawUnitStatusIcon(&pos,&ctx);pos.x+=384;func_020796b0(&pos,&ctx);
 }
-void func_02079310(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
-void func_02079db0(s32,s32,s32,s32,s32,s32);s32 func_020cfc0c(s32);
-s32 flags; s32 mask,x=0,y=0;
-if(f)mask=24;else{x+=16;mask=8;y=x;} flags=gTerrainClassFlags[c][0];
-if(mask&(u16)flags)x+=func_020cfc0c(e);
-if(d){func_02079db0(a,b,c,x,g,h);func_02079db0(a,b,d,y,g,h);return;}
-func_02079db0(a,b,c,x,g,h);
+/* Submit the terrain quads of one map cell: the terrain class's flags say whether
+ * the cell has a visible top (bit 3) and/or a side face (bit 4); a property adds
+ * its owner's corner height to the top.  A cell with two facing variants (d)
+ * submits both, the first lowered by that height. */
+void Map_SubmitTerrainQuads(s32 x,s32 y,s32 terrain,s32 altTerrain,s32 tile,s32 visible,s32 cornerA,s32 cornerB){
+void Map_SubmitCellQuads(s32,s32,s32,s32,s32,s32);s32 Map_GetPropertyOwnerArmy(s32);
+s32 flags; s32 mask,xOff=0,yOff=0;
+if(visible)mask=24;else{xOff+=16;mask=8;yOff=xOff;} flags=gTerrainClassFlags[terrain][0];
+if(mask&(u16)flags)xOff+=Map_GetPropertyOwnerArmy(tile);
+if(altTerrain){Map_SubmitCellQuads(x,y,terrain,xOff,cornerA,cornerB);Map_SubmitCellQuads(x,y,altTerrain,yOff,cornerA,cornerB);return;}
+Map_SubmitCellQuads(x,y,terrain,xOff,cornerA,cornerB);
 }
 

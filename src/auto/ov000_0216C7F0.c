@@ -89,10 +89,10 @@ s32 func_ov000_0216cbc4(s32 arg0) {
 }
 
 s32 func_ov000_0216cc4c(s32 arg0, s32 arg1) {
- s32 func_020cfc0c(s32);
+ s32 Map_GetPropertyOwnerArmy(s32);
  extern s32 *gCurrentMap;
  s32 temp_r2 = *gCurrentMap;
- return func_020cfc0c(M2C_FIELD(temp_r2 + (arg0 + M2C_FIELD(temp_r2 + arg1 * 2, u16 *, 0x3758)), u8 *, 0x1420));
+ return Map_GetPropertyOwnerArmy(M2C_FIELD(temp_r2 + (arg0 + M2C_FIELD(temp_r2 + arg1 * 2, u16 *, 0x3758)), u8 *, 0x1420));
 }
 
 s32 func_ov000_0216cc84(s32 arg0, s32 arg1) {

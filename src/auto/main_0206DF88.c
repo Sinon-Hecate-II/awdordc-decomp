@@ -324,13 +324,43 @@ return 1;
 return 0;
 }
 
-s32 func_0206eb30(void *arg0,void *arg1){s16 x,y;s32 i,min;s32 b;u32 a;u8 c,d;
-if(!M2C_FIELD(arg0,u8 *,5))return M2C_FIELD(arg1,u8 *,5)!=0;
-if(!M2C_FIELD(arg1,u8 *,5))return 0;
-y=M2C_FIELD(arg1,s16 *,2);x=M2C_FIELD(arg0,s16 *,2);
-if(x==y){a=M2C_FIELD(arg0,u8 *,4);b=M2C_FIELD(arg1,u8 *,4);i=0;min=a;if((s32)a>(s32)b)min=b;
-if(min>0)do{d=M2C_FIELD(arg1+i,u8 *,5);c=M2C_FIELD(arg0+i,u8 *,5);if(c<d)return 1;if(d<c)return 0;i++;}while(i<min);
-if(min==a && i<b){do{if(M2C_FIELD(arg1+i,u8 *,5)!=0)return 1;i++;}while(i<M2C_FIELD(arg1,volatile u8 *,4));}return 0;}return x<y;}
+/* Orders two BCD digit strings (sign at +0, exponent at +2, digit count at +4,
+ * most significant digit first at +5): a zero value sorts first, then the
+ * smaller exponent, then the smaller digit sequence. Returns 1 when a < b. */
+s32 func_0206eb30(void *a, void *b) {
+    s16 expA, expB;
+    s32 i, count;
+    s32 countB;
+    u32 countA;
+    u8 digitA, digitB;
+
+    if (!M2C_FIELD(a, u8 *, 5)) return M2C_FIELD(b, u8 *, 5) != 0;
+    if (!M2C_FIELD(b, u8 *, 5)) return 0;
+    expB = M2C_FIELD(b, s16 *, 2);
+    expA = M2C_FIELD(a, s16 *, 2);
+    if (expA == expB) {
+        countA = M2C_FIELD(a, u8 *, 4);
+        countB = M2C_FIELD(b, u8 *, 4);
+        i = 0;
+        count = countA;
+        if ((s32)countA > (s32)countB) count = countB;
+        if (count > 0) do {
+            digitB = M2C_FIELD(b + i, u8 *, 5);
+            digitA = M2C_FIELD(a + i, u8 *, 5);
+            if (digitA < digitB) return 1;
+            if (digitB < digitA) return 0;
+            i++;
+        } while (i < count);
+        if (count == countA && i < countB) {
+            do {
+                if (M2C_FIELD(b + i, u8 *, 5) != 0) return 1;
+                i++;
+            } while (i < M2C_FIELD(b, volatile u8 *, 4));
+        }
+        return 0;
+    }
+    return expA < expB;
+}
 
 #pragma optimization_level 2
 void func_0206ec10(void *arg0, void *arg1, void *arg2) {

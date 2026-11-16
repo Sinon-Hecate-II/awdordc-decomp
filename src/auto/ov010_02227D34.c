@@ -142,6 +142,10 @@ cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32),12);if(cb==0)return;cb(
 
 s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK gOv010OnlineSession; s32 result=1; s32 (*fp)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,s32 (**)(s32,s32),0x20); if(fp) result+=fp(a,b); return result; }
 
+/* Handles the online session's start of a battle: lets the installed start
+ * callback run the setup (waiting for the other player, or recording the local
+ * player id and status before the first transfer), then forwards the start to
+ * the session's registered callback. */
 void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_ov010_022282f8(void);
     void func_ov010_02228298(s32);

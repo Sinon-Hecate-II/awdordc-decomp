@@ -280,17 +280,40 @@ void func_020d1034(void *arg0) {
     func_020a6328(M2C_FIELD(arg0, void **, 0), var_r1 - var_r5);
 }
 
-void func_020d1094(s32 a,s32 b){
-void func_020b576c(void *);s32 func_020cd614(void);s32 func_020cd5d8(void);void func_020b5594(s32,s32,s32,s32);
-void *p=M2C_FIELD(a,void **,0);s32 k;
-M2C_FIELD(p,u16 *,6)=(M2C_FIELD(p,u16 *,6)&~127)|(M2C_FIELD(a,u16 *,14)&127);
-M2C_FIELD(p,u16 *,6)=(M2C_FIELD(p,u16 *,6)&~0x780)|((u32)(M2C_FIELD(a,u16 *,16)<<28)>>21);
-if(M2C_FIELD(a,s16 *,14)<=0){func_020b576c(p);return;}
-if(!b)return;if(func_020cd614())return;if(M2C_FIELD(a,s16 *,8)-M2C_FIELD(a,s16 *,14)==0)return;
-if(M2C_FIELD(b,s16 *,14)<=0)return;if(!func_020cd5d8())return;
-k=D068CLow(M2C_FIELD(b,void **,0));
-if(k==1)goto special;if(k==2)goto special;if(k==3)goto special;goto normal;special:func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),7,7);
-return;normal:func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),6,7);
+/* Writes a battle participant's displayed HP and ammo back to its unit record,
+ * then picks how the unit reacts: at 0 HP it plays the collapse animation; when
+ * the other side still has HP and animations are on it counters, using the
+ * merge/counter pose (7) against transports (kinds 1-3) and the plain counter
+ * pose (6) otherwise. */
+void func_020d1094(s32 participant, s32 opponent) {
+    void func_020b576c(void *);
+    s32 func_020cd614(void);
+    s32 func_020cd5d8(void);
+    void func_020b5594(s32, s32, s32, s32);
+    void *unit = M2C_FIELD(participant, void **, 0);
+    s32 kind;
+
+    M2C_FIELD(unit, u16 *, 6) = (M2C_FIELD(unit, u16 *, 6) & ~127) | (M2C_FIELD(participant, u16 *, 14) & 127);
+    M2C_FIELD(unit, u16 *, 6) = (M2C_FIELD(unit, u16 *, 6) & ~0x780) | ((u32)(M2C_FIELD(participant, u16 *, 16) << 28) >> 21);
+    if (M2C_FIELD(participant, s16 *, 14) <= 0) {
+        func_020b576c(unit);
+        return;
+    }
+    if (!opponent) return;
+    if (func_020cd614()) return;
+    if (M2C_FIELD(participant, s16 *, 8) - M2C_FIELD(participant, s16 *, 14) == 0) return;
+    if (M2C_FIELD(opponent, s16 *, 14) <= 0) return;
+    if (!func_020cd5d8()) return;
+    kind = D068CLow(M2C_FIELD(opponent, void **, 0));
+    if (kind == 1) goto counter;
+    if (kind == 2) goto counter;
+    if (kind == 3) goto counter;
+    goto plain;
+counter:
+    func_020b5594(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 7, 7);
+    return;
+plain:
+    func_020b5594(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 6, 7);
 }
 
 void func_020d1174(u8 *a) {

@@ -99,17 +99,36 @@ s32 func_02013f1c(s32 arg0) {
  return 0;
 }
 
-s32 func_02013f70(s32 arg0, u32 arg1) {
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 func_02015214(s32);extern s32 gMbWork;
-u32 val; s32 expected; s32 state;
-state=OS_DisableInterrupts();
-switch(arg1){case 0:expected=10;val=4;break;case 1:expected=10;val=3;break;case 2:expected=14;val=2;break;case 3:expected=7;val=5;break;default:OS_RestoreInterrupts(state);return 0;}
-if(gMbWork && func_02015214(arg0)){
-s32 idx=arg0-1;u8 *base=(u8 *)gMbWork;
-if(expected==*(s32 *)(base+idx*4+0x14e8)){
-*(u16 *)(base+idx*2+0x1754)=val;OS_RestoreInterrupts(state);return 1;
-}}
-OS_RestoreInterrupts(state);return 0;
+/* Notes that player `player` has acknowledged a step of the multiboot match
+ * setup (phase 0..3): only if the player is in the expected state does its
+ * per-player pending value change. Returns 1 when it did. */
+s32 func_02013f70(s32 player, u32 phase) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 func_02015214(s32);
+    extern s32 gMbWork;
+    u32 pending; s32 expected; s32 saved;
+    saved = OS_DisableInterrupts();
+    switch (phase) {
+    case 0: expected = 10; pending = 4; break;
+    case 1: expected = 10; pending = 3; break;
+    case 2: expected = 14; pending = 2; break;
+    case 3: expected = 7; pending = 5; break;
+    default:
+        OS_RestoreInterrupts(saved);
+        return 0;
+    }
+    if (gMbWork && func_02015214(player)) {
+        s32 idx = player - 1;
+        u8 *base = (u8 *)gMbWork;
+        if (expected == *(s32 *)(base + idx * 4 + 0x14e8)) {
+            *(u16 *)(base + idx * 2 + 0x1754) = pending;
+            OS_RestoreInterrupts(saved);
+            return 1;
+        }
+    }
+    OS_RestoreInterrupts(saved);
+    return 0;
 }
 
 void func_02014050(s32 arg0, s32 arg1, M2C_UNK arg2) {

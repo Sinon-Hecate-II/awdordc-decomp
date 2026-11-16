@@ -124,7 +124,8 @@ void func_ov000_0216dd0c(void) {
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
  gCur3DSpriteEngine=saved;CloseNarcArchive();
  }
- if(M2C_FIELD(gArmyInfoState,u8 *,16)==1) {
+ if(M2C_FIELD(gArmyInfoState,u8 *,16)!=1)return;
+ {
  OpenNarcArchive(GetLocalizedFileName(data_ov000_021b88a4));
  saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b88b8),M2C_FIELD(engine,void **,0x28));
@@ -133,7 +134,7 @@ void func_ov000_0216dd0c(void) {
  M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
  engine=g3DSpriteEngineSub;gCur3DSpriteEngine=engine;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b88d0),M2C_FIELD(engine,void **,0x28));
- M2C_FIELD(gCur3DSpriteEngine,u8 *,(s32)0x46)|=4;
+ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_01ff9d88(1);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
  func_0209b26c(3,14,1,0xf0000097,0x1000,1);

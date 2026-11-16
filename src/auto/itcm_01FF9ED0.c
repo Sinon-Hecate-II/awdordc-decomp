@@ -534,14 +534,51 @@ void func_01ffaa8c(void *arg0) {
     M2C_FIELD(temp_r1, u8 *, 0x31) = (u8) (M2C_FIELD(temp_r1, u8 *, 0x31) - 1);
 }
 
-void AddSprite(s32 a,s32 b,s32 c,s32 d,s32 priority){extern s32 gCur3DSpriteEngine;void *p,*q,*next;u8 *base;u32 index;
-if(M2C_FIELD(gCur3DSpriteEngine,u8 *,0x49)>=128)return;
-base=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,4);index=M2C_FIELD(gCur3DSpriteEngine,volatile u8 *,0x49);p=base+index*20;
-M2C_FIELD(p,s16 *,8)=0;M2C_FIELD(p,s16 *,10)=0;M2C_FIELD(p,s16 *,12)=a;M2C_FIELD(p,s16 *,14)=b;M2C_FIELD(p,s16 *,16)=c;M2C_FIELD(p,s32 *,4)=d;M2C_FIELD(p,s8 *,19)=priority;
-M2C_FIELD(p,u8 *,18)&=~15;M2C_FIELD(p,u8 *,18)&=~240;
-if(M2C_FIELD(gCur3DSpriteEngine,void **,8)==0){M2C_FIELD(gCur3DSpriteEngine,void **,8)=p;M2C_FIELD(p,void **,0)=0;}
-else{q=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,8);if(M2C_FIELD(q,s8 *,19)>priority){M2C_FIELD(p,void **,0)=q;M2C_FIELD(gCur3DSpriteEngine,void **,8)=p;}else{for(;;){next=M2C_FIELD(q,void **,0);if(!next || M2C_FIELD(next,s8 *,19)>priority){M2C_FIELD(p,void **,0)=next;M2C_FIELD(q,void **,0)=p;break;}q=next;}}}
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x49)++;
+/* Adds one 3D sprite to the active engine's list: claims the next of its 128
+ * 20-byte slots, fills it in and links it into the list kept sorted by
+ * priority (highest first).  Silently drops the sprite when the list is full. */
+void AddSprite(s32 x, s32 y, s32 tile, s32 template_, s32 priority) {
+    extern s32 gCur3DSpriteEngine;
+    void *sprite, *prev, *next;
+    u8 *list;
+    u32 index;
+
+    if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49) >= 128) return;
+    list = M2C_FIELD(gCur3DSpriteEngine, u8 *volatile *, 4);
+    index = M2C_FIELD(gCur3DSpriteEngine, volatile u8 *, 0x49);
+    sprite = list + index * 20;
+
+    M2C_FIELD(sprite, s16 *, 8) = 0;
+    M2C_FIELD(sprite, s16 *, 10) = 0;
+    M2C_FIELD(sprite, s16 *, 12) = x;
+    M2C_FIELD(sprite, s16 *, 14) = y;
+    M2C_FIELD(sprite, s16 *, 16) = tile;
+    M2C_FIELD(sprite, s32 *, 4) = template_;
+    M2C_FIELD(sprite, s8 *, 19) = priority;
+    M2C_FIELD(sprite, u8 *, 18) &= ~15;
+    M2C_FIELD(sprite, u8 *, 18) &= ~240;
+
+    if (M2C_FIELD(gCur3DSpriteEngine, void **, 8) == 0) {
+        M2C_FIELD(gCur3DSpriteEngine, void **, 8) = sprite;
+        M2C_FIELD(sprite, void **, 0) = 0;
+    } else {
+        prev = M2C_FIELD(gCur3DSpriteEngine, void *volatile *, 8);
+        if (M2C_FIELD(prev, s8 *, 19) > priority) {
+            M2C_FIELD(sprite, void **, 0) = prev;
+            M2C_FIELD(gCur3DSpriteEngine, void **, 8) = sprite;
+        } else {
+            for (;;) {
+                next = M2C_FIELD(prev, void **, 0);
+                if (!next || M2C_FIELD(next, s8 *, 19) > priority) {
+                    M2C_FIELD(sprite, void **, 0) = next;
+                    M2C_FIELD(prev, void **, 0) = sprite;
+                    break;
+                }
+                prev = next;
+            }
+        }
+    }
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49)++;
 }
 
 /* Allocates a paired-sprite entry in gCur3DSpriteEngine's array, fills in fields, and inserts it into the priority-ordered list. Returns silently if the 128-entry array is full. */

@@ -237,7 +237,10 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
 
 s32 func_02045620(void){void func_020478b8(void);extern s32 gWebTransaction;func_020478b8();return gWebTransaction=0;}
 
-s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
+/* Validate and send a put.asp web request: the record count and payload size
+ * must be in range (a payload needs a size), then the put request is built and
+ * queued. Returns 0 once sent, otherwise a web error code (8/9 build failures). */
+s32 func_0204563c(u32 recordCount, s32 arg1, s32 arg2, s32 payload, u32 payloadSize) {
     s32 HasNetError();
     s32 BuildWebPutRequest(s32, s32, s32, s32, s32, s32);
     extern s32 gWebTransaction;
@@ -248,13 +251,13 @@ s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
     if (gWebTransaction != 1 && gWebTransaction != 5) {
         return 7;
     }
-    if (arg0 > 0x3e8u || arg4 > 0x2fcu) {
+    if (recordCount > 0x3e8u || payloadSize > 0x2fcu) {
         return 2;
     }
-    if (arg3 == 0 && arg4 != 0) {
+    if (payload == 0 && payloadSize != 0) {
         return 2;
     }
-    r = BuildWebPutRequest((s32)arg0, M2C_FIELD(&gWebTransaction, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
+    r = BuildWebPutRequest((s32)recordCount, M2C_FIELD(&gWebTransaction, s32 *, 4), arg1, arg2, payload, (s32)payloadSize);
     switch(r) {
     case 3: return 8;
     case 2: return 9;

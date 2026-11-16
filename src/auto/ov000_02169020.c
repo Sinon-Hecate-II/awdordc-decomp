@@ -98,7 +98,7 @@ void func_ov000_021692a8(void *arg0) {
 
 void func_ov000_021692c0(void *p) {
  void func_ov000_02169138(void *);
- s32 func_ov000_02169ae4(void *);
+ s32 UnitMove_CanStepOntoCell(void *);
  void func_ov000_02169a28(void *);
  extern void (*data_ov000_021ae970[])(void *);
  u32 n=M2C_FIELD(p,u8 *,0x41);
@@ -109,7 +109,7 @@ void func_ov000_021692c0(void *p) {
  }
  data_ov000_021ae970[M2C_FIELD(p,u8 *,0x41)](p);
  }
- if(func_ov000_02169ae4(p))func_ov000_02169a28(p);
+ if(UnitMove_CanStepOntoCell(p))func_ov000_02169a28(p);
 }
 
 void func_ov000_02169334(void *p) {
@@ -393,35 +393,38 @@ void func_ov000_02169a28(void *p) {
  DrawSprite3D(q,v,n,0);
 }
 
-s32 func_ov000_02169ae4(void *p) {
+/* Whether the moving unit may still step onto tile (cx,cy) and be drawn: open
+ * fog (the owner's fog flag) or a visible cell the unit is allowed on.  While the
+ * move is in its walking state, keeps the view centred on the unit. */
+s32 UnitMove_CanStepOntoCell(void *p) {
     s32 func_020a5d8c(s32, s32, s32);
     void ScrollMapViewToPoint(s32, s32);
     s32 cx;
     s32 cy;
     u8 *base;
-    u8 flags;
-    u32 a;
+    u8 fogFlags;
+    u32 unit;
     u32 idx;
     u8 hit;
-    s32 r;
+    s32 visible;
 
-    cx = (M2C_FIELD(p, s16 *, 0x4C) + 8) / 16;
-    cy = (M2C_FIELD(p, s16 *, 0x4E) + 8) / 16;
+    cx = (M2C_FIELD(p, s16 *, UNIT_MOVE_X) + 8) / 16;
+    cy = (M2C_FIELD(p, s16 *, UNIT_MOVE_Y) + 8) / 16;
     base = (u8 *)*gCurrentMap;
-    flags = M2C_FIELD(base + M2C_FIELD(base + 0x5200, u16 *, 0xA4) * 0x8C, u8 *, 0x67C3);
-    a = M2C_FIELD(p, u32 *, 0x3C);
-    r = 1;
-    if (!(flags & 2)) {
+    fogFlags = M2C_FIELD(base + M2C_FIELD(base + 0x5200, u16 *, 0xA4) * MAP_PLAYER_STRIDE, u8 *, 0x67C3);
+    unit = M2C_FIELD(p, u32 *, UNIT_MOVE_UNIT);
+    visible = 1;
+    if (!(fogFlags & 2)) {
         idx = cx + M2C_FIELD(base + cy * 2 + 0x3700, u16 *, 0x58);
         hit = M2C_FIELD(base + (idx >> 3) + 0x5000, u8 *, 0x201) & (1 << (idx & 7));
-        if (!hit || func_020a5d8c(a, (s16)cx, (s16)cy) == 0) {
-            r = 0;
+        if (!hit || func_020a5d8c(unit, (s16)cx, (s16)cy) == 0) {
+            visible = 0;
         }
     }
-    if (M2C_FIELD(p, u8 *, 0x41) == 2 && M2C_FIELD(p, u8 *, 0x46) != 0) {
-        ScrollMapViewToPoint(M2C_FIELD(p, s16 *, 0x4C), M2C_FIELD(p, s16 *, 0x4E));
+    if (M2C_FIELD(p, u8 *, UNIT_MOVE_STATE) == 2 && M2C_FIELD(p, u8 *, UNIT_MOVE_ACTIVE) != 0) {
+        ScrollMapViewToPoint(M2C_FIELD(p, s16 *, UNIT_MOVE_X), M2C_FIELD(p, s16 *, UNIT_MOVE_Y));
     }
-    return r;
+    return visible;
 }
 
 /* Create the two sprites that show the moving unit: load its tile graphics and

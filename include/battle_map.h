@@ -346,6 +346,7 @@ typedef struct MapTargetEntry {
 #define PLAYER_REC_SIDE    0x1F /* u8 SIDE_*, within a record */
 #define PLAYER_REC_CROSS_ALL 0x1F /* u8 bits: terrain the player's units may enter regardless of movement type */
 #define PLAYER_REC_ARMY    0x26 /* u8 army (nation) id, within a record */
+#define PLAYER_REC_PROPERTY_ARMY 0x1D /* u8 1-based army id that owns the player's properties (property records), 0 = none */
 #define PLAYER_REC_ARMY_INDEX 0x1D /* u8 1-based army index that picks its colour */
 #define PLAYER_REC_ARMY_STATE 0x27 /* u8 per-player army state shown by the army info window */
 #define PLAYER_REC_TURN_TIME 0x88 /* u32 elapsed turn time in frames (0 when untimed) */

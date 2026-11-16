@@ -92,7 +92,7 @@ a=(u16)(s16)(z>>8);b=(u16)(s16)(y>>8);c=(u16)(s16)ty;d=(u16)(s16)(x>>8);e=(u16)(
 #pragma opt_common_subs reset
 #pragma push
 void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
- void func_02079310(s32,s32,s32,s32,u8,u8,u8,u8);
+ void Map_SubmitTerrainQuads(s32,s32,s32,s32,u8,u8,u8,u8);
  extern s32 *gCurrentMap;
  extern u8 gMapCellCodes[];
  extern u8 data_02142ebc[3840];
@@ -123,7 +123,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  terrain=mapByte020778cc(base,index);
  a=(gMapCellCodes+x*40)[y];
  b=(data_02141788+x*40)[y];
- func_02079310(x,y,0xac,0,terrain,fog,a,b);
+ Map_SubmitTerrainQuads(x,y,0xac,0,terrain,fog,a,b);
  }
  }
  }

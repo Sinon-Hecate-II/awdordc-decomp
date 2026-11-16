@@ -276,18 +276,21 @@ data_0215d8a0[0]=v&~0xff000000;
 M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;func_02086810(161,1);func_01ffa3dc(&data_0212b804,7);
 }
 
-void func_020cd544(s32 arg0) {
+/* Starts a battle over the chosen map: reads the map kind, clears the map
+ * config's mode bits, sets the map up, and either opens the field or (with no
+ * unit data) spawns the placeholder menu object. */
+void func_020cd544(s32 mapKind) {
     extern u16 gMapConfig;
     extern M2C_UNK data_0212b844;
     s32 func_020bf054(s32, s32);
     s32 IsUnitAvailable(s32);
-    u8 value;
+    u8 kind;
     func_02088634();
-    value = func_020bf054(0, arg0);
+    kind = func_020bf054(0, mapKind);
     gMapConfig &= ~7;
-    func_020e4a18(arg0);
-    if (IsUnitAvailable(value)) {
-        func_020d4ac8(value);
+    func_020e4a18(mapKind);
+    if (IsUnitAvailable(kind)) {
+        func_020d4ac8(kind);
     } else {
         func_01ffa3dc(&data_0212b844, 7);
     }
@@ -300,6 +303,7 @@ void func_020cd5ac(void) {
     func_01ffa3dc(&data_0212b844, 7);
 }
 
+/* True unless the options turn battle animations off. */
 s32 func_020cd5d8(void) {
     extern M2C_UNK data_0215d9b8;
     switch ((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 20) >> 30) {
@@ -309,6 +313,8 @@ s32 func_020cd5d8(void) {
     }
 }
 
+/* True while captures may start: always on in free battles, and in a campaign
+ * battle only when the current player is human. */
 s32 func_020cd614(void) {
     extern M2C_UNK data_0215d9b8;
     extern s32 *gCurrentMap;
@@ -406,14 +412,16 @@ s32 GetPlayerRelation(s32 arg0, s32 arg1) {
     return 2;
 }
 
-s32 PlayerHasHumanAlly(s32 arg0) {
+/* True when a human player is on the given player's side (any of the other
+ * three players is both an ally and human). */
+s32 PlayerHasHumanAlly(s32 player) {
  s32 i, v, n;
- n = arg0 + 1;
+ n = player + 1;
  i = 1;
  do {
  v = n;
  if (n >= 5) v = n - 4;
- if (GetPlayerRelation(arg0, (u16)v) == 2 && IsPlayerHuman(v) != 0) return 1;
+ if (GetPlayerRelation(player, (u16)v) == 2 && IsPlayerHuman(v) != 0) return 1;
  i++;
  n++;
  } while(i < 4);

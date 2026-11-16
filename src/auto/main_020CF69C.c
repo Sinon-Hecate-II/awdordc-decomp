@@ -181,13 +181,16 @@ void GetMapName(u32 arg0) {
     GetLocalizedText();
 }
 
-u8 func_020cfc0c(s32 arg0) {
+/* The 1-based army that owns the property with the given terrain byte, or 0 when
+ * the terrain is not an owned property (property terrain carries its owner in the
+ * top three bits, see PLAYER_REC_PROPERTY_ARMY). */
+u8 Map_GetPropertyOwnerArmy(s32 terrain) {
  extern s32 *gCurrentMap;
  extern s8 gTerrainPropertyFlags[];
- s32 mask=arg0 & 0xE0;
- if(mask==0) return 0;
- if(gTerrainPropertyFlags[arg0 & 0x1F]==0) return 0;
- return M2C_FIELD((void *)*gCurrentMap+(mask>>5)*0x8C,u8 *,0x67C1);
+ s32 owner=terrain & 0xE0;
+ if(owner==0) return 0;
+ if(gTerrainPropertyFlags[terrain & 0x1F]==0) return 0;
+ return M2C_FIELD((void *)*gCurrentMap+(owner>>5)*MAP_PLAYER_STRIDE,u8 *,0x67C1);
 }
 
 void ClampCursorToMap(void) {
