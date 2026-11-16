@@ -12,6 +12,113 @@ void ClearAiInfluenceMaps(void);
 void SetMapCursor(int, int, int, int, int);
 
 #pragma opt_strength_reduction off
+/* Scans the map for the reachable cell that best approaches (targetX,targetY).
+ * Unit kind 22 also gets a second, preferred destination; a cursor marker is
+ * placed on each chosen cell. */
+void PlanMoveDestination(s32 targetX, s32 targetY) {
+    void SelectMapLayer(void *);
+    void FloodFillUnitRange(s32, s32, u8, s32, s32);
+    void BuildUnitMoveRange(void *);
+    s32 IsValidMoveCell(s16, s16);
+    s32 func_ov000_021a8be8(s16, s16, s32);
+    s32 IsAllyUnitAtCell(s16, s16);
+    s32 CellMoveScore(s32, s32, s32, s32);
+    s32 func_ov000_021a90a8(u8, s16, s16);
+    s32 DestinationScore(s32, s32, s32, s32);
+    s32 bestX, bestY, specialX, specialY, bestD, specialD;
+    s32 bestC, bestV, specialC, x, specialV, score, y, cost, cellCost;
+    u8 *unit;
+    bestX = -1;
+    bestY = 0;
+    bestV = 0x7fffffff;
+    specialX = bestX;
+    specialY = bestY;
+    bestD = bestY;
+    specialD = bestY;
+    specialV = 0x7fffffff;
+    SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
+    FloodFillUnitRange(targetX, targetY,
+                       ((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->kind, 110, 0);
+    unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+    if ((*(s8 **)((u8 *)*gCurrentMap + 0x52e8 + unit[2] * 4))[unit[1]] < 0) {
+        (*(s8 **)((u8 *)*gCurrentMap + 0x52e8 + unit[2] * 4))[unit[1]] = 110;
+    }
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
+    BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap + 0x52d0));
+    unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+    if (!IsValidMoveCell(unit[1], unit[2]) ||
+        (((UnitKind0218 *)*(u8 **)((u8 *)*gCurrentMap + 0x52d0))->kind == 22 &&
+         func_ov000_021a8be8((*(u8 **)((u8 *)*gCurrentMap + 0x52d0))[1],
+                             (*(u8 **)((u8 *)*gCurrentMap + 0x52d0))[2], 1))) {
+        bestC = 32767;
+    } else {
+        unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+        bestC = *(s8 *)((u8 *)*gCurrentMap +
+                        (unit[1] + *(u16 *)((u8 *)*gCurrentMap + 0x3758 + unit[2] * 2)) + 0x2338);
+    }
+    specialC = bestC;
+    for (y = 0; y < *(u16 *)((u8 *)*gCurrentMap + 0x5146); y++) {
+        for (x = 0; x < *(u16 *)((u8 *)*gCurrentMap + 0x5144); x++) {
+            if ((*(s8 **)((u8 *)*gCurrentMap + 0x52e8 + y * 4))[x] < 0) {
+                continue;
+            }
+            if (*(u8 *)((u8 *)*gCurrentMap + 0x52d6)) {
+                unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+                if (x == unit[1] && y == unit[2]) {
+                    goto valid;
+                }
+            }
+            if (IsAllyUnitAtCell((s16)x, (s16)y)) {
+                continue;
+            }
+        valid:
+            if (!IsValidMoveCell((s16)x, (s16)y)) {
+                continue;
+            }
+            score = CellMoveScore(x, y, 1, 2);
+            if (((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->kind == 22 &&
+                *(s8 *)((u8 *)*gCurrentMap + x + *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2) +
+                        0x2338) <= specialC &&
+                func_ov000_021a90a8(*(u8 *)((u8 *)*gCurrentMap + 0x52d4), (s16)x, (s16)y) != 1 &&
+                func_ov000_021a8be8((s16)x, (s16)y, 1) != 1) {
+                cost = DestinationScore(x, y, targetX, targetY);
+                cellCost = *(s8 *)((u8 *)*gCurrentMap + x +
+                                   *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2) + 0x2338);
+                if (specialC != cellCost ||
+                    (score <= specialV && (score != specialV || cost <= specialD))) {
+                    specialC = cellCost;
+                    specialD = cost;
+                    specialX = x;
+                    specialY = y;
+                    specialV = score;
+                }
+            }
+            if (*(s8 *)((u8 *)*gCurrentMap + x + *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2) +
+                        0x2338) > bestC) {
+                continue;
+            }
+            cost = DestinationScore(x, y, targetX, targetY);
+            cellCost = *(s8 *)((u8 *)*gCurrentMap + x +
+                               *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2) + 0x2338);
+            if (bestC != cellCost || (score <= bestV && (score != bestV || cost <= bestD))) {
+                bestC = cellCost;
+                bestV = score;
+                bestD = cost;
+                bestX = x;
+                bestY = y;
+            }
+        }
+    }
+    if (specialX > -1) {
+        SetMapCursor((s16)specialX, (s16)specialY, 2, 0, 0);
+    }
+    if (bestX > -1) {
+        SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
+    }
+}
+#pragma opt_strength_reduction reset
+
+#pragma opt_strength_reduction off
 /* AI step: for the unit under the cursor, flood-fill its movement range, score
  * every reachable cell and pick the best one to attack from, then plan the move
  * to it. */
@@ -29,7 +136,7 @@ void SelectAttackMoveDestination(void) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
 
-    register s32 bestScore asm("r7") = 0x7fff;
+    s32 bestScore = 0x7fff;
     s16 bestTile[2];
     s32 x;
     s32 y;
@@ -107,60 +214,3 @@ void func_ov000_0218b02c(void) {
     p = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
     SetMapCursor(p[1], p[2], 2, 0, 0);
 }
-#pragma opt_strength_reduction off
-/* Scans the map for the reachable cell that best approaches (targetX,targetY).
- * Unit kind 22 also gets a second, preferred destination; a cursor marker is
- * placed on each chosen cell. */
-void PlanMoveDestination(s32 targetX,s32 targetY) {
-void SelectMapLayer(void *);
-void FloodFillUnitRange(s32,s32,u8,s32,s32);
-void BuildUnitMoveRange(void *);
-s32 IsValidMoveCell(s16,s16);
-s32 func_ov000_021a8be8(s16,s16,s32);
-s32 IsAllyUnitAtCell(s16,s16);
-s32 CellMoveScore(s32,s32,s32,s32);
-s32 func_ov000_021a90a8(u8,s16,s16);
-s32 DestinationScore(s32,s32,s32,s32);
-s32 bestX,bestY,specialX,specialY,bestD,specialD;
-s32 bestC,bestV,specialC,x,specialV,score,y,cost,cellCost;u8 *unit;
-bestX=-1;bestY=0;bestV=0x7fffffff;specialX=bestX;specialY=bestY;bestD=bestY;specialD=bestY;specialV=0x7fffffff;
-SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-FloodFillUnitRange(targetX,targetY,((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->kind,110,0);
-unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+unit[2]*4))[unit[1]]<0) (*(s8 **)((u8 *)*gCurrentMap+0x52e8+unit[2]*4))[unit[1]]=110;
-SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap+0x52d0));
-unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-if(!IsValidMoveCell(unit[1],unit[2]) ||
-(((UnitKind0218 *)*(u8 **)((u8 *)*gCurrentMap+0x52d0))->kind==22 &&
-func_ov000_021a8be8((*(u8 **)((u8 *)*gCurrentMap+0x52d0))[1],(*(u8 **)((u8 *)*gCurrentMap+0x52d0))[2],1))) bestC=32767;
-else {unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);bestC=*(s8 *)((u8 *)*gCurrentMap+(unit[1]+*(u16 *)((u8 *)*gCurrentMap+0x3758+unit[2]*2))+0x2338);}
-specialC=bestC;
-for(y=0;y<*(u16 *)((u8 *)*gCurrentMap+0x5146);y++){
-for(x=0;x<*(u16 *)((u8 *)*gCurrentMap+0x5144);x++){
-if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x]<0)continue;
-if(*(u8 *)((u8 *)*gCurrentMap+0x52d6)) {
-unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-if(x==unit[1] && y==unit[2])goto valid;
-}
-if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
-valid:
-if(!IsValidMoveCell((s16)x,(s16)y))continue;
-score=CellMoveScore(x,y,1,2);
-if(((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->kind==22 &&
-*(s8 *)((u8 *)*gCurrentMap+x+*(u16 *)((u8 *)*gCurrentMap+0x3758+y*2)+0x2338)<=specialC &&
-func_ov000_021a90a8(*(u8 *)((u8 *)*gCurrentMap+0x52d4),(s16)x,(s16)y)!=1 &&
-func_ov000_021a8be8((s16)x,(s16)y,1)!=1) {
-cost=DestinationScore(x,y,targetX,targetY);
-cellCost=*(s8 *)((u8 *)*gCurrentMap+x+*(u16 *)((u8 *)*gCurrentMap+0x3758+y*2)+0x2338);
-if(specialC!=cellCost || (score<=specialV && (score!=specialV || cost<=specialD))) {specialC=cellCost;specialD=cost;specialX=x;specialY=y;specialV=score;}
-}
-if(*(s8 *)((u8 *)*gCurrentMap+x+*(u16 *)((u8 *)*gCurrentMap+0x3758+y*2)+0x2338)>bestC)continue;
-cost=DestinationScore(x,y,targetX,targetY);
-cellCost=*(s8 *)((u8 *)*gCurrentMap+x+*(u16 *)((u8 *)*gCurrentMap+0x3758+y*2)+0x2338);
-if(bestC!=cellCost || (score<=bestV && (score!=bestV || cost<=bestD))) {bestC=cellCost;bestV=score;bestD=cost;bestX=x;bestY=y;}
-}}
-if(specialX>-1)SetMapCursor((s16)specialX,(s16)specialY,2,0,0);
-if(bestX>-1)SetMapCursor((s16)bestX,(s16)bestY,2,0,0);
-}
-#pragma opt_strength_reduction reset

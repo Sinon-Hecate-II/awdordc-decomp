@@ -213,6 +213,99 @@ s32 func_020c60c8(void) {
     return 0;
 }
 
+s32 func_020c6134(void) {
+    s32 func_020c60c8();
+    s32 func_020c6350();
+    M2C_UNK FillMapLayer(s32);
+    s32 func_0209fd2c();
+    extern void **gCurrentMap;
+    void *base;
+    s16 a;
+    s16 b;
+
+    if (func_020c60c8() == 0) {
+        return 2;
+    }
+    if (func_020c6350() == 0) {
+        return 2;
+    }
+    FillMapLayer(-1);
+    base = *gCurrentMap;
+    a = M2C_FIELD(base, s16 *, 0x52DE);
+    b = M2C_FIELD(base, s16 *, 0x52DC);
+    M2C_FIELD(M2C_FIELD((s8 *)base + a * 4, u8 **, 0x52E8), u8 *, b) = 0;
+    if (func_0209fd2c() != 0) {
+        return 0;
+    }
+    return 2;
+}
+
+s32 func_020c61a4(void) {
+    s32 func_020c60c8();
+    s32 func_020c6350();
+    M2C_UNK FillMapLayer(s32);
+    s32 func_0209ff34();
+    extern void **gCurrentMap;
+    void *base;
+    s16 a;
+    s16 b;
+
+    if (func_020c60c8() == 0) {
+        return 2;
+    }
+    if (func_020c6350() == 0) {
+        return 2;
+    }
+    FillMapLayer(-1);
+    base = *gCurrentMap;
+    a = M2C_FIELD(base, s16 *, 0x52DE);
+    b = M2C_FIELD(base, s16 *, 0x52DC);
+    M2C_FIELD(M2C_FIELD((s8 *)base + a * 4, u8 **, 0x52E8), u8 *, b) = 0;
+    if (func_0209ff34() != 0) {
+        return 0;
+    }
+    return 2;
+}
+
+/* Returns 0 on success, 2 if the attempted move/attack is blocked. */
+s32 func_020c6214(void) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5c09[], gUnitMinAttackRange[];
+    s32 func_020c9430(s32);
+    s32 func_020a85c8(s32);
+    s32 func_0209f990(void);
+    s32 FillMapLayer(s32);
+    void func_01ffc368(s32, s32, void *);
+    void *base;
+    s32 x, y;
+
+    if (func_020c9430(0) != 0 || func_020c9430(1) != 0) {
+        return 2;
+    }
+    base = *gCurrentMap;
+    y = M2C_FIELD(base, s16 *, 0x52DE);
+    x = M2C_FIELD(base, s16 *, 0x52DC);
+    if (M2C_FIELD(base, u8 *, x + M2C_FIELD((u8 *)base + y * 2, u16 *, 0x3758)) != 0) {
+        return 2;
+    }
+    if (x != M2C_FIELD(base, s16 *, 0x52D8) || y != M2C_FIELD(base, s16 *, 0x52DA)) {
+        s32 id = ((UnkStruct_020C5D0C *)M2C_FIELD(base, void **, 0x52D0))->unk0;
+        if (data_ov000_021b5c09[id * 0x70] != 1 && func_020a85c8(id) == 0) {
+            return 2;
+        }
+    }
+    if (gUnitMinAttackRange[((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap, void **, 0x52D0))->unk0 * 0x70] == 0) {
+        return 2;
+    }
+    FillMapLayer(-1);
+    base = *gCurrentMap;
+    func_01ffc368(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), M2C_FIELD(base, void **, 0x52D0));
+    if (func_0209f990() != 0) {
+        return 0;
+    }
+    return 2;
+}
+
 s32 func_020c6350(void) {
     s32 func_020ba790(s16, s16);
     extern void **gCurrentMap;
@@ -318,99 +411,6 @@ s32 func_020c67bc(void) {
  if(func_020c60c8()==0)return 2;
  if(func_020c6350()==0)return 2;
  return 0;
-}
-
-s32 func_020c6134(void) {
-    s32 func_020c60c8();
-    s32 func_020c6350();
-    M2C_UNK FillMapLayer(s32);
-    s32 func_0209fd2c();
-    extern void **gCurrentMap;
-    void *base;
-    s16 a;
-    s16 b;
-
-    if (func_020c60c8() == 0) {
-        return 2;
-    }
-    if (func_020c6350() == 0) {
-        return 2;
-    }
-    FillMapLayer(-1);
-    base = *gCurrentMap;
-    a = M2C_FIELD(base, s16 *, 0x52DE);
-    b = M2C_FIELD(base, s16 *, 0x52DC);
-    M2C_FIELD(M2C_FIELD((s8 *)base + a * 4, u8 **, 0x52E8), u8 *, b) = 0;
-    if (func_0209fd2c() != 0) {
-        return 0;
-    }
-    return 2;
-}
-
-s32 func_020c61a4(void) {
-    s32 func_020c60c8();
-    s32 func_020c6350();
-    M2C_UNK FillMapLayer(s32);
-    s32 func_0209ff34();
-    extern void **gCurrentMap;
-    void *base;
-    s16 a;
-    s16 b;
-
-    if (func_020c60c8() == 0) {
-        return 2;
-    }
-    if (func_020c6350() == 0) {
-        return 2;
-    }
-    FillMapLayer(-1);
-    base = *gCurrentMap;
-    a = M2C_FIELD(base, s16 *, 0x52DE);
-    b = M2C_FIELD(base, s16 *, 0x52DC);
-    M2C_FIELD(M2C_FIELD((s8 *)base + a * 4, u8 **, 0x52E8), u8 *, b) = 0;
-    if (func_0209ff34() != 0) {
-        return 0;
-    }
-    return 2;
-}
-
-/* Returns 0 on success, 2 if the attempted move/attack is blocked. */
-s32 func_020c6214(void) {
-    extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c09[], gUnitMinAttackRange[];
-    s32 func_020c9430(s32);
-    s32 func_020a85c8(s32);
-    s32 func_0209f990(void);
-    s32 FillMapLayer(s32);
-    void func_01ffc368(s32, s32, void *);
-    void *base;
-    s32 x, y;
-
-    if (func_020c9430(0) != 0 || func_020c9430(1) != 0) {
-        return 2;
-    }
-    base = *gCurrentMap;
-    y = M2C_FIELD(base, s16 *, 0x52DE);
-    x = M2C_FIELD(base, s16 *, 0x52DC);
-    if (M2C_FIELD(base, u8 *, x + M2C_FIELD((u8 *)base + y * 2, u16 *, 0x3758)) != 0) {
-        return 2;
-    }
-    if (x != M2C_FIELD(base, s16 *, 0x52D8) || y != M2C_FIELD(base, s16 *, 0x52DA)) {
-        s32 id = ((UnkStruct_020C5D0C *)M2C_FIELD(base, void **, 0x52D0))->unk0;
-        if (data_ov000_021b5c09[id * 0x70] != 1 && func_020a85c8(id) == 0) {
-            return 2;
-        }
-    }
-    if (gUnitMinAttackRange[((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap, void **, 0x52D0))->unk0 * 0x70] == 0) {
-        return 2;
-    }
-    FillMapLayer(-1);
-    base = *gCurrentMap;
-    func_01ffc368(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), M2C_FIELD(base, void **, 0x52D0));
-    if (func_0209f990() != 0) {
-        return 0;
-    }
-    return 2;
 }
 
 s32 func_020c680c(void) {
