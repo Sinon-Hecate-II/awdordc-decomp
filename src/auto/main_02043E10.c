@@ -1,13 +1,151 @@
 /* 35 functions from 0x02043E10 to 0x02044E04 (main), found by ds-decomp. */
 #include "common.h"
 void MI_CpuCopy8(void *,void *,s32);
+s32 GetConnection(void);
+void SetConnectionState(s32);
 
-s32 func_02043e10(M2C_UNK arg0, M2C_UNK arg1, void *arg2, s32 arg3) {
-    (void) arg0;
-    (void) arg1;
-    (void) arg2;
-    (void) arg3;
-    return 0;
+/* GameSpy GT2 connection callback: with an outgoing connection request (status 0) it
+ * sends the connection command and arms the peer timers; with a reply it advances the
+ * handshake, retries or tears the attempt down, reporting through the connection state. */
+void func_02043e10(s32 status, s32 socket, void *peer, void *request)
+{
+    M2C_UNK func_02040e1c(M2C_UNK);
+    s32 func_0200567c(void *, s32, void *, s32);
+    s32 func_0205d4d8(s32, s32, s32);
+    s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
+    void func_02043230(void);
+    s32 func_020431e0(s32);
+    s32 func_02041038(s32);
+    s32 func_0203ef9c(void *);
+    s32 func_02043184();
+    u64 GetSystemTick(void);
+    extern M2C_UNK data_020fc908;
+
+    u8 buf[12];
+    void *connection;
+    void *peerConn;
+    void *portConn;
+    s32 kind;
+    s32 res;
+    s32 slot;
+    u16 port;
+
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) != 6 && M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) != 0xb) {
+        return;
+    }
+    if (request == 0) {
+        return;
+    }
+    if (status == 0) {
+        M2C_FIELD(request, s32 *, 8) = 0;
+        M2C_FIELD(GetConnection(), u8 *, 0x14)++;
+        slot = M2C_FIELD(GetConnection(), u8 *, 0x14);
+        if (M2C_FIELD(request, u8 *, 0) != 0) {
+            M2C_FIELD(GetConnection() + slot * 4, s32 *, CONN_SESSION_PEER_IPS) = M2C_FIELD(peer, s32 *, 4);
+            port = M2C_FIELD(peer, u16 *, 2);
+            M2C_FIELD(GetConnection() + slot * 2, u16 *, CONN_SESSION_PEER_PORTS) = (u16)((u8)((s32)port >> 8) | ((port << 8) & 0xFF00));
+            M2C_FIELD(GetConnection(), u8 *, 0x17c) = 0;
+            M2C_FIELD(GetConnection(), s32 *, 0x180) = 0;
+            connection = GetConnection();
+            M2C_FIELD(connection, s32 *, 0x184) = 0;
+            M2C_FIELD(connection, s32 *, 0x188) = 0;
+            if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xb) {
+                SetConnectionState(0xc);
+            } else {
+                SetConnectionState(7);
+            }
+            M2C_FIELD(GetConnection(), u8 *, 0xc) = 0;
+            func_0200567c(buf, 12, &data_020fc908, M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_PARAM));
+            connection = GetConnection();
+            peerConn = GetConnection();
+            portConn = GetConnection();
+            res = func_0205d4d8(M2C_FIELD(peerConn + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(portConn + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
+            res = func_0205adcc(*M2C_FIELD(connection, s32 **, 4), 0, res, buf, -1, 5000, M2C_FIELD(GetConnection(), s32 *, 8), 0);
+            if (res == 1) {
+                func_02043230();
+                return;
+            }
+            if (res == 0) {
+                return;
+            }
+            if (func_02040e1c(M2C_FIELD(GetConnection() + slot * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+                return;
+            }
+            return;
+        } else {
+            if (peer != 0) {
+                res = slot - 1;
+                M2C_FIELD(GetConnection() + res * 4, s32 *, CONN_SESSION_PEER_IPS) = M2C_FIELD(peer, s32 *, 4);
+                port = M2C_FIELD(peer, u16 *, 2);
+                M2C_FIELD(GetConnection() + res * 2, u16 *, CONN_SESSION_PEER_PORTS) = (u16)((u8)((s32)port >> 8) | ((port << 8) & 0xFF00));
+            }
+            connection = GetConnection();
+            M2C_FIELD(connection, u64 *, 0x18c) = GetSystemTick();
+            SetConnectionState(7);
+            return;
+        }
+    } else {
+        if (M2C_FIELD(request, s32 *, 8) == 0) {
+            return;
+        }
+        kind = func_020431e0(status);
+        if (kind != 2 && kind != 1) {
+            return;
+        }
+        if (M2C_FIELD(request, u8 *, 0) == 0) {
+            if (kind == 1 || (kind == 2 && M2C_FIELD(request, u8 *, 1) >= 1)) {
+                M2C_FIELD(request, s32 *, 8) = 0;
+                if (func_020441e8(0) == 0) {
+                    return;
+                }
+                connection = GetConnection();
+                peerConn = GetConnection();
+                if (func_02041038(M2C_FIELD(connection + M2C_FIELD(peerConn, u8 *, CONN_SESSION_PLAYER_COUNT) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+                    return;
+                }
+                return;
+            } else {
+                M2C_FIELD(request, u8 *, 1)++;
+                func_0203ef9c(request);
+                if (func_02043184() == 0) {
+                    return;
+                }
+                return;
+            }
+        } else {
+            connection = GetConnection();
+            M2C_FIELD(connection, u64 *, 0x184) = GetSystemTick();
+            if (kind != 1) {
+                if (kind != 2) {
+                    return;
+                }
+                if (M2C_FIELD(GetConnection(), u8 *, 0x17c) < 1) {
+                    return;
+                }
+            }
+        }
+        M2C_FIELD(request, s32 *, 8) = 0;
+        if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3 || M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 2) {
+            if (func_020441e8(1) == 0) {
+                return;
+            }
+        } else {
+            if (func_020441e8(0) == 0) {
+                return;
+            }
+        }
+        M2C_FIELD(GetConnection(), u8 *, 0x17c) = 0;
+        M2C_FIELD(GetConnection(), s32 *, 0x180) = 0;
+        connection = GetConnection();
+        M2C_FIELD(connection, s32 *, 0x184) = 0;
+        M2C_FIELD(connection, s32 *, 0x188) = 0;
+        connection = GetConnection();
+        peerConn = GetConnection();
+        if (func_02040e1c(M2C_FIELD(connection + (M2C_FIELD(peerConn, u8 *, CONN_SESSION_PLAYER_COUNT) + 1) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+            return;
+        }
+        return;
+    }
 }
 
 s32 func_020441e8(s32 arg0) {

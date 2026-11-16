@@ -300,7 +300,7 @@ s32 func_0205b758(void *arg0) {
     if (func_0205cb4c() == 0) {
         return 0;
     }
-    if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) == 6 ? 0 : 1) == 0) {
+    if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) != 6 ? 1 : 0) == 0) {
         return 0;
     }
     return 1;

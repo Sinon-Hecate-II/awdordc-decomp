@@ -247,7 +247,13 @@ src/auto/main_02047B84.c:
     .text start:0x02047b84 end:0x02048b74
 
 src/auto/main_02048B74.c:
-    .text start:0x02048b74 end:0x02049ab8
+    .text start:0x02048b74 end:0x020492a8
+
+src/auto/main_STRINGTOLOWER.c:
+    .text start:0x020492a8 end:0x020492ec
+
+src/auto/main_STRINGTOLOWER_GHISETNONBLOCKING.c:
+    .text start:0x020492ec end:0x02049ab8
 
 src/auto/main_02049AB8.c:
     .text start:0x02049ab8 end:0x0204aa34

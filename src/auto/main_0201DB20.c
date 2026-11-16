@@ -104,10 +104,11 @@ void func_0201dc68(void) {
 void func_0201dd08(void) {
     extern M2C_UNK gNetStack;
     extern M2C_UNK gSocketManager;
-    extern M2C_UNK data_02137370;
-    extern M2C_UNK data_021375b8;
-    extern M2C_UNK data_0213793c;
-    extern M2C_UNK data_021377bc;
+    extern u8 data_02137370[];
+    extern u8 data_021375b8[];
+    extern u8 data_0213793c[];
+    extern u8 data_021377bc[];
+    extern u8 gArpCache[];
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     u64 GetSystemTick(void);
     void func_02006030(s32);
@@ -115,67 +116,148 @@ void func_0201dd08(void) {
     s32 func_0201e754(void);
     s32 func_0201e7ac(u32 *, s32);
     void func_0201a134(s32);
-    void func_0201d138(s32);
+    void func_0201d138(void *);
     void func_0201d14c(void);
+    void func_0201aca0(s32);
+    void func_020251b8(u32);
+    void func_0201e8a8(void);
+    void TaskWake(void *);
 
-    s32 r4;
-    s32 r10;
-    s32 r11;
-    u32 sp0;
+    s32 state;
+    s32 count;
+    s32 flag;
+    u32 wait;
     u32 tick;
     s32 i;
+    void *node;
+    u8 *obj;
+    u8 *e;
 
-    r4 = 0;
-    r10 = 1;
-    r11 = 1;
-    sp0 = 1;
-
+    state = 0;
+    count = 1;
+    flag = 1;
+    wait = 1;
     M2C_FIELD(&gNetStack, u32 *, 0x44) = 0;
-    MI_CpuFill8((s32)&data_02137370, 0, 0x64);
-    func_0201d138((s32)&data_02137370);
+    MI_CpuFill8((s32)data_02137370, 0, 0x64);
     M2C_FIELD(&gNetStack, s32 *, 0x11c) = 0x180;
-    M2C_FIELD(&gNetStack, void **, 0x120) = &data_0213793c;
+    M2C_FIELD(&gNetStack, void **, 0x120) = data_0213793c;
     M2C_FIELD(&gNetStack, s32 *, 0x128) = 0x180;
-    M2C_FIELD(&gNetStack, void **, 0x12c) = &data_021377bc;
+    M2C_FIELD(&gNetStack, void **, 0x12c) = data_021377bc;
+    func_0201d138(data_02137370);
     M2C_FIELD(&gNetStack, s32 *, 0xc) = 1;
     func_02006030(0x3e8);
 
-mainloop:
-    if (M2C_FIELD(&gNetStack, u32 *, 0x44) != 0) goto epilogue;
+loop:
+    if (M2C_FIELD(&gNetStack, u32 *, 0x44) != 0) goto done;
     tick = (u32)(GetSystemTick() >> 16);
-    if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() != 0) {
-        sp0--;
-        if (sp0 == 0) {
-            if (M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) {
-                if (r4 == 0) { func_0201dc68(); r4 = 1; }
-            } else {
-                switch (r4) {
-                case 0:
-                    if (r11) {
-                        M2C_FIELD(&gNetStack, s32 *, 0xc) = 2;
-                        r11 = 0;
-                    }
-                    if (func_0201e754()) {
-                        if (func_0201e7ac(&sp0, 0)) r4 = 1;
-                        else { func_0201dc68(); r4 = 3; }
-                    } else {
-                        if (func_0201e7ac(&sp0, 1)) {
-                        } else if (sp0 < 0x3c) {
-                            r4 = 2;
-                        }
-                    }
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                    break;
+    if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() == 0) {
+        func_0201a134(1);
+        count = 1;
+        wait = 1;
+        state = 0;
+    } else if (--wait == 0) {
+        if (M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) {
+            if (state == 0) {
+                func_0201dc68();
+                state = 1;
+            }
+        } else {
+            switch (state) {
+            case 0:
+                if (flag) {
+                    M2C_FIELD(&gNetStack, s32 *, 0xc) = 2;
+                    flag = 0;
                 }
+                if (func_0201e754()) {
+                    if (func_0201e7ac(&wait, 0)) {
+                        state = 1;
+                    } else {
+                        func_0201dc68();
+                        state = 3;
+                    }
+                } else {
+                    if (!func_0201e7ac(&wait, 1)) {
+                        if (wait < 0x3c) state = 2;
+                    }
+                }
+                break;
+            case 1:
+                if (!func_0201e7ac(&wait, 1)) {
+                    if (wait < 0x3c) state = 2;
+                }
+                break;
+            case 2:
+                if (func_0201e7ac(&wait, 2)) {
+                    state = 1;
+                } else if (wait < 0x3c) {
+                    func_0201a134(3);
+                    count = 1;
+                    wait = 1;
+                    state = 0;
+                }
+                break;
+            case 3:
+                break;
             }
         }
     }
-    goto mainloop;
+    for (i = 0; i < 8; i++) {
+        e = gArpCache + i * 0xc;
+        if (M2C_FIELD(e, u32 *, 0) != 0) {
+            if ((s16)(tick - M2C_FIELD(e, u16 *, 0xa)) > 0x3bd) {
+                M2C_FIELD(e, u32 *, 0) = 0;
+            }
+        }
+    }
+    if (M2C_FIELD(&gNetStack, u32 *, 0x2c) != 0) {
+        if (--count == 0) {
+            func_0201aca0(M2C_FIELD(&gNetStack, s32 *, 0x2c));
+            count = 0x69;
+        }
+    }
+    node = M2C_FIELD(&gSocketManager, void **, 8);
+    while (node) {
+        obj = M2C_FIELD(node, u8 **, 0xa4);
+        if (obj && M2C_FIELD(obj, u32 *, 0)) {
+            s32 kind = M2C_FIELD(obj, u8 *, 8);
+            if (kind == 3) {
+                if ((s32)(tick - M2C_FIELD(obj, u32 *, 0x10)) > 0x27) {
+                    M2C_FIELD(obj, u8 *, 8) = 1;
+                    M2C_FIELD(obj, u16 *, 0x18) = M2C_FIELD(obj, u16 *, 0x1a);
+                    M2C_FIELD(obj, u32 *, 0x1c) = M2C_FIELD(obj, u32 *, 0x20);
+                }
+            } else if (kind == 2) {
+                if ((s32)(tick - M2C_FIELD(obj, u32 *, 0x10)) > 0x27) {
+                    if (M2C_FIELD(obj, u32 *, 4) == 1) {
+                        M2C_FIELD(obj, u8 *, 8) = 0;
+                        M2C_FIELD(obj, u32 *, 4) = 0;
+                        TaskWake(M2C_FIELD(obj, void **, 0));
+                    }
+                }
+            } else if (kind != 4 && M2C_FIELD(obj, u32 *, 4) == 2) {
+                M2C_FIELD(obj, u32 *, 4) = 0;
+                TaskWake(M2C_FIELD(obj, void **, 0));
+            }
+        }
+        node = M2C_FIELD(node, void **, 0x68);
+    }
+    for (i = 0; i < 8; i++) {
+        e = data_021375b8 + i * 0x38;
+        if (M2C_FIELD(e, u16 *, 4) != 0) {
+            if ((s32)(tick - M2C_FIELD(e, u32 *, 0x2c)) > 0xef) {
+                ((void (*)(u32))M2C_FIELD(&gNetStack, u32 *, 0x40))(M2C_FIELD(e, u32 *, 0x34));
+                M2C_FIELD(e, u16 *, 4) = 0;
+            }
+        }
+    }
+    func_020251b8(tick);
+    if (M2C_FIELD(&gNetStack, u32 *, 0x3c) != 0) {
+        ((void (*)(void))M2C_FIELD(&gNetStack, u32 *, 0x3c))();
+    }
+    goto loop;
 
-epilogue:
+done:
+    if (!(M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) && state != 3) func_0201e8a8();
     func_0201d14c();
 }
 

@@ -395,17 +395,23 @@ void func_020296e0(void *arg0) {
 
 #pragma opt_common_subs off
 void func_02029714(void) {
-s32 GetSession(void);s32 func_02029a24(void *);s32 WFC_SubmitRequest(s32,void *,void *,u32);void func_02029a10(void);s32 func_02029a74(M2C_UNK *);extern M2C_UNK gWfcSendLock;
-s32 res; void *ptr; void *base;
-base=(void *)GetSession();if(!base)return;
-ptr=(s8 *)base+0x2000;
-res=((s32 *)ptr)[0x98];
-if(res!=9)return;
-if(M2C_FIELD(ptr,u8 *,0x26b)==1)return;
-if(!func_02029a24(&gWfcSendLock))return;
-res=WFC_SubmitRequest((s32)func_02029a10,(s8 *)base+0x2144,(s8 *)base+0xf00,0);
-if(res==2)return;
-func_02029a74(&gWfcSendLock);
+    s32 GetSession(void);
+    s32 func_02029a24(void *);
+    s32 WFC_SubmitRequest(s32, void *, void *, u32);
+    void func_02029a10(void);
+    s32 func_02029a74(M2C_UNK *);
+    extern M2C_UNK gWfcSendLock;
+    void *base;
+    s32 res;
+
+    base = (void *)GetSession();
+    if (base == 0) return;
+    if (M2C_FIELD((s8 *)base + 0x2000, s32 *, 0x260) != 9) return;
+    if (M2C_FIELD((s8 *)base + 0x2000, u8 *, 0x26b) == 1) return;
+    if (func_02029a24(&gWfcSendLock) == 0) return;
+    res = WFC_SubmitRequest((s32)func_02029a10, (s8 *)base + 0x2144, (s8 *)base + 0xf00, 0);
+    if (res == 2) return;
+    func_02029a74(&gWfcSendLock);
 }
 #pragma opt_common_subs reset
 void *func_02029784(void) {

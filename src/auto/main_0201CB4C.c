@@ -311,7 +311,7 @@ void func_0201d25c(void *arg0) {
     OS_RestoreInterrupts(temp_r4);
 }
 
-void func_0201d29c(s32 arg0) {
+void SocketSetReceiveCallback(s32 arg0) {
     extern M2C_UNK gSocketManager;
     void *x = M2C_FIELD(&gSocketManager, void **, 4);
     s32 *q = M2C_FIELD(x, s32 **, 0xa4);

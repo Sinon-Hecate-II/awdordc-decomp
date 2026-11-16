@@ -236,8 +236,8 @@ void func_ov007_022143f0(void) {
 }
 
 void func_ov007_0221440c(void) {
-    M2C_UNK func_020bfa80(M2C_UNK);
-    func_020bfa80(0);
+    M2C_UNK MapSettings_InitDefaults(M2C_UNK);
+    MapSettings_InitDefaults(0);
     MapSettings_Apply(0);
     MapEditor_SetMapModified(1);
 }

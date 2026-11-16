@@ -62,7 +62,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     M2C_UNK func_020886d4();
     M2C_UNK func_020886fc();
     M2C_UNK func_0208f780(M2C_UNK);
-    M2C_UNK func_020bfa80(M2C_UNK);
+    M2C_UNK MapSettings_InitDefaults(M2C_UNK);
     M2C_UNK func_020bfb74(M2C_UNK);
     u32 func_020d886c();
     void SetOv003SceneState(s32);
@@ -143,7 +143,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 6:
         temp_lr_2 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
@@ -156,7 +156,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         var_r0_2 = PanelHasSelection(M2C_FIELD(temp_r0,void **,0x40));
         if (var_r0_2 != 0) {
             func_020bfb74(0);
-            func_020bfa80(0);
+            MapSettings_InitDefaults(0);
         }
         func_020886d4();
         return;
@@ -172,7 +172,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         var_r0_3 = PanelHasSelection(M2C_FIELD(temp_r0,void **,0x40));
         if (var_r0_3 != 0) {
             func_020bfb74(0);
-            func_020bfa80(0);
+            MapSettings_InitDefaults(0);
         }
         func_020886fc();
         return;
@@ -187,7 +187,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         var_r0_4 = PanelHasSelection(M2C_FIELD(temp_r0,void **,0x40));
         if (var_r0_4 != 0) {
             func_020bfb74(0);
-            func_020bfa80(0);
+            MapSettings_InitDefaults(0);
         }
         func_020886fc();
         return;
@@ -205,7 +205,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 24:
         func_020886d4();
@@ -221,7 +221,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 8:
         func_020886fc();
@@ -237,7 +237,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 14:
         func_020886fc();
@@ -253,7 +253,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 15:
         func_020886fc();
@@ -269,7 +269,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 16:
         func_020886fc();
@@ -285,7 +285,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     case 17:
         func_020886fc();
@@ -301,7 +301,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             return;
         }
         func_020bfb74(0);
-        func_020bfa80(0);
+        MapSettings_InitDefaults(0);
         return;
     default:
         return;

@@ -56,12 +56,12 @@ void func_0204d5c0(void *arg0) {
     }
     if (headerEnd) {
         headerEnd[2] = 0;
-        bodyLen = M2C_FIELD(arg0, s32 *, 0x80) - (s32)(headerEnd + 4 - M2C_FIELD(arg0, s8 **, 0x78));
-        M2C_FIELD(arg0, s32 *, 0x80) = (s32)(headerEnd + 2 - M2C_FIELD(arg0, s8 **, 0x78));
-        headerLen = (s32)(headerEnd + 2 - M2C_FIELD(arg0, s8 **, 0x78));
+        body = headerEnd + 4;
+        bodyLen = M2C_FIELD(arg0, s32 *, 0x80) - (s32)(body - M2C_FIELD(arg0, s8 **, 0x78));
+        M2C_FIELD(arg0, s32 *, 0x80) = (s32)(headerEnd + 2) - (s32)M2C_FIELD(arg0, s8 **, 0x78);
+        headerLen = (s32)(headerEnd + 2) - (s32)M2C_FIELD(arg0, s8 **, 0x78);
         M2C_FIELD(arg0, s32 *, 0xf8) = headerLen;
         M2C_FIELD(arg0, s32 *, 0x84) = headerLen;
-        body = headerEnd + 4;
         statusClass = M2C_FIELD(arg0, s32 *, 0xec) / 100;
         if (statusClass == 1) {
             if (bodyLen != 0) {

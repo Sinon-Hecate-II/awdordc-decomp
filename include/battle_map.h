@@ -422,4 +422,20 @@ typedef struct MapViewTask {
     s16 unk3A;     /* +0x3A */
 } MapViewTask;
 
+/* Drawing a map cell with the 3D sprite engine.  The cell's
+ * sprite id picks a script out of one of two tables, one per view zoom; the
+ * matching graphics block lives at a fixed VRAM address.  A sprite id at or
+ * above MAP_SPRITE_PART_MIN is drawn from a ring of parts around the cell. */
+#define MAP_SPRITE_ZOOM_SMALL     16     /* cell size the view is drawn at when GetViewZoom <= 0 */
+#define MAP_SPRITE_ZOOM_LARGE     24     /* ... and when it is above 0 */
+#define MAP_SPRITE_GFX_ADDR_SMALL 0x21000 /* VRAM address of the small cell sprite graphics */
+#define MAP_SPRITE_GFX_ADDR_LARGE 0x21980 /* VRAM address of the large cell sprite graphics */
+#define MAP_SPRITE_GFX_SIZE_SMALL 0x30000 /* size of the small cell sprite graphics block */
+#define MAP_SPRITE_GFX_SIZE_LARGE 0x20000 /* size of the large cell sprite graphics block */
+#define MAP_SPRITE_TILE_DATA_SIZE 0x1440  /* size of the cell sprite's tile data block (stride 0x20) */
+#define MAP_SPRITE_PALETTE        31      /* OBJ palette the cell sprites are drawn with */
+#define MAP_SPRITE_CELL_SIZE      48      /* map-position units per cell (1/16-cell input * this) */
+#define MAP_SPRITE_PART_MIN       20      /* first sprite id drawn from parts around the cell */
+#define MAP_SPRITE_ATTR           0x8a1   /* z/attribute word of the drawn cell sprite */
+
 #endif

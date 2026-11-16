@@ -5,13 +5,15 @@ struct Packet_0205 { u8 a,b; u16 c; s32 d; };
 struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
 
 s32 func_0205cb68(s32 a, s32 b, s32 c) {
-s32 func_0205d228(void *,s32,s32,void *,s32);
-extern u8 gGt2Magic[];
-u8 v[3];
-v[0]=gGt2Magic[0];
-v[2]=0x68;
-v[1]=gGt2Magic[1];
-return func_0205d228((void *)a,b,c,v,3)!=0;
+    s32 func_0205d228(void *, s32, s32, void *, s32);
+    extern u8 gGt2Magic[];
+    u8 v[3];
+    struct BytePair_0205 *p = (struct BytePair_0205 *)v;
+
+    v[2] = 0x68;
+    p->v[1] = gGt2Magic[1];
+    p->v[0] = gGt2Magic[0];
+    return func_0205d228((void *)a, b, c, p, 3) != 0;
 }
 
 s32 func_0205cbb4(void *a, s32 *b) {

@@ -263,13 +263,16 @@ void func_020be2f8(M2C_UNK arg0) {
     func_020be2e0(arg0, 0x5CC, 4);
 }
 
-u8 func_020be324(s32 arg0,M2C_UNK arg1){
+/* Load the newest save-directory record of type `type`: walk the save directory,
+ * keep the record of that type with the largest timestamp, load it, and show the
+ * load-failure message when the load reports a problem. */
+u8 func_020be324(s32 type,M2C_UNK arg1){
 void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);s32 LoadSaveRecord(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK GetLocalizedText(s32);M2C_UNK func_02076244();
-u8 *p,*best;s32 n,i,id; s32 better; u32 high;u32 b,a;u8 result;
-p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
-if(n>0)do{if(arg0==p[2]){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));
-if(!better)goto next;
-}best=p;}next:i++;p+=40;}while(i<n);
+u8 *record,*best;s32 n,i,id; s32 isNewer;u8 result;
+record=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
+if(n>0)do{if(type==record[SAVE_RECORD_TYPE]){if(best){isNewer=IsNewerValue(M2C_FIELD(best,u32 *,SAVE_RECORD_TIME),M2C_FIELD(record,u32 *,SAVE_RECORD_TIME));
+if(!isNewer)goto next;
+}best=record;}next:i++;record+=SAVE_RECORD_STRIDE;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return 0;
 result=LoadSaveRecord(id,arg1);
@@ -328,7 +331,7 @@ void func_020be59c(void) {
  * and the save records, set the default slot words and clear the per-slot
  * setting words. Runs at startup and whenever the settings magic is missing. */
 void InitDefaultGameSettings(void) {
-M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK func_020bf8fc(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK func_020bfa80(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
+M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK func_020bf8fc(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_InitDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
 s32 i,slot,entry; s32 flagOff,modeOff;
 M2C_FIELD(&gGameSettings,s32 *,0x128)=GAME_SETTINGS_MAGIC;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~15;
@@ -337,7 +340,7 @@ M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0xc00;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x3000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)|=0x4000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x8000;
-func_020bfa80(0);
+MapSettings_InitDefaults(0);
 i=0;flagOff=0;modeOff=0;
 do{func_020bf8ac(i,flagOff);func_020bf8fc(i,modeOff);++i;}while(i<15);
 func_020bf814(0);func_020e47f8();func_020e49ec();func_02086b9c();func_02091bcc();

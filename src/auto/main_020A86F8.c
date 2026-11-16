@@ -93,7 +93,7 @@ s32 func_020a8910(void) {
     return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 8;
 }
 
-s32 func_020a8924(void) {
+s32 MapData_IsRandomSelectable(void) {
     return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 0x10;
 }
 
@@ -116,7 +116,7 @@ u8 func_020a8984(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0xB);
 }
 
-u8 func_020a8994(void) {
+u8 MapData_GetBattleSetting(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0xC);
 }
 
@@ -124,11 +124,11 @@ u16 func_020a89a4(void) {
     return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xD) * 0xE10);
 }
 
-u16 func_020a89c4(void) {
+u16 MapData_GetValueLimitLow(void) {
     return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xE) * 0x64);
 }
 
-u16 func_020a89e4(void) {
+u16 MapData_GetValueLimitHigh(void) {
     return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xF) * 0x64);
 }
 

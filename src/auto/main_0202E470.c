@@ -386,7 +386,8 @@ void func_0202ee2c(void) {
 #pragma opt_common_subs off
 void func_0202ee30(void *arg0) {
  void OS_SleepThread(void *); void LockMutex(void *); void UnlockMutex(void *); void *func_0202e09c(void *); void func_0202e470(void *); void func_0202e12c(void *);
- char *base=(char *)arg0+0xC8; char *p;
+ void *p;
+ void *base=(char *)arg0+0xC8;
  for (;;) { OS_SleepThread(arg0+0x4C0); for (;;) {
  LockMutex(base+0x400); p=func_0202e09c(arg0+0x4E0);
  if(p == 0){UnlockMutex(base+0x400);break;}

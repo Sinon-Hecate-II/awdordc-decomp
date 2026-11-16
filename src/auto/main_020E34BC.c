@@ -52,22 +52,22 @@ s32 HeapAllocBlock(s32 arg0) {
 }
 #pragma opt_common_subs reset
 s32 func_020e3580(s32, s32);
+#pragma opt_common_subs off
 s32 func_020e34f4(s32 arg0) {
+    s32 func_020e3580(s32, s32);
+    register u32 s;
     volatile u32 saved;
-    u16 old;
+    u32 old;
     s32 result;
     old = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
     saved = old;
     result = func_020e3580(arg0, 8);
-    {
-        u32 s = saved;
-        (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = s;
-    }
+    s = saved;
+    (void)*(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = s;
     return result;
 }
-
 #pragma opt_common_subs reset
 s32 func_020e352c(s32 arg0, s32 arg1) {
     M2C_UNK func_0202a468(s32, s32, s32);
@@ -705,13 +705,12 @@ void func_020e4304(void) {
 }
 
 void *func_020e4318(void *arg0) {
-    void HeapFreeBlock();
     void MemFree(void *);
     extern M2C_UNK data_0212da10;
 
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212da10;
     if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
-        HeapFreeBlock();
+        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x44));
     }
     MemFree(arg0);
     return arg0;

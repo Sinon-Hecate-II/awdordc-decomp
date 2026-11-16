@@ -18,7 +18,7 @@ void MapEditor_StartMap(void *editor) {
  void (*callback)(void);
  ResetBattleMap();func_020d8cfc();
  M2C_FIELD(*gCurrentMap,u8*,MAP_PLAYER_COUNT)=4;
- func_020bfb74(0);ResetPlayerSetupTables();func_020bfa80(0);
+ func_020bfb74(0);ResetPlayerSetupTables();MapSettings_InitDefaults(0);
  if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
  map=*gCurrentMap;
  text=GetLocalizedText(0xc00002eb);

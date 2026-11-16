@@ -197,7 +197,7 @@ M2C_UNK *GetMapSettings(void) {
     return &data_0215da0c;
 }
 
-void func_020bfa80(u16 *arg0) {
+void MapSettings_InitDefaults(u16 *arg0) {
 extern M2C_UNK data_0211faf4;
 SaveInit *p=(SaveInit *)arg0;
 s32 i;
@@ -228,32 +228,32 @@ M2C_FIELD(a,u32 *,8)=M2C_FIELD(&gGameSettings,u32 *,8);
 M2C_FIELD(a,u32 *,12)=M2C_FIELD(&gGameSettings,u32 *,12);
 }
 
-s32 func_020bfc0c(void) {
+s32 RandomSelectableMapId(void) {
 s32 NextRandomValue(void);
-s32 func_020a8924(s32);
+s32 MapData_IsRandomSelectable(s32);
 s32 i,count,chosen,n;
 count=0;i=0;
-do { if(func_020a8924(i))count++; i++; } while(i<0x113);
+do { if(MapData_IsRandomSelectable(i))count++; i++; } while(i<0x113);
 if(count) {
 chosen=NextRandomValue()%count;
 n=0;i=0;
-do {if(func_020a8924(i)){if(chosen==n)return i;n++;}i++;}while(i<0x113);
+do {if(MapData_IsRandomSelectable(i)){if(chosen==n)return i;n++;}i++;}while(i<0x113);
 }
 return 0;
 }
 
-s32 func_020bfc94(void) {
+s32 RandomFog(void) {
 s32 NextRandomValue(void);
 return NextRandomValue()%100>80;
 }
 
-s32 func_020bfccc(void) {
+s32 RandomTileset(void) {
 s32 NextRandomValue(void);
 s32 n=NextRandomValue()%100;
 if(n>80)return 1;if(n>60)return 2;if(n>40)return 3;return 0;
 }
 
-s32 func_020bfd1c(u32 a) {
+s32 WeatherForTileset(u32 a) {
 s32 NextRandomValue(void);
 s32 n=NextRandomValue()%100;
 switch(a) {
@@ -265,37 +265,40 @@ case 0:if(n>80)return 2;break;
 return 0;
 }
 
-void func_020bfda8(void *arg0) {
-    s32 func_020a8994(s32);
-    s32 func_020a89c4(s32);
-    s32 func_020a89e4(s32);
-    void func_020bfa80(u16 *);
-    s32 func_020bfc0c();
-    s32 func_020bfc94();
-    s32 func_020bfccc();
-    s32 func_020bfd1c(u32);
-    register unsigned long temp_r0;
-    unsigned temp_r1;
-    void *var_r5;
+/* Fill a map-settings record for a randomly generated map: a random selectable
+ * map id, random fog, tileset and weather, and the chosen map record's battle
+ * setting and value limits, packed into the rules and values words. */
+void MapSettings_Randomize(void *arg0) {
+    s32 MapData_GetBattleSetting(s32);
+    s32 MapData_GetValueLimitLow(s32);
+    s32 MapData_GetValueLimitHigh(s32);
+    void MapSettings_InitDefaults(u16 *);
+    s32 RandomSelectableMapId();
+    s32 RandomFog();
+    s32 RandomTileset();
+    s32 WeatherForTileset(u32);
+    register unsigned long mapId;
+    unsigned word;
+    void *settings;
 
-    var_r5 = arg0;
-    if (var_r5 == NULL) {
-        var_r5 = GetMapSettings();
+    settings = arg0;
+    if (settings == NULL) {
+        settings = GetMapSettings();
     }
-    func_020bfa80(var_r5);
-    temp_r0 = func_020bfc0c();
-    M2C_FIELD(var_r5, s32 *, 8) = (s32) ((M2C_FIELD(var_r5, s32 *, 8) & 0xFFFFF001) | ((u32) (temp_r0 << 0x15) >> 0x14));
-    M2C_FIELD(var_r5, s32 *, 8) = (s32) ((M2C_FIELD(var_r5, s32 *, 8) & ~0x1000) | ((u32) (func_020bfc94() << 0x1F) >> 0x13));
-    temp_r1 = (M2C_FIELD(var_r5, s32 *, 8) & ~0x1E0000) | ((u32) (func_020bfccc() << 0x1C) >> 0xB);
-    M2C_FIELD(var_r5, s32 *, 8) = temp_r1;
-    M2C_FIELD(var_r5, s32 *, 8) = (s32) (((M2C_FIELD(var_r5, s32 *, 8) & ~0xE000) | (u16) (func_020bfd1c((u32) (temp_r1 << 0xB) >> 0x1C) << 0xD)) & ~0x10000);
-    temp_r1 = (M2C_FIELD(var_r5, s32 *, 8) & ~0x0FE00000) | ((u32) (func_020a8994(temp_r0) << 0x19) >> 4);
- M2C_FIELD(var_r5,s32 *,8)=temp_r1;
- M2C_FIELD(var_r5,s32 *,8)=(M2C_FIELD(var_r5,s32 *,8) & ~0xF0000000)|0x20000000;
-    M2C_FIELD(var_r5, s32 *, 0xC) = (s32) ((M2C_FIELD(var_r5, s32 *, 0xC) & ~0x1FFFF) | (func_020a89c4(temp_r0) & 0x1FFFF));
-    temp_r1 = (M2C_FIELD(var_r5, s32 *, 0xC) & 0x8001FFFF) | ((u32) (func_020a89e4(temp_r0) << 0x12) >> 1);
- M2C_FIELD(var_r5,s32 *,12)=temp_r1;
- M2C_FIELD(var_r5,s32 *,12)=(M2C_FIELD(var_r5,s32 *,12) & ~0x80000000)|0x80000000;
+    MapSettings_InitDefaults(settings);
+    mapId = RandomSelectableMapId();
+    M2C_FIELD(settings, s32 *, 8) = (s32) ((M2C_FIELD(settings, s32 *, 8) & 0xFFFFF001) | ((u32) (mapId << 0x15) >> 0x14));
+    M2C_FIELD(settings, s32 *, 8) = (s32) ((M2C_FIELD(settings, s32 *, 8) & ~0x1000) | ((u32) (RandomFog() << 0x1F) >> 0x13));
+    word = (M2C_FIELD(settings, s32 *, 8) & ~0x1E0000) | ((u32) (RandomTileset() << 0x1C) >> 0xB);
+    M2C_FIELD(settings, s32 *, 8) = word;
+    M2C_FIELD(settings, s32 *, 8) = (s32) (((M2C_FIELD(settings, s32 *, 8) & ~0xE000) | (u16) (WeatherForTileset((u32) (word << 0xB) >> 0x1C) << 0xD)) & ~0x10000);
+    word = (M2C_FIELD(settings, s32 *, 8) & ~0x0FE00000) | ((u32) (MapData_GetBattleSetting(mapId) << 0x19) >> 4);
+    M2C_FIELD(settings, s32 *, 8) = word;
+    M2C_FIELD(settings, s32 *, 8) = (M2C_FIELD(settings, s32 *, 8) & ~0xF0000000) | 0x20000000;
+    M2C_FIELD(settings, s32 *, 0xC) = (s32) ((M2C_FIELD(settings, s32 *, 0xC) & ~0x1FFFF) | (MapData_GetValueLimitLow(mapId) & 0x1FFFF));
+    word = (M2C_FIELD(settings, s32 *, 0xC) & 0x8001FFFF) | ((u32) (MapData_GetValueLimitHigh(mapId) << 0x12) >> 1);
+    M2C_FIELD(settings, s32 *, 0xC) = word;
+    M2C_FIELD(settings, s32 *, 0xC) = (M2C_FIELD(settings, s32 *, 0xC) & ~0x80000000) | 0x80000000;
 }
 
 /* Capture the current battle map and gMapConfig back into a packed settings

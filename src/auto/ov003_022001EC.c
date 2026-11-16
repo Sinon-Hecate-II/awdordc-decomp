@@ -176,7 +176,7 @@ void func_ov003_022006dc(s32 arg0) {
     extern void **gCurrentMap;
     s32 IsLinkSessionActive(void);
     void func_020833d0(void);
-    s32 func_020bfda8(s32);
+    s32 MapSettings_Randomize(s32);
     void SetPlayerIdForSlot(s32, s32);
     void func_020a232c(s32, s32);
     void func_020a2204(s32);
@@ -196,7 +196,7 @@ void func_ov003_022006dc(s32 arg0) {
     }
     func_020833d0();
     if (arg0 == 0) {
-        func_020bfda8(0);
+        MapSettings_Randomize(0);
         M2C_FIELD(*gCurrentMap, u8 *, 0x5141) = 2;
         SetPlayerIdForSlot(1, 1);
         SetPlayerIdForSlot(2, 2);

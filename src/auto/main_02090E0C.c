@@ -133,7 +133,7 @@ DeleteSpriteObject(arg0);
 }
 #pragma opt_propagation reset
 void func_0209106c(void *a) {void Sprite_ClearHandle(s32 *);void (*fp)(s32 *)=Sprite_ClearHandle;fp(M2C_FIELD(a,s32 **,0x58));}
-s32 func_0209107c(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
+s32 DrawSpriteScript(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
 s32 func_02091af8(void *,s32,s32);s32 DrawSprite3DGeometry(s32,s32,s32,s32,s32,s32,u8);
 s32 r=func_02091af8(a,b,c);if(r) {DrawSprite3DGeometry(r,d,e,f,g,h,i);return 1;}return 0;
 }

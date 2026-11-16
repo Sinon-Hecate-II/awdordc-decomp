@@ -1,7 +1,7 @@
 /* The network-stack socket layer (main_0201F89C..main_02020738).  A socket
  * object holds a raw connection at +0x64; the raw connection keeps the records
  * that have arrived but not been read yet in a singly linked queue.  The
- * data-arrival callback func_02020364 appends a record and wakes the reader;
+ * data-arrival callback appends a record and wakes the reader;
  * SocketRecv (was func_02020220) removes one. */
 #ifndef NET_SOCKET_H
 #define NET_SOCKET_H
@@ -10,6 +10,17 @@
 #define SOCK_RAW        0x64 /* void *raw connection holding the receive queue */
 #define SOCK_FLAGS      0x70 /* s16: bit 0 set once the socket is initialised */
 #define SOCK_FLAG_READY 0x0001
+
+/* The socket's own local port (SOCK_RECV_PORT) and the port the transport layer
+ * bound it to (SOCK_LINK_PORT, the low-level socket's local port); the first
+ * received record fills SOCK_RECV_PORT in.  SOCK_PEER_* is the peer of the
+ * record just queued, staged at SOCK_NEXT_PEER_* until the record is built. */
+#define SOCK_RECV_PORT      0x74 /* u16 local port the socket receives on */
+#define SOCK_LINK_PORT      0x0a /* u16 local port the transport bound the socket to */
+#define SOCK_PEER_PORT      0x18 /* u16 port the queued record came from */
+#define SOCK_PEER_ADDR      0x1c /* s32 IPv4 address the queued record came from */
+#define SOCK_NEXT_PEER_PORT 0x1a /* u16 staged peer port */
+#define SOCK_NEXT_PEER_ADDR 0x20 /* s32 staged peer IPv4 address */
 
 /* Raw connection receive queue. */
 #define CONN_RECV_TAIL   0x100 /* void *newest queued record */
@@ -49,6 +60,10 @@
  * only the alloc/free slots are used so far. */
 #define NET_ALLOC_ALLOC 0x18 /* void *(*)(s32 size) */
 #define NET_ALLOC_FREE  0x1c /* void (*)(void *block) */
+
+/* Receive-side drop counters. */
+#define RECV_STAT_NO_MEMORY  0x00 /* s32 records dropped because the allocator failed */
+#define RECV_STAT_QUEUE_FULL 0x04 /* s32 records dropped because the queue was full */
 
 /* SocketRecv results. */
 #define SOCK_WOULD_BLOCK (-6)  /* nothing queued and the caller asked not to wait */

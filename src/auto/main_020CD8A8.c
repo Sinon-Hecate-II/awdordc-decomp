@@ -267,20 +267,24 @@ y=(s16)(y+1);dy=(s16)(dy+1);
 #pragma pop
 void MarkThreatBitmap(M2C_UNK a,M2C_UNK b,M2C_UNK c,u32 d,u8 e,u8 f){void MarkThreatCells(M2C_UNK,M2C_UNK,M2C_UNK,u8,s32,s32);extern void **gCurrentMap;switch(d){case 1:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);return;case 3:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);case 2:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52ba),e,f);case 0:default:break;}}
 
-void func_020ce508(void *p,s32 x,s32 y) {
+/* Mark the threat range of map unit `unit` as if it stood on tile (x,y): the radius
+ * is the unit's threat range for the current weather, and the owner's side picks which
+ * threat bitmap it is marked into.  Units that are mid-action are skipped, and a unit
+ * whose commander may use its kind gets the stricter marker. */
+void func_020ce508(void *unit,s32 x,s32 y) {
 s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),func_020a7824(void *,s32,s32);
 extern void **gCurrentMap;
-s32 player=GetUnitOwner(p);
-s32 flag;
-s32 allowed;
-s32 value;
-if(((u32)(M2C_FIELD(p,u8 *,0)<<26)>>26)==0)return;
-if((M2C_FIELD(p,u16 *,4)&2)&&!(M2C_FIELD(p,u16 *,4)&4))return;
-flag=0;allowed=0;
-if(((u32)(M2C_FIELD(*gCurrentMap+player*140,s32 *,0x6810)<<24)>>24)==3) {if(func_020a33c4(player))allowed=1;}
-if(allowed) {if(func_020a27f8((u32)(M2C_FIELD(p,u8 *,0)<<26)>>26,player))flag=2;}
-value=func_020a7824(p,x,y);
-MarkThreatBitmap((s16)x,(s16)y,(s16)value,M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c3),(u8)player,(u8)flag);
+s32 owner=GetUnitOwner(unit);
+s32 mark;
+s32 commanderReady;
+s32 radius;
+if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0)return;
+if((M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&2)&&!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&4))return;
+mark=0;commanderReady=0;
+if(((u32)(M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE)<<24)>>24)==3) {if(func_020a33c4(owner))commanderReady=1;}
+if(commanderReady) {if(func_020a27f8((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26,owner))mark=2;}
+radius=func_020a7824(unit,x,y);
+MarkThreatBitmap((s16)x,(s16)y,(s16)radius,M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF),(u8)owner,(u8)mark);
 }
 
 void MarkUnitThreatRange(void *arg0) {

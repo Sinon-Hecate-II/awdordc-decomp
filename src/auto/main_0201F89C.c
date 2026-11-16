@@ -447,13 +447,13 @@ M2C_FIELD(raw,u16 *,CONN_RECV_COUNT)-=result;
 OS_RestoreInterrupts(irq);return result;
 }
 
-s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
+s32 SocketQueueReceivedData(void *arg0, s16 arg1, void *arg2) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
     void OS_WakeupThread(void *);
     extern s32 gNetAllocator;
-    extern M2C_UNK data_02138b24;
+    extern M2C_UNK gSocketRecvStats;
     void *temp_r4;
     void *temp_r0;
     s32 temp_r6;
@@ -477,10 +477,10 @@ s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
                 M2C_FIELD(temp_r4, void **, 0x104) = temp_r0;
             }
         } else {
-            M2C_FIELD(&data_02138b24, s32 *, 0) = (s32) (M2C_FIELD(&data_02138b24, s32 *, 0) + 1);
+            M2C_FIELD(&gSocketRecvStats, s32 *, 0) = (s32) (M2C_FIELD(&gSocketRecvStats, s32 *, 0) + 1);
         }
     } else {
-        M2C_FIELD(&data_02138b24, s32 *, 4) = (s32) (M2C_FIELD(&data_02138b24, s32 *, 4) + 1);
+        M2C_FIELD(&gSocketRecvStats, s32 *, 4) = (s32) (M2C_FIELD(&gSocketRecvStats, s32 *, 4) + 1);
     }
     if (M2C_FIELD(arg2, u16 *, 0x74) == 0) {
         M2C_FIELD(arg2, u16 *, 0x74) = (u16) M2C_FIELD(arg2, u16 *, 0xA);

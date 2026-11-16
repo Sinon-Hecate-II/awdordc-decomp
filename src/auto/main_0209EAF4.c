@@ -213,7 +213,7 @@ void InitBattleMapConfig(void) {
     void ResetPlayerSetupTables(void);
     s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
     void func_020a230c(s32,s32); void func_020a232c(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
-    s32 func_020a88d4(s32); s32 func_020a8994(s32); s32 func_020a89a4(s32); s32 func_020a89c4(s32); s32 func_020a89e4(s32); s32 func_020a8a04(s32);
+    s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 func_020a89a4(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void func_020a4100(void); s32 MapData_GetTileset(s32);
     s32 player, value, fieldA, fieldB, playerFlags, team;
     u8 *base;
@@ -238,13 +238,13 @@ void InitBattleMapConfig(void) {
         SetPlayerTeam(player, team);
     }
     if (func_020a88d4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
-    setting = func_020a8994(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    setting = MapData_GetBattleSetting(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_3 = setting;
     setting = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_4 = setting;
-    setting = func_020a89c4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    setting = MapData_GetValueLimitLow(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_8 = setting;
-    setting = func_020a89e4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    setting = MapData_GetValueLimitHigh(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_6 = setting;
     setting = func_020a8a04(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_2 = setting;

@@ -459,15 +459,15 @@ M2C_UNK func_0201d138(void *);
 M2C_UNK func_0201d164();
 M2C_UNK func_0201d1f0();
 M2C_UNK func_0201d244(s32);
-M2C_UNK func_0201d29c(M2C_UNK *);
-extern M2C_UNK func_02020364;
+M2C_UNK SocketSetReceiveCallback(M2C_UNK *);
+extern M2C_UNK SocketQueueReceivedData;
 void *p=M2C_FIELD(arg0,void**,4);
 s32 v;
 func_0201d138(p);
 v=M2C_FIELD(p,s32*,0x68);
 switch(M2C_FIELD(p,s8*,0x73)){
 case 0:case 4:func_0201d244(v+0x20);func_0201d1f0();break;
-case 1:func_0201d1f0();func_0201d164();func_0201d29c(&func_02020364);break;
+case 1:func_0201d1f0();func_0201d164();SocketSetReceiveCallback(&SocketQueueReceivedData);break;
 case 2:func_0201d164();break;
 }
 M2C_FIELD(p,s16*,0x70)=1;return 0;

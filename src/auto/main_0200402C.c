@@ -390,21 +390,20 @@ void func_02004b14(void) {
 }
 
 void func_02004b54(void) {
- s32 func_020033b8(void);
- extern u8 data_020e9b40[], data_020e9b42[], data_020e9b44[];
- extern M2C_UNK data_0212dbfc;
- s32 idx;
- u32 a,b,c;
- s32 off;
- idx=func_020033b8();
- off=idx*6;
- a=*(volatile u16 *)(data_020e9b40+off);
- b=*(volatile u16 *)(data_020e9b42+off);
- c=*(volatile u16 *)(data_020e9b44+off);
- M2C_FIELD(&data_0212dbfc,s32 *,0x14)=idx;
- M2C_FIELD(&data_0212dbfc,s32 *,4)=a<<12;
- M2C_FIELD(&data_0212dbfc,s32 *,0x18)=b<<12;
- M2C_FIELD(&data_0212dbfc,s32 *,0x1c)=c<<12;
+    s32 func_020033b8(void);
+    extern u8 data_020e9b40[], data_020e9b42[], data_020e9b44[];
+    extern M2C_UNK data_0212dbfc;
+    s32 idx;
+    u32 a, b, c;
+
+    idx = func_020033b8();
+    a = *(volatile u16 *)(data_020e9b40 + idx * 6);
+    b = *(volatile u16 *)(data_020e9b42 + idx * 6);
+    c = *(volatile u16 *)(data_020e9b44 + idx * 6);
+    M2C_FIELD(&data_0212dbfc, s32 *, 0x14) = idx;
+    M2C_FIELD(&data_0212dbfc, s32 *, 4) = a << 12;
+    M2C_FIELD(&data_0212dbfc, s32 *, 0x18) = b << 12;
+    M2C_FIELD(&data_0212dbfc, s32 *, 0x1c) = c << 12;
 }
 
 /* Copy `size` bytes from `src` to the texture-bank region at byte `offset`.

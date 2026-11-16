@@ -236,14 +236,14 @@ s32 func_020a1f88(s32 player) {
 
 void func_020a2148(u16 *arg0) {
  s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
- u16 *GetMapSettings(void); void func_020bfa80(u16 *); void MapSettings_Capture(u16 *);
+ u16 *GetMapSettings(void); void MapSettings_InitDefaults(u16 *); void MapSettings_Capture(u16 *);
  s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 GetPlayerTeam(s32);
  s32 i; u16 *p; u16 value;
  p=arg0;
  if(p==0) p=GetMapSettings();
  if(IsLinkSessionActive()!=0) return;
  if(func_020cd6d4()!=0) return;
- func_020bfa80(p); MapSettings_Capture(p);
+ MapSettings_InitDefaults(p); MapSettings_Capture(p);
  i=0;
  do {
  *p=(*p & ~0xff) | (u8)(u16)func_020a22fc(i+1);

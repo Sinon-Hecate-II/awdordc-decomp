@@ -276,7 +276,148 @@ void func_02079d0c(s32 arg0, s32 arg1, s32 *arg2) {
     arg2[2] = M2C_FIELD(temp_r4,s32 *,0xF8) + pos.z;
 }
 
-void func_02079db0(void) {
-    return;
-}
+#pragma opt_propagation off
+void func_02079db0(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+    extern u8 gTerrainClassFlags[];
+    extern M2C_UNK data_02140f70;
+    extern u8 data_02142688[];
+    extern u16 data_020eb1a8[];
+    extern u16 data_020eb1d0[];
+    extern u16 data_020eb1e0[];
+    s32 func_0207fa64(s32);
+    volatile s16 jy, jx;
+    volatile u16 raw1, raw0;
+    s32 mode = 0;
+    s32 c0 = 0x7fff, c1 = c0, c2 = c0, c3 = c0;
+    s32 u0 = (a0 << 4) * 0x30;
+    s32 v0 = (a1 << 4) * 0x30;
+    s32 z = 0;
+    u16 low;
+    s32 vx, vy, ex, ey;
+    s32 tx, ty, rx, by;
+    u8 *entry = gTerrainClassFlags + a2 * 8;
+    s32 flags = M2C_FIELD(entry, s32 *, 0);
+    s32 sign = flags & 0x80000000;
+    s32 x = M2C_FIELD(entry, u8 *, 4);
+    s32 y = M2C_FIELD(entry, u8 *, 5);
+    u32 h = M2C_FIELD(entry, u8 *, 6) + a3;
+    s32 k = M2C_FIELD(entry, u8 *, 7);
 
+    low = (u16)flags;
+    if (k != 0) {
+        u32 v = func_0207fa64(k);
+        raw0 = v;
+        raw1 = v >> 16;
+        jx = raw0;
+        jy = raw1;
+        x += jx;
+        y += jy;
+    }
+    switch (a4) {
+    case 0:
+    case 1:
+        if (low & 0x40) {
+            *(volatile u32 *)0x40004ac = (((u32)(M2C_FIELD(&data_02140f70, u8 *, 0) + a3) << 5) + 0xc00) >> 4;
+        } else if ((low & 0x80) && M2C_FIELD(&data_02140f70, u8 *, 1) && a3 && a3 < 0x10) {
+            *(volatile u32 *)0x40004ac = (((u32)(a3 - 1) << 5) + 0x1000) >> 4;
+        } else {
+            *(volatile u32 *)0x40004ac = (h << 5) >> 4;
+        }
+        break;
+    case 2:
+        *(volatile u32 *)0x40004ac = ((h << 5) + 0x800) >> 4;
+        break;
+    case 3:
+        *(volatile u32 *)0x40004ac = ((h << 5) + 0x400) >> 4;
+        break;
+    }
+    if (a4 != 0) {
+        mode = 2;
+        c0 = M2C_FIELD(&data_02140f70, u16 *, 0x10);
+        c1 = M2C_FIELD(&data_02140f70, u16 *, 0x12);
+        c2 = M2C_FIELD(&data_02140f70, u16 *, 0x14);
+        c3 = M2C_FIELD(&data_02140f70, u16 *, 0x16);
+    } else {
+        if (flags & 0x20) {
+            u16 d = (a5 << 10) | (a5 << 5) | a5;
+            if (sign != 0) {
+                if (sign == 0x80000000) {
+                    s32 i0 = a0 * 0x2a;
+                    s32 i1 = (a0 + 1) * 0x2a;
+                    c0 = (u16)(data_020eb1a8[0x14] - d);
+                    c3 = c0;
+                    c1 = (u16)(data_020eb1d0[data_02142688[i0 + a1 + 1]] - d);
+                    c2 = (u16)(data_020eb1d0[data_02142688[i1 + a1 + 1]] - d);
+                }
+            } else {
+                s32 i0 = a0 * 0x2a;
+                s32 i1 = (a0 + 1) * 0x2a;
+                c0 = (u16)(data_020eb1e0[data_02142688[i0 + a1]] - d);
+                c1 = (u16)(data_020eb1e0[data_02142688[i0 + a1 + 1]] - d);
+                c2 = (u16)(data_020eb1e0[data_02142688[i1 + a1 + 1]] - d);
+                c3 = (u16)(data_020eb1e0[data_02142688[i1 + a1]] - d);
+            }
+        } else {
+            u16 d = (a5 << 10) | (a5 << 5) | a5;
+            c0 = c1 = c2 = c3 = (u16)(0x7fff - d);
+        }
+    }
+    if (sign != 0) {
+        if (sign == 0x80000000) {
+            z = ((a1 << 12) >> 8) + 0x430;
+            tx = x * 0x18000 + 0x800;
+            ty = y * 0x18000 + 0x800;
+            vx = u0;
+            ex = u0 + 0x300;
+            rx = (x + 1) * 0x18000 + 0x800;
+            by = (y + 2) * 0x18000 + 0x800;
+            vy = v0 - 0x300;
+            ey = v0 + 0x300;
+        }
+    } else {
+        z = ((a1 << 12) >> 8) + 0x20;
+        tx = x * 0x18000 + 0x800;
+        ty = y * 0x18000 + 0x800;
+        vx = u0;
+        ex = u0 + 0x300;
+        rx = (x + 1) * 0x18000 + 0x800;
+        by = (y + 1) * 0x18000 + 0x800;
+        vy = v0;
+        ey = v0 + 0x300;
+    }
+    tx = (s32)(tx << 8) >> 16;
+    ty = (s32)(ty << 8) >> 16;
+    rx = (s32)(rx << 8) >> 16;
+    by = (s32)(by << 8) >> 16;
+    vx = (s16)vx;
+    vy = (s16)vy;
+    ex = (s16)ex;
+    ey = (s16)ey;
+    z = (s16)z;
+    if (flags & 0x100) {
+        *(volatile u32 *)0x40004a4 = M2C_FIELD(&data_02140f70, u32 *, 8) |
+            (M2C_FIELD(&data_02140f70, u32 *, 4) | (mode << 4) | 0x80) | 0x1140000;
+    } else {
+        *(volatile u32 *)0x40004a4 = M2C_FIELD(&data_02140f70, u32 *, 8) |
+            (M2C_FIELD(&data_02140f70, u32 *, 4) | (mode << 4) | 0x80) | 0x1f0000;
+    }
+    *(volatile u32 *)0x4000500 = 1;
+    *(volatile u32 *)0x4000488 = (u16)tx | ((u16)ty << 16);
+    *(volatile u32 *)0x4000480 = c0;
+    *(volatile u32 *)0x400048c = (u16)vx | ((u16)vy << 16);
+    *(volatile u32 *)0x400048c = (u16)z;
+    *(volatile u32 *)0x4000488 = (u16)tx | ((u16)by << 16);
+    *(volatile u32 *)0x4000480 = c1;
+    *(volatile u32 *)0x400048c = (u16)vx | ((u16)ey << 16);
+    *(volatile u32 *)0x400048c = (u16)z;
+    *(volatile u32 *)0x4000488 = (u16)rx | ((u16)by << 16);
+    *(volatile u32 *)0x4000480 = c2;
+    *(volatile u32 *)0x400048c = (u16)ex | ((u16)ey << 16);
+    *(volatile u32 *)0x400048c = (u16)z;
+    *(volatile u32 *)0x4000488 = (u16)rx | ((u16)ty << 16);
+    *(volatile u32 *)0x4000480 = c3;
+    *(volatile u32 *)0x400048c = (u16)ex | ((u16)vy << 16);
+    *(volatile u32 *)0x400048c = (u16)z;
+    *(volatile u32 *)0x4000504 = 0;
+}
+#pragma opt_propagation reset

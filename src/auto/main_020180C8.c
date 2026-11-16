@@ -100,12 +100,12 @@ s32 func_02018418(void) {
 }
 
 void func_02018438(s32 arg0, s32 arg1) {
- extern M2C_UNK gMbState;
+ extern M2C_UNK data_02136c40;
  u16 buf[2];
  void *p;
  if (arg1 == 2 || arg1 == 0) return;
  buf[0]=arg0;
- p=M2C_FIELD(&gMbState,void **,8);
+ p=M2C_FIELD(&data_02136c40,void **,8);
  buf[1]=arg1;
  M2C_FIELD(p,void (**)(u8,void *),0x51c)((u8)(arg0 | 255),buf);
 }
