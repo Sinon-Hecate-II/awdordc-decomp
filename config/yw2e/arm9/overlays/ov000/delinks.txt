@@ -45,6 +45,7 @@ src/auto/ov000_02173468.c:
     .text start:0x02173468 end:0x021743f0
 
 src/auto/ov000_021743F0.c:
+    complete
     .text start:0x021743f0 end:0x02175310
 
 src/auto/ov000_02175310.c:

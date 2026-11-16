@@ -394,6 +394,7 @@ src/auto/main_0206CD20.c:
     .text start:0x0206cd20 end:0x0206ce00
 
 src/auto/main_0206CE00.c:
+    complete
     .text start:0x0206ce00 end:0x0206df88
 
 src/auto/main_0206DF88.c:

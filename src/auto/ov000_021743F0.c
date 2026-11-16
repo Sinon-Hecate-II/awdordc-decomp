@@ -285,57 +285,72 @@ s32 func_ov000_02174d78(void) {
     return 1;
 }
 
+/* Draw the remaining turn time with sprites on the lower screen. */
 void func_ov000_02174da4(s32 x, s32 y) {
-    extern u16 gTurnTimeConfig[];
+    extern u8 gMapConfig[];
     extern void **gCurrentMap;
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
-    extern u32 gTimerColonTiles[];
-    extern u32 gTimerDigitTiles[];
-    s32 HardDiv(s32, s32);
+    extern u8 gSpriteDesc32x8[];
+    extern u8 gSpriteDesc8x8[];
+    s32 Divide(s32, s32);
     void AddSprite(u16, u16, u16, void *, s32);
 
-    s32 total, minutes, centis, palette, separator;
+    s32 remainingTicks;
+    s32 minutes;
+    s32 hundredths;
+    s32 palette;
+    s32 separatorTile;
     void *map;
     void *savedSpriteEngine;
 
-    total = gTurnTimeConfig[2];
-    if (total == 0) return;
+    remainingTicks = M2C_FIELD(gMapConfig, u16 *, 4);
+    if (remainingTicks == 0) {
+        return;
+    }
 
     map = *gCurrentMap;
     {
         void *player = (u8 *)map + M2C_FIELD(map, u16 *, 0x52a4) * 140;
         s32 elapsed = M2C_FIELD(player, s32 *, 0x682c);
-        if (!elapsed) return;
-        total -= elapsed;
+        if (elapsed == 0) {
+            return;
+        }
+        remainingTicks -= elapsed;
     }
 
-    if (total < 0) total = 0;
+    if (remainingTicks < 0) {
+        remainingTicks = 0;
+    }
 
-    minutes = HardDiv(total, 60);
-    centis = HardDiv((total % 60) * 100, 60);
+    minutes = Divide(remainingTicks, 60);
+    hundredths = Divide((remainingTicks % 60) * 100, 60);
 
     palette = 8;
-    separator = 180;
-    if (total < 600) {
+    separatorTile = 180;
+    if (remainingTicks < 600) {
         palette = 10;
-        separator = 181;
+        separatorTile = 181;
     }
 
     savedSpriteEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
 
-    AddSprite(x, y, ((182 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)) & 1023) | 0x6000, gTimerColonTiles, 1);
-    AddSprite(x + 72, y, ((centis % 10 + 140) & 1023) | ((palette & 15) << 12), gTimerDigitTiles, 1);
+    AddSprite(x, y,
+        ((182 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)) & 1023) | 0x6000,
+        gSpriteDesc32x8, 1);
+    AddSprite(x + 72, y, ((hundredths % 10 + 140) & 1023) | ((palette & 15) << 12), gSpriteDesc8x8, 1);
 
-    centis = HardDiv(centis, 10);
-    AddSprite(x + 64, y, ((centis % 10 + 140) & 1023) | ((palette & 15) << 12), gTimerDigitTiles, 1);
-    AddSprite(x + 56, y, ((separator >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)) & 1023) | 0x6000, gTimerDigitTiles, 1);
+    hundredths = Divide(hundredths, 10);
+    AddSprite(x + 64, y, ((hundredths % 10 + 140) & 1023) | ((palette & 15) << 12), gSpriteDesc8x8, 1);
+    AddSprite(x + 56, y,
+        ((separatorTile >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)) & 1023) | 0x6000,
+        gSpriteDesc8x8, 1);
 
     x += 48;
     do {
-        AddSprite(x, y, ((minutes % 10 + 140) & 1023) | ((palette & 15) << 12), gTimerDigitTiles, 1);
-        minutes = HardDiv(minutes, 10);
+        AddSprite(x, y, ((minutes % 10 + 140) & 1023) | ((palette & 15) << 12), gSpriteDesc8x8, 1);
+        minutes = Divide(minutes, 10);
         x -= 8;
     } while (minutes != 0);
 
