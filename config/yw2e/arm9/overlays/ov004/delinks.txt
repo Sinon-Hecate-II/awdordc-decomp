@@ -11,6 +11,7 @@ src/auto/ov004_022120C0.c:
     .text start:0x022120c0 end:0x02212918
 
 src/auto/ov004_02212918.c:
+    complete
     .text start:0x02212918 end:0x022138b0
 
 src/auto/ov004_022138B0.c:

@@ -3,6 +3,8 @@
 #include "battle_map.h"
 #include "ov000_unit_entry.h"
 
+extern void *gAreaEffectCallbacks[];
+
 s32 CalcAreaEffectDamage(void *arg0,s32 arg1,s32 arg2){
 s32 func_ov000_021a9904(u32);
 extern u16 data_ov000_021b5c00;
@@ -53,9 +55,8 @@ s32 CombineAreaEffectPenalty(s32 arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 s32 ScoreAreaEffectCell(void *playerIdx, s32 tileX, s32 tileY, s32 range, s32 count, s32 flag, s32 oldTileX, s32 oldTileY) {
     extern void **gCurrentMap;
-    extern void *gAreaEffectFuncs[];
-    s32 Unit_IsTargetable(s32,s32);
-    u8 Units_ShareOwner(s32,s32);
+    s32 func_ov000_021a93ec(s32,s32);
+    u8 IsSameTeam(s32,s32);
     typedef s32 (*UnitValueFunc)(void *,s32,s32);
     typedef s32 (*AreaCombineFunc)(s32,s32);
     s32 xmin,ymin,right,bottom,dist,dx,zero,id;
@@ -89,18 +90,18 @@ s32 ScoreAreaEffectCell(void *playerIdx, s32 tileX, s32 tileY, s32 range, s32 co
     unit=(UnkStruct_ov000_021A860C *)((u8 *)base+0x59a4)+id;
     }
     if(unit->unk0==0)continue;
-    if(flag==1 && Unit_IsTargetable(((u8 *)unit)[1],((u8 *)unit)[2])==0)continue;
+    if(flag==1 && func_ov000_021a93ec(((u8 *)unit)[1],((u8 *)unit)[2])==0)continue;
     if(unit==0)id=0;
     else id=unit-(UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4);
-    if(Units_ShareOwner((s32)playerIdx,(id>>6)+1)==1)own+=((UnitValueFunc)gAreaEffectFuncs[1])(unit,count,0);
-    else enemy+=((UnitValueFunc)gAreaEffectFuncs[1])(unit,count,1);
+    if(IsSameTeam((s32)playerIdx,(id>>6)+1)==1)own+=((UnitValueFunc)gAreaEffectCallbacks[1])(unit,count,0);
+    else enemy+=((UnitValueFunc)gAreaEffectCallbacks[1])(unit,count,1);
     }while(++xx<=right);
     }
     }
     base=*gCurrentMap;
     id=M2C_FIELD((u8 *)base+(tileX+M2C_FIELD((u8 *)base+tileY*2,u16 *,0x3758)),u8 *,0x508);
-    if(id!=0 && Units_ShareOwner((s32)playerIdx,(id>>6)+1)==0)enemy++;
-    return ((AreaCombineFunc)gAreaEffectFuncs[0])(own,enemy);
+    if(id!=0 && IsSameTeam((s32)playerIdx,(id>>6)+1)==0)enemy++;
+    return ((AreaCombineFunc)gAreaEffectCallbacks[0])(own,enemy);
 }
 #pragma opt_strength_reduction reset
 #pragma opt_loop_invariants reset
@@ -129,7 +130,6 @@ s32 func_ov000_021aa820(s32 a, s32 b, s32 c, s32 d) {
  * cells) and reports whether a candidate beat the mode's baseline score. */
 s32 SelectAreaEffectTarget(s16 *outPos, void *player, s32 targetableOnly, s32 mode, s32 range, s32 power, u8 useGridFilter) {
 s32 RandomIntRange(s32,s32);
-extern void *gAreaEffectCallbacks[];
 extern void **gCurrentMap;
 s32 oldX,oldY,bestScore,cellX,cellY,score;
 void *map;

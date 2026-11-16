@@ -196,7 +196,19 @@ void func_0204917c(u8 *a,char *b){extern char data_020fcdcc[];unsigned int i=0;i
 
 void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);func_0202709c(ctx,a,b);func_020270a8(digest,ctx);func_0204917c(digest,c);}
 
-unsigned long long GetTickCountMs(void){int func_02006f8c(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
+char data_020fcdf0[32] = "OS_IsTickAvailable() == TRUE";
+
+u64 GetTickCountMs(void) {
+    int func_02006f8c(void);
+    u64 GetSystemTick(void);
+    u64 func_02072088(u64, u64);
+    extern char data_020fce10[], data_020fcde0[];
+
+    if (func_02006f8c() != 1) {
+        AssertFailed(data_020fcdf0, data_020fce10, data_020fcde0, 0x109);
+    }
+    return func_02072088(GetSystemTick() << 6, 0x82ea);
+}
 
 void gpiSleep(void) {
     M2C_UNK func_02006030();

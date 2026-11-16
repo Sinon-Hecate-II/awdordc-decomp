@@ -2006,4 +2006,4 @@ gAiCommandTimer kind:bss addr:0x021e1468
 data_ov000_021e146c kind:bss addr:0x021e146c
 data_ov000_021e1474 kind:bss addr:0x021e1474
 data_ov000_021e14aa kind:bss addr:0x021e14aa
-gAreaEffectCallbacks kind:bss addr:0x021e14e0
+gAreaEffectCallbacks kind:bss(size=0x8) addr:0x021e14e0

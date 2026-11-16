@@ -289,7 +289,7 @@ if(func_02072088((GetSystemTick()-M2C_FIELD(mgr,u64*,16))<<6,0x82ea)>=M2C_FIELD(
 }
 if(!M2C_FIELD(mgr,u8*,2)) return;
 mgr=gConnectionMgr;
-if(((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6)/0x82ea<(M2C_FIELD(mgr,u32*,4)>>2)) return;
+if(func_02072088((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6,0x82ea)<(M2C_FIELD(mgr,u32*,4)>>2)) return;
 send:
 if(M2C_FIELD(GetConnection(),s32*,0x204)) {
 func_02040dc8(M2C_FIELD(GetConnection(),s32*,0x204)); if(func_0204084c()) return;

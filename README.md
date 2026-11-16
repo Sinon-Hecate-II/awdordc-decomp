@@ -116,7 +116,22 @@ Once configuration is available and `build.ninja` has been generated:
 | `ninja rom` | Rebuild and compare the ROM against the supplied original. |
 | `ninja -k 0 all_source` | Attempt to compile all source files, continuing after errors. |
 
-Successful ROM verification requires a matching original and compatible compiler/linker configuration. These commands describe what the build script defines; they are **not** a claim that the current checkout builds successfully.
+ROM verification requires a matching original and compatible compiler/linker configuration.
+
+### Verified Linux x86-64 setup
+
+The build was tested with Ninja 1.13.2, dsd 0.12.1, Wibo 1.2.0, and objdiff-cli 3.8.2. The CodeWarrior directory must contain `2.0/sp1p5/mwccarm.exe`, `2.0/sp1p5/mwldarm.exe`, and the compiler versions selected for individual source files in `config/yw2e/arm9/file_compilers.json`.
+
+With the tools under `.cache/bin/` and the CodeWarrior directory at `.cache/mwccarm/`, run from the repository root:
+
+```bash
+export PATH="$PWD/.cache/bin:$PATH"
+python3 tools/configure.py yw2e --dsd .cache/bin/dsd --compilers .cache/mwccarm --wibo .cache/bin/wibo
+ninja prepare
+ninja rom
+```
+
+The tested USA ROM (`YW2E`) has SHA-1 `d7ac135e1144729839881dae29a1184c88ed6b2c`. The ARM9 link uses compiled C objects for units marked `complete` in `config/yw2e/arm9/**/delinks.txt`. It uses original delinked objects for the remaining units. Inspect `build/yw2e/objects.txt` to see which object is used for each unit. The build still extracts the ARM7 program and assets from the original ROM.
 
 ## Working on the decompilation
 
@@ -132,13 +147,24 @@ When improving code:
 
 Matching the original binary can depend on seemingly minor details such as types, compiler versions, optimization flags, expression order, and structure layouts.
 
+To switch a verified unit to the compiled object, add an indented `complete` line below its source path in the corresponding `delinks.txt`. Run `ninja rom` and verify the object path in `build/yw2e/objects.txt`. Objdiff scores are a starting point for this check. The link also needs the correct symbols, data, and section layout.
+
+After the initial `ninja prepare`, you can rebuild and compare an individual unit. Substitute the object path, objdiff unit name, and function symbol for your change:
+
+```bash
+ninja build/yw2e/src/auto/main_0203D910.o
+objdiff-cli diff -p . -u src/auto/main_0203D910 \
+  -o .cache/func_0203d910.diff.json func_0203d910
+objdiff-cli report generate -p . -o .cache/local-report.json
+```
+
 ## Contributing
 
 Contributions that improve readability, document game structures, identify functions, or advance matching are welcome.
 
 Please keep changes focused, explain what was identified or fixed, and include any relevant object comparisons or build results. Avoid committing copyrighted ROMs, extracted commercial assets, proprietary compiler binaries, or generated build output.
 
-You can open an [issue](https://github.com/Sinon-Hecate-II/awdordc-decomp/issues) to discuss findings or propose a change.
+Use the [Decompilation Work Tracker](https://github.com/Sinon-Hecate-II/awdordc-decomp/issues/3) to coordinate work on a unit and link the pull request when it is ready.
 
 ## Legal notice
 

@@ -8,6 +8,7 @@ src/auto/itcm_01FF8F90.c:
     .text start:0x01ff8f90 end:0x01ff9e44
 
 src/auto/itcm_01FF9E44.c:
+    complete
     .text start:0x01ff9e44 end:0x01ff9ed0
 
 src/auto/itcm_01FF9ED0.c:

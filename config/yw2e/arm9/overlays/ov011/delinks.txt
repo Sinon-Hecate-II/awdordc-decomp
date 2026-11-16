@@ -14,6 +14,7 @@ src/auto/ov011_022231F8.c:
     .text start:0x022231f8 end:0x02223cb8
 
 src/auto/ov011_02223CB8.c:
+    complete
     .text start:0x02223cb8 end:0x02224b9c
 
 src/auto/ov011_02224B9C.c:

@@ -11,9 +11,11 @@ src/auto/ov006_02212184.c:
     .text start:0x02212184 end:0x02212dfc
 
 src/auto/ov006_02212DFC.c:
+    complete
     .text start:0x02212dfc end:0x02213e98
 
 src/auto/ov006_02213E98.c:
+    complete
     .text start:0x02213e98 end:0x022144ac
 
 src/auto/ov006_022144AC.c:
@@ -29,4 +31,5 @@ src/auto/ov006_022172B0.c:
     .text start:0x022172b0 end:0x02218200
 
 src/auto/ov006_02218200.c:
+    complete
     .text start:0x02218200 end:0x02218340

@@ -56,12 +56,15 @@ src/auto/ov001_02175F60.c:
     .text start:0x02175f60 end:0x02176f4c
 
 src/auto/ov001_02176F4C.c:
+    complete
     .text start:0x02176f4c end:0x02177f1c
 
 src/auto/ov001_02177F1C.c:
+    complete
     .text start:0x02177f1c end:0x02178e80
 
 src/auto/ov001_02178E80.c:
+    complete
     .text start:0x02178e80 end:0x02179e74
 
 src/auto/ov001_02179E74.c:
@@ -83,6 +86,7 @@ src/auto/ov001_0217EB6C.c:
     .text start:0x0217eb6c end:0x0217fb68
 
 src/auto/ov001_0217FB68.c:
+    complete
     .text start:0x0217fb68 end:0x02180b68
 
 src/auto/ov001_02180B68.c:
@@ -92,6 +96,7 @@ src/auto/ov001_02181A84.c:
     .text start:0x02181a84 end:0x02182a4c
 
 src/auto/ov001_02182A4C.c:
+    complete
     .text start:0x02182a4c end:0x02183a20
 
 src/auto/ov001_02183A20.c:
@@ -110,6 +115,7 @@ src/auto/ov001_02187590.c:
     .text start:0x02187590 end:0x0218851c
 
 src/auto/ov001_0218851C.c:
+    complete
     .text start:0x0218851c end:0x02188774
 
 src/auto/ov001_02188774.c:

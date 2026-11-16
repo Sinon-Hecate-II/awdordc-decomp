@@ -2757,10 +2757,12 @@ func_02071c50 kind:function(arm,size=0x278) addr:0x02071c50
 func_02071ec8 kind:function(arm,size=0x1c0) addr:0x02071ec8
 .L_02071ed8 kind:label(arm) addr:0x02071ed8
 func_02072088 kind:function(arm,size=0x48) addr:0x02072088
-.L_02072094 kind:label(arm) addr:0x02072094
+_ll_udiv kind:label(arm) addr:0x02072088
+_ull_mod kind:label(arm) addr:0x02072094
 func_020720d0 kind:function(arm,size=0x20) addr:0x020720d0
 func_020720f0 kind:function(arm,size=0x20c) addr:0x020720f0
 func_020722fc kind:function(arm,size=0x1e4) addr:0x020722fc
+_s32_div_f kind:label(arm) addr:0x020722fc
 .L_02072304 kind:label(arm) addr:0x02072304
 func_020724f8 kind:function(arm,size=0x544) addr:0x020724f8
 func_02072a3c kind:function(arm,size=0x4) addr:0x02072a3c

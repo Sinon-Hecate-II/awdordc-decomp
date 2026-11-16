@@ -5,6 +5,7 @@
     .bss        start:0x022111c0 end:0x02211200 kind:bss align:32
 
 src/auto/ov003_021E1500.c:
+    complete
     .text start:0x021e1500 end:0x021e16ec
 
 src/auto/ov003_021E16EC.c:
@@ -26,6 +27,7 @@ src/auto/ov003_021E5E24.c:
     .text start:0x021e5e24 end:0x021e6e18
 
 src/auto/ov003_021E6E18.c:
+    complete
     .text start:0x021e6e18 end:0x021e771c
 
 src/auto/ov003_021E771C.c:
@@ -68,6 +70,7 @@ src/auto/ov003_021F25CC.c:
     .text start:0x021f25cc end:0x021f35b0
 
 src/auto/ov003_021F35B0.c:
+    complete
     .text start:0x021f35b0 end:0x021f40a8
 
 src/auto/ov003_021F40A8.c:
@@ -128,6 +131,7 @@ src/auto/ov003_022056BC.c:
     .text start:0x022056bc end:0x022066a8
 
 src/auto/ov003_022066A8.c:
+    complete
     .text start:0x022066a8 end:0x022066d8
 
 src/auto/ov003_022066D8.c:
@@ -146,6 +150,7 @@ src/auto/ov003_02209D0C.c:
     .text start:0x02209d0c end:0x0220accc
 
 src/auto/ov003_0220ACCC.c:
+    complete
     .text start:0x0220accc end:0x0220bcac
 
 src/auto/ov003_0220BCAC.c:
@@ -161,4 +166,5 @@ src/auto/ov003_0220DE5C.c:
     .text start:0x0220de5c end:0x0220ed80
 
 src/auto/ov003_0220ED80.c:
+    complete
     .text start:0x0220ed80 end:0x0220f0b8
