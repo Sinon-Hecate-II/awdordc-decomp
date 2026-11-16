@@ -344,8 +344,8 @@ u8 func_ov003_021effcc(void *arg0) {
 }
 
 void func_ov003_021efff8(void) {
-    M2C_UNK func_ov003_021ea314();
-    func_ov003_021ea314();
+    M2C_UNK Ov003_SyncLinkSlots();
+    Ov003_SyncLinkSlots();
 }
 
 void func_ov003_021f0004(void) {

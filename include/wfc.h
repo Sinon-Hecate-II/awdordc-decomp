@@ -315,6 +315,8 @@ typedef struct NasRequest {
 #define WFC_RECORD_STRIDE      0xC0
 #define WFC_RECORD_CODE_LEN    0x0A /* u16 length of the record's code */
 #define WFC_RECORD_CODE        0x0C /* u8[] code bytes */
+#define WFC_RECORD_COUNT_OFF 0x36 /* u16 entry count sent with the record, minus one in the message */
+#define WFC_RECORD_CODE_OFF  0x3C /* u8[] code bytes sent for the record */
 
 #define WFC_CODE_LEN_FRIEND    0x20 /* 32-byte friend code */
 #define WFC_CODE_LEN_FREESPOT  0x08 /* 8-byte FREESPOT code */

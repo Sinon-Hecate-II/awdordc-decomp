@@ -42,32 +42,36 @@ done:
 return 0;
 }
 
-s32 func_0204fff8(M2C_UNK arg0, void *arg1, s8 arg2, M2C_UNK arg3) {
+/* Send one character to the peer's socket; when nothing is queued in the peer's
+ * send buffer and the socket would block, append it to that buffer instead.
+ * Returns a gpi error code (0 on success). */
+s32 gpiSendOrBufferSingleChar(M2C_UNK connection, void *peer, s8 ch, M2C_UNK unused) {
     s32 Vector_GetCount(s32);
     s32 gpiAppendChar(M2C_UNK, void *, s8);
     s32 gpiSendOrBufferChar(M2C_UNK, s32, s8 *, M2C_UNK, M2C_UNK *, s32 *, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fdef8;
     extern M2C_UNK gGpiBufferFileName;
-    extern M2C_UNK data_020fe000;
+    extern M2C_UNK gGpiAssertOutputBuffer;
     extern M2C_UNK data_020fe024;
-    M2C_UNK sp10;
-    s32 spC;
+    M2C_UNK wouldBlock;
+    s32 sent;
 
-    if (M2C_FIELD(arg1, s32 *, 0x28) == 0) {
-        AssertFailed(&data_020fe000, &gGpiBufferFileName, &data_020fdef8, 0xde);
+    if (M2C_FIELD(peer, s32 *, 0x28) == 0) {
+        AssertFailed(&gGpiAssertOutputBuffer, &gGpiBufferFileName, &data_020fdef8, 0xde);
     }
-    if (((M2C_FIELD(arg1, s32 *, 0x30) - M2C_FIELD(arg1, s32 *, 0x34)) == 0) &&
-        (Vector_GetCount(M2C_FIELD(arg1, s32 *, 0x38)) == 0)) {
-        s32 temp_r0 = gpiSendOrBufferChar(arg0, M2C_FIELD(arg1, s32 *, 8), &arg2, 1, &sp10, &spC, &data_020fe024);
-        if (temp_r0 != 0) {
-            return temp_r0;
+    /* Only talk to the socket while the peer's send buffer is empty. */
+    if (((M2C_FIELD(peer, s32 *, 0x30) - M2C_FIELD(peer, s32 *, 0x34)) == 0) &&
+        (Vector_GetCount(M2C_FIELD(peer, s32 *, 0x38)) == 0)) {
+        s32 result = gpiSendOrBufferChar(connection, M2C_FIELD(peer, s32 *, 8), &ch, 1, &wouldBlock, &sent, &data_020fe024);
+        if (result != 0) {
+            return result;
         }
-        if (spC != 0) {
+        if (sent != 0) {
             return 0;
         }
     }
-    return gpiAppendChar(arg0, arg1 + 0x28, arg2);
+    return gpiAppendChar(connection, peer + 0x28, ch);
 }
 
 s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s32 stringLen) {

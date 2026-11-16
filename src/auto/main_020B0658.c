@@ -152,7 +152,7 @@ void func_020b0af4(void *arg0) {
 }
 
 #pragma opt_strength_reduction off
-void func_020b0b0c(void *arg0) {
+void BeginBrightEffectStereo(void *arg0) {
 M2C_UNK Clear3DSpriteLayer(M2C_UNK);
 M2C_UNK func_0207a66c(s16,s16);
 M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
@@ -167,7 +167,12 @@ func_0207c3dc(&data_020f3d60,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+0x4900,0x8
 M2C_FIELD(arg0,s16 *,0x6e)=2;
 }
 
-void func_020b0bdc(void *arg0) {
+/* Stereo (3D layer) half of the screen-brighten effect's per-frame step: while
+ * the first eight 128-byte blocks are left, upload block n into the engine's
+ * palette area, then pulse a 16-colour synthetic-palette gradient (one of 15
+ * equally spaced frames of white, so it takes 60 frames to cycle) through the
+ * mixer, choosing one of the two gradients by the effect's side flag (0x6C). */
+void DrawBrightEffectStereo(void *arg0) {
 M2C_UNK func_01ff9e78(void *,M2C_UNK,M2C_UNK);
 M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
 extern M2C_UNK data_020f3d60; extern M2C_UNK data_020f4160; extern M2C_UNK data_020f41a0;

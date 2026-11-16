@@ -147,8 +147,8 @@ s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
     M2C_UNK gpiFree(s32);
     s32 func_0204ee40(void **, void *);
     s32 gpiFindBuddyStatus(void **, M2C_UNK, void **);
-    M2C_UNK func_02055bf4(void **, void *);
-    s32 func_02055d6c(void *);
+    M2C_UNK gpiFreeBuddyList(void **, void *);
+    s32 gpiPeerConnectionDone(void *);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     extern M2C_UNK data_020fde60;
     void *sp0;
@@ -172,8 +172,8 @@ s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
     if ((M2C_FIELD(temp_r5, s32 *, 0x100) == 0) && ((s32) M2C_FIELD(sp0, s32 *, 0x14) <= 0)) {
         gpiFree(M2C_FIELD(sp0, s32 *, 0x10));
         M2C_FIELD(sp0, s32 *, 0x10) = 0;
-        if (func_02055d6c(sp0) != 0) {
-            func_02055bf4(arg0, sp0);
+        if (gpiPeerConnectionDone(sp0) != 0) {
+            gpiFreeBuddyList(arg0, sp0);
         }
     }
     return 0;
@@ -192,8 +192,8 @@ s32 func_0204fb50(void **connection,s32 opId) {
 void gpiAppendStringField(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_0204fb2c(void *,void *,s32);
 s32 gpiFindBuddyStatus(void **,s32,void **);
-s32 func_02055d6c(void *);
-M2C_UNK func_02055bf4(void **,void *);
+s32 gpiPeerConnectionDone(void *);
+M2C_UNK gpiFreeBuddyList(void **,void *);
 M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 M2C_UNK gpiFree(s32);
 void AssertFailed(void *,void *,void *,s32);
@@ -214,7 +214,7 @@ M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,8)=0;
 gpiFree(M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,12));
 M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,12)=0;
 gpiFree(M2C_FIELD(op,s32 *,8));M2C_FIELD(op,s32 *,8)=0;
-if(func_02055d6c(op))func_02055bf4(connection,op);
+if(gpiPeerConnectionDone(op))gpiFreeBuddyList(connection,op);
 if(--M2C_FIELD(session,s32 *,0x430)<0)AssertFailed(&data_020fdea8,&data_020fde9c,&data_020fdd84,0x204);
 func_02055cd0(connection,func_0204fb2c,refCount);
 }

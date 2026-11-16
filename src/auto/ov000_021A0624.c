@@ -7,7 +7,7 @@ extern u8 data_ov000_021e00ae[];
 extern u8 gUnitKindFlags[];
 extern void **gCurrentMap;
 
-u8 func_ov000_021a0624(s32 a,s32 b) {
+u8 CountFootUnitsWithAiFlag(s32 a,s32 b) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 IsFootUnitKind(void);

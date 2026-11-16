@@ -307,7 +307,7 @@ void BuildScoredAiRole1UnitList(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
-    extern M2C_UNK func_ov000_02180f14;
+    extern M2C_UNK PlanAiAdvanceDestination;
     void func_ov000_0219c8fc(void);
     s32 index;
     s32 stride;
@@ -342,7 +342,7 @@ void BuildScoredAiRole1UnitList(void) {
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
     func_ov000_0219c8fc();
-    gAiUnitAction = &func_ov000_02180f14;
+    gAiUnitAction = &PlanAiAdvanceDestination;
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 

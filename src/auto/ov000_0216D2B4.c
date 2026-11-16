@@ -1,6 +1,18 @@
 /* 6 functions from 0x0216D2B4 to 0x0216E178 (ov000), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 bytes[6]; } UnitPaletteLookup;
+static inline void ArmyInfo_LoadTile(s32 tile, u32 resource, s32 palette) {
+ void func_0209b26c(s32,s32,s32,u32,s32,s32);
+ func_0209b26c(3,tile,1,resource,0x1000,palette);
+}
+static inline void *ArmyInfo_UseEngine(void **current, void *engine) {
+ *current=engine;
+ return engine;
+}
+static inline void ArmyInfo_SelectEngine(void *engine) {
+ extern void *gCur3DSpriteEngine;
+ gCur3DSpriteEngine=engine;
+}
 
 #pragma opt_strength_reduction off
 #pragma opt_instruction_scheduling off
@@ -75,18 +87,69 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,56)=x;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,64)=0;
 gCur3DSpriteEngine=p;
 }
-#pragma opt_strength_reduction reset
-#pragma opt_instruction_scheduling reset
-M2C_UNK func_ov000_0216dd0c(void) {
-    return 0;
+#pragma opt_instruction_scheduling off
+void func_ov000_0216dd0c(void) {
+ extern void *gArmyInfoState;
+ extern u8 gMovementCostTable[];
+ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+ extern u8 data_ov000_021b8860[],data_ov000_021b8874[],data_ov000_021b888c[],data_ov000_021b88a4[],data_ov000_021b88b8[],data_ov000_021b88d0[];
+ M2C_UNK SetArmyInfoFileDirectory(void);
+ void func_0209bfa8(void);
+ void *GetLocalizedFileName(void *);
+ void OpenNarcArchive(void *);void CloseNarcArchive(void);
+ void LoadNarcFileDecompressed(void *,void *);
+ void func_01ff9d38(s32);void func_01ff9d88(s32);
+ void func_0209bbd0(s32,s32,s32,s32,s32,s32);
+ void func_0209b26c(s32,s32,s32,u32,s32,s32);
+ u8 *state=gArmyInfoState;
+ void *record=gMovementCostTable+M2C_FIELD(state+state[13],u8 *,4)*0x9c;
+ void *saved,*engine;
+ SetArmyInfoFileDirectory();func_0209bfa8();
+ if(M2C_FIELD(gArmyInfoState,u8 *,16)==0) {
+ OpenNarcArchive(GetLocalizedFileName(data_ov000_021b8860));
+ saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;
+ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b8874),M2C_FIELD(engine,void **,0x28));
+ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
+ func_01ff9d38(1);
+ M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
+ func_0209bbd0(2,2,1,M2C_FIELD(record,s32 *,8),0x1000,1);
+ func_0209bbd0(2,12,1,M2C_FIELD(record,s32 *,12),0x1000,0xa1);
+ M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
+ gCur3DSpriteEngine=g3DSpriteEngineSub;engine=g3DSpriteEngineSub;
+ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b888c),M2C_FIELD(engine,void **,0x28));
+ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
+ func_01ff9d88(1);
+ M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
+ func_0209bbd0(2,8,1,M2C_FIELD(record,s32 *,4),0x1000,0x81);
+ M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
+ gCur3DSpriteEngine=saved;CloseNarcArchive();
+ }
+ if(M2C_FIELD(gArmyInfoState,u8 *,16)==1) {
+ OpenNarcArchive(GetLocalizedFileName(data_ov000_021b88a4));
+ saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;
+ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b88b8),M2C_FIELD(engine,void **,0x28));
+ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
+ func_01ff9d38(1);
+ M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
+ engine=g3DSpriteEngineSub;gCur3DSpriteEngine=engine;
+ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b88d0),M2C_FIELD(engine,void **,0x28));
+ M2C_FIELD(gCur3DSpriteEngine,u8 *,(s32)0x46)|=4;
+ func_01ff9d88(1);
+ M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
+ func_0209b26c(3,14,1,0xf0000097,0x1000,1);
+ func_0209b26c(3,16,1,0xf0000098,0x1000,0x21);
+ func_0209b26c(3,18,1,0xf0000099,0x1000,0x41);
+ func_0209b26c(3,20,1,0xf000009a,0x1000,0x61);
+ M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
+ gCur3DSpriteEngine=saved;CloseNarcArchive();
+ }
 }
-
 void func_ov000_0216e054(void) {
     extern void *gArmyInfoState;
     M2C_UNK SetArmyInfoFileDirectory(void);
     M2C_UNK FocusSpriteSlotById(u8);
     M2C_UNK ArmyInfo_DrawFaceMain(void);
-    M2C_UNK func_ov000_0216dd0c(void);
+    void func_ov000_0216dd0c(void);
     SetArmyInfoFileDirectory();
     FocusSpriteSlotById(M2C_FIELD(gArmyInfoState, u8 *, 0xD));
     ArmyInfo_DrawFaceMain();

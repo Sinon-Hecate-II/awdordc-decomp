@@ -204,7 +204,7 @@ u8 func_ov000_0219c6c0(void) {
 }
 
 void func_ov000_0219c774(void);
-void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(func_ov000_0219c5d4,6,0x2000,17,0);return;}switch(*gAiCommandState){case 3:func_ov000_0219e948();return;case 5:func_ov000_021a02ac();return;case 6:func_ov000_0219c774();return;}}
+void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(func_ov000_0219c5d4,6,0x2000,17,0);return;}switch(*gAiCommandState){case 3:func_ov000_0219e948();return;case 5:AiPlaceBuildingUnit();return;case 6:func_ov000_0219c774();return;}}
 
 void func_ov000_0219c774(void) {
     MarkKnownEnemyUnits();

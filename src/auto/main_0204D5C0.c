@@ -339,8 +339,8 @@ s32 func_0204e074(void **arg0,s32 arg1) {
 s32 func_0204e0c4(void **arg0,s32 arg1) {
  void gpiFree(s32);
  s32 gpiFindBuddyStatus(void **,s32,void **);
- void func_02055bf4(void **,void *);
- s32 func_02055d6c(void *);
+ void gpiFreeBuddyList(void **,void *);
+ s32 gpiPeerConnectionDone(void *);
  extern s32 gGpiMsgDisconnected;
  void *sp0;
  void *p;
@@ -352,7 +352,7 @@ s32 func_0204e0c4(void **arg0,s32 arg1) {
  if(M2C_FIELD(p,s32 *,0x100)==0 && M2C_FIELD(sp0,s32 *,0x14)<=0) {
  gpiFree(M2C_FIELD(sp0,s32 *,0x10));
  M2C_FIELD(sp0,s32 *,0x10)=0;
- if(func_02055d6c(sp0)!=0) func_02055bf4(arg0,sp0);
+ if(gpiPeerConnectionDone(sp0)!=0) gpiFreeBuddyList(arg0,sp0);
  }
  return 0;
 }

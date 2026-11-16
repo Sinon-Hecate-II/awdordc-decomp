@@ -430,7 +430,12 @@ void func_ov003_021ea2ac(void) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x53) = 0;
 }
 
-void func_ov003_021ea314(void *p) {
+/* Link (overlay 9/10) side of the wireframe/cutscene sync: mark the local side
+ * flag when the active player kind is 2, hand the overlay the current slots,
+ * mark the record ready (and clear its second half) when this is the first slot,
+ * spend the rest of the frame stepping slot turns, then finish with the
+ * overlay's post-sync hook. */
+void Ov003_SyncLinkSlots(void *p) {
 s32 func_020cfb94(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32); void func_02084e74(void); void func_01ffa6fc(void*); s32 func_02084a0c(void); s32 func_ov003_021f153c(void);
 u32 buf[9]; u8 flag, n, start;
 if(func_020cfb94()==2) M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~1)|1;

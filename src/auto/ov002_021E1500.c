@@ -197,7 +197,7 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK func_ov002_021e26d4(void *);
     M2C_UNK func_ov002_021e2724(void *);
     M2C_UNK func_ov002_021e2770(void *, M2C_UNK);
-    M2C_UNK func_ov002_021e2848(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov002_CreateEffectNode(void *, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov002_021e2928(void *, M2C_UNK);
     M2C_UNK func_020afa00(M2C_UNK);
     M2C_UNK func_020afa98(M2C_UNK);
@@ -341,11 +341,11 @@ void func_ov002_021e1844(void *arg0) {
         {
             u8 op2 = M2C_FIELD(current, u8 *, 1);
             if (op2 >= 0x41 && op2 <= 0x4f) {
-                func_ov002_021e2848(arg0, (M2C_UNK)(op2 - 0x41), (M2C_UNK)(-1));
+                Ov002_CreateEffectNode(arg0, (M2C_UNK)(op2 - 0x41), (M2C_UNK)(-1));
                 M2C_FIELD(arg0, s32 *, 0x24) = 0;
             }
             if (op2 >= 0x51 && op2 <= 0x5f) {
-                func_ov002_021e2848(arg0, (M2C_UNK)(op2 - 0x51), (M2C_UNK)1);
+                Ov002_CreateEffectNode(arg0, (M2C_UNK)(op2 - 0x51), (M2C_UNK)1);
                 M2C_FIELD(arg0, s32 *, 0x24) = 0;
             }
             if (M2C_FIELD(current, u8 *, 1) == 0xff) {

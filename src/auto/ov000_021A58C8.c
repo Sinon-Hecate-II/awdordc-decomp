@@ -282,10 +282,10 @@ for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU ) { value=(s8)p[5]; if(best 
 
 #pragma opt_lifetimes off
 s32 func_ov000_021a6528(s32 arg0) {
-void func_ov000_021a01c0(void); s32 func_ov000_021a6440(s32,s32);
+void ReleaseAiTargetGroups(void); s32 func_ov000_021a6440(s32,s32);
 extern u8 *gAiState; extern M2C_UNK gAiTargetGroups;
 u8 *p; s32 result; s32 i; s32 r; s32 best;
-p=(u8 *)&gAiTargetGroups; best=0; func_ov000_021a01c0();
+p=(u8 *)&gAiTargetGroups; best=0; ReleaseAiTargetGroups();
 for(;;) { result=-1; for(i=0;i<(s32)gAiState[1];i++,p+=8) { if(p[1]!=255 && best<(s32)p[0]) { best=p[0];result=i; } } if(result==-1)return -1; r=func_ov000_021a6440(arg0,result); if(r!=-1)return r; p[1]=255; }
 }
 #pragma opt_lifetimes reset
@@ -313,19 +313,19 @@ s32 func_ov000_021a65c4(s32 arg0, s32 arg1) {
 }
 
 s32 func_ov000_021a664c(void) {
-void func_ov000_021a01c0(void); s32 func_ov000_021a65c4(s32,s32);
+void ReleaseAiTargetGroups(void); s32 func_ov000_021a65c4(s32,s32);
 extern u8 *gAiState; extern M2C_UNK gAiTargetGroups;
 s32 result; s32 i; s32 r; u8 *p;
-p=(u8 *)&gAiTargetGroups; func_ov000_021a01c0();
+p=(u8 *)&gAiTargetGroups; ReleaseAiTargetGroups();
 for(;;) { result=-1; for(i=0;i<(s32)gAiState[1];i++,p+=8) { if(p[1]!=255 && ((Candidate1F14 *)p)->used==0) {result=i;break;} } if(result==-1)return -1; r=func_ov000_021a65c4(1,result); if(r!=-1)return r; p[1]=255; }
 }
 
 #pragma optimization_level 3
 s32 FindNavalThreatBuildCandidate(void) {
-void func_ov000_021a01c0(void);
+void ReleaseAiTargetGroups(void);
 extern M2C_UNK gAiTargetGroups,gAiTargetCandidates;extern u8 *gAiState;extern void **data_027e0058;
 u8 *p=(u8 *)&gAiTargetGroups; s32 found,i,r;u8 *entry;void *map;
-func_ov000_021a01c0();
+ReleaseAiTargetGroups();
 for(;;){
 found=-1;
 for(i=0;i<gAiState[1];i++,p+=8){

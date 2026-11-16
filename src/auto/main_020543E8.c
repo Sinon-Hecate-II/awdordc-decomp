@@ -88,8 +88,79 @@ void *func_0205455c(void **a,void *b,s32 c) {
  return p;
 }
 
-M2C_UNK func_02054600(M2C_UNK arg0, void *arg1) {
-    return 0;
+/* Per-frame step of a gpi peer that is being connected: open the socket, build
+ * the \auth\ request (pid, nick, signature from the buddy record) once TCP is up,
+ * read the peer's reply and check it for \aack\/\anack\, then move the peer on to
+ * the next state and flush whatever text is waiting in its send buffer. */
+s32 gpiPeerProcessConnecting(M2C_UNK a,void *peer) {
+ s32 gpiPeerBeginConnect(M2C_UNK,void *);
+ s32 gpiCheckConnectionSocket(M2C_UNK,s32,s32 *);
+ s32 gpiFindBuddyStatus(M2C_UNK,s32,void **);
+ s32 gpiSetErrorString(void **,M2C_UNK *);
+ M2C_UNK gpiAppendStringField(M2C_UNK,M2C_UNK,M2C_UNK);
+ M2C_UNK gpiAppendIntField(M2C_UNK,M2C_UNK,s32);
+ s32 gpiReceiveData(void **,s32,void *,s32 *,s32 *,M2C_UNK *);
+ s32 gpiSendFromBuffer(void **,s32,void *,s32 *,s32,M2C_UNK *);
+ s32 StringFind(M2C_UNK,M2C_UNK);
+ s32 StringCompareN(M2C_UNK,M2C_UNK,s32);
+ s32 gpiStartPeerChallenge(M2C_UNK,void *);
+ s32 gpiPeerConnectionDone(void *);void gpiFreeBuddyList(M2C_UNK,void *);
+ extern M2C_UNK gGpiErrorConnectPeer,gGsKeyAuth,gGsKeyPid,gGsKeyNickAuth,gGsKeySig,gGsKeyFinalAuth,data_020febb0,gGsKeyAuthNack,data_020febbc,gGsKeyAuthAck,data_020febe8,data_020fec08,data_020fec0c,data_020feb48;
+ void *session=*(void **)a;
+ s32 status,bytes,io,rc,clear;
+ void *buddy,*p,*end,*text;
+ switch(M2C_FIELD(peer,s32 *,0)) {
+ case GPI_PEER_STATE_CHALLENGED:break;
+ case GPI_PEER_STATE_PROGRESSING:
+ rc=gpiPeerBeginConnect(a,peer);if(rc)return rc;
+ break;
+ case GPI_PEER_STATE_CONNECTING:
+ rc=gpiCheckConnectionSocket(a,M2C_FIELD(peer,s32 *,8),&status);if(rc)return rc;
+ if(status==4){gpiSetErrorString((void **)a,&gGpiErrorConnectPeer);return 3;}
+ if(status!=3)break;
+ clear=1;
+ if(!gpiFindBuddyStatus(a,M2C_FIELD(peer,s32 *,12),&buddy)){gpiSetErrorString((void **)a,&gGpiErrorConnectPeer);return 3;}
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),(M2C_UNK)&gGsKeyAuth);
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),(M2C_UNK)&gGsKeyPid);
+ gpiAppendIntField(a,(M2C_UNK)(peer+0x28),M2C_FIELD(session,s32 *,0x1a0));
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),(M2C_UNK)&gGsKeyNickAuth);
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),(M2C_UNK)(session+0x110));
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),(M2C_UNK)&gGsKeySig);
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),M2C_FIELD(buddy,s32 *,0x18));
+ gpiAppendStringField(a,(M2C_UNK)(peer+0x28),(M2C_UNK)&gGsKeyFinalAuth);
+ /* Another peer for the same player that is still connecting shares the buddy's
+  * \sig\, so leave the buddy record for it instead of completing it here. */
+ for(p=M2C_FIELD(session,void **,0x434);p;p=M2C_FIELD(p,void **,0x3c))
+ if(M2C_FIELD(p,s32 *,12)==M2C_FIELD(peer,s32 *,12) && p!=peer && M2C_FIELD(p,s32 *,0)<=103)clear=0;
+ if(clear) {
+ gpiFree(M2C_FIELD(buddy,void **,0x18));M2C_FIELD(buddy,void **,0x18)=NULL;
+ if(gpiPeerConnectionDone(buddy))gpiFreeBuddyList(a,buddy);
+ }
+ M2C_FIELD(peer,s32 *,0)=GPI_PEER_STATE_WAITING;
+ break;
+ case GPI_PEER_STATE_WAITING:
+ rc=gpiReceiveData((void **)a,M2C_FIELD(peer,s32 *,8),peer+0x18,&bytes,&io,&data_020febb0);if(rc)return rc;
+ end=(void *)StringFind(M2C_FIELD(peer,s32 *,0x18),(M2C_UNK)&gGsKeyFinalAuth);
+ if(!end)break;
+ *(u8 *)end=0;text=M2C_FIELD(peer,void **,0x18);
+ if(StringCompareN((M2C_UNK)text,(M2C_UNK)&gGsKeyAuthNack,7)==0) {
+ M2C_FIELD(peer,s32 *,0x14)++;
+ if(M2C_FIELD(peer,s32 *,0x14)>1){gpiSetErrorString((void **)a,&data_020febbc);return 3;}
+ rc=gpiStartPeerChallenge(a,peer);if(rc)return rc;
+ } else if(StringCompareN((M2C_UNK)text,(M2C_UNK)&gGsKeyAuthAck,6)!=0) {
+ gpiSetErrorString((void **)a,&data_020febe8);return 3;
+ }
+ M2C_FIELD(peer,s32 *,0)=GPI_PEER_STATE_CONNECTED;M2C_FIELD(peer,s32 *,0x20)=0;
+ break;
+ default:
+ AssertFailed(&data_020fec08,&data_020fec0c,&data_020feb48,0x9f);
+ break;
+ }
+ if(M2C_FIELD(peer,s32 *,0x30)>0) {
+ rc=gpiSendFromBuffer((void **)a,M2C_FIELD(peer,s32 *,8),peer+0x28,&io,1,&data_020febb0);
+ if(io || rc)M2C_FIELD(peer,s32 *,0)=GPI_PEER_STATE_ERROR;
+ }
+ return 0;
 }
 
 #pragma push
@@ -324,14 +395,14 @@ block_42:
 }
 
 s32 func_02054f0c(M2C_UNK a,void *b) {
- s32 func_02054600(M2C_UNK,void *);
+ s32 gpiPeerProcessConnecting(M2C_UNK,void *);
  s32 gpiProcessPeerAcceptingConnection(M2C_UNK,void *);
  s32 gpiProcessPeer(void **,void *);
  extern M2C_UNK data_020fec54,data_020fec0c,data_020feac4;
  s32 v=0;
  if(M2C_FIELD(b,s32 *,0)==100) AssertFailed(&data_020fec54,&data_020fec0c,&data_020feac4,473);
  if(M2C_FIELD(b,s32 *,0)!=105) {
- if(M2C_FIELD(b,s32 *,4)) v=func_02054600(a,b);else v=gpiProcessPeerAcceptingConnection(a,b);
+ if(M2C_FIELD(b,s32 *,4)) v=gpiPeerProcessConnecting(a,b);else v=gpiProcessPeerAcceptingConnection(a,b);
  }
  if(!v && M2C_FIELD(b,s32 *,0)==105) v=gpiProcessPeer(a,b);
  return v;

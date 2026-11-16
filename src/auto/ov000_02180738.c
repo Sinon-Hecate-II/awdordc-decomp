@@ -451,7 +451,11 @@ void func_ov000_02180ec8(void) {
     }
 }
 
-void func_ov000_02180f14(void) {
+/* Destination plan for an AI role-3 unit whose own turn comes next: on the
+ * attacking AI modes it only positions for a capture and picks a target, and it
+ * hands the already-wounded attacker a retreat (func_ov000_02190f74) so the
+ * healthy one gets the kill. The special movement kinds (6 and 8) skip it. */
+void PlanAiAdvanceDestination(void) {
 extern void **gCurrentMap;
 void *p; u32 type;
 if(IsAiMap175Player2Override()) return;

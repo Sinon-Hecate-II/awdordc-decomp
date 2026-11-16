@@ -87,28 +87,33 @@ void func_ov002_021e2770(void *arg0, s8 arg1) {
 
 s32 func_ov002_021e27c4(void *a){s32 sum=0;u8 *p;if(!M2C_FIELD(a,s32 *,4))return sum;p=M2C_FIELD(a,u8 **,0x18);while(p[1]!=255){if(!p[0]){switch(p[1]){case 0:case 2:return sum;case 1:case 6:return 0;case 3:case 4:case 5:default:break;}}else sum+=p[0];p+=12;}return sum;}
 
-void func_ov002_021e2848(void *a,s32 b,s32 c) {
+/* Create the effect node for a template: chain the template's previous node as a
+ * sibling, allocate and initialise a new node, and copy the template's resource,
+ * translation and display fields into it.  `variant` picks the resource variant
+ * (the template's command byte minus 0x41 or 0x51); side is -1 or 1, the node's
+ * initial translation offset. */
+void Ov002_CreateEffectNode(void *tmpl, s32 variant, s32 side) {
 void *MemAlloc(M2C_UNK);
 M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);
-register void *q;
-void *p;
-if(M2C_FIELD(a,void **,8)) {
-p=MemAlloc(8);
-if(p) {M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;}
-M2C_FIELD(p,void **,0)=M2C_FIELD(a,void **,8);
-M2C_FIELD(p,void **,4)=M2C_FIELD(a,void **,12);
-M2C_FIELD(a,void **,12)=p;
+register void *node;
+void *link;
+if(M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD)) {
+link=MemAlloc(8);
+if(link) {M2C_FIELD(link,void **,0)=0;M2C_FIELD(link,void **,4)=0;}
+M2C_FIELD(link,void **,0)=M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD);
+M2C_FIELD(link,void **,4)=M2C_FIELD(tmpl,void **,FX_TEMPLATE_NEXT);
+M2C_FIELD(tmpl,void **,FX_TEMPLATE_NEXT)=link;
 }
-M2C_FIELD(a,void **,8)=((p=MemAlloc(0x54)) ? init_021e2848(p) : p);
-q=M2C_FIELD(a,void **,8);
-func_ov002_021e16bc(q,M2C_FIELD(a,u8 *,0x53),M2C_FIELD(a,u8 *,0x47));
-SetEffectNodeTranslation(q,0,0,(s16)c);
-((M2C_UNK (*)(void *,s32,u16,u8,s32))func_ov002_021e16dc)(q,M2C_FIELD(a,s32 *,4),M2C_FIELD(a,u16 *,0x38),M2C_FIELD(a,u8 *,0x3a),b);
-M2C_FIELD(q,s32 *,0x28)=M2C_FIELD(a,s32 *,0x1c);
-M2C_FIELD(q,s32 *,0x2c)=M2C_FIELD(a,s32 *,0x24);
-M2C_FIELD(q,u8 *,0x4c)=M2C_FIELD(a,u8 *,0x4b);
-M2C_FIELD(q,u8 *,0x50)=M2C_FIELD(a,u8 *,0x50);
-M2C_FIELD(q,u8 *,0x51)=M2C_FIELD(a,u8 *,0x51);
+M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD)=((node=MemAlloc(0x54)) ? init_021e2848(node) : node);
+node=M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD);
+func_ov002_021e16bc(node,M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_PALETTE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_TABLE_INDEX));
+SetEffectNodeTranslation(node,0,0,(s16)side);
+((M2C_UNK (*)(void *,s32,u16,u8,s32))func_ov002_021e16dc)(node,M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_SOURCE_ID),M2C_FIELD(tmpl,u16 *,FX_TEMPLATE_SHAPE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_KIND),variant);
+M2C_FIELD(node,s32 *,FX_NODE_GRAPHIC_X)=M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_X);
+M2C_FIELD(node,s32 *,FX_NODE_GRAPHIC_Y)=M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_Y);
+M2C_FIELD(node,u8 *,FX_NODE_COLOUR)=M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_COLOUR_BLEND);
+M2C_FIELD(node,u8 *,FX_NODE_ACTIVE)=M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_ACTIVE);
+M2C_FIELD(node,u8 *,FX_NODE_FLAG_51)=M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_FLAG_51);
 }
 
 void func_ov002_021e2928(void *a,s32 b){void func_ov002_021e1780(void *);void **p=0;while((p=p?M2C_FIELD(p,void ***,4):(M2C_FIELD(a,s32 *,8)==0?0:(void **)((u8 *)a+8)))!=0){func_ov002_021e2928(*p,b);if(b==M2C_FIELD(*p,u8 *,0x46))func_ov002_021e1780(*p);}}

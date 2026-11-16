@@ -145,11 +145,12 @@ s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
  s32 func_ov007_0221b754(s32,s32);
  s32 func_ov007_0221bad0(s32,s32);
  extern u8 data_ov007_0221f544[],data_ov007_0221f52c[],data_ov007_0221f514[];
- long i=0;
- u8 count=0,diagonal=0,mask=0;
+ s32 i;
+ u8 count,diagonal,mask;
  struct TileNeighbors_0221 all;
  struct TileCardinalNeighbors_0221 cardinal, corners;
  u8 *p;
+ i=0;count=0;diagonal=0;mask=0;
  switch(kind) {
  case 13:case 14:
  if(func_ov007_0221b754(x,y))return 1;
@@ -164,7 +165,7 @@ s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
  cardinal=*(const struct TileCardinalNeighbors_0221 *)data_ov007_0221f52c;
  p=(u8 *)&cardinal;
  for(i=0;i<4;i++,p+=6) {
- if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2))) {mask|=1<<i;++count;}
+ if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2))) {mask|=1<<i;count++;}
  }
  if(count==0)return 0;
  if(count==4)return 0;

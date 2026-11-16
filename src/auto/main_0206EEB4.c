@@ -53,7 +53,7 @@ double func_0206e2d8(double,double);
 double ScaleDoubleByExp(double,s32);
 void func_0206e630(void*,void*,s32);
 int func_0206eb30(void*,void*);
-int func_0206ea50(void*,void*);
+int Bcd_IsEqual(void*,void*);
 void func_0206ec10(void*,void*,void*);
 extern u32 data_021002e8;
 extern u8 data_021006d0[];
@@ -87,7 +87,7 @@ else x*=func_0206e2d8(5.0,(double)exp);
 x=ScaleDoubleByExp(x,exp);
 if(func_0206f7a8(x)==2){(*(u64*)&x)=0x7fefffffffffffffULL;}
 yp=(u64*)&y;func_0206eeb4((u8*)&b,x);
-above=0;if(!func_0206ea50(&b,&value)){
+above=0;if(!Bcd_IsEqual(&b,&value)){
 above=0;if(func_0206eb30(&b,&value))above=1;
 for(;;){
 below=above==0;y=x;
@@ -97,7 +97,7 @@ if(!above && !func_0206eb30(&value,&c)){d=b;b=c;c=d;tmp=x;x=y;y=tmp;break;}
 b=c;x=y;
 }
 func_0206ec10(&d,&value,&b);func_0206ec10(&e,&c,&value);
-if(func_0206ea50(&d,&e)){if((*(u64*)&x)&1)x=y;}
+if(Bcd_IsEqual(&d,&e)){if((*(u64*)&x)&1)x=y;}
 else if(!func_0206eb30(&d,&e))x=y;
 }
 if(value.sign)x=-x;return x;

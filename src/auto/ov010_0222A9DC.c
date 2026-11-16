@@ -250,25 +250,28 @@ gCur3DSpriteEngine=savedBank;
 SetSpriteAnimation((s32)entity,19);
 }
 
-void func_ov010_0222b234(void *arg0) {
+/* Hide the entity's sprite on the display banks it selects (0 = main engine,
+ * 1 = sub engine, 3 = the engine active when called), then play its hide
+ * animation. */
+void Ov010_HideEntitySprite(void *entity) {
 M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b520(void *);M2C_UNK SetSpriteAnimation(s32,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-s32 old;u32 current;s32 i;s8 mode;void *p;
-if(M2C_FIELD(arg0,s8 *,0x35)>=0){
-old=gCur3DSpriteEngine;i=0;
+s32 savedBank;u32 bank;s32 i;s8 engine;void *sprite;
+if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
+savedBank=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
-gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
-if(mode==0&&current!=g3DSpriteEngineMain)continue;
-if(mode==1&&current!=g3DSpriteEngineSub)continue;
-if(mode==3&&current!=old)continue;
-p=func_0208b520(arg0);
-func_020899cc(p,0,M2C_FIELD(arg0,u16 *,0x36)<<5,0x4200001e);
-M2C_FIELD(p,s32 *,0x58)=((M2C_FIELD(p,s32 *,0x58)|0x1000)&~0x400)|0x800;
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
+gCur3DSpriteEngine=bank;engine=M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE);
+if(engine==0&&bank!=g3DSpriteEngineMain)continue;
+if(engine==1&&bank!=g3DSpriteEngineSub)continue;
+if(engine==3&&bank!=savedBank)continue;
+sprite=func_0208b520(entity);
+func_020899cc(sprite,0,M2C_FIELD(entity,u16 *,0x36)<<5,0x4200001e);
+M2C_FIELD(sprite,s32 *,0x58)=((M2C_FIELD(sprite,s32 *,0x58)|0x1000)&~0x400)|0x800;
 }while(++i<2);
-gCur3DSpriteEngine=old;
+gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)arg0,7);
+SetSpriteAnimation((s32)entity,7);
 }
 
 /* Creates a draw entry in both active banks when the entity's bank selector allows. */

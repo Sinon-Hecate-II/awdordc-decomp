@@ -161,7 +161,7 @@ u8 func_0203095c(void) {
     u32 Wfc_GetLinkState();
     void *Wfc_GetWorkBlock(M2C_UNK);
     M2C_UNK func_0202f558(M2C_UNK);
-    M2C_UNK func_02030b98(u8);
+    M2C_UNK Wfc_SendConnectionMessage(u8);
     u32 mode;
     u8 result;
     void *state;
@@ -178,7 +178,7 @@ u8 func_0203095c(void) {
             result = 7;
             M2C_FIELD((state + (M2C_FIELD(state, u8 *, 0xD13) * 4)), s8 *, 0x444) = 0;
         } else if (((u32) result >= 3U) && ((u32) result <= 5U)) {
-            func_02030b98(result);
+            Wfc_SendConnectionMessage(result);
         }
         break;
     case 6:
@@ -247,15 +247,39 @@ s8 func_02030b30(s32 a) {
  return -1;
 }
 
-s32 func_02030b98(u8 mode){
-void *Wfc_GetWorkBlock(s32);u64 GetSystemTick(void);void func_020311e4(s32,s32,s32,s32);
-extern u8 data_020ea758[],data_020ea760[];
-void *p=Wfc_GetWorkBlock(16);s32 n;
-switch(mode){
-case 3:M2C_FIELD(p,u64 *,0xcb0)=GetSystemTick();func_020311e4((s32)data_020ea758,(s32)data_020ea760,M2C_FIELD(p,s8 *,0xd11),0x200000);break;
-case 4:M2C_FIELD(p,u64 *,0xcb0)=GetSystemTick();n=(s16)M2C_FIELD(p,u8 *,0xd0f)*(s16)192;func_020311e4((s32)((u8*)p+0x474+n),(s32)((u8*)p+0x47c+n),M2C_FIELD((u8*)p+n,u16 *,0x4a6)-1,0x300000);break;
-case 5:M2C_FIELD(p,u64 *,0xcb0)=GetSystemTick();func_020311e4((s32)data_020ea758,(s32)((u8*)p+0x304+M2C_FIELD(p,u8 *,0xd0f)*36),M2C_FIELD(p,s8 *,0xd11),0x300000);break;
-}
+/* Friend-connection states 3..5: restarts the timeout and submits one message to
+ * the WFC engine (func_020311e4) - state 3 the selected friend's code, state 4
+ * the next friend record (its code and entry count minus one), state 5 the
+ * next friend-list row.  data_020ea758 is the empty sender code, so these
+ * messages carry no code of their own. */
+s32 Wfc_SendConnectionMessage(u8 mode) {
+    void *Wfc_GetWorkBlock(s32);
+    u64 GetSystemTick(void);
+    void func_020311e4(s32, s32, s32, s32);
+    extern u8 data_020ea758[], data_020ea760[];
+    void *state;
+    s32 offset;
+
+    state = Wfc_GetWorkBlock(16);
+    switch (mode) {
+    case 3:
+        M2C_FIELD(state, u64 *, WFC_STATE_TIMER) = GetSystemTick();
+        func_020311e4((s32) data_020ea758, (s32) data_020ea760, M2C_FIELD(state, s8 *, WFC_STATE_FRIEND_ID), 0x200000);
+        break;
+    case 4:
+        M2C_FIELD(state, u64 *, WFC_STATE_TIMER) = GetSystemTick();
+        offset = (s16) M2C_FIELD(state, u8 *, WFC_STATE_WORK_INDEX) * (s16) WFC_RECORD_STRIDE;
+        func_020311e4((s32) ((u8 *) state + 0x474 + offset), (s32) ((u8 *) state + 0x47C + offset),
+                      M2C_FIELD((u8 *) state + offset, u16 *, 0x4A6) - 1, 0x300000);
+        break;
+    case 5:
+        M2C_FIELD(state, u64 *, WFC_STATE_TIMER) = GetSystemTick();
+        func_020311e4((s32) data_020ea758,
+                      (s32) ((u8 *) state + WFC_STATE_ENTRIES + WFC_ENTRY_CODE
+                             + M2C_FIELD(state, u8 *, WFC_STATE_WORK_INDEX) * WFC_ENTRY_STRIDE),
+                      M2C_FIELD(state, s8 *, WFC_STATE_FRIEND_ID), 0x300000);
+        break;
+    }
 }
 
 s32 func_02030c78(void *a) {
@@ -336,7 +360,7 @@ s32 func_02030ffc(void *arg0, s32 arg1) {
     M2C_UNK func_02030554(M2C_UNK);
     s32 func_02031184(void *);
     s32 func_02030d6c(void *);
-    M2C_UNK func_02030b98(u8);
+    M2C_UNK Wfc_SendConnectionMessage(u8);
     s32 var_r4 = arg1;
     switch (var_r4) {
     case 3:
@@ -365,7 +389,7 @@ s32 func_02030ffc(void *arg0, s32 arg1) {
         }
         break;
     }
-    ((M2C_UNK(*)(M2C_UNK))func_02030b98)(var_r4);
+    ((M2C_UNK(*)(M2C_UNK))Wfc_SendConnectionMessage)(var_r4);
     return var_r4;
 }
 

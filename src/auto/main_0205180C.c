@@ -119,7 +119,7 @@ M2C_FIELD(p,s32 *,0x1d8)=2;
 return 0;
 }
 
-s32 func_02051f74(void **a,void *b){M2C_UNK gpiFree(void *);M2C_UNK func_02055bf4(void **,void *);void *p=M2C_FIELD(b,void **,8);void *q=*a;
+s32 func_02051f74(void **a,void *b){M2C_UNK gpiFree(void *);M2C_UNK gpiFreeBuddyList(void **,void *);void *p=M2C_FIELD(b,void **,8);void *q=*a;
 if(p&&M2C_FIELD(q,s32 *,260)==0){
 gpiFree(M2C_FIELD(p,void **,8));M2C_FIELD(M2C_FIELD(b,void **,8),void **,8)=0;
 gpiFree(M2C_FIELD(M2C_FIELD(b,void **,8),void **,12));M2C_FIELD(M2C_FIELD(b,void **,8),void **,12)=0;
@@ -127,7 +127,7 @@ gpiFree(M2C_FIELD(b,void **,8));M2C_FIELD(b,void **,8)=0;
 }
 gpiFree(M2C_FIELD(b,void **,16));M2C_FIELD(b,void **,16)=0;
 gpiFree(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=0;M2C_FIELD(b,s32 *,20)=0;
-if(!M2C_FIELD(b,s32 *,12)||(M2C_FIELD(q,s32 *,260)==1&&!M2C_FIELD(b,void **,8))){func_02055bf4(a,b);return 0;}
+if(!M2C_FIELD(b,s32 *,12)||(M2C_FIELD(q,s32 *,260)==1&&!M2C_FIELD(b,void **,8))){gpiFreeBuddyList(a,b);return 0;}
 return 1;
 }
 

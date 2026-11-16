@@ -50,6 +50,10 @@ s32 Mb_SendChannelPacket(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3,
     return temp_r0;
 }
 
+/* Send one match packet (buffer `data`, `len` bytes, channel `chan`, flags `flags`)
+ * over the multiboot link. Returns 1 when the link is not up or the player has
+ * given up, otherwise the channel send's result; a result of 2 means the send is
+ * queued, so the pending flag is set and 0 is returned. */
 s32 Mb_SendMatchPacket(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK gMbState;
 void func_02017158(void);

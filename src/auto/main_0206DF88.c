@@ -304,7 +304,11 @@ block_69:
     }
 }
 
-s32 func_0206ea50(void *a,void *b){
+/* Compare two digits BCD values: header byte +0 is the sign, +2 the exponent,
+ * +4 the digit count and +5.. the most significant first digits. Equal when
+ * both are zero, or the sign, exponent and digits (after trailing zeros are
+ * dropped) agree. */
+s32 Bcd_IsEqual(void *a,void *b){
 s32 i,n;u8 x,y,z;
 x=M2C_FIELD(a,u8*,5);
 if(x==0)return M2C_FIELD(b,u8*,5)==0;

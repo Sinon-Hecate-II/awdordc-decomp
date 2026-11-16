@@ -102,7 +102,7 @@ func_020501d8(arg0,arg1,buf);
  * deadline to 300 ticks from now.  Returns a nonzero error code on failure. */
 s32 func_0205575c(M2C_UNK connection, void *peer, M2C_UNK *message, s32 length) {
 s32 gpiGetTime(M2C_UNK);
-s32 func_0204fff8(M2C_UNK,void *,M2C_UNK);
+s32 gpiSendOrBufferSingleChar(M2C_UNK,void *,M2C_UNK);
 s32 gpiSendOrBufferStringLen(M2C_UNK,void *,M2C_UNK *,s32);
 s32 func_020501d8(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
@@ -116,7 +116,7 @@ if(length==-1)length=StringLength(message);
 StringFormat(header,&gGpiMessageHeaderFormat,length);
 result=func_020501d8(connection,peer,header);if(result)return result;
 result=gpiSendOrBufferStringLen(connection,peer,message,length);if(result)return result;
-result=func_0204fff8(connection,peer,0);if(result)return result;
+result=gpiSendOrBufferSingleChar(connection,peer,0);if(result)return result;
 M2C_FIELD(peer,s32 *,0x10)=gpiGetTime(0)+0x12c;
 return 0;
 }
@@ -242,7 +242,7 @@ void func_02055bc0(void **arg0, M2C_UNK arg1) {
     func_02048f54(M2C_FIELD(temp_r4, s32 *, 0x428), sp0);
 }
 
-void func_02055bf4(void **arg0) {
+void gpiFreeBuddyList(void **arg0) {
     M2C_UNK func_02048f54(s32);
     func_02048f54(M2C_FIELD(*arg0, s32 *, 0x428));
 }
@@ -287,7 +287,7 @@ s32 data[2]; data[0]=arg1;data[1]=0;
 func_02055cd0(arg0,func_02055d10,data);return data[1];
 }
 
-s32 func_02055d6c(void *arg0) {
+s32 gpiPeerConnectionDone(void *arg0) {
     if ((arg0 != NULL) && (M2C_FIELD(arg0, s32 *, 0xC) == 0) && (M2C_FIELD(arg0, s32 *, 8) == 0) && (M2C_FIELD(arg0, s32 *, 0x18) == 0) && (M2C_FIELD(arg0, s32 *, 0x10) == 0)) {
         return 1;
     }

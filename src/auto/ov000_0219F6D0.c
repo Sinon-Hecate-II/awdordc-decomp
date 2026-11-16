@@ -245,7 +245,7 @@ void func_ov000_0219fdc8(void) {
     s32 func_ov000_021a2db8(void);
     s32 func_ov000_021a20d4(void);
     void CommitAiAction(s32);
-    void func_ov000_021a029c(void);
+    void ReleaseAiTargets(void);
     extern u8 *gAiState;
     extern void *gAiCommandState;
     extern u8 gAiCommand[];
@@ -269,7 +269,7 @@ void func_ov000_0219fdc8(void) {
         case 1:
             if (BuildAiKind6Unit() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 2:
             if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 && addr578[0][7] == 0) {
@@ -279,7 +279,7 @@ void func_ov000_0219fdc8(void) {
         case 3:
             if (func_ov000_021a1ab8() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 4:
             if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 || addr578[0][7] == 0) {
@@ -289,7 +289,7 @@ void func_ov000_0219fdc8(void) {
         case 5:
             if (func_ov000_021a1b1c() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 6:
             if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 || addr578[0][7] == 0) {
@@ -306,7 +306,7 @@ void func_ov000_0219fdc8(void) {
             }
             if (func_ov000_021a21f8(one) != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 8:
             if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) > 1) {
@@ -322,12 +322,12 @@ void func_ov000_0219fdc8(void) {
             }
             if (func_ov000_021a21f8(zero) != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 9:
             if (BuildAiBasicUnit() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 10:
             UpdateAiCandidateCosts();
@@ -336,28 +336,28 @@ void func_ov000_0219fdc8(void) {
         case 11:
             if (func_ov000_021a4320() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 12:
             if (func_ov000_021a1dec() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         case 13:
             if (func_ov000_021a2db8() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
         default:
             if (func_ov000_021a20d4() != 0) return;
             addr578[0][2]++;
-            func_ov000_021a029c();
+            ReleaseAiTargets();
             break;
     }
     M2C_FIELD(gAiCommandState, u8 *, 0) = 6;
 }
 
-void func_ov000_021a01c0(void) {
+void ReleaseAiTargetGroups(void) {
 extern u8 *gAiState;
 extern u8 gAiTargetGroups[];
 u8 *q=gAiState;
@@ -404,40 +404,45 @@ void func_ov000_021a0250(void) {
     } while (i < (s32)*count);
 }
 
-void func_ov000_021a029c(void) {
+void ReleaseAiTargets(void) {
     void ResetAiTargetCandidates(void);
-    void func_ov000_021a01c0(void);
-    func_ov000_021a01c0();
+    void ReleaseAiTargetGroups(void);
+    ReleaseAiTargetGroups();
     ResetAiTargetCandidates();
 }
 
-void func_ov000_021a02ac(void) {
+/* The AI's "unit built" step: show the target tile when it is visible, then once
+ * the build animation is over create the unit from the AI command at the
+ * candidate's tile and decide whether it should advance (its AI flag 0x0B bit 4)
+ * or hold position for defence. Sets the cursor to the new unit and plays the
+ * placement sound. */
+void AiPlaceBuildingUnit(void) {
  extern u8 *gAiState,*gAiSettings;
  extern u8 gAiTargetCandidates,gAiCommand[],gBattleEndState[];
  extern void *gAiCommandState;
  extern void **gCurrentMap;
  void func_0207b774(u8,u8);s32 func_0207b7c4(void);
  BattleMapUnitHead *ProduceUnit(u8,u8,u8);
- s32 IsFootUnitKind(u32);u32 func_ov000_021a0624(s32,s32);
+ s32 IsFootUnitKind(u32);u32 CountFootUnitsWithAiFlag(s32,s32);
  s32 GetUnitKindMaxAttackRange(u32);
  void SendBattleCommandPacket(s32,s32,s32,s32);
  void PlaySoundAtTile(s32,s32,s32);
  BattleMapUnitHead *unit;
  u8 *state=gAiState;
  u8 *target;
- u8 *map;u8 x,y,bits,attr;s32 visible;
- u32 cell; s32 id;
+ u8 *map;u8 x,y,bits,attr;u32 cell;
+ s32 visible; s32 id;
  target=&gAiTargetCandidates+state[4]*12;
  switch(state[3]) {
  case 1:
  state[3]++;
  map=*gCurrentMap;y=target[1];x=target[0];
  attr=M2C_FIELD(map+M2C_FIELD(map,u16 *,0x52a4)*0x8c,u8 *,0x67c3);
- visible=1;
- if(!(attr&2)) {
+ if(attr&2)visible=1;
+ else {
  cell=x+M2C_FIELD(map+y*2,u16 *,0x3758);
  bits=M2C_FIELD(map+(cell>>3),u8 *,0x5201)&(1<<(cell&7));
- if(!bits)visible=0;
+ visible=(bits!=0);
  }
  if(visible)func_0207b774(x,y);
  return;
@@ -451,10 +456,13 @@ void func_ov000_021a02ac(void) {
  else {unit->targetX=63;unit->targetY=63;}
  if(IsFootUnitKind(unit->kind)) {
  if(unit)id=(unit-(BattleMapUnitHead *)(*gCurrentMap+0x59a4));else id=0;
- if(func_ov000_021a0624(id,1)<gAiSettings[9]) {unit->unkB4=1;goto finish;}
+ if(CountFootUnitsWithAiFlag(id,1)<gAiSettings[9]) {unit->unkB4=1;goto finish;}
  if(unit)id=(unit-(BattleMapUnitHead *)(*gCurrentMap+0x59a4));else id=0;
- if(func_ov000_021a0624(id,0)<gAiSettings[8]) {unit->unkB4=0;goto finish;}
+ if(CountFootUnitsWithAiFlag(id,0)<gAiSettings[8]) {unit->unkB4=0;goto finish;}
  }
+ /* No AI role for this kind (or too many of it already): a kind that cannot shoot
+  * holds position, otherwise build more only while the turn's tiebreak number is
+  * below the kind's threshold, else hold position. */
  if(GetUnitKindMaxAttackRange(unit->kind)==0)unit->unkB4=1;
  else {
  if(M2C_FIELD(gAiCommandState,u8 *,3)<M2C_FIELD(gAiSettings+(unit->kind-1)*12,u8 *,0x19))unit->unkB4=0;

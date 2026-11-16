@@ -598,6 +598,7 @@ enum {
 enum {
     GPI_PEER_STATE_CREATED     = 100, /* allocated, no challenge answered yet */
     GPI_PEER_STATE_CHALLENGED  = 101, /* challenge sent, awaiting the answer */
+    GPI_PEER_STATE_PROGRESSING = 102, /* authentication reply built, socket being opened */
     GPI_PEER_STATE_CONNECTING  = 103, /* socket opened, awaiting the TCP connect */
     GPI_PEER_STATE_WAITING     = 104, /* waiting for the peer's \auth\ reply */
     GPI_PEER_STATE_CONNECTED   = 105, /* ready: relay game data messages */
@@ -825,9 +826,9 @@ typedef struct PeerAddress {
 #define MB_GROUP_UNIT_DATA  0x0000 /* 0xE4-byte unit roster sent when the group's battle starts */
 #define MB_GROUP_UNIT_COUNT 0x5C4  /* u16 players/units in the group */
 #define MB_GROUP_ACTIVE     0x5CA  /* u8 nonzero while the group record is in use */
-#define MB_GROUP_UNITS_LEFT 0x5AA  /* u16 record-relative: per-player units-still-in-battle bitmask */
-#define MB_GROUP_UNITS_OUT  0x5AC  /* u16 record-relative: players whose units have left the battle */
-#define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player "resigned" flag: -1 = gave up, 1 byte each, indexed from 1 */
+#define MB_GROUP_PENDING    0x5AA  /* u16 record-relative: per-player pending bitmask */
+#define MB_GROUP_ACKED      0x5AC  /* u16 record-relative: per-player done bitmask */
+#define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player 1-byte flag, -1 = gave up, indexed from 1 */
 
 /* Assembly of the per-player info records received during multiboot match setup:
  * each 30-byte record (player id, info block, group) is sent in command-7 packets
