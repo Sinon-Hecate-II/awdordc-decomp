@@ -25,6 +25,8 @@
 /* More gNetStack fields used by the IPv4 sender in main_0201AE0C. */
 #define NETSTACK_IP_ID    0x06 /* u16 IPv4 identification counter, bumped per packet */
 #define NETSTACK_LOCAL_IP 0x50 /* u32 local IPv4 address, host order */
+#define NETSTACK_DHCP_SERVER    0x20 /* u32 DHCP server identifier from the OFFER (option 54) */
+#define NETSTACK_REQUESTED_IP   0x34 /* u32 IPv4 address requested from the DHCP server (option 50) */
 #define NETSTACK_ARP_RESOLVED 0x01 /* u8 set once an ARP reply announcing the local address arrives */
 
 /* ARP packet layout (RFC 826), as handled by HandleArpPacket in main_0201AE0C.

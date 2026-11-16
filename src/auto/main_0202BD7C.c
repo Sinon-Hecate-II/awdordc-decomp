@@ -102,7 +102,7 @@ void *func_0202c230(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCur
 
 void *func_0202c294(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x20);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c2f8(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x1c);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *GetSoundGroupRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x1c);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
 s32 func_0202c35c(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
 
@@ -288,7 +288,7 @@ s32 func_0202c848(void) {
     return 0;
 }
 
-s32 func_0202c860(M2C_UNK arg0,M2C_UNK arg1){s32 func_0202ca40(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);if(func_0202ca40(arg0,255,arg1,1,0)==0)return 1;return 0;}
+s32 func_0202c860(M2C_UNK arg0,M2C_UNK arg1){s32 LoadSoundSequenceArchive(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);if(LoadSoundSequenceArchive(arg0,255,arg1,1,0)==0)return 1;return 0;}
 
 s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
     s32 LoadSoundBank(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -299,15 +299,15 @@ s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_0202c8b8(s32 arg0,s32 arg1) {
-void *base=func_0202c2f8(arg0);u32 i;void *p;s32 r;
+void *base=GetSoundGroupRecord(arg0);u32 i;void *p;s32 r;
 if(!base)return 1;
 i=0;
 if(i<M2C_FIELD(base,u32 *,0)){
 p=base+4;
 do{
 switch(M2C_FIELD(p,u8 *,0)){
-case 0:r=func_0202c9bc(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
-case 3:r=func_0202ca40(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 0:r=LoadSoundSequence(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 3:r=LoadSoundSequenceArchive(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
 case 1:r=LoadSoundBank(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
 case 2:r=LoadWaveArchive(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
 }
@@ -317,7 +317,7 @@ i++;p+=8;
 return 0;
 }
 
-s32 func_0202c9bc(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
+s32 LoadSoundSequence(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
 s32 LoadSoundBank(s32,s32,s32,s32,s32);
 void *p=func_0202c03c(a);s32 r;
 if(!p)return 2;
@@ -327,7 +327,7 @@ if(flags&1){r=func_0202cd0c(a,b,c);if(!r)return 6;}else r=func_0202c444(a);
 if(out)*out=r;return 0;
 }
 
-s32 func_0202ca40(s32 a,s32 flags,s32 b,s32 c,s32 out) {
+s32 LoadSoundSequenceArchive(s32 a,s32 flags,s32 b,s32 c,s32 out) {
 s32 func_0202cd78(s32,s32,s32);
 void *p=func_0202c0a0(a);s32 r;
 if(!p)return 3;

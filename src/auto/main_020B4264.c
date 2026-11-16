@@ -404,8 +404,8 @@ void func_020b4e10(M2C_UNK arg0) {
 /* Set up the 3D-sprite overlay of both screens for the map: reset each engine's
  * sprite-bank control bits and split rows, then reload the map's palette. */
 void Init3DSpriteDisplay(void) {
-    void func_02082cb4(void);
-    void func_0208232c(void);
+    void Set3DSpriteVramBanks(void);
+    void Apply3DSpriteDisplayConfig(void);
     void func_020d4d78(void);
     void func_020994e0(s32);
     void func_020c0a88(void);
@@ -418,12 +418,12 @@ void Init3DSpriteDisplay(void) {
     void *saved;
     s32 i;
 
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     saved = gCur3DSpriteEngine;
     i = 0;
     do {
         gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        func_0208232c();
+        Apply3DSpriteDisplayConfig();
         ctrl200 = *(u16 **)gCur3DSpriteEngine; *ctrl200 = *ctrl200 & ~0x200;
         ctrl400 = *(u16 **)gCur3DSpriteEngine; *ctrl400 = *ctrl400 & ~0x400;
         ctrl800 = *(u16 **)gCur3DSpriteEngine; *ctrl800 = *ctrl800 & ~0x800;

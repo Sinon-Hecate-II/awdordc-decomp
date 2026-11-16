@@ -10,7 +10,7 @@ typedef struct Setup180 {u16 h[6];} Setup180;
 typedef struct Pos180 {s16 h[4];} Pos180;
 extern u16 data_ov005_02220058[];
 extern void *gOv005MenuState, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-void func_02086608();
+void LoadUiGraphicsBank();
 void func_02082c84();
 void GX_SetBankForBG();
 void GX_SetBankForOBJ();
@@ -76,7 +76,7 @@ u16 * volatile v8;
 u16 * volatile v9;
 u16 * volatile v10;
 u16 * volatile v11;
-func_02086608(10); gOv005MenuState=HeapAllocBlock(60);func_02082c84();
+LoadUiGraphicsBank(10); gOv005MenuState=HeapAllocBlock(60);func_02082c84();
 GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_02002bb8(32);func_0200323c(128);func_020032bc(256);
 M2C_FIELD(gOv005MenuState,u8 *,0)=0; M2C_FIELD(gOv005MenuState,s16 *,4)=0; M2C_FIELD(gOv005MenuState,s16 *,2)=M2C_FIELD(gOv005MenuState,s16 *,4);M2C_FIELD(gOv005MenuState,s16 *,14)=0;M2C_FIELD(gOv005MenuState,s16 *,12)=M2C_FIELD(gOv005MenuState,s16 *,14);M2C_FIELD(gOv005MenuState,s16 *,18)=0;M2C_FIELD(gOv005MenuState,s16 *,20)=0;M2C_FIELD(gOv005MenuState,s16 *,16)=M2C_FIELD(gOv005MenuState,s16 *,14)+1;M2C_FIELD(gOv005MenuState,s16 *,6)=0;M2C_FIELD(gOv005MenuState,s16 *,22)=12;M2C_FIELD(gOv005MenuState,s16 *,24)=0;M2C_FIELD(gOv005MenuState,s16 *,8)=0;M2C_FIELD(gOv005MenuState,s16 *,10)=256;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&first);
@@ -241,11 +241,11 @@ void func_ov005_02218db4(M2C_UNK arg0) {
 }
 
 void func_ov005_02218dfc(void) {
- M2C_UNK func_020af1e4(); M2C_UNK func_020842d4(); M2C_UNK func_020b2178(); M2C_UNK HeapFreeBlock(); M2C_UNK func_02086658(s32);
+ M2C_UNK func_020af1e4(); M2C_UNK func_020842d4(); M2C_UNK func_020b2178(); M2C_UNK HeapFreeBlock(); M2C_UNK FreeUiGraphicsBank(s32);
  extern void *gOv005MenuState;
  func_020af1e4(); func_020842d4(); func_020b2178();
  if(gOv005MenuState) {HeapFreeBlock(); gOv005MenuState=0;}
- func_02086658(10);
+ FreeUiGraphicsBank(10);
 }
 
 void func_ov005_02218e3c(M2C_UNK arg0) {

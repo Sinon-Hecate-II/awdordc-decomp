@@ -236,14 +236,14 @@ s32 func_ov003_021f2b88(s32 a) {
 void InitMapSelectScreen(s32 arg0) {
     M2C_UNK func_01ff9e00(void);
     void func_02082c84(void);
-    void func_02082cb4(void);
+    void Set3DSpriteVramBanks(void);
     void func_02003560(void);
     void func_02002bb8(s32);
     void func_020035bc(void);
     void func_02002ab8(s32);
     void func_ov003_021f1ab8(s32);
     void func_ov003_021f1af8(s32);
-    s32 func_020d4810(void);
+    s32 IsMapConfirmEnabled(void);
     void func_ov003_021f1bd4(void);
     void func_ov003_021f1be8(void);
     void func_ov003_021f192c(void *);
@@ -267,7 +267,7 @@ void InitMapSelectScreen(s32 arg0) {
 
     func_01ff9e00();
     func_02082c84();
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     func_02003560();
     func_02002bb8(0x40);
     func_020035bc();
@@ -309,7 +309,7 @@ void InitMapSelectScreen(s32 arg0) {
     } while (layer < 2);
     gCur3DSpriteEngine = savedEngine;
 
-    if (func_020d4810() != 0) {
+    if (IsMapConfirmEnabled() != 0) {
         func_ov003_021f1bd4();
     } else {
         func_ov003_021f1be8();
@@ -351,7 +351,7 @@ void InitMapSelectScreen(s32 arg0) {
 void func_ov003_021f2e98(s32 entry) {
  M2C_UNK func_ov003_021f17e0(); M2C_UNK SetSpriteAnimation(M2C_UNK,M2C_UNK);
  void func_01ffa6fc(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
- s32 func_ov003_021f1bfc(void); void func_020d47d0(void); void func_020d47f0(void);
+ s32 func_ov003_021f1bfc(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
  void func_02086330(void); void func_02085054(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
@@ -377,14 +377,14 @@ void func_ov003_021f2e98(s32 entry) {
  switch(func_ov003_021f1bfc()) {
  case 0: default: return;
  case 1:
- if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {func_020d47d0();func_01ffa6fc(entry);return;}
+ if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {EnableMapConfirm();func_01ffa6fc(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
  else {if(!GetSceneSlideOffset()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
- if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {func_020d47f0();func_02086330();func_02085054(0,0x6e0,entry);func_01ffa6fc(entry);return;}
+ if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();func_02086330();func_02085054(0,0x6e0,entry);func_01ffa6fc(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
@@ -414,8 +414,8 @@ void func_ov003_021f34d8(void) {
 void func_ov003_021f34e4(void *a) {
     s32 IsLinkSessionActive(void);
     void func_020bfbc0(s32);
-    void func_020d47d0(void);
-    void func_020d47f0(void);
+    void EnableMapConfirm(void);
+    void DisableMapConfirm(void);
     s32 func_ov003_021f1bfc(void);
     void func_ov006_02217214(void *);
     u8 mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
@@ -426,12 +426,12 @@ void func_ov003_021f34e4(void *a) {
     }
     if(test) func_020bfbc0(0);
     if(func_ov003_021f1bfc()==1) {
-        func_020d47d0();
+        EnableMapConfirm();
         if(!IsLinkSessionActive()) return;
         mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
         if(mode!=1 && mode!=5) return;
         func_ov006_02217214(a);
-    } else func_020d47f0();
+    } else DisableMapConfirm();
 }
 
 void func_ov003_021f3564(M2C_UNK arg0) {

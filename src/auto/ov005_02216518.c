@@ -85,7 +85,7 @@ void func_020b2738(void);
 void func_020842d4(void);
 void func_020b2178(void);
 void HeapFreeBlock(void *);
-void func_02086658(s32);
+void FreeUiGraphicsBank(s32);
 void func_02082014(void);
 void func_020901e0(s32);
 extern M2C_UNK gRecordsMenuState;
@@ -96,7 +96,7 @@ if (M2C_FIELD(&gRecordsMenuState, void **, 8)) {
 HeapFreeBlock(M2C_FIELD(&gRecordsMenuState, void **, 8));
 M2C_FIELD(&gRecordsMenuState, void **, 8) = 0;
 }
-func_02086658(7);
+FreeUiGraphicsBank(7);
 func_02082014();
 func_020901e0(4);
 }

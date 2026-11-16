@@ -13,11 +13,11 @@ void func_020e4490(void) {
     M2C_UNK func_02081a48();
     M2C_UNK func_02082d08();
     M2C_UNK Reset3DSpriteDisplayState();
-    M2C_UNK func_02082cb4();
+    M2C_UNK Set3DSpriteVramBanks();
     M2C_UNK func_02082078();
     M2C_UNK func_020e31f0();
     M2C_UNK func_01ff85ec();
-    M2C_UNK func_0208232c();
+    M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK func_0209daec();
     M2C_UNK func_020e3448();
     M2C_UNK func_02080bd4();
@@ -52,7 +52,7 @@ void func_020e4490(void) {
     func_02081a48();
     func_02082d08();
     Reset3DSpriteDisplayState();
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     func_02082078();
     func_020e31f0();
     temp_r7 = gCur3DSpriteEngine;
@@ -65,7 +65,7 @@ void func_020e4490(void) {
         }
         gCur3DSpriteEngine = var_r0;
         func_01ff85ec();
-        func_0208232c();
+        Apply3DSpriteDisplayConfig();
         var_r8 += 1;
     } while (var_r8 < 2);
     gCur3DSpriteEngine = temp_r7;

@@ -368,11 +368,11 @@ if(M2C_FIELD(arg0,s32 *,0x50))DrawMenuEntryHighlight(arg0);
  if(M2C_FIELD(arg0,u32 *,0x44)<199)return; DeleteSpriteObject(arg0);
 }
 
-void *func_ov011_02225684(M2C_UNK **arg0) { M2C_UNK func_02086608(s32); extern M2C_UNK data_02129b9c; extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; M2C_FIELD(arg0,u8 *,0x34)|=2; M2C_FIELD(arg0,s16 *,0x3a)=0; M2C_FIELD(arg0,s8 *,0x37)=0; M2C_FIELD(arg0,s8 *,0x38)=0; M2C_FIELD(arg0,u8 *,0x34)&=~0xf0; M2C_FIELD(arg0,u8 *,0x35)&=~15; M2C_FIELD(arg0,s32 *,0x50)=0; do { arg0[i+16]=0; i++; }while(i<3); M2C_FIELD(arg0,M2C_UNK **,0x4c)=&data_02129b9c; func_02086608(10); return arg0; }
+void *func_ov011_02225684(M2C_UNK **arg0) { M2C_UNK LoadUiGraphicsBank(s32); extern M2C_UNK data_02129b9c; extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; M2C_FIELD(arg0,u8 *,0x34)|=2; M2C_FIELD(arg0,s16 *,0x3a)=0; M2C_FIELD(arg0,s8 *,0x37)=0; M2C_FIELD(arg0,s8 *,0x38)=0; M2C_FIELD(arg0,u8 *,0x34)&=~0xf0; M2C_FIELD(arg0,u8 *,0x35)&=~15; M2C_FIELD(arg0,s32 *,0x50)=0; do { arg0[i+16]=0; i++; }while(i<3); M2C_FIELD(arg0,M2C_UNK **,0x4c)=&data_02129b9c; LoadUiGraphicsBank(10); return arg0; }
 
-void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10);  return arg0; }
+void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10);  return arg0; }
 
-void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10); MemFree(arg0); return arg0; }
+void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10); MemFree(arg0); return arg0; }
 
 void func_ov011_022257b4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x50) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 4);

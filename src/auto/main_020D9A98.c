@@ -5,20 +5,20 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void func_020d47d0(void);M2C_UNK ResetPlayerMask(void);M2C_UNK func_020d47f0(void);s32 func_ov010_022282b4(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
+void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 func_ov010_022282b4(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 func_02084fc0(0);
 switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
 if(!func_ov009_02224508(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
-func_02085414();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));func_020d47d0();
-}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();func_020d47f0();}break;
+func_02085414();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
+}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 case 1:case 2:
 if(!func_ov010_022282b4(6)&&func_ov010_022282b4(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)CreateVoiceChatWidget(7);
-func_02085414();func_02084eec(M2C_FIELD(a,s32 *,0x18));func_020d47d0();
-}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();func_020d47f0();}break;
+func_02085414();func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
+}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 }
 savedEngine=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
@@ -42,8 +42,8 @@ func_020b1c44(0,0);
 
 void func_020d9d5c(void *arg0) {
     M2C_UNK SetSpriteAnimation(void *, u8);
-    s32 func_020d4810();
-    if (func_020d4810() != 0) {
+    s32 IsMapConfirmEnabled();
+    if (IsMapConfirmEnabled() != 0) {
         return;
     }
     SetSpriteAnimation(arg0, M2C_FIELD(arg0, u8 *, 0x40));
@@ -272,7 +272,7 @@ void func_020da480(void *arg0) {
     M2C_UNK GetUiColor(M2C_UNK);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
-    M2C_UNK func_020d47f0(void);
+    M2C_UNK DisableMapConfirm(void);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
     extern void *g3DSpriteBankMain;
@@ -374,7 +374,7 @@ void func_020da480(void *arg0) {
     Clear3DSpriteLayer(0);
     func_01ff9dd8(0);
     gCur3DSpriteEngine = savedEngine;
-    func_020d47f0();
+    DisableMapConfirm();
 }
 
 void func_020da8e4(s32,void *);
@@ -412,7 +412,7 @@ void func_020da7e8(void *entity) {
 void func_020da8e4(s32 arg0, void *arg1) {
     s32 func_020abe90(u8);
     s32 func_020ad3f0();
-    M2C_UNK func_020d47f0();
+    M2C_UNK DisableMapConfirm();
     M2C_UNK func_ov009_02225fb4(s8, u16, s32, void *);
     M2C_UNK func_ov010_022282d4(M2C_UNK);
     if ((func_020abe90(M2C_FIELD(arg1, u8 *, 0x44)) == 1) || (func_020ad3f0() != 0)) {
@@ -423,7 +423,7 @@ void func_020da8e4(s32 arg0, void *arg1) {
         return;
     }
     func_ov009_02225fb4((s8) M2C_FIELD(arg1, u8 *, 0x44), M2C_FIELD(arg1, u16 *, 0x46), arg0, arg1);
-    func_020d47f0();
+    DisableMapConfirm();
     SetSpriteAnimation(arg1, 1);
 }
 
@@ -431,7 +431,7 @@ void func_020da948(s32 arg0,M2C_UNK arg1,u32 arg2,void *arg3){
 s32 func_020abe90(u8); s32 func_020ad3f0(void);
 M2C_UNK func_ov009_02224528(M2C_UNK); void func_ov010_02228320(void);
 M2C_UNK func_ov010_0222a808(s8,u16,s32,M2C_UNK,u32,void *);
-M2C_UNK func_ov010_022282d4(M2C_UNK); M2C_UNK func_020d47f0(void); M2C_UNK SetSpriteAnimation(void *,M2C_UNK);
+M2C_UNK func_ov010_022282d4(M2C_UNK); M2C_UNK DisableMapConfirm(void); M2C_UNK SetSpriteAnimation(void *,M2C_UNK);
 if(func_020abe90(M2C_FIELD(arg3,u8 *,0x44))==1 || func_020ad3f0()!=0){
 func_ov009_02224528(1); return;
 }
@@ -440,7 +440,7 @@ func_ov010_0222a808(M2C_FIELD(arg3,s8 *,0x44),M2C_FIELD(arg3,u16 *,0x46),arg0,ar
 func_ov010_02228320();
 switch(arg2){
 case 0:case 1:case 2:func_ov010_022282d4(6);return;
-case 3:case 4:case 5:case 6:func_020d47f0();SetSpriteAnimation(arg3,1);return;
+case 3:case 4:case 5:case 6:DisableMapConfirm();SetSpriteAnimation(arg3,1);return;
 case 7:default:return;
 }
 }

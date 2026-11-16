@@ -11,7 +11,7 @@ void func_02097c84(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,1,arg1,arg2);
 }
 
-void func_02097cb8(u32 arg0) { s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
+void HideMenuCursor(u32 arg0) { s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
 
 /* Returns the tile row (5 or 6) at which the given character's face graphics
  * start in the 32-tile-wide face tile buffer. */

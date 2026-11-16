@@ -64,11 +64,11 @@ void func_020d4790(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x
 
 void func_020d47b0(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=0;}
 
-void func_020d47d0(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=1;}
+void EnableMapConfirm(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=1;}
 
-void func_020d47f0(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=0;}
+void DisableMapConfirm(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=0;}
 
-u8 func_020d4810(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ad);}
+u8 IsMapConfirmEnabled(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ad);}
 
 /* Normalize the current map/arena id into the base slot (225), copying its
    entry there when it falls in the arena range [225,425). */

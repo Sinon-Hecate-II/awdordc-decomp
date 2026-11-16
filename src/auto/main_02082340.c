@@ -250,7 +250,7 @@ void func_02082c84(void) {
     func_0200365c();
 }
 
-void func_02082cb4(void) {
+void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);

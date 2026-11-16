@@ -739,21 +739,21 @@ void func_ov009_022260dc(void *arg0) {
 }
 
 void func_ov009_02226148(void) {
-    M2C_UNK func_020d47f0();
-    func_020d47f0();
+    M2C_UNK DisableMapConfirm();
+    DisableMapConfirm();
 }
 
 void func_ov009_02226154(void) {
     M2C_UNK func_020852a8();
     M2C_UNK func_020852e0();
-    M2C_UNK func_020d47d0();
+    M2C_UNK EnableMapConfirm();
     s32 GetLinkPhase();
     if (GetLinkPhase() == 1) {
-        func_020d47d0();
+        EnableMapConfirm();
         func_020852a8();
         return;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     func_020852e0();
 }
 
@@ -768,10 +768,10 @@ void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK func_ov009_0222454c();
     extern M2C_UNK data_ov009_02226784;
     if (GetLinkPhase() != 0) {
-        func_020d47d0();
+        EnableMapConfirm();
         return;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     func_ov009_02224528(1);
     if (func_ov009_022242c8() == 0) return;
     func_ov009_0222454c();
@@ -783,11 +783,11 @@ void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
 
 void func_ov009_022261e4(M2C_UNK arg0, u16 arg1, void *arg2) {
     s32 GetLinkPhase(void);
-    M2C_UNK func_020d47d0(void);
+    M2C_UNK EnableMapConfirm(void);
     void *func_01ffa444(void *, void *);
     extern M2C_UNK data_ov009_022267b4;
     if (GetLinkPhase() == 0) {
-        func_020d47d0();
+        EnableMapConfirm();
         return;
     }
     func_01ffa444(&data_ov009_022267b4, arg2);

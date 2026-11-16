@@ -186,63 +186,63 @@ s32 func_02086520(s32 arg0) {
 
 void func_02086574(void) {
     void func_020865a0(void);
-    extern M2C_UNK data_02157678[];
+    extern M2C_UNK gUiGraphicsBanks[];
     s32 i;
     i = 0;
     do {
-        data_02157678[i] = 0;
+        gUiGraphicsBanks[i] = 0;
         i = i + 1;
     } while (i < 0x28);
     func_020865a0();
 }
 
 void func_020865a0(void) {
-    void func_02086608(u8);
-    void func_02086658(u8);
-    extern M2C_UNK data_02157678[];
+    void LoadUiGraphicsBank(u8);
+    void FreeUiGraphicsBank(u8);
+    extern M2C_UNK gUiGraphicsBanks[];
     s32 var_r4;
     s32 var_r5;
     var_r5 = 0;
     do {
-        if ((func_02086520((u8)var_r5) != 0) && (((s32 *)&data_02157678)[var_r5] != 0)) {
-            func_02086658((u8)var_r5);
+        if ((func_02086520((u8)var_r5) != 0) && (((s32 *)&gUiGraphicsBanks)[var_r5] != 0)) {
+            FreeUiGraphicsBank((u8)var_r5);
         }
         var_r5 += 1;
     } while (var_r5 < 0x28);
     var_r4 = 0;
     do {
         if (func_02086520((u8)var_r4) != 0) {
-            func_02086608((u8)var_r4);
+            LoadUiGraphicsBank((u8)var_r4);
         }
         var_r4 += 1;
     } while (var_r4 < 0x28);
 }
 
-void func_02086608(u8 arg0) {
+void LoadUiGraphicsBank(u8 arg0) {
  s32 GetLocalizedFileName(s32);
  void StringFormat(void *, void *, s32);
  s32 func_02081070(void *, s32);
- extern M2C_UNK data_0210244c, data_02102250, data_02157678[];
+ extern M2C_UNK data_0210244c, data_02102250, gUiGraphicsBanks[];
  u8 sp0[0x20];
  StringFormat(sp0, &data_02102250, GetLocalizedFileName(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
- ((s32 *)&data_02157678)[arg0] = func_02081070(sp0, 1);
+ ((s32 *)&gUiGraphicsBanks)[arg0] = func_02081070(sp0, 1);
 }
 
-void func_02086658(u8 arg0) {
+void FreeUiGraphicsBank(u8 arg0) {
  void HeapFreeBlock(s32);
- extern M2C_UNK data_02157678[];
- HeapFreeBlock(((s32 *)&data_02157678)[arg0]);
- ((s32 *)&data_02157678)[arg0] = 0;
+ extern M2C_UNK gUiGraphicsBanks[];
+ HeapFreeBlock(((s32 *)&gUiGraphicsBanks)[arg0]);
+ ((s32 *)&gUiGraphicsBanks)[arg0] = 0;
 }
 
 s32 GetLocalizedText(u32 arg0) {
  extern u32 data_02102448;
- extern M2C_UNK data_02157678[];
+ extern M2C_UNK gUiGraphicsBanks[];
  u32 *p = &data_02102448;
  if (arg0 == -1U) arg0 = func_02086730();
  for (; p[1] != 0; p += 2) {
   if (arg0 >= p[0]) {
-   s32 base = ((s32 *)&data_02157678)[((s32)p - (s32)&data_02102448) / 8];
+   s32 base = ((s32 *)&gUiGraphicsBanks)[((s32)p - (s32)&data_02102448) / 8];
    return base + ((s32 *)base)[arg0 & 0xFFFFFF];
   }
  }

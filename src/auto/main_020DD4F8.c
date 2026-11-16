@@ -44,7 +44,7 @@ static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteF
    sprite shows whether the unit of the slot under the cursor exists and confirming picks
    that unit. */
 void UnitPreviewMenuInput(void *arg0) {
-void MenuSpriteUpdate(void *);void func_020d47f0(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
+void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
 s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
@@ -57,7 +57,7 @@ M2C_FIELD(arg0,u16 *,0x48)&=~32;
 if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
 func_ov009_02224688();
 PressSprite(M2C_FIELD(arg0,void **,0x58));
-func_020d47f0();SetSpriteAnimation(arg0,1);PlaySoundEffect(0x1000f);return;
+DisableMapConfirm();SetSpriteAnimation(arg0,1);PlaySoundEffect(0x1000f);return;
 }
 /* the cursor moved to another option */
 if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg0,s8 *,0x41)!=M2C_FIELD(arg0,s8 *,0x42)){
@@ -98,7 +98,7 @@ void func_020dd97c(void) {
  * the cursor sprite shows whether the unit of the slot under the cursor exists
  * and confirming picks that unit. */
 void UnitDeployMenuInput(void *arg0) {
-void MenuSpriteUpdate(void *);void func_020d47f0(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
+void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
 s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
@@ -110,7 +110,7 @@ M2C_FIELD(arg0,u16 *,0x48)&=~32;
 /* the back button closes the 3D view */
 if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
 PressSprite(M2C_FIELD(arg0,void **,0x58));
-func_020d47f0();
+DisableMapConfirm();
 switch(M2C_FIELD(arg0,s32 *,0x38)) {
 case 0: M2C_FIELD(arg0,u8 *,0x40)=0x26; M2C_FIELD(arg0,u16 *,0x48)|=32; SetSpriteAnimation(arg0,0x44); break;
 case 1: M2C_FIELD(arg0,u8 *,0x40)=0x27; SetSpriteAnimation(arg0,1); break;

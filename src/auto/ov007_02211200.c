@@ -33,7 +33,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- LoadMapTileset();func_02086608(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
+ LoadMapTileset();LoadUiGraphicsBank(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
  func_ov007_0221c648(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -65,14 +65,14 @@ void func_ov007_0221142c(M2C_UNK arg0) {
 }
 
 void func_ov007_02211480(void) {
-    M2C_UNK func_02086658(M2C_UNK);
+    M2C_UNK FreeUiGraphicsBank(M2C_UNK);
     M2C_UNK func_0208c748();
     M2C_UNK func_020b2178();
     M2C_UNK func_020bfbc0(M2C_UNK);
     M2C_UNK func_020d4c08();
     M2C_UNK func_ov007_02212db8();
     M2C_UNK func_ov007_0221ab38();
-    func_02086658(4);
+    FreeUiGraphicsBank(4);
     func_ov007_02212db8();
     func_020b2178();
     func_ov007_0221ab38();

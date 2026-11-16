@@ -221,7 +221,7 @@ void func_ov007_022143bc(void) {
     M2C_UNK MapSettings_Capture(M2C_UNK);
     M2C_UNK func_02088624();
     extern u16 gMapConfig;
-    if (func_020d4810() != 0) {
+    if (IsMapConfirmEnabled() != 0) {
         gMapConfig = (u16) (gMapConfig | 0x40);
         MapSettings_Capture(0);
     }

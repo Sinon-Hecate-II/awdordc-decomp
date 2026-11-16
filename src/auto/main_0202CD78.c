@@ -336,7 +336,7 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     void *func_0202b018(void *, s32, s32);
     void *func_0202b158(s32, void *);
     s32 LoadSoundBank(void *, s32, s32, s32, s32 *);
-    s32 func_0202c9bc(s32, s32, s32, s32, s32 *);
+    s32 LoadSoundSequence(s32, s32, s32, s32, s32 *);
     void func_0202b0b0(void *);
     void func_0202b0bc(void *, void *, s32);
     void func_0202acf0(void *, s8);
@@ -359,7 +359,7 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
         func_0202b0b0(handle);
         return 0;
     }
-    if (func_0202c9bc(arg5, 1, (s32)p, 0, &slot8) != 0) {
+    if (LoadSoundSequence(arg5, 1, (s32)p, 0, &slot8) != 0) {
         func_0202b0b0(handle);
         return 0;
     }

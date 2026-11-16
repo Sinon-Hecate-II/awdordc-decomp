@@ -328,7 +328,7 @@ void func_ov010_0222b418(void *arg0) {
     register unsigned long temp_r9;
     void *temp_r0;
 
-    if (func_020d4810() != 0) {
+    if (IsMapConfirmEnabled() != 0) {
         func_020c4a74(0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8)(M2C_FIELD(arg0, u8 *, 0x34) | 1u);
         SetSpriteAnimation(arg0, 3);
@@ -382,7 +382,7 @@ void func_ov010_0222b604(void *arg0) {
 M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 old;u32 current;s32 i;s8 mode;void *p;
-if(func_020d4810()){
+if(IsMapConfirmEnabled()){
 if(M2C_FIELD(arg0,s8 *,0x35)<0)return;
 old=gCur3DSpriteEngine;i=0;
 do {
@@ -446,7 +446,7 @@ gCur3DSpriteEngine=old;
 }
 
 void func_ov010_0222b8ac(void *arg0) {
-    if (func_020d4810() != 0) {
+    if (IsMapConfirmEnabled() != 0) {
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
         SetSpriteAnimation(arg0, 3);
         return;
@@ -455,8 +455,8 @@ void func_ov010_0222b8ac(void *arg0) {
 }
 
 void func_ov010_0222b8ec(M2C_UNK arg0) {
-    s32 func_020d4810();
-    if (func_020d4810() != 0) {
+    s32 IsMapConfirmEnabled();
+    if (IsMapConfirmEnabled() != 0) {
         SetSpriteAnimation(arg0, 3);
         return;
     }
@@ -483,10 +483,10 @@ void func_ov010_0222b92c(void *arg0) {
 
 void func_ov010_0222b998(void) {
     M2C_UNK func_020852a8();
-    M2C_UNK func_020d47f0();
+    M2C_UNK DisableMapConfirm();
     M2C_UNK func_ov010_022282d4(M2C_UNK);
     M2C_UNK func_ov010_02228320();
-    func_020d47f0();
+    DisableMapConfirm();
     func_ov010_02228320();
     func_ov010_022282d4(6);
     func_020852a8();
@@ -494,13 +494,13 @@ void func_ov010_0222b998(void) {
 
 void func_ov010_0222b9b4(void) {
     M2C_UNK func_020852e0();
-    M2C_UNK func_020d47d0();
+    M2C_UNK EnableMapConfirm();
     s32 func_ov010_022282b4(M2C_UNK);
     if (func_ov010_022282b4(2) != 0) {
-        func_020d47d0();
+        EnableMapConfirm();
         return;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     func_020852e0();
 }
 

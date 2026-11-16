@@ -21,8 +21,8 @@ u8 func_020c0254(void) {
 
 /* In each graphics bank, clear the low status bits of the first entry and set status bit 0x100. */
 void func_020c0278(void) {
-    M2C_UNK func_02082cb4();
-    M2C_UNK func_0208232c();
+    M2C_UNK Set3DSpriteVramBanks();
+    M2C_UNK Apply3DSpriteDisplayConfig();
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -34,12 +34,12 @@ void func_020c0278(void) {
     s32 savedBank;
     s32 i;
 
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     savedBank = gCur3DSpriteEngine;
     i = 0;
     do {
         gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        func_0208232c();
+        Apply3DSpriteDisplayConfig();
         ++i;
         ctx0 = *(u16 **)gCur3DSpriteEngine;
         *ctx0 = *ctx0 & ~0x10;

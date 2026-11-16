@@ -18,8 +18,8 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     extern u8 data_ov005_022201c0[];
     extern u8 data_ov005_022201d0[];
     void func_020885fc(void);
-    void func_02082cb4(void);
-    void func_0208232c(void);
+    void Set3DSpriteVramBanks(void);
+    void Apply3DSpriteDisplayConfig(void);
     void Reset3DSpriteBankState(void);
     void *func_020896f0(void *);
     void func_02089424(void);
@@ -42,14 +42,14 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void LoadBattleMap(u16);
     void func_ov003_021ff3d4(void *);
     void func_02089438(void *);
-    void func_02086608(s32);
+    void LoadUiGraphicsBank(s32);
 
     func_020885fc();
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     savedEngine = gCur3DSpriteEngine;
     i=0;do {
         gCur3DSpriteEngine = (i == 0) ? data_027e00c8 : data_027e00c4;
-        func_0208232c();
+        Apply3DSpriteDisplayConfig();
         { u16 *volatile reg=*(u16 **)(void *)gCur3DSpriteEngine; *reg = *reg | 16; }
 { u16 *volatile reg=*(u16 **)(void *)gCur3DSpriteEngine; *reg = *reg | 32; }
 { u16 *volatile reg=*(u16 **)(void *)gCur3DSpriteEngine; *reg = *reg | 64; }
@@ -156,14 +156,14 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         M2C_FIELD(p, s16 *, 0x36) = 0x58;
     }
     func_02089438(M2C_FIELD((void *)arg0, void **, 0x4C));
-    func_02086608(4);
+    LoadUiGraphicsBank(4);
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 s32 func_ov005_0221174c(void) {
-s32 func_02086658(s32); s32 func_020af1e4(); s32 func_ov003_021ff7ac(); s32 func_02088624();
-func_02086658(4); func_020af1e4(); func_ov003_021ff7ac(); func_02088624();
+s32 FreeUiGraphicsBank(s32); s32 func_020af1e4(); s32 func_ov003_021ff7ac(); s32 func_02088624();
+FreeUiGraphicsBank(4); func_020af1e4(); func_ov003_021ff7ac(); func_02088624();
 }
 
 #pragma opt_strength_reduction off

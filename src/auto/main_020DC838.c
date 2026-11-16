@@ -26,7 +26,7 @@ static inline void func_020dcc00(void *q) {
  * presses into the confirm and back animations of the highlighted option. */
 void MatchingMenuConfirmInput(void *menu) {
     void MenuSpriteUpdate(void *);
-    void func_020d47f0(void);
+    void DisableMapConfirm(void);
     void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32);
     void func_01ffa6fc(void *);
@@ -61,7 +61,7 @@ void MatchingMenuConfirmInput(void *menu) {
         M2C_FIELD(backSprite, SpriteFrameBits *, MENU_SPRITE_FRAME).frame = (u16)(M2C_FIELD(backSprite, SpriteBaseBits *, MENU_SPRITE_BASE).base + 1);
         M2C_FIELD(backSprite, u8 *, MENU_SPRITE_TIMER) = 12;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     switch(M2C_FIELD(menu,s32*,0x38)){
     case 0: M2C_FIELD(menu,u8*,0x40)=0x1e; break;
     case 1: M2C_FIELD(menu,u8*,0x40)=0x1f; break;

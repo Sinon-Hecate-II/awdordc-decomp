@@ -24,6 +24,8 @@
 #define DHCP_OPT_SUBNET     1    /* parameter request: subnet mask */
 #define DHCP_OPT_ROUTER     3    /* parameter request: router */
 #define DHCP_OPT_DNS        6    /* parameter request: DNS servers */
+#define DHCP_OPT_REQUESTED_IP 50 /* u32 IPv4 address the client asks for */
+#define DHCP_OPT_SERVER_ID  54   /* u32 address of the DHCP server that offered it */
 #define DHCP_OPTION_END     255  /* end-of-options marker */
 
 /* DHCP message types. */

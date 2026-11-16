@@ -110,7 +110,7 @@ void func_020e0368(void) {
     ((M2C_UNK (*)())func_020e0194)();
 }
 
-s32 func_020d4810();
+s32 IsMapConfirmEnabled();
 M2C_UNK func_020e0374(void *arg0) { s16 v; void *q; u16 value; func_020e0230(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
@@ -130,7 +130,7 @@ M2C_UNK func_020e03b8(void *arg0) { void *p;
  s16 v;
 void *q;
 u16 value;
- if(!func_020d4810()){func_ov010_022294ec();func_ov010_02228c88(arg0);}
+ if(!IsMapConfirmEnabled()){func_ov010_022294ec();func_ov010_02228c88(arg0);}
  p=M2C_FIELD(arg0,void**,0x54);
  if(func_020e_check(p))Hide3DSpriteSlide(p);
  Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x58));
@@ -206,14 +206,14 @@ M2C_UNK func_020e0580(s32 arg0) {
    the map's link flag and (re)create that player's marker object on the matching
    3D engine; if none differs, drop any leftover marker object. */
 void RefreshLinkPlayerSprites(void *entity) {
-s32 GetLocalPlayerIdForOverlay(); void func_020d47d0(); void func_020d47f0();
+s32 GetLocalPlayerIdForOverlay(); void EnableMapConfirm(); void DisableMapConfirm();
 s32 func_0208b5ec(); M2C_UNK func_0208af20(); void *func_0208b564(void *);
 M2C_UNK func_020899cc(void *,s32,s32,s32);
 extern u16 *gLinkPlayerMasks[];
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *sprite; s32 engine; register s32 slot; u8 screenMode; s32 savedEngine; u16 playerMask; s32 player;
 playerMask=*gLinkPlayerMasks[GetLocalPlayerIdForOverlay()];
-func_020d47d0();
+EnableMapConfirm();
 for(player=0;player<4;player++){
 if((playerMask & (1<<player)) && playerMask != *gLinkPlayerMasks[player]){
 if(func_0208b5ec())func_0208af20();
@@ -230,9 +230,9 @@ func_020899cc(sprite,2,M2C_FIELD(entity,u16*,0x46)<<5,0x4400000a);
 M2C_FIELD(sprite,s32*,0x58)|=0x1000;
 next: ++slot;
 }while(slot<2);
-gCur3DSpriteEngine=savedEngine;func_020d47f0();break;
+gCur3DSpriteEngine=savedEngine;DisableMapConfirm();break;
 }}
-if(func_020d4810() && func_0208b5ec())func_0208af20();
+if(IsMapConfirmEnabled() && func_0208b5ec())func_0208af20();
 }
 
 M2C_UNK func_020e06fc() {
@@ -277,7 +277,7 @@ void func_020e0b04(void *entity) {
     s32 IsLinkSessionActive(void); s32 func_0208477c(void); s32 GetOverlayEventFlags(void);
     s32 func_0208b5ec(void); M2C_UNK func_0208af20(void); void *func_0208b564(void *);
     M2C_UNK func_020899cc(void *, s32, s32, s32);
-    void func_020d47f0(void); void SetSpriteAnimation(void *, s32);
+    void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32); void func_01ffa6fc(void *);
     void MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
@@ -291,7 +291,7 @@ void func_020e0b04(void *entity) {
     keys = *gKeyState;
     M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
     if (E0B04Process(entity)) {
-        func_020d47f0();
+        DisableMapConfirm();
         SetSpriteAnimation(entity, 0x40);
         return;
     }

@@ -285,6 +285,30 @@ typedef struct ScenePanelState {
     u8 unk_0A[2];
 } ScenePanelState;
 
+/* Input action flags of the scene-panel widgets, returned for the buttons and
+ * for the stylus. */
+enum {
+    PANEL_INPUT_LEFT    = 0x04, /* left key, or a touch on the widget's left half */
+    PANEL_INPUT_RIGHT   = 0x08, /* right key, or a touch on the widget's right half */
+    PANEL_INPUT_CONFIRM = 0x10, /* A key, or a touch release on the touched half */
+    PANEL_INPUT_CANCEL  = 0x20  /* B key */
+};
+
+/* A two-state widget of a scene panel: two 32x16 halves side by side, one of
+ * them selected. The layout helper places it and the update helper handles its
+ * input and runs `callback` once the user has chosen. */
+typedef struct ToggleWidget {
+    u8 pad00[0x34];
+    s16 selected;           /* +0x34 0 = left half, 1 = right half */
+    u8 pad36[0x0A];
+    u8 engine;              /* +0x40 engine (screen) whose layer the widget is on */
+    u8 pad41[3];
+    void (*callback)(void); /* +0x44 run after the choice is made */
+    u16 panelEntry;         /* +0x48 panel entry the widget was created on */
+    s16 x;                  /* +0x4A x offset of the selected half */
+    s32 tile;               /* +0x4C offset of the widget's tile in the layer */
+} ToggleWidget;             /* 0x50 bytes */
+
 /* A CO face sprite (the portrait nodes built by func_02099338): a 3D sprite
  * object extended with the face texture shown, its expression and palette
  * style, and a linked face object that is refreshed with it. */

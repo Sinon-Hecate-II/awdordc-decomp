@@ -82,9 +82,9 @@ void func_ov006_0221747c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x48) = HeapAllocBlock(0x6F8);
     M2C_FIELD(arg0, s32 *, 0x4C) = HeapAllocBlock(0x2AC);
     func_020e36dc(arg0);
-    func_02086608(4);
+    LoadUiGraphicsBank(4);
     func_02089728();
-    func_020d47f0();
+    DisableMapConfirm();
 }
 
 void func_ov006_022174d0(void *arg0) {
@@ -92,7 +92,7 @@ void func_ov006_022174d0(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x3C));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x48));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
-    func_02086658(4);
+    FreeUiGraphicsBank(4);
     func_02089740();
 }
 
@@ -185,7 +185,7 @@ void func_ov006_02217794(void *arg0) {
     if ((M2C_FIELD(arg0, s32 *, 0x38) != 0) && (func_0208471c() == 0)) {
         return;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     SetSpriteAnimation(arg0, 2);
 }
 
@@ -196,7 +196,7 @@ void func_ov006_022177c8(s32 arg0) {
 
 void func_ov006_022177e4(void) {
     M2C_UNK func_02089728();
-    func_02086608(4);
+    LoadUiGraphicsBank(4);
     func_02089728();
     if (func_02086a30(0x21) == 0) {
         func_02086720(0x46000026);
@@ -208,7 +208,7 @@ void func_ov006_022177e4(void) {
 
 void func_ov006_0221782c(void) {
     M2C_UNK func_02089740();
-    func_02086658(4);
+    FreeUiGraphicsBank(4);
     func_02089740();
 }
 
@@ -223,7 +223,7 @@ s32 func_020c7eb8(s32);
 M2C_FIELD(arg0,s32 *,0x4c)=HeapAllocBlock(0x1ea0);
 M2C_FIELD(arg0,s32 *,0x50)=HeapAllocBlock(0x45b0);
 M2C_FIELD(arg0,s32 *,0x54)=0;
-func_020e36dc(arg0); func_02086608(4); func_02089728(); func_020d47f0();
+func_020e36dc(arg0); LoadUiGraphicsBank(4); func_02089728(); DisableMapConfirm();
 if(func_020c7eb8(M2C_FIELD(arg0,s32 *,0x34))){
 switch(M2C_FIELD(arg0,s32 *,0x38)){case 0:func_02086720(0x4600002c);return;case 1:func_02086720(0x4600002d);return;}
 }else{
@@ -235,7 +235,7 @@ void func_ov006_0221791c(void *arg0) {
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK func_020e36f4();
     func_020e36f4();
-    func_02086658(4);
+    FreeUiGraphicsBank(4);
     func_02089740();
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
@@ -367,11 +367,11 @@ void func_ov006_02217b24(void *arg0) {
 
 void func_ov006_02217b7c(M2C_UNK arg0) {
     s32 func_0208471c();
-    M2C_UNK func_020d47f0();
+    M2C_UNK DisableMapConfirm();
     if (func_0208471c() == 0) {
         return;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     SetSpriteAnimation(arg0, 4);
 }
 
@@ -405,11 +405,11 @@ M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=0;
 void func_ov006_02217c30(s32 a) { extern M2C_UNK data_ov006_02218bd8; void *p=((void *(*)())CreateSpriteObject)(&data_ov006_02218bd8); M2C_FIELD(p,s32 *,0x34)=a; M2C_FIELD(p,s32 *,0x38)=1; }
 
 void func_ov006_02217c54(void) {
-    func_02086608(4);
+    LoadUiGraphicsBank(4);
 }
 
 void func_ov006_02217c64(void) {
-    func_02086658(4);
+    FreeUiGraphicsBank(4);
 }
 
 void func_ov006_02217c74(M2C_UNK arg0) {
@@ -442,10 +442,10 @@ void func_ov006_02217d28(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x50) = HeapAllocBlock(6);
     M2C_FIELD(arg0, s8 *, 0x3B) = 0;
     func_020e36dc(arg0);
-    func_02086608(4);
+    LoadUiGraphicsBank(4);
     func_02089728();
     func_ov006_02217cfc(0);
-    func_020d47f0();
+    DisableMapConfirm();
 }
 
 void func_ov006_02217d9c(void *arg0) {
@@ -455,7 +455,7 @@ void func_ov006_02217d9c(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
     func_020e36f4(arg0);
-    func_02086658(4);
+    FreeUiGraphicsBank(4);
     func_02089740();
 }
 

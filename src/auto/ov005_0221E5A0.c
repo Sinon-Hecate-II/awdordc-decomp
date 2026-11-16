@@ -213,9 +213,9 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     s32 func_020815bc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208232c();
+    M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, u16 *);
-    M2C_UNK func_02082cb4();
+    M2C_UNK Set3DSpriteVramBanks();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -263,7 +263,7 @@ void func_ov005_0221f084(void *arg0) {
     void *var_r0;
 
     sp8 = data_ov005_02220078;
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     func_02091cd0();
     SetFileDirectory(&data_ov005_02221230);
     temp_r11 = data_027e01d8;
@@ -275,7 +275,7 @@ void func_ov005_0221f084(void *arg0) {
             var_r0 = (void*)g3DSpriteEngineSub;
         }
         data_027e01d8 = var_r0;
-        func_0208232c();
+        Apply3DSpriteDisplayConfig();
         Configure3DSpriteLayer(3, &sp8);
         var_r9 += 1;
         temp_r0 = M2C_FIELD(data_027e01d8, u16 **, 0);

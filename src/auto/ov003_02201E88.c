@@ -408,7 +408,7 @@ void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020d47f0();
+    M2C_UNK DisableMapConfirm();
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f1be8();
     s32 func_ov003_02200c7c();
@@ -421,7 +421,7 @@ void func_ov003_02202cc4(void *arg0) {
     void *temp_r0;
 
     PlaySoundEffect(0x1000F);
-    func_020d47f0();
+    DisableMapConfirm();
     temp_r0 = *M2C_FIELD(arg0, void ***, 0x40);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));

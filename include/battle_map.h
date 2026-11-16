@@ -324,6 +324,7 @@ typedef struct MapTargetEntry {
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
 #define MAP_RETURN_STATE    0x52b2 /* u16 state to go back to after a temporary submode (0 = none) */
 #define MAP_CURSOR_OWNER    0x52a8 /* u16 owner mask the unit under the cursor must match */
+#define MAP_CONFIRM_ENABLED 0x52ad /* u8 nonzero while the current map/choice is confirmed (IsMapConfirmEnabled) */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_TARGET_Y 0x52c4
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */

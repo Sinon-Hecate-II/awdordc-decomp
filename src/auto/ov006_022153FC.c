@@ -574,18 +574,18 @@ done:
  * unreadable code picks the matching error state; then updates the panel sprite
  * and plays the result sound. */
 M2C_UNK ConfirmFriendCode(void *entry){
-void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void func_020d47f0(void);void func_020d47d0(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
+void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
 u32 codeWords[3];u64 enteredCode,ownCode;void *panel=M2C_FIELD(entry,void **,0x10);void *part;u16 **savedEngine;
 if(M2C_FIELD(entry,u8 *,0)==12){
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
-Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));func_020d47f0();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000f);return;}
+Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));DisableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000f);return;}
 ownCode=func_020c53e4(0);enteredCode=func_020c54ac(gFriendCodeInput);
 if((ownCode==0||enteredCode==0||ownCode!=enteredCode)&&func_020c5474(enteredCode)){
 func_020c5424(codeWords,enteredCode);if(!func_020c54e8(codeWords)){
 MI_CpuCopy8(gFriendCodeInput,M2C_FIELD(panel,s32 *,0x34),13);
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
-Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));func_020d47d0();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000e);return;}
+Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));EnableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000e);return;}
 func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,5);PlaySoundEffect(0x1001d);return;
 }
 if(ownCode!=0&&enteredCode!=0&&ownCode==enteredCode){

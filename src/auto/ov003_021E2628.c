@@ -1,7 +1,7 @@
 /* 1 function from 0x021E2628 to 0x021E3500 (ov003), found by ds-decomp. */
 #include "common.h"
 extern u8 *gTouchState;extern u16 *gKeyState;
-s32 func_020d4810(void);void Hide3DSprite(void*);void SetOv003SceneState(s32);void func_01ffa6fc(void*);void func_ov003_021f1bd4(void);
+s32 IsMapConfirmEnabled(void);void Hide3DSprite(void*);void SetOv003SceneState(s32);void func_01ffa6fc(void*);void func_ov003_021f1bd4(void);
 void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(s32);
 void *func_0208b564(void*);s32 func_ov003_021f1894(void);void func_020899cc(void*,s32,s32,s32);void func_0208ae88(void*,s32);
 void func_ov003_021e161c(void*);void func_ov003_021e1530(void*,u8);void func_ov003_021e3714(void*);
@@ -40,8 +40,8 @@ u8 *p=arg0;u16 keys,repeat;u8 allowed,busy,clicked;void *menu,*sprite;u8 selecte
 if(((HandlerFlags*)(p+0x60))->pending){
 ((HandlerFlags*)(p+0x60))->pending=0;
 switch(((HandlerFlags*)(p+0x60))->mode){
-case 0:if(func_020d4810())VCall(p,0x1c);break;
-case 1:if(func_020d4810())VCall(p,0x20);break;
+case 0:if(IsMapConfirmEnabled())VCall(p,0x1c);break;
+case 1:if(IsMapConfirmEnabled())VCall(p,0x20);break;
 case 2:if(p[0x39])Hide3DSprite(M2C_FIELD(p,void**,0x4c));SetOv003SceneState(2);p[0x38]=0;func_01ffa6fc(p);break;
 }
 }

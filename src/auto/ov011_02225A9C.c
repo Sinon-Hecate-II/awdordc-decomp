@@ -47,10 +47,10 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
+s32 Set3DSpriteVramBanks(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
-M2C_FIELD(state,u8 *,0x34)&=~1;func_02082cb4(state);
+M2C_FIELD(state,u8 *,0x34)&=~1;Set3DSpriteVramBanks(state);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020822b8(data_ov011_02228a3c);
 Priority25d(6,0);Priority25d(8,1);Priority25d(10,2);Priority25d(12,3);

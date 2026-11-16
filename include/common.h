@@ -1724,6 +1724,14 @@ typedef struct FifoMessage {
     u32 payload:26; /* bits 6..31: message data */
 } FifoMessage;
 
+/* An ARM7 transfer request is posted on the IPC FIFO as seven words: first the
+ * transfer flags (with the fixed bits 0x02004100), then the source,
+ * destination and byte size, each as a high and a low 16-bit half.  A word
+ * carries its command index at bits 16..22, and the last word also sets bit 24. */
+#define ARM7_XFER_FIFO_TAG 9   /* IPC FIFO handler tag of the ARM7 transfer service */
+#define ARM7_XFER_WORD(n)  ((u32)(n) << 16) /* command index of a request word */
+#define ARM7_XFER_LAST_WORD 0x01000000      /* set on the last word of a request */
+
 /* Stream locking shared by ReadFileData, GetFilePosition and SetFilePosition.
  * gStreamMutexes holds one GsiMutex per stream class; the running thread object
  * (gSocketManager+0x04) carries its id at +0x6C, which gStreamLockOwner records

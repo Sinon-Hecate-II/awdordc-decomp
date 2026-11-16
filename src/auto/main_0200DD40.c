@@ -142,26 +142,30 @@ cb=M2C_FIELD(&gArm7TransferState,void (**)(s32,s32),8);
 if(cb){M2C_FIELD(&gArm7TransferState,s32 *,8)=0;cb(result,M2C_FIELD(&gArm7TransferState,s32 *,12));}
 }
 #pragma scheduling on
-s32 Arm7TransferSubmit(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
-    if (SendFifoMessage(9, arg3 | 0x02004100, 0) < 0) {
+/* Post an ARM7 transfer request on the IPC FIFO: the transfer flags word, then
+ * the source, destination and byte size as high/low 16-bit halves.  Each word
+ * must be accepted by the FIFO; the last one marks the end of the request.
+ * Returns 1 when all seven words went out, 0 when the FIFO rejected one. */
+s32 Arm7TransferSubmit(u32 src, u32 dst, u32 size, u32 flags) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, flags | 0x02004100, 0) < 0) {
         return 0;
     }
-    if (SendFifoMessage(9, (arg0 >> 16) | 0x10000, 0) < 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, (src >> 16) | ARM7_XFER_WORD(1), 0) < 0) {
         return 0;
     }
-    if (SendFifoMessage(9, (u16)arg0 | 0x20000, 0) < 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, (u16)src | ARM7_XFER_WORD(2), 0) < 0) {
         return 0;
     }
-    if (SendFifoMessage(9, (arg1 >> 16) | 0x30000, 0) < 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, (dst >> 16) | ARM7_XFER_WORD(3), 0) < 0) {
         return 0;
     }
-    if (SendFifoMessage(9, (u16)arg1 | 0x40000, 0) < 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, (u16)dst | ARM7_XFER_WORD(4), 0) < 0) {
         return 0;
     }
-    if (SendFifoMessage(9, (arg2 >> 16) | 0x50000, 0) < 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, (size >> 16) | ARM7_XFER_WORD(5), 0) < 0) {
         return 0;
     }
-    if (SendFifoMessage(9, 0x01060000 | (u16)arg2, 0) >= 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, ARM7_XFER_WORD(6) | ARM7_XFER_LAST_WORD | (u16)size, 0) >= 0) {
         return 1;
     }
     return 0;

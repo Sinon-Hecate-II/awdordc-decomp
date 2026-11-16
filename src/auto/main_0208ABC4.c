@@ -19,8 +19,8 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
     void func_0208af20(void *);
     u8 func_0208ae88(Unk0208ABC4 *, s32);
     M2C_UNK PlaySoundEffect(s32);
-    void func_020d47d0(void);
-    void func_020d47f0(void);
+    void EnableMapConfirm(void);
+    void DisableMapConfirm(void);
     extern u16 *gKeyState;
     register u32 mode asm("r0");
 
@@ -51,18 +51,18 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
         }
         if ((*(u16 *)gKeyState) & 1) {
             if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 0) {
-                func_020d47d0();
+                EnableMapConfirm();
                 PlaySoundEffect(0x1000d);
             }
             if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 1) {
-                func_020d47f0();
+                DisableMapConfirm();
                 PlaySoundEffect(0x1000f);
             }
             func_0208af20(arg0);
             return;
         }
         if ((*(u16 *)gKeyState) & 2) {
-            func_020d47f0();
+            DisableMapConfirm();
             PlaySoundEffect(0x1000f);
             func_0208af20(arg0);
         }

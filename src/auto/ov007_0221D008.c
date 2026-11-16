@@ -180,8 +180,8 @@ void MapEditTextActionInput(void *arg0) {
     s32 IsLeadByte(s32 *);
     s32 IsGlyphEscape(s32 *);
     M2C_UNK func_020b269c();
-    M2C_UNK func_020d47d0();
-    M2C_UNK func_020d47f0();
+    M2C_UNK EnableMapConfirm();
+    M2C_UNK DisableMapConfirm();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK gGlyphSpace;
@@ -204,7 +204,7 @@ void MapEditTextActionInput(void *arg0) {
     editor = M2C_FIELD(arg0, s32 *, 0x10);
     switch (action) {                              /* irregular */
     case 0x69:
-        func_020d47f0();
+        DisableMapConfirm();
         SetSpriteAnimation(editor, 3);
         PlaySoundEffect(0x1000F);
         return;
@@ -247,7 +247,7 @@ loop_9:
                     srcGlyphs += 1;
                 }
                 *dest = 0;
-                func_020d47d0();
+                EnableMapConfirm();
                 SetSpriteAnimation(editor, 3);
                 PlaySoundEffect(0x1000E);
                 return;

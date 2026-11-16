@@ -10,7 +10,7 @@ static inline u64 NextPacketRandom64(void) {
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_0201e944(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
+void SendNetPacket(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
 extern M2C_UNK gNetStack;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[3]=0;packet[2]=0x100;label=qname;packet[4]=0;packet[5]=0;
@@ -23,7 +23,7 @@ ch=*name++;
 }while(ch);
 }
 *label=size;p[0]=0;p[1]=(u32)b>>8;p[2]=b;p[3]=0;p[4]=1;
-func_0201db20(packet,p+5-(u8*)packet);
+SendNetPacket(packet,p+5-(u8*)packet);
 result=0;start=(u32)(GetSystemTick()>>16);
 while(M2C_FIELD(&gNetStack,s32 (**)(void),0x48)()!=0 && result==0 && (s32)((u32)(GetSystemTick()>>16)-start)<15){
 if(!func_0201dbb8()){func_0201a238();continue;}

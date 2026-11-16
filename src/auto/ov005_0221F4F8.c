@@ -1,5 +1,6 @@
 /* 24 functions from 0x0221F4F8 to 0x02220018 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_ov005_0221f4f8(void *arg0){
 s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_01ffac9c(u16,u16,u16,void *,s32);void func_0207c650(void *,s32,s32,s32,s32);void func_02088f1c(void *);
@@ -74,14 +75,14 @@ void func_ov005_0221fa00(M2C_UNK arg0) {
 
 /* Enable five display-control bits (0x10/0x20/0x40/0x80/0x100) on each of the two screen contexts. */
 void func_ov005_0221fa18(void) {
-    M2C_UNK func_02082cb4(); M2C_UNK func_0208232c();
+    M2C_UNK Set3DSpriteVramBanks(); M2C_UNK Apply3DSpriteDisplayConfig();
     extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineSub; extern u16 **g3DSpriteEngineMain;
     u16 *volatile ctxPtr0; u16 *volatile ctxPtr1; u16 *volatile ctxPtr2; u16 *volatile ctxPtr3; u16 *volatile ctxPtr4;
     u16 **savedContext; s32 i;
-    func_02082cb4(); savedContext = gCur3DSpriteEngine; i = 0;
+    Set3DSpriteVramBanks(); savedContext = gCur3DSpriteEngine; i = 0;
     do {
         gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        func_0208232c(); i++;
+        Apply3DSpriteDisplayConfig(); i++;
         ctxPtr0 = *(u16 **)gCur3DSpriteEngine; *ctxPtr0 = *ctxPtr0 | 0x10;
         ctxPtr1 = *(u16 **)gCur3DSpriteEngine; *ctxPtr1 = *ctxPtr1 | 0x20;
         ctxPtr2 = *(u16 **)gCur3DSpriteEngine; *ctxPtr2 = *ctxPtr2 | 0x40;
@@ -132,28 +133,49 @@ void func_ov005_0221fbc8(M2C_UNK arg0) {
     }
 }
 
-void func_ov005_0221fc0c(void) {
-M2C_UNK func_02082cb4(); M2C_UNK func_0208232c(); M2C_UNK func_02086608(M2C_UNK);
-extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineSub; extern u16 **g3DSpriteEngineMain;
-u16 *volatile p0; u16 *volatile p1; u16 *volatile p2; u16 *volatile p3; u16 *volatile p4;
-u16 **saved; s32 i;
-func_02082cb4(); saved=gCur3DSpriteEngine; i=0;
-do {
-gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-func_0208232c(); i++;
-p0=*(u16 **)gCur3DSpriteEngine; *p0=*p0|0x10;
-p1=*(u16 **)gCur3DSpriteEngine; *p1=*p1|0x20;
-p2=*(u16 **)gCur3DSpriteEngine; *p2=*p2|0x40;
-p3=*(u16 **)gCur3DSpriteEngine; *p3=*p3|0x80;
-p4=*(u16 **)gCur3DSpriteEngine; *p4=*p4|0x100;
-} while(i<2);
-gCur3DSpriteEngine=saved;
-func_02086608(11);
+/* Initialize the ov005 screen's graphics: assign the 3D sprite VRAM banks,
+ * apply the display config and enable its five display-control bits on both the
+ * main and the sub screen, then load the screen's UI graphics bank. */
+void Ov005_InitScreenGraphics(void) {
+    M2C_UNK Set3DSpriteVramBanks(void);
+    M2C_UNK Apply3DSpriteDisplayConfig(void);
+    M2C_UNK LoadUiGraphicsBank(M2C_UNK);
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **g3DSpriteEngineSub;
+    extern u16 **g3DSpriteEngineMain;
+    u16 *volatile disp0;
+    u16 *volatile disp1;
+    u16 *volatile disp2;
+    u16 *volatile disp3;
+    u16 *volatile disp4;
+    u16 **savedEngine;
+    s32 engineIndex;
+
+    Set3DSpriteVramBanks();
+    savedEngine = gCur3DSpriteEngine;
+    engineIndex = 0;
+    do {
+        gCur3DSpriteEngine = engineIndex == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        Apply3DSpriteDisplayConfig();
+        engineIndex++;
+        disp0 = *(u16 **) gCur3DSpriteEngine;
+        *disp0 = *disp0 | DS3D_BANK_MODE0;
+        disp1 = *(u16 **) gCur3DSpriteEngine;
+        *disp1 = *disp1 | DS3D_BANK_MODE1;
+        disp2 = *(u16 **) gCur3DSpriteEngine;
+        *disp2 = *disp2 | DS3D_BANK_MODE2;
+        disp3 = *(u16 **) gCur3DSpriteEngine;
+        *disp3 = *disp3 | DS3D_BANK_MODE3;
+        disp4 = *(u16 **) gCur3DSpriteEngine;
+        *disp4 = *disp4 | DS3D_BANK_MODE4;
+    } while (engineIndex < 2);
+    gCur3DSpriteEngine = savedEngine;
+    LoadUiGraphicsBank(11);
 }
 
 void func_ov005_0221fd10(void) {
-    M2C_UNK func_02086658(M2C_UNK);
-    func_02086658(0xB);
+    M2C_UNK FreeUiGraphicsBank(M2C_UNK);
+    FreeUiGraphicsBank(0xB);
 }
 
 void func_ov005_0221fd20(M2C_UNK arg0) {

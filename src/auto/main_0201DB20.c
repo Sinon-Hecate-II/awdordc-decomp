@@ -22,7 +22,7 @@ static inline s32 PacketTransactionMatches(const u16 *p, const u32 *expected) {
 static inline void PacketPut32(u8 *p,u32 x) { *(u16*)p=PacketSwap(x>>16); *(u16*)(p+2)=PacketSwap(x); }
 static inline void PacketAddress(u8 *p) { extern M2C_UNK gLocalMacAddress; void MI_CpuCopy8(s32,u8*,s32); MI_CpuCopy8((s32)&gLocalMacAddress,p,6); }
 
-u32 func_0201db20(s32 a, s32 b) {
+u32 SendNetPacket(s32 a, s32 b) {
     extern M2C_UNK gSocketManager;
     M2C_UNK MemMove(s32, s32, u32);
     void *p;
@@ -312,7 +312,7 @@ u8 *BuildDhcpPacket(u8 *packet, s32 msgType, s32 xidOut) {
     return packet + 0x10d;
 }
 #pragma opt_common_subs reset
-s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
+s32 PadPacket(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     s32 temp_r4;
     s32 var_r5;
@@ -327,10 +327,10 @@ s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
 }
 
 #pragma opt_common_subs off
-s32 func_0201e238(void) {
-extern M2C_UNK gNetStack; extern u8 data_021377e6[];
+s32 BuildDhcpDiscover(void) {
+extern M2C_UNK gNetStack; extern u8 gDhcpPacketBuffer[];
 u8 *BuildDhcpPacket(u8 *,s32,s32);
-u8 *p; s32 result; s32 base=(s32)data_021377e6;
+u8 *p; s32 result; s32 base=(s32)gDhcpPacketBuffer;
 p=BuildDhcpPacket((u8 *)base,1,(s32)&result);
 if(M2C_FIELD(&gNetStack,u32 *,0x34)) {
 p[0]=0x32; p[1]=4;
@@ -341,35 +341,48 @@ p[5]=M2C_FIELD(&gNetStack,u32 *,0x34);
 p+=6;
 }
 *p++=255;
-p=(u8 *)func_0201e204(0,300,(s32)p,(s32)p-base);
-func_0201db20(base,(s32)p-base);
+p=(u8 *)PadPacket(0,300,(s32)p,(s32)p-base);
+SendNetPacket(base,(s32)p-base);
 return result;
 }
 #pragma opt_common_subs off
-s32 func_0201e2fc(s32 a){
-extern M2C_UNK gNetStack;extern u8 data_021377e6[];
-u8 *BuildDhcpPacket(u8 *,s32,s32);
-u8 *p;u16 hi;s32 result;s32 base=(s32)data_021377e6;
-p=BuildDhcpPacket((u8 *)base,3,(s32)&result);
-if(a==0){
-p[0]=0x32;p[1]=4;
-hi=M2C_FIELD(&gNetStack,u32 *,0x34)>>16;p[2]=hi>>8;
-p[3]=M2C_FIELD(&gNetStack,u32 *,0x34)>>16;
-p[4]=(u16)M2C_FIELD(&gNetStack,u32 *,0x34)>>8;
-p[5]=M2C_FIELD(&gNetStack,u32 *,0x34);
-p[6]=0x36;p[7]=4;
-hi=M2C_FIELD(&gNetStack,u32 *,0x20)>>16;p[8]=hi>>8;
-p[9]=M2C_FIELD(&gNetStack,u32 *,0x20)>>16;
-p[10]=(u16)M2C_FIELD(&gNetStack,u32 *,0x20)>>8;
-p[11]=M2C_FIELD(&gNetStack,u32 *,0x20);
-p+=12;
+/* Build a DHCPREQUEST (message type 3) into gDhcpPacketBuffer and send it: on
+ * the first attempt (mode 0) it asks for the address in gNetStack and names the
+ * server that offered it; later attempts (renew/rebind) omit both options. The
+ * packet is padded to DHCP_PACKET_MIN bytes before it is sent. */
+s32 BuildDhcpRequest(s32 mode) {
+    extern M2C_UNK gNetStack;
+    extern u8 gDhcpPacketBuffer[];
+    u8 *BuildDhcpPacket(u8 *, s32, s32);
+    s32 PadPacket(M2C_UNK, u32, s32, u32);
+    u32 SendNetPacket(s32, s32);
+
+    u8 *p;
+    u16 addressHi;
+    s32 result;
+    s32 base = (s32) gDhcpPacketBuffer;
+
+    p = BuildDhcpPacket((u8 *) base, DHCP_MSG_REQUEST, (s32) &result);
+    if (mode == 0) {
+        p[0] = DHCP_OPT_REQUESTED_IP; p[1] = 4;
+        addressHi = M2C_FIELD(&gNetStack, u32 *, NETSTACK_REQUESTED_IP) >> 16;
+        p[2] = addressHi >> 8;
+        p[3] = M2C_FIELD(&gNetStack, u32 *, NETSTACK_REQUESTED_IP) >> 16;
+        p[4] = (u16) M2C_FIELD(&gNetStack, u32 *, NETSTACK_REQUESTED_IP) >> 8;
+        p[5] = M2C_FIELD(&gNetStack, u32 *, NETSTACK_REQUESTED_IP);
+        p[6] = DHCP_OPT_SERVER_ID; p[7] = 4;
+        addressHi = M2C_FIELD(&gNetStack, u32 *, NETSTACK_DHCP_SERVER) >> 16;
+        p[8] = addressHi >> 8;
+        p[9] = M2C_FIELD(&gNetStack, u32 *, NETSTACK_DHCP_SERVER) >> 16;
+        p[10] = (u16) M2C_FIELD(&gNetStack, u32 *, NETSTACK_DHCP_SERVER) >> 8;
+        p[11] = M2C_FIELD(&gNetStack, u32 *, NETSTACK_DHCP_SERVER);
+        p += 12;
+    }
+    *p++ = DHCP_OPTION_END;
+    p = (u8 *) PadPacket(0, DHCP_PACKET_MIN, (s32) p, (s32) p - base);
+    SendNetPacket(base, (s32) p - base);
+    return result;
 }
-*p++=255;
-p=(u8 *)func_0201e204(0,300,(s32)p,(s32)p-base);
-func_0201db20(base,(s32)p-base);
-return result;
-}
-#pragma opt_common_subs off
 s32 func_0201e404(s32 arg0, s32 arg1) {
     u64 GetSystemTick(void);
     s32 func_0201dbb8(void);
@@ -492,7 +505,7 @@ s32 func_0201e754(void) {
     M2C_UNK func_0201d190(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d1f0();
     M2C_UNK func_0201d224();
-    s32 func_0201e238();
+    s32 BuildDhcpDiscover();
     s32 func_0201e404(s32, s32);
     s32 temp_r0;
     s32 var_r5;
@@ -502,7 +515,7 @@ s32 func_0201e754(void) {
     func_0201d190(0x44, 0x43, -1);
     var_r5 = 0;
 loop_1:
-    temp_r0 = func_0201e404(func_0201e238(), var_r5);
+    temp_r0 = func_0201e404(BuildDhcpDiscover(), var_r5);
     if (temp_r0 != 1) {
         var_r5 += 1;
         if (var_r5 < 4) {
@@ -520,7 +533,7 @@ loop_1:
  * On a peer-data match (result 2) record the peer's size info and return
  * success; otherwise halve the stored timeout and apply a mode-specific floor. */
 s32 func_0201e7ac(u32 *out_size, s32 mode) {
-    s32 func_0201e2fc(s32);
+    s32 BuildDhcpRequest(s32);
     extern M2C_UNK gNetStack;
     s32 result;
     s32 attempt;
@@ -535,7 +548,7 @@ s32 func_0201e7ac(u32 *out_size, s32 mode) {
     }
     attempt = 0;
 loop_4:
-    result = func_0201e404(func_0201e2fc(mode), attempt);
+    result = func_0201e404(BuildDhcpRequest(mode), attempt);
     if (result == 0) {
         attempt += 1;
         if (attempt < 4) {
@@ -569,17 +582,17 @@ loop_4:
 
 void func_0201e8a8(void) {
  extern M2C_UNK gNetStack;
- extern u8 data_021377e6[];
+ extern u8 gDhcpPacketBuffer[];
  u8 *BuildDhcpPacket(u8 *,s32,s32);
  s32 p; s32 base;
  func_0201d1f0();
  func_0201d164();
  func_0201d190(0x44,0x43,M2C_FIELD(&gNetStack,s32 *,0x20));
- base=(s32)data_021377e6;
+ base=(s32)gDhcpPacketBuffer;
  p=(s32)BuildDhcpPacket((u8 *)base,7,0);
  M2C_FIELD(p,u8 *,0)=0xff; p++;
- p=func_0201e204(0,300,(s32)p,p-base);
- func_0201db20((s32)base,p-base);
+ p=PadPacket(0,300,(s32)p,p-base);
+ SendNetPacket((s32)base,p-base);
  func_0201d224();
 }
 

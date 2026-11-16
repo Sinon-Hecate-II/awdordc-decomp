@@ -49,17 +49,17 @@ void func_ov006_02218200(void *entity) {
     }
     func_ov006_02217cfc(M2C_FIELD(sub, s32 *, 8));
     MI_CpuCopy32(curId, prevId, 0x54);
-    func_020d47d0();
+    EnableMapConfirm();
 }
 
 void func_ov006_02218300(M2C_UNK arg0) {
     M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     s32 func_0208471c();
-    M2C_UNK func_020d47f0();
+    M2C_UNK DisableMapConfirm();
     if (func_0208471c() == 0) {
         return;
     }
-    func_020d47f0();
+    DisableMapConfirm();
     SetSpriteAnimation(arg0, 3);
 }
 

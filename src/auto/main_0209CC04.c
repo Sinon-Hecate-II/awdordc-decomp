@@ -539,15 +539,15 @@ s32 func_0209d728(void *arg0) {
 }
 
 s32 func_0209d750(void *arg0) {
-    void func_02086608(u8);
-    void func_02086658(u8);
+    void LoadUiGraphicsBank(u8);
+    void FreeUiGraphicsBank(u8);
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 8);
     if (M2C_FIELD(temp_r1, s32 *, 4) != 0) {
-        func_02086608(M2C_FIELD(temp_r1, s16 *, 2));
+        LoadUiGraphicsBank(M2C_FIELD(temp_r1, s16 *, 2));
     } else {
-        func_02086658(M2C_FIELD(temp_r1, s16 *, 2));
+        FreeUiGraphicsBank(M2C_FIELD(temp_r1, s16 *, 2));
     }
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;

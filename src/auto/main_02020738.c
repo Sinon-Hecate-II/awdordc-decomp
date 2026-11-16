@@ -80,7 +80,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
 s32 SocketSendTask(void *request) {
  void OS_WakeupThread(s32);
  M2C_UNK func_0201d190(u16,u16,s32);
- s32 func_0201db20(s32,s32);
+ s32 SendNetPacket(s32,s32);
  s32 func_0201d4c0();
  s32 sent,sendBuffer,isStream,maxChunk,valid,read;void *socket; void *sendConn;u32 total;s32 headerSize;
  s8 state,state2,state3;
@@ -101,7 +101,7 @@ s32 SocketSendTask(void *request) {
  loop:
  read=ReadSendRequest(sendBuffer+headerSize,maxChunk,request);
  if(read>0) {
- sent=func_0201db20(sendBuffer+headerSize,read);
+ sent=SendNetPacket(sendBuffer+headerSize,read);
  if(sent<=0) {
  state3=M2C_FIELD(socket,s8 *,SOCK_STATE);valid=1;
  if(state3 && state3!=4)valid=0;

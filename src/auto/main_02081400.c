@@ -650,7 +650,7 @@ M2C_UNK func_020822b8(M2C_UNK *a) {
     func_02082164((u8 *)a);
 }
 
-void func_0208232c(void) {
+void Apply3DSpriteDisplayConfig(void) {
     M2C_UNK func_020822b8(M2C_UNK *);
     extern M2C_UNK data_02101fb4;
     func_020822b8(&data_02101fb4);

@@ -657,11 +657,11 @@ void func_02094b78(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02094ba0(M2C_UNK arg0) {
-    M2C_UNK func_02097bac(M2C_UNK);
+    M2C_UNK ClearScenePanelRows(M2C_UNK);
     if (func_0209600c() != 0) {
         return;
     }
-    func_02097bac(arg0);
+    ClearScenePanelRows(arg0);
 }
 
 void func_02094bc0(M2C_UNK arg0) {
@@ -712,7 +712,7 @@ void func_02094c90(s32 slot, s32 arg1) {
  s32 value; void *ptrA,*ptrB,*ptrC,*ptrD;
  if(func_0209600c()!=0)return;
  if(func_020979a4(slot)!=1)return;
- func_02097cb8(GetMenuCursor());
+ HideMenuCursor(GetMenuCursor());
  if(GetMenuCursor()<0)return;
  if(GetMenuCursor()>=3)return;
  value=func_02091e70(3);

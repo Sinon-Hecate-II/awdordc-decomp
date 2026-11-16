@@ -111,20 +111,20 @@ void EnableSpriteLayers(void) {
    selection: configures the background banks, then clears the five layer mode
    bits of the main and/or sub engine's sprite bank. */
 void DisableSpriteLayers(void) {
-M2C_UNK func_02082cb4();
-M2C_UNK func_0208232c();
+M2C_UNK Set3DSpriteVramBanks();
+M2C_UNK Apply3DSpriteDisplayConfig();
 s32 func_02091e14();
 M2C_UNK func_020aca8c(M2C_UNK);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 u16 *volatile layer0;u16 *volatile layer1;u16 *volatile layer2;u16 *volatile layer3;u16 *volatile layer4;
 void *savedEngine; s32 engineIndex;
-func_02082cb4();
+Set3DSpriteVramBanks();
 savedEngine=gCur3DSpriteEngine;
 engineIndex=0;
 do {
 gCur3DSpriteEngine=engineIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
 if((func_02091e14()!=0||gCur3DSpriteEngine==g3DSpriteEngineMain)&&(func_02091e14()!=1||gCur3DSpriteEngine==g3DSpriteEngineSub)&&(func_02091e14()!=3||gCur3DSpriteEngine==savedEngine)){
-func_0208232c();
+Apply3DSpriteDisplayConfig();
 layer0=*(u16 **)gCur3DSpriteEngine;*layer0=*layer0&~DS3D_BANK_MODE0;
 layer1=*(u16 **)gCur3DSpriteEngine;*layer1=*layer1&~DS3D_BANK_MODE1;
 layer2=*(u16 **)gCur3DSpriteEngine;*layer2=*layer2&~DS3D_BANK_MODE2;
@@ -443,7 +443,7 @@ s32 func_0209787c(s32 arg0) {
     s32 Is3DSpriteVisible(void);
     s32 func_020abe90(u8);
     M2C_UNK func_02088f8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_02097bac(s32);
+    void ClearScenePanelRows(s32);
     void *temp_r4;
     s32 var_r5;
 
@@ -464,7 +464,7 @@ s32 func_0209787c(s32 arg0) {
             func_02088f8c(temp_r4, 0, 0x80, 0, 0xc0, var_r5);
             break;
         }
-        func_02097bac(arg0);
+        ClearScenePanelRows(arg0);
         return 1;
     }
     return 0;
@@ -554,7 +554,7 @@ void func_02097aac(s32 arg0, u8 arg1) {
     gCur3DSpriteEngine=saved;
 }
 
-void func_02097bac(M2C_UNK arg0) {
+void ClearScenePanelRows(M2C_UNK arg0) {
     s32 func_02091e70(M2C_UNK);
     s32 *GetScenePanelState();
     void func_02097aac(s32, u8);

@@ -1,6 +1,8 @@
 /* 28 functions from 0x02095C90 to 0x02096C7C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
+#include "sound.h"
 typedef struct { u8 kind:6; u8 owner:2; u8 rest[13]; } Unit964;
 extern u8 data_02102ee4[];
 extern u16 gMapConfig[];
@@ -80,7 +82,7 @@ void InitTelopWindow(void *telop) {
 
 void func_02095eb4(void) {
     M2C_UNK func_020af230();
-    M2C_UNK func_0208232c();
+    M2C_UNK Apply3DSpriteDisplayConfig();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     u16 *volatile v0;
@@ -93,7 +95,7 @@ void func_02095eb4(void) {
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020af230();
-    func_0208232c();
+    Apply3DSpriteDisplayConfig();
     v0 = *(u16 **)gCur3DSpriteEngine;
     *v0 = *v0 | 0x10;
     v1 = *(u16 **)gCur3DSpriteEngine;
@@ -213,7 +215,7 @@ void func_0209614c(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK GetMenuCursor();
-    M2C_UNK func_02097cb8();
+    M2C_UNK HideMenuCursor();
     s32 func_0209dc48();
     s32 func_0209dd54();
     s32 temp_r4;
@@ -229,7 +231,7 @@ void func_0209614c(void *arg0) {
     }
     PlaySoundEffect(0x10012);
     GetMenuCursor();
-    func_02097cb8();
+    HideMenuCursor();
     M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
     func_01ffa6fc(arg0);
 }
@@ -265,70 +267,73 @@ void func_020962ec(void *arg0) {
     M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
 }
 
-void func_02096334(void *arg0) {
-    M2C_UNK func_02097bac(M2C_UNK);
-    s32 func_0209dcf0(void);
-    s32 func_0209def8(void);
-    M2C_UNK func_020d47d0(void);
-    M2C_UNK func_020d47f0(void);
+/* Per-frame input of the two-state widget: left/right switch the selected half
+ * with a click sound; A accepts the highlighted half and B cancels (selecting
+ * the right half), which sets the map's confirm flag, hides the menu cursor,
+ * clears the cursor's panel rows and runs the widget's callback. */
+void UpdateToggleWidget(ToggleWidget *widget) {
+    M2C_UNK ClearScenePanelRows(M2C_UNK);
+    s32 GetPanelKeyAction(void);
+    s32 GetPanelTouchAction(void);
+    M2C_UNK EnableMapConfirm(void);
+    M2C_UNK DisableMapConfirm(void);
     M2C_UNK LayoutToggleWidget(void *);
     M2C_UNK PlaySoundEffect(M2C_UNK);
-    M2C_UNK GetMenuCursor(void);
-    M2C_UNK func_02097cb8(void);
+    s32 GetMenuCursor(void);
+    M2C_UNK HideMenuCursor(s32);
     M2C_UNK func_01ffa6fc(void *);
 
-    s16 temp_r0;
-    s16 temp_r1;
-    s32 temp_r5;
-    s32 temp_r0_2;
+    s16 selected;
+    s16 oldSelected;
+    s32 actions;
+    s32 touchActions;
 
-    temp_r5 = func_0209dcf0();
-    temp_r0_2 = func_0209def8();
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x34);
-    temp_r5 = temp_r5 | temp_r0_2;
-    if (temp_r1 != 0) {
-        if ((temp_r1 == 1) && (temp_r5 & 4)) {
-            M2C_FIELD(arg0, s16 *, 0x34) = 0;
-            LayoutToggleWidget(arg0);
-            PlaySoundEffect(0x10010);
+    actions = GetPanelKeyAction();
+    touchActions = GetPanelTouchAction();
+    oldSelected = widget->selected;
+    actions = actions | touchActions;
+    if (oldSelected != 0) {
+        if ((oldSelected == 1) && (actions & PANEL_INPUT_LEFT)) {
+            widget->selected = 0;
+            LayoutToggleWidget(widget);
+            PlaySoundEffect(SOUND_MENU_MOVE);
             return;
         }
         goto block_8;
     }
-    if (temp_r5 & 8) {
-        M2C_FIELD(arg0, s16 *, 0x34) = 1;
-        LayoutToggleWidget(arg0);
-        PlaySoundEffect(0x10010);
+    if (actions & PANEL_INPUT_RIGHT) {
+        widget->selected = 1;
+        LayoutToggleWidget(widget);
+        PlaySoundEffect(SOUND_MENU_MOVE);
         return;
     }
-    if (temp_r5 & 0x20) {
-        M2C_FIELD(arg0, s16 *, 0x34) = 1;
-        LayoutToggleWidget(arg0);
+    if (actions & PANEL_INPUT_CANCEL) {
+        widget->selected = 1;
+        LayoutToggleWidget(widget);
     }
 block_8:
-    if (temp_r5 & 0x10) {
-        PlaySoundEffect(0x1000D);
+    if (actions & PANEL_INPUT_CONFIRM) {
+        PlaySoundEffect(SOUND_MENU_CONFIRM);
     }
-    if (temp_r5 & 0x20) {
-        PlaySoundEffect(0x1000F);
+    if (actions & PANEL_INPUT_CANCEL) {
+        PlaySoundEffect(SOUND_MENU_CANCEL);
     }
-    if (!(temp_r5 & 0x30)) {
+    if (!(actions & (PANEL_INPUT_CONFIRM | PANEL_INPUT_CANCEL))) {
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, s16 *, 0x34);
-    switch (temp_r0) {
+    selected = widget->selected;
+    switch (selected) {
     case 0:
-        func_020d47d0();
+        EnableMapConfirm();
         break;
     case 1:
-        func_020d47f0();
+        DisableMapConfirm();
         break;
     }
-    GetMenuCursor();
-    func_02097cb8();
-    func_02097bac(3);
-    M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
-    func_01ffa6fc(arg0);
+    HideMenuCursor(GetMenuCursor());
+    ClearScenePanelRows(3);
+    widget->callback();
+    func_01ffa6fc(widget);
 }
 
 /* Loads the current map: campaign/arena maps (id in

@@ -4,18 +4,18 @@
 typedef struct { u8 value; } Flag;
 
 void func_ov010_0222b9dc(void) {
-    M2C_UNK func_020d47f0();
-    func_020d47f0();
+    M2C_UNK DisableMapConfirm();
+    DisableMapConfirm();
 }
 
 void func_ov010_0222b9e8(void) {
     M2C_UNK func_020852e0();
-    M2C_UNK func_020d47d0();
+    M2C_UNK EnableMapConfirm();
     s32 func_ov010_022282b4(M2C_UNK);
     if (func_ov010_022282b4(0) == 0) {
-        func_020d47d0();
+        EnableMapConfirm();
     } else {
-        func_020d47f0();
+        DisableMapConfirm();
     }
     func_020852e0();
 }
@@ -29,7 +29,7 @@ void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
     void *temp_r0;
 
     if (func_ov010_022282b4(2) != 0) {
-        func_020d47d0();
+        EnableMapConfirm();
         return;
     }
     if (FindObjectByClass(&data_ov010_0222c6c4) != 0) {
@@ -56,7 +56,7 @@ void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_ov010_0222c928;
     void *temp_r0;
     if (func_ov010_022282b4(0) == 0) {
-        func_020d47d0();
+        EnableMapConfirm();
         return;
     }
     if (FindObjectByClass(&data_ov010_0222c5d4) != 0) return;

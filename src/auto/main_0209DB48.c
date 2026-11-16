@@ -68,7 +68,7 @@ s32 func_0209dc9c(void) {
     return 0;
 }
 
-s32 func_0209dcf0(void) {
+s32 GetPanelKeyAction(void) {
     extern u16 *gKeyState;
     u16 temp_r0;
 
@@ -144,7 +144,7 @@ s32 func_0209deb0(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 /* Returns the action code for the current stylus interaction, based on which of two touch regions the point lies in. */
-s32 func_0209def8(void) {
+s32 GetPanelTouchAction(void) {
     extern void *gTouchState;
     extern s32 data_0215bde0;
     s32 region;

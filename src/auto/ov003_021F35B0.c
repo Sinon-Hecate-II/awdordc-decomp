@@ -27,10 +27,10 @@ void func_ov003_021f35f8(void *arg0) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 func_0208471c();
     s32 func_0208477c();
-    s32 func_020d4810();
+    s32 IsMapConfirmEnabled();
     M2C_UNK func_ov003_021f1bd4();
     M2C_FIELD(arg0, s8 *, 0x34) = 2;
-    if (func_020d4810() != 0) {
+    if (IsMapConfirmEnabled() != 0) {
         func_ov003_021f1bd4();
         return;
     }
@@ -44,11 +44,11 @@ void func_ov003_021f35f8(void *arg0) {
 void func_ov003_021f3648(void *arg0) {
     M2C_UNK func_02085054(M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_02086330();
-    M2C_UNK func_020d47f0();
+    M2C_UNK DisableMapConfirm();
     M2C_UNK func_ov003_021f182c();
     M2C_UNK func_ov003_021f1be8();
     func_ov003_021f1be8();
-    func_020d47f0();
+    DisableMapConfirm();
     func_02086330();
     func_02085054(0, 0x6E0, arg0);
     if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {

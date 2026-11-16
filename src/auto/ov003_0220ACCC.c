@@ -249,7 +249,7 @@ void func_ov003_0220bb88(void *arg0) {
 void func_ov003_0220bbcc(void *entity) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020d47d0();
+    M2C_UNK EnableMapConfirm();
     M2C_UNK func_020d885c(M2C_UNK);
     extern M2C_UNK data_0215d9b8;
     void *subObject;
@@ -260,7 +260,7 @@ void func_ov003_0220bbcc(void *entity) {
         M2C_FIELD(subObject, s32 *, 0x40) = (s32) ((M2C_FIELD(subObject, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(subObject, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         M2C_FIELD(subObject, s8 *, 0x5A) = 0xC;
     }
-    func_020d47d0();
+    EnableMapConfirm();
     func_020d885c(0x12);
     func_01ffa6fc(entity);
     PlaySoundEffect(0x1000E);

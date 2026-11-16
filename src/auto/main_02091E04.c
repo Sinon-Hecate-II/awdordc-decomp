@@ -512,23 +512,23 @@ void func_02092908(M2C_UNK arg0) {
 }
 
 s32 func_02092918(void *arg0) {
-s32 func_0209600c();M2C_UNK func_02097bac(M2C_UNK);M2C_UNK func_0209707c();
+s32 func_0209600c();M2C_UNK ClearScenePanelRows(M2C_UNK);M2C_UNK func_0209707c();
 s32 v;
 if(func_0209600c()!=0)v=1;
-else {func_02097bac(3);func_0209707c();v=0;}
+else {ClearScenePanelRows(3);func_0209707c();v=0;}
 M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }
 
 s32 func_02092958(void *arg0) {
-    M2C_UNK func_02086608(u8);
-    func_02086608((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
+    M2C_UNK LoadUiGraphicsBank(u8);
+    LoadUiGraphicsBank((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 0;
 }
 
 s32 func_02092984(void *arg0) {
-    M2C_UNK func_02086658(u8);
-    func_02086658((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
+    M2C_UNK FreeUiGraphicsBank(u8);
+    FreeUiGraphicsBank((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 0;
 }

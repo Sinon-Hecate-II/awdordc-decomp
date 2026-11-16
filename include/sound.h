@@ -41,7 +41,34 @@
 #define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): restart the voices for a sound */
 #define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
 
+/* A sound group of the sound archive: a count and that many items, each saying
+ * which kind of sound resource it names and the load flags its loader gets. */
+typedef struct SoundGroupItem {
+    u8  type;   /* +0x00 SOUND_GROUP_* */
+    u8  flags;  /* +0x01 load flags handed to the item's loader */
+    u8  pad02[2];
+    s32 index;  /* +0x04 id in the table of that kind (sequence, bank, ...) */
+} SoundGroupItem; /* 8 bytes */
+
+typedef struct SoundGroup {
+    u32 count;               /* +0x00 number of items */
+    SoundGroupItem items[1]; /* +0x04 */
+} SoundGroup;
+
+/* SoundGroupItem::type */
+enum {
+    SOUND_GROUP_SEQUENCE         = 0,
+    SOUND_GROUP_BANK             = 1,
+    SOUND_GROUP_WAVE_ARCHIVE     = 2,
+    SOUND_GROUP_SEQUENCE_ARCHIVE = 3
+};
+
 /* An id field of a sound-archive record meaning "no file/entry". */
 #define SOUND_FILE_NONE 0xFFFF
+
+/* Menu sounds handed to PlaySoundEffect. */
+#define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
+#define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */
+#define SOUND_MENU_CANCEL  0x1000F /* the choice was cancelled */
 
 #endif

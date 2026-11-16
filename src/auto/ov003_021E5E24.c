@@ -128,9 +128,9 @@ void func_ov003_021e6470(void) {
 }
 
 u8 func_ov003_021e647c(void *arg0) {
-    s32 func_020d4810();
+    s32 IsMapConfirmEnabled();
     M2C_FIELD(arg0, u8 *, 0x60) = 0;
-    M2C_FIELD(arg0, u8 *, 0x60) = func_020d4810() == 0;
+    M2C_FIELD(arg0, u8 *, 0x60) = IsMapConfirmEnabled() == 0;
     return M2C_FIELD(arg0, u8 *, 0x60);
 }
 

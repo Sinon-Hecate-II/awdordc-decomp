@@ -179,7 +179,7 @@ if((u8)(unitId-11)==1 && !IsUnitAvailable(8)){type=MENU_ENTRY_INFO;value=5;}
 }
 switch(type){
 case MENU_ENTRY_UNIT:menu[MENU_ACTION]=49;Ov003_SetRowAnimation(menu,value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
-case MENU_ENTRY_INFO:func_020d47d0();func_020d885c(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ffa6fc(menu);PlaySoundEffect(0x1000e);break;
+case MENU_ENTRY_INFO:EnableMapConfirm();func_020d885c(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ffa6fc(menu);PlaySoundEffect(0x1000e);break;
 case MENU_ENTRY_SUBMENU:switch(desc[MENU_DESC_VALUE]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(menu,1);func_020b4db0(value,menu);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(menu,3);func_020b4e10(menu);break;}break;
 }
 }
@@ -190,11 +190,11 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  p[0x38]&=~2;
  q=*(u8 **)(p+0x3c); v=q[0x10];
  PlaySoundEffect(0x1000f);
- if((u8)((((unsigned int)p[0x36]<<24)>>28)==1) || (u8)((((unsigned int)p[0x36]<<24)>>28)==2)){p[0x35]=1;func_020d47f0();func_01ffa6fc(p);}
+ if((u8)((((unsigned int)p[0x36]<<24)>>28)==1) || (u8)((((unsigned int)p[0x36]<<24)>>28)==2)){p[0x35]=1;DisableMapConfirm();func_01ffa6fc(p);}
  p[0x38]&=~8;
  q=*(u8 **)(p+0x3c);q[q[0xf]]=arg1;
  if(v!=16){p[0x34]=30;Ov003_SetRowAnimation(p,v);Ov003_RefreshListRowAnimations(p,5,255);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
- else {func_020d47f0();func_01ffa6fc(p);}
+ else {DisableMapConfirm();func_01ffa6fc(p);}
 }
 
 void RequestMenuMode(void *arg0, s32 arg1) {
@@ -207,7 +207,7 @@ M2C_FIELD(arg0,u8 *,0x38) |= 0x10;
    display engine's plane bits, then run the mode - 1 confirms the highlighted unit
    selection, 2 redraws the unit label, 3 resets the selection buffer. */
 void RunPendingMenuAction(void *arg0) {
-    s32 func_020d4810(void);
+    s32 IsMapConfirmEnabled(void);
     void DrawMapSelectLabel(void *);
     void func_ov003_0220c328(void *, s32);
     void func_02083464(void);
@@ -289,7 +289,7 @@ void RunPendingMenuAction(void *arg0) {
         case 0:
             break;
         case 1: {
-            s32 canConfirm = func_020d4810();
+            s32 canConfirm = IsMapConfirmEnabled();
             if (canConfirm == 0) {
                 return;
             }

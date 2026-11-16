@@ -271,8 +271,8 @@ void func_02076244(M2C_UNK arg0) {
     M2C_UNK func_02008ef0(M2C_UNK);
     M2C_UNK func_020092d0(M2C_UNK);
     M2C_UNK func_02081f08();
-    M2C_UNK func_0208232c();
-    M2C_UNK func_02082cb4();
+    M2C_UNK Apply3DSpriteDisplayConfig();
+    M2C_UNK Set3DSpriteVramBanks();
     M2C_UNK func_02090248(M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
@@ -326,7 +326,7 @@ void func_02076244(M2C_UNK arg0) {
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~2);
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~4);
     func_01ff9b38();
-    func_02082cb4();
+    Set3DSpriteVramBanks();
     *(u16 *)0x04000304 &= ~0x8000;
     GX_TurnOnDisplay();
     var_r6 = 0;
@@ -339,7 +339,7 @@ void func_02076244(M2C_UNK arg0) {
             var_r0 = g3DSpriteEngineSub;
         }
         data_027e01d8 = var_r0;
-        func_0208232c();
+        Apply3DSpriteDisplayConfig();
         temp_r0 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp3C = temp_r0;
         *temp_r0 = *sp3C & ~0x10;
