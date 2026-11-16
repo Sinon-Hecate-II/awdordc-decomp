@@ -146,6 +146,16 @@ This is an **unofficial fan reverse-engineering project**. It is not affiliated 
 
 **Advance Wars**, **Days of Ruin**, and **Dark Conflict**, together with the original game's code, artwork, music, and other assets, belong to their respective rights holders. This repository is intended for research, preservation, and technical understanding. No original ROM is provided. You are responsible for obtaining any required tools and game files legally and complying with applicable law.
 
+## License
+
+Original material in this project that its contributors have the rights to dedicate is made available under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
+
+Attribution is not required, but credit to the project and its contributors is always appreciated.
+
+This dedication does not apply to Nintendo or Intelligent Systems intellectual property, third-party code, proprietary tools, or other material that contributors do not have the rights to license.
+
+Advance Wars: Days of Ruin and its original game code and assets remain the intellectual property of their respective rights holders.
+
 ## Credits
 
 - **[Sinon-Hecate-II](https://github.com/Sinon-Hecate-II)** — project repository and decompilation work.
