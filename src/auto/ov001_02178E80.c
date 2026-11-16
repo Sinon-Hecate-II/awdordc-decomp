@@ -412,12 +412,12 @@ void func_ov001_02179874(void) {
 }
 
 void func_ov001_021798b0(void) {
-    s32 func_ov001_0218c884(s32, void (*)(void), s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
     void func_ov001_02179bd0(void);
     extern M2C_UNK func_ov001_021798f8;
     extern u8 data_ov001_02193d8c;
     if (Ov001_GetIconRowSelection() == -2) return;
-    M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = func_ov001_0218c884(1, &func_ov001_02179bd0, 0, 0x78);
+    M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = Ov001_AddTask(1, &func_ov001_02179bd0, 0, 0x78);
     Ov001_SetStepCallback(&func_ov001_021798f8);
 }
 

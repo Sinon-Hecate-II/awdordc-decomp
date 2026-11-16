@@ -210,9 +210,9 @@ void func_020d8904(void) {
 
 void func_020d8914(void) {
     M2C_UNK func_0209f87c();
-    M2C_UNK func_020a2204(M2C_UNK);
+    M2C_UNK ApplyMapSettingsToPlayers(M2C_UNK);
     func_0209f87c();
-    func_020a2204(0);
+    ApplyMapSettingsToPlayers(0);
 }
 
 void func_020d8928(void) {

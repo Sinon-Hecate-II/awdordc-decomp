@@ -10,7 +10,7 @@ typedef struct {
     u8 unk0_6 : 2;    /* +0x00 owner/extra bits */
     u8 unk1[5];       /* +0x01 tile x, tile y, ... */
     u16 unk6 : 7;     /* +0x06 health */
-    u16 unk6_7 : 9;   /* +0x06 facing direction in the top five bits */
+    u16 unk6_7 : 9;   /* +0x06 ammo in bits 7..10 and capture points in bits 11..15 */
     u8 unk8[3];       /* +0x08 */
     u8 unkB : 4;      /* +0x0B action state nibble */
     u8 unkB_4 : 1;    /* +0x0B */

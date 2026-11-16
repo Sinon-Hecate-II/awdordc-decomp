@@ -57,7 +57,7 @@ bestKind=M2C_FIELD(node,u8 *,6);
 return bestIndex;
 }
 
-void func_02074a48(List_02074920 *arg0) {
+void SaveList_ClearUsed(List_02074920 *arg0) {
 u32 i=0;
 for(;i<arg0->count;i++) arg0->entries[i].active=0;
 }
@@ -87,7 +87,7 @@ arg0->count--; return;
 }
 
 /* Sorts the entry list by kind and id using bubble sort. */
-u32 func_02074b84(List_02074920 *list) {
+u32 SaveList_Sort(List_02074920 *list) {
     void MI_CpuCopy8(void *, void *, u32);
     u32 i;
     Entry_02074920 *cur;
@@ -130,6 +130,10 @@ u32 func_02074b84(List_02074920 *list) {
     return subLimit;
 }
 
+/* Set up the save manager's backup archive: when an archive already exists check
+ * that its root header is a valid Wi-Fi save ("dsw2") and that it holds command
+ * 0x1202 with status 2, then store the outcome in the manager's archive-status
+ * byte (0x2050) and flag a fresh save (0x2052) when the archive is unusable. */
 void func_02074c58(void *arg0) {
     s32 func_0200558c(void);
     void func_020055f4(u8);
@@ -139,38 +143,38 @@ void func_02074c58(void *arg0) {
     s32 func_0201033c(s32, s32 *, s32, s32, s32, s32, s32, s32, s32);
     s32 func_02010424(void);
     s32 func_0201044c(s32);
-    u8 tmp;
-    u16 id2;
-    u16 id;
-    s32 sp14;
+    u8 headerOk;
+    u16 handle2;
+    u16 handle;
+    s32 result;
 
     if (func_0200fe08() == 0) {
-        id = 0;
+        handle = 0;
     } else {
-        id = (u16)func_0200558c();
-        ((void(*)(M2C_UNK))func_0200fe5c)(id);
-        tmp = (u8)func_0201044c(0x1202);
-        ((void(*)(M2C_UNK))func_0200fe6c)(id);
-        ((void(*)(M2C_UNK))func_020055f4)(id);
-        if (tmp == 0) {
-            id = 0;
+        handle = (u16)func_0200558c();
+        ((void(*)(M2C_UNK))func_0200fe5c)(handle);
+        headerOk = (u8)func_0201044c(0x1202);
+        ((void(*)(M2C_UNK))func_0200fe6c)(handle);
+        ((void(*)(M2C_UNK))func_020055f4)(handle);
+        if (headerOk == 0) {
+            handle = 0;
         } else {
             if ((u8)func_02010424() != 2) {
-                id = 0;
+                handle = 0;
             } else {
-                id2 = (u16)func_0200558c();
-                ((void(*)(M2C_UNK))func_0200fe5c)(id2);
-                id = (u8)func_0201033c(0, &sp14, 4, 0, 0, 0, 6, 1, 0);
-                ((void(*)(M2C_UNK))func_0200fe6c)(id2);
-                ((void(*)(M2C_UNK))func_020055f4)(id2);
-                if (id == 0) {
-                    id = 0;
+                handle2 = (u16)func_0200558c();
+                ((void(*)(M2C_UNK))func_0200fe5c)(handle2);
+                handle = (u8)func_0201033c(0, &result, 4, 0, 0, 0, 6, 1, 0);
+                ((void(*)(M2C_UNK))func_0200fe6c)(handle2);
+                ((void(*)(M2C_UNK))func_020055f4)(handle2);
+                if (handle == 0) {
+                    handle = 0;
                 }
             }
         }
     }
-    M2C_FIELD(arg0, u8 *, 0x2050) = (u8)id;
-    if ((id & 0xFF) == 0) {
+    M2C_FIELD(arg0, u8 *, 0x2050) = (u8)handle;
+    if ((handle & 0xFF) == 0) {
         M2C_FIELD(arg0, u8 *, 0x2052) = 1;
     }
 }
@@ -234,7 +238,7 @@ M2C_FIELD(a+M2C_FIELD(a,u32*,0x204c)*40,u8*,0xc4f)=0;
 func_0200fe5c(low);ok=func_0201033c(off20,(s32 *)(((u8 *)((List_02074920 *)(a+0xc4c))->entries+M2C_FIELD(a,u32*,0x204c)*40)+4),36,0,0,0,6,1,0)!=0;func_0200fe6c(low);
 if(ok == 0){a[0x2052]=1;MI_CpuFill32(0,((u8 *)((List_02074920 *)(a+0xc4c))->entries+M2C_FIELD(a,u32*,0x204c)*40)+4,36);}
 *count=*count+1;
-}func_02074b84((List_02074920 *)(a+0xc4c));return;
+}SaveList_Sort((List_02074920 *)(a+0xc4c));return;
 }
 
 /* Write a ranked list of entries to a save buffer. */

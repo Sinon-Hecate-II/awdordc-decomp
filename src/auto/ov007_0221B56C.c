@@ -14,12 +14,12 @@ void Map_RefreshCellTile(s32,s32);
 s32 Map_TryPaintTile(s32 x,s32 y,s32 newTile,s32 newDir) {
 extern s32 *gCurrentMap;
 s32 Map_CanPlaceTile(s32,s32,s32,s32);
-s32 func_020c1a80(s32);
+s32 IsDestroyedPipeTile(s32);
 s32 func_ov007_0221b2cc(s32,s32,s32,s32,s32,s32);
 s32 oldTile=Map_GetCellTerrainKind(x,y),oldDir=Map_GetCellTerrainOwner(x,y);
 s32 r=Map_CanPlaceTile(x,y,newTile,newDir); s32 cellX,cellY;
 if(r!=1)return r;
-if(func_020c1a80(newTile))return 0;
+if(IsDestroyedPipeTile(newTile))return 0;
 if(func_ov007_0221b2cc(x,y,newTile,newDir,oldTile,oldDir)){
 for(cellY=0;cellY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);cellY++)
 for(cellX=0;cellX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);cellX++)Map_RefreshCellTile(cellX,cellY);

@@ -341,14 +341,14 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
  * and the profile is cached, update the cached record first; callback and
  * callbackArg are delivered on completion, and doFinish waits for the result. */
 s32 func_02053c9c(void **connection,s32 profileId,s32 useLocal,s32 doFinish,s32 callback,s32 callbackArg) {
-s32 func_02055b84(void **,s32,void **);void *gpiMalloc(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void gpiCopyInfo(void *,void *);
+s32 gpiFindBuddyStatus(void **,s32,void **);void *gpiMalloc(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void gpiCopyInfo(void *,void *);
 s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 gpiThink(void **,s32);
 extern M2C_UNK data_020fe824;
 register void *buffer; register s32 operationId; register s32 finish=doFinish; register s32 value=profileId;
 void *cachedInfo,*operation; void *session=*connection; s32 useCache,rc;RequestPair534 pair;
 operation=0;useCache=0;if(useLocal==1)useCache=1;
 if(M2C_FIELD(session,s32 *,256)==0)useCache=0;
-if(callback && useCache && func_02055b84(connection,profileId,&cachedInfo) && M2C_FIELD(cachedInfo,void **,12)) {
+if(callback && useCache && gpiFindBuddyStatus(connection,profileId,&cachedInfo) && M2C_FIELD(cachedInfo,void **,12)) {
 buffer=gpiMalloc(516);
 if(!buffer){gpiSetErrorString(connection,&data_020fe824);return 1;}
 gpiCopyInfo(M2C_FIELD(cachedInfo,void **,12),buffer);

@@ -318,7 +318,7 @@ void func_02022128(s32 arg0, s32 arg1) {
     }
 }
 
-void *func_02022150(void *p,void *key){
+void *FindNamedRsaKey(void *p,void *key){
 s32 StringCompare(void *,void *);
 s32 i;void **a;s32 n;void *v;
 n=M2C_FIELD(p,s32 *,0x818);

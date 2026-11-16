@@ -342,7 +342,7 @@ void SelectAiKind13Unit(void) {
             kind = (u32)(M2C_FIELD(units, u8 *, offset) << 26) >> 26;
             if (kind != 0) {
                 if (!(M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & 1) && kind == 13) {
-                    if (((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_FACING) << 16) >> 27) != 0) {
+                    if (((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27) != 0) {
                         cursor = gAiUnitListCursor;
                         gAiUnitListCursor = cursor + 1;
                         *cursor = unitId;

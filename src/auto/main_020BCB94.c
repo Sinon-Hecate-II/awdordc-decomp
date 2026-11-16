@@ -115,15 +115,18 @@ void func_020bcee4(void *arg0) {
 
 void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}
 
-void func_020bcf6c(void){extern void *gTouchState;extern void **gCurrentMap;s32 IsTouchInputDisabled(void);void ScreenToMapPosition(u16,u16,s32 *);s32 Divide(s32,s32);void ClampCursorToMap(void);
-s32 pos[3];u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
-if(IsTouchInputDisabled())return;if(!M2C_FIELD(gTouchState,u8 *,0x12))return;
+/* Aim the map cursor at the tile under the stylus: turn the current touch point
+ * into map pixel coordinates, divide by a tile's size, clamp it to the map and,
+ * when the touch just began, also mark the tile the press started on. */
+void UpdateMapCursorFromTouch(void){extern void *gTouchState;extern void **gCurrentMap;s32 IsTouchInputDisabled(void);void ScreenToMapPosition(u16,u16,s32 *);s32 Divide(s32,s32);void ClampCursorToMap(void);
+s32 pos[3];u16 x=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_X),y=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_Y);
+if(IsTouchInputDisabled())return;if(!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))return;
 ScreenToMapPosition(x,y,pos);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=Divide(pos[0],768);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=Divide(pos[1],768);
-ClampCursorToMap();if(!M2C_FIELD(gTouchState,u8 *,0x14))return;
-M2C_FIELD(*gCurrentMap,s16 *,0x52ca)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
-M2C_FIELD(*gCurrentMap,s16 *,0x52cc)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=Divide(pos[0],MAP_TILE_SIZE);
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=Divide(pos[1],MAP_TILE_SIZE);
+ClampCursorToMap();if(!M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return;
+M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X);
+M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y);
 }
 
 void func_020bd054(void *arg0) {
@@ -181,12 +184,16 @@ u8 func_020bd118(void) {
     return var_r0;
 }
 
-s32 func_020bd13c(s32 a){extern void *gTouchState;s32 IsTouchInputDisabled(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
-u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
-if(IsTouchInputDisabled())return 0;if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
-if(func_020bdecc(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 16;return 4096;}
-if(func_020bdf7c(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 256;return 4096;}
-if(a&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 64;return 32;}return 4096;
+/* Key action of a stylus touch on the battle map for the cursor mode: the
+ * on-screen direction buttons (up 0x70..0x90, down 0xA0..0xC0, left 0x40..0x60
+ * when enabled) give their key, or 4096 when the touch just started on them;
+ * 0 when touch input is off. */
+s32 func_020bd13c(s32 enableLeftButton){extern void *gTouchState;s32 IsTouchInputDisabled(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
+u16 x=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_X),y=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_Y);
+if(IsTouchInputDisabled())return 0;if(!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))return 0;
+if(func_020bdecc(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 16;return 4096;}
+if(func_020bdf7c(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 256;return 4096;}
+if(enableLeftButton&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 64;return 32;}return 4096;
 }
 
 /* Updates the map cursor target from the current stylus position. */
@@ -283,10 +290,13 @@ void func_020bd3c0(void *arg0) {
     PlaySoundEffect(arg0);
 }
 
-s32 func_020bd560(void){s32 IsTouchInputDisabled(void);void SelectCursorTarget(s32,s32);void DeleteTouchCursor(void);void HideTouchCursor(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
+/* Touch handler of the battle-map cursor mode: while the stylus stays on the
+ * tile the press started on, lifting it selects that tile (after 20 frames of
+ * touch) and a touch stroke confirms it. Returns 1 when the touch was used. */
+s32 HandleMapTouchRelease(void){s32 IsTouchInputDisabled(void);void SelectCursorTarget(s32,s32);void DeleteTouchCursor(void);void HideTouchCursor(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
 if(IsTouchInputDisabled())return 0;
-if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){SelectCursorTarget(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));DeleteTouchCursor();return 1;}
-if(M2C_FIELD(gTouchState,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){HideTouchCursor();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
+if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)==M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_X)&&M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)==M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_Y)){SelectCursorTarget(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));DeleteTouchCursor();return 1;}
+if(M2C_FIELD(gTouchState,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)==M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_X)&&M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)==M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_Y)){HideTouchCursor();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y),1,0,0))return 1;}return 0;
 }
 
 s32 func_020bd650(void) {

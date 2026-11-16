@@ -46,7 +46,53 @@ M2C_FIELD((u8*)*gCurrentMap+tail[0]+M2C_FIELD((u8*)*gCurrentMap+tail[1]*2,u16*,0
 gMoveSearchWrite+=4;gMoveSearchCount++;
 }
 #pragma pop
-M2C_UNK func_ov000_02186624(u8 arg0, u8 arg1) { (void)arg0; (void)arg1; return 0; }
+M2C_UNK func_ov000_02186624(u8 arg0,u8 arg1) {
+ extern s8 gAiRangeLayer[];
+ extern u8 *gMoveSearchState;
+ extern s32 gMoveSearchCount;
+ extern s8 gMoveSearchBuffer;
+ extern u8 *gMoveSearchWrite,*gMoveSearchCurrent;
+ extern void **gCurrentMap;
+ void MI_CpuFill8(void *,s32,u32);
+ void func_ov000_0218639c(void);
+ s32 left,top,right,bottom,x,y,d,v;
+ u8 *base,*node;
+ MI_CpuFill8(gAiRangeLayer,0,0x508);
+ base=gMoveSearchState;
+ gMoveSearchCount=0;gMoveSearchBuffer=0;
+ gMoveSearchWrite=base+0x28;gMoveSearchCurrent=base+0x5a0;
+ left=0;if(arg0-1>=0)left=arg0-1;
+ top=arg1-1;if(top<0)top=0;
+ right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(arg0+1<right)right=arg0+1;
+ bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(arg1+1<bottom)bottom=arg1+1;
+ for(y=top;y<=bottom;y++)for(x=left;x<=right;x++) {
+ v=arg0-x;if(v<=0)v=x-arg0;d=v+0;
+ if(arg1-y>0)d+=arg1-y;else d+=y-arg1;
+ if(d>=1 && d<=1) {
+ if(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x2338)>=0) {
+ gMoveSearchWrite[0]=x;gMoveSearchWrite[1]=y;gMoveSearchWrite[2]=1;gMoveSearchWrite[3]=1;
+ node=gMoveSearchWrite;
+ M2C_FIELD(*gCurrentMap+node[0]+M2C_FIELD(*gCurrentMap+node[1]*2,u16 *,0x3758),u8 *,0x2338)=node[3]|0x40;
+ gAiRangeLayer[y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)+x]=gMoveSearchWrite[3]|0xc0;
+ gMoveSearchWrite+=4;
+ }
+ }
+ }
+ gMoveSearchWrite[2]=0;
+ while(1) {
+ if(gMoveSearchBuffer==0) {
+ gMoveSearchWrite=gMoveSearchState+0x5a0;gMoveSearchCurrent=gMoveSearchState+0x28;gMoveSearchBuffer=1;gMoveSearchCount=0;
+ } else {
+ gMoveSearchWrite=gMoveSearchState+0x28;gMoveSearchCurrent=gMoveSearchState+0x5a0;gMoveSearchBuffer=0;gMoveSearchCount=0;
+ }
+ if(gMoveSearchCurrent[2]==0)break;
+ while(gMoveSearchCurrent[2]!=0) {
+ func_ov000_0218639c();gMoveSearchWrite[2]=0;gMoveSearchCurrent+=4;
+ }
+ }
+ gMoveSearchState[0x24]=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
+ gMoveSearchState[0x25]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
+}
 
 void func_ov000_02186940(void *arg0) {
     void func_ov000_021862e8();

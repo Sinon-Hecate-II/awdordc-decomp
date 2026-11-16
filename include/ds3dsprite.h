@@ -275,7 +275,15 @@ enum {
     SCENE_PANEL_CURRENT = 3
 };
 
+/* Screen the 3D-sprite system draws on, returned by Get3DSpriteTarget. */
+enum {
+    DS3D_TARGET_MAIN   = 0,
+    DS3D_TARGET_SUB    = 1,
+    DS3D_TARGET_ACTIVE = 3 /* whichever engine gCur3DSpriteEngine already holds */
+};
+
 /* One 12-byte panel record at the start of Get3DSpriteManager(). */
+#define SCENE_PANEL_TILE_COLUMNS 32 /* u16 cells in one row of a panel's tilemap */
 typedef struct ScenePanelState {
     void *tiles;       /* +0x00 tile buffer */
     u16 tileAttr;      /* +0x04 tile attributes passed to the text renderer */
@@ -293,6 +301,23 @@ enum {
     PANEL_INPUT_CONFIRM = 0x10, /* A key, or a touch release on the touched half */
     PANEL_INPUT_CANCEL  = 0x20  /* B key */
 };
+
+/* Text layer of a 3D sprite object: the object shows `values[palette]` through
+ * the text renderer of the layer it asks for, on one or both display banks.
+ * Fields at 0x34.. are the text layer's own, past the plain object fields. */
+#define TEXT_LAYER_FLAGS    0x34 /* u8 TEXT_LAYER_FLAG_* */
+#define TEXT_LAYER_ENGINE   0x35 /* s8 engine to draw on: 0 main, 1 sub, 3 active, below 0 both */
+#define TEXT_LAYER_VALUE    0x36 /* u16 palette offset of the layer's text */
+
+/* TEXT_LAYER_FLAGS bits. */
+#define TEXT_LAYER_FLAG_CONFIRMED 0x01 /* the screen choice was confirmed */
+
+/* The text renderer's bitmap: TEXT_BITMAP_ROW_BYTES-byte pixel rows, eight rows
+ * to a TEXT_BITMAP_BLOCK_BYTES-byte block whose upper and lower halves are kept
+ * apart for the 3D sprite. */
+#define TEXT_BITMAP_ROW_BYTES   32
+#define TEXT_BITMAP_BLOCK_ROWS  8
+#define TEXT_BITMAP_BLOCK_BYTES 256
 
 /* A two-state widget of a scene panel: two 32x16 halves side by side, one of
  * them selected. The layout helper places it and the update helper handles its

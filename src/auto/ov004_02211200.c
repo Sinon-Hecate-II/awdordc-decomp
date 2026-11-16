@@ -56,7 +56,7 @@ void func_ov004_022112b4(M2C_UNK arg0) {
 }
 
 void func_ov004_022112e8(void *arg0) {
-    M2C_UNK func_0208ffe4(s32, s32, s32);
+    M2C_UNK PlaySlotPendingSound(s32, s32, s32);
     M2C_FIELD(arg0, s16 *, 0x34) = 0x100;
     M2C_FIELD(arg0, s16 *, 0x36) = 0x100;
     M2C_FIELD(arg0, s16 *, 0x38) = 0;
@@ -73,7 +73,7 @@ void func_ov004_022112e8(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x4E) = 0;
     M2C_FIELD(arg0, s16 *, 0x50) = 0;
     M2C_FIELD(arg0, s16 *, 0x52) = 0;
-    func_0208ffe4(0, -1, 0xF7);
+    PlaySlotPendingSound(0, -1, 0xF7);
 }
 
 void func_ov004_02211358(void) {

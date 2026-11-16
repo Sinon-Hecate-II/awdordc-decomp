@@ -145,11 +145,11 @@ s32 func_ov007_0221ad24(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_020c1a80(s32);
+    s32 IsDestroyedPipeTile(s32);
     s32 Map_GetCellTerrainKind(s32, s32);
     s32 GetEditorUnitCategoryCount(s32, s32);
     s32 func_ov007_0221204c(void);
-    if (func_020c1a80(arg2) == 0) {
+    if (IsDestroyedPipeTile(arg2) == 0) {
         goto ret1;
     }
     if (arg2 == 0xF) {
@@ -160,7 +160,7 @@ s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (func_ov007_0221204c() < 0x63) {
         goto ret1;
     }
-    if (func_020c1a80(Map_GetCellTerrainKind(arg0, arg1)) == 0) {
+    if (IsDestroyedPipeTile(Map_GetCellTerrainKind(arg0, arg1)) == 0) {
         return 0;
     }
 ret1:

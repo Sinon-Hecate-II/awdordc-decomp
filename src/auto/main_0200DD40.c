@@ -484,7 +484,7 @@ void func_0200e8f4(M2C_UNK arg0) {
 void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(M2C_UNK);
-    M2C_UNK func_020051f8(M2C_UNK);
+    M2C_UNK OS_DisableIrqMask(M2C_UNK);
     M2C_UNK func_0200519c(M2C_UNK);
     void func_0200ede8(M2C_UNK);
     M2C_UNK func_02018c9c(void);
@@ -523,7 +523,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     *hw208 = 0;
 
     sp8 = OS_DisableInterrupts();
-    sp4 = func_020051f8(0x3fffff);
+    sp4 = OS_DisableIrqMask(0x3fffff);
     func_0200519c(0x40000);
     OS_RestoreInterrupts(sp8);
 

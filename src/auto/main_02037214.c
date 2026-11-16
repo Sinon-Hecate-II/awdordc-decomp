@@ -481,7 +481,7 @@ s32 func_02037c1c(void) {
     }
 }
 
-s32 func_02037c90(void) {
+s32 GetLastNasError(void) {
     extern s32 gNasConnection;
     return gNasConnection;
 }
@@ -518,24 +518,37 @@ void func_02037db0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     StringLength(arg2);
 }
 
-s32 ExtractKeyValue(s8 *arg0, s8 *arg1, s8 *arg2, s32 arg3) {
+/* Extract the value of "key=value" from a string made of separator-delimited
+ * tokens: find the token that starts with key and equals it (up to the
+ * separator), copy the text between the next two separators into out
+ * (NUL-terminated) and return its length, or -1 when the key is not there. */
+s32 ExtractKeyValue(s8 *key, s8 *out, s8 *text, s32 separator) {
+    s8 *p;
+    s8 *q;
+    s32 len;
 
-s8 *p; s8 *q; s32 len;
-if (!arg1) return -1;
-p=StringFindChar(arg2,arg3); if(!p)return -1;
-for (;;) {
-len=StringLength(arg0);
-if(StringCompareN((u8*)(p+1),(u8*)arg0,len)!=0)goto next;
-len=StringLength(arg0); if(arg3==*(s8 *)(len+(s32)p+1))goto extract;
-next:
-q=StringFindChar(p+1,arg3);if(!q)return -1;
-p=StringFindChar(q+1,arg3);if(!p)return -1;
-}
+    if (!out) return -1;
+    p = StringFindChar(text, separator);
+    if (!p) return -1;
+    for (;;) {
+        len = StringLength(key);
+        if (StringCompareN((u8 *)(p + 1), (u8 *)key, len) != 0) goto next;
+        len = StringLength(key);
+        if (separator == *(s8 *)(len + (s32)p + 1)) goto extract;
+    next:
+        q = StringFindChar(p + 1, separator);
+        if (!q) return -1;
+        p = StringFindChar(q + 1, separator);
+        if (!p) return -1;
+    }
 extract:
-p=StringFindChar(p+1,arg3);if(!p)return -1;
-q=StringFindChar(p+1,arg3);
-if(q)len=q-(p+1);else len=StringLength(p+1);
-func_02068d18(arg1,p+1,len);arg1[len]=0;return len;
+    p = StringFindChar(p + 1, separator);
+    if (!p) return -1;
+    q = StringFindChar(p + 1, separator);
+    if (q) len = q - (p + 1); else len = StringLength(p + 1);
+    StringCopyPad(out, p + 1, len);
+    out[len] = 0;
+    return len;
 }
 
 u32 RandomBelow(u32 max) {

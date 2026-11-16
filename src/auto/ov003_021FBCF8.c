@@ -446,7 +446,7 @@ void func_ov003_021fc95c(void *arg0) {
 }
 
 void SetMenuPanelState(void *arg0, u32 arg1) {
-void *func_0208b564(void *);
+void *CreateTextLayer(void *);
 void func_020899cc(void *, s32, s32, u32);
 u8 byte;
 u32 r1tmp;
@@ -466,22 +466,22 @@ case 1:
 case 2:
     return;
 case 3:
-    r0 = func_0208b564(arg0);
+    r0 = CreateTextLayer(arg0);
     func_020899cc(r0, 3, 0xDC00, 0x4200001D);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 case 4:
-    r0 = func_0208b564(arg0);
+    r0 = CreateTextLayer(arg0);
     func_020899cc(r0, 2, 0xDC00, 0x4700001E);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 case 5:
-    r0 = func_0208b564(arg0);
+    r0 = CreateTextLayer(arg0);
     func_020899cc(r0, 2, 0xDC00, 0x47000020);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 case 6:
-    r0 = func_0208b564(arg0);
+    r0 = CreateTextLayer(arg0);
     func_020899cc(r0, 2, 0xDC00, 0x47000021);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;

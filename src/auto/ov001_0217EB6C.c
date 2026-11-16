@@ -150,7 +150,7 @@ void func_ov001_0217f1c0(u32 a){void func_ov001_0217f038(void);extern M2C_UNK gM
 void func_ov001_0217f1f0(s32 event) {
     void *GetCurrentMapRecord(void);
     M2C_UNK Ov001_PlaySound(s32);
-    s32 func_ov001_0218c884(s32, void (*)(s32), s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
     extern M2C_UNK gMapListState;
     void *context;
     s32 result;
@@ -225,7 +225,7 @@ void func_ov001_0217f1f0(s32 event) {
                 M2C_FIELD(&gMapListState, u8 *, 2) = M2C_FIELD(&gMapListState, u8 *, 2) - 1;
             } else {
                 Ov001_PlaySound(19);
-                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = func_ov001_0218c884(0, func_ov001_0217ee48, 0, 120);
+                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217ee48, 0, 120);
                 return;
             }
         } else if (event == 3) {
@@ -233,7 +233,7 @@ void func_ov001_0217f1f0(s32 event) {
                 M2C_FIELD(&gMapListState, u8 *, 2) = M2C_FIELD(&gMapListState, u8 *, 2) + 1;
             } else {
                 Ov001_PlaySound(19);
-                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = func_ov001_0218c884(0, func_ov001_0217ef10, 0, 120);
+                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217ef10, 0, 120);
                 return;
             }
         } else {

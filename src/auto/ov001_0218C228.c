@@ -6,8 +6,8 @@ typedef struct { s32 a; u8 pad[4]; s32 b; u8 rest[52]; } RuntimePair64;
 
 RuntimeRangeNode *func_ov001_0218c228(s32 n,s32 size,s32 forward,s32 *out) {
 s32 func_ov001_0218a74c(s32);
-s32 func_020051f8(s32);
-void func_020051c8(s32);
+s32 OS_DisableIrqMask(s32);
+void OS_EnableIrqMask(s32);
 void SystemHalt(void);
 void func_ov001_0218bf84(void *,void *);
 extern s32 data_ov001_02193e6c;
@@ -16,7 +16,7 @@ s32 old,units;
 node=(RuntimeRangeNode *)func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e6c+n*0x1a0,s32 *,0x19c));
 units=((size+3)&~3)>>2;
 node->size=units;
-old=func_020051f8(1);
+old=OS_DisableIrqMask(1);
 if(forward) {
 p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].head;
 if(p!=&((RuntimeRangePool *)data_ov001_02193e6c)[n].tail) do {
@@ -45,7 +45,7 @@ p=prev;
 if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180)) SystemHalt();
 }
 *out=node->start;
-func_020051c8(old);
+OS_EnableIrqMask(old);
 return node;
 }
 
@@ -121,7 +121,7 @@ void func_ov001_0218c4c0(void) {
     void func_02002ab8(s32);
     void func_02002bb8(s32);
     void GX_SetBankForTex(s32);
-    void func_02002e3c(s32);
+    void GX_SetBankForOBJExtPltt(s32);
     void GX_SetBankForTexExtPltt(s32);
     void func_02003124(s32);
     void func_020031cc(s32);
@@ -139,7 +139,7 @@ void func_ov001_0218c4c0(void) {
     func_02002ab8(data_ov001_02193e70[2]);
     func_02002bb8(data_ov001_02193e70[3]);
     GX_SetBankForTex(data_ov001_02193e70[4]);
-    func_02002e3c(data_ov001_02193e70[5]);
+    GX_SetBankForOBJExtPltt(data_ov001_02193e70[5]);
     GX_SetBankForTexExtPltt(data_ov001_02193e70[6]);
     func_02003124(data_ov001_02193e70[7]);
     func_020031cc(data_ov001_02193e70[8]);
@@ -225,7 +225,7 @@ void Ov001_InitTasks(void) {
 }
 
 void func_ov001_0218c78c(void) {
-void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void func_ov001_0218b71c(void *); extern s32 gOv001Tasks; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } func_ov001_0218b71c(data_ov001_02193e70+13); }
+void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); extern s32 gOv001Tasks; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } Ov001_FreeAlloc(data_ov001_02193e70+13); }
 
 void func_ov001_0218c7d4(s32 n) {
 s32 func_ov001_0218a74c(s32);
@@ -247,15 +247,15 @@ func_ov001_0218c958(n,p);
 }
 }
 
-void func_ov001_0218c884(s32 a,s32 b,s32 c,s32 d) {
+void Ov001_AddTask(s32 a,s32 b,s32 c,s32 d) {
 void *func_ov001_0218c898(s32,s32,s32,s32,u8);
 func_ov001_0218c898(a,b,c,d,0);
 }
 
 void *func_ov001_0218c898(s32 n,s32 callback,s32 arg,s32 priority,u8 owns) {
 s32 func_ov001_0218a74c(s32);
-s32 func_020051f8(s32);
-void func_020051c8(s32);
+s32 OS_DisableIrqMask(s32);
+void OS_EnableIrqMask(s32);
 void func_ov001_0218bf84(void *,void *);
 extern s32 gOv001Tasks;
 void *p;
@@ -266,7 +266,7 @@ M2C_FIELD(p,s32 *,8)=callback;
 M2C_FIELD(p,s32 *,12)=arg;
 M2C_FIELD(p,u8 *,16)=priority;
 M2C_FIELD(p,u8 *,17)=owns;
-saved=func_020051f8(1);
+saved=OS_DisableIrqMask(1);
 q=M2C_FIELD(gOv001Tasks+(n<<6),void **,16);
 for(;;) {
 if((u32)priority<M2C_FIELD(q,u8 *,16)) {
@@ -275,11 +275,11 @@ break;
 }
 q=M2C_FIELD(q,void **,4);
 }
-func_020051c8(saved);
+OS_EnableIrqMask(saved);
 return p;
 }
 
-void func_ov001_0218c924(void *arg0, s32 arg1) {
+void Ov001_SetSlideStep(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 8) = arg1;
 }
 
@@ -295,11 +295,11 @@ void func_ov001_0218c94c(void) {
 }
 
 M2C_UNK func_ov001_0218c958(s32 n,void *p) {
-void func_ov001_0218b71c(void *);
+void Ov001_FreeAlloc(void *);
 M2C_UNK func_ov001_0218bf4c();
 M2C_UNK func_ov001_0218a6f4(s32,u32);
 extern s32 gOv001Tasks;
-if(M2C_FIELD(p,u8 *,17)) func_ov001_0218b71c((u8 *)p+12);
+if(M2C_FIELD(p,u8 *,17)) Ov001_FreeAlloc((u8 *)p+12);
 func_ov001_0218bf4c(p);
 func_ov001_0218a6f4(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
 }

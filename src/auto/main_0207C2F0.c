@@ -115,7 +115,7 @@ void func_0207c4b4(void *arg0) {
 
 void func_0207c4ec(void *arg0) {
     s32 func_020033cc(void);
-    M2C_UNK func_02002e3c(s32);
+    M2C_UNK GX_SetBankForOBJExtPltt(s32);
     extern u16 data_02101438[];
     s32 base;
     s32 count;
@@ -133,7 +133,7 @@ void func_0207c4ec(void *arg0) {
             offset += 2;
         } while (count > 0);
     }
-    func_02002e3c(mode);
+    GX_SetBankForOBJExtPltt(mode);
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }

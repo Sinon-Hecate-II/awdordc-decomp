@@ -396,7 +396,7 @@ void func_ov001_02182370(void) {
     if (sp0 == 0) {
         func_0202f2c8(M2C_FIELD(temp_r4, u8 *, 0xF4), temp_r4);
     }
-    func_ov001_0218c884(0, (void *)func_ov001_021825a8, 0, 0x78);
+    Ov001_AddTask(0, (void *)func_ov001_021825a8, 0, 0x78);
 }
 
 void func_ov001_02182408(void) {

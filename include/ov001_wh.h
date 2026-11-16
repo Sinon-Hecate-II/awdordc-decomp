@@ -30,6 +30,14 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_EVENT_INDICATE 0x08 /* u16 connect/disconnect indication kind */
 #define WH_EVENT_CHILD_ID 0x10 /* u16 child index, a bit position in the child bitmap */
 
+/* Connection object fields (gWhWork+4). */
+#define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
+#define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */
+#define WH_CHILD_BITS   0x60 /* u16: one bit per child still wanted */
+#define WH_RANDOM_SEED  0x58 /* u32: xorshift/LCG state for picking a child */
+#define WH_RANDOM_MUL   0x10dcd /* seed multiplier of the game's LCG */
+#define WH_RANDOM_ADD   0x3039 /* seed increment of the game's LCG */
+
 /* Connection object status field (+0x40). */
 enum {
     WH_STATUS_STOP           = 0,

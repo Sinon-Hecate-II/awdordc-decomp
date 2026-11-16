@@ -370,7 +370,7 @@ void BeginAiTurn(void) {
     void func_ov000_0219c444(void);
     void func_ov000_02181c88(void);
     void func_ov000_0219a350(void);
-    void func_ov000_0219a8c4(void);
+    void UpdateAiSupplyStates(void);
     s32 func_ov000_021a9b84(void);
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
@@ -402,7 +402,7 @@ void BeginAiTurn(void) {
     func_ov000_0219c444();
     func_ov000_02181c88();
     func_ov000_0219a350();
-    func_ov000_0219a8c4();
+    UpdateAiSupplyStates();
     if (func_ov000_021a9b84() == 1) {
         gAiCommandState[AI_COMMAND_STATE_FLAGS] |= 0x04;
     } else {

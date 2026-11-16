@@ -267,10 +267,10 @@ void func_020d1f2c(void) {
     s32 GetPlayerTeam(s32, s32);
     s32 GetPlayerIdForSlot(s32);
     s32 func_020a8bd8(s32, s32);
-    s32 func_020a22fc(s32);
+    s32 GetPlayerCoId(s32);
     s32 func_020a2390(s32);
     void func_020a3550(s32, s32);
-    s32 func_020a2370(s32);
+    s32 GetPlayerArmyId(s32);
     s32 func_020a2380(s32);
     s32 func_020cd6d4(void);
     void func_020d2168(void);
@@ -312,13 +312,13 @@ void func_020d1f2c(void) {
             if (((u8 *)*gCurrentMap)[r9 + 0x67c2] == 0) {
                 func_020a8bd8(r8, 0);
             } else {
-                func_020a8bd8(r8, func_020a22fc(r8));
+                func_020a8bd8(r8, GetPlayerCoId(r8));
             }
 
             func_020a3550(r8, func_020a2390(r8));
 
             r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
-            r10[0x26] = (u8)func_020a2370(r8);
+            r10[0x26] = (u8)GetPlayerArmyId(r8);
 
             r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
             r10[0x32] = (u8)func_020a2380(r8);

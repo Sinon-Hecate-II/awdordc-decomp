@@ -5,14 +5,14 @@ typedef struct {u8 count; u8 pad[3]; ParsedItem items[16];} ParsedItems;
 typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } PacketParams_02012a64;
 
 s32 func_02011bb0(void) {
-    void *func_02011440();
+    void *WFC_GetInfoBlock();
     void DC_InvalidateRange(void *, s32);
     void *p;
     void *q;
     s32 flag;
     u16 v;
     u16 w;
-    p = func_02011440();
+    p = WFC_GetInfoBlock();
     if (func_020114b4(2, 7, 8) != 0) {
         return 0;
     }
@@ -41,32 +41,37 @@ s32 func_02011bb0(void) {
     }
 }
 
-void *func_02011c74(void *arg0,u32 arg1){
-void *func_02011440(void);s32 func_02011450(void);void DC_InvalidateRange(void *,s32);
-s32 entries[15];void *p=func_02011440();s32 i;
-if(func_02011450())return 0;
-if(arg1<1||arg1>15)return 0;
-DC_InvalidateRange((u8 *)M2C_FIELD(p,void **,4)+0x182,2);
-if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<arg1)))return 0;
-if(!M2C_FIELD(arg0,volatile u16 *,4))return 0;
-entries[0]=(s32)arg0+10;i=0;
+/* Finds the multiboot command message that the ARM7's per-player batch `batch`
+ * holds for player slot `player`: the batch's message count is at +4 and the
+ * byte size of one nested message at +6, the messages start at +0xA and each
+ * carries its player slot at +4.  Nothing is returned when the player's Wi-Fi
+ * profile is not registered or the batch has no message for it. */
+void *MultiBoot_FindPlayerMessage(void *batch, u32 player) {
+void *WFC_GetInfoBlock(); s32 WFC_CheckReady(); void DC_InvalidateRange(void *,s32);
+s32 messages[15]; void *block=WFC_GetInfoBlock(); s32 i;
+if(WFC_CheckReady())return 0;
+if(player<1||player>15)return 0;
+DC_InvalidateRange((u8 *)M2C_FIELD(block,void **,4)+0x182,2);
+if(!(M2C_FIELD(M2C_FIELD(block,void **,4),u16 *,0x182)&(1<<player)))return 0;
+if(!M2C_FIELD(batch,volatile u16 *,4))return 0;
+messages[0]=(s32)batch+10;i=0;
 do{
-if(arg1==M2C_FIELD(entries[i],u16 *,4))return (void *)entries[i];
+if(player==M2C_FIELD(messages[i],u16 *,4))return (void *)messages[i];
 i++;
-entries[i]=entries[i-1]+M2C_FIELD(arg0,u16 *,6);
-}while(i<M2C_FIELD(arg0,volatile u16 *,4));
+messages[i]=messages[i-1]+M2C_FIELD(batch,u16 *,6);
+}while(i<M2C_FIELD(batch,volatile u16 *,4));
 return 0;
 }
 
 u16 func_02011d58(void) {
-    s32 func_02011450();
-    if (func_02011450() != 0) {
+    s32 WFC_CheckReady();
+    if (WFC_CheckReady() != 0) {
         return 0x8000U;
     }
     return *(u16 *)0x027FFCFA;
 }
 
-u16 func_02011d78(void){void *func_02011440();s32 func_02011450();void DC_InvalidateRange(void *,s32);void *p=func_02011440();void *q;u16 n;if(func_02011450())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
+u16 func_02011d78(void){void *WFC_GetInfoBlock();s32 WFC_CheckReady();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;u16 n;if(WFC_CheckReady())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
 
 u16 func_02011e08(void){void GetMacAddress(u8 *);u8 buf[6];u16 sum;s32 i;u8 *p;u16 v;GetMacAddress(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*7;return (s32)v%20+200;}
 
@@ -118,8 +123,8 @@ data_020f5540=(u16)(data_020f5540+1);return (u16)data_020f5540;
 }
 
 s32 func_020120f8(M2C_UNK a){
-s32 func_020114b4(s32,s32); void *func_02011440();s32 r;void *p;
-r=func_020114b4(1,0);if(r)return r;func_020112b4(3,a);p=func_02011440();r=func_02011324(3,3,M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,16));if(!r)r=2;return r;
+s32 func_020114b4(s32,s32); void *WFC_GetInfoBlock();s32 r;void *p;
+r=func_020114b4(1,0);if(r)return r;func_020112b4(3,a);p=WFC_GetInfoBlock();r=func_02011324(3,3,M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,16));if(!r)r=2;return r;
 }
 
 s32 func_02012158(M2C_UNK arg0) {
@@ -173,7 +178,7 @@ s32 func_020121d8(M2C_UNK arg0) {
 
 s32 func_02012218(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02011034(M2C_UNK, M2C_UNK);
-    void *func_02011440();
+    void *WFC_GetInfoBlock();
     s32 temp_r0;
     s32 var_r0;
     void *temp_r0_2;
@@ -183,7 +188,7 @@ s32 func_02012218(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
         return temp_r0;
     }
     func_020112b4(0, arg1);
-    temp_r0_2 = func_02011440();
+    temp_r0_2 = WFC_GetInfoBlock();
     var_r0 = func_02011324(0, 3, M2C_FIELD(temp_r0_2, s32 *, 0), M2C_FIELD(temp_r0_2, s32 *, 4), M2C_FIELD(temp_r0_2, s32 *, 0x10));
     if (var_r0 == 0) {
         var_r0 = 2;
@@ -259,7 +264,7 @@ s32 func_020123c8(void *arg0) {
     return 1;
 }
 
-s32 func_02012418(M2C_UNK a,M2C_UNK b){void *func_02011440();s32 r=func_020114b4(1,2);void *p;if(r)return r;p=func_02011440();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(8,a);r=func_02011324(8,1,b);if(!r)r=2;return r;}
+s32 func_02012418(M2C_UNK a,M2C_UNK b){void *WFC_GetInfoBlock();s32 r=func_020114b4(1,2);void *p;if(r)return r;p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(8,a);r=func_02011324(8,1,b);if(!r)r=2;return r;}
 
 void func_02012474(M2C_UNK arg0) {
     M2C_UNK func_02012418(M2C_UNK, M2C_UNK);
@@ -282,7 +287,35 @@ s32 func_02012484(M2C_UNK arg0) {
     return var_r0;
 }
 
-s32 func_020124c4(s32 a,void *b){s32 func_020114b4();s32 func_020113d0(void *,s32);u32 packet[4];s32 r;u16 n;r=func_020114b4(3,2,3,5);if(r)return r;if(!b)return 6;if(!M2C_FIELD(b,u32 *,0))return 6;n=M2C_FIELD(b,u16 *,4);if(n<1U||n>14U)return 6;func_020112b4(10,a);M2C_FIELD(packet,u16 *,0)=10;M2C_FIELD(packet,u16 *,2)=M2C_FIELD(b,u16 *,4);M2C_FIELD(packet,u32 *,4)=M2C_FIELD(b,u32 *,0);M2C_FIELD(packet,u16 *,8)=M2C_FIELD(b,u16 *,6);M2C_FIELD(packet,u8 *,10)=M2C_FIELD(b,u8 *,8);M2C_FIELD(packet,u8 *,11)=M2C_FIELD(b,u8 *,9);M2C_FIELD(packet,u8 *,12)=M2C_FIELD(b,u8 *,10);M2C_FIELD(packet,u8 *,13)=M2C_FIELD(b,u8 *,11);M2C_FIELD(packet,u8 *,14)=M2C_FIELD(b,u8 *,12);M2C_FIELD(packet,u8 *,15)=M2C_FIELD(b,u8 *,13);r=func_020113d0(packet,16);if(!r)r=2;return r;}
+/* Sends this player's multiboot match profile (command 10): validates the
+ * profile block (match id, 1..14 players in the group and up to 14 info bytes)
+ * and queues it in a 16-byte command-10 packet carrying the command handler,
+ * match id, player count, info word and the info bytes.  Returns 0 on success
+ * (2 once handed to the queue), 6 for a bad profile. */
+s32 func_020124c4(s32 commandHandler,void *profile){
+s32 func_020114b4();s32 func_020113d0(void *,s32);
+u32 packet[4];s32 result;u16 playerCount;
+result=func_020114b4(3,2,3,5);
+if(result)return result;
+if(!profile)return 6;
+if(!M2C_FIELD(profile,u32 *,0))return 6;
+playerCount=M2C_FIELD(profile,u16 *,4);
+if(playerCount<1U||playerCount>14U)return 6;
+func_020112b4(10,commandHandler);
+M2C_FIELD(packet,u16 *,0)=10;
+M2C_FIELD(packet,u16 *,2)=M2C_FIELD(profile,u16 *,4);
+M2C_FIELD(packet,u32 *,4)=M2C_FIELD(profile,u32 *,0);
+M2C_FIELD(packet,u16 *,8)=M2C_FIELD(profile,u16 *,6);
+M2C_FIELD(packet,u8 *,10)=M2C_FIELD(profile,u8 *,8);
+M2C_FIELD(packet,u8 *,11)=M2C_FIELD(profile,u8 *,9);
+M2C_FIELD(packet,u8 *,12)=M2C_FIELD(profile,u8 *,10);
+M2C_FIELD(packet,u8 *,13)=M2C_FIELD(profile,u8 *,11);
+M2C_FIELD(packet,u8 *,14)=M2C_FIELD(profile,u8 *,12);
+M2C_FIELD(packet,u8 *,15)=M2C_FIELD(profile,u8 *,13);
+result=func_020113d0(packet,16);
+if(!result)result=2;
+return result;
+}
 
 /* Wraps params into a packet and dispatches it to the host. */
 s32 WFC_SendRequestPacket(s32 sendCode, void *params) {
@@ -335,23 +368,27 @@ s32 func_02012700(M2C_UNK arg0) {
 }
 
 s32 func_02012740(s32 a,u16 *b,void *c,s32 d,u16 e){
-void *func_02011440(void);
+void *WFC_GetInfoBlock(void);
 void func_020067c4(void *,s32);void MI_CpuCopy8(void *,void *,s32);void MI_CpuFill8(void *,s32,s32);s32 func_020113d0(void *,s32);
 u32 packet[10];s32 r;void *p;
 r=func_020114b4(1,2);if(r)return r;if(!b)return 6;
-func_020067c4(b,*b*2);p=func_02011440();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(12,a);
+func_020067c4(b,*b*2);p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(12,a);
 M2C_FIELD(packet,u16 *,0)=12;M2C_FIELD(packet,u16 **,4)=b;
 if(c)MI_CpuCopy8(c,&packet[2],24);else MI_CpuFill8(&packet[2],0,24);
 M2C_FIELD(packet,s32 *,32)=d;M2C_FIELD(packet,u16 *,38)=e;
 r=func_020113d0(packet,40);if(!r)r=2;return r;
 }
 
-s32 func_0201280c(s32 a,u32 b){s32 func_020114b4();void *func_02011440();void DC_InvalidateRange(void *,s32);void *p=func_02011440();void *q;s32 r=func_020114b4(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;DC_InvalidateRange((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;func_020112b4(13,a);r=func_02011324(13,1,1<<b);if(!r)r=2;return r;}
+/* Register connection profile number `b` of type `a` in the Wi-Fi info block: check
+ * the block is a connected (kind 7 or 9) one, then record the profile's bit.  Returns
+ * 0 on success, or a Wi-Fi error code (2 = add failed, 6 = bad profile number,
+ * 7 = profile not in the block's list). */
+s32 func_0201280c(s32 a,u32 b){s32 func_020114b4();void *WFC_GetInfoBlock();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;s32 r=func_020114b4(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;DC_InvalidateRange((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;func_020112b4(13,a);r=func_02011324(13,1,1<<b);if(!r)r=2;return r;}
 
 s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void *data) {
     /* Register a pending uplink packet: validates camera/module state, builds packet header in a 64-byte buffer, returns status. */
     s32 func_020114b4();
-    void *func_02011440();
+    void *WFC_GetInfoBlock();
     void DC_InvalidateRange(void *, s32);
     void CpuFill(s32, void *, s32);
     void func_02007e70(void *, void *, s32);
@@ -360,7 +397,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     u32 packet[16];
     s32 rc;
     void *ctx;
-    ctx = M2C_FIELD(func_02011440(), void **, 4);
+    ctx = M2C_FIELD(WFC_GetInfoBlock(), void **, 4);
     rc = func_020114b4(2, 7, 8);
     if (rc) return rc;
     DC_InvalidateRange(ctx + 0x188, 2);

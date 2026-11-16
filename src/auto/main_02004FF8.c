@@ -14,7 +14,7 @@ else p=stack_end_02005968();
 return p-size;
 }
 
-void func_02004ff8(u32 arg0, s32 arg1) {
+void OS_SetFifoReceiveHandlers(u32 arg0, s32 arg1) {
     extern M2C_UNK data_0212dc1c;
     extern M2C_UNK data_027e0000;
     s32 i;
@@ -41,7 +41,7 @@ void func_02004ff8(u32 arg0, s32 arg1) {
     } while (i < 22);
 }
 
-s32 func_02005080(u32 arg0) {
+s32 OS_GetFifoReceiveHandler(u32 arg0) {
     extern M2C_UNK data_0212dc1c;
     extern s32 data_027e0000;
     s32 i;
@@ -67,7 +67,7 @@ s32 func_02005080(u32 arg0) {
 
 #pragma scheduling on
 void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_020051c8(s32);
+    s32 OS_EnableIrqMask(s32);
     extern M2C_UNK data_0212dc1c;
     extern M2C_UNK data_0212dc20;
     extern M2C_UNK data_0212dc24;
@@ -77,16 +77,16 @@ void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
     shift = arg0 + 8;
     M2C_FIELD(&data_0212dc1c, s32 *, offset) = arg1;
     M2C_FIELD(&data_0212dc24, s32 *, offset) = arg2;
-    M2C_FIELD(&data_0212dc20, s32 *, offset) = func_020051c8(1 << shift) & (1 << shift);
+    M2C_FIELD(&data_0212dc20, s32 *, offset) = OS_EnableIrqMask(1 << shift) & (1 << shift);
 }
 #pragma optimization_level 2
 void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020051c8(s32);
+ s32 OS_EnableIrqMask(s32);
  extern M2C_UNK data_0212dc4c, data_0212dc50, data_0212dc54;
  s32 offset = arg0 * 12;
  M2C_FIELD(&data_0212dc4c, volatile s32 *, offset) = arg1;
  M2C_FIELD(&data_0212dc54, volatile s32 *, offset) = arg2;
- func_020051c8(1 << (arg0 + 3));
+ OS_EnableIrqMask(1 << (arg0 + 3));
  M2C_FIELD(&data_0212dc50, s32 *, offset) = 1;
 }
 #pragma optimization_level reset
@@ -102,7 +102,7 @@ s32 func_0200519c(s32 arg0) {
     return old;
 }
 
-s32 func_020051c8(s32 arg0) {
+s32 OS_EnableIrqMask(s32 arg0) {
     s32 old;
     u16 ime;
     ime = *(volatile u16 *)0x04000208;
@@ -114,7 +114,7 @@ s32 func_020051c8(s32 arg0) {
     return old;
 }
 
-s32 func_020051f8(s32 arg0) {
+s32 OS_DisableIrqMask(s32 arg0) {
     s32 old;
     u16 ime;
     ime = *(volatile u16 *)0x04000208;
@@ -126,7 +126,7 @@ s32 func_020051f8(s32 arg0) {
     return old;
 }
 
-s32 func_02005228(s32 arg0) {
+s32 OS_SetIrqMask(s32 arg0) {
     s32 old;
     u16 ime;
     ime = *(volatile u16 *)0x04000208;

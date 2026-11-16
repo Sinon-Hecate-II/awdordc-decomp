@@ -89,7 +89,7 @@ void func_ov006_022150f8(void) {
 void func_ov006_02215104(s32 spriteId) {
 void Clear3DSpriteLayer(s32);
 void func_01ff9dd8(s32);
-void *func_0208b564(s32);
+void *CreateTextLayer(s32);
 void func_020899cc(void *,s32,s32,s32);
 void LoadScenePanelPalette(s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
@@ -109,7 +109,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
 Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);func_01ff9dd8(0);func_01ff9dd8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|1;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|2;
-sprite=func_0208b564(spriteId);func_020899cc(sprite,2,0x4640,0x42000001);M2C_FIELD(sprite,u32 *,0x58)|=0x1000;
+sprite=CreateTextLayer(spriteId);func_020899cc(sprite,2,0x4640,0x42000001);M2C_FIELD(sprite,u32 *,0x58)|=0x1000;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 p6=*(u16 **)gCur3DSpriteEngine; *p6=*p6|0x10;
 p7=*(u16 **)gCur3DSpriteEngine; *p7=*p7|0x20;

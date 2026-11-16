@@ -473,7 +473,7 @@ u16 bl=(ab*x+bb*y)>>5;
 return (r&31)|((g&31)<<5)|((bl&31)<<10);
 }
 
-void func_020ae46c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void FadePaletteTowardsBlack(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     void BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     BlendPalette(arg0, arg1, arg2, arg3, 0x20);
 }

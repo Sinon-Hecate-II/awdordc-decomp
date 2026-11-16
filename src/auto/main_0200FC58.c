@@ -386,8 +386,8 @@ void func_02010688(void) {
 #pragma opt_propagation on
 void func_020106dc(void) {
     s32 func_02007ca4(s32);
-    void func_020051f8(s32);
-    void func_02005228(s32);
+    void OS_DisableIrqMask(s32);
+    void OS_SetIrqMask(s32);
     s32 func_02010a28(void);
     void func_02010f84(s32);
     s32 OS_DisableInterrupts(void);
@@ -422,8 +422,8 @@ void func_020106dc(void) {
     M2C_FIELD(q, s32 *, 0x1c) = b;
     M2C_FIELD(q, s32 *, 0x20) = c;
     if (flag) goto fail;
-    func_020051f8(0x80000);
-    func_02005228(0x80000);
+    OS_DisableIrqMask(0x80000);
+    OS_SetIrqMask(0x80000);
     p = &data_0212fde0;
     r = func_02010a28();
     func_02010f84(r);

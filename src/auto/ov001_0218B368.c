@@ -1,6 +1,6 @@
 /* 40 functions from 0x0218B368 to 0x0218C228 (ov001), found by ds-decomp. */
 #include "common.h"
-void func_020051c8(s32);
+void OS_EnableIrqMask(s32);
 extern s32 data_ov001_02193e6c;
 
 typedef struct ListLink { struct ListLink *prev; struct ListLink *next; } ListLink;
@@ -138,9 +138,9 @@ void func_ov001_0218b688(void) {
 }
 
 s32 func_ov001_0218b6ac(s32 a,s32 b){
-s32 func_020051f8(s32);void func_020051c8(s32);s32 func_0202a468(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;s32 result,saved;
-saved=func_020051f8(1);result=func_0202a468(data_ov001_02193e44,a,b);
-if(!result)SystemHalt();func_020051c8(saved);return result;
+s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 func_0202a468(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;s32 result,saved;
+saved=OS_DisableIrqMask(1);result=func_0202a468(data_ov001_02193e44,a,b);
+if(!result)SystemHalt();OS_EnableIrqMask(saved);return result;
 }
 
 s32 Ov001_Alloc(M2C_UNK arg0) {
@@ -153,24 +153,24 @@ s32 Ov001_Alloc(M2C_UNK arg0) {
     return temp_r0;
 }
 
-s32 func_ov001_0218b71c(s32 *p) {
-s32 func_020051f8(s32);
+s32 Ov001_FreeAlloc(s32 *p) {
+s32 OS_DisableIrqMask(s32);
 extern s32 data_ov001_02193e44;
-s32 saved=func_020051f8(1);
+s32 saved=OS_DisableIrqMask(1);
 if(*p==0)return saved;
 func_0202a498(data_ov001_02193e44,*p);
-func_020051c8(saved);
+OS_EnableIrqMask(saved);
 *p=0;
 return 0;
 }
 
 void func_ov001_0218b760(s32 a) {
-s32 func_020051f8(s32);
+s32 OS_DisableIrqMask(s32);
 extern s32 data_ov001_02193e44;
-s32 saved=func_020051f8(1);
+s32 saved=OS_DisableIrqMask(1);
 if(a==0)return;
 func_0202a498(data_ov001_02193e44,a);
-func_020051c8(saved);
+OS_EnableIrqMask(saved);
 }
 
 void func_ov001_0218b850(void);
@@ -190,13 +190,13 @@ void func_ov001_0218b818(void) {
     M2C_UNK func_0200d95c();
     M2C_UNK func_0200dd14(M2C_UNK);
     s32 func_0200dd2c(M2C_UNK);
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK data_ov001_02193e4c;
     do {
         func_0200d95c();
         func_0200dd14(4);
     } while (func_0200dd2c(4) != 0);
-    func_ov001_0218b71c(&data_ov001_02193e4c);
+    Ov001_FreeAlloc(&data_ov001_02193e4c);
 }
 
 void func_ov001_0218b850(void) {
@@ -346,9 +346,9 @@ if(func_0200ec24(0))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=1;
 void func_ov001_0218bedc(void);
 void func_ov001_0218be2c(void) {
 data_ov001_02193e60[1]=*(volatile u32 *)0x04000210;
-func_0200519c(0x40018);func_020051c8(1);
-data_ov001_02193e60[0]=func_02005080(1);
-func_02004ff8(1,func_ov001_0218bedc);func_02005228(1);
+func_0200519c(0x40018);OS_EnableIrqMask(1);
+data_ov001_02193e60[0]=OS_GetFifoReceiveHandler(1);
+OS_SetFifoReceiveHandlers(1,func_ov001_0218bedc);OS_SetIrqMask(1);
 {u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=1;func_02007508(1,old);}
 }
 
@@ -356,7 +356,7 @@ void func_ov001_0218bea0(void) {
 (void)*(volatile u16 *)0x04000208;
 *(volatile u16 *)0x04000208=0;
 func_0200519c(data_ov001_02193e60[1]);
-func_02004ff8(1,data_ov001_02193e60[0]);
+OS_SetFifoReceiveHandlers(1,data_ov001_02193e60[0]);
 }
 
 void func_ov001_0218bedc(void) {
@@ -370,14 +370,14 @@ s32 Ov001_ListCreate(void){s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(16,4);
 M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(p,s32 *,4)=p+8;M2C_FIELD(p,s32 *,8)=p;M2C_FIELD(p,s32 *,12)=0;return p;}
 
 void func_ov001_0218bf30(s32 arg0, ...) {
- M2C_UNK func_ov001_0218b71c(M2C_UNK *);
- func_ov001_0218b71c(&arg0);
+ M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
+ Ov001_FreeAlloc(&arg0);
 }
 
-void func_ov001_0218bf4c(ListLink *node){s32 func_020051f8(s32);void func_020051c8(s32);s32 state=func_020051f8(1);node->prev->next=node->next;node->next->prev=node->prev;node->next=0;node->prev=0;func_020051c8(state);}
+void func_ov001_0218bf4c(ListLink *node){s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 state=OS_DisableIrqMask(1);node->prev->next=node->next;node->next->prev=node->prev;node->next=0;node->prev=0;OS_EnableIrqMask(state);}
 
 M2C_UNK func_ov001_0218bf84(a,b)
-s32 a; s32 b;{s32 func_020051f8(s32);s32 state=func_020051f8(1);ListLink *head=(ListLink *)a,*node=(ListLink *)b;head->prev->next=node;node->prev=head->prev;node->next=head;head->prev=node;func_020051c8(state);}
+s32 a; s32 b;{s32 OS_DisableIrqMask(s32);s32 state=OS_DisableIrqMask(1);ListLink *head=(ListLink *)a,*node=(ListLink *)b;head->prev->next=node;node->prev=head->prev;node->next=head;head->prev=node;OS_EnableIrqMask(state);}
 
 void Ov001_ListPushBack(s32 arg0) {
     func_ov001_0218bf84(arg0 + 8);
@@ -390,10 +390,10 @@ void Ov001_ListPushFront(void *arg0) {
 
 void func_ov001_0218bfd4(void){
 void func_ov001_0218c070(void);
-extern s32 data_ov001_02193e68;void MI_CpuFill32(s32,s32,s32);s32 Ov001_QueueCreateFromBuffer(s32,s32,s32);s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
+extern s32 data_ov001_02193e68;void MI_CpuFill32(s32,s32,s32);s32 Ov001_QueueCreateFromBuffer(s32,s32,s32);s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
 s32 i,offset; s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(0x80c,4);data_ov001_02193e68=p;MI_CpuFill32(0x200,p,0x800);
 for(i=0,offset=0;i<2;i++){s32 result=Ov001_QueueCreateFromBuffer(0x40,data_ov001_02193e68+offset,8);offset+=0x400;((s32 *)data_ov001_02193e68)[i+0x200]=result;}
-M2C_FIELD(data_ov001_02193e68,s32 *,0x808)=func_ov001_0218c884(1,func_ov001_0218c070,0,200);
+M2C_FIELD(data_ov001_02193e68,s32 *,0x808)=Ov001_AddTask(1,func_ov001_0218c070,0,200);
 }
 
 void func_ov001_0218c070(void){
@@ -406,7 +406,7 @@ void func_ov001_0218c0b8(void) {
     extern s32 data_ov001_02193e68;
     extern s32 data_ov001_02193e6c;
     func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193e68, s32 *, 0x808));
-    func_ov001_0218b71c(&data_ov001_02193e6c-1);
+    Ov001_FreeAlloc(&data_ov001_02193e6c-1);
 }
 #pragma pool_constants reset
 void func_ov001_0218c0e4(s32 n){

@@ -96,8 +96,8 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     M2C_UNK StringFormat(void *, void *, s32);
     M2C_UNK StringAppend(void *, void *);
     s32 GetLocalizedText(s32);
-    M2C_UNK func_020899fc(s32, M2C_UNK, s32, void *);
-    s32 func_0208b564(M2C_UNK);
+    M2C_UNK RenderTextLayer(s32, M2C_UNK, s32, void *);
+    s32 CreateTextLayer(M2C_UNK);
     extern s32 gMovementCostTable;
     extern M2C_UNK data_0215c334;
     extern M2C_UNK data_ov005_022212f4;
@@ -117,7 +117,7 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
         var_r9 += 1;
         var_r10 += 0x9C;
     } while (var_r9 < 0xF);
-    func_020899fc(func_0208b564(arg0), 2, 0x6B80, sp20);
+    RenderTextLayer(CreateTextLayer(arg0), 2, 0x6B80, sp20);
 }
 
 void func_ov005_0221fbc8(M2C_UNK arg0) {

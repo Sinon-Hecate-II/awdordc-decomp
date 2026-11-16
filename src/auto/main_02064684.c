@@ -1,5 +1,8 @@
 /* 23 functions from 0x02064684 to 0x0206536C (main), found by ds-decomp. */
 #include "common.h"
+/* The first bytes of a GameSpy stream object: the flag word at +4 (mode in
+ * bits 2..4, access in bits 7..9, nonzero while the stream is open) and the
+ * state word at +8 (low 3 bits: 0 closed, 1 open, 2 flushing). */
 typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
 extern u8 gStdinStream[], gStdoutStream[], gStderrStream[], gStreamMutexes[];
 extern s32 gStreamLockOwner[], gStreamLockDepth[];
@@ -13,7 +16,7 @@ typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
  * stream is line-buffered, and returns written/size via the divide helper. */
 s32 StreamWrite(s32 buffer, s32 elemSize, s32 count, void *stream) {
     M2C_UNK func_020640ec(void *);
-    s32 func_020641a8(void *, s32);
+    s32 StreamFlush(void *, s32);
     s8 *MemCopy(s8 *, s8 *, s32);
     u8 *FindLastByte(u8 *, s32, u32);
     s32 func_0206ad4c(void *, M2C_UNK);
@@ -87,7 +90,7 @@ loop_21:
                 remaining -= scratch;
                 M2C_FIELD(stream, u32 *, 0x28) = (u32) (M2C_FIELD(stream, u32 *, 0x28) - chunk);
             }
-            if (((M2C_FIELD(stream, u32 *, 0x28) == 0) || (eol != 0) || (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) == 0)) && (func_020641a8(stream, NULL) != 0)) {
+            if (((M2C_FIELD(stream, u32 *, 0x28) == 0) || (eol != 0) || (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) == 0)) && (StreamFlush(stream, NULL) != 0)) {
                 M2C_FIELD(stream, u8 *, 0xD) = 1U;
                 remaining = 0;
                 M2C_FIELD(stream, u32 *, 0x28) = 0U;
@@ -105,7 +108,7 @@ loop_21:
         M2C_FIELD(stream, s32 *, 0x1C) = src;
         M2C_FIELD(stream, u32 *, 0x20) = remaining;
         M2C_FIELD(stream, s32 *, 0x24) = (s32) (src + remaining);
-        if (func_020641a8(stream, (s32)&chunk) == 0) {
+        if (StreamFlush(stream, (s32)&chunk) == 0) {
             written += chunk;
         } else {
             M2C_FIELD(stream, u8 *, 0xD) = 1U;
@@ -123,11 +126,11 @@ loop_21:
 }
 #pragma pop
 s32 func_02064934(void *arg0) {
-s32 CloseAllStreams(void *);
+s32 StreamClose(void *);
 s32 a,b,result;
 if(!arg0)return -1;
 if(((u32)(M2C_FIELD(arg0,s32 *,4)<<22)>>29)==0)return 0;
-b=CloseAllStreams(arg0);
+b=StreamClose(arg0);
 a=M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
 result=0;
 M2C_FIELD(arg0,volatile s32 *,4)&=~0x380;
@@ -137,42 +140,46 @@ if(b!=0||a!=0)result=1;
 return -result;
 }
 #pragma scheduling on
-s32 CloseAllStreams(void *arg0) {
-    s32 func_02064034();
-    s32 func_020641a8(void *, M2C_UNK);
+/* Closes a GameSpy stream: a NULL stream closes the three standard streams; a
+ * stream in an error state or not open fails, a write-only stream needs nothing,
+ * a stream that is not open in state 1 is just reset, and an open one is flushed
+ * before its state, write total and pending count are cleared. */
+s32 StreamClose(void *stream) {
+    s32 CloseStandardStreams();
+    s32 StreamFlush(void *, M2C_UNK);
     s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
+    s32 stateWord;
+    s32 stateWord2;
 
-    if (arg0 == NULL) {
-        return func_02064034();
+    if (stream == NULL) {
+        return CloseStandardStreams();
     }
-    if ((M2C_FIELD(arg0, u8 *, 0xD) != 0) || (((StreamFlags649 *)arg0)->access == 0)) {
+    if ((M2C_FIELD(stream, u8 *, 0xD) != 0) || (((StreamFlags649 *)stream)->access == 0)) {
         return -1;
     }
-    if (((StreamFlags649 *)arg0)->mode == 1) {
+    if (((StreamFlags649 *)stream)->mode == 1) {
         return 0;
     }
-    temp_r0_2 = M2C_FIELD(arg0, s32 *, 8);
-    if (((StreamFlags649 *)arg0)->state >= 3U) {
-        ((StreamFlags649 *)arg0)->state=2;
+    stateWord = M2C_FIELD(stream, s32 *, 8);
+    if (((StreamFlags649 *)stream)->state >= 3U) {
+        ((StreamFlags649 *)stream)->state=2;
     }
-    if (((u32) (M2C_FIELD(arg0, s32 *, 8) << 0x1D) >> 0x1D) == 2) {
-        M2C_FIELD(arg0, s32 *, 0x28) = 0;
+    if (((u32) (M2C_FIELD(stream, s32 *, 8) << 0x1D) >> 0x1D) == 2) {
+        M2C_FIELD(stream, s32 *, 0x28) = 0;
     }
-    temp_r0_3 = M2C_FIELD(arg0, s32 *, 8);
-    if (((StreamFlags649 *)arg0)->state != 1) {
-        ((StreamFlags649 *)arg0)->state=0;
+    stateWord2 = M2C_FIELD(stream, s32 *, 8);
+    if (((StreamFlags649 *)stream)->state != 1) {
+        ((StreamFlags649 *)stream)->state=0;
         return 0;
     }
-    if (func_020641a8(arg0, 0) != 0) {
-        M2C_FIELD(arg0, u8 *, 0xD) = 1U;
-        M2C_FIELD(arg0, s32 *, 0x28) = 0;
+    if (StreamFlush(stream, 0) != 0) {
+        M2C_FIELD(stream, u8 *, 0xD) = 1U;
+        M2C_FIELD(stream, s32 *, 0x28) = 0;
         return -1;
     }
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) & ~7);
-    M2C_FIELD(arg0, s32 *, 0x18) = 0;
-    M2C_FIELD(arg0, s32 *, 0x28) = 0;
+    M2C_FIELD(stream, s32 *, 8) = (s32) (M2C_FIELD(stream, s32 *, 8) & ~7);
+    M2C_FIELD(stream, s32 *, 0x18) = 0;
+    M2C_FIELD(stream, s32 *, 0x28) = 0;
     return 0;
 }
 
@@ -250,11 +257,11 @@ return position;
 
 /* Sets/updates the transfer position, adjusting buffered stream state, and reports progress through the object's callback. */
 s32 func_02064ce8(void *stream, u32 position, s32 mode, ...) {
-s32 func_020641a8(void *, s32);
+s32 StreamFlush(void *, s32);
 s32 GetStreamPosition(void *);
 extern s32 gErrno;
 if ((u8)((M2C_FIELD(stream,u32 *,4)<<22)>>29)!=1 || M2C_FIELD(stream,u8 *,13)!=0) { gErrno=40; return -1; }
-if (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==1 && func_020641a8(stream,0)!=0) { M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; gErrno=40; return -1; }
+if (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==1 && StreamFlush(stream,0)!=0) { M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; gErrno=40; return -1; }
 if(mode==1){mode=0;position+=GetStreamPosition(stream);}
 if(mode!=2 && (M2C_FIELD(stream,u32 *,4)<<27)>>29 !=3 && (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29))-2<=1) {
 u32 current=position; u32 base;
@@ -358,7 +365,7 @@ return i;
 }
 
 u32 func_0206512c(s8 *out,u16 *in,u32 n) {
-void func_02068d18(void *,void *,u32);
+void StringCopyPad(void *,void *,u32);
 s8 buf[4];
 u32 used=0;
 if(!out || !in) return 0;
@@ -367,7 +374,7 @@ u32 len;
 if(!*in) {out[used]=0;break;}
 len=func_02065088(buf,*in++);
 if(used+len>n) break;
-func_02068d18(out+used,buf,len);
+StringCopyPad(out+used,buf,len);
 used+=len;
 } while(used<=n);
 return used;

@@ -16,7 +16,7 @@ s32 func_ov000_021882c4(void) {
     s32 CountUnusedCapturableProperties();
     s32 flag, count, current;
     if (func_ov000_02187e50() == 1) return 0;
-    flag = func_ov000_0218a2f8();
+    flag = CountAiAttackTargetUnits();
     if (flag) count = CountCapturableProperties();
     else count = CountUnusedCapturableProperties();
     if (count == 0) return 0;
@@ -83,7 +83,7 @@ u8 func_ov000_02188448(void) {
     if (func_ov000_02187e50() == 1) {
         return 0U;
     }
-    temp_r0 = func_ov000_0218a2f8();
+    temp_r0 = CountAiAttackTargetUnits();
     if (temp_r0 == 0) {
         return 0U;
     }
@@ -103,7 +103,7 @@ s32 func_ov000_02188488(void) {
     s32 var_r1;
     s32 var_r2;
 
-    temp_r4 = func_ov000_0218a2f8();
+    temp_r4 = CountAiAttackTargetUnits();
     temp_r0 = func_ov000_0218a294();
     if (temp_r4 > 5) {
         var_r2 = 5;
@@ -149,7 +149,7 @@ u8 CanDoAiAction01(s32 arg0, s32 arg1) {
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
 
-    current = func_ov000_0218a2f8();
+    current = CountAiAttackTargetUnits();
     if (current == 0) return 0;
     if (func_ov000_0218a294() < current + 5) result = 1;
     else result = 0;
@@ -205,11 +205,11 @@ void CanDoAiAction2(s32 arg0, s32 arg1) {
 }
 
 u8 func_ov000_02188744(void) {
-    s32 func_ov000_0218a2f8();
+    s32 CountAiAttackTargetUnits();
     s32 temp_r4;
     u8 var_r0;
 
-    if (func_ov000_0218a2f8() == 0) {
+    if (CountAiAttackTargetUnits() == 0) {
         return 0U;
     }
     temp_r4 = CountCapturableProperties();

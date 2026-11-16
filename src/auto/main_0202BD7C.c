@@ -270,14 +270,14 @@ void *q=func_0202a67c(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s
 }
 
 void func_0202c828(void) {
-    M2C_UNK func_020092d0(M2C_UNK);
-    M2C_UNK func_0200948c(s32);
-    s32 func_020094f8();
+    M2C_UNK Sound_FlushCommands(M2C_UNK);
+    M2C_UNK Sound_WaitForCommand(s32);
+    s32 Sound_GetCommandCounter();
     s32 temp_r4;
 
-    temp_r4 = func_020094f8();
-    func_020092d0(1);
-    func_0200948c(temp_r4);
+    temp_r4 = Sound_GetCommandCounter();
+    Sound_FlushCommands(1);
+    Sound_WaitForCommand(temp_r4);
 }
 
 s32 func_0202c848(void) {
@@ -298,21 +298,24 @@ s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
     return 0;
 }
 
-s32 func_0202c8b8(s32 arg0,s32 arg1) {
-void *base=GetSoundGroupRecord(arg0);u32 i;void *p;s32 r;
-if(!base)return 1;
+/* Loads every sound resource of a sound group (the group record for id groupId)
+   into memory pool `pool`: sequence, bank, wave archive and sequence archive
+   items, in the group's order.  Returns 0, or the first loader's error code. */
+s32 func_0202c8b8(s32 groupId,s32 pool) {
+void *group=GetSoundGroupRecord(groupId);u32 i;SoundGroupItem *item;s32 error;
+if(!group)return 1;
 i=0;
-if(i<M2C_FIELD(base,u32 *,0)){
-p=base+4;
+if(i<M2C_FIELD(group,u32 *,0)){
+item=group+4;
 do{
-switch(M2C_FIELD(p,u8 *,0)){
-case 0:r=LoadSoundSequence(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
-case 3:r=LoadSoundSequenceArchive(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
-case 1:r=LoadSoundBank(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
-case 2:r=LoadWaveArchive(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+switch(item->type){
+case SOUND_GROUP_SEQUENCE:error=LoadSoundSequence(item->index,item->flags,pool,1,0);if(error)return error;break;
+case SOUND_GROUP_SEQUENCE_ARCHIVE:error=LoadSoundSequenceArchive(item->index,item->flags,pool,1,0);if(error)return error;break;
+case SOUND_GROUP_BANK:error=LoadSoundBank(item->index,item->flags,pool,1,0);if(error)return error;break;
+case SOUND_GROUP_WAVE_ARCHIVE:error=LoadWaveArchive(item->index,item->flags,pool,1,0);if(error)return error;break;
 }
-i++;p+=8;
-}while(i<M2C_FIELD(base,u32 *,0));
+i++;item++;
+}while(i<M2C_FIELD(group,u32 *,0));
 }
 return 0;
 }

@@ -110,7 +110,7 @@ if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIE
 old=func_ov003_02207c5c(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
 if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
 else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));func_ov003_0220c328(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
+func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));Ov003_ConfirmRowValue(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
 }else if(active&&func_ov003_02207a54(a)&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20))){
 if(func_ov003_02207a70(a))func_ov003_0220bbcc(a);active=0;
 }else if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12))){

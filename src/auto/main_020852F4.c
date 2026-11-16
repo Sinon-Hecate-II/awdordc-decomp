@@ -251,7 +251,7 @@ void func_02085724(s32 a,s32 b,s32 c,s32 d) {
 void func_02085788(s32 arg0) {
     M2C_UNK MemSet(M2C_UNK *, u8, s32);
     s32 GetActiveOverlay();
-    s32 func_020a2370(s32);
+    s32 GetPlayerArmyId(s32);
     M2C_UNK func_020c4cdc(s32);
     M2C_UNK func_020c4dd0(s32);
     void *func_020c5328();
@@ -346,8 +346,8 @@ loop_10:
         var_r9 = 0;
         do {
             if ((var_r9 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r9))) {
-                temp_r6_2 = func_020a2370(temp_r8 + 1);
-                if (temp_r6_2 != func_020a2370(var_r9 + 1)) {
+                temp_r6_2 = GetPlayerArmyId(temp_r8 + 1);
+                if (temp_r6_2 != GetPlayerArmyId(var_r9 + 1)) {
                     temp_r0_4 = func_ov010_02229b0c(var_r9);
                     if (temp_r0_4 != NULL) {
                         temp_r0_5 = func_020c5708(M2C_FIELD(temp_r0_4, s32 *, 0x1C));

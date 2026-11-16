@@ -25,17 +25,17 @@ void func_02000b9c(void) {
 
 extern void func_020e4490(void);
 extern void func_020e4570(void);
-extern void func_02086508(void);
-extern void func_020e4594(void);
+extern void Init3DSpriteScene(void);
+extern void NitroMain(void);
 void main(void)
 {
   void func_020e4490(void);
   void func_020e4570(void);
-  void func_02086508(void);
-  void func_020e4594(void);
+  void Init3DSpriteScene(void);
+  void NitroMain(void);
   func_020e4570();
-  func_02086508();
-  func_020e4594();
+  Init3DSpriteScene();
+  NitroMain();
   for (;;)
   {
     func_020e4490();

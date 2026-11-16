@@ -40,7 +40,7 @@ void func_0203a04c(M2C_UNK a,M2C_UNK b,M2C_UNK *c,M2C_UNK d) {
 extern M2C_UNK gNasLogin;
 void StringCopy(void *,M2C_UNK);
 u64 GetSystemTick(void);
-void func_0204dbd4(s32,void *,void *,s32,s32,M2C_UNK *,s32);
+void gpiStartConnectionRaw(s32,void *,void *,s32,s32,M2C_UNK *,s32);
 s32 ReportNasError(void);
 void *p;
 StringCopy((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x48,a);
@@ -49,7 +49,7 @@ p=M2C_FIELD(&gNasLogin,void **,4);
 M2C_FIELD(p,u64 *,0x34)=GetSystemTick();
 M2C_FIELD(p,s32 *,0x30)=1;
 p=M2C_FIELD(&gNasLogin,void **,4);
-func_0204dbd4(M2C_FIELD(p,s32 *,0),(u8 *)p+0x48,(u8 *)p+0x148,1,0,c,0);
+gpiStartConnectionRaw(M2C_FIELD(p,s32 *,0),(u8 *)p+0x48,(u8 *)p+0x148,1,0,c,0);
 if(ReportNasError()) return; M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,4)=d;
 }
 

@@ -358,7 +358,7 @@ void func_ov003_021f0010(void) {
 }
 
 void func_ov003_021f0014(void *arg0) {
-s32 IsLinkSessionActive(); s32 GetLocalPlayerIdForOverlay(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void SetOv003SceneState(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
+s32 IsLinkSessionActive(); s32 GetLocalPlayerIdForOverlay(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 GetPlayerCoId(s32); s32 func_ov003_021e6d28(); void SetOv003SceneState(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
 u8 buf[0x24]; s32 v;
 if (!IsLinkSessionActive()) return;
 if (((u32)(M2C_FIELD(arg0,u8 *,0x39)<<31)>>31)==1) v=1; else v=0;
@@ -366,7 +366,7 @@ if (!(v&255)) return;
 func_ov003_022006dc(0); func_ov003_021f152c(1); SetOv003SceneState(1); func_ov006_022172b0(arg0);
 if (!func_ov003_021e6d28()) return;
 if (!func_02084d3c(buf,0x24)) return;
-buf[13]=func_ov003_02200808((u8)func_020a22fc(GetLocalPlayerIdForOverlay()+1));
+buf[13]=func_ov003_02200808((u8)GetPlayerCoId(GetLocalPlayerIdForOverlay()+1));
 func_02084d88(buf,0x24); func_02084e74();
 }
 
@@ -380,7 +380,7 @@ void func_ov003_021f00d0(void) {
 }
 
 void func_ov003_021f00dc(void *arg0) {
-void *func_02084e24(); void *func_02084e64(); s32 func_020a22fc(s32); s32 func_ov003_02200808(u8);
+void *func_02084e24(); void *func_02084e64(); s32 GetPlayerCoId(s32); s32 func_ov003_02200808(u8);
 s32 flag; s8 old,count,value; u8 i; void *p,*q;
 i=0; count=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c),s8 *,4);
 if(count<=0)return;
@@ -390,10 +390,10 @@ old=M2C_FIELD(p,s8 *,10);
 if(M2C_FIELD(p,u8 *,0x74)==255) flag=1; else flag=0;
 if(!(flag&255)){
 q=func_02084e24();
-if(q) value=M2C_FIELD(q,s8 *,13); else value=func_ov003_02200808((u8)func_020a22fc(i+1));
+if(q) value=M2C_FIELD(q,s8 *,13); else value=func_ov003_02200808((u8)GetPlayerCoId(i+1));
 }else{
 q=func_02084e64();
-if(q) value=M2C_FIELD(q+i,s8 *,0x12); else value=func_ov003_02200808((u8)func_020a22fc(i+1));
+if(q) value=M2C_FIELD(q+i,s8 *,0x12); else value=func_ov003_02200808((u8)GetPlayerCoId(i+1));
 }
 if(old!=value){
 M2C_FIELD(M2C_FIELD(arg0,void **,0x6c)+i,u8 *,10)=(u8)value;

@@ -32,7 +32,7 @@ int func_ov000_0218bbd0(void *arg0) {
     s32 func_ov000_021a9904(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
-    void func_ov000_0217c3a4(void);
+    void ClearUnitMoveTarget(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s16 position[2];
     s32 bestScore = 0, bestId = 0;
@@ -128,12 +128,12 @@ int func_ov000_0218bbd0(void *arg0) {
 
     if (bestScore != 0) {
         if (arg0 != 0) return 1;
-        func_ov000_0217c3a4();
+        ClearUnitMoveTarget();
         SetMapCursor(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2], 4, (u8)bestId, 0);
     }
     if (bestHealth != 0xff) {
         if (arg0 != 0) return 1;
-        func_ov000_0217c3a4();
+        ClearUnitMoveTarget();
         SetMapCursor(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2], 5, (u8)savedY, (u8)savedX);
     }
     return 0;
@@ -160,7 +160,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     s32 func_ov000_021a9904(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
-    void func_ov000_0217c3a4(void);
+    void ClearUnitMoveTarget(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s16 position[2];
     s32 bestX = -1, bestY = -1, bestScore = 0, bestId = 0, bestX2 = -1, bestY2 = -1;
@@ -266,12 +266,12 @@ s32 func_ov000_0218c400(s32 arg0) {
 
     if (bestScore != 0) {
         if (arg0 != 0) return 1;
-        func_ov000_0217c3a4();
+        ClearUnitMoveTarget();
         SetMapCursor((s16)bestX, (s16)bestY, 4, (u8)bestId, 0);
     }
     if (bestHealth != 0xff) {
         if (arg0 != 0) return 1;
-        func_ov000_0217c3a4();
+        ClearUnitMoveTarget();
         SetMapCursor((s16)bestX2, (s16)bestY2, 5, (u8)savedY, (u8)savedX);
     }
     return 0;

@@ -67,7 +67,7 @@ void DisconnectConnection(void) {
     void *GetConnection(void);
     void CloseConnection(void);
     s32 func_02041b0c(void);
-    M2C_UNK func_0205afec(s32);
+    M2C_UNK GT2NotifyConnectionClosed(s32);
     void func_0205df50(s32);
     s32 func_02040dc8(M2C_UNK);
     s32 func_0204084c(void);
@@ -81,7 +81,7 @@ void DisconnectConnection(void) {
     if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3) {
         M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_BUSY) = 1;
         if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
-            func_0205afec(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
+            GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
         } else {
             func_02040dc8(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
             if (((s32 (*)())func_0204084c)() != 0) return;
@@ -108,7 +108,7 @@ void DisconnectConnection(void) {
     }
     if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
         M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_BUSY) = 1;
-        func_0205afec(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
+        GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
     }
     CloseConnection();
 }
@@ -193,7 +193,7 @@ s32 func_02041dd4(s32 arg0) {
  p=func_02039140(arg0,M2C_FIELD(GetConnection(),u8*,0xd)+1);
  if(p!=0) {
  M2C_FIELD(GetConnection(),u8*,0x1a8)=2;
- func_0205afcc(*p);
+ GT2FailConnectionAttempt(*p);
  M2C_FIELD(GetConnection(),u8*,0x1a8)=0;
  return 1;
  }
@@ -203,9 +203,9 @@ s32 func_02041dd4(s32 arg0) {
 
 void func_02041e44(void) {
     void *GetConnection();
-    M2C_UNK func_0205afec(s32);
+    M2C_UNK GT2NotifyConnectionClosed(s32);
     M2C_FIELD(GetConnection(), s8 *, 0x1A8) = 2;
-    func_0205afec(*M2C_FIELD(GetConnection(), s32 **, 4));
+    GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(), s32 **, 4));
     M2C_FIELD(GetConnection(), s8 *, 0x1A8) = 0;
 }
 

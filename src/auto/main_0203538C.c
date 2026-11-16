@@ -6,7 +6,7 @@ extern u8 data_0213d150[],gSocketManager[],data_020fb8c8[],data_020fb8d4[],data_
 extern s32 gErrno;
 s32 HttpClientInit(void*,void*);s32 func_02033de8(void*);void func_02034480(void*);void func_02036290(s32);s32 func_02006028(s32);void func_02033e80(void*,s32);void func_02005d60(void*);
 s32 ParseHttpResponse(void*,s32);void *FindHttpHeader(void*,void*);s32 ParseInt(void*);s32 StringCompare(void*,void*);s32 func_020336c0(void*);s32 func_02033988(void*,void*,s32);
-s32 func_020346d0(void*,void*,void*,s32);s32 StringLength(void*);void func_02068d18(void*,void*,s32);void GetWfcProfile(void*);
+s32 func_020346d0(void*,void*,void*,s32);s32 StringLength(void*);void StringCopyPad(void*,void*,s32);void GetWfcProfile(void*);
 s32 CreateNasConnection(void*,void*);void func_02032b68(void);s32 func_02032b98(void);void func_02032be4(void*);void func_02032b10(void);
 extern u8 data_020fb860[],data_0213d16c[],data_020fb914[],data_020fb91c[],data_020fb810[],data_020fb924[],data_020fb930[],data_020fb934[],data_020fb93c[],data_020fb87c[],data_020fb888[],data_020fb898[],data_020fb8a8[],data_020fb944[],data_020fb950[],data_020fb95c[];
 s32 ReadHttpHeader(void*,void*,void*,u32);s32 func_020347dc(void*,void*);void func_02006030(s32);
@@ -64,7 +64,7 @@ case 8:func_02034480(NetHandle());func_02036290(7);goto done;
 text=M2C_FIELD(NetHandle(),void**,0x1a08);if(!text){func_02034480(NetHandle());func_02036290(2);goto done;}
 M2C_FIELD(gWfcNet,void**,0x1114)=alloc(data_020fb860,StringLength(text)+1);
 urlcopy=M2C_FIELD(gWfcNet,void**,0x1114);if(!urlcopy){func_02034480(NetHandle());func_02036290(4);goto done;}
-func_02068d18(urlcopy,text,StringLength(text));break;
+StringCopyPad(urlcopy,text,StringLength(text));break;
 default:func_02034480(NetHandle());func_02036290(10);goto done;
 }
 func_02034480(NetHandle());GetWfcProfile(&clock);
@@ -136,7 +136,7 @@ if(ParseHttpResponse(NetHandle(),1)!=1){func_02034480(NetHandle());func_02036290
 text=M2C_FIELD(NetHandle(),void**,0x1a08);if(!text){func_02034480(NetHandle());func_02036290(2);goto done;}
 M2C_FIELD(gWfcNet,void**,0x1118)=alloc(data_020fb8a8,StringLength(text)+1);
 urlcopy=M2C_FIELD(gWfcNet,void**,0x1118);if(!urlcopy){func_02034480(NetHandle());func_02036290(4);goto done;}
-func_02068d18(urlcopy,text,StringLength(text));func_02034480(NetHandle());func_02006030(delay);
+StringCopyPad(urlcopy,text,StringLength(text));func_02034480(NetHandle());func_02006030(delay);
 }
 done:
 if(first)freefn(data_020fb944,first,0);if(second)freefn(data_020fb950,second,0);if(result)freefn(data_020fb95c,result,0);

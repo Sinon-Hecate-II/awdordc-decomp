@@ -3,6 +3,8 @@
 extern s8 *data_ov000_021b5c54[];
 
 #include "ov000_unit_entry.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 pad[10]; u8 value:7; u8 flag:1; } UnkValue_021a89a4;
 
 #pragma pool_constants off
@@ -134,7 +136,7 @@ u8 func_ov000_021a8a88(void *a){u8 r;if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))r
 
 s32 func_ov000_021a8ac8(void *a){extern void **gCurrentMap;s32 n;if(a){if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(M2C_FIELD(*gCurrentMap,u16 *,0x52a8)!=n){if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;}return func_ov000_021a8a60(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20;}
 
-s32 func_ov000_021a8b78(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=func_ov000_021a8a60(a);while(x<20){x+=n;i++;}return i;}
+s32 GetCaptureTurnsLeft(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=func_ov000_021a8a60(a);while(x<20){x+=n;i++;}return i;}
 
 #pragma opt_strength_reduction off
 s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
@@ -268,14 +270,16 @@ if(M2C_FIELD(p+a*0x8c,u8 *,0x67ca)==M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67ca))r=1
 
 s32 func_ov000_021a91d0(s32 a){switch(a&31){case 15:case 17:case 18:case 19:case 22:return 1;default:return 0;}}
 
-s32 IsCaptureTargetAt(void *a,s32 b,s32 c){
+/* Returns 1 when tile (x, y) holds a property the unit could capture: a capturable
+   cell owned by another army, and the unit's kind may capture that terrain. */
+s32 IsCaptureTargetAt(void *unit,s32 x,s32 y){
 extern void **gCurrentMap;s32 func_020d280c();
 u8 *p=*gCurrentMap;s32 n;
-if(IsPropertyTerrain(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420))==1){
-if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
-if(func_020d280c((n>>6)+1,b,c)){
+if(IsPropertyTerrain(M2C_FIELD(p+(x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN))==1){
+if(!unit)n=0;else n=((s32)unit-(s32)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/14;
+if(func_020d280c((n>>6)+1,x,y)){
 p=*gCurrentMap;
-if(M2C_FIELD(data_ov000_021b5c54,s8 **,((u32)(M2C_FIELD(a,u8 *,0)<<26)>>26)*112)[M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420)&31])return 1;
+if(M2C_FIELD(data_ov000_021b5c54,s8 **,((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)*UNIT_KIND_STATS_SIZE)[M2C_FIELD(p+(x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK])return 1;
 }}return 0;}
 
 u8 func_ov000_021a9318(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 func_020d280c(s32);void *p;if(!func_020d280c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;p=*gCurrentMap;return M2C_FIELD(data_ov000_021b5c54,s8 **,a*112)[M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420)&31]!=0;}

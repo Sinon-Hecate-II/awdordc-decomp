@@ -11,13 +11,13 @@ static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
 void func_ov001_021724c0(void) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a5f0(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218ac04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK DrawPanelText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a070(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_0217355c(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_021728b0(M2C_UNK);
     extern void *gOv001MenuState;
@@ -76,7 +76,7 @@ void func_ov001_021724c0(void) {
     }
     for (u = 0; u < 2; u++) {
         u8 b = data_ov001_0218f31c[u];
-        p = func_ov001_0218a61c(0, b, 1);
+        p = Ov001_CreateSprite(0, b, 1);
         ((void **)((u8 *)gOv001MenuState + 0xfc))[u] = p;
         p = ((void **)((u8 *)gOv001MenuState + 0xfc))[u];
         func_ov001_0218a260(p, (M2C_UNK)-1, 0x200, 0);
@@ -121,11 +121,11 @@ void func_ov001_021724c0(void) {
             }
         }
     }
-    ret = func_ov001_0218a61c(0, 0x40, 1);
+    ret = Ov001_CreateSprite(0, 0x40, 1);
     M2C_FIELD(gOv001MenuState, void **, 0x114) = ret;
     func_ov001_0218a260(ret, (M2C_UNK)-1, 0x200, 0);
     Ov001_SetSpritePalette(ret, (M2C_UNK)-1, 2);
-    ret = (void *)func_ov001_0218c884(0, (M2C_UNK)func_ov001_021728b0, 0, 0x78);
+    ret = (void *)Ov001_AddTask(0, (M2C_UNK)func_ov001_021728b0, 0, 0x78);
     M2C_FIELD(gOv001MenuState, void **, 0x118) = ret;
     func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11d), 0, 0xc0);
 }
@@ -134,7 +134,7 @@ void func_ov001_02172824(void) {
  extern void *gOv001MenuState;
  void func_ov001_02173e38(void);
  func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState, s32 *, 0x114));
- func_ov001_0218c924(M2C_FIELD(gOv001MenuState, s32 *, 0x118), func_ov001_02173e38);
+ Ov001_SetSlideStep(M2C_FIELD(gOv001MenuState, s32 *, 0x118), func_ov001_02173e38);
 }
 
 u8 GetKeyboardKey(void) {
@@ -171,7 +171,7 @@ pos[0]=x;
 if(pos[0]>0x51){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,pos[0]);return;}
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,0x51);
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,0xc0);
-func_ov001_0218c924(arg0,func_ov001_02172944);
+Ov001_SetSlideStep(arg0,func_ov001_02172944);
 }
 #pragma optimization_level 2
 void func_ov001_02172944(s32 arg0){
@@ -186,7 +186,7 @@ pos[0]=x;
 if(pos[0]>0x67){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,pos[0]);return;}
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,0x67);
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,0xc0);
-func_ov001_0218c924(arg0,func_ov001_021729d8);
+Ov001_SetSlideStep(arg0,func_ov001_021729d8);
 }
 #pragma optimization_level 3
 void func_ov001_021729d8(s32 arg0){
@@ -201,7 +201,7 @@ pos[0]=x;
 if(pos[0]>0x7d){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,pos[0]);return;}
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,0x7d);
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,0xc0);
-func_ov001_0218c924(arg0,func_ov001_02172a6c);
+Ov001_SetSlideStep(arg0,func_ov001_02172a6c);
 }
 #pragma peephole off
 void func_ov001_02172a6c(s32 arg0){
@@ -216,18 +216,18 @@ pos[0]=x;
 if(pos[0]>0x93){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,pos[0]);return;}
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,0x93);
 func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,0xc0);
-func_ov001_0218c924(arg0,func_ov001_02172b00);
+Ov001_SetSlideStep(arg0,func_ov001_02172b00);
 }
 #pragma peephole reset
 void func_ov001_02172b00(s32 arg0) {
  extern void *gOv001MenuState;
  void func_ov001_02172b8c(void);
  s32 pos[2];
- func_ov001_0218a4d4(M2C_FIELD(gOv001MenuState,s32 *,0xfc),0,&pos[1],&pos[0]);
+ Ov001_GetSpritePosition(M2C_FIELD(gOv001MenuState,s32 *,0xfc),0,&pos[1],&pos[0]);
  pos[0]-=12;
  if(pos[0]>170) {func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,pos[0]);return;}
  func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,170);
- func_ov001_02173924(); func_ov001_0218c924(arg0,func_ov001_02172b8c);
+ func_ov001_02173924(); Ov001_SetSlideStep(arg0,func_ov001_02172b8c);
 }
 
 void func_ov001_02172b8c(void) {

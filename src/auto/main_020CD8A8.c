@@ -126,7 +126,24 @@ void SetAllyTeamColor(s32 a, s32 b) {
     } while (i < 4);
 }
 #pragma scheduling reset
-s32 HumansShareOneTeam(s32 a){s32 IsPlayerActive(s32);s32 IsPlayerHuman(s32);extern void **gCurrentMap;s32 count;u8 team;s32 i,off,own;u8 v;s32 p,q;if(IsPlayerHuman(a))return 0;off=140;own=a*140;team=0;count=0;i=1;do{if(IsPlayerActive(i)&&i!=a){if(count==0){if(IsPlayerHuman(i)){p=(s32)*gCurrentMap;v=M2C_FIELD(p+off,u8 *,0x67ca);if(v!=M2C_FIELD(own+p,u8 *,0x67ca)){team=v;count++;}}}else if(IsPlayerHuman(i)){q=(s32)*gCurrentMap;v=M2C_FIELD(q+off,u8 *,0x67ca);if(team!=v&&v!=M2C_FIELD(own+q,u8 *,0x67ca))return 0;}}i++;off+=140;}while(i<5);return 1;}
+/* For a CPU player, checks that every active human player shares one army: the
+ * first human not on the CPU player's army fixes the team, and every other human
+ * must be on that team or on the CPU player's army.  A human player always fails. */
+s32 HumansShareOneTeam(s32 activePlayer){
+s32 IsPlayerActive(s32);s32 IsPlayerHuman(s32);extern void **gCurrentMap;
+s32 teamCount;u8 firstTeam;s32 player,recordOffset,activeRecord;u8 army;s32 mapA,mapB;
+if(IsPlayerHuman(activePlayer))return 0;
+recordOffset=MAP_PLAYER_STRIDE;activeRecord=activePlayer*MAP_PLAYER_STRIDE;firstTeam=0;teamCount=0;player=1;
+do{
+if(IsPlayerActive(player)&&player!=activePlayer){
+if(teamCount==0){
+if(IsPlayerHuman(player)){mapA=(s32)*gCurrentMap;army=M2C_FIELD(mapA+recordOffset,u8 *,PLAYER_ARMY_OFF);
+if(army!=M2C_FIELD(activeRecord+mapA,u8 *,PLAYER_ARMY_OFF)){firstTeam=army;teamCount++;}}
+}else if(IsPlayerHuman(player)){mapB=(s32)*gCurrentMap;army=M2C_FIELD(mapB+recordOffset,u8 *,PLAYER_ARMY_OFF);
+if(firstTeam!=army&&army!=M2C_FIELD(activeRecord+mapB,u8 *,PLAYER_ARMY_OFF))return 0;}
+}
+player++;recordOffset+=MAP_PLAYER_STRIDE;
+}while(player<5);return 1;}
 
 #pragma opt_strength_reduction off
 /* Walk every map cell within Manhattan distance `radius` of (originX,originY)
@@ -272,7 +289,7 @@ void MarkThreatBitmap(M2C_UNK a,M2C_UNK b,M2C_UNK c,u32 d,u8 e,u8 f){void MarkTh
  * threat bitmap it is marked into.  Units that are mid-action are skipped, and a unit
  * whose commander may use its kind gets the stricter marker. */
 void func_020ce508(void *unit,s32 x,s32 y) {
-s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),func_020a7824(void *,s32,s32);
+s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),GetUnitMoveScoreWeather(void *,s32,s32);
 extern void **gCurrentMap;
 s32 owner=GetUnitOwner(unit);
 s32 mark;
@@ -283,7 +300,7 @@ if((M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&2)&&!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLA
 mark=0;commanderReady=0;
 if(((u32)(M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE)<<24)>>24)==3) {if(func_020a33c4(owner))commanderReady=1;}
 if(commanderReady) {if(func_020a27f8((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26,owner))mark=2;}
-radius=func_020a7824(unit,x,y);
+radius=GetUnitMoveScoreWeather(unit,x,y);
 MarkThreatBitmap((s16)x,(s16)y,(s16)radius,M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF),(u8)owner,(u8)mark);
 }
 

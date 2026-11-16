@@ -11,13 +11,13 @@ void func_ov001_0217416c(void) {
     extern void *gOv001Keypad;
     M2C_UNK Ov001_Alloc();
     M2C_UNK func_ov001_0218a5f0();
-    M2C_UNK func_ov001_0218a61c();
+    M2C_UNK Ov001_CreateSprite();
     M2C_UNK func_ov001_0218a260();
     M2C_UNK Ov001_SetSpritePalette();
     M2C_UNK func_ov001_0218ac04();
     M2C_UNK func_ov001_0218a070();
     M2C_UNK func_ov001_02174f68();
-    M2C_UNK func_ov001_0218c884();
+    M2C_UNK Ov001_AddTask();
 
     u16 sp1c;
     u16 sp1e;
@@ -80,7 +80,7 @@ void func_ov001_0217416c(void) {
     r10 = 0;
     while (r10 < 2) {
         u8 b2 = *r9++;
-        void *q2 = (void*)func_ov001_0218a61c(0, b2, 1);
+        void *q2 = (void*)Ov001_CreateSprite(0, b2, 1);
         M2C_FIELD(p, void**, 0x40 + r10*4) = q2;
         func_ov001_0218a260(q2, -1, 0x200, 0);
         Ov001_SetSpritePalette(q2, 3);
@@ -104,12 +104,12 @@ void func_ov001_0217416c(void) {
         r10++;
     }
 
-    q = (void*)func_ov001_0218a61c(0, -1, 2);
+    q = (void*)Ov001_CreateSprite(0, -1, 2);
     M2C_FIELD(p, void**, 0x58) = q;
     func_ov001_0218a260(q, -1, 0x200, 0);
     Ov001_SetSpritePalette(q, 2);
 
-    x = (void*)func_ov001_0218c884(0, 0, 0, 0x78);
+    x = (void*)Ov001_AddTask(0, 0, 0, 0x78);
     M2C_FIELD(p, void**, 0x5c) = x;
     func_ov001_02174f68(0, 0);
 
@@ -122,7 +122,7 @@ void func_ov001_021744a8(void) {
     extern void *gOv001Keypad;
     void func_ov001_021753c8(void);
     func_ov001_0218a1cc(M2C_FIELD(gOv001Keypad, s32 *, 0x58));
-    func_ov001_0218c924(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), func_ov001_021753c8);
+    Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), func_ov001_021753c8);
 }
 
 u8 func_ov001_021744dc(void) {
@@ -161,7 +161,7 @@ y=v&0x1ff0000;x=(v&255)-12;
 ((volatile s32 *)pos)[0]=x;
 if(pos[0]>76){func_ov001_02174f68(0,pos[0]);return;}
 func_ov001_02174f68(0,76);func_ov001_02174f68(1,192);
-func_ov001_0218c924(arg0,func_ov001_021745cc);
+Ov001_SetSlideStep(arg0,func_ov001_021745cc);
 }
 #pragma opt_propagation reset
 void func_ov001_021745cc(s32 arg0){
@@ -177,7 +177,7 @@ y=(u32)y>>16;
 if(pos[0]>99){func_ov001_02174f68(1,x);return;}
 func_ov001_02174f68(1,99);
 func_ov001_02174f68(2,192);
-func_ov001_0218c924(arg0,func_ov001_02174650);
+Ov001_SetSlideStep(arg0,func_ov001_02174650);
 }
 
 #pragma opt_propagation off
@@ -193,7 +193,7 @@ x=(v&255)-12;
 if(pos[0]>122){func_ov001_02174f68(2,pos[0]);return;}
 func_ov001_02174f68(2,122);
 func_ov001_02174f68(3,192);
-func_ov001_0218c924(arg0,func_ov001_021746d4);
+Ov001_SetSlideStep(arg0,func_ov001_021746d4);
 }
 #pragma opt_propagation off
 void func_ov001_021746d4(s32 arg0){
@@ -208,16 +208,16 @@ x=(v&255)-12;
 if(pos[0]>145){func_ov001_02174f68(3,pos[0]);return;}
 func_ov001_02174f68(3,145);
 func_ov001_02174f68(4,192);
-func_ov001_0218c924(arg0,func_ov001_02174758);
+Ov001_SetSlideStep(arg0,func_ov001_02174758);
 }
 #pragma opt_propagation on
 void func_ov001_02174758(s32 arg0){extern void *gOv001Keypad;
 void func_ov001_021747cc(void);
 s32 pos[2];
-func_ov001_0218a4d4(M2C_FIELD(gOv001Keypad,s32*,0x40),0,&pos[1],&pos[0]);
+Ov001_GetSpritePosition(M2C_FIELD(gOv001Keypad,s32*,0x40),0,&pos[1],&pos[0]);
 pos[0]-=12;
 if(pos[0]>170){func_ov001_02174f68(4,pos[0]);return;}
-func_ov001_02174f68(4,170);Ov001KeypadCommitKey();func_ov001_0218c924(arg0,func_ov001_021747cc);
+func_ov001_02174f68(4,170);Ov001KeypadCommitKey();Ov001_SetSlideStep(arg0,func_ov001_021747cc);
 }
 
 void Ov001KeypadTouchHeld(void);

@@ -9,6 +9,16 @@
 #define PROFILE_MAP_H      0x64A /* u16 */
 #define PROFILE_LIST_BASE  0xAA4 /* void * base of the profile list entries */
 #define PROFILE_FILE       0xAB4 /* request block for the profile download */
+#define PROFILE_ENTRY_BASE 0x100  /* first of two 0x44-byte slot entries (id, 0x40-byte data) */
+#define PROFILE_ENTRY_SIZE 0x44   /* bytes per slot entry */
+#define PROFILE_ENTRY_VALID 0x208 /* s32 per slot: its entry holds a received slot */
+#define PROFILE_LINKED     0xA93 /* u8: the download-play link is connected */
+#define PROFILE_LINK_TICKS 0xA94 /* s32: link ticks, a list move every other one */
+#define PROFILE_CURSOR_MARK 0x202 /* u16 cursor id pushed to the connected players */
+#define PROFILE_ROW_COUNT  0x24   /* rows in a profile list round */
+#define PROFILE_ID_ROW     0x10   /* entry id: the row is selected */
+#define PROFILE_ID_CONNECT 0xBC   /* entry id: wait for a connection */
+#define PROFILE_ID_JOIN    0xBD   /* entry id: the joining player said yes */
 typedef struct A070Node { struct A070Node *prev; struct A070Node *next; s32 start; u8 size; u8 pad[3]; } A070Node;
 typedef struct A070Pool { u8 pad[0x200]; A070Node head; A070Node tail; s32 unk220; s32 handle; } A070Pool;
 
@@ -113,7 +123,7 @@ void Ov001_UpdateProfileTask(void) {
     s32 Ov001_GetTaskStep(void);
     void func_ov001_021888a8(s32, u16, u16, s32);
     void func_ov001_0218986c(s32, s32, void *);
-    void func_ov001_021899d4(void);
+    void Ov001_UpdateProfileLink(void);
     u16 Ov001_ReadInputCode(void);
     extern void *gOv001ProfileState;
 
@@ -133,7 +143,7 @@ void Ov001_UpdateProfileTask(void) {
         u32 index = row % 16;
         void *entry = (u8 *)listBase + (index << 6);
         func_ov001_0218986c(0, row, entry);
-        func_ov001_021899d4();
+        Ov001_UpdateProfileLink();
         if (*(u8 *)((u8 *)gOv001ProfileState + PROFILE_STATE) == 0x1b) break;
         if (*(u32 *)((u8 *)gOv001ProfileState + PROFILE_LIST_TIMER) > 0x1e0) {
             *(u8 *)((u8 *)gOv001ProfileState + PROFILE_STATE) = 0x1b;
@@ -255,25 +265,29 @@ void func_ov001_0218986c(s32 arg0, s32 arg1, void *arg2) {
 }
 
 #pragma optimization_level 2
-void func_ov001_021899d4(void) {
+/* Advances the download-play link exchange from the player slots' reply entries:
+ * while connected, counts link ticks and steps this console's list row every
+ * other tick; otherwise pushes the wait-for-connection id, and starts the list
+ * round (row 0, no ticks) once the joining player accepted. */
+void Ov001_UpdateProfileLink(void) {
 extern void *gOv001ProfileState;s32 i;u8 *p;
 i=0;do {
-if(M2C_FIELD((u8 *)gOv001ProfileState+i*4,s32*,0x208)){
-p=(u8 *)gOv001ProfileState+0x100+i*0x44;
+if(M2C_FIELD((u8 *)gOv001ProfileState+i*4,s32*,PROFILE_ENTRY_VALID)){
+p=(u8 *)gOv001ProfileState+PROFILE_ENTRY_BASE+i*PROFILE_ENTRY_SIZE;
 if(i==1){
-if(M2C_FIELD(gOv001ProfileState,u8*,0xa93)==1){
-if(*(u16 *)p!=0x10)return;
-M2C_FIELD(gOv001ProfileState,s32*,0xa94)++;
-if(!(M2C_FIELD(gOv001ProfileState,s32*,0xa94)&1)){
-M2C_FIELD(gOv001ProfileState,u16*,0x200)++;
-if(M2C_FIELD(gOv001ProfileState,u16*,0x200)>=0x24)M2C_FIELD(gOv001ProfileState,u16*,0x200)=0;
+if(M2C_FIELD(gOv001ProfileState,u8*,PROFILE_LINKED)==1){
+if(*(u16 *)p!=PROFILE_ID_ROW)return;
+M2C_FIELD(gOv001ProfileState,s32*,PROFILE_LINK_TICKS)++;
+if(!(M2C_FIELD(gOv001ProfileState,s32*,PROFILE_LINK_TICKS)&1)){
+M2C_FIELD(gOv001ProfileState,u16*,PROFILE_LIST_COUNT)++;
+if(M2C_FIELD(gOv001ProfileState,u16*,PROFILE_LIST_COUNT)>=PROFILE_ROW_COUNT)M2C_FIELD(gOv001ProfileState,u16*,PROFILE_LIST_COUNT)=0;
 }
 }else{
-M2C_FIELD(gOv001ProfileState,u16*,0x202)=0xbc;
-if(*(u16 *)p==0xbd){
-M2C_FIELD(gOv001ProfileState,u8*,0xa93)=1;
-M2C_FIELD(gOv001ProfileState,u16*,0x200)=0;
-M2C_FIELD(gOv001ProfileState,s32*,0xa94)=0;
+M2C_FIELD(gOv001ProfileState,u16*,PROFILE_CURSOR_MARK)=PROFILE_ID_CONNECT;
+if(*(u16 *)p==PROFILE_ID_JOIN){
+M2C_FIELD(gOv001ProfileState,u8*,PROFILE_LINKED)=1;
+M2C_FIELD(gOv001ProfileState,u16*,PROFILE_LIST_COUNT)=0;
+M2C_FIELD(gOv001ProfileState,s32*,PROFILE_LINK_TICKS)=0;
 }
 }
 }
@@ -358,16 +372,16 @@ void func_0200b510(void *);
 void func_0200b32c(void *);
 void func_0200b238(void *);
 void func_020055f4(u16);
-void func_ov001_0218b71c(void *);
+void Ov001_FreeAlloc(void *);
 func_0200bc5c(data_ov001_021917b4);
 func_0200b510((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
 func_0200b238((u8 *)data_ov001_02193e2c+0x88);
 func_020055f4(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
 M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4)=0;
-func_ov001_0218b71c(data_ov001_02193e2c);
+Ov001_FreeAlloc(data_ov001_02193e2c);
 M2C_FIELD(data_ov001_02193e2c,u32 *,0)=0;
-func_ov001_0218b71c((void *)0x02193e2c);
+Ov001_FreeAlloc((void *)0x02193e2c);
 }
 
 s32 func_ov001_02189d0c(s32 arg0, s32 arg1) {
@@ -406,28 +420,46 @@ s32 func_ov001_02189dc0(void) {
     return 1;
 }
 
-void *Ov001_LoadFile(void *arg0,u32 *arg1,s32 arg2){
-s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 OpenFileRequest(void *,void *);void SystemHalt(void);void FileRead(void *,void *,s32);void CloseFileRequest(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 Ov001_Alloc(s32,s32);
-extern void *data_ov001_02193e2c;extern s32 data_ov001_021917bc;
-void *buf;u32 work[18];u32 size;s32 align;void *out;
-func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c,s32*,0x84));
-InitFileRequest(work);if(!OpenFileRequest(work,arg0))SystemHalt();
-size=work[10]-work[9];if(arg1)*arg1=size;
-if(func_ov001_02189ef0(arg0,(s32)&data_ov001_021917bc,2))align=-4;else align=arg2;
-buf=(void *)Ov001_Alloc(size,align);
-FileRead(work,buf,size);CloseFileRequest(work);
-if(align>0)return buf;
-size=*(u32 *)buf>>8;if(arg1)*arg1=size;
-out=(void *)Ov001_Alloc(size,arg2);func_020081d0(buf,out);func_ov001_0218b71c(&buf);return out;
+/* Loads a file into memory: reads the whole file into a raw buffer and returns it,
+ * or, for a compressed (.lz) file, allocates the decompressed buffer from the size
+ * word at the head of the file and returns that, freeing the raw read.  *outSize
+ * gets the size of the returned buffer; alignment is the caller's unless the buffer
+ * must be freed with the compressed helper. */
+void *Ov001_LoadFile(void *path, u32 *outSize, s32 alignment) {
+s32 func_ov001_0218a74c(s32);
+void InitFileRequest(void *);
+s32 OpenFileRequest(void *, void *);
+void SystemHalt(void);
+void FileRead(void *, void *, s32);
+void CloseFileRequest(void *);
+void Ov001_DecompressBuffer(void *, void *);
+void Ov001_FreeAlloc(void *);
+s32 Ov001_Alloc(s32, s32);
+extern void *data_ov001_02193e2c;
+extern s32 data_ov001_021917bc;
+void *raw;
+u32 request[18];
+u32 size;
+s32 align;
+void *out;
+func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84));
+InitFileRequest(request); if (!OpenFileRequest(request, path)) SystemHalt();
+size = request[10] - request[9]; if (outSize) *outSize = size;
+if (Ov001_FileHasSuffix(path, (s32)&data_ov001_021917bc, 2)) align = -4; else align = alignment;
+raw = (void *)Ov001_Alloc(size, align);
+FileRead(request, raw, size); CloseFileRequest(request);
+if (align > 0) return raw;
+size = *(u32 *)raw >> 8; if (outSize) *outSize = size;
+out = (void *)Ov001_Alloc(size, alignment); Ov001_DecompressBuffer(raw, out); Ov001_FreeAlloc(&raw); return out;
 }
 
 void Ov001_FreeFile(s32 arg0, ...) {
- M2C_UNK func_ov001_0218a6f4(s32,void*); void func_ov001_0218b71c(void*); extern void *data_ov001_02193e2c;
- func_ov001_0218b71c(&arg0);
+ M2C_UNK func_ov001_0218a6f4(s32,void*); void Ov001_FreeAlloc(void*); extern void *data_ov001_02193e2c;
+ Ov001_FreeAlloc(&arg0);
  func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193e2c,s32*,0x84),(void*)arg0);
 }
 
-s32 func_ov001_02189ef0(void *arg0, s32 arg1, s32 arg2) {
+s32 Ov001_FileHasSuffix(void *arg0, s32 arg1, s32 arg2) {
     s32 StringLength(void *);
     s32 ByteCompareN(void *, void *, s32);
     s32 temp_r4;
@@ -460,12 +492,12 @@ p=(void *)(data_ov001_02193e30+i*0x228);Ov001_ListPushBack(M2C_FIELD(p,s32*,0x22
 }
 
 #pragma opt_propagation off
-void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void func_ov001_0218b71c(void *); void func_ov001_0218bf30(s32); extern s32 data_ov001_02193e30; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);func_ov001_0218b71c(&data_ov001_02193e30); }
+void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 data_ov001_02193e30; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&data_ov001_02193e30); }
 #pragma opt_propagation reset
 void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     s32 func_ov001_0218a74c(s32);
-    s32 func_020051f8(s32);
-    void func_020051c8(s32);
+    s32 OS_DisableIrqMask(s32);
+    void OS_EnableIrqMask(s32);
     void SystemHalt(void);
     void func_ov001_0218bf84(void *, void *);
     extern s32 data_ov001_02193e30;
@@ -484,7 +516,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     s32 need;
 
     node = (A070Node *)func_ov001_0218a74c(*((s32 *)(data_ov001_02193e30 + off + 0x224)));
-    state = func_020051f8(1);
+    state = OS_DisableIrqMask(1);
     if (arg2 != 0) {
         bound = (A070Node *)(data_ov001_02193e30 + off + 0x210);
         cur = (A070Node *)(data_ov001_02193e30 + off + 0x200);
@@ -525,7 +557,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
             SystemHalt();
         }
     }
-    func_020051c8(state);
+    OS_EnableIrqMask(state);
     node->size = (u8)arg1;
     return node;
 }
@@ -580,7 +612,7 @@ array[arg1][0]=val;
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov001_0218a304(void *obj, s32 index, u32 a, u32 b) {
+void Ov001_SetSpriteAttrs(void *obj, s32 index, u32 a, u32 b) {
  u8 *entries=M2C_FIELD(obj,u8**,8);
  s32 i;
  if(index>=0) {

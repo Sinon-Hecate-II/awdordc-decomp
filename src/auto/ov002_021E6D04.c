@@ -68,14 +68,14 @@ void InitBattleScene(void *state) {
     void func_ov002_021e8d04(void *, s32);
     void func_02086d18(void);
     extern M2C_UNK gPlayerSettings;
-    extern u8 data_ov002_021f2f44[];
+    extern u8 gEffectVariants[];
     extern M2C_UNK data_ov002_021f3124;
     extern M2C_UNK data_ov002_021f3018;
     extern void *g3DSpriteBankMain;
 
     SetupPlayerSettings(&gPlayerSettings);
-    func_ov002_021e3890(data_ov002_021f2f44);
-    PlayerPanels_Init(data_ov002_021f2f44);
+    func_ov002_021e3890(gEffectVariants);
+    PlayerPanels_Init(gEffectVariants);
 
     {
         s32 side = 0;

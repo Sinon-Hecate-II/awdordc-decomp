@@ -393,7 +393,7 @@ void func_020487fc(s32 *a,s32 b,s32 c){s32 AssertFailed();s32 func_02048bf8(s32,
 
 s32 func_0204887c(s32 *a,s32 b){s32 AssertFailed();s32 MemMove(s32,s32,s32);s32 n,p,q;if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&data_020fcca4,&data_020fcc1c,0xc0);n=a[0]-1;if(b<n){p=Vector_GetItem(a,b);q=Vector_GetItem(a,b+1);MemMove(p,q,a[2]*(n-b));}return --a[0];}
 
-void func_0204890c(s32 *a,s32 b) {
+void Vector_RemoveItem(s32 *a,s32 b) {
 s32 func_0204887c();s32 AssertFailed();
 if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&data_020fcca4,&data_020fcc2c,0xca);
 func_020484b8(a,b);func_0204887c(a,b);

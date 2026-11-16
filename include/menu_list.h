@@ -14,5 +14,6 @@
 #define MENU_LIST_FIRST_ROW     0x40 /* s16 first visible row */
 #define MENU_LIST_ROW_COUNT     0x42 /* s16 number of rows in the list */
 #define MENU_LIST_REPEAT_DELAY  0x46 /* s16 frames left before a held key repeats */
+#define MENU_LIST_ROW_MARK      0x34 /* u8 nonzero when the row's unit is unavailable (drawn greyed) */
 
 #endif

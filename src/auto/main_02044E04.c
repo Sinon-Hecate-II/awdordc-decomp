@@ -191,7 +191,7 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     s32 func_020323b0(void *);
     s32 func_020323f4(void *);
     u32 StringLength(void *);
-    void *func_02068d18(void *, void *, s32);
+    void *StringCopyPad(void *, void *, s32);
     s32 func_0206abd8(void *, s32, s32);
     s32 func_0204800c(void *, void *, s32, s32, s32, s32);
     s32 StringCompare(void *, void *);
@@ -216,12 +216,12 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     if (StringLength((void *)requestStr) >= 0x54u) {
         return 4;
     }
-    func_02068d18(key, (void *)requestStr, 0x14);
+    StringCopyPad(key, (void *)requestStr, 0x14);
     key[0x14] = 0;
-    param0 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x14), 8), 0, 0x10);
-    param1 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x1c), 8), 0, 0x10);
-    param2 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x24), 8), 0, 0x10);
-    param3 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x2c), 8), 0, 0x10);
+    param0 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x14), 8), 0, 0x10);
+    param1 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x1c), 8), 0, 0x10);
+    param2 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x24), 8), 0, 0x10);
+    param3 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x2c), 8), 0, 0x10);
     if (func_0204800c((void *)(requestStr + 0x34), key, param0, param1, param2, param3) == 0) {
         return 5;
     }
@@ -255,16 +255,11 @@ s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
         return 2;
     }
     r = BuildWebPutRequest((s32)arg0, M2C_FIELD(&gWebTransaction, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
-    if (r == 2) goto L8;
-    if (r != 3) goto Ldata;
-    goto L9;
-L8:
-    return 8;
-L9:
-    return 9;
-Ldata:
-    gWebTransaction = 2;
-    return 0;
+    switch(r) {
+    case 3: return 8;
+    case 2: return 9;
+    default: gWebTransaction=2; return 0;
+    }
 }
 
 /* Validate and send a get.asp web request: the payload's size, flag and count

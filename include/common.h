@@ -339,6 +339,48 @@ typedef struct HistoryMenu {
 /* ov005 records/achievements screen: the object at gRecordsMenuState+8.
  * Three tabs (tab) each list one record group; the list scrolls six rows at a
  * time and a row is only selectable when its enabled[] flag is set. */
+/* Run-time exception frames used by the C++ code in src/auto/main_020739F8.c.
+ * The handler's data block is self-describing: 1-byte opcodes (low 5 bits) with
+ * an operand flag; FindExceptionEntryTarget walks the block to find where the
+ * handler for the frame that faulted starts. */
+#define JS_KIND_BIGENDIAN 0x80 /* data block: integers are big-endian and the opcodes are 5 bits wide */
+#define JS_KIND_IMMEDIATE 0x40 /* operand flag tested by some handlers: take the value at the frame instead of memory */
+#define JS_KIND_ID4       0x20 /* operand flag: something with function ids (bit checked by handlers 4, 6..11) */
+#define JS_OP_MASK        0x1F /* opcode bits of a data byte */
+
+/* Frame context: the first 7 words are a copy of the faulted frame's sticky
+ * fields, tail[0..20] the spilled registers r4..r11 too. */
+typedef struct JsFrameContext {
+    s32 f0, f1, f2, f3, f4, f5, f6;
+    s32 tail[21];
+} JsFrameContext;
+
+typedef struct JsRecord {           /* a frame's record: copy of the context plus the handler location */
+    s32 f0, f1, f2, f3, f4, f5, f6;
+    s32 tail[21];
+    u8 *entry;
+} JsRecord;
+
+typedef struct JsRecordRef {
+    s32 result;                     /* +0x00 nonzero while the record is in use */
+    s32 handler;                    /* +0x04 handler of the record */
+    void *unused;                   /* +0x08 */
+    u8 *data;                       /* +0x0C the record's data block */
+} JsRecordRef;
+
+typedef struct JsResume {
+    u8 *data;                       /* +0x00 the record's data block */
+    s32 opcode;                     /* +0x04 opcode that resumes the handler */
+} JsResume;
+
+/* One entry of the unit kind table (gUnitKindTable, 0x70 = UNIT_KIND_STATS_SIZE
+ * bytes per kind): the kind's name, movement and combat numbers.  The in-use and
+ * not-yet-named fields are kept as raw bytes. */
+#define UNIT_KIND_STATS_NAME     0x00 /* char[?]: the kind's name */
+#define UNIT_KIND_STATS_FUEL_COST 0x56 /* s8 *: per-terrain fuel cost table, 0x20 terrain entries */
+#define UNIT_KIND_STATS_LOSE_FUEL 0x5C /* u8 per kind: terrain (MAP_TERRAIN_PLAIN-based) kinds the unit loses fuel on */
+#define UNIT_KIND_STATS_LOSE_FUEL2 0x5D /* u8 per kind: a second kind the unit loses fuel on */
+
 typedef struct RecordsScreen {
     u16 flags;           /* +0x00 */
     s16 fadeCursor;      /* +0x02: position in fadeList, -1 before the first step */
@@ -661,6 +703,23 @@ typedef struct GpiStringListData {
     s32    count;     /* +0x04 number of strings */
     char **strings;   /* +0x08 owned array of allocated strings */
 } GpiStringListData;
+
+/* A gpi connection's error state and callback queue. */
+#define GPI_CONN_ERROR_CALLBACK 0x1A4 /* s32 registered error callback function */
+#define GPI_CONN_ERROR_DATA     0x1A8 /* s32 parameter passed to it */
+#define GPI_CONN_ERROR_CODE     0x418 /* s32 code last stored by gpiSetError */
+#define GPI_CONN_ERROR_FATAL    0x41C /* s32 nonzero once a fatal error was reported */
+#define GPI_CONN_CALLBACK_HEAD  0x438 /* GPICallbackData *first queued callback */
+#define GPI_CONN_CALLBACK_TAIL  0x43C /* GPICallbackData *last queued callback */
+
+/* Fatal flag passed to gpiCallErrorCallback. */
+enum {
+    GP_NON_FATAL = 0, /* the connection stays usable */
+    GP_FATAL     = 1  /* the connection is finished */
+};
+
+/* Result code of an operation that did not fail. */
+#define GP_NO_ERROR 0
 
 /* Connection session states (the state at GetConnection()->0x1A0) used while
  * the peers agree on their player slots and synchronise. */
@@ -1075,6 +1134,19 @@ typedef struct NamedRsaKey {
 #define TLS_DIGEST_LEN    0x47c /* s32 bytes written to TLS_DIGEST */
 #define TLS_SIGNATURE     0x5a4 /* u8 * signature bytes of the handshake message */
 #define TLS_SIGNATURE_LEN 0x5a8 /* s32 bytes in TLS_SIGNATURE */
+#define TLS_CERT_SIGNATURE_ALGORITHM 0x458 /* s32 OID index of the certificate's signature algorithm: 3 md5WithRSA, 4 sha1WithRSA */
+#define TLS_CERT_KEY_ALGORITHM 0x45c /* s32 OID index of the certificate's public key algorithm, -1 when none was parsed */
+#define TLS_SIGNED_MESSAGE_START 0x460 /* u8 * first handshake message the certificate's signature covers */
+#define TLS_SIGNED_MESSAGE_END 0x464 /* u8 * end of those handshake messages */
+#define TLS_ISSUER_NAME    0x5b0 /* char[] name of the key that signed the certificate */
+#define TLS_CERT_DATE_VALID 0x5af /* u8 nonzero while the certificate's date range contains the console's date */
+
+/* What the certificate check reports (the low bits; 0 = the chain checks out). */
+#define TLS_CERT_CHECK_DATE        0x8000 /* the certificate is not valid at the console's date */
+#define TLS_CERT_CHECK_NO_SIGNATURE 1     /* the issuer's key is unknown */
+#define TLS_CERT_CHECK_BAD_SIGNATURE 2    /* the signature does not verify */
+#define TLS_CERT_CHECK_UNSUPPORTED  3     /* the digest algorithm is not supported */
+#define TLS_CERT_CHECK_NO_KEY       4     /* the certificate carries no RSA key algorithm */
 
 /* On-screen keyboard of the ov001 name-entry screen; gOv001MenuState points at one.  The 47
  * character keys of a page are followed by two page toggles, space, delete and the two actions. */
@@ -1648,7 +1720,7 @@ typedef struct Ov001Glyph {
 /* The drawing operations a text panel points at with Ov001TextPanel::ops. */
 typedef struct Ov001TextOps {
     s32 (*drawGlyph)(void *panel, Ov001Font *font, s32 x, s32 y, s32 color, Ov001Glyph *glyph); /* +0x00 */
-    void (*unk04)(void *panel, s32 arg); /* +0x04 second operation (func_ov001_0218b1ec) */
+    void (*unk04)(void *panel, s32 arg); /* +0x04 second operation (TextPanel_ClearText) */
 } Ov001TextOps;
 
 /* A text panel: the bitmap surface (CreateTextPanel) text is drawn into. */

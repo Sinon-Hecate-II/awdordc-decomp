@@ -65,7 +65,7 @@ void func_ov000_021855e4(void) {
 extern u8 *gAiCommandState; extern s8 gTerrainPropertyFlags[];
 void MI_CpuFill8(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
 void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
-s32 IsUnitOnCurrentTeam(s32); s32 IsCarrierUnitKind(u32); s32 func_020a7738(void*,s32,s32,s32);
+s32 IsUnitOnCurrentTeam(s32); s32 IsCarrierUnitKind(u32); s32 GetUnitMoveScore(void*,s32,s32,s32);
 void func_ov000_021851b8(s32,s32,s32,s32); s32 GetUnitMoveRange(s32,u32);
 void func_01ffc294(u16,s32,s32,u32,s32,s32);
 s32 t;
@@ -99,7 +99,7 @@ map=*gCurrentMap;
 if(!IsCarrierUnitKind((u32)(M2C_FIELD(map+14*M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758),u8*,0x508),u8*,0x59a4)<<26)>>26))continue;
 }
 if(unit){if(!unit)n=0;else n=(unit-((u8*)*gCurrentMap+(unsigned short)0x59a4))/14;n=(n>>6)+1;}else n=0;
-radius=func_020a7738(unit,unit[1],unit[2],player);
+radius=GetUnitMoveScore(unit,unit[1],unit[2],player);
 func_ov000_021851b8(unit[1],unit[2],n,radius);
 MI_CpuFill8(gAiRangeLayer,0,1288);
 func_01ffc294((u16)n,unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(n,(u32)(unit[0]<<26)>>26),4);

@@ -47,7 +47,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 Set3DSpriteVramBanks(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
+s32 Set3DSpriteVramBanks(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;Set3DSpriteVramBanks(state);
@@ -64,7 +64,7 @@ AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),(u16)Get3DSpriteLayerSize((
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;
 Set25d(0,4096);Clear25d(0,0x6000);
 LoadScenePanelPalette(31);func_02088774(30);func_020aeebc(3,15,7);
-func_020ae46c(M2C_FIELD(gCur3DSpriteEngine,s32 *,48)+480,0,8,8);
+FadePaletteTowardsBlack(M2C_FIELD(gCur3DSpriteEngine,s32 *,48)+480,0,8,8);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=8;
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(data_ov011_02228a30);
 Priority25d(6,3);Priority25d(8,0);Priority25d(10,1);Priority25d(12,2);

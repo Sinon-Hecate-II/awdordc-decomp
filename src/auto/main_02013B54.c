@@ -46,9 +46,9 @@ s32 func_02013d4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) 
 
 s32 func_02013dac(s32 arg0,s16 arg1,s16 arg2,s16 arg3,u16 arg4) {
  s32 func_020113d0(s16 *,s32);
- void func_02011440();
+ void WFC_GetInfoBlock();
  s16 packet[5]; s32 result;
- func_02011440();
+ WFC_GetInfoBlock();
  result=func_020114b4(1,2);
  if(result) return result;
  func_020112b4(0x1e,arg0);
@@ -243,7 +243,7 @@ M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,8,0);break;
 #pragma opt_strength_reduction reset
 void func_02014a48(s32 arg0) {
  extern s32 gMbWork; extern s32 data_02131180;
- void *func_02011c74(s32,u16); void func_02014564(void *,u16);
+ void *MultiBoot_FindPlayerMessage(s32,u16); void func_02014564(void *,u16);
  u16 i; void *p;
  for(i=0;i<16;i++) {
  p=(void *)(gMbWork+i*0x5d4);
@@ -251,7 +251,7 @@ void func_02014a48(s32 arg0) {
  }
  data_02131180=0;
  for(i=1;i<=15;i++) {
- p=func_02011c74(arg0,i);
+ p=MultiBoot_FindPlayerMessage(arg0,i);
  if(p && M2C_FIELD(p,u16 *,0)!=0xffff && M2C_FIELD(p,u16 *,0)!=0) func_02014564(p,i);
  }
 }

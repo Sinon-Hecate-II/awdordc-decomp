@@ -331,7 +331,7 @@ void func_020be59c(void) {
  * and the save records, set the default slot words and clear the per-slot
  * setting words. Runs at startup and whenever the settings magic is missing. */
 void InitDefaultGameSettings(void) {
-M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK func_020bf8fc(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_InitDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
+M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK func_020bf8fc(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
 s32 i,slot,entry; s32 flagOff,modeOff;
 M2C_FIELD(&gGameSettings,s32 *,0x128)=GAME_SETTINGS_MAGIC;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~15;
@@ -340,7 +340,7 @@ M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0xc00;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x3000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)|=0x4000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x8000;
-MapSettings_InitDefaults(0);
+MapSettings_SetDefaults(0);
 i=0;flagOff=0;modeOff=0;
 do{func_020bf8ac(i,flagOff);func_020bf8fc(i,modeOff);++i;}while(i<15);
 func_020bf814(0);func_020e47f8();func_020e49ec();func_02086b9c();func_02091bcc();

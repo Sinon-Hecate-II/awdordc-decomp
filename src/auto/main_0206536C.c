@@ -16,7 +16,7 @@ extern HexText5 data_0210051c,data_02100524,data_02100534,data_0210053c;
 extern HexText4 data_0210052c,data_02100530,data_02100544,data_02100548;
 char *FormatIntegerNarrow(int,char *,HexFormat);
 void func_0206f034();
-double func_0206dfb0(double);
+double fabs(double);
 
 #pragma opt_common_subs off
 char *func_0206536c(char *input, s32 **args, HexFormat *out) {
@@ -240,7 +240,7 @@ char *func_02065e44(double value,char *end,HexFormat fmt) {
  if(precision>509)return 0;
  conv[0]=0;*(u16 *)(conv+2)=32;
  func_0206f034(conv,value,decimal);
- if(func_0206dfb0(value)==0.0){p=end-6;{ const u8 *src=(const u8 *)&data_02100514;u8 a,b;a=src[0];b=src[1];p[0]=a;p[1]=b;a=src[2];b=src[3];p[2]=a;p[3]=b;a=src[4];b=src[5];p[4]=a;p[5]=b;}return p;}
+ if(fabs(value)==0.0){p=end-6;{ const u8 *src=(const u8 *)&data_02100514;u8 a,b;a=src[0];b=src[1];p[0]=a;p[1]=b;a=src[2];b=src[3];p[2]=a;p[3]=b;a=src[4];b=src[5];p[4]=a;p[5]=b;}return p;}
  if(decimal[5]=='I'){
  if(*(s8 *)decimal){p=end-5;if(spec=='A'){{ const u8 *src=(const u8 *)&data_0210051c;u8 a,b;a=src[0];b=src[1];p[0]=a;p[1]=b;a=src[2];b=src[3];p[2]=a;p[3]=b;a=src[4];p[4]=a;}return p;}else {{ const u8 *src=(const u8 *)&data_02100524;u8 a,b;a=src[0];b=src[1];p[0]=a;p[1]=b;a=src[2];b=src[3];p[2]=a;p[3]=b;a=src[4];p[4]=a;}return p;}}
  p=end-4;if(spec=='A'){{ const u8 *src=(const u8 *)&data_0210052c;u8 a,b;a=src[0];b=src[1];p[0]=a;p[1]=b;a=src[2];b=src[3];p[2]=a;p[3]=b;}return p;}else {{ const u8 *src=(const u8 *)&data_02100530;u8 a,b;a=src[0];b=src[1];p[0]=a;p[1]=b;a=src[2];b=src[3];p[2]=a;p[3]=b;}return p;}

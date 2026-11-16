@@ -69,7 +69,7 @@ u8 func_0208ff4c(s32 arg0) {
     return var_r0;
 }
 
-s32 func_0208ff94(M2C_UNK arg0) {
+s32 SetSoundEffectVolume(M2C_UNK arg0) {
     extern M2C_UNK data_02157830;
     extern M2C_UNK data_02157834;
     u8 func_0208ff2c(void);
@@ -85,7 +85,7 @@ s32 func_0208ff94(M2C_UNK arg0) {
     return 1;
 }
 
-s32 func_0208ffe4(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 PlaySlotPendingSound(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     extern M2C_UNK data_02157830;
     extern M2C_UNK data_02157850;
     M2C_UNK func_0208fd40(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -102,20 +102,20 @@ s32 func_0208ffe4(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 s32 func_02090034(s32 arg0, M2C_UNK arg1) {
     extern M2C_UNK data_02157830;
     extern M2C_UNK data_02157850;
-    u8 func_02090084(s32);
+    u8 IsSlotSoundActive(s32);
     M2C_UNK func_0208fd94(M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
         return 0;
     }
-    if (func_02090084(arg0) == 0) {
+    if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
     func_0208fd94(&data_02157850 + arg0, arg1);
     return 1;
 }
 
-u8 func_02090084(s32 arg0) {
+u8 IsSlotSoundActive(s32 arg0) {
     extern M2C_UNK data_02157850;
     u8 var_r0;
 
@@ -127,48 +127,48 @@ u8 func_02090084(s32 arg0) {
     return var_r0;
 }
 
-s32 func_020900a4(s32 arg0, s32 arg1, s32 arg2) {
+s32 SetSlotSoundPending(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_02157830;
     extern M2C_UNK data_02157850;
-    u8 func_02090084(s32);
+    u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad50(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
         return 0;
     }
-    if (func_02090084(arg0) == 0) {
+    if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
     func_0202ad50(&data_02157850 + arg0, (M2C_UNK)(u16)arg1, arg2);
     return 1;
 }
 
-s32 func_02090100(s32 arg0, s32 arg1) {
+s32 PlaySlotSoundEffect(s32 arg0, s32 arg1) {
     extern M2C_UNK data_02157830;
     extern M2C_UNK data_02157850;
-    u8 func_02090084(s32);
+    u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
         return 0;
     }
-    if (func_02090084(arg0) == 0) {
+    if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
     func_0202ad90(&data_02157850 + arg0, 0xFFFF, arg1);
     return 1;
 }
 
-s32 func_02090158(s32 arg0, s32 arg1, s32 arg2) {
+s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_02157830;
     extern M2C_UNK data_02157850;
-    u8 func_02090084(s32);
+    u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
         return 0;
     }
-    if (func_02090084(arg0) == 0) {
+    if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
     func_0202ad04(&data_02157850 + arg0, arg1, arg2);
@@ -176,11 +176,11 @@ s32 func_02090158(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_020901b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    s32 func_0208ffe4(s32, M2C_UNK, M2C_UNK);
-    s32 func_02090158(s32, s32, s32);
+    s32 PlaySlotPendingSound(s32, M2C_UNK, M2C_UNK);
+    s32 PlaySlotScriptedSound(s32, s32, s32);
 
-    if (func_0208ffe4(arg0, arg1, arg2) != 0) {
-        func_02090158(arg0, arg3, 0);
+    if (PlaySlotPendingSound(arg0, arg1, arg2) != 0) {
+        PlaySlotScriptedSound(arg0, arg3, 0);
     }
     return 1;
 }

@@ -141,35 +141,40 @@ func_01ffa6fc(arg0);
 }
 
 #pragma opt_strength_reduction off
-void func_ov005_0221a598(void *arg0) {
+/* Per-frame handler of the medal-award overlay: animates the award panel up
+ * into place (+0x3C) over 16 frames while the second medal bits slide in from
+ * the left (+0x4C); on the first frame it reveals the second medal, and on the
+ * last frame it deletes the panel's two 3D sprites (main and sub screen) and
+ * finishes the effect. */
+void func_ov005_0221a598(void *award) {
     M2C_UNK EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     void func_ov005_0221a38c(void **);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK func_01ffa6fc(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
 
-    s32 saved;
-    s32 i;
+    s32 savedEngine;
+    s32 screen;
 
-    M2C_FIELD(arg0, s32 *, 0x40) = (M2C_FIELD(arg0, s32 *, 0x40) + 1);
-    M2C_FIELD(arg0, s32 *, 0x3C) = EaseInterpolate(0, 0x58, 0x60, M2C_FIELD(arg0, s32 *, 0x40), 0x10);
-    func_ov005_0221a38c(arg0);
-    if (M2C_FIELD(arg0, s32 *, 0x40) == 1) {
-        M2C_FIELD(arg0, u8 *, 0x45) = 1;
+    M2C_FIELD(award, s32 *, 0x40) = (M2C_FIELD(award, s32 *, 0x40) + 1);
+    M2C_FIELD(award, s32 *, 0x3C) = EaseInterpolate(0, 0x58, 0x60, M2C_FIELD(award, s32 *, 0x40), 0x10);
+    func_ov005_0221a38c(award);
+    if (M2C_FIELD(award, s32 *, 0x40) == 1) {
+        M2C_FIELD(award, u8 *, 0x45) = 1;
     }
-    M2C_FIELD(arg0, u16 *, 0x4C) = (u16)(EaseInterpolate(0, -0x80, 0, M2C_FIELD(arg0, s32 *, 0x40), 0x10) & 0x1FF);
-    if (M2C_FIELD(arg0, s32 *, 0x40) != 0x10) {
+    M2C_FIELD(award, u16 *, 0x4C) = (u16)(EaseInterpolate(0, -0x80, 0, M2C_FIELD(award, s32 *, 0x40), 0x10) & 0x1FF);
+    if (M2C_FIELD(award, s32 *, 0x40) != 0x10) {
         return;
     }
-    saved = gCur3DSpriteEngine;
-    for (i = 0; i < 2; i++) {
-        gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        DeleteSpriteObject(M2C_FIELD((char *)arg0 + i * 4, s32 *, 0x34));
+    savedEngine = gCur3DSpriteEngine;
+    for (screen = 0; screen < 2; screen++) {
+        gCur3DSpriteEngine = screen == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        DeleteSpriteObject(M2C_FIELD((char *)award + screen * 4, s32 *, 0x34));
     }
-    gCur3DSpriteEngine = saved;
-    M2C_FIELD(arg0, u8 *, 0x44) = 1;
-    M2C_FIELD(arg0, s32 *, 0x40) = 0;
-    func_01ffa6fc(arg0);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(award, u8 *, 0x44) = 1;
+    M2C_FIELD(award, s32 *, 0x40) = 0;
+    func_01ffa6fc(award);
 }
 
 /* Create two sprite objects for a hit effect and play the appropriate sound. */

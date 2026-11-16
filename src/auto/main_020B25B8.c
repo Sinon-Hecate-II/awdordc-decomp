@@ -1,9 +1,16 @@
 /* 24 functions from 0x020B25B8 to 0x020B34F8 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_slot.h"
+#include "ds3dsprite.h"
 #include "sprite_grid.h"
 
-void func_020b25b8(void){
-u8 func_020b2714(void);void func_020b2d5c(void*);
+/* Draw the touchable sprite slots of the screen named in the slot manager (the
+   main or the sub engine, or whichever engine is current when it says either):
+   for each screen point gCur3DSpriteEngine at its engine, emit every active
+   slot's sprite, then let the engine draw.  The previous engine is restored at
+   the end, and nothing is drawn while the slot manager is paused. */
+void DrawSpriteSlots(void){
+u8 func_020b2714(void);void DrawSpriteSlotSprite(void*);
 extern u16 **gCur3DSpriteEngine;extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*gSpriteSlotManager;extern u8 gSpriteSlots[];
 void *old,*p;u8 mode;s32 j,i;u8 *q;
 if(func_020b2714())return;
@@ -11,10 +18,10 @@ old=gCur3DSpriteEngine;
 i=0;do{
 if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
 gCur3DSpriteEngine=p;
-mode=M2C_FIELD(gSpriteSlotManager,u8*,0x24);
-if((mode!=0||p==g3DSpriteEngineMain)&&(mode!=1||p==g3DSpriteEngineSub)&&(mode!=3||p==old)){
+mode=M2C_FIELD(gSpriteSlotManager,u8*,SPRITE_SLOT_MGR_SCREEN);
+if((mode!=DS3D_TARGET_MAIN||p==g3DSpriteEngineMain)&&(mode!=DS3D_TARGET_SUB||p==g3DSpriteEngineSub)&&(mode!=DS3D_TARGET_ACTIVE||p==old)){
 j=0;q=gSpriteSlots;
-do{if(q[1])func_020b2d5c(q);j++;q+=60;}while(j<85);
+do{if(q[SPRITE_SLOT_VISIBLE])DrawSpriteSlotSprite(q);j++;q+=SPRITE_SLOT_STRIDE;}while(j<SPRITE_SLOT_COUNT);
 func_020b1d84();
 }
 i++;}while(i<2);
@@ -234,16 +241,19 @@ void AnimateSpriteSlot(void *context) {
     }
 }
 
-void func_020b2d5c(void *arg0) {
+/* Emit the OAM sprite of a touchable slot: its position (clipped to the OAM
+   field widths) with the disabled flag, and its tile from the slot's 3D-sprite
+   bank plus its priority, into the current 3D sprite engine. */
+void DrawSpriteSlotSprite(void *slot) {
 M2C_UNK func_01ff883c(u16,u16,u16,s32);
 s32 GetSpriteDescForSize(s16,s16);
 extern u16 **gCur3DSpriteEngine;
-u32 a,b; s16 x,y; s32 flag;
-a=M2C_FIELD(arg0,u16 *,0x20); b=M2C_FIELD(arg0,u16 *,0x22);
-x=M2C_FIELD(arg0,s16 *,0x18); y=M2C_FIELD(arg0,s16 *,0x1a); flag=0;
-if(!SpriteSlotHasFlags(arg0,2))return;
-if(SpriteSlotHasFlags(arg0,0x800))flag=0x400;
-func_01ff883c((u16)(M2C_FIELD(arg0,s16 *,0x14)&0x1ff),(u16)((M2C_FIELD(arg0,s16 *,0x16)&0xff)|flag),(u16)((0x3ff&(a>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((b<<28)>>16)),GetSpriteDescForSize(x,y));
+u32 tile,prio; s16 w,h; s32 flag;
+tile=M2C_FIELD(slot,u16 *,SPRITE_SLOT_TILE); prio=M2C_FIELD(slot,u16 *,SPRITE_SLOT_PRIORITY);
+w=M2C_FIELD(slot,s16 *,SPRITE_SLOT_W); h=M2C_FIELD(slot,s16 *,SPRITE_SLOT_H); flag=0;
+if(!SpriteSlotHasFlags(slot,2))return;
+if(SpriteSlotHasFlags(slot,0x800))flag=0x400;
+func_01ff883c((u16)(M2C_FIELD(slot,s16 *,SPRITE_SLOT_X)&0x1ff),(u16)((M2C_FIELD(slot,s16 *,SPRITE_SLOT_Y)&0xff)|flag),(u16)((0x3ff&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((prio<<28)>>16)),GetSpriteDescForSize(w,h));
 }
 
 void InvokeConfirmCallback(void *p) {
@@ -508,22 +518,26 @@ if(M2C_FIELD(arg0,s16 *,0x12)!=0)result=1;else result=0;
 return result;
 }
 
-u8 func_020b3410(void *arg0){
+/* Moves one single-column sprite grid one item forward (next column): as many
+ * items as fit one page, sliding the item window down a row.  Each step plays
+ * the cursor sound; the pixel offset is set to the row delta times the row
+ * height.  Returns 1 when the grid moved. */
+u8 func_020b3410(void *grid){
 s32 Divide(); M2C_UNK PlaySoundEffect(s32);
-s32 active,i,factor,delta; s16 total,count,limit; u8 step,result; s32 n,old;
-if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
+s32 active,i,factor,delta; s16 total,count,pages; u8 cols,result; s32 itemsPerPage,oldScroll;
+if(M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0)active=1;else active=0;
 if(active&255)return 0;
-step=M2C_FIELD(arg0,u8 *,5);total=M2C_FIELD(arg0,s16 *,10);n=M2C_FIELD(arg0,u8 *,4);
-limit=Divide(total+step-1,step);
-count=(old=M2C_FIELD(arg0,volatile s16 *,12),n>=limit?limit:n);
+cols=M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS);total=M2C_FIELD(grid,s16 *,SPRITE_GRID_ITEM_COUNT);itemsPerPage=M2C_FIELD(grid,u8 *,SPRITE_GRID_ROWS);
+pages=Divide(total+cols-1,cols);
+count=(oldScroll=M2C_FIELD(grid,volatile s16 *,SPRITE_GRID_SCROLL),itemsPerPage>=pages?pages:itemsPerPage);
 for(i=0;i<count;i++){
-if(limit!=M2C_FIELD(arg0,volatile s16 *,12)+count)M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(arg0,volatile s16 *,12)+1;
-if(M2C_FIELD(arg0,volatile s16 *,8)+step<total)M2C_FIELD(arg0,s16 *,8)=M2C_FIELD(arg0,volatile s16 *,8)+step;
+if(pages!=M2C_FIELD(grid,volatile s16 *,SPRITE_GRID_SCROLL)+count)M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)=M2C_FIELD(grid,volatile s16 *,SPRITE_GRID_SCROLL)+1;
+if(M2C_FIELD(grid,volatile s16 *,SPRITE_GRID_SELECTED)+cols<total)M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)=M2C_FIELD(grid,volatile s16 *,SPRITE_GRID_SELECTED)+cols;
 }
-if(old!=M2C_FIELD(arg0,s16 *,12))PlaySoundEffect(0x10019);
-delta=M2C_FIELD(arg0,s16 *,12);factor=M2C_FIELD(arg0,u8 *,7);delta-=old;
-M2C_FIELD(arg0,s16 *,18)=delta*factor;
-if(M2C_FIELD(arg0,s16 *,18)!=0)result=1;else result=0;
+if(oldScroll!=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL))PlaySoundEffect(0x10019);
+delta=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);factor=M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_HEIGHT);delta-=oldScroll;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)=delta*factor;
+if(M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0)result=1;else result=0;
 return result;
 }
 

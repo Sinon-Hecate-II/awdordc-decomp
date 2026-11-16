@@ -56,7 +56,30 @@ enum {
 
 #define WFC_HTTP_RESPONSE_SIZE 0x20 /* bytes of the status line being read */
 
-#define WFC_HTTP_PORT 80 /* the client talks HTTP */
+/* A WFC profile record handed in a reply: its user id, the game id it belongs
+ * to (GPI_PROFILE_GAME_ID, matched against the game's own), and its state. */
+#define PROFILE_RECORD_USBID    0x04 /* u8[6] network user id */
+#define PROFILE_RECORD_GAME_ID  0x0C /* u8[8] the game this profile plays, "NWCUSBAP" for this one */
+#define PROFILE_RECORD_STATE    0x15 /* u8 bit 0: the profile is online */
+
+/* The ov001 (WFC connection) state object behind gOv001ConnectionState, 0x1ba0
+ * bytes: the game's connection callback, the request blocks sent to the WFC
+ * library, the 16 known player slots and the timers of the nick exchange. */
+#define OV001_CONN_CALLBACK      0x1370 /* void (*)(s32 event): the game's connection callback */
+#define OV001_CONN_PROFILE       0x1374 /* profile record sent with WFC_SendRequestPacket */
+#define OV001_CONN_RESPONSE      0x13B8 /* response block; its +0 state 2 = done */
+#define OV001_CONN_SLOTS         0x1300 /* 16 player slots of 7 bytes: u8[6] user id, u8 known */
+#define OV001_CONN_SLOT_COUNT    16
+#define OV001_CONN_SLOT_STRIDE   7
+#define OV001_CONN_SLOT_KNOWN    0x06 /* u8 nonzero once the slot's player is connected */
+#define OV001_CONN_GAME_ID       0x1388 /* u8[8] the game id this profile list belongs to */
+#define OV001_CONN_USER_COUNT    0x1391 /* u8 number of users in the reply */
+#define OV001_CONN_USERS         0x1394 /* u16[?] user ids of the reply */
+#define OV001_CONN_START_TICK    0x1B88 /* u64 GetSystemTick() when the connection started */
+#define OV001_CONN_TIMER         0x1B90 /* s32 timer id of the nick exchange (Ov001_AddTask) */
+#define OV001_CONN_FLAG          0x1B94 /* u8 lobby-quit flag: 0 connected, 1 quitting, 2 quit */
+#define OV001_CONN_REQUIRED      0x1B95 /* u8 set when the profile list arrived before the game sent its own profile */
+#define OV001_CONN_HAS_PROFILE   0x1B96 /* u8 nonzero once the game sent its own profile to the server */
 
 /* Session object (gWfcSession) fields used by the WFC state machine in
  * main_020270B4. The values stored in the state field are the ones passed to
@@ -120,7 +143,7 @@ typedef struct WfcSendState {
 #define WFC_MATCH_PLAYER_COUNT 0x1d24 /* s32 number of players the request asked about */
 
 /* The ov001 Wi-Fi connection state (gOv001ConnectionState, 0x1ba0 bytes, allocated by
- * func_ov001_02185bf4): the roster of the players seen on the connection, the
+ * Ov001_ConnectToWfcServer): the roster of the players seen on the connection, the
  * status callback and the watch timer that reports the final state once. */
 #define WFC_CONN_SLOTS        0x1300 /* 16 player slots, WFC_CONN_SLOT_STRIDE bytes each */
 #define WFC_CONN_SLOT_COUNT   16     /* slots in WFC_CONN_SLOTS */
@@ -131,6 +154,7 @@ typedef struct WfcSendState {
 #define WFC_CONN_WATCH_START  0x1B88 /* u64 tick the connection watch began at */
 #define WFC_CONN_WATCH_TIMER  0x1B90 /* s32 handle of the watch timer, 0 when stopped */
 #define WFC_CONN_WATCH_DONE   0x1B96 /* u8 set once the watch has reported the state */
+#define WFC_CONN_SLOT_DEFERRED 0x1B95 /* u8 set when a profile-list reply merged a profile before the roster was reported */
 
 /* Status the connection watch reports (WFC_CONN_STATUS_CB argument). */
 enum {
@@ -266,6 +290,10 @@ typedef struct NasRequest {
 #define WFC_STATE_ENTRY_COUNT  0xD10 /* u8 number of friend-list rows */
 #define WFC_STATE_RECORD_COUNT 0xD12 /* u8 number of friend records in use */
 #define WFC_STATE_RECORD_INDEX 0xD13 /* u8 index of the selected friend record */
+
+#define WFC_STATE_ENTRY_CODES  0x40  /* friend-code groups of a record: three 0x20-byte codes */
+#define WFC_FRIEND_CODE_GROUPS 3
+#define WFC_STATE_MODE_RECORDS 0xE7  /* u8 record layout: 0xFF none, 1 two codes (0x40/0x60), 0 one */
 
 #define WFC_STATE_ENTRIES      0x300 /* friend-list rows, WFC_ENTRY_STRIDE bytes each */
 #define WFC_ENTRY_STRIDE       0x24

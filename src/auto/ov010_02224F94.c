@@ -245,6 +245,8 @@ void func_ov010_02225538(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2) {
  func_ov010_0222531c(arg0,&data_ov010_0222d974,arg1,arg2);
 }
 
+/* Add two signed 16-bit sample buffers into `out`, four samples a turn, clamping
+ * every sum to the 16-bit range; `size` is the buffer size in bytes. */
 void func_ov010_02225558(s16 *a,s16 *b,s16 *out,u32 size){
 u32 i; s32 v;
 for(i=0;i<(size>>1);i+=4){

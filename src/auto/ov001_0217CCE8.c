@@ -152,7 +152,7 @@ void InitMapListScreen(void) {
     M2C_UNK func_ov001_021838a8(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *CreateTextPanel(s32, s32);
     void *func_ov001_0218a5f0(s32, s32);
-    void *func_ov001_0218c884(s32, void (*)(void), s32, s32);
+    void *Ov001_AddTask(s32, void (*)(void), s32, s32);
     M2C_UNK func_ov001_0217e238(void);
     void func_ov001_0217f038(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -203,8 +203,8 @@ void InitMapListScreen(void) {
             break;
         }
     }
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = func_ov001_0218c884(1, (void (*)(void))func_ov001_0217efb4, 0, 0x6e);
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = func_ov001_0218c884(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = Ov001_AddTask(1, (void (*)(void))func_ov001_0217efb4, 0, 0x6e);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
     func_ov001_0217e238();
     func_ov001_0217f038();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d6bc);
@@ -317,7 +317,7 @@ void func_ov001_0217d754(void) {
     M2C_UNK func_ov001_0217da58(u32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void *func_ov001_0218c884(s32, void (*)(void), s32, s32);
+    void *Ov001_AddTask(s32, void (*)(void), s32, s32);
     M2C_UNK func_ov001_0217f1f0(s32);
     void *obj;
 
@@ -348,7 +348,7 @@ void func_ov001_0217d754(void) {
         }
         Ov001_PlaySound(0x13);
         M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x38) =
-            func_ov001_0218c884(0, (void (*)(void))&func_ov001_0217ef10, 0, 0x78);
+            Ov001_AddTask(0, (void (*)(void))&func_ov001_0217ef10, 0, 0x78);
         return;
     }
     if (KeyReleased(0x200) != 0) {
@@ -365,7 +365,7 @@ void func_ov001_0217d754(void) {
         }
         Ov001_PlaySound(0x13);
         M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x38) =
-            func_ov001_0218c884(0, (void (*)(void))&func_ov001_0217ee48, 0, 0x78);
+            Ov001_AddTask(0, (void (*)(void))&func_ov001_0217ee48, 0, 0x78);
         return;
     }
     if (KeyReleased(0x100) != 0) {

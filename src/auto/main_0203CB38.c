@@ -218,22 +218,26 @@ void func_0203cb38(void *arg0) {
         M2C_FIELD(GetConnection(),void (**)(s32),0x47c)(M2C_FIELD(GetConnection(),s32 *,0x480));
 }
 
-s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
-    UnkPacket packet;
-    u8 c;
-    if (!arg4 || !arg3) return 0;
-    CpuFill(0,&packet,8);
-    packet.b=2;
-    packet.c=(u8)(arg2>>8)|((arg2<<8)&0xff00);
-    packet.d=arg1;
-    c=arg3[0];
-    if ((c==0xfe && arg3[1]==0xfd)||c==0x5c) {
+/* Routes one incoming GameSpy datagram: query/QR2 packets (leading 0x5c, or the
+ * 0xfe 0xfd header tail) go to the QR2 handler on the connection object, NAT-negotiation
+ * packets go to HandleNatNegPacket, and anything else is dropped. The 8-byte
+ * reply header carries the datagram's source port and address. */
+s32 RouteIncomingGameSpyPacket(s32 unused, s32 sourceAddress, s32 sourcePort, u8 *packet, s32 length) {
+    UnkPacket header;
+    u8 lead;
+    if (!length || !packet) return 0;
+    CpuFill(0,&header,8);
+    header.b=2;
+    header.c=(u8)(sourcePort>>8)|((sourcePort<<8)&0xff00); /* u16 in network order */
+    header.d=sourceAddress;
+    lead=packet[0];
+    if ((lead==0xfe && packet[1]==0xfd)||lead==0x5c) {
         if (M2C_FIELD(GetConnection(),s32 *,0x10))
-            func_0205f83c(M2C_FIELD(GetConnection(),s32 *,0x10),arg3,arg4,&packet);
-    } else if (!ByteCompareN(arg3,gNatNegMagic,6)) {
-        HandleNatNegPacket(arg3,arg4,&packet);
+            func_0205f83c(M2C_FIELD(GetConnection(),s32 *,0x10),packet,length,&header);
+    } else if (!ByteCompareN(packet,gNatNegMagic,6)) {
+        HandleNatNegPacket(packet,length,&header);
     } else {
-        switch(c) { case 0xfe: break; default: return 0; }
+        switch(lead) { case 0xfe: break; default: return 0; }
         return 0;
     }
     return 1;

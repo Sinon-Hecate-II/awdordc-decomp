@@ -22,7 +22,7 @@ void func_ov001_02179ea8(void) {
     void func_ov001_0217a0d4(void);
     void func_ov001_0217a17c(void);
     M2C_UNK CreateTextPanel(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_0217ac18(void);
     void func_ov001_0217b130(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -46,7 +46,7 @@ void func_ov001_02179ea8(void) {
         func_ov001_0217a17c();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc) = (s32)CreateTextPanel((M2C_UNK)0, (M2C_UNK)0);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x3c) =
-        (s32)func_ov001_0218c884((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);
+        (s32)Ov001_AddTask((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);
     func_ov001_0217ac18();
     func_ov001_0217b130();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a2f0);
@@ -240,7 +240,7 @@ void MapSelectList_HandleInput(void) {
  M2C_UNK Ov001_PlaySound(s32);
  void func_ov001_0217ac18(void);
  void func_ov001_0217b130(void);
- s32 func_ov001_0218c884(s32,s32,s32,s32);
+ s32 Ov001_AddTask(s32,s32,s32,s32);
  s32 remainder;
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)) return;
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55))
@@ -264,11 +264,11 @@ void MapSelectList_HandleInput(void) {
  remainder=func_020020c4(M2C_FIELD(&gMapSelectState,u16 *,2),0x1c);
  if(remainder==0) {func_ov001_0217b130();return;}
  if(remainder<14) {
- M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=func_ov001_0218c884(0,(s32)&func_ov001_0217af80,0,120);
+ M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=Ov001_AddTask(0,(s32)&func_ov001_0217af80,0,120);
  return;
  }
 
- M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=func_ov001_0218c884(0,(s32)&func_ov001_0217b03c,0,120);
+ M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=Ov001_AddTask(0,(s32)&func_ov001_0217b03c,0,120);
  return;
  case 4:
  if(M2C_FIELD(&gMapSelectState,u16 *,2)==0) {
@@ -277,7 +277,7 @@ void MapSelectList_HandleInput(void) {
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58)=1;return;
  }
  Ov001_PlaySound(0x13);
- M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=func_ov001_0218c884(0,(s32)&func_ov001_0217af80,0,120);return;
+ M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=Ov001_AddTask(0,(s32)&func_ov001_0217af80,0,120);return;
  case 6:
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x51)<=4 || M2C_FIELD(&gMapSelectState,u16 *,2)==M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)) {
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58))return;
@@ -285,7 +285,7 @@ void MapSelectList_HandleInput(void) {
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58)=1;return;
  }
  Ov001_PlaySound(0x13);
- M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=func_ov001_0218c884(0,(s32)&func_ov001_0217b03c,0,120);return;
+ M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=Ov001_AddTask(0,(s32)&func_ov001_0217b03c,0,120);return;
  case 5:case 7:
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58)=0;return;
  default:return;
@@ -416,14 +416,14 @@ Ov001_SetNextScreenMode(0,1);Ov001_SetNameEntryMode(1,1);Ov001_SetStepCallback(&
 Ov001_SetNextScreenMode(0,1);Ov001_SetNameEntryMode(0,1);Ov001_SetStepCallback(&func_ov001_021828ac);
 }
 }
-func_ov001_0218b71c(&data_ov001_02193d9c);
+Ov001_FreeAlloc(&data_ov001_02193d9c);
 }
 void func_ov001_0217ac18(void) {
     s32 func_02002088(s32, u16);
           void MapSelectList_DrawMapName(s32, s32);
     M2C_UNK func_ov001_0217ae38(s32, s32);
     M2C_UNK func_ov001_0217aec4();
-    M2C_UNK func_ov001_0218b1ec(M2C_UNK, M2C_UNK);
+    M2C_UNK TextPanel_ClearText(M2C_UNK, M2C_UNK);
     M2C_UNK CloseTextPanel(M2C_UNK);
     extern M2C_UNK gMapSelectState;
     s32 var_r4;
@@ -433,7 +433,7 @@ void func_ov001_0217ac18(void) {
 
     var_r7 = func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1c);
     var_r4 = M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x51);
-    func_ov001_0218b1ec(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc), 0);
+    TextPanel_ClearText(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc), 0);
     if (var_r4 > 5) {
         var_r4 = 5;
     }

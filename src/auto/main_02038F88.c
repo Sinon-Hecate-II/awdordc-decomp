@@ -5,7 +5,7 @@ s32 func_02038f88(void) {
 extern void *gNetSession;
 s32 RandomBelow(s32);s32 func_0205d4d8(s32,u16,s32);
 s32 func_0205ad4c(void *,s32,s32,s32,void (*)(s32 *));
-void func_02039ba8(s32 *); void func_0203d6c8(void); void func_0203d5d4(void);
+void func_02039ba8(s32 *); void func_0203d6c8(void); void RouteIncomingGameSpyPacket(void);
 void func_0205ada8(s32,void (*)(void));void func_0205b050(s32,void (*)(void));
 u32 func_020393d4();
 void *base; s32 result;u16 angle;
@@ -15,7 +15,7 @@ base=gNetSession;
 result=func_0205ad4c(gNetSession,func_0205d4d8(0,angle,0),M2C_FIELD(base,s32 *,0x14),M2C_FIELD(base,s32 *,0x18),func_02039ba8);
 if(func_020393d4(result))return result;
 func_0205ada8(M2C_FIELD(gNetSession,s32 *,0),func_0203d6c8);
-func_0205b050(M2C_FIELD(gNetSession,s32 *,0),func_0203d5d4);
+func_0205b050(M2C_FIELD(gNetSession,s32 *,0),RouteIncomingGameSpyPacket);
 return result;
 }
 
@@ -250,14 +250,14 @@ void func_02039698(s32 unused, void *arg1) {
    the MAT payload to the command parser. */
 void HandleGpcmMatMessage(s32 conn,void *info,s32 arg){
 extern char sGpcmPrefix[],sMatPrefix[];extern void *gNetSession;
-s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
+s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *StringCopyPad(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
 void func_0203db94(s32,s32,char *);
 char versionText[12]={0};char *text=M2C_FIELD(info,char **,8);u32 len;
 if(func_0203ad70(conn,info,arg))return;
 if(ByteCompareN(text,sGpcmPrefix,StringLength(sGpcmPrefix)))return;
 text+=StringLength(sGpcmPrefix);
 len=StringFindChar(text,'v')-text;
-func_02068d18(versionText,text,len);
+StringCopyPad(versionText,text,len);
 if(len>10)return;
 if(func_0206abd8(versionText,0,10)!=3)return;
 text+=len+1;

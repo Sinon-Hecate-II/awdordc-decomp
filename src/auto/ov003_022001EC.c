@@ -178,11 +178,11 @@ void func_ov003_022006dc(s32 arg0) {
     void func_020833d0(void);
     s32 MapSettings_Randomize(s32);
     void SetPlayerIdForSlot(s32, s32);
-    void func_020a232c(s32, s32);
-    void func_020a2204(s32);
+    void SetPlayerArmyId(s32, s32);
+    void ApplyMapSettingsToPlayers(s32);
     void MI_CpuFill32(s32, void *, s32);
-    s8 func_020a2370(s32);
-    s32 func_020a22fc(s32);
+    s8 GetPlayerArmyId(s32);
+    s32 GetPlayerCoId(s32);
     s32 func_ov003_02200808(u32);
     s32 func_0208492c(void);
     void func_02084d88(void *, s32);
@@ -202,21 +202,21 @@ void func_ov003_022006dc(s32 arg0) {
         SetPlayerIdForSlot(2, 2);
         SetPlayerIdForSlot(3, 3);
         SetPlayerIdForSlot(4, 4);
-        func_020a232c(1, 1);
-        func_020a232c(2, 2);
-        func_020a232c(3, 3);
-        func_020a232c(4, 4);
+        SetPlayerArmyId(1, 1);
+        SetPlayerArmyId(2, 2);
+        SetPlayerArmyId(3, 3);
+        SetPlayerArmyId(4, 4);
     }
-    func_020a2204(0);
+    ApplyMapSettingsToPlayers(0);
     MI_CpuFill32(0, sp, 0x24);
     r5 = 0;
     do {
         r6 = sp + r5;
-        r6[0xe] = (u8)func_020a2370(r5 + 1);
-        r6[0x12] = (u8)func_ov003_02200808(func_020a22fc(r5 + 1) & 0xFF);
+        r6[0xe] = (u8)GetPlayerArmyId(r5 + 1);
+        r6[0x12] = (u8)func_ov003_02200808(GetPlayerCoId(r5 + 1) & 0xFF);
         r5 = (u8)(r5 + 1);
     } while (r5 < 4);
-    sp[0xd] = (u8)func_ov003_02200808(func_020a22fc(func_0208492c() + 1) & 0xFF);
+    sp[0xd] = (u8)func_ov003_02200808(GetPlayerCoId(func_0208492c() + 1) & 0xFF);
     func_02084d88(sp, 0x24);
 }
 

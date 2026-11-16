@@ -638,6 +638,7 @@ M2C_FIELD(*gCurrentMap,s16 *,0x52d8)=M2C_FIELD(&data_02164d5c,s16 *,2);
 M2C_FIELD(*gCurrentMap,s16 *,0x52da)=M2C_FIELD(&data_02164d5c,s16 *,4);
 }
 
+#pragma opt_common_subs off
 M2C_UNK func_020c5b98(s32 a) {
  void func_020c08f8(s32,s32,s32,s32,s32);void func_0209bfa8(void);void ClearTileRect(void*,s32,s32);void func_0209b26c(s32,s32,s32,s32,s32,u16);
  extern M2C_UNK data_02164d5c;
@@ -651,7 +652,7 @@ M2C_UNK func_020c5b98(s32 a) {
  if(a) { index=M2C_FIELD(&data_02164d5c,u8*,0); tile=index*(s16)56+0x124; func_0209b26c(8,19,1,a,0,(u16)tile); }
  M2C_FIELD(&data_02164d5c,u8*,0)=(M2C_FIELD(&data_02164d5c,u8*,0)+1)&1;
 }
-
+#pragma opt_common_subs reset
 void func_020c5c78(void *arg0) {
     
     func_020c5b98(M2C_FIELD(arg0, s32 *, 0x20));

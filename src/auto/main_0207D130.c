@@ -193,16 +193,19 @@ void func_0207da60(s32 arg0, s32 arg1, s32 arg2) {
 
 M2C_UNK func_0207dacc(s32 arg0,s32 arg1) {
 s32 func_020033cc(void);
-void func_02002e3c(s32);
+void GX_SetBankForOBJExtPltt(s32);
 s32 state=func_020033cc();
 u32 base=(u32)data_020ebddc[state>>4]<<12;
 data_0214c0c0[1]=state;
 data_0214c0c0[0]=base;
 *(u16 *)(base+(arg1&~1))=*(u16 *)arg0;
-func_02002e3c(state);
+GX_SetBankForOBJExtPltt(state);
 }
 
-void SetTerrainTileset(u8 arg0) { switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)) {
+/* Point the terrain tile lookup at the table for the current map's tileset kind
+ * (the unique tilesets of kinds 4..9, the normal one otherwise) and record the
+ * kind as the loaded tileset. */
+void SetTerrainTileset(u8 tileset) { switch(M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET)) {
 case 4: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ec6bc;break;
 case 5: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ecabc;break;
 case 6: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ecebc;break;
@@ -210,7 +213,7 @@ case 7: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ed2bc;break;
 case 8: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ed6bc;break;
 case 9: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020edabc;break;
 default:M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ec2bc;break;
-} gTerrainTileset=arg0; }
+} gTerrainTileset=tileset; }
 
 u8 GetTerrainTileset(void) {
     extern u8 gTerrainTileset;

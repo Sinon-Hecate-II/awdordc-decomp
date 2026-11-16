@@ -12,6 +12,8 @@
 #define SPRITE_SLOT_W        0x18 /* s16 width */
 #define SPRITE_SLOT_H        0x1a /* s16 height */
 #define SPRITE_SLOT_FLAGS    0x1c /* u16 SPRITE_SLOT_FLAG_* */
+#define SPRITE_SLOT_TILE     0x20 /* u16 OBJ tile index (low 10 bits pick the tile in the screen's bank) */
+#define SPRITE_SLOT_PRIORITY 0x22 /* u16 OBJ priority bits 0..1 */
 #define SPRITE_SLOT_CLICK_CB 0x2c /* void (*)(void *) */
 #define SPRITE_SLOT_UPDATE_CB 0x24 /* void (*)(void *): run for the slot every frame */
 #define SPRITE_SLOT_STRIDE   0x3c

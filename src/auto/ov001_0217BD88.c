@@ -297,17 +297,17 @@ Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,0x15);
 Ov001_GetNameEntryMode(&sp0,0);if(sp0>=3)sp0++;
 Ov001_SetNextScreenMode(2,1);Ov001_SetNameEntryMode(0,sp0+3);
 Ov001_SetStepCallback(&InitMapListScreen);
-func_ov001_0218b71c((u8*)&data_ov001_02193da4);
+Ov001_FreeAlloc((u8*)&data_ov001_02193da4);
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
 M2C_UNK func_ov001_0217c7e8(void){
  extern void *data_ov001_02193da4; extern const u16 data_ov001_0218f848[]; extern M2C_UNK data_ov001_0218f888;
- void func_ov001_0218b1ec(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
+ void TextPanel_ClearText(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
  u16 buf[6];s32 i,a,handle;const u8 *p;
  handle=M2C_FIELD(data_ov001_02193da4,s32 *,0);
  buf[2]=data_ov001_0218f848[7];buf[3]=data_ov001_0218f848[8];buf[4]=11;buf[5]=16;
- func_ov001_0218b1ec(handle,0);
+ TextPanel_ClearText(handle,0);
  buf[1]=0;
  p=(const u8 *)&data_ov001_0218f888;
  for(i=0;i<12;i++){

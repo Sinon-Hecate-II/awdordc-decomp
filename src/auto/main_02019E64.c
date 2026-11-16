@@ -307,7 +307,7 @@ s32 IsTransportChecksumBad(u8 *a,s32 b,u8 *c,u32 d){u32 r;r=ChecksumAccumulate(c
 
 s32 IsLocalSubnetAddress(s32 a){extern M2C_UNK gNetStack;s32 r=1;if(a!=-1&&a!=0x7f000001){s32 mask=M2C_FIELD(&gNetStack,s32 *,28);if((a&mask)!=(M2C_FIELD(&gNetStack,s32 *,80)&mask))r=0;}return r;}
 
-s32 func_0201a704(s32 a){s32 IsLocalSubnetAddress(s32);extern M2C_UNK gNetStack;if(!IsLocalSubnetAddress(a))a=M2C_FIELD(&gNetStack,s32 *,44);return a;}
+s32 GetIpNextHop(s32 a){s32 IsLocalSubnetAddress(s32);extern M2C_UNK gNetStack;if(!IsLocalSubnetAddress(a))a=M2C_FIELD(&gNetStack,s32 *,44);return a;}
 
 s32 func_0201a728(s32 a){extern M2C_UNK gNetStack;s32 r=0;if(IsLocalSubnetAddress(a)){s32 m=~M2C_FIELD(&gNetStack,s32 *,28);if(m==(m&a))r=1;}return r;}
 
@@ -411,10 +411,10 @@ void func_0201ab8c(void){
     OS_RestoreInterrupts(key);
 }
 #pragma opt_strength_reduction reset
-s32 func_0201abd0(s32 a){extern M2C_UNK gNetStack,gLocalMacAddress,data_020faf78,gArpCache,gArpCacheAge;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);u64 GetSystemTick(void);s32 irq=OS_DisableInterrupts();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&gNetStack,s32 *,0x50))r=&gLocalMacAddress;else if(func_0201a728(a)||IsMulticastAddress(a))r=&data_020faf78;else{p=(u8 *)&gArpCache;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=GetSystemTick()>>16;M2C_FIELD(&gArpCacheAge,u16 *,i*12)=a;r=(u8 *)&gArpCache+i*12+4;break;}}}OS_RestoreInterrupts(irq);return (s32)r;}
+s32 FindArpMacAddress(s32 a){extern M2C_UNK gNetStack,gLocalMacAddress,data_020faf78,gArpCache,gArpCacheAge;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);u64 GetSystemTick(void);s32 irq=OS_DisableInterrupts();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&gNetStack,s32 *,0x50))r=&gLocalMacAddress;else if(func_0201a728(a)||IsMulticastAddress(a))r=&data_020faf78;else{p=(u8 *)&gArpCache;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=GetSystemTick()>>16;M2C_FIELD(&gArpCacheAge,u16 *,i*12)=a;r=(u8 *)&gArpCache+i*12+4;break;}}}OS_RestoreInterrupts(irq);return (s32)r;}
 
 /* Build and send a 42-byte ARP-style announcement packet for `nodeId`, swapping byte order in the id fields. */
-void func_0201aca0(s32 nodeId) {
+void SendArpRequest(s32 nodeId) {
     extern M2C_UNK gLocalMacAddress;
     extern M2C_UNK gNetStack;
     void MI_CpuFill8(void *, s32, s32);
@@ -446,5 +446,5 @@ void func_0201aca0(s32 nodeId) {
     SendLinkFrame((u8 *)&packet, 42, 0, 0);
 }
 
-s32 func_0201ad9c(s32 a){void func_0201aca0(s32);void func_02006030(s32);s32 func_0201abd0(s32);extern M2C_UNK gNetStack;u32 i,j;s32 r;for(i=0;i<8;i++){func_0201aca0(a);for(j=0;j<20;j++){if(!M2C_FIELD(&gNetStack,s32 *,80))return 0;func_02006030(100);r=func_0201abd0(a);if(r)return r;}}return 0;}
+s32 func_0201ad9c(s32 a){void SendArpRequest(s32);void func_02006030(s32);s32 FindArpMacAddress(s32);extern M2C_UNK gNetStack;u32 i,j;s32 r;for(i=0;i<8;i++){SendArpRequest(a);for(j=0;j<20;j++){if(!M2C_FIELD(&gNetStack,s32 *,80))return 0;func_02006030(100);r=FindArpMacAddress(a);if(r)return r;}}return 0;}
 

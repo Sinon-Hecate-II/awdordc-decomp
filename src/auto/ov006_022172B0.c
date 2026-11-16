@@ -107,7 +107,7 @@ void func_ov006_02217504(void *arg0) {
 void func_ov006_02217554(void *p) {
 extern M2C_UNK data_ov006_02218e20;
 if(M2C_FIELD(&data_ov006_02218e20,s32 *,8)) {M2C_FIELD(p,s32 *,0x38)=1;return;}
-func_020e38f0(M2C_FIELD(&data_ov006_02218e20,s32 *,4),p+0x38);
+CreateOnlinePlayerListNode(M2C_FIELD(&data_ov006_02218e20,s32 *,4),p+0x38);
 }
 
 void func_ov006_02217588(void *arg0) {
@@ -268,7 +268,7 @@ void func_ov006_022179b4(void *arg0) {
     s32 IsValidMapRecord(s32);
     M2C_UNK ExpandMapRecord(s32, s32);
     s32 IsLocalMacAddress(void *);
-    s32 func_020c8cbc(s32);
+    s32 FindCampaignMapId(s32);
     s32 GetOnlineLocalPlayerId();
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 var_r6;   /* hit mask */
@@ -303,7 +303,7 @@ void func_ov006_022179b4(void *arg0) {
             } else {
                 var_r0 = 0;
             }
-            if ((var_r0 == 0) && (IsValidMapRecord(temp_r4 + var_r9) != 0) && (func_020c8cbc(temp_r4 + var_r9) == 0)) {
+            if ((var_r0 == 0) && (IsValidMapRecord(temp_r4 + var_r9) != 0) && (FindCampaignMapId(temp_r4 + var_r9) == 0)) {
                 var_r6 |= 1 << var_r5;
                 sp0 += 1;
             }
@@ -350,14 +350,14 @@ void func_ov006_02217b08(void *arg0) {
 void func_ov006_02217b24(void *arg0) {
     M2C_UNK func_0208999c(s32, M2C_UNK, s32);
     M2C_UNK func_02089b38(s32, M2C_UNK *);
-    s32 func_0208b564();
+    s32 CreateTextLayer();
     M2C_UNK func_0209ccb8(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020c8e40();
     extern M2C_UNK data_ov006_02218cd8;
     extern M2C_UNK func_ov003_021fef18;
     s32 temp_r0;
 
-    temp_r0 = func_0208b564();
+    temp_r0 = CreateTextLayer();
     func_0208999c(temp_r0, 2, 0x4600001F);
     func_02089b38(temp_r0, &data_ov006_02218cd8);
     func_02089b38(temp_r0, M2C_FIELD(arg0, s32 *, 0x54) + 6);
@@ -489,12 +489,12 @@ void func_ov006_02217de4(void *arg0) {
 }
 
 void func_ov006_02217e78(void *arg0) {
-M2C_UNK StringFormat(void *,void *,s32,s32); M2C_UNK func_02084d1c(s32); M2C_UNK func_020899fc(void *,s32,s32,void *); s32 func_020c9244(s32,s32); s32 func_020c9268(s32,s32); 
+M2C_UNK StringFormat(void *,void *,s32,s32); M2C_UNK func_02084d1c(s32); M2C_UNK RenderTextLayer(void *,s32,s32,void *); s32 func_020c9244(s32,s32); s32 func_020c9268(s32,s32); 
 extern M2C_UNK data_ov006_02218dd4;
 u8 sp0[64]; s32 x,y; void *p;
 switch(M2C_FIELD(arg0,u8 *,0x3b)) {
 case 1: func_02084d1c(M2C_FIELD(arg0,s32 *,0x3c)); return;
-case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); y=func_020c9268(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); func_02084d1c(x); StringFormat(sp0,&data_ov006_02218dd4,x,y); p=(void *)func_0208b564(arg0); func_020899fc(p,2,0xcc00,sp0); M2C_FIELD(p,s32 *,0x58)|=0x400; return;
+case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); y=func_020c9268(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); func_02084d1c(x); StringFormat(sp0,&data_ov006_02218dd4,x,y); p=(void *)CreateTextLayer(arg0); RenderTextLayer(p,2,0xcc00,sp0); M2C_FIELD(p,s32 *,0x58)|=0x400; return;
 }}
 
 void func_ov006_02217f20(void *arg0) {

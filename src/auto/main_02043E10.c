@@ -304,18 +304,18 @@ s32 func_0204455c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return var_r6;
 }
 
-s32 func_020445cc(s32 a,s32 b,s32 c){void *GetTransferSlot();void *p=GetTransferSlot(a);if(func_02044a24(a)==2)return 0;M2C_FIELD(p,s32 *,4)=b;M2C_FIELD(p,s32 *,8)=c;M2C_FIELD(p,u8 *,0x1d)=1;M2C_FIELD(p,s32 *,0x10)=0;M2C_FIELD(p,s32 *,0x18)=0;return 1;}
+s32 func_020445cc(s32 a,s32 b,s32 c){void *GetTransferSlot();void *p=GetTransferSlot(a);if(GetTransferState(a)==2)return 0;M2C_FIELD(p,s32 *,4)=b;M2C_FIELD(p,s32 *,8)=c;M2C_FIELD(p,u8 *,0x1d)=1;M2C_FIELD(p,s32 *,0x10)=0;M2C_FIELD(p,s32 *,0x18)=0;return 1;}
 
-s32 func_02044618(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x600)=a;return 1;}
+s32 Transfer_SetStartCallback(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x600)=a;return 1;}
 
-s32 func_02044638(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x604)=a;return 1;}
+s32 Transfer_SetEndCallback(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x604)=a;return 1;}
 
 s32 func_02044658(u16 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,u16 *,0x610)=a;return 1;}
 
 void BuildTransferHeader(void *arg0, s16 arg1, s32 arg2) {
-    M2C_UNK func_02068d18(s32, M2C_UNK *, M2C_UNK);
+    M2C_UNK StringCopyPad(s32, M2C_UNK *, M2C_UNK);
     extern M2C_UNK gTransferMagic;
-    func_02068d18(arg0 + 6, &gTransferMagic, 2);
+    StringCopyPad(arg0 + 6, &gTransferMagic, 2);
     M2C_FIELD(arg0, s16 *, 4) = arg1;
     M2C_FIELD(arg0, s32 *, 0) = arg2;
 }
@@ -379,7 +379,7 @@ void *GetTransferSlot(s32 a){extern s32 gTransferManager;return (void *)(gTransf
 
 s32 IsTransferSending(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransferManager+0x30*a,u8 *,0x1c);}
 
-s32 func_02044a24(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransferManager+0x30*a,u8 *,0x1d);}
+s32 GetTransferState(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransferManager+0x30*a,u8 *,0x1d);}
 
 void SendConnectionData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 FindPlayerConnection(M2C_UNK);
@@ -391,17 +391,17 @@ void SendConnectionData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) 
 void func_02044a68(s32 a, s32 b, s32 c) {
     extern s32 gTransferManager;
     s32 func_020390b4(s32);
-    s32 func_02044a24(s32);
+    s32 GetTransferState(s32);
     u16 func_020446ac(void *);
     void func_02044da4(M2C_UNK, M2C_UNK);
     void func_02044bf8(s32, s32, s32);
-    void func_02044cc0(s32, void *, s32);
+    void TransferReceiveData(s32, void *, s32);
     void SetNetError(s32, s32);
 
     s32 id = func_020390b4(a);
     u32 kind;
 
-    switch (func_02044a24(id)) {
+    switch (GetTransferState(id)) {
     case 0:
         kind = func_020446ac((void *)b);
         if (kind < 2) return;
@@ -412,7 +412,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
         func_02044bf8(id, b, c);
         break;
     case 2:
-        func_02044cc0(id, (void *)b, c);
+        TransferReceiveData(id, (void *)b, c);
         break;
     case 3:
         ((void (*)(s32, s32, s32))func_02044da4)(id, b, c);
@@ -434,7 +434,7 @@ void func_02044bf8(s32 a,s32 b,s32 c) {
 extern s32 gTransferManager;
 void *p; s32 v; u8 buf[8];
 p=(u8 *)gTransferManager+a*0x30;
-M2C_FIELD(p,u8 *,0x1e)=func_02044a24(a);
+M2C_FIELD(p,u8 *,0x1e)=GetTransferState(a);
 v=func_020446ac(b);
 switch(v){
 case 1:
@@ -454,21 +454,24 @@ state3: M2C_FIELD(p,u8 *,0x1d)=3;break;
 M2C_FIELD(p,u16 *,0x22)=v;
 }
 
-void func_02044cc0(s32 a,void *b,s32 c){
-extern s32 gTransferManager; s32 func_02044a24(s32); void MI_CpuCopy8(void *,void *,s32);void SetNetError(s32,s32);u64 GetSystemTick(void);
+/* Append one inbound chunk of an incoming transfer to its slot's buffer; when
+ * the expected byte count arrives, flag the transfer done, reset the slot and
+ * call the manager's onReceived. Any activity restarts the slot's idle timer. */
+void TransferReceiveData(s32 id, void *data, s32 size) {
+extern s32 gTransferManager; s32 GetTransferState(s32); void MI_CpuCopy8(void *,void *,s32);void SetNetError(s32,s32);u64 GetSystemTick(void);
 void *p;void (*cb)(s32,void *,s32);s32 pos,len;
-p=(void *)(gTransferManager+a*0x30);
-if(func_02044a24(a)==2){
+p=(void *)(gTransferManager+id*0x30);
+if(GetTransferState(id)==2){
 pos=M2C_FIELD(p,s32 *,0x10);
-if(pos+c>M2C_FIELD(p,s32 *,8)){SetNetError(6,0xfffe82ac);return;}
-MI_CpuCopy8(b,M2C_FIELD(p,u8 **,4)+pos,c);
+if(pos+size>M2C_FIELD(p,s32 *,8)){SetNetError(6,0xfffe82ac);return;}
+MI_CpuCopy8(data,M2C_FIELD(p,u8 **,4)+pos,size);
 }
-M2C_FIELD(p,s32 *,0x10)+=c;
+M2C_FIELD(p,s32 *,0x10)+=size;
 len=M2C_FIELD(p,s32 *,0x18);
 if(M2C_FIELD(p,s32 *,0x10)==len){
 M2C_FIELD(p,u8 *,0x1d)=1;M2C_FIELD(p,s32 *,0x10)=0;M2C_FIELD(p,s32 *,0x18)=0;
 cb=M2C_FIELD(gTransferManager,void (**)(s32,void *,s32),0x604);
-if(cb)cb(a,M2C_FIELD(p,void **,4),len);
+if(cb)cb(id,M2C_FIELD(p,void **,4),len);
 }
 if(!M2C_FIELD(gTransferManager,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;
 M2C_FIELD(p,u64 *,0x24)=GetSystemTick();

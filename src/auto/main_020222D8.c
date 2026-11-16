@@ -3,49 +3,53 @@
 static inline u32 CertificateTag(u8 tag) { return tag & 31; }
 typedef struct CertificateTagBits { u8 number:5; u8 constructed:1; u8 category:2; } CertificateTagBits;
 
-s32 func_02022970(void *arg0) {
+/* Verifies the signature carried in the current certificate: hash the handshake
+ * messages it covers with the certificate's digest algorithm (MD5 or SHA1),
+ * look the issuer's key up by name and check the signature with it.  Returns 0
+ * when the chain checks out, otherwise the TLS_CERT_CHECK_* error bits. */
+s32 TlsVerifyCertificateSignature(void *ctx) {
     void MD5_Init(void *);
     void MD5_Update(void *, void *, s32);
     void MD5_Final(void *, s32);
     void SHA1_Init(void *);
     void SHA1_Update(void *, void *, s32);
     void SHA1_Final(void *, void *);
-    s32 func_02022150(void *, void *);
+    s32 FindNamedRsaKey(void *, void *);
     s32 VerifyRsaSignature(void *, void *);
-    s32 var_r4;
+    s32 errors;
     s32 t0, t1;
-    register s32 p asm("r1");
-    if (*(u8 *)((u8 *)arg0 + 0x5af) != 0) {
-        var_r4 = 0;
+    register s32 key asm("r1");
+    if (*(u8 *)((u8 *)ctx + TLS_CERT_DATE_VALID) != 0) {
+        errors = 0;
     } else {
-        var_r4 = 0x8000;
+        errors = TLS_CERT_CHECK_DATE;
     }
-    if (*(s32 *)((u8 *)arg0 + 0x45c) == -1) {
-        return var_r4 | 4;
+    if (*(s32 *)((u8 *)ctx + TLS_CERT_KEY_ALGORITHM) == -1) {
+        return errors | TLS_CERT_CHECK_NO_KEY;
     }
-    switch (*(s32 *)((u8 *)arg0 + 0x458)) {
+    switch (*(s32 *)((u8 *)ctx + TLS_CERT_SIGNATURE_ALGORITHM)) {
     case 3:
-        MD5_Init((u8 *)arg0 + 0x3fc);
-        t0 = *(s32 *)((u8 *)arg0 + 0x460);
-        MD5_Update((u8 *)arg0 + 0x3fc, (void *)t0, *(s32 *)((u8 *)arg0 + 0x464) - t0);
-        MD5_Final((u8 *)arg0 + 0x3fc, (s32)((u8 *)arg0 + 0x468));
-        *(s32 *)((u8 *)arg0 + 0x47c) = 0x10;
+        MD5_Init((u8 *)ctx + TLS_MD5_CTX);
+        t0 = *(s32 *)((u8 *)ctx + TLS_SIGNED_MESSAGE_START);
+        MD5_Update((u8 *)ctx + TLS_MD5_CTX, (void *)t0, *(s32 *)((u8 *)ctx + TLS_SIGNED_MESSAGE_END) - t0);
+        MD5_Final((u8 *)ctx + TLS_MD5_CTX, (s32)((u8 *)ctx + TLS_DIGEST));
+        *(s32 *)((u8 *)ctx + TLS_DIGEST_LEN) = 0x10;
         break;
     case 4:
-        SHA1_Init((u8 *)arg0 + 0x348);
-        t1 = *(s32 *)((u8 *)arg0 + 0x460);
-        SHA1_Update((u8 *)arg0 + 0x348, (void *)t1, *(s32 *)((u8 *)arg0 + 0x464) - t1);
-        SHA1_Final((u8 *)arg0 + 0x348, (u8 *)arg0 + 0x468);
-        *(s32 *)((u8 *)arg0 + 0x47c) = 0x14;
+        SHA1_Init((u8 *)ctx + TLS_SHA1_CTX);
+        t1 = *(s32 *)((u8 *)ctx + TLS_SIGNED_MESSAGE_START);
+        SHA1_Update((u8 *)ctx + TLS_SHA1_CTX, (void *)t1, *(s32 *)((u8 *)ctx + TLS_SIGNED_MESSAGE_END) - t1);
+        SHA1_Final((u8 *)ctx + TLS_SHA1_CTX, (u8 *)ctx + TLS_DIGEST);
+        *(s32 *)((u8 *)ctx + TLS_DIGEST_LEN) = 0x14;
         break;
     default:
-        return var_r4 | 3;
+        return errors | TLS_CERT_CHECK_UNSUPPORTED;
     }
-    p = func_02022150(arg0, (u8 *)arg0 + 0x5b0);
-    if (p == 0) {
-        return var_r4 | 1;
+    key = FindNamedRsaKey(ctx, (u8 *)ctx + TLS_ISSUER_NAME);
+    if (key == 0) {
+        return errors | TLS_CERT_CHECK_NO_SIGNATURE;
     }
-    return var_r4 | VerifyRsaSignature(arg0, (void *)p);
+    return errors | VerifyRsaSignature(ctx, (void *)key);
 }
 
 s32 func_02022a54(s8 *p) {
@@ -85,7 +89,7 @@ M2C_FIELD(a,u8 *,0x5ad)=0;M2C_FIELD(a,u8 *,0x5ac)=0;M2C_FIELD(a,u8 *,0x5af)=0;M2
 M2C_FIELD(a,u8 **,0x804)=b;M2C_FIELD(a,u32 *,0x808)=n;
 remaining-=n+3;
 if(((s32 (*)(void *,u8 **,s32,s32,u8))func_020222d8)(a,&b,0,0,low)!=0 || M2C_FIELD(a,u32 *,0x594)<51 || M2C_FIELD(a,s32 *,0x5a0)==0){M2C_FIELD(a,u8 *,0x455)=9;return;}
-result=func_02022970(a);
+result=TlsVerifyCertificateSignature(a);
 if(i==0 && M2C_FIELD(a,s8 **,0x800)!=0 && func_02022a78(M2C_FIELD(a,s8 **,0x800),(s8 *)a+0x7b0))result|=0x4000;
 low=(u8)result;
 if(low==1 && remaining){

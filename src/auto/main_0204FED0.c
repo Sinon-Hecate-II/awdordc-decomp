@@ -326,47 +326,50 @@ M2C_FIELD(M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,8),u8 *,0)=0;
 M2C_FIELD(p,s32 *,12)=0;return 0;
 }
 
-void gpiCallErrorCallback(void **arg0, s32 arg1, s32 arg2) {
+/* Queues the connection's registered error callback with the result and the
+ * fatal flag; a fatal error also latches the connection's fatal state.  Nothing
+ * is queued when no error callback is registered. */
+void gpiCallErrorCallback(void **connectionRef, s32 result, s32 fatal) {
     void *gpiMalloc(s32);
     s32 gpiAddCallback(void *, volatile Unk02050838Pair, s32, s32, u32);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fe128;
-    extern M2C_UNK data_020fe140;
+    extern M2C_UNK gGpiCallErrorCallbackName;
+    extern M2C_UNK gGpiAssertConnection;
     extern M2C_UNK gGpiCallbackFileName;
-    extern M2C_UNK data_020fe164;
-    extern M2C_UNK data_020fe17c;
+    extern M2C_UNK gGpiAssertResult;
+    extern M2C_UNK gGpiAssertFatal;
 
-    void *conn = *arg0;
+    void *conn = *connectionRef;
 
     if (conn == NULL) {
-        AssertFailed(&data_020fe140, &gGpiCallbackFileName, &data_020fe128, 0x23);
+        AssertFailed(&gGpiAssertConnection, &gGpiCallbackFileName, &gGpiCallErrorCallbackName, 0x23);
     }
-    if (arg1 == 0) {
-        AssertFailed(&data_020fe164, &gGpiCallbackFileName, &data_020fe128, 0x24);
+    if (result == GP_NO_ERROR) {
+        AssertFailed(&gGpiAssertResult, &gGpiCallbackFileName, &gGpiCallErrorCallbackName, 0x24);
     }
-    if (arg2 != 1 && arg2 != 0) {
-        AssertFailed(&data_020fe17c, &gGpiCallbackFileName, &data_020fe128, 0x25);
+    if (fatal != GP_FATAL && fatal != GP_NON_FATAL) {
+        AssertFailed(&gGpiAssertFatal, &gGpiCallbackFileName, &gGpiCallErrorCallbackName, 0x25);
     }
-    if (arg2 == 1) {
-        M2C_FIELD(conn, s32 *, 0x41C) = 1;
+    if (fatal == GP_FATAL) {
+        M2C_FIELD(conn, s32 *, GPI_CONN_ERROR_FATAL) = 1;
     }
     {
-        s32 val = M2C_FIELD(conn, s32 *, 0x1A4);
-        volatile Unk02050838Pair sp8;
-        void *temp_r0;
-        sp8.unk_0 = val;
-        sp8.unk_4 = M2C_FIELD(conn, s32 *, 0x1A8);
-        if (val == 0) {
+        s32 callback = M2C_FIELD(conn, s32 *, GPI_CONN_ERROR_CALLBACK);
+        volatile Unk02050838Pair pair;
+        void *data;
+        pair.unk_0 = callback;
+        pair.unk_4 = M2C_FIELD(conn, s32 *, GPI_CONN_ERROR_DATA);
+        if (callback == 0) {
             return;
         }
-        temp_r0 = gpiMalloc(0x10);
-        if (temp_r0 != NULL) {
-            M2C_FIELD(temp_r0, s32 *, 0) = arg1;
-            M2C_FIELD(temp_r0, s32 *, 0xC) = arg2;
-            M2C_FIELD(temp_r0, s32 *, 4) = M2C_FIELD(conn, s32 *, 0x418);
-            M2C_FIELD(temp_r0, void **, 8) = conn;
+        data = gpiMalloc(0x10);
+        if (data != NULL) {
+            M2C_FIELD(data, s32 *, 0) = result;
+            M2C_FIELD(data, s32 *, 0xC) = fatal;
+            M2C_FIELD(data, s32 *, 4) = M2C_FIELD(conn, s32 *, GPI_CONN_ERROR_CODE);
+            M2C_FIELD(data, void **, 8) = conn;
         }
-        gpiAddCallback(arg0, sp8, (s32)temp_r0, 0, 1);
+        gpiAddCallback(connectionRef, pair, (s32)data, 0, 1);
     }
 }
 
@@ -450,69 +453,71 @@ void gpiCallCallback(void *connection, GPICallbackData *data) {
     gpiFree(data);
 }
 
-s32 func_02050ad4(void **arg0, s32 arg1) {
-    void *temp_r4;
-    void *var_r5;
-    void *var_r6;
-    void *var_r7;
-    void *temp_r8;
-    void *temp_r6b;
-    void *var_r1;
-    void *saved;
+/* Take queued gpi callbacks off the connection's queue and run them.  With an
+ * operation id, only that operation's callbacks and the queued error callbacks
+ * go, the rest stay queued in order; with 0, everything queued goes. */
+s32 gpiRemoveCallbacks(void **connectionRef, s32 operationId) {
+    void *conn;
+    void *head;
+    void *tail;
+    void *prev;
+    void *data;
+    void *next;
+    void *cur;
 
-    temp_r4 = *arg0;
+    conn = *connectionRef;
 
-    if (arg1 != 0) {
-        var_r5 = M2C_FIELD(temp_r4, void **, 0x438);
-        var_r6 = M2C_FIELD(temp_r4, void **, 0x43C);
-        var_r7 = (void *)0;
-        M2C_FIELD(temp_r4, void **, 0x438) = (void *)0;
-        var_r1 = var_r5;
-        M2C_FIELD(temp_r4, void **, 0x43C) = (void *)0;
-        if (var_r5 != (void *)0) {
+    if (operationId != 0) {
+        head = M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD);
+        tail = M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_TAIL);
+        prev = (void *)0;
+        M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD) = (void *)0;
+        cur = head;
+        M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_TAIL) = (void *)0;
+        if (head != (void *)0) {
             do {
-                temp_r8 = M2C_FIELD(var_r1, void **, 0x14);
-                if ((M2C_FIELD(var_r1, s32 *, 0x10) == arg1) ||
-                    (M2C_FIELD(var_r1, s32 *, 0xC) == 1)) {
-                    if (var_r7 != (void *)0) {
-                        M2C_FIELD(var_r7, void **, 0x14) = temp_r8;
+                next = M2C_FIELD(cur, void **, 0x14);
+                if ((M2C_FIELD(cur, s32 *, 0x10) == operationId) ||
+                    (M2C_FIELD(cur, s32 *, 0xC) == GPI_CALLBACK_ERROR)) {
+                    if (prev != (void *)0) {
+                        M2C_FIELD(prev, void **, 0x14) = next;
                     } else {
-                        var_r5 = temp_r8;
+                        head = next;
                     }
-                    if (var_r6 == var_r1) {
-                        var_r6 = var_r7;
+                    if (tail == cur) {
+                        tail = prev;
                     }
-                    gpiCallCallback(arg0, var_r1);
+                    gpiCallCallback(connectionRef, cur);
                 } else {
-                    var_r7 = var_r1;
+                    prev = cur;
                 }
-                var_r1 = temp_r8;
-            } while (temp_r8 != (void *)0);
+                cur = next;
+            } while (next != (void *)0);
         }
-        if (M2C_FIELD(temp_r4, void **, 0x438) != (void *)0) {
-            M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x43C), void **, 0x14) = var_r5;
+        if (M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD) != (void *)0) {
+            M2C_FIELD(M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_TAIL), void **, 0x14) = head;
         } else {
-            M2C_FIELD(temp_r4, void **, 0x438) = var_r5;
+            M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD) = head;
         }
-        M2C_FIELD(temp_r4, void **, 0x43C) = var_r6;
+        M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_TAIL) = tail;
         return 0;
     }
 
-    var_r1 = M2C_FIELD(temp_r4, void **, 0x438);
-    if (var_r1 != (void *)0) {
+    cur = M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD);
+    if (cur != (void *)0) {
         do {
-            var_r5 = (void *)0;
-            M2C_FIELD(temp_r4, void **, 0x438) = (void *)0;
-            M2C_FIELD(temp_r4, void **, 0x43C) = (void *)0;
-            if (var_r1 != (void *)0) {
+            head = (void *)0;
+            M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD) = (void *)0;
+            M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_TAIL) = (void *)0;
+            if (cur != (void *)0) {
                 do {
-                    saved = M2C_FIELD(var_r1, void **, 0x14);
-                    gpiCallCallback(arg0, var_r1);
-                    var_r1 = saved;
-                } while (saved != (void *)0);
+                    data = M2C_FIELD(cur, void **, 0x14);
+                    gpiCallCallback(connectionRef, cur);
+                    cur = data;
+                } while (data != (void *)0);
             }
-            var_r1 = M2C_FIELD(temp_r4, void **, 0x438);
-        } while (var_r1 != (void *)0);
+            cur = M2C_FIELD(conn, void **, GPI_CONN_CALLBACK_HEAD);
+        } while (cur != (void *)0);
     }
     return 0;
 }

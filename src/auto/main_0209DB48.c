@@ -359,7 +359,7 @@ loop_1:
 void func_0209e320(void *arg0) {
     extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
     extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
-    s32 Is3DSpriteVisible(void*);s32 func_02099014(void*);s32 BlendRgb555_16(s32,s32,s32,s32);
+    s32 Is3DSpriteVisible(void*);s32 IsFaceSpriteLoaded(void*);s32 BlendRgb555_16(s32,s32,s32,s32);
     void func_020ae528(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
     s32 i;
     u8 *pal;
@@ -392,8 +392,8 @@ void func_0209e320(void *arg0) {
     M2C_FIELD(p,void**,0x60)=data_020f3a08;M2C_FIELD(p,void**,0x64)=data_020f3a08;
     switch(p[0x5a]){
         case 2:
-            if(func_02099014(a)&&Is3DSpriteVisible(a)){if(a[0x59])M2C_FIELD(p,void**,0x60)=data_020f3a3a;else M2C_FIELD(p,void**,0x60)=data_020f3a9e;}
-            if(func_02099014(b)&&Is3DSpriteVisible(b)){if(b[0x59])M2C_FIELD(p,void**,0x64)=data_020f3ad0;else M2C_FIELD(p,void**,0x64)=data_020f3a6c;}
+            if(IsFaceSpriteLoaded(a)&&Is3DSpriteVisible(a)){if(a[0x59])M2C_FIELD(p,void**,0x60)=data_020f3a3a;else M2C_FIELD(p,void**,0x60)=data_020f3a9e;}
+            if(IsFaceSpriteLoaded(b)&&Is3DSpriteVisible(b)){if(b[0x59])M2C_FIELD(p,void**,0x64)=data_020f3ad0;else M2C_FIELD(p,void**,0x64)=data_020f3a6c;}
             p[0x49]=4;break;
         case 1:M2C_FIELD(p,void**,0x60)=data_020f39ee;M2C_FIELD(p,void**,0x64)=data_020f39d4;p[0x49]=7;break;
     }

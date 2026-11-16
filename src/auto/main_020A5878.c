@@ -111,21 +111,25 @@ s32 ChargeUnitTurnFuel(BattleMapUnitHead *unit) {
     return 0;
 }
 
+/* Whether a unit with its current fuel can take the turn-start fuel charge of the
+ * ground it stands on: a loaded unit pays nothing, and a unit on ground owned by
+ * its own team pays nothing when its kind neither pays on that ground (kind 18/20)
+ * nor is grounded there (kind 19/21). */
 s32 CanUnitSpendTurnFuel(u8 *p){
 extern s32 *gCurrentMap;
-extern u8 data_ov000_021b5c67[];
+extern u8 gUnitKindTable[];
 s32 IsSameTeam(u16,s32);
 u8 *base=(u8 *)*gCurrentMap;
 u16 flags=M2C_FIELD(p,u16 *,4);
-u8 tile=M2C_FIELD(base+(p[1]+M2C_FIELD(base+p[2]*2,u16 *,0x3758)),u8 *,0x1420);
+u8 tile=M2C_FIELD(base+(p[1]+M2C_FIELD(base+p[2]*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN);
 if(flags&8)return 0;
 if(IsSameTeam(M2C_FIELD(base,u16 *,0x52a4),(tile&0xe0)>>5)){
-switch(tile&31){
+switch(tile&MAP_TERRAIN_KIND_MASK){
 case 18:case 20:
-if(data_ov000_021b5c67[((u32)(p[0]<<26)>>26)*0x70]==18)return 0;
+if(gUnitKindTable[((u32)(p[0]<<26)>>26)*0x70]==18)return 0;
 break;
 case 19:case 21:
-if(data_ov000_021b5c67[((u32)(p[0]<<26)>>26)*0x70]==19)return 0;
+if(gUnitKindTable[((u32)(p[0]<<26)>>26)*0x70]==19)return 0;
 break;
 }
 }

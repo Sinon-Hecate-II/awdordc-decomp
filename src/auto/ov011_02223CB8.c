@@ -8,7 +8,7 @@ void func_ov011_02223764(void *,s16,u8,void *);
 void G3_SubmitSpriteQuad(void *,int,int,s16,s16);
 int GetLanguage(void);
 int EaseInterpolate(int,int,int,u16,int);
-void func_0208ffe4(int,int,int);
+void PlaySlotPendingSound(int,int,int);
 void func_ov011_02224b9c(void *,int);
 void func_ov011_02224aac(void *,int);
 void HandleIntroInput(void *);
@@ -147,7 +147,7 @@ void func_ov011_022242dc(void *p) {
   G3_UpdateIntroTiles(p, 1, 0x7ff, 0x8052, colors.bytes);
   break;
  case 2:
-  if (M2C_FIELD(p, u16 *, 0x34) == 3) func_0208ffe4(0, -1, 300);
+  if (M2C_FIELD(p, u16 *, 0x34) == 3) PlaySlotPendingSound(0, -1, 300);
   func_ov011_02224aac(p, 2);
   break;
  case 3:
@@ -180,7 +180,7 @@ void func_ov011_022242dc(void *p) {
  case 7:
   mode = GetLanguage() == 4 ? 4 : 5;
   time = (u16)(M2C_FIELD(p, u16 *, 0x34) - 650);
-  if (time == 0) { func_ov011_02224b9c(p, 4); func_0208ffe4(0, -1, 301); }
+  if (time == 0) { func_ov011_02224b9c(p, 4); PlaySlotPendingSound(0, -1, 301); }
   if (time > 66) func_ov011_02223764(p, -98, mode, colors.bytes + 10);
   else if (time > 20) func_ov011_02224b9c(p, 3);
   G3_UpdateIntroTiles(p, (u8)(mode | 128), 0x7fff, 128, colors.bytes + 10);

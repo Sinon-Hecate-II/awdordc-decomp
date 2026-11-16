@@ -118,7 +118,7 @@ s32 func_ov002_021e8e7c(s32 arg0) {
 /* Advance one unit's animation: tick its child lists, accumulate position deltas, and step its frame. */
 void func_ov002_021e8e8c(void *unit){
 void func_ov002_021e1844(void *);void func_ov002_021e2aa8(void *);void func_ov002_021e3e64(void *);
-extern u8 gEffectTable[],data_ov002_021f314e[];
+extern u8 gEffectTable[],gEffectHasVariants[];
 void *node;
 func_ov002_021e1844(unit);
 node=0;
@@ -131,8 +131,8 @@ M2C_FIELD(unit,s32 *,0x74)+=M2C_FIELD(unit,s16 *,0x88);
 M2C_FIELD(unit,s32 *,0x78)+=M2C_FIELD(unit,s16 *,0x8a);
 if(M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(unit,u8 *,0x8c)*24),u8 *,0x3d)==2){
 M2C_FIELD(unit,s32 *,0x80)++;
-M2C_FIELD(unit,s16 *,0x7e)+=GetUnitRotationDelta(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44],M2C_FIELD(unit,s32 *,0x80));
-if(M2C_FIELD(unit,s32 *,0x80)==func_ov002_021e8e7c(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44]))M2C_FIELD(unit,s32 *,0x80)=0;
+M2C_FIELD(unit,s16 *,0x7e)+=GetUnitRotationDelta(gEffectHasVariants[M2C_FIELD(unit,u8 *,0x8c)*44],M2C_FIELD(unit,s32 *,0x80));
+if(M2C_FIELD(unit,s32 *,0x80)==func_ov002_021e8e7c(gEffectHasVariants[M2C_FIELD(unit,u8 *,0x8c)*44]))M2C_FIELD(unit,s32 *,0x80)=0;
 }}
 
 void func_ov002_021e8ff0(void *arg0, s16 arg1, s16 arg2, s16 arg3) {
@@ -283,7 +283,7 @@ void SetupUnitMoveNode(void *, s32);
 void SetupUnitActionNode(void *, s32);
 void SetupUnitActionNodeEx(void *);
 void func_ov002_021ea4bc(void *, s16, s16);
-extern u8 gEffectTable[], gEffectDefaultVariant[], data_ov002_021f314e[];
+extern u8 gEffectTable[], gEffectDefaultVariant[], gEffectHasVariants[];
 s32 off;
 switch (mode) {
 case 0:
@@ -296,7 +296,7 @@ SetupUnitMoveNode(unit, -1); return;
 case 2:
 if (flag == 0) { SetupUnitActionNode(unit, value); return; }
 func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3b));
-if (data_ov002_021f314e[M2C_FIELD(unit, u8 *, 0x8c) * 44]) SetupUnitActionNodeEx(unit); else SetupUnitActionNode(unit, -1);
+if (gEffectHasVariants[M2C_FIELD(unit, u8 *, 0x8c) * 44]) SetupUnitActionNodeEx(unit); else SetupUnitActionNode(unit, -1);
 if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) == 0) func_ov002_021e9008(unit, 0x800, -0x800); else func_ov002_021ea4bc(unit, 0, 0);
 if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) != 2) return;
 func_ov002_021e9008(unit, 0x200, 0x100); M2C_FIELD(unit, s32 *, 0x80) = -1; return;

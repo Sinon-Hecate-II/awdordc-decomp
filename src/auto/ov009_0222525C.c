@@ -634,28 +634,42 @@ void func_ov009_02225dd4(void *arg0) {
     func_020ad348(2, 8, 1, arg0);
 }
 
-void func_ov009_02225e40(void *entity) {
-M2C_UNK func_020899fc(void *,u8,s32,s32);void *func_0208b564(void *);
-extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-void *created; u32 byte; s32 flags; s32 value; s32 i; s32 savedBank; u32 bank; s8 mode;
-if(M2C_FIELD(entity,s32 *,0x40)==0)return;
-if(func_0208b5ec())func_0208af20();
-value=GetLocalizedText(M2C_FIELD(entity,s32 *,0x38));
-flags=M2C_FIELD(entity,s32 *,0x3c);
-savedBank=gCur3DSpriteEngine;i=0;byte=flags;
-do {
-if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
-gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,0x35);
-if(mode==0&&bank!=g3DSpriteEngineMain)continue;
-if(mode==1&&bank!=g3DSpriteEngineSub)continue;
-if(mode==3&&bank!=savedBank)continue;
-created=func_0208b564(entity);
-func_020899fc(created,byte,M2C_FIELD(entity,u16 *,0x36)<<5,value);
-M2C_FIELD(created,s32 *,0x58)|=0x1400;
-if(flags==0)M2C_FIELD(created,s32 *,0x58)|=0x800;
-}while(++i<2);
-gCur3DSpriteEngine=savedBank;
-func_ov009_02225db4();
+/* Redraws a link status-text layer: looks up its localized text and style,
+ * (re)creates the text on each display bank the layer selects, and drops the
+ * stale level. */
+void RefreshLinkMessageText(void *layer) {
+    s32 FindTextLayer();
+    M2C_UNK func_0208af20();
+    M2C_UNK RenderTextLayer(void *, u8, s32, s32);
+    void *CreateTextLayer(void *);
+    extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
+    void *created;
+    u32 styleByte;
+    s32 style;
+    s32 text;
+    s32 i;
+    s32 savedBank;
+    u32 bank;
+    s8 engine;
+
+    if (M2C_FIELD(layer, s32 *, LINK_LAYER_STATUS) == 0) return;
+    if (FindTextLayer()) func_0208af20();
+    text = GetLocalizedText(M2C_FIELD(layer, s32 *, LINK_LAYER_TEXT_KEY));
+    style = M2C_FIELD(layer, s32 *, LINK_LAYER_STYLE);
+    savedBank = gCur3DSpriteEngine; i = 0; styleByte = style;
+    do {
+        if (i == 0) bank = g3DSpriteEngineMain; else bank = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = bank; engine = M2C_FIELD(layer, s8 *, TEXT_LAYER_ENGINE);
+        if (engine == 0 && bank != g3DSpriteEngineMain) continue;
+        if (engine == 1 && bank != g3DSpriteEngineSub) continue;
+        if (engine == 3 && bank != savedBank) continue;
+        created = CreateTextLayer(layer);
+        RenderTextLayer(created, styleByte, M2C_FIELD(layer, u16 *, TEXT_LAYER_VALUE) << 5, text);
+        M2C_FIELD(created, s32 *, 0x58) |= 0x1400;
+        if (style == 0) M2C_FIELD(created, s32 *, 0x58) |= 0x800;
+    } while (++i < 2);
+    gCur3DSpriteEngine = savedBank;
+    func_ov009_02225db4();
 }
 
 void func_ov009_02225f44(void) {

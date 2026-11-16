@@ -9,7 +9,7 @@ typedef struct Map972e0 { u8 pad[0x5144]; volatile u16 width; u16 height; } Map9
 
 #pragma opt_strength_reduction off
 #pragma opt_strength_reduction off
-u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
+u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
     extern void **gCurrentMap;
     extern u8 gAiRangeBitmap[];
     s32 func_020ce0ec(s32, s32);
@@ -98,7 +98,7 @@ u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
 }
 #pragma opt_strength_reduction reset
 
-void func_ov000_02196bd8(void) {
+void TagAiKind5TargetCells(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern KindScan96 gUnitKindStats[];
@@ -108,7 +108,7 @@ void FillMapLayer(s32);
 s32 GetUnitAttackClass(u32);
 s32 GetUnitDamagePercent(s32,s32);
 s32 GetUnitAttackRangeMax(void *);
-u32 func_ov000_0219694c(s32,s32);
+u32 ScoreMapCellNear(s32,s32);
 void SetMapCursor(s32,s32,s32,s32,s32);
 u8 *m,*u; MapScan96 *bounds; s32 bx,by,i,off,l,b,l2,b2,l3,x,y,t,r,d,z; u32 best,v;
 m=*gCurrentMap; u=M2C_FIELD(m,u8 **,0x52d0);
@@ -147,7 +147,7 @@ M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
 { s32 l3,t3,b3; u32 best3; s32 x3,y3,r3,d3; u8 *u3;
 m=*gCurrentMap; u3=M2C_FIELD(m,u8 **,0x52d0);
 best3=0;l3=u3[1]-5<0?0:u3[1]-5;t3=u3[2]-5;if(t3<0)t3=0;r3=M2C_FIELD(m,u16 *,0x5144)-1;if(u3[1]+5<r3)r3=u3[1]+5;b3=M2C_FIELD(m,u16 *,0x5146)-1;if(u3[2]+5<b3)b3=u3[2]+5;
-z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);d3=0; if(u3[1]-x3>0)d3+=u3[1]-x3;else d3+=x3-u3[1]; if(u3[2]-y3>0)d3+=u3[2]-y3;else d3+=y3-u3[2];if(d3<0||d3>5)continue;v=func_ov000_0219694c(x3,y3);if(!v||best3>v)continue;if(best3==v&&gAiCommandState[3]<50)continue;best3=v;bx=x3;by=y3;}
+z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);d3=0; if(u3[1]-x3>0)d3+=u3[1]-x3;else d3+=x3-u3[1]; if(u3[2]-y3>0)d3+=u3[2]-y3;else d3+=y3-u3[2];if(d3<0||d3>5)continue;v=ScoreMapCellNear(x3,y3);if(!v||best3>v)continue;if(best3==v&&gAiCommandState[3]<50)continue;best3=v;bx=x3;by=y3;}
 if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);SetMapCursor(u3[1],u3[2],21,(u8)bx,(u8)by);
 }}
 #pragma opt_strength_reduction reset

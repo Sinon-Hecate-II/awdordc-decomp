@@ -8,6 +8,15 @@ typedef struct HttpClientOptions { s32 words[7]; } HttpClientOptions;
  * the request has been queued) and the request status at +0x1020. */
 typedef struct HttpClientState { u8 pad[0x1000]; u8 flag; u8 pad2[31]; s32 status; } HttpClientState;
 extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
+/* The response header block HttpClientInit receives at +0x1A08: its pointer at
+ * +0 and its end (start of the body) at +4; the parsed body offset and
+ * Content-Length are kept at +0x1A34 and +0x1A30 under the +0x1A18 mutex. */
+#define HTTP_HDR_BLOCK 0x1a08
+#define HTTP_HDR_START 0x1a08 /* char *response headers */
+#define HTTP_HDR_BODY  0x1a0c /* char *first byte after the headers */
+#define HTTP_BODY_OFF  0x1a34 /* s32 POST body offset in the header block */
+#define HTTP_BODY_LEN  0x1a30 /* s32 body length from Content-Length */
+#define HTTP_LOCK      0x1a18 /* OS mutex guarding the two fields above */
 
 #pragma push
 #pragma opt_common_subs on
@@ -236,11 +245,11 @@ s32 func_02033de8(void *arg0) {
     s32 func_020345f4(void *, void *, void *);
     s32 StringLength(s32);
     s32 StringFind(s32, void *);
-    extern u8 data_020fb588[], data_020fb594[], data_020fb59c[], data_020fb5a4[], data_020fb5a8[];
+    extern u8 data_020fb588[], data_020fb594[], gHttpHeaderEnd[], data_020fb5a4[], data_020fb5a8[];
     u8 sp0[8];
     s32 temp;
     if (func_020345f4(arg0, data_020fb588, data_020fb594)) return 1;
-    temp = StringLength(StringFind(M2C_FIELD(arg0,s32 *,0x19f8),data_020fb59c)+4);
+    temp = StringLength(StringFind(M2C_FIELD(arg0,s32 *,0x19f8),gHttpHeaderEnd)+4);
     if (temp) {
         func_0200567c(sp0,7,data_020fb5a4,temp);
         if (func_020345f4(arg0,data_020fb5a8,sp0)) return 1;
@@ -312,24 +321,27 @@ void func_02034068(void *arg0) {
     func_0201ed20(M2C_FIELD(arg0, s32 *, 0x1124));
 }
 
-s32 func_0203407c(void *a){
+/* Find where the HTTP response body starts (just past the blank line that ends
+ * the header block) and, when the response has a Content-Length header, parse
+ * its value, temporarily terminating the header line. */
+s32 HttpParseContentLength(void *client){
 s32 StringLength(s32);s32 StringFind(s32,void *);s32 ParseInt(s8 *);
-extern u8 data_020fb59c[];extern M2C_UNK data_020fb5b8,data_020fb5cc;
-s8 ch;void *hdr; s8 *p,*end; s32 len; s8 *q;
-p=M2C_FIELD(a,s8 **,0x1a08);hdr=(u8 *)a+0x1a08;
-if(StringFind((s32)p,data_020fb59c)==0)return 0;
-p=(s8 *)(StringFind((s32)p,data_020fb59c)+4);
-LockMutex(a+0x1a18);
-M2C_FIELD(a,s32 *,0x1a34)=M2C_FIELD(hdr,s8 **,4)-p;
-UnlockMutex(a+0x1a18);
-q=(s8 *)StringFind(M2C_FIELD(hdr,s32 *,0),&data_020fb5b8);
+extern u8 gHttpHeaderEnd[];extern M2C_UNK gHttpContentLengthHeader,gHttpHeaderLineEnd;
+s8 ch;void *headers; s8 *p,*end; s32 len; s8 *q;
+p=M2C_FIELD(client,s8 **,HTTP_HDR_START);headers=(u8 *)client+HTTP_HDR_BLOCK;
+if(StringFind((s32)p,gHttpHeaderEnd)==0)return 0;
+p=(s8 *)(StringFind((s32)p,gHttpHeaderEnd)+4);
+LockMutex(client+HTTP_LOCK);
+M2C_FIELD(client,s32 *,HTTP_BODY_OFF)=M2C_FIELD(headers,s8 **,4)-p;
+UnlockMutex(client+HTTP_LOCK);
+q=(s8 *)StringFind(M2C_FIELD(headers,s32 *,0),&gHttpContentLengthHeader);
 if(q==NULL)return 1;
-len=StringLength(&data_020fb5b8);
-end=(s8 *)StringFind((s32)(q+len),&data_020fb5cc);
+len=StringLength(&gHttpContentLengthHeader);
+end=(s8 *)StringFind((s32)(q+len),&gHttpHeaderLineEnd);
 ch=*end;*end=0;
-LockMutex(a+0x1a18);
-M2C_FIELD(a,s32 *,0x1a30)=ParseInt(q+len);
-UnlockMutex(a+0x1a18);
+LockMutex(client+HTTP_LOCK);
+M2C_FIELD(client,s32 *,HTTP_BODY_LEN)=ParseInt(q+len);
+UnlockMutex(client+HTTP_LOCK);
 *end=ch;return 1;
 }
 

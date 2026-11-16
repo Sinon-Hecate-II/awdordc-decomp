@@ -15,7 +15,7 @@ typedef struct { char text[5]; } ScanWord5;
 
 #pragma push
 #pragma opt_strength_reduction off
-double func_02069048(s32 limit,s32 (*read)(void *,s32,s32),void *ctx,s32 *count,s32 *status){
+double ScanFloatStrtod(s32 limit,s32 (*read)(void *,s32,s32),void *ctx,s32 *count,s32 *status){
 double func_0206f0dc(void *);double func_02063f90(char *);void *memcpy(void *,const void *,u32);
 s32 hexstate=0,used=0,space=0,state=1;
 u16 decimal[19]={0};ScanWord9 infcopy;char payload[32];ScanWord9 infinity;u8 hex[8];ScanWord5 nancopy;double packed;u8 *bits=(u8 *)&packed;ScanWord5 nanword;

@@ -430,7 +430,7 @@ void func_02006858(void) {
     M2C_UNK func_02005288();
     M2C_UNK func_02005968();
     void func_02006838(void);
-void func_020068a0(void);
+void InitArenaTable(void);
     void func_02006ce4();
     M2C_UNK func_020074c0();
     M2C_UNK func_020075b4();
@@ -440,7 +440,7 @@ void func_020068a0(void);
     M2C_UNK func_0200e2f8();
     M2C_UNK func_02010c14();
     M2C_UNK func_02018f3c();
-    func_020068a0();
+    InitArenaTable();
     func_02009d34();
     func_02005288();
     func_020069a4();
@@ -458,7 +458,9 @@ void func_020068a0(void);
     func_02006838();
 }
 
-void func_020068a0(void) {
+/* Fills the arena table once: the top and bottom address of each arena's memory
+   range, as the current boot's memory map gives them (arena 2 stays empty). */
+void InitArenaTable(void) {
     s32 func_02006a38(s32);
     void func_02006bc4(s32, s32);
     s32 func_02006b1c(s32);

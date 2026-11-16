@@ -551,13 +551,13 @@ void func_ov010_022269f8(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
 void func_ov010_02226a10(void *a){volatile u32 saved;u32 temp;void *p;temp=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=0;p=M2C_FIELD(a,void **,0);saved=temp;while(p!=0){M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0);func_ov010_02226908(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(a,void **,0);}M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}
 
 void func_ov010_02226a88(void) {
-extern M2C_UNK data_ov010_0222eee0,data_ov010_0222ef58,data_ov010_0222ef88,data_ov010_0222efb8;
+extern M2C_UNK gOv010OnlineSession,data_ov010_0222ef58,data_ov010_0222ef88,data_ov010_0222efb8;
 extern Ov010MemberCall data_ov010_0222c128[];
 volatile u32 saved;u32 temp;void *p;
 temp=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=0;
-p=M2C_FIELD(&data_ov010_0222eee0,void **,0x60);saved=temp;
-while(p){M2C_FIELD(&data_ov010_0222eee0,void **,0x60)=M2C_FIELD(p,void **,0);func_ov010_02226908(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(&data_ov010_0222eee0,void **,0x60);}
-M2C_FIELD(&data_ov010_0222eee0,s32 *,0x64)=0;M2C_FIELD(&data_ov010_0222eee0,s32 *,0x60)=0;M2C_FIELD(&data_ov010_0222eee0,s32 *,0x68)=0;
+p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);saved=temp;
+while(p){M2C_FIELD(&gOv010OnlineSession,void **,0x60)=M2C_FIELD(p,void **,0);func_ov010_02226908(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);}
+M2C_FIELD(&gOv010OnlineSession,s32 *,0x64)=0;M2C_FIELD(&gOv010OnlineSession,s32 *,0x60)=0;M2C_FIELD(&gOv010OnlineSession,s32 *,0x68)=0;
 (void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;
 ov010CallArray((u8 *)&data_ov010_0222ef58,48,data_ov010_0222c128[2]);
 ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
@@ -565,9 +565,9 @@ ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
 
 #pragma cplusplus on
 extern "C" s32 IsOnlinePacketQueued(s32 a) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     Ov010InterruptGuard guard;
-    void *p = M2C_FIELD(&data_ov010_0222eee0, void **, 0x60);
+    void *p = M2C_FIELD(&gOv010OnlineSession, void **, 0x60);
     while (p != NULL) {
         if (a == M2C_FIELD(p, u8 *, 8)) return 1;
         p = M2C_FIELD(p, void **, 0);

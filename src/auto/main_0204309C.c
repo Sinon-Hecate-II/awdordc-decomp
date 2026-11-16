@@ -1,25 +1,29 @@
 /* 18 functions from 0x0204309C to 0x02043E10 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_session.h"
 #include "qr2.h"
 
-s32 ReportQr2Error(u32 ret){
+/* Report a QR2 operation's result to whichever online subsystem owns the
+ * session (NAS login, matchmaking or the live session), each with its own
+ * detail offset, and pass the result back. */
+s32 ReportQr2Error(u32 result){
 s32 GetNetSessionState(void);
-u32 off,code;
-if(ret==0)return 0;
-switch(ret){
-case 1:code=6;off=code-56;break;
-case 2:code=6;off=code-66;break;
-case 3:code=6;off=code-36;break;
-case 4:code=6;off=code-86;break;
-case 5:code=6;off=code-26;break;
+u32 detail,code;
+if(result==0)return 0;
+switch(result){
+case 1:code=6;detail=code-56;break;
+case 2:code=6;detail=code-66;break;
+case 3:code=6;detail=code-36;break;
+case 4:code=6;detail=code-86;break;
+case 5:code=6;detail=code-26;break;
 }
 switch(GetNetSessionState()){
-case 2:ReportNasLoginError(code,off-0xfa00);break;
-case 4:func_0203accc(code,off+0xfffedef0);break;
-case 5:func_0203dc38(code,off+0xfffeb7e0);break;
-default:SetNetError(code,off+0xfffe90d0);break;
+case NET_STATE_LOGIN:ReportNasLoginError(code,detail-0xfa00);break;
+case NET_STATE_MATCHMAKING:func_0203accc(code,detail+0xfffedef0);break;
+case NET_STATE_SESSION:func_0203dc38(code,detail+0xfffeb7e0);break;
+default:SetNetError(code,detail+0xfffe90d0);break;
 }
-return ret;
+return result;
 }
 
 s32 func_02043184(s32 a,s32 unused,s32 off) {
@@ -78,7 +82,7 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     s32 SelectMatchmakingSession();
     s32 SBServerGetIntValue();
     u64 GetSystemTick(void);
-    void func_020410f8();
+    void DisconnectAllPeers();
     s32 func_0204084c();
     void SendJoinRequest();
     void func_02040dc8();
@@ -203,7 +207,7 @@ status2_done:
                     if (EvaluateMatchmakingSessions(0) != 0) {
                         ctx = GetConnection();
                         if (M2C_FIELD(ctx, u8 *, 0x0d) != 0) {
-                            func_020410f8();
+                            DisconnectAllPeers();
                             if (func_0204084c() != 0) goto cleanup;
                         }
                     } else {

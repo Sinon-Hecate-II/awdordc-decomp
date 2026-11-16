@@ -39,7 +39,7 @@ void func_ov000_0218d908(void) {
     s32 func_ov000_02178778(s16, s16);
     s32 func_ov000_02178e84(s16, s16);
     s32 CellMoveScore(s32, s32, s32, s32);
-    void func_ov000_0217c3a4(void);
+    void ClearUnitMoveTarget(void);
     M2C_UNK SetMapCursor(s16, s16, M2C_UNK, u8, s32);
     s32 bestX = -1, bestY = -1, bestScore = 0x7fffffff, bestCost = 0x7fff, useTransport = 0;
     u8 *unit;
@@ -117,7 +117,7 @@ nextTile:
             }
         }
     }
-    func_ov000_0217c3a4();
+    ClearUnitMoveTarget();
     if (useTransport) SetMapCursor((s16)bestX, (s16)bestY, 7, 0, 0);
     else SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
 }

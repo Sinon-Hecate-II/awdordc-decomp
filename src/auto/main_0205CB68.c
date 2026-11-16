@@ -6,15 +6,14 @@ struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
 
 #pragma push
 #pragma opt_global_reg off
-s32 func_0205cb68(s32 a,s32 b,s32 c) {
- s32 func_0205d228(void *,s32,s32,void *,s32);
- extern u8 gGt2Magic[];
- u8 v[3];
- struct BytePair_0205 *p=(struct BytePair_0205 *)v;
- v[2]=0x68;
- p->v[1]=gGt2Magic[1];
- p->v[0]=gGt2Magic[0];
- return func_0205d228((void *)a,b,c,p,3)!=0;
+s32 func_0205cb68(void *a,s32 b,s32 c) {
+s32 func_0205d228(void *,s32,s32,void *,s32);
+extern u8 gGt2Magic[];
+u8 v[3];
+struct BytePair_0205 *p=(struct BytePair_0205 *)v;
+v[2]=0x68;
+*p=*(struct BytePair_0205 *)gGt2Magic;
+return func_0205d228((void *)a,b,c,p,3)!=0;
 }
 #pragma pop
 s32 func_0205cbb4(void *a, s32 *b) {
@@ -242,7 +241,7 @@ done:
 s32 func_0205d164(s32 arg) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
-    void func_0204890c(s32, s32);
+    void Vector_RemoveItem(s32, s32);
     void func_02048f54(s32, void *);
     void *p = (void *)arg;
     s32 v = M2C_FIELD(p, s32 *, 0x14);
@@ -257,7 +256,7 @@ s32 func_0205d164(s32 arg) {
         for (i = 0; i < n; i++) {
             s32 *item = Vector_GetItem(base, i);
             if (item[0] == arg) {
-                func_0204890c(base, i);
+                Vector_RemoveItem(base, i);
                 return 0;
             }
         }
@@ -369,11 +368,11 @@ void func_0205d464(void *arg0) {
 }
 
 void func_0205d49c(void *a) {
-    void func_0205afec(void *);
+    void GT2NotifyConnectionClosed(void *);
     s32 func_02059f18(void *);
     if (M2C_FIELD(a, s32 *, 0x18)) return;
     M2C_FIELD(a, s32 *, 0x18) = 1;
-    func_0205afec(a);
+    GT2NotifyConnectionClosed(a);
     if (!func_02059f18(a)) return;
     func_0205cef8(a);
 }

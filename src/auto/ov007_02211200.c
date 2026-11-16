@@ -19,7 +19,7 @@ void MapEditor_StartMap(void *editor) {
  void (*callback)(void);
  ResetBattleMap();func_020d8cfc();
  M2C_FIELD(*gCurrentMap,u8*,MAP_PLAYER_COUNT)=4;
- func_020bfb74(0);ResetPlayerSetupTables();MapSettings_InitDefaults(0);
+ func_020bfb74(0);ResetPlayerSetupTables();MapSettings_SetDefaults(0);
  if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
  map=*gCurrentMap;
  text=GetLocalizedText(0xc00002eb);
@@ -52,14 +52,14 @@ void func_ov007_0221142c(M2C_UNK arg0) {
     M2C_UNK func_02086740(M2C_UNK, M2C_UNK);
     s32 func_02086a30(M2C_UNK);
     M2C_UNK func_0208999c(void *, M2C_UNK, s32);
-    void *func_0208b564(M2C_UNK);
+    void *CreateTextLayer(M2C_UNK);
     void *temp_r0;
 
     if (func_02086a30(0x20) != 0) {
         return;
     }
     func_02086740(0x20, 1);
-    temp_r0 = func_0208b564(arg0);
+    temp_r0 = CreateTextLayer(arg0);
     func_0208999c(temp_r0, 2, 0x46000025);
     M2C_FIELD(temp_r0, s32 *, 0x58) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x58) & ~0x1FC00000) | 0x01000000);
 }
@@ -276,7 +276,7 @@ s32 func_ov007_02211990(s32 x, s32 y) {
     s32 func_ov007_02211f30(void); s32 func_ov007_02211f40(void); s32 func_ov007_02211f50(void);
     u8 GetMapEditorTerrainKind(void); u8 GetMapEditorTerrainOwner(void);
     s32 func_ov007_0221bb44(s32, s32, s32, s32, s32);
-    s32 Map_CanPlaceTile(s32, s32, s32, s32); s32 func_020c1a80(s32);
+    s32 Map_CanPlaceTile(s32, s32, s32, s32); s32 IsDestroyedPipeTile(s32);
     s32 a, b; void *p;
     switch (func_ov007_02211f00()) {
     case 1:
@@ -311,7 +311,7 @@ s32 func_ov007_02211990(s32 x, s32 y) {
             a = GetMapEditorTerrainKind();
             if (!Map_CanPlaceTile(x, y, a, GetMapEditorTerrainOwner()))
                 return 5;
-            if (func_020c1a80(GetMapEditorTerrainKind()))
+            if (IsDestroyedPipeTile(GetMapEditorTerrainKind()))
                 return 5;
             break;
         }

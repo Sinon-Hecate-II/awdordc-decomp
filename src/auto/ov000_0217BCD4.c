@@ -311,7 +311,7 @@ base=*gCurrentMap;
 return 0;
 }
 
-void func_ov000_0217c3a4(void) {
+void ClearUnitMoveTarget(void) {
 extern void **gCurrentMap;
 s32 IsFootUnitKind();
 void *p;

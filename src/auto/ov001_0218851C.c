@@ -1,5 +1,6 @@
 /* 25 functions from 0x0218851C to 0x021893E4 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
 extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
@@ -30,21 +31,24 @@ void func_ov001_021885f4(M2C_UNK arg0, M2C_UNK arg1) {
 s32 func_ov001_02188614(void) {
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_021916b4;
-s32 func_ov001_0218868c(u16);
+s32 WhPickChild(u16);
 if(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,0x40)!=7) SystemHalt();
 SetWhStatus(1);
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C)=func_ov001_0218868c(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x60));
+M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C)=WhPickChild(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x60));
 if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))
 M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0)(0x8000000,&data_ov001_021916b4,M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C));
 return M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C);
 }
 
-s32 func_ov001_0218868c(u16 bits) {
+/* Pick a wanted child of the wireless connection: its one-based index from the
+ * wanted-child bitmap (the only one set, or 0 when none), or, when several are
+ * wanted, a pseudo-random one, advancing the connection's LCG seed. */
+s32 WhPickChild(u16 bits) {
  s16 last=0; u16 count=0; s16 i=0; u16 pick;
  for(;i<16;i++) if(bits&(1<<i)){last=i+1;count++;}
  if(count<=1)return last;
- M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,88)=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,88)*0x10dcd+0x3039;
- pick=(count*(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,88)&255))>>8;
+ M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,WH_RANDOM_SEED)=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,WH_RANDOM_SEED)*WH_RANDOM_MUL+WH_RANDOM_ADD;
+ pick=(count*(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,WH_RANDOM_SEED)&255))>>8;
  for(i=0;i<16;bits>>=1,i++)if(bits&1){if(pick==0)return (s16)(i+1);pick--;}
  return 0;
 }

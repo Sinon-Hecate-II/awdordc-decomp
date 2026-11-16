@@ -27,7 +27,7 @@ static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2
 #pragma opt_strength_reduction off
 void func_ov000_0218f468(void){
 s32 Divide(s32,s32);s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(s16);
-void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
+void ClearUnitMoveTarget(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
 s32 func_020d27a4(s32,s32);s32 GetUnitDamagePercent(s32,s32);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
 s32 CanUnitAttackKind(void *,s32);void FloodFillUnitRange(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
@@ -40,7 +40,7 @@ u8 terrain=M2C_FIELD(TileF468(x,y),u8 *,0x1420);
 if((terrain&0xe0)==0 || (terrain&31)==15){
 if(IsAllyUnitAtCell((s16)x,(s16)y)==0 || IsCurrentPlayerUnit(M2C_FIELD(TileF468(x,y),u8 *,0x508))!=0)goto prepared;
 }}
-ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
+ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();
 prepared:
 BuildUnitMoveRange(SelectedF468());
 if(PassF468(x,y)<0){
@@ -50,7 +50,7 @@ right=MinF468(x+2,M2C_FIELD(m,u16 *,0x5144)-1);bottom=MinF468(y+2,M2C_FIELD(m,u1
 for(yy=top;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
 s32 dist=DistanceF468(x,y,xx,yy);if(dist<0)continue;if(dist>2)continue;
 v=UnitAtF468(xx,yy);
-if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && GetUnitDamagePercent(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
+if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && GetUnitDamagePercent(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();}
 }}
 if(PassF468(x,y)>=0){
 if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();func_ov000_02199f38();}
@@ -61,13 +61,13 @@ m=MapF468();tile=TileF468(x,y);
 if((M2C_FIELD(tile,u8 *,0x1420)&31)==24){
 pos[0]=x;pos[1]=y;
 if(func_ov000_021aa820(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
-ClearF468();func_ov000_0217c3a4();SetMapCursor((s16)x,(s16)y,19,(u8)pos[0],(u8)pos[1]);return;
+ClearF468();ClearUnitMoveTarget();SetMapCursor((s16)x,(s16)y,19,(u8)pos[0],(u8)pos[1]);return;
 }
 m=MapF468();tile=TileF468(x,y);v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;
 M2C_FIELD(v,u8 *,3)++;SetMapCursor((s16)x,(s16)y,2,0,0);return;
 }
 v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;M2C_FIELD(v,u8 *,3)++;
-ClearF468();func_ov000_0217c3a4();SetMapCursor((s16)x,(s16)y,3,0,0);return;
+ClearF468();ClearUnitMoveTarget();SetMapCursor((s16)x,(s16)y,3,0,0);return;
 }
 if(ActionGetF468(SelectedF468())==2){
 s32 i,offset;
@@ -79,10 +79,10 @@ SetMapCursor(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2),7,0,0);
 }
 i++;offset+=14;
 }while(i<gPlayerUnitIdBase[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51);}
-ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
+ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();
 }
 u=SelectedF468();FloodFillUnitRange(M2C_FIELD(u,u8 *,1),M2C_FIELD(u,u8 *,2),KindF468(u),110,1);
-if(PassF468(x,y)<0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
+if(PassF468(x,y)<0){ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();}
 PlanMoveDestination(x,y);
 }
 #pragma push
@@ -94,13 +94,13 @@ PlanMoveDestination(x,y);
 void SelectAIDestination(void) {
 s32 IsFootUnitKind(s32);
 void BuildUnitMoveRange(void *);
-s32 func_ov000_021a8b78(void *);
+s32 GetCaptureTurnsLeft(void *);
 s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16);
 s32 func_ov000_021a9860(s32,s32);
 void func_ov000_02199f38(void);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);
-void func_ov000_0217c3a4(void);
+void ClearUnitMoveTarget(void);
 void SetMapCursor(s16,s16,s32,u8,u8);
 s16 pos[2];
 s32 bestX,bestY,transportX,transportY;
@@ -111,7 +111,7 @@ u8 *map,*cellPtr,*record;
 if(!IsFootUnitKind(KindF468(SelectedF468())))return;
 BuildUnitMoveRange(SelectedF468());
 bestY=9999;bestX=bestY;transportY=bestY;transportX=bestY;bestScore=-1;bestTransportScore=-1;bestThreat=32767;
-healthyUnit=(u8)(func_ov000_021a8b78(SelectedF468())>=5);
+healthyUnit=(u8)(GetCaptureTurnsLeft(SelectedF468())>=5);
 for(cellY=0;cellY<M2C_FIELD(MapF468(),u16 *,0x5146);cellY++){
 for(cellX=0;cellX<M2C_FIELD(MapF468(),u16 *,0x5144);cellX++){
 if(PassF468(cellX,cellY)<0)continue;
@@ -158,12 +158,12 @@ SetMapCursor((s16)transportX,(s16)transportY,19,(u8)pos[0],(u8)pos[1]);return;
 }
 if(bestScore==-1)return;
 if(IsAllyUnitAtCell((s16)bestX,(s16)bestY))func_ov000_02199f38();
-if(func_ov000_021a8b78(SelectedF468())>=2){
+if(GetCaptureTurnsLeft(SelectedF468())>=2){
 map=MapF468();
 record=map+0x6c60+M2C_FIELD(map+(bestX+M2C_FIELD(map+bestY*2,u16 *,0x3758)),s8 *,0x1928)*6;
 M2C_FIELD(record,u8 *,3)++;
 }
-func_ov000_0217c3a4();
+ClearUnitMoveTarget();
 SetMapCursor((s16)bestX,(s16)bestY,3,0,0);
 }
 #pragma pop

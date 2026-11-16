@@ -385,22 +385,25 @@ void func_ov009_02222b8c(void *arg0) {
     (void)arg0;
 }
 
-s32 func_ov009_02222e1c(void) {
-void func_ov009_02223ac8(void *); void func_ov009_02222f0c(void *);
+/* Starts the single-card link session: does nothing while a link is already
+ * up (phases 4/5), otherwise registers the event handler on tasks 4 and 12,
+ * enters phase 4 and starts the connect task; a failure signals a link error. */
+s32 StartLinkSession(void) {
+void func_ov009_02223ac8(void *); void HandleLinkConnectTaskEvent(void *);
 s32 GetLinkPhase(void); M2C_UNK SetLinkPhase(s32);
 s32 func_02011a20(s32,void (*)(void *),s32);
 s32 func_02012b08(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
 extern M2C_UNK gLinkState,data_ov009_022270e0,data_ov009_02227000;
-s32 n=GetLinkPhase();switch(n){case 4:case 5:return 1;default:break;}
+s32 phase=GetLinkPhase();switch(phase){case 4:case 5:return 1;default:break;}
 if(func_02011a20(4,func_ov009_02223ac8,0)!=0) {SignalLinkError();return 0;}
 if(func_02011a20(12,func_ov009_02223ac8,0)!=0) {SignalLinkError();return 0;}
 M2C_FIELD(&gLinkState,u8 *,0)=0;
 SetLinkPhase(4);
-if(func_02012b08(func_ov009_02222f0c,&data_ov009_022270e0,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&data_ov009_02227000,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
+if(func_02012b08(HandleLinkConnectTaskEvent,&data_ov009_022270e0,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&data_ov009_02227000,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
 SignalLinkError();return 0;
 }
 
-void func_ov009_02222f0c(void *arg0) {
+void HandleLinkConnectTaskEvent(void *arg0) {
  s8 GetLinkLocalPlayerId();
  extern M2C_UNK gLinkState;
  u16 state = M2C_FIELD(arg0,u16 *,2);

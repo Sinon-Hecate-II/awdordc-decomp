@@ -193,19 +193,22 @@ return (u8 *)&data_0215d9ec+((a-5)<<3);
 }
 
 M2C_UNK *GetMapSettings(void) {
-    extern M2C_UNK data_0215da0c;
-    return &data_0215da0c;
+    extern M2C_UNK gMapSettings;
+    return &gMapSettings;
 }
 
-void MapSettings_InitDefaults(u16 *arg0) {
-extern M2C_UNK data_0211faf4;
+/* Resets a map-settings record (gMapSettings when none is given) to its defaults:
+ * no map, no fog or weather, value limits of 1000, and the four player slots set
+ * to the default CO with the player's army; player 1 gets team 1, the rest team 2. */
+void MapSettings_SetDefaults(u16 *arg0) {
+extern M2C_UNK gDefaultPlayerCoIds;
 SaveInit *p=(SaveInit *)arg0;
 s32 i;
 if(!p) p=(SaveInit *)GetMapSettings();
 p->a=0; p->b=0; p->c=0; p->d=0; p->e=0; p->f=0; p->g=0;
 p->j=0; p->k=1000; p->h=2; p->l=1;
 for(i=0;i<4;i++){
-p->entries[i].id=((u8 *)&data_0211faf4)[i+1];
+p->entries[i].id=((u8 *)&gDefaultPlayerCoIds)[i+1];
 p->entries[i].index=(u16)(i+1);
 if(i==0) p->entries[i].mode=1;
 else p->entries[i].mode=2;
@@ -272,7 +275,7 @@ void MapSettings_Randomize(void *arg0) {
     s32 MapData_GetBattleSetting(s32);
     s32 MapData_GetValueLimitLow(s32);
     s32 MapData_GetValueLimitHigh(s32);
-    void MapSettings_InitDefaults(u16 *);
+    void MapSettings_SetDefaults(u16 *);
     s32 RandomSelectableMapId();
     s32 RandomFog();
     s32 RandomTileset();
@@ -285,7 +288,7 @@ void MapSettings_Randomize(void *arg0) {
     if (settings == NULL) {
         settings = GetMapSettings();
     }
-    MapSettings_InitDefaults(settings);
+    MapSettings_SetDefaults(settings);
     mapId = RandomSelectableMapId();
     M2C_FIELD(settings, s32 *, 8) = (s32) ((M2C_FIELD(settings, s32 *, 8) & 0xFFFFF001) | ((u32) (mapId << 0x15) >> 0x14));
     M2C_FIELD(settings, s32 *, 8) = (s32) ((M2C_FIELD(settings, s32 *, 8) & ~0x1000) | ((u32) (RandomFog() << 0x1F) >> 0x13));

@@ -439,49 +439,52 @@ s32 ShowScenePanel(s32 panelIndex) {
     return 0;
 }
 
-s32 func_0209787c(s32 arg0) {
+/* Slide an open scene panel back out of its screen band, opposite to
+ * ShowScenePanel's directions, then clear the panel's tile rows.  Needs a
+ * visible 3D sprite; returns 0 when the panel is closed or already moving out. */
+s32 HideScenePanel(s32 panelIndex) {
     s32 Is3DSpriteVisible(void);
     s32 func_020abe90(u8);
-    M2C_UNK func_02088f8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Slide3DSpriteOut(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void ClearScenePanelRows(s32);
-    void *temp_r4;
-    s32 var_r5;
+    void *panel;
+    s32 slideFrames;
 
-    temp_r4 = (void *) FindScenePanel((u16) arg0);
-    if (temp_r4 != NULL && Is3DSpriteVisible() != 0) {
-        var_r5 = 8;
-        if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r4, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
-            var_r5 = 0;
+    panel = (void *) FindScenePanel((u16) panelIndex);
+    if (panel != NULL && Is3DSpriteVisible() != 0) {
+        slideFrames = 8;
+        if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+            slideFrames = 0;
         }
-        switch (arg0) {
-        case 0:
-            func_02088f8c(temp_r4, 0, 0, 0, -0x40, var_r5);
+        switch (panelIndex) {
+        case SCENE_PANEL_TOP:
+            Slide3DSpriteOut(panel, 0, 0, 0, -0x40, slideFrames);
             break;
-        case 1:
-            func_02088f8c(temp_r4, 0, 0x40, 0x100, 0x40, var_r5);
+        case SCENE_PANEL_MIDDLE:
+            Slide3DSpriteOut(panel, 0, 0x40, 0x100, 0x40, slideFrames);
             break;
-        case 2:
-            func_02088f8c(temp_r4, 0, 0x80, 0, 0xc0, var_r5);
+        case SCENE_PANEL_BOTTOM:
+            Slide3DSpriteOut(panel, 0, 0x80, 0, 0xc0, slideFrames);
             break;
         }
-        ClearScenePanelRows(arg0);
+        ClearScenePanelRows(panelIndex);
         return 1;
     }
     return 0;
 }
 
-s32 func_02097964(void) {
-    s32 func_0209787c(M2C_UNK);
+s32 HideAllScenePanels(void) {
+    s32 HideScenePanel(M2C_UNK);
     s32 var_r4;
 
     var_r4 = 0;
-    if (func_0209787c(0) != 0) {
+    if (HideScenePanel(0) != 0) {
         var_r4 = 1;
     }
-    if (func_0209787c(1) != 0) {
+    if (HideScenePanel(1) != 0) {
         var_r4 = 1;
     }
-    if (func_0209787c(2) != 0) {
+    if (HideScenePanel(2) != 0) {
         var_r4 = 1;
     }
     return var_r4;
@@ -522,48 +525,54 @@ void func_02097aa8(void) {
 
 }
 
-void func_02097aac(s32 arg0, u8 arg1) {
+/* Clears the interior rows (all but the top and bottom border) of a scene
+ * panel's 32-column tilemap, once per 3D-sprite engine the screen target
+ * selects. */
+void ClearTilemapRows(s32 tilemapAddress, u8 rowPairs) {
     s32 Get3DSpriteTarget();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void *g3DSpriteEngineSub;
-    void *saved;
+    void *savedEngine;
     void *engine;
     s32 engineIndex;
-    u16 *base;
-    s32 rows;
+    u16 *tilemap;
+    s32 endRow;
     s32 col;
     s32 row;
-    saved=gCur3DSpriteEngine;
-    rows=arg1*2+1;
-    base=(u16 *)arg0;
-    engineIndex=0;
+
+    savedEngine = gCur3DSpriteEngine;
+    endRow = rowPairs * 2 + 1;
+    tilemap = (u16 *)tilemapAddress;
+    engineIndex = 0;
     do {
-        if(engineIndex==0)engine=g3DSpriteEngineMain;
-        else engine=g3DSpriteEngineSub;
-        gCur3DSpriteEngine=engine;
-        if(((Get3DSpriteTarget()!=0)||(gCur3DSpriteEngine==g3DSpriteEngineMain)) &&
-           ((Get3DSpriteTarget()!=1)||(gCur3DSpriteEngine==g3DSpriteEngineSub)) &&
-           ((Get3DSpriteTarget()!=3)||(gCur3DSpriteEngine==saved))) {
-            for(row=1;row<rows;row++){
-                for(col=0;col<32;col++)base[row*32+col]=0;
+        if (engineIndex == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        if (((Get3DSpriteTarget() != DS3D_TARGET_MAIN) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) &&
+            ((Get3DSpriteTarget() != DS3D_TARGET_SUB) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) &&
+            ((Get3DSpriteTarget() != DS3D_TARGET_ACTIVE) || (gCur3DSpriteEngine == savedEngine))) {
+            for (row = 1; row < endRow; row++) {
+                for (col = 0; col < SCENE_PANEL_TILE_COLUMNS; col++) {
+                    tilemap[row * SCENE_PANEL_TILE_COLUMNS + col] = 0;
+                }
             }
         }
         engineIndex++;
-    }while(engineIndex<2);
-    gCur3DSpriteEngine=saved;
+    } while (engineIndex < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void ClearScenePanelRows(M2C_UNK arg0) {
     s32 func_02091e70(M2C_UNK);
     s32 *GetScenePanelState();
-    void func_02097aac(s32, u8);
+    void ClearTilemapRows(s32, u8);
     s32 *temp_r5;
     s32 temp_r4;
 
     temp_r5 = GetScenePanelState();
     temp_r4 = func_02091e70(arg0);
-    func_02097aac(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
+    ClearTilemapRows(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
 }
 
 s32 func_02097be0(void) {

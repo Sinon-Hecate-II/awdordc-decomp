@@ -72,7 +72,7 @@ void DrawMapBackground(void) {
 void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 GetViewZoom(s32);
-    s32 func_02090158(M2C_UNK, s32, M2C_UNK);
+    s32 PlaySlotScriptedSound(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020901b0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern s32 *gCurrentMap;
     s32 temp_r0;
@@ -93,7 +93,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
             var_r5 = 0;
         }
     }
-    if (func_02090158(arg0, var_r5, 0xA) != 0) {
+    if (PlaySlotScriptedSound(arg0, var_r5, 0xA) != 0) {
         return;
     }
     if (var_r5 == 0) {

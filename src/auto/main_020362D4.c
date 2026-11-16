@@ -185,7 +185,7 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void func_02068d18();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
+ s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
@@ -200,7 +200,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d1c)=flagsOut;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d20)=countOut;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d24)=count;
- func_02068d18(gWfcMatchSession+0x1c18,gNasServer,256);
+ StringCopyPad(gWfcMatchSession+0x1c18,gNasServer,256);
  M2C_FIELD(gWfcMatchSession,u8 *,0x1d18)=0;
  p=StringFind(gWfcMatchSession+0x1c18,sWfcMatchPath);
  if(!p)goto fail;

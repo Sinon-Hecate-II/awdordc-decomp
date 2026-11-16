@@ -159,12 +159,12 @@ void RunAiSupplyAction(void) {
     func_ov000_0218ef40();
 }
 
-void func_ov000_02181b8c(void) {
-    M2C_UNK func_ov000_02196bd8();
+void RunAiKind5Action(void) {
+    M2C_UNK TagAiKind5TargetCells();
     if (IsAiMap175Player2Override() != 0) {
         return;
     }
-    func_ov000_02196bd8();
+    TagAiKind5TargetCells();
 }
 
 void func_ov000_02181ba4(void) {

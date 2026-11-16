@@ -30,14 +30,14 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     M2C_UNK func_02053e40(void **, void *, s8 **);
     M2C_UNK func_02054484(void **, void *);
     void *func_02055aa0(void **, s32);
-    M2C_UNK func_02055b84(void **, s32, void **);
+    M2C_UNK gpiFindBuddyStatus(void **, s32, void **);
     s32 func_0205817c(void **, char *, s32);
     s32 gpiValueForKey(char *, M2C_UNK *, void *, s32);
     M2C_UNK gpiSetError(void **, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     s32 StringCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0206a374(s8 *);
+    M2C_UNK atof(s8 *);
     s32 ParseInt(s8 *);
     s32 func_0207044c();
     extern M2C_UNK data_020fe690;
@@ -106,7 +106,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     if (temp_r0_3 <= 0) {
         AssertFailed(&data_020fe71c, &data_020fe6a4, &data_020fe690, 0x15A);
     }
-    func_02055b84(arg0, temp_r0_3, &sp10);
+    gpiFindBuddyStatus(arg0, temp_r0_3, &sp10);
     }
     {Response526 response = {0};
     Buffers526 buffers;
@@ -149,13 +149,13 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     if (gpiValueForKey(arg2, &data_020fe798, &buffers.bufEC[0], 0x40) == 0) {
         response.n2C = 0;
     } else {
-        func_0206a374(&buffers.bufEC[0]);
+        atof(&buffers.bufEC[0]);
         response.n2C = func_0207044c();
     }
     if (gpiValueForKey(arg2, &data_020fe7a0, &buffers.bufEC[0], 0x40) == 0) {
         response.n30 = 0;
     } else {
-        func_0206a374(&buffers.bufEC[0]);
+        atof(&buffers.bufEC[0]);
         response.n30 = func_0207044c();
     }
     if (gpiValueForKey(arg2, &data_020fe7a8, &response.b34[0], 0x80) == 0) {

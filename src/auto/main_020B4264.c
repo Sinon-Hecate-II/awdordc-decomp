@@ -19,7 +19,7 @@ s32 func_020b4264(u8 *arg0) {
     void ApplyTerrainBlast(s32, s32);
     void SetPlayerTeam(s32, s32);
     void SetPlayerIdForSlot(s32, s32);
-    void func_020a232c(s32, s32);
+    void SetPlayerArmyId(s32, s32);
     void func_020a233c(s32, s32);
     void func_020a44fc(u8 *, s32);
     void func_020a16a8(u8 *);
@@ -217,7 +217,7 @@ s32 func_020b4264(u8 *arg0) {
     for (; i < 4; i++) {
         SetPlayerTeam(i + 1, M2C_FIELD(unit, u8 *, 0x1CE));
         SetPlayerIdForSlot(i + 1, M2C_FIELD(unit, u8 *, 0x1CD));
-        func_020a232c(i + 1, M2C_FIELD(unit, u8 *, 0x1D6));
+        SetPlayerArmyId(i + 1, M2C_FIELD(unit, u8 *, 0x1D6));
         func_020a233c(i + 1, M2C_FIELD(unit, u8 *, 0x1E2));
         unit += 0x8C;
     }

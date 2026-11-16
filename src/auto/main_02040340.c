@@ -404,9 +404,13 @@ s32 func_02041038(void) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_020410f8(void) {
+/* Tell every peer the session is over: send it the disconnect command (10)
+   with its address and port, and fail out on the first send error.  Then clear
+   the armed-connection flag and, marking the kick-out in progress, close the
+   local connection. */
+s32 DisconnectAllPeers(void) {
  s32 i,r; void *a,*b,*c,*d;
- s32 SendConnectionCommand(M2C_UNK,M2C_UNK,s32,u16,s32,s32); void func_0205afec(s32); 
+ s32 SendConnectionCommand(M2C_UNK,M2C_UNK,s32,u16,s32,s32); void GT2NotifyConnectionClosed(s32);
  for(i=1;i<=M2C_FIELD(GetConnection(),u8*,0xd);i++){
  a=GetConnection();b=GetConnection();c=GetConnection();d=GetConnection();
  r=SendConnectionCommand(10,M2C_FIELD((u8*)a+(i<<2),s32*,0xf4),M2C_FIELD((u8*)b+(int)i*4,s32*,0x24),M2C_FIELD((u8*)c+(i<<1),u16*,0xa4),(s32)((u8*)d+0x348),M2C_FIELD(GetConnection(),s32*,0x348)+1);
@@ -415,8 +419,7 @@ s32 func_020410f8(void) {
  M2C_FIELD(GetConnection(),u8*,0x17)=0;
  M2C_FIELD(GetConnection(),s32*,0x20)=0;
  M2C_FIELD(GetConnection(),u8*,0x1a8)=1;
- func_0205afec(*M2C_FIELD(GetConnection(),s32**,4));
+ GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(),s32**,4));
  M2C_FIELD(GetConnection(),u8*,0x1a8)=0;
  return 0;
 }
-#pragma opt_strength_reduction reset

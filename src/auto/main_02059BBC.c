@@ -1,5 +1,6 @@
 /* 28 functions from 0x02059BBC to 0x0205ABB4 (main), found by ds-decomp. */
 #include "common.h"
+#include "gt2.h"
 typedef struct { s32 v[4]; } Unk0205Copy;
 
 u8 *func_02059bbc(void *out_, void *in_)
@@ -166,42 +167,51 @@ if(M2C_FIELD(socket,s32 *,0x14)&&!M2C_FIELD(socket,s32 *,0x1c)){func_0205cef8(so
 return 1;
 }
 
-s32 func_0205a0d0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Report a connection event: record the event type on the connection and, when
+ * the connection has an event callback, call it with the event's data.  The
+ * call is nested via the connection and socket counters, so that a socket marked
+ * for destruction is freed once the outermost callback has returned.  Returns 0
+ * when the socket was freed, 1 otherwise. */
+s32 Gt2ConnectionCallCallback(void *connection, s32 type, s32 data, s32 length) {
 M2C_UNK func_0205cef8(void *);
 M2C_UNK AssertFailed(M2C_UNK*,M2C_UNK*,M2C_UNK*,M2C_UNK);
 extern M2C_UNK data_020ff7a4,data_020ff77c,data_020ff6d4;
-if(!arg0)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6d4,0x69);
-if(!arg0)return 1;
-M2C_FIELD(arg0,s32*,0x18)=arg1;
-if(!M2C_FIELD(arg0,void**,0x28))return 1;
-if(!arg3||!arg2) {arg2=0;arg3=0;}
-M2C_FIELD(arg0,s32*,0x24)++;
-M2C_FIELD(M2C_FIELD(arg0,void**,8),s32*,0x1c)++;
+if(!connection)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6d4,0x69);
+if(!connection)return 1;
+M2C_FIELD(connection,s32*,0x18)=type;
+if(!M2C_FIELD(connection,void**,GT2_CONNECTION_CALLBACK))return 1;
+if(!length||!data) {data=0;length=0;}
+M2C_FIELD(connection,s32*,GT2_CONNECTION_CALLBACKS)++;
+M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_CALLBACKS)++;
 
-((void (*)(void*,s32,s32,s32))M2C_FIELD(arg0,void**,0x28))(arg0,arg1,arg2,arg3);
-M2C_FIELD(arg0,s32*,0x24)--;
-M2C_FIELD(M2C_FIELD(arg0,void**,8),s32*,0x1c)--;
-if(M2C_FIELD(M2C_FIELD(arg0,void**,8),s32*,0x14)) {
-if(!M2C_FIELD(M2C_FIELD(arg0,void**,8),s32*,0x1c)) {
-func_0205cef8(M2C_FIELD(arg0,void**,8));return 0;
+((void (*)(void*,s32,s32,s32))M2C_FIELD(connection,void**,GT2_CONNECTION_CALLBACK))(connection,type,data,length);
+M2C_FIELD(connection,s32*,GT2_CONNECTION_CALLBACKS)--;
+M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_CALLBACKS)--;
+if(M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_DIRTY)) {
+if(!M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_CALLBACKS)) {
+func_0205cef8(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET));return 0;
 }}
 return 1;
 }
 
-s32 func_0205a1b8(void *p,void *a,s32 b,s32 c){
+/* Report an incoming message on a connection: when the connection has a message
+ * callback, call it with the message, nested via the connection and socket
+ * counters so a socket marked for destruction is freed once the outermost
+ * callback returns. Returns 0 when the socket was freed, 1 otherwise. */
+s32 Gt2ConnectionCallMessageCallback(void *connection,void *messageData,s32 messageLength,s32 unk){
 extern int data_020ff7a4,data_020ff77c,data_020ff6bc;
-if(!p)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6bc,0x94);
-if(!p)return 1;
-if(!M2C_FIELD(p,void **,0x2c))return 1;
-if(!b||!a){a=0;b=0;}
-M2C_FIELD(p,int *,0x24)++;
-M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)++;
+if(!connection)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6bc,0x94);
+if(!connection)return 1;
+if(!M2C_FIELD(connection,void **,GT2_CONNECTION_CALLBACK_MSG))return 1;
+if(!messageLength||!messageData){messageData=0;messageLength=0;}
+M2C_FIELD(connection,int *,GT2_CONNECTION_CALLBACKS)++;
+M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_CALLBACKS)++;
 
-((void (*)(void *,void *,s32,s32))M2C_FIELD(p,void **,0x2c))(p,a,b,c);
-M2C_FIELD(p,int *,0x24)--;
-M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)--;
-if(M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x14)&&!M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)){
-func_0205cef8(M2C_FIELD(p,void **,8));return 0;
+((void (*)(void *,void *,s32,s32))M2C_FIELD(connection,void **,GT2_CONNECTION_CALLBACK_MSG))(connection,messageData,messageLength,unk);
+M2C_FIELD(connection,int *,GT2_CONNECTION_CALLBACKS)--;
+M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_CALLBACKS)--;
+if(M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_DIRTY)&&!M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_CALLBACKS)){
+func_0205cef8(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET));return 0;
 }return 1;}
 
 int func_0205a29c(void *arg0, int arg1) {
@@ -381,12 +391,12 @@ s32 func_0205a9ec(void *arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0205aa34(void *p,u32 t) {
-s32 func_0205a0d0(void *,s32,s32,s32);void gti2SendClosed(void *);void gti2MarkConnectionClosed(void *);
+s32 Gt2ConnectionCallCallback(void *,s32,s32,s32);void gti2SendClosed(void *);void gti2MarkConnectionClosed(void *);
 s32 state=M2C_FIELD(p,s32 *,12),flag;
 if(state<5){flag=0;
 if(M2C_FIELD(p,s32 *,16)){u32 limit=M2C_FIELD(p,u32 *,32);if(limit){if(t-M2C_FIELD(p,u32 *,28)>limit)flag=1;}}
 else if(state<4){if(t-M2C_FIELD(p,u32 *,28)>60000)flag=1;}
-if(flag){gti2SendClosed(p);gti2MarkConnectionClosed(p);if(!func_0205a0d0(p,6,0,0))return 0;}}
+if(flag){gti2SendClosed(p);gti2MarkConnectionClosed(p);if(!Gt2ConnectionCallCallback(p,6,0,0))return 0;}}
 return 1;
 }
 

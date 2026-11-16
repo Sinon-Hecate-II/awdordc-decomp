@@ -83,7 +83,7 @@ s32 func_020081c8(void) {
     return M2C_ERROR(/* unknown instruction: swp $r0, $r0, ($r1) */);
 }
 
-void func_020081d0(u32 *arg0,u8 *dst){
+void Ov001_DecompressBuffer(u32 *arg0,u8 *dst){
  s32 remaining=*arg0++>>8;u8 *src=(u8*)arg0;
  while(remaining>0){u32 flags=*src++; s32 bits=8;
  while(--bits>=0){if(!(flags&128)){*dst++=*src++;remaining--;}
@@ -656,16 +656,16 @@ void func_02008bb8(void) {
 }
 
 void func_02008bd0(M2C_UNK arg0) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(1, arg0, 0, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(1, arg0, 0, 0, 0);
 }
 
 void func_02008bf0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    func_02008f88(2, arg0, arg1, arg2, arg3);
+    SendArm7Message(2, arg0, arg1, arg2, arg3);
 }
 
 void func_02008c18(M2C_UNK arg0) {
-    func_02008f88(3, arg0, 0, 0, 0);
+    SendArm7Message(3, arg0, 0, 0, 0);
 }
 
 void func_02008c38(M2C_UNK arg0, M2C_UNK arg1) {
@@ -687,16 +687,16 @@ void func_02008c84(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_02008ca0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    func_02008f88(9, arg0, arg1, arg2, 0);
+    SendArm7Message(9, arg0, arg1, arg2, 0);
 }
 
 void func_02008cc8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    func_02008f88(0xC, arg0, arg1, arg2, arg3);
+    SendArm7Message(0xC, arg0, arg1, arg2, arg3);
 }
 
-void func_02008cf0(M2C_UNK arg0, M2C_UNK arg1, u32 arg2, s32 arg3) {
+void Sound_StopChannels(M2C_UNK arg0, M2C_UNK arg1, u32 arg2, s32 arg3) {
     M2C_UNK func_0200976c(s32);
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 var_r4;
     u32 var_r5;
 
@@ -709,53 +709,53 @@ void func_02008cf0(M2C_UNK arg0, M2C_UNK arg1, u32 arg2, s32 arg3) {
         var_r4 += 1;
         var_r5 = var_r5 >> 1;
     }
-    func_02008f88(0xD, arg0, arg1, arg2, arg3);
+    SendArm7Message(0xD, arg0, arg1, arg2, arg3);
 }
 
 void func_02008d54(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     s32 func_0200978c(M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0x12, arg0, arg1, arg2, func_0200978c(arg0, arg3, arg4));
+    SendArm7Message(0x12, arg0, arg1, arg2, func_0200978c(arg0, arg3, arg4));
 }
 
 void func_02008d94(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    func_02008f88(8, arg0, arg1, arg2, 0);
+    SendArm7Message(8, arg0, arg1, arg2, 0);
 }
 
 void func_02008dbc(M2C_UNK arg0, M2C_UNK arg1) {
-    func_02008f88(0x1A, arg0, arg1, 0, 0);
+    SendArm7Message(0x1A, arg0, arg1, 0, 0);
 }
 
 void func_02008ddc(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02008f88(0x1B, arg0, arg1, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    SendArm7Message(0x1B, arg0, arg1, 0, 0);
 }
 
 void func_02008dfc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    func_02008f88(0x14, arg0, arg1, arg2, 0);
+    SendArm7Message(0x14, arg0, arg1, arg2, 0);
 }
 
 void func_02008e24(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0x15, arg0, arg1, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0x15, arg0, arg1, 0, 0);
 }
 
 void func_02008e44(s32 arg0, s32 arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0xE, arg0 | (arg8 << 0x10), arg2, arg5 | ((arg6 << 0x18) | (arg7 << 0x16)), arg4 | (((arg3 << 0x1A) | (arg1 << 0x18)) | (arg9 << 0x10)));
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0xE, arg0 | (arg8 << 0x10), arg2, arg5 | ((arg6 << 0x18) | (arg7 << 0x16)), arg4 | (((arg3 << 0x1A) | (arg1 << 0x18)) | (arg9 << 0x10)));
 }
 
 void func_02008e90(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0x1E, arg0, arg1, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0x1E, arg0, arg1, 0, 0);
 }
 
 void func_02008eb0(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0x1F, arg0, arg1, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0x1F, arg0, arg1, 0, 0);
 }
 
 void func_02008ed0(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0x20, arg0, arg1, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0x20, arg0, arg1, 0, 0);
 }
 

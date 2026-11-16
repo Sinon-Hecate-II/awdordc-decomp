@@ -6,10 +6,12 @@ typedef union { u32 word; u16 half[2]; u8 byte[4]; } Unk996Row;
 typedef struct { s32 values[12]; } Unk02098BD4Table;
 extern Unk02098BD4Table data_020f36bc;
 
-s32 func_02098bd4(M2C_UNK arg0, u8 arg1) {
+/* Indexes the CO face layout table by expression (0..11, in three-step groups)
+ * and by the face's variant flag, and returns the face tile record chosen. */
+s32 func_02098bd4(M2C_UNK expr, u8 variant) {
 Unk02098BD4Table table=data_020f36bc;
 s32 i=0;
-switch(arg0) {
+switch(expr) {
 case 0: i=0; break;
 case 1: i=2; break;
 case 2: i=4; break;
@@ -23,7 +25,7 @@ case 9: i=8; break;
 case 10: i=8; break;
 case 11: i=10; break;
 }
-if(arg1) i++;
+if(variant) i++;
 return table.values[i];
 }
 
@@ -89,14 +91,14 @@ void func_02098e04(void *arg0, u32 arg1, s32 arg2) {
     Hide3DSprite();
 }
 
-u8 func_02099014(void *);
+u8 IsFaceSpriteLoaded(void *);
 void func_02098e2c(void *arg0, s32 arg1) {
 extern void *data_027e01d8, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 void *old; void *v; s32 i; u32 mode;
 M2C_FIELD(arg0,u8*,0x58)=arg1;
 M2C_FIELD(arg0,u8*,0x49)=3;
 M2C_FIELD(arg0,M2C_UNK **,0x44)=func_02098db4();
-if (!func_02099014(arg0)) return;
+if (!IsFaceSpriteLoaded(arg0)) return;
 old=data_027e01d8; i=0;
 do {
 if(i==0) v=g3DSpriteEngineMain; else v=(int)g3DSpriteEngineSub;
@@ -113,44 +115,47 @@ void SetFaceSpriteExpression(void *arg0, u8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x59) = arg1;
 }
 
-void RefreshFaceSpritePalette(void *arg0) {
+/* Reload the palette of the face sprite's texture on every display engine it
+ * is drawn on and, when no expression is set, darken its 32 colours by 6 steps. */
+void RefreshFaceSpritePalette(void *face) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
-    M2C_UNK func_02098d48(M2C_UNK, u16);
-    u8 func_02099014(void *);
-    M2C_UNK func_020ae46c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void *old;
-    s32 i;
-    void *p;
-    u32 mode;
+    M2C_UNK LoadFacePalette(M2C_UNK, u16);
+    u8 IsFaceSpriteLoaded(void *);
+    M2C_UNK FadePaletteTowardsBlack(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void *savedEngine;
+    s32 bank;
+    void *engine;
+    u32 screen;
     s32 zero = 0;
-    s32 ten = 10;
-    if (!func_02099014(arg0)) return;
-    old = gCur3DSpriteEngine;
-    i = 0;
+    s32 steps = 10;
+
+    if (!IsFaceSpriteLoaded(face)) return;
+    savedEngine = gCur3DSpriteEngine;
+    bank = 0;
     do {
-        if (i == 0) p = g3DSpriteEngineMain; else p = g3DSpriteEngineSub;
-        gCur3DSpriteEngine = p;
-        mode = (u32)(M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29;
-        if (((mode != 0) || (p == g3DSpriteEngineMain)) &&
-            ((mode != 1) || (p == g3DSpriteEngineSub)) &&
-            ((mode != 3) || (p == old))) {
-            func_02098d48((M2C_UNK)M2C_FIELD(arg0, u8 *, 0x58),
-                (u16)(((M2C_FIELD(arg0, u32 *, 0x40) << 6) >> 24) + 0x10));
-            if (M2C_FIELD(arg0, u8 *, 0x59) == 0) {
-                func_020ae46c(
+        if (bank == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        screen = (u32)(M2C_FIELD(face, u8 *, FACE_SPRITE_SCREEN) << 28) >> 29;
+        if (((screen != 0) || (engine == g3DSpriteEngineMain)) &&
+            ((screen != 1) || (engine == g3DSpriteEngineSub)) &&
+            ((screen != 3) || (engine == savedEngine))) {
+            LoadFacePalette((M2C_UNK)M2C_FIELD(face, u8 *, FACE_SPRITE_FACE),
+                (u16)(((M2C_FIELD(face, u32 *, FACE_SPRITE_TILE) << 6) >> 24) + 0x10));
+            if (M2C_FIELD(face, u8 *, FACE_SPRITE_EXPRESSION) == 0) {
+                FadePaletteTowardsBlack(
                     (M2C_UNK)(M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x30) +
-                        ((((M2C_FIELD(arg0, u32 *, 0x40) << 6) >> 24) + 0x10) << 5 & ~1)),
-                    zero, ten, 6);
+                        ((((M2C_FIELD(face, u32 *, FACE_SPRITE_TILE) << 6) >> 24) + 0x10) << 5 & ~1)),
+                    zero, steps, 6);
             }
         }
-        i++;
-    } while (i < 2);
-    gCur3DSpriteEngine = old;
+        bank++;
+    } while (bank < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-u8 func_02099014(void *arg0) {
+u8 IsFaceSpriteLoaded(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u8 *, 0x58) != 0) {
@@ -170,7 +175,7 @@ M2C_UNK func_02099040(void *arg0) {
  void func_02088964(void *);
  void UpdateSpriteSlide(void *);
  void func_020887ec(void *);
- if(func_02099014(arg0)==0) return;
+ if(IsFaceSpriteLoaded(arg0)==0) return;
  func_02088964(arg0);
  UpdateSpriteSlide(arg0);
  func_020887ec(arg0);

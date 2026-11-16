@@ -131,9 +131,9 @@ void func_020c04b4(void *arg0, s32 arg1) {
 
 void func_020c04e4(void) {
     s32 func_020c05b0(void);
-    void func_020c0bb0();
+    void DrawCarriedUnitList();
     if (func_020c05b0() == 0) return;
-    func_020c0bb0();
+    DrawCarriedUnitList();
 }
 
 void func_020c04fc(void *arg0) {
@@ -357,25 +357,28 @@ void func_020c0b88(s8 arg0) {
 
 s8 func_020c0b9c(void) {extern void *data_02163eec;return M2C_FIELD(data_02163eec,s8 *,2);}
 
-void func_020c0bb0(void *arg0) {
+/* Draws the cargo list of the unit under the cursor: one row per carried-unit
+ * slot (the row's +0x24 slot, 0xFFFF when empty), with the carried unit's icon
+ * and, when that unit is damaged, the number of health bars it has left. */
+void DrawCarriedUnitList(void *list) {
 M2C_UNK func_0209c764(u16,u16,u16,M2C_UNK,s32);
 M2C_UNK DrawDecimalNumber(s32,s32,s32);
 s32 GetUnitHealthBarCount(s32);
 extern void *gCurrentMap;
-s32 i=0,x,y,k;s32 j;void *p,*q;u16 t;u8 v;
-if((s32)M2C_FIELD(arg0,u8 *,0x4d)<=0)return;
-j=0;
+s32 row=0,x,y,bars;s32 rowOffset;void *entry,*map;u16 slot;u8 carriedId;
+if((s32)M2C_FIELD(list,u8 *,0x4d)<=0)return;
+rowOffset=0;
 do{
-p=(void *)func_020c03bc(arg0,i);t=M2C_FIELD(p,u16 *,0x24);
-if(t!=0xffff){
-x=M2C_FIELD(arg0,s16 *,0x54);y=M2C_FIELD(arg0,s16 *,0x56)+((u32)j<<3);
-func_0209c764(t,(u16)(x+2),(u16)y,0,11);
-t=M2C_FIELD(p,u16 *,0x24);
-if((t!=0)&&(t!=1)){}else{q=*(void **)gCurrentMap;v=M2C_FIELD(M2C_FIELD(q,s32 *,0x52d0)+t,u8 *,12);
-if(v){k=GetUnitHealthBarCount((s32)q+0x59a4+v*14);if(k!=10)DrawDecimalNumber(x+9,y+7,k);}
+entry=(void *)func_020c03bc(list,row);slot=M2C_FIELD(entry,u16 *,0x24);
+if(slot!=0xffff){
+x=M2C_FIELD(list,s16 *,0x54);y=M2C_FIELD(list,s16 *,0x56)+((u32)rowOffset<<3);
+func_0209c764(slot,(u16)(x+2),(u16)y,0,11);
+slot=M2C_FIELD(entry,u16 *,0x24);
+if((slot!=0)&&(slot!=1)){}else{map=*(void **)gCurrentMap;carriedId=M2C_FIELD(M2C_FIELD(map,s32 *,0x52d0)+slot,u8 *,12);
+if(carriedId){bars=GetUnitHealthBarCount((s32)map+0x59a4+carriedId*14);if(bars!=10)DrawDecimalNumber(x+9,y+7,bars);}
 }}
-i++;j+=2;
-}while(i<(s32)M2C_FIELD(arg0,u8 *,0x4d));
+row++;rowOffset+=2;
+}while(row<(s32)M2C_FIELD(list,u8 *,0x4d));
 }
 
 void func_020c0c9c(void *arg0,u8 *arg1) {
@@ -504,21 +507,19 @@ void func_020c1078(void) {
 #pragma push
 #pragma opt_strength_reduction off
 void *func_020c10a4(s32 x,s32 y,s32 flag){
-extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 gPlayerColorIndex;extern u16 data_02129728[],gTileGfxRowOffset[],gPreviewTileGfx[];
-MapC10 *p;u32 idx; s32 k,n,v;
-if(x>=0 && y>=0){
-p=*(void**)data_027e0058;
-if(x<p->width&&y<p->height)goto valid;
-}
+extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
+MapC10 *p;u32 idx; s32 k,n,v;u8 *tiles;
+if(x>=0 && y>=0){p=*(void **)data_027e0058;if(x<p->width&&y<p->height)goto valid;}
 return data_02163f9c;
 valid:
+tiles=p->tiles;
 idx=x+p->rows[y];
-{u8 *tiles=p->tiles; v=tiles[idx];}
-n=v&31;k=((u8*)&gPlayerColorIndex)[v>>5];
-if(flag && (u8)(p->visible[(u32)idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0;}
+v=*(tiles+idx);
+n=v&31;k=((u8 *)&data_0216408c)[v>>5];
+if(flag && (u8)(p->visible[idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0;}
 v=data_02129728[n];
 if(n==27 || (u32)n==28)k=0;
-return &gPreviewTileGfx[gTileGfxRowOffset[v+k]];
+return &data_0211e538[data_021296e8[v+k]];
 }
 #pragma pop
 void func_020c1184(void *arg0) {

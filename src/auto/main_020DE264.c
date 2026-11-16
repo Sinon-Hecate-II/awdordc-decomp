@@ -356,9 +356,9 @@ void func_020debe4(M2C_UNK arg0) {
 
 #pragma opt_strength_reduction off
 void func_020debf4(void *self){void MenuSpriteUpdate(void*);
- int func_0208b5ec(void);
+ int FindTextLayer(void);
  void func_0208af20(void);
-void *func_0208b564(void*);
+void *CreateTextLayer(void*);
 void func_020899cc(void*,int,int,u32);
 void DisableMapConfirm(void);
 void func_01ffa6fc(void*);
@@ -400,7 +400,7 @@ keys=M2C_FIELD(gKeyState,u16 *,0);
 M2C_FIELD(self,u16 *,0x48)=M2C_FIELD(self,u16 *,0x48)&~0x20U;
 
 if(!(M2C_FIELD(self,u16 *,0x48)&1)){
-if(M2C_FIELD(self,u16 *,0x48)&0x100){if(func_0208b5ec())func_0208af20();
+if(M2C_FIELD(self,u16 *,0x48)&0x100){if(FindTextLayer())func_0208af20();
 old=gCur3DSpriteEngine;
 for(i=0;
 i<2;
@@ -412,7 +412,7 @@ if(M2C_FIELD(self,u8 *,0x44)==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)contin
 
 if(M2C_FIELD(self,u8 *,0x44)==3 && gCur3DSpriteEngine!=old)continue;
 
-p=func_0208b564(self);
+p=CreateTextLayer(self);
 func_020899cc(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000001);
 M2C_FIELD(p,u32 *,0x58)|=0x1000;
 
@@ -421,7 +421,7 @@ DisableMapConfirm();
 func_01ffa6fc(self);
 return;
 }
-else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(func_0208b5ec())func_0208af20();
+else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(FindTextLayer())func_0208af20();
 old=gCur3DSpriteEngine;
 for(i2=0;
 i2<2;
@@ -433,7 +433,7 @@ if(M2C_FIELD(self,u8 *,0x44)==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)contin
 
 if(M2C_FIELD(self,u8 *,0x44)==3 && gCur3DSpriteEngine!=old)continue;
 
-p=func_0208b564(self);
+p=CreateTextLayer(self);
 func_020899cc(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000002);
 M2C_FIELD(p,u32 *,0x58)|=0x1000;
 

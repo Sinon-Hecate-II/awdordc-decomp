@@ -1,11 +1,12 @@
 /* 30 functions from 0x0222A9DC to 0x0222B9DC (ov010), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 /* Draws the entity's cursor in the style that fits the current situation, on the display banks
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK SetSpriteAnimation(void *,s32);M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK func_0208ae88(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK SetSpriteAnimation(void *,s32);M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK func_0208ae88(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -16,7 +17,7 @@ gCur3DSpriteEngine=bank;mode=M2C_FIELD(arg0,s8 *,0x35);
 if(mode==0&&bank!=g3DSpriteEngineMain)continue;
 if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
-created=func_0208b564(arg0);func_020899cc(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000013);
+created=CreateTextLayer(arg0);func_020899cc(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000013);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
 }while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,8);return;}
@@ -29,7 +30,7 @@ gCur3DSpriteEngine=bank;mode=M2C_FIELD(arg0,s8 *,0x35);
 if(mode==0&&bank!=g3DSpriteEngineMain)continue;
 if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
-created=func_0208b564(arg0);func_020899cc(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000015);
+created=CreateTextLayer(arg0);func_020899cc(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000015);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 func_0208ae88(created,1);
 }while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,10);return;}
@@ -41,7 +42,7 @@ gCur3DSpriteEngine=bank;mode=M2C_FIELD(arg0,s8 *,0x35);
 if(mode==0&&bank!=g3DSpriteEngineMain)continue;
 if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
-created=func_0208b564(arg0);func_020899cc(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000017);
+created=CreateTextLayer(arg0);func_020899cc(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000017);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
 }while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,12);return;}
@@ -53,12 +54,15 @@ gCur3DSpriteEngine=bank;mode=M2C_FIELD(arg0,s8 *,0x35);
 if(mode==0&&bank!=g3DSpriteEngineMain)continue;
 if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
-created=func_0208b564(arg0);func_020899cc(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000014);
+created=CreateTextLayer(arg0);func_020899cc(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000014);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 func_0208ae88(created,0);
 }while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,9);
 }
 
+/* Settles one text layer on a display bank: creates the layer's label with the chosen
+   value and bank (func_ov010_0222a808) and drops out of the message queue, or switches
+   back to the layer's idle animation.  Ignored while another message is showing. */
 void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_020abe90(M2C_UNK);
     s32 func_020ad3f0(void);
@@ -155,7 +159,7 @@ void func_ov010_0222af9c(void *arg0) {
     if (func_ov010_02229ef4(arg0 + 0x38, 1, 0, arg0 + 0x3C, arg0 + 0x40) != 0) {
         return;
     }
-    if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (func_0208b5ec() != 0)) {
+    if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (FindTextLayer() != 0)) {
         func_0208af20();
     }
     if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
@@ -167,12 +171,12 @@ void func_ov010_0222af9c(void *arg0) {
 
 void func_ov010_0222b01c(void *arg0) {
     M2C_UNK func_0208af20();
-    s32 func_0208b5ec();
+    s32 FindTextLayer();
     s32 func_ov010_02229f64();
     if (func_ov010_02229f64() != 0) {
         return;
     }
-    if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (func_0208b5ec() != 0)) {
+    if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (FindTextLayer() != 0)) {
         func_0208af20();
     }
     if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
@@ -225,10 +229,10 @@ void func_ov010_0222b11c(M2C_UNK arg0) {
 
 /* Refresh the entity's sprite on the selected display banks, then queue command 19. */
 void func_ov010_0222b140(void *entity) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
-if(M2C_FIELD(entity,s8 *,0x35)>=0&&func_0208b5ec())func_0208af20();
+if(M2C_FIELD(entity,s8 *,0x35)>=0&&FindTextLayer())func_0208af20();
 if(M2C_FIELD(entity,s8 *,0x35)>=0){
 savedBank=gCur3DSpriteEngine;i=0;
 do {
@@ -237,7 +241,7 @@ gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,0x35);
 if(mode==0&&bank!=g3DSpriteEngineMain)continue;
 if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
-created=func_0208b564(entity);
+created=CreateTextLayer(entity);
 func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x36)<<5,0x4200001f);
 M2C_FIELD(created,s32 *,0x58)|=0x1000;
 }while(++i<2);
@@ -269,9 +273,9 @@ SetSpriteAnimation((s32)arg0,7);
 
 /* Creates a draw entry in both active banks when the entity's bank selector allows. */
 void func_ov010_0222b314(void *entity) {
-    s32 func_02037c90();
+    s32 GetLastNasError();
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
-    void *func_0208b564(void *);
+    void *CreateTextLayer(void *);
     M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -282,7 +286,7 @@ void func_ov010_0222b314(void *entity) {
     s8 mode;
     s32 savedBank;
 
-    if ((func_02037c90() == 2) || (M2C_FIELD(entity, s8 *, 0x3C) != 0)) {
+    if ((GetLastNasError() == 2) || (M2C_FIELD(entity, s8 *, 0x3C) != 0)) {
         if ((s32) M2C_FIELD(entity, s8 *, 0x35) >= 0) {
             savedBank = gCur3DSpriteEngine;
             for (i = 0; i < 2; ++i) {
@@ -302,7 +306,7 @@ void func_ov010_0222b314(void *entity) {
                 if (mode == 3 && bank != savedBank) {
                     continue;
                 }
-                created = func_0208b564(entity);
+                created = CreateTextLayer(entity);
                 func_020899cc(created, 2, M2C_FIELD(entity, u16 *, 0x36) << 5, 0x4200001C);
                 M2C_FIELD(created, s32 *, 0x58) = (s32) (M2C_FIELD(created, s32 *, 0x58) | 0x1000);
             }
@@ -318,8 +322,12 @@ void func_ov010_0222b414(void) {
 
 }
 
-void func_ov010_0222b418(void *arg0) {
-    void *func_0208b564(void *);
+/* Unlocks the map Start button: once the map confirm flag is on, the text layer draws
+   its "go" label, refreshes that label on the display banks the layer selects (one call
+   per bank: the message id starts at 0x42000017), and moves on to the animation that
+   follows it. */
+void func_ov010_0222b418(void *layer) {
+    void *CreateTextLayer(void *);
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
     s8 temp_r1;
@@ -330,96 +338,105 @@ void func_ov010_0222b418(void *arg0) {
 
     if (IsMapConfirmEnabled() != 0) {
         func_020c4a74(0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8)(M2C_FIELD(arg0, u8 *, 0x34) | 1u);
-        SetSpriteAnimation(arg0, 3);
+        M2C_FIELD(layer, u8 *, TEXT_LAYER_FLAGS) = (u8)(M2C_FIELD(layer, u8 *, TEXT_LAYER_FLAGS) | TEXT_LAYER_FLAG_CONFIRMED);
+        SetSpriteAnimation(layer, 3);
         return;
     }
 
-    if (M2C_FIELD(arg0, s8 *, 0x35) >= 0) {
+    if (M2C_FIELD(layer, s8 *, TEXT_LAYER_ENGINE) >= 0) {
         temp_r9 = gCur3DSpriteEngine;
         var_r8 = 0;
         do {
             if (var_r8 == 0) var_r2 = g3DSpriteEngineMain;
             else var_r2 = g3DSpriteEngineSub;
             gCur3DSpriteEngine = var_r2;
-            temp_r1 = M2C_FIELD(arg0, s8 *, 0x35);
+            temp_r1 = M2C_FIELD(layer, s8 *, TEXT_LAYER_ENGINE);
             if (temp_r1 == 0 && var_r2 != g3DSpriteEngineMain) continue;
             if (temp_r1 == 1 && var_r2 != g3DSpriteEngineSub) continue;
             if (temp_r1 == 3 && var_r2 != temp_r9) continue;
-            temp_r0 = func_0208b564(arg0);
-            func_020899cc(temp_r0, 2, (s32)M2C_FIELD(arg0, u16 *, 0x36) << 5, 0x42000017);
+            temp_r0 = CreateTextLayer(layer);
+            func_020899cc(temp_r0, 2, (s32)M2C_FIELD(layer, u16 *, TEXT_LAYER_VALUE) << 5, 0x42000017);
             M2C_FIELD(temp_r0, s32 *, 0x58) = (s32)(M2C_FIELD(temp_r0, s32 *, 0x58) | 0x1000);
         } while (++var_r8 < 2);
         gCur3DSpriteEngine = temp_r9;
     }
 
-    SetSpriteAnimation(arg0, 0xC);
+    SetSpriteAnimation(layer, 0xC);
 }
 
-void func_ov010_0222b520(void *arg0) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK SetSpriteAnimation(s32,s32);M2C_UNK func_0208ae88(void *,s32);
+/* Draws the "chosen" label of the entity on the display banks the entity asks
+ * for (0 = main engine, 1 = sub engine, 3 = the active engine) and moves the
+ * entity to animation 14. */
+void func_ov010_0222b520(void *entity) {
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetSpriteAnimation(s32,s32);M2C_UNK func_0208ae88(void *,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-s32 old;u32 current;s32 i;s8 mode;void *p;
-if(M2C_FIELD(arg0,s8 *,0x35)>=0){
-old=gCur3DSpriteEngine;i=0;
+s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
+if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
+savedBank=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
-gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
-if(mode==0&&current!=g3DSpriteEngineMain)continue;
-if(mode==1&&current!=g3DSpriteEngineSub)continue;
-if(mode==3&&current!=old)continue;
-p=func_0208b564(arg0);
-func_020899cc(p,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x4200001a);
-M2C_FIELD(p,s32 *,0x58)|=0x1000;
-func_0208ae88(p,1);
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
+gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE);
+if(mode==0&&bank!=g3DSpriteEngineMain)continue;
+if(mode==1&&bank!=g3DSpriteEngineSub)continue;
+if(mode==3&&bank!=savedBank)continue;
+created=CreateTextLayer(entity);
+func_020899cc(created,3,M2C_FIELD(entity,u16 *,TEXT_LAYER_VALUE)<<5,0x4200001a);
+M2C_FIELD(created,s32 *,0x58)|=0x1000;
+func_0208ae88(created,1);
 }while(++i<2);
-gCur3DSpriteEngine=old;
+gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)arg0,14);
+SetSpriteAnimation((s32)entity,14);
 }
 
-void func_ov010_0222b604(void *arg0) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);
+/* Show the "map confirm" prompt for the entity: with the confirm prompt enabled, draw the
+   prompt label on the display bank the entity asks for (0 = main, 1 = sub, 3 = the active
+   engine); otherwise play the entity's cancel animation. */
+void func_ov010_0222b604(void *entity) {
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-s32 old;u32 current;s32 i;s8 mode;void *p;
+s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(IsMapConfirmEnabled()){
-if(M2C_FIELD(arg0,s8 *,0x35)<0)return;
-old=gCur3DSpriteEngine;i=0;
+if(M2C_FIELD(entity,s8 *,0x35)<0)return;
+savedBank=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
-gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
-if(mode==0&&current!=g3DSpriteEngineMain)continue;
-if(mode==1&&current!=g3DSpriteEngineSub)continue;
-if(mode==3&&current!=old)continue;
-p=func_0208b564(arg0);
-func_020899cc(p,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000019);
-M2C_FIELD(p,s32 *,0x58)|=0x1000;
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
+gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,0x35);
+if(mode==0&&bank!=g3DSpriteEngineMain)continue;
+if(mode==1&&bank!=g3DSpriteEngineSub)continue;
+if(mode==3&&bank!=savedBank)continue;
+created=CreateTextLayer(entity);
+func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x36)<<5,0x42000019);
+M2C_FIELD(created,s32 *,0x58)|=0x1000;
 }while(++i<2);
-gCur3DSpriteEngine=old;return;
+gCur3DSpriteEngine=savedBank;return;
 }
-SetSpriteAnimation((s32)arg0,1);
+SetSpriteAnimation((s32)entity,1);
 }
 
-void func_ov010_0222b6ec(void *arg0) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);
+/* Draws the entity's "decided" label on the display banks the entity asks for
+ * (0 = main engine, 1 = sub engine, 3 = the active engine) and moves the entity
+ * to animation 13. */
+void func_ov010_0222b6ec(void *entity) {
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-s32 old;u32 current;s32 i;s8 mode;void *p;
-if(M2C_FIELD(arg0,s8 *,0x35)>=0){
-old=gCur3DSpriteEngine;i=0;
+s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
+if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
+savedBank=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
-gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
-if(mode==0&&current!=g3DSpriteEngineMain)continue;
-if(mode==1&&current!=g3DSpriteEngineSub)continue;
-if(mode==3&&current!=old)continue;
-p=func_0208b564(arg0);
-func_020899cc(p,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000018);
-M2C_FIELD(p,s32 *,0x58)|=0x1000;
-func_0208ae88(p,1);
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
+gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE);
+if(mode==0&&bank!=g3DSpriteEngineMain)continue;
+if(mode==1&&bank!=g3DSpriteEngineSub)continue;
+if(mode==3&&bank!=savedBank)continue;
+created=CreateTextLayer(entity);
+func_020899cc(created,3,M2C_FIELD(entity,u16 *,TEXT_LAYER_VALUE)<<5,0x42000018);
+M2C_FIELD(created,s32 *,0x58)|=0x1000;
+func_0208ae88(created,1);
 }while(++i<2);
-gCur3DSpriteEngine=old;
+gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)arg0,13);
+SetSpriteAnimation((s32)entity,13);
 }
 
 void func_ov010_0222b7d0(M2C_UNK arg0) {
@@ -427,7 +444,7 @@ void func_ov010_0222b7d0(M2C_UNK arg0) {
 }
 
 void func_ov010_0222b7e0(void *arg0) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 old;u32 current;s32 i;s8 mode;void *p;
 if(M2C_FIELD(arg0,s8 *,0x35)<0)return;
@@ -438,7 +455,7 @@ gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
 if(mode==0&&current!=g3DSpriteEngineMain)continue;
 if(mode==1&&current!=g3DSpriteEngineSub)continue;
 if(mode==3&&current!=old)continue;
-p=func_0208b564(arg0);
+p=CreateTextLayer(arg0);
 func_020899cc(p,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000016);
 M2C_FIELD(p,s32 *,0x58)|=0x1000;
 }while(++i<2);

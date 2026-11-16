@@ -170,9 +170,9 @@ s32 SBServerGetIntValue(void *arg0,s32 arg1,s32 arg2){
 }
 
 double func_02060c10(void *arg0,s32 arg1,double arg2){
- double func_0206a374(s32);
+ double atof(s32);
  s32 p=SBServerGetStringValue(arg0,arg1,0);
- if(p)arg2=func_0206a374(p);
+ if(p)arg2=atof(p);
  return arg2;
 }
 

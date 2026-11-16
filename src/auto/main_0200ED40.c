@@ -429,11 +429,14 @@ s64 MakeTime(void *arg0, void *arg1) {
     if(seconds==-1) return -1;
     return (s64)days*86400LL+seconds;
 }
-void func_0200f844(void *arg0, s32 arg1) {
-    extern s32 data_020f550c[];
-    s32 d = arg1;
+/* Convert a count of days since 2000/01/01 into the RTC date record: year at
+ * +0, month at +4, day at +8 and weekday (0 = Sunday) at +0xC.  The count is
+ * clamped to 99 years and 365 days; leap years have 366 days. */
+void RtcDaysToDate(void *date, s32 days) {
+    extern s32 gMonthDayTable[];
+    s32 d = days;
     u32 years;
-    s32 m;
+    s32 month;
     s32 r;
 
     if (d < 0) {
@@ -442,7 +445,7 @@ void func_0200f844(void *arg0, s32 arg1) {
     if (d > 0x8EAC) {
         d = 0x8EAC;
     }
-    M2C_FIELD(arg0, s32 *, 0xC) = (d + 6) % 7;
+    M2C_FIELD(date, s32 *, 0xC) = (d + 6) % 7;
     for (years=0;;) {
         s32 saved;
         s32 sub;
@@ -462,30 +465,30 @@ void func_0200f844(void *arg0, s32 arg1) {
             break;
         }
     }
-    M2C_FIELD(arg0, u32 *, 0) = (u32)years;
+    M2C_FIELD(date, u32 *, 0) = (u32)years;
     if (d > 0x16D) {
         d = 0x16D;
     }
     if (!(years & 3)) {
         if (d < 0x3C) {
             if (d < 0x1F) {
-                m = 1;
+                month = 1;
             } else {
                 d -= 0x1F;
-                m = 2;
+                month = 2;
             }
-            M2C_FIELD(arg0, s32 *, 4) = m;
-            M2C_FIELD(arg0, s32 *, 8) = d + 1;
+            M2C_FIELD(date, s32 *, 4) = month;
+            M2C_FIELD(date, s32 *, 8) = d + 1;
             return;
         }
         d -= 1;
     }
     r = 0xB;
     while (1) {
-        if (d >= data_020f550c[r]) {
-            M2C_FIELD(arg0, s32 *, 4) = r + 1;
-            d -= *(volatile s32 *)&data_020f550c[r];
-            M2C_FIELD(arg0, s32 *, 8) = d + 1;
+        if (d >= gMonthDayTable[r]) {
+            M2C_FIELD(date, s32 *, 4) = r + 1;
+            d -= *(volatile s32 *)&gMonthDayTable[r];
+            M2C_FIELD(date, s32 *, 8) = d + 1;
             return;
         }
         r--;
@@ -506,11 +509,11 @@ void func_0200f944(s32 *arg0,s32 arg1) {
 }
 
 void func_0200f9c4(void *arg0,s32 *arg1,long long time) {
-void func_0200f844(void *,s32);
+void RtcDaysToDate(void *,s32);
 if(time<0) time=0;
 else if(time>3155759999LL) time=3155759999LL;
 func_0200f944(arg1,time%86400);
-func_0200f844(arg0,time/86400);
+RtcDaysToDate(arg0,time/86400);
 }
 
 #pragma opt_instruction_scheduling off

@@ -2,7 +2,7 @@
 #include "common.h"
 #include "scan_spec.h"
 extern const u16 gCharClassTable[];
-extern u32 data_021002ec;
+extern u32 gFloatNanBits;
 static inline s32 ScanOutside67cb0(s32 c) { s32 outside=1; if(c>=0 && c<128)outside=0; return outside; }
 static inline s32 ScanSpace67cb0(s32 c) {return ScanOutside67cb0(c)?0:gCharClassTable[c]&0x100;}
 
@@ -10,7 +10,7 @@ static inline s32 ScanSpace67cb0(s32 c) {return ScanOutside67cb0(c)?0:gCharClass
 char *ParseScanConversion(char *,ScanSpec677b8 *);
 u32 func_0206a384(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 u64 func_0206a76c(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
-f64 func_02069048(int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *);
+f64 ScanFloatStrtod(int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *);
 f64 func_0207191c(f32);
 f32 func_0207044c(f64);
 int func_02065020(void *,const char *,int);
@@ -107,12 +107,12 @@ if(!failed)assigned++;conversions++;
 }
 break;
 case 'a':case 'A':case 'e':case 'E':case 'f':case 'F':case 'g':case 'G':
-if(failed)real=func_0207191c(*(f32 *)&data_021002ec);
+if(failed)real=func_0207191c(*(f32 *)&gFloatNanBits);
 else{
-real=func_02069048(spec.width,get,ctx,&used,&overflow);
+real=ScanFloatStrtod(spec.width,get,ctx,&used,&overflow);
 if(used==0){
 if(!safe)goto done;
-failed=1;real=func_0207191c(*(f32 *)&data_021002ec);
+failed=1;real=func_0207191c(*(f32 *)&gFloatNanBits);
 }else nread+=used;
 }
 if(dst){
@@ -216,7 +216,7 @@ if(get(ctx,0,2) && !conversions)return -1;
 return assigned;
 }
 #pragma optimize_for_size off
-s32 func_02068a04(void *arg0, s32 arg1, s32 arg2) {
+s32 ScanFloatStreamRead(void *arg0, s32 arg1, s32 arg2) {
     s8 *temp_r1;
     s8 temp_r2;
 
@@ -243,13 +243,13 @@ s32 func_02068a04(void *arg0, s32 arg1, s32 arg2) {
 }
 #pragma optimize_for_size reset
 s32 func_02068a88(s8 *arg0, s32 arg1, s32 arg2) {
-    s32 func_02068a04(void *, s32, s32);
+    s32 ScanFloatStreamRead(void *, s32, s32);
     s32 func_02067cb0(s32 (*)(void *, s32, s32), void *, s32, s32, s32);
     struct { s8 *ptr; s32 eof; } state;
     state.ptr = arg0;
     if (arg0 == NULL || *arg0 == 0) return -1;
     state.eof = 0;
-    return func_02067cb0(func_02068a04, &state, arg1, arg2, 0);
+    return func_02067cb0(ScanFloatStreamRead, &state, arg1, arg2, 0);
 }
 
 void StringScanf(s32 arg0, s32 arg1, ...) {

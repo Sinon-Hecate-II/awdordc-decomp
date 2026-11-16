@@ -220,13 +220,13 @@ s32 func_ov003_021f2a9c(s32 entry) {
 s32 func_ov003_021f2b88(s32 a) {
     s32 IsLinkSessionActive(void);
     s32 func_0208b5a8(void);
-    s32 func_0208b564(s32);
+    s32 CreateTextLayer(s32);
     void func_020899cc(s32,s32,s32,u32);
     if(!IsLinkSessionActive()) return 0;
     if(M2C_FIELD(a,u8 *,0x45)) return 0;
     if(!M2C_FIELD(a,u8 *,0x46)) return 0;
     if(func_0208b5a8()) return 0;
-    func_020899cc(func_0208b564(a),2,0xdc00,0x44000001);
+    func_020899cc(CreateTextLayer(a),2,0xdc00,0x44000001);
     return 1;
 }
 

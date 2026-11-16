@@ -50,7 +50,7 @@ typedef struct BattleMapUnit {
      u16 flags;    /* +0x04 per-unit flags, UNIT_FLAG_* */
      u16 health:7; /* +0x06 current HP (MAP_UNIT_HEALTH) */
      u16 ammo:4;   /* +0x06 ammo in bits 7..10 (MAP_UNIT_AMMO) */
-     u16 facing:5; /* +0x06 facing direction in bits 11..15 (MAP_UNIT_FACING) */
+     u16 facing:5; /* +0x06 capture points in bits 11..15, 0 when not capturing (MAP_UNIT_CAPTURE) */
      u16 targetX:6;    /* +0x08 AI move target x, MAP_UNIT_TARGET_NONE when unset */
      u16 targetY:6;    /* +0x08 AI move target y in bits 6..11 */
      u16 unk8_12:2;    /* +0x08+12 */
@@ -268,11 +268,12 @@ typedef struct MapSettings {
 #define MAP_UNIT_FLAGS      0x04 /* u16 per-unit flags */
 #define MAP_UNIT_HEALTH     0x06 /* u16 health in the low seven bits */
 #define MAP_UNIT_AMMO       0x06 /* u16: ammo in bits 7..10 (health in bits 0..6) */
-#define MAP_UNIT_FACING     0x06 /* u16: facing direction in bits 11..15, nonzero once the unit is placed */
+#define MAP_UNIT_CAPTURE    0x06 /* u16: capture points in bits 11..15, 0 when the unit is not capturing (20 finishes it) */
 #define MAP_UNIT_FUEL       0x0A /* u8 fuel in the low seven bits */
 #define MAP_UNIT_CARRIED    0x0C /* u8 first carried unit, 0 if none */
 #define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
 #define MAP_UNIT_TARGET     0x08 /* u16 packed AI move target: x in low six bits, y in bits 6..11 */
+#define MAP_UNIT_NEED_STATE 0x08 /* u16: resupply/repair need in bits 12..13 (0 none, 1 resupply, 2 repair) */
 #define MAP_UNIT_TARGET_NONE 0x3F /* a target coordinate of 0x3f means "no target" */
 #define MAP_UNIT_TARGET_X_MASK 0x003F /* low six bits of MAP_UNIT_TARGET: target x */
 #define MAP_UNIT_TARGET_Y_MASK 0x0FC0 /* bits 6..11 of MAP_UNIT_TARGET: target y */
@@ -327,6 +328,7 @@ typedef struct MapTargetEntry {
 #define MAP_CONFIRM_ENABLED 0x52ad /* u8 nonzero while the current map/choice is confirmed (IsMapConfirmEnabled) */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_TARGET_Y 0x52c4
+#define MAP_TILE_SIZE 768 /* 3 * 256: one map tile's on-screen size in pixels */
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
 #define MAP_TOUCH_TILE_Y    0x52cc
 #define MAP_TILE_SUBPIXEL   0x300  /* map-position units per tile, from ScreenToMapPosition */
@@ -342,6 +344,7 @@ typedef struct MapTargetEntry {
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
 #define PLAYER_REC_SIDE    0x1F /* u8 SIDE_*, within a record */
+#define PLAYER_REC_CROSS_ALL 0x1F /* u8 bits: terrain the player's units may enter regardless of movement type */
 #define PLAYER_REC_ARMY    0x26 /* u8 army (nation) id, within a record */
 #define PLAYER_REC_ARMY_INDEX 0x1D /* u8 1-based army index that picks its colour */
 #define PLAYER_REC_ARMY_STATE 0x27 /* u8 per-player army state shown by the army info window */
@@ -461,6 +464,11 @@ typedef struct MapRecordHeader {
 #define MAP_RECORD_SIZE        0x6F8 /* expanded runtime record */
 #define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */
 #define MAP_RECORD_UNITS       0x3D8 /* packed unit entries in the runtime record */
+#define MAP_RECORD_PLAYER_COUNT 0x27 /* u8; a map-selection slot holding 0 is empty */
+
+/* A map-selection list: five runtime map records held one after another. */
+#define MAP_RECORD_LIST_COUNT 5
+#define MAP_RECORD_LIST_SIZE  0x22D8 /* MAP_RECORD_LIST_COUNT * MAP_RECORD_SIZE */
 
 /* The task that fades the battle map in when the map view opens: MapFadeInStep
  * (main_020CBACC.c) bumps fadeTimer each frame while the map is drawn. */

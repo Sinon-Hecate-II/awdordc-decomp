@@ -14,14 +14,14 @@ void func_020be718(void *arg0) {
     extern M2C_UNK data_0215d9d0;
     extern M2C_UNK data_0215d9e0;
     extern M2C_UNK data_0215d9ec;
-    extern M2C_UNK data_0215da0c;
+    extern M2C_UNK gMapSettings;
     extern M2C_UNK gCoUnlocked;
     extern M2C_UNK gRecordValues;
     extern M2C_UNK data_0215dba4;
     extern M2C_UNK data_0215771c;
     extern M2C_UNK data_02157724;
     extern M2C_UNK data_02157734;
-    extern M2C_UNK data_0215773c;
+    extern M2C_UNK gListRowFlags;
     extern M2C_UNK data_02157744;
     extern M2C_UNK data_02157767;
     extern M2C_UNK data_0215778a;
@@ -60,7 +60,7 @@ void func_020be718(void *arg0) {
         for (i=0;i<8;i++) r8[i] = r9[i];
     }
     {
-        M2C_UNK *r7 = &data_0215da0c;
+        M2C_UNK *r7 = &gMapSettings;
         M2C_UNK *r6 = (M2C_UNK *)((u8 *)arg0 + 0xec);
         int i;
         for (i=0;i<4;i++) r6[i] = r7[i];
@@ -114,7 +114,7 @@ void func_020be718(void *arg0) {
     }
     {
         u8 *dst = (u8 *)arg0 + 0x20;
-        u8 *src = (u8 *)&data_0215773c;
+        u8 *src = (u8 *)&gListRowFlags;
         int i;
         for (i=0;i<4;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
     }
@@ -153,14 +153,14 @@ void func_020beabc(M2C_UNK *arg0) {
     extern M2C_UNK data_0215d9c0;
     extern M2C_UNK data_0215d9e0;
     extern M2C_UNK data_0215d9ec;
-    extern M2C_UNK data_0215da0c;
+    extern M2C_UNK gMapSettings;
     extern M2C_UNK gCoUnlocked;
     extern M2C_UNK gRecordValues;
     extern M2C_UNK data_0215dba4;
     extern M2C_UNK data_0215771c;
     extern M2C_UNK data_02157724;
     extern M2C_UNK data_02157734;
-    extern M2C_UNK data_0215773c;
+    extern M2C_UNK gListRowFlags;
     extern M2C_UNK data_02157744;
     extern M2C_UNK data_02157767;
     extern M2C_UNK data_0215778a;
@@ -196,7 +196,7 @@ void func_020beabc(M2C_UNK *arg0) {
     }
     {
         u32 *s = (u32 *)(p + 0xcc);
-        u32 *d = (u32 *)&data_0215da0c;
+        u32 *d = (u32 *)&gMapSettings;
         s32 i;
         for (i = 8; i; i--) *d++ = *s++;
     }
@@ -287,7 +287,7 @@ void func_020beabc(M2C_UNK *arg0) {
     }
     {
         u8 *s = p + 0x18;
-        u8 *d = (u8 *)&data_0215773c;
+        u8 *d = (u8 *)&gListRowFlags;
         s32 i;
         for (i = 4; i; i--) {
             *d++ = *s++;

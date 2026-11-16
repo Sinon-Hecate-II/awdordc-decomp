@@ -3,8 +3,8 @@
 #include "battle_map.h"
 typedef struct MapEffectParticle { u16 x, y, dx, dy, sprite, unkA; } MapEffectParticle;
 static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
- void func_01ff90e4(u8,u8,s32,void *);extern u8 data_021204a4[];
- func_01ff90e4(x,(u8)((p->y>>8)-M2C_FIELD(map,s16 *,0x514a)),0,data_021204a4+p->sprite*8);
+ void DS3D_AddSpriteQuad(u8,u8,s32,void *);extern u8 data_021204a4[];
+ DS3D_AddSpriteQuad(x,(u8)((p->y>>8)-M2C_FIELD(map,s16 *,0x514a)),0,data_021204a4+p->sprite*8);
 }
 
 typedef struct { u8 x,y; u16 width:3; u16 height:3; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020ADimEntryTop;
@@ -182,32 +182,100 @@ M2C_FIELD(*gCurrentMap,u8 *,0x5159)=0;
 
 #pragma push
 #pragma opt_instruction_scheduling on
-void func_020a4154(void) {
-void func_01ff90e4(u8,u8,s32,void *); extern u8 data_021204a4[];extern s32 *gCurrentMap;extern s32 data_027e15c0;
-s16 i=0; s32 offset=0;void *p,*q;s32 drawOffset,end;u32 j;s16 next;
-do {p=M2C_FIELD(gCurrentMap,void **,12);i++;M2C_FIELD(p,u16 *,offset)+=M2C_FIELD((u8 *)p+offset,u16 *,4);q=(u8 *)M2C_FIELD(gCurrentMap,void **,12)+offset;offset+=12;M2C_FIELD(q,u16 *,2)+=M2C_FIELD(q,u16 *,6);}while(i<32);
-j=(u32)(data_027e15c0<<31)>>27;end=j+16;if(end<=(s32)j)return;drawOffset=(s16)j*12;
-do {p=(u8 *)M2C_FIELD(gCurrentMap,void **,12)+drawOffset;q=M2C_FIELD(gCurrentMap,void **,0);
-{u16 x=M2C_FIELD(p,volatile u16 *,0);s16 mx=M2C_FIELD(q,volatile s16 *,0x5148);u16 idx=M2C_FIELD(p,volatile u16 *,8);
-func_01ff90e4((u8)((x>>8)-mx),(u8)((M2C_FIELD(p,u16 *,2)>>8)-M2C_FIELD(q,s16 *,0x514a)),0,data_021204a4+idx*8);}
-next=j+1;drawOffset+=12;j=next;}while(end>(s32)j);
+/* Rain pass, drawn through the effect sprite engine: advance the off-screen
+ * weather particles (16 of the 32 by turn) and draw them as rain sprites. */
+void DrawRainParticles(void) {
+    void DS3D_AddSpriteQuad(u8, u8, s32, void *);
+    extern u8 data_021204a4[];
+    extern s32 *gCurrentMap;
+    extern s32 data_027e15c0;
+    s16 particle = 0;
+    s32 offset = 0;
+    void *p;
+    void *q;
+    s32 drawOffset;
+    s32 end;
+    u32 first;
+    s16 next;
+
+    do {
+        p = M2C_FIELD(gCurrentMap, void **, 12);
+        particle++;
+        M2C_FIELD(p, u16 *, offset) += M2C_FIELD((u8 *)p + offset, u16 *, 4);
+        q = (u8 *)M2C_FIELD(gCurrentMap, void **, 12) + offset;
+        offset += 12;
+        M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
+    } while (particle < 32);
+    first = (u32)(data_027e15c0 << 31) >> 27;
+    end = first + 16;
+    if (end <= (s32)first) return;
+    drawOffset = (s16)first * 12;
+    do {
+        p = (u8 *)M2C_FIELD(gCurrentMap, void **, 12) + drawOffset;
+        q = M2C_FIELD(gCurrentMap, void **, 0);
+        {
+            u16 x = M2C_FIELD(p, volatile u16 *, 0);
+            s16 mx = M2C_FIELD(q, volatile s16 *, 0x5148);
+            u16 sprite = M2C_FIELD(p, volatile u16 *, 8);
+            DS3D_AddSpriteQuad((u8)((x >> 8) - mx),
+                          (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514a)),
+                          0, data_021204a4 + sprite * 8);
+        }
+        next = first + 1;
+        drawOffset += 12;
+        first = next;
+    } while (end > (s32)first);
 }
 
 #pragma push
 #pragma opt_instruction_scheduling on
-void func_020a4250(void) {
-void func_01ff90e4(u8,u8,s32,void *); extern u8 data_021204bc[];extern s32 *data_027e0058;extern s32 data_027e15c0;
-s16 i=0; s32 offset=0;void *p,*q;s32 drawOffset,end;u32 j;s16 next;
-do {p=M2C_FIELD(data_027e0058,void **,12);i++;M2C_FIELD(p,u16 *,offset)+=M2C_FIELD((u8 *)p+offset,u16 *,4);q=(u8 *)M2C_FIELD(data_027e0058,void **,12)+offset;offset+=12;M2C_FIELD(q,u16 *,2)+=M2C_FIELD(q,u16 *,6);}while(i<32);
-j=(u32)(data_027e15c0<<31)>>27;end=j+16;if(end<=(s32)j)return;drawOffset=(s16)j*12;
-do {p=(u8 *)M2C_FIELD(data_027e0058,void **,12)+drawOffset;q=M2C_FIELD(data_027e0058,void **,0);
-{u16 x=M2C_FIELD(p,volatile u16 *,0);s16 mx=M2C_FIELD(q,volatile s16 *,0x5148);u16 idx=M2C_FIELD(p,volatile u16 *,8);
-func_01ff90e4((u8)((x>>8)-mx),(u8)((M2C_FIELD(p,u16 *,2)>>8)-M2C_FIELD(q,s16 *,0x514a)),0,data_021204bc+idx*8);}
-next=j+1;drawOffset+=12;j=next;}while(end>(s32)j);
+/* Snow pass, drawn through the effect sprite engine: advance the off-screen
+ * weather particles (16 of the 32 by turn) and draw them as snow sprites. */
+void DrawSnowParticles(void) {
+    void DS3D_AddSpriteQuad(u8, u8, s32, void *);
+    extern u8 data_021204bc[];
+    extern s32 *data_027e0058;
+    extern s32 data_027e15c0;
+    s16 particle = 0;
+    s32 offset = 0;
+    void *p;
+    void *q;
+    s32 drawOffset;
+    s32 end;
+    u32 first;
+    s16 next;
+
+    do {
+        p = M2C_FIELD(data_027e0058, void **, 12);
+        particle++;
+        M2C_FIELD(p, u16 *, offset) += M2C_FIELD((u8 *)p + offset, u16 *, 4);
+        q = (u8 *)M2C_FIELD(data_027e0058, void **, 12) + offset;
+        offset += 12;
+        M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
+    } while (particle < 32);
+    first = (u32)(data_027e15c0 << 31) >> 27;
+    end = first + 16;
+    if (end <= (s32)first) return;
+    drawOffset = (s16)first * 12;
+    do {
+        p = (u8 *)M2C_FIELD(data_027e0058, void **, 12) + drawOffset;
+        q = M2C_FIELD(data_027e0058, void **, 0);
+        {
+            u16 x = M2C_FIELD(p, volatile u16 *, 0);
+            s16 mx = M2C_FIELD(q, volatile s16 *, 0x5148);
+            u16 sprite = M2C_FIELD(p, volatile u16 *, 8);
+            DS3D_AddSpriteQuad((u8)((x >> 8) - mx),
+                          (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514a)),
+                          0, data_021204bc + sprite * 8);
+        }
+        next = first + 1;
+        drawOffset += 12;
+        first = next;
+    } while (end > (s32)first);
 }
 #pragma pop
 void func_020a434c(void) {
-    void func_01ff90e4(u8, u8, s32, void *);
+    void DS3D_AddSpriteQuad(u8, u8, s32, void *);
     extern u8 data_0212049c[];
     extern s32 *gCurrentMap;
     extern s32 data_027e15c0;
@@ -236,7 +304,7 @@ void func_020a434c(void) {
     do {
         p = (u8 *)M2C_FIELD(gCurrentMap, void **, 0xC) + drawOffset;
         q = M2C_FIELD(gCurrentMap, void **, 0);
-        func_01ff90e4((u8)(((((M2C_FIELD(p, u16 *, 0) >> 8) - (s32)M2C_FIELD(M2C_FIELD(q, void **, 0), s16 *, 0x5148)) & 0xff) - 0x10) & 0x1ff),
+        DS3D_AddSpriteQuad((u8)(((((M2C_FIELD(p, u16 *, 0) >> 8) - (s32)M2C_FIELD(M2C_FIELD(q, void **, 0), s16 *, 0x5148)) & 0xff) - 0x10) & 0x1ff),
                      (u8)(((M2C_FIELD(p, u16 *, 2) >> 8) - (s32)M2C_FIELD(M2C_FIELD(q, void **, 0), s16 *, 0x514A)) & 0xff),
                      0,
                      data_0212049c);
@@ -248,10 +316,10 @@ void func_020a434c(void) {
 
 void func_020a445c(void) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;extern s32 *gCurrentMap;
-void func_020a4250(void);void func_020a434c(void);
+void DrawSnowParticles(void);void func_020a434c(void);
 s32 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-switch(M2C_FIELD(*gCurrentMap,u8 *,0x5158)){case 0:break;case 1:func_020a4154();break;case 2:func_020a4250();break;case 3:func_020a434c();break;}
+switch(M2C_FIELD(*gCurrentMap,u8 *,0x5158)){case 0:break;case 1:DrawRainParticles();break;case 2:DrawSnowParticles();break;case 3:func_020a434c();break;}
 gCur3DSpriteEngine=old;
 }
 

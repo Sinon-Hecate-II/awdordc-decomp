@@ -40,13 +40,13 @@ void func_020cf754(s32 arg0, s32 arg1) {
 
 void func_020cf80c(void) {
     M2C_UNK MoveMapCursorWithKeys();
-    M2C_UNK func_020bcf6c();
+    M2C_UNK UpdateMapCursorFromTouch();
     s32 func_020d4dd0();
     if (func_020d4dd0() == 0) {
         return;
     }
     MoveMapCursorWithKeys();
-    func_020bcf6c();
+    UpdateMapCursorFromTouch();
 }
 
 void func_020cf828(M2C_UNK arg0) {
@@ -84,6 +84,10 @@ u8 func_020cf878(s32 arg0,s32 arg1) {
  return result;
 }
 
+/* Check whether the terrain tile at (arg0, arg1) can be entered by unit kind arg3:
+ * the tile's movement class must be arg2, and the kind must either be an air kind
+ * (15) or be able to enter the tile's own terrain class (17) or, for kinds with
+ * the tracked/booted flags, a road/bridge class (18, 19). */
 u8 func_020cf908(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
 void func_020d0538(void);
 u8 func_020d04d4(s32,s32);

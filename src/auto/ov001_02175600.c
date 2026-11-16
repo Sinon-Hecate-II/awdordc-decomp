@@ -14,7 +14,7 @@ for(i=0;i<4;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218a1cc(((void **)
 for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218a1cc(((void **)ptr)[i+0x10]);}
 for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_ReleaseSprite(((void **)ptr)[i+0xe]);}
 for(i=0;i<10;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_ReleaseSprite(((void **)ptr)[i+4]);}
-func_ov001_0218b71c((void *)0x02193D20);
+Ov001_FreeAlloc((void *)0x02193D20);
 }
 
 /* Prepare the default wireless setup request and start its worker. */

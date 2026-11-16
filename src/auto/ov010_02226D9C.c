@@ -5,20 +5,20 @@ typedef struct { u8 bytes[26]; u16 count0, count1, count2; s8 state0, state1, st
 typedef struct { u8 pad[0x2d4]; Ov010Entry entries[1]; } Ov010State;
 extern unsigned char data_ov010_0222f02c[];
 
-extern M2C_UNK data_ov010_0222eee0;
+extern M2C_UNK gOv010OnlineSession;
 
 static inline void QueuePop26d9c(void *packet){
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
 u32 saved=*(volatile u16 *)0x4000208;u8 *node;
 *(volatile u16 *)0x4000208=0;
-node=M2C_FIELD(&data_ov010_0222eee0,void **,0x60);
+node=M2C_FIELD(&gOv010OnlineSession,void **,0x60);
 if(!node){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return;}
 {Ov010Packet *h=(Ov010Packet *)(node+4);
 func_ov010_0222959c(packet,h->kind,h->channel,h->flags,node+16,M2C_FIELD(node,u32 *,12),M2C_FIELD(node,u16 *,10));}
-{void *next=M2C_FIELD(node,void **,0);M2C_FIELD(&data_ov010_0222eee0,void **,0x60)=next;
-if(!next)M2C_FIELD(&data_ov010_0222eee0,void **,0x64)=0;}
+{void *next=M2C_FIELD(node,void **,0);M2C_FIELD(&gOv010OnlineSession,void **,0x60)=next;
+if(!next)M2C_FIELD(&gOv010OnlineSession,void **,0x64)=0;}
 func_ov010_02226908(0,node,M2C_FIELD(node,u32 *,12)+16);
-M2C_FIELD(&data_ov010_0222eee0,u32 *,0x68)--;
+M2C_FIELD(&gOv010OnlineSession,u32 *,0x68)--;
 {u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}
 }
 
@@ -31,25 +31,25 @@ static inline u32 PacketId26d9c(Ov010Packet *p){Ov010Packet h=*p;return h.id;}
 static inline u32 QueueCount26d9c(void){
 u32 saved=*(volatile u16 *)0x4000208;u32 n;
 *(volatile u16 *)0x4000208=0;
-if(!M2C_FIELD(&data_ov010_0222eee0,void **,0x60)){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
-{u32 old=*(volatile u16 *)0x4000208;n=M2C_FIELD(&data_ov010_0222eee0,u32 *,0x68);*(volatile u16 *)0x4000208=saved;}return n;
+if(!M2C_FIELD(&gOv010OnlineSession,void **,0x60)){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
+{u32 old=*(volatile u16 *)0x4000208;n=M2C_FIELD(&gOv010OnlineSession,u32 *,0x68);*(volatile u16 *)0x4000208=saved;}return n;
 }
 static inline u16 QueueMask26d9c(void){
 u32 saved=*(volatile u16 *)0x4000208;void *p;u16 n;
-*(volatile u16 *)0x4000208=0;p=M2C_FIELD(&data_ov010_0222eee0,void **,0x60);
+*(volatile u16 *)0x4000208=0;p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);
 if(!p){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
 n=M2C_FIELD(p,u16 *,10);{u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}return n;
 }
 static inline u32 QueuePayload26d9c(void){
 u32 saved=*(volatile u16 *)0x4000208;void *p;u32 n;
-*(volatile u16 *)0x4000208=0;p=M2C_FIELD(&data_ov010_0222eee0,void **,0x60);
+*(volatile u16 *)0x4000208=0;p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);
 if(!p){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
 {u32 old=*(volatile u16 *)0x4000208;n=M2C_FIELD(p,u32 *,12);*(volatile u16 *)0x4000208=saved;}return n;
 }
 static inline u32 QueueSize26d9c(void){
 u32 saved=*(volatile u16 *)0x4000208;u32 n;
 *(volatile u16 *)0x4000208=0;
-if(!M2C_FIELD(&data_ov010_0222eee0,void **,0x60)){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
+if(!M2C_FIELD(&gOv010OnlineSession,void **,0x60)){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
 n=QueuePayload26d9c()+12;{u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}return n;
 }
 
@@ -114,7 +114,7 @@ M2C_FIELD(entry,u32 *,8)++;
 void func_ov010_02226d9c(void *a){
 s32 func_ov010_022282b4(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 func_0204428c(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
 void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK func_01ffa6fc(void *);
-extern M2C_UNK data_ov010_0222eee0;
+extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
 if(!func_ov010_022282b4(3))return;
 self=GetOnlineTransportPlayerId();
@@ -154,7 +154,7 @@ func_ov010_0222959c(p,4,h->channel,h->flags,M2C_FIELD(a,void **,0x38),12,h->id);
 M2C_FIELD(a,void **,0x3c)=p;M2C_FIELD(a,u32 *,0x40)=p->size+12;
 }
 }
-{void (*cb)(u16,void *)=M2C_FIELD(&data_ov010_0222eee0,void (**)(u16,void *),0x58);if(cb)cb(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c));}
+{void (*cb)(u16,void *)=M2C_FIELD(&gOv010OnlineSession,void (**)(u16,void *),0x58);if(cb)cb(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c));}
 one=1;
 if(M2C_FIELD(a,u16 *,0x44)&(one<<self)){
 func_ov010_02227934(M2C_FIELD(a,s32 *,0x40),(u8)self);
@@ -205,7 +205,7 @@ void func_ov010_02227f88(s32,void *);
 M2C_UNK func_ov010_02228cbc();
 void MI_CpuCopy8(void *,void *,u32);
 void MI_CpuFill8(void *,s32,u32);
-extern M2C_UNK data_ov010_0222eee0;
+extern M2C_UNK gOv010OnlineSession;
 extern u8 data_ov010_0222ef58[],data_ov010_0222ef88[];
 register s32 i;
 s32 j;
@@ -217,7 +217,7 @@ s32 keep;
 Ov010Packet hdr;
 u8 *entry;
 if(!func_ov010_022282b4(3))return;
-state=(u8 *)&data_ov010_0222eee0;
+state=(u8 *)&gOv010OnlineSession;
 for(i=0;i<4;i++){
 entry=data_ov010_0222ef58+(u8)i*12;
 size=RxQueueSize26d9c((u8 **)entry);
@@ -294,7 +294,7 @@ if(cb)keep=cb((u8)chan,p);}
 if(!keep)continue;
 func_ov010_02229580(p);
 }
-state=(u8 *)&data_ov010_0222eee0;
+state=(u8 *)&gOv010OnlineSession;
 if(!M2C_FIELD(state,void **,0x50))return;
 {
 void *p2;
@@ -316,17 +316,17 @@ func_ov010_02229580(p2);
 }
 #pragma opt_common_subs reset
 s32 func_ov010_0222791c(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
 
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x40);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x40) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40) = arg0;
     return temp_r2;
 }
 
 void func_ov010_02227934(s32 a, s32 b) {
-extern M2C_UNK data_ov010_0222eee0;
-void (*cb)(s32,s32) = M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32),0x38);
+extern M2C_UNK gOv010OnlineSession;
+void (*cb)(s32,s32) = M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32),0x38);
 if (!cb) return;
 cb(a,b);
 }
@@ -343,7 +343,7 @@ void *func_ov010_022268f4(s32,u32,u32);
 void MI_CpuFill8(void *,s32,u32);
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);
 extern u8 data_ov010_0222c160[], data_ov010_0222ef58[],data_ov010_0222ef88[];
-extern M2C_UNK data_ov010_0222eee0;
+extern M2C_UNK gOv010OnlineSession;
 Ov010Packet header; volatile Ov010Packet *h; u32 kind; void *state;
 void (*cb)(s32,void *,s32);
 MI_CpuCopy8(b,&header,12);
@@ -400,8 +400,8 @@ M2C_FIELD(queue,u32 *,8)=M2C_FIELD(queue,u32 *,8)+1;
 }}
 }
 callbacks:
-cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,void *,s32),0x2c); if(cb)cb(a,b,c);
-cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,void *,s32),0x4c); if(cb)cb(a,b,c);
+cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,void *,s32),0x2c); if(cb)cb(a,b,c);
+cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,void *,s32),0x4c); if(cb)cb(a,b,c);
 }
 #pragma opt_common_subs reset
 void DisconnectOnlinePeer(void) {
@@ -411,7 +411,7 @@ void DisconnectOnlinePeer(void) {
 
 #pragma opt_common_subs off
 void func_ov010_02227bd4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     extern u8 data_ov010_0222f02c[];
     void (*cb)(s32,s32,s32,s32,s32,s32);
     u8 *p;
@@ -420,19 +420,19 @@ void func_ov010_02227bd4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f) {
     u16 newFlags;
     p = &data_ov010_0222f02c[d*0x6c];
     byte = M2C_FIELD(p,u8 *,0x1a);
-    flags = M2C_FIELD(&data_ov010_0222eee0,u16 *,0);
+    flags = M2C_FIELD(&gOv010OnlineSession,u16 *,0);
     byte = byte & ~1;
     newFlags = (u16)(flags | (1 << d));
     M2C_FIELD(p,u8 *,0x1a) = byte;
-    M2C_FIELD(&data_ov010_0222eee0,u16 *,0) = newFlags;
-    cb = M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32,s32,s32,s32),0x34);
+    M2C_FIELD(&gOv010OnlineSession,u16 *,0) = newFlags;
+    cb = M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32,s32,s32,s32),0x34);
     if (!cb) return;
     cb(a,b,c,d,e,f);
 }
 #pragma opt_common_subs reset
 void func_ov010_02227c3c(s32 a,s32 b) {
-extern M2C_UNK data_ov010_0222eee0;
-void (*cb)(s32,s32)=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32),0x10);
+extern M2C_UNK gOv010OnlineSession;
+void (*cb)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32),0x10);
 if (!cb) return;
 cb(a,b);
 }
@@ -441,7 +441,7 @@ cb(a,b);
 void func_ov010_02227c5c(s32 arg0, s32 arg1, s32 arg2) {
 void *func_020c4b60(void);
 void FillU16(s32,void *,s32);
-extern M2C_UNK data_ov010_0222eee0;
+extern M2C_UNK gOv010OnlineSession;
 Ov010State *base;
 u32 offset;
 void (*cb)(s32,s32,s32);
@@ -457,6 +457,6 @@ base->entries[arg0].count2=0;
 base->entries[arg0].state0=-1;
 base->entries[arg0].state1=-2;
 base->entries[arg0].state2=-2;
-cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),20);
+cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32),20);
 if(cb)cb(arg0,arg1,arg2);
 }

@@ -40,7 +40,7 @@ s32 i=0; u8 *p=data_ov000_021df7e4; u8 zero=i;
 do { i++; *p++=zero; } while(i<64);
 }
 
-void func_ov000_0219a6ec(void *arg0) {
+void SelectAiUnitSupplyState(void *arg0) {
 s32 IsUnitSelected(void); s32 func_020a8604(u32,u32); s32 Divide(s32,s32);
 u32 a,b;
 if ((s32)M2C_FIELD(gAiUnitTypeTuning,u8 *,4) > (s32)((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)) {
@@ -60,7 +60,7 @@ if((u8)Divide(((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25)*100,gUnitKindMaxFuel[((u3
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000;
 }
 
-void func_ov000_0219a818(void *arg0) {
+void UpdateAiUnitSupplyState(void *arg0) {
 s32 func_020a8604(u32,u32);
 u32 a,b;
 a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
@@ -72,33 +72,36 @@ if((s32)(gUnitKindMaxFuel[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]>>1)<(s32
 M2C_FIELD(arg0,u16 *,8)&=~0x3000;
 }
 
-void func_ov000_0219a8a4(void *arg0) {
+void UpdateAiUnitRepairState(void *arg0) {
     if ((u32) ((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19) >= 0x3DU) {
         M2C_FIELD(arg0, u16 *, 8) = (u16) (M2C_FIELD(arg0, u16 *, 8) & ~0x3000);
     }
 }
 
-void func_ov000_0219a8c4(void) {
+/* Updates the resupply and repair needs of the current player's units: each
+ * unit's AI tuning record is selected from its kind, then its need state (none,
+ * resupply or repair) is re-checked by the matching helper. */
+void UpdateAiSupplyStates(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    s32 i;
-    u8 *e;
-    u32 type;
+    s32 unitId;
+    u8 *unit;
+    u32 kind;
     u32 state;
-    u16 start;
-    void *base;
-    base = *gCurrentMap;
-    start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52a4)];
-    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)] + 0x33; i++) {
-        e = (u8 *)*gCurrentMap + 0x59a4 + i * 14;
-        type = (u32)(e[0] << 26) >> 26;
-        if (type == 0) continue;
-        gAiUnitTypeTuning = (void *)((u8 *)gAiSettings + 0x14 + (type - 1) * 12);
-        state = (u32)(M2C_FIELD(e, u16 *, 8) << 18) >> 30;
+    u16 firstUnitId;
+    void *map;
+    map = *gCurrentMap;
+    firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+    for (unitId = firstUnitId + 1; unitId < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; unitId++) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        kind = (u32)(unit[MAP_UNIT_KIND] << 26) >> 26;
+        if (kind == 0) continue;
+        gAiUnitTypeTuning = (void *)((u8 *)gAiSettings + 0x14 + (kind - 1) * 12);
+        state = (u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_NEED_STATE) << 18) >> 30;
         switch (state) {
-            case 1: func_ov000_0219a818(e); break;
-            case 2: func_ov000_0219a8a4(e); break;
-            default: func_ov000_0219a6ec(e); break;
+            case 1: UpdateAiUnitSupplyState(unit); break;
+            case 2: UpdateAiUnitRepairState(unit); break;
+            default: SelectAiUnitSupplyState(unit); break;
         }
     }
 }

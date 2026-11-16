@@ -9,41 +9,47 @@ return 0;
 typedef struct { u8 values[27]; } UnkA866cTable;
 extern const UnkA866cTable data_020f3c04;
 
-s32 func_020a7738(s32 arg0,s32 a,s32 b,u8 mode) {
-M2C_UNK GetUnitOwner(); u8 func_020a7b0c(s32); s32 func_020a26f8(void *,u8,u8);
+/* Score of a unit that moves from its own tile to (a,b): the power of its kind, the
+ * player's terrain effect and the terrain penalty of the destination.  A player
+ * without a terrain category (weather-type 2) only gets the destination penalty. */
+s32 GetUnitMoveScore(s32 arg0,s32 a,s32 b,u8 mode) {
+M2C_UNK GetUnitOwner(); u8 GetUnitKindByte0(s32); s32 func_020a26f8(void *,u8,u8);
 extern void **gCurrentMap;
 u8 *p=(u8 *)arg0;
-s32 first,base,result,n;
+s32 power,terrain,result,player;
 GetUnitOwner(p);
-first=func_020a7b0c((u32)(p[0]<<26)>>26);
-base=func_020a26f8(p,p[1],p[2]);
-result=func_020a7848(p,a,b);
-result+=first+base;
-if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
-if (((u32)(M2C_FIELD((u8 *)*gCurrentMap+n*0x8c,s32 *,0x6810)<<24)>>24)!=10 && mode==2) result=base+1;
+power=GetUnitKindByte0((u32)(p[0]<<26)>>26);
+terrain=func_020a26f8(p,p[1],p[2]);
+result=GetUnitTerrainPenalty(p,a,b);
+result+=power+terrain;
+if(p){if(!p)player=0;else player=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;player=(player>>6)+1;}else player=0;
+if (((u32)(M2C_FIELD((u8 *)*gCurrentMap+player*0x8c,s32 *,0x6810)<<24)>>24)!=10 && mode==2) result=terrain+1;
 if(result<1)result=1;
 return result;
 }
 
-void func_020a7824(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020a7738(M2C_UNK, M2C_UNK, M2C_UNK, u8);
+/* GetUnitMoveScore with the weather as the terrain-effect mode. */
+void GetUnitMoveScoreWeather(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    M2C_UNK GetUnitMoveScore(M2C_UNK, M2C_UNK, M2C_UNK, u8);
     extern void **gCurrentMap;
-    func_020a7738(arg0, arg1, arg2, M2C_FIELD(*gCurrentMap, u8 *, 0x5158));
+    GetUnitMoveScore(arg0, arg1, arg2, M2C_FIELD(*gCurrentMap, u8 *, 0x5158));
 }
 
-s32 func_020a7848(u8 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Damage-free move penalty of entering the destination terrain: infantry and mech
+ * (kinds 1 and 2) lose 3 points when the destination takes their movement type 4. */
+s32 GetUnitTerrainPenalty(u8 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 func_020d04ec(M2C_UNK, M2C_UNK, M2C_UNK);
- s32 var_r4;
- u32 temp_r0;
- var_r4 = 0;
+ s32 penalty;
+ u32 kind;
+ penalty = 0;
  if (func_020d04ec(arg1, arg2, 4) != 0) {
-  temp_r0 = (u32)(*arg0 << 26) >> 26;
-  switch (temp_r0) {
+  kind = (u32)(*arg0 << 26) >> 26;
+  switch (kind) {
   case 1:
-  case 2: var_r4 += 3; break;
+  case 2: penalty += 3; break;
   }
  }
- return var_r4;
+ return penalty;
 }
 
 u32 func_020a788c(void *arg0) {
@@ -143,9 +149,10 @@ s32 func_020a7a74(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
  return var_r4;
 }
 
-u8 func_020a7b0c(s32 arg0) {
- extern u8 data_ov000_021b5c06[];
- return data_ov000_021b5c06[arg0 * 0x70];
+/* Byte 0 of a unit kind entry: the kind's first stat byte (gUnitKindTable). */
+u8 GetUnitKindByte0(s32 arg0) {
+ extern u8 gUnitKindTable[];
+ return gUnitKindTable[arg0 * 0x70];
 }
 
 u8 func_020a7b24(s32 arg0) {

@@ -14,7 +14,7 @@ void func_ov001_021757d0(s32 arg0) {
             func_ov001_02184b50(M2C_FIELD(&gOv001WirelessSetup, void **, 4) + 0x117);
         }
     }
-    func_ov001_0218b71c(&data_ov001_02193d28);
+    Ov001_FreeAlloc(&data_ov001_02193d28);
 }
 
 s32 func_ov001_02175820(void) {
@@ -86,7 +86,7 @@ M2C_UNK p;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
 if(!func_02006f8c())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
-func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();p=Ov001_Alloc(0x700,0x20);func_02046884();func_ov001_0218b71c(&p);
+func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();p=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&p);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the
@@ -297,9 +297,9 @@ void func_ov001_02175e74(void) {
 }
 
 void func_ov001_02175eb0(void) {
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK data_ov001_02193d4c;
-    func_ov001_0218b71c(&data_ov001_02193d4c);
+    Ov001_FreeAlloc(&data_ov001_02193d4c);
 }
 
 M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {

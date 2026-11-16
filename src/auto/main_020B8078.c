@@ -154,18 +154,18 @@ void UpdateMapClearFade(void *effect) {
 
 u8 func_020b846c(M2C_UNK arg0) {
     void *GetMenuList(void);
-    s32 func_02086a00(M2C_UNK);
+    s32 IsListRowFlagSet(M2C_UNK);
     void *temp_r4;
     temp_r4 = GetMenuList();
-    return (func_02086a00(arg0) != 0) || (M2C_FIELD(temp_r4, u8 *, 0x34) != 0);
+    return (IsListRowFlagSet(arg0) != 0) || (M2C_FIELD(temp_r4, u8 *, 0x34) != 0);
 }
 
-void func_020b84a0(s32 arg0, s32 arg1) {
+void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
     void func_0209c048(s32, s32, void *, s32, s32, s32);
     u8 func_020b846c(s32);
     M2C_UNK func_0209b2dc(M2C_UNK, s16, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02127c0c;
-    extern s32 data_0215d84c;
+    extern s32 gListRowDrawOffset;
     extern void *g3DSpriteEngineMain;
     extern void *data_027e01d8;
     s32 var_r5;
@@ -182,15 +182,18 @@ void func_020b84a0(s32 arg0, s32 arg1) {
     temp_r6 = data_027e01d8;
     data_027e01d8 = g3DSpriteEngineMain;
     func_0209c048(3, (s16) (arg0 + 5), M2C_FIELD(data_027e01d8, s32 *, 0x24), arg1 + 1, 0, (s32) var_r4);
-    func_0209b2dc(6, (s16) (arg0 + 5), 1, var_r5, 0, (s32) var_r4, (s32) (u16) data_0215d84c);
+    func_0209b2dc(6, (s16) (arg0 + 5), 1, var_r5, 0, (s32) var_r4, (s32) (u16) gListRowDrawOffset);
     data_027e01d8 = temp_r6;
-    data_0215d84c += 0x24;
+    gListRowDrawOffset += 0x24;
 }
 
-void RedrawListRows(s32 arg0) {
+/* Redraw the six visible menu-list rows at pixel `offset` of the scroll: clear
+ * the row block, draw the rows (seven of them, two rows apart, for an odd
+ * offset), then clear the two scroll strips an odd offset leaves empty. */
+void RedrawListRows(s32 offset) {
     M2C_UNK ClearTileRect(s32, M2C_UNK, M2C_UNK);
-    void func_020b84a0(s32, s32);
-    extern s32 data_0215d84c;
+    void DrawListRowsAtOffset(s32, s32);
+    extern s32 gListRowDrawOffset;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     s32 var_r5;
@@ -199,18 +202,18 @@ void RedrawListRows(s32 arg0) {
     s32 var_r6_2;
     s32 var_r7;
     s32 var_r7_2;
-    void *temp_r4;
+    void *savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    data_0215d84c = 0x124;
+    gListRowDrawOffset = 0x124;
     ClearTileRect(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x24) + 0x140, 0x20, 0xC);
-    if (arg0 & 1) {
+    if (offset & 1) {
         var_r5 = 0;
-        var_r6 = arg0 >> 1;
+        var_r6 = offset >> 1;
         var_r7 = -1;
         do {
-            func_020b84a0(var_r7, var_r6);
+            DrawListRowsAtOffset(var_r7, var_r6);
             var_r5 += 1;
             var_r6 += 1;
             var_r7 += 2;
@@ -220,16 +223,16 @@ void RedrawListRows(s32 arg0) {
     } else {
         var_r7_2 = 0;
         var_r6_2 = 0;
-        var_r5_2 = arg0 >> 1;
+        var_r5_2 = offset >> 1;
         do {
-            func_020b84a0(var_r6_2, var_r5_2);
+            DrawListRowsAtOffset(var_r6_2, var_r5_2);
             var_r7_2 += 1;
             var_r5_2 += 1;
             var_r6_2 += 2;
         } while (var_r7_2 < 6);
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 s32 ScrollListUp(void *arg0) {

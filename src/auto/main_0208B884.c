@@ -11,7 +11,7 @@ void func_0208b884(void *arg0) {
     extern void *g3DSpriteEngineMain;
     extern void *g3DSpriteEngineSub;
     M2C_UNK func_0209b9a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ff90e4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK DS3D_AddSpriteQuad(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
 
     void *saved = gCur3DSpriteEngine;
     s32 r9;

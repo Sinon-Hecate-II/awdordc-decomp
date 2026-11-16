@@ -120,7 +120,7 @@ void func_020c70b4(void) {
 }
 
 s32 func_020c70ec(void){
- extern void **gCurrentMap;s32 func_020c60c8(void);s32 func_020c6350(void);s32 func_020cccdc(void);
+ extern void **gCurrentMap;s32 func_020c60c8(void);s32 func_020c6350(void);s32 CanSaveHiddenTerrainMap(void);
  u8 *p;
  if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26)!=13)return 2;
  if(!func_020c60c8())return 2;
@@ -128,11 +128,11 @@ s32 func_020c70ec(void){
  p=*gCurrentMap;
  if((M2C_FIELD(p+(M2C_FIELD(p,s16 *,0x52dc)+M2C_FIELD(p+M2C_FIELD(p,s16 *,0x52de)*2,u16 *,0x3758)),u8 *,0x1420)&31)!=1)return 2;
  if(((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u16 *,6)<<21)>>28)==0)return 2;
- if(func_020cccdc())return 0;return 2;
+ if(CanSaveHiddenTerrainMap())return 0;return 2;
 }
 
 s32 func_020c71b4(void){
-s32 func_020c60c8(void); s32 func_020c6350(void); s32 func_020cccdc(void);
+s32 func_020c60c8(void); s32 func_020c6350(void); s32 CanSaveHiddenTerrainMap(void);
 extern void **gCurrentMap; void *p; s32 x,y;
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26)!=13)return 2;
 if(!func_020c60c8())return 2;
@@ -141,7 +141,7 @@ p=*gCurrentMap;
 y=M2C_FIELD(p,s16 *,0x52de);x=M2C_FIELD(p,s16 *,0x52dc);
 if((M2C_FIELD((char*)p+(x+M2C_FIELD((char*)p+y*2,u16 *,0x3758)),u8 *,0x1420)&31)!=9)return 2;
 if(((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u16 *,6)<<21)>>28)==0)return 2;
-return func_020cccdc()!=0?0:2;
+return CanSaveHiddenTerrainMap()!=0?0:2;
 }
 
 void func_020c727c(void) {

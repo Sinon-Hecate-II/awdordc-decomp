@@ -239,23 +239,26 @@ loop_2:
     return var_r4;
 }
 
-#pragma optimization_level 2
 #pragma opt_propagation off
 #pragma opt_common_subs off
-void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
- M2C_UNK func_02007e70(void *,s32,M2C_UNK);
- s32 value; u16 code; void *p;
- p=(void *)(arg3+0x6c);
- M2C_FIELD(p,u8 *,0x401)=arg0;
- code=M2C_FIELD(arg1,u16 *,2);
- value=(s32)code>>2;
- if(!(code&2))value+=25;
- M2C_FIELD(p,u8 *,0x402)=(u8)value;
- M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);
- func_02007e70(arg1,arg3+0xbf0,0xc0);
+void func_0202fa68(u8 arg0,void *arg1,s32 arg2,s32 arg3) {
+M2C_UNK func_02007e70(void *,s32,M2C_UNK);
+s32 value;
+u8 byte;
+u16 code;
+void *p;
+p=(void *)(arg3+0x6c);
+M2C_FIELD(p,u8 *,0x401)=arg0;
+code=M2C_FIELD(arg1,u16 *,2);
+value=(s32)code>>2;
+if(!(code&2))value+=25;
+byte=value;
+M2C_FIELD(p,u8 *,0x402)=byte;
+M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);
+func_02007e70(arg1,arg3+0xbf0,0xc0);
 }
-#pragma opt_propagation reset
 #pragma opt_common_subs reset
+#pragma opt_propagation reset
 #pragma optimization_level 2
 void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  M2C_UNK func_02007e70(void *, s32, M2C_UNK);
@@ -276,41 +279,47 @@ void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  func_02007e70(arg1,(s32)arg3+offset,0xC0);
 }
 #pragma opt_common_subs off
-void Wfc_SortFriendRoster(s32 arg0, s32 arg1) {
+/* Bubble-sorts the WFC friend roster backwards from `count`-1: while the entry
+ * in front has the same or a lower byte at +0x2 than the one before it, the two
+ * per-record result entries (WFC_STATE_RECORD_RESULT, 4 bytes each) and their
+ * 0xC0-byte friend records (WFC_STATE_RECORDS) are swapped through the stack,
+ * so the roster ends up ordered with its best entry at index 0.  Clears the
+ * last result entry and the last record. */
+void Wfc_SortFriendRoster(s32 count, s32 base) {
     M2C_UNK CpuFill(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e70(void *, s32, s32);
-    u8 sp4[0xc0];
-    M2C_UNK sp0;
-    s32 var_r4; M2C_UNK *temp_r5; s32 var_r6,temp_r7,temp_r8; s32 var_r9; s32 var_r10,temp_r5_2;
+    u8 recordTemp[0xc0];
+    M2C_UNK resultTemp;
+    s32 index; M2C_UNK *curResult; s32 prev; s32 results, records; s32 prevResult; s32 prevRecord, curOffset;
 
-    var_r4 = arg0;
-    temp_r7 = arg1 + 0x444;
-    temp_r8 = arg1 + 0x470;
-    var_r6 = var_r4 - 1;
-    if (var_r6 >= 0) {
-        var_r10 = (var_r6 * 0xC0) + temp_r8;
-        var_r9 = temp_r7 + var_r6*4;
+    index = count;
+    results = base + WFC_STATE_RECORD_RESULT;
+    records = base + WFC_STATE_RECORDS;
+    prev = index - 1;
+    if (prev >= 0) {
+        prevRecord = (prev * WFC_RECORD_STRIDE) + records;
+        prevResult = results + prev*4;
 loop_2:
-        if ((u32) M2C_FIELD((temp_r7 + (var_r4 * 4)), u8 *, 2) >= (u32) M2C_FIELD((temp_r7 + (var_r6 * 4)), u8 *, 2)) {
-            func_02007e70((void *)var_r9, (s32)&sp0, 4);
-            temp_r5 = (M2C_UNK *) (temp_r7 + (var_r4 * 4));
-            func_02007e70(temp_r5, (s32)var_r9, 4);
-            func_02007e70(&sp0, (s32)temp_r5, 4);
-            func_02007e70((M2C_UNK *) var_r10, (s32)sp4, 0xC0);
-            temp_r5_2 = var_r4 * 0xC0;
-            func_02007e70((void *)(temp_r8 + temp_r5_2), var_r10, 0xC0);
-            func_02007e70(&sp4, temp_r8 + temp_r5_2, 0xC0);
-            var_r4 = var_r6;
-            var_r9=var_r9-4;
-            var_r10 -= 0xC0;
-            --var_r6;
-            if (var_r6 >= 0) {
+        if ((u32) M2C_FIELD((results + (index * 4)), u8 *, 2) >= (u32) M2C_FIELD((results + (prev * 4)), u8 *, 2)) {
+            func_02007e70((void *)prevResult, (s32)&resultTemp, 4);
+            curResult = (M2C_UNK *) (results + (index * 4));
+            func_02007e70(curResult, (s32)prevResult, 4);
+            func_02007e70(&resultTemp, (s32)curResult, 4);
+            func_02007e70((M2C_UNK *) prevRecord, (s32)recordTemp, 0xC0);
+            curOffset = index * WFC_RECORD_STRIDE;
+            func_02007e70((void *)(records + curOffset), prevRecord, 0xC0);
+            func_02007e70(&recordTemp, records + curOffset, 0xC0);
+            index = prev;
+            prevResult=prevResult-4;
+            prevRecord -= WFC_RECORD_STRIDE;
+            --prev;
+            if (prev >= 0) {
                 goto loop_2;
             }
         }
     }
-    CpuFill(0, temp_r7 + 0x28, 4);
-    CpuFill(0, temp_r8 + 0x780, 0xC0);
+    CpuFill(0, results + 0x28, 4);
+    CpuFill(0, records + 0x780, 0xC0);
 }
 #pragma opt_common_subs reset
 void func_0202fc10(void *arg0) {

@@ -57,7 +57,7 @@ void Update3DSpriteVram(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
-s32 func_01ffa13c(s32 arg0) {
+s32 GetSpriteLayerHead(s32 arg0) {
     extern s32 data_021581ac[];
     return data_021581ac[arg0];
 }
@@ -143,7 +143,7 @@ void func_01ffa244(s32 arg0) {
     *data_021581a8 = (void *) arg0;
 }
 
-void func_01ffa284(void *arg0, u32 arg1) {
+void InsertSpriteInLayer(void *arg0, u32 arg1) {
  extern s32 data_021581ac[];
  void **table=(void **)data_021581ac;
  void *prev=table[arg1];
@@ -185,7 +185,7 @@ void func_01ffa2cc(void *p) {
 }
 
 s32 func_01ffa334(s32 a,s32 b,s32 c) {
- void func_01ffa284(void *,u32);
+ void InsertSpriteInLayer(void *,u32);
  extern s32 gCur3DSpriteEngine;
  void *p=func_01ffa1ec();
  s32 old;
@@ -203,7 +203,7 @@ s32 func_01ffa334(s32 a,s32 b,s32 c) {
  M2C_FIELD(p,u16 *,0x2E)=0xFF00;
  M2C_FIELD(p,u8 *,0x31)=0;
  M2C_FIELD(p,u8 *,0x30)=0x18;
- if((u32)b<12)func_01ffa284(p,b);else func_01ffa2ac(p,(void *)b);
+ if((u32)b<12)InsertSpriteInLayer(p,b);else func_01ffa2ac(p,(void *)b);
  old=gCur3DSpriteEngine;gCur3DSpriteEngine=c;
  Update3DSpriteState(p);
  gCur3DSpriteEngine=old;

@@ -45,7 +45,7 @@ s32 func_01ff9dd8();
 s32 Modulo();
 s32 func_ov003_02202408();
 s32 func_ov003_022004f0();
-s32 func_020a22fc();
+s32 GetPlayerCoId();
 s32 ClearTileRect();
 s32 LoadFaceTexture();
 s32 FillFaceTileMap();
@@ -156,7 +156,7 @@ for(i=0;i<(u32)func_ov003_022023fc(p);i++){
 if(Modulo(i,2)==0)side=0;else side=1;
 side2=(u8)side;
 if(i<2)offset=0;else offset=func_ov003_02202408((u16)func_ov003_022004f0(2));
-character=func_020a22fc(i+1);
+character=GetPlayerCoId(i+1);
 if(character==0){
 ClearTileRect((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+(offset+1)*2,7,7);
 }else{

@@ -128,10 +128,10 @@ void func_02061b38(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,
 
 void func_02061b6c(void *a,s32 b) {
 s32 *Vector_GetItem();
-void func_0204890c(s32,s32);
+void Vector_RemoveItem(s32,s32);
 s32 p=*Vector_GetItem(M2C_FIELD(a,s32 *,4),b);
 M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,2,p,M2C_FIELD(a,s32 *,0x494));
-func_0204890c(M2C_FIELD(a,s32 *,4),b);
+Vector_RemoveItem(M2C_FIELD(a,s32 *,4),b);
 func_02061b38(a,p);
 }
 
@@ -276,22 +276,25 @@ void AppendByte(s8 **arg0, s8 arg1, s32 *arg2) {
     *arg0 += 1;
 }
 
-void AppendInt32BE(u8 **a,s32 b,s32 *c,...){u8 *p=*a;u8 *q=(u8 *)&b;u8 x,y;x=q[1];y=q[0];p[0]=y;p[1]=x;x=q[3];y=q[2];p[2]=y;p[3]=x;*c+=4;*a+=4;}
+void AppendInt32BE(u8 **a,s32 b,s32 *c,...) {u8 *p=*a;const u8 *q=(u8 *)&b;s32 x,y;x=q[0];y=q[1];p[0]=x;p[1]=y;x=q[2];y=q[3];p[2]=x;p[3]=y;*c+=4;*a+=4;}
 
 void AppendBytes(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
 M2C_UNK MemCopy(s32,M2C_UNK *,s32);
 MemCopy(*a,b,c);*d+=c;*a+=c;
 }
 
+/* Fill the 8-byte QR2 session key at +0x74 of the server list with printable
+ * random characters, each shifted by one when its parity does not fit the running
+ * parity of what was generated so far (the master server checks it). */
 void GenerateSessionKey(void *arg0) {
  s32 Rand(void);
- s32 i, parity; s8 *p; s32 a,b;
- *(s8 *)((u8 *)arg0+0x74)=Rand()%93+33;
+ s32 i, parity; s8 *p; s32 prev,cur;
+ *(s8 *)((u8 *)arg0+0x74)=Rand()%93+33;   /* '!'..'}' */
  parity=0;
  i=1; do {
  p=(s8 *)((u32)arg0+i);
- a=p[0x73]; b=*((s8 *)arg0+0x74);
- { s32 x,y; if(a<b)x=1;else x=0; if(b<79)y=1;else y=0; parity=(b&1)^(parity^((i^a)&1)); parity^=y; parity^=x; }
+ prev=p[0x73]; cur=*((s8 *)arg0+0x74);
+ { s32 below,over; if(prev<cur)below=1;else below=0; if(cur<79)over=1;else over=0; parity=(cur&1)^(parity^((i^prev)&1)); parity^=over; parity^=below; }
  p[0x74]=Rand()%93+33;
  if ((parity && !(p[0x74]&1)) || (!parity && (p[0x74]&1)==1)) p[0x74]++;
  i++; }while(i<8);

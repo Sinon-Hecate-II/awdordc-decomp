@@ -84,6 +84,7 @@ enum {
 #define VRAM_BANKS_OBJ     0x04 /* banks assigned to the main engine OBJ (sprite) area */
 #define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
 #define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
+#define VRAM_BANKS_OBJ_EXTPLTT 0x0A /* banks assigned to the OBJ extended palette */
 
 /* 3D engine state and render parameters. */
 #define REG_GXSTAT           (*(volatile u32 *)0x04000600)

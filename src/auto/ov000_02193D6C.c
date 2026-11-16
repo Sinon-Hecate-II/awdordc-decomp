@@ -54,7 +54,7 @@ void SelectAttackingUnit(void) {
  unit=map+0x59a4+14*map[foundX+*(u16*)(map+0x3758+foundY*2)];
  ((Position_02194090 *)(unit+8))->x=(u16)foundX;
  ((Position_02194090 *)(unit+8))->y=(u16)foundY;
- func_ov000_0217c3a4();
+ ClearUnitMoveTarget();
  SetMapCursor((s16)foundX,(s16)foundY,7,0,0);
 }
 

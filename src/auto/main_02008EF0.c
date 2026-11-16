@@ -4,13 +4,13 @@
 typedef struct { u16 values[5]; } Unk02009B0CFields;
 typedef struct { u16 values[6]; } Unk02009B0CRecord;
 typedef struct Shared09d40 { u8 pad[0x388]; u32 value; } Shared09d40;
-extern u16 data_0212fb64;
+extern u16 gLinkInitialized;
 extern s32 gFifoMessageHandlers[32];
 void FifoReceiveHandler(void);
 void func_0200902c(void);
 void func_0200962c(void);
 void *func_02009210(int);
-s32 func_020092d0(s32);
+s32 Sound_FlushCommands(s32);
 void func_02009854(void *);
 typedef struct Link09a0c { void *owner; struct Link09a0c *next; } Link09a0c;
 
@@ -20,23 +20,23 @@ typedef struct { QueueNode09298 *head; s32 count, unk8, unkc; QueueNode09298 *ta
 typedef struct Queue09298 { s32 unk0, unk4; QueueNode09298 *head, *tail; } Queue09298;
 
 void func_02008ef0(M2C_UNK arg0) {
-    M2C_UNK func_02008f88(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02008f88(0x17, arg0, 0, 0, 0);
+    M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0x17, arg0, 0, 0, 0);
 }
 
 void func_02008f10(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    func_02008f88(0x19, arg0, arg1, arg2, arg3);
+    SendArm7Message(0x19, arg0, arg1, arg2, arg3);
 }
 
 void func_02008f38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    func_02008f88(6, arg0, arg1, arg2, arg3);
+    SendArm7Message(6, arg0, arg1, arg2, arg3);
 }
 
 void func_02008f60(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
-    func_02008f88(7, arg0 | (arg4 << 0x18), arg1, arg2, arg3);
+    SendArm7Message(7, arg0 | (arg4 << 0x18), arg1, arg2, arg3);
 }
 
-s32 func_02008f88(int a,int b,int c,int d,int e){void *func_02009210(int);void *p=func_02009210(1);if(!p)return (s32)p;M2C_FIELD(p,s32 *,4)=a;M2C_FIELD(p,s32 *,8)=b;M2C_FIELD(p,s32 *,12)=c;M2C_FIELD(p,s32 *,16)=d;M2C_FIELD(p,s32 *,20)=e;return func_02009298(p);}
+s32 SendArm7Message(int a,int b,int c,int d,int e){void *func_02009210(int);void *p=func_02009210(1);if(!p)return (s32)p;M2C_FIELD(p,s32 *,4)=a;M2C_FIELD(p,s32 *,8)=b;M2C_FIELD(p,s32 *,12)=c;M2C_FIELD(p,s32 *,16)=d;M2C_FIELD(p,s32 *,20)=e;return func_02009298(p);}
 
 void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;InitMutex(&data_0212e004);func_0200902c();func_0200973c();}
 
@@ -75,7 +75,7 @@ p=func_02009210(1);
 if(!p)return;
 M2C_FIELD(p,int *,4)=29;
 M2C_FIELD(p,s32 **,8)=data_0212fb60;
-func_02009298(p);func_020092d0(1);
+func_02009298(p);Sound_FlushCommands(1);
 }
 #pragma opt_common_subs off
 s32 func_02009100(s32 flags){
@@ -107,7 +107,7 @@ return (s32)head;
 #pragma opt_common_subs reset
 void *func_02009210(int flags){
   void func_0200968c(void);
-  s32 func_020092d0(s32);
+  s32 Sound_FlushCommands(s32);
   s32 func_020096fc(void);
   void *func_020096b4(void);
   s32 func_02009100(int);
@@ -124,7 +124,7 @@ p=func_020096b4();
 if(p)return p;
 }
 else{
-func_020092d0(1);
+Sound_FlushCommands(1);
 }
 func_0200968c();
 do{
@@ -144,7 +144,7 @@ if(p[3]==0)p[2]=arg0;else *p[3]=arg0;
 p[3]=arg0;*arg0=0;return OS_RestoreInterrupts(s);
 }
 #pragma opt_common_subs reset
-s32 func_020092d0(s32 flags) {
+s32 Sound_FlushCommands(s32 flags) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 s32 func_02009100(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
 s32 SendFifoMessage(s32,M2C_UNK,s32); void func_0200968c(void);
@@ -190,7 +190,7 @@ if(flags&2)func_0200968c();
 return 1;
 }
 #pragma opt_common_subs reset
-void func_0200948c(int a) {
+void Sound_WaitForCommand(int a) {
 void func_0200968c(void);
 if(func_02009524(a))return;
 while(func_02009100(0)){}
@@ -200,7 +200,7 @@ if(func_02009524(a))return;
 do {func_02009100(1);}while(!func_02009524(a));
 }
 
-s32 func_020094f8(void) {
+s32 Sound_GetCommandCounter(void) {
 s32 OS_DisableInterrupts(void);extern M2C_UNK data_0212e020;
 s32 s=OS_DisableInterrupts();s32 r;
 if(M2C_FIELD(&data_0212e020,s32 *,8)==0)r=M2C_FIELD(&data_0212e020,s32 *,4);else r=M2C_FIELD(&data_0212e020,s32 *,32);
@@ -399,19 +399,22 @@ func_02009018();return v;
 }
 
 void func_02009d34(void) {
-    M2C_UNK func_02009d40();
-    func_02009d40();
+    M2C_UNK InitArm7Link();
+    InitArm7Link();
 }
 
 #pragma scheduling off
-s32 func_02009d40(void){
+/* Connect to the ARM7 firmware once: reset the FIFO channel, install the FIFO
+ * receive interrupt and clear the message handlers, then wait until the
+ * firmware's channel report reads idle, stopping every channel it names. */
+s32 InitArm7Link(void){
 s32 OS_DisableInterrupts(void);s32 state=OS_DisableInterrupts();int i,timeout,value,stable;
-if(!data_0212fb64){
-data_0212fb64=1;
+if(!gLinkInitialized){
+gLinkInitialized=1;
 {Shared09d40 *p=(Shared09d40 *)0x027ffc00; p->value=0;}
 for(i=0;i<32;i++)gFifoMessageHandlers[i]=0;
 *(volatile u16 *)0x04000184=0xc408;
-func_02005228(0x40000);func_02004ff8(0x40000,FifoReceiveHandler);func_020051c8(0x40000);
+OS_SetIrqMask(0x40000);OS_SetFifoReceiveHandlers(0x40000,FifoReceiveHandler);OS_EnableIrqMask(0x40000);
 stable=0;
 for(;;){value=*(volatile u16 *)0x04000180&15;
 *(volatile u16 *)0x04000180=value<<8;

@@ -1,5 +1,6 @@
 /* 36 functions from 0x021E4448 to 0x021E5118 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 void func_ov003_021e4448(void *arg0){
 M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
@@ -27,15 +28,48 @@ void func_ov003_021e450c(void) {
 
 }
 
-void func_ov003_021e4510(void *arg0) {
-s32 func_020c8cbc(void *);void func_ov003_021f2588(void);void *HeapAllocBlock(s32);void MI_CpuCopy32(void *,void *,u32);void HeapFreeBlock(void *);
-u8 changed=0;u8 *p;u8 k;u8 *copy;u8 i,j;u8 *dest;u32 off;
-for(k=0;k<5;k++){p=M2C_FIELD(arg0,u8 **,0x6c)+k*0x6f8;if((u16)func_020c8cbc(p)){p[0x27]=0;func_ov003_021f2588();changed=1;}}
-if(!changed)return;
-copy=HeapAllocBlock(0x22d8);MI_CpuCopy32(M2C_FIELD(arg0,void **,0x6c),copy,0x22d8);
-for(j=0,i=0;i<5;i++){p=copy+i*0x6f8;off=j*0x6f8;dest=M2C_FIELD(arg0,u8 **,0x6c);if(p[0x27]){MI_CpuCopy32(p,dest+off,0x6f8);j++;}}
-while(j<5){M2C_FIELD(M2C_FIELD(arg0,u8 **,0x6c)+j*0x6f8,u8 *,0x27)=0;j++;}
-HeapFreeBlock(copy);
+/* Drops downloaded map records that are identical to a campaign map: marks the
+ * matching record empty, removes its id from the downloaded-map selection, and
+ * packs the remaining records down. */
+void RemoveDownloadedCampaignMaps(void *view) {
+    s32 FindCampaignMapId(void *);
+    void RemoveDownloadedMapId();
+    void *HeapAllocBlock(s32);
+    void MI_CpuCopy32(void *, void *, u32);
+    void HeapFreeBlock(void *);
+    u8 anyRemoved = 0;
+    u8 *record;
+    u8 k;
+    u8 *copy;
+    u8 i, kept;
+    u8 *mapRecords;
+    u32 slotOffset;
+
+    for (k = 0; k < MAP_RECORD_LIST_COUNT; k++) {
+        record = M2C_FIELD(view, u8 **, 0x6c) + k * MAP_RECORD_SIZE;
+        if ((u16)FindCampaignMapId(record)) {
+            record[MAP_RECORD_PLAYER_COUNT] = 0;
+            RemoveDownloadedMapId();
+            anyRemoved = 1;
+        }
+    }
+    if (!anyRemoved) return;
+    copy = HeapAllocBlock(MAP_RECORD_LIST_SIZE);
+    MI_CpuCopy32(M2C_FIELD(view, void **, 0x6c), copy, MAP_RECORD_LIST_SIZE);
+    for (kept = 0, i = 0; i < MAP_RECORD_LIST_COUNT; i++) {
+        record = copy + i * MAP_RECORD_SIZE;
+        slotOffset = kept * MAP_RECORD_SIZE;
+        mapRecords = M2C_FIELD(view, u8 **, 0x6c);
+        if (record[MAP_RECORD_PLAYER_COUNT]) {
+            MI_CpuCopy32(record, mapRecords + slotOffset, MAP_RECORD_SIZE);
+            kept++;
+        }
+    }
+    while (kept < MAP_RECORD_LIST_COUNT) {
+        M2C_FIELD(M2C_FIELD(view, u8 **, 0x6c) + kept * MAP_RECORD_SIZE, u8 *, MAP_RECORD_PLAYER_COUNT) = 0;
+        kept++;
+    }
+    HeapFreeBlock(copy);
 }
 
 void func_ov003_021e4610(void **arg0) {
@@ -142,8 +176,8 @@ void func_ov003_021e47a4(void) {
 }
 
 void func_ov003_021e47b0(void) {
-    void func_ov003_021e4510();
-    func_ov003_021e4510();
+    void RemoveDownloadedCampaignMaps();
+    RemoveDownloadedCampaignMaps();
 }
 
 u32 func_ov003_021e47bc(void *arg0) {

@@ -494,13 +494,13 @@ void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_02004ddc(void) {
     M2C_UNK func_02007c3c(s32);
-    M2C_UNK func_02002e3c(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     extern s32 data_020f5204;
     extern M2C_UNK data_0212dbfc;
     if (data_020f5204 != -1) {
         func_02007c3c(data_020f5204);
     }
-    func_02002e3c(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc));
+    GX_SetBankForOBJExtPltt(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc));
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc) = 0;
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x8) = 0;
 }
@@ -538,7 +538,7 @@ void func_02004ed4(void) {
 }
 
 void func_02004ed8(s32 arg0) {
- void func_020051f8(s32);
+ void OS_DisableIrqMask(s32);
  extern M2C_UNK data_0212dc1c, data_020f5208, data_0212dc24, data_027e0000, data_0212dc20;
  s32 field20; u16 shift;
  u32 mask;
@@ -551,7 +551,7 @@ void func_02004ed8(s32 arg0) {
  if(saved) saved(M2C_FIELD(&data_0212dc24,void **,arg0*12));
  field20=M2C_FIELD(&data_0212dc20,s32 *,arg0*12);
  M2C_FIELD(&data_027e0000,u32 *,0x3ff8) |= mask;
- if(field20==0) func_020051f8(mask);
+ if(field20==0) OS_DisableIrqMask(mask);
 }
 
 void func_02004f60(void) {

@@ -255,7 +255,7 @@ void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
-    M2C_UNK func_02002e3c(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
     M2C_UNK func_0200323c(M2C_UNK);
@@ -266,7 +266,7 @@ void Set3DSpriteVramBanks(void) {
     func_02003124(4);
     func_020031cc(8);
     GX_SetBankForOBJ(0x10);
-    func_02002e3c(0x20);
+    GX_SetBankForOBJExtPltt(0x20);
     func_02002ab8(0x40);
     func_0200323c(0x80);
     func_020032bc(0x100);

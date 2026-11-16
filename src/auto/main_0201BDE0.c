@@ -31,12 +31,12 @@ void func_0201be44(void *a,void *b) {
 }
 
 s32 func_0201bec8(s32 arg0) {
-    s32 func_0201a704();
-    s32 func_0201abd0();
-    if (func_0201a704() == 0) {
+    s32 GetIpNextHop();
+    s32 FindArpMacAddress();
+    if (GetIpNextHop() == 0) {
         return 1;
     }
-    return func_0201abd0();
+    return FindArpMacAddress();
 }
 
 M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
@@ -44,7 +44,7 @@ M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
  if(func_0201bec8(M2C_FIELD(a,s32 *,28)) || M2C_FIELD(&gSocketManager,void **,4)!=&data_021374f8) {
  TcpSendSegment(0,0,a,b,c);return;
  }
- func_0201aca0(func_0201a704(M2C_FIELD(a,s32 *,28)));
+ SendArpRequest(GetIpNextHop(M2C_FIELD(a,s32 *,28)));
 }
 
 void TcpSendAck(M2C_UNK arg0, M2C_UNK arg1) {
@@ -86,16 +86,24 @@ if(M2C_FIELD(seg,u8 *,13)&3)M2C_FIELD(conn,s32 *,TCP_CONN_ACK_NUM)=ackNum+1;
 func_0201bee4((s32)conn,20,arg);
 }
 
-M2C_UNK func_0201c0bc(void *arg0,void *arg1,void *arg2){u64 GetSystemTick(void);u16 a,b,c,d,e,f,g;u64 t;
-M2C_FIELD(arg2,u8 *,8)=3;t=GetSystemTick();M2C_FIELD(arg2,u32 *,16)=t>>16;
-a=M2C_FIELD(arg0,u16 *,18);b=M2C_FIELD(arg0,u16 *,16);
-M2C_FIELD(arg2,u32 *,20)=((u16)(((s32)b>>8)|(b<<8))<<16)|(u16)(((s32)a>>8)|(a<<8));
-c=M2C_FIELD(arg1,u16 *,0);M2C_FIELD(arg2,u16 *,24)=((s32)c>>8)|(c<<8);
-d=M2C_FIELD(arg0,u16 *,14);e=M2C_FIELD(arg0,u16 *,12);
-M2C_FIELD(arg2,u32 *,28)=((u16)(((s32)e>>8)|(e<<8))<<16)|(u16)(((s32)d>>8)|(d<<8));
-f=M2C_FIELD(arg1,u16 *,6);g=M2C_FIELD(arg1,u16 *,4);
-M2C_FIELD(arg2,u32 *,36)=(((u16)(((s32)g>>8)|(g<<8))<<16)|(u16)(((s32)f>>8)|(f<<8)))+1;
-func_0201be44(arg1,arg2);func_0201bee4((s32)arg2,18,0);
+/* Answers an incoming segment on a connection in SYN_RCVD (a SYN segment):
+ * fills the socket with its SYN_ACK state, the tick it was sent at, the peer
+ * address/port and the sequence numbers (the peer's sequence plus one in
+ * TCP_CONN_ACK_NUM), copies the connection's SYN options into the reply and
+ * sends it as segment type 18 with no flags. */
+M2C_UNK func_0201c0bc(void *ipHeader,void *seg,void *conn){
+u64 GetSystemTick(void);
+u16 dstPortLo,dstPortHi,srcLo,srcHi,peerLo,peerHi,seqLo,seqHi;
+u64 tick;
+M2C_FIELD(conn,u8 *,SOCKET_STATE)=TCP_STATE_SYN_RCVD;tick=GetSystemTick();M2C_FIELD(conn,u32 *,16)=tick>>16;
+dstPortLo=M2C_FIELD(ipHeader,u16 *,18);dstPortHi=M2C_FIELD(ipHeader,u16 *,16);
+M2C_FIELD(conn,u32 *,SOCKET_LOCAL_ADDR)=((u16)(((s32)dstPortHi>>8)|(dstPortHi<<8))<<16)|(u16)(((s32)dstPortLo>>8)|(dstPortLo<<8));
+seqLo=M2C_FIELD(seg,u16 *,0);M2C_FIELD(conn,u16 *,SOCKET_PEER_PORT)=((s32)seqLo>>8)|(seqLo<<8);
+srcLo=M2C_FIELD(ipHeader,u16 *,14);srcHi=M2C_FIELD(ipHeader,u16 *,12);
+M2C_FIELD(conn,u32 *,SOCKET_PEER_ADDR)=((u16)(((s32)srcHi>>8)|(srcHi<<8))<<16)|(u16)(((s32)srcLo>>8)|(srcLo<<8));
+peerLo=M2C_FIELD(seg,u16 *,6);peerHi=M2C_FIELD(seg,u16 *,4);
+M2C_FIELD(conn,u32 *,TCP_CONN_ACK_NUM)=(((u16)(((s32)peerHi>>8)|(peerHi<<8))<<16)|(u16)(((s32)peerLo>>8)|(peerLo<<8)))+1;
+func_0201be44(seg,conn);func_0201bee4((s32)conn,18,0);
 }
 
 s32 func_0201c1a8(s32 a,s32 b,s32 c) {

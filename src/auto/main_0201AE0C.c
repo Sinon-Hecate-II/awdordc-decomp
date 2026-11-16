@@ -1,6 +1,7 @@
 /* 15 functions from 0x0201AE0C to 0x0201BDE0 (main), found by ds-decomp. */
 #include "common.h"
 #include "tcp_socket.h"
+#include "net_socket.h"
 
 /* Updates the ARP cache for `ip`: refreshes the entry if the address is already
  * cached, otherwise (when `create`) stores `mac` in a free entry, or the oldest
@@ -36,15 +37,15 @@ M2C_FIELD(&gArpCacheAge,u16*,off)=now;
 #pragma scheduling off
 void SendEthernetFrame(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
 M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
-s32 func_0201a704(u32); s32 IsMulticastAddress(u32);
+s32 GetIpNextHop(u32); s32 IsMulticastAddress(u32);
 M2C_UNK SendLinkFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK *func_0201abd0(void); M2C_UNK *func_0201ad9c(s32);
+M2C_UNK *FindArpMacAddress(void); M2C_UNK *func_0201ad9c(s32);
 extern M2C_UNK gLocalMacAddress;
 M2C_UNK *p; s32 n;
 M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);
 if(!IsMulticastAddress(ip)){
-n=func_0201a704(ip);if(!n)return;
-p=func_0201abd0();
+n=GetIpNextHop(ip);if(!n)return;
+p=FindArpMacAddress();
 if(!p)p=func_0201ad9c(n);
 if(!p)return;
 MI_CpuCopy8(p,(u8 *)a-14,6);
@@ -249,19 +250,26 @@ void HandleArpPacket(void *frame, u32 len) {
 }
 #pragma opt_common_subs reset
 #pragma optimization_level 4
-M2C_UNK func_0201b984(void *arg0,u8 *arg1,s32 arg2){
-s32 Checksum(u8 *,s32);s32 func_0201a704(u32);M2C_UNK *func_0201abd0(void);void func_0201aca0(s32);void SendIpPacket(void *,u32,void *,u32,u32,u8);
-s32 a,b;u16 hi,lo;u32 val;
-lo=M2C_FIELD(arg0,u16*,14);hi=M2C_FIELD(arg0,u16*,12);
-val=((u16)(((s32)hi>>8)|(hi<<8))<<16)|(u16)(((s32)lo>>8)|(lo<<8));
-a=func_0201a704(val);if(!a)return;if(!func_0201abd0()){func_0201aca0(a);return;}
-arg1[0]=0;M2C_FIELD(arg1,u16*,2)=0;b=Checksum(arg1,arg2);M2C_FIELD(arg1,u16*,2)=(b>>8)|(b<<8);
-lo=M2C_FIELD(arg0,u16*,14);hi=M2C_FIELD(arg0,u16*,12);
-val=((u16)(((s32)hi>>8)|(hi<<8))<<16)|(u16)(((s32)lo>>8)|(lo<<8));
-SendIpPacket(arg1,arg2,0,0,val,1);
+/* Answers an ICMP echo request: `ipHeader` is the received IPv4 header and
+ * `icmp`/`len` the request message.  Resolve the sender's link address (asking
+ * for it over ARP when the cache has no entry), then turn the message into an
+ * echo reply with a fresh checksum and send it back. */
+M2C_UNK SendIcmpEchoReply(void *ipHeader,u8 *icmp,s32 len){
+s32 Checksum(u8 *,s32);s32 GetIpNextHop(u32);M2C_UNK *FindArpMacAddress();void SendArpRequest(s32);void SendIpPacket(void *,u32,void *,u32,u32,u8);
+s32 nextHop,sum;u16 hi,lo;u32 sender;
+lo=M2C_FIELD(ipHeader,u16*,14);hi=M2C_FIELD(ipHeader,u16*,12);
+sender=((u16)(((s32)hi>>8)|(hi<<8))<<16)|(u16)(((s32)lo>>8)|(lo<<8));
+nextHop=GetIpNextHop(sender);if(!nextHop)return;if(!FindArpMacAddress()){SendArpRequest(nextHop);return;}
+icmp[0]=0;M2C_FIELD(icmp,u16*,2)=0;sum=Checksum(icmp,len);M2C_FIELD(icmp,u16*,2)=(sum>>8)|(sum<<8);
+lo=M2C_FIELD(ipHeader,u16*,14);hi=M2C_FIELD(ipHeader,u16*,12);
+sender=((u16)(((s32)hi>>8)|(hi<<8))<<16)|(u16)(((s32)lo>>8)|(lo<<8));
+SendIpPacket(icmp,len,0,0,sender,1);
 }
 #pragma optimization_level 4
-M2C_UNK func_0201ba68(void *arg0,u8 *arg1,M2C_UNK arg2) {
+/* Hand a received ICMP echo reply's payload to the socket waiting for it: the
+ * first ICMP socket with the reply's id and remote address that holds no
+ * pending datagram gets it (up to its capacity), and its task is woken. */
+M2C_UNK IcmpSocketReceive(void *packet,u8 *ip,M2C_UNK ipLen) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void TaskWake(s32); M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
 extern M2C_UNK gSocketManager;
 void *entry; s32 saved,id; void *node; u16 low,high; u32 max,len;
@@ -270,12 +278,12 @@ node=M2C_FIELD(&gSocketManager,void **,8);
 while(node){
 entry=M2C_FIELD(node,void **,0xa4);
 if(entry && (id=M2C_FIELD(entry,s32 *,0))!=0){
-if(M2C_FIELD(entry,u8 *,8)==11 && M2C_FIELD(arg1,u16 *,4)==(u16)id && M2C_FIELD(entry,u16 *,10)==M2C_FIELD(arg1,u16 *,6) && M2C_FIELD(entry,u32 *,68)==0){
-low=M2C_FIELD(arg0,u16 *,14);high=M2C_FIELD(arg0,u16 *,12);
+if(M2C_FIELD(entry,u8 *,8)==11 && M2C_FIELD(ip,u16 *,4)==(u16)id && M2C_FIELD(entry,u16 *,10)==M2C_FIELD(ip,u16 *,6) && M2C_FIELD(entry,u32 *,68)==0){
+low=M2C_FIELD(packet,u16 *,14);high=M2C_FIELD(packet,u16 *,12);
 if(M2C_FIELD(entry,u32 *,28)==(((u16)(((s32)high>>8)|(high<<8))<<16)|(u16)(((s32)low>>8)|(low<<8)))){
-max=M2C_FIELD(entry,u32 *,60);len=arg2-8;
+max=M2C_FIELD(entry,u32 *,60);len=ipLen-8;
 if(len>max)M2C_FIELD(entry,u32 *,68)=max;else M2C_FIELD(entry,u32 *,68)=len;
-MI_CpuCopy8((M2C_UNK *)(arg1+8),M2C_FIELD(entry,void **,64),M2C_FIELD(entry,u32 *,68));
+MI_CpuCopy8((M2C_UNK *)(ip+8),M2C_FIELD(entry,void **,64),M2C_FIELD(entry,u32 *,68));
 if(M2C_FIELD(entry,s32 *,4)==3){M2C_FIELD(entry,s32 *,4)=0;TaskWake(M2C_FIELD(entry,s32 *,0));}
 break;
 }
@@ -295,8 +303,8 @@ s32 func_0201bb68(s32 arg0, s32 arg1) {
 
 void func_0201bb88(void *arg0, u8 *arg1, M2C_UNK arg2) {
     s32 Checksum(u8 *, M2C_UNK);
-    M2C_UNK func_0201b984(void *, u8 *, M2C_UNK);
-    M2C_UNK func_0201ba68(void *, u8 *, M2C_UNK);
+    M2C_UNK SendIcmpEchoReply(void *, u8 *, M2C_UNK);
+    M2C_UNK IcmpSocketReceive(void *, u8 *, M2C_UNK);
     u16 a;
     u16 b;
     u16 c;
@@ -318,10 +326,10 @@ void func_0201bb88(void *arg0, u8 *arg1, M2C_UNK arg2) {
     }
     switch (*arg1) {
         case 0:
-            func_0201ba68(arg0, arg1, arg2);
+            IcmpSocketReceive(arg0, arg1, arg2);
             return;
         case 8:
-            func_0201b984(arg0, arg1, arg2);
+            SendIcmpEchoReply(arg0, arg1, arg2);
             return;
         default:
             return;

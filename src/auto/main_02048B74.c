@@ -5,7 +5,7 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
 void func_02048b74(M2C_UNK arg0) {
     s32 Vector_GetCount();
-    M2C_UNK func_0204890c(M2C_UNK, s32);
+    M2C_UNK Vector_RemoveItem(M2C_UNK, s32);
     s32 var_r4;
 
     var_r4 = Vector_GetCount() - 1;
@@ -13,7 +13,7 @@ void func_02048b74(M2C_UNK arg0) {
         return;
     }
     do {
-        func_0204890c(arg0, var_r4);
+        Vector_RemoveItem(arg0, var_r4);
         var_r4 -= 1;
     } while (var_r4 >= 0);
 }
@@ -159,7 +159,7 @@ if(!p)return 0;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
 n=func_020489e4(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
 if(n==-1)return 0;
-func_0204890c(M2C_FIELD(p,s32 **,0)[i],n);
+Vector_RemoveItem(M2C_FIELD(p,s32 **,0)[i],n);
 return 1;
 }
 
@@ -175,7 +175,7 @@ if(n==-1)return 0;
 return Vector_GetItem(M2C_FIELD(p,s32 **,0)[i],n);
 }
 
-void func_02049098(void *p,s32 a,s32 b) {
+void Vector_ForEach(void *p,s32 a,s32 b) {
 extern M2C_UNK data_020fcdc8,data_020fcd84,data_020fcd5c;
 void func_02048a9c(s32,s32,s32);
 s32 i;

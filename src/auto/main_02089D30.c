@@ -207,7 +207,7 @@ u32 func_0208a6b0(void *arg0) {
     u32 IsLinkSessionActive(void);
     u32 PlaySoundEffect(M2C_UNK);
     u32 func_0208ff4c(M2C_UNK);
-    M2C_UNK func_0208ffe4(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK PlaySlotPendingSound(M2C_UNK, M2C_UNK, s32);
     u32 temp_r0;
     u32 temp_r0_2;
     u32 temp_r0_3;
@@ -223,7 +223,7 @@ u32 func_0208a6b0(void *arg0) {
     if (temp_r0_2 == 0) {
         return temp_r0_2;
     }
-    func_0208ffe4(0, -1, 0x10013);
+    PlaySlotPendingSound(0, -1, 0x10013);
     temp_r0 = M2C_FIELD(arg0, u32 *, 0x58) | 0x4000;
     M2C_FIELD(arg0, u32 *, 0x58) = temp_r0;
     return temp_r0;

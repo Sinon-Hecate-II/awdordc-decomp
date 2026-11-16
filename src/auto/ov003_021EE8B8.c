@@ -102,7 +102,7 @@ void func_ov003_021ee8b8(void *arg0) {
     u8 playerCount;
     int player;
     s8 k, oldValue, newValue;
-    int func_020a22fc(int);
+    int GetPlayerCoId(int);
     int func_ov003_02200808(u8);
     u32 mask;
     void *p, *q;
@@ -299,11 +299,11 @@ foundPlayer:
         if(!(u8)(id==255)){
             q=func_02084e24(id);
             if(q)newValue=M2C_FIELD(q,s8 *,0xd);
-            else newValue=func_ov003_02200808((u8)func_020a22fc(i+1));
+            else newValue=func_ov003_02200808((u8)GetPlayerCoId(i+1));
         }else{
             q=func_02084e64();
             if(q)newValue=M2C_FIELD(q+i,s8 *,0x12);
-            else newValue=func_ov003_02200808((u8)func_020a22fc(i+1));
+            else newValue=func_ov003_02200808((u8)GetPlayerCoId(i+1));
         }
         if(oldValue!=newValue){
             PlaySoundEffect(0x10011);

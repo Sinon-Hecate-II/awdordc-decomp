@@ -534,11 +534,11 @@ s32 func_02092984(void *arg0) {
 }
 
 s32 func_020929b0(void *arg0) {
-M2C_UNK func_020867dc(u8,M2C_UNK);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_020ae124(u8);
+M2C_UNK SetListRowFlag(u8,M2C_UNK);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_020ae124(u8);
 s32 func_020ae1a4();s32 func_020d8db0();s32 func_020d8f4c();M2C_UNK func_020d8f1c(s16,s32);
 u8 v=(u8)M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
 void *p;
-func_020867dc(v,1);p=M2C_FIELD(arg0,void **,4);
+SetListRowFlag(v,1);p=M2C_FIELD(arg0,void **,4);
 if(M2C_FIELD(p,s32 *,12)==0){M2C_FIELD(arg0,void **,4)=p+16;return 1;}
 if(func_020d8db0()!=0)return 0;
 if(func_020d8f4c()==2){if(func_020ae1a4()==0)return 0;func_020ae124(v);}

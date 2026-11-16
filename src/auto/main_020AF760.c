@@ -57,81 +57,84 @@ void func_020af7dc(void) {
     } while (var_r1 < 2);
 }
 
-void func_020af828(s32 arg0, s32 arg1) {
+void PlaySlotSound(s32 arg0, s32 arg1) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_0208ff94(M2C_UNK);
+    M2C_UNK SetSoundEffectVolume(M2C_UNK);
     if (arg1 == 0) {
         return;
     }
     PlaySoundEffect(arg1);
     if (arg0 == 0) {
-        func_0208ff94(-0x80);
+        SetSoundEffectVolume(-0x80);
         return;
     }
-    func_0208ff94(0x7F);
+    SetSoundEffectVolume(0x7F);
 }
 
-void func_020af860(s32 arg0, s32 arg1) {
-    M2C_UNK func_0208ffe4(s32, s32, s32);
-    M2C_UNK func_02090100(s32, s32);
+void ReplaceSlotSound(s32 arg0, s32 arg1) {
+    M2C_UNK PlaySlotPendingSound(s32, s32, s32);
+    M2C_UNK PlaySlotSoundEffect(s32, s32);
     void func_020af8c8(s32, s32);
     extern M2C_UNK gEffectTable;
     s32 v = M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + arg0 * 0x18), void **, 0x34), s32 *, 4);
     if (v == 0) return;
-    func_0208ffe4(arg0, -1, v);
-    if (arg0 == 0) func_02090100(arg0, -0x80);
-    else func_02090100(arg0, 0x7F);
+    PlaySlotPendingSound(arg0, -1, v);
+    if (arg0 == 0) PlaySlotSoundEffect(arg0, -0x80);
+    else PlaySlotSoundEffect(arg0, 0x7F);
     func_020af8c8(arg0, arg1);
 }
 
-void func_020af8c8(s32 arg0, s32 arg1) {
-    M2C_UNK func_020900a4(s32, s32, M2C_UNK);
-    M2C_UNK func_02090158(s32, u8, M2C_UNK);
-    extern M2C_UNK data_02127ed8;
-    extern M2C_UNK data_ov002_021f2f44;
+/* Pick the variant of effect `effect` that shows at frame `frame`: set the
+ * effect's frame window (ticked through func_020900a4) and play the sound of
+ * the level it falls on. */
+void func_020af8c8(s32 effect, s32 frame) {
+    M2C_UNK SetSlotSoundPending(s32, s32, M2C_UNK);
+    M2C_UNK PlaySlotScriptedSound(s32, u8, M2C_UNK);
+    extern u8 gSoundLevelVolumes[];
+    extern u8 gEffectVariants[];
     extern M2C_UNK gEffectTable;
-    extern M2C_UNK data_ov002_021f314e;
-    s32 var_r1;
-    s32 var_r1_2;
-    s32 var_r2;
-    s32 var_r3;
-    u8 temp_r0;
+    extern u8 gEffectHasVariants[];
+    s32 level;
+    s32 levelScan;
+    s32 variant;
+    s32 variantAddr;
+    u8 startFrame;
     void *temp_r1;
 
-    temp_r1 = *(void **)((u8 *)&gEffectTable + (arg0 * 0x18));
+    temp_r1 = *(void **)((u8 *)&gEffectTable + (effect * 0x18));
     if (M2C_FIELD(M2C_FIELD(temp_r1, void **, 0x34), s32 *, 4) == 0) {
         return;
     }
     if (M2C_FIELD(temp_r1, u8 *, 0x3D) == 3) {
-        var_r1 = 7;
-    } else if (*((u8 *)&data_ov002_021f314e + (arg0 * 0x2C)) != 0 && arg1 != 0) {
-        var_r1 = 7;
-    } else if (arg1 <= 0) {
-        var_r1 = 0;
-    } else if (arg1 <= 1) {
-        var_r1 = 1;
-    } else if (arg1 <= 3) {
-        var_r1 = 3;
+        level = 7;
+    } else if (gEffectHasVariants[effect * 0x2C] != 0 && frame != 0) {
+        level = 7;
+    } else if (frame <= 0) {
+        level = 0;
+    } else if (frame <= 1) {
+        level = 1;
+    } else if (frame <= 3) {
+        level = 3;
     } else {
-        var_r1 = 7;
+        level = 7;
     }
-    func_020900a4(arg0, ~var_r1, 2);
-    var_r2 = 5;
-    if (*((u8 *)&data_ov002_021f314e + (arg0 * 0x2C)) != 0) {
-        var_r2 = 0;
+    SetSlotSoundPending(effect, ~level, 2);
+    variant = 5;
+    if (gEffectHasVariants[effect * 0x2C] != 0) {
+        variant = 0;
     } else {
-        var_r3 = (arg0 * 0x68) + (s32) &data_ov002_021f2f44;
-        var_r1_2 = 0;
+        variantAddr = (effect * 0x68) + (s32)gEffectVariants;
+        levelScan = 0;
         do {
-            temp_r0 = M2C_FIELD(var_r3, u8 *, 0x12);
-            var_r3 += 1;
-            if ((s32) temp_r0 < arg1) {
-                var_r2 = var_r1_2;
+            startFrame = M2C_FIELD(variantAddr, u8 *, 0x12);
+            variantAddr += 1;
+            if ((s32)startFrame < frame) {
+                variant = levelScan;
             }
-            var_r1_2 += 1;
-        } while (var_r1_2 < var_r2);
+            levelScan += 1;
+        } while (levelScan < variant);
     }
-    func_02090158(arg0, *((u8 *)&data_02127ed8 + var_r2), 0);
+    PlaySlotScriptedSound(effect, gSoundLevelVolumes[variant], 0);
 }
 
 void func_020af9cc(s32 arg0,s32 arg1,s32 arg2) {
@@ -140,23 +143,23 @@ if(arg2==0 && M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*0x18),u8 *,0x3d)==3)r
 func_02090034(arg0,arg1);
 }
 
-void func_020afa00(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c430[];u32 n=*((u8 *)&gEffectDefaultVariant+a*24);void *p=*(void **)((u8 *)&gEffectTable+a*24);if(M2C_FIELD((u8 *)p+n,u8 *,0x3e)==1){if((data_0215c430)[a])return;(data_0215c430)[a]=4;}func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(p,void **,0x34)+n*4,s32 *,8));}
+void func_020afa00(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c430[];u32 n=*((u8 *)&gEffectDefaultVariant+a*24);void *p=*(void **)((u8 *)&gEffectTable+a*24);if(M2C_FIELD((u8 *)p+n,u8 *,0x3e)==1){if((data_0215c430)[a])return;(data_0215c430)[a]=4;}PlaySlotSound(a,M2C_FIELD((u8 *)M2C_FIELD(p,void **,0x34)+n*4,s32 *,8));}
 
 void func_020afa64(s32 a) {
     extern M2C_UNK gEffectTable;
     s32 b = (a == 0) ? 1 : 0;
-    func_020af828(a, M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + b * 24), void **, 0x34), s32 *, 0x10));
+    PlaySlotSound(a, M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + b * 24), void **, 0x34), s32 *, 0x10));
 }
 
-void func_020afa98(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c42c[];s32 n;if(M2C_FIELD((u8 *)*(void **)((u8 *)&gEffectTable+(a==0?1:0)*24)+*((u8 *)&gEffectDefaultVariant+(a==0?1:0)*24),u8 *,0x3e)==1){if((data_0215c42c)[a])return;(data_0215c42c)[a]=4;n=1;}else n=0;func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),void **,0x34)+n*4,s32 *,0x14));}
+void func_020afa98(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c42c[];s32 n;if(M2C_FIELD((u8 *)*(void **)((u8 *)&gEffectTable+(a==0?1:0)*24)+*((u8 *)&gEffectDefaultVariant+(a==0?1:0)*24),u8 *,0x3e)==1){if((data_0215c42c)[a])return;(data_0215c42c)[a]=4;n=1;}else n=0;PlaySlotSound(a,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),void **,0x34)+n*4,s32 *,0x14));}
 
-void func_020afb34(s32 a){extern M2C_UNK gEffectTable;switch(M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),u8 *,0x3d)){case 2:func_020af828(a,0x2000b);return;case 3:func_020af828(a,0x2000c);return;default:func_020af828(a,0x2000a);return;}}
+void func_020afb34(s32 a){extern M2C_UNK gEffectTable;switch(M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),u8 *,0x3d)){case 2:PlaySlotSound(a,0x2000b);return;case 3:PlaySlotSound(a,0x2000c);return;default:PlaySlotSound(a,0x2000a);return;}}
 
 void func_020afb94(s32 arg0) {
 extern M2C_UNK gEffectTable;
 void func_020afb34(s32);
 s32 v=M2C_FIELD(M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*24),void **,0x34),s32 *,0x1c);
-if(v){func_020af828(arg0,v);return;}func_020afb34(arg0);
+if(v){PlaySlotSound(arg0,v);return;}func_020afb34(arg0);
 }
 
 void func_020afbcc(void) {

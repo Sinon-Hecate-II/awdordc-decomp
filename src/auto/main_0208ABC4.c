@@ -259,7 +259,7 @@ void func_0208b520(s32 arg0) {
     M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
 }
 
-void func_0208b564(s32 arg0) {
+void CreateTextLayer(s32 arg0) {
     void *func_01ffa444(M2C_UNK *, M2C_UNK);
     void *func_020898d0(void);
     extern M2C_UNK data_021027f0;
@@ -273,18 +273,18 @@ void func_0208b564(s32 arg0) {
 
 u8 func_0208b5a8(void) {
     u8 var_r0;
-    if (func_0208b5ec() != 0) var_r0 = 1;
+    if (FindTextLayer() != 0) var_r0 = 1;
     else var_r0 = 0;
     return var_r0;
 }
 
 s32 func_0208b5c4(void) {
     s32 func_020890d4(void);
-    if ((func_0208b5ec() != 0) && (func_020890d4() != 0)) return 1;
+    if ((FindTextLayer() != 0) && (func_020890d4() != 0)) return 1;
     return 0;
 }
 
-s32 func_0208b5ec(void) {
+s32 FindTextLayer(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_021027f0;
     return FindObjectByClass(&data_021027f0);

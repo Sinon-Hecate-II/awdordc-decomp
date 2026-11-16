@@ -383,8 +383,8 @@ void func_ov002_021e8738(void *p) {
     s32 func_ov002_021e86f8(s32, s32);
     void func_ov002_021e8ff0(void *, s16, s16, s16);
     void func_ov002_021e9000(void *, s16);
-    void func_020af860(s32, s32);
-    extern u8 data_ov002_021f2f44[];
+    void ReplaceSlotSound(s32, s32);
+    extern u8 gEffectVariants[];
     extern u8 data_ov002_021ea704[];
     extern u8 data_ov002_021f2f1c[];
     extern M2C_UNK gPlayerSettings;
@@ -399,7 +399,7 @@ void func_ov002_021e8738(void *p) {
     idx = 0;
 loop:
     if (flag == 0) {
-        if (M2C_FIELD(data_ov002_021f2f44 + owner * 0x68, u8 *, idx * 2 + 8) == 0) goto tail2;
+        if (M2C_FIELD(gEffectVariants + owner * 0x68, u8 *, idx * 2 + 8) == 0) goto tail2;
     }
     alloc = MemAlloc(0x90);
     if (alloc != 0) {
@@ -427,7 +427,7 @@ loop:
     idx++;
     if (idx < 5) goto loop;
 tail:
-    func_020af860(owner, M2C_FIELD(p, u8 *, 0x2B));
+    ReplaceSlotSound(owner, M2C_FIELD(p, u8 *, 0x2B));
     return;
 tail2:
     if (flag != 0) goto tail;

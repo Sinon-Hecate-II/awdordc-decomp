@@ -331,24 +331,59 @@ void func_0209c428(void *arg0) {
     }
 }
 
-s32 func_0209c454(u8 *arg0,s32 arg1) {
-s32 MeasureGlyphWidth(u8 *,s32 *);
-s32 width; s32 zero;  s32 max=0;u8 *p=arg0; u8 c; width=0;
-if(!p)return 0;
-c=*p;
-if(c){zero=0;do{
-switch(c){
-case 10:case 13:
-if(!arg1)return width;
-p++;if(width>max)max=width;width=zero;break;
-case 4:p++;break;
-case 22:case 23:case 28:case 29:p+=2;break;
-default:p+=MeasureGlyphWidth(p,&width);break;
-}
-c=*p;
-}while(c);}
-if(max>width)width=max;
-return width;
+/* Pixel width of a message string.  Like MeasureMessageWidth, but when
+ * stopAtBreak is set it stops at the first line break and returns that line's
+ * width; otherwise it returns the widest of the lines, where a line ends at
+ * 0x0A/0x0D.  0x04 is a one-byte code, 0x16/0x17/0x1C/0x1D two-byte codes with
+ * no width, everything else is a glyph laid out by MeasureGlyphWidth. */
+s32 MeasureMessageLinesWidth(u8 *text, s32 stopAtBreak) {
+    s32 MeasureGlyphWidth(u8 *, s32 *);
+    s32 width;
+    s32 lineStart;
+    s32 widest = 0;
+    u8 *cursor = text;
+    u8 c;
+
+    width = 0;
+    if (!cursor) {
+        return 0;
+    }
+    c = *cursor;
+    if (c) {
+        lineStart = 0;
+        do {
+            switch (c) {
+            case 0x0A:
+            case 0x0D:
+                if (!stopAtBreak) {
+                    return width;
+                }
+                cursor++;
+                if (width > widest) {
+                    widest = width;
+                }
+                width = lineStart;
+                break;
+            case 0x04:
+                cursor++;
+                break;
+            case 0x16:
+            case 0x17:
+            case 0x1C:
+            case 0x1D:
+                cursor += 2;
+                break;
+            default:
+                cursor += MeasureGlyphWidth(cursor, &width);
+                break;
+            }
+            c = *cursor;
+        } while (c);
+    }
+    if (widest > width) {
+        width = widest;
+    }
+    return width;
 }
 
 s32 func_0209c550(u8 *arg0) {

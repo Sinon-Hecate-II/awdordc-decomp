@@ -249,12 +249,15 @@ s32 func_ov000_021a1d08(void) {
     return 1;
 }
 
+/* Builds a unit kind 22 (submarine) when the AI's command mode allows it, its
+ * unit set wants kind 22 and the player can afford one, aiming it at the best
+ * remaining target candidate. */
 s32 func_ov000_021a1dec(void) {
 s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);s32 FindBestTargetCandidate();M2C_UNK CommitAiAction();
 extern void **gCurrentMap;extern void *gAiSettings,*gAiCommandState;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;
-if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,0xa)<<20)>>29)&4))return 0;
-if(M2C_FIELD(gAiSettings,u8 *,0x110)==0)return 0;
+if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_MODE)<<20)>>29)&4))return 0;
+if(M2C_FIELD(gAiSettings,u8 *,AI_SETTING_UNIT(22))==0)return 0;
 if(CanBuildUnitKind(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0x16)==0)return 0;
 base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
 if((s32)(GetUnitBuildCost(id,0x16)*10)>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0;

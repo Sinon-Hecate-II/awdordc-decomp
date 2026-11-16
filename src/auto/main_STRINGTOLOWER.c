@@ -16,17 +16,19 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
 /* Polls a single fd for readability/priority/error; sets output flags accordingly. */
 
-#pragma push
-#pragma peephole off
+#pragma optimization_level 2
+#pragma opt_common_subs off
 s8 *StringToLower(s8 *p) {
- extern M2C_UNK data_020eac40;
- s8 *q=p;
- s32 c=*p;
- if(c) do {
- if(c>=0) { if(c<128) { u8 *entry=(u8 *)&data_020eac40+c; c=*entry; } }
- *p=c;
- c=*++p;
- }while(c);
- return q;
+extern M2C_UNK data_020eac40;
+s8 *q=p;
+s32 c=*p;
+if(c)do {
+if(c<0){} else if(c<128)c=((u8 *)&data_020eac40)[c];
+store_char:
+*p=c;
+c=*++p;
+}while(c);
+return q;
 }
-#pragma pop
+#pragma opt_common_subs reset
+#pragma optimization_level reset

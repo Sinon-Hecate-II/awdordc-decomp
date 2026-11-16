@@ -13,7 +13,7 @@ void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
     s32 func_0203a9d0(char *, s32, void *, s32);
     void *func_020c4b60(void);
     void CopyU16(void *, void *, s32);
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     char buf[0x6c];
     s32 r;
     void *p;
@@ -35,7 +35,7 @@ void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
         }
     }
 
-    cb = *(void (**)(s32, void *, char *, s32))((char *)&data_ov010_0222eee0 + 4);
+    cb = *(void (**)(s32, void *, char *, s32))((char *)&gOv010OnlineSession + 4);
     if (cb != 0) {
         cb(arg0, arg1, arg2, arg3);
     }
@@ -57,15 +57,19 @@ void func_ov010_02227df8(void) {
     func_ov010_02228298(2);
 }
 
-void func_ov010_02227e20(s32 arg0, s32 arg1) {
+/* Starts the ov010 online session: does nothing if it is already running,
+ * otherwise raises the running flag, stores the owner id and installs the
+ * transfer and frame callbacks; if a NAS error is pending, hands it to the
+ * installed error handler. */
+void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 func_ov010_022282f8(void);
     s32 func_0203a850(void *, s32);
-    s32 func_02044618(s32);
-    s32 func_02044638(s32);
+    s32 Transfer_SetStartCallback(s32);
+    s32 Transfer_SetEndCallback(s32);
     s32 func_02038d14(s32, s32);
     s32 func_0203a9a4(s32, s32);
     s32 func_02038790(s32, s32, s32, s32, s32, s32, s32);
-    s32 func_02037c90(void);
+    s32 GetLastNasError(void);
     void func_ov010_02227934(void);
     void func_ov010_02227954(void);
     void func_ov010_02227bd4(void);
@@ -73,7 +77,7 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
     void func_ov010_02227c5c(void);
     void func_ov010_02227df8(void);
     void func_ov010_02227d34(s32, void *, char *, s32);
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
 
     s32 var_r0;
@@ -88,38 +92,38 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
         return;
     }
 
-    flags = M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa);
- M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa) = flags | 1;
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0xfc) = arg1;
+    flags = M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfa);
+ M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfa) = flags | 1;
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0xfc) = arg1;
     func_0203a850(&gLocalPlayerStatus, 0x6c);
 
-    func_02044618((s32)func_ov010_02227934);
-    func_02044638((s32)func_ov010_02227954);
+    Transfer_SetStartCallback((s32)func_ov010_02227934);
+    Transfer_SetEndCallback((s32)func_ov010_02227954);
     func_02038d14((s32)func_ov010_02227bd4, 0);
     func_0203a9a4((s32)func_ov010_02227c3c, 0);
 
     func_02038790(0, (s32)func_ov010_02227df8, 0, (s32)func_ov010_02227d34, 0,
                    (s32)func_ov010_02227c5c, 0);
 
-    if (func_02037c90() != 2) {
+    if (GetLastNasError() != 2) {
         return;
     }
 
-    if (M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x40) == 0) {
+    if (M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40) == 0) {
         return;
     }
 
     {
-        s32 res = func_02037c90();
-        void (*cb)(s32) = M2C_FIELD(&data_ov010_0222eee0, void (**)(s32), 0x40);
-        cb(res);
+        s32 code = GetLastNasError();
+        void (*handler)(s32) = M2C_FIELD(&gOv010OnlineSession, void (**)(s32), 0x40);
+        handler(code);
     }
 }
 
 void func_ov010_02227f14(void) {
- s32 GetActiveConnectionList(u8 **); s32 GetOnlineTransportPlayerId(void); void func_020445cc(u32,void *,s32); extern M2C_UNK data_ov010_0222eee0;
+ s32 GetActiveConnectionList(u8 **); s32 GetOnlineTransportPlayerId(void); void func_020445cc(u32,void *,s32); extern M2C_UNK gOv010OnlineSession;
  u8 *list; s32 n=GetActiveConnectionList(&list); s32 i; u32 id; u32 index;
- for(i=0;i<n;i++){id=list[i];if(id!=GetOnlineTransportPlayerId()){if(id<(u32)GetOnlineTransportPlayerId())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&data_ov010_0222eee0,u8 **,0x3c)+index*0x5a0,0x5a0);}}
+ for(i=0;i<n;i++){id=list[i];if(id!=GetOnlineTransportPlayerId()){if(id<(u32)GetOnlineTransportPlayerId())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&gOv010OnlineSession,u8 **,0x3c)+index*0x5a0,0x5a0);}}
 }
 
 void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
@@ -129,14 +133,14 @@ void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {
-s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK data_ov010_0222eee0; extern M2C_UNK gLocalPlayerStatus;
+s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK gOv010OnlineSession; extern M2C_UNK gLocalPlayerStatus;
 s32 t; void (*cb)(s32,s32,s32);
 t=func_ov010_022282f8();t=(t!=0);
-if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
-cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
+if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&gOv010OnlineSession,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
+cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
 }
 
-s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK data_ov010_0222eee0; s32 result=1; s32 (*fp)(s32,s32)=M2C_FIELD(&data_ov010_0222eee0,s32 (**)(s32,s32),0x20); if(fp) result+=fp(a,b); return result; }
+s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK gOv010OnlineSession; s32 result=1; s32 (*fp)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,s32 (**)(s32,s32),0x20); if(fp) result+=fp(a,b); return result; }
 
 void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_ov010_022282f8(void);
@@ -146,7 +150,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     s32 func_0203a850(void *, s32);
     void func_ov010_02227f14(void);
     s32 func_ov010_02229a94(void);
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
 
     s32 t;
@@ -157,7 +161,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     if (t == 0) {
         if (arg1 == 0) {
             func_ov010_02228298(3);
-            M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfb) =
+            M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfb) =
                 (u8)GetOnlineTransportPlayerId();
             func_0203a850(&gLocalPlayerStatus, 0x6c);
             func_ov010_02227f14();
@@ -179,7 +183,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 
 callback_call:
     if (M2C_FIELD(
-            &data_ov010_0222eee0,
+            &gOv010OnlineSession,
             void (* volatile *)(s32, s32, s32, s32, s32, s32),
             0x8
         ) == 0) {
@@ -187,15 +191,15 @@ callback_call:
     }
 
     M2C_FIELD(
-        &data_ov010_0222eee0,
+        &gOv010OnlineSession,
         void (* volatile *)(s32, s32, s32, s32, s32, s32),
         0x8
     )(arg0, arg1, arg2, arg3, arg4, arg5);
 }
 
 void func_ov010_0222815c(s32 a,s32 b) {
- extern M2C_UNK data_ov010_0222eee0;
- void (*cb)(s32,s32)=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32),0x44);
+ extern M2C_UNK gOv010OnlineSession;
+ void (*cb)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32),0x44);
  if(!cb)return; cb(a,b);
 }
 
@@ -203,6 +207,12 @@ void func_ov010_0222817c(void) {
 
 }
 
+/* Brings up the ov010 online session: returns 0 when the session is already
+ * running (mode 0 raised); otherwise checks the NAS player status in a temporary
+ * 0x700-byte buffer, and unless that status is 3 frees it and allocates the
+ * session's 0x10e0-byte work block, invalidates it, plays the online start sound
+ * (0x5b9) and clears the session's callbacks so the session starts fresh.  The
+ * status is returned (3 = not available here). */
 s32 func_ov010_02228180(void) {
     M2C_UNK func_ov010_022282b4(M2C_UNK);
     M2C_UNK func_ov010_022268f4(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -214,76 +224,76 @@ s32 func_ov010_02228180(void) {
     s32 func_02044658(u16);
     M2C_UNK func_ov010_02229a50();
     void func_ov010_02228280(M2C_UNK);
-    extern M2C_UNK data_ov010_0222eee0;
-    M2C_UNK p;
-    M2C_UNK q;
-    s32 s;
+    extern M2C_UNK gOv010OnlineSession;
+    M2C_UNK statusBuffer;
+    M2C_UNK workBlock;
+    s32 status;
 
     if (func_ov010_022282b4(0) != 0) {
         return 0;
     }
-    p = func_ov010_022268f4(0, 0x700, 0x20);
-    s = func_02031d00(p);
-    func_ov010_02226908(0, p, 0x700);
-    if (s != 3) {
+    statusBuffer = func_ov010_022268f4(0, 0x700, 0x20);
+    status = func_02031d00(statusBuffer);
+    func_ov010_02226908(0, statusBuffer, 0x700);
+    if (status != 3) {
         func_02037680((s32)func_ov010_022268f4, (s32)func_ov010_02226908);
-        q = func_ov010_022268f4(0, 0x10e0, 0x20);
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x3c) = q;
-        DC_InvalidateRange(q, 0x10e0);
+        workBlock = func_ov010_022268f4(0, 0x10e0, 0x20);
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = workBlock;
+        DC_InvalidateRange(workBlock, 0x10e0);
         func_ov010_02226a88();
         func_02044658(0x5b9);
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x40) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x38) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x4c) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x2c) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x34) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x10) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x14) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x4) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x20) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0xc) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x8) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x44) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x58) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x1c) = 0;
-        M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x50) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x38) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4c) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x34) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x10) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x14) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x20) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0xc) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x8) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x44) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x58) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x1c) = 0;
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x50) = 0;
         func_ov010_02229a50();
         func_ov010_02228280(0);
     }
-    return s;
+    return status;
 }
 
 void func_ov010_0222826c(void) {
-    extern M2C_UNK data_ov010_0222eee0;
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x54) = 0;
+    extern M2C_UNK gOv010OnlineSession;
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 0;
 }
 
 void func_ov010_02228280(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x54) = 1 << arg0;
+    extern M2C_UNK gOv010OnlineSession;
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 1 << arg0;
 }
 
 void func_ov010_02228298(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, (unsigned)0x54) =
-        (M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x54) | (1 << arg0));
+    extern M2C_UNK gOv010OnlineSession;
+    M2C_FIELD(&gOv010OnlineSession, s32 *, (unsigned)0x54) =
+        (M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) | (1 << arg0));
 }
 
 s32 func_ov010_022282b4(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 var_r2 = 1;
-    if (!(M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x54) & (1 << arg0))) {
+    if (!(M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) & (1 << arg0))) {
         var_r2 = 0;
     }
     return var_r2;
 }
 
 M2C_UNK func_ov010_022282d4(M2C_UNK arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 v;
-    v = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x54);
+    v = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54);
     v = v & (-1 ^ (1 << arg0));
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x54) = v;
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = v;
     return v;
 }
 
@@ -459,7 +469,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     extern M2C_UNK data_ov010_0222c3fc;
     extern M2C_UNK data_ov010_0222f1dc;
     extern M2C_UNK data_ov010_0222c3f0;
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
     extern M2C_UNK data_ov010_0222efec;
     extern M2C_UNK data_ov010_0222c128;
@@ -520,19 +530,19 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     func_ov010_022294b0(i);
     func_ov010_022294c8(j);
     func_ov010_02229a50();
-    state=&data_ov010_0222eee0;
+    state=&gOv010OnlineSession;
     M2C_FIELD(state,s32 *,0x18)=0;
     M2C_FIELD(state,s32 *,0x24)=0;
     MI_CpuFill8(&gLocalPlayerStatus,0,0x1a);
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0xfa)=0;
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0xfb)=-1;
-    M2C_FIELD(&data_ov010_0222eee0,s32 *,0xfc)=-1;
-    M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=0x5dc000;
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0x104)=-1;
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0x105)=-2;
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0x106)=-2;
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0x107)=-1;
-    M2C_FIELD(&data_ov010_0222eee0,s8 *,0x108)=-1;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0xfa)=0;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0xfb)=-1;
+    M2C_FIELD(&gOv010OnlineSession,s32 *,0xfc)=-1;
+    M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=0x5dc000;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0x104)=-1;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0x105)=-2;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0x106)=-2;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0x107)=-1;
+    M2C_FIELD(&gOv010OnlineSession,s8 *,0x108)=-1;
     MI_CpuFill8(&data_ov010_0222efec,0,0x40);
     aa=*(Ov010CallbackFn *)&data_ov010_0222c128;
     bb=aa;
@@ -543,11 +553,11 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     dd=cc;
     func_ov010_022269dc(&gLocalPlayerStatus,GetLocalPlayerName());
     func_ov000_0216a470();
-    M2C_FIELD(&data_ov010_0222eee0,u8 *,0x104)=func_ov000_0216a564();
-    M2C_FIELD(&data_ov010_0222eee0,u8 *,0x105)=func_ov000_0216a76c();
-    M2C_FIELD(&data_ov010_0222eee0,u8 *,0x106)=func_ov000_0216a7c4();
-    M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
-    StartNetLogin(&gLocalPlayerStatus,0,(void *)func_ov010_02227e20,0);
+    M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
+    M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
+    M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
+    M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
+    StartNetLogin(&gLocalPlayerStatus,0,(void *)Ov010Online_StartSession,0);
     obj=func_01ffa3dc(&data_ov010_0222c160,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;
@@ -629,57 +639,57 @@ void func_ov010_02228a70(void) {
 }
 
 s32 func_ov010_02228b20(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x38);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x38) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x38);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x38) = arg0;
     return temp_r2;
 }
 
 s32 func_ov010_02228b38(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x4C);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x4C) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4C);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4C) = arg0;
     return temp_r2;
 }
 
 s32 func_ov010_02228b50(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
-    s32 old = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x2c);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x2c) = arg0;
+    extern M2C_UNK gOv010OnlineSession;
+    s32 old = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c) = arg0;
     return old;
 }
 
 s32 func_ov010_02228b68(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x34);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x34) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x34);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x34) = arg0;
     return temp_r2;
 }
 
 s32 func_ov010_02228b80(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x10);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x10) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x10);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x10) = arg0;
     return temp_r2;
 }
 
 s32 func_ov010_02228b98(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x14);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x14) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x14);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x14) = arg0;
     return temp_r2;
 }
 
 s32 func_ov010_02228bb0(s32 arg0) {
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     s32 temp_r2;
-    temp_r2 = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x4);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x4) = arg0;
+    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4) = arg0;
     return temp_r2;
 }
 
@@ -757,10 +767,10 @@ void func_ov010_02228ce4(void) {
     M2C_UNK func_ov010_02226a88();
     M2C_UNK func_ov010_02226908(M2C_UNK, s32, s32);
     void func_ov010_0222826c(void);
-    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK gOv010OnlineSession;
     func_ov010_02226a88();
-    func_ov010_02226908(0, M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x3c), 0x10e0);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x3c) = 0;
+    func_ov010_02226908(0, M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c), 0x10e0);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = 0;
     func_ov010_0222826c();
 }
 

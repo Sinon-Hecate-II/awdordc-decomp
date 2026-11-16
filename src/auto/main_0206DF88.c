@@ -3,7 +3,7 @@
 
 double func_0206df88(double x,double y) { ((u32 *)&x)[1] = (((u32 *)&x)[1] & 0x7fffffff) | (((u32 *)&y)[1] & 0x80000000); return x; }
 
-double func_0206dfb0(double x) { ((u32 *)&x)[1] &= 0x7fffffff; return x; }
+double fabs(double x) { ((u32 *)&x)[1] &= 0x7fffffff; return x; }
 
 double func_0206dfd0(double x,s32 *exp) {
  double func_02070658(double,double);
@@ -67,22 +67,15 @@ s32 func_0206e2e4(u8 *p,s32 i) {
 }
 
 #pragma opt_space on
-void func_0206e350(u8 *p, s32 n) {
-    u8 *start = p + 5;
-    u8 *q = start + n - 1;
-
-    for (;;) {
-        if (*q < 9) {
-            ++*q;
-            return;
-        }
-        if (q == start) {
-            *q = 1;
-            M2C_FIELD(p, s16 *, 2) += 1;
-            return;
-        }
-        *q-- = 0;
-    }
+void func_0206e350(u8 *p,s32 n) {
+u8 *start=p+5;u8 *q=start+n-1;
+again:
+{
+if(*q<9){++*q;return;}
+if(q==start){*q=1;M2C_FIELD(p,s16 *,2)+=1;return;}
+*q--=0;
+goto again;
+}
 }
 #pragma opt_space off
 void func_0206e39c(void) {

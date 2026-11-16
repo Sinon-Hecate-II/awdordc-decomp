@@ -385,14 +385,13 @@ void func_0202ee2c(void) {
 
 #pragma opt_common_subs off
 void func_0202ee30(void *arg0) {
- void OS_SleepThread(void *); void LockMutex(void *); void UnlockMutex(void *); void *func_0202e09c(void *); void func_0202e470(void *); void func_0202e12c(void *);
- void *p;
- void *base=(char *)arg0+0xC8;
- for (;;) { OS_SleepThread(arg0+0x4C0); for (;;) {
- LockMutex(base+0x400); p=func_0202e09c(arg0+0x4E0);
- if(p == 0){UnlockMutex(base+0x400);break;}
- func_0202e470(p);func_0202e12c(p);UnlockMutex(base+0x400);
- }}
+void OS_SleepThread(void *);void LockMutex(void *);void UnlockMutex(void *);void *func_0202e09c(void *);void func_0202e470(void *);void func_0202e12c(void *);
+void *p;char *base=(char*)arg0; base+=0xc8;
+for(;;){OS_SleepThread((char*)arg0+0x4c0);for(;;){
+LockMutex((char*)base+0x400);p=func_0202e09c((char*)arg0+0x4e0);
+if(!p){UnlockMutex((char*)base+0x400);break;}
+func_0202e470(p);func_0202e12c(p);UnlockMutex((char*)base+0x400);
+}}
 }
 #pragma opt_common_subs reset
 void *func_0202ee80(void *arg0,s32 arg1) {

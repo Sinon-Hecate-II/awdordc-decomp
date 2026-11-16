@@ -14,7 +14,7 @@ func_ov003_021e3aec kind:function(arm,size=0x50c) addr:0x021e3aec
 func_ov003_021e3ff8 kind:function(arm,size=0x450) addr:0x021e3ff8
 func_ov003_021e4448 kind:function(arm,size=0xc4) addr:0x021e4448
 func_ov003_021e450c kind:function(arm,size=0x4) addr:0x021e450c
-func_ov003_021e4510 kind:function(arm,size=0x100) addr:0x021e4510
+RemoveDownloadedCampaignMaps kind:function(arm,size=0x100) addr:0x021e4510
 func_ov003_021e4610 kind:function(arm,size=0x14) addr:0x021e4610
 func_ov003_021e4624 kind:function(arm,size=0xc) addr:0x021e4624
 func_ov003_021e4630 kind:function(arm,size=0x14) addr:0x021e4630
@@ -272,7 +272,7 @@ func_ov003_021f24ec kind:function(arm,size=0x38) addr:0x021f24ec
 func_ov003_021f2524 kind:function(arm,size=0x3c) addr:0x021f2524
 func_ov003_021f2560 kind:function(arm,size=0x14) addr:0x021f2560
 func_ov003_021f2574 kind:function(arm,size=0x14) addr:0x021f2574
-func_ov003_021f2588 kind:function(arm,size=0x44) addr:0x021f2588
+RemoveDownloadedMapId kind:function(arm,size=0x44) addr:0x021f2588
 func_ov003_021f25cc kind:function(arm,size=0x88) addr:0x021f25cc
 func_ov003_021f2654 kind:function(arm,size=0x48) addr:0x021f2654
 func_ov003_021f269c kind:function(arm,size=0x2c) addr:0x021f269c
@@ -609,7 +609,7 @@ func_ov003_0220bf98 kind:function(arm,size=0x150) addr:0x0220bf98
 func_ov003_0220c0e8 kind:function(arm,size=0x24) addr:0x0220c0e8
 func_ov003_0220c10c kind:function(arm,size=0x84) addr:0x0220c10c
 Ov003_ActivateUnitListEntry kind:function(arm,size=0x198) addr:0x0220c190
-func_ov003_0220c328 kind:function(arm,size=0xec) addr:0x0220c328
+Ov003_ConfirmRowValue kind:function(arm,size=0xec) addr:0x0220c328
 RequestMenuMode kind:function(arm,size=0x28) addr:0x0220c414
 RunPendingMenuAction kind:function(arm,size=0x268) addr:0x0220c43c
 func_ov003_0220c6a4 kind:function(arm,size=0xc) addr:0x0220c6a4
@@ -884,6 +884,6 @@ sTextPassThroughFormat kind:data(any) addr:0x02211188
 data_ov003_0221118c kind:data(any) addr:0x0221118c
 data_ov003_0221119c kind:data(any) addr:0x0221119c
 gOv003SceneState kind:bss addr:0x022111c0
-data_ov003_022111d4 kind:bss addr:0x022111d4
+gDownloadedMapIds kind:bss addr:0x022111d4
 data_ov003_022111de kind:bss addr:0x022111de
 data_ov003_022111e8 kind:bss addr:0x022111e8

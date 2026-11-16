@@ -3,7 +3,7 @@
 extern u8 *gTouchState;extern u16 *gKeyState;
 s32 IsMapConfirmEnabled(void);void Hide3DSprite(void*);void SetOv003SceneState(s32);void func_01ffa6fc(void*);void func_ov003_021f1bd4(void);
 void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(s32);
-void *func_0208b564(void*);s32 func_ov003_021f1894(void);void func_020899cc(void*,s32,s32,s32);void func_0208ae88(void*,s32);
+void *CreateTextLayer(void*);s32 func_ov003_021f1894(void);void func_020899cc(void*,s32,s32,s32);void func_0208ae88(void*,s32);
 void func_ov003_021e161c(void*);void func_ov003_021e1530(void*,u8);void func_ov003_021e3714(void*);
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
 s32 func_020aae44(void*);s32 func_020aae10(void*);void SetTextById(void*,s32);
@@ -20,8 +20,8 @@ static inline void ShowAction(void *p,u8 mode){
 void *dialog;
 ((HandlerFlags*)((u8*)p+0x60))->pending=1;((HandlerFlags*)((u8*)p+0x60))->mode=mode;
 switch(((HandlerFlags*)((u8*)p+0x60))->mode){
-case 0:dialog=func_0208b564(p);func_020899cc(dialog,3,func_ov003_021f1894()<<5,0x47000023);M2C_FIELD(dialog,u32*,0x58)|=0x400;func_0208ae88(dialog,0);break;
-case 1:dialog=func_0208b564(p);func_020899cc(dialog,3,func_ov003_021f1894()<<5,0x47000024);M2C_FIELD(dialog,u32*,0x58)|=0x400;func_0208ae88(dialog,1);break;
+case 0:dialog=CreateTextLayer(p);func_020899cc(dialog,3,func_ov003_021f1894()<<5,0x47000023);M2C_FIELD(dialog,u32*,0x58)|=0x400;func_0208ae88(dialog,0);break;
+case 1:dialog=CreateTextLayer(p);func_020899cc(dialog,3,func_ov003_021f1894()<<5,0x47000024);M2C_FIELD(dialog,u32*,0x58)|=0x400;func_0208ae88(dialog,1);break;
 }}
 static inline void UpdateSelection(void *p){
 void *sprite=M2C_FIELD(M2C_FIELD(p,u8**,0x48),void**,0x38);s32 h=func_020aae44(sprite)-4,w=func_020aae10(sprite);s16 x=M2C_FIELD(sprite,s16*,0x34),y=M2C_FIELD(sprite,s16*,0x36);u8 *cursor=M2C_FIELD(p,u8**,0x4c);

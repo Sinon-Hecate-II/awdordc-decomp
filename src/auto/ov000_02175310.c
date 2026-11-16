@@ -49,9 +49,9 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = func_020a26c8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x3C) = func_020a78ec(unit);
     kind = ((UnitKind75310 *)unit)->value;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = func_020a7b0c((s32)kind);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = GetUnitKindByte0((s32)kind);
     value = func_020a26f8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
-    tmp2 = func_020a7848(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    tmp2 = GetUnitTerrainPenalty(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x44) = value + tmp2;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x4C) = func_020a788c(unit);
     kind = ((UnitKind75310 *)unit)->value;
@@ -69,7 +69,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
 }
 #pragma pop
 void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
-    s32 func_020a7b0c(s32);
+    s32 GetUnitKindByte0(s32);
     s32 func_020a7b24(s32);
     s32 func_020a7bec(s32);
     s32 func_020a7bf8(s32);
@@ -97,7 +97,7 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x34) = func_020a7bec(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x3C) = 0;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = func_020a7b0c(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = GetUnitKindByte0(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x44) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x4C) = 0x63;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = func_020a7c98(statIndex);

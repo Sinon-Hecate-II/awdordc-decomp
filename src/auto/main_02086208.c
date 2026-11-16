@@ -162,7 +162,7 @@ void *func_020864c4(void *arg0) {
     return arg0;
 }
 
-void func_02086508(void) {
+void Init3DSpriteScene(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102210;
     func_01ffa3dc(&data_02102210, 7);
@@ -292,10 +292,10 @@ void func_020867a8(u32 arg0, s32 arg1) {
  M2C_FIELD(&data_02157734, u8 *, arg0 >> 3) = (M2C_FIELD(&data_02157734, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void func_020867dc(u32 arg0, s32 arg1) {
- extern M2C_UNK data_0215773c;
+void SetListRowFlag(u32 arg0, s32 arg1) {
+ extern M2C_UNK gListRowFlags;
  s32 shift = arg0 & 7;
- M2C_FIELD(&data_0215773c, u8 *, arg0 >> 3) = (M2C_FIELD(&data_0215773c, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
 void func_02086810(u32 arg0, s32 arg1) {
@@ -372,9 +372,9 @@ u8 func_020869e0(u32 arg0) {
     return (u8) (M2C_FIELD(&data_02157734, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
-u8 func_02086a00(u32 arg0) {
-    extern M2C_UNK data_0215773c;
-    return (u8) (M2C_FIELD(&data_0215773c, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+u8 IsListRowFlagSet(u32 arg0) {
+    extern M2C_UNK gListRowFlags;
+    return (u8) (M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 u8 func_02086a20(s32 arg0) {
@@ -488,7 +488,7 @@ void func_02086b9c(void) {
     } while (var_r5_5 < 0x40);
     var_r5_6 = 0;
     do {
-        func_020867dc(var_r5_6, 0);
+        SetListRowFlag(var_r5_6, 0);
         var_r5_6 += 1;
     } while (var_r5_6 < 0x40);
     var_r5_7 = 0;

@@ -102,12 +102,12 @@ return 0;
 #pragma opt_strength_reduction on
 s32 func_02051ed0(void **arg0) {
 M2C_UNK gpiCallErrorCallback(void **,s32,s32);
-s32 func_0205835c(void **,s32,s32 *);
+s32 gpiCheckConnectionSocket(void **,s32,s32 *);
 M2C_UNK gpiSetError(void **,s32,M2C_UNK *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020fe200,data_020fe3c4,data_020fe628,data_020fe650;
 s32 state,result;void *p=*arg0;
-result=func_0205835c(arg0,M2C_FIELD(p,s32 *,0x1d4),&state);
+result=gpiCheckConnectionSocket(arg0,M2C_FIELD(p,s32 *,0x1d4),&state);
 if(result)return result;
 if(state==4){
 gpiSetError(arg0,0x107,&data_020fe628);

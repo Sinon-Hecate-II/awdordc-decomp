@@ -7,8 +7,8 @@ typedef struct { u8 bytes[0x64]; u16 flags; } SystemInfo;
 
 void func_02006f14(void) {
     void func_02006ef8(s32);
-    void func_02004ff8(u32, void (*)(void));
-    void func_020051c8(u32);
+    void OS_SetFifoReceiveHandlers(u32, void (*)(void));
+    void OS_EnableIrqMask(u32);
     void func_02006f9c(void);
     extern u16 data_0212dfb4;
     if (data_0212dfb4 != 0) return;
@@ -18,8 +18,8 @@ void func_02006f14(void) {
     *(volatile u16 *)0x04000102 = 0;
     *(volatile u16 *)0x04000100 = 0;
     *(volatile u16 *)0x04000102 = 0xC1;
-    func_02004ff8(8, func_02006f9c);
-    func_020051c8(8);
+    OS_SetFifoReceiveHandlers(8, func_02006f9c);
+    OS_EnableIrqMask(8);
     M2C_FIELD(&data_0212dfb4, s32 *, 4) = 0;
 }
 
@@ -61,7 +61,7 @@ u16 func_020070a4(void) {
 
 #pragma opt_if_conversion off
 void func_020070b4(void *arg0) {
-void func_02005154(u32, void (*)(void), u32); s32 func_020073c0(s32); void func_020051c8(u32);
+void func_02005154(u32, void (*)(void), u32); s32 func_020073c0(s32); void OS_EnableIrqMask(u32);
 u64 now=GetSystemTick(); s64 delta; u16 timer;
 *(volatile u16 *)0x04000106=0;
 delta=M2C_FIELD(arg0,s64*,0xc)-now;
@@ -71,19 +71,19 @@ if(delta<0)timer=0xfffe;
 else if(delta<0x10000)timer=(u16)~(u32)delta;
 *(volatile u16 *)0x04000104=timer;
 *(volatile u16 *)0x04000106=0xc1;
-func_020051c8(0x10);
+OS_EnableIrqMask(0x10);
 }
 #pragma opt_if_conversion reset
 void func_02007140(void) {
  void func_02006ef8(s32);
- M2C_UNK func_020051f8(M2C_UNK);
+ M2C_UNK OS_DisableIrqMask(M2C_UNK);
  extern u16 data_0212dfc4;
  if (M2C_FIELD(&data_0212dfc4, u16 *, 0) != 0) return;
  M2C_FIELD(&data_0212dfc4, u16 *, 0) = 1;
  func_02006ef8(1);
  M2C_FIELD(&data_0212dfc4, s32 *, 4) = 0;
  M2C_FIELD(&data_0212dfc4, s32 *, 8) = 0;
- func_020051f8(0x10);
+ OS_DisableIrqMask(0x10);
 }
 
 u16 func_02007180(void) {
@@ -201,7 +201,7 @@ s32 func_020073c0(s32 arg0) {
     return arg0;
 }
 void func_020073d0(void) {
-    M2C_UNK func_020051f8(M2C_UNK);
+    M2C_UNK OS_DisableIrqMask(M2C_UNK);
     u64 GetSystemTick(void);
     void func_020070b4(void *);
     void func_020071a0(void *, u32, u32);
@@ -218,7 +218,7 @@ void func_020073d0(void) {
     u32 arg;
 
     *(volatile u16 *)0x04000106 = 0;
-    func_020051f8(0x10);
+    OS_DisableIrqMask(0x10);
     *(u32 *)((u8 *)&data_027e0000 + 0x3FF8) |= 0x10;
 
     now = GetSystemTick();
@@ -270,7 +270,7 @@ void func_020073d0(void) {
 #pragma interworking reset
 
 void func_020074c0(void) {
-    M2C_UNK func_020051f8(M2C_UNK);
+    M2C_UNK OS_DisableIrqMask(M2C_UNK);
     extern M2C_UNK data_0212dfd0;
     if (M2C_FIELD(&data_0212dfd0, u16 *, 0) != 0) {
         return;
@@ -278,7 +278,7 @@ void func_020074c0(void) {
     M2C_FIELD(&data_0212dfd0, u16 *, 0) = 1U;
     M2C_FIELD(&data_0212dfd0, s32 *, 0xC) = 0;
     M2C_FIELD(&data_0212dfd0, s32 *, 0x10) = 0;
-    func_020051f8(4);
+    OS_DisableIrqMask(4);
     M2C_FIELD(&data_0212dfd0, s32 *, 8) = 0;
     M2C_FIELD(&data_0212dfd0, s32 *, 4) = 0;
 }
@@ -336,7 +336,7 @@ void func_0200763c(s32 arg0) {
 void func_02007668(s32 arg0) {
     M2C_UNK func_01ff81e4();
     void func_0200519c(s32);
-    void func_02005228(s32);
+    void OS_SetIrqMask(s32);
     u16 func_0200558c(void);
     void func_0200763c(s32);
     M2C_UNK SystemHalt();
@@ -353,7 +353,7 @@ void func_02007668(s32 arg0) {
         func_02007ca4(2);
         func_02007ca4(3);
         func_0200519c(0x40000);
-        func_02005228(0xFFFFFFFF);
+        OS_SetIrqMask(0xFFFFFFFF);
     }
     *(s32 *)0x027FFC20 = arg0;
     func_0200763c(0x10);
@@ -390,7 +390,7 @@ void func_020077cc(void) {
  do { data_0212dfec[i]=0; i++; } while(i<9);
 }
 
-void func_02007800(s32 arg0,s32 arg1) {
+void GX_ReleaseBanksByOwner(s32 arg0,s32 arg1) {
  u32 OS_DisableInterrupts(void);
  void OS_RestoreInterrupts(u32);
  s32 func_020077c4(u32);

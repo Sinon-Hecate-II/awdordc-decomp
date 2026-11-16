@@ -257,22 +257,26 @@ else M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)=M2C_FIELD(fun
 RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));
 }
 
-void func_ov005_02214fec(s32 a) {
+/* Records tab 2 (the sorted list): picking a record selects it, or, when it is the
+ * selected one already, toggles it off.  Tabs 0 and 1 only select it.  Selecting
+ * reshuffles the enabled-record list so the record comes first, and then starts the
+ * pending action on it. */
+void RecordsMenu_HandlePick(s32 record) {
 s32 func_ov005_022140f8(s32);
 void func_ov005_022172d8(s32,s32);
 extern M2C_UNK gRecordsMenuState;
 switch(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)) {
 case 0: case 1:
-if(func_ov005_022140f8(a))func_ov005_022172d8(a,1);
+if(func_ov005_022140f8(record))func_ov005_022172d8(record,1);
 break;
 case 2:
-if(func_ov005_022140f8(a)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+a,u8 *,0xa2)==1) {
-RecordsMenu_ShuffleList(a);
+if(func_ov005_022140f8(record)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+record,u8 *,0xa2)==1) {
+RecordsMenu_ShuffleList(record);
 func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
-} else if(func_ov005_022140f8(a)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+a,u8 *,0xa2)==0) {
+} else if(func_ov005_022140f8(record)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+record,u8 *,0xa2)==0) {
 RecordsMenu_ShuffleList(-1);
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=-1;
-func_ov005_022172d8(a,1);
+func_ov005_022172d8(record,1);
 }
 break;
 }

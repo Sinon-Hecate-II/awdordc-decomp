@@ -212,27 +212,39 @@ if(chosen==NULL)return 0;
 return AllocFromBlock(arg0+0x24,chosen,address,arg1,1);
 }
 
-s32 func_0202a334(void *arg0, HeapRange *arg1) {
-HeapRange range; void *prev; u8 *p; u32 size;
-range=*arg1;
-prev=0;
-for(p=M2C_FIELD(arg0,u8 **,0);p!=0;p=M2C_FIELD(p,u8 **,12)) {
-if(p<arg1->start) prev=p;
-else {
-if(p==arg1->end) {
-size=M2C_FIELD(p,u32 *,4);
-range.end=(u8 *)(size+(u32)(p+16));
-UnlinkBlock(arg0,p);
-}
-break;
-}
-}
-if(prev!=0 && (u8 *)(M2C_FIELD(prev,u32 *,4)+(u32)((u8 *)prev+16))==arg1->start){
-range.start=prev;prev=UnlinkBlock(arg0,prev);
-}
-if((u32)(range.end-range.start)<16) return 0;
-InsertBlock(arg0,InitBlock(&range,0x4652),prev);
-return 1;
+/* Frees again a used-block range that was cut out of the heap at `range`
+ * (the SDK's free-walk): unlinks the block that starts at range->start,
+ * merges the free block in front of it when they are adjacent, and puts the
+ * resulting free block back on `freeList`.  Returns 0 when what is left is
+ * too small to be a block (16 bytes), 1 when a free block was inserted. */
+s32 func_0202a334(void *freeList, HeapRange *range)
+{
+    HeapRange merged;
+    void *prev;
+    u8 *block;
+    u32 size;
+
+    merged = *range;
+    prev = 0;
+    for (block = M2C_FIELD(freeList, u8 **, 0); block != 0; block = M2C_FIELD(block, u8 **, 12)) {
+        if (block < range->start) {
+            prev = block;
+        } else {
+            if (block == range->end) {
+                size = M2C_FIELD(block, u32 *, 4);
+                merged.end = (u8 *)(size + (u32)(block + 16));
+                UnlinkBlock(freeList, block);
+            }
+            break;
+        }
+    }
+    if (prev != 0 && (u8 *)(M2C_FIELD(prev, u32 *, 4) + (u32)((u8 *)prev + 16)) == range->start) {
+        merged.start = prev;
+        prev = UnlinkBlock(freeList, prev);
+    }
+    if ((u32)(merged.end - merged.start) < 16) return 0;
+    InsertBlock(freeList, InitBlock(&merged, HEAP_BLOCK_FREE), prev);
+    return 1;
 }
 
 void *func_0202a424(u32 arg0, u32 arg1, s32 arg2) {
@@ -552,7 +564,7 @@ void func_0202a968(void) {
 
 void func_0202a9f0(void) {
     s32 func_02009100(M2C_UNK);
-    M2C_UNK func_020092d0(M2C_UNK);
+    M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK func_0202aeb4();
     M2C_UNK func_0202baa4();
     M2C_UNK func_0202d9e4();
@@ -562,21 +574,21 @@ void func_0202a9f0(void) {
     func_0202aeb4();
     func_0202baa4();
     func_0202d9e4();
-    func_020092d0(0);
+    Sound_FlushCommands(0);
 }
 
 void func_0202aa20(void) {
-    M2C_UNK func_02008cf0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0200948c(s32);
-    s32 func_020094f8();
+    M2C_UNK Sound_StopChannels(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_WaitForCommand(s32);
+    s32 Sound_GetCommandCounter();
     M2C_UNK func_0202bc1c();
     s32 temp_r4;
 
     func_0202bc1c();
-    func_02008cf0(0, 0, 0, 0);
-    temp_r4 = func_020094f8();
-    func_020092d0(1);
-    func_0200948c(temp_r4);
+    Sound_StopChannels(0, 0, 0, 0);
+    temp_r4 = Sound_GetCommandCounter();
+    Sound_FlushCommands(1);
+    Sound_WaitForCommand(temp_r4);
 }
 
 void func_0202aa58(void) {

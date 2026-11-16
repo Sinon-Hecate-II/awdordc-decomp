@@ -314,13 +314,13 @@ void CopyMovePath(void *arg0, void *arg1)
   }
   goto loop;
   end:
-  *dst = *((volatile s8 *) src);
+  *dst = *((volatile s8 *)src);
+  return;
 
   normal:
   src++;
 
   *(dst++) = token;
-  dst[0] = token;
   goto loop;
 }
 
@@ -329,21 +329,24 @@ void func_ov000_02169850(void) {
 }
 
 extern u32* D_027E0058;
+/* Check a pending movement path to (x,y): every step is valid while the path stays
+ * on the current player's reachable-cell bitmap, unless the player's units may cross
+ * any terrain.  An own unit on the destination (MOVE_DIR_ATTACK/10) is a valid move. */
 int IsMovePathValid(int x,int y,const signed char *cmd) {
 u8 *map=(u8 *)*gCurrentMap;
 u32 pos;
-if(*(u8 *)(map+*(u16 *)(map+0x52a4)*140+0x67c3)&2)return 1;
+if(*(u8 *)(map+*(u16 *)(map+MAP_CURRENT_PLAYER)*140+0x67c3)&2)return 1;
 for(;;){
-pos=x+*(u16 *)(map+y*2+0x3758);
-if((u8)(map[(pos>>3)+0x5201] & (1<<(pos&7))))return 1;
+pos=x+*(u16 *)(map+y*2+MAP_ROW_OFFSETS);
+if((u8)(map[(pos>>3)+MAP_CELL_BITMAP] & (1<<(pos&7))))return 1;
 switch(*cmd++){
-case 9:cmd++;break;
-case -1: case 4:return 0;
-case 10:return 1;
-case 0:x--;break;
-case 1:x++;break;
-case 2:y++;break;
-case 3:y--;break;
+case 9:cmd++;break;   /* skip the step's extra byte */
+case -1: case MOVE_DIR_STOP:return 0;
+case MOVE_DIR_ATTACK:return 1;
+case MOVE_DIR_LEFT:x--;break;
+case MOVE_DIR_RIGHT:x++;break;
+case MOVE_DIR_DOWN:y++;break;
+case MOVE_DIR_UP:y--;break;
 }
 }
 }

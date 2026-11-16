@@ -140,15 +140,18 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     M2C_FIELD(p, s32 *, 0x3c) = (s32)M2C_FIELD(unitPtr, u8 *, 0x2);
 }
 
+/* Orders two units for a battle preview: first by tile y, and for units on the
+ * same row by their owner's HQ tile x (the low seven bits, bit 7 marks no HQ).
+ * Returns 1 when unit a is drawn before unit b. */
 s32 func_0209f0a0(u8 *a,u8 *b){
 extern void **gCurrentMap;s32 i,j;u8 *p,*q,*base;
 if(a[1]>b[1])return 1;
 if(a[1]==b[1]){
-if(b)i=(b-((u8 *)*gCurrentMap+0x59a4))/14;else i=0;
+if(b)i=(b-((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;else i=0;
 base=*gCurrentMap;
-q=base+0x67a4+((i>>6)+1)*140;
-if(a)j=(a-(base+0x59a4))/14;else j=0;
-p=base+0x67a4+((j>>6)+1)*140;
+q=base+MAP_PLAYER_STATES+((i>>6)+1)*MAP_PLAYER_STRIDE;
+if(a)j=(a-(base+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;else j=0;
+p=base+MAP_PLAYER_STATES+((j>>6)+1)*MAP_PLAYER_STRIDE;
 if((p[0x2b]&127)>(q[0x2b]&127))return 1;
 }
 return 0;
@@ -212,7 +215,7 @@ void InitBattleMapConfig(void) {
     extern MapConfigRecord gMapConfig;
     void ResetPlayerSetupTables(void);
     s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
-    void func_020a230c(s32,s32); void func_020a232c(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
+    void SetPlayerCoId(s32,s32); void SetPlayerArmyId(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
     s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 func_020a89a4(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void func_020a4100(void); s32 MapData_GetTileset(s32);
     s32 player, value, fieldA, fieldB, playerFlags, team;
@@ -227,11 +230,11 @@ void InitBattleMapConfig(void) {
         fieldB = func_020a8a4c(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         playerFlags = func_020a8a14(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         switch (value) {
-        case 0: func_020a230c(player, 0); break;
+        case 0: SetPlayerCoId(player, 0); break;
         case 15: break;
-        default: func_020a230c(player, value); break;
+        default: SetPlayerCoId(player, value); break;
         }
-        func_020a232c(player, fieldA);
+        SetPlayerArmyId(player, fieldA);
         SetPlayerIdForSlot(player, fieldB);
         if (playerFlags & 0x80) team = 1;
         else team = (player != 1) ? 2 : 1;
@@ -262,9 +265,9 @@ void InitBattleMapConfig(void) {
  * and initialize the player config record at gMapConfig (flags word plus
  * default values 0/1000/0/0), setting its default flag bits. */
 void ResetPlayerSetupTables(void) {
-    void func_020a230c(s32, s32);
+    void SetPlayerCoId(s32, s32);
     void SetPlayerIdForSlot(s32, s32);
-    void func_020a232c(s32, s32);
+    void SetPlayerArmyId(s32, s32);
     void func_020a233c(s32, s32);
     void func_020a234c(s32, s32);
     void SetPlayerTeam(s32, s32);
@@ -292,18 +295,18 @@ void ResetPlayerSetupTables(void) {
     SetPlayerIdForSlot(2, 2);
     SetPlayerIdForSlot(3, 3);
     SetPlayerIdForSlot(4, 4);
-    func_020a230c(1, 0);
-    func_020a230c(2, 0);
-    func_020a230c(3, 0);
-    func_020a230c(4, 0);
+    SetPlayerCoId(1, 0);
+    SetPlayerCoId(2, 0);
+    SetPlayerCoId(3, 0);
+    SetPlayerCoId(4, 0);
     func_020a234c(1, 0);
     func_020a234c(2, 0);
     func_020a234c(3, 0);
     func_020a234c(4, 0);
-    func_020a232c(1, 1);
-    func_020a232c(2, 2);
-    func_020a232c(3, 3);
-    func_020a232c(4, 4);
+    SetPlayerArmyId(1, 1);
+    SetPlayerArmyId(2, 2);
+    SetPlayerArmyId(3, 3);
+    SetPlayerArmyId(4, 4);
     func_020a233c(1, 0);
     func_020a233c(2, 0);
     func_020a233c(3, 0);

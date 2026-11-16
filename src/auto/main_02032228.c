@@ -177,13 +177,16 @@ void FormatNasId(s32,s32,s32);
 FormatNasId(b,M2C_FIELD(a,s32 *,0x24),c);
 }
 
+/* Compares two NAS session/profile records (Unk032Record).  Records of
+ * different kinds never match; keyed records compare their whole key, joined
+ * records their profile id, and gpi records their encoded gpi user id. */
 s32 func_02032710(void *a,void *b){
 s32 func_02031e28(void *); s32 func_02031dcc(void *); u64 func_02031d90(void *); s32 func_02031db0(void *); u64 func_02031db8(void *);
-s32 type=func_02031e28(a);
-if(type!=func_02031e28(b))return 0;
-if(type==3)return func_02031dcc(a)==func_02031dcc(b);
-if(type==1){if(func_02031d90(a)==func_02031d90(b) && func_02031db0(a)==func_02031db0(b))return 1;return 0;}
-if(type==2)return func_02031db8(a)==func_02031db8(b);
+s32 kind=func_02031e28(a);
+if(kind!=func_02031e28(b))return 0;
+if(kind==3)return func_02031dcc(a)==func_02031dcc(b);
+if(kind==1){if(func_02031d90(a)==func_02031d90(b) && func_02031db0(a)==func_02031db0(b))return 1;return 0;}
+if(kind==2)return func_02031db8(a)==func_02031db8(b);
 return 0;
 }
 

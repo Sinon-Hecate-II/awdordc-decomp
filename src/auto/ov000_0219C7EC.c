@@ -59,24 +59,28 @@ done:
     }
 }
 
+/* Score the current player's AI units by movement type: a kind-17 unit moves as a
+ * kind-14 unit plus one, a kind-15 unit as a kind-14 unit plus two, everything else
+ * as its own kind; sea and air kinds not loaded on a transport lose ten points more.
+ * The scored unit-id list is then sorted best-first. */
 void func_ov000_0219caac(void) {
 u8 func_020a7b24(s32);void func_ov000_0219c874(s32);
 extern u8 gAiUnitList;extern s8 gAiUnitScores;extern s32 *gCurrentMap;extern u8 gUnitKindStats[];
-s32 n;u8 *entry;u8 *p;u8 *q;u8 unit;u32 code;
-p=&gAiUnitList;q=(u8 *)&gAiUnitScores;n=0;
+s32 count;u8 *entry;u8 *p;u8 *q;u8 unit;u32 kind;
+p=&gAiUnitList;q=(u8 *)&gAiUnitScores;count=0;
 while(1){
 unit=*p;if(!unit)break;
-entry=(u8 *)(*gCurrentMap+0x59a4+unit*14);
-code=(u32)(*entry<<26)>>26;
-if(code==17)*q=func_020a7b24(14)+1;
-else if(code==15)*q=func_020a7b24(14)+2;
-else *q=func_020a7b24(code);
-code=(u32)(*entry<<26)>>26;
-if(gUnitKindStats[code*112+19]&16)
-if(!(*(u16 *)(entry+4)&8))*q=*(volatile u8 *)q+10;
-p++;q++;n++;
+entry=(u8 *)(*gCurrentMap+MAP_UNIT_RECORDS+unit*MAP_UNIT_STRIDE);
+kind=(u32)(*entry<<26)>>26;
+if(kind==17)*q=func_020a7b24(14)+1;
+else if(kind==15)*q=func_020a7b24(14)+2;
+else *q=func_020a7b24(kind);
+kind=(u32)(*entry<<26)>>26;
+if(gUnitKindStats[kind*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_FLAGS]&UNIT_KIND_FLAGS_SEA)
+if(!(*(u16 *)(entry+MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED))*q=*(volatile u8 *)q+10;
+p++;q++;count++;
 }
-func_ov000_0219c874(n);
+func_ov000_0219c874(count);
 }
 
 void ScoreAiUnitsByAttackRange(void) {
@@ -106,20 +110,20 @@ loop_1:
 }
 
 void ScoreAiUnitsByPosition(s32 arg0) {
-s8 func_020a7824(s32,u8,u8);
+s8 GetUnitMoveScoreWeather(s32,u8,u8);
 extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
 s32 n;u8 *p;s8 *q;u8 x;s32 a;
 p=&gAiUnitList;q=&gAiUnitScores;n=0;
-loop: x=*p;if(x){a=x*14+(*gCurrentMap+0x59a4);*q=func_020a7824(a,M2C_FIELD(a,u8 *,1),M2C_FIELD(a,u8 *,2));q++;p++;n++;goto loop;}
+loop: x=*p;if(x){a=x*14+(*gCurrentMap+0x59a4);*q=GetUnitMoveScoreWeather(a,M2C_FIELD(a,u8 *,1),M2C_FIELD(a,u8 *,2));q++;p++;n++;goto loop;}
 if(arg0==0){func_ov000_0219c874(n);return;}func_ov000_0219c7ec(n);
 }
 
 void func_ov000_0219cc84(void) {
-s8 func_020a7824(s32,u8,u8);
+s8 GetUnitMoveScoreWeather(s32,u8,u8);
 extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
 s32 n;u8 *p;s8 *q;u8 x;s32 a;
 p=&gAiUnitList;q=&gAiUnitScores;n=0;
-loop: x=*p;if(x){a=x*14+(*gCurrentMap+0x59a4);*q=func_020a7824(a,M2C_FIELD(a,u8 *,1),M2C_FIELD(a,u8 *,2));p++;n++;if(!(M2C_FIELD(a,u16 *,4)&8))*q=*(volatile u8*)q+10;q++;goto loop;}
+loop: x=*p;if(x){a=x*14+(*gCurrentMap+0x59a4);*q=GetUnitMoveScoreWeather(a,M2C_FIELD(a,u8 *,1),M2C_FIELD(a,u8 *,2));p++;n++;if(!(M2C_FIELD(a,u16 *,4)&8))*q=*(volatile u8*)q+10;q++;goto loop;}
 func_ov000_0219c874(n);
 }
 
@@ -221,7 +225,7 @@ void BuildAiRole1UnitList(void) {
             if (type != 0) {
                 if (!(M2C_FIELD((u8 *)table + stride, u16 *, MAP_UNIT_FLAGS) & 1)
                     && gUnitKindStats[type * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 1
-                    && ((u32)(M2C_FIELD((u8 *)table + stride, u16 *, MAP_UNIT_FACING) << 0x10) >> 0x1B) != 0
+                    && ((u32)(M2C_FIELD((u8 *)table + stride, u16 *, MAP_UNIT_CAPTURE) << 0x10) >> 0x1B) != 0
                     && ((u32)(M2C_FIELD((u8 *)table + stride, u8 *, MAP_UNIT_AI_STATE) << 0x1C) >> 0x1C) == 0) {
                     out = gAiUnitListCursor;
                     gAiUnitListCursor = out + 1;

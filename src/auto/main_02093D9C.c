@@ -605,14 +605,14 @@ void func_02094a74(M2C_UNK arg0) {
 
 void func_02094a94(s32 arg0) {
     void *GetScenePanelState(s32);
-    M2C_UNK func_0209787c(s32);
+    M2C_UNK HideScenePanel(s32);
     s32 var_r4;
 
     if (func_0209600c() != 0) {
         var_r4 = 0;
         do {
             if (M2C_FIELD(GetScenePanelState(var_r4), s16 *, 8) != 0) {
-                func_0209787c(var_r4);
+                HideScenePanel(var_r4);
             }
             var_r4 += 1;
         } while (var_r4 < 3);
@@ -621,7 +621,7 @@ void func_02094a94(s32 arg0) {
     if (M2C_FIELD(GetScenePanelState(arg0), s16 *, 8) == 0) {
         return;
     }
-    func_0209787c(arg0);
+    HideScenePanel(arg0);
 }
 
 void func_02094af8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

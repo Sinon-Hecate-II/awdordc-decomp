@@ -77,7 +77,7 @@ func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;re
 void func_ov001_021714d0(void);
 #pragma thumb off
 void func_ov001_021713c4(s8 arg0) {
-s32 *func_ov001_0218a5f0(s32,s32); void *Ov001_Alloc(s32,s32); s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
+s32 *func_ov001_0218a5f0(s32,s32); void *Ov001_Alloc(s32,s32); s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
 extern M2C_UNK data_ov001_0218f278; extern void *data_ov001_02193cc4;
 s32 *p,*q,*r; void *a; s8 v;
 a=Ov001_Alloc(12,4);data_ov001_02193cc4=a;M2C_FIELD(a,s8 *,8)=arg0;
@@ -88,18 +88,18 @@ M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xc00)|0x400;
 q=M2C_FIELD(data_ov001_02193cc4,s32 **,4);*q&=~0xc00;
 M2C_FIELD(q,u16 *,4)=(M2C_FIELD(q,u16 *,4)&~0xf000)|((u8)v<<12);
 r=M2C_FIELD(data_ov001_02193cc4,s32 **,4);*r=(*r&0xfe00ff00)|0xe6008b;
-M2C_FIELD(data_ov001_02193cc4,s32 *,0)=func_ov001_0218c884(1,func_ov001_021714d0,0,120);
+M2C_FIELD(data_ov001_02193cc4,s32 *,0)=Ov001_AddTask(1,func_ov001_021714d0,0,120);
 }
 #pragma merge_constants off
 void func_ov001_02171494(void) {
-    M2C_UNK func_ov001_0218b71c(void **);
+    M2C_UNK Ov001_FreeAlloc(void **);
     M2C_UNK Ov001_ReleaseSprite(s32);
     M2C_UNK func_ov001_0218c94c(M2C_UNK, s32);
     extern void *data_ov001_02193cc4;
     extern void *gOv001IconRow;
     func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193cc4, s32 *, 0));
     Ov001_ReleaseSprite(M2C_FIELD(data_ov001_02193cc4, s32 *, 4));
-    func_ov001_0218b71c(&gOv001IconRow - 1);
+    Ov001_FreeAlloc(&gOv001IconRow - 1);
 }
 #pragma merge_constants reset
 void func_ov001_021714d0(void) {
@@ -132,12 +132,12 @@ void func_ov001_021714d0(void) {
    animation timer (120 units). */
 void func_ov001_0217159c(s32 id) {
     extern const u8 gOv001IconRowLayout[];
-    void func_ov001_02171768(void *);
+    void Ov001_IconRow_Layout(void *);
     void *Ov001_Alloc(s32, s32);
-    void *func_ov001_0218a61c(s32, s32, s32);
+    void *Ov001_CreateSprite(s32, s32, s32);
     void Ov001_SetSpritePalette(void *, s32, s32);
-    void func_ov001_021717fc(void);
-    s32 func_ov001_0218c884(s32, void (*)(void), s32, s32);
+    void Ov001_IconRow_SlideOut(void);
+    s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
     s32 n, i;
     const u8 *p;
     n = gOv001IconRowCount[id];
@@ -148,21 +148,21 @@ void func_ov001_0217159c(s32 id) {
     if (n > 0) {
         p = gOv001IconRowLayout + id * 2;
         do {
-            ((void **)gOv001IconRow)[i] = func_ov001_0218a61c(0, *p++, 1);
+            ((void **)gOv001IconRow)[i] = Ov001_CreateSprite(0, *p++, 1);
             Ov001_SetSpritePalette(((void **)gOv001IconRow)[i], -1, 1);
             i++;
         } while (i < n);
     }
-    M2C_FIELD(gOv001IconRow, void **, 8) = func_ov001_0218a61c(0, 1, 1);
+    M2C_FIELD(gOv001IconRow, void **, 8) = Ov001_CreateSprite(0, 1, 1);
     Ov001_SetSpritePalette(M2C_FIELD(gOv001IconRow, void **, 8), -1, 1);
-    func_ov001_02171768((void *)192);
-    M2C_FIELD(gOv001IconRow, s32 *, 12) = func_ov001_0218c884(0, func_ov001_021717fc, 0, 120);
+    Ov001_IconRow_Layout((void *)192);
+    M2C_FIELD(gOv001IconRow, s32 *, 12) = Ov001_AddTask(0, Ov001_IconRow_SlideOut, 0, 120);
 }
 
 void func_ov001_02171694(void){
- extern void *gOv001IconRow;void func_ov001_0218c924(s32,void (*)(void));void func_ov001_02171a44(void);
+ extern void *gOv001IconRow;void Ov001_SetSlideStep(s32,void (*)(void));void func_ov001_02171a44(void);
  M2C_FIELD(gOv001IconRow,u8 *,0x19)=1;
- func_ov001_0218c924(M2C_FIELD(gOv001IconRow,s32 *,12),func_ov001_02171a44);
+ Ov001_SetSlideStep(M2C_FIELD(gOv001IconRow,s32 *,12),func_ov001_02171a44);
 }
 
 #pragma thumb off
@@ -185,5 +185,5 @@ void Ov001_UnlockIconRow(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRo
 
 void Ov001_LockIconRow(void){M2C_FIELD(gOv001IconRow,u8 *,0x18)=1;}
 
-void func_ov001_02171768(void *a){s32 n,i;n=gOv001IconRowCount[M2C_FIELD(gOv001IconRow,u8 *,0x17)];Ov001_MoveSpriteLayout(M2C_FIELD(gOv001IconRow,void **,8),-1,0,a);for(i=0;i<n;i++)Ov001_MoveSpriteLayout(((void **)gOv001IconRow)[i],-1,gOv001IconRowX[((const u8 (*)[2])gOv001IconRowSlot)[M2C_FIELD(gOv001IconRow,u8 *,0x17)][i]*2],(u8 *)a+4);}
+void Ov001_IconRow_Layout(void *a){s32 n,i;n=gOv001IconRowCount[M2C_FIELD(gOv001IconRow,u8 *,0x17)];Ov001_MoveSpriteLayout(M2C_FIELD(gOv001IconRow,void **,8),-1,0,a);for(i=0;i<n;i++)Ov001_MoveSpriteLayout(((void **)gOv001IconRow)[i],-1,gOv001IconRowX[((const u8 (*)[2])gOv001IconRowSlot)[M2C_FIELD(gOv001IconRow,u8 *,0x17)][i]*2],(u8 *)a+4);}
 

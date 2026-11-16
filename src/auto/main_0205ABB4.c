@@ -57,9 +57,9 @@ func_0205ccd8(a,b,c,d,e);
 }
 
 void func_0205ad60(M2C_UNK arg0) {
-    void func_0205afec();
+    void GT2NotifyConnectionClosed();
     M2C_UNK func_0205cef8(M2C_UNK);
-    func_0205afec();
+    GT2NotifyConnectionClosed();
     func_0205cef8(arg0);
 }
 
@@ -118,22 +118,22 @@ if(Vector_GetCount(M2C_FIELD(a,s32 *,0x98))) {func_0205a424(a,0,b,c,d);return;}
 func_0205cc20(a,b,c,d);
 }
 
-void func_0205afcc(M2C_UNK arg0) {
+void GT2FailConnectionAttempt(M2C_UNK arg0) {
     M2C_UNK func_0205ac1c(M2C_UNK, M2C_UNK);
     func_0205ac1c(arg0, 1);
 }
 
 void func_0205afdc(s32 *arg0) {
-    func_0205afcc(*arg0);
+    GT2FailConnectionAttempt(*arg0);
 }
 
-void func_0205afec(void *a) {
+void GT2NotifyConnectionClosed(void *a) {
 extern s32 data_0213e110;
-void func_02049098(s32,void (*)(s32 *),s32);
+void Vector_ForEach(s32,void (*)(s32 *),s32);
 void func_0205afdc(s32 *);
 if(data_0213e110==1)return;
 data_0213e110=1;
-func_02049098(M2C_FIELD(a,s32 *,12),func_0205afdc,0);
+Vector_ForEach(M2C_FIELD(a,s32 *,12),func_0205afdc,0);
 data_0213e110=0;
 }
 
@@ -180,10 +180,10 @@ s16 Gt2CompareSequence(s32 arg0, s32 arg1) {
 }
 
 s32 func_0205b110(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
-s32 func_0205a0d0(s32,s32,s32,s32);s32 func_0205a29c(s32,s32);
+s32 Gt2ConnectionCallCallback(s32,s32,s32,s32);s32 func_0205a29c(s32,s32);
 s32 n=M2C_FIELD(a,s32 *,12);
 if(n<5){
-if(M2C_FIELD(a,s32 *,16)){gti2MarkConnectionClosed((void *)a);if(!func_0205a0d0(a,b,0,0))return 0;}
+if(M2C_FIELD(a,s32 *,16)){gti2MarkConnectionClosed((void *)a);if(!Gt2ConnectionCallCallback(a,b,0,0))return 0;}
 else {if(n==4)M2C_FIELD(a,s32 *,20)=1;gti2MarkConnectionClosed((void *)a);}
 }else if(n!=7){gti2MarkConnectionClosed((void *)a);if(!func_0205a29c(a,c))return 0;}
 return 1;
@@ -211,7 +211,7 @@ s32 n,i,removed; s32 *p;
 n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n)return 1;
 for(i=0;i<n;i++){if(Gt2CompareSequence(M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i),u16 *,8),b)>=0)break;}
 if(!i)return 1;
-while(i--){func_0204890c(M2C_FIELD(a,s32 *,0x60),i);}
+while(i--){Vector_RemoveItem(M2C_FIELD(a,s32 *,0x60),i);}
 n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n){M2C_FIELD(a,s32 *,0x58)=0;return 1;}
 removed=*(s32 *)Vector_GetItem(M2C_FIELD(a,s32 *,0x60),0);
 for(i=0;i<n;i++){p=Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i);*p-=removed;}
@@ -219,7 +219,7 @@ func_02059e78((u8 *)a+0x50,0,removed);return 1;}
 
 s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 Vector_GetCount(s32);
-    s32 func_0205a1b8(void *, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 Gt2ConnectionCallMessageCallback(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 gti2ReceiveFilterCallback(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
     s32 var_r0;
@@ -236,7 +236,7 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
         }
         return var_r0;
     }
-    if (func_0205a1b8(arg0, arg1, arg2, 0) != 0) {
+    if (Gt2ConnectionCallMessageCallback(arg0, arg1, arg2, 0) != 0) {
         return 1;
     }
     return 0;
@@ -244,13 +244,13 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 s32 func_0205b370(void *a,s32 b,s32 c) {
 s32 Vector_GetCount(s32);
-s32 func_0205a1b8(void *,s32,s32,s32);
+s32 Gt2ConnectionCallMessageCallback(void *,s32,s32,s32);
 s32 gti2ReceiveFilterCallback(void *,s32,s32,s32,s32);
 s32 n=M2C_FIELD(a,s32 *,12),r;
 if(n!=5&&n!=6){if(!Gt2CloseConnection((s32)a))return 0;}
 else {
 if(Vector_GetCount(M2C_FIELD(a,s32 *,0x9c))){if(gti2ReceiveFilterCallback(a,0,b,c,1))r=1;else r=0;return r;}
-if(!func_0205a1b8(a,b,c,1))return 0;
+if(!Gt2ConnectionCallMessageCallback(a,b,c,1))return 0;
 }
 return 1;
 }
@@ -292,9 +292,9 @@ s32 gti2HandleClientResponse(void *connection, s32 message, s32 length) {
     return Gt2InvokeConnectAttempt(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), connection, M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP), M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT), GetTickCountMs() - M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME), message + GT2_RESPONSE_SIZE, length - GT2_RESPONSE_SIZE) != 0;
 }
 
-s32 func_0205b6a0(void *a) {s32 func_0205a0d0();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(func_0205a0d0(a,0,0,0))return 1;return 0;}
+s32 func_0205b6a0(void *a) {s32 Gt2ConnectionCallCallback();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(Gt2ConnectionCallCallback(a,0,0,0))return 1;return 0;}
 
-s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 gti2SendClosed();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;}gti2MarkConnectionClosed(a);if(!gti2SendClosed(a))return 0;if(func_0205a0d0(a,2,b,c))return 1;return 0;}
+s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 Gt2ConnectionCallCallback();s32 gti2SendClosed();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;}gti2MarkConnectionClosed(a);if(!gti2SendClosed(a))return 0;if(Gt2ConnectionCallCallback(a,2,b,c))return 1;return 0;}
 
 #pragma push
 #pragma opt_propagation off
@@ -349,7 +349,7 @@ if(!func_0205caac(session,(u16)(M2C_FIELD(prev,u16 *,12)+1),(u16)(sequence-1)))r
 *error=0;return 1;
 }
 
-void func_0205ba64(void *a,void *b,s32 c) {void *Vector_GetItem(s32,s32);s32 x,y,n,i,max;void *p;s32 v;x=M2C_FIELD(b,s32 *,0);y=M2C_FIELD(b,s32 *,4);max=0;func_0204890c(M2C_FIELD(a,s32 *,92),c);n=Vector_GetCount(M2C_FIELD(a,s32 *,92));i=0;if(n>0)do{p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,s32 *,0)>x){M2C_FIELD(p,s32 *,0)-=y;v=M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,4);if(max<=v)max=v;}i++;}while(i<n);func_02059e78((char*)a+68,x,y);}
+void func_0205ba64(void *a,void *b,s32 c) {void *Vector_GetItem(s32,s32);s32 x,y,n,i,max;void *p;s32 v;x=M2C_FIELD(b,s32 *,0);y=M2C_FIELD(b,s32 *,4);max=0;Vector_RemoveItem(M2C_FIELD(a,s32 *,92),c);n=Vector_GetCount(M2C_FIELD(a,s32 *,92));i=0;if(n>0)do{p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,s32 *,0)>x){M2C_FIELD(p,s32 *,0)-=y;v=M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,4);if(max<=v)max=v;}i++;}while(i<n);func_02059e78((char*)a+68,x,y);}
 
 s32 Gt2DispatchPendingCommands(void *a){s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 Gt2DispatchCommand(void *,s32,s32,s32);s32 i;void *p;restart:for(i=Vector_GetCount(M2C_FIELD(a,s32 *,92))-1;i>=0;i--){p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,u16 *,12)==M2C_FIELD(a,u16 *,102)){if(Gt2DispatchCommand(a,M2C_FIELD(p,s32 *,8),M2C_FIELD(a,s32 *,68)+M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4))==0)return 0;func_0205ba64(a,p,i);goto restart;}}return 1;}
 

@@ -13,6 +13,9 @@ void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 }
 #pragma opt_common_subs reset
+/* Set up the ov001 online profile screen: allocate its work block, store the
+ * task's continuation callback, copy the default match settings, hand the
+ * block to the profile subsystem and install the screen's task. */
 void func_ov001_02175f8c(void *arg0) {
     s32 Ov001_Alloc(s32, s32);
     s32 func_ov001_02175f48(M2C_UNK, u32);
@@ -20,7 +23,7 @@ void func_ov001_02175f8c(void *arg0) {
     void func_ov001_02188c78(M2C_UNK, void *);
     s32 func_ov001_02188ec4(void);
     void SystemHalt(void);
-    M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
     extern void *data_ov001_02193d50;
     extern u8 data_ov001_0219031c[28];
     extern M2C_UNK gOv001MessageArchive;
@@ -42,14 +45,13 @@ void func_ov001_02175f8c(void *arg0) {
     buf.g = (u8)func_ov001_02175e34();
     func_ov001_02188c78((M2C_UNK)data_ov001_02193d50, &buf);
     if (func_ov001_02188ec4() == 0) SystemHalt();
-    M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E29C) = func_ov001_0218c884(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
-
+    M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E29C) = Ov001_AddTask(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
 }
 
 void func_ov001_02176078(void) {
-    M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_02176098;
-    func_ov001_0218c884(0, &func_ov001_02176098, 0, 0x78);
+    Ov001_AddTask(0, &func_ov001_02176098, 0, 0x78);
 }
 
 void func_ov001_02176098(M2C_UNK arg0) {
@@ -90,7 +92,7 @@ void *func_ov001_02176114(void) {
 #pragma opt_propagation off
 void func_ov001_0217612c(void *arg0) {
 void func_ov001_02188f40(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
-M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK func_ov001_0218b71c(M2C_UNK*);
+M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK Ov001_FreeAlloc(M2C_UNK*);
 void *func_ov001_02189308(void); void CopyU16(const void*,void*,u32);
 u8 sp1,sp0; u8 *main; void (*fp)(s32);
 func_ov001_02188f40();
@@ -154,7 +156,7 @@ if(sp0==0)return;
 
 fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
 if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(2);return;
-tail:Ov001_PostTaskMessage(0,(M2C_UNK)arg0);func_ov001_0218b71c((M2C_UNK*)&data_ov001_02193d50);done:return;}
+tail:Ov001_PostTaskMessage(0,(M2C_UNK)arg0);Ov001_FreeAlloc((M2C_UNK*)&data_ov001_02193d50);done:return;}
 #pragma pop
 void func_ov001_021763cc(void) {
     s32 Ov001_Alloc(s32, s32);
@@ -174,12 +176,12 @@ void func_ov001_021763cc(void) {
 void func_ov001_02176438(void) {
     M2C_UNK SystemHalt();
     s32 func_ov001_021712c8();
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK data_ov001_02193d54;
     if (func_ov001_021712c8() != 1) {
         SystemHalt();
     }
-    func_ov001_0218b71c(&data_ov001_02193d54);
+    Ov001_FreeAlloc(&data_ov001_02193d54);
 }
 
 s32 func_ov001_0217645c(s32 arg0) {

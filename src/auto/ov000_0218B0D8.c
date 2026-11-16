@@ -134,13 +134,13 @@ int func_ov000_0218b0d8(void *arg0) {
  }
  if(best) {
  if(arg0) return 1;
- func_ov000_0217c3a4();
+ ClearUnitMoveTarget();
  func_ov000_021843ec(bestX,bestY,((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[bestId].unk0);
  SetMapCursor((s16)bestX,(s16)bestY,4,(u8)bestId,0);
  }
  if(repairHP!=255) {
  if(arg0) return 1;
- func_ov000_0217c3a4();
+ ClearUnitMoveTarget();
  SetMapCursor((s16)repairX,(s16)repairY,5,(u8)rx,(u8)ry);
  }
  if(arg0) return 0;

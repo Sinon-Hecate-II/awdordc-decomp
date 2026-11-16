@@ -40,7 +40,7 @@ void func_ov002_021e99f0(void *arg0, s32 arg1) {
     extern u8 gEffectTable[];
     extern u8 gEffectDefaultVariant[];
     extern u8 data_ov002_021f3108[];
-    extern u8 data_ov002_021f314e[];
+    extern u8 gEffectHasVariants[];
     s16 temp_r7;
     s16 var_r5;
     s16 var_r6;
@@ -76,7 +76,7 @@ void func_ov002_021e99f0(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, void **, 0x54) = temp_r0_2;
     temp_r1 = M2C_FIELD(arg0, u8 *, 0x8C);
     temp_r2 = temp_r1 * 0x18;
-    if (M2C_FIELD(data_ov002_021f314e + (temp_r1 * 0x2C), u8 *, 0) != 0) {
+    if (M2C_FIELD(gEffectHasVariants + (temp_r1 * 0x2C), u8 *, 0) != 0) {
         var_r0 = M2C_FIELD(M2C_FIELD(gEffectTable, void **, temp_r2), void **, 0x28);
         var_r3 = var_r0 + (arg1 * 8);
     } else {
@@ -107,7 +107,7 @@ void SetEffectNodeResource(void *,s32,u16,u8,s32);
 void SetEffectNodePosition(void *,s16,s16,s16);
 void func_ov002_021e2d2c(void *,s16,s16,s16,s32,s32,s32,s32,s32);
 void SetEffectNodeScreenPosition(void *,s16,s16,u16);
-extern u8 data_ov002_021ea704[],data_ov002_021ea71c[],gEffectNodeResource[],data_ov002_021f3034[],data_ov002_021f3048[],gEffectTable[],gEffectDefaultVariant[],data_ov002_021f3108[],data_ov002_021f314e[];
+extern u8 data_ov002_021ea704[],data_ov002_021ea71c[],gEffectNodeResource[],data_ov002_021f3034[],data_ov002_021f3048[],gEffectTable[],gEffectDefaultVariant[],data_ov002_021f3108[],gEffectHasVariants[];
 void *settings; s16 x,y,z; void *q; u16 pointScale; s32 offset,finalOff; u32 scale; u8 index;void *p,*extra; u16 *point;
 if(M2C_FIELD(gEffectNodeResource,s32 *,M2C_FIELD(arg0,u8 *,0x8C)*100)==0)return;
 if(M2C_FIELD(arg0,void **,0x5C)){
@@ -118,7 +118,7 @@ M2C_FIELD(p,void **,0)=M2C_FIELD(arg0,void **,0x5C);M2C_FIELD(p,void **,4)=M2C_F
 M2C_FIELD(arg0,void **,0x5C)=((p=MemAlloc(0x88)) ? init_021ea71c(p):p);
 q=M2C_FIELD(arg0,void **,0x5C);
 index=M2C_FIELD(arg0,u8 *,0x8C); offset=(u32)index*24U;
-if(data_ov002_021f314e[index*44])point=(u16 *)(M2C_FIELD(M2C_FIELD(gEffectTable,void **,offset),void **,40)+arg1*8);
+if(gEffectHasVariants[index*44])point=(u16 *)(M2C_FIELD(M2C_FIELD(gEffectTable,void **,offset),void **,40)+arg1*8);
 else point=(u16 *)(M2C_FIELD(M2C_FIELD(gEffectTable,void **,offset),void **,40)+gEffectDefaultVariant[offset]*8);
 x=M2C_FIELD(point,s16 *,0x50);y=M2C_FIELD(point,s16 *,0x52);z=M2C_FIELD(point,s16 *,0x54);pointScale=M2C_FIELD(point,u16 *,0x56);
 if(data_ov002_021f3108[offset]){
@@ -308,8 +308,8 @@ void func_ov002_021ea5b8(void) {
 void func_ov002_021ea5c4(void *arg0) {
     void func_ov002_021e99f0(void *,s32);
     void func_ov002_021e9bc0(void *,s32);
-    extern u8 data_ov002_021f314e[];
-    if (data_ov002_021f314e[M2C_FIELD(arg0,u8 *,0x8C)*0x2C]) {
+    extern u8 gEffectHasVariants[];
+    if (gEffectHasVariants[M2C_FIELD(arg0,u8 *,0x8C)*0x2C]) {
         func_ov002_021e99f0(arg0,M2C_FIELD(arg0,s32 *,0x84));
         func_ov002_021e9bc0(arg0,M2C_FIELD(arg0,s32 *,0x84));
         M2C_FIELD(arg0,s32 *,0x84)++;
@@ -320,10 +320,10 @@ void func_ov002_021ea5c4(void *arg0) {
 }
 
 s32 func_ov002_021ea628(void *arg0) {
-extern u8 data_ov002_021f314e[];
-extern u8 data_ov002_021f2f44[];
+extern u8 gEffectHasVariants[];
+extern u8 gEffectVariants[];
 u8 index = M2C_FIELD(arg0,u8 *,0x8C);
-if (data_ov002_021f314e[index*0x2C] != 0 && M2C_FIELD(data_ov002_021f2f44 + index*0x68,u8 *,0x66) <= M2C_FIELD(arg0,s32 *,0x84)) return 1;
+if (gEffectHasVariants[index*0x2C] != 0 && M2C_FIELD(gEffectVariants + index*0x68,u8 *,0x66) <= M2C_FIELD(arg0,s32 *,0x84)) return 1;
 return 0;
 }
 

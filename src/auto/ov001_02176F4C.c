@@ -415,7 +415,7 @@ void func_ov001_02177850(void) {
 
 void func_ov001_021778c0(void) {
 extern M2C_UNK gOv001OptionMenuState;
-extern M2C_UNK data_ov001_0218f77a,data_ov001_0218f77e,data_ov001_0218f77c,data_ov001_0218f780;
+extern M2C_UNK gOv001OptionFrameLeft,gOv001OptionFrameRight,gOv001OptionFrameTop,gOv001OptionFrameBottom;
 void Ov001_LoadOptionMenuBg(void);
 void func_ov001_02177b24(void);
 void *func_ov001_0218a5f0(s32,s32);
@@ -435,7 +435,7 @@ M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|0x84|0xe00000;
 p=M2C_FIELD(&gOv001OptionMenuState,void **,8);
 M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xc00)|0xc00;
 offset=M2C_FIELD(&gOv001OptionMenuState,u8 *,0)*8;
-Ov001_LayoutChoiceFrame(M2C_FIELD(&data_ov001_0218f77a,u16 *,offset),M2C_FIELD(&data_ov001_0218f77e,u16 *,offset),M2C_FIELD(&data_ov001_0218f77c,u16 *,offset),M2C_FIELD(&data_ov001_0218f780,u16 *,offset));
+Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset),M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset),M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset),M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset));
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177b24);
 }
 
@@ -509,40 +509,43 @@ void func_ov001_02177bb4(void) {
 }
 
 void func_ov001_02177bdc(void) {
-    void func_ov001_02177bf0(void);
+    void Ov001_HandleOptionMenuInput(void);
     void func_ov001_02177ce4(void);
     void func_ov001_02177ce8(void);
-    func_ov001_02177bf0();
+    Ov001_HandleOptionMenuInput();
     func_ov001_02177ce4();
     func_ov001_02177ce8();
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_02177bf0(void){
+/* Input for the ov001 Wi-Fi option menu: a touch on one of the three rows
+ * selects it and moves the choice frame there, A confirms, B cancels, and
+ * up/down move the selection. */
+void Ov001_HandleOptionMenuInput(void){
 M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
 M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
-void func_ov001_02177f1c(s32);
+void Ov001_MoveOptionSelection(s32);
 s32 KeyPressed(s32);s32 KeyHeld(s32);s32 TouchRectPressed(void *);
-extern u8 data_ov001_0218f762[];
-extern M2C_UNK data_ov001_0218f77a,data_ov001_0218f77e,data_ov001_0218f77c,data_ov001_0218f780,gOv001OptionMenuState;
-u32 index;u8 *entry;s32 offset;u16 a,b,c,d;
-entry=data_ov001_0218f762;
-for(index=0;index<3;index++,entry+=8){
-if(TouchRectPressed(entry)){
+extern u8 gOv001OptionButtonRects[];
+extern M2C_UNK gOv001OptionFrameLeft,gOv001OptionFrameRight,gOv001OptionFrameTop,gOv001OptionFrameBottom,gOv001OptionMenuState;
+u32 index;u8 *rect;s32 offset;u16 left,right,top,bottom;
+rect=gOv001OptionButtonRects;
+for(index=0;index<3;index++,rect+=8){
+if(TouchRectPressed(rect)){
 Ov001_LatchIconRowSelection(1);
 offset=(u8)index*8;
-a=M2C_FIELD(&data_ov001_0218f77a,u16 *,offset);
-b=M2C_FIELD(&data_ov001_0218f77e,u16 *,offset);
-c=M2C_FIELD(&data_ov001_0218f77c,u16 *,offset);
-d=M2C_FIELD(&data_ov001_0218f780,u16 *,offset);
+left=M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset);
+right=M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset);
+top=M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset);
+bottom=M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset);
 M2C_FIELD(&gOv001OptionMenuState,s8 *,0)=index;
-Ov001_LayoutChoiceFrame(a,b,c,d);return;
+Ov001_LayoutChoiceFrame(left,right,top,bottom);return;
 }}
 if(KeyPressed(1)){Ov001_LatchIconRowSelection(1);return;}
 if(KeyPressed(2)){Ov001_LatchIconRowSelection(0);return;}
-if(KeyHeld(0x40)){func_ov001_02177f1c(1);return;}
+if(KeyHeld(0x40)){Ov001_MoveOptionSelection(1);return;}
 if(!KeyHeld(0x80))return;
-func_ov001_02177f1c(3);
+Ov001_MoveOptionSelection(3);
 }
 #pragma opt_strength_reduction reset
 void func_ov001_02177ce4(void) {

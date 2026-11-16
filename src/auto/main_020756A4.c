@@ -99,26 +99,29 @@ s32 func_02075b58(M2C_UNK *arg0, s32 arg1) {
     return var_lr;
 }
 
-void func_02075bc8(M2C_UNK *p) {
-u8 *q;u32 i;
+/* Applies the queued save-record requests to the (initialised) save list: runs
+ * each update, then each delete, then writes the merged list back.  When the
+ * save hardware is not ready the list is marked failed and left untouched. */
+void SaveList_Flush(M2C_UNK *p) {
+u8 *req;u32 i;
 if(((Queue02075*)p)->active!=0 && ((Queue02075*)p)->state!=1){
 if(!func_02074d44(p)){((Queue02075*)p)->state=1;return;}
-func_02074a48((void*)p+0xc4c);
-q=(void*)p+0x2054;i=0;
+SaveList_ClearUsed((void*)p+0xc4c);
+req=(void*)p+0x2054;i=0;
 if(((Queue02075*)p)->count>i){
 if(i<((Queue02075*)p)->count){
 do {
-switch(q[15]){
-case 1:func_020753f8(p,*(s32*)q,*(s32*)(q+4),*(s32*)(q+8),q[14],*(s32*)(q+16));break;
-case 2:func_02075938(p,*(u16*)(q+12));break;
+switch(req[15]){
+case 1:func_020753f8(p,*(s32*)req,*(s32*)(req+4),*(s32*)(req+8),req[14],*(s32*)(req+16));break;
+case 2:func_02075938(p,*(u16*)(req+12));break;
 }
-i++;q+=20;
+i++;req+=20;
 }while(i<((Queue02075*)p)->count);
 }
 }
 func_020756a4(p);
 ((Queue02075*)p)->count=0;
-func_02074b84((void*)p+0xc4c);
+SaveList_Sort((void*)p+0xc4c);
 }
 }
 
@@ -174,7 +177,7 @@ void func_02075ecc(void) {
 void func_02075ee8(void) {
 
     extern M2C_UNK data_0213ea18;
-    func_02075bc8(&data_0213ea18);
+    SaveList_Flush(&data_0213ea18);
 }
 
 void func_02075efc(void) {
@@ -269,14 +272,14 @@ void func_02076244(M2C_UNK arg0) {
     M2C_UNK Update3DSpriteVram();
     M2C_UNK GX_TurnOnDisplay();
     M2C_UNK func_02008ef0(M2C_UNK);
-    M2C_UNK func_020092d0(M2C_UNK);
+    M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK func_02081f08();
     M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK Set3DSpriteVramBanks();
     M2C_UNK func_02090248(M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_0209c454(M2C_UNK, M2C_UNK);
+    s32 MeasureMessageLinesWidth(M2C_UNK, M2C_UNK);
     s32 func_0209c550(M2C_UNK);
     extern void *g3DSpriteBankMain;
     extern void *g3DSpriteEngineSub;
@@ -320,7 +323,7 @@ void func_02076244(M2C_UNK arg0) {
 
     func_02090248(0);
     func_02008ef0(0);
-    func_020092d0(0);
+    Sound_FlushCommands(0);
     func_02081f08();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1);
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~2);
@@ -391,7 +394,7 @@ void func_02076244(M2C_UNK arg0) {
         *temp_r0_14 = *sp8 & ~0x100;
     } while (var_r6 < 2);
     data_027e01d8 = g3DSpriteEngineMain;
-    temp_r4 = func_0209c454(arg0, 1);
+    temp_r4 = MeasureMessageLinesWidth(arg0, 1);
     temp_r1 = 0xC0 - func_0209c550(arg0);
     temp_r0_15 = 0x100 - temp_r4;
     temp_r1_2 = (s32) (temp_r1 + (temp_r1 >> 0x1F)) >> 1;

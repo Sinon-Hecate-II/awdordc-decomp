@@ -94,94 +94,96 @@ void func_02003430(void) {
     func_0200333c(&data_0212dbdc);
 }
 
-s32 func_02003458(M2C_UNK *a) {
-    u16 v = *(u16 *)a;
-    *(volatile u16 *)a = 0;
-    if (v & 0x1) *(volatile u8 *)0x4000240 = 0;
-    if (v & 0x2) *(volatile u8 *)0x4000241 = 0;
-    if (v & 0x4) *(volatile u8 *)0x4000242 = 0;
-    if (v & 0x8) *(volatile u8 *)0x4000243 = 0;
-    if (v & 0x10) *(volatile u8 *)0x4000244 = 0;
-    if (v & 0x20) *(volatile u8 *)0x4000245 = 0;
-    if (v & 0x40) *(volatile u8 *)0x4000246 = 0;
-    if (v & 0x80) *(volatile u8 *)0x4000248 = 0;
-    if (v & 0x100) *(volatile u8 *)0x4000249 = 0;
-    func_02007800(v & 0xffffU, data_0212dbc2);
-    return v;
+/* Release the VRAM grant kept in *grant: clear the grant and set each bank's
+   control register back to 0x80, then give the banks back to the allocator. */
+s32 GX_ReleaseBankGrant(M2C_UNK *grant) {
+    u16 banks = *(u16 *)grant;
+    *(volatile u16 *)grant = 0;
+    if (banks & VRAM_BANK_A) REG_VRAM_A_CR = 0;
+    if (banks & VRAM_BANK_B) REG_VRAM_B_CR = 0;
+    if (banks & VRAM_BANK_C) REG_VRAM_C_CR = 0;
+    if (banks & VRAM_BANK_D) REG_VRAM_D_CR = 0;
+    if (banks & VRAM_BANK_E) REG_VRAM_E_CR = 0;
+    if (banks & VRAM_BANK_F) REG_VRAM_F_CR = 0;
+    if (banks & VRAM_BANK_G) REG_VRAM_G_CR = 0;
+    if (banks & VRAM_BANK_H) REG_VRAM_H_CR = 0;
+    if (banks & VRAM_BANK_I) REG_VRAM_I_CR = 0;
+    GX_ReleaseBanksByOwner(banks & 0xffffU, data_0212dbc2);
+    return banks;
 }
 
 void func_02003538(void) {
-    M2C_UNK func_02003458(M2C_UNK *);
+    M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbc6;
-    func_02003458(&data_0212dbc6);
+    GX_ReleaseBankGrant(&data_0212dbc6);
 }
 
 void func_0200354c(void) {
     extern M2C_UNK data_0212dbc8;
-    func_02003458(&data_0212dbc8);
+    GX_ReleaseBankGrant(&data_0212dbc8);
 }
 
 void func_02003560(void) {
     extern M2C_UNK data_0212dbd2;
     *(s32 *)0x04000000 &= ~0x40000000;
-    func_02003458(&data_0212dbd2);
+    GX_ReleaseBankGrant(&data_0212dbd2);
 }
 
 void func_02003584(void) {
     extern M2C_UNK data_0212dbd4;
     *(s32 *)0x04000000 &= ~0x80000000;
-    func_02003458(&data_0212dbd4);
+    GX_ReleaseBankGrant(&data_0212dbd4);
 }
 
 void func_020035a8(void) {
-    M2C_UNK func_02003458(M2C_UNK *);
+    M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbcc;
-    func_02003458(&data_0212dbcc);
+    GX_ReleaseBankGrant(&data_0212dbcc);
 }
 
 void func_020035bc(void) {
-    M2C_UNK func_02003458(M2C_UNK *);
+    M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbce;
-    func_02003458(&data_0212dbce);
+    GX_ReleaseBankGrant(&data_0212dbce);
 }
 
 void func_020035d0(void) {
     extern M2C_UNK data_0212dbd0;
-    func_02003458(&data_0212dbd0);
+    GX_ReleaseBankGrant(&data_0212dbd0);
 }
 
 void func_020035e4(void) {
     extern M2C_UNK data_0212dbca;
-    func_02003458(&data_0212dbca);
+    GX_ReleaseBankGrant(&data_0212dbca);
 }
 
 void func_020035f8(void) {
     extern M2C_UNK gVramBankState;
-    func_02003458(&gVramBankState);
+    GX_ReleaseBankGrant(&gVramBankState);
 }
 
 void func_0200360c(void) {
-    M2C_UNK func_02003458(M2C_UNK *);
+    M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbd6;
-    func_02003458(&data_0212dbd6);
+    GX_ReleaseBankGrant(&data_0212dbd6);
 }
 
 void func_02003620(void) {
-    M2C_UNK func_02003458(M2C_UNK *);
+    M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbd8;
-    func_02003458(&data_0212dbd8);
+    GX_ReleaseBankGrant(&data_0212dbd8);
 }
 
 void func_02003634(void) {
     extern M2C_UNK data_0212dbda;
     *(s32 *)0x04001000 &= ~0x40000000;
-    func_02003458(&data_0212dbda);
+    GX_ReleaseBankGrant(&data_0212dbda);
 }
 
 void func_0200365c(void) {
     extern M2C_UNK data_0212dbdc;
     *(s32 *)0x04001000 &= ~0x80000000;
-    func_02003458(&data_0212dbdc);
+    GX_ReleaseBankGrant(&data_0212dbdc);
 }
 
 s32 func_02003684(void){s32 b=*(volatile u16 *)0x4000008;u32 a=(*(volatile u32 *)0x4000000&0x38000000)>>27;b=(b&0x1f00)>>8;return (a<<16)+0x6000000+(b<<11);}

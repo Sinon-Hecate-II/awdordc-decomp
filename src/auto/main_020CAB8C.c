@@ -183,41 +183,45 @@ if(pay){map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);if(M2C_F
 else{update:ammoWord=M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO);total+=cost;M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)=(ammoWord&~0x780)|((u32)((u16)(((u32)(ammoWord<<21)>>28)+1)<<28)>>21);goto loop;}}
 return total;}
 
-s32 RefillUnitFuel(void *arg0, s32 arg1) {
+/* Refill a unit's fuel one point at a time until it reaches its kind's
+   maximum, returning the fuel added.  Each point costs the owning player an
+   amount that grows with the unit's health (one per ten HP); when pay is set
+   the refill stops as soon as the player cannot afford the next unit of fuel. */
+s32 RefillUnitFuel(void *unit, s32 pay) {
     s32 Divide(s32, M2C_UNK);
     M2C_UNK func_020d2b10(s32, u16);
     extern void **gCurrentMap;
     extern M2C_UNK gUnitKindStats;
     u8 *tab;
-    s32 var_r7;
-    u32 temp_r0;
-    u16 temp_r8;
-    u16 temp_r0_2;
-    u8 temp_r1_2;
-    void *temp_r1;
+    s32 total;
+    u32 health;
+    u16 cost;
+    u16 player;
+    u8 fuel;
+    void *map;
 
-    var_r7 = 0;
-    temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
-    temp_r8 = temp_r0 ? (Divide(temp_r0 - 1, 0xA) + 1) : var_r7;
+    total = 0;
+    health = (u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 0x19) >> 0x19;
+    cost = health ? (Divide(health - 1, 0xA) + 1) : total;
     tab = (u8 *) &gUnitKindStats;
 loop_4:
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0xA) << 0x19) >> 0x19) != tab[((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70 + 0xE]) {
-        if (arg1 != 0) {
-            temp_r1 = *gCurrentMap;
-            temp_r0_2 = M2C_FIELD(temp_r1, u16 *, 0x52A4);
-            if ((s32) M2C_FIELD(((temp_r0_2 * 0x8C) + (s32) temp_r1), s32 *, 0x67A4) >= (s32) temp_r8) {
-                func_020d2b10(temp_r0_2, temp_r8);
+    if (((u32) (M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL) << 0x19) >> 0x19) != tab[((u32) (M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 0x1A) >> 0x1A) * 0x70 + UNIT_KIND_STATS_FUEL]) {
+        if (pay != 0) {
+            map = *gCurrentMap;
+            player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+            if ((s32) M2C_FIELD(((player * 0x8C) + (s32) map), s32 *, PLAYER_FUNDS_OFF) >= (s32) cost) {
+                func_020d2b10(player, cost);
                 goto block_8;
             }
         } else {
 block_8:
-            temp_r1_2 = M2C_FIELD(arg0, u8 *, 0xA);
-            var_r7 += temp_r8;
-            M2C_FIELD(arg0, u8 *, 0xA) = (u8) ((temp_r1_2 & ~0x7F) | ((u8) (((u32) (temp_r1_2 << 0x19) >> 0x19) + 1) & 0x7F));
+            fuel = M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL);
+            total += cost;
+            M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL) = (u8) ((fuel & ~0x7F) | ((u8) (((u32) (fuel << 0x19) >> 0x19) + 1) & 0x7F));
             goto loop_4;
         }
     }
-    return var_r7;
+    return total;
 }
 
 #pragma opt_common_subs on

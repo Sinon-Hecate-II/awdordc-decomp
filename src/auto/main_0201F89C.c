@@ -83,39 +83,43 @@ if(M2C_FIELD(arg0,s8 *,0x73)!=1)return 0;
 return func_0201fb3c(arg0);
 }
 
-s32 func_0201fa54(void *arg0, s16 arg1, s32 arg2) {
+/* Give the socket a receive timeout: refuse when the network stack is down, the
+ * socket is torn down or busy, or an operation is already running; a finished
+ * operation reports its result, a running one asks for its timeout, and an idle
+ * socket starts a receive that expires after timeout/token. */
+s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
     s32 func_020214a8();
     s32 func_0201fb3c(void *);
-    extern s32 data_020faf9c;
-    s32 a, b, r;
-    s8 v;
+    extern s32 gSocketDefaultRecvTimeout;
+    s32 ready, usable, result;
+    s8 state;
 
-    if (func_020214a8() != 0 || (M2C_FIELD(arg0, volatile s16 *, 0x70) & 8)) return -28;
-    a = 0;
-    if (arg0 != 0) {
-        a = (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1) != 0;
+    if (func_020214a8() != 0 || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_ERROR)) return -28;
+    ready = 0;
+    if (sock != 0) {
+        ready = (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) != 0;
     }
-    if (a == 0) return -39;
-    v = M2C_FIELD(arg0, s8 *, 0x73);
-    b = 1;
-    if (v != 0 && v != 4) {
-        b = 0;
+    if (ready == 0) return -39;
+    state = M2C_FIELD(sock, s8 *, SOCK_STATE);
+    usable = 1;
+    if (state != 0 && state != 4) {
+        usable = 0;
     }
-    if (b != 0) {
-        if (M2C_FIELD(arg0, volatile s16 *, 0x70) & 4) {
-            return M2C_FIELD(arg0, s8 *, 0x72) == 1 ? -30 : 0;
+    if (usable != 0) {
+        if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE) {
+            return M2C_FIELD(sock, s8 *, SOCK_KIND) == SOCK_KIND_TCP ? -30 : 0;
         }
-        if (M2C_FIELD(arg0, volatile s16 *, 0x70) & 2) {
-            return (M2C_FIELD(arg0, volatile s16 *, 0x70) & 0x40) ? M2C_FIELD(arg0, s32 *, 0x6c) : data_020faf9c;
+        if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_BUSY) {
+            return (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_TIMEOUT) ? M2C_FIELD(sock, s32 *, SOCK_RECV_TIMEOUT) : gSocketDefaultRecvTimeout;
         }
-        M2C_FIELD(arg0, s16 *, 0x76) = arg1;
-        M2C_FIELD(arg0, s32 *, 0x78) = arg2;
-        r = func_0201fb3c(arg0);
-        if (M2C_FIELD(arg0, s8 *, 0x72) != 1) r = -26;
-        return r;
+        M2C_FIELD(sock, s16 *, SOCK_TIMEOUT) = timeout;
+        M2C_FIELD(sock, s32 *, SOCK_TIMEOUT_RESULT) = token;
+        result = func_0201fb3c(sock);
+        if (M2C_FIELD(sock, s8 *, SOCK_KIND) != SOCK_KIND_TCP) result = -26;
+        return result;
     }
-    M2C_FIELD(arg0, s16 *, 0x76) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x78) = arg2;
+    M2C_FIELD(sock, s16 *, SOCK_TIMEOUT) = timeout;
+    M2C_FIELD(sock, s32 *, SOCK_TIMEOUT_RESULT) = token;
     return 0;
 }
 

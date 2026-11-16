@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct Callbacks3506c { void *(*alloc)(void *,int); int b,c; } Callbacks3506c;
 extern M2C_UNK gWfcNet, data_020fb7dc, data_020fb7f0;
-extern M2C_UNK data_020fb674, data_020fb59c, data_020fb680, data_020fb684;
+extern M2C_UNK data_020fb674, gHttpHeaderEnd, data_020fb680, data_020fb684;
 typedef struct Pair02034164 {s32 first, second;} Pair02034164;
 typedef struct Buffer02034164 { s32 start, current, end, size; } Buffer02034164;
 typedef struct Unk02034164 {
@@ -62,7 +62,7 @@ s32 func_020345f4(Unk02034164 *obj,int a,int b) {
  n+= (int)((fmt-4)+(unsigned int)StringLength(a));
  room=buf->end-buf->current;
  if(n+1>room && func_02034908((int)obj,buf,n-room+1)==0)return 1;
- p=StringFind(buf->start,&data_020fb59c)+2;
+ p=StringFind(buf->start,&gHttpHeaderEnd)+2;
  save=*p;
  MemMove(p+n,p,StringLength((int)p)+1);
  p[func_0200567c(p,n+1,&data_020fb674,a,b)]=save;
@@ -190,11 +190,11 @@ s32 func_02034908(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C
  * URL into client->url, then split out the host, the optional port (default 80
  * for http, 443 for https), the TLS flag and the path. Returns 1 on success. */
 s32 HttpParseUrl(Unk02034164 *client,s32 urlText) {
-void func_02068d18(s32,s32,s32);char *StringFind(int,void *);s32 ParseInt(char *);
+void StringCopyPad(s32,s32,s32);char *StringFind(int,void *);s32 ParseInt(char *);
 extern M2C_UNK sHttpSchemePrefix,sHttpsSchemePrefix,sPortSeparator,sPathSeparator;
 char *portStr=0,*match,*path;u32 len;
 if((u32)StringLength(urlText)>=256)return 0;
-func_02068d18((s32)client->url,urlText,256);
+StringCopyPad((s32)client->url,urlText,256);
 len=StringLength(urlText);
 if(len!=StringLength((s32)client->url))return 0;
 match=StringFind((s32)client->url,&sHttpSchemePrefix);
@@ -239,12 +239,12 @@ return 0;
 
 s32 ParseHttpResponse(Unk02034164 *arg0,s32 arg1) {
 char *StringFind(s32,void*); s32 StringCompareN(s32,void*,s32); s32 StringLength(s32); M2C_UNK MI_CpuFill8(void*,s32,s32);
-extern M2C_UNK data_020fb75c,data_020fb760,data_020fb76c,data_020fb5cc,data_020fb770,data_020fb774,data_020fb778;
+extern M2C_UNK data_020fb75c,data_020fb760,data_020fb76c,gHttpHeaderLineEnd,data_020fb770,data_020fb774,data_020fb778;
 s32 buf[3]; char *base,*end,*p,*colon,*value,*term; s8 save,save2; s32 result; s32 input;
 buf[0]=(s32)((u8*)arg0+0x1a38);buf[1]=32;buf[2]=0;
 MI_CpuFill8((void*)buf[0],0,256);
 input=M2C_FIELD(arg0,s32*,0x1a08);
-base=StringFind(input,&data_020fb59c);
+base=StringFind(input,&gHttpHeaderEnd);
 if(!base)return 0;
 end=base+4+StringLength((s32)(base+4));
 colon=StringFind(input,&data_020fb75c);
@@ -254,13 +254,13 @@ result=HttpHeaders_Add(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(colon
 colon[4]=save;
 if(result!=1)return 0;
 if(arg1==1 || StringCompareN((s32)(colon+1),&data_020fb76c,3)!=0)return 1;
-p=StringFind((s32)(colon+5),&data_020fb5cc);
+p=StringFind((s32)(colon+5),&gHttpHeaderLineEnd);
 if(!p)return 0;
 p+=2;
 while(!(p[0]==13 || p[1]==10)){
 colon=StringFind((s32)p,&data_020fb770);if(!colon)break;
 save=*colon;*colon=0;value=colon+2;
-term=StringFind((s32)value,&data_020fb5cc);
+term=StringFind((s32)value,&gHttpHeaderLineEnd);
 if(!term){*colon=save;break;}
 save2=*term;*term=0;
 if(HttpHeaders_Add(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;*term=save2;return 0;}
@@ -272,7 +272,7 @@ while(p<end){
 colon=StringFind((s32)p,&data_020fb774);if(!colon)break;
 save=*colon;*colon=0;value=colon+1;
 term=StringFind((s32)value,&data_020fb778);
-if(!term)term=StringFind((s32)value,&data_020fb5cc);
+if(!term)term=StringFind((s32)value,&gHttpHeaderLineEnd);
 if(term){save2=*term;*term=0;}
 if(HttpHeaders_Add(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;if(term)*term=save2;return 0;}
 result=StringLength((s32)value);*colon=save;p=value+result+1;if(term)*term=save2;

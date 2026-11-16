@@ -166,7 +166,7 @@ void Ov001_LoadAccessPointMenuGraphics(void) {
 
 void func_ov001_02180eb4(void) {
     s32 func_ov001_02184868(void);
-    M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void Ov001_SetSpritePalette(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
@@ -183,7 +183,7 @@ void func_ov001_02180eb4(void) {
             idx = 3;
             goto second;
         }
-        handle = func_ov001_0218a61c(0, 0x11, 1);
+        handle = Ov001_CreateSprite(0, 0x11, 1);
         M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, M2C_UNK *, 0x10) = handle;
         Ov001_MoveSpriteLayout(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
@@ -195,7 +195,7 @@ void func_ov001_02180eb4(void) {
             -1, 3);
 
 second:
-        handle = func_ov001_0218a61c(0, data_ov001_0218f9c8[idx], 1);
+        handle = Ov001_CreateSprite(0, data_ov001_0218f9c8[idx], 1);
         M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, M2C_UNK *, 0x4) = handle;
         Ov001_MoveSpriteLayout(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
@@ -398,7 +398,7 @@ if(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_o
 else{Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
 case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
 }
-func_ov001_0218b71c(&data_ov001_02193dd0);
+Ov001_FreeAlloc(&data_ov001_02193dd0);
 }
 void Ov001_UpdateMenuCursor(void) {
     void func_ov001_02171fd8(s32, u16, u16, u16);
@@ -511,7 +511,7 @@ void func_ov001_02181990(void) {
 }
 
 void func_ov001_021819b4(void) {
-void func_ov001_021837e4(s32,u8,u8);s32 func_ov001_02184868(void);void func_ov001_0218a304(s32,s32,s32,u8);
+void func_ov001_021837e4(s32,u8,u8);s32 func_ov001_02184868(void);void Ov001_SetSpriteAttrs(s32,s32,s32,u8);
 extern u8 data_ov001_0218f9cc[];extern M2C_UNK gOv001MenuRegion;
 u8 a[4]={data_ov001_0218f9cc[0],data_ov001_0218f9cc[1],data_ov001_0218f9cc[2],data_ov001_0218f9cc[3]};
 u8 b[4]={data_ov001_0218f9cc[4],data_ov001_0218f9cc[5],data_ov001_0218f9cc[6],data_ov001_0218f9cc[7]};s32 n;u8 value;u8 *values=a;
@@ -520,6 +520,6 @@ value=values[M2C_FIELD(&gOv001MenuRegion,u8 *,0)];
 func_ov001_021837e4(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),s32 *,0),value,value);
 if(M2C_FIELD(&gOv001MenuRegion,u8 *,0)==3)return;
 n=func_ov001_02184868();if(n>2)n=3;
-func_ov001_0218a304(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion,void **,4)+M2C_FIELD(&gOv001MenuRegion,u8 *,0)*4,s32 *,4),-1,0,b[n]);
+Ov001_SetSpriteAttrs(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion,void **,4)+M2C_FIELD(&gOv001MenuRegion,u8 *,0)*4,s32 *,4),-1,0,b[n]);
 }
 

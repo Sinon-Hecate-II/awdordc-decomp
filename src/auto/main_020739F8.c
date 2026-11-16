@@ -236,20 +236,24 @@ void func_02073eb8(void *arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void func_02073f14(void *a){
+/* Execute the handler of the record whose frame is frame: decode the handlers of the
+ * record's data block (JsRecordRef.data) into the handler and the record's data, then
+ * run the block's opcodes until one continues or ends execution.  Returns 0 when the
+ * block runs to its end (or the record has no handler). */
+void Js_RunHandler(void *a){
 void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *func_02072b20(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void func_0207453c(void *,void *);
-s32 t[6]; s32 vals[4]; u8 *p;
-FindExceptionTableHandler(M2C_FIELD(a,s32 *,16),t);
-if(!t[1])func_020742e0();
-func_0207453c(a,t);
+s32 frame[6]; s32 operands[4]; u8 *p; u8 *data;
+FindExceptionTableHandler(M2C_FIELD(a,s32 *,16),frame);
+if(!frame[1])func_020742e0();
+func_0207453c(a,frame);
 if(M2C_FIELD(a,s32 *,0))M2C_FIELD(a,s32 *,12)=0;
-else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,t);if(!M2C_FIELD(a,s32 *,12))func_020742e0();}
-p=func_02073cdc(a,t,&vals[0]);
-vals[1]=p[1]|(p[2]<<8)|(p[3]<<16)|(p[4]<<24);
-func_02072b20(DecodeExceptionValue(p+5,&vals[2]),&vals[3]);
-func_02073148(a,t,p);
-func_02073eb8(a,vals[3],vals[0]);
-func_0207462c(a,t,t[0]+vals[2]);
+else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,frame);if(!M2C_FIELD(a,s32 *,12))func_020742e0();}
+p=func_02073cdc(a,frame,&operands[0]);
+operands[1]=p[1]|(p[2]<<8)|(p[3]<<16)|(p[4]<<24);
+func_02072b20(DecodeExceptionValue(p+5,&operands[2]),&operands[3]);
+func_02073148(a,frame,p);
+func_02073eb8(a,operands[3],operands[0]);
+func_0207462c(a,frame,frame[0]+operands[2]);
 }
 
 void func_02074000(void *arg0) {
@@ -324,7 +328,7 @@ extern "C" void func_020741c4(s32 arg0, s32 arg1, s32 arg2, M2C_UNK (*arg3)(s32)
         current = arg1 * arg2 + arg0;
         try {
             while (arg1 != 0) { current -= arg2; arg3(current); --arg1; }
-        } catch (...) {}
+        } catch (s32) {}
     }
 }
 #pragma exceptions off

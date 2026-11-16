@@ -308,48 +308,53 @@ void NatNeg_HandleConnectPong(void *arg0, void *arg1, void *arg2) {
     NatNeg_SendConnectPong(arg0);
 }
 
-void NatNeg_HandleInitAndErt(void *arg0, void *arg1, void *arg2) {
-    M2C_UNK GetTickCountMs(void);
+/* Handles the two partner packets of the NAT negotiation: an INIT_ACK (kind 1)
+   records which of the partner's three responses arrived, and once all of them
+   have the peer moves on to its connect step (state 1, a 10 s deadline and an
+   event 1 report); an ERT_TEST (kind 2) is answered by turning the packet into
+   an ERT_ACK (kind 3) and sending it back to the peer's address and port. */
+void NatNeg_HandleInitAndErt(void *peer, void *packet, void *fromAddress) {
+    s32 GetTickCountMs(void);
     void func_0205d944(s32, s32, u16, void *, s32);
-    u8 temp_r1;
+    u8 kind;
 
-    temp_r1 = M2C_FIELD(arg1, u8 *, 7);
-    switch (temp_r1) {
-        case 1: {
-            u8 temp_r0 = M2C_FIELD(arg1, u8 *, 0xC);
-            if ((u32)temp_r0 > 2U) {
+    kind = M2C_FIELD(packet, u8 *, 7);
+    switch (kind) {
+        case NATNEG_KIND_INIT_ACK: {
+            u8 response = M2C_FIELD(packet, u8 *, 0xC);
+            if ((u32)response > 2U) {
                 break;
             }
-            M2C_FIELD((void *)((u8 *)arg0 + (temp_r0 * 4)), s32 *, 0x14) = 1;
-            if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
+            M2C_FIELD((void *)((u8 *)peer + (response * 4)), s32 *, NATNEG_PEER_GOT0) = 1;
+            if (M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) != 0) {
                 break;
             }
-            if (M2C_FIELD(arg0, s32 *, 0x18) == 0) {
+            if (M2C_FIELD(peer, s32 *, NATNEG_PEER_GOT1) == 0) {
                 break;
             }
-            if (M2C_FIELD(arg0, s32 *, 0x1C) == 0) {
+            if (M2C_FIELD(peer, s32 *, NATNEG_PEER_GOT2) == 0) {
                 break;
             }
-            if (M2C_FIELD(arg0, s32 *, 4) != -1) {
-                if (M2C_FIELD(arg0, s32 *, 0x14) == 0) {
+            if (M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET2) != -1) {
+                if (M2C_FIELD(peer, s32 *, NATNEG_PEER_GOT0) == 0) {
                     break;
                 }
             }
-            M2C_FIELD(arg0, s32 *, 0x10) = 1;
-            M2C_FIELD(arg0, s32 *, 0x28) = GetTickCountMs() + 0x2710;
-            M2C_FIELD(arg0, void (**)(s32, s32), 0x34)(
-                M2C_FIELD(arg0, s32 *, 0x10), M2C_FIELD(arg0, s32 *, 0x3C));
+            M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_ACKED;
+            M2C_FIELD(peer, s32 *, NATNEG_PEER_DEADLINE) = GetTickCountMs() + 0x2710;
+            M2C_FIELD(peer, void (**)(s32, s32), NATNEG_PEER_EVENT)(
+                M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE), M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND_DATA));
             break;
         }
-        case 2: {
+        case NATNEG_KIND_ERT_TEST: {
             u16 port;
             u16 swapped;
 
-            M2C_FIELD(arg1, u8 *, 7) = 3;
-            port = M2C_FIELD(arg2, u16 *, 2);
+            M2C_FIELD(packet, u8 *, 7) = NATNEG_KIND_ERT_ACK;
+            port = M2C_FIELD(fromAddress, u16 *, 2);
             swapped = (u16)(((port >> 8) & 0xFF) | ((port << 8) & 0xFF00));
-            func_0205d944(M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg2, s32 *, 4),
-                          swapped, arg1, 0x15);
+            func_0205d944(M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET), M2C_FIELD(fromAddress, s32 *, 4),
+                          swapped, packet, 0x15);
             break;
         }
         default:

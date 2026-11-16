@@ -13,7 +13,7 @@ void func_ov003_021e3500(void *arg0) {
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
     M2C_UNK func_0208ae88(void *, M2C_UNK);
-    void *func_0208b564(void *);
+    void *CreateTextLayer(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020c9100(void *);
     M2C_UNK func_020c9120(u16, s32);
@@ -63,13 +63,13 @@ void func_ov003_021e3500(void *arg0) {
             M2C_FIELD(r5, u8 *, 0x60) = temp_r1;
             switch ((u32)((u32)temp_r1 << 0x1A) >> 0x1E) {
             case 0:
-                temp_r6 = func_0208b564(r5);
+                temp_r6 = CreateTextLayer(r5);
                 func_020899cc(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000023);
                 M2C_FIELD(temp_r6, s32 *, 0x58) = M2C_FIELD(temp_r6, s32 *, 0x58) | 0x400;
                 func_0208ae88(temp_r6, 0);
                 break;
             case 1:
-                temp_r6 = func_0208b564(r5);
+                temp_r6 = CreateTextLayer(r5);
                 func_020899cc(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000024);
                 M2C_FIELD(temp_r6, s32 *, 0x58) = M2C_FIELD(temp_r6, s32 *, 0x58) | 0x400;
                 func_0208ae88(temp_r6, 1);

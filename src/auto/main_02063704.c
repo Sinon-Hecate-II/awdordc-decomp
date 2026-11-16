@@ -283,7 +283,7 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
     s32 TryLockMutex(void *);
     M2C_UNK LockMutex();
     M2C_UNK UnlockMutex();
-    M2C_UNK CloseAllStreams(s32);
+    M2C_UNK StreamClose(s32);
     M2C_UNK func_020746f0(void);
     extern u8 gStreamMutexes[];
     extern M2C_UNK gSocketManager, gSocketEventState, gSocketEventCallbacks;
@@ -318,23 +318,23 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
         M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB)();
         M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB) = 0;
     }
-    CloseAllStreams(0);
+    StreamClose(0);
     func_020746f0();
 }
 #pragma opt_common_subs reset
 void func_02063f90(void) {
     M2C_UNK func_0207191c(s32);
-    extern s32 data_021002ec;
-    func_0207191c(data_021002ec);
+    extern s32 gFloatNanBits;
+    func_0207191c(gFloatNanBits);
 }
 
 #pragma opt_strength_reduction off
 s32 func_02063fa8(void){
-s32 CloseAllStreams(s32);extern u8 gStdinStream[];
+s32 StreamClose(s32);extern u8 gStdinStream[];
 u8 *p; s32 result; s32 i; u8 *base; s32 zero; s32 off;
 p=gStdinStream;result=0;i=1;zero=result;base=gStdinStream;
 do{u32 a; u32 v=M2C_FIELD(p,u32*,4);a=(u32)(v<<22)>>29;
-if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))CloseAllStreams)(p,b,a))result=-1;}
+if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))StreamClose)(p,b,a))result=-1;}
 if(i<3){off=i*76;i++;p=base+off;}else p=0;
 }while(p);
 return result;}
@@ -342,13 +342,13 @@ return result;}
 
 #pragma opt_strength_reduction off
 #pragma peephole off
-s32 func_02064034(void) {
-s32 CloseAllStreams(s32);
+s32 CloseStandardStreams(void) {
+s32 StreamClose(s32);
 extern u8 gStdinStream[];
 void *p; s32 result; s32 i; s32 offset;
 p=gStdinStream; result=0; i=1;
 do {
-if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && CloseAllStreams((s32)p)) result=-1;
+if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && StreamClose((s32)p)) result=-1;
 if(i<3) {offset=i*0x4c; i++; p=gStdinStream+offset;} else p=NULL;
 }while(p);
 return result;
@@ -416,7 +416,7 @@ s32 func_0206411c(void *arg0, M2C_UNK *arg1, M2C_UNK arg2) {
 }
 
 #pragma scheduling off
-s32 func_020641a8(void *arg0,M2C_UNK *arg1){
+s32 StreamFlush(void *arg0,M2C_UNK *arg1){
 void func_020640e4(M2C_UNK,M2C_UNK*);void func_020640ec(void*);
 s32 n=M2C_FIELD(arg0,s32*,0x24)-M2C_FIELD(arg0,s32*,0x1c);s32 result;
 if(n){

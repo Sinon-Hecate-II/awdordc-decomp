@@ -35,7 +35,7 @@ M2C_FIELD(entries+i*8,u16 *,4)=(M2C_FIELD(entries+i*8,u16 *,4)&~0xc00)|(arg2<<10
 }
 }
 #pragma opt_strength_reduction on
-void func_ov001_0218a4d4(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
+void Ov001_GetSpritePosition(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
  void *base=M2C_FIELD(arg0,void **,8);
  *arg2=(M2C_FIELD(base,u32 *,arg1*8)&0x01FF0000)>>16;
  *arg3=M2C_FIELD(base,u32 *,arg1*8)&0xFF;
@@ -83,7 +83,7 @@ s32 func_ov001_0218a5f0(M2C_UNK arg0, M2C_UNK arg1) {
     return temp_r0;
 }
 
-M2C_UNK func_ov001_0218a61c(s32 arg0,s32 arg1,s32 arg2) {
+M2C_UNK Ov001_CreateSprite(s32 arg0,s32 arg1,s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
 M2C_UNK func_ov001_0218a070(s32,s32,s32);
 s32 Ov001_GetSpriteObjEntry(s32,s32);
@@ -120,37 +120,37 @@ void *Ov001_QueueCreateFromBuffer(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_ov001_0218a6d8(s32 arg0, ...) {
- M2C_UNK func_ov001_0218b71c(M2C_UNK *);
- func_ov001_0218b71c(&arg0);
+ M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
+ Ov001_FreeAlloc(&arg0);
 }
 
 void func_ov001_0218a6f4(void *arg0, s32 arg1) {
     u8 func_020020c4(s32, u16);
-    M2C_UNK func_020051c8(s32);
-    s32 func_020051f8(M2C_UNK);
+    M2C_UNK OS_EnableIrqMask(s32);
+    s32 OS_DisableIrqMask(M2C_UNK);
     M2C_UNK SystemHalt();
     s32 temp_r6;
     u8 temp_r0;
 
-    temp_r6 = func_020051f8(1);
+    temp_r6 = OS_DisableIrqMask(1);
     temp_r0 = func_020020c4(M2C_FIELD(arg0, u8 *, 3) + 1, M2C_FIELD(arg0, u16 *, 0));
     if (temp_r0 == M2C_FIELD(arg0, u8 *, 2)) {
         SystemHalt();
     }
     M2C_FIELD((arg0 + (M2C_FIELD(arg0, u8 *, 3) * 4)), s32 *, 4) = arg1;
     M2C_FIELD(arg0, u8 *, 3) = temp_r0;
-    func_020051c8(temp_r6);
+    OS_EnableIrqMask(temp_r6);
 }
 
 s32 func_ov001_0218a74c(void *arg0) {
-M2C_UNK func_020051c8(M2C_UNK);s32 func_020051f8(M2C_UNK);u8 func_020020c4(s32,u16);
+M2C_UNK OS_EnableIrqMask(M2C_UNK);s32 OS_DisableIrqMask(M2C_UNK);u8 func_020020c4(s32,u16);
 s32 result=0,saved,value;u8 head,tail,idx;u16 size;
 
-saved=func_020051f8(1);head=M2C_FIELD(arg0,u8 *,3);tail=M2C_FIELD(arg0,u8 *,2);
+saved=OS_DisableIrqMask(1);head=M2C_FIELD(arg0,u8 *,3);tail=M2C_FIELD(arg0,u8 *,2);
 if(tail!=head){size=M2C_FIELD(arg0,u16 *,0);
 value=func_020020c4(head+size-1,size);M2C_FIELD(arg0,u8 *,3)=value;idx=M2C_FIELD(arg0,u8 *,3);
 result=M2C_FIELD((u8*)arg0+(idx<<2),s32 *,4);}
-func_020051c8(saved);return result;
+OS_EnableIrqMask(saved);return result;
 }
 
 void Ov001_InitFades(void) {
@@ -163,9 +163,9 @@ void Ov001_InitFades(void) {
 }
 
 void Ov001_FreeFades(void) {
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK gOv001FadeStates;
-    func_ov001_0218b71c(&gOv001FadeStates);
+    Ov001_FreeAlloc(&gOv001FadeStates);
 }
 
 u8 Ov001_IsFadeActive(s32 arg0) {
@@ -184,14 +184,14 @@ extern u8 gOv001FadeTable[];
 extern M2C_UNK gOv001FadeStates;
 void GX_SetBlendControl(s32,s32,s32);
 void Ov001_UpdateFade(M2C_UNK, void *);
-void *func_ov001_0218c884(s32,s32,void *,s32);
+void *Ov001_AddTask(s32,s32,void *,s32);
 s8 buf[4];
 void *p;
 buf[0]=gOv001FadeTable[8]; buf[1]=gOv001FadeTable[9]; buf[2]=gOv001FadeTable[10]; buf[3]=gOv001FadeTable[11];
 if(arg1==1) p=(void *)gOv001FadeStates; else p=(u8 *)gOv001FadeStates+12;
 if(M2C_FIELD(p,u8 *,9)) return 0;
 if(arg1==1) GX_SetBlendControl(0x4001050,arg2,buf[arg0]); else GX_SetBlendControl(0x4000050,arg2,buf[arg0]);
-M2C_FIELD(p,s32 *,0)=(s32)func_ov001_0218c884(1,(s32)Ov001_UpdateFade,p,200);
+M2C_FIELD(p,s32 *,0)=(s32)Ov001_AddTask(1,(s32)Ov001_UpdateFade,p,200);
 M2C_FIELD(p,u16 *,4)=0;
 M2C_FIELD(p,u8 *,8)=arg0;
 M2C_FIELD(p,u16 *,6)=arg3;
@@ -269,7 +269,7 @@ void Ov001_UpdateFade(M2C_UNK task, void *fadeArg) {
 }
 
 s32 func_ov001_0218aa24(s32 arg0) {
-    void *func_ov001_0218c884(s32, M2C_UNK, void *, s32);
+    void *Ov001_AddTask(s32, M2C_UNK, void *, s32);
     void func_ov001_0218aa7c(M2C_UNK, void *);
     extern M2C_UNK gOv001FadeStates;
     s32 a = arg0;
@@ -277,7 +277,7 @@ s32 func_ov001_0218aa24(s32 arg0) {
     if (*((u8 *)r4 + 9) != 0) {
         return 0;
     }
-    *(void **)r4 = func_ov001_0218c884(1, (M2C_UNK)func_ov001_0218aa7c, r4, 0xc8);
+    *(void **)r4 = Ov001_AddTask(1, (M2C_UNK)func_ov001_0218aa7c, r4, 0xc8);
     *(u16 *)((u8 *)r4 + 4) = 0;
     *(u16 *)((u8 *)r4 + 6) = (u16)a;
     *((u8 *)r4 + 9) = 1;
@@ -337,14 +337,14 @@ void func_ov001_0218aab4(void) {
 void func_ov001_0218abb8(void) {
  void Ov001_FreeFile(s32);
  void func_ov001_0218a6d8(s32,...);
- M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+ M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
  extern M2C_UNK data_ov001_02193e40;
  extern M2C_UNK data_ov001_02193e44;
  M2C_UNK *p=&data_ov001_02193e40;
  s32 i;
  for(i=0;i<2;i++)Ov001_FreeFile(*((s32 *)((u8 *)(*p)+0x674)+i));
  func_ov001_0218a6d8(*((s32 *)((u8 *)data_ov001_02193e40+0x670)));
- func_ov001_0218b71c(&data_ov001_02193e44-1);
+ Ov001_FreeAlloc(&data_ov001_02193e44-1);
 }
 
 void *func_ov001_0218ac04(s32 a,s32 b,s32 c,s32 d,s32 *out,s32 e){
@@ -379,7 +379,7 @@ void *CreateTextPanel(s32 arg0,s32 arg1) {
 void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 func_02003684(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
-void func_ov001_0218b1ec(void*,s32); void *func_ov001_0218c884(s32,M2C_UNK,void*,s32); void func_ov001_0218ae84(M2C_UNK,void*);
+void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void func_ov001_0218ae84(M2C_UNK,void*);
 extern M2C_UNK data_ov001_02193e40; extern u8 data_ov001_0218fd18[],data_ov001_0218fd1a[],data_ov001_0218fd14[];
 void *base;
 void *p=(u8*)(void*)data_ov001_02193e40+0x610+arg0*0x30;
@@ -397,8 +397,8 @@ if(arg0==1) v=func_020036b8(); else v=func_02003684();
 zero=0;
 c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
 func_ov001_0216a230(v,b,a,zero,zero,32,c,15);
-func_ov001_0218b1ec(p,0);
-*(void**)((u8*)p+0x2c)=func_ov001_0218c884(1,(M2C_UNK)func_ov001_0218ae84,(u8*)(void*)data_ov001_02193e40+0x67c+arg0,200);
+TextPanel_ClearText(p,0);
+*(void**)((u8*)p+0x2c)=Ov001_AddTask(1,(M2C_UNK)func_ov001_0218ae84,(u8*)(void*)data_ov001_02193e40+0x67c+arg0,200);
 return p;
 }
 #pragma opt_propagation reset
@@ -429,7 +429,7 @@ M2C_UNK func_ov001_0218af0c(s32 arg0) {
     } else {
         temp_r0 = FillU16(0, func_02003834(), 0x3000);
     }
-    return func_ov001_0218b71c((u8 *)arg0 + 0x28);
+    return Ov001_FreeAlloc((u8 *)arg0 + 0x28);
 }
 
 void func_ov001_0218af70(s32 arg0) {
@@ -512,7 +512,7 @@ void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     func_ov001_0216a9d0((s32)(arg0 + 0x18), arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
 }
 
-void func_ov001_0218b1ec(void *arg0, s32 arg1) {
+void TextPanel_ClearText(void *arg0, s32 arg1) {
 M2C_FIELD(M2C_FIELD(arg0,void **,0x14),void (**)(void *,s32),4)(arg0,arg1);
 }
 
@@ -520,13 +520,13 @@ void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 a
     M2C_UNK func_ov001_0216a398(s32, u8, u8, M2C_UNK, s32, s32, s32, s32);
           s32 Ov001_GetSpriteObjEntry(s32, s32);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a304(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetSpriteAttrs(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, s32);
     s32 temp_r5;
 
     temp_r5 = Ov001_GetSpriteObjEntry(arg3, 0);
     func_ov001_0218a260(arg3, -1, 0, 0);
-    func_ov001_0218a304(arg3, -1, 0, 0xF);
+    Ov001_SetSpriteAttrs(arg3, -1, 0, 0xF);
     Ov001_SetSpritePalette(arg3, -1, arg4);
     func_ov001_0216a398(temp_r5, M2C_FIELD(arg0, u8 *, 0x2E), M2C_FIELD(arg0, u8 *, 0x2F), arg1, arg2, 0, (s32) M2C_FIELD(arg0, u16 *, 0x2C), 2);
 }

@@ -5,7 +5,7 @@ typedef struct { u8 kind:6; u8 flags:2; } UnitKind0218;
 extern void **gCurrentMap;
 extern void *gAiCommandState;
 extern void (*gAiUnitAction)(void);
-void func_ov000_0217c3a4(void);
+void ClearUnitMoveTarget(void);
 void func_ov000_0218d040(int);
 void func_ov000_0218d908(void);
 void ClearAiInfluenceMaps(void);
@@ -103,7 +103,7 @@ void func_ov000_0218b02c(void) {
         ClearAiInfluenceMaps();
         gAiUnitAction();
     }
-    func_ov000_0217c3a4();
+    ClearUnitMoveTarget();
     p = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
     SetMapCursor(p[1], p[2], 2, 0, 0);
 }

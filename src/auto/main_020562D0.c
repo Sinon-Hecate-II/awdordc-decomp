@@ -66,7 +66,7 @@ extern char data_020ff1e8[];
 #pragma opt_lifetimes off
 s32 func_020562d0(void *a,void *b) {
 s32 gpiSendFromBuffer(void*,s32,void*,void*,s32,void*);
-s32 func_0205835c(void*,s32,s32*);
+s32 gpiCheckConnectionSocket(void*,s32,s32*);
 void gpiAppendStringField(void*,void*,void*);
 void gpiAppendIntField(void*,void*,s32);
 s32 gpiReceiveData(void*,s32,void*,s32*,s32*,void*);
@@ -85,7 +85,7 @@ again:
 result=gpiSendFromBuffer(a,M2C_FIELD(request,s32*,4),request+24,&status,1,&data_020fef90);
 if(result)return result;
 if(M2C_FIELD(b,s32*,20)==1){
-result=func_0205835c(a,M2C_FIELD(request,s32*,4),&kind);if(result)return result;
+result=gpiCheckConnectionSocket(a,M2C_FIELD(request,s32*,4),&kind);if(result)return result;
 if(kind==4){gpiSetError(a,0xd01,data_020fef94);gpiCallErrorCallback(a,4,0);return 4;}
 if(kind==3){
 i=M2C_FIELD(request,s32*,0);

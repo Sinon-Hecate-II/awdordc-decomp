@@ -187,7 +187,7 @@ void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK func_020d468c();
     M2C_UNK func_020a0d18();
     M2C_UNK func_020d46ac();
-    M2C_UNK func_020a046c();
+    M2C_UNK BuildMovePathDirections();
     M2C_UNK func_01ffb3d0();
     M2C_UNK func_020cc7e0();
     extern void *gCurrentMap;
@@ -240,7 +240,7 @@ void MoveCursorTo(s32 x, s32 y) {
     }
     if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_X) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X) ||
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_Y) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y)) {
-        func_020a046c();
+        BuildMovePathDirections();
     } else {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_PATH) = 4;
     }

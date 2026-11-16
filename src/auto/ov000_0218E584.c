@@ -1,5 +1,6 @@
 /* 7 functions from 0x0218E584 to 0x0218F468 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct UnitKind18e584 { u8 kind:6; u8 flags:2; } UnitKind18e584;
 
 
@@ -12,7 +13,7 @@ s32 IsCaptureTargetAt(void*,s32,s32);
 s32 func_ov000_021a93a8(void*,s32,s32);
 u8 func_ov000_0217a8a0(s16,s16,s32);
 void PlanMoveDestination(s32,s32);
-void func_ov000_0217c3a4(void);
+void ClearUnitMoveTarget(void);
 extern void **gCurrentMap;
 extern void *gAiCommandState,*gAiUnitTypeTuning;
 extern s8 gTerrainPropertyType[];
@@ -67,7 +68,7 @@ next:
 }
 }
 if(bestX==-1)return;
-func_ov000_0217c3a4();
+ClearUnitMoveTarget();
 
 if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)gAiCommandState)[5] && ((u8*)*gCurrentMap)[M2C_FIELD(((u8*)*gCurrentMap)+bestY*2,u16*,0x3758)+bestX]==0){
 SetMapCursor((s16)bestX,(s16)bestY,2,0,0);return;
@@ -88,7 +89,7 @@ s32 IsCaptureTargetAt(void*,s32,s32);
 s32 func_ov000_021a93a8(void*,s32,s32);
 u8 func_ov000_0217a8a0(s16,s16,s32);
 void PlanMoveDestination(s32,s32);
-void func_ov000_0217c3a4(void);
+void ClearUnitMoveTarget(void);
 extern void **gCurrentMap;
 extern void *gAiCommandState,*gAiUnitTypeTuning;
 extern s8 gTerrainPropertyType[];
@@ -152,7 +153,7 @@ next:
 }
 }
 if(best==0x7fff)return;
-func_ov000_0217c3a4();
+ClearUnitMoveTarget();
 
 if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)gAiCommandState)[5] && ((u8*)*gCurrentMap)[M2C_FIELD(((u8*)*gCurrentMap)+bestY*2,u16*,0x3758)+bestX]==0){
 SetMapCursor((s16)bestX,(s16)bestY,2,0,0);return;
@@ -290,7 +291,7 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
 extern void **gCurrentMap; extern void *gAiCommandState;
-s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
+s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void ClearUnitMoveTarget(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
 if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
 BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
@@ -310,34 +311,38 @@ if(!func_ov000_021a8a88(unit))continue;
 if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
 if(!func_ov000_02177f24(x,y,out))continue;
 if((u32)(M2C_FIELD(gAiCommandState,u8 *,7)<<28)>>31){func_ov000_02199f38();return;}
-func_ov000_0217c3a4();
+ClearUnitMoveTarget();
 {u8 *base=*gCurrentMap; SetMapCursor(out[0],out[1],4,base[x+M2C_FIELD(base+y*2,u16 *,0x3758)],0);}
 return;
 }
 }
 }
 
-void func_ov000_0218f37c(void) {
+/* Keeps a capturing unit on its property: when the unit under the AI cursor is
+ * a foot unit that is already capturing, mark the property as taken while the
+ * capture needs two or more turns, clear the unit's move target and put the
+ * cursor on the unit so the capture action runs. */
+void SelectCaptureStayDestination(void) {
 extern void **gCurrentMap;
 s32 IsFootUnitKind(u32);
-s32 func_ov000_021a8b78(void *);
-void func_ov000_0217c3a4(void);
+s32 GetCaptureTurnsLeft(void *);
+void ClearUnitMoveTarget(void);
 void SetMapCursor(u32,u32,u32,u32,u32);
-u8 *p;
-u8 *base;
-u8 *q;
-p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-if(!IsFootUnitKind((u32)(p[0]<<26)>>26))return;
-p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-if(!((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27))return;
-if(func_ov000_021a8b78(p)>=2) {
-base=*gCurrentMap;
-p=M2C_FIELD(base,u8 **,0x52d0);
-q=base+0x6c60+6*M2C_FIELD(base+(p[1]+M2C_FIELD(base+2*p[2],u16 *,0x3758)),s8 *,0x1928);
-q[3]++;
+u8 *unit;
+u8 *map;
+u8 *property;
+unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+if(!IsFootUnitKind((u32)(unit[MAP_UNIT_KIND]<<26)>>26))return;
+unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+if(!((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_CAPTURE)<<16)>>27))return;
+if(GetCaptureTurnsLeft(unit)>=2) {
+map=*gCurrentMap;
+unit=M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT);
+property=map+0x6c60+6*M2C_FIELD(map+(unit[MAP_UNIT_X]+M2C_FIELD(map+2*unit[MAP_UNIT_Y],u16 *,MAP_ROW_OFFSETS)),s8 *,MAP_CELL_PROPERTY_INDEX);
+property[MAP_PROPERTY_COUNT]++;
 }
-func_ov000_0217c3a4();
-p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-SetMapCursor(p[1],p[2],3,0,0);
+ClearUnitMoveTarget();
+unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+SetMapCursor(unit[MAP_UNIT_X],unit[MAP_UNIT_Y],3,0,0);
 }
 

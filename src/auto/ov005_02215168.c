@@ -157,9 +157,9 @@ done:
 }
 
 void func_ov005_02215594(u8 *arg0) {
- void func_ov005_02214fec(s16);
+ void RecordsMenu_HandlePick(s16);
  extern M2C_UNK gRecordsMenuState;
- func_ov005_02214fec((s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0));
+ RecordsMenu_HandlePick((s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0));
 }
 
 void func_ov005_022155c0(u8 *arg0) {

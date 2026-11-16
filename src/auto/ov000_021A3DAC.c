@@ -160,58 +160,95 @@ s32 func_ov000_021a43e8(s32 arg0) {
     return 0;
 }
 
-s32 func_ov000_021a4414(void) {
-s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
-u8 *entries;s32 count7=0,count8=0,i,idx;void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16*,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(base,u16*,0x52a4)]+0x33;i++){
-entries=(u8 *)base+0x59a4;
-idx=i*14;
-if((u32)(entries[idx]<<26)>>26){
-if(!func_ov000_021a43e8((u32)(entries[idx]<<26)>>26)){
-if(gUnitKindStats[((u32)(entries[idx]<<26)>>26)*112+19]&7){
-if(GetUnitAttackClass((u32)(entries[idx]<<26)>>26)==0)count7++;
-if(GetUnitAttackClass((u32)(entries[idx]<<26)>>26)==1)count8++;
-}}}
-base=*gCurrentMap;
-}
-if(count7>count8*3)return 0;
-return 1;
+/* Kind-10 build rule: walk the acting player's units; for every non-foot,
+ * combat-flagged kind count the direct (class 0) and indirect (class 1) ones.
+ * Reject the turn's build plan when direct units outnumber indirect ones 3:1
+ * (returns 0), otherwise accept (1). */
+s32 IsIndirectUnitRatioOk(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    extern u8 gUnitKindStats[];
+    u8 *units;
+    s32 direct;
+    s32 indirect;
+    s32 i;
+    s32 idx;
+    void *base = *gCurrentMap;
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
+
+    direct = 0;
+    indirect = 0;
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)] + 0x33; i++) {
+        units = (u8 *)base + 0x59a4;
+        idx = i * 14;
+        if ((u32)(units[idx] << 26) >> 26) {
+            if (!func_ov000_021a43e8((u32)(units[idx] << 26) >> 26)) {
+                if (gUnitKindStats[((u32)(units[idx] << 26) >> 26) * 112 + 19] & 7) {
+                    if (GetUnitAttackClass((u32)(units[idx] << 26) >> 26) == 0) direct++;
+                    if (GetUnitAttackClass((u32)(units[idx] << 26) >> 26) == 1) indirect++;
+                }
+            }
+        }
+        base = *gCurrentMap;
+    }
+    if (direct > indirect * 3) return 0;
+    return 1;
 }
 
-s32 func_ov000_021a4510(void) {
-s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
-s32 a=0,b=0,i;
-void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
-u8 *entry=(u8 *)*gCurrentMap+0x59a4+i*14;
-if(((u32)(entry[0]<<26)>>26)!=0 && !func_ov000_021a43e8((u32)(entry[0]<<26)>>26)){
-if(gUnitKindStats[((u32)(entry[0]<<26)>>26)*112+19]&7){
-if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==0)a++;
-if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==1)b++;
-}}
-}
-if(a>b)return 0;return 1;
+/* Kind-26 build rule: walk the acting player's units; for every non-foot,
+ * combat-flagged kind count the direct (attack class 0) and indirect (class 1)
+ * ones.  Reject the turn's build plan when direct units outnumber indirect ones
+ * (returns 0), otherwise accept (1). */
+s32 IsSubmarineRatioOk(void) {
+    s32 func_ov000_021a43e8(s32);
+    s32 GetUnitAttackClass(s32);
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    extern u8 gUnitKindStats[];
+    s32 direct = 0;
+    s32 indirect = 0;
+    s32 i;
+    void *base = *gCurrentMap;
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+        u8 *entry = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        if (((u32)(entry[0] << 26) >> 26) != 0 && !func_ov000_021a43e8((u32)(entry[0] << 26) >> 26)) {
+            if (gUnitKindStats[((u32)(entry[0] << 26) >> 26) * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_FLAGS] & 7) {
+                if (GetUnitAttackClass((u32)(entry[0] << 26) >> 26) == UNIT_ATTACK_DIRECT) direct++;
+                if (GetUnitAttackClass((u32)(entry[0] << 26) >> 26) == UNIT_ATTACK_INDIRECT) indirect++;
+            }
+        }
+    }
+    if (direct > indirect) return 0;
+    return 1;
 }
 
-s32 func_ov000_021a4608(void) {
-s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
-s32 a=0,b=0,i;
-void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
-u8 *entry=(u8 *)*gCurrentMap+0x59a4+i*14;
-if(((u32)(entry[0]<<26)>>26)!=0 && !func_ov000_021a43e8((u32)(entry[0]<<26)>>26)){
-if(gUnitKindStats[((u32)(entry[0]<<26)>>26)*112+19]&7 && ((u32)(entry[0]<<26)>>26)!=26){
-if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==0)a++;
-if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==1)b++;
-}}
-}
-if(a>(b<<1))return 0;return 1;
+/* Kind-11 build rule: walk the acting player's units; for every non-foot,
+ * combat-flagged kind except kind 26 (submarine) count the direct (class 0)
+ * and indirect (class 1) ones.  Reject the turn's build plan when direct units
+ * outnumber indirect ones 2:1 (returns 0), otherwise accept (1). */
+s32 IsDirectUnitRatioOk(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    extern u8 gUnitKindStats[];
+    s32 direct = 0;
+    s32 indirect = 0;
+    s32 i;
+    void *base = *gCurrentMap;
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
+
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33; i++) {
+        u8 *entry = (u8 *)*gCurrentMap + 0x59a4 + i * 14;
+        if (((u32)(entry[0] << 26) >> 26) != 0 && !func_ov000_021a43e8((u32)(entry[0] << 26) >> 26)) {
+            if (gUnitKindStats[((u32)(entry[0] << 26) >> 26) * 112 + 19] & 7 && ((u32)(entry[0] << 26) >> 26) != 26) {
+                if (GetUnitAttackClass((u32)(entry[0] << 26) >> 26) == 0) direct++;
+                if (GetUnitAttackClass((u32)(entry[0] << 26) >> 26) == 1) indirect++;
+            }
+        }
+    }
+    if (direct > (indirect << 1)) return 0;
+    return 1;
 }
 
 s32 func_ov000_021a4704(void) {
@@ -275,18 +312,18 @@ s32 func_ov000_021a4704(void) {
 }
 
 s32 func_ov000_021a484c(s32 arg0, s32 arg1) {
-    s32 func_ov000_021a4414();
-    s32 func_ov000_021a4510();
-    s32 func_ov000_021a4608();
+    s32 IsIndirectUnitRatioOk();
+    s32 IsSubmarineRatioOk();
+    s32 IsDirectUnitRatioOk();
     s32 func_ov000_021a4704();
 
     switch (arg1) {
     case 10:
-        return func_ov000_021a4414();
+        return IsIndirectUnitRatioOk();
     case 26:
-        return func_ov000_021a4510();
+        return IsSubmarineRatioOk();
     case 11:
-        return func_ov000_021a4608();
+        return IsDirectUnitRatioOk();
     case 12:
         return func_ov000_021a4704();
     }

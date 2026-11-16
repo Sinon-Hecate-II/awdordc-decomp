@@ -117,12 +117,12 @@ void func_ov001_0217b130(void) {
 void MapSelectList_MoveCursor(s32 dir){
 void func_ov001_0217b33c(void);
 extern M2C_UNK gMapSelectState;
-s32 func_ov001_0218c884(s32,void (*)(s32),s32,s32);
+s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
 s32 moved=1;s32 row=M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR);
 switch(row) {
 case 0: if(dir==1) {if(!M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)) M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=4;else {
 Ov001_PlaySound(19);
-M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELECT_SCROLL_ANIM)=func_ov001_0218c884(0,func_ov001_0217af80,0,120);return;
+M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELECT_SCROLL_ANIM)=Ov001_AddTask(0,func_ov001_0217af80,0,120);return;
 }} else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 1:case 2: if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>(row+1))M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {func_ov001_0217b33c();return;}break;
@@ -134,7 +134,7 @@ Ov001_PlaySound(8);func_ov001_0217b130();
 
 void func_ov001_0217b2c8(void) {
     M2C_UNK Ov001_PlaySound(s32);
-    s32 func_ov001_0218c884(s32, void (*)(s32), s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
     extern M2C_UNK gMapSelectState;
     if (M2C_FIELD(&gMapSelectState, u16 *, 2) == 0) {
         if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x59) != 0) return;
@@ -143,12 +143,12 @@ void func_ov001_0217b2c8(void) {
         return;
     }
     Ov001_PlaySound(0x13);
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = func_ov001_0218c884(0, func_ov001_0217af80, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217af80, 0, 0x78);
 }
 
 void func_ov001_0217b33c(void) {
     M2C_UNK Ov001_PlaySound(s32);
-    s32 func_ov001_0218c884(s32, void (*)(s32), s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
     extern M2C_UNK gMapSelectState;
     if (M2C_FIELD(&gMapSelectState, u16 *, 2) == M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40) || M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x51) <= 4) {
         if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x59) != 0) return;
@@ -157,7 +157,7 @@ void func_ov001_0217b33c(void) {
         return;
     }
     Ov001_PlaySound(0x13);
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = func_ov001_0218c884(0, func_ov001_0217b03c, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217b03c, 0, 0x78);
 }
 
 void func_ov001_0217b3c0(void) {
@@ -395,7 +395,7 @@ void func_ov001_0217ba1c(void) {
     void Ov001_SetNextScreenMode(s32, s32);
     void Ov001_SetNameEntryMode(s32, s32);
     s32 Ov001_SetStepCallback(s32 *);
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern void *gNameEntryState;
     extern void *data_ov001_02190758;
     extern void GX_LoadOBJPltt(void);
@@ -427,32 +427,34 @@ void func_ov001_0217ba1c(void) {
         }
     }
     p = sp0 ? (void *)&gNameEntryState : (void *)&gNameEntryState;
-    func_ov001_0218b71c((M2C_UNK *)p);
+    Ov001_FreeAlloc((M2C_UNK *)p);
 }
 #pragma peephole reset
+/* Draws the entered name on the name-entry panel: one glyph per character in
+ * two rows of 16, substituting a dash for spaces, then closes the panel. */
 void RedrawNameEntryText(void) {
-extern void *gNameEntryState; extern u8 data_ov001_0218f838[];
-void func_ov001_0218b1ec(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
-u16 buf[6]; u16 *p; s32 j,i; u8 v;
-p=&buf[2];p[1]=0;p[2]=0;p[3]=0;p[0]=0;
-buf[3]=32;buf[4]=14;buf[5]=16;
-func_ov001_0218b1ec(M2C_FIELD(gNameEntryState,s32 *,0),0);
-i=0;j=i;buf[1]=i;
+extern void *gNameEntryState; extern u8 gNameEntryColumnStride[];
+void TextPanel_ClearText(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
+u16 glyphs[6]; u16 *rect; s32 column,i; u8 c;
+rect=&glyphs[2];rect[1]=0;rect[2]=0;rect[3]=0;rect[0]=0;
+glyphs[3]=32;glyphs[4]=14;glyphs[5]=16;
+TextPanel_ClearText(M2C_FIELD(gNameEntryState,s32 *,NAME_ENTRY_PANEL),0);
+i=0;column=i;glyphs[1]=i;
 do {
-if(i==16){j=0;buf[3]=49;}
-v=M2C_FIELD((u8 *)gNameEntryState+i,u8 *,8);
-if(v==32)buf[0]=0xe01d;else buf[0]=v;
-buf[2]=data_ov001_0218f838[j];
-DrawPanelText(M2C_FIELD(gNameEntryState,s32 *,0),buf[2],buf[3],buf[4],buf[5],2,0x480,buf);
-i++;j++;
+if(i==16){column=0;glyphs[3]=49;}
+c=M2C_FIELD((u8 *)gNameEntryState+i,u8 *,NAME_ENTRY_TEXT);
+if(c==32)glyphs[0]=0xe01d;else glyphs[0]=c;
+glyphs[2]=gNameEntryColumnStride[column];
+DrawPanelText(M2C_FIELD(gNameEntryState,s32 *,NAME_ENTRY_PANEL),glyphs[2],glyphs[3],glyphs[4],glyphs[5],2,0x480,glyphs);
+i++;column++;
 }while(i<32);
-CloseTextPanel(M2C_FIELD(gNameEntryState,s32 *,0));
+CloseTextPanel(M2C_FIELD(gNameEntryState,s32 *,NAME_ENTRY_PANEL));
 }
 
 void UpdateNameEntryCursor(void) {
     extern void *gNameEntryState;
     extern u8 data_ov001_0218f834[];
-    extern u8 data_ov001_0218f838[];
+    extern u8 gNameEntryColumnStride[];
     void *obj;
     s32 *slot;
     u8 value;
@@ -466,7 +468,7 @@ void UpdateNameEntryCursor(void) {
         high = 1;
         index = 0xF;
     }
-    *slot = (*slot & 0xFE00FF00) | data_ov001_0218f834[high] | ((u32)data_ov001_0218f838[index] << 0x17 >> 7);
+    *slot = (*slot & 0xFE00FF00) | data_ov001_0218f834[high] | ((u32)gNameEntryColumnStride[index] << 0x17 >> 7);
 }
 
 void func_ov001_0217bc7c(void) {

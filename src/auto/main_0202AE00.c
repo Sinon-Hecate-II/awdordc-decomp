@@ -107,9 +107,9 @@ void func_0202b0b0(void) {
 }
 
 void func_0202b0bc(void *a){
-void func_0202b1ac(void *);void func_02008bf0();void func_02008ca0();s32 func_020094f8();void *p=M2C_FIELD(a,void **,4);
+void func_0202b1ac(void *);void func_02008bf0();void func_02008ca0();s32 Sound_GetCommandCounter();void *p=M2C_FIELD(a,void **,4);
 func_02008bf0(M2C_FIELD(a,u8 *,60));if(M2C_FIELD(p,s32 *,28))func_02008ca0(M2C_FIELD(a,u8 *,60),65535,M2C_FIELD(p,s32 *,28));
-func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=func_020094f8();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
+func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
 }
 
 void func_0202b10c(void *a,s32 b){void func_0202b298(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void func_0202b40c(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){func_0202b298(a);return;}func_0202eed8(a+28,0,b);func_0202b40c(a,0);M2C_FIELD(a,u8 *,44)=2;}
@@ -333,7 +333,7 @@ void Sound_SetChannelVolume(void *arg0, s32 arg1, M2C_UNK arg2) {
     func_02008e24(1 << M2C_FIELD((arg0 + arg1), u8 *, 0x4C), arg2);
 }
 
-void func_0202b86c(void *a){M2C_UNK func_02008cf0(s32,M2C_UNK,s32,M2C_UNK);M2C_UNK func_0200ee40(void *);M2C_UNK func_0200ee58(void *);M2C_UNK func_020092d0(M2C_UNK);M2C_UNK func_0200948c(s32);s32 func_020094f8();s32 r;if(((s32)(M2C_FIELD(a,s32 *,36)<<30)>>31)!=0){func_02008cf0(M2C_FIELD(a,s32 *,68),0,1<<M2C_FIELD(a,s32 *,64),0);func_0200ee40(a+8);func_0200ee58(a+20);M2C_FIELD(a,s32 *,36)&=~2;r=func_020094f8();func_020092d0(1);func_0200948c(r);}func_0202b8e0(a);}
+void func_0202b86c(void *a){M2C_UNK Sound_StopChannels(s32,M2C_UNK,s32,M2C_UNK);M2C_UNK func_0200ee40(void *);M2C_UNK func_0200ee58(void *);M2C_UNK Sound_FlushCommands(M2C_UNK);M2C_UNK Sound_WaitForCommand(s32);s32 Sound_GetCommandCounter();s32 r;if(((s32)(M2C_FIELD(a,s32 *,36)<<30)>>31)!=0){Sound_StopChannels(M2C_FIELD(a,s32 *,68),0,1<<M2C_FIELD(a,s32 *,64),0);func_0200ee40(a+8);func_0200ee58(a+20);M2C_FIELD(a,s32 *,36)&=~2;r=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(r);}func_0202b8e0(a);}
 
 void func_0202b8e0(void *arg0) {
     M2C_UNK func_02029d7c(M2C_UNK *, void *);
@@ -352,19 +352,19 @@ void Sound_AdvanceVoice(M2C_UNK arg0) {
 M2C_UNK Sound_StartSegment(M2C_UNK arg0,M2C_UNK b){s32 func_020722fc(s32,s32);void *a=(void *)arg0;s32 size,offset,i,n,v;size=func_020722fc(M2C_FIELD(a,s32 *,40),M2C_FIELD(a,s32 *,44));offset=size*M2C_FIELD(a,s32 *,56);for(i=0;i<M2C_FIELD(a,s32 *,72);i++){v=M2C_FIELD(gSoundChannelInfo,s32 *,M2C_FIELD(a+i,u8 *,76)*8);v+=offset;data_0213bb94[i]=v;}M2C_FIELD(a,void (**)(s32,s32,s32 *,s32,s32,s32),48)(b,M2C_FIELD(a,s32 *,72),data_0213bb94,size,M2C_FIELD(a,s32 *,32),M2C_FIELD(a,s32 *,52));i=M2C_FIELD(a,s32 *,56)+1;M2C_FIELD(a,s32 *,56)=i;n=M2C_FIELD(a,s32 *,44);if(i>=n){n=0;M2C_FIELD(a,s32 *,56)=n;}return n;}
 
 void func_0202b9d0(void *arg0) {
-    M2C_UNK func_02008cf0(s32, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020092d0(M2C_UNK);
-    M2C_UNK func_0200948c(s32);
-    s32 func_020094f8();
+    M2C_UNK Sound_StopChannels(s32, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK Sound_FlushCommands(M2C_UNK);
+    M2C_UNK Sound_WaitForCommand(s32);
+    s32 Sound_GetCommandCounter();
     s32 temp_r4;
 
     if (((s32) (M2C_FIELD(arg0, s32 *, 0x24) << 0x1E) >> 0x1F) == 0) {
         return;
     }
-    func_02008cf0(M2C_FIELD(arg0, s32 *, 0x44), 0, 1 << M2C_FIELD(arg0, s32 *, 0x40), 0);
-    temp_r4 = func_020094f8();
-    func_020092d0(1);
-    func_0200948c(temp_r4);
+    Sound_StopChannels(M2C_FIELD(arg0, s32 *, 0x44), 0, 1 << M2C_FIELD(arg0, s32 *, 0x40), 0);
+    temp_r4 = Sound_GetCommandCounter();
+    Sound_FlushCommands(1);
+    Sound_WaitForCommand(temp_r4);
 }
 
 s32 func_0202ba1c(void *arg0) {
@@ -388,42 +388,45 @@ s32 func_0202ba1c(void *arg0) {
 }
 
 void func_0202ba8c(void) {
-    extern M2C_UNK data_0213bc54;
-    M2C_FIELD(&data_0213bc54, s32 *, 0) = 0;
-    M2C_FIELD(&data_0213bc54, s32 *, 0x48) = 0;
+    extern M2C_UNK gStreamSoundState;
+    M2C_FIELD(&gStreamSoundState, s32 *, 0) = 0;
+    M2C_FIELD(&gStreamSoundState, s32 *, 0x48) = 0;
 }
 
-void func_0202baa4(void){void func_0202ef34(void *);s32 func_0202ef4c(void *);s32 func_0202ef00(void *);void func_0202bb2c(void);M2C_UNK func_02008dfc();extern M2C_UNK data_0213bc54,data_0213bc9c;void *p=&data_0213bc9c;s32 volume;
-if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;if(M2C_FIELD(p,s32 *,4))return;func_0202ef34(p+60);
-if(M2C_FIELD(p,s32 *,76)&&func_0202ef4c(p+60)){func_0202bb2c();return;}
+void func_0202baa4(void){void func_0202ef34(void *);s32 func_0202ef4c(void *);s32 func_0202ef00(void *);void StopStreamVoice(void);M2C_UNK func_02008dfc();extern M2C_UNK gStreamSoundState,gStreamVoice;void *p=&gStreamVoice;s32 volume;
+if(!M2C_FIELD(&gStreamSoundState,s32 *,72))return;if(M2C_FIELD(p,s32 *,4))return;func_0202ef34(p+60);
+if(M2C_FIELD(p,s32 *,76)&&func_0202ef4c(p+60)){StopStreamVoice();return;}
 volume=func_0202ef00(p+60)>>8;if(volume==M2C_FIELD(p,s32 *,80))return;func_02008dfc(M2C_FIELD(p,s32 *,36),volume,0);M2C_FIELD(p,s32 *,80)=volume;
 }
 
-void func_0202bb2c(void) {
-extern M2C_UNK data_0213bc54,data_0213bc9c,data_0213bc5c;
+/* Stops the streamed sound voice: silences its channel masks, waits for the
+ * sound driver to apply the stop, frees the channel allocations and clears the
+ * voice. */
+void StopStreamVoice(void) {
+extern M2C_UNK gStreamSoundState,gStreamVoice,gSoundCommandQueue;
 s32 func_02006390(); M2C_UNK func_0202aadc(); M2C_UNK func_0202aaac(); M2C_UNK func_0202ab40(s32); M2C_UNK func_02008f10();
-s32 func_020094f8(); M2C_UNK func_020092d0(M2C_UNK); M2C_UNK func_0200948c(s32);
-void *p=&data_0213bc9c; s32 yes,r;
-if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;
-yes=M2C_FIELD(p,s32 *,44)>=0;
-func_02008cf0(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),yes?1<<M2C_FIELD(p,s32 *,44):0,0);
-if(yes){r=func_020094f8();func_020092d0(1);func_0200948c(r);while(func_02006390(&data_0213bc5c,0,0)){}}
-if(M2C_FIELD(p,s32 *,40))func_0202aadc(M2C_FIELD(p,s32 *,40));
-if(M2C_FIELD(p,s32 *,32))func_0202aaac(M2C_FIELD(p,s32 *,32));
-if(yes)func_0202ab40(M2C_FIELD(p,s32 *,44));
-if(M2C_FIELD(p,s32 *,4)==1)func_02008f10(0,0,0,0);
-M2C_FIELD(p,s32 *,0)=0;
+s32 Sound_GetCommandCounter(); M2C_UNK Sound_FlushCommands(M2C_UNK); M2C_UNK Sound_WaitForCommand(s32);
+void *voice=&gStreamVoice; s32 channelUsed,mark;
+if(!M2C_FIELD(&gStreamSoundState,s32 *,STREAM_STATE_VOICE))return;
+channelUsed=M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL)>=0;
+Sound_StopChannels(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B),channelUsed?1<<M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL):0,0);
+if(channelUsed){mark=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(mark);while(func_02006390(&gSoundCommandQueue,0,0)){}}
+if(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B))func_0202aadc(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B));
+if(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED))func_0202aaac(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED));
+if(channelUsed)func_0202ab40(M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL));
+if(M2C_FIELD(voice,s32 *,STREAM_VOICE_ENDED)==1)func_02008f10(0,0,0,0);
+M2C_FIELD(voice,s32 *,STREAM_VOICE_ACTIVE)=0;
 }
 
-void func_0202bc1c(void){M2C_UNK func_02008cf0(s32,s32,s32,s32);s32 func_020094f8();M2C_UNK func_020092d0(s32);M2C_UNK func_0200948c(s32);extern M2C_UNK data_0213bc54,data_0213bc9c;s32 r;void *p=&data_0213bc9c;s32 channel;if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;channel=M2C_FIELD(p,s32 *,44);func_02008cf0(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);r=func_020094f8();func_020092d0(1);func_0200948c(r);}
+void func_0202bc1c(void){M2C_UNK Sound_StopChannels(s32,s32,s32,s32);s32 Sound_GetCommandCounter();M2C_UNK Sound_FlushCommands(s32);M2C_UNK Sound_WaitForCommand(s32);extern M2C_UNK gStreamSoundState,gStreamVoice;s32 r;void *p=&gStreamVoice;s32 channel;if(!M2C_FIELD(&gStreamSoundState,s32 *,72))return;channel=M2C_FIELD(p,s32 *,44);Sound_StopChannels(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);r=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(r);}
 
 #pragma opt_common_subs off
 void func_0202bc7c(void) {
 void CpuFill(s32,s32,s32); void DC_FlushRange(s32,s32); M2C_UNK func_02008cc8();
-extern M2C_UNK data_0213bc54,data_0213bc9c;
-AudioBufferState *p=(AudioBufferState *)&data_0213bc9c;
+extern M2C_UNK gStreamSoundState,gStreamVoice;
+AudioBufferState *p=(AudioBufferState *)&gStreamVoice;
 s32 channel; register s32 dest,size;
-if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;
+if(!M2C_FIELD(&gStreamSoundState,s32 *,72))return;
 dest=p->buffer0;
 size=p->size;
 p->state=0;

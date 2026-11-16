@@ -329,9 +329,9 @@ tail:
 
 s32 func_02038d14(s32 a,s32 b){extern void *gNetSession;if(!gNetSession)return 0;M2C_FIELD(gNetSession,s32 *,144)=a;M2C_FIELD(gNetSession,s32 *,148)=b;return 1;}
 
-s32 func_02038d40(void){extern void *gNetSession;extern M2C_UNK gEmptyString;s32 HasNetError(void);void SetGpiStatus(s32,void *,s32);void func_0203bd0c(void);void SetNetState(s32);void func_0205afec(void *);s32 state;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;if(!M2C_FIELD(gNetSession,u8 *,0x381)){SetGpiStatus(1,&gEmptyString,0);func_0203bd0c();SetNetState(3);return 1;}M2C_FIELD(gNetSession,u8 *,0x2d)=1;func_0205afec(M2C_FIELD(gNetSession,void **,0));M2C_FIELD(gNetSession,u8 *,0x2d)=0;return 0;}
+s32 func_02038d40(void){extern void *gNetSession;extern M2C_UNK gEmptyString;s32 HasNetError(void);void SetGpiStatus(s32,void *,s32);void func_0203bd0c(void);void SetNetState(s32);void GT2NotifyConnectionClosed(void *);s32 state;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;if(!M2C_FIELD(gNetSession,u8 *,0x381)){SetGpiStatus(1,&gEmptyString,0);func_0203bd0c();SetNetState(3);return 1;}M2C_FIELD(gNetSession,u8 *,0x2d)=1;GT2NotifyConnectionClosed(M2C_FIELD(gNetSession,void **,0));M2C_FIELD(gNetSession,u8 *,0x2d)=0;return 0;}
 
-s32 DisconnectPeerSlot(s32 a){extern void *gNetSession;s32 HasNetError(void);void *FindPlayerConnection(s32);void func_0205afcc(void *);s32 state;void *p;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;p=FindPlayerConnection(a);if(!p)return -2;func_0205afcc(p);return 0;}
+s32 DisconnectPeerSlot(s32 a){extern void *gNetSession;s32 HasNetError(void);void *FindPlayerConnection(s32);void GT2FailConnectionAttempt(void *);s32 state;void *p;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;p=FindPlayerConnection(a);if(!p)return -2;GT2FailConnectionAttempt(p);return 0;}
 
 s32 func_02038e4c(void){extern void *gNetSession;s32 func_0203e2c4(void);s32 func_0203e2a4(void);if(!gNetSession)return 0;if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e2c4()+1;return func_0203e2a4()+1;}
 

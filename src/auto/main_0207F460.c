@@ -211,12 +211,12 @@ s32 func_0207fa64(s32 arg0) {
 }
 
 void func_0207fa74(s32 arg0) {
-    M2C_UNK func_02004ff8(s32, s32);
-    M2C_UNK func_020051c8(s32);
+    M2C_UNK OS_SetFifoReceiveHandlers(s32, s32);
+    M2C_UNK OS_EnableIrqMask(s32);
     M2C_UNK func_0209ccb8(M2C_UNK *, M2C_UNK);
     void func_0207fab8(void);
-    func_02004ff8(2, arg0);
-    func_020051c8(2);
+    OS_SetFifoReceiveHandlers(2, arg0);
+    OS_EnableIrqMask(2);
     func_0209ccb8((M2C_UNK *)func_0207fab8, 2);
 }
 
@@ -232,10 +232,10 @@ void func_0207fab8(void) {
 }
 
 void func_0207fad4(void) {
-    void func_020051f8(s32);
+    void OS_DisableIrqMask(s32);
     extern void *g3DSpriteBankMain;
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) &= ~2;
-    func_020051f8(2);
+    OS_DisableIrqMask(2);
 }
 
 #pragma push

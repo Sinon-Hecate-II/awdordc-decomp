@@ -1,7 +1,7 @@
 /* 1 function from 0x0206CE00 to 0x0206DF88 (main), found by ds-decomp. */
 #include "common.h"
 extern double data_020eb178[],data_020eb188[],data_020eb198[];
-extern float data_021002ec;
+extern float gFloatNanBits;
 extern s32 gErrno;
 #define POW_HI(x) (((s32 *)&(x))[1])
 #define POW_LO(x) (((u32 *)&(x))[0])
@@ -9,7 +9,7 @@ extern s32 gErrno;
 #pragma opt_common_subs off
 double func_0206ce00(double x,double y) {
 double func_02070134(double,double);double func_02070b70(double,double);double func_02070658(double,double);double func_020724f8(double,double);
-double func_020709bc(double);double func_0206dfb0(double);double func_0207191c(float);double func_0206f818(double,s32);
+double func_020709bc(double);double fabs(double);double func_0207191c(float);double func_0206f818(double,s32);
 s32 hx=POW_HI(x),hy=POW_HI(y),ix=hx&0x7fffffff,iy=hy&0x7fffffff;
 u32 lx=POW_LO(x),ly=POW_LO(y);s32 j; s32 yisint,k,n,i,signFlag;
 double z,ax,zh,zl,ph,pl,y1,t1,t2,r,s,t,u,v,w;
@@ -35,7 +35,7 @@ if(iy==0x3ff00000){if(hy>=0)return x;return func_020724f8(1.0,x);}
 if(hy==0x40000000)return func_02070658(x,x);
 if(hy==0x3fe00000&&hx>=0)return func_020709bc(x);
 }
-ax=func_0206dfb0(x);
+ax=fabs(x);
 if(lx==0&&(ix==0x7ff00000||ix==0||ix==0x3ff00000)){
 z=ax;if(hy<0)z=func_020724f8(1.0,z);
 if(hx<0){
@@ -45,7 +45,7 @@ else if(yisint==1)z=func_02070b70(0.0,z);
 return z;
 }
 signFlag=(hx>>31)+1;
-if((signFlag|yisint)==0){gErrno=33;return func_0207191c(data_021002ec);}
+if((signFlag|yisint)==0){gErrno=33;return func_0207191c(gFloatNanBits);}
 if(iy>0x41e00000){
 if(iy>0x43f00000){
 if(ix<=0x3fefffff){return hy<0?(1.0/0.0):0.0;}

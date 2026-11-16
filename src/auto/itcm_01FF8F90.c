@@ -106,41 +106,46 @@ loop_3:
     return 0;
 }
 
-void func_01ff90e4(s32 arg0, s32 arg1, u32 arg2, u16 *arg3)
+/* Appends a SpriteQuadTemplate's attribute words to the current 3D-sprite
+ * engine's OAM source list: x + xOffset (mod 0x200) into attr0's tile column,
+ * y + yOffset (mod 0x100) into attr1, and tile + the template's tile number
+ * (scaled by the bank's tile-size bits) into attr2. Gives up once the engine
+ * has 128 sprites. */
+void DS3D_AddSpriteQuad(s32 x, s32 y, u32 tile, u16 *template_)
 {
     extern u16 **gCur3DSpriteEngine;
-    u16 *dst;
+    u16 *oam;
     s32 count;
-    s32 lo, hi, mask = 0x3ff, xmask;
+    s32 tileLow, tileHigh, mask = 0x3ff, xmask;
     s32 a, b, c, shift;
-    u16 *base;
+    u16 *src;
     void *engine;
-    u8 n;
+    u8 index;
 
-    count = *arg3++;
+    count = *template_++;
     engine = gCur3DSpriteEngine;
-    base = M2C_FIELD(engine, u16 * volatile *, 0x38);
-    n = M2C_FIELD(engine, volatile u8 *, 0x4a);
-    dst = base + n * 4;
+    src = M2C_FIELD(engine, u16 * volatile *, 0x38);
+    index = M2C_FIELD(engine, volatile u8 *, 0x4a);
+    oam = src + index * 4;
     if (!count) {
         return;
     }
-    hi = arg2 & 0xfc00;
-    lo = arg2 & mask;
+    tileHigh = tile & 0xfc00;
+    tileLow = tile & mask;
     xmask = mask - 0x200;
     do {
         if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a) >= 128) {
             return;
         }
-        a = arg3[0];
-        dst[0] = ((a | arg1) & 0xff00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3e) + (a + arg1)) & 255);
-        b = arg3[1];
-        dst[1] = ((b | arg0) & 0xfe00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (b + arg0)) & xmask);
-        c = arg3[2];
-        arg3 += 3;
+        a = template_[0];
+        oam[0] = ((a | y) & 0xff00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3e) + (a + y)) & 255);
+        b = template_[1];
+        oam[1] = ((b | x) & 0xfe00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (b + x)) & xmask);
+        c = template_[2];
+        template_ += 3;
         shift = (u32)(*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30;
-        dst[2] = (c & 0xfc00) + ((lo + (((c & mask) >> shift) & mask)) & mask) + hi;
-        dst += 4;
+        oam[2] = (c & 0xfc00) + ((tileLow + (((c & mask) >> shift) & mask)) & mask) + tileHigh;
+        oam += 4;
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a)++;
     } while (--count);
 }

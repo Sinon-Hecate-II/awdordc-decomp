@@ -19,25 +19,29 @@ s32 func_020303e4(void *arg0) {
 
 s32 func_02030400(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIELD(a,u8 *,0x14);if(t==3)r=0xffff3864-M2C_FIELD(a,u8 *,0x15);else if(t==4)r=-0xc800-M2C_FIELD(a,u8 *,0x15);else r=0xffff379c-M2C_FIELD(a,u8 *,0x15);}else if(t<13)r=0xffff34e0-M2C_FIELD(a,u8 *,0x15);else {r=M2C_FIELD(a,s32 *,0x10);if(r==0)r=0xffff3cb0-M2C_FIELD(a,u8 *,0x15);else if(r==-1)r=0xffff347c-M2C_FIELD(a,u8 *,0x15);else if(r==-2)r=0xffff3418-M2C_FIELD(a,u8 *,0x15);else if(r==-3)r=0xffff33b4-M2C_FIELD(a,u8 *,0x15);else if(r==-4)r=0xffff30f8-M2C_FIELD(a,u8 *,0x15);else if(r==-5)r=0xffff3094-M2C_FIELD(a,u8 *,0x15);else if(r==-6){r=0xffff3030-M2C_FIELD(a,u8 *,0x15);return r;}}return r;}
 
-s32 func_02030554(s32 a){void *Wfc_GetWorkBlock(s32);void CpuFill(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 func_02030694(void *);u8 *p=Wfc_GetWorkBlock(16);switch(a){case 0:CpuFill(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:CpuFill(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=func_02030694(p);break;}return p[0xd10];}
+s32 func_02030554(s32 a){void *Wfc_GetWorkBlock(s32);void CpuFill(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 Wfc_BuildFreespotEntries(void *);u8 *p=Wfc_GetWorkBlock(16);switch(a){case 0:CpuFill(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:CpuFill(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=Wfc_BuildFreespotEntries(p);break;}return p[0xd10];}
 
 s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
 
 s32 func_02030634(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
 
-s32 func_02030694(void *a){
+/* Build the friend-list rows of the FREESPOT connection: after the rows of the
+ * shared friend code (func_02030780), append one row per enabled connection mode
+ * - 6 = Wayport2, 9 = NINTENDOWFC, 10 = the game's own id - storing the mode's
+ * code in the row.  Mode 0 of WFC_STATE_FLAGS builds all three. */
+s32 Wfc_BuildFreespotEntries(void *a){
 u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);
 extern M2C_UNK data_020fb224,data_020ea844,data_020ea854;
-u8 n;u8 *p;u32 v;
-p=(u8*)a+0x300;n=func_02030780(a);
-p+=n*36;
-v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;
-if(v==0||v==4){MI_CpuCopy8(&data_020fb224,p+4,8);p[3]=8;p[1]=6;n++;p+=36;}
-v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;
-if(v==0||v==7){MI_CpuCopy8(&data_020ea844,p+4,8);p[3]=8;p[1]=9;n++;p+=36;}
-v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;
-if(v==0||v==8){MI_CpuCopy8(&data_020ea854,p+4,11);p[3]=11;p[1]=10;n++;}
-return n;
+u8 rows;u8 *entry;u32 mode;
+entry=(u8*)a+WFC_STATE_ENTRIES;rows=func_02030780(a);
+entry+=rows*WFC_ENTRY_STRIDE;
+mode=(u32)(M2C_FIELD(a,u8 *,WFC_STATE_FLAGS)<<28)>>28;
+if(mode==0||mode==4){MI_CpuCopy8(&data_020fb224,entry+WFC_ENTRY_CODE,8);entry[WFC_ENTRY_CODE_LEN]=8;entry[WFC_ENTRY_ID]=6;rows++;entry+=WFC_ENTRY_STRIDE;}
+mode=(u32)(M2C_FIELD(a,u8 *,WFC_STATE_FLAGS)<<28)>>28;
+if(mode==0||mode==7){MI_CpuCopy8(&data_020ea844,entry+WFC_ENTRY_CODE,8);entry[WFC_ENTRY_CODE_LEN]=8;entry[WFC_ENTRY_ID]=9;rows++;entry+=WFC_ENTRY_STRIDE;}
+mode=(u32)(M2C_FIELD(a,u8 *,WFC_STATE_FLAGS)<<28)>>28;
+if(mode==0||mode==8){MI_CpuCopy8(&data_020ea854,entry+WFC_ENTRY_CODE,11);entry[WFC_ENTRY_CODE_LEN]=11;entry[WFC_ENTRY_ID]=10;rows++;}
+return rows;
 }
 
 u8 func_02030780(void *arg0) {

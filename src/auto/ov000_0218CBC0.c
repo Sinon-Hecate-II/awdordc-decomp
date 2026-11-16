@@ -15,7 +15,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
     s32 func_ov000_021a93ec(s16, s16);
     s32 func_ov000_02176e28(s32, s16 *);
     s32 func_020d27a4(s32, s32);
-    void func_ov000_0217c3a4(void);
+    void ClearUnitMoveTarget(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s16 position[2];
     s32 bestX = -1, bestY = -1, bestScore = 0, bestId = 0, bestX2 = -1, bestY2 = -1;
@@ -107,11 +107,11 @@ M2C_UNK func_ov000_0218cbc0(void) {
     }
 
     if (bestScore != 0) {
-        func_ov000_0217c3a4();
+        ClearUnitMoveTarget();
         SetMapCursor(bestX, bestY, 4, (u8)bestId, 0);
     }
     if (bestHealth != 0xff) {
-        func_ov000_0217c3a4();
+        ClearUnitMoveTarget();
         SetMapCursor(bestX2, bestY2, 5, (u8)savedX, (u8)savedY);
     }
 }
@@ -166,7 +166,7 @@ void FindBestMoveTarget(void) {
     s32 func_ov000_02178778(s16, s16);
     s32 func_ov000_02178e84(s16, s16);
     s32 CellMoveScore(s32, s32, s32, s32);
-    void func_ov000_0217c3a4(void);
+    void ClearUnitMoveTarget(void);
     void SetMapCursor(s32,s32,s32,s32,s32);
     s32 func_ov000_02196430(s16 *);void SelectMapLayer(void *);void FloodFillUnitRange(s16,s16,s32,s32,s32);
     s16 unitPos[2];
@@ -230,7 +230,7 @@ nextTile:
         y++;
     }
     if (bestX == -1) return;
-    func_ov000_0217c3a4();
+    ClearUnitMoveTarget();
     if (useTransport) SetMapCursor((s16)bestX, (s16)bestY, 7, 0, 0);
     else SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
 }

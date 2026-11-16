@@ -1,5 +1,6 @@
 /* 28 functions from 0x02058CA4 to 0x02059BBC (main), found by ds-decomp. */
 #include "common.h"
+#include "net_session.h"
 typedef struct ByteBlock16 { u8 bytes[16]; } ByteBlock16;
 
 #pragma opt_common_subs off
@@ -108,7 +109,7 @@ s8 *func_02058f34(s8 *arg0, s32 arg1) {
     return NULL;
 }
 
-s32 func_02058f9c(s32 arg0, s32 arg1, s32 arg2) {
+s32 gpiFindProfileRecord(s32 arg0, s32 arg1, s32 arg2) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem();
     extern M2C_UNK gGpiInfoState;
@@ -127,7 +128,7 @@ void func_02059020(void *arg0) {
     s32 *Vector_GetItem(s32, s32);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4b0;
-    extern M2C_UNK data_020ff4b8;
+    extern M2C_UNK gKeyPid;
     extern M2C_UNK data_020ff4bc;
     extern M2C_UNK gGpiInfoState;
     s32 var_r1;
@@ -137,9 +138,9 @@ void func_02059020(void *arg0) {
     s32 temp_r6;
 
     temp_r5 = ParseInt(func_02058f10(arg0, &data_020ff4b0));
-    temp_r4 = ParseInt(func_02058f10(arg0, &data_020ff4b8));
+    temp_r4 = ParseInt(func_02058f10(arg0, &gKeyPid));
     temp_r6 = func_02058f10(arg0, &data_020ff4bc);
-    temp_r0 = func_02058f9c(0, temp_r4, 0);
+    temp_r0 = gpiFindProfileRecord(0, temp_r4, 0);
     if (temp_r0 == -1) {
         return;
     }
@@ -157,14 +158,14 @@ void func_020590d0(void *arg0) {
     s32 *Vector_GetItem(s32, s32);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4c4;
-    extern M2C_UNK data_020ff4b8;
+    extern M2C_UNK gKeyPid;
     extern M2C_UNK gGpiInfoState;
     s32 var_r1;
     s32 temp_r0;
     s32 temp_r4;
 
     temp_r4 = ParseInt(func_02058f10(arg0, &data_020ff4c4));
-    temp_r0 = func_02058f9c(3, ParseInt(func_02058f10(arg0, &data_020ff4b8)), 0);
+    temp_r0 = gpiFindProfileRecord(3, ParseInt(func_02058f10(arg0, &gKeyPid)), 0);
     if (temp_r0 == -1) {
         return;
     }
@@ -177,20 +178,23 @@ void func_020590d0(void *arg0) {
     func_02059448(temp_r0, var_r1, 0, 0, 0);
 }
 
-void func_0205915c(void *arg0) {
-s32 ParseInt(M2C_UNK);s8 *StringFind(s8 *,s8 *);s32 func_02058f9c(s32,s32,s32);M2C_UNK func_02059448(s32,s32,s32,s32,s32);M2C_UNK *func_02058f10(void *,M2C_UNK *);
-extern M2C_UNK data_020ff4cc,data_020ff4b8,data_020ff4d4,data_020ff4d8,data_020ff4dc,data_020ff4e4,data_020ff4a8;
-s32 result; s32 n,a,b,c,d; s8 *p,*text;
-a=ParseInt(func_02058f10(arg0,&data_020ff4cc));
-b=ParseInt(func_02058f10(arg0,&data_020ff4b8));
-c=ParseInt(func_02058f10(arg0,&data_020ff4d4));
-d=ParseInt(func_02058f10(arg0,&data_020ff4d8));
-result=func_02058f9c(1,b,c);
-if(result==-1)return;
-n=ParseInt(func_02058f10(arg0,&data_020ff4dc));
+/* Handle the server's reply to a \setpdr\ profile-update request: find the
+   player's auth-profile record, and report back its secret and status, with the
+   optional \pr\ text and its length (0 when the reply carries none). */
+void gpiHandleSetProfileReply(void *arg0) {
+s32 ParseInt(M2C_UNK);s8 *StringFind(s8 *,s8 *);s32 gpiFindProfileRecord(s32,s32,s32);M2C_UNK func_02059448(s32,s32,s32,s32,s32);M2C_UNK *func_02058f10(void *,M2C_UNK *);
+extern M2C_UNK data_020ff4cc,gKeyPid,data_020ff4d4,data_020ff4d8,data_020ff4dc,data_020ff4e4,data_020ff4a8;
+s32 profileIndex; s32 textLength,secret,pid,p1,status; s8 *p,*text;
+secret=ParseInt(func_02058f10(arg0,&data_020ff4cc));
+pid=ParseInt(func_02058f10(arg0,&gKeyPid));
+p1=ParseInt(func_02058f10(arg0,&data_020ff4d4));
+status=ParseInt(func_02058f10(arg0,&data_020ff4d8));
+profileIndex=gpiFindProfileRecord(1,pid,p1);
+if(profileIndex==-1)return;
+textLength=ParseInt(func_02058f10(arg0,&data_020ff4dc));
 p=StringFind(arg0,(s8 *)&data_020ff4e4);
-if(!p){text=(s8 *)&data_020ff4a8;n=0;}else text=p+6;
-func_02059448(result,a,d,(s32)text,n);
+if(!p){text=(s8 *)&data_020ff4a8;textLength=0;}else text=p+6;
+func_02059448(profileIndex,secret,status,(s32)text,textLength);
 }
 
 void func_02059240(void *arg0) {
@@ -198,7 +202,7 @@ void func_02059240(void *arg0) {
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4ec;
     extern M2C_UNK data_020ff4d4;
-    extern M2C_UNK data_020ff4b8;
+    extern M2C_UNK gKeyPid;
     extern M2C_UNK data_020ff4d8;
     s32 temp_r0;
     s32 temp_r4;
@@ -208,20 +212,22 @@ void func_02059240(void *arg0) {
 
     temp_r6 = ParseInt(func_02058f10(arg0, &data_020ff4ec));
     temp_r5 = ParseInt(func_02058f10(arg0, &data_020ff4d4));
-    temp_r4 = ParseInt(func_02058f10(arg0, &data_020ff4b8));
+    temp_r4 = ParseInt(func_02058f10(arg0, &gKeyPid));
     temp_r4_2 = ParseInt(func_02058f10(arg0, &data_020ff4d8));
-    temp_r0 = func_02058f9c(2, temp_r4, temp_r5);
+    temp_r0 = gpiFindProfileRecord(2, temp_r4, temp_r5);
     if (temp_r0 == -1) {
         return;
     }
     func_02059448(temp_r0, temp_r6, temp_r4_2, 0, 0);
 }
 
+/* Handle one complete \final\-terminated gpi info message: terminate its text and
+ * hand it to the parser for its command (\pauthr\, \getpidr\, \getpdr\, \setpdr\). */
 void func_020592d8(s8 *arg0, s32 arg1) {
     s32 StringCompareN(void *, void *, s32);
     void func_02059020();
     void func_020590d0();
-    void func_0205915c();
+    void gpiHandleSetProfileReply();
     void func_02059240();
     extern u8 data_020ff4f4[];
     extern u8 data_020ff500[];
@@ -232,7 +238,7 @@ void func_020592d8(s8 *arg0, s32 arg1) {
     if (StringCompareN(arg0, data_020ff4f4, 8) == 0) { func_02059020(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
-    if (StringCompareN(arg0, data_020ff50c, 8) == 0) { func_0205915c(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff50c, 8) == 0) { gpiHandleSetProfileReply(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff518, 8) != 0) return;
     func_02059240(arg0, arg1);
 }
@@ -257,49 +263,52 @@ s32 gpiInfoProcessRecvData(s8 *arg0, s32 arg1) {
  return original - arg1;
 }
 
-s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Report a server update for profile record `profileIndex` (type and status
+ * from the reply, plus the command's own arguments) to its registered
+ * callback, then drop the record from the profile list. */
+s32 func_02059448(s32 profileIndex, s32 status, s32 secret, s32 text, s32 flags) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
-    void func_0204890c(s32 *, s32);
+    void Vector_RemoveItem(s32 *, s32);
     extern M2C_UNK gGpiInfoState;
-    s32 *p;
-    s32 *cb;
+    s32 *profile;
+    s32 *callback;
 
-    if (arg0 < 0) {
+    if (profileIndex < 0) {
     }
-    else if (arg0 < Vector_GetCount(M2C_FIELD(&gGpiInfoState, s32 *, 4))) {
-        p = Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), arg0);
-        cb = M2C_FIELD(p, s32 *, 0x18);
-        if (cb != NULL) {
-            s32 type = M2C_FIELD(p, s32 *, 0);
+    else if (profileIndex < Vector_GetCount(M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES))) {
+        profile = Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES), profileIndex);
+        callback = M2C_FIELD(profile, s32 *, GPI_PROFILE_CALLBACK);
+        if (callback != NULL) {
+            s32 type = M2C_FIELD(profile, s32 *, GPI_PROFILE_TYPE);
             switch (type) {
-                case 0:
-                    ((void (*)(s32, s32, s32, s32, s32))cb)(
-                        M2C_FIELD(p, s32 *, 4), M2C_FIELD(p, s32 *, 0x8),
-                        arg1, arg3, M2C_FIELD(p, s32 *, 0x14));
+                case GPI_PROFILE_STATUS:
+                    ((void (*)(s32, s32, s32, s32, s32))callback)(
+                        M2C_FIELD(profile, s32 *, GPI_PROFILE_ID), M2C_FIELD(profile, s32 *, GPI_PROFILE_PID),
+                        status, text, M2C_FIELD(profile, s32 *, GPI_PROFILE_ONLINE));
                     break;
-                case 1:
-                    ((void (*)(s32, s32, s32, s32, s32, s32, s32, s32, s32))cb)(
-                        M2C_FIELD(p, s32 *, 4), M2C_FIELD(p, s32 *, 0x8),
-                        M2C_FIELD(p, s32 *, 0xC), M2C_FIELD(p, s32 *, 0x10),
-                        arg1, arg2, arg3, arg4, M2C_FIELD(p, s32 *, 0x14));
+                case GPI_PROFILE_AUTH:
+                    ((void (*)(s32, s32, s32, s32, s32, s32, s32, s32, s32))callback)(
+                        M2C_FIELD(profile, s32 *, GPI_PROFILE_ID), M2C_FIELD(profile, s32 *, GPI_PROFILE_PID),
+                        M2C_FIELD(profile, s32 *, GPI_PROFILE_NAME), M2C_FIELD(profile, s32 *, GPI_PROFILE_NAME_PAD),
+                        status, secret, text, flags, M2C_FIELD(profile, s32 *, GPI_PROFILE_ONLINE));
                     break;
-                case 2:
-                    ((void (*)(s32, s32, s32, s32, s32, s32, s32))cb)(
-                        M2C_FIELD(p, s32 *, 4), M2C_FIELD(p, s32 *, 0x8),
-                        M2C_FIELD(p, s32 *, 0xC), M2C_FIELD(p, s32 *, 0x10),
-                        arg1, arg2, M2C_FIELD(p, s32 *, 0x14));
+                case GPI_PROFILE_INFO:
+                    ((void (*)(s32, s32, s32, s32, s32, s32, s32))callback)(
+                        M2C_FIELD(profile, s32 *, GPI_PROFILE_ID), M2C_FIELD(profile, s32 *, GPI_PROFILE_PID),
+                        M2C_FIELD(profile, s32 *, GPI_PROFILE_NAME), M2C_FIELD(profile, s32 *, GPI_PROFILE_NAME_PAD),
+                        status, secret, M2C_FIELD(profile, s32 *, GPI_PROFILE_ONLINE));
                     break;
-                case 3:
-                    ((void (*)(s32, s32, s32, s32))cb)(
-                        M2C_FIELD(p, s32 *, 4), M2C_FIELD(p, s32 *, 0x8),
-                        arg1, M2C_FIELD(p, s32 *, 0x14));
+                case GPI_PROFILE_BUDDY:
+                    ((void (*)(s32, s32, s32, s32))callback)(
+                        M2C_FIELD(profile, s32 *, GPI_PROFILE_ID), M2C_FIELD(profile, s32 *, GPI_PROFILE_PID),
+                        status, M2C_FIELD(profile, s32 *, GPI_PROFILE_ONLINE));
                     break;
                 default:
                     break;
             }
         }
-        func_0204890c(M2C_FIELD(&gGpiInfoState, s32 *, 4), arg0);
+        Vector_RemoveItem(M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES), profileIndex);
     }
 }
 

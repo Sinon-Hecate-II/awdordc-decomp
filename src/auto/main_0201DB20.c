@@ -87,16 +87,16 @@ void func_0201dc28(void) {
 
 void func_0201dc68(void) {
     extern M2C_UNK gNetStack;
-    void func_0201aca0(s32);
+    void SendArpRequest(s32);
     void func_02006030(s32);
     u64 GetSystemTick(void);
     void func_0201a134(s32);
     s32 start;
     M2C_FIELD(&gNetStack, void (**)(void), 0x18)();
     if (!M2C_FIELD(&gNetStack, s32 *, 0x50)) return;
-    func_0201aca0(M2C_FIELD(&gNetStack, s32 *, 0x50));
+    SendArpRequest(M2C_FIELD(&gNetStack, s32 *, 0x50));
     func_02006030(100);
-    func_0201aca0(M2C_FIELD(&gNetStack, s32 *, 0x50));
+    SendArpRequest(M2C_FIELD(&gNetStack, s32 *, 0x50));
     start = (u32)(GetSystemTick() >> 16);
     goto check;
     loop:
@@ -129,7 +129,7 @@ void func_0201dd08(void) {
     void func_0201a134(s32);
     void func_0201d138(void *);
     void func_0201d14c(void);
-    void func_0201aca0(s32);
+    void SendArpRequest(s32);
     void func_020251b8(u32);
     void func_0201e8a8(void);
     void TaskWake(void *);
@@ -218,7 +218,7 @@ void func_0201dd08(void) {
         { s32 address = M2C_FIELD(&gNetStack, s32 *, 0x2c);
         if (address != 0) {
             if (--count == 0) {
-                func_0201aca0(address);
+                SendArpRequest(address);
                 count = 0x69;
             }
         }
@@ -596,7 +596,7 @@ void func_0201e8a8(void) {
  func_0201d224();
 }
 
-u8 *func_0201e914(u8 *p) {
+u8 *DnsSkipName(u8 *p) {
     u32 c = *p++;
     while (c) {
         if ((c & 0xC0) == 0xC0) return p + 1;

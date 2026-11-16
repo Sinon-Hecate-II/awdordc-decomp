@@ -41,6 +41,21 @@
 #define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): restart the voices for a sound */
 #define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
 
+/* The streamed-sound state (gStreamSoundState); its streamed voice object
+ * (gStreamVoice) starts at +0x48. */
+#define STREAM_STATE_VOICE 0x48 /* s32 first word of the streamed voice: nonzero while open */
+
+/* Fields of the streamed sound voice (gStreamVoice). */
+#define STREAM_VOICE_ACTIVE   0x00 /* s32 nonzero while a stream is open */
+#define STREAM_VOICE_ENDED    0x04 /* s32 1 when the stream reached its end */
+#define STREAM_VOICE_RESERVED 0x20 /* u32 channels reserved for the stream */
+#define STREAM_VOICE_MASK_A   0x24 /* u32 first channel mask stopped with the stream */
+#define STREAM_VOICE_MASK_B   0x28 /* u32 second channel mask stopped and cleared */
+#define STREAM_VOICE_CHANNEL  0x2C /* s32 hardware channel index, -1 when none */
+#define STREAM_VOICE_ENVELOPE 0x3C /* envelope state driven by the func_0202ef* helpers */
+#define STREAM_VOICE_REFILL   0x4C /* s32 nonzero while a buffer is being refilled */
+#define STREAM_VOICE_VOLUME   0x50 /* s32 last volume written to the hardware */
+
 /* A sound group of the sound archive: a count and that many items, each saying
  * which kind of sound resource it names and the load flags its loader gets. */
 typedef struct SoundGroupItem {

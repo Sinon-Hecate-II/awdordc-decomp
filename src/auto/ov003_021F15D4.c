@@ -456,19 +456,19 @@ void func_ov003_021f242c(u16 *arg0) {
 void func_ov003_021f24ac(void *arg0, void *arg1) {
     void CopyU16(void *, void *, u32);
     extern M2C_UNK data_ov003_022111de;
-    extern M2C_UNK data_ov003_022111d4;
+    extern M2C_UNK gDownloadedMapIds;
     CopyU16(arg0, &data_ov003_022111de, 10);
-    CopyU16(arg1, &data_ov003_022111d4, 10);
+    CopyU16(arg1, &gDownloadedMapIds, 10);
     func_ov003_021f242c((u16 *)&data_ov003_022111de);
-    func_ov003_021f242c((u16 *)&data_ov003_022111d4);
+    func_ov003_021f242c((u16 *)&gDownloadedMapIds);
 }
 
 void func_ov003_021f24ec(void *arg0, void *arg1) {
     void CopyU16(void *, void *, u32);
     extern M2C_UNK data_ov003_022111de;
-    extern M2C_UNK data_ov003_022111d4;
+    extern M2C_UNK gDownloadedMapIds;
     CopyU16(&data_ov003_022111de, arg0, 10);
-    CopyU16(&data_ov003_022111d4, arg1, 10);
+    CopyU16(&gDownloadedMapIds, arg1, 10);
 }
 
 M2C_UNK func_ov003_021f2524(M2C_UNK *arg0) {
@@ -490,15 +490,15 @@ void func_ov003_021f2560(void) {
 
 void func_ov003_021f2574(void) {
     M2C_UNK func_ov003_021f2524(M2C_UNK *);
-    extern M2C_UNK data_ov003_022111d4;
-    func_ov003_021f2524(&data_ov003_022111d4);
+    extern M2C_UNK gDownloadedMapIds;
+    func_ov003_021f2524(&gDownloadedMapIds);
 }
 
-void func_ov003_021f2588(u32 arg0) {
-extern M2C_UNK data_ov003_022111d4;
-u16 *base=(u16 *)&data_ov003_022111d4;
+void RemoveDownloadedMapId(u32 arg0) {
+extern M2C_UNK gDownloadedMapIds;
+u16 *base=(u16 *)&gDownloadedMapIds;
 u8 i=0;
 do { if(arg0==base[i]) base[i]=0xffff; i++; } while(i<5);
-func_ov003_021f242c((u16 *)&data_ov003_022111d4);
+func_ov003_021f242c((u16 *)&gDownloadedMapIds);
 }
 

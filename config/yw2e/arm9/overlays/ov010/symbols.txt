@@ -160,7 +160,7 @@ func_ov010_02227c3c kind:function(arm,size=0x20) addr:0x02227c3c
 func_ov010_02227c5c kind:function(arm,size=0xd8) addr:0x02227c5c
 func_ov010_02227d34 kind:function(arm,size=0xc4) addr:0x02227d34
 func_ov010_02227df8 kind:function(arm,size=0x28) addr:0x02227df8
-func_ov010_02227e20 kind:function(arm,size=0xf4) addr:0x02227e20
+Ov010Online_StartSession kind:function(arm,size=0xf4) addr:0x02227e20
 func_ov010_02227f14 kind:function(arm,size=0x74) addr:0x02227f14
 func_ov010_02227f88 kind:function(arm,size=0x24) addr:0x02227f88
 func_ov010_02227fac kind:function(arm,size=0xa4) addr:0x02227fac
@@ -447,7 +447,7 @@ data_ov010_0222ee70 kind:bss addr:0x0222ee70
 data_ov010_0222ee78 kind:bss addr:0x0222ee78
 data_ov010_0222ee98 kind:bss addr:0x0222ee98
 gWebRequestError kind:bss addr:0x0222eec8
-data_ov010_0222eee0 kind:bss addr:0x0222eee0
+gOv010OnlineSession kind:bss addr:0x0222eee0
 data_ov010_0222ef08 kind:bss addr:0x0222ef08
 data_ov010_0222ef10 kind:bss addr:0x0222ef10
 data_ov010_0222ef28 kind:bss addr:0x0222ef28

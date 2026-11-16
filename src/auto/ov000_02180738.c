@@ -425,7 +425,7 @@ void func_ov000_02180dcc(void) {
 }
 
 void func_ov000_02180e4c(void) {
- s32 IsAiMap175Player2Override(); M2C_UNK BuildAiInfluenceMaps(); M2C_UNK func_ov000_0218f0ec(); M2C_UNK func_ov000_0218f37c();
+ s32 IsAiMap175Player2Override(); M2C_UNK BuildAiInfluenceMaps(); M2C_UNK func_ov000_0218f0ec(); M2C_UNK SelectCaptureStayDestination();
  extern void **gCurrentMap; u32 x; void *p;
  if(IsAiMap175Player2Override()) return;
  x=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28;
@@ -433,7 +433,7 @@ void func_ov000_02180e4c(void) {
  BuildAiInfluenceMaps();
  p=*gCurrentMap;
  if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67ce)!=3) func_ov000_0218f0ec();
- func_ov000_0218f37c();
+ SelectCaptureStayDestination();
 }
 
 void func_ov000_02180ec8(void) {
@@ -464,7 +464,7 @@ func_ov000_0218f0ec();
 func_ov000_0219137c();
 }
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)<=60)func_ov000_02190f74();
-func_ov000_0218edd8(); func_ov000_0218f37c(); SelectAIDestination();
+func_ov000_0218edd8(); SelectCaptureStayDestination(); SelectAIDestination();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60)func_ov000_02190f74();
 }
 
@@ -482,7 +482,7 @@ M2C_UNK func_ov000_0218ca94();
 M2C_UNK func_ov000_021962f8();
 M2C_UNK func_ov000_02190f74();
 M2C_UNK func_ov000_0218edd8();
-M2C_UNK func_ov000_0218f37c();
+M2C_UNK SelectCaptureStayDestination();
 M2C_UNK SelectAIDestination();
 M2C_UNK func_ov000_02186a18();
 M2C_UNK FindJoinTarget();
@@ -501,7 +501,7 @@ if(state==6){func_ov000_0218cfec();return;}
 if(state==8){func_ov000_0218f0ec();func_ov000_0219137c();func_ov000_0218ca94();func_ov000_021962f8();return;}
 if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_02190f74();
-func_ov000_0218edd8();func_ov000_0218f37c();SelectAIDestination();
+func_ov000_0218edd8();SelectCaptureStayDestination();SelectAIDestination();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)>60)func_ov000_02190f74();
 map=*gCurrentMap;handled=0;
 playerRecord=(PlayerRecord02180738 *)((u8 *)map+MAP_PLAYER_STATES);

@@ -61,11 +61,11 @@ UpdateMoveSoundPan(move);
 
 void UpdateMoveSoundPan(void *p) {
 s32 func_0208fa78(s32,s32);
-s32 func_02090084(s32);
+s32 IsSlotSoundActive(s32);
 s32 x,y;
-if(!func_02090084(0))return;
+if(!IsSlotSoundActive(0))return;
 x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;
-func_02090100(0,func_0208fa78(x/16,y/16));
+PlaySlotSoundEffect(0,func_0208fa78(x/16,y/16));
 }
 
 void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {

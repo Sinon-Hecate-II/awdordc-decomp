@@ -211,15 +211,19 @@ s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
  return 0;
 }
 
-s32 func_0204dbd4(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32),s32 e){
+/* Opens a GameSpy connection with a raw profile: nickname, unique nickname and a
+   completion callback (no e-mail, password or CD key).  Fails with "No callback."
+   when no callback is given.  A connection that already has a user id just calls
+   the callback straight away. */
+s32 gpiStartConnectionRaw(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32),s32 e){
  s32 gpiStartConnection(void **,void *,void *,void *,void *,s8 *,s8 *,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
  void gpiSetErrorString(void **,void *);
- extern M2C_UNK data_020fda34,data_020fda44;
+ extern M2C_UNK gpiErrorNoCallback,data_020fda44;
  void *q;
  if(!p || !(q=*p))return 2;
  if(!a || !*a)return 2;
  if(!b || !*b)return 2;
- if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
+ if(!cb){gpiSetErrorString(p,&gpiErrorNoCallback);return 2;}
  if(M2C_FIELD(q,s32 *,0x108)){
  s32 buf[8]={0};cb(p,buf,e);return 0;
  }
@@ -245,10 +249,10 @@ void gpiCloseConnection(void **arg0) {
 
 s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(void **,s32 *,s32),s32 h){
  s32 gpiSearchProfiles(void **,s32,s32,s32,s32,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
- void gpiSetErrorString(void **,void *);extern M2C_UNK data_020fda34;
+ void gpiSetErrorString(void **,void *);extern M2C_UNK gpiErrorNoCallback;
  s32 buf[4];s32 *result;void *q;
  if(!p || !(q=*p))return 2;
- if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
+ if(!cb){gpiSetErrorString(p,&gpiErrorNoCallback);return 2;}
  if(M2C_FIELD(q,s32 *,0x108)){
  result=(s32 *)buf;
  *(volatile s32 *)(result+2)=0;
@@ -264,10 +268,10 @@ s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(
 
 s32 gpiGetInfo(void **p,s32 a,s32 b,s32 c,void (*cb)(void **,s32 *,s32),s32 d){
 s32 func_02053c9c(void **,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
-extern M2C_UNK data_020fda34;extern s32 gGpiMsgDisconnected;
+extern M2C_UNK gpiErrorNoCallback;extern s32 gGpiMsgDisconnected;
 void *q;
 if(!p || !(q=*p) || !a)return 2;
-if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
+if(!cb){gpiSetErrorString(p,&gpiErrorNoCallback);return 2;}
 if(M2C_FIELD(q,s32 *,0x108)){s32 buf[129]={0};cb(p,buf,d);return 0;}
 if(M2C_FIELD(q,s32 *,0x1d8)==4){gpiSetErrorString(p,&gGpiMsgDisconnected);return 2;}
 return func_02053c9c(p,a,b,c,cb,d);
@@ -334,7 +338,7 @@ s32 func_0204e074(void **arg0,s32 arg1) {
 
 s32 func_0204e0c4(void **arg0,s32 arg1) {
  void gpiFree(s32);
- s32 func_02055b84(void **,s32,void **);
+ s32 gpiFindBuddyStatus(void **,s32,void **);
  void func_02055bf4(void **,void *);
  s32 func_02055d6c(void *);
  extern s32 gGpiMsgDisconnected;
@@ -343,7 +347,7 @@ s32 func_0204e0c4(void **arg0,s32 arg1) {
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
  if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
- if(func_02055b84(arg0,arg1,&sp0)==0) return 0;
+ if(gpiFindBuddyStatus(arg0,arg1,&sp0)==0) return 0;
  M2C_FIELD(sp0,s32 *,0x14)--;
  if(M2C_FIELD(p,s32 *,0x100)==0 && M2C_FIELD(sp0,s32 *,0x14)<=0) {
  gpiFree(M2C_FIELD(sp0,s32 *,0x10));
@@ -393,21 +397,21 @@ s32 gpGetBuddyStatus(void **connection,s32 index,MatchPlayerInfo *status){
 }
 
 s32 func_0204e2f4(void **arg0,s32 arg1,s32 *arg2) {
- s32 func_02055b84(void **,s32,void **);
+ s32 gpiFindBuddyStatus(void **,s32,void **);
  void *sp0; s32 *q;
  if(arg0==0 || *arg0==0) return 2;
  if(M2C_FIELD(*arg0,s32 *,0x108)!=0) {*arg2=0; return 0;}
- if(func_02055b84(arg0,arg1,&sp0)!=0 && (q=M2C_FIELD(sp0,s32 **,8))!=0) *arg2=*q;
+ if(gpiFindBuddyStatus(arg0,arg1,&sp0)!=0 && (q=M2C_FIELD(sp0,s32 **,8))!=0) *arg2=*q;
  else *arg2=-1;
  return 0;
 }
 
 s32 func_0204e364(void **arg0,s32 arg1) {
- s32 func_02055b84(void **,s32,void **);
+ s32 gpiFindBuddyStatus(void **,s32,void **);
  void *sp0;
  if(arg0==0 || *arg0==0) return 0;
  if(M2C_FIELD(*arg0,s32 *,0x108)!=0) return 0;
- if(func_02055b84(arg0,arg1,&sp0)!=0 && M2C_FIELD(sp0,s32 *,8)!=0) return 1;
+ if(gpiFindBuddyStatus(arg0,arg1,&sp0)!=0 && M2C_FIELD(sp0,s32 *,8)!=0) return 1;
  return 0;
 }
 

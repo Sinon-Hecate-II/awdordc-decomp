@@ -43,7 +43,7 @@ void func_ov001_02174f68(s32 arg0, s32 arg1) {
 }
 #pragma pop
 void func_ov001_021751c8(s32 arg0, s32 arg1) {
-void func_ov001_0218a304(s32,s32,s32,u8);
+void Ov001_SetSpriteAttrs(s32,s32,s32,u8);
 extern void *gOv001Keypad;
 extern u8 data_ov001_0218f5e4[],data_ov001_0218f5d8[];
 void *p;u32 color;s32 index;
@@ -63,7 +63,7 @@ M2C_FIELD(p,u32 *,0)&=~0xc00;
 M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xf000)|(color<<12);
 return;
 }
-func_ov001_0218a304(M2C_FIELD((u8 *)gOv001Keypad+(arg0-12)*4,s32 *,0x40),-1,0,data_ov001_0218f5d8[arg1]);
+Ov001_SetSpriteAttrs(M2C_FIELD((u8 *)gOv001Keypad+(arg0-12)*4,s32 *,0x40),-1,0,data_ov001_0218f5d8[arg1]);
 }
 
 void Ov001KeypadCommitKey(void) {
@@ -111,7 +111,7 @@ void func_ov001_0217531c(s32 arg0) {
 #pragma scheduling off
 void func_ov001_021753c8(M2C_UNK arg0) {
     #pragma scheduling off
-    M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
+    M2C_UNK Ov001_SetSlideStep(M2C_UNK, void (*)(M2C_UNK));
     void func_ov001_02175440(M2C_UNK);
     extern void *gOv001Keypad;
     Position pos;
@@ -121,42 +121,42 @@ void func_ov001_021753c8(M2C_UNK arg0) {
     pos.x = (u8)bits + 12;
     ((void(*)(s32,s32,u32))func_ov001_02174f68)(4, pos.x, pos.y);
     if (*(volatile s32 *)&pos.x < 0xc0) return;
-    func_ov001_0218c924(arg0, func_ov001_02175440);
+    Ov001_SetSlideStep(arg0, func_ov001_02175440);
 }
 #pragma scheduling reset
 void func_ov001_02175440(M2C_UNK arg0) {
-M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_021754b0(M2C_UNK);extern void *gOv001Keypad;
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_021754b0(M2C_UNK);extern void *gOv001Keypad;
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x34);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
 ((void(*)(s32))func_ov001_02174f68)(3);
-if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_021754b0);
+if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_021754b0);
 }
 
 void func_ov001_021754b0(M2C_UNK arg0) {
-M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175520(M2C_UNK);extern void *gOv001Keypad;
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175520(M2C_UNK);extern void *gOv001Keypad;
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x28);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
 ((void(*)(s32))func_ov001_02174f68)(2);
-if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_02175520);
+if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175520);
 }
 
 void func_ov001_02175520(M2C_UNK arg0) {
-M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175590(M2C_UNK);extern void *gOv001Keypad;
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175590(M2C_UNK);extern void *gOv001Keypad;
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x1c);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
 ((void(*)(s32))func_ov001_02174f68)(1);
-if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_02175590);
+if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175590);
 }
 
 void func_ov001_02175590(M2C_UNK arg0) {
-M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175600(M2C_UNK);extern void *gOv001Keypad;
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175600(M2C_UNK);extern void *gOv001Keypad;
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x10);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
 ((void(*)(s32))func_ov001_02174f68)(0);
-if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_02175600);
+if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175600);
 }
 

@@ -313,18 +313,21 @@ s32 func_ov000_0218a294(void) {
     return count;
 }
 
-s32 func_ov000_0218a2f8(void){
+/* Counts the units of the other army that the AI can attack: an active player
+   whose units are not on the current player's team, of a kind that can attack,
+   not loaded in a transport and standing on a passable grid cell. */
+s32 CountAiAttackTargetUnits(void){
 s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 s32 count=0,p,end,i;
 for(p=1;p<5;p++){
-if(IsPlayerActive(p)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)!=1){
+if(IsPlayerActive(p)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),p)!=1){
 u16 start=gPlayerUnitIdBase[p];
 i=start+1;end=start+0x33;
 for(;i<end;i++){
-UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap+0x59a4))[i];
+UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[i];
 u32 type=entry->unk0;
-if(type!=0 && !(entry->unk4&8) && (gUnitKindStats[type*0x70+0x13]&7) && ((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1)count++;
+if(type!=0 && !(entry->unk4&UNIT_FLAG_LOADED) && (gUnitKindStats[type*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_FLAGS]&7) && ((s8 **)((u8 *)*gCurrentMap+MAP_GRID))[entry->unk2][entry->unk1]!=-1)count++;
 }}}return count;}
 
 /* Whether some active player has a movable unit the AI cares about: an enemy

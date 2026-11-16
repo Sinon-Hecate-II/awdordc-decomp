@@ -16,7 +16,7 @@ int IsCurrentPlayerUnit(int);
 int func_ov000_021a8984(int);
 int CanUnitAttackKind(void *,int);
 int func_ov000_0217c2d4(void *);
-void func_ov000_0217c3a4(void);
+void ClearUnitMoveTarget(void);
 int func_ov000_0217de64(s16,s16,int,u8,void *);
 void SetMapCursor(s16,s16,int,int,int);
 #pragma opt_strength_reduction off
@@ -260,7 +260,7 @@ void func_ov000_021906a0(int arg0) {
  }
  unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
  ((Position_021906a0 *)(unit + 8))->state = 0;
- func_ov000_0217c3a4();
+ ClearUnitMoveTarget();
  if (kind == 19) {
   m = *gCurrentMap;
   if (func_ov000_0217de64((s16)sx, (s16)sy, 19, (u8)((*(u16 *)(m + 0x59a8 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)]) & 1) != 0), pos) == 1) {

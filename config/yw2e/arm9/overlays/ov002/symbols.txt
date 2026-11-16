@@ -1235,7 +1235,7 @@ gAnimStateTable kind:data(any) addr:0x021f2e70
 data_ov002_021f2ef0 kind:data(any) addr:0x021f2ef0
 data_ov002_021f2f1c kind:data(any) addr:0x021f2f1c
 data_ov002_021f2f40 kind:bss addr:0x021f2f40
-data_ov002_021f2f44 kind:bss addr:0x021f2f44
+gEffectVariants kind:bss addr:0x021f2f44
 data_ov002_021f2fa9 kind:bss addr:0x021f2fa9
 data_ov002_021f3014 kind:bss addr:0x021f3014
 data_ov002_021f3018 kind:bss addr:0x021f3018
@@ -1281,5 +1281,5 @@ data_ov002_021f3107 kind:bss addr:0x021f3107
 data_ov002_021f3108 kind:bss addr:0x021f3108
 data_ov002_021f3124 kind:bss addr:0x021f3124
 data_ov002_021f312c kind:bss addr:0x021f312c
-data_ov002_021f314e kind:bss addr:0x021f314e
+gEffectHasVariants kind:bss addr:0x021f314e
 data_ov002_021f3150 kind:bss addr:0x021f3150

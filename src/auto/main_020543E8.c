@@ -73,7 +73,7 @@ void *func_0205455c(void **a,void *b,s32 c) {
  void *func_0205180c(void **,void *,s32);
  void *gpiProcessNewPlayer(void **,void *,s32);
  void *func_02052600(void **,void *,s32);
- void *func_02057ff8(void **,void *,s32);
+ void *gpiProcessLoginReply(void **,void *,s32);
  M2C_UNK gpiLogMessage(void **,M2C_UNK *,...);
  extern M2C_UNK data_020fea6c,data_020fea48,data_020fea00,data_020fe9d8;
  void *p=NULL;
@@ -81,7 +81,7 @@ void *func_0205455c(void **a,void *b,s32 c) {
  case 0:p=func_0205180c(a,b,c);break;
  case 1:p=gpiProcessNewPlayer(a,b,c);break;
  case 2:p=func_02052600(a,b,c);break;
- case 4:p=func_02057ff8(a,b,c);break;
+ case 4:p=gpiProcessLoginReply(a,b,c);break;
  default:gpiLogMessage(a,&data_020fea6c,M2C_FIELD(b,u32 *,0));AssertFailed(&data_020fea48,&data_020fea00,&data_020fe9d8,326);break;
  }
  if(p) M2C_FIELD(b,void **,28)=p;
@@ -198,7 +198,7 @@ end:
 #pragma pop
 s32 gpiSendQueuedMessages(void **arg0,void *arg1){
 s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32);
-M2C_UNK func_0204890c(s32,s32);
+M2C_UNK Vector_RemoveItem(s32,s32);
 s32 gpiSendFromBuffer(void **,s32,void *,s32 *,s32,M2C_UNK *);
 extern M2C_UNK data_020febb0;
 s32 sp8; void *p; s32 result;
@@ -208,7 +208,7 @@ p=Vector_GetItem(M2C_FIELD(arg1,s32 *,0x38),0);
 result=gpiSendFromBuffer(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
 if(sp8 || result){M2C_FIELD(arg1,s32 *,0)=0x6a;return 0;}
 if(M2C_FIELD(p,s32 *,12)!=M2C_FIELD(p,s32 *,8))break;
-func_0204890c(M2C_FIELD(arg1,s32 *,0x38),0);
+Vector_RemoveItem(M2C_FIELD(arg1,s32 *,0x38),0);
 }
 return 0;
 }
@@ -351,8 +351,8 @@ M2C_UNK func_02054fa8(void **a,void *b) {
 void func_02055008(void **manager, void *entry) {
     s32 Vector_GetCount(s32);
     void *Vector_GetItem(s32, M2C_UNK);
-    M2C_UNK func_0204890c(s32, M2C_UNK);
-    M2C_UNK func_0204f89c(void **, s32, s32, s32);
+    M2C_UNK Vector_RemoveItem(s32, M2C_UNK);
+    M2C_UNK gpiSendMessageToServer(void **, s32, s32, s32);
     M2C_UNK func_02054fa8(void **, void *);
     M2C_UNK gpiLogMessage(void **, M2C_UNK *, ...);
     extern M2C_UNK data_020feab4;
@@ -398,9 +398,9 @@ block_9:
             item = Vector_GetItem(M2C_FIELD(entry, s32 *, 0x38), 0);
             count = M2C_FIELD(item, s32 *, 0x10);
             if (count < 0x64) {
-                func_0204f89c(manager, M2C_FIELD(entry, s32 *, 0xC), count, M2C_FIELD(item, s32 *, 0) + M2C_FIELD(item, s32 *, 0x14));
+                gpiSendMessageToServer(manager, M2C_FIELD(entry, s32 *, 0xC), count, M2C_FIELD(item, s32 *, 0) + M2C_FIELD(item, s32 *, 0x14));
             }
-            func_0204890c(M2C_FIELD(entry, s32 *, 0x38), 0);
+            Vector_RemoveItem(M2C_FIELD(entry, s32 *, 0x38), 0);
         } while (Vector_GetCount(M2C_FIELD(entry, s32 *, 0x38)) != 0);
     }
     func_02054fa8(manager, entry);
@@ -423,7 +423,12 @@ void func_02055124(M2C_UNK arg0) {
     func_020493f8(arg0);
 }
 
-s32 func_0205519c(void **arg0) {
+/* Ticks the gpi session manager: accepts a pending incoming connection (the
+ * socket in the manager's -1 peer slot, queued as a new GPI_STATE_ACCEPTING
+ * peer and set non-blocking), then steps every peer on the manager's peer list
+ * (0x434) and drops the peers that errored out or went quiet past their
+ * deadline.  Returns 0. */
+s32 func_0205519c(void **manager) {
     M2C_UNK ghiSetNonBlocking(M2C_UNK, s32);
     s32 func_02049534(s32);
     s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
@@ -431,45 +436,44 @@ s32 func_0205519c(void **arg0) {
     M2C_UNK func_020496b8(s32);
     s32 func_02054f0c(M2C_UNK, void *);
     void func_02055008(void **, void *);
-    void *func_020552e0(void **, s32, s32);
+    void *gpiCreatePeer(void **, s32, s32);
     void func_02055124(M2C_UNK);
-    s32 temp_r0;
-    s32 temp_r0_3;
-    void *temp_r0_2;
-    void *temp_r6;
-    void *temp_r7;
-    void *var_r7;
+    s32 socket;
+    s32 peerResult;
+    void *peer;
+    void *nextPeer;
+    void *session;
 
-    temp_r7 = *arg0;
-    if ( -1 != M2C_FIELD(temp_r7, s32 *, 0x204) && (func_02049534(M2C_FIELD(temp_r7, s32 *, 0x204)) != 0)) {
-        temp_r0 = func_020497a0(M2C_FIELD(temp_r7, s32 *, 0x204), 0, 0);
-        if (temp_r0 != -1) {
-            temp_r0_2 = func_020552e0(arg0, -1, 0);
-            if (temp_r0_2 != NULL) {
-                M2C_FIELD(temp_r0_2, s32 *, 0) = 0x68;
-                M2C_FIELD(temp_r0_2, s32 *, 8) = temp_r0;
-                ghiSetNonBlocking(temp_r0, 0);
-                func_02055124(M2C_FIELD(temp_r0_2, s32 *, 8));
+    session = *manager;
+    if ( -1 != M2C_FIELD(session, s32 *, 0x204) && (func_02049534(M2C_FIELD(session, s32 *, 0x204)) != 0)) {
+        socket = func_020497a0(M2C_FIELD(session, s32 *, 0x204), 0, 0);
+        if (socket != -1) {
+            peer = gpiCreatePeer(manager, -1, 0);
+            if (peer != NULL) {
+                M2C_FIELD(peer, s32 *, 0) = 0x68;
+                M2C_FIELD(peer, s32 *, 8) = socket;
+                ghiSetNonBlocking(socket, 0);
+                func_02055124(M2C_FIELD(peer, s32 *, 8));
             } else {
-                func_020496b8(temp_r0);
+                func_020496b8(socket);
             }
         }
     }
-    var_r7 = M2C_FIELD(temp_r7, void **, 0x434);
-    if (var_r7 != NULL) {
+    peer = M2C_FIELD(session, void **, 0x434);
+    if (peer != NULL) {
         do {
-            temp_r6 = M2C_FIELD(var_r7, void **, 0x3C);
-            temp_r0_3 = func_02054f0c(arg0, var_r7);
-            if ((M2C_FIELD(var_r7, s32 *, 0) == 0x6A) || (temp_r0_3 != 0) || (gpiGetTime(0) > (s32) M2C_FIELD(var_r7, s32 *, 0x10))) {
-                func_02055008(arg0, var_r7);
+            nextPeer = M2C_FIELD(peer, void **, 0x3C);
+            peerResult = func_02054f0c(manager, peer);
+            if ((M2C_FIELD(peer, s32 *, 0) == 0x6A) || (peerResult != 0) || (gpiGetTime(0) > (s32) M2C_FIELD(peer, s32 *, 0x10))) {
+                func_02055008(manager, peer);
             }
-            var_r7 = temp_r6;
-        } while (temp_r6 != NULL);
+            peer = nextPeer;
+        } while (nextPeer != NULL);
     }
     return 0;
 }
 
-void *func_0205528c(void **a,s32 b) {
+void *gpiFindConnectedPeer(void **a,s32 b) {
  void *p=M2C_FIELD(*a,void **,0x434);
  while(p) {if(M2C_FIELD(p,s32 *,12)==b && M2C_FIELD(p,s32 *,0)==105) return p; p=M2C_FIELD(p,void **,60);}
  return NULL;
@@ -481,7 +485,7 @@ void func_020552c4(s32 *arg0) {
     *arg0 = 0;
 }
 
-void *func_020552e0(void **a,s32 b,s32 c) {
+void *gpiCreatePeer(void **a,s32 b,s32 c) {
  void *gpiMalloc(s32);
  s32 gpiGetTime(s32);
  s32 func_02048558(s32,s32,void *);
@@ -500,7 +504,7 @@ void *func_020552e0(void **a,s32 b,s32 c) {
  return p;
 }
 
-s32 func_02055360(M2C_UNK arg0, void *arg1) {
+s32 gpiStartPeerChallenge(M2C_UNK arg0, void *arg1) {
     s32 func_02053c04(M2C_UNK, s32, s32);
     s32 gpiAddOperation(M2C_UNK, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
     void *spC;

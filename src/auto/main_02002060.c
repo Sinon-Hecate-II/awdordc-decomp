@@ -352,30 +352,34 @@ void GX_SetBankForTex(s32 banks) {
     GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING));
 }
 
-void func_02002e3c(s32 a) {
+/* Assign the requested VRAM banks to the extended palette of the main engine's
+ * OBJ (sprite) characters: a run gets the next 16 KiB slot of banks E/F/G, the
+ * banks the palette no longer uses are released and the new assignment is
+ * recorded. */
+void GX_SetBankForOBJExtPltt(s32 banks) {
     extern M2C_UNK gVramBankState;
-    M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,0xa))&~a;
-    M2C_FIELD(&gVramBankState,u16 *,0xa)=a;
-    switch (a) {
-    case 0x60:
-        *(volatile u8 *)0x4000246 = 0x8b;
-    case 0x20:
-        *(volatile u8 *)0x4000245 = 0x83;
+    M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)=(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)|M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_OBJ_EXTPLTT))&~banks;
+    M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_OBJ_EXTPLTT)=banks;
+    switch (banks) {
+    case VRAM_BANK_F | VRAM_BANK_G:
+        REG_VRAM_G_CR = 0x8b;
+    case VRAM_BANK_F:
+        REG_VRAM_F_CR = 0x83;
         break;
-    case 0x40:
-        *(volatile u8 *)0x4000246 = 0x83;
+    case VRAM_BANK_G:
+        REG_VRAM_G_CR = 0x83;
         break;
-    case 0x70:
-        *(volatile u8 *)0x4000246 = 0x9b;
-    case 0x30:
-        *(volatile u8 *)0x4000245 = 0x93;
-    case 0x10:
-        *(volatile u8 *)0x4000244 = 0x83;
+    case VRAM_BANK_E | VRAM_BANK_F | VRAM_BANK_G:
+        REG_VRAM_G_CR = 0x9b;
+    case VRAM_BANK_E | VRAM_BANK_F:
+        REG_VRAM_F_CR = 0x93;
+    case VRAM_BANK_E:
+        REG_VRAM_E_CR = 0x83;
         break;
     case 0:
         break;
     }
-    GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
+    GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING));
 }
 
 /* Assign VRAM banks A/B/C/D to the 3D texture extended palette: a two-bank run

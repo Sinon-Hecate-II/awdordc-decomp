@@ -4,6 +4,8 @@
 #ifndef OV009_LINK_H
 #define OV009_LINK_H
 
+#include "ds3dsprite.h"
+
 /* Event record passed to the registered link task callback. */
 #define LINK_EVENT_STATE   0x02 /* u16 phase/status reported by the task */
 #define LINK_EVENT_COMMAND 0x08 /* u16 command reported by the task */
@@ -37,5 +39,12 @@ enum {
 /* gLinkState +0x28: u16 * mask of the player announcement in flight; the actor
  * stores its own bit there until every connected peer has answered. */
 #define LINK_STATE_ANNOUNCE 0x28
+
+/* The link overlay's status-text layer (generic text-layer fields at 0x34..0x36
+ * are in ds3dsprite.h): it shows a localized message while the link result is
+ * on screen. */
+#define LINK_LAYER_TEXT_KEY 0x38 /* s32 localized-text key shown by the layer */
+#define LINK_LAYER_STYLE    0x3C /* s32 style word handed to the text renderer */
+#define LINK_LAYER_STATUS   0x40 /* s32 link status/result code; 0 hides the layer */
 
 #endif

@@ -325,7 +325,7 @@ void func_ov002_021e3f28(void) {
 }
 
 void func_ov002_021e3f2c(void *arg0, s32 arg1) {
-    extern u8 data_ov002_021f2f44[];
+    extern u8 gEffectVariants[];
     extern u8 data_ov002_021f3105[];
     extern s8 data_ov002_021f2d4c[];
     s32 func_ov002_021e377c(void *);
@@ -334,7 +334,7 @@ void func_ov002_021e3f2c(void *arg0, s32 arg1) {
     s8 t;
 
     M2C_FIELD(arg0, u8 *, 3) = (M2C_FIELD(arg0, u8 *, 3) & ~0xF) | ((u8)arg1 & 0xF);
-    M2C_FIELD(arg0, s8 *, 1) = func_ov002_021e377c((s32)data_ov002_021f2f44 + arg1 * 0x68);
+    M2C_FIELD(arg0, s8 *, 1) = func_ov002_021e377c((s32)gEffectVariants + arg1 * 0x68);
     M2C_FIELD(arg0, s8 *, 0) = 0;
     M2C_FIELD(arg0, s8 *, 5) = 0x10;
     M2C_FIELD(arg0, s8 *, 2) = 0;

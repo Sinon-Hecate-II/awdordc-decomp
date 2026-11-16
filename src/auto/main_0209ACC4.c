@@ -1,17 +1,18 @@
 /* 22 functions from 0x0209ACC4 to 0x0209BC58 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #pragma opt_propagation off
 static inline void EmitSprite(u16 x, s32 yArg, u32 tile, u16 *desc) {
-    void func_01ff90e4(u16, u16, u32, u16 *);
+    void DS3D_AddSpriteQuad(u16, u16, u32, u16 *);
     s32 y = (u16)yArg;
-    func_01ff90e4(x,(u16)y,tile,desc);
+    DS3D_AddSpriteQuad(x,(u16)y,tile,desc);
 }
 static inline void DrawSpritePair(s32 xArg, s32 y, s32 tile, u16 *desc) {
     s32 x = (u16)xArg;
-    void func_01ff90e4(u16, u16, u32, u16 *);
+    void DS3D_AddSpriteQuad(u16, u16, u32, u16 *);
     extern s32 gCur3DSpriteEngine;
-    func_01ff90e4(x,(u16)y,(u16)tile,desc);
-    func_01ff90e4(x,(u16)((y & 0xff00)|((y+8)&255)),(u16)(tile+(0x3ff & (4 >> (((u32)**(u16 **)gCur3DSpriteEngine <<17)>>30)))),desc);
+    DS3D_AddSpriteQuad(x,(u16)y,(u16)tile,desc);
+    DS3D_AddSpriteQuad(x,(u16)((y & 0xff00)|((y+8)&255)),(u16)(tile+(0x3ff & (4 >> (((u32)**(u16 **)gCur3DSpriteEngine <<17)>>30)))),desc);
 }
 #pragma opt_propagation reset
 
@@ -158,7 +159,7 @@ void UpdateTextObject(TextState *st) {
     s32 func_0209546c(void);
     void func_02095ff8(s8);
     s32 func_02096038(void);
-    s32 func_02097964(void);
+    s32 HideAllScenePanels(void);
     s32 func_02097be0(void);
     s32 func_020999b8(void *);
     M2C_UNK StopTextObject(M2C_UNK);
@@ -224,7 +225,7 @@ void UpdateTextObject(TextState *st) {
             }
             if (DrawTextStep(st) == 0) {
                 if (st->flags & 0x1) {
-                    func_02097964();
+                    HideAllScenePanels();
                     func_01ffa6fc(st);
                 } else {
                     DeleteSpriteObject(st);
@@ -367,25 +368,27 @@ void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
  } while(1);
 }
 
-void func_0209b4a8(M2C_UNK arg0,M2C_UNK arg1,u16 arg2){
+/* Copies a text bitmap into the label tile buffer block by block, taking the
+ * even pixel rows of each eight-row block first and the odd rows after them. */
+void SplitTextBitmapHalves(M2C_UNK source,M2C_UNK destination,u16 width){
 s32 HeapAllocBlock(); M2C_UNK HeapFreeBlock(s32);void MI_CpuCopy32(M2C_UNK,M2C_UNK,u32);
-s32 i,count; M2C_UNK buf;u8 *src,*dst;
-src=(u8 *)arg0;dst=(u8 *)arg1;
-buf=HeapAllocBlock(256);
-count=(((s32)arg2+7)>>3)+3;count>>=2;
-i=0;if(count>0)do{
-MI_CpuCopy32(src,buf,256);
-MI_CpuCopy32(buf,dst,32);
-MI_CpuCopy32((u8 *)buf+64,dst+32,32);
-MI_CpuCopy32((u8 *)buf+128,dst+64,32);
-MI_CpuCopy32((u8 *)buf+192,dst+96,32);
-MI_CpuCopy32((u8 *)buf+32,dst+128,32);
-MI_CpuCopy32((u8 *)buf+96,dst+160,32);
-MI_CpuCopy32((u8 *)buf+160,dst+192,32);
-MI_CpuCopy32((u8 *)buf+224,dst+224,32);
-src+=256;dst+=256;
-i++;}while(i<count);
-HeapFreeBlock((s32)buf);
+s32 block,blockCount; M2C_UNK temp;u8 *src,*dst;
+src=(u8 *)source;dst=(u8 *)destination;
+temp=HeapAllocBlock(TEXT_BITMAP_BLOCK_BYTES);
+blockCount=(((s32)width+7)>>3)+3;blockCount>>=2;
+block=0;if(blockCount>0)do{
+MI_CpuCopy32(src,temp,TEXT_BITMAP_BLOCK_BYTES);
+MI_CpuCopy32(temp,dst,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+64,dst+32,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+128,dst+64,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+192,dst+96,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+32,dst+128,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+96,dst+160,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+160,dst+192,TEXT_BITMAP_ROW_BYTES);
+MI_CpuCopy32((u8 *)temp+224,dst+224,TEXT_BITMAP_ROW_BYTES);
+src+=TEXT_BITMAP_BLOCK_BYTES;dst+=TEXT_BITMAP_BLOCK_BYTES;
+block++;}while(block<blockCount);
+HeapFreeBlock((s32)temp);
 }
 
 void func_0209b59c(M2C_UNK arg0, s32 arg1) {
@@ -400,12 +403,12 @@ void func_0209b5c4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_0209b5e4(M2C_UNK a,s32 b) {
- s32 func_0209c454(s32,M2C_UNK); s32 HeapAllocBlock(); void func_0209b4a8(s32,s32,u16); M2C_UNK HeapFreeBlock(s32);
+ s32 MeasureMessageLinesWidth(s32,M2C_UNK); s32 HeapAllocBlock(); void SplitTextBitmapHalves(s32,s32,u16); M2C_UNK HeapFreeBlock(s32);
  s32 n,p;
- n=func_0209c454(b,0);
+ n=MeasureMessageLinesWidth(b,0);
  if((((((n+7)>>3)+3)>>2)<<8)>0) {
  p=HeapAllocBlock(); func_0209b59c(p,n); func_0209b370(0,0,4,p,0,b,0,0,0);
- func_0209b4a8(p,a,(u16)n); HeapFreeBlock(p);
+ SplitTextBitmapHalves(p,a,(u16)n); HeapFreeBlock(p);
  }
  return n;
 }
@@ -440,9 +443,9 @@ if(cells>=1)DrawSpritePairPriority(curX,curY,tile,gSpriteDesc8x8,priority);
 }
 #pragma pop
 void func_0209b8c0(void *arg0) {
-    void func_0209b4a8(s32, s32, u16);
+    void SplitTextBitmapHalves(s32, s32, u16);
     M2C_UNK HeapFreeBlock(s32);
-    func_0209b4a8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), (u16) M2C_FIELD(arg0, s32 *, 0x3C));
+    SplitTextBitmapHalves(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), (u16) M2C_FIELD(arg0, s32 *, 0x3C));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
@@ -459,12 +462,12 @@ void func_0209b8ec(s32 arg0, s32 arg1, s32 arg2) {
 
 s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
     M2C_UNK func_0209b370(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
-    s32 func_0209c454(s32, M2C_UNK);
+    s32 MeasureMessageLinesWidth(s32, M2C_UNK);
     s32 HeapAllocBlock();
     s32 temp_r0;
     s32 temp_r0_2;
 
-    temp_r0 = func_0209c454(arg1, 0);
+    temp_r0 = MeasureMessageLinesWidth(arg1, 0);
     if ((s32) (((s32) (((s32) (temp_r0 + 7) >> 3) + 3) >> 2) << 8) > 0) {
         temp_r0_2 = HeapAllocBlock();
         func_0209b59c(temp_r0_2, temp_r0);
@@ -476,7 +479,7 @@ s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
 
 #pragma scheduling off
 void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
-    void func_01ff90e4(u16, u16, u32, u16 *);
+    void DS3D_AddSpriteQuad(u16, u16, u32, u16 *);
     extern u8 gSpriteDesc32x16[];
     extern u8 gSpriteDesc16x8[];
     extern u8 gSpriteDesc8x8[];

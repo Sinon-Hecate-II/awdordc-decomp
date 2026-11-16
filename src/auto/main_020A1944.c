@@ -236,77 +236,81 @@ s32 func_020a1f88(s32 player) {
 
 void func_020a2148(u16 *arg0) {
  s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
- u16 *GetMapSettings(void); void MapSettings_InitDefaults(u16 *); void MapSettings_Capture(u16 *);
- s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 GetPlayerTeam(s32);
+ u16 *GetMapSettings(void); void MapSettings_SetDefaults(u16 *); void MapSettings_Capture(u16 *);
+ s32 GetPlayerCoId(s32); s32 GetPlayerArmyId(s32); s32 GetPlayerTeam(s32);
  s32 i; u16 *p; u16 value;
  p=arg0;
  if(p==0) p=GetMapSettings();
  if(IsLinkSessionActive()!=0) return;
  if(func_020cd6d4()!=0) return;
- MapSettings_InitDefaults(p); MapSettings_Capture(p);
+ MapSettings_SetDefaults(p); MapSettings_Capture(p);
  i=0;
  do {
- *p=(*p & ~0xff) | (u8)(u16)func_020a22fc(i+1);
- *p=(*p & ~0xf00) | ((u32)((u16)func_020a2370(i+1)<<28)>>20);
+ *p=(*p & ~0xff) | (u8)(u16)GetPlayerCoId(i+1);
+ *p=(*p & ~0xf00) | ((u32)((u16)GetPlayerArmyId(i+1)<<28)>>20);
  value=GetPlayerTeam(i+1); i++;
  *p=(*p & ~0xf000) | ((u32)(value<<28)>>16);
  p++;
  }while(i<4);
 }
 
-void func_020a2204(u16 *arg0) {
+/* Applies a map-settings block (the current one when NULL) to the per-player
+ * tables: each of the four slots gets the saved CO id if that CO is unlocked,
+ * its army id and team.  In a link session the slots take the default COs and
+ * their own slot number, all on the same team. */
+void ApplyMapSettingsToPlayers(u16 *settings) {
 u16 *GetMapSettings(void);
 s32 func_020cd6d4(void);
 void MapSettings_Apply(u16 *);
 s32 IsLinkSessionActive(void);
 u32 IsCoUnlocked(s32);
-void func_020a230c(s32,s32);
-void func_020a232c(s32,s32);
+void SetPlayerCoId(s32,s32);
+void SetPlayerArmyId(s32,s32);
 void SetPlayerTeam(s32,s32);
-extern M2C_UNK data_0211faf4;
-u16 *p;
+extern M2C_UNK gDefaultPlayerCoIds;
+u16 *entries;
 s32 i;
-u16 val;
-s32 low;
-s32 r6;
-s32 r7;
-s32 r8;
+u16 rawEntry;
+s32 savedCoId;
+s32 coId;
+s32 armyId;
+s32 team;
 s32 idx;
-s32 r9;
-if(arg0==0){
-p=GetMapSettings(); arg0=p;
+s32 slot;
+if(settings==0){
+entries=GetMapSettings(); settings=entries;
 }
-p=arg0;
+entries=settings;
 if(func_020cd6d4()!=0) return;
-MapSettings_Apply(p);
+MapSettings_Apply(entries);
 for(idx=1;idx<5;idx++){
-func_020a230c(idx,0);
-func_020a232c(idx,idx);
+SetPlayerCoId(idx,0);
+SetPlayerArmyId(idx,idx);
 SetPlayerTeam(idx,0);
 }
-p=arg0; i=0;
+entries=settings; i=0;
 do {
-val=*p; r6=0; r9=i+1;
-low=((SaveInitEntry *)p)->id;
-r7=((SaveInitEntry *)p)->index;
-r8=((SaveInitEntry *)p)->mode;
-if(IsCoUnlocked(low)) r6=((SaveInitEntry *)p)->id;
+rawEntry=*entries; coId=0; slot=i+1;
+savedCoId=((SaveInitEntry *)entries)->id;
+armyId=((SaveInitEntry *)entries)->index;
+team=((SaveInitEntry *)entries)->mode;
+if(IsCoUnlocked(savedCoId)) coId=((SaveInitEntry *)entries)->id;
 if(IsLinkSessionActive()){
-r6=M2C_FIELD(&data_0211faf4,u8 *,r9); r7=r9; r8=0;
+coId=M2C_FIELD(&gDefaultPlayerCoIds,u8 *,slot); armyId=slot; team=0;
 }
-func_020a230c(r9,r6);
-func_020a232c(r9,r7);
-SetPlayerTeam(r9,r8);
-i++;p++;
+SetPlayerCoId(slot,coId);
+SetPlayerArmyId(slot,armyId);
+SetPlayerTeam(slot,team);
+i++;entries++;
 }while(i<4);
 }
 
-s32 func_020a22fc(s32 arg0) {
+s32 GetPlayerCoId(s32 arg0) {
     extern M2C_UNK data_0215c386;
     return M2C_FIELD(&data_0215c386, u8 *, arg0);
 }
 
-void func_020a230c(s32 arg0, s32 arg1) {
+void SetPlayerCoId(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0215c386;
     M2C_FIELD(&data_0215c386, s8 *, arg0) = arg1;
 }
@@ -316,7 +320,7 @@ void SetPlayerIdForSlot(s32 arg0, s8 arg1) {
     M2C_FIELD(&data_0215c381, s8 *, arg0) = arg1;
 }
 
-void func_020a232c(s32 arg0, s32 arg1) {
+void SetPlayerArmyId(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0215c38b;
     M2C_FIELD(&data_0215c38b, s8 *, arg0) = arg1;
 }
@@ -336,7 +340,7 @@ u8 GetPlayerIdForSlot(s32 arg0) {
     return M2C_FIELD(&data_0215c381, u8 *, arg0);
 }
 
-s32 func_020a2370(s32 arg0) {
+s32 GetPlayerArmyId(s32 arg0) {
     extern M2C_UNK data_0215c38b;
     return M2C_FIELD(&data_0215c38b, u8 *, arg0);
 }

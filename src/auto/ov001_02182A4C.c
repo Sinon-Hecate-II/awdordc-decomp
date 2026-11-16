@@ -294,13 +294,13 @@ void func_ov001_021830b8(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0218314c(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02185bf4(M2C_UNK *);
-    extern u8 data_ov001_02193dec;
-    extern M2C_UNK func_ov001_02183498;
+    M2C_UNK Ov001_ConnectToWfcServer(M2C_UNK *);
+    extern u8 gOv001WfcScreenState;
+    extern M2C_UNK Ov001_HandleConnectionStatus;
     extern M2C_UNK func_ov001_021831f4;
     u8 sp[0x6C];
 
-    data_ov001_02193dec = 0;
+    gOv001WfcScreenState = 0;
     func_ov001_0218314c();
     func_ov001_02172250(8);
     func_ov001_02171dd0(2);
@@ -309,7 +309,7 @@ void func_ov001_021830b8(void) {
     CopyU16(&sp[0x1A], &sp[0], M2C_FIELD(sp, u16 *, 0x30) * 2);
     func_ov001_02171ecc(&sp[0], 0x28);
     func_ov001_021713c4(0);
-    func_ov001_02185bf4((M2C_UNK *)&func_ov001_02183498);
+    Ov001_ConnectToWfcServer((M2C_UNK *)&Ov001_HandleConnectionStatus);
     Ov001_PlaySound(0xB);
     Ov001_SetStepCallback(&func_ov001_021831f4);
 }
@@ -384,7 +384,7 @@ void func_ov001_021832c8(void) {
 
 }
 
-void func_ov001_021832cc(void){void func_ov001_02183318(void);extern u8 data_ov001_02193dec;M2C_UNK Ov001_StopSound();if(data_ov001_02193dec)return;if(Ov001_GetIconRowSelection())return;data_ov001_02193dec=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);}
+void func_ov001_021832cc(void){void func_ov001_02183318(void);extern u8 gOv001WfcScreenState;M2C_UNK Ov001_StopSound();if(gOv001WfcScreenState)return;if(Ov001_GetIconRowSelection())return;gOv001WfcScreenState=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);}
 
 void func_ov001_02183318(void) {
     M2C_UNK Ov001_LockIconRow();
@@ -396,7 +396,7 @@ void func_ov001_02183318(void) {
     Ov001_SetStepCallback(&func_ov001_02183338);
 }
 
-void func_ov001_02183338(void){extern u8 data_ov001_02193dec;extern M2C_UNK func_ov001_021833a4;M2C_UNK func_ov001_02171694();if(Ov001_IsFadeActive(1))return;func_ov001_02171694();if((u8)(data_ov001_02193dec+254)<=1)Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,21,8);Ov001_SetStepCallback(&func_ov001_021833a4);}
+void func_ov001_02183338(void){extern u8 gOv001WfcScreenState;extern M2C_UNK func_ov001_021833a4;M2C_UNK func_ov001_02171694();if(Ov001_IsFadeActive(1))return;func_ov001_02171694();if((u8)(gOv001WfcScreenState+254)<=1)Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,21,8);Ov001_SetStepCallback(&func_ov001_021833a4);}
 
 /* Sets up the overlay 001 mode based on the selected slot/state, runs init hooks, then schedules render callbacks. */
 void func_ov001_021833a4(void) {
@@ -409,7 +409,7 @@ void func_ov001_021833a4(void) {
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     void func_ov001_02185dac(void);
-    extern u8 data_ov001_02193dec;
+    extern u8 gOv001WfcScreenState;
     extern void func_ov001_02180d44(void);
     extern void func_ov001_02182d0c(void);
     extern void func_ov001_02182b00(void);
@@ -417,7 +417,7 @@ void func_ov001_021833a4(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if ((data_ov001_02193dec == 2) && (Ov001_IsFadeActive(1) != 0)) {
+    if ((gOv001WfcScreenState == 2) && (Ov001_IsFadeActive(1) != 0)) {
         return;
     }
     if (func_ov001_0217170c() == 0) {
@@ -426,17 +426,17 @@ void func_ov001_021833a4(void) {
     func_ov001_02185dac();
     func_ov001_02171494();
     func_ov001_0218af70(0);
-    if (data_ov001_02193dec == 2 || data_ov001_02193dec == 3) {
+    if (gOv001WfcScreenState == 2 || gOv001WfcScreenState == 3) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193dec == 2) {
+    if (gOv001WfcScreenState == 2) {
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180d44);
         return;
     }
-    if (data_ov001_02193dec == 3) {
+    if (gOv001WfcScreenState == 3) {
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182d0c);
         return;
@@ -445,46 +445,51 @@ void func_ov001_021833a4(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182b00);
 }
 
-M2C_UNK func_ov001_02183498(M2C_UNK arg0) {
+/* Connection-status callback of the Wi-Fi screen: while no screen has been
+ * picked yet, the watch's status (0 = no player on the connection, 1 = every
+ * player online, 2 = some offline, 3 = the connection was lost) selects the
+ * sound, message box and step callback of the screen that follows.  A second
+ * report is ignored and leaves the picked screen alone. */
+M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
     M2C_UNK Ov001_StopSound(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Ov001_LockIconRow();
-    void func_ov001_02185e90(s32);
+    void Ov001_SetConnectionStatusCallback(s32);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern u8 data_ov001_02193dec;
+    extern u8 gOv001WfcScreenState;
     void func_ov001_02183584(void);
     void func_ov001_02183318(void);
     void func_ov001_021835d0(void);
 
-    if (data_ov001_02193dec != 0) {
-        return arg0;
+    if (gOv001WfcScreenState != 0) {
+        return status;
     }
-    switch (arg0) {
+    switch (status) {
     case 0:
-        data_ov001_02193dec = 3;
+        gOv001WfcScreenState = 3;
         Ov001_StopSound();
         Ov001_PlaySound(0x12);
         Ov001_ShowMessage(0x10, 1, 1, -1, 0);
         Ov001_LockIconRow();
         return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183584);
     case 1:
-        data_ov001_02193dec = 1;
+        gOv001WfcScreenState = 1;
         Ov001_StopSound();
         return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
     case 2:
         Ov001_StopSound();
-        func_ov001_02185e90(0);
+        Ov001_SetConnectionStatusCallback(0);
         Ov001_ShowMessage(0x11, 0, 1, -1, 0);
         Ov001_LockIconRow();
         return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021835d0);
     case 3:
-        data_ov001_02193dec = 2;
+        gOv001WfcScreenState = 2;
         Ov001_StopSound();
         Ov001_PlaySound(9);
         return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
     }
-    return arg0;
+    return status;
 }
 
 void func_ov001_02183584(void) {
@@ -508,32 +513,32 @@ void func_ov001_021835b0(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
 }
 
-void func_ov001_021835d0(void){void func_ov001_0218362c(void);extern u8 data_ov001_02193dec;switch(func_ov001_02186648()){case 1:data_ov001_02193dec=3;Ov001_PlaySound(6);break;case 0:data_ov001_02193dec=1;Ov001_PlaySound(7);break;default:return;}func_ov001_02186604();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218362c);}
+void func_ov001_021835d0(void){void func_ov001_0218362c(void);extern u8 gOv001WfcScreenState;switch(func_ov001_02186648()){case 1:gOv001WfcScreenState=3;Ov001_PlaySound(6);break;case 0:gOv001WfcScreenState=1;Ov001_PlaySound(7);break;default:return;}func_ov001_02186604();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218362c);}
 
 void func_ov001_0218362c(void) {
     M2C_UNK Ov001_UnlockIconRow();
-    void func_ov001_02185e90(s32);
-    extern u8 data_ov001_02193dec;
+    void Ov001_SetConnectionStatusCallback(s32);
+    extern u8 gOv001WfcScreenState;
     void func_ov001_0218327c(void);
-          M2C_UNK func_ov001_02183498(M2C_UNK);
+          M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK);
       if (func_ov001_0218665c() != 0) {
         return;
     }
-    if (data_ov001_02193dec == 1) {
+    if (gOv001WfcScreenState == 1) {
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
         return;
     }
     Ov001_PlaySound(0xB);
     Ov001_UnlockIconRow();
-    data_ov001_02193dec = 0;
-    func_ov001_02185e90((M2C_UNK)&func_ov001_02183498);
+    gOv001WfcScreenState = 0;
+    Ov001_SetConnectionStatusCallback((M2C_UNK)&Ov001_HandleConnectionStatus);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218327c);
 }
 
-void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 func_ov001_0218c884(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=Ov001_Alloc(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=func_ov001_0218c884(1,func_ov001_02183790,0,120);}
+void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 Ov001_AddTask(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=Ov001_Alloc(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=Ov001_AddTask(1,func_ov001_02183790,0,120);}
 
 #pragma opt_propagation off
-void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *data_ov001_02193dfc;void func_ov001_0218c94c(s32,s32);void func_ov001_0218b71c(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);func_ov001_0218b71c(&data_ov001_02193dfc-3);}
+void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *data_ov001_02193dfc;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);Ov001_FreeAlloc(&data_ov001_02193dfc-3);}
 #pragma opt_propagation reset
 void func_ov001_02183720(void) {
     extern void *data_ov001_02193df0;
@@ -551,10 +556,10 @@ M2C_FIELD(data_ov001_02193df0,u8 *,0x604)=0;
 }
 
 void func_ov001_021837e4(s32 a,s32 b,s32 c){
-extern void *data_ov001_02193df0;void func_ov001_02183820();s32 func_ov001_0218c884(s32,void (*)(),s32,s32);
+extern void *data_ov001_02193df0;void func_ov001_02183820();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 M2C_FIELD(&data_ov001_02193df0,s32 *,4)=a+(b<<5);
 M2C_FIELD(&data_ov001_02193df0,s32 *,8)=(c<<5)+0x5000000;
-func_ov001_0218c884(1,func_ov001_02183820,0,0x78);
+Ov001_AddTask(1,func_ov001_02183820,0,0x78);
 }
 
 void func_ov001_02183820(s32 a){
@@ -564,9 +569,9 @@ Ov001_PostTaskMessage(1,a);
 }
 
 void func_ov001_0218384c(s32 a){
-extern void *data_ov001_02193df0;void func_ov001_02183878();s32 func_ov001_0218c884(s32,void (*)(),s32,s32);
+extern void *data_ov001_02193df0;void func_ov001_02183878();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 M2C_FIELD(&data_ov001_02193df0,s32 *,4)=a;
-func_ov001_0218c884(1,func_ov001_02183878,0,0x78);
+Ov001_AddTask(1,func_ov001_02183878,0,0x78);
 }
 
 void func_ov001_02183878(s32 a){
@@ -579,10 +584,10 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     extern u8 data_ov001_0218fb58[];
     void *Ov001_Alloc(s32, s32);
     void func_ov001_0218b2bc(s32, s32, void *);
-    M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_MoveSpriteLayout(M2C_UNK, s32, s32, s32);
     void Ov001_SetSpritePalette(M2C_UNK, s32, s32);
-    s32 func_ov001_0218c884(s32, void (*)(), s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(), s32, s32);
     void func_ov001_02183a20(void);
 
     void *p;
@@ -594,20 +599,20 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     *(u8 *)((char *)data_ov001_02193dfc + 0x19) = (u8)b;
     *(u8 *)((char *)data_ov001_02193dfc + 0x1a) = (u8)e;
     func_ov001_0218b2bc(c, d, (char *)data_ov001_02193dfc + 0x10);
-    t = func_ov001_0218a61c(0, data_ov001_0218fb58[a], 1);
+    t = Ov001_CreateSprite(0, data_ov001_0218fb58[a], 1);
     *(M2C_UNK *)data_ov001_02193dfc = t;
     Ov001_MoveSpriteLayout(*(M2C_UNK *)data_ov001_02193dfc, -1, c, d + e);
     Ov001_SetSpritePalette(*(M2C_UNK *)data_ov001_02193dfc, -1, 1);
-    *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = func_ov001_0218c884(0, func_ov001_02183a20, 0, 0x80);
+    *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = Ov001_AddTask(0, func_ov001_02183a20, 0, 0x80);
 }
 
 void func_ov001_02183980(void) {
 extern void *data_ov001_02193dfc; extern void *gWfcFriendRoster;
 void func_ov001_0218c94c(s32, s32);
-void func_ov001_0218b71c(void *);
+void Ov001_FreeAlloc(void *);
 func_ov001_0218c94c(0,M2C_FIELD(data_ov001_02193dfc,s32*,12));
 func_ov001_0218a1cc(M2C_FIELD(data_ov001_02193dfc,s32*,0));
-func_ov001_0218b71c(&gWfcFriendRoster-1);
+Ov001_FreeAlloc(&gWfcFriendRoster-1);
 }
 
 u8 GetMenuRow(void) {

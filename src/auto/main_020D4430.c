@@ -304,7 +304,7 @@ int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2
  * handler consume the key, draws the unit-info panel and, on a cancel action,
  * clears the unit selection. */
 void UpdateMapCursor(void) {
-s32 func_020d8f60(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 func_020bd560(void);
+s32 func_020d8f60(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 HandleMapTouchRelease(void);
 s32 hadSelection, cancelled, playSound, key;
 hadSelection=func_020d8f60();
 cancelled=0; playSound=0;
@@ -317,7 +317,7 @@ if(func_ov000_0216ab64(1)) return;
 switch(key) {
 case 0: case 0x20: case 0x1000:
 if(func_020bc910()) return;
-if(func_020bd560()) return;
+if(HandleMapTouchRelease()) return;
 break;
 case 0x10: func_020c752c(); return;
 case 0x100: CreateMapMenu(); return;

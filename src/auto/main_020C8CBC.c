@@ -4,7 +4,7 @@ static inline u64 Pack_020c91ac(u64 x, u64 y, u64 z, u32 w) {
     return (x<<20) | (y<<36) | (z<<4) | (w&15);
 }
 
-s32 func_020c8cbc(M2C_UNK arg0) {
+s32 FindCampaignMapId(M2C_UNK arg0) {
     s32 GetMapRecord(s32);
     s32 func_020c7eb8(s32);
     s32 MapRecordsMatch(M2C_UNK, s32);
@@ -226,8 +226,8 @@ return (u16)((a>>20)&0xffff);
  * and draw it into the text sprite of `owner` at vertical position `y`. Returns
  * 0 when the map has no valid record. */
 s32 DrawMapCode(s32 mapIndex,s32 y,s32 owner) {
-void *GetMapRecordStamp(s32); void *func_0208b564(s32);
-void StringFormat(void *,const void *,...); void func_020899fc(void *,s32,s32,void *);
+void *GetMapRecordStamp(s32); void *CreateTextLayer(s32);
+void StringFormat(void *,const void *,...); void RenderTextLayer(void *,s32,s32,void *);
 extern char sMapCodeFormat[];
 u64 code=func_020c91ac(mapIndex), mid, top; s32 group3,group2,group1,group0; char buf[64]; void *sprite;
 GetMapRecordStamp(mapIndex);
@@ -236,7 +236,7 @@ mid=code/10000; top=mid/10000;
 func_020c9244(code);func_020c9268(code);
 group3=(top/10000)%10000; group2=top%10000; group1=mid%10000; group0=code%10000;
 StringFormat(buf,sMapCodeFormat,group3,group2,group1,group0);
-sprite=func_0208b564(owner);func_020899fc(sprite,2,y<<5,buf);
+sprite=CreateTextLayer(owner);RenderTextLayer(sprite,2,y<<5,buf);
 M2C_FIELD(sprite,u32 *,0x58)|=0x400;return 1;
 }
 

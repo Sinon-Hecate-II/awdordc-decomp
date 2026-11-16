@@ -301,7 +301,7 @@ s32 gpiHandleServerData(void *ctx) {
    search and pending-operation queues, and flushes finished callbacks; a nonzero
    error code is returned to stop. */
 s32 gpiThink(void **connection, s32 waitId) {
-    void gpiSleep(s32); s32 gpiHandleServerData(void *); s32 func_02050ad4(void **,s32);
+    void gpiSleep(s32); s32 gpiHandleServerData(void *); s32 gpiRemoveCallbacks(void **,s32);
     s32 func_02051ed0(void **); void gpiFinishOperation(void **); void func_02054484(void **,void *);
     s32 func_020544d4(void **,void **,s32); s32 func_0205519c(void **);
     s32 gpiProcessSearches(void **); s32 gpiDisconnect(void **,s32);
@@ -337,7 +337,7 @@ s32 gpiThink(void **connection, s32 waitId) {
         else {gpiFinishOperation(connection);pending=next;next=M2C_FIELD(pending,void **,0x20);func_02054484(connection,pending);}
         pending=next;
     }while(pending);
-    code=func_02050ad4(connection,waitId);
+    code=gpiRemoveCallbacks(connection,waitId);
     if(code)return code;
     if(M2C_FIELD(session,s32 *,0x41c))gpiDisconnect(connection,0);
     return result;

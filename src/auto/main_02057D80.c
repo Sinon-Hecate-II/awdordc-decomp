@@ -73,24 +73,29 @@ if(StringScanf(buf,&data_020ff24c,&x,&y,&z)!=3)return;
 func_02057ed0(a,(s32)&x,b,2,0);
 }
 
-s32 func_02057ff8(void **a,void *b,s32 c) {
+/* Handles a server message of type 4 (a player's "login" reply): any "rn" request
+   from the server is answered by the caller of func_0205817c, anything else must
+   be the player's own "\rn\" reply.  A reply naming a player queues the login
+   callback (the player's id is read into the connection at 0x418), otherwise the
+   request is simply finished.  Returns 0 or an error code. */
+s32 gpiProcessLoginReply(void **a,void *b,s32 c) {
 s32 func_0205817c(void **,s32,s32);void gpiSetError(void **,s32,s32);void gpiSetErrorString(s32 *,s32);
 s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
-extern M2C_UNK data_020ff258,data_020ff260,data_020ff290;
+extern M2C_UNK gGsKeyRoomName,data_020ff260,data_020ff290;
 Unk02050838Pair pair;s32 *p;s32 r;
 if(func_0205817c(a,c,1))return 4;
-if(StringCompareN(c,&data_020ff258,4)){gpiSetError(a,1,(s32)&data_020ff260);gpiCallErrorCallback(a,3,1);return 3;}
+if(StringCompareN(c,&gGsKeyRoomName,4)){gpiSetError(a,1,(s32)&data_020ff260);gpiCallErrorCallback(a,3,1);return 3;}
 pair=*(Unk02050838Pair *)((u8 *)b+12);
 if(pair.unk_0){p=gpiMalloc(4);if(!p){gpiSetErrorString((s32 *)a,(s32)&data_020ff290);return 1;}*p=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
 func_02054484(a,b);return 0;
 }
 
 M2C_UNK StringCopyN(s32 a,s32 b,s32 n) {
-void AssertFailed(void *,void *,void *,s32);void func_02068d18(s32,s32,s32);
+void AssertFailed(void *,void *,void *,s32);void StringCopyPad(s32,s32,s32);
 extern M2C_UNK data_020ff2cc,sGpiUtilitySourceFile,data_020ff2a0,data_020ff2ec;
 if(!a)AssertFailed(&data_020ff2cc,&sGpiUtilitySourceFile,&data_020ff2a0,47);
 if(!b)AssertFailed(&data_020ff2ec,&sGpiUtilitySourceFile,&data_020ff2a0,48);
-func_02068d18(a,b,n);
+StringCopyPad(a,b,n);
 M2C_FIELD(a+n,u8 *,-1)=0;
 return a+n;
 }
@@ -124,13 +129,16 @@ for(i=0;i<len-1 && (ch=field[i])!=0 && ch!=separator;i++)*(s8 *)((u32)value+(u32
 ((s8 *)value)[i]=0;return 1;
 }
 
-s32 func_0205835c(s32 p,s32 a,s32 *out){
+/* Checks the connection's socket for activity: a poll error reports error 5 and
+ * returns 3; a rejected connection sets *state to 4 and an accepted connection to
+ * 3 (both succeed); no activity sets *state to 0. */
+s32 gpiCheckConnectionSocket(s32 conn, s32 socket, s32 *state){
 s32 PollOneFd(s32,s32,s32*,s32*);void gpiLogMessage(s32,...);void gpiSetError(void**,s32,s32);void gpiCallErrorCallback(void*,s32,s32);
-extern M2C_UNK data_020ff350,data_020ff364,data_020ff39c,data_020ff3b4;
-s32 x=0,y=0; s32 r=PollOneFd(a,0,&x,&y);
-if(r==-1){gpiLogMessage(p,&data_020ff350);gpiSetError((void**)p,5,(s32)&data_020ff364);gpiCallErrorCallback((void*)p,3,1);return 3;}
-if(r>0){if(y){gpiLogMessage(p,&data_020ff39c);*out=4;return 0;}if(x){gpiLogMessage(p,&data_020ff3b4);*out=3;return 0;}}
-*out=0;return 0;
+extern M2C_UNK gpiLogErrorConnecting, gpiErrorCheckingCompletedConnection, gpiLogConnectionRejected, gpiLogConnectionAccepted;
+s32 accepted=0,rejected=0; s32 r=PollOneFd(socket,0,&accepted,&rejected);
+if(r==-1){gpiLogMessage(conn,&gpiLogErrorConnecting);gpiSetError((void**)conn,5,(s32)&gpiErrorCheckingCompletedConnection);gpiCallErrorCallback((void*)conn,3,1);return 3;}
+if(r>0){if(rejected){gpiLogMessage(conn,&gpiLogConnectionRejected);*state=4;return 0;}if(accepted){gpiLogMessage(conn,&gpiLogConnectionAccepted);*state=3;return 0;}}
+*state=0;return 0;
 }
 
 s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {

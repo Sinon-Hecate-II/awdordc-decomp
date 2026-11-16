@@ -10,6 +10,17 @@
 #define MENU_SELECTED_UNIT 0x5C /* void ** selected unit, or 0 */
 
 #define MENU_FLAG_PENDING  0x02 /* an action is queued for the next update */
+#define MENU_FLAG_ANIM     0x08 /* a row animation is running */
+#define MENU_FLAG_MODE     0x10 /* the mode byte in MENU_MODE has been set */
+
+#define MENU_MODE          0x36 /* u8: MENU_MODE_FIRST/SECOND, the idle value 0xFF, or MENU_MODE_SHIFTed modes */
+#define MENU_MODE_SHIFT    4    /* RequestMenuMode stores the mode shifted left by this (bytes 0x36..0x37) */
+#define MENU_MODE_FIRST    1    /* modes 1 and 2 confirm the menu instead of running its action */
+#define MENU_MODE_SECOND   2
+#define MENU_SELECT_MODE   0x35 /* u8 nonzero once the mode was applied to the rows */
+#define MENU_ROW_VALUE     0x10 /* u8 *selection context: the row's current value */
+#define MENU_ROW_COUNT     0x0F /* u8 *selection context: number of rows */
+#define MENU_MODE_IDLE     0xFF /* MENU_MODE value that means no mode switch is pending */
 
 #define MENU_ROW_STRIDE    0x24
 #define MENU_ROW_DESC      0x00 /* pointer to the row's MENU_DESC_* descriptor */

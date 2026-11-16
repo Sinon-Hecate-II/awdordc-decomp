@@ -6,18 +6,19 @@ typedef struct { u8 count; u8 pad[3]; s32 ptr; } Unk02168Fec;
 u16 *func_020e4c10(u16 *,u16 *,u16 *,u32);
 extern s32 data_02168ff4;
 
+#pragma opt_common_subs off
 void func_020e4490(void) {
     M2C_UNK func_020e4378();
     M2C_UNK func_02082058();
     M2C_UNK func_02081724();
     M2C_UNK func_02081a48();
     M2C_UNK func_02082d08();
-    M2C_UNK Reset3DSpriteDisplayState();
-    M2C_UNK Set3DSpriteVramBanks();
+    M2C_UNK func_02082b78();
+    M2C_UNK func_02082cb4();
     M2C_UNK func_02082078();
     M2C_UNK func_020e31f0();
     M2C_UNK func_01ff85ec();
-    M2C_UNK Apply3DSpriteDisplayConfig();
+    M2C_UNK func_0208232c();
     M2C_UNK func_0209daec();
     M2C_UNK func_020e3448();
     M2C_UNK func_02080bd4();
@@ -31,18 +32,17 @@ void func_020e4490(void) {
     M2C_UNK func_02075efc();
     void func_020e476c(void);
     M2C_UNK func_020e349c();
-    extern s32 gFrameCounter;
+    extern s32 data_027e15bc;
     extern s32 data_027e15c0;
     extern u8 data_027e15b4;
     extern u8 data_027e15b8;
     extern s32 gCur3DSpriteEngine;
-    extern s32 g3DSpriteEngineSub;
-    extern s32 g3DSpriteEngineMain;
+    extern s32 data_027e00c4;
+    extern s32 data_027e00c8;
     s32 temp_r7;
-    s32 var_r0;
     s32 var_r8;
 
-    gFrameCounter = 0;
+    data_027e15bc = 0;
     data_027e15c0 = 0;
     data_027e15b4 = 0;
     data_027e15b8 = 0;
@@ -51,21 +51,20 @@ void func_020e4490(void) {
     func_02081724();
     func_02081a48();
     func_02082d08();
-    Reset3DSpriteDisplayState();
-    Set3DSpriteVramBanks();
+    func_02082b78();
+    func_02082cb4();
     func_02082078();
     func_020e31f0();
     temp_r7 = gCur3DSpriteEngine;
     var_r8 = 0;
     do {
         if (var_r8 == 0) {
-            var_r0 = g3DSpriteEngineMain;
+            gCur3DSpriteEngine = data_027e00c8;
         } else {
-            var_r0 = g3DSpriteEngineSub;
+            gCur3DSpriteEngine = data_027e00c4;
         }
-        gCur3DSpriteEngine = var_r0;
         func_01ff85ec();
-        Apply3DSpriteDisplayConfig();
+        func_0208232c();
         var_r8 += 1;
     } while (var_r8 < 2);
     gCur3DSpriteEngine = temp_r7;
@@ -83,7 +82,7 @@ void func_020e4490(void) {
     func_020e476c();
     func_020e349c();
 }
-
+#pragma opt_common_subs reset
 void func_020e4570(void) {
     M2C_UNK GX_TurnOnDisplay();
     M2C_UNK func_02007598();
@@ -92,7 +91,10 @@ void func_020e4570(void) {
     *(s32 *)0x04001000 |= 0x10000;
 }
 
-void func_020e4594(void) {
+/* NNS/NitroSDK main loop body, run once per frame by main(): wait for the game
+ * frame to be ready, run the input, sound and 3D-sprite updates for every
+ * sprite layer, then let the pending frame callback (VBlank) run. */
+void NitroMain(void) {
 extern u8 data_027e15b4;
 extern s32 gFrameCounter;
 extern void (*data_02168fe8)(void);
@@ -103,10 +105,10 @@ void func_02090390(void);
 void func_02081ee4(void);
 void func_02091bf4(void);
 void UpdateSpriteSlots(void);
-void func_020b25b8(void);
+void DrawSpriteSlots(void);
 void func_0209db48(void);
 void func_0208f4f0(void);
-void func_01ffa13c(int);
+void GetSpriteLayerHead(int);
 void Update3DSpriteObject(void);
 void func_02004e60(int,int);
 if (!data_027e15b4) return;
@@ -114,15 +116,15 @@ data_02168fe8=0;
 func_0208f4d8();
 gFrameCounter++;
 func_0208184c(); UpdateTouchInput(); func_02090390(); func_02081ee4();
-func_01ffa13c(3);Update3DSpriteObject();
-func_01ffa13c(4);Update3DSpriteObject();
-func_01ffa13c(5);Update3DSpriteObject();
-func_01ffa13c(6);Update3DSpriteObject();
-func_01ffa13c(7);Update3DSpriteObject();
-func_01ffa13c(8);Update3DSpriteObject();
-func_02091bf4();UpdateSpriteSlots();func_020b25b8();
-func_01ffa13c(9);Update3DSpriteObject();
-func_01ffa13c(10);Update3DSpriteObject();
+GetSpriteLayerHead(3);Update3DSpriteObject();
+GetSpriteLayerHead(4);Update3DSpriteObject();
+GetSpriteLayerHead(5);Update3DSpriteObject();
+GetSpriteLayerHead(6);Update3DSpriteObject();
+GetSpriteLayerHead(7);Update3DSpriteObject();
+GetSpriteLayerHead(8);Update3DSpriteObject();
+func_02091bf4();UpdateSpriteSlots();DrawSpriteSlots();
+GetSpriteLayerHead(9);Update3DSpriteObject();
+GetSpriteLayerHead(10);Update3DSpriteObject();
 func_0209db48();
 if(data_02168fe8) data_02168fe8();
 data_027e15b4=0;
@@ -135,7 +137,7 @@ void func_020e4688(void) {
     void func_01ff87e4(void);
     M2C_UNK func_01ff9b38();
     void Update3DSpriteVram(void);
-    void func_01ffa13c(int);
+    void GetSpriteLayerHead(int);
     void Update3DSpriteObject(void);
     void func_0200d248(void *);
     void func_0200d288(void *);
@@ -149,13 +151,13 @@ void func_020e4688(void) {
     data_027e15b8 = 1;
     data_027e15c0 += 1;
     if (data_027e15b4 == 0) {
-        func_01ffa13c(0);
+        GetSpriteLayerHead(0);
         Update3DSpriteObject();
     }
-    func_01ffa13c(1);
+    GetSpriteLayerHead(1);
     Update3DSpriteObject();
     if (data_027e15b4 == 0) {
-        func_01ffa13c(2);
+        GetSpriteLayerHead(2);
         Update3DSpriteObject();
         func_01ff9b38();
         Update3DSpriteVram();

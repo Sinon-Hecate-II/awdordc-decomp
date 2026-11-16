@@ -275,9 +275,9 @@ void func_020d93e0(void *entity) {
     s32 IsLinkSessionActive(void);
     s32 func_0208477c(void);
     s32 GetOverlayEventFlags(void);
-    s32 func_0208b5ec(void);
+    s32 FindTextLayer(void);
     void func_0208af20(void);
-    void *func_0208b564(void *);
+    void *CreateTextLayer(void *);
     void func_020899cc(void *, s32, s32, u32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 
@@ -289,14 +289,14 @@ void func_020d93e0(void *entity) {
     if (func_0208477c()) return;
     if (!GetOverlayEventFlags()) return;
     M2C_FIELD(entity, u16 *, 0x48) |= 0x1000;
-    if (func_0208b5ec()) func_0208af20();
+    if (FindTextLayer()) func_0208af20();
     savedEntity = gCur3DSpriteEngine;
     for (i = 0; i < 2; i++) {
         gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
         if (M2C_FIELD(entity, u8 *, 0x44) == 0 && gCur3DSpriteEngine != g3DSpriteEngineMain) continue;
         if (M2C_FIELD(entity, u8 *, 0x44) == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) continue;
         if (M2C_FIELD(entity, u8 *, 0x44) == 3 && gCur3DSpriteEngine != savedEntity) continue;
-        created = func_0208b564(entity);
+        created = CreateTextLayer(entity);
         func_020899cc(created, 2, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000001);
         M2C_FIELD(created, u32 *, 0x58) |= 0x1000;
     }

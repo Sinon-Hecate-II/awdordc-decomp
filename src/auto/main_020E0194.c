@@ -7,7 +7,7 @@ typedef struct { unsigned char value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 static inline s32 E0B04Process(void *entity) {
 s32 IsLinkSessionActive(void);s32 func_0208477c(void);s32 GetOverlayEventFlags(void);
-s32 func_0208b5ec(void); M2C_UNK func_0208af20(void);void *func_0208b564(void *);
+s32 FindTextLayer(void); M2C_UNK func_0208af20(void);void *CreateTextLayer(void *);
 M2C_UNK func_020899cc(void *,s32,s32,s32);
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; s32 saved; u8 mode;
@@ -15,7 +15,7 @@ if(!IsLinkSessionActive())return 0;
 if(func_0208477c())return 0;
 if(GetOverlayEventFlags()){
 M2C_FIELD(entity,u16 *,0x48)|=0x1000;
-if(func_0208b5ec())func_0208af20();
+if(FindTextLayer())func_0208af20();
 saved=gCur3DSpriteEngine;i=0;
 do{
 if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
@@ -23,7 +23,7 @@ gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,u8 *,0x44);
 if(mode==0&&bank!=g3DSpriteEngineMain)goto next;
 if(mode==1&&bank!=g3DSpriteEngineSub)goto next;
 if(mode==3&&bank!=saved)goto next;
-created=func_0208b564(entity);
+created=CreateTextLayer(entity);
 func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x46)<<5,0x44000001);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 next: ++i;
@@ -165,7 +165,7 @@ void func_020e048c(void *entity) {
     M2C_UNK func_020899cc(void *, s32, s32, s32);
     M2C_UNK func_0208af20();
     void *func_0208b520(void *);
-    s32 func_0208b5ec();
+    s32 FindTextLayer();
     extern M2C_UNK data_02168f74;
     extern s32 g3DSpriteEngineMain, g3DSpriteEngineSub, gCur3DSpriteEngine;
     void *created;
@@ -173,7 +173,7 @@ void func_020e048c(void *entity) {
     register s32 i;
     u8 mode;
     int savedEntity;
-    if (func_0208b5ec()) func_0208af20();
+    if (FindTextLayer()) func_0208af20();
     i = 0;
     savedEntity = gCur3DSpriteEngine;
     do {
@@ -207,7 +207,7 @@ M2C_UNK func_020e0580(s32 arg0) {
    3D engine; if none differs, drop any leftover marker object. */
 void RefreshLinkPlayerSprites(void *entity) {
 s32 GetLocalPlayerIdForOverlay(); void EnableMapConfirm(); void DisableMapConfirm();
-s32 func_0208b5ec(); M2C_UNK func_0208af20(); void *func_0208b564(void *);
+s32 FindTextLayer(); M2C_UNK func_0208af20(); void *CreateTextLayer(void *);
 M2C_UNK func_020899cc(void *,s32,s32,s32);
 extern u16 *gLinkPlayerMasks[];
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
@@ -216,7 +216,7 @@ playerMask=*gLinkPlayerMasks[GetLocalPlayerIdForOverlay()];
 EnableMapConfirm();
 for(player=0;player<4;player++){
 if((playerMask & (1<<player)) && playerMask != *gLinkPlayerMasks[player]){
-if(func_0208b5ec())func_0208af20();
+if(FindTextLayer())func_0208af20();
 savedEngine=gCur3DSpriteEngine;slot=0;
 do {
 if(slot==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
@@ -225,14 +225,14 @@ screenMode=M2C_FIELD(entity,u8*,0x44);
 if(screenMode==0 && engine!=g3DSpriteEngineMain)goto next;
 if(screenMode==1 && engine!=g3DSpriteEngineSub)goto next;
 if(screenMode==3 && engine!=savedEngine)goto next;
-sprite=func_0208b564(entity);
+sprite=CreateTextLayer(entity);
 func_020899cc(sprite,2,M2C_FIELD(entity,u16*,0x46)<<5,0x4400000a);
 M2C_FIELD(sprite,s32*,0x58)|=0x1000;
 next: ++slot;
 }while(slot<2);
 gCur3DSpriteEngine=savedEngine;DisableMapConfirm();break;
 }}
-if(IsMapConfirmEnabled() && func_0208b5ec())func_0208af20();
+if(IsMapConfirmEnabled() && FindTextLayer())func_0208af20();
 }
 
 M2C_UNK func_020e06fc() {
@@ -275,7 +275,7 @@ void func_020e0af8(void) {
 /* Updates child objects and resumes the entity script when its primary child is ready or A is pressed. */
 void func_020e0b04(void *entity) {
     s32 IsLinkSessionActive(void); s32 func_0208477c(void); s32 GetOverlayEventFlags(void);
-    s32 func_0208b5ec(void); M2C_UNK func_0208af20(void); void *func_0208b564(void *);
+    s32 FindTextLayer(void); M2C_UNK func_0208af20(void); void *CreateTextLayer(void *);
     M2C_UNK func_020899cc(void *, s32, s32, s32);
     void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32); void func_01ffa6fc(void *);

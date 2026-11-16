@@ -1,5 +1,7 @@
 /* 14 functions from 0x0219E6D4 to 0x0219F6D0 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 
 #pragma inline_depth(0)
 static inline s32 E6D4Offset(s16 index) { return index * (s16)14; }
@@ -20,48 +22,52 @@ void func_ov000_0219e6d4(void) {
  *gAiCommandState = 2;
 }
 
-void func_ov000_0219e72c(void) {
-    /* Variant collecting type-5 map entries, installing func_ov000_02181b8c. */
+/* AI turn phase starter for kind-5 units (the kind-5..6 family, such as
+ * submarines): collect the current player's available kind-5 units into
+ * gAiUnitList and install their action callback. */
+void SelectAiKind5Unit(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern s8 *gAiCommandState;
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_02181b8c;
-    s32 index;
-    s32 stride;
-    s8 *out;
-    u16 baseIndex;
-    u32 type;
-    void *table;
-    void *obj;
+    extern M2C_UNK RunAiKind5Action;
+    s32 unitId;
+    s32 offset;
+    s8 *cursor;
+    u16 groupBase;
+    u32 kind;
+    void *units;
+    void *map;
+    void *unit;
 
     gAiUnitListCursor = &gAiUnitList;
-    obj = *gCurrentMap;
-    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-    index = baseIndex + 1;
-    if (index < baseIndex + 0x33) {
-        stride = index * 14;
+    map = *gCurrentMap;
+    groupBase = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+    unitId = groupBase + 1;
+    if (unitId < groupBase + MAP_UNIT_GROUP_SCAN) {
+        offset = unitId * MAP_UNIT_STRIDE;
         do {
-            table = (u8 *)obj + 0x59A4;
-            type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-            if (type != 0) {
-                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && type == 5) {
-                    out = gAiUnitListCursor;
-                    gAiUnitListCursor = out + 1;
-                    *out = index;
+            units = (u8 *)map + MAP_UNIT_RECORDS;
+            kind = (u32)(M2C_FIELD(units, u8 *, offset + MAP_UNIT_KIND) << 26) >> 26;
+            if (kind != 0) {
+                unit = (u8 *)units + offset;
+                if (!(M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & 1) && kind == 5) {
+                    cursor = gAiUnitListCursor;
+                    gAiUnitListCursor = cursor + 1;
+                    *cursor = unitId;
                 }
             }
-            index++;
-            obj = *gCurrentMap;
-            stride += 14;
-        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+            unitId++;
+            map = *gCurrentMap;
+            offset += MAP_UNIT_STRIDE;
+        } while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = &gAiUnitList;
-    gAiUnitAction = &func_ov000_02181b8c;
-    *gAiCommandState = 2;
+    gAiUnitAction = &RunAiKind5Action;
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 
 void func_ov000_0219e830(void) {
@@ -378,7 +384,7 @@ s32 func_ov000_0219f0d8(void) {
     void func_ov000_0219f3fc(void);
     void func_ov000_0219f448(void);
     void func_ov000_0219f494(void);
-    u8 func_ov000_0219f518(void);
+    u8 AiMoveCursorToCommandTile(void);
     u8 func_ov000_0219f5fc(void);
     void func_020bb458(void);
     void func_ov000_0219fabc(s32);
@@ -443,7 +449,7 @@ s32 func_ov000_0219f0d8(void) {
         BattleUpdateUnitCursor();
         break;
     case 8:
-        return func_ov000_0219f518();
+        return AiMoveCursorToCommandTile();
     case 9:
         return func_ov000_0219f5fc();
     case 10:
@@ -547,7 +553,11 @@ p++;
 
 #pragma opt_common_subs off
 #pragma opt_propagation off
-u8 func_ov000_0219f518(void){
+/* AI command 8, "move the cursor": when the command's target tile is on the current
+   player's team (or in the second team's visibility bitmap), move the map cursor
+   to that tile and report 1; then reset the command timer and advance the AI
+   command step.  The target tile is the unit record's x/y at gAiCommand[6]. */
+u8 AiMoveCursorToCommandTile(void){
 extern void **gCurrentMap;
 extern u8 gAiCommand[];
 extern s8 *gAiCommandState;
@@ -562,29 +572,27 @@ u8 *q;
 s32 yes,y;
 u32 x,bit;
 p=*gCurrentMap;
-index=gAiCommand[6];
+index=gAiCommand[AI_COMMAND_UNIT];
 offset=index*(s16)14;
-yes=M2C_FIELD(p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3);
+yes=M2C_FIELD(p+M2C_FIELD(p,u16 *,MAP_CURRENT_PLAYER)*140,u8 *,0x67c3);
 q=p+0x59a4+offset;
 y=q[2];x=q[1];
 value=0;
 if(yes&2)yes=1;
 else{
-bit=x+M2C_FIELD(p+y*2,u16 *,0x3758);
+bit=x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS);
 yes=1;
-if((u8)(M2C_FIELD(p+(bit>>3),u8 *,0x5201)&(1<<(bit&7)))==0)yes=0;
+if((u8)(M2C_FIELD(p+(bit>>3),u8 *,MAP_CELL_BITMAP)&(1<<(bit&7)))==0)yes=0;
 }
 if(yes){
 q=p+0x59a4+offset;
 value=func_0207b764(q[1],q[2]);
 }
 gAiCommandTimer=0;
-M2C_FIELD(gAiCommandState,u8 *,1)=7;
+M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_STEP)=7;
 result=value==0;
 return result;
 }
-#pragma opt_common_subs reset
-#pragma opt_propagation reset
 u8 func_ov000_0219f5fc(void){
 s32 func_0207b764(u8,u8);extern void **gCurrentMap;extern u8 gAiCommand[];extern s8 *gAiCommandState;extern s32 gAiCommandTimer;
 void *p=*gCurrentMap;u8 y=gAiCommand[7],x=gAiCommand[6];s32 r=0;u32 n;u32 flags; s32 ok;

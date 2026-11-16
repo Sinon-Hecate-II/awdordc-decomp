@@ -418,15 +418,15 @@ M2C_UNK **func_0208996c(M2C_UNK **arg0) {
 
 void func_0208999c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetLocalizedText(M2C_UNK);
-    M2C_UNK func_020899fc(M2C_UNK, M2C_UNK, s32, s32);
-    func_020899fc(arg0, arg1, 0x4B80, GetLocalizedText(arg2));
+    M2C_UNK RenderTextLayer(M2C_UNK, M2C_UNK, s32, s32);
+    RenderTextLayer(arg0, arg1, 0x4B80, GetLocalizedText(arg2));
 }
 
 void func_020899cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    func_020899fc(arg0, arg1, arg2, GetLocalizedText(arg3));
+    RenderTextLayer(arg0, arg1, arg2, GetLocalizedText(arg3));
 }
 
-M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
+M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
     extern void *gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     extern s32 g3DSpriteEngineSub;

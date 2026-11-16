@@ -201,7 +201,7 @@ void func_0208f5d8(void) {
     func_0208f780(4);
 }
 
-s32 func_0208f5e8(void) {
+s32 GetLanguageIndex(void) {
     u32 GetLanguage();
     u32 temp_r0;
 
@@ -224,10 +224,15 @@ s32 func_0208f5e8(void) {
     }
 }
 
-void func_0208f64c(void) {
-s32 func_02005080(s32);
-void func_02004ff8(s32,s32);
-void func_020051f8(s32);
+/* Runs the ov001 front end (title and menu screens): shuts down the FIFO
+ * receive handler, the IRQ mask, VBlank interrupts and the sound engine, loads
+ * resource set 2, then runs the overlay with the console's language on a
+ * temporary work buffer.  Afterwards it restores the handlers and interrupts,
+ * resets the sound engine and turns the display back on. */
+void RunFrontEndOverlay(void) {
+s32 OS_GetFifoReceiveHandler(s32);
+void OS_SetFifoReceiveHandlers(s32,s32);
+void OS_DisableIrqMask(s32);
 void GX_SetVBlankIrq(s32);
 void func_0208fce8(void);
 void func_02088724(void);
@@ -238,27 +243,27 @@ M2C_UNK HeapFreeBlock();
 void func_0208859c(void);
 void func_02088634(void);
 void func_0208fba0(void);
-void func_020051c8(s32);
+void OS_EnableIrqMask(s32);
 void func_02007598(void);
 void GX_TurnOnDisplay(void);
-s32 old;void *p;u16 unused;
-old=func_02005080(1);
-func_02004ff8(1,0);
-func_020051f8(1);
+s32 savedFifoHandler;void *workBuffer;u16 imeState;
+savedFifoHandler=OS_GetFifoReceiveHandler(1);
+OS_SetFifoReceiveHandlers(1,0);
+OS_DisableIrqMask(1);
 GX_SetVBlankIrq(0);
 func_0208fce8();
 func_02088724();
 func_02037854(2);
-p=func_020e3580(0x40000,0x20);
-if(func_0208f5e8()==0) func_ov001_0217589c(p,func_0208f5e8(),0x10);
-else func_ov001_0217589c(p,func_0208f5e8(),0);
-HeapFreeBlock(p);
+workBuffer=func_020e3580(0x40000,0x20);
+if(GetLanguageIndex()==0) func_ov001_0217589c(workBuffer,GetLanguageIndex(),0x10);
+else func_ov001_0217589c(workBuffer,GetLanguageIndex(),0);
+HeapFreeBlock(workBuffer);
 func_0208859c();
 func_02088634();
 func_0208fba0();
-func_02004ff8(1,old);
-func_020051c8(1);
-unused=*(volatile u16 *)0x4000208;
+OS_SetFifoReceiveHandlers(1,savedFifoHandler);
+OS_EnableIrqMask(1);
+imeState=*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=1;
 GX_SetVBlankIrq(1);
 func_02007598();
@@ -406,7 +411,7 @@ void func_0208f94c(void *arg0) {
     }
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x64);
     if (func_0208fe7c(M2C_FIELD(arg0, s32 *, 0x5C), M2C_FIELD(arg0, s32 *, 0x60)) != 0) {
-        func_0208ff94(temp_r4);
+        SetSoundEffectVolume(temp_r4);
     }
     DeleteSpriteObject(arg0);
 }
@@ -483,7 +488,7 @@ void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
 
 void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_0208fa78(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208ff94(s32);
+    M2C_UNK SetSoundEffectVolume(s32);
     s32 temp_r4;
     s32 temp_r5;
 
@@ -492,7 +497,7 @@ void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     if (func_0208fe7c(arg0, temp_r5) == 0) {
         return;
     }
-    func_0208ff94(temp_r4);
+    SetSoundEffectVolume(temp_r4);
 }
 
 void SpawnSoundEffectAtTile(s32 a,s32 b,s32 c,s32 d){

@@ -1,14 +1,14 @@
 /* 68 functions from 0x02177F1C to 0x02178E80 (ov001), found by ds-decomp. */
 #include "common.h"
 
-void func_ov001_02177f1c(s32 arg0) {
+void Ov001_MoveOptionSelection(s32 arg0) {
     s32 func_020020c4(s32, s32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
-    extern M2C_UNK data_ov001_0218f77a;
-extern M2C_UNK data_ov001_0218f77c;
-extern M2C_UNK data_ov001_0218f77e;
-extern M2C_UNK data_ov001_0218f780;
+    extern M2C_UNK gOv001OptionFrameLeft;
+extern M2C_UNK gOv001OptionFrameTop;
+extern M2C_UNK gOv001OptionFrameRight;
+extern M2C_UNK gOv001OptionFrameBottom;
     extern M2C_UNK gOv001OptionMenuState;
     s32 offset;
     if (arg0 == 1) {
@@ -18,7 +18,7 @@ extern M2C_UNK data_ov001_0218f780;
     }
     Ov001_PlaySound(8);
     offset = M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) * 8;
-    Ov001_LayoutChoiceFrame(M2C_FIELD(&data_ov001_0218f77a,u16 *,offset), M2C_FIELD(&data_ov001_0218f77e,u16 *,offset), M2C_FIELD(&data_ov001_0218f77c,u16 *,offset), M2C_FIELD(&data_ov001_0218f780,u16 *,offset));
+    Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset), M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset), M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset), M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset));
 }
 
 void func_ov001_02177fac(void) {

@@ -360,34 +360,36 @@ M2C_UNK func_020a0360(void) {
     return 0;
 }
 
-void func_020a046c(void) {
+/* Turns the pending move path (gUnitMovePath) into the map's cursor path arrows:
+ * each step gets the direction it takes from the step before, and the last arrow
+ * is the stop marker. */
+void BuildMovePathDirections(void) {
     extern void *gUnitMovePath;
     extern s32 *gCurrentMap;
 
     s8 i;
-    u8 *r;
-    u8 *dest;
+    u8 *step;
 
     i = 1;
     if (((s8 *)gUnitMovePath)[0x5b] >= 1) {
     do {
-        r = (u8 *)gUnitMovePath + i;
-        if ((s8)r[0x36] < (s8)r[0x35]) {
-            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 0;
-        } else if ((s8)r[0x36] > (s8)r[0x35]) {
-            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 1;
+        step = (u8 *)gUnitMovePath + i;
+        if ((s8)step[0x36] < (s8)step[0x35]) {
+            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = MOVE_DIR_LEFT;
+        } else if ((s8)step[0x36] > (s8)step[0x35]) {
+            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = MOVE_DIR_RIGHT;
         } else {
-            if ((s8)r[0x42] < (s8)r[0x41]) {
-                *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 3;
+            if ((s8)step[0x42] < (s8)step[0x41]) {
+                *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = MOVE_DIR_UP;
             } else {
-                *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 2;
+                *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = MOVE_DIR_DOWN;
             }
         }
         i++;
     } while (i <= (s8)((u8 *)gUnitMovePath)[0x5b]);
 
     }
-    *((u8 *)((u8 *)*gCurrentMap + (i - 1) + 0x5388)) = 4;
+    *((u8 *)((u8 *)*gCurrentMap + (i - 1) + 0x5388)) = MOVE_DIR_STOP;
     return;
 }
 

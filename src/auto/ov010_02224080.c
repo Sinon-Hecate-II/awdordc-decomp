@@ -237,11 +237,15 @@ M2C_UNK VoiceLink_SendControl(s32 arg0) {
 
 #pragma opt_propagation off
 void VoiceLink_InitContext(void *arg0,s32 arg1) {
-register u32 i; register u8 zero; u8 *ptr; extern M2C_UNK gLinkConfig;
-ptr=arg0;zero=0;i=6;
+extern M2C_UNK gLinkConfig;
+u8 zero;
+u32 i;
+u8 *ptr;
+ptr=arg0;i=6;zero=0;
 do {ptr[0]=zero;ptr[1]=zero;ptr[2]=zero;ptr[3]=zero;ptr+=4;}while(--i);
 M2C_FIELD(arg0,s32 *,0)=M2C_FIELD(&gLinkConfig,s32 *,0x10);
-M2C_FIELD(arg0,s32 *,0xc)=0;M2C_FIELD(arg0,s8 *,4)=arg1;
+M2C_FIELD(arg0,s32 *,0xc)=0;
+M2C_FIELD(arg0,s8 *,4)=arg1;
 }
 #pragma opt_propagation reset
 s32 func_ov010_02224614(void *arg0,void *arg1) {

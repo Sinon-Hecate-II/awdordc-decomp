@@ -1,20 +1,25 @@
 /* 10 functions from 0x0206A294 to 0x0206ADF8 (main), found by ds-decomp. */
 #include "common.h"
 
+/* strtod: parse a floating-point value from the character stream p, whose
+   reader is ScanFloatStreamRead; stops after `count` characters.  end, when
+   non-null, receives the stream position just past the parsed text, and an
+   underflow/overflow raises errno 34 (ERANGE). */
 double func_0206a294(M2C_UNK p,M2C_UNK end){
-double func_02069048(); double func_0206dfb0(double);void func_02068a04();extern s32 gErrno;
+double ScanFloatStrtod();double fabs(double);void ScanFloatStreamRead();extern s32 gErrno;
 s32 count,overflow;M2C_UNK state[2];double value,absolute;
 state[1]=0;state[0]=p;
-value=func_02069048(0x7fffffff,func_02068a04,state,&count,&overflow);
+value=ScanFloatStrtod(0x7fffffff,ScanFloatStreamRead,state,&count,&overflow);
 if(end)M2C_FIELD(end,s32*,0)=p+count;
-absolute=func_0206dfb0(value);
+absolute=fabs(value);
 if(overflow || (value!=0.0 && (absolute<2.2250738585072014e-308 || absolute>1.7976931348623157e308)))gErrno=34;
 return value;
 }
 
-void func_0206a374(M2C_UNK arg0) {
+/* atof: parse the double that begins a null-terminated string, ignoring where parsing stopped. */
+void atof(M2C_UNK string) {
     double func_0206a294(M2C_UNK, M2C_UNK);
-    func_0206a294(arg0, 0);
+    func_0206a294(string, 0);
 }
 
 u32 func_0206a384(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, M2C_UNK *e, M2C_UNK *f, M2C_UNK *g) {
@@ -54,7 +59,7 @@ get(ctx,c,1);return value;
 #pragma opt_instruction_scheduling off
 s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
     u32 func_0206a384();
-    void func_02068a04();
+    void ScanFloatStreamRead();
     extern s32 gErrno;
     s32 count;
     s32 negative;
@@ -63,7 +68,7 @@ s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
     u32 value;
     state[0] = arg0;
     state[1] = 0;
-    value = func_0206a384(arg2, 0x7fffffff, func_02068a04, state, &count, &negative, &overflow);
+    value = func_0206a384(arg2, 0x7fffffff, ScanFloatStreamRead, state, &count, &negative, &overflow);
     if (arg1 != 0) {
         *arg1 = arg0 + count;
     }
@@ -80,10 +85,10 @@ s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
 #pragma opt_strength_reduction reset
 #pragma opt_instruction_scheduling reset
 s32 func_0206ac70(M2C_UNK p,M2C_UNK end,M2C_UNK base){
-u32 func_0206a384();void func_02068a04();extern s32 gErrno;
+u32 func_0206a384();void ScanFloatStreamRead();extern s32 gErrno;
 s32 count,negative,overflow; M2C_UNK state[2];u32 value;
 state[0]=p;state[1]=0;
-value=func_0206a384(base,0x7fffffff,func_02068a04,state,&count,&negative,&overflow);
+value=func_0206a384(base,0x7fffffff,ScanFloatStreamRead,state,&count,&negative,&overflow);
 if(end)M2C_FIELD(end,s32*,0)=p+count;
 if(overflow || (!negative && value>0x7fffffffU) || (negative && value>0x80000000U)){
 value=negative?0x80000000:0x7fffffff;gErrno=34;return value;

@@ -28,7 +28,7 @@ s32 gpiPeerBeginConnect(M2C_UNK connection, void *peer) {
     s32 peerRecord;
     s32 *record;
 
-    if (func_02055b84(connection, M2C_FIELD(peer, s32 *, 0xc), &peerRecord) == 0) {
+    if (gpiFindBuddyStatus(connection, M2C_FIELD(peer, s32 *, 0xc), &peerRecord) == 0) {
         gpiSetErrorString(connection, &gGpiErrorConnectPeer);
         return 3;
     }
@@ -96,7 +96,11 @@ StringFormat(buf,&data_020fed64,arg2,a,b,c);
 func_020501d8(arg0,arg1,buf);
 }
 
-s32 func_0205575c(M2C_UNK arg0, void *arg1, M2C_UNK *arg2, s32 arg3) {
+/* Queues a gpi message to a peer: sends the "\len\<n>\msg\\n" header (the
+ * length being the string's when -1 is passed, an empty string when none), the
+ * message bytes themselves and the terminating NUL, then sets the peer's
+ * deadline to 300 ticks from now.  Returns a nonzero error code on failure. */
+s32 func_0205575c(M2C_UNK connection, void *peer, M2C_UNK *message, s32 length) {
 s32 gpiGetTime(M2C_UNK);
 s32 func_0204fff8(M2C_UNK,void *,M2C_UNK);
 s32 gpiSendOrBufferStringLen(M2C_UNK,void *,M2C_UNK *,s32);
@@ -104,16 +108,16 @@ s32 func_020501d8(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
 M2C_UNK StringFormat(void *,void *,...);
 s32 StringLength(M2C_UNK *);
-extern M2C_UNK data_020feb04,data_020fec0c,data_020fec7c,data_020fed78,data_020fed7c;
-M2C_UNK buffer[8];s32 result;
-if(!arg1)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
-if(!arg2)arg2=&data_020fed78;
-if(arg3==-1)arg3=StringLength(arg2);
-StringFormat(buffer,&data_020fed7c,arg3);
-result=func_020501d8(arg0,arg1,buffer);if(result)return result;
-result=gpiSendOrBufferStringLen(arg0,arg1,arg2,arg3);if(result)return result;
-result=func_0204fff8(arg0,arg1,0);if(result)return result;
-M2C_FIELD(arg1,s32 *,0x10)=gpiGetTime(0)+0x12c;
+extern M2C_UNK data_020feb04,data_020fec0c,data_020fec7c,gGpiMessageHeaderFormat,data_020fed78;
+M2C_UNK header[8];s32 result;
+if(!peer)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
+if(!message)message=&data_020fed78;
+if(length==-1)length=StringLength(message);
+StringFormat(header,&gGpiMessageHeaderFormat,length);
+result=func_020501d8(connection,peer,header);if(result)return result;
+result=gpiSendOrBufferStringLen(connection,peer,message,length);if(result)return result;
+result=func_0204fff8(connection,peer,0);if(result)return result;
+M2C_FIELD(peer,s32 *,0x10)=gpiGetTime(0)+0x12c;
 return 0;
 }
 
@@ -173,25 +177,28 @@ if(callback.unk_0){data=gpiMalloc(8);if(!data){gpiSetErrorString((s32)connection
 func_02054484(connection,request);return 0;
 }
 
-s32 func_02055aa0(void **arg0, s32 arg1) {
+/* Get the buddy status record of player `playerId`, creating an empty (zeroed)
+   record in the connection's buddy table when there is none yet.  Returns 1 when
+   the record exists afterwards, 0 for an invalid id. */
+s32 func_02055aa0(void **connection, s32 playerId) {
     M2C_UNK func_02048eac(s32,s32 *);
     M2C_UNK AssertFailed();
     extern M2C_UNK data_020fed8c;
     extern M2C_UNK data_020fedf4;
     extern M2C_UNK data_020fedfc;
     s32 key[7];
-    s32 sp0;
-    void *temp_r4;
+    s32 record;
+    void *gpi;
 
-    temp_r4 = *arg0;
-    if (arg1 <= 0) {
+    gpi = *connection;
+    if (playerId <= 0) {
         AssertFailed(&data_020fedf4, &data_020fedfc, &data_020fed8c, 0x2B5);
     }
-    if (arg1 <= 0) {
+    if (playerId <= 0) {
         return 0;
     }
-    if (func_02055b84(arg0, arg1, &sp0) != 0) {
-        return sp0;
+    if (gpiFindBuddyStatus(connection, playerId, &record) != 0) {
+        return record;
     }
     M2C_FIELD((s32)key, s32 *, 0) = 0;
     M2C_FIELD((s32)key, s32 *, 4) = 0;
@@ -199,22 +206,22 @@ s32 func_02055aa0(void **arg0, s32 arg1) {
     M2C_FIELD((s32)key, s32 *, 0x10) = 0;
     M2C_FIELD((s32)key, s32 *, 0x14) = 0;
     M2C_FIELD((s32)key, s32 *, 0x18) = 0;
-    key[0] = arg1;
+    key[0] = playerId;
     M2C_FIELD((s32)key, s32 *, 8) = 0;
     key[1] = 0;
     key[3] = 0;
     key[4] = 0;
     key[6] = 0;
     key[5] = 0;
-    func_02048eac(M2C_FIELD(temp_r4, s32 *, 0x428),key);
-    M2C_FIELD(temp_r4, s32 *, 0x42C) = (s32) (M2C_FIELD(temp_r4, s32 *, 0x42C) + 1);
-    if (func_02055b84(arg0, arg1, &sp0) != 0) {
-        return sp0;
+    func_02048eac(M2C_FIELD(gpi, s32 *, 0x428),key);
+    M2C_FIELD(gpi, s32 *, 0x42C) = (s32) (M2C_FIELD(gpi, s32 *, 0x42C) + 1);
+    if (gpiFindBuddyStatus(connection, playerId, &record) != 0) {
+        return record;
     }
     return 0;
 }
 
-s32 func_02055b84(void **arg0,s32 arg1,s32 *arg2) {
+s32 gpiFindBuddyStatus(void **arg0,s32 arg1,s32 *arg2) {
 s32 func_02048ff8(s32,void *);
 s32 key[7];s32 v;void *p=*arg0;
 key[0]=arg1;
@@ -224,12 +231,12 @@ return v!=0;
 }
 
 void func_02055bc0(void **arg0, M2C_UNK arg1) {
-    s32 func_02055b84(void **, M2C_UNK, s32 *);
+    s32 gpiFindBuddyStatus(void **, M2C_UNK, s32 *);
     s32 sp0;
     void *temp_r4;
 
     temp_r4 = *arg0;
-    if (func_02055b84(arg0, arg1, &sp0) == 0) {
+    if (gpiFindBuddyStatus(arg0, arg1, &sp0) == 0) {
         return;
     }
     func_02048f54(M2C_FIELD(temp_r4, s32 *, 0x428), sp0);

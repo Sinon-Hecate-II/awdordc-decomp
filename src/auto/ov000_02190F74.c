@@ -15,7 +15,7 @@ int HasBetterAttackerNearby(void *);
 int func_ov000_021aa820(s16 *,u16,int,int);
 void SetMapCursor(s16,s16,int,int,int);
 void func_ov000_02199f38(void);
-void func_ov000_0217c3a4(void);
+void ClearUnitMoveTarget(void);
 
 typedef struct { u8 kind:6;u8 flags:2;u8 pad[5];u16 health:7;u16 flags2:4;u16 value:5;u8 tail[6]; } Unit1911;
 typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8 pad3[0x188];Unit1911 *selected;u8 pad4[0x14];s8 *grid[64]; } Map1911;
@@ -177,7 +177,7 @@ void func_ov000_0219137c(void){
  }}
  if(best==0)return;
  if(((AIState1913 *)gAiCommandState)->active){func_ov000_02199f38();return;}
- func_ov000_0217c3a4();
+ ClearUnitMoveTarget();
  SetMapCursor((s16)destX,(s16)destY,4,(u8)unitId,0);
 #pragma pop
 }

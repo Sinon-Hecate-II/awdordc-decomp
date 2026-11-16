@@ -518,8 +518,8 @@ s32 func_0209d6a4(void *arg0) {
 }
 
 s32 func_0209d6cc(void *arg0) {
-    M2C_UNK func_0208ffe4(M2C_UNK, M2C_UNK, s32);
-    func_0208ffe4(0, -1, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
+    M2C_UNK PlaySlotPendingSound(M2C_UNK, M2C_UNK, s32);
+    PlaySlotPendingSound(0, -1, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }
@@ -632,7 +632,7 @@ s32 func_0209d8b8(void *arg0) {
 }
 
 s32 func_0209d91c(void *arg0) {
-    void *func_0208b564(void *);
+    void *CreateTextLayer(void *);
     void func_0209d818(void *, s32, s32, s32);
     s32 id;
     s16 value;
@@ -642,7 +642,7 @@ s32 func_0209d91c(void *arg0) {
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
     if (func_020866fc(id) != 0) {
-        obj = func_0208b564(arg0);
+        obj = CreateTextLayer(arg0);
         func_0209d818(obj, 2, id, value);
         M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
     }
@@ -651,7 +651,7 @@ s32 func_0209d91c(void *arg0) {
 }
 
 s32 func_0209d97c(void *arg0) {
-    void *func_0208b564(void *);
+    void *CreateTextLayer(void *);
     void func_0209d818(void *, s32, s32, s32);
     s32 id;
     s16 value;
@@ -661,7 +661,7 @@ s32 func_0209d97c(void *arg0) {
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
     if (func_020866fc(id) != 0) {
-        obj = func_0208b564(arg0);
+        obj = CreateTextLayer(arg0);
         func_0209d818(obj, 1, id, value);
         M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
     }
@@ -670,7 +670,7 @@ s32 func_0209d97c(void *arg0) {
 }
 
 s32 func_0209d9dc(void *arg0) {
-    void *func_0208b564(void *);
+    void *CreateTextLayer(void *);
     void func_0209d818(void *, s32, s32, s32);
     s32 id;
     s16 value;
@@ -680,7 +680,7 @@ s32 func_0209d9dc(void *arg0) {
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
     if (func_020866fc(id) != 0) {
-        obj = func_0208b564(arg0);
+        obj = CreateTextLayer(arg0);
         func_0209d818(obj, 3, id, value);
         M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
     }
@@ -690,8 +690,8 @@ s32 func_0209d9dc(void *arg0) {
 
 s32 func_0209da3c(void *arg0) {
     M2C_UNK func_0208af20();
-    s32 func_0208b5ec();
-    if (func_0208b5ec() != 0) {
+    s32 FindTextLayer();
+    if (FindTextLayer() != 0) {
         func_0208af20();
     }
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);

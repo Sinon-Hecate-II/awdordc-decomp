@@ -184,7 +184,9 @@ s32 func_02083e50(void *arg0) {
     return 0;
 }
 
-void func_020841c8(void *a){
+/* Draw the glyph run of a sprite-text label from its own x position (no end caps):
+ * one 16x32 sprite per glyph, advancing x by each glyph's width. */
+void DrawSpriteTextGlyphs(void *a){
 s32 i; u16 x,y; void *p;
 x=M2C_FIELD(a,u16 *,0x56);y=M2C_FIELD(a,u16 *,0x58);
 for(i=0;i<M2C_FIELD(a,u16 *,0x5a);i++){

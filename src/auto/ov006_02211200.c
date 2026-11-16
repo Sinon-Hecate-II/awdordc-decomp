@@ -81,7 +81,7 @@ gCur3DSpriteEngine=saved;func_01ff9b38();
 
 void func_ov006_02211314(M2C_UNK arg0) {
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
-    void *func_0208b564(M2C_UNK);
+    void *CreateTextLayer(M2C_UNK);
     s64 func_020c53e4(M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -90,7 +90,7 @@ void func_ov006_02211314(M2C_UNK arg0) {
     if (func_020c53e4(0) == 0) {
         temp_r4 = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        temp_r0 = func_0208b564(arg0);
+        temp_r0 = CreateTextLayer(arg0);
         func_020899cc(temp_r0, 2, 0x4640, 0x42000001);
         M2C_FIELD(temp_r0, s32 *, 0x58) |= 0x1000;
         gCur3DSpriteEngine = temp_r4;

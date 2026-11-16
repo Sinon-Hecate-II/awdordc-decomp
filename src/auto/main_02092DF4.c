@@ -176,12 +176,12 @@ s32 func_02093250(void *arg0) {
 }
 
 s32 func_02093288(void *arg0) {
-    M2C_UNK func_0208ffe4(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK PlaySlotPendingSound(M2C_UNK, M2C_UNK, s32);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
     if (func_0209600c() == 0) {
-        func_0208ffe4(0, -1, temp_r4);
+        PlaySlotPendingSound(0, -1, temp_r4);
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;

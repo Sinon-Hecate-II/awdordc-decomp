@@ -150,7 +150,7 @@ void func_ov003_021ebca4(s32 arg0,s32 arg1,s32 arg2) {
 s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
  void *func_02084e24(s32);
  void *func_02084e64(s32);
- s32 func_020a22fc(s32);
+ s32 GetPlayerCoId(s32);
  s32 func_ov003_02200808(u8);
  s32 id=M2C_FIELD(M2C_FIELD(arg0,s32 *,0x6c)+arg1,u8 *,0x74);
  u8 missing;
@@ -159,11 +159,11 @@ s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
  if(!missing) {
   p=func_02084e24(id);
   if(p) return M2C_FIELD(p,s8 *,0xd);
-  return (s8)func_ov003_02200808((u8)func_020a22fc(arg1+1));
+  return (s8)func_ov003_02200808((u8)GetPlayerCoId(arg1+1));
  }
  p=func_02084e64(id);
  if(p) return M2C_FIELD(p+arg1,s8 *,0x12);
- return (s8)func_ov003_02200808((u8)func_020a22fc(arg1+1));
+ return (s8)func_ov003_02200808((u8)GetPlayerCoId(arg1+1));
 }
 
 void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {

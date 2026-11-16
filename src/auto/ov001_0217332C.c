@@ -7,7 +7,7 @@ typedef struct { s32 x; u32 y; } Position;
 void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
 void func_ov001_0217385c(s32 arg0, s32 arg1);
 s32 *Ov001_GetSpriteObjEntry(s32 arg0, s32 arg1);
-void func_ov001_0218c924(void *arg0, void *arg1);
+void Ov001_SetSlideStep(void *arg0, void *arg1);
 extern void *gOv001MenuState;
 extern u8 data_ov001_0218f314[];
 extern u8 data_ov001_0218f318[];
@@ -127,7 +127,7 @@ func_ov001_0217385c(47,var_r5);func_ov001_0217385c(48,var_r6);
 #pragma scheduling off
 #pragma opt_common_subs off
 void func_ov001_0217385c(s32 arg0,s32 arg1){
-void func_ov001_0218a304(void *,s32,s32,u8);
+void Ov001_SetSpriteAttrs(void *,s32,s32,u8);
 s32 i; void *p;
 if(arg0<0)return;
 if(arg0<0x2f){
@@ -146,7 +146,7 @@ M2C_FIELD(p,s32 *,0)&=~0xc00;
 M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xf000)|(arg0<<12);
 return;
 }}
-func_ov001_0218a304(M2C_FIELD(gOv001MenuState+(arg0-0x33)*4,s32 *,0xfc),-1,0,data_ov001_0218f318[arg1]);
+Ov001_SetSpriteAttrs(M2C_FIELD(gOv001MenuState+(arg0-0x33)*4,s32 *,0xfc),-1,0,data_ov001_0218f318[arg1]);
 }
 #pragma scheduling reset
 #pragma opt_common_subs reset
@@ -221,7 +221,7 @@ void func_ov001_02173e38(void *arg0) {
     if (*(volatile s32 *)&pos.x < 0xC0) {
         return;
     }
-    func_ov001_0218c924(arg0, &func_ov001_02173ebc);
+    Ov001_SetSlideStep(arg0, &func_ov001_02173ebc);
 }
 
 void func_ov001_02173ebc(void *arg0) {
@@ -232,7 +232,7 @@ u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
 func_ov001_0217355c(b,3,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
-func_ov001_0218c924(arg0,func_ov001_02173f30);
+Ov001_SetSlideStep(arg0,func_ov001_02173f30);
 }
 
 void func_ov001_02173f30(void *arg0) {
@@ -243,7 +243,7 @@ u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
 func_ov001_0217355c(b,2,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
-func_ov001_0218c924(arg0,func_ov001_02173fa4);
+Ov001_SetSlideStep(arg0,func_ov001_02173fa4);
 }
 
 #pragma opt_strength_reduction off
@@ -255,11 +255,11 @@ u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
 func_ov001_0217355c(b,1,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
-func_ov001_0218c924(arg0,func_ov001_02174018);
+Ov001_SetSlideStep(arg0,func_ov001_02174018);
 }
 #pragma opt_strength_reduction reset
 void func_ov001_02174018(void *arg0) {
-    void func_ov001_0218c924(void *, void *);
+    void Ov001_SetSlideStep(void *, void *);
     void func_ov001_0217355c(u8, s32, s32, u32);
     Position pos;
     void *a = gOv001MenuState;
@@ -269,7 +269,7 @@ void func_ov001_02174018(void *arg0) {
     pos.x = (u8)bits + 12;
     func_ov001_0217355c(b, 0, pos.x, pos.y);
     if (*(volatile s32 *)&pos.x < 0xc0) return;
-    func_ov001_0218c924(arg0, &func_ov001_0217408c);
+    Ov001_SetSlideStep(arg0, &func_ov001_0217408c);
 }
 
 void func_ov001_0217408c(int arg0){
@@ -284,6 +284,6 @@ if(i==0)func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState+j*4,void **,0x104));
 for(i=0;i<2;i++)func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState+i*4,void **,0xfc));
 for(i=0;i<4;i++)Ov001_ReleaseSprite(M2C_FIELD(gOv001MenuState+i*4,void **,0xec));
 for(i=0; i!=0x2f; ++i)Ov001_ReleaseSprite(M2C_FIELD(gOv001MenuState+i*4,void **,0x30));
-func_ov001_0218b71c(&gOv001MenuState);
+Ov001_FreeAlloc(&gOv001MenuState);
 }
 
