@@ -481,7 +481,7 @@ void DrawTextRun(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, 
 }
 
 void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    M2C_UNK func_ov001_0216a9d0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawVerticallyAnchoredText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     u8 spC;
     u8 spD;
     u8 temp_ip;
@@ -509,7 +509,7 @@ void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
         M2C_FIELD(&spD, u8 *, 0) = (u8)-1;
         break;
     }
-    func_ov001_0216a9d0((s32)(arg0 + 0x18), arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
+    DrawVerticallyAnchoredText((s32)(arg0 + 0x18), arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
 }
 
 void TextPanel_ClearText(void *arg0, s32 arg1) {

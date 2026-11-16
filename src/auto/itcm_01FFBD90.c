@@ -4,44 +4,43 @@
 /* Fill a diamond (Manhattan circle) of the given radius centered at (x,y)
    in the map occupancy grid with value. */
 #pragma opt_strength_reduction off
-/* Mark, for the unit unit, every cell its attack can reach: for each cell holding
+/* Mark, for the unit arg0, every cell its attack can reach: for each cell holding
    no unit (or the cursor's 0x40 marker) the cells within the kind's attack range
    (and at least its minimum range) get their grid value incremented and flagged
-   0x40 (taken); every unflagged cell is then reset to -1 (unreachable).  The
-   marker and reset are done now so a later call for the next unit/target only
-   clears what it flagged. */
-void func_01ffbd90(u8 *unit) {
+   0x40 (taken); every unflagged cell is then reset to -1 (unreachable). */
+void MarkUnitAttackRangeCells(u8 *arg0) {
  extern void **gCurrentMap;
  extern u8 gUnitKindStats[];
  s32 GetUnitAttackRangeMax(u8 *);
  s16 x,y;
  s32 left,top,right,bottom,xx,yy,d,range;
  u16 *bounds;
- for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++) {
-  for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++) {
-   s32 v=M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x];
+ for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++) {
+  for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++) {
+   s32 v=M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x];
    if(v<0 || v==0x40) continue;
-   if(v!=0 && ((u8 *)*gCurrentMap+x)[M2C_FIELD(*gCurrentMap+y*2,u16 *,MAP_ROW_OFFSETS)]!=0) continue;
-   left=x-GetUnitAttackRangeMax(unit)<0?0:x-GetUnitAttackRangeMax(unit);
-   top=y-GetUnitAttackRangeMax(unit)<0?0:y-GetUnitAttackRangeMax(unit);
-   bounds=(u16 *)(*gCurrentMap+0x5120); range=GetUnitAttackRangeMax(unit);
-  if(x+range>=bounds[0x12]-1) right=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)-1; else right=x+GetUnitAttackRangeMax(unit);
-   bounds=(u16 *)(*gCurrentMap+0x5120); range=GetUnitAttackRangeMax(unit);
-  if(y+range>=bounds[0x13]-1) bottom=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)-1; else bottom=y+GetUnitAttackRangeMax(unit);
+   if(v!=0 && ((u8 *)*gCurrentMap+x)[M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758)]!=0) continue;
+   left=x-GetUnitAttackRangeMax(arg0)<0?0:x-GetUnitAttackRangeMax(arg0);
+   top=y-GetUnitAttackRangeMax(arg0)<0?0:y-GetUnitAttackRangeMax(arg0);
+   bounds=(u16 *)(*gCurrentMap+0x5120); range=GetUnitAttackRangeMax(arg0);
+  if(x+range>=bounds[0x12]-1) right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1; else right=x+GetUnitAttackRangeMax(arg0);
+   bounds=(u16 *)(*gCurrentMap+0x5120); range=GetUnitAttackRangeMax(arg0);
+  if(y+range>=bounds[0x13]-1) bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1; else bottom=y+GetUnitAttackRangeMax(arg0);
    for(yy=top;yy<=bottom;yy++) for(xx=left;xx<=right;xx++) {
     d=0;
     if(x-xx>0) d+=x-xx; else d+=xx-x;
     if(y-yy>0) d+=y-yy; else d+=yy-y;
-    if(d<gUnitKindStats[((u32)(unit[0]<<26)>>26)*0x70+0xc] || d>GetUnitAttackRangeMax(unit)) continue;
-    if(M2C_FIELD(*gCurrentMap+yy*4,s8 **,MAP_GRID)[xx]>=0 && (M2C_FIELD(*gCurrentMap+yy*4,s8 **,MAP_GRID)[xx]&0x40)) continue;
-    M2C_FIELD(*gCurrentMap+yy*4,s8 **,MAP_GRID)[xx]++;
-    M2C_FIELD(*gCurrentMap+yy*4,s8 **,MAP_GRID)[xx]|=0x40;
+    if(d<gUnitKindStats[((u32)(arg0[0]<<26)>>26)*0x70+0xc] || d>GetUnitAttackRangeMax(arg0)) continue;
+    if(M2C_FIELD(*gCurrentMap+yy*4,s8 **,0x52e8)[xx]>=0 && (M2C_FIELD(*gCurrentMap+yy*4,s8 **,0x52e8)[xx]&0x40)) continue;
+    M2C_FIELD(*gCurrentMap+yy*4,s8 **,0x52e8)[xx]++;
+    M2C_FIELD(*gCurrentMap+yy*4,s8 **,0x52e8)[xx]|=0x40;
    }
   }
  }
- for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++) for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++)
- if(!(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x]&0x40)) M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x]=-1;
+ for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++) for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++)
+ if(!(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]&0x40)) M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]=-1;
 }
+#pragma opt_strength_reduction on
 void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
     extern void **gCurrentMap;
     s16 dy, row, col;

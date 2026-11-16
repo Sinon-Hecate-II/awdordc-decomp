@@ -48,7 +48,7 @@ void *GetFontGlyphMetric(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD
 
 s32 GetTextLineWidth(void *a,s32 b,s32 arg2,s32 *d){s32 c=arg2;s32 width,ch,id;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);width=0;ch=f(&c);if(ch){do{if(ch==10)break;id=GetFontGlyphIndex(a,ch);if(id==65535)id=M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,2);width+=b+M2C_FIELD(GetFontGlyphMetric(a,id),s8 *,2);ch=f(&c);}while(ch);}if(d)*d=ch==10?c:0;if(width>0)width-=b;return width;}
 
-s32 func_ov001_02169294(void *a,s32 b,s32 arg2){s32 c=arg2;s32 z[2]={0,0};s32 n,ch;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);n=1;ch=f(&c);while(ch){if(ch==10)n++;ch=f(&c);}return n*(b+M2C_FIELD(M2C_FIELD(a,void **,0),s8 *,1))-b;}
+s32 GetTextBlockHeight(void *a,s32 b,s32 arg2){s32 c=arg2;s32 z[2]={0,0};s32 n,ch;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);n=1;ch=f(&c);while(ch){if(ch==10)n++;ch=f(&c);}return n*(b+M2C_FIELD(M2C_FIELD(a,void **,0),s8 *,1))-b;}
 
 void GetTextBlockSize(FontSize *out,void **a,s32 b,s32 c,s32 d){FontSize v={0,0};s32 n=1,w;while(d){w=GetTextLineWidth(a,b,d,&d);if(w>v.x)v.x=w;n++;}v.y=(n-1)*(c+M2C_FIELD(*a,s8 *,1))-c;*out=v;}
 

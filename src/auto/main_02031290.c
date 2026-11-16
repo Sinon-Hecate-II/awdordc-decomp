@@ -101,9 +101,9 @@ s32 func_020313f0(void *arg0) {
 s32 func_02031480(void) {
     M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
     M2C_UNK func_0202f558(M2C_UNK);
-    s32 func_0203506c();
+    s32 Dwc_HttpStartup();
     Wfc_GetWorkBlock(8);
-    if (func_0203506c() == 0) {
+    if (Dwc_HttpStartup() == 0) {
         return 0xE;
     }
     func_0202f558(3);

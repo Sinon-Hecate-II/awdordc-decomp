@@ -42,7 +42,7 @@ s32 func_02093d9c(void *arg0) {
 }
 
 s32 func_02093e2c(void *arg0) {
-    M2C_UNK func_020a48ec(u8, u8, u8, u8, s32, s32, s32, s32);
+    M2C_UNK AddMapOrder(u8, u8, u8, u8, s32, s32, s32, s32);
     s16 temp_ip;
     s16 temp_r2;
     void *temp_lr;
@@ -50,7 +50,7 @@ s32 func_02093e2c(void *arg0) {
     temp_lr = M2C_FIELD(arg0, void **, 4);
     temp_ip = M2C_FIELD(temp_lr, s16 *, 0xA);
     temp_r2 = M2C_FIELD(temp_lr, s16 *, 8);
-    func_020a48ec((u8) temp_r2, (u8) (temp_r2 >> 8), (u8) temp_ip, (u8) (temp_ip >> 8), 3, 0, 0, M2C_FIELD(temp_lr, s32 *, 0xC));
+    AddMapOrder((u8) temp_r2, (u8) (temp_r2 >> 8), (u8) temp_ip, (u8) (temp_ip >> 8), 3, 0, 0, M2C_FIELD(temp_lr, s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -77,7 +77,7 @@ s32 func_02093ed8(void *arg0) {
     temp_r0 = M2C_FIELD(arg0, void **, 4);
     temp_ip = M2C_FIELD(temp_r0, s16 *, 8);
     temp_r5 = M2C_FIELD(temp_r0, s32 *, 0xC);
-    func_020a48ec((u8) temp_ip, (u8) (temp_ip >> 8), 1, 1, 9, 0, 0, temp_r5);
+    AddMapOrder((u8) temp_ip, (u8) (temp_ip >> 8), 1, 1, 9, 0, 0, temp_r5);
     if (temp_r5 == 6) {
         func_0208fa00(0x10025, 0x16);
     }

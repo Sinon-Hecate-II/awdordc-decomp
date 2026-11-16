@@ -46,7 +46,7 @@ M2C_FIELD((u8*)*gCurrentMap+tail[0]+M2C_FIELD((u8*)*gCurrentMap+tail[1]*2,u16*,0
 gMoveSearchWrite+=4;gMoveSearchCount++;
 }
 #pragma pop
-M2C_UNK func_ov000_02186624(u8 arg0,u8 arg1) {
+void func_ov000_02186624(u8 arg0,u8 arg1) {
  extern s8 gAiRangeLayer[];
  extern u8 *gMoveSearchState;
  extern s32 gMoveSearchCount;
@@ -66,7 +66,7 @@ M2C_UNK func_ov000_02186624(u8 arg0,u8 arg1) {
  right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(arg0+1<right)right=arg0+1;
  bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(arg1+1<bottom)bottom=arg1+1;
  for(y=top;y<=bottom;y++)for(x=left;x<=right;x++) {
- v=arg0-x;if(v<=0)v=x-arg0;d=v+0;
+ d=0;v=arg0-x;if(v<=0)v=x-arg0;d+=v;
  if(arg1-y>0)d+=arg1-y;else d+=y-arg1;
  if(d>=1 && d<=1) {
  if(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x2338)>=0) {
@@ -94,9 +94,10 @@ M2C_UNK func_ov000_02186624(u8 arg0,u8 arg1) {
  gMoveSearchState[0x25]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
 }
 
+#pragma opt_strength_reduction on
 void func_ov000_02186940(void *arg0) {
     void func_ov000_021862e8();
-    M2C_UNK func_ov000_02186624(u8, u8);
+    void func_ov000_02186624(u8, u8);
     func_ov000_021862e8();
     func_ov000_02186624(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }

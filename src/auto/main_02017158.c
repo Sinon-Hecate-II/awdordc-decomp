@@ -44,7 +44,7 @@ void func_02017158(void *arg0) {
     s32 func_02012740(void *, s32, s32, s32, s32);
     s32 func_020122ac(void *);
     s32 func_02012a64(void *, s32, u16, void *, u16, u16, u16, s32, s32, s32, s32);
-    s32 func_02018438(s32, s32);
+    s32 Mb_ReportPacketResult(s32, s32);
     s32 func_02011a20(s32, void *, s32);
     s32 func_020167d0(void *);
     s32 func_02016840(void);
@@ -62,7 +62,7 @@ void func_02017158(void *arg0) {
     case 0:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
         M2C_FIELD(base,void (**)(s32,void *),0x51c)(21,event);
-        func_02018438(29,func_02013d4c(func_02017158,M2C_FIELD(&gMbParam,u16 *,6),M2C_FIELD(&gMbParam,u16 *,2),M2C_FIELD(&gMbParam,u16 *,0),M2C_FIELD(&gMbParam,u16 *,4)));
+        Mb_ReportPacketResult(29,func_02013d4c(func_02017158,M2C_FIELD(&gMbParam,u16 *,6),M2C_FIELD(&gMbParam,u16 *,2),M2C_FIELD(&gMbParam,u16 *,0),M2C_FIELD(&gMbParam,u16 *,4)));
         return;
     case 29:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
@@ -77,7 +77,7 @@ void func_02017158(void *arg0) {
         M2C_FIELD(&gMbState,u8 *,0x2d)=255;
         M2C_FIELD(base,s32 *,0x5e4)=1;
         M2C_FIELD(base,s32 *,0x5e8)=1;
-        func_02018438(10,func_020124c4(func_02017158,&data_02136c60)); return;
+        Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
     case 10:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
         switch((s32)M2C_FIELD(event,u16 *,8)) {
@@ -112,17 +112,17 @@ found:
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(4,event);
             if(!M2C_FIELD(base,s32 *,0x5e4))return;
             if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))func_02017ff8();
-            func_02018438(10,func_020124c4(func_02017158,&data_02136c60)); return;
+            Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
         case 4:
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(5,event);
             if(!M2C_FIELD(base,s32 *,0x5e4))return;
             if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))func_02017ff8();
-            func_02018438(10,func_020124c4(func_02017158,&data_02136c60)); return;
+            Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
         default: M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
         }
     case 11:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
-        func_02018438(12,func_02012740(func_02017158,M2C_FIELD(base,s32 *,0x520),0,1,0)); return;
+        Mb_ReportPacketResult(12,func_02012740(func_02017158,M2C_FIELD(base,s32 *,0x520),0,1,0)); return;
     case 12:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base+0x500,u16 *,0xe0)=0; M2C_FIELD(base,void (**)(s32,void *),0x51c)(11,event); return; }
         switch((s32)M2C_FIELD(event,u16 *,8)){
@@ -134,7 +134,7 @@ found:
             if(func_02011a20(1,func_020170e8,0))return;
             {u32 flag;
             if(M2C_FIELD(base+0x500,u16 *,0x2c))flag=0;else flag=1;
-            func_02018438(14,func_02012a64(func_02017158,M2C_FIELD(base,s32 *,0x504),M2C_FIELD(base+0x500,u16 *,0x1a),base+0x40,M2C_FIELD(base+0x500,u16 *,0x18),(u16)flag,0,0,0,1,1));}return;
+            Mb_ReportPacketResult(14,func_02012a64(func_02017158,M2C_FIELD(base,s32 *,0x504),M2C_FIELD(base+0x500,u16 *,0x1a),base+0x40,M2C_FIELD(base+0x500,u16 *,0x18),(u16)flag,0,0,0,1,1));}return;
         case 9: M2C_FIELD(base,void (**)(s32,void *),0x51c)(10,event); M2C_FIELD(base+0x500,u16 *,0x2a)=0;M2C_FIELD(base+0x500,u16 *,0x28)=0;return;
         case 26:return;
         default:M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
@@ -156,7 +156,7 @@ found:
         if(M2C_FIELD(event,u16 *,2)){M2C_FIELD(base+0x500,u16 *,0x26)=0;M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;}
         M2C_FIELD(base+0x500,u16 *,0x2a)=0;
         M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;
-        func_02018438(2,func_020122ac(func_02017158));return;
+        Mb_ReportPacketResult(2,func_020122ac(func_02017158));return;
     case 2:
         if(M2C_FIELD(event,u16 *,2)){M2C_FIELD(base+0x500,u16 *,0x26)=0;M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;}func_020168f0(event);return;
     case 21: if(func_02016840())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
@@ -377,11 +377,11 @@ void func_02017f90(s32 a){M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320
 
 s32 func_02017fb4(void) {
     s32 func_02012274(s32);
-    M2C_UNK func_02018438(M2C_UNK, s32);
+    M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);
         s32 var_r4;
 
     var_r4 = func_02012274(M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), s32 *, 0x508));
-    func_02018438(1, var_r4);
+    Mb_ReportPacketResult(1, var_r4);
     if (var_r4 == 2) {
         var_r4 = 0;
     }

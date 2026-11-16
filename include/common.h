@@ -825,6 +825,9 @@ typedef struct PeerAddress {
 #define MB_GROUP_UNIT_DATA  0x0000 /* 0xE4-byte unit roster sent when the group's battle starts */
 #define MB_GROUP_UNIT_COUNT 0x5C4  /* u16 players/units in the group */
 #define MB_GROUP_ACTIVE     0x5CA  /* u8 nonzero while the group record is in use */
+#define MB_GROUP_UNITS_LEFT 0x5AA  /* u16 record-relative: per-player units-still-in-battle bitmask */
+#define MB_GROUP_UNITS_OUT  0x5AC  /* u16 record-relative: players whose units have left the battle */
+#define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player "resigned" flag: -1 = gave up, 1 byte each, indexed from 1 */
 
 /* Assembly of the per-player info records received during multiboot match setup:
  * each 30-byte record (player id, info block, group) is sent in command-7 packets
@@ -1686,6 +1689,8 @@ typedef struct VoiceLinkReply {
 #define OV001_TEXT_ANCHOR_VCENTER 0x02 /* centre the block across the text direction */
 #define OV001_TEXT_ANCHOR_VBOTTOM 0x04 /* put the block's bottom edge at the anchor */
 #define OV001_TEXT_ANCHOR_HCENTER 0x10 /* centre the block along the text direction */
+#define OV001_TEXT_ANCHOR_HORIZ_BLOCK 0x80  /* unknown anchor flag used by the textured-text draw path */
+#define OV001_TEXT_VALIGN_BOTTOM 0x100      /* DrawVerticallyAnchoredText: put the block's end at the anchor */
 #define OV001_TEXT_ANCHOR_HRIGHT  0x20 /* put the block's trailing edge at the anchor */
 
 typedef struct Ov001FontResource {

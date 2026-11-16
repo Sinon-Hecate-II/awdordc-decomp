@@ -135,10 +135,10 @@ s32 func_02015e44(u32 a, u32 p, u32 n) {
 void SendMatchPacket(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK DC_FlushRange(M2C_UNK, s32);
     M2C_UNK func_02006804();
-    M2C_UNK func_020182b0(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK Mb_SendMatchPacket(M2C_UNK, s32, M2C_UNK);
     DC_FlushRange(arg2, (arg0 + 0x1F) & ~0x1F);
     func_02006804();
-    func_020182b0(arg2, arg0, arg1);
+    Mb_SendMatchPacket(arg2, arg0, arg1);
 }
 
 u16 func_02015f48(u16 *p,s32 bytes) {
@@ -425,11 +425,11 @@ s32 func_02016840(void) {
 void func_020168a0(void) {
     s32 func_020119dc(M2C_UNK *);
     s32 func_02013d4c(M2C_UNK *, u16, u16, u16, s32);
-    M2C_UNK func_02018438(M2C_UNK, s32);
+    M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);
     extern M2C_UNK gMbParam;
     extern M2C_UNK func_02016934;
-    func_02018438(0x80, func_020119dc(&func_02016934));
-    func_02018438(0x1D, func_02013d4c(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
+    Mb_ReportPacketResult(0x80, func_020119dc(&func_02016934));
+    Mb_ReportPacketResult(0x1D, func_02013d4c(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
 }
 
 void func_020168f0(s32 arg0) {

@@ -411,7 +411,64 @@ void func_ov000_021a029c(void) {
     ResetAiTargetCandidates();
 }
 
-s32 func_ov000_021a02ac(void) {
-    return 0;
+void func_ov000_021a02ac(void) {
+ extern u8 *gAiState,*gAiSettings;
+ extern u8 gAiTargetCandidates,gAiCommand[],gBattleEndState[];
+ extern void *gAiCommandState;
+ extern void **gCurrentMap;
+ void func_0207b774(u8,u8);s32 func_0207b7c4(void);
+ BattleMapUnitHead *ProduceUnit(u8,u8,u8);
+ s32 IsFootUnitKind(u32);u32 func_ov000_021a0624(s32,s32);
+ s32 GetUnitKindMaxAttackRange(u32);
+ void SendBattleCommandPacket(s32,s32,s32,s32);
+ void PlaySoundAtTile(s32,s32,s32);
+ BattleMapUnitHead *unit;
+ u8 *state=gAiState;
+ u8 *target;
+ u8 *map;u8 x,y,bits,attr;s32 visible;
+ u32 cell; s32 id;
+ target=&gAiTargetCandidates+state[4]*12;
+ switch(state[3]) {
+ case 1:
+ state[3]++;
+ map=*gCurrentMap;y=target[1];x=target[0];
+ attr=M2C_FIELD(map+M2C_FIELD(map,u16 *,0x52a4)*0x8c,u8 *,0x67c3);
+ visible=1;
+ if(!(attr&2)) {
+ cell=x+M2C_FIELD(map+y*2,u16 *,0x3758);
+ bits=M2C_FIELD(map+(cell>>3),u8 *,0x5201)&(1<<(cell&7));
+ if(!bits)visible=0;
+ }
+ if(visible)func_0207b774(x,y);
+ return;
+ case 2:
+ if(func_0207b7c4())return;
+ gAiState[3]=0;
+ unit=ProduceUnit(target[0],target[1],gAiCommand[6]);
+ unit->aiState=gAiCommand[7];
+ unit->unk8_12=0;unit->unk8_14=0;
+ if((u8)(gAiState[2]+0xfa)<=1) {unit->targetX=gAiState[14];unit->targetY=gAiState[15];}
+ else {unit->targetX=63;unit->targetY=63;}
+ if(IsFootUnitKind(unit->kind)) {
+ if(unit)id=(unit-(BattleMapUnitHead *)(*gCurrentMap+0x59a4));else id=0;
+ if(func_ov000_021a0624(id,1)<gAiSettings[9]) {unit->unkB4=1;goto finish;}
+ if(unit)id=(unit-(BattleMapUnitHead *)(*gCurrentMap+0x59a4));else id=0;
+ if(func_ov000_021a0624(id,0)<gAiSettings[8]) {unit->unkB4=0;goto finish;}
+ }
+ if(GetUnitKindMaxAttackRange(unit->kind)==0)unit->unkB4=1;
+ else {
+ if(M2C_FIELD(gAiCommandState,u8 *,3)<M2C_FIELD(gAiSettings+(unit->kind-1)*12,u8 *,0x19))unit->unkB4=0;
+ else unit->unkB4=1;
+ }
+ finish:
+ M2C_FIELD(*gCurrentMap,u16 *,0x52dc)=target[0];
+ M2C_FIELD(*gCurrentMap,u16 *,0x52de)=target[1];
+ if(gBattleEndState[0])SendBattleCommandPacket(13,gAiCommand[6],gAiCommand[7],0);
+ PlaySoundAtTile(0x111,target[0],target[1]);
+ return;
+ default:
+ M2C_FIELD(gAiCommandState,u8 *,0)=4;
+ return;
+ }
 }
 

@@ -40,17 +40,17 @@ void func_02018254(s16 arg0) {
     M2C_FIELD(&gMbState, s16 *, 0x26) = arg0;
 }
 
-s32 func_02018264(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4) {
+s32 Mb_SendChannelPacket(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4) {
     s32 WFC_SendChannelData(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
-    void func_02018438(M2C_UNK, s32);
+    void Mb_ReportPacketResult(M2C_UNK, s32);
     s32 temp_r0;
 
     temp_r0 = WFC_SendChannelData(arg0, 0, arg1, arg2, (s32) arg4, 1, 3);
-    func_02018438(0xF, temp_r0);
+    Mb_ReportPacketResult(0xF, temp_r0);
     return temp_r0;
 }
 
-s32 func_020182b0(s32 arg0, s32 arg1, s32 arg2) {
+s32 Mb_SendMatchPacket(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK gMbState;
 void func_02017158(void);
 void *p;
@@ -61,12 +61,12 @@ p = M2C_FIELD(&gMbState, void **, 8);
 if (M2C_FIELD(p,u16 *,0x528) == 0 || M2C_FIELD(p,u16 *,0x526) == 1) return 1;
 switch (M2C_FIELD(p,u16 *,0x524)) {
 case 1:
-result = func_02018264(M2C_FIELD(p,s32 *,0x508),arg0,a,(u16)(M2C_FIELD(p,u16 *,0x52c) == 0 ? 1000 : 0),b);
+result = Mb_SendChannelPacket(M2C_FIELD(p,s32 *,0x508),arg0,a,(u16)(M2C_FIELD(p,u16 *,0x52c) == 0 ? 1000 : 0),b);
 if (result == 2) M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50c)=1;
 if (result == 2) return 0;
 return result;
 case 2:
-result = func_02018264((s32)func_02017158,arg0,a,0,b);
+result = Mb_SendChannelPacket((s32)func_02017158,arg0,a,0,b);
 if (result == 2) M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50c)=1;
 if (result == 2) return 0;
 return result;
@@ -99,7 +99,7 @@ s32 func_02018418(void) {
     return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, 0x50d) == 1;
 }
 
-void func_02018438(s32 arg0, s32 arg1) {
+void Mb_ReportPacketResult(s32 arg0, s32 arg1) {
  extern M2C_UNK data_02136c40;
  u16 buf[2];
  void *p;

@@ -222,23 +222,25 @@ void DrawAnchoredText(Ov001TextState *state, s32 x, s32 y, s32 color, s32 flags,
     DrawTextMultiline(state, x, y, result.x, color, flags, text, dir);
 }
 #pragma opt_propagation reset
-void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, TextDirection dir) {
-    s32 func_ov001_02169294(s32, s32, s32);
+/* Draw a multi-line text block anchored along the text direction instead of
+ * across it: with 0x100 the block ends at `anchor` and with 0x80 it is centred
+ * on it (both measured in block height along dir), then DrawTextMultiline
+ * renders it at the shifted origin. */
+void DrawVerticallyAnchoredText(void *state, s32 x, s32 y, s32 blockWidth, s32 anchor, s32 color, s32 flags, s32 text, TextDirection dir) {
+    s32 GetTextBlockHeight(s32, s32, s32);
     
-    s32 x = arg1;
-    s32 y = arg2;
     s32 d;
 
-    if (arg6 & 0x100) {
-        d = arg4 - func_ov001_02169294(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg0, s32 *, 0xC), arg7);
+    if (flags & 0x100) {
+        d = anchor - GetTextBlockHeight(M2C_FIELD(state, s32 *, 4), M2C_FIELD(state, s32 *, 0xC), text);
         x += d * -dir.y;
         y += d * dir.x;
-    } else if (arg6 & 0x80) {
-        d = ((arg4 + 1) / 2) - ((func_ov001_02169294(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg0, s32 *, 0xC), arg7) + 1) / 2);
+    } else if (flags & 0x80) {
+        d = ((anchor + 1) / 2) - ((GetTextBlockHeight(M2C_FIELD(state, s32 *, 4), M2C_FIELD(state, s32 *, 0xC), text) + 1) / 2);
         x += d * -dir.y;
         y += d * dir.x;
     }
-    DrawTextMultiline(arg0, x, y, arg3, arg5, arg6, arg7, dir);
+    DrawTextMultiline(state, x, y, blockWidth, color, flags, text, dir);
 }
 
 /* Validates a font resource (magic 'NFTR'-ish, version >= 1.00) and relocates its

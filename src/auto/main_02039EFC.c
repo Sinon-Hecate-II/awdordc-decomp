@@ -282,7 +282,10 @@ void func_0203a9d0(void) {
     func_0203739c();
 }
 
-void func_0203a9dc(void *a,s32 b,s32 c,s32 d,s32 e) {
+/* Start a match session: register the session object a in gMatchSessionMgr and
+   fill its fields (state 0, id b, the e/d settings, the byte flags at 0x1C..0x1F,
+   the record c at 0x28); every other field is cleared. */
+void StartMatchSession(void *a,s32 b,s32 c,s32 d,s32 e) {
  extern M2C_UNK gMatchSessionMgr;
  void *p;
  M2C_FIELD(&gMatchSessionMgr,void**,8)=a;

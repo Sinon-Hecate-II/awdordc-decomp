@@ -192,7 +192,7 @@ s32 func_ov001_02188f0c(void){
 extern void *gOv001ProfileState;
 if(M2C_FIELD(gOv001ProfileState,u8 *,0xa90)!=5)return 0;
 M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=6;
-func_ov001_0218730c();return 1;
+Ov001_DropUnacknowledgedPlayers();return 1;
 }
 
 void func_ov001_02188f40(void) {

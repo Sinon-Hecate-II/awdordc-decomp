@@ -314,7 +314,12 @@ i++;}while(i<arg2);
 return;
 }
 
-s32 func_0203506c(Callbacks3506c *cb) {
+/* Initialise the WFC networking library: allocate the net-check context (0x11F4
+ * bytes) and the HTTP client context (0x1C14 bytes) from the caller's allocator,
+ * clear them, store the client handlers at context+0x1108, set the client's
+ * socket timeout and create the mutex the client state is locked with. Returns
+ * 4 if any of that fails or the library is already initialised, 0 on success. */
+s32 Dwc_HttpStartup(Callbacks3506c *cb) {
  M2C_UNK InitMutex(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK func_02035304();
  void *(*alloc)(void *,int)=cb->alloc; void *p;
  if(M2C_FIELD(&gWfcNet,void **,0))return 4;

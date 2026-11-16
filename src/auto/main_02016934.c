@@ -12,7 +12,7 @@ void *func_02012418(void *, void *);
 void *func_02013cfc(void *, int);
 void *func_020122ac(void *);
 void *func_02012a64(void *, int, int, void *, int, int, int, int, int, int, int);
-void func_02018438(int, void *);
+void Mb_ReportPacketResult(int, void *);
 void func_0200758c(int);
 void SystemHalt(void);
 void func_02011a20(int,int,int);
@@ -24,9 +24,9 @@ void func_02016934(void *arg0) {
 u32 i,n; 
 switch ((s32)M2C_FIELD(arg0,u16 *,0)) {
 case 0: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else func_020168a0(); return;
-case 29: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else func_02018438(7,func_020122ec(func_02016934,M2C_FIELD(&gMbState,void **,8))); return;
-case 7: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(21,arg0); func_02018438(25,func_02013cfc(func_02016934,1)); return;
-case 25: if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else func_02018438(8,func_02012418(func_02016934,M2C_FIELD(&gMbParam,void **,12))); return;
+case 29: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(7,func_020122ec(func_02016934,M2C_FIELD(&gMbState,void **,8))); return;
+case 7: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(21,arg0); Mb_ReportPacketResult(25,func_02013cfc(func_02016934,1)); return;
+case 25: if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(8,func_02012418(func_02016934,M2C_FIELD(&gMbParam,void **,12))); return;
 case 8:
 if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);return;}
 switch((s32)M2C_FIELD(arg0,u16 *,8)){
@@ -37,7 +37,7 @@ M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)|=1<<M2C_FIELD(arg0,u16 *,1
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(0,arg0);
 if(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)==0 && M2C_FIELD(&gMbState,DispatchWork169 **,12)->active==0){
 M2C_FIELD(&gMbState,DispatchWork169 **,12)->active=1;
-{u32 flag=(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52c)==0); void *ctx=M2C_FIELD(&gMbState,void * volatile *,8);func_02018438(14,func_02012a64(func_02016934,M2C_FIELD(ctx,u32 *,0x504),M2C_FIELD(ctx,u16 *,0x51a),(char*)ctx+0x40,M2C_FIELD(ctx,u16 *,0x518),(u16)flag,0,0,0,1,1));}return;
+{u32 flag=(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52c)==0); void *ctx=M2C_FIELD(&gMbState,void * volatile *,8);Mb_ReportPacketResult(14,func_02012a64(func_02016934,M2C_FIELD(ctx,u32 *,0x504),M2C_FIELD(ctx,u16 *,0x51a),(char*)ctx+0x40,M2C_FIELD(ctx,u16 *,0x518),(u16)flag,0,0,0,1,1));}return;
 }
 if(func_02016840()){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(25,0);}return;
 case 9: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)&=~(1<<M2C_FIELD(arg0,u16 *,16)); M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(1,arg0);return;
@@ -64,7 +64,7 @@ M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(19,arg0);i
 case 1:
 if(M2C_FIELD(M2C_FIELD(&gMbState,void **,12),u32 *,0x1320)==0){
 if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);return;}
-M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)=0; M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;func_02018438(2,func_020122ac(func_02016934));return;
+M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)=0; M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;Mb_ReportPacketResult(2,func_020122ac(func_02016934));return;
 }
 func_02011a20(1,0,0);func_020119dc(0);
 case 2:if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);}else func_020168f0(arg0);return;

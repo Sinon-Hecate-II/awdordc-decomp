@@ -287,7 +287,11 @@ OS_RestoreInterrupts(state);
 }
 }
 
-void func_ov001_0218730c(void) {
+/* Drop every joined player (bit set in work+2) that has not been kicked (+4): once
+   acknowledge (+6) is not pending, clear all six link-header bits with interrupts
+   off and close that player's connection; players still mid-kick go through the
+   same echo-group check that may finish the drop (func_ov001_02187234). */
+void Ov001_DropUnacknowledgedPlayers(void) {
 u16 i,mask;
 s32 state;
 Ov001_SetLinkStatus(3);

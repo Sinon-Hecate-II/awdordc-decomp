@@ -5,7 +5,10 @@ typedef struct { u8 pad[5]; u8 player:3; u8 rest:5; } Unk020APlayer;
 typedef struct { u8 x,y; u16 a:3; u16 b:3; u16 type:4; u16 rest:6; u8 value; u8 player:3; u8 enabled:1; u8 mode:4; u8 extra,last; } Unk020ABaseEntry;
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
-Unk020AEntry *func_020a48ec(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h) {
+/* Append an order record to the map's order queue (entries at map+0x58A4, the
+   first one with type 0 is free): tile (a,b), counts c/d, order type e, player f,
+   enabled flag g and value h.  Returns the new record. */
+Unk020AEntry *AddMapOrder(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h) {
  extern s32 *gCurrentMap;
  Unk020ABaseEntry *p=(Unk020ABaseEntry *)(*gCurrentMap+0x58a4);
  while(p->type)p++;
@@ -17,8 +20,8 @@ Unk020AEntry *func_020a48ec(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h) {
 }
 
 M2C_UNK func_020a49cc(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h,s32 i,s32 j,s32 k,s32 l) {
-Unk020AEntry *func_020a48ec(s32,s32,s32,s32,s32,s32,u8,s32);
-Unk020AEntry *p=func_020a48ec(a,b,c,d,e,f,g,h);u16 top=(u16)k;u16 kind=(u16)j;u8 last=l;p->mode=(u8)i;p->top=top;p->kind=kind;M2C_FIELD(p,s8 *,6)=i;p->last=last;return (s32)p;}
+Unk020AEntry *AddMapOrder(s32,s32,s32,s32,s32,s32,u8,s32);
+Unk020AEntry *p=AddMapOrder(a,b,c,d,e,f,g,h);u16 top=(u16)k;u16 kind=(u16)j;u8 last=l;p->mode=(u8)i;p->top=top;p->kind=kind;M2C_FIELD(p,s8 *,6)=i;p->last=last;return (s32)p;}
 
 void func_020a4a68(Unk020AEntry *p) {while(p->type){*p=p[1];p++;}}
 

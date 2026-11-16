@@ -10,6 +10,7 @@ sp[33]=0;M2C_FIELD(sp,s32 *,36)=0;sp[41]=0;
 
 }
 struct TileNeighbors_0221 { s16 values[24]; };
+struct TileCardinalNeighbors_0221 { s16 values[12]; };
 
 void func_ov007_0221a59c(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
@@ -140,8 +141,59 @@ s32 Map_CanPlaceTile(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-s32 func_ov007_0221ad24(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    return 0;
+s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
+ s32 func_ov007_0221b754(s32,s32);
+ s32 func_ov007_0221bad0(s32,s32);
+ extern u8 data_ov007_0221f544[],data_ov007_0221f52c[],data_ov007_0221f514[];
+ long i=0;
+ u8 count=0,diagonal=0,mask=0;
+ struct TileNeighbors_0221 all;
+ struct TileCardinalNeighbors_0221 cardinal, corners;
+ u8 *p;
+ switch(kind) {
+ case 13:case 14:
+ if(func_ov007_0221b754(x,y))return 1;
+ return (u8)(func_ov007_0221bad0(x,y)!=0);
+ case 10:case 12:
+ all=*(const struct TileNeighbors_0221 *)data_ov007_0221f544;
+ p=(u8 *)&all;
+ for(i=0;i<8;i++,p+=6)
+ if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2)))return 0;
+ break;
+ case 9:
+ cardinal=*(const struct TileCardinalNeighbors_0221 *)data_ov007_0221f52c;
+ p=(u8 *)&cardinal;
+ for(i=0;i<4;i++,p+=6) {
+ if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2))) {mask|=1<<i;++count;}
+ }
+ if(count==0)return 0;
+ if(count==4)return 0;
+ if(mask==9)return 0;
+ if(mask==6)return 0;
+ if(count==3)return 1;
+ corners=*(const struct TileCardinalNeighbors_0221 *)data_ov007_0221f514;
+ p=(u8 *)&corners;
+ for(i=0;i<4;i++,p+=6)
+ if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2)))diagonal|=1<<i;
+ if(mask&1) {
+ if(!(mask&2) && (diagonal&4))return 0;
+ if(!(mask&4) && (diagonal&8))return 0;
+ }
+ if(mask&8) {
+ if(!(mask&2) && (diagonal&1))return 0;
+ if(!(mask&4) && (diagonal&2))return 0;
+ }
+ if(mask&2) {
+ if(!(mask&1) && (diagonal&2))return 0;
+ if(!(mask&8) && (diagonal&8))return 0;
+ }
+ if(mask&4) {
+ if(!(mask&1) && (diagonal&1))return 0;
+ if(!(mask&8) && (diagonal&4))return 0;
+ }
+ break;
+ }
+ return 1;
 }
 
 s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
