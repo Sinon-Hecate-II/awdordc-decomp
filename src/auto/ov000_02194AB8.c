@@ -8,7 +8,7 @@ typedef struct { u8 kind:6; u8 flags:2; } UnitKind1955;
 #pragma opt_instruction_scheduling off
 int func_ov000_02194ab8(short *arg0) {
 void GetAiUnitRange(void);
-void func_ov000_02179d3c(void);
+void BuildAiUnitThreatRange(void);
 s32 GetUnitAttackClass(s32);
 s32 GetUnitAttackRangeMax(void *);
 s32 IsPlayerActive(s32);
@@ -37,7 +37,7 @@ s32 offset;
 s32 threshold,team,id,value,cost,kind,x,y,terrain,index,xx,yy,x0,y0,x1,y1,sum,delta;
 u8 *map,*unit,*selected;
 GetAiUnitRange();
-func_ov000_02179d3c();
+BuildAiUnitThreatRange();
 if(!(M2C_FIELD(gAiCommandState,u16 *,8)&32)&&GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1){
 threshold=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(gAiCommandState,u8 *,5);
 }else threshold=0;
@@ -175,13 +175,13 @@ void func_ov000_021954a4(void) {
 
 s32 func_ov000_021954dc(s16 *arg0) {
     void GetAiUnitRange();
-    void func_ov000_02179d3c();
+    void BuildAiUnitThreatRange();
     s32 func_ov000_021786a8(s16 *);
     s32 FindAttackPosition(s16 *);
     s16 sp0[2];
 
     GetAiUnitRange();
-    func_ov000_02179d3c();
+    BuildAiUnitThreatRange();
     if (func_ov000_021786a8(sp0) == 0) {
         return 0;
     }
@@ -212,7 +212,7 @@ void func_ov000_0219553c(void) {
 s32 func_ov000_02195574(s16 *out) {
 s32 GetUnitAttackClass(s32);
 void GetAiUnitRange(void);
-void func_ov000_02179d3c(void);
+void BuildAiUnitThreatRange(void);
 s32 GetTerrainPropertyFlagsAt(s32,s32);
 s32 func_ov000_0217bc34(s32,s32,s32,s32);
 s32 FindAttackPosition(s16 *);
@@ -223,7 +223,7 @@ s16 cand[2];
 s32 x,y,kind;
 kind=GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1?2:1;
 GetAiUnitRange();
-func_ov000_02179d3c();
+BuildAiUnitThreatRange();
 for(y=0;y<*(u16 *)((u8 *)*gCurrentMap+0x5146);y++){
 for(x=0;x<*(u16 *)((u8 *)*gCurrentMap+0x5144);x++){
 u8 *map;

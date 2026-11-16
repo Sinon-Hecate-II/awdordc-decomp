@@ -46,12 +46,12 @@ void func_ov007_02213150(void) {
 
 void func_ov007_0221327c(void) {
     M2C_UNK func_02088fc4(s32, M2C_UNK);
-    s32 func_02089064(s32);
+    s32 Is3DSpriteVisible(s32);
     extern M2C_UNK data_ov007_02221a50;
     s32 i;
     i = 0;
     do {
-        if (func_02089064(((s32 *)&data_ov007_02221a50)[i]) != 0)
+        if (Is3DSpriteVisible(((s32 *)&data_ov007_02221a50)[i]) != 0)
             func_02088fc4(((s32 *)&data_ov007_02221a50)[i], 4);
         i++;
     } while (i < 13);
@@ -114,13 +114,13 @@ void func_ov007_0221336c(void) {
 void func_ov007_02213378(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK RefreshMapView();
-    M2C_UNK func_ov007_022121b0();
+    M2C_UNK RefreshMapEditor();
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK FillMapTerrain(s32);
     M2C_UNK func_ov007_0221ab68();
     FillMapTerrain(M2C_FIELD(arg0, s32 *, 0x5C));
     RefreshMapView();
-    func_ov007_022121b0();
+    RefreshMapEditor();
     func_ov007_0221ab68();
     MapEditor_SetMapModified(1);
     PlaySoundEffect(0x11D);
@@ -188,7 +188,7 @@ void func_ov007_022134b4(void *arg0) {
     void *p;
     LoadMapFromExport(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
     RefreshMapView();
-    func_ov007_022121b0();
+    RefreshMapEditor();
     func_ov007_0221ab68();
     MapEditor_SetMapModified(1);
     p = *gCurrentMap;

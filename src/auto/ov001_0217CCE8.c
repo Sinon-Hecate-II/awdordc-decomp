@@ -15,10 +15,10 @@ M2C_UNK func_ov001_0217cce8(void) {
 
 void func_ov001_0217d044(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217d078;
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217d078);
 }
 
@@ -96,12 +96,12 @@ void func_ov001_0217d15c(void) {
 
 void func_ov001_0217d1ac(void) {
     s32 func_ov001_0217170c();
-    M2C_UNK func_ov001_02171cf8();
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0217f72c(M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
-    M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK InitMapListScreen;
     extern M2C_UNK func_ov001_02180d44;
     s32 sp0;
@@ -116,16 +116,16 @@ void func_ov001_0217d1ac(void) {
         return;
     }
     func_ov001_0218af70(0);
-    func_ov001_02171cf8();
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x15);
+    Ov001_FreeOptionBackground();
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 != 0) {
-        func_ov001_02175d64(2, 1);
+        Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02180d44);
         return;
     }
-    func_ov001_02175d64(2, 0);
+    Ov001_SetNextScreenMode(2, 0);
     Ov001_SetNameEntryMode(0, 0);
     func_ov001_0217f72c(0);
     Ov001_SetStepCallback(&InitMapListScreen);
@@ -224,7 +224,7 @@ void InitMapListGraphics(void) {
     extern u8 sYbBgStep21NclPath[];
     extern M2C_UNK sYbObjKbPath, sJbBgStep2NcgPath, sJbBgStep21NcgPath, sJb3ListNscPath;
     extern M2C_UNK gMapListState;
-    extern M2C_UNK func_02004160, func_0200472c, func_020046cc, GX_LoadBGPltt, func_020044ec;
+    extern M2C_UNK GX_LoadOBJPltt, func_0200472c, GX_LoadBG2Char, GX_LoadBGPltt, func_020044ec;
     typedef struct { u8 bytes[23]; } ListBackPath;
     typedef struct { u8 bytes[21]; } BgStep2Path;
     typedef struct { u8 bytes[22]; } BgStep21Path;
@@ -236,9 +236,9 @@ void InitMapListGraphics(void) {
     M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) =
         (M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) & 0x43) | 0x218 | 0xC00;
 
-    Ov001_LoadAsset(&sYbObjKbPath, &func_02004160);      /* UI palette */
+    Ov001_LoadAsset(&sYbObjKbPath, &GX_LoadOBJPltt);      /* UI palette */
     Ov001_LoadAsset(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
-    Ov001_LoadAsset(&sJbBgStep21NcgPath, &func_020046cc);/* background tiles, step 21 */
+    Ov001_LoadAsset(&sJbBgStep21NcgPath, &GX_LoadBG2Char);/* background tiles, step 21 */
     Ov001_LoadAsset((void *)&bgStep2Path, &GX_LoadBGPltt);   /* background palette, step 2 */
     Ov001_LoadAsset(&sJb3ListNscPath, &func_020044ec);   /* list tilemap */
 
@@ -278,13 +278,13 @@ void func_ov001_0217d680(void) {
 
 void func_ov001_0217d6bc(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0217d710(void);
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x1D, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x1D);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x1D);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d710);
 }
 

@@ -19,13 +19,13 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
-    s32 func_0208206c();
+    s32 GetLocalPlayerName();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *func_0208bc24(void *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK LoadScenePanelPalette(M2C_UNK);
     void *func_0209b26c(s16, M2C_UNK, M2C_UNK, s32, s32, u32);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -164,9 +164,9 @@ void func_ov003_021e5118(void *arg0) {
     func_020a9a30(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x2C0);
     Clear3DSpriteLayer(0);
     func_01ff9dd8(0);
-    func_02091d4c(7);
+    LoadScenePanelPalette(7);
     temp_r6_2 = data_027e01d8;
-    func_020e4cd8(func_0208206c(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
+    func_020e4cd8(GetLocalPlayerName(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
     func_ov000_0216a470();
     func_ov000_0216a30c(func_ov000_0216a564(), 0x5F80, 9);
     if ((func_ov000_0216a76c() != -2) && (func_ov000_0216a76c() != -1)) {
@@ -186,7 +186,7 @@ void func_ov003_021e5118(void *arg0) {
     LoadFileToSpriteBuffer(&data_ov003_0220f854, 0xE0, 0x20);
     SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x24), 0x20, 0x20, 7);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
-    func_02091d4c(9);
+    LoadScenePanelPalette(9);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     DrawMapPreview(M2C_FIELD(data_027e01d8, s32 *, 0xC), M2C_FIELD(data_027e01d8, s32 *, 0x20), 1, 5);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);

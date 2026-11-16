@@ -234,7 +234,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK GetUiColor(M2C_UNK);
@@ -343,8 +343,8 @@ loop_1:
     CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov007_022219d8, 0xA0, 0x60);
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
-    func_02091d4c(4);
-    func_02091d4c(0x17);
+    LoadScenePanelPalette(4);
+    LoadScenePanelPalette(0x17);
     func_020aeebc(2, 0xF, 6);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);

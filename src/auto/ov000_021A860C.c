@@ -214,9 +214,9 @@ u8 IsCurrentPlayerUnit(s32 arg0) {
 }
 
 u8 IsPropertyTerrain(s32 arg0) {
-    extern s8 data_ov000_021b54c0[];
+    extern s8 gTerrainIsProperty[];
     u8 var_r0;
-    if (data_ov000_021b54c0[arg0 & 0x1F] != 0) {
+    if (gTerrainIsProperty[arg0 & 0x1F] != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -225,10 +225,10 @@ u8 IsPropertyTerrain(s32 arg0) {
 }
 
 u8 func_ov000_021a9014(s32 a) {
-extern s8 data_ov000_021b54c0[];
+extern s8 gTerrainIsProperty[];
 s32 i=a&31;u8 v;
 if(i==24)return 0;
-if(data_ov000_021b54c0[i])v=1;else v=0;
+if(gTerrainIsProperty[i])v=1;else v=0;
 return v;
 }
 

@@ -99,7 +99,7 @@ void func_0208f3d4(void *arg0) {
 }
 
 #pragma opt_common_subs off
-u16 func_0208f404(u8 *arg0, s32 arg1) {
+u16 Crc16(u8 *arg0, s32 arg1) {
     u32 crc = 0;
     u32 byte;
     s32 i;
@@ -476,7 +476,7 @@ void func_0208facc(M2C_UNK arg0) {
     func_0208fe7c(arg0, func_0208fa3c());
 }
 
-void func_0208fae8(M2C_UNK arg0) {
+void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
     M2C_UNK func_020901b0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     func_020901b0(0, -1, arg0, func_0208fa3c());
 }
@@ -495,7 +495,7 @@ void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_0208ff94(temp_r4);
 }
 
-void func_0208fb54(s32 a,s32 b,s32 c,s32 d){
+void SpawnSoundEffectAtTile(s32 a,s32 b,s32 c,s32 d){
  void *func_01ffa3dc(M2C_UNK*,M2C_UNK);
  extern M2C_UNK data_02102984;
  void *p=func_01ffa3dc(&data_02102984,7);

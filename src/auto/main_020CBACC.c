@@ -193,7 +193,7 @@ void DrawMapPreview(s32,s32,s32,s32);
 void SetFrameRect(s32,s32,s32,s32);
 void Reset3DSpriteEngineState(void);
 void Reset3DSpriteBankState(void);
-void func_02091d4c(s32);
+void LoadScenePanelPalette(s32);
 s32 GetMapName(s32);
 void DrawTextLine(s32,s32,s32,s32,s32,s32);
 s32 x,y;
@@ -211,7 +211,7 @@ x=-((256-(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<<2))>>1);
 SetFrameRect((256-(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<<2))>>1,(192-(M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)<<2))>>1,0x35c,11);
 Reset3DSpriteEngineState();
 Reset3DSpriteBankState();
-func_02091d4c(0);
+LoadScenePanelPalette(0);
 ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->corner[2]=0;
 ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->corner[6]=0;
 DrawTextLine(1,0,2,GetMapName(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)),0,16);
@@ -415,11 +415,11 @@ p=*data_027e0058;
 x=M2C_FIELD(p,volatile s16 *,0x52dc);y=M2C_FIELD(p,volatile s16 *,0x52de);
 M2C_FIELD(a,s16 *,0x6c)=func_020ba320(M2C_FIELD(p,volatile s32 *,0x52d0),x,y);
 M2C_FIELD(a,s16 *,0x6e)=3;
-M2C_FIELD(a,s16 *,0x6e)=func_020cac1c(3,M2C_FIELD(a,s16 *,0x6c));
+M2C_FIELD(a,s16 *,0x6e)=NextMapCursorOption(3,M2C_FIELD(a,s16 *,0x6c));
 }
 #pragma pop
 void func_020cc8d8(void *arg0) {
-    M2C_UNK func_020cad1c(s32 *, M2C_UNK);
+    M2C_UNK UpdateMapCursorOption(s32 *, M2C_UNK);
     M2C_UNK DeleteSpriteObject(void *);
     void func_020d472c(void);
     void func_020c75cc(void);
@@ -432,7 +432,7 @@ void func_020cc8d8(void *arg0) {
 
     tmp = M2C_FIELD(arg0, s16 *, 0x6c);
     sp0 = M2C_FIELD(arg0, s16 *, 0x6e);
-    ret = func_020cad1c(&sp0, tmp);
+    ret = UpdateMapCursorOption(&sp0, tmp);
     M2C_FIELD(arg0, s16 *, 0x6e) = (s16)sp0;
     if (ret & 0x20) {
         DeleteSpriteObject(arg0);

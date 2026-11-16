@@ -280,7 +280,7 @@ void func_ov000_02170110(void *arg0) {
 void func_ov000_021703e8(void *arg0) {
     void AddSprite(s32, s32, u16, void *, s32);
     M2C_UNK MenuSpriteUpdate(void *);
-    s32 func_02001fb4(s32, s32);
+    s32 FX_Div(s32, s32);
     void DrawFrameBorder(s32, s32, s32, s32, u16, s32, s32);
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListScrollUp(void *);
@@ -368,9 +368,9 @@ void func_ov000_021703e8(void *arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     v1 = M2C_FIELD(arg0, s16 *, 0x3c) << 12;
     v2 = M2C_FIELD(arg0, s16 *, 0x3a) << 12;
-    t1 = func_02001fb4(0x62000, v1);
+    t1 = FX_Div(0x62000, v1);
     t1 = (s32) (((s64) t1 * 0x6000 + 0x800) >> 12);
-    t2 = func_02001fb4(0x62000 - t1, v1 - 0x6000);
+    t2 = FX_Div(0x62000 - t1, v1 - 0x6000);
     t2 = (s32) (((s64) t2 * v2 + 0x800) >> 12);
     t3 = t1 >> 12;
     if (t3 > 0x62) t3 = 0x62;

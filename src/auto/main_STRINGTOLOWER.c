@@ -23,7 +23,7 @@ s8 *StringToLower(s8 *p) {
  s8 *q=p;
  s32 c=*p;
  if(c) do {
- if(c>=0 && c<128) c=((u8 *)&data_020eac40)[c];
+ if(c>=0) { if(c<128) { u8 *entry=(u8 *)&data_020eac40+c; c=*entry; } }
  *p=c;
  c=*++p;
  }while(c);

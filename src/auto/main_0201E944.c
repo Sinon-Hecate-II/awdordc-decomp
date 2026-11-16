@@ -1,6 +1,11 @@
 /* 35 functions from 0x0201E944 to 0x0201F89C (main), found by ds-decomp. */
 #include "common.h"
 typedef struct DnsPacket0201e944 { u16 header[6]; u8 name[48]; } DnsPacket0201e944;
+static inline u64 NextPacketRandom64(void) {
+    extern M2C_UNK gNetStack;
+    M2C_FIELD(&gNetStack, u64 *, 0x68) = M2C_FIELD(&gNetStack, u64 *, 0x70) * M2C_FIELD(&gNetStack, u64 *, 0x68) + M2C_FIELD(&gNetStack, u64 *, 0x78);
+    return M2C_FIELD(&gNetStack, u64 *, 0x68);
+}
 
 #pragma push
 #pragma opt_strength_reduction off
@@ -99,76 +104,41 @@ s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     return result;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+#pragma peephole off
 s32 func_0201ed20(s32 arg0) {
-    s32 func_0201ec20(u8 *, s32 *);
-    s32 func_0201ecbc(M2C_UNK, s32, M2C_UNK);
-    extern M2C_UNK gNetStack;
-    extern M2C_UNK data_021372f0;
-    s32 out = 0;
-    u8 flag0 = 1;
-    u8 flag1 = 1;
-    u16 rand0;
-    u16 rand1;
-    s32 r10 = arg0;
-    u32 r5, r3, r1;
-    u64 p;
-    u32 r8, r7, r9, r4, r11;
-    u32 carry;
-    u32 r8b;
-    u64 p2;
-    u32 r10h;
-    s32 i, r8i;
-
-    r5 = M2C_FIELD(&gNetStack, u32 *, 0x70);
-    r3 = M2C_FIELD(&gNetStack, u32 *, 0x68);
-    r1 = M2C_FIELD(&gNetStack, u32 *, 0x6C);
-    p = (u64)r5 * r3;
-    r8 = (u32)p;
-    r7 = (u32)(p >> 32);
-    r9 = M2C_FIELD(&gNetStack, u32 *, 0x78);
-    r7 = r7 + (r5 * r1);
-    r4 = M2C_FIELD(&gNetStack, u32 *, 0x74);
-    r11 = r9 + r8;
-    carry = (r11 < r9) ? 1 : 0;
-    r7 = r7 + (r4 * r3);
-    r8b = M2C_FIELD(&gNetStack, u32 *, 0x7C);
-    p2 = (u64)r5 * r11;
-    r3 = (u32)p2;
-    r10h = r8b + r7 + carry;
-    M2C_FIELD(&gNetStack, u32 *, 0x68) = r11;
-    r7 = (r10h >> 16);
-    carry = (r9 + r3 < r9) ? 1 : 0;
-    r5 = r9 + r3;
-    r1 = (r4 * r11) + (u32)(p2 >> 32);
-    M2C_FIELD(&gNetStack, u32 *, 0x6C) = r10h;
-    rand0 = r7;
-    r4 = r8b + r1 + carry;
-    rand1 = (r4 >> 16);
-    M2C_FIELD(&gNetStack, u32 *, 0x68) = r5;
-    M2C_FIELD(&gNetStack, u32 *, 0x6C) = r4;
-
-    if (func_0201ec20((u8 *)r10, &out) != 0) {
-        return out;
-    }
-
-    for (i = 0; i < 3; i++) {
-        for (r8i = 0; r8i < 2; r8i++) {
-            if (r8i == 0 ? flag0 : flag1) {
-                u16 half = (r8i == 0) ? rand0 : rand1;
-                s32 slot = M2C_FIELD(&data_021372f0, s32 *, r8i * 4);
-                out = func_0201ecbc(r10, slot, half);
-                if (out != 0 && out != -1) {
-                } else if (out == -1) {
-                    if (r8i == 0) flag0 = 0; else flag1 = 0;
-                }
-            }
-        }
-    }
-
-    if (out == -1) out = 0;
-    return out;
+extern M2C_UNK data_021372f0;
+extern M2C_UNK gNetStack;
+u8 flags[2];
+s32 out;
+u16 rnd[2];
+u64 state, mul, inc;
+s32 i,j;
+u8 *p;
+mul=M2C_FIELD(&gNetStack,u64*,0x70);
+inc=M2C_FIELD(&gNetStack,u64*,0x78);
+state=mul*M2C_FIELD(&gNetStack,u64*,0x68)+inc;
+M2C_FIELD(&gNetStack,u64*,0x68)=state;
+rnd[0]=(u64)(state>>32)>>16;
+state=mul*state+inc;
+M2C_FIELD(&gNetStack,u64*,0x68)=state;
+rnd[1]=state>>48;
+if(func_0201ec20((u8*)arg0,&out)) return out;
+flags[0]=1; flags[1]=1;
+for(i=0;i<3;i++){
+for(j=0,p=flags;j<2;j++,p++){
+if(*p){
+out=func_0201ecbc(arg0,M2C_FIELD(&data_021372f0,s32*,j*4),rnd[j]);
+if(out!=0 && out!=-1) goto done;
+if(out==-1)*p=0;
 }
-
+}}
+done:
+if(out==-1)out=0;
+return out;
+}
+#pragma pop
 s32 func_0201ee58(s32 arg0) {
     M2C_UNK func_02000b9c(s32);
     s32 func_0201ee94();

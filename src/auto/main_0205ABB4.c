@@ -1,5 +1,6 @@
 /* 42 functions from 0x0205ABB4 to 0x0205BB90 (main), found by ds-decomp. */
 #include "common.h"
+#include "gt2.h"
 typedef struct { s32 offset,size,command;u16 sequence; } Command5B8B0;
 
 s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
@@ -23,14 +24,14 @@ s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 M2C_UNK func_0205ac1c(s32 a,s32 b) {
-void func_0205ac6c(void *,...);M2C_UNK func_0205cb4c();s32 func_0205a29c(s32,s32);void func_0205d164(s32);void func_0205c8c8(s32);
+void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 func_0205a29c(s32,s32);void func_0205d164(s32);void func_0205c8c8(s32);
 if(b){
 if(M2C_FIELD(a,s32 *,12)>=7)return;
-func_0205ac6c((void *)a);func_0205cb4c(a);func_0205a29c(a,0);func_0205d164(a);
+gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);func_0205a29c(a,0);func_0205d164(a);
 }else {M2C_FIELD(a,s32 *,12)=6;func_0205c8c8(a);}
 }
 
-void func_0205ac6c(void *p,...) {
+void gti2MarkConnectionClosed(void *p,...) {
 void func_02048f54(s32,void **);void Vector_AddItem(s32,void **);
 if(M2C_FIELD(p,s32 *,12)==7)return;
 M2C_FIELD(p,s32 *,12)=7;
@@ -182,9 +183,9 @@ s32 func_0205b110(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
 s32 func_0205a0d0(s32,s32,s32,s32);s32 func_0205a29c(s32,s32);
 s32 n=M2C_FIELD(a,s32 *,12);
 if(n<5){
-if(M2C_FIELD(a,s32 *,16)){func_0205ac6c((void *)a);if(!func_0205a0d0(a,b,0,0))return 0;}
-else {if(n==4)M2C_FIELD(a,s32 *,20)=1;func_0205ac6c((void *)a);}
-}else if(n!=7){func_0205ac6c((void *)a);if(!func_0205a29c(a,c))return 0;}
+if(M2C_FIELD(a,s32 *,16)){gti2MarkConnectionClosed((void *)a);if(!func_0205a0d0(a,b,0,0))return 0;}
+else {if(n==4)M2C_FIELD(a,s32 *,20)=1;gti2MarkConnectionClosed((void *)a);}
+}else if(n!=7){gti2MarkConnectionClosed((void *)a);if(!func_0205a29c(a,c))return 0;}
 return 1;
 }
 
@@ -194,8 +195,8 @@ s32 Gt2CloseConnection(M2C_UNK arg0) {
 }
 
 s32 func_0205b1b8(M2C_UNK arg0) {
-    s32 func_0205cb4c();
-    if (func_0205cb4c() == 0) {
+    s32 gti2SendClosed();
+    if (gti2SendClosed() == 0) {
         return 0;
     }
     return func_0205b110(arg0, 1, 4);
@@ -266,38 +267,39 @@ M2C_FIELD(a,s32 *,12)=3;return 1;
 }
 
 s32 func_0205b4b4(void *a,void *b,s32 c) {
-void func_02059bbc(void *,void *);s32 func_02059cc4(void *,void *);s32 func_0205c780(void *,void *,s32,s32);
+void func_02059bbc(void *,void *);s32 gti2CheckResponse(void *,void *);s32 func_0205c780(void *,void *,s32,s32);
 u8 x[32];
 if(M2C_FIELD(a,s32 *,12)!=0)return Gt2CloseConnection((s32)a)!=0;
 if(c<64)return Gt2CloseConnection((s32)a)!=0;
-if(!func_02059cc4(b,(u8 *)a+0x68))return Gt2CloseConnection((s32)a)!=0;
+if(!gti2CheckResponse(b,(u8 *)a+0x68))return Gt2CloseConnection((s32)a)!=0;
 func_02059bbc(x,(u8 *)b+32);
 if(!func_0205c780(a,x,M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c)))return 0;
 if(M2C_FIELD(a,void **,0x38)){gpiFree(M2C_FIELD(a,void **,0x38));M2C_FIELD(a,void **,0x38)=0;}
 M2C_FIELD(a,s32 *,12)=1;return 1;
 }
 
-s32 func_0205b590(void *a,s32 b,s32 c){
-s32 func_02059cc4(void *,void *);s32 func_0205cb4c(void *);s32 GetTickCountMs(void);s32 func_02059fb4(void *,void *,s32,u16,s32,s32,s32);
-if(M2C_FIELD(a,s32 *,12)!=3)return Gt2CloseConnection((s32)a)!=0;
-if(c<32)return Gt2CloseConnection((s32)a)!=0;
-if(!func_02059cc4((void *)b,a+0x68))return Gt2CloseConnection((s32)a)!=0;
-if(!M2C_FIELD(M2C_FIELD(a,void **,8),s32 *,32)){
-if(!func_0205cb4c(a))return 0;
-func_0205ac6c(a);return 1;
-}
-M2C_FIELD(a,s32 *,12)=4;
-return func_02059fb4(M2C_FIELD(a,void **,8),a,M2C_FIELD(a,s32 *,0),M2C_FIELD(a,u16 *,4),GetTickCountMs()-M2C_FIELD(a,s32 *,0x8c),b+32,c-32)!=0;
+/* Validate an incoming client's response and pass its payload to the connection-attempt callback. */
+s32 gti2HandleClientResponse(void *connection, s32 message, s32 length) {
+    s32 gti2CheckResponse(void *, void *); s32 gti2SendClosed(void *); s32 GetTickCountMs(void); s32 Gt2InvokeConnectAttempt(void *, void *, s32, u16, s32, s32, s32);
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_AWAIT_CLIENT_RESPONSE) return Gt2CloseConnection((s32)connection) != 0;
+    if (length < GT2_RESPONSE_SIZE) return Gt2CloseConnection((s32)connection) != 0;
+    if (!gti2CheckResponse((void *)message, connection + GT2_CONNECTION_RESPONSE)) return Gt2CloseConnection((s32)connection) != 0;
+    if (!M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECT_ATTEMPT)) {
+        if (!gti2SendClosed(connection)) return 0;
+        gti2MarkConnectionClosed(connection); return 1;
+    }
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_AWAIT_ACCEPT;
+    return Gt2InvokeConnectAttempt(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), connection, M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP), M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT), GetTickCountMs() - M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME), message + GT2_RESPONSE_SIZE, length - GT2_RESPONSE_SIZE) != 0;
 }
 
 s32 func_0205b6a0(void *a) {s32 func_0205a0d0();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(func_0205a0d0(a,0,0,0))return 1;return 0;}
 
-s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 func_0205cb4c();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;}func_0205ac6c(a);if(!func_0205cb4c(a))return 0;if(func_0205a0d0(a,2,b,c))return 1;return 0;}
+s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 gti2SendClosed();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;}gti2MarkConnectionClosed(a);if(!gti2SendClosed(a))return 0;if(func_0205a0d0(a,2,b,c))return 1;return 0;}
 
 #pragma push
 #pragma opt_propagation off
 s32 func_0205b758(void *arg0) {
-    if (func_0205cb4c() == 0) {
+    if (gti2SendClosed() == 0) {
         return 0;
     }
     if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) != 6 ? 1 : 0) == 0) {
@@ -308,12 +310,12 @@ s32 func_0205b758(void *arg0) {
 #pragma pop
 /* Increment the object's command counter and dispatch one of its commands (0-6). */
 s32 Gt2DispatchCommand(void *object, s32 command, s32 param_a, s32 param_b) {
-    s32 func_0205b590(void *, s32, s32);
+    s32 gti2HandleClientResponse(void *, s32, s32);
     M2C_FIELD(object, u16 *, 0x66)++;
     if (command == 0) { if (!func_0205b370(object, param_a, param_b)) return 0; }
     else if (command == 1) { if (!func_0205b41c(object, (void *)param_a, param_b)) return 0; }
     else if (command == 2) { if (!func_0205b4b4(object, (void *)param_a, param_b)) return 0; }
-    else if (command == 3) { if (!func_0205b590(object, param_a, param_b)) return 0; }
+    else if (command == 3) { if (!gti2HandleClientResponse(object, param_a, param_b)) return 0; }
     else if (command == 4) { if (!func_0205b6a0(object)) return 0; }
     else if (command == 5) { if (!func_0205b6ec(object, param_a, param_b)) return 0; }
     else if (command == 6) { if (!func_0205b758(object)) return 0; }

@@ -180,7 +180,7 @@ void func_ov003_021e8958(void *arg0) {
     void LoadFileToSpriteBuffer(void *, s32, s32);
     void func_ov003_021ea2ac(void);
     void SetTileRectPalette(s32, s32, s32, s32);
-    void func_02091d4c(s32);
+    void LoadScenePanelPalette(s32);
     s32 t1;
     s32 t2;
     s32 v;
@@ -286,7 +286,7 @@ void func_ov003_021e8958(void *arg0) {
     LoadFileToSpriteBuffer(data_ov003_0220fc1c, 0, 0x20);
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x20, 0);
     func_ov003_021ea134(0);
-    func_02091d4c(2);
+    LoadScenePanelPalette(2);
     SetFileDirectory(data_ov003_0220fc30);
     h = func_02080e30(GetLocalizedFileName(data_ov003_0220fc38), 1);
     func_0207c780(h, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x2800);

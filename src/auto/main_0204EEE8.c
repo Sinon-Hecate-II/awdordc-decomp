@@ -3,10 +3,10 @@
 
 typedef struct { s32 function; s32 parameter; } GpiCallbackPair;
 static inline u32 gpiParseAddress(char *buffer, void *key, char *small) {
- s32 GetStringField(void *,void *,void *,s32);
+ s32 gpiValueForKey(void *,void *,void *,s32);
  s32 ParseInt(void *);
  u32 a,b,c,d;
- if(!GetStringField(buffer,key,small,16))return 0;
+ if(!gpiValueForKey(buffer,key,small,16))return 0;
  a=ParseInt(small);b=ParseInt(small);
  c=ParseInt(small);d=ParseInt(small);
  return ((c>>24)&255)|((d>>8)&0xff00)|((b<<8)&0xff0000)|((a<<24)&0xff000000);
@@ -15,7 +15,7 @@ static inline u32 gpiParseAddress(char *buffer, void *key, char *small) {
 #pragma opt_instruction_scheduling off
 s32 func_0204eee8(void *arg0, void *arg1) {
 extern M2C_UNK data_020fddcc,data_020fddd4,data_020fde04,data_020fde08,data_020fde10,data_020fde20,data_020fde28,data_020fde34,data_020fde38,data_020fde40,data_020fde48,data_020fde50,data_020fde54,data_020fde58;
-s32 GetStringField(void *,void *,void *,s32);
+s32 gpiValueForKey(void *,void *,void *,s32);
 s32 ParseInt(void *);
 s32 gpiGetTime(s32);
 void *gpiMalloc(s32);
@@ -27,24 +27,24 @@ char *StringFind(void *,void *);
 s32 gpiStringDup(char *);
 s32 gpiSendMessageToPlayer(void **,s32,s32,void *);
 u32 w,x,v,y,value; register s32 id; s32 kind,time,r,err; s32 *q,*b,*f; char *c; u16 port; GpiCallbackPair cb,cb4,cb3,cb2; void *p=*(void **)arg0; char buf[4096],text[256],small[16];
-if(!GetStringField(arg1,&data_020fddcc,buf,4096)) {gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fddcc,buf,4096)) {gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 kind=ParseInt(buf);
-if(!GetStringField(arg1,&data_020fde04,buf,4096)) {gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fde04,buf,4096)) {gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 id=ParseInt(buf);
-if(GetStringField(arg1,&data_020fde08,buf,4096)) time=ParseInt(buf); else time=gpiGetTime(0);
+if(gpiValueForKey(arg1,&data_020fde08,buf,4096)) time=ParseInt(buf); else time=gpiGetTime(0);
 switch(kind) {
 case 1:
 cb= M2C_FIELD(p,GpiCallbackPair *,0x1bc);
 if(!cb.function)break;
 q=gpiMalloc(12);if(!q){gpiSetErrorString(arg0,&data_020fde10);return 1;}
-if(!GetStringField(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 q[2]=(s32)gpiMalloc(StringLength((s32)buf)+1);
 if(!q[2]){gpiSetErrorString(arg0,&data_020fde10);return 1;}
 StringCopy((void *)q[2],buf);
 q[0]=id;q[1]=time;r=gpiAddCallback(arg0,cb,q,0,2);if(r)return r;break;
 case 2:
 b=func_02055aa0(arg0,id);if(!b){gpiSetErrorString(arg0,&data_020fde10);return 1;}
-if(!GetStringField(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 c=StringFind(buf,&data_020fde28);if(!c){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 *c=0;if(StringLength((s32)(c+8))!=32){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 gpiFree(b[4]);b[4]=0;b[4]=gpiStringDup(c+8);b[5]++;
@@ -60,20 +60,20 @@ c=(char *)b[2];v=6;do {c[0]=0;c[1]=0;c[2]=0;c[3]=0;c+=4;}while(--v);
 v=M2C_FIELD(p,s32 *,0x430);M2C_FIELD(p,s32 *,0x430)=v+1;*(s32 *)b[2]=v;
 }
 f=(s32 *)b[2];
-if(!GetStringField(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
-if(!GetStringField(buf,&data_020fde34,small,16)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(buf,&data_020fde34,small,16)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 f[1]=ParseInt(small);
 gpiFree(f[2]);f[2]=0;
-if(!GetStringField(buf,&data_020fde38,text,256))text[0]=0;
+if(!gpiValueForKey(buf,&data_020fde38,text,256))text[0]=0;
 f[2]=gpiStringDup(text);if(!f[2]){gpiSetErrorString(arg0,&data_020fde10);return 1;}
 gpiFree(f[3]);f[3]=0;
-if(!GetStringField(buf,&data_020fde40,text,256))text[0]=0;
+if(!gpiValueForKey(buf,&data_020fde40,text,256))text[0]=0;
 f[3]=gpiStringDup(text);if(!f[3]){gpiSetErrorString(arg0,&data_020fde10);return 1;}
-if(!GetStringField(buf,&data_020fde48,small,16))f[4]=0;
+if(!gpiValueForKey(buf,&data_020fde48,small,16))f[4]=0;
 else {v=ParseInt(small);w=ParseInt(small);x=ParseInt(small);y=ParseInt(small);
 f[4]=((w>>24)&255)|((y>>8)&0xff00)|((x<<8)&0xff0000)|((v<<24)&0xff000000);}
 
-if(!GetStringField(buf,&data_020fde50,small,16))v=0;
+if(!gpiValueForKey(buf,&data_020fde50,small,16))v=0;
 else {port=ParseInt(small);v=(u16)(((port>>8)&255)|((port<<8)&0xff00));}
 f[5]=v;
 cb3=M2C_FIELD(p,GpiCallbackPair *,0x1b4);if(!cb3.function)break;
@@ -81,7 +81,7 @@ q=gpiMalloc(12);if(!q){gpiSetErrorString(arg0,&data_020fde10);return 1;}
 q[0]=id;q[2]=f[0];q[1]=time;
 r=gpiAddCallback(arg0,cb3,q,0,5);if(r)return r;break;
 case 101:
-if(!GetStringField(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 c=StringFind(buf,&data_020fde50);if(!c){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 if(!c[3]){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 err=ParseInt(c+3);c=StringFind(buf,&data_020fde54);
@@ -91,7 +91,7 @@ q=gpiMalloc(0x108);if(!q){gpiSetErrorString(arg0,&data_020fde10);return 1;}
 q[0]=id;q[1]=err;StringCopy(q+2,text);
 r=gpiAddCallback(arg0,cb4,q,0,0);if(r)return r;break;
 case 102:
-if(!GetStringField(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
+if(!gpiValueForKey(arg1,&data_020fde20,buf,4096)){gpiSetError(arg0,1,&data_020fddd4);gpiCallErrorCallback(arg0,3,1);return 3;}
 gpiSendMessageToPlayer(arg0,id,103,&data_020fde58);break;
 
 }
@@ -242,22 +242,41 @@ M2C_FIELD(b,u8 **,0)=p;
 return 0;
 }
 
-s32 gpiAppendStringToBufferLen(void **a,void *b,void *s,s32 n) {
-extern char data_020fdf90[],gGpiBufferFileName[],data_020fdf40[],data_020fdfa0[],sAssertOutputBufferNotNull[];
-extern M2C_UNK gGpiRecvOutOfMemory;
-void AssertFailed(void *,void *,void *,s32);
-void *gpiRealloc(void *,s32);
-M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
-s32 len,cap; u8 *p;
-if(!s)AssertFailed(data_020fdf90,gGpiBufferFileName,data_020fdf40,0x51);
-if(n<0)AssertFailed(data_020fdfa0,gGpiBufferFileName,data_020fdf40,0x52);
-if(!b)AssertFailed(sAssertOutputBufferNotNull,gGpiBufferFileName,data_020fdf40,0x53);
-if(!s)return 0;
-len=M2C_FIELD(b,s32 *,8);cap=M2C_FIELD(b,s32 *,4);p=M2C_FIELD(b,u8 **,0);
-if(cap-len<n){cap+=n<0x800?0x800:n;p=gpiRealloc(p,cap+1);if(!p){gpiSetErrorString(a,&gGpiRecvOutOfMemory);return 1;}}
-MemCopy(p+len,s,n);p[len+n]=0;
-M2C_FIELD(b,s32 *,8)+=n;M2C_FIELD(b,s32 *,4)=cap;M2C_FIELD(b,u8 **,0)=p;
-return 0;
+/* Append stringLen bytes, growing the buffer as needed and retaining a trailing NUL. */
+s32 gpiAppendStringToBufferLen(void **connection, void *outputBuffer, void *string, s32 stringLen) {
+    extern char sAssertGpiStringNotNull[], gGpiBufferFileName[], sGpiAppendStringToBufferLenName[];
+    extern char sAssertGpiStringLengthNonnegative[], sAssertOutputBufferNotNull[];
+    extern M2C_UNK gGpiRecvOutOfMemory;
+    void AssertFailed(void *, void *, void *, s32);
+    void *gpiRealloc(void *, s32);
+    M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
+    s32 length, capacity;
+    u8 *data;
+
+    if (!string)
+        AssertFailed(sAssertGpiStringNotNull, gGpiBufferFileName, sGpiAppendStringToBufferLenName, 0x51);
+    if (stringLen < 0)
+        AssertFailed(sAssertGpiStringLengthNonnegative, gGpiBufferFileName, sGpiAppendStringToBufferLenName, 0x52);
+    if (!outputBuffer)
+        AssertFailed(sAssertOutputBufferNotNull, gGpiBufferFileName, sGpiAppendStringToBufferLenName, 0x53);
+    if (!string) return 0;
+    length = ((GPIBuffer *)outputBuffer)->len;
+    capacity = ((GPIBuffer *)outputBuffer)->size;
+    data = ((GPIBuffer *)outputBuffer)->data;
+    if (capacity - length < stringLen) {
+        capacity += stringLen < GPI_BUFFER_GROWTH ? GPI_BUFFER_GROWTH : stringLen;
+        data = gpiRealloc(data, capacity + 1);
+        if (!data) {
+            gpiSetErrorString(connection, &gGpiRecvOutOfMemory);
+            return 1;
+        }
+    }
+    MemCopy(data + length, string, stringLen);
+    data[length + stringLen] = 0;
+    ((GPIBuffer *)outputBuffer)->len += stringLen;
+    ((GPIBuffer *)outputBuffer)->size = capacity;
+    ((GPIBuffer *)outputBuffer)->data = data;
+    return 0;
 }
 
 void gpiAppendStringField(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

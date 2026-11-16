@@ -1,6 +1,7 @@
 /* 14 functions from 0x0207D130 to 0x0207DE50 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "gx.h"
 typedef struct { s16 coords[24]; } TerrainCoords48;
 typedef struct { s16 coords[12]; } TerrainCoords24;
 extern void **gCurrentMap;
@@ -44,27 +45,30 @@ y2=(s16)(bottom>>8);x2=(s16)(right>>8);
 *(volatile u32 *)0x4000504=0;
 }
 
-void func_0207d5c0(s32 a,s32 b,s32 flags){
-s32 ax=a<<12,by=b<<12; s32 left=0x800,top=0x800,right=ax+0x800,bottom=by+0x800;
-s16 vx,vy,y1,x1,y2,x2;
-if(flags&0x1000){left=right-0x1000;right=-top;}
-if(flags&0x2000){top=bottom-0x1000;bottom=-0x800;}
-vx=(s16)a;vy=(s16)b;y1=(s16)(top>>8);x1=(s16)(left>>8);
+/* Draws a textured quad of width x height at the screen origin (half a pixel
+ * inset), writing the GX FIFO directly; the flip flags mirror its texture
+ * coordinates on the S or T axis. */
+void DrawTexturedQuad(s32 width,s32 height,s32 flags){
+s32 posX=width<<12,posY=height<<12; s32 left=GX_FX_HALF,top=GX_FX_HALF,right=posX+GX_FX_HALF,bottom=posY+GX_FX_HALF;
+s16 texU,texV,y1,x1,y2,x2;
+if(flags&GX_TEXCOORD_FLIP_S){left=right-GX_FX_ONE;right=-top;}
+if(flags&GX_TEXCOORD_FLIP_T){top=bottom-GX_FX_ONE;bottom=-GX_FX_HALF;}
+texU=(s16)width;texV=(s16)height;y1=(s16)(top>>8);x1=(s16)(left>>8);
 y2=(s16)(bottom>>8);x2=(s16)(right>>8);
-*(volatile u32 *)0x4000500=1;
-*(volatile u32 *)0x4000488=(u32)(u16)x1|((u32)(u16)y1<<16);
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000488=(u32)(u16)x1|((u32)(u16)y2<<16);
-*(volatile u32 *)0x400048c=(u32)(u16)vy<<16;
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000488=(u32)(u16)x2|((u32)(u16)y2<<16);
-*(volatile u32 *)0x400048c=(u32)(u16)vx|((u32)(u16)vy<<16);
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000488=(u32)(u16)x2|((u32)(u16)y1<<16);
-*(volatile u32 *)0x400048c=(u16)vx;
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000504=0;
+REG_GX_BEGIN_VTXS=GX_PRIM_QUADS;
+REG_GX_TEX_COORD=(u32)(u16)x1|((u32)(u16)y1<<16);
+REG_GX_VTX_16=0;
+REG_GX_VTX_16=0;
+REG_GX_TEX_COORD=(u32)(u16)x1|((u32)(u16)y2<<16);
+REG_GX_VTX_16=(u32)(u16)texV<<16;
+REG_GX_VTX_16=0;
+REG_GX_TEX_COORD=(u32)(u16)x2|((u32)(u16)y2<<16);
+REG_GX_VTX_16=(u32)(u16)texU|((u32)(u16)texV<<16);
+REG_GX_VTX_16=0;
+REG_GX_TEX_COORD=(u32)(u16)x2|((u32)(u16)y1<<16);
+REG_GX_VTX_16=(u16)texU;
+REG_GX_VTX_16=0;
+REG_GX_END_VTXS=0;
 }
 
 s32 func_0207d6c8(s32 arg0) {
@@ -140,10 +144,10 @@ void func_0207d95c(M2C_UNK *arg0) {
 void func_0207d990(s32 arg0, void *arg1, void *arg2) {
     M2C_UNK func_0200154c(s32, s32, s32, s32, s32);
     M2C_UNK MatrixScale44(s32, s32, s32, s32, s32);
-    M2C_UNK func_02003fc8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
+    M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     M2C_FIELD((void *)0x04000440, s32 *, 0) = 0;
     M2C_FIELD((void *)0x04000440, s32 *, 0x14) = 0;
-    func_02003fc8(-0x1200, 0x1200, -0x1800, 0x1800, 0, 0x2000, 0x1000, 1, arg0);
+    GX_SetOrthoProjection(-0x1200, 0x1200, -0x1800, 0x1800, 0, 0x2000, 0x1000, 1, arg0);
     func_0200154c(arg0, arg0, M2C_FIELD(arg2, s32 *, 0), M2C_FIELD(arg2, s32 *, 4), M2C_FIELD(arg2, s32 *, 8));
     MatrixScale44(arg0, arg0, M2C_FIELD(arg1, s32 *, 0), M2C_FIELD(arg1, s32 *, 4), M2C_FIELD(arg1, s32 *, 8));
     *(s32 *)0x0400044C = 0;

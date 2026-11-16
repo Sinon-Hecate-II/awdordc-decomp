@@ -71,7 +71,7 @@ u32 func_0200bf0c(void *arg0) {
     return M2C_FIELD(arg0, u32 *, 8);
 }
 #pragma opt_strength_reduction reset
-void func_0200bf28(void *arg0) {
+void ClearFileBss(void *arg0) {
     M2C_UNK DC_InvalidateRange(s32, s32);
     M2C_UNK func_0200681c(s32, s32);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
@@ -87,7 +87,7 @@ void func_0200bf28(void *arg0) {
     MI_CpuFill8(temp_r4 + temp_r5, 0, temp_r6 - temp_r5);
 }
 
-void func_0200bf64(u32 *arg0,void *arg1) {
+void BuildFileRange(u32 *arg0,void *arg1) {
     extern M2C_UNK data_0212fc14;
     volatile u32 tmp[2];
     u32 base = (u32)&data_0212fc14;
@@ -105,7 +105,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   s32 OpenFileDirect(void *, s32, u32, u32, s32);
   s32 FileRead(void *, void *, s32);
   void CloseFileRequest(void *);
-  s32 func_0200b9e4(void *, Unk0200FilePair);
+  s32 OpenFileRange(void *, Unk0200FilePair);
   u32 work[18];
   Unk0200FilePair pair;
   u32 size;
@@ -140,8 +140,8 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   }
   CloseFileRequest(work);
   arg0[8] = arg1;
-  func_0200bf64((u32 *) (&pair), arg0);
-  if (!func_0200b9e4(work, pair))
+  BuildFileRange((u32 *) (&pair), arg0);
+  if (!OpenFileRange(work, pair))
   {
     return 0;
   }
@@ -151,16 +151,16 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   return 1;
 }
 #pragma scheduling reset
-s32 func_0200c084(u32 *arg0,s32 arg1,u32 arg2) {
-void InitFileRequest(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void CloseFileRequest(void *);void MI_CpuCopy8();
+s32 LoadFileHeader(u32 *arg0,s32 arg1,u32 arg2) {
+void InitFileRequest(void *);s32 OpenFileRange(void *,Unk0200FilePair);void CloseFileRequest(void *);void MI_CpuCopy8();
 extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
 u32 work[18];Unk0200FilePair pair;u32 *p;
 p=arg1==0?data_0212fc04:data_0212fc0c;
 if(p[0]){
 if(p[1]<=(arg2<<5))return 0;
 MI_CpuCopy8(p[0]+(arg2<<5),arg0,32);
-arg0[8]=arg1;InitFileRequest(work);func_0200bf64((u32 *)&pair,arg0);
-if(!func_0200b9e4(work,pair))return 0;
+arg0[8]=arg1;InitFileRequest(work);BuildFileRange((u32 *)&pair,arg0);
+if(!OpenFileRange(work,pair))return 0;
 arg0[9]=work[9];arg0[10]=work[10]-work[9];CloseFileRequest(work);return 1;
 }
 return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
@@ -178,7 +178,7 @@ p=out;for(i=0;i<20;i+=4,p++) if(*p!=*(u32 *)(arg0+i)) break;
 return i==20;
 }
 
-void func_0200c214(void *arg0) {
+void CompleteFileLoad(void *arg0) {
     u32 func_0200bf0c(void *);
     s32 HmacSha1Verify(u32, s32, s32);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
@@ -312,7 +312,7 @@ s32 func_0200c3f8(void) {
     return 1;
 }
 
-s32 func_0200c408(s32 arg0,s32 arg1) {s32 func_0200c084();u8 temp[44];if(!func_0200c084(temp,arg0,arg1) || !((s32 (*)())func_0200c3f8)(temp)) return 0;return 1;}
+s32 func_0200c408(s32 arg0,s32 arg1) {s32 LoadFileHeader();u8 temp[44];if(!LoadFileHeader(temp,arg0,arg1) || !((s32 (*)())func_0200c3f8)(temp)) return 0;return 1;}
 
 void func_0200c454(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;

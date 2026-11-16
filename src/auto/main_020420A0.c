@@ -10,7 +10,7 @@ s32 UpdateConnectionSyncWait(void) {
  void *GetConnection(void);
  u64 GetSystemTick(void);
  u64 func_02072088(u64,u64);
- s32 func_02038f6c(void);
+ s32 GetNetSessionState(void);
  s32 func_02041038(s32);
  void SendConnectionPacket(s32,s32);
  s32 PruneConnectionPeers(s32);
@@ -30,7 +30,7 @@ s32 UpdateConnectionSyncWait(void) {
  switch(M2C_FIELD(GetConnection(),s32 *,0x1a0)){
  case CONN_STATE_WAIT_SLOT:
  if(elapsed>6000ULL){
- if(func_02038f6c()==5 && M2C_FIELD(GetConnection(),u8 *,0x1ad)>=5){
+ if(GetNetSessionState()==5 && M2C_FIELD(GetConnection(),u8 *,0x1ad)>=5){
  if(func_02041038(M2C_FIELD(GetConnection(),s32 *,0xf4))==0) return 0;
  } else {
  M2C_FIELD(GetConnection(),u8 *,0x1ad)++;
@@ -79,7 +79,7 @@ s32 SendPeerSyncNotice(s32 a,s32 b){void *GetConnection(void);u64 GetSystemTick(
  * a notice could not be sent. */
 s32 HandlePeerSyncNotice(s32 peerId,s32 notice,s32 value) {
 void *GetConnection(void);
-s32 func_02038f6c(void);
+s32 GetNetSessionState(void);
 void SetConnectionState(s32);
 void func_02041dd4(s32);
 s32 SendPeerSyncNotice(s32,s32);
@@ -90,7 +90,7 @@ s32 GetConnectedPlayerMask(s32);
 void func_02041be0(s32);
 u64 now,excess;
 s32 idx,connectedPeers,i;
-if(func_02038f6c()!=6)return 1;
+if(GetNetSessionState()!=6)return 1;
 switch(notice){
 case PEER_SYNC_PREPARE:
 if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)!=CONN_STATE_SYNC_PREPARE){SetConnectionState(CONN_STATE_SYNC_PREPARE);func_02041dd4(value);}

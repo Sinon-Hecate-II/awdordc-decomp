@@ -7,7 +7,7 @@
 s32 func_ov002_021e41ac(void *entry, s32 flag) {
     extern u8 data_ov002_021f3105[];
     extern u8 data_ov002_021f30fe[];
-    extern u8 data_ov002_021f3104[];
+    extern u8 gVersusPlayerStates[];
     u32 idx;
     u8 val0, val1;
     s32 alt;
@@ -26,7 +26,7 @@ s32 func_ov002_021e41ac(void *entry, s32 flag) {
     }
     if (flag != 0) {
         alt = (idx == 0) ? 1 : 0;
-        if (data_ov002_021f3104[alt * 0x18] == 0) {
+        if (gVersusPlayerStates[alt * 0x18] == 0) {
             return 0;
         }
     }

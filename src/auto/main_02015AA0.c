@@ -151,7 +151,7 @@ u16 func_02015f48(u16 *p,s32 bytes) {
 /* Initialize an entry's 0x4C0-byte work buffer from a source descriptor: zero it, load two optional resources, and copy fixed fields. */
 void func_02015f94(void *dest, void *src, s32 extra) {
     M2C_UNK FillU16(M2C_UNK, void *, M2C_UNK);
-    M2C_UNK func_02007e20(s32, void *, u16);
+    M2C_UNK CopyU16(s32, void *, u16);
     M2C_UNK MI_CpuFill32(M2C_UNK, void *, M2C_UNK);
     s32 func_02016084(s32, void *, M2C_UNK);
 
@@ -176,11 +176,11 @@ void func_02015f94(void *dest, void *src, s32 extra) {
     }
     M2C_FIELD(dest, s32 *, 0x4B8) = (s32) M2C_FIELD(src, s32 *, 0x14);
     if (extra != 0) {
-        func_02007e20(extra, dest + 0x220, 0x16U);
+        CopyU16(extra, dest + 0x220, 0x16U);
     }
     M2C_FIELD(dest, u8 *, 0x236) = (u8) M2C_FIELD(src, u8 *, 0x18);
-    func_02007e20(M2C_FIELD(src, s32 *, 4), dest + 0x238, (u16) (func_02016194(M2C_FIELD(src, s32 *, 4)) * 2));
-    func_02007e20(M2C_FIELD(src, s32 *, 8), dest + 0x298, 0xC0U);
+    CopyU16(M2C_FIELD(src, s32 *, 4), dest + 0x238, (u16) (func_02016194(M2C_FIELD(src, s32 *, 4)) * 2));
+    CopyU16(M2C_FIELD(src, s32 *, 8), dest + 0x298, 0xC0U);
     M2C_FIELD(dest, s8 *, 0x358) = 1;
     M2C_FIELD(dest, s16 *, 0x35A) = 1;
     M2C_FIELD(dest, s16 *, 0x4B0) = 1;
@@ -200,7 +200,7 @@ FileRead(file,arg1,size);CloseFileRequest(file);return 1;
 
 void func_02016124(void *arg0,s32 arg1,s32 arg2,s16 arg3) {
 s32 i;u8 n=1;
-func_02007e20(arg1,arg0+0x35e,0x14a);
+CopyU16(arg1,arg0+0x35e,0x14a);
 for(i=0;i<15;i++)if(arg2&(2<<i))n++;
 M2C_FIELD(arg0,u8 *,0x358)=n;
 M2C_FIELD(arg0,s16 *,0x35a)=arg2|1;
@@ -299,7 +299,7 @@ extern M2C_UNK data_021311ee;
 extern M2C_UNK data_021311e8;
 extern M2C_UNK data_021311e0;
 s32 FillU16(s32,void *,s32);
-s32 func_02007e20();
+s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
 void func_02013c44(s32,void *,s32,s32,s32,s32);
 void *p=M2C_FIELD(&data_021311a0,void **,0x1c);
@@ -308,7 +308,7 @@ u32 src=M2C_FIELD(&data_021311a0,u32 *,0x20);
 u32 n;
 if(src+0x62<=end)M2C_FIELD(&data_021311a0,u8 *,0x4c)=0x62;
 else {n=end-src;M2C_FIELD(&data_021311a0,u8 *,0x4c)=n;FillU16(0,(u8 *)&data_021311ee+(u8)n,0x62-(u8)n);}
-func_02007e20(M2C_FIELD(&data_021311a0,s32 *,0x20),&data_021311ee,M2C_FIELD(&data_021311a0,u8 *,0x4c));
+CopyU16(M2C_FIELD(&data_021311a0,s32 *,0x20),&data_021311ee,M2C_FIELD(&data_021311a0,u8 *,0x4c));
 M2C_FIELD(&data_021311a0,u8 *,0x4a)=M2C_FIELD(&data_021311a0,u8 *,0x27);
 M2C_FIELD(&data_021311a0,u8 *,0x4b)=M2C_FIELD(&data_021311a0,u8 *,0x28);
 p=M2C_FIELD(&data_021311a0,void **,0x1c);
@@ -338,7 +338,7 @@ M2C_FIELD(&data_021311a0,u8 *,0x24)=5;
 #pragma opt_lifetimes off
 void func_02016564(s32 a,s32 b,s32 c) {
 extern M2C_UNK data_021311a0,data_02131248,data_021311f0,data_021311e8,data_021311e0;
-s32 FillU16(s32,void *,s32);s32 func_02007e20();
+s32 FillU16(s32,void *,s32);s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
 void func_02013c44(s32,void *,s32,s32,s32,s32);
 void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
@@ -368,7 +368,7 @@ count=0;
 mask=M2C_FIELD(p,u16 *,0x4b0)^M2C_FIELD(p,u16 *,0x35a);
 i=0;goto checkEntries;entriesLoop: {
 if(!(mask&(2<<i)))goto nextEntry;
-func_02007e20((u8 *)M2C_FIELD(&data_021311a0,void **,0x1c)+0x35e + i*22,(u8 *)&data_021311f0+count*22,22);
+CopyU16((u8 *)M2C_FIELD(&data_021311a0,void **,0x1c)+0x35e + i*22,(u8 *)&data_021311f0+count*22,22);
 count++;
 M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u16 *,0x4b0)|=2<<i;
 if(count==4)goto entriesDone;

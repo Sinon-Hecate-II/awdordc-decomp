@@ -57,7 +57,7 @@ u8 *func_02059bbc(void *out_, void *in_)
   return out;
 }
 
-s32 func_02059cc4(u8 *a,u8 *b) {s32 i=0;do{if(i!=0&&i!=13&&a[i]!=b[i])return 0;i++;}while(i<32);return 1;}
+s32 gti2CheckResponse(u8 *a,u8 *b) {s32 i=0;do{if(i!=0&&i!=13&&a[i]!=b[i])return 0;i++;}while(i<32);return 1;}
 
 s32 func_02059cf8(void *arg0, s32 arg1) {
     s32 gpiMalloc(s32);
@@ -152,7 +152,7 @@ s32 func_02059f18(void *arg0) {
  * latency, message, length) to the socket's connect-attempt callback, keeping the socket
  * and connection callback counts; when the socket was asked to close and this was its
  * last callback, free it. Returns 1, or 0 once the socket has been freed. */
-s32 func_02059fb4(void *socket,void *connection,s32 ip,s32 port,s32 latency,s32 message,s32 length){
+s32 Gt2InvokeConnectAttempt(void *socket,void *connection,s32 ip,s32 port,s32 latency,s32 message,s32 length){
 extern int data_020ff78c,data_020ff77c,data_020ff738;
 if(!socket||!connection)AssertFailed(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
 if(!socket||!connection)return 1;
@@ -381,12 +381,12 @@ s32 func_0205a9ec(void *arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0205aa34(void *p,u32 t) {
-s32 func_0205a0d0(void *,s32,s32,s32);void func_0205cb4c(void *);void func_0205ac6c(void *);
+s32 func_0205a0d0(void *,s32,s32,s32);void gti2SendClosed(void *);void gti2MarkConnectionClosed(void *);
 s32 state=M2C_FIELD(p,s32 *,12),flag;
 if(state<5){flag=0;
 if(M2C_FIELD(p,s32 *,16)){u32 limit=M2C_FIELD(p,u32 *,32);if(limit){if(t-M2C_FIELD(p,u32 *,28)>limit)flag=1;}}
 else if(state<4){if(t-M2C_FIELD(p,u32 *,28)>60000)flag=1;}
-if(flag){func_0205cb4c(p);func_0205ac6c(p);if(!func_0205a0d0(p,6,0,0))return 0;}}
+if(flag){gti2SendClosed(p);gti2MarkConnectionClosed(p);if(!func_0205a0d0(p,6,0,0))return 0;}}
 return 1;
 }
 

@@ -124,7 +124,7 @@ void func_020dca80(void) {
 M2C_UNK func_020dca8c(void *arg0) {
     M2C_UNK func_020b2178();
     M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s16 temp_r0;
     void *temp_r2;
@@ -132,9 +132,9 @@ M2C_UNK func_020dca8c(void *arg0) {
 
     func_020b2178();
     func_020b1c44(0, 0);
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x50));
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x58));
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x64));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
     temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
     temp_r2 = M2C_FIELD(arg0, void **, 0x68);
     M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;
@@ -148,7 +148,7 @@ M2C_UNK func_020dca8c(void *arg0) {
 M2C_UNK func_020dcae8(void *arg0) {
     M2C_UNK func_020b2178();
     M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s16 temp_r0;
     void *temp_r2;
@@ -156,9 +156,9 @@ M2C_UNK func_020dcae8(void *arg0) {
 
     func_020b2178();
     func_020b1c44(0, 0);
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x50));
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x58));
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x64));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
     temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
     temp_r2 = M2C_FIELD(arg0, void **, 0x68);
     M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;

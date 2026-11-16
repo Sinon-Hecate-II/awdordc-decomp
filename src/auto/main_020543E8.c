@@ -104,7 +104,7 @@ s32 gpiProcessPeerAcceptingConnection(M2C_UNK a, void *b) {
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK gpiAppendStringField(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 gpiReceiveData(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
-    s32 GetStringField(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 gpiValueForKey(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK StringFormat(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 StringLength(M2C_UNK);
@@ -154,19 +154,19 @@ s32 gpiProcessPeerAcceptingConnection(M2C_UNK a, void *b) {
 
     if (StringCompareN((M2C_UNK)text, (M2C_UNK)&gGsKeyAuth, 6) != 0) goto fail_end_0x794;
 
-    if (GetStringField((M2C_UNK)text, (M2C_UNK)&gGsKeyPid, (M2C_UNK)pidText, 0x10) == 0) {
+    if (gpiValueForKey((M2C_UNK)text, (M2C_UNK)&gGsKeyPid, (M2C_UNK)pidText, 0x10) == 0) {
         M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
 
     playerId = (s32)ParseInt((M2C_UNK)pidText);
 
-    if (GetStringField((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&gGsKeyNickAuth, (M2C_UNK)nickText, 0x1f) == 0) {
+    if (gpiValueForKey((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&gGsKeyNickAuth, (M2C_UNK)nickText, 0x1f) == 0) {
         M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
 
-    if (GetStringField((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&gGsKeySig, (M2C_UNK)peerSig, 0x21) == 0) {
+    if (gpiValueForKey((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&gGsKeySig, (M2C_UNK)peerSig, 0x21) == 0) {
         M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }

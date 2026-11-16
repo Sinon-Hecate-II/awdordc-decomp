@@ -329,7 +329,7 @@ void func_020378a4(void) {
 
 s32 func_02037954(void) {
     extern void *data_0213d1dc;
-    s32 func_02037a0c(void);
+    s32 GetNetConnectionStatus(void);
     s32 dummy = 0;
     (void)dummy;
     if (!data_0213d1dc) {
@@ -339,7 +339,7 @@ s32 func_02037954(void) {
         return 0;
     }
     M2C_FIELD(data_0213d1dc, u16 *, 4) = 3;
-    func_02037a0c();
+    GetNetConnectionStatus();
     return 1;
 }
 
@@ -362,7 +362,7 @@ void func_02037994(void) {
     }
 }
 
-s32 func_02037a0c(void) {
+s32 GetNetConnectionStatus(void) {
     extern void *data_0213d1dc;
     s32 func_0202f1dc(void);
     void SetNetError(s32, s32);

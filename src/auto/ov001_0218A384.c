@@ -58,7 +58,7 @@ void func_ov001_0218a534(u8 arg0) {
 void Ov001_LoadSpriteObjLayout(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
 void CpuFill(u32,void *,s32);
-void func_02007e20(const void *,void *,u32);
+void CopyU16(const void *,void *,u32);
 void func_02007e70(const void *,void *,s32);
 u8 *base=(u8 *)((M2C_UNK *)&data_ov001_02193e34)[arg0];
 s32 index=arg1<<3;
@@ -69,7 +69,7 @@ u8 *dst=(u8 *)arg2;
 u8 sp[8]; s32 i;
 CpuFill(0,sp,8);
 for(i=0;i<(s32)count;i++){
-func_02007e20(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
+CopyU16(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
 }
 }
 
@@ -560,7 +560,7 @@ void BuildTouchRect(void *arg0, void *arg1, void *arg2) {
     M2C_FIELD(arg2, s16 *, 6) = (s16) (M2C_FIELD(arg0, u16 *, 2) + M2C_FIELD(arg1, u16 *, 2));
 }
 
-void func_ov001_0218b314(s32 arg0, s32 arg1) {
+void Ov001_EnableVisiblePlanes(s32 arg0, s32 arg1) {
     if (arg0 == 1) {
         volatile u32 *p1 = (volatile u32 *)0x04001000;
         u32 t1 = *p1 & 0x1F00;

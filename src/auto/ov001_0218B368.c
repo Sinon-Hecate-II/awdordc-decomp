@@ -36,7 +36,7 @@ typedef struct InputGlobal {
     InputState *state;
 } InputGlobal;
 
-void func_ov001_0218b368(s32 a,s32 b){
+void Ov001_DisableVisiblePlanes(s32 a,s32 b){
 if(a==1){volatile u32 *p=(volatile u32 *)0x04001000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);return;}
 {volatile u32 *p=(volatile u32 *)0x04000000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);}
 }
@@ -414,7 +414,7 @@ extern s32 data_ov001_02193e68; void func_ov001_0218a74c(s32);
 func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e68+(n<<2),s32 *,0x800));
 }
 
-void func_ov001_0218c104(u32 *p){
+void Ov001_ReleaseSprite(u32 *p){
 extern s32 data_ov001_02193e68;
 void func_ov001_0218a6f4(s32,void *);
 s32 i=0;

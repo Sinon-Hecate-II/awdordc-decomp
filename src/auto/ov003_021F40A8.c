@@ -41,7 +41,7 @@ void func_ov003_021f40a8(void *arg0) {
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
     void func_02087d84(void *,s32,s16,s16,u16,u16);
-    void func_020830ec(s32,void *,s32);
+    void BuildMapSelectionLists(s32,void *,s32);
     void *list;
     void *p;
     s32 n,x,y; s32 i;
@@ -298,10 +298,10 @@ M2C_FIELD(p,void **,28)=func_020ab1c4(arg0);func_020aab24(M2C_FIELD(p,void **,28
 M2C_FIELD(p,void **,32)=func_020ab1c4(arg0);func_020aab24(M2C_FIELD(p,void **,32),27,480,3,0);{void *sprite=M2C_FIELD(p,void **,32);func_02088e84(sprite,0,160,0,160);if ((u8)(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)) {s16 sy=M2C_FIELD(sprite,s16 *,0x52),sx=M2C_FIELD(sprite,s16 *,0x50);s32 w=func_020aae10(sprite);s32 h=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)w,(u16)h);}}Hide3DSprite(M2C_FIELD(p,void **,32));
 M2C_FIELD(p,void **,36)=func_020ab1c4(arg0);func_020aab24(M2C_FIELD(p,void **,36),70,384,3,0);{void *sprite=M2C_FIELD(p,void **,36);func_02088e84(sprite,160,160,160,160);if ((u8)(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)) {s16 sy=M2C_FIELD(sprite,s16 *,0x52),sx=M2C_FIELD(sprite,s16 *,0x50);s32 w=func_020aae10(sprite);s32 h=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)w,(u16)h);}}Hide3DSprite(M2C_FIELD(p,void **,36));
 
-if((u8)(OV3KIND(arg0)==0))func_020830ec(0,list,0);
-else if((u8)(OV3KIND(arg0)==2)||(u8)(OV3KIND(arg0)==6)||(u8)(OV3KIND(arg0)==7)||(u8)(OV3KIND(arg0)==8))func_020830ec(7,list,0);
-else if((u8)(OV3KIND(arg0)==4))func_020830ec(6,list,0);
-else if((u8)(OV3KIND(arg0)==3))func_020830ec(8,list,0);
+if((u8)(OV3KIND(arg0)==0))BuildMapSelectionLists(0,list,0);
+else if((u8)(OV3KIND(arg0)==2)||(u8)(OV3KIND(arg0)==6)||(u8)(OV3KIND(arg0)==7)||(u8)(OV3KIND(arg0)==8))BuildMapSelectionLists(7,list,0);
+else if((u8)(OV3KIND(arg0)==4))BuildMapSelectionLists(6,list,0);
+else if((u8)(OV3KIND(arg0)==3))BuildMapSelectionLists(8,list,0);
 o=M2C_FIELD(arg0,void **,92);M2C_FIELD(o,s32 *,8)=(M2C_FIELD(list,u8 *,0x1800)-1);
 if(M2C_FIELD(o,u8 *,20)){
 while(M2C_FIELD(o,s32 *,4)>M2C_FIELD(o,s32 *,8)){M2C_FIELD(o,s32 *,4)-=M2C_FIELD(o,s32 *,8)-M2C_FIELD(o,s32 *,12)+1;}

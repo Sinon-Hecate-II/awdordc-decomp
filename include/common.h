@@ -575,6 +575,9 @@ enum {
  * message buffer at peer + 0x18): storage, the allocated size, the number of
  * bytes currently held and, for a peer buffer, the read position of the next
  * message. */
+/* Appending strings grows storage by at least this many bytes, plus a terminator. */
+#define GPI_BUFFER_GROWTH 0x800
+
 typedef struct GPIBuffer {
     void *data; /* +0x00 storage */
     s32   size; /* +0x04 allocated bytes */
@@ -788,6 +791,8 @@ typedef struct MbRecordRx {
 
 /* States of the WFC match-making session (gNetSession + 0x24). */
 enum {
+    NET_STATE_OFFLINE  = 0, /* session has not logged in */
+    NET_STATE_CHECKING_SERVICE = 1, /* checking service availability before login */
     NET_STATE_READY    = 3, /* idle in the lobby: a match can be started */
     NET_STATE_STARTING = 5  /* a match is being set up */
 };
@@ -1718,6 +1723,16 @@ typedef struct FifoMessage {
     u32 reply:1;    /* bit 5: 0 = request, 1 = reply */
     u32 payload:26; /* bits 6..31: message data */
 } FifoMessage;
+
+/* Stream locking shared by ReadFileData, GetFilePosition and SetFilePosition.
+ * gStreamMutexes holds one GsiMutex per stream class; the running thread object
+ * (gSocketManager+0x04) carries its id at +0x6C, which gStreamLockOwner records
+ * while it holds the mutex and gStreamLockDepth counts its reentrant nesting. */
+#define STREAM_LOCK_STDIN  2    /* gStreamMutexes index for stdin */
+#define STREAM_LOCK_STDOUT 3    /* ... for stdout */
+#define STREAM_LOCK_STDERR 4    /* ... for stderr */
+#define STREAM_LOCK_FILE   5    /* ... for every other stream */
+#define STREAM_THREAD_ID   0x6C /* s32 thread id inside the running thread object */
 
 #endif
 

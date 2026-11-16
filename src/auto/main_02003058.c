@@ -1,5 +1,6 @@
 /* 63 functions from 0x02003058 to 0x0200402C (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 
 extern u16 data_0212dbc2;
 
@@ -271,34 +272,36 @@ void func_02003a8c(s32 a){void func_02004e44(s32);*(s32 *)0x4000400=0x18;func_02
 
 void func_02003aa8(s32 a){void func_02004e20(s32);*(s32 *)0x4000400=0x19;func_02004e20(a);}
 
-void GX_BeginFrame(void) {
-void func_02003c3c(void);
-void GX_RestoreMatrixStack(void);
-void func_02003e24(void);
-func_02003c3c();
-*(volatile u32 *)0x4000504=0;
-while(*(volatile u32 *)0x4000600&0x8000000){}
-*(volatile u16 *)0x4000060=0;
-*(volatile u32 *)0x4000600=0;
-*(volatile u32 *)0x4000010=0;
-*(volatile u16 *)0x4000060|=0x2000;
-*(volatile u16 *)0x4000060|=0x1000;
-*(volatile u16 *)0x4000060&=0xffffcffd;
-*(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3000)|0x10;
-*(volatile u16 *)0x4000060&=0xcffb;
-*(volatile u32 *)0x4000600|=0x8000;
-*(volatile u32 *)0x4000600=(*(volatile u32 *)0x4000600&~0xc0000000)|0x80000000;
-GX_RestoreMatrixStack();
-*(volatile u32 *)0x4000350=0;
-*(volatile u16 *)0x4000354=0x7fff;
-*(volatile u16 *)0x4000356=0;
-*(volatile u32 *)0x4000358=0;
-*(volatile u16 *)0x400035c=0;
-*(volatile u16 *)0x4000008&=~3;
-func_02003e24();
-*(volatile u32 *)0x40004a4=0x1f0080;
-*(volatile u32 *)0x40004a8=0;
-*(volatile u32 *)0x40004ac=0;
+/* Initialize the geometry engine, matrix stacks, render state and lookup tables. */
+void G3X_Init(void) {
+    void G3X_ClearFifo(void);
+    void GX_RestoreMatrixStack(void);
+    void G3X_InitTable(void);
+
+    G3X_ClearFifo();
+    REG_GX_END_VTXS = 0;
+    while (REG_GXSTAT & GXSTAT_GEOMETRY_BUSY) {}
+    REG_DISP3DCNT = 0;
+    REG_GXSTAT = 0;
+    REG_BG0OFS = 0;
+    REG_DISP3DCNT |= DISP3DCNT_OVERFLOW;
+    REG_DISP3DCNT |= DISP3DCNT_UNDERFLOW;
+    REG_DISP3DCNT &= 0xffffcffd;
+    REG_DISP3DCNT = (REG_DISP3DCNT & ~DISP3DCNT_ERROR_MASK) | DISP3DCNT_ALPHA_BLEND;
+    REG_DISP3DCNT &= 0xcffb;
+    REG_GXSTAT |= GXSTAT_STACK_ERROR;
+    REG_GXSTAT = (REG_GXSTAT & ~GXSTAT_FIFO_IRQ_MASK) | GXSTAT_FIFO_IRQ_EMPTY;
+    GX_RestoreMatrixStack();
+    REG_GX_CLEAR_COLOR = 0;
+    REG_GX_CLEAR_DEPTH = GX_CLEAR_DEPTH_MAX;
+    REG_GX_CLEAR_OFFSET = 0;
+    REG_GX_FOG_COLOR = 0;
+    REG_GX_FOG_OFFSET = 0;
+    REG_BG0CNT &= ~BG_PRIORITY_MASK;
+    G3X_InitTable();
+    REG_GX_POLYGON_ATTR = GX_POLYGON_DEFAULT;
+    REG_GX_TEXIMAGE_PARAM = 0;
+    REG_GX_TEXPLTT_BASE = 0;
 }
 
 void func_02003cfc(void);
@@ -313,7 +316,7 @@ func_02003cfc();
 ((volatile u32 *)0x40004a4)[2]=0;
 }
 
-void func_02003c3c(void){
+void G3X_ClearFifo(void){
 func_02003f34(0x4000400);
 while(*(volatile u32 *)0x4000600&0x8000000){
 }
@@ -358,8 +361,8 @@ if(b)*(volatile u32 *)0x4000448=b;
 void GX_SetFog(s32 a,s32 b,s32 c,s32 d){if(a){*(volatile u16 *)0x400035c=d;*(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3f40)|((c<<8)|(b<<6)|0x80);}else *(volatile u16 *)0x4000060&=0xcf7f;}
 
 void GX_LoadToonTable(M2C_UNK arg0) {
-    M2C_UNK func_02007e20(M2C_UNK, s32, M2C_UNK);
-    func_02007e20(arg0, 0x04000380, 0x40);
+    M2C_UNK CopyU16(M2C_UNK, s32, M2C_UNK);
+    CopyU16(arg0, 0x04000380, 0x40);
 }
 
 void GX_SetClearColor(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
@@ -373,13 +376,13 @@ void GX_SetClearColor(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD((void *)0x04000350, s16 *, 4) = arg2;
 }
 
-void func_02003e24(void){extern s32 data_020f5204;s32 i; if(data_020f5204!=-1){func_02007ae0(data_020f5204,0x4000330,0,16,0,0);DmaFill(data_020f5204,0x4000360,0,96);}else{CpuFill(0,0x4000330,16);CpuFill(0,0x4000360,96);}i=0;do{i++;*(volatile s32 *)0x40004d0=0;}while(i<32);}
+void G3X_InitTable(void){extern s32 data_020f5204;s32 i; if(data_020f5204!=-1){func_02007ae0(data_020f5204,0x4000330,0,16,0,0);DmaFill(data_020f5204,0x4000360,0,96);}else{CpuFill(0,0x4000330,16);CpuFill(0,0x4000360,96);}i=0;do{i++;*(volatile s32 *)0x40004d0=0;}while(i<32);}
 
 void func_02003f24(s32 arg0) {
     *(s32 *)0x04000010 = arg0;
 }
 
-void func_02003fc8(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 *p){
+void GX_SetOrthoProjection(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 *p){
 void func_02001dac(s32,s32,s32,s32,s32,s32,s32,s32*);
 s32 tmp[16];
 if(!p)p=tmp;

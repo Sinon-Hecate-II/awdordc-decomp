@@ -6,26 +6,26 @@ typedef struct { s32 x; u32 y; } Position;
 void func_ov001_021757d0(s32 arg0) {
     M2C_UNK func_ov001_0216d14c();
     M2C_UNK func_ov001_02184b50(void *);
-    extern M2C_UNK data_ov001_02193d24;
+    extern M2C_UNK gOv001WirelessSetup;
     extern M2C_UNK data_ov001_02193d28;
     func_ov001_0216d14c();
     if (arg0 != 0) {
-        if ((M2C_FIELD(M2C_FIELD(&data_ov001_02193d24, void **, 4), u8 *, 0x116) == 0) && (M2C_FIELD(&data_ov001_02193d24, u8 *, 0) == 1)) {
-            func_ov001_02184b50(M2C_FIELD(&data_ov001_02193d24, void **, 4) + 0x117);
+        if ((M2C_FIELD(M2C_FIELD(&gOv001WirelessSetup, void **, 4), u8 *, 0x116) == 0) && (M2C_FIELD(&gOv001WirelessSetup, u8 *, 0) == 1)) {
+            func_ov001_02184b50(M2C_FIELD(&gOv001WirelessSetup, void **, 4) + 0x117);
         }
     }
     func_ov001_0218b71c(&data_ov001_02193d28);
 }
 
 s32 func_ov001_02175820(void) {
-    extern M2C_UNK data_ov001_02193d24;
+    extern M2C_UNK gOv001WirelessSetup;
     s32 func_ov001_0216ad74(M2C_UNK);
-    if (func_ov001_0216ad74(M2C_FIELD(&data_ov001_02193d24, M2C_UNK *, 4)) == 0) {
-        M2C_FIELD(&data_ov001_02193d24, u8 *, 0) = 1;
+    if (func_ov001_0216ad74(M2C_FIELD(&gOv001WirelessSetup, M2C_UNK *, 4)) == 0) {
+        M2C_FIELD(&gOv001WirelessSetup, u8 *, 0) = 1;
         return 1;
     }
     {
-        u8 c = M2C_FIELD(M2C_FIELD(&data_ov001_02193d24, M2C_UNK *, 4), u8 *, 0x116);
+        u8 c = M2C_FIELD(M2C_FIELD(&gOv001WirelessSetup, M2C_UNK *, 4), u8 *, 0x116);
         if (c == 1) goto L0;
         if ((u8)(c + 0xFD) > 2) goto L2;
     L0:
@@ -35,12 +35,12 @@ s32 func_ov001_02175820(void) {
     }
 }
 
-void func_ov001_02175880(M2C_UNK arg0) {
+void Ov001_AllocWirelessWork(M2C_UNK arg0) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
     Ov001_Alloc(arg0, 0x20);
 }
 
-void func_ov001_02175890(void) {
+void Ov001_FreeWirelessWork(void) {
     M2C_UNK func_ov001_0218b760();
     func_ov001_0218b760();
 }
@@ -214,7 +214,7 @@ void Ov001_SetStepCallback(s32 arg0) {
     M2C_FIELD(&data_ov001_02193d2c, s32 *, 0xc) = arg0;
 }
 
-void func_ov001_02175d64(s32 arg0, s32 arg1) {
+void Ov001_SetNextScreenMode(s32 arg0, s32 arg1) {
     extern u8 data_ov001_02193d2c;
     M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x10) = arg0;
     M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x14) = arg1;

@@ -57,6 +57,24 @@ struct FSFileRequest {
 #define FS_EVENT_IDLE             10
 #define FS_EVENT_IDLE_MASK    0x400
 
+/* The header LoadFileHeader fills for one file of a game data archive: the file
+ * entry index, the buffer its data is read into and the sizes of the data and
+ * of the zeroed BSS part that follows it, then the range of initializer
+ * callbacks CompleteFileLoad runs once the data is in place. */
+typedef struct FSFileHeader {
+    u32  index;              /* +0x00 file entry index in the archive */
+    void *data;              /* +0x04 buffer the file data is read into */
+    u32  dataSize;           /* +0x08 bytes of data */
+    u32  bssSize;            /* +0x0C bytes of BSS zeroed after the data */
+    void **initCallbacks;    /* +0x10 first initializer FinishFileLoad runs */
+    void **initCallbacksEnd; /* +0x14 end of the initializer list */
+    u32  archiveSize;        /* +0x18 size of the archive range the file lives in */
+    u32  flags;              /* +0x1C top byte: 1 flush the data, 2 verify its HMAC */
+    u32  archive;            /* +0x20 archive the file comes from */
+    u32  fileOffset;         /* +0x24 offset of the data in the archive file */
+    u32  fileSize;           /* +0x28 size of the data in the archive file */
+} FSFileHeader;              /* 0x2C bytes */
+
 /* A resource archive (the game's data pack).  The 0x30-byte file header names
  * three sections by file offset and byte size; LoadResourceArchive reads them
  * into a memory pool and records the loaded pointers at +0x84..+0x8C. */

@@ -229,17 +229,17 @@ void func_ov003_021fd0a0(void **arg0) {
 
 /* Refreshes an entity's display data: reinitializes its two display objects and then releases the pending handles stored in its part list (plus an extra handle when the low state nibble equals 2). */
 void func_ov003_021fd0b4(void *entity) {
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    s32 func_ov003_021f15d4();
-    s16 func_ov003_021f1608();
+    s32 GetSceneSlideDirection();
+    s16 GetSceneSlideOffset();
     s16 displayValue;
     s32 flag;
     void *first;
     void *second;
     void *parts;
 
-    displayValue = func_ov003_021f1608();
+    displayValue = GetSceneSlideOffset();
     first = M2C_FIELD(entity, void **, 0x58);
     M2C_FIELD(first, s16 *, 0xE) = GetSpriteAnimValue(first);
     M2C_FIELD(first, s16 *, 0x10) = displayValue;
@@ -250,25 +250,25 @@ void func_ov003_021fd0b4(void *entity) {
     M2C_FIELD(second, s16 *, 0x10) = -32;
     M2C_FIELD(second, s16 *, 0xC) = 12;
     M2C_FIELD(second, u16 *, 2) = M2C_FIELD(second, u16 *, 4);
-    if (!func_ov003_021f15d4()) {
+    if (!GetSceneSlideDirection()) {
         return;
     }
     parts = M2C_FIELD(entity, void **, 0x68);
-    func_02088ff4(M2C_FIELD(parts, s32 *, 0));
-    func_02088ff4(M2C_FIELD(parts, s32 *, 4));
-    func_02088ff4(M2C_FIELD(parts, s32 *, 8));
-    func_02088ff4(M2C_FIELD(parts, s32 *, 12));
-    func_02088ff4(M2C_FIELD(parts, s32 *, 16));
-    func_02088ff4(M2C_FIELD(parts, s32 *, 20));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 0));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 4));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 8));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 12));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 16));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 20));
     if (((u32)(M2C_FIELD(entity, u8 *, 0x3b) << 28) >> 28) == 2) {
         flag = 1;
     } else {
         flag = 0;
     }
     if (flag & 255) {
-        func_02088ff4(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 32));
+        Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 32));
     }
-    func_02088ff4(M2C_FIELD(M2C_FIELD(entity, void **, 0x6c), s32 *, 4));
+    Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(entity, void **, 0x6c), s32 *, 4));
 }
 
 void func_ov003_021fd18c(void **arg0) {
@@ -371,7 +371,7 @@ u8 func_ov003_021fd270(void *arg0) {
 /* Clears the low state bits of an entity, switches it to state 4 handling, and updates its display lists/palette. */
 void func_ov003_021fd2d0(void *entity) {
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK func_020893a8(s32, s32, M2C_UNK, s32);
     M2C_UNK SetTextById(s32, s32);
     s32 GetUiColor(M2C_UNK);
@@ -424,7 +424,7 @@ void func_ov003_021fd2d0(void *entity) {
     }
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x10, 3, 6);
     SetTextById(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 4), 0x4700001D);
-    func_02088ff4(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 8));
+    Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 8));
     func_020893a8(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 0), 0x8B80, 1, GetUiColor(0x11));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }

@@ -1,5 +1,6 @@
 /* 84 functions from 0x0222525C to 0x02226214 (ov009), found by ds-decomp. */
 #include "common.h"
+#include "ov009_link.h"
 
 void func_ov009_0222525c(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
@@ -366,36 +367,40 @@ void func_ov009_02225938(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     M2C_FIELD(temp_r0, s32 *, 0x44) = arg4;
 }
 
-void func_ov009_0222598c(s32 arg0) {
- s32 func_020c5400(void *);
- s32 MI_CpuFill8(s32, s32, s32);
- s32 func_0208206c();
- s32 func_02082088(void);
- void MI_CpuCopy8(void *, void *, s32);
- M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
- extern M2C_UNK gLinkState;
- u8 buffer[40];
- u16 mask;
- void *p;
- if (GetLinkPhase()!=4 && GetLinkPhase()!=5) {
- M2C_FIELD(arg0, u16 *, 0)=1<<GetLinkLocalPlayerId();
- M2C_FIELD(&gLinkState, void **, 0x28)=NULL;
- return;
- }
- if(func_020c5400(buffer)) {
- M2C_FIELD(arg0, u16 *, 0)=1<<GetLinkLocalPlayerId();
- M2C_FIELD(&gLinkState, void **, 0x28)=(void *)arg0;
- mask=0xFFFF;
- mask &= (-1 ^ (1U<<GetLinkLocalPlayerId()));
- if(!mask) return;
- MI_CpuFill8((s32)(buffer+12),0,26);
- p=(void *)func_0208206c();
- MI_CpuCopy8(p,buffer+12,func_02082088()*2);
- func_ov009_02224d9c(13,buffer,40,mask);
- } else {
- M2C_FIELD(arg0, u16 *, 0)=1<<GetLinkLocalPlayerId();
- M2C_FIELD(&gLinkState, void **, 0x28)=NULL;
- }
+/* Broadcasts the local player's record and name to the other connected peers
+ * (link message 13), keeping the local player's bit in the actor's mask while
+ * the announcement is in flight; outside the in-game phases it only resets
+ * that mask. */
+void BroadcastLinkPlayerInfo(void *maskPtr) {
+    s32 CopyLocalPlayerRecord(void *);
+    s32 MI_CpuFill8(s32, s32, s32);
+    s32 GetLocalPlayerName();
+    s32 GetLocalPlayerNameLength(void);
+    void MI_CpuCopy8(void *, void *, s32);
+    M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
+    extern M2C_UNK gLinkState;
+    u8 packet[LINK_PLAYER_INFO_SIZE];
+    u16 peers;
+    void *name;
+    if (GetLinkPhase()!=LINK_PHASE_ACTIVE && GetLinkPhase()!=LINK_PHASE_INGAME) {
+        M2C_FIELD(maskPtr, u16 *, 0)=1<<GetLinkLocalPlayerId();
+        M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE)=NULL;
+        return;
+    }
+    if(CopyLocalPlayerRecord(packet)) {
+        M2C_FIELD(maskPtr, u16 *, 0)=1<<GetLinkLocalPlayerId();
+        M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE)=(void *)maskPtr;
+        peers=0xFFFF;
+        peers &= (-1 ^ (1U<<GetLinkLocalPlayerId()));
+        if(!peers) return;
+        MI_CpuFill8((s32)(packet+LINK_PLAYER_NAME_OFFSET),0,LINK_PLAYER_NAME_SIZE);
+        name=(void *)GetLocalPlayerName();
+        MI_CpuCopy8(name,packet+LINK_PLAYER_NAME_OFFSET,GetLocalPlayerNameLength()*2);
+        func_ov009_02224d9c(LINK_MSG_PLAYER_INFO,packet,LINK_PLAYER_INFO_SIZE,peers);
+    } else {
+        M2C_FIELD(maskPtr, u16 *, 0)=1<<GetLinkLocalPlayerId();
+        M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE)=NULL;
+    }
 }
 
 s32 func_ov009_02225a98(s32 arg0) {
@@ -417,7 +422,7 @@ void func_ov009_02225ae0(s32 arg0) {
 
 void func_ov009_02225af4(s32 arg0) {
 
-    func_ov009_0222598c(arg0 + 0x34);
+    BroadcastLinkPlayerInfo(arg0 + 0x34);
 }
 
 s32 func_ov009_02225b04(s32 arg0) {
@@ -754,7 +759,7 @@ void func_ov009_02226154(void) {
 
 void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
     void *func_01ffa444(void *, void *);
-    s32 func_0208206c();
+    s32 GetLocalPlayerName();
     M2C_UNK func_02085c4c();
     M2C_UNK func_ov009_02223f34(s32);
     M2C_UNK func_ov009_02223f44(s32, M2C_UNK);
@@ -771,7 +776,7 @@ void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
     if (func_ov009_022242c8() == 0) return;
     func_ov009_0222454c();
     func_ov009_02223f34(0x654);
-    func_ov009_02223f44(func_0208206c(), 0x14);
+    func_ov009_02223f44(GetLocalPlayerName(), 0x14);
     func_02085c4c();
     func_01ffa444(&data_ov009_02226784, arg2);
 }

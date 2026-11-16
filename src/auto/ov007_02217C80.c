@@ -164,8 +164,8 @@ void func_ov007_02217f8c(void *arg0) {
     s8 func_ov007_02211f00();
     s32 func_ov007_02211f30();
     M2C_UNK func_ov007_02211f40();
-    s32 func_ov007_02211f90();
-    M2C_UNK func_ov007_02211fa0();
+    s32 GetMapEditorTerrainKind();
+    M2C_UNK GetMapEditorTerrainOwner();
     s8 func_ov007_02217b90(M2C_UNK, s32);
     s8 func_ov007_02217c1c();
     extern void *g3DSpriteEngineMain;
@@ -232,9 +232,9 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x35) = 0;
     M2C_FIELD(arg0, s8 *, 0x36) = 0;
     M2C_FIELD(arg0, s8 *, 0x37) = func_ov007_02211f00();
-    M2C_FIELD(arg0, s8 *, 0x3A) = func_ov007_02217b90(0, func_ov007_02211f90());
+    M2C_FIELD(arg0, s8 *, 0x3A) = func_ov007_02217b90(0, GetMapEditorTerrainKind());
     M2C_FIELD(arg0, s8 *, 0x3B) = func_ov007_02217b90(1, func_ov007_02211f30());
-    func_ov007_02211fa0();
+    GetMapEditorTerrainOwner();
     M2C_FIELD(arg0, s8 *, 0x38) = func_ov007_02217c1c();
     func_ov007_02211f40();
     M2C_FIELD(arg0, s8 *, 0x39) = func_ov007_02217c1c();
@@ -360,8 +360,8 @@ void func_ov007_02218570(void *arg0) {
     M2C_UNK func_ov007_02211f10(M2C_UNK);
     M2C_UNK func_ov007_02211f60();
     M2C_UNK func_ov007_02211f70();
-    M2C_UNK func_ov007_02211fb0();
-    M2C_UNK func_ov007_02211fc0();
+    M2C_UNK SetMapEditorTerrainKind();
+    M2C_UNK SetMapEditorTerrainOwner();
     M2C_UNK func_ov007_02217bd0(M2C_UNK, u8);
     M2C_UNK func_ov007_02217be8(M2C_UNK, s32, u8);
     M2C_UNK func_ov007_0221ab4c();
@@ -376,10 +376,10 @@ void func_ov007_02218570(void *arg0) {
         switch (temp_r0) {                          /* irregular */
         case 0:
             func_ov007_02217bd0(0, M2C_FIELD((arg0 + temp_r0), u8 *, 0x3A));
-            func_ov007_02211fb0();
+            SetMapEditorTerrainKind();
             temp_r2 = arg0 + M2C_FIELD(arg0, u8 *, 0x37);
             func_ov007_02217be8(0, M2C_FIELD(temp_r2, u8 *, 0x3A), M2C_FIELD(temp_r2, u8 *, 0x38));
-            func_ov007_02211fc0();
+            SetMapEditorTerrainOwner();
             break;
         case 1:
             func_ov007_02217bd0(1, M2C_FIELD((arg0 + temp_r0), u8 *, 0x3A));

@@ -49,7 +49,7 @@ func_ov002_021e2eb8 kind:function(arm,size=0x178) addr:0x021e2eb8
 func_ov002_021e3030 kind:function(arm,size=0x14) addr:0x021e3030
 func_ov002_021e3044 kind:function(arm,size=0x8c) addr:0x021e3044
 func_ov002_021e30d0 kind:function(arm,size=0x30) addr:0x021e30d0
-func_ov002_021e3100 kind:function(arm,size=0x110) addr:0x021e3100
+BuildPanelStatEntries kind:function(arm,size=0x110) addr:0x021e3100
 func_ov002_021e3210 kind:function(arm,size=0x368) addr:0x021e3210
 func_ov002_021e3578 kind:function(arm,size=0x158) addr:0x021e3578
 func_ov002_021e36d0 kind:function(arm,size=0xac) addr:0x021e36d0
@@ -130,7 +130,7 @@ func_ov002_021e8984 kind:function(arm,size=0x320) addr:0x021e8984
 func_ov002_021e8ca4 kind:function(arm,size=0x60) addr:0x021e8ca4
 func_ov002_021e8d04 kind:function(arm,size=0x8) addr:0x021e8d04
 func_ov002_021e8d0c kind:function(arm,size=0x64) addr:0x021e8d0c
-func_ov002_021e8d70 kind:function(arm,size=0x10c) addr:0x021e8d70
+GetUnitRotationDelta kind:function(arm,size=0x10c) addr:0x021e8d70
 func_ov002_021e8e7c kind:function(arm,size=0x10) addr:0x021e8e7c
 func_ov002_021e8e8c kind:function(arm,size=0x164) addr:0x021e8e8c
 func_ov002_021e8ff0 kind:function(arm,size=0x10) addr:0x021e8ff0
@@ -1274,7 +1274,7 @@ data_ov002_021f30fe kind:bss addr:0x021f30fe
 data_ov002_021f30ff kind:bss addr:0x021f30ff
 data_ov002_021f3101 kind:bss addr:0x021f3101
 gEffectDefaultVariant kind:bss addr:0x021f3103
-data_ov002_021f3104 kind:bss addr:0x021f3104
+gVersusPlayerStates kind:bss addr:0x021f3104
 data_ov002_021f3105 kind:bss addr:0x021f3105
 data_ov002_021f3106 kind:bss addr:0x021f3106
 data_ov002_021f3107 kind:bss addr:0x021f3107

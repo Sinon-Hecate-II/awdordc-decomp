@@ -42,7 +42,7 @@ void func_0203cb38(void *arg0) {
     void func_0203dc18(void);
     void func_0203dc38(s32, s32);
     s32 SendConnectionCommand(u8, s32, s32, u16, s32 *, s32);
-    s32 func_02038f6c(void);
+    s32 GetNetSessionState(void);
     void *timerState;
     void *limitState;
     u64 now;
@@ -153,7 +153,7 @@ void func_0203cb38(void *arg0) {
         }
         break;
     case 1:
-        if(func_02038f6c()!=5)break;
+        if(GetNetSessionState()!=5)break;
         now=GetSystemTick();
         if(func_02072088((now-M2C_FIELD(GetConnection(),u64 *,0x1f8))<<6,0x82ea)<=30000)break;
         if(M2C_FIELD(GetConnection(),u8 *,0x1ad)>=5) {

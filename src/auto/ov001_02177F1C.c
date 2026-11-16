@@ -48,8 +48,8 @@ void func_ov001_02177fd8(void) {
 void func_ov001_02178010(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190618;
-    extern M2C_UNK func_0200448c;
-    Ov001_LoadAsset(&data_ov001_02190618, &func_0200448c);
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&data_ov001_02190618, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -59,10 +59,10 @@ void func_ov001_02178010(void) {
 
 void func_ov001_02178090(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021780c4;
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_021780c4);
 }
 
@@ -103,10 +103,10 @@ void func_ov001_0217810c(void) {
 void func_ov001_02178134(void) {
     M2C_UNK func_ov001_02171494();
     M2C_UNK func_ov001_021723d4();
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 func_ov001_021760d4();
     M2C_UNK func_ov001_0218af70(M2C_UNK);
-    M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern s8 data_ov001_02193d74;
     void func_ov001_02178250(void);
     void func_ov001_021789d8(void);
@@ -116,8 +116,8 @@ void func_ov001_02178134(void) {
     func_ov001_021723d4();
     func_ov001_02171494();
     func_ov001_0218af70(0);
-    func_ov001_0218b368(0, 0x15);
-    func_ov001_02175d64(0, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_SetNextScreenMode(0, 1);
     if ((u8)data_ov001_02193d74 == 0) {
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178bc0);
         return;
@@ -172,10 +172,10 @@ void func_ov001_02178270(void) {
 }
 
 void func_ov001_021782d8(void) {
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217830c;
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217830c);
 }
 
@@ -278,7 +278,7 @@ void func_ov001_02178480(void) {
 void func_ov001_021784e8(void) {
     extern M2C_UNK func_ov001_0217851c;
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217851c);
 }
 
@@ -353,9 +353,9 @@ void func_ov001_02178600(void) {
 
 void func_ov001_0217863c(void) {
     s32 func_ov001_0217170c();
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
-    M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_02179320;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
@@ -364,12 +364,12 @@ void func_ov001_0217863c(void) {
         return;
     }
     func_ov001_0218af70(0);
-    func_ov001_0218b368(0, 0x15);
-    func_ov001_02175d64(0, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_SetNextScreenMode(0, 1);
     Ov001_SetStepCallback(&func_ov001_02179320);
 }
 
-void func_ov001_0217868c(void) {
+void Ov001_OpenWfcEraseScreen(void) {
     s8 func_ov001_02171c24(s32, s32, s32);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_021786d4(void);
@@ -386,8 +386,8 @@ void func_ov001_0217868c(void) {
 void func_ov001_021786d4(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_0219062c;
-    extern M2C_UNK func_0200448c;
-    Ov001_LoadAsset(&data_ov001_0219062c, &func_0200448c);
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&data_ov001_0219062c, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -399,8 +399,8 @@ void func_ov001_02178754(void) {
     extern M2C_UNK func_ov001_021787a8;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_021787a8);
 }
 
@@ -493,16 +493,16 @@ void func_ov001_02178920(void) {
     if (func_ov001_0217170c() == 0) return;
     func_ov001_0218af70(0);
     if (data_ov001_02193d78 == 0) {
-        func_ov001_02171cf8();
-        func_ov001_0218b368(1, 1);
+        Ov001_FreeOptionBackground();
+        Ov001_DisableVisiblePlanes(1, 1);
     }
-    func_ov001_0218b368(0, 0x15);
+    Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193d78 == 0) {
-        func_ov001_02175d64(0, 1);
+        Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(&func_ov001_021778c0);
         return;
     }
-    func_ov001_02175d64(0, 1);
+    Ov001_SetNextScreenMode(0, 1);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178460);
 }
 
@@ -519,8 +519,8 @@ void func_ov001_021789d8(void) {
 void func_ov001_02178a08(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190640;
-    extern M2C_UNK func_0200448c;
-    Ov001_LoadAsset(&data_ov001_02190640, &func_0200448c);
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&data_ov001_02190640, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16)((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16)((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16)((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
@@ -529,10 +529,10 @@ void func_ov001_02178a08(void) {
 
 void func_ov001_02178a74(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_02178aa8;
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_02178aa8);
 }
 
@@ -567,7 +567,7 @@ void func_ov001_02178aec(void) {
 }
 
 void func_ov001_02178b28(void) {
-    M2C_UNK func_ov001_02171cf8();
+    M2C_UNK Ov001_FreeOptionBackground();
     extern M2C_UNK func_ov001_021778c0;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -576,10 +576,10 @@ void func_ov001_02178b28(void) {
         return;
     }
     func_ov001_0218af70(0);
-    func_ov001_02171cf8();
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x15);
-    func_ov001_02175d64(0, 1);
+    Ov001_FreeOptionBackground();
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_SetNextScreenMode(0, 1);
     Ov001_SetStepCallback(&func_ov001_021778c0);
 }
 
@@ -605,8 +605,8 @@ void func_ov001_02178bc0(void) {
 void func_ov001_02178bfc(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190654;
-    extern M2C_UNK func_0200448c;
-    Ov001_LoadAsset(&data_ov001_02190654, &func_0200448c);
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&data_ov001_02190654, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -618,10 +618,10 @@ void func_ov001_02178c7c(void) {
     extern s8 data_ov001_02193d80;
     void func_ov001_02178ce4(void);
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     if ((u8)data_ov001_02193d80 != 0) {
         Ov001_StartFade(2, 1, 1, 8);
-        func_ov001_0218b314(1, 1);
+        Ov001_EnableVisiblePlanes(1, 1);
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178ce4);
 }

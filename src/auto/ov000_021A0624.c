@@ -43,7 +43,7 @@ void CommitAiAction(s32 arg0) {
 s32 func_ov000_021a43e8(); s32 GetUnitAttackClass(M2C_UNK);
 extern u8 gAiCommand[]; extern void *gAiState; extern u8 *gAiCommandState;
 extern u8 data_ov000_021e00af[],data_ov000_021dfd98[],data_ov000_021dfd99[],data_ov000_021dfd9a[];
-extern s8 data_ov000_021e00b0[];
+extern s8 gAiTargetCandidateGroup[];
 s32 offset; s32 index;
 gAiCommand[7]=func_ov000_021a06e4(gAiCommand[6]);
 offset=arg0*12;
@@ -51,9 +51,9 @@ data_ov000_021e00af[offset]=252;
 M2C_FIELD(gAiState,u8*,7)++;
 M2C_FIELD(gAiState,u8*,4)=arg0;
 if((gUnitKindFlags[(s16)gAiCommand[6]*(s16)112]&7) && func_ov000_021a43e8()==0){
-if(GetUnitAttackClass(gAiCommand[6])==0){index=data_ov000_021e00b0[offset];data_ov000_021dfd98[index*8]++;}
-if(GetUnitAttackClass(gAiCommand[6])==1){index=data_ov000_021e00b0[offset];data_ov000_021dfd99[index*8]++;}
-if(gAiCommand[6]==26){index=data_ov000_021e00b0[offset];data_ov000_021dfd9a[index*8]++;}
+if(GetUnitAttackClass(gAiCommand[6])==0){index=gAiTargetCandidateGroup[offset];data_ov000_021dfd98[index*8]++;}
+if(GetUnitAttackClass(gAiCommand[6])==1){index=gAiTargetCandidateGroup[offset];data_ov000_021dfd99[index*8]++;}
+if(gAiCommand[6]==26){index=gAiTargetCandidateGroup[offset];data_ov000_021dfd9a[index*8]++;}
 }
 M2C_FIELD(gAiState,u8*,3)=1;
 *gAiCommandState=5;

@@ -86,7 +86,7 @@ void func_ov003_021e46c8(void **arg0) {
 }
 
 u32 func_ov003_021e46dc(void *arg0) {
-    u32 func_02088ff4(s32);
+    u32 Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     u32 temp_r0;
     void *temp_r4;
@@ -107,10 +107,10 @@ u32 func_ov003_021e46dc(void *arg0) {
     M2C_FIELD(temp_r5_2, s16 *, 0x10) = -0x20;
     M2C_FIELD(temp_r5_2, s16 *, 0xC) = 0xC;
     M2C_FIELD(temp_r5_2, u16 *, 2) = (u16) M2C_FIELD(temp_r5_2, u16 *, 4);
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x58));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
     temp_r4 = M2C_FIELD(arg0, void **, 0x44);
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 0));
-    return func_02088ff4(M2C_FIELD(temp_r4, s32 *, 4));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0));
+    return Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 4));
 }
 
 void func_ov003_021e4764(void **arg0) {

@@ -158,7 +158,7 @@ switch(func_ov000_021a9904((u32)(p[0]<<26)>>26)){case 0:func_ov000_0217f96c(p);b
 }
 }
 
-s32 func_ov000_02180410(void) {
+s32 IsAiMap175Player2Override(void) {
  extern u16 gMapConfig;
  extern void **gCurrentMap;
  void *p;
@@ -168,7 +168,7 @@ s32 func_ov000_02180410(void) {
  return 0;
 }
 
-void func_ov000_0218046c(void) {
+void RunAiMap175MoveOverride(void) {
     M2C_UNK PlanAiUnitMove();
     extern void **gCurrentMap;
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x5142) != 0xAF) {

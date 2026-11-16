@@ -1,11 +1,12 @@
 /* 27 functions from 0x02180B68 to 0x02181A84 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct { u8 bytes[22]; } PathBuffer80;
-extern u8 data_ov001_0218f9d4[];
+extern u8 gOv001Step11PalettePath[];
 extern u16 data_ov001_0218f9ea[], data_ov001_0218f9ec[];
-extern M2C_UNK data_ov001_0219099c, data_ov001_021909b0, data_ov001_021909c8, data_ov001_021909e0;
+extern M2C_UNK gOv001WayObjPalettePath, gOv001Step1TilesPath, gOv001Step1PalettePath, gOv001AccessPointTilemapPath;
 extern M2C_UNK gOv001MenuRegion;
-extern M2C_UNK func_02004160, func_020046cc, GX_LoadBGPltt, func_0200448c;
+extern M2C_UNK GX_LoadOBJPltt, GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
 
 void func_ov001_02180b68(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
@@ -59,15 +60,15 @@ void func_ov001_02180bdc(void) {
 void func_ov001_02180c2c(void) {
     M2C_UNK func_ov001_02171494();
     s32 func_ov001_0217170c();
-    M2C_UNK func_ov001_02171cf8();
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183fa0();
     s32 func_ov001_021840d4();
     void *GetCurrentMapRecord();
     M2C_UNK func_ov001_02184880(u8);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
-    M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001FriendListState;
     extern M2C_UNK func_ov001_02179ea8;
     extern M2C_UNK func_ov001_02181a84;
@@ -85,17 +86,17 @@ void func_ov001_02180c2c(void) {
     } while (func_ov001_021840d4() == 0);
     func_ov001_02171494();
     func_ov001_0218af70(0);
-    func_ov001_02171cf8();
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x15);
+    Ov001_FreeOptionBackground();
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
     if (gOv001FriendListState != 1) {
         func_ov001_02183fa0();
         func_ov001_02184880(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4));
-        func_ov001_02175d64(2, 1);
+        Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;
     }
-    func_ov001_02175d64(0, 1);
+    Ov001_SetNextScreenMode(0, 1);
     Ov001_SetNameEntryMode(0, 0);
     Ov001_SetStepCallback(&func_ov001_02179ea8);
 }
@@ -123,7 +124,7 @@ void func_ov001_02180d24(void) {
 
 void func_ov001_02180d44(void) {
     void *Ov001_Alloc(s32, s32);
-    void func_ov001_02180da4(void);
+    void Ov001_LoadAccessPointMenuGraphics(void);
     void func_ov001_02180eb4(void);
     void Ov001_UpdateMenuCursor(void);
     void func_ov001_02180fbc(void);
@@ -135,7 +136,7 @@ void func_ov001_02180d44(void) {
     temp_r0 = Ov001_Alloc(0x20, 4);
     M2C_FIELD(&gOv001MenuRegion, void **, 4) = temp_r0;
     M2C_FIELD(temp_r0, u8 *, 0x1D) = 0;
-    func_ov001_02180da4();
+    Ov001_LoadAccessPointMenuGraphics();
     func_ov001_02172250(1);
     func_ov001_02171c24(0x2F, -1, 0);
     func_ov001_02171dd0(0);
@@ -144,22 +145,23 @@ void func_ov001_02180d44(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180fbc);
 }
 
-void func_ov001_02180da4(void) {
-s32 Ov001_LocalizePath(void *);
-M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
-void func_ov001_0218b314(s32,s32);
-PathBuffer80 path = *(PathBuffer80 *)data_ov001_0218f9d4;
-Ov001_LoadAsset(&data_ov001_0219099c,&func_02004160);
-Ov001_LoadAsset(&data_ov001_021909b0,&func_020046cc);
-Ov001_LoadAsset(&data_ov001_021909c8,&GX_LoadBGPltt);
-Ov001_LoadAsset(&data_ov001_021909e0,&func_0200448c);
-*M2C_FIELD(&gOv001MenuRegion,s32 **,4) = Ov001_LoadFile(Ov001_LocalizePath(&path),0,4);
-func_ov001_0218b314(1,16);
-M2C_FIELD((void *)0x04001008,u16 *,0)=(M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;
-M2C_FIELD((void *)0x04001008,u16 *,2)=(M2C_FIELD((void *)0x04001008,u16 *,2)&~3)|3;
-M2C_FIELD((void *)0x0400000a,u16 *,0)=(M2C_FIELD((void *)0x0400000a,u16 *,0)&~3)|3;
-M2C_FIELD((void *)0x0400000a,u16 *,2)=(M2C_FIELD((void *)0x0400000a,u16 *,2)&~3)|3;
+/* Load the access-point menu palettes, tiles and tilemap, and set its background priorities. */
+void Ov001_LoadAccessPointMenuGraphics(void) {
+    s32 Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
+    s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
+    void Ov001_EnableVisiblePlanes(s32, s32);
+    PathBuffer80 palettePath = *(PathBuffer80 *)gOv001Step11PalettePath;
+    Ov001_LoadAsset(&gOv001WayObjPalettePath, &GX_LoadOBJPltt);
+    Ov001_LoadAsset(&gOv001Step1TilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001Step1PalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001AccessPointTilemapPath, &GX_LoadBG2Scr);
+    *M2C_FIELD(&gOv001MenuRegion, s32 **, 4) = Ov001_LoadFile(Ov001_LocalizePath(&palettePath), 0, 4);
+    Ov001_EnableVisiblePlanes(1, 16);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
 void func_ov001_02180eb4(void) {
@@ -212,8 +214,8 @@ void func_ov001_02180fbc(void) {
     extern M2C_UNK func_ov001_02181010;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x14);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x14);
     Ov001_SetStepCallback(&func_ov001_02181010);
 }
 
@@ -373,7 +375,7 @@ void func_ov001_021812fc(void) {
  * callback (map list or layout screen, depending on the chosen region). */
 void Ov001_FinishRegionMenu(void){
 extern M2C_UNK data_ov001_021909f4,data_ov001_02193dd0;
-extern M2C_UNK func_ov001_021768b8,func_ov001_02181a84,InitMapListScreen,func_ov001_02182d0c;
+extern M2C_UNK Ov001_OpenWifiMenu,func_ov001_02181a84,InitMapListScreen,func_ov001_02182d0c;
 s32 Ov001_IsFadeActive(s32);s32 func_ov001_02185b34(void);s32 func_ov001_0217170c(void);void *GetCurrentMapRecord(void);
 void func_ov001_0218a1cc(s32);
 u32 i;s32 p;
@@ -383,18 +385,18 @@ if(!func_ov001_02185b34())return;
 if(!func_ov001_0217170c())return;
 for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->top[i];if(p)func_ov001_0218a1cc(p);}
 for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->middle[i];if(p)func_ov001_0218a1cc(p);}
-func_ov001_02172184();func_ov001_02171cf8();
+Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();
 Ov001_FreeFile(((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->obj);
-Ov001_LoadAsset(&data_ov001_021909f4,&func_02004160);
-func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
+Ov001_LoadAsset(&data_ov001_021909f4,&GX_LoadOBJPltt);
+Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
 if(((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->mode==2){
-func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_021768b8);
+Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&Ov001_OpenWifiMenu);
 }else switch(((Ov001MenuRegion*)&gOv001MenuRegion)->index){
 case 0:case 1:case 2:
-func_ov001_02175d64(2,0);
+Ov001_SetNextScreenMode(2,0);
 if(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_ov001_02181a84);
 else{Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
-case 3:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
+case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
 }
 func_ov001_0218b71c(&data_ov001_02193dd0);
 }

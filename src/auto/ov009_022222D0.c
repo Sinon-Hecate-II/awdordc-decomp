@@ -41,17 +41,17 @@ static inline void ov009CallRange(u8 *first,s32 size,Ov009CallbackFn fn) {
 void func_ov009_022222d0(s32 arg0) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(s32, void *, s32);
-    s32 func_0208206c();
-    s32 func_02082088();
-    s32 func_020c5400(void *);
+    s32 GetLocalPlayerName();
+    s32 GetLocalPlayerNameLength();
+    s32 CopyLocalPlayerRecord(void *);
     M2C_UNK func_ov009_02224d9c(M2C_UNK, void *, M2C_UNK, u16);
     u8 spC[0x1C];
     u8 sp0[0xC];
     s32 temp_r4;
-    if (func_020c5400(sp0) == 0) return;
+    if (CopyLocalPlayerRecord(sp0) == 0) return;
     MI_CpuFill8(spC,0,0x1A);
-    temp_r4=func_0208206c();
-    MI_CpuCopy8(temp_r4,spC,func_02082088()*2);
+    temp_r4=GetLocalPlayerName();
+    MI_CpuCopy8(temp_r4,spC,GetLocalPlayerNameLength()*2);
     func_ov009_02224d9c(0xF,sp0,0x28,(u16)(1<<arg0));
 }
 

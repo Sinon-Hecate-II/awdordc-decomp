@@ -38,7 +38,7 @@ s32 func_02091e70(s32 arg0) {
     s32 temp_r0;
     u8 temp_r0_2;
     void *temp_r4;
-    temp_r4 = (void *)func_02091f18(arg0);
+    temp_r4 = (void *)GetScenePanelState(arg0);
     temp_r0 = Get3DSpriteCount();
     switch (temp_r0) {
     case 1:
@@ -70,7 +70,7 @@ s32 func_02091f08(void) {
     return func_02091ef0() * 8;
 }
 
-s32 func_02091f18(s32 arg0) {
+s32 GetScenePanelState(s32 arg0) {
     s32 var_r4;
 
     var_r4 = arg0;
@@ -455,7 +455,7 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 s32 ShowMessageText(s32 textId) {
  s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
  s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
- u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 func_02091f18(s32);
+ u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
  s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK func_0209707c(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
@@ -470,7 +470,7 @@ s32 ShowMessageText(s32 textId) {
  if(Get3DSpriteTarget()==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)goto next;
  if(Get3DSpriteTarget()==3 && gCur3DSpriteEngine!=savedEngine)goto next;
  style=func_02091e70(2); managerA=(void *)Get3DSpriteManager();managerB=(void *)Get3DSpriteManager();
- layerA=(void *)func_02091f18(2);layerB=(void *)func_02091f18(2);layerC=(void *)func_02091f18(2);
+ layerA=(void *)GetScenePanelState(2);layerB=(void *)GetScenePanelState(2);layerC=(void *)GetScenePanelState(2);
  attr=M2C_FIELD(layerB,u8 *,6);attr=attr<<28;attr=attr>>16;
  sprite=(void *)CreateMessageSprite((s16)style,1,M2C_FIELD(managerA,u8 *,0x4c),
  M2C_FIELD((u8 *)gCur3DSpriteEngine+(M2C_FIELD(managerB,u8 *,0x4c)<<2),u32 *,12),

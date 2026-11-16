@@ -1,5 +1,6 @@
 /* 18 functions from 0x0203804C to 0x02038F88 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_session.h"
 
 /* Initialize the global WFC session object: install the state callbacks, set up its transport,
    upload and connection sub-objects from the NAS config, and copy the game name and password
@@ -100,7 +101,7 @@ void func_020382d0(void) {
 }
 
 /* Advances the online connection state, installs callbacks after the availability check, and releases deferred network resources. */
-void func_02038438(void) {
+void TickNetSession(void) {
     extern void *gNetSession;
     extern M2C_UNK func_02039698;
     extern M2C_UNK HandleGpcmMatMessage;
@@ -114,7 +115,7 @@ void func_02038438(void) {
     void SetNetState(s32);
     void func_02039c68(void);
     void func_02039ca0(void);
-    void func_02039db4(s32, s32);
+    void ReportNasLoginError(s32, s32);
     void func_0203aabc(void);
     void func_0203cb38(s32);
     void UpdateTransferSlots(void);
@@ -138,10 +139,10 @@ void func_02038438(void) {
             func_02039c68();
             break;
         case 2:
-            func_02039db4(3, -0x4e8e);
+            ReportNasLoginError(3, -0x4e8e);
             return;
         case 3:
-            func_02039db4(4, -0x4e85);
+            ReportNasLoginError(4, -0x4e85);
             return;
         }
         break;
@@ -173,25 +174,38 @@ void func_02038438(void) {
     }
 }
 
-s32 func_02038688(u16 *text,s32 unused,s32 a,s32 b){
-extern void *gNetSession;
-s32 HasNetError(void); u32 Utf16StringLength(u16 *);
-void FillU16(s32,void *,s32); void func_02007e20(void *,void *,s32);
-s32 func_02037a0c(void);void func_02039db4(s32,s32);void SetNetState(s32);void InitServiceAvailabilityQuery(s32);
-u32 n;
-if(!text)return 0;
-if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=0)return 0;
-M2C_FIELD(gNetSession,s32 *,112)=a;
-M2C_FIELD(gNetSession,s32 *,116)=b;
-if(!text || !*text)n=0;
-else{
-FillU16(0,(u8 *)gNetSession+46,52);
-if(Utf16StringLength(text)>25)n=25;else n=Utf16StringLength(text);
-func_02007e20(text,(u8 *)gNetSession+46,n*2);
-}
-M2C_FIELD((u8 *)gNetSession+n*2,u16 *,46)=0;
-if(func_02037a0c()!=4){func_02039db4(2,-60010);return 1;}
-SetNetState(1);InitServiceAvailabilityQuery(M2C_FIELD(gNetSession,s32 *,104));return 1;
+/* Start asynchronous login with a bounded UTF-16 name and a completion callback. */
+s32 StartNetLogin(u16 *playerName, s32 unused, s32 loginCallback, s32 callbackData) {
+    extern void *gNetSession;
+    s32 HasNetError(void);
+    u32 Utf16StringLength(u16 *);
+    void FillU16(s32, void *, s32);
+    void CopyU16(void *, void *, s32);
+    s32 GetNetConnectionStatus(void);
+    void ReportNasLoginError(s32, s32);
+    void SetNetState(s32);
+    void InitServiceAvailabilityQuery(s32);
+    u32 nameLength;
+
+    if (!playerName) return 0;
+    if (HasNetError() || M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE) != NET_STATE_OFFLINE) return 0;
+    M2C_FIELD(gNetSession, s32 *, NET_SESSION_LOGIN_CALLBACK) = loginCallback;
+    M2C_FIELD(gNetSession, s32 *, NET_SESSION_LOGIN_DATA) = callbackData;
+    if (!playerName || !*playerName) nameLength = 0;
+    else {
+        FillU16(0, (u8 *)gNetSession + NET_SESSION_LOGIN_NAME, NET_LOGIN_NAME_BYTES);
+        if (Utf16StringLength(playerName) > NET_LOGIN_NAME_MAX) nameLength = NET_LOGIN_NAME_MAX;
+        else nameLength = Utf16StringLength(playerName);
+        CopyU16(playerName, (u8 *)gNetSession + NET_SESSION_LOGIN_NAME, nameLength * 2);
+    }
+    M2C_FIELD((u8 *)gNetSession + nameLength * 2, u16 *, NET_SESSION_LOGIN_NAME) = 0;
+    if (GetNetConnectionStatus() != NET_CONNECTION_CONNECTED) {
+        ReportNasLoginError(2, NET_LOGIN_ERROR_CONNECTION);
+        return 1;
+    }
+    SetNetState(NET_STATE_CHECKING_SERVICE);
+    InitServiceAvailabilityQuery(M2C_FIELD(gNetSession, s32 *, NET_SESSION_GAME_NAME));
+    return 1;
 }
 
 s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 HasNetError(void);void SetNetState(s32);void func_0203ac20(void *,void *,void *,s32,s32,s32,s32,s32);extern M2C_UNK func_020394d8;extern void *gNetSession;s32 state;if(HasNetError() || (state=M2C_FIELD(gNetSession,s32 *,36))<3 || state==4)return 0;M2C_FIELD(gNetSession,s32 *,120)=b;M2C_FIELD(gNetSession,s32 *,124)=c;SetNetState(4);func_0203ac20(gNetSession+224,gNetSession+480,&func_020394d8,0,d,e,f,g);return 1;}
@@ -335,7 +349,7 @@ s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32
 
 s32 IsConnectionActive(s32 a){extern void *gNetSession;s32 func_020391b8(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return func_020391b8(a);}
 
-s32 func_02038f6c(void) {
+s32 GetNetSessionState(void) {
     extern void *gNetSession;
     if (gNetSession != NULL) {
         return M2C_FIELD(gNetSession, s32 *, 0x24);

@@ -165,7 +165,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     s32 func_02011934(void);
     s32 func_02011994(void);
     s32 WFC_SendChannelData(s32, s32, void *, u32, u16, u16, u16);
-    void func_02007e20(void *, void *, u32);
+    void CopyU16(void *, void *, u32);
     void func_02013888(void *, u32, void *);
     void WFC_PostReceive(void *, s32);
     void func_02013590(void *);
@@ -209,7 +209,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
         if (M2C_FIELD(r10, u16 *, 0x80c) != M2C_FIELD(r10, u16 *, 0x80a)) {
             r6 = M2C_FIELD(r10, u16 *, 0x80c);
             M2C_FIELD((void *)(r10 + (r6 << 9)), u16 *, 0) = (u16)(M2C_FIELD((void *)(r10 + (r6 << 9)), u16 *, 0) | 1);
-            func_02007e20((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 9)), r8, 0x200);
+            CopyU16((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 9)), r8, 0x200);
             M2C_FIELD(r10, u16 *, 0x81a) = M2C_FIELD((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 1)), u16 *, 0x800);
             M2C_FIELD(r10, u16 *, 0x80c) = (u16)((M2C_FIELD(r10, u16 *, 0x80c) + 1) & 3);
             r5 = 1;
@@ -232,7 +232,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
             if ((*slot & 1) == 0) {
                 *slot = (u16)(*slot | 1);
             } else {
-                func_02007e20(slot, r8, 0x200);
+                CopyU16(slot, r8, 0x200);
                 M2C_FIELD(r10, u16 *, 0x81a) = M2C_FIELD((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 1)), u16 *, 0x800);
                 M2C_FIELD(r10, u16 *, 0x80c) = (u16)((M2C_FIELD(r10, u16 *, 0x80c) + 1) & 3);
                 r7 = 0;
@@ -241,7 +241,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
         }
         if (r6 != 0) {
             slot = (u16 *)(r10 + (M2C_FIELD(r10, u16 *, 0x80a) << 9));
-            func_02007e20(r9, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810));
+            CopyU16(r9, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810));
             ret = WFC_SendChannelData((s32)func_02013590, r10, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810), M2C_FIELD(r10, u16 *, 0x80e), M2C_FIELD(r10, u16 *, 0x816), 1);
             M2C_FIELD(r10, u16 *, 0x80a) = (u16)((M2C_FIELD(r10, u16 *, 0x80a) + 1) & 3);
             if (ret != 0 && ret != 2) {
@@ -298,7 +298,7 @@ break;
 }
 
 void func_02013794(void *p) {
-void func_02007e20(void *,void *,u32);s32 func_02011934(void);
+void CopyU16(void *,void *,u32);s32 func_02011934(void);
 void *q=M2C_FIELD(p,void **,0x1C);u16 *data;u16 mask;u32 len;s32 bit;
 if(!q)return;
 if(M2C_FIELD(p,u16 *,2)==0) {
@@ -310,7 +310,7 @@ len=M2C_FIELD(p,u16 *,0x10);data=M2C_FIELD(p,u16 **,0xC);mask=*data;bit=func_020
 if(len!=M2C_FIELD(q,u16 *,0x814)){if(len>0x200)len=0x200;}
 if(len<4)return;
 if(!(mask&(1<<bit)))return;
-func_02007e20(data,q+(M2C_FIELD(q,u16 *,0x808)<<9),len);
+CopyU16(data,q+(M2C_FIELD(q,u16 *,0x808)<<9),len);
 M2C_FIELD(q+M2C_FIELD(q,u16 *,0x808)*2,u16 *,0x800)=(s32)M2C_FIELD(p,u16 *,0x1A)>>1;
 M2C_FIELD(q,u16 *,0x808)=(M2C_FIELD(q,u16 *,0x808)+1)&3;
 break;
@@ -319,7 +319,7 @@ break;
 }
 
 void func_02013888(void *p,u32 index,void *src) {
- void func_02007e20(void *,void *,u32);void FillU16(s32,void *,u32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
+ void CopyU16(void *,void *,u32);void FillU16(s32,void *,u32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
  u16 mask=1<<index; u16 slot; void *dst; s32 irq;
  if(!(M2C_FIELD(p,u16 *,0x80e)&mask))return;
  slot=M2C_FIELD(p,u16 *,0x808);
@@ -329,7 +329,7 @@ void func_02013888(void *p,u32 index,void *src) {
  if(!(M2C_FIELD(p,u16 *,slot<<9)&mask))return;
  }
  dst=(void *)func_02013afc(p,M2C_FIELD(p,u16 *,0x80e),(s32)&((u16 (*)[256])p)[slot][2],index);
- if(src)func_02007e20(src,dst,M2C_FIELD(p,u16 *,0x810));
+ if(src)CopyU16(src,dst,M2C_FIELD(p,u16 *,0x810));
  else FillU16(0,dst,M2C_FIELD(p,u16 *,0x810));
  irq=OS_DisableInterrupts();
  M2C_FIELD(p,u16 *,slot<<9)&=~mask;

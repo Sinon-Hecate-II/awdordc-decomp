@@ -180,8 +180,7 @@ u16 code=(u16)value;u16 command=(u16)((code&0x7f00)>>8);s32 status;
 TouchSample sample1,sample2;TouchResult *out; u8 touch,valid;u16 y,x;
 if(error){
 value=(u32)&gTouchDriverState;
-error=1<<command;
-((TouchState *)(void *)value)->flags38|=error;
+((TouchState *)(void *)value)->flags38=(u16)(((TouchState *)(void *)value)->flags38 | (1U<<command));
 if(((TouchState *)(void *)value)->callback)((TouchState *)(void *)value)->callback(command,4,0);return;
 }
 if(command==16){
@@ -208,14 +207,16 @@ break;
 case 1:M2C_FIELD(&gTouchDriverState,u16 *,0x36)=2;break;
 case 2:M2C_FIELD(&gTouchDriverState,u16 *,0x36)=0;break;
 }
-((TouchState *)&gTouchDriverState)->flags3a&=~(1<<command);
+value=(u32)&gTouchDriverState;
+((TouchState *)(void *)value)->flags3a=(u16)(~(1<<command)&((TouchState *)(void *)value)->flags3a);
 if(((TouchState *)&gTouchDriverState)->callback)((TouchState *)&gTouchDriverState)->callback(command,0,0);return;
 case 4:status=3;goto report;
 case 2:status=1;goto report;
 case 3:status=2;
 report:
+value=(u32)&gTouchDriverState;
 ((TouchState *)&gTouchDriverState)->flags38|=1<<command;
-((TouchState *)&gTouchDriverState)->flags3a&=~(1<<command);
+((TouchState *)&gTouchDriverState)->flags3a=(u16)(~(1<<command)&((TouchState *)(void *)value)->flags3a);
 if(((TouchState *)&gTouchDriverState)->callback)((TouchState *)&gTouchDriverState)->callback(command,(u8)status,0);
 return;
 default:SystemHalt();return;

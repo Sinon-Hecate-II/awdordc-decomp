@@ -42,7 +42,7 @@ void func_ov001_0217af80(s32 arg0) {
     s32 delta, remainder;
     u32 position;
     func_ov001_02183a08();
-    func_ov001_02172184();
+    Ov001_FreeSpriteObjects();
     if ((u32)M2C_FIELD(&gMapSelectState, u16 *, 2) > 4U) M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - 4;
     else M2C_FIELD(&gMapSelectState, u16 *, 2) = 0;
     remainder = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
@@ -70,7 +70,7 @@ void func_ov001_0217b03c(s32 arg0) {
     extern M2C_UNK gMapSelectState;
     s32 result;
     func_ov001_02183a08();
-    func_ov001_02172184();
+    Ov001_FreeSpriteObjects();
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) + 4;
     result = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
     if (result >= 4) {
@@ -225,13 +225,13 @@ void func_ov001_0217b578(void) {
     extern M2C_UNK data_ov001_0219072c;
     extern M2C_UNK data_ov001_02190744;
     extern M2C_UNK GX_LoadBGPltt;
-    extern M2C_UNK func_02004160;
-    extern M2C_UNK func_0200448c;
-    extern M2C_UNK func_020046cc;
-    Ov001_LoadAsset(&data_ov001_02190700, &func_02004160);
-    Ov001_LoadAsset(&data_ov001_02190714, &func_020046cc);
+    extern M2C_UNK GX_LoadOBJPltt;
+    extern M2C_UNK GX_LoadBG2Scr;
+    extern M2C_UNK GX_LoadBG2Char;
+    Ov001_LoadAsset(&data_ov001_02190700, &GX_LoadOBJPltt);
+    Ov001_LoadAsset(&data_ov001_02190714, &GX_LoadBG2Char);
     Ov001_LoadAsset(&data_ov001_0219072c, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_02190744, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_02190744, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 2;
@@ -241,12 +241,12 @@ void func_ov001_0217b578(void) {
 
 void func_ov001_0217b634(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217b688;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217b688);
 }
 
@@ -386,42 +386,42 @@ void func_ov001_0217b944(void) {
 #pragma optimization_level 4
 #pragma peephole off
 void func_ov001_0217ba1c(void) {
-    M2C_UNK func_ov001_02171cf8(void);
+    M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov001_0218c104(M2C_UNK);
+    M2C_UNK Ov001_ReleaseSprite(M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
-    void func_ov001_0218b368(s32, s32);
+    void Ov001_DisableVisiblePlanes(s32, s32);
     void Ov001_GetNameEntryMode(s32 *, s32);
-    void func_ov001_02175d64(s32, s32);
+    void Ov001_SetNextScreenMode(s32, s32);
     void Ov001_SetNameEntryMode(s32, s32);
     s32 Ov001_SetStepCallback(s32 *);
     M2C_UNK func_ov001_0218b71c(M2C_UNK *);
     extern void *gNameEntryState;
     extern void *data_ov001_02190758;
-    extern void func_02004160(void);
+    extern void GX_LoadOBJPltt(void);
     extern void InitMapListScreen(void);
     extern void func_ov001_02179ea8(void);
     extern void func_ov001_021828ac(void);
     s32 sp4, sp0;
     void *p;
-    func_ov001_02171cf8();
-    func_ov001_0218c104(M2C_FIELD(gNameEntryState, void **, 4));
+    Ov001_FreeOptionBackground();
+    Ov001_ReleaseSprite(M2C_FIELD(gNameEntryState, void **, 4));
     func_ov001_0218af70(0);
-    Ov001_LoadAsset((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&func_02004160);
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x15);
+    Ov001_LoadAsset((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&GX_LoadOBJPltt);
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_GetNameEntryMode(&sp4, &sp0);
     if (sp0 == 0) {
-        func_ov001_02175d64(2, 1);
+        Ov001_SetNextScreenMode(2, 1);
         Ov001_SetNameEntryMode(0, sp4);
         Ov001_SetStepCallback((s32 *)InitMapListScreen);
     } else {
         if (M2C_FIELD(gNameEntryState, u8 *, 0x2A) == 0) {
-            func_ov001_02175d64(0, 1);
+            Ov001_SetNextScreenMode(0, 1);
             Ov001_SetNameEntryMode(1, 0);
             Ov001_SetStepCallback((s32 *)func_ov001_02179ea8);
         } else {
-            func_ov001_02175d64(0, 0);
+            Ov001_SetNextScreenMode(0, 0);
             Ov001_SetNameEntryMode(0, 1);
             Ov001_SetStepCallback((s32 *)func_ov001_021828ac);
         }

@@ -1,5 +1,6 @@
 /* 29 functions from 0x021E24E8 to 0x021E3210 (ov002), found by ds-decomp. */
 #include "common.h"
+#include "ov002_panel.h"
 
 typedef struct SlotEntry { s16 value; u8 index:3; u8 rest:5; u8 pad; } SlotEntry;
 static inline void SetSlotIndex(SlotEntry *p, u8 index) { p->index=index; }
@@ -367,26 +368,30 @@ else *(u8*)(arg0+i*2+9)=0;
 #pragma opt_strength_reduction on
 s32 func_ov002_021e30d0(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
 
-void func_ov002_021e3100(void *a){
-extern u8 data_ov002_021f3104[];extern volatile u8 gPlayerSettings[];
-SlotEntry *p;s32 first,n,i;u32 index;u8 *src;void *entry;
-first=0;do{M2C_FIELD(a+((u32)first<<2),s16 *,0x22)=-1;first++;}while(first<5);
-if(!data_ov002_021f3104[(s16)M2C_FIELD(a,u8 *,0x64)*24])return;
-n=0;i=0;p=a+0x22;
+/* Build a versus screen player's status panel: clear its five stat entries, and
+ * while the player is in the match copy each selected stat's value from the CO's
+ * stat table (the panel's own table for the local player, the opponent's table
+ * for the other panel), tagging the entry with the stat's icon index. */
+void BuildPanelStatEntries(void *panel){
+extern u8 gVersusPlayerStates[];extern volatile u8 gPlayerSettings[];
+SlotEntry *slot;s32 clearIndex,n,orderIndex;u32 statIndex;u8 *statTable;void *entry;
+clearIndex=0;do{M2C_FIELD(panel+((u32)clearIndex<<2),s16 *,PANEL_ENTRIES)=-1;clearIndex++;}while(clearIndex<5);
+if(!gVersusPlayerStates[(s16)M2C_FIELD(panel,u8 *,PANEL_PLAYER)*24])return;
+n=0;orderIndex=0;slot=panel+PANEL_ENTRIES;
 do{
-index=M2C_FIELD(a+i,u8 *,0x17);
-if(M2C_FIELD(a,u8 *,0x64)==gPlayerSettings[0]){
-if(M2C_FIELD(a+index*2,u8 *,8)){
-src=M2C_FIELD(a,u8 **,4);
-p->value=src[0]+src[n+3];n++;
-SetSlotIndex(p,index);p++;
+statIndex=M2C_FIELD(panel+orderIndex,u8 *,PANEL_STAT_ORDER);
+if(M2C_FIELD(panel,u8 *,PANEL_PLAYER)==gPlayerSettings[0]){
+if(M2C_FIELD(panel+statIndex*2,u8 *,PANEL_STAT_STATE)){
+statTable=M2C_FIELD(panel,u8 **,PANEL_STAT_TABLE);
+slot->value=statTable[0]+statTable[n+3];n++;
+SetSlotIndex(slot,statIndex);slot++;
 }
-}else if(M2C_FIELD(a+index*2,u8 *,9)){
-src=M2C_FIELD(M2C_FIELD(a,void **,0x60),u8 **,4);
-p->value=src[0]+src[n+8];n++;
-SetSlotIndex(p,index);p++;
+}else if(M2C_FIELD(panel+statIndex*2,u8 *,PANEL_STAT_STATE+1)){
+statTable=M2C_FIELD(M2C_FIELD(panel,void **,PANEL_OTHER),u8 **,PANEL_STAT_TABLE);
+slot->value=statTable[0]+statTable[n+8];n++;
+SetSlotIndex(slot,statIndex);slot++;
 }
-i++;
-}while(i<5);
+orderIndex++;
+}while(orderIndex<5);
 }
 

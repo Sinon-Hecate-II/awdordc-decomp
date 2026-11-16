@@ -87,19 +87,19 @@ void func_ov007_02219d10(void){
     8x4 palette blocks placed per the row-0 table byte; flags the layer engine's
     DMA dirty bits (0x46 |= 2,2,1) before restoring the current engine. */
  extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
- s32 func_ov007_0221202c(s32,s32);u8 func_ov007_02211f00(void);
+ s32 GetEditorUnitCategoryCount(s32,s32);u8 func_ov007_02211f00(void);
  void SetTileRectPalette(void *,s32,s32,u16);
  s32 savedEngine,row,rowStart;
  savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
  row=0;rowStart=2;do{
- if(row==0)func_ov007_02219c58(17,rowStart,row,func_ov007_0221202c(8,row));
- else func_ov007_02219c58(17,rowStart,row,func_ov007_0221202c(0,row));
- func_ov007_02219c58(19,rowStart,row,func_ov007_0221202c(1,row));
- func_ov007_02219c58(21,rowStart,row,func_ov007_0221202c(2,row));
- func_ov007_02219c58(23,rowStart,row,func_ov007_0221202c(3,row));
- func_ov007_02219c58(25,rowStart,row,func_ov007_0221202c(4,row));
- func_ov007_02219c58(27,rowStart,row,func_ov007_0221202c(7,row));
- func_ov007_02219c58(29,rowStart,row,func_ov007_0221202c(9,row));
+ if(row==0)func_ov007_02219c58(17,rowStart,row,GetEditorUnitCategoryCount(8,row));
+ else func_ov007_02219c58(17,rowStart,row,GetEditorUnitCategoryCount(0,row));
+ func_ov007_02219c58(19,rowStart,row,GetEditorUnitCategoryCount(1,row));
+ func_ov007_02219c58(21,rowStart,row,GetEditorUnitCategoryCount(2,row));
+ func_ov007_02219c58(23,rowStart,row,GetEditorUnitCategoryCount(3,row));
+ func_ov007_02219c58(25,rowStart,row,GetEditorUnitCategoryCount(4,row));
+ func_ov007_02219c58(27,rowStart,row,GetEditorUnitCategoryCount(7,row));
+ func_ov007_02219c58(29,rowStart,row,GetEditorUnitCategoryCount(9,row));
  rowStart+=3;row++;
  }while(row<5);
  switch(func_ov007_02211f00()){
@@ -118,8 +118,8 @@ void func_ov007_02219d10(void){
  gCur3DSpriteEngine=savedEngine;
 }
 void func_ov007_02219f4c(void) {
-    u8 func_ov007_02211f90(void);
-    u8 func_ov007_02211fa0(void);
+    u8 GetMapEditorTerrainKind(void);
+    u8 GetMapEditorTerrainOwner(void);
     s32 func_ov000_0216cda4(s32);
     void *func_ov000_0216cdcc(s32);
     void *func_ov000_0216cdec(s32, s32);
@@ -136,8 +136,8 @@ void func_ov007_02219f4c(void) {
     void *temp_r4ptr;
     s32 old;
 
-    temp_r7 = func_ov007_02211f90();
-    temp_r4a = func_ov007_02211fa0();
+    temp_r7 = GetMapEditorTerrainKind();
+    temp_r4a = GetMapEditorTerrainOwner();
     temp_r5 = func_ov000_0216cda4(temp_r7);
     temp_r6ptr = func_ov000_0216cdcc(temp_r7);
     temp_r4ptr = func_ov000_0216cdec(temp_r7, temp_r4a);
@@ -215,7 +215,7 @@ void func_ov007_0221a160(void) {
     void DrawMapPreview(M2C_UNK, M2C_UNK);
     void func_020af04c(s32, s32, s32);
     void func_02099450(s32, s32, s32);
-    void func_02091d4c(s32);
+    void LoadScenePanelPalette(s32);
     void func_020a9a30(s32, s32, s32, M2C_UNK);
     M2C_UNK func_ov000_0216ce10(s32);
     void MI_CpuCopy32(M2C_UNK, M2C_UNK, s32);
@@ -306,7 +306,7 @@ void func_ov007_0221a160(void) {
 
     func_020af04c(3, 0xF, 6);
     func_02099450(0, 0, 1);
-    func_02091d4c(1);
+    LoadScenePanelPalette(1);
 
     func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
     func_020a9a30(1, 0, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2980);
@@ -339,7 +339,7 @@ void func_ov007_0221a160(void) {
 
     LoadFileToSpriteBuffer(&data_ov007_02220170, 0x3A0, 0x20);
 
-    func_02091d4c(0x1E);
+    LoadScenePanelPalette(0x1E);
 
     gCur3DSpriteEngine = savedEngine;
 

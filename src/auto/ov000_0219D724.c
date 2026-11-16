@@ -522,7 +522,7 @@ void func_ov000_0219e358(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_0218190c;
+    extern M2C_UNK RunAiRole2LoadedAction;
     s32 slotIndex;
     s32 stride;
     s8 *outputPtr;
@@ -561,7 +561,7 @@ void func_ov000_0219e358(void) {
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = &gAiUnitList;
     ScoreAiUnitsByMoveRange(0);
-    gAiUnitAction = &func_ov000_0218190c;
+    gAiUnitAction = &RunAiRole2LoadedAction;
     *gAiCommandState = 2;
 }
 

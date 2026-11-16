@@ -17,7 +17,7 @@ void func_ov003_021eccd4(void *arg0) {
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088f1c(s32);
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s16 GetSpriteAnimValue(void *);
@@ -163,7 +163,7 @@ void func_ov003_021eccd4(void *arg0) {
             if (var_r0_5 & 0xFF) {
                 if (func_ov003_021e6d28() != 0) {
                     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
-                    func_02088ff4(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
+                    Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
                 }
                 temp_r6 = M2C_FIELD(arg0, void **, 0x64);
                 var_r4 = 0;

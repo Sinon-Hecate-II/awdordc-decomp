@@ -4,7 +4,7 @@
 extern "C" {
 void func_020742f8(void);
 M2C_UNK func_020742e0(void);
-void *func_02072bac(void *, s32 *);
+void *DecodeExceptionValue(void *, s32 *);
 void *func_02072b20(void *, s32 *);
 s32 func_02073b4c(M2C_UNK,void *);
 void func_020746a4(void);
@@ -103,8 +103,8 @@ s32 func_02073b4c(M2C_UNK arg0, void *arg1) {
 extern "C" void func_02073bd0(void *arg0){
 u8 *p=M2C_FIELD(arg0,u8 **,20);s32 values[4];
 try{func_020742f8();}catch(...){
-void *q=func_02072bac(p+1,&values[0]);
-q=func_02072bac(q,&values[1]);
+void *q=DecodeExceptionValue(p+1,&values[0]);
+q=DecodeExceptionValue(q,&values[1]);
 values[3]=(s32)func_02072b20(q,&values[2]);
 if(func_02073b4c(M2C_FIELD(arg0,s32 *,8),values))func_020746a4();
 if(func_02073b4c((s32)data_021009a4,values)){void *exception=data_02100998;func_0207465c(data_021009bc,&exception,(void *)func_02073c78);}
@@ -138,7 +138,7 @@ void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
 u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     u8 func_02072da4(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);
-    void *func_02072bac(void *, M2C_UNK *);
+    void *DecodeExceptionValue(void *, M2C_UNK *);
     void *func_02072b20(void *, s32 *);
     M2C_UNK func_020742e0(void);
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
@@ -171,7 +171,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
             u8 *node = (u8 *)ctx.token.t2;
             values[0] = node[1] | (node[2] << 8) | (node[3] << 16) | (node[4] << 24);
             {
-                u8 *r = (u8 *)func_02072bac(node + 5, &values[1]);
+                u8 *r = (u8 *)DecodeExceptionValue(node + 5, &values[1]);
                 func_02072b20(r, &values[2]);
             }
             if (func_02074330(((CtxState_020739f8 *)arg0)->f0, values[0], arg2) != 0) {
@@ -182,8 +182,8 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
         case 15: {
             u8 *node = (u8 *)ctx.token.t2;
             u8 *r;
-            r = (u8 *)func_02072bac(node + 1, &operands.a);
-            r = (u8 *)func_02072bac(r, &operands.b);
+            r = (u8 *)DecodeExceptionValue(node + 1, &operands.a);
+            r = (u8 *)DecodeExceptionValue(r, &operands.b);
             r = (u8 *)func_02072b20(r, &operands.c);
             operands.d = (s32)r;
             if (func_02073b4c(((CtxState_020739f8 *)arg0)->f0, &operands.a) != 0) {
@@ -237,16 +237,16 @@ void func_02073eb8(void *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_02073f14(void *a){
-void func_02072c9c(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *func_02072bac(void *,M2C_UNK *); void *func_02072b20(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void func_0207453c(void *,void *);
+void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *func_02072b20(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void func_0207453c(void *,void *);
 s32 t[6]; s32 vals[4]; u8 *p;
-func_02072c9c(M2C_FIELD(a,s32 *,16),t);
+FindExceptionTableHandler(M2C_FIELD(a,s32 *,16),t);
 if(!t[1])func_020742e0();
 func_0207453c(a,t);
 if(M2C_FIELD(a,s32 *,0))M2C_FIELD(a,s32 *,12)=0;
 else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,t);if(!M2C_FIELD(a,s32 *,12))func_020742e0();}
 p=func_02073cdc(a,t,&vals[0]);
 vals[1]=p[1]|(p[2]<<8)|(p[3]<<16)|(p[4]<<24);
-func_02072b20(func_02072bac(p+5,&vals[2]),&vals[3]);
+func_02072b20(DecodeExceptionValue(p+5,&vals[2]),&vals[3]);
 func_02073148(a,t,p);
 func_02073eb8(a,vals[3],vals[0]);
 func_0207462c(a,t,t[0]+vals[2]);
@@ -467,7 +467,7 @@ s32 func_020744e0(void *arg0) {
 }
 
 void func_0207453c(void *arg0, void *arg1) {
-    void *func_02072bac(void *, M2C_UNK *);
+    void *DecodeExceptionValue(void *, M2C_UNK *);
     void *temp_r1;
     void *temp_r0_2;
     u8 flags;
@@ -501,9 +501,9 @@ void func_0207453c(void *arg0, void *arg1) {
     M2C_FIELD(arg0, u8 *, 0x6C) = var_r0;
     M2C_FIELD(arg0, u16 *, 0x68) = (u16) (M2C_FIELD(temp_r1, u8 *, 1) << 4);
     M2C_FIELD(arg0, u16 *, 0x68) = (u16) (M2C_FIELD(arg0, u16 *, 0x68) | 0x4000);
-    temp_r0_2 = func_02072bac((u8 *)temp_r1 + 2, (M2C_UNK *)((u8 *)arg0 + 0x60));
+    temp_r0_2 = DecodeExceptionValue((u8 *)temp_r1 + 2, (M2C_UNK *)((u8 *)arg0 + 0x60));
     if (temp_r4 != 0) {
-        func_02072bac(temp_r0_2, (M2C_UNK *)((u8 *)arg0 + 0x64));
+        DecodeExceptionValue(temp_r0_2, (M2C_UNK *)((u8 *)arg0 + 0x64));
     }
     if (temp_r4 != 0) {
         if (temp_r5 != 0) {
@@ -523,18 +523,18 @@ M2C_FIELD(arg0,void **,16)=&__exception_table_end__;
 return 1;
 }
 
-void func_020745fc(u8 *arg0) {
-    void *func_02072bac(void *, M2C_UNK *);
+void SkipExceptionDataHeader(u8 *arg0) {
+    void *DecodeExceptionValue(void *, M2C_UNK *);
     M2C_UNK sp0;
     u8 temp_r4;
     void *temp_r0;
 
     temp_r4 = *arg0;
-    temp_r0 = func_02072bac(arg0 + 2, &sp0);
+    temp_r0 = DecodeExceptionValue(arg0 + 2, &sp0);
     if (!(temp_r4 & 0x40)) {
         return;
     }
-    func_02072bac(temp_r0, &sp0);
+    DecodeExceptionValue(temp_r0, &sp0);
 }
 
 void func_020746f0(void) {

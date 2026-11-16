@@ -258,8 +258,8 @@ void func_02085788(s32 arg0) {
     s32 func_020c5708(s32);
     M2C_UNK func_020c5770(M2C_UNK, s32 *, s32 *);
     s32 func_ov010_022282b4(M2C_UNK);
-    s8 func_ov010_02229a08();
-    s32 func_ov010_02229a24();
+    s8 GetOnlineTransportPlayerId();
+    s32 GetOnlinePeerMask();
     void *GetLocalPlayerStatus();
     void *func_ov010_02229b0c(u8);
     extern s32 data_021020b8;
@@ -298,15 +298,15 @@ void func_02085788(s32 arg0) {
     if (func_ov010_022282b4(3) == 0) {
         return;
     }
-    temp_r10 = func_ov010_02229a24();
-    M2C_FIELD(&data_02157634, s8 *, 1) = func_ov010_02229a08();
+    temp_r10 = GetOnlinePeerMask();
+    M2C_FIELD(&data_02157634, s8 *, 1) = GetOnlineTransportPlayerId();
     temp_r0_2 = M2C_FIELD(temp_r0, s8 *, 0x27);
     switch (temp_r0_2) {                            /* irregular */
     case 0:
         temp_r5 = func_020c4acc();
         var_r7 = 0;
 loop_10:
-        if ((var_r7 != func_ov010_02229a08()) && (temp_r10 & (1 << var_r7)) && (temp_r0_3 = func_ov010_02229b0c(var_r7), (temp_r0_3 != NULL))) {
+        if ((var_r7 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r7)) && (temp_r0_3 = func_ov010_02229b0c(var_r7), (temp_r0_3 != NULL))) {
             M2C_FIELD(&data_02157634, u8 *, 4) = var_r7;
             temp_r6 = M2C_FIELD(temp_r0, s32 *, 0x20);
             sp8 = temp_r6;
@@ -342,10 +342,10 @@ loop_10:
         }
         MemSet(&data_02157638, (u8) (s8) data_021020b8, var_r2_2);
         out=(u8 *)&data_02157634;
-        temp_r8 = func_ov010_02229a08();
+        temp_r8 = GetOnlineTransportPlayerId();
         var_r9 = 0;
         do {
-            if ((var_r9 != func_ov010_02229a08()) && (temp_r10 & (1 << var_r9))) {
+            if ((var_r9 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r9))) {
                 temp_r6_2 = func_020a2370(temp_r8 + 1);
                 if (temp_r6_2 != func_020a2370(var_r9 + 1)) {
                     temp_r0_4 = func_ov010_02229b0c(var_r9);

@@ -7,7 +7,7 @@ extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020f
 #pragma opt_strength_reduction off
 s32 func_0205180c(void **a, void *b, char *text) {
 s32 func_0205817c(void **,char *,s32);
-s32 GetStringField(char *,M2C_UNK *,void *,s32);
+s32 gpiValueForKey(char *,M2C_UNK *,void *,s32);
 s32 ParseInt(char *);
 M2C_UNK func_02055bc0(void **,s32);
 s32 StringFind(char *,M2C_UNK *);
@@ -39,7 +39,7 @@ if(M2C_FIELD(p,s32 *,0x418)==0x106 && M2C_FIELD(p,s32 *,0x1a0)){
 func_02055bc0(a,M2C_FIELD(p,s32 *,0x1a0));
 M2C_FIELD(p,s32 *,0x19c)=0;M2C_FIELD(p,s32 *,0x1a0)=0;
 }else if(M2C_FIELD(p,s32 *,0x418)==0x201){
-if(GetStringField(text,&data_020fe564,work.buf,512))M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
+if(gpiValueForKey(text,&data_020fe564,work.buf,512))M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
 }
 if(StringFind(text,&data_020fe56c)){gpiSetError(a,M2C_FIELD(p,s32 *,0x418),p);gpiCallErrorCallback(a,4,1);return 4;}
 else {gpiSetError(a,M2C_FIELD(p,s32 *,0x418),p);gpiCallErrorCallback(a,4,0);return 4;}
@@ -48,7 +48,7 @@ q=M2C_FIELD(b,void **,4);
 switch(M2C_FIELD(b,s32 *,20)){
 case 1:
 if(StringCompareN(text,&data_020fe574,5)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(!GetStringField(text,&data_020fe488,q,128)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe488,q,128)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
 if(M2C_FIELD(q,s32 *,0x304)){
 result=SendNewUserProfile(a,q);if(result)return result;
 M2C_FIELD(b,s32 *,20)=3;
@@ -59,28 +59,28 @@ M2C_FIELD(b,s32 *,20)=2;
 break;
 case 3:
 if(StringCompareN(text,&data_020fe5ac,5)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(!GetStringField(text,&data_020fe4bc,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe4bc,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x19c)=ParseInt(work.buf);
-if(!GetStringField(text,&data_020fe4c8,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe4c8,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
 result=func_020511dc(a,q);if(result)return result;
 M2C_FIELD(b,s32 *,20)=2;break;
 case 2:
 if(StringCompareN(text,&data_020fe5e4,5)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(!GetStringField(text,&data_020fe5ec,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe5ec,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x198)=ParseInt(work.buf);
-if(!GetStringField(text,&data_020fe4bc,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe4bc,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x19c)=ParseInt(work.buf);
-if(!GetStringField(text,&data_020fe4c8,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe4c8,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
-if(!GetStringField(text,&gGsKeyUniqueNick,work.token,21))work.token[0]=0;
-if(!GetStringField(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
+if(!gpiValueForKey(text,&gGsKeyUniqueNick,work.token,21))work.token[0]=0;
+if(!gpiValueForKey(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
 if(M2C_FIELD(q,s8 *,0xc2))chosen=(char *)q+0xc2;
 else if(M2C_FIELD(p,s8 *,0x12f))chosen=(char *)p+0x12f;
 else {StringFormat(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);chosen=work.name;}
 StringFormat(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
 Md5Hex(work.buf,StringLength(work.buf),work.hash);
-if(!GetStringField(text,&data_020fe600,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
+if(!gpiValueForKey(text,&data_020fe600,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
 if(ByteCompareN(work.hash,work.buf,32)){gpiSetError(a,0x108,&data_020fe608);gpiCallErrorCallback(a,3,1);return 3;}
 if(M2C_FIELD(p,s32 *,0x100)){record=func_02055aa0(a,M2C_FIELD(p,s32 *,0x1a0));record[0]=M2C_FIELD(p,s32 *,0x1a0);record[1]=M2C_FIELD(p,s32 *,0x19c);}
 M2C_FIELD(p,s32 *,0x1d8)=3;

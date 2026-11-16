@@ -571,13 +571,13 @@ s32 func_0209d790(void *arg0) {
 }
 
 s32 func_0209d7d8(void *arg0) {
-    void func_020883f0(u8);
+    void LoadResource(u8);
     void func_020884f8(u8);
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 8);
     if (M2C_FIELD(temp_r1, s32 *, 4) != 0) {
-        func_020883f0(M2C_FIELD(temp_r1, s16 *, 2));
+        LoadResource(M2C_FIELD(temp_r1, s16 *, 2));
     } else {
         func_020884f8(M2C_FIELD(temp_r1, s16 *, 2));
     }

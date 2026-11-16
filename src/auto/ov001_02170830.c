@@ -93,12 +93,12 @@ M2C_FIELD(data_ov001_02193cc4,s32 *,0)=func_ov001_0218c884(1,func_ov001_021714d0
 #pragma merge_constants off
 void func_ov001_02171494(void) {
     M2C_UNK func_ov001_0218b71c(void **);
-    M2C_UNK func_ov001_0218c104(s32);
+    M2C_UNK Ov001_ReleaseSprite(s32);
     M2C_UNK func_ov001_0218c94c(M2C_UNK, s32);
     extern void *data_ov001_02193cc4;
     extern void *gOv001IconRow;
     func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193cc4, s32 *, 0));
-    func_ov001_0218c104(M2C_FIELD(data_ov001_02193cc4, s32 *, 4));
+    Ov001_ReleaseSprite(M2C_FIELD(data_ov001_02193cc4, s32 *, 4));
     func_ov001_0218b71c(&gOv001IconRow - 1);
 }
 #pragma merge_constants reset

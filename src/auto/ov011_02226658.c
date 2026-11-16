@@ -292,7 +292,7 @@ u32 func_ov011_02226658(void *arg0) {
 }
 #pragma opt_common_subs reset
 void func_ov011_02227048(void *a){
-s32 func_ov011_02226550(s32 *,s32);extern u16 **g3DSpriteEngineSub,**g3DSpriteEngineMain,**gCur3DSpriteEngine;extern s32 data_ov011_02228c30;
+s32 LoadOv011EffectLayer(s32 *,s32);extern u16 **g3DSpriteEngineSub,**g3DSpriteEngineMain,**gCur3DSpriteEngine;extern s32 data_ov011_02228c30;
 u16 *volatile p0;
 u16 *volatile p1;
 u16 *volatile p2;
@@ -342,6 +342,6 @@ p17=*gCur3DSpriteEngine;*p17=*p17|64;
 p18=*gCur3DSpriteEngine;*p18=*p18|128;
 p19=*gCur3DSpriteEngine;*p19=*p19&~256;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x3c)=0;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x44)=0;
-func_ov011_02226550(&data_ov011_02228c30,2);gCur3DSpriteEngine=old;
+LoadOv011EffectLayer(&data_ov011_02228c30,2);gCur3DSpriteEngine=old;
 }
 #pragma opt_common_subs reset

@@ -213,9 +213,9 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
 }
 void MenuSpriteUpdate(void *arg0) {
     M2C_UNK func_02088044(s32);
-    s32 func_02089064();
+    s32 Is3DSpriteVisible();
     void UpdateUnitSpriteFrame(void *);
-    if (func_02089064() != 0) {
+    if (Is3DSpriteVisible() != 0) {
         func_02088044(M2C_FIELD(arg0, s32 *, 0x64));
     }
     UpdateUnitSpriteFrame(arg0);

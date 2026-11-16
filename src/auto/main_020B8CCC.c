@@ -8,7 +8,7 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 func_020b846c(s32);void RedrawListRows(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 func_02001fb4(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
+s32 func_020b846c(s32);void RedrawListRows(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
@@ -34,8 +34,8 @@ if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x4c)))ScrollListDown(a);
 if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x50))){func_020b876c();return;}
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 h=M2C_FIELD(a,s16*,0x42)<<12;pos=M2C_FIELD(a,s16*,0x40)<<12;
-size=((s64)func_02001fb4(0x62000,h)*0x6000+0x800)>>12;
-v=MulUiB8ccc(func_02001fb4(0x62000-size,h-0x6000),pos);
+size=((s64)FX_Div(0x62000,h)*0x6000+0x800)>>12;
+v=MulUiB8ccc(FX_Div(0x62000-size,h-0x6000),pos);
 t=size>>12;if(t>98)t=98;else if(t<1)t=1;
 pal=0x35c;
 DrawFrameBorder(248,(v>>12)+40,2,t,((pal+0xa3)&(pal>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0xb000,0,2);
@@ -195,7 +195,7 @@ func_020b9874((s8)gProductionMenuState);func_01ffa3dc(&data_021291b0,7);
 }
 
 void func_020b9874(s8 mask) {
-    s32 func_020b9e20(s32, s32);
+    s32 CanBuildUnitKind(s32, s32);
     s32 GetUnitBuildCostTimes10(s32, s32);
     extern s8 data_ov000_021aab94[];
     extern u8 gUnitKindStats[];
@@ -215,7 +215,7 @@ void func_020b9874(s8 mask) {
                 void **gp = gCurrentMap;
                 void *g = *gp;
                 u16 idx = *(u16 *)((u8 *)g + 0x52a4);
-                if (func_020b9e20((s32)&((u8 *)g)[0x52a4], kind) != 0) {
+                if (CanBuildUnitKind((s32)&((u8 *)g)[0x52a4], kind) != 0) {
                     void *g2 = *gp;
                     s32 base = GetUnitBuildCostTimes10(idx, kind);
                     s32 total = *(s32 *)((u8 *)g2 + idx * 0x8c + 0x67a4);

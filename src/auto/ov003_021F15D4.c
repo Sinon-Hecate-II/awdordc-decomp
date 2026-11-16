@@ -6,7 +6,7 @@ void func_020a9a30(s32,s32,s32,void *);
 func_020a9a30(2,2,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(m<<5));
 }
 
-s32 func_ov003_021f15d4(void) {
+s32 GetSceneSlideDirection(void) {
     s32 func_ov003_021f1584();
     s32 func_ov003_021f15ac();
     u8 func_ov003_021f1bfc(void);
@@ -19,7 +19,7 @@ s32 func_ov003_021f15d4(void) {
     }
 }
 
-s32 func_ov003_021f1608(void) {
+s32 GetSceneSlideOffset(void) {
     s32 func_ov003_021f1594();
     s32 func_ov003_021f15bc();
     u8 func_ov003_021f1bfc(void);
@@ -177,7 +177,7 @@ gCur3DSpriteEngine=old;
 M2C_FIELD(&gSceneLayerConfig,void **,0)=a;
 }
 
-void func_ov003_021f1a58(void) {
+void DeleteOv003SceneSprite(void) {
     M2C_UNK DeleteSpriteObject(s32);
     extern u8 gOv003SceneState;
     DeleteSpriteObject(M2C_FIELD(&gOv003SceneState, s32 *, 0x10));
@@ -454,21 +454,21 @@ void func_ov003_021f242c(u16 *arg0) {
 }
 
 void func_ov003_021f24ac(void *arg0, void *arg1) {
-    void func_02007e20(void *, void *, u32);
+    void CopyU16(void *, void *, u32);
     extern M2C_UNK data_ov003_022111de;
     extern M2C_UNK data_ov003_022111d4;
-    func_02007e20(arg0, &data_ov003_022111de, 10);
-    func_02007e20(arg1, &data_ov003_022111d4, 10);
+    CopyU16(arg0, &data_ov003_022111de, 10);
+    CopyU16(arg1, &data_ov003_022111d4, 10);
     func_ov003_021f242c((u16 *)&data_ov003_022111de);
     func_ov003_021f242c((u16 *)&data_ov003_022111d4);
 }
 
 void func_ov003_021f24ec(void *arg0, void *arg1) {
-    void func_02007e20(void *, void *, u32);
+    void CopyU16(void *, void *, u32);
     extern M2C_UNK data_ov003_022111de;
     extern M2C_UNK data_ov003_022111d4;
-    func_02007e20(&data_ov003_022111de, arg0, 10);
-    func_02007e20(&data_ov003_022111d4, arg1, 10);
+    CopyU16(&data_ov003_022111de, arg0, 10);
+    CopyU16(&data_ov003_022111d4, arg1, 10);
 }
 
 M2C_UNK func_ov003_021f2524(M2C_UNK *arg0) {

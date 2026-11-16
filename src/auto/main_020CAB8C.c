@@ -7,7 +7,7 @@
  * cargo count (gUnitKindCargoCount[kind]). */
 typedef struct UnitCB9 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 hp; u8 tail[6]; } UnitCB9;
 typedef struct UnitHealthCB { u8 pad[6]; u16 health:7; u16 flags:9; } UnitHealthCB;
-extern u8 data_0212b1b8[][4];
+extern u8 gMapCursorDirs[][4];
 
 void func_020cab8c(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
@@ -16,19 +16,19 @@ void func_020cab8c(void) {
 }
 
 #pragma optimization_level 4
-s32 func_020caba4(s32 a,s32 b,s32 c){
+s32 FindMapCursorOptionAt(s32 a,s32 b,s32 c){
  extern void **gCurrentMap;
  s32 i=0;void *p;
  do{
- if(c&data_0212b1b8[i][0]){
+ if(c&gMapCursorDirs[i][0]){
  p=*gCurrentMap;
- if(a==M2C_FIELD(p,s16 *,0x52dc)+(s8)data_0212b1b8[i][2] && b==M2C_FIELD(p,s16 *,0x52de)+(s8)data_0212b1b8[i][3])return i;
+ if(a==M2C_FIELD(p,s16 *,0x52dc)+(s8)gMapCursorDirs[i][2] && b==M2C_FIELD(p,s16 *,0x52de)+(s8)gMapCursorDirs[i][3])return i;
  } i++;
  }while(i<4);return -1;
 }
-s32 func_020cac1c(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&data_0212b1b8[a][0]));return a;}
+s32 NextMapCursorOption(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
 
-s32 func_020cac3c(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&data_0212b1b8[a][0]));return a;}
+s32 PrevMapCursorOption(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
 
 void func_020cac5c(void *arg0) {
  M2C_UNK FillMapLayer(M2C_UNK); M2C_UNK SelectMapLayer(void *); M2C_UNK func_0207a748(M2C_UNK);
@@ -40,7 +40,7 @@ void func_020cac5c(void *arg0) {
  SelectMapLayer((u8 *)*gCurrentMap+0x1e30);FillMapLayer(-1);
  p=*gCurrentMap;func_020cdf30(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);func_0207a748(0);
  M2C_FIELD(arg0,s16 *,0x6c)=n;M2C_FIELD(arg0,s16 *,0x6e)=3;
- M2C_FIELD(arg0,s16 *,0x6e)=func_020cac1c(M2C_FIELD(arg0,s16 *,0x6e),n);
+ M2C_FIELD(arg0,s16 *,0x6e)=NextMapCursorOption(M2C_FIELD(arg0,s16 *,0x6e),n);
 }
 
 void func_020cad00(s32 arg0) {
@@ -51,48 +51,52 @@ void func_020cad00(s32 arg0) {
     PlaySoundAtTile(0x7C);
 }
 
-s32 func_020cad1c(s32 *arg0, s32 arg1) {
-    s32 func_020bcbd8(void);
-    s32 func_020cac1c(s32, s32);
-    s32 func_020cac3c(s32, s32);
+/* One frame of the map's directional cursor: cycle the selected option among
+ * the available ones (right/down steps forward, left/up back), move the target
+ * cursor onto that option's neighbour tile, and return the confirm (0x10) or
+ * cancel (0x20) key action. */
+s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
+    s32 GetCursorCycleKey(void);
+    s32 NextMapCursorOption(s32, s32);
+    s32 PrevMapCursorOption(s32, s32);
     void func_020bda88(s32 *, s32);
     void PlaySoundEffect(s32);
     void MoveMapCursorToTarget(s32);
     s32 GetKeyActionFlags(void);
     s32 func_020bdbf4(s32);
     extern void **gCurrentMap;
-    extern s8 data_0212b1ba[];
-    extern s8 data_0212b1bb[];
-    s32 sp0;
-    s32 old;
-    s32 result_r6;
+    extern s8 gMapCursorDirDX[];
+    extern s8 gMapCursorDirDY[];
+    s32 selected;
+    s32 previous;
+    s32 keys;
     void *map;
 
-    sp0 = *arg0;
-    old = *arg0;
-    result_r6 = func_020bcbd8();
-    if (result_r6 & 8) {
-        sp0 = func_020cac1c(sp0, arg1);
+    selected = *option;
+    previous = *option;
+    keys = GetCursorCycleKey();
+    if (keys & 8) {
+        selected = NextMapCursorOption(selected, optionMask);
     }
-    if (result_r6 & 4) {
-        sp0 = func_020cac3c(sp0, arg1);
+    if (keys & 4) {
+        selected = PrevMapCursorOption(selected, optionMask);
     }
-    func_020bda88(&sp0, arg1);
-    if (sp0 != old) {
-        *arg0 = sp0;
+    func_020bda88(&selected, optionMask);
+    if (selected != previous) {
+        *option = selected;
         PlaySoundEffect(0x1001A);
     }
     map = *gCurrentMap;
-    M2C_FIELD(map, s16 *, 0x52C2) = (s16)(M2C_FIELD(map, s16 *, 0x52DC) + data_0212b1ba[sp0 * 4]);
+    M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X) = (s16)(M2C_FIELD(map, s16 *, MAP_CURSOR_X) + gMapCursorDirDX[selected * 4]);
     map = *gCurrentMap;
-    M2C_FIELD(map, s16 *, 0x52C4) = (s16)(M2C_FIELD(map, s16 *, 0x52DE) + data_0212b1bb[sp0 * 4]);
+    M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y) = (s16)(M2C_FIELD(map, s16 *, MAP_CURSOR_Y) + gMapCursorDirDY[selected * 4]);
     MoveMapCursorToTarget(1);
-    result_r6 = GetKeyActionFlags();
-    result_r6 = result_r6 | func_020bdbf4(arg1);
-    if (result_r6 & 0x20) {
+    keys = GetKeyActionFlags();
+    keys = keys | func_020bdbf4(optionMask);
+    if (keys & 0x20) {
         return 0x20;
     }
-    if (result_r6 & 0x10) {
+    if (keys & 0x10) {
         return 0x10;
     }
     return 0;
@@ -102,7 +106,7 @@ void func_020cae2c(void *p){
 extern void **gCurrentMap; extern s32 data_0215be0c;
 M2C_UNK func_020d472c();M2C_UNK func_020c75cc();void DeleteSpriteObject(void *);void func_01ffa6fc(void *);void func_020c93fc(u8,u8);
 s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
-flags=func_020cad1c(&a,mask);
+flags=UpdateMapCursorOption(&a,mask);
 M2C_FIELD(p,s16 *,0x6e)=a;
 if(flags&32){
 func_020d472c();func_020c75cc();
@@ -299,12 +303,12 @@ return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
 
 #pragma opt_instruction_scheduling off
 void func_020cb704(void *a) {
-s32 IsSupplyTargetAt(s32,s32); extern s32 data_0215be0c; extern void **gCurrentMap; extern u8 data_0212b1b8[][4];
+s32 IsSupplyTargetAt(s32,s32); extern s32 data_0215be0c; extern void **gCurrentMap; extern u8 gMapCursorDirs[][4];
 u16 i=0; data_0215be0c=0;
 do {
 void *p=*gCurrentMap;
-s32 n=IsSupplyTargetAt(M2C_FIELD(p,s16*,0x52dc)+(s8)data_0212b1b8[i][2],M2C_FIELD(p,s16*,0x52de)+(s8)data_0212b1b8[i][3]);
-{u32 mask=data_0212b1b8[i][0]; data_0215be0c = (u32)data_0215be0c | mask*(u32)n;} i++;
+s32 n=IsSupplyTargetAt(M2C_FIELD(p,s16*,0x52dc)+(s8)gMapCursorDirs[i][2],M2C_FIELD(p,s16*,0x52de)+(s8)gMapCursorDirs[i][3]);
+{u32 mask=gMapCursorDirs[i][0]; data_0215be0c = (u32)data_0215be0c | mask*(u32)n;} i++;
 }while(i<4);
 M2C_FIELD(a,s16*,0x34)=0;
 }
@@ -325,8 +329,8 @@ if(!M2C_FIELD(arg0,s16 *,0x36))SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x
 func_020d468c();
 return;
 }
-if(data_0215be0c&data_0212b1b8[i][0]){
-m=*gCurrentMap;q=(u8 *)data_0212b1b8+i*4;
+if(data_0215be0c&gMapCursorDirs[i][0]){
+m=*gCurrentMap;q=(u8 *)gMapCursorDirs+i*4;
 func_020cb6a4(M2C_FIELD((M2C_FIELD(m+2*(M2C_FIELD(m,s16 *,0x52de)+M2C_FIELD(q,s8 *,3)),u16 *,0x3758)+(M2C_FIELD(q,s8 *,2)+(s32)(m+M2C_FIELD(m,s16 *,0x52dc)))),u8 *,0x508)*14+(m+0x59a4));
 M2C_FIELD(arg0,s16 *,0x34)++;
 }else{M2C_FIELD(arg0,s16 *,0x34)++;}goto loop;

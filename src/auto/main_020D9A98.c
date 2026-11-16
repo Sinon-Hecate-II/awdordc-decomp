@@ -261,7 +261,7 @@ void func_020da480(void *arg0) {
     M2C_UNK ResetPlayerMask(void);
     M2C_UNK func_02086330(void);
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, void *);
-    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK SetFileDirectory(void *);
     M2C_UNK GetLocalizedFileName(void *);
@@ -336,7 +336,7 @@ void func_020da480(void *arg0) {
     *((u8 *)pcl + 0x53) = 0;
     ((u8 *)*gCur3DSpriteEngine)[0x46] |= 2;
 
-    func_02091d4c(9);
+    LoadScenePanelPalette(9);
     Clear3DSpriteLayer(0);
     SetFileDirectory(data_0212d1f4);
     r0v = GetLocalizedFileName(data_0212d1fc);

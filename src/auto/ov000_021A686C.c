@@ -241,13 +241,13 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
 }
 #pragma opt_propagation off
 u8 func_ov000_021a72c0(u32 arg0){
-s32 func_020b9e20(u16);
+s32 CanBuildUnitKind(u16);
 extern int *data_027e0058;extern s8 data_ov000_021aab78[];extern void *data_ov000_021df57c;
 u8 result=0;
 if(arg0>=27)return result;
 if(data_ov000_021aab78[arg0]==-1)return result;
 if(((u8*)data_ov000_021df57c+(arg0-1)*12)[20]==0)return result;
-result=func_020b9e20(*(u16*)((u8*)*data_027e0058+0x52a4))!=0;
+result=CanBuildUnitKind(*(u16*)((u8*)*data_027e0058+0x52a4))!=0;
 return result;
 }
 #pragma opt_propagation reset

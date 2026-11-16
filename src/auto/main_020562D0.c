@@ -284,7 +284,7 @@ code=ParseInt(value);
 if(code)M2C_FIELD(ctx,s32*,0x418)=code;
 extra=0;
 if(!code){
-if(!GetStringField(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){gpiSetError(a,1,data_020ff150);gpiCallErrorCallback(a,3,1);return 3;}}
+if(!gpiValueForKey(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){gpiSetError(a,1,data_020ff150);gpiCallErrorCallback(a,3,1);return 3;}}
 else extra=ParseInt(value);
 }
 entry=gpiMalloc(8);if(!entry){gpiSetErrorString(a,gGpiSearchMsgOutOfMemory);return 1;}M2C_FIELD(entry,s32*,0)=code;M2C_FIELD(entry,s32*,4)=extra;
@@ -301,7 +301,7 @@ code=ParseInt(value);
 if(code)M2C_FIELD(ctx,s32*,0x418)=code;
 extra=0;
 if(1){
-if(!GetStringField(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){gpiSetError(a,1,data_020ff150);gpiCallErrorCallback(a,3,1);return 3;}}
+if(!gpiValueForKey(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){gpiSetError(a,1,data_020ff150);gpiCallErrorCallback(a,3,1);return 3;}}
 else extra=ParseInt(value);
 }
 entry=gpiMalloc(8);if(!entry){gpiSetErrorString(a,gGpiSearchMsgOutOfMemory);return 1;}M2C_FIELD(entry,s32*,0)=code;M2C_FIELD(entry,s32*,4)=extra;

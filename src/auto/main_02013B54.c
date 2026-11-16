@@ -6,7 +6,7 @@ s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK func_020067c4(s32,M2C_UNK); s3
 
 s32 func_02013bc8(M2C_UNK a,u32 b,s32 c,s32 d){ s32 r=func_0201146c();if(r)return r;if(b>3)return 6;if(b){if(!d)return 6;func_020067c4(d,80);}func_020112b4(39,a);r=func_02011324(39,3,b,d,c);if(!r)r=2;return r;}
 
-s32 func_02013c44(M2C_UNK a,s32 b,u32 c,s32 d,u16 e,u8 f){ M2C_UNK func_02007e20(s32,M2C_UNK *,u32);extern M2C_UNK data_02131100;s32 r=func_020114b4(2,7,9);if(r)return r;if(!b)return 6;if(c>112)return 6;func_02007e20(b,&data_02131100,c);func_020067c4(&data_02131100,c);func_020112b4(24,a);r=func_02011324(24,5,&data_02131100,c,d,(s32)e,(s32)f);if(!r)r=2;return r;}
+s32 func_02013c44(M2C_UNK a,s32 b,u32 c,s32 d,u16 e,u8 f){ M2C_UNK CopyU16(s32,M2C_UNK *,u32);extern M2C_UNK data_02131100;s32 r=func_020114b4(2,7,9);if(r)return r;if(!b)return 6;if(c>112)return 6;CopyU16(b,&data_02131100,c);func_020067c4(&data_02131100,c);func_020112b4(24,a);r=func_02011324(24,5,&data_02131100,c,d,(s32)e,(s32)f);if(!r)r=2;return r;}
 
 s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
     s32 func_0201146c();

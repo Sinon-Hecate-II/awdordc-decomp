@@ -173,29 +173,29 @@ void func_0209713c(s8 arg0) {
 }
 
 void func_02097150(M2C_UNK arg0, s16 arg1) {
-    s32 *func_02091f18();
-    M2C_FIELD(func_02091f18(), s16 *, 4) = arg1;
+    s32 *GetScenePanelState();
+    M2C_FIELD(GetScenePanelState(), s16 *, 4) = arg1;
 }
 
-void func_02097164(s32 a,s8 b) { s32 *func_02091f18(); M2C_FIELD(func_02091f18(),s8 *,6)=b; }
+void func_02097164(s32 a,s8 b) { s32 *GetScenePanelState(); M2C_FIELD(GetScenePanelState(),s8 *,6)=b; }
 
-void func_02097178(s32 a,s32 b) { s32 *func_02091f18(); s32 p; M2C_FIELD(func_02091f18(),u8 *,7)=b; p=func_0209e9dc((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
+void func_02097178(s32 a,s32 b) { s32 *GetScenePanelState(); s32 p; M2C_FIELD(GetScenePanelState(),u8 *,7)=b; p=FindScenePanel((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
 
-void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=func_0209e9dc((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)func_02098e2c(r,0);else func_02098e2c(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
+void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)func_02098e2c(r,0);else func_02098e2c(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
 
-void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=func_0209e9dc((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);func_02098e2c(r,b);func_0209e320(p); }
+void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);func_02098e2c(r,b);func_0209e320(p); }
 
 void func_02097280(s32 arg0) {
     M2C_UNK func_02088db8(void *, s32);
     M2C_UNK Show3DSprite(s32);
-    M2C_UNK func_02088ea8(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK Slide3DSpriteIn(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 func_020abe90(u8);
     void *temp_r0;
     void *temp_r7;
     s32 var_r8;
     s32 temp_r4;
 
-    temp_r0 = func_0209e9dc(2);
+    temp_r0 = FindScenePanel(2);
     if (temp_r0 == NULL) {
         return;
     }
@@ -207,11 +207,11 @@ void func_02097280(s32 arg0) {
     }
     switch (arg0) {                                 /* irregular */
     case 0:
-        func_02088ea8(temp_r7, -0x40, 0, 0, 0, var_r8);
+        Slide3DSpriteIn(temp_r7, -0x40, 0, 0, 0, var_r8);
         func_02088db8(temp_r7, var_r8);
         break;
     case 1:
-        func_02088ea8(temp_r7, 0xA0, 0, 0x60, 0, var_r8);
+        Slide3DSpriteIn(temp_r7, 0xA0, 0, 0x60, 0, var_r8);
         func_02088db8(temp_r7, var_r8);
         break;
     }
@@ -229,7 +229,7 @@ void func_02097348(s32 arg0) {
     long var_r8;
     register unsigned temp_r4;
 
-    temp_r0 = func_0209e9dc(2);
+    temp_r0 = FindScenePanel(2);
     if (temp_r0 == NULL) {
         return;
     }
@@ -257,14 +257,14 @@ void func_02097410(void) {
 
 }
 
-void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=func_0209e9dc(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);func_02098e2c(r,b); }
+void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);func_02098e2c(r,b); }
 
 void func_0209747c(M2C_UNK arg0, s32 arg1) {
     s32 temp_r0;
     s32 temp_r0_3;
     void *temp_r0_2;
 
-    temp_r0 = func_0209e9dc(2);
+    temp_r0 = FindScenePanel(2);
     if (temp_r0 == 0) {
         return;
     }
@@ -283,7 +283,7 @@ void func_0209747c(M2C_UNK arg0, s32 arg1) {
 void Build3DSpriteScene(s32 spriteData) {
     s32 Get3DSpriteCount();
     s32 Get3DSpriteTarget();
-    void func_020943a8(s32);
+    void SetMenuCursor(s32);
     M2C_UNK func_02098e04(void *, s32, u16);
     M2C_UNK func_020990d4(void *, s32, u16);
     M2C_UNK func_0209e184(void *, M2C_UNK, M2C_UNK, u16);
@@ -387,51 +387,52 @@ loop_17:
         screen = nextScreen;
     } while (nextScreen < 2);
     gCur3DSpriteEngine = savedEngine;
-    func_020943a8(-1);
+    SetMenuCursor(-1);
 }
 
 void func_02097768(void) {
 
 }
 
-s32 func_0209776c(s32 arg0) {
-    s32 func_02089064(void);
+/* Slide a hidden scene panel into its screen band and select it if no panel is active. */
+s32 ShowScenePanel(s32 panelIndex) {
+    s32 Is3DSpriteVisible(void);
     s32 func_020abe90(u8);
-    M2C_UNK func_02088ea8(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209e9dc(M2C_UNK);
-    void func_0209e1b0(void *);
-    s32 *func_02091f18();
+    M2C_UNK Slide3DSpriteIn(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK FindScenePanel(M2C_UNK);
+    void ReloadScenePanelGraphics(void *);
+    s32 *GetScenePanelState();
     s32 func_02091f08(void);
-    void func_02091d4c(M2C_UNK);
+    void LoadScenePanelPalette(M2C_UNK);
     s32 GetMenuCursor(void);
-    void func_020943a8(s32);
-    void *temp_r4;
-    s32 var_r6;
-    s32 *temp_r5;
+    void SetMenuCursor(s32);
+    void *panel;
+    s32 slideFrames;
+    ScenePanelState *panelState;
 
-    temp_r4 = (void *) func_0209e9dc((u16) arg0);
-    if (temp_r4 != NULL && func_02089064() == 0) {
-        func_0209e1b0(temp_r4);
-        var_r6 = 8;
-        if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r4, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
-            var_r6 = 0;
+    panel = (void *) FindScenePanel((u16) panelIndex);
+    if (panel != NULL && Is3DSpriteVisible() == 0) {
+        ReloadScenePanelGraphics(panel);
+        slideFrames = 8;
+        if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+            slideFrames = 0;
         }
-        switch (arg0) {
-        case 0:
-            func_02088ea8(temp_r4, 0, -0x40, 0, 0, var_r6);
+        switch (panelIndex) {
+        case SCENE_PANEL_TOP:
+            Slide3DSpriteIn(panel, 0, -0x40, 0, 0, slideFrames);
             break;
-        case 1:
-            func_02088ea8(temp_r4, -0x100, 0x40, 0, 0x40, var_r6);
+        case SCENE_PANEL_MIDDLE:
+            Slide3DSpriteIn(panel, -0x100, 0x40, 0, 0x40, slideFrames);
             break;
-        case 2:
-            func_02088ea8(temp_r4, 0, 0xc0, 0, 0x80, var_r6);
+        case SCENE_PANEL_BOTTOM:
+            Slide3DSpriteIn(panel, 0, 0xc0, 0, 0x80, slideFrames);
             break;
         }
-        temp_r5 = func_02091f18(arg0);
-        M2C_FIELD(temp_r5, u16 *, 0x8) = (u16) func_02091f08();
-        func_02091d4c(M2C_FIELD(temp_r5, u8 *, 0x6));
+        panelState = (ScenePanelState *) GetScenePanelState(panelIndex);
+        panelState->unk_08 = (u16) func_02091f08();
+        LoadScenePanelPalette(panelState->palette);
         if (GetMenuCursor() < 0) {
-            func_020943a8(arg0);
+            SetMenuCursor(panelIndex);
         }
         return 1;
     }
@@ -439,15 +440,15 @@ s32 func_0209776c(s32 arg0) {
 }
 
 s32 func_0209787c(s32 arg0) {
-    s32 func_02089064(void);
+    s32 Is3DSpriteVisible(void);
     s32 func_020abe90(u8);
     M2C_UNK func_02088f8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02097bac(s32);
     void *temp_r4;
     s32 var_r5;
 
-    temp_r4 = (void *) func_0209e9dc((u16) arg0);
-    if (temp_r4 != NULL && func_02089064() != 0) {
+    temp_r4 = (void *) FindScenePanel((u16) arg0);
+    if (temp_r4 != NULL && Is3DSpriteVisible() != 0) {
         var_r5 = 8;
         if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r4, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
             var_r5 = 0;
@@ -486,12 +487,12 @@ s32 func_02097964(void) {
     return var_r4;
 }
 
-s32 func_020979a4(s32 a) { s32 *func_02091f18();s32 i,q,p,b;for(i=0;i<3;i++){q=func_02091f18(i);p=func_0209e9dc((u16)i);if(p){b=0;if(i==a)b=1;func_02091d6c(M2C_FIELD(q,u8 *,6),b);func_0209e26c(p,b);func_0209e320(p);}}func_020943a8(a);func_02094ba0(a);func_0209707c();return 1;}
+s32 func_020979a4(s32 a) { s32 *GetScenePanelState();s32 i,q,p,b;for(i=0;i<3;i++){q=GetScenePanelState(i);p=FindScenePanel((u16)i);if(p){b=0;if(i==a)b=1;func_02091d6c(M2C_FIELD(q,u8 *,6),b);func_0209e26c(p,b);func_0209e320(p);}}SetMenuCursor(a);func_02094ba0(a);func_0209707c();return 1;}
 
 void func_02097a2c(s32 arg0) {
     s32 Get3DSpriteCount();
     M2C_UNK func_020991f4(s32, s32);
-    M2C_UNK func_02099204(s32);
+    M2C_UNK RefreshFaceSprite(s32);
     long var_r6;
     s32 temp_r0;
     s32 temp_r0_2;
@@ -499,7 +500,7 @@ void func_02097a2c(s32 arg0) {
     if (Get3DSpriteCount() != 2) {
         return;
     }
-    temp_r0 = func_0209e9dc(2);
+    temp_r0 = FindScenePanel(2);
     if (!temp_r0) {
         return;
     }
@@ -511,7 +512,7 @@ void func_02097a2c(s32 arg0) {
         } else {
             func_020991f4(temp_r0_2, 0);
         }
-        func_02099204(temp_r0_2);
+        RefreshFaceSprite(temp_r0_2);
         var_r6++;
     } while (2 > var_r6);
     func_0209e320(temp_r0);
@@ -555,12 +556,12 @@ void func_02097aac(s32 arg0, u8 arg1) {
 
 void func_02097bac(M2C_UNK arg0) {
     s32 func_02091e70(M2C_UNK);
-    s32 *func_02091f18();
+    s32 *GetScenePanelState();
     void func_02097aac(s32, u8);
     s32 *temp_r5;
     s32 temp_r4;
 
-    temp_r5 = func_02091f18();
+    temp_r5 = GetScenePanelState();
     temp_r4 = func_02091e70(arg0);
     func_02097aac(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
 }
@@ -568,7 +569,7 @@ void func_02097bac(M2C_UNK arg0) {
 s32 func_02097be0(void) {
 s32 func_020890d4(s32);
 s32 i,p,j;
-i=0;do {p=func_0209e9dc((u16)i);if(p) {
+i=0;do {p=FindScenePanel((u16)i);if(p) {
 if(func_020890d4(p))return 1;
 j=0;do {if(func_020890d4(Get3DSpriteChild(p,j)))return 1;j++;}while(j<2);
 }i++;}while(i<3);return 0;

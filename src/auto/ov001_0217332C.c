@@ -282,8 +282,8 @@ func_ov001_0218ace0(((unsigned int (*)[4])ptr)[i][j]);
 if(i==0)func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState+j*4,void **,0x104));
 }}
 for(i=0;i<2;i++)func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState+i*4,void **,0xfc));
-for(i=0;i<4;i++)func_ov001_0218c104(M2C_FIELD(gOv001MenuState+i*4,void **,0xec));
-for(i=0; i!=0x2f; ++i)func_ov001_0218c104(M2C_FIELD(gOv001MenuState+i*4,void **,0x30));
+for(i=0;i<4;i++)Ov001_ReleaseSprite(M2C_FIELD(gOv001MenuState+i*4,void **,0xec));
+for(i=0; i!=0x2f; ++i)Ov001_ReleaseSprite(M2C_FIELD(gOv001MenuState+i*4,void **,0x30));
 func_ov001_0218b71c(&gOv001MenuState);
 }
 

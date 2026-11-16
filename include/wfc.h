@@ -4,6 +4,28 @@
 #ifndef WFC_H
 #define WFC_H
 
+/* Allocation tags also serve as ownership bits in the WFC allocation state. */
+enum {
+    WFC_WORK_CONTROL = 1,
+    WFC_WORK_SESSION = 2,
+    WFC_WORK_AUX = 4,
+    WFC_WORK_CALLBACKS = 8,
+    WFC_WORK_FRIENDS = 16
+};
+enum {
+    WFC_CONTROL_SIZE = 24,
+    WFC_SESSION_SIZE = 8960,
+    WFC_AUX_SIZE = 88,
+    WFC_CALLBACKS_SIZE = 12,
+    WFC_FRIENDS_SIZE = 3352
+};
+typedef struct WfcAllocationState {
+    void *(*allocate)(s32 tag, s32 size);
+    void (*freeBlock)(s32 tag, void *block, s32 size);
+    u8 ownedMask;
+    u8 unk09[15];
+} WfcAllocationState;
+
 typedef struct WfcHttpConnection {
     s32 socket;          /* +0x00 socket, -1 until created */
     u8  addrLen;         /* +0x04 socket address length */
@@ -233,7 +255,7 @@ typedef struct NasRequest {
 #define GPI_INFO_LASTNAME       0x08E /* char[31], also carries the game's id */
 #define GPI_INFO_FIELD_LASTNAME 0x705 /* gpiSetInfoString: 0x700 + field 5, \lastname\ */
 
-/* Friend roster kept in the WFC manager state (func_0202f48c(16)): a list of
+/* Friend roster kept in the WFC manager state (Wfc_GetWorkBlock(16)): a list of
  * 0x24-byte rows built from the 0xC0-byte friend records, plus the small state
  * used while the player picks one. */
 #define WFC_STATE_FLAGS        0xD0C /* u8: low nibble list mode, bits 6..7 friend selection mode */

@@ -38,12 +38,12 @@ void func_020c8d50(M2C_UNK arg0) {
 
 s32 func_020c8d7c(s32 a){
 s32 GetMapRecordBuffer();void *func_020c7a08();s32 func_020c8018(s32);
-s32 func_020be324(u8,s32);s32 func_0207c368(void *,s32);
+s32 func_020be324(u8,s32);s32 StringHasTerminator(void *,s32);
 extern u8 data_02164d64[];
 s32 n=GetMapRecordBuffer(),v,b;u32 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
 if(a>=225) b=(a<425);c=(b==0)?0:1;if(!c)return 0;
 v=func_020c8018(a);if(!func_020be324((u8)(v+9),n))return 0;
-if(!func_0207c368(p+6,33))return 0;
+if(!StringHasTerminator(p+6,33))return 0;
 MI_CpuCopy32(p,data_02164d64+v*84,84,M2C_FIELD(p,u32 *,56)&=0xfffff001);
 return 1;
 }
@@ -277,7 +277,7 @@ if(M2C_FIELD(p+x,u8 *,0x508)) d=5;
 return d;
 }
 
-s32 GetHeldMapDirections(void) { extern M2C_UNK data_0212b1b8;s32 v=0;if(func_020c9430(0))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(0)-1)*4);if(func_020c9430(1))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(1)-1)*4);return v;}
+s32 GetHeldMapDirections(void) { extern M2C_UNK gMapCursorDirs;s32 v=0;if(func_020c9430(0))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(func_020c9430(0)-1)*4);if(func_020c9430(1))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(func_020c9430(1)-1)*4);return v;}
 
 s32 func_020c9550(s32 a) {
 s32 v=0;
@@ -289,13 +289,13 @@ return v;
 #pragma optimization_level 3
 void func_020c9580(s32 a) {
 extern void **gCurrentMap;
-extern M2C_UNK data_0212b1ba,data_0212b1bb,data_ov000_021e146c;
+extern M2C_UNK gMapCursorDirDX,gMapCursorDirDY,data_ov000_021e146c;
 s32 func_020a15b4(s32,s32);
 s32 i = (s32)func_020c9430(a) - 1;
 volatile void *p = *gCurrentMap;
 s32 x = M2C_FIELD(p,s16 *,0x52dc);
 s32 y = M2C_FIELD(p,s16 *,0x52de);
-M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x + M2C_FIELD(&data_0212b1ba,s8 *,i*4), y + M2C_FIELD(&data_0212b1bb,s8 *,i*4));
+M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x + M2C_FIELD(&gMapCursorDirDX,s8 *,i*4), y + M2C_FIELD(&gMapCursorDirDY,s8 *,i*4));
 }
 #pragma optimization_level reset
 void func_020c95e4(void) {
@@ -310,11 +310,11 @@ func_020a15e4();
 
 void func_020c960c(s32 a,s32 b,s32 c,void *d) {
 void func_02079c6c(s32,s32,s32 *);
-void func_02091700(void *,s32);
+void SetSpriteAnimFrame(void *,s32);
 s32 v[3];
 func_02079c6c(a,b,v);
-if(v[0]<128) {func_02091700(d,c);return;}
-func_02091700(d,c+1);
+if(v[0]<128) {SetSpriteAnimFrame(d,c);return;}
+SetSpriteAnimFrame(d,c+1);
 }
 
 void func_020c9654(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
@@ -333,10 +333,10 @@ case 7:PlaySoundAtTile(273,arg0,arg1);return;
 
 #pragma optimization_level 3
 void func_020c9730(void *arg0) {
-void *func_02091270(M2C_UNK *,s32,s32);
+void *CreateSpriteAnim(M2C_UNK *,s32,s32);
 void func_020c9654(s32,s32,s32);
 extern M2C_UNK data_02120920;
-void *p=func_02091270(&data_02120920,14,6);
+void *p=CreateSpriteAnim(&data_02120920,14,6);
 M2C_FIELD(arg0,void **,0x54)=p;
 M2C_FIELD(p,s32 *,0x28)=0x329a0;
 M2C_FIELD(M2C_FIELD(arg0,void **,0x54),s32 *,0x2c)=0x1560;

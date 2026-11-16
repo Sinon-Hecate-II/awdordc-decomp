@@ -134,8 +134,8 @@ case 3:errCode=6;detail=errCode-16;break;
 case 4:errCode=6;detail=errCode-26;break;
 }
 switch(M2C_FIELD(gNetSession,u32 *,0x24)){
-case 1:detail+=0xffff11b8;func_02039db4(errCode,detail);break;
-case 2:detail+=0xffff11b8;if(M2C_FIELD(gNetSession,s32 *,0x9c)<1)func_02039db4(errCode,detail);break;
+case 1:detail+=0xffff11b8;ReportNasLoginError(errCode,detail);break;
+case 2:detail+=0xffff11b8;if(M2C_FIELD(gNetSession,s32 *,0x9c)<1)ReportNasLoginError(errCode,detail);break;
 case 5:detail+=0xfffec398;func_0203dc38(errCode,detail);break;
 case 4:detail+=0xfffeeaa8;break;
 default:detail+=0xfffe9c88;break;
@@ -157,7 +157,7 @@ u32 func_020393d4(u32 a, u32 unused, u32 off) {
     case 6: code = 6; off = code - 76; break;
     case 7: code = 6; off = code - 86; break;
     }
-    if (code) func_02039db4(code, (s32)(off + 0xFFFEFA48));
+    if (code) ReportNasLoginError(code, (s32)(off + 0xFFFEFA48));
     return ret;
 }
 
@@ -527,7 +527,7 @@ void func_02039ca0(void) {
         p = M2C_FIELD(&gNasLogin, void **, 4);
         if (!M2C_FIELD(p, s32 *, 0x30)) return;
         if (func_02072088((GetSystemTick() - M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
-            func_02039db4(6, -61070);
+            ReportNasLoginError(6, -61070);
             M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x30) = 0;
         }
         return;
@@ -544,7 +544,7 @@ s32 GetLocalPlayerInfo(void) {
     return 0;
 }
 
-s32 func_02039db4(u32 arg0, s32 arg1) {
+s32 ReportNasLoginError(u32 arg0, s32 arg1) {
     extern M2C_UNK gNasLogin;
     void SetNetError(s32, s32);
     void func_02039e60(void);
@@ -593,7 +593,7 @@ u32 ReportNasError(u32 a, u32 unused, u32 off) {
     case 3: code = 6; off = code - 0x10; break;
     case 4: code = 6; off = code - 0x1a; break;
     }
-    func_02039db4(code, off + 0xffff11b8);
+    ReportNasLoginError(code, off + 0xffff11b8);
     return ret;
 }
 

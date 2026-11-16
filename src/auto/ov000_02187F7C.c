@@ -17,7 +17,7 @@ s32 func_ov000_021882c4(void) {
     s32 flag, count, current;
     if (func_ov000_02187e50() == 1) return 0;
     flag = func_ov000_0218a2f8();
-    if (flag) count = func_ov000_02189e2c();
+    if (flag) count = CountCapturableProperties();
     else count = CountUnusedCapturableProperties();
     if (count == 0) return 0;
     current = func_ov000_0218a230();
@@ -36,7 +36,7 @@ s32 func_ov000_02188338(void) {
     s32 var_r0;
     s32 var_r5;
 
-    temp_r4 = func_ov000_02189e2c();
+    temp_r4 = CountCapturableProperties();
     if (AiHasAttackTargetOrFootUnit() == 0) {
         var_r5 = 0x80;
     } else {
@@ -70,7 +70,7 @@ u8 CanDoFootAiAction(s32 arg0, s32 arg1) {
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
     current = func_ov000_0218a230();
-    if (current < func_ov000_02189e2c() + 2) result = 1;
+    if (current < CountCapturableProperties() + 2) result = 1;
     else result = 0;
     return result;
 }
@@ -212,7 +212,7 @@ u8 func_ov000_02188744(void) {
     if (func_ov000_0218a2f8() == 0) {
         return 0U;
     }
-    temp_r4 = func_ov000_02189e2c();
+    temp_r4 = CountCapturableProperties();
     if (temp_r4 > func_ov000_0218a294()) {
         var_r0 = 1;
     } else {
@@ -222,11 +222,11 @@ u8 func_ov000_02188744(void) {
 }
 
 s32 func_ov000_02188778(void) {
-    s32 func_ov000_02189e2c();
+    s32 CountCapturableProperties();
     s32 func_ov000_0218a294();
     s32 temp_r4;
 
-    temp_r4 = func_ov000_02189e2c();
+    temp_r4 = CountCapturableProperties();
     return temp_r4 - func_ov000_0218a294();
 }
 

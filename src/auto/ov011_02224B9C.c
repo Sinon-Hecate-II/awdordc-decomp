@@ -11,19 +11,9 @@ typedef struct { s32 words[5]; } ContextTemplate;
 extern ContextTemplate data_ov011_02227f3c;
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *data_027e01d8;
 
-/* An entry of the intro menu built by func_ov011_0222588c. */
-typedef struct MenuEntry011 {
-    u8 unknown00[0x34]; /* +0x00 */
-    u8 count;           /* +0x34 number of entries in the menu */
-    u8 index;           /* +0x35 index of this entry */
-    u8 unknown36[2];    /* +0x36 */
-    s16 posX;           /* +0x38 entry x position */
-    s16 posY;           /* +0x3a entry y position */
-    u8 unknown3c[0x14]; /* +0x3c */
-    s32 labelId;        /* +0x50 localized text id */
-    u8 unknown54[4];    /* +0x54 */
-    s16 textWidth;      /* +0x58 width of the rendered label */
-} MenuEntry011;
+/* An entry of the intro menu built by func_ov011_0222588c: a 3D sprite object
+   (fields at +0x34 and up) plus the animation state the intro menu drives. */
+#include "intro_menu.h"
 
 /* Submit a 2D sprite/quad to one of the two 3D sprite engines (screen 0 or 1,
    selected by arg1, or to the engine already active when arg1 is 3) using the
@@ -212,7 +202,7 @@ void func_ov011_02225114(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UN
 void func_ov011_0222513c(void) {
     M2C_UNK func_02003bd0();
     M2C_UNK GX_SetClearColor(M2C_UNK, M2C_UNK, s32, M2C_UNK, s32);
-    M2C_UNK func_02003fc8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
+    M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     func_02003bd0();
     *(u16 *)0x04000060 = (*(u16 *)0x04000060 & ~0x3000) | 8;
     GX_SetClearColor(0, 0, 0x7FFF, 0x3F, 0);
@@ -222,7 +212,7 @@ void func_ov011_0222513c(void) {
     M2C_FIELD((void *)0x040004C8, s32 *, -4) = 0x7FFF7FFF;
     M2C_FIELD((void *)0x040004C8, s32 *, 0xB8) = 0xBFFF0000;
     M2C_FIELD((void *)0x040004C8, s32 *, -0x88) = 0;
-    func_02003fc8(0, 0xC0, 0, 0x100, -0x3E8, 0, 0x1000, 1, 0);
+    GX_SetOrthoProjection(0, 0xC0, 0, 0x100, -0x3E8, 0, 0x1000, 1, 0);
     M2C_FIELD((void *)0x04000440, s32 *, 0) = 3;
     M2C_FIELD((void *)0x04000440, s32 *, 0x14) = 0;
     M2C_FIELD((void *)0x04000440, s32 *, 0) = 2;
@@ -235,25 +225,47 @@ void func_ov011_02225224(void) {
     *(s32 *)0x04000540 = 1;
 }
 
-void func_ov011_02225238(void *a) {
-M2C_UNK SetFileDirectory(M2C_UNK *); M2C_UNK StringFormat(void *,M2C_UNK *,s32);
-M2C_UNK func_0208be8c(void *,void *,void *,M2C_UNK *,s32,s32,s32); M2C_UNK func_0208c080(void *,M2C_UNK);void *func_0208c528(void *);
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK data_ov011_02228b28,data_ov011_02228b30,data_ov011_02228b38,data_ov011_02228b3c;
-extern s32 data_ov011_02228cec;
-char first[32],second[32];void *saved;void *p;s32 x,y;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-M2C_FIELD(a,s16 *,0x38)=0;M2C_FIELD(a,s16 *,0x3a)=0;M2C_FIELD(a,s16 *,0x3c)=0;M2C_FIELD(a,s16 *,0x3e)=0;M2C_FIELD(a,s16 *,0x40)=0;M2C_FIELD(a,s16 *,0x42)=0;
-M2C_FIELD(a,s32 *,0x44)=0;M2C_FIELD(a,s32 *,0x48)=0;M2C_FIELD(a,u8 *,0x36)=1;
-StringFormat(first,&data_ov011_02228b28,M2C_FIELD(a,s32 *,0x54));
-StringFormat(second,&data_ov011_02228b30,M2C_FIELD(a,s32 *,0x54));
-SetFileDirectory(&data_ov011_02228b38);
-M2C_FIELD(a,void **,0x4c)=func_0208c528(a);
-func_0208be8c(M2C_FIELD(a,void **,0x4c),first,second,&data_ov011_02228b3c,data_ov011_02228cec,M2C_FIELD(a,u8 *,0x35),1);
-func_0208c080(M2C_FIELD(a,void **,0x4c),5);
-y=M2C_FIELD(a,s16 *,0x3a);x=M2C_FIELD(a,s16 *,0x38);p=M2C_FIELD(a,void **,0x4c);
-M2C_FIELD(p,s32 *,0x34)=x;M2C_FIELD(p,s32 *,0x38)=y;M2C_FIELD(p,s32 *,0x3c)=0;
-data_ov011_02228cec+=0x200;gCur3DSpriteEngine=saved;
+/* Create the entry's main-screen sprite and reserve its texture and palette slots. */
+void InitIntroMenuEntry(void *entry) {
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK StringFormat(void *, M2C_UNK *, s32);
+    M2C_UNK LoadAnimatedSpriteAssets(void *, void *, void *, M2C_UNK *, s32, s32, s32);
+    M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
+    void *CreateAnimatedSpriteObject(void *);
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
+    extern M2C_UNK sIntroMenuTextureFormat, sIntroMenuContextFormat, sIntroMenuDirectory, sIntroMapUnitClutFile;
+    extern s32 gIntroMenuTextureOffset;
+    char texturePath[32], contextPath[32];
+    void *savedEngine;
+    void *sprite;
+    s32 x, y;
+
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    ((MenuEntry011 *)entry)->posX = 0;
+    ((MenuEntry011 *)entry)->posY = 0;
+    ((MenuEntry011 *)entry)->slideFromX = 0;
+    ((MenuEntry011 *)entry)->slideFromY = 0;
+    ((MenuEntry011 *)entry)->slideToX = 0;
+    ((MenuEntry011 *)entry)->slideToY = 0;
+    ((MenuEntry011 *)entry)->age = 0;
+    ((MenuEntry011 *)entry)->slideTimer = 0;
+    ((MenuEntry011 *)entry)->slideSpeed = 1;
+    StringFormat(texturePath, &sIntroMenuTextureFormat, (s32)((MenuEntry011 *)entry)->name);
+    StringFormat(contextPath, &sIntroMenuContextFormat, (s32)((MenuEntry011 *)entry)->name);
+    SetFileDirectory(&sIntroMenuDirectory);
+    ((MenuEntry011 *)entry)->sprite = CreateAnimatedSpriteObject(entry);
+    LoadAnimatedSpriteAssets(((MenuEntry011 *)entry)->sprite, texturePath, contextPath,
+        &sIntroMapUnitClutFile, gIntroMenuTextureOffset, ((MenuEntry011 *)entry)->index, 1);
+    SetAnimatedSpriteFrame(((MenuEntry011 *)entry)->sprite, INTRO_MENU_INITIAL_FRAME);
+    y = ((MenuEntry011 *)entry)->posY;
+    x = ((MenuEntry011 *)entry)->posX;
+    sprite = ((MenuEntry011 *)entry)->sprite;
+    M2C_FIELD(sprite, s32 *, ANIMATED_SPRITE_X) = x;
+    M2C_FIELD(sprite, s32 *, ANIMATED_SPRITE_Y) = y;
+    M2C_FIELD(sprite, s32 *, ANIMATED_SPRITE_Z) = 0;
+    gIntroMenuTextureOffset += INTRO_MENU_TEXTURE_STRIDE;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov011_02225348(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s16 arg3, s16 arg4, register u32 arg5) {
@@ -380,10 +392,10 @@ gCur3DSpriteEngine=saved;
 
 #pragma opt_common_subs off
 void func_ov011_0222588c(void *a) {
-extern s32 data_ov011_02228cec;
+extern s32 gIntroMenuTextureOffset;
 s32 func_ov011_02225a18(void *); void *func_ov011_02227ea4(void *);
 s32 values[3],labels[3]; s32 i,n; register u32 k; s32 *p; s32 v,l; u8 y,c;
-data_ov011_02228cec=0; ((MenuCount011 *)a)->count=0;
+gIntroMenuTextureOffset=0; ((MenuCount011 *)a)->count=0;
 while(func_ov011_02225a18(a)==2 && (k=((MenuCount011 *)a)->count)<3) {
 p=M2C_FIELD(a,s32 **,0x4c); v=p[2];l=p[3]; M2C_FIELD(a,s32 **,0x4c)+=4;
 values[k]=v;labels[k]=l; c=((MenuCount011 *)a)->count; ((MenuCount011 *)a)->count=(u8)(c+1);
@@ -392,7 +404,7 @@ for(i=0,n=((MenuCount011 *)a)->count;i<n;i++,n=((MenuCount011 *)a)->count) {
 ((void **)((u8 *)a+0x40))[i]=func_ov011_02227ea4(a);
 func_ov011_02225420(((void **)((u8 *)a+0x40))[i],labels[i]);
 func_ov011_02225408(((void **)((u8 *)a+0x40))[i],(u8)i);
-func_ov011_02225238(((void **)((u8 *)a+0x40))[i]);
+InitIntroMenuEntry(((void **)((u8 *)a+0x40))[i]);
 y=60+(128/n)*(i+1)-128/(n*2);
 func_ov011_022253f0(((void **)((u8 *)a+0x40))[i],-16,y,272,y);
 func_ov011_02225418(((void **)((u8 *)a+0x40))[i],values[i]);

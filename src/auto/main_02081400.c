@@ -108,7 +108,7 @@ void func_0208161c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  func_020811b8(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
-void func_02081644(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void LoadNarcLayerPalette(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
  void func_02081254(s32, M2C_UNK, M2C_UNK, M2C_UNK);
  func_02081254(BuildNarcPath(arg0), arg1, arg2, arg3);
@@ -518,7 +518,7 @@ void func_02082058(void) {
     func_02007740(&data_0214c1b8);
 }
 
-M2C_UNK *func_0208206c(void) {
+M2C_UNK *GetLocalPlayerName(void) {
     extern M2C_UNK data_0214c1bc;
     return &data_0214c1bc;
 }
@@ -528,7 +528,7 @@ u8 func_02082078(void) {
     return data_0214c1b8;
 }
 
-u16 func_02082088(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,u16 *,0x1a);}
+u16 GetLocalPlayerNameLength(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,u16 *,0x1a);}
 
 void Set3DSpriteLayerBank(u32 arg0,u32 arg1) {
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
@@ -571,13 +571,13 @@ void func_02082164(u8 *arg0) {
     u16 *q;
     s32 i;
     void Reset3DSpriteLayers(void);
-    void func_02082700(void);
+    void Reset3DSpriteCorners(void);
     void Configure3DSpriteLayer(s32, void *);
 
     r4 = arg0;
 
     Reset3DSpriteLayers();
-    func_02082700();
+    Reset3DSpriteCorners();
 
     p = *(u16 **)gCur3DSpriteEngine;
     *p = (*p & ~0x7) | (r4[0] & 0x7);

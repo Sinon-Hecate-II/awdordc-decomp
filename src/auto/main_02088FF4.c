@@ -13,7 +13,7 @@ void func_02089c34(void *, s32);
 extern M2C_UNK data_02102638;
 
 #pragma opt_common_subs off
-void func_02088ff4(void *p) {
+void Hide3DSpriteSlide(void *p) {
     M2C_UNK Hide3DSprite(void *);
     if (!M2C_FIELD(p, u8 *, 0x4F)) {
         M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x54);
@@ -31,7 +31,7 @@ void func_02088ff4(void *p) {
     M2C_FIELD(p, u8 *, 0x48) = (u8)((M2C_FIELD(p, u8 *, 0x48) & ~0xC0) | 0xC0);
 }
 #pragma opt_common_subs reset
-u8 func_02089064(void *arg0) {
+u8 Is3DSpriteVisible(void *arg0) {
     u8 var_r0;
 
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x1F) >> 0x1F) != 0) {
@@ -434,7 +434,7 @@ M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetUiColor(s32);
     M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
     void func_02091c98(void);
-    void func_02091d4c(s32);
+    void LoadScenePanelPalette(s32);
     void func_02089b18(M2C_UNK, M2C_UNK);
 
     void *savedBank;
@@ -472,7 +472,7 @@ M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
             t2 = GetUiColor(0xE);
             func_0208e0f0(0x1400, 1, t1, t2);
             func_02091c98();
-            func_02091d4c(0x12);
+            LoadScenePanelPalette(0x12);
             func_02089b18(entity, arg3);
         }
         i++;

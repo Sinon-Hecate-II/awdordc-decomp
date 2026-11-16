@@ -162,13 +162,13 @@ void func_ov002_021e3890(s32 arg0) {
    then have their icons, positions and gauges refreshed. */
 void PlayerPanels_Init(void *p){
 void func_ov002_021e2eb8(void *,s32,s32);void func_ov002_021e3044(void *,s32,s32);
-void func_ov002_021e3100(void *);void func_ov002_021e3210(void *);void func_ov002_021e3578(void *);
+void BuildPanelStatEntries(void *);void func_ov002_021e3210(void *);void func_ov002_021e3578(void *);
 extern u8 gPlayerSettings;
 func_ov002_021e2eb8(p,M2C_FIELD(M2C_FIELD(&gPlayerSettings,void **,4)+M2C_FIELD(&gPlayerSettings,u8 *,0x13)*4,s32 *,0x2c),0);
 func_ov002_021e2eb8(p+0x68,M2C_FIELD(M2C_FIELD(&gPlayerSettings,void **,0x1c)+M2C_FIELD(&gPlayerSettings,u8 *,0x2b)*4,s32 *,0x2c),0);
 func_ov002_021e3044(p,(M2C_FIELD(&gPlayerSettings,u8 *,0xd)+9)/10,(M2C_FIELD(&gPlayerSettings,u8 *,0xe)+9)/10);
 func_ov002_021e3044(p+0x68,(M2C_FIELD(&gPlayerSettings,u8 *,0x25)+9)/10,(M2C_FIELD(&gPlayerSettings,u8 *,0x26)+9)/10);
-func_ov002_021e3100(p);func_ov002_021e3100(p+0x68);
+BuildPanelStatEntries(p);BuildPanelStatEntries(p+0x68);
 func_ov002_021e3210(p);func_ov002_021e3210(p+0x68);
 func_ov002_021e3578(p);func_ov002_021e3578(p+0x68);
 func_ov002_021e36d0(p);func_ov002_021e36d0(p+0x68);
@@ -362,7 +362,7 @@ void func_ov002_021e3f2c(void *arg0, s32 arg1) {
    side's gauge is far enough ahead (or both are low), 0 otherwise. */
 s32 ComparePlayerGauges(void *arg0) {
     extern u8 data_ov002_021f30fd[];
-    extern u8 data_ov002_021f3104[];
+    extern u8 gVersusPlayerStates[];
     extern u8 data_ov002_021f3105[];
     u32 slot;
     s32 ofs;
@@ -374,8 +374,8 @@ s32 ComparePlayerGauges(void *arg0) {
     if (data_ov002_021f3105[ofs] == 0) {
         return 0;
     }
-    alive = data_ov002_021f3104[ofs];
-    if (alive == 0 || data_ov002_021f3104[(slot == 0 ? 1 : 0) * 0x18] == 0) {
+    alive = gVersusPlayerStates[ofs];
+    if (alive == 0 || gVersusPlayerStates[(slot == 0 ? 1 : 0) * 0x18] == 0) {
         if (alive != 0) {
             return 0;
         }

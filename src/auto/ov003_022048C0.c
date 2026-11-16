@@ -260,15 +260,15 @@ void func_ov003_02205570(void **arg0) {
 }
 
 void func_ov003_02205584(void *arg0) {
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    s32 func_ov003_021f15d4();
-    s16 func_ov003_021f1608();
+    s32 GetSceneSlideDirection();
+    s16 GetSceneSlideOffset();
     s16 value;
     u8 i;
     void *second;
     void *first;
-    value = func_ov003_021f1608();
+    value = GetSceneSlideOffset();
     first = M2C_FIELD(arg0, void **, 0x3C);
     M2C_FIELD(first, s16 *, 0xE) = GetSpriteAnimValue(first);
     M2C_FIELD(first, s16 *, 0x10) = value;
@@ -279,15 +279,15 @@ void func_ov003_02205584(void *arg0) {
     M2C_FIELD(second, s16 *, 0x10) = -32;
     M2C_FIELD(second, s16 *, 0xC) = 12;
     M2C_FIELD(second, u16 *, 2) = M2C_FIELD(second, u16 *, 4);
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0x58));
-    if (!func_ov003_021f15d4()) return;
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
+    if (!GetSceneSlideDirection()) return;
     arg0 = M2C_FIELD(arg0, void **, 0x40);
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 0));
-    func_02088ff4(M2C_FIELD(arg0, s32 *, 4));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0));
+    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 4));
     i = 0;
     do {
-        func_02088ff4(((s32 *)arg0)[i + 2]);
-        func_02088ff4(((s32 *)arg0)[i + 10]);
+        Hide3DSpriteSlide(((s32 *)arg0)[i + 2]);
+        Hide3DSpriteSlide(((s32 *)arg0)[i + 10]);
         i++;
     } while (i < 8U);
 }

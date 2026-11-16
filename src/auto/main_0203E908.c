@@ -308,7 +308,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     void *GetConnection(void);
     s32 func_0205d4d8(s32, s32, s32);
     s32 func_02061638(s32, s32, s32, void *, s32);
-    extern PacketTag5 data_020fca00;
+    extern PacketTag5 sQr2MatchCommandMagic;
     SendPacket packet;
     u8 e, d, c, b, a;
     u8 *tag;
@@ -321,11 +321,11 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     }
     count *= 4;
     tag = (u8 *)&packet;
-    e = data_020fca00.e;
-    a = data_020fca00.a;
-    b = data_020fca00.b;
-    c = data_020fca00.c;
-    d = data_020fca00.d;
+    e = sQr2MatchCommandMagic.e;
+    a = sQr2MatchCommandMagic.a;
+    b = sQr2MatchCommandMagic.b;
+    c = sQr2MatchCommandMagic.c;
+    d = sQr2MatchCommandMagic.d;
     tag[4] = e;
     tag[0] = a;
     tag[1] = b;

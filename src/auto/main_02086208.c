@@ -500,12 +500,12 @@ void func_02086b9c(void) {
 
 void func_02086d18(void) {
     M2C_UNK GX_SetClearColor(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_02003fc8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
+    M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     M2C_FIELD((void *)0x04000060, u16 *, 0) = (u16) (M2C_FIELD((void *)0x04000060, u16 *, 0) & 0xCFEF);
     M2C_FIELD((void *)0x04000060, s32 *, 0x4E0) = 1;
     GX_SetClearColor(0x2BEA, 0, 0x7FFF, 0x3F, 0);
     *(s32 *)0x04000580 = 0xBFFF0000;
-    func_02003fc8(0, -0xC0, 0, 0x100, 1, 0x2000, 0x1000, 1, 0);
+    GX_SetOrthoProjection(0, -0xC0, 0, 0x100, 1, 0x2000, 0x1000, 1, 0);
     M2C_FIELD((void *)0x0400044C, s32 *, 0) = 0;
     M2C_FIELD((void *)0x0400044C, s32 *, -0xC) = 2;
 }

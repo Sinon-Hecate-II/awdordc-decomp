@@ -24,6 +24,8 @@
 #define AI_COMMAND_STATE_TIEBREAK   0x03 /* u8 random 0..99 chosen when an action starts, breaks score ties */
 #define AI_COMMAND_STATE_MOVE_RANGE 0x05 /* u8 movement range of the acting unit */
 #define AI_COMMAND_STATE_FLAGS      0x07 /* u8 AI action flags */
+#define AI_COMMAND_STATE_ACTION_FLAGS 0x08 /* u16 action-planning flags */
+#define AI_ACTION_SKIP_REPLAN 0x20 /* suppress the fallback callback in action finalization */
 #define AI_COMMAND_STATE_MODE       0x0A /* u16 bitfield word (3-bit fields at bits 3..5, 6..8, 9..11) */
 #define AI_COMMAND_STATE_ATTACKER   0x0C /* u8 kind of the unit the AI is evaluating an attack with */
 #define AI_COMMAND_STATE_PLAYER     0x0D /* u8 player slot the AI is acting for */
@@ -66,6 +68,9 @@
 #define UNIT_KIND_FLAGS_AIR  0x20 /* air kind */
 #define UNIT_KIND_FLAGS_FUEL_CRITICAL (UNIT_KIND_FLAGS_SEA | UNIT_KIND_FLAGS_AIR)
 
+/* Attack-distance rings added outside a movement flood fill start above its cost values. */
+#define AI_THREAT_RING_FIRST 111
+
 /* Unit kinds the AI code names directly. */
 #define UNIT_KIND_INFANTRY  1
 #define UNIT_KIND_MECH      2
@@ -106,5 +111,22 @@
 #define AI_SETTING_BUILD_FLAGS         0x11 /* u8 mask of the optional unit kinds the AI may build */
 #define AI_BUILD_FLAG_UNIT_25          0x01 /* the AI may build unit kind 25 */
 #define AI_BUILD_FLAG_UNIT_24          0x02 /* the AI may build unit kind 24 */
+
+/* The per-kind records of gAiSettings start after its 8-byte header.  The record
+ * index is the unit kind and record byte 0 is the kind's weight in the AI unit
+ * set chosen for this match; 0 means that set does not build the kind. */
+#define AI_SETTING_UNIT_RECORDS        0x08
+#define AI_SETTING_UNIT_WEIGHT         0x00
+#define AI_SETTING_UNIT(kind)          (AI_SETTING_UNIT_RECORDS + (kind) * AI_UNIT_RECORD_STRIDE + AI_SETTING_UNIT_WEIGHT)
+
+/* One AI target group record in gAiTargetGroups, 8 bytes each. */
+#define AI_GROUP_SCORE       0x00 /* s8 value of the group, higher is better */
+#define AI_GROUP_CLAIMED     0x01 /* u8 0xFF once the group can no longer be used */
+#define AI_GROUP_PROPERTIES  0x02 /* u8 number of properties in the group */
+#define AI_GROUP_FLAGS       0x03 /* u8 AI_GROUP_FLAG_* bits */
+#define AI_GROUP_STRIDE      8
+#define AI_GROUP_FLAG_CLAIMED     0x01 /* a build already reserved the group */
+#define AI_GROUP_FLAG_SEA_THREAT  0x02 /* an enemy sea unit threatens the group and no ready kind-6/14 unit is in it */
+#define AI_GROUP_FLAG_PROPERTY    0x04 /* the group's best tile is worth capturing */
 
 #endif

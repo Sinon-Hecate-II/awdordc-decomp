@@ -1,5 +1,7 @@
 /* 18 functions from 0x021F35B0 to 0x021F40A8 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
+#include "battle_map.h"
 
 static inline s32 PanelHasSelection(void *p) {
     switch (M2C_FIELD(p,u8 *,4)) {
@@ -70,7 +72,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_0220fca8;
     extern M2C_UNK data_ov003_0220fcdc;
     extern M2C_UNK data_ov003_0220fd9c;
-    extern M2C_UNK data_ov003_0220fdac;
+    extern M2C_UNK gOv003BattleSetupVTable;
     extern M2C_UNK data_ov003_0220fdb8;
     M2C_UNK **temp_ip;
     M2C_UNK **temp_lr;
@@ -111,7 +113,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
 
     temp_r0 = CreateSpriteObject(&data_ov003_0220fcdc, arg0);
     if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_0220fdac;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gOv003BattleSetupVTable;
         M2C_FIELD(temp_r0, s8 *, 0x34) = 5;
         M2C_FIELD(temp_r0, s8 *, 0x35) = 0;
         M2C_FIELD(temp_r0, s8 *, 0x44) = 0;
@@ -308,63 +310,64 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     }
 }
 
-void *func_ov003_021f3cec(void *obj) {
-    extern M2C_UNK data_ov003_0220fdac;
+/* Tear down the battle setup, restore its scene state, and free its owned buffers and menu. */
+void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
+    extern M2C_UNK gOv003BattleSetupVTable;
     extern void **gCurrentMap;
     s32 GetMapRecordBuffer(void);
-    void func_020c8664(u16, s32);
+    void DoesMapRecordMatchBuffer(u16, s32);
     void SetOv003SceneState(s32);
-    s32 func_ov003_021f1608(void);
+    s32 GetSceneSlideOffset(void);
     void func_ov003_021f1858(void);
     void func_ov003_021f18a4(void);
     void func_020af1e4(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     M2C_UNK MemFree();
-    void *base;
-    void *inner;
-    s32 mode_result;
+    void *mapName;
+    Ov003BattleSetupMenu *menu;
+    s32 usesSetupScene;
 
-    M2C_FIELD(obj, void **, 0) = &data_ov003_0220fdac;
-    base = (u8 *)*gCurrentMap + 0x5120;
-    func_020c8664(M2C_FIELD(base, u16 *, 0x22), GetMapRecordBuffer());
-    M2C_FIELD(obj, u8 *, 0x34) = 3;
-    inner = M2C_FIELD(obj, void **, 0x40);
-    switch (M2C_FIELD(inner, u8 **, 8)[M2C_FIELD(inner, s8 *, 5)]) {
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-            mode_result = 1;
-            break;
-        default:
-            mode_result = 0;
-            break;
+    setup->vtable = &gOv003BattleSetupVTable;
+    mapName = (u8 *)*gCurrentMap + MAP_NAME;
+    DoesMapRecordMatchBuffer(M2C_FIELD(mapName, u16 *, MAP_ID - MAP_NAME), GetMapRecordBuffer());
+    setup->state = 3;
+    menu = setup->menu;
+    switch (menu->items[menu->selection]) {
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+        usesSetupScene = 1;
+        break;
+    default:
+        usesSetupScene = 0;
+        break;
     }
-    if (mode_result) {
+    if (usesSetupScene) {
         SetOv003SceneState(4);
     } else {
-        if (!func_ov003_021f1608()) {
+        if (!GetSceneSlideOffset()) {
             func_ov003_021f1858();
-            M2C_FIELD(obj, u8 *, 0x44) = 0;
+            setup->pending = 0;
         }
         func_ov003_021f18a4();
     }
     func_020af1e4();
-    func_ov003_021f1a58();
-    MemFree(M2C_FIELD(obj, void **, 0x38));
-    MemFree(M2C_FIELD(obj, void **, 0x3C));
-    inner = M2C_FIELD(obj, void **, 0x40);
-    if (inner) {
-        ((void (*)(void *))M2C_FIELD(M2C_FIELD(inner, void **, 0), void **, 4))(inner);
+    DeleteOv003SceneSprite();
+    MemFree(setup->buffer38);
+    MemFree(setup->buffer3C);
+    menu = setup->menu;
+    if (menu) {
+        ((void (*)(void *))M2C_FIELD(M2C_FIELD(menu, void **, 0), void **, 4))(menu);
     }
-    MemFree(obj);
-    return obj;
+    MemFree(setup);
+    return setup;
 }
 
 s32 func_ov003_021f3df4(s32 arg0) {
@@ -375,24 +378,24 @@ s32 func_ov003_021f3df4(s32 arg0) {
 
 /* Tears down / reinitialises an object: swaps its vtable, refreshes display-related state, checks its mode and either re-enters mode 4 or does a soft reset, then releases resources and invokes its destructor. */
 void *func_ov003_021f3e08(void *obj) {
-    extern M2C_UNK data_ov003_0220fdac;
+    extern M2C_UNK gOv003BattleSetupVTable;
     extern void **gCurrentMap;
     s32 GetMapRecordBuffer(void);
-    void func_020c8664(u16, s32);
+    void DoesMapRecordMatchBuffer(u16, s32);
     void SetOv003SceneState(s32);
-    s32 func_ov003_021f1608(void);
+    s32 GetSceneSlideOffset(void);
     void func_ov003_021f1858(void);
     void func_ov003_021f18a4(void);
     void func_020af1e4(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     M2C_UNK MemFree();
     void *base;
     void *inner;
     s32 mode_result;
 
-    M2C_FIELD(obj, void **, 0) = &data_ov003_0220fdac;
+    M2C_FIELD(obj, void **, 0) = &gOv003BattleSetupVTable;
     base = (u8 *)*gCurrentMap + 0x5120;
-    func_020c8664(M2C_FIELD(base, u16 *, 0x22), GetMapRecordBuffer());
+    DoesMapRecordMatchBuffer(M2C_FIELD(base, u16 *, 0x22), GetMapRecordBuffer());
     M2C_FIELD(obj, u8 *, 0x34) = 3;
     inner = M2C_FIELD(obj, void **, 0x40);
     switch (M2C_FIELD(inner, u8 **, 8)[M2C_FIELD(inner, s8 *, 5)]) {
@@ -415,14 +418,14 @@ void *func_ov003_021f3e08(void *obj) {
     if (mode_result) {
         SetOv003SceneState(4);
     } else {
-        if (!func_ov003_021f1608()) {
+        if (!GetSceneSlideOffset()) {
             func_ov003_021f1858();
             M2C_FIELD(obj, u8 *, 0x44) = 0;
         }
         func_ov003_021f18a4();
     }
     func_020af1e4();
-    func_ov003_021f1a58();
+    DeleteOv003SceneSprite();
     MemFree(M2C_FIELD(obj, void **, 0x38));
     MemFree(M2C_FIELD(obj, void **, 0x3C));
     inner = M2C_FIELD(obj, void **, 0x40);

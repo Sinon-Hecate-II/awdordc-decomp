@@ -256,8 +256,8 @@ s32 func_020a72b0(s32 arg0, M2C_UNK arg1) {
 }
 
 void *func_020a72e8(s32 arg0) {
-    extern M2C_UNK data_02120a20;
-    return (u8 *)&data_02120a20 + ((arg0 - 1) << 5);
+    extern M2C_UNK gArmyPalettes;
+    return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
 
 s32 func_020a72fc(s32 arg0, s32 arg1) {

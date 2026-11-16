@@ -71,7 +71,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     void Show3DSprite(void *);
     void Hide3DSprite(void *);
     s32 func_02088f1c(s32);
-    s32 func_02088ff4(s32);
+    s32 Hide3DSpriteSlide(s32);
     u32 SetTextById(s32, s32);
     s16 GetSpriteAnimValue(void *);
     s32 func_020aae10(void *);
@@ -153,7 +153,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     if (var_r0_3 & 0xFF) {
         if (func_ov003_021e6d28() != 0) {
             Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
-            func_02088ff4(*M2C_FIELD(arg0, s32 **, 0x64));
+            Hide3DSpriteSlide(*M2C_FIELD(arg0, s32 **, 0x64));
         }
         temp_r4_5 = (s8 *) M2C_FIELD(arg0, s32 **, 0x64);
         var_r7 = 0;
@@ -446,13 +446,13 @@ func_02084d88(buf,0x24);func_02084e74();func_01ffa6fc(p);
 
 void func_ov003_021ea3f4(void *arg0) {
  void *func_02084e24(u8);
- M2C_UNK func_02088ff4(s32);
+ M2C_UNK Hide3DSpriteSlide(s32);
  s32 temp_r2,var_r1;
  u8 var_r0,var_r8;
  void *temp_r0,*temp_r1,*temp_r4;
  temp_r4=M2C_FIELD(arg0,void**,0x64);
- func_02088ff4(M2C_FIELD(temp_r4,s32*,0));
- func_02088ff4(M2C_FIELD(temp_r4,s32*,4));
+ Hide3DSpriteSlide(M2C_FIELD(temp_r4,s32*,0));
+ Hide3DSpriteSlide(M2C_FIELD(temp_r4,s32*,4));
  var_r8=0;
  if(M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4)<=0)return;
  do {

@@ -219,7 +219,7 @@ s32 func_02084890(void) {
 
 s32 GetLocalPlayerIdForOverlay(void) {
     s32 GetLinkLocalPlayerId();
-    s32 func_ov010_02229a08();
+    s32 GetOnlineTransportPlayerId();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -227,7 +227,7 @@ s32 GetLocalPlayerIdForOverlay(void) {
     case 1:
         return GetLinkLocalPlayerId();
     case 2:
-        return func_ov010_02229a08();
+        return GetOnlineTransportPlayerId();
     default:
         return 0;
     }
@@ -235,7 +235,7 @@ s32 GetLocalPlayerIdForOverlay(void) {
 
 s32 GetReadyPlayerMask(void) {
     s32 GetConnectedPlayers();
-    s32 func_ov010_02229a24();
+    s32 GetOnlinePeerMask();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -243,7 +243,7 @@ s32 GetReadyPlayerMask(void) {
     case 1:
         return GetConnectedPlayers();
     case 2:
-        return func_ov010_02229a24();
+        return GetOnlinePeerMask();
     default:
         return 0;
     }

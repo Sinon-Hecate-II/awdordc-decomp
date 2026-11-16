@@ -99,7 +99,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     M2C_UNK func_02088f8c(void *, s32, s32, s32, s32, s32);
     void func_0208f998(s32, s32);
     s32 NextRandomValue(void);
-    void *func_0208c528(void *);
+    void *CreateAnimatedSpriteObject(void *);
     void func_0208bddc(void *, void *, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
 
@@ -184,7 +184,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
                 s32 r8 = (t1 % 0xC0) + 0x20 - M2C_FIELD(arg0, s16 *, 0x4E);
                 s32 t2 = NextRandomValue();
                 s32 r9 = (t2 % 0x40) + 0x20 - M2C_FIELD(arg0, s16 *, 0x50);
-                spr = func_0208c528(arg0);
+                spr = CreateAnimatedSpriteObject(arg0);
                 func_0208bddc(spr, (void *)data_ov004_02218cb0, 0, 0, 0);
                 M2C_FIELD(spr, s32 *, 0x34) = r8;
                 M2C_FIELD(spr, s32 *, 0x38) = r9;

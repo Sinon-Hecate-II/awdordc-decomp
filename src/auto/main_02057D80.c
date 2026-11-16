@@ -65,10 +65,10 @@ r=func_0205575c(a,c,p,-1);if(!r)r=0;return r;
 }
 
 void func_02057f74(s32 a,s32 b,s32 c,s32 d) {
-s32 GetStringField(s32,void *,void *,s32);s32 StringScanf(void *,void *,void *,void *,void *);
+s32 gpiValueForKey(s32,void *,void *,s32);s32 StringScanf(void *,void *,void *,void *,void *);
 extern M2C_UNK data_020ff244,data_020ff24c;
 u8 buf[64];s32 z,y,x;
-if(!GetStringField(d,&data_020ff244,buf,64))return;
+if(!gpiValueForKey(d,&data_020ff244,buf,64))return;
 if(StringScanf(buf,&data_020ff24c,&x,&y,&z)!=3)return;
 func_02057ed0(a,(s32)&x,b,2,0);
 }
@@ -87,9 +87,9 @@ func_02054484(a,b);return 0;
 
 M2C_UNK StringCopyN(s32 a,s32 b,s32 n) {
 void AssertFailed(void *,void *,void *,s32);void func_02068d18(s32,s32,s32);
-extern M2C_UNK data_020ff2cc,data_020ff2dc,data_020ff2a0,data_020ff2ec;
-if(!a)AssertFailed(&data_020ff2cc,&data_020ff2dc,&data_020ff2a0,47);
-if(!b)AssertFailed(&data_020ff2ec,&data_020ff2dc,&data_020ff2a0,48);
+extern M2C_UNK data_020ff2cc,sGpiUtilitySourceFile,data_020ff2a0,data_020ff2ec;
+if(!a)AssertFailed(&data_020ff2cc,&sGpiUtilitySourceFile,&data_020ff2a0,47);
+if(!b)AssertFailed(&data_020ff2ec,&sGpiUtilitySourceFile,&data_020ff2a0,48);
 func_02068d18(a,b,n);
 M2C_FIELD(a+n,u8 *,-1)=0;
 return a+n;
@@ -98,28 +98,30 @@ return a+n;
 void gpiLogMessage(s32 a, ...) {}
 
 s32 func_0205817c(void **a,s32 b,s32 c) {
-s32 StringCompareN(s32,void *,s32);s32 GetStringField(s32,void *,void *,s32);s32 ParseInt(void *);void *StringFind(s32,void *);void gpiCallErrorCallback(void *,s32,s32);
+s32 StringCompareN(s32,void *,s32);s32 gpiValueForKey(s32,void *,void *,s32);s32 ParseInt(void *);void *StringFind(s32,void *);void gpiCallErrorCallback(void *,s32,s32);
 extern M2C_UNK data_020ff2f8,data_020ff300,data_020ff308,data_020ff314;
 u8 buf[16];void *p=*a;
 if(StringCompareN(b,&data_020ff2f8,7)==0){
-if(GetStringField(b,&data_020ff300,buf,16))M2C_FIELD(p,s32 *,0x418)=ParseInt(buf);
-if(!GetStringField(b,&data_020ff308,p,256))M2C_FIELD(p,u8 *,0)=0;
+if(gpiValueForKey(b,&data_020ff300,buf,16))M2C_FIELD(p,s32 *,0x418)=ParseInt(buf);
+if(!gpiValueForKey(b,&data_020ff308,p,256))M2C_FIELD(p,u8 *,0)=0;
 if(c){s32 x=StringFind(b,&data_020ff314)!=0;gpiCallErrorCallback(a,4,x!=0);}
 return 1;}return 0;
 }
 
-s32 GetStringField(s32 a,void *b,void *c,s32 n){
+/* Copies the value of key from a GameSpy command string ("\key\value") into
+ * value, NUL-terminated and at most len bytes; returns 0 when the key is absent. */
+s32 gpiValueForKey(s32 command,void *key,void *value,s32 len){
 void AssertFailed(void *,void *,void *,s32);void *StringFind(s32,void *);s32 StringLength(void *);
-extern M2C_UNK data_020ff31c,data_020ff2dc,data_020ff2a8,data_020ff32c,data_020ff338,data_020ff348;
-s8 *p;s32 ch,v;s32 i;
-if(!a)AssertFailed(&data_020ff31c,&data_020ff2dc,&data_020ff2a8,269);
-if(!b)AssertFailed(&data_020ff32c,&data_020ff2dc,&data_020ff2a8,270);
-if(!c)AssertFailed(&data_020ff338,&data_020ff2dc,&data_020ff2a8,271);
-if(n<=0)AssertFailed(&data_020ff348,&data_020ff2dc,&data_020ff2a8,272);
-ch=*(s8 *)b;p=StringFind(a,b);if(!p)return 0;
-p+=StringLength(b);
-for(i=0;i<n-1 && (v=p[i])!=0 && v!=ch;i++)*(s8 *)((u32)c+(u32)i)=v;
-((s8 *)c)[i]=0;return 1;
+extern M2C_UNK sGpiAssertCommandNotNull,sGpiUtilitySourceFile,sGpiValueForKeyName,sGpiAssertKeyNotNull,sGpiAssertValueNotNull,sGpiAssertLenPositive;
+s8 *field;s32 separator,ch;s32 i;
+if(!command)AssertFailed(&sGpiAssertCommandNotNull,&sGpiUtilitySourceFile,&sGpiValueForKeyName,269);
+if(!key)AssertFailed(&sGpiAssertKeyNotNull,&sGpiUtilitySourceFile,&sGpiValueForKeyName,270);
+if(!value)AssertFailed(&sGpiAssertValueNotNull,&sGpiUtilitySourceFile,&sGpiValueForKeyName,271);
+if(len<=0)AssertFailed(&sGpiAssertLenPositive,&sGpiUtilitySourceFile,&sGpiValueForKeyName,272);
+separator=*(s8 *)key;field=StringFind(command,key);if(!field)return 0;
+field+=StringLength(key);
+for(i=0;i<len-1 && (ch=field[i])!=0 && ch!=separator;i++)*(s8 *)((u32)value+(u32)i)=ch;
+((s8 *)value)[i]=0;return 1;
 }
 
 s32 func_0205835c(s32 p,s32 a,s32 *out){
@@ -135,7 +137,7 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
     void AssertFailed(void *, void *, void *, s32);
     void gpiSetError(void **, s32, M2C_UNK);
     void gpiCallErrorCallback(void *, s32, s32);
-    extern M2C_UNK data_020ff3cc, data_020ff2dc, data_020ff2b8, data_020ff32c, data_020ff338, data_020ff3dc;
+    extern M2C_UNK data_020ff3cc, sGpiUtilitySourceFile, data_020ff2b8, sGpiAssertKeyNotNull, sGpiAssertValueNotNull, data_020ff3dc;
     s32 idx;
     s8 *p;
     s8 *dstA;
@@ -149,13 +151,13 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
     dstA = (s8 *)arg3;
     dstB = (s8 *)arg4;
     if (!arg1) {
-        AssertFailed(&data_020ff3cc, &data_020ff2dc, &data_020ff2b8, 0x199);
+        AssertFailed(&data_020ff3cc, &sGpiUtilitySourceFile, &data_020ff2b8, 0x199);
     }
     if (!dstA) {
-        AssertFailed(&data_020ff32c, &data_020ff2dc, &data_020ff2b8, 0x19a);
+        AssertFailed(&sGpiAssertKeyNotNull, &sGpiUtilitySourceFile, &data_020ff2b8, 0x19a);
     }
     if (!dstB) {
-        AssertFailed(&data_020ff338, &data_020ff2dc, &data_020ff2b8, 0x19b);
+        AssertFailed(&sGpiAssertValueNotNull, &sGpiUtilitySourceFile, &data_020ff2b8, 0x19b);
     }
     idx = *arg2;
     p = (s8 *)arg1 + idx;

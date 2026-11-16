@@ -470,11 +470,11 @@ else func_0208bd2c(sprite,kind,base+0x329a0,tile,1);
 }
 
 s32 func_020b5134(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
-    s32 func_0208c528(s32);
+    s32 CreateAnimatedSpriteObject(s32);
     M2C_UNK PlaceMapSprite(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     s32 temp_r0;
 
-    temp_r0 = func_0208c528(arg6);
+    temp_r0 = CreateAnimatedSpriteObject(arg6);
     PlaceMapSprite(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
     return temp_r0;
 }

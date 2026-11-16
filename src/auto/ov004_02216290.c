@@ -13,8 +13,8 @@ extern u32 gFrameCounter;
 #pragma push
 #pragma optimization_level 3
 void func_ov004_02216290(void *arg0){
-void func_0200100c(void *);s32 func_02001fb4(s32,s32);s32 Divide(s32,s32);
-void func_02003fc8(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+void func_0200100c(void *);s32 FX_Div(s32,s32);s32 Divide(s32,s32);
+void GX_SetOrthoProjection(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_02001114(void *,s32,s32,s32);void func_02001068(void *,void *,s32,s32,s32);
 void func_02001148(void *,void *,void *);void func_02007f68(void *,void *);void func_02003a70(void *);
 void func_02087048(s32,s32);void func_020870dc(s32,s32,s32,s32,s32,s32,s32,s32);
@@ -25,7 +25,7 @@ void func_0200112c(void *,s32,s32);void func_02087064(s32,s32,s32,s32,s32);void 
 s32 qp[12],qr[12],q2[12],q1[12],qt[12],qs[12],qm[12],q0[12],pivot[12],tr[12],sz[12],rot[12],mat[12],p2[12],p1[12],p0[12],d[12],c[12],b[12],a[12];s32 j,k,n,value,spacing,tex,flags,cx,cy,amount;void *link,*node; s32 scale,i,x,y,h,w,bottom,top;void *entry;
 volatile u32 *gx=(volatile u32 *)0x04000440;
 func_0200100c(a);func_0200100c(b);func_0200100c(c);
-scale=func_02001fb4(4096,M2C_FIELD(arg0,s32 *,64));
+scale=FX_Div(4096,M2C_FIELD(arg0,s32 *,64));
 M2C_FIELD(arg0,s16 *,68)=M2C_FIELD(arg0,s16 *,72)-((M2C_FIELD(arg0,s16 *,72)-M2C_FIELD(arg0,s16 *,68))*7)/8;
 M2C_FIELD(arg0,s16 *,70)=M2C_FIELD(arg0,s16 *,74)-((M2C_FIELD(arg0,s16 *,74)-M2C_FIELD(arg0,s16 *,70))*7)/8;
 switch(M2C_FIELD(arg0,u8 *,56)){
@@ -49,7 +49,7 @@ if(M2C_FIELD(arg0,s16 *,82)<192-Divide(M2C_FIELD(arg0,s32 *,64)*344,4096))M2C_FI
 if(M2C_FIELD(arg0,s16 *,80)>0)M2C_FIELD(arg0,s16 *,80)=0;
 if(M2C_FIELD(arg0,s16 *,82)>0)M2C_FIELD(arg0,s16 *,82)=0;
 }
-gx[0]=0;func_02003fc8(0,192,0,256,-1000,0,4096,1,0);
+gx[0]=0;GX_SetOrthoProjection(0,192,0,256,-1000,0,4096,1,0);
 func_02001114(a,M2C_FIELD(arg0,s32 *,64),M2C_FIELD(arg0,s32 *,64),4096);
 y=M2C_FIELD(arg0,s16 *,82);x=M2C_FIELD(arg0,s16 *,80);func_0200100c(b);func_02001068(b,b,x,y,0);
 func_0200100c(d);func_02001148(a,b,d);func_02007f68(d,c);

@@ -27,4 +27,46 @@ typedef struct Ov003Object {
     void *sub70;         /* +0x70 sub-object with a resource handle at +0x14 */
 } Ov003Object;
 
+/* Battle-setup controller; distinct from the scene object's interface layout above. */
+typedef struct Ov003BattleSetup {
+    void *vtable;
+    u8 pad04[0x30];
+    u8 state;
+    u8 pad35[3];
+    void *buffer38;
+    void *buffer3C;
+    void *menu;
+    u8 pending;
+} Ov003BattleSetup;
+
+typedef struct Ov003BattleSetupMenu {
+    void *vtable;
+    u8 mode;
+    s8 selection;
+    s8 lastSelection;
+    u8 pad07;
+    u8 *items;
+} Ov003BattleSetupMenu;
+
+/* The ov003 battle scene object (vtable data_ov003_0220fb38, built by
+ * func_ov003_021f05fc): SpriteTween slots that slide the map and player panels
+ * into place, the CO panel record and the sprite handles it owns. */
+#define BATTLE_SCENE_SLIDE_MAP    0x3C /* SpriteTween *: map view slide */
+#define BATTLE_SCENE_PANEL_INFO   0x40 /* 0x14-byte CO panel record */
+#define BATTLE_SCENE_SLIDE_PANEL  0x44 /* SpriteTween *: CO panel slide */
+#define BATTLE_SCENE_SLIDE_A      0x48 /* SpriteTween *: first extra slide */
+#define BATTLE_SCENE_SLIDE_B      0x4C /* SpriteTween *: second extra slide */
+#define BATTLE_SCENE_SLIDE_C      0x50 /* SpriteTween *: third extra slide */
+#define BATTLE_SCENE_PANEL_SPRITE 0x54 /* 3D sprite handle of the CO panel */
+#define BATTLE_SCENE_SPRITES      0x64 /* void *[10]: sprite handle array */
+
+/* Slide parameters the battle scene tweens use. */
+#define BATTLE_SCENE_SLIDE_FRAMES 12   /* frames a slide tween runs */
+#define BATTLE_SCENE_PANEL_HOME_X 0xC0 /* x the CO panel rests at */
+
+/* CO panel record fields (BATTLE_SCENE_PANEL_INFO). */
+#define BATTLE_PANEL_CURRENT 0x10 /* u8 current player slot */
+#define BATTLE_PANEL_ICON    0x11 /* u8 waypoint option icon */
+#define BATTLE_PANEL_NONE    0x63 /* no player / no icon */
+
 #endif

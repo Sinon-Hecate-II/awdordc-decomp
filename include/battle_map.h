@@ -8,6 +8,22 @@
 #ifndef BATTLE_MAP_H
 #define BATTLE_MAP_H
 
+/* Area-scan state: modes 0..5 use relative offsets; higher modes scan all tiles. */
+typedef struct AreaScan {
+    s32 width;
+    s32 height;
+    s32 originX;
+    s32 originY;
+    s32 x;
+    s32 y;
+    s32 mode;
+    s32 index;
+} AreaScan;
+
+enum { AREA_SCAN_FULL_MAP = 6, AREA_SCAN_END = 127 };
+extern s16 *gAreaScanOffsetTables[];
+
+
 /* A unit record of the battle map. */
 typedef struct BattleMapUnit {
     u8 kind;         /* +0x00 kind of the unit */
@@ -116,7 +132,8 @@ enum {
 #define MAP_PATH_X          0x52e0 /* s16 tile x the movement path starts at */
 #define MAP_PATH_Y          0x52e2 /* s16 tile y the movement path starts at */
 #define MAP_CURSOR_PATH     0x5388 /* the path from the unit to the cursor */
-#define MAP_CELL_BITMAP     0x5201 /* bitmap of the occupied cells */
+#define MAP_CELL_BITMAP     0x5201 /* u8[0xA1] the second team's bitmap of the cells it can see or threaten */
+#define MAP_CELL_BITMAP_TEAM_A 0x5160 /* u8[0xA1] the first team's bitmap of the cells it can see or threaten */
 #define MAP_WIDTH           0x5144 /* u16 map width in cells */
 #define MAP_HEIGHT          0x5146 /* u16 map height in cells */
 #define MAP_VIEW_X          0x5148 /* s16 view scroll x, in 1/16-cell units */
@@ -130,6 +147,8 @@ enum {
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 #define MAP_TILESET         0x5157 /* u8 battle-setting/tileset index, selects the terrain tileset bank */
 #define MAP_FOG             0x5156 /* u8 nonzero when fog of war hides distant units */
+/* Values stored in the map's weather fields. */
+enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM = 3 };
 #define MAP_WEATHER         0x5158 /* u8 current weather (0 clear, 1 rain, 2 snow, 3 sandstorm) */
 #define MAP_WEATHER_MODE    0x5159 /* u8 nonzero when the weather may change by itself */
 #define MAP_WEATHER_START   0x515a /* u8 weather when the battle starts */
@@ -162,6 +181,7 @@ enum {
 #define MAP_CELL_TILE_ID    0xa10  /* u16 per cell: tile id, keyed through the current terrain tileset */
 #define MAP_ROW_OFFSETS     0x3758 /* u16 per row: offset of the row in the cell arrays */
 #define MAP_CELL_UNIT_ID    0x508  /* u8 per cell: id of the unit standing there, 0 if none */
+#define MAP_CELL_VISIBLE_UNIT 0x000 /* u8 per cell: id of the unit the viewing player can see there, 0 if none (fog) */
 #define MAP_CELL_TERRAIN    0x1420 /* u8 per cell: low 5 bits terrain kind, high 3 bits owner */
 #define MAP_CELL_PROPERTY_INDEX 0x1928 /* s8 per cell: index of the cell's record in MAP_PROPERTY_CELLS */
 #define MAP_TILE_TERRAIN    0x6a60 /* u8 per tile id: terrain kind/owner byte the cell gets */
@@ -172,6 +192,9 @@ enum {
  * table maps each tile id to one of these packed values. */
 #define MAP_TERRAIN_PLAIN      1    /* plain ground */
 #define MAP_TERRAIN_WASTELAND  8    /* barren ground a destroyed owned property leaves */
+#define MAP_TERRAIN_PROPERTY_FIRST 0x0f /* first property terrain kind: headquarters */
+#define MAP_TERRAIN_HQ         0x0f /* headquarters: the AI scores it 30 capture points, other properties 1 */
+#define MAP_TERRAIN_PROPERTY_LAST  0x18 /* last property terrain kind */
 #define MAP_TERRAIN_IMPACT     0x1c /* destructible impact feature; its cell becomes a crater */
 
 /* Remaining HP of destructible terrain (low seven bits, 0 where there is none). */
@@ -193,12 +216,19 @@ enum {
 #define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
 /* One bit per neighbour direction of a map tile, as set in the cursor and unit
- * move direction masks.  The direction table at data_0212b1b8 maps each cursor
+ * move direction masks.  The direction table at gMapCursorDirs maps each cursor
  * direction index to its bit and its (dx, dy) step in this encoding. */
 #define MAP_DIR_UP    1
 #define MAP_DIR_DOWN  2
 #define MAP_DIR_LEFT  4
 #define MAP_DIR_RIGHT 8
+
+/* Cursor option index: which neighbour tile the directional cursor points at,
+ * in gMapCursorDirs order (up, right, down, left). */
+#define MAP_CURSOR_OPTION_UP    0
+#define MAP_CURSOR_OPTION_RIGHT 1
+#define MAP_CURSOR_OPTION_DOWN  2
+#define MAP_CURSOR_OPTION_LEFT  3
 
 /* The map's property-cell list, rebuilt by func_020cf2c8: one 6-byte record per
  * property (or kind 0x18 special) cell, ended by a 0xff terrain kind. */
@@ -249,6 +279,7 @@ typedef struct MapSettings {
 #define MAP_UNIT_TARGET_Y_NONE 0x0FC0 /* all six target-y bits set: no target */
 #define MAP_UNIT_AI_STATE   0x0B /* u8 low nibble AI step; bit 5 held while a move target is assigned */
 #define MAP_UNIT_AI_STATE_MASK 0x0F /* low nibble of MAP_UNIT_AI_STATE */
+#define MAP_UNIT_AI_KNOWN   0x40 /* u8 bit 6 of MAP_UNIT_AI_STATE: the AI knows where this unit is even without sight of its cell */
 #define MAP_UNIT_KIND_MASK  0x3F /* low six bits of MAP_UNIT_KIND: the kind, the owner is above */
 
 /* One entry of the battle map's target list: the unit on a cell (0 when the
@@ -424,6 +455,7 @@ typedef struct MapRecordHeader {
 } MapRecordHeader;
 
 #define MAP_RECORD_MAGIC       0x20070731
+#define MAP_RECORD_CHECKSUM    0x46 /* u16 CRC-16 of the record data (Crc16 from +0x54, 0x6A4 bytes) */
 #define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */
 #define MAP_RECORD_SIZE        0x6F8 /* expanded runtime record */
 #define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */

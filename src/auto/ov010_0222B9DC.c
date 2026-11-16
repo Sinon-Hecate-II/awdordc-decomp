@@ -23,7 +23,7 @@ void func_ov010_0222b9e8(void) {
 void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 FindObjectByClass(M2C_UNK *);
-    s32 func_0208206c();
+    s32 GetLocalPlayerName();
     extern M2C_UNK data_ov010_0222c6c4;
     extern M2C_UNK data_ov010_0222c928;
     void *temp_r0;
@@ -43,7 +43,7 @@ void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
     M2C_FIELD(temp_r0, s8 *, 0x34) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x35) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x36) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = func_0208206c();
+    M2C_FIELD(temp_r0, s32 *, 0x38) = GetLocalPlayerName();
     M2C_FIELD(temp_r0, s8 *, 0x3C) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x40) = 0;
 }
@@ -51,7 +51,7 @@ void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
 void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 FindObjectByClass(M2C_UNK *);
-    s32 func_0208206c();
+    s32 GetLocalPlayerName();
     extern M2C_UNK data_ov010_0222c5d4;
     extern M2C_UNK data_ov010_0222c928;
     void *temp_r0;
@@ -66,14 +66,14 @@ void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
     M2C_FIELD(temp_r0, s8 *, 0x34) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x35) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x36) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = func_0208206c();
+    M2C_FIELD(temp_r0, s32 *, 0x38) = GetLocalPlayerName();
     M2C_FIELD(temp_r0, s8 *, 0x3C) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x40) = 0;
 }
 
 void func_ov010_0222bb18(M2C_UNK arg0) {
     s32 ByteCompareN(s32, s32, M2C_UNK);
-    M2C_UNK func_ov010_02229a08();
+    M2C_UNK GetOnlineTransportPlayerId();
     s32 GetLocalPlayerStatus();
     s32 func_ov010_02229b48();
     M2C_UNK func_ov010_02229eb4(M2C_UNK);
@@ -83,7 +83,7 @@ void func_ov010_0222bb18(M2C_UNK arg0) {
         return;
     }
     temp_r4 = GetLocalPlayerStatus();
-    func_ov010_02229a08();
+    GetOnlineTransportPlayerId();
     if (ByteCompareN(temp_r4, func_ov010_02229b48(), 0x6C) == 0) {
         return;
     }

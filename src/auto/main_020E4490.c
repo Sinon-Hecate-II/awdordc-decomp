@@ -12,7 +12,7 @@ void func_020e4490(void) {
     M2C_UNK func_02081724();
     M2C_UNK func_02081a48();
     M2C_UNK func_02082d08();
-    M2C_UNK func_02082b78();
+    M2C_UNK Reset3DSpriteDisplayState();
     M2C_UNK func_02082cb4();
     M2C_UNK func_02082078();
     M2C_UNK func_020e31f0();
@@ -51,7 +51,7 @@ void func_020e4490(void) {
     func_02081724();
     func_02081a48();
     func_02082d08();
-    func_02082b78();
+    Reset3DSpriteDisplayState();
     func_02082cb4();
     func_02082078();
     func_020e31f0();

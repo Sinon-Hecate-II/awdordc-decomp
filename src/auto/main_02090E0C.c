@@ -153,7 +153,7 @@ void SetSpritePaletteBase(void) {
 
 void SetSpritePaletteIndex(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
 #pragma optimization_level reset
-s32 func_02091270(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 CreateSpriteAnim(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
             void func_02091954(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_020919b4(M2C_UNK);
     s32 temp_r0;
@@ -376,7 +376,7 @@ void func_02091570(M2C_UNK a) {
     } while (r7 < count);
 }
 
-void func_02091700(void *arg0,s32 arg1) {
+void SetSpriteAnimFrame(void *arg0,s32 arg1) {
 void func_02091928(void *);
 void *root;
 u8 *base;
@@ -716,9 +716,9 @@ gCur3DSpriteEngine=save;
 }
 
 #pragma scheduling off
-void func_02091d20(void) {M2C_UNK func_02007e20(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK data_020f41e0;extern void *gCur3DSpriteEngine;func_02007e20(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
+void func_02091d20(void) {M2C_UNK CopyU16(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK data_020f41e0;extern void *gCur3DSpriteEngine;CopyU16(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
 #pragma scheduling reset
-void func_02091d4c(s32 arg0) {
+void LoadScenePanelPalette(s32 arg0) {
     M2C_UNK func_01ff9e44(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_0211e088;
     func_01ff9e44(&data_0211e088, arg0 << 5, 0x20);
@@ -726,7 +726,7 @@ void func_02091d4c(s32 arg0) {
 
 void func_02091d6c(s32 a,s32 b) {
 extern void *gCur3DSpriteEngine;
-func_02091d4c(a);
+LoadScenePanelPalette(a);
 if(b!=0)return;
 func_020ae528(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+((a<<5)&~1));
 }

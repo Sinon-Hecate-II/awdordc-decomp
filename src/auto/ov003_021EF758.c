@@ -1,5 +1,6 @@
 /* 21 functions from 0x021EF758 to 0x021F05FC (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
 
 u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     M2C_UNK AddSprite(u16, M2C_UNK, u16, M2C_UNK *, s32);
@@ -152,7 +153,7 @@ void func_ov003_021efb60(void **arg0) {
 void func_ov003_021efb74(void *arg0) {
     M2C_UNK Show3DSprite(s32);
     M2C_UNK Hide3DSprite(s32);
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK IsLinkSessionActive(void);
     M2C_UNK SetTextById(void *, s32);
@@ -254,8 +255,8 @@ void func_ov003_021efb74(void *arg0) {
         if (func_ov003_021e6d28() != 0) {
             Hide3DSprite(M2C_FIELD(r7, s32 *, 0x58));
             r4c = M2C_FIELD(r7, void **, 0x64);
-            func_02088ff4(M2C_FIELD(r4c, s32 *, 0x0));
-            func_02088ff4(M2C_FIELD(r4c, s32 *, 0x4));
+            Hide3DSpriteSlide(M2C_FIELD(r4c, s32 *, 0x0));
+            Hide3DSpriteSlide(M2C_FIELD(r4c, s32 *, 0x4));
             r1p = M2C_FIELD(r7, void **, 0x44);
             M2C_FIELD(r1p, s16 *, 0xe) = (s16)0xc0;
             M2C_FIELD(r1p, s16 *, 0x10) = (s16)0x24;
@@ -304,17 +305,20 @@ void func_ov003_021efe9c(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
 }
 
-void func_ov003_021efeb0(void *arg0) {
-M2C_UNK func_02088ff4(s32);s16 GetSpriteAnimValue(void *);s32 func_ov003_021f15d4();s16 func_ov003_021f1608();
-s16 value;void *p,*q;
-value=func_ov003_021f1608();
-p=M2C_FIELD(arg0,void **,60); M2C_FIELD(p,s16 *,14)=GetSpriteAnimValue(p);M2C_FIELD(p,s16 *,16)=value;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
-q=M2C_FIELD(arg0,void **,64);M2C_FIELD(q,s8 *,16)=99;M2C_FIELD(q,s8 *,17)=99;
-p=M2C_FIELD(arg0,void **,72); M2C_FIELD(p,s16 *,14)=GetSpriteAnimValue(p);M2C_FIELD(p,s16 *,16)=value;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
-p=M2C_FIELD(arg0,void **,68); M2C_FIELD(p,s16 *,14)=GetSpriteAnimValue(p);M2C_FIELD(p,s16 *,16)=0xc0;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
-p=M2C_FIELD(arg0,void **,80); M2C_FIELD(p,s16 *,14)=GetSpriteAnimValue(p);M2C_FIELD(p,s16 *,16)=value;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
-p=M2C_FIELD(arg0,void **,76); M2C_FIELD(p,s16 *,14)=GetSpriteAnimValue(p);M2C_FIELD(p,s16 *,16)=0xc0;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
-func_02088ff4(M2C_FIELD(arg0,s32 *,84));if(func_ov003_021f15d4()==0)return;p=M2C_FIELD(arg0,void **,100);func_02088ff4(M2C_FIELD(p,s32 *,0));func_02088ff4(M2C_FIELD(p,s32 *,4));}
+/* Resets the battle scene's slide: starts a 12-frame tween of the map and the
+ * side panels from their current positions to the scene offset or the panel
+ * home x, clears the CO panel record and hides the panel sprites. */
+void ResetBattleSceneSlide(void *scene) {
+M2C_UNK Hide3DSpriteSlide(s32);s16 GetSpriteAnimValue(void *);s32 GetSceneSlideDirection();s16 GetSceneSlideOffset();
+s16 offset;void *tween,*panel;
+offset=GetSceneSlideOffset();
+tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_MAP); ((SpriteTween *)tween)->from=GetSpriteAnimValue(tween);((SpriteTween *)tween)->to=offset;((SpriteTween *)tween)->duration=BATTLE_SCENE_SLIDE_FRAMES;((SpriteTween *)tween)->current=((SpriteTween *)tween)->start;
+panel=M2C_FIELD(scene,void **,BATTLE_SCENE_PANEL_INFO);M2C_FIELD(panel,s8 *,BATTLE_PANEL_CURRENT)=BATTLE_PANEL_NONE;M2C_FIELD(panel,s8 *,BATTLE_PANEL_ICON)=BATTLE_PANEL_NONE;
+tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_A); ((SpriteTween *)tween)->from=GetSpriteAnimValue(tween);((SpriteTween *)tween)->to=offset;((SpriteTween *)tween)->duration=BATTLE_SCENE_SLIDE_FRAMES;((SpriteTween *)tween)->current=((SpriteTween *)tween)->start;
+tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_PANEL); ((SpriteTween *)tween)->from=GetSpriteAnimValue(tween);((SpriteTween *)tween)->to=BATTLE_SCENE_PANEL_HOME_X;((SpriteTween *)tween)->duration=BATTLE_SCENE_SLIDE_FRAMES;((SpriteTween *)tween)->current=((SpriteTween *)tween)->start;
+tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_C); ((SpriteTween *)tween)->from=GetSpriteAnimValue(tween);((SpriteTween *)tween)->to=offset;((SpriteTween *)tween)->duration=BATTLE_SCENE_SLIDE_FRAMES;((SpriteTween *)tween)->current=((SpriteTween *)tween)->start;
+tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_B); ((SpriteTween *)tween)->from=GetSpriteAnimValue(tween);((SpriteTween *)tween)->to=BATTLE_SCENE_PANEL_HOME_X;((SpriteTween *)tween)->duration=BATTLE_SCENE_SLIDE_FRAMES;((SpriteTween *)tween)->current=((SpriteTween *)tween)->start;
+Hide3DSpriteSlide(M2C_FIELD(scene,s32 *,BATTLE_SCENE_PANEL_SPRITE));if(GetSceneSlideDirection()==0)return;tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SPRITES);Hide3DSpriteSlide(M2C_FIELD(tween,s32 *,0));Hide3DSpriteSlide(M2C_FIELD(tween,s32 *,4));}
 
 void func_ov003_021effb8(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);

@@ -29,43 +29,43 @@ void func_02004078(s32 arg0,s32 arg1) {
 
 void GX_LoadBGPltt(M2C_UNK arg0,s32 arg1,u32 arg2) {
  M2C_UNK func_02007a74(s32,M2C_UNK,s32,u32);
- M2C_UNK func_02007e20(M2C_UNK,s32,u32);
+ M2C_UNK CopyU16(M2C_UNK,s32,u32);
  extern s32 data_020f5204;
  if(data_020f5204!=-1&&arg2>0x1CU){func_02007a74(data_020f5204,arg0,arg1+0x05000000,arg2);return;}
- func_02007e20(arg0,arg1+0x05000000,arg2);
+ CopyU16(arg0,arg1+0x05000000,arg2);
 }
 
 void func_02004108(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     if (data_020f5204 != -1 && arg2 > 0x1CU) {
         func_02007a74(data_020f5204, arg0, arg1 + 0x05000400, arg2);
         return;
     }
-    func_02007e20(arg0, arg1 + 0x05000400, arg2);
+    CopyU16(arg0, arg1 + 0x05000400, arg2);
 }
 
-void func_02004160(M2C_UNK arg0, s32 arg1, u32 arg2) {
+void GX_LoadOBJPltt(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     if (data_020f5204 != -1 && arg2 > 0x1CU) {
         func_02007a74(data_020f5204, arg0, arg1 + 0x05000200, arg2);
         return;
     }
-    func_02007e20(arg0, arg1 + 0x05000200, arg2);
+    CopyU16(arg0, arg1 + 0x05000200, arg2);
 }
 
 void func_020041b8(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     if (data_020f5204 != -1 && arg2 > 0x1CU) {
         func_02007a74(data_020f5204, arg0, arg1 + 0x05000600, arg2);
         return;
     }
-    func_02007e20(arg0, arg1 + 0x05000600, arg2);
+    CopyU16(arg0, arg1 + 0x05000600, arg2);
 }
 
 void func_02004210(M2C_UNK arg0, s32 arg1, u32 arg2) {
@@ -122,7 +122,7 @@ void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036b8();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     s32 temp_ip;
 
@@ -131,13 +131,13 @@ void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
         func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
         return;
     }
-    func_02007e20(arg0, temp_ip + arg1, arg2);
+    CopyU16(arg0, temp_ip + arg1, arg2);
 }
 
 void func_020043cc(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036d8();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     s32 temp_ip;
 
@@ -146,13 +146,13 @@ void func_020043cc(M2C_UNK arg0, s32 arg1, u32 arg2) {
         func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
         return;
     }
-    func_02007e20(arg0, temp_ip + arg1, arg2);
+    CopyU16(arg0, temp_ip + arg1, arg2);
 }
 
 void func_0200442c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_0200370c();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     s32 temp_ip;
 
@@ -161,13 +161,13 @@ void func_0200442c(M2C_UNK arg0, s32 arg1, u32 arg2) {
         func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
         return;
     }
-    func_02007e20(arg0, temp_ip + arg1, arg2);
+    CopyU16(arg0, temp_ip + arg1, arg2);
 }
 
-void func_0200448c(M2C_UNK arg0, s32 arg1, u32 arg2) {
+void GX_LoadBG2Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_0200372c();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     s32 temp_ip;
 
@@ -176,13 +176,13 @@ void func_0200448c(M2C_UNK arg0, s32 arg1, u32 arg2) {
         func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
         return;
     }
-    func_02007e20(arg0, temp_ip + arg1, arg2);
+    CopyU16(arg0, temp_ip + arg1, arg2);
 }
 
 void func_020044ec(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020037b0();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e20(M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
     s32 temp_ip;
 
@@ -191,7 +191,7 @@ void func_020044ec(M2C_UNK arg0, s32 arg1, u32 arg2) {
         func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
         return;
     }
-    func_02007e20(arg0, temp_ip + arg1, arg2);
+    CopyU16(arg0, temp_ip + arg1, arg2);
 }
 
 void func_0200454c(M2C_UNK arg0,s32 arg1,u32 arg2) {
@@ -226,7 +226,7 @@ void func_0200466c(M2C_UNK arg0,s32 arg1,u32 arg2) {
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
-void func_020046cc(M2C_UNK arg0,s32 arg1,u32 arg2) {
+void GX_LoadBG2Char(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_020038dc(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
  extern s32 data_020f5204; s32 temp_ip;
  temp_ip=func_020038dc();

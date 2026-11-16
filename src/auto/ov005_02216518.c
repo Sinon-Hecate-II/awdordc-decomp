@@ -171,7 +171,7 @@ void func_ov005_02217334(s16 arg0) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 void Ov005DrawEntryList(void) {
-    void func_02098ac0(s32, s32, s32, s32);
+    void LoadFacePaletteAt(s32, s32, s32, s32);
     void LoadFacePalette(s32, s32, s32, s32, u8);
     extern u8 *gOv005MenuState;
     extern void *gCur3DSpriteEngine;
@@ -181,7 +181,7 @@ void Ov005DrawEntryList(void) {
     s32 value = M2C_FIELD(gOv005MenuState, s16 *, 0x10);
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_02098ac0(value, 0, (u16)(M2C_FIELD(gOv005MenuState, s16 *, 0x10) - 1), 0);
+    LoadFacePaletteAt(value, 0, (u16)(M2C_FIELD(gOv005MenuState, s16 *, 0x10) - 1), 0);
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     LoadFacePalette(value, 8, 2, 0, 0);
     gCur3DSpriteEngine = saved;

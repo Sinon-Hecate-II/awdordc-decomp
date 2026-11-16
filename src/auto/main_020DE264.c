@@ -367,7 +367,7 @@ u32 GetActivePlayerMask(void);
 u32 CountBits(void);
 u32 func_ov009_02225470(void);
 void func_02088f1c(void*);
-void func_02088ff4(void*);
+void Hide3DSpriteSlide(void*);
 void SetTextById(void*,u32);
 u32 GetReadyPlayerMask(void);
 void func_ov009_02224064(void);
@@ -376,7 +376,7 @@ void func_ov009_02223fbc(void);
 void func_020d47d0(void);
 void ResetPlayerMask(void);
 int func_020890b8(void*);
-int func_02089064(void*);
+int Is3DSpriteVisible(void*);
 void *func_ov009_02224070(int);
 void func_ov009_022258a8(void*);
 extern void *gKeyState;
@@ -470,7 +470,7 @@ func_02088f1c(M2C_FIELD(self,void * *,0x54));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
 else if(SetupIsActive(p)){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+2,0);
-func_02088ff4(M2C_FIELD(self,void * *,0x54));
+Hide3DSpriteSlide(M2C_FIELD(self,void * *,0x54));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000011);
 }
 p=M2C_FIELD(self,void * *,0x54);
@@ -498,10 +498,10 @@ PlaySoundEffect(0x1000e);return;
 v=func_ov009_02225470();
 p=M2C_FIELD(self,void * *,0x60);
 
-if(v>=2){if(!func_020890b8(p)&&!func_02089064(M2C_FIELD(self,void * *,0x60))){func_02088f1c(M2C_FIELD(self,void * *,0x60));
+if(v>=2){if(!func_020890b8(p)&&!Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){func_02088f1c(M2C_FIELD(self,void * *,0x60));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
-else if(!func_020890b8(p)&&func_02089064(M2C_FIELD(self,void * *,0x60))){func_02088ff4(M2C_FIELD(self,void * *,0x60));
+else if(!func_020890b8(p)&&Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Hide3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000011);
 }
 p=func_ov009_02224070(0);

@@ -3,7 +3,7 @@
 #include "qr2.h"
 
 s32 ReportQr2Error(u32 ret){
-s32 func_02038f6c(void);
+s32 GetNetSessionState(void);
 u32 off,code;
 if(ret==0)return 0;
 switch(ret){
@@ -13,8 +13,8 @@ case 3:code=6;off=code-36;break;
 case 4:code=6;off=code-86;break;
 case 5:code=6;off=code-26;break;
 }
-switch(func_02038f6c()){
-case 2:func_02039db4(code,off-0xfa00);break;
+switch(GetNetSessionState()){
+case 2:ReportNasLoginError(code,off-0xfa00);break;
 case 4:func_0203accc(code,off+0xfffedef0);break;
 case 5:func_0203dc38(code,off+0xfffeb7e0);break;
 default:SetNetError(code,off+0xfffe90d0);break;
@@ -428,33 +428,38 @@ func_0203ecb0(1,arg0,zero);
 if(func_02043184()!=0)return;p=GetConnection();M2C_FIELD(p,u8 *,0x3cc)=255;
 }
 
-void Qr2OnReceiveState(s32 arg0, u32 arg1) {
-    s32 func_02038f6c(void);
+/* Validate and dispatch binary QR2 matchmaking commands while the session permits them. */
+void Qr2OnReceiveState(s32 packetAddress, u32 packetBytes) {
+    s32 GetNetSessionState(void);
     void *GetConnection(void);
     void MI_CpuCopy8(void *, void *, s32);
     s32 StringCompareN(void *, void *, s32);
-    s32 func_0203f45c(s32, u32, u32, u32, void *, s32);
-    extern u8 data_020fca00[];
-    u8 record[20];
-    u8 buf[128];
-    u32 acc = 0;
+    s32 HandleConnectionCommand(s32, u32, u32, u32, void *, s32);
+    extern u8 sQr2MatchCommandMagic[];
+    u8 header[QR2_MATCH_HEADER_SIZE];
+    u8 payload[QR2_MATCH_PAYLOAD_MAX];
+    u32 processedBytes = 0;
 
-    if (func_02038f6c() != 5) {
-        if (func_02038f6c() != 6) return;
-        if (((u8 *)GetConnection())[0x15] != 2) {
-            if (((u8 *)GetConnection())[0x15] != 3) return;
+    if (GetNetSessionState() != NET_STATE_STARTING) {
+        if (GetNetSessionState() != 6) return;
+        if (((u8 *)GetConnection())[CONN_SESSION_MODE] != 2) {
+            if (((u8 *)GetConnection())[CONN_SESSION_MODE] != 3) return;
         }
     }
-    if (arg1 < 0x14) return;
+    if (packetBytes < QR2_MATCH_HEADER_SIZE) return;
 
     for (;;) {
-        MI_CpuCopy8((void *)arg0, record, 0x14);
-        if (StringCompareN(record, data_020fca00, 4) != 0) return;
-        if (*(u32 *)(record + 4) != 3) return;
-        MI_CpuCopy8((void *)(arg0 + 0x14), buf, record[9]);
-        if (func_0203f45c(record[8], *(u32 *)(record + 16), *(u32 *)(record + 12), *(u16 *)(record + 10), buf, record[9] >> 2) == 0) return;
-        acc += record[9] + 0x14;
-        if (acc + 0x14 > arg1) return;
+        MI_CpuCopy8((void *)packetAddress, header, QR2_MATCH_HEADER_SIZE);
+        if (StringCompareN(header, sQr2MatchCommandMagic, 4) != 0) return;
+        if (((Qr2MatchCommandHeader *)header)->version != QR2_MATCH_VERSION) return;
+        MI_CpuCopy8((void *)(packetAddress + QR2_MATCH_HEADER_SIZE), payload, ((Qr2MatchCommandHeader *)header)->payloadBytes);
+        if (HandleConnectionCommand(((Qr2MatchCommandHeader *)header)->command,
+            ((Qr2MatchCommandHeader *)header)->profileId,
+            ((Qr2MatchCommandHeader *)header)->address,
+            ((Qr2MatchCommandHeader *)header)->port, payload,
+            ((Qr2MatchCommandHeader *)header)->payloadBytes >> 2) == 0) return;
+        processedBytes += ((Qr2MatchCommandHeader *)header)->payloadBytes + QR2_MATCH_HEADER_SIZE;
+        if (processedBytes + QR2_MATCH_HEADER_SIZE > packetBytes) return;
     }
 }
 

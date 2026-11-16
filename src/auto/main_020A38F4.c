@@ -42,7 +42,7 @@ void func_020a398c(s32 a) {
  func_020a38f4(a);
 }
 
-void func_020a39c0(M2C_UNK arg0) {
+void StartWeatherChange(M2C_UNK arg0) {
     s16 func_020a3790(M2C_UNK);
     void func_020a3934();
     extern M2C_UNK data_021204f4;

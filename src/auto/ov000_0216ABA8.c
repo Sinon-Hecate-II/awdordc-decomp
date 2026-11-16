@@ -110,7 +110,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK func_0209b59c(s32, M2C_UNK);
     M2C_UNK func_0209b5e4(s32, s32);
     s32 MeasureStringWidth();
@@ -211,7 +211,7 @@ void func_ov000_0216b194(void *arg0) {
     func_0209b59c(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
     temp_r6_5 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
     func_0209b5e4(temp_r6_5 + 0x8FC0, GetCurrentMapName());
-    func_02091d4c(0x12);
+    LoadScenePanelPalette(0x12);
     M2C_FIELD(arg0, s16 *, 0x3E) = 0x20;
     GetCurrentMapName();
     temp_r0_19 = MeasureStringWidth();

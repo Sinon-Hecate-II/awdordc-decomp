@@ -47,7 +47,7 @@ s32 func_ov009_022242c8(void) {
     M2C_UNK func_ov009_022224e0(void);
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     void func_ov009_022213f0(M2C_UNK, M2C_UNK);
-    void *func_0208206c(void);
+    void *GetLocalPlayerName(void);
     M2C_UNK func_ov000_0216a470(void);
     M2C_UNK func_ov000_0216a564(void);
     M2C_UNK func_ov000_0216a76c(void);
@@ -135,7 +135,7 @@ s32 func_ov009_022242c8(void) {
     stk[0] = stk[6];
     stk[1] = stk[7];
 
-    func_ov009_022213f0((s32)&data_ov009_02226a20, (s32)func_0208206c());
+    func_ov009_022213f0((s32)&data_ov009_02226a20, (s32)GetLocalPlayerName());
 
     func_ov000_0216a470();
     M2C_FIELD(&gLinkState, s8 *, 0x158) = (u8)func_ov000_0216a564();
@@ -207,7 +207,7 @@ void func_ov009_0222454c(void) {
 s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     s32 func_ov009_02224718(s32);
-    void func_02007e20(void *, void *, s32);
+    void CopyU16(void *, void *, s32);
     s32 MemSet(s32, s32, s32);
     s32 func_ov009_02222f84(void);
     extern M2C_UNK gLinkState;
@@ -232,7 +232,7 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(&gLinkState, u16 *, 0x84) = 0;
 
     if (arg1 != 0) {
-        func_02007e20((void *)arg1, &data_ov009_02226968, 6);
+        CopyU16((void *)arg1, &data_ov009_02226968, 6);
     } else {
         s32 value;
         s32 count;

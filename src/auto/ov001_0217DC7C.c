@@ -12,7 +12,7 @@ void MapListHandleState(void) {
  s32 GetMenuState(void);
  s32 GetMenuRow(void);
  s32 func_020020c4(u16,s32);
- void func_ov001_02172184(void);
+ void Ov001_FreeSpriteObjects(void);
  void func_ov001_0217e238(void);
  void func_ov001_0217f110(void);
  M2C_UNK Ov001_PlaySound(s32);
@@ -24,7 +24,7 @@ void MapListHandleState(void) {
  case 1:M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,69)=1;return;
  case 2:
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65))return;
- func_ov001_02172184();
+ Ov001_FreeSpriteObjects();
  M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
  func_ov001_0217e238();M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65)=4;return;
  case 3:
@@ -78,7 +78,7 @@ void func_ov001_0217def8(void) {
 #pragma opt_strength_reduction off
 void func_ov001_0217df44(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
-extern M2C_UNK func_02004160,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,func_ov001_02180d44,func_ov001_02181a84;
+extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,func_ov001_02180d44,func_ov001_02181a84;
 s32 Ov001_IsFadeActive(s32);
 void *GetCurrentMapRecord(void);
 s32 CountSetBits(void *);
@@ -87,30 +87,30 @@ if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 func_ov001_0218c94c(0,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0));
 func_ov001_0218c94c(1,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,60));
-for(i=0;i<7;i++)func_ov001_0218c104(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,24));
-if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52))func_ov001_0218c104(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52));
-func_ov001_02183980();func_ov001_0218af70(0);func_ov001_02172184();
-if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)!=12)func_ov001_02171cf8();
+for(i=0;i<7;i++)Ov001_ReleaseSprite(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,24));
+if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52))Ov001_ReleaseSprite(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52));
+func_ov001_02183980();func_ov001_0218af70(0);Ov001_FreeSpriteObjects();
+if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)!=12)Ov001_FreeOptionBackground();
 func_ov001_021836f4();
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,8));
 for(i=0;i<2;i++)Ov001_FreeFile(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,12));
-Ov001_LoadAsset(&data_ov001_0219085c,&func_02004160);
-func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
+Ov001_LoadAsset(&data_ov001_0219085c,&GX_LoadOBJPltt);
+Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,29);
 *(volatile u32*)0x04000010=0;*(volatile u32*)0x04000018=0;
 *(volatile u16*)0x0400000c=(*(volatile u16*)0x0400000c&0x43)|0xe10;
 switch((u32)M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)){
-case 0:case 1:Ov001_SetNameEntryMode();func_ov001_02175d64(2,0);Ov001_SetStepCallback(&InitNameEntryScreen);break;
+case 0:case 1:Ov001_SetNameEntryMode();Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&InitNameEntryScreen);break;
 case 4:case 5:case 6:case 9:case 10:
 n=M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)-4;
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)>=9)n-=2;
-func_ov001_02175d64(2,0);Ov001_SetNameEntryMode(n,0);Ov001_SetStepCallback(&func_ov001_0217bf84);break;
+Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(n,0);Ov001_SetStepCallback(&func_ov001_0217bf84);break;
 case 11:p=GetCurrentMapRecord();p[0xd0]=CountSetBits(p+0xf0);
 if(p[0xf5]){MI_CpuFill8(p+0xc0,0,4);MI_CpuFill8(p+0xc4,0,4);MI_CpuFill8(p+0xf0,0,4);p[0xd0]=0;}
 if(p[0xf6])MI_CpuFill8(p+0xc8,0,8);
-func_ov001_02175d64(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
-case 12:func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
-case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02180d44);}
-else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);func_ov001_02175d64(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
+Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
+case 12:Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
+case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02180d44);}
+else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
 }
 func_ov001_0218b71c(&data_ov001_02193db4);
 }

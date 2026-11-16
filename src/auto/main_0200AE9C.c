@@ -324,9 +324,9 @@ s32 OpenFileDirect(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return 1;
 }
 
-s32 func_0200b9e4(s32 a,Unk02BDFileRange b){if(!b.words[0])return 0;M2C_FIELD(a,u32 *,8)=b.words[0];M2C_FIELD(a,u32 *,48)=b.words[0];M2C_FIELD(a,u32 *,52)=M2C_FIELD(&b,volatile u32 *,4);if(!SubmitFileRequest((void *)a,6))return 0;M2C_FIELD(a,s32 *,12)=(M2C_FIELD(a,s32 *,12)|16)&~32;return 1;}
+s32 OpenFileRange(s32 a,Unk02BDFileRange b){if(!b.words[0])return 0;M2C_FIELD(a,u32 *,8)=b.words[0];M2C_FIELD(a,u32 *,48)=b.words[0];M2C_FIELD(a,u32 *,52)=M2C_FIELD(&b,volatile u32 *,4);if(!SubmitFileRequest((void *)a,6))return 0;M2C_FIELD(a,s32 *,12)=(M2C_FIELD(a,s32 *,12)|16)&~32;return 1;}
 
-s32 OpenFileRequest(s32 a){s32 func_0200b9e4(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&func_0200b9e4(a,v))return 1;return 0;}
+s32 OpenFileRequest(s32 a){s32 OpenFileRange(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&OpenFileRange(a,v))return 1;return 0;}
 
 s32 CloseFileRequest(void *arg0) {
     s32 SubmitFileRequest(void *, M2C_UNK);

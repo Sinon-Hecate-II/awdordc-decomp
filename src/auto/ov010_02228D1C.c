@@ -434,8 +434,8 @@ void *func_ov010_0222959c(void *arg0, u8 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 
 s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     s32 func_ov010_022282b4(s32);
-    u16 func_ov010_02229a24();
-    s32 func_ov010_02229a08();
+    u16 GetOnlinePeerMask();
+    s32 GetOnlineTransportPlayerId();
     M2C_UNK func_ov010_022268f4(M2C_UNK, s32, s32);
     void MI_CpuFill8(void *, s32, s32);
     extern u16 data_ov010_0222eee0;
@@ -446,9 +446,9 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     s32 ret;
 
     if (func_ov010_022282b4(3) == 0) return 0;
-    arg3 &= func_ov010_02229a24();
-    arg3 = (u16)(arg3 & (-1 ^ (1 << func_ov010_02229a08())));
-    mode = func_ov010_02229a08();
+    arg3 &= GetOnlinePeerMask();
+    arg3 = (u16)(arg3 & (-1 ^ (1 << GetOnlineTransportPlayerId())));
+    mode = GetOnlineTransportPlayerId();
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
     force = &saved;
@@ -476,10 +476,10 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     return ret != 0;
 }
 
-s32 func_ov010_0222972c(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
+s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 func_ov010_022282b4(s32);
-    u16 func_ov010_02229a24();
-    s32 func_ov010_02229a08();
+    u16 GetOnlinePeerMask();
+    s32 GetOnlineTransportPlayerId();
     M2C_UNK func_ov010_022268f4(s32, s32, s32);
     void MI_CpuFill8(void *, s32, s32);
     extern u16 data_ov010_0222eee0;
@@ -490,9 +490,9 @@ s32 func_ov010_0222972c(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 ret;
 
     if (func_ov010_022282b4(3) == 0) return 0;
-    arg3 = arg3 & func_ov010_02229a24();
-    v = (u16)(arg3 & (-1 ^ (1 << func_ov010_02229a08())));
-    mode = func_ov010_02229a08();
+    arg3 = arg3 & GetOnlinePeerMask();
+    v = (u16)(arg3 & (-1 ^ (1 << GetOnlineTransportPlayerId())));
+    mode = GetOnlineTransportPlayerId();
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
     node = (void *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
@@ -577,7 +577,7 @@ M2C_FIELD(&data_ov010_0222ef90,s32 *,offset)--;
 return M2C_FIELD(b,s32 *,8)+12;
 }
 
-s32 func_ov010_02229a08(void) {
+s32 GetOnlineTransportPlayerId(void) {
     s32 GetLocalPlayerId();
     return GetLocalPlayerId();
 }
@@ -587,7 +587,7 @@ u8 func_ov010_02229a14(void) {
     return M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xFB);
 }
 
-u16 func_ov010_02229a24(void) {
+u16 GetOnlinePeerMask(void) {
     s32 func_02038f00();
     return (u16)func_02038f00();
 }
@@ -623,7 +623,7 @@ if(func_ov010_022282b4(2)) {
 if(!func_0203a850(&gLocalPlayerStatus,0x6c))return 0;
 }
 if(func_ov010_022282b4(3)) {
-func_ov010_02227f88(func_ov010_02229a08(),&gLocalPlayerStatus);
+func_ov010_02227f88(GetOnlineTransportPlayerId(),&gLocalPlayerStatus);
 func_ov010_02229608(7,&gLocalPlayerStatus,0x6c,0xffff);
 }
 return 1;
@@ -637,7 +637,7 @@ M2C_UNK *GetLocalPlayerStatus(void) {
 s32 func_ov010_02229b0c(s32 a) {
 extern M2C_UNK data_ov010_0222f02c;
 s32 p;
-if(!(func_ov010_02229a24()&(1<<a)))return 0;
+if(!(GetOnlinePeerMask()&(1<<a)))return 0;
 p=(s32)&data_ov010_0222f02c+a*0x6c;
 if(!(M2C_FIELD(p,u8 *,0x1a)&1))p=0;
 return p;
@@ -677,12 +677,12 @@ if(!p)return 0;MI_CpuCopy8(p+0x2c,b,c);return b;
 }
 
 s32 func_ov010_02229bdc(void) {
-    if (func_ov010_02229a08() == 0) return 1;
+    if (GetOnlineTransportPlayerId() == 0) return 1;
     return 0;
 }
 
 s32 func_ov010_02229bf4(void) {
-    if (func_ov010_02229a08() != 0) return 1;
+    if (GetOnlineTransportPlayerId() != 0) return 1;
     return 0;
 }
 
@@ -690,14 +690,14 @@ void func_ov010_02229c0c(void *p,s32 a) {
 extern u16 data_ov010_0222eee0;
 if(!func_ov010_022282b4(3))return;
 M2C_FIELD(p,s32 *,0)=a;
-M2C_FIELD(p,s16 *,4)=1<<func_ov010_02229a08();
+M2C_FIELD(p,s16 *,4)=1<<GetOnlineTransportPlayerId();
 M2C_FIELD(&data_ov010_0222eee0,void **,0x18)=p;
 if(!func_ov010_02229bdc())return;
 func_ov010_02229608(2,M2C_FIELD(&data_ov010_0222eee0,void **,0x18),8,0xffff);
 }
 
 s32 func_ov010_02229c74(void) {
-    u16 func_ov010_02229a24();
+    u16 GetOnlinePeerMask();
     s32 func_ov010_022282b4(s32);
     s32 func_ov010_022282f8();
     s32 func_ov010_02229bdc();
@@ -705,7 +705,7 @@ s32 func_ov010_02229c74(void) {
     s32 temp_r4;
     s32 var_r5;
     s32 t;
-    temp_r4 = func_ov010_02229a24();
+    temp_r4 = GetOnlinePeerMask();
     var_r5 = 0;
     if (M2C_FIELD(&data_ov010_0222eee0, void **, 0x18) != NULL &&
         temp_r4 != (temp_r4 & M2C_FIELD(M2C_FIELD(&data_ov010_0222eee0, void **, 0x18), u16 *, 4))) var_r5 = 1;

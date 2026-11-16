@@ -1,5 +1,6 @@
 /* 48 functions from 0x02176F4C to 0x02177F1C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 typedef struct { u8 bytes[22]; } MenuBuf22;
 typedef struct { u8 bytes[23]; } MenuBuf23;
 
@@ -9,7 +10,7 @@ typedef struct { u64 value; u32 rest[3]; } WfcProfile;
 
 /* State shared by the ov001 option-menu step functions. */
 typedef struct {
-    s8 selected;       /* +0x00 selected option, 0..2 */
+    u8 selected;       /* +0x00 selected option, 0..2 */
     u8 paletteLoaded;  /* +0x01 nonzero once the option palette was chosen */
     u8 pad02[2];
     void *palette;     /* +0x04 loaded palette-file (NCL) data */
@@ -116,16 +117,16 @@ void func_ov001_021770ec(void) {
     if (func_ov001_0217170c() == 0) return;
     func_ov001_0218af70(0);
     if (data_ov001_02193d64 == 0) {
-        func_ov001_02171cf8();
-        func_ov001_0218b368(1, 1);
+        Ov001_FreeOptionBackground();
+        Ov001_DisableVisiblePlanes(1, 1);
     }
-    func_ov001_0218b368(0, 0x15);
+    Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193d64 == 0) {
-        func_ov001_02175d64(0, 1);
+        Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(&func_ov001_021778c0);
         return;
     }
-    func_ov001_02175d64(0, 1);
+    Ov001_SetNextScreenMode(0, 1);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177214);
 }
 
@@ -170,8 +171,8 @@ void func_ov001_02177214(void) {
 void func_ov001_02177238(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190534;
-    extern M2C_UNK func_0200448c;
-    Ov001_LoadAsset(&data_ov001_02190534, &func_0200448c);
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&data_ov001_02190534, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -181,10 +182,10 @@ void func_ov001_02177238(void) {
 
 void func_ov001_021772b8(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021772ec;
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_021772ec);
 }
 
@@ -267,7 +268,7 @@ void func_ov001_0217740c(void) {
     func_0200e840();
 }
 
-void func_ov001_02177440(void) {
+void Ov001_OpenMacAddressScreen(void) {
     M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_02177474(void);
@@ -283,8 +284,8 @@ void func_ov001_02177440(void) {
 void func_ov001_02177474(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190548;
-    extern M2C_UNK func_0200448c;
-    Ov001_LoadAsset(&data_ov001_02190548, &func_0200448c);
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&data_ov001_02190548, &GX_LoadBG2Scr);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -317,8 +318,8 @@ void func_ov001_021776c8(void) {
     extern M2C_UNK func_ov001_0217771c;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_0217771c);
 }
 
@@ -390,10 +391,10 @@ void func_ov001_02177800(void) {
 
 void func_ov001_02177850(void) {
     s32 func_ov001_0217170c();
-    M2C_UNK func_ov001_02171cf8();
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
-    M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021778c0;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -405,10 +406,10 @@ void func_ov001_02177850(void) {
         return;
     }
     func_ov001_0218af70(0);
-    func_ov001_02171cf8();
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x15);
-    func_ov001_02175d64(0, 1);
+    Ov001_FreeOptionBackground();
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_SetNextScreenMode(0, 1);
     Ov001_SetStepCallback(&func_ov001_021778c0);
 }
 
@@ -450,15 +451,15 @@ void Ov001_LoadOptionMenuBg(void) {
     void DC_FlushRange(void *, u32);
     void GX_LoadBGPltt(void *, s32, u32);
     void Ov001_FreeFile(void *);
-    extern M2C_UNK gOv001OptionBgPalettePath, gOv001OptionBgPaletteBankPath, gOv001OptionBgTilesPath, gOv001OptionMenuMapPath, gOv001OptionMenuState, func_020046cc, func_0200448c;
+    extern M2C_UNK gOv001OptionBgPalettePath, gOv001OptionBgPaletteBankPath, gOv001OptionBgTilesPath, gOv001OptionMenuMapPath, gOv001OptionMenuState, GX_LoadBG2Char, GX_LoadBG2Scr;
     MenuBuf22 palettePath = *(MenuBuf22 *)&gOv001OptionBgPalettePath;
     MenuBuf23 layoutPath = *(MenuBuf23 *)&gOv001OptionBgPaletteBankPath;
     WfcProfile profile;
     register u8 *dst, *src;
     register s32 i;
     register void *palette;
-    Ov001_LoadAsset(&gOv001OptionBgTilesPath, &func_020046cc);
-    Ov001_LoadAsset(&gOv001OptionMenuMapPath, &func_0200448c);
+    Ov001_LoadAsset(&gOv001OptionBgTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001OptionMenuMapPath, &GX_LoadBG2Scr);
     M2C_FIELD(&gOv001OptionMenuState, void **, 4) = Ov001_LoadFile(Ov001_LocalizePath(&layoutPath), 0, 4);
     palette = Ov001_LoadFile(Ov001_LocalizePath(&palettePath), 0, 4);
     GetWfcProfile(&profile);
@@ -479,8 +480,8 @@ void func_ov001_02177b24(void) {
     extern M2C_UNK func_ov001_02177b78;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x14);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x14);
     Ov001_SetStepCallback(&func_ov001_02177b78);
 }
 
@@ -587,7 +588,7 @@ void func_ov001_02177d8c(void) {
 
 void func_ov001_02177dac(void) {
     extern M2C_UNK gOv001OptionMenuState;
-    extern M2C_UNK func_ov001_02177e10;
+    extern M2C_UNK Ov001_OptionMenuClose;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
@@ -596,25 +597,29 @@ void func_ov001_02177dac(void) {
     }
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x14, 8);
-    Ov001_SetStepCallback(&func_ov001_02177e10);
+    Ov001_SetStepCallback(&Ov001_OptionMenuClose);
 }
 
-void func_ov001_02177e10(void) {
+/* Closes the Wi-Fi option menu once the fades have finished: releases its
+ * sprites and palette, then opens the selected option screen (or returns to the
+ * Wi-Fi menu when the menu was not entered from an option). */
+void Ov001_OptionMenuClose(void) {
 extern M2C_UNK gOv001OptionMenuState;
-void func_ov001_021768b8(void);void func_ov001_02177440(void);void func_ov001_02176e30(void);void func_ov001_0217868c(void);
+void Ov001_OpenWifiMenu(void);void Ov001_OpenMacAddressScreen(void);void Ov001_OpenWfcSettingsScreen(void);void Ov001_OpenWfcEraseScreen(void);
+void Ov001_FreeSpriteObjects(void);M2C_UNK Ov001_FreeOptionBackground();M2C_UNK Ov001_SetNextScreenMode(M2C_UNK,M2C_UNK);
 s32 Ov001_IsFadeActive(M2C_UNK);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 if(!func_ov001_0217170c())return;
-func_ov001_0218c104(M2C_FIELD(&gOv001OptionMenuState,void **,8));
-func_ov001_02172184();func_ov001_02171cf8();
-Ov001_FreeFile(M2C_FIELD(&gOv001OptionMenuState,void **,4));
-func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
-if(!M2C_FIELD(&gOv001OptionMenuState,u8 *,1)){func_ov001_02175d64(0,0);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021768b8);return;}
-switch(M2C_FIELD(&gOv001OptionMenuState,u8 *,0)){
-case 0:func_ov001_02175d64(0,1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177440);return;
-case 1:func_ov001_02175d64(0,1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176e30);return;
-case 2:func_ov001_02175d64(0,1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217868c);return;
+Ov001_ReleaseSprite(((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite);
+Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();
+Ov001_FreeFile(((Ov001OptionMenuState *)&gOv001OptionMenuState)->palette);
+Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
+if(!((Ov001OptionMenuState *)&gOv001OptionMenuState)->paletteLoaded){Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWifiMenu);return;}
+switch(((Ov001OptionMenuState *)&gOv001OptionMenuState)->selected){
+case OV001_OPTION_MAC_ADDRESS:Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenMacAddressScreen);return;
+case OV001_OPTION_WFC_SETTINGS:Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWfcSettingsScreen);return;
+case OV001_OPTION_ERASE_WFC:Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWfcEraseScreen);return;
 }
 }
 

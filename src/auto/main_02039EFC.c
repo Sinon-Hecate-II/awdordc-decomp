@@ -7,7 +7,7 @@ typedef struct { u32 words[8]; } Record39;
 void NasConnectionResultCallback(M2C_UNK a,Record39 *b){
 extern M2C_UNK gNasLogin,data_020fc8a8,NasLoginInfoCallback;
 s32 SetGpiStatus(s32,s32,void *);s32 ReportNasError(void);s32 func_02038f88(void);s32 StartQr2Reporting(s32);
-void func_02039db4(s32,s32);M2C_UNK gpiGetInfo(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
+void ReportNasLoginError(s32,s32);M2C_UNK gpiGetInfo(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
 void *p;
 M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,48)=0;
 if(b->words[0]==0){
@@ -22,7 +22,7 @@ p=M2C_FIELD(&gNasLogin,void **,4);
 M2C_FIELD(p,void (**)(s32,u32,s32),20)(0,b->words[1],M2C_FIELD(p,s32 *,24));
 if(func_02038f88())return;
 if(StartQr2Reporting(b->words[1]))return;
-}else func_02039db4(6,-60000);
+}else ReportNasLoginError(6,-60000);
 }else if(M2C_FIELD(p,s32 *,4)==3){
 gpiGetInfo(a,b->words[1],0,0,&NasLoginInfoCallback,0);
 if(ReportNasError())return;
@@ -99,7 +99,7 @@ void func_0203a2b4(void) {
     s32 Utf16StringLength(s32);
     void MI_CpuCopy8(s32, void *, s32);
     void CreateNasConnection(void *, M2C_UNK);
-    void func_02039db4(s32, s32);
+    void ReportNasLoginError(s32, s32);
     void HeapAlloc(void);
     void NasConnectionResultCallback(M2C_UNK, Record39 *);
 
@@ -142,7 +142,7 @@ void func_0203a2b4(void) {
             func_02032b10();
             HeapFree(0, M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24), 0);
             M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24) = 0;
-            func_02039db4(2, *(s32 *)(buf + 0x48));
+            ReportNasLoginError(2, *(s32 *)(buf + 0x48));
         } else {
             func_02032b10();
             MI_CpuFill8(buf, 0, 0x48);

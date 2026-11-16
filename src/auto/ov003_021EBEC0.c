@@ -1,5 +1,6 @@
 /* 8 functions from 0x021EBEC0 to 0x021ECCD4 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "waypoint_panel.h"
 typedef struct { u32 x:9; u32 y:9; u32 rest:14; } SpritePosC57C;
 #pragma opt_propagation off
 static inline s32 ov003_entries_differ(s32 arg0) {
@@ -9,28 +10,66 @@ static inline s32 ov003_entries_differ(s32 arg0) {
  return 0;
 }
 
-void func_ov003_021ec4e4(u8 *);
+void RestoreWaypointOption(u8 *);
 #pragma inline off
-void func_ov003_021ebec0(void *p,u32 state){
-void PlaySoundEffect(u32);void func_ov003_021ebfcc(void *);s32 IsWaypointPanelIdle(void *);void SetWaypointPanelState(void *,s32);void func_ov003_021ec4e4(u8 *);void UpdateWaypointSelection(void *,s32);
-PlaySoundEffect(0x1000f);
-switch(state){
-case 25:case 3:case 2:case 1:case 0:func_ov003_021ebfcc(p);break;
-case 4:case 5:case 6:case 7:
-if(IsWaypointPanelIdle(p))func_ov003_021ebfcc(p);else SetWaypointPanelState(p,0);break;
-case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:case 20:
-func_ov003_021ec4e4(M2C_FIELD(p,u8 **,0x6c));SetWaypointPanelState(p,0);UpdateWaypointSelection(p,27);break;
-case 21:case 22:case 23:case 24:
-if(IsWaypointPanelIdle(p))func_ov003_021ebfcc(p);else SetWaypointPanelState(p,0);break;
-}
+/* Cancel the selected panel action, restoring an option edit before returning to its player slot. */
+void HandleWaypointPanelCancel(void *panel, u32 selection) {
+    void PlaySoundEffect(u32);
+    void ToggleWaypointPanelMode(void *);
+    s32 IsWaypointPanelIdle(void *);
+    void SetWaypointPanelState(void *, s32);
+    void RestoreWaypointOption(u8 *);
+    void UpdateWaypointSelection(void *, s32);
+
+    PlaySoundEffect(0x1000f);
+    switch (selection) {
+    case 25:
+    case 3:
+    case 2:
+    case 1:
+    case 0:
+        ToggleWaypointPanelMode(panel);
+        break;
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+        if (IsWaypointPanelIdle(panel)) ToggleWaypointPanelMode(panel);
+        else SetWaypointPanelState(panel, WAYPOINT_PANEL_IDLE);
+        break;
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
+    case 20:
+        RestoreWaypointOption(M2C_FIELD(panel, u8 **, WAYPOINT_PANEL_MENU_OFFSET));
+        SetWaypointPanelState(panel, WAYPOINT_PANEL_IDLE);
+        UpdateWaypointSelection(panel, WAYPOINT_ACTION_CURRENT_SLOT);
+        break;
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+        if (IsWaypointPanelIdle(panel)) ToggleWaypointPanelMode(panel);
+        else SetWaypointPanelState(panel, WAYPOINT_PANEL_IDLE);
+        break;
+    }
 }
 
 #pragma push
 #pragma opt_propagation on
-void func_ov003_021ebfcc(void *p) {
+void ToggleWaypointPanelMode(void *p) {
  void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
- void Show3DSprite(void*); void Hide3DSprite(void*); void func_02088f1c(s32); void func_02088ff4(s32);
+ void Show3DSprite(void*); void Hide3DSprite(void*); void func_02088f1c(s32); void Hide3DSpriteSlide(s32);
  s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 func_020aae44(void*); s32 func_020aae10(void*); s16 func_ov003_022004a8(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
@@ -58,7 +97,7 @@ void func_ov003_021ebfcc(void *p) {
  s=M2C_FIELD(p,void**,0x4c);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=192;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  flag=((u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30)==1;
  if(flag){
-  if(func_ov003_021e6d28()){Hide3DSprite(M2C_FIELD(p,void**,0x58));func_02088ff4(*M2C_FIELD(p,s32**,0x64));}
+  if(func_ov003_021e6d28()){Hide3DSprite(M2C_FIELD(p,void**,0x58));Hide3DSpriteSlide(*M2C_FIELD(p,s32**,0x64));}
   entries2=M2C_FIELD(p,s32**,0x64);for(j=0;j<4;j++){Hide3DSprite((void*)entries2[j+2]);Hide3DSprite((void*)entries2[j+6]);}
   s=M2C_FIELD(p,void**,0x48);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=-256;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
   s=M2C_FIELD(p,void**,0x50);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=0;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
@@ -83,7 +122,7 @@ void func_ov003_021ebfcc(void *p) {
 }
 #pragma pop
 
-void func_ov003_021ec4e4(u8 *p) {
+void RestoreWaypointOption(u8 *p) {
 s32 GetLocalPlayerIdForOverlay(void);
 s32 func_ov003_021e6cfc(void);
 s32 func_ov003_021e6d28(void);

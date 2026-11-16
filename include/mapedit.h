@@ -9,7 +9,11 @@
 enum {
     SOFTKEY_MODE_US = 0x64,
     SOFTKEY_MODE_EU = 0x65,
-    SOFTKEY_MODE_JP = 0x66
+    SOFTKEY_MODE_JP = 0x66,
+    SOFTKEY_DELETE = 0x67,
+    SOFTKEY_ACCENT = 0x68,
+    SOFTKEY_CANCEL = 0x69,
+    SOFTKEY_CONFIRM = 0x6A
 };
 
 /* The widget the map editor's entry list is made of; the input handler works on it.

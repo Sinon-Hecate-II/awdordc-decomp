@@ -152,7 +152,7 @@ void func_020d908c(void) {
     M2C_UNK func_020d4d78(void);
     void func_020822b8(void *);
     void Reset3DSpriteBankState(void);
-    void func_02082700(void);
+    void Reset3DSpriteCorners(void);
     void func_020c0a88(void);
     void func_0207c780(M2C_UNK *, M2C_UNK);
     void AddToU16Array(void *, s32, s32);
@@ -182,7 +182,7 @@ void func_020d908c(void) {
     *bankFlags = (u16)(*bankFlags & ~7);
     func_020822b8(&setup);
     Reset3DSpriteBankState();
-    func_02082700();
+    Reset3DSpriteCorners();
     func_020c0a88();
     func_0207c780(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));
     func_0207c780(&data_020f28f0, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C));

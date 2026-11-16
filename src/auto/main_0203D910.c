@@ -164,13 +164,13 @@ void func_0203d910(s32 a, s32 b)
 #pragma pop
 void func_0203db94(s32 arg0,s32 arg1,u8 *arg2) {
  s32 func_0203f3c0(void *,u8 *,s32); s32 func_0206abd8(void *,s32,s32);
- void func_0203f45c(s32,s32,s32,s32,s32 *,s32);
+ void HandleConnectionCommand(s32,s32,s32,s32,s32 *,s32);
  char buf[16]; s32 values[128]; s32 i;
  for(i=0;i<128;i++) {
  if(func_0203f3c0(buf,arg2+1,i)==-1) break;
  values[i]=func_0206abd8(buf,0,10);
  }
- func_0203f45c(arg2[0],arg1,0,0,values,i);
+ HandleConnectionCommand(arg2[0],arg1,0,0,values,i);
 }
 
 void func_0203dc18(void) {
@@ -276,10 +276,10 @@ void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
 
 /* Handles deferred battle/action state transitions after the active phase check. */
 s32 func_0203dee8(s32 command, s32 parameter) {
-u64 GetSystemTick(void); s32 func_02038f6c(void);
+u64 GetSystemTick(void); s32 GetNetSessionState(void);
 M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void func_02041d14(void); void func_0205afec(s32); void func_0205df50(s32);
 void *state;
-if(func_02038f6c()!=5)return 0;
+if(GetNetSessionState()!=5)return 0;
 if(M2C_FIELD(GetConnection(),u8 *,21)==2)return 1;
 if(command){func_0203dc38(command,parameter+0xfffec780);return 1;}
 M2C_FIELD(GetConnection(),u8 *,0x2d0)=0;

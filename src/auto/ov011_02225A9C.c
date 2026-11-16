@@ -1,5 +1,6 @@
 /* 5 functions from 0x02225A9C to 0x02226658 (ov011), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub;
 extern u8 data_ov011_02228a3c[],data_ov011_02228b54[],data_ov011_02228b5c[],data_ov011_02228b68[],data_ov011_02228b74[],data_ov011_02228b80[],data_ov011_02228a30[],data_ov011_02228b8c[],data_ov011_02228b94[],data_ov011_02228ba0[],data_ov011_02228bac[],data_ov011_02228bb8[],data_ov011_02228bc4[],data_ov011_02228bcc[],data_ov011_02228bd8[],data_ov011_02228be4[],data_ov011_02228bf0[],data_ov011_02228bfc[],data_ov011_02228c04[],data_ov011_02228c0c[];
@@ -10,7 +11,7 @@ typedef struct Mode25d {u16 mode:3;u16 rest:13;} Mode25d;
 
 void func_ov011_02225a9c(void *arg0,s32 arg1,s32 arg2,s32 arg3){
 void StringFormat(void *,void *,...);
-void func_ov011_02226550(s32,s32);
+void LoadOv011EffectLayer(s32,s32);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 extern u8 data_ov011_02228b48[];
 char buf[8];s32 start;u8 alpha;
@@ -19,7 +20,7 @@ switch(arg3){case 0:start=600;break;case 1:start=1600;break;case 2:start=2600;br
 if(M2C_FIELD(arg0,u16 *,0x3a)==start){
 M2C_FIELD(arg0,u16 *,0x3c)=arg1;
 M2C_FIELD(arg0,u16 *,0x3e)=arg2;
-func_ov011_02226550((s32)buf,2);
+LoadOv011EffectLayer((s32)buf,2);
 }
 if(M2C_FIELD(arg0,u16 *,0x3a)<start)return;
 if(M2C_FIELD(arg0,u16 *,0x3a)>start+620)return;
@@ -46,7 +47,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 func_02091d4c(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
+s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;func_02082cb4(state);
@@ -62,7 +63,7 @@ LoadNarcFileToSpriteBuffer(data_ov011_02228b80,32,32);CloseNarcArchive();
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),(u16)Get3DSpriteLayerSize((u8)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),Mode25d *,0).mode,2),4096);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;
 Set25d(0,4096);Clear25d(0,0x6000);
-func_02091d4c(31);func_02088774(30);func_020aeebc(3,15,7);
+LoadScenePanelPalette(31);func_02088774(30);func_020aeebc(3,15,7);
 func_020ae46c(M2C_FIELD(gCur3DSpriteEngine,s32 *,48)+480,0,8,8);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=8;
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(data_ov011_02228a30);
@@ -105,27 +106,35 @@ if (((u32)(M2C_FIELD(arg0,u8 *,0x34)<<31)>>31)==0) return;
 M2C_FIELD(arg0,u8 *,0x38)++;
 }
 
-void func_ov011_02226550(s32 arg0,s32 arg1) {
-s32 Clear3DSpriteLayer(u8);
-s32 SetFileDirectory(void *);
-s32 StringCopy(void *,s32);
-s32 StringAppend(void *,void *);
-s32 OpenNarcArchive(void *);
-s32 CloseNarcArchive(void);
-s32 LoadNarcFileDecompressed(void *,s32);
-s32 func_02081644(void *,s32,s32,s32);
-extern s32 gCur3DSpriteEngine;
-extern M2C_UNK data_ov011_02228c14,data_ov011_02228c1c,data_ov011_02228c20,data_ov011_02228c24,data_ov011_02228c28;
-u32 sp60[8],sp40[8],sp20[8],sp0[8];
-StringCopy(sp60,arg0);StringAppend(sp60,&data_ov011_02228c14);
-StringCopy(sp40,arg0);StringAppend(sp40,&data_ov011_02228c1c);
-StringCopy(sp20,arg0);StringAppend(sp20,&data_ov011_02228c20);
-StringCopy(sp0,arg0);StringAppend(sp0,&data_ov011_02228c24);
-Clear3DSpriteLayer((u8)arg1);SetFileDirectory(&data_ov011_02228c28);
-OpenNarcArchive(sp60);
-LoadNarcFileDecompressed(sp40,M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32 *,12));
-LoadNarcFileDecompressed(sp20,M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32 *,32));
-func_02081644(sp0,arg1,0,0x200);CloseNarcArchive();
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1<<arg1;
+/* Load an effect's archive, graphics, screen map and palette into the selected layer. */
+void LoadOv011EffectLayer(s32 effectName, s32 layer) {
+    s32 Clear3DSpriteLayer(u8);
+    s32 SetFileDirectory(void *);
+    s32 StringCopy(void *, s32);
+    s32 StringAppend(void *, void *);
+    s32 OpenNarcArchive(void *);
+    s32 CloseNarcArchive(void);
+    s32 LoadNarcFileDecompressed(void *, s32);
+    s32 LoadNarcLayerPalette(void *, s32, s32, s32);
+    extern s32 gCur3DSpriteEngine;
+    extern M2C_UNK sOv011EffectArchiveExtension, sOv011EffectGraphicsExtension, sOv011EffectScreenExtension, sOv011EffectPaletteExtension, sOv011EffectDirectory;
+    u32 archiveName[8], graphicsName[8], screenName[8], paletteName[8];
+
+    StringCopy(archiveName, effectName);
+    StringAppend(archiveName, &sOv011EffectArchiveExtension);
+    StringCopy(graphicsName, effectName);
+    StringAppend(graphicsName, &sOv011EffectGraphicsExtension);
+    StringCopy(screenName, effectName);
+    StringAppend(screenName, &sOv011EffectScreenExtension);
+    StringCopy(paletteName, effectName);
+    StringAppend(paletteName, &sOv011EffectPaletteExtension);
+    Clear3DSpriteLayer((u8)layer);
+    SetFileDirectory(&sOv011EffectDirectory);
+    OpenNarcArchive(archiveName);
+    LoadNarcFileDecompressed(graphicsName, DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[layer]);
+    LoadNarcFileDecompressed(screenName, (s32)DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[layer]);
+    LoadNarcLayerPalette(paletteName, layer, 0, DS3D_LAYER_PALETTE_BYTES);
+    CloseNarcArchive();
+    DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= 1 << layer;
 }
 

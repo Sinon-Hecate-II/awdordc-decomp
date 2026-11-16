@@ -4,7 +4,7 @@
 
 s32 GetKeyActionFlags(void){extern void *gKeyState;u16 v=M2C_FIELD(gKeyState,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
 
-s32 func_020bcbd8(void) {
+s32 GetCursorCycleKey(void) {
     extern void *gKeyState;
     u16 temp_r0;
 

@@ -430,51 +430,55 @@ func_020640ec(arg0);
 }return 0;
 }
 #pragma scheduling reset
-s32 ReadFileData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
+/* Reads count elements of elemSize bytes from stream into buffer, under the
+ * stream's reentrant lock: the running thread's id is kept in gStreamLockOwner,
+ * its nesting in gStreamLockDepth, and the mutex is released when the outermost
+ * read returns.  Streams other than stdin share the last lock. */
+s32 ReadFileData(void *buffer, s32 elemSize, s32 count, void *stream) {
     s32 TryLockMutex(void *);
     M2C_UNK LockMutex();
     M2C_UNK UnlockMutex();
-    s32 func_0206433c(u16 *, s32, s32, void *);
+    s32 StreamRead(u16 *, s32, s32, void *);
     extern u8 gStdinStream[];
-    extern u8 gStreamMutexes[];
+    extern u8 gStreamMutexes[]; /* GsiMutex array, sizeof(GsiMutex) per stream class */
     extern M2C_UNK gSocketManager;
     extern s32 gStreamLockOwner[];
     extern s32 gStreamLockDepth[];
 
-    u32 n;
-    s32 result;
+    s32 lockIndex;
+    s32 bytesRead;
     void *thread;
     s32 owner;
 
-    if (arg3 == (void *)gStdinStream) {
-        n = 2;
+    if (stream == (void *)gStdinStream) {
+        lockIndex = STREAM_LOCK_STDIN;
     } else {
-        n = 5;
+        lockIndex = STREAM_LOCK_FILE;
     }
 
-    if (TryLockMutex(gStreamMutexes + n * 24) == 0) {
-        gStreamLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        gStreamLockDepth[n] = 1;
+    if (TryLockMutex(gStreamMutexes + lockIndex * sizeof(GsiMutex)) == 0) {
+        gStreamLockOwner[lockIndex] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, STREAM_THREAD_ID);
+        gStreamLockDepth[lockIndex] = 1;
     } else if ((thread = M2C_FIELD(&gSocketManager, void **, 4),
-               owner = gStreamLockOwner[n],
-               owner == M2C_FIELD(thread, s32 *, 0x6C))) {
-        gStreamLockDepth[n]++;
+               owner = gStreamLockOwner[lockIndex],
+               owner == M2C_FIELD(thread, s32 *, STREAM_THREAD_ID))) {
+        gStreamLockDepth[lockIndex]++;
     } else {
-        LockMutex(gStreamMutexes + n * 24);
-        gStreamLockOwner[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
-        gStreamLockDepth[n] = 1;
+        LockMutex(gStreamMutexes + lockIndex * sizeof(GsiMutex));
+        gStreamLockOwner[lockIndex] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, STREAM_THREAD_ID);
+        gStreamLockDepth[lockIndex] = 1;
     }
 
-    result = func_0206433c(arg0, arg1, arg2, arg3);
+    bytesRead = StreamRead(buffer, elemSize, count, stream);
 
-    if (--gStreamLockDepth[n] == 0) {
-        UnlockMutex(gStreamMutexes + n * 24);
+    if (--gStreamLockDepth[lockIndex] == 0) {
+        UnlockMutex(gStreamMutexes + lockIndex * sizeof(GsiMutex));
     }
 
-    return result;
+    return bytesRead;
 }
 
-s32 func_0206433c(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
+s32 StreamRead(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 func_02063fa8();
     s32 func_0206411c(void *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(void *, s32, u32);

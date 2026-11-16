@@ -233,7 +233,7 @@ void func_ov000_0219fd54(void) {
 void func_ov000_0219fdc8(void) {
     void InitAiTurn(void);
     void BuildThreatMapAgainstKind6(void);
-    s32 func_ov000_021a19a8(void);
+    s32 BuildAiKind6Unit(void);
     s32 func_ov000_021a1ab8(void);
     s32 func_ov000_021a1b1c(void);
     s32 func_ov000_021a1d08(void);
@@ -267,7 +267,7 @@ void func_ov000_0219fdc8(void) {
             BuildThreatMapAgainstKind6();
             break;
         case 1:
-            if (func_ov000_021a19a8() != 0) return;
+            if (BuildAiKind6Unit() != 0) return;
             addr578[0][2]++;
             func_ov000_021a029c();
             break;

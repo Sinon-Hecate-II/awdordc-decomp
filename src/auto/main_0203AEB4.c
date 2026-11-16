@@ -473,21 +473,21 @@ s32 func_0203bd34(void) {
 
 s32 func_0203bd54(void) {
     s32 HasNetError();
-    s32 func_02038f6c();
+    s32 GetNetSessionState();
     void *GetConnection();
     if (HasNetError() != 0) {
         return 0;
     }
-    if ((GetConnection() == NULL) || (func_02038f6c() != 5) || (M2C_FIELD(GetConnection(), u8 *, 0x1A9) != 0)) {
+    if ((GetConnection() == NULL) || (GetNetSessionState() != 5) || (M2C_FIELD(GetConnection(), u8 *, 0x1A9) != 0)) {
         return 0;
     }
     return 1;
 }
 
 s32 func_0203bda0(void (*callback)(s32),s32 arg) {
-s32 HasNetError(void);void *GetConnection(void);s32 func_02038f6c(void);void func_0203e410(void);
+s32 HasNetError(void);void *GetConnection(void);s32 GetNetSessionState(void);void func_0203e410(void);
 void *p;
-if(HasNetError()!=0||!GetConnection()||M2C_FIELD(GetConnection(),u8 *,0x15)!=2||(func_02038f6c()!=5&&func_02038f6c()!=6))return 0;
+if(HasNetError()!=0||!GetConnection()||M2C_FIELD(GetConnection(),u8 *,0x15)!=2||(GetNetSessionState()!=5&&GetNetSessionState()!=6))return 0;
 if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==10){
 p=GetConnection();M2C_FIELD(p,u8 *,0x16)=M2C_FIELD(GetConnection(),u8 *,0xd);
 func_0203e410();if(callback)callback(arg);

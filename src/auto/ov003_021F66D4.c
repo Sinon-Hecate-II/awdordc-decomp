@@ -39,17 +39,17 @@ void func_ov003_021f66d4(M2C_UNK arg0) {
 }
 
 void func_ov003_021f6724(void *arg0) {
-    M2C_UNK func_02088ff4(s32);
+    M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK func_ov003_021f8c20(void *);
     void *temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, void **, 0x68);
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 0));
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 4));
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 8));
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 0xC));
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 0x10));
-    func_02088ff4(M2C_FIELD(temp_r4, s32 *, 0x14));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 4));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 8));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0xC));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0x10));
+    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0x14));
     func_ov003_021f8c20(arg0);
 }
 

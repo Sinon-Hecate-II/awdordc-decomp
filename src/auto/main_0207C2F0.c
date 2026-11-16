@@ -34,7 +34,7 @@ s32 RandomIntRange(s32 arg0, s32 arg1) {
     return arg0 + Modulo(NextRandomValue() & 0x7fffffff, arg1 - arg0 + 1);
 }
 
-s32 func_0207c368(u8 *arg0, s32 arg1) {
+s32 StringHasTerminator(u8 *arg0, s32 arg1) {
     s32 i;
     for (i = 0; i < arg1; i++, arg0++) {
         if (*arg0 == 0) return 1;

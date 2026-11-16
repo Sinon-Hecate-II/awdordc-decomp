@@ -51,7 +51,7 @@ void func_02017158(void *arg0) {
     void func_020168f0(void *);
     void DC_InvalidateRange(void *, s32);
     void func_02007a74(u16, void *, void *, s32);
-    void func_02007e20(void *, void *, s32);
+    void CopyU16(void *, void *, s32);
     u8 *base;
     s32 i;
     void *event;
@@ -103,7 +103,7 @@ void func_02017158(void *arg0) {
             }
             if(i<16) {
                 M2C_FIELD(base+0x500,u16 *,0xe0)=i+1;
-                func_02007e20(event,records+i*0x180+0xc0,0xb8);
+                CopyU16(event,records+i*0x180+0xc0,0xb8);
                 DC_InvalidateRange(base+0x600+i*0x180,0xc0);
                 func_02007a74(M2C_FIELD(&gMbState,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
                 M2C_FIELD(base,s32 *,0x5ec)=i;

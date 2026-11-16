@@ -14,10 +14,24 @@
 #define UNIT_MOVE_DIRECTION   0x44 /* s8 direction the unit faces */
 #define UNIT_MOVE_SLOT        0x45 /* u8 pool slot of the controller */
 #define UNIT_MOVE_ACTIVE      0x46 /* u8 nonzero while the move runs */
+#define UNIT_MOVE_PALETTE_MODE 0x47 /* u8 cached sprite palette mode: 0x10 normal, 0x18 zoomed */
+#define UNIT_MOVE_GFX         0x50 /* s32 unit tile-graphics buffer (freed with HeapFreeBlock) */
+#define UNIT_MOVE_ANIM        0x54 /* s32 unit sprite animation data buffer */
 #define UNIT_MOVE_PHASE       0x48 /* u16 progress through the current step */
 #define UNIT_MOVE_SPEED       0x4a /* s16 movement speed */
 #define UNIT_MOVE_X           0x4c /* s16 x in 1/16-tile units */
 #define UNIT_MOVE_Y           0x4e /* s16 y in 1/16-tile units */
 #define UNIT_MOVE_COMMANDS    0x58 /* s8[] copy of the movement command stream */
+
+/* Footstep sound ids GetTerrainStepSound returns; the low 5 bits of the cell's
+ * MAP_CELL_TERRAIN select them, and plain ground also depends on MAP_TILESET. */
+#define STEP_SOUND_PLAIN       0x40 /* plain ground, properties, tileset 0 */
+#define STEP_SOUND_PLAIN_1     0x41 /* plain ground on tileset 1 */
+#define STEP_SOUND_WOODS       0x42 /* terrain kind 4 */
+#define STEP_SOUND_HARD        0x43 /* terrain kinds 7, 8 and 12 */
+#define STEP_SOUND_WATER       0x44 /* terrain kind 2 */
+#define STEP_SOUND_PLAIN_3     0x45 /* plain ground on tileset 3 */
+#define STEP_SOUND_SHOAL       0x46 /* terrain kind 9 and plain ground on tileset 2 */
+#define STEP_SOUND_ROCK        0x3f /* terrain kind 3 */
 
 #endif

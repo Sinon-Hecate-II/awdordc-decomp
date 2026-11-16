@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 
-s32 func_02030348(void){void *func_0202f48c(s32);s32 func_0202f57c(void);s32 func_02030400(void *);void *p; s32 r;p=func_0202f48c(1);r=func_0202f57c();if(r<4)return func_02030398(r);else if(r<5)return func_020303dc();else if(r==5)return func_020303e4(p);else return func_02030400(p);}
+s32 func_02030348(void){void *Wfc_GetWorkBlock(s32);s32 func_0202f57c(void);s32 func_02030400(void *);void *p; s32 r;p=Wfc_GetWorkBlock(1);r=func_0202f57c();if(r<4)return func_02030398(r);else if(r<5)return func_020303dc();else if(r==5)return func_020303e4(p);else return func_02030400(p);}
 
 s32 func_02030398(u32 a){switch(a){case 1:return -9;case 0:return -10;case 2:return -8;case 3:return -7;default:return 0;}}
 
@@ -19,9 +19,9 @@ s32 func_020303e4(void *arg0) {
 
 s32 func_02030400(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIELD(a,u8 *,0x14);if(t==3)r=0xffff3864-M2C_FIELD(a,u8 *,0x15);else if(t==4)r=-0xc800-M2C_FIELD(a,u8 *,0x15);else r=0xffff379c-M2C_FIELD(a,u8 *,0x15);}else if(t<13)r=0xffff34e0-M2C_FIELD(a,u8 *,0x15);else {r=M2C_FIELD(a,s32 *,0x10);if(r==0)r=0xffff3cb0-M2C_FIELD(a,u8 *,0x15);else if(r==-1)r=0xffff347c-M2C_FIELD(a,u8 *,0x15);else if(r==-2)r=0xffff3418-M2C_FIELD(a,u8 *,0x15);else if(r==-3)r=0xffff33b4-M2C_FIELD(a,u8 *,0x15);else if(r==-4)r=0xffff30f8-M2C_FIELD(a,u8 *,0x15);else if(r==-5)r=0xffff3094-M2C_FIELD(a,u8 *,0x15);else if(r==-6){r=0xffff3030-M2C_FIELD(a,u8 *,0x15);return r;}}return r;}
 
-s32 func_02030554(s32 a){void *func_0202f48c(s32);void CpuFill(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 func_02030694(void *);u8 *p=func_0202f48c(16);switch(a){case 0:CpuFill(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:CpuFill(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=func_02030694(p);break;}return p[0xd10];}
+s32 func_02030554(s32 a){void *Wfc_GetWorkBlock(s32);void CpuFill(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 func_02030694(void *);u8 *p=Wfc_GetWorkBlock(16);switch(a){case 0:CpuFill(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:CpuFill(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=func_02030694(p);break;}return p[0xd10];}
 
-s32 Wfc_MatchFreespotCode(u8 *a){void *func_0202f48c(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(func_0202f48c(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
+s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
 
 s32 func_02030634(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
 
@@ -155,14 +155,14 @@ u8 func_0203095c(void) {
     M2C_UNK WFC_ProcessLinkStep();
     M2C_UNK WFC_ProcessLinkState();
     u32 Wfc_GetLinkState();
-    void *func_0202f48c(M2C_UNK);
+    void *Wfc_GetWorkBlock(M2C_UNK);
     M2C_UNK func_0202f558(M2C_UNK);
     M2C_UNK func_02030b98(u8);
     u32 mode;
     u8 result;
     void *state;
 
-    state = func_0202f48c(0x10);
+    state = Wfc_GetWorkBlock(0x10);
     result = 9;
     mode = Wfc_GetLinkState();
     switch (mode) {
@@ -197,7 +197,7 @@ u8 func_0203095c(void) {
 }
 
 s32 func_02030a38(void) {
-    void *func_0202f48c(s32);
+    void *Wfc_GetWorkBlock(s32);
     s32 Wfc_GetSessionState(void);
     u32 Wfc_GetLinkState(void);
     s32 func_02030c78(void *);
@@ -209,7 +209,7 @@ s32 func_02030a38(void) {
     s32 state;
     u32 val;
 
-    ctx = func_0202f48c(0x10);
+    ctx = Wfc_GetWorkBlock(0x10);
     state = Wfc_GetSessionState();
     val = Wfc_GetLinkState();
     if (state == 2 && val == 3) {
@@ -231,11 +231,11 @@ s32 func_02030a38(void) {
     return state;
 }
 
-void Wfc_MarkFriendId(u32 a){void *func_0202f48c(s32);u8 *p=func_0202f48c(16);u32 v;p+=0xd00;if(a>13)a=13;v=M2C_FIELD(p,u16 *,22);a--;M2C_FIELD(p,u16 *,22)=v|(1<<a);}
+void Wfc_MarkFriendId(u32 a){void *Wfc_GetWorkBlock(s32);u8 *p=Wfc_GetWorkBlock(16);u32 v;p+=0xd00;if(a>13)a=13;v=M2C_FIELD(p,u16 *,22);a--;M2C_FIELD(p,u16 *,22)=v|(1<<a);}
 
 s8 func_02030b30(s32 a) {
- void *func_0202f48c(s32);
- u16 mask=M2C_FIELD(func_0202f48c(16),u16 *,0xd16);
+ void *Wfc_GetWorkBlock(s32);
+ u16 mask=M2C_FIELD(Wfc_GetWorkBlock(16),u16 *,0xd16);
  u8 i,n;
  if(!mask)return -1;
  i=0;n=0;
@@ -244,9 +244,9 @@ s8 func_02030b30(s32 a) {
 }
 
 s32 func_02030b98(u8 mode){
-void *func_0202f48c(s32);u64 GetSystemTick(void);void func_020311e4(s32,s32,s32,s32);
+void *Wfc_GetWorkBlock(s32);u64 GetSystemTick(void);void func_020311e4(s32,s32,s32,s32);
 extern u8 data_020ea758[],data_020ea760[];
-void *p=func_0202f48c(16);s32 n;
+void *p=Wfc_GetWorkBlock(16);s32 n;
 switch(mode){
 case 3:M2C_FIELD(p,u64 *,0xcb0)=GetSystemTick();func_020311e4((s32)data_020ea758,(s32)data_020ea760,M2C_FIELD(p,s8 *,0xd11),0x200000);break;
 case 4:M2C_FIELD(p,u64 *,0xcb0)=GetSystemTick();n=(s16)M2C_FIELD(p,u8 *,0xd0f)*(s16)192;func_020311e4((s32)((u8*)p+0x474+n),(s32)((u8*)p+0x47c+n),M2C_FIELD((u8*)p+n,u16 *,0x4a6)-1,0x300000);break;
@@ -411,11 +411,11 @@ void func_020311e4(s32 a,s32 b,s32 c,s32 d){void func_02027518(s32,s32,s32);exte
 
 s32 func_02031208(void) {
  u32 Wfc_GetLinkState(void);
- void *func_0202f48c(s32);
+ void *Wfc_GetWorkBlock(s32);
  s32 WFC_ConnectStep(s32 *,void *);
  s32 func_0202f558(s32);
  extern M2C_UNK func_0202fc10;
- s32 v[4];s32 r=Wfc_GetLinkState();void *p=func_0202f48c(16);
+ s32 v[4];s32 r=Wfc_GetLinkState();void *p=Wfc_GetWorkBlock(16);
  if(r==1){
  v[0]=M2C_FIELD(p,u8 *,0xd0a);v[1]=0;v[2]=0;v[3]=0;
  func_02030554(0);

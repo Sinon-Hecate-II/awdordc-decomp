@@ -294,7 +294,7 @@ s32 func_02094384(void *arg0) {
     return 1;
 }
 
-void func_020943a8(s8 arg0) {
+void SetMenuCursor(s8 arg0) {
     void *Get3DSpriteManager();
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D) = arg0;
 }
@@ -392,16 +392,16 @@ void Reset3DSpriteEngines(void) {
 void func_020947ac(void);
 void func_020945f8(void) {
  extern M2C_UNK data_02157fe8;
- void *func_02091f18(s32);
+ void *GetScenePanelState(s32);
  s16 i; u8 *p;
  M2C_FIELD(Get3DSpriteManager(),u8*,0x4b)=0;
  p=(u8*)&data_02157fe8;
  for(i=0;i<8;i++,p+=0x18)*(s32*)p=0;
  for(i=0;i<8;) { p=Get3DSpriteManager(); p+=(u32)i*4; i++; M2C_FIELD(p,s32*,0x24)=0; }
  func_02086ac0();func_020947ac();func_02095fd4();
- for(i=0;i<3;i++)M2C_FIELD(func_02091f18(i),s16*,8)=0;
+ for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
- func_020943a8(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
+ SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
 }
 
 s32 IsDialogActive(void) {
@@ -515,13 +515,13 @@ void func_02094860(void) {
 #pragma optimization_level 2
 void *func_020948c4(s32 arg0) {
 s32 func_02094724(s32);
-void func_020943a8(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
+void SetMenuCursor(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
 M2C_UNK func_02095fd4(void);void func_02094798(void);void func_020d4704(void);
 extern M2C_UNK data_02157fe8,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
 index=func_02094724(0);
 if(index==-1)return NULL;
-func_020943a8(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
+SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
 func_02095fd4();func_02094798();func_020d4704();
 offset=index*24;
 base=(u8 *)&data_02157fe8;
@@ -596,29 +596,29 @@ void func_020949f8(void) {
 
 void func_02094a74(M2C_UNK arg0) {
     s32 func_0209600c();
-    M2C_UNK func_0209776c(M2C_UNK);
+    M2C_UNK ShowScenePanel(M2C_UNK);
     if (func_0209600c() != 0) {
         return;
     }
-    func_0209776c(arg0);
+    ShowScenePanel(arg0);
 }
 
 void func_02094a94(s32 arg0) {
-    void *func_02091f18(s32);
+    void *GetScenePanelState(s32);
     M2C_UNK func_0209787c(s32);
     s32 var_r4;
 
     if (func_0209600c() != 0) {
         var_r4 = 0;
         do {
-            if (M2C_FIELD(func_02091f18(var_r4), s16 *, 8) != 0) {
+            if (M2C_FIELD(GetScenePanelState(var_r4), s16 *, 8) != 0) {
                 func_0209787c(var_r4);
             }
             var_r4 += 1;
         } while (var_r4 < 3);
         return;
     }
-    if (M2C_FIELD(func_02091f18(arg0), s16 *, 8) == 0) {
+    if (M2C_FIELD(GetScenePanelState(arg0), s16 *, 8) == 0) {
         return;
     }
     func_0209787c(arg0);
@@ -708,7 +708,7 @@ void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
 void func_02094c90(s32 slot, s32 arg1) {
  extern s32 gCur3DSpriteEngine;
  s32 func_0209600c(); s32 func_020979a4(); s32 GetMenuCursor(); s32 func_02091e70();
- void *func_02091f18(s32);
+ void *GetScenePanelState(s32);
  s32 value; void *ptrA,*ptrB,*ptrC,*ptrD;
  if(func_0209600c()!=0)return;
  if(func_020979a4(slot)!=1)return;
@@ -716,7 +716,7 @@ void func_02094c90(s32 slot, s32 arg1) {
  if(GetMenuCursor()<0)return;
  if(GetMenuCursor()>=3)return;
  value=func_02091e70(3);
- ptrA=Get3DSpriteManager();ptrB=Get3DSpriteManager();ptrC=func_02091f18(3);ptrD=func_02091f18(3);
- func_0209bee0(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(func_02091f18(3),u16*,4));
+ ptrA=Get3DSpriteManager();ptrB=Get3DSpriteManager();ptrC=GetScenePanelState(3);ptrD=GetScenePanelState(3);
+ func_0209bee0(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(GetScenePanelState(3),u16*,4));
 }
 

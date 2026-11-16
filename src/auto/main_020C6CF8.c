@@ -402,25 +402,29 @@ s32 func_020c7a14(void) {
     return func_020c7a08() + 0x40;
 }
 
-s32 func_020c7a24(s32 arg0) {
-    M2C_UNK func_0208f404(s32, s32);
-    return func_0208f404(arg0 + 0x54, 0x6A4);
+s32 ComputeMapRecordChecksum(s32 arg0) {
+    M2C_UNK Crc16(s32, s32);
+    return Crc16(arg0 + 0x54, 0x6A4);
 }
 
-u8 func_020c7a3c(void *p) {
-s32 func_0207c368(void *,s32);
-s32 func_020c7a24(s32);
+/* Validate a saved map record's header before loading it: the name must be
+ * terminated, the magic and dimensions sane, the player, property and unit
+ * counts in range, every player id a valid slot, and the stored CRC must match
+ * the record's terrain and unit data. */
+u8 IsValidMapRecord(void *p) {
+s32 StringHasTerminator(void *,s32);
+s32 ComputeMapRecordChecksum(s32);
 s32 i;u16 checksum;
-if(!func_0207c368(p+6,0x21))return 0;
-if(M2C_FIELD(p,u32 *,0)!=0x20070731)return 0;
-if(M2C_FIELD(p,u8 *,4)<5 || M2C_FIELD(p,u8 *,5)<5 || M2C_FIELD(p,u8 *,4)>30 || M2C_FIELD(p,u8 *,5)>30)return 0;
-if(M2C_FIELD(p,u8 *,0x2f)>200)return 0;
-switch(M2C_FIELD(p,u8 *,0x27)){case 0:case 1:case 2:case 3:case 4:case 255:break;default:return 0;}
+if(!StringHasTerminator(p+6,0x21))return 0;
+if(((MapRecordHeader *)p)->magic!=MAP_RECORD_MAGIC)return 0;
+if(((MapRecordHeader *)p)->width<5 || ((MapRecordHeader *)p)->height<5 || ((MapRecordHeader *)p)->width>30 || ((MapRecordHeader *)p)->height>30)return 0;
+if(((MapRecordHeader *)p)->unitCount>200)return 0;
+switch(((MapRecordHeader *)p)->playerCount){case 0:case 1:case 2:case 3:case 4:case 255:break;default:return 0;}
 for(i=0;i<5;i++){
 switch(M2C_FIELD(p+i,u8 *,0x28)){case 0:case 1:case 2:case 3:case 4:break;default:return 0;}
 }
-checksum=M2C_FIELD(p,u16 *,0x46);
-return (u8)(checksum==func_020c7a24((s32)p));
+checksum=M2C_FIELD(p,u16 *,MAP_RECORD_CHECKSUM);
+return (u8)(checksum==ComputeMapRecordChecksum((s32)p));
 }
 
 /* Packs a runtime map record into its compact saved form: copies the shared

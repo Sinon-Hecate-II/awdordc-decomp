@@ -330,23 +330,29 @@ else if(gAiCommand[2]!=gAiCommand[4] || gAiCommand[3]!=gAiCommand[5]) p[11]&=~0x
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_0219a0e0(void) {
-extern s32 *gCurrentMap;
-s32 IsCellUnitOnSameArmy(s32,s16,s16);
-s32 x,y;u32 idx;u8 *base=(u8 *)*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-idx=x+M2C_FIELD(base+y*2,u16 *,0x3758);
-if((u8)(M2C_FIELD(base+(idx>>3),u8 *,0x5160)&(1<<(idx&7)))&&
-M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0)!=0){
-if(IsCellUnitOnSameArmy((u8)M2C_FIELD(base,u16 *,0x52a4),x,y)==0){
-base=(u8 *)*gCurrentMap;
-M2C_FIELD(base+0x59a4+M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0)*14,u8 *,0xb)|=0x40;
-}
-}
-base=(u8 *)*gCurrentMap;
-}
-}
+/* Remembers the enemy units the AI can see: for every cell of the first team's
+ * visibility bitmap that holds a unit of another army, set MAP_UNIT_AI_KNOWN on
+ * that unit so the AI keeps tracking it (targeting, movement blocking) even when
+ * it later leaves the AI's sight.  Runs at the end of the AI's turn. */
+void MarkKnownEnemyUnits(void) {
+    extern s32 *gCurrentMap;
+    s32 IsCellUnitOnSameArmy(s32, s16, s16);
+    s32 x, y;
+    u32 idx;
+    u8 *map = (u8 *)*gCurrentMap;
+    for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
+            idx = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            if ((u8)(M2C_FIELD(map + (idx >> 3), u8 *, MAP_CELL_BITMAP_TEAM_A) & (1 << (idx & 7))) &&
+                M2C_FIELD(M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS) + (map + x), u8 *, MAP_CELL_VISIBLE_UNIT) != 0) {
+                if (IsCellUnitOnSameArmy((u8)M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), x, y) == 0) {
+                    map = (u8 *)*gCurrentMap;
+                    M2C_FIELD(map + MAP_UNIT_RECORDS + M2C_FIELD(M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS) + (map + x), u8 *, MAP_CELL_VISIBLE_UNIT) * MAP_UNIT_STRIDE, u8 *, MAP_UNIT_AI_STATE) |= MAP_UNIT_AI_KNOWN;
+                }
+            }
+            map = (u8 *)*gCurrentMap;
+        }
+    }
 }
 /* Begins the AI's turn (the phase-0 handler of the AI command state machine):
  * points the cursor at the acting player's first unit, resets the command state,

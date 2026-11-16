@@ -322,7 +322,7 @@ void func_ov005_02212ef0(void) {
 
 #pragma opt_common_subs off
 void func_ov005_02212f54(void) {
-s16 *HistoryTabAt(s8);s32 func_02001fb4(s32,s32);
+s16 *HistoryTabAt(s8);s32 FX_Div(s32,s32);
 void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
 void *GetLocalizedText(s32);s32 MeasureStringWidth(void *);
@@ -334,9 +334,9 @@ s16 *p;void *saved;s32 total,amount,ratio,left,height,width;u16 attr; s32 text;
 p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 total=p[4]<<12;amount=p[1]<<12;
-ratio=func_02001fb4(0x73000,total);
+ratio=FX_Div(0x73000,total);
 left=(s32)(((s64)ratio*(u64)0x7000+0x800)>>12);
-height=func_02001fb4(0x73000-left,total-0x7000);
+height=FX_Div(0x73000-left,total-0x7000);
 height=(s32)(((s64)height*amount+0x800)>>12);
 width=left>>12;if(width>115)width=115;else if(width<1)width=1;
 attr=(u16)(((0x140 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x6000);

@@ -1,7 +1,10 @@
 /* 5 functions from 0x02178E84 to 0x02179E48 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
+#include "ov000_unit_entry.h"
 extern void **gCurrentMap;
-extern s8 data_ov000_021b54c0[],data_ov000_021b5480[];
+extern s8 gTerrainIsProperty[],data_ov000_021b5480[];
 extern u8 gUnitKindFlags[];
 extern u32 gUnitKindStats[];
 extern void *gAiCommandState;
@@ -25,7 +28,7 @@ u8 *unit;void *map;u32 terrain,kind; s32 x,y,d,xmin,ymin,xmax,ymax,radius,width,
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 if(((u32)(unit[11]<<28)>>28)==6)return 1;
 terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
-if(!data_ov000_021b54c0[terrain&31])return 1;
+if(!gTerrainIsProperty[terrain&31])return 1;
 if(!IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),terrain)){
 unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
 if(IsFootUnitKind((u32)(unit[0]<<26)>>26))return 1;
@@ -188,22 +191,33 @@ s32 func_ov000_02179ce4(u8 *arg0) {
     return result;
 }
 
-void func_ov000_02179d3c(M2C_UNK arg0) {
-M2C_UNK FloodFillUnitRange(u8,u8,u32,M2C_UNK,s32);
-M2C_UNK MarkAdjacentCells(s8);
-s32 GetUnitAttackRangeMax(void *);
-s32 GetUnitMoveRange(u16,s32);
-s32 GetUnitAttackClass(void);
-extern void **gCurrentMap;
-extern u8 gUnitMinAttackRange[];
-s32 i,n;void *p,*base;
-p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
-FloodFillUnitRange(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),(u32)(M2C_FIELD(p,u8 *,0)<<26)>>26,arg0,0);
-base=*gCurrentMap;
-if(((u32)(M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,0)<<26)>>26)==21)
-n=GetUnitMoveRange(M2C_FIELD(base,u16 *,0x52A4),17)+1;
-else if(GetUnitAttackClass()==1)n=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,0x52D0));
-else n=gUnitMinAttackRange[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26)*0x70];
-i=0;if(n<=0)return;do{MarkAdjacentCells((s8)(i+0x6F));i++;}while(i<n);
+/* Flood the selected unit's movement range, then add its attack-distance rings. */
+void BuildAiUnitThreatRange(M2C_UNK moveBudget) {
+    M2C_UNK FloodFillUnitRange(u8, u8, u32, M2C_UNK, s32);
+    M2C_UNK MarkAdjacentCells(s8);
+    s32 GetUnitAttackRangeMax(void *);
+    s32 GetUnitMoveRange(u16, s32);
+    s32 GetUnitAttackClass(void);
+    extern void **gCurrentMap;
+    extern u8 gUnitMinAttackRange[];
+    s32 ring, attackRange;
+    void *unit, *map;
+
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    FloodFillUnitRange(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y),
+        (u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26, moveBudget, 0);
+    map = *gCurrentMap;
+    if (((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) == UNIT_KIND_CARRIER)
+        attackRange = GetUnitMoveRange(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), 17) + 1;
+    else if (GetUnitAttackClass() == UNIT_ATTACK_INDIRECT)
+        attackRange = GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT));
+    else
+        attackRange = gUnitMinAttackRange[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE];
+    ring = 0;
+    if (attackRange <= 0) return;
+    do {
+        MarkAdjacentCells((s8)(ring + AI_THREAT_RING_FIRST));
+        ring++;
+    } while (ring < attackRange);
 }
 

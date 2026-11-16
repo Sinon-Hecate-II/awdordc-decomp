@@ -181,19 +181,22 @@ void func_ov000_02189df4(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_ov000_02189e2c(void){
-extern void **gCurrentMap;extern s8 data_ov000_021b54c0[];s32 IsTerrainOnUnitTeam(u8,u8);
-s32 n=0,x,y;void *base=*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-if(M2C_FIELD(M2C_FIELD(base+(y<<2),s8 **,0x52e8),s8 *,x)>=0){
-if(data_ov000_021b54c0[M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420)&31]!=0){
-if(IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,0x3758)+(base+x),u8 *,0x1420))==0){
-if((M2C_FIELD(M2C_FIELD(*gCurrentMap+(y<<1),u16 *,0x3758)+(*gCurrentMap+x),u8 *,0x1420)&31)==15)n+=30;else n++;
+/* Score the property cells the AI's unit could capture: every reachable cell
+ * with property terrain whose owner is not on the unit's team counts 1, except
+ * headquarters, which count 30. */
+s32 CountCapturableProperties(void){
+extern void **gCurrentMap;extern s8 gTerrainIsProperty[];s32 IsTerrainOnUnitTeam(u8,u8);
+s32 score=0,x,y;void *base=*gCurrentMap;
+for(y=0;y<M2C_FIELD(base,u16 *,MAP_HEIGHT);y++){
+for(x=0;x<M2C_FIELD(base,u16 *,MAP_WIDTH);x++){
+if(M2C_FIELD(M2C_FIELD(base+(y<<2),s8 **,MAP_GRID),s8 *,x)>=0){
+if(gTerrainIsProperty[M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,MAP_ROW_OFFSETS)+(base+x),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK]!=0){
+if(IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(M2C_FIELD(base+(y<<1),u16 *,MAP_ROW_OFFSETS)+(base+x),u8 *,MAP_CELL_TERRAIN))==0){
+if((M2C_FIELD(M2C_FIELD(*gCurrentMap+(y<<1),u16 *,MAP_ROW_OFFSETS)+(*gCurrentMap+x),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)==MAP_TERRAIN_HQ)score+=30;else score++;
 }}}
 base=*gCurrentMap;
 }}
-return n;
+return score;
 }
 
 #pragma push
@@ -205,7 +208,7 @@ return n;
  * (kind 15). An HQ is worth 30 points, every other property 1. */
 s32 CountUnusedCapturableProperties(void) {
     extern void **gCurrentMap;
-    extern s8 data_ov000_021b54c0[];
+    extern s8 gTerrainIsProperty[];
     s32 IsTerrainOnUnitTeam(u8, u8);
     s32 score = 0, x, y;
     void *base = *gCurrentMap;
@@ -213,7 +216,7 @@ s32 CountUnusedCapturableProperties(void) {
     for (y = 0; y < M2C_FIELD(base, u16 *, MAP_HEIGHT); y++) {
         for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
             if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, MAP_GRID), s8 *, x) >= 0) {
-                if (data_ov000_021b54c0[M2C_FIELD(M2C_FIELD(base + (y << 1), u16 *, MAP_ROW_OFFSETS) + (base + x), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK] != 0) {
+                if (gTerrainIsProperty[M2C_FIELD(M2C_FIELD(base + (y << 1), u16 *, MAP_ROW_OFFSETS) + (base + x), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK] != 0) {
                     if (IsTerrainOnUnitTeam(M2C_FIELD(base, u8 *, MAP_CURSOR_UNIT_ID), M2C_FIELD(M2C_FIELD(base + (y << 1), u16 *, MAP_ROW_OFFSETS) + (base + x), u8 *, MAP_CELL_TERRAIN)) == 0) {
                         void *b = *gCurrentMap;
                         void *cell = (b + x) + M2C_FIELD(b + (y << 1), u16 *, MAP_ROW_OFFSETS);

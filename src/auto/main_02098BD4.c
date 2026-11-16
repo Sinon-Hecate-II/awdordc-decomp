@@ -1,5 +1,6 @@
 /* 52 functions from 0x02098BD4 to 0x02099B18 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef union { u32 word; u16 half[2]; u8 byte[4]; } Unk996Row;
 
 typedef struct { s32 values[12]; } Unk02098BD4Table;
@@ -108,11 +109,11 @@ i += 1;
 data_027e01d8=old;
 }
 
-void func_02098f08(void *arg0, u8 arg1) {
+void SetFaceSpriteExpression(void *arg0, u8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x59) = arg1;
 }
 
-void func_02098f10(void *arg0) {
+void RefreshFaceSpritePalette(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
@@ -213,17 +214,17 @@ void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
 
 void func_020990fc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 u8 GetFaceTileRow(s32);
-u8 func_02099320(void *);
+u8 FaceSpriteIsLoaded(void *);
 void LoadFaceTexture(s32, s32, s32);
 void func_02098e2c(void *, s32);
-void func_02099204(void *);
+void RefreshFaceSprite(void *);
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 
 void *old; void *v; s32 i; u32 mode;
 M2C_FIELD(arg0, u8 *, 0x58) = (u8)arg1;
 M2C_FIELD(arg0, u8 *, 0x59) = (u8)arg2;
 M2C_FIELD(arg0, u8 *, 0x49) = GetFaceTileRow(M2C_FIELD(arg0,u8*,0x58));
-if (func_02099320(arg0)) {
+if (FaceSpriteIsLoaded(arg0)) {
 old = gCur3DSpriteEngine;
 i = 0;
 do {
@@ -242,7 +243,7 @@ gCur3DSpriteEngine = old;
 if (arg3) {
 func_02098e2c(M2C_FIELD(arg0, void **, 0x60), arg1);
 }
-func_02099204(arg0);
+RefreshFaceSprite(arg0);
 }
 
 void func_020991f4(void *arg0, s8 arg1) {
@@ -253,27 +254,30 @@ void func_020991fc(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5D) = arg1;
 }
 
-void func_02099204(void *p) {
-u8 func_02099320(void *);void func_02098ac0(s32,s32,u16,u8);void func_02098f08(void *,u8);void func_02098f10(void *);
+/* Reloads a CO face sprite's palette on every engine it targets, choosing the
+ * palette effects from whether the face is active and its palette style, then
+ * refreshes its linked face object. */
+void RefreshFaceSprite(void *p) {
+u8 FaceSpriteIsLoaded(void *);void LoadFacePaletteAt(s32,s32,u16,u8);void SetFaceSpriteExpression(void *,u8);void RefreshFaceSpritePalette(void *);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
-register void **engine;register u8 flags;register void *old;register s32 i;void *v;u32 mode;
-if(func_02099320(p)){
+register void **engine;register u8 effects;register void *old;register s32 i;void *v;u32 mode;
+if(FaceSpriteIsLoaded(p)){
 engine=&gCur3DSpriteEngine;
-flags=0;
-if(M2C_FIELD(p,u8 *,0x5c)==0)flags|=1;
+effects=0;
+if(M2C_FIELD(p,u8 *,FACE_SPRITE_ACTIVE)==0)effects|=FACE_EFFECT_DIM;
 old=*engine;
-if(M2C_FIELD(p,u8 *,0x5d)==1)flags|=2;
-if(M2C_FIELD(p,u8 *,0x5d)==2)flags|=4;
+if(M2C_FIELD(p,u8 *,FACE_SPRITE_PALETTE)==1)effects|=FACE_EFFECT_SEPIA;
+if(M2C_FIELD(p,u8 *,FACE_SPRITE_PALETTE)==2)effects|=FACE_EFFECT_GRAY;
 i=0;do{
 if(i==0)v=g3DSpriteEngineMain;else v=g3DSpriteEngineSub;
-*engine=v;mode=(u32)(M2C_FIELD(p,u8 *,0x48)<<28)>>29;
+*engine=v;mode=(u32)(M2C_FIELD(p,u8 *,FACE_SPRITE_SCREEN)<<28)>>29;
 if((mode!=0 || v==g3DSpriteEngineMain)&&(mode!=1 || v==g3DSpriteEngineSub)&&(mode!=3 || v==old))
-func_02098ac0(M2C_FIELD(p,u8 *,0x58),M2C_FIELD(p,u8 *,0x59),(u16)((M2C_FIELD(p,u32 *,0x40)<<6)>>24),flags);
+LoadFacePaletteAt(M2C_FIELD(p,u8 *,FACE_SPRITE_FACE),M2C_FIELD(p,u8 *,FACE_SPRITE_EXPRESSION),(u16)((M2C_FIELD(p,u32 *,FACE_SPRITE_TILE)<<6)>>24),effects);
 i++;
 }while(i<2);
 gCur3DSpriteEngine=old;
 }
-if(M2C_FIELD(p,void **,0x60)){func_02098f08(M2C_FIELD(p,void **,0x60),M2C_FIELD(p,u8 *,0x5c));func_02098f10(M2C_FIELD(p,void **,0x60));}
+if(M2C_FIELD(p,void **,FACE_SPRITE_CHILD)){SetFaceSpriteExpression(M2C_FIELD(p,void **,FACE_SPRITE_CHILD),M2C_FIELD(p,u8 *,FACE_SPRITE_ACTIVE));RefreshFaceSpritePalette(M2C_FIELD(p,void **,FACE_SPRITE_CHILD));}
 }
 
 void func_02099310(void *arg0, s8 arg1) {
@@ -284,7 +288,7 @@ void func_02099318(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5B) = arg1;
 }
 
-u8 func_02099320(void *arg0) {
+u8 FaceSpriteIsLoaded(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u8 *, 0x58) != 0) {
@@ -310,7 +314,7 @@ M2C_UNK func_0209936c(void *a){
  void func_02088964(void*);void UpdateSpriteSlide(void*);
  s32 func_02098bd4(M2C_UNK,u8);
  void func_020887a8(void*,s32,s32,s32,s32);
- s32 v;if(!func_02099320(a))return;
+ s32 v;if(!FaceSpriteIsLoaded(a))return;
  v=func_02098bd4(M2C_FIELD(a,u8*,0x59),M2C_FIELD(a,u8*,0x5b));
  func_02088964(a);UpdateSpriteSlide(a);
  func_020887a8(a,M2C_FIELD(a,s16*,0x34),M2C_FIELD(a,s16*,0x36),M2C_FIELD(a,s8*,0x49),v);

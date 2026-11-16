@@ -334,12 +334,12 @@ void Sound_SetPlayerCallbacks(void *arg0,s32 arg1) {
 s32 func_0202ed18(void *arg0, s32 arg1) {
  s32 func_0202c3ac(s32,void *,s32,s32);
  void func_0202c424(void *);
- s32 func_0200b9e4(void *,Unk0202ed18);
+ s32 OpenFileRange(void *,Unk0202ed18);
  s32 func_0202c35c(s32);
  Unk0202ed18 sp0;
  if(func_0202c3ac(arg1,arg0+0xA8,0x40,0)!=0x40)return 0;
  func_0202c424(&sp0);
- if(!func_0200b9e4(arg0+0x5C,sp0))return 0;
+ if(!OpenFileRange(arg0+0x5C,sp0))return 0;
  M2C_FIELD(arg0,s32 *,0xA4)=func_0202c35c(arg1);return 1;
 }
 
@@ -451,7 +451,7 @@ s32 func_0202ef4c(void *arg0) {
  * session. Returns 1 on success, or 0 after tearing the resources down again
  * when the session cannot start. */
 s32 WFC_Init(void *params) {
-void CpuFill(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 WFC_InitSession(void *,s32);void func_0202f37c(void);
+void CpuFill(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 WFC_InitSession(void *,s32);void Wfc_FreeWorkBlocks(void);
 extern M2C_UNK data_0213d100;
 void *block,*buffer;Config0202ef *config;s32 status;
 block=M2C_FIELD(params,void *(**)(s32,s32),0)(1,24);
@@ -473,7 +473,7 @@ buffer=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(buffer,s32 *,0)=M2C_FIELD(
 config->c=M2C_FIELD(params,u8 *,10);config->d=M2C_FIELD(params,u8 *,11);
 func_02045c90();
 status=WFC_InitSession(M2C_FIELD(&data_0213d100,void **,4),0x2300);
-if(status==1 || status>=4){func_0202f37c();return 0;}return 1;
+if(status==1 || status>=4){Wfc_FreeWorkBlocks();return 0;}return 1;
 }
 
 s32 func_0202f10c(void) {
@@ -529,27 +529,27 @@ u8 func_0202f248(void) {
 
 s32 func_0202f28c(void) {
  u32 Wfc_GetSessionState();
- void func_0202f37c(void);
+ void Wfc_FreeWorkBlocks(void);
  void func_020301dc(u8 *);
  void func_0202f4e4(u32);
  u8 n=Wfc_GetSessionState();
  if(n==0 || n==18) {
- func_0202f37c(); return 1;
+ Wfc_FreeWorkBlocks(); return 1;
  }
  func_020301dc(&n);func_0202f4e4(n);return 0;
 }
 
 void func_0202f2c8(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_02007e70(M2C_UNK, s32, M2C_UNK);
-    s32 func_0202f48c(M2C_UNK);
-    func_02007e70(arg1, func_0202f48c(0x10) + (arg0 << 8), 0xF0);
+    s32 Wfc_GetWorkBlock(M2C_UNK);
+    func_02007e70(arg1, Wfc_GetWorkBlock(0x10) + (arg0 << 8), 0xF0);
 }
 
 s32 func_0202f2f4(s32 arg0, M2C_UNK arg1) {
     u8 temp_r1;
     void *temp_r0;
 
-    temp_r0 = func_0202f48c(1);
+    temp_r0 = Wfc_GetWorkBlock(1);
     temp_r1 = M2C_FIELD(temp_r0, u8 *, 8);
     if (temp_r1 & arg0) {
         return 0;
@@ -562,7 +562,7 @@ void func_0202f334(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     u8 temp_r2;
     void *temp_r0;
 
-    temp_r0 = func_0202f48c(1);
+    temp_r0 = Wfc_GetWorkBlock(1);
     temp_r2 = M2C_FIELD(temp_r0, u8 *, 8);
     if (!(temp_r2 & arg0)) {
         return;

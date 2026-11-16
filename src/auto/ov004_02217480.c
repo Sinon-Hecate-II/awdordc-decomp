@@ -38,7 +38,7 @@ func_01ffa8c4(state,1);
 void func_ov004_02217514(void *state) {
 void *func_0208c54c(void *);
 void func_0208bd2c(void *,void *,s32,s32,s32);
-s32 func_02001fb4(s32,s32);
+s32 FX_Div(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void ResetBattleMap(void);void func_020cf278(s32);void LoadBattleMap(s32);void func_ov003_021ff36c(void);
@@ -51,14 +51,14 @@ sprite=func_0208c54c(state);func_0208bd2c(sprite,data_ov004_0223c678,0x3a800,25,
 y=M2C_FIELD(entry,s16 *,2);x=M2C_FIELD(entry,s16 *,0);
 M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;
 M2C_FIELD(sprite,s32 *,0x3c)=9;
-M2C_FIELD(sprite,s32 *,0x40)=func_02001fb4(4096,M2C_FIELD(state,s32 *,0x40));
+M2C_FIELD(sprite,s32 *,0x40)=FX_Div(4096,M2C_FIELD(state,s32 *,0x40));
 PlaySoundEffect(238);M2C_FIELD(state,u8 *,0x35)=1;return;
 case 1:
 sprite=func_0208c54c(state);func_0208bd2c(sprite,data_ov004_0223c63c,0x3a800,25,1);
 y=M2C_FIELD(entry,s16 *,2);x=M2C_FIELD(entry,s16 *,0);
 M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;
 M2C_FIELD(sprite,s32 *,0x3c)=9;
-M2C_FIELD(sprite,s32 *,0x40)=func_02001fb4(4096,M2C_FIELD(state,s32 *,0x40));
+M2C_FIELD(sprite,s32 *,0x40)=FX_Div(4096,M2C_FIELD(state,s32 *,0x40));
 M2C_FIELD(sprite,u32 *,0x44)=(M2C_FIELD(sprite,u32 *,0x44)&~0x3000000)|0x2000000;
 M2C_FIELD(entry,u8 *,5)=data_0215d8a8[M2C_FIELD(entry,u8 *,7)]>>29;
 M2C_FIELD(state,u8 *,0x36)=0;M2C_FIELD(state,u8 *,0x35)=2;return;

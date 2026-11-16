@@ -23,7 +23,7 @@ return result;
 /* Initialize the map scene: load map data, fill tile slots, and center the viewport. */
 void func_ov007_0221c534(void) {
 M2C_UNK func_0207b754(u32,u32); M2C_UNK func_020cf498(s16,s16);
-M2C_UNK RefreshMapView(); M2C_UNK func_ov007_022121b0();
+M2C_UNK RefreshMapView(); M2C_UNK RefreshMapEditor();
 M2C_UNK MapEditor_SetMapModified(M2C_UNK); M2C_UNK func_ov007_0221ab68();
 extern void **gCurrentMap;
 M2C_UNK func_020c857c(M2C_UNK); M2C_UNK GetSlotForPlayerId(M2C_UNK);
@@ -36,7 +36,7 @@ slot1=GetSlotForPlayerId(1);slot2=GetSlotForPlayerId(2);slot3=GetSlotForPlayerId
 RemapUnitGroups(slot1,slot2,slot3,GetSlotForPlayerId(4));
 slot1b=GetSlotForPlayerId(1);slot2b=GetSlotForPlayerId(2);slot3b=GetSlotForPlayerId(3);
 Map_ReassignPropertyOwners(slot1b,slot2b,slot3b,GetSlotForPlayerId(4));
-ResetPlayerOrder(); RefreshMapView(); func_ov007_022121b0(); func_ov007_0221ab68();
+ResetPlayerOrder(); RefreshMapView(); RefreshMapEditor(); func_ov007_0221ab68();
 state=*gCurrentMap;
 viewX=(u32)M2C_FIELD(state,u16 *,0x5144)>>1;
 viewY=(u32)M2C_FIELD(state,u16 *,0x5146)>>1;

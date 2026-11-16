@@ -171,7 +171,7 @@ void *func_ov003_021ff7d4(void *obj) {
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_ov003_021f1920(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_02210158, data_ov003_02210184;
     void *sub;
@@ -179,7 +179,7 @@ void *func_ov003_021ff7d4(void *obj) {
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210158;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210184;
     func_ov003_021f1920();
-    func_ov003_021f1a58();
+    DeleteOv003SceneSprite();
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
@@ -236,7 +236,7 @@ void *func_ov003_021ff9dc(void *obj) {
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_ov003_021f1920(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_02210158, data_ov003_02210184;
     void *sub;
@@ -244,7 +244,7 @@ void *func_ov003_021ff9dc(void *obj) {
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210158;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210184;
     func_ov003_021f1920();
-    func_ov003_021f1a58();
+    DeleteOv003SceneSprite();
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
@@ -302,7 +302,7 @@ void *func_ov003_021ffbec(void *obj) {
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_020af1e4(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;
     void *sub;
@@ -310,7 +310,7 @@ void *func_ov003_021ffbec(void *obj) {
     M2C_FIELD(obj, void **, 0) = &data_ov003_022101ac;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_022101d8;
     func_020af1e4();
-    func_ov003_021f1a58();
+    DeleteOv003SceneSprite();
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
@@ -367,7 +367,7 @@ void *func_ov003_021ffdf4(void *obj) {
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_020af1e4(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;
     void *sub;
@@ -375,7 +375,7 @@ void *func_ov003_021ffdf4(void *obj) {
     M2C_FIELD(obj, void **, 0) = &data_ov003_022101ac;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_022101d8;
     func_020af1e4();
-    func_ov003_021f1a58();
+    DeleteOv003SceneSprite();
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
     sub = M2C_FIELD(obj, void **, 0x70);
@@ -435,7 +435,7 @@ void *Ov003Object_Destructor(Ov003Object *obj) {
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_020af1e4(void);
-    void func_ov003_021f1a58(void);
+    void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;
     void *sub;

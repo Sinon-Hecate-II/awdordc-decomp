@@ -75,7 +75,7 @@ void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
     s32 BuildNarcPath(M2C_UNK);
-    void func_0208be8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u8);
+    void LoadAnimatedSpriteAssets(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u8);
     void func_0208c69c(M2C_UNK);
     void func_0208c6fc(void);
     extern M2C_UNK data_02102840, data_02102848, data_02102850;
@@ -89,7 +89,7 @@ void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
     StringCopy(spC, temp_r0);
     StringAppend(spC, &data_02102850);
     func_0208c69c(arg1);
-    func_0208be8c(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
+    LoadAnimatedSpriteAssets(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
     func_0208c6fc();
 }
 
@@ -116,11 +116,11 @@ void func_0208bddc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
 }
 
 /* Set up a display object's buffers from three prepared lists. */
-void func_0208be8c(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 value, u16 count, u8 flag) {
+void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 value, u16 count, u8 flag) {
     s32 func_02080e30(M2C_UNK, M2C_UNK);
     s32 func_02081070(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
-    void *func_02091270(s32, M2C_UNK, M2C_UNK);
+    void *CreateSpriteAnim(s32, M2C_UNK, M2C_UNK);
 
     s32 size;
     void *sub;
@@ -132,9 +132,9 @@ void func_0208be8c(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 v
         M2C_FIELD(obj, s32 *, 0x50) = func_02081070(list1, 1);
         func_0208143c(list3, size, 0x20);
     }
-    sub = func_02091270(M2C_FIELD(obj, s32 *, 0x54), 0xD, 6);
+    sub = CreateSpriteAnim(M2C_FIELD(obj, s32 *, 0x54), 0xD, 6);
     M2C_FIELD(obj, void **, 0x4C) = sub;
-    func_02091700(sub, 0);
+    SetSpriteAnimFrame(sub, 0);
     M2C_FIELD(M2C_FIELD(obj, void **, 0x4C), s32 *, 0x30) = (s32) M2C_FIELD(obj, s32 *, 0x50);
     M2C_FIELD(M2C_FIELD(obj, void **, 0x4C), s32 *, 0x28) = value;
     M2C_FIELD(M2C_FIELD(obj, void **, 0x4C), s32 *, 0x2C) = size;
@@ -146,13 +146,13 @@ void func_0208be8c(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 v
 }
 
 void func_0208bf7c(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
-s32 func_02080e30(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *func_02091270(s32,M2C_UNK,M2C_UNK);
+s32 func_02080e30(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
 u16 packed;void *sub,*ptr;
 packed=(u16)((0x3ff&(value>>5))+(u16)(count<<12));
 M2C_FIELD(obj,s32 *,0x54)=func_02080e30(b,1);
 if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);LoadFileToSpriteBuffer(c,(count+16)<<5,32);}
-sub=func_02091270(M2C_FIELD(obj,s32 *,0x54),13,2);
-M2C_FIELD(obj,void **,0x4c)=sub;func_02091700(sub,0);
+sub=CreateSpriteAnim(M2C_FIELD(obj,s32 *,0x54),13,2);
+M2C_FIELD(obj,void **,0x4c)=sub;SetSpriteAnimFrame(sub,0);
 M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x30)=M2C_FIELD(obj,s32 *,0x50);
 M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x28)=packed;
 ptr=M2C_FIELD(obj,void **,0x4c);M2C_FIELD(ptr,u8 *,0x22)|=0x40;
@@ -161,11 +161,11 @@ M2C_FIELD(obj,s32 *,0x48)=(M2C_FIELD(obj,s32 *,0x48)&0xffe003ff)|((u32)(func_020
 M2C_FIELD(obj,s32 *,0x44)=(M2C_FIELD(obj,s32 *,0x44)&~0xc00000)|0x800000;
 }
 
-void func_0208c080(void *arg0) {
-    M2C_UNK func_02091700(s32);
+void SetAnimatedSpriteFrame(void *arg0) {
+    M2C_UNK SetSpriteAnimFrame(s32);
     s32 func_02091a84(s32);
     s32 func_02091ac0(s32);
-    func_02091700(M2C_FIELD(arg0, s32 *, 0x4C));
+    SetSpriteAnimFrame(M2C_FIELD(arg0, s32 *, 0x4C));
     M2C_FIELD(arg0, s32 *, 0x44) = (s32) ((M2C_FIELD(arg0, s32 *, 0x44) & ~0xFC000000) | (func_02091ac0(M2C_FIELD(arg0, s32 *, 0x4C)) << 0x1A));
     M2C_FIELD(arg0, s32 *, 0x48) = (s32) ((M2C_FIELD(arg0, s32 *, 0x48) & 0xFFE003FF) | ((u32) (func_02091a84(M2C_FIELD(arg0, s32 *, 0x4C)) << 0x15) >> 0xB));
 }
@@ -285,7 +285,7 @@ void func_0208c51c(void) {
     ((void (*)())UpdateSpriteObject)();
 }
 
-void func_0208c528(M2C_UNK arg0) {
+void CreateAnimatedSpriteObject(M2C_UNK arg0) {
     s32 func_01ffa3dc(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0208bc58();
     extern M2C_UNK data_02102790;

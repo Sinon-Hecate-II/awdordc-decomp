@@ -161,12 +161,12 @@ return p->handle!=0;
 s32 gpiProcessNewPlayer(void **connection,void *request,s32 command) {
 s32 func_0205817c(void **,s32,s32);void gpiSetError(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
 s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
-s32 GetStringField(s32,void *,void *,s32);s32 ParseInt(void *);
+s32 gpiValueForKey(s32,void *,void *,s32);s32 ParseInt(void *);
 extern M2C_UNK gGpiNewPlayerTag,gGpiMsgUnexpectedData,gGpiProfileIdKey,gGpiNewPlayerMsgOutOfMemory;
 char idText[16];Unk02050838Pair callback;s32 *data;s32 result;s32 profileId;
 if(func_0205817c(connection,command,1))return 4;
 if(StringCompareN(command,&gGpiNewPlayerTag,5)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
-if(!GetStringField(command,&gGpiProfileIdKey,idText,16)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
+if(!gpiValueForKey(command,&gGpiProfileIdKey,idText,16)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
 profileId=ParseInt(idText);
 callback=*(Unk02050838Pair *)((u8 *)request+12);
 if(callback.unk_0){data=gpiMalloc(8);if(!data){gpiSetErrorString((s32)connection,(s32 *)&gGpiNewPlayerMsgOutOfMemory);return 1;}data[1]=profileId;data[0]=0;result=gpiAddCallback(connection,callback,data,request,0);if(result)return result;}

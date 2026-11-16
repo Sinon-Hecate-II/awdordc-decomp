@@ -55,8 +55,8 @@ void AddRecordValue(s32,s32);
 void func_ov000_02169740(void *);
 void func_ov000_021696f8(void *);
 void RefreshMapView(void);
-void func_ov000_0216a040(void *);
-void func_02091700(s32,s32);
+void StepUnitMoveSound(void *);
+void SetSpriteAnimFrame(s32,s32);
 extern s32 *gCurrentMap;
 s8 ReadMovementCommand(void *);
 s16 command;
@@ -74,17 +74,17 @@ break;
 case 4:func_ov000_02169740(p);break;
 case -1:func_ov000_021696f8(p);RefreshMapView();break;
 case 0:case 1:case 2:case 3:
-func_ov000_0216a040(p);
+StepUnitMoveSound(p);
 if(command!=M2C_FIELD(p,s8*,0x44)){
-func_02091700(M2C_FIELD(p,s32*,0x34),command);
-func_02091700(M2C_FIELD(p,s32*,0x38),command+4);
+SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x34),command);
+SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x38),command+4);
 M2C_FIELD(p,s8*,0x44)=command;M2C_FIELD(p,u8*,0x41)=2;
 }break;
 case 5:case 6:case 7:case 8:
 command-=5;
 if(command!=M2C_FIELD(p,s8*,0x44)){
-func_02091700(M2C_FIELD(p,s32*,0x34),command);
-func_02091700(M2C_FIELD(p,s32*,0x38),command+4);
+SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x34),command);
+SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x38),command+4);
 M2C_FIELD(p,s8*,0x44)=command;
 }break;
 }
@@ -114,9 +114,9 @@ void func_ov000_021692c0(void *p) {
 
 void func_ov000_02169334(void *p) {
  extern s32 *gCurrentMap;
- M2C_UNK func_ov000_02169f94();
+ M2C_UNK PlayUnitMoveSound();
  void func_ov000_02169cd4(void *);
- func_ov000_02169f94(p);
+ PlayUnitMoveSound(p);
  func_ov000_02169cd4(p);
  M2C_FIELD(gCurrentMap,u8 **,8)[M2C_FIELD(p,s8 *,0x45)]=0;
 }
@@ -152,7 +152,7 @@ void *func_ov000_0216941c(s32 a,s32 b,s32 c,s32 d,s32 e) {
  s32 func_ov000_0216975c(void);
  void *func_01ffa3dc(M2C_UNK *,s32);
  s32 func_ov000_02169f08(void *);
- void func_ov000_02169bc4(void *);
+ void InitUnitMoveSprites(void *);
  extern M2C_UNK data_ov000_021ae988;
  void *p;
  s32 slot=func_ov000_0216975c();
@@ -166,7 +166,7 @@ void *func_ov000_0216941c(s32 a,s32 b,s32 c,s32 d,s32 e) {
  M2C_FIELD(p,u8 *,0x43)=c;
  M2C_FIELD(p,u8 *,0x44)=e;
  M2C_FIELD(p,u16 *,0x4A)=func_ov000_02169f08(p);
- func_ov000_02169bc4(p);
+ InitUnitMoveSprites(p);
  return p;
 }
 
@@ -261,8 +261,8 @@ u8 func_ov000_0216971c(void) {
 
 void func_ov000_02169740(void *arg0) {
     M2C_UNK func_020d47b0();
-    M2C_UNK func_ov000_02169f94();
-    func_ov000_02169f94();
+    M2C_UNK PlayUnitMoveSound();
+    PlayUnitMoveSound();
     M2C_FIELD(arg0, s8 *, 0x41) = 1;
     func_020d47b0();
 }
@@ -421,26 +421,30 @@ s32 func_ov000_02169ae4(void *p) {
     return r;
 }
 
-void func_ov000_02169bc4(void *p){
-s32 func_02091270(s32,s32,s32);void func_02091700(s32,s32);void func_0207c55c(void *,s32,s32,s32);
-extern u8 data_02120a20[];
-void *player;s32 a;
-M2C_FIELD(p,s32 *,0x50)=func_ov000_02169d00((s32)p);
-M2C_FIELD(p,s32 *,0x54)=func_ov000_02169d28(p);
-M2C_FIELD(p,s32 *,0x34)=func_02091270(M2C_FIELD(p,s32 *,0x54),15,14);
-M2C_FIELD(p,s32 *,0x38)=func_02091270(M2C_FIELD(p,s32 *,0x54),15,14);
-M2C_FIELD(p,u8 *,0x47)=0;
-func_02091700(M2C_FIELD(p,s32 *,0x34),M2C_FIELD(p,s8 *,0x44));
-M2C_FIELD(M2C_FIELD(p,void **,0x34),s32 *,0x30)=M2C_FIELD(p,s32 *,0x50);
-M2C_FIELD(M2C_FIELD(p,void **,0x34),s32 *,0x28)=func_ov000_02169d50(p);
-M2C_FIELD(M2C_FIELD(p,void **,0x34),s32 *,0x2c)=func_ov000_02169d64(p);
-func_02091700(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s8 *,0x44)+4);
-M2C_FIELD(M2C_FIELD(p,void **,0x38),s32 *,0x30)=M2C_FIELD(p,s32 *,0x50);
-M2C_FIELD(M2C_FIELD(p,void **,0x38),s32 *,0x28)=func_ov000_02169d50(p);
-M2C_FIELD(M2C_FIELD(p,void **,0x38),s32 *,0x2c)=func_ov000_02169d64(p);
-player=(u8*)M2C_FIELD(gCurrentMap,void **,0)+0x67a4+M2C_FIELD(p,u8 *,0x43)*140;
-a=func_ov000_02169d64(p);
-func_0207c55c(data_02120a20+(M2C_FIELD(player,u8 *,0x1d)-1)*32,a,32,0);
+/* Create the two sprites that show the moving unit: load its tile graphics and
+ * animation data, create both sprites, point them at the unit's tile and palette
+ * offsets, select each one's frame from the facing direction (the second sprite
+ * uses the next frame), and upload the owner's army palette to palette RAM. */
+void InitUnitMoveSprites(void *move){
+s32 CreateSpriteAnim(s32,s32,s32);void SetSpriteAnimFrame(s32,s32);void func_0207c55c(void *,s32,s32,s32);
+extern u8 gArmyPalettes[];
+void *player;s32 paletteOffset;
+M2C_FIELD(move,s32 *,UNIT_MOVE_GFX)=LoadUnitMoveGfx((s32)move);
+M2C_FIELD(move,s32 *,UNIT_MOVE_ANIM)=LoadUnitMoveAnim(move);
+M2C_FIELD(move,s32 *,UNIT_MOVE_SPRITE)=CreateSpriteAnim(M2C_FIELD(move,s32 *,UNIT_MOVE_ANIM),15,14);
+M2C_FIELD(move,s32 *,UNIT_MOVE_SPRITE2)=CreateSpriteAnim(M2C_FIELD(move,s32 *,UNIT_MOVE_ANIM),15,14);
+M2C_FIELD(move,u8 *,UNIT_MOVE_PALETTE_MODE)=0;
+SetSpriteAnimFrame(M2C_FIELD(move,s32 *,UNIT_MOVE_SPRITE),M2C_FIELD(move,s8 *,UNIT_MOVE_DIRECTION));
+M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE),s32 *,0x30)=M2C_FIELD(move,s32 *,UNIT_MOVE_GFX);
+M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE),s32 *,0x28)=UnitMoveTileOffset(move);
+M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE),s32 *,0x2c)=UnitMovePaletteOffset(move);
+SetSpriteAnimFrame(M2C_FIELD(move,s32 *,UNIT_MOVE_SPRITE2),M2C_FIELD(move,s8 *,UNIT_MOVE_DIRECTION)+4);
+M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x30)=M2C_FIELD(move,s32 *,UNIT_MOVE_GFX);
+M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x28)=UnitMoveTileOffset(move);
+M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x2c)=UnitMovePaletteOffset(move);
+player=(u8*)M2C_FIELD(gCurrentMap,void **,0)+MAP_PLAYER_STATES+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE;
+paletteOffset=UnitMovePaletteOffset(move);
+func_0207c55c(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
 }
 
 void func_ov000_02169cd4(void *arg0) {
@@ -452,7 +456,7 @@ void func_ov000_02169cd4(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
 }
 
-s32 func_ov000_02169d00(M2C_UNK arg0) {
+s32 LoadUnitMoveGfx(M2C_UNK arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02081070(s32, M2C_UNK);
     s32 func_ov000_02169ec0(M2C_UNK);
@@ -461,7 +465,7 @@ s32 func_ov000_02169d00(M2C_UNK arg0) {
     func_02081070(func_ov000_02169ec0(arg0), 1);
 }
 
-s32 func_ov000_02169d28(void *arg0) {
+s32 LoadUnitMoveAnim(void *arg0) {
     M2C_UNK func_02080e30(s32, M2C_UNK);
     s32 func_ov000_02169f64(u8);
     extern M2C_UNK data_ov000_021aeee4;
@@ -469,11 +473,11 @@ s32 func_ov000_02169d28(void *arg0) {
     func_02080e30(func_ov000_02169f64(M2C_FIELD(arg0, u8 *, 0x42)), 1);
 }
 
-s32 func_ov000_02169d50(void *arg0) {
+s32 UnitMoveTileOffset(void *arg0) {
     return (M2C_FIELD(arg0, s8 *, 0x45) << 0xB) + 0x30D20;
 }
 
-s32 func_ov000_02169d64(void *arg0) {
+s32 UnitMovePaletteOffset(void *arg0) {
     return (M2C_FIELD(arg0, s8 *, 0x45) << 5) + 0x14C0;
 }
 
@@ -530,7 +534,7 @@ s32 func_ov000_02169f64(u8 arg0) {
 }
 
 void StepUnitMove(void) {
-    M2C_UNK func_ov000_0216a1ac();
-    func_ov000_0216a1ac();
+    M2C_UNK PlayUnitStepSound();
+    PlayUnitStepSound();
 }
 

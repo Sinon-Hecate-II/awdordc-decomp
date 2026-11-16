@@ -106,7 +106,7 @@ s32 func_020a2bd8(void) {
 
 u8 func_020a2be0(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 func_020a3594(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!func_020a3594(a,2))return 0;t=func_020a3518(a);if(t>=func_020a3594(a,2))r=1;else r=0;return r;}
 
-void func_020a2c58(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
+void func_020a2c58(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
 void func_020a2c68(void *a){extern s32 *gCurrentMap;extern u8 data_021261c4[];s32 p=*gCurrentMap+0x67a4+M2C_FIELD(a,s32 *,0x5c)*0x8c;s32 i=func_020a3460(M2C_FIELD(a,s32 *,0x5c));u32 v=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;if(M2C_FIELD(data_021261c4+v*0x9c,s32 *,i*0x28)==0){DeleteSpriteObject(a);}else{M2C_FIELD(a,u16 *,0x70)=1;M2C_FIELD(a,u16 *,0x6c)=0;}}
 
@@ -169,7 +169,7 @@ M2C_FIELD(view,s16 *,0x6c)++;
 RefreshMapView();
 }
 
-void func_020a2f28(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
+void func_020a2f28(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
 void func_020a2f38(s32 arg0) {
     void *CreateSpriteObject(M2C_UNK *);
@@ -177,64 +177,65 @@ void func_020a2f38(s32 arg0) {
     M2C_FIELD(CreateSpriteObject(&data_02120404), s32 *, 0x5C) = arg0;
 }
 
-void func_020a2f54(s32 arg0) {
+/* Choose a different adverse weather, start its transition, and refresh the player's army. */
+void ChangeToRandomAdverseWeather(s32 player) {
     extern s32 *gCurrentMap;
     s32 RandomIntRange(s32, s32);
-    s32 func_020a39c0(s32, s32);
-    s32 func_020a363c(s32);
-    s32 v = M2C_FIELD(*gCurrentMap, u8 *, 0x5158);
+    s32 StartWeatherChange(s32, s32);
+    s32 RefreshPlayerArmyDisplay(s32);
+    s32 weather = M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER);
 
-    switch (v) {
-    case 0:
+    switch (weather) {
+    case WEATHER_CLEAR:
         switch (RandomIntRange(0, 2)) {
         case 0:
         default:
-            v = 2;
+            weather = WEATHER_SNOW;
             break;
         case 1:
-            v = 1;
+            weather = WEATHER_RAIN;
             break;
         case 2:
-            v = 3;
+            weather = WEATHER_SANDSTORM;
             break;
         }
         break;
-    case 2:
+    case WEATHER_SNOW:
         switch (RandomIntRange(0, 1)) {
         case 0:
         default:
-            v = 1;
+            weather = WEATHER_RAIN;
             break;
         case 1:
-            v = 3;
+            weather = WEATHER_SANDSTORM;
             break;
         }
         break;
-    case 1:
+    case WEATHER_RAIN:
         switch (RandomIntRange(0, 1)) {
         case 0:
         default:
-            v = 2;
+            weather = WEATHER_SNOW;
             break;
         case 1:
-            v = 3;
+            weather = WEATHER_SANDSTORM;
             break;
         }
         break;
-    case 3:
+    case WEATHER_SANDSTORM:
         switch (RandomIntRange(0, 1)) {
         case 0:
         default:
-            v = 2;
+            weather = WEATHER_SNOW;
             break;
         case 1:
-            v = 1;
+            weather = WEATHER_RAIN;
             break;
         }
         break;
     }
-    func_020a39c0(v, 3);
-    func_020a363c(arg0);
+    StartWeatherChange(weather, 3);
+    RefreshPlayerArmyDisplay(player);
 }
 
 u8 func_020a3060(u8 *arg0) {
@@ -374,7 +375,7 @@ value=*(s32 *)(data_02126188+idx*0x9c);break;
 return value*((s32 (*)(s32))func_020a2bd8)(a);
 }
 
-s32 func_020a363c(s32 a){
+s32 RefreshPlayerArmyDisplay(s32 a){
  extern s32 *gCur3DSpriteEngine;
  s32 func_020a3460(s32);
  void func_020a338c(s32,s32);
@@ -414,7 +415,7 @@ void func_020a3740(void *arg0) {
 }
 
 void func_020a3764(void *arg0) {
-    func_020a363c(M2C_FIELD(arg0, s16 *, 0x6C));
+    RefreshPlayerArmyDisplay(M2C_FIELD(arg0, s16 *, 0x6C));
 }
 
 void func_020a3774(s16 arg0) {

@@ -60,4 +60,18 @@
 #define QR2_PLAYER_STRING    0x04 /* char *heap string for the key */
 #define QR2_PLAYER_VALUE     0x08 /* s32 value, or a pointer to one */
 
+/* Binary matchmaking commands received through the QR2 callback. */
+typedef struct Qr2MatchCommandHeader {
+    char magic[4];    /* +0x00 "SBCM" */
+    u32 version;      /* +0x04 protocol version 3 */
+    u8 command;       /* +0x08 command handled by HandleConnectionCommand */
+    u8 payloadBytes;  /* +0x09 size of the following u32 values */
+    u16 port;         /* +0x0A sender's port */
+    u32 address;      /* +0x0C sender's IPv4 address */
+    u32 profileId;    /* +0x10 sender's profile id */
+} Qr2MatchCommandHeader;
+#define QR2_MATCH_HEADER_SIZE 20
+#define QR2_MATCH_VERSION 3
+#define QR2_MATCH_PAYLOAD_MAX 128
+
 #endif

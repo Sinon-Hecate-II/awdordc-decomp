@@ -4,17 +4,39 @@
 typedef struct SelectionEntryFlag { u8 low:4; u8 high:4; } SelectionEntryFlag;
 typedef struct SelectionFlagBlock { u8 pad[0xc00]; u8 low:6; u8 mode:2; } SelectionFlagBlock;
 
-void func_0202f37c(void) {
- void *func_0202f48c(s32);
- void *p=func_0202f48c(1); void *q;
- if(M2C_FIELD(p,u8 *,8)&16) { q=func_0202f48c(16); M2C_FIELD(p,u8 *,8)&=~16; M2C_FIELD(p,void (**)(s32,void *,s32),4)(16,q,3352); }
- if(M2C_FIELD(p,u8 *,8)&8) { q=func_0202f48c(8); M2C_FIELD(p,u8 *,8)&=~8; M2C_FIELD(p,void (**)(s32,void *,s32),4)(8,q,12); }
- if(M2C_FIELD(p,u8 *,8)&4) { q=func_0202f48c(4); M2C_FIELD(p,u8 *,8)&=~4; M2C_FIELD(p,void (**)(s32,void *,s32),4)(4,q,88); }
- if(M2C_FIELD(p,u8 *,8)&2) { q=func_0202f48c(2); M2C_FIELD(p,u8 *,8)&=~2; M2C_FIELD(p,void (**)(s32,void *,s32),4)(2,q,8960); }
- if(M2C_FIELD(p,u8 *,8)&1) { M2C_FIELD(p,u8 *,8)&=~1; M2C_FIELD(p,void (**)(s32,void *,s32),4)(1,p,24); }
+/* Free owned WFC work blocks in reverse order, ending with the allocation state itself. */
+void Wfc_FreeWorkBlocks(void) {
+    void *Wfc_GetWorkBlock(s32);
+    WfcAllocationState *state = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+    void *block;
+
+    if (state->ownedMask & WFC_WORK_FRIENDS) {
+        block = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+        state->ownedMask &= ~WFC_WORK_FRIENDS;
+        state->freeBlock(WFC_WORK_FRIENDS, block, WFC_FRIENDS_SIZE);
+    }
+    if (state->ownedMask & WFC_WORK_CALLBACKS) {
+        block = Wfc_GetWorkBlock(WFC_WORK_CALLBACKS);
+        state->ownedMask &= ~WFC_WORK_CALLBACKS;
+        state->freeBlock(WFC_WORK_CALLBACKS, block, WFC_CALLBACKS_SIZE);
+    }
+    if (state->ownedMask & WFC_WORK_AUX) {
+        block = Wfc_GetWorkBlock(WFC_WORK_AUX);
+        state->ownedMask &= ~WFC_WORK_AUX;
+        state->freeBlock(WFC_WORK_AUX, block, WFC_AUX_SIZE);
+    }
+    if (state->ownedMask & WFC_WORK_SESSION) {
+        block = Wfc_GetWorkBlock(WFC_WORK_SESSION);
+        state->ownedMask &= ~WFC_WORK_SESSION;
+        state->freeBlock(WFC_WORK_SESSION, block, WFC_SESSION_SIZE);
+    }
+    if (state->ownedMask & WFC_WORK_CONTROL) {
+        state->ownedMask &= ~WFC_WORK_CONTROL;
+        state->freeBlock(WFC_WORK_CONTROL, state, WFC_CONTROL_SIZE);
+    }
 }
 
-void *func_0202f48c(s32 arg0) {
+void *Wfc_GetWorkBlock(s32 arg0) {
  extern M2C_UNK gWfcManager;
  if (arg0 & 1) return M2C_FIELD(&gWfcManager, void **, 0x10);
  if (arg0 & 2) return M2C_FIELD(&gWfcManager, void **, 4);
@@ -24,11 +46,11 @@ void *func_0202f48c(s32 arg0) {
  return 0;
 }
 
-void *func_0202f48c(s32);
+void *Wfc_GetWorkBlock(s32);
 u32 func_0202f5ac(u32);
 void func_0202f4e4(u8 arg0) {
- void *a = func_0202f48c(1);
- void *b = func_0202f48c(0x10);
+ void *a = Wfc_GetWorkBlock(1);
+ void *b = Wfc_GetWorkBlock(0x10);
  M2C_FIELD(a,u8 *,9) = arg0;
  if (arg0 < 0x10) {
   if (arg0 > M2C_FIELD(a,u8 *,0x16)) {
@@ -47,10 +69,10 @@ u8 Wfc_GetSessionState(void) {
 }
 
 void func_0202f558(s32 arg0) {
-    void *func_0202f48c(M2C_UNK);
+    void *Wfc_GetWorkBlock(M2C_UNK);
     void *temp_r0;
 
-    temp_r0 = func_0202f48c(1);
+    temp_r0 = Wfc_GetWorkBlock(1);
     M2C_FIELD(temp_r0, s32 *, 0xC) = arg0;
     M2C_FIELD(temp_r0, s8 *, 0xA) = Wfc_GetSessionState();
 }
@@ -107,11 +129,11 @@ s32 func_0202f5f4(void) {
    or a single row (state 5), then updates and re-sorts the roster. */
 void Wfc_HandleFriendMessage(s32 arg0) {
  void *msg=(void *)arg0;
- void *func_0202f48c(s32); u8 Wfc_GetSessionState(void);
+ void *Wfc_GetWorkBlock(s32); u8 Wfc_GetSessionState(void);
  void Wfc_MarkFriendId(u16); s32 func_0202f894(void *,s32,void *); s32 func_0202f910(void *,void *);
  s32 func_0202f9a0(s32,void *,M2C_UNK,void *); void Wfc_SortFriendRoster(s32,s32);
- s32 result=-1; u8 friendId; void *wfc=func_0202f48c(16);
- M2C_FIELD(func_0202f48c(1),u8 *,11)=1;
+ s32 result=-1; u8 friendId; void *wfc=Wfc_GetWorkBlock(16);
+ M2C_FIELD(Wfc_GetWorkBlock(1),u8 *,11)=1;
  switch(Wfc_GetSessionState()) {
  case 3:
  friendId=M2C_FIELD(wfc,u8 *,WFC_STATE_FRIEND_ID);
@@ -141,7 +163,7 @@ void Wfc_HandleFriendMessage(s32 arg0) {
 s32 Wfc_MatchFriendCode(void *arg0) {
  s32 func_0203174c(void *);
  s32 func_020317f8(void *);
- void *p = func_0202f48c(0x10);
+ void *p = Wfc_GetWorkBlock(0x10);
  u32 a = (u32)(M2C_FIELD(p,u8 *,0xD0C)<<28)>>28;
  if ((a==0 || a==4) && (((s32)M2C_FIELD(arg0,u16 *,0x2C)>>4)&1)==1 && func_020317f8(arg0+0xC)==1) return 6;
  a = (u32)(M2C_FIELD(p,u8 *,0xD0C)<<28)>>28;
@@ -293,7 +315,7 @@ loop_2:
 #pragma opt_common_subs reset
 void func_0202fc10(void *arg0) {
  void Wfc_HandleFriendMessage(s32);
- void *p=func_0202f48c(0x10);
+ void *p=Wfc_GetWorkBlock(0x10);
  s16 type=M2C_FIELD(arg0,s16 *,0);
  if(type==5) {
  if(M2C_FIELD(arg0,s16 *,2)==0) return;
@@ -312,7 +334,7 @@ s32 func_0202fc9c(void) {
     s32 var_r4;
 
     var_r4 = Wfc_GetSessionState();
-    func_0202f48c(0x10);
+    Wfc_GetWorkBlock(0x10);
     switch (var_r4) {                               /* irregular */
     case 7:
         var_r4 = func_0202fce0();
@@ -537,7 +559,7 @@ s32 func_020302f4(void) {
 
 s32 func_02030324(void) {
     s32 func_020301dc(s32);
-    if (func_020301dc((s32)(func_0202f48c(1) + 0xA)) == 1) {
+    if (func_020301dc((s32)(Wfc_GetWorkBlock(1) + 0xA)) == 1) {
         return 0x12;
     }
     return 0x11;

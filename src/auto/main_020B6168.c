@@ -7,7 +7,7 @@ void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
-    s32 func_0208c080(void *, s32);
+    s32 SetAnimatedSpriteFrame(void *, s32);
     void func_02080750(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
     M2C_UNK CancelMapCursorAnimation(void);
@@ -59,7 +59,7 @@ void func_020b6168(void *arg0) {
                 if (dx < 0) dx=-dx;
 
                 p = func_020b5188((M2C_UNK *)((u8 *)arg0 + 0x34), x, y, 0x10, 0, 0, arg0);
-                func_0208c080(p, 2);
+                SetAnimatedSpriteFrame(p, 2);
                 ((RangeEffect *)p)->distance=(u8)((dx+dy)*8);
                 M2C_FIELD(p, s32 *, 0x58) = x;
                 M2C_FIELD(p, s32 *, 0x5C) = y;
@@ -139,7 +139,7 @@ void func_020b6444(void *arg0) {
     void func_020b51dc(void);
     void func_020b5200(M2C_UNK *, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
-    s32 func_0208c080(void *, s32);
+    s32 SetAnimatedSpriteFrame(void *, s32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     extern void **gCurrentMap;
     extern M2C_UNK data_02128ebc;
@@ -167,7 +167,7 @@ void func_020b6444(void *arg0) {
     func_020b5200(&data_02128ebc, 0);
     {
         void *p = func_020b5188(&data_02128ec4, x, y, 0x30, 0, 0, arg0);
-        func_0208c080(p, 0);
+        SetAnimatedSpriteFrame(p, 0);
     }
     {
         u8 *uu = M2C_FIELD(arg0, u8 **, 0x5c);
@@ -204,7 +204,7 @@ void func_020b65e4(void *arg0) {
 void func_020b65f8(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, u16, s32);
     M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
-    M2C_UNK func_0208c080(void *, s32);
+    M2C_UNK SetAnimatedSpriteFrame(void *, s32);
     extern M2C_UNK data_02128ecc;
     u16 count;
     u32 bits;
@@ -214,14 +214,14 @@ void func_020b65f8(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), count, (u16)((bits << 11) >> 21));
     if ((s32)count % 16 != 0) return;
     p = (void *)func_020b5134(&data_02128ecc, 0, 0, 16, 0, 0, arg0);
-    func_0208c080(p, 2);
+    SetAnimatedSpriteFrame(p, 2);
     M2C_FIELD(p, s32 *, 0x34) = M2C_FIELD(arg0, s32 *, 0x34);
     M2C_FIELD(p, s32 *, 0x38) = M2C_FIELD(arg0, s32 *, 0x38);
 }
 
 void func_020b6698(void *arg0) {
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
-    M2C_UNK func_0208c080(void *, s32);
+    M2C_UNK SetAnimatedSpriteFrame(void *, s32);
     void func_020b65e4(void *);
     void func_020b65f8(void *);
     extern M2C_UNK data_02128ed4, data_02128edc;
@@ -229,14 +229,14 @@ void func_020b6698(void *arg0) {
     func_020b51dc();
     func_020b5200(&data_02128ed4, 0);
     p = func_020b5188(&data_02128edc, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 16, 0, 0, arg0);
-    func_0208c080(p, 1);
+    SetAnimatedSpriteFrame(p, 1);
     M2C_FIELD(p, void (**)(void *), 0x68) = func_020b65e4;
     M2C_FIELD(p, void (**)(void *), 0x6C) = func_020b65f8;
     PlaySoundAtTile(0x130, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
 void func_020b6718(void *arg0) {
-    M2C_UNK func_0208c080(void *, M2C_UNK);
+    M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
     void *func_020b5188(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
     M2C_UNK CancelMapCursorAnimation();
     extern M2C_UNK data_02128ee4;
@@ -247,7 +247,7 @@ void func_020b6718(void *arg0) {
     func_020b51dc();
     func_020b5200(&data_02128ee4, 0);
     temp_r0 = func_020b5188(&data_02128eec, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0);
-    func_0208c080(temp_r0, 0);
+    SetAnimatedSpriteFrame(temp_r0, 0);
     M2C_FIELD(temp_r0, void (**)(void *), 0x6C) = func_020b6570;
     CancelMapCursorAnimation();
     PlaySoundAtTile(0x131, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));

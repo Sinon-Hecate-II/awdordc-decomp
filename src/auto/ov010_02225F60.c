@@ -1,5 +1,6 @@
 /* 41 functions from 0x02225F60 to 0x02226D9C (ov010), found by ds-decomp. */
 #include "common.h"
+#include "online_link.h"
 static inline u32 ov010DisableInterrupts(void) {
     u32 previous = *(volatile u16 *)0x4000208;
     *(volatile u16 *)0x4000208 = 0;
@@ -38,7 +39,7 @@ s32 func_ov010_02225f60(void) {
     extern M2C_UNK data_ov010_0222ee70, data_ov010_0222ee98, data_ov010_0222ee78;
     void func_ov010_02225e50();
     void func_ov010_02225f54();
-    s32 func_ov010_02229a08();
+    s32 GetOnlineTransportPlayerId();
     s32 func_ov010_02225cd8(s32);
     s32 func_ov010_02225640(void *);
     void func_ov010_02228b50();
@@ -56,7 +57,7 @@ s32 func_ov010_02225f60(void) {
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 16) = 1;
     M2C_FIELD(&data_ov010_0222ee70, void **, 8) = &data_ov010_0222ee98;
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 12) = 2;
-    M2C_FIELD(&data_ov010_0222ee70, u8 *, 20) = (u8)func_ov010_02229a08();
+    M2C_FIELD(&data_ov010_0222ee70, u8 *, 20) = (u8)GetOnlineTransportPlayerId();
     M2C_FIELD(&data_ov010_0222ee70, void **, 32) = func_ov010_02225e50;
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 36) = 0;
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 24) = M2C_FIELD(&data_ov010_0222ee70, s32 *, 0);
@@ -541,8 +542,8 @@ void *func_ov010_0222697c(void *arg0) {
 }
 
 void func_ov010_022269dc(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02007e20(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02007e20(arg1, arg0, 0x18);
+    M2C_UNK CopyU16(M2C_UNK, M2C_UNK, M2C_UNK);
+    CopyU16(arg1, arg0, 0x18);
 }
 
 void func_ov010_022269f8(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
@@ -563,7 +564,7 @@ ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
 }
 
 #pragma cplusplus on
-extern "C" s32 func_ov010_02226be8(s32 a) {
+extern "C" s32 IsOnlinePacketQueued(s32 a) {
     extern M2C_UNK data_ov010_0222eee0;
     Ov010InterruptGuard guard;
     void *p = M2C_FIELD(&data_ov010_0222eee0, void **, 0x60);
@@ -574,29 +575,50 @@ extern "C" s32 func_ov010_02226be8(s32 a) {
     return 0;
 }
 #pragma cplusplus off
-void func_ov010_02226c68(void *arg0) {
-s32 func_02001fb4(s32,s32);s32 Divide(s32,s32);s32 IsConnectionActive(u8);void func_02038438(void);
-s32 func_ov010_02226be8(s32);void func_ov010_02227bc8(u8);void func_ov010_0222972c(s32,void *,s32,u16);s32 func_ov010_02229a08(void);s32 func_ov010_02229a24(void);
-s32 t,n,limit,raw;u16 mask;u8 i;
-t=func_02001fb4(0x3e8000,0x3c000);
-n=M2C_FIELD(arg0,s32 *,0x34)+1;
-t=(n*t)>>12;
-M2C_FIELD(arg0,s32 *,0x34)=n;
-if(t>4000){
-raw=func_ov010_02229a24();
-mask=raw & (-1 ^ (1U<<func_ov010_02229a08()));
-if(mask && (mask & func_ov010_02229a24()) && !func_ov010_02226be8(1))func_ov010_0222972c(1,arg0+0x34,4,mask);
-M2C_FIELD(arg0,s32 *,0x34)=0;
-}
-limit=Divide(0x1b7740,1000);i=0;
-do{
-if(IsConnectionActive(i)){
-{void *entry=arg0+i*4;n=M2C_FIELD(entry,s32 *,0x38)+1;M2C_FIELD(entry,s32 *,0x38)=n;}
-if(n>limit){func_ov010_02227bc8(i);((s32 *)(arg0+0x38))[i]=0;}
-}else ((s32 *)(arg0+0x38))[i]=0;
-i++;
-}while(i<4);
-func_02038438();
+/* Send periodic heartbeats, disconnect silent peers, and advance the network session. */
+void TickOnlinePeerKeepAlive(void *link) {
+    s32 FX_Div(s32, s32);
+    s32 Divide(s32, s32);
+    s32 IsConnectionActive(u8);
+    void TickNetSession(void);
+    s32 IsOnlinePacketQueued(s32);
+    void DisconnectOnlinePeer(u8);
+    void QueueOnlinePacket(s32, void *, s32, u16);
+    s32 GetOnlineTransportPlayerId(void);
+    s32 GetOnlinePeerMask(void);
+    s32 elapsedMs, frames, timeoutFrames, connectedPeers;
+    u16 remotePeers;
+    u8 peer;
+
+    elapsedMs = FX_Div(ONLINE_MS_PER_SECOND_FX12, ONLINE_TICK_RATE_FX12);
+    frames = M2C_FIELD(link, s32 *, ONLINE_HEARTBEAT_FRAMES) + 1;
+    elapsedMs = (frames * elapsedMs) >> 12;
+    M2C_FIELD(link, s32 *, ONLINE_HEARTBEAT_FRAMES) = frames;
+    if (elapsedMs > ONLINE_HEARTBEAT_INTERVAL_MS) {
+        connectedPeers = GetOnlinePeerMask();
+        remotePeers = connectedPeers & (-1 ^ (1U << GetOnlineTransportPlayerId()));
+        if (remotePeers && (remotePeers & GetOnlinePeerMask()) && !IsOnlinePacketQueued(ONLINE_PACKET_HEARTBEAT))
+            QueueOnlinePacket(ONLINE_PACKET_HEARTBEAT, link + ONLINE_HEARTBEAT_FRAMES, 4, remotePeers);
+        M2C_FIELD(link, s32 *, ONLINE_HEARTBEAT_FRAMES) = 0;
+    }
+    timeoutFrames = Divide(ONLINE_PEER_TIMEOUT_NUMERATOR, ONLINE_MILLISECONDS_PER_SECOND);
+    peer = 0;
+    do {
+        if (IsConnectionActive(peer)) {
+            {
+                void *entry = link + peer * 4;
+                frames = M2C_FIELD(entry, s32 *, ONLINE_PEER_IDLE_FRAMES) + 1;
+                M2C_FIELD(entry, s32 *, ONLINE_PEER_IDLE_FRAMES) = frames;
+            }
+            if (frames > timeoutFrames) {
+                DisconnectOnlinePeer(peer);
+                ((s32 *)(link + ONLINE_PEER_IDLE_FRAMES))[peer] = 0;
+            }
+        } else
+            ((s32 *)(link + ONLINE_PEER_IDLE_FRAMES))[peer] = 0;
+        peer++;
+    } while (peer < ONLINE_PEER_COUNT);
+    TickNetSession();
 }
 
 void func_ov010_02226d74(void *arg0) {

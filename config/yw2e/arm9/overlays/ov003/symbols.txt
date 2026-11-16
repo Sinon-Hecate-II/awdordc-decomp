@@ -164,9 +164,9 @@ func_ov003_021ebd64 kind:function(arm,size=0x84) addr:0x021ebd64
 func_ov003_021ebde8 kind:function(arm,size=0xc) addr:0x021ebde8
 func_ov003_021ebdf4 kind:function(arm,size=0x6c) addr:0x021ebdf4
 func_ov003_021ebe60 kind:function(arm,size=0x60) addr:0x021ebe60
-func_ov003_021ebec0 kind:function(arm,size=0x10c) addr:0x021ebec0
-func_ov003_021ebfcc kind:function(arm,size=0x518) addr:0x021ebfcc
-func_ov003_021ec4e4 kind:function(arm,size=0x98) addr:0x021ec4e4
+HandleWaypointPanelCancel kind:function(arm,size=0x10c) addr:0x021ebec0
+ToggleWaypointPanelMode kind:function(arm,size=0x518) addr:0x021ebfcc
+RestoreWaypointOption kind:function(arm,size=0x98) addr:0x021ec4e4
 UpdateWaypointSelection kind:function(arm,size=0x204) addr:0x021ec57c
 func_ov003_021ec780 kind:function(arm,size=0x1c) addr:0x021ec780
 StepCounterDown kind:function(arm,size=0x300) addr:0x021ec79c
@@ -189,7 +189,7 @@ func_ov003_021efb60 kind:function(arm,size=0x14) addr:0x021efb60
 func_ov003_021efb74 kind:function(arm,size=0x31c) addr:0x021efb74
 func_ov003_021efe90 kind:function(arm,size=0xc) addr:0x021efe90
 func_ov003_021efe9c kind:function(arm,size=0x14) addr:0x021efe9c
-func_ov003_021efeb0 kind:function(arm,size=0x108) addr:0x021efeb0
+ResetBattleSceneSlide kind:function(arm,size=0x108) addr:0x021efeb0
 func_ov003_021effb8 kind:function(arm,size=0x14) addr:0x021effb8
 func_ov003_021effcc kind:function(arm,size=0x2c) addr:0x021effcc
 func_ov003_021efff8 kind:function(arm,size=0xc) addr:0x021efff8
@@ -241,8 +241,8 @@ func_ov003_021f1584 kind:function(arm,size=0x10) addr:0x021f1584
 func_ov003_021f1594 kind:function(arm,size=0x18) addr:0x021f1594
 func_ov003_021f15ac kind:function(arm,size=0x10) addr:0x021f15ac
 func_ov003_021f15bc kind:function(arm,size=0x18) addr:0x021f15bc
-func_ov003_021f15d4 kind:function(arm,size=0x34) addr:0x021f15d4
-func_ov003_021f1608 kind:function(arm,size=0x34) addr:0x021f1608
+GetSceneSlideDirection kind:function(arm,size=0x34) addr:0x021f15d4
+GetSceneSlideOffset kind:function(arm,size=0x34) addr:0x021f1608
 Ov003_StartBattleScene kind:function(arm,size=0x1a4) addr:0x021f163c
 func_ov003_021f17e0 kind:function(arm,size=0x1c) addr:0x021f17e0
 func_ov003_021f17fc kind:function(arm,size=0x30) addr:0x021f17fc
@@ -254,7 +254,7 @@ func_ov003_021f18a4 kind:function(arm,size=0x10) addr:0x021f18a4
 func_ov003_021f18b4 kind:function(arm,size=0x6c) addr:0x021f18b4
 func_ov003_021f1920 kind:function(arm,size=0xc) addr:0x021f1920
 func_ov003_021f192c kind:function(arm,size=0x12c) addr:0x021f192c
-func_ov003_021f1a58 kind:function(arm,size=0x18) addr:0x021f1a58
+DeleteOv003SceneSprite kind:function(arm,size=0x18) addr:0x021f1a58
 func_ov003_021f1a70 kind:function(arm,size=0x48) addr:0x021f1a70
 func_ov003_021f1ab8 kind:function(arm,size=0x40) addr:0x021f1ab8
 func_ov003_021f1af8 kind:function(arm,size=0x40) addr:0x021f1af8
@@ -297,7 +297,7 @@ func_ov003_021f35d8 kind:function(arm,size=0x20) addr:0x021f35d8
 func_ov003_021f35f8 kind:function(arm,size=0x50) addr:0x021f35f8
 func_ov003_021f3648 kind:function(arm,size=0x40) addr:0x021f3648
 func_ov003_021f3688 kind:function(arm,size=0x664) addr:0x021f3688
-func_ov003_021f3cec kind:function(arm,size=0x108) addr:0x021f3cec
+DestroyOv003BattleSetup kind:function(arm,size=0x108) addr:0x021f3cec
 func_ov003_021f3df4 kind:function(arm,size=0x14) addr:0x021f3df4
 func_ov003_021f3e08 kind:function(arm,size=0x100) addr:0x021f3e08
 func_ov003_021f3f08 kind:function(arm,size=0x4) addr:0x021f3f08
@@ -729,7 +729,7 @@ data_ov003_0220fca8 kind:data(any) addr:0x0220fca8
 data_ov003_0220fcb4 kind:data(any) addr:0x0220fcb4
 data_ov003_0220fcdc kind:data(any) addr:0x0220fcdc
 data_ov003_0220fd9c kind:data(any) addr:0x0220fd9c
-data_ov003_0220fdac kind:data(any) addr:0x0220fdac
+gOv003BattleSetupVTable kind:data(any) addr:0x0220fdac
 data_ov003_0220fdb8 kind:data(any) addr:0x0220fdb8
 data_ov003_0220fde4 kind:data(any) addr:0x0220fde4
 data_ov003_0220fde6 kind:data(any) addr:0x0220fde6

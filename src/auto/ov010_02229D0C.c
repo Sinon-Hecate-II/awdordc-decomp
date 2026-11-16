@@ -40,17 +40,17 @@ return temp_r0;
 }
 
 M2C_UNK func_ov010_02229d9c(s32 arg0) {
-    s32 func_ov010_02229a08();
+    s32 GetOnlineTransportPlayerId();
     s8 func_ov010_02229a94();
     extern M2C_UNK data_ov010_0222eee0;
     if (func_ov010_022282b4(3) == 0) return;
-    M2C_FIELD(arg0, u16 *, 2) = 1 << func_ov010_02229a08();
+    M2C_FIELD(arg0, u16 *, 2) = 1 << GetOnlineTransportPlayerId();
     M2C_FIELD(arg0, u8 *, 0) = func_ov010_02229a94();
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x24) = arg0;
 }
 
-s32 func_ov010_02229ddc(s32 arg0){s32 func_ov010_02229a24();s32 func_ov010_022282f8();extern M2C_UNK data_ov010_0222eee0;s32 v,b,t;
-if(M2C_FIELD(&data_ov010_0222eee0,void * volatile *,0x24)){v=func_ov010_02229a24();t=func_ov010_02229a24();if(v!=(M2C_FIELD(M2C_FIELD(&data_ov010_0222eee0,void **,0x24),u16 *,2)&t)){v=1;goto ready;}}v=0;ready:;
+s32 func_ov010_02229ddc(s32 arg0){s32 GetOnlinePeerMask();s32 func_ov010_022282f8();extern M2C_UNK data_ov010_0222eee0;s32 v,b,t;
+if(M2C_FIELD(&data_ov010_0222eee0,void * volatile *,0x24)){v=GetOnlinePeerMask();t=GetOnlinePeerMask();if(v!=(M2C_FIELD(M2C_FIELD(&data_ov010_0222eee0,void **,0x24),u16 *,2)&t)){v=1;goto ready;}}v=0;ready:;
 if(!M2C_FIELD(M2C_FIELD(&data_ov010_0222eee0,void **,0x24),u8 *,0))v=0;
 if(!func_ov010_022282b4(3))v=0;
 if(func_ov010_022282f8())b=1;else b=0;if(b)v=0;if(!v)func_ov010_02229bdc();return v;}

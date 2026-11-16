@@ -258,7 +258,7 @@ return arg0*40+(p+0x2d4);
 }
 #pragma optimize_for_size reset
 s32 func_020c536c(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_02007e20(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK CopyU16(M2C_UNK, s32, M2C_UNK);
     s32 temp_r0;
     s32 temp_r4;
     s32 temp_r5;
@@ -269,7 +269,7 @@ s32 func_020c536c(s32 arg0, M2C_UNK arg1) {
     }
     temp_r4 = arg0 * 0x28;
     temp_r5 = temp_r0 + 0x2D4;
-    func_02007e20(arg1, temp_r5 + temp_r4, 0x18);
+    CopyU16(arg1, temp_r5 + temp_r4, 0x18);
     return temp_r5 + temp_r4;
 }
 
@@ -293,7 +293,7 @@ void func_020c53e4(s32 arg0) {
     func_02032604(var_r0 + 4);
 }
 
-void func_020c5400(M2C_UNK arg0) {
+void CopyLocalPlayerRecord(M2C_UNK arg0) {
     M2C_UNK func_02032380(M2C_UNK);
     M2C_UNK func_02032670(s32, M2C_UNK);
     func_02032670(func_020c4acc() + 4, arg0);
@@ -460,7 +460,7 @@ loop_5:
 }
 
 void func_020c5770(s32 arg0, void *arg1, void *arg2) {
-    s32 func_02001fb4(s32, s32);
+    s32 FX_Div(s32, s32);
     s32 func_020719d4(s32);
     s32 func_02071564(s32, s32);
     double func_0207191c(s32);
@@ -478,8 +478,8 @@ void func_020c5770(s32 arg0, void *arg1, void *arg2) {
     void *p2 = arg2;
     s32 r9 = *(s32 *)p2;
     s32 r8 = *(s32 *)p1;
-    s32 r7 = func_02001fb4(r9 - r8, 0x190000);
-    r8 = func_02001fb4(r8 - r9, 0x190000);
+    s32 r7 = FX_Div(r9 - r8, 0x190000);
+    r8 = FX_Div(r8 - r9, 0x190000);
 
     {
         s32 t;

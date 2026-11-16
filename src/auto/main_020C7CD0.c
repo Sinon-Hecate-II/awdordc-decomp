@@ -299,23 +299,23 @@ s32 func_020c857c(M2C_UNK arg0) {
     return 1;
 }
 
-s32 LoadMapRecord(s32 a,s32 b){u8 func_020c8664(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(func_020c8664(a,b))r=1;else r=0;return r;}
+s32 LoadMapRecord(s32 a,s32 b){u8 DoesMapRecordMatchBuffer(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(DoesMapRecordMatchBuffer(a,b))r=1;else r=0;return r;}
 
 s32 func_020c8624(s32 a,s32 b) {
- s32 func_020c7a3c(s32); void func_020be438(s32,s32,s32);
+ s32 IsValidMapRecord(s32); void func_020be438(s32,s32,s32);
  s32 p=func_020c7ea8(a);
- if(!func_020c7a3c(b))return 0;
+ if(!IsValidMapRecord(b))return 0;
  func_020be438(p,b,0x6f8);return 1;
 }
 
-u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 MapRecordsMatch(u8 *,u8 *);s32 p=GetMapRecord(a);u8 r;if(!func_020c7a3c(b))return 0;if(MapRecordsMatch(b,p))r=1;else r=0;return r;}
+u8 DoesMapRecordMatchBuffer(s32 a,s32 b){s32 IsValidMapRecord(s32);u8 MapRecordsMatch(u8 *,u8 *);s32 p=GetMapRecord(a);u8 r;if(!IsValidMapRecord(b))return 0;if(MapRecordsMatch(b,p))r=1;else r=0;return r;}
 
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
-    s32 func_020c7a24(); s32 GetLocalTime(); void GetMacAddress(void *);
+    s32 ComputeMapRecordChecksum(); s32 GetLocalTime(); void GetMacAddress(void *);
     extern u32 gFrameCounter;
     s32 date[4], time[3];
-    s32 v = func_020c7a24(p);
+    s32 v = ComputeMapRecordChecksum(p);
     GetLocalTime(date, time);
     GetMacAddress((u8 *)p + 64);
     M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((gFrameCounter << 20) >> 14);

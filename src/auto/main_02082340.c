@@ -1,7 +1,8 @@
 /* 19 functions from 0x02082340 to 0x02083320 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
-typedef struct { u8 entries[0x1800];u8 count; } Lists020830;
+#include "map_selection.h"
+typedef MapSelectionLists Lists020830;
 
 /* Packed attributes of one 3D sprite layer, as passed to Configure3DSpriteLayer.
  * Field names are the bit offsets: f0 texture VRAM bank (4 bits), f4 palette
@@ -44,7 +45,7 @@ void Configure3DSpriteLayer(s32 layer, SpriteAttr *attr) {
     MI_CpuCopy32(M2C_FIELD(gCur3DSpriteEngine + layer, volatile s32 *, 0x20), src, size);
 }
 #pragma scheduling on
-void func_020824cc(void) {
+void Reset3DSpriteLayerRegisters(void) {
     void Build3DSpriteTransform(void *, void *);
     extern void **gCur3DSpriteEngine;
     extern u8 sSpriteTransformDefault[];
@@ -88,7 +89,7 @@ Build3DSpriteTransform(sSpriteTransformDefault,(u8 *)*gCur3DSpriteEngine+0x14);
 Build3DSpriteTransform(sSpriteTransformDefault,(u8 *)*gCur3DSpriteEngine+0x24);
 }
 
-void func_02082700(void) {
+void Reset3DSpriteCorners(void) {
     extern void **gCur3DSpriteEngine;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x38) = 0;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
@@ -193,23 +194,37 @@ b=dy-y;a=dx-x;
 M2C_FIELD(out,s32 *,8)=M2C_FIELD(out,s16 *,0)*a+M2C_FIELD(out,s16 *,2)*b+(x<<8);
 M2C_FIELD(out,s32 *,12)=M2C_FIELD(out,s16 *,4)*a+M2C_FIELD(out,s16 *,6)*b+(y<<8);
 }
-void func_02082b78(void){
-extern void *g3DSpriteBankMain;extern void *g3DSpriteBankSub;
-extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineSub;extern void **g3DSpriteEngineMain;
-u16 *volatile a;u16 *volatile b;void **old;s32 i;
-M2C_FIELD(g3DSpriteBankMain,s32*,0x34)=1;M2C_FIELD(g3DSpriteBankSub,s32*,0x34)=1;
-M2C_FIELD(g3DSpriteBankMain,u16*,4)=(M2C_FIELD(g3DSpriteBankMain,u16*,4)&~1)|1;
-M2C_FIELD(g3DSpriteBankMain,u16*,4)&=~2;
-M2C_FIELD(g3DSpriteBankMain,u16*,4)&=~4;
-a=*gCur3DSpriteEngine;*a=*a&~0x1000;
-b=*gCur3DSpriteEngine;*b=*b&~0x6000;
-old=gCur3DSpriteEngine;
-for(i=0;i<2;i++){
-gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-func_020824cc();func_02082700();Reset3DSpriteBankState();Reset3DSpriteEngineState();
-M2C_FIELD(*gCur3DSpriteEngine,u8*,0x50)=0;
-}
-gCur3DSpriteEngine=old;
+/* Restore both display banks, layers, windows and brightness to their defaults. */
+void Reset3DSpriteDisplayState(void) {
+    extern void *g3DSpriteBankMain;
+    extern void *g3DSpriteBankSub;
+    extern void **gCur3DSpriteEngine;
+    extern void **g3DSpriteEngineSub;
+    extern void **g3DSpriteEngineMain;
+    u16 *volatile objMapping;
+    u16 *volatile objBoundary;
+    void **savedEngine;
+    s32 engineIndex;
+
+    ((DS3DSpriteBank *)g3DSpriteBankMain)->displayMode = DS3D_DISPLAY_GRAPHICS;
+    ((DS3DSpriteBank *)g3DSpriteBankSub)->displayMode = DS3D_DISPLAY_GRAPHICS;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1) | 1;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 4) &= ~2;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 4) &= ~4;
+    objMapping = *gCur3DSpriteEngine;
+    *objMapping = *objMapping & ~DS3D_BANK_OBJ_1D;
+    objBoundary = *gCur3DSpriteEngine;
+    *objBoundary = *objBoundary & ~DS3D_BANK_OBJ_BOUNDARY_MASK;
+    savedEngine = gCur3DSpriteEngine;
+    for (engineIndex = 0; engineIndex < 2; engineIndex++) {
+        gCur3DSpriteEngine = engineIndex == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        Reset3DSpriteLayerRegisters();
+        Reset3DSpriteCorners();
+        Reset3DSpriteBankState();
+        Reset3DSpriteEngineState();
+        ((DS3DSpriteBank *)*gCur3DSpriteEngine)->brightness = 0;
+    }
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_02082c84(void) {
@@ -347,31 +362,50 @@ s32 func_0208302c(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return
 u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 func_020c7ef4(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!func_020c7ef4(x))return 7; return GetMapPlayerCount(x)+7; }
 
 #pragma opt_common_subs off
-void func_020830ec(u32 mode,Lists020830 *p,s32 arg){
-s32 IsLinkSessionActive(void);void func_020831f8(void*,s32,s32);
-s32 i;u8 n=0;
-p->count=0;
-switch(mode){
-case 0:case 8:
-for(i=2;i<12;i++){
-if(!IsLinkSessionActive()){if(i<8||i>11)goto process;goto next;}else if(i==7)goto next;
-process:
-if(mode==8&&i==7)continue;
-func_020831f8((void*)p+(p->count<<9),(u8)i,arg);
-if(M2C_FIELD((void*)p+(p->count<<9),u8*,0x1ff))p->count++;
-next:;
-}
-break;
-case 6:case 7:case 9:
-p->count=1;
-for(i=0xe1;i<0x113;i++){M2C_FIELD(p,u16*,n*2)=i;n++;}
-M2C_FIELD(p,u8*,0x1ff)=n;M2C_FIELD(p,u8*,0x1fe)=7;
-break;
-case 1:case 2:case 3:case 4:case 5:break;
-}
+/* Build the available map categories, or a single list of local custom-map slots. */
+void BuildMapSelectionLists(u32 mode, MapSelectionLists *lists, s32 playerCount) {
+    s32 IsLinkSessionActive(void);
+    void BuildMapSelectionCategory(void *, s32, s32);
+    s32 category;
+    u8 mapCount = 0;
+
+    lists->count = 0;
+    switch (mode) {
+    case 0:
+    case 8:
+        for (category = 2; category < MAP_LIST_CATEGORY_END; category++) {
+            if (!IsLinkSessionActive()) {
+                if (category < MAP_LIST_LINK_CUSTOM_FIRST || category > 11) goto process;
+                goto next;
+            } else if (category == MAP_LIST_CUSTOM) goto next;
+        process:
+            if (mode == 8 && category == MAP_LIST_CUSTOM) continue;
+            BuildMapSelectionCategory((void *)lists + (lists->count << 9), (u8)category, playerCount);
+            if (M2C_FIELD((void *)lists + (lists->count << 9), u8 *, MAP_LIST_COUNT_OFFSET)) lists->count++;
+        next:;
+        }
+        break;
+    case 6:
+    case 7:
+    case 9:
+        lists->count = 1;
+        for (category = MAP_CUSTOM_FIRST; category < MAP_CUSTOM_LOCAL_END; category++) {
+            M2C_FIELD(lists, u16 *, mapCount * 2) = category;
+            mapCount++;
+        }
+        M2C_FIELD(lists, u8 *, MAP_LIST_COUNT_OFFSET) = mapCount;
+        M2C_FIELD(lists, u8 *, MAP_LIST_CATEGORY_OFFSET) = MAP_LIST_CUSTOM;
+        break;
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        break;
+    }
 }
 #pragma opt_common_subs reset
-void func_020831f8(void *p,s32 b,s32 c){
+void BuildMapSelectionCategory(void *p,s32 b,s32 c){
 s32 IsLinkSessionActive(void);s32 func_02083320(s32,s32);
 s32 count=0; s32 i; s32 limit; u8 type;
 M2C_FIELD(p,u8 *,0x1fe)=b;

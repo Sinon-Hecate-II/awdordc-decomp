@@ -130,7 +130,7 @@ s32 ByteCompareN(void *,M2C_UNK *,s32);
 s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 func_0205cb68(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
-void func_0205cb4c(void *);s32 func_0205b2e0(void *,void *,s32);
+void gti2SendClosed(void *);s32 func_0205b2e0(void *,void *,s32);
 s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 func_0205bedc(void *,s32,void *,s32);
 extern M2C_UNK gGt2Magic;
 void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
@@ -159,7 +159,7 @@ connected:
 connection2=connection;
 if(M2C_FIELD(connection2,s32*,0xc)==7){
 if(isControl && buf[2]==104)goto accepted3;
-if(!((s32 (*)(void *))func_0205cb4c)(connection2))return 0;
+if(!((s32 (*)(void *))gti2SendClosed)(connection2))return 0;
 accepted3:return 1;
 }
 if(isControl && len>=4 && !ByteCompareN(buf+2,&gGt2Magic,2)){buf+=2;len-=2;isControl=0;}
@@ -466,7 +466,7 @@ if(func_0205a9ec(p,buf,n)==0)return 0; return 1;
 
 s32 func_0205cb38(s32 a,void *b,s32 c) { s32 func_0205a9ec(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return func_0205a9ec(a,b,c); }
 
-void func_0205cb4c(void *arg0) {
+void gti2SendClosed(void *arg0) {
     M2C_UNK func_0205cb68(s32, s32, u16);
     func_0205cb68(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4));
 }

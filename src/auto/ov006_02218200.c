@@ -7,7 +7,7 @@ void func_ov006_02218200(void *entity) {
     s32 func_020c7e58(s32);
     s32 GetOnlineLocalPlayerId();
     s32 IsLocalMacAddress(void *);
-    s32 func_020c7a3c(s32);
+    s32 IsValidMapRecord(s32);
     void *sub = M2C_FIELD(entity, void **, 0x54);
     s32 curId = GetMapRecordBuffer();
     s32 prevId = func_020c7e58(0);
@@ -43,7 +43,7 @@ void func_ov006_02218200(void *entity) {
         return;
     }
     ExpandMapRecord(sub + 0x10, curId);
-    if (!func_020c7a3c(curId)) {
+    if (!IsValidMapRecord(curId)) {
         SetSpriteAnimation(entity, 3);
         return;
     }

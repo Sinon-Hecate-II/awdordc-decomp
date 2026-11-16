@@ -152,15 +152,15 @@ s32 func_ov007_0221bad0(s32 a,s32 b) {
 }
 
 s32 func_ov007_0221bb44(s32 a,s32 b,s32 c,s32 d,s32 e){
-u8 func_ov007_0221bd00(s32,s32,s32);s32 func_ov007_02211ffc(s32);extern s32 *data_027e0058;
+u8 func_ov007_0221bd00(s32,s32,s32);s32 GetCachedPlayerUnitCount(s32);extern s32 *data_027e0058;
 s32 p,id;u8 *entry;
 if(!func_ov007_0221bd00(a,b,c))return 0;
 p=*data_027e0058;id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
 if(id){entry=(u8 *)(p+0x59a4)+id*14;
 if(((id&0xc0)>>6)+1==d){
 if(c==((u32)(entry[0]<<26)>>26)&&((u32)(entry[11]<<28)>>28)==(unsigned)e)return 2;
-}else{if(func_ov007_02211ffc(d)>=50)return 0;}
-}else{if(func_ov007_02211ffc(d)>=50)return 0;}
+}else{if(GetCachedPlayerUnitCount(d)>=50)return 0;}
+}else{if(GetCachedPlayerUnitCount(d)>=50)return 0;}
 return 1;
 }
 

@@ -12,7 +12,7 @@ void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
     s32 StringLength(char *);
     s32 func_0203a9d0(char *, s32, void *, s32);
     void *func_020c4b60(void);
-    void func_02007e20(void *, void *, s32);
+    void CopyU16(void *, void *, s32);
     extern M2C_UNK data_ov010_0222eee0;
     char buf[0x6c];
     s32 r;
@@ -27,7 +27,7 @@ void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
         if (func_0203a9d0(arg2, r, buf, 0x6c) == 0x6c) {
             p = func_020c4b60();
             off = arg0 * 0x28;
-            func_02007e20(buf, (char *)p + 0x2d4 + off, 0x18);
+            CopyU16(buf, (char *)p + 0x2d4 + off, 0x18);
             dst = (char *)p + off;
             dst[0x2f4] = (signed char)buf[0x24];
             dst[0x2f5] = (signed char)buf[0x25];
@@ -117,9 +117,9 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
 }
 
 void func_ov010_02227f14(void) {
- s32 GetActiveConnectionList(u8 **); s32 func_ov010_02229a08(void); void func_020445cc(u32,void *,s32); extern M2C_UNK data_ov010_0222eee0;
+ s32 GetActiveConnectionList(u8 **); s32 GetOnlineTransportPlayerId(void); void func_020445cc(u32,void *,s32); extern M2C_UNK data_ov010_0222eee0;
  u8 *list; s32 n=GetActiveConnectionList(&list); s32 i; u32 id; u32 index;
- for(i=0;i<n;i++){id=list[i];if(id!=func_ov010_02229a08()){if(id<(u32)func_ov010_02229a08())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&data_ov010_0222eee0,u8 **,0x3c)+index*0x5a0,0x5a0);}}
+ for(i=0;i<n;i++){id=list[i];if(id!=GetOnlineTransportPlayerId()){if(id<(u32)GetOnlineTransportPlayerId())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&data_ov010_0222eee0,u8 **,0x3c)+index*0x5a0,0x5a0);}}
 }
 
 void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
@@ -129,10 +129,10 @@ void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {
-s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 func_ov010_02229a08(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK data_ov010_0222eee0; extern M2C_UNK gLocalPlayerStatus;
+s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK data_ov010_0222eee0; extern M2C_UNK gLocalPlayerStatus;
 s32 t; void (*cb)(s32,s32,s32);
 t=func_ov010_022282f8();t=(t!=0);
-if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfb)=func_ov010_02229a08();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
+if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
 cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
 }
 
@@ -142,7 +142,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     s32 func_ov010_022282f8(void);
     void func_ov010_02228298(s32);
     M2C_UNK func_ov010_022282d4(M2C_UNK);
-    s32 func_ov010_02229a08(void);
+    s32 GetOnlineTransportPlayerId(void);
     s32 func_0203a850(void *, s32);
     void func_ov010_02227f14(void);
     s32 func_ov010_02229a94(void);
@@ -158,7 +158,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
         if (arg1 == 0) {
             func_ov010_02228298(3);
             M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfb) =
-                (u8)func_ov010_02229a08();
+                (u8)GetOnlineTransportPlayerId();
             func_0203a850(&gLocalPlayerStatus, 0x6c);
             func_ov010_02227f14();
             func_ov010_02229a94();
@@ -488,11 +488,11 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     void *func_01ffa3dc(void *, s32);
     void MI_CpuFill8(void *, s32, s32);
     void InitNetSession(void *, void *, s32, void *, void *, s32, s32, void *, s32);
-    void func_02038688(void *, s32, void *, s32);
+    void StartNetLogin(void *, s32, void *, s32);
     void func_02074114(void *, s32, s32, void *, void *);
 
 
-    void *func_0208206c(void);
+    void *GetLocalPlayerName(void);
     void func_ov010_022269dc(void *, void *);
     void MI_CpuFill32(s32, void *, s32);
     void func_ov010_02228a38(void *);
@@ -541,13 +541,13 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
         (((Ov010Callback *)p)->*cc)();
     }
     dd=cc;
-    func_ov010_022269dc(&gLocalPlayerStatus,func_0208206c());
+    func_ov010_022269dc(&gLocalPlayerStatus,GetLocalPlayerName());
     func_ov000_0216a470();
     M2C_FIELD(&data_ov010_0222eee0,u8 *,0x104)=func_ov000_0216a564();
     M2C_FIELD(&data_ov010_0222eee0,u8 *,0x105)=func_ov000_0216a76c();
     M2C_FIELD(&data_ov010_0222eee0,u8 *,0x106)=func_ov000_0216a7c4();
     M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
-    func_02038688(&gLocalPlayerStatus,0,(void *)func_ov010_02227e20,0);
+    StartNetLogin(&gLocalPlayerStatus,0,(void *)func_ov010_02227e20,0);
     obj=func_01ffa3dc(&data_ov010_0222c160,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;
@@ -695,8 +695,8 @@ void func_ov010_02228bdc(M2C_UNK arg0) {
     s32 func_ov010_022282b4(M2C_UNK);
     s32 func_ov010_022282f8();
     s32 func_ov010_02229850();
-    s32 func_ov010_02229a08();
-    s32 func_ov010_02229a24();
+    s32 GetOnlineTransportPlayerId();
+    s32 GetOnlinePeerMask();
     s32 temp_r5;
     s32 var_r0;
     u16 temp_r7;
@@ -714,9 +714,9 @@ void func_ov010_02228bdc(M2C_UNK arg0) {
     if (func_ov010_02229850() == 0) {
         return;
     }
-    temp_r5 = func_ov010_02229a24();
+    temp_r5 = GetOnlinePeerMask();
     c = 1;
-    temp_r7 = (u16)(temp_r5 & ((c - 2) ^ (c << func_ov010_02229a08())));
+    temp_r7 = (u16)(temp_r5 & ((c - 2) ^ (c << GetOnlineTransportPlayerId())));
     if (temp_r7 == 0) goto end;
     var_r6 = 0;
     c = 1;

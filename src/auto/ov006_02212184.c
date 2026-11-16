@@ -18,7 +18,7 @@ u16 *func_020c53ac(int);
 u64 func_020c5430(void *);
 void func_020c5498(char *,u64);
 void FillU16(int,void *,int);
-void func_02007e20(void *,void *,int);
+void CopyU16(void *,void *,int);
 void MI_CpuCopy8(void *,void *,int);
 void func_02019e64(void *,int,void *,int,int);
 void func_020e4cd8(void *,void *,void *,int,int,int,int);
@@ -27,7 +27,7 @@ extern u8 *g3DSpriteEngineMain;
 extern u32 g3DSpriteEngineSub;
 extern u8 data_ov006_022186b4[],data_ov006_022186d0[];
 extern u16 data_ov006_022183e0[];
-int func_02001fb4(int,int);
+int FX_Div(int,int);
 void DrawFrameBorder(int,int,int,int,int,int,int);
 void func_0208df84(int,int,int,int,int,int);
 void func_02088e84(void *,int,int,int,int);
@@ -82,7 +82,7 @@ item=func_020c52ec(i);
 FillU16(0,text,26);
 if(item) {
 u16 *custom=func_020c53ac(i);
-if(custom[0]) func_02007e20(custom,text,26);
+if(custom[0]) CopyU16(custom,text,26);
 else {
 id=func_020c5430(item);
 if(id) {func_020c5498(name,id);func_02019e64(text,0,name,0,0);}
@@ -113,11 +113,11 @@ engine=M2C_FIELD(p,u8 **,0x40);M2C_FIELD(engine,s16 *,6)=x+248;M2C_FIELD(engine,
 SetTextSpriteValue(M2C_FIELD(p,void **,0x40),60);DrawTextSprite(M2C_FIELD(p,void **,0x40));
 record=M2C_FIELD(p,u8 **,0x4c);
 a=M2C_FIELD(record,s16 *,10)<<12;b=record[4];c=M2C_FIELD(record,s16 *,18);d=record[7];
-e=func_02001fb4(0x72000,a);
+e=FX_Div(0x72000,a);
 f=(int)(((s64)e*(b<<12)+0x800)>>12);
-g=func_02001fb4(0x72000-f,a-(b<<12));
+g=FX_Div(0x72000-f,a-(b<<12));
 h=M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,12);
-e=func_02001fb4(c<<12,d<<12);
+e=FX_Div(c<<12,d<<12);
 yy=(g*h-(int)(((s64)g*e+0x800)>>12))>>12;
 i=f>>12;
 if(i>114) i=114;else if(i<1)i=1;

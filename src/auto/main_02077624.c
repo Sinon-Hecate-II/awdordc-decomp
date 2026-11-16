@@ -60,9 +60,9 @@ void func_02077624(void) {
 }
 
 void func_02077700(void) {
-    M2C_UNK func_02001fb4(M2C_UNK, s32);
+    M2C_UNK FX_Div(M2C_UNK, s32);
     extern M2C_UNK data_02140f70;
-    func_02001fb4(0x60000, M2C_FIELD(&data_02140f70, s32 *, 0x18) * 3);
+    FX_Div(0x60000, M2C_FIELD(&data_02140f70, s32 *, 0x18) * 3);
 }
 
 void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
@@ -162,12 +162,12 @@ M2C_UNK func_02077ab8(s32 arg0) {
     func_0207d990((s32)&data_02140f88, colors, dims);
 }
 
-void func_02077bb4(s32 arg0) {void func_02003a8c();void func_02001034();extern M2C_UNK data_02140f88;u8 temp[64];
+void ApplyMapViewProjection(s32 arg0) {void func_02003a8c();void func_02001034();extern M2C_UNK data_02140f88;u8 temp[64];
 *(volatile u32 *)0x4000440=0;*(volatile u32 *)0x4000454=0;func_02003a8c(&data_02140f88);func_02001034(arg0+28,temp);func_02003a8c(temp);*(volatile u32 *)0x4000440=2;*(volatile u32 *)0x4000454=0;}
 
 void func_02077c10(void) {
     M2C_UNK func_02077ab8(s32);
-    void func_02077bb4(s32);
+    void ApplyMapViewProjection(s32);
     M2C_UNK func_0207cd0c(s32);
     M2C_UNK func_0207cddc(s32, M2C_UNK *);
     M2C_UNK func_0207ce54(s32);
@@ -182,7 +182,7 @@ void func_02077c10(void) {
     func_0207ce54(temp_r4 + 0x6C00);
     func_0207cd0c(temp_r4 + 0x6C00);
     func_0207cddc(temp_r4 + 0x6C00, &data_02140f88);
-    func_02077bb4(temp_r4 + 0x6C00);
+    ApplyMapViewProjection(temp_r4 + 0x6C00);
 }
 
 void func_02077c64(void) {
@@ -201,7 +201,7 @@ void func_02077c78(void) {
 /* Set up a map frame: configure the 3D sprite bank's layer modes, let the active map view claim
  * its VRAM banks, program the main screen and 3D registers and load the current toon table. */
 void Map_BeginFrame(void) {
-    void GX_BeginFrame(void);
+    void G3X_Init(void);
     void GX_RestoreMatrixStack(void);
     M2C_UNK GX_SetClearColor(s32, s32, s16, s32, s32);
     M2C_UNK GX_LoadToonTable(M2C_UNK);
@@ -229,7 +229,7 @@ void Map_BeginFrame(void) {
     bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[4]=(bank[4] & ~3);
     bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[5]=(bank[5] & ~3);
     bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[6]=(bank[6] & ~3);
-    GX_BeginFrame();
+    G3X_Init();
     GX_RestoreMatrixStack();
 
     {

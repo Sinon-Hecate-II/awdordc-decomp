@@ -141,8 +141,8 @@ void *GetUnitIconTiles(void) {
 }
 
 void *func_ov000_0216cd90(s32 arg0) {
-    extern M2C_UNK data_02120a20;
-    return (u8 *)&data_02120a20 + ((arg0 - 1) << 5);
+    extern M2C_UNK gArmyPalettes;
+    return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
 
 s32 func_ov000_0216cda4(s32 arg0) {
@@ -212,22 +212,23 @@ SetArmyInfoFileDirectory();
 gCur3DSpriteEngine=saved;
 }
 
+/* Draw the selected CO portrait on the sub screen, or clear its panel when absent. */
 void ArmyInfo_DrawFaceSub(void) {
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*gArmyInfoState;
-void *saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=g3DSpriteEngineSub;
-if(M2C_FIELD(gArmyInfoState,u8 *,14)) {
-MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,12),64);
-LoadFaceTexture(M2C_FIELD(gArmyInfoState,u8 *,15),8,M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+64);
-LoadFacePalette(M2C_FIELD(gArmyInfoState,u8 *,15),8,2,0,0);
-FillFaceTileMap(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),1,0,0);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
-SetArmyInfoFileDirectory();
-}else{
-ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,32)+24,20,24);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
-}
-gCur3DSpriteEngine=saved;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *gArmyInfoState;
+    void *savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    if (M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_SUB)) {
+        MI_CpuFill32(0, DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[0], 64);
+        LoadFaceTexture(M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_MAIN), 8, DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[0] + 64);
+        LoadFacePalette(M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_MAIN), 8, 2, 0, 0);
+        FillFaceTileMap(8, 12, 0, (s32)DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[0], 1, 0, 0);
+        DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= 1;
+        SetArmyInfoFileDirectory();
+    } else {
+        ClearTileRect((s32)DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[0] + 24, 20, 24);
+        DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= 1;
+    }
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_0216d130(void) {

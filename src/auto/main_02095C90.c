@@ -10,7 +10,7 @@ extern u16 gMapConfig[];
  * queue the text for drawing, then hand the engine back to the caller. */
 void InitTelopWindow(void *telop) {
     M2C_UNK MeasureStringWidth(M2C_UNK);
-    void func_02091d4c(M2C_UNK);
+    void LoadScenePanelPalette(M2C_UNK);
     void func_02096d0c(void);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
@@ -50,7 +50,7 @@ void InitTelopWindow(void *telop) {
     statReg4 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *statReg4 = *statReg4 | 0x100;
     M2C_FIELD(telop, u8 *, 0x35) = MeasureStringWidth(telop + 0x36);
-    func_02091d4c(0);
+    LoadScenePanelPalette(0);
     centerDelta = 0 - (0x100 - M2C_FIELD(telop, u8 *, 0x35));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) =
         (s16)(((s32)(centerDelta + (s32)((u32)centerDelta >> 31))) >> 1);

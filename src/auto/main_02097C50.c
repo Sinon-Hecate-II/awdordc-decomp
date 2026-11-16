@@ -2,16 +2,16 @@
 #include "common.h"
 
 void func_02097c50(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 func_0209e9dc(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
- s32 t=func_0209e9dc((u16)arg0); if(!t)return; func_0209e25c(t,2,arg1,arg2);
+ s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
+ s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,2,arg1,arg2);
 }
 
 void func_02097c84(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 func_0209e9dc(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
- s32 t=func_0209e9dc((u16)arg0); if(!t)return; func_0209e25c(t,1,arg1,arg2);
+ s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
+ s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,1,arg1,arg2);
 }
 
-void func_02097cb8(u32 arg0) { s32 func_0209e9dc(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=func_0209e9dc((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
+void func_02097cb8(u32 arg0) { s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
 
 /* Returns the tile row (5 or 6) at which the given character's face graphics
  * start in the 32-tile-wide face tile buffer. */
@@ -393,7 +393,7 @@ void func_02098970(M2C_UNK arg0, s32 arg1, s32 arg2) {
 
 void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,e,512);func_0207c650(q,c,off,512,1);}
 
-void func_02098ac0(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
+void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SetFileDirectory(s32);
@@ -414,9 +414,9 @@ void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_02098b94(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     void LoadFaceTexture(M2C_UNK, M2C_UNK, s32);
-    void func_02098ac0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void LoadFacePaletteAt(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     LoadFaceTexture(arg0, arg1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg2);
-    func_02098ac0(arg0, arg1, arg3, 0);
+    LoadFacePaletteAt(arg0, arg1, arg3, 0);
 }
 

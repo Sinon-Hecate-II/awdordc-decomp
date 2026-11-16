@@ -270,7 +270,7 @@ s32 gpiSendFromBuffer(s32 connection,s32 sock,void *buffer,s32 *outBuffered,s32 
 s32 gpiReadMessageFromPeer(M2C_UNK connection, GPIBuffer *buf, s8 **messageOut, s32 *messageType, s32 *messageLength) {
     s8 *StringFindChar(M2C_UNK, M2C_UNK);
     s32 StringCompareN(s32, M2C_UNK *, s32);
-    s32 GetStringField(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
+    s32 gpiValueForKey(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
     s32 ParseInt(M2C_UNK *);
     extern M2C_UNK gGpiKeyMsg;
     extern M2C_UNK gGpiKeyM;
@@ -294,11 +294,11 @@ s32 gpiReadMessageFromPeer(M2C_UNK connection, GPIBuffer *buf, s8 **messageOut, 
         return 3;
     }
     *lineEnd = 0;
-    if (GetStringField((M2C_UNK)buf->data, &gGpiKeyM, field, 0x10) == 0) {
+    if (gpiValueForKey((M2C_UNK)buf->data, &gGpiKeyM, field, 0x10) == 0) {
         return 3;
     }
     *messageType = ParseInt(field);
-    if (GetStringField((M2C_UNK)buf->data, &gGpiKeyLen, field, 0x10) == 0) {
+    if (gpiValueForKey((M2C_UNK)buf->data, &gGpiKeyLen, field, 0x10) == 0) {
         return 3;
     }
     bodyLen = ParseInt(field);

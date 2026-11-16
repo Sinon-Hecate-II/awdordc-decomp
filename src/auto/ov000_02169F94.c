@@ -1,57 +1,65 @@
 /* 33 functions from 0x02169F94 to 0x0216ABA8 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_unit_move.h"
 typedef struct { s32 values[3]; } A77cTable;
 typedef struct { u32 value, threshold; } A564Entry;
 extern const A77cTable data_ov000_021aabb0;
 
 #pragma opt_strength_reduction off
-void func_ov000_02169f94(void *p) { s32 func_020a7298(u8,u8); void func_ov000_0216a1ac(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK data_ov000_021aec98;s32 idx,mode,x,y;idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&data_ov000_021aec98+idx*20)){case 0:break;case 0x8000:func_ov000_0216a1ac(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
+void PlayUnitMoveSound(void *p) { s32 func_020a7298(u8,u8); void PlayUnitStepSound(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;s32 idx,mode,x,y;idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)){case 0:break;case 0x8000:PlayUnitStepSound(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
 #pragma opt_strength_reduction reset
-void func_ov000_0216a2b8(void *);
-void func_ov000_0216a040(void *p) {
+void UpdateMoveSoundPan(void *);
+void StepUnitMoveSound(void *p) {
 s32 func_020a7298(u8,u8);
-void func_ov000_0216a1ac(void *);
-extern s32 *gCurrentMap;extern M2C_UNK data_ov000_021aec98;
+void PlayUnitStepSound(void *);
+extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;
 s32 idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd));
-if(*(s32 *)((u8 *)&data_ov000_021aec98+idx*20)==0x8000){func_ov000_0216a1ac(p);return;}
-((void (*)(void *))func_ov000_0216a2b8)(p);
+if(*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)==0x8000){PlayUnitStepSound(p);return;}
+((void (*)(void *))UpdateMoveSoundPan)(p);
 }
 
-s32 func_ov000_0216a0a4(s32 unused,s32 x,s32 y){
-extern s32 *gCurrentMap;void *base=(void *)*gCurrentMap;
-switch(M2C_FIELD((u8*)base+(x+M2C_FIELD((u8*)base+y*2,u16 *,0x3758)),u8 *,0x1420)&31){
-case 4:return 0x42;
-case 3:return 0x3f;
-case 9:return 0x46;
-case 2:return 0x44;
-case 1:switch(M2C_FIELD(base,u8 *,0x5157)){case 1:return 0x41;case 2:return 0x46;case 3:return 0x45;default:return 0x40;}
-case 13:case 14:case 15:case 16:case 17:case 18:case 19:return 0x40;
-case 7:case 8:case 12:return 0x43;
+/* Returns the footstep sound id for the terrain at map cell (x, y): most kinds
+ * have one sound, plain ground varies with the map tileset, and unknown cells
+ * are silent. */
+s32 GetTerrainStepSound(s32 unused,s32 x,s32 y){
+extern s32 *gCurrentMap;void *map=(void *)*gCurrentMap;
+switch(M2C_FIELD((u8*)map+(x+M2C_FIELD((u8*)map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK){
+case 4:return STEP_SOUND_WOODS;
+case 3:return STEP_SOUND_ROCK;
+case 9:return STEP_SOUND_SHOAL;
+case 2:return STEP_SOUND_WATER;
+case 1:switch(M2C_FIELD(map,u8 *,MAP_TILESET)){case 1:return STEP_SOUND_PLAIN_1;case 2:return STEP_SOUND_SHOAL;case 3:return STEP_SOUND_PLAIN_3;default:return STEP_SOUND_PLAIN;}
+case 13:case 14:case 15:case 16:case 17:case 18:case 19:return STEP_SOUND_PLAIN;
+case 7:case 8:case 12:return STEP_SOUND_HARD;
 default:return 0;
 }
 }
 
-void func_ov000_0216a1ac(void *p){
-s32 func_020a7298(u8,u8);void PlaySoundAtTile(s32,s32,s32);void func_0208fae8(s32);
-extern s32 *gCurrentMap;extern s32 data_ov000_021aec94;
-s32 index,x,y;u16 effect;
-index=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd));
-x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x/=16;y/=16;
-switch(M2C_FIELD(p,u8 *,0x42)){
+/* Play one movement step's sound for the moving unit: infantry and mechs use the
+ * terrain's footstep sound, a hidden submarine a fixed sound, every other kind
+ * its own movement sound; then pan the sound to the unit's tile. */
+void PlayUnitStepSound(void *move){
+s32 func_020a7298(u8,u8);void PlaySoundAtTile(s32,s32,s32);void PlaySoundEffectOnChannel0(s32);
+extern s32 *gCurrentMap;extern s32 gUnitMoveSounds;
+s32 soundIndex,x,y;u16 sound;
+soundIndex=func_020a7298(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND),M2C_FIELD(*gCurrentMap+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
+x=M2C_FIELD(move,s16 *,UNIT_MOVE_X)+8;y=M2C_FIELD(move,s16 *,UNIT_MOVE_Y)+8;x/=16;y/=16;
+switch(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND)){
 case 1:case 2:
-if(!*(s32 *)((u8 *)&data_ov000_021aec94+index*20))return;
-effect=func_ov000_0216a0a4((s32)p,x,y);if(!effect)return;
-PlaySoundAtTile(effect,x,y);return;
+if(!*(s32 *)((u8 *)&gUnitMoveSounds+soundIndex*20))return;
+sound=GetTerrainStepSound((s32)move,x,y);if(!sound)return;
+PlaySoundAtTile(sound,x,y);return;
 case 22:
-if(M2C_FIELD(p,void **,0x3c)&& (M2C_FIELD(M2C_FIELD(p,void **,0x3c),u16 *,4)&32)){func_0208fae8(0x5d);break;}
+if(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)&& (M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_UNIT),u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_FOG)){PlaySoundEffectOnChannel0(0x5d);break;}
 default:
-effect=0;
-if(*(s32 *)((u8 *)&data_ov000_021aec94+index*20))func_0208fae8(*(s32 *)((u8 *)&data_ov000_021aec94+index*20));break;
+sound=0;
+if(*(s32 *)((u8 *)&gUnitMoveSounds+soundIndex*20))PlaySoundEffectOnChannel0(*(s32 *)((u8 *)&gUnitMoveSounds+soundIndex*20));break;
 }
-func_ov000_0216a2b8(p);
+UpdateMoveSoundPan(move);
 }
 
-void func_ov000_0216a2b8(void *p) {
+void UpdateMoveSoundPan(void *p) {
 s32 func_0208fa78(s32,s32);
 s32 func_02090084(s32);
 s32 x,y;

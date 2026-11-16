@@ -63,7 +63,7 @@ void func_020b9dcc(void) {
  func_0207a668(); func_020b2268();
 }
 
-s32 func_020b9e20(s32 arg0, s32 arg1) {
+s32 CanBuildUnitKind(s32 arg0, s32 arg1) {
  s32 func_020b9e70(s32,s32); s32 func_020b9ec0(s32,s32);
  extern M2C_UNK gMapConfig;
  if(M2C_FIELD(&gMapConfig,u32 *,12)&(1<<(u8)arg1)) return 0;

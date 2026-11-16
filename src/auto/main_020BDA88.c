@@ -16,7 +16,7 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
     void ScreenToMapPosition(u16 touchX, u16 touchY, s32 *coords);
     s32 Divide(s32 value, s32 divisor);
     s32 IsTouchInputDisabled(void);
-    s32 func_020caba4(s32 tileX, s32 tileY, s32 mask);
+    s32 FindMapCursorOptionAt(s32 tileX, s32 tileY, s32 mask);
     void CreateTouchCursor(s16 x, s16 y);
     void DeleteTouchCursor(void);
     extern void *gTouchState;
@@ -31,7 +31,7 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
     ScreenToMapPosition(touchX, touchY, coords);
     pixelX = Divide(coords[0], 0x300);
     pixelY = Divide(coords[1], 0x300);
-    tileIndex = func_020caba4(pixelX, pixelY, arg);
+    tileIndex = FindMapCursorOptionAt(pixelX, pixelY, arg);
     if (tileIndex >= 0) {
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = pixelX;
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = pixelY;
@@ -51,13 +51,13 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
 }
 
 s32 func_020bdbf4(s32 arg0) {
-s32 IsTouchInputDisabled(void); void ScreenToMapPosition(u16,u16,s32 *); s32 Divide(s32,s32); void HideTouchCursor(void); s32 func_020caba4(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
+s32 IsTouchInputDisabled(void); void ScreenToMapPosition(u16,u16,s32 *); s32 Divide(s32,s32); void HideTouchCursor(void); s32 FindMapCursorOptionAt(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
 s32 coords[3];u16 x,y;s32 scaledX,scaledY,result;
 x=M2C_FIELD(gTouchState,u16 *,0);y=M2C_FIELD(gTouchState,u16 *,2);
 if(IsTouchInputDisabled()!=0)return 0;
 ScreenToMapPosition(x,y,coords);scaledX=Divide(coords[0],0x300);scaledY=Divide(coords[1],0x300);
 if(M2C_FIELD(gTouchState,u8 *,0x16)==0)return 0;
-if(scaledX==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&scaledY==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){HideTouchCursor();if(func_020caba4(scaledX,scaledY,arg0)>=0)result=0x10;else result=0x20;}else result=0;return result;
+if(scaledX==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&scaledY==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){HideTouchCursor();if(FindMapCursorOptionAt(scaledX,scaledY,arg0)>=0)result=0x10;else result=0x20;}else result=0;return result;
 }
 
 s32 func_020bdcd0(void) {

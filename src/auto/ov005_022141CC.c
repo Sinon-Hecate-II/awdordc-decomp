@@ -33,7 +33,7 @@ s16 func_ov005_02214210(void) {
 }
 
 void func_ov005_0221425c(void){
-s32 func_02001fb4(s32,s32);void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);void AddSprite(s32,u16,u16,void *,s32);
+s32 FX_Div(s32,s32);void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);void AddSprite(s32,u16,u16,void *,s32);
 s32 EaseInterpolate(s32,s32,s32,s16,s32);s32 Divide(s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern M2C_UNK gRecordsMenuState;
 s32 h,fy,fx;void *saved=gCur3DSpriteEngine;void *engine=g3DSpriteEngineMain;u8 *p; s32 a,b,c,d,x,y,t,u,v,w,n,z; ShakeList1425c list;
@@ -41,8 +41,8 @@ p=M2C_FIELD(&gRecordsMenuState,u8 **,8);
 gCur3DSpriteEngine=engine;
 if(M2C_FIELD(p,u16 *,0)&1){
 fy=M2C_FIELD(p,s16 *,0x9a)<<12;fx=M2C_FIELD(p,s16 *,0x98)<<12;
-h=(s64)(func_02001fb4(0x60000,fy)) * 0x6000LL +0x800 >>12;
-z=Mul1425c(func_02001fb4(0x60000-h,fy-0x6000),fx);
+h=(s64)(FX_Div(0x60000,fy)) * 0x6000LL +0x800 >>12;
+z=Mul1425c(FX_Div(0x60000-h,fy-0x6000),fx);
 a=h>>12;if(a>96)a=96;else if(a<1)a=1;
 DrawFrameBorder(248,(z>>12)+25,2,a,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),0,2);
 }

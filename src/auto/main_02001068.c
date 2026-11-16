@@ -265,7 +265,7 @@ void func_02001dac(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p) {
     p[14] = (s32)(((q3 * (f + e)) + 0x80000000ULL) >> 32);
 }
 #pragma pop
-void func_02001fb4(void) {
+void FX_Div(void) {
     M2C_UNK func_02001ff8();
     M2C_UNK func_02002060();
     func_02002060();

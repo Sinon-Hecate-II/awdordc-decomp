@@ -95,12 +95,17 @@ void func_ov002_021e8d0c(void *arg0, s8 arg1, s8 arg2) {
     M2C_FIELD(arg0, s8 *, 0x8D) = arg2;
 }
 
-s32 func_ov002_021e8d70(s32 a,s32 b){
-if(a){switch(b){
+/* Per-frame step of a unit model's rocking rotation (+0x7E): a fixed curve
+   selected by the animation kind, moving the offset out by one on the first
+   half of the animation and back by one on the second half so it returns to
+   zero over a loop.  animationKind comes from the caller's per-model table,
+   frame is the model's animation frame counter; returns +1, -1 or 0. */
+s32 GetUnitRotationDelta(s32 animationKind,s32 frame){
+if(animationKind){switch(frame){
 case 0x6f:case 0x70:case 0x72:case 0x75:case 0x79:case 0x7f:return 1;
 case 0xef:case 0xf0:case 0xf2:case 0xf5:case 0xf9:case 0xff:return -1;
 }}
-else{switch(b){case 0x59:case 0x5b:case 0x5f:return 1;case 0xb9:case 0xbb:case 0xbf:return -1;}}
+else{switch(frame){case 0x59:case 0x5b:case 0x5f:return 1;case 0xb9:case 0xbb:case 0xbf:return -1;}}
 return 0;}
 
 s32 func_ov002_021e8e7c(s32 arg0) {
@@ -126,7 +131,7 @@ M2C_FIELD(unit,s32 *,0x74)+=M2C_FIELD(unit,s16 *,0x88);
 M2C_FIELD(unit,s32 *,0x78)+=M2C_FIELD(unit,s16 *,0x8a);
 if(M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(unit,u8 *,0x8c)*24),u8 *,0x3d)==2){
 M2C_FIELD(unit,s32 *,0x80)++;
-M2C_FIELD(unit,s16 *,0x7e)+=func_ov002_021e8d70(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44],M2C_FIELD(unit,s32 *,0x80));
+M2C_FIELD(unit,s16 *,0x7e)+=GetUnitRotationDelta(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44],M2C_FIELD(unit,s32 *,0x80));
 if(M2C_FIELD(unit,s32 *,0x80)==func_ov002_021e8e7c(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44]))M2C_FIELD(unit,s32 *,0x80)=0;
 }}
 

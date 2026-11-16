@@ -1,5 +1,6 @@
 /* 38 functions from 0x02088044 to 0x02088FF4 (main), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 typedef struct { u32 words[2]; } Unk0200FilePair;
 
 void func_02088044(void *arg0) {
@@ -147,60 +148,92 @@ loop_2:
 }
 
 void func_020883bc(void) {
-    M2C_UNK func_020883f0(M2C_UNK);
-    extern M2C_UNK data_021577b4;
+    M2C_UNK LoadResource(M2C_UNK);
+    extern M2C_UNK gResourceLoaded;
     s32 i;
     u8 *p;
     i = 0;
-    p = (u8 *)&data_021577b4;
+    p = (u8 *)&gResourceLoaded;
     do {
         *p++ = 0;
         i++;
     } while (i < 12);
-    func_020883f0(0);
-    func_020883f0(4);
+    LoadResource(0);
+    LoadResource(4);
 }
 
-M2C_UNK func_020883f0(M2C_UNK a) {
-extern M2C_UNK data_021577b4,data_0210259c;
-s32 func_0200c084(void *,s32,s32);void InitFileRequest(void *);void func_0200bf64(void *,void *);
-s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200bf28(void *);s32 FileRead(void *,void *,s32);void CloseFileRequest(void *);void func_0200c214(void *);M2C_UNK func_020e349c(void);
-Unk0200FilePair pair;u32 info[11];u32 file[18];s32 size;u8 *dest; s32 offset,n; u32 flag;
-flag=((u8 *)&data_021577b4)[a]; if(flag==1)return flag;
-if(!func_0200c084(info,0,((s32 *)&data_0210259c)[a]))return;
-InitFileRequest(file);func_0200bf64(&pair,info);
-if(!func_0200b9e4(file,pair))return;
-func_0200bf28(info);size=file[10]-file[9];dest=(u8 *)info[1];
-for(offset=0;offset<size;offset+=0x2800){n=size-offset;if(n>=0x2800)n=0x2800;if(n!=FileRead(file,dest+offset,n)){CloseFileRequest(file);return;}}
-CloseFileRequest(file);func_0200c214(info);((u8 *)&data_021577b4)[a]=1;func_020e349c();
+/* Load resource file `index` of the game's data archive into memory unless it
+ * is already loaded: read its file header, open its range, clear the BSS after
+ * the data, copy the data in 0x2800-byte chunks and run the file's initializers. */
+M2C_UNK LoadResource(M2C_UNK index) {
+    extern M2C_UNK gResourceLoaded, gResourceFileIds;
+    s32 LoadFileHeader(void *, s32, s32);
+    void InitFileRequest(void *);
+    void BuildFileRange(void *, void *);
+    s32 OpenFileRange(void *, Unk0200FilePair);
+    void ClearFileBss(void *);
+    s32 FileRead(void *, void *, s32);
+    void CloseFileRequest(void *);
+    void CompleteFileLoad(void *);
+    M2C_UNK func_020e349c(void);
+
+    Unk0200FilePair range;
+    FSFileHeader header;
+    u32 request[18];
+    s32 size;
+    u8 *dest;
+    s32 offset, chunk;
+    u32 loaded;
+
+    loaded = ((u8 *) &gResourceLoaded)[index];
+    if (loaded == 1) return loaded;
+    if (!LoadFileHeader(&header, 0, ((s32 *) &gResourceFileIds)[index])) return;
+    InitFileRequest(request);
+    BuildFileRange(&range, &header);
+    if (!OpenFileRange(request, range)) return;
+    ClearFileBss(&header);
+    size = request[10] - request[9];
+    dest = (u8 *) header.data;
+    for (offset = 0; offset < size; offset += 0x2800) {
+        chunk = size - offset;
+        if (chunk >= 0x2800) chunk = 0x2800;
+        if (chunk != FileRead(request, dest + offset, chunk)) {
+            CloseFileRequest(request);
+            return;
+        }
+    }
+    CloseFileRequest(request);
+    CompleteFileLoad(&header);
+    ((u8 *) &gResourceLoaded)[index] = 1;
+    func_020e349c();
 }
 
-void func_020884f8(u8 a){s32 func_0200c408(M2C_UNK,s32);M2C_UNK func_020e349c();extern M2C_UNK data_0210259c,data_021577b4;
-if(M2C_FIELD(&data_021577b4,u8 *,a)==0)return;
-if(func_0200c408(0,((s32 *)&data_0210259c)[a])==1)M2C_FIELD(&data_021577b4,u8 *,a)=0;
+void func_020884f8(u8 a){s32 func_0200c408(M2C_UNK,s32);M2C_UNK func_020e349c();extern M2C_UNK gResourceFileIds,gResourceLoaded;
+if(M2C_FIELD(&gResourceLoaded,u8 *,a)==0)return;
+if(func_0200c408(0,((s32 *)&gResourceFileIds)[a])==1)M2C_FIELD(&gResourceLoaded,u8 *,a)=0;
 func_020e349c();}
 
 void func_0208853c(s32 arg0) {
-    extern M2C_UNK data_02102590;
+    extern M2C_UNK gResourceDependencyMasks;
     s32 i;
     u8 *p;
-    p = (u8 *)&data_02102590;
+    p = (u8 *)&gResourceDependencyMasks;
     i = 0;
     do {
-        if ((*p & ((u8 *)&data_02102590)[arg0]) && func_0208858c((u8)i) != 0) func_020884f8(i);
+        if ((*p & ((u8 *)&gResourceDependencyMasks)[arg0]) && func_0208858c((u8)i) != 0) func_020884f8(i);
         i++;
         p++;
     } while (i < 12);
 }
 
 s32 func_0208858c(s32 arg0) {
-    extern M2C_UNK data_021577b4;
-    return M2C_FIELD(&data_021577b4, u8 *, arg0);
+    extern M2C_UNK gResourceLoaded;
+    return M2C_FIELD(&gResourceLoaded, u8 *, arg0);
 }
 
-void func_0208859c(void){if(func_0208858c(0)!=0)return;func_0208853c(0);func_020883f0(0);}
+void func_0208859c(void){if(func_0208858c(0)!=0)return;func_0208853c(0);LoadResource(0);}
 
-void func_020885c4(void){if(func_0208858c(2)!=0)return;func_0208853c(2);func_020883f0(2);}
+void func_020885c4(void){if(func_0208858c(2)!=0)return;func_0208853c(2);LoadResource(2);}
 
 void func_020885ec(void) {
     func_020884f8(2);
@@ -211,7 +244,7 @@ void func_020885fc(void) {
         return;
     }
     func_0208853c(3);
-    func_020883f0(3);
+    LoadResource(3);
 }
 
 void func_02088624(void) {
@@ -223,7 +256,7 @@ void func_02088634(void) {
         return;
     }
     func_0208853c(4);
-    func_020883f0(4);
+    LoadResource(4);
 }
 
 void func_0208865c(void) {
@@ -231,7 +264,7 @@ void func_0208865c(void) {
         return;
     }
     func_0208853c(5);
-    func_020883f0(5);
+    LoadResource(5);
 }
 
 void func_02088684(void) {
@@ -239,7 +272,7 @@ void func_02088684(void) {
         return;
     }
     func_0208853c(6);
-    func_020883f0(6);
+    LoadResource(6);
 }
 
 void func_020886ac(void) {
@@ -247,7 +280,7 @@ void func_020886ac(void) {
         return;
     }
     func_0208853c(7);
-    func_020883f0(7);
+    LoadResource(7);
 }
 
 void func_020886d4(void) {
@@ -255,7 +288,7 @@ void func_020886d4(void) {
         return;
     }
     func_0208853c(9);
-    func_020883f0(9);
+    LoadResource(9);
 }
 
 void func_020886fc(void) {
@@ -263,7 +296,7 @@ void func_020886fc(void) {
         return;
     }
     func_0208853c(0xA);
-    func_020883f0(0xA);
+    LoadResource(0xA);
 }
 
 void func_02088724(void) {
@@ -271,7 +304,7 @@ void func_02088724(void) {
         return;
     }
     func_0208853c(1);
-    func_020883f0(1);
+    LoadResource(1);
 }
 
 void func_0208874c(void) {
@@ -279,11 +312,11 @@ void func_0208874c(void) {
         return;
     }
     func_0208853c(0xB);
-    func_020883f0(0xB);
+    LoadResource(0xB);
 }
 
 #pragma optimization_level 4
-void func_02088774(s32 a){void func_02007e20(void *,s32,s32);extern u8 data_021577c0[];extern void *gCur3DSpriteEngine;s32 base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30);s32 offset=(a<<5)&~1;func_02007e20(data_021577c0,offset+base,32);}
+void func_02088774(s32 a){void CopyU16(void *,s32,s32);extern u8 data_021577c0[];extern void *gCur3DSpriteEngine;s32 base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30);s32 offset=(a<<5)&~1;CopyU16(data_021577c0,offset+base,32);}
 #pragma optimization_level reset
 void func_020887a8(void *p,s32 a,s32 b,s32 c,s32 d){void func_020887ec(void *);s32 x=M2C_FIELD(p,s16 *,0x34),y=M2C_FIELD(p,s16 *,0x36),z=M2C_FIELD(p,s8 *,0x49),w=M2C_FIELD(p,s32 *,0x44);M2C_FIELD(p,s16 *,0x34)=a;M2C_FIELD(p,s16 *,0x36)=b;M2C_FIELD(p,s8 *,0x49)=c;M2C_FIELD(p,s32 *,0x44)=d;func_020887ec(p);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,s8 *,0x49)=z;M2C_FIELD(p,s32 *,0x44)=w;}
 
@@ -495,13 +528,13 @@ void func_02088e7c(void *arg0, s32 arg1) {
 
 void func_02088e84(void *p,s16 a,s16 b,s16 c,s32 d){func_02088e5c(p,a,b);func_02088e70(p,c,d);}
 
-void func_02088ea8(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void func_02088f1c(void *);func_02088e5c(p,c,d);func_02088e70(p,a,b);func_02088e68(p,e);func_02088f1c(p);}
+void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void func_02088f1c(void *);func_02088e5c(p,c,d);func_02088e70(p,a,b);func_02088e68(p,e);func_02088f1c(p);}
 
 void func_02088eec(void *p,s8 a){void func_02088f1c(void *);func_02088e5c(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);func_02088f1c(p);}
 
 void func_02088f1c(void *p){if(!M2C_FIELD(p,u8 *,0x4e)){M2C_FIELD(p,s16 *,0x34)=M2C_FIELD(p,s16 *,0x50);M2C_FIELD(p,s16 *,0x36)=M2C_FIELD(p,s16 *,0x52);M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)&=~0xc0;Show3DSprite(p);return;}if(((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30)==2)return;M2C_FIELD(p,s8 *,0x4c)=0;M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0xc0)|0x80;}
 
-void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void func_02088ff4(void *);func_02088e5c(p,a,b);func_02088e70(p,c,d);func_02088e7c(p,e);func_02088ff4(p);}
+void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);func_02088e5c(p,a,b);func_02088e70(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
 
-void func_02088fc4(void *p,s8 a){void func_02088ff4(void *);func_02088e70(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);func_02088ff4(p);}
+void func_02088fc4(void *p,s8 a){void Hide3DSpriteSlide(void *);func_02088e70(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);Hide3DSpriteSlide(p);}
 

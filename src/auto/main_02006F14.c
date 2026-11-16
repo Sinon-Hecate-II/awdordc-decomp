@@ -366,7 +366,7 @@ void GetMacAddress(M2C_UNK arg0) {
 }
 
 void func_02007740(void *arg0) {
- void func_02007e20(void *, void *, u32);
+ void CopyU16(void *, void *, u32);
  SystemInfo *info=(SystemInfo *)0x027FFC80;
  M2C_FIELD(arg0,u8 *,0) = (u32)(info->flags << 29) >> 29;
  M2C_FIELD(arg0,u8 *,1) = (u32)(info->bytes[2] << 28) >> 28;
@@ -374,8 +374,8 @@ void func_02007740(void *arg0) {
  M2C_FIELD(arg0,u8 *,3) = info->bytes[4];
  M2C_FIELD(arg0,u16 *,0x1a) = info->bytes[0x1a];
  M2C_FIELD(arg0,u16 *,0x52) = info->bytes[0x50];
- func_02007e20(info->bytes+6,(u8 *)arg0+4,20);
- func_02007e20(info->bytes+0x1c,(u8 *)arg0+0x1c,52);
+ CopyU16(info->bytes+6,(u8 *)arg0+4,20);
+ CopyU16(info->bytes+0x1c,(u8 *)arg0+0x1c,52);
  M2C_FIELD(arg0,u16 *,0x18)=0;
  M2C_FIELD(arg0,u16 *,0x50)=0;
 }

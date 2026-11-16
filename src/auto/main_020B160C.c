@@ -9,16 +9,16 @@
 void UploadBattleMapGraphics(void){
 s32 func_020a7290(void);void *func_020a7278(void);void *func_020a7284(void);
 M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);void func_01ff9e44(void *,s32,s32);void func_020c09c0(s32);
-extern void *gCur3DSpriteEngine;extern void *gCurrentMap;extern u8 data_02120a20[];
+extern void *gCur3DSpriteEngine;extern void *gCurrentMap;extern u8 gArmyPalettes[];
 s32 tileBytes;void *engine;
 tileBytes=func_020a7290()<<5;engine=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10);
 MI_CpuCopy32(func_020a7278(),engine+0x25c0,tileBytes);
 engine=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10)+0x4e0;
 MI_CpuCopy32(func_020a7284(),engine+0x3000,0x3c0);
-func_01ff9e44(data_02120a20+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+1*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,384,32);
-func_01ff9e44(data_02120a20+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+2*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,416,32);
-func_01ff9e44(data_02120a20+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+3*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,448,32);
-func_01ff9e44(data_02120a20+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+4*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,480,32);
+func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+1*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,384,32);
+func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+2*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,416,32);
+func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+3*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,448,32);
+func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+4*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,480,32);
 func_020c09c0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER));}
 
 void func_020b172c(void) {
@@ -109,7 +109,7 @@ void func_020b185c(void) {
     func_020aca8c(3);
     func_0207b84c();
     func_02077a7c();
-    func_02082700();
+    Reset3DSpriteCorners();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);
     if (callback != NULL) callback();
     func_02091cd0();
@@ -128,7 +128,7 @@ u16 *volatile sp4;u16 *volatile sp0;void (*callback)(void);
 func_020aca8c(3);func_0207b940();
 sp4=(u16 *)*(void **)gCur3DSpriteEngine;*sp4=*sp4|0x1000;
 sp0=(u16 *)*(void **)gCur3DSpriteEngine;*sp0=*sp0&~0x6000;
-func_02082700();
+Reset3DSpriteCorners();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
 func_01ff9b38();func_02091cd0();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(callback)callback();

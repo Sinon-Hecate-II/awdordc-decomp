@@ -425,9 +425,9 @@ void func_ov000_02180dcc(void) {
 }
 
 void func_ov000_02180e4c(void) {
- s32 func_ov000_02180410(); M2C_UNK BuildAiInfluenceMaps(); M2C_UNK func_ov000_0218f0ec(); M2C_UNK func_ov000_0218f37c();
+ s32 IsAiMap175Player2Override(); M2C_UNK BuildAiInfluenceMaps(); M2C_UNK func_ov000_0218f0ec(); M2C_UNK func_ov000_0218f37c();
  extern void **gCurrentMap; u32 x; void *p;
- if(func_ov000_02180410()) return;
+ if(IsAiMap175Player2Override()) return;
  x=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28;
  if(x==6 || x==8) return;
  BuildAiInfluenceMaps();
@@ -441,7 +441,7 @@ void func_ov000_02180ec8(void) {
     extern void **gCurrentMap;
     u32 temp_r0;
 
-    if (func_ov000_02180410() != 0) {
+    if (IsAiMap175Player2Override() != 0) {
         return;
     }
     temp_r0 = (u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 0x1C) >> 0x1C;
@@ -454,7 +454,7 @@ void func_ov000_02180ec8(void) {
 void func_ov000_02180f14(void) {
 extern void **gCurrentMap;
 void *p; u32 type;
-if(func_ov000_02180410()) return;
+if(IsAiMap175Player2Override()) return;
 type=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28;
 if(type==6 || type==8)return;
 BuildAiInfluenceMaps();
@@ -474,7 +474,7 @@ if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60
    owning player's AI mode. */
 void RunAIUnitAction(void) {
 M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK func_ov000_0218046c();
+M2C_UNK RunAiMap175MoveOverride();
 M2C_UNK func_ov000_0218cfec();
 M2C_UNK func_ov000_0218f0ec();
 M2C_UNK func_ov000_0219137c();
@@ -491,10 +491,10 @@ M2C_UNK func_ov000_02190094();
 M2C_UNK func_ov000_02194370();
 M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_0218b02c();
-s32 func_ov000_02180410();
+s32 IsAiMap175Player2Override();
 extern void **gCurrentMap; extern void *gAiCommandState;
 void *map; PlayerRecord02180738 *playerRecord; u32 state; s32 handled;
-if(func_ov000_02180410()) {func_ov000_0218046c();return;}
+if(IsAiMap175Player2Override()) {RunAiMap175MoveOverride();return;}
 BuildAiInfluenceMaps();map=*gCurrentMap;
 state=(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28;
 if(state==6){func_ov000_0218cfec();return;}
@@ -517,9 +517,9 @@ func_ov000_02190094();func_ov000_021954a4();func_ov000_0218b02c();
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021811e8(void) {
- s32 func_ov000_02180410(); M2C_UNK func_ov000_0218049c(); M2C_UNK func_ov000_021804b0(); M2C_UNK func_ov000_021804c4();
+ s32 IsAiMap175Player2Override(); M2C_UNK func_ov000_0218049c(); M2C_UNK func_ov000_021804b0(); M2C_UNK func_ov000_021804c4();
  extern void **gCurrentMap; extern void *gAiCommandState;
- if(func_ov000_02180410()) return;
+ if(IsAiMap175Player2Override()) return;
  if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,8)<<18)>>30)==2)
  M2C_FIELD(gAiCommandState,u16 *,8)|=128;
  switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28) {
@@ -533,7 +533,7 @@ void func_ov000_021811e8(void) {
 void func_ov000_021812a8(void) {
 extern void **gCurrentMap;
 void *state;
-if(func_ov000_02180410()) {func_ov000_0218046c(); return;}
+if(IsAiMap175Player2Override()) {RunAiMap175MoveOverride(); return;}
 state=*gCurrentMap;
 switch((u32)(M2C_FIELD(M2C_FIELD(state,void **,0x52d0),u8 *,11)<<28)>>28) {
 case 0: func_ov000_021804d4(); return;
@@ -551,9 +551,9 @@ case 10: func_ov000_02180894(); return;
 }
 
 void func_ov000_021813a4(void) {
- s32 func_ov000_02180410();
+ s32 IsAiMap175Player2Override();
  extern void **gCurrentMap; extern void *gAiCommandState;
- if(func_ov000_02180410()) return;
+ if(IsAiMap175Player2Override()) return;
  if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,8)<<18)>>30)!=2)
  M2C_FIELD(gAiCommandState,u16 *,8)|=128;
  switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28) {
@@ -568,7 +568,7 @@ void func_ov000_021813a4(void) {
 void RunAiRole3Action(void) {
     extern void **gCurrentMap;
     void *state;
-    if (func_ov000_02180410()) { func_ov000_0218046c(); return; }
+    if (IsAiMap175Player2Override()) { RunAiMap175MoveOverride(); return; }
     state = *gCurrentMap;
     switch ((u32)(M2C_FIELD(M2C_FIELD(state, void **, 0x52D0), u8 *, 11) << 28) >> 28) {
     case 0: func_ov000_02180934(); return;
@@ -592,7 +592,7 @@ s32 func_ov000_02178e84(u8,u8);
 void *base,*unit;
 u16 player;
 s32 cost;u32 idx;
-if(func_ov000_02180410()!=0) return;
+if(IsAiMap175Player2Override()!=0) return;
 if(FindFreeUnitRecord(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==0)return;
 base=*gCurrentMap;player=M2C_FIELD(base,u16 *,0x52a4);
 cost=GetUnitBuildCost(player,17)*10;
@@ -612,7 +612,7 @@ SetMapCursor(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),23,0,0);
 
 void RunAiKind13Action(void) {
     M2C_UNK func_ov000_02193998();
-    if (func_ov000_02180410() != 0) {
+    if (IsAiMap175Player2Override() != 0) {
         return;
     }
     func_ov000_02193998();

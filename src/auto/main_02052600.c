@@ -32,7 +32,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     void *func_02055aa0(void **, s32);
     M2C_UNK func_02055b84(void **, s32, void **);
     s32 func_0205817c(void **, char *, s32);
-    s32 GetStringField(char *, M2C_UNK *, void *, s32);
+    s32 gpiValueForKey(char *, M2C_UNK *, void *, s32);
     M2C_UNK gpiSetError(void **, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
@@ -97,7 +97,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
-    if (GetStringField(arg2, &data_020fe710, parse, 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe710, parse, 0x40) == 0) {
         gpiSetError(arg0, 1, &data_020fe6e0);
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;
@@ -117,51 +117,51 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     response.p14 = &buffers.buf12C[0];
     response.p0 = &buffers.bufCD[0];
     response.pC8 = &buffers.buf14[0];
-    if (GetStringField(arg2, &data_020fe72c, &buffers.bufCD[0], 0x1F) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe72c, &buffers.bufCD[0], 0x1F) == 0) {
         *response.p0 = 0;
     }
-    if (GetStringField(arg2, &data_020fe734, response.p4, 0x15) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe734, response.p4, 0x15) == 0) {
         *response.p4 = 0;
     }
-    if (GetStringField(arg2, &data_020fe744, response.p8, 0x33) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe744, response.p8, 0x33) == 0) {
         *response.p8 = 0;
     }
-    if (GetStringField(arg2, &data_020fe74c, response.pC, 0x1F) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe74c, response.pC, 0x1F) == 0) {
         *response.pC = 0;
     }
-    if (GetStringField(arg2, &data_020fe758, response.p10, 0x1F) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe758, response.p10, 0x1F) == 0) {
         *response.p10 = 0;
     }
-    if (GetStringField(arg2, &data_020fe764, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe764, &buffers.bufEC[0], 0x40) == 0) {
         response.n18 = -1;
     } else {
         response.n18 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe770, response.p14, 0x4C) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe770, response.p14, 0x4C) == 0) {
         *response.p14 = 0;
     }
-    if (GetStringField(arg2, &data_020fe77c, &response.b1C[0], 0xB) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe77c, &response.b1C[0], 0xB) == 0) {
         response.b1C[0] = 0;
     }
-    if (GetStringField(arg2, &data_020fe788, response.b27, 3) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe788, response.b27, 3) == 0) {
         response.b27[0] = 0;
     }
-    if (GetStringField(arg2, &data_020fe798, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe798, &buffers.bufEC[0], 0x40) == 0) {
         response.n2C = 0;
     } else {
         func_0206a374(&buffers.bufEC[0]);
         response.n2C = func_0207044c();
     }
-    if (GetStringField(arg2, &data_020fe7a0, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7a0, &buffers.bufEC[0], 0x40) == 0) {
         response.n30 = 0;
     } else {
         func_0206a374(&buffers.bufEC[0]);
         response.n30 = func_0207044c();
     }
-    if (GetStringField(arg2, &data_020fe7a8, &response.b34[0], 0x80) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7a8, &response.b34[0], 0x80) == 0) {
         response.b34[0] = 0;
     }
-    if (GetStringField(arg2, &data_020fe7b0, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7b0, &buffers.bufEC[0], 0x40) == 0) {
         response.nB4 = 0;
         response.nB8 = 0;
         response.nBC = 0;
@@ -172,7 +172,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
         return temp_r0_2;
     }
 block_41:
-    if (GetStringField(arg2, &data_020fe7bc, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7bc, &buffers.bufEC[0], 0x40) == 0) {
         response.nC0 = 0x502;
     } else if (buffers.bufEC[0] == 0x30) {
         response.nC0 = 0x500;
@@ -181,60 +181,60 @@ block_41:
     } else {
         response.nC0 = 0x502;
     }
-    if (GetStringField(arg2, &data_020fe7c4, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7c4, &buffers.bufEC[0], 0x40) == 0) {
         response.nC4 = -1;
     } else {
         response.nC4 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe7cc, response.pC8, 0x33) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7cc, response.pC8, 0x33) == 0) {
         *response.pC8 = 0;
     }
-    if (GetStringField(arg2, &data_020fe7d4, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7d4, &buffers.bufEC[0], 0x40) == 0) {
         response.nCC = 0;
     } else {
         response.nCC = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe7dc, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7dc, &buffers.bufEC[0], 0x40) == 0) {
         response.nD0 = 0;
     } else {
         response.nD0 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe7e4, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7e4, &buffers.bufEC[0], 0x40) == 0) {
         response.nD4 = 0;
     } else {
         response.nD4 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe7ec, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7ec, &buffers.bufEC[0], 0x40) == 0) {
         response.nD8 = 0;
     } else {
         response.nD8 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe7f4, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7f4, &buffers.bufEC[0], 0x40) == 0) {
         response.nDC = 0;
     } else {
         response.nDC = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe7fc, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe7fc, &buffers.bufEC[0], 0x40) == 0) {
         response.nE0 = 0;
     } else {
         response.nE0 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe804, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe804, &buffers.bufEC[0], 0x40) == 0) {
         response.nE4 = 0;
     } else {
         response.nE4 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe80c, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe80c, &buffers.bufEC[0], 0x40) == 0) {
         response.nE8 = 0;
     } else {
         response.nE8 = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe814, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe814, &buffers.bufEC[0], 0x40) == 0) {
         response.nEC = 0;
     } else {
         response.nEC = ParseInt(&buffers.bufEC[0]);
     }
-    if (GetStringField(arg2, &data_020fe81c, &buffers.bufEC[0], 0x40) == 0) {
+    if (gpiValueForKey(arg2, &data_020fe81c, &buffers.bufEC[0], 0x40) == 0) {
         gpiSetError(arg0, 1, &data_020fe6e0);
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;

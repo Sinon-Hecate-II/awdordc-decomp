@@ -32,6 +32,11 @@
 #define DS3D_BANK_MODE3 0x0080
 #define DS3D_BANK_MODE4 0x0100
 
+/* Bank flags copied to DISPCNT's OBJ mapping and boundary fields. */
+#define DS3D_BANK_OBJ_1D 0x1000
+#define DS3D_BANK_OBJ_BOUNDARY_MASK 0x6000
+#define DS3D_DISPLAY_GRAPHICS 1
+
 /* The four layer attribute words of the bank, one per layer (packed SpriteTile). */
 #define DS3D_BANK_LAYER_TILE0 0x06
 #define DS3D_BANK_LAYER_TILE1 0x08
@@ -88,13 +93,13 @@ typedef struct DS3DSpriteBank {
     u16 oamAttr;       /* +0x12 OBJ attribute word of the 3D sprite */
     DS3DSpriteMatrix matrixA; /* +0x14 transform including the screen offset */
     DS3DSpriteMatrix matrixB; /* +0x24 transform relative to the screen offset */
-    u8  filler_34[4];
+    s32 displayMode;   /* +0x34 DISPCNT display mode: 1 = graphics */
     s16 corner[8];     /* +0x38 four (x,y) corner offsets of the sprite quad */
     u8  window0H[2];   /* +0x48 split window 0 horizontal bounds (right, left) */
     u8  window0V[2];   /* +0x4A split window 0 vertical bounds */
     u8  window1H[2];   /* +0x4C split window 1 horizontal bounds (right, left) */
     u8  window1V[2];   /* +0x4E split window 1 vertical bounds */
-    u8  filler_50;
+    s8  brightness;    /* +0x50 signed master brightness, 0 = unchanged */
     u8  rowsAbove;     /* +0x51 rows of the cell grid above the split */
     u8  rowsBelow;     /* +0x52 rows of the cell grid below the split */
     u8  filler_53;     /* +0x53 display blend level (0..31) */
@@ -155,6 +160,7 @@ typedef struct WallpaperFileSet {
 
 /* DS3DSpriteEngine::layerDirty bit of the OBJ palette shadow. */
 #define DS3D_DIRTY_PALETTE 0x10
+#define DS3D_LAYER_PALETTE_BYTES 0x200 /* 256 colours, two bytes each */
 
 /* Control word of a 3D sprite object (at object+0x44). */
 typedef struct SpriteFlags {
@@ -260,5 +266,42 @@ typedef struct DS3DSpritePaletteFade {
 #define DS3D_FADE_FORWARD  0x02 /* fade towards `to`, otherwise towards `from` */
 #define DS3D_FADE_PINGPONG 0x04 /* reverse direction instead of stopping */
 #define DS3D_FADE_DELETE   0x08 /* delete the object once the fade has finished */
+
+/* The three scene panels occupy the top, middle and bottom 64-pixel bands. */
+enum {
+    SCENE_PANEL_TOP = 0,
+    SCENE_PANEL_MIDDLE = 1,
+    SCENE_PANEL_BOTTOM = 2,
+    SCENE_PANEL_CURRENT = 3
+};
+
+/* One 12-byte panel record at the start of Get3DSpriteManager(). */
+typedef struct ScenePanelState {
+    void *tiles;       /* +0x00 tile buffer */
+    u16 tileAttr;      /* +0x04 tile attributes passed to the text renderer */
+    u8 palette;        /* +0x06 OBJ palette slot */
+    u8 mode;           /* +0x07 */
+    u16 unk_08;        /* +0x08 */
+    u8 unk_0A[2];
+} ScenePanelState;
+
+/* A CO face sprite (the portrait nodes built by func_02099338): a 3D sprite
+ * object extended with the face texture shown, its expression and palette
+ * style, and a linked face object that is refreshed with it. */
+#define FACE_SPRITE_TILE        0x40 /* u32: bits 18..25 are the face tile row */
+#define FACE_SPRITE_SCREEN      0x48 /* u8: bits 1..3 pick the engine (0 main, 1 sub, 3 active) */
+#define FACE_SPRITE_TILE_ROW    0x49 /* u8 tile row inside the face texture */
+#define FACE_SPRITE_FACE        0x58 /* u8 face id; 0 = no face loaded */
+#define FACE_SPRITE_EXPRESSION  0x59 /* u8 expression/pose index; 0 = none */
+#define FACE_SPRITE_LAYOUT      0x5A /* u8 layout of the linked face group */
+#define FACE_SPRITE_VARIANT     0x5B /* u8 variant index into the face table */
+#define FACE_SPRITE_ACTIVE      0x5C /* u8 nonzero while this is the active face */
+#define FACE_SPRITE_PALETTE     0x5D /* u8 palette style: 1 sepia, 2 grayscale */
+#define FACE_SPRITE_CHILD       0x60 /* void *linked face object refreshed with this one */
+
+/* Palette effects LoadFacePaletteAt applies to the face palette it loads. */
+#define FACE_EFFECT_DIM   0x01 /* inactive face: blend towards dark blue */
+#define FACE_EFFECT_SEPIA 0x02 /* warm tint */
+#define FACE_EFFECT_GRAY  0x04 /* grayscale */
 
 #endif

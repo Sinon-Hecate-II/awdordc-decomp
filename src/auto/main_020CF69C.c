@@ -1,5 +1,6 @@
 /* 39 functions from 0x020CF69C to 0x020D068C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern u8 data_0212bd5c[];
 extern s8 gTerrainDefenseStars[];
 extern s8 data_ov000_021b5580[];
@@ -385,24 +386,24 @@ void InitAreaScan(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
 }
 
-s32 NextAreaTile(void *p){
-s32 Modulo(s32,s32);s32 Divide(s32,s32);
-extern s16 *data_0212b97c[];
-s16 *table;
-if(M2C_FIELD(p,s32 *,24)>=6){
-if(M2C_FIELD(p,s32 *,28)>=M2C_FIELD(p,s32 *,0)*M2C_FIELD(p,s32 *,4))return 0;
-M2C_FIELD(p,s32 *,16)=Modulo(M2C_FIELD(p,s32 *,28),M2C_FIELD(p,s32 *,0));
-M2C_FIELD(p,s32 *,20)=Divide(M2C_FIELD(p,s32 *,28),M2C_FIELD(p,s32 *,0));
-M2C_FIELD(p,s32 *,28)++;return 1;
-}
-table=data_0212b97c[M2C_FIELD(p,s32 *,24)];if(!table)return 0;
-while(table[M2C_FIELD(p,s32 *,28)*2]!=127){
-M2C_FIELD(p,s32 *,16)=M2C_FIELD(p,s32 *,8)+table[M2C_FIELD(p,s32 *,28)*2];
-M2C_FIELD(p,s32 *,20)=M2C_FIELD(p,s32 *,12)+table[M2C_FIELD(p,s32 *,28)*2+1];
-M2C_FIELD(p,s32 *,28)++;
-if(M2C_FIELD(p,s32 *,16)>=0 && M2C_FIELD(p,s32 *,20)>=0 && M2C_FIELD(p,s32 *,16)<M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144) && M2C_FIELD(p,s32 *,20)<M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146))return 1;
-}
-return 0;
+/* Advance to the next in-bounds area offset, or the next tile of a full-map scan. */
+s32 NextAreaTile(void *state) {
+    s32 Modulo(s32, s32); s32 Divide(s32, s32);
+    s16 *offsets;
+    if (((AreaScan *)state)->mode >= AREA_SCAN_FULL_MAP) {
+        if (((AreaScan *)state)->index >= ((AreaScan *)state)->width * ((AreaScan *)state)->height) return 0;
+        ((AreaScan *)state)->x = Modulo(((AreaScan *)state)->index, ((AreaScan *)state)->width);
+        ((AreaScan *)state)->y = Divide(((AreaScan *)state)->index, ((AreaScan *)state)->width);
+        ((AreaScan *)state)->index++; return 1;
+    }
+    offsets = gAreaScanOffsetTables[((AreaScan *)state)->mode]; if (!offsets) return 0;
+    while (offsets[((AreaScan *)state)->index * 2] != AREA_SCAN_END) {
+        ((AreaScan *)state)->x = ((AreaScan *)state)->originX + offsets[((AreaScan *)state)->index * 2];
+        ((AreaScan *)state)->y = ((AreaScan *)state)->originY + offsets[((AreaScan *)state)->index * 2 + 1];
+        ((AreaScan *)state)->index++;
+        if (((AreaScan *)state)->x >= 0 && ((AreaScan *)state)->y >= 0 && ((AreaScan *)state)->x < M2C_FIELD((void *)*gCurrentMap, u16 *, MAP_WIDTH) && ((AreaScan *)state)->y < M2C_FIELD((void *)*gCurrentMap, u16 *, MAP_HEIGHT)) return 1;
+    }
+    return 0;
 }
 
 s32 func_020d03c4(s32 arg0) {

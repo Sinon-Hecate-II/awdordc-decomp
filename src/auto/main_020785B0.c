@@ -1,6 +1,7 @@
 /* 10 functions from 0x020785B0 to 0x020793F0 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "gx.h"
 static inline s32 ClampRenderCoord(s32 v, u16 *dims, s32 axis) {
  s32 max=dims[axis]-1;
  if(v>max)return max;
@@ -43,28 +44,29 @@ void func_0207863c(void) {
 }
 
 #pragma scheduling on
-void func_0207866c(void){
-void func_02003fc8(s32,s32,s32,s32,s32,s32,s32,s32,s32);
-void func_02077bb4(s32);
-extern s32 *gCurrentMap;
-extern u16 data_020eb290[][4];
-u32 kind=M2C_FIELD(*gCurrentMap,u8 *,0x5157);
-u16 *v=data_020eb290[kind];
-*(volatile u32 *)0x4000440=0;
-*(volatile u32 *)0x4000454=0;
-func_02003fc8(0,192,0,256,-1000,0,4096,1,0);
-*(volatile u32 *)0x4000500=1;
-*(volatile u32 *)0x4000480=v[0];
-*(volatile u32 *)0x400048c=0;*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000480=v[1];
-*(volatile u32 *)0x400048c=0xc00000;*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000480=v[2];
-*(volatile u32 *)0x400048c=0xc00100;*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000480=v[3];
-*(volatile u32 *)0x400048c=0x100;*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000504=0;
-func_02077bb4(*gCurrentMap+0x6ef8);
-*(volatile u32 *)0x4000480=0x7fff;
+/* Draw the tileset's four-colour background quad, then restore the map projection. */
+void DrawMapBackground(void) {
+    void GX_SetOrthoProjection(s32, s32, s32, s32, s32, s32, s32, s32, s32);
+    void ApplyMapViewProjection(s32);
+    extern s32 *gCurrentMap;
+    extern u16 gMapBackgroundCornerColors[][4];
+    u32 tileset = M2C_FIELD(*gCurrentMap, u8 *, MAP_TILESET);
+    u16 *cornerColors = gMapBackgroundCornerColors[tileset];
+    REG_GX_MTX_MODE = 0;
+    REG_GX_MTX_IDENTITY = 0;
+    GX_SetOrthoProjection(0, 192, 0, 256, -1000, 0, 4096, 1, 0);
+    REG_GX_BEGIN_VTXS = GX_PRIM_QUADS;
+    REG_GX_COLOR = cornerColors[0];
+    REG_GX_VTX_16 = 0; REG_GX_VTX_16 = 0;
+    REG_GX_COLOR = cornerColors[1];
+    REG_GX_VTX_16 = 0xC00000; REG_GX_VTX_16 = 0;
+    REG_GX_COLOR = cornerColors[2];
+    REG_GX_VTX_16 = 0xC00100; REG_GX_VTX_16 = 0;
+    REG_GX_COLOR = cornerColors[3];
+    REG_GX_VTX_16 = 0x100; REG_GX_VTX_16 = 0;
+    REG_GX_END_VTXS = 0;
+    ApplyMapViewProjection(*gCurrentMap + MAP_VIEW_ZOOM);
+    REG_GX_COLOR = GX_RGB_WHITE;
 }
 
 void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
@@ -123,7 +125,7 @@ s32 base,tile,visible,v1,v2;
 u16 a,b;
 u32 index;
 mode=M2C_FIELD(*gCurrentMap,u16*,0x52b4)==10?1:0;
-func_02077624();func_02077a4c();func_0207866c();
+func_02077624();func_02077a4c();DrawMapBackground();
 *(volatile u32*)0x4000444=0;
 *(volatile u32*)0x4000440=3;
 *(volatile u32*)0x4000454=0;

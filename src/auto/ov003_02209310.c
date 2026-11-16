@@ -19,7 +19,7 @@ void AddSprite(u16,u16,u16,void *,s32);
 s32 func_ov003_02206690(s32,s32,s32);
 s32 func_02089080(void *);
 void Show3DSprite(void *);
-s32 func_02089064(void *);
+s32 Is3DSpriteVisible(void *);
 void Hide3DSprite(void *);
 u16 *volatile blend;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
@@ -163,8 +163,8 @@ if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);
 func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
 }
 }else{
-if(func_02089064(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4)))Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));
-if(func_02089064(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8)))Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8));
+if(Is3DSpriteVisible(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4)))Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));
+if(Is3DSpriteVisible(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8)))Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8));
 }
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 a=16-GetSpriteAnimValue(M2C_FIELD(arg0,void **,0x54));

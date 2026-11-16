@@ -294,8 +294,8 @@ if(cb)cb();
 }
 
 void func_020c09c0(s32 arg0) {
-extern M2C_UNK data_02120a20;extern void *gCurrentMap;
-func_01ff9e44((u8 *)&data_02120a20+((M2C_FIELD(arg0*0x8c+M2C_FIELD(gCurrentMap,s32 *,0),u8 *,0x67c1)+3)<<5),0x160,0x20);
+extern M2C_UNK gArmyPalettes;extern void *gCurrentMap;
+func_01ff9e44((u8 *)&gArmyPalettes+((M2C_FIELD(arg0*0x8c+M2C_FIELD(gCurrentMap,s32 *,0),u8 *,0x67c1)+3)<<5),0x160,0x20);
 }
 
 void func_020c0a04(M2C_UNK arg0) {
@@ -312,12 +312,12 @@ void func_020c0a1c(s32 arg0) {
 
 void func_020c0a3c(s32 arg0) {
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK LoadScenePanelPalette(M2C_UNK);
     s32 GetUiColor(M2C_UNK);
     extern s32 gCur3DSpriteEngine;
     func_020c0a04(M2C_FIELD((gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
     func_020c0a1c(3);
-    func_02091d4c(0);
+    LoadScenePanelPalette(0);
     func_0208ca2c(0x1000, 1, GetUiColor(9), 2);
 }
 

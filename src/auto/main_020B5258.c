@@ -39,7 +39,7 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
     void func_02080750(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
-    M2C_UNK func_0208fb54(s32, s32, s32, s32);
+    M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     typedef M2C_UNK (*Fb0c)(s32, s32, s32);
     switch (mode) {
     case 0:
@@ -69,8 +69,8 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
         func_02080750(0, 5, 0);
         return;
     case 8:
-        func_0208fb54(0x10e, x, y, 0);
-        func_0208fb54(0x10f, x, y, 0x1e);
+        SpawnSoundEffectAtTile(0x10e, x, y, 0);
+        SpawnSoundEffectAtTile(0x10f, x, y, 0x1e);
         func_02080750(1, 0x14, 0);
         func_02080358(4, 0, 2, 0);
         return;
@@ -381,7 +381,7 @@ void func_020b5e00(s32 arg0, s32 arg1, M2C_UNK arg2) {
 }
 
 void func_020b5e28(void *arg0) {
-    M2C_UNK func_0208c080(void *, M2C_UNK);
+    M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
     void *func_020b5134(void *, s16, s16, M2C_UNK, s32, s32, void *);
     M2C_UNK func_020b51dc();
     M2C_UNK func_020b5200(s32, M2C_UNK);
@@ -389,10 +389,10 @@ void func_020b5e28(void *arg0) {
     void *temp_r0;
     func_020b51dc();
     func_020b5200(arg0 + 0x34, 0);
-    func_0208c080(func_020b5134(arg0 + 0x34, M2C_FIELD(arg0,s16 *,0x44), M2C_FIELD(arg0,s16 *,0x46),0x10,0,0,arg0),3);
+    SetAnimatedSpriteFrame(func_020b5134(arg0 + 0x34, M2C_FIELD(arg0,s16 *,0x44), M2C_FIELD(arg0,s16 *,0x46),0x10,0,0,arg0),3);
     temp_r0 = func_020b5134(arg0 + 0x34, M2C_FIELD(arg0,s16 *,0x44), M2C_FIELD(arg0,s16 *,0x46),0x10,0,0,arg0);
     M2C_FIELD(arg0,void **,0x60) = temp_r0;
-    func_0208c080(temp_r0,4);
+    SetAnimatedSpriteFrame(temp_r0,4);
     M2C_FIELD(arg0,s16 *,0x48)=0;
     M2C_FIELD(arg0,s16 *,0x4A)=0x40;
     M2C_FIELD(arg0,s32 *,0x54)=M2C_FIELD(M2C_FIELD(arg0,void **,0x60),s32 *,0x38);
@@ -440,7 +440,7 @@ void func_020b5f74(s32 arg0, s32 arg1) {
 }
 
 void func_020b5fec(void *arg0) {
-    M2C_UNK func_0208c080(void *, M2C_UNK);
+    M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
     void *func_020b5134(void *, s16, s16, M2C_UNK, s32, s32, void *);
     M2C_UNK func_020b51dc();
     M2C_UNK func_020b5200(s32, M2C_UNK);
@@ -453,7 +453,7 @@ void func_020b5fec(void *arg0) {
     func_020b5200(arg0 + 0x34, 0);
     temp_r0 = func_020b5134(arg0 + 0x34, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0);
     M2C_FIELD(arg0, void **, 0x60) = temp_r0;
-    func_0208c080(temp_r0, 0);
+    SetAnimatedSpriteFrame(temp_r0, 0);
     M2C_FIELD(arg0, s16 *, 0x48) = 0;
     M2C_FIELD(arg0, s16 *, 0x4A) = 0x20;
     M2C_FIELD(arg0, s32 *, 0x54) = (s32) (M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) - 0x1E00);
@@ -471,7 +471,7 @@ void func_020b607c(void *arg0) {
     if ((s32) M2C_FIELD(arg0, s16 *, 0x48) < (s32) M2C_FIELD(arg0, s16 *, 0x4A)) {
         return;
     }
-    func_0208c080(func_020b5134(arg0 + 0x34, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0), 1);
+    SetAnimatedSpriteFrame(func_020b5134(arg0 + 0x34, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0), 1);
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x50);
     if (temp_r0 != 0) {
         PlaySoundAtTile(temp_r0, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));

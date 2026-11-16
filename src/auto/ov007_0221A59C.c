@@ -16,7 +16,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc32x16[],gSpriteDesc64x32[];
 extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
 void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
-s32 func_ov007_02211ffc(s32);s32 func_ov007_02211f00(void);s32 func_ov007_02211f40(void);s32 func_ov007_0221204c(void);
+s32 GetCachedPlayerUnitCount(s32);s32 func_ov007_02211f00(void);s32 func_ov007_02211f40(void);s32 func_ov007_0221204c(void);
 void DrawFrameRectBorder(s32,s32,s32,s32);void SetTextSpriteValue(void*,s32);void DrawTextSprite(void*);
 void DrawTileRow(u16,u8,u16,u16,s32);s32 func_ov007_0221216c(s32);
 u8 sp[44];void *saved;s32 i,x,tile,mode,width,height;
@@ -30,7 +30,7 @@ sp[40]&=~224;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 for(i=0,x=0x85,tile=0x158;i<4;x+=0x1d,tile+=4,i++){
 AddSprite((u16)(x&0x1ff),0x9e,(u16)(((u16)((i+5)<<12)|0x400)|(tile&0x3ff)),gSpriteDesc16x16,0);
-func_020a9774(sp,x+0x18,0xa6,3,func_ov007_02211ffc(i+1));
+func_020a9774(sp,x+0x18,0xa6,3,GetCachedPlayerUnitCount(i+1));
 }
 width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);height=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
 DrawFrameRectBorder(64-((width*4)>>1),80-((height*4)>>1),0x80,1);
@@ -41,13 +41,13 @@ switch(mode){
 case 0:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
-func_020a9774(sp,0x38,0x92,4,50-func_ov007_02211ffc(func_ov007_02211f40()));
+func_020a9774(sp,0x38,0x92,4,50-GetCachedPlayerUnitCount(func_ov007_02211f40()));
 func_020a9774(sp,0x78,0x92,3,99-func_ov007_0221204c());
 break;
 case 1:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
-func_020a9774(sp,0x38,0x92,3,50-func_ov007_02211ffc(func_ov007_02211f40()));
+func_020a9774(sp,0x38,0x92,3,50-GetCachedPlayerUnitCount(func_ov007_02211f40()));
 func_020a9774(sp,0x78,0x92,4,99-func_ov007_0221204c());
 break;
 }
@@ -147,13 +147,13 @@ s32 func_ov007_0221ad24(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_020c1a80(s32);
     s32 Map_GetCellTerrainKind(s32, s32);
-    s32 func_ov007_0221202c(s32, s32);
+    s32 GetEditorUnitCategoryCount(s32, s32);
     s32 func_ov007_0221204c(void);
     if (func_020c1a80(arg2) == 0) {
         goto ret1;
     }
     if (arg2 == 0xF) {
-        if (func_ov007_0221202c(0, arg3) > 0) {
+        if (GetEditorUnitCategoryCount(0, arg3) > 0) {
             return 0;
         }
     }

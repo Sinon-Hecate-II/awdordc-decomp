@@ -549,42 +549,43 @@ void func_0207b040(void) {
  func_0207a768();
 }
 
-void InitMapScrollAnimation(void *arg0) {
+/* Save the pan endpoints and build a speed ramp capped at eight view units per frame. */
+void InitMapScrollAnimation(MapScrollAnim *pan) {
     s32 Abs(s32);
     extern void *gCurrentMap;
     extern u8 gMapScrollSpeedRamp[];
 
-    u16 rem;
-    u16 counter;
+    u16 distanceLeft;
+    u16 speed;
 
-    M2C_FIELD(arg0, s16 *, 0x34) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148);
-    M2C_FIELD(arg0, s16 *, 0x36) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514a);
+    pan->startX = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_X);
+    pan->startY = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_Y);
 
-    M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x38) - M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148));
-    M2C_FIELD(arg0, s16 *, 0x3e) = (s16)(M2C_FIELD(arg0, s16 *, 0x3a) - M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514a));
+    pan->deltaX = (s16)(pan->targetX - M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_X));
+    pan->deltaY = (s16)(pan->targetY - M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_Y));
 
-    if (Abs(M2C_FIELD(arg0, s16 *, 0x3c)) > Abs(M2C_FIELD(arg0, s16 *, 0x3e))) {
-        rem = (u16)Abs(M2C_FIELD(arg0, s16 *, 0x3c));
+    if (Abs(pan->deltaX) > Abs(pan->deltaY)) {
+        distanceLeft = (u16)Abs(pan->deltaX);
     } else {
-        rem = (u16)Abs(M2C_FIELD(arg0, s16 *, 0x3e));
+        distanceLeft = (u16)Abs(pan->deltaY);
     }
 
-    M2C_FIELD(arg0, s16 *, 0x40) = 0;
-    counter = 1;
+    pan->remaining = 0;
+    speed = 1;
     for (;;) {
-        s32 diff = (s32)rem - (s32)counter;
-        if (diff < 0) {
+        s32 nextDistance = (s32)distanceLeft - (s32)speed;
+        if (nextDistance < 0) {
             break;
         }
-        rem = (u16)diff;
-        gMapScrollSpeedRamp[M2C_FIELD(arg0, u16 *, 0x40)] = (u8)counter;
-        if (counter < 8) {
-            counter = (u16)(counter + 1);
+        distanceLeft = (u16)nextDistance;
+        gMapScrollSpeedRamp[pan->remaining] = (u8)speed;
+        if (speed < 8) {
+            speed = (u16)(speed + 1);
         }
-        M2C_FIELD(arg0, s16 *, 0x40) = (s16)(M2C_FIELD(arg0, u16 *, 0x40) + 1);
+        pan->remaining = (s16)(pan->remaining + 1);
     }
-    gMapScrollSpeedRamp[M2C_FIELD(arg0, u16 *, 0x40)] = (u8)rem;
-    M2C_FIELD(arg0, s16 *, 0x42) = 0;
+    gMapScrollSpeedRamp[pan->remaining] = (u8)distanceLeft;
+    pan->accum = 0;
 }
 
 /* Advances the map-scroll pan one frame: adds the current speed step to the

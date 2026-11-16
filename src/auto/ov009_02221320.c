@@ -94,8 +94,8 @@ void *func_ov009_0222139c(void *arg0) {
 }
 
 void func_ov009_022213f0(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02007e20(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02007e20(arg1, arg0, 0x14);
+    M2C_UNK CopyU16(M2C_UNK, M2C_UNK, M2C_UNK);
+    CopyU16(arg1, arg0, 0x14);
 }
 
 void func_ov009_0222140c(s32 arg0, M2C_UNK arg1, s32 arg2) {
@@ -108,7 +108,7 @@ void func_ov009_0222140c(s32 arg0, M2C_UNK arg1, s32 arg2) {
  * peers, then age each remote peer's last-heard counter and let the link actor
  * drop the session once a peer has gone too long without reporting in. */
 void func_ov009_02221424(void *arg0) {
- s32 func_02001fb4(s32,s32);
+ s32 FX_Div(s32,s32);
  s32 Divide(s32,s32);
  s32 IsLinkPacketQueued(s32);
  M2C_UNK func_ov009_02223a24(u8);
@@ -116,7 +116,7 @@ void func_ov009_02221424(void *arg0) {
  M2C_UNK QueueLinkPacket(s32,void *,s32,u16);
  s32 GetLinkLocalPlayerId();
  s32 elapsed,count,timeoutLimit,connected; u16 peers; u8 player;
- elapsed=func_02001fb4(0x3e8000,0x3c000);
+ elapsed=FX_Div(0x3e8000,0x3c000);
  count=M2C_FIELD(arg0,s32 *,0x38)+1;
  elapsed=(count*elapsed)>>12;
  M2C_FIELD(arg0,s32 *,0x38)=count;

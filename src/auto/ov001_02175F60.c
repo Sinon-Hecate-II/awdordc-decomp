@@ -91,7 +91,7 @@ void *func_ov001_02176114(void) {
 void func_ov001_0217612c(void *arg0) {
 void func_ov001_02188f40(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
 M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK func_ov001_0218b71c(M2C_UNK*);
-void *func_ov001_02189308(void); void func_02007e20(const void*,void*,u32);
+void *func_ov001_02189308(void); void CopyU16(const void*,void*,u32);
 u8 sp1,sp0; u8 *main; void (*fp)(s32);
 func_ov001_02188f40();
 if(M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)!=0 && M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a1)==0){
@@ -131,7 +131,7 @@ high29:if(v==34)goto tail;return;
 block5:
 
 if(sp0==0)return;
-main=(u8*)data_ov001_02193d50+0x2280;func_02007e20(func_ov001_02189308(),main+0x1c000,0x16);
+main=(u8*)data_ov001_02193d50+0x2280;CopyU16(func_ov001_02189308(),main+0x1c000,0x16);
 fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
 if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(0);return;
 block13:
@@ -280,7 +280,7 @@ void Ov001_InitScreen(void) {
     s32 Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     void Ov001_LoadCharBank(s32, M2C_UNK);
-    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern s32 gOv001MessageArchive;
     extern M2C_UNK gOv001MessagePathUsa;
     extern M2C_UNK gOv001MessageFilePaths[7];
@@ -300,10 +300,10 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK func_02004108;
     extern M2C_UNK func_02004314;
     extern M2C_UNK func_020041b8;
-    extern M2C_UNK func_020046cc;
+    extern M2C_UNK GX_LoadBG2Char;
     extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK func_020042bc;
-    extern M2C_UNK func_02004160;
+    extern M2C_UNK GX_LoadOBJPltt;
     extern M2C_UNK func_0200442c;
     extern M2C_UNK func_ov001_02176808;
 
@@ -326,10 +326,10 @@ void Ov001_InitScreen(void) {
     Ov001_LoadAsset(&gOv001TopBgMapPath, &func_02004108);
     Ov001_LoadAsset(&gOv001TopObjTilesPath, &func_02004314);
     Ov001_LoadAsset(&gOv001ObjMapPath, &func_020041b8);
-    Ov001_LoadAsset(&gOv001BottomBgStep1TilesPath, &func_020046cc);
+    Ov001_LoadAsset(&gOv001BottomBgStep1TilesPath, &GX_LoadBG2Char);
     Ov001_LoadAsset(&gOv001BottomBgStep1MapPath, &GX_LoadBGPltt);
     Ov001_LoadAsset(&gOv001BottomObjTilesPath, &func_020042bc);
-    Ov001_LoadAsset(&gOv001BottomObjMapPath, &func_02004160);
+    Ov001_LoadAsset(&gOv001BottomObjMapPath, &GX_LoadOBJPltt);
     /* The top screen's layout depends on the screen variant. */
     switch (Ov001_GetScreenLayout()) {
     case 0:
@@ -344,8 +344,8 @@ void Ov001_InitScreen(void) {
     M2C_FIELD((void *)0x0400100A, u16 *, 0) = (M2C_FIELD((void *)0x0400100A, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
-    func_ov001_0218b314(1, 2);
-    func_ov001_0218b314(0, 2);
+    Ov001_EnableVisiblePlanes(1, 2);
+    Ov001_EnableVisiblePlanes(0, 2);
     Ov001_SetStepCallback(&func_ov001_02176808);
 }
 
@@ -357,9 +357,9 @@ void func_ov001_02176808(void) {
 }
 
 void func_ov001_02176844(void) {
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 Ov001_GetScreenLayout();
-    extern M2C_UNK func_ov001_021768b8;
+    extern M2C_UNK Ov001_OpenWifiMenu;
     extern M2C_UNK func_ov001_02180d44;
     s32 temp_r0;
 
@@ -372,17 +372,17 @@ void func_ov001_02176844(void) {
     temp_r0 = Ov001_GetScreenLayout();
     switch (temp_r0) {                              /* irregular */
     case 0:
-        func_ov001_02175d64(0, 1);
-        Ov001_SetStepCallback(&func_ov001_021768b8);
+        Ov001_SetNextScreenMode(0, 1);
+        Ov001_SetStepCallback(&Ov001_OpenWifiMenu);
         return;
     case 1:
-        func_ov001_02175d64(1, 1);
+        Ov001_SetNextScreenMode(1, 1);
         Ov001_SetStepCallback(&func_ov001_02180d44);
         return;
     }
 }
 
-void func_ov001_021768b8(void) {
+void Ov001_OpenWifiMenu(void) {
  void func_ov001_02176934(void);
  M2C_UNK func_ov001_02172250(M2C_UNK);
  M2C_UNK func_ov001_02171c24(M2C_UNK,M2C_UNK,M2C_UNK);
@@ -412,13 +412,13 @@ void func_ov001_02176934(void) {
     extern M2C_UNK data_ov001_0219050c;
     extern M2C_UNK GX_LoadBGPltt;
     extern u8 gOv001ChoiceState;
-    extern M2C_UNK func_0200448c;
-    extern M2C_UNK func_020046cc;
+    extern M2C_UNK GX_LoadBG2Scr;
+    extern M2C_UNK GX_LoadBG2Char;
     typedef struct { u8 bytes[22]; } Text;
     Text text = *(Text *)&data_ov001_0218f716;
     Ov001_LoadAsset(&data_ov001_021904f4, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_0219050c, &func_0200448c);
-    Ov001_LoadAsset(&data_ov001_021904dc, &func_020046cc);
+    Ov001_LoadAsset(&data_ov001_0219050c, &GX_LoadBG2Scr);
+    Ov001_LoadAsset(&data_ov001_021904dc, &GX_LoadBG2Char);
     M2C_FIELD(&gOv001ChoiceState, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&text), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
@@ -430,8 +430,8 @@ void func_ov001_02176a20(void) {
     extern M2C_UNK func_ov001_02176a74;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x14);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x14);
     Ov001_SetStepCallback(&func_ov001_02176a74);
 }
 
@@ -554,11 +554,11 @@ void func_ov001_02176c8c(void) {
 
 void func_ov001_02176cd8(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    M2C_UNK func_ov001_02172184();
-    M2C_UNK func_ov001_02171cf8();
+    M2C_UNK Ov001_FreeSpriteObjects();
+    M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_FreeFile(s32);
-    M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 gOv001ChoiceState;
     extern M2C_UNK func_ov001_02180d44;
@@ -570,18 +570,18 @@ void func_ov001_02176cd8(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_02172184();
-    func_ov001_02171cf8();
+    Ov001_FreeSpriteObjects();
+    Ov001_FreeOptionBackground();
     Ov001_FreeFile(M2C_FIELD(&gOv001ChoiceState, s32 *, 4));
-    func_ov001_0218b368(1, 1);
-    func_ov001_0218b368(0, 0x14);
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x14);
     switch (gOv001ChoiceState) {                  /* irregular */
     case 0:
-        func_ov001_02175d64(1, 0);
+        Ov001_SetNextScreenMode(1, 0);
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180d44);
         return;
     case 1:
-        func_ov001_02175d64(0, 0);
+        Ov001_SetNextScreenMode(0, 0);
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021778c0);
         return;
     }
@@ -610,7 +610,7 @@ u8 value=table.values[gOv001ChoiceState];
 func_ov001_021837e4(M2C_FIELD(&gOv001ChoiceState,s32 *,4),value,value);
 }
 
-void func_ov001_02176e30(void) {
+void Ov001_OpenWfcSettingsScreen(void) {
     M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171e58(M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
@@ -628,8 +628,8 @@ void func_ov001_02176e30(void) {
 void func_ov001_02176e78(void) {
  M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
  extern M2C_UNK data_ov001_02190520;
- extern M2C_UNK func_0200448c;
- Ov001_LoadAsset(&data_ov001_02190520, &func_0200448c);
+ extern M2C_UNK GX_LoadBG2Scr;
+ Ov001_LoadAsset(&data_ov001_02190520, &GX_LoadBG2Scr);
  M2C_FIELD((void *)0x04001008,u16 *,0) = (M2C_FIELD((void *)0x04001008,u16 *,0) & ~3) | 3;
  M2C_FIELD((void *)0x04001008,u16 *,2) = (M2C_FIELD((void *)0x04001008,u16 *,2) & ~3) | 3;
  *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -641,8 +641,8 @@ void func_ov001_02176ef8(void) {
     extern M2C_UNK func_ov001_02176f4c;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
-    func_ov001_0218b314(1, 1);
-    func_ov001_0218b314(0, 0x15);
+    Ov001_EnableVisiblePlanes(1, 1);
+    Ov001_EnableVisiblePlanes(0, 0x15);
     Ov001_SetStepCallback(&func_ov001_02176f4c);
 }
 

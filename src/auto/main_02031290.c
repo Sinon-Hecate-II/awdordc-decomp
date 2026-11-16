@@ -1,7 +1,7 @@
 /* 48 functions from 0x02031290 to 0x02032228 (main), found by ds-decomp. */
 #include "common.h"
 
-M2C_UNK func_0202f48c(M2C_UNK);
+M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
 
 /* Dispatch the next state depending on the current game mode. */
 s32 func_02031290(void) {
@@ -15,7 +15,7 @@ s32 func_02031290(void) {
     void *ctx;
 
     state = Wfc_GetSessionState();
-    ctx = (void *)func_0202f48c(0x10);
+    ctx = (void *)Wfc_GetWorkBlock(0x10);
     if (Wfc_GetLinkState() == 9) {
         tmp = state - 0xA;
         switch (tmp) {                          /* switch 1 */
@@ -68,8 +68,8 @@ s32 func_0203138c(M2C_UNK arg0) {
     s32 temp_r0;
     s32 temp_r5;
 
-    temp_r5 = func_0202f48c(1);
-    temp_r0 = func_0202f48c(4);
+    temp_r5 = Wfc_GetWorkBlock(1);
+    temp_r0 = Wfc_GetWorkBlock(4);
     func_0203155c(temp_r5, arg0, temp_r0);
     data_02138ac0 = 4;
     if (func_02021a90(temp_r0) == 0) {
@@ -99,10 +99,10 @@ s32 func_020313f0(void *arg0) {
 }
 
 s32 func_02031480(void) {
-    M2C_UNK func_0202f48c(M2C_UNK);
+    M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
     M2C_UNK func_0202f558(M2C_UNK);
     s32 func_0203506c();
-    func_0202f48c(8);
+    Wfc_GetWorkBlock(8);
     if (func_0203506c() == 0) {
         return 0xE;
     }
@@ -118,7 +118,7 @@ s32 func_020314ac(void *arg0) {
     s32 temp_r0;
     void *temp_r4;
 
-    temp_r4 = (void *)func_0202f48c(1);
+    temp_r4 = (void *)Wfc_GetWorkBlock(1);
     temp_r0 = func_020352ac();
     if (temp_r0 != 0) {
         if (M2C_FIELD(temp_r4, u8 *, 0x15) == func_0202f5ac(M2C_FIELD(arg0, u8 *, 0xD0D))) {

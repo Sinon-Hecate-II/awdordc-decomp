@@ -4,10 +4,10 @@ u64 func_02072088(u64,u64);
 extern u8 *gConnectionMgr;
 void *GetConnection(void);u64 GetSystemTick(void);
 
-int func_0203f45c(int type,int peer,int a,int b,s32 *payload,int count){
+int HandleConnectionCommand(int type,int peer,int a,int b,s32 *payload,int count){
 int n=0,i,j;u32 packet0;u32 packet[65];u8 raw[8];void *p,*q;s64 ticks;
 if(!GetConnection()||!M2C_FIELD(GetConnection(),s32 *,416))return 1;
-if(func_02038f6c()==5&&M2C_FIELD(GetConnection(),s32 *,416)==1&&peer==M2C_FIELD(GetConnection(),s32 *,244))func_02042ad0();
+if(GetNetSessionState()==5&&M2C_FIELD(GetConnection(),s32 *,416)==1&&peer==M2C_FIELD(GetConnection(),s32 *,244))func_02042ad0();
 switch(type){
 case 1:case 11:
 if(M2C_FIELD(GetConnection(),u8 *,21)){a=payload[1];b=(u16)payload[2];}

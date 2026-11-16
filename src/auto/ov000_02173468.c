@@ -166,7 +166,7 @@ void func_ov000_02173f78(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK LoadFaceTexture(u8, s32, s32);
     M2C_UNK LoadFacePalette(u8, M2C_UNK, M2C_UNK, u16, s32);
     s32 func_020a7278();
@@ -283,7 +283,7 @@ register s32 temp_r9;
     CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov000_021b8ee8, 0, 0x80);
     LoadFileToSpriteBuffer(&data_ov000_021b8ef4, 0x160, 0x20);
-    func_02091d4c(0xF);
+    LoadScenePanelPalette(0xF);
     LoadFileToSpriteBuffer(&data_ov000_021b8f00, 0x2C0, 0x20);
     palette = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->sprites;
     func_020a9a30(1, 2, 1, palette + 0x300);

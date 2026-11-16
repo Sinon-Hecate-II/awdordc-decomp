@@ -321,7 +321,7 @@ for(;;) { result=-1; for(i=0;i<(s32)gAiState[1];i++,p+=8) { if(p[1]!=255 && ((Ca
 }
 
 #pragma optimization_level 3
-s32 func_ov000_021a66e8(void) {
+s32 FindNavalThreatBuildCandidate(void) {
 void func_ov000_021a01c0(void);
 extern M2C_UNK gAiTargetGroups,gAiTargetCandidates;extern u8 *gAiState;extern void **data_027e0058;
 u8 *p=(u8 *)&gAiTargetGroups; s32 found,i,r;u8 *entry;void *map;

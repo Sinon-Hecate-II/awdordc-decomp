@@ -23,7 +23,7 @@ static inline void DisableMenuSprite_02213e98(MenuSprite_02213e98 *s) {
  if(IsMenuDisabled_02213e98(s))SetMenuFrame_02213e98(s,frame);
 }
 
-void func_02088ff4(void *);
+void Hide3DSpriteSlide(void *);
 u32 func_020c5464(s16);
 /* Updates menu state and sprite frames based on selection */
 void func_ov006_02213e98(void *arg0) {
@@ -34,12 +34,12 @@ void func_ov006_02213e98(void *arg0) {
  M2C_FIELD(p, s16 *, 12) = 12;
  M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
  sprites = M2C_FIELD(arg0, void **, 0x3c);
- func_02088ff4(sprites[0]);
+ Hide3DSpriteSlide(sprites[0]);
  SetMenuFrame_02213e98(sprites[1], (u16)(sprites[1]->base + 2));
  SetMenuFrame_02213e98(sprites[2], (u16)(sprites[2]->base + 2));
- func_02088ff4(sprites[3]);
- func_02088ff4(sprites[4]);
- func_02088ff4(sprites[5]);
+ Hide3DSpriteSlide(sprites[3]);
+ Hide3DSpriteSlide(sprites[4]);
+ Hide3DSpriteSlide(sprites[5]);
  switch (func_020c5464(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4c), s16 *, 8))) {
  case 0:
  {

@@ -1,7 +1,8 @@
 /* 7 functions from 0x0221D008 to 0x0221E004 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "mapedit.h"
 
-void func_ov007_0221d008(u8 *arg0) {
+void MapEditTextDeleteAccentAction(u8 *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MI_CpuCopy32(s32 *, s8 *, M2C_UNK);
     M2C_UNK func_02019424(s32 *, M2C_UNK);
@@ -113,46 +114,47 @@ MI_CpuCopy32(padding,(s8 *)&gMapEditObjectList,0x44);
 PlaySoundEffect(0x1000d);return;
 } default:return;}}
 
-void func_ov007_0221dbb0(u8 *arg0) {
-M2C_UNK FocusSpriteSlotById(u8);
-extern void *gKeyState;
-u16 held,pressed;
-u8 current,old;
-old=*arg0;
-pressed=M2C_FIELD(gKeyState,u16 *,0);
-current=old;
-held=M2C_FIELD(gKeyState,u16 *,2);
-if(pressed&1){func_ov007_0221d008(arg0);return;}
-if(held&0x40){
-switch(old){
-case 103:if(held==pressed)current=64;break;
-case 104:if(held==pressed)current=66;break;
-}
-if(current>=103U){ if(current>104U){} else goto horizontal; }
-}else if(held&0x80){
-switch(old){
-case 103:if(held==pressed)current=4;break;
-case 104:if(held==pressed)current=6;break;
-}
-if(current>=103U && current<=104U)goto horizontal;
-}else{
-horizontal:
-if(held&0x20){
-switch(current){
-case 104:current=103;break;
-case 103:current=102;break;
-}
-if(current>=103U && current<=104U)goto done;
-}else if(held&0x10){
-switch(current){
-case 104:current=105;break;
-case 103:current=104;break;
-}
-}
-}
+/* Navigate the delete/accent softkeys, or apply the selected action on A. */
+void MapEditTextDeleteAccentInput(u8 *selection) {
+    M2C_UNK FocusSpriteSlotById(u8);
+    extern void *gKeyState;
+    u16 repeat, pressed;
+    u8 slot, oldSlot;
+    oldSlot = *selection;
+    pressed = ((KeyState *)gKeyState)->pressed;
+    slot = oldSlot;
+    repeat = ((KeyState *)gKeyState)->repeat;
+    if (pressed & KEY_A) { MapEditTextDeleteAccentAction(selection); return; }
+    if (repeat & KEY_UP) {
+        switch (oldSlot) {
+        case SOFTKEY_DELETE: if (repeat == pressed) slot = 64; break;
+        case SOFTKEY_ACCENT: if (repeat == pressed) slot = 66; break;
+        }
+        if (slot >= (u32)SOFTKEY_DELETE) { if (slot > (u32)SOFTKEY_ACCENT) {} else goto horizontal; }
+    } else if (repeat & KEY_DOWN) {
+        switch (oldSlot) {
+        case SOFTKEY_DELETE: if (repeat == pressed) slot = 4; break;
+        case SOFTKEY_ACCENT: if (repeat == pressed) slot = 6; break;
+        }
+        if (slot >= (u32)SOFTKEY_DELETE && slot <= (u32)SOFTKEY_ACCENT) goto horizontal;
+    } else {
+    horizontal:
+        if (repeat & KEY_LEFT) {
+            switch (slot) {
+            case SOFTKEY_ACCENT: slot = SOFTKEY_DELETE; break;
+            case SOFTKEY_DELETE: slot = SOFTKEY_MODE_JP; break;
+            }
+            if (slot >= (u32)SOFTKEY_DELETE && slot <= (u32)SOFTKEY_ACCENT) goto done;
+        } else if (repeat & KEY_RIGHT) {
+            switch (slot) {
+            case SOFTKEY_ACCENT: slot = SOFTKEY_CANCEL; break;
+            case SOFTKEY_DELETE: slot = SOFTKEY_ACCENT; break;
+            }
+        }
+    }
 done:
-if(old==current)return;
-FocusSpriteSlotById(current);
+    if (oldSlot == slot) return;
+    FocusSpriteSlotById(slot);
 }
 
 void func_ov007_0221dcc0(void) {

@@ -230,45 +230,44 @@ void func_ov010_022236e4(void) {
 }
 
 #pragma opt_common_subs off
-/* Insert a packet into its channel's queue, kept sorted by LINK_PACKET_KEY so
- * the oldest sequence is at the head, and return the new queue length; -1 when
- * the packet is null or the channel invalid. */
-s32 Link_InsertPacket(void *packet, u8 channel) {
-    s32 OS_DisableInterrupts(void);
-    void OS_RestoreInterrupts(s32);
-    extern s32 gLinkQueueHead[], gLinkQueueTail[], gLinkQueueCount[];
-    extern s32 gLinkQueueIrq;
-    void *cursor;
-    if (!packet) return -1;
-    if (channel >= LINK_CHANNEL_COUNT) return -1;
-    gLinkQueueIrq = OS_DisableInterrupts();
-    if (!gLinkQueueHead[channel]) {
-        gLinkQueueHead[channel] = (s32)packet;
-        M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = 0;
-        M2C_FIELD((void *)gLinkQueueHead[channel], s32 *, LINK_PACKET_NEXT) = 0;
-        gLinkQueueTail[channel] = gLinkQueueHead[channel];
-    } else {
-        cursor = (void *)gLinkQueueTail[channel];
-        while (cursor) {
-            if (M2C_FIELD(cursor, u32 *, LINK_PACKET_KEY) < M2C_FIELD(packet, u32 *, LINK_PACKET_KEY)) {
-                M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = (s32)cursor;
-                M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT) = M2C_FIELD(cursor, s32 *, LINK_PACKET_NEXT);
-                M2C_FIELD(cursor, s32 *, LINK_PACKET_NEXT) = (s32)packet;
-                if (M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT)) M2C_FIELD((void *)M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT), s32 *, LINK_PACKET_PREV) = (s32)packet;
-                if (cursor == (void *)gLinkQueueTail[channel]) gLinkQueueTail[channel] = (s32)packet;
-                goto done;
-            }
-            cursor = (void *)M2C_FIELD(cursor, s32 *, LINK_PACKET_PREV);
-        }
-        M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = 0;
-        M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT) = gLinkQueueHead[channel];
-        M2C_FIELD((void *)gLinkQueueHead[channel], s32 *, LINK_PACKET_PREV) = (s32)packet;
-        gLinkQueueHead[channel] = (s32)packet;
-    }
+/* Insert a link packet into a channel's packet queue, keeping the queue ordered
+   ascending by the packet's key field.  Returns the new queue length, or -1 for
+   a null packet or a channel outside 0..LINK_CHANNEL_COUNT-1. */
+s32 Link_InsertPacket(void *packet, u8 channel){
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
+extern s32 gLinkQueueHead[],gLinkQueueTail[],gLinkQueueCount[];
+extern s32 gLinkQueueIrq;
+void *node;
+if(!packet)return -1;
+if(channel>=3)return -1;
+gLinkQueueIrq=OS_DisableInterrupts();
+if(!gLinkQueueHead[channel]){
+gLinkQueueHead[channel]=(s32)packet;
+M2C_FIELD(packet,s32*,LINK_PACKET_PREV)=0;
+M2C_FIELD((void*)gLinkQueueHead[channel],s32*,LINK_PACKET_NEXT)=0;
+gLinkQueueTail[channel]=gLinkQueueHead[channel];
+}else{
+node=(void*)gLinkQueueTail[channel];
+while(node){
+if(M2C_FIELD(node,u32*,LINK_PACKET_KEY)<M2C_FIELD(packet,u32*,LINK_PACKET_KEY)){
+M2C_FIELD(packet,s32*,LINK_PACKET_PREV)=(s32)node;
+M2C_FIELD(packet,s32*,LINK_PACKET_NEXT)=M2C_FIELD(node,s32*,LINK_PACKET_NEXT);
+M2C_FIELD(node,s32*,LINK_PACKET_NEXT)=(s32)packet;
+if(M2C_FIELD(packet,s32*,LINK_PACKET_NEXT))M2C_FIELD((void*)M2C_FIELD(packet,s32*,LINK_PACKET_NEXT),s32*,LINK_PACKET_PREV)=(s32)packet;
+if(node==(void*)gLinkQueueTail[channel])gLinkQueueTail[channel]=(s32)packet;
+goto done;
+}
+node=(void*)M2C_FIELD(node,s32*,LINK_PACKET_PREV);
+}
+M2C_FIELD(packet,s32*,LINK_PACKET_PREV)=0;
+M2C_FIELD(packet,s32*,LINK_PACKET_NEXT)=gLinkQueueHead[channel];
+M2C_FIELD((void*)gLinkQueueHead[channel],s32*,LINK_PACKET_PREV)=(s32)packet;
+gLinkQueueHead[channel]=(s32)packet;
+}
 done:
-    gLinkQueueCount[channel]++;
-    OS_RestoreInterrupts(gLinkQueueIrq);
-    return gLinkQueueCount[channel];
+gLinkQueueCount[channel]++;
+OS_RestoreInterrupts(gLinkQueueIrq);
+return gLinkQueueCount[channel];
 }
 void *Link_PeekPacket(s32 arg0) {
     s32 OS_DisableInterrupts(void);

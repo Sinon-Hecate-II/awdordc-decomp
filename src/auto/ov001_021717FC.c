@@ -1,6 +1,6 @@
 /* 30 functions from 0x021717FC to 0x021724C0 (ov001), found by ds-decomp. */
 #include "common.h"
-void func_ov001_02172184(void);
+void Ov001_FreeSpriteObjects(void);
 extern s32 data_ov001_02193d14;
 extern u8 data_ov001_021900e4[];
 extern u8 *data_ov001_02190094[];
@@ -137,7 +137,7 @@ DrawPanelText(p,20,0,216,64,2,func_ov001_02171f88(),t);CloseTextPanel(p);
 data_ov001_02193ccc=1;return 1;
 }
 
-s32 func_ov001_02171cf8(void) {
+s32 Ov001_FreeOptionBackground(void) {
  void func_ov001_0218af70(s32);
  if((u8)data_ov001_02193ccc==0) return 0;
  func_ov001_0218af70(1);
@@ -229,9 +229,9 @@ void func_ov001_02171fa0(void) {
 }
 
 void func_ov001_02171fc0(void) {
-    void func_ov001_02172184();
+    void Ov001_FreeSpriteObjects();
     extern M2C_UNK data_ov001_02193d10;
-    func_ov001_02172184();
+    Ov001_FreeSpriteObjects();
     func_ov001_0218b71c(&data_ov001_02193d10);
 }
 
@@ -242,7 +242,7 @@ s32 func_ov001_0218a61c(s32,s32,s32);
 void Ov001_SetSpritePalette(s32,s32,s32);
 void Ov001_MoveSpriteLayout(s32,s32,s32,s32);
 s32 i;u8 *p;
-func_ov001_02172184();
+Ov001_FreeSpriteObjects();
 p=&data_ov001_0218f300[a*2];
 for(i=0;i<2;i++){
 ((s32 *)data_ov001_02193d10)[i]=func_ov001_0218a61c(0,*p++,1);
@@ -255,7 +255,7 @@ Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[1],-1,c,d);
 void Ov001_LayoutChoiceFrame(s32 a,s32 b,s32 c,s32 d){
 extern s32 data_ov001_02193d10;
 s32 func_ov001_0218a61c(s32,s32,s32);void Ov001_SetSpritePalette(s32,s32,s32);void Ov001_MoveSpriteLayout(s32,s32,s32,s32);
-s32 j=6,i;func_ov001_02172184();
+s32 j=6,i;Ov001_FreeSpriteObjects();
 for(i=0;i<4;i++,j++){
 ((s32 *)data_ov001_02193d10)[i]=func_ov001_0218a61c(0,j,1);
 Ov001_SetSpritePalette(((s32 *)data_ov001_02193d10)[i],-1,1);
@@ -266,7 +266,7 @@ Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[2],-1,a,d);
 Ov001_MoveSpriteLayout(((s32 *)data_ov001_02193d10)[3],-1,b,d);
 }
 
-void func_ov001_02172184(void) {
+void Ov001_FreeSpriteObjects(void) {
  void func_ov001_0218a1cc(s32);
  extern s32 data_ov001_02193d10;
  s32 i,v;
@@ -340,10 +340,10 @@ void func_ov001_0217231c(s8 a) {
 
 void func_ov001_021723d4(void) {
  void func_ov001_0218c94c(s32,s32);
- void func_ov001_0218c104(s32);
+ void Ov001_ReleaseSprite(s32);
  if(data_ov001_02193d18==NULL) return;
  func_ov001_0218c94c(0,M2C_FIELD(data_ov001_02193d18,s32 *,4));
- func_ov001_0218c104(M2C_FIELD(data_ov001_02193d18,s32 *,0));
+ Ov001_ReleaseSprite(M2C_FIELD(data_ov001_02193d18,s32 *,0));
  func_ov001_0218b71c((M2C_UNK *)&data_ov001_02193d18);
 }
 

@@ -139,7 +139,7 @@ void func_ov006_0221762c(void *arg0) {
     M2C_UNK PackMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK ExpandMapRecord(M2C_UNK, M2C_UNK);
     s32 GetOnlineLocalPlayerId(void);
-    s32 func_020c7a3c(M2C_UNK);
+    s32 IsValidMapRecord(M2C_UNK);
     void func_020e3788(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     extern const Ov006Date data_ov006_02218394;
@@ -174,7 +174,7 @@ void func_ov006_0221762c(void *arg0) {
     cell[0x13] = (cell[0x13] & ~0x3FU) | (d[2] & 0x3FU);
     cell[0x13] &= 0xF003FFFFU;
 
-    if (func_020c7a3c(M2C_FIELD(arg0, M2C_UNK *, 0x48)) != 0) {
+    if (IsValidMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48)) != 0) {
         func_020e3788((M2C_UNK)M2C_FIELD(arg0, M2C_UNK *, 0x4C), 0x2AC, (M2C_UNK)((u8 *)arg0 + 0x38), (M2C_UNK)arg0);
     } else {
         SetSpriteAnimation(arg0, 2);
@@ -265,7 +265,7 @@ void func_ov006_02217948(void *arg0) {
 void func_ov006_022179b4(void *arg0) {
     s32 NextRandomValue();
     u64 func_020720f0(s32, s32);
-    s32 func_020c7a3c(s32);
+    s32 IsValidMapRecord(s32);
     M2C_UNK ExpandMapRecord(s32, s32);
     s32 IsLocalMacAddress(void *);
     s32 func_020c8cbc(s32);
@@ -303,7 +303,7 @@ void func_ov006_022179b4(void *arg0) {
             } else {
                 var_r0 = 0;
             }
-            if ((var_r0 == 0) && (func_020c7a3c(temp_r4 + var_r9) != 0) && (func_020c8cbc(temp_r4 + var_r9) == 0)) {
+            if ((var_r0 == 0) && (IsValidMapRecord(temp_r4 + var_r9) != 0) && (func_020c8cbc(temp_r4 + var_r9) == 0)) {
                 var_r6 |= 1 << var_r5;
                 sp0 += 1;
             }
