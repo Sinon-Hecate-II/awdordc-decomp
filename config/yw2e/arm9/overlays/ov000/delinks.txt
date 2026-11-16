@@ -244,4 +244,4 @@ src/auto/ov000_021AA3FC.c:
 
 src/auto/ov000_area_effect_callbacks.c:
     complete
-    .bss start:0x021e14e0 end:0x021e14e8
+    .bss start:0x021e14e0 end:0x021e1500
