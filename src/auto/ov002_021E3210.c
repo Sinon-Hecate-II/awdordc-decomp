@@ -1,13 +1,15 @@
 /* 21 functions from 0x021E3210 to 0x021E41AC (ov002), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "ov002_effects.h"
+#include "ov002_panel.h"
 
 void func_ov002_021e3210(void *arg0) {
     (void)arg0;
 }
 
 void func_ov002_021e3578(void *arg0) {
-    s8 func_ov002_021e30d0(void *);
+    s8 CountPanelEntries(void *);
     extern u8 gPlayerSettings;
     s32 temp_r0_2;
     s32 var_r10;
@@ -26,7 +28,7 @@ void func_ov002_021e3578(void *arg0) {
         M2C_FIELD(arg0 + var_r2 * 4, s16 *, 0x4A) = -1;
         var_r2 = var_r2 + 1;
     } while (var_r2 < 5);
-    temp_r0_2 = func_ov002_021e30d0(arg0 + 0x36);
+    temp_r0_2 = CountPanelEntries(arg0 + 0x36);
     var_r6 = 0;
     var_lr = arg0 + 0x4A;
     if (temp_r0_2 <= 0) {
@@ -62,13 +64,17 @@ void func_ov002_021e3578(void *arg0) {
     } while (var_r6 < temp_r0_2);
 }
 
-void func_ov002_021e36d0(void *a) {
-s8 func_ov002_021e30d0(void *);void *p;s32 i;
-M2C_FIELD(a,s8 *,102)=func_ov002_021e30d0(a+34);if(!M2C_FIELD(a,u8 *,101))return;
-for(p=a+34,i=0;i<5;i++,p+=4)M2C_FIELD(p,u8 *,2)&=~7;
-{void *q; s32 j;for(q=a+54,j=0;j<5;j++,q+=4)M2C_FIELD(q,u8 *,2)&=~7;}
-{void *q; s32 j;for(q=a+74,j=0;j<5;j++,q+=4)M2C_FIELD(q,u8 *,2)&=~7;}
-{void *q; s32 j;for(q=a+38,j=1;j<5;j++,q+=4)M2C_FIELD(q,s16 *,0)=-1;}
+/* Reset a versus-screen player panel for its gauge animation: record how many of
+ * the five stat entries are filled, then, when the player's CO gauge is shown,
+ * clear the icon index of every entry in the stat, source and display lists and
+ * empty stat entries 1..4. */
+void ResetPanelEntries(void *panel) {
+s8 CountPanelEntries(void *);void *entry;s32 i;
+M2C_FIELD(panel,s8 *,PANEL_ENTRY_COUNT)=CountPanelEntries(panel+PANEL_ENTRIES);if(!M2C_FIELD(panel,u8 *,PANEL_GAUGES_SHOWN))return;
+for(entry=panel+PANEL_ENTRIES,i=0;i<5;i++,entry+=4)M2C_FIELD(entry,u8 *,2)&=~7;
+{void *q; s32 j;for(q=panel+PANEL_STAT_SOURCE,j=0;j<5;j++,q+=4)M2C_FIELD(q,u8 *,2)&=~7;}
+{void *q; s32 j;for(q=panel+PANEL_STAT_DISPLAY,j=0;j<5;j++,q+=4)M2C_FIELD(q,u8 *,2)&=~7;}
+{void *q; s32 j;for(q=panel+PANEL_ENTRIES+4,j=1;j<5;j++,q+=4)M2C_FIELD(q,s16 *,0)=-1;}
 }
 
 s32 func_ov002_021e377c(void *arg0) {
@@ -171,7 +177,7 @@ func_ov002_021e3044(p+0x68,(M2C_FIELD(&gPlayerSettings,u8 *,0x25)+9)/10,(M2C_FIE
 BuildPanelStatEntries(p);BuildPanelStatEntries(p+0x68);
 func_ov002_021e3210(p);func_ov002_021e3210(p+0x68);
 func_ov002_021e3578(p);func_ov002_021e3578(p+0x68);
-func_ov002_021e36d0(p);func_ov002_021e36d0(p+0x68);
+ResetPanelEntries(p);ResetPanelEntries(p+0x68);
 }
 
 M2C_UNK func_ov002_021e39e8(s32 *p) {
@@ -310,14 +316,20 @@ void func_ov002_021e3e64(void *arg0) {
     }
 }
 
-void func_ov002_021e3e7c(void *p) {
-s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 a,b;
-if(M2C_FIELD(p,u16 *,6)>=M2C_FIELD(p,u16 *,8))return;
-a=EaseInterpolate(0,M2C_FIELD(p,u8 *,16),0,M2C_FIELD(p,u16 *,6),M2C_FIELD(p,u16 *,8));
-b=EaseInterpolate(4,M2C_FIELD(p,u16 *,12),M2C_FIELD(p,u16 *,14),M2C_FIELD(p,u16 *,6),M2C_FIELD(p,u16 *,8));
-func_02087048(M2C_FIELD(p,u8 *,17),(u8)a);func_0208718c();
-func_020872c8(M2C_FIELD(p,u8 *,18)?M2C_FIELD(p,s16 *,0):-M2C_FIELD(p,s16 *,0),M2C_FIELD(p,s16 *,2),M2C_FIELD(p,s16 *,4),b,32,M2C_FIELD(p,u16 *,10));
-func_02087048(0,31);
+/* Draws one frame of a unit model's disc effect: eases the polygon alpha and the
+   radius over the disc's lifetime, draws the filled circle in 3D and restores
+   the default polygon attribute. */
+void DrawModelEffectDisc(void *p) {
+    s32 EaseInterpolate(s32,s32,s32,s32,s32);
+    EffectDisc *disc = (EffectDisc *)p;
+    s32 alpha, radius;
+    if (disc->elapsed >= disc->duration) return;
+    alpha = EaseInterpolate(0, disc->alphaTo, 0, disc->elapsed, disc->duration);
+    radius = EaseInterpolate(4, disc->radiusFrom, disc->radiusTo, disc->elapsed, disc->duration);
+    SetGxPolygonAttr(disc->polygonAttr, (u8)alpha);
+    ResetGxTextureParams();
+    DrawGxCircleFan(disc->mirror ? disc->x : -disc->x, disc->y, disc->z, radius, 32, disc->color);
+    SetGxPolygonAttr(0, 31);
 }
 
 void func_ov002_021e3f28(void) {

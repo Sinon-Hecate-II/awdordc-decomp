@@ -64,16 +64,16 @@ func_0208ae88(created,0);
    value and bank (func_ov010_0222a808) and drops out of the message queue, or switches
    back to the layer's idle animation.  Ignored while another message is showing. */
 void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
-    s32 func_020abe90(M2C_UNK);
-    s32 func_020ad3f0(void);
+    s32 GetScreenFlag(M2C_UNK);
+    s32 IsScreenFadeActive(void);
     M2C_UNK func_ov010_0222a808(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228320(void);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
-    if (func_020abe90(M2C_FIELD(arg3, u8 *, 0x35)) == 1) {
+    if (GetScreenFlag(M2C_FIELD(arg3, u8 *, 0x35)) == 1) {
         return;
     }
-    if (func_020ad3f0() != 0) {
+    if (IsScreenFadeActive() != 0) {
         return;
     }
     if (arg0 == 0) {
@@ -191,8 +191,8 @@ void func_ov010_0222b01c(void *arg0) {
 }
 
 void func_ov010_0222b074(void) {
-    M2C_UNK func_ov010_02228a70();
-    func_ov010_02228a70();
+    M2C_UNK Ov010Online_EndSession();
+    Ov010Online_EndSession();
 }
 
 void func_ov010_0222b080(void) {
@@ -209,15 +209,15 @@ void func_ov010_0222b08c(M2C_UNK arg0) {
 }
 
 void func_ov010_0222b0b0(void *arg0) {
-    s32 func_020abe90(M2C_UNK);
+    s32 GetScreenFlag(M2C_UNK);
     M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 2) && (func_020abe90(0) == 0)) {
+    if ((M2C_FIELD(arg0, u8 *, 0x34) & 2) && (GetScreenFlag(0) == 0)) {
         func_020ad348(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 4)) {
         return;
     }
-    if (func_020abe90(1) != 0) {
+    if (GetScreenFlag(1) != 0) {
         return;
     }
     func_020ad348(2, 8, 1, arg0);
@@ -497,11 +497,11 @@ void func_ov010_0222b91c(M2C_UNK arg0) {
 
 void func_ov010_0222b92c(void *arg0) {
     M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if (func_020abe90(0) == 1) {
+    if (GetScreenFlag(0) == 1) {
         func_020ad2a0(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
     }
-    if (func_020abe90(1) != 1) {
+    if (GetScreenFlag(1) != 1) {
         return;
     }
     func_020ad2a0(2, 8, 1, arg0);

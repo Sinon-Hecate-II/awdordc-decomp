@@ -253,32 +253,44 @@ s32 func_020c6414(void) {
  return 2;
 }
 
-s32 func_020c64a4(void) {
- s32 IsCarrierUnitKind(s32);
- extern void **gCurrentMap;
- void *base; u32 index;
- if(CanLoadUnitAtCursor()==0)return 2;
- if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
- base=*gCurrentMap;
- index=M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,12);
- if(index==0)return 2;
- if(M2C_FIELD((u8 *)base+index*14,u16 *,0x59A8)&1)return 2;
- if(M2C_FIELD(base,s16 *,0x52DC)!=M2C_FIELD(base,s16 *,0x52D8)||M2C_FIELD(base,s16 *,0x52DE)!=M2C_FIELD(base,s16 *,0x52DA))return 2;
- return 0;
+/* Whether the carrier under the cursor may drop the unit in its first cargo
+   slot: the unit must be a carrier that has not moved this turn, the slot must
+   hold a unit that has not acted yet, and the cursor must still be on the
+   carrier.  Returns 0 when the action is available, 2 when it is not. */
+s32 CanDropFirstCargo(void) {
+    s32 IsCarrierUnitKind(s32);
+    extern void **gCurrentMap;
+    void *base;
+    u32 cargoId;
+
+    if (CanLoadUnitAtCursor() == 0) return 2;
+    if (IsCarrierUnitKind(((BattleMapUnitHead *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT))->kind) == 0) return 2;
+    base = *gCurrentMap;
+    cargoId = M2C_FIELD(M2C_FIELD(base, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_FIRST_CARRIED);
+    if (cargoId == 0) return 2;
+    if (M2C_FIELD((u8 *)base + cargoId * MAP_UNIT_STRIDE, u16 *, MAP_UNIT_RECORDS + MAP_UNIT_FLAGS) & UNIT_FLAG_ACTED) return 2;
+    if (M2C_FIELD(base, s16 *, MAP_CURSOR_X) != M2C_FIELD(base, s16 *, MAP_CURSOR_OLD_X) || M2C_FIELD(base, s16 *, MAP_CURSOR_Y) != M2C_FIELD(base, s16 *, MAP_CURSOR_OLD_Y)) return 2;
+    return 0;
 }
 
-s32 func_020c6554(void) {
- s32 IsCarrierUnitKind(s32);
- extern void **gCurrentMap;
- void *base; u32 index;
- if(CanLoadUnitAtCursor()==0)return 2;
- if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
- base=*gCurrentMap;
- index=M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,13);
- if(index==0)return 2;
- if(M2C_FIELD((u8 *)base+index*14,u16 *,0x59A8)&1)return 2;
- if(M2C_FIELD(base,s16 *,0x52DC)!=M2C_FIELD(base,s16 *,0x52D8)||M2C_FIELD(base,s16 *,0x52DE)!=M2C_FIELD(base,s16 *,0x52DA))return 2;
- return 0;
+/* Whether the carrier under the cursor may drop the unit in its second cargo
+   slot: the unit must be a carrier that has not moved this turn, the slot must
+   hold a unit that has not acted yet, and the cursor must still be on the
+   carrier.  Returns 0 when the action is available, 2 when it is not. */
+s32 CanDropSecondCargo(void) {
+    s32 IsCarrierUnitKind(s32);
+    extern void **gCurrentMap;
+    void *base;
+    u32 cargoId;
+
+    if (CanLoadUnitAtCursor() == 0) return 2;
+    if (IsCarrierUnitKind(((BattleMapUnitHead *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT))->kind) == 0) return 2;
+    base = *gCurrentMap;
+    cargoId = M2C_FIELD(M2C_FIELD(base, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_NEXT_CARRIED);
+    if (cargoId == 0) return 2;
+    if (M2C_FIELD((u8 *)base + cargoId * MAP_UNIT_STRIDE, u16 *, MAP_UNIT_RECORDS + MAP_UNIT_FLAGS) & UNIT_FLAG_ACTED) return 2;
+    if (M2C_FIELD(base, s16 *, MAP_CURSOR_X) != M2C_FIELD(base, s16 *, MAP_CURSOR_OLD_X) || M2C_FIELD(base, s16 *, MAP_CURSOR_Y) != M2C_FIELD(base, s16 *, MAP_CURSOR_OLD_Y)) return 2;
+    return 0;
 }
 
 /* Whether the unit under the cursor may deploy a unit: the unit must be a carrier

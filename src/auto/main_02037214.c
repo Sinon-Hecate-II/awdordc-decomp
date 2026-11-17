@@ -1,5 +1,6 @@
 /* 39 functions from 0x02037214 to 0x0203804C (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 static inline void seed371(u64 *seed) {
 extern u64 data_0213d1e0[];
 data_0213d1e0[0]=*seed;
@@ -115,7 +116,7 @@ s32 func_0203739c(char *src, u32 len, char *dest, u32 maxDest) {
     return (s32)written;
 }
 
-s32 func_02037508(s32 *outParam, s32 *outType) {
+s32 GetNetError(s32 *outParam, s32 *outType) {
     extern M2C_UNK gNetError;
     if (outParam != (s32 *)0) {
         *outParam = M2C_FIELD(&gNetError, s32 *, 4);
@@ -273,13 +274,13 @@ void gpiFree(M2C_UNK arg0) {
 }
 
 M2C_UNK func_020377dc(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK d){
- extern void *data_0213d1dc;
+ extern void *gWfcConnection;
  void func_02037854(s32);
  void MI_CpuFill8(void *,s32,s32);void func_020220a8(s32);
- if(data_0213d1dc)return;
+ if(gWfcConnection)return;
  MI_CpuFill8(a,0,12);
  M2C_FIELD(a,u16 *,8)=b;M2C_FIELD(a,u16 *,10)=1;M2C_FIELD(a,u16 *,4)=1;M2C_FIELD(a,u16 *,6)=0;
- data_0213d1dc=(void *)a;func_02037854(0);func_020220a8(d);
+ gWfcConnection=(void *)a;func_02037854(0);func_020220a8(d);
 }
 
 void func_0203783c(M2C_UNK arg0) {
@@ -305,21 +306,27 @@ void func_02037854(s32 arg0) {
     }
 }
 
-void func_020378a4(void) {
-    extern void *data_0213d1dc;
+/* Start the WFC library on the connection created by func_020377dc: build the
+ * WFC_Init parameters from the connection's mode and sub-mode, hand the library
+ * the game's work-block allocators and move the connection to RUNNING. A
+ * failed WFC_Init is reported as network error -6; starting without a
+ * connection object reports -4. */
+void Wfc_StartConnection(void) {
+    extern void *gWfcConnection;
     void MI_CpuFill8(void *, s32, s32);
     s32 WFC_Init(void *);
     void SetNetError(s32, s32);
-    s32 args[3];
-    if (data_0213d1dc) {
-        if (M2C_FIELD(data_0213d1dc, u16 *, 4) != 1) return;
-        MI_CpuFill8((s32)args, 0, 12);
-        M2C_FIELD(args, u8 *, 8) = M2C_FIELD(data_0213d1dc, u16 *, 8);
-        M2C_FIELD(args, u8 *, 9) = M2C_FIELD(data_0213d1dc, u16 *, 10);
-        args[0] = (s32)HeapAlloc;
-        args[1] = (s32)HeapFree;
-        M2C_FIELD(data_0213d1dc, u16 *, 4) = 2;
-        if (!WFC_Init(args)) {
+    WfcInitParams params;
+
+    if (gWfcConnection) {
+        if (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) != WFC_CONN_IDLE) return;
+        MI_CpuFill8(&params, 0, sizeof(params));
+        params.mode = M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_MODE);
+        params.submode = M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_SUBMODE);
+        params.allocate = (void *(*)(s32, s32))HeapAlloc;
+        params.freeBlock = (void (*)(s32, void *, s32))HeapFree;
+        M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_RUNNING;
+        if (!WFC_Init(&params)) {
             SetNetError(9, -6);
         }
     } else {
@@ -328,97 +335,100 @@ void func_020378a4(void) {
 }
 
 s32 func_02037954(void) {
-    extern void *data_0213d1dc;
+    extern void *gWfcConnection;
     s32 GetNetConnectionStatus(void);
     s32 dummy = 0;
     (void)dummy;
-    if (!data_0213d1dc) {
+    if (!gWfcConnection) {
         return 0;
     }
-    if (!M2C_FIELD(data_0213d1dc, s32 *, 0)) {
+    if (!M2C_FIELD(gWfcConnection, s32 *, 0)) {
         return 0;
     }
-    M2C_FIELD(data_0213d1dc, u16 *, 4) = 3;
+    M2C_FIELD(gWfcConnection, u16 *, 4) = 3;
     GetNetConnectionStatus();
     return 1;
 }
 
 void func_02037994(void) {
-    extern void *data_0213d1dc;
+    extern void *gWfcConnection;
     s32 Wfc_ProcessStep(void);
     s32 Wfc_GetLinkState(void);
     s32 dummy = 0;
     (void)dummy;
-    if (!data_0213d1dc) return;
-    if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 2) {
-        M2C_FIELD(data_0213d1dc, s32 *, 0) = Wfc_ProcessStep();
+    if (!gWfcConnection) return;
+    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 2) {
+        M2C_FIELD(gWfcConnection, s32 *, 0) = Wfc_ProcessStep();
         return;
     }
-    if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 4 && M2C_FIELD(data_0213d1dc, u16 *, 6) != 0) {
+    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 4 && M2C_FIELD(gWfcConnection, u16 *, 6) != 0) {
         if (Wfc_GetLinkState() != 9) {
-            M2C_FIELD(data_0213d1dc, u16 *, 6) = 0;
-            M2C_FIELD(data_0213d1dc, u16 *, 4) = 6;
+            M2C_FIELD(gWfcConnection, u16 *, 6) = 0;
+            M2C_FIELD(gWfcConnection, u16 *, 4) = 6;
         }
     }
 }
 
+/* Poll the WFC connection and advance its state: leave an idle connection
+ * alone, then record the link as connecting, connected or ready, or record a
+ * failed/fatal WFC error in the global network error record and stop. */
 s32 GetNetConnectionStatus(void) {
-    extern void *data_0213d1dc;
-    s32 func_0202f1dc(void);
+    extern void *gWfcConnection;
+    s32 GetWfcSessionProgress(void);
     void SetNetError(s32, s32);
-    s32 n;
+    s32 state;
     s32 dummy = 0;
     (void)dummy;
-    if (!data_0213d1dc) return 0;
-    n = M2C_FIELD(data_0213d1dc, u16 *, 4);
-    if (n == 1) return n;
-    n = func_0202f1dc();
-    if (n == 5) {
-        M2C_FIELD(data_0213d1dc, u16 *, 4) = 4;
-        M2C_FIELD(data_0213d1dc, u16 *, 6) = 1;
-        return 4;
+    if (!gWfcConnection) return 0;
+    state = M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE);
+    if (state == WFC_CONN_IDLE) return state;
+    state = GetWfcSessionProgress();
+    if (state == 5) {
+        M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_CONNECTED;
+        M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_LINK_READY) = 1;
+        return WFC_CONN_CONNECTED;
     }
-    if (n < 0) {
-        if (n >= -10) {
-            SetNetError(9, n - 700);
-            M2C_FIELD(data_0213d1dc, u16 *, 4) = 8;
-            return 8;
+    if (state < 0) {
+        if (state >= -10) {
+            SetNetError(9, state - 700);
+            M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_FATAL;
+            return WFC_CONN_FATAL;
         }
-        SetNetError(5, n);
-        M2C_FIELD(data_0213d1dc, u16 *, 4) = 7;
-        return 7;
+        SetNetError(5, state);
+        M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_FAILED;
+        return WFC_CONN_FAILED;
     }
-    return 2;
+    return WFC_CONN_RUNNING;
 }
 
 void func_02037abc(void) {
-extern void *data_0213d1dc;s32 func_0202f28c(void);void func_02006030(s32);
-if(!data_0213d1dc)return;
-if(M2C_FIELD(data_0213d1dc,u16 *,4)==1){data_0213d1dc=0;return;}
-while(!func_0202f28c())func_02006030(10);
-data_0213d1dc=0;
+extern void *gWfcConnection;s32 func_0202f28c(void);void SleepMilliseconds(s32);
+if(!gWfcConnection)return;
+if(M2C_FIELD(gWfcConnection,u16 *,4)==1){gWfcConnection=0;return;}
+while(!func_0202f28c())SleepMilliseconds(10);
+gWfcConnection=0;
 }
 
 s32 func_02037b1c(void) {
-    extern void *data_0213d1dc;
+    extern void *gWfcConnection;
     s32 func_0202f28c(void);
     s32 dummy = 0;
     (void)dummy;
-    if (!data_0213d1dc) return 1;
-    if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 8) return 0;
-    if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 1) {
-        data_0213d1dc = 0;
+    if (!gWfcConnection) return 1;
+    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 8) return 0;
+    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 1) {
+        gWfcConnection = 0;
         return 1;
     }
-    M2C_FIELD(data_0213d1dc, u16 *, 4) = 5;
+    M2C_FIELD(gWfcConnection, u16 *, 4) = 5;
     if (!func_0202f28c()) return 0;
-    data_0213d1dc = 0;
+    gWfcConnection = 0;
     return 1;
 }
 
 s32 func_02037b8c(void) {
-    extern void *data_0213d1dc;
-    if ((data_0213d1dc != NULL) && (M2C_FIELD(data_0213d1dc, u16 *, 4) == 6)) {
+    extern void *gWfcConnection;
+    if ((gWfcConnection != NULL) && (M2C_FIELD(gWfcConnection, u16 *, 4) == 6)) {
         return 1;
     }
     return 0;

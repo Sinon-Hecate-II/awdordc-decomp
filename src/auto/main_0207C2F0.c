@@ -138,7 +138,7 @@ void func_0207c4ec(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_0207c55c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void QueueVramCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_0207c4ec(void *);
     void *var_r0;
 
@@ -228,7 +228,7 @@ void func_0207c728(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     func_01ffa8bc(temp_r0, 0xFF02);
 }
 
-void func_0207c780(void *arg0, u32 arg1) {
+void LoadGraphicsBlock(void *arg0, u32 arg1) {
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
     extern void (*data_02101448[])();
     void (*func)();
@@ -367,7 +367,7 @@ s32 IntPow(s32 arg0, s32 arg1) {
     return arg0 * IntPow(arg0, arg1 - 1);
 }
 
-s32 func_0207cb88(s32 arg0) {
+s32 GetDigitCount(s32 arg0) {
     s32 Divide(s32, M2C_UNK);
     s32 var_r0;
     s32 var_r5;
@@ -425,7 +425,7 @@ M2C_UNK func_0207cc9c(M2C_UNK *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  * view matrix from them and inverts it into the view's inverse matrix. */
 void BuildMapViewTransform(void *view) {
     void func_0200402c(void *, void *, void *, s32, void *);
-    void func_02007f4c(void *, void *);
+    void MTX_Copy33(void *, void *);
     M2C_UNK func_02000ca0(void *, s32);
     Vec0207 eye = {0, 0, 0};
     Vec0207 ground = {0, 0, 0};
@@ -442,7 +442,7 @@ void BuildMapViewTransform(void *view) {
     *(Vec0207 *)((u8 *)view + 0xfc) = ground;
     *(Vec0207 *)((u8 *)view + 0x108) = up;
     func_0200402c(&eye, &up, &ground, 1, (u8 *)view + 0x1c);
-    func_02007f4c((u8 *)view + 0x1c, matrix);
+    MTX_Copy33((u8 *)view + 0x1c, matrix);
     func_02000ca0(matrix, (s32)view + 0x4c);
 }
 

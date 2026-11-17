@@ -19,7 +19,7 @@ void SpawnMapClearEffect(void *arg0){
 extern void **gCurrentMap;
 M2C_UNK SetFileDirectory(M2C_UNK *);
 M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-s32 func_020abe90(M2C_UNK);
+s32 GetScreenFlag(M2C_UNK);
 void *CreateMapClearWinObject(M2C_UNK);
 void *CreateMapClearLoseObject(M2C_UNK);
 void *CreateMapClearDrawObject(M2C_UNK);
@@ -41,7 +41,7 @@ register u8 player asm("r5");
 u8 armyIndex;
 effect=NULL;
 player=(u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER);
-if(func_020abe90(3)==1)return;
+if(GetScreenFlag(3)==1)return;
 if(DidPlayerWin()!=0){
 effect=CreateMapClearWinObject(arg0);
 player=(u8)GetWinningPlayer();
@@ -349,7 +349,7 @@ void func_020b8970(void *arg0) {
     void func_02087d84(void *, s32, s32, s32, s32, s32);
     void func_02088e84(void *, s32, s32, s32, s32);
     void func_02088f1c(void *);
-    void func_0208ca2c(void *, s32, s32, s32);
+    void Load3DSpritePattern(void *, s32, s32, s32);
     void func_020994e0(s32);
     void func_0209c024(s32, s32, void *, s32, s32, s32);
     void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
@@ -420,7 +420,7 @@ void func_020b8970(void *arg0) {
     }
     func_02088f1c(M2C_FIELD(arg0, void **, 0x50));
     CreateMenuUnitSprite(arg0);
-    func_0208ca2c((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
+    Load3DSpritePattern((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
     DrawTilemapNumber(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
     func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
     DrawTilemapNumber(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);

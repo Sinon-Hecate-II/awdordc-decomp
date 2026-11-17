@@ -248,8 +248,8 @@ if(callback)callback(arg1,arg2,arg3);
 }
 #pragma pop
 void func_ov009_02223a24(void) {
-    M2C_UNK func_ov009_0222529c();
-    func_ov009_0222529c();
+    M2C_UNK RestartLinkSession();
+    RestartLinkSession();
 }
 
 void ClearPlayerActive(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
@@ -307,16 +307,16 @@ s32 func_ov009_02223b5c(void) {
 
 void func_ov009_02223b8c(void *arg0) {
     s32 func_ov009_02223bbc();
-    M2C_UNK func_ov009_0222525c();
+    M2C_UNK CloseLinkChannel();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SignalLinkEvent();
-        func_ov009_0222525c();
+        CloseLinkChannel();
         return;
     }
     if (func_ov009_02223bbc() != 0) {
         return;
     }
-    func_ov009_0222525c();
+    CloseLinkChannel();
 }
 
 s32 func_ov009_02223bbc(void) {
@@ -349,19 +349,19 @@ s32 func_ov009_02223c08(void) {
 }
 
 void func_ov009_02223c38(void *arg0) {
- s32 func_ov009_02223c60(void); M2C_UNK func_ov009_0222529c();
- if(M2C_FIELD(arg0,u16 *,2)!=0) {SignalLinkEvent();func_ov009_0222529c();return;}
+ s32 func_ov009_02223c60(void); M2C_UNK RestartLinkSession();
+ if(M2C_FIELD(arg0,u16 *,2)!=0) {SignalLinkEvent();RestartLinkSession();return;}
  if(func_ov009_02223c60()!=0) return;
 }
 
 s32 func_ov009_02223c60(void) {
     s32 func_0201280c(void (*)(void *), s32);
     void func_ov009_02223c98(void *);
-    M2C_UNK func_ov009_0222525c();
+    M2C_UNK CloseLinkChannel();
     SetLinkPhase(3);
     if (func_0201280c(func_ov009_02223c98, 0) == 2) return 1;
     SignalLinkError();
-    func_ov009_0222525c();
+    CloseLinkChannel();
     return 0;
 }
 
@@ -596,7 +596,7 @@ s32 GetLinkPhase(void) {
     return M2C_FIELD(&gLinkState, s32 *, 0x10);
 }
 
-s32 func_ov009_022241a4(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,0x38);}
+s32 GetLinkRequestKind(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,0x38);}
 
 s32 func_ov009_022241b4(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,12);}
 

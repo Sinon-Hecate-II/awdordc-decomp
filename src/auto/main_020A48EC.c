@@ -167,10 +167,10 @@ if(!found)ClearSelectionQueue();
 
 #pragma opt_lifetimes off
 void SelectPointOrderTargets(Unk020ABaseEntry *p) {
-extern s32 *gCurrentMap; void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void ClearSelectionQueue(void);
+extern s32 *gCurrentMap; void SelectMapLayer(s32);void FillMapLayer(s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void ClearSelectionQueue(void);
 s16 pos[2];s32 map; s32 centerY;register s32 right;register s32 yy;register s32 xx;register s32 zero;register u32 cy;register s32 bottom;s32 left,top,dist;
 SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);
-func_01ffb918(p->x,p->y,(u32)(M2C_FIELD(p,u16 *,2)<<16)>>30,0,0);
+FillMapColumn(p->x,p->y,(u32)(M2C_FIELD(p,u16 *,2)<<16)>>30,0,0);
 if(!func_ov000_021aab4c(pos,p->player,0,6,2,M2C_FIELD(p,s8 *,7))){ClearSelectionQueue();return;}
 AppendSelectionEntry((u16)pos[0],(u16)pos[1],0,0);
 left=pos[0]-2;if(left<0)left=0;
@@ -187,7 +187,7 @@ xx++;}while(xx<=right);}}
 /* Paints the area an order targets on the map score layer, by order type: a
    radius-5 diamond centred on the order, a line of length top, or a point. */
 s32 DrawOrderTargetArea(Unk020AEntry *order,s8 color,u8 extra) {
-void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
+void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
 Unk020ABaseEntry *base=(Unk020ABaseEntry *)order;
 if(!IsMapOrderActive(order))return 0;
 switch(order->type) {
@@ -201,7 +201,7 @@ s32 dir=order->top;
 if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)>=(s32)base->player) dir=(dir+1)%3;
 func_01ffb80c(base->x,base->y,dir,color);return 1;
 }
-case 5:func_01ffb918(base->x,base->y,order->top,color,extra);return 1;
+case 5:FillMapColumn(base->x,base->y,order->top,color,extra);return 1;
 default:return 0;
 }
 }

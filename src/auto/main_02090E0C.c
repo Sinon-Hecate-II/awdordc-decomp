@@ -59,45 +59,49 @@ void DrawSprite3DFrame(void *obj,s32 *pos,s32 attr,s32 extra) {
     }
     DrawSprite3DParts((M2C_UNK)obj);
 }
-M2C_UNK func_02090e0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    extern M2C_UNK data_021029d8;
-    extern M2C_UNK data_021029cc;
+/* Create a sprite driven by an animation script: allocate the scripted sprite
+ * object and install its vtable, remember the script, then allocate and start
+ * its first script player at (x, y).  ownsScript makes the script buffer be
+ * freed together with the object; a mode of 0 selects the default mode 9. */
+M2C_UNK CreateScriptedSprite(M2C_UNK script, M2C_UNK slot, M2C_UNK x, M2C_UNK y, u16 tile, s32 priority, s32 ownsScript, s32 mode) {
+    extern M2C_UNK gScriptedSpriteClass;
+    extern M2C_UNK gScriptedSpriteVtbl;
     M2C_UNK func_01ffa3dc(M2C_UNK, M2C_UNK);
     M2C_UNK MemAlloc(M2C_UNK);
-    void func_020906a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void *r4;
-    M2C_UNK alloc;
+    void SpritePlayer_Init(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void *object;
+    M2C_UNK player;
 
-    if (arg7 == 0) {
-        arg7 = 9;
+    if (mode == 0) {
+        mode = 9;
     }
-    r4 = (void *)func_01ffa3dc((M2C_UNK)&data_021029d8, arg7);
-    if (r4 != 0) {
-        *(M2C_UNK *)r4 = (M2C_UNK)&data_021029cc;
-        M2C_FIELD(r4, M2C_UNK *, 0x40) = arg0;
-        M2C_FIELD(r4, M2C_UNK *, 0x38) = 0;
-        M2C_FIELD(r4, M2C_UNK *, 0x3C) = 0;
-        M2C_FIELD(r4, M2C_UNK *, 0x34) = 0;
-        M2C_FIELD(r4, u8 *, 0x44) = *((u8 *)&arg6);
-        alloc = MemAlloc(0x30);
-        if (alloc != 0) {
-            func_020906a8(alloc, (M2C_UNK)r4, arg0, arg1, arg2, arg3, arg4, arg5);
+    object = (void *)func_01ffa3dc((M2C_UNK)&gScriptedSpriteClass, mode);
+    if (object != 0) {
+        *(M2C_UNK *)object = (M2C_UNK)&gScriptedSpriteVtbl;
+        M2C_FIELD(object, M2C_UNK *, 0x40) = script;
+        M2C_FIELD(object, M2C_UNK *, 0x38) = 0;
+        M2C_FIELD(object, M2C_UNK *, 0x3C) = 0;
+        M2C_FIELD(object, M2C_UNK *, 0x34) = 0;
+        M2C_FIELD(object, u8 *, 0x44) = *((u8 *)&ownsScript);
+        player = MemAlloc(0x30);
+        if (player != 0) {
+            SpritePlayer_Init(player, (M2C_UNK)object, script, slot, x, y, tile, priority);
         }
     }
-    return (M2C_UNK)r4;
+    return (M2C_UNK)object;
 }
 
-void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK func_02090e0c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=func_02081070(a,1);func_02090e0c(r,b,c,d,e,f,1,g);}
+void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK CreateScriptedSprite(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=func_02081070(a,1);CreateScriptedSprite(r,b,c,d,e,f,1,g);}
 
 void *func_02090f0c(void *arg0) {
     M2C_UNK func_02090894();
     M2C_UNK Sprite_DestroyAuxList();
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK MemFree();
-    extern M2C_UNK data_021029cc;
+    extern M2C_UNK gScriptedSpriteVtbl;
     M2C_UNK (*temp_r1)(void *);
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021029cc;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gScriptedSpriteVtbl;
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
         func_02090894();
     }
@@ -115,7 +119,7 @@ void *func_02090f0c(void *arg0) {
     return arg0;
 }
 
-void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK Sprite_DestroyAuxList();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_021029cc;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&data_021029cc;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))Sprite_DestroyAuxList();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
+void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK Sprite_DestroyAuxList();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK gScriptedSpriteVtbl;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&gScriptedSpriteVtbl;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))Sprite_DestroyAuxList();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
 
 #pragma opt_propagation off
 void func_02090fdc(void *arg0) {
@@ -688,7 +692,7 @@ if(value+gRecordValues[index]<0xf423fU) { gRecordValues[index]=gRecordValues[ind
 gRecordValues[index]=0xf423fU;
 }
 #pragma peephole off
-void func_02091c54(s32 index,s32 value) {
+void AddRecordFunds(s32 index,s32 value) {
 extern u32 gRecordValues[];
 if(value+gRecordValues[index]<0x5f5e0ffU) { gRecordValues[index]=gRecordValues[index]+value; return; }
 gRecordValues[index]=0x5f5e0ffU;
@@ -703,7 +707,7 @@ void func_02091c98(void) {
 extern void *gCur3DSpriteEngine;
 extern M2C_UNK data_0211e738;
 extern M2C_UNK data_0211e068;
-func_0207c780(&data_0211e738,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
+LoadGraphicsBlock(&data_0211e738,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
 CopyToObjPaletteShadow(&data_0211e068,0x200,0x20);
 }
 

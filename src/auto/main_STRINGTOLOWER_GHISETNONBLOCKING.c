@@ -50,7 +50,7 @@ s32 func_020493b0(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32
 s32 func_020493f8(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1001,(int)&value,&size)==-1)return -1;return value;}
 
 s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
-    s32 func_02021d34(void *, u32, s64);
+    s32 PollSockets(void *, u32, s64);
     PollFd p;
     s32 r;
 
@@ -59,7 +59,7 @@ s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
     if (readable) p.events |= 1;
     if (pri) p.events |= 8;
     p.revents = 0;
-    r = func_02021d34(&p, 1, 0);
+    r = PollSockets(&p, 1, 0);
     if (r < 0) return -1;
     if (readable) {
         if (r > 0 && (p.revents & 0x41)) *readable = 1;
@@ -76,7 +76,7 @@ s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
     return r;
 }
 
-s32 func_02049534(M2C_UNK arg0) {
+s32 ghiSocketCanRecv(M2C_UNK arg0) {
     s32 PollOneFd(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
     s32 sp0;
 
@@ -156,7 +156,7 @@ void ghiRecv(void) {
     func_0204968c(func_020215d4(), -1);
 }
 
-void func_020497e0(int a,int b,int c,int d,u8 *e,s32 *f){s32 func_020215f8(int,int,int,int,u8 *);s32 r;*e=*f;r=func_020215f8(a,b,c,d,e);*f=*e;func_0204968c(r,-1);}
+void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 func_020215f8(int,int,int,int,u8 *);s32 r;*e=*f;r=func_020215f8(a,b,c,d,e);*f=*e;func_0204968c(r,-1);}
 
 void func_02049810(void) {
     s32 func_020216a8();

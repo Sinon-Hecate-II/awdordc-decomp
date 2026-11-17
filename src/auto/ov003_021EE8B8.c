@@ -6,7 +6,7 @@ static inline void Ov003PanelUpdate(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),
 static inline int Ov003PlayersReady(void) {
     int IsLinkSessionActive(void);
     u32 GetReadyPlayerMask(void);
-    void *func_02084e24(int);
+    void *GetNetworkPlayerRecord(int);
     u32 mask;
     s8 i;
     void *p;
@@ -14,7 +14,7 @@ static inline int Ov003PlayersReady(void) {
     mask=GetReadyPlayerMask();
     for(i=0;i<4;i++) {
         if(mask & (1<<i)) {
-            p=func_02084e24(i);
+            p=GetNetworkPlayerRecord(i);
             if(!p) return 0;
             if(!M2C_FIELD(p,s32 *,0x18)) return 0;
         }
@@ -30,7 +30,7 @@ void func_02087d84(void *,int,s16,s16,u16,u16);
 u32 GetUnitSpriteWidth(void *);u32 GetUnitSpriteHeight(void *);
 int IsLinkSessionActive(void);
 s16 func_ov003_022004a8(u8);
-int GetWaypointOptionIcon(u8);
+int GetWaypointOptionCoId(u8);
 int func_ov003_021e6cc4(s16,int,int,int);
 int func_ov003_021e6e5c(void);
 
@@ -92,7 +92,7 @@ void func_ov003_021ee8b8(void *arg0) {
     void *temp_r6_2;
 
     void *func_02084e64(void);
-    void *func_02084e24(int);
+    void *GetNetworkPlayerRecord(int);
     int GetLocalPlayerIdForOverlay(void);
     u32 GetReadyPlayerMask(void);
     void *packet;
@@ -119,7 +119,7 @@ void func_ov003_021ee8b8(void *arg0) {
     if(count>0) do {
         id=M2C_FIELD(p+i,u8 *,0x74);
         if ((u8)(id==255)) id=M2C_FIELD(p,u8 *,0x74);
-        q=func_02084e24(id);
+        q=GetNetworkPlayerRecord(id);
         if (!q) break;
         p=M2C_FIELD(arg0,void **,0x68)+i;
         n=M2C_FIELD(q,u32 *,0x18);
@@ -297,7 +297,7 @@ foundPlayer:
         id=M2C_FIELD(p,u8 *,0x74);
         oldValue=M2C_FIELD(p,s8 *,0xa);
         if(!(u8)(id==255)){
-            q=func_02084e24(id);
+            q=GetNetworkPlayerRecord(id);
             if(q)newValue=M2C_FIELD(q,s8 *,0xd);
             else newValue=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }else{
@@ -391,7 +391,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
     sp24 = 0x3FF;
     do {
         temp_r9 = spC + func_ov003_022004a8(var_r8);
-        temp_r2_2 = (GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA)) * 0x10) + 0x1F0;
+        temp_r2_2 = (GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA)) * 0x10) + 0x1F0;
         temp_r0_2 = temp_r9 - 4;
         sp10 = temp_r0_2;
         func_02098dc0((s16) temp_r0_2, 0, (u16) ((sp24 & (temp_r2_2 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7400), 0xA);

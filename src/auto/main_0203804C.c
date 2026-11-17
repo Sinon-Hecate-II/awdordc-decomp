@@ -53,7 +53,7 @@ MI_CpuCopy8(gamePassword,gSessionGamePassword,len);
 gSessionGamePassword[len]=0;
 }
 
-void func_020382d0(void) {
+void TeardownNetSession(void) {
     extern void *gNetSession;
     void Qr2_DestroyConnection(void *resource);
     void func_020614b0(void *resource);
@@ -208,7 +208,7 @@ s32 StartNetLogin(u16 *playerName, s32 unused, s32 loginCallback, s32 callbackDa
     return 1;
 }
 
-s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 HasNetError(void);void SetNetState(s32);void func_0203ac20(void *,void *,void *,s32,s32,s32,s32,s32);extern M2C_UNK func_020394d8;extern void *gNetSession;s32 state;if(HasNetError() || (state=M2C_FIELD(gNetSession,s32 *,36))<3 || state==4)return 0;M2C_FIELD(gNetSession,s32 *,120)=b;M2C_FIELD(gNetSession,s32 *,124)=c;SetNetState(4);func_0203ac20(gNetSession+224,gNetSession+480,&func_020394d8,0,d,e,f,g);return 1;}
+s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 HasNetError(void);void SetNetState(s32);void MatchSession_Start(void *,void *,void *,s32,s32,s32,s32,s32);extern M2C_UNK func_020394d8;extern void *gNetSession;s32 state;if(HasNetError() || (state=M2C_FIELD(gNetSession,s32 *,36))<3 || state==4)return 0;M2C_FIELD(gNetSession,s32 *,120)=b;M2C_FIELD(gNetSession,s32 *,124)=c;SetNetState(4);MatchSession_Start(gNetSession+224,gNetSession+480,&func_020394d8,0,d,e,f,g);return 1;}
 
 s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void StartHostMatch(s32,s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,128)=c;M2C_FIELD(gNetSession,s32 *,132)=d;SetNetState(5);StartHostMatch((u8)(a-1),b,&func_02039520,0,e,f);return 1;}
 

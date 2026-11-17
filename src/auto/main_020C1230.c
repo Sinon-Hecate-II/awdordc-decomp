@@ -247,7 +247,7 @@ u8 IsDestroyedPipeTile(void) {
     return var_r0;
 }
 
-void func_020c1a9c(s32 a,s32 b){s32 GetUiColor(s32); func_0208ca2c(a<<5,(u16)b,GetUiColor(11),1);}
+void func_020c1a9c(s32 a,s32 b){s32 GetUiColor(s32); Load3DSpritePattern(a<<5,(u16)b,GetUiColor(11),1);}
 
 /* Draw the border of the frame rectangle whose top-left corner is (x, y): the
  * screen corners (0,0) and (256,192) are mapped to frame-tile coordinates, and

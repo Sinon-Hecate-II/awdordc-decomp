@@ -2,7 +2,7 @@
 #include "common.h"
 void *GetLocalizedFileName(void *);
 void func_0208c5fc(void *,s32,s32);
-void func_0208bddc(void *,void *,s32,s32,s32);
+void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 static inline void LoadPalette7464(u32 value) { extern void *gCur3DSpriteEngine; void AddToU16Array(s32,u16,s32); AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),(u16)value,0x6124); }
 typedef struct { u8 pad[0x48]; u32 mode:10; u32 duration:11; u32 frame:11; } FadeTask;
@@ -27,7 +27,7 @@ void UpdateBeamEffect(void *task) {
     M2C_UNK func_02076910(u32, u32);
     M2C_UNK PanMapViewToTile(u32, u32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, u32, u32);
-    s32 func_020b5200(M2C_UNK *, M2C_UNK);
+    s32 LoadEffectSpriteSheet(M2C_UNK *, M2C_UNK);
     M2C_UNK ApplyPendingDamageToTargets(s32, s32, M2C_UNK);
     extern void **gCurrentMap;
     extern M2C_UNK data_02128f94;
@@ -75,7 +75,7 @@ loop_15:
         break;
     }
     PanMapViewToTile(x, y);
-    ApplyPendingDamageToTargets(spawnIndex, func_020b5200(&data_02128f94, 8), 8);
+    ApplyPendingDamageToTargets(spawnIndex, LoadEffectSpriteSheet(&data_02128f94, 8), 8);
 }
 
 /* Spawns the beam attack effect on a tile: a beam sprite whose task extends it
@@ -84,18 +84,18 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
  M2C_UNK PanMapViewToTile(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
  u32 GetFacingOffset(u32);
  void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
- void func_020b51dc(void); s32 func_020b51f0(void);
+ void ResetEffectSpritePool(void); s32 GetEffectSpritePoolOffset(void);
  extern M2C_UNK sBeam04Color,sBeam04Sprite,sBeamChargeSprite;
  s32 beamColor,chargeColor; u32 facingTile; s32 offsetX,offsetY; void *beam,*charge;
  facingTile=GetFacingOffset(facing); offsetX=0; offsetY=0;
- func_020b51dc(); beamColor=func_020b5200(&sBeam04Color,0);
+ ResetEffectSpritePool(); beamColor=LoadEffectSpriteSheet(&sBeam04Color,0);
  switch(facing) {case 0:offsetX=-132;offsetY=132;break;case 1:offsetY=176;break;case 2:offsetX=132;offsetY=offsetX;break;case 3:offsetY=172;break;default:break;}
  beam=func_020b5188(&sBeam04Sprite,offsetX+tileX*16,offsetY+tileY*16,48,beamColor,0,parent);
  if(beam) {
  ((SpriteTile *)beam)->tile=(u16)(facingTile+0x4000);
  M2C_FIELD(beam,s32 *,0x58)=order; M2C_FIELD(beam,s32 *,0x5c)=tileX; M2C_FIELD(beam,s32 *,0x60)=tileY; M2C_FIELD(beam,u32 *,0x64)=facing; M2C_FIELD(beam,void (**)(void *),0x68)=UpdateBeamEffect; parent=beam;
  }
- chargeColor=func_020b51f0();
+ chargeColor=GetEffectSpritePoolOffset();
  switch(facing) {case 0:offsetX=-12;offsetY=12;break;case 1:offsetX=0;offsetY=16;break;case 2:offsetX=12;offsetY=offsetX;break;case 3:offsetX=0;offsetY=12;break;default:break;}
  charge=func_020b5188(&sBeamChargeSprite,offsetX+tileX*16,offsetY+tileY*16,32,chargeColor,1,parent);
  if(charge) {PlaySoundAtTile(0x103,tileX,tileY+2); ((SpriteTile *)charge)->tile=(u16)facingTile;}
@@ -105,7 +105,7 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void LoadScenePanelPalette(s32);void *func_ov000_0216ce10(s32);void MI_CpuCopy32(void *,s32,s32);void *func_ov000_0216ce84(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *CreateAnimatedSpriteObject(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
+s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void LoadScenePanelPalette(s32);void *func_ov000_0216ce10(s32);void MI_CpuCopy32(void *,s32,s32);void *func_ov000_0216ce84(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *CreateAnimatedSpriteObject(s32);void func_0208c5fc(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
@@ -125,7 +125,7 @@ flag=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;
 if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=GetUnitSpriteWidth(p);n=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
 func_020ab150(M2C_FIELD(a,void **,0x38),1);func_020aad18(M2C_FIELD(a,void **,0x38));func_02088f1c(M2C_FIELD(a,void **,0x38));
 M2C_FIELD(a,void **,0x3c)=CreateAnimatedSpriteObject((s32)a);
-func_0208c5fc(GetLocalizedFileName(data_02128fe4),0x6c00,12);q=GetLocalizedFileName(data_02128ff0);func_0208bddc(M2C_FIELD(a,void **,0x3c),q,0x6c00,12,0);
+func_0208c5fc(GetLocalizedFileName(data_02128fe4),0x6c00,12);q=GetLocalizedFileName(data_02128ff0);LoadCompressedSpriteAssetsFromNarc(M2C_FIELD(a,void **,0x3c),q,0x6c00,12,0);
 p=M2C_FIELD(a,void **,0x3c);M2C_FIELD(p,s32 *,0x34)=128;M2C_FIELD(p,s32 *,0x38)=96;M2C_FIELD(p,s32 *,0x3c)=0;
 }
 #pragma pop
@@ -273,7 +273,7 @@ extern M2C_UNK data_02128ffc,data_02129004;
 void *p; void *resource;
 p=CreateAnimatedSpriteObject(7);
 func_0208c5fc(GetLocalizedFileName(&data_02128ffc),0x6B80,11);
-func_0208bddc(p,GetLocalizedFileName(&data_02129004),0x6B80,11,0);
+LoadCompressedSpriteAssetsFromNarc(p,GetLocalizedFileName(&data_02129004),0x6B80,11,0);
 M2C_FIELD(p,s32 *,0x44)|=0x380000;
 M2C_FIELD(p,void (**)(void *),0x6C)=func_020b78c4;
 M2C_FIELD(p,void (**)(void),0x70)=func_020b7b54;
@@ -363,7 +363,7 @@ extern "C" void func_020b7ef0(void) {
 #pragma cplusplus off
 
 s32 CreateMapClearWinObject(void) {
-    void func_0208bddc(void *,void *,s32,s32,s32);
+    void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
     s32 func_0208c54c();
     void func_0208c5fc(void *,s32,s32);
     void *GetLocalizedFileName(void *);
@@ -373,7 +373,7 @@ s32 CreateMapClearWinObject(void) {
 
     temp_r4 = func_0208c54c();
     func_0208c5fc(GetLocalizedFileName(&data_0212900c), 0x6B80, 0xB);
-    func_0208bddc((void *)temp_r4, GetLocalizedFileName(&data_0212901c), 0x6B80, 0xB, 0);
+    LoadCompressedSpriteAssetsFromNarc((void *)temp_r4, GetLocalizedFileName(&data_0212901c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 
@@ -384,7 +384,7 @@ s32 CreateMapClearLoseObject(void) {
 
     temp_r4 = func_0208c54c();
     func_0208c5fc(GetLocalizedFileName(&data_0212902c), 0x6B80, 0xB);
-    func_0208bddc((void *)temp_r4, GetLocalizedFileName(&data_0212903c), 0x6B80, 0xB, 0);
+    LoadCompressedSpriteAssetsFromNarc((void *)temp_r4, GetLocalizedFileName(&data_0212903c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 
@@ -395,7 +395,7 @@ s32 CreateMapClearDrawObject(void) {
 
     temp_r4 = func_0208c54c();
     func_0208c5fc(GetLocalizedFileName(&data_0212904c), 0x6B80, 0xB);
-    func_0208bddc((void *)temp_r4, GetLocalizedFileName(&data_0212905c), 0x6B80, 0xB, 0);
+    LoadCompressedSpriteAssetsFromNarc((void *)temp_r4, GetLocalizedFileName(&data_0212905c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 

@@ -349,8 +349,8 @@ void func_ov003_021efff8(void) {
 }
 
 void func_ov003_021f0004(void) {
-    M2C_UNK func_ov003_021ea3f4();
-    func_ov003_021ea3f4();
+    M2C_UNK WaypointPanel_RefreshPlayerReady();
+    WaypointPanel_RefreshPlayerReady();
 }
 
 void func_ov003_021f0010(void) {
@@ -396,7 +396,7 @@ void func_ov003_021f00d0(void) {
 }
 
 void func_ov003_021f00dc(void *arg0) {
-void *func_02084e24(); void *func_02084e64(); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
+void *GetNetworkPlayerRecord(); void *func_02084e64(); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
 s32 flag; s8 old,count,value; u8 i; void *p,*q;
 i=0; count=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c),s8 *,4);
 if(count<=0)return;
@@ -405,7 +405,7 @@ p=M2C_FIELD(arg0,void **,0x6c)+i;
 old=M2C_FIELD(p,s8 *,10);
 if(M2C_FIELD(p,u8 *,0x74)==255) flag=1; else flag=0;
 if(!(flag&255)){
-q=func_02084e24();
+q=GetNetworkPlayerRecord();
 if(q) value=M2C_FIELD(q,s8 *,13); else value=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
 }else{
 q=func_02084e64();
@@ -435,7 +435,7 @@ void func_ov003_021f01cc(void *arg0) {
 void func_ov003_021f01f0(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
-    M2C_UNK func_02074114(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK ConstructArray(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     void func_ov003_021f05cc(void *);
     void func_ov003_021f05f8(void);
@@ -618,7 +618,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     temp_r0_3 = MemAlloc(0xE8);
     if (temp_r0_3 != NULL) {
         * (M2C_UNK **)temp_r0_3 = &data_ov003_0220fb18;
-        func_02074114(temp_r0_3 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+        ConstructArray(temp_r0_3 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
         i = 0;
         do {
             base = &((M2C_UNK *)temp_r0_3)[i];

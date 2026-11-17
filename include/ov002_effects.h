@@ -52,4 +52,22 @@ typedef struct EffectVariant {
 /* gEffectVariants[effect]: the effect's variants, EffectVariant[]. */
 /* gSoundLevelVolumes[level 0..7]: the sound id each level plays. */
 
+/* One disc effect of a unit model (0x14 bytes): a flat filled circle drawn in
+ * the model's 3D space that grows and fades in over its lifetime.  The model
+ * keeps them in its third child list; DrawModelEffectDisc draws one per frame. */
+typedef struct EffectDisc {
+    s16 x;            /* +0x00 centre in the model's space, 0 when mirror is set */
+    s16 y;            /* +0x02 */
+    s16 z;            /* +0x04 */
+    u16 elapsed;      /* +0x06 frames the disc has been drawn */
+    u16 duration;     /* +0x08 frames until it finishes */
+    u16 color;        /* +0x0A BGR555 fill colour */
+    u16 radiusFrom;   /* +0x0C radius at frame 0 */
+    u16 radiusTo;     /* +0x0E radius it grows to */
+    u8  alphaTo;      /* +0x10 polygon alpha it fades in to, 0..31 */
+    u8  polygonAttr;  /* +0x11 high byte of REG_GX_POLYGON_ATTR while drawing */
+    u8  mirror;       /* +0x12 nonzero: draw the disc at -x */
+    u8  unk13;        /* +0x13 */
+} EffectDisc; /* 0x14 bytes */
+
 #endif

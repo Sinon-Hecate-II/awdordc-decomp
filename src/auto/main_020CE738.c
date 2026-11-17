@@ -213,7 +213,7 @@ void func_020ced08(void) {
 }
 
 void func_020ceea8(void) {
-    M2C_UNK func_020a15f8();
+    M2C_UNK ResetTerrainHitPoints();
     M2C_UNK func_020a4d58();
     void func_020ced08(void);
     M2C_UNK AdvancePlayerTurn();
@@ -224,7 +224,7 @@ void func_020ceea8(void) {
     AdvancePlayerTurn();
     func_020ced08();
     func_020a4d58();
-    func_020a15f8();
+    ResetTerrainHitPoints();
 }
 
 /* Load the current map's terrain tileset: when its tileset kind differs from the one

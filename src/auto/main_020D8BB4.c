@@ -154,7 +154,7 @@ void func_020d908c(void) {
     void Reset3DSpriteBankState(void);
     void Reset3DSpriteCorners(void);
     void func_020c0a88(void);
-    void func_0207c780(M2C_UNK *, M2C_UNK);
+    void LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     void AddToU16Array(void *, s32, s32);
     void CopyToObjPaletteShadow(M2C_UNK *, s32, s32);
     void func_02091cd0(void);
@@ -184,8 +184,8 @@ void func_020d908c(void) {
     Reset3DSpriteBankState();
     Reset3DSpriteCorners();
     func_020c0a88();
-    func_0207c780(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));
-    func_0207c780(&data_020f28f0, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C));
+    LoadGraphicsBlock(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));
+    LoadGraphicsBlock(&data_020f28f0, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C));
     AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C), 0x800, 0x1000);
     CopyToObjPaletteShadow(&data_020f28d0, 0x20, 0x20);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x8);
@@ -738,8 +738,8 @@ void func_020d9918(void) {
 }
 
 void func_020d9924(void) {
-    M2C_UNK func_020e03b8();
-    func_020e03b8();
+    M2C_UNK DismissOnlineMenu();
+    DismissOnlineMenu();
 }
 
 void func_020d9930(void) {

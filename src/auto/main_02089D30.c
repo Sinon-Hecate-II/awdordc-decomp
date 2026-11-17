@@ -251,8 +251,8 @@ u32 func_0208a714(void *arg0) {
 #pragma push
 #pragma scheduling off
 void func_0208a750(void *arg0) {
-    s32 func_020abe90(u32);
-    s32 func_020ad3f0();
+    s32 GetScreenFlag(u32);
+    s32 IsScreenFadeActive();
     M2C_UNK func_020b269c();
     M2C_UNK func_020d4704();
     extern s32 gCur3DSpriteEngine;
@@ -308,7 +308,7 @@ void func_0208a750(void *arg0) {
     u16 *temp_r1_8;
     u16 *temp_r1_9;
 
-    if ((func_020ad3f0() != 0) || (func_020abe90((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x1C) >> 0x1D) == 1)) {
+    if ((IsScreenFadeActive() != 0) || (GetScreenFlag((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x1C) >> 0x1D) == 1)) {
         M2C_FIELD(arg0, s32 *, 0x58) = (s32) (M2C_FIELD(arg0, s32 *, 0x58) & ~0x400);
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x13) >> 0x1F) & 0xFF) {

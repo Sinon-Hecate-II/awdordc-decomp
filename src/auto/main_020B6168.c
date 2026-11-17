@@ -75,7 +75,7 @@ void func_020b6168(void *arg0) {
     CancelMapCursorAnimation();
 }
 
-/* Step the screen-transition down-counter (func_020b524c -> func_0208c6fc, which
+/* Step the screen-transition down-counter (func_020b524c -> CloseEffectNarcArchive, which
  * fires CloseNarcArchive once the counter wraps to zero), then finalize the current
  * map view and run its registered callbacks (RefreshMapView -> func_020d0270 +
  * func_020cfd38). */
@@ -136,8 +136,8 @@ void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
 }
 
 void func_020b6444(void *arg0) {
-    void func_020b51dc(void);
-    void func_020b5200(M2C_UNK *, s32);
+    void ResetEffectSpritePool(void);
+    void LoadEffectSpriteSheet(M2C_UNK *, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 SetAnimatedSpriteFrame(void *, s32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
@@ -163,8 +163,8 @@ void func_020b6444(void *arg0) {
     } else {
         x = x - 6;
     }
-    func_020b51dc();
-    func_020b5200(&data_02128ebc, 0);
+    ResetEffectSpritePool();
+    LoadEffectSpriteSheet(&data_02128ebc, 0);
     {
         void *p = func_020b5188(&data_02128ec4, x, y, 0x30, 0, 0, arg0);
         SetAnimatedSpriteFrame(p, 0);
@@ -203,7 +203,7 @@ void func_020b65e4(void *arg0) {
 
 void func_020b65f8(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, u16, s32);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     M2C_UNK SetAnimatedSpriteFrame(void *, s32);
     extern M2C_UNK data_02128ecc;
     u16 count;
@@ -213,7 +213,7 @@ void func_020b65f8(void *arg0) {
     count = (u16)(bits >> 21);
     M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), count, (u16)((bits << 11) >> 21));
     if ((s32)count % 16 != 0) return;
-    p = (void *)func_020b5134(&data_02128ecc, 0, 0, 16, 0, 0, arg0);
+    p = (void *)CreateAnimatedMapSprite(&data_02128ecc, 0, 0, 16, 0, 0, arg0);
     SetAnimatedSpriteFrame(p, 2);
     M2C_FIELD(p, s32 *, 0x34) = M2C_FIELD(arg0, s32 *, 0x34);
     M2C_FIELD(p, s32 *, 0x38) = M2C_FIELD(arg0, s32 *, 0x38);
@@ -226,8 +226,8 @@ void func_020b6698(void *arg0) {
     void func_020b65f8(void *);
     extern M2C_UNK data_02128ed4, data_02128edc;
     void *p;
-    func_020b51dc();
-    func_020b5200(&data_02128ed4, 0);
+    ResetEffectSpritePool();
+    LoadEffectSpriteSheet(&data_02128ed4, 0);
     p = func_020b5188(&data_02128edc, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 16, 0, 0, arg0);
     SetAnimatedSpriteFrame(p, 1);
     M2C_FIELD(p, void (**)(void *), 0x68) = func_020b65e4;
@@ -244,8 +244,8 @@ void func_020b6718(void *arg0) {
     void func_020b6570(void *);
     void *temp_r0;
 
-    func_020b51dc();
-    func_020b5200(&data_02128ee4, 0);
+    ResetEffectSpritePool();
+    LoadEffectSpriteSheet(&data_02128ee4, 0);
     temp_r0 = func_020b5188(&data_02128eec, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0);
     SetAnimatedSpriteFrame(temp_r0, 0);
     M2C_FIELD(temp_r0, void (**)(void *), 0x6C) = func_020b6570;
@@ -311,7 +311,7 @@ M2C_FIELD(p,s32 *,0x34)=0;return p;
  * plays the explosion sound at the average target position. */
 s32 ApplyPendingDamageToTargets(s32 firstTarget, s32 graphicOffset, s32 tileIndex) {
 s32 GetTargetCount(void); void *GetTargetPosition(s32);
-s32 func_020b5134(M2C_UNK *,s32,s32,s32,s32,s32,void *);
+s32 CreateAnimatedMapSprite(M2C_UNK *,s32,s32,s32,s32,s32,void *);
 s32 Divide(s32,s32);
 extern void **gCurrentMap; extern M2C_UNK gDamageSpriteName;
 s32 n=0, sx=0, sy=0; s32 x,y;
@@ -321,7 +321,7 @@ u8 *unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+id*MAP_UNIT_STRIDE;
 MapTargetEntry *target=GetTargetPosition(firstTarget);
 x=unit[MAP_UNIT_X]; y=unit[MAP_UNIT_Y];
 DamageUnitAtTile(x,y,target->value);
-M2C_FIELD((void *)func_020b5134(&gDamageSpriteName,x,y,16,graphicOffset,tileIndex,(void *)7),s32 *,0x3c)=0x8c1;
+M2C_FIELD((void *)CreateAnimatedMapSprite(&gDamageSpriteName,x,y,16,graphicOffset,tileIndex,(void *)7),s32 *,0x3c)=0x8c1;
 func_02076910(x,y);
 sx+=x; sy+=y; n++;
 }
@@ -392,7 +392,7 @@ void UpdateAuroraEffect(void *effect) {
     M2C_UNK PlaySoundAtTile(s32, s32, s32);
     s32 ApplyPendingDamage(void *);
     u32 NextRandomValue(void);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     extern M2C_UNK gAuroraSmokeName;
     s32 tileX, tileY, power;
     u16 frame;
@@ -417,7 +417,7 @@ void UpdateAuroraEffect(void *effect) {
     if (NextRandomValue() & 1) tileY += (s32)NextRandomValue() % 2 + 2;
     else tileY -= (s32)NextRandomValue() % 2 + 2;
     PlaySoundAtTile(257, tileX, tileY);
-    func_020b5134(&gAuroraSmokeName, tileX, tileY, 16, power, 1, effect);
+    CreateAnimatedMapSprite(&gAuroraSmokeName, tileX, tileY, 16, power, 1, effect);
 }
 #pragma opt_common_subs reset
 void ApplyAuroraPendingDamage(void) {
@@ -426,8 +426,8 @@ void ApplyAuroraPendingDamage(void) {
 }
 
 void func_020b6e58(void *arg0) {
-    M2C_UNK func_020b51dc();
-    func_020b51dc();
+    M2C_UNK ResetEffectSpritePool();
+    ResetEffectSpritePool();
     M2C_FIELD(arg0, s16 *, 0x56) = 0;
 }
 
@@ -436,8 +436,8 @@ void func_020b6e58(void *arg0) {
  * sprite, copies those handles and the power value onto it, wires up its bombard/
  * update/apply callbacks and deletes the staging object. */
 void StageAuroraEffect(void *effect) {
-    s32 func_020b5200(M2C_UNK *, s32);
-    s32 func_020b51f0(void);
+    s32 LoadEffectSpriteSheet(M2C_UNK *, s32);
+    s32 GetEffectSpritePoolOffset(void);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     void func_01ffa6fc(void *);
     extern M2C_UNK gAuroraAimSprite, gAuroraSmokeSprite, gAuroraDamageSprite, gAuroraSprite;
@@ -455,16 +455,16 @@ void StageAuroraEffect(void *effect) {
     M2C_FIELD(effect, s16 *, 0x56) = stage + 1;
     switch (stage) {
     case 0:
-        M2C_FIELD(effect, s32 *, 0x5c) = func_020b5200(&gAuroraAimSprite, 0);
+        M2C_FIELD(effect, s32 *, 0x5c) = LoadEffectSpriteSheet(&gAuroraAimSprite, 0);
         break;
     case 1:
-        M2C_FIELD(effect, s32 *, 0x60) = func_020b5200(&gAuroraSmokeSprite, 1);
+        M2C_FIELD(effect, s32 *, 0x60) = LoadEffectSpriteSheet(&gAuroraSmokeSprite, 1);
         break;
     case 2:
-        M2C_FIELD(effect, s32 *, 0x64) = func_020b5200(&gAuroraDamageSprite, 8);
+        M2C_FIELD(effect, s32 *, 0x64) = LoadEffectSpriteSheet(&gAuroraDamageSprite, 8);
         break;
     case 3:
-        strike = func_020b5188(&gAuroraSprite, x, y, 1, func_020b51f0(), 2, effect);
+        strike = func_020b5188(&gAuroraSprite, x, y, 1, GetEffectSpritePoolOffset(), 2, effect);
         M2C_FIELD(strike, s32 *, 0x58) = power;
         M2C_FIELD(strike, s32 *, 0x5c) = M2C_FIELD(effect, s32 *, 0x5c);
         M2C_FIELD(strike, s32 *, 0x60) = M2C_FIELD(effect, s32 *, 0x60);
@@ -493,16 +493,16 @@ temp_r0 = CreateSpriteObject(&data_02128cac, arg3);
 
 void func_020b6fd8(void *arg0) {
     M2C_UNK PanMapViewToTile(s32, s32);
-    func_020b51dc();
+    ResetEffectSpritePool();
     PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_020b6ff4(void *arg0) {
     M2C_UNK PlaySoundAtTile(s32, s32, s32);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
+    M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
     extern M2C_UNK data_02128f3c;
     extern M2C_UNK data_02128f48;
-    func_020b5134(&data_02128f48, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 0x10, func_020b5200(&data_02128f3c, 0), 0, arg0);
+    CreateAnimatedMapSprite(&data_02128f48, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 0x10, LoadEffectSpriteSheet(&data_02128f3c, 0), 0, arg0);
     PlaySoundAtTile(0x105, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
@@ -512,7 +512,7 @@ void func_020b7050(void *arg0) {
     extern M2C_UNK data_02128f64;
     s32 temp_r4;
 
-    temp_r4 = func_020b5134(&data_02128f64, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, func_020b5200(&data_02128f54, 1), 1, arg0);
+    temp_r4 = CreateAnimatedMapSprite(&data_02128f64, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, LoadEffectSpriteSheet(&data_02128f54, 1), 1, arg0);
     PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
     func_0207b7e8(temp_r4);
 }
@@ -520,15 +520,15 @@ void func_020b7050(void *arg0) {
 void func_020b70b0(void *arg0) {
     extern M2C_UNK data_02128f74;
     extern M2C_UNK data_02128f80;
-    s32 temp = func_020b5200(&data_02128f74, 2);
-    func_020b5134(&data_02128f80, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, temp, 2, arg0);
+    s32 temp = LoadEffectSpriteSheet(&data_02128f74, 2);
+    CreateAnimatedMapSprite(&data_02128f80, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, temp, 2, arg0);
     PlaySoundAtTile(0x106, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
 }
 
 void func_020b710c(void *arg0) {
-    s32 func_020b5200(M2C_UNK *, M2C_UNK);
+    s32 LoadEffectSpriteSheet(M2C_UNK *, M2C_UNK);
     M2C_UNK ApplyPendingDamageToTargets(s32, s32, M2C_UNK);
     extern M2C_UNK data_02128f8c;
-    ApplyPendingDamageToTargets(M2C_FIELD(arg0, s32 *, 0x44), func_020b5200(&data_02128f8c, 8), 8);
+    ApplyPendingDamageToTargets(M2C_FIELD(arg0, s32 *, 0x44), LoadEffectSpriteSheet(&data_02128f8c, 8), 8);
 }
 

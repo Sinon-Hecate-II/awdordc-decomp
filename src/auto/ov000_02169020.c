@@ -436,7 +436,7 @@ s32 UnitMove_CanStepOntoCell(void *p) {
  * offsets, select each one's frame from the facing direction (the second sprite
  * uses the next frame), and upload the owner's army palette to palette RAM. */
 void InitUnitMoveSprites(void *move){
-s32 CreateSpriteAnim(s32,s32,s32);void SetSpriteAnimFrame(s32,s32);void func_0207c55c(void *,s32,s32,s32);
+s32 CreateSpriteAnim(s32,s32,s32);void SetSpriteAnimFrame(s32,s32);void QueueVramCopy(void *,s32,s32,s32);
 extern u8 gArmyPalettes[];
 void *player;s32 paletteOffset;
 M2C_FIELD(move,s32 *,UNIT_MOVE_GFX)=LoadUnitMoveGfx((s32)move);
@@ -454,7 +454,7 @@ M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x28)=UnitMoveTileOffs
 M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x2c)=UnitMovePaletteOffset(move);
 player=(u8*)M2C_FIELD(gCurrentMap,void **,0)+MAP_PLAYER_STATES+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE;
 paletteOffset=UnitMovePaletteOffset(move);
-func_0207c55c(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
+QueueVramCopy(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
 }
 
 void func_ov000_02169cd4(void *arg0) {

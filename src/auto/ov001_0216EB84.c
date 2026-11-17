@@ -19,7 +19,9 @@ void func_ov001_0216edf4(void *a){u16 buf[5];u32 n;u8 *dst,*src;u8 *p;dst=(u8 *)
 
 s32 func_ov001_0216ee90(void){GetMacAddress();return 1;}
 
-s32 func_ov001_0216f16c(u8 *a,s8 *b,s32 n){s32 c,v,i;v=0;i=v;for(;i<n;i++){c=b[i];switch(c){case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':v+=c-48;break;case 'a':case 'b':case 'c':case 'd':case 'e':case 'f':v+=c-87;break;case 'A':case 'B':case 'C':case 'D':case 'E':case 'F':v+=c-55;break;default:return 0;}if(i%2==0)v<<=4;else{a[i/2]=v;v=0;}}return 1;}
+/* Decode `length` hex digits from `hex` into bytes in `out`, two digits per byte
+ * (high nibble first).  Returns 0 on the first character that is not a hex digit. */
+s32 HexToBytes(u8 *out,s8 *hex,s32 length){s32 ch,value,index;value=0;index=value;for(;index<length;index++){ch=hex[index];switch(ch){case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':value+=ch-48;break;case 'a':case 'b':case 'c':case 'd':case 'e':case 'f':value+=ch-87;break;case 'A':case 'B':case 'C':case 'D':case 'E':case 'F':value+=ch-55;break;default:return 0;}if(index%2==0)value<<=4;else{out[index/2]=value;value=0;}}return 1;}
 
 void func_ov001_0216fb34(u8 *a,u8 *b,u8 *c){c[0]=a[0]^b[0];c[1]=a[1]^b[1];c[2]=a[2]^b[2];c[3]=a[3]^b[3];c[4]=a[4]^b[4];c[5]=a[5]^b[5];c[6]=a[6]^b[6];c[7]=a[7]^b[7];}
 

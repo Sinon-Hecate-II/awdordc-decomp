@@ -81,6 +81,37 @@ enum {
 #define OV001_CONN_REQUIRED      0x1B95 /* u8 set when the profile list arrived before the game sent its own profile */
 #define OV001_CONN_HAS_PROFILE   0x1B96 /* u8 nonzero once the game sent its own profile to the server */
 
+/* The WFC connection object (gWfcConnection, 12 bytes): the WFC library's step
+ * handle and the state machine main_02037214 drives it through. */
+#define WFC_CONN_STEP       0x00 /* s32 Wfc_ProcessStep handle, 0 before the first step */
+#define WFC_CONN_STATE      0x04 /* u16 one of WFC_CONN_* */
+#define WFC_CONN_LINK_READY 0x06 /* u16 set when the link came up, cleared once settled */
+#define WFC_CONN_MODE       0x08 /* u16 mode handed to WFC_Init */
+#define WFC_CONN_SUBMODE    0x0A /* u16 sub-mode handed to WFC_Init */
+
+/* WFC_CONN_STATE values; GetNetConnectionStatus updates the field each poll. */
+enum {
+    WFC_CONN_IDLE      = 1, /* created; WFC_Init has not run yet */
+    WFC_CONN_RUNNING   = 2, /* WFC_Init done; Wfc_ProcessStep drives the session */
+    WFC_CONN_CONNECTED = 4, /* the session reports the link up */
+    WFC_CONN_READY     = 6, /* the link settled: the game may use the connection */
+    WFC_CONN_FAILED    = 7, /* WFC error, reported as network error 5 */
+    WFC_CONN_FATAL     = 8  /* fatal WFC error, reported as network error 9 */
+};
+
+/* Parameters handed to WFC_Init (12 bytes): the work-block allocator callbacks
+ * the library keeps for the session, then the connection settings. The ov001
+ * setup keeps a filled-in template of this block in its read-only data and only
+ * patches the player count. */
+typedef struct WfcInitParams {
+    void *(*allocate)(s32 tag, s32 size);              /* +0x00 work-block allocator */
+    void (*freeBlock)(s32 tag, void *block, s32 size); /* +0x04 work-block deallocator */
+    u8 mode;        /* +0x08 WFC_CONN_MODE, 0..3 */
+    u8 submode;     /* +0x09 WFC_CONN_SUBMODE, 0..3 */
+    u8 playerCount; /* +0x0A number of players, 1..4 */
+    u8 unk0B;       /* +0x0B 2 bits in the WFC configuration, 0 here */
+} WfcInitParams; /* 12 bytes */
+
 /* Session object (gWfcSession) fields used by the WFC state machine in
  * main_020270B4. The values stored in the state field are the ones passed to
  * WFC_SetState (1..13); 11 is the error state and 13 the finished state. */
@@ -278,13 +309,19 @@ enum {
  * the request descriptor, the network handle the HTTP runs on and the task that
  * drives it. */
 #define NAS_CONNECTION_SIZE  0x13F4
+#define NAS_CONN_STACK       0x0000 /* stack the connection task runs on */
+#define NAS_CONN_STACK_SIZE  0x1000 /* bytes of that stack */
+#define NAS_CONN_STACK_TOP   0x1000 /* top of the stack (the status block starts there) */
 #define NAS_CONN_RESULT      0x1004 /* s32 outcome of the connection attempt */
 #define NAS_CONN_STATUS      0x1008 /* s32 head of the status block */
 #define NAS_CONN_STATUS_SIZE 0x1C4  /* bytes of the status block shared with the caller */
 #define NAS_CONN_REQUEST     0x11CC /* NasRequest descriptor copied from the caller */
 #define NAS_CONN_HANDLE      0x1314 /* void *network handle the HTTP runs on */
 #define NAS_CONN_TASK        0x1318 /* task that drives the connection */
+#define NAS_CONN_TASK_ID     0x1384 /* s32 id TaskCreate gave that task, 0 before it exists */
+#define NAS_CONN_TASK_PRIORITY 16   /* priority the connection task runs at */
 #define NAS_CONN_MUTEX       0x13D8 /* mutex guarding the connection */
+#define NAS_CONN_ABORT       0x13F0 /* s32 set to 1 to drop the attempt at the task's next step */
 
 /* Status the connection reports at NAS_CONN_STATUS: 0x4E00 plus the NAS code. */
 #define NAS_STATUS_IDLE 0x4E84

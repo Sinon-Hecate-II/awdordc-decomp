@@ -8,7 +8,7 @@ typedef struct { u8 v[8]; } PacketBytes8;
 extern PacketBytes13 data_02100014;
 extern PacketBytes8 data_02100024;
 
-void func_0205f83c(void *a, void *b, s32 c, void *d) {
+void Qr2_HandlePacket(void *a, void *b, s32 c, void *d) {
 }
 
 void func_0205fb50(void *arg0){
@@ -78,7 +78,7 @@ void Qr2_SendState(void *qr2, s32 state) {
     }
     Qr2AppendString(query, &gQr2KeyGameName);
     Qr2AppendString(query, (char *)qr2 + QR2_GAMENAME);
-    if (M2C_FIELD(qr2, s32 *, QR2_PUBLIC_VALID) != 0) {
+    if (M2C_FIELD(qr2, s32 *, QR2_CB_PUBLIC_ADDRESS) != 0) {
         Qr2AppendString(query, &gQr2KeyPublicIp);
         Qr2AppendInt(query, M2C_FIELD(qr2, s32 *, QR2_PUBLIC_IP));
         Qr2AppendString(query, &gQr2KeyPublicPort);
@@ -108,19 +108,22 @@ void func_0205fdbc(s32 arg0, s32 arg1) {
     gQr2KeyNames[arg0] = arg1;
 }
 
-u8 GsCryptInitStep(u8 *arg0,u32 arg1,u8 *arg2,u32 arg3,u8 *arg4,u32 *arg5){
+/* One step of the GameSpy stream cipher's key setup (gs_crypt_init_step): mixes a
+ * key byte into the running value and returns a permutation index derived from
+ * it, retrying while the index is above `i`. */
+u8 GsCryptInitStep(u8 *sbox,u32 i,u8 *key,u32 keyLen,u8 *value,u32 *pos){
  u32 count;u32 mask;u32 result;
- if(arg1==0)return 0;
+ if(i==0)return 0;
  count=0;mask=1;
- while(mask<arg1)mask=mask*2+1;
+ while(mask<i)mask=mask*2+1;
  do {
- u32 pos=(*arg5)++;
- *arg4=arg0[*arg4]+arg2[pos];
- if(*arg5>=arg3){*arg5=0;*arg4+=arg3;}
+ u32 keyIndex=(*pos)++;
+ *value=sbox[*value]+key[keyIndex];
+ if(*pos>=keyLen){*pos=0;*value+=keyLen;}
  count++;
- result=mask & *arg4;
- if(count>11)result%=arg1;
- }while(result>arg1);
+ result=mask & *value;
+ if(count>11)result%=i;
+ }while(result>i);
  return result;
 }
 
@@ -359,11 +362,11 @@ s32 func_02060670(void *a,void *b,void *c,s32 d) {
 
 #pragma peephole off
 void func_02060678(void *p,s32 mode){
-s32 func_02049534(s32);s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
+s32 ghiSocketCanRecv(s32);s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *);
 s8 buf[2048];u8 addr[8];s32 alen=8;s32 n;void *q; s32 sock;u32 peer,ip;
 sock=mode?M2C_FIELD(p,s32 *,0x24):M2C_FIELD(p,s32 *,0x20);
-while(func_02049534(sock)){
-n=func_020497e0(sock,buf,2047,0,addr,&alen);if(n==-1)return;buf[n]=0;
+while(ghiSocketCanRecv(sock)){
+n=ghiRecvFrom(sock,buf,2047,0,addr,&alen);if(n==-1)return;buf[n]=0;
 for(q=M2C_FIELD(p,void **,8);q;q=M2C_FIELD(q,void **,0x20)){
 if(mode&&(M2C_FIELD(q,u8 *,0x15)&8)&&M2C_FIELD(q,u32 *,0x10)==M2C_FIELD(addr,u32 *,4))goto found;
 ip=M2C_FIELD(addr,u32 *,4);peer=M2C_FIELD(q,u32 *,0);

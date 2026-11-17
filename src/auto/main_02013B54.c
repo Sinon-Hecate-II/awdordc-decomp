@@ -168,7 +168,7 @@ M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
 #pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 gMbWork;
-void func_02014a48(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void func_02016250(); void func_02015230(); void MI_CpuFill32();
+void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void func_02016250(); void func_02015230(); void MI_CpuFill32();
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
@@ -198,7 +198,7 @@ if(M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*4,s32*,0x14e8)==8) func_02014050(*(u
 func_02014050(*(u16*)((u8*)b+16),3,(s32)b);
 M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*4,s32*,0x14e8)=0;
 break;
-case 3: func_02014a48((s32)b); break;
+case 3: ProcessGroupStartMessages((s32)b); break;
 case 25: func_02015008(); break;
 case 28:
 for(i=0;i<16;i++){
@@ -217,8 +217,8 @@ if(a==17){void (*cb)(s32,s32,s32)=M2C_FIELD(gMbWork,void (**)(s32,s32,s32),0x14e
 }
 #pragma opt_scheduling on
 #pragma opt_common_subs on
-void func_02014564(void *arg0,u16 n) {
-void *MultiBoot_DecodePacket(); void MI_CpuCopy8(); u16 func_02015204(); extern s32 gMbWork; extern s32 data_02131180;
+void MultiBoot_HandlePlayerPacket(void *arg0,u16 n) {
+void *MultiBoot_DecodePacket(); void MI_CpuCopy8(); u16 func_02015204(); extern s32 gMbWork; extern s32 gGroupChunkPendingMask;
 s32 state; u8 *p; u32 group; u8 count,i; u8 header[20]; u8 packet[32];
 if(!n)return; if(n>15)return;
 p=MultiBoot_DecodePacket((u8 *)arg0+10,header,n);
@@ -267,7 +267,7 @@ case 9:
 if(state!=6)return;
 group=M2C_FIELD(gMbWork+n-1,u8 *,0x1526);if(group==255)return;
 M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4a)=func_02015204(M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4a),*(u16 *)(header+2));
-data_02131180|=1<<group;break;
+gGroupChunkPendingMask|=1<<group;break;
 case 10:
 if(state==6){group=M2C_FIELD(gMbWork+n-1,u8 *,0x1526);if(group==255)return;M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4c)&=~(1<<n);func_02014050(n,7,0);return;}
 if(state!=7)return;
@@ -276,18 +276,20 @@ M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,8,0);break;
 }
 }
 #pragma opt_strength_reduction reset
-void func_02014a48(s32 arg0) {
- extern s32 gMbWork; extern s32 data_02131180;
- void *MultiBoot_FindPlayerMessage(s32,u16); void func_02014564(void *,u16);
+/* Group-start event: forgets each active group's pending chunk transfer, then
+   hands every player's queued multiboot message to the packet handler. */
+void ProcessGroupStartMessages(s32 batch) {
+ extern s32 gMbWork; extern s32 gGroupChunkPendingMask;
+ void *MultiBoot_FindPlayerMessage(s32,u16); void MultiBoot_HandlePlayerPacket(void *,u16);
  u16 i; void *p;
  for(i=0;i<16;i++) {
- p=(void *)(gMbWork+i*0x5d4);
- if(M2C_FIELD(p,u8 *,0x1d52)) M2C_FIELD(p,u16 *,0x1d4a)=0;
+ p=(void *)(gMbWork+i*MB_GROUP_STRIDE);
+ if(M2C_FIELD(p,u8 *,MB_GROUPS+MB_GROUP_ACTIVE)) M2C_FIELD(p,u16 *,MB_GROUPS+MB_GROUP_CHUNK_GOAL)=0;
  }
- data_02131180=0;
+ gGroupChunkPendingMask=0;
  for(i=1;i<=15;i++) {
- p=MultiBoot_FindPlayerMessage(arg0,i);
- if(p && M2C_FIELD(p,u16 *,0)!=0xffff && M2C_FIELD(p,u16 *,0)!=0) func_02014564(p,i);
+ p=MultiBoot_FindPlayerMessage(batch,i);
+ if(p && M2C_FIELD(p,u16 *,0)!=0xffff && M2C_FIELD(p,u16 *,0)!=0) MultiBoot_HandlePlayerPacket(p,i);
  }
 }
 

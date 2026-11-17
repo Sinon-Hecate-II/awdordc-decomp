@@ -199,8 +199,8 @@ void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);fun
 unsigned long long GetTickCountMs(void){int func_02006f8c(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
 
 void gpiSleep(void) {
-    M2C_UNK func_02006030();
-    func_02006030();
+    M2C_UNK SleepMilliseconds();
+    SleepMilliseconds();
 }
 
 void func_0204926c(void) {

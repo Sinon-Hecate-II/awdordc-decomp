@@ -121,7 +121,7 @@ s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
 #pragma push
 #pragma opt_strength_reduction off
 #pragma peephole off
-s32 func_0201ed20(s32 arg0) {
+s32 DnsLookupAddress(s32 arg0) {
 extern M2C_UNK data_021372f0;
 extern M2C_UNK gNetStack;
 u8 flags[2]; s32 out; u16 rnd[2];
@@ -440,7 +440,7 @@ s32 SocketCreateFromConfig(void) {
 }
 
 s32 func_0201f43c(void *arg0) {
-M2C_UNK func_0201d138(void *);
+M2C_UNK SetCurrentRawConnection(void *);
 M2C_UNK func_0201d164();
 M2C_UNK func_0201d1f0();
 M2C_UNK func_0201d244(s32);
@@ -448,7 +448,7 @@ M2C_UNK SocketSetReceiveCallback(M2C_UNK *);
 extern M2C_UNK SocketQueueReceivedData;
 void *p=M2C_FIELD(arg0,void**,4);
 s32 v;
-func_0201d138(p);
+SetCurrentRawConnection(p);
 v=M2C_FIELD(p,s32*,0x68);
 switch(M2C_FIELD(p,s8*,0x73)){
 case 0:case 4:func_0201d244(v+0x20);func_0201d1f0();break;

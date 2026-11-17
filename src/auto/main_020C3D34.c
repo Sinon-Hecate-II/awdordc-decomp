@@ -1,5 +1,6 @@
 /* 28 functions from 0x020C3D34 to 0x020C4D28 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct { u8 bytes[6]; u16 half[6]; } SetupColors;
 typedef struct { u32 names[15]; } SetupNames;
 typedef struct { s32 v[4]; } SaveDate;
@@ -12,7 +13,7 @@ static inline s32 SaveTime_Get2(SaveTime *p) { return p->v[2]; }
 #pragma opt_strength_reduction off
 void func_020c3d34(void) {
 extern void **gCurrentMap;
-extern void *data_02164094;
+extern void *gBreakCutIn;
 extern u16 **gCur3DSpriteEngine;
 extern u16 **g3DSpriteEngineSub;
 extern const SetupColors data_020f4df4;
@@ -31,17 +32,17 @@ names=data_020f4e08;
 colors.bytes[0]=data_020f4df4.bytes[0];colors.bytes[1]=data_020f4df4.bytes[1];colors.bytes[2]=data_020f4df4.bytes[2];colors.bytes[3]=b3;colors.bytes[4]=b4;colors.bytes[5]=b5;kind=kindWord;
 colors.half[0]=data_020f4df4.half[0];colors.half[1]=data_020f4df4.half[1];colors.half[2]=data_020f4df4.half[2];colors.half[3]=data_020f4df4.half[3];colors.half[4]=data_020f4df4.half[4];colors.half[5]=data_020f4df4.half[5];
 
-data_02164094=HeapAllocBlock(40);
-M2C_FIELD(data_02164094,s32*,0)=0;
-M2C_FIELD(data_02164094,u32*,0x10)=0xc3200000;
-M2C_FIELD(data_02164094,s16*,0x14)=0;
-M2C_FIELD(data_02164094,s16*,0x16)=0;
-M2C_FIELD(data_02164094,s16*,0x18)=255;
-M2C_FIELD(data_02164094,s16*,0x1a)=0;
-M2C_FIELD(data_02164094,s16*,8)=kind;
-M2C_FIELD(data_02164094,s16*,0x24)=16;
-M2C_FIELD(data_02164094,s16*,0x1e)=22;
-M2C_FIELD(data_02164094,s16*,0x22)=138;
+gBreakCutIn=HeapAllocBlock(40);
+M2C_FIELD(gBreakCutIn,s32*,0)=0;
+M2C_FIELD(gBreakCutIn,u32*,0x10)=0xc3200000;
+M2C_FIELD(gBreakCutIn,s16*,0x14)=0;
+M2C_FIELD(gBreakCutIn,s16*,0x16)=0;
+M2C_FIELD(gBreakCutIn,s16*,0x18)=255;
+M2C_FIELD(gBreakCutIn,s16*,0x1a)=0;
+M2C_FIELD(gBreakCutIn,s16*,8)=kind;
+M2C_FIELD(gBreakCutIn,s16*,0x24)=16;
+M2C_FIELD(gBreakCutIn,s16*,0x1e)=22;
+M2C_FIELD(gBreakCutIn,s16*,0x22)=138;
 SetFileDirectory(data_0212a464);
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 func_020822b8(colors.half);
@@ -69,7 +70,7 @@ M2C_FIELD(*gCur3DSpriteEngine,u16*,12)=(M2C_FIELD(*gCur3DSpriteEngine,u16*,12)&~
 {u16 * volatile p17=*gCur3DSpriteEngine+8;*p17=(*p17&~0)|16;}
 {u16 * volatile p18=*gCur3DSpriteEngine+7;*p18=(*p18&~0)|32;}
 {u16 * volatile p19=*gCur3DSpriteEngine+8;*p19=(*p19&~0)|32;}
-x0=M2C_FIELD(data_02164094,s16*,20);y0=M2C_FIELD(data_02164094,s16*,22);x1=M2C_FIELD(data_02164094,s16*,24);y1=M2C_FIELD(data_02164094,s16*,26);
+x0=M2C_FIELD(gBreakCutIn,s16*,20);y0=M2C_FIELD(gBreakCutIn,s16*,22);x1=M2C_FIELD(gBreakCutIn,s16*,24);y1=M2C_FIELD(gBreakCutIn,s16*,26);
 M2C_FIELD(*gCur3DSpriteEngine,u8*,72)=x0;
 M2C_FIELD(*gCur3DSpriteEngine,u8*,74)=y0;
 M2C_FIELD(*gCur3DSpriteEngine,u8*,73)=x1;
@@ -85,7 +86,7 @@ M2C_FIELD(*gCur3DSpriteEngine,u8*,75)=y1;
 {u16 * volatile p28=*gCur3DSpriteEngine+9;*p28=(*p28&~2048)|0;}
 {u16 * volatile p29=*gCur3DSpriteEngine+9;*p29=(*p29&~4096)|0;}
 {u16 * volatile p30=*gCur3DSpriteEngine+9;*p30=(*p30&~192)|64;}
-alpha=M2C_FIELD(data_02164094,s16*,36);
+alpha=M2C_FIELD(gBreakCutIn,s16*,36);
 M2C_FIELD(*gCur3DSpriteEngine,u8*,81)=alpha;
 M2C_FIELD(*gCur3DSpriteEngine,u8*,82)=alpha;
 color=((u8*)&colors)[M2C_FIELD(unit,u8*,29)];
@@ -107,46 +108,49 @@ OpenNarcArchive(GetLocalizedFileName(data_0212a4d8));
 LoadNarcFileDecompressed(GetLocalizedFileName(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
 CloseNarcArchive();
 MI_CpuFill32(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
-LoadFaceTexture(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
-LoadFacePalette(M2C_FIELD(data_02164094,s16*,8),8,3,0,0);
-LoadFaceTexture(M2C_FIELD(data_02164094,s16*,8),11,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+0x7840);
-LoadFacePalette(M2C_FIELD(data_02164094,s16*,8),11,3,1,0);
+LoadFaceTexture(M2C_FIELD(gBreakCutIn,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
+LoadFacePalette(M2C_FIELD(gBreakCutIn,s16*,8),8,3,0,0);
+LoadFaceTexture(M2C_FIELD(gBreakCutIn,s16*,8),11,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+0x7840);
+LoadFacePalette(M2C_FIELD(gBreakCutIn,s16*,8),11,3,1,0);
 SetFileDirectory(data_0212a4f0);
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction reset
-void func_020c4604(M2C_UNK arg0){extern u16 *gKeyState;extern void *data_02164094;
-M2C_FIELD(data_02164094,s32*,0)++;
-if((M2C_FIELD(data_02164094,s32*,0)<250)&&!(*gKeyState&1))return;
-M2C_FIELD(data_02164094,s32*,4)=0;func_01ffa6fc(arg0);}
+void func_020c4604(M2C_UNK arg0){extern u16 *gKeyState;extern void *gBreakCutIn;
+M2C_FIELD(gBreakCutIn,s32*,0)++;
+if((M2C_FIELD(gBreakCutIn,s32*,0)<250)&&!(*gKeyState&1))return;
+M2C_FIELD(gBreakCutIn,s32*,4)=0;func_01ffa6fc(arg0);}
 
-void func_020c4658(M2C_UNK arg0){extern void *data_02164094;
-M2C_FIELD(data_02164094,s32*,0)++;M2C_FIELD(data_02164094,s32*,4)++;
-if(M2C_FIELD(data_02164094,s32*,0)>=250)M2C_FIELD(data_02164094,s32*,0)=250;
-if(M2C_FIELD(data_02164094,s32*,4)<64)return;func_01ffa6fc(arg0);}
+void func_020c4658(M2C_UNK arg0){extern void *gBreakCutIn;
+M2C_FIELD(gBreakCutIn,s32*,0)++;M2C_FIELD(gBreakCutIn,s32*,4)++;
+if(M2C_FIELD(gBreakCutIn,s32*,0)>=250)M2C_FIELD(gBreakCutIn,s32*,0)=250;
+if(M2C_FIELD(gBreakCutIn,s32*,4)<64)return;func_01ffa6fc(arg0);}
 
-void func_020c46b4(void) {
- M2C_UNK HeapFreeBlock(void *);
- extern void *data_02164094;
- extern u16 **gCur3DSpriteEngine;
- extern u16 **g3DSpriteEngineSub;
- u16 **old;
- u16 * volatile sp8;
- u16 * volatile sp4;
- u16 * volatile sp0;
- if (data_02164094 != 0) {
-  HeapFreeBlock(data_02164094);
-  data_02164094 = 0;
- }
- old = gCur3DSpriteEngine;
- gCur3DSpriteEngine = g3DSpriteEngineSub;
- sp8 = *gCur3DSpriteEngine;
- *sp8 = (*sp8 & ~0x200);
- sp4 = *gCur3DSpriteEngine;
- *sp4 = (*sp4 & ~0x400);
- sp0 = *gCur3DSpriteEngine;
- *sp0 = (*sp0 & ~0x800);
- gCur3DSpriteEngine = old;
+/* Tear down the battle-start "break" cut-in: free its effect state and switch the
+ * remaining layer flags off on the sub engine's sprite bank. */
+void DestroyBreakCutIn(void) {
+    M2C_UNK HeapFreeBlock(void *);
+    extern void *gBreakCutIn;
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **g3DSpriteEngineSub;
+    u16 **savedEngine;
+    u16 * volatile mode5;
+    u16 * volatile mode6;
+    u16 * volatile mode7;
+
+    if (gBreakCutIn != 0) {
+        HeapFreeBlock(gBreakCutIn);
+        gBreakCutIn = 0;
+    }
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    mode5 = *gCur3DSpriteEngine;
+    *mode5 = (*mode5 & ~DS3D_BANK_MODE5);
+    mode6 = *gCur3DSpriteEngine;
+    *mode6 = (*mode6 & ~DS3D_BANK_MODE6);
+    mode7 = *gCur3DSpriteEngine;
+    *mode7 = (*mode7 & ~DS3D_BANK_MODE7);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_020c4764(M2C_UNK arg0) {

@@ -31,17 +31,23 @@ gAiCommandState[4]+=func_ov000_0219a3b0(i);
 }
 }
 
-void func_ov000_0219a618(void) {
-s32 IsPlayerActive(s32); s32 i,j,end;
-for(i=1;i<5;i++) if(IsPlayerActive(i)) {
-s32 start=gPlayerUnitIdBase[i];
-for(j=start+1;j<start+0x33;j++) {
-u8 *p=(u8 *)*gCurrentMap+0x59a4+j*14;
-if((u32)(p[0]<<26)>>26) {
-M2C_FIELD(p,u16 *,8)&=~0xc000; p[11]&=~0x20; p[10]&=~0x80;
-}
-}
-}
+/* Clear the AI state of every active player's units: the action the AI chose,
+ * the "has a move target" bit and the "move planned" fuel bit, so that
+ * BeginAiTurn assigns fresh orders. */
+void ClearAiUnitActions(void) {
+    s32 IsPlayerActive(s32);
+    s32 player, unitId;
+    for (player = 1; player < 5; player++) if (IsPlayerActive(player)) {
+        s32 base = gPlayerUnitIdBase[player];
+        for (unitId = base + 1; unitId < base + MAP_UNIT_GROUP_SCAN; unitId++) {
+            u8 *unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+            if ((u32)(unit[MAP_UNIT_KIND] << 26) >> 26) {
+                M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) &= ~MAP_UNIT_ACTION_MASK;
+                unit[MAP_UNIT_AI_STATE] &= ~MAP_UNIT_AI_HAS_TARGET;
+                unit[MAP_UNIT_FUEL] &= ~MAP_UNIT_MOVE_PLANNED;
+            }
+        }
+    }
 }
 
 void func_ov000_0219a6c8(void) {

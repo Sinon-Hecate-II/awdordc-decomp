@@ -185,7 +185,7 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void HttpClientStartTask();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
+ s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
@@ -226,7 +226,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  if(M2C_FIELD(gWfcMatchSession,s32 *,0x1ba4))return 1;
 fail:
  if(namesBuf)HeapFree(0,namesBuf,0);
- if(gWfcMatchSession){if(M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)==1)func_02034480(gWfcMatchSession);HeapFree(0,gWfcMatchSession,0);gWfcMatchSession=0;}
+ if(gWfcMatchSession){if(M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)==1)HttpClientCleanup(gWfcMatchSession);HeapFree(0,gWfcMatchSession,0);gWfcMatchSession=0;}
  return 0;
 }
 
@@ -240,7 +240,7 @@ void func_02036ec0(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
 s32 func_02036f14(void) {
     s32 TaskIsFinished(void *);
     u32 func_0202f248();
-    M2C_UNK func_02034480(void *);
+    M2C_UNK HttpClientCleanup(void *);
     s32 ProcessWfcMatchResponse();
     M2C_UNK SetNetError(M2C_UNK, s32);
     extern void *gWfcMatchSession;
@@ -286,7 +286,7 @@ s32 func_02036f14(void) {
         var_r4 = 3;
         break;
     }
-    func_02034480(gWfcMatchSession);
+    HttpClientCleanup(gWfcMatchSession);
     HeapFree(0, gWfcMatchSession, 0);
     gWfcMatchSession = 0;
     return var_r4;

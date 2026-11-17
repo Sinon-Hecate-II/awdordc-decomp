@@ -190,7 +190,7 @@ M2C_FIELD(M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT),s32 *,NAS_LOGIN_STATE)
 }
 }
 
-s32 func_0203a660(void) {
+s32 IsNasLoginDone(void) {
     extern M2C_UNK gNasLogin;
     if ((M2C_FIELD(&gNasLogin, void **, 4) != NULL) && (M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 4) == 5)) {
         return 1;
@@ -242,7 +242,7 @@ extern M2C_UNK gMatchSessionMgr;
 s32 func_02037214(s32,s32,void *,s32);
 s32 SetGpiStatus(s32,s32,void *);
 u8 buf[256];s32 n;
-if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!func_0203a660())return 0;
+if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!IsNasLoginDone())return 0;
 n=func_02037214(a,b,buf,255);
 if(n==-1)return 0;
 buf[n]=0;
@@ -261,7 +261,7 @@ extern M2C_UNK gMatchSessionMgr;
 s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,void *);
 s32 func_0204e364(s32,s32);void func_0204e3b0(s32,s32);void MI_CpuFill8(void *,s32,s32);
 s32 n;
-if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!func_0203a660()||!GetLocalPlayerInfo())goto clear;
+if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!IsNasLoginDone()||!GetLocalPlayerInfo())goto clear;
 n=GetPlayerRecordId(GetLocalPlayerInfo(),a);
 if(!n || n==-1)goto clear;
 if(func_0204e364(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,4),n))
@@ -361,21 +361,26 @@ M2C_FIELD(ctx,u8 *,0x1f)=0;
 func_0203b3c4();
 }
 
-void func_0203ac20(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h) {
+/* Start the match session's play phase: store its four callbacks and their data
+   values, clear the player cursor, dirty flag and match step, mark the session
+   running and take its first step - a second one too when the session has no
+   player list yet. (The two leading pointers are not used here.) */
+void MatchSession_Start(s32 unused0, s32 unused1, s32 eventCallback, s32 eventData,
+                        s32 infoCallback, s32 infoData, s32 statsCallback, s32 statsData) {
 extern M2C_UNK gMatchSessionMgr;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,44)=c;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,48)=d;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,52)=e;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,56)=f;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,60)=g;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,64)=h;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,29)=0;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,30)=0;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,31)=0;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,28)=0;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0)=1;
-{void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);if(!M2C_FIELD(p,s32 *,24))M2C_FIELD(p,u8 *,31)++;}
-{void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);M2C_FIELD(p,u8 *,31)++;}
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_EVENT_CB)=eventCallback;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_EVENT_DATA)=eventData;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_INFO_CB)=infoCallback;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_INFO_DATA)=infoData;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATS_CB)=statsCallback;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATS_DATA)=statsData;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_DIRTY)=0;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_STATE)=0;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_STEP)=0;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_CURSOR)=0;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATUS)=1;
+{void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);if(!M2C_FIELD(p,s32 *,MATCH_SESSION_PLAYERS))M2C_FIELD(p,u8 *,MATCH_SESSION_STEP)++;}
+{void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);M2C_FIELD(p,u8 *,MATCH_SESSION_STEP)++;}
 }
 
 void func_0203accc(s32 a,s32 b) {

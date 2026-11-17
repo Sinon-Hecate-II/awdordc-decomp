@@ -120,8 +120,8 @@ void func_ov001_02180cf8(void) {
 }
 
 void func_ov001_02180d24(void) {
-    s32 func_ov001_0218665c();
-    if (func_ov001_0218665c() != 0) {
+    s32 Ov001_IsRegionMenuActive();
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180bbc);
@@ -400,7 +400,7 @@ Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&Ov001_OpenWifiMenu);
 case 0:case 1:case 2:
 Ov001_SetNextScreenMode(2,0);
 if(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_ov001_02181a84);
-else{Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
+else{Ov001_SetNameEntryMode(0,0);SetMapListMode(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
 case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
 }
 Ov001_FreeAlloc(&data_ov001_02193dd0);
@@ -508,7 +508,7 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181990);
 void func_ov001_02181990(void) {
     M2C_UNK Ov001_UnlockIconRow();
     void func_ov001_02181080(void);
-    if (func_ov001_0218665c() != 0) {
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_UnlockIconRow();

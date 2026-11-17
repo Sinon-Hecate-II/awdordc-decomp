@@ -175,7 +175,7 @@ s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_020901b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+s32 PlaySlotScriptedSoundAtVolume(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     s32 PlaySlotPendingSound(s32, M2C_UNK, M2C_UNK);
     s32 PlaySlotScriptedSound(s32, s32, s32);
 
@@ -474,68 +474,77 @@ u8 func_02090698(s32 arg0) {
     return M2C_FIELD(&data_02157914, u8 *, arg0);
 }
 
-void func_020906a8(void *arg0, void *arg1, u8 *arg2, u8 arg3, u16 arg4, u16 arg5, u16 arg6, s32 arg7) {
-u8 *temp_r4; u32 y;
-M2C_FIELD(arg0,u8 **,0xc)=arg2;
-M2C_FIELD(arg0,u8 *,0x2c)=arg3;
-M2C_FIELD(arg0,void **,0x14)=arg2+*(u32 *)M2C_FIELD(arg0,u8 **,0xc);
-temp_r4=M2C_FIELD(arg0,u8 **,0xc);
-M2C_FIELD(arg0,void **,0x10)=temp_r4+M2C_FIELD(temp_r4+M2C_FIELD(arg0,u8 *,0x2c)*4,u32 *,4);
-M2C_FIELD(arg0,s16 *,0x20)=arg4&0x1ff;
-if(arg4&0x100) M2C_FIELD(arg0,s16 *,0x20)|=0xfe00;
-y=arg5;
-M2C_FIELD(arg0,s16 *,0x22)=y&255;
-if(y>=192) M2C_FIELD(arg0,s16 *,0x22)|=0xff00;
-M2C_FIELD(arg0,s16 *,0x24)=arg4&0xfe00;
-M2C_FIELD(arg0,s16 *,0x26)=y&0xff00;
-M2C_FIELD(arg0,u16 *,0x28)=arg6;
-M2C_FIELD(arg0,s8 *,0x2a)=arg7;
-M2C_FIELD(arg0,s8 *,0x2b)=0;
-M2C_FIELD(arg0,u8 *,0x2d)=0;
-M2C_FIELD(arg0,s32 *,0x1c)=0;
-M2C_FIELD(arg0,void **,0)=arg1;
-M2C_FIELD(arg0,s32 *,4)=0;
-M2C_FIELD(arg0,s32 *,8)=0;
-M2C_FIELD(arg1,void **,0x38)=arg0;
+/* Initialise a freshly allocated script player for `object`: attach the script and the
+ * slot's entries, set the position, tile and priority, and make it the object's first
+ * player.  x carries its upper bits in SPRITE_PLAYER_X_HIGH, y likewise. */
+void SpritePlayer_Init(void *player, void *object, u8 *script, u8 slot, u16 x, u16 y, u16 tile, s32 priority) {
+    u8 *scriptData;
+    u32 posY;
+
+    M2C_FIELD(player, u8 **, SPRITE_PLAYER_SCRIPT) = script;
+    M2C_FIELD(player, u8 *, SPRITE_PLAYER_SLOT) = slot;
+    M2C_FIELD(player, void **, SPRITE_PLAYER_FRAME_TABLE) = script + *(u32 *)M2C_FIELD(player, u8 **, SPRITE_PLAYER_SCRIPT);
+    scriptData = M2C_FIELD(player, u8 **, SPRITE_PLAYER_SCRIPT);
+    M2C_FIELD(player, void **, SPRITE_PLAYER_CURSOR) = scriptData + M2C_FIELD(scriptData + M2C_FIELD(player, u8 *, SPRITE_PLAYER_SLOT) * 4, u32 *, 4);
+    M2C_FIELD(player, s16 *, SPRITE_PLAYER_X) = x & 0x1ff;
+    if (x & 0x100) M2C_FIELD(player, s16 *, SPRITE_PLAYER_X) |= 0xfe00;
+    posY = y;
+    M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y) = posY & 255;
+    if (posY >= 192) M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y) |= 0xff00;
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_X_HIGH) = x & 0xfe00;
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y_HIGH) = posY & 0xff00;
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_TILE) = tile;
+    M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY) = priority;
+    M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY_ADD) = 0;
+    M2C_FIELD(player, u8 *, SPRITE_PLAYER_FLAGS) = 0;
+    M2C_FIELD(player, s32 *, SPRITE_PLAYER_DELAY) = 0;
+    M2C_FIELD(player, void **, SPRITE_PLAYER_OWNER) = object;
+    M2C_FIELD(player, s32 *, SPRITE_PLAYER_PREV) = 0;
+    M2C_FIELD(player, s32 *, SPRITE_PLAYER_NEXT) = 0;
+    M2C_FIELD(object, void **, SPRITE_OWNER_PLAYER_LIST) = player;
 }
 
-void SpritePlayer_SpawnChild(void *arg0, void *arg1, s32 arg2) {
+/* Appends a new script player to the end of `parent`'s list and starts it on the
+ * same script at the given slot: it copies the position, tile, priority and flags
+ * of the list's last player (whose script and owner it inherits), resets its wait
+ * counter and links it in after that player. */
+void SpritePlayer_SpawnChild(void *player, void *parent, s32 slot) {
     s32 *temp_ip;
     s32 *temp_ip_2;
     void *temp_r2;
-    void *var_r1;
-    void *var_r3;
+    void *tail;
+    void *walker;
 
-    var_r1 = arg1;
-    var_r3 = M2C_FIELD(var_r1, void **, 8);
-    if (var_r3 != NULL) {
+    tail = parent;
+    walker = M2C_FIELD(tail, void **, SPRITE_PLAYER_NEXT);
+    if (walker != NULL) {
         do {
-            var_r1 = var_r3;
-            var_r3 = M2C_FIELD(var_r3, void **, 8);
-        } while (var_r3 != NULL);
+            tail = walker;
+            walker = M2C_FIELD(walker, void **, SPRITE_PLAYER_NEXT);
+        } while (walker != NULL);
     }
-    M2C_FIELD(arg0, s32 **, 0xC) = (s32 *) M2C_FIELD(var_r1, s32 **, 0xC);
-    M2C_FIELD(arg0, u8 *, 0x2C) = arg2;
-    temp_ip = M2C_FIELD(arg0, s32 **, 0xC);
-    M2C_FIELD(arg0, void **, 0x14) = (void *) ((s8 *) temp_ip + *temp_ip);
-    temp_ip_2 = M2C_FIELD(arg0, s32 **, 0xC);
-    M2C_FIELD(arg0, void **, 0x10) = (void *) ((s8 *) temp_ip_2 + M2C_FIELD(temp_ip_2 + M2C_FIELD(arg0, u8 *, 0x2C), s32 *, 4));
-    M2C_FIELD(arg0, s16 *, 0x20) = (s16) M2C_FIELD(var_r1, s16 *, 0x20);
-    M2C_FIELD(arg0, s16 *, 0x22) = (s16) M2C_FIELD(var_r1, s16 *, 0x22);
-    M2C_FIELD(arg0, u16 *, 0x24) = (u16) M2C_FIELD(var_r1, u16 *, 0x24);
-    M2C_FIELD(arg0, u16 *, 0x26) = (u16) M2C_FIELD(var_r1, u16 *, 0x26);
-    M2C_FIELD(arg0, u16 *, 0x28) = (u16) M2C_FIELD(var_r1, u16 *, 0x28);
-    M2C_FIELD(arg0, s8 *, 0x2A) = (s8) M2C_FIELD(var_r1, s8 *, 0x2A);
-    M2C_FIELD(arg0, u8 *, 0x2D) = (u8) M2C_FIELD(var_r1, u8 *, 0x2D);
-    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
-    M2C_FIELD(arg0, s32 *, 0) = (s32) M2C_FIELD(var_r1, s32 *, 0);
-    M2C_FIELD(arg0, void **, 4) = var_r1;
-    temp_r2 = M2C_FIELD(var_r1, void **, 8);
-    M2C_FIELD(arg0, void **, 8) = temp_r2;
+    M2C_FIELD(player, s32 **, SPRITE_PLAYER_SCRIPT) = (s32 *) M2C_FIELD(tail, s32 **, SPRITE_PLAYER_SCRIPT);
+    M2C_FIELD(player, u8 *, SPRITE_PLAYER_SLOT) = slot;
+    temp_ip = M2C_FIELD(player, s32 **, SPRITE_PLAYER_SCRIPT);
+    M2C_FIELD(player, void **, SPRITE_PLAYER_FRAME_TABLE) = (void *) ((s8 *) temp_ip + *temp_ip);
+    temp_ip_2 = M2C_FIELD(player, s32 **, SPRITE_PLAYER_SCRIPT);
+    M2C_FIELD(player, void **, SPRITE_PLAYER_CURSOR) = (void *) ((s8 *) temp_ip_2 + M2C_FIELD(temp_ip_2 + M2C_FIELD(player, u8 *, SPRITE_PLAYER_SLOT), s32 *, 4));
+    M2C_FIELD(player, s16 *, SPRITE_PLAYER_X) = (s16) M2C_FIELD(tail, s16 *, SPRITE_PLAYER_X);
+    M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y) = (s16) M2C_FIELD(tail, s16 *, SPRITE_PLAYER_Y);
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_X_HIGH) = (u16) M2C_FIELD(tail, u16 *, SPRITE_PLAYER_X_HIGH);
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y_HIGH) = (u16) M2C_FIELD(tail, u16 *, SPRITE_PLAYER_Y_HIGH);
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_TILE) = (u16) M2C_FIELD(tail, u16 *, SPRITE_PLAYER_TILE);
+    M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY) = (s8) M2C_FIELD(tail, s8 *, SPRITE_PLAYER_PRIORITY);
+    M2C_FIELD(player, u8 *, SPRITE_PLAYER_FLAGS) = (u8) M2C_FIELD(tail, u8 *, SPRITE_PLAYER_FLAGS);
+    M2C_FIELD(player, s32 *, SPRITE_PLAYER_DELAY) = 0;
+    M2C_FIELD(player, s32 *, SPRITE_PLAYER_OWNER) = (s32) M2C_FIELD(tail, s32 *, SPRITE_PLAYER_OWNER);
+    M2C_FIELD(player, void **, SPRITE_PLAYER_PREV) = tail;
+    temp_r2 = M2C_FIELD(tail, void **, SPRITE_PLAYER_NEXT);
+    M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT) = temp_r2;
     if (temp_r2 != NULL) {
-        M2C_FIELD(temp_r2, void **, 4) = arg0;
+        M2C_FIELD(temp_r2, void **, SPRITE_PLAYER_PREV) = player;
     }
-    M2C_FIELD(var_r1, void **, 8) = arg0;
+    M2C_FIELD(tail, void **, SPRITE_PLAYER_NEXT) = player;
 }
 
 void func_02090810(void *arg0, s32 arg1, s32 arg2) {

@@ -2,6 +2,8 @@
 #include "common.h"
 #include "battle_map.h"
 #include "gx.h"
+#include "ds3dsprite.h"
+#include "sound.h"
 static inline s32 ClampRenderCoord(s32 v, u16 *dims, s32 axis) {
  s32 max=dims[axis]-1;
  if(v>max)return max;
@@ -69,37 +71,41 @@ void DrawMapBackground(void) {
     REG_GX_COLOR = GX_RGB_WHITE;
 }
 
-void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+/* Sets one of the map ambience loops (a scripted sound slot) to a volume derived
+ * from how many of its cells are on screen: the count is scaled by the view zoom
+ * and eased into 0..SOUND_VOLUME_MAX, then the loop is started at that volume.
+ * A zero count leaves the slot silent. */
+void SetAmbienceSoundVolume(s32 slot, s32 soundId, s32 cellCount) {
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 GetViewZoom(s32);
-    s32 PlaySlotScriptedSound(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020901b0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK PlaySlotScriptedSound(s32, s32, s32);
+    M2C_UNK PlaySlotScriptedSoundAtVolume(s32, s32, s32, s32);
     extern s32 *gCurrentMap;
-    s32 temp_r0;
-    s32 var_r5;
-    s32 var_r6;
+    s32 zoom;
+    s32 volume;
+    s32 count;
 
-    var_r6 = arg2;
-    temp_r0 = GetViewZoom(*gCurrentMap + 0x6EF8);
-    var_r5 = 0;
-    if (var_r6 != 0) {
-        if (var_r6 < 8) {
-            var_r6 = 8;
+    count = cellCount;
+    zoom = GetViewZoom(*gCurrentMap + MAP_VIEW_ZOOM);
+    volume = 0;
+    if (count != 0) {
+        if (count < 8) {
+            count = 8;
         }
-        var_r5 = EaseInterpolate(0, 0, 0x7F, var_r6 * temp_r0, 0x1000);
-        if (var_r5 > 0x7F) {
-            var_r5 = 0x7F;
-        } else if (var_r5 < 0) {
-            var_r5 = 0;
+        volume = EaseInterpolate(EASE_LINEAR, 0, SOUND_VOLUME_MAX, count * zoom, 0x1000);
+        if (volume > SOUND_VOLUME_MAX) {
+            volume = SOUND_VOLUME_MAX;
+        } else if (volume < 0) {
+            volume = 0;
         }
     }
-    if (PlaySlotScriptedSound(arg0, var_r5, 0xA) != 0) {
+    if (PlaySlotScriptedSound(slot, volume, 0xA) != 0) {
         return;
     }
-    if (var_r5 == 0) {
+    if (volume == 0) {
         return;
     }
-    func_020901b0(arg0, -1, arg1, var_r5);
+    PlaySlotScriptedSoundAtVolume(slot, -1, soundId, volume);
 }
 
 #pragma push
@@ -167,7 +173,7 @@ for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
 if(func_020a62ac(x,y))RenderUnitAt(x,y,gMapCellCodes[x*40+y],mode);
 }
 *(volatile u32*)0x4000448=1;
-func_0207877c(1,0x108,counts[26]);func_0207877c(2,0x109,counts[27]);
+SetAmbienceSoundVolume(1,0x108,counts[26]);SetAmbienceSoundVolume(2,0x109,counts[27]);
 }
 #pragma pop
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){

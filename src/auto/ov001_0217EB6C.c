@@ -10,13 +10,13 @@ s32 func_ov001_0217eb6c(void){
  s32 func_02002088(u16,s32);
  extern M2C_UNK gTouchScreenRect,gMapListState;
  extern FourBytes gOv001MapListLayout;
- extern u8 data_ov001_0218f9a4[],data_ov001_0218f952[];
+ extern u8 gMapListRowToState[],data_ov001_0218f952[];
  FourShorts rect; s32 value,i,j,k;u8 *p;
  if(!TouchRectPressed(&gTouchScreenRect))return 14;
  value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+4);
  for(i=0;i<4;i++,value++){
- if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return data_ov001_0218f9a4[value];}
+ if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return gMapListRowToState[value];}
  rect.b+=29;
  }
  value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
@@ -97,7 +97,7 @@ void MapListScrollUp(s32 message) {
     if (remainder != 0) return;
     func_ov001_021839e4((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
     Ov001_UnblockScrollBar();
-    func_ov001_0217f110();
+    MapList_UpdateStateFromRow();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = 0;
     Ov001_PostTaskMessage(0, message);
 }
@@ -110,7 +110,7 @@ void MapListScrollDown(s32 arg0) {
     M2C_UNK MapListRedrawInfoPanel();
     M2C_UNK func_ov001_021839e4(s32);
     M2C_UNK Ov001_UnblockScrollBar();
-    M2C_UNK func_ov001_0217f110();
+    M2C_UNK MapList_UpdateStateFromRow();
     M2C_UNK Ov001_PostTaskMessage(s32, s32);
     extern M2C_UNK gMapListState;
     s32 result;
@@ -126,7 +126,7 @@ void MapListScrollDown(s32 arg0) {
     MapListRedrawInfoPanel();
     func_ov001_021839e4((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
     Ov001_UnblockScrollBar();
-    func_ov001_0217f110();
+    MapList_UpdateStateFromRow();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = 0;
     Ov001_PostTaskMessage(0, arg0);
 }
@@ -134,7 +134,7 @@ void MapListScrollDown(s32 arg0) {
 void func_ov001_0217efb4(void){s32 func_02002088(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);x=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
 
 /* Selects a map-layout entry from the state index and applies it via Ov001_LayoutChoiceFrameRow. */
-void func_ov001_0217f038(void) {
+void MapList_ApplyRowLayout(void) {
     extern FourteenBytes data_ov001_0218f8e0;
     extern M2C_UNK gMapListState;
     extern u16 data_ov001_0218f96a[], data_ov001_0218f96e[], data_ov001_0218f96c[];
@@ -151,9 +151,45 @@ void func_ov001_0217f038(void) {
     Ov001_LayoutChoiceFrameRow(1, entry.a, entry.c, entry.b);
 }
 
-M2C_UNK func_ov001_0217f110(void){void *GetCurrentMapRecord(void);s32 func_02002088(u16,s32);void func_ov001_0217f038(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9a4[];void *p;s32 i,j;if((u8)(M2C_FIELD(&gMapListState,u8 *,0)+245)<=2){func_ov001_0217f038();return;}p=GetCurrentMapRecord();i=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);j=M2C_FIELD(&gMapListState,u8 *,2);j+=i;switch(j){case 2:if(M2C_FIELD(p,u8 *,0xf5))M2C_FIELD(&gMapListState,u8 *,0)=2;else M2C_FIELD(&gMapListState,u8 *,0)=3;break;case 6:if(M2C_FIELD(p,u8 *,0xf6))M2C_FIELD(&gMapListState,u8 *,0)=7;else M2C_FIELD(&gMapListState,u8 *,0)=8;break;default:M2C_FIELD(&gMapListState,u8 *,0)=data_ov001_0218f9a4[j];break;}func_ov001_0217f038();}
+/* Set the map-list screen's state from the list row under the selection: the two
+ * save rows (2 and 6) pick one of two states from the working save slot's
+ * empty-code flags (SAVE_SLOT_EMPTY_A/B), every other row takes its state from
+ * gMapListRowToState.  The sub-screen states 11..13 keep the list's row layout,
+ * and the row layout is re-applied either way. */
+M2C_UNK MapList_UpdateStateFromRow(void) {
+    void *GetCurrentMapRecord(void);
+    s32 func_02002088(u16, s32);
+    void MapList_ApplyRowLayout(void);
+    extern M2C_UNK gMapListState;
+    extern u8 gMapListRowToState[];
+    u8 *record;
+    s32 row, selected;
 
-void func_ov001_0217f1c0(u32 a){void func_ov001_0217f038(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=func_ov001_0217ede0(data_ov001_0218f9bc[a]);func_ov001_0217f038();}
+    if ((u8)(M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) + 0xF5) <= 2) {
+        MapList_ApplyRowLayout();
+        return;
+    }
+    record = GetCurrentMapRecord();
+    row = func_02002088(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    selected = M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_ROW);
+    selected += row;
+    switch (selected) {
+    case 2:
+        if (record[SAVE_SLOT_EMPTY_A]) M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = 2;
+        else M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = 3;
+        break;
+    case 6:
+        if (record[SAVE_SLOT_EMPTY_B]) M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = 7;
+        else M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = 8;
+        break;
+    default:
+        M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = gMapListRowToState[selected];
+        break;
+    }
+    MapList_ApplyRowLayout();
+}
+
+void func_ov001_0217f1c0(u32 a){void MapList_ApplyRowLayout(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=func_ov001_0217ede0(data_ov001_0218f9bc[a]);MapList_ApplyRowLayout();}
 
 void func_ov001_0217f1f0(s32 event) {
     void *GetCurrentMapRecord(void);
@@ -258,13 +294,13 @@ void func_ov001_0217f1f0(s32 event) {
                 break;
             }
             Ov001_PlaySound(8);
-            func_ov001_0217f038();
+            MapList_ApplyRowLayout();
         }
         break;
     }
     if (result == 2) return;
     Ov001_PlaySound(8);
-    if (result == 0) func_ov001_0217f110();
+    if (result == 0) MapList_UpdateStateFromRow();
 }
 
 void func_ov001_0217f4e0(void){void Ov001_LoadObjTile(s32,u8,u8);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f8c0[];u8 v=data_ov001_0218f8c0[M2C_FIELD(&gMapListState,u8 *,0)-11];Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,16),v,v);}
@@ -294,15 +330,15 @@ s32 func_ov001_0217f62c(void){void *GetCurrentMapRecord(void);s32 func_0204612c(
 void func_ov001_0217f6cc(void){s32 func_ov001_02186648(void);M2C_UNK Ov001_PlaySound(s32);M2C_UNK func_ov001_02186604();M2C_UNK func_ov001_0218384c(s32);extern M2C_UNK gMapListState;extern M2C_UNK func_ov001_0217f70c;if(func_ov001_02186648())return;Ov001_PlaySound(6);func_ov001_02186604();func_ov001_0218384c(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,12));Ov001_SetStepCallback(&func_ov001_0217f70c);}
 
 void func_ov001_0217f70c(void) {
-    s32 func_ov001_0218665c();
+    s32 Ov001_IsRegionMenuActive();
     extern M2C_UNK func_ov001_0217d744;
-    if (func_ov001_0218665c() != 0) {
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_0217d744);
 }
 
-void func_ov001_0217f72c(s8 arg0) {
+void SetMapListMode(s8 arg0) {
     extern M2C_UNK gMapListState;
     M2C_FIELD(&gMapListState, s8 *, 1) = arg0;
 }
@@ -343,7 +379,7 @@ void func_ov001_0217f844(void) {
     Ov001_SetStepCallback(&func_ov001_0217f894);
 }
 
-void func_ov001_0217f894(void){s32 func_ov001_0218665c(void);void func_ov001_0217f8bc(void);void func_ov001_0217f8c0(void);void func_ov001_0217f8c4(void);func_ov001_0217f8bc();func_ov001_0217f8c0();if(func_ov001_0218665c())return;Ov001_SetStepCallback(func_ov001_0217f8c4);}
+void func_ov001_0217f894(void){s32 Ov001_IsRegionMenuActive(void);void func_ov001_0217f8bc(void);void func_ov001_0217f8c0(void);void func_ov001_0217f8c4(void);func_ov001_0217f8bc();func_ov001_0217f8c0();if(Ov001_IsRegionMenuActive())return;Ov001_SetStepCallback(func_ov001_0217f8c4);}
 
 void func_ov001_0217f8bc(void) {
 
@@ -427,12 +463,12 @@ void func_ov001_0217fa98(void) {
 }
 
 void func_ov001_0217fac0(void) {
-    M2C_UNK func_02006030(s32);
+    M2C_UNK SleepMilliseconds(s32);
     M2C_UNK func_ov001_0217fca4();
     void func_ov001_0217fae0(void);
     void func_ov001_0217fb18(void);
     void func_ov001_0217fb1c(void);
-    func_02006030(10);
+    SleepMilliseconds(10);
     func_ov001_0217fca4();
     func_ov001_0217fae0();
     func_ov001_0217fb18();

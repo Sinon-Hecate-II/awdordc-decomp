@@ -51,7 +51,12 @@ s32 GetFontGlyphIndex(void **a,u32 b){s32 GetFontCmapGlyphIndex(void *,u32);void
 
 void *GetFontGlyphMetric(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD(base,void **,12);while(p){u16 lo=M2C_FIELD(p,u16 *,0);if(lo<=b && b<=M2C_FIELD(p,u16 *,2))return p+8+(b-lo)*3;p=M2C_FIELD(p,void **,4);}return base+4;}
 
-s32 GetTextLineWidth(void *a,s32 b,s32 arg2,s32 *d){s32 c=arg2;s32 width,ch,id;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);width=0;ch=f(&c);if(ch){do{if(ch==10)break;id=GetFontGlyphIndex(a,ch);if(id==65535)id=M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,2);width+=b+M2C_FIELD(GetFontGlyphMetric(a,id),s8 *,2);ch=f(&c);}while(ch);}if(d)*d=ch==10?c:0;if(width>0)width-=b;return width;}
+/* Width in pixels of one line of text from the font's character stream: add each
+ * glyph's advance plus the letter spacing until a newline (10) or the end of the
+ * text.  A missing glyph uses the font's default character.  The trailing letter
+ * spacing is not counted; when `nextLine` is given it receives the stream position
+ * after the newline, or 0 at the end of the text. */
+s32 GetTextLineWidth(void *font,s32 letterSpacing,s32 start,s32 *nextLine){s32 pos=start;s32 width,ch,glyph;s32 (*decodeChar)(s32 *);decodeChar=((Ov001Font *)font)->decodeChar;width=0;ch=decodeChar(&pos);if(ch){do{if(ch==10)break;glyph=GetFontGlyphIndex((void **)font,ch);if(glyph==65535)glyph=((Ov001Font *)font)->resource->defaultChar;width+=letterSpacing+((Ov001GlyphMetric *)GetFontGlyphMetric((void **)font,glyph))->advance;ch=decodeChar(&pos);}while(ch);}if(nextLine)*nextLine=ch==10?pos:0;if(width>0)width-=letterSpacing;return width;}
 
 s32 GetTextBlockHeight(void *a,s32 b,s32 arg2){s32 c=arg2;s32 z[2]={0,0};s32 n,ch;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);n=1;ch=f(&c);while(ch){if(ch==10)n++;ch=f(&c);}return n*(b+M2C_FIELD(M2C_FIELD(a,void **,0),s8 *,1))-b;}
 

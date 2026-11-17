@@ -25,7 +25,7 @@ s32 func_02006028(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x70);
 }
 
-void func_02006030(s32 arg0) {
+void SleepMilliseconds(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void func_02007190(void *);
@@ -439,7 +439,7 @@ void InitArenaTable(void);
     M2C_UNK func_02009d34();
     M2C_UNK func_0200e2f8();
     M2C_UNK func_02010c14();
-    M2C_UNK func_02018f3c();
+    M2C_UNK Mb_BootInit();
     InitArenaTable();
     func_02009d34();
     func_02005288();
@@ -452,7 +452,7 @@ void InitArenaTable(void);
     func_020077cc();
     func_02005968();
     func_020075b4();
-    func_02018f3c();
+    Mb_BootInit();
     func_02010c14();
     func_0200e2f8();
     func_02006838();

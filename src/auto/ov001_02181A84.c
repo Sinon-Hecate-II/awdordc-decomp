@@ -265,7 +265,7 @@ switch(M2C_FIELD(&data_ov001_02193dd4,s8 *,1)){
 case 0:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02180860);return;
 case 1:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02179718);return;
 case 2:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_021803ec);return;
-case 3:Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);func_ov001_0217f72c(1);Ov001_SetStepCallback(&InitMapListScreen);return;
+case 3:Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);SetMapListMode(1);Ov001_SetStepCallback(&InitMapListScreen);return;
 }
 }
 
@@ -500,7 +500,7 @@ void func_ov001_021825a8(s32 arg0) {
         data_ov001_02193ddc = 1;
         Ov001_PlaySound(0x11);
     } else {
-        func_0202f1dc();
+        GetWfcSessionProgress();
         func_ov001_0217d260();
         Ov001_PlaySound(0x12);
     }

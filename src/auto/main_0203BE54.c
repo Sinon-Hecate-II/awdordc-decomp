@@ -1,5 +1,6 @@
 /* 10 functions from 0x0203BE54 to 0x0203CB38 (main), found by ds-decomp. */
 #include "common.h"
+#include "qr2.h"
 
 #pragma push
 #pragma scheduling off
@@ -207,7 +208,7 @@ M2C_FIELD(GetConnection(),s16*,26)=0;
 func_0205e864(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnPublicAddress);
 func_0205e834(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnStateChanged);
 func_0205e84c(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnReceiveState);
-func_0205ea70(M2C_FIELD(GetConnection(),s32*,16));
+Qr2_StateChanged(M2C_FIELD(GetConnection(),s32*,16));
 return result;
 }
 
@@ -411,40 +412,46 @@ SendJoinRequest(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_IDS),0);
 if(func_0204084c())return;
 }
 
-void func_0203ca88(void *arg0) {
-    M2C_UNK func_0205e87c();
-    M2C_UNK func_0205ea70(s32);
-    u32 temp_r0_2;
-    u8 temp_r0;
+/* Pump one frame of the QR2 record (keep-alive, timeouts, incoming queries) and,
+ * once the connection has moved into a state that changes what the master should
+ * report about this match, ask QR2 to report the state change - unless a report
+ * is already pending. */
+void Qr2_ServiceConnection(void *qr2) {
+    M2C_UNK Qr2_Think(void *);
+    M2C_UNK Qr2_StateChanged(s32);
+    u8 mode;
+    u32 state;
 
-    if (arg0 == NULL) {
+    if (qr2 == NULL) {
         return;
     }
-    func_0205e87c();
-    if (M2C_FIELD(arg0, s32 *, 0xB4) != 0) {
+    Qr2_Think(qr2);
+    if (M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) != 0) {
         return;
     }
-    temp_r0 = M2C_FIELD(GetConnection(), u8 *, 0x15);
-    switch (temp_r0) {
+    mode = M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE);
+    switch (mode) {
     case 0:
     case 1:
-        temp_r0_2 = M2C_FIELD(GetConnection(), u32 *, 0x1A0);
-        switch (temp_r0_2) {
+        /* our own connection is being set up, or a peer slot changed */
+        state = M2C_FIELD(GetConnection(), u32 *, CONN_SESSION_STATE);
+        switch (state) {
         case 1:
         case 2:
         case 3:
         case 4:
         case 6:
         case 11:
-            func_0205ea70(M2C_FIELD(GetConnection(), s32 *, 0x10));
+            Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_RECORD));
             break;
         default:
             break;
         }
         break;
     case 2:
-        if (M2C_FIELD(GetConnection(), u32 *, 0x1A0) == 0xB) {
-            func_0205ea70(M2C_FIELD(GetConnection(), s32 *, 0x10));
+        /* hosting: a peer had to be reconnected, so the peer list changed */
+        if (M2C_FIELD(GetConnection(), u32 *, CONN_SESSION_STATE) == 0xB) {
+            Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_RECORD));
         }
         break;
     }

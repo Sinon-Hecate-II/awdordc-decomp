@@ -293,19 +293,19 @@ s32 hash=0; s32 c=*arg0;
 if(c){do{if(c>=0 && c<128){c=(u32)data_020eac40[c];}else{c=(s32)c;}hash=hash*0x9CCF9319+c;c=*++arg0;}while(c);}
 return func_020722fc(hash,arg1)>>32;
 }
-void func_02061040(void *arg0) {
+void FreeServerKeyValue(void *arg0) {
     M2C_UNK StringInternRelease(M2C_UNK, s32);
     StringInternRelease(0, M2C_FIELD(arg0, s32 *, 0));
     StringInternRelease(0, M2C_FIELD(arg0, s32 *, 4));
 }
 
-void func_02061064(s8 **arg0, s32 arg1) {
+void HashServerKey(s8 **arg0, s32 arg1) {
     s32 func_02060fe8(s8 *, s32);
 
     func_02060fe8(*arg0, arg1);
 }
 
-void func_02061074(s32 *arg0, s32 *arg1) {
+void CompareServerKeys(s32 *arg0, s32 *arg1) {
     func_0206f8ac(*arg0, *arg1);
 }
 
@@ -313,18 +313,20 @@ s32 SBServerGetPing(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x1C);
 }
 
-void *SBServerNew(s32 arg0,s32 arg1,s32 arg2){
+/* Allocates a server record for the address the browser saw it at, with an empty
+   key/value table and all its state, address, value and ping cleared. */
+void *SBServerNew(s32 unused,s32 ip,s32 port){
  void *gpiMalloc(s32);M2C_UNK gpiFree(s32);
  s32 TableNew2(s32,s32,s32,void *,void *,void *);
- void *temp_r0=gpiMalloc(0x24);
- if(!temp_r0)return 0;
- M2C_FIELD(temp_r0,s32 *,0x18)=TableNew2(8,8,4,func_02061064,func_02061074,func_02061040);
- if(!M2C_FIELD(temp_r0,s32 *,0x18)){gpiFree((s32)temp_r0);return 0;}
- M2C_FIELD(temp_r0,u8 *,0x14)=0;M2C_FIELD(temp_r0,u8 *,0x15)=0;
- M2C_FIELD(temp_r0,s32 *,0x20)=0;M2C_FIELD(temp_r0,s32 *,0x1c)=0;
- M2C_FIELD(temp_r0,s32 *,0x10)=0;M2C_FIELD(temp_r0,s32 *,0)=arg1;
- M2C_FIELD(temp_r0,u16 *,4)=arg2;M2C_FIELD(temp_r0,s32 *,8)=0;
- M2C_FIELD(temp_r0,u16 *,12)=0;return temp_r0;
+ GpiPlayer *server=(GpiPlayer *)gpiMalloc(sizeof(GpiPlayer));
+ if(!server)return 0;
+ server->keyValues=TableNew2(8,8,4,HashServerKey,CompareServerKeys,FreeServerKeyValue);
+ if(!server->keyValues){gpiFree((s32)server);return 0;}
+ server->state=0;server->flags=0;
+ server->next=0;server->ping=0;
+ server->value=0;server->ip=ip;
+ server->port=port;server->address=0;
+ server->queryPort=0;return server;
 }
 
 void gpiPlayerSetFlags(void *arg0, s8 arg1) {

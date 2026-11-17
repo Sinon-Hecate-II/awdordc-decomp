@@ -6,7 +6,7 @@ void func_0200bda4(s32 arg0) {
     s32 OS_GetLockID(void);
     void func_02010c14(void);
     void func_0200b118(void *);
-    s32 func_0200b184(void *, M2C_UNK, M2C_UNK);
+    s32 RegisterArchiveName(void *, M2C_UNK, M2C_UNK);
     void func_0200b6a8(void *, s32, s32);
     s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 func_0200bd9c(void);
@@ -27,7 +27,7 @@ void func_0200bda4(s32 arg0) {
     M2C_FIELD(&data_0212fbfc, s32 *, 0x14) = 0;
     func_02010c14();
     func_0200b118(&data_0212fc14);
-    func_0200b184(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
+    RegisterArchiveName(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
 
     if (M2C_FIELD(base, u16 *, 0) == 2) {
         M2C_FIELD(&data_0212fbfc, s32 *, 8) = -1;

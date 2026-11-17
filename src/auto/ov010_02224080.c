@@ -3,8 +3,8 @@
 typedef struct PoolEntry0222415c { u8 data[20]; struct PoolEntry0222415c *next; } PoolEntry0222415c;
 extern s32 data_ov010_0222d920[4];
 extern s32 data_ov010_0222d914[3];
-extern u8 data_ov010_0222be4c[8];
-extern u8 data_ov010_0222be54[8];
+extern u8 gControlReplyTypes[8];
+extern u8 gDataReplyTypes[8];
 
 /* Build the packet of an exchange step into the caller's buffer: check the
  * arguments and the step, write the packet header, and when the exchange starts
@@ -84,38 +84,41 @@ void func_ov010_02224270(void) {
     M2C_FIELD(&gVoiceLinkState, s32 *, 0x10) = 0;
 }
 
-void func_ov010_02224288(void) {
+/* Drops the voice-chat link's active exchange once it has been idle for longer
+ * than gVoiceLinkTimeoutTicks: clear the activity stamp and the exchange state,
+ * send a control packet and tell the link layer about the timeout. */
+void VoiceLink_CheckTimeout(void) {
     u64 GetSystemTick(void);
     M2C_UNK VoiceLink_SendControl(s32);
     extern M2C_UNK gLinkConfig;
     extern M2C_UNK gVoiceLinkState;
-    extern M2C_UNK data_ov010_0222c024;
+    extern M2C_UNK gVoiceLinkTimeoutTicks;
     extern M2C_UNK gVoiceLinkContext;
     u64 now;
     u64 last;
 
     now = GetSystemTick();
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) != 2) {
+    if (((LinkConfig *) &gLinkConfig)->mode != 2) {
         return;
     }
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0xC) == 0) {
+    if (((LinkConfig *) &gLinkConfig)->control == 0) {
         return;
     }
-    last = M2C_FIELD(&gVoiceLinkState, u64 *, 8);
+    last = ((VoiceLinkState *) &gVoiceLinkState)->lastActivity;
     if (last == 0) {
         return;
     }
-    if (now - last <= M2C_FIELD(&data_ov010_0222c024, u64 *, 0)) {
+    if (now - last <= M2C_FIELD(&gVoiceLinkTimeoutTicks, u64 *, 0)) {
         return;
     }
     M2C_FIELD(&gVoiceLinkState, s32 *, 8) = 0;
     M2C_FIELD(&gVoiceLinkState, s32 *, 0xC) = 0;
-    M2C_FIELD(&gVoiceLinkState, s32 *, 0x3C) = 0;
-    M2C_FIELD(&gVoiceLinkState, s32 *, 0x48) = 0;
+    ((VoiceLinkState *) &gVoiceLinkState)->sessionState = 0;
+    ((VoiceLinkState *) &gVoiceLinkState)->substate = 0;
     VoiceLink_SendControl(0);
-    M2C_FIELD(&gLinkConfig, M2C_UNK (**)(u8, s32, M2C_UNK *, M2C_UNK), 4)(
-        M2C_FIELD(&gVoiceLinkState, u8 *, 0x40), 9, &gVoiceLinkContext,
-        M2C_FIELD(&gLinkConfig, M2C_UNK *, 8));
+    ((LinkConfig *) &gLinkConfig)->notify(
+        ((VoiceLinkState *) &gVoiceLinkState)->peerId, LINK_NOTIFY_TIMEOUT, &gVoiceLinkContext,
+        ((LinkConfig *) &gLinkConfig)->notifyArg);
 }
 
 s32 func_ov010_02224334(s32 arg0, void *arg1, s32 arg2, M2C_UNK arg3) {
@@ -154,12 +157,12 @@ return p;
 }
 
 s32 func_ov010_0222441c(void *arg0, M2C_UNK arg1) {
-    s32 func_ov010_02223fac(void *, M2C_UNK, void *, u32);
+    s32 VoiceLink_BuildControlPacket(void *, M2C_UNK, void *, u32);
     s32 func_ov010_02224614(void *, void *);
     u8 sp0[0x10];
     s32 temp_r0;
 
-    temp_r0 = func_ov010_02223fac(arg0, arg1, sp0, 0x10);
+    temp_r0 = VoiceLink_BuildControlPacket(arg0, arg1, sp0, 0x10);
     if (temp_r0 != 0) {
         return temp_r0;
     }
@@ -266,7 +269,35 @@ s32 func_ov010_02224614(void *arg0,void *arg1) {
  return 1;
 }
 
-u8 VoiceLink_GetReplyType(u8 *a,u8 *b){s32 n,v;b[5]=a[11];if(a[4]==255){if(a[6]==0){M2C_FIELD(b,s32 *,8)=b[4]?(1<<b[4]):1;}return data_ov010_0222be4c[a[6]];}if(a[4]==0){if(a[6]==0){n=M2C_FIELD(b,s32 *,12);if(n==1){M2C_FIELD(b,s32 *,8)=b[4]?(1<<b[4]):1;return 7;}if(n==5)return 9;return 12;}return data_ov010_0222be54[a[6]];}return 12;}
+/* Works out the reply type for a voice-chat link packet: control packets and
+   non-first data subtypes take theirs from the packet subtype tables, while the
+   first data subtype picks it from the exchange's current step.  Every answer
+   records the packet's peer id in the context and refreshes its peer mask. */
+u8 VoiceLink_GetReplyType(u8 *a,u8 *b){
+    VoiceLinkPacket *packet=(VoiceLinkPacket *)a;
+    VoiceLinkContext *context=(VoiceLinkContext *)b;
+    s32 step;
+    context->packetPeerId = packet->peerId;
+    if (packet->kind == 0xFF) {
+        if (packet->subtype == 0) {
+            context->peerMask = context->peerId ? (1 << context->peerId) : 1;
+        }
+        return gControlReplyTypes[packet->subtype];
+    }
+    if (packet->kind == 0) {
+        if (packet->subtype == 0) {
+            step = context->step;
+            if (step == 1) {
+                context->peerMask = context->peerId ? (1 << context->peerId) : 1;
+                return 7;
+            }
+            if (step == 5) return 9;
+            return 12;
+        }
+        return gDataReplyTypes[packet->subtype];
+    }
+    return 12;
+}
 
 M2C_UNK VoiceLink_InitPacket(void *a,void *b,u8 c){extern M2C_UNK gLinkConfig;M2C_FIELD(b,s32 *,0)=0x5f564354;M2C_FIELD(b,u8 *,5)=16;M2C_FIELD(b,u8 *,6)=c;M2C_FIELD(b,u8 *,8)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,u8 *,9)=M2C_FIELD(a,u8 *,4);M2C_FIELD(b,u8 *,10)=0;M2C_FIELD(b,u8 *,11)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,s32 *,12)=0;return 0;}
 

@@ -211,7 +211,7 @@ if(!r)return -1;
 y=(r+v)&(v-0x3f);M2C_FIELD(&data_ov001_02192790,s32 *,0x40)=y;
 M2C_FIELD(&data_ov001_02192790,s32 *,0x5c)=(y+x+0x2490+v)&(v-0x3f);
 if(!WhStartSession((s32)WhPushEvent,y,0))return -2;
-do {func_02006030(10);r=WhPopEvent();
+do {SleepMilliseconds(10);r=WhPopEvent();
 while(r) { if(r==4 || r==5) {} else if(r==6) {active=0;result=1;} else {active=0;result=-2;} r=WhPopEvent(); }
 }while(active);return result;
 }
@@ -220,7 +220,7 @@ s32 func_ov001_0216e3f0(void) {
 extern M2C_UNK data_ov001_02192790;
 s32 r,again=1;
 if(func_ov001_0216e0b4()){
-do{func_02006030(10);r=WhPopEvent();
+do{SleepMilliseconds(10);r=WhPopEvent();
 while(r){switch(r){case 4:case 5:break;case 20:again=0;break;default:again=0;break;}r=WhPopEvent();}
 }while(again);
 }
@@ -236,7 +236,7 @@ return 1;
  * event queue until the join completes, is aborted or reaches the configured
  * deadline; on success initialise the network config and mark the join ready. */
 s32 WhJoinSelectedHost(void) {
-    M2C_UNK func_02006030(s32);
+    M2C_UNK SleepMilliseconds(s32);
     M2C_UNK func_02007190(void *);
     M2C_UNK func_020072cc(void *, s32, s32, void *, s32);
     M2C_UNK func_02007338(void *);
@@ -264,7 +264,7 @@ s32 WhJoinSelectedHost(void) {
             result = -8;
             break;
         }
-        func_02006030(10);
+        SleepMilliseconds(10);
         while ((event = WhPopEvent()) != 0) {
             switch (event) {
             case 12:
@@ -303,7 +303,7 @@ s32 WhJoinSelectedHost(void) {
 #pragma opt_propagation off
 #pragma opt_common_subs on
 s32 func_ov001_0216e79c(void) {
-    M2C_UNK func_02006030(s32);
+    M2C_UNK SleepMilliseconds(s32);
     M2C_UNK func_02007190(void *);
     M2C_UNK func_020072cc(void *, s32, s32, void *, s32);
     M2C_UNK func_02007338(void *);
@@ -346,7 +346,7 @@ s32 func_ov001_0216e79c(void) {
         again = 1;
         result = 0;
         do {
-            func_02006030(10);
+            SleepMilliseconds(10);
             if (WhGetTime() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) break;
             if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x10)) break;
             event = WhPopEvent();

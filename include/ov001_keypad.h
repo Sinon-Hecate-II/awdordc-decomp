@@ -11,6 +11,8 @@
 #define KEYPAD_HIGHLIGHTED 0x62 /* s8 key whose pressed sprite is shown */
 #define KEYPAD_LAST_KEY    0x63 /* s8 last key that was under the finger */
 #define KEYPAD_NAV_KEY     0x64 /* s8 key the d-pad came from */
+#define KEYPAD_NAV_WRAP_UP   (-1) /* gKeypadNeighborTable result: d-pad wrapped past the up edge */
+#define KEYPAD_NAV_WRAP_DOWN (-2) /* gKeypadNeighborTable result: d-pad wrapped past the down edge */
 #define KEYPAD_REPEAT      0x65 /* u8 held-delete auto-repeat counter */
 #define KEYPAD_CAN_DELETE  0x66 /* u8 delete key enabled (a digit can be removed) */
 #define KEYPAD_DIGITS_ON   0x67 /* u8 number keys enabled (the code is not full) */

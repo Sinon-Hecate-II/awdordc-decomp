@@ -18,8 +18,8 @@ typedef struct Arm7TransferDesc {
 
 void func_0200dd40(void) {
     M2C_UNK func_02009d34();
-    M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
-    s32 func_02009e8c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
+    s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK gArm7TransferState;
     void func_0200dfb8(s32,u32,s32);
     if (M2C_FIELD(&gArm7TransferState, u16 *, 0) != 0) return;
@@ -27,9 +27,9 @@ void func_0200dd40(void) {
     M2C_FIELD(&gArm7TransferState, s32 *, 4) = 0;
     M2C_FIELD(&gArm7TransferState, s32 *, 8) = 0;
     func_02009d34();
-    do {} while (func_02009e8c(9, 1) == 0);
+    do {} while (IsFifoMessageReady(9, 1) == 0);
     *(s32 *)0x027FFF90 = 0;
-    func_02009e40(9, (M2C_UNK *)&func_0200dfb8);
+    SetFifoMessageHandler(9, (M2C_UNK *)&func_0200dfb8);
 }
 
 /* Validate an ARM7 transfer descriptor and start it: the type picks the transfer
@@ -240,8 +240,8 @@ void Arm7FinishCommand(s32 arg0) {
 void func_0200e2f8(void) {
     M2C_UNK InitMutex(M2C_UNK *);
     M2C_UNK func_02009d34();
-    M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
-    s32 func_02009e8c(M2C_UNK,M2C_UNK);
+    M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
+    s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);
     extern M2C_UNK gArm7CommandState;
     extern M2C_UNK data_0212fcf4;
     extern M2C_UNK data_0212fd0c;
@@ -252,8 +252,8 @@ void func_0200e2f8(void) {
     M2C_FIELD(&gArm7CommandState,s32 *,0x18)=0;
     M2C_FIELD(&gArm7CommandState,s32 *,0x1C)=0;
     func_02009d34();
-    do {} while(func_02009e8c(8,1)==0);
-    func_02009e40(8,&Arm7CommandReply);
+    do {} while(IsFifoMessageReady(8,1)==0);
+    SetFifoMessageHandler(8,&Arm7CommandReply);
     for(i=0;i<5;i++) ((u16 (*)[4])&data_0212fd0c)[i][0]=0;
     InitMutex(&data_0212fcf4);
     M2C_FIELD(&gArm7CommandState,s32 *,0x10)=*(s32 *)0x027FFC3C;
@@ -306,7 +306,7 @@ s32 func_0200e464(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_0200e4f8(u32 arg0, s32 arg1, s32 arg2) {
+s32 Arm7SetPowerState(u32 arg0, s32 arg1, s32 arg2) {
     void func_0200e8f4(s32);
     extern M2C_UNK gArm7CommandState;
     if (func_0200e234() == 0) return 1;
@@ -366,7 +366,7 @@ s32 func_0200e64c(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 SendPowerCommand(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
-    s32 func_0200e4f8();
+    s32 Arm7SetPowerState();
     s32 var_r0;
 
     switch (arg0) {                                 /* irregular */
@@ -386,7 +386,7 @@ s32 SendPowerCommand(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
     if (var_r0 == 0) {
         return 0xFFFF;
     }
-    return func_0200e4f8();
+    return Arm7SetPowerState();
 }
 
 s32 SendPowerCommandWait(s32 arg0) {
@@ -399,7 +399,7 @@ s32 SendPowerCommandWait(s32 arg0) {
     return sp0;
 }
 
-s32 func_0200e6f0(M2C_UNK arg0, M2C_UNK arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
+s32 Arm7SetBacklight(M2C_UNK arg0, M2C_UNK arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     s32 sel;
 
     sel = 0;
@@ -416,49 +416,54 @@ s32 func_0200e6f0(M2C_UNK arg0, M2C_UNK arg1, void (*arg2)(s32, s32 *), s32 *arg
     if (sel == 0) {
         return 0xFFFF;
     }
-    return func_0200e4f8(sel, (M2C_UNK)arg2, (s32)arg3);
+    return Arm7SetPowerState(sel, (M2C_UNK)arg2, (s32)arg3);
 }
 
-s32 func_0200e76c(M2C_UNK arg0, M2C_UNK arg1) {
+s32 Arm7SetBacklightWait(M2C_UNK arg0, M2C_UNK arg1) {
     void func_0200e270(void);
-    s32 func_0200e6f0(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
+    s32 Arm7SetBacklight(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
     s32 result;
-    result = func_0200e6f0(arg0, arg1, func_0200e2b0, &sp0);
+    result = Arm7SetBacklight(arg0, arg1, func_0200e2b0, &sp0);
     if (result != 0) return result;
     func_0200e270();
     return sp0;
 }
 
-void func_0200e794(s32 arg0, s32 arg1) {
-    void func_0200758c(M2C_UNK);
-    s32 func_0200ec44(void);
+/* Bring the display back up after the power service switched it off: give the
+ * hardware time to settle, restore each screen's backlight state from the ARM7's
+ * power flags, enable the LCD (the service refuses a re-enable within seven
+ * frames of switching it off, so retry after a delay), then send ARM7 power
+ * command 0x0E; its reply is handed to callback together with user. */
+void WakeDisplay(s32 callback, s32 user) {
+    void WaitCycles(M2C_UNK);
+    s32 IsLcdEnabled(void);
 
-    M2C_UNK func_0200e76c(M2C_UNK, M2C_UNK);
-    s32 func_0200ec24(s32);
-    s32 func_0200e4f8(u32, s32, s32);
-    s32 sp4;
-    s32 sp0;
+    M2C_UNK Arm7SetBacklightWait(M2C_UNK, M2C_UNK);
+    s32 SetLcdEnabled(s32);
+    s32 Arm7SetPowerState(u32, s32, s32);
+    s32 backlight0Off;
+    s32 backlight1Off;
 
-    func_0200758c(0x996A00);
-    if (func_0200ec44() != 1) {
-        func_0200e898(&sp4, &sp0);
-        if (sp4 != 0) {
-            func_0200e76c(0, 0);
+    WaitCycles(LCD_WAKE_DELAY_CYCLES);
+    if (IsLcdEnabled() != 1) {
+        ReadPowerFlags(&backlight0Off, &backlight1Off);
+        if (backlight0Off != 0) {
+            Arm7SetBacklightWait(0, 0);
         }
-        if (sp0 != 0) {
-            func_0200e76c(1, 0);
+        if (backlight1Off != 0) {
+            Arm7SetBacklightWait(1, 0);
         }
-        while (func_0200ec24(1) == 0) {
-            func_0200758c(0x996A00);
+        while (SetLcdEnabled(1) == 0) {
+            WaitCycles(LCD_WAKE_DELAY_CYCLES);
         }
     }
-    func_0200e4f8(0xE, arg0, arg1);
+    Arm7SetPowerState(0xE, callback, user);
 }
 
-s32 func_0200e840(void) {
+s32 WakeDisplayWait(void) {
 s32 sp0,result;
-result=((s32 (*)(s32,s32))func_0200e794)((s32)func_0200e2b0,(s32)&sp0);
+result=((s32 (*)(s32,s32))WakeDisplay)((s32)func_0200e2b0,(s32)&sp0);
 if(result)return result;
 func_0200e270();return sp0;
 }
@@ -471,7 +476,7 @@ void func_0200e880(s32 a) {
 func_0200e64c(3,(u16)a);
 }
 
-s32 func_0200e898(s32 *a,s32 *b) {
+s32 ReadPowerFlags(s32 *a,s32 *b) {
 u16 value;s32 result;
 result=func_0200e5c4(0,&value);
 if(result)return result;
@@ -495,15 +500,15 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_0200519c(M2C_UNK);
     void func_0200ede8(M2C_UNK);
     M2C_UNK func_02018c9c(void);
-    M2C_UNK func_0200ec44(void);
-    s32 func_0200e898(s32 *, s32 *);
-    s32 func_0200e76c(M2C_UNK, M2C_UNK);
+    M2C_UNK IsLcdEnabled(void);
+    s32 ReadPowerFlags(s32 *, s32 *);
+    s32 Arm7SetBacklightWait(M2C_UNK, M2C_UNK);
     M2C_UNK func_0200e464(M2C_UNK, M2C_UNK);
     void func_02007968(void);
     M2C_UNK SetLcdPower(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 SendPowerCommandWait(s32);
-    void func_0200758c(M2C_UNK);
-    s32 func_0200e840(void);
+    void WaitCycles(M2C_UNK);
+    s32 WakeDisplayWait(void);
     extern M2C_UNK gArm7CommandState;
 
     M2C_UNK r10 = arg0;
@@ -553,9 +558,9 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     p4m1 = (volatile u32 *)0x4001000;
     r5 = *p4m;
     r6 = *p4m1;
-    sp0 = func_0200ec44();
-    func_0200e898(&sp14, &sp10);
-    func_0200e76c(2, 0);
+    sp0 = IsLcdEnabled();
+    ReadPowerFlags(&sp14, &sp10);
+    Arm7SetBacklightWait(2, 0);
 
     sp12 = *p27;
     while(*p27 == sp12) {}
@@ -588,14 +593,14 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
     *p4m = r5;
     *p4m1 = r6;
-    func_0200758c(0x708100);
+    WaitCycles(0x708100);
     }
     OS_DisableInterrupts();
     func_0200519c(sp4);
     OS_RestoreInterrupts(sp8);
 
     {u16 tmp=*hw208; *hw208=r8;}
-    if(r4 != 0) func_0200e840();
+    if(r4 != 0) WakeDisplayWait();
 
     func_0200ede8(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0x14));
 
@@ -633,7 +638,7 @@ s32 SetLcdPower(s32 on, s32 arm7State, s32 force, s32 wait) {
     return 1;
 }
 
-s32 func_0200ec24(s32 arg0) {
+s32 SetLcdEnabled(s32 arg0) {
     M2C_UNK SetLcdPower(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 var_r0;
 
@@ -644,7 +649,7 @@ s32 func_0200ec24(s32 arg0) {
     SetLcdPower(var_r0, 0, 0, 1);
 }
 
-s32 func_0200ec44(void) {
+s32 IsLcdEnabled(void) {
     if (*(u16 *)0x04000304 & 1) {
         return 1;
     }

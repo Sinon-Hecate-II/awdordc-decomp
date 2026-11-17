@@ -210,7 +210,7 @@ s32 TlsClientHandshake(void *transport) {
  return 0;
 }
 
-s32 func_02024c60(void *p){s32 func_0201d2f0(void *);s32 TlsClientHandshake(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&func_0201d2f0(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return TlsClientHandshake(p);}
+s32 func_02024c60(void *p){s32 TcpConnect(void *);s32 TlsClientHandshake(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&TcpConnect(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return TlsClientHandshake(p);}
 
 /* TLS-socket counterpart of PeekReceivedData: finishes the pending TLS record by
  * reading its remaining bytes from the socket, hands the assembled record to

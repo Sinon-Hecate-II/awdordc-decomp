@@ -230,8 +230,8 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_0205c344(void *conn) {
-    s32 func_02049534(void *);
-    s32 func_020497e0(void *, void *, s32, s32, void *, s32 *);
+    s32 ghiSocketCanRecv(void *);
+    s32 ghiRecvFrom(void *, void *, s32, s32, void *, s32 *);
     s32 ghiGetLastSocketError(void);
     s32 func_0205c244(void *, M2C_UNK, M2C_UNK);
     void func_0205d49c(void *);
@@ -244,14 +244,14 @@ s32 func_0205c344(void *conn) {
     s32 read;
     s32 x;
 
-    if (func_02049534((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
+    if (ghiSocketCanRecv((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
         return 0;
     }
 
     cnt = 8;
 
     for (;;) {
-        read = func_020497e0((void *)M2C_FIELD(conn, s32 *, 0), buffer, 0x5dc, 0,
+        read = ghiRecvFrom((void *)M2C_FIELD(conn, s32 *, 0), buffer, 0x5dc, 0,
                               (u8 *)&val_c, &cnt);
         if (read != -1) {
             u16 hv = *(u16 *)((char *)&val_c + 2);
@@ -259,7 +259,7 @@ s32 func_0205c344(void *conn) {
             if (gti2HandleMessage(conn, buffer, read, val_10, bsw) == 0) {
                 return 0;
             }
-            if (func_02049534((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
+            if (ghiSocketCanRecv((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
                 return 1;
             }
         } else {

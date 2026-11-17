@@ -1,6 +1,7 @@
 /* 24 functions from 0x0221F4F8 to 0x02220018 (ov005), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 
 void func_ov005_0221f4f8(void *arg0){
 s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_01ffac9c(u16,u16,u16,void *,s32);void func_0207c650(void *,s32,s32,s32,s32);void func_02088f1c(void *);
@@ -92,7 +93,9 @@ void func_ov005_0221fa18(void) {
     gCur3DSpriteEngine = savedContext;
 }
 
-void func_ov005_0221fb14(M2C_UNK arg0) {
+/* Build the list of COs the player has unlocked - a title line followed by one
+ * name per unlocked CO - and render it into a new text layer. */
+void DrawUnlockedCoList(M2C_UNK owner) {
     M2C_UNK StringFormat(void *, void *, s32);
     M2C_UNK StringAppend(void *, void *);
     s32 GetLocalizedText(s32);
@@ -102,22 +105,23 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     extern M2C_UNK gCoState;
     extern M2C_UNK data_ov005_022212f4;
     extern M2C_UNK data_ov005_022212f8;
-    char sp20[128];
-    char sp0[32];
-    s32 var_r9;
-    char *var_r10;
-    StringFormat(sp20, &data_ov005_022212f4, GetLocalizedText(0xF000000F));
-    var_r10 = (char *)&gMovementCostTable;
-    var_r9 = 0;
+    char text[128];
+    char entry[32];
+    s32 co;
+    char *army;
+
+    StringFormat(text, &data_ov005_022212f4, GetLocalizedText(0xF000000F));
+    army = (char *)&gMovementCostTable;
+    co = 0;
     do {
-        if (M2C_FIELD(&gCoState, s32 *, 8) & (1 << var_r9)) {
-            StringFormat(sp0, &data_ov005_022212f8, GetLocalizedText(*(s32 *)var_r10));
-            StringAppend(sp20, sp0);
+        if (M2C_FIELD(&gCoState, s32 *, CO_STATE_UNLOCKED) & (1 << co)) {
+            StringFormat(entry, &data_ov005_022212f8, GetLocalizedText(*(s32 *)(army + ARMY_DATA_NAME)));
+            StringAppend(text, entry);
         }
-        var_r9 += 1;
-        var_r10 += 0x9C;
-    } while (var_r9 < 0xF);
-    RenderTextLayer(CreateTextLayer(arg0), 2, 0x6B80, sp20);
+        co += 1;
+        army += ARMY_DATA_SIZE;
+    } while (co < 15);
+    RenderTextLayer(CreateTextLayer(owner), 2, 0x6B80, text);
 }
 
 void func_ov005_0221fbc8(M2C_UNK arg0) {

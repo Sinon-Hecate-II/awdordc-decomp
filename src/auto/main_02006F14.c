@@ -290,7 +290,7 @@ s32 func_02007508(void) {
 }
 
 extern void func_00000678(unsigned int);
-void func_0200758c(unsigned int value)
+void WaitCycles(unsigned int value)
 {
     if (value >= 4)
         return func_00000678(value - 4);
@@ -305,8 +305,8 @@ void func_02007598(void) {
 
 void func_020075b4(void) {
     M2C_UNK func_02009d34();
-    M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
-    s32 func_02009e8c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
+    s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0212dfe4;
     extern M2C_UNK func_02007608;
     if (M2C_FIELD(&data_0212dfe4, u16 *, 2) != 0) {
@@ -316,8 +316,8 @@ void func_020075b4(void) {
     func_02009d34();
     do {
 
-    } while (func_02009e8c(0xC, 1) == 0);
-    func_02009e40(0xC, &func_02007608);
+    } while (IsFifoMessageReady(0xC, 1) == 0);
+    SetFifoMessageHandler(0xC, &func_02007608);
 }
 
 void func_02007608(s32 arg0,s32 arg1) {

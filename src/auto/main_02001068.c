@@ -5,12 +5,15 @@ typedef struct UnkVec3 { s32 x,y,z; } UnkVec3;
 typedef struct Matrix01148 { s32 m[12]; } Matrix01148;
 typedef struct Matrix016 { s32 m[16]; } Matrix016;
 
-void func_02001068(s32 *arg0,s32 *arg1,s32 arg2,s32 arg3,s32 arg4) {
-void func_02007f4c(void *,void *);
-if(arg0!=arg1) func_02007f4c(arg0,arg1);
-arg1[9]=arg0[9]+(s32)(((long long)arg2*arg0[0]+(long long)arg3*arg0[3]+(long long)arg4*arg0[6])>>12);
-arg1[10]=arg0[10]+(s32)(((long long)arg2*arg0[1]+(long long)arg3*arg0[4]+(long long)arg4*arg0[7])>>12);
-arg1[11]=arg0[11]+(s32)(((long long)arg2*arg0[2]+(long long)arg3*arg0[5]+(long long)arg4*arg0[8])>>12);
+/* Append a local translation (x, y, z) to a Q12 4x3 matrix: the rotation part is
+ * copied to dst and the translation row becomes src's own plus the delta rotated
+ * by the source rotation. */
+void MTX_TransApply43(s32 *src,s32 *dst,s32 x,s32 y,s32 z) {
+void MTX_Copy33(void *,void *);
+if(src!=dst) MTX_Copy33(src,dst);
+dst[MTX43_TRANS+0]=src[MTX43_TRANS+0]+(s32)(((long long)x*src[MTX43_ROT+0]+(long long)y*src[MTX43_ROT+3]+(long long)z*src[MTX43_ROT+6])>>MTX_FX_SHIFT);
+dst[MTX43_TRANS+1]=src[MTX43_TRANS+1]+(s32)(((long long)x*src[MTX43_ROT+1]+(long long)y*src[MTX43_ROT+4]+(long long)z*src[MTX43_ROT+7])>>MTX_FX_SHIFT);
+dst[MTX43_TRANS+2]=src[MTX43_TRANS+2]+(s32)(((long long)x*src[MTX43_ROT+2]+(long long)y*src[MTX43_ROT+5]+(long long)z*src[MTX43_ROT+8])>>MTX_FX_SHIFT);
 }
 
 s32 func_02001114(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -121,9 +124,9 @@ void func_02001524(void *arg0,UnkVec3 *arg1) {
 *arg1++=*(UnkVec3 *)arg0;
 }
 
-void func_0200154c(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void func_02007f68(void *, void *);
-    if (arg0 != arg1) func_02007f68(arg0, arg1);
+void MTX_TransApply44(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void MTX_Copy43(void *, void *);
+    if (arg0 != arg1) MTX_Copy43(arg0, arg1);
     arg1[12] = arg0[12] + (s32)(((long long)arg3 * arg0[4] + (long long)arg2 * arg0[0] + (long long)arg4 * arg0[8]) >> 12);
     arg1[13] = arg0[13] + (s32)(((long long)arg3 * arg0[5] + (long long)arg2 * arg0[1] + (long long)arg4 * arg0[9]) >> 12);
     arg1[14] = arg0[14] + (s32)(((long long)arg3 * arg0[6] + (long long)arg2 * arg0[2] + (long long)arg4 * arg0[10]) >> 12);

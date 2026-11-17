@@ -466,7 +466,7 @@ s32 ShowMessageText(s32 textId) {
  s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
  u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
  s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
- M2C_UNK func_0209707c(void);
+ M2C_UNK MarkSpriteLayer1Dirty(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
  s32 text; void *savedEngine; s32 screen,style; void *managerA,*managerB,*layerA,*layerB,*layerC,*sprite; u32 attr;
  text=GetLocalizedText(textId);
@@ -486,7 +486,7 @@ s32 ShowMessageText(s32 textId) {
  M2C_FIELD(layerA,u32 *,0),text,(u16)attr,M2C_FIELD(layerC,u16 *,4));
  next:;
  }
- gCur3DSpriteEngine=savedEngine;M2C_FIELD(sprite,void (**)(void),0x50)=(void(*)(void))func_0209707c;
+ gCur3DSpriteEngine=savedEngine;M2C_FIELD(sprite,void (**)(void),0x50)=(void(*)(void))MarkSpriteLayer1Dirty;
  return 0;
 abort: return 1;
 }
@@ -521,10 +521,10 @@ void func_02092908(M2C_UNK arg0) {
 }
 
 s32 func_02092918(void *arg0) {
-s32 func_0209600c();M2C_UNK ClearScenePanelRows(M2C_UNK);M2C_UNK func_0209707c();
+s32 func_0209600c();M2C_UNK ClearScenePanelRows(M2C_UNK);M2C_UNK MarkSpriteLayer1Dirty();
 s32 v;
 if(func_0209600c()!=0)v=1;
-else {ClearScenePanelRows(3);func_0209707c();v=0;}
+else {ClearScenePanelRows(3);MarkSpriteLayer1Dirty();v=0;}
 M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }
 

@@ -299,9 +299,9 @@ CopyToObjPaletteShadow((u8 *)&gArmyPalettes+((M2C_FIELD(arg0*0x8c+M2C_FIELD(gCur
 }
 
 void func_020c0a04(M2C_UNK arg0) {
-    M2C_UNK func_0207c780(M2C_UNK *, M2C_UNK);
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0211e0a8;
-    func_0207c780(&data_0211e0a8, arg0);
+    LoadGraphicsBlock(&data_0211e0a8, arg0);
 }
 
 void func_020c0a1c(s32 arg0) {
@@ -311,14 +311,14 @@ void func_020c0a1c(s32 arg0) {
 }
 
 void func_020c0a3c(s32 arg0) {
-    M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     s32 GetUiColor(M2C_UNK);
     extern s32 gCur3DSpriteEngine;
     func_020c0a04(M2C_FIELD((gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
     func_020c0a1c(3);
     LoadScenePanelPalette(0);
-    func_0208ca2c(0x1000, 1, GetUiColor(9), 2);
+    Load3DSpritePattern(0x1000, 1, GetUiColor(9), 2);
 }
 
 void func_020c0a88(void) {
@@ -381,25 +381,48 @@ row++;rowOffset+=2;
 }while(row<(s32)M2C_FIELD(list,u8 *,0x4d));
 }
 
-void func_020c0c9c(void *arg0,u8 *arg1) {
-extern void *gKeyState;
-s32 old=*arg1; s32 value=old; u16 keys=M2C_FIELD(gKeyState,u16 *,2);
-if(keys&0x40) {if(old==0){if(keys!=M2C_FIELD(gKeyState,u16 *,0))return;value=M2C_FIELD(arg0,u8 *,0x4d);}value--;}
-else if(keys&0x80){if(old==M2C_FIELD(arg0,u8 *,0x4d)-1){if(keys!=M2C_FIELD(gKeyState,u16 *,0))return;value=-1;}value++;}
-if(value!=old){FocusSpriteSlotById(value);M2C_FIELD(arg0,u8 *,0x4e)=value;}
-else if(M2C_FIELD(gKeyState,u16 *,0)&1)InvokeConfirmCallback(arg1);
-else if(M2C_FIELD(gKeyState,u16 *,0)&2)InvokeCancelCallback();
+/* D-pad handler for the carried-unit list: moves the selected row up or down,
+ * wrapping round at the ends only on a fresh press, keeps the sprite-slot focus
+ * on it, then confirms the row (A) or cancels the menu (B). */
+void HandleCarriedUnitListInput(void *arg0, u8 *selection) {
+    extern void *gKeyState;
+    MenuC0634 *list = (MenuC0634 *)arg0;
+    s32 old = *selection;
+    s32 value = old;
+    u16 keys = M2C_FIELD(gKeyState, u16 *, 2);
+
+    if (keys & KEY_UP) {
+        if (old == 0) {
+            if (keys != M2C_FIELD(gKeyState, u16 *, 0)) return;
+            value = list->count;
+        }
+        value--;
+    } else if (keys & KEY_DOWN) {
+        if (old == list->count - 1) {
+            if (keys != M2C_FIELD(gKeyState, u16 *, 0)) return;
+            value = -1;
+        }
+        value++;
+    }
+    if (value != old) {
+        FocusSpriteSlotById(value);
+        list->selection = value;
+    } else if (M2C_FIELD(gKeyState, u16 *, 0) & KEY_A) {
+        InvokeConfirmCallback(selection);
+    } else if (M2C_FIELD(gKeyState, u16 *, 0) & KEY_B) {
+        InvokeCancelCallback();
+    }
 }
 
 void func_020c0d50(void *arg0) {
-    void func_020c0c9c(void *, u8 *);
+    void HandleCarriedUnitListInput(void *, u8 *);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x10);
     if (func_020c05c4() == 0) {
         return;
     }
-    func_020c0c9c(temp_r4, arg0);
+    HandleCarriedUnitListInput(temp_r4, arg0);
 }
 
 s32 func_020c0d78(void *arg0) {
@@ -455,7 +478,7 @@ void func_020c0f18(void) {
 M2C_UNK func_020c0f24(void *p) {
 extern u8 data_02163f30[];
 void func_0207bbc8(void *);void func_0207bbd8(s32,s32,s32,s32);
-void func_0207bcc4(u8,u8);void func_0207bdc4(void);void func_0207bf00(s32,s32);
+void func_0207bcc4(u8,u8);void func_0207bdc4(void);void DrawSpriteBatchAt(s32,s32);
 s32 i;u16 v;
 func_0207bbc8(data_02163f30);
 func_0207bbd8(2,1,0x24,3);
@@ -464,7 +487,7 @@ v=M2C_FIELD(func_020c03bc(p,i),u16 *,0x26);
 func_0207bcc4((u8)v,(u8)func_020c03d4((s32)p,i));
 }
 func_0207bdc4();
-func_0207bf00(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));
+DrawSpriteBatchAt(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));
 }
 
 /* Creates the fixed-geometry unit sprite a menu shows (style 2, size 0x120, kind

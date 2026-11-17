@@ -6,7 +6,7 @@ void *GetConnection(void);
 /* Decide how to answer an incoming join request from peer (payload b/c,
  * mode d, force e) for the current session, returning the reply code. */
 s32 ConnectionHandleJoin(s32 peer, s32 b, s32 c, s32 mode, s32 force) {
-s32 func_0204e364(s32,s32); s32 IsConnectionMember(s32); void func_0205ea70(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
+s32 func_0204e364(s32,s32); s32 IsConnectionMember(s32); void Qr2_StateChanged(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
 extern u8 gConnectionMgr[];
 s32 result; void *session;
 switch(M2C_FIELD(GetConnection(),u8*,0x15)) {
@@ -16,7 +16,7 @@ case 1:
 case 0:
  if(mode!=M2C_FIELD(GetConnection(),u8*,0x15) || M2C_FIELD(GetConnection(),u8*,0x1a9)!=0 || (session=GetConnection(), M2C_FIELD(session,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16)) || (M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (session=GetConnection(), M2C_FIELD(session,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200)))) {
  result=3;
- if(M2C_FIELD(GetConnection(),u8*,0x15)==0 && M2C_FIELD(M2C_FIELD(GetConnection(),void**,0x10),s32*,0xb4)==0 && M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (session=GetConnection(),M2C_FIELD(session,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200))) func_0205ea70(M2C_FIELD(GetConnection(),s32*,0x10));
+ if(M2C_FIELD(GetConnection(),u8*,0x15)==0 && M2C_FIELD(M2C_FIELD(GetConnection(),void**,0x10),s32*,0xb4)==0 && M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (session=GetConnection(),M2C_FIELD(session,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200))) Qr2_StateChanged(M2C_FIELD(GetConnection(),s32*,0x10));
  break;
  }
  if(!((M2C_FIELD(GetConnection(),s32*,0x1a0)==3 || M2C_FIELD(GetConnection(),s32*,0x1a0)==4) && (M2C_FIELD(GetConnection(),s32*,0x1c)!=0 || M2C_FIELD(GetConnection(),u16*,0x1a)!=0)) || (b==0 && c==0)){result=4;break;}
@@ -46,7 +46,7 @@ return result;
 s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     s32 SendConnectionCommand(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     void *GetConnection(void);
-    void func_0205ea70(s32);
+    void Qr2_StateChanged(s32);
     u8 func_0204284c(void);
     void ResetConnectionSync(s32);
     s32 loc[2];
@@ -58,7 +58,7 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     M2C_FIELD(GetConnection(), s32 *, 0x20) = arg0;
     M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 0;
     M2C_FIELD(GetConnection(), s32 *, 0x1c8) = 0;
-    func_0205ea70(M2C_FIELD(GetConnection(), s32 *, 0x10));
+    Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, 0x10));
     M2C_FIELD(GetConnection(), s32 *, 0x204) = 0;
     p = GetConnection();
     M2C_FIELD((u8 *)p + ((M2C_FIELD(GetConnection(), u8 *, 0x14) + 1) << 2), s32 *, 0xf4) = arg0;
@@ -297,7 +297,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     M2C_UNK ReconnectUnlessServing(void);
     M2C_UNK func_02041dd4(M2C_UNK);
     s32 SendPeerSyncNotice(s32, M2C_UNK);
-    void func_0205ea70(s32);
+    void Qr2_StateChanged(s32);
     M2C_UNK func_0205df50(s32);
     M2C_UNK SetConnectionState(M2C_UNK);
     void *GetConnection(void);
@@ -315,7 +315,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     if (var_r4 != 0) {
         M2C_FIELD(GetConnection(), u8 *, 0x17) = 0;
         M2C_FIELD(GetConnection(), s32 *, 0x20) = 0;
-        func_0205ea70(M2C_FIELD(GetConnection(), s32 *, 0x10));
+        Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, 0x10));
         if ((u32) M2C_FIELD(GetConnection(), u8 *, 0xD) < 0x1FU) {
             temp_r6 = GetConnection();
             M2C_FIELD((temp_r6 + ((M2C_FIELD(GetConnection(), u8 *, 0xD) + 1) << 2)), s32 *, 0xF4) = 0;

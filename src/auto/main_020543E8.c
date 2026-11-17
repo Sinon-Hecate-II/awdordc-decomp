@@ -513,7 +513,7 @@ void func_02055124(M2C_UNK arg0) {
  * deadline.  Returns 0. */
 s32 func_0205519c(void **manager) {
     M2C_UNK ghiSetNonBlocking(M2C_UNK, s32);
-    s32 func_02049534(s32);
+    s32 ghiSocketCanRecv(s32);
     s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK func_020496b8(s32);
@@ -528,7 +528,7 @@ s32 func_0205519c(void **manager) {
     void *session;
 
     session = *manager;
-    if ( -1 != M2C_FIELD(session, s32 *, 0x204) && (func_02049534(M2C_FIELD(session, s32 *, 0x204)) != 0)) {
+    if ( -1 != M2C_FIELD(session, s32 *, 0x204) && (ghiSocketCanRecv(M2C_FIELD(session, s32 *, 0x204)) != 0)) {
         socket = func_020497a0(M2C_FIELD(session, s32 *, 0x204), 0, 0);
         if (socket != -1) {
             peer = gpiCreatePeer(manager, -1, 0);

@@ -35,7 +35,7 @@ s32 func_02084338(u8 *arg0) {
 
 void func_0208435c(void){void func_0208441c(void);s32 func_02085370(u8,u8 *);s32 func_02084338(u8 *);void SetAiCommandPhase(s32);void func_ov000_0219c7d8(s32);u8 v;u8 *base;u8 *p;func_0208441c();base=*gCurrentMap;p=base+0x67a4; p+=M2C_FIELD(base,u16 *,0x52a4)*0x8c;v=p[0x1e];if(v==2)v=0;else v-=3;if(func_02085370(v,gAiCommand)!=1)return;if(func_02084338(gAiCommand)!=1)return;SetAiCommandPhase(3);func_ov000_0219c7d8(0);data_02156e4c=1;}
 
-void func_020843e8(void){void func_0208441c(void);s32 func_020d4dd0(void);s32 func_ov000_0219e948(void);s32 func_ov000_0219c7b0(void);func_0208441c();if(!func_020d4dd0())return;func_ov000_0219e948();if(func_ov000_0219c7b0()==2)data_02156e4c=0;}
+void func_020843e8(void){void func_0208441c(void);s32 func_020d4dd0(void);s32 ProcessAiCommandStep(void);s32 func_ov000_0219c7b0(void);func_0208441c();if(!func_020d4dd0())return;ProcessAiCommandStep();if(func_ov000_0219c7b0()==2)data_02156e4c=0;}
 
 void func_0208441c(void) {
     M2C_UNK func_0207a7a4(M2C_UNK, M2C_UNK);
@@ -120,7 +120,7 @@ s32 func_020846e8(void) {
 }
 
 s32 func_0208471c(void) {
-    s32 func_ov010_022282f8();
+    s32 GetNetErrorCode();
     s32 temp_r0;
     s32 var_r0;
 
@@ -132,7 +132,7 @@ s32 func_0208471c(void) {
         }
         return 0;
     case 2:
-        if (func_ov010_022282f8() != 0) {
+        if (GetNetErrorCode() != 0) {
             var_r0 = 1;
         } else {
             var_r0 = 0;
@@ -428,7 +428,7 @@ s8 func_02084ba8(M2C_UNK arg0) {
     }
 }
 
-s32 func_02084bf8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 Link_BroadcastMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_ov009_02224d9c(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 func_ov010_02229608(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
@@ -444,7 +444,7 @@ s32 func_02084bf8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     }
 }
 
-s32 func_02084c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+s32 Link_SendMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -533,7 +533,7 @@ s32 func_02084dcc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     }
 }
 
-s32 func_02084e24(M2C_UNK arg0) {
+s32 GetNetworkPlayerRecord(M2C_UNK arg0) {
     s32 func_ov009_022240f4(M2C_UNK);
     s32 func_ov010_02229b90(M2C_UNK);
     s32 temp_r0;
@@ -550,8 +550,8 @@ s32 func_02084e24(M2C_UNK arg0) {
 }
 
 void func_02084e64(void) {
-    M2C_UNK func_02084e24(M2C_UNK);
-    func_02084e24(0);
+    M2C_UNK GetNetworkPlayerRecord(M2C_UNK);
+    GetNetworkPlayerRecord(0);
 }
 
 void Link_FlushSend(void) {

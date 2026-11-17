@@ -88,7 +88,7 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     unit[2] = saved2;
 }
 #pragma opt_strength_reduction reset
-s32 func_020d18e8(s32 *arg0) {
+s32 GetDefenderBonus(s32 *arg0) {
     M2C_UNK GetUnitOwner(s32);
     GetUnitOwner(*arg0);
     return 0;
@@ -154,12 +154,12 @@ s32 HasActiveHumanPlayer(void) {
 
 s32 func_020d1b40(void) {
     s32 IsPlayerHuman(s32);
-    s32 func_020d3214(s32);
+    s32 HasPlayerGivenUp(s32);
     s32 var_r4;
 
     var_r4 = 1;
 loop_1:
-    if ((IsPlayerHuman(var_r4) != 0) && (func_020d3214(var_r4) != 0)) {
+    if ((IsPlayerHuman(var_r4) != 0) && (HasPlayerGivenUp(var_r4) != 0)) {
         return 1;
     }
     var_r4 += 1;
@@ -406,7 +406,7 @@ void func_020d2168(void) {
  * the per-unit-kind counters, then builds the derived per-player data. */
 void InitPlayerStates(void){
 extern void **gCurrentMap;extern M2C_UNK gMapData;
-void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void func_020a3550(s32,s32);void SetPlayerSelectedUnit(s32,s32);void func_020d31f0(s32,u8);void func_020d327c(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
+void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void func_020a3550(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
 s32 playerOffset; s32 player;
 s32 unitKind;player=1;playerOffset=140;
 do{
@@ -431,7 +431,7 @@ func_020a338c(player,0);func_020a3428(player,0);func_020a33f0(player,0);
 M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~0x3c000;
 func_020a3550(player,0);SetPlayerSelectedUnit(player,0);
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67cb)=0;
-func_020d31f0(player,0);func_020d327c(player,0);
+SetPlayerGaveUp(player,0);SetPlayerLost(player,0);
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67d5)=0;
 unitKind=0;do{M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap)),u8*,0x67d7)=0;M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap)),u8*,0x67f2)=0;unitKind++;}while(unitKind<27);
 func_020d2d60(player);

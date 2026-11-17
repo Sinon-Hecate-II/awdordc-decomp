@@ -199,21 +199,26 @@ M2C_FIELD(arg1,u8 *,2)=arg0>>8;
 M2C_FIELD(arg1,u8 *,3)=arg0;
 }
 
-s32 func_02021d34(void *a,u32 n,s64 timeout){
-s32 SocketPoll(s32);void func_02006030(s32);
+/* Waits until one of the `count` sockets in `fds` is ready or `timeout` timer
+ * ticks pass (-1 waits forever).  Each round polls every socket, always asking
+ * for the error, writable and invalid events as well, and stores the events
+ * that fired in its revents field; between rounds it sleeps for a millisecond.
+ * Returns the number of sockets that were ready. */
+s32 PollSockets(PollFd *fds, u32 count, s64 timeout) {
+s32 SocketPoll(s32);void SleepMilliseconds(s32);
 s32 limited=timeout!=-1;
-void *p;u32 i;s32 count;
+PollFd *p;u32 i;s32 ready;
 for(;;){
-count=0;p=a;i=0;
-if(n>i) do {
-s32 mask=M2C_FIELD(p,s16 *,4)|0xe0;
-s32 v=mask&SocketPoll(M2C_FIELD(p,s32 *,0));
-M2C_FIELD(p,s16 *,6)=v;if(v)count++;p+=8;i++;
-}while(n>i);
-if(count>0)break;
+ready=0;p=fds;i=0;
+if(count>i) do {
+s32 wanted=p->events|POLL_FD_ALWAYS;
+s32 fired=wanted&SocketPoll(p->fd);
+p->revents=fired;if(fired)ready++;p++;i++;
+}while(count>i);
+if(ready>0)break;
 if(limited && 0LL>=timeout)break;
-func_02006030(1);timeout-=0x20b;
-}return count;
+SleepMilliseconds(1);timeout-=0x20b;
+}return ready;
 }
 
 void func_02021de8(void *p) {
@@ -270,7 +275,7 @@ M2C_FIELD(best,u32 *,0x50)=now; best[0x5A]=1; M2C_FIELD(best,s32 *,0x54)=addr;M2
 OS_RestoreInterrupts(state);
 }
 
-void func_02022008(void *p) {
+void TlsSessionCacheDiscard(void *p) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 ByteCompareN(void *,void *,s32);
 extern M2C_UNK data_02138cc8;
 s32 i; s32 old;void *q;old=OS_DisableInterrupts();q=&data_02138cc8;i=0;

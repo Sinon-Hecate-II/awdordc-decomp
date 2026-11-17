@@ -24,7 +24,7 @@ typedef union ObjFlags20 {
 #pragma opt_strength_reduction off
 void func_ov003_022056bc(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02074114(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
+    M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
     M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
@@ -136,7 +136,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
         M2C_FIELD(temp_r0_6, s8 *, 4) = -1;
         M2C_FIELD(temp_r0_6, s8 *, 5) = -1;
         M2C_FIELD(temp_r0_6, s8 *, 6) = 0;
-        func_02074114((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+        ConstructArray((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
         var_r2 = 0;
         M2C_FIELD(temp_r0_6, s32 *, 0x10C) = 0;
         do {
@@ -179,7 +179,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 void func_ov003_022059d0(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02074114(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
+    M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
     M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
@@ -285,7 +285,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_6, s8 *, 4) = -1;
             M2C_FIELD(temp_r0_6, s8 *, 5) = -1;
             M2C_FIELD(temp_r0_6, s8 *, 6) = 0;
-            func_02074114((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+            ConstructArray((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
             var_r2 = 0;
             M2C_FIELD(temp_r0_6, s32 *, 0x10C) = 0;
             do {

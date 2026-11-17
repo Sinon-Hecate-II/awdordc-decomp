@@ -371,7 +371,7 @@ else *(u8*)(arg0+i*2+9)=0;
 }
 }
 #pragma opt_strength_reduction on
-s32 func_ov002_021e30d0(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
+s32 CountPanelEntries(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
 
 /* Build a versus screen player's status panel: clear its five stat entries, and
  * while the player is in the match copy each selected stat's value from the CO's

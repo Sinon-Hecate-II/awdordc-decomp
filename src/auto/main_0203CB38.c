@@ -8,7 +8,7 @@ extern char data_020fc938[24];
 void CpuFill(int, void *, int);
 void *GetConnection(void);
 void HandleNatNegPacket(void *, int, void *);
-void func_0205f83c(int, void *, int, void *);
+void Qr2_HandlePacket(int, void *, int, void *);
 int ByteCompareN(void *, void *, int);
 
 extern u8 gConnectionMgr[];
@@ -16,7 +16,7 @@ void OnPeerConnect(s32,s32,s32,void *);
 s32 SBServerListThink(s32);
 s32 func_020614b0(s32);
 s32 func_02061750(s32);
-void func_0203ca88(s32);
+void Qr2_ServiceConnection(s32);
 void func_0205e178(void);
 void func_0205d8f4(void);
 s32 StartMatchmaking(void);
@@ -29,7 +29,7 @@ void func_0203cb38(void *arg0) {
     s32 HasNetError(void);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
-    s32 func_0205e87c(s32);
+    s32 Qr2_Think(s32);
     s32 func_0205ad78(s32);
     s32 SendJoinRequest(s32, s32);
     s32 func_0204084c(void);
@@ -53,7 +53,7 @@ void func_0203cb38(void *arg0) {
     if (HasNetError()) return;
     if (arg0 == 0) {
         if (M2C_FIELD(GetConnection(), s32 *, 0x10))
-            func_0205e87c(M2C_FIELD(GetConnection(), s32 *, 0x10));
+            Qr2_Think(M2C_FIELD(GetConnection(), s32 *, 0x10));
         if (M2C_FIELD(GetConnection(), s32 *, 0x4) == 0) return;
         func_0205ad78(M2C_FIELD(M2C_FIELD(GetConnection(), s32 *, 0x4), s32 *, 0));
         return;
@@ -191,7 +191,7 @@ void func_0203cb38(void *arg0) {
             if(now>M2C_FIELD(GetConnection(),u64 *,0x174))ReportConnectionError(6,0xfffeb3ee);
         }
     }
-    func_0203ca88(M2C_FIELD(GetConnection(),s32 *,0x10));
+    Qr2_ServiceConnection(M2C_FIELD(GetConnection(),s32 *,0x10));
     M2C_FIELD(gConnectionMgr,s32 *,0xc)=0;
     M2C_FIELD(gConnectionMgr,s32 *,0x10)=1;
     func_0205e178();
@@ -233,7 +233,7 @@ s32 RouteIncomingGameSpyPacket(s32 unused, s32 sourceAddress, s32 sourcePort, u8
     lead=packet[0];
     if ((lead==0xfe && packet[1]==0xfd)||lead==0x5c) {
         if (M2C_FIELD(GetConnection(),s32 *,0x10))
-            func_0205f83c(M2C_FIELD(GetConnection(),s32 *,0x10),packet,length,&header);
+            Qr2_HandlePacket(M2C_FIELD(GetConnection(),s32 *,0x10),packet,length,&header);
     } else if (!ByteCompareN(packet,gNatNegMagic,6)) {
         HandleNatNegPacket(packet,length,&header);
     } else {

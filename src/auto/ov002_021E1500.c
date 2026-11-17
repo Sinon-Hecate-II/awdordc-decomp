@@ -16,23 +16,23 @@ void func_ov002_021e1500(void) {
 
 void func_ov002_021e152c(void) {
     void func_020822b8(void *);
-    void func_ov002_021e7c84(void *);
+    void SetDemoBattleDefaults(void *);
     void InitBattleScene(void *);
     void InitBattleSpriteScene(void *);
     extern M2C_UNK data_ov002_021ea680,gPlayerSettings,data_ov002_021f30e4,data_ov002_021f3014;
     extern u8 data_ov002_021f2f40;
     func_ov002_021e1500();
     func_020822b8(&data_ov002_021ea680);
-    if(data_ov002_021f2f40) func_ov002_021e7c84(&gPlayerSettings);
+    if(data_ov002_021f2f40) SetDemoBattleDefaults(&gPlayerSettings);
     InitBattleScene(&data_ov002_021f30e4);
     InitBattleSpriteScene(&data_ov002_021f3014);
 }
 
 void func_ov002_021e157c(void) {
- M2C_UNK func_ov002_021e6ff0(void *);
+ M2C_UNK UpdateBattleScene(void *);
  M2C_UNK func_ov002_021e78e4(void *);
  extern M2C_UNK data_ov002_021f30e4;
- func_ov002_021e6ff0(&data_ov002_021f30e4);
+ UpdateBattleScene(&data_ov002_021f30e4);
  func_ov002_021e78e4(&data_ov002_021f30e4);
 }
 
@@ -489,7 +489,7 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
 }
 #pragma pop
 void func_ov002_021e1ef8(void *arg0, s32 arg1) {
-    M2C_UNK func_02087048(s32, s32);
+    M2C_UNK SetGxPolygonAttr(s32, s32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
     void func_ov002_021e2204(void *);
     void func_ov002_021e2364(void *);
@@ -511,7 +511,7 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
 
     temp_r2 = M2C_FIELD(arg0, u8 *, 0x4D);
     if (temp_r2 != 0) {
-        func_02087048((s32) (u8) (temp_r2 + ((M2C_FIELD(arg0, u8 *, 0x47) * 3) + 9)), (s32) M2C_FIELD(arg0, u8 *, 0x4E));
+        SetGxPolygonAttr((s32) (u8) (temp_r2 + ((M2C_FIELD(arg0, u8 *, 0x47) * 3) + 9)), (s32) M2C_FIELD(arg0, u8 *, 0x4E));
     }
     var_r4 = 0;
     M2C_FIELD((void *)0x04000444, s32 *, 0) = 0;
@@ -576,7 +576,7 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
             M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 0;
             M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
         }
-        func_02087048(0x1E, 0xB);
+        SetGxPolygonAttr(0x1E, 0xB);
         temp_r0_4 = M2C_FIELD(arg0, u8 *, 0x53);
         if (arg1 == 0) {
             if (temp_r0_4 == 0) {
@@ -605,7 +605,7 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
             M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 0;
             M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
         }
-        func_02087048(0x1D, 8);
+        SetGxPolygonAttr(0x1D, 8);
         temp_r0_5 = M2C_FIELD(arg0, u8 *, 0x53);
         if (arg1 == 0) {
             if (temp_r0_5 == 0) {
@@ -623,7 +623,7 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
         } else {
             func_ov002_021e2204(arg0);
         }
-        func_02087048(0, 0x1F);
+        SetGxPolygonAttr(0, 0x1F);
         M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
     }
     var_r7 = NULL;
@@ -645,7 +645,7 @@ loop_65:
     if (M2C_FIELD(arg0, u8 *, 0x4D) == 0) {
         return;
     }
-    func_02087048(0, 0x1F);
+    SetGxPolygonAttr(0, 0x1F);
 }
 
 void func_ov002_021e2204(void *arg0) {

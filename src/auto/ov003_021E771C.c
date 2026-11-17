@@ -38,7 +38,7 @@ static inline s32 ov003_entries_differ(void *arg0) {
 void func_ov003_021e771c(void *arg0, s32 arg1) {
 s32 func_020cfb94(void); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
 s32 IsLinkSessionActive(void);u8 *func_02084e64(void);s32 GetReadyPlayerMask(void);
-u8 *func_02084e24(s32); u8 GetLocalPlayerIdForOverlay(void);s32 GetPlayerTeam(s32);s32 GetPlayerArmyId(s32);
+u8 *GetNetworkPlayerRecord(s32); u8 GetLocalPlayerIdForOverlay(void);s32 GetPlayerTeam(s32);s32 GetPlayerArmyId(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
 void *func_020ab1c4(s32);s16 func_ov003_022004a8(u8);s32 Modulo(s32,s32);s32 Divide(s32,s32);
 void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void func_ov003_021e8354(s32,s32,s32);
@@ -53,7 +53,7 @@ i=0;mask=GetReadyPlayerMask();
 for(id=0;id<4;id++){
 if(mask&(1<<id)){
 p[0x74+i]=(u8)id;
-remote=func_02084e24(id);
+remote=GetNetworkPlayerRecord(id);
 tmp=remote?remote[13]:p[10+(u8)ov003_find_player(p,(u8)id)];
 if(i!=id)p[10+(u8)id]=p[10+i];
 p[10+i]=tmp;i++;

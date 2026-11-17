@@ -23,8 +23,8 @@ s32 CalculateUnitDamage(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 s32 GetUnitAttackPower(void *arg0) {
-    s32 func_020a74a8(void *, u8, u8);
-    return func_020a74a8(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0x64;
+    s32 GetUnitAttackPowerBonus(void *, u8, u8);
+    return GetUnitAttackPowerBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0x64;
 }
 
 s32 func_020a8774(u32 arg0) {
@@ -293,11 +293,11 @@ s32 func_020a8e28(s32 arg0, s32 arg1) {
  * unchanged), then by widthScale and heightScale (256 = unchanged), which grow
  * the quad from its top-left corner. */
 void DrawSolidQuadScaled(s32 centerX,s32 centerY,s32 z,s32 width,s32 height,s32 color,s32 scaleX,s32 scaleY,s32 widthScale,s32 heightScale){
-void func_0208718c();void DrawSolidQuad(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;
+void ResetGxTextureParams();void DrawSolidQuad(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;
 px=centerX-(ScaleFixed8(width,scaleX)>>1);py=centerY-(ScaleFixed8(height,scaleY)>>1);x=ScaleFixed8(width,scaleX);y=ScaleFixed8(height,scaleY);
 if(widthScale!=256)x=ScaleFixed8(x,widthScale);
 if(heightScale!=256)y=ScaleFixed8(y,heightScale);
-func_0208718c();DrawSolidQuad(px,py,z,x,y,(u16)color);}
+ResetGxTextureParams();DrawSolidQuad(px,py,z,x,y,(u16)color);}
 
 u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
 

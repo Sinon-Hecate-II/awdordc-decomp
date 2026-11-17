@@ -305,7 +305,7 @@ s32 MultiBoot_Init(s32 reason) {
     void func_02018940(void *);
     void func_02016200(void);
     s32 func_02017cd8(void);
-    s32 func_02009e8c(s32, s32);
+    s32 IsFifoMessageReady(s32, s32);
     void func_020140c4(void);
     void func_02016934(void);
     void MI_CpuFill8(void *, s32, s32);
@@ -367,7 +367,7 @@ s32 MultiBoot_Init(s32 reason) {
     res = func_02017cd8();
     OS_RestoreInterrupts(state);
 
-    M2C_FIELD(gMbState.work + 0x7000, u32 *, 0x4C8) = func_02009e8c(0xF, 0x1);
+    M2C_FIELD(gMbState.work + 0x7000, u32 *, 0x4C8) = IsFifoMessageReady(0xF, 0x1);
 
     (void)i;
     return res;

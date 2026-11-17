@@ -27,7 +27,9 @@
 /* Geometry engine command ports.  Writing a command's parameters to these
  * FIFO ports queues the command; see GBATEK's GX command list. */
 #define REG_GX_MTX_MODE   (*(volatile u32 *)0x04000440)
+#define REG_GX_MTX_STORE  (*(volatile u32 *)0x0400044C)
 #define REG_GX_MTX_IDENTITY (*(volatile u32 *)0x04000454)
+#define REG_GX_SWAP_BUFFERS (*(volatile u32 *)0x04000540)
 #define REG_GX_COLOR      (*(volatile u32 *)0x04000480)
 #define REG_GX_TEX_COORD  (*(volatile u32 *)0x04000488)
 #define REG_GX_VTX_16     (*(volatile u32 *)0x0400048C)
@@ -93,6 +95,7 @@ enum {
 #define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
 #define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
 #define VRAM_BANKS_OBJ_EXTPLTT 0x0A /* banks assigned to the OBJ extended palette */
+#define VRAM_BANKS_OBJ_CD  0x06 /* banks assigned to the OBJ area built from banks C/D */
 
 /* 3D engine state and render parameters. */
 #define REG_GXSTAT           (*(volatile u32 *)0x04000600)
@@ -116,6 +119,25 @@ enum {
 #define DISP3DCNT_ERROR_MASK 0x3000
 #define DISP3DCNT_ALPHA_BLEND 0x0010
 #define GX_CLEAR_DEPTH_MAX   0x7FFF
+
+/* A texture's side length in pixels, and the code the GX TEXIMAGE_PARAM width
+ * and height fields store for it (log2(pixels) - 3, so 0 is 8 pixels). */
+#define GX_TEX_SIZE_8      0x008
+#define GX_TEX_SIZE_16     0x010
+#define GX_TEX_SIZE_32     0x020
+#define GX_TEX_SIZE_64     0x040
+#define GX_TEX_SIZE_128    0x080
+#define GX_TEX_SIZE_256    0x100
+#define GX_TEX_SIZE_512    0x200
+#define GX_TEX_SIZE_1024   0x400
+#define GX_TEX_CODE_8      0
+#define GX_TEX_CODE_16     1
+#define GX_TEX_CODE_32     2
+#define GX_TEX_CODE_64     3
+#define GX_TEX_CODE_128    4
+#define GX_TEX_CODE_256    5
+#define GX_TEX_CODE_512    6
+#define GX_TEX_CODE_1024   7
 #define GX_POLYGON_DEFAULT  0x001F0080 /* opaque, front faces rendered */
 
 #endif

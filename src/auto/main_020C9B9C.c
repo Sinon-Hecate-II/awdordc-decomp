@@ -168,7 +168,7 @@ void func_020c9f74(s32 arg0) {
     func_02096b50(sp0.entries[M2C_FIELD((u8 *)*gCurrentMap + arg0 * 0x8C, u8 *, 0x67C1) - 1]);
 }
 
-void func_020c9fc8(s32 arg0, s32 arg1) {
+void StartPlayerDefeat(s32 arg0, s32 arg1) {
     void func_020ca484(void);
     void func_020a3498(void);
     void func_020bbb08(void);
@@ -184,44 +184,53 @@ void func_020c9fc8(s32 arg0, s32 arg1) {
     func_020ca484();
 }
 
-void func_020ca030(void) {
-    void func_020c9fc8(s32, s32);
+/* Starts the defeat sequence for every active player a victory rule has removed:
+   by giving up (or a team-mate being defeated first), by being a human player
+   left without units and properties, by being left without units and properties,
+   or by having the lost flag set. */
+void StartPlayerDefeatSequences(void) {
+    void StartPlayerDefeat(s32, s32);
     s32 IsPlayerActive(s16);
-    s32 func_020d3248(s16);
-    s32 func_020d336c(s16);
-    s32 func_020d332c(s16);
-    s32 func_020d32d4(s16);
-    s16 var_r8;
-    var_r8 = 1;
+    s32 HasActivePlayerGivenUp(s16);
+    s32 IsHumanPlayerStillFighting(s16);
+    s32 IsPlayerStillFighting(s16);
+    s32 IsPlayerHqIntact(s16);
+    s16 player;
+    player = 1;
     do {
-        if (IsPlayerActive(var_r8) != 0) {
-            if (func_020d3248(var_r8) != 0) func_020c9fc8(var_r8, 8);
-            else if (func_020d336c(var_r8) == 0) func_020c9fc8(var_r8, 0x10);
-            else if (func_020d332c(var_r8) == 0) func_020c9fc8(var_r8, 1);
-            else if (func_020d32d4(var_r8) == 0) func_020c9fc8(var_r8, 2);
+        if (IsPlayerActive(player) != 0) {
+            if (HasActivePlayerGivenUp(player) != 0) StartPlayerDefeat(player, PLAYER_DEFEAT_GAVE_UP);
+            else if (IsHumanPlayerStillFighting(player) == 0) StartPlayerDefeat(player, PLAYER_DEFEAT_HUMAN);
+            else if (IsPlayerStillFighting(player) == 0) StartPlayerDefeat(player, PLAYER_DEFEAT_NO_UNITS);
+            else if (IsPlayerHqIntact(player) == 0) StartPlayerDefeat(player, PLAYER_DEFEAT_LOST);
         }
-        var_r8 += 1;
-    } while (var_r8 < 5);
+        player += 1;
+    } while (player < 5);
 }
 
-void func_020ca0e0(void) {
+/* Records the defeat of every active player a victory rule has removed: by
+   giving up (or a team-mate being defeated first), by being a human player left
+   without units and properties, by being left without units and properties, or
+   by having the lost flag set.  Unlike StartPlayerDefeatSequences this records
+   the defeat without starting the defeat presentation. */
+void RecordDefeatedPlayers(void) {
     void MarkPlayerDefeated(s32, s32);
     s32 IsPlayerActive(s16);
-    s32 func_020d3248(s16);
-    s32 func_020d336c(s16);
-    s32 func_020d332c(s16);
-    s32 func_020d32d4(s16);
-    s16 var_r8;
-    var_r8 = 1;
+    s32 HasActivePlayerGivenUp(s16);
+    s32 IsHumanPlayerStillFighting(s16);
+    s32 IsPlayerStillFighting(s16);
+    s32 IsPlayerHqIntact(s16);
+    s16 player;
+    player = 1;
     do {
-        if (IsPlayerActive(var_r8) != 0) {
-            if (func_020d3248(var_r8) != 0) MarkPlayerDefeated(var_r8, 8);
-            else if (func_020d336c(var_r8) == 0) MarkPlayerDefeated(var_r8, 0x10);
-            else if (func_020d332c(var_r8) == 0) MarkPlayerDefeated(var_r8, 1);
-            else if (func_020d32d4(var_r8) == 0) MarkPlayerDefeated(var_r8, 2);
+        if (IsPlayerActive(player) != 0) {
+            if (HasActivePlayerGivenUp(player) != 0) MarkPlayerDefeated(player, PLAYER_DEFEAT_GAVE_UP);
+            else if (IsHumanPlayerStillFighting(player) == 0) MarkPlayerDefeated(player, PLAYER_DEFEAT_HUMAN);
+            else if (IsPlayerStillFighting(player) == 0) MarkPlayerDefeated(player, PLAYER_DEFEAT_NO_UNITS);
+            else if (IsPlayerHqIntact(player) == 0) MarkPlayerDefeated(player, PLAYER_DEFEAT_LOST);
         }
-        var_r8 += 1;
-    } while (var_r8 < 5);
+        player += 1;
+    } while (player < 5);
 }
 
 s32 func_020ca190(void) {
@@ -240,12 +249,12 @@ s32 func_020ca190(void) {
 s32 func_020ca1ec(void) {
 extern void **gCurrentMap;
 s32 i,j,mism; u8 buf[5]; u8 *cur; s32 offset; void **maps; s32 inner;
-for(i=1;i<5;i++){buf[i]=0;if(IsPlayerActive(i)&&!func_020d3248(i)&&func_020d336c(i)&&func_020d332c(i)&&func_020d32d4(i))buf[i]=1;}
+for(i=1;i<5;i++){buf[i]=0;if(IsPlayerActive(i)&&!HasActivePlayerGivenUp(i)&&IsHumanPlayerStillFighting(i)&&IsPlayerStillFighting(i)&&IsPlayerHqIntact(i))buf[i]=1;}
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5155)&4){
- for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&IsPlayerActive(j)&&IsSameTeam(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
+ for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&IsPlayerActive(j)&&IsSameTeam(i,j)&&!buf[j]){buf[i]=0;SetPlayerGaveUp(i,1);}}}}
 }
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5155)&16){
- for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&IsPlayerHuman(j)&&IsSameTeam(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
+ for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&IsPlayerHuman(j)&&IsSameTeam(i,j)&&!buf[j]){buf[i]=0;SetPlayerGaveUp(i,1);}}}}
 }
 maps=gCurrentMap; cur=buf+1; i=1; offset=140; do {if(*cur){mism=0;for(j=1,inner=140;j<5;j++,inner+=140){if(i==j)continue; if(!buf[j])continue; if(M2C_FIELD((u8 *)*maps+offset,u8 *,0x67ca)!=M2C_FIELD((u8 *)*maps+inner,u8 *,0x67ca))mism++;}if(mism==0)return 1;}cur++;offset+=140;}while(++i<5);
 return 0;
@@ -268,14 +277,14 @@ void func_020ca484(void) {
 void func_020ca4c0(void) {
     M2C_UNK func_02096c7c(s32, M2C_UNK);
     M2C_UNK func_020c9b70();
-    void func_020ca030();
-    void func_020ca0e0();
+    void StartPlayerDefeatSequences();
+    void RecordDefeatedPlayers();
     s32 func_020ca190();
     s32 func_020ca1ec();
     s32 temp_r0;
 
     if (func_020ca1ec() != 0) {
-        func_020ca0e0();
+        RecordDefeatedPlayers();
         func_020c9b70();
         return;
     }
@@ -284,7 +293,7 @@ void func_020ca4c0(void) {
         func_02096c7c(temp_r0, 0x20);
         return;
     }
-    func_020ca030();
+    StartPlayerDefeatSequences();
 }
 
 void func_020ca4fc(void *arg0) {

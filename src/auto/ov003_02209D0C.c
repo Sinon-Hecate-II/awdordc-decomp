@@ -154,7 +154,7 @@ return Ov003_RefreshListRowAnimations(a,10,255);
 #pragma opt_strength_reduction reset
 void func_ov003_0220a5fc(void *arg0, s32 arg1) {
 M2C_UNK SetFileDirectory(M2C_UNK *);
-M2C_UNK func_0207c780(s32,s32);
+M2C_UNK LoadGraphicsBlock(s32,s32);
 s32 LoadFileToBuffer(s32,s32);
 s32 GetLocalizedFileName(s32);
 M2C_UNK HeapFreeBlock(s32);
@@ -163,14 +163,14 @@ extern M2C_UNK data_ov003_0220f240, data_ov003_0221118c, data_ov003_0221119c;
 s32 temp_r0;
 SetFileDirectory(&data_ov003_0221118c);
 temp_r0=LoadFileToBuffer(GetLocalizedFileName((s32)&data_ov003_0221119c),1);
-func_0207c780(temp_r0+M2C_FIELD(&data_ov003_0220f240,s32 *,arg1*16),M2C_FIELD(g3DSpriteEngineSub,s32 *,0x14));
+LoadGraphicsBlock(temp_r0+M2C_FIELD(&data_ov003_0220f240,s32 *,arg1*16),M2C_FIELD(g3DSpriteEngineSub,s32 *,0x14));
 HeapFreeBlock(temp_r0);
 }
 
 void func_ov003_0220a658(void *arg0, s32 arg1) {
     M2C_UNK func_02004b54();
     M2C_UNK func_02004cf0();
-    M2C_UNK func_0207c780(s32, s32);
+    M2C_UNK LoadGraphicsBlock(s32, s32);
     s32 LoadFileToBuffer(s32, s32);
     s32 GetLocalizedFileName(s32);
     M2C_UNK HeapFreeBlock(s32);
@@ -178,7 +178,7 @@ void func_ov003_0220a658(void *arg0, s32 arg1) {
     s32 temp_r4;
     temp_r4 = LoadFileToBuffer(GetLocalizedFileName(M2C_FIELD(&data_ov003_0220f244, s32 *, arg1 * 0x10)), 1);
     func_02004b54();
-    func_0207c780(temp_r4, 0x06800000);
+    LoadGraphicsBlock(temp_r4, 0x06800000);
     func_02004cf0();
     HeapFreeBlock(temp_r4);
 }

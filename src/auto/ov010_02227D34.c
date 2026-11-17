@@ -48,10 +48,10 @@ void func_ov010_02227d34(s32 slot, void *data, char *text, s32 size) {
 
 void func_ov010_02227df8(void) {
     void SetOnlineSessionFlag(M2C_UNK);
-    s32 func_ov010_022282f8();
+    s32 GetNetErrorCode();
     s32 var_r0;
 
-    if (func_ov010_022282f8() != 0) {
+    if (GetNetErrorCode() != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -67,7 +67,7 @@ void func_ov010_02227df8(void) {
  * transfer and frame callbacks; if a NAS error is pending, hands it to the
  * installed error handler. */
 void Ov010Online_StartSession(s32 owner, s32 arg1) {
-    s32 func_ov010_022282f8(void);
+    s32 GetNetErrorCode(void);
     s32 func_0203a850(void *, s32);
     s32 Transfer_SetStartCallback(s32);
     s32 Transfer_SetEndCallback(s32);
@@ -88,7 +88,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 var_r0;
  u32 flags;
 
-    if (func_ov010_022282f8() != 0) {
+    if (GetNetErrorCode() != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -138,9 +138,9 @@ void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {
-s32 func_ov010_022282f8(void); void SetOnlineSessionFlag(s32); M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK gOv010OnlineSession; extern M2C_UNK gLocalPlayerStatus;
+s32 GetNetErrorCode(void); void SetOnlineSessionFlag(s32); M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK gOv010OnlineSession; extern M2C_UNK gLocalPlayerStatus;
 s32 t; void (*cb)(s32,s32,s32);
-t=func_ov010_022282f8();t=(t!=0);
+t=GetNetErrorCode();t=(t!=0);
 if(t==0) {if(arg1==0) {SetOnlineSessionFlag(3);M2C_FIELD(&gOv010OnlineSession,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{SetOnlineSessionFlag(4);}}else{SetOnlineSessionFlag(4);Ov010Online_ClearStepFlag(3);}
 cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
 }
@@ -152,7 +152,7 @@ s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK gOv010OnlineSession; s32 r
  * player id and status before the first transfer), then forwards the start to
  * the session's registered callback. */
 void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    s32 func_ov010_022282f8(void);
+    s32 GetNetErrorCode(void);
     void SetOnlineSessionFlag(s32);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     s32 GetOnlineTransportPlayerId(void);
@@ -164,7 +164,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 
     s32 t;
 
-    t = func_ov010_022282f8();
+    t = GetNetErrorCode();
     t = (t != 0);
 
     if (t == 0) {
@@ -306,15 +306,15 @@ M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK arg0) {
     return v;
 }
 
-s32 func_ov010_022282f8(void) {
+s32 GetNetErrorCode(void) {
     void func_ov010_02228314();
     s32 out[2];
     func_ov010_02228314(&out[1], &out[0]);
 }
 
 void func_ov010_02228314(void) {
-    M2C_UNK func_02037508();
-    func_02037508();
+    M2C_UNK GetNetError();
+    GetNetError();
 }
 
 void func_ov010_02228320(void) {
@@ -374,14 +374,14 @@ s32 func_ov010_0222832c(s32 arg0, s32 arg1) {
 void func_ov010_02228614(void) {
     M2C_UNK func_0203783c(M2C_UNK *);
     M2C_UNK func_02037854(M2C_UNK);
-    M2C_UNK func_020378a4();
+    M2C_UNK Wfc_StartConnection();
     M2C_UNK func_ov010_02226a88();
     extern M2C_UNK data_ov010_0222ef4c;
     Ov010Online_ClearStepFlag(1);
     func_ov010_02226a88();
     func_0203783c(&data_ov010_0222ef4c);
     func_02037854(2);
-    func_020378a4();
+    Wfc_StartConnection();
 }
 
 s32 func_ov010_02228640(void) {
@@ -483,9 +483,9 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     extern M2C_UNK data_ov010_0222efec;
     extern M2C_UNK data_ov010_0222c128;
     extern M2C_UNK data_ov010_0222f02c;
-    extern M2C_UNK data_ov010_0222c160;
+    extern M2C_UNK gOv010SessionStateClass;
     extern M2C_UNK data_ov010_0222c3bc;
-    extern M2C_UNK data_ov010_0222c330;
+    extern M2C_UNK gOv010ConnectionClass;
     extern M2C_UNK data_ov010_0222c3a8;
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     void func_ov010_0222791c(M2C_UNK);
@@ -508,7 +508,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     void MI_CpuFill8(void *, s32, s32);
     void InitNetSession(void *, void *, s32, void *, void *, s32, s32, void *, s32);
     void StartNetLogin(void *, s32, void *, s32);
-    void func_02074114(void *, s32, s32, void *, void *);
+    void ConstructArray(void *, s32, s32, void *, void *);
 
 
     void *GetLocalPlayerName(void);
@@ -516,7 +516,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     void MI_CpuFill32(s32, void *, s32);
     void func_ov010_02228a38(void *);
     void *func_ov010_02228a48(void *);
-    extern M2C_UNK data_ov010_0222c2f8, data_ov010_0222c3d0;
+    extern M2C_UNK gOv010PacketAssemblyClass, data_ov010_0222c3d0;
     void *r4;
     void *obj;
     void *state;
@@ -567,13 +567,13 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
     M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
     StartNetLogin(&gLocalPlayerStatus,0,(void *)Ov010Online_StartSession,0);
-    obj=func_01ffa3dc(&data_ov010_0222c160,3);
+    obj=func_01ffa3dc(&gOv010SessionStateClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;
         M2C_FIELD(obj,s32 *,0x34)=0;
         MI_CpuFill32(0,(u8 *)obj+0x38,0x10);
     }
-    obj=func_01ffa3dc(&data_ov010_0222c330,3);
+    obj=func_01ffa3dc(&gOv010ConnectionClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3a8;
         M2C_FIELD(obj,s32 *,0x34)=0;
@@ -582,10 +582,10 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
         M2C_FIELD(obj,s32 *,0x40)=0;
         M2C_FIELD(obj,u16 *,0x44)=0;
     }
-    obj=func_01ffa3dc(&data_ov010_0222c2f8,3);
+    obj=func_01ffa3dc(&gOv010PacketAssemblyClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3d0;
-        func_02074114((u8 *)obj+0x34,4,8,(void *)func_ov010_02228a38,(void *)func_ov010_02228a48);
+        ConstructArray((u8 *)obj+0x34,4,8,(void *)func_ov010_02228a38,(void *)func_ov010_02228a48);
     }
 }
 #pragma pop
@@ -603,9 +603,13 @@ void *func_ov010_02228a48(void *arg0) {
     return arg0;
 }
 
-void func_ov010_02228a70(void) {
+/* Tear down the ov010 online session: delete its state, connection and packet
+ * reassembly screen objects, close the global net session, then clear the
+ * session's callbacks and per-peer state (each setter below resets one field)
+ * and leave the in-match step. */
+void Ov010Online_EndSession(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK);
-    void func_020382d0(void);
+    void TeardownNetSession(void);
     void func_ov010_0222791c(M2C_UNK);
     s32 func_ov010_02228b20(M2C_UNK);
     s32 func_ov010_02228b38(M2C_UNK);
@@ -622,13 +626,13 @@ void func_ov010_02228a70(void) {
     void func_ov010_022294b0(M2C_UNK);
     void func_ov010_022294c8(M2C_UNK);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    extern M2C_UNK data_ov010_0222c160;
-    extern M2C_UNK data_ov010_0222c330;
-    extern M2C_UNK data_ov010_0222c2f8;
-    DeleteSpriteObjectsOfClass(&data_ov010_0222c160);
-    DeleteSpriteObjectsOfClass(&data_ov010_0222c330);
-    DeleteSpriteObjectsOfClass(&data_ov010_0222c2f8);
-    func_020382d0();
+    extern M2C_UNK gOv010SessionStateClass;
+    extern M2C_UNK gOv010ConnectionClass;
+    extern M2C_UNK gOv010PacketAssemblyClass;
+    DeleteSpriteObjectsOfClass(&gOv010SessionStateClass);
+    DeleteSpriteObjectsOfClass(&gOv010ConnectionClass);
+    DeleteSpriteObjectsOfClass(&gOv010PacketAssemblyClass);
+    TeardownNetSession();
     func_ov010_0222791c(0);
     func_ov010_02228b20(0);
     func_ov010_02228b38(0);
@@ -712,7 +716,7 @@ void func_ov010_02228bc8(void) {
 void func_ov010_02228bdc(M2C_UNK arg0) {
     s32 func_0204428c(u8);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    s32 func_ov010_022282f8();
+    s32 GetNetErrorCode();
     s32 func_ov010_02229850();
     s32 GetOnlineTransportPlayerId();
     s32 GetOnlinePeerMask();
@@ -723,7 +727,7 @@ void func_ov010_02228bdc(M2C_UNK arg0) {
     s32 c;
 
     if (IsOnlineSessionFlagSet(3) == 0) goto end;
-    if (func_ov010_022282f8() != 0) {
+    if (GetNetErrorCode() != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -767,9 +771,9 @@ void func_ov010_02228cc8(void) {
 }
 
 void func_ov010_02228cd4(void) {
-      void func_ov010_02228a70();
+      void Ov010Online_EndSession();
   func_ov010_02228320();
-    func_ov010_02228a70();
+    Ov010Online_EndSession();
 }
 
 void func_ov010_02228ce4(void) {

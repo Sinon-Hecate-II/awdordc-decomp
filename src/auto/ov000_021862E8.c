@@ -3,15 +3,18 @@
 #include "battle_map.h"
 #include "ov000_ai.h"
 
-void func_ov000_021862e8(s32 arg0) {
+/* Build the AI's danger map against the target unit: clear the influence/score
+ * layer, then fold in the attack ranges of every active player that is not on the
+ * current player's team.  The player being processed is saved and restored. */
+void MarkEnemyThreatsToUnit(s32 target) {
 void FillMapLayer(s32); void SelectMapLayer(void *);
 s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32); void MarkPlayerThreatsToUnit(u8,s32);
 extern void **gCurrentMap;
-u16 saved; s32 i; void *base;
-base=*gCurrentMap; saved=M2C_FIELD(base,u16 *,0x52b6);
-SelectMapLayer(base+0x2338); FillMapLayer(-1); SelectMapLayer(*gCurrentMap+0x1e30);
-for(i=1;i<5;i++){if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),i)==0)MarkPlayerThreatsToUnit(i,arg0);}
-M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=saved;
+u16 savedPlayer; s32 player; void *base;
+base=*gCurrentMap; savedPlayer=M2C_FIELD(base,u16 *,MAP_ACTIVE_PLAYER);
+SelectMapLayer(base+MAP_CELL_SCORE); FillMapLayer(-1); SelectMapLayer(*gCurrentMap+MAP_CELL_ORDER);
+for(player=1;player<MAX_PLAYERS;player++){if(IsPlayerActive(player)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),player)==0)MarkPlayerThreatsToUnit(player,target);}
+M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=savedPlayer;
 }
 
 #pragma push
@@ -98,9 +101,9 @@ void func_ov000_02186624(u8 arg0,u8 arg1) {
 
 #pragma opt_strength_reduction on
 void func_ov000_02186940(void *arg0) {
-    void func_ov000_021862e8();
+    void MarkEnemyThreatsToUnit();
     void func_ov000_02186624(u8, u8);
-    func_ov000_021862e8();
+    MarkEnemyThreatsToUnit();
     func_ov000_02186624(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 

@@ -165,7 +165,7 @@ void func_ov000_02173f78(void *arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_020822b8(M2C_UNK *);
-    M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK LoadFaceTexture(u8, s32, s32);
     M2C_UNK LoadFacePalette(u8, M2C_UNK, M2C_UNK, u16, s32);
@@ -269,7 +269,7 @@ register s32 temp_r9;
     OpenNarcArchive();
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8eb0), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14));
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ebc), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14) + 0x3000);
-    func_0208ca2c(0x800, 1, GetUiColor(9), 2);
+    Load3DSpritePattern(0x800, 1, GetUiColor(9), 2);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
     func_020a9a30(1, 0, 0, tiles + 0x1000);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;

@@ -372,5 +372,34 @@ next: node=M2C_FIELD(node,void **,SOCK_OBJECT_NEXT);
 return 0;
 }
 
-s32 func_0201bd2c(void *a,void *b,void *c){s32 result,ok,first,second;u16 x,y,z,w;u8 kind;kind=M2C_FIELD(c,u8 *,8);result=0;ok=0;second=0;first=0;if(kind!=10&&kind!=11)ok=1;if(ok){x=M2C_FIELD(b,u16 *,2);if(M2C_FIELD(c,u16 *,10)==(u16)((x>>8)|(x<<8)))first=1;}if(first){y=M2C_FIELD(b,u16 *,0);if(M2C_FIELD(c,u16 *,24)==(u16)((y>>8)|(y<<8)))second=1;}if(second){z=M2C_FIELD(a,u16 *,12);w=M2C_FIELD(a,u16 *,14);if(M2C_FIELD(c,u32 *,28)==(((u16)((z>>8)|(z<<8))<<16)|(u16)((w>>8)|(w<<8))))result=1;}return result;}
+/* Whether the received TCP segment `segment` of the IP packet `ipHeader` belongs
+ * to the connection `conn`: the segment's destination port must be the
+ * connection's local port, and its source port and address the connection's
+ * remote ones.  A UDP or ICMP socket never matches. */
+s32 TcpConnectionMatchesSegment(void *ipHeader, void *segment, void *conn) {
+    s32 matches, isTcp, portOk, peerOk;
+    u16 dstPort, srcPort, srcIpHi, srcIpLo;
+    u8 transport;
+
+    transport = M2C_FIELD(conn, u8 *, SOCK_TRANSPORT);
+    matches = 0;
+    isTcp = 0;
+    peerOk = 0;
+    portOk = 0;
+    if (transport != SOCK_KIND_UDP && transport != SOCK_KIND_ICMP) isTcp = 1;
+    if (isTcp) {
+        dstPort = M2C_FIELD(segment, u16 *, TCPH_DST_PORT);
+        if (M2C_FIELD(conn, u16 *, CONN_LOCAL_PORT) == (u16)((dstPort >> 8) | (dstPort << 8))) portOk = 1;
+    }
+    if (portOk) {
+        srcPort = M2C_FIELD(segment, u16 *, TCPH_SRC_PORT);
+        if (M2C_FIELD(conn, u16 *, CONN_REMOTE_PORT) == (u16)((srcPort >> 8) | (srcPort << 8))) peerOk = 1;
+    }
+    if (peerOk) {
+        srcIpHi = M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_HI);
+        srcIpLo = M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_LO);
+        if (M2C_FIELD(conn, u32 *, CONN_REMOTE_IP) == (((u16)((srcIpHi >> 8) | (srcIpHi << 8)) << 16) | (u16)((srcIpLo >> 8) | (srcIpLo << 8)))) matches = 1;
+    }
+    return matches;
+}
 

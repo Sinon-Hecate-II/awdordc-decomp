@@ -80,28 +80,33 @@ void func_0208ca14(M2C_UNK arg0) {
     func_01ffa3dc(&data_021027c0, arg0);
 }
 
-void func_0208ca2c(s32 arg0, s32 arg1, s16 arg2, s32 arg3) {
-    M2C_UNK func_0207c780(M2C_UNK *, s32);
+/* Sets up one of the two built-in patterns a 3D sprite panel is drawn with:
+ * loads block `block` (1 or 2) into the current engine's texture VRAM at
+ * vramOffset, then gives palette `palette` (slot 16 + palette of the OBJ palette
+ * shadow) `color` and a darker blend of it as its first two colours and marks
+ * the palette shadow dirty. */
+void Load3DSpritePattern(s32 vramOffset, s32 palette, s16 color, s32 block) {
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     s16 BlendRgb555_16(s16, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0211e278;
-    extern M2C_UNK data_0211e304;
+    extern M2C_UNK g3DSpritePattern1;
+    extern M2C_UNK g3DSpritePattern2;
     extern void *gCur3DSpriteEngine;
-    s16 temp_r0;
-    void *temp_r2;
+    s16 darker;
+    void *entry;
 
-    switch (arg3) {                                 /* irregular */
+    switch (block) {                                /* irregular */
     case 1:
-        func_0207c780(&data_0211e278, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
+        LoadGraphicsBlock(&g3DSpritePattern1, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + vramOffset);
         break;
     case 2:
-        func_0207c780(&data_0211e304, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
+        LoadGraphicsBlock(&g3DSpritePattern2, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + vramOffset);
         break;
     }
-    temp_r0 = BlendRgb555_16(arg2, 0, 8, 8);
-    temp_r2 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + (((arg1 + 0x10) << 5) & ~1);
-    M2C_FIELD(temp_r2, s16 *, 2) = arg2;
-    M2C_FIELD(temp_r2, s16 *, 4) = temp_r0;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
+    darker = BlendRgb555_16(color, 0, 8, 8);
+    entry = M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + (((palette + 0x10) << 5) & ~1);
+    M2C_FIELD(entry, s16 *, 2) = color;
+    M2C_FIELD(entry, s16 *, 4) = darker;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_PALETTE);
 }
 
 #pragma opt_strength_reduction off

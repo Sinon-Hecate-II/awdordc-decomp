@@ -1,5 +1,6 @@
 /* 9 functions from 0x0221E5A0 to 0x0221F4F8 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 extern u8 data_ov005_02220b70[];
 extern u8 data_ov005_02220f54[];
 extern u8 data_ov005_02220a34[];
@@ -36,7 +37,7 @@ s32 func_020a7290(void);
 s32 func_020a7278(void);
 s32 func_020a72e8(s32);
 s32 func_020a8a84(s32);
-s32 func_0207cb88(s32);
+s32 GetDigitCount(s32);
 s32 func_ov000_0216ce10(s32);
 s32 func_ov000_0216ce84(s32);
 s32 GetTerrainTileData(s32);
@@ -109,7 +110,7 @@ DrawTilemapNumber(6,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),func_020a8a84(M2C_F
 func_0209c024(8,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
 } else func_0209c024(5,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
 if(!GetLanguage()) DrawTilemapNumber(23,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
-else DrawTilemapNumber((s16)(func_0207cb88(t)+24),1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
+else DrawTilemapNumber((s16)(GetDigitCount(t)+24),1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 gCur3DSpriteEngine=saved2; v=M2C_FIELD(p,s32 *,0x54);
 OpenNarcArchive(GetLocalizedFileName(data_ov005_02220f1c));
@@ -122,38 +123,42 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(p,u8 *,0x58)=1;
 }
 #pragma opt_strength_reduction on
-void func_ov005_0221eef4(void *arg0) {
-    s32 func_020ad3f0(void);
+/* Per-frame update of the results-screen object: on every fourth frame it scrolls
+ * both 3D sprite screens down one pixel, and when START is pressed it creates the
+ * object described by data_ov005_02220ad0 (unless a screen fade is running). */
+void UpdateResultsScreen(void *parent) {
     s32 func_01ffa3dc(s32 *, void *);
+    u8 IsScreenFadeActive(void);
     extern u32 gFrameCounter;
     extern void **g3DSpriteEngineSub, **g3DSpriteEngineMain, **gCur3DSpriteEngine;
     extern u16 *gKeyState;
     extern s32 data_ov005_02220ad0[];
-    volatile u16 *volatile p;
-    void **saved;
-    s32 i;
-    void **chosen;
+    volatile u16 *volatile offsetY;
+    void **savedEngine;
+    s32 screen;
+    void **engine;
+
     if (!(gFrameCounter & 3)) {
-        saved = gCur3DSpriteEngine;
-        i = 0;
+        savedEngine = gCur3DSpriteEngine;
+        screen = 0;
         do {
-            if (i == 0) chosen = g3DSpriteEngineMain;
-            else chosen = g3DSpriteEngineSub;
-            i++;
-            gCur3DSpriteEngine = chosen;
-            p = (u16 *)((u8 *)*chosen + 0x3E);
-            *p = *p + 1;
-        } while (i < 2);
-        gCur3DSpriteEngine = saved;
+            if (screen == 0) engine = g3DSpriteEngineMain;
+            else engine = g3DSpriteEngineSub;
+            screen++;
+            gCur3DSpriteEngine = engine;
+            offsetY = (u16 *)((u8 *)*engine + DS3D_OFFSET_Y);
+            *offsetY = *offsetY + 1;
+        } while (screen < 2);
+        gCur3DSpriteEngine = savedEngine;
     }
-    if (*gKeyState & 8) {
-        if (!func_020ad3f0()) func_01ffa3dc(data_ov005_02220ad0, arg0);
+    if (*gKeyState & KEY_START) {
+        if (!IsScreenFadeActive()) func_01ffa3dc(data_ov005_02220ad0, parent);
     }
 }
 
 void func_ov005_0221efac(void) {
-    void func_ov005_0221eef4();
-    func_ov005_0221eef4();
+    void UpdateResultsScreen();
+    UpdateResultsScreen();
 }
 
 void func_ov005_0221efb8(void) {
@@ -355,28 +360,32 @@ void func_ov005_0221f3e8(void *arg0) {
     }
 }
 
-void func_ov005_0221f448(void *arg0) {
+/* Tear down the results screen's 3D sprite: hide it on both screens (clear the
+ * sprite bank's OBJ priority and split) and free the two 0x200-byte graphic
+ * buffers it loaded for the main and sub screens. */
+void FreeResultsScreenGraphics(void *object) {
     s32 HeapFreeBlock(s32);
     extern void **g3DSpriteEngineSub, **g3DSpriteEngineMain, **gCur3DSpriteEngine;
-    u16 *volatile p;
-    void **saved;
-    s32 i;
-    void **chosen;
-    i = 0;
-    saved = gCur3DSpriteEngine;
+    u16 *volatile oamAttr;
+    void **savedEngine;
+    s32 screen;
+    void **engine;
+
+    screen = 0;
+    savedEngine = gCur3DSpriteEngine;
     do {
-        if (i == 0) chosen = g3DSpriteEngineMain;
-        else chosen = g3DSpriteEngineSub;
-        i++;
-        gCur3DSpriteEngine = chosen;
-        p = (u16 *)((u8 *)*chosen + 0x12);
-        *p = *p & ~0xC0;
-        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x51) = 0;
-        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x52) = 0;
-        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x53) = 0;
-    } while (i < 2);
-    gCur3DSpriteEngine = saved;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x3C));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x40));
+        if (screen == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        screen++;
+        gCur3DSpriteEngine = engine;
+        oamAttr = (u16 *)((u8 *)*engine + DS3D_BANK_OAMATTR);
+        *oamAttr = *oamAttr & ~DS3D_BANK_OAMATTR_PRIORITY;
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, DS3D_BANK_ROWS_ABOVE) = 0;
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, DS3D_BANK_ROWS_BELOW) = 0;
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, DS3D_BANK_BLEND) = 0;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
+    HeapFreeBlock(M2C_FIELD(object, s32 *, 0x3C));
+    HeapFreeBlock(M2C_FIELD(object, s32 *, 0x40));
 }
 

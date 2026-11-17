@@ -249,7 +249,7 @@ void func_ov000_0219dc98(void) {
 }
 
 void func_ov000_0219dd14(void) {
-    s8 func_ov000_021aa214();
+    s8 GetCoPowerUnitId();
     extern s8 *gAiCommandState;
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
@@ -259,7 +259,7 @@ void func_ov000_0219dd14(void) {
     s8 temp_r0;
 
     gAiUnitListCursor = &gAiUnitList;
-    temp_r0 = func_ov000_021aa214();
+    temp_r0 = GetCoPowerUnitId();
     if (temp_r0 != 0) {
         temp_r3 = gAiUnitListCursor;
         gAiUnitListCursor = temp_r3 + 1;

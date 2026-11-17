@@ -456,19 +456,22 @@ void Ov001_FreePageBackground(s32 arg0) {
     func_ov001_0218af0c((0x30 * arg0) + (data_ov001_02193e40 + 0x610));
 }
 
-void func_ov001_0218af94(void *arg0,s32 x,s32 y,s32 b,s32 arg4,s32 arg5) {
+/* Draw an anchored text block on a text panel: choose the run direction from the
+ * font's direction byte (right, down, left or up) and draw the text anchored at
+ * (x, y) with the given colour and anchor flags. */
+void DrawPanelAnchoredText(void *panel,s32 x,s32 y,s32 colour,s32 flags,s32 text) {
 M2C_UNK DrawAnchoredText(void *,s32,s32,s32,s32,s32,TextDirection);
-void **p=M2C_FIELD(arg0,void ***,0x1c);
+void **entry=M2C_FIELD(panel,void ***,0x1c);
 TextDirection dir={0,0};
-u8 type=M2C_FIELD(M2C_FIELD(*p,void **,8),u8 *,7);
-switch(type){
+u8 dirIndex=M2C_FIELD(M2C_FIELD(*entry,void **,8),u8 *,7);
+switch(dirIndex){
 case 0: case 7:dir.x=1;break;
 case 1: case 2:dir.y=1;break;
 case 3: case 4:dir.x=-1;break;
 case 5: case 6:dir.y=-1;break;
 default:break;
 }
-DrawAnchoredText(arg0+0x18,x,y,b,arg4,arg5,dir);
+DrawAnchoredText(panel+0x18,x,y,colour,flags,text,dir);
 }
 
 void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {

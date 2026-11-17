@@ -22,10 +22,10 @@ void func_ov001_02182a88(void) {}
 void func_ov001_02182a8c(void) {}
 
 void func_ov001_02182a90(void) {
-    s32 func_ov001_0218665c();
+    s32 Ov001_IsRegionMenuActive();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_02182ac4(void);
-    if (func_ov001_0218665c() != 0) return;
+    if (Ov001_IsRegionMenuActive() != 0) return;
     Ov001_StartFade(3, 0, 0x14, 8);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182ac4);
 }
@@ -510,8 +510,8 @@ void func_ov001_02183584(void) {
 }
 
 void func_ov001_021835b0(void) {
-    s32 func_ov001_0218665c();
-    if (func_ov001_0218665c() != 0) {
+    s32 Ov001_IsRegionMenuActive();
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
@@ -525,7 +525,7 @@ void func_ov001_0218362c(void) {
     extern u8 gOv001WfcScreenState;
     void func_ov001_0218327c(void);
           M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK);
-      if (func_ov001_0218665c() != 0) {
+      if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     if (gOv001WfcScreenState == 1) {

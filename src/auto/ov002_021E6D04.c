@@ -2,6 +2,11 @@
 #include "common.h"
 typedef struct { u16 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1,b8:1,b9:1,b10:1,b11:1,b12:1,b13:1,b14:1,b15:1; } SetupFlags;
 typedef struct { u8 low:4; u8 high:4; } NibbleFlags;
+/* One side of the ov002 battle scene's loaded resources: six file handles.  The
+ * two sides are 0x64-byte entries of the scene's resource table. */
+typedef struct BattleSideResources {
+    void *handle[6]; /* +0x00 handles, allocated by the scene's resource setup */
+} BattleSideResources;
 static inline u8 IsEntryReady(void *p) {
 s32 ready=1;
 if(M2C_FIELD(p,u8 *,1)!=0) {
@@ -14,41 +19,42 @@ done:
 return ready ? 1 : 0;
 }
 
-void func_ov002_021e6d04(void *arg0) {
+/* Free both sides' battle-scene resource handles and clear them. */
+void ReleaseBattleSceneResources(void *arg0) {
     M2C_UNK HeapFreeBlock();
-    s32 var_r9;
-    void *var_r10;
+    s32 side;
+    BattleSideResources *resources;
 
-    var_r9 = 0;
-    var_r10 = arg0;
+    side = 0;
+    resources = arg0;
     do {
-        if (M2C_FIELD(var_r10, s32 *, 0) != 0) {
-            HeapFreeBlock();
-            M2C_FIELD(var_r10, s32 *, 0) = 0;
+        if (resources->handle[0] != 0) {
+            HeapFreeBlock(resources->handle[0]);
+            resources->handle[0] = 0;
         }
-        if (M2C_FIELD(var_r10, s32 *, 4) != 0) {
-            HeapFreeBlock();
-            M2C_FIELD(var_r10, s32 *, 4) = 0;
+        if (resources->handle[1] != 0) {
+            HeapFreeBlock(resources->handle[1]);
+            resources->handle[1] = 0;
         }
-        if (M2C_FIELD(var_r10, s32 *, 8) != 0) {
-            HeapFreeBlock();
-            M2C_FIELD(var_r10, s32 *, 8) = 0;
+        if (resources->handle[2] != 0) {
+            HeapFreeBlock(resources->handle[2]);
+            resources->handle[2] = 0;
         }
-        if (M2C_FIELD(var_r10, s32 *, 0xC) != 0) {
-            HeapFreeBlock();
-            M2C_FIELD(var_r10, s32 *, 0xC) = 0;
+        if (resources->handle[3] != 0) {
+            HeapFreeBlock(resources->handle[3]);
+            resources->handle[3] = 0;
         }
-        if (M2C_FIELD(var_r10, s32 *, 0x10) != 0) {
-            HeapFreeBlock();
-            M2C_FIELD(var_r10, s32 *, 0x10) = 0;
+        if (resources->handle[4] != 0) {
+            HeapFreeBlock(resources->handle[4]);
+            resources->handle[4] = 0;
         }
-        if (M2C_FIELD(var_r10, s32 *, 0x14) != 0) {
-            HeapFreeBlock();
-            M2C_FIELD(var_r10, s32 *, 0x14) = 0;
+        if (resources->handle[5] != 0) {
+            HeapFreeBlock(resources->handle[5]);
+            resources->handle[5] = 0;
         }
-        var_r9 += 1;
-        var_r10 += 0x64;
-    } while (var_r9 < 2);
+        side += 1;
+        resources = (BattleSideResources *)((u8 *)resources + 0x64);
+    } while (side < 2);
 }
 
 #pragma opt_common_subs off
@@ -66,7 +72,7 @@ void InitBattleScene(void *state) {
     void func_ov002_021e8738(void *);
     void func_ov002_021e42a8(void *, s32);
     void func_ov002_021e8d04(void *, s32);
-    void func_02086d18(void);
+    void Init3DRendering(void);
     extern M2C_UNK gPlayerSettings;
     extern u8 gEffectVariants[];
     extern M2C_UNK gUnitViews;
@@ -145,29 +151,32 @@ void InitBattleScene(void *state) {
     }
 
 
-    func_02086d18();
+    Init3DRendering();
 }
 #pragma opt_common_subs reset
-void func_ov002_021e795c(void *);
+void EndBattleScene(void *);
 void func_ov002_021e7120(void *);
 void func_ov002_021e7474(void *);
-void func_ov002_021e6ff0(void *arg0) {
-void func_ov002_021e70a0(void *);
-extern u8 data_ov002_021f2f40;
-extern void *gKeyState;
-extern u32 gFrameCounter;
-extern void *gTouchState;
-if(data_ov002_021f2f40) return;
-if(M2C_FIELD(gKeyState,u16 *,6)&0x200) {
-if(gFrameCounter&1) func_ov002_021e70a0(arg0);
-} else if(M2C_FIELD(gKeyState,u16 *,6)&0x100) {
-func_ov002_021e70a0(arg0); func_ov002_021e70a0(arg0);
-} else func_ov002_021e70a0(arg0);
-if(!M2C_FIELD(arg0,u8 *,9)) return;
-if((M2C_FIELD(gKeyState,u16 *,0)&0xB)||M2C_FIELD(gTouchState,u8 *,0x14)) func_ov002_021e795c(arg0);
+/* Per-frame update of the battle scene: steps the scene animation once (twice
+   while R is held, every other frame while L is held) and, once the scene is
+   ready, ends it on A/B/START or a touch. */
+void UpdateBattleScene(void *state) {
+    void StepBattleScene(void *);
+    extern u8 data_ov002_021f2f40;
+    extern KeyState *gKeyState;
+    extern u32 gFrameCounter;
+    extern void *gTouchState;
+    if (data_ov002_021f2f40) return;
+    if (gKeyState->held & KEY_L) {
+        if (gFrameCounter & 1) StepBattleScene(state);
+    } else if (gKeyState->held & KEY_R) {
+        StepBattleScene(state); StepBattleScene(state);
+    } else StepBattleScene(state);
+    if (!M2C_FIELD(state, u8 *, 9)) return;
+    if ((gKeyState->pressed & (KEY_A | KEY_B | KEY_START)) || M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED)) EndBattleScene(state);
 }
 
-void func_ov002_021e70a0(void *arg0) {
+void StepBattleScene(void *arg0) {
 void func_ov002_021e712c(void *);
 void func_ov002_021e749c(void *);
 void func_ov002_021e8914(void *);
@@ -297,13 +306,13 @@ if(!AreUnitViewsReady(arg0)) return;
 temp=M2C_FIELD(arg0,s32 *,4)+1;
 M2C_FIELD(arg0,s32 *,4)=temp;
 if(temp!=0x4B) return;
-func_ov002_021e795c(arg0);
+EndBattleScene(arg0);
 }
 
 void func_ov002_021e78e4(void) {
     M2C_UNK func_02086dfc();
     M2C_UNK func_02086ec8();
-    M2C_UNK func_02087048(M2C_UNK, M2C_UNK);
+    M2C_UNK SetGxPolygonAttr(M2C_UNK, M2C_UNK);
     s32 func_ov002_021e3e00(M2C_UNK *);
     M2C_UNK func_ov002_021e8984(s32);
     extern M2C_UNK data_ov002_021f3014;
@@ -312,7 +321,7 @@ void func_ov002_021e78e4(void) {
     s32 var_r2;
 
     func_02086dfc();
-    func_02087048(0, 0x1F);
+    SetGxPolygonAttr(0, 0x1F);
     if (func_ov002_021e3e00(&data_ov002_021f3014) != 0) {
         func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, 1) * 0x2C) + (s32) &gUnitViews);
     } else {
@@ -326,7 +335,7 @@ void func_ov002_021e78e4(void) {
     func_02086ec8();
 }
 
-void func_ov002_021e795c(void *arg0) {
+void EndBattleScene(void *arg0) {
     M2C_UNK func_ov002_021e15e0();
     M2C_FIELD(arg0, s8 *, 9) = 0;
     func_ov002_021e15e0();
@@ -342,7 +351,7 @@ void func_ov002_021e7970(void) {
     p=&gUnitViews;
     i=0;
     do { func_ov002_021e8ca4(p); i++; p+=0x2C; } while(i<2);
-    func_ov002_021e6d04(&data_ov002_021f3018);
+    ReleaseBattleSceneResources(&data_ov002_021f3018);
     func_020af79c();
 }
 

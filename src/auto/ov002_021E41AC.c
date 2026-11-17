@@ -113,22 +113,25 @@ REG_GX_END_VTXS=0;
 REG_GX_COLOR=GX_RGB_WHITE;
 }
 
-void func_ov002_021e45c0(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
+/* Draw the left (player 0) versus-screen panel's background art mirrored about x:
+ * two rows of nine 8x32 tiles, the columns running right to left, each tile using
+ * its own 8x32 block of the panel's texture tile list. */
+void DrawVersusPanelArtFlipped(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
  M2C_UNK DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 j,i,k,next;
- j=0;k=0;
+ s32 row,i,rowBase,nextRow;
+ row=0;rowBase=0;
  do {
  i=0; do {
- func_02087064(4,8,32,tiles+(i+k)*8,pal);
+ func_02087064(4,8,32,tiles+(i+rowBase)*8,pal);
  DrawTexturedQuadUVFlip(x+(8-i)*8,y,0,8,32,0,0,8,32,1,0);
  i++; } while(i<9);
- k+=9; y+=32; next=j+1; j=next;
- } while(j<2);
+ rowBase+=9; y+=32; nextRow=row+1; row=nextRow;
+ } while(row<2);
 }
 
 #pragma opt_strength_reduction off
-void func_ov002_021e4674(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
+void DrawVersusPanelArt(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
  M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 j,i,k,pp;

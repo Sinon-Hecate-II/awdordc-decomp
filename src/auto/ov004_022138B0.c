@@ -336,7 +336,7 @@ s32 func_ov004_022143cc(void) {
  extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
  s32 count,i,end;u8 *p,v;
  count=0;
- if(func_020d32a0(2))return 1;
+ if(HasPlayerLost(2))return 1;
  i=gPlayerUnitIdBase[2]+1;end=gPlayerUnitIdBase[2]+0x33;
  if(i<end){p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do{v=*p;if((u32)(v<<26)>>26)count++;i++;p+=14;}while(i<end);}

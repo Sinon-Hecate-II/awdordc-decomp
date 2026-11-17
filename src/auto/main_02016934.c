@@ -13,7 +13,7 @@ void *func_02013cfc(void *, int);
 void *WFC_EndLink(void *);
 void *func_02012a64(void *, int, int, void *, int, int, int, int, int, int, int);
 void Mb_ReportPacketResult(int, void *);
-void func_0200758c(int);
+void WaitCycles(int);
 void SystemHalt(void);
 void WFC_SetChannelHandler(int,int,int);
 void func_020119dc(int);
@@ -55,7 +55,7 @@ default:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(25
 case 15:
 if(M2C_FIELD(M2C_FIELD(&gMbState,void **,12),u32 *,0x74c8)){
 n=0;i=0;do {if(M2C_FIELD(&gMbState,DispatchWork169 **,12)->entries[i]){n++;if(n>=2)break;}i++;}while(i<15);
-if(n==1)func_0200758c(0x32c8);
+if(n==1)WaitCycles(0x32c8);
 }
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50c)=0;
 if(M2C_FIELD(arg0,u16 *,2)==0){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(2,arg0);if(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)==0){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(25,0);}return;}

@@ -24,7 +24,7 @@ void func_ov001_0216cd28(s32 arg0, s32 arg1) {
 s32 func_ov001_0216cd38(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_ov001_0216ce88(s32);
     s32 func_02021a90(void *);
-    void func_02006030();
+    void SleepMilliseconds();
     extern s32 data_021372e0;
     extern M2C_UNK data_ov001_0218fd44;
     extern M2C_UNK data_ov001_0218fd4c;
@@ -32,7 +32,7 @@ s32 func_ov001_0216cd38(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x1c) = func_ov001_0216ce88(arg1);
     M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x20) = func_ov001_0216ce88(arg2);
     if (func_02021a90(&data_ov001_0218fd4c) < 0) return -1;
-    while (data_021372e0 == 0) func_02006030(100);
+    while (data_021372e0 == 0) SleepMilliseconds(100);
     return 0;
 }
 
@@ -69,7 +69,7 @@ void func_ov001_0216cdf0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 *arg4, s32 *
 }
 
 void func_ov001_0216ce04(M2C_UNK arg0, s32 *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 *arg4) {
-    M2C_UNK func_02021d34(s32 *, s32, u64);
+    M2C_UNK PollSockets(s32 *, s32, u64);
     u64 func_020720d0(s64, s64);
     s32 sp0;
     s32 sp4;
@@ -79,7 +79,7 @@ void func_ov001_0216ce04(M2C_UNK arg0, s32 *arg1, M2C_UNK arg2, M2C_UNK arg3, s3
     sp4 = arg1[1];
     temp += func_020720d0(arg4[0], 0x1FF6210) >> 6;
     temp += func_020720d0(arg4[1], 0x1FF6210) >> 6;
-    func_02021d34(&sp0, 1, temp);
+    PollSockets(&sp0, 1, temp);
 }
 
 void func_ov001_0216ce58(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s8 *arg4, s32 arg5) {
@@ -280,8 +280,8 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
 }
 #pragma pop
 void func_ov001_0216d564(void) {
-    void func_02006030(void);
-    func_02006030();
+    void SleepMilliseconds(void);
+    SleepMilliseconds();
 }
 
 s32 func_ov001_0216d56c(s32 a){extern s32 (*data_ov001_021925e0)(s32);void (*f)(s32)=M2C_FIELD(&data_ov001_021925e0,void (**)(s32),4);if(f)f(a);return 0;}

@@ -26,14 +26,14 @@ void RunAiRole2EmptyAction(void) {
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 28) >> 28) == 8) {
         func_ov000_021962f8();
-        func_ov000_0218b02c();
+        FinishAiUnitAction();
         return;
     }
     func_ov000_02193d6c(0);
     func_ov000_02191970();
     func_ov000_02193d6c(1);
     func_ov000_02192018();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_021817c0(void) {
@@ -86,7 +86,7 @@ void RunAiRole2LoadedAction(void) {
     if (M2C_FIELD(map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE)) func_ov000_02186a18();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
         func_ov000_021962f8();
-        func_ov000_0218b02c();
+        FinishAiUnitAction();
         return;
     }
     func_ov000_021935c4();
@@ -94,7 +94,7 @@ void RunAiRole2LoadedAction(void) {
     M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) |= AI_ACTION_SKIP_REPLAN;
     func_ov000_02192d88();
     func_ov000_021935c4();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 /* Runs one step of the AI action of a role-5 unit: refreshes the influence maps
@@ -130,11 +130,11 @@ void RunAiRole5Action(void) {
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
         func_ov000_021962f8();
-        func_ov000_0218b02c();
+        FinishAiUnitAction();
         return;
     }
     func_ov000_02189df4();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void RunAiSupplyAction(void) {

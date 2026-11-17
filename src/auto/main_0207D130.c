@@ -71,49 +71,56 @@ REG_GX_VTX_16=0;
 REG_GX_END_VTXS=0;
 }
 
-s32 func_0207d6c8(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
-    case 0x8:
-        return 0;
-    case 0x10:
-        return 1;
-    case 0x20:
-        return 2;
-    case 0x40:
-        return 3;
-    case 0x80:
-        return 4;
-    case 0x100:
-        return 5;
-    case 0x200:
-        return 6;
-    case 0x400:
-        return 7;
+/* Map a texture's side length in pixels (8..1024) to the size code that the GX
+ * TEXIMAGE_PARAM width and height fields store for it; any other length is
+ * reported as the 8-pixel code. */
+s32 GetGxTextureSizeCode(s32 pixels) {
+    switch (pixels) {
+    case GX_TEX_SIZE_8:
+        return GX_TEX_CODE_8;
+    case GX_TEX_SIZE_16:
+        return GX_TEX_CODE_16;
+    case GX_TEX_SIZE_32:
+        return GX_TEX_CODE_32;
+    case GX_TEX_SIZE_64:
+        return GX_TEX_CODE_64;
+    case GX_TEX_SIZE_128:
+        return GX_TEX_CODE_128;
+    case GX_TEX_SIZE_256:
+        return GX_TEX_CODE_256;
+    case GX_TEX_SIZE_512:
+        return GX_TEX_CODE_512;
+    case GX_TEX_SIZE_1024:
+        return GX_TEX_CODE_1024;
     default:
-        return 0;
+        return GX_TEX_CODE_8;
     }
 }
 
-s32 func_0207d774(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
-    case 0x8:
-        return 0;
-    case 0x10:
-        return 1;
-    case 0x20:
-        return 2;
-    case 0x40:
-        return 3;
-    case 0x80:
-        return 4;
-    case 0x100:
-        return 5;
-    case 0x200:
-        return 6;
-    case 0x400:
-        return 7;
+/* Maps a texture's side length in pixels (GX_TEX_SIZE_*) to the code the GX
+ * TEXIMAGE_PARAM size field stores (GX_TEX_CODE_*).  Identical to
+ * GetGxTextureSizeCode: the game had a copy of this helper in more than one
+ * source file. */
+s32 GetGxTextureSizeCode2(s32 size) {
+    switch (size) {                                 /* irregular */
+    case GX_TEX_SIZE_8:
+        return GX_TEX_CODE_8;
+    case GX_TEX_SIZE_16:
+        return GX_TEX_CODE_16;
+    case GX_TEX_SIZE_32:
+        return GX_TEX_CODE_32;
+    case GX_TEX_SIZE_64:
+        return GX_TEX_CODE_64;
+    case GX_TEX_SIZE_128:
+        return GX_TEX_CODE_128;
+    case GX_TEX_SIZE_256:
+        return GX_TEX_CODE_256;
+    case GX_TEX_SIZE_512:
+        return GX_TEX_CODE_512;
+    case GX_TEX_SIZE_1024:
+        return GX_TEX_CODE_1024;
     default:
-        return 0;
+        return GX_TEX_CODE_8;
     }
 }
 
@@ -142,13 +149,13 @@ void func_0207d95c(M2C_UNK *arg0) {
 }
 
 void func_0207d990(s32 arg0, void *arg1, void *arg2) {
-    M2C_UNK func_0200154c(s32, s32, s32, s32, s32);
+    M2C_UNK MTX_TransApply44(s32, s32, s32, s32, s32);
     M2C_UNK MatrixScale44(s32, s32, s32, s32, s32);
     M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     M2C_FIELD((void *)0x04000440, s32 *, 0) = 0;
     M2C_FIELD((void *)0x04000440, s32 *, 0x14) = 0;
     GX_SetOrthoProjection(-0x1200, 0x1200, -0x1800, 0x1800, 0, 0x2000, 0x1000, 1, arg0);
-    func_0200154c(arg0, arg0, M2C_FIELD(arg2, s32 *, 0), M2C_FIELD(arg2, s32 *, 4), M2C_FIELD(arg2, s32 *, 8));
+    MTX_TransApply44(arg0, arg0, M2C_FIELD(arg2, s32 *, 0), M2C_FIELD(arg2, s32 *, 4), M2C_FIELD(arg2, s32 *, 8));
     MatrixScale44(arg0, arg0, M2C_FIELD(arg1, s32 *, 0), M2C_FIELD(arg1, s32 *, 4), M2C_FIELD(arg1, s32 *, 8));
     *(s32 *)0x0400044C = 0;
 }

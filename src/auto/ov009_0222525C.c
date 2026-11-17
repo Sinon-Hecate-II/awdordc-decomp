@@ -2,7 +2,7 @@
 #include "common.h"
 #include "ov009_link.h"
 
-void func_ov009_0222525c(void) {
+void CloseLinkChannel(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
     s32 func_ov009_02223ce4();
@@ -18,38 +18,43 @@ void func_ov009_0222525c(void) {
     SetLinkPhase(9);
 }
 
-void func_ov009_0222529c(void) {
+/* Recovers the download-play link once it breaks or its in-game session ends:
+ * delete the in-game sprites, return the state machine to PENDING and re-submit
+ * the channel request of the kind the session started with.  In the request
+ * phase it only advances the state machine, and in any other phase it closes
+ * the channel. */
+void RestartLinkSession(void) {
     s32 GetLinkPhase();
-    s32 func_ov009_022241a4();
+    s32 GetLinkRequestKind();
     s32 func_ov009_02224688();
     s32 func_ov009_02223b5c();
     s32 func_ov009_02223c08();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
     extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
-    s32 state = GetLinkPhase();
-    if (state == 1) return;
-    if (state == 2) {
+    s32 phase = GetLinkPhase();
+    if (phase == LINK_PHASE_READY) return;
+    if (phase == LINK_PHASE_REQUEST) {
         if (func_ov009_02224688() != 0) return;
-        func_ov009_0222525c();
+        CloseLinkChannel();
         return;
     }
-    if (state != 5 && state != 4) {
-        func_ov009_0222525c();
+    if (phase != LINK_PHASE_INGAME && phase != LINK_PHASE_ACTIVE) {
+        CloseLinkChannel();
         return;
     }
-    SetLinkPhase(3);
+    SetLinkPhase(LINK_PHASE_PENDING);
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
     DeleteSpriteObjectsOfClass(&data_ov009_02226638);
     DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
-    switch (func_ov009_022241a4()) {
+    switch (GetLinkRequestKind()) {
     case 0:
         if (func_ov009_02223b5c() != 0) return;
-        func_ov009_0222525c();
+        CloseLinkChannel();
         return;
     case 1:
         if (func_ov009_02223c08() != 0) return;
-        func_ov009_0222525c();
+        CloseLinkChannel();
         return;
     }
 }
@@ -624,15 +629,15 @@ void func_ov009_02225db4(void) {
 }
 
 void func_ov009_02225dd4(void *arg0) {
-    s32 func_020abe90(M2C_UNK);
+    s32 GetScreenFlag(M2C_UNK);
     M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (func_020abe90(0) == 0)) {
+    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
         func_020ad348(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
         return;
     }
-    if (func_020abe90(1) != 0) {
+    if (GetScreenFlag(1) != 0) {
         return;
     }
     func_020ad348(2, 8, 1, arg0);
@@ -682,11 +687,11 @@ void func_ov009_02225f44(void) {
 
 void func_ov009_02225f48(void *arg0) {
     M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if (func_020abe90(0) == 1) {
+    if (GetScreenFlag(0) == 1) {
         func_020ad2a0(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
     }
-    if (func_020abe90(1) != 1) {
+    if (GetScreenFlag(1) != 1) {
         return;
     }
     func_020ad2a0(2, 8, 1, arg0);
@@ -715,13 +720,13 @@ M2C_UNK func_ov009_02225fb4(s8 arg0, u16 arg1, s32 arg2, void *arg3) {
 }
 
 void func_ov009_02226034(void *arg0) {
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (func_020abe90(0) == 0)) {
+    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
         func_020ad348(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
         return;
     }
-    if (func_020abe90(1) != 0) {
+    if (GetScreenFlag(1) != 0) {
         return;
     }
     func_020ad348(2, 8, 1, arg0);
@@ -745,11 +750,11 @@ void func_ov009_022260d8(void) {
 }
 
 void func_ov009_022260dc(void *arg0) {
-    if (func_020abe90(0) == 1) {
+    if (GetScreenFlag(0) == 1) {
         func_020ad2a0(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
     }
-    if (func_020abe90(1) != 1) {
+    if (GetScreenFlag(1) != 1) {
         return;
     }
     func_020ad2a0(2, 8, 1, arg0);

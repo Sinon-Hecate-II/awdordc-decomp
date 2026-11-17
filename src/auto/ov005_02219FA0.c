@@ -9,7 +9,7 @@ typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
 void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     void *FindObjectByClass(void *);
     void *func_01ffa3dc(void *, void *);
-    s32 func_02090e0c(s32, u8, s32, s32, s32, s32, s32, void *);
+    s32 CreateScriptedSprite(s32, u8, s32, s32, s32, s32, s32, void *);
     void DrawResultSpark(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02220d50, data_ov005_02220fa4, data_0211e058;
@@ -26,7 +26,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     for (screen = 0; screen < 2; screen++) {
         if (screen == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
         gCur3DSpriteEngine = engine;
-        M2C_FIELD((char *)spark + 4 * screen, s32 *, 0x34) = func_02090e0c(M2C_FIELD(parent, s32 *, 0x34), (u8)variant, 0, 0, (u16)((0x3ff & (0x178 >> ((u32)(**(u16 **)engine << 17) >> 30))) | 0xf000), 0, 0, spark);
+        M2C_FIELD((char *)spark + 4 * screen, s32 *, 0x34) = CreateScriptedSprite(M2C_FIELD(parent, s32 *, 0x34), (u8)variant, 0, 0, (u16)((0x3ff & (0x178 >> ((u32)(**(u16 **)engine << 17) >> 30))) | 0xf000), 0, 0, spark);
     }
     gCur3DSpriteEngine = savedEngine;
     M2C_FIELD(spark, s32 *, 0x3c) = x;

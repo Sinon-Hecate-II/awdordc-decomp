@@ -1,5 +1,6 @@
 /* 48 functions from 0x020D2470 to 0x020D3464 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6; u8 flags:2; } SelectionKind;
 typedef struct { SelectionKind kind; u8 pad[3]; u16 flags; u8 tail[8]; } SelectionUnit;
 
@@ -200,7 +201,7 @@ void func_020d2958(void) {
     } while (i < 5);
 }
 
-s32 func_020d29a8(M2C_UNK arg0) {
+s32 IsPlayerRouted(M2C_UNK arg0) {
  s32 func_020d2a00(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 func_020d303c(M2C_UNK);
  if (!IsPlayerActive()) return 1;
  if (func_020d2a00(arg0)) {
@@ -255,13 +256,16 @@ y++;
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-void PayPlayerFunds(s32 arg0,s32 arg1) {
-extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); void func_02091c54(s32,s32);
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c54(11,arg1);
-*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c))-=arg1;
-*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c)+1)+=arg1;
-if(*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c)+1)>0x3b9ac9ff)
-*((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c)+1)=0x3b9ac9ff;
+/* Pay `cost` out of a player's funds: count it in the human player's battle
+ * records, subtract it from the player's funds and add it to the cumulative
+ * funds-spent stat (capped at PLAYER_FUNDS_SPENT_MAX). */
+void PayPlayerFunds(s32 player,s32 cost) {
+extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); void AddRecordFunds(s32,s32);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))AddRecordFunds(11,cost);
+*((s32 *)((u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE))-=cost;
+*((s32 *)((u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE)+1)+=cost;
+if(*((s32 *)((u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE)+1)>PLAYER_FUNDS_SPENT_MAX)
+*((s32 *)((u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE)+1)=PLAYER_FUNDS_SPENT_MAX;
 }
 
 void func_020d2bc0(s32 arg0, s32 arg1) {
@@ -524,20 +528,20 @@ void func_020d31e4(void) {
     DecrementPlayerUnitCount();
 }
 
-void func_020d31f0(s32 a, u8 b) {
+void SetPlayerGaveUp(s32 a, u8 b) {
 extern s32 *gCurrentMap;
 M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d3)=b;
 }
 
-u8 func_020d3214(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d3]!=0;}
+u8 HasPlayerGivenUp(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d3]!=0;}
 
-u8 func_020d3248(M2C_UNK arg0) {
+u8 HasActivePlayerGivenUp(M2C_UNK arg0) {
     u8 var_r0;
 
     if (IsPlayerActive() == 0) {
         return 0U;
     }
-    if (func_020d3214(arg0) != 0) {
+    if (HasPlayerGivenUp(arg0) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -545,33 +549,33 @@ u8 func_020d3248(M2C_UNK arg0) {
     return var_r0;
 }
 
-void func_020d327c(s32 a,u8 b) {
+void SetPlayerLost(s32 a,u8 b) {
 extern s32 *gCurrentMap;
 M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d4)=b;
 }
 
-u8 func_020d32a0(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d4]!=0;}
+u8 HasPlayerLost(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d4]!=0;}
 
-u8 func_020d32d4(s32 a){
+u8 IsPlayerHqIntact(s32 a){
 extern s32 *gCurrentMap;u8 result;
 if(!(((u8 *)*gCurrentMap)[0x5155]&2))return 1;
 if(IsPlayerActive(a)==0)return 0;
-if(func_020d32a0(a)==0)result=1;else result=0;
+if(HasPlayerLost(a)==0)result=1;else result=0;
 return result;
 }
 
-u8 func_020d332c(s32 a){
+u8 IsPlayerStillFighting(s32 a){
 extern s32 *gCurrentMap;u8 result;
 if(!(((u8 *)*gCurrentMap)[0x5155]&1))return 1;
-if(func_020d29a8(a)==0)result=1;else result=0;
+if(IsPlayerRouted(a)==0)result=1;else result=0;
 return result;
 }
 
-u8 func_020d336c(s32 a){
+u8 IsHumanPlayerStillFighting(s32 a){
 extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); u8 result;
 if(IsPlayerHuman(a)==0)return 1;
 if(!(((u8 *)*gCurrentMap)[0x5155]&16))return 1;
-if(func_020d29a8(a)==0)result=1;else result=0;
+if(IsPlayerRouted(a)==0)result=1;else result=0;
 return result;
 }
 

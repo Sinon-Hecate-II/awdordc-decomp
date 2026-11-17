@@ -288,10 +288,10 @@ void DrawFrameBorderPulse(s32 x, s32 y, s32 width, s32 height, u16 tile, s32 pri
 }
 
 void func_0208e054(s32 arg0, s32 arg1, s16 arg2) {
-    M2C_UNK func_0207c780(M2C_UNK *, s32);
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     extern M2C_UNK data_0211e0e4;
     extern void *gCur3DSpriteEngine;
-    func_0207c780(&data_0211e0e4, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
+    LoadGraphicsBlock(&data_0211e0e4, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
     M2C_FIELD((M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + (((arg1 + 0x10) << 5) & ~1)), s16 *, 0x1E) = arg2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
 }
@@ -301,12 +301,12 @@ void func_0208e0b8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     DrawVerticalBar((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg3, arg4);
 }
 
-void func_0208e0f0(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
-    M2C_UNK func_0207c780(M2C_UNK *, s32);
+void DrawUiGradient(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     extern M2C_UNK data_0211e394;
     extern void *gCur3DSpriteEngine;
     s32 temp_r3;
-    func_0207c780(&data_0211e394, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
+    LoadGraphicsBlock(&data_0211e394, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
     temp_r3 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + (((arg1 + 0x10) << 5) & ~1);
     M2C_FIELD(temp_r3, s16 *, 6) = arg2;
     M2C_FIELD(temp_r3, s16 *, 8) = arg3;

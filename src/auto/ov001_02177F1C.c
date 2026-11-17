@@ -131,12 +131,12 @@ void func_ov001_02178134(void) {
 
 void func_ov001_021781c8(s32 arg0) {
     M2C_UNK func_ov001_02176078();
-    M2C_UNK func_ov001_02184cac();
+    M2C_UNK ResetSaveSlotsWithWfcProfile();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
     extern s8 data_ov001_02193d74;
     if (arg0 == 2) {
-        func_ov001_02184cac();
+        ResetSaveSlotsWithWfcProfile();
         data_ov001_02193d74 = 1;
         Ov001_StopSound();
         Ov001_PlaySound(0x10);
@@ -247,16 +247,16 @@ void func_ov001_021783e0(void) {
 }
 
 void func_ov001_0217842c(void) {
-    M2C_UNK func_0200758c(M2C_UNK);
-    M2C_UNK func_0200e840();
+    M2C_UNK WaitCycles(M2C_UNK);
+    M2C_UNK WakeDisplayWait();
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_0200758c(0x01000000);
-    func_0200e840();
+    WaitCycles(0x01000000);
+    WakeDisplayWait();
 }
 
 void func_ov001_02178460(void) {

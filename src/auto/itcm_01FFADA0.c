@@ -1,5 +1,6 @@
 /* 12 functions from 0x01FFADA0 to 0x01FFBD90 (itcm), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 static inline s16 SearchMovementFlags(s8 *state) { return M2C_FIELD(state,s16*,0x22); }
 static inline u8 *SearchPlayerRecords(void *map) { return (u8*)map+0x67a4; }
@@ -311,17 +312,20 @@ void func_01ffb80c(s32 x, s32 y, s32 dir, s8 value) {
     }
 }
 
-void func_01ffb918(s32 arg0,s32 arg1,s32 arg2,s8 arg3,u8 arg4) {
+/* Paint `value` down every row of the map's selected cell layer in the column
+ * band centred on x: three columns wide, five when `wide` is set, clamped to the
+ * map's width.  y and right are ignored. */
+void FillMapColumn(s32 x,s32 y,s32 right,s8 value,u8 wide) {
 extern void **gCurrentMap;
-s32 radius=1,left,y,x; void *base;
-if(arg4) radius+=2;
-left=arg0-radius; arg2=arg0+radius;
+s32 radius=1,left,column; void *base;
+if(wide) radius+=2;
+left=x-radius; right=x+radius;
 if(left<0) left=0;
 base=*gCurrentMap;
-if(arg2>M2C_FIELD(base,u16 *,0x5144)-1) arg2=M2C_FIELD(base,u16 *,0x5144)-1;
-for(arg0=0;arg0<M2C_FIELD(base,u16 *,0x5146);arg0++) {
-for(x=left;x<=arg2;x++) {
-((s8 **)*gCurrentMap)[arg0+0x14ba][x]=arg3;
+if(right>M2C_FIELD(base,u16 *,MAP_WIDTH)-1) right=M2C_FIELD(base,u16 *,MAP_WIDTH)-1;
+for(x=0;x<M2C_FIELD(base,u16 *,MAP_HEIGHT);x++) {
+for(column=left;column<=right;column++) {
+((s8 **)*gCurrentMap)[x+MAP_GRID_ROW_INDEX][column]=value;
 }
 base=*gCurrentMap;
 }

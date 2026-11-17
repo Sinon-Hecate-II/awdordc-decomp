@@ -118,7 +118,7 @@ s32 func_020637fc(void *arg0) {
 }
 #pragma scheduling off
 s32 func_020639c0(void *arg0) {
-    s32 func_02049534(s32);
+    s32 ghiSocketCanRecv(s32);
     s32 ghiRecv(s32, s32, s32, M2C_UNK);
     M2C_UNK func_0206006c(void *, s32, s32);
     M2C_UNK SBServerListCheckQueryError(void *);
@@ -128,7 +128,7 @@ s32 func_020639c0(void *arg0) {
     s32 var_r4;
     s32 temp_r5;
 
-    if (func_02049534(M2C_FIELD(arg0, s32 *, 0x4B0)) == 0) {
+    if (ghiSocketCanRecv(M2C_FIELD(arg0, s32 *, 0x4B0)) == 0) {
         return 0;
     }
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x80);
@@ -201,8 +201,8 @@ extern s32 sSbNoServer[];
    which notifies the callback); once the 2-second collection window is over the
    socket is closed, the list goes idle and the callback is told the query finished. */
 s32 SBServerListProcessAdHocServers(void *list) {
-    s32 func_02049534(s32);
-    s32 func_020497e0(s32, void *, s32, s32, void *, s32 *);
+    s32 ghiSocketCanRecv(s32);
+    s32 ghiRecvFrom(s32, void *, s32, s32, void *, s32 *);
     s32 SBServerListFindByAddress(void *, s32, u16);
     s32 SBServerNew(void *, s32, u16);
     s32 func_02061168(void);
@@ -215,8 +215,8 @@ s32 SBServerListProcessAdHocServers(void *list) {
     s32 addrLen = 8;
     s32 server;
 
-    while (func_02049534(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET))) {
-        if (func_020497e0(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET), packet, 0x5db, 0,
+    while (ghiSocketCanRecv(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET))) {
+        if (ghiRecvFrom(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET), packet, 0x5db, 0,
                           fromAddr, &addrLen) != -1 &&
             SBServerListFindByAddress(list, *(s32 *)(fromAddr + 2), fromAddr[1]) == -1) {
             server = SBServerNew(list, *(s32 *)(fromAddr + 2), fromAddr[1]);

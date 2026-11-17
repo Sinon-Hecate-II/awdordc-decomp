@@ -263,7 +263,7 @@ s32 func_0209ff34(void) {
     return count;
 }
 
-void func_020a004c(u16 arg0, u16 arg1) {
+void SetUnitPathCursor(u16 arg0, u16 arg1) {
     extern void *gUnitMovePath;
     M2C_FIELD(gUnitMovePath, s8 *, 0x34) = arg0;
     M2C_FIELD(gUnitMovePath, s8 *, 0x35) = arg1;
@@ -433,19 +433,29 @@ i--;q--;
 return 1;
 }
 
-void func_020a06a0(s32 arg0) {
- extern void *gUnitMovePath; extern s32 *gCurrentMap;
- s32 func_020a7694(s32); M2C_UNK func_020a0068(s32); void func_020a01c0(s32,s32); M2C_UNK func_020a0360(void); M2C_UNK func_020a0d18(); void func_020a004c(u16,u16);
- void *p;
- M2C_FIELD(gUnitMovePath,s8 *,0x5a)=func_020a7694(M2C_FIELD((void *)*gCurrentMap,s32 *,0x52d0));
- M2C_FIELD(gUnitMovePath,s8 *,0x5b)=0;
- func_020a0068(0);
- p=M2C_FIELD((void *)*gCurrentMap,void **,0x52d0);
- func_020a01c0(M2C_FIELD(p,s8 *,1),M2C_FIELD(p,s8 *,2));
- M2C_FIELD(gUnitMovePath,s8 *,0x4e)=M2C_FIELD(gUnitMovePath,s8 *,0x5a);
- if(arg0!=0)func_020a0360();
- M2C_FIELD((void *)*gCurrentMap,u8 *,0x5388)=4;
- func_020a004c(0xffff,0xffff);func_020a0d18();
+/* Starts a fresh move path for the unit under the cursor: resets the path to the
+   unit's remaining movement, makes the unit's own tile step 0, optionally adds
+   the step the movement input has already queued, clears the drawn cursor path
+   and updates the path to the cursor. */
+void StartUnitMovePath(s32 followInput) {
+    extern void *gUnitMovePath;
+    extern s32 *gCurrentMap;
+    s32 GetUnitRemainingMoveRange(s32);
+    M2C_UNK func_020a0068(s32);
+    void func_020a01c0(s32, s32);
+    M2C_UNK func_020a0360(void);
+    M2C_UNK func_020a0d18();
+    void SetUnitPathCursor(u16, u16);
+    void *unit;
+    M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_START_COST) = GetUnitRemainingMoveRange(M2C_FIELD((void *)*gCurrentMap, s32 *, MAP_CURSOR_UNIT));
+    M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_LENGTH) = 0;
+    func_020a0068(0);
+    unit = M2C_FIELD((void *)*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    func_020a01c0(M2C_FIELD(unit, s8 *, MAP_UNIT_X), M2C_FIELD(unit, s8 *, MAP_UNIT_Y));
+    M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_STEP_COST) = M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_START_COST);
+    if (followInput != 0) func_020a0360();
+    M2C_FIELD((void *)*gCurrentMap, u8 *, MAP_CURSOR_PATH) = MOVE_DIR_STOP;
+    SetUnitPathCursor(0xffff, 0xffff); func_020a0d18();
 }
 
 /* Score a cell as an AI move destination: 0 when the cell is invalid or has a unit,

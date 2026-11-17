@@ -77,16 +77,16 @@ void func_01ffc294(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4,
 }
 
 void func_01ffc2e8(void *arg0) {
-s32 func_020a7694(void);
+s32 GetUnitRemainingMoveRange(void);
 M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-s16 value=func_020a7694();
+s16 value=GetUnitRemainingMoveRange();
 FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,1);
 }
 
 void BuildUnitMoveRange(void *arg0) {
-s32 func_020a7694(void);
+s32 GetUnitRemainingMoveRange(void);
 M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-s16 value=func_020a7694();
+s16 value=GetUnitRemainingMoveRange();
 FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,3);
 }
 

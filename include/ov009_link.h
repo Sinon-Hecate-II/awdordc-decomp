@@ -15,6 +15,8 @@
 enum {
     LINK_PHASE_IDLE    = 0,
     LINK_PHASE_READY   = 1, /* a setup command finished; the next step may start */
+    LINK_PHASE_REQUEST = 2, /* a link request arrived; its data is being prepared */
+    LINK_PHASE_PENDING = 3, /* a WFC command is in flight; its completion advances the phase */
     LINK_PHASE_ACTIVE  = 4, /* link established; the menu treats 4/5 as in-game */
     LINK_PHASE_INGAME  = 5, /* second in-game phase; every check accepts 4 or 5 */
     LINK_PHASE_RESULT  = 7, /* showing the result/status screen */

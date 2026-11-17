@@ -170,18 +170,22 @@ if(aw<(u32)w&&ah<(u32)h){n=func_ov001_0216a398(dst,w-aw,h-ah,x+aw*8,y+ah*8,mode,
 return count;
 }
 
-void DrawFontTextLine(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 *arg5,TextDirection dir) {
+/* Draw one line of a bitmap font's text: decode characters from the text cursor
+ * and draw each glyph at (x, y) in colour, advancing the pen along dir, until the
+ * text ends or a newline (10) is reached. When `rest` is given it receives the
+ * cursor just past the newline, or 0 when the text ended. */
+void DrawFontTextLine(Ov001TextState *state, s32 startX, s32 startY, s32 color, s32 text, s32 *rest, TextDirection dir) {
 
-s32 spC,sp8;
-s32 step,space;void *font;s32 (*next)(s32 *);s32 ch,x,y;
-space=M2C_FIELD(arg0,s32 *,8);font=M2C_FIELD(arg0,void **,4);spC=arg4;
-next=M2C_FIELD(font,s32 (**)(s32 *),4);
-x=arg1;y=arg2;sp8=arg3;
-ch=next(&spC);
+s32 cursor,lineEnd;
+s32 step,spacing;Ov001Font *font;s32 (*decode)(s32 *);s32 ch,x,y;
+spacing=state->letterSpacing;font=state->font;cursor=text;
+decode=font->decodeChar;
+x=startX;y=startY;lineEnd=color;
+ch=decode(&cursor);
 if(ch!=0){loop:
-if(ch!=10){step=space+DrawTextGlyph(M2C_FIELD(arg0,s32 *,0),font,x,y,sp8,ch);x+=step*dir.x;y+=step*dir.y;ch=next(&spC);if(ch!=0)goto loop;}}
-if(arg5==0)return;
-*arg5=ch==10?spC:0;
+if(ch!=10){step=spacing+DrawTextGlyph(state->panel,font,x,y,lineEnd,ch);x+=step*dir.x;y+=step*dir.y;ch=decode(&cursor);if(ch!=0)goto loop;}}
+if(rest==0)return;
+*rest=ch==10?cursor:0;
 }
 
 /* Draws a multi-line string: each line is optionally centred or right-aligned

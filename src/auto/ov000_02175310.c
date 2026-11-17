@@ -115,10 +115,10 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
    the two extra unit-type icons when the entry's stat index asks for them. */
 void DrawInfoPanelBackdrop(void *entry) {
     M2C_UNK AddToU16Array(s32, s32, s32);
-    M2C_UNK func_0207c780(M2C_UNK *, s32);
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     M2C_UNK FillTileRect(s32, s32, s32, u16, s32);
     M2C_UNK SetTileRectPalette(s32, s32, s32, s32);
-    u32 GetInfoWindowMode();
+    u32 GetInfoWindowLanguage();
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021ae2d0;
@@ -135,7 +135,7 @@ void DrawInfoPanelBackdrop(void *entry) {
     panelTiles = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28);
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    switch (GetInfoWindowMode()) {
+    switch (GetInfoWindowLanguage()) {
     case 0:
         gfxRes = &gInfoPanelGfx0;
         break;
@@ -158,7 +158,7 @@ void DrawInfoPanelBackdrop(void *entry) {
         gfxRes = &gInfoPanelGfx0;
         break;
     }
-    func_0207c780(gfxRes, panelTiles);
+    LoadGraphicsBlock(gfxRes, panelTiles);
     AddToU16Array(panelTiles, 0x800, 0x180);
     SetTileRectPalette(panelTiles, 0x20, 0x18, 0xB);
     if (M2C_FIELD(&data_ov000_021ae2d0, u32 *, M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 8) * 0xC) == 1) {
@@ -170,7 +170,7 @@ void DrawInfoPanelBackdrop(void *entry) {
 
 void func_ov000_02175878(void *arg0) {
     void CopyToObjPaletteShadow(void *, s32, s32);
-    M2C_UNK func_0207c780(M2C_UNK *, s32);
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     void func_0209b26c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -201,7 +201,7 @@ void func_ov000_02175878(void *arg0) {
     } else {
         base += 0xA40;
     }
-    func_0207c780((M2C_UNK *)data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag + 2], base);
+    LoadGraphicsBlock((M2C_UNK *)data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag + 2], base);
     CopyToObjPaletteShadow(data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag] + idx, 0x180, 0x20);
     func_0209b26c(2, 0xD, 1, data_ov000_021debc8[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)], 0xF000, color);
     gCur3DSpriteEngine = saved;
@@ -248,7 +248,7 @@ void func_ov000_02175ed8(void *arg0) {
  * for the window's current mode, uploads the gauge tiles, then draws the stat
  * bar and number, the unit-type icon and the team-coloured tiles for `entry`. */
 void Ov000Info_DrawUnitPanel(void *entry){
-M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK FillTileRect(s32,s32,s32,u16,s32); s32 HeapAllocBlock(s32); void HeapFreeBlock(s32); void Clear3DSpriteLayer(s32); u32 GetInfoWindowMode();
+M2C_UNK LoadGraphicsBlock(M2C_UNK *,s32); M2C_UNK FillTileRect(s32,s32,s32,u16,s32); s32 HeapAllocBlock(s32); void HeapFreeBlock(s32); void Clear3DSpriteLayer(s32); u32 GetInfoWindowLanguage();
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
 extern M2C_UNK gInfoPanelGfx0,gInfoPanelGfx1,gInfoPanelGfx2,gInfoPanelGfx3,gInfoPanelGfx4,gInfoPanelGfx5;
 extern u16 data_ov000_021deb10[]; extern u8 data_ov000_021ae2a0[]; extern s8 data_ov000_021dede4[];
@@ -258,8 +258,8 @@ gfx=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28);
 tile=(u16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
 temp=HeapAllocBlock(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
 Clear3DSpriteLayer(0);
-switch(GetInfoWindowMode()){case 0:table=&gInfoPanelGfx0;break;case 1:table=&gInfoPanelGfx1;break;case 2:table=&gInfoPanelGfx2;break;case 3:table=&gInfoPanelGfx3;break;case 4:table=&gInfoPanelGfx4;break;case 5:table=&gInfoPanelGfx5;break;default:table=&gInfoPanelGfx0;break;}
-func_0207c780(table,temp);func_02080a14(base,16,2,temp+0x520);
+switch(GetInfoWindowLanguage()){case 0:table=&gInfoPanelGfx0;break;case 1:table=&gInfoPanelGfx1;break;case 2:table=&gInfoPanelGfx2;break;case 3:table=&gInfoPanelGfx3;break;case 4:table=&gInfoPanelGfx4;break;case 5:table=&gInfoPanelGfx5;break;default:table=&gInfoPanelGfx0;break;}
+LoadGraphicsBlock(table,temp);func_02080a14(base,16,2,temp+0x520);
 for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
 SetTileRectPalette(base,16,2,11);HeapFreeBlock(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){

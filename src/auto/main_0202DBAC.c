@@ -183,10 +183,10 @@ void func_0202dfcc(void *arg0, s32 arg1) {
     M2C_UNK TaskCreate(void *, M2C_UNK *, void *, s32, s32, s32);
     M2C_UNK TaskWake(void *);
     M2C_UNK InitMutex(void *);
-    M2C_UNK func_02029c30(void *, M2C_UNK);
+    M2C_UNK ListInit(void *, M2C_UNK);
     extern M2C_UNK func_0202ee30;
     TaskCreate(arg0, &func_0202ee30, arg0, arg0 + 0x4C0, 0x400, arg1);
-    func_02029c30(arg0 + 0x4E0, 0);
+    ListInit(arg0 + 0x4E0, 0);
     InitMutex(arg0 + 0x4C8);
     M2C_FIELD(arg0, s32 *, 0x4C4) = 0;
     M2C_FIELD(arg0, s32 *, 0x4C0) = 0;
@@ -239,12 +239,12 @@ return node;
 void func_0202e12c(M2C_UNK arg0) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    M2C_UNK func_02029c74(M2C_UNK *, M2C_UNK);
+    M2C_UNK ListAppend(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0213c29c[];
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    func_02029c74(data_0213c29c, arg0);
+    ListAppend(data_0213c29c, arg0);
     OS_RestoreInterrupts(temp_r4);
 }
 
@@ -269,7 +269,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
     M2C_UNK ListRemove(M2C_UNK, void *);
     void func_0202e12c(M2C_UNK);
     M2C_UNK func_0202e0ec(void);
-    M2C_UNK func_02029c74(M2C_UNK *, M2C_UNK);
+    M2C_UNK ListAppend(M2C_UNK *, M2C_UNK);
     void OS_WakeupThread(void *);
     void MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213c920;
@@ -327,7 +327,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
         base = (void *)&data_0213c440;
     }
     *(s32 *)((u8 *)arg4 + 0x11c) = *(s32 *)((u8 *)arg4 + 0x11c) + 1;
-    func_02029c74((M2C_UNK *)((u8 *)base + 0x4e0), node);
+    ListAppend((M2C_UNK *)((u8 *)base + 0x4e0), node);
     OS_WakeupThread((void *)((u8 *)base + 0x4c0));
 }
 

@@ -182,7 +182,7 @@ void func_020e476c(void) {
     M2C_UNK func_020960b4();
     M2C_UNK func_0209f87c();
     M2C_UNK func_020abf94();
-    M2C_UNK func_020aca8c(M2C_UNK);
+    M2C_UNK ApplyScreenMode(M2C_UNK);
     M2C_UNK func_020b1b3c();
     M2C_UNK InitDefaultGameSettings();
     M2C_UNK func_020c8eec();
@@ -211,7 +211,7 @@ void func_020e476c(void) {
             var_r1 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r1;
-        func_020aca8c(1);
+        ApplyScreenMode(1);
         func_01ff9b38();
         var_r9 += 1;
     } while (var_r9 < 2);

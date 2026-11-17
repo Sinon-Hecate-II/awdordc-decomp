@@ -98,6 +98,12 @@
 #define SOCK_WOULD_BLOCK (-6)  /* nothing queued and the caller asked not to wait */
 #define SOCK_ABORTED     (-56) /* the socket was closed or torn down while waiting */
 
+/* A DNS lookup runs over a temporary raw connection whose buffers come from one
+ * allocation: a receive buffer and, behind it, the pending-datagram buffer. */
+#define DNS_LOOKUP_BLOCK_BYTES   0xFD0 /* bytes of the block LookupHostAddress allocates */
+#define DNS_LOOKUP_RX_BYTES      0xB68 /* CONN_IN_WINDOW of that connection */
+#define DNS_LOOKUP_PENDING_BYTES 0x466 /* CONN_RX_MAX (pending-datagram buffer) of it */
+
 /* The socket manager (gSocketManager): a list of socket objects; each object
  * links the socket the network stack sees at +0xA4. */
 #define SOCKMGR_SOCKETS    0x08 /* void *first socket object */

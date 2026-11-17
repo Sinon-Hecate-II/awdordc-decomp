@@ -26,6 +26,7 @@
 #define AI_COMMAND_STATE_FLAGS      0x07 /* u8 AI action flags */
 #define AI_COMMAND_STATE_ACTION_FLAGS 0x08 /* u16 action-planning flags */
 #define AI_ACTION_SKIP_REPLAN 0x20 /* suppress the fallback callback in action finalization */
+#define AI_ACTION_DESTINATION_CHOSEN 0x10 /* the acting unit's destination is chosen; finalization does not choose it again */
 #define AI_COMMAND_STATE_MODE       0x0A /* u16 bitfield word (3-bit fields at bits 3..5, 6..8, 9..11) */
 #define AI_COMMAND_STATE_ATTACKER   0x0C /* u8 kind of the unit the AI is evaluating an attack with */
 #define AI_COMMAND_STATE_PLAYER     0x0D /* u8 player slot the AI is acting for */

@@ -104,19 +104,26 @@ if(result==0)M2C_FIELD(a,u8 *,0x455)=3;else M2C_FIELD(a,u8 *,0x455)=9;
 }
 
 #pragma opt_propagation off
-void TlsProcessServerHello(s32 p,u8 *s) {
-s32 old,n;
-MI_CpuCopy8(s+2,p+0x54,0x20);
-old=M2C_FIELD(p,u8 *,0x30);n=s[0x22];s+=0x23;
-if(old && n==0x20 && !ByteCompareN(p+0x74,s,0x20))M2C_FIELD(p,u8 *,0x31)=1;
-else {
-if(old)func_02022008(p);
-if(!n) M2C_FIELD(p,u8 *,0x30)=0;
-else {MI_CpuCopy8(s,p+0x74,0x20);M2C_FIELD(p,u8 *,0x30)=1;}
-M2C_FIELD(p,u8 *,0x31)=0;
-}
-M2C_FIELD(p,u16 *,0x32)=(s[n]<<8)+(s+n)[1];
-M2C_FIELD(p,u8 *,0x455)=2;
+/* Handle a ServerHello body: keep the server's random, resume the cached session when the
+ * server echoed its id (otherwise cache the new id, dropping the old entry), and take the
+ * server's hash algorithm from the cipher suite that follows the session id. */
+void TlsProcessServerHello(s32 channel, u8 *body) {
+    void TlsSessionCacheDiscard(s32);
+    s32 hadCachedSession, sessionIdLen;
+
+    MI_CpuCopy8(body + 2, channel + TLS_RANDOM_B, 0x20);
+    hadCachedSession = M2C_FIELD(channel, u8 *, TLS_SESSION_CACHED);
+    sessionIdLen = body[0x22];
+    body += 0x23;
+    if (hadCachedSession && sessionIdLen == 0x20 && !ByteCompareN(channel + TLS_SESSION_ID, body, 0x20)) M2C_FIELD(channel, u8 *, TLS_SESSION_RESUMED) = 1;
+    else {
+        if (hadCachedSession) TlsSessionCacheDiscard(channel);
+        if (!sessionIdLen) M2C_FIELD(channel, u8 *, TLS_SESSION_CACHED) = 0;
+        else {MI_CpuCopy8(body, channel + TLS_SESSION_ID, 0x20);M2C_FIELD(channel, u8 *, TLS_SESSION_CACHED) = 1;}
+        M2C_FIELD(channel, u8 *, TLS_SESSION_RESUMED) = 0;
+    }
+    M2C_FIELD(channel, u16 *, TLS_HASH_ALGORITHM) = (body[sessionIdLen] << 8) + (body + sessionIdLen)[1];
+    M2C_FIELD(channel, u8 *, TLS_STATE) = 2;
 }
 #pragma opt_propagation reset
 s32 func_02022dbc(u8 *p,s32 n,s32 stride,s32 target) {

@@ -111,7 +111,10 @@ s32 func_ov000_0219e8d0(void) {
     return 1;
 }
 
-s32 func_ov000_0219e948(void) {
+/* Runs the handler of the AI command's current step (AI_COMMAND_STATE_STEP) and
+ * keeps dispatching while the handler returns nonzero: the handlers advance the
+ * step themselves and return 0 once the AI has to wait for the screen. */
+s32 ProcessAiCommandStep(void) {
     s32 func_ov000_0219e9f4();
     s32 func_ov000_0219efa4();
     s32 func_ov000_0219f0d8();
@@ -123,46 +126,46 @@ s32 func_ov000_0219e948(void) {
     s32 func_ov000_0219fa30();
     s32 func_ov000_0219fa98();
     extern s8 *gAiCommandState;
-    s32 var_r5;
-    var_r5 = 0;
+    s32 continues;
+    continues = 0;
     do {
-        switch (M2C_FIELD(gAiCommandState, u8 *, 1)) {
+        switch (M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_STEP)) {
         case 0:
-            var_r5 = func_ov000_0219e9f4();
+            continues = func_ov000_0219e9f4();
             break;
         case 1:
-            var_r5 = func_ov000_0219efa4();
+            continues = func_ov000_0219efa4();
             break;
         case 2:
-            var_r5 = func_ov000_0219f0d8();
+            continues = func_ov000_0219f0d8();
             break;
         case 3:
-            var_r5 = func_ov000_0219f918();
+            continues = func_ov000_0219f918();
             break;
         case 4:
-            var_r5 = func_ov000_0219f968();
+            continues = func_ov000_0219f968();
             break;
         case 5:
-            var_r5 = func_ov000_0219fa0c();
+            continues = func_ov000_0219fa0c();
             break;
         case 6:
-            var_r5 = func_ov000_0219f9c0();
+            continues = func_ov000_0219f9c0();
             break;
         case 7:
-            var_r5 = ProcessAiCommandDelay();
+            continues = ProcessAiCommandDelay();
             break;
         case 8:
-            var_r5 = func_ov000_0219fa30();
+            continues = func_ov000_0219fa30();
             break;
         case 9:
-            var_r5 = func_ov000_0219fa98();
+            continues = func_ov000_0219fa98();
             break;
         default:
-            var_r5 = 0;
+            continues = 0;
             break;
         }
-    } while (var_r5 != 0);
-    return var_r5;
+    } while (continues != 0);
+    return continues;
 }
 
 s32 func_ov000_0219e9f4(void) {

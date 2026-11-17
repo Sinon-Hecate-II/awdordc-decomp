@@ -50,11 +50,11 @@ M2C_UNK func_ov010_02229d9c(s32 arg0) {
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x24) = arg0;
 }
 
-s32 func_ov010_02229ddc(s32 arg0){s32 GetOnlinePeerMask();s32 func_ov010_022282f8();extern M2C_UNK gOv010OnlineSession;s32 v,b,t;
+s32 func_ov010_02229ddc(s32 arg0){s32 GetOnlinePeerMask();s32 GetNetErrorCode();extern M2C_UNK gOv010OnlineSession;s32 v,b,t;
 if(M2C_FIELD(&gOv010OnlineSession,void * volatile *,0x24)){v=GetOnlinePeerMask();t=GetOnlinePeerMask();if(v!=(M2C_FIELD(M2C_FIELD(&gOv010OnlineSession,void **,0x24),u16 *,2)&t)){v=1;goto ready;}}v=0;ready:;
 if(!M2C_FIELD(M2C_FIELD(&gOv010OnlineSession,void **,0x24),u8 *,0))v=0;
 if(!IsOnlineSessionFlagSet(3))v=0;
-if(func_ov010_022282f8())b=1;else b=0;if(b)v=0;if(!v)func_ov010_02229bdc();return v;}
+if(GetNetErrorCode())b=1;else b=0;if(b)v=0;if(!v)func_ov010_02229bdc();return v;}
 
 void func_ov010_02229e70(s32 arg0) {
 extern M2C_UNK gOv010OnlineSession;
@@ -230,9 +230,33 @@ void func_ov010_0222a148(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-void func_ov010_0222a15c(void *arg0){s32 func_ov010_022282f8();s32 func_ov010_02228314(s32 *,u32 *);s32 sp4;u32 sp0;void (*fn)(s32,s32,u32,s32);s32 v,b;
-if(func_ov010_022282f8())b=1;else b=0;if(!b)return;v=func_ov010_02228314(&sp4,&sp0);if(IsOnlineSessionFlagSet(6))return;
-switch(sp0){case 0:break;case 1:case 2:case 3:case 4:case 5:case 6:case 7:SetOnlineSessionFlag(6);fn=M2C_FIELD(arg0,void (**)(s32,s32,u32,s32),0x34);if(!fn)return;fn(v,sp4,sp0,M2C_FIELD(arg0,s32 *,0x18));break;default:break;}}
+/* Per-frame network error check: while an error is pending, report it once — mark
+   the session's error flag and hand the error code, detail and category to the
+   owner's error callback, if it has one. */
+void ReportNetErrorToCallback(void *self) {
+    s32 GetNetErrorCode();
+    s32 func_ov010_02228314(s32 *, u32 *);
+    s32 errorDetail;
+    u32 errorType;
+    void (*callback)(s32, s32, u32, s32);
+    s32 errorCode, reported;
+    if (GetNetErrorCode()) reported = 1; else reported = 0;
+    if (!reported) return;
+    errorCode = func_ov010_02228314(&errorDetail, &errorType);
+    if (IsOnlineSessionFlagSet(OV010_FLAG_ERROR)) return;
+    switch (errorType) {
+    case 0:
+        break;
+    case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        SetOnlineSessionFlag(OV010_FLAG_ERROR);
+        callback = M2C_FIELD(self, void (**)(s32, s32, u32, s32), 0x34);
+        if (!callback) return;
+        callback(errorCode, errorDetail, errorType, M2C_FIELD(self, s32 *, 0x18));
+        break;
+    default:
+        break;
+    }
+}
 
 void func_ov010_0222a20c(s32 arg0) {
     void *func_01ffa3dc(void *);
@@ -276,10 +300,10 @@ void func_ov010_0222a278(void) {
 }
 
 u8 func_ov010_0222a298(void) {
-    s32 func_020ad3f0();
+    s32 IsScreenFadeActive();
     u8 var_r0;
 
-    if (func_020ad3f0() != 0) {
+    if (IsScreenFadeActive() != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -288,15 +312,15 @@ u8 func_ov010_0222a298(void) {
 }
 
 void func_ov010_0222a2b4(void *arg0) {
-    s32 func_020abe90(M2C_UNK);
+    s32 GetScreenFlag(M2C_UNK);
     M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (func_020abe90(0) == 0)) {
+    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
         func_020ad348(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
         return;
     }
-    if (func_020abe90(1) != 0) {
+    if (GetScreenFlag(1) != 0) {
         return;
     }
     func_020ad348(2, 8, 1, arg0);
@@ -366,11 +390,11 @@ void func_ov010_0222a694(void *arg0){u32 v;if(!M2C_FIELD(arg0,s32 *,0x38))return
 
 void func_ov010_0222a6e4(void *arg0) {
     M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if (func_020abe90(0) == 1) {
+    if (GetScreenFlag(0) == 1) {
         func_020ad2a0(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
     }
-    if (func_020abe90(1) != 1) {
+    if (GetScreenFlag(1) != 1) {
         return;
     }
     func_020ad2a0(2, 8, 1, arg0);
@@ -406,15 +430,15 @@ void StringStorageConcat(void *out, void *first, void *last) {
 void func_ov010_0222a808(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *func_01ffa444(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=func_01ffa444(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
 
 void func_ov010_0222a880(void *arg0) {
-    s32 func_020abe90(M2C_UNK);
+    s32 GetScreenFlag(M2C_UNK);
     M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (func_020abe90(0) == 0)) {
+    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
         func_020ad348(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
         return;
     }
-    if (func_020abe90(1) != 0) {
+    if (GetScreenFlag(1) != 0) {
         return;
     }
     func_020ad348(2, 8, 1, arg0);
@@ -429,11 +453,11 @@ void func_ov010_0222a96c(void) {
 
 void func_ov010_0222a970(void *arg0) {
     M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if (func_020abe90(0) == 1) {
+    if (GetScreenFlag(0) == 1) {
         func_020ad2a0(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
     }
-    if (func_020abe90(1) != 1) {
+    if (GetScreenFlag(1) != 1) {
         return;
     }
     func_020ad2a0(2, 8, 1, arg0);

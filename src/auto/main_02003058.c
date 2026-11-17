@@ -18,7 +18,10 @@ void func_02003f34(void *arg0) {
     }
 }
 
-void func_02003058(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,6))&~a;M2C_FIELD(&gVramBankState,u16 *,6)=a;switch(a){case 0:break;case 12:*(volatile u8 *)0x4000243=0x8a;*(volatile u8 *)0x4000242=0x82;break;case 4:*(volatile u8 *)0x4000242=0x82;break;case 8:*(volatile u8 *)0x4000243=0x82;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
+/* Give the requested banks to the main engine's OBJ area when it is built from
+ * banks C and D (C takes slot 0, D slot 1) and release the banks the area no
+ * longer uses.  Banks the area gives up are added to the pending release mask. */
+void GX_SetBankForObjCD(s32 banks){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)=(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)|M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_OBJ_CD))&~banks;M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_OBJ_CD)=banks;switch(banks){case 0:break;case VRAM_BANK_C|VRAM_BANK_D:REG_VRAM_D_CR=VRAM_CR_MAIN_OBJ(1);REG_VRAM_C_CR=VRAM_CR_MAIN_OBJ(0);break;case VRAM_BANK_C:REG_VRAM_C_CR=VRAM_CR_MAIN_OBJ(0);break;case VRAM_BANK_D:REG_VRAM_D_CR=VRAM_CR_MAIN_OBJ(0);break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING));}
 
 void func_02003124(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,18))&~a;M2C_FIELD(&gVramBankState,u16 *,18)=a;switch(a){case 0:break;case 4:*(volatile u8 *)0x4000242=0x84;break;case 0x180:*(volatile u8 *)0x4000249=0x81;case 0x80:*(volatile u8 *)0x4000248=0x81;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
 

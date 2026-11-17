@@ -74,48 +74,57 @@ M2C_FIELD(obj,s32 *,0x6c)=0;
 M2C_FIELD(obj,s32 *,0x70)=0;
 }
 
-void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
+/* Load an animated sprite's assets from the effect NARC named by assetName: build
+   the asset's .tex/.ctx/.cl paths, open the archive once and hand the paths to
+   LoadAnimatedSpriteAssets (destOffset is the frame data's VRAM offset, frameCount
+   its number of frames, loadGraphics says whether to load the texture and palette). */
+void LoadAnimatedSpriteAssetsFromNarc(void *sprite, M2C_UNK assetName, s32 destOffset, u16 frameCount, u8 loadGraphics) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
     s32 BuildNarcPath(M2C_UNK);
     void LoadAnimatedSpriteAssets(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u8);
-    void func_0208c69c(M2C_UNK);
-    void func_0208c6fc(void);
-    extern M2C_UNK data_02102840, data_02102848, data_02102850;
-    M2C_UNK sp4C[8], sp2C[8], spC[8];
-    s32 temp_r0;
-    temp_r0 = BuildNarcPath(arg1);
-    StringCopy(sp4C, temp_r0);
-    StringAppend(sp4C, &data_02102840);
-    StringCopy(sp2C, temp_r0);
-    StringAppend(sp2C, &data_02102848);
-    StringCopy(spC, temp_r0);
-    StringAppend(spC, &data_02102850);
-    func_0208c69c(arg1);
-    LoadAnimatedSpriteAssets(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
-    func_0208c6fc();
+    void OpenEffectNarcArchive(M2C_UNK);
+    void CloseEffectNarcArchive(void);
+    extern M2C_UNK sSpriteTexExtension, sSpriteCtxExtension, sSpriteClExtension;
+    M2C_UNK texPath[8], ctxPath[8], clPath[8];
+    s32 narcPath;
+    narcPath = BuildNarcPath(assetName);
+    StringCopy(texPath, narcPath);
+    StringAppend(texPath, &sSpriteTexExtension);
+    StringCopy(ctxPath, narcPath);
+    StringAppend(ctxPath, &sSpriteCtxExtension);
+    StringCopy(clPath, narcPath);
+    StringAppend(clPath, &sSpriteClExtension);
+    OpenEffectNarcArchive(assetName);
+    LoadAnimatedSpriteAssets(sprite, (M2C_UNK)texPath, (M2C_UNK)ctxPath, (M2C_UNK)clPath, destOffset, frameCount, loadGraphics);
+    CloseEffectNarcArchive();
 }
 
-void func_0208bddc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
+/* Load a compressed animated sprite's assets from the asset's NARC: build the
+ * asset's .cg/.ctc/.cl paths, open the archive once and hand the paths to
+ * LoadCompressedSpriteAssets (destOffset is the frame data's VRAM offset,
+ * frameCount its number of frames, loadGraphics says whether to load the
+ * graphics and palette). */
+void LoadCompressedSpriteAssetsFromNarc(M2C_UNK sprite, M2C_UNK assetName, s32 destOffset, u16 frameCount, u8 loadGraphics) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
     s32 BuildNarcPath(M2C_UNK);
-    void func_0208bf7c(void *, M2C_UNK, M2C_UNK, M2C_UNK *, u32, u16, u8);
-    void func_0208c69c(M2C_UNK);
-    void func_0208c6fc(void);
-    extern M2C_UNK data_02102854, data_02102858, data_02102860;
-    M2C_UNK sp4C[8], sp2C[8], spC[8];
-    s32 temp_r0;
-    temp_r0 = BuildNarcPath(arg1);
-    StringCopy(sp4C, temp_r0);
-    StringAppend(sp4C, &data_02102854);
-    StringCopy(sp2C, temp_r0);
-    StringAppend(sp2C, &data_02102858);
-    StringCopy(spC, temp_r0);
-    StringAppend(spC, &data_02102860);
-    func_0208c69c(arg1);
-    func_0208bf7c(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
-    func_0208c6fc();
+    void LoadCompressedSpriteAssets(void *, M2C_UNK, M2C_UNK, M2C_UNK *, u32, u16, u8);
+    void OpenEffectNarcArchive(M2C_UNK);
+    void CloseEffectNarcArchive(void);
+    extern M2C_UNK sSpriteCgExtension, sSpriteCtcExtension, sSpriteAnimClExtension;
+    M2C_UNK gfxPath[8], animPath[8], palPath[8];
+    s32 narcPath;
+    narcPath = BuildNarcPath(assetName);
+    StringCopy(gfxPath, narcPath);
+    StringAppend(gfxPath, &sSpriteCgExtension);
+    StringCopy(animPath, narcPath);
+    StringAppend(animPath, &sSpriteCtcExtension);
+    StringCopy(palPath, narcPath);
+    StringAppend(palPath, &sSpriteAnimClExtension);
+    OpenEffectNarcArchive(assetName);
+    LoadCompressedSpriteAssets(sprite, (M2C_UNK)gfxPath, (M2C_UNK)animPath, (M2C_UNK)palPath, destOffset, frameCount, loadGraphics);
+    CloseEffectNarcArchive();
 }
 
 /* Set up a display object's buffers from three prepared lists. */
@@ -148,7 +157,7 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
     M2C_FIELD(obj, s32 *, 0x44) = (s32) ((M2C_FIELD(obj, s32 *, 0x44) & ~0xC00000) | 0x400000);
 }
 
-void func_0208bf7c(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
+void LoadCompressedSpriteAssets(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
 s32 LoadFileToBuffer(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
 u16 packed;void *sub,*ptr;
 packed=(u16)((0x3ff&(value>>5))+(u16)(count<<12));
@@ -314,8 +323,8 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_020813c4(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
     s32 BuildNarcPath();
-    void func_0208c69c(M2C_UNK);
-    void func_0208c6fc(void);
+    void OpenEffectNarcArchive(M2C_UNK);
+    void CloseEffectNarcArchive(void);
     extern M2C_UNK data_02102864, data_0210286c;
     M2C_UNK sp20[8], sp0[8];
     s32 temp_r0, temp_r4;
@@ -324,10 +333,10 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     StringAppend(sp20, &data_02102864);
     StringCopy(sp0, temp_r0);
     StringAppend(sp0, &data_0210286c);
-    func_0208c69c(arg0);
+    OpenEffectNarcArchive(arg0);
     temp_r4 = func_020813c4(sp20, arg1);
     func_0208143c((M2C_UNK)sp0, arg2 << 5, 0x20);
-    func_0208c6fc();
+    CloseEffectNarcArchive();
     return temp_r4;
 }
 
@@ -337,8 +346,8 @@ s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 LoadDecompressedFileTo(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     s32 BuildNarcPath();
-    void func_0208c69c(M2C_UNK);
-    void func_0208c6fc(void);
+    void OpenEffectNarcArchive(M2C_UNK);
+    void CloseEffectNarcArchive(void);
     extern M2C_UNK data_02102870;
     extern M2C_UNK data_02102874;
     extern void *gCur3DSpriteEngine;
@@ -351,14 +360,14 @@ s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
     StringAppend(sp20, &data_02102870);
     StringCopy(sp0, temp_r0);
     StringAppend(sp0, &data_02102874);
-    func_0208c69c(arg0);
+    OpenEffectNarcArchive(arg0);
     temp_r4 = LoadDecompressedFileTo(sp20, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1);
     LoadFileToSpriteBuffer(sp0, (arg2 + 0x10) << 5, 0x20);
-    func_0208c6fc();
+    CloseEffectNarcArchive();
     return temp_r4;
 }
 
-void func_0208c69c(M2C_UNK arg0) {
+void OpenEffectNarcArchive(M2C_UNK arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
@@ -380,7 +389,7 @@ void func_0208c69c(M2C_UNK arg0) {
     OpenNarcArchive(sp0);
 }
 
-void func_0208c6fc(void) {
+void CloseEffectNarcArchive(void) {
     M2C_UNK CloseNarcArchive();
     extern u8 data_021577e0;
     u32 temp_r1;

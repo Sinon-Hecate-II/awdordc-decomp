@@ -418,18 +418,21 @@ M2C_UNK *GetContentType(void *arg0) {
     return &data_020fd3d4;
 }
 
-s32 func_0204b70c(void *arg0) {
+/* Byte length of a query-string POST body (a POST with no file parts): for every
+ * string part its name, its value, two extra bytes per character the URL encoding
+ * expands, and the '=', plus one '&' between consecutive parts. */
+s32 ghiPostGetNoFilesContentLength(void *connection) {
  s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32); s32 StringLength(s32);
  extern M2C_UNK data_020fd3f8,sGhttpPostFile,data_020fd2d0;
- void *p=M2C_FIELD(arg0,void **,0x13c); void *q; s32 i,n,total=0;
- n=Vector_GetCount(M2C_FIELD(p,s32 *,0));
- if(n==0)return total;
- for(i=0;i<n;i++) {
- q=Vector_GetItem(M2C_FIELD(p,s32 *,0),i);
- if(M2C_FIELD(q,s32 *,0)!=0)AssertFailed(&data_020fd3f8,&sGhttpPostFile,&data_020fd2d0,0x1b0);
- total += StringLength(M2C_FIELD(q,s32 *,4)); total += M2C_FIELD(q,s32 *,12); total += M2C_FIELD(q,s32 *,20)*2; total++;
+ GHIPost *post=(GHIPost *)M2C_FIELD(connection,void **,GHI_POST_DATA); GHIPostData *part; s32 i,count,total=0;
+ count=Vector_GetCount(post->items);
+ if(count==0)return total;
+ for(i=0;i<count;i++) {
+ part=(GHIPostData *)Vector_GetItem(post->items,i);
+ if(part->type!=GHIString)AssertFailed(&data_020fd3f8,&sGhttpPostFile,&data_020fd2d0,0x1b0);
+ total += StringLength((s32)part->name); total += part->u.string.length; total += part->u.string.escapedChars*2; total++;
  }
- return total+(n-1);
+ return total+(count-1);
 }
 
 /* Byte length of the multipart/form-data body of a POST that contains files:
@@ -483,13 +486,13 @@ s32 ghiPostGetHasFilesContentLength(void *obj) {
     return total + ghiPostLengthCache.endLength;
 }
 
-s32 func_0204b958(void *arg0) {
- s32 ghiPostGetHasFilesContentLength(void *); s32 func_0204b70c(void *);
+s32 ghiPostGetContentLength(void *arg0) {
+ s32 ghiPostGetHasFilesContentLength(void *); s32 ghiPostGetNoFilesContentLength(void *);
  extern M2C_UNK data_020fd384,sGhttpPostFile,data_020fd27c;
  void *p=M2C_FIELD(arg0,void **,0x13c);
  if(p==NULL)AssertFailed(&data_020fd384,&sGhttpPostFile,&data_020fd27c,0x20c);
  if(p==NULL)return 0;
  if(M2C_FIELD(p,s32 *,12)!=0)return ghiPostGetHasFilesContentLength(arg0);
- return func_0204b70c(arg0);
+ return ghiPostGetNoFilesContentLength(arg0);
 }
 

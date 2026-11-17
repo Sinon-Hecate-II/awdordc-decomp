@@ -209,6 +209,9 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 
 /* Remaining HP of destructible terrain (low seven bits, 0 where there is none). */
 #define MAP_CELL_TERRAIN_HP    0x539c /* u8 per cell */
+#define MAP_CELL_TERRAIN_HP_MASK    0x7f /* remaining HP in the byte */
+#define MAP_CELL_TERRAIN_HP_PRESENT 0x80 /* set on every nonzero HP byte: the saved-map run-length data keeps such bytes as literals */
+#define MAP_TERRAIN_IMPACT_HP_FULL  99   /* HP an impact feature has when the battle starts */
 
 /* Tile ids the impact blast writes into the current tileset bank. */
 #define MAP_TILE_WASTELAND     3
@@ -276,6 +279,12 @@ typedef struct MapSettingsPlayer {
 #define MAP_SETTINGS_PLAYER_ARMY 0x0F00 /* bits 8..11: army id */
 #define MAP_SETTINGS_PLAYER_TEAM 0xF000 /* bits 12..15: team number */
 
+/* CO ids and their icon-strip indices (GetPlayerCoIconIndex): ids 1..12 use icons
+ * 0..11 in order; id 0 is the random/unset slot, which uses the last icon. */
+#define CO_ID_RANDOM      0
+#define CO_ICON_RANDOM    12
+#define CO_ICON_NONE      0xFF /* returned for a CO id outside the icon strip */
+
 /* Packed per-map settings, saved with a slot and copied into the battle map and
  * gMapConfig by ApplyMapSettings. */
 typedef struct MapSettings {
@@ -309,11 +318,14 @@ typedef struct MapSettings {
 #define MAP_UNIT_MOVE_PLANNED 0x80 /* bit 7 of the fuel byte: the AI has planned a move for the unit (SetMapCursor sets it) */
 #define MAP_UNIT_CAPTURE_COMPLETE 20 /* capture points at which a property is captured */
 #define MAP_UNIT_CARRIED    0x0C /* u8 first carried unit, 0 if none */
+#define MAP_UNIT_FIRST_CARRIED 0x0C /* u8 first unit this unit carries, 0 if none */
 #define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
 #define MAP_UNIT_TARGET     0x08 /* u16 packed AI move target: x in low six bits, y in bits 6..11 */
 #define MAP_UNIT_NEED_STATE 0x08 /* u16: resupply/repair need in bits 12..13 (0 none, 1 resupply, 2 repair) */
 #define MAP_UNIT_TARGET_NONE 0x3F /* a target coordinate of 0x3f means "no target" */
 #define MAP_UNIT_ACTION     0x08 /* u16 bits 14..15 of MAP_UNIT_TARGET: the AI's action state */
+#define MAP_UNIT_ACTION_MASK 0xC000 /* bits 14..15 of MAP_UNIT_TARGET */
+#define MAP_UNIT_AI_HAS_TARGET 0x20 /* u8 bit 5 of MAP_UNIT_AI_STATE: a move target is assigned */
 #define MAP_UNIT_ACTION_NONE 0 /* the AI has chosen no action for the unit */
 #define MAP_UNIT_ACTION_MOVE 1 /* the AI moves the unit to its target, then acts there */
 #define MAP_UNIT_ACTION_STAY 2 /* the AI acts from where the unit stands */
@@ -391,8 +403,10 @@ typedef struct MapTargetEntry {
 #define MAP_BATTLE_WINNER   0x6ed6 /* s16: side that wins the previewed battle, 0 = no preview */
 #define MAP_BATTLE_DAMAGE   0x6ed4 /* s16: damage the previewed attacker deals to its target */
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
+#define MAP_GRID_ROW_INDEX  0x14ba /* MAP_GRID seen as an s8 * array: index of row y (MAP_GRID / 4) */
 #define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
+#define MAP_CELL_UNSET      0x7f   /* s8 marker FillMapLayer clears a cell layer to: no value computed yet */
 #define MAP_CELL_LAYER_BYTES 0x508 /* bytes of one per-cell byte layer (the largest map's cell count) */
 #define MAP_CELL_ORDER      0x1e30 /* s8 per cell: working order/overlay layer */
 #define MAP_CELL_THREAT_DIRECT   0x2840 /* u8 per cell: threat from direct attackers */
@@ -430,12 +444,21 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_PLAYER_STATES  0x67a4
 #define MAP_PLAYER_STRIDE  0x8c
 #define PLAYER_REC_FUNDS   0x00 /* s32 funds: builds cost ten times the unit's price */
+#define PLAYER_REC_FUNDS_SPENT 0x04 /* s32 total funds the player has spent */
+#define PLAYER_FUNDS_SPENT_MAX 999999999 /* cap of PLAYER_REC_FUNDS_SPENT */
 #define PLAYER_REC_INCOME  0x08 /* s32 funds the player's properties pay it per turn */
 #define PLAYER_FUNDS_OFF (MAP_PLAYER_STATES + PLAYER_REC_FUNDS) /* s32 funds of a player record */
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
+#define PLAYER_REC_PROPERTIES 0x18 /* u8 properties (cities/bases/HQ) the player owns, recounted when the map loads */
 #define PLAYER_REC_DEFEAT_TURN   0x1A /* u16 turn the player was defeated on, 0 while still in the battle (IsPlayerActive) */
 #define PLAYER_REC_DEFEAT_REASON 0x1C /* u8 why the player was defeated: 8, 0x10, 1 or 2, the victory-rule flag that removed them */
+#define PLAYER_DEFEAT_PROPERTIES 0x20 /* PLAYER_REC_DEFEAT_REASON: fewer properties than the winner at the turn limit */
+/* PLAYER_REC_DEFEAT_REASON values: each is the victory-rule flag that removed the player. */
+#define PLAYER_DEFEAT_GAVE_UP    8    /* the player's give-up flag is set: the AI resigned or a team-mate was defeated first */
+#define PLAYER_DEFEAT_HUMAN      0x10 /* a human player is left without units and properties (rule flag 0x10) */
+#define PLAYER_DEFEAT_NO_UNITS   1    /* the player is left without units and properties (rule flag 1) */
+#define PLAYER_DEFEAT_LOST       2    /* the player's lost flag is set (rule flag 2) */
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
 #define PLAYER_REC_ENEMY_UNITS 0x22 /* u16 running total of the opposing team's units */
 #define PLAYER_REC_UNIT_COUNT  0x31 /* u8 units the player has alive */
@@ -447,6 +470,8 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_ARMY_STATE 0x27 /* u8 per-player army state shown by the army info window */
 #define PLAYER_REC_CURSOR_X  0x2D /* u8 tile x the map cursor was left on */
 #define PLAYER_REC_CURSOR_Y  0x2E /* u8 tile y the map cursor was left on */
+#define PLAYER_REC_GAVE_UP   0x2F /* u8 give-up flag: the AI resigned, or a team-mate was defeated first */
+#define PLAYER_REC_LOST      0x30 /* u8 lost flag: the player's HQ was captured */
 #define PLAYER_REC_TURN_TIME 0x88 /* u32 elapsed turn time in frames (0 when untimed) */
 #define PLAYER_REC_AI_MODE    0x2A /* u8 AI behaviour mode (0..3) */
 #define PLAYER_REC_HQ_X       0x2B /* u8 HQ tile x in the low seven bits; bit 7 set when the player has no HQ */
@@ -473,6 +498,12 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_SPRITE_STATE_OFF (MAP_PLAYER_STATES + PLAYER_REC_SPRITE_STATE) /* u8 */
 #define MAP_TEAM_A_PLAYER  0x52b8 /* s16 id of the player team A's army belongs to */
 #define MAP_TEAM_B_PLAYER  0x52ba /* s16 id of the player team B's army belongs to */
+
+/* The per-army (CO) data table at gMovementCostTable, one 0x9c-byte block per
+ * army id: +0x00 is the s32 localized name text id, +0x64 the s8 * movement
+ * cost table for the army's current weather. */
+#define ARMY_DATA_SIZE 0x9c
+#define ARMY_DATA_NAME 0x00
 
 /* gCurrentMap[1] is the map-view controller: it owns the scroll task and gets
  * a callback run each time a scroll pan finishes. */
@@ -541,6 +572,7 @@ enum {
 #define MAPDATA_WIDTH   0x00 /* u8 map width in cells */
 #define MAPDATA_HEIGHT  0x01 /* u8 map height in cells */
 #define MAPDATA_TILES   0x02 /* u16 per cell: tile id into MAP_TILE_TERRAIN */
+#define MAPDATA_LINK_BATTLE 0x04 /* u8 nonzero when the battle runs over a link/online session (its overlay is polled) */
 #define MAPDATA_TURN_TIME 0x10 /* u16 configured per-turn time limit in frames, 0 = untimed */
 
 /* Map ids in this range are campaign maps with a full 0x6f8-byte record. */

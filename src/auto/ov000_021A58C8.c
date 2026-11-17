@@ -57,30 +57,33 @@ void MarkPlayerIndirectThreat(u8 player) {
     } while (id < gPlayerUnitIdBase[player] + 51);
 }
 #pragma opt_strength_reduction reset
-void func_ov000_021a5b28(void) {
+/* Rebuilds the map's indirect-threat score layer: clear the score layer, select
+ * the layer the range fills work in, mark the indirect-attack threat of every
+ * other player, then restore the player whose units are being processed. */
+void BuildIndirectThreatMap(void) {
     void FillMapLayer(s32);
     void SelectMapLayer(void *);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     void MarkPlayerIndirectThreat(u8);
     extern void **gCurrentMap;
-    u16 saved;
-    s32 i;
-    void *base;
-    base = *gCurrentMap;
-    saved = M2C_FIELD(base, u16 *, 0x52B6);
-    SelectMapLayer(base + 0x2338);
-    FillMapLayer(0x7F);
-    SelectMapLayer(*gCurrentMap + 0x1E30);
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0)
-            MarkPlayerIndirectThreat(i);
+    u16 savedPlayer;
+    s32 player;
+    void *map;
+    map = *gCurrentMap;
+    savedPlayer = M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER);
+    SelectMapLayer(map + MAP_CELL_SCORE);
+    FillMapLayer(MAP_CELL_UNSET);
+    SelectMapLayer(*gCurrentMap + MAP_CELL_ORDER);
+    for (player = 1; player < 5; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0)
+            MarkPlayerIndirectThreat(player);
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 
 #pragma opt_strength_reduction off
-void func_ov000_021a5bd4(u8 arg0) {
+void MarkPlayerRangeThreat(u8 arg0) {
     void FloodFillUnitRange(s32,s32,s32,s32,s32);
     void MI_CpuFill8(void*,s32,s32);
     s32 IsUnitOnCurrentTeam(s32);
@@ -146,26 +149,30 @@ void func_ov000_021a5bd4(u8 arg0) {
     } while(id<gPlayerUnitIdBase[arg0]+51);
 }
 #pragma opt_strength_reduction reset
-void func_ov000_021a5f50(void) {
+/* Rebuilds the map's score layer from the range fills of every other player's
+ * units, folding each into gAiRangeLayer: clear the score layer, select the
+ * layer the fills work in, mark each other player, then restore the player whose
+ * units are being processed.  The counterpart of BuildIndirectThreatMap. */
+void BuildRangeThreatMap(void) {
     void FillMapLayer(s32);
     void SelectMapLayer(void *);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
-    void func_ov000_021a5bd4(u8);
+    void MarkPlayerRangeThreat(u8);
     extern void **gCurrentMap;
-    u16 saved;
-    s32 i;
-    void *base;
-    base = *gCurrentMap;
-    saved = M2C_FIELD(base, u16 *, 0x52B6);
-    SelectMapLayer(base + 0x2338);
-    FillMapLayer(0x7F);
-    SelectMapLayer(*gCurrentMap + 0x1E30);
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0)
-            func_ov000_021a5bd4(i);
+    u16 savedPlayer;
+    s32 player;
+    void *map;
+    map = *gCurrentMap;
+    savedPlayer = M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER);
+    SelectMapLayer(map + MAP_CELL_SCORE);
+    FillMapLayer(MAP_CELL_UNSET);
+    SelectMapLayer(*gCurrentMap + MAP_CELL_ORDER);
+    for (player = 1; player < 5; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0)
+            MarkPlayerRangeThreat(player);
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 
 s32 FindAiTargetOfType(s32 arg0) {

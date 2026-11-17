@@ -3,7 +3,7 @@
 #include "battle_map.h"
 
 void func_ov003_021e4448(void *arg0){
-M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK CountMapPicks(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
+M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK CountMapPicks(M2C_UNK,M2C_UNK *);M2C_UNK CreateMapTransferPanel(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
 extern M2C_UNK data_ov003_0220f47c;
 struct {void *data;u16 buf0[5];u16 buf1[5];}local;
 u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
@@ -21,7 +21,7 @@ LoadMapRecord(val,(s32)base+i*0x6f8);
 }
 i++;
 }while(i<5);
-func_ov006_0221734c(arg0,M2C_FIELD(arg0,void **,0x68),M2C_FIELD(arg0,void **,0x6c));
+CreateMapTransferPanel(arg0,M2C_FIELD(arg0,void **,0x68),M2C_FIELD(arg0,void **,0x6c));
 }
 
 void func_ov003_021e450c(void) {

@@ -188,7 +188,7 @@ s32 func_020abe28(s32 arg0) {
 void func_020abe3c(u8 arg0,s8 arg1) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
 u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} M2C_FIELD(data_0212735c+a,s8 *,0)=arg1;}
 
-u8 func_020abe90(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 GetScreenFlag(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
 u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,0);}
 
 void func_020abee4(u8 arg0, s8 arg1) {
@@ -230,7 +230,7 @@ void func_020abf94(void) {
  * has fully opened. */
 void UpdateSplitTransition(u16 frame, u16 length) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    void func_020aca8c(s32);
+    void ApplyScreenMode(s32);
     extern s32 gCur3DSpriteEngine;
     s32 hProgress;
     s32 vProgress;
@@ -238,7 +238,7 @@ void UpdateSplitTransition(u16 frame, u16 length) {
     hProgress = EaseInterpolate(EASE_LINEAR, 0, 0x100, frame, length);
     vProgress = EaseInterpolate(EASE_LINEAR, 0, 0xc0, frame, length);
     if (hProgress == 0 || vProgress == 0) {
-        func_020aca8c(2);
+        ApplyScreenMode(2);
         return;
     }
     if (hProgress >= 0x100) {
@@ -446,7 +446,7 @@ void func_020ac5e0(void *arg0) {
 void func_020ac65c(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void UpdateSplitTransition(u16, u16);
-    void func_020ac998(s32);
+    void SetScreenMode(s32);
     void func_01ffa6fc(void *);
     void func_020ac598(s32);
     extern s32 gCur3DSpriteEngine;
@@ -487,7 +487,7 @@ void func_020ac65c(void *arg0) {
             break;
         }
         if (M2C_FIELD(arg0, u16 *, 0x38) >= M2C_FIELD(arg0, u16 *, 0x3a)) {
-            func_020ac998(M2C_FIELD(arg0, s32 *, 0x34) & 0xff);
+            SetScreenMode(M2C_FIELD(arg0, s32 *, 0x34) & 0xff);
             func_01ffa6fc(arg0);
         }
     next:

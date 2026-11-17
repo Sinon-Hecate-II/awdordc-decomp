@@ -16,29 +16,35 @@ s32 host, path;       /* parsed from url */
 s32 unk112c, useTls;  /* useTls: 0 = http, 1 = https */
 u16 port;             /* default 80 (http) or 443 (https) */
 u8 pad1136[0x896];
-s32 unk19cc, unk19d0;
+s32 lowRecvBuf, lowSendBuf;   /* +0x19CC/+0x19D0: low-level receive/send buffers */
 u8 pad19d4[0x24];
-s32 buffer[4];
+s32 buffer[4];                /* +0x19F8: request (send) buffer descriptor */
+Buffer02034164 recvBuffer;    /* +0x1A08: raw response header text */
+u8 pad1a18[0x20];
+Pair02034164 headers[32];     /* +0x1A38: parsed response header name/value pairs */
 } Unk02034164;
 
 void HttpClientTask(void) { return; }
 
-void func_02034480(Unk02034164 *arg0) {
+/* Releases everything HttpClientInit allocated for the client - the parsed
+ * response header pairs, the response and request buffers and the low-level
+ * receive/send buffers - then clears the whole context. */
+void HttpClientCleanup(Unk02034164 *client) {
 M2C_UNK MI_CpuFill8(void *,s32,s32);
-void func_020348c8(void *,s32 *);
-void func_02034fe4(void *,void *,s32);
-extern M2C_UNK data_020fb5d0; extern M2C_UNK data_020fb5e8;
-M2C_UNK (*fn)(M2C_UNK *,s32,s32)=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
-s32 v;
-if(!arg0)return;
-func_02034fe4(arg0,(u8*)arg0 + 0x1a38,32);
-func_020348c8(arg0,(s32*)((u8*)arg0 + 0x1a08));
-func_020348c8(arg0,(s32*)((u8*)(u8*)arg0 + 0x19f8));
-v=arg0->unk19cc;
-if(v){fn(&data_020fb5d0,v,0);arg0->unk19cc=0;}
-v=arg0->unk19d0;
-if(v){fn(&data_020fb5e8,v,0);arg0->unk19d0=0;}
-MI_CpuFill8(arg0,0,0x1c14);
+void HttpBufferFree(void *,s32 *);
+void HttpHeaders_Free(void *,void *,s32);
+extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
+M2C_UNK (*free)(M2C_UNK *,s32,s32)=client->free;
+s32 buf;
+if(!client)return;
+HttpHeaders_Free(client,client->headers,32);
+HttpBufferFree(client,(s32*)&client->recvBuffer);
+HttpBufferFree(client,client->buffer);
+buf=client->lowRecvBuf;
+if(buf){free(gHttpLowRecvBufName,buf,0);client->lowRecvBuf=0;}
+buf=client->lowSendBuf;
+if(buf){free(gHttpLowSendBufName,buf,0);client->lowSendBuf=0;}
+MI_CpuFill8(client,0,0x1c14);
 }
 
 /* Formats the request line and Host header into the request buffer: chooses the
@@ -199,7 +205,7 @@ M2C_FIELD(arg1,s32 *,8)=v;
 return (v!=0);
 }
 
-void func_020348c8(void *arg0,s32 *arg1) {
+void HttpBufferFree(void *arg0,s32 *arg1) {
 M2C_UNK MI_CpuFill8(void *,s32,s32); extern M2C_UNK data_020fb6a4;
 s32 v=*arg1;
 M2C_UNK (*fn)(M2C_UNK *,s32,s32)=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
@@ -323,7 +329,7 @@ c[n]=0;return n;
 #pragma optimize_ifs reset
 s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 FindHttpHeader(void *,s32);s32 StringLength(s32);void StringCopy(void *,s32);s32 p=FindHttpHeader(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;StringCopy(c,p);return 1;}
 
-void func_02034fe4(void *arg0, void *arg1, s32 arg2) {
+void HttpHeaders_Free(void *arg0, void *arg1, s32 arg2) {
 extern M2C_UNK data_020fb77c; extern M2C_UNK data_020fb798;
 M2C_UNK (*fn)(M2C_UNK *,s32,s32)=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
 Pair02034164 *p=arg1;

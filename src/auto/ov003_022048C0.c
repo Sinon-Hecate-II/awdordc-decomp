@@ -1,5 +1,6 @@
 /* 19 functions from 0x022048C0 to 0x022056BC (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
 typedef struct { u8 pad[28]; u32 a:12,b:1,c:3,d:1,e:4,f:7,g:4; u32 h:17,i:14,j:1; } Input048c0;
 static inline void Invoke048c0(void *self,s32 offset){ M2C_FIELD(M2C_FIELD(self,void **,0),void (**)(void *),offset)(self); }
 
@@ -259,35 +260,39 @@ void func_ov003_02205570(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
 }
 
-void func_ov003_02205584(void *arg0) {
+/* Closes an ov003 scene object's display: tweens the two status sprites out (the
+ * upper one to the scene's slide offset, the lower one off the top) and hides the
+ * shared sprite and, when the scene is sliding, every sprite of the parts array. */
+void CloseSceneObjectDisplay(void *entity) {
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s32 GetSceneSlideDirection();
     s16 GetSceneSlideOffset();
-    s16 value;
+    s16 offset;
     u8 i;
-    void *second;
-    void *first;
-    value = GetSceneSlideOffset();
-    first = M2C_FIELD(arg0, void **, 0x3C);
-    M2C_FIELD(first, s16 *, 0xE) = GetSpriteAnimValue(first);
-    M2C_FIELD(first, s16 *, 0x10) = value;
-    M2C_FIELD(first, s16 *, 0xC) = 12;
-    M2C_FIELD(first, u16 *, 2) = M2C_FIELD(first, u16 *, 4);
-    second = M2C_FIELD(arg0, void **, 0x48);
-    M2C_FIELD(second, s16 *, 0xE) = GetSpriteAnimValue(second);
-    M2C_FIELD(second, s16 *, 0x10) = -32;
-    M2C_FIELD(second, s16 *, 0xC) = 12;
-    M2C_FIELD(second, u16 *, 2) = M2C_FIELD(second, u16 *, 4);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
+    void *bottom;
+    void *top;
+
+    offset = GetSceneSlideOffset();
+    top = M2C_FIELD(entity, void **, SCENE_DISPLAY_TWEEN_TOP);
+    M2C_FIELD(top, s16 *, 0xE) = GetSpriteAnimValue(top);
+    M2C_FIELD(top, s16 *, 0x10) = offset;
+    M2C_FIELD(top, s16 *, 0xC) = 12;
+    M2C_FIELD(top, u16 *, 2) = M2C_FIELD(top, u16 *, 4);
+    bottom = M2C_FIELD(entity, void **, SCENE_DISPLAY_TWEEN_BOTTOM);
+    M2C_FIELD(bottom, s16 *, 0xE) = GetSpriteAnimValue(bottom);
+    M2C_FIELD(bottom, s16 *, 0x10) = -32;
+    M2C_FIELD(bottom, s16 *, 0xC) = 12;
+    M2C_FIELD(bottom, u16 *, 2) = M2C_FIELD(bottom, u16 *, 4);
+    Hide3DSpriteSlide(M2C_FIELD(entity, s32 *, SCENE_DISPLAY_SPRITE));
     if (!GetSceneSlideDirection()) return;
-    arg0 = M2C_FIELD(arg0, void **, 0x40);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 4));
+    entity = M2C_FIELD(entity, void **, SCENE_DISPLAY_PARTS);
+    Hide3DSpriteSlide(M2C_FIELD(entity, s32 *, 0));
+    Hide3DSpriteSlide(M2C_FIELD(entity, s32 *, 4));
     i = 0;
     do {
-        Hide3DSpriteSlide(((s32 *)arg0)[i + 2]);
-        Hide3DSpriteSlide(((s32 *)arg0)[i + 10]);
+        Hide3DSpriteSlide(((s32 *)entity)[i + 2]);
+        Hide3DSpriteSlide(((s32 *)entity)[i + 10]);
         i++;
     } while (i < 8U);
 }

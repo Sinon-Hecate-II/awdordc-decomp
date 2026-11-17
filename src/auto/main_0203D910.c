@@ -8,7 +8,7 @@ void func_0203d910(s32 a, s32 b)
     s32 GetConnection(void);
     M2C_UNK func_02040e1c(M2C_UNK);
     s32 StringFormatN(void *, s32, void *, s32);
-    s32 Gt2AddressToString(s32, s32, s32);
+    s32 gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
     void ReportConnectionError(s32, s32);
@@ -73,7 +73,7 @@ void func_0203d910(s32 a, s32 b)
             i = (s32)M2C_FIELD(z, u8 *, 0x14);
             j = (s32)M2C_FIELD(t, u8 *, 0x14);
 
-            r = Gt2AddressToString(
+            r = gt2AddressToString(
                 M2C_FIELD(y + i * 4, s32 *, 0x210),
                 M2C_FIELD(w + j * 2, u16 *, 0x290),
                 0
@@ -204,13 +204,13 @@ void ReportConnectionError(s32 errorCode, s32 errorDetail) {
 }
 
 void func_0203dcf4(void) {
-    M2C_UNK func_0205ea70(s32);
+    M2C_UNK Qr2_StateChanged(s32);
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 2) {
         return;
     }
     M2C_FIELD(GetConnection(), s8 *, 0x14) = 0;
     M2C_FIELD(GetConnection(), s8 *, 0x16) = 0;
-    func_0205ea70(M2C_FIELD(GetConnection(), s32 *, 0x10));
+    Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, 0x10));
 }
 
 /* Receive handler for the connection handshake packets (types 2..4), the

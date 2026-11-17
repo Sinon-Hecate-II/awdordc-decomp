@@ -23,8 +23,8 @@ void OS_SleepThread(s32);
 void DC_FlushRange(s32 *, s32);
 void DC_InvalidateRange(s32 *, s32);
 void func_02006804(void);
-void func_0200758c(s32);
-s32 func_02009e8c(s32, s32);
+void WaitCycles(s32);
+s32 IsFifoMessageReady(s32, s32);
 s32 SendFifoMessage(s32, s32, s32);
 s32 OS_DisableInterrupts(void);
 M2C_UNK OS_RestoreInterrupts(s32);
@@ -35,8 +35,8 @@ s32 savedIrq;
 count = retries;
 if (!(M2C_FIELD(dev, volatile s32 *, 0x114) & 2)) {
 M2C_FIELD(dev, volatile s32 *, 0x114) = M2C_FIELD(dev, volatile s32 *, 0x114) | 2;
-if (func_02009e8c(11, 1) == 0) {
-do { func_0200758c(100); } while (func_02009e8c(11, 1) == 0);
+if (IsFifoMessageReady(11, 1) == 0) {
+do { WaitCycles(100); } while (IsFifoMessageReady(11, 1) == 0);
 }
 func_02010d14(dev, 0, 1);
 }
@@ -60,7 +60,7 @@ if (status == 0) return 1;
 return 0;
 }
 
-void func_02010e68(void) { void func_02009d34(void); void func_02009e40(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; func_02009d34();func_02009e40(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
+void func_02010e68(void) { void func_02009d34(void); void SetFifoMessageHandler(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; func_02009d34();SetFifoMessageHandler(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
 
 void func_02010e94(s32 a,s32 b) { void func_02010ef8(void); void SystemHalt(void); extern M2C_UNK data_02130640; s32 result;
 if((b&63)==17) {if(M2C_FIELD(&data_02130640,s32 *,0))return;result=1;M2C_FIELD(&data_02130640,s32 *,0)=result;
@@ -74,11 +74,11 @@ s32 func_02010ee8(void) {
     return data_02130640;
 }
 
-void func_02010ef8(void) { void func_02007ca4(s32); s32 func_0200e840(void); void func_0200758c(s32); void func_02010fe4(M2C_UNK,M2C_UNK); void SystemHalt(void);
+void func_02010ef8(void) { void func_02007ca4(s32); s32 WakeDisplayWait(void); void WaitCycles(s32); void func_02010fe4(M2C_UNK,M2C_UNK); void SystemHalt(void);
 s32 ok=1; s32 result;
 func_02007ca4(0);func_02007ca4(1);func_02007ca4(2);func_02007ca4(3);
 if((*(u16 *)0x027fffa8 & 0x8000)>>15) {
-result=func_0200e840();while(result==4){func_0200758c(0xa3a47);result=func_0200e840();}
+result=WakeDisplayWait();while(result==4){WaitCycles(0xa3a47);result=WakeDisplayWait();}
 if(result==0)ok=0;
 }
 if(ok)func_02010fe4(1,1);
@@ -120,14 +120,14 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     void func_02009d34();
-    s32 func_02009e8c(s32, s32);
+    s32 IsFifoMessageReady(s32, s32);
     void DC_InvalidateRange();
     void DmaFill();
     void func_020118f4(void);
     void func_020062d4();
     void DC_CleanRange();
     s32 func_020062fc();
-    void func_02009e40();
+    void SetFifoMessageHandler();
     M2C_UNK func_02011548();
     extern M2C_UNK data_02130660;
     extern M2C_UNK data_02130668;
@@ -156,7 +156,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         return 6;
     }
     func_02009d34();
-    if (func_02009e8c(10, 1) == 0) {
+    if (IsFifoMessageReady(10, 1) == 0) {
         OS_RestoreInterrupts(saved);
         return 4;
     }
@@ -183,7 +183,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         DC_CleanRange(buf + j * 256, 2);
         func_020062fc(&data_02130668, buf + j * 256, 1);
     }
-    func_02009e40(10, func_02011548);
+    SetFifoMessageHandler(10, func_02011548);
     M2C_FIELD(&data_02130660, u16 *, 0) = 1;
     OS_RestoreInterrupts(saved);
     return 0;
@@ -194,7 +194,7 @@ s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);s32 WFC_CheckChanne
 s32 saved=OS_DisableInterrupts();s32 result;
 if(WFC_CheckReady()!=0){OS_RestoreInterrupts(saved);return 3;}
 result=WFC_CheckChannelState(1,0);if(result!=0)return result;
-func_020118f4();func_02009e40(10,0);
+func_020118f4();SetFifoMessageHandler(10,0);
 M2C_FIELD(&data_02130660,s32 *,4)=0;M2C_FIELD(&data_02130660,u16 *,0)=0;
 OS_RestoreInterrupts(saved);return 0;
 }

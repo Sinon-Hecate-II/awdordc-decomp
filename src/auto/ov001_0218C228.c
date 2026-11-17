@@ -69,7 +69,11 @@ for(i=0;i<n;i++) if(!p[i]) break;
 return i;
 }
 
-void func_ov001_0218c40c(void) {
+/* VRAM init pass 1: release the bank grant every VRAM allocator is holding and
+ * remember the banks each one gave back in gVramBankGrants, which the second
+ * init pass hands to the matching allocator again.  Then assign the main
+ * background banks and clear VRAM for the new display setup. */
+void GxReleaseAllBankGrants(void) {
 M2C_UNK func_02003538(void);
 M2C_UNK func_0200354c(void);
 M2C_UNK func_02003560(void);
@@ -83,39 +87,39 @@ M2C_UNK func_02003634(void);
 M2C_UNK func_0200365c(void);
 M2C_UNK func_020035e4(void);
 M2C_UNK func_020035f8(void);
-void func_02003058(s32);
+void GX_SetBankForObjCD(s32);
 void func_ov001_0218c5b8();
-extern s32 data_ov001_02193e70[];
-data_ov001_02193e70[0]=func_02003538();
-data_ov001_02193e70[1]=func_0200354c();
-data_ov001_02193e70[2]=func_02003560();
-data_ov001_02193e70[3]=func_02003584();
-data_ov001_02193e70[4]=func_020035a8();
-data_ov001_02193e70[5]=func_020035bc();
-data_ov001_02193e70[6]=func_020035d0();
-data_ov001_02193e70[7]=func_0200360c();
-data_ov001_02193e70[8]=func_02003620();
-data_ov001_02193e70[9]=func_02003634();
-data_ov001_02193e70[10]=func_0200365c();
-data_ov001_02193e70[11]=func_020035e4();
-data_ov001_02193e70[12]=func_020035f8();
-func_02003058(data_ov001_02193e70[11]);
+extern s32 gVramBankGrants[];
+gVramBankGrants[0]=func_02003538();
+gVramBankGrants[1]=func_0200354c();
+gVramBankGrants[2]=func_02003560();
+gVramBankGrants[3]=func_02003584();
+gVramBankGrants[4]=func_020035a8();
+gVramBankGrants[5]=func_020035bc();
+gVramBankGrants[6]=func_020035d0();
+gVramBankGrants[7]=func_0200360c();
+gVramBankGrants[8]=func_02003620();
+gVramBankGrants[9]=func_02003634();
+gVramBankGrants[10]=func_0200365c();
+gVramBankGrants[11]=func_020035e4();
+gVramBankGrants[12]=func_020035f8();
+GX_SetBankForObjCD(gVramBankGrants[11]);
 func_ov001_0218c5b8();
 return;
 }
 
-/* System init pass 2: invoke NitroSDK startup hooks from data_ov001_02193e70,
+/* System init pass 2: invoke NitroSDK startup hooks from gVramBankGrants,
    plus a timing/sync hook, then clear VCOUNT/IRQ mask regs before enabling
-   something via func_0200ec24(1). */
+   something via SetLcdEnabled(1). */
 #pragma opt_global_reg_alloc off
 void func_ov001_0218c4c0(void) {
-    extern s32 data_ov001_02193e70[];
+    extern s32 gVramBankGrants[];
     s32 func_02003538(void);
     s32 func_0200354c(void);
     s32 func_0200360c(void);
     s32 func_02003620(void);
     void func_ov001_0218c5b8(void);
-    void func_0200ec24(s32);
+    void SetLcdEnabled(s32);
     void GX_SetBankForBG(s32);
     void GX_SetBankForOBJ(s32);
     void func_02002ab8(s32);
@@ -134,18 +138,18 @@ void func_ov001_0218c4c0(void) {
     func_0200360c();
     func_02003620();
     func_ov001_0218c5b8();
-    GX_SetBankForBG(data_ov001_02193e70[0]);
-    GX_SetBankForOBJ(data_ov001_02193e70[1]);
-    func_02002ab8(data_ov001_02193e70[2]);
-    func_02002bb8(data_ov001_02193e70[3]);
-    GX_SetBankForTex(data_ov001_02193e70[4]);
-    GX_SetBankForOBJExtPltt(data_ov001_02193e70[5]);
-    GX_SetBankForTexExtPltt(data_ov001_02193e70[6]);
-    func_02003124(data_ov001_02193e70[7]);
-    func_020031cc(data_ov001_02193e70[8]);
-    func_0200323c(data_ov001_02193e70[9]);
-    func_020032bc(data_ov001_02193e70[10]);
-    func_02003104(data_ov001_02193e70[12]);
+    GX_SetBankForBG(gVramBankGrants[0]);
+    GX_SetBankForOBJ(gVramBankGrants[1]);
+    func_02002ab8(gVramBankGrants[2]);
+    func_02002bb8(gVramBankGrants[3]);
+    GX_SetBankForTex(gVramBankGrants[4]);
+    GX_SetBankForOBJExtPltt(gVramBankGrants[5]);
+    GX_SetBankForTexExtPltt(gVramBankGrants[6]);
+    func_02003124(gVramBankGrants[7]);
+    func_020031cc(gVramBankGrants[8]);
+    func_0200323c(gVramBankGrants[9]);
+    func_020032bc(gVramBankGrants[10]);
+    func_02003104(gVramBankGrants[12]);
     *(volatile u16 *)0x4000050 = 0;
     *(volatile u16 *)0x4001050 = 0;
     *(volatile u32 *)0x4000010 = 0;
@@ -156,7 +160,7 @@ void func_ov001_0218c4c0(void) {
     *(volatile u32 *)0x4001014 = 0;
     *(volatile u32 *)0x4001018 = 0;
     *(volatile u32 *)0x400101c = 0;
-    func_0200ec24(1);
+    SetLcdEnabled(1);
 }
 #pragma opt_global_reg_alloc reset
 void func_ov001_0218c5b8(void) {
@@ -225,7 +229,7 @@ void Ov001_InitTasks(void) {
 }
 
 void func_ov001_0218c78c(void) {
-void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); extern s32 gOv001Tasks; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } Ov001_FreeAlloc(data_ov001_02193e70+13); }
+void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); extern s32 gOv001Tasks; extern s32 gVramBankGrants[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } Ov001_FreeAlloc(gVramBankGrants+13); }
 
 void func_ov001_0218c7d4(s32 n) {
 s32 Ov001_QueuePop(s32);

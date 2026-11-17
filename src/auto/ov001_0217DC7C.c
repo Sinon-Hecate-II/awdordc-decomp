@@ -14,7 +14,7 @@ void MapListHandleState(void) {
  s32 func_020020c4(u16,s32);
  void Ov001_FreeSpriteObjects(void);
  void MapListRedrawInfoPanel(void);
- void func_ov001_0217f110(void);
+ void MapList_UpdateStateFromRow(void);
  M2C_UNK Ov001_PlaySound(s32);
  s32 Ov001_AddTask(s32,s32,s32,s32);
  s32 remainder;
@@ -32,7 +32,7 @@ void MapListHandleState(void) {
  M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
  Ov001_PlaySound(19);MapListRedrawInfoPanel();
  remainder=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29);
- if(remainder==0){func_ov001_0217f110();return;}
+ if(remainder==0){MapList_UpdateStateFromRow();return;}
  if(remainder<16){M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollUp,0,120);return;}
  M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollDown,0,120);return;
  case 4:

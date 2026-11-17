@@ -78,7 +78,7 @@ void func_02096dbc(void) {
 void EnableSpriteLayers(void) {
     void func_02096d5c(void);
     void func_02096d0c(void);
-    M2C_UNK func_020aca8c(M2C_UNK);
+    M2C_UNK ApplyScreenMode(M2C_UNK);
     M2C_UNK func_01ff9e00(void);
     s32 func_02091e14(void);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
@@ -99,7 +99,7 @@ void EnableSpriteLayers(void) {
             layer2 = *(u16 **)gCur3DSpriteEngine; *layer2 = *layer2 | 0x40;
             layer3 = *(u16 **)gCur3DSpriteEngine; *layer3 = *layer3 | 0x80;
             layer4 = *(u16 **)gCur3DSpriteEngine; *layer4 = *layer4 | 0x100;
-            func_020aca8c(3);
+            ApplyScreenMode(3);
             func_01ff9e00();
         }
         engineIndex++;
@@ -114,7 +114,7 @@ void DisableSpriteLayers(void) {
 M2C_UNK Set3DSpriteVramBanks();
 M2C_UNK Apply3DSpriteDisplayConfig();
 s32 func_02091e14();
-M2C_UNK func_020aca8c(M2C_UNK);
+M2C_UNK ApplyScreenMode(M2C_UNK);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 u16 *volatile layer0;u16 *volatile layer1;u16 *volatile layer2;u16 *volatile layer3;u16 *volatile layer4;
 void *savedEngine; s32 engineIndex;
@@ -130,37 +130,39 @@ layer1=*(u16 **)gCur3DSpriteEngine;*layer1=*layer1&~DS3D_BANK_MODE1;
 layer2=*(u16 **)gCur3DSpriteEngine;*layer2=*layer2&~DS3D_BANK_MODE2;
 layer3=*(u16 **)gCur3DSpriteEngine;*layer3=*layer3&~DS3D_BANK_MODE3;
 layer4=*(u16 **)gCur3DSpriteEngine;*layer4=*layer4&~DS3D_BANK_MODE4;
-func_020aca8c(3);
+ApplyScreenMode(3);
 }
 ++engineIndex;
 }while(engineIndex<2);
 gCur3DSpriteEngine=savedEngine;
 }
 
-void func_0209707c(void) {
+/* Marks sprite layer 1 dirty on each 3D-sprite engine the screen target selects
+   (main, sub or the engine that was current), so the layer's tiles are rebuilt. */
+void MarkSpriteLayer1Dirty(void) {
     s32 Get3DSpriteTarget();
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    s32 var_r5;
-    void *var_r0;
+    void *savedEngine;
+    s32 engineIndex;
+    void *engine;
 
-    temp_r4 = gCur3DSpriteEngine;
-    var_r5 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    engineIndex = 0;
     do {
-        if (var_r5 == 0) {
-            var_r0 = g3DSpriteEngineMain;
+        if (engineIndex == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r0 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r0;
-        if (((Get3DSpriteTarget() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((Get3DSpriteTarget() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == temp_r4))) {
-            M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+        gCur3DSpriteEngine = engine;
+        if (((Get3DSpriteTarget() != DS3D_TARGET_MAIN) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((Get3DSpriteTarget() != DS3D_TARGET_SUB) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((Get3DSpriteTarget() != DS3D_TARGET_ACTIVE) || (gCur3DSpriteEngine == savedEngine))) {
+            M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
         }
-        var_r5 += 1;
-    } while (var_r5 < 2);
-    gCur3DSpriteEngine = temp_r4;
+        engineIndex += 1;
+    } while (engineIndex < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_02097128(s8 arg0) {
@@ -181,9 +183,9 @@ void func_02097164(s32 a,s8 b) { s32 *GetScenePanelState(); M2C_FIELD(GetScenePa
 
 void func_02097178(s32 a,s32 b) { s32 *GetScenePanelState(); s32 p; M2C_FIELD(GetScenePanelState(),u8 *,7)=b; p=FindScenePanel((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
 
-void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)SetFaceSpriteFace(r,0);else SetFaceSpriteFace(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
+void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)SetFaceSpriteFace(r,0);else SetFaceSpriteFace(r,M2C_FIELD(q,u8 *,0x58));UpdateScenePanelPalette(p); }
 
-void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);SetFaceSpriteFace(r,b);func_0209e320(p); }
+void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);SetFaceSpriteFace(r,b);UpdateScenePanelPalette(p); }
 
 /* ShowPanelFace: shows face slot faceIndex (0 or 1) of the scene panel — the
    slot's 3D sprite slides in from the side over eight frames, or snaps when the
@@ -193,7 +195,7 @@ void ShowPanelFace(s32 faceIndex) {
     M2C_UNK Show3DSpriteFade(void *, s32);
     M2C_UNK Show3DSprite(s32);
     M2C_UNK Slide3DSpriteIn(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_020abe90(u8);
+    s32 GetScreenFlag(u8);
     void *panel;
     void *face;
     s32 slideFrames;
@@ -206,7 +208,7 @@ void ShowPanelFace(s32 faceIndex) {
     face = Get3DSpriteChild(panel, faceIndex);
     slideFrames = 8;
     child = M2C_FIELD(face, s32 *, FACE_SPRITE_CHILD);
-    if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+    if (GetScreenFlag((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
         slideFrames = 0;
     }
     switch (faceIndex) {                                 /* irregular */
@@ -220,7 +222,7 @@ void ShowPanelFace(s32 faceIndex) {
         break;
     }
     Show3DSprite(child);
-    func_0209e320(panel);
+    UpdateScenePanelPalette(panel);
 }
 
 /* HidePanelFace: hides face slot faceIndex (0 or 1) of the scene panel — the
@@ -230,7 +232,7 @@ void HidePanelFace(s32 faceIndex) {
     M2C_UNK Slide3DSpriteOut(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK Hide3DSpriteFade(void *, s32);
-    s32 func_020abe90(u8);
+    s32 GetScreenFlag(u8);
     void *panel;
     register void *face;
     long slideFrames;
@@ -243,7 +245,7 @@ void HidePanelFace(s32 faceIndex) {
     face = Get3DSpriteChild(panel, faceIndex);
     slideFrames = 8;
     child = M2C_FIELD(face, s32 *, FACE_SPRITE_CHILD);
-    if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+    if (GetScreenFlag((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
         slideFrames = 0;
     }
     switch (faceIndex) {                                 /* irregular */
@@ -257,7 +259,7 @@ void HidePanelFace(s32 faceIndex) {
         break;
     }
     Hide3DSprite(child);
-    func_0209e320(panel);
+    UpdateScenePanelPalette(panel);
 }
 
 void func_02097410(void) {
@@ -282,7 +284,7 @@ void func_0209747c(M2C_UNK arg0, s32 arg1) {
     } else {
         SetFaceSpriteFace(temp_r0_3, M2C_FIELD(temp_r0_2, u8 *, 0x58));
     }
-    func_0209e320(temp_r0);
+    UpdateScenePanelPalette(temp_r0);
 }
 
 /* Builds the 3D sprite cells for the current sprite mode on both screens:
@@ -404,7 +406,7 @@ void func_02097768(void) {
 /* Slide a hidden scene panel into its screen band and select it if no panel is active. */
 s32 ShowScenePanel(s32 panelIndex) {
     s32 Is3DSpriteVisible(void);
-    s32 func_020abe90(u8);
+    s32 GetScreenFlag(u8);
     M2C_UNK Slide3DSpriteIn(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK FindScenePanel(M2C_UNK);
     void ReloadScenePanelGraphics(void *);
@@ -421,7 +423,7 @@ s32 ShowScenePanel(s32 panelIndex) {
     if (panel != NULL && Is3DSpriteVisible() == 0) {
         ReloadScenePanelGraphics(panel);
         slideFrames = 8;
-        if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+        if (GetScreenFlag((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
             slideFrames = 0;
         }
         switch (panelIndex) {
@@ -451,7 +453,7 @@ s32 ShowScenePanel(s32 panelIndex) {
  * visible 3D sprite; returns 0 when the panel is closed or already moving out. */
 s32 HideScenePanel(s32 panelIndex) {
     s32 Is3DSpriteVisible(void);
-    s32 func_020abe90(u8);
+    s32 GetScreenFlag(u8);
     M2C_UNK Slide3DSpriteOut(void *, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void ClearScenePanelRows(s32);
     void *panel;
@@ -460,7 +462,7 @@ s32 HideScenePanel(s32 panelIndex) {
     panel = (void *) FindScenePanel((u16) panelIndex);
     if (panel != NULL && Is3DSpriteVisible() != 0) {
         slideFrames = 8;
-        if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+        if (GetScreenFlag((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
             slideFrames = 0;
         }
         switch (panelIndex) {
@@ -497,7 +499,7 @@ s32 HideAllScenePanels(void) {
     return var_r4;
 }
 
-s32 func_020979a4(s32 a) { s32 *GetScenePanelState();s32 i,q,p,b;for(i=0;i<3;i++){q=GetScenePanelState(i);p=FindScenePanel((u16)i);if(p){b=0;if(i==a)b=1;func_02091d6c(M2C_FIELD(q,u8 *,6),b);func_0209e26c(p,b);func_0209e320(p);}}SetMenuCursor(a);func_02094ba0(a);func_0209707c();return 1;}
+s32 func_020979a4(s32 a) { s32 *GetScenePanelState();s32 i,q,p,b;for(i=0;i<3;i++){q=GetScenePanelState(i);p=FindScenePanel((u16)i);if(p){b=0;if(i==a)b=1;func_02091d6c(M2C_FIELD(q,u8 *,6),b);func_0209e26c(p,b);UpdateScenePanelPalette(p);}}SetMenuCursor(a);func_02094ba0(a);MarkSpriteLayer1Dirty();return 1;}
 
 void func_02097a2c(s32 arg0) {
     s32 Get3DSpriteCount();
@@ -525,7 +527,7 @@ void func_02097a2c(s32 arg0) {
         RefreshFaceSprite(temp_r0_2);
         var_r6++;
     } while (2 > var_r6);
-    func_0209e320(temp_r0);
+    UpdateScenePanelPalette(temp_r0);
 }
 
 void func_02097aa8(void) {

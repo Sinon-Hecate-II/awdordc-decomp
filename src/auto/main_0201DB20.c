@@ -88,14 +88,14 @@ void func_0201dc28(void) {
 void func_0201dc68(void) {
     extern M2C_UNK gNetStack;
     void SendArpRequest(s32);
-    void func_02006030(s32);
+    void SleepMilliseconds(s32);
     u64 GetSystemTick(void);
     void func_0201a134(s32);
     s32 start;
     M2C_FIELD(&gNetStack, void (**)(void), 0x18)();
     if (!M2C_FIELD(&gNetStack, s32 *, 0x50)) return;
     SendArpRequest(M2C_FIELD(&gNetStack, s32 *, 0x50));
-    func_02006030(100);
+    SleepMilliseconds(100);
     SendArpRequest(M2C_FIELD(&gNetStack, s32 *, 0x50));
     start = (u32)(GetSystemTick() >> 16);
     goto check;
@@ -105,7 +105,7 @@ void func_0201dc68(void) {
             func_0201a134(4);
             return;
         }
-        func_02006030(100);
+        SleepMilliseconds(100);
     }
     check:
     if (!M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)()) return;
@@ -122,13 +122,13 @@ void func_0201dd08(void) {
     extern u8 gArpCache[];
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     u64 GetSystemTick(void);
-    void func_02006030(s32);
+    void SleepMilliseconds(s32);
     void func_0201dc68(void);
     s32 func_0201e754(void);
     s32 func_0201e7ac(u32 *, s32);
     void func_0201a134(s32);
-    void func_0201d138(void *);
-    void func_0201d14c(void);
+    void SetCurrentRawConnection(void *);
+    void ClearCurrentRawConnection(void);
     void SendArpRequest(s32);
     void func_020251b8(u32);
     void func_0201e8a8(void);
@@ -146,13 +146,13 @@ void func_0201dd08(void) {
     M2C_FIELD(&gNetStack, void **, 0x120) = data_0213793c;
     M2C_FIELD(&gNetStack, s32 *, 0x128) = 0x180;
     M2C_FIELD(&gNetStack, void **, 0x12c) = data_021377bc;
-    func_0201d138(data_02137370);
+    SetCurrentRawConnection(data_02137370);
     count = 1;
     flag = 1;
     wait = M2C_FIELD(&gNetStack, s32 *, 0xc) = 1;
     state = 0;
     for (;;) {
-        func_02006030(0x3e8);
+        SleepMilliseconds(0x3e8);
         if (M2C_FIELD(&gNetStack, u32 *, 0x44) != 0) break;
         tick = (u32)(GetSystemTick() >> 16);
         if (M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)() != 0) {
@@ -266,7 +266,7 @@ void func_0201dd08(void) {
         }
     }
     if (!(M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) && state != 3) func_0201e8a8();
-    func_0201d14c();
+    ClearCurrentRawConnection();
 }
 
 #pragma opt_common_subs off

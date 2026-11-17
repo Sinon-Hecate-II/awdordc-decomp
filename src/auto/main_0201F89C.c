@@ -323,7 +323,7 @@ func_0201f318(arg0,p);
 
 s32 func_02020038(void *arg0) {
     void *func_0201d618(u32 *);
-    M2C_UNK func_02006030(s32);
+    M2C_UNK SleepMilliseconds(s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 func_0201fe70(void *, M2C_UNK, s32, u16 *, s32 *);
     void func_0201d70c(s32);
@@ -359,7 +359,7 @@ loop_1:
         if ((var_r1 != 0) && (M2C_FIELD((u32)temp_r7, u8 *, 8) != 4)) {
             var_r0 = 0;
         } else {
-            func_02006030(0xA);
+            SleepMilliseconds(0xA);
             goto loop_1;
         }
     }

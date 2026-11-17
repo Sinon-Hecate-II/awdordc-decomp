@@ -451,7 +451,7 @@ s8 func_ov001_02186648(void) {
     return M2C_FIELD(gOv001RegionMenu, s8 *, 0x1B);
 }
 
-s32 func_ov001_0218665c(void) {
+s32 Ov001_IsRegionMenuActive(void) {
     extern void *gOv001RegionMenu;
     if (gOv001RegionMenu != 0) {
         return 1;

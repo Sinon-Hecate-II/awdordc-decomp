@@ -243,8 +243,8 @@ void HandleIntroInput(void *entry) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020ac998(s32);
-    M2C_UNK func_020aca8c(s32);
+    M2C_UNK SetScreenMode(s32);
+    M2C_UNK ApplyScreenMode(s32);
     extern u16 *gKeyState;
     extern void *gTouchState;
     extern s32 g3DSpriteEngineSub;
@@ -283,7 +283,7 @@ void HandleIntroInput(void *entry) {
                 chosenContext = g3DSpriteEngineSub;
             }
             gCur3DSpriteEngine = chosenContext;
-            func_020ac998(0);
+            SetScreenMode(0);
             screenIndex += 1;
         } while (screenIndex < 2);
         gCur3DSpriteEngine = savedContext;
@@ -301,7 +301,7 @@ void HandleIntroInput(void *entry) {
                 chosenContext2 = g3DSpriteEngineSub;
             }
             gCur3DSpriteEngine = chosenContext2;
-            func_020aca8c(0);
+            ApplyScreenMode(0);
             screenIndex2 += 1;
         } while (screenIndex2 < 2);
         gCur3DSpriteEngine = savedContext2;

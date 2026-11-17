@@ -154,8 +154,8 @@ void func_ov001_021771a4(void) {
 }
 
 void func_ov001_021771f4(void) {
-    s32 func_ov001_0218665c();
-    if (func_ov001_0218665c() != 0) {
+    s32 Ov001_IsRegionMenuActive();
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177068);
@@ -164,11 +164,11 @@ void func_ov001_021771f4(void) {
 void func_ov001_02177214(void) {
     M2C_UNK func_ov001_02171e58(M2C_UNK);
     void func_ov001_02177238(void);
-    M2C_UNK func_ov001_02184cac();
+    M2C_UNK ResetSaveSlotsWithWfcProfile();
     extern M2C_UNK func_ov001_021772b8;
     func_ov001_02177238();
     func_ov001_02171e58(0x19);
-    func_ov001_02184cac();
+    ResetSaveSlotsWithWfcProfile();
     Ov001_SetStepCallback(&func_ov001_021772b8);
 }
 
@@ -259,8 +259,8 @@ void func_ov001_021773c0(void) {
 }
 
 void func_ov001_0217740c(void) {
-    M2C_UNK func_0200758c(M2C_UNK);
-    M2C_UNK func_0200e840();
+    M2C_UNK WaitCycles(M2C_UNK);
+    M2C_UNK WakeDisplayWait();
     s32 Ov001_IsFadeActive(M2C_UNK);
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -268,8 +268,8 @@ void func_ov001_0217740c(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_0200758c(0x01000000);
-    func_0200e840();
+    WaitCycles(0x01000000);
+    WakeDisplayWait();
 }
 
 void Ov001_OpenMacAddressScreen(void) {

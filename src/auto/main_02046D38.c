@@ -7,7 +7,7 @@ typedef struct { u32 lo, hi; } Unk046Pair;
 typedef struct { Unk046Pair a, b; s32 flag; } Unk046State;
 void GetWfcProfile(void *);
 s32 func_02045d94(void *, s32);
-s32 func_02046ebc(void *);
+s32 BuildWfcProfile(void *);
 
 /* Encode a WFC profile code: pack the 16-bit seed, the 24-bit MAC address and
    the flag bits together, then obfuscate the bytes with a fixed XOR, a nibble
@@ -32,7 +32,7 @@ return code.value;
 }
 
 #pragma opt_common_subs on
-s32 func_02046ebc(void *arg0) {
+s32 BuildWfcProfile(void *arg0) {
 void GetWfcProfile(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void GetMacAddress(void *);u64 GetSystemTick(void);
 u8 *p=arg0;u8 sp[0x24];long long diff;long long seed;u32 state;u8 flag;u32 mac;
 GetWfcProfile(p);func_0200ee70();
@@ -63,7 +63,7 @@ while(*(u64 *)(p+8)==0){
 }
 return 1;
 }
-s32 func_02047098(s32 arg0) { Unk046State s; if (func_02046ebc(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
+s32 func_02047098(s32 arg0) { Unk046State s; if (BuildWfcProfile(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
 
 s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }
 

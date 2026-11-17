@@ -7,11 +7,15 @@
 #define QR2_QUERY_SIZE   0x800 /* bytes of key/value text in the query buffer */
 #define QR2_QUERY_COUNT  0x800 /* s32 length written at the end of the buffer */
 
+/* Replies from the master are received into a 256-byte buffer: at most 255
+ * datagram bytes so that the last byte can always be the terminating NUL. */
+#define QR2_RECV_MAX     255
+
 /* Fields of the QR2 connection record. */
 #define QR2_SOCKET        0x00  /* s32 UDP socket */
 #define QR2_GAMENAME      0x04  /* char[] game name reported to the master */
 #define QR2_LOCAL_IP      0x84  /* u8[4] local IPv4 address */
-#define QR2_PUBLIC_VALID  0xA8  /* s32 public address/port are known */
+#define QR2_CB_PUBLIC_ADDRESS 0xA8 /* void (*)(u32 ip, u16 port, void *ctx): set to be told the public address the master sees (also makes the state report carry it) */
 #define QR2_LAST_SENT     0xAC  /* s32 tick of the last state query */
 #define QR2_LAST_POLL     0xB0  /* s32 tick of the last keep-alive */
 #define QR2_STATE_DIRTY   0xB4  /* s32 state changed since the last update */

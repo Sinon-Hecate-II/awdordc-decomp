@@ -224,7 +224,7 @@ default:SystemHalt();return;
 }
 #pragma pop
 void func_0200d544(void) {
-void func_02009d34(void); s32 func_02009e8c(s32,s32); void func_02009e40(s32,void *);
+void func_02009d34(void); s32 IsFifoMessageReady(s32,s32); void SetFifoMessageHandler(s32,void *);
 if(M2C_FIELD(&gTouchDriverState,u16 *,0)) return;
 M2C_FIELD(&gTouchDriverState,u16 *,0)=1;
 func_02009d34();
@@ -235,8 +235,8 @@ M2C_FIELD(&gTouchDriverState,u16 *,0x36)=0;
 M2C_FIELD(&gTouchDriverState,u16 *,0x34)=0;
 M2C_FIELD(&gTouchDriverState,u16 *,0x3a)=0;
 M2C_FIELD(&gTouchDriverState,u16 *,0x38)=0;
-while(!func_02009e8c(6,1)) {}
-func_02009e40(6,&func_0200d2c4);
+while(!IsFifoMessageReady(6,1)) {}
+SetFifoMessageHandler(6,&func_0200d2c4);
 }
 
 #pragma opt_propagation off

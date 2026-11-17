@@ -364,7 +364,7 @@ void BeginAiTurn(void) {
     void UpdateAiCapabilityFlags(void);
     void func_ov000_0219a370(void);
     void MarkAiTargetAreas(void);
-    void func_ov000_0219a618(void);
+    void ClearAiUnitActions(void);
     void func_ov000_0219a6c8(void);
     void func_ov000_0219a584(void);
     void Ov000_AssignAiOrders(void);
@@ -396,7 +396,7 @@ void BeginAiTurn(void) {
     UpdateAiCapabilityFlags();
     func_ov000_0219a370();
     MarkAiTargetAreas();
-    func_ov000_0219a618();
+    ClearAiUnitActions();
     func_ov000_0219a6c8();
     func_ov000_0219a584();
     Ov000_AssignAiOrders();

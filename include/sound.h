@@ -130,6 +130,46 @@ typedef struct PackedBankEntry {
     u16 unk_0A;
 } PackedBankEntry;
 
+/* The sound driver's own voice pool and channel tables (separate from the
+ * sound player object above).
+ *
+ * A linked list is a 12-byte header; every node carries a {prev, next} pair at
+ * a fixed offset from the node's start (ListInit/ListAppend/ListRemove take
+ * the header and compute the links from that offset). */
+#define SOUND_LIST_COUNT       0x08 /* u16 nodes in the list */
+#define SOUND_LIST_NODE_OFFSET 0x0A /* u16 offset of the links inside a node */
+
+/* One voice of gVoicePool (16 voices, 0x44 bytes each).  gActiveVoices and
+ * gFreeVoices both link the voices at SOUND_VOICE_LINKS; a playing voice is
+ * also linked into its channel's list at SOUND_CHANNEL_VOICE_LINKS. */
+#define SOUND_VOICE_SIZE     0x44
+#define SOUND_VOICE_LINKS    0x14 /* the {prev, next} pair of the voice lists */
+#define SOUND_VOICE_STATE    0x2C /* u8 0 = free, 1 = keyed on, 2 = playing */
+#define SOUND_VOICE_CHANNEL  0x3C /* u8 hardware channel the voice plays on */
+#define SOUND_VOICE_COUNT    16
+
+/* One channel of gSoundChannels (32 channels, 0x24 bytes each): the voices and
+ * the sequences playing through it, its voice limit and its volume. */
+#define SOUND_CHANNEL_SIZE        0x24
+#define SOUND_CHANNEL_VOICE_LIST  0x00 /* list of voices, links at voice+0xC */
+#define SOUND_CHANNEL_VOICE_LINKS 0x0C
+#define SOUND_CHANNEL_SEQ_LIST    0x0C /* list of sequences, links at their +0 */
+#define SOUND_CHANNEL_VOICE_LIMIT 0x18 /* u32 voices the channel accepts */
+#define SOUND_CHANNEL_UNK_1C      0x1C /* u32 cleared at start-up */
+#define SOUND_CHANNEL_VOLUME      0x20 /* u8 volume, 0..SOUND_VOLUME_MAX */
+#define SOUND_CHANNEL_COUNT       32
+
+#define SOUND_VOLUME_MAX 0x7F /* full volume, in the 0..0x7F range */
+
+/* Per-hardware-channel state (gSoundChannelSampleState), two s32 words per channel,
+ * indexed by the note id the player lists at SOUND_PLAYER_NOTES: the sample
+ * address the channel's current segment starts at and the timer period it is
+ * played with.  The sound player fills it when a voice starts and reads it back
+ * for every segment. */
+#define SOUND_CHANNEL_STATE_STRIDE  8 /* bytes per channel: SOUND_CHANNEL_SAMPLE_ADDR + one word */
+#define SOUND_CHANNEL_SAMPLE_ADDR   0 /* s32 address of the channel's current sample */
+#define SOUND_CHANNEL_TIMER_PERIOD  4 /* s32 timer period the channel plays at */
+
 /* Menu sounds handed to PlaySoundEffect. */
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
 #define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */

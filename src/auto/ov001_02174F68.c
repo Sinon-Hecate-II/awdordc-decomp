@@ -1,5 +1,6 @@
 /* 35 functions from 0x02174F68 to 0x02175F60 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_keypad.h"
 typedef struct { u8 v[5]; } Counts4F68;
 extern u8 gKeypadLayout[];
 extern u16 gKeypadDigitRects[], gKeypadAuxRects[], gKeypadActionRects[];
@@ -84,28 +85,34 @@ void Ov001KeypadCommitKey(void) {
     Ov001_MoveSpriteLayout(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, data_ov001_0218f66a[temp_ip], data_ov001_0218f66c[temp_ip]);
 }
 
-void func_ov001_0217531c(s32 arg0) {
+/* Move the keypad selection one step in `direction` (one of OV001_DIR_*).
+ * gKeypadNeighborTable maps [currentKey][direction] to the key to select; its
+ * KEYPAD_NAV_WRAP_* markers mean the d-pad left the grid vertically and the
+ * column remembered in KEYPAD_NAV_KEY picks the key to land on.  Entering the
+ * confirm key from above or below remembers that column. */
+void Ov001KeypadMoveSelection(s32 direction) {
+    void Ov001KeypadCommitKey(void);
     void Ov001_PlaySound(s32);
-    extern s8 data_ov001_0218f6a2[][4];
+    extern s8 gKeypadNeighborTable[][4];
     extern void *gOv001Keypad;
-    s8 old;
-    s8 current;
-    old = M2C_FIELD(gOv001Keypad, s8 *, 0x63);
-    M2C_FIELD(gOv001Keypad, s8 *, 0x63) = data_ov001_0218f6a2[old][arg0];
-    current = M2C_FIELD(gOv001Keypad, s8 *, 0x63);
-    if (current == 13 && (arg0 == 1 || arg0 == 3)) {
-        M2C_FIELD(gOv001Keypad, s8 *, 0x64) = old;
-    } else if (current == -1) {
-        if (M2C_FIELD(gOv001Keypad, s8 *, 0x64) == 1 || M2C_FIELD(gOv001Keypad, s8 *, 0x64) == 10)
-            M2C_FIELD(gOv001Keypad, s8 *, 0x63) = 10;
-        else M2C_FIELD(gOv001Keypad, s8 *, 0x63) = 11;
-    } else if (current == -2) {
-        if (M2C_FIELD(gOv001Keypad, s8 *, 0x64) == 1 || M2C_FIELD(gOv001Keypad, s8 *, 0x64) == 10)
-            M2C_FIELD(gOv001Keypad, s8 *, 0x63) = 1;
-        else M2C_FIELD(gOv001Keypad, s8 *, 0x63) = 2;
+    s8 previousKey;
+    s8 newKey;
+    previousKey = M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY);
+    M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = gKeypadNeighborTable[previousKey][direction];
+    newKey = M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY);
+    if (newKey == KEYPAD_CONFIRM && (direction == OV001_DIR_UP || direction == OV001_DIR_DOWN)) {
+        M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_NAV_KEY) = previousKey;
+    } else if (newKey == KEYPAD_NAV_WRAP_UP) {
+        if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_NAV_KEY) == 1 || M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_NAV_KEY) == KEYPAD_DELETE)
+            M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = KEYPAD_DELETE;
+        else M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = KEYPAD_NEXT;
+    } else if (newKey == KEYPAD_NAV_WRAP_DOWN) {
+        if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_NAV_KEY) == 1 || M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_NAV_KEY) == KEYPAD_DELETE)
+            M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = 1;
+        else M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = 2;
     }
     Ov001KeypadCommitKey();
-    Ov001_PlaySound(8);
+    Ov001_PlaySound(8); /* cursor-move blip */
 }
 
 #pragma scheduling off

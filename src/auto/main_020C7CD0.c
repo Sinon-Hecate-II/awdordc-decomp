@@ -125,18 +125,37 @@ s32 IsCampaignMapRecordPlayable(s32 a) {
  return 1;
 }
 
-u8 IsCampaignMapAvailable(s32 a) {
- s32 IsLocalCampaignMapRecord(s32); s32 func_02086960(s32);
- s32 p;
- if(a<0xE1||a>=0x1A9)return 0;
- if(!IsCampaignMapRecordValid(a))return 0;
- if(!IsCampaignMapRecordPlayable(a))return 0;
- if(!IsLocalCampaignMapRecord(a))return 0;
- if(!func_02086960(a))return 0;
- p=GetMapRecord(a);
- if(M2C_FIELD(p,u8 *,4)>10)return 0;
- if(M2C_FIELD(p,u8 *,5)>10)return 0;
- return M2C_FIELD(p,u8 *,0x2F)<=50;
+/* Whether a campaign map record may be shared: it must be a valid, playable,
+ * locally saved record of a map the player has cleared, no larger than 10x10
+ * cells and holding at most 50 units. */
+u8 IsCampaignMapAvailable(s32 mapId) {
+    s32 IsLocalCampaignMapRecord(s32);
+    s32 IsCampaignMapCleared(s32);
+    MapRecordHeader *record;
+
+    if (mapId < MAP_ID_CAMPAIGN_FIRST || mapId >= MAP_ID_CAMPAIGN_END) {
+        return 0;
+    }
+    if (!IsCampaignMapRecordValid(mapId)) {
+        return 0;
+    }
+    if (!IsCampaignMapRecordPlayable(mapId)) {
+        return 0;
+    }
+    if (!IsLocalCampaignMapRecord(mapId)) {
+        return 0;
+    }
+    if (!IsCampaignMapCleared(mapId)) {
+        return 0;
+    }
+    record = (MapRecordHeader *)GetMapRecord(mapId);
+    if (record->width > 10) {
+        return 0;
+    }
+    if (record->height > 10) {
+        return 0;
+    }
+    return record->unitCount <= 50;
 }
 
 s32 func_020c7fe4(M2C_UNK arg0) {

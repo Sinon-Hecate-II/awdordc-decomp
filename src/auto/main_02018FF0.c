@@ -4,8 +4,8 @@ typedef struct { s32 left; char *current,*start; } Print195;
 typedef struct { char prefix[2]; Print195 out; char digits[24]; } Format195;
 typedef struct Work19334 { s32 (*first)(struct Work19334 *); void (*second)(struct Work19334 *); s32 result; s32 rest[6]; } Work19334;
 
-void func_02018ff0(void) {
-    extern M2C_UNK data_02136ca0;
+void Mb_SendBootParams(void) {
+    extern M2C_UNK gMbBootState;
     extern s16 data_02136c9c;
     extern M2C_UNK data_02136cc0;
     extern M2C_UNK data_02136cc4;
@@ -32,10 +32,10 @@ void func_02018ff0(void) {
     u8 *p;
     u8 *dst;
 
-    if (data_02136ca0 != 0) {
+    if (gMbBootState != 0) {
         return;
     }
-    data_02136ca0 = 1;
+    gMbBootState = 1;
     hw = *(volatile u16 *)0x4000300;
     if (!(hw & 1)) {
         return;
@@ -87,22 +87,22 @@ void func_02018ff0(void) {
     func_0200519c(old);
 }
 
-void func_020191e4(s32 a,s32 b) {
+void Mb_BootHandshakeHandler(s32 a,s32 b) {
 extern s16 data_02136c9c;
 if((b&63)==1){data_02136c9c=1;return;}
 SystemHalt();
 }
 
-void func_02019210(s32 a,s32 b) {
+void Mb_BootCompleteHandler(s32 a,s32 b) {
 void func_0201926c(void);
-extern M2C_UNK data_02136ca0;
+extern M2C_UNK gMbBootState;
 if((b&63)==17){
 s32 result;
-if(M2C_FIELD(&data_02136ca0,s32 *,12))return;
+if(M2C_FIELD(&gMbBootState,s32 *,12))return;
 result=0;
-if(M2C_FIELD(&data_02136ca0,s32 (**)(),24)) result=M2C_FIELD(&data_02136ca0,s32 (**)(),24)();
+if(M2C_FIELD(&gMbBootState,s32 (**)(),24)) result=M2C_FIELD(&gMbBootState,s32 (**)(),24)();
 if(result)func_0201926c();
-M2C_FIELD(&data_02136ca0,s32 *,12)=1;
+M2C_FIELD(&gMbBootState,s32 *,12)=1;
 return;
 }
 SystemHalt();
@@ -115,12 +115,12 @@ void func_0201926c(void) {
     SystemHalt();
 }
 
-void func_02019280(void) {
-    extern M2C_UNK data_02136ca0;
-    M2C_FIELD(&data_02136ca0, s32 *, 4) = 0;
+void Mb_RemoteReadyHandler(void) {
+    extern M2C_UNK gMbBootState;
+    M2C_FIELD(&gMbBootState, s32 *, 4) = 0;
 }
 
-void func_02019294(M2C_UNK a) {
+void Mb_StartTask(M2C_UNK a) {
 void func_02019320(M2C_UNK);
 extern s32 data_02136e68;
 extern M2C_UNK data_02136e6c,gNetStack;

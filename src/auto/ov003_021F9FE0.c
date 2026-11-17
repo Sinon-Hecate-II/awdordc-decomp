@@ -15,7 +15,7 @@ extern void *gCur3DSpriteEngine;
 void *GetMapRecord(int);
 int func_020a8b2c(int);
 int IsCampaignMapRecordValid(int);
-int func_ov003_02200968(int);
+int GetMapIconFrameIndex(int);
 void AddSprite(int,int,int,void *,int);
 int func_020a8ef8(int);
 int func_ov003_021f2654(void);
@@ -46,12 +46,12 @@ if((u32)id>=225 && (u32)id<425) {q=GetMapRecord(id);if(q[47])flag=1;if(Unk021F9F
 else if(func_020a8b2c(id))flag=1;
 if(flag){
 if(flag2)dx=-64;
-tile=(u16)((func_ov003_02200968(7)<<4)+320);
+tile=(u16)((GetMapIconFrameIndex(7)<<4)+320);
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite((u16)((b+192+dx)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
 }
 if(flag2) {
-tile=(u16)((func_ov003_02200968(12)<<4)+320);
+tile=(u16)((GetMapIconFrameIndex(12)<<4)+320);
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite((u16)((b+192)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
 }

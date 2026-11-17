@@ -30,7 +30,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK func_ov003_021ef758(void *, s32);
     s32 func_ov003_022004d0();
     s32 func_ov003_022004f0(M2C_UNK);
-    s32 GetWaypointOptionIcon(u8);
+    s32 GetWaypointOptionCoId(u8);
     extern M2C_UNK gSpriteDesc64x32;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
@@ -87,7 +87,7 @@ void func_ov003_021ea57c(void *arg0) {
         gCur3DSpriteEngine = g3DSpriteEngineSub;
         Clear3DSpriteLayer(3);
         temp_r5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0xF);
-        temp_r4 = GetWaypointOptionIcon((u8) temp_r5);
+        temp_r4 = GetWaypointOptionCoId((u8) temp_r5);
         if (temp_r4 == 0) {
             Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78));
         } else {
@@ -123,7 +123,7 @@ void func_ov003_021ea57c(void *arg0) {
                 } else {
                     var_r7 = (s32) ((u32) (func_ov003_022004f0(2) << 0x10) >> 3) >> 0x10;
                 }
-                temp_r0_2 = GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
+                temp_r0_2 = GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (temp_r0_2 == 0) {
                     ClearTileRect(M2C_FIELD(&gCur3DSpriteEngine[var_r0_2], s32 *, 0x20) + ((var_r7 + 1) * 2), 7, 7);
                 } else {
@@ -147,7 +147,7 @@ void func_ov003_021ea57c(void *arg0) {
                 if (var_r9 >= 2U) {
                     func_ov003_022004f0(2);
                 }
-                temp_r0_3 = GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
+                temp_r0_3 = GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (var_r9 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7)) goto zero_37;
                 var_r1=(((u32)(M2C_FIELD(arg0,u8 *,0x39)<<24)>>28)==2);
                 if (var_r1&255) goto one_37;
@@ -179,7 +179,7 @@ after_37:
                 if (var_r8 >= 2U) {
                     func_ov003_022004f0(2);
                 }
-                temp_r0_4 = GetWaypointOptionIcon(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA));
+                temp_r0_4 = GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA));
                 if (var_r8 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7)) goto zero_56;
                 var_r1_2=(((u32)(M2C_FIELD(arg0,u8 *,0x39)<<24)>>28)==2);
                 if (var_r1_2&255) goto one_56;

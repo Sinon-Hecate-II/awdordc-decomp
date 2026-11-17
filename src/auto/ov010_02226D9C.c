@@ -342,7 +342,7 @@ void *FindObjectByClass(void *);
 void *func_ov010_022268f4(s32,u32,u32);
 void MI_CpuFill8(void *,s32,u32);
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);
-extern u8 data_ov010_0222c160[], data_ov010_0222ef58[],data_ov010_0222ef88[];
+extern u8 gOv010SessionStateClass[], data_ov010_0222ef58[],data_ov010_0222ef88[];
 extern M2C_UNK gOv010OnlineSession;
 Ov010Packet header; volatile Ov010Packet *h; u32 kind; void *state;
 void (*cb)(s32,void *,s32);
@@ -350,7 +350,7 @@ MI_CpuCopy8(b,&header,12);
 h=&header;
 if(header.magic==0x5f57464d) {
 u8 channel=h->channel;
-state=FindObjectByClass(data_ov010_0222c160);
+state=FindObjectByClass(gOv010SessionStateClass);
 if(state) M2C_FIELD((u8 *)state+channel*4,u32 *,0x38)=0;
 kind=h->kind;
 if(kind!=0 && kind!=1) {if(kind<10) {

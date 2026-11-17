@@ -5,7 +5,7 @@ void CloseGt2Connection(void);
 
 void func_020411dc(s32 arg0){
 extern s32 sEmptyString;extern u8 gConnectionMgr[];
-s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void ReconnectUnlessServing(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 GetSessionPlayerSlot(s32);void TeardownConnectionSession(void);void func_020614b0(s32);void func_0203bd0c(void);void ReportGpiSessionStatus(void);s32 ReportConnectionStatusResult(void);void ResetSessionList(s32);
+s32 SetConnectionState(s32);void Qr2_StateChanged(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void ReconnectUnlessServing(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 GetSessionPlayerSlot(s32);void TeardownConnectionSession(void);void func_020614b0(s32);void func_0203bd0c(void);void ReportGpiSessionStatus(void);s32 ReportConnectionStatusResult(void);void ResetSessionList(s32);
 s32 n=3,update=0; s32 values[5];s32 b,c;u8 *a,*d,*e,*f,*g,*h;s32 i;
 switch(arg0){
 case 0:
@@ -17,7 +17,7 @@ a=GetConnection();values[2]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1),u
 a=GetConnection();values[3]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1)*4,s32*,36);
 a=GetConnection();values[4]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1)*2,u16*,164);n=5;
 }else{
-M2C_FIELD(GetConnection(),u8*,23)=0;M2C_FIELD(GetConnection(),s32*,32)=0;func_0205ea70(M2C_FIELD(GetConnection(),s32*,16));
+M2C_FIELD(GetConnection(),u8*,23)=0;M2C_FIELD(GetConnection(),s32*,32)=0;Qr2_StateChanged(M2C_FIELD(GetConnection(),s32*,16));
 if(M2C_FIELD(GetConnection(),u8*,21)==0)SetConnectionState(n);else if(M2C_FIELD(GetConnection(),u8*,21)==1)SetConnectionState(4);else SetConnectionState(10);
 M2C_FIELD(GetConnection(),u8*,420)=0;
 a=0;if(M2C_FIELD(GetConnection(),u8*,21)==2)goto complete;

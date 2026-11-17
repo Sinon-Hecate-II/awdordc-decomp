@@ -88,6 +88,13 @@
 #define ICMP_CHECKSUM  0x02 /* u16 message checksum */
 #define ICMP_TYPE_ECHO_REPLY   0
 #define ICMP_TYPE_ECHO_REQUEST 8
+/* The 16-bit one's-complement internet checksum (RFC 1071) the network stack
+ * builds: ChecksumAccumulate adds the words of a buffer to a running sum and
+ * folds its carries (words are summed big-endian, so a buffer at an odd address
+ * is summed byte by byte and an even one has its host-order words byte-swapped
+ * around the sum), and ChecksumFinalize complements the result, mapping 0 to
+ * 0xFFFF so that a message summed with its own checksum field gives
+ * CHECKSUM_VALID when the checksum is right. */
 #define CHECKSUM_VALID 0xFFFF /* sum over a message, checksum field included, when it is valid */
 
 /* TCP header fields (RFC 793), network byte order in the packet. */
@@ -102,7 +109,7 @@
 
 /* Fields of the datagram/stream socket object (gSocketManager->...+0xA4) the
  * transport senders share. */
-#define SOCK_KIND        0x08 /* u8 socket kind: 10 = UDP, 11 = ICMP, else a TCP stream */
+#define SOCK_TRANSPORT   0x08 /* u8 transport: SOCK_KIND_UDP (10), SOCK_KIND_ICMP (11), else a TCP stream */
 #define SOCK_TLS_ACTIVE  0x09 /* u8 nonzero once the socket's payload is wrapped in TLS records */
 #define SOCK_LOCAL_PORT  0x0A /* u16 local (source) port */
 #define SOCK_REMOTE_PORT 0x18 /* u16 remote (destination) port */

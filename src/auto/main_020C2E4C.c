@@ -307,7 +307,7 @@ void func_020c33ec(void) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK FillFaceTileMap(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02101f0c;
-    extern void *data_02164094;
+    extern void *gBreakCutIn;
     extern void *g3DSpriteEngineSub;
     extern void *data_027e01d8;
     u16 *volatile sp7C;
@@ -394,7 +394,7 @@ void func_020c33ec(void) {
 
     sp10 = data_027e01d8;
     data_027e01d8 = g3DSpriteEngineSub;
-    temp_r0 = M2C_FIELD(data_02164094, s32 *, 0);
+    temp_r0 = M2C_FIELD(gBreakCutIn, s32 *, 0);
     if (temp_r0 < 0x37) {
         if (temp_r0 == 0) {
             Clear3DSpriteLayer(3);
@@ -415,12 +415,12 @@ void func_020c33ec(void) {
             temp_r1 = M2C_FIELD(data_027e01d8, u16 **, 0);
             sp6C = temp_r1;
             *sp6C = *sp6C | 0x100;
-            M2C_FIELD(data_02164094, s32 *, 0x10) = 0xC3200000;
-            M2C_FIELD(data_02164094, s16 *, 0x1C) = -0x104;
-            M2C_FIELD(data_02164094, s16 *, 0x20) = 0x104;
-            M2C_FIELD(data_02164094, s16 *, 0x24) = 0x10;
+            M2C_FIELD(gBreakCutIn, s32 *, 0x10) = 0xC3200000;
+            M2C_FIELD(gBreakCutIn, s16 *, 0x1C) = -0x104;
+            M2C_FIELD(gBreakCutIn, s16 *, 0x20) = 0x104;
+            M2C_FIELD(gBreakCutIn, s16 *, 0x24) = 0x10;
         }
-        temp_r4 = data_02164094;
+        temp_r4 = gBreakCutIn;
 
         if ((s32) M2C_FIELD(temp_r4, s32 *, 0) < 0x19) {
             var_r0 = func_02070f24(M2C_FIELD(temp_r4, s32 *, 0x10), 0x40C00000);
@@ -443,8 +443,8 @@ void func_020c33ec(void) {
         temp_r1_2 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp58 = (u16 *)((u8 *)temp_r1_2 + 0x10);
         *sp58 = (s16) (*sp58 | 0x10);
-        M2C_FIELD(data_02164094, s16 *, 0x16) = 0;
-        M2C_FIELD(data_02164094, s16 *, 0x1A) = 0xC0;
+        M2C_FIELD(gBreakCutIn, s16 *, 0x16) = 0;
+        M2C_FIELD(gBreakCutIn, s16 *, 0x1A) = 0xC0;
     } else if (temp_r0 < 0x41) {
         if (temp_r0 == 0x37) {
             Clear3DSpriteLayer(3);
@@ -465,13 +465,13 @@ void func_020c33ec(void) {
             temp_r1_3 = M2C_FIELD(data_027e01d8, u16 **, 0);
             sp44 = temp_r1_3;
             *sp44 = *sp44 | 0x100;
-            M2C_FIELD(data_02164094, s32 *, 0x10) = 0xC3160000;
+            M2C_FIELD(gBreakCutIn, s32 *, 0x10) = 0xC3160000;
         }
-        M2C_FIELD(data_02164094, s16 *, 0x24) = (s16) (M2C_FIELD(data_02164094, s16 *, 0x24) - 1);
-        if ((s32) M2C_FIELD(data_02164094, s16 *, 0x24) < 8) {
-            M2C_FIELD(data_02164094, s16 *, 0x24) = 8;
+        M2C_FIELD(gBreakCutIn, s16 *, 0x24) = (s16) (M2C_FIELD(gBreakCutIn, s16 *, 0x24) - 1);
+        if ((s32) M2C_FIELD(gBreakCutIn, s16 *, 0x24) < 8) {
+            M2C_FIELD(gBreakCutIn, s16 *, 0x24) = 8;
         }
-        temp_r4_6 = data_02164094;
+        temp_r4_6 = gBreakCutIn;
         M2C_FIELD(temp_r4_6, s32 *, 0x10) = func_02070f24(M2C_FIELD(temp_r4_6, s32 *, 0x10), 0x41000000);
         temp_r0_3 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp40 = (u16 *)((u8 *)temp_r0_3 + 0x10);
@@ -488,26 +488,26 @@ void func_020c33ec(void) {
         temp_r0_7 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp30 = (u16 *)((u8 *)temp_r0_7 + 0x10);
         *sp30 = (s16) (*sp30 | 0x10);
-        temp_r0_8 = M2C_FIELD(data_02164094, s32 *, 0) - 0x37;
+        temp_r0_8 = M2C_FIELD(gBreakCutIn, s32 *, 0) - 0x37;
         temp_r4_7 = (temp_r0_8 << 5) / 10;
-        M2C_FIELD(data_02164094, s16 *, 0x16) = (s16) (0x60 - temp_r4_7);
-        M2C_FIELD(data_02164094, s16 *, 0x1A) = (s16) (temp_r4_7 + 0x60);
+        M2C_FIELD(gBreakCutIn, s16 *, 0x16) = (s16) (0x60 - temp_r4_7);
+        M2C_FIELD(gBreakCutIn, s16 *, 0x1A) = (s16) (temp_r4_7 + 0x60);
     } else {
         if (temp_r0 == 0x4E) {
             PlaySoundEffect(0x116);
         }
-        if (M2C_FIELD(data_02164094, s32 *, 0) == 0x5E) {
+        if (M2C_FIELD(gBreakCutIn, s32 *, 0) == 0x5E) {
             PlaySoundEffect(0x117);
         }
-        temp_r0_9 = M2C_FIELD(data_02164094, s32 *, 0);
+        temp_r0_9 = M2C_FIELD(gBreakCutIn, s32 *, 0);
         if ((temp_r0_9 >= 0x4E) && (temp_r0_9 < 0x58)) {
-            M2C_FIELD(data_02164094, s16 *, 0x1C) = (s16) (M2C_FIELD(data_02164094, s16 *, 0x1C) + 0x1A);
+            M2C_FIELD(gBreakCutIn, s16 *, 0x1C) = (s16) (M2C_FIELD(gBreakCutIn, s16 *, 0x1C) + 0x1A);
         }
-        temp_r0_10 = M2C_FIELD(data_02164094, s32 *, 0);
+        temp_r0_10 = M2C_FIELD(gBreakCutIn, s32 *, 0);
         if ((temp_r0_10 >= 0x55) && (temp_r0_10 < 0x5F)) {
-            M2C_FIELD(data_02164094, s16 *, 0x20) = (s16) (M2C_FIELD(data_02164094, s16 *, 0x20) - 0x1A);
+            M2C_FIELD(gBreakCutIn, s16 *, 0x20) = (s16) (M2C_FIELD(gBreakCutIn, s16 *, 0x20) - 0x1A);
         }
-        temp_r4_8 = data_02164094;
+        temp_r4_8 = gBreakCutIn;
         M2C_FIELD(temp_r4_8, s32 *, 0x10) = func_02070f24(M2C_FIELD(temp_r4_8, s32 *, 0x10), 0x3E19999A);
         temp_r2 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp2C = (u16 *)((u8 *)temp_r2 + 0x10);
@@ -524,40 +524,40 @@ void func_020c33ec(void) {
         temp_r1_4 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp1C = (u16 *)((u8 *)temp_r1_4 + 0x10);
         *sp1C = (s16) (*sp1C | 0x10);
-        M2C_FIELD(data_02164094, s16 *, 0x16) = 0x40;
-        M2C_FIELD(data_02164094, s16 *, 0x1A) = 0x80;
+        M2C_FIELD(gBreakCutIn, s16 *, 0x16) = 0x40;
+        M2C_FIELD(gBreakCutIn, s16 *, 0x1A) = 0x80;
     }
-    M2C_FIELD(data_02164094, s16 *, 0xA) = (s16) (M2C_FIELD(data_02164094, s16 *, 0xA) - 0xC);
-    temp_r0_11 = M2C_FIELD(data_02164094, s16 *, 0xA);
+    M2C_FIELD(gBreakCutIn, s16 *, 0xA) = (s16) (M2C_FIELD(gBreakCutIn, s16 *, 0xA) - 0xC);
+    temp_r0_11 = M2C_FIELD(gBreakCutIn, s16 *, 0xA);
     if ((s32) temp_r0_11 < 0) {
-        M2C_FIELD(data_02164094, s16 *, 0xA) = (s16) (temp_r0_11 + 0x100);
+        M2C_FIELD(gBreakCutIn, s16 *, 0xA) = (s16) (temp_r0_11 + 0x100);
     }
-    M2C_FIELD(data_02164094, s16 *, 0xC) = (s16) (M2C_FIELD(data_02164094, s16 *, 0xC) - 7);
-    temp_r0_12 = M2C_FIELD(data_02164094, s16 *, 0xC);
+    M2C_FIELD(gBreakCutIn, s16 *, 0xC) = (s16) (M2C_FIELD(gBreakCutIn, s16 *, 0xC) - 7);
+    temp_r0_12 = M2C_FIELD(gBreakCutIn, s16 *, 0xC);
     if ((s32) temp_r0_12 < 0) {
-        M2C_FIELD(data_02164094, s16 *, 0xC) = (s16) (temp_r0_12 + 0x100);
+        M2C_FIELD(gBreakCutIn, s16 *, 0xC) = (s16) (temp_r0_12 + 0x100);
     }
-    M2C_FIELD(data_02164094, s16 *, 0x14) = 0;
-    M2C_FIELD(data_02164094, s16 *, 0x18) = 0xFF;
-    { s16 a,b,c,d; void *p=data_02164094;
+    M2C_FIELD(gBreakCutIn, s16 *, 0x14) = 0;
+    M2C_FIELD(gBreakCutIn, s16 *, 0x18) = 0xFF;
+    { s16 a,b,c,d; void *p=gBreakCutIn;
 d=M2C_FIELD(p,s16 *,0x1A); c=M2C_FIELD(p,s16 *,0x18); b=M2C_FIELD(p,s16 *,0x16); a=M2C_FIELD(p,s16 *,0x14);
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x48) = a;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x4A) = b;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x49) = c;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x4B) = d;
     }
-    M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x38) = (s16) M2C_FIELD(data_02164094, s16 *, 0xA);
+    M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x38) = (s16) M2C_FIELD(gBreakCutIn, s16 *, 0xA);
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x40) = 0;
-    M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x3A) = (s16) M2C_FIELD(data_02164094, s16 *, 0xC);
+    M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x3A) = (s16) M2C_FIELD(gBreakCutIn, s16 *, 0xC);
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x42) = 0;
-    temp_r0_13 = func_020719a0(M2C_FIELD(data_02164094, s32 *, 0x10));
+    temp_r0_13 = func_020719a0(M2C_FIELD(gBreakCutIn, s32 *, 0x10));
     sp14 = 0;
     var_r7 = sp14;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x3E) = temp_r0_13;
     var_r8 = var_r7;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x46) = (s16) var_r7;
     temp_r0_14 = M2C_FIELD(data_027e01d8, u16 **, 0);
-    temp_r4_12 = M2C_FIELD(data_02164094, s16 *, 0x24);
+    temp_r4_12 = M2C_FIELD(gBreakCutIn, s16 *, 0x24);
     sp18 = (u16 *)((u8 *)temp_r0_14 + 0x12);
     *sp18 = (s16) ((*sp18 & ~0xC0) | 0x40);
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), u8 *, 0x51) = (u8) temp_r4_12;
@@ -567,7 +567,7 @@ d=M2C_FIELD(p,s16 *,0x1A); c=M2C_FIELD(p,s16 *,0x18); b=M2C_FIELD(p,s16 *,0x16);
         var_r9 = 0x40;
         var_r10 = 0;
 loop_30:
-        AddSprite((u16) ((M2C_FIELD(data_02164094, s16 *, 0x1C) + var_r8) & 0x1FF), (u8) (M2C_FIELD(data_02164094, s16 *, 0x1E) + var_r10), (u16) ((0x3FF & ((s32) (var_r9 + var_r7) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite((u16) ((M2C_FIELD(gBreakCutIn, s16 *, 0x1C) + var_r8) & 0x1FF), (u8) (M2C_FIELD(gBreakCutIn, s16 *, 0x1E) + var_r10), (u16) ((0x3FF & ((s32) (var_r9 + var_r7) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
         var_r6 += 1;
         var_r9 += 0x20;
         var_r10 += 8;
@@ -587,7 +587,7 @@ loop_30:
         var_r8_2 = 0xC0;
         var_r9_2 = 0;
 loop_34:
-        AddSprite((u16) ((M2C_FIELD(data_02164094, s16 *, 0x20) + var_r7_2) & 0x1FF), (u8) (M2C_FIELD(data_02164094, s16 *, 0x22) + var_r9_2), (u16) ((0x3FF & ((s32) (var_r8_2 + var_r6_2) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite((u16) ((M2C_FIELD(gBreakCutIn, s16 *, 0x20) + var_r7_2) & 0x1FF), (u8) (M2C_FIELD(gBreakCutIn, s16 *, 0x22) + var_r9_2), (u16) ((0x3FF & ((s32) (var_r8_2 + var_r6_2) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
         var_r10_2 += 1;
         var_r8_2 += 0x20;
         var_r9_2 += 8;

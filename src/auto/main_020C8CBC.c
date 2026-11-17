@@ -248,40 +248,44 @@ M2C_FIELD(sprite,u32 *,0x58)|=0x400;return 1;
 }
 
 void func_020c93cc(void) {
-    extern M2C_UNK data_02168f04;
+    extern M2C_UNK gHeldDirections;
     extern M2C_UNK data_ov000_021e146c;
-    M2C_FIELD(&data_02168f04, s8 *, 0) = 0;
-    M2C_FIELD(&data_02168f04, s8 *, 1) = 0;
-    M2C_FIELD(&data_02168f04, s8 *, 2) = 0;
-    M2C_FIELD(&data_02168f04, s8 *, 3) = 0;
+    M2C_FIELD(&gHeldDirections, s8 *, 0) = 0;
+    M2C_FIELD(&gHeldDirections, s8 *, 1) = 0;
+    M2C_FIELD(&gHeldDirections, s8 *, 2) = 0;
+    M2C_FIELD(&gHeldDirections, s8 *, 3) = 0;
     M2C_FIELD(&data_ov000_021e146c, s32 *, 0) = 0;
     M2C_FIELD(&data_ov000_021e146c, s32 *, 4) = 0;
 }
 
 void func_020c93fc(s32 a,s32 b) {
 s32 func_020c9550(s32);
-extern M2C_UNK data_02168f04;
-if (!func_020c9550(a)) M2C_FIELD(&data_02168f04,u8 *,2)=a;
-else M2C_FIELD(&data_02168f04,u8 *,3)=a;
-M2C_FIELD(&data_02168f04,u8 *,a)=b;
+extern M2C_UNK gHeldDirections;
+if (!func_020c9550(a)) M2C_FIELD(&gHeldDirections,u8 *,2)=a;
+else M2C_FIELD(&gHeldDirections,u8 *,3)=a;
+M2C_FIELD(&gHeldDirections,u8 *,a)=b;
 }
 
 u8 GetHeldDirection(s32 arg0) {
-    extern M2C_UNK data_02168f04;
-    return M2C_FIELD(&data_02168f04, u8 *, arg0);
+    extern M2C_UNK gHeldDirections;
+    return M2C_FIELD(&gHeldDirections, u8 *, arg0);
 }
 
-s32 ResolveHeldDirection(u32 x,s32 y,s32 a) {
+/* Resolves the direction held on cursor input channel `channel` into the code a
+   battle command carries: it steps the cursor cell one cell that way and, when
+   the step's cell is not marked in the player's bitmap but holds a unit, reports
+   direction 5 instead. */
+s32 ResolveHeldDirection(u32 x,s32 y,s32 channel) {
 extern void **gCurrentMap;
-s32 d=GetHeldDirection(a);
-void *p;
-switch(d) {case 0: break; case 1: y--; break; case 2: x++; break; case 3: y++; break; case 4: x--; break;}
-if(!d) return d;
-p=*gCurrentMap;
-x+=M2C_FIELD(p+y*2,u16 *,0x3758);
-if((u8)(M2C_FIELD(p+(x>>3),u8 *,0x5201) & (1<<(x&7)))) return d;
-if(M2C_FIELD(p+x,u8 *,0x508)) d=5;
-return d;
+s32 dir=GetHeldDirection(channel);
+void *map;
+switch(dir) {case 0: break; case 1: y--; break; case 2: x++; break; case 3: y++; break; case 4: x--; break;}
+if(!dir) return dir;
+map=*gCurrentMap;
+x+=M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS);
+if((u8)(M2C_FIELD(map+(x>>3),u8 *,MAP_CELL_BITMAP) & (1<<(x&7)))) return dir;
+if(M2C_FIELD(map+x,u8 *,MAP_CELL_UNIT_ID)) dir=5;
+return dir;
 }
 
 s32 GetHeldMapDirections(void) { extern M2C_UNK gMapCursorDirs;s32 v=0;if(GetHeldDirection(0))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(GetHeldDirection(0)-1)*4);if(GetHeldDirection(1))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(GetHeldDirection(1)-1)*4);return v;}
@@ -306,10 +310,10 @@ M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x + M2C_FIELD(&gMapCurso
 }
 #pragma optimization_level reset
 void func_020c95e4(void) {
-extern M2C_UNK data_02168f04;
+extern M2C_UNK gHeldDirections;
 s32 func_020c9550();
 u32 i=func_020c9550()+1;
-u8 *p=(u8 *)&data_02168f04;
+u8 *p=(u8 *)&gHeldDirections;
 i=p[i];
 p[i]=0;
 DeleteDirectionMarkerSprites();
@@ -431,7 +435,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_UNK func_0208143c(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
     s32 StepMapViewToTile(s32, s32);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, s32);
+    M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, s32);
     void PlayMapActionSound(s32, s32, s32);
     extern void **gCurrentMap;
     extern M2C_UNK data_0212b3e4;
@@ -492,11 +496,11 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
 
 second_path:
     switch (mode) {
-        case 3: func_020b5134(&data_0212b79c, x, y, 8, 0, 0, 7); break;
-        case 4: func_020b5134(&data_0212b7a4, x, y, 8, 0, 0, 7); break;
-        case 5: func_020b5134(&data_0212b7b0, x, y, 8, 0, 0, 7); break;
-        case 6: func_020b5134(&data_0212b7bc, x, y, 8, 0, 0, 7); break;
-        case 7: func_020b5134(&data_0212b7c8, x, y, 8, 0, 0, 7); break;
+        case 3: CreateAnimatedMapSprite(&data_0212b79c, x, y, 8, 0, 0, 7); break;
+        case 4: CreateAnimatedMapSprite(&data_0212b7a4, x, y, 8, 0, 0, 7); break;
+        case 5: CreateAnimatedMapSprite(&data_0212b7b0, x, y, 8, 0, 0, 7); break;
+        case 6: CreateAnimatedMapSprite(&data_0212b7bc, x, y, 8, 0, 0, 7); break;
+        case 7: CreateAnimatedMapSprite(&data_0212b7c8, x, y, 8, 0, 0, 7); break;
         default: break;
     }
     PlayMapActionSound(x, y, mode);

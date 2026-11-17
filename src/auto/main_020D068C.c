@@ -9,7 +9,7 @@ static inline s32 D068COwner(void *p) { if(p) return (D068CIndex(p)>>6)+1; retur
 typedef struct { unsigned char value:6; } D068CBits;
 typedef struct { u8 kind:6;u8 team:2; } D11F4Bits;
 static inline void D11F4Set(void *p,u8 team){((D11F4Bits *)p)->team=team;}
-void func_020d0bf8(M2C_UNK);
+void RollDamageVariance(M2C_UNK);
 static inline u32 D068CLow(void *p) { return M2C_FIELD(p,D068CBits*,0).value; }
 static inline u32 D068CFlag(void *p) { return M2C_FIELD(p,u16*,4)&32; }
 s32 CalculateUnitDamage();
@@ -20,10 +20,10 @@ static inline s32 D068CCall(M2C_UNK a,void *p,s32 c) {
 }
 static inline void D068CApply(void *p) {
  if(M2C_FIELD(p,s16*,0x14)==0)return;
- M2C_FIELD(p,s16*,0x14)+=((s32 (*)(M2C_UNK))func_020d0bf8)(M2C_FIELD(p,M2C_UNK*,0));
+ M2C_FIELD(p,s16*,0x14)+=((s32 (*)(M2C_UNK))RollDamageVariance)(M2C_FIELD(p,M2C_UNK*,0));
 }
-void func_020d0bf8(M2C_UNK);
-void func_020d0bac(void *,s32);
+void RollDamageVariance(M2C_UNK);
+void AddDamageVariance(void *,s32);
 
 void InitBattleUnit(void *p,s16 index) {
 s32 GetTerrainDefenseScore(); s32 func_020a3518();
@@ -129,25 +129,30 @@ s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
  return var_r4!=0 || temp_r0!=0;
 }
 
-void ApplyBattleDamage(void *arg0,s32 arg1,M2C_UNK arg2) {
- s32 func_020d18e8(void *);
- s32 var_r0,var_r4;u32 temp_r0;
- var_r4=100;
- temp_r0=(u32)(M2C_FIELD(M2C_FIELD(arg0,void**,0),u16*,6)<<25)>>25;
- if(temp_r0==0)var_r0=0;else var_r0=Divide(temp_r0-1,10)+1;
- M2C_FIELD(arg0,s16*,0x16)=M2C_FIELD(arg0,s16*,0x16)+Divide(M2C_FIELD(arg0,s16*,6)*var_r0,10);
- M2C_FIELD(arg0,s16*,0x14)=M2C_FIELD(arg0,s16*,0x18);
- if(arg1==1)var_r4+=func_020d18e8(arg0);
- M2C_FIELD(arg0,s16*,0x14)=Divide(M2C_FIELD(arg0,s16*,0x14)*var_r4,100);
- M2C_FIELD(arg0,s16*,0x1c)=M2C_FIELD(arg0,s16*,0x14);
- func_020d0bac(arg0,arg2);
- if(M2C_FIELD(arg0,s16*,0x14)<0)M2C_FIELD(arg0,s16*,0x14)=0;
+/* Applies one battle side's chosen weapon damage: scale its attack power by the
+   unit's health level, copy the weapon damage into the damage total, add the
+   defender's bonus percentage and the random variance, then clamp it to zero. */
+void ApplyBattleDamage(BattleUnit *side, s32 isDefender, M2C_UNK addVariance) {
+    s32 GetDefenderBonus(void *);
+    s32 healthLevel, percent;
+    u32 health;
+
+    percent = 100;
+    health = (u32)(M2C_FIELD(side->unit, u16 *, 6) << 25) >> 25;
+    if (health == 0) healthLevel = 0; else healthLevel = Divide(health - 1, 10) + 1;
+    side->attackPower = side->attackPower + Divide(side->attackBase * healthLevel, 10);
+    side->damage = side->weaponDamage;
+    if (isDefender == 1) percent += GetDefenderBonus(side);
+    side->damage = Divide(side->damage * percent, 100);
+    side->unk1C = side->damage;
+    AddDamageVariance(side, addVariance);
+    if (side->damage < 0) side->damage = 0;
 }
 
 #pragma opt_cond_exec off
-void func_020d0bac(void *p,s32 a) { extern u8 gMapData[]; if(((u32)M2C_FIELD(gMapData,u16*,12)<<20)>>31)return; switch(a){case 0:return;default:break;} if(M2C_FIELD(p,volatile s16*,0x14)==0)return; {s32 t=((s32 (*)(M2C_UNK))func_020d0bf8)(M2C_FIELD(p,M2C_UNK*,0)); M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;} }
+void AddDamageVariance(void *p,s32 a) { extern u8 gMapData[]; if(((u32)M2C_FIELD(gMapData,u16*,12)<<20)>>31)return; switch(a){case 0:return;default:break;} if(M2C_FIELD(p,volatile s16*,0x14)==0)return; {s32 t=((s32 (*)(M2C_UNK))RollDamageVariance)(M2C_FIELD(p,M2C_UNK*,0)); M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;} }
 #pragma opt_cond_exec reset
-void func_020d0bf8(M2C_UNK arg0) {
+void RollDamageVariance(M2C_UNK arg0) {
     M2C_UNK RandomIntRange(s32, s32);
     s32 func_020a78fc();
     s32 func_020a7914(M2C_UNK);

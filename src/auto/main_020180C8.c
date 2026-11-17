@@ -497,7 +497,7 @@ i++;
 return 1;
 }
 
-void func_02018c24(void) {
+void Mb_InitBootState(void) {
     M2C_UNK CpuSet(s32 *, M2C_UNK *, s32);
     s16 OS_GetLockID();
     extern M2C_UNK data_02136c98;
@@ -625,7 +625,7 @@ void func_02018ea4(M2C_UNK arg0) {
     } while (SendFifoMessage(0xD, arg0, 0) != 0);
 }
 
-void func_02018ef4(s32 arg0) {
+void Mb_SetBootMode(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 func_02018c5c(void);
@@ -646,35 +646,40 @@ void func_02018ef4(s32 arg0) {
     OS_RestoreInterrupts(saved);
 }
 
-void func_02018f3c(void) {
+/* Bring up DS Download Play once: initialise the boot state and the ARM7 link,
+ * wait for the ARM7's channel 13 to come up, install the boot handshake
+ * handler, send the boot parameters, then swap in the boot-complete handler,
+ * start the multiboot task and register the channel-17 ready handler. */
+void Mb_BootInit(void) {
     M2C_UNK func_02009d34();
-    M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
-    s32 func_02009e8c(M2C_UNK, M2C_UNK);
-    void func_02018ef4(M2C_UNK);
-    M2C_UNK func_02018ff0();
-    M2C_UNK func_02019294(M2C_UNK *);
-    extern M2C_UNK data_02136ca0;
-    extern M2C_UNK data_02136d80;
-    extern M2C_UNK func_020191e4;
-    extern M2C_UNK func_02019210;
-    extern M2C_UNK func_02019280;
-    if (M2C_FIELD(&data_02136ca0, s32 *, 8) != 0) {
+    s32 SetFifoMessageHandler(s32, M2C_UNK *);
+    s32 IsFifoMessageReady(s32, s32);
+    void Mb_InitBootState(void);
+    void Mb_SetBootMode(s32);
+    M2C_UNK Mb_SendBootParams();
+    M2C_UNK Mb_StartTask(M2C_UNK *);
+    extern MbBootState gMbBootState;
+    extern M2C_UNK gMbTask;
+    extern M2C_UNK Mb_BootHandshakeHandler;
+    extern M2C_UNK Mb_BootCompleteHandler;
+    extern M2C_UNK Mb_RemoteReadyHandler;
+    if (gMbBootState.initialised != 0) {
         return;
     }
-    M2C_FIELD(&data_02136ca0, s32 *, 8) = 1;
-    func_02018c24();
-    M2C_FIELD(&data_02136ca0, s32 *, 0xC) = 0;
+    gMbBootState.initialised = 1;
+    Mb_InitBootState();
+    gMbBootState.complete = 0;
     func_02009d34();
     do {
 
-    } while (func_02009e8c(0xD, 1) == 0);
-    func_02009e40(0xD, &func_020191e4);
-    func_02018ff0();
-    func_02009e40(0xD, NULL);
-    func_02009e40(0xD, &func_02019210);
-    M2C_FIELD(&data_02136ca0, s32 *, 0x18) = 0;
-    func_02019294(&data_02136d80);
-    func_02009e40(0x11, &func_02019280);
-    func_02018ef4(0);
+    } while (IsFifoMessageReady(0xD, 1) == 0);
+    SetFifoMessageHandler(0xD, &Mb_BootHandshakeHandler);
+    Mb_SendBootParams();
+    SetFifoMessageHandler(0xD, NULL);
+    SetFifoMessageHandler(0xD, &Mb_BootCompleteHandler);
+    gMbBootState.onComplete = 0;
+    Mb_StartTask(&gMbTask);
+    SetFifoMessageHandler(0x11, &Mb_RemoteReadyHandler);
+    Mb_SetBootMode(0);
 }
 

@@ -3,26 +3,36 @@
 #include "ghttp.h"
 typedef struct { u8 bytes[4]; } BCDCBytes;
 
-s32 func_0204b9b8(void *arg0) {
- M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
- s32 GetFilePosition(s32);
- s32 SetFilePosition(s32,s32,s32);
- void func_02064ffc(s32);
- extern M2C_UNK data_020fd224, sAssertZero, sGhttpPostFile;
- s32 state = *M2C_FIELD(arg0,s32 **,0);
- M2C_FIELD(arg0,s32 *,4)=-1;
- if(state == 0) goto success;
- if(state == 1) {
- if (!M2C_FIELD(arg0,s32 *,8)) return 0;
- if (SetFilePosition(M2C_FIELD(arg0,s32 *,8),0,2)) return 0;
- M2C_FIELD(arg0,s32 *,12)=GetFilePosition(M2C_FIELD(arg0,s32 *,8));
- if (M2C_FIELD(arg0,s32 *,12)==-1) return 0;
- func_02064ffc(M2C_FIELD(arg0,s32 *,8));
- } else if(state != 2) {
- AssertFailed(&sAssertZero,&sGhttpPostFile,&data_020fd224,0x244); return 0;
- }
- success:
- return 1;
+/* GameSpy ghttpPost.c: prepare one POST part for upload.  Clears the part's
+ * position (-1: the part header has not been written yet).  A string part needs
+ * no further setup; a file part is measured from its size and rewound to the
+ * start; a memory-file part passes straight through.  Returns 0 when the part
+ * cannot be posted. */
+s32 ghiPostStateInit(void *arg0) {
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    s32 GetFilePosition(s32);
+    s32 SetFilePosition(s32, s32, s32);
+    void RewindStream(s32);
+    extern M2C_UNK sGhiPostStateInit, sAssertZero, sGhttpPostFile;
+    GHIPostState *part;
+    s32 type;
+
+    part = (GHIPostState *)arg0;
+    type = part->data->type;
+    part->pos = -1;
+    if (type == GHIString) goto success;
+    if (type == GHIFile) {
+        if (!part->file) return 0;
+        if (SetFilePosition((s32)part->file, 0, 2)) return 0;
+        part->length = GetFilePosition((s32)part->file);
+        if (part->length == -1) return 0;
+        RewindStream((s32)part->file);
+    } else if (type != GHIFileMemory) {
+        AssertFailed(&sAssertZero, &sGhttpPostFile, &sGhiPostStateInit, 0x244);
+        return 0;
+    }
+success:
+    return 1;
 }
 
 void func_0204ba68(void *arg0) {
@@ -45,11 +55,11 @@ s32 func_0204bad4(void *arg0) {
     s32 Vector_GetCount(s32);
     void *Vector_New(s32, s32, s32);
     void *Vector_GetItem(s32, s32);
-    s32 func_0204b9b8(void *);
+    s32 ghiPostStateInit(void *);
     void Vector_AddItem(void *, void *);
     void func_0204ba68(void *);
     void Vector_Free(s32);
-    s32 func_0204b958(void *);
+    s32 ghiPostGetContentLength(void *);
     extern M2C_UNK data_020fd440, sGhttpPostFile, data_020fd1fc, data_020fd454;
 
     s32 i;
@@ -80,7 +90,7 @@ s32 func_0204bad4(void *arg0) {
         buf[1] = zero;
         buf[2] = zero;
         buf[3] = zero;
-        if (func_0204b9b8(buf) == 0) {
+        if (ghiPostStateInit(buf) == 0) {
             i--;
             if (i >= 0) {
                 do {
@@ -98,7 +108,7 @@ s32 func_0204bad4(void *arg0) {
     if (Vector_GetCount(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0)) != Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x140))) {
         AssertFailed(&data_020fd454, &sGhttpPostFile, &data_020fd1fc, 0x2b1);
     }
-    M2C_FIELD(arg0, s32 *, 0x14c) = func_0204b958(arg0);
+    M2C_FIELD(arg0, s32 *, 0x14c) = ghiPostGetContentLength(arg0);
     return 1;
 }
 

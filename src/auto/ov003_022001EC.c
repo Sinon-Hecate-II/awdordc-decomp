@@ -1,5 +1,7 @@
 /* 40 functions from 0x022001EC to 0x02200EE4 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "waypoint_panel.h"
 
 /* A polymorphic ov003 scene object: a vtable at +0, a second interface vtable at
  * +0x34, then the children, buffers and sprite-handle arrays it owns. */
@@ -223,28 +225,68 @@ void func_ov003_022006dc(s32 arg0) {
     Link_SendPacket(sp, 0x24);
 }
 
-s32 GetPlayerCoIconIndex(u32 a) {
-switch(a) {
-case 1:return 0;
-case 2:return 1;
-case 3:return 2;
-case 4:return 3;
-case 5:return 4;
-case 6:return 5;
-case 7:return 6;
-case 8:return 7;
-case 9:return 8;
-case 10:return 9;
-case 11:return 10;
-case 12:return 11;
-case 0:return 12;
-default:return 255;
-}
+/* Maps a CO id to its index in the CO icon strip: ids 1..12 use icons 0..11 in
+   order and the random/unset id 0 uses the last icon.  Any other id has no icon. */
+s32 GetPlayerCoIconIndex(u32 coId) {
+    switch (coId) {
+    case 1: return 0;
+    case 2: return 1;
+    case 3: return 2;
+    case 4: return 3;
+    case 5: return 4;
+    case 6: return 5;
+    case 7: return 6;
+    case 8: return 7;
+    case 9: return 8;
+    case 10: return 9;
+    case 11: return 10;
+    case 12: return 11;
+    case CO_ID_RANDOM: return CO_ICON_RANDOM;
+    default: return CO_ICON_NONE;
+    }
 }
 
-s32 GetWaypointOptionIcon(u32 a){switch(a){case 0:return 1;case 1:return 2;case 2:return 3;case 3:return 4;case 4:return 5;case 5:return 6;case 6:return 7;case 7:return 8;case 8:return 9;case 9:return 10;case 10:return 11;case 11:return 12;case 12:return 0;default:return 255;}}
+/* CO id (1..12) of a waypoint-panel CO option: option 12 is the random choice,
+   whose CO id is 0, and any other option has no CO. */
+s32 GetWaypointOptionCoId(u32 option) {
+    switch (option) {
+    case 0: return 1;
+    case 1: return 2;
+    case 2: return 3;
+    case 3: return 4;
+    case 4: return 5;
+    case 5: return 6;
+    case 6: return 7;
+    case 7: return 8;
+    case 8: return 9;
+    case 9: return 10;
+    case 10: return 11;
+    case 11: return 12;
+    case WAYPOINT_OPTION_RANDOM: return 0;
+    default: return WAYPOINT_CO_NONE;
+    }
+}
 
-s32 func_ov003_02200968(u32 a){switch(a){case 3:return 3;case 4:return 4;case 0:return 0;case 1:return 1;case 2:return 2;case 5:return 5;case 6:return 6;case 7:return 7;case 8:return 8;case 9:return 9;case 10:return 10;case 11:return 11;case 12:return 12;default:return 0;}}
+/* Icon frame index of a map-list icon id: ids 0..12 map to themselves and any
+   other id falls back to frame 0. */
+s32 GetMapIconFrameIndex(u32 iconId) {
+    switch (iconId) {
+    case 3: return 3;
+    case 4: return 4;
+    case 0: return 0;
+    case 1: return 1;
+    case 2: return 2;
+    case 5: return 5;
+    case 6: return 6;
+    case 7: return 7;
+    case 8: return 8;
+    case 9: return 9;
+    case 10: return 10;
+    case 11: return 11;
+    case 12: return 12;
+    default: return 0;
+    }
+}
 
 /* Icon tile a map-list row of `kind` uses for map `id`.  The map's player count
  * picks between the two-, three- and four-player icons (kinds 2 and 3 give one
@@ -261,7 +303,7 @@ s32 GetIconGridRecordIndex(u32 a){switch(a){case 0:return 0;case 1:return 1;case
 s32 func_ov003_02200b5c(u32 a){switch(a){case 0:return 15;case 1:return 16;case 2:return 17;case 3:return 18;case 4:return 19;case 5:return 22;case 6:return 23;case 7:return 24;default:return -1;}}
 
 void func_ov003_02200bd0(u32 arg0) {
-    M2C_UNK func_ov003_02200968(u32);
+    M2C_UNK GetMapIconFrameIndex(u32);
     u32 var_r0;
 
     var_r0 = arg0;
@@ -299,7 +341,7 @@ void func_ov003_02200bd0(u32 arg0) {
         var_r0 = 0xB;
         break;
     }
-    func_ov003_02200968(var_r0);
+    GetMapIconFrameIndex(var_r0);
 }
 
 u8 func_ov003_02200c64(s32 arg0, s32 arg1, s32 arg2) {

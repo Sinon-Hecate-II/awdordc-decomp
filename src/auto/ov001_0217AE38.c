@@ -201,9 +201,9 @@ void func_ov001_0217b3f0(void) {
 void func_ov001_0217b41c(void) {
     M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK Ov001_UnblockScrollBar();
-    s32 func_ov001_0218665c();
+    s32 Ov001_IsRegionMenuActive();
     extern M2C_UNK func_ov001_0217a3a8;
-    if (func_ov001_0218665c() != 0) {
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_UnlockIconRow();
@@ -495,7 +495,7 @@ void UpdateNameEntryCursor(void) {
 
 void func_ov001_0217bc7c(void) {
     extern void *gNameEntryState;
-    extern M2C_UNK func_ov001_0217bcd8;
+    extern M2C_UNK Ov001_FinishNameEntry;
     M2C_FIELD(gNameEntryState, u8 *, 0x2A) = func_ov001_02186648();
     switch (M2C_FIELD(gNameEntryState, u8 *, 0x2A)) {
     case 0: Ov001_PlaySound(7); break;
@@ -503,11 +503,15 @@ void func_ov001_0217bc7c(void) {
     default: return;
     }
     func_ov001_02186604();
-    Ov001_SetStepCallback(&func_ov001_0217bcd8);
+    Ov001_SetStepCallback(&Ov001_FinishNameEntry);
 }
 
-void func_ov001_0217bcd8(void) {
-    s32 func_ov001_0218665c(void);
+/* Final name-entry step, run once the region menu has been answered: waits for
+   the menu to close, then either clears the cursor of a cancelled entry and
+   resumes the entry screen (result 0) or passes the entered text to that entry
+   mode's accept handler and leaves the screen. */
+void Ov001_FinishNameEntry(void) {
+    s32 Ov001_IsRegionMenuActive(void);
     s32 Ov001_SetStepCallback(s32 *);
     void Ov001_GetNameEntryMode(s32 *, s32);
     void func_ov001_0217b688(void);
@@ -515,21 +519,21 @@ void func_ov001_0217bcd8(void) {
     extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
 
-    void *entries[2];
-    s32 index;
+    void *acceptHandlers[2];
+    s32 mode;
 
-    entries[0] = M2C_FIELD(&gOv001NameEntryConfig, void **, 0x10);
-    entries[1] = M2C_FIELD(&gOv001NameEntryConfig, void **, 0x14);
+    acceptHandlers[0] = M2C_FIELD(&gOv001NameEntryConfig, void **, NAME_ENTRY_CONFIG_ACCEPT);
+    acceptHandlers[1] = M2C_FIELD(&gOv001NameEntryConfig, void **, NAME_ENTRY_CONFIG_ACCEPT + 4);
 
-    if (func_ov001_0218665c()) return;
-    if (M2C_FIELD(gNameEntryState, u8 *, 0x2a) == 0) {
-        s32 *p = M2C_FIELD(gNameEntryState, s32 **, 4);
-        *p &= 0xc1fffcff;
+    if (Ov001_IsRegionMenuActive()) return;
+    if (M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT) == 0) {
+        s32 *cursor = M2C_FIELD(gNameEntryState, s32 **, NAME_ENTRY_CURSOR);
+        *cursor &= NAME_ENTRY_CURSOR_MASK;
         Ov001_SetStepCallback((s32 *)func_ov001_0217b688);
         return;
     }
-    Ov001_GetNameEntryMode(&index, 0);
-    ((void (*)(void *))entries[index])((u8 *)gNameEntryState + 8);
+    Ov001_GetNameEntryMode(&mode, 0);
+    ((void (*)(void *))acceptHandlers[mode])((u8 *)gNameEntryState + NAME_ENTRY_TEXT);
     Ov001_SetStepCallback((s32 *)func_ov001_0217ba1c);
 }
 

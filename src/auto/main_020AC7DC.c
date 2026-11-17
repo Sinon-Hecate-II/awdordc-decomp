@@ -1,5 +1,6 @@
 /* 37 functions from 0x020AC7DC to 0x020AD78C (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 s32 *func_020ad570(s32);
 
@@ -25,7 +26,7 @@ case 1:M2C_FIELD(M2C_FIELD(bank,void **,0),s8 *,0x50)=pos;break;
 case 2:UpdateSplitTransition(M2C_FIELD(arg0,u16 *,0x3a)-M2C_FIELD(arg0,u16 *,0x38));break;
 }
 if(M2C_FIELD(arg0,u16 *,0x38)>=M2C_FIELD(arg0,u16 *,0x3a)){
-func_020aca8c((u8)M2C_FIELD(arg0,s32 *,0x34));
+ApplyScreenMode((u8)M2C_FIELD(arg0,s32 *,0x34));
 func_01ffa6fc(arg0);
 }
 next: i++;
@@ -44,7 +45,7 @@ s32 func_020ac924(M2C_UNK arg0, s32 arg1) {
  }
 }
 
-void func_020ac970(M2C_UNK arg0) {
+void DeleteScreenTransitionSprites(M2C_UNK arg0) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020ac924(M2C_UNK, M2C_UNK);
     func_020ac924(arg0, 0);
@@ -53,14 +54,14 @@ void func_020ac970(M2C_UNK arg0) {
     DeleteSpriteObject();
 }
 
-void func_020ac998(s32 mode) {
+void SetScreenMode(s32 mode) {
 s32 GetScreenMode(u8); void ConfigureScreenEngine(u8,s32,s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;
 u8 currentIsPrimary, screen; u16 *volatile p; u16 *volatile q;
 if(gCur3DSpriteEngine==g3DSpriteEngineMain)currentIsPrimary=1;else currentIsPrimary=0;
 if(currentIsPrimary!=1)screen=1;else screen=0;
 if(mode==3)mode=GetScreenMode(screen);
-func_020ac970(screen);ConfigureScreenEngine(screen,0,mode);
+DeleteScreenTransitionSprites(screen);ConfigureScreenEngine(screen,0,mode);
 switch(mode){
 case 0: case 1: M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x50)=0;break;
 case 2:
@@ -71,9 +72,9 @@ break;
 /* Configure the active display for the requested mode. */
 }
 
-M2C_UNK func_020aca8c(M2C_UNK arg0) {
+M2C_UNK ApplyScreenMode(M2C_UNK arg0) {
     s32 GetScreenMode(u8);
-    void func_020ac970(M2C_UNK);
+    void DeleteScreenTransitionSprites(M2C_UNK);
     void ConfigureScreenEngine(u8, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
@@ -111,7 +112,7 @@ M2C_UNK func_020aca8c(M2C_UNK arg0) {
     }
     if (arg0 == 3) {
         mode = GetScreenMode(screen);
-        func_020ac970(screen);
+        DeleteScreenTransitionSprites(screen);
         ConfigureScreenEngine(screen, 1, mode);
         switch (mode) {
         case 0:
@@ -190,8 +191,8 @@ M2C_UNK func_020aca8c(M2C_UNK arg0) {
 }
 
 void func_020ace54(void) {
-    s32 func_020abe90(u8);
-    M2C_UNK func_020aca8c(M2C_UNK);
+    s32 GetScreenFlag(u8);
+    M2C_UNK ApplyScreenMode(M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     u8 var_r0;
@@ -207,74 +208,83 @@ void func_020ace54(void) {
     } else {
         var_r0_2 = 0;
     }
-    if (func_020abe90(var_r0_2) != 1) {
+    if (GetScreenFlag(var_r0_2) != 1) {
         return;
     }
-    func_020aca8c(3);
+    ApplyScreenMode(3);
 }
 
-void func_020acea8(s32 arg0, s16 arg1, s32 arg2) {
+/* Plays a display transition on the screen that is not the active one: unless the
+ * transition is instant (length 0, which applies the mode at once), create its
+ * sprite on `layer` there, animating `mode` for `length` frames. */
+void CreateScreenTransitionSprite(s32 mode, s16 length, s32 layer) {
  void *func_01ffa3dc(M2C_UNK *, s32);
- s32 func_020abe90(u8);
- void func_020ac998(M2C_UNK);
+ s32 GetScreenFlag(u8);
+ void SetScreenMode(s32);
  extern M2C_UNK data_02127360;
  extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
- s32 var_r4;
- u8 var_r0;
- u8 var_r0_2;
- void *temp_r0;
- if(gCur3DSpriteEngine == g3DSpriteEngineMain) var_r0=1; else var_r0=0;
- if(var_r0 != 1) var_r0_2=1; else var_r0_2=0;
- var_r4=arg2;
- if(var_r4==0) var_r4=7;
- if(arg1==0) {
- func_020ac970(var_r0_2);
- func_020ac998(arg0);
+ s32 spriteLayer;
+ u8 currentIsPrimary;
+ u8 screen;
+ void *sprite;
+ if(gCur3DSpriteEngine == g3DSpriteEngineMain) currentIsPrimary=1; else currentIsPrimary=0;
+ if(currentIsPrimary != 1) screen=1; else screen=0;
+ spriteLayer=layer;
+ if(spriteLayer==0) spriteLayer=7;
+ if(length==0) {
+ DeleteScreenTransitionSprites(screen);
+ SetScreenMode(mode);
  return;
  }
- if(func_020abe90(var_r0_2)==0) return;
- func_020ac970(var_r0_2);
- temp_r0=func_01ffa3dc(&data_02127360,var_r4);
- M2C_FIELD(temp_r0,s16 *,0x2e)=var_r0_2;
- M2C_FIELD(temp_r0,u8 *,0x3c)=var_r0_2;
- M2C_FIELD(temp_r0,s16 *,0x3a)=arg1;
- M2C_FIELD(temp_r0,s32 *,0x34)=arg0;
- M2C_FIELD(temp_r0,s32 *,0x40)=0;
+ if(GetScreenFlag(screen)==0) return;
+ DeleteScreenTransitionSprites(screen);
+ sprite=func_01ffa3dc(&data_02127360,spriteLayer);
+ M2C_FIELD(sprite,s16 *,DS3D_SPRITE_Z)=screen;
+ M2C_FIELD(sprite,u8 *,TRANSITION_SPRITE_SCREEN)=screen;
+ M2C_FIELD(sprite,s16 *,TRANSITION_SPRITE_LENGTH)=length;
+ M2C_FIELD(sprite,s32 *,TRANSITION_SPRITE_MODE)=mode;
+ M2C_FIELD(sprite,s32 *,TRANSITION_SPRITE_PARENT)=0;
 }
 
-void func_020acf54(s32 arg0, s16 arg1, s32 arg2) {
- void *func_01ffa3dc(M2C_UNK *, s32);
- s32 func_020abe90(u8);
- M2C_UNK func_020aca8c(M2C_UNK);
- extern M2C_UNK data_02127390;
- extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
- s32 var_r4;
- u8 var_r0;
- u8 var_r0_2;
- void *temp_r0;
- if(gCur3DSpriteEngine == g3DSpriteEngineMain) var_r0=1; else var_r0=0;
- if(var_r0 != 1) var_r0_2=1; else var_r0_2=0;
- var_r4=arg2;
- if(var_r4==0) var_r4=7;
- if(arg1==0) {
- func_020ac970(var_r0_2);
- func_020aca8c(arg0);
- return;
- }
- if(func_020abe90(var_r0_2)==1) return;
- func_020ac970(var_r0_2);
- temp_r0=func_01ffa3dc(&data_02127390,var_r4);
- M2C_FIELD(temp_r0,s16 *,0x2e)=var_r0_2;
- M2C_FIELD(temp_r0,u8 *,0x3c)=var_r0_2;
- M2C_FIELD(temp_r0,s16 *,0x3a)=arg1;
- M2C_FIELD(temp_r0,s32 *,0x34)=arg0;
- M2C_FIELD(temp_r0,s32 *,0x40)=0;
+/* Starts the screen-change transition on the screen the active 3D-sprite engine
+ * draws to: a transition object slides the screen sideways (mode 0/1) or splits
+ * it (mode 2) over `duration` frames.  A zero duration applies the mode at once
+ * instead, and nothing is created when the screen is already set up for the
+ * other kind of transition. */
+void StartScreenFade(s32 mode, s16 duration, s32 createMode) {
+    void *func_01ffa3dc(M2C_UNK *, s32);
+    s32 GetScreenFlag(u8);
+    M2C_UNK ApplyScreenMode(M2C_UNK);
+    extern M2C_UNK data_02127390;
+    extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
+    s32 variant;
+    u8 isPrimary;
+    u8 screen;
+    DS3DSpriteScreenFade *fade;
+
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) isPrimary = 1; else isPrimary = 0;
+    if (isPrimary != 1) screen = 1; else screen = 0;
+    variant = createMode;
+    if (variant == 0) variant = 7;
+    if (duration == 0) {
+        DeleteScreenTransitionSprites(screen);
+        ApplyScreenMode(mode);
+        return;
+    }
+    if (GetScreenFlag(screen) == 1) return;
+    DeleteScreenTransitionSprites(screen);
+    fade = func_01ffa3dc(&data_02127390, variant);
+    M2C_FIELD(fade, s16 *, DS3D_SPRITE_Z) = screen;
+    fade->screen = screen;
+    fade->length = duration;
+    fade->mode = mode;
+    fade->resource = 0;
 }
 
 void func_020ad000(s32 arg0, s16 arg1, s32 arg2) {
 void *func_01ffa3dc(M2C_UNK *, s32);
-s32 func_020abe90(u8);
-void func_020ac998(M2C_UNK);
+s32 GetScreenFlag(u8);
+void SetScreenMode(M2C_UNK);
 M2C_UNK func_01ffaa5c(s32);
 extern M2C_UNK data_02127360;
 extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
@@ -283,12 +293,12 @@ void *temp_r0;
 if(gCur3DSpriteEngine == g3DSpriteEngineMain) var_r0=1; else var_r0=0;
 if(var_r0 != 1) var_r0_2=1; else var_r0_2=0;
 if(arg1==0) {
-func_020ac970(var_r0_2);
-func_020ac998(arg0);
+DeleteScreenTransitionSprites(var_r0_2);
+SetScreenMode(arg0);
 return;
 }
-if(func_020abe90(var_r0_2)==0) return;
-func_020ac970(var_r0_2);
+if(GetScreenFlag(var_r0_2)==0) return;
+DeleteScreenTransitionSprites(var_r0_2);
 temp_r0=func_01ffa3dc(&data_02127360,1);
 M2C_FIELD(temp_r0,s16 *,0x2e)=var_r0_2;
 M2C_FIELD(temp_r0,u8 *,0x3c)=var_r0_2;
@@ -300,8 +310,8 @@ func_01ffaa5c(arg2);
 
 void func_020ad0a8(s32 arg0, s16 arg1, s32 arg2) {
 void *func_01ffa3dc(M2C_UNK *, s32);
-s32 func_020abe90(u8);
-M2C_UNK func_020aca8c(M2C_UNK);
+s32 GetScreenFlag(u8);
+M2C_UNK ApplyScreenMode(M2C_UNK);
 M2C_UNK func_01ffaa5c(s32);
 extern M2C_UNK data_02127390;
 extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
@@ -310,12 +320,12 @@ void *temp_r0;
 if(gCur3DSpriteEngine == g3DSpriteEngineMain) var_r0=1; else var_r0=0;
 if(var_r0 != 1) var_r0_2=1; else var_r0_2=0;
 if(arg1==0) {
-func_020ac970(var_r0_2);
-func_020aca8c(arg0);
+DeleteScreenTransitionSprites(var_r0_2);
+ApplyScreenMode(arg0);
 return;
 }
-if(func_020abe90(var_r0_2)==1) return;
-func_020ac970(var_r0_2);
+if(GetScreenFlag(var_r0_2)==1) return;
+DeleteScreenTransitionSprites(var_r0_2);
 temp_r0=func_01ffa3dc(&data_02127390,1);
 M2C_FIELD(temp_r0,s16 *,0x2e)=var_r0_2;
 M2C_FIELD(temp_r0,u8 *,0x3c)=var_r0_2;
@@ -345,7 +355,7 @@ void func_020ad150(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
         if (((arg2 != 0) || (var_r1 == g3DSpriteEngineMain)) &&
             ((arg2 != 1) || (var_r1 == g3DSpriteEngineSub)) &&
             ((arg2 != 3) || (var_r1 == temp_r5))) {
-            func_020acea8(arg0, arg1, arg3);
+            CreateScreenTransitionSprite(arg0, arg1, arg3);
         }
         var_r6 += 1;
     } while (var_r6 < 2);
@@ -372,7 +382,7 @@ void func_020ad1f8(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
         if (((arg2 != 0) || (var_r1 == g3DSpriteEngineMain)) &&
             ((arg2 != 1) || (var_r1 == g3DSpriteEngineSub)) &&
             ((arg2 != 3) || (var_r1 == temp_r5))) {
-            func_020acf54(arg0, arg1, arg3);
+            StartScreenFade(arg0, arg1, arg3);
         }
         var_r6 += 1;
     } while (var_r6 < 2);
@@ -433,7 +443,7 @@ void func_020ad348(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
     gCur3DSpriteEngine = temp_r5;
 }
 
-u8 func_020ad3f0(void) {
+u8 IsScreenFadeActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02127360;
     extern M2C_UNK data_02127390;

@@ -46,19 +46,22 @@ if (type != 0 && type == arg0) { count += 1; }
 return count;
 }
 
-s32 func_ov000_021a881c(s32 arg0, s32 arg1) {
-extern void **gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-s32 count = 0;
-s32 i;
-void *base = *gCurrentMap;
-u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
-for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33; i++) {
-UnkStruct_ov000_021A860C *entry = &((UnkStruct_ov000_021A860C *)((u8 *)base + 0x59A4))[i];
-u32 type = entry->unk0;
-if (type != 0 && type == arg0 && entry->unkB != arg1) { count += 1; }
-}
-return count;
+/* How many of the current player's units of `kind` have an AI action state
+ * other than `aiState`: the AI asks this to find a unit of the kind that is
+ * still free (the build code passes 5, the step a freshly built unit waits in). */
+s32 CountPlayerUnitsOfKindNotInAiState(s32 kind, s32 aiState) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 count = 0;
+    s32 i;
+    void *base = *gCurrentMap;
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+        BattleMapUnitHead *entry = &((BattleMapUnitHead *)((u8 *)base + MAP_UNIT_RECORDS))[i];
+        u32 type = entry->kind;
+        if (type != 0 && type == kind && entry->aiState != aiState) { count += 1; }
+    }
+    return count;
 }
 
 /* How many units the current player has of one kind that are not busy with an
@@ -142,7 +145,24 @@ s32 GetUnitCaptureRateHere(void *arg0) {
 
 u8 WillCaptureCompleteThisTurn(void *a){u8 r;if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;if(GetUnitCaptureRateHere(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20)r=1;else r=0;return r;}
 
-s32 func_ov000_021a8ac8(void *a){extern void **gCurrentMap;s32 n;if(a){if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(M2C_FIELD(*gCurrentMap,u16 *,0x52a8)!=n){if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;}return GetUnitCaptureRateAtOwnTile(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20;}
+/* Whether the unit finishes capturing the property it stands on this turn: its
+ * capture points plus the capture rate at its tile reach MAP_UNIT_CAPTURE_COMPLETE.
+ * A unit with no capture progress is rejected first, unless it belongs to the
+ * map's recorded current-player unit block (MAP_CURSOR_OWNER). */
+s32 WillFinishCaptureThisTurn(void *unit) {
+    extern void **gCurrentMap;
+    s32 owner;
+
+    if (unit) {
+        if (!unit) owner = 0;
+        else owner = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+        owner = (owner >> 6) + 1;
+    } else owner = 0;
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_OWNER) != owner) {
+        if (!((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27)) return 0;
+    }
+    return GetUnitCaptureRateAtOwnTile(unit) + (s32)((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27) >= MAP_UNIT_CAPTURE_COMPLETE;
+}
 
 s32 GetCaptureTurnsLeft(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=GetUnitCaptureRateAtOwnTile(a);while(x<20){x+=n;i++;}return i;}
 

@@ -66,7 +66,7 @@ packet0=payload[0];j=(u8)payload[1];
 if(M2C_FIELD(GetConnection(),u8 *,21)==1&&!M2C_FIELD(GetConnection(),u8 *,422)){packet[0]=IsConnectionMember(packet0);SendConnectionCommand(32,peer,a,b,packet,1);if(func_0204084c())return 0;}
 p=GetConnection();i=M2C_FIELD(GetConnection(),u8 *,20)+1;M2C_FIELD((u8 *)p+i*4,s32 *,244)=packet0;
 p=GetConnection();i=M2C_FIELD(GetConnection(),u8 *,20)+1;M2C_FIELD((u8 *)p+i,u8 *,720)=j;
-func_0205ea70(M2C_FIELD(GetConnection(),s32 *,16));
+Qr2_StateChanged(M2C_FIELD(GetConnection(),s32 *,16));
 if(M2C_FIELD(GetConnection(),s32 *,1132)){p=GetConnection();i=GetSessionPlayerSlot(packet0);M2C_FIELD(p,void (**)(s32,s32),1132)(i,M2C_FIELD(GetConnection(),s32 *,1136));}break;
 case 8:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=1||M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;

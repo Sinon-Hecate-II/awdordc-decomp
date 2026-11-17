@@ -256,17 +256,19 @@ for(clearY=y-1;clearY<=y+1;clearY++)for(clearX=x-1;clearX<=x+1;clearX++)Map_SetC
 return Map_PlaceSideBase(x,y,side,radius,distance);
 }
 #pragma opt_common_subs reset
-s32 Map_PickRandomTileOfValue(s32 *x,s32 *y,s32 value) {
- s32 RandomIntRange(s32,s32);
- extern s32 *gCurrentMap;
- s32 n=0;
- s32 a=0,b=0;
- do {
- if(++n>100) return 0;
- *x=RandomIntRange(a,M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1);
- *y=RandomIntRange(b,M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1);
- } while(value!=M2C_FIELD((*gCurrentMap+((*x+M2C_FIELD((*gCurrentMap+(*y*2)),u16 *,0x3758))*2)),u16 *,0xA10));
- return 1;
+/* Pick a random map cell whose terrain tile id equals tileId: roll a random x
+   and y (up to 100 tries) until the cell under them has that tile id. Returns 1
+   when a cell was found, 0 when the rolls ran out. */
+s32 Map_PickRandomTileOfValue(s32 *x, s32 *y, s32 tileId) {
+    s32 RandomIntRange(s32, s32);
+    s32 attempts = 0;
+    s32 minX = 0, minY = 0;
+    do {
+        if (++attempts > 100) return 0;
+        *x = RandomIntRange(minX, M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) - 1);
+        *y = RandomIntRange(minY, M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT) - 1);
+    } while (tileId != M2C_FIELD((*gCurrentMap + ((*x + M2C_FIELD((*gCurrentMap + (*y * 2)), u16 *, MAP_ROW_OFFSETS)) * 2)), u16 *, MAP_CELL_TILE_ID));
+    return 1;
 }
 
 /* Pick a random non-border tile whose 3x3 neighbourhood all equals tileValue, at least Map_MinDistanceThreshold(50) Manhattan distance from avoidPoint when given; retry up to 100 times. Returns 1 on success, 0 otherwise. */

@@ -1,5 +1,6 @@
 /* 57 functions from 0x02086208 to 0x020871A8 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct { s32 x,y,z; } Vec02086dfc;
 extern const Vec02086dfc data_020f3578, data_020f3584;
 extern void (*data_02168fe8)(void);
@@ -347,7 +348,7 @@ u8 func_02086940(u32 arg0) {
     return (u8) (M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
-u8 func_02086960(u32 arg0) {
+u8 IsCampaignMapCleared(u32 arg0) {
     extern M2C_UNK data_0215778a;
     return (u8) (M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
@@ -498,16 +499,20 @@ void func_02086b9c(void) {
     } while (var_r5_7 < 8);
 }
 
-void func_02086d18(void) {
+/* Prepare the 3D engine for a scene: clear the 3D display control's blend and error
+ * status bits, enable the 3D display, use a blue clear colour and a full-screen
+ * orthographic projection, then start a new projection matrix. */
+void Init3DRendering(void) {
     M2C_UNK GX_SetClearColor(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
-    M2C_FIELD((void *)0x04000060, u16 *, 0) = (u16) (M2C_FIELD((void *)0x04000060, u16 *, 0) & 0xCFEF);
-    M2C_FIELD((void *)0x04000060, s32 *, 0x4E0) = 1;
-    GX_SetClearColor(0x2BEA, 0, 0x7FFF, 0x3F, 0);
+
+    REG_DISP3DCNT = (u16)(REG_DISP3DCNT & (u16)~(DISP3DCNT_ALPHA_BLEND | DISP3DCNT_ERROR_MASK));
+    REG_GX_SWAP_BUFFERS = 1;
+    GX_SetClearColor(0x2BEA, 0, GX_CLEAR_DEPTH_MAX, 0x3F, 0);
     *(s32 *)0x04000580 = 0xBFFF0000;
     GX_SetOrthoProjection(0, -0xC0, 0, 0x100, 1, 0x2000, 0x1000, 1, 0);
-    M2C_FIELD((void *)0x0400044C, s32 *, 0) = 0;
-    M2C_FIELD((void *)0x0400044C, s32 *, -0xC) = 2;
+    REG_GX_MTX_STORE = 0;
+    REG_GX_MTX_MODE = 2;
 }
 
 void func_02086dc8(void) {
@@ -543,75 +548,82 @@ void func_02086ec8(void) {
  *(volatile u32 *)0x04000448=1;data_02168fe8=func_02086eb4;
 }
 
-s32 func_02086ef0(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
-    case 0x8:
-        return 0;
-    case 0x10:
-        return 1;
-    case 0x20:
-        return 2;
-    case 0x40:
-        return 3;
-    case 0x80:
-        return 4;
-    case 0x100:
-        return 5;
-    case 0x200:
-        return 6;
-    case 0x400:
-        return 7;
+/* Maps a texture's side length in pixels (GX_TEX_SIZE_*) to the code the GX
+ * TEXIMAGE_PARAM size field stores (GX_TEX_CODE_*).  Another copy of the same
+ * helper as GetGxTextureSizeCode; the display-list writers below put the result
+ * in the 3D sprite's texture-image attribute. */
+s32 GetGxTextureSizeCode3(s32 size) {
+    switch (size) {                                 /* irregular */
+    case GX_TEX_SIZE_8:
+        return GX_TEX_CODE_8;
+    case GX_TEX_SIZE_16:
+        return GX_TEX_CODE_16;
+    case GX_TEX_SIZE_32:
+        return GX_TEX_CODE_32;
+    case GX_TEX_SIZE_64:
+        return GX_TEX_CODE_64;
+    case GX_TEX_SIZE_128:
+        return GX_TEX_CODE_128;
+    case GX_TEX_SIZE_256:
+        return GX_TEX_CODE_256;
+    case GX_TEX_SIZE_512:
+        return GX_TEX_CODE_512;
+    case GX_TEX_SIZE_1024:
+        return GX_TEX_CODE_1024;
     default:
-        return 0;
+        return GX_TEX_CODE_8;
     }
 }
 
-s32 func_02086f9c(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
-    case 0x8:
-        return 0;
-    case 0x10:
-        return 1;
-    case 0x20:
-        return 2;
-    case 0x40:
-        return 3;
-    case 0x80:
-        return 4;
-    case 0x100:
-        return 5;
-    case 0x200:
-        return 6;
-    case 0x400:
-        return 7;
+/* Maps a square texture's size in pixels (8, 16, ... 1024) to its 3-bit GX
+ * texture-size code (0..7); another copy of the helper, used here for the
+ * 3D sprite's texture image attributes. */
+s32 GetGxTextureSizeCode4(s32 size) {
+    switch (size) {                                 /* irregular */
+    case GX_TEX_SIZE_8:
+        return GX_TEX_CODE_8;
+    case GX_TEX_SIZE_16:
+        return GX_TEX_CODE_16;
+    case GX_TEX_SIZE_32:
+        return GX_TEX_CODE_32;
+    case GX_TEX_SIZE_64:
+        return GX_TEX_CODE_64;
+    case GX_TEX_SIZE_128:
+        return GX_TEX_CODE_128;
+    case GX_TEX_SIZE_256:
+        return GX_TEX_CODE_256;
+    case GX_TEX_SIZE_512:
+        return GX_TEX_CODE_512;
+    case GX_TEX_SIZE_1024:
+        return GX_TEX_CODE_1024;
     default:
-        return 0;
+        return GX_TEX_CODE_8;
     }
 }
 
-void func_02087048(s32 arg0, s32 arg1) {
+void SetGxPolygonAttr(s32 arg0, s32 arg1) {
     *(s32 *)0x040004A4 = (arg0 << 0x18) | 0x81 | (arg1 << 0x10);
 }
 
 void func_02087064(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
  s32 temp_r5; s32 var_r0;
- temp_r5=func_02086f9c(arg2);
- *(volatile u32 *)0x040004A8=((u32)(arg3<<5)>>3)|(arg0<<26)|0x40000000|(func_02086ef0(arg1)<<20)|(temp_r5<<23)|0x20000000;
+ temp_r5=GetGxTextureSizeCode4(arg2);
+ *(volatile u32 *)0x040004A8=((u32)(arg3<<5)>>3)|(arg0<<26)|0x40000000|(GetGxTextureSizeCode3(arg1)<<20)|(temp_r5<<23)|0x20000000;
  var_r0=arg0==2?1:0;
  *(volatile u32 *)0x040004AC=(u32)(arg4<<5)>>(4-var_r0);
 }
 
 void func_020870dc(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u8 arg5,u8 arg6,u8 arg7) {
  s32 temp_r0; s32 temp_r4; s32 var_r0; s32 var_r1; s32 var_r2; s32 var_r3;
- temp_r4=func_02086f9c(arg2);
- temp_r0=func_02086ef0(arg1);
+ temp_r4=GetGxTextureSizeCode4(arg2);
+ temp_r0=GetGxTextureSizeCode3(arg1);
  var_r1=arg5?3:0;var_r2=arg6?3:0;var_r3=arg7?1:0;
  *(volatile u32 *)0x040004A8=(((u32)(arg3<<5)>>3)|(arg0<<26)|0x40000000|(temp_r0<<20)|(temp_r4<<23))|(var_r1<<16)|(var_r2<<18)|(var_r3<<29);
  var_r0=arg0==2?1:0;
  *(volatile u32 *)0x040004AC=(u32)(arg4<<5)>>(4-var_r0);
 }
 
-void func_0208718c(void) {
+void ResetGxTextureParams(void) {
     M2C_FIELD((void *)0x040004A8, s32 *, 0) = 0x20000000;
     M2C_FIELD((void *)0x040004A8, s32 *, 4) = 0;
 }

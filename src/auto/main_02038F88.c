@@ -9,7 +9,7 @@
  * returns the socket-open result (0 on success). */
 s32 OpenGameSpySocket(void){
  extern void *gNetSession;
- s32 RandomBelow(s32);s32 Gt2AddressToString(s32,u16,s32);
+ s32 RandomBelow(s32);s32 gt2AddressToString(s32,u16,s32);
  s32 Gt2CreateSocket(void *,s32,s32,s32,void (*)(s32 *));
  void Gt2SocketErrorCallback(s32 *); void HandleGt2ConnectAttempt(void); void RouteIncomingGameSpyPacket(void);
  void Gt2SocketSetConnectAttempt(s32,void (*)(void));void Gt2SocketSetUnrecognizedCallback(s32,void (*)(void));
@@ -18,7 +18,7 @@ s32 OpenGameSpySocket(void){
  if(M2C_FIELD(gNetSession,s32 *,NET_SESSION_SOCKET))return 0;
  angle=RandomBelow(0x4000)+0xc000;
  session=gNetSession;
- result=Gt2CreateSocket(gNetSession,Gt2AddressToString(0,angle,0),M2C_FIELD(session,s32 *,NET_SESSION_RX_BUFFER),M2C_FIELD(session,s32 *,NET_SESSION_TX_BUFFER),Gt2SocketErrorCallback);
+ result=Gt2CreateSocket(gNetSession,gt2AddressToString(0,angle,0),M2C_FIELD(session,s32 *,NET_SESSION_RX_BUFFER),M2C_FIELD(session,s32 *,NET_SESSION_TX_BUFFER),Gt2SocketErrorCallback);
  if(ReportGt2SocketResult(result))return result;
  Gt2SocketSetConnectAttempt(M2C_FIELD(gNetSession,s32 *,NET_SESSION_SOCKET),HandleGt2ConnectAttempt);
  Gt2SocketSetUnrecognizedCallback(M2C_FIELD(gNetSession,s32 *,NET_SESSION_SOCKET),RouteIncomingGameSpyPacket);
@@ -295,7 +295,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK func_0203e064();
     s32 RemoveConnectionPeer();
     M2C_UNK SetGpiStatus();
-    M2C_UNK func_0205ea70();
+    M2C_UNK Qr2_StateChanged();
     M2C_UNK GetSessionPlayerSlot();
     M2C_UNK func_0203bd0c();
     M2C_UNK func_0203dcf4();
@@ -437,7 +437,7 @@ void func_02039844(s32 arg0, s32 arg1) {
             M2C_FIELD(base, u8 *, 0x38a) = M2C_FIELD(base, u8 *, 0x388);
             {
                 void *base2 = gNetSession;
-                func_0205ea70(M2C_FIELD(base2, s32 *, 0x384));
+                Qr2_StateChanged(M2C_FIELD(base2, s32 *, 0x384));
             }
         }
     }

@@ -377,22 +377,28 @@ void func_0205d49c(void *a) {
     gti2FreeSocket(a);
 }
 
-char *Gt2AddressToString(s32 a,s32 b,char *p) {
-s32 IpToString(s32);
-s32 StringFormat(char *,const char *,...);
-extern s32 data_0213e114;
-extern char data_0213e118[],data_020ff848[],data_020ff850[],data_020ff854[];
-volatile s32 saved;
-if (!p) { data_0213e114^=1; p=data_0213e118+data_0213e114*22; }
-if(a) {
-saved=a;
-if(b) StringFormat(p,data_020ff848,IpToString(a),b);
-else StringFormat(p,data_020ff850,IpToString(a));
-} else {
-if(!b) *p=0;
-else StringFormat(p,data_020ff854,b);
-}
-return p;
+/* GameSpy GT2 gt2AddressToString: format an IPv4 address and/or a port as
+   "ip:port", "ip" or ":port" into buf, or into the next of the two rotating
+   static buffers when buf is 0, and return the buffer used. */
+char *gt2AddressToString(s32 ip, s32 port, char *buf) {
+    s32 IpToString(s32);
+    s32 StringFormat(char *, const char *, ...);
+    extern s32 gGt2AddressStringIndex;
+    extern char gGt2AddressStringBuffers[], sGt2AddressAndPortFormat[], sGt2AddressFormat[], sGt2PortFormat[];
+    volatile s32 saved;
+    if (!buf) {
+        gGt2AddressStringIndex ^= 1;
+        buf = gGt2AddressStringBuffers + gGt2AddressStringIndex * 22;
+    }
+    if (ip) {
+        saved = ip;
+        if (port) StringFormat(buf, sGt2AddressAndPortFormat, IpToString(ip), port);
+        else StringFormat(buf, sGt2AddressFormat, IpToString(ip));
+    } else {
+        if (!port) *buf = 0;
+        else StringFormat(buf, sGt2PortFormat, port);
+    }
+    return buf;
 }
 
 #pragma opt_common_subs off

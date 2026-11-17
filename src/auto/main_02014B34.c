@@ -57,7 +57,7 @@ void func_02014ccc(void *arg0) {
 s32 func_02014d6c(void) {
     extern void *gMbWork;
     void func_02015188(s32);
-    s32 func_02015ce4(void *,void *,u16,void *);
+    s32 Mb_GetChunkTransfer(void *,void *,u16,void *);
     s32 SerializeCommand(s8 *,void *);
     s32 func_020184ec(void *,u32,s32,u32);
     s32 func_0201874c(void *);
@@ -96,7 +96,7 @@ s32 func_02014d6c(void) {
     func_02015188(candidate);
     base=gMbWork;
     i=M2C_FIELD(base,u8 *,0x1525);
-    if (!func_02015ce4(output,base+0x1d2c+i*0x5d4,M2C_FIELD(base+i*0x5d4,u16 *,0x1d48),base+0x1788+i*0x5d4)) return 21;
+    if (!Mb_GetChunkTransfer(output,base+0x1d2c+i*0x5d4,M2C_FIELD(base+i*0x5d4,u16 *,0x1d48),base+0x1788+i*0x5d4)) return 21;
     base=gMbWork;
     packet[0]=4;
     *(u16 *)(packet+2)=M2C_FIELD(base,u8 *,0x1525);
@@ -164,10 +164,10 @@ if(result==21)func_02014af4(0,0xffff);
 }
 
 void func_02015188(s32 arg0) {
- extern s32 data_02131180;
+ extern s32 gGroupChunkPendingMask;
     extern void *gMbWork;
  u16 a,b; void *base;
- if(!(data_02131180 & (1<<arg0)))return;
+ if(!(gGroupChunkPendingMask & (1<<arg0)))return;
  base=(void *)(arg0*0x5d4+gMbWork);
  if(M2C_FIELD(base,u8 *,0x1d52)!=0 && M2C_FIELD(base,u16 *,0x1d4c)!=0){
  a=M2C_FIELD(base+0x1d00,u16 *,0x48); b=M2C_FIELD(base,u16 *,0x1d4a);

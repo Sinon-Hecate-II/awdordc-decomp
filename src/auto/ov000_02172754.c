@@ -6,7 +6,7 @@ static inline u16 *ScenePalette(u32 n) { extern void *gCur3DSpriteEngine; return
 extern s32 data_ov000_021b976c, data_ov000_021b9bec, data_ov000_021bb06c, data_ov000_021b9c6c, data_ov000_021b99ec, data_ov000_021bb1ec;
 extern void *g3DSpriteEngineSub;
 extern void *gCur3DSpriteEngine;
-extern void **gCurrentMap;extern M2C_UNK data_ov000_021c1944, data_ov000_021c13b0, data_ov000_021c11dc, data_ov000_021c1764, data_ov000_021c1b28, data_ov000_021c1d0c;
+extern void **gCurrentMap;extern M2C_UNK gInfoFrameGfxUnset, gInfoFrameGfxEnglish, gInfoFrameGfxFrench, gInfoFrameGfxGerman, gInfoFrameGfxItalian, gInfoFrameGfxSpanish;
 extern M2C_UNK data_ov000_021d841c, data_ov000_021b8f5c;
 
 void func_ov000_02172754(void *arg0) {
@@ -122,26 +122,28 @@ void func_ov000_02172754(void *arg0) {
     gCur3DSpriteEngine = saved;
 }
 
+/* Uploads the info window's frame graphics for the window's language
+   (LANGUAGE_*) into the sub screen's tile buffer. */
 void DrawInfoWindowFrame(void *unused) {
- M2C_UNK func_0207c780(M2C_UNK *,s32); u32 GetInfoWindowMode();
- void *saved; s32 base; M2C_UNK *p;
- base=M2C_FIELD(g3DSpriteEngineSub,s32 *,0x28); saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
- switch(GetInfoWindowMode()) {
- case 0:p=&data_ov000_021c1944;break;
- case 1:p=&data_ov000_021c13b0;break;
- case 2:p=&data_ov000_021c11dc;break;
- case 3:p=&data_ov000_021c1764;break;
- case 4:p=&data_ov000_021c1b28;break;
- case 5:p=&data_ov000_021c1d0c;break;
- default:p=&data_ov000_021c1944;break;
+ M2C_UNK LoadGraphicsBlock(M2C_UNK *,s32); u32 GetInfoWindowLanguage();
+ void *savedEngine; s32 tiles; M2C_UNK *gfx;
+ tiles=M2C_FIELD(g3DSpriteEngineSub,s32 *,0x28); savedEngine=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
+ switch(GetInfoWindowLanguage()) {
+ case LANGUAGE_UNSET:gfx=&gInfoFrameGfxUnset;break;
+ case LANGUAGE_ENGLISH:gfx=&gInfoFrameGfxEnglish;break;
+ case LANGUAGE_FRENCH:gfx=&gInfoFrameGfxFrench;break;
+ case LANGUAGE_GERMAN:gfx=&gInfoFrameGfxGerman;break;
+ case LANGUAGE_ITALIAN:gfx=&gInfoFrameGfxItalian;break;
+ case LANGUAGE_SPANISH:gfx=&gInfoFrameGfxSpanish;break;
+ default:gfx=&gInfoFrameGfxUnset;break;
  }
- func_0207c780(p,base);gCur3DSpriteEngine=saved;
+ LoadGraphicsBlock(gfx,tiles);gCur3DSpriteEngine=savedEngine;
 }
 
 /* Draw the selected terrain's banner: its graphic, the tileset-specific tiles
    and its localized name. */
 void DrawTerrainInfoBanner(void *entry) {
-    M2C_UNK func_0207c780(M2C_UNK *, s32);
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     void CopyToObjPaletteShadow(M2C_UNK, s32, s32);
     void func_0209b26c(s32, s32, s32, s32, s32, u16);
     s32 func_ov000_0217244c();
@@ -158,9 +160,9 @@ void DrawTerrainInfoBanner(void *entry) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     drawY = M2C_FIELD(entry, s32 *, 0) ? M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x10) + 0x20 : M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x10) + 0xa40;
     if (GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18))) {
-        func_0207c780((M2C_UNK *)GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18)), drawY);
+        LoadGraphicsBlock((M2C_UNK *)GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18)), drawY);
     } else {
-        func_0207c780(&data_ov000_021d841c, drawY);
+        LoadGraphicsBlock(&data_ov000_021d841c, drawY);
     }
     if (GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18))) {
         switch (M2C_FIELD(M2C_FIELD(gCurrentMap, s32 *, 0) + 0x5000, u8 *, 0x157)) {
@@ -315,7 +317,7 @@ void DrawPlayerArmyList(void *info) {
     M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK func_020807e4(s32, s32, u16, s32);
     void FillFaceTileMap(u32, s32, s32, s32, u16, u16, u8);
-    u32 GetInfoWindowMode();
+    u32 GetInfoWindowLanguage();
     extern u8 gArmyPaletteIndices[12];
     extern u16 gPlayerLabelTiles[4];
     extern M2C_UNK gArmyIconSprite0, gArmyIconSprite1, gArmyIconSprite2, gArmyIconSprite3, gArmyIconSprite4, gArmyIconSprite5;
@@ -347,7 +349,7 @@ void DrawPlayerArmyList(void *info) {
         playerState = (M2C_UNK *)((player + 1) * MAP_PLAYER_STRIDE + ((s32)*gCurrentMap + MAP_PLAYER_STATES));
         if (M2C_FIELD(M2C_FIELD(info, s32 *, 0x18) + stateOff, u8 *, 0x6f) != 0) {
             dst = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28) + 0xac + rowOff * 2;
-            switch (GetInfoWindowMode()) {
+            switch (GetInfoWindowLanguage()) {
             case 0: sprite = &gArmyIconSprite0; break;
             case 1: sprite = &gArmyIconSprite1; break;
             case 2: sprite = &gArmyIconSprite2; break;

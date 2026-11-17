@@ -1,7 +1,7 @@
 /* 23 functions from 0x02045D94 to 0x02046D38 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void SystemHalt(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {
+s32 func_02045d94(void *arg0,u8 *a) { void *EncodeWfcProfileBlob(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void SystemHalt(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;EncodeWfcProfileBlob(arg0);func_02076710(a+512,0xa001);i=0;do {
 if(!func_020465c4(b,256,(s32)a)){SystemHalt();return 0;}MI_CpuCopy8((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
 s32 func_02045e70(u16 *a) {  extern M2C_UNK data_0213db28; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&data_0213db28,s32 *,8)=(*a<<3)-1024;return 1; }
@@ -162,13 +162,13 @@ fail:return state;
 }
 #pragma opt_propagation reset
 s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) {
-M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788;
+M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788;
 register u16 len;
-DC_InvalidateRange(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788);
+DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,&func_02046788);
 len=(u16)arg1;
 loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
-void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK DC_CleanRange(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);DC_CleanRange(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
+void func_02046654(s32 a,s32 b,s32 c) { s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); M2C_UNK DC_CleanRange(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,(M2C_UNK *)&func_02046788);DC_CleanRange(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 
 s32 func_020466d0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -183,14 +183,14 @@ s32 func_020466d0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 
 s32 func_0204671c(void) {
     M2C_UNK WaitByLoop(M2C_UNK);
-    M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
-    s32 func_02009e8c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
+    s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     s32 func_02046158(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_02046788;
     do {
 
-    } while (func_02009e8c(4, 1) == 0);
-    func_02009e40(4, &func_02046788);
+    } while (IsFifoMessageReady(4, 1) == 0);
+    SetFifoMessageHandler(4, &func_02046788);
 loop_3:
     if (func_02046158(7, 0, 0, 0) != 1) {
         WaitByLoop(0x40000);
@@ -201,7 +201,7 @@ loop_3:
 
 s32 func_02046788(s32 a,s32 b,s32 c) { extern M2C_UNK data_0213db28; M2C_FIELD(&data_0213db28,u16 *,0)=(u8)b;M2C_FIELD(&data_0213db28,s32 *,4)=1;if(c)M2C_FIELD(&data_0213db28,u16 *,0)=255;return M2C_FIELD(&data_0213db28,u16 *,0); }
 
-void *func_020467b8(void *a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db34,data_0213db3a,data_0213db40; u32 low,lo,hi,z; u64 x,y; lo=M2C_FIELD(a,u32 *,8);hi=M2C_FIELD(a,u32 *,12);((u32 *)&x)[1]=hi;((u32 *)&x)[0]=lo;MI_CpuCopy8((s32)a,&data_0213db34,5);low=(u32)x;hi=(u32)(x>>32);y=x>>5;z=(M2C_FIELD(a,u32 *,4)>>8)&7; M2C_FIELD(&data_0213db34,u8 *,5)=z|((u32)(x&31)<<3);x=y;MI_CpuCopy8((s32)&x,&data_0213db3a,4);M2C_FIELD(&data_0213db34,u8 *,10)=((x>>32)&63)|((M2C_FIELD(a,u16 *,16)&3)<<6);M2C_FIELD(&data_0213db34,u8 *,11)=M2C_FIELD(a,u16 *,16)>>2;MI_CpuCopy8((s32)a+18,&data_0213db40,2);return &data_0213db34; }
+void *EncodeWfcProfileBlob(void *a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db34,data_0213db3a,data_0213db40; u32 low,lo,hi,z; u64 x,y; lo=M2C_FIELD(a,u32 *,8);hi=M2C_FIELD(a,u32 *,12);((u32 *)&x)[1]=hi;((u32 *)&x)[0]=lo;MI_CpuCopy8((s32)a,&data_0213db34,5);low=(u32)x;hi=(u32)(x>>32);y=x>>5;z=(M2C_FIELD(a,u32 *,4)>>8)&7; M2C_FIELD(&data_0213db34,u8 *,5)=z|((u32)(x&31)<<3);x=y;MI_CpuCopy8((s32)&x,&data_0213db3a,4);M2C_FIELD(&data_0213db34,u8 *,10)=((x>>32)&63)|((M2C_FIELD(a,u16 *,16)&3)<<6);M2C_FIELD(&data_0213db34,u8 *,11)=M2C_FIELD(a,u16 *,16)>>2;MI_CpuCopy8((s32)a+18,&data_0213db40,2);return &data_0213db34; }
 
 M2C_UNK *func_02046878(void) {
     extern M2C_UNK data_0213db34;
@@ -381,7 +381,7 @@ block_13:
     return 1;
 }
 
-s32 func_02046c8c(s32 a) { void FillU16(s32,s32,s32); void func_02046ebc(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 sp0[20];s32 i;void *p;register u8 *q;register u32 fill=255;FillU16(0,a,1024);i=0;do{q=(u8 *)(a+((u32)i<<8));M2C_FIELD(q,u8 *,0xe7)=fill;i++;}while(i<3);func_02046ebc(sp0);p=func_020467b8(sp0);i=0;do{MI_CpuCopy8((s32)p,(M2C_UNK *)(a+240),14);i++;a+=256;}while(i<2);return 0;}
+s32 func_02046c8c(s32 a) { void FillU16(s32,s32,s32); void BuildWfcProfile(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 sp0[20];s32 i;void *p;register u8 *q;register u32 fill=255;FillU16(0,a,1024);i=0;do{q=(u8 *)(a+((u32)i<<8));M2C_FIELD(q,u8 *,0xe7)=fill;i++;}while(i<3);BuildWfcProfile(sp0);p=EncodeWfcProfileBlob(sp0);i=0;do{MI_CpuCopy8((s32)p,(M2C_UNK *)(a+240),14);i++;a+=256;}while(i<2);return 0;}
 
 #pragma opt_common_subs off
 void func_02046d0c(s32 a,s32 b) { void FillU16(s32,s32,s32); FillU16(0,a+(b<<8),256); M2C_FIELD(a+(b<<8),u8 *,0xe7)=255; }

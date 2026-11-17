@@ -20,13 +20,13 @@ void MI_CpuCopy32(u8 *src, u8 *dst, u32 size) {
     }
 }
 
-void func_02007f4c(CopyV3 *src, CopyV3 *dst) {
+void MTX_Copy33(CopyV3 *src, CopyV3 *dst) {
     *dst++ = *src++;
     *dst++ = *src++;
     *dst++ = *src++;
 }
 
-void func_02007f68(CopyV3 *src, CopyV3 *dst) {
+void MTX_Copy43(CopyV3 *src, CopyV3 *dst) {
     *dst++ = *src++;
     *dst++ = *src++;
     *dst++ = *src++;

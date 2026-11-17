@@ -147,27 +147,32 @@ void func_ov001_0217d13c(void) {
 
 void func_ov001_0217d15c(void) {
     M2C_UNK func_ov001_02171694();
-    extern M2C_UNK func_ov001_0217d1ac;
+    extern M2C_UNK Ov001_LeaveWfcErrorScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_0217d1ac);
+    Ov001_SetStepCallback(&Ov001_LeaveWfcErrorScreen);
 }
 
-void func_ov001_0217d1ac(void) {
+/* Final step leaving the ov001 Wi-Fi error screen: once its closing fades have
+ * finished and the icon row has settled, tear the screen down and hand over to
+ * the access point menu if a name-entry variant is pending, or back to the map
+ * list otherwise. */
+void Ov001_LeaveWfcErrorScreen(void) {
     s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0217f72c(M2C_UNK);
+    M2C_UNK SetMapListMode(M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     extern M2C_UNK InitMapListScreen;
     extern M2C_UNK Ov001_OpenAccessPointMenu;
-    s32 sp0;
+    s32 nameEntryVariant;
 
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -182,15 +187,15 @@ void func_ov001_0217d1ac(void) {
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 != 0) {
+    Ov001_GetNameEntryMode(0, &nameEntryVariant);
+    if (nameEntryVariant != 0) {
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
         return;
     }
     Ov001_SetNextScreenMode(2, 0);
     Ov001_SetNameEntryMode(0, 0);
-    func_ov001_0217f72c(0);
+    SetMapListMode(0);
     Ov001_SetStepCallback(&InitMapListScreen);
 }
 
@@ -217,7 +222,7 @@ void InitMapListScreen(void) {
     void *Ov001_CreateSpriteFromLayout(s32, s32);
     void *Ov001_AddTask(s32, void (*)(void), s32, s32);
     M2C_UNK MapListRedrawInfoPanel(void);
-    void func_ov001_0217f038(void);
+    void MapList_ApplyRowLayout(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern s8 data_ov001_0218f99c[];
     void func_ov001_0217efb4(void);
@@ -269,7 +274,7 @@ void InitMapListScreen(void) {
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = Ov001_AddTask(1, (void (*)(void))func_ov001_0217efb4, 0, 0x6e);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
     MapListRedrawInfoPanel();
-    func_ov001_0217f038();
+    MapList_ApplyRowLayout();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d6bc);
 }
 

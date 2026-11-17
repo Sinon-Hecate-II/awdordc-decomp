@@ -320,7 +320,7 @@ u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
  extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
- s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 func_020a7bbc(s32); s32 func_ov000_021aa2c4(s32,s32);
+ s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 func_020a7bbc(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
  GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
@@ -342,7 +342,7 @@ s32 FindBestSelectableUnit(void) {
  if(!func_020a2788(commander,(u32)(unit[0]<<26)>>26))continue;
  {u8 *map=*gCurrentMap; s32 player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
  if(GetUnitActionCost(player,(u32)(unit[0]<<26)>>26)>M2C_FIELD(map+player*140,s32 *,0x67a4))continue;}
- if(*gAiSettings==0){if(func_ov000_021aa2c4(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
+ if(*gAiSettings==0){if(AiSettings_DefaultUnitFilter(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
  else {if((*gAiSettings)(commander,(u32)(unit[0]<<26)>>26))goto select;goto next;}
  select:
  if(best && func_020a7bbc((u32)(best[0]<<26)>>26)>=func_020a7bbc((u32)(unit[0]<<26)>>26))continue;
@@ -354,26 +354,36 @@ s32 FindBestSelectableUnit(void) {
  return 0;
 }
 
-s32 func_ov000_021aa214(void) {
- extern u16 gMapConfig;
- extern void **gCurrentMap;
- s32 func_020a2be0(u16); void *GetPlayerSelectedUnit(u16);
- void *p;
- if(((u32)(gMapConfig<<18)>>31)==0)return 0;
- if(!func_020a2be0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
- p=GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
- if(M2C_FIELD(p,u16 *,4)&9)return 0;
- if(!p)return 0;
- return ((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
+/* Returns the id of the current player's selected unit when the battle enables
+   CO abilities and the player's CO power is charged and that unit has not yet
+   acted or been loaded; 0 when there is no such unit. */
+s32 GetCoPowerUnitId(void) {
+    extern u16 gMapConfig;
+    extern void **gCurrentMap;
+    s32 IsPlayerCoPowerReady(u16);
+    void *GetPlayerSelectedUnit(u16);
+    void *unit;
+
+    if (((u32)(gMapConfig << 18) >> 31) == 0) return 0;
+    if (!IsPlayerCoPowerReady(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) return 0;
+    unit = GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    if (M2C_FIELD(unit, u16 *, 4) & (UNIT_FLAG_ACTED | UNIT_FLAG_LOADED)) return 0;
+    if (!unit) return 0;
+    return ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
 }
 
-s32 func_ov000_021aa2c4(s32 a,s32 b) {
+/* Default AI unit-set filter, used when the AI settings block has no unit picker
+   of its own: a unit kind is picked only when the commander's damage row can hit
+   it, and only some kinds qualify - 9, 14 and 16 when that row has one weapon,
+   7 and 8 as well when it has two, and only 11, 20 and 26 when the row cannot hit
+   kind 9 or 14. */
+s32 AiSettings_DefaultUnitFilter(s32 commander,s32 unitKind) {
  s32 func_020a27a0(s32,s32); s32 func_020a25bc(s32,s32);
- if(!func_020a27a0(a,b))return 0;
- if(func_020a27a0(a,9)||func_020a27a0(a,14)){
- if(func_020a25bc(a,0)<=1){if(b!=9 && b!=14 && b!=16)return 0;}
- else {if(b!=9 && b!=8 && b!=7 && b!=14 && b!=16)return 0;}
- }else {if(b!=26 && b!=11 && b!=20)return 0;}
+ if(!func_020a27a0(commander,unitKind))return 0;
+ if(func_020a27a0(commander,9)||func_020a27a0(commander,14)){
+ if(func_020a25bc(commander,0)<=1){if(unitKind!=9 && unitKind!=14 && unitKind!=16)return 0;}
+ else {if(unitKind!=9 && unitKind!=8 && unitKind!=7 && unitKind!=14 && unitKind!=16)return 0;}
+ }else {if(unitKind!=26 && unitKind!=11 && unitKind!=20)return 0;}
  return 1;
 }
 

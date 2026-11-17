@@ -401,13 +401,13 @@ s32 func_ov010_022294ec(void) {
 
 void func_ov010_0222952c(void) {
     M2C_UNK func_0203a850(M2C_UNK *, s32);
-    void func_0203bda0(void *, s32);
+    void RequestMatchStart(void *, s32);
     extern u16 gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
     void func_ov010_0222817c(void);
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFA) = M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFA) & ~2;
     func_0203a850(&gLocalPlayerStatus, 0x6C);
-    func_0203bda0(&func_ov010_0222817c, 0);
+    RequestMatchStart(&func_ov010_0222817c, 0);
 }
 
 void func_ov010_02229568(M2C_UNK arg0) {
@@ -699,7 +699,7 @@ func_ov010_02229608(2,M2C_FIELD(&gOv010OnlineSession,void **,0x18),8,0xffff);
 s32 func_ov010_02229c74(void) {
     u16 GetOnlinePeerMask();
     s32 IsOnlineSessionFlagSet(s32);
-    s32 func_ov010_022282f8();
+    s32 GetNetErrorCode();
     s32 func_ov010_02229bdc();
     extern u16 gOv010OnlineSession;
     s32 temp_r4;
@@ -710,7 +710,7 @@ s32 func_ov010_02229c74(void) {
     if (M2C_FIELD(&gOv010OnlineSession, void **, 0x18) != NULL &&
         temp_r4 != (temp_r4 & M2C_FIELD(M2C_FIELD(&gOv010OnlineSession, void **, 0x18), u16 *, 4))) var_r5 = 1;
     if (IsOnlineSessionFlagSet(3) == 0) var_r5 = 0;
-    t = (func_ov010_022282f8() != 0);
+    t = (GetNetErrorCode() != 0);
     if (t) var_r5 = 0;
     if (!(temp_r4 & 1)) var_r5 = 0;
     if (var_r5 == 0 && func_ov010_02229bdc() != 0)

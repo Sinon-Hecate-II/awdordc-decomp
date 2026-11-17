@@ -214,7 +214,7 @@ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x20),32,24,0);SetTileRectP
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 func_020a9a30(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x3a00);
 func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+0x2c0);
-func_0208ca2c(0x1000,1,GetUiColor(9),2);
+Load3DSpritePattern(0x1000,1,GetUiColor(9),2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 M2C_FIELD(arg0,void**,0x4c)=func_0208bc24(arg0);
 M2C_FIELD(M2C_FIELD(arg0,void**,0x4c),u16*,0x3e)=320;

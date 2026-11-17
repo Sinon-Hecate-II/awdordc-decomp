@@ -80,12 +80,12 @@ s32 UpdateTurnTimer(void) {
 }
 
 void func_020d35d8(void) {
-    M2C_UNK func_020d4dfc();
+    M2C_UNK UpdateMapMode();
     M2C_UNK func_02081fec();
     M2C_UNK func_020b7bbc();
     extern void **gCurrentMap;
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
-        func_020d4dfc();
+        UpdateMapMode();
         return;
     }
     func_02081fec();
@@ -109,7 +109,7 @@ s32 HandleOverlayResult(void) {
  M2C_UNK GetActiveOverlay();
  M2C_UNK GetLinkPhase();
  void func_ov009_022244ec(M2C_UNK);
- M2C_UNK func_ov010_022282f8();
+ M2C_UNK GetNetErrorCode();
  M2C_UNK func_ov010_02228314(M2C_UNK *,M2C_UNK *);
  void SetOnlineSessionFlag(M2C_UNK);
  M2C_UNK GetOverlayEventFlags();
@@ -129,7 +129,7 @@ s32 HandleOverlayResult(void) {
  func_ov009_022244ec(1); overlayResult=1;
  } break;
  case 2:
- if(func_ov010_022282f8()!=0 ? 1 : overlayResult){
+ if(GetNetErrorCode()!=0 ? 1 : overlayResult){
  func_ov010_02228314(&errorCode,&errorType);
  switch(errorType){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: SetOnlineSessionFlag(6); break;}
  overlayResult=1;
@@ -157,7 +157,7 @@ s32 HandleOverlayResult(void) {
 }
 
 void func_020d3830(void) {
-    M2C_UNK func_020d4dfc();
+    M2C_UNK UpdateMapMode();
     M2C_UNK func_0208b5a8();
     M2C_UNK GetActiveOverlay();
     M2C_UNK func_ov009_022241b4();
@@ -171,7 +171,7 @@ void func_020d3830(void) {
     extern M2C_UNK gMapData;
 
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
-        func_020d4dfc();
+        UpdateMapMode();
         return;
     }
     if (func_0208b5a8() != 0) {
@@ -251,14 +251,14 @@ void func_020d39f4(s32 arg0) {
 }
 
 void func_020d3a3c(void) {
-    M2C_UNK func_020d4dfc();
+    M2C_UNK UpdateMapMode();
     M2C_UNK func_0208b5a8();
     M2C_UNK func_02081fec();
     void func_01ffa3dc(void *, s32);
     extern void **gCurrentMap;
     extern char data_0212ba7c[];
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
-        func_020d4dfc();
+        UpdateMapMode();
         return;
     }
     if (func_0208b5a8() != 0) {
@@ -312,7 +312,7 @@ void func_020d3b24(void) {
     void func_020d42d0();
     void func_020d42f8();
     void BeginPlayerTurn();
-    M2C_UNK func_020d4dfc();
+    M2C_UNK UpdateMapMode();
     M2C_UNK func_020d1a1c(M2C_UNK);
     M2C_UNK func_ov000_0219c6e0();
     void func_02084304();
@@ -386,7 +386,7 @@ void func_020d3b24(void) {
             BeginPlayerTurn();
             return;
         case 13:
-            func_020d4dfc();
+            UpdateMapMode();
             return;
         case 14:
             if (func_020d1a1c(*(u16 *)(p+0xa4))) { func_ov000_0219c6e0(); return; }
@@ -502,32 +502,34 @@ void func_020d3d68(void) {
     }
 }
 
-s32 func_020d3e94(void) {
-    M2C_UNK IsPlayerActive(s32);
-    M2C_UNK MarkPlayerDefeated(s32, s32);
-    M2C_UNK func_020c9b70();
+/* Property-count victory: the active player owning the most properties wins and
+ * every other active player is marked defeated (reason PLAYER_DEFEAT_PROPERTIES). */
+s32 ResolvePropertyCountVictory(void) {
+    s32 IsPlayerActive(s32);
+    void MarkPlayerDefeated(s32, s32);
+    void func_020c9b70();
     extern void **gCurrentMap;
-    s32 i;
-    s32 off;
-    s32 max;
-    void *base;
+    s32 player;
+    s32 offset;
+    s32 maxProperties;
+    void *map;
 
-    max = 0;
-    for (i = 1, off = 0x8C; i < 5; i++, off += 0x8C) {
-        if (IsPlayerActive(i) != 0) {
-            s32 value;
-            base = *gCurrentMap;
-            value = M2C_FIELD((u8 *)base + off, u8 *, 0x67BC);
-            if (max < value) {
-                max = value;
+    maxProperties = 0;
+    for (player = 1, offset = MAP_PLAYER_STRIDE; player < MAX_PLAYERS; player++, offset += MAP_PLAYER_STRIDE) {
+        if (IsPlayerActive(player) != 0) {
+            s32 properties;
+            map = *gCurrentMap;
+            properties = M2C_FIELD((u8 *)map + offset, u8 *, MAP_PLAYER_STATES + PLAYER_REC_PROPERTIES);
+            if (maxProperties < properties) {
+                maxProperties = properties;
             }
         }
     }
-    for (i = 1, off = 0x8C; i < 5; i++, off += 0x8C) {
-        if (IsPlayerActive(i) != 0) {
-            base = *gCurrentMap;
-            if (max > M2C_FIELD((u8 *)base + off, u8 *, 0x67BC)) {
-                MarkPlayerDefeated(i, 0x20);
+    for (player = 1, offset = MAP_PLAYER_STRIDE; player < MAX_PLAYERS; player++, offset += MAP_PLAYER_STRIDE) {
+        if (IsPlayerActive(player) != 0) {
+            map = *gCurrentMap;
+            if (maxProperties > M2C_FIELD((u8 *)map + offset, u8 *, MAP_PLAYER_STATES + PLAYER_REC_PROPERTIES)) {
+                MarkPlayerDefeated(player, PLAYER_DEFEAT_PROPERTIES);
             }
         }
     }
@@ -590,24 +592,27 @@ s32 HumanPlayersOnDifferentArmies(void) {
     return 0;
 }
 
-s32 func_020d4060(void) {
+/* True when no active player is human-controlled: a CPU-only (demo) battle.
+   A local battle only counts once a skip button (A/B/Start/X/Y) is held; a
+   link/online battle is checked directly. */
+s32 IsCpuOnlyBattle(void) {
     M2C_UNK IsPlayerActive(s32);
     M2C_UNK IsPlayerCpu(s32);
     extern M2C_UNK gMapData;
     extern void *gKeyState;
     s32 i;
 
-    if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
-        for (i = 1; i < 5; i++) {
+    if (M2C_FIELD(&gMapData, u8 *, MAPDATA_LINK_BATTLE) != 0) {
+        for (i = 1; i < MAX_PLAYERS; i++) {
             if (IsPlayerActive(i) != 0 && IsPlayerCpu(i) == 0) {
                 return 0;
             }
         }
     } else {
-        if ((M2C_FIELD(gKeyState, u16 *, 0x6) & 0xC0B) == 0) {
+        if ((M2C_FIELD(gKeyState, u16 *, 0x6) & (KEY_A | KEY_B | KEY_START | KEY_X | KEY_Y)) == 0) {
             return 0;
         }
-        for (i = 1; i < 5; i++) {
+        for (i = 1; i < MAX_PLAYERS; i++) {
             if (IsPlayerActive(i) != 0 && IsPlayerCpu(i) == 0) {
                 return 0;
             }
@@ -617,36 +622,36 @@ s32 func_020d4060(void) {
 }
 
 void func_020d4110(void) {
-    M2C_UNK func_020d3e94();
+    M2C_UNK ResolvePropertyCountVictory();
     void func_01ffa3dc(void *, s32);
     extern M2C_UNK gMapData;
     extern char data_0212ba3c[];
     if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
-        func_020d3e94();
+        ResolvePropertyCountVictory();
         return;
     }
     func_01ffa3dc(data_0212ba3c, 7);
 }
 
 void func_020d4144(void) {
- M2C_UNK func_020d1a90(); M2C_UNK func_020ca484(); M2C_UNK func_02096b50(M2C_UNK); M2C_UNK func_020d3e94(); extern M2C_UNK gMapData; extern void **gCurrentMap;
+ M2C_UNK func_020d1a90(); M2C_UNK func_020ca484(); M2C_UNK func_02096b50(M2C_UNK); M2C_UNK ResolvePropertyCountVictory(); extern M2C_UNK gMapData; extern void **gCurrentMap;
  if(M2C_FIELD(&gMapData,u8*,15)!=0 && func_020d1a90()!=0) {
  if(M2C_FIELD(&gMapData,u8*,15)==M2C_FIELD(*gCurrentMap,u16*,0x52A2)) goto same;
  }
  M2C_FIELD(*gCurrentMap,u16*,0x52B0)=2;
  func_020ca484(); return;
 same:
- func_02096b50(0xc0000347); func_020d3e94();
+ func_02096b50(0xc0000347); ResolvePropertyCountVictory();
 }
 
 void func_020d41c4(void) {
- M2C_UNK AdvancePlayerTurn(); M2C_UNK HumanPlayersOnDifferentArmies(); M2C_UNK func_020b78ac(); M2C_UNK func_020d4060(); void func_020d4110(void); extern void **gCurrentMap;
+ M2C_UNK AdvancePlayerTurn(); M2C_UNK HumanPlayersOnDifferentArmies(); M2C_UNK func_020b78ac(); M2C_UNK IsCpuOnlyBattle(); void func_020d4110(void); extern void **gCurrentMap;
  void (*cb)(void)=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x40);
  if(cb) cb();
  AdvancePlayerTurn();
  M2C_FIELD(*gCurrentMap,u16*,0x52B0)=3;
  if(HumanPlayersOnDifferentArmies()!=0){func_020b78ac();return;}
- if(func_020d4060()==0)return;
+ if(IsCpuOnlyBattle()==0)return;
  func_020d4110();
 }
 

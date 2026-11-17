@@ -312,13 +312,13 @@ extern s32 *gCurrentMap;
 s32 GetUnitBuildCost(s32,u32);
 s32 IsPlayerHuman(s32);
 s32 func_020cd728(void);
-void func_02091c54(s32,s32);
+void AddRecordFunds(s32,s32);
 s32 id, income;
 if(entry){if(!entry)id=0;else id=((s32)entry-(s32)((u8 *)*gCurrentMap+0x1a4+0x5800))/14;id=(id>>6)+1;}else id=0;
 income=amount*GetUnitBuildCost(id,(u32)(entry[0]<<26)>>26);
 ((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money+=income;
 if(((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money>999999999)((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money=999999999;
-if(IsPlayerHuman(id)&&!func_020cd728())func_02091c54(12,income);
+if(IsPlayerHuman(id)&&!func_020cd728())AddRecordFunds(12,income);
 }
 
 s32 func_020a641c(u8 *p,s32 a){extern s32 *gCurrentMap;s32 func_020a85c0(u32);s32 func_020a86f0(s32);s32 n,v;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(func_020a85c0((u32)(p[0]<<26)>>26))return 0;v=func_020a86f0(n)*a;n=(u32)(p[10]<<25)>>25;if(v>n)v=n;return v;}

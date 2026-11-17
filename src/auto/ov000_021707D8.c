@@ -11,7 +11,7 @@ extern u8 gMapConfig[];
 s32 func_020cd6d4(void);s32 func_020a8a84(u16);void *GetCurrentMapName(void);
 void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
 void func_0209c024(s16,s16,void *,void *,s32,s32);
-s32 GetLanguage(void);s32 func_0207cb88(s32);s32 func_020cfb94(void);
+s32 GetLanguage(void);s32 GetDigitCount(s32);s32 func_020cfb94(void);
 s32 func_020d303c(s32);s32 func_020d30a8(s32);
 void *func_020a8bc0(void);void *func_020a8bcc(void);
 volatile s32 e;
@@ -26,7 +26,7 @@ DrawTilemapNumber(3,1,dst,func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,
 func_0209c024(5,1,dst,GetCurrentMapName(),0,0);
 }else func_0209c024(2,1,dst,GetCurrentMapName(),0,0);
 if(!GetLanguage()) x=26;
-else x=30-(3-func_0207cb88(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
+else x=30-(3-GetDigitCount(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
 DrawTilemapNumber((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
 {s32 i=0;
 if(func_020cfb94()>0){y=6;do{

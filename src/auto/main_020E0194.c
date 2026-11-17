@@ -126,24 +126,29 @@ void func_020e03ac(void) {
     func_020e0230();
 }
 
-M2C_UNK func_020e03b8(void *arg0) { void *p;
- s16 v;
-void *q;
-u16 value;
- if(!IsMapConfirmEnabled()){func_ov010_022294ec();func_ov010_02228c88(arg0);}
- p=M2C_FIELD(arg0,void**,0x54);
- if(func_020e_check(p))Hide3DSpriteSlide(p);
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x58));
- if(Is3DSpriteVisible(M2C_FIELD(arg0,void**,0x60)))Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x60));
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x64));
- v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
- q=M2C_FIELD(arg0,void**,0x68);
- M2C_FIELD(q,s16*,0xe)=v;
- M2C_FIELD(q,s16*,0x10)=-255;
- M2C_FIELD(q,s16*,0xc)=12;
- value=M2C_FIELD(q,u16*,4);
-M2C_FIELD(q,u16*,2)=value;
- return value;
+/* Hide an online menu's buttons and label and start its slide-out animation;
+   unless a map confirm is already enabled, also close the online session and
+   create its departure object.  Returns the animation's start value. */
+M2C_UNK DismissOnlineMenu(void *menu) {
+    void *button;
+    s16 value;
+    SpriteTween *slide;
+    u16 start;
+
+    if (!IsMapConfirmEnabled()) { func_ov010_022294ec(); func_ov010_02228c88(menu); }
+    button = M2C_FIELD(menu, void **, 0x54);
+    if (func_020e_check(button)) Hide3DSpriteSlide(button);
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
+    if (Is3DSpriteVisible(M2C_FIELD(menu, void **, 0x60))) Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x60));
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x64));
+    value = GetSpriteAnimValue(M2C_FIELD(menu, void **, 0x68));
+    slide = M2C_FIELD(menu, void **, 0x68);
+    slide->from = value;
+    slide->to = -255;
+    slide->duration = 12;
+    start = slide->start;
+    slide->current = start;
+    return start;
 }
 
 void func_020e0468(void) {
@@ -151,8 +156,8 @@ void func_020e0468(void) {
 }
 
 void func_020e0474(void) {
-    M2C_UNK func_020e03b8();
-    func_020e03b8();
+    M2C_UNK DismissOnlineMenu();
+    DismissOnlineMenu();
 }
 
 void func_020e0480(void) {

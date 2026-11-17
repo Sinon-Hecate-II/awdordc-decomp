@@ -5,16 +5,16 @@ typedef struct {u32 first:8;u32 second:6;u32 third:6;u32 rest:12;} MapStampCount
 
 void func_ov003_021e5e24(void *arg0,s32 slide) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern u8 data_ov003_0220f60e[],gSpriteDesc16x16[];
-void *GetMapRecord(s32);void *GetMapRecordStamp(s32);s32 func_ov003_02200968(s32);s32 GetMapListIconTile(s32,s32);
+void *GetMapRecord(s32);void *GetMapRecordStamp(s32);s32 GetMapIconFrameIndex(s32);s32 GetMapListIconTile(s32,s32);
 void AddSprite(u16,u16,u16,void*,s32);void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);
 s32 captured=0,played=0,offset=0;void *record;void *saved;u16 tile;u8 row,column;s32 width,height,labelX;void *text;
 record=GetMapRecord(225);
 if(M2C_FIELD(record,u8*,0x2f))captured=1;
 if(((MapPlayedFlag*)((u8*)record+0x38))->played)played=1;
-if(captured){if(played)offset=-64;tile=(u16)((func_ov003_02200968(7)<<4)+0x140);
+if(captured){if(played)offset=-64;tile=(u16)((GetMapIconFrameIndex(7)<<4)+0x140);
 AddSprite((u16)((slide+192+offset)&511),28,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0x6000),data_ov003_0220f60e,11);
 }
-if(played){tile=(u16)((func_ov003_02200968(12)<<4)+0x140);
+if(played){tile=(u16)((GetMapIconFrameIndex(12)<<4)+0x140);
 AddSprite((u16)((slide+192)&511),28,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0x6000),data_ov003_0220f60e,11);}
 width=M2C_FIELD(arg0,s16*,0x62);height=M2C_FIELD(arg0,s16*,0x64);
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x38)=-(164-width/2+slide);

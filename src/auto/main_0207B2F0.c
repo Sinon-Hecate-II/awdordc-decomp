@@ -1,5 +1,6 @@
 /* 39 functions from 0x0207B2F0 to 0x0207C2F0 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 /* The current 3D sprite batch: gSpriteBatch holds a pointer to one. Up to ten sprites are
  * placed into the sprite engine's tile memory. */
 typedef struct SpriteBatch {
@@ -183,9 +184,9 @@ void func_0207b800(void) {
 }
 
 /* Configure the current 3D sprite engine: set control bit 3, clear the low 3 bits of the sprite header, then initialise engine slots from the default data block (and a second pass / the alternate block when not on the secondary engine). */
-void func_0207b84c(void) {
+void Init3DSpriteLayers1D(void) {
     void func_020822b8(void *);
-    extern M2C_UNK data_02100c64, data_02100c70;
+    extern M2C_UNK g3DSpriteLayout1D, g3DSpriteLayoutSub;
     extern u16 *g3DSpriteBankMain;
     extern u16 **g3DSpriteEngineMain, **gCur3DSpriteEngine;
     u16 *volatile sprite0;
@@ -196,7 +197,7 @@ void func_0207b84c(void) {
     *g3DSpriteBankMain |= 8;
     sprite0 = *gCur3DSpriteEngine;
     *sprite0 = *sprite0 & ~7;
-    func_020822b8(&data_02100c64);
+    func_020822b8(&g3DSpriteLayout1D);
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
         isSecondaryEngine = 1;
     } else {
@@ -206,33 +207,36 @@ void func_0207b84c(void) {
         *g3DSpriteBankMain |= 8;
         sprite1 = *gCur3DSpriteEngine;
         *sprite1 = *sprite1 & ~7;
-        func_020822b8(&data_02100c64);
+        func_020822b8(&g3DSpriteLayout1D);
         return;
     }
     sprite2 = *gCur3DSpriteEngine;
     *sprite2 = *sprite2 & ~7;
-    func_020822b8(&data_02100c70);
+    func_020822b8(&g3DSpriteLayoutSub);
 }
 
-void func_0207b940(void) {
+/* Configure the current 3D sprite engine's layers for the 2D OBJ character VRAM
+ * mapping: on the main engine clear the bank's 1D mapping bit and load the 2D layer
+ * layout, otherwise reset the layer attribute's mode bits and use the sub layout. */
+void Init3DSpriteLayers2D(void) {
     void func_020822b8(void *);
-    extern M2C_UNK data_02100c58, data_02100c70;
+    extern M2C_UNK g3DSpriteLayout2D, g3DSpriteLayoutSub;
     extern u16 *g3DSpriteBankMain;
     extern u16 **g3DSpriteEngineMain, **gCur3DSpriteEngine;
-    u16 *volatile sp4;
-    u16 *volatile sp0;
-    u8 equal;
-    if (gCur3DSpriteEngine == g3DSpriteEngineMain) equal = 1; else equal = 0;
-    if (equal) {
-        *g3DSpriteBankMain &= ~8;
-        sp4 = *gCur3DSpriteEngine;
-        *sp4 = *sp4 & ~7;
-        func_020822b8(&data_02100c58);
+    u16 *volatile mainBank;
+    u16 *volatile engineBank;
+    u8 onMain;
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) onMain = 1; else onMain = 0;
+    if (onMain) {
+        *g3DSpriteBankMain &= ~DS3D_BANK_OBJ_MAPPING_1D;
+        mainBank = *gCur3DSpriteEngine;
+        *mainBank = *mainBank & ~7;
+        func_020822b8(&g3DSpriteLayout2D);
         return;
     }
-    sp0 = *gCur3DSpriteEngine;
-    *sp0 = *sp0 & ~7;
-    func_020822b8(&data_02100c70);
+    engineBank = *gCur3DSpriteEngine;
+    *engineBank = *engineBank & ~7;
+    func_020822b8(&g3DSpriteLayoutSub);
 }
 
 /* Convert a tile type into the movement/collision result used by callers. */
@@ -460,20 +464,26 @@ void func_0207bdc4(void) {
     CloseNarcArchive();
 }
 
-void func_0207bf00(s32 arg0,s32 arg1) {
-extern s32 gSpriteBatch; extern u16 **gCur3DSpriteEngine; void DrawSpriteBatch(void);
-s32 x,y;
-u8 index;
-M2C_FIELD(gSpriteBatch,s32 *,0)=arg0>>3;
-M2C_FIELD(gSpriteBatch,s32 *,4)=arg1>>3;
-DrawSpriteBatch();
-x=arg0&7; y=arg1&7;
-index=M2C_FIELD(gSpriteBatch,u32 *,12);
-M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x38)=7-x;
-M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x40)=-3-y;
-index=M2C_FIELD(gSpriteBatch,u32 *,8);
-M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x38)=-x;
-M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x40)=-y;
+/* Draw the current sprite batch with its graphics at pixel (x, y): place the batch's base tile,
+ * submit its tiles, then offset each of the two layers' quads by the leftover sub-tile pixels. */
+void DrawSpriteBatchAt(s32 x, s32 y) {
+    extern s32 gSpriteBatch;
+    extern u16 **gCur3DSpriteEngine;
+    void DrawSpriteBatch(void);
+    s32 subX, subY;
+    u8 layer;
+
+    SPRITE_BATCH->baseX = x >> 3;
+    SPRITE_BATCH->baseY = y >> 3;
+    DrawSpriteBatch();
+    subX = x & 7;
+    subY = y & 7;
+    layer = SPRITE_BATCH->bank2;
+    M2C_FIELD((u8 *)*gCur3DSpriteEngine + layer * 2, s16 *, DS3D_QUAD_X) = 7 - subX;
+    M2C_FIELD((u8 *)*gCur3DSpriteEngine + layer * 2, s16 *, DS3D_QUAD_Y) = -3 - subY;
+    layer = SPRITE_BATCH->bank;
+    M2C_FIELD((u8 *)*gCur3DSpriteEngine + layer * 2, s16 *, DS3D_QUAD_X) = -subX;
+    M2C_FIELD((u8 *)*gCur3DSpriteEngine + layer * 2, s16 *, DS3D_QUAD_Y) = -subY;
 }
 
 /* Plots the current 3D sprite batch into the sprite engine's tile memory: each placed sprite is
@@ -549,11 +559,11 @@ void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02004d3c();
     M2C_UNK func_02004ddc();
     M2C_UNK MI_CpuCopy32(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0207c780(M2C_UNK *, M2C_UNK);
+    M2C_UNK LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02101468;
     extern M2C_UNK data_02101488;
     func_02004b54();
-    func_0207c780(&data_02101488, arg0);
+    LoadGraphicsBlock(&data_02101488, arg0);
     func_02004cf0();
     func_02004d3c();
     MI_CpuCopy32(&data_02101468, arg1, 0x20);

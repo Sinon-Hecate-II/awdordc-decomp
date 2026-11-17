@@ -43,7 +43,7 @@ s32 func_020720f0(s32,s32);
 #pragma push
 #pragma optimization_level 4
 #pragma opt_common_subs off
-void func_020872c8(s32 x,s32 y,s32 z,s32 r,s32 n,u16 color){s32 px,qx,py,qy,i;*(volatile u32*)0x4000500=0;*(volatile u32*)0x4000480=color;if(n&1) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=n;i++){func_0208726c(&qx,&qy,(u16)func_020720f0(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+void DrawGxCircleFan(s32 x,s32 y,s32 z,s32 r,s32 n,u16 color){s32 px,qx,py,qy,i;*(volatile u32*)0x4000500=0;*(volatile u32*)0x4000480=color;if(n&1) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=n;i++){func_0208726c(&qx,&qy,(u16)func_020720f0(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 *(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;

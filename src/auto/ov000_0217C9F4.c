@@ -174,13 +174,13 @@ return 0;
 }
 #pragma opt_strength_reduction on
 void func_ov000_0217d3b8(s32 arg0) {
-    s32 func_ov000_021a8ac8(void *);
+    s32 WillFinishCaptureThisTurn(void *);
     extern void **gCurrentMap;
     void *unit;
     if (arg0 != 3) return;
     unit = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (((u32)(M2C_FIELD(unit, u16 *, 6) << 25) >> 25) < 0x3DU) return;
-    if (func_ov000_021a8ac8(unit) != 1) return;
+    if (WillFinishCaptureThisTurn(unit) != 1) return;
     unit = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (((u32)(M2C_FIELD(unit, u8 *, 0xB) << 28) >> 28) == 0) {
         M2C_FIELD(unit, u8 *, 0xB) |= 0x20;

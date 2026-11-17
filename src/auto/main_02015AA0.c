@@ -81,34 +81,41 @@ if(i<2)blockOffsets[i+1]=end;else M2C_FIELD(chunkIndex,u16 *,0x12)=end;
 }return 1;
 }
 
-s32 func_02015ce4(void *out,void *a,u32 index,void *b) {
+/* Fill the transfer descriptor for multiboot download `block`: find the chunk the
+ * block falls in, then give its destination address, the bytes left from there
+ * (at most one block) and its offset in the download image.  Returns 0 when the
+ * block index is past the end of the chunk index. */
+s32 Mb_GetChunkTransfer(MbChunkTransfer *xfer,void *chunkIndex,u32 block,void *chunks) {
  extern void *gMbWork;
  s8 i;u32 offset;void *entry;
- if(index>=M2C_FIELD(a,u16 *,0x12))return 0;
+ if(block>=M2C_FIELD(chunkIndex,u16 *,0x12))return 0;
  i=2;
 loop:
- if(index>=((u16 *)(a+0xC))[i])goto found;
+ if(block>=((u16 *)(chunkIndex+0xC))[i])goto found;
  i--;
  if(i>=0)goto loop;
 found:
  if(i<0)return 0;
- offset=index-((u16 *)(a+0xC))[i];
- offset=offset*M2C_FIELD(gMbWork,u32 *,0x1318);
- entry=b+0xC+i*16;
- M2C_FIELD(out,u32 *,4)=M2C_FIELD(entry,u32 *,8)-offset;
- if(M2C_FIELD(out,u32 *,4)>M2C_FIELD(gMbWork,u32 *,0x1318))M2C_FIELD(out,u32 *,4)=M2C_FIELD(gMbWork,u32 *,0x1318);
- M2C_FIELD(out,u32 *,8)=offset+M2C_FIELD(a+i*4,u32 *,0);
- M2C_FIELD(out,u32 *,0)=offset+M2C_FIELD(entry,u32 *,0);
- M2C_FIELD(out,u8 *,0xC)=i;return 1;
+ offset=block-((u16 *)(chunkIndex+0xC))[i];
+ offset=offset*M2C_FIELD(gMbWork,u32 *,MB_BLOCK_SIZE);
+ entry=chunks+0xC+i*16;
+ xfer->size=M2C_FIELD(entry,u32 *,8)-offset;
+ if(xfer->size>M2C_FIELD(gMbWork,u32 *,MB_BLOCK_SIZE))xfer->size=M2C_FIELD(gMbWork,u32 *,MB_BLOCK_SIZE);
+ xfer->source=offset+M2C_FIELD(chunkIndex+i*4,u32 *,0);
+ xfer->dest=offset+M2C_FIELD(entry,u32 *,0);
+ xfer->chunk=i;return 1;
 }
 
-s32 Mb_ValidateChunkWindow(s32 a,u32 p,u32 n) {
+/* Whether a download chunk of `size` bytes at `addr` fits the memory window its
+   kind allows: a kind-2 chunk only the fixed header window, a kind-0 chunk only
+   the first main RAM window, a kind-1 chunk the rest of main RAM or all of it. */
+s32 Mb_ValidateChunkWindow(s32 chunk,u32 addr,u32 size) {
  extern const u32 sMbChunkKinds[];
- switch(sMbChunkKinds[a]){
- case 2:if(p>=0x027FFE00 && p+n<=0x027FFF60)return 1;break;
- case 0:if(p>=0x02000000 && p+n<=0x022C0000)return 1;break;
- case 1:if(p>=0x022C0000 && p+n<=0x02300000)return 1;
- if(p>=0x02000000 && p+n<=0x02300000)return 1;break;
+ switch(sMbChunkKinds[chunk]){
+ case 2:if(addr>=MB_WINDOW_HEADER_START && addr+size<=MB_WINDOW_HEADER_END)return 1;break;
+ case 0:if(addr>=MB_WINDOW_RAM_START && addr+size<=MB_WINDOW_RAM_LOW_END)return 1;break;
+ case 1:if(addr>=MB_WINDOW_RAM_LOW_END && addr+size<=MB_WINDOW_RAM_END)return 1;
+ if(addr>=MB_WINDOW_RAM_START && addr+size<=MB_WINDOW_RAM_END)return 1;break;
  default:return 0;
  }return 0;
 }

@@ -487,8 +487,8 @@ void func_0208facc(M2C_UNK arg0) {
 }
 
 void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
-    M2C_UNK func_020901b0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_020901b0(0, -1, arg0, func_0208fa3c());
+    M2C_UNK PlaySlotScriptedSoundAtVolume(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    PlaySlotScriptedSoundAtVolume(0, -1, arg0, func_0208fa3c());
 }
 
 void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -565,7 +565,7 @@ void func_0208fce8(void) {
 
 void func_0208fd40(M2C_UNK *a,s32 b,u32 c){
  u32 hi=(c&0xffff0000)>>16;u32 lo=(u16)c;
- if(hi){func_0202d468(a,b,-1,-1,hi,lo);return;}
+ if(hi){Sound_PlayArchiveEntry(a,b,-1,-1,hi,lo);return;}
  func_0202d378(a,b,-1,-1,lo);
 }
 

@@ -307,7 +307,7 @@ return result;
 }
 
 #pragma opt_propagation off
-void func_02064ffc(void *arg0) {
+void RewindStream(void *arg0) {
     M2C_UNK SetFilePosition(void *, M2C_UNK, M2C_UNK);
     M2C_FIELD(arg0, s8 *, 0xD) = 0;
     SetFilePosition(arg0, 0, 0);
@@ -398,8 +398,8 @@ void *MemMove(char *dst,char *src,u32 n) {
 }
 
 s32 MemSet(s32 arg0) {
-    M2C_UNK func_020652bc();
-    func_020652bc();
+    M2C_UNK MemFill();
+    MemFill();
     return arg0;
 }
 
@@ -424,26 +424,33 @@ s32 ByteCompareN(u8 *a,u8 *b,u32 n) {
  return 0;
 }
 
-M2C_UNK func_020652bc(u8 *p,s32 value,u32 n) {
-u32 v=(u8)value; u32 k;
-if(n>=32) {
-k=(-(u32)p)&3;
-if(k) {n-=k;do {*p++=(u8)v;}while(--k);}
-if (v == 0) goto skip_v;
-v |= ((v<<24)|(v<<16))|(v<<8);
-skip_v:
-k=n>>5;
-if(k) do {
-((u32 *)p)[0]=v;((u32 *)p)[1]=v;((u32 *)p)[2]=v;((u32 *)p)[3]=v;
-((u32 *)p)[4]=v;((u32 *)p)[5]=v;((u32 *)p)[6]=v;((u32 *)p)[7]=v;
-p+=32;
-}while(--k);
-k=(n&31)>>2;
-if(k) do {*(u32 *)p=v;p+=4;}while(--k);
-n&=3;
-}
-if(n) do {*p++=(u8)v;}while(--n);
-(void)k;
-return (s32)p;
+/* Fill n bytes at p with the byte value and return the address one past them:
+   align p to a word, expand the byte into all four lanes, store 32 bytes at a
+   time, then whole words, then the trailing bytes. */
+M2C_UNK MemFill(u8 *p, s32 value, u32 n) {
+    u32 fill = (u8)value;
+    u32 words;
+    if (n >= 32) {
+        words = (-(u32)p) & 3;
+        if (words) {
+            n -= words;
+            do { *p++ = (u8)fill; } while (--words);
+        }
+        if (fill == 0) goto skip_expand;
+        fill |= ((fill << 24) | (fill << 16)) | (fill << 8);
+    skip_expand:
+        words = n >> 5;
+        if (words) do {
+            ((u32 *)p)[0] = fill; ((u32 *)p)[1] = fill; ((u32 *)p)[2] = fill; ((u32 *)p)[3] = fill;
+            ((u32 *)p)[4] = fill; ((u32 *)p)[5] = fill; ((u32 *)p)[6] = fill; ((u32 *)p)[7] = fill;
+            p += 32;
+        } while (--words);
+        words = (n & 31) >> 2;
+        if (words) do { *(u32 *)p = fill; p += 4; } while (--words);
+        n &= 3;
+    }
+    if (n) do { *p++ = (u8)fill; } while (--n);
+    (void)words;
+    return (s32)p;
 }
 

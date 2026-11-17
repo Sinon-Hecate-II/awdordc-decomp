@@ -336,10 +336,10 @@ void func_ov001_0218bdb0(void) {
 extern M2C_UNK data_ov001_02193e48;
 if(M2C_FIELD(&data_ov001_02193e48,u8 *,0)){
 if(((*(volatile u16 *)0x027fffa8)&0x8000)>>15)return;
-if(func_0200ec24(1))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=0;
+if(SetLcdEnabled(1))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=0;
 }else{
 if(!(((*(volatile u16 *)0x027fffa8)&0x8000)>>15))return;
-if(func_0200ec24(0))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=1;
+if(SetLcdEnabled(0))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=1;
 }
 }
 

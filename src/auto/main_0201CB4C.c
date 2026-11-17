@@ -197,7 +197,7 @@ u16 func_0201d04c(void) {
     return M2C_FIELD(&gNetStack, u16 *, 8);
 }
 
-s32 func_0201d0f4(void) {
+s32 NetStackRandom(void) {
     extern M2C_UNK gNetStack;
     u64 mult;
     u64 val;
@@ -212,12 +212,12 @@ s32 func_0201d0f4(void) {
     return (s32)(res >> 32);
 }
 
-void func_0201d138(s32 arg0) {
+void SetCurrentRawConnection(s32 arg0) {
     extern M2C_UNK gSocketManager;
     M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = arg0;
 }
 
-void func_0201d14c(void) {
+void ClearCurrentRawConnection(void) {
     extern M2C_UNK gSocketManager;
     M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = 0;
 }
@@ -297,11 +297,11 @@ void func_0201d25c(void *arg0) {
     M2C_UNK OS_SleepThread(M2C_UNK);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_0201d0f4();
+    s32 NetStackRandom();
     s32 temp_r0;
     s32 temp_r4;
 
-    temp_r0 = func_0201d0f4();
+    temp_r0 = NetStackRandom();
     M2C_FIELD(arg0, s32 *, 0x28) = temp_r0;
     M2C_FIELD(arg0, s32 *, 0x30) = temp_r0;
     M2C_FIELD(arg0, s8 *, 8) = 1;
@@ -335,37 +335,42 @@ void func_0201d2b8(void) {
     }
 }
 
-s32 func_0201d2f0(void *arg0) {
+/* Opens a TCP connection: pick an initial send sequence, enter SYN_SENT, note
+ * the tick and send the SYN segment, then wait (under the interrupt lock) for
+ * the peer to answer, retrying the handshake up to three times.  Returns 0 once
+ * the connection is established, 1 when the link is down or every attempt
+ * timed out. */
+s32 TcpConnect(void *conn) {
     u64 GetSystemTick();
-    M2C_UNK func_0201bee4(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK TcpTransmitSegment(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNetStack;
-    u32 var_r7;
-    s32 temp_r8;
-    s32 temp_r9;
+    u32 attempts;
+    s32 initialSequence;
+    s32 irqState;
 
-    temp_r8 = func_0201d0f4();
-    var_r7 = 0;
+    initialSequence = NetStackRandom();
+    attempts = 0;
 loop_1:
-    M2C_FIELD(arg0, s32 *, 0x28) = temp_r8;
-    M2C_FIELD(arg0, u8 *, 8) = 2U;
-    M2C_FIELD(arg0, s32 *, 0x10) = (s32)(GetSystemTick() >> 16);
-    func_0201bee4(arg0, 2, 0x18);
-    temp_r9 = OS_DisableInterrupts();
-    if ((M2C_FIELD(arg0, u8 *, 8) == 2) && (M2C_FIELD(&gNetStack, s32 *, 0x50) != 0)) {
-        M2C_FIELD(arg0, s32 *, 4) = 1;
+    M2C_FIELD(conn, s32 *, TCP_CONN_SEND_SEQ) = initialSequence;
+    M2C_FIELD(conn, u8 *, SOCKET_STATE) = TCP_STATE_SYN_SENT;
+    M2C_FIELD(conn, s32 *, SOCKET_STATE_TICK) = (s32)(GetSystemTick() >> 16);
+    TcpTransmitSegment(conn, TCP_FLAG_SYN, 0x18);
+    irqState = OS_DisableInterrupts();
+    if ((M2C_FIELD(conn, u8 *, SOCKET_STATE) == TCP_STATE_SYN_SENT) && (M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP) != 0)) {
+        M2C_FIELD(conn, s32 *, SOCKET_TASK_STATE) = 1;
         OS_SleepThread(0);
     }
-    OS_RestoreInterrupts(temp_r9);
-    if (M2C_FIELD(arg0, u8 *, 8) == 4) {
+    OS_RestoreInterrupts(irqState);
+    if (M2C_FIELD(conn, u8 *, SOCKET_STATE) == TCP_STATE_ESTABLISHED) {
         return 0;
     }
-    if ((M2C_FIELD(&gNetStack, s32 *, 0x50) == 0) || (++var_r7 >= 3U)) {
+    if ((M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP) == 0) || (++attempts >= 3U)) {
         return 1;
     }
     goto loop_1;
 }
 
-s32 func_0201d3a4(void){extern M2C_UNK gSocketManager;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return func_0201d2f0(p);}return 1;}
+s32 func_0201d3a4(void){extern M2C_UNK gSocketManager;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return TcpConnect(p);}return 1;}
 
 s32 func_0201d3e4(u16 *arg0,u32 *arg1) {
 extern M2C_UNK gSocketManager;
@@ -716,8 +721,8 @@ void UdpSendSegment(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 TlsSe
 void *sock; s32 sent;
 sock=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),void **,0xa4);
 if(sock!=0){
-if(M2C_FIELD(sock,u8 *,SOCK_KIND)==10){if(len1)UdpSendSegment(src1,len1,sock);if(len2)UdpSendSegment(src2,len2,sock);sent=len1+len2;}
-else if(M2C_FIELD(sock,u8 *,SOCK_KIND)==11){if(len1)func_0201b338(src1,len1,sock);if(len2)func_0201b338(src2,len2,sock);sent=len1+len2;}
+if(M2C_FIELD(sock,u8 *,SOCK_TRANSPORT)==10){if(len1)UdpSendSegment(src1,len1,sock);if(len2)UdpSendSegment(src2,len2,sock);sent=len1+len2;}
+ else if(M2C_FIELD(sock,u8 *,SOCK_TRANSPORT)==11){if(len1)func_0201b338(src1,len1,sock);if(len2)func_0201b338(src2,len2,sock);sent=len1+len2;}
 else if(M2C_FIELD(sock,u8 *,SOCK_TLS_ACTIVE))sent=TlsSendAppData(src1,len1,src2,len2,sock);
 else sent=TcpSendData(src1,len1,src2,len2,sock);
 if(M2C_FIELD(&gNetStack,u8 *,0)==0)return sent;

@@ -1,6 +1,7 @@
 /* 3 functions from 0x0218A9AC to 0x0218B0D8 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 kind:6; u8 flags:2; } UnitKind0218;
 extern void **gCurrentMap;
 extern void *gAiCommandState;
@@ -90,22 +91,27 @@ next:;
     return;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_0218b02c(void) {
+/* Last step of the acting AI unit's action: mark its destination as chosen, pick
+   and finalize that destination, and - unless the caller already suppressed the
+   fallback - clear the influence maps and run the unit's default action. Finally
+   clear the move target and put the cursor on the unit. A carried unit does
+   nothing. */
+void FinishAiUnitAction(void) {
     u16 flags;
-    u8 *p;
-    if (*(u8 *)((u8 *)*gCurrentMap + 0x52d6)) return;
-    *(u16 *)((u8 *)gAiCommandState + 8) |= 0x10;
+    u8 *unit;
+    if (*(u8 *)((u8 *)*gCurrentMap + MAP_CURSOR_CARRIER)) return;
+    *(u16 *)((u8 *)gAiCommandState + AI_COMMAND_STATE_ACTION_FLAGS) |= AI_ACTION_DESTINATION_CHOSEN;
     func_ov000_0218d908();
     func_ov000_0218d040(1);
-    flags = *(u16 *)((u8 *)gAiCommandState + 8);
-    if (!(flags & 0x20)) {
-        *(u16 *)((u8 *)gAiCommandState + 8) = flags | 0x20;
+    flags = *(u16 *)((u8 *)gAiCommandState + AI_COMMAND_STATE_ACTION_FLAGS);
+    if (!(flags & AI_ACTION_SKIP_REPLAN)) {
+        *(u16 *)((u8 *)gAiCommandState + AI_COMMAND_STATE_ACTION_FLAGS) = flags | AI_ACTION_SKIP_REPLAN;
         ClearAiInfluenceMaps();
         gAiUnitAction();
     }
     ClearUnitMoveTarget();
-    p = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-    SetMapCursor(p[1], p[2], 2, 0, 0);
+    unit = *(u8 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
+    SetMapCursor(unit[1], unit[2], 2, 0, 0);
 }
 #pragma opt_strength_reduction off
 /* Scans the map for the reachable cell that best approaches (targetX,targetY).

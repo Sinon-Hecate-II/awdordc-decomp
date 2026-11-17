@@ -232,7 +232,7 @@ s32 StartPeerConnect(void *arg0) {
     ConnAttempt *attempt = (ConnAttempt *)arg0;
     s32 func_02043008();
     s32 GT2SocketHandle(s32);
-    s32 Gt2AddressToString(s32, M2C_UNK, M2C_UNK);
+    s32 gt2AddressToString(s32, M2C_UNK, M2C_UNK);
     s32 func_0205de88(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
     M2C_UNK func_02061690(s32, s32, u16, s32);
     extern M2C_UNK func_02043e0c;
@@ -243,7 +243,7 @@ s32 StartPeerConnect(void *arg0) {
 
     if (attempt->isJoin == 0) {
         connection = GetConnection();
-        func_02061690(M2C_FIELD(connection, s32 *, CONN_SESSION_SERVER_BROWSER), Gt2AddressToString(attempt->address, 0, 0), attempt->port, attempt->natNeg);
+        func_02061690(M2C_FIELD(connection, s32 *, CONN_SESSION_SERVER_BROWSER), gt2AddressToString(attempt->address, 0, 0), attempt->port, attempt->natNeg);
         if (func_02043008() != 0) {
             return 2;
         }
@@ -312,7 +312,7 @@ s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *va
 s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     void func_02007e70(s32, void *, s32);
     void *GetConnection(void);
-    s32 Gt2AddressToString(s32, s32, s32);
+    s32 gt2AddressToString(s32, s32, s32);
     s32 func_02061638(s32, s32, s32, void *, s32);
     extern PacketTag5 sQr2MatchCommandMagic;
     SendPacket packet;
@@ -345,7 +345,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     packet.state = M2C_FIELD(GetConnection(), s32 *, 0x200);
     for (i = 0; i < 5; i++) {
         context = GetConnection();
-        result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), Gt2AddressToString(dest, 0, 0), mode, tag, packet.length + 20);
+        result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), gt2AddressToString(dest, 0, 0), mode, tag, packet.length + 20);
         if (result == 0) {
             return result;
         }

@@ -98,8 +98,8 @@ void func_0200ee58(M2C_UNK arg0) {
 }
 void func_0200ee70(void) {
     M2C_UNK func_02009d34();
-    M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
-    s32 func_02009e8c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
+    s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0212fd34;
     extern M2C_UNK func_0200f0e4;
     if (M2C_FIELD(&data_0212fd34, u16 *, 0) != 0) {
@@ -113,8 +113,8 @@ void func_0200ee70(void) {
     M2C_FIELD(&data_0212fd34, s32 *, 0x10) = 0;
     func_02009d34();
     do {
-    } while (func_02009e8c(4 + 1, 1) == 0);
-    func_02009e40(2 + 3, &func_0200f0e4);
+    } while (IsFifoMessageReady(4 + 1, 1) == 0);
+    SetFifoMessageHandler(2 + 3, &func_0200f0e4);
 }
 
 s32 func_0200eedc(s32 arg0, s32 arg1, s32 arg2) {

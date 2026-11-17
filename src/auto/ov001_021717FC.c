@@ -217,12 +217,12 @@ extern s32 gOv001MessageArchive;
 s32 Ov001_GetLanguage(s32);
 extern u16 gOv001NameTextY[],gOv001NameTextX[];
 
-void func_ov001_0218af94(s32,s32,s32,s32,s32,s32);
+void DrawPanelAnchoredText(s32,s32,s32,s32,s32,s32);
 s32 panel,text,langX,langY;
 panel=CreateTextPanel(0,0);text=Ov001_GetMessageText(gOv001MessageArchive,messageId);
 DrawPanelText(panel,13,60,230,94,2,Ov001_GetTextFontId(),text);
 langX=((s32 (*)(void))Ov001_GetLanguage)();langY=((s32 (*)(void))Ov001_GetLanguage)();
-func_ov001_0218af94(panel,gOv001NameTextX[langX*2],gOv001NameTextY[langY*2],2,0x209,name);
+DrawPanelAnchoredText(panel,gOv001NameTextX[langX*2],gOv001NameTextY[langY*2],2,0x209,name);
 CloseTextPanel(panel);
 }
 

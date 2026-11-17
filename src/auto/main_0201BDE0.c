@@ -2,13 +2,13 @@
 #include "common.h"
 
 void *TcpFindConnection(s32 a,s32 b) {
- s32 func_0201bd2c(s32,s32,void *);
+ s32 TcpConnectionMatchesSegment(s32,s32,void *);
  extern M2C_UNK gSocketManager;
  void *q;
  void *p=M2C_FIELD(&gSocketManager,void **,8);
  while(p) {
  q=M2C_FIELD(p,void **,0xa4);
- if(q && M2C_FIELD(q,s32 *,0) && func_0201bd2c(a,b,q))return q;
+ if(q && M2C_FIELD(q,s32 *,0) && TcpConnectionMatchesSegment(a,b,q))return q;
  p=M2C_FIELD(p,void **,0x68);
  }
  return NULL;
@@ -39,7 +39,7 @@ s32 func_0201bec8(s32 arg0) {
     return FindArpMacAddress();
 }
 
-M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
+M2C_UNK TcpTransmitSegment(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
  extern M2C_UNK gSocketManager,data_021374f8;
  if(func_0201bec8(M2C_FIELD(a,s32 *,28)) || M2C_FIELD(&gSocketManager,void **,4)!=&data_021374f8) {
  TcpSendSegment(0,0,a,b,c);return;
@@ -48,13 +48,13 @@ M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
 }
 
 void TcpSendAck(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0201bee4(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_0201bee4(arg0, 0x10, arg1);
+    M2C_UNK TcpTransmitSegment(M2C_UNK, M2C_UNK, M2C_UNK);
+    TcpTransmitSegment(arg0, 0x10, arg1);
 }
 
 void TcpSendFinAck(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0201bee4(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_0201bee4(arg0, 0x11, arg1);
+    M2C_UNK TcpTransmitSegment(M2C_UNK, M2C_UNK, M2C_UNK);
+    TcpTransmitSegment(arg0, 0x11, arg1);
 }
 
 /* Reply to an unacceptable TCP segment with a reset.  The reset is built in the
@@ -76,14 +76,14 @@ M2C_FIELD(&gNetStack,u32 *,352)=((u16)(((s32)ipSrcHi>>8)|(ipSrcHi<<8))<<16)|(u16
 if(M2C_FIELD(seg,u8 *,13)&16){
 ackLo=M2C_FIELD(seg,u16 *,10);ackHi=M2C_FIELD(seg,u16 *,8);
 M2C_FIELD(conn,u32 *,TCP_CONN_SEND_SEQ)=((u16)(((s32)ackHi>>8)|(ackHi<<8))<<16)|(u16)(((s32)ackLo>>8)|(ackLo<<8));
-func_0201bee4((s32)conn,4,arg);return;
+TcpTransmitSegment((s32)conn,4,arg);return;
 }
 M2C_FIELD(conn,s32 *,TCP_CONN_SEND_SEQ)=0;
 seqLo=M2C_FIELD(seg,u16 *,6);seqHi=M2C_FIELD(seg,u16 *,4);
 ackNum=len+(((u16)(((s32)seqHi>>8)|(seqHi<<8))<<16)|(u16)(((s32)seqLo>>8)|(seqLo<<8)));
 M2C_FIELD(conn,s32 *,TCP_CONN_ACK_NUM)=ackNum;
 if(M2C_FIELD(seg,u8 *,13)&3)M2C_FIELD(conn,s32 *,TCP_CONN_ACK_NUM)=ackNum+1;
-func_0201bee4((s32)conn,20,arg);
+TcpTransmitSegment((s32)conn,20,arg);
 }
 
 /* Answers an incoming segment on a connection in SYN_RCVD (a SYN segment):
@@ -103,7 +103,7 @@ srcLo=M2C_FIELD(ipHeader,u16 *,14);srcHi=M2C_FIELD(ipHeader,u16 *,12);
 M2C_FIELD(conn,u32 *,SOCKET_PEER_ADDR)=((u16)(((s32)srcHi>>8)|(srcHi<<8))<<16)|(u16)(((s32)srcLo>>8)|(srcLo<<8));
 peerLo=M2C_FIELD(seg,u16 *,6);peerHi=M2C_FIELD(seg,u16 *,4);
 M2C_FIELD(conn,u32 *,TCP_CONN_ACK_NUM)=(((u16)(((s32)peerHi>>8)|(peerHi<<8))<<16)|(u16)(((s32)peerLo>>8)|(peerLo<<8)))+1;
-func_0201be44(seg,conn);func_0201bee4((s32)conn,18,0);
+func_0201be44(seg,conn);TcpTransmitSegment((s32)conn,18,0);
 }
 
 s32 TcpProcessSynExisting(s32 a,s32 b,s32 c) {

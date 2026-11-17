@@ -278,7 +278,7 @@ void Ov003_DrawPreviewUnitCategoryGrid(void *panel, s16 originX, s16 originY) {
 void func_ov003_021e3aec(void *arg0, s32 arg1) {
     u8 func_ov003_021e1500(s32, s32, s32);
     void *GetMapRecord(s32);
-    s32 func_ov003_02200968(s32);
+    s32 GetMapIconFrameIndex(s32);
     void AddSprite(u16, u8, u16, void *, s32);
     s32 GetMapListIconTile(s32, u16);
     s32 Modulo(s32, s32);
@@ -322,14 +322,14 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
 
     if (flag != 0) {
         if (bit != 0) adj = -0x40;
-        tile = (u16)(func_ov003_02200968(7) * 16 + 0x140);
+        tile = (u16)(GetMapIconFrameIndex(7) * 16 + 0x140);
         shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
         x = (arg1 + 0xc0 + adj) & 0x1ff;
         color = (0x3ff & (tile >> shift)) | 0x6000;
         AddSprite((u16)x, 0x1c, (u16)color, data_ov003_0220f34c, 0xb);
     }
     if (bit != 0) {
-        tile = (u16)(func_ov003_02200968(0xc) * 16 + 0x140);
+        tile = (u16)(GetMapIconFrameIndex(0xc) * 16 + 0x140);
         shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
         x = (arg1 + 0xc0) & 0x1ff;
         color = (0x3ff & (tile >> shift)) | 0x6000;

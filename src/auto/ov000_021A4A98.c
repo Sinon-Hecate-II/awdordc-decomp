@@ -1,5 +1,6 @@
 /* 5 functions from 0x021A4A98 to 0x021A58C8 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern void **gCurrentMap;
 extern u8 gUnitKindFlags[],gUnitKindStats[];
 #define MAP (*gCurrentMap)
@@ -223,25 +224,29 @@ next:;unitId++;unitOffset+=14;
 }while(unitId<gPlayerUnitIdBase[player]+51);
 }
 #pragma pop
-void func_ov000_021a581c(void) {
+/* Rebuilds the map's influence score layer: clear the score layer to zero,
+ * select the layer the range fills work in, add one point to every cell each
+ * other player's kind-22 unit can reach, then restore the player being
+ * processed. */
+void BuildInfluenceMap(void) {
     void FillMapLayer(s32);
     void SelectMapLayer(void *);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     void MarkPlayerInfluence(u8);
     extern void **gCurrentMap;
-    u16 saved;
-    s32 i;
-    void *base;
-    base = *gCurrentMap;
-    saved = M2C_FIELD(base, u16 *, 0x52B6);
-    SelectMapLayer(base + 0x2338);
+    u16 savedPlayer;
+    s32 player;
+    void *map;
+    map = *gCurrentMap;
+    savedPlayer = M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER);
+    SelectMapLayer(map + MAP_CELL_SCORE);
     FillMapLayer(0);
-    SelectMapLayer(*gCurrentMap + 0x1E30);
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0)
-            MarkPlayerInfluence(i);
+    SelectMapLayer(*gCurrentMap + MAP_CELL_ORDER);
+    for (player = 1; player < 5; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0)
+            MarkPlayerInfluence(player);
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 

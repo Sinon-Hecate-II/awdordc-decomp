@@ -321,11 +321,11 @@ void func_ov010_02225778(void) {
 
 void func_ov010_022257a0(void) {
 extern s32 data_ov010_0222edb4;
-void func_ov010_02224288(void);
+void VoiceLink_CheckTimeout(void);
 s32 func_ov010_022231d4(void);
 void func_ov010_02223114(void);
 if(!M2C_FIELD(&data_ov010_0222edb4,s32 *,8))return;
-if(!(++data_ov010_0222edb4 & 15))func_ov010_02224288();
+if(!(++data_ov010_0222edb4 & 15))VoiceLink_CheckTimeout();
 if(func_ov010_022231d4())func_ov010_02223114();
 }
 

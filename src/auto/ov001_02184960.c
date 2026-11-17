@@ -108,13 +108,16 @@ s32 func_ov001_02184c60(void) {
 
 void func_ov001_02184c70(s32 a) {void UpdateSaveChecksums(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;UpdateSaveChecksums(a);}
 
-void func_ov001_02184cac(void) {
-void FillU16(s32,s32,s32);void func_02046ebc(void *);void *func_020467b8(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void UpdateSaveChecksums(s32);extern s32 gSaveData;
-u8 buf[20];register s32 i;void *p;register u8 *q;register u32 fill=255;s32 offset;
+/* Reset the save data: clear the four save slot images, mark the first three
+ * erased, store the local Wi-Fi profile code in the first two slots and refresh
+ * every slot's checksum. */
+void ResetSaveSlotsWithWfcProfile(void) {
+void FillU16(s32,s32,s32);void BuildWfcProfile(void *);void *EncodeWfcProfileBlob(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void UpdateSaveChecksums(s32);extern s32 gSaveData;
+u8 profile[20];register s32 i;void *code;register u8 *q;register u32 fill=255;s32 offset;
 FillU16(0,gSaveData,1024);
-i=0;do{q=(u8 *)(gSaveData+((u32)i<<8));q[0xe7]=fill;i++;}while(i<3);
-func_02046ebc(buf);p=func_020467b8(buf);
-i=0;offset=0;do{MI_CpuCopy8(p,(void *)(gSaveData+offset+0xf0),14);i++;offset+=256;}while(i<2);
+i=0;do{q=(u8 *)(gSaveData+((u32)i<<8));q[SAVE_SLOT_STATUS_REL]=fill;i++;}while(i<3);
+BuildWfcProfile(profile);code=EncodeWfcProfileBlob(profile);
+i=0;offset=0;do{MI_CpuCopy8(code,(void *)(gSaveData+offset+SAVE_SLOT_CODE),SAVE_SLOT_PROFILE_CODE_SIZE);i++;offset+=SAVE_SLOT_SIZE;}while(i<2);
 for(i=0;i<4;i++)UpdateSaveChecksums(i);
 }
 

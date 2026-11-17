@@ -14,7 +14,7 @@ void func_ov002_021e497c(s32,s32,s32,s32);
 extern u8 data_ov002_021f30fd[],data_ov002_021f30fe[],data_ov002_021f3107[],data_ov002_021f3105[],data_ov002_021f3106[];
 extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data_ov002_021f3044[],data_ov002_021f3018[];
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-void func_0208718c(void);
+void ResetGxTextureParams(void);
 void DrawSolidQuad(s32,s32,s32,s32,s32,u16);
 void func_ov002_021e5974(s32 *,s32 *);
 void DrawFlatQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
@@ -22,23 +22,23 @@ void DrawGradientQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 s32 func_ov002_021e4b68(void);
 void func_ov002_021e4728(s32,s32,s32,s32,s32);
 void func_ov002_021e47b0(s32,s32,s32,s32,s32);
-void func_ov002_021e45c0(s32,s32,s32,s32,s32);
-void func_ov002_021e4674(s32,s32,s32,s32,s32);
+void DrawVersusPanelArtFlipped(s32,s32,s32,s32,s32);
+void DrawVersusPanelArt(s32,s32,s32,s32,s32);
 
 
 void func_ov002_021e4b94(void *arg0) {
 u8 *p=arg0; s32 width,b,a,color,tiles,offset,yy,i,xx;s16 x,y;
 width=EaseInterpolate(0,data_ov002_021f30fd[((u32)(p[3]<<28)>>28)*24],data_ov002_021f30fe[((u32)(p[3]<<28)>>28)*24],p[0],p[1]);
-y=166-(s8)p[2];func_0208718c();DrawSolidQuad(0,y,10,256,20,0x1cc2);
+y=166-(s8)p[2];ResetGxTextureParams();DrawSolidQuad(0,y,10,256,20,0x1cc2);
 offset=((u32)(p[3]<<28)>>28)*24;
 color=data_ov002_021f3107[offset]?M2C_FIELD(p,u16 *,6):0x7fff;
 if(data_ov002_021f3105[offset]){
 if(data_ov002_021f3106[offset]!=2){
-y=168-(s8)p[2];func_0208718c();a=91;b=82;
+y=168-(s8)p[2];ResetGxTextureParams();a=91;b=82;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawFlatQuad(0,y,a,y,0,y+16,b,y+16,9,0);
 else DrawFlatQuad(256-a,y,256,y,256-b,y+16,256,y+16,9,0);
-y=169-(s8)p[2];func_0208718c();a=84;b=76;
+y=169-(s8)p[2];ResetGxTextureParams();a=84;b=76;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+14,b,y+14,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+14,256,y+14,8,color,1);
@@ -49,19 +49,19 @@ if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e4728(0,y,0,tiles,data_ov002_021f3044[
 else func_ov002_021e47b0(208,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 }
 }else{
-y=154-(s8)p[2];func_0208718c();a=97;b=80;
+y=154-(s8)p[2];ResetGxTextureParams();a=97;b=80;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawFlatQuad(0,y,a,y,0,y+30,b,y+30,9,0);
 else DrawFlatQuad(256-a,y,256,y,256-b,y+30,256,y+30,9,0);
-y=155-(s8)p[2];func_0208718c();a=90;b=74;
+y=155-(s8)p[2];ResetGxTextureParams();a=90;b=74;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+28,b,y+28,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+28,256,y+28,8,color,1);
 if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
 y=119-(s8)p[2];
 tiles=M2C_FIELD((func_ov002_021e4b68()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
-if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e45c0(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
-else func_ov002_021e4674(184,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
+if(((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
+else DrawVersusPanelArt(184,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 }
 }
 }

@@ -69,4 +69,16 @@ typedef struct Ov003BattleSetupMenu {
 #define BATTLE_PANEL_ICON    0x11 /* u8 waypoint option icon */
 #define BATTLE_PANEL_NONE    0x63 /* no player / no icon */
 
+/* The ov003 battle-display object that SetupSceneObjectDisplay and
+ * CloseSceneObjectDisplay drive: two tween sprites that slide the rows in and
+ * out, the arrays of part sprites and per-slot records, a sprite group, a text
+ * sprite and a sprite shared by the whole display. */
+#define SCENE_DISPLAY_TWEEN_TOP    0x3C /* void *: sprite tweened to/from the scene slide offset */
+#define SCENE_DISPLAY_PARTS        0x40 /* s32 *: part sprite handles, 2 sprites then 8 + 8 */
+#define SCENE_DISPLAY_RECORDS      0x44 /* 8 records of 0x18 bytes, the record total at +0xC */
+#define SCENE_DISPLAY_TWEEN_BOTTOM 0x48 /* void *: sprite tweened to/from -32 */
+#define SCENE_DISPLAY_GROUP        0x50 /* s32 *: group sprite handles, 3 runs of 4 */
+#define SCENE_DISPLAY_TEXT         0x54 /* void *: text sprite */
+#define SCENE_DISPLAY_SPRITE       0x58 /* s32: sprite hidden together with the display */
+
 #endif

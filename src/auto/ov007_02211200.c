@@ -153,7 +153,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK func_020cfe2c();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
+    M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov007_0221f680;
@@ -162,7 +162,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
         func_ov007_022114ac(arg0);
-        func_020b5134(&data_ov007_0221f680, arg1, arg2, 0x50, 0, 0, arg0);
+        CreateAnimatedMapSprite(&data_ov007_0221f680, arg1, arg2, 0x50, 0, 0, arg0);
         SpawnSoundEffectAtTile(0x8A, arg1, arg2, 1);
         return;
     }
@@ -227,7 +227,7 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     M2C_UNK func_020cfe2c();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
+    M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov007_0221f690;
@@ -238,7 +238,7 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
         func_ov007_022114ac(editor);
-        func_020b5134(&data_ov007_0221f690, x, y, 0x50, 0, 0, editor);
+        CreateAnimatedMapSprite(&data_ov007_0221f690, x, y, 0x50, 0, 0, editor);
         SpawnSoundEffectAtTile(0x8a, x, y, 1);
         return;
     }
@@ -645,10 +645,10 @@ void MapEditor_SetMapModified(s32 arg0) {
 }
 
 void func_ov007_022121e4(void) {
-    M2C_UNK func_020b51dc();
-    M2C_UNK func_020b5200(M2C_UNK *, M2C_UNK);
+    M2C_UNK ResetEffectSpritePool();
+    M2C_UNK LoadEffectSpriteSheet(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f6a0;
-    func_020b51dc();
-    func_020b5200(&data_ov007_0221f6a0, 0);
+    ResetEffectSpritePool();
+    LoadEffectSpriteSheet(&data_ov007_0221f6a0, 0);
 }
 

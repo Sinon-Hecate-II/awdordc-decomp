@@ -242,15 +242,19 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return 0;
 }
 
-s32 func_0205b370(void *a,s32 b,s32 c) {
+/* Handle command 0 (application data) received on a GT2 control channel: hand the
+   payload to the connection's receive filters, or to its message callback when it
+   has no filters, flagged as coming from the control channel. A connection that is
+   neither connected nor closing is closed instead of receiving the data. */
+s32 gti2HandleDataCommand(void *connection,s32 message,s32 length) {
 s32 Vector_GetCount(s32);
 s32 Gt2ConnectionCallMessageCallback(void *,s32,s32,s32);
 s32 gti2ReceiveFilterCallback(void *,s32,s32,s32,s32);
-s32 n=M2C_FIELD(a,s32 *,12),r;
-if(n!=5&&n!=6){if(!Gt2CloseConnection((s32)a))return 0;}
+s32 state=M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE),r;
+if(state!=GT2_STATE_CONNECTED&&state!=GT2_STATE_PEER_CLOSED){if(!Gt2CloseConnection((s32)connection))return 0;}
 else {
-if(Vector_GetCount(M2C_FIELD(a,s32 *,0x9c))){if(gti2ReceiveFilterCallback(a,0,b,c,1))r=1;else r=0;return r;}
-if(!Gt2ConnectionCallMessageCallback(a,b,c,1))return 0;
+if(Vector_GetCount(M2C_FIELD(connection,s32 *,GT2_CONNECTION_FILTERS))){if(gti2ReceiveFilterCallback(connection,0,message,length,1))r=1;else r=0;return r;}
+if(!Gt2ConnectionCallMessageCallback(connection,message,length,1))return 0;
 }
 return 1;
 }
@@ -315,7 +319,7 @@ s32 func_0205b758(void *arg0) {
 s32 Gt2DispatchCommand(void *object, s32 command, s32 param_a, s32 param_b) {
     s32 gti2HandleClientResponse(void *, s32, s32);
     M2C_FIELD(object, u16 *, 0x66)++;
-    if (command == 0) { if (!func_0205b370(object, param_a, param_b)) return 0; }
+    if (command == 0) { if (!gti2HandleDataCommand(object, param_a, param_b)) return 0; }
     else if (command == 1) { if (!func_0205b41c(object, (void *)param_a, param_b)) return 0; }
     else if (command == 2) { if (!gti2HandleConnectAccept(object, (void *)param_a, param_b)) return 0; }
     else if (command == 3) { if (!gti2HandleClientResponse(object, param_a, param_b)) return 0; }

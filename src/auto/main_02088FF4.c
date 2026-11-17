@@ -217,7 +217,7 @@ void *func_02089340(void *arg0) {
 }
 
 void func_020893a8(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
-    M2C_UNK func_0208ca2c(u32, s32, s32, M2C_UNK);
+    M2C_UNK Load3DSpritePattern(u32, s32, s32, M2C_UNK);
     *(volatile u16 *)((s8 *)arg0 + 0x3E) = (u16)(arg1 >> 5);
     {
         s32 t = *(volatile s32 *)((s8 *)arg0 + 0x40);
@@ -228,7 +228,7 @@ void func_020893a8(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
         *(volatile s32 *)((s8 *)arg0 + 0x40) = t;
     }
     *(volatile s16 *)((s8 *)arg0 + 0x5C) = (s16)arg3;
-    func_0208ca2c(arg1, arg2, arg3, 2);
+    Load3DSpritePattern(arg1, arg2, arg3, 2);
     *(volatile s16 *)((s8 *)arg0 + 0x3C) = 0;
     *(volatile s8 *)((s8 *)arg0 + 0x49) = 0;
 }
@@ -337,30 +337,34 @@ void func_020897a4(void) {
 }
 
 void func_020897b8(void) {
-    M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
     s32 GetUiColor(M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = GetUiColor(0xD);
-    func_0208e0f0(0x1400, 1, temp_r4, GetUiColor(0xE));
+    DrawUiGradient(0x1400, 1, temp_r4, GetUiColor(0xE));
 }
 
-void func_020897e8(void) {
+/* Fills the UI gradient palette with a gradient from UI colour 0xD to a colour
+ * that cycles between the highlight colours 0xF and 0x10 on a 32-frame triangle
+ * wave, then uploads the changed sprite data. */
+void DrawUiGradientPulse(void) {
     M2C_UNK Update3DSpriteVram();
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 GetUiColor(M2C_UNK);
     s32 BlendRgb555_32(s32, s32, u8, u8);
-    M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
     extern volatile s32 data_027e15c0;
-    s32 temp_r4;
-    s32 temp_r4_2;
-    u8 var_r0;
-    var_r0 = (u32)(data_027e15c0 & 0x1F) < 0x10U ?
-        EaseInterpolate(0, 0, 0x20, data_027e15c0 & 0x1F, 0x10) :
-        EaseInterpolate(0, 0x20, 0, (data_027e15c0 & 0x1F) - 0x10, 0x10);
-    temp_r4 = GetUiColor(0xF);
-    temp_r4_2 = BlendRgb555_32(temp_r4, GetUiColor(0x10), var_r0, (u8)(0x20 - var_r0));
-    func_0208e0f0(0x1400, 1, GetUiColor(0xD), temp_r4_2);
+    s32 highlightColor;
+    s32 blendedColor;
+    u8 pulse;
+
+    pulse = (u32)(data_027e15c0 & 0x1F) < UI_GRADIENT_PULSE_HALF ?
+        EaseInterpolate(0, 0, UI_GRADIENT_PULSE_FRAMES, data_027e15c0 & 0x1F, UI_GRADIENT_PULSE_HALF) :
+        EaseInterpolate(0, UI_GRADIENT_PULSE_FRAMES, 0, (data_027e15c0 & 0x1F) - UI_GRADIENT_PULSE_HALF, UI_GRADIENT_PULSE_HALF);
+    highlightColor = GetUiColor(0xF);
+    blendedColor = BlendRgb555_32(highlightColor, GetUiColor(0x10), pulse, (u8)(UI_GRADIENT_PULSE_FRAMES - pulse));
+    DrawUiGradient(UI_GRADIENT_TILE, UI_GRADIENT_PALETTE, GetUiColor(0xD), blendedColor);
     Update3DSpriteVram();
 }
 
@@ -432,7 +436,7 @@ M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
     extern s32 g3DSpriteEngineSub;
     u8 func_0208ae88(M2C_UNK, s32);
     M2C_UNK GetUiColor(s32);
-    M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
     void func_02091c98(void);
     void LoadScenePanelPalette(s32);
     void func_02089b18(M2C_UNK, M2C_UNK);
@@ -470,7 +474,7 @@ M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
             func_0208ae88(entity, tmp + 0x62);
             t1 = GetUiColor(0xD);
             t2 = GetUiColor(0xE);
-            func_0208e0f0(0x1400, 1, t1, t2);
+            DrawUiGradient(0x1400, 1, t1, t2);
             func_02091c98();
             LoadScenePanelPalette(0x12);
             func_02089b18(entity, arg3);

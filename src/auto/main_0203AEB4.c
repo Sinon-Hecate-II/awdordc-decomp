@@ -19,14 +19,18 @@ void func_0203af18(void) {
  M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u64 *,0xC)=t;
 }
 
-s32 SetGpiStatus(s32 a,void *b,void *c) {
- extern M2C_UNK gMatchSessionMgr;
- s32 func_0203a660(void); s32 gpiSetStatusInfo(void *,s32,void *,void *);
- if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!func_0203a660())return 0;
- if(a==-1)a=M2C_FIELD(*M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void ***,4),s32 *,0x214);
- if(!b)b=(u8 *)*M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void ***,4)+0x218;
- if(!c)c=(u8 *)*M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void ***,4)+0x318;
- return gpiSetStatusInfo(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),a,b,c);
+/* Sends the match session's GameSpy status and location strings to the lobby;
+   a status of -1 and null strings fall back to the values cached on the
+   connection.  Does nothing until the NAS login has completed. */
+s32 SetGpiStatus(s32 status, void *statusString, void *locationString) {
+    extern M2C_UNK gMatchSessionMgr;
+    s32 IsNasLoginDone(void);
+    s32 gpiSetStatusInfo(void *, s32, void *, void *);
+    if (!M2C_FIELD(&gMatchSessionMgr, void **, 8) || !IsNasLoginDone()) return 0;
+    if (status == -1) status = M2C_FIELD(*M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void ***, MATCH_SESSION_CONNECTION), s32 *, GPI_CONN_CACHED_STATUS);
+    if (!statusString) statusString = (u8 *)*M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void ***, MATCH_SESSION_CONNECTION) + GPI_CONN_STATUS_STRING;
+    if (!locationString) locationString = (u8 *)*M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void ***, MATCH_SESSION_CONNECTION) + GPI_CONN_LOCATION_STRING;
+    return gpiSetStatusInfo(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void **, MATCH_SESSION_CONNECTION), status, statusString, locationString);
 }
 
 void NotifyPlayerSlotChanged(s32 a) {
@@ -76,7 +80,7 @@ void SyncSessionPlayerConnections(M2C_UNK *arg0,s32 playerCount){
 extern M2C_UNK gMatchSessionMgr;
 s32 func_0204e184(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 func_0204e3b0(void *,s32);
 u32 ReportNetError();s32 GetSessionPlayerId(s32);s32 IsPlayerRecordJoined(void *);void AssignPlayerRecordId(void *,s32);void MarkPlayerRecordJoined(void *);
-s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);
+s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);
 s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,s32);void FormatPlayerNasId(s32,void *,void *);
 void HandlePeerConnectResult(s32,void *,s32);s32 gpiProfileSearch(void *,s32,s32,s32,s32,void *,s32,s32,void (*)(s32,void *,s32),s32);
 s32 i,remoteCount,remoteIndex;u32 buddyInfo[132];u32 peerAddress[6];s32 slot,profileId;u8 *a=(u8 *)arg0;
@@ -101,7 +105,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1e)=1;
 while(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c)<playerCount){
 profileId=GetSessionPlayerId(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c));
 if(profileId){
-if(!func_0203b454(a,M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c),profileId)){
+if(!MatchSession_MergeDuplicatePlayer(a,M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c),profileId)){
 ReportNetError(func_0204e2f4(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),profileId,&remoteIndex));
 if(remoteIndex==-1)DropSessionPlayer(profileId);
 }
@@ -123,7 +127,7 @@ void func_0203b3c4(void) {
 }
 
 #pragma opt_propagation off
-void func_0203b3fc(u8 *a,u32 b,u32 c) {
+void MatchSession_ClearPlayerRecord(u8 *a,u32 b,u32 c) {
 extern M2C_UNK gMatchSessionMgr;void MI_CpuFill8(void*,s32,u32);
 void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(!p)return;
@@ -132,15 +136,19 @@ p=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));
 }
 #pragma opt_propagation reset
-s32 func_0203b454(u8 *a,s32 b,s32 c) {
+/* Look for the player `profileId` among the session's player records before
+   `slot` and merge the duplicate: the record that is already joined survives and
+   the other one (with its battle stats) is folded into it, then the player list
+   is marked dirty. Returns 1 when the player was found, 0 otherwise. */
+s32 MatchSession_MergeDuplicatePlayer(u8 *playerRecords, s32 slot, s32 profileId) {
  extern M2C_UNK gMatchSessionMgr; s32 GetSessionPlayerId(s32); s32 IsPlayerRecordJoined(void *);
- s32 i,x;
- for(i=0;i<b;i++) {
- x=GetSessionPlayerId(i);
- if(x&&x==c) {
- if(IsPlayerRecordJoined(a+b*12)&&!IsPlayerRecordJoined(a+i*12))func_0203b3fc(a,i,b);
- else func_0203b3fc(a,b,i);
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1D)=1;return 1;
+ s32 i,id;
+ for(i=0;i<slot;i++) {
+ id=GetSessionPlayerId(i);
+ if(id&&id==profileId) {
+ if(IsPlayerRecordJoined(playerRecords+slot*12)&&!IsPlayerRecordJoined(playerRecords+i*12))MatchSession_ClearPlayerRecord(playerRecords,i,slot);
+ else MatchSession_ClearPlayerRecord(playerRecords,slot,i);
+ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_DIRTY)=1;return 1;
  }
  }return 0;
 }
@@ -152,7 +160,7 @@ s32 ResolvePlayerSlot(u8 *a, s32 b, s32 c) {
     s32 IsPlayerRecordJoined(void *);
     void AssignPlayerRecordId(void *, s32);
     void MarkPlayerRecordJoined(void *);
-    void func_0203b3fc(u8 *, u32, u32);
+    void MatchSession_ClearPlayerRecord(u8 *, u32, u32);
 
     s32 x, i, y, j;
     s32 result = -1;
@@ -191,7 +199,7 @@ s32 ResolvePlayerSlot(u8 *a, s32 b, s32 c) {
             }
 
             MarkPlayerRecordJoined(pi);
-            func_0203b3fc(a, j, i);
+            MatchSession_ClearPlayerRecord(a, j, i);
 
             M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), u8 *, 0x1D) = 1;
         }
@@ -209,11 +217,11 @@ s32 DropSessionPlayer(s32 a) {
 
 s32 FetchMatchPlayerInfo(s32 arg0,s32 arg1) {
 extern M2C_UNK gMatchSessionMgr;
-s32 func_0203a660(void); s32 GetLocalPlayerInfo(void); s32 GetPlayerRecordId(s32,s32);
+s32 IsNasLoginDone(void); s32 GetLocalPlayerInfo(void); s32 GetPlayerRecordId(s32,s32);
 s32 func_0204e2f4(void *,s32,s32 *); s32 gpGetBuddyStatus(void *,s32,s32);
 void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
 s32 b=arg1; s32 a=arg0; s32 out=0;
-if(!p||!func_0203a660())return 0;
+if(!p||!IsNasLoginDone())return 0;
 a=GetPlayerRecordId(GetLocalPlayerInfo(),a);
 if(a>0)if(func_0204e2f4(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),a,&out))return 0;
 if(a<=0||out==-1)return 0;
@@ -228,14 +236,14 @@ u32 ReportNetError(u32 a,u32 unused,u32 off){void func_0203accc(u32,u32);u32 ret
 void HandlePeerConnectResult(s32 connection, void *result, s32 index) {
 extern M2C_UNK gMatchSessionMgr;
 s32 GetPlayerRecordType(void *); void MarkPlayerRecordJoined(void *); void AssignPlayerRecordId(void *,s32);
-s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);void NotifyPlayerSlotChanged(s32);
+s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);void NotifyPlayerSlotChanged(s32);
 s32 peerIndex,entryOffset,slotOffset,entryBase;
 if(M2C_FIELD(result,s32 *,0)==0 && M2C_FIELD(result,s32 *,4)!=0) {
 slotOffset=index*MATCH_SESSION_PLAYER_SIZE;
 if(GetPlayerRecordType(((u8 *)M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,MATCH_SESSION_PLAYERS)+slotOffset))!=0) {
 if(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATUS)!=1)return;
 peerIndex=0;if(M2C_FIELD(result,s32 *,4)>0){entryOffset=0;do {
-if(func_0203b454(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,MATCH_SESSION_PLAYERS),index,M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryOffset,s32 *,0))) {
+if(MatchSession_MergeDuplicatePlayer(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,MATCH_SESSION_PLAYERS),index,M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryOffset,s32 *,0))) {
 M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_CURSOR)++;
 M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_STATE)=1;
 M2C_FIELD(result,s32 *,8)=0x601;
@@ -484,17 +492,33 @@ s32 func_0203bd54(void) {
     return 1;
 }
 
-s32 func_0203bda0(void (*callback)(s32),s32 arg) {
-s32 HasNetError(void);void *GetConnection(void);s32 GetNetSessionState(void);void ReportGpiSessionStatus(void);
-void *p;
-if(HasNetError()!=0||!GetConnection()||M2C_FIELD(GetConnection(),u8 *,0x15)!=2||(GetNetSessionState()!=5&&GetNetSessionState()!=6))return 0;
-if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==10){
-p=GetConnection();M2C_FIELD(p,u8 *,0x16)=M2C_FIELD(GetConnection(),u8 *,0xd);
-ReportGpiSessionStatus();if(callback)callback(arg);
-}else{
-M2C_FIELD(GetConnection(),void (**)(s32),0x47c)=callback;
-M2C_FIELD(GetConnection(),s32 *,0x480)=arg;
-M2C_FIELD(GetConnection(),u8 *,0x1ae)=1;
-}return 1;
+/* Ask for the hosted match to start once its online session is up: if the
+ * connection is already in the match state, fix the session capacity at the
+ * current player count, publish the session status and run the callback;
+ * otherwise remember the callback and let the connection update start the
+ * match when it reaches CONN_STATE_MATCH. */
+s32 RequestMatchStart(void (*callback)(s32), s32 data) {
+    s32 HasNetError(void);
+    void *GetConnection(void);
+    s32 GetNetSessionState(void);
+    void ReportGpiSessionStatus(void);
+    void *connection;
+
+    if (HasNetError() != 0 || !GetConnection() ||
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) != 2 ||
+        (GetNetSessionState() != NET_STATE_STARTING && GetNetSessionState() != NET_STATE_MATCH)) {
+        return 0;
+    }
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == CONN_STATE_MATCH) {
+        connection = GetConnection();
+        M2C_FIELD(connection, u8 *, CONN_SESSION_CAPACITY) = M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT);
+        ReportGpiSessionStatus();
+        if (callback) callback(data);
+    } else {
+        M2C_FIELD(GetConnection(), void (**)(s32), CONN_SESSION_MATCH_START_CALLBACK) = callback;
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_MATCH_START_DATA) = data;
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MATCH_START_PENDING) = 1;
+    }
+    return 1;
 }
 

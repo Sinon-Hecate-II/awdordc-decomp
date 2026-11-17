@@ -120,17 +120,17 @@ func_020d8804();
 void SpawnRippleEffect(M2C_UNK unused, M2C_UNK mode) {
 extern void **gCurrentMap;
 extern u8 sRippleInName[],sRippleOutName[];
-void *func_020b5134(void *,s32,s32,s32,s32,s32,s32);
+void *CreateAnimatedMapSprite(void *,s32,s32,s32,s32,s32,s32);
 s32 func_020d0548(s32,s32);
 void *map=*gCurrentMap,*sprite; s32 x=M2C_FIELD(map,s16 *,0x52dc),y=M2C_FIELD(map,s16 *,0x52de); if(!visibleCB(map,x,y))return;
 if(!func_020d0548(x,y))return;
 switch(mode){
 case 0:
-sprite=func_020b5134(sRippleInName,x,y,0,0,0,7);
+sprite=CreateAnimatedMapSprite(sRippleInName,x,y,0,0,0,7);
 M2C_FIELD(sprite,u32 *,0x44)=(M2C_FIELD(sprite,u32 *,0x44)&~0x3000000)|0x2000000;
 PlaySoundAtTile(0x84,x,y);break;
 case 1:
-sprite=func_020b5134(sRippleOutName,x,y,0,0,0,7);
+sprite=CreateAnimatedMapSprite(sRippleOutName,x,y,0,0,0,7);
 M2C_FIELD(sprite,u32 *,0x44)=(M2C_FIELD(sprite,u32 *,0x44)&~0x3000000)|0x2000000;
 PlaySoundAtTile(0x85,x,y);break;
 }
@@ -164,7 +164,7 @@ void func_020cbfe4(void) {
 
 void func_020cbffc(void) {
  extern void **gCurrentMap;
- func_020d31f0(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),1);
+ SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),1);
  func_020ca484();
 }
 
@@ -176,7 +176,7 @@ void func_020cc028(void) {
 
 void func_020cc050(void) {
 extern void **gCurrentMap;
-func_020d31f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1);
+SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1);
 SetBattleCommand(17,0,0,0);
 }
 

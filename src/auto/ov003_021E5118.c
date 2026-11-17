@@ -9,7 +9,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_0207c780(s32, s32);
+    M2C_UNK LoadGraphicsBlock(s32, s32);
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK AddTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
@@ -24,7 +24,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *func_0208bc24(void *);
-    M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     void *func_0209b26c(s16, M2C_UNK, M2C_UNK, s32, s32, u32);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -190,9 +190,9 @@ void func_ov003_021e5118(void *arg0) {
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     DrawMapPreview(M2C_FIELD(data_027e01d8, s32 *, 0xC), M2C_FIELD(data_027e01d8, s32 *, 0x20), 1, 5);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);
-    func_0208ca2c(0x5100, 0xA, GetUiColor(0xA), 1);
+    Load3DSpritePattern(0x5100, 0xA, GetUiColor(0xA), 1);
     temp_r0_3 = LoadFileToBuffer(GetLocalizedFileName(&data_ov003_0220f868), 1);
-    func_0207c780(temp_r0_3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
+    LoadGraphicsBlock(temp_r0_3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
     HeapFreeBlock(temp_r0_3);
     LoadFileToSpriteBuffer(&data_ov003_0220f87c, 0x2C0, 0x20);
     func_020a9a30(1, 0, 4, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x6500);

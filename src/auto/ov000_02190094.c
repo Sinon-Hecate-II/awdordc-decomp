@@ -39,7 +39,7 @@ void func_01ffc2e8(void *);
 s32 GetAiUnitRange(void);
 void func_ov000_0217a59c(s32,s32,s32,s32);
 s32 IsPropertyCell(s32,s32);
-s32 func_020a7694(void *);
+s32 GetUnitRemainingMoveRange(void *);
 void func_ov000_02199f38(void);
 void PlanMoveDestination(s32,s32);
 s32 func_ov000_021a91d0(s32);
@@ -123,7 +123,7 @@ void func_ov000_02190094(void)
       index = a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2))));
       if ((!((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + index))].count) && ((!new_var[1][index]) || ((((u32) gAiCommandState[7]) << 28) >> 31)))
       {
-        d = func_020a7694(*((u8 **) (new_var[1] + 0x52d0)));
+        d = GetUnitRemainingMoveRange(*((u8 **) (new_var[1] + 0x52d0)));
         if ((*((s8 **) ((((u8 *) (*gCurrentMap)) + 0x52e8) + (b * 4))))[a] < d)
         {
           func_ov000_02199f38();

@@ -1,6 +1,8 @@
 /* 35 functions from 0x0200AE9C to 0x0200BDA4 (main), found by ds-decomp. */
 #include "common.h"
 #include "fs.h"
+/* The archives the game has open, in the order they were opened. */
+extern FSArchiveList gArchiveList;
 typedef struct { u32 words[3]; } Unk032Record;
 typedef struct FileLink { struct FileLink *prev,*next; } FileLink;
 static inline void UnlinkFileRequest(FileLink *a) {
@@ -80,49 +82,50 @@ void func_0200b118(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
 }
 
-s32 FindArchive(s32 a,s32 b){s32 PackArchiveName(s32,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);extern M2C_UNK data_0212fbe8;s32 id=PackArchiveName(a,b),key;void *p;key=OS_DisableInterrupts();p=M2C_FIELD(&data_0212fbe8,void **,0);while(p&&M2C_FIELD(p,s32 *,0)!=id)p=M2C_FIELD(p,void **,4);OS_RestoreInterrupts(key);return (s32)p;}
+s32 FindArchive(s32 a,s32 b){s32 PackArchiveName(s32,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 id=PackArchiveName(a,b),key;void *p;key=OS_DisableInterrupts();p=M2C_FIELD(&gArchiveList,void **,0);while(p&&M2C_FIELD(p,s32 *,0)!=id)p=M2C_FIELD(p,void **,4);OS_RestoreInterrupts(key);return (s32)p;}
 
-s32 func_0200b184(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Add an archive to the open-archive list under its packed name, unless an
+ * archive with that name is already open. Returns 1 if the archive was added. */
+s32 RegisterArchiveName(FSArchive *archive, M2C_UNK name, M2C_UNK length) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 PackArchiveName(M2C_UNK, M2C_UNK);
     s32 FindArchive(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0212fbe8;
-    s32 temp_r4;
-    s32 var_r8;
-    void *var_r0;
-    void *var_r1;
+    s32 irq;
+    s32 registered;
+    FSArchive *next;
+    FSArchive *last;
 
-    var_r8 = 0;
-    temp_r4 = OS_DisableInterrupts();
-    if (FindArchive(arg1, arg2) == 0) {
-        var_r1 = M2C_FIELD(&data_0212fbe8, void **, 0);
-        if (var_r1 == NULL) {
-            M2C_FIELD(&data_0212fbe8, void **, 0) = arg0;
-            M2C_FIELD(&data_0212fbe8, void **, 4) = arg0;
-            M2C_FIELD(&data_0212fbe8, s32 *, 0xC) = 0;
-            M2C_FIELD(&data_0212fbe8, s16 *, 0xA) = 0;
-            M2C_FIELD(&data_0212fbe8, s16 *, 8) = 0;
+    registered = 0;
+    irq = OS_DisableInterrupts();
+    if (FindArchive(name, length) == 0) {
+        last = gArchiveList.first;
+        if (last == NULL) {
+            gArchiveList.first = archive;
+            gArchiveList.last = archive;
+            gArchiveList.unk0C = 0;
+            gArchiveList.unk0A = 0;
+            gArchiveList.unk08 = 0;
         } else {
-            var_r0 = M2C_FIELD(var_r1, void **, 4);
-            if (var_r0 != NULL) {
+            next = last->next;
+            if (next != NULL) {
                 do {
-                    var_r1 = var_r0;
-                    var_r0 = M2C_FIELD(var_r0, void **, 4);
-                } while (var_r0 != NULL);
+                    last = next;
+                    next = next->next;
+                } while (next != NULL);
             }
-            M2C_FIELD(var_r1, void **, 4) = arg0;
-            M2C_FIELD(arg0, void **, 8) = var_r1;
+            last->next = archive;
+            archive->prev = last;
         }
-        M2C_FIELD(arg0, s32 *, 0) = PackArchiveName(arg1, arg2);
-        var_r8 = 1;
-        M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) | 1);
+        archive->id = PackArchiveName(name, length);
+        registered = 1;
+        archive->state = (s32) (archive->state | FS_ARCHIVE_NAMED);
     }
-    OS_RestoreInterrupts(temp_r4);
-    return var_r8;
+    OS_RestoreInterrupts(irq);
+    return registered;
 }
 
-void func_0200b238(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);extern M2C_UNK data_0212fbe8;s32 key;void *p;if(!M2C_FIELD(a,s32 *,0))return;key=OS_DisableInterrupts();p=M2C_FIELD(a,void **,4);if(p)M2C_FIELD(p,void **,8)=M2C_FIELD(a,void **,8);p=M2C_FIELD(a,void **,8);if(p)M2C_FIELD(p,void **,4)=M2C_FIELD(a,void **,4);M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,28)&=~1;if(M2C_FIELD(&data_0212fbe8,void **,4)==a){M2C_FIELD(&data_0212fbe8,void **,4)=M2C_FIELD(&data_0212fbe8,void **,0);M2C_FIELD(&data_0212fbe8,s32 *,12)=0;M2C_FIELD(&data_0212fbe8,u16 *,10)=0;M2C_FIELD(&data_0212fbe8,u16 *,8)=0;}OS_RestoreInterrupts(key);}
+void func_0200b238(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 key;void *p;if(!M2C_FIELD(a,s32 *,0))return;key=OS_DisableInterrupts();p=M2C_FIELD(a,void **,4);if(p)M2C_FIELD(p,void **,8)=M2C_FIELD(a,void **,8);p=M2C_FIELD(a,void **,8);if(p)M2C_FIELD(p,void **,4)=M2C_FIELD(a,void **,4);M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,28)&=~1;if(M2C_FIELD(&gArchiveList,void **,4)==a){M2C_FIELD(&gArchiveList,void **,4)=M2C_FIELD(&gArchiveList,void **,0);M2C_FIELD(&gArchiveList,s32 *,12)=0;M2C_FIELD(&gArchiveList,u16 *,10)=0;M2C_FIELD(&gArchiveList,u16 *,8)=0;}OS_RestoreInterrupts(key);}
 
 s32 func_0200b2bc(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,void *g,void *h) {
  extern M2C_UNK func_0200ac34,func_0200ac50;

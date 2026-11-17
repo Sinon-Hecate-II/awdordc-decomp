@@ -47,7 +47,7 @@ void func_ov005_022176a0(void){
 s32 IsCoUnlocked(s32);void AddSprite(u16,u16,u16,void*,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);void func_02098dc0(s16,s16,u16,s32);
 void func_02088e84(void*,s32,s32,s32,s32);u32 GetUnitSpriteWidth(void*);u32 GetUnitSpriteHeight(void*);
-void func_02087d84(void*,s32,s16,s16,u16,u16);void func_ov005_02217440(void);
+void func_02087d84(void*,s32,s16,s16,u16,u16);void Ov005RefreshNameGraphic(void);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 i; s16 x,y;void *saved;
 M2C_FIELD(STATE,s16*,0x16)+=M2C_FIELD(STATE,s16*,0x18);
@@ -76,7 +76,7 @@ if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(IsCoUnlocked(M2C_FIELD(STATE,s16*,14)+1))func_02098dc0(98,32,ATTR(0x41c,0x6000),0);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-if(M2C_FIELD(STATE,s16*,0x16)<=0)func_ov005_02217440();
+if(M2C_FIELD(STATE,s16*,0x16)<=0)Ov005RefreshNameGraphic();
 {
 s16 pos=EaseInterpolate(4,-240,8,M2C_FIELD(STATE,s16*,0x16),12);
 u32 left=pos&511; u32 right;

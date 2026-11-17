@@ -13,6 +13,8 @@
 #define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds */
 #define GT2_CONNECTION_DATA        0x38 /* void *data to send with our handshake message */
 #define GT2_CONNECTION_DATA_LEN    0x3C /* s32 length of GT2_CONNECTION_DATA */
+#define GT2_CONNECTION_MESSAGE_CALLBACKS 0x98 /* Vector of per-message callbacks (func_0205a424) */
+#define GT2_CONNECTION_FILTERS     0x9C /* Vector of receive filters (gti2ReceiveFilterCallback) */
 /* The connection's callback for the current event (0x28, or 0x2C with a message
  * pointer) and the two counters that nest around calling it: one on the
  * connection (+0x24) and one on its socket (+0x1C), so the socket can be
@@ -30,6 +32,9 @@ enum {
     GT2_STATE_AWAIT_SERVER_ACCEPT = 1,  /* client sent its response, waiting for ACCEPT */
     GT2_STATE_AWAIT_CLIENT_RESPONSE = 3,
     GT2_STATE_AWAIT_ACCEPT = 4,
+    GT2_STATE_CONNECTED = 5,            /* both sides accepted the handshake; data flows */
+    GT2_STATE_PEER_CLOSED = 6,          /* the peer's closed command arrived, waiting for our side to finish */
+    GT2_STATE_CLOSED = 7,               /* connection torn down */
     GT2_RESPONSE_SIZE = 32,
     GT2_CONNECT_ACCEPT_SIZE = 64        /* challenge response + the server's challenge */
 };

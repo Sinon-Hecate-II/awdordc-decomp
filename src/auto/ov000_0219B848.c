@@ -215,7 +215,36 @@ for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
 SelectMapLayer((void *)*gCurrentMap + MAP_CELL_ORDER);
 }
 
-void func_ov000_0219c5d4(void){for(;;){switch(*gAiCommandState){case 0:BeginAiTurn();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
+/* Per-frame AI turn driver: runs the AI command phase handler over and over
+ * (begin the turn, assign the orders, run the phase state machine), stopping as
+ * soon as a phase has to wait for the screen; at the end of a campaign turn it
+ * hands the map back instead. */
+void ProcessAiCommandPhase(void) {
+    for (;;) {
+        switch (*gAiCommandState) {
+        case 0:
+            BeginAiTurn();
+            break;
+        case 1:
+            func_ov000_0219e848();
+            break;
+        case 2:
+            func_ov000_0219997c();
+            break;
+        case 4:
+            if (((u32) gMapConfig << 22) >> 31) {
+                if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+                    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = 13;
+                    return;
+                }
+            }
+            func_ov000_0219fdc8();
+            return;
+        default:
+            return;
+        }
+    }
+}
 
 s32 func_ov000_0219c680(void){switch(*gAiCommandState){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
 
@@ -232,7 +261,7 @@ u8 func_ov000_0219c6c0(void) {
 }
 
 void func_ov000_0219c774(void);
-void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(func_ov000_0219c5d4,6,0x2000,17,0);return;}switch(*gAiCommandState){case 3:func_ov000_0219e948();return;case 5:AiPlaceBuildingUnit();return;case 6:func_ov000_0219c774();return;}}
+void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(ProcessAiCommandPhase,6,0x2000,17,0);return;}switch(*gAiCommandState){case 3:ProcessAiCommandStep();return;case 5:AiPlaceBuildingUnit();return;case 6:func_ov000_0219c774();return;}}
 
 void func_ov000_0219c774(void) {
     MarkKnownEnemyUnits();

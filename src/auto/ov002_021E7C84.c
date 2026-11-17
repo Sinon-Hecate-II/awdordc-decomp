@@ -7,7 +7,66 @@ static inline s32 UnitOwner80(void *unit) { if(unit) return (UnitIndex80(unit)>>
 #pragma opt_common_subs reset
 typedef struct { s32 pad[2]; s32 slots[5]; } ObjectSlots;
 
-void func_ov002_021e7c84(u8 *p) { extern s32 gPlayerSettings; p[0]=0;p[1]=0;((u8 *)&gPlayerSettings)[12]=8;((u8 *)&gPlayerSettings)[36]=12;((u8 *)&gPlayerSettings)[16]=0;((u8 *)&gPlayerSettings)[40]=1;((u8 *)&gPlayerSettings)[17]=3;((u8 *)&gPlayerSettings)[41]=3;((u8 *)&gPlayerSettings)[18]=0;((u8 *)&gPlayerSettings)[42]=0;((u8 *)&gPlayerSettings)[3]=0;p[13]=100;p[37]=100;p[14]=80;p[38]=20;p[15]=3;p[39]=3;p[21]=1;p[45]=2;p[22]=2;p[46]=2;p[23]=1;p[47]=1;((u8 *)&gPlayerSettings)[20]=1;((u8 *)&gPlayerSettings)[44]=1;((u8 *)&gPlayerSettings)[19]=0;((u8 *)&gPlayerSettings)[43]=0;((u8 *)&gPlayerSettings)[24]=0;((u8 *)&gPlayerSettings)[48]=1;((u8 *)&gPlayerSettings)[25]=0;((u8 *)&gPlayerSettings)[49]=1;}
+/* Defaults for the two combatants of the automatic demo battle.  Each side is a
+ * 0x18-byte record (side 0 at +0x00, side 1 at +0x18) holding the unit kind
+ * (+0x0C), health (+0x0D), remaining value (+0x0E), team (+0x0F), terrain
+ * (+0x10), two stats (+0x11/+0x12), selected and active flags (+0x13/+0x14),
+ * owner (+0x15), display state (+0x16) and damage preview (+0x17).  The panel
+ * header holds the two active-side flags (+0x00/+0x01) and the battle setting
+ * (+0x03).  The records are the ones at gPlayerSettings; the caller passes that
+ * same buffer, and the original writes some bytes through the argument and some
+ * through the global. */
+void SetDemoBattleDefaults(u8 *panel) {
+    extern s32 gPlayerSettings;
+
+    /* Neither side is the active one; battle setting 0. */
+    panel[0] = 0;
+    panel[1] = 0;
+
+    /* Unit kinds: side 0 a kind 8, side 1 a kind 12. */
+    ((u8 *)&gPlayerSettings)[12] = 8;
+    ((u8 *)&gPlayerSettings)[36] = 12;
+
+    /* Terrain the two units stand on. */
+    ((u8 *)&gPlayerSettings)[16] = 0;
+    ((u8 *)&gPlayerSettings)[40] = 1;
+
+    /* Stat and defense-star values. */
+    ((u8 *)&gPlayerSettings)[17] = 3;
+    ((u8 *)&gPlayerSettings)[41] = 3;
+    ((u8 *)&gPlayerSettings)[18] = 0;
+    ((u8 *)&gPlayerSettings)[42] = 0;
+
+    ((u8 *)&gPlayerSettings)[3] = 0;
+
+    /* Both at full health, with their remaining value. */
+    panel[13] = 100;
+    panel[37] = 100;
+    panel[14] = 80;
+    panel[38] = 20;
+
+    /* Team byte and the two units' owner values. */
+    panel[15] = 3;
+    panel[39] = 3;
+    panel[21] = 1;
+    panel[45] = 2;
+
+    /* Both units selected, with a damage preview. */
+    panel[22] = 2;
+    panel[46] = 2;
+    panel[23] = 1;
+    panel[47] = 1;
+
+    /* Selected/active flags cleared, then side 1's own header bytes. */
+    ((u8 *)&gPlayerSettings)[20] = 1;
+    ((u8 *)&gPlayerSettings)[44] = 1;
+    ((u8 *)&gPlayerSettings)[19] = 0;
+    ((u8 *)&gPlayerSettings)[43] = 0;
+    ((u8 *)&gPlayerSettings)[24] = 0;
+    ((u8 *)&gPlayerSettings)[48] = 1;
+    ((u8 *)&gPlayerSettings)[25] = 0;
+    ((u8 *)&gPlayerSettings)[49] = 1;
+}
 
 #pragma push
 #pragma opt_common_subs off

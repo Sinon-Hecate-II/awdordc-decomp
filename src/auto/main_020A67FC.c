@@ -310,7 +310,25 @@ bonus+=func_020a87ec(unit);
 return bonus+func_020a25d8(unit,x,y);
 }
 
-s32 func_020a74a8(u8 *p,s32 a,s32 b){s32 func_020a8560(u32);s32 func_020a8844(s32);s32 func_020a8804(void *);s32 func_020a2608(void *,s32,s32);s32 result=0,n;if(func_020a8560((u32)(p[0]<<26)>>26))return result;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;result+=func_020a8844(n);result+=func_020a8804(p);return result+func_020a2608(p,a,b);}
+/* Attack-power bonus (the part GetUnitAttackPower adds its 100 base to) of
+   `unit` at tile (x, y): the owner's power bonus, the unit's rank bonus and the
+   stat block's valueA; 0 for the unit kinds the bonus does not apply to. */
+s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
+    s32 func_020a8560(u32);
+    s32 func_020a8844(s32);
+    s32 func_020a8804(void *);
+    s32 func_020a2608(void *, s32, s32);
+    s32 bonus = 0, owner;
+    if (func_020a8560((u32)(unit[0] << 26) >> 26)) return bonus;
+    if (unit) {
+        if (!unit) owner = 0;
+        else owner = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+        owner = (owner >> 6) + 1;
+    } else owner = 0;
+    bonus += func_020a8844(owner);
+    bonus += func_020a8804(unit);
+    return bonus + func_020a2608(unit, x, y);
+}
 
 s32 func_020a7558(void) {
     M2C_UNK GetUnitOwner();
@@ -356,7 +374,7 @@ s32 GetUnitMovement(void *arg0) {
     return penalty + (base + bonus);
 }
 
-s32 func_020a7694(void *p){s32 GetUnitMovement(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=GetUnitMovement(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
+s32 GetUnitRemainingMoveRange(void *p){s32 GetUnitMovement(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=GetUnitMovement(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
 
 s32 GetUnitAttackRangeMax(u8 *p){s32 GetUnitKindMaxAttackRange(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=GetUnitKindMaxAttackRange((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
 

@@ -178,7 +178,7 @@ done:
 s32 func_ov003_021eba74(void) {
  s32 IsLinkSessionActive();
  s32 GetReadyPlayerMask();
- void *func_02084e24(s32);
+ void *GetNetworkPlayerRecord(s32);
  s8 i;
  s32 mask;
  void *p;
@@ -186,7 +186,7 @@ s32 func_ov003_021eba74(void) {
  mask=GetReadyPlayerMask();
  for(i=0;i<4;i++) {
   if(mask & (1<<i)) {
-   p=func_02084e24(i);
+   p=GetNetworkPlayerRecord(i);
    if(p==NULL) return 0;
    if(M2C_FIELD(p,s32 *,0x18)==0) return 0;
   }
@@ -300,7 +300,7 @@ void func_ov003_021ebca4(s32 arg0,s32 arg1,s32 arg2) {
 }
 
 s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
- void *func_02084e24(s32);
+ void *GetNetworkPlayerRecord(s32);
  void *func_02084e64(s32);
  s32 GetPlayerCoId(s32);
  s32 GetPlayerCoIconIndex(u8);
@@ -309,7 +309,7 @@ s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
  void *p;
  if(id==0xff) missing=1; else missing=0;
  if(!missing) {
-  p=func_02084e24(id);
+  p=GetNetworkPlayerRecord(id);
   if(p) return M2C_FIELD(p,s8 *,0xd);
   return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(arg1+1));
  }

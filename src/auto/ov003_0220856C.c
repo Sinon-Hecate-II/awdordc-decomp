@@ -5,7 +5,7 @@ s16 GetSpriteAnimValue(void *);
 void func_02086e9c(void);
 void func_02086dfc(s32);
 s32 Divide(s32, s32);
-void func_02087048(s32, s32);
+void SetGxPolygonAttr(s32, s32);
 void func_020a8cf0(s32, s32, s32, s32, u16, s32, u16, u16, u16, volatile u16);
 s32 func_ov003_02206690(s32, s32, s32);
 s32 func_020e4b28(s32);
@@ -49,7 +49,7 @@ if(i!=Selected856(arg0,none))color=26;
 else{alpha+=GetSpriteAnimValue(M2C_FIELD(arg0,void **,80));color=31;}
 sx=sy=M2C_FIELD(entry,u16 *,12);scaleX=scaleY=256;
 }
-func_02087048(1,31);
+SetGxPolygonAttr(1,31);
 if(Pair856(arg0,i)){
 *(volatile u32 *)0x4000480=(u16)(color|(color<<5)|(color<<10));
 func_020a8cf0(x+(width>>2),y,1,(u16)half,24,3,0x22a,1,(u16)scaleX,(u16)scaleY);
@@ -97,7 +97,7 @@ func_020a8cf0(x,y,10,256,M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,3),3,M2C_FIEL
 align=Pair856(arg0,i)?128:256;
 if(alpha && !((u32)(M2C_FIELD(arg0,u8 *,56)<<27)>>31) &&
 (((u32)(M2C_FIELD(arg0,u8 *,56)<<30)>>31)||i!=Selected856(arg0,none))){
-func_02087048(1,(u8)alpha);DrawSolidQuadScaled(x,y,2,width,M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,2),shade,sx,sy,align,256);func_02087048(1,31);
+SetGxPolygonAttr(1,(u8)alpha);DrawSolidQuadScaled(x,y,2,width,M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,2),shade,sx,sy,align,256);SetGxPolygonAttr(1,31);
 }
 if(!Pair856(arg0,i)&&Mode856(arg0,8))func_ov003_02206690((u8)i,2,4);
 next:data=M2C_FIELD(arg0,void **,68);originY=(s16)(originY+M2C_FIELD(data,u8 *,4));advance:i++;offset+=36;

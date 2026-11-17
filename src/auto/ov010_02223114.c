@@ -452,31 +452,36 @@ s32 VoiceLink_ReleaseContext(VoiceLinkContext *context) {
     return 0;
 }
 
-s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
+/* Build one control packet (kind 0xFF) for a voice-link protocol step: check the
+ * context and the buffer, write the packet header for `step` and check that step
+ * against the protocol table.  In link mode 1 starting an exchange is refused
+ * while another context is still waiting.  Returns 0 on success, -1 for a bad
+ * argument and -3 when the link refuses the step. */
+s32 VoiceLink_BuildControlPacket(void *context, s32 step, void *packet, u32 size) {
     M2C_UNK VoiceLink_InitPacket(void *, void *, u8);
     s32 VoiceLink_NoOtherContextWaiting(void *);
     s32 VoiceLink_CheckStartStep(void *, void *);
     extern M2C_UNK gLinkConfig;
 
-    if (arg0 == NULL) {
+    if (context == NULL) {
         return -1;
     }
-    if (arg3 < 0x10) {
+    if (size < 0x10) {
         return -1;
     }
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0xC) == 1) {
+    if (M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_CONTROL) == 1) {
         return -3;
     }
-    if ((arg1 < 0) || (arg1 >= 5)) {
+    if ((step < 0) || (step >= 5)) {
         return -3;
     }
-    M2C_FIELD(arg2, u8 *, 4) = 0xFF;
-    VoiceLink_InitPacket(arg0, arg2, (u8) arg1);
-    if (VoiceLink_CheckStartStep(arg0, arg2) == 0) {
+    ((VoiceLinkPacket *)packet)->kind = 0xFF;
+    VoiceLink_InitPacket(context, packet, (u8) step);
+    if (VoiceLink_CheckStartStep(context, packet) == 0) {
         return -3;
     }
-    if ((M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 1) && (arg1 == 0)) {
-        if (VoiceLink_NoOtherContextWaiting(arg0) == 0) {
+    if ((M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE) == 1) && (step == 0)) {
+        if (VoiceLink_NoOtherContextWaiting(context) == 0) {
             return -3;
         }
     }

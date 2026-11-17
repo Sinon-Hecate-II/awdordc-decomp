@@ -1,5 +1,6 @@
 /* 17 functions from 0x01FF8F90 to 0x01FF9ED0 (itcm), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 static inline void SetSubWindow9690(volatile u16 *h, volatile u16 *v, s32 left, s32 right, s32 top, s32 bottom) { *h=((left<<8)&0xff00)|top; *v=((right<<8)&0xff00)|bottom; }
 static inline void SetSubScroll9690(volatile u32 *reg, s32 x, s32 y) { s32 mask=0x1ff; *reg=(x&mask)|((mask<<16)&(y<<16)); }
 
@@ -294,27 +295,32 @@ void func_01ff9b38(void) {
     func_0207fafc();
 }
 
-u8 func_01ff9b70(u8 arg0,u32 arg1) {
+u8 Is3DSpriteWholeLayer(u8 arg0,u32 arg1) {
 u8 result;
 switch(arg0){case 0:return 1;case 1:case 3:if(arg1<=2)result=1;else result=0;return result;case 2:case 4:case 5:if(arg1<=1)result=1;else result=0;return result;default:return 0;}
 }
 
-u8 func_01ff9bcc(s32 arg0,s32 arg1) {
+u8 Is3DSpriteSplitLayer(s32 arg0,s32 arg1) {
 u8 a,b,c;
 switch(arg0){case 1:if(arg1==3)a=1;else a=0;return a;case 2:if((u32)(u8)(arg1+0xfe)<=1)b=1;else b=0;return b;case 4:if(arg1==2)c=1;else c=0;return c;default:return 0;}
 }
 
-s32 Get3DSpriteLayerSize(u8 arg0, s32 arg1) {
+/* Byte size of the tile buffer of sprite layer `layer` in the current engine,
+ * looked up from the layer's 2-bit size class (bits 14..15 of its packed
+ * SpriteTile word in the bank): the whole cell grid for a layer that is a full
+ * panel in this bank mode, one half of it for a split layer, and both halves
+ * when the mode gives the layer neither role. */
+s32 Get3DSpriteLayerSize(u8 bankMode, s32 layer) {
     extern u16 **gCur3DSpriteEngine;
-    extern s32 data_01ff9b50[];
-    extern s32 data_01ff9b60[];
-    if (func_01ff9b70(arg0, arg1) != 0) {
-        return data_01ff9b50[(u32)(M2C_FIELD(*gCur3DSpriteEngine + arg1, u16 *, 6) << 16) >> 30];
+    extern s32 data_01ff9b50[]; /* sizes per size class, whole cell grid */
+    extern s32 data_01ff9b60[]; /* sizes per size class, one half of the grid */
+    if (Is3DSpriteWholeLayer(bankMode, layer) != 0) {
+        return data_01ff9b50[(u32)(M2C_FIELD(*gCur3DSpriteEngine + layer, u16 *, DS3D_BANK_LAYER_TILE0) << 16) >> 30];
     }
-    if (func_01ff9bcc(arg0, arg1) != 0) {
-        return data_01ff9b60[(u32)(M2C_FIELD(*gCur3DSpriteEngine + arg1, u16 *, 6) << 16) >> 30];
+    if (Is3DSpriteSplitLayer(bankMode, layer) != 0) {
+        return data_01ff9b60[(u32)(M2C_FIELD(*gCur3DSpriteEngine + layer, u16 *, DS3D_BANK_LAYER_TILE0) << 16) >> 30];
     }
-    return data_01ff9b60[(u32)(M2C_FIELD(*gCur3DSpriteEngine + arg1, u16 *, 6) << 16) >> 30] * 2;
+    return data_01ff9b60[(u32)(M2C_FIELD(*gCur3DSpriteEngine + layer, u16 *, DS3D_BANK_LAYER_TILE0) << 16) >> 30] * 2;
 }
 
 void Clear3DSpriteLayer(u8 arg0) {

@@ -4,8 +4,8 @@
 typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 
 M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_02029c30(void *, s32);
-    M2C_UNK func_02029c74(M2C_UNK, void *);
+    M2C_UNK ListInit(void *, s32);
+    M2C_UNK ListAppend(M2C_UNK, void *);
     M2C_UNK func_02029e70(void *);
     extern s32 data_02138e90;
     extern u8 data_02138e94[];
@@ -15,12 +15,12 @@ M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
     M2C_FIELD(arg0, s32 *, 0x1C) = arg3;
     M2C_FIELD(arg0, s32 *, 0x20) = 0;
     M2C_FIELD(arg0, struct Flags *, 0x20).value = *(u16 *)&arg4;
-    func_02029c30(arg0 + 0xC, 4);
+    ListInit(arg0 + 0xC, 4);
     if (data_02138e90 == 0) {
-        func_02029c30(data_02138e94, 4);
+        ListInit(data_02138e94, 4);
         data_02138e90 = 1;
     }
-    func_02029c74(func_02029e70(arg0), arg0);
+    ListAppend(func_02029e70(arg0), arg0);
 }
 
 M2C_UNK func_02029f14(void *arg0) {
@@ -467,7 +467,7 @@ s32 func_0202a7b4(void *arg0) {
  * blocks, register the handle under `name` and give it the block layout the
  * file lookups use. Returns 0 on a bad archive or a failed registration. */
 s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
-    s32 func_0200b184(void *, M2C_UNK, s32);
+    s32 RegisterArchiveName(void *, M2C_UNK, s32);
     M2C_UNK func_0200b118(void *);
     s32 func_0200b2bc(void *, void *, s32, s32, s32, s32, s32, s32);
     s32 StringLength(M2C_UNK);
@@ -512,7 +512,7 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     M2C_FIELD(archive, void **, 0x60) = fat;
     imageData = image + 8;
     M2C_FIELD(archive, void **, 0x64) = imageData;
-    if (func_0200b184(archive, name, StringLength(name)) == 0) {
+    if (RegisterArchiveName(archive, name, StringLength(name)) == 0) {
         return 0;
     }
     if (func_0200b2bc(archive, imageData, (fat + 0xC) - imageData, M2C_FIELD(fat, s32 *, 4) - 0xC, (fnt + 8) - imageData, M2C_FIELD(fnt, s32 *, 4) - 8, 0, 0) != 0) {
@@ -538,7 +538,7 @@ void func_0202a968(void) {
     M2C_UNK func_0200ee28(M2C_UNK);
     void func_0202ab60(void);
     M2C_UNK func_0202ba8c(void);
-    M2C_UNK func_0202ae00(void);
+    M2C_UNK Sound_InitVoices(void);
     void func_0202aa20(void);
     void func_0202aa58(void);
     extern M2C_UNK data_02138ea0;
@@ -557,7 +557,7 @@ void func_0202a968(void) {
     func_0200ee28((M2C_UNK)&data_02138ebc);
     func_0202ab60();
     func_0202ba8c();
-    func_0202ae00();
+    Sound_InitVoices();
     M2C_FIELD(&data_02138ea0, s8 *, 0) = -1;
     M2C_FIELD(&data_02138ea0, s32 *, 4) = 1;
 }
@@ -671,10 +671,10 @@ void func_0202abb4(s32 arg0, s32 arg1) {
 }
 
 s32 func_0202abcc(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_02029c74(s32, void *);
+    M2C_UNK ListAppend(s32, void *);
     s32 func_0202c4ac(void *, s32);
     void *func_0202c5f0(s32 *, s32, s32, s32, s32);
-    extern M2C_UNK data_0213b704;
+    extern M2C_UNK gSoundChannels;
     extern M2C_UNK func_0202b3bc;
     s32 temp_r0_2;
     void *temp_r0;
@@ -691,7 +691,7 @@ s32 func_0202abcc(s32 arg0, M2C_UNK arg1, s32 arg2) {
         return 0;
     }
     M2C_FIELD(temp_r0, s32 *, 0x8) = temp_r0_2;
-    func_02029c74((s32)&data_0213b704 + arg0 * 0x24 + 0xC, temp_r0);
+    ListAppend((s32)&gSoundChannels + arg0 * 0x24 + 0xC, temp_r0);
     return 1;
 }
 
@@ -701,11 +701,11 @@ void func_0202ac60(s32 *arg0) {
 }
 
 void func_0202ac70(M2C_UNK arg0) {
-    extern M2C_UNK data_0213b2c4;
+    extern M2C_UNK gVoicePool;
     s32 var_r4;
     u8 *var_r5;
 
-    var_r5 = (u8 *)&data_0213b2c4;
+    var_r5 = (u8 *)&gVoicePool;
     var_r4 = 0;
     do {
         if (M2C_FIELD(var_r5, u8 *, 0x2C) != 0) {

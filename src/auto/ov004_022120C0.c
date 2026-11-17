@@ -15,7 +15,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed();
     M2C_UNK AddToU16Array();
     M2C_UNK CloseNarcArchive();
-    M2C_UNK func_020aca8c();
+    M2C_UNK ApplyScreenMode();
     M2C_UNK func_0208ca14();
     M2C_UNK func_0208c79c();
     M2C_UNK func_0208c75c();
@@ -123,7 +123,7 @@ void func_ov004_022120c0(void *arg0) {
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) |= 0x80;
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) &= ~0x100;
 
-            func_020aca8c();
+            ApplyScreenMode();
 
             o1 = func_0208ca14(a0);
             M2C_FIELD(a0, void **, 0x40) = o1;

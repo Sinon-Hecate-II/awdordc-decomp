@@ -175,14 +175,14 @@ void func_0205df50(void) {
 /* Polls one NAT-negotiation peer: drains its socket, retries the current step
    when the deadline passes, and releases the peer on completion or timeout. */
 void UpdateNatNegPeer(void *peer) {
-s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void NatNeg_SendConnectPong(void *);
+s32 func_0205d88c(); s32 ghiSocketCanRecv(s32); s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void NatNeg_SendConnectPong(void *);
 extern u8 gNatNegRecvBuffer[];
 u8 address[8]; s32 size=8; u8 reply[8]; s32 n;
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_DONE){func_0205d88c(peer);return;}
 if(-1!=M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)){
 do {
-if(!func_02049534(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)))break;
-n=func_020497e0(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET),gNatNegRecvBuffer,512,0,address,&size);
+if(!ghiSocketCanRecv(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)))break;
+n=ghiRecvFrom(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET),gNatNegRecvBuffer,512,0,address,&size);
 if(n==-1)break;
 HandleNatNegPacket(gNatNegRecvBuffer,n,(M2C_UNK)address);
 } while(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)!=NATNEG_STATE_DONE && M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)!=-1);
@@ -461,7 +461,7 @@ s32 Qr2_CreateConnection(u8 **outConnection, s32 socket, s32 localPort, s32 game
     M2C_FIELD(qr2, s32 *, QR2_NATNEG) = natNeg;
     M2C_FIELD(qr2, s32 *, QR2_PUBLIC_IP) = 0;
     M2C_FIELD(qr2, s16 *, QR2_PUBLIC_PORT) = 0;
-    M2C_FIELD(qr2, s32 *, QR2_PUBLIC_VALID) = 0;
+    M2C_FIELD(qr2, s32 *, QR2_CB_PUBLIC_ADDRESS) = 0;
     M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) = 0;
     do {
         rnd = Rand();
@@ -526,27 +526,36 @@ void func_0205e864(void *arg0, s32 arg1) {
  M2C_FIELD(arg0,s32 *,0xA8)=arg1;
 }
 
-void func_0205e87c(void *p) {
+void Qr2_Think(void *p) {
  extern void *data_020ff8d4;
  void func_0205e95c(void *);
- void func_0205e8b0(void *);
+ void Qr2_ReadPackets(void *);
  if(p==NULL)p=data_020ff8d4;
  if(M2C_FIELD(p,s32 *,0xbc))func_0205e95c(p);
- func_0205e8b0(p);
+ Qr2_ReadPackets(p);
 }
 
-void func_0205e8b0(void *arg0) {
- s32 func_02049534(s32);
- s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
- void func_0205f83c(void *,void *,s32,void *);
- extern u8 data_0213e3b0[];
- u8 spC[8]; s32 sp8=8; s32 n;
- if(M2C_FIELD(arg0,s32 *,0xc4)==0)return;
- if(func_02049534(M2C_FIELD(arg0,s32 *,0))==0)return;
- do {
- n=func_020497e0(M2C_FIELD(arg0,s32 *,0),data_0213e3b0,255,0,spC,&sp8);
- if(n!=-1){data_0213e3b0[n]=0;func_0205f83c(arg0,data_0213e3b0,n,spC);}
- }while(func_02049534(M2C_FIELD(arg0,s32 *,0))!=0);
+/* Drain the QR2 socket: while it has data, receive one reply from the master into
+   gQr2RecvBuffer, NUL-terminate it and hand it to Qr2_HandlePacket. The record only
+   reads replies while its +0xC4 field is set. */
+void Qr2_ReadPackets(void *qr2) {
+    s32 ghiSocketCanRecv(s32);
+    s32 ghiRecvFrom(s32, void *, s32, s32, void *, s32 *);
+    void Qr2_HandlePacket(void *, void *, s32, void *);
+    extern u8 gQr2RecvBuffer[];
+    u8 fromAddress[8];
+    s32 fromLength = 8;
+    s32 length;
+
+    if (M2C_FIELD(qr2, s32 *, 0xC4) == 0) return;
+    if (ghiSocketCanRecv(M2C_FIELD(qr2, s32 *, QR2_SOCKET)) == 0) return;
+    do {
+        length = ghiRecvFrom(M2C_FIELD(qr2, s32 *, QR2_SOCKET), gQr2RecvBuffer, QR2_RECV_MAX, 0, fromAddress, &fromLength);
+        if (length != -1) {
+            gQr2RecvBuffer[length] = 0;
+            Qr2_HandlePacket(qr2, gQr2RecvBuffer, length, fromAddress);
+        }
+    } while (ghiSocketCanRecv(M2C_FIELD(qr2, s32 *, QR2_SOCKET)) != 0);
 }
 #pragma push
 #pragma opt_propagation off

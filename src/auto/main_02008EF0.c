@@ -89,7 +89,7 @@ State09100 *state; s32 irq;QueueNode09298 *head,*tail;
 irq=OS_DisableInterrupts();
 if(flags&1){
 while(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
-OS_RestoreInterrupts(irq);func_0200758c(100);irq=OS_DisableInterrupts();
+OS_RestoreInterrupts(irq);WaitCycles(100);irq=OS_DisableInterrupts();
 }
 }else if(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
 OS_RestoreInterrupts(irq);return 0;
@@ -230,7 +230,7 @@ void func_02009608(int unused,int arg1) {
 s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);OS_RestoreInterrupts(s);
 }
 
-void InitSoundCommandLink(void){M2C_UNK func_0200758c(M2C_UNK);s32 func_020096fc();M2C_UNK func_02009e40(M2C_UNK,M2C_UNK *);s32 func_02009e8c(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);func_02009e40(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(func_02009e8c(7,1))return;do{func_0200758c(100);}while(!func_02009e8c(7,1));}
+void InitSoundCommandLink(void){M2C_UNK WaitCycles(M2C_UNK);s32 func_020096fc();M2C_UNK SetFifoMessageHandler(M2C_UNK,M2C_UNK *);s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);SetFifoMessageHandler(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(IsFifoMessageReady(7,1))return;do{WaitCycles(100);}while(!IsFifoMessageReady(7,1));}
 
 void func_0200968c(void) {
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -437,7 +437,7 @@ stable++;
 return OS_RestoreInterrupts(state);
 }
 #pragma scheduling on
-s32 func_02009e40(s32 a,M2C_UNK *b){
+s32 SetFifoMessageHandler(s32 a,M2C_UNK *b){
 s32 OS_DisableInterrupts(void);extern s32 gFifoMessageHandlers[];
 s32 s=OS_DisableInterrupts();s32 *base=(s32 *)0x027ffc00;
 gFifoMessageHandlers[a]=(s32)b;
@@ -446,7 +446,7 @@ else base[226]&=~(1<<a);
 return OS_RestoreInterrupts(s);
 }
 
-s32 func_02009e8c(s32 a, s32 b) {
+s32 IsFifoMessageReady(s32 a, s32 b) {
     extern u8 data_027ffc00[];
     u32 val = *((u32 *)((u8 *)data_027ffc00 + b * 4 + 0x388));
     s32 r = 1;

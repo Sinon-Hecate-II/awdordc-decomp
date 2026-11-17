@@ -303,21 +303,24 @@ void func_02074074(void) {
 
 #pragma cplusplus on
 #pragma exceptions on
-extern "C" void func_020740b8(u32 arg0,u32 arg1,s32 arg2,M2C_UNK (*arg3)(u32)) { try { while(arg1>arg0) { arg1-=arg2; arg3(arg1); } } catch (...) { for (;;) {} } }
-extern "C" void func_020740b8(u32, u32, s32, M2C_UNK (*)(u32));
-extern "C" void func_02074114(s32 arg0, s32 arg1, s32 arg2, M2C_UNK (*arg3)(s32), s32 arg4) {
+extern "C" void DestroyPartialArray(u32 arg0,u32 arg1,s32 arg2,M2C_UNK (*arg3)(u32)) { try { while(arg1>arg0) { arg1-=arg2; arg3(arg1); } } catch (...) { for (;;) {} } }
+extern "C" void DestroyPartialArray(u32, u32, s32, M2C_UNK (*)(u32));
+/* Construct `count` array elements starting at `first`, `stride` bytes apart, by
+ * calling `constructor` on each.  If a constructor throws, destroy the elements
+ * already built (in reverse order, through `destructor`) and rethrow. */
+extern "C" void ConstructArray(s32 first, s32 count, s32 stride, M2C_UNK (*constructor)(s32), s32 destructor) {
     s32 current;
-    if (arg3 == 0) return;
-    if (arg4 != 0) {
-        current = arg0;
+    if (constructor == 0) return;
+    if (destructor != 0) {
+        current = first;
         try {
-            while (arg1 != 0) { arg3(current); current += arg2; --arg1; }
+            while (count != 0) { constructor(current); current += stride; --count; }
         } catch (...) {
-            func_020740b8(arg0, current, arg2, (M2C_UNK (*)(u32))arg4);
+            DestroyPartialArray(first, current, stride, (M2C_UNK (*)(u32))destructor);
             throw;
         }
     } else {
-        while (arg1 != 0) { arg3(arg0); arg0 += arg2; --arg1; }
+        while (count != 0) { constructor(first); first += stride; --count; }
     }
 }
 #pragma cplusplus on

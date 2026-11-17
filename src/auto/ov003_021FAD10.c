@@ -30,7 +30,7 @@ s32 func_ov003_021f2654(void);
 s32 IsCampaignMapAvailable(u16);
 s32 IsCampaignMapRecordValid(u16);
 s32 IsCampaignMapRecordPlayable(u16);
-s32 func_02086960(u16);
+s32 IsCampaignMapCleared(u16);
 void *GetMapName(u16);
 void func_0209b32c(s16,s16,s32,void *,s32,u8,u16);
 extern u8 gSpriteDesc16x16[];
@@ -111,7 +111,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  if(!(u8)(FindMapPick((u8*)p+4,(u8*)p+18,item)!=255))
  shade=(u8)(((s32)item>=225&&(s32)item<0x1a9&&!IsCampaignMapRecordValid(item))?3:0);
  } else if((u8)(mode==2))shade=(u8)(IsCampaignMapRecordPlayable(item)?0:3);
- else shade=(u8)(func_02086960(item)?0:3);
+ else shade=(u8)(IsCampaignMapCleared(item)?0:3);
  }
  {u8 a=(u8)Modulo(i,20);void *b=GetMapName(item);
  func_0209b32c((s16)tx,(s16)ty,0,b,0xa000,shade,(u16)(a*16+1));}

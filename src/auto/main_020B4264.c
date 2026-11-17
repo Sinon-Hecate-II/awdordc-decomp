@@ -465,11 +465,11 @@ M2C_FIELD(sprite,s32 *,0x40)=flags&8?GetFrameStep():0x20000;
 if(flags&64)M2C_FIELD(sprite,u32 *,0x44)&=~0x80000;
 else M2C_FIELD(sprite,u32 *,0x44)|=0x80000;
 tile=(u16)(saved+0xab);
-if(flags&16)func_0208bd2c(sprite,kind,base+0x329a0,tile,0);
-else func_0208bd2c(sprite,kind,base+0x329a0,tile,1);
+if(flags&16)LoadAnimatedSpriteAssetsFromNarc(sprite,kind,base+0x329a0,tile,0);
+else LoadAnimatedSpriteAssetsFromNarc(sprite,kind,base+0x329a0,tile,1);
 }
 
-s32 func_020b5134(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
+s32 CreateAnimatedMapSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
     s32 CreateAnimatedSpriteObject(s32);
     M2C_UNK PlaceMapSprite(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     s32 temp_r0;
@@ -488,25 +488,25 @@ s32 func_020b5188(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, 
     return temp_r0;
 }
 
-void func_020b51dc(void) {
-    extern s32 data_0215d848;
-    data_0215d848 = 0;
+void ResetEffectSpritePool(void) {
+    extern s32 gEffectSpritePoolUsed;
+    gEffectSpritePoolUsed = 0;
 }
 
-s32 func_020b51f0(void) {
-    extern s32 data_0215d848;
-    return data_0215d848;
+s32 GetEffectSpritePoolOffset(void) {
+    extern s32 gEffectSpritePoolUsed;
+    return gEffectSpritePoolUsed;
 }
 
-s32 func_020b5200(s32 arg0,s32 arg1){s32 func_0208c570(s32,s32,u16);extern s32 data_0215d848;s32 old=data_0215d848;data_0215d848+=func_0208c570(arg0,old+0x329a0,(u16)(arg1+0xab));return old;}
+s32 LoadEffectSpriteSheet(s32 arg0,s32 arg1){s32 func_0208c570(s32,s32,u16);extern s32 gEffectSpritePoolUsed;s32 old=gEffectSpritePoolUsed;gEffectSpritePoolUsed+=func_0208c570(arg0,old+0x329a0,(u16)(arg1+0xab));return old;}
 
 void func_020b5240(void) {
-    M2C_UNK func_0208c69c();
-    func_0208c69c();
+    M2C_UNK OpenEffectNarcArchive();
+    OpenEffectNarcArchive();
 }
 
 void func_020b524c(void) {
-    M2C_UNK func_0208c6fc();
-    func_0208c6fc();
+    M2C_UNK CloseEffectNarcArchive();
+    CloseEffectNarcArchive();
 }
 

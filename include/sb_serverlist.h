@@ -47,6 +47,26 @@ typedef struct SBServerListKey {
     s32   type; /* +0x04 GPI_FIELD_* (common.h): how the value is encoded */
 } SBServerListKey;
 
+/* One server found by the browser: a gpi player record (0x24 bytes), allocated
+ * and filled by SBServerNew, read through the SBServerGet* and gpiPlayer*
+ * accessors.  The gpi layer keeps the key/value table at +0x18; the browser
+ * keeps the ping and its list of removed servers in the words after it. */
+typedef struct GpiPlayer {
+    u32 ip;         /* +0x00 address the record was received from */
+    u16 port;       /* +0x04 its port, network order */
+    u16 pad06;
+    u32 address;    /* +0x08 address the server reports for queries */
+    u16 queryPort;  /* +0x0C its port, network order */
+    u16 pad0E;
+    s32 value;      /* +0x10 the record's optional value field */
+    u8  state;      /* +0x14 gpi state bits (GPI_PLAYER_STATE_*) and browser state */
+    u8  flags;      /* +0x15 gpi record flags (GPI_REC_FLAG_*) */
+    u16 pad16;
+    s32 keyValues;  /* +0x18 table of the record's interned key/value strings */
+    s32 ping;       /* +0x1C last measured round-trip time in ms */
+    s32 next;       /* +0x20 next removed server on the browser's free list */
+} GpiPlayer; /* 0x24 bytes */
+
 /* Events the list reports through SB_SLIST_CALLBACK:
  * (list, event, server, SB_SLIST_INSTANCE). */
 #define SB_LIST_EVENT_SERVER_ADDED   0 /* a server was added to the list */

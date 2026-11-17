@@ -93,7 +93,7 @@ void func_020c6ffc(void) {
 }
 
 s32 func_020c7034(void) {
-    s32 func_020a2be0(u16);
+    s32 IsPlayerCoPowerReady(u16);
     s32 GetPlayerSelectedUnit();
     M2C_UNK GetUnitOwner(s32);
     extern void **gCurrentMap;
@@ -103,7 +103,7 @@ s32 func_020c7034(void) {
         return 2;
     }
     GetUnitOwner(M2C_FIELD(temp_r4, s32 *, 0x52D0));
-    if ((M2C_FIELD(temp_r4, s32 *, 0x52D0) == GetPlayerSelectedUnit()) && (func_020a2be0(M2C_FIELD(temp_r4, u16 *, 0x52A4)) != 0)) {
+    if ((M2C_FIELD(temp_r4, s32 *, 0x52D0) == GetPlayerSelectedUnit()) && (IsPlayerCoPowerReady(M2C_FIELD(temp_r4, u16 *, 0x52A4)) != 0)) {
         return 0;
     }
     return 2;

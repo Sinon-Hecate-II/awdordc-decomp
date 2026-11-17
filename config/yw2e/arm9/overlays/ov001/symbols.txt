@@ -160,7 +160,7 @@ func_ov001_0216edf4 kind:function(thumb,size=0x9c) addr:0x0216edf4
 func_ov001_0216ee90 kind:function(thumb,size=0xa) addr:0x0216ee90
 func_ov001_0216ee9c kind:function(thumb,size=0xfc) addr:0x0216ee9c
 func_ov001_0216ef98 kind:function(thumb,size=0x1d4) addr:0x0216ef98
-func_ov001_0216f16c kind:function(thumb,size=0xb4) addr:0x0216f16c
+HexToBytes kind:function(thumb,size=0xb4) addr:0x0216f16c
 func_ov001_0216f220 kind:function(thumb,size=0x188) addr:0x0216f220
 func_ov001_0216f3a8 kind:function(thumb,size=0x3e4) addr:0x0216f3a8
 func_ov001_0216f78c kind:function(thumb,size=0x38) addr:0x0216f78c
@@ -283,7 +283,7 @@ func_ov001_02174dcc kind:function(arm,size=0x19c) addr:0x02174dcc
 func_ov001_02174f68 kind:function(arm,size=0x260) addr:0x02174f68
 func_ov001_021751c8 kind:function(arm,size=0xc8) addr:0x021751c8
 Ov001KeypadCommitKey kind:function(arm,size=0x8c) addr:0x02175290
-func_ov001_0217531c kind:function(arm,size=0xac) addr:0x0217531c
+Ov001KeypadMoveSelection kind:function(arm,size=0xac) addr:0x0217531c
 func_ov001_021753c8 kind:function(arm,size=0x78) addr:0x021753c8
 func_ov001_02175440 kind:function(arm,size=0x70) addr:0x02175440
 func_ov001_021754b0 kind:function(arm,size=0x70) addr:0x021754b0
@@ -566,7 +566,7 @@ func_ov001_0217ba1c kind:function(arm,size=0x104) addr:0x0217ba1c
 RedrawNameEntryText kind:function(arm,size=0xf4) addr:0x0217bb20
 UpdateNameEntryCursor kind:function(arm,size=0x68) addr:0x0217bc14
 func_ov001_0217bc7c kind:function(arm,size=0x5c) addr:0x0217bc7c
-func_ov001_0217bcd8 kind:function(arm,size=0xb0) addr:0x0217bcd8
+Ov001_FinishNameEntry kind:function(arm,size=0xb0) addr:0x0217bcd8
 IsNameEntryValid kind:function(arm,size=0x18c) addr:0x0217bd88
 func_ov001_0217bf14 kind:function(arm,size=0x2c) addr:0x0217bf14
 func_ov001_0217bf40 kind:function(arm,size=0x44) addr:0x0217bf40
@@ -586,7 +586,7 @@ func_ov001_0217c744 kind:function(arm,size=0xa4) addr:0x0217c744
 func_ov001_0217c7e8 kind:function(arm,size=0xc4) addr:0x0217c7e8
 func_ov001_0217c8ac kind:function(arm,size=0x54) addr:0x0217c8ac
 func_ov001_0217c900 kind:function(arm,size=0x5c) addr:0x0217c900
-func_ov001_0217c95c kind:function(arm,size=0xb4) addr:0x0217c95c
+Ov001_FinishCodeEntry kind:function(arm,size=0xb4) addr:0x0217c95c
 func_ov001_0217ca10 kind:function(arm,size=0x78) addr:0x0217ca10
 IsCodeEntryValid kind:function(arm,size=0x154) addr:0x0217ca88
 func_ov001_0217cbdc kind:function(arm,size=0x2c) addr:0x0217cbdc
@@ -603,7 +603,7 @@ func_ov001_0217d110 kind:function(arm,size=0x4) addr:0x0217d110
 func_ov001_0217d114 kind:function(arm,size=0x28) addr:0x0217d114
 func_ov001_0217d13c kind:function(arm,size=0x20) addr:0x0217d13c
 func_ov001_0217d15c kind:function(arm,size=0x50) addr:0x0217d15c
-func_ov001_0217d1ac kind:function(arm,size=0xb4) addr:0x0217d1ac
+Ov001_LeaveWfcErrorScreen kind:function(arm,size=0xb4) addr:0x0217d1ac
 func_ov001_0217d260 kind:function(arm,size=0x10) addr:0x0217d260
 InitMapListScreen kind:function(arm,size=0x1fc) addr:0x0217d270
 InitMapListGraphics kind:function(arm,size=0x214) addr:0x0217d46c
@@ -634,8 +634,8 @@ func_ov001_0217ee24 kind:function(arm,size=0x24) addr:0x0217ee24
 MapListScrollUp kind:function(arm,size=0xc8) addr:0x0217ee48
 MapListScrollDown kind:function(arm,size=0xa4) addr:0x0217ef10
 func_ov001_0217efb4 kind:function(arm,size=0x84) addr:0x0217efb4
-func_ov001_0217f038 kind:function(arm,size=0xd8) addr:0x0217f038
-func_ov001_0217f110 kind:function(arm,size=0xb0) addr:0x0217f110
+MapList_ApplyRowLayout kind:function(arm,size=0xd8) addr:0x0217f038
+MapList_UpdateStateFromRow kind:function(arm,size=0xb0) addr:0x0217f110
 func_ov001_0217f1c0 kind:function(arm,size=0x30) addr:0x0217f1c0
 func_ov001_0217f1f0 kind:function(arm,size=0x2f0) addr:0x0217f1f0
 func_ov001_0217f4e0 kind:function(arm,size=0x34) addr:0x0217f4e0
@@ -644,7 +644,7 @@ MapListHighlightCustomRow kind:function(arm,size=0xc4) addr:0x0217f568
 func_ov001_0217f62c kind:function(arm,size=0xa0) addr:0x0217f62c
 func_ov001_0217f6cc kind:function(arm,size=0x40) addr:0x0217f6cc
 func_ov001_0217f70c kind:function(arm,size=0x20) addr:0x0217f70c
-func_ov001_0217f72c kind:function(arm,size=0x10) addr:0x0217f72c
+SetMapListMode kind:function(arm,size=0x10) addr:0x0217f72c
 func_ov001_0217f73c kind:function(arm,size=0x20) addr:0x0217f73c
 func_ov001_0217f75c kind:function(arm,size=0x94) addr:0x0217f75c
 func_ov001_0217f7f0 kind:function(arm,size=0x54) addr:0x0217f7f0
@@ -889,7 +889,7 @@ StoreLinkMatchSetup kind:function(arm,size=0x114) addr:0x02184a3c
 func_ov001_02184b50 kind:function(arm,size=0x110) addr:0x02184b50
 func_ov001_02184c60 kind:function(arm,size=0x10) addr:0x02184c60
 func_ov001_02184c70 kind:function(arm,size=0x3c) addr:0x02184c70
-func_ov001_02184cac kind:function(arm,size=0xb0) addr:0x02184cac
+ResetSaveSlotsWithWfcProfile kind:function(arm,size=0xb0) addr:0x02184cac
 UpdateSaveChecksums kind:function(arm,size=0x168) addr:0x02184d5c
 func_ov001_02184ec4 kind:function(arm,size=0x88) addr:0x02184ec4
 HexCharValue kind:function(arm,size=0x1c) addr:0x02184f4c
@@ -929,7 +929,7 @@ Ov001_ReportConnectionState kind:function(arm,size=0x13c) addr:0x0218619c
 Ov001_ShowMessage kind:function(arm,size=0x32c) addr:0x021862d8
 func_ov001_02186604 kind:function(arm,size=0x44) addr:0x02186604
 func_ov001_02186648 kind:function(arm,size=0x14) addr:0x02186648
-func_ov001_0218665c kind:function(arm,size=0x1c) addr:0x0218665c
+Ov001_IsRegionMenuActive kind:function(arm,size=0x1c) addr:0x0218665c
 func_ov001_02186678 kind:function(arm,size=0x60) addr:0x02186678
 Ov001_SlideRegionMenuIn kind:function(arm,size=0xd4) addr:0x021866d8
 Ov001_UpdateRegionMenuInput kind:function(arm,size=0x15c) addr:0x021867ac
@@ -1070,7 +1070,7 @@ CreateTextPanel kind:function(arm,size=0x178) addr:0x0218ad0c
 func_ov001_0218ae84 kind:function(arm,size=0x88) addr:0x0218ae84
 func_ov001_0218af0c kind:function(arm,size=0x64) addr:0x0218af0c
 Ov001_FreePageBackground kind:function(arm,size=0x24) addr:0x0218af70
-func_ov001_0218af94 kind:function(arm,size=0xb0) addr:0x0218af94
+DrawPanelAnchoredText kind:function(arm,size=0xb0) addr:0x0218af94
 func_ov001_0218b044 kind:function(arm,size=0x3c) addr:0x0218b044
 DrawTextRun kind:function(arm,size=0xac) addr:0x0218b080
 DrawPanelText kind:function(arm,size=0xc0) addr:0x0218b12c
@@ -1124,7 +1124,7 @@ Ov001_InitTilePools kind:function(arm,size=0xc0) addr:0x0218c168
 func_ov001_0218c228 kind:function(arm,size=0x178) addr:0x0218c228
 func_ov001_0218c3a0 kind:function(arm,size=0x40) addr:0x0218c3a0
 StringLengthUpTo kind:function(arm,size=0x2c) addr:0x0218c3e0
-func_ov001_0218c40c kind:function(arm,size=0xb4) addr:0x0218c40c
+GxReleaseAllBankGrants kind:function(arm,size=0xb4) addr:0x0218c40c
 func_ov001_0218c4c0 kind:function(arm,size=0xf8) addr:0x0218c4c0
 func_ov001_0218c5b8 kind:function(arm,size=0x84) addr:0x0218c5b8
 func_ov001_0218c63c kind:function(arm,size=0x2c) addr:0x0218c63c
@@ -1204,7 +1204,7 @@ data_ov001_0218f628 kind:data(any) addr:0x0218f628
 gKeypadDigitRects kind:data(any) addr:0x0218f642
 data_ov001_0218f66a kind:data(any) addr:0x0218f66a
 data_ov001_0218f66c kind:data(any) addr:0x0218f66c
-data_ov001_0218f6a2 kind:data(any) addr:0x0218f6a2
+gKeypadNeighborTable kind:data(any) addr:0x0218f6a2
 gKeypadDigitChars kind:data(any) addr:0x0218f6dc
 gOv001DefaultDeviceName kind:data(any) addr:0x0218f6e8
 data_ov001_0218f6f4 kind:data(any) addr:0x0218f6f4
@@ -1235,8 +1235,8 @@ gOv001NameEntryConfig kind:data(any) addr:0x0218f81c
 data_ov001_0218f834 kind:data(any) addr:0x0218f834
 gNameEntryColumnStride kind:data(any) addr:0x0218f838
 data_ov001_0218f848 kind:data(any) addr:0x0218f848
-data_ov001_0218f860 kind:data(any) addr:0x0218f860
-data_ov001_0218f874 kind:data(any) addr:0x0218f874
+gCodeEntryLoadHandlers kind:data(any) addr:0x0218f860
+gCodeEntrySaveHandlers kind:data(any) addr:0x0218f874
 data_ov001_0218f888 kind:data(any) addr:0x0218f888
 gOv001PanelBackgroundIndex kind:data(any) addr:0x0218f894
 gOv001ErrorCodeTextX kind:data(any) addr:0x0218f8a4
@@ -1254,7 +1254,7 @@ data_ov001_0218f96a kind:data(any) addr:0x0218f96a
 data_ov001_0218f96c kind:data(any) addr:0x0218f96c
 data_ov001_0218f96e kind:data(any) addr:0x0218f96e
 data_ov001_0218f99c kind:data(any) addr:0x0218f99c
-data_ov001_0218f9a4 kind:data(any) addr:0x0218f9a4
+gMapListRowToState kind:data(any) addr:0x0218f9a4
 data_ov001_0218f9b0 kind:data(any) addr:0x0218f9b0
 data_ov001_0218f9bc kind:data(any) addr:0x0218f9bc
 data_ov001_0218f9c8 kind:data(any) addr:0x0218f9c8
@@ -1652,7 +1652,7 @@ data_ov001_02193d94 kind:bss addr:0x02193d94
 gMapSelectState kind:bss addr:0x02193d98
 data_ov001_02193d9c kind:bss addr:0x02193d9c
 gNameEntryState kind:bss addr:0x02193da0
-data_ov001_02193da4 kind:bss addr:0x02193da4
+gOv001FriendCodeState kind:bss addr:0x02193da4
 gOv001WfcErrorCode kind:bss addr:0x02193da8
 gMapListState kind:bss addr:0x02193dac
 data_ov001_02193db4 kind:bss addr:0x02193db4
@@ -1693,5 +1693,5 @@ data_ov001_02193e50 kind:bss addr:0x02193e50
 data_ov001_02193e60 kind:bss addr:0x02193e60
 data_ov001_02193e68 kind:bss addr:0x02193e68
 gOv001TilePools kind:bss addr:0x02193e6c
-data_ov001_02193e70 kind:bss addr:0x02193e70
+gVramBankGrants kind:bss addr:0x02193e70
 gOv001Tasks kind:bss addr:0x02193ea4

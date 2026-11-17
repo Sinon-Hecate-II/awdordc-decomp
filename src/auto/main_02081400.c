@@ -13,13 +13,13 @@ void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK DC_FlushRange(s32, M2C_UNK);
-    M2C_UNK func_0207c55c(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK QueueVramCopy(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = LoadFileToBuffer(arg0, 0);
     DC_FlushRange(temp_r0, arg2);
-    func_0207c55c(temp_r0, arg1, arg2, 1);
+    QueueVramCopy(temp_r0, arg1, arg2, 1);
 }
 
 void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -361,10 +361,10 @@ reset_tail:
 }
 
 u8 func_02081d18(void) {
-    s32 func_0200ec24(M2C_UNK);
+    s32 SetLcdEnabled(M2C_UNK);
     u8 var_r0;
 
-    if (func_0200ec24(1) == 0) {
+    if (SetLcdEnabled(1) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -378,7 +378,7 @@ void func_02081d38(void) {
     func_01ffa3dc(&data_02101e8c, 7);
 }
 
-void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK func_0200ec24(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);func_0200ec24(0);}
+void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);SetLcdEnabled(0);}
 
 void func_02081d6c(void){extern M2C_UNK data_0214c18c;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&data_0214c18c,u8 *,1)=1;}
 

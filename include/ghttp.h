@@ -218,6 +218,8 @@ typedef struct GHIPostData {
             char *value; /* +0x08 string sent as the value */
             s32 length;  /* +0x0C its length */
             s32 urlEncode; /* +0x10 append URL-encoded as a query parameter */
+            s32 escapedChars; /* +0x14 characters the URL encoding expands to %XX: the
+                               * query-string content length counts two extra bytes each */
         } string;
         struct {
             void *file;  /* +0x08 open file handle */

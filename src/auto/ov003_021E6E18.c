@@ -54,14 +54,14 @@ s32 GetWaypointOptionTextId(s32 arg0) {
 
 s32 IsWaypointOptionValid(s32 arg0) {
     s32 IsCoUnlocked();
-    M2C_UNK GetWaypointOptionIcon(s32);
+    M2C_UNK GetWaypointOptionCoId(s32);
     if (arg0 == 0xC) {
         return 1;
     }
     if ((func_ov003_021e6e40() != 0) && (arg0 == 0xB)) {
         return 0;
     }
-    GetWaypointOptionIcon(arg0);
+    GetWaypointOptionCoId(arg0);
     return IsCoUnlocked();
 }
 

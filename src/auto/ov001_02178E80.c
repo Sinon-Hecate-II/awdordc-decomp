@@ -135,7 +135,7 @@ void func_ov001_02179168(void) {
 void func_ov001_0217916c(void) {
     extern s8 gOv001ProfileChoice;
     extern M2C_UNK func_ov001_021791c8;
-    if (func_ov001_0218665c() != 0) return;
+    if (Ov001_IsRegionMenuActive() != 0) return;
     if (M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
@@ -591,9 +591,9 @@ void func_ov001_02179bec(void) {
 
 void func_ov001_02179c18(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    s32 func_ov001_0218665c();
+    s32 Ov001_IsRegionMenuActive();
     void func_ov001_02179a54(void);
-    if (func_ov001_0218665c() != 0) {
+    if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);

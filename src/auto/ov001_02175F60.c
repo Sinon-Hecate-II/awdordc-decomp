@@ -170,7 +170,7 @@ void func_ov001_021763cc(void) {
     if (func_ov001_021711e0(0xF, 0x40, func_ov001_02176544, func_ov001_0217655c, func_ov001_0217656c, 0x800) != 1) {
         SystemHalt();
     }
-    func_02006030(0xA);
+    SleepMilliseconds(0xA);
 }
 
 void Ov001_FreeOptionPage(void) {

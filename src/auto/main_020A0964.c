@@ -143,7 +143,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
 #pragma push
 #pragma opt_common_subs off
 void func_020a0d18(void) {
-    M2C_UNK func_020a004c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetUnitPathCursor(M2C_UNK, M2C_UNK);
     M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK func_020a0560(void);
     M2C_UNK func_020a086c(M2C_UNK, M2C_UNK);
@@ -182,7 +182,7 @@ void func_020a0d18(void) {
     ctx = (s8 *)gUnitMovePath;
     startX = *(s16 *)(initialBase + 0x52c2);
     if (ctx[0x34] == startX && ctx[0x35] == *(s16 *)(initialBase + 0x52c4)) return;
-    func_020a004c((u16)startX, *(u16 *)(initialBase + 0x52c4));
+    SetUnitPathCursor((u16)startX, *(u16 *)(initialBase + 0x52c4));
     base = (u8 *)*gCurrentMap;
     y = *(s16 *)(base + 0x52c4);
     x = *(s16 *)(base + 0x52c2);
@@ -450,18 +450,20 @@ void DeleteDirectionMarkerSprites(void) {
 }
 
 #pragma opt_strength_reduction off
-void func_020a15f8(void) {
+/* Battle start: give every impact-feature cell its full destructible-terrain
+   HP and clear the HP of every other cell. */
+void ResetTerrainHitPoints(void) {
     extern s32 *gCurrentMap;
     s32 x, y;
     u8 *base;
     u8 *p;
     base = (u8 *)*gCurrentMap;
-    for (y = 0; y < M2C_FIELD(base, u16 *, 0x5146); y++) {
-        for (x = 0; x < M2C_FIELD(base, u16 *, 0x5144); x++) {
-            base = base + x + M2C_FIELD(base + y * 2, u16 *, 0x3758);
+    for (y = 0; y < M2C_FIELD(base, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
+            base = base + x + M2C_FIELD(base + y * 2, u16 *, MAP_ROW_OFFSETS);
             p = base;
-            if ((p[0x1420] & 0x1F) == 0x1C) p[0x539C] = 0xE3;
-            else p[0x539C] = 0;
+            if ((p[MAP_CELL_TERRAIN] & MAP_TERRAIN_KIND_MASK) == MAP_TERRAIN_IMPACT) p[MAP_CELL_TERRAIN_HP] = MAP_CELL_TERRAIN_HP_PRESENT | MAP_TERRAIN_IMPACT_HP_FULL;
+            else p[MAP_CELL_TERRAIN_HP] = 0;
             base = (u8 *)*gCurrentMap;
         }
     }

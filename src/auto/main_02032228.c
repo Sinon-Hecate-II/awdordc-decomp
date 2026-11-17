@@ -257,15 +257,18 @@ NasStartTask();
 return 0;
 }
 
+/* Starts the task that drives a NAS connection: resets the connection's mutex and
+ * abort flag, and unless the previous task is still running, creates the task
+ * that runs NasConnectTask on the connection block's stack and wakes it. */
 void NasStartTask(void) {
 M2C_UNK InitMutex(void *); M2C_UNK TaskCreate(void *,void (*)(void),void *,void *,s32,s32);
 s32 TaskIsFinished(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
-extern M2C_UNK gNasConnection; extern M2C_UNK data_0213d11c;
-InitMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
-M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=0;
-if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384)!=0 && TaskIsFinished(M2C_FIELD(&gNasConnection,void **,8)+0x1318)==0)return;
-TaskCreate(M2C_FIELD(&gNasConnection,void **,8)+0x1318,NasConnectTask,&data_0213d11c,M2C_FIELD(&gNasConnection,void **,8)+0x1000,0x1000,0x10);
-TaskWake(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
+extern M2C_UNK gNasConnection; extern M2C_UNK gNasTaskOwner;
+InitMutex(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_MUTEX);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_ABORT)=0;
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_TASK_ID)!=0 && TaskIsFinished(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK)==0)return;
+TaskCreate(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK,NasConnectTask,&gNasTaskOwner,M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_STACK_TOP,NAS_CONN_STACK_SIZE,NAS_CONN_TASK_PRIORITY);
+TaskWake(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK);
 }
 
 void func_02032a84(void) {
@@ -281,11 +284,11 @@ func_02005d60(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
 }
 
 void func_02032b10(void) {
-M2C_UNK func_02034480(s32); extern M2C_UNK gNasConnection; extern M2C_UNK data_020fb34c;
+M2C_UNK HttpClientCleanup(s32); extern M2C_UNK gNasConnection; extern M2C_UNK data_020fb34c;
 void (*callback)(void *,void *,s32);
 if(!M2C_FIELD(&gNasConnection,void **,8))return;
 callback=M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void (**)(void *,void *,s32),0x1210);
-if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))func_02034480(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))HttpClientCleanup(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
 callback(&data_020fb34c,M2C_FIELD(&gNasConnection,void **,8),0);
 M2C_FIELD(&gNasConnection,void **,8)=0;
 }
@@ -359,11 +362,11 @@ M2C_UNK func_02005d60(void *);
 M2C_UNK LockMutex(void *);
 M2C_UNK UnlockMutex(void *);
 u64 GetSystemTick(void);
-M2C_UNK func_02006030(M2C_UNK);
+M2C_UNK SleepMilliseconds(M2C_UNK);
 u64 U64Divide(u64,u64);
 M2C_UNK func_0203367c(M2C_UNK);
 M2C_UNK Nas_UpdateRequest(void);
-M2C_UNK func_02034480(M2C_UNK);
+M2C_UNK HttpClientCleanup(M2C_UNK);
 M2C_UNK NasConnect(M2C_UNK);
 
 M2C_UNK retryCount = 0;
@@ -444,7 +447,7 @@ for (;;) {
                 return;
             }
             UnlockMutex((u8 *)conn + 0x13d8);
-            func_02006030(0x1388);
+            SleepMilliseconds(0x1388);
             nowTick2 = GetSystemTick();
             elapsedTicks = nowTick2 - startTick;
             elapsedMs2 = U64Divide(elapsedTicks << 6, (u64)0x82ea);
@@ -455,7 +458,7 @@ for (;;) {
     conn = M2C_FIELD(&gNasConnection, void **, 8);
     ctx = (u8 *)conn + 0x1000;
     stream = *(void **)((u8 *)ctx + 0x314);
-    func_02034480((M2C_UNK)stream);
+    HttpClientCleanup((M2C_UNK)stream);
 
     conn = M2C_FIELD(&gNasConnection, void **, 8);
     LockMutex((u8 *)conn + 0x13d8);

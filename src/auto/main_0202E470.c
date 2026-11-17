@@ -394,7 +394,7 @@ func_0202e470(p);func_0202e12c(p);UnlockMutex((char*)base+0x400);
 }}
 }
 #pragma opt_common_subs reset
-void *func_0202ee80(void *arg0,s32 arg1) {
+void *GetSoundArchiveEntry(void *arg0,s32 arg1) {
  void *p;
  if(arg1<0)return NULL;
  if((u32)arg1>=M2C_FIELD(arg0,u32 *,0x1C))return NULL;
@@ -497,7 +497,7 @@ s32 Wfc_ProcessStep(void) {
     return 0;
 }
 
-s32 func_0202f1dc(void) {
+s32 GetWfcSessionProgress(void) {
  u32 Wfc_GetSessionState();
  s32 func_02030348(u32);
  u32 n=Wfc_GetSessionState();

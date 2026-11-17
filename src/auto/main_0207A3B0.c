@@ -428,7 +428,7 @@ s32 RebuildPropertyTile(s32 x, s32 y, s32 owner) {
 void func_0207ad30(s32 value) {
     s32 IsPlayerPresent(s32);
     s32 func_020d1a74(s32);
-    s32 func_020a2be0(s32);
+    s32 IsPlayerCoPowerReady(s32);
     extern void *gCurrentMap;
 
     s32 state = (value >> 2) & 15;
@@ -444,7 +444,7 @@ void func_0207ad30(s32 value) {
             if (callback) {
                 callback(i, state);
             }
-        } else if (func_020a2be0(i)) {
+        } else if (IsPlayerCoPowerReady(i)) {
             switch (state) {
             case 15: {
                 callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(s32, s32), 0x24);

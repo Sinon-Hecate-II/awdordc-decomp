@@ -282,7 +282,7 @@ return 0;
 s32 SocketCloseTask(void *arg0) {
     M2C_UNK func_0201d4c0();
     M2C_UNK func_0201d224();
-    M2C_UNK func_0201d14c();
+    M2C_UNK ClearCurrentRawConnection();
     M2C_UNK SocketQueueTask(s32, s32);
     void func_02021418(void *);
     void func_02021430(M2C_UNK);
@@ -301,7 +301,7 @@ s32 SocketCloseTask(void *arg0) {
         func_0201d4c0();
         func_0201d224();
     }
-    func_0201d14c();
+    ClearCurrentRawConnection();
     M2C_FIELD(temp_r4, s16 *, 0x70) &= ~6;
     if (M2C_FIELD(temp_r4, s8 *, 0x73) == 2) var_r0 = M2C_FIELD(temp_r4, s32 *, 0x68);
     else var_r0 = M2C_FIELD(temp_r4, s32 *, 0x64);
@@ -393,7 +393,7 @@ M2C_UNK func_02020f30(void) {
 }
 
 s32 func_02020f6c(void) {
-    M2C_UNK func_02006030(M2C_UNK);
+    M2C_UNK SleepMilliseconds(M2C_UNK);
     M2C_UNK func_0201a4f8(s32);
     M2C_UNK func_0201a508();
     s32 func_0201f160();
@@ -404,7 +404,7 @@ s32 func_02020f6c(void) {
     s32 temp_r4;
     if (data_02138ac4 == 0) { data_02138ac4 = data_021372e0; }
     if (func_020210b8() == -0x1A) {
-        do { func_02006030(0x64); } while (func_020210b8() == -0x1A);
+        do { SleepMilliseconds(0x64); } while (func_020210b8() == -0x1A);
     }
     temp_r4 = func_0201f160();
     if (temp_r4 >= 0) {
@@ -468,34 +468,38 @@ s32 func_020210b8(void) {
     return var_r4;
 }
 
-s32 LookupHostAddress(s32 arg0) {
+/* Resolve a host name to an IPv4 address: hand the network stack a temporary raw
+ * connection whose receive and pending-datagram buffers share one allocated block,
+ * look the name up, then restore the previous connection and free the block. */
+s32 LookupHostAddress(s32 hostname) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0201d138(void *);
-    M2C_UNK func_0201d14c();
-    s32 func_0201ed20(s32);
+    M2C_UNK SetCurrentRawConnection(void *);
+    M2C_UNK ClearCurrentRawConnection();
+    s32 DnsLookupAddress(s32);
     extern void *gNetAllocator;
-    u8 sp0[0x64];
-    s32 temp_r4;
-    s32 temp_r5;
-    if (arg0 == 0) { return 0; }
-    temp_r4 = M2C_FIELD(gNetAllocator, s32 (**)(M2C_UNK), 0x18)(0xFD0);
-    if (temp_r4 == 0) { return 0; }
-    MI_CpuFill8(sp0, 0, 0x64);
-    M2C_FIELD(sp0, s32 *, 0x40) = temp_r4;
-    M2C_FIELD(sp0, s32 *, 0x3C) = 0xB68;
-    M2C_FIELD(sp0, s32 *, 0x4C) = temp_r4 + 0xB68;
-    M2C_FIELD(sp0, s32 *, 0x48) = 0x466;
-    func_0201d138(sp0);
-    temp_r5 = func_0201ed20(arg0);
-    func_0201d14c();
-    M2C_FIELD(gNetAllocator, M2C_UNK (**)(s32), 0x1C)(temp_r4);
-    return temp_r5;
+    u8 conn[0x64];
+    s32 block;
+    s32 address;
+
+    if (hostname == 0) { return 0; }
+    block = M2C_FIELD(gNetAllocator, s32 (**)(M2C_UNK), NET_ALLOC_ALLOC)(DNS_LOOKUP_BLOCK_BYTES);
+    if (block == 0) { return 0; }
+    MI_CpuFill8(conn, 0, 0x64);
+    M2C_FIELD(conn, u32 *, CONN_RX_BUFFER) = block;
+    M2C_FIELD(conn, u32 *, CONN_IN_WINDOW) = DNS_LOOKUP_RX_BYTES;
+    M2C_FIELD(conn, u32 *, CONN_RX_PENDING_BUF) = block + DNS_LOOKUP_RX_BYTES;
+    M2C_FIELD(conn, u32 *, CONN_RX_MAX) = DNS_LOOKUP_PENDING_BYTES;
+    SetCurrentRawConnection(conn);
+    address = DnsLookupAddress(hostname);
+    ClearCurrentRawConnection();
+    M2C_FIELD(gNetAllocator, M2C_UNK (**)(s32), NET_ALLOC_FREE)(block);
+    return address;
 }
 
 s32 func_020211e4(s32 arg0) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_0201ed20(s32);
+    s32 DnsLookupAddress(s32);
     extern M2C_UNK data_021372f0;
     s32 temp_r4;
     s32 temp_r5;
@@ -506,7 +510,7 @@ s32 func_020211e4(s32 arg0) {
     temp_r7 = M2C_FIELD(&data_021372f0, s32 *, 4);
     M2C_FIELD(&data_021372f0, s32 *, 0) = 0;
     M2C_FIELD(&data_021372f0, s32 *, 4) = 0;
-    temp_r4 = func_0201ed20(arg0);
+    temp_r4 = DnsLookupAddress(arg0);
     M2C_FIELD(&data_021372f0, s32 *, 0) = temp_r6;
     M2C_FIELD(&data_021372f0, s32 *, 4) = temp_r7;
     OS_RestoreInterrupts(temp_r5);
@@ -525,14 +529,14 @@ s32 func_02021230(s32 arg0, s32 arg1) {
 }
 
 s32 func_02021264(void) {
-    M2C_UNK func_02006030(M2C_UNK);
+    M2C_UNK SleepMilliseconds(M2C_UNK);
     s32 func_02007580();
     extern s32 data_021372e0;
     extern s32 data_02138ac4;
     extern s32 data_02138ac8;
     if (data_021372e0 == 0) {
         if (((data_02138ac8 & 3) == 1) && (func_02007580() != 0x12)) {
-            func_02006030(0xA);
+            SleepMilliseconds(0xA);
         }
     } else if (data_02138ac4 == 0) {
         data_02138ac4 = data_021372e0;

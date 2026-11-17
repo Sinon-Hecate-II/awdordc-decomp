@@ -104,7 +104,7 @@ s32 func_020a2bd8(void) {
     return 0xA;
 }
 
-u8 func_020a2be0(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 func_020a3594(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!func_020a3594(a,2))return 0;t=func_020a3518(a);if(t>=func_020a3594(a,2))r=1;else r=0;return r;}
+u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 func_020a3594(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!func_020a3594(a,2))return 0;t=func_020a3518(a);if(t>=func_020a3594(a,2))r=1;else r=0;return r;}
 
 void func_020a2c58(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 

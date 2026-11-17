@@ -1,5 +1,6 @@
 /* 11 functions from 0x02216518 to 0x022174F4 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ov005_menu.h"
 
 
 
@@ -188,7 +189,9 @@ void Ov005DrawEntryList(void) {
     SetOv005FileDirectory();
 }
 
-void func_ov005_02217440(void) {
+/* Loads the selected CO's name graphic from shogun_name.narc into the sub
+ * screen's texture bank, or clears that bank while the CO is still locked. */
+void Ov005RefreshNameGraphic(void) {
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
@@ -202,22 +205,22 @@ void func_ov005_02217440(void) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern M2C_UNK data_ov005_022208f4;
-    void *temp_r5;
-    void *saved;
+    void *nameFile;
+    void *savedEngine;
 
-    temp_r5 = func_020e3018(M2C_FIELD(gOv005MenuState, s16 *, 0x10));
-    saved = gCur3DSpriteEngine;
+    nameFile = func_020e3018(M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_BASE_INDEX));
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (IsCoUnlocked(M2C_FIELD(gOv005MenuState, s16 *, 0x10))) {
+    if (IsCoUnlocked(M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_BASE_INDEX))) {
         func_020e3004();
         GetLocalizedFileName(&data_ov005_022208f4);
         OpenNarcArchive();
-        LoadNarcFileDecompressed(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
+        LoadNarcFileDecompressed(GetLocalizedFileName(nameFile), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
         CloseNarcArchive();
         SetOv005FileDirectory();
     } else {
         MI_CpuFill32(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
     }
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 }
 

@@ -1,5 +1,21 @@
 /* 46 functions from 0x020852F4 to 0x02086208 (main), found by ds-decomp. */
 #include "common.h"
+
+/* The link player-data listener objects of this file: each one is registered as
+ * the link layer's message handler, remembers the handler that was installed
+ * before it and forwards every message it does not handle on to it, and collects
+ * each player's data block (one session data block per player) as it arrives. */
+#define LINK_PLAYER_DATA_PREV_HANDLER 0x34 /* s32 (*)(u32, void *): previous message handler */
+#define LINK_PLAYER_DATA_PTRS         0x38 /* void **: one data block per player */
+#define LINK_PLAYER_OWN_DATA          0x3C /* void *: the block sent for this player */
+#define LINK_PLAYER_DATA_SIZE         0x40 /* s32: bytes in one player's block */
+#define LINK_PLAYER_DATA_RECEIVED     0x44 /* u16: bit of each player whose block has arrived */
+
+/* Link messages it handles: one player's data block, then the acknowledgement
+ * that the block arrived. */
+#define LINK_MSG_PLAYER_DATA     0x86
+#define LINK_MSG_PLAYER_DATA_ACK 0x87
+
 static inline u16 StatusX(void *p) { return M2C_FIELD(p,s16 *,0x34)&511; }
 static inline u8 StatusY(void *p) { return M2C_FIELD(p,s16 *,0x36); }
 static inline u16 StatusTile(u16 state) {
@@ -57,7 +73,7 @@ void func_02085324(void){
 
 void func_02085348(M2C_UNK arg0,M2C_UNK arg1){
  s32 func_0208492c();
- func_02084bf8((u8)(func_0208492c()+0x81),arg0,arg1);
+ Link_BroadcastMessage((u8)(func_0208492c()+0x81),arg0,arg1);
 }
 
 u8 func_02085370(s32 arg0, M2C_UNK arg1) {
@@ -101,7 +117,7 @@ void func_02085428(M2C_UNK arg0) {
 
 void func_02085440(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    func_02084bf8(0x85, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    Link_BroadcastMessage(0x85, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
     func_01ffa6fc(arg0);
 }
 
@@ -195,36 +211,45 @@ u8 func_02085608(void *a) {
 }
 
 void func_02085644(void *arg0) {
-    M2C_UNK func_02084bf8(M2C_UNK, s32, s32);
-    func_02084bf8(0x86, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+    M2C_UNK Link_BroadcastMessage(M2C_UNK, s32, s32);
+    Link_BroadcastMessage(0x86, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
 }
 
 void func_0208565c(M2C_UNK arg0) {
     func_02084ea0(0x50524353, arg0);
 }
 
-s32 func_02085674(u32 a,void *b) {
+/* Handles the link messages that carry the players' data blocks: a
+ * LINK_MSG_PLAYER_DATA message copies its payload (message + 0xC) into the
+ * buffer of the player its header names (message + 5, low nibble) and answers
+ * with LINK_MSG_PLAYER_DATA_ACK for that player; a LINK_MSG_PLAYER_DATA_ACK
+ * marks the block as arrived.  Anything else goes to the handler installed
+ * before this one.  Returns 1 unless a forwarded handler says otherwise. */
+s32 Link_HandlePlayerDataMessage(u32 arg0, void *message) {
     void *FindObjectByClass(M2C_UNK *);
-    void func_02084c5c(s32,s32,s32,u16);
-    extern M2C_UNK data_0210212c;
-    void *p;
+    void Link_SendMessage(s32, s32, s32, u16);
+    extern M2C_UNK gLinkPlayerDataClass;
+    void *listener;
     s32 result;
-    s32 (*callback)(u32,void *);
-    p=FindObjectByClass(&data_0210212c);
-    result=1;
-    if(p) {
-        a=(u32)(M2C_FIELD(b,u8 *,5)<<28)>>28;
-        switch(M2C_FIELD(b,u8 *,4)) {
-        case 0x86:
-            MI_CpuCopy8((u8 *)b+12,M2C_FIELD(M2C_FIELD(p,void **,0x38),void **,a*4),M2C_FIELD(p,s32 *,0x40));
-            func_02084c5c(0x87,0,0,(u16)(result<<a));
+    s32 (*forward)(u32, void *);
+
+    listener = FindObjectByClass(&gLinkPlayerDataClass);
+    result = 1;
+    if (listener) {
+        arg0 = (u32)(M2C_FIELD(message, u8 *, 5) << 28) >> 28;
+        switch (M2C_FIELD(message, u8 *, 4)) {
+        case LINK_MSG_PLAYER_DATA:
+            MI_CpuCopy8((u8 *)message + 12,
+                        M2C_FIELD(M2C_FIELD(listener, void **, LINK_PLAYER_DATA_PTRS), void **, arg0 * 4),
+                        M2C_FIELD(listener, s32 *, LINK_PLAYER_DATA_SIZE));
+            Link_SendMessage(LINK_MSG_PLAYER_DATA_ACK, 0, 0, (u16)(result << arg0));
             break;
-        case 0x87:
-            M2C_FIELD(p,u16 *,0x44)|=result<<a;
+        case LINK_MSG_PLAYER_DATA_ACK:
+            M2C_FIELD(listener, u16 *, LINK_PLAYER_DATA_RECEIVED) |= result << arg0;
             break;
         default:
-            callback=M2C_FIELD(p,s32 (**)(u32,void *),0x34);
-            if(callback) result=callback(a,b);
+            forward = M2C_FIELD(listener, s32 (**)(u32, void *), LINK_PLAYER_DATA_PREV_HANDLER);
+            if (forward) result = forward(arg0, message);
             break;
         }
     }
@@ -234,11 +259,11 @@ s32 func_02085674(u32 a,void *b) {
 void func_02085724(s32 a,s32 b,s32 c,s32 d) {
     void *func_01ffa444(M2C_UNK *,M2C_UNK);
     s32 GetLocalPlayerIdForOverlay(void);
-    extern M2C_UNK data_0210212c, data_0210219c;
-    void *p=func_01ffa444(&data_0210212c,d);
+    extern M2C_UNK gLinkPlayerDataClass, data_0210219c;
+    void *p=func_01ffa444(&gLinkPlayerDataClass,d);
     if(!p) return;
     M2C_FIELD(p,void **,0)=&data_0210219c;
-    M2C_FIELD(p,s32 *,0x34)=func_02084fc0((M2C_UNK *)&func_02085674);
+    M2C_FIELD(p,s32 *,0x34)=func_02084fc0((M2C_UNK *)&Link_HandlePlayerDataMessage);
     M2C_FIELD(p,s32 *,0x38)=a;
     M2C_FIELD(p,s32 *,0x3c)=b;
     M2C_FIELD(p,s32 *,0x40)=c;

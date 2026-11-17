@@ -245,7 +245,7 @@ u8 func_0209e0dc(M2C_UNK arg0) {
     return var_r0;
 }
 
-void func_0209e104(s32 arg0, M2C_UNK arg1) {
+void LoadWindowGraphics(s32 arg0, M2C_UNK arg1) {
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0211f840;
     extern M2C_UNK data_0211f848;
@@ -261,7 +261,7 @@ void func_0209e104(s32 arg0, M2C_UNK arg1) {
     }
 }
 
-void func_0209e158(s32 arg0) {
+void LoadWindowPalette(s32 arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_0211f868;
@@ -278,30 +278,34 @@ void func_0209e184(void *arg0, s8 arg1, u32 arg2, s32 arg3) {
     Hide3DSprite();
 }
 
-void ReloadScenePanelGraphics(void *arg0) {
+/* Load the dialogue window's graphics into each screen the panel is shown on:
+ * the panel's layout picks window_talk.cg or window_body.cg, decompressed to its
+ * tile row in the selected engine's VRAM, then recolour the window palette. */
+void ReloadScenePanelGraphics(void *panel) {
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    void func_0209e320(void *);
-    void *old;
-    u32 mode;
-    s32 i;
-    void *p;
-    old = gCur3DSpriteEngine;
-    i = 0;
+    void UpdateScenePanelPalette(void *);
+    void *savedEngine;
+    u32 target;
+    s32 screen;
+    void *engine;
+
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (i == 0) p = g3DSpriteEngineMain; else p = g3DSpriteEngineSub;
-        gCur3DSpriteEngine = p;
-        mode = (u32)(M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29;
-        if (((mode != 0) || (p == g3DSpriteEngineMain)) &&
-            ((mode != 1) || (p == g3DSpriteEngineSub)) &&
-            ((mode != 3) || (p == old))) {
-            func_0209e104(M2C_FIELD(arg0, u8 *, 0x5A), M2C_FIELD(p, s32 *, 0x1C) + (M2C_FIELD(arg0, u16 *, 0x3E) << 5));
+        if (screen == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        target = (u32)(M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 28) >> 29;
+        if (((target != DS3D_TARGET_MAIN) || (engine == g3DSpriteEngineMain)) &&
+            ((target != DS3D_TARGET_SUB) || (engine == g3DSpriteEngineSub)) &&
+            ((target != DS3D_TARGET_ACTIVE) || (engine == savedEngine))) {
+            LoadWindowGraphics(M2C_FIELD(panel, u8 *, SCENE_PANEL_LAYOUT), M2C_FIELD(engine, s32 *, DS3D_ENGINE_TEXTURE) + (M2C_FIELD(panel, u16 *, SPRITE_ACTOR_TILE_ROW) << 5));
         }
-        i++;
-    } while (i < 2);
-    gCur3DSpriteEngine = old;
-    func_0209e320(arg0);
+        screen++;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
+    UpdateScenePanelPalette(panel);
 }
 
 void func_0209e25c(void *arg0, s8 arg1, s16 arg2, s16 arg3) {
@@ -313,7 +317,7 @@ void func_0209e25c(void *arg0, s8 arg1, s16 arg2, s16 arg3) {
 void func_0209e26c(void *arg0, s8 arg1) {
     M2C_UNK func_020991f4(s32, s8);
     M2C_UNK RefreshFaceSprite(s32);
-    void func_0209e320(void *);
+    void UpdateScenePanelPalette(void *);
     s32 temp_r0;
     s32 var_r5;
 
@@ -325,7 +329,7 @@ void func_0209e26c(void *arg0, s8 arg1) {
         RefreshFaceSprite(temp_r0);
         var_r5 += 1;
     } while (var_r5 < 2);
-    func_0209e320(arg0);
+    UpdateScenePanelPalette(arg0);
 }
 
 void func_0209e2b8(void *arg0, s8 arg1) {
@@ -361,7 +365,7 @@ loop_1:
 }
 
 /* Blend sprite palette colors for animation transitions. */
-void func_0209e320(void *arg0) {
+void UpdateScenePanelPalette(void *arg0) {
     extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
     extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
     s32 Is3DSpriteVisible(void*);s32 IsFaceSpriteLoaded(void*);s32 BlendRgb555_16(s32,s32,s32,s32);
@@ -382,7 +386,7 @@ void func_0209e320(void *arg0) {
         gCur3DSpriteEngine=engine;
         mode=(u32)(p[0x48]<<28)>>29;
         if((mode!=0 || engine==g3DSpriteEngineMain) && (mode!=1 || engine==g3DSpriteEngineSub) && (mode!=3 || engine==old)){
-            func_0209e158((u16)(((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16));
+            LoadWindowPalette((u16)(((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16));
             pal=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+(((((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16)<<5)&~1);
             c0=M2C_FIELD(pal,u16*,0x16);c1=M2C_FIELD(pal,u16*,0x18);c2=M2C_FIELD(pal,u16*,0x1a);
             if(a[0x59]){if(Is3DSpriteVisible(a))c0=c1;}else c1=BlendRgb555_16(c1,0,8,8);

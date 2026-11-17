@@ -345,7 +345,7 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
 #pragma opt_propagation off
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 GetWaypointOptionIcon(u8);
+s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 GetWaypointOptionCoId(u8);
 void ClearTileRect(void*,s32,s32); void FillFaceTileMap(u32,s32,s32,s32,u32,u16,u8); void LoadFacePalette(s32,s32,s32,s32,u8);
 u8 i; void *old,*saved; s32 b; u8 a; s8 c; u16 v;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
@@ -354,7 +354,7 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 a=(Modulo(i,2)!=0);
 if(i<2)b=0;
 else b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
-c=(s8)GetWaypointOptionIcon(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
+c=(s8)GetWaypointOptionCoId(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(c==0){
 ClearTileRect((void*)((u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+(b+1)*2),7,7);
 }else{
@@ -369,7 +369,7 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 a=(Modulo(i,2)!=0);
 if(i>=2)func_ov003_022004f0(2);
-c=(s8)GetWaypointOptionIcon(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
+c=(s8)GetWaypointOptionCoId(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(i==M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7)||!E9638Mode(p,2)){
 if(c)LoadFacePalette(c,1,a,i,0);
 }else{
@@ -394,12 +394,12 @@ void func_ov003_021ea134(s32 arg0) {
  * then flip the text palette colour for the next frame. */
 void DrawWaypointOption(void *p){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
-void Clear3DSpriteLayer(s32); s32 GetWaypointOptionIcon(u8); void Hide3DSprite(void*); void Show3DSprite(void*); void func_020990fc(void*,s32,s32,s32); void *GetWaypointOptionTextId(s32); void *GetLocalizedText(void*); void DrawTextLine(s32,s32,s32,void*,s32,u16);
+void Clear3DSpriteLayer(s32); s32 GetWaypointOptionCoId(u8); void Hide3DSprite(void*); void Show3DSprite(void*); void func_020990fc(void*,s32,s32,s32); void *GetWaypointOptionTextId(s32); void *GetLocalizedText(void*); void DrawTextLine(s32,s32,s32,void*,s32,u16);
 void *savedEngine; s8 optionIndex,iconIndex; u8 paletteBit;
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 Clear3DSpriteLayer(3);
 optionIndex=M2C_FIELD(M2C_FIELD(p,void**,0x40),s8*,15);
-iconIndex=GetWaypointOptionIcon((u8)optionIndex);
+iconIndex=GetWaypointOptionCoId((u8)optionIndex);
 if(!iconIndex)Hide3DSprite(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
 else {
 if(((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))Show3DSprite(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
@@ -449,34 +449,38 @@ if(func_020cfb94()-start>0)do{n++;}while(n<func_020cfb94()-start);
 Link_SendPacket(buf,0x24);Link_FlushSend();func_01ffa6fc(p);
 }
 
-void func_ov003_021ea3f4(void *arg0) {
- void *func_02084e24(u8);
+/* Refreshes the waypoint panel's per-player ready flags from the link player
+ * records, silently: retracts the two player-select slides, then for every slot in
+ * use looks the slot's player record up (an empty slot shows the first slot's
+ * player) and records whether its data has arrived. */
+void WaypointPanel_RefreshPlayerReady(void *panel) {
+ void *GetNetworkPlayerRecord(u8);
  M2C_UNK Hide3DSpriteSlide(s32);
  s32 temp_r2,var_r1;
  u8 var_r0,var_r8;
  void *temp_r0,*temp_r1,*temp_r4;
- temp_r4=M2C_FIELD(arg0,void**,0x64);
+ temp_r4=M2C_FIELD(panel,void**,WAYPOINT_PANEL_SELECT_SPRITES);
  Hide3DSpriteSlide(M2C_FIELD(temp_r4,s32*,0));
  Hide3DSpriteSlide(M2C_FIELD(temp_r4,s32*,4));
  var_r8=0;
- if(M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4)<=0)return;
+ if(M2C_FIELD(M2C_FIELD(panel,void**,WAYPOINT_PANEL_LIST),s8*,WAYPOINT_LIST_COUNT)<=0)return;
  do {
- var_r0=M2C_FIELD((u8*)M2C_FIELD(arg0,void**,0x6c)+var_r8,u8*,0x74);
+ var_r0=M2C_FIELD((u8*)M2C_FIELD(panel,void**,WAYPOINT_PANEL_LIST)+var_r8,u8*,WAYPOINT_LIST_IDS);
  var_r1=E9638IsFF(var_r0);
- if(var_r1)var_r0=M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),u8*,0x74);
- temp_r0=func_02084e24(var_r0);
+ if(var_r1)var_r0=M2C_FIELD(M2C_FIELD(panel,void**,WAYPOINT_PANEL_LIST),u8*,WAYPOINT_LIST_IDS);
+ temp_r0=GetNetworkPlayerRecord(var_r0);
  if(temp_r0==0)return;
  temp_r2=E9638Value(temp_r0);
- temp_r1=(u8*)M2C_FIELD(arg0,void**,0x68)+var_r8;
- if(M2C_FIELD(temp_r1,u8*,0x7c)!=0) {
- if(temp_r2==0)M2C_FIELD(temp_r1,u8*,0x7c)=0;
- }else if(temp_r2!=0)M2C_FIELD(temp_r1,u8*,0x7c)=1;
+ temp_r1=(u8*)M2C_FIELD(panel,void**,WAYPOINT_PANEL_GROUP)+var_r8;
+ if(M2C_FIELD(temp_r1,u8*,WAYPOINT_GROUP_READY)!=0) {
+ if(temp_r2==0)M2C_FIELD(temp_r1,u8*,WAYPOINT_GROUP_READY)=0;
+ }else if(temp_r2!=0)M2C_FIELD(temp_r1,u8*,WAYPOINT_GROUP_READY)=1;
  var_r8++;
- }while(var_r8<M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4));
+ }while(var_r8<M2C_FIELD(M2C_FIELD(panel,void**,WAYPOINT_PANEL_LIST),s8*,WAYPOINT_LIST_COUNT));
 }
 
 void func_ov003_021ea4a8(void *arg0,s32 arg1){
-void *func_02084e24(u8);M2C_UNK PlaySoundEffect(s32);
+void *GetNetworkPlayerRecord(u8);M2C_UNK PlaySoundEffect(s32);
 s32 temp_r2,var_r1;u8 var_r0,var_r7;void *temp_r0,*temp_r8;
 var_r7=0;
 if(M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4)<=0)return;
@@ -484,7 +488,7 @@ do{
 var_r0=M2C_FIELD((u8*)M2C_FIELD(arg0,void**,0x6c)+var_r7,u8*,0x74);
 var_r1=E9638IsFF(var_r0);
 if(var_r1)var_r0=M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),u8*,0x74);
-temp_r0=func_02084e24(var_r0);if(!temp_r0)return;
+temp_r0=GetNetworkPlayerRecord(var_r0);if(!temp_r0)return;
 temp_r2=E9638Value(temp_r0);
 temp_r8=(u8*)M2C_FIELD(arg0,void**,0x68)+var_r7;
 if(M2C_FIELD(temp_r8,u8*,0x7c)){

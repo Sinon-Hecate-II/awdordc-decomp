@@ -1,5 +1,6 @@
 /* 21 functions from 0x020B8CCC to 0x020B9C8C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 value; u8 flag; } Unk020BChoice;
 typedef struct UiB8ccc {u8 pad[0x40];u32 a:18;u32 tile:8;u32 b:6;u8 pad44[0x15];u8 mode:4;u8 active:1;u8 c:3;u8 reset;u8 pad5b[9];s8 *state;} UiB8ccc;
 
@@ -56,18 +57,18 @@ void func_020b9140(s32 arg0) {
 
 #pragma optimization_level 2
 #pragma opt_common_subs off
-void func_020b916c(s32 x,s32 y,s32 a,s32 b,s32 c){
-void ClearTileRect(void *,s32,s32);s32 func_0207cb88(s32);void DrawTilemapNumber(s32,s32,s32,s32,u16,u16);void func_0209c0bc(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
+void DrawFundsCostRow(s32 x,s32 y,s32 a,s32 b,s32 c){
+void ClearTileRect(void *,s32,s32);s32 GetDigitCount(s32);void DrawTilemapNumber(s32,s32,s32,s32,u16,u16);void func_0209c0bc(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
 s32 pos,base=x; s32 color=0;
 if(c<0)color=3;
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+x*2+y*64,32,2);
-pos=x+4;DrawTilemapNumber((s16)(pos+(func_0207cb88(a)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
+pos=x+4;DrawTilemapNumber((s16)(pos+(GetDigitCount(a)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
 pos=base+11;if(b<0){func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,0);if(b<0)b=-b;}else{func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),43,0,0);}
-a=base+14;DrawTilemapNumber((s16)(a+(func_0207cb88(b)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),b,0,0);
+a=base+14;DrawTilemapNumber((s16)(a+(GetDigitCount(b)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),b,0,0);
 func_0209c0bc(base+20,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),61,0,0);
 base+=23;
 if(c<0){func_0209c0bc(base++,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,color);if(c<0)c=-c;}
-DrawTilemapNumber((s16)(base+(func_0207cb88(c)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),c,0,color);
+DrawTilemapNumber((s16)(base+(GetDigitCount(c)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),c,0,color);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 }
 #pragma opt_common_subs reset
@@ -89,13 +90,17 @@ void func_020b939c(void *arg0) {
     DeleteSpriteObject(arg0);
 }
 
-void func_020b93f4(void *a) {s32 GetUnitBuildCostTimes10(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_020b916c(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void func_01ffa6fc(void *);extern void **gCurrentMap;
-s32 n,limit,total,base,delta,v,index;void *g;
-v=M2C_FIELD(a,s32 *,92);M2C_FIELD(a,s16 *,108)++;g=*gCurrentMap;n=M2C_FIELD(a,s16 *,108);limit=M2C_FIELD(a,s16 *,110);
-index=M2C_FIELD(g,u16 *,0x52a4);total=M2C_FIELD((u8 *)g+index*140,s32 *,0x67a4);
-base=GetUnitBuildCostTimes10(index,v);delta=total-base;
-func_020b916c(0,1,EaseInterpolate(0,total,delta,n,limit),-base,delta);
-if((n&3)==1)PlaySoundEffect(0x10023);if(n<limit)return;func_01ffa6fc(a);
+/* Advance the production menu's funds count-up by one frame: ease the displayed
+ * funds from the player's current funds down to what is left after the row's
+ * unit cost, redraw the funds line with it, tick a sound every fourth frame, and
+ * once the count-up is over hand the row object on to the sprite state. */
+void UpdateProductionFundsRow(void *row) {s32 GetUnitBuildCostTimes10(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void DrawFundsCostRow(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void func_01ffa6fc(void *);extern void **gCurrentMap;
+s32 frame,duration,funds,cost,remaining,kind,player;void *map;
+kind=M2C_FIELD(row,s32 *,PRODUCTION_ROW_KIND);M2C_FIELD(row,s16 *,PRODUCTION_ROW_FRAME)++;map=*gCurrentMap;frame=M2C_FIELD(row,s16 *,PRODUCTION_ROW_FRAME);duration=M2C_FIELD(row,s16 *,PRODUCTION_ROW_DURATION);
+player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);funds=M2C_FIELD((u8 *)map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF);
+cost=GetUnitBuildCostTimes10(player,kind);remaining=funds-cost;
+DrawFundsCostRow(0,1,EaseInterpolate(0,funds,remaining,frame,duration),-cost,remaining);
+if((frame&3)==1)PlaySoundEffect(0x10023);if(frame<duration)return;func_01ffa6fc(row);
 }
 
 void func_020b94a4(void *a) {s32 ProduceUnit(s32,s32,s32);void SetBattleCommand(s32,u8,s32,s32);void func_ov000_0216aa44(s32,s32);extern void **gCurrentMap;s32 v=M2C_FIELD(a,s32 *,92);s32 result;void *g=*gCurrentMap;
@@ -111,7 +116,7 @@ void func_020b953c(s32 arg0, s32 arg1) {
     M2C_FIELD(CreateSpriteObject(&data_02129178), s32 *, 0x5C) = arg0;
 }
 
-void func_020b9558(u8 a) {s32 GetUnitBuildCostTimes10(s32,s32);void func_020b916c(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=GetUnitBuildCostTimes10(idx,a);func_020b916c(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
+void func_020b9558(u8 a) {s32 GetUnitBuildCostTimes10(s32,s32);void DrawFundsCostRow(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=GetUnitBuildCostTimes10(idx,a);DrawFundsCostRow(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
 
 void ProductionMenu_HandleInput(u8 *selection) {
 extern u16 *gKeyState;
@@ -155,7 +160,7 @@ void func_020b96e0(u8 *a) {
     extern void **gCurrentMap;
     extern u8 data_0215d859[];
     extern u8 data_0215d858[];
-    extern M2C_UNK data_021291b0;
+    extern M2C_UNK gProductionMenuScreenClass;
     u8 index = *a;
     if (data_0215d859[index * 2] == 1) {
         PlaySoundEffect(0x1001d);
@@ -165,21 +170,21 @@ void func_020b96e0(u8 *a) {
         PlaySoundEffect(0x1001d);
         func_02096b6c(0xc0000332);
     } else {
-        void *result = FindObjectByClass(&data_021291b0);
+        void *result = FindObjectByClass(&gProductionMenuScreenClass);
         func_020b953c(data_0215d858[index * 2], (s32)result);
     }
     func_020b2178();
-    func_01ffa9bc(&data_021291b0);
+    func_01ffa9bc(&gProductionMenuScreenClass);
 }
 
 void func_020b9778(void) {
     M2C_UNK func_01ffa9bc(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b2178();
-    extern M2C_UNK data_021291b0;
+    extern M2C_UNK gProductionMenuScreenClass;
     PlaySoundEffect(0x10018);
     func_020b2178();
-    func_01ffa9bc(&data_021291b0);
+    func_01ffa9bc(&gProductionMenuScreenClass);
 }
 
 void func_020b979c(u8 *a) {
@@ -190,11 +195,36 @@ void func_020b979c(u8 *a) {
     PlaySoundEffect(0x10019);
 }
 
-void func_020b97c4(s32 a,s32 b) {void func_020b9874(s8);M2C_UNK func_01ffa3dc(M2C_UNK *,s32);extern void **gCurrentMap;extern M2C_UNK gProductionMenuState;extern M2C_UNK data_021291b0;u8 *g=*gCurrentMap;u32 type=M2C_FIELD(g+(a+M2C_FIELD(g+b*2,u16 *,0x3758)),u8 *,0x1420)&31;switch(type){case 15:case 16:case 17:gProductionMenuState=7;break;case 18:gProductionMenuState=16;break;case 19:gProductionMenuState=32;break;}
-func_020b9874((s8)gProductionMenuState);func_01ffa3dc(&data_021291b0,7);
+/* Open the unit-production menu on the property tile at (x, y): pick the build
+ * mask from the tile's terrain kind (the ground facilities offer the ground
+ * kinds, an airport the air kinds and a port the naval kinds), rebuild the
+ * menu's entry list from that mask and create the production menu screen. */
+void OpenProductionMenu(s32 x, s32 y) {
+    void BuildProductionMenuEntries(s8 mask);
+    M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
+    extern void **gCurrentMap;
+    extern M2C_UNK gProductionMenuState;
+    extern M2C_UNK gProductionMenuScreenClass;
+    u8 *map = *gCurrentMap;
+    u32 terrain = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+    switch (terrain) {
+    case MAP_TERRAIN_PROPERTY_FIRST:     /* headquarters */
+    case MAP_TERRAIN_PROPERTY_FIRST + 1: /* city */
+    case MAP_TERRAIN_PROPERTY_FIRST + 2: /* base */
+        M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_KIND_MASK) = PRODUCTION_BUILD_GROUND;
+        break;
+    case MAP_TERRAIN_PROPERTY_FIRST + 3: /* airport */
+        M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_KIND_MASK) = PRODUCTION_BUILD_AIR;
+        break;
+    case MAP_TERRAIN_PROPERTY_FIRST + 4: /* port */
+        M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_KIND_MASK) = PRODUCTION_BUILD_NAVAL;
+        break;
+    }
+    BuildProductionMenuEntries((s8)M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_KIND_MASK));
+    func_01ffa3dc(&gProductionMenuScreenClass, 7);
 }
 
-void func_020b9874(s8 mask) {
+void BuildProductionMenuEntries(s8 mask) {
     s32 CanBuildUnitKind(s32, s32);
     s32 GetUnitBuildCostTimes10(s32, s32);
     extern s8 data_ov000_021aab94[];

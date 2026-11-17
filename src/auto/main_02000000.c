@@ -48,7 +48,7 @@ void main(void)
 s32 func_02000ca0(void *arg0,void *arg1){
 void func_02002030(s32,s32);
 s32 func_02001ff8(void);
-void func_02007f4c(void *,void *);
+void MTX_Copy33(void *,void *);
 s32 *m=arg0,*d=arg1; s32 temp[9];
 s64 c0,c1,c2; s32 det,inv,a,b,c,e;
 if(arg0==arg1)d=temp;
@@ -74,7 +74,7 @@ a=(s32)(((s64)m[0]*m[7]-(s64)m[6]*m[1])>>12);
 d[7]=-(s32)(((s64)inv*a)>>12);
 c0=(s32)(((s64)m[0]*m[4]-(s64)m[3]*m[1])>>12);
 d[8]=(s32)((inv*c0)>>12);
-if(d==temp)func_02007f4c(temp,arg1);
+if(d==temp)MTX_Copy33(temp,arg1);
 return 0;
 }
 #pragma pop

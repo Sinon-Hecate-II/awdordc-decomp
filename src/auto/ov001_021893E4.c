@@ -321,7 +321,7 @@ void func_ov001_02189ad0(void) {
     void FileRead(void *, void *, s32);
     void CloseFileRequest(void *);
     void func_0200b118(void *);
-    s32 func_0200b184(void *, void *, s32);
+    s32 RegisterArchiveName(void *, void *, s32);
     void func_0200b6a8(void *, s32, s32);
     s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 LoadArchiveIndex(void *, s32, s32);
@@ -354,7 +354,7 @@ void func_ov001_02189ad0(void) {
     FileRead(request, lo, 8);
     CloseFileRequest(request);
     func_0200b118((u8 *)data_ov001_02193e2c + 0x88);
-    if (!func_0200b184((u8 *)data_ov001_02193e2c + 0x88, data_ov001_0218fd04, 3)) {
+    if (!RegisterArchiveName((u8 *)data_ov001_02193e2c + 0x88, data_ov001_0218fd04, 3)) {
         SystemHalt();
     }
     func_0200b6a8((u8 *)data_ov001_02193e2c + 0x88, (s32)func_ov001_02189d0c, 0x602);

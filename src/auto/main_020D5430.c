@@ -118,7 +118,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)=M2C_FIELD(M2
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_UNIT_RECORDS+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)*14;
 
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
-if(func_020cf878(x,y)) { if(playMoveEffect)func_020b97c4(x,y); return 1; }
+if(func_020cf878(x,y)) { if(playMoveEffect)OpenProductionMenu(x,y); return 1; }
 if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
 func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
@@ -133,7 +133,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(M2
 func_020d5868();
 func_0207a748(0);func_0207b028(7);
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_MODE)=2;
-func_020a06a0(menuMode);
+StartUnitMovePath(menuMode);
 func_01ffa3dc(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
 DrawUnitInfoPanel(2);
@@ -171,7 +171,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     func_020d5868();
     func_0207a748(0); func_0207b028(7);
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_MODE) = 2;
-    func_020a06a0(menuMode);
+    StartUnitMovePath(menuMode);
     func_01ffa3dc(&data_0211fbc4, 6);
     PlaySoundEffect(0x1001c);
 }
@@ -342,7 +342,7 @@ void func_020d6208(void) {
 void func_020d6310(void) {
  extern void *gCurrentMap;
  if(!func_020d4dd0())return;
- func_ov000_0219e948();
+ ProcessAiCommandStep();
  if(func_ov000_0219c7b0()!=2)return;
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }

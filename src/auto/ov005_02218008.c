@@ -3,7 +3,7 @@
 #include "ov005_menu.h"
 void Ov005RefreshEntryLabel(void);
 void Ov005RefreshEntryFace(void);
-void func_ov005_02217440(void);
+void Ov005RefreshNameGraphic(void);
 void CreateSubWallpaperSprite(int,int,int);
 void func_020b1b3c(void);
 typedef struct Setup180 {u16 h[6];} Setup180;
@@ -27,11 +27,11 @@ void LoadNarcFileToBuffer();
 void CloseNarcArchive();
 void LoadFileToSpriteBuffer();
 void SetFileDirectory();
-void func_0207c780();
+void LoadGraphicsBlock();
 M2C_UNK HeapFreeBlock();
 void func_02098b94();
 void CreateMenuTextSprite();
-void func_0208ca2c();
+void Load3DSpritePattern();
 void CreateMainWallpaperSprite();
 void func_020a9a30(s32,s32,u8,void *);
 void SetTextById();
@@ -95,7 +95,7 @@ OpenNarcArchive(GetLocalizedFileName(data_ov005_02220908));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_0222091c),M2C_FIELD(g3DSpriteEngineMain,void * *,20));
 LoadNarcFileToBuffer(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpriteEngineMain,void * *,40),0,0);CloseNarcArchive();
 LoadFileToSpriteBuffer(data_ov005_02220944,0,32);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;SetFileDirectory(data_ov005_02220958);
-p=LoadFileToBuffer(data_ov005_02220960,1);func_0207c780((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
+p=LoadFileToBuffer(data_ov005_02220960,1);LoadGraphicsBlock((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
 LoadFileToSpriteBuffer(data_ov005_02220978,0x2e0,32);
 for(i=0,j=0;i<12;i++,j+=12)func_02098b94((s16)(i+1),0,0x9380+(j<<6),(u16)i);
 SetOv005FileDirectory();
@@ -104,7 +104,7 @@ CreateMenuTextSprite((char*)gOv005MenuState+40,224,160,2,0x36c,3,2,arg0,0);
 {Pos180 pos={{43,44,45,46}};
 for(i=0,j=0x37c,k=14,m=0;i<4;i++,j+=36,k+=60,m+=4)CreateMenuTextSprite((char*)gOv005MenuState+44+m,M2C_FIELD(gOv005MenuState,s16 *,10)+k,90,pos.h[i]&255,j,3,-1,arg0,0);
 }
-func_0208ca2c(4096,1,GetUiColor(9),2);CreateMainWallpaperSprite(3,15,6);
+Load3DSpritePattern(4096,1,GetUiColor(9),2);CreateMainWallpaperSprite(3,15,6);
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&second);
 v6=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v6 = *v6 | 16;
 v7=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v7 = *v7 &~ 32;
@@ -127,7 +127,7 @@ func_020a9a30(2,2,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,48)+0x2e0);
 M2C_FIELD(sprite,u32 *,68)=func_020aaf74(sprite);M2C_FIELD(sprite,u16 *,62)=0x180;M2C_FIELD(sprite,u32 *,64)=(M2C_FIELD(sprite,u32 *,64)&~0x3fc0000)|0x5c0000;M2C_FIELD(sprite,u16 *,60)=0xc00;
 M2C_FIELD(gOv005MenuState,void * *,28)=func_0208bc24(arg0);M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u16 *,62)=0x200;M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)=(M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)&~0x3fc0000)|0x200000;
 SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);func_02088f1c(M2C_FIELD(gOv005MenuState,void * *,28));func_020e3004();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
-Ov005RefreshEntryFace();func_ov005_02217440();CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=saved;func_020b1b3c();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
+Ov005RefreshEntryFace();Ov005RefreshNameGraphic();CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=saved;func_020b1b3c();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
 }
 #pragma opt_strength_reduction reset
 void func_ov005_0221885c(void) {

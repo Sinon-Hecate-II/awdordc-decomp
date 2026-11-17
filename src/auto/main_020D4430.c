@@ -190,7 +190,7 @@ extern void func_020d33d8(void);
 extern void func_020cbdbc(void);
 extern int IsLinkSessionActive(void);
 extern void func_020852a8(void);
-extern void func_020901b0(int, int, int, int);
+extern void PlaySlotScriptedSoundAtVolume(int, int, int, int);
 int func_020d4b30() {
     extern void **gCurrentMap;
     void (*callback)(void);
@@ -213,8 +213,8 @@ int func_020d4b30() {
         func_020852a8();
     }
 
-    func_020901b0(1, -1, 0x108, 0);
-    func_020901b0(2, -1, 0x109, 0);
+    PlaySlotScriptedSoundAtVolume(1, -1, 0x108, 0);
+    PlaySlotScriptedSoundAtVolume(2, -1, 0x109, 0);
 }
 
 int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();func_02090034(1,10);func_02090034(2,10);}
@@ -299,7 +299,24 @@ u8 func_020d4dac(void) {
 u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
 
 void func_020d5068(void);
-void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:UpdateMapCursor();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:UpdateUnitSelectCursor();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
+/* Runs the per-frame update handler of the battle map's current input mode
+   (MAP_MODE): normal cursor, aiming, unit selection, touch selection, etc. */
+void UpdateMapMode(void){
+extern void **gCurrentMap;
+switch(M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)){
+case 0:UpdateMapCursor();break;
+case 1:func_020d5068();break;
+case 2:UpdateAimingCursor();break;
+case 3:UpdateUnitSelectCursor();break;
+case 4:func_020d61ac();break;
+case 5:func_020d6208();break;
+case 6:func_020d6310();break;
+case 7:func_020d6350();break;
+case 8:func_020d5430();break;
+case 9:func_020d54b4();break;
+case 10:func_020d54b8();break;
+}
+}
 
 int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(IsDialogActive())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
 

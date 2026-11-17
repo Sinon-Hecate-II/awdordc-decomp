@@ -310,7 +310,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK ResetLinkQueues(void);
     void *func_01ffa3dc(M2C_UNK, M2C_UNK);
     void MI_CpuFill32(s32, void *, s32);
-    void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
+    void ConstructArray(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02006804(void);
@@ -430,7 +430,7 @@ test:
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
-        func_02074114((s32)ptr, 4, 8, (M2C_UNK (*)(s32))func_ov009_0222497c, (s32)func_ov009_0222496c);
+        ConstructArray((s32)ptr, 4, 8, (M2C_UNK (*)(s32))func_ov009_0222497c, (s32)func_ov009_0222496c);
     }
 
     result = 0;
@@ -459,7 +459,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK ResetLinkQueues(void);
     void *func_01ffa3dc(M2C_UNK, M2C_UNK);
     void MI_CpuFill32(s32, void *, s32);
-    void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
+    void ConstructArray(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02006804(void);
@@ -559,7 +559,7 @@ test:
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
-        func_02074114((s32)ptr, 4, 8, (M2C_UNK (*)(s32))func_ov009_0222497c, (s32)func_ov009_0222496c);
+        ConstructArray((s32)ptr, 4, 8, (M2C_UNK (*)(s32))func_ov009_0222497c, (s32)func_ov009_0222496c);
     }
 
     if (arg0 == 1) {
@@ -626,7 +626,7 @@ s32 func_ov009_02224c1c(s32 arg0) {
 
 s32 func_ov009_02224c34(M2C_UNK arg0) {
     s32 func_ov009_02223d40(M2C_UNK);
-    if (func_ov009_022241a4() != 0) {
+    if (GetLinkRequestKind() != 0) {
         return 0;
     }
     if (func_ov009_02223d40(arg0) != 0) {
@@ -638,8 +638,8 @@ s32 func_ov009_02224c34(M2C_UNK arg0) {
 
 s32 func_ov009_02224c70(void) {
     s32 func_ov009_02223dc0();
-    s32 func_ov009_022241a4();
-    if (func_ov009_022241a4() != 0) {
+    s32 GetLinkRequestKind();
+    if (GetLinkRequestKind() != 0) {
         return 0;
     }
     if (func_ov009_02223dc0() != 0) {
@@ -651,7 +651,7 @@ s32 func_ov009_02224c70(void) {
 
 s32 func_ov009_02224ca4(void) {
     s32 func_ov009_02223e5c();
-    if (func_ov009_022241a4() != 0) {
+    if (GetLinkRequestKind() != 0) {
         return 0;
     }
     if (func_ov009_02223e5c() != 0) {
@@ -663,7 +663,7 @@ s32 func_ov009_02224ca4(void) {
 
 s32 func_ov009_02224cd8(void) {
     s32 func_ov009_02223ec8();
-    if (func_ov009_022241a4() != 0) {
+    if (GetLinkRequestKind() != 0) {
         return 0;
     }
     if (func_ov009_02223ec8() != 0) {

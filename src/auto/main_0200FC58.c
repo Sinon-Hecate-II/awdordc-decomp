@@ -11,7 +11,7 @@ void func_0200fc58(void) {
     void MI_CpuCopy8(void *, void *, u32);
     void TaskCreate(void *, void *, s32, u8 *, u32, s32);
     void TaskWake(void *);
-    void func_02009e40(s32, void *);
+    void SetFifoMessageHandler(s32, void *);
     void func_0200fd90(s32);
     void func_02010cc4(void);
     void func_02010c90(s32, s32, s32);
@@ -46,7 +46,7 @@ void func_0200fc58(void) {
         TaskWake((u8 *)base + 0x44);
     }
 
-    func_02009e40(0xB, (void *)func_02010c90);
+    SetFifoMessageHandler(0xB, (void *)func_02010c90);
 
     v = *(volatile u16 *)0x27ffc40;
     n = (v == 2) ? 1 : 0;

@@ -483,7 +483,7 @@ void func_ov001_02174dcc(void) {
     extern u8 gKeypadDigitChars[];
     extern u8 gKeypadAuxCodes[];
     extern u8 gKeypadActionCodes[];
-    void func_ov001_0217531c(s32);
+    void Ov001KeypadMoveSelection(s32);
     s32 KeyPressed(s32);
     s32 KeyHeld(s32);
     s32 KeyReleased(s32);
@@ -491,16 +491,16 @@ void func_ov001_02174dcc(void) {
     register s8 k;
 
     if (KeyHeld(0x20)) {
-        func_ov001_0217531c(0);
+        Ov001KeypadMoveSelection(0);
     }
     if (KeyHeld(0x40)) {
-        func_ov001_0217531c(1);
+        Ov001KeypadMoveSelection(1);
     }
     if (KeyHeld(0x10)) {
-        func_ov001_0217531c(2);
+        Ov001KeypadMoveSelection(2);
     }
     if (KeyHeld(0x80)) {
-        func_ov001_0217531c(3);
+        Ov001KeypadMoveSelection(3);
     }
     if (KeyPressed(1)) {
         k = M2C_FIELD(gOv001Keypad, s8 *, 0x63);

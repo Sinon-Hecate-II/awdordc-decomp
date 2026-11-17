@@ -40,7 +40,7 @@ s32 func_ov000_021a6940(void) {
  u8 x;
  s32 best;
  best=0;result=-1;p=(u8 *)&gAiTargetCandidates;
- func_ov000_021a581c();
+ BuildInfluenceMap();
  i=0;
  if((s32)*gAiState>0) do {
  if(p[3]<252 && p[2]==3) {
@@ -67,7 +67,7 @@ s32 func_ov000_021a6a00(void) {
  u8 x;
  u8 y;
  best=126; result=-1; p=(u8 *)&gAiTargetCandidates;
- func_ov000_021a5b28();
+ BuildIndirectThreatMap();
  i=0;
  if((s32)*gAiState > 0) do {
  if(p[3] < 252 && p[2] == 3) {
@@ -88,7 +88,7 @@ s32 func_ov000_021a6a00(void) {
  * healthy enemy kind-23 unit is on the map. */
 s32 FindBestTargetCandidate(void) {
   void FloodFillUnitRange(s32,s32,s32,s32,s32);
-  void func_ov000_021a5f50(void);
+  void BuildRangeThreatMap(void);
   s32 IsUnitOnCurrentTeam(s32);
   extern s32 *gCurrentMap;
   extern u8 *gAiState;
@@ -107,7 +107,7 @@ s32 FindBestTargetCandidate(void) {
   best=126;
   result=-1;
   p=(u8 *)&gAiTargetCandidates;
-  func_ov000_021a5f50();
+  BuildRangeThreatMap();
   i=0;
   if((s32)*gAiState>0) do {
   if(p[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && p[AI_CANDIDATE_TYPE]==3) {
@@ -264,7 +264,7 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  if(a==22 && b==20)v<<=1;
  if((gUnitKindFlags[b*112]&16) && a!=12){v<<=1;if(a==14 || a==16)v<<=1;}
  if(a==6 && (gUnitKindFlags[b*112]&16)){
- if((gAiState[6]==2 || gAiState[6]==4) && func_ov000_021a881c(6,5))v>>=1;
+ if((gAiState[6]==2 || gAiState[6]==4) && CountPlayerUnitsOfKindNotInAiState(6,5))v>>=1;
  if(gAiState[6]==3)v<<=1;
  }
  if(a==23 && (gUnitKindFlags[b*112]&16)){

@@ -143,7 +143,7 @@ case 1:func_020ad1f8((u8)arg1,(u16)arg2,value,7);return;
 void func_0209535c(s32 arg0) {
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 saved,i,v;
-if(func_020ad3f0()) {
+if(IsScreenFadeActive()) {
 if(!func_02096064())return;
 saved=gCur3DSpriteEngine;
 i=0;

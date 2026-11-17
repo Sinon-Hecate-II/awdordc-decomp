@@ -698,14 +698,14 @@ if(data_02138e7c<16) data_02138e7c++;
 else data_02138e7c=(data_02138e7c+1)%16+16;
 }
 #pragma opt_propagation reset
-void func_02029c30(void *arg0, s16 arg1) {
+void ListInit(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s16 *, 8) = 0;
     M2C_FIELD(arg0, s16 *, 0xA) = arg1;
 }
 
-void func_02029c48(void *arg0, void *arg1) {
+void ListAddFirst(void *arg0, void *arg1) {
     u16 off = M2C_FIELD(arg0, u16 *, 0xA);
     void *p = (void *)((s8 *)arg1 + off);
     M2C_FIELD(p, s32 *, 4) = 0;
@@ -715,12 +715,12 @@ void func_02029c48(void *arg0, void *arg1) {
     M2C_FIELD(arg0, u16 *, 8) += 1;
 }
 
-void func_02029c74(void *arg0, void *arg1) {
-    void func_02029c48(void *, void *);
+void ListAppend(void *arg0, void *arg1) {
+    void ListAddFirst(void *, void *);
     u16 off;
 
     if (M2C_FIELD(arg0, void **, 0) == (void *)0) {
-        func_02029c48(arg0, arg1);
+        ListAddFirst(arg0, arg1);
         return;
     }
     off = M2C_FIELD(arg0, u16 *, 0xA);
@@ -732,11 +732,11 @@ void func_02029c74(void *arg0, void *arg1) {
 }
 
 void func_02029cc8(void *arg0, void *arg1) {
-    void func_02029c48(void *, void *);
+    void ListAddFirst(void *, void *);
     u16 off;
 
     if (M2C_FIELD(arg0, void **, 0) == (void *)0) {
-        func_02029c48(arg0, arg1);
+        ListAddFirst(arg0, arg1);
         return;
     }
     off = M2C_FIELD(arg0, u16 *, 0xA);
@@ -748,9 +748,9 @@ void func_02029cc8(void *arg0, void *arg1) {
 }
 
 void func_02029d18(void *arg0, void *arg1, void *arg2) {
-void func_02029c74(void *,void *); void func_02029cc8(void *,void *);
+void ListAppend(void *,void *); void func_02029cc8(void *,void *);
 ListLinks *link; void *oldNext; u16 off;
-if(!arg1) {func_02029c74(arg0,arg2);return;}
+if(!arg1) {ListAppend(arg0,arg2);return;}
 if(arg1==M2C_FIELD(arg0,void **,0)) {func_02029cc8(arg0,arg2);return;}
 off=M2C_FIELD(arg0,u16 *,10);
 link=(ListLinks *)((char *)arg2+off);

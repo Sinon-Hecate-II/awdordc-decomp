@@ -295,8 +295,8 @@ s32 ParseServiceAvailabilityReply(s8 *packet, s32 length, void *source, u32 *sta
 }
 
 s32 func_0204837c(void) {
-s32 func_02049534(void);
-s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
+s32 ghiSocketCanRecv(void);
+s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *);
 s32 func_020496b8(s32);
 s32 GetTickCountMs(void);
 s8 buffer[64];
@@ -308,7 +308,7 @@ if(gDnsQueryState[1]==-1){
 gDnsQueryState[0]=1;
 return 1;
 }
-if(func_02049534() && ParseServiceAvailabilityReply(buffer,func_020497e0(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
+if(ghiSocketCanRecv() && ParseServiceAvailabilityReply(buffer,ghiRecvFrom(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
 func_020496b8(gDnsQueryState[1]);
 if(flags&1)gDnsQueryState[0]=2;
 else if(flags&2)gDnsQueryState[0]=3;

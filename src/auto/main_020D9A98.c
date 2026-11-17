@@ -273,7 +273,7 @@ void func_020da480(void *arg0) {
     M2C_UNK LoadFileToSpriteBuffer(void *, M2C_UNK, M2C_UNK);
     M2C_UNK CloseNarcArchive(void);
     M2C_UNK GetUiColor(M2C_UNK);
-    M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK DisableMapConfirm(void);
     extern void **gCur3DSpriteEngine;
@@ -356,7 +356,7 @@ void func_020da480(void *arg0) {
     LoadFileToSpriteBuffer(data_0212d234, 0x2c0, 0x20);
     CloseNarcArchive();
     r0v = GetUiColor(9);
-    func_0208ca2c(0x1000, 1, r0v, 2);
+    Load3DSpritePattern(0x1000, 1, r0v, 2);
 
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     st = *gCur3DSpriteEngine;
@@ -413,12 +413,12 @@ void func_020da7e8(void *entity) {
 }
 
 void func_020da8e4(s32 arg0, void *arg1) {
-    s32 func_020abe90(u8);
-    s32 func_020ad3f0();
+    s32 GetScreenFlag(u8);
+    s32 IsScreenFadeActive();
     M2C_UNK DisableMapConfirm();
     M2C_UNK func_ov009_02225fb4(s8, u16, s32, void *);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    if ((func_020abe90(M2C_FIELD(arg1, u8 *, 0x44)) == 1) || (func_020ad3f0() != 0)) {
+    if ((GetScreenFlag(M2C_FIELD(arg1, u8 *, 0x44)) == 1) || (IsScreenFadeActive() != 0)) {
         Ov010Online_ClearStepFlag(6);
         return;
     }
@@ -436,8 +436,8 @@ void func_020da8e4(s32 arg0, void *arg1) {
  * classes clear the session step flag, a connection failure starts the error
  * animation, and a cancel is ignored. */
 void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, void *entity) {
-    s32 func_020abe90(u8);
-    s32 func_020ad3f0(void);
+    s32 GetScreenFlag(u8);
+    s32 IsScreenFadeActive(void);
     M2C_UNK func_ov009_02224528(M2C_UNK);
     void func_ov010_02228320(void);
     M2C_UNK func_ov010_0222a808(s8, u16, s32, M2C_UNK, u32, void *);
@@ -445,7 +445,7 @@ void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, vo
     M2C_UNK DisableMapConfirm(void);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
 
-    if (func_020abe90(M2C_FIELD(entity, u8 *, 0x44)) == 1 || func_020ad3f0() != 0) {
+    if (GetScreenFlag(M2C_FIELD(entity, u8 *, 0x44)) == 1 || IsScreenFadeActive() != 0) {
         func_ov009_02224528(1); return;
     }
     if (netError == 0) return;

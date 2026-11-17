@@ -107,8 +107,8 @@ void func_020b185c(void) {
     void (*callback)(void);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020aca8c(3);
-    func_0207b84c();
+    ApplyScreenMode(3);
+    Init3DSpriteLayers1D();
     func_02077a7c();
     Reset3DSpriteCorners();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);
@@ -130,7 +130,7 @@ void func_020b185c(void) {
 void InitMapViewScreen(void) {
 extern void *gCurrentMap,*gCur3DSpriteEngine;
 u16 *volatile bank1;u16 *volatile bank2;void (*callback)(void);
-func_020aca8c(3);func_0207b940();
+ApplyScreenMode(3);Init3DSpriteLayers2D();
 bank1=(u16 *)*(void **)gCur3DSpriteEngine;*bank1=*bank1|DS3D_BANK_OBJ_1D;
 bank2=(u16 *)*(void **)gCur3DSpriteEngine;*bank2=*bank2&~DS3D_BANK_OBJ_BOUNDARY_MASK;
 Reset3DSpriteCorners();
@@ -146,24 +146,28 @@ void func_020b19a8(s32 arg0, s32 arg1) {
     func_01ff9e78(data_020f3c20 + arg1 * 2, ((arg0 + 0xB) << 5) + 0x1E, 2);
 }
 
-void func_020b19d0(s32 arg0, s32 arg1) {
-    M2C_UNK func_0207c55c(void *, s32, M2C_UNK, M2C_UNK);
+/* Upload the caller's entry of the army colour table - and the table's first
+ * entry - to the two palette rows of a player's army, swapping which row gets
+ * which while the player's army icon is animating. */
+void func_020b19d0(s32 player, s32 colour) {
+    M2C_UNK QueueVramCopy(void *, s32, M2C_UNK, M2C_UNK);
     s32 func_020d1a74(void);
     extern u8 data_020f3c20[];
     extern void *gCurrentMap;
-    s32 offset;
-    s32 first;
-    s32 second;
+    s32 playerOffset;
+    s32 row1;
+    s32 row2;
+
     if (func_020d1a74() != 0) {
-        first = 0;
-        second = 8;
+        row1 = 0;
+        row2 = 8;
     } else {
-        first = 8;
-        second = 0;
+        row1 = 8;
+        row2 = 0;
     }
-    offset = arg0 * 0x8C;
-    func_0207c55c(data_020f3c20 + arg1 * 2, ((first + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + offset, u8 *, 0x67C1) - 1)) << 5) + 0x121E, 2, 0);
-    func_0207c55c(data_020f3c20, ((second + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + offset, u8 *, 0x67C1) - 1)) << 5) + 0x121E, 2, 0);
+    playerOffset = player * MAP_PLAYER_STRIDE;
+    QueueVramCopy(data_020f3c20 + colour * 2, ((row1 + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + playerOffset, u8 *, PLAYER_ARMY_INDEX_OFF) - 1)) << 5) + 0x121E, 2, 0);
+    QueueVramCopy(data_020f3c20, ((row2 + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + playerOffset, u8 *, PLAYER_ARMY_INDEX_OFF) - 1)) << 5) + 0x121E, 2, 0);
 }
 
 void func_020b1a84(void) {
@@ -175,9 +179,9 @@ void func_020b1a88(void) {
 }
 
 void func_020b1a8c(s32 arg0) {
-    M2C_UNK func_0207c55c(void *, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK QueueVramCopy(void *, s32, M2C_UNK, M2C_UNK);
     extern u8 data_021206e0[];
-    func_0207c55c(data_021206e0 + ((u32)((arg0 >> 2) << 28) >> 27), 0x1448, 2, 0);
+    QueueVramCopy(data_021206e0 + ((u32)((arg0 >> 2) << 28) >> 27), 0x1448, 2, 0);
 }
 
 void func_020b1abc(void) {

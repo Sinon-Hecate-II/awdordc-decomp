@@ -147,12 +147,12 @@ void func_0201a134(s32 arg0) {
 void func_0201a238(void) {
     extern M2C_UNK gNetStack;
     void TaskYield(void);
-    void func_02006030(s32);
+    void SleepMilliseconds(s32);
     s32 f = M2C_FIELD(&gNetStack, s32 *, 0x24);
     if (f == 0) {
         TaskYield();
     } else {
-        func_02006030(f);
+        SleepMilliseconds(f);
     }
 }
 
@@ -287,7 +287,13 @@ void func_0201a550(s32 arg0) {
     func_02005f80(&data_02137438, arg0);
 }
 
-u32 ChecksumAccumulate(u8 *p,u32 n,u32 sum){u32 v;if((u32)p&1){while(n>1){sum+=(u16)((p[0]<<8)|p[1]);n-=2;p+=2;}}else{v=(u16)sum;sum=(u16)(((s32)v>>8)|(v<<8));while(n>1){sum+=*(u16 *)p;p+=2;n-=2;}v=((sum>>8)&0x00ff00ff)|((sum<<8)&0xff00ff00);sum=(v>>16)|(v<<16);}if(n)sum+=*p<<8;v=(u16)sum+(sum>>16);v+=v>>16;return (u16)v;}
+/* Adds the 16-bit words of a buffer to a running one's-complement checksum and
+ * folds the carries, so the caller can sum several buffers in a row before
+ * ChecksumFinalize complements the total. Words are summed big-endian: a buffer
+ * that starts at an odd address is summed byte by byte, an even one has its
+ * host-order words byte-swapped around the sum, and a trailing odd byte counts as
+ * the high half of a last word. */
+u32 ChecksumAccumulate(u8 *data,u32 length,u32 sum){u32 folded;if((u32)data&1){while(length>1){sum+=(u16)((data[0]<<8)|data[1]);length-=2;data+=2;}}else{folded=(u16)sum;sum=(u16)(((s32)folded>>8)|(folded<<8));while(length>1){sum+=*(u16 *)data;data+=2;length-=2;}folded=((sum>>8)&0x00ff00ff)|((sum<<8)&0xff00ff00);sum=(folded>>16)|(folded<<16);}if(length)sum+=*data<<8;folded=(u16)sum+(sum>>16);folded+=folded>>16;return (u16)folded;}
 
 s32 ChecksumFinalize(s32 arg0) {
     u16 var_r0;
@@ -495,5 +501,5 @@ void SendArpRequest(s32 nodeId) {
     SendLinkFrame((u8 *)&packet, 42, 0, 0);
 }
 
-s32 ResolveArpMacAddress(s32 a){void SendArpRequest(s32);void func_02006030(s32);s32 FindArpMacAddress(s32);extern M2C_UNK gNetStack;u32 i,j;s32 r;for(i=0;i<8;i++){SendArpRequest(a);for(j=0;j<20;j++){if(!M2C_FIELD(&gNetStack,s32 *,80))return 0;func_02006030(100);r=FindArpMacAddress(a);if(r)return r;}}return 0;}
+s32 ResolveArpMacAddress(s32 a){void SendArpRequest(s32);void SleepMilliseconds(s32);s32 FindArpMacAddress(s32);extern M2C_UNK gNetStack;u32 i,j;s32 r;for(i=0;i<8;i++){SendArpRequest(a);for(j=0;j<20;j++){if(!M2C_FIELD(&gNetStack,s32 *,80))return 0;SleepMilliseconds(100);r=FindArpMacAddress(a);if(r)return r;}}return 0;}
 

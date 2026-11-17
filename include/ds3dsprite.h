@@ -19,6 +19,7 @@
 
 /* The bank's OBJ attribute word (its priority is in bits 6..7). */
 #define DS3D_BANK_OAMATTR 0x12
+#define DS3D_BANK_OAMATTR_PRIORITY 0x00C0 /* OBJ priority bits of oamAttr */
 
 /* Rows of the bank's cell grid above/below the split point. */
 #define DS3D_BANK_ROWS_ABOVE 0x51
@@ -31,8 +32,14 @@
 #define DS3D_BANK_MODE2 0x0040
 #define DS3D_BANK_MODE3 0x0080
 #define DS3D_BANK_MODE4 0x0100
+/* The remaining three bits of the same one-hot field.  No code selects these
+ * modes, but the full bank reset (func_02076244) clears all eight. */
+#define DS3D_BANK_MODE5 0x0200
+#define DS3D_BANK_MODE6 0x0400
+#define DS3D_BANK_MODE7 0x0800
 
 /* Bank flags copied to DISPCNT's OBJ mapping and boundary fields. */
+#define DS3D_BANK_OBJ_MAPPING_1D 0x0008 /* bit 3: 1D OBJ character VRAM mapping, clear for 2D */
 #define DS3D_BANK_OBJ_1D 0x1000
 #define DS3D_BANK_OBJ_BOUNDARY_MASK 0x6000
 #define DS3D_DISPLAY_GRAPHICS 1
@@ -69,6 +76,11 @@
 #define DS3D_OFFSET2_X 0x40
 #define DS3D_OFFSET2_Y 0x42
 
+/* Byte offsets, from the sprite bank plus the layer's s16 index, of that layer's
+ * quad offset: x at +0x38, y at +0x40 (see DS3DSpriteBank::corner). */
+#define DS3D_QUAD_X 0x38
+#define DS3D_QUAD_Y 0x40
+
 /* Affine transform of the 3D sprite's layer grid, built by BuildSpriteTransform
  * from a DS3DSpriteTransform. The coefficients are 8.8 fixed point. */
 typedef struct DS3DSpriteMatrix {
@@ -100,7 +112,7 @@ typedef struct DS3DSpriteBank {
     DS3DSpriteMatrix matrixA; /* +0x14 transform including the screen offset */
     DS3DSpriteMatrix matrixB; /* +0x24 transform relative to the screen offset */
     s32 displayMode;   /* +0x34 DISPCNT display mode: 1 = graphics */
-    s16 corner[8];     /* +0x38 four (x,y) corner offsets of the sprite quad */
+    s16 corner[8];     /* +0x38 the four layers' quad offsets: x in [0..3], y in [4..7] */
     u8  window0H[2];   /* +0x48 split window 0 horizontal bounds (right, left) */
     u8  window0V[2];   /* +0x4A split window 0 vertical bounds */
     u8  window1H[2];   /* +0x4C split window 1 horizontal bounds (right, left) */
@@ -153,6 +165,13 @@ typedef struct DS3DSpriteEngine {
 #define DS3D_ENGINE(enginePtr) ((DS3DSpriteEngine *)(enginePtr))
 #define DS3D_BANK(enginePtr) ((DS3DSpriteBank *)(*(void **)(enginePtr)))
 
+/* Engine fields code reaches through a void *gCur3DSpriteEngine. */
+#define DS3D_ENGINE_TEXTURE 0x1C /* u32 VRAM address graphics blocks are decompressed to */
+#define DS3D_ENGINE_PALETTES 0x30 /* void *0x400-byte OBJ palette shadow: 32 palettes of 0x20 bytes */
+#define DS3D_ENGINE_DIRTY    0x46 /* u8 DS3D_DIRTY_* bits (and bit i per layer) */
+#define DS3D_PALETTE_BYTES   0x20 /* bytes of one OBJ palette (16 colours, two bytes each) */
+#define DS3D_PALETTE_15      15   /* colours in a palette the fade code rewrites */
+
 /* One entry of gWallpaperFileSets: the files of a wallpaper in one language. */
 typedef struct WallpaperFileSet {
     const char *name;  /* +0x00 base name of the set's files, e.g. "wallp_bmap_s" */
@@ -183,6 +202,13 @@ typedef struct WallpaperFileSet {
 
 /* DS3DSpriteEngine::layerDirty bit of the OBJ palette shadow. */
 #define DS3D_DIRTY_PALETTE 0x10
+
+/* DS3DSpriteEngine::layerDirty bits: bit i says layer i's data changed and the
+ * layer must be rebuilt. */
+#define DS3D_DIRTY_LAYER0 0x01
+#define DS3D_DIRTY_LAYER1 0x02
+#define DS3D_DIRTY_LAYER2 0x04
+#define DS3D_DIRTY_LAYER3 0x08
 #define DS3D_LAYER_PALETTE_BYTES 0x200 /* 256 colours, two bytes each */
 
 /* Control word of a 3D sprite object (at object+0x44). */
@@ -224,6 +250,20 @@ typedef struct DS3DSpriteSplit {
     s32 elapsed;  /* +0x64 frames elapsed so far */
 } DS3DSpriteSplit;
 
+/* A screen-transition object: a 3D sprite (one of the fade classes) that slides
+ * the visible screen sideways or splits it over a number of frames, then applies
+ * the new screen mode and deletes itself.  Only its own fields past the plain
+ * object fields (0x00..0x33) are known. */
+typedef struct DS3DSpriteScreenFade {
+    u8  pad00[0x34];
+    s32 mode;      /* +0x34 direction: 0/1 slide one way or the other, 2 split */
+    u16 elapsed;   /* +0x38 frames elapsed */
+    u16 length;    /* +0x3A frames the transition takes */
+    u8  screen;    /* +0x3C screen (3D-sprite engine) that shows the transition */
+    u8  pad3d[3];
+    s32 resource;  /* +0x40 sprite resource freed with the object, 0 when none */
+} DS3DSpriteScreenFade;
+
 /* State of the screen-change split transition (gScreenTransition, 12 bytes). */
 typedef struct ScreenTransition {
     s16 flags;  /* +0x00 TRANSITION_* */
@@ -239,6 +279,23 @@ enum {
     TRANSITION_DONE    = 0x1,
     TRANSITION_ENABLED = 0x2,
     TRANSITION_CANCEL  = 0x4
+};
+
+/* A screen-change transition sprite: the 3D sprite object that animates the
+ * display transition (a fade or the split) on one screen.  Its fields come after
+ * the plain 3D sprite object fields; the elapsed frame count is advanced by the
+ * object's own update callback. */
+#define TRANSITION_SPRITE_MODE    0x34 /* s32 TRANSITION_MODE_*, or 3 for the active screen's mode */
+#define TRANSITION_SPRITE_ELAPSED 0x38 /* u16 frames elapsed */
+#define TRANSITION_SPRITE_LENGTH  0x3a /* u16 frames the transition takes */
+#define TRANSITION_SPRITE_SCREEN  0x3c /* u8 screen to animate: 0 main, 1 sub, 3 the active one */
+#define TRANSITION_SPRITE_PARENT  0x40 /* void *parent sprite whose child count it holds */
+
+/* TRANSITION_SPRITE_MODE values. */
+enum {
+    TRANSITION_MODE_DARK   = 0, /* fade the screen down to black (brightness -16) */
+    TRANSITION_MODE_BRIGHT = 1, /* fade the screen up to white (brightness +16) */
+    TRANSITION_MODE_SPLIT  = 2  /* split the screen into two sliding windows */
 };
 
 /* Fields of a 3D sprite object, the nodes of the twelve per-layer sprite lists

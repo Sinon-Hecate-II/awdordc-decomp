@@ -420,16 +420,21 @@ void Qr2OnPublicAddress(s32 arg0, s16 arg1) {
     M2C_FIELD(GetConnection(), s16 *, 0x1A) = arg1;
 }
 
-void Qr2OnStateChanged(s32 arg0){
+/* QR2 target notice: while the session is between states 1, 6 and 11, remember
+ * which connect target the QR2 master reported (counting repeated notices for
+ * the same target), drop the pending join's tick, open a peer connect for that
+ * target and, unless reporting the error failed, mark the connection's last
+ * command as none. */
+void Qr2OnStateChanged(s32 target){
 void *GetConnection();M2C_UNK SetConnectionState(M2C_UNK);s32 func_02043184();s32 func_0203ecb0();
-void *p; s32 zero;
-p=GetConnection();
-if(M2C_FIELD(p,s32 *,0x1a0)==1)SetConnectionState(6);else{p=GetConnection();if(M2C_FIELD(p,s32 *,0x1a0)!=6){p=GetConnection();if(M2C_FIELD(p,s32 *,0x1a0)!=11)return;}}
-p=GetConnection();if(arg0==M2C_FIELD(p,s32 *,0x180)){p=GetConnection();M2C_FIELD(p,u8 *,0x17c)=(u8)(M2C_FIELD(p,u8 *,0x17c)+1);}else{p=GetConnection();M2C_FIELD(p,s8 *,0x17c)=0;p=GetConnection();M2C_FIELD(p,s32 *,0x180)=arg0;}
-p=GetConnection();zero=0;
-M2C_FIELD(p,s32 *,0x184)=zero;M2C_FIELD(p,s32 *,0x188)=zero;
-func_0203ecb0(1,arg0,zero);
-if(func_02043184()!=0)return;p=GetConnection();M2C_FIELD(p,u8 *,0x3cc)=255;
+void *conn; s32 zero;
+conn=GetConnection();
+if(M2C_FIELD(conn,s32 *,CONN_SESSION_STATE)==1)SetConnectionState(6);else{conn=GetConnection();if(M2C_FIELD(conn,s32 *,CONN_SESSION_STATE)!=6){conn=GetConnection();if(M2C_FIELD(conn,s32 *,CONN_SESSION_STATE)!=11)return;}}
+conn=GetConnection();if(target==M2C_FIELD(conn,s32 *,CONN_SESSION_CONNECT_TARGET)){conn=GetConnection();M2C_FIELD(conn,u8 *,CONN_SESSION_TARGET_NOTICES)=(u8)(M2C_FIELD(conn,u8 *,CONN_SESSION_TARGET_NOTICES)+1);}else{conn=GetConnection();M2C_FIELD(conn,s8 *,CONN_SESSION_TARGET_NOTICES)=0;conn=GetConnection();M2C_FIELD(conn,s32 *,CONN_SESSION_CONNECT_TARGET)=target;}
+conn=GetConnection();zero=0;
+M2C_FIELD(conn,s32 *,CONN_SESSION_JOIN_TICK)=zero;M2C_FIELD(conn,s32 *,CONN_SESSION_JOIN_TICK+4)=zero;
+func_0203ecb0(1,target,zero);
+if(func_02043184()!=0)return;conn=GetConnection();M2C_FIELD(conn,u8 *,CONN_SESSION_LAST_COMMAND)=0xFF;
 }
 
 /* Validate and dispatch binary QR2 matchmaking commands while the session permits them. */

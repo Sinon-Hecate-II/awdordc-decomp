@@ -26,7 +26,7 @@ void func_ov000_02180778(void) {
     M2C_UNK func_ov000_02194370();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
     void *temp_r3;
@@ -42,7 +42,7 @@ void func_ov000_02180778(void) {
     func_ov000_02194370();
     SelectAttackMoveDestination();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_021807d8(void) {
@@ -54,7 +54,7 @@ void func_ov000_021807d8(void) {
     M2C_UNK func_ov000_02194370();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
     void *temp_r3;
@@ -70,7 +70,7 @@ void func_ov000_021807d8(void) {
     func_ov000_02194370();
     SelectAttackMoveDestination();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180838(void) {
@@ -81,7 +81,7 @@ M2C_UNK func_ov000_0219619c();
 M2C_UNK func_ov000_02194370();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK func_ov000_021967fc();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_02186a18();
 extern void **gCurrentMap;
 void *temp_r3;
@@ -94,7 +94,7 @@ func_ov000_0219619c();
 func_ov000_02194370();
 SelectAttackMoveDestination();
 func_ov000_021967fc();
-func_ov000_0218b02c();
+FinishAiUnitAction();
 }
 
 void func_ov000_02180894(void) {
@@ -109,7 +109,7 @@ M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK func_ov000_0219553c();
 M2C_UNK func_ov000_021967fc();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_02186a18();
 extern void **gCurrentMap;
 void *temp_r3;
@@ -126,7 +126,7 @@ SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 func_ov000_0219553c();
 func_ov000_021967fc();
-func_ov000_0218b02c();
+FinishAiUnitAction();
 }
 
 void func_ov000_02180900(void) {
@@ -162,7 +162,7 @@ M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK func_ov000_0219553c();
 M2C_UNK func_ov000_021967fc();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_0218ca94();
 s32 func_020a85c8(u32);
 extern void **gCurrentMap;
@@ -178,7 +178,7 @@ SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 func_ov000_0219553c();
 func_ov000_021967fc();
-func_ov000_0218b02c();
+FinishAiUnitAction();
 }
 
 void func_ov000_021809b0(void) {
@@ -190,7 +190,7 @@ void func_ov000_021809b0(void) {
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK func_ov000_0219553c();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_0218ca94();
     s32 func_020a85c8(u32);
     extern void **gCurrentMap;
@@ -207,7 +207,7 @@ void func_ov000_021809b0(void) {
     SelectPropertyAttackDestination();
     func_ov000_0219553c();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180a28(void) {
@@ -220,7 +220,7 @@ M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_021967fc();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_0218ca94();
 s32 func_020a85c8(u32);
 extern void **gCurrentMap;
@@ -236,7 +236,7 @@ SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 func_ov000_021954a4();
 func_ov000_021967fc();
-func_ov000_0218b02c();
+FinishAiUnitAction();
 }
 
 void func_ov000_02180aa4(void) {
@@ -249,7 +249,7 @@ M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_021967fc();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_0218ca94();
 s32 func_020a85c8(u32);
 extern void **gCurrentMap;
@@ -265,7 +265,7 @@ SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 func_ov000_021954a4();
 func_ov000_021967fc();
-func_ov000_0218b02c();
+FinishAiUnitAction();
 }
 
 void func_ov000_02180b20(void) {
@@ -278,7 +278,7 @@ M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_02194370();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK func_ov000_021967fc();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_0218ca94();
 s32 func_020a85c8(u32);
 extern void **gCurrentMap;
@@ -294,7 +294,7 @@ func_ov000_021954a4();
 func_ov000_02194370();
 SelectPropertyAttackDestination();
 func_ov000_021967fc();
-func_ov000_0218b02c();
+FinishAiUnitAction();
 }
 
 void func_ov000_02180b9c(void) {
@@ -305,7 +305,7 @@ void func_ov000_02180b9c(void) {
     M2C_UNK func_ov000_02194370();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_0218ca94();
     s32 func_020a85c8(u32);
     extern void **gCurrentMap;
@@ -321,7 +321,7 @@ void func_ov000_02180b9c(void) {
     func_ov000_02194370();
     SelectAttackMoveDestination();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180c10(void) {
@@ -346,7 +346,7 @@ void func_ov000_02180c74(void) {
     M2C_UNK func_ov000_02194370();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_0218ca94();
     s32 func_020a85c8(u32);
     extern void **gCurrentMap;
@@ -362,7 +362,7 @@ void func_ov000_02180c74(void) {
     func_ov000_02194370();
     SelectAttackMoveDestination();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180ce8(void) {
@@ -373,7 +373,7 @@ void func_ov000_02180ce8(void) {
     M2C_UNK func_ov000_02194370();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_0218ca94();
     s32 func_020a85c8(u32);
     extern void **gCurrentMap;
@@ -389,7 +389,7 @@ void func_ov000_02180ce8(void) {
     func_ov000_02194370();
     SelectAttackMoveDestination();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180d5c(void) {
@@ -399,7 +399,7 @@ void func_ov000_02180d5c(void) {
     M2C_UNK func_ov000_02194370();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK func_ov000_021967fc();
-    M2C_UNK func_ov000_0218b02c();
+    M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_0218ca94();
     s32 func_020a85c8(u32);
     extern void **gCurrentMap;
@@ -414,15 +414,15 @@ void func_ov000_02180d5c(void) {
     func_ov000_02194370();
     SelectAttackMoveDestination();
     func_ov000_021967fc();
-    func_ov000_0218b02c();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180dcc(void) {
- M2C_UNK BuildAiInfluenceMaps(); M2C_UNK SelectAiActionTarget(); M2C_UNK func_ov000_0218ca94(); M2C_UNK FindBestMoveTarget(); M2C_UNK func_ov000_021963f8(); M2C_UNK func_ov000_021954a4(); M2C_UNK func_ov000_02194370(); M2C_UNK SelectAttackMoveDestination(); M2C_UNK SelectPropertyAttackDestination(); M2C_UNK func_ov000_0219553c(); M2C_UNK func_ov000_021967fc(); M2C_UNK func_ov000_0218b02c();
+ M2C_UNK BuildAiInfluenceMaps(); M2C_UNK SelectAiActionTarget(); M2C_UNK func_ov000_0218ca94(); M2C_UNK FindBestMoveTarget(); M2C_UNK func_ov000_021963f8(); M2C_UNK func_ov000_021954a4(); M2C_UNK func_ov000_02194370(); M2C_UNK SelectAttackMoveDestination(); M2C_UNK SelectPropertyAttackDestination(); M2C_UNK func_ov000_0219553c(); M2C_UNK func_ov000_021967fc(); M2C_UNK FinishAiUnitAction();
  s32 func_020a85c8(u32); extern void **gCurrentMap; void *p;
  BuildAiInfluenceMaps(); SelectAiActionTarget(); p=*gCurrentMap;
  if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26)!=0) func_ov000_0218ca94();
- FindBestMoveTarget(); func_ov000_021963f8(); func_ov000_021954a4(); func_ov000_02194370(); SelectAttackMoveDestination(); SelectPropertyAttackDestination(); func_ov000_0219553c(); func_ov000_021967fc(); func_ov000_0218b02c();
+ FindBestMoveTarget(); func_ov000_021963f8(); func_ov000_021954a4(); func_ov000_02194370(); SelectAttackMoveDestination(); SelectPropertyAttackDestination(); func_ov000_0219553c(); func_ov000_021967fc(); FinishAiUnitAction();
 }
 
 void func_ov000_02180e4c(void) {
@@ -495,7 +495,7 @@ M2C_UNK func_ov000_0218d908();
 M2C_UNK func_ov000_02190094();
 M2C_UNK func_ov000_02194370();
 M2C_UNK func_ov000_021954a4();
-M2C_UNK func_ov000_0218b02c();
+M2C_UNK FinishAiUnitAction();
 s32 IsAiMap175Player2Override();
 extern void **gCurrentMap; extern void *gAiCommandState;
 void *map; PlayerRecord02180738 *playerRecord; u32 state; s32 handled;
@@ -518,7 +518,7 @@ if(!handled){map=*gCurrentMap;if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CUR
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_0218d908();
 func_ov000_02190094();func_ov000_02194370();
 M2C_FIELD(gAiCommandState,u16 *,8)|=0x20;
-func_ov000_02190094();func_ov000_021954a4();func_ov000_0218b02c();
+func_ov000_02190094();func_ov000_021954a4();FinishAiUnitAction();
 }
 #pragma opt_strength_reduction reset
 /* Action callback shared by AI role-4 and role-6 units: flag the action plan when

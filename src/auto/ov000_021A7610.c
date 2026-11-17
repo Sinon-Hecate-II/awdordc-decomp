@@ -124,7 +124,7 @@ s32 func_ov000_021a7f1c(s32 arg0) {
 s32 FindAiTargetOfType(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
 s32 func_ov000_021a484c(s32,s32);s32 func_ov000_021a67f0(u8);s32 func_ov000_021a4980(s8,s32);
 void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
-s32 CanReservePurchaseFunds(s32);s32 func_ov000_021a881c(s32,s32);
+s32 CanReservePurchaseFunds(s32);s32 CountPlayerUnitsOfKindNotInAiState(s32,s32);
 extern u8 gUnitKindInfo[],gUnitKindStats[],gUnitKindTargetClass[],gAiTargetCandidates[],gAiCommand[];
 extern u32 gUnitKindScores[];extern void **gCurrentMap;extern u8 *gAiState;
 s32 mode,flag,low,best,i,index,other,cost,limit;u8 chosen;u32 score,v; s32 shortfall;u8 *attr,*entry,*map,*state;u16 price,player;
@@ -172,7 +172,7 @@ map=*gCurrentMap;state=gAiState;
 }
 goto reject;
 }
-if(func_ov000_021a881c(best,5)){
+if(CountPlayerUnitsOfKindNotInAiState(best,5)){
 other=func_ov000_021a7e98((u8)(*(s32 *)(gAiState+20)!=0));
 if(other!=-1){
 if(!*(s32 *)(gAiState+20)){
@@ -190,7 +190,7 @@ reserve:
 shortfall=*(s32 *)(gAiState+20);
 if(shortfall && gAiState[5]){
 gAiState[5]--;
-if(func_ov000_021a881c(best,5)){
+if(CountPlayerUnitsOfKindNotInAiState(best,5)){
 map=*gCurrentMap;
 if(price>((AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4))->money-*(s32 *)(gAiState+20))goto reject;
 }
@@ -245,7 +245,7 @@ void func_ov000_021a7610(void) {
 u8 func_ov000_021a7348(void); s32 GetUnitThreatClass(u8); s32 func_ov000_021a72c0(s32);
 s32 func_ov000_021a96f4(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
 s32 ScaleAiDamageByRange(s32,s32,s32); s32 Divide(s32,s32);
-s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 GetUnitBuildCost(u16,s32);
+s32 func_ov000_021a7084(u8,u8); s32 CountPlayerUnitsOfKindNotInAiState(s32,s32); s32 GetUnitBuildCost(u16,s32);
 extern u8 *gAiState; extern u32 gUnitKindScores[27];
 extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *gAiCommandState;
 extern u8 data_ov000_021df598[]; extern u8 gUnitKindStats[]; extern void **gCurrentMap;
@@ -279,7 +279,7 @@ for(i=1;i<27;i++){
 if(!func_ov000_021a72c0((u8)i))continue;
 if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
 for(j=0;j<9;j++)if(values[j]>0)gUnitKindScores[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),values[j]);
-for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>3;
+for(k=0;k<CountPlayerUnitsOfKindNotInAiState(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>3;
 }
 return;
 }
@@ -290,7 +290,7 @@ for(i=1;i<27;i++){
 if(!func_ov000_021a72c0((u8)i))continue;
 if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
 for(j=0;j<9;j++)if(values[j]!=0)gUnitKindScores[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),(values[j]-(minimum-1)));
-for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
+for(k=0;k<CountPlayerUnitsOfKindNotInAiState(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
 }
 return;
 }
@@ -299,7 +299,7 @@ if(!func_ov000_021a72c0((u8)i))continue;
 if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
 if(!GetAttackDamage(i,1,0))continue;
 gUnitKindScores[i]=GetUnitBuildCost(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i);
-for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
+for(k=0;k<CountPlayerUnitsOfKindNotInAiState(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
 }
 }
 

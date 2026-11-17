@@ -3,7 +3,7 @@
 
 void func_ov003_021f05fc(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02074114(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
+    M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
     void func_ov003_021f13ec(s32);
     extern M2C_UNK data_02102174;
@@ -186,7 +186,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
         temp_r0_10 = MemAlloc(0xE8);
         if (temp_r0_10 != NULL) {
             *temp_r0_10 = &data_ov003_0220fb18;
-            func_02074114(temp_r0_10 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+            ConstructArray(temp_r0_10 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
             var_r3_2 = 0;
             do {
                 temp_r1_2 = &temp_r0_10[var_r3_2];
@@ -207,7 +207,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     void func_020850dc();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK GetWaypointOptionIcon();
+    M2C_UNK GetWaypointOptionCoId();
     void SetPlayerCoId(M2C_UNK, M2C_UNK);
     void SetPlayerArmyId(M2C_UNK, M2C_UNK);
     void SetPlayerTeam(M2C_UNK, M2C_UNK);
@@ -304,10 +304,10 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     SetPlayerTeam(4, playerState);
 
     // per-player army colours
-    SetPlayerCoId(1, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
-    SetPlayerCoId(2, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
-    SetPlayerCoId(3, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
-    SetPlayerCoId(4, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
+    SetPlayerCoId(1, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
+    SetPlayerCoId(2, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
+    SetPlayerCoId(3, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
+    SetPlayerCoId(4, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
 
     // per-player teams
     SetPlayerArmyId(1, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);
@@ -415,7 +415,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     void func_020850dc();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK GetWaypointOptionIcon();
+    M2C_UNK GetWaypointOptionCoId();
     void SetPlayerCoId(M2C_UNK, M2C_UNK);
     void SetPlayerArmyId(M2C_UNK, M2C_UNK);
     void SetPlayerTeam(M2C_UNK, M2C_UNK);
@@ -512,10 +512,10 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     SetPlayerTeam(4, playerState);
 
     // per-player army colours
-    SetPlayerCoId(1, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
-    SetPlayerCoId(2, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
-    SetPlayerCoId(3, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
-    SetPlayerCoId(4, GetWaypointOptionIcon(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
+    SetPlayerCoId(1, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
+    SetPlayerCoId(2, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
+    SetPlayerCoId(3, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
+    SetPlayerCoId(4, GetWaypointOptionCoId(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
 
     // per-player teams
     SetPlayerArmyId(1, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);

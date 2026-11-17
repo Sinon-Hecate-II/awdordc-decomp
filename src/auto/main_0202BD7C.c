@@ -207,9 +207,9 @@ func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();retur
 }
 
 void *func_0202c5f0(s32 *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 ListNext(void *,M2C_UNK);M2C_UNK func_02029c74(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
+s32 ListNext(void *,M2C_UNK);M2C_UNK ListAppend(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
 temp_r0=func_0202a67c(*arg0,((arg1+31)&~31)+32,32);if(!temp_r0)return 0;
-temp_r0_2=ListNext(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;func_02029c74(temp_r0_2,temp_r0);return temp_r0+32;
+temp_r0_2=ListNext(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;ListAppend(temp_r0_2,temp_r0);return temp_r0+32;
 }
 
 s32 func_0202c658(void *arg0) {
@@ -280,15 +280,15 @@ s32 func_0202c784(s32 *arg0) {
 }
 
 void func_0202c7a8(M2C_UNK arg0) {
-    M2C_UNK func_02029c30(M2C_UNK, M2C_UNK);
-    func_02029c30(arg0, 0);
+    M2C_UNK ListInit(M2C_UNK, M2C_UNK);
+    ListInit(arg0, 0);
 }
 
-s32 func_0202c7b8(u32 p,s32 a){s32 func_0202c7ec(void *);func_02029c30(p+4,12);M2C_FIELD(p,s32 *,0)=a;return func_0202c7ec(p)!=0;}
+s32 func_0202c7b8(u32 p,s32 a){s32 func_0202c7ec(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return func_0202c7ec(p)!=0;}
 
 s32 func_0202c7ec(void *p){
-void *func_0202a67c(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK func_02029c74(s32,void *);
-void *q=func_0202a67c(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);func_02029c74((s32)(p+4),q);return 1;
+void *func_0202a67c(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK ListAppend(s32,void *);
+void *q=func_0202a67c(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);ListAppend((s32)(p+4),q);return 1;
 }
 
 void Sound_FlushAndWait(void) {

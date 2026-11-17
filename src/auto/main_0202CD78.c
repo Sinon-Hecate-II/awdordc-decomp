@@ -304,7 +304,7 @@ return func_0202d514(arg0,arg1,arg2,arg3,p,arg4);
 s32 func_0202d3e8(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 *func_0202c0a0(s32);
     s32 Sound_PlaySequenceEntry(M2C_UNK, s32, s32, s32, void *, s32, s32, s32);
-    void *func_0202ee80(s32, s32);
+    void *GetSoundArchiveEntry(s32, s32);
     s32 *temp_r0_3;
     s32 temp_r0_2;
     void *temp_r0;
@@ -317,28 +317,31 @@ s32 func_0202d3e8(M2C_UNK arg0, s32 arg1, s32 arg2) {
     if (temp_r0_2 == 0) {
         return 0;
     }
-    temp_r0 = func_0202ee80(temp_r0_2, arg2);
+    temp_r0 = GetSoundArchiveEntry(temp_r0_2, arg2);
     if (temp_r0 == NULL) {
         return 0;
     }
     return Sound_PlaySequenceEntry(arg0, M2C_FIELD(temp_r0, u8 *, 9), M2C_FIELD(temp_r0, u16 *, 4), M2C_FIELD(temp_r0, u8 *, 8), temp_r0, temp_r0_2, arg1, arg2);
 }
 
-s32 func_0202d468(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
+/* Play entry `entryIndex` of the loaded sound archive `archiveId` on `player`: a
+ * negative channel, bank or priority takes the entry's own value.  Returns 0 when
+ * the archive record, the loaded archive or the entry cannot be found. */
+s32 Sound_PlayArchiveEntry(s32 player,s32 channel,s32 bankId,s32 priority,s32 archiveId,s32 entryIndex) {
 s32 *func_0202c0a0(s32);
-void *func_0202ee80(s32,s32);
+void *GetSoundArchiveEntry(s32,s32);
 s32 Sound_PlaySequenceEntry(s32,s32,s32,s32,void *,s32,s32,s32);
-s32 *q; s32 h; void *p;
-q=func_0202c0a0(arg4);
-if(!q)return 0;
-h=func_0202c444(*q);
-if(!h)return 0;
-p=func_0202ee80(h,arg5);
-if(!p)return 0;
-if(arg3<0)arg3=M2C_FIELD(p,u8 *,8);
-if(arg2<0)arg2=M2C_FIELD(p,u16 *,4);
-if(arg1<0)arg1=M2C_FIELD(p,u8 *,9);
-return Sound_PlaySequenceEntry(arg0,arg1,arg2,arg3,p,h,arg4,arg5);
+s32 *record; s32 archive; SoundArchiveEntry *entry;
+record=func_0202c0a0(archiveId);
+if(!record)return 0;
+archive=func_0202c444(*record);
+if(!archive)return 0;
+entry=GetSoundArchiveEntry(archive,entryIndex);
+if(!entry)return 0;
+if(priority<0)priority=entry->priority;
+if(bankId<0)bankId=entry->bankId;
+if(channel<0)channel=entry->channel;
+return Sound_PlaySequenceEntry(player,channel,bankId,priority,entry,archive,archiveId,entryIndex);
 }
 
 s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) {
@@ -421,8 +424,8 @@ s32 Sound_PlaySequenceEntry(s32 player, s32 channel, s32 bankId, s32 priority,
 void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK InitMutex(M2C_UNK *);
     M2C_UNK InitFileRequest(s32);
-    M2C_UNK func_02029c30(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02029c74(M2C_UNK *, s32);
+    M2C_UNK ListInit(M2C_UNK *, M2C_UNK);
+    M2C_UNK ListAppend(M2C_UNK *, s32);
     M2C_UNK func_0202b46c(s32);
     M2C_UNK func_0202d7d8(M2C_UNK);
     M2C_UNK func_0202dfcc(M2C_UNK *, M2C_UNK);
@@ -442,11 +445,11 @@ void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {
         return;
     }
     M2C_FIELD(&data_0213c290, s32 *, 0) = 1;
-    func_02029c30(&data_0213c29c, 0);
+    ListInit(&data_0213c29c, 0);
     var_r9 = 0;
 loop_4:
     if (var_r9 < 8) {
-        func_02029c74(&data_0213c29c, (var_r9 * 0x30) + (s32) &data_0213c2c0);
+        ListAppend(&data_0213c29c, (var_r9 * 0x30) + (s32) &data_0213c2c0);
         var_r9 += 1;
         goto loop_4;
     }

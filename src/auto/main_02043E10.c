@@ -14,7 +14,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
 {
     M2C_UNK func_02040e1c(M2C_UNK);
     s32 StringFormatN(void *, s32, void *, s32);
-    s32 Gt2AddressToString(s32, s32, s32);
+    s32 gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
     s32 func_020431e0(s32);
@@ -62,7 +62,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
             sessionA = GetConnection();
             sessionB = GetConnection();
             sessionC = GetConnection();
-            res = Gt2AddressToString(M2C_FIELD(sessionB + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(sessionC + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
+            res = gt2AddressToString(M2C_FIELD(sessionB + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(sessionC + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
             res = func_0205adcc(*M2C_FIELD(sessionA, s32 **, 4), 0, res, buf, -1, 5000, M2C_FIELD(GetConnection(), s32 *, 8), 0);
             if (res == 1) {
                 func_02043230();

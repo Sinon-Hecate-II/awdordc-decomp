@@ -48,7 +48,7 @@ block_14:
     func_0205fb50(arg0);
 }
 
-void func_0205ea70(void *arg0) {
+void Qr2_StateChanged(void *arg0) {
     s32 GetTickCountMs();
     M2C_UNK Qr2_SendState(void *, M2C_UNK);
     extern void *data_020ff8d4;
@@ -229,20 +229,24 @@ void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
  M2C_FIELD(b,s32 *,0x800)+=StringLength((u8 *)b+M2C_FIELD(b,s32 *,0x800))+1;
 }
 
-void func_0205f05c(void *arg0,M2C_UNK arg1) {
- M2C_UNK StringScanf(M2C_UNK,M2C_UNK *,u32 *,s32 *);
- extern M2C_UNK data_020ffa54;
- u32 sp4; s32 sp0; u16 port; u32 address;
- StringScanf(arg1,&data_020ffa54,&sp4,&sp0);
- port=sp0;
- address=((sp4<<24)&0xff000000)|(((sp4<<8)&0xff0000)|((u8)(sp4>>24)|((sp4>>8)&0xff00)));
- sp4=address;
- if(address && port) {
- if(M2C_FIELD(arg0,u32 *,0x104)==address && M2C_FIELD(arg0,u16 *,0x108)==port)return;
- M2C_FIELD(arg0,u32 *,0x104)=address;
- M2C_FIELD(arg0,u16 *,0x108)=port;
- M2C_FIELD(arg0,M2C_UNK (**)(u32,u16,s32),0xa8)(sp4,port,M2C_FIELD(arg0,s32 *,0x10c));
- }
+/* GameSpy QR2: parse the master's public-address reply, which packs the address
+   in network byte order and the port as hex ("%08X%04X"), convert the address
+   to host order and, when it differs from the cached one, store it and tell the
+   application through its public-address callback. */
+void Qr2_ParsePublicAddress(void *qr2, M2C_UNK text) {
+    M2C_UNK StringScanf(M2C_UNK, M2C_UNK *, u32 *, s32 *);
+    extern M2C_UNK sQr2PublicAddressFormat;
+    u32 wireAddress; s32 portValue; u16 port; u32 address;
+    StringScanf(text, &sQr2PublicAddressFormat, &wireAddress, &portValue);
+    port = portValue;
+    address = ((wireAddress << 24) & 0xff000000) | (((wireAddress << 8) & 0xff0000) | ((u8)(wireAddress >> 24) | ((wireAddress >> 8) & 0xff00)));
+    wireAddress = address;
+    if (address && port) {
+        if (M2C_FIELD(qr2, u32 *, QR2_PUBLIC_IP) == address && M2C_FIELD(qr2, u16 *, QR2_PUBLIC_PORT) == port) return;
+        M2C_FIELD(qr2, u32 *, QR2_PUBLIC_IP) = address;
+        M2C_FIELD(qr2, u16 *, QR2_PUBLIC_PORT) = port;
+        M2C_FIELD(qr2, M2C_UNK (**)(u32, u16, s32), QR2_CB_PUBLIC_ADDRESS)(wireAddress, port, M2C_FIELD(qr2, s32 *, QR2_CTX));
+    }
 }
 
 #pragma push

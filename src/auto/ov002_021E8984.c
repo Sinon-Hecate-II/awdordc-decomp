@@ -18,7 +18,7 @@ static inline void *Next021e8e8c(void *head, void *node) {
 #pragma opt_common_subs off
 #pragma scheduling off
 void func_ov002_021e8984(void *arg0){
-s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_02087048(s32,s32);void func_02087064(s32,s32,s32,s32,s32);void DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
+s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetGxPolygonAttr(s32,s32);void func_02087064(s32,s32,s32,s32,s32);void DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
 extern u16 **gCur3DSpriteEngine;extern u8 data_ov002_021f30f8[],data_ov002_021f30e4[],data_ov002_021f3043[],data_ov002_021f303c[];
 s32 j,x,y,alpha,t,i,depth;u8 used,best;void *p;volatile s32 *matrix=(volatile s32 *)0x4000444;
 x=M2C_FIELD(arg0,s16 *,0x1e)+M2C_FIELD(arg0,s16 *,0x22);y=M2C_FIELD(arg0,s16 *,0x24);
@@ -35,12 +35,12 @@ M2C_FIELD(*gCur3DSpriteEngine,volatile s16 *,0x46)=y;
 if(M2C_FIELD(M2C_FIELD(data_ov002_021f30f8,void **,(s16)M2C_FIELD(arg0,u8 *,0x27)*24),s32 *,16)!=0&&!func_ov002_021e79ac(data_ov002_021f30e4)){
 t=M2C_FIELD(arg0,u8 *,0x29)&127;
 if(t<32)alpha=0;else if(t<64)alpha=(s16)EaseInterpolate(0,0,31,t-32,32);else if(t<96)alpha=31;else alpha=(s16)EaseInterpolate(0,31,0,t-96,32);
-if(alpha){func_02087048(31,alpha&255);
+if(alpha){SetGxPolygonAttr(31,alpha&255);
 t=(s16)M2C_FIELD(arg0,u8 *,0x27)*100;
 func_02087064(3,256,128,M2C_FIELD(data_ov002_021f303c,u16 *,t),data_ov002_021f3043[t]);
 DrawTexturedQuadUVFlip(0,120,100,256,72,0,0,256,72,M2C_FIELD(arg0,u8 *,0x27)!=0,0);
 }
-func_02087048(0,31);
+SetGxPolygonAttr(0,31);
 }
 matrix[0]=0;Translate021e9014(128,0,0);
 t=(s32)(M2C_FIELD(arg0,u16 *,0x1c)<<12)>>8;matrix[10]=t;matrix[10]=t;matrix[10]=4096;
@@ -154,7 +154,7 @@ void func_ov002_021e9008(void *arg0, s16 arg1, s16 arg2) {
  * flip byte at +0x8C is set), scale and the two optional rotation offsets, then draws
  * the model and its three child lists; pops the transforms at the end. */
 void DrawUnitModelTree(void *unit){
-void func_ov002_021e1ef8(void *,s32);void func_ov002_021e2cf0(void *);void func_ov002_021e3e7c(void *);
+void func_ov002_021e1ef8(void *,s32);void func_ov002_021e2cf0(void *);void DrawModelEffectDisc(void *);
 void *node,*child;s32 transX,transZ,transY,modelScale;volatile u32 *matrix=(volatile u32 *)0x4000444;
 matrix[0]=0;
 if(!M2C_FIELD(unit,u8 *,0x8c)){
@@ -174,7 +174,7 @@ else{transX=M2C_FIELD(unit,s16 *,0x7c);transY=M2C_FIELD(unit,s16 *,0x7e);matrix[
 func_ov002_021e1ef8(unit,0);
 node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))func_ov002_021e1ef8(child,0);}
 node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))func_ov002_021e2cf0(child);}
-node=0;while((node=Next021e8e8c(unit+0x64,node))!=0)func_ov002_021e3e7c(M2C_FIELD(node,void **,0));
+node=0;while((node=Next021e8e8c(unit+0x64,node))!=0)DrawModelEffectDisc(M2C_FIELD(node,void **,0));
 if(M2C_FIELD(unit,s16 *,0x7c)||M2C_FIELD(unit,s16 *,0x7e))*(volatile u32 *)0x4000448=1;
 if(M2C_FIELD(unit,s32 *,0x74)||M2C_FIELD(unit,s32 *,0x78))*(volatile u32 *)0x4000448=1;
 node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){child=M2C_FIELD(node,void **,0);if(!M2C_FIELD(child,u8 *,0x4a))func_ov002_021e1ef8(child,0);}
