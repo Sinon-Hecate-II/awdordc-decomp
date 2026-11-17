@@ -4,9 +4,9 @@ void Ov001_FreeSpriteObjects(void);
 extern s32 data_ov001_02193d14;
 extern u8 data_ov001_021900e4[];
 extern u8 *data_ov001_02190094[];
-extern void *data_ov001_02193d18;
-extern const u8 data_ov001_0218f30c[];
-void func_ov001_02172418(s32);
+extern Ov001WfcIcon *gOv001WfcIcon;
+extern const u8 gOv001WfcIconLayouts[];
+void Ov001_WfcIconUpdate(s32);
 s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
 extern s32 gOv001ChoiceFrameSprites;
 extern s8 gOv001MessagePanelActive;
@@ -337,33 +337,37 @@ void func_ov001_021722dc(s32 a) {
  Ov001_PostTaskMessage(1,a);
 }
 
-void func_ov001_0217231c(s8 a) {
- s32 *func_ov001_0218a5f0(s32,u8);
- s32 *p;
- s32 *q;
- void *v;
- if(data_ov001_02193d18!=NULL) return;
- v=(void *)Ov001_Alloc(12,4);
- data_ov001_02193d18=v;
- M2C_FIELD(v,s8 *,8)=a;
- M2C_FIELD(data_ov001_02193d18,s32 **,0)=func_ov001_0218a5f0(0,data_ov001_0218f30c[a*4]);
- p=M2C_FIELD(data_ov001_02193d18,s32 **,0);
- *p=(*p&0xFE00FF00)|0xE50026;
- q=M2C_FIELD(data_ov001_02193d18,s32 **,0);
- M2C_FIELD(q,u16 *,4)=(M2C_FIELD(q,u16 *,4)&~0xC00)|0x800;
- M2C_FIELD(data_ov001_02193d18,s32 *,4)=Ov001_AddTask(0,func_ov001_02172418,0,120);
+/* Creates the Wi-Fi connection indicator of the given style: one sprite set to
+ * the first of that style's four status layouts, its tile and palette
+ * attributes fixed up, and a per-frame task that follows the WFC state.  Does
+ * nothing when an indicator is already up. */
+void Ov001_ShowWfcIcon(s8 style) {
+    s32 *Ov001_CreateSpriteFromLayout(s32, u8);
+    s32 *sprite;
+    s32 *word;
+    Ov001WfcIcon *icon;
+    if (gOv001WfcIcon != NULL) return;
+    icon = (Ov001WfcIcon *)Ov001_Alloc(12, 4);
+    gOv001WfcIcon = icon;
+    icon->style = style;
+    M2C_FIELD(gOv001WfcIcon, s32 **, 0) = Ov001_CreateSpriteFromLayout(0, gOv001WfcIconLayouts[style * 4]);
+    sprite = M2C_FIELD(gOv001WfcIcon, s32 **, 0);
+    *sprite = (*sprite & 0xFE00FF00) | 0xE50026;
+    word = M2C_FIELD(gOv001WfcIcon, s32 **, 0);
+    M2C_FIELD(word, u16 *, 4) = (M2C_FIELD(word, u16 *, 4) & ~0xC00) | 0x800;
+    gOv001WfcIcon->task = Ov001_AddTask(0, Ov001_WfcIconUpdate, 0, 120);
 }
 
-void func_ov001_021723d4(void) {
+void Ov001_HideWfcIcon(void) {
  void func_ov001_0218c94c(s32,s32);
  void Ov001_ReleaseSprite(s32);
- if(data_ov001_02193d18==NULL) return;
- func_ov001_0218c94c(0,M2C_FIELD(data_ov001_02193d18,s32 *,4));
- Ov001_ReleaseSprite(M2C_FIELD(data_ov001_02193d18,s32 *,0));
- Ov001_FreeAlloc((M2C_UNK *)&data_ov001_02193d18);
+ if(gOv001WfcIcon==NULL) return;
+ func_ov001_0218c94c(0,M2C_FIELD(gOv001WfcIcon,s32 *,4));
+ Ov001_ReleaseSprite(M2C_FIELD(gOv001WfcIcon,s32 *,0));
+ Ov001_FreeAlloc((M2C_UNK *)&gOv001WfcIcon);
 }
 
-void func_ov001_02172418(s32 a) {
+void Ov001_WfcIconUpdate(s32 a) {
  s32 func_02011d58(void);
  s32 func_02011d78(void);
  void Ov001_LoadSpriteObjLayout(s32,s32,s32);
@@ -375,10 +379,10 @@ void func_ov001_02172418(s32 a) {
  if(func_02011d58()!=0x8000) offset=func_02011d78();
  (void)*ime;
  *ime=old;
- Ov001_LoadSpriteObjLayout(0,(data_ov001_0218f30c+M2C_FIELD(data_ov001_02193d18,s8 *,8)*4)[offset],M2C_FIELD(data_ov001_02193d18,s32 *,0));
- p=M2C_FIELD(data_ov001_02193d18,s32 **,0);
+ Ov001_LoadSpriteObjLayout(0,(gOv001WfcIconLayouts+M2C_FIELD(gOv001WfcIcon,s8 *,8)*4)[offset],M2C_FIELD(gOv001WfcIcon,s32 *,0));
+ p=M2C_FIELD(gOv001WfcIcon,s32 **,0);
  *p=(*p&0xFE00FF00)|0xE50026;
- q=M2C_FIELD(data_ov001_02193d18,s32 **,0);
+ q=M2C_FIELD(gOv001WfcIcon,s32 **,0);
  M2C_FIELD(q,u16 *,4)=(M2C_FIELD(q,u16 *,4)&~0xC00)|0x800;
 }
 

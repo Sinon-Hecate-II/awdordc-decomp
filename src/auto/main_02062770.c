@@ -165,7 +165,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     return result;
 }
 
-void func_02062e28(void *arg0, s32 arg1) {
+void SBServerListSetError(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x4AC) = arg1;
 }
 
@@ -183,7 +183,7 @@ M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,6,sSbNoServer,M2C_FIELD(a,s32
 copy633h((u8 *)a+0x4a8,p+4);
 if(M2C_FIELD(a,u16 *,0x4a8)==0xffff){
 if(BoundedStringLength(p+6,n-6)==-1)break;
-func_02062e28(a,p+6);
+SBServerListSetError(a,p+6);
 M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,5,sSbNoServer,M2C_FIELD(a,s32 *,0x494));
 if(!M2C_FIELD(a,void **,0x7c))break;
 }

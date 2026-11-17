@@ -10,7 +10,7 @@ static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
 
 void func_ov001_021724c0(void) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a5f0(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_CreateSpriteFromLayout(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -44,7 +44,7 @@ void func_ov001_021724c0(void) {
     M2C_FIELD(gOv001MenuState, u8 *, 0x123) = 1;
     M2C_FIELD(gOv001MenuState, u8 *, 0x124) = 1;
     for (i = 0; i < 0x2f; i++) {
-        p = func_ov001_0218a5f0(0, 0x34);
+        p = Ov001_CreateSpriteFromLayout(0, 0x34);
         ((void **)((u8 *)gOv001MenuState + 0x30))[i] = p;
         p = ((void **)((u8 *)gOv001MenuState + 0x30))[i];
         {
@@ -60,7 +60,7 @@ void func_ov001_021724c0(void) {
     }
     for (i = 0; i < 4; i++) {
         u8 b = data_ov001_0218f324[i];
-        p = func_ov001_0218a5f0(0, b);
+        p = Ov001_CreateSpriteFromLayout(0, b);
         ((void **)((u8 *)gOv001MenuState + 0xec))[i] = p;
         p = ((void **)((u8 *)gOv001MenuState + 0xec))[i];
         {

@@ -193,16 +193,18 @@ u8 Map_GetPropertyOwnerArmy(s32 terrain) {
  return M2C_FIELD((void *)*gCurrentMap+(owner>>5)*MAP_PLAYER_STRIDE,u8 *,0x67C1);
 }
 
+/* Keep the map cursor's target tile inside the map: clamp x to 0..width-1 and y
+ * to 0..height-1. */
 void ClampCursorToMap(void) {
  extern s32 *gCurrentMap;
- if(M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C2)<0)
- M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C2)=0;
- if(M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C2)>=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144))
- M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C2)=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144)-1;
- if(M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C4)<0)
- M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C4)=0;
- if(M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C4)>=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146))
- M2C_FIELD((void *)*gCurrentMap,s16 *,0x52C4)=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146)-1;
+ if(M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)<0)
+ M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=0;
+ if(M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)>=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_WIDTH))
+ M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_WIDTH)-1;
+ if(M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)<0)
+ M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=0;
+ if(M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)>=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_HEIGHT))
+ M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_HEIGHT)-1;
 }
 
 void func_020cfd14(void) {

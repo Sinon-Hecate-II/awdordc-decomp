@@ -418,9 +418,9 @@ void func_ov009_02223da0(void *arg0) {
 
 s32 func_ov009_02223dc0(void) {
  extern M2C_UNK gLinkState,data_ov009_022269e0,func_ov009_02223e38;
- s32 func_02013c44(M2C_UNK *,s32,u16,s32,u16,u8);
+ s32 WFC_SubmitDownloadData(M2C_UNK *,s32,u16,s32,u16,u8);
  s32 result;
- result=func_02013c44(&func_ov009_02223e38,M2C_FIELD(&gLinkState,s32 *,0x100),M2C_FIELD(&data_ov009_022269e0,u16 *,4),M2C_FIELD(&gLinkState,s32 *,0x108),M2C_FIELD(&data_ov009_022269e0,u16 *,12),(u8)((M2C_FIELD(&gLinkState,u8 *,0x156)&2)!=0));
+ result=WFC_SubmitDownloadData(&func_ov009_02223e38,M2C_FIELD(&gLinkState,s32 *,0x100),M2C_FIELD(&data_ov009_022269e0,u16 *,4),M2C_FIELD(&gLinkState,s32 *,0x108),M2C_FIELD(&data_ov009_022269e0,u16 *,12),(u8)((M2C_FIELD(&gLinkState,u8 *,0x156)&2)!=0));
  switch(result) {case 2: case 3: break; default: SignalLinkError();return 0;} return 1;
 }
 

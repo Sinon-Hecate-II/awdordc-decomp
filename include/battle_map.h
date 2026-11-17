@@ -421,9 +421,12 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_PLAYER_STATES  0x67a4
 #define MAP_PLAYER_STRIDE  0x8c
 #define PLAYER_REC_FUNDS   0x00 /* s32 funds: builds cost ten times the unit's price */
+#define PLAYER_REC_INCOME  0x08 /* s32 funds the player's properties pay it per turn */
 #define PLAYER_FUNDS_OFF (MAP_PLAYER_STATES + PLAYER_REC_FUNDS) /* s32 funds of a player record */
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
+#define PLAYER_REC_DEFEAT_TURN   0x1A /* u16 turn the player was defeated on, 0 while still in the battle (IsPlayerActive) */
+#define PLAYER_REC_DEFEAT_REASON 0x1C /* u8 why the player was defeated: 8, 0x10, 1 or 2, the victory-rule flag that removed them */
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
 #define PLAYER_REC_ENEMY_UNITS 0x22 /* u16 running total of the opposing team's units */
 #define PLAYER_REC_UNIT_COUNT  0x31 /* u8 units the player has alive */

@@ -10,7 +10,7 @@ void func_ov001_0217416c(void) {
     extern u8 func_ov001_02174548[];
     extern void *gOv001Keypad;
     M2C_UNK Ov001_Alloc();
-    M2C_UNK func_ov001_0218a5f0();
+    M2C_UNK Ov001_CreateSpriteFromLayout();
     M2C_UNK Ov001_CreateSprite();
     M2C_UNK func_ov001_0218a260();
     M2C_UNK Ov001_SetSpritePalette();
@@ -58,7 +58,7 @@ void func_ov001_0217416c(void) {
 
     mask = 0xc1fffcff;
     for (i = 0; i < 10; i++) {
-        q = (void*)func_ov001_0218a5f0(0, 0x36);
+        q = (void*)Ov001_CreateSpriteFromLayout(0, 0x36);
         M2C_FIELD(p, void**, 0x10 + i*4) = q;
         *(s32*)q = (*(s32*)q & mask) | 0x200;
         h = M2C_FIELD(q, u16*, 0x4);
@@ -68,7 +68,7 @@ void func_ov001_0217416c(void) {
     src = data_ov001_0218f5dc;
     for (i = 0; i < 2; i++) {
         u8 b = *src++;
-        q = (void*)func_ov001_0218a5f0(0, b);
+        q = (void*)Ov001_CreateSpriteFromLayout(0, b);
         M2C_FIELD(p, void**, 0x38 + i*4) = q;
         *(s32*)q = (*(s32*)q & mask) | 0x200;
         h = M2C_FIELD(q, u16*, 0x4);

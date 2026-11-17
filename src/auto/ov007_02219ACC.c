@@ -66,18 +66,22 @@ func_020ae528(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+(offset&~1));
 gCur3DSpriteEngine=old;
 }
 
-void func_ov007_02219c58(s32 a,s32 b,s32 c,s32 d) {
+/* Draw one cell of the map editor's unit catalogue: clear the two tiles under the
+ * icon, write the number of units of that kind there when there are any, and give
+ * the icon tiles their palette row (the row after the plain one, +5, when the icon
+ * is shown together with a count). */
+void MapEditor_DrawCatalogueCell(s32 x, s32 y, s32 paletteRow, s32 count) {
 extern s32 gCur3DSpriteEngine;
 void ClearTileRect(void *,s32,s32);
-void func_0209c048(s16,s16,void *,s32,s32,s32);
+void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
 void SetTileRectPalette(void *,s32,s32,u16);
-s32 tile=c+4;
-ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x20)+a*2+(b+1)*64,2,2);
-if(d>0) {
-func_0209c048(a+1,b+1,M2C_FIELD(gCur3DSpriteEngine,void **,0x20),d,0x1000,0);
-tile+=5;
+s32 row=paletteRow+4;
+ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x20)+x*2+(y+1)*64,2,2);
+if(count>0) {
+DrawTilemapNumber(x+1,y+1,M2C_FIELD(gCur3DSpriteEngine,void **,0x20),count,0x1000,0);
+row+=5;
 }
-SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+a*2+b*64,2,3,(u16)tile);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+x*2+y*64,2,3,(u16)row);
 }
 
 #pragma opt_strength_reduction off
@@ -92,14 +96,14 @@ void func_ov007_02219d10(void){
  s32 savedEngine,row,rowStart;
  savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
  row=0;rowStart=2;do{
- if(row==0)func_ov007_02219c58(17,rowStart,row,GetEditorUnitCategoryCount(8,row));
- else func_ov007_02219c58(17,rowStart,row,GetEditorUnitCategoryCount(0,row));
- func_ov007_02219c58(19,rowStart,row,GetEditorUnitCategoryCount(1,row));
- func_ov007_02219c58(21,rowStart,row,GetEditorUnitCategoryCount(2,row));
- func_ov007_02219c58(23,rowStart,row,GetEditorUnitCategoryCount(3,row));
- func_ov007_02219c58(25,rowStart,row,GetEditorUnitCategoryCount(4,row));
- func_ov007_02219c58(27,rowStart,row,GetEditorUnitCategoryCount(7,row));
- func_ov007_02219c58(29,rowStart,row,GetEditorUnitCategoryCount(9,row));
+ if(row==0)MapEditor_DrawCatalogueCell(17,rowStart,row,GetEditorUnitCategoryCount(8,row));
+ else MapEditor_DrawCatalogueCell(17,rowStart,row,GetEditorUnitCategoryCount(0,row));
+ MapEditor_DrawCatalogueCell(19,rowStart,row,GetEditorUnitCategoryCount(1,row));
+ MapEditor_DrawCatalogueCell(21,rowStart,row,GetEditorUnitCategoryCount(2,row));
+ MapEditor_DrawCatalogueCell(23,rowStart,row,GetEditorUnitCategoryCount(3,row));
+ MapEditor_DrawCatalogueCell(25,rowStart,row,GetEditorUnitCategoryCount(4,row));
+ MapEditor_DrawCatalogueCell(27,rowStart,row,GetEditorUnitCategoryCount(7,row));
+ MapEditor_DrawCatalogueCell(29,rowStart,row,GetEditorUnitCategoryCount(9,row));
  rowStart+=3;row++;
  }while(row<5);
  switch(GetMapEditorMode()){
@@ -224,7 +228,7 @@ void func_ov007_0221a160(void) {
     void MI_CpuCopy32(M2C_UNK, M2C_UNK, s32);
     void func_020c1a9c(s32, s32);
     void func_020ae528(void *);
-    void func_ov007_0221ab68(void);
+    void MapEditor_FitPreviewToMap(void);
 
     extern u16 data_ov007_0221f508[];
     extern s32 gCur3DSpriteEngine;
@@ -346,7 +350,7 @@ void func_ov007_0221a160(void) {
 
     gCur3DSpriteEngine = savedEngine;
 
-    func_ov007_0221ab68();
+    MapEditor_FitPreviewToMap();
 }
 
 void func_ov007_0221a568(void) {

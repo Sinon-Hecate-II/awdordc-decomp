@@ -57,17 +57,17 @@ void func_020b9140(s32 arg0) {
 #pragma optimization_level 2
 #pragma opt_common_subs off
 void func_020b916c(s32 x,s32 y,s32 a,s32 b,s32 c){
-void ClearTileRect(void *,s32,s32);s32 func_0207cb88(s32);void func_0209c048(s32,s32,s32,s32,u16,u16);void func_0209c0bc(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
+void ClearTileRect(void *,s32,s32);s32 func_0207cb88(s32);void DrawTilemapNumber(s32,s32,s32,s32,u16,u16);void func_0209c0bc(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
 s32 pos,base=x; s32 color=0;
 if(c<0)color=3;
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+x*2+y*64,32,2);
-pos=x+4;func_0209c048((s16)(pos+(func_0207cb88(a)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
+pos=x+4;DrawTilemapNumber((s16)(pos+(func_0207cb88(a)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
 pos=base+11;if(b<0){func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,0);if(b<0)b=-b;}else{func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),43,0,0);}
-a=base+14;func_0209c048((s16)(a+(func_0207cb88(b)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),b,0,0);
+a=base+14;DrawTilemapNumber((s16)(a+(func_0207cb88(b)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),b,0,0);
 func_0209c0bc(base+20,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),61,0,0);
 base+=23;
 if(c<0){func_0209c0bc(base++,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,color);if(c<0)c=-c;}
-func_0209c048((s16)(base+(func_0207cb88(c)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),c,0,color);
+DrawTilemapNumber((s16)(base+(func_0207cb88(c)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),c,0,color);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 }
 #pragma opt_common_subs reset
@@ -242,7 +242,7 @@ void func_020b9978(void) {
 #pragma opt_common_subs off
 void func_020b99ac(s32 arg0,s32 arg1,s32 arg2) {
 M2C_UNK func_0209bfdc(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
-void func_0209c048(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
+void DrawTilemapNumber(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 M2C_UNK func_0207a61c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
 M2C_UNK GetUnitBuildCostTimes10(M2C_UNK,M2C_UNK);
 extern u8 data_0215d858[],gUnitKindStats[];
@@ -260,7 +260,7 @@ if(*(i*2+ptr+1)){mode=3;color=256;}else{mode=0;color=M2C_FIELD(*gCurrentMap,u16*
 row=y+i*2;
 func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(gUnitKindStats,s32*,kind*112),0,mode);
 value=GetUnitBuildCostTimes10(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
-func_0209c048(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
+DrawTilemapNumber(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
 func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);
 i++; } while(i<7);
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0x3a)=0;

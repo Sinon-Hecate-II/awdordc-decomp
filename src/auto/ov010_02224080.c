@@ -6,32 +6,37 @@ extern s32 data_ov010_0222d914[3];
 extern u8 data_ov010_0222be4c[8];
 extern u8 data_ov010_0222be54[8];
 
-s32 func_ov010_02224080(void *arg0, s32 arg1, void *arg2, u32 arg3) {
-    M2C_UNK func_ov010_02224700(void *, void *, u8);
-    s32 func_ov010_02224820(void *);
-    s32 func_ov010_0222486c(void *, void *);
+/* Build the packet of an exchange step into the caller's buffer: check the
+ * arguments and the step, write the packet header, and when the exchange starts
+ * (step 0) set the context's peer mask and make sure no other exchange context
+ * is waiting and that the first transition is allowed.  Returns 0 when the
+ * packet may be sent, -1 for a bad argument and -3 for a refused step. */
+s32 VoiceLink_BuildStepPacket(void *context, s32 step, void *packet, u32 size) {
+    M2C_UNK VoiceLink_InitPacket(void *, void *, u8);
+    s32 VoiceLink_NoOtherContextWaiting(void *);
+    s32 VoiceLink_CheckStartStep(void *, void *);
     extern M2C_UNK gLinkConfig;
 
-    if (arg0 == NULL) {
+    if (context == NULL) {
         return -1;
     }
-    if (arg3 < 0x10) {
+    if (size < 0x10) {
         return -1;
     }
-    if ((arg1 < 0) || (arg1 >= 6)) {
+    if ((step < 0) || (step >= 6)) {
         return -3;
     }
-    M2C_FIELD(arg2, u8 *, 4) = 0;
-    func_ov010_02224700(arg0, arg2, (u8) arg1);
-    if (arg1 == 0) {
-        if ((M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 1) && (M2C_FIELD(arg0, s32 *, 0xC) == 4)) {
-            if (func_ov010_02224820(arg0) == 0) {
+    ((VoiceLinkPacket *) packet)->kind = 0;
+    VoiceLink_InitPacket(context, packet, (u8) step);
+    if (step == 0) {
+        if ((M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE) == 1) && (((VoiceLinkContext *) context)->step == 4)) {
+            if (VoiceLink_NoOtherContextWaiting(context) == 0) {
                 return -3;
             }
         }
-        M2C_FIELD(arg0, s32 *, 8) = M2C_FIELD(arg0, u8 *, 4) ? (1 << M2C_FIELD(arg0, u8 *, 4)) : 1;
+        ((VoiceLinkContext *) context)->peerMask = ((VoiceLinkContext *) context)->peerId ? (1 << ((VoiceLinkContext *) context)->peerId) : 1;
     }
-    if (func_ov010_0222486c(arg0, arg2) == 0) {
+    if (VoiceLink_CheckStartStep(context, packet) == 0) {
         return -3;
     }
     return 0;
@@ -167,7 +172,7 @@ s32 func_ov010_0222441c(void *arg0, M2C_UNK arg1) {
 s32 VoiceLink_SendPacket(void *arg0,s32 arg1) {
  u8 sp0[0x10]; s32 result;
  s32 func_ov010_02224614(void *,void *);
- result=func_ov010_02224080(arg0,arg1,sp0,0x10);
+ result=VoiceLink_BuildStepPacket(arg0,arg1,sp0,0x10);
  if(result!=0) return result;
  if(func_ov010_02224614(arg0,sp0)!=0) return 0;
  return -4;
@@ -230,10 +235,10 @@ s32 VoiceLink_BroadcastPacket(void *context, void *packet) {
 
 M2C_UNK VoiceLink_SendControl(s32 arg0) {
  extern M2C_UNK gVoiceLinkContext;
- M2C_UNK func_ov010_02224700(void *,void *,u8);
+ M2C_UNK VoiceLink_InitPacket(void *,void *,u8);
  u8 sp0[0x10];
  sp0[4]=0xff;
- func_ov010_02224700(&gVoiceLinkContext,sp0,4);
+ VoiceLink_InitPacket(&gVoiceLinkContext,sp0,4);
  sp0[0xa]=arg0;
  VoiceLink_BroadcastPacket(&gVoiceLinkContext,sp0);
 }
@@ -263,7 +268,7 @@ s32 func_ov010_02224614(void *arg0,void *arg1) {
 
 u8 VoiceLink_GetReplyType(u8 *a,u8 *b){s32 n,v;b[5]=a[11];if(a[4]==255){if(a[6]==0){M2C_FIELD(b,s32 *,8)=b[4]?(1<<b[4]):1;}return data_ov010_0222be4c[a[6]];}if(a[4]==0){if(a[6]==0){n=M2C_FIELD(b,s32 *,12);if(n==1){M2C_FIELD(b,s32 *,8)=b[4]?(1<<b[4]):1;return 7;}if(n==5)return 9;return 12;}return data_ov010_0222be54[a[6]];}return 12;}
 
-M2C_UNK func_ov010_02224700(void *a,void *b,u8 c){extern M2C_UNK gLinkConfig;M2C_FIELD(b,s32 *,0)=0x5f564354;M2C_FIELD(b,u8 *,5)=16;M2C_FIELD(b,u8 *,6)=c;M2C_FIELD(b,u8 *,8)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,u8 *,9)=M2C_FIELD(a,u8 *,4);M2C_FIELD(b,u8 *,10)=0;M2C_FIELD(b,u8 *,11)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,s32 *,12)=0;return 0;}
+M2C_UNK VoiceLink_InitPacket(void *a,void *b,u8 c){extern M2C_UNK gLinkConfig;M2C_FIELD(b,s32 *,0)=0x5f564354;M2C_FIELD(b,u8 *,5)=16;M2C_FIELD(b,u8 *,6)=c;M2C_FIELD(b,u8 *,8)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,u8 *,9)=M2C_FIELD(a,u8 *,4);M2C_FIELD(b,u8 *,10)=0;M2C_FIELD(b,u8 *,11)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,s32 *,12)=0;return 0;}
 
 s32 VoiceLink_AdvanceStep(void *a, void *b) {
 extern M2C_UNK gLinkConfig;
@@ -286,10 +291,10 @@ default: break;
 return v;
 }
 
-s32 func_ov010_02224820(void *a){extern M2C_UNK gVoiceLinkState;void *p=M2C_FIELD(&gVoiceLinkState,void **,20);while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,s32 *,12)==2&&a!=p)return 0;p=M2C_FIELD(p,void **,20);}return 1;}
+s32 VoiceLink_NoOtherContextWaiting(void *a){extern M2C_UNK gVoiceLinkState;void *p=M2C_FIELD(&gVoiceLinkState,void **,20);while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,s32 *,12)==2&&a!=p)return 0;p=M2C_FIELD(p,void **,20);}return 1;}
 
 #pragma opt_propagation off
-s32 func_ov010_0222486c(void *a,void *b){
+s32 VoiceLink_CheckStartStep(void *a,void *b){
 extern M2C_UNK gLinkConfig; extern s8 data_ov010_0222be9e[]; extern s8 data_ov010_0222bee0[];
 s32 i=M2C_FIELD(b,u8*,6);s8 *t;s8 v;u32 row;
 if(M2C_FIELD(b,u8*,4)==0)i+=5;

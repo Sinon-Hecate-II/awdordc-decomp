@@ -25,12 +25,12 @@ extern M2C_UNK gGameSettings, data_0215deec, gMovementCostTable;
 #pragma opt_strength_reduction off
 #pragma opt_propagation off
 void *BuildSaveSlotText(s32 arg0,s32 arg1) {
-s32 func_020bf054(s32); void *func_020bfa60(s32);
+s32 func_020bf054(s32); void *GetBattleRecord(s32);
 s32 IsUnitAvailable(s32); s32 GetLocalizedText(s32); void StringAppend(char*,const char*); void StringFormat(char*,const char*,...);
 s32 func_020a8a84(s32); s32 GetMapName(s32); void FormatDateTime(char*,void*); s32 func_020e4b28(s32); void LoadCampaignMapHeader(s32);
 char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
 buf[0x100]=0; n=func_020bf054(a);
-p=func_020bfa60(n);
+p=GetBattleRecord(n);
 switch(a) {
 case 0: case 5:
 if(IsUnitAvailable(n)) {
@@ -97,7 +97,7 @@ void func_020bf858(void) {
 
 }
 
-void func_020bf85c(void) {
+void AdvanceMapTurn(void) {
     extern void **gCurrentMap;
     u16 temp_r2;
     void *temp_r3;
@@ -187,7 +187,7 @@ void func_020bfa48(void) {
     func_0209066c(1, func_020bfa20());
 }
 
-void *func_020bfa60(s32 a) {
+void *GetBattleRecord(s32 a) {
 extern M2C_UNK data_0215d9ec;
 return (u8 *)&data_0215d9ec+((a-5)<<3);
 }

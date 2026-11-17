@@ -74,7 +74,7 @@ void func_ov001_0217bf40(void) {
 
 void func_ov001_0217bf84(void) {
 void *Ov001_Alloc(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
-void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
+void *CreateTextPanel(s32,s32);void *Ov001_CreateSpriteFromLayout(s32,s32);
 void Ov001_LoadCodeEntryGraphics(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
 CodeHandlers handlers=data_ov001_0218f860;
 u8 choices[5]={((u8*)data_ov001_0218f848)[8],((u8*)data_ov001_0218f848)[9],((u8*)data_ov001_0218f848)[10],((u8*)data_ov001_0218f848)[11],((u8*)data_ov001_0218f848)[12]};
@@ -87,7 +87,7 @@ if(ByteCompareN(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
 else {MI_CpuFill8(p+8,0,12);M2C_FIELD(data_ov001_02193da4,u8*,20)=0;}
 Ov001_LoadCodeEntryGraphics();func_ov001_02172250(a+11);Ov001_ShowMessagePanel(choices[a],-1,0);func_ov001_02171dd0(2);
 M2C_FIELD(data_ov001_02193da4,void**,0)=CreateTextPanel(0,0);
-M2C_FIELD(data_ov001_02193da4,void**,4)=func_ov001_0218a5f0(0,63);
+M2C_FIELD(data_ov001_02193da4,void**,4)=Ov001_CreateSpriteFromLayout(0,63);
 M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)&~0xc00)|0xc00;
 func_ov001_0217c8ac();func_ov001_0217c7e8();Ov001_SetStepCallback((s32*)func_ov001_0217c1b4);
 }

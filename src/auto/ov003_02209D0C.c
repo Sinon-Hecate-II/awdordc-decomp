@@ -1,6 +1,6 @@
 /* 7 functions from 0x02209D0C to 0x0220ACCC (ov003), found by ds-decomp. */
 #include "common.h"
-static inline u8 AdvanceLabelX(u8 x,u16 width) { return x+(width+8); }
+static inline void AdvanceLabelX(s32 *x,u16 width) { *x=(u8)(*x+(width+8)); }
 
 
 static inline void UpdateA9Slider(void *p, s16 value) {

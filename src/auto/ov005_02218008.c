@@ -254,8 +254,8 @@ void func_ov005_02218e3c(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov005_02220850, arg0);
 }
 
-u32 func_ov005_02218e54(void) {
- s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 data_ov005_02221024[]; extern u8 data_0215c334[]; extern u16 data_0215c340[];
+u32 GetCurrentCoFaceId(void) {
+ s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 data_ov005_02221024[]; extern u8 gCoState[]; extern u16 gCoPlayerSlots[];
  s32 a,b; u16 x;
  if(DidPlayerWin()) {
  a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
@@ -263,7 +263,7 @@ u32 func_ov005_02218e54(void) {
  if(a) b=1; else b=0;
  if(b&255) return data_ov005_02221024[(x-0xa1)*2];
  }
- return *(u16 *)((u8 *)data_0215c340 + (s16)data_0215c334[4]*(s16)12);
+ return *(u16 *)((u8 *)gCoPlayerSlots + (s16)gCoState[4]*(s16)12);
 }
 
 u32 func_ov005_02218edc(void) {
@@ -278,13 +278,13 @@ u32 func_ov005_02218edc(void) {
  return 9;
 }
 
-s32 func_ov005_02218f50(void) {
-s32 func_020a30c0(u16); extern void **gCurrentMap; extern u32 data_ov005_02220ce8[]; extern u8 data_0215c334[]; extern u16 data_0215c340[];
+s32 GetCoQuoteTextId(void) {
+s32 func_020a30c0(u16); extern void **gCurrentMap; extern u32 data_ov005_02220ce8[]; extern u8 gCoState[]; extern u16 gCoPlayerSlots[];
 s32 a,b; u16 x;
 a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
 if((u32)x>=0xa1U && (u32)x<0xbbU) a=1;
 if(a) b=1; else b=0;
 if(b&255) return data_ov005_02220ce8[x-0xa1];
-return func_020a30c0(*(u16 *)((u8 *)data_0215c340 + (s16)data_0215c334[4]*(s16)12));
+return func_020a30c0(*(u16 *)((u8 *)gCoPlayerSlots + (s16)gCoState[4]*(s16)12));
 }
 

@@ -164,11 +164,11 @@ s32 func_020c8020(s32 a) {
 
 s32 func_020c8054(s32 arg0) {
     s32 IsUnitAvailable(M2C_UNK);
-    u16 *func_020bfa60(M2C_UNK);
+    u16 *GetBattleRecord(M2C_UNK);
     u16 *temp_r0;
 
     if (IsUnitAvailable(8) != 0) {
-        temp_r0 = func_020bfa60(8);
+        temp_r0 = GetBattleRecord(8);
         if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (arg0 == *temp_r0)) {
             return 1;
         }

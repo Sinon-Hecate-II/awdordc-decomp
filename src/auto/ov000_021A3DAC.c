@@ -422,37 +422,41 @@ s32 func_ov000_021a4980(s32 arg0, s32 arg1) {
     return 1;
 }
 
-u8 func_ov000_021a49e0(s32 arg0) {
+/* Decide whether the AI may reserve money (AI_STATE_SHORTFALL) for a purchase it
+ * cannot afford yet: nothing may be reserved already, the price must sit inside
+ * the army-adjusted income window, and funds plus one income, minus the army
+ * value, must cover the price. */
+u8 CanReservePurchaseFunds(s32 price) {
     s32 Divide(s32, M2C_UNK);
     s32 func_020a886c(u16, M2C_UNK);
     extern void **gCurrentMap;
     extern void *gAiState;
-    s32 temp_r2;
-    s32 temp_r4;
-    s32 temp_r5;
-    u16 temp_r0;
-    u8 var_r0;
-    void *temp_r1;
+    s32 income;
+    s32 armyValue;
+    s32 record;
+    void *map;
+    u16 player;
+    u8 result;
 
-    if (M2C_FIELD(gAiState, s32 *, 0x14) != 0) {
+    if (M2C_FIELD(gAiState, s32 *, AI_STATE_SHORTFALL) != 0) {
         return 0U;
     }
-    temp_r4 = M2C_FIELD(gAiState, s32 *, 0x10);
-    temp_r1 = *gCurrentMap;
-    temp_r0 = M2C_FIELD(temp_r1, u16 *, 0x52A4);
-    temp_r5 = (temp_r0 * 0x8C) + (s32) (temp_r1 + 0x67A4);
-    temp_r2 = M2C_FIELD(temp_r5, s32 *, 8);
-    if (arg0 <= (s32) (temp_r2 - temp_r4)) {
+    armyValue = M2C_FIELD(gAiState, s32 *, AI_STATE_ARMY_VALUE);
+    map = *gCurrentMap;
+    player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+    record = (player * MAP_PLAYER_STRIDE) + (s32) ((u8 *) map + MAP_PLAYER_STATES);
+    income = M2C_FIELD(record, s32 *, PLAYER_REC_INCOME);
+    if (price <= (s32) (income - armyValue)) {
         return 0U;
     }
-    if (arg0 > (s32) ((temp_r2 * 2) - temp_r4)) {
+    if (price > (s32) ((income * 2) - armyValue)) {
         return 0U;
     }
-    if ((s32) (arg0 + Divide((func_020a886c(temp_r0, 0) + 0x64) * 0x7D0, 0x64)) < (s32) ((M2C_FIELD(temp_r5, s32 *, 0) + M2C_FIELD(temp_r5, s32 *, 8)) - temp_r4)) {
-        var_r0 = 1;
+    if ((s32) (price + Divide((func_020a886c(player, 0) + 0x64) * 0x7D0, 0x64)) < (s32) ((M2C_FIELD(record, s32 *, PLAYER_REC_FUNDS) + M2C_FIELD(record, s32 *, PLAYER_REC_INCOME)) - armyValue)) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 

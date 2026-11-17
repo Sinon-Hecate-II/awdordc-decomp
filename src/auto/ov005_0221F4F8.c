@@ -99,7 +99,7 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     M2C_UNK RenderTextLayer(s32, M2C_UNK, s32, void *);
     s32 CreateTextLayer(M2C_UNK);
     extern s32 gMovementCostTable;
-    extern M2C_UNK data_0215c334;
+    extern M2C_UNK gCoState;
     extern M2C_UNK data_ov005_022212f4;
     extern M2C_UNK data_ov005_022212f8;
     char sp20[128];
@@ -110,7 +110,7 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     var_r10 = (char *)&gMovementCostTable;
     var_r9 = 0;
     do {
-        if (M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r9)) {
+        if (M2C_FIELD(&gCoState, s32 *, 8) & (1 << var_r9)) {
             StringFormat(sp0, &data_ov005_022212f8, GetLocalizedText(*(s32 *)var_r10));
             StringAppend(sp20, sp0);
         }
@@ -122,11 +122,11 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
 
 void func_ov005_0221fbc8(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0215c334;
+    extern M2C_UNK gCoState;
     extern M2C_UNK data_ov005_02220b38;
     s32 i;
     for (i = 0; i < 15; i++) {
-        if (M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << i)) {
+        if (M2C_FIELD(&gCoState, s32 *, 8) & (1 << i)) {
             CreateSpriteObject(&data_ov005_02220b38, arg0);
             return;
         }

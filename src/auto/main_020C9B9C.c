@@ -1,5 +1,6 @@
 /* 17 functions from 0x020C9B9C to 0x020CAB8C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 /* A selection menu (sprite object type 7): the highlighted entry and how many
    entries the menu has. */
@@ -132,23 +133,28 @@ void func_020c9e94(u16 arg0, u16 arg1) {
     M2C_FIELD(temp_r0, s16 *, 0x6E) = arg1;
 }
 
-void func_020c9ebc(s32 arg0, s32 arg1) {
+/* Mark `player` as defeated from the current turn by `reason` (the victory-rule
+ * flag that removed them): the player record gets the turn and the reason, so
+ * IsPlayerActive reports them out, and the battle-record counters are updated
+ * for the human players involved. */
+void MarkPlayerDefeated(s32 player, s32 reason) {
     M2C_UNK AddRecordValue(s32, s32);
     s32 IsPlayerHuman(s32);
     extern void **gCurrentMap;
-    void *temp_r2;
-    s32 temp_lr;
-    s32 current;
-    temp_r2 = *gCurrentMap;
-    temp_lr = arg0 * 0x8C;
-    M2C_FIELD((u8 *)temp_r2 + temp_lr, u16 *, 0x67BE) = M2C_FIELD(temp_r2, u16 *, 0x52A2);
-    M2C_FIELD((u8 *)*gCurrentMap + temp_lr, s8 *, 0x67C0) = arg1;
-    if (IsPlayerHuman(arg0) != 0) AddRecordValue(0x18, 1);
-    current = M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
-    if (current == arg0) return;
-    if (IsPlayerHuman(current) == 0) return;
-    if (arg1 & 0x11) AddRecordValue(0x17, 1);
-    if (!(arg1 & 2)) return;
+    void *map;
+    s32 recordOffset;
+    s32 currentPlayer;
+
+    map = *gCurrentMap;
+    recordOffset = player * MAP_PLAYER_STRIDE;
+    M2C_FIELD((u8 *)map + recordOffset, u16 *, MAP_PLAYER_STATES + PLAYER_REC_DEFEAT_TURN) = M2C_FIELD(map, u16 *, MAP_TURN);
+    M2C_FIELD((u8 *)*gCurrentMap + recordOffset, s8 *, MAP_PLAYER_STATES + PLAYER_REC_DEFEAT_REASON) = reason;
+    if (IsPlayerHuman(player) != 0) AddRecordValue(0x18, 1);
+    currentPlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
+    if (currentPlayer == player) return;
+    if (IsPlayerHuman(currentPlayer) == 0) return;
+    if (reason & 0x11) AddRecordValue(0x17, 1);
+    if (!(reason & 2)) return;
     AddRecordValue(0x16, 1);
 }
 
@@ -169,7 +175,7 @@ void func_020c9fc8(s32 arg0, s32 arg1) {
     extern void **gCurrentMap;
     func_020c9f74(arg0);
     func_020c9e94((u16)arg0, (u16)arg1);
-    func_020c9ebc(arg0, arg1);
+    MarkPlayerDefeated(arg0, arg1);
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52A4) == arg0) {
         func_020a3498();
         func_020bbb08();
@@ -199,7 +205,7 @@ void func_020ca030(void) {
 }
 
 void func_020ca0e0(void) {
-    void func_020c9ebc(s32, s32);
+    void MarkPlayerDefeated(s32, s32);
     s32 IsPlayerActive(s16);
     s32 func_020d3248(s16);
     s32 func_020d336c(s16);
@@ -209,10 +215,10 @@ void func_020ca0e0(void) {
     var_r8 = 1;
     do {
         if (IsPlayerActive(var_r8) != 0) {
-            if (func_020d3248(var_r8) != 0) func_020c9ebc(var_r8, 8);
-            else if (func_020d336c(var_r8) == 0) func_020c9ebc(var_r8, 0x10);
-            else if (func_020d332c(var_r8) == 0) func_020c9ebc(var_r8, 1);
-            else if (func_020d32d4(var_r8) == 0) func_020c9ebc(var_r8, 2);
+            if (func_020d3248(var_r8) != 0) MarkPlayerDefeated(var_r8, 8);
+            else if (func_020d336c(var_r8) == 0) MarkPlayerDefeated(var_r8, 0x10);
+            else if (func_020d332c(var_r8) == 0) MarkPlayerDefeated(var_r8, 1);
+            else if (func_020d32d4(var_r8) == 0) MarkPlayerDefeated(var_r8, 2);
         }
         var_r8 += 1;
     } while (var_r8 < 5);

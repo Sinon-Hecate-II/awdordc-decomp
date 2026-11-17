@@ -161,7 +161,7 @@ u8 func_020b846c(M2C_UNK arg0) {
 }
 
 void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
-    void func_0209c048(s32, s32, void *, s32, s32, s32);
+    void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
     u8 func_020b846c(s32);
     M2C_UNK func_0209b2dc(M2C_UNK, s16, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02127c0c;
@@ -181,7 +181,7 @@ void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
     }
     temp_r6 = data_027e01d8;
     data_027e01d8 = g3DSpriteEngineMain;
-    func_0209c048(3, (s16) (arg0 + 5), M2C_FIELD(data_027e01d8, s32 *, 0x24), arg1 + 1, 0, (s32) var_r4);
+    DrawTilemapNumber(3, (s16) (arg0 + 5), M2C_FIELD(data_027e01d8, s32 *, 0x24), arg1 + 1, 0, (s32) var_r4);
     func_0209b2dc(6, (s16) (arg0 + 5), 1, var_r5, 0, (s32) var_r4, (s32) (u16) gListRowDrawOffset);
     data_027e01d8 = temp_r6;
     gListRowDrawOffset += 0x24;
@@ -352,7 +352,7 @@ void func_020b8970(void *arg0) {
     void func_0208ca2c(void *, s32, s32, s32);
     void func_020994e0(s32);
     void func_0209c024(s32, s32, void *, s32, s32, s32);
-    void func_0209c048(s32, s32, void *, s32, s32, s32);
+    void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
     s32 func_020a8b78(void);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
@@ -421,9 +421,9 @@ void func_020b8970(void *arg0) {
     func_02088f1c(M2C_FIELD(arg0, void **, 0x50));
     CreateMenuUnitSprite(arg0);
     func_0208ca2c((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
-    func_0209c048(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
+    DrawTilemapNumber(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
     func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
-    func_0209c048(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);
+    DrawTilemapNumber(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);
     RedrawListRows(M2C_FIELD(arg0, s16 *, 0x3e));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;

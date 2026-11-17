@@ -166,7 +166,7 @@ void func_ov001_0217d1ac(void) {
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK InitMapListScreen;
-    extern M2C_UNK func_ov001_02180d44;
+    extern M2C_UNK Ov001_OpenAccessPointMenu;
     s32 sp0;
 
     if (Ov001_IsFadeActive(1) != 0) {
@@ -185,7 +185,7 @@ void func_ov001_0217d1ac(void) {
     Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 != 0) {
         Ov001_SetNextScreenMode(2, 1);
-        Ov001_SetStepCallback(&func_ov001_02180d44);
+        Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
         return;
     }
     Ov001_SetNextScreenMode(2, 0);
@@ -214,7 +214,7 @@ void InitMapListScreen(void) {
     void func_ov001_021722c4(void);
     M2C_UNK Ov001_CreateScrollBar(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *CreateTextPanel(s32, s32);
-    void *func_ov001_0218a5f0(s32, s32);
+    void *Ov001_CreateSpriteFromLayout(s32, s32);
     void *Ov001_AddTask(s32, void (*)(void), s32, s32);
     M2C_UNK MapListRedrawInfoPanel(void);
     void func_ov001_0217f038(void);
@@ -247,19 +247,19 @@ void InitMapListScreen(void) {
                         (M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x14) = CreateTextPanel(0, 1);
     for (i = 0; i < 7; i++) {
-        ((void **)M2C_FIELD(&gMapListState, void **, 8))[i + 6] = func_ov001_0218a5f0(0, 0x29);
+        ((void **)M2C_FIELD(&gMapListState, void **, 8))[i + 6] = Ov001_CreateSpriteFromLayout(0, 0x29);
     }
     value = M2C_FIELD(profile, u8 *, 0xe7);
     switch (value) {
         case 1: {
-            sprite = func_ov001_0218a5f0(0, 0x50);
+            sprite = Ov001_CreateSpriteFromLayout(0, 0x50);
             M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34) = sprite;
             M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) =
                 (M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) & ~0xc00) | 0xc00;
             break;
         }
         case 2: {
-            sprite = func_ov001_0218a5f0(0, 0x51);
+            sprite = Ov001_CreateSpriteFromLayout(0, 0x51);
             M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34) = sprite;
             M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) =
                 (M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) & ~0xc00) | 0xc00;

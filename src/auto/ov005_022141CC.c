@@ -77,7 +77,7 @@ gCur3DSpriteEngine=saved;
 void RecordsMenu_DrawRow(s32 row,s32 record) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain; extern M2C_UNK gRecordsMenuState;
 s32 func_ov005_022140f8(s32); void *func_020ad570(s32);
-void func_0209c048(s32,s16,void *,s32,s32,s32);
+void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);
 void func_0209b2dc(s32,s16,s32,u32,s32,s32,u16);
 void FillTileRect(void *,s32,s32,u16,s32);
 s32 mode; u32 color; s32 barTile; void *saved; u16 iconTile;
@@ -87,7 +87,7 @@ if(func_ov005_022140f8(record)) {
 color=M2C_FIELD(func_020ad570(record),u32 *,4);
 if(RECORDS_SCREEN->highlighted==record)mode=9;else mode=0;
 } else {color=0x43000000; mode=3;}
-func_0209c048(3,(s16)(row+3),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),record+1,0x2000,mode);
+DrawTilemapNumber(3,(s16)(row+3),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),record+1,0x2000,mode);
 func_0209b2dc(5,(s16)(row+3),1,color,0x2000,mode,(u16)barTile);
 iconTile=RECORDS_SCREEN->enabled[record]?0x124:0x128;
 FillTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x38+(row+3)*64,2,2,iconTile,0);
@@ -98,7 +98,7 @@ gCur3DSpriteEngine=saved;
  * rows (seven when the scroll position is half a row off, six otherwise), then
  * redraw the selectable and total counters at the bottom. */
 void RecordsMenu_DrawList(s32 scroll) {
-void ClearTileRect(void *,s32,s32);void func_0209c048(s32,s16,void *,s32,s32,s32);void func_0209c024(s32,s16,void *,s32,s32,s32);s32 func_020a8b78(void);
+void ClearTileRect(void *,s32,s32);void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);void func_0209c024(s32,s16,void *,s32,s32,s32);s32 func_020a8b78(void);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern M2C_UNK gRecordsMenuState;
 s32 drawn,recordEven,recordOdd,rowEven,rowOdd,drawnEven;void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -112,9 +112,9 @@ ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x3c0,32,1);
 drawnEven=0;rowEven=0;recordEven=scroll>>1;
 do{RecordsMenu_DrawRow(rowEven,recordEven);drawnEven++;recordEven++;rowEven+=2;}while(drawnEven<6);
 }
-func_0209c048(27,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((RecordsScreen *)M2C_FIELD(&gRecordsMenuState,void **,8))->selectable,0x2000,0);
+DrawTilemapNumber(27,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((RecordsScreen *)M2C_FIELD(&gRecordsMenuState,void **,8))->selectable,0x2000,0);
 func_0209c024(28,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0x2000,0);
-func_0209c048(30,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((RecordsScreen *)M2C_FIELD(&gRecordsMenuState,void **,8))->count,0x2000,0);
+DrawTilemapNumber(30,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((RecordsScreen *)M2C_FIELD(&gRecordsMenuState,void **,8))->count,0x2000,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }

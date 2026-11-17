@@ -124,7 +124,28 @@ s32 func_0205bea4(void *arg0) {
     return 1;
 }
 #pragma pop
-s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 gti2HandleResendRequest(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!gti2HandleResendRequest(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
+/* Dispatch a GT2 control message to its handler: the type byte (100..104) follows
+ * the two-byte magic and the control payload starts after it, so every handler
+ * but 102 and 104 gets MESSAGE+3 with the length minus three.  Returns 0 when the
+ * handler fails (the connection is then dropped) and 1 otherwise, unknown types
+ * included. */
+s32 gti2HandleLargeMessage(void *session, s32 messageType, void *message, s32 size) {
+    s32 gti2HandleResendRequest(void *, void *, s32);
+    s32 len = size - 3;
+
+    if (messageType == 100) {
+        if (!func_0205bcdc((s32) session, (s32) ((char *) message + 3), len)) return 0;
+    } else if (messageType == 101) {
+        if (!gti2HandleResendRequest(session, (char *) message + 3, len)) return 0;
+    } else if (messageType == 102) {
+        if (!func_0205be04((s32) session, message, size)) return 0;
+    } else if (messageType == 103) {
+        if (!func_0205be10(session, (char *) message + 3, len)) return 0;
+    } else if (messageType == 104) {
+        if (!func_0205bea4(session)) return 0;
+    }
+    return 1;
+}
 
 /* GT2 message dispatcher for one received socket message: accept or reject new
    connections, close dead ones, and route the payload to the data handler or to
@@ -137,7 +158,7 @@ s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 func_0205cb68(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
 void gti2SendClosed(void *);s32 func_0205b2e0(void *,void *,s32);
-s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 func_0205bedc(void *,s32,void *,s32);
+s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 gti2HandleLargeMessage(void *,s32,void *,s32);
 extern M2C_UNK gGt2Magic;
 void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
 u8 *buf=message;
@@ -173,7 +194,7 @@ if(!isControl)return func_0205b2e0(connection2,buf,len)!=0;
 msgType=buf[2];
 if(msgType<0)return Gt2CloseConnection(connection2)!=0;
 if(msgType<8)return gti2HandleSmallMessage(connection2,msgType,(s32)buf,len)!=0;
-return func_0205bedc(connection2,msgType,buf,len)!=0;
+return gti2HandleLargeMessage(connection2,msgType,buf,len)!=0;
 }
 
 /* Looks up the entry for the given connection/key; validates or refreshes it. */

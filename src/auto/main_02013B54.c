@@ -6,7 +6,23 @@ s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK DC_CleanRange(s32,M2C_UNK); s3
 
 s32 func_02013bc8(M2C_UNK a,u32 b,s32 c,s32 d){ s32 r=func_0201146c();if(r)return r;if(b>3)return 6;if(b){if(!d)return 6;DC_CleanRange(d,80);}WFC_SetChannelParam(39,a);r=WFC_SendCommand(39,3,b,d,c);if(!r)r=2;return r;}
 
-s32 func_02013c44(M2C_UNK a,s32 b,u32 c,s32 d,u16 e,u8 f){ M2C_UNK CopyU16(s32,M2C_UNK *,u32);extern M2C_UNK data_02131100;s32 r=WFC_CheckChannelState(2,7,9);if(r)return r;if(!b)return 6;if(c>112)return 6;CopyU16(b,&data_02131100,c);DC_CleanRange(&data_02131100,c);WFC_SetChannelParam(24,a);r=WFC_SendCommand(24,5,&data_02131100,c,d,(s32)e,(s32)f);if(!r)r=2;return r;}
+/* Submit a download-play data block to the WFC channel: require the channel to be
+ * in one of the states this request may be sent from, copy the caller's block
+ * into the shared request buffer and hand it to the WFC driver as command 24. */
+s32 WFC_SubmitDownloadData(s32 channelParam, void *data, u32 length, s32 sendCode, u16 sequence, u8 flags) {
+    M2C_UNK CopyU16(s32, M2C_UNK *, u32);
+    extern M2C_UNK gWfcRequestBuffer;
+    s32 result = WFC_CheckChannelState(2, 7, 9);
+    if (result) return result;
+    if (!data) return 6;
+    if (length > 112) return 6;
+    CopyU16((s32) data, &gWfcRequestBuffer, length);
+    DC_CleanRange(&gWfcRequestBuffer, length);
+    WFC_SetChannelParam(24, channelParam);
+    result = WFC_SendCommand(24, 5, &gWfcRequestBuffer, length, sendCode, (s32) sequence, (s32) flags);
+    if (!result) result = 2;
+    return result;
+}
 
 s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
     s32 func_0201146c();

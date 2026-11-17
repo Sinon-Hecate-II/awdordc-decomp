@@ -111,7 +111,7 @@ s32 HandleOverlayResult(void) {
  void func_ov009_022244ec(M2C_UNK);
  M2C_UNK func_ov010_022282f8();
  M2C_UNK func_ov010_02228314(M2C_UNK *,M2C_UNK *);
- void func_ov010_02228298(M2C_UNK);
+ void SetOnlineSessionFlag(M2C_UNK);
  M2C_UNK GetOverlayEventFlags();
  void func_02081fd4(void);
  extern M2C_UNK gMapData;
@@ -131,7 +131,7 @@ s32 HandleOverlayResult(void) {
  case 2:
  if(func_ov010_022282f8()!=0 ? 1 : overlayResult){
  func_ov010_02228314(&errorCode,&errorType);
- switch(errorType){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: func_ov010_02228298(6); break;}
+ switch(errorType){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: SetOnlineSessionFlag(6); break;}
  overlayResult=1;
  }
  break;
@@ -504,7 +504,7 @@ void func_020d3d68(void) {
 
 s32 func_020d3e94(void) {
     M2C_UNK IsPlayerActive(s32);
-    M2C_UNK func_020c9ebc(s32, s32);
+    M2C_UNK MarkPlayerDefeated(s32, s32);
     M2C_UNK func_020c9b70();
     extern void **gCurrentMap;
     s32 i;
@@ -527,7 +527,7 @@ s32 func_020d3e94(void) {
         if (IsPlayerActive(i) != 0) {
             base = *gCurrentMap;
             if (max > M2C_FIELD((u8 *)base + off, u8 *, 0x67BC)) {
-                func_020c9ebc(i, 0x20);
+                MarkPlayerDefeated(i, 0x20);
             }
         }
     }
@@ -640,10 +640,10 @@ same:
 }
 
 void func_020d41c4(void) {
- M2C_UNK func_020d1b80(); M2C_UNK HumanPlayersOnDifferentArmies(); M2C_UNK func_020b78ac(); M2C_UNK func_020d4060(); void func_020d4110(void); extern void **gCurrentMap;
+ M2C_UNK AdvancePlayerTurn(); M2C_UNK HumanPlayersOnDifferentArmies(); M2C_UNK func_020b78ac(); M2C_UNK func_020d4060(); void func_020d4110(void); extern void **gCurrentMap;
  void (*cb)(void)=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x40);
  if(cb) cb();
- func_020d1b80();
+ AdvancePlayerTurn();
  M2C_FIELD(*gCurrentMap,u16*,0x52B0)=3;
  if(HumanPlayersOnDifferentArmies()!=0){func_020b78ac();return;}
  if(func_020d4060()==0)return;

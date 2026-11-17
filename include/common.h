@@ -828,6 +828,23 @@ typedef struct GpiStringListData {
 #define GPI_CONN_ERROR_FATAL    0x41C /* s32 nonzero once a fatal error was reported */
 #define GPI_CONN_CALLBACK_HEAD  0x438 /* GPICallbackData *first queued callback */
 #define GPI_CONN_CALLBACK_TAIL  0x43C /* GPICallbackData *last queued callback */
+#define GPI_CONN_OPERATIONS     0x424 /* GPIOperation *first pending operation */
+#define GPI_CONN_NEXT_OPERATION_ID 0x20C /* s32 next operation id handed out (starts at 2) */
+
+/* A queued gpi operation (0x24 bytes), a node of the connection's pending
+ * operation list.  gpiAddOperation allocates one and prepends it; the stepping
+ * code walks the list, stores the result and turns it into a callback. */
+typedef struct GPIOperation {
+    s32 type;          /* +0x00 operation kind */
+    void *data;        /* +0x04 profile, peer or search the operation works on */
+    s32 blocking;      /* +0x08 nonzero when the operation must finish before returning */
+    s32 callback;      /* +0x0C completion callback */
+    s32 callbackParam; /* +0x10 the callback's parameter */
+    s32 state;         /* +0x14 operation state */
+    s32 id;            /* +0x18 id of the operation */
+    s32 result;        /* +0x1C result stored when it completes */
+    struct GPIOperation *next; /* +0x20 next pending operation */
+} GPIOperation; /* 0x24 bytes */
 
 /* Fatal flag passed to gpiCallErrorCallback. */
 enum {
@@ -1156,6 +1173,13 @@ enum {
 #define SAVE_TYPE_BATTLE        3          /* battle save */
 #define SAVE_TYPE_CAMPAIGN_MAP  9          /* campaign map index 0; record type = 9 + map index */
 
+/* A battle save record: eight bytes kept per save slot (slots 5..8, see
+ * GetBattleSaveRecord) describing the last battle fought there. */
+#define BATTLE_RECORD_SIZE  0x08 /* bytes per battle save record */
+#define BATTLE_RECORD_MAP   0x00 /* u16: map id the battle was fought on, 0 when the slot is empty */
+#define BATTLE_RECORD_DAYS  0x02 /* u16: days the battle lasted (gCurrentMap +0x52a2, capped at 999) */
+#define BATTLE_RECORD_DATE  0x04 /* u32: local date/time, year:8 month:6 day:6 hour:6 minute:6 */
+
 /* Save-chip configuration the save manager asks the device for before it reads
  * the archive: the chip kind in the low byte and the size/variant bit index in
  * bits 8..15 (0x1202 = kind 2, bit 18).  The device must report state 2 after. */
@@ -1355,6 +1379,15 @@ typedef struct Ov001IconRow {
     u8 inputLocked;   /* +0x18 nonzero: the row is moving, touch is ignored */
     u8 active;        /* +0x19 nonzero once the row is in use */
 } Ov001IconRow;
+
+/* Wi-Fi connection indicator of an ov001 screen (gOv001WfcIcon): a single
+ * sprite that shows one of the four status layouts of its style and is
+ * relaid out each frame from the WFC connection state. */
+typedef struct Ov001WfcIcon {
+    void *sprite; /* +0x00 sprite object showing the icon */
+    s32 task;     /* +0x04 update task, 0 when none */
+    s8 style;     /* +0x08 icon style, indexes gOv001WfcIconLayouts */
+} Ov001WfcIcon;   /* 0x0C bytes */
 
 /* Blend control registers the ov001 screen fades write: the main engine's and
  * the sub engine's BLDCNT, with BLDY at +4. */

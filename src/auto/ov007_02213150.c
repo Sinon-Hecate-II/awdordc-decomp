@@ -117,11 +117,11 @@ void func_ov007_02213378(void *arg0) {
     M2C_UNK RefreshMapEditor();
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK FillMapTerrain(s32);
-    M2C_UNK func_ov007_0221ab68();
+    M2C_UNK MapEditor_FitPreviewToMap();
     FillMapTerrain(M2C_FIELD(arg0, s32 *, 0x5C));
     RefreshMapView();
     RefreshMapEditor();
-    func_ov007_0221ab68();
+    MapEditor_FitPreviewToMap();
     MapEditor_SetMapModified(1);
     PlaySoundEffect(0x11D);
 }
@@ -189,7 +189,7 @@ void func_ov007_022134b4(void *arg0) {
     LoadMapFromExport(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
     RefreshMapView();
     RefreshMapEditor();
-    func_ov007_0221ab68();
+    MapEditor_FitPreviewToMap();
     MapEditor_SetMapModified(1);
     p = *gCurrentMap;
     func_0207b754((u32)M2C_FIELD(p, u16 *, 0x5144) >> 1, (u32)M2C_FIELD(p, u16 *, 0x5146) >> 1);

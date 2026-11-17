@@ -167,14 +167,32 @@ s32 FindNearestTargetCandidate(void) {
 extern unsigned char *gAiState;
 extern int gAiTargetCandidates;
 extern int *gCurrentMap;
-int FindBaseTargetCandidate(void) {
-unsigned char *entry; int i; int min; int result;
-min=0x7fff;result=-1;entry=(unsigned char *)&gAiTargetCandidates;
-for(i=0;i<gAiState[0];i++,entry+=12) {
-if(entry[3]<0xfc && func_ov000_021a4e08(entry[0],entry[1],7)<60 && entry[2]==1) {
-int value=(*(signed char **)((unsigned char *)gCurrentMap[0]+0x5000+entry[1]*4+0x2e8))[entry[0]];
-if(min>value){min=value;result=i;}
-}}return result;}
+/* Choose the type-1 (base) AI target candidate with the lowest map grid value:
+ * among the candidates where a kind-7 unit would take less than 60 damage, keep
+ * the cheapest tile (the first one on a tie). */
+s32 FindBaseTargetCandidate(void) {
+    extern s32 *gCurrentMap;
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetCandidates;
+    u8 *p;
+    s32 i;
+    s32 best;
+    s32 result;
+
+    best = 32767;
+    result = -1;
+    p = (u8 *)&gAiTargetCandidates;
+    for (i = 0; i < *gAiState; i++, p += AI_CANDIDATE_STRIDE) {
+        if (p[AI_CANDIDATE_STATUS] < AI_CANDIDATE_REJECTED && func_ov000_021a4e08(p[AI_CANDIDATE_X], p[AI_CANDIDATE_Y], 7) < 60 && p[AI_CANDIDATE_TYPE] == 1) {
+            s32 value = M2C_FIELD((u8 *)*gCurrentMap + p[AI_CANDIDATE_Y] * 4, s8 **, MAP_GRID)[p[AI_CANDIDATE_X]];
+            if (best > value) {
+                best = value;
+                result = i;
+            }
+        }
+    }
+    return result;
+}
 
 s32 HasAiTargetOfType(s32 a) {
  extern u8 *gAiState;

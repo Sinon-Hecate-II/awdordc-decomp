@@ -1,5 +1,7 @@
 /* 12 functions from 0x0221A59C to 0x0221B56C (ov007), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
+#include "battle_map.h"
 extern u8 gHeapObjectVTable[];
 static inline void InitTextDescriptor(u8 *sp) {
 sp[32]=(u8)((u8)(sp[32]&~1)&~30);sp[32]=(sp[32]&~224)|64;
@@ -89,24 +91,29 @@ void MapEditor_RefreshGraphics(void) {
     func_ov007_0221a104();
 }
 
-void func_ov007_0221ab68(void) {
-extern void **gCurrentMap;
-extern void *g3DSpriteEngineSub;
-extern void *gCur3DSpriteEngine;
-void *saved=gCur3DSpriteEngine;
-void *p;
-u32 x,y;
-gCur3DSpriteEngine=g3DSpriteEngineSub;
-Clear3DSpriteLayer(2);
-func_020c12f8(M2C_FIELD(gCur3DSpriteEngine,s32 *,20),M2C_FIELD(gCur3DSpriteEngine,s32 *,40),1,14);
-p=*gCurrentMap;
-x=M2C_FIELD(p,u16 *,0x5144);
-y=M2C_FIELD(p,u16 *,0x5146);
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s16 *,60)=-(64-((s32)(x*4)>>1));
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s16 *,68)=-(80-((s32)(y*4)>>1));
-M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;
-gCur3DSpriteEngine=saved;
-MapEditor_RefreshGraphics();
+/* Size the map editor's preview to the map: clear the top screen's third 3D
+ * sprite layer and reload its texture, centre the layer's quad over the map's
+ * cells (four pixels each), mark the layer changed and rebuild the editor
+ * graphics. */
+void MapEditor_FitPreviewToMap(void) {
+    extern void **gCurrentMap;
+    extern void *g3DSpriteEngineSub;
+    extern void *gCur3DSpriteEngine;
+    void *saved = gCur3DSpriteEngine;
+    void *map;
+    u32 width, height;
+
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    Clear3DSpriteLayer(2);
+    func_020c12f8(DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[2], DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[2], 1, 14);
+    map = *gCurrentMap;
+    width = M2C_FIELD(map, u16 *, MAP_WIDTH);
+    height = M2C_FIELD(map, u16 *, MAP_HEIGHT);
+    DS3D_BANK(gCur3DSpriteEngine)->corner[2] = -(64 - ((s32) (width * 4) >> 1));
+    DS3D_BANK(gCur3DSpriteEngine)->corner[6] = -(80 - ((s32) (height * 4) >> 1));
+    DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= 4;
+    gCur3DSpriteEngine = saved;
+    MapEditor_RefreshGraphics();
 }
 
 void Map_SetTileAndRefresh(s32 a,s32 b,u16 c,u16 d) {

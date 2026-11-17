@@ -166,7 +166,7 @@ void func_02096b88(void) {
  * total, refresh each teammate's record, then finish the view update. */
 void UpdateTeamRecords(s32 player, M2C_UNK flags) {
     M2C_UNK func_020c9b70();
-    M2C_UNK func_020c9ebc(s32, M2C_UNK);
+    M2C_UNK MarkPlayerDefeated(s32, M2C_UNK);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
@@ -199,7 +199,7 @@ loop_1:
                 temp_r1 = opponentOffset + temp_r0;
                 M2C_FIELD(temp_r1, u16 *, PLAYER_ENEMY_UNITS_OFF) = (u16) (M2C_FIELD(temp_r1, u16 *, PLAYER_ENEMY_UNITS_OFF) + M2C_FIELD((temp_r0 + offset), u8 *, PLAYER_UNIT_COUNT_OFF));
             }
-            func_020c9ebc(mate, flags);
+            MarkPlayerDefeated(mate, flags);
         }
         mate += 1;
         offset += MAP_PLAYER_STRIDE;

@@ -208,7 +208,7 @@ s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;
    not ready, so a list is only created while networking is up. */
 void SBServerListInit(void *list,void *gameName,void *secretKey,void *gameVersion,s32 queryPort,s32 force,s32 callback,s32 instance){
 extern u8 sSbAssertSlistNotNull[],sSbServerListInitName[],sSbAssertCallbackNotNull[];extern s32 gDnsQueryState[];extern M2C_UNK sSbEmptyString;
-void AssertFailed(void*,void*,void*,s32);s32 func_020609bc(s32);void StringCopy(void*,void*);void func_02062e28(void*,void*);s32 GetTickCountMs(void);void SetRandSeed(s32);void func_0204926c(void);
+void AssertFailed(void*,void*,void*,s32);s32 func_020609bc(s32);void StringCopy(void*,void*);void SBServerListSetError(void*,void*);s32 GetTickCountMs(void);void SetRandSeed(s32);void func_0204926c(void);
 if(!list)AssertFailed(sSbAssertSlistNotNull,sSbFileName,sSbServerListInitName,0x11c);
 if(!force && gDnsQueryState[0]!=1)return;
 M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;func_02061c8c(list);func_020609bc((s32)list);
@@ -220,11 +220,39 @@ M2C_FIELD(list,s32*,0x4a0)=0;M2C_FIELD(list,s32*,SB_SLIST_SOCKET)=-1;
 M2C_FIELD(list,s32*,0x7c)=0;M2C_FIELD(list,s32*,0x80)=0;M2C_FIELD(list,s32*,8)=0;
 M2C_FIELD(list,s32*,0x484)=-1;M2C_FIELD(list,s32*,0x480)=0;
 M2C_FIELD(list,s32*,0x4a4)=0;M2C_FIELD(list,s32*,SB_SLIST_QUERY_PORT)=queryPort;
-func_02062e28(list,&sSbEmptyString);M2C_FIELD(list,s32*,0x5cc)=0;
+SBServerListSetError(list,&sSbEmptyString);M2C_FIELD(list,s32*,0x5cc)=0;
 SetRandSeed(GetTickCountMs());func_0204926c();
 }
 
-s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 StringCompareN(void *,void *,u32);void func_02062e28(void *,void *);s32 SBServerListDisconnect(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=sSbQueryErrorPrefix;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=sSbQueryErrorPrefix;if(!StringCompareN(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,sSbNoServer[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,sSbNoServer[0],M2C_FIELD(a,s32 *,0x494));SBServerListDisconnect(a);}
+/* Check the master server's reply sitting in the list's receive buffer: when it
+ * starts with "Query Error: " the text after the prefix becomes the list's error
+ * message and the query-error event is reported.  Either way the disconnect event
+ * follows and the list is disconnected. */
+s32 SBServerListCheckQueryError(void *list) {
+    s32 StringLength(M2C_UNK *);
+    s32 StringCompareN(void *, void *, u32);
+    void SBServerListSetError(void *, void *);
+    s32 SBServerListDisconnect(void *);
+    s32 length;
+    void *prefix;
+    void *buffer;
+    void *start;
+
+    length = M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH);
+    if (length > 0) {
+        prefix = sSbQueryErrorPrefix;
+        if ((u32)length > (u32)StringLength(prefix)) {
+            buffer = M2C_FIELD(list, void **, SB_SLIST_RECV_BUFFER);
+            start = sSbQueryErrorPrefix;
+            if (!StringCompareN(buffer, start, StringLength(start))) {
+                SBServerListSetError(list, (u8 *)buffer + StringLength(prefix));
+                M2C_FIELD(list, M2C_UNK (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_QUERY_ERROR, sSbNoServer[0], M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
+            }
+        }
+    }
+    M2C_FIELD(list, M2C_UNK (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_DISCONNECTED, sSbNoServer[0], M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
+    SBServerListDisconnect(list);
+}
 
 s32 func_02061fb8(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];
@@ -303,7 +331,7 @@ void GenerateSessionKey(void *arg0) {
 
 s32 func_02062324(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02049810(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02061efc(void *);
+    M2C_UNK SBServerListCheckQueryError(void *);
     s32 SBServerListConnectAndQuery(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
     s32 temp_r0_2;
@@ -317,7 +345,7 @@ loop_1:
         SBServerListDisconnect(arg0);
         temp_r0 = SBServerListConnectAndQuery(arg0, 0, 0, 2, 0);
         if (temp_r0 != 0) {
-            func_02061efc(arg0);
+            SBServerListCheckQueryError(arg0);
             return temp_r0;
         }
         if (var_r7 < 0) {

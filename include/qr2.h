@@ -35,6 +35,11 @@
 /* A query collects at most this many key ids before appending them. */
 #define QR2_KEY_LIST_SIZE 256
 
+/* A field-list length byte of 0xFF means "every key of the group": the list
+ * itself is left out and the record's key callback supplies the ids.  0 means
+ * the group has no fields at all. */
+#define QR2_FIELDS_ALL    0xFF
+
 /* Game-key ids answered by Qr2AppendGameKey.  Keys 8..52 report one connection
  * field each (the CONN_SESSION_* offsets in common.h); 53/54 report constants;
  * keys QR2_GAMEKEY_TABLE_BASE..QR2_GAMEKEY_TABLE_END-1 index the session player

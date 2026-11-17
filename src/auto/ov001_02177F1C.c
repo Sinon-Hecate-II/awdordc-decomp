@@ -35,12 +35,12 @@ void func_ov001_02177fd8(void) {
     void func_ov001_02178090(void);
     M2C_UNK func_ov001_02171e58(s32);
     M2C_UNK Ov001_CreateAnimSprite(s32);
-    M2C_UNK func_ov001_0217231c(s32);
+    M2C_UNK Ov001_ShowWfcIcon(s32);
     M2C_UNK Ov001_PlaySound(s32);
     func_ov001_02178010();
     func_ov001_02171e58(30);
     Ov001_CreateAnimSprite(0);
-    func_ov001_0217231c(1);
+    Ov001_ShowWfcIcon(1);
     Ov001_PlaySound(11);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178090);
 }
@@ -102,7 +102,7 @@ void func_ov001_0217810c(void) {
 
 void func_ov001_02178134(void) {
     M2C_UNK Ov001_FreeOptionSprites();
-    M2C_UNK func_ov001_021723d4();
+    M2C_UNK Ov001_HideWfcIcon();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 Ov001_IsProfileScreenDone();
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -113,7 +113,7 @@ void func_ov001_02178134(void) {
     void func_ov001_02178bc0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     if (Ov001_IsProfileScreenDone() == 0) return;
-    func_ov001_021723d4();
+    Ov001_HideWfcIcon();
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -374,8 +374,8 @@ void Ov001_OpenWfcEraseScreen(void) {
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_021786d4(void);
     void func_ov001_02178754(void);
-    extern u8 data_ov001_02193d78;
-    data_ov001_02193d78 = 0;
+    extern u8 gOv001WfcEraseConfirmed;
+    gOv001WfcEraseConfirmed = 0;
     func_ov001_021786d4();
     func_ov001_02172250(0x13);
     Ov001_ShowMessagePanel(0x3C, -1, 0);
@@ -446,13 +446,13 @@ void func_ov001_02178848(void) {
 }
 
 void func_ov001_0217884c(void) {
-    extern u8 data_ov001_02193d78;
+    extern u8 gOv001WfcEraseConfirmed;
     void func_ov001_0217889c(void);
     switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
-        data_ov001_02193d78 = 1;
+        gOv001WfcEraseConfirmed = 1;
         break;
     default: return;
     }
@@ -470,34 +470,38 @@ void func_ov001_0217889c(void) {
 }
 
 void func_ov001_021788bc(void) {
-    extern u8 data_ov001_02193d78;
-    extern M2C_UNK func_ov001_02178920;
+    extern u8 gOv001WfcEraseConfirmed;
+    extern M2C_UNK Ov001_CloseWfcEraseScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
-    if (data_ov001_02193d78 == 0) {
+    if (gOv001WfcEraseConfirmed == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02178920);
+    Ov001_SetStepCallback(&Ov001_CloseWfcEraseScreen);
 }
 
-void func_ov001_02178920(void) {
+/* Close the Wi-Fi data-erase screen once its fades finish and its icon row is
+ * idle: a confirmed erase continues to the erase-result screen, while a
+ * cancelled one returns to the Wi-Fi option menu (releasing its background and
+ * panel too). */
+void Ov001_CloseWfcEraseScreen(void) {
     s32 Ov001_IsIconRowIdle();
     extern M2C_UNK Ov001_InitOptionMenu;
     void func_ov001_02178460(void);
-    extern u8 data_ov001_02193d78;
+    extern u8 gOv001WfcEraseConfirmed;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (data_ov001_02193d78 == 0 && Ov001_IsFadeActive(1) != 0) return;
+    if (gOv001WfcEraseConfirmed == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193d78 == 0) {
+    if (gOv001WfcEraseConfirmed == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193d78 == 0) {
+    if (gOv001WfcEraseConfirmed == 0) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(&Ov001_InitOptionMenu);
         return;

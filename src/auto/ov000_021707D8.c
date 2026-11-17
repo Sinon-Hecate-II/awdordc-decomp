@@ -9,7 +9,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern void **gCurrentMap;
 extern u8 gMapConfig[];
 s32 func_020cd6d4(void);s32 func_020a8a84(u16);void *GetCurrentMapName(void);
-void func_0209c048(s16,s16,void *,s32,s32,s32);
+void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
 void func_0209c024(s16,s16,void *,void *,s32,s32);
 s32 GetLanguage(void);s32 func_0207cb88(s32);s32 func_020cfb94(void);
 s32 func_020d303c(s32);s32 func_020d30a8(s32);
@@ -22,12 +22,12 @@ u8 *p,*map;
 old=gCur3DSpriteEngine;dst=M2C_FIELD(old,void **,0x24);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_020cd6d4()){
-func_0209c048(3,1,dst,func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
+DrawTilemapNumber(3,1,dst,func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
 func_0209c024(5,1,dst,GetCurrentMapName(),0,0);
 }else func_0209c024(2,1,dst,GetCurrentMapName(),0,0);
 if(!GetLanguage()) x=26;
 else x=30-(3-func_0207cb88(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
-func_0209c048((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
+DrawTilemapNumber((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
 {s32 i=0;
 if(func_020cfb94()>0){y=6;do{
 x=i+1;p=(u8 *)*gCurrentMap+0x67a4+x*140;
@@ -36,8 +36,8 @@ a=func_020d303c(x);if(a>999)a=999;
 b=func_020d30a8(x);if(b>999)b=999;
 x=M2C_FIELD(p,s32 *,0);c=p[0x18];if(c>999)c=999;d=M2C_FIELD(p,s32 *,8);if(d>999999)d=999999;e=x;if(x>999999)e=999999;
 color=p[0x1c]?3:0;
-func_0209c048(8,(s16)y,dst,a,0,color);
-func_0209c048(12,(s16)y,dst,b,0,color);
+DrawTilemapNumber(8,(s16)y,dst,a,0,color);
+DrawTilemapNumber(12,(s16)y,dst,b,0,color);
 if(p[0x1c]){
 func_0209c024(16,(s16)y,dst,func_020a8bc0(),0,color);
 func_0209c024(23,(s16)y,dst,func_020a8bc0(),0,color);
@@ -45,13 +45,13 @@ func_0209c024(30,(s16)y,dst,func_020a8bc0(),0,color);
 }else{
 map=*gCurrentMap;
 if((!map[0x5156] && map[0x5158]!=2) || p[0x26]==map[0x67ca+M2C_FIELD(map,u16 *,0x52a4)*140]){
-func_0209c048(16,(s16)y,dst,c,0,color);
-func_0209c048(23,(s16)y,dst,d,0,color);
-func_0209c048(30,(s16)y,dst,e,0,color);
+DrawTilemapNumber(16,(s16)y,dst,c,0,color);
+DrawTilemapNumber(23,(s16)y,dst,d,0,color);
+DrawTilemapNumber(30,(s16)y,dst,e,0,color);
 }else{
 if(gMapConfig[2]){
-func_0209c048(16,(s16)y,dst,c,0,color);
-func_0209c048(23,(s16)y,dst,d,0,color);
+DrawTilemapNumber(16,(s16)y,dst,c,0,color);
+DrawTilemapNumber(23,(s16)y,dst,d,0,color);
 }else{
 func_0209c024(16,(s16)y,dst,func_020a8bcc(),0,color);
 func_0209c024(23,(s16)y,dst,func_020a8bcc(),0,color);
@@ -63,7 +63,7 @@ y+=3;
 map=*gCurrentMap;
 if((!map[0x5156] && map[0x5158]!=2)||gMapConfig[2]){
 a=map[0x67bc];if(a>999)a=999;
-func_0209c048(16,17,dst,a,0,0);
+DrawTilemapNumber(16,17,dst,a,0,0);
 }else func_0209c024(16,17,dst,func_020a8bcc(),0,0);
 gCur3DSpriteEngine=old;
 }

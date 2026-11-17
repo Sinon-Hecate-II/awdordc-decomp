@@ -14,30 +14,36 @@ static inline s32 MaxU8(u8 a, u8 b, u8 c) {
     return m;
 }
 
-void func_ov005_0221bb70(M2C_UNK arg0) {
+/* Show the winning CO's victory quote: the message sprite is created with one of
+ * the CO's quote texts and spoken in that character's voice group.  Without a win
+ * or without a CO in the current slot there is nothing to say, so the screen
+ * object is ended instead. */
+void StartCoVictoryQuote(M2C_UNK screen) {
     M2C_UNK func_01ffa730(M2C_UNK);
     s32 func_02097e84();
     void *func_0209bccc(s32, s32, s32, s32, s32, s32);
     s32 DidPlayerWin();
-    M2C_UNK func_ov005_02218e54();
-    s32 func_ov005_02218f50();
-    extern M2C_UNK data_0215c334;
-    extern M2C_UNK data_0215c340;
-    s32 enabled;
-    void *object;
-    if (DidPlayerWin() == 0) enabled = 0;
-    else if (M2C_FIELD(&data_0215c340, u16 *, M2C_FIELD(&data_0215c334, u8 *, 4) * 12) == 0) enabled = 0;
-    else enabled = 1;
-    if (enabled == 0) {
-        func_01ffa730(arg0);
+    M2C_UNK GetCurrentCoFaceId();
+    s32 GetCoQuoteTextId();
+    extern M2C_UNK gCoState;
+    extern M2C_UNK gCoPlayerSlots;
+    s32 hasCo;
+    void *sprite;
+    if (DidPlayerWin() == 0) hasCo = 0;
+    else if (M2C_FIELD(&gCoPlayerSlots, u16 *, M2C_FIELD(&gCoState, u8 *, 4) * 12) == 0) hasCo = 0;
+    else hasCo = 1;
+    if (hasCo == 0) {
+        func_01ffa730(screen);
         return;
     }
-    object = func_0209bccc(2, 0x14, 0, func_ov005_02218f50(), 0, 1);
-    M2C_FIELD(object, u16 *, 0x46) = 12;
-    M2C_FIELD(object, u8 *, 0x55) = 2;
-    func_ov005_02218e54();
-    M2C_FIELD(object, s32 *, 0x60) = func_02097e84();
-    M2C_FIELD(object, u8 *, 0x5C) |= 4;
+    sprite = func_0209bccc(2, 0x14, 0, GetCoQuoteTextId(), 0, 1);
+    M2C_FIELD(sprite, u16 *, 0x46) = 12;
+    M2C_FIELD(sprite, u8 *, 0x55) = 2;
+    /* Leaves the CO's face id in r0 for func_02097e84, which maps a character to
+       the voice/effect group the message is spoken with. */
+    GetCurrentCoFaceId();
+    M2C_FIELD(sprite, s32 *, 0x60) = func_02097e84();
+    M2C_FIELD(sprite, u8 *, 0x5C) |= 4;
 }
 
 M2C_UNK func_ov005_0221bc28(void) {
@@ -162,13 +168,13 @@ int func_ov005_0221c150(void *arg0) {
 s32 DidPlayerWin(void);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
 void AddSprite(u16,u8,u16,void *,s32);
-extern M2C_UNK data_0215c334,data_0215c340,gSpriteAnimConfig,data_02101f4c,data_02101f1c;
+extern M2C_UNK gCoState,gCoPlayerSlots,gSpriteAnimConfig,data_02101f4c,data_02101f1c;
 extern void *gCur3DSpriteEngine;
 extern void **gCurrentMap;
 s32 enabled,i,y,id,offset,x,x2,k;
 u8 *p;
 if(!DidPlayerWin())enabled=0;
-else if(M2C_FIELD(&data_0215c340,u16 *,M2C_FIELD(&data_0215c334,u8 *,4)*12)==0)enabled=0;
+else if(M2C_FIELD(&gCoPlayerSlots,u16 *,M2C_FIELD(&gCoState,u8 *,4)*12)==0)enabled=0;
 else enabled=1;
 if(!enabled) return;
 x=M2C_FIELD(arg0,s16 *,0x38)&511;
@@ -232,8 +238,8 @@ void func_ov005_0221c9cc(void) {
 }
 
 void func_ov005_0221c9d8(void) {
-    void func_ov005_0221bb70();
-    func_ov005_0221bb70();
+    void StartCoVictoryQuote();
+    StartCoVictoryQuote();
 }
 
 void func_ov005_0221c9e4(M2C_UNK arg0) {

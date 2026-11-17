@@ -201,7 +201,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK func_0208ca2c(s32, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020994e0(M2C_UNK);
     M2C_UNK func_0209c024(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
-    M2C_UNK func_0209c048(M2C_UNK, M2C_UNK, s32, s16, s32, s32);
+    M2C_UNK DrawTilemapNumber(M2C_UNK, M2C_UNK, s32, s16, s32, s32);
     s32 func_020a8b3c(u8);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK CreateMenuUnitSprite(void *);
@@ -275,7 +275,7 @@ void func_ov000_02170110(void *arg0) {
     CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
     func_0208ca2c(0x6B80, 0xB, GetUiColor(0xC), 2);
     func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), func_020a8b3c(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
-    func_0209c048(0x1A, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), M2C_FIELD(arg0, s16 *, 0x3C), 0, 0);
+    DrawTilemapNumber(0x1A, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), M2C_FIELD(arg0, s16 *, 0x3C), 0, 0);
     ScrollListDrawRows(M2C_FIELD(arg0, s16 *, 0x38));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);

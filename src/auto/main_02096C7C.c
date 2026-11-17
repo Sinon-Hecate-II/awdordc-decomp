@@ -4,7 +4,7 @@
 
 void func_02096c7c(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_020c9b70();
-    M2C_UNK func_020c9ebc(s32, M2C_UNK);
+    M2C_UNK MarkPlayerDefeated(s32, M2C_UNK);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
@@ -22,7 +22,7 @@ void func_02096c7c(s32 arg0, M2C_UNK arg1) {
             temp_r2 = *gCurrentMap;
             temp_r3 = var_r7 + temp_r2;
             M2C_FIELD(temp_r3, u16 *, 0x67C6) = (u16) (M2C_FIELD(temp_r3, u16 *, 0x67C6) + M2C_FIELD((temp_r2 + var_r6), u8 *, 0x67D5));
-            func_020c9ebc(var_r5, arg1);
+            MarkPlayerDefeated(var_r5, arg1);
         }
         var_r5 += 1;
         var_r6 += 0x8C;

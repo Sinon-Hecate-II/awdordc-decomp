@@ -105,11 +105,11 @@ CopyToObjPaletteShadow(GetTerrainPalette(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FI
 gCur3DSpriteEngine=g3DSpriteEngineSub; func_02099450(0,0,0);
 v=GetCurrentMapName(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
 if(func_020cd6d4()) {
-func_0209c048(6,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
+DrawTilemapNumber(6,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
 func_0209c024(8,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
 } else func_0209c024(5,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
-if(!GetLanguage()) func_0209c048(23,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
-else func_0209c048((s16)(func_0207cb88(t)+24),1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
+if(!GetLanguage()) DrawTilemapNumber(23,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
+else DrawTilemapNumber((s16)(func_0207cb88(t)+24),1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 gCur3DSpriteEngine=saved2; v=M2C_FIELD(p,s32 *,0x54);
 OpenNarcArchive(GetLocalizedFileName(data_ov005_02220f1c));

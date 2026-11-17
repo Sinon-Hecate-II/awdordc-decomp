@@ -1,6 +1,32 @@
 /* 12 functions from 0x01FFADA0 to 0x01FFBD90 (itcm), found by ds-decomp. */
 #include "common.h"
 
+static inline s16 SearchMovementFlags(s8 *state) { return M2C_FIELD(state,s16*,0x22); }
+static inline u8 *SearchPlayerRecords(void *map) { return (u8*)map+0x67a4; }
+static inline s32 RejectSearchCell(s8 *state,u8 *map,s32 x,s32 y) {
+s32 index;u32 cell;s32 owner;u8 *unit;u16 unitFlags;
+if(M2C_FIELD(state,s16*,0x22)&13){
+index=x+M2C_FIELD(map+y*2,u16*,0x3758);cell=map[index];
+if(cell){
+if(M2C_FIELD(state,s16*,0x22)&2){if(!((u8)(M2C_FIELD(map+((u32)index>>3),u8*,0x5160)&(1<<(index&7))))){
+if(!((u32)(M2C_FIELD(map+cell*14,u8*,0x59af)<<25)>>31))return 0;
+}}
+owner=((s32)cell>>6)+1;
+if((u8)state[0x26]==M2C_FIELD(SearchPlayerRecords(map)+owner*140,u8*,0x26))return 0;
+unit=map+0x59a4+cell*14;unitFlags=M2C_FIELD(unit,u16*,4);
+if(unitFlags&32){
+if((unitFlags&128)&&(M2C_FIELD(SearchPlayerRecords(map)+M2C_FIELD(map,u16*,0x52b6)*140,u8*,0x1f)&2))goto unit_checks;
+if(!(unitFlags&64))return 0;
+if(!(M2C_FIELD(SearchPlayerRecords(map)+M2C_FIELD(map,u16*,0x52b6)*140,u8*,0x1f)&1))return 0;
+}
+unit_checks:
+if((M2C_FIELD(state,s16*,0x22)&1)||M2C_FIELD(map,u16*,0x52a4)!=owner)return 1;
+if((M2C_FIELD(state,s16*,0x22)&4)&&(unitFlags&1))return 1;
+if((M2C_FIELD(state,s16*,0x22)&8)&&((u32)(unit[10]<<24)>>31))return 1;
+}}
+
+return 0;
+}
 typedef struct UnkB454Bits { u32 value : 8; u32 rest : 24; } UnkB454Bits;
 
 /* Flood-fill the tiles a unit of `kind` at (x,y) can reach within the cost
@@ -104,135 +130,46 @@ void FloodFillUnitRange(s32 x, s32 y, s32 kind, s32 value, s32 moveRange) {
     }
 }
 
-void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
-    extern void *gMoveSearchCurrent;
-    extern s8 *gMoveSearchState;
-    extern void **gCurrentMap;
-    extern u8 data_ov000_021b55c0[];
-    extern s32 gMoveSearchCount;
-    extern void *gMoveSearchWrite;
-    s32 IsPropertyOwnedByTeam(s32, s32, s32);
-
-    u8 *q = (u8 *)gMoveSearchCurrent;
-    s8 *terrain = gMoveSearchState;
-    u8 q0 = q[0];
-    u8 q1 = q[1];
-    u8 x = (u8)(arg1 + q0);
-    u8 y = (u8)(arg2 + q1);
-    void *m;
-    s16 field22;
-    u16 row;
-    void **tablePtr;
-    s8 *signedTable;
-    s8 costVal;
-    u8 terrainType;
-    u8 terrainAttr;
-    s16 score;
-    u16 mapField;
-    u8 *unitRec;
-    u32 idx;
-    u8 cellType;
-    s32 group;
-    u8 occ, bit, chk, rec26, terrain26, val;
-    u16 flags, mf, mf2, mfB, flagsx;
-
-    if (x >= (u8)terrain[0x24]) return;
-    if (y >= (u8)terrain[0x25]) return;
-
-    m = *gCurrentMap;
-    field22 = *(s16 *)(terrain + 0x22);
-    row = *(u16 *)((u8 *)m + y * 2 + 0x3758);
-    tablePtr = (void **)((u8 *)m + q1 * 4 + 0x52e8);
-    signedTable = (s8 *)tablePtr[0];
-    costVal = signedTable[q0];
-    terrainType = ((u8 *)m)[x + row + 0x1000 + 0x420] & 0x1f;
-    terrainAttr = (u8)terrain[terrainType];
-    score = (s16)(costVal + terrainAttr);
-
-    if (field22 & 0x10) {
-        if (data_ov000_021b55c0[terrainType] != 0) {
-            mapField = *(u16 *)((u8 *)m + 0x52b6);
-            if (IsPropertyOwnedByTeam(mapField, x, y) == 0) {
-                score = 0x00ff;
-            }
-            m = *gCurrentMap;
-            tablePtr = (void **)((u8 *)m + y * 4 + 0x52e8);
-            if (score >= (s16)((u8 *)tablePtr[0])[x]) {
-                return;
-            }
-        }
-    }
-
-    if (field22 & 0x0d) {
-        idx = x + row;
-        cellType = ((u8 *)m)[idx];
-        if (cellType != 0) {
-            if (field22 & 0x02) {
-                occ = ((u8 *)m)[(idx >> 3) + 0x5160];
-                bit = (u8)(occ >> (idx & 7)) & 1;
-                if (!bit) {
-                    chk = ((u8 *)m)[cellType * 14 + 0x59af];
-                    if (!(chk & 0x40)) {
-                        goto enqueue;
-                    }
-                }
-            }
-            group = (s32)cellType >> 6;
-            terrain26 = (u8)terrain[0x26];
-            rec26 = ((u8 *)m)[0x67a4 + (group + 1) * 140 + 0x26];
-            if (terrain26 == rec26) {
-                goto enqueue;
-            }
-            unitRec = (u8 *)m + 0x59a4 + cellType * 14;
-            flags = *(u16 *)(unitRec + 0x04);
-            if (flags & 0x20) {
-                if (flags & 0x80) {
-                    mf = *(u16 *)((u8 *)m + 0x52b6);
-                    val = ((u8 *)m)[0x67a4 + mf * 140 + 0x1f];
-                    if (!(val & 0x02)) {
-                        if (!(flags & 0x40)) goto enqueue;
-                        {
-                            u8 val2 = ((u8 *)m)[0x67a4 + mf * 140 + 0x1f];
-                            if (!(val2 & 0x01)) goto enqueue;
-                        }
-                    }
-                } else {
-                    if (!(flags & 0x40)) goto enqueue;
-                    mf2 = *(u16 *)((u8 *)m + 0x52b6);
-                    val = ((u8 *)m)[0x67a4 + mf2 * 140 + 0x1f];
-                    if (!(val & 0x01)) goto enqueue;
-                }
-            }
-            if (!(field22 & 0x01)) {
-                mfB = *(u16 *)((u8 *)m + 0x52a4);
-                if (mfB != (u16)(group + 1)) {
-                    return;
-                }
-            }
-            if (field22 & 0x04) {
-                flagsx = *(u16 *)(unitRec + 0x04);
-                if (flagsx & 0x01) return;
-            }
-            if (field22 & 0x08) {
-                if ((unitRec[0x0a] >> 7) & 1) return;
-            }
-        }
-    }
-
+void func_01ffb114(s32 arg0,s32 arg1,s32 arg2) {
+extern void *gMoveSearchCurrent,*gMoveSearchWrite;extern s8 *gMoveSearchState;extern void **gCurrentMap;extern s8 data_ov000_021b55c0[];extern s32 gMoveSearchCount;
+s32 IsPropertyOwnedByTeam(s32,s32,s32);
+s16 cost;
+u32 qx=((MoveSearchNode*)gMoveSearchCurrent)->x,qy=((MoveSearchNode*)gMoveSearchCurrent)->y;
+s8 *initState=gMoveSearchState; s8 *state;u8 *map,*unit;s32 index;u32 cell;s32 owner,kind; s32 flags;u16 unitFlags;
+arg1=(u8)(arg1+qx);arg2=(u8)(arg2+qy);
+if((u32)arg1>=(u8)initState[0x24]||(u32)arg2>=(u8)initState[0x25])return;
+map=*gCurrentMap;flags=M2C_FIELD(initState,s16*,0x22);
+kind=M2C_FIELD(map+(arg1+M2C_FIELD(map+arg2*2,u16*,0x3758)),u8*,0x1420)&31;
+cost=(s16)(M2C_FIELD(map+qy*4,s8**,0x52e8)[qx]+(u8)initState[kind]);
+if((flags&16)&&data_ov000_021b55c0[kind] && !IsPropertyOwnedByTeam(M2C_FIELD(map,u16*,0x52b6),arg1,arg2))cost=255;
+map=*gCurrentMap;
+if(cost>=M2C_FIELD(map+arg2*4,u8**,0x52e8)[arg1])return;
+state=gMoveSearchState;
+if(M2C_FIELD(state,s16*,0x22)&13){
+index=arg1+M2C_FIELD(map+arg2*2,u16*,0x3758);cell=map[index];
+if(cell){
+if(M2C_FIELD(state,s16*,0x22)&2){if(!((u8)(M2C_FIELD(map+((u32)index>>3),u8*,0x5160)&(1<<(index&7))))){
+if(!((u32)(M2C_FIELD(map+cell*14,u8*,0x59af)<<25)>>31))goto enqueue;
+}}
+owner=((s32)cell>>6)+1;
+if((u8)state[0x26]==M2C_FIELD(SearchPlayerRecords(map)+owner*140,u8*,0x26))goto enqueue;
+unit=map+0x59a4+cell*14;unitFlags=M2C_FIELD(unit,u16*,4);
+if(unitFlags&32){
+if((unitFlags&128)&&(M2C_FIELD(SearchPlayerRecords(map)+M2C_FIELD(map,u16*,0x52b6)*140,u8*,0x1f)&2))goto unit_checks;
+if(!(unitFlags&64))goto enqueue;
+if(!(M2C_FIELD(SearchPlayerRecords(map)+M2C_FIELD(map,u16*,0x52b6)*140,u8*,0x1f)&1))goto enqueue;
+}
+unit_checks:
+if((M2C_FIELD(state,s16*,0x22)&1)||M2C_FIELD(map,u16*,0x52a4)!=owner)return;
+if((M2C_FIELD(state,s16*,0x22)&4)&&(unitFlags&1))return;
+if((M2C_FIELD(state,s16*,0x22)&8)&&((u32)(unit[10]<<24)>>31))return;
+}}
 enqueue:
-    if (score > *(s16 *)(terrain + 0x20)) return;
-    if (gMoveSearchCount >= 0x15d) return;
-    gMoveSearchCount++;
-    {
-        u8 *cursor = (u8 *)gMoveSearchWrite;
-        cursor[0] = x;
-        cursor[1] = y;
-        cursor[2] = (u8)arg0;
-        cursor[3] = (u8)score;
-        gMoveSearchWrite = cursor + 4;
-        tablePtr = (void **)((u8 *)m + y * 4 + 0x52e8);
-        ((u8 *)tablePtr[0])[x] = (u8)score;
-    }
+if(cost>M2C_FIELD(state,s16*,0x20)||gMoveSearchCount>=349)return;
+gMoveSearchCount++;
+((MoveSearchNode*)gMoveSearchWrite)->x=arg1;((MoveSearchNode*)gMoveSearchWrite)->y=arg2;((MoveSearchNode*)gMoveSearchWrite)->dir=arg0;M2C_FIELD(gMoveSearchWrite,s8*,3)=cost;
+gMoveSearchWrite=(u8*)gMoveSearchWrite+4;
+M2C_FIELD((u8*)*gCurrentMap+arg2*4,u8**,0x52e8)[arg1]=cost;
 }
 
 void FillMapLayer(s8 arg0) {

@@ -231,7 +231,7 @@ void func_ov010_0222a148(void *arg0) {
 
 void func_ov010_0222a15c(void *arg0){s32 func_ov010_022282f8();s32 func_ov010_02228314(s32 *,u32 *);s32 sp4;u32 sp0;void (*fn)(s32,s32,u32,s32);s32 v,b;
 if(func_ov010_022282f8())b=1;else b=0;if(!b)return;v=func_ov010_02228314(&sp4,&sp0);if(IsOnlineSessionFlagSet(6))return;
-switch(sp0){case 0:break;case 1:case 2:case 3:case 4:case 5:case 6:case 7:func_ov010_02228298(6);fn=M2C_FIELD(arg0,void (**)(s32,s32,u32,s32),0x34);if(!fn)return;fn(v,sp4,sp0,M2C_FIELD(arg0,s32 *,0x18));break;default:break;}}
+switch(sp0){case 0:break;case 1:case 2:case 3:case 4:case 5:case 6:case 7:SetOnlineSessionFlag(6);fn=M2C_FIELD(arg0,void (**)(s32,s32,u32,s32),0x34);if(!fn)return;fn(v,sp4,sp0,M2C_FIELD(arg0,s32 *,0x18));break;default:break;}}
 
 void func_ov010_0222a20c(s32 arg0) {
     void *func_01ffa3dc(void *);

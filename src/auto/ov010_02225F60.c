@@ -143,26 +143,30 @@ void func_ov010_02226130(void) {
     func_020459ec();
 }
 
-s32 func_ov010_0222613c(void) {
+/* Submit the NAS player-registration request for the local profile, create the
+ * waiting indicator sprite of sOv010RegisterSpriteClass and mark online step 5.
+ * Returns 1 once the request is under way (or was already submitted), 0 when it
+ * failed; the status codes other than 0 and 3 are recorded as the web error. */
+s32 SubmitWebRegisterRequest(void) {
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    void func_ov010_02226204();
+    void ClearWebRequestError(void);
     u8 *func_020c4acc();
     s32 RegisterWebRequest(M2C_UNK *, u8 *);
     M2C_UNK SetWebRequestError(M2C_UNK);
     M2C_UNK **func_01ffa3dc(M2C_UNK *, s32);
-    void func_ov010_02228298(M2C_UNK);
-    extern M2C_UNK data_ov010_0222c0e8;
-    extern M2C_UNK data_ov010_0222c0c0;
-    extern M2C_UNK data_ov010_0222c054;
-    s32 var_r4;
-    u32 temp_r0;
-    M2C_UNK **temp_r0_2;
+    void SetOnlineSessionFlag(M2C_UNK);
+    extern M2C_UNK sOv010NasRegisterRequest;
+    extern M2C_UNK sOv010RegisterSpriteClass;
+    extern M2C_UNK sOv010RegisterSpriteVtable;
+    s32 success;
+    u32 status;
+    M2C_UNK **slot;
 
-    var_r4 = 1;
+    success = 1;
     if (IsOnlineSessionFlagSet(5) != 0) return 1;
-    func_ov010_02226204();
-    temp_r0 = RegisterWebRequest(&data_ov010_0222c0e8, func_020c4acc() + 4);
-    switch (temp_r0) {
+    ClearWebRequestError();
+    status = RegisterWebRequest(&sOv010NasRegisterRequest, func_020c4acc() + 4);
+    switch (status) {
     case 0:
         break;
     case 1:
@@ -172,25 +176,25 @@ s32 func_ov010_0222613c(void) {
     case 3:
         break;
     case 4:
-        var_r4 = 0;
+        success = 0;
         break;
     case 5:
-        var_r4 = 0;
+        success = 0;
         break;
     case 6:
-        var_r4 = 0;
+        success = 0;
         break;
     }
-    if ((temp_r0 != 0) && (temp_r0 != 3)) {
-        SetWebRequestError(temp_r0);
+    if ((status != 0) && (status != 3)) {
+        SetWebRequestError(status);
     } else {
-        temp_r0_2 = func_01ffa3dc(&data_ov010_0222c0c0, 3);
-        if (temp_r0_2 != NULL) {
-            *temp_r0_2 = &data_ov010_0222c054;
+        slot = func_01ffa3dc(&sOv010RegisterSpriteClass, 3);
+        if (slot != NULL) {
+            *slot = &sOv010RegisterSpriteVtable;
         }
-        func_ov010_02228298(5);
+        SetOnlineSessionFlag(5);
     }
-    return var_r4;
+    return success;
 }
 
 s32 GetWebRequestError(void) {
@@ -198,7 +202,7 @@ s32 GetWebRequestError(void) {
     return gWebRequestError;
 }
 
-void func_ov010_02226204(void) {
+void ClearWebRequestError(void) {
     M2C_UNK SetWebRequestError(M2C_UNK);
     SetWebRequestError(0);
 }
@@ -511,7 +515,7 @@ s32 func_ov010_02226888(void) {
     s32 func_02045620();
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    extern M2C_UNK data_ov010_0222c0c0;
+    extern M2C_UNK sOv010RegisterSpriteClass;
     s32 temp_r0;
     s32 var_r5;
 
@@ -524,7 +528,7 @@ s32 func_ov010_02226888(void) {
     } else {
         var_r5 = 0;
     }
-    DeleteSpriteObjectsOfClass(&data_ov010_0222c0c0);
+    DeleteSpriteObjectsOfClass(&sOv010RegisterSpriteClass);
     if (temp_r0 != 0) {
         SetWebRequestError(temp_r0);
     }

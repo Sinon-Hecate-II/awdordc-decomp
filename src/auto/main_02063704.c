@@ -52,7 +52,7 @@ apply:
 #pragma scheduling reset
 s32 func_020637fc(void *arg0) {
     s32 func_02049810(s32, void *, s32, s32);
-    M2C_UNK func_02061efc(void *);
+    M2C_UNK SBServerListCheckQueryError(void *);
     s32 SBServerListParseKeyList(void *, u8 *, s32);
     s32 GpiHandleRecordList(void *, u8 *, s32);
     s32 GpiHandleServerInfoResponse(void *, u8 *, s32);
@@ -112,7 +112,7 @@ s32 func_020637fc(void *arg0) {
         }
     }
     if (result != 0) {
-        func_02061efc(arg0);
+        SBServerListCheckQueryError(arg0);
     }
     return result;
 }
@@ -121,7 +121,7 @@ s32 func_020639c0(void *arg0) {
     s32 func_02049534(s32);
     s32 ghiRecv(s32, s32, s32, M2C_UNK);
     M2C_UNK func_0206006c(void *, s32, s32);
-    M2C_UNK func_02061efc(void *);
+    M2C_UNK SBServerListCheckQueryError(void *);
     s32 func_02062e30(void *);
     s32 func_020637fc(void *);
     s32 temp_r0;
@@ -134,7 +134,7 @@ s32 func_020639c0(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x80);
     temp_r0 = ghiRecv(M2C_FIELD(arg0, s32 *, 0x4B0), M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, 0x1000 - temp_r5, 0);
     if ((u32) (temp_r0 + 1) <= 1U) {
-        func_02061efc(arg0);
+        SBServerListCheckQueryError(arg0);
         return 3;
     }
     var_r4 = 0;

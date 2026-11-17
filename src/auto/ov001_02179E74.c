@@ -118,7 +118,7 @@ void func_ov001_0217a0d4(void) {
 
 #pragma opt_common_subs off
 void func_ov001_0217a17c(void) {
-void *func_ov001_0218a5f0(M2C_UNK, M2C_UNK);
+void *Ov001_CreateSpriteFromLayout(M2C_UNK, M2C_UNK);
 void Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, M2C_UNK);
 extern M2C_UNK gMapSelectState;
 extern u8 data_ov001_0218f814[];
@@ -129,8 +129,8 @@ if (cnt > 5) cnt = 5;
 if (cnt > 0) {
     i = 0;
     do {
-        ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4 + i] = func_ov001_0218a5f0(0, 0x2e);
-        ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9 + i] = func_ov001_0218a5f0(0, 0x18);
+        ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4 + i] = Ov001_CreateSpriteFromLayout(0, 0x2e);
+        ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9 + i] = Ov001_CreateSpriteFromLayout(0, 0x18);
         i++;
     } while (i < cnt);
 }

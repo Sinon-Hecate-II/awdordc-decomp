@@ -9,7 +9,7 @@ static inline s32 MaxU8(u8 a, u8 b, u8 c) {
 }
 
 M2C_UNK func_ov005_0221abf8(void *arg0) {
-    extern M2C_UNK data_0215c334;
+    extern M2C_UNK gCoState;
     extern u16 *gKeyState;
     extern M2C_UNK gTouchState;
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc, data_ov005_0222120c;
@@ -22,12 +22,12 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     s32 r5 = 0;
     s32 r6 = 0;
-    if (M2C_FIELD(arg0, s32 *, 0x3c) < M2C_FIELD(&data_0215c334, u8 *, 0)) {
+    if (M2C_FIELD(arg0, s32 *, 0x3c) < M2C_FIELD(&gCoState, u8 *, 0)) {
         s32 old0 = M2C_FIELD(arg0, s32 *, 0x3c);
         M2C_FIELD(arg0, s32 *, 0x3c) = old0 + 1;
         if (((*gKeyState) & 1) == 0) { u8 byte0 = M2C_FIELD(gTouchState, u8 *, 0x14); (void)byte0; }
         if (old0 < 0x64 && M2C_FIELD(arg0, s32 *, 0x3c) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x2c0, 0x20);
-        if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&data_0215c334, u8 *, 0)) {
+        if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&gCoState, u8 *, 0)) {
             void *o0 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
             if (o0 != NULL) {
                 M2C_FIELD(o0, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
@@ -42,11 +42,11 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
         } else r6 = 1;
     } else r6 = 1;
 
-    if (M2C_FIELD(arg0, s32 *, 0x40) < M2C_FIELD(&data_0215c334, u8 *, 1)) {
+    if (M2C_FIELD(arg0, s32 *, 0x40) < M2C_FIELD(&gCoState, u8 *, 1)) {
         s32 old1 = M2C_FIELD(arg0, s32 *, 0x40);
         M2C_FIELD(arg0, s32 *, 0x40) = old1 + 1;
         if (old1 < 0x64 && M2C_FIELD(arg0, s32 *, 0x40) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x2e0, 0x20);
-        if (M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&data_0215c334, u8 *, 1)) {
+        if (M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&gCoState, u8 *, 1)) {
             void *o1 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
             if (o1 != NULL) {
                 M2C_FIELD(o1, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
@@ -61,11 +61,11 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
         } else r6 = 1;
     } else r6 = 1;
 
-    if (M2C_FIELD(arg0, s32 *, 0x44) < M2C_FIELD(&data_0215c334, u8 *, 2)) {
+    if (M2C_FIELD(arg0, s32 *, 0x44) < M2C_FIELD(&gCoState, u8 *, 2)) {
         s32 old2 = M2C_FIELD(arg0, s32 *, 0x44);
         M2C_FIELD(arg0, s32 *, 0x44) = old2 + 1;
         if (old2 < 0x64 && M2C_FIELD(arg0, s32 *, 0x44) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x300, 0x20);
-        if (M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&data_0215c334, u8 *, 2)) {
+        if (M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&gCoState, u8 *, 2)) {
             void *o2 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
             if (o2 != NULL) {
                 M2C_FIELD(o2, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
@@ -84,9 +84,9 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     if (r6 != 0) {
         if (((M2C_UNK)gFrameCounter & 3) == 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221224);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&data_0215c334, u8 *, 0) &&
-        M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&data_0215c334, u8 *, 1) &&
-        M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&data_0215c334, u8 *, 2)) {
+    if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&gCoState, u8 *, 0) &&
+        M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&gCoState, u8 *, 1) &&
+        M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&gCoState, u8 *, 2)) {
         void *o = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
         if (o != NULL) {
             M2C_FIELD(o, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
@@ -355,8 +355,8 @@ void func_ov005_0221b854(void *arg0) {
     M2C_UNK func_01ffa730(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 DidPlayerWin();
-    extern M2C_UNK data_0215c334;
-    extern M2C_UNK data_0215c340;
+    extern M2C_UNK gCoState;
+    extern M2C_UNK gCoPlayerSlots;
     extern u16 **data_027e01d8;
     u16 *sp3C;
     u16 *sp38;
@@ -394,7 +394,7 @@ void func_ov005_0221b854(void *arg0) {
 
     if (DidPlayerWin() == 0) {
         var_r0 = 0;
-    } else if (*(&data_0215c340 + (M2C_FIELD(&data_0215c334, u8 *, 4) * 0xC)) == 0) {
+    } else if (*(&gCoPlayerSlots + (M2C_FIELD(&gCoState, u8 *, 4) * 0xC)) == 0) {
         var_r0 = 0;
     } else {
         var_r0 = 1;

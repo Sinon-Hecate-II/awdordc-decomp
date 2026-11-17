@@ -124,7 +124,7 @@ s32 func_ov000_021a7f1c(s32 arg0) {
 s32 FindAiTargetOfType(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
 s32 func_ov000_021a484c(s32,s32);s32 func_ov000_021a67f0(u8);s32 func_ov000_021a4980(s8,s32);
 void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
-s32 func_ov000_021a49e0(s32);s32 func_ov000_021a881c(s32,s32);
+s32 CanReservePurchaseFunds(s32);s32 func_ov000_021a881c(s32,s32);
 extern u8 gUnitKindInfo[],gUnitKindStats[],gUnitKindTargetClass[],gAiTargetCandidates[],gAiCommand[];
 extern u32 gUnitKindScores[];extern void **gCurrentMap;extern u8 *gAiState;
 s32 mode,flag,low,best,i,index,other,cost,limit;u8 chosen;u32 score,v; s32 shortfall;u8 *attr,*entry,*map,*state;u16 price,player;
@@ -166,7 +166,7 @@ func_ov000_021a0250();
 cost=GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+0x52a4),best)*10;
 map=*gCurrentMap;price=(u16)cost;
 if(((AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4))->money<price){
-if(arg0==1 && func_ov000_021a49e0(price)==1){
+if(arg0==1 && CanReservePurchaseFunds(price)==1){
 map=*gCurrentMap;state=gAiState;
 *(s32 *)(state+20)=price-(((AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4))->income-*(s32 *)(state+16));
 }
@@ -178,7 +178,7 @@ if(other!=-1){
 if(!*(s32 *)(gAiState+20)){
 map=*gCurrentMap;player=*(u16 *)(map+0x52a4);
 if(GetUnitBuildCost(player,21)*10>((AiPlayer *)(map+0x67a4)+player)->money){
-if(arg0==1 && func_ov000_021a49e0(GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+0x52a4),21)*10)==1){
+if(arg0==1 && CanReservePurchaseFunds(GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+0x52a4),21)*10)==1){
 map=*gCurrentMap;state=gAiState;player=*(u16 *)(map+0x52a4);
 *(s32 *)(state+20)=GetUnitBuildCost(player,21)*10-(((AiPlayer *)(map+0x67a4)+player)->income-*(s32 *)(state+16));goto retry;
 }

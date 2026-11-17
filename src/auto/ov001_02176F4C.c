@@ -94,34 +94,38 @@ void func_ov001_02177068(void) {
 }
 
 void func_ov001_02177088(void) {
-    extern u8 data_ov001_02193d64;
-    extern M2C_UNK func_ov001_021770ec;
+    extern u8 gOv001WfcSettingsReset;
+    extern M2C_UNK Ov001_CloseWfcSettingsScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
-    if (data_ov001_02193d64 == 0) {
+    if (gOv001WfcSettingsReset == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_021770ec);
+    Ov001_SetStepCallback(&Ov001_CloseWfcSettingsScreen);
 }
 
-void func_ov001_021770ec(void) {
+/* Close the Wi-Fi settings screen once its fades finish and its icon row is
+ * idle: when the player confirmed resetting the WFC settings it goes on to the
+ * reset screen, otherwise it returns to the Wi-Fi option menu (releasing its
+ * background and panel too). */
+void Ov001_CloseWfcSettingsScreen(void) {
     s32 Ov001_IsIconRowIdle();
     extern M2C_UNK Ov001_InitOptionMenu;
     void func_ov001_02177214(void);
-    extern u8 data_ov001_02193d64;
+    extern u8 gOv001WfcSettingsReset;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (data_ov001_02193d64 == 0 && Ov001_IsFadeActive(1) != 0) return;
+    if (gOv001WfcSettingsReset == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193d64 == 0) {
+    if (gOv001WfcSettingsReset == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193d64 == 0) {
+    if (gOv001WfcSettingsReset == 0) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(&Ov001_InitOptionMenu);
         return;
@@ -132,13 +136,13 @@ void func_ov001_021770ec(void) {
 
 void func_ov001_021771a4(void) {
     void func_ov001_021771f4(void);
-    extern u8 data_ov001_02193d64;
+    extern u8 gOv001WfcSettingsReset;
     s32 temp_r0;
     temp_r0 = func_ov001_02186648();
     switch (temp_r0) {
     case 1:
         Ov001_PlaySound(0xE);
-        data_ov001_02193d64 = 1;
+        gOv001WfcSettingsReset = 1;
         break;
     case 0:
         Ov001_PlaySound(7);
@@ -421,7 +425,7 @@ void Ov001_InitOptionMenu(void) {
     extern M2C_UNK gOv001OptionFrameLeft, gOv001OptionFrameRight, gOv001OptionFrameTop, gOv001OptionFrameBottom;
     void Ov001_LoadOptionMenuBg(void);
     void Ov001_FadeInOptionMenu(void);
-    void *func_ov001_0218a5f0(s32, s32);
+    void *Ov001_CreateSpriteFromLayout(s32, s32);
     M2C_UNK func_ov001_02172250(s32);
     M2C_UNK Ov001_LoadMenuResource(s32);
     M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
@@ -433,7 +437,7 @@ void Ov001_InitOptionMenu(void) {
     func_ov001_02172250(16);
     Ov001_LoadMenuResource(3);
     Ov001_ShowMessagePanel(0x39, -1, 0);
-    p = func_ov001_0218a5f0(0, 0x5b);
+    p = Ov001_CreateSpriteFromLayout(0, 0x5b);
     ((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite = p;
     M2C_FIELD(p, u32 *, 0) = (M2C_FIELD(p, u32 *, 0) & 0xfe00ff00) | 0x84 | 0xe00000;
     p = ((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite;

@@ -156,19 +156,23 @@ u8 CanDoAiAction01(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 func_ov000_021885c8(void) {
+/* Returns 1 when the HQ cell of an enemy player (active, has an HQ, other team
+ * than the current player) lies in the movement range marked in the map grid,
+ * i.e. the AI unit whose range was just flood-filled could reach an enemy HQ.
+ * This is the objective check of AI state 2. */
+s32 AiRangeReachesEnemyHq(void) {
     s32 IsPlayerActive(s32);
     s32 PlayerHasHq(s32);
     s32 IsSameTeam(u16, s32);
     extern void **gCurrentMap;
-    s32 i, offset;
+    s32 player, offset;
     void *base, *entry;
     if (func_ov000_02187e50() == 1) return 0;
-    for (i = 1, offset = 0x8C; i < 5; i++, offset += 0x8C) {
-        if (IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) && PlayerHasHq(i)) {
+    for (player = 1, offset = MAP_PLAYER_STRIDE; player < 5; player++, offset += MAP_PLAYER_STRIDE) {
+        if (IsPlayerActive(player) && !IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) && PlayerHasHq(player)) {
             base = *gCurrentMap;
             entry = (u8 *)base + offset;
-            if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, 0x67D0) << 25) >> 23), s8 **, 0x52E8), s8 *, M2C_FIELD(entry, u8 *, 0x67CF) & 0x7F) > 0) return 1;
+            if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, MAP_PLAYER_STATES + PLAYER_REC_HQ_Y) << 25) >> 23), s8 **, MAP_GRID), s8 *, M2C_FIELD(entry, u8 *, MAP_PLAYER_STATES + PLAYER_REC_HQ_X) & 0x7F) > 0) return 1;
         }
     }
     return 0;
@@ -179,18 +183,18 @@ s32 func_ov000_02188680(void) {
 }
 
 void func_ov000_02188688(void) {
-    s32 func_ov000_021885c8(void);
+    s32 AiRangeReachesEnemyHq(void);
     extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = func_ov000_021885c8;
+    data_ov000_021df64c = AiRangeReachesEnemyHq;
     data_ov000_021df648 = func_ov000_02188680;
     func_ov000_02187f7c();
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
 void CanDoAiAction2(s32 arg0, s32 arg1) {
-    s32 func_ov000_021885c8(void);
+    s32 AiRangeReachesEnemyHq(void);
     s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
@@ -201,7 +205,7 @@ void CanDoAiAction2(s32 arg0, s32 arg1) {
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
 
-    func_ov000_021885c8();
+    AiRangeReachesEnemyHq();
 }
 
 u8 func_ov000_02188744(void) {

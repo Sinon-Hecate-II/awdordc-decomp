@@ -290,7 +290,7 @@ void func_020b4b34(void) {
     func_0208f8d8();
 }
 
-void func_020b4b40(void *arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);func_020bee8c(v);if(!func_020bf084(v)){func_020bf0dc(0,v);func_020e4870();}func_020b4a44(func_020be120());func_020be438(v,func_020be120(),0x125c);}
+void func_020b4b40(void *arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!func_020bf084(v)){func_020bf0dc(0,v);func_020e4870();}func_020b4a44(func_020be120());func_020be438(v,func_020be120(),0x125c);}
 
 void func_020b4b98(void *arg0) {
     if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {

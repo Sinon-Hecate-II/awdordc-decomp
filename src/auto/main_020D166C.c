@@ -136,7 +136,7 @@ u8 func_020d1a90(void) {
  return n<M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
 }
 
-s32 func_020d1afc(void) {
+s32 HasActiveHumanPlayer(void) {
     s32 IsPlayerActive(s32);
     s32 var_r5;
     s32 var_r6;
@@ -169,14 +169,29 @@ loop_1:
     goto loop_1;
 }
 
-void func_020d1b80(void){
-void func_020bf85c(void);void AddRecordValue(s32,s32);extern void **gCurrentMap;
-s32 active=func_020d1afc();s32 one=1;u8 *p;
-do {
-M2C_FIELD(*gCurrentMap,u16 *,0x52a4)++;
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==5){func_020bf85c();M2C_FIELD(*gCurrentMap,u16 *,0x52a4)=one;if(active)AddRecordValue(one,one);}
-}while(!IsPlayerActive(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
-p=*gCurrentMap;M2C_FIELD(p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,s32 *,0x682c)=0;
+/* End of turn: move the current-player marker on to the next player still in
+ * the battle, rolling the map turn over when it wraps past player 4 (counting
+ * the turn in the records when a human is playing), then reset the new current
+ * player's turn timer. */
+void AdvancePlayerTurn(void) {
+    void AdvanceMapTurn(void);
+    void AddRecordValue(s32, s32);
+    extern void **gCurrentMap;
+    s32 humanTurn = HasActiveHumanPlayer();
+    s32 player1 = 1;
+    u8 *p;
+
+    do {
+        M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)++;
+        if (M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) == 5) {
+            AdvanceMapTurn();
+            M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) = player1;
+            if (humanTurn) AddRecordValue(player1, player1);
+        }
+    } while (!IsPlayerActive(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)));
+
+    p = *gCurrentMap;
+    M2C_FIELD(p + M2C_FIELD(p, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_TURN_TIME) = 0;
 }
 
 void func_020d1c38(void) {

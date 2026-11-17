@@ -549,40 +549,44 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
     return 0;
 }
 
-s32 gpiAddOperation(void **arg0, s32 arg1, s32 arg2, void **arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Creates a gpi operation of `type` working on `data`, prepends it to the
+ * connection's pending operation list and returns it through `operationOut`.
+ * A type-0 operation gets id 1; every other type gets the next connection-wide
+ * id.  Returns 0, or 1 when the operation could not be allocated. */
+s32 gpiAddOperation(void **connection, s32 type, s32 data, void **operationOut, s32 blocking, s32 callback, s32 callbackParam) {
     void *gpiMalloc(M2C_UNK);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     extern M2C_UNK data_020fea38;
-    s32 temp_r2;
-    void *temp_r0;
-    void *temp_r4;
+    s32 id;
+    GPIOperation *op;
+    void *conn;
 
-    temp_r4 = *arg0;
-    temp_r0 = gpiMalloc(0x24);
-    if (temp_r0 == NULL) {
-        gpiSetErrorString(arg0, &data_020fea38);
+    conn = *connection;
+    op = gpiMalloc(0x24);
+    if (op == NULL) {
+        gpiSetErrorString(connection, &data_020fea38);
         return 1;
     }
-    M2C_FIELD(temp_r0, s32 *, 0) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 4) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 8) = arg4;
-    M2C_FIELD(temp_r0, s32 *, 0x14) = 0;
-    if (arg1 == 0) {
-        M2C_FIELD(temp_r0, s32 *, 0x18) = 1;
+    op->type = type;
+    op->data = (void *)data;
+    op->blocking = blocking;
+    op->state = 0;
+    if (type == 0) {
+        op->id = 1;
     } else {
-        temp_r2 = M2C_FIELD(temp_r4, s32 *, 0x20C);
-        M2C_FIELD(temp_r4, s32 *, 0x20C) = (s32) (temp_r2 + 1);
-        M2C_FIELD(temp_r0, s32 *, 0x18) = temp_r2;
-        if ((s32) M2C_FIELD(temp_r4, s32 *, 0x20C) < 2) {
-            M2C_FIELD(temp_r4, s32 *, 0x20C) = 2;
+        id = M2C_FIELD(conn, s32 *, GPI_CONN_NEXT_OPERATION_ID);
+        M2C_FIELD(conn, s32 *, GPI_CONN_NEXT_OPERATION_ID) = (s32) (id + 1);
+        op->id = id;
+        if ((s32) M2C_FIELD(conn, s32 *, GPI_CONN_NEXT_OPERATION_ID) < 2) {
+            M2C_FIELD(conn, s32 *, GPI_CONN_NEXT_OPERATION_ID) = 2;
         }
     }
-    M2C_FIELD(temp_r0, s32 *, 0x1C) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0xC) = arg5;
-    M2C_FIELD(temp_r0, s32 *, 0x10) = arg6;
-    M2C_FIELD(temp_r0, void **, 0x20) = (void *) M2C_FIELD(temp_r4, void **, 0x424);
-    M2C_FIELD(temp_r4, void **, 0x424) = temp_r0;
-    *arg3 = temp_r0;
+    op->result = 0;
+    op->callback = callback;
+    op->callbackParam = callbackParam;
+    op->next = (GPIOperation *) M2C_FIELD(conn, void **, GPI_CONN_OPERATIONS);
+    M2C_FIELD(conn, void **, GPI_CONN_OPERATIONS) = op;
+    *operationOut = op;
     return 0;
 }
 

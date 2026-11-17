@@ -272,12 +272,12 @@ void func_02016250(s32 a,s32 b,s32 c) {
 s32 func_020162dc(void) {
  extern M2C_UNK data_021311a0;extern M2C_UNK data_021311e0;
  s32 func_02018390(void);s32 func_020183a4(void);
- void func_02013c44(s32,void *,s32,s32,s32,s32);
+ void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
  void func_0201622c(void);
  void *p;
  if(M2C_FIELD(&data_021311a0,void **,0x18)==0){
  s32 x=func_02018390();
- func_02013c44(0,&data_021311e0,0x70,x,func_020183a4(),8);return 0;
+ WFC_SubmitDownloadData(0,&data_021311e0,0x70,x,func_020183a4(),8);return 0;
  }
  p=M2C_FIELD(&data_021311a0,void **,0x1C);
  if(p!=0 && M2C_FIELD(p,void **,0x4BC)!=0)p=M2C_FIELD(p,void **,0x4BC);
@@ -312,7 +312,7 @@ extern M2C_UNK data_021311e0;
 s32 FillU16(s32,void *,s32);
 s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
-void func_02013c44(s32,void *,s32,s32,s32,s32);
+void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 void *p=M2C_FIELD(&data_021311a0,void **,0x1c);
 u32 end=(u32)p+0x358;
 u32 src=M2C_FIELD(&data_021311a0,u32 *,0x20);
@@ -333,7 +333,7 @@ M2C_FIELD(&data_021311a0,u16 *,0x48)=0;
 M2C_FIELD(&data_021311a0,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
 if(++M2C_FIELD(&data_021311a0,u8 *,0x27)>=M2C_FIELD(&data_021311a0,u8 *,0x28))M2C_FIELD(&data_021311a0,u8 *,0x24)=4;
 else M2C_FIELD(&data_021311a0,u32 *,0x20)+=0x62;
-func_02013c44(0,&data_021311e0,0x70,a,b,(u8)(c|3));
+WFC_SubmitDownloadData(0,&data_021311e0,0x70,a,b,(u8)(c|3));
 }
 
 void func_02016534(void) {
@@ -351,7 +351,7 @@ void func_02016564(s32 a,s32 b,s32 c) {
 extern M2C_UNK data_021311a0,data_02131248,data_021311f0,data_021311e8,data_021311e0;
 s32 FillU16(s32,void *,s32);s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
-void func_02013c44(s32,void *,s32,s32,s32,s32);
+void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
 p=M2C_FIELD(&data_021311a0,void **,0x1c);
 if(M2C_FIELD(&data_021311a0,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))func_02016534();
@@ -392,7 +392,7 @@ M2C_FIELD(&data_021311a0,u16 *,0x48)=0;
 M2C_FIELD(&data_021311a0,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
 p=M2C_FIELD(&data_021311a0,void **,0x1c);
 if(M2C_FIELD(p,u16 *,0x4b0)==M2C_FIELD(p,u16 *,0x35a))M2C_FIELD(&data_021311a0,u8 *,0x24)=1;
-func_02013c44(0,&data_021311e0,0x70,a,b,(u8)(c|3));
+WFC_SubmitDownloadData(0,&data_021311e0,0x70,a,b,(u8)(c|3));
 if(M2C_FIELD(&data_021311a0,s32 *,0x10)==1){
 callback=M2C_FIELD(&data_021311a0,void (**)(u32),0x14);
 if(callback)callback(M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u32 *,0x4b8));

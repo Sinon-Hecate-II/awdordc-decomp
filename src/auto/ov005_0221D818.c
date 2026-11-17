@@ -7,7 +7,7 @@ M2C_UNK func_ov005_0221d818(M2C_UNK arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 gSpriteDesc32x16[],data_02101f4c[],gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc16x32[];
-extern u8 data_0215c34a[],data_0215c334[],data_ov005_02220a1c[],data_ov005_02220a24[];
+extern u8 data_0215c34a[],gCoState[],data_ov005_02220a1c[],data_ov005_02220a24[];
 void AddSprite(u16,u16,u16,void *,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
 s32 func_020cfb94(void);
@@ -71,7 +71,7 @@ x=0;i=0;oy=96;
 if(*p){q=data_ov005_02220a24;tile=0x3ac;
 do{
 if(!Modulo(i,3)){oy+=32;x=51;}
-map=data_0215c334+M2C_FIELD(arg0,s32 *,0x50)*12;
+map=gCoState+M2C_FIELD(arg0,s32 *,0x50)*12;
 count=M2C_FIELD((u8 *)map+*q,u8 *,26);
 y=oy+M2C_FIELD(arg0,s32 *,0x48);
 if(y<192){
@@ -166,7 +166,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     extern M2C_UNK data_ov005_02220db8, data_ov005_02220f90, data_ov005_02220a4c, data_ov005_02220a78;
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
     extern u16 gMapConfig;
-    extern u8 data_0215c334[];
+    extern u8 gCoState[];
     void *medalDisplay, *savedEngine;
     s32 i, x, y, isOtherMode;
 
@@ -199,7 +199,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     }
     if (((u32)(gMapConfig << 29) >> 29) != 1) isOtherMode = 1;
     else isOtherMode = 0;
-    if ((isOtherMode & 255) && data_0215c334[3] != 4) return;
+    if ((isOtherMode & 255) && gCoState[3] != 4) return;
     for (i = 0; i < 8; i++) {
         x = RandomIntRange(-48, -16);
         y = RandomIntRange(288, 352);

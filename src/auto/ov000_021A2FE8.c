@@ -183,36 +183,46 @@ if(type!=0 && type==arg0 && entry->unkC[0]==0) count++;
 return count;
 }
 
+/* Counts the current player's capture-capable units that are still ready to act
+ * this turn. */
 s32 CountReadyCaptureUnits(void) {
-extern void **gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-s32 IsCaptureKind(s32);
-s32 count=0;
-s32 i;
-void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
-UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-u32 type=entry->unk0;
-if(type!=0 && IsCaptureKind(type)!=0 && ((UnkState_021a36e4 *)entry)->state==2) count++;
-}
-return count;
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 IsCaptureKind(s32);
+    s32 readyCaptures = 0;
+    s32 unitId;
+    void *base = *gCurrentMap;
+    u16 firstUnitId = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+
+    for (unitId = firstUnitId + 1;
+         unitId < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN;
+         unitId++) {
+        UnkStruct_ov000_021A860C *unit = &((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[unitId];
+        u32 kind = unit->unk0;
+        if (kind != 0 && IsCaptureKind(kind) != 0 && ((UnkState_021a36e4 *)unit)->state == UNIT_STATE_READY) readyCaptures++;
+    }
+    return readyCaptures;
 }
 
+/* Counts the current player's non-capture units (of the 0x33-unit group that
+ * starts after the player's first id) that are still ready to act this turn. */
 s32 CountReadyCombatUnits(void) {
-extern void **gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-s32 IsCaptureKind(s32);
-s32 count=0;
-s32 i;
-void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
-UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-u32 type=entry->unk0;
-if(type!=0 && IsCaptureKind(type)==0 && ((UnkState_021a36e4 *)entry)->state==2) count++;
-}
-return count;
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 IsCaptureKind(s32);
+    s32 readyCombat = 0;
+    s32 unitId;
+    void *base = *gCurrentMap;
+    u16 firstUnitId = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+
+    for (unitId = firstUnitId + 1;
+         unitId < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN;
+         unitId++) {
+        UnkStruct_ov000_021A860C *unit = &((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[unitId];
+        u32 kind = unit->unk0;
+        if (kind != 0 && IsCaptureKind(kind) == 0 && ((UnkState_021a36e4 *)unit)->state == UNIT_STATE_READY) readyCombat++;
+    }
+    return readyCombat;
 }
 
 #pragma push

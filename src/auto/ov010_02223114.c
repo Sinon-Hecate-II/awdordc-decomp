@@ -453,9 +453,9 @@ s32 VoiceLink_ReleaseContext(VoiceLinkContext *context) {
 }
 
 s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
-    M2C_UNK func_ov010_02224700(void *, void *, u8);
-    s32 func_ov010_02224820(void *);
-    s32 func_ov010_0222486c(void *, void *);
+    M2C_UNK VoiceLink_InitPacket(void *, void *, u8);
+    s32 VoiceLink_NoOtherContextWaiting(void *);
+    s32 VoiceLink_CheckStartStep(void *, void *);
     extern M2C_UNK gLinkConfig;
 
     if (arg0 == NULL) {
@@ -471,12 +471,12 @@ s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
         return -3;
     }
     M2C_FIELD(arg2, u8 *, 4) = 0xFF;
-    func_ov010_02224700(arg0, arg2, (u8) arg1);
-    if (func_ov010_0222486c(arg0, arg2) == 0) {
+    VoiceLink_InitPacket(arg0, arg2, (u8) arg1);
+    if (VoiceLink_CheckStartStep(arg0, arg2) == 0) {
         return -3;
     }
     if ((M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 1) && (arg1 == 0)) {
-        if (func_ov010_02224820(arg0) == 0) {
+        if (VoiceLink_NoOtherContextWaiting(arg0) == 0) {
             return -3;
         }
     }

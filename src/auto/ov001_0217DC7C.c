@@ -78,7 +78,7 @@ void func_ov001_0217def8(void) {
 #pragma opt_strength_reduction off
 void func_ov001_0217df44(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
-extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,func_ov001_02180d44,func_ov001_02181a84;
+extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,Ov001_OpenAccessPointMenu,func_ov001_02181a84;
 s32 Ov001_IsFadeActive(s32);
 void *GetCurrentMapRecord(void);
 s32 CountSetBits(void *);
@@ -109,7 +109,7 @@ if(p[0xf5]){MI_CpuFill8(p+0xc0,0,4);MI_CpuFill8(p+0xc4,0,4);MI_CpuFill8(p+0xf0,0
 if(p[0xf6])MI_CpuFill8(p+0xc8,0,8);
 Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
 case 12:Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
-case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02180d44);}
+case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);}
 else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
 }
 Ov001_FreeAlloc(&data_ov001_02193db4);

@@ -114,7 +114,7 @@ void func_ov003_021f2878(s32 entry) {
     void func_ov009_022244ec(M2C_UNK);
     s32 func_ov009_02224508(M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    void func_ov010_02228298(M2C_UNK);
+    void SetOnlineSessionFlag(M2C_UNK);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
     s32 GetOverlayEventFlags(void);
     s32 func_02084a0c(void);
@@ -150,11 +150,11 @@ ready:
             }
         break; case 2:
             if (IsOnlineSessionFlagSet(6) == 0) {
-                func_ov010_02228298(6);
+                SetOnlineSessionFlag(6);
                 func_ov010_02228314(&var_sp4, &var_sp0);
                 switch (var_sp0) {
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-                    func_ov010_02228298(6);
+                    SetOnlineSessionFlag(6);
                     break;
                 default:
                     break;

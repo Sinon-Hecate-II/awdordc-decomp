@@ -127,7 +127,7 @@ void func_ov001_02180d24(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180bbc);
 }
 
-void func_ov001_02180d44(void) {
+void Ov001_OpenAccessPointMenu(void) {
     void *Ov001_Alloc(s32, s32);
     void Ov001_LoadAccessPointMenuGraphics(void);
     void func_ov001_02180eb4(void);

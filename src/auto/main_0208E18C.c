@@ -6,53 +6,49 @@ typedef struct { u8 pad[0x60]; u64 v; u64 *p; } UnkNode0208EE1C;
 
 
 void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+    typedef struct { s32 t[5][5]; } TileTable;
     void AddSprite(u16, u16, u16, void *, u8);
+#define ADS ((void (*)(u16, u16, u16, void *, s32))AddSprite)
+#define SHIFT (((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)
     s32 Divide(s32, s32);
-    void DrawVerticalBar(s32, s16, s16, u16);
-    void DrawVerticalBarReverse(s16, s16, s16, u16);
-    void DrawHorizontalBar(s16, s32, s16, u16);
-    void DrawHorizontalBarReverse(s16, s16, s16, u16);
+    void DrawVerticalBar(s32, s16, s16, u16, s32);
+    void DrawVerticalBarReverse(s16, s16, s16, u16, s32);
+    void DrawHorizontalBar(s16, s32, s16, u16, s32);
+    void DrawHorizontalBarReverse(s16, s16, s16, u16, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
     extern s32 gCur3DSpriteEngine;
-    extern u32 data_020f35c8[];
+    extern TileTable data_020f35c8;
     extern u8 gSpriteDesc8x8[];
     extern s16 gSinCosTable[];
-    s32 tbl[25];
-    s32 i;
+    TileTable tbl;
+    s32 t;
     s32 v4, v8, vc, v10, v14, v18, v1c, v20, v38, v3c;
-    s32 sh, r4, r5, r6, r7, r11;
+    s32 r4, r5, r6, r7, r11;
 
-    for (i = 0; i < 25; i++) tbl[i] = data_020f35c8[i];
+    t = a4;
+    tbl = data_020f35c8;
 
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    r7 = a0 & 0x3ff;
+    r7 = a0 & 0x1ff;
     r4 = a1 & 0xff;
-    AddSprite((u16)r7, (u8)r4, (u16)(a4 + ((0x54 >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
+    ADS((u16)r7, (u8)r4, (u16)(t + ((0x54 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
     v8 = a0 + a2 - 8;
-    r4 = v8 & 0x1ff;
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    AddSprite((u16)r4, (u8)a1, (u16)(a4 + ((0x56 >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
+    r7 = v8 & 0x1ff;
+    ADS((u16)r7, (u8)r4, (u16)(t + ((0x56 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
     vc = a1 + a3 - 8;
     r7 = vc & 0xff;
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    AddSprite((u16)(a0 & 0x3ff), (u8)r7, (u16)(a4 + ((0x58 >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
+    ADS((u16)(a0 & 0x1ff), (u8)r7, (u16)(t + ((0x58 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    AddSprite((u16)r4, (u8)r7, (u16)(a4 + ((0x5a >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
+    ADS((u16)(v8 & 0x1ff), (u8)r7, (u16)(t + ((0x5a >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> sh) & 0x3ff)));
+    DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(t + ((0x4a >> SHIFT) & 0x3ff)), a5);
 
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    DrawVerticalBarReverse((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> sh) & 0x3ff)));
+    DrawVerticalBarReverse((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(t + ((0x4a >> SHIFT) & 0x3ff)), a5);
 
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    DrawHorizontalBar((s16)(a0 + 8), a1, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> sh) & 0x3ff)));
+    DrawHorizontalBar((s16)(a0 + 8), a1, (s16)(a2 - 16), (u16)(t + ((0x40 >> SHIFT) & 0x3ff)), a5);
 
-    sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    DrawHorizontalBarReverse((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> sh) & 0x3ff)));
+    DrawHorizontalBarReverse((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(t + ((0x40 >> SHIFT) & 0x3ff)), a5);
 
     v1c = (s16)(a3 - 16);
     v20 = (s16)(a1 + 8);
@@ -97,13 +93,13 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
             while (r7 < 5) {
                 while (v14 >= r6) {
                     if (r6 >= 0x40 && r4 >= 0x40) {
-                        AddSprite((u16)((r5 & 0x1ff) | 0x3e00), (u16)r11, (u16)a4, (void *)tbl[r7], (u8)a5);
+                        ADS((u16)((r5 & 0x1ff) | 0x3e00), (u16)r11, t, (void *)tbl.t[v18][r7], a5);
                     } else if (r6 >= 0x40) {
-                        AddSprite((u16)((r5 & 0x1ff) | 0x3800), (u16)v38, (u16)a4, (void *)tbl[r7], (u8)a5);
+                        ADS((u16)((r5 & 0x1ff) | 0x3800), (u16)v38, t, (void *)tbl.t[v18][r7], a5);
                     } else if (r4 >= 0x40) {
-                        AddSprite((u16)(((r5 - (r6 >> 1)) & 0x1ff) | 0x3600), (u16)r11, (u16)a4, (void *)tbl[r7], (u8)a5);
+                        ADS((u16)(((r5 - (r6 >> 1)) & 0x1ff) | 0x3600), (u16)r11, t, (void *)tbl.t[v18][r7], a5);
                     } else {
-                        AddSprite((u16)((r5 & 0x1ff)), (u16)v3c, (u16)a4, (void *)tbl[r7], (u8)a5);
+                        ADS((u16)((r5 & 0x1ff)), (u16)v3c, t, (void *)tbl.t[v18][r7], a5);
                     }
                     r5 += r6;
                     v14 -= r6;
@@ -118,6 +114,8 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
         r4 >>= 1;
         v18++;
     }
+#undef ADS
+#undef SHIFT
 }
 
 void func_0208e7ec(u32 arg0,s32 arg1) { extern u8 data_02102888[],data_02102898[],data_021028a4[],data_021028b0[]; extern s32 gCur3DSpriteEngine; void *p; SetFileDirectory(data_02102888); OpenNarcArchive(data_02102898); LoadNarcFileDecompressed(data_021028a4,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+arg0); LoadNarcFileToSpriteBuffer(data_021028b0,(arg1+16)<<5,32); CloseNarcArchive(); p=(void *)gCur3DSpriteEngine; M2C_FIELD(p,u8 *,0x46)|=16; }

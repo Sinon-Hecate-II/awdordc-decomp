@@ -162,7 +162,7 @@ void func_ov005_0221298c(s16 arg0) {
 s16 *HistoryTabAt(s8);
 void func_ov005_02212944(s32,s32);
 void ClearTileRect(void *,s32,s32);
-void func_0209c048(s32,s16,void *,s32,s32,s32);
+void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);
 void func_0209c024(s32,s16,void *,s32,s32,s32);
 s32 func_020a8b78(void);
 extern void *gHistoryMenu;
@@ -189,10 +189,10 @@ f=arg0>>1;
 do{func_ov005_02212944(e,f);d++;f++;e+=2;}while(d<7);
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0xf4,6,2);
 }
-func_0209c048(0x1b,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,6),0x1000,0);
+DrawTilemapNumber(0x1b,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,6),0x1000,0);
 value=func_020a8b78();
 func_0209c024(0x1c,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),value,0x1000,0);
-func_0209c048(0x1e,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,8),0x1000,0);
+DrawTilemapNumber(0x1e,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,8),0x1000,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
@@ -231,9 +231,9 @@ i++;offset+=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 HeapFreeBlock(buffer);
 func_01ff9d88(1);
-func_0209c048(26,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x2e),0x9000,0);
+DrawTilemapNumber(26,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x2e),0x9000,0);
 func_0209c024(27,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),func_020a8b78(),0x9000,0);
-func_0209c048(30,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x30),0x9000,0);
+DrawTilemapNumber(30,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x30),0x9000,0);
 func_0209b59c((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,0x60);
 func_0209b5c4((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,M2C_FIELD(gHistoryMenu,s32 *,0x34));
 func_0209b59c((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1780,0x60);

@@ -301,26 +301,47 @@ if(before==M2C_FIELD(a1,s32 *,2048))Qr2AppendString((void *)a1,&sQr2EmptyValue);
 }
 }
 #pragma pop
-void func_0205f364(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+void Qr2AppendPlayerFields(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     void func_0205f10c(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     func_0205f10c(arg0, arg1, 0, arg2, arg3);
     func_0205f10c(arg0, arg1, 1, arg4, arg5);
     func_0205f10c(arg0, arg1, 2, arg6, arg7);
 }
 
-void func_0205f3bc(M2C_UNK a,M2C_UNK b,u8 *p,s32 n) {
- s32 x,y,z; s32 q=0,r=0,s=0;
- if(n<3)return;
- x=*p++;n--;
- if(x && x!=255){q=(s32)p;n-=x;p+=x;}
- if(n<2)return;
- y=*p++;n--;
- if(y && y!=255){r=(s32)p;n-=y;p+=y;}
- if(n<1)return;
- z=*p;n--;
- if(z && z!=255){n-=z;s=(s32)(p+1);}
- if(n<0)return;
- func_0205f364(a,b,x,q,y,r,z,s);
+/* Appends one player record to a QR2 query string.  A record is three
+ * length-prefixed field lists: the plain "key\value" fields, then the two
+ * indexed field groups.  A length of 0 means the group is empty and
+ * QR2_FIELDS_ALL means "every key of the group", in which case no list
+ * follows in the record. */
+void Qr2AppendPlayerRecord(M2C_UNK qr2Record, void *query, u8 *record, s32 length) {
+    s32 plainLength, indexedLength, indexed2Length;
+    s32 plainFields = 0, indexedFields = 0, indexed2Fields = 0;
+
+    if (length < 3) return;
+    plainLength = *record++;
+    length--;
+    if (plainLength != 0 && plainLength != QR2_FIELDS_ALL) {
+        plainFields = (s32)record;
+        length -= plainLength;
+        record += plainLength;
+    }
+    if (length < 2) return;
+    indexedLength = *record++;
+    length--;
+    if (indexedLength != 0 && indexedLength != QR2_FIELDS_ALL) {
+        indexedFields = (s32)record;
+        length -= indexedLength;
+        record += indexedLength;
+    }
+    if (length < 1) return;
+    indexed2Length = *record;
+    length--;
+    if (indexed2Length != 0 && indexed2Length != QR2_FIELDS_ALL) {
+        length -= indexed2Length;
+        indexed2Fields = (s32)(record + 1);
+    }
+    if (length < 0) return;
+    Qr2AppendPlayerFields(qr2Record, query, plainLength, plainFields, indexedLength, indexedFields, indexed2Length, indexed2Fields);
 }
 
 /* Appends every key of one mode to a QR2 query string. mode 0 writes plain

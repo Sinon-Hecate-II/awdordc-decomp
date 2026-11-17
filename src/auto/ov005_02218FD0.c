@@ -42,9 +42,9 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
-    s32 func_ov005_02218e54();
+    s32 GetCurrentCoFaceId();
     s32 func_ov005_02218edc();
-    extern M2C_UNK data_0215c334;
+    extern M2C_UNK gCoState;
     extern u16 gMapConfig;
     extern void **data_027e0058;
     extern s32 g3DSpriteEngineSub;
@@ -358,7 +358,7 @@ void func_ov005_02218fd0(void *arg0) {
             LoadDecompressedFileTo(&data_ov005_02221170, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
             LoadFileToSpriteBuffer(&data_ov005_02221180, 0x340, 0x20);
         } else {
-            switch (M2C_FIELD(&data_0215c334, u8 *, 3)) {
+            switch (M2C_FIELD(&gCoState, u8 *, 3)) {
             default:
                 break;
             case 4:
@@ -382,7 +382,7 @@ void func_ov005_02218fd0(void *arg0) {
         var_r9 += 1;
     } while (var_r9 < 2);
     gCur3DSpriteEngine = sp8;
-    temp_r4 = func_ov005_02218e54();
+    temp_r4 = GetCurrentCoFaceId();
     temp_r1 = func_ov005_02218edc();
     if (temp_r4 == 0) {
         return;

@@ -73,7 +73,7 @@ CopyU16(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
 }
 }
 
-s32 func_ov001_0218a5f0(M2C_UNK arg0, M2C_UNK arg1) {
+s32 Ov001_CreateSpriteFromLayout(M2C_UNK arg0, M2C_UNK arg1) {
     void Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
     s32 func_ov001_0218c0e4();
     s32 temp_r0;

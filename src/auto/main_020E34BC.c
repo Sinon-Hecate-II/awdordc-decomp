@@ -173,8 +173,8 @@ void func_020e3698(M2C_UNK arg0) {
 
 void func_020e36dc(void) {
    void func_020e4304();
-   s32 func_ov010_0222613c(void);
-   if (func_ov010_0222613c() == 0) return;
+   s32 SubmitWebRegisterRequest(void);
+   if (SubmitWebRegisterRequest() == 0) return;
    func_020e4304();
 }
 

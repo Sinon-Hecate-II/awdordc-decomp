@@ -20,4 +20,9 @@ typedef struct {
 
 /* Unit kind whose unkC[] chain names the units it carries. */
 #define UNIT_KIND_CARRIER 21
+
+/* The unit record's two-bit state field at +0x08 bits 14..15 (read through the
+ * UnkState_021a36e4 overlay).  The AI counts a unit whose state is 2 as ready
+ * to act this turn. */
+#define UNIT_STATE_READY 2
 #endif

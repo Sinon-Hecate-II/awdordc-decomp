@@ -164,7 +164,7 @@ s32 func_0209953c(s32,s32,s32,s32,u16,u16);
 func_0209953c(a,b,c,d,e,f);
 }
 
-void func_0209c048(s32 arg0, s32 arg1, s32 arg2, u32 arg3, u16 arg4, u16 arg5) {
+void DrawTilemapNumber(s32 arg0, s32 arg1, s32 arg2, u32 arg3, u16 arg4, u16 arg5) {
     u32 var_r3;
     u16 var_r1;
     s16 *var_r0;
@@ -559,11 +559,11 @@ void func_0209c8d4(void) {
     M2C_UNK func_020bf814(u16);
     s32 IsCoUnlocked(s32);
     s32 DidPlayerWin();
-    s32 func_020d1afc();
+    s32 HasActiveHumanPlayer();
     s32 func_020d1b40();
     s32 func_020e4b54();
-    extern M2C_UNK data_0215c334;
-    extern M2C_UNK data_0215c340;
+    extern M2C_UNK gCoState;
+    extern M2C_UNK gCoPlayerSlots;
     extern s32 data_0215d8a0[2];
     extern s32 data_0215d8a8[58];
     extern u16 gMapConfig;
@@ -583,23 +583,23 @@ void func_0209c8d4(void) {
     u32 var_r1;
     u8 temp_r11;
 
-    temp_r11 = M2C_FIELD(&data_0215c334, u8 *, 4);
+    temp_r11 = M2C_FIELD(&gCoState, u8 *, 4);
     temp_r8 = M2C_FIELD(*data_027e0058, u16 *, 0x5142);
     var_r7 = 0;
     temp_r9 = temp_r8 - 0xA1;
     do {
         if (IsCoUnlocked(var_r7) != 0) {
-            var_r0 = M2C_FIELD(&data_0215c334, s32 *, 8) | (1 << var_r7);
+            var_r0 = M2C_FIELD(&gCoState, s32 *, 8) | (1 << var_r7);
         } else {
-            var_r0 = M2C_FIELD(&data_0215c334, s32 *, 8) & (-1 ^ (1 << var_r7));
+            var_r0 = M2C_FIELD(&gCoState, s32 *, 8) & (-1 ^ (1 << var_r7));
         }
         var_r7 += 1;
-        M2C_FIELD(&data_0215c334, s32 *, 8) = var_r0;
+        M2C_FIELD(&gCoState, s32 *, 8) = var_r0;
     } while (var_r7 < 0xF);
     if (IsLinkSessionActive() == 0) {
         func_02086844(temp_r8, 1);
         if (DidPlayerWin() != 0) {
-            if ((func_020d1afc() != 0) && (func_020d1b40() == 0)) {
+            if ((HasActiveHumanPlayer() != 0) && (func_020d1b40() == 0)) {
                 AddRecordValue(0x1A, 1);
                 func_02086878(temp_r8, 1);
             }
@@ -613,8 +613,8 @@ void func_0209c8d4(void) {
             }
             if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
                 temp_r5 = data_0215d8a8[temp_r9];
-                if ((u32) M2C_FIELD(&data_0215c334, u16 *, 6) >= (u32) ((u32) (temp_r5 << 6) >> 0x17)) {
-                    temp_r3 = (((temp_r5 & ~0x78) | ((u32) (*(s32 *)((u8 *)&data_0215c340 + (temp_r11 * 0xC)) << 0x1C) >> 0x19)) & 0xFC01FFFF) | ((u32) (M2C_FIELD(&data_0215c334, u16 *, 6) << 0x17) >> 6);
+                if ((u32) M2C_FIELD(&gCoState, u16 *, 6) >= (u32) ((u32) (temp_r5 << 6) >> 0x17)) {
+                    temp_r3 = (((temp_r5 & ~0x78) | ((u32) (*(s32 *)((u8 *)&gCoPlayerSlots + (temp_r11 * 0xC)) << 0x1C) >> 0x19)) & 0xFC01FFFF) | ((u32) (M2C_FIELD(&gCoState, u16 *, 6) << 0x17) >> 6);
                     data_0215d8a8[temp_r9] = temp_r3;
                     temp_r3_2 = (temp_r3 & 0xFFFE007F) | ((u32) (M2C_FIELD(*data_027e0058, u16 *, 0x52A2) << 0x16) >> 0xF);
                     data_0215d8a8[temp_r9] = (temp_r3_2 & ~0x1C000000) | ((u32) ((temp_r3_2 >> 0x1D) << 0x1D) >> 3);
@@ -636,7 +636,7 @@ void func_0209c8d4(void) {
                     }
                     data_0215d8a0[0] = (data_0215d8a0[0] & ~0xFF0000) | ((u32) (var_r1 << 0x18) >> 8);
                 }
-                switch (M2C_FIELD(&data_0215c334, u8 *, 3)) { /* switch 2 */
+                switch (M2C_FIELD(&gCoState, u8 *, 3)) { /* switch 2 */
                 default:                            /* switch 2 */
                     break;
                 case 4:                             /* switch 2 */
@@ -657,10 +657,10 @@ void func_0209c8d4(void) {
     }
     var_r5 = 0;
     do {
-        if (!(M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r5)) && (IsCoUnlocked(var_r5) != 0)) {
-            M2C_FIELD(&data_0215c334, s32 *, 8) = (s32) (M2C_FIELD(&data_0215c334, s32 *, 8) | (1 << var_r5));
+        if (!(M2C_FIELD(&gCoState, s32 *, 8) & (1 << var_r5)) && (IsCoUnlocked(var_r5) != 0)) {
+            M2C_FIELD(&gCoState, s32 *, 8) = (s32) (M2C_FIELD(&gCoState, s32 *, 8) | (1 << var_r5));
         } else {
-            M2C_FIELD(&data_0215c334, s32 *, 8) = (s32) (M2C_FIELD(&data_0215c334, s32 *, 8) & (-1 ^ (1 << var_r5)));
+            M2C_FIELD(&gCoState, s32 *, 8) = (s32) (M2C_FIELD(&gCoState, s32 *, 8) & (-1 ^ (1 << var_r5)));
         }
         var_r5 += 1;
     } while (var_r5 < 0xF);

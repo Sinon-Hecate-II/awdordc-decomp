@@ -216,12 +216,12 @@ void func_020ceea8(void) {
     M2C_UNK func_020a15f8();
     M2C_UNK func_020a4d58();
     void func_020ced08(void);
-    M2C_UNK func_020d1b80();
+    M2C_UNK AdvancePlayerTurn();
     M2C_UNK func_020d1f2c();
     M2C_UNK InitPlayerStates();
     InitPlayerStates();
     func_020d1f2c();
-    func_020d1b80();
+    AdvancePlayerTurn();
     func_020ced08();
     func_020a4d58();
     func_020a15f8();

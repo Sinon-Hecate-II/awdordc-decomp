@@ -84,9 +84,9 @@ void func_020a1a0c(void) {
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 void func_020a1adc(void){
-extern s32 *gCurrentMap;extern u8 data_0215c340[],data_0215c334[];
+extern s32 *gCurrentMap;extern u8 gCoPlayerSlots[],gCoState[];
 s32 i,j,offset;register s32 y=0;u8 *out;u8 *base;s32 x;void **map2;u8 *rec,*attr; s32 cell,terrain;void **map;
-out=data_0215c340;map=(void **)gCurrentMap;
+out=gCoPlayerSlots;map=(void **)gCurrentMap;
 for(j=1,offset=0x8c;j<5;j++,offset+=0x8c,out+=12){
 M2C_FIELD(out,u16 *,12)=(u32)(M2C_FIELD((u8 *)*map+offset,s32 *,0x6810)<<24)>>24;
 out[23]=M2C_FIELD((u8 *)*map+offset,u8 *,0x67c1);
@@ -98,7 +98,7 @@ for(y=0;y<M2C_FIELD(*map2,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD((base=*map2),u16 *,0x5144);x++){
 cell=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)+0x508];
 if(cell){
-rec=data_0215c334+(cell>>6)*12;
+rec=gCoState+(cell>>6)*12;
 rec[34]++;
 attr=(u8 *)*map2+0x59a4+cell*14;
 if(attr[12])rec[34]++;
@@ -106,14 +106,14 @@ if(attr[13])rec[34]++;
 }
 base=*map2;
 terrain=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)+0x1420];
-switch(terrain&31){case 16:{u8 *p=data_0215c334+(terrain>>5)*12;p[14]++;break;}
-case 17:{u8 *p=data_0215c334+(terrain>>5)*12;p[15]++;break;}
-case 18:{u8 *p=data_0215c334+(terrain>>5)*12;p[16]++;break;}
-case 19:{u8 *p=data_0215c334+(terrain>>5)*12;p[17]++;break;}
-case 20:{u8 *p=data_0215c334+(terrain>>5)*12;p[20]++;break;}
-case 21:{u8 *p=data_0215c334+(terrain>>5)*12;p[21]++;break;}
-case 22:{u8 *p=data_0215c334+(terrain>>5)*12;p[18]++;break;}
-case 23:{u8 *p=data_0215c334+(terrain>>5)*12;p[19]++;break;}}
+switch(terrain&31){case 16:{u8 *p=gCoState+(terrain>>5)*12;p[14]++;break;}
+case 17:{u8 *p=gCoState+(terrain>>5)*12;p[15]++;break;}
+case 18:{u8 *p=gCoState+(terrain>>5)*12;p[16]++;break;}
+case 19:{u8 *p=gCoState+(terrain>>5)*12;p[17]++;break;}
+case 20:{u8 *p=gCoState+(terrain>>5)*12;p[20]++;break;}
+case 21:{u8 *p=gCoState+(terrain>>5)*12;p[21]++;break;}
+case 22:{u8 *p=gCoState+(terrain>>5)*12;p[18]++;break;}
+case 23:{u8 *p=gCoState+(terrain>>5)*12;p[19]++;break;}}
 }
 }}
 }

@@ -138,26 +138,26 @@ return sum;
 
 void func_02048eac(void *p,s32 a) {
 extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd2c;
-s32 func_020489e4(s32,s32,s32,s32,s32);
+s32 Vector_Search(s32,s32,s32,s32,s32);
 M2C_UNK Vector_AddItem(s32,s32);
 M2C_UNK func_02048964(s32,s32,s32);
 s32 i,n;
 if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd2c,0x71);
 if(!p)return;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
-n=func_020489e4(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
+n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
 if(n==-1)Vector_AddItem(M2C_FIELD(p,s32 **,0)[i],a);
 else func_02048964(M2C_FIELD(p,s32 **,0)[i],a,n);
 }
 
 s32 func_02048f54(void *p,s32 a) {
 extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd44;
-s32 func_020489e4(s32,s32,s32,s32,s32);
+s32 Vector_Search(s32,s32,s32,s32,s32);
 s32 i,n;
 if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd44,0x82);
 if(!p)return 0;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
-n=func_020489e4(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
+n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
 if(n==-1)return 0;
 Vector_RemoveItem(M2C_FIELD(p,s32 **,0)[i],n);
 return 1;
@@ -170,7 +170,7 @@ s32 i,n;
 if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd50,0x94);
 if(!p)return 0;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
-n=func_020489e4(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
+n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
 if(n==-1)return 0;
 return Vector_GetItem(M2C_FIELD(p,s32 **,0)[i],n);
 }

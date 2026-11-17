@@ -32,7 +32,7 @@ void Qr2_SendState(void *qr2, s32 state) {
     M2C_UNK Qr2AppendInt(void *, s32);
     M2C_UNK Qr2AppendString(void *, void *);
     M2C_UNK Qr2InitQuery(void *, s32, void *);
-    M2C_UNK func_0205f364(void *, void *, s32, s32, s32, s32, s32, s32);
+    M2C_UNK Qr2AppendPlayerFields(void *, void *, s32, s32, s32, s32, s32, s32);
     M2C_UNK StringFormat(void *, void *, s32, ...);
     extern s32 gLocalIpCount;
     extern s32 gLocalIps[];
@@ -85,7 +85,7 @@ void Qr2_SendState(void *qr2, s32 state) {
         Qr2AppendInt(query, (s32)M2C_FIELD(qr2, u16 *, QR2_PUBLIC_PORT));
     }
     if (state != QR2_STATE_FINAL) {
-        func_0205f364(qr2, query, 0xFF, 0, 0xFF, 0, 0xFF, 0);
+        Qr2AppendPlayerFields(qr2, query, 0xFF, 0, 0xFF, 0, 0xFF, 0);
     } else {
         used = M2C_FIELD(query, s32 *, QR2_QUERY_COUNT);
         if ((QR2_QUERY_SIZE - used) >= 1) {

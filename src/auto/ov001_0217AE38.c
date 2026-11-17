@@ -19,22 +19,28 @@ void func_ov001_0217ae38(s32 arg0, s32 arg1) {
     M2C_FIELD(second, u16 *, 4) = (M2C_FIELD(second, u16 *, 4) & ~0x3FF) | M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, 4) + 2 * M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), void **, 0) + offset, u16 *, 0x26), u16 *, 0x48);
 }
 
+/* Place the visible row sprites down the screen: the label and the map name of
+ * each of the up-to-five visible rows, one 0x1C-pixel row apart, offset by the
+ * list's current scroll position; then flag the BG scroll registers as dirty. */
 void MapSelectList_PositionRows(void) {
-s32 func_020020c4(u16,s32);extern M2C_UNK gMapSelectState;
-s32 *first,*second; s32 position; s32 count; s32 i;
-position=0x36-func_020020c4(M2C_FIELD(&gMapSelectState,u16 *,2),28);
-count=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x51);
-i=0;
-if(count>5)count=5;
-while(i<count){
-first=((s32 **)M2C_FIELD(&gMapSelectState,void **,4))[i+4];
-*first=(*first&0xfe00ff00)|(u8)(position-2)|0xb30000;
-second=((s32 **)M2C_FIELD(&gMapSelectState,void **,4))[i+9];
-i++;
-*second=(*second&0xfe00ff00)|(u8)(position+1)|0xd20000;
-position+=28;
-}
-M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x56)=1;
+    s32 func_020020c4(u16, s32); /* hardware divide unit: remainder */
+    extern M2C_UNK gMapSelectState;
+    u32 *label, *name;
+    s32 y, count, row;
+
+    y = MAPSELECT_ROW_BASE_Y - func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
+    count = M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_COUNT);
+    row = 0;
+    if (count > MAPSELECT_ROWS) count = MAPSELECT_ROWS;
+    while (row < count) {
+        label = ((u32 **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[row + 4];
+        *label = (*label & 0xfe00ff00) | (u8)(y - 2) | (MAPSELECT_ROW_LABEL_X << 16);
+        name = ((u32 **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[row + 9];
+        row++;
+        *name = (*name & 0xfe00ff00) | (u8)(y + 1) | (MAPSELECT_ROW_NAME_X << 16);
+        y += MAPSELECT_ROW_UNITS;
+    }
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_SCROLL_DIRTY) = 1;
 }
 
 /* Page the map-select list up towards its first row: pull the scroll position
@@ -212,7 +218,7 @@ void func_ov001_0217b41c(void) {
 void InitNameEntryScreen(void) {
 extern void *gOv001NameEntryConfig; extern void *gNameEntryState;
 void *Ov001_Alloc(s32,s32);void Ov001_GetNameEntryMode(s32 *,s32);
-s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
+s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *Ov001_CreateSpriteFromLayout(s32,s32);
 void func_ov001_0217b634(void);
 u8 modeMessages[2]={M2C_FIELD(&gOv001NameEntryConfig,u8 *,0),M2C_FIELD(&gOv001NameEntryConfig,u8 *,1)};s32 mode,variant;
 gNameEntryState=Ov001_Alloc(44,4);
@@ -222,7 +228,7 @@ Ov001_LoadNameEntryGraphics();func_ov001_02172250(mode+9);
 if(variant==1)Ov001_ShowMessagePanel(53,-1,0);else Ov001_ShowMessagePanel(modeMessages[mode],-1,0);
 func_ov001_02171dd0(2);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_PANEL)=CreateTextPanel(0,0);
-M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR)=func_ov001_0218a5f0(0,62);
+M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR)=Ov001_CreateSpriteFromLayout(0,62);
 M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)=(M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)&~0xc00)|0xc00;
 UpdateNameEntryCursor();RedrawNameEntryText();Ov001_SetStepCallback((s32 *)func_ov001_0217b634);
 }

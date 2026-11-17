@@ -367,7 +367,7 @@ void func_ov001_02176844(void) {
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 Ov001_GetScreenLayout();
     extern M2C_UNK Ov001_OpenWifiMenu;
-    extern M2C_UNK func_ov001_02180d44;
+    extern M2C_UNK Ov001_OpenAccessPointMenu;
     s32 temp_r0;
 
     if (Ov001_IsFadeActive(1) != 0) {
@@ -384,7 +384,7 @@ void func_ov001_02176844(void) {
         return;
     case 1:
         Ov001_SetNextScreenMode(1, 1);
-        Ov001_SetStepCallback(&func_ov001_02180d44);
+        Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
         return;
     }
 }
@@ -568,7 +568,7 @@ void func_ov001_02176cd8(void) {
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 gOv001ChoiceState;
-    extern M2C_UNK func_ov001_02180d44;
+    extern M2C_UNK Ov001_OpenAccessPointMenu;
     extern M2C_UNK Ov001_InitOptionMenu;
 
     if (Ov001_IsFadeActive(1) != 0) {
@@ -585,7 +585,7 @@ void func_ov001_02176cd8(void) {
     switch (gOv001ChoiceState) {                  /* irregular */
     case 0:
         Ov001_SetNextScreenMode(1, 0);
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180d44);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenAccessPointMenu);
         return;
     case 1:
         Ov001_SetNextScreenMode(0, 0);
@@ -622,9 +622,9 @@ void Ov001_OpenWfcSettingsScreen(void) {
     M2C_UNK func_ov001_02171e58(M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_02176e78();
-    extern s8 data_ov001_02193d64;
+    extern s8 gOv001WfcSettingsReset;
     extern M2C_UNK func_ov001_02176ef8;
-    data_ov001_02193d64 = 0;
+    gOv001WfcSettingsReset = 0;
     func_ov001_02176e78();
     func_ov001_02172250(0x12);
     Ov001_ShowMessagePanel(0x3B, -1, 0);

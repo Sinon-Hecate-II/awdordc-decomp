@@ -77,11 +77,11 @@ func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;re
 void Ov001_AnimSpriteTask(void);
 #pragma thumb off
 void Ov001_CreateAnimSprite(s8 arg0) {
-s32 *func_ov001_0218a5f0(s32,s32); void *Ov001_Alloc(s32,s32); s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
+s32 *Ov001_CreateSpriteFromLayout(s32,s32); void *Ov001_Alloc(s32,s32); s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
 extern M2C_UNK gOv001AnimSpritePalette; extern void *gOv001AnimSprite;
 s32 *p,*q,*r; void *a; s8 v;
 a=Ov001_Alloc(12,4);gOv001AnimSprite=a;M2C_FIELD(a,s8 *,8)=arg0;
-M2C_FIELD(gOv001AnimSprite,s32 **,4)=func_ov001_0218a5f0(0,0x47);
+M2C_FIELD(gOv001AnimSprite,s32 **,4)=Ov001_CreateSpriteFromLayout(0,0x47);
 v=((u8 *)&gOv001AnimSpritePalette)[arg0];
 p=M2C_FIELD(gOv001AnimSprite,s32 **,4);
 M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xc00)|0x400;

@@ -364,7 +364,7 @@ void func_ov001_0217f900(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02180d44;
+    extern M2C_UNK Ov001_OpenAccessPointMenu;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
@@ -375,7 +375,7 @@ void func_ov001_0217f900(void) {
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x14);
     Ov001_SetNextScreenMode(2, 1);
-    Ov001_SetStepCallback(&func_ov001_02180d44);
+    Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
 }
 
 s32 func_ov001_0217f95c(void) {

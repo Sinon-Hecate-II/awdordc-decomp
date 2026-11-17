@@ -183,14 +183,14 @@ void func_ov005_0221a688(void *arg) {
     void *CreateSpriteObject(void *, void *);
     void MI_CpuCopy32(void *, void *, s32);
     extern Ov005ModeBits gMapConfig;
-    extern u8 data_0215c334[];
+    extern u8 gCoState[];
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub;
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc;
     s32 sound = 0xe9;
     s32 saved;
     void *obj;
     if ((u8)(gMapConfig.mode != 1)) {
-        switch (data_0215c334[3]) {
+        switch (gCoState[3]) {
         case 4: sound = 0xea; break;
         case 3: sound = 0xeb; break;
         case 2: sound = 0xec; break;

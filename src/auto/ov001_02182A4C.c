@@ -127,8 +127,8 @@ void func_ov001_02182d0c(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_02182d5c(void);
     void func_ov001_02182e04(void);
-    extern u8 data_ov001_02193de8;
-    data_ov001_02193de8 = 0;
+    extern u8 gOv001WfcConnectChosen;
+    gOv001WfcConnectChosen = 0;
     func_ov001_02182d5c();
     func_ov001_02172250(8);
     Ov001_ShowMessagePanel(0x38, -1, 0);
@@ -209,13 +209,13 @@ void func_ov001_02182f0c(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern u8 data_ov001_02193de8;
+    extern u8 gOv001WfcConnectChosen;
     void func_ov001_02182f5c(void);
     switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
-        data_ov001_02193de8 = 1;
+        gOv001WfcConnectChosen = 1;
         break;
     default: return;
     }
@@ -234,20 +234,24 @@ void func_ov001_02182f5c(void) {
 
 void func_ov001_02182f7c(void) {
     M2C_UNK func_ov001_02171694();
-    extern u8 data_ov001_02193de8;
-    extern M2C_UNK func_ov001_02182fe0;
+    extern u8 gOv001WfcConnectChosen;
+    extern M2C_UNK Ov001_CloseWfcMenuScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
-    if (data_ov001_02193de8 == 0) {
+    if (gOv001WfcConnectChosen == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02182fe0);
+    Ov001_SetStepCallback(&Ov001_CloseWfcMenuScreen);
 }
 
-void func_ov001_02182fe0(void) {
+/* Last step of the Nintendo WFC menu screen: once the fades finish, free the
+ * screen's backgrounds and hand over to the next screen's step callback, the
+ * access-point menu, or the WFC connection screen when the player chose to
+ * connect to Nintendo WFC. */
+void Ov001_CloseWfcMenuScreen(void) {
     s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -255,25 +259,25 @@ void func_ov001_02182fe0(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern u8 data_ov001_02193de8;
-    extern M2C_UNK func_ov001_02180d44;
-    extern M2C_UNK func_ov001_021830b8;
+    extern u8 gOv001WfcConnectChosen;
+    extern M2C_UNK Ov001_OpenAccessPointMenu;
+    extern M2C_UNK Ov001_OpenWfcConnectScreen;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (data_ov001_02193de8 == 0 && Ov001_IsFadeActive(1) != 0) return;
+    if (gOv001WfcConnectChosen == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193de8 == 0) {
+    if (gOv001WfcConnectChosen == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193de8 == 0) {
+    if (gOv001WfcConnectChosen == 0) {
         Ov001_SetNextScreenMode(2, 1);
-        Ov001_SetStepCallback(&func_ov001_02180d44);
+        Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
         return;
     }
     Ov001_SetNextScreenMode(2, 1);
-    Ov001_SetStepCallback(&func_ov001_021830b8);
+    Ov001_SetStepCallback(&Ov001_OpenWfcConnectScreen);
 }
 
 s32 func_ov001_02183098(void) {
@@ -283,7 +287,7 @@ s32 func_ov001_02183098(void) {
     return 0;
 }
 
-void func_ov001_021830b8(void) {
+void Ov001_OpenWfcConnectScreen(void) {
     M2C_UNK func_02007740(u8 *);
     M2C_UNK FillU16(M2C_UNK, u8 *, s32);
     M2C_UNK CopyU16(u8 *, u8 *, s32);
@@ -410,7 +414,7 @@ void func_ov001_021833a4(void) {
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     void func_ov001_02185dac(void);
     extern u8 gOv001WfcScreenState;
-    extern void func_ov001_02180d44(void);
+    extern void Ov001_OpenAccessPointMenu(void);
     extern void func_ov001_02182d0c(void);
     extern void func_ov001_02182b00(void);
 
@@ -433,7 +437,7 @@ void func_ov001_021833a4(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (gOv001WfcScreenState == 2) {
         Ov001_SetNextScreenMode(2, 1);
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180d44);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenAccessPointMenu);
         return;
     }
     if (gOv001WfcScreenState == 3) {
