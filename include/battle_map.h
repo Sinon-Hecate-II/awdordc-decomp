@@ -311,6 +311,7 @@ typedef struct MapTargetEntry {
 } MapTargetEntry;
 
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
+#define UNIT_FLAG_ACTED      0x0001 /* the unit has acted this turn (HasUnitActed) */
 #define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
 #define UNIT_FLAG_REPAIR_TMP 0x8000 /* scratch bit marking a repair neighbour during the repair pass */
 #define UNIT_FLAG_LOADED     0x0008 /* unit is loaded in a transport (turn passes skip it) */
@@ -418,6 +419,9 @@ typedef struct MapScrollAnim {
     u16 remaining; /* +0x40 index of the current speed step, counts down */
     u16 accum;     /* +0x42 cells travelled so far, times the major-axis sign */
 } MapScrollAnim;
+
+/* Players are numbered 1..MAX_PLAYERS-1; player 0 means "none". */
+#define MAX_PLAYERS 5
 
 /* Battle outcome for one player, returned by GetPlayerResult. */
 enum {

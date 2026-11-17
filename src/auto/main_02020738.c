@@ -651,19 +651,19 @@ s32 SocketIsClosed(s32 arg0) {
 }
 
 void func_02021500(s32 unused, s32 arg1) {
- M2C_UNK func_0201f400(M2C_UNK *);
- extern M2C_UNK data_020fafa0;
- extern M2C_UNK data_020fafb8;
- if(arg1 == 1) {func_0201f400(&data_020fafb8); return;}
- func_0201f400(&data_020fafa0);
+ M2C_UNK SocketCreateFromConfig(M2C_UNK *);
+ extern M2C_UNK gUdpSocketConfig;
+ extern M2C_UNK gTcpSocketConfig;
+ if(arg1 == 1) {SocketCreateFromConfig(&gTcpSocketConfig); return;}
+ SocketCreateFromConfig(&gUdpSocketConfig);
 }
 
 void func_0202152c(M2C_UNK arg0, void *arg1) {
-    M2C_UNK func_0201f9e4(M2C_UNK, u16);
+    M2C_UNK SocketSetReceivePort(M2C_UNK, u16);
     u16 temp_r1;
 
     temp_r1 = M2C_FIELD(arg1, u16 *, 2);
-    func_0201f9e4(arg0, (u16) ((u8) ((s32) temp_r1 >> 8) | ((temp_r1 << 8) & 0xFF00)));
+    SocketSetReceivePort(arg0, (u16) ((u8) ((s32) temp_r1 >> 8) | ((temp_r1 << 8) & 0xFF00)));
 }
 
 void func_02021558(M2C_UNK arg0, void *arg1) {

@@ -190,7 +190,7 @@ void *GetScrollList(void) {
 #pragma opt_scheduling off
 void func_ov000_02170110(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02080c50(M2C_UNK *, s32);
@@ -272,7 +272,7 @@ void func_ov000_02170110(void *arg0) {
     LoadFileToSpriteBuffer(&data_ov000_021b8b78, 0x380, 0x20);
     p = (void *) (M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x3880);
     MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
-    func_01ff9e44(func_ov000_0216ce84(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
+    CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
     func_0208ca2c(0x6B80, 0xB, GetUiColor(0xC), 2);
     func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), func_020a8b3c(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
     func_0209c048(0x1A, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), M2C_FIELD(arg0, s16 *, 0x3C), 0, 0);

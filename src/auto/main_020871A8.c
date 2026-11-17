@@ -1,27 +1,30 @@
 /* 17 functions from 0x020871A8 to 0x02088044 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "sprite_grid.h"
 
-void func_020871a8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 arg5) {
-    s32 x, y, z;
-    s16 b = (s16) arg1, a = (s16) arg0, e = (s16) (arg1 + arg4), c = (s16) arg2, d = (s16) (arg0 + arg3);
+/* Draws the axis-aligned quad at (x, y) of size width x height, at depth z,
+ * filled with one GX colour, and leaves the current vertex colour white. */
+void DrawSolidQuad(s32 x, s32 y, s32 z, s32 width, s32 height, u16 color) {
+    s32 v, w, d;
+    s16 y0 = (s16) y, x0 = (s16) x, y1 = (s16) (y + height), zz = (s16) z, x1 = (s16) (x + width);
 
-    *(volatile u32 *) 0x4000500 = 1;
-    *(volatile u32 *) 0x4000480 = arg5;
-    x = (u32) (u16) a | ((u32) (u16) b << 0x10);
-    *(volatile u32 *) 0x400048C = x;
-    *(volatile u32 *) 0x400048C = (u32) (u16) c;
-    y = (u32) (u16) a | ((u32) (u16) e << 0x10);
-    *(volatile u32 *) 0x400048C = y;
-    *(volatile u32 *) 0x400048C = (u32) (u16) c;
-    z = (u32) (u16) d | ((u32) (u16) e << 0x10);
-    *(volatile u32 *) 0x400048C = z;
-    *(volatile u32 *) 0x400048C = (u32) (u16) c;
-    x = (u32) (u16) d | ((u32) (u16) b << 0x10);
-    *(volatile u32 *) 0x400048C = x;
-    *(volatile u32 *) 0x400048C = (u32) (u16) c;
-    *(volatile u32 *) 0x4000504 = 0;
-    *(volatile u32 *) 0x4000480 = 0x7FFF;
+    REG_GX_BEGIN_VTXS = GX_PRIM_QUADS;
+    REG_GX_COLOR = color;
+    v = (u32) (u16) x0 | ((u32) (u16) y0 << 0x10);
+    REG_GX_VTX_16 = v;
+    REG_GX_VTX_16 = (u32) (u16) zz;
+    w = (u32) (u16) x0 | ((u32) (u16) y1 << 0x10);
+    REG_GX_VTX_16 = w;
+    REG_GX_VTX_16 = (u32) (u16) zz;
+    d = (u32) (u16) x1 | ((u32) (u16) y1 << 0x10);
+    REG_GX_VTX_16 = d;
+    REG_GX_VTX_16 = (u32) (u16) zz;
+    v = (u32) (u16) x1 | ((u32) (u16) y0 << 0x10);
+    REG_GX_VTX_16 = v;
+    REG_GX_VTX_16 = (u32) (u16) zz;
+    REG_GX_END_VTXS = 0;
+    REG_GX_COLOR = GX_RGB_WHITE;
 }
 
 void func_0208726c(s32 *x, s32 *y, s32 angle, s32 dist) {

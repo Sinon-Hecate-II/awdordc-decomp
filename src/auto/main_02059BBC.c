@@ -126,12 +126,12 @@ M2C_FIELD(p,s32 *,8)-=b;
 }
 
 s32 func_02059f18(void *arg0) {
-    M2C_UNK func_0205cef8(void *);
+    M2C_UNK gti2FreeSocket(void *);
     extern M2C_UNK data_020ff704;
     extern M2C_UNK data_020ff774;
-    extern M2C_UNK data_020ff77c;
+    extern M2C_UNK gAssertFileName;
     if (arg0 == NULL) {
-        AssertFailed(&data_020ff774, &data_020ff77c, &data_020ff704, 0x1B);
+        AssertFailed(&data_020ff774, &gAssertFileName, &data_020ff704, 0x1B);
     }
     if (arg0 == NULL) {
         return 1;
@@ -143,7 +143,7 @@ s32 func_02059f18(void *arg0) {
     M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x24)(arg0);
     M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) - 1);
     if ((M2C_FIELD(arg0, s32 *, 0x14) != 0) && (M2C_FIELD(arg0, s32 *, 0x1C) == 0)) {
-        func_0205cef8(arg0);
+        gti2FreeSocket(arg0);
         return 0;
     }
     return 1;
@@ -154,8 +154,8 @@ s32 func_02059f18(void *arg0) {
  * and connection callback counts; when the socket was asked to close and this was its
  * last callback, free it. Returns 1, or 0 once the socket has been freed. */
 s32 Gt2InvokeConnectAttempt(void *socket,void *connection,s32 ip,s32 port,s32 latency,s32 message,s32 length){
-extern int data_020ff78c,data_020ff77c,data_020ff738;
-if(!socket||!connection)AssertFailed(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
+extern int data_020ff78c,gAssertFileName,data_020ff738;
+if(!socket||!connection)AssertFailed(&data_020ff78c,&gAssertFileName,&data_020ff738,0x3d);
 if(!socket||!connection)return 1;
 if(!M2C_FIELD(socket,void **,0x20))return 1;
 if(!length||!message){message=0;length=0;}
@@ -163,7 +163,7 @@ M2C_FIELD(socket,s32 *,0x1c)++;
 M2C_FIELD(connection,s32 *,0x24)++;
 ((void (*)(void *,void *,s32,s32,s32,s32,s32))M2C_FIELD(socket,void **,0x20))(socket,connection,ip,port,latency,message,length);
 M2C_FIELD(socket,s32 *,0x1c)--;M2C_FIELD(connection,s32 *,0x24)--;
-if(M2C_FIELD(socket,s32 *,0x14)&&!M2C_FIELD(socket,s32 *,0x1c)){func_0205cef8(socket);return 0;}
+if(M2C_FIELD(socket,s32 *,0x14)&&!M2C_FIELD(socket,s32 *,0x1c)){gti2FreeSocket(socket);return 0;}
 return 1;
 }
 
@@ -173,10 +173,10 @@ return 1;
  * for destruction is freed once the outermost callback has returned.  Returns 0
  * when the socket was freed, 1 otherwise. */
 s32 Gt2ConnectionCallCallback(void *connection, s32 type, s32 data, s32 length) {
-M2C_UNK func_0205cef8(void *);
+M2C_UNK gti2FreeSocket(void *);
 M2C_UNK AssertFailed(M2C_UNK*,M2C_UNK*,M2C_UNK*,M2C_UNK);
-extern M2C_UNK data_020ff7a4,data_020ff77c,data_020ff6d4;
-if(!connection)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6d4,0x69);
+extern M2C_UNK gAssertNameConnection,gAssertFileName,data_020ff6d4;
+if(!connection)AssertFailed(&gAssertNameConnection,&gAssertFileName,&data_020ff6d4,0x69);
 if(!connection)return 1;
 M2C_FIELD(connection,s32*,0x18)=type;
 if(!M2C_FIELD(connection,void**,GT2_CONNECTION_CALLBACK))return 1;
@@ -189,7 +189,7 @@ M2C_FIELD(connection,s32*,GT2_CONNECTION_CALLBACKS)--;
 M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_CALLBACKS)--;
 if(M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_DIRTY)) {
 if(!M2C_FIELD(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET),s32*,GT2_SOCKET_CALLBACKS)) {
-func_0205cef8(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET));return 0;
+gti2FreeSocket(M2C_FIELD(connection,void**,GT2_CONNECTION_SOCKET));return 0;
 }}
 return 1;
 }
@@ -199,8 +199,8 @@ return 1;
  * counters so a socket marked for destruction is freed once the outermost
  * callback returns. Returns 0 when the socket was freed, 1 otherwise. */
 s32 Gt2ConnectionCallMessageCallback(void *connection,void *messageData,s32 messageLength,s32 unk){
-extern int data_020ff7a4,data_020ff77c,data_020ff6bc;
-if(!connection)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6bc,0x94);
+extern int gAssertNameConnection,gAssertFileName,data_020ff6bc;
+if(!connection)AssertFailed(&gAssertNameConnection,&gAssertFileName,&data_020ff6bc,0x94);
 if(!connection)return 1;
 if(!M2C_FIELD(connection,void **,GT2_CONNECTION_CALLBACK_MSG))return 1;
 if(!messageLength||!messageData){messageData=0;messageLength=0;}
@@ -211,20 +211,20 @@ M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_C
 M2C_FIELD(connection,int *,GT2_CONNECTION_CALLBACKS)--;
 M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_CALLBACKS)--;
 if(M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_DIRTY)&&!M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKET_CALLBACKS)){
-func_0205cef8(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET));return 0;
+gti2FreeSocket(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET));return 0;
 }return 1;}
 
-int func_0205a29c(void *arg0, int arg1) {
-    M2C_UNK func_0205cef8(void *);
+int gti2ClosedCallback(void *arg0, int arg1) {
+    M2C_UNK gti2FreeSocket(void *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020ff7a4;
-    extern M2C_UNK data_020ff77c;
+    extern M2C_UNK gAssertNameConnection;
+    extern M2C_UNK gAssertFileName;
     extern M2C_UNK data_020ff6a8;
     void *temp;
     void *base;
 
     if (arg0 == NULL) {
-        AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff6a8, 0xBA);
+        AssertFailed(&gAssertNameConnection, &gAssertFileName, &data_020ff6a8, 0xBA);
     }
     if (arg0 == NULL) {
         return 1;
@@ -242,36 +242,41 @@ int func_0205a29c(void *arg0, int arg1) {
     temp = *(void **)((char *)arg0 + 0x8);
     if (*(int *)((char *)temp + 0x14)) {
         if (!*(int *)((char *)temp + 0x1C)) {
-            func_0205cef8((void *) temp);
+            gti2FreeSocket((void *) temp);
             return 0;
         }
     }
     return 1;
 }
 
-s32 func_0205a360(void *arg0, void *arg1) {
-    M2C_UNK func_0205cef8(void *);
+/* GameSpy GT2's gti2PingCallback: report a ping reply's round-trip time to the
+ * connection's ping callback.  The call is nested via the connection and the
+ * socket callback counters, so that a socket marked for destruction is freed
+ * once the outermost callback has returned.  Returns 1, or 0 once the socket
+ * has been freed. */
+s32 gti2PingCallback(void *connection, s32 pingTime) {
+    M2C_UNK gti2FreeSocket(void *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020ff7a4;
-    extern M2C_UNK data_020ff77c;
-    extern M2C_UNK data_020ff694;
-    if (arg0 == NULL) {
-        AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff694, 0xD9);
+    extern M2C_UNK gAssertNameConnection;
+    extern M2C_UNK gAssertFileName;
+    extern M2C_UNK gAssertExprPingCallback;
+    if (connection == NULL) {
+        AssertFailed(&gAssertNameConnection, &gAssertFileName, &gAssertExprPingCallback, 0xD9);
     }
-    if (arg0 == NULL) {
+    if (connection == NULL) {
         return 1;
     }
-    if (!*(void **)((char *)arg0 + 0x34)) {
+    if (!M2C_FIELD(connection, void **, GT2_CONNECTION_CALLBACK_PING)) {
         return 1;
     }
-    *(int *)((char *)arg0 + 0x24) = *(int *)((char *)arg0 + 0x24) + 1;
-    *(int *)((char *)*(void **)((char *)arg0 + 0x8) + 0x1C) = *(int *)((char *)*(void **)((char *)arg0 + 0x8) + 0x1C) + 1;
-    ((void (*)(void *, void *))*(void **)((char *)arg0 + 0x34))(arg0, arg1);
-    *(int *)((char *)arg0 + 0x24) = *(int *)((char *)arg0 + 0x24) - 1;
-    *(int *)((char *)*(void **)((char *)arg0 + 0x8) + 0x1C) = *(int *)((char *)*(void **)((char *)arg0 + 0x8) + 0x1C) - 1;
-    if (*(int *)((char *)*(void **)((char *)arg0 + 0x8) + 0x14)) {
-        if (!*(int *)((char *)*(void **)((char *)arg0 + 0x8) + 0x1C)) {
-            func_0205cef8(*(void **)((char *)arg0 + 0x8));
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) + 1;
+    M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CALLBACKS) = M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CALLBACKS) + 1;
+    ((void (*)(void *, s32))M2C_FIELD(connection, void **, GT2_CONNECTION_CALLBACK_PING))(connection, pingTime);
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) - 1;
+    M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CALLBACKS) = M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CALLBACKS) - 1;
+    if (M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_DIRTY)) {
+        if (!M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CALLBACKS)) {
+            gti2FreeSocket(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET));
             return 0;
         }
     }
@@ -282,8 +287,8 @@ s32 func_0205a360(void *arg0, void *arg1) {
 s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
     void *Vector_GetItem(int, int);
     void *callback;
-    extern int data_020ff7a4, data_020ff77c, data_020ff6ec;
-    if (!connection) AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff6ec, 0x101);
+    extern int gAssertNameConnection, gAssertFileName, data_020ff6ec;
+    if (!connection) AssertFailed(&gAssertNameConnection, &gAssertFileName, &data_020ff6ec, 0x101);
     if (!connection) return 1;
     callback = Vector_GetItem(M2C_FIELD(connection, void **, 0x98), callbackIndex);
     if (!callback) return 1;
@@ -294,7 +299,7 @@ s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
     M2C_FIELD(connection, int *, 0x24)--;
     M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x1c)--;
     if (M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x14) && !M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x1c)) {
-        func_0205cef8(M2C_FIELD(connection, void **, 8));
+        gti2FreeSocket(M2C_FIELD(connection, void **, 8));
         return 0;
     }
     return 1;
@@ -303,8 +308,8 @@ s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
 /* Invoke receive-filter callback entry 0 (or a), with nesting/refcount bookkeeping; release the filter table when idle. */
 s32 gti2ReceiveFilterCallback(void *p,void *a,s32 b,s32 c,s32 d){
 void *Vector_GetItem(int,int);void *entry;
-extern int data_020ff7a4,data_020ff77c,data_020ff71c;
-if(!p)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff71c,0x12d);
+extern int gAssertNameConnection,gAssertFileName,data_020ff71c;
+if(!p)AssertFailed(&gAssertNameConnection,&gAssertFileName,&data_020ff71c,0x12d);
 if(!p)return 1;
 entry=Vector_GetItem(M2C_FIELD(p,void **,0x9c),a);if(!entry)return 1;
 if(!c||!b){b=0;c=0;}
@@ -315,16 +320,16 @@ M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)++;
 M2C_FIELD(p,int *,0x24)--;
 M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)--;
 if(M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x14)&&!M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)){
-func_0205cef8(M2C_FIELD(p,void **,8));return 0;
+gti2FreeSocket(M2C_FIELD(p,void **,8));return 0;
 }return 1;}
 
 /* Invoke the GT2 socket's dump handler for a message being sent (send != 0) or
  * received, keep the socket's and connection's callback refcounts, and free the
  * socket when it was closed and the last callback has returned. */
 s32 gti2DumpCallback(void *socket, void *connection, s32 address, s32 port, s32 flags, s32 message, s32 length, s32 send) {
-    extern int data_020ff774, data_020ff77c, data_020ff680;
+    extern int data_020ff774, gAssertFileName, data_020ff680;
     void (*dumpHandler)(void *, void *, s32, s32, s32, s32, s32);
-    if (!socket) AssertFailed(&data_020ff774, &data_020ff77c, &data_020ff680, 0x160);
+    if (!socket) AssertFailed(&data_020ff774, &gAssertFileName, &data_020ff680, 0x160);
     if (!socket) return 1;
     if (send) dumpHandler = M2C_FIELD(socket, void (**)(void *, void *, s32, s32, s32, s32, s32), 0x28);
     else dumpHandler = M2C_FIELD(socket, void (**)(void *, void *, s32, s32, s32, s32, s32), 0x2c);
@@ -335,22 +340,22 @@ s32 gti2DumpCallback(void *socket, void *connection, s32 address, s32 port, s32 
     dumpHandler(socket, connection, address, port, flags, message, length);
     M2C_FIELD(socket, s32 *, 0x1c)--;
     if (connection) M2C_FIELD(connection, s32 *, 0x24)--;
-    if (M2C_FIELD(socket, s32 *, 0x14) && !M2C_FIELD(socket, s32 *, 0x1c)) { func_0205cef8(socket); return 0; }
+    if (M2C_FIELD(socket, s32 *, 0x14) && !M2C_FIELD(socket, s32 *, 0x1c)) { gti2FreeSocket(socket); return 0; }
     return 1;
 }
 
 /* Invoke the "unrecognized message" callback with refcount tracking, releasing the owning handler when idle. */
 s32 gti2UnrecognizedMessageCallback(void *p,s32 a,s32 b,s32 c,s32 d,s32 *out){
-extern int data_020ff774,data_020ff77c,data_020ff754;
+extern int data_020ff774,gAssertFileName,data_020ff754;
 *out=0;
-if(!p)AssertFailed(&data_020ff774,&data_020ff77c,&data_020ff754,0x197);
+if(!p)AssertFailed(&data_020ff774,&gAssertFileName,&data_020ff754,0x197);
 if(!p)return 1;
 if(!M2C_FIELD(p,void **,0x30))return 1;
 if(!d||!c){c=0;d=0;}
 M2C_FIELD(p,int *,0x1c)++;
 *out=((s32 (*)(void *,s32,s32,s32,s32))M2C_FIELD(p,void **,0x30))(p,a,b,c,d);
 M2C_FIELD(p,int *,0x1c)--;
-if(M2C_FIELD(p,int *,0x14)&&!M2C_FIELD(p,int *,0x1c)){func_0205cef8(p);return 0;}
+if(M2C_FIELD(p,int *,0x14)&&!M2C_FIELD(p,int *,0x1c)){gti2FreeSocket(p);return 0;}
 return 1;
 }
 

@@ -123,7 +123,7 @@ StepMapViewToTile(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void 
  * the CO's colour, stamps the portrait animation, sets the cut-in quad and
  * queues the panel, gauge and ability sprites. */
 void DrawOccupationScreen(u8 *panel){
-void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void func_01ff9e44(void *,s32,s32);
+void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void CopyToObjPaletteShadow(void *,s32,s32);
 s32 GetCOFaceIndex(s32); s32 BlendRgb555_16(s32,s32,u8,u8);
 void BlendPalette(void *,s32,u8,u8,s32); s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
@@ -135,7 +135,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x44)=0xffcb;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0xffb4;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=0xffcb;
 UpdateSpriteAnimation(*(void **)(panel+68)); fade=GetSpriteAnimValue(*(void **)(panel+68));
-func_01ff9e44(*(void **)(panel+76),64,128);
+CopyToObjPaletteShadow(*(void **)(panel+76),64,128);
 scratch=GetCOFaceIndex((*(u8 **)(panel+64))[3]);
 if((*(u8 **)(panel+64))[2]==0)BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,scratch,16-fade,fade,128);
 else{q0=GetCOFaceIndex((*(u8 **)(panel+64))[2]);q0=BlendRgb555_16(q0,scratch,16-fade*2,fade*2);BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,q0,11,5,128);}

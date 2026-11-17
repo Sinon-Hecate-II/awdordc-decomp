@@ -4,23 +4,35 @@
 
 typedef struct { u32 words[3]; } Unk032Record;
 
-void func_02032228(void *arg0) {
-void func_02007888(u32 *); void func_020472cc(void *); void func_02031dd4(void *,u32,u32); void func_02031dfc(void *,u32); void func_02031e94(void *,s32);
-u32 b[5]; u32 a[8]; u32 i; u64 seed;
-func_02007888(a);
-for(i=1;i<8;i++)a[i]^=a[i-1];
-seed=a[7];
-func_020472cc(b);
-if(b[4])func_02031dd4(arg0,b[0],b[1]);else func_02031dd4(arg0,b[2],b[3]);
-func_02031dfc(arg0,(u32)((seed*0x5d588b656c078965ULL+0x269ec3)>>32));
-func_02031e94(arg0,1);
+/* Fill the 12-byte NAS login key record: the local WFC profile's 64-bit id (its
+ * first id, or the second when the first is unset) and a check word derived from
+ * console entropy, marked as a kind-1 record. */
+void InitNasLoginKey(void *record) {
+    void GetConsoleEntropy(u32 *);
+    void GetWfcProfileIds(void *);
+    void func_02031dd4(void *, u32, u32);
+    void func_02031dfc(void *, u32);
+    void func_02031e94(void *, s32);
+    u32 profile[5];
+    u32 entropy[8];
+    u32 i;
+    u64 seed;
+
+    GetConsoleEntropy(entropy);
+    for (i = 1; i < 8; i++) entropy[i] ^= entropy[i - 1];
+    seed = entropy[7];
+    GetWfcProfileIds(profile);
+    if (profile[4]) func_02031dd4(record, profile[0], profile[1]);
+    else func_02031dd4(record, profile[2], profile[3]);
+    func_02031dfc(record, (u32)((seed * NAS_KEY_SEED_MULT + NAS_KEY_SEED_ADD) >> 32));
+    func_02031e94(record, 1);
 }
 
 s32 func_020322ec(void *a) {
-void func_020472cc(void *);
+void GetWfcProfileIds(void *);
 u64 func_02031d90(void *);
 u32 s[5];
-func_020472cc(s);
+GetWfcProfileIds(s);
 if(s[4]) return *(u64 *)&s[0]==func_02031d90(a);
 return *(u64 *)&s[2]==func_02031d90(a);
 }
@@ -72,11 +84,11 @@ s32 func_020323f4(void *arg0) {
 
 s32 func_02032424(void *a) {
 s32 func_02031e28(void *);
-void func_020472cc(void *);
+void GetWfcProfileIds(void *);
 u64 func_02031d90(void *);
 u32 s[5];
 if(func_02031e28((u8 *)a+0x10)==0)return 1;
-func_020472cc(s);
+GetWfcProfileIds(s);
 if(s[4]==0)return 0;
 return *(u64 *)&s[0]==func_02031d90((u8 *)a+0x10);
 }

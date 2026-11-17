@@ -18,7 +18,7 @@ void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
  * block to the profile subsystem and install the screen's task. */
 void func_ov001_02175f8c(void *arg0) {
     s32 Ov001_Alloc(s32, s32);
-    s32 func_ov001_02175f48(M2C_UNK, u32);
+    s32 Ov001_GetMessageText(M2C_UNK, u32);
     s32 func_ov001_02175e34(void);
     void func_ov001_02188c78(M2C_UNK, void *);
     s32 func_ov001_02188ec4(void);
@@ -40,8 +40,8 @@ void func_ov001_02175f8c(void *arg0) {
     M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A0) = 0;
     M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A1) = 0;
     buf = *(Buf28 *)data_ov001_0219031c;
-    buf.b = func_ov001_02175f48(gOv001MessageArchive, 0);
-    buf.c = func_ov001_02175f48(gOv001MessageArchive, 1);
+    buf.b = Ov001_GetMessageText(gOv001MessageArchive, 0);
+    buf.c = Ov001_GetMessageText(gOv001MessageArchive, 1);
     buf.g = (u8)func_ov001_02175e34();
     func_ov001_02188c78((M2C_UNK)data_ov001_02193d50, &buf);
     if (func_ov001_02188ec4() == 0) SystemHalt();

@@ -321,7 +321,7 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, s32);
     extern M2C_UNK data_020fe710;
-    extern M2C_UNK data_020fe84c;
+    extern M2C_UNK gGpiUpdateFinal;
     extern M2C_UNK data_020fe990;
     extern M2C_UNK data_020fe9a8;
     void *temp_r4;
@@ -333,7 +333,7 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
     gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg1);
     gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe9a8);
     gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg2);
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe84c);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &gGpiUpdateFinal);
     return 0;
 }
 

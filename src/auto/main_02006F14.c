@@ -411,7 +411,7 @@ void GX_ReleaseBanksByOwner(s32 arg0,s32 arg1) {
  OS_RestoreInterrupts(state);
 }
 
-void func_02007888(void *out_arg) {
+void GetConsoleEntropy(void *out_arg) {
     extern u32 data_0212dfbc[2];
     u8 *base;
     u32 *out;
@@ -496,7 +496,7 @@ void func_02007a74(s32 a,s32 b,s32 c,u32 n) {
  while (*p & 0x80000000) {}
 }
 
-void func_02007ae0(s32 arg0, M2C_UNK arg1, s32 arg2, u32 arg3, void (*arg4)(s32), s32 arg5) {
+void DmaFillAsync(s32 arg0, M2C_UNK arg1, s32 arg2, u32 arg3, void (*arg4)(s32), s32 arg5) {
     void func_02007c3c(s32);
     void func_0200510c(s32, s32, s32);
     u32 OS_DisableInterrupts(void);

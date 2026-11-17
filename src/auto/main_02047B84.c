@@ -106,7 +106,7 @@ void *func_0206f8b8(void *,void *,s32);
 
 #pragma push
 #pragma optimization_level 2
-s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
+s32 BuildWebSyncRequest(s32 x, s32 y, s32 a, s32 b) {
     s32 Base64EncodedLength(void *);
     void HeapFree(s32, s32, s32);
     void *HeapAlloc(s32, s32);
@@ -332,14 +332,17 @@ void func_02048534(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     MemCopy(Vector_GetItem(arg0, arg2), arg1, M2C_FIELD(arg0, s32 *, 8));
 }
 
-s32 *Vector_New(s32 a,s32 b,s32 c) {
-s32 *gpiMalloc(s32); s32 AssertFailed();
+/* GameSpy gpi ArrayNew: allocates an array of `capacity` items of `elemSize` bytes
+ * each. Layout: +0x00 count, +0x04 capacity, +0x08 item size, +0x0C capacity added
+ * when it grows, +0x10 user data (the per-item release callback), +0x14 items. */
+s32 *Vector_New(s32 elemSize, s32 capacity, s32 userData) {
+s32 gpiMalloc(s32); s32 AssertFailed();
 extern M2C_UNK data_020fcbec,data_020fccb8;
 s32 *p=gpiMalloc(24);
 if(!p)AssertFailed(&data_020fccb0,&data_020fcca4,&data_020fcbec,0x52);
-if(!a)AssertFailed(&data_020fccb8,&data_020fcca4,&data_020fcbec,0x53);
-if(!b)b=8;
-p[0]=0;p[1]=b;p[2]=a;p[3]=b;p[4]=c;
+if(!elemSize)AssertFailed(&data_020fccb8,&data_020fcca4,&data_020fcbec,0x53);
+if(!capacity)capacity=8;
+p[0]=0;p[1]=capacity;p[2]=elemSize;p[3]=capacity;p[4]=userData;
 if(p[1]) {
 p[5]=(s32)gpiMalloc(p[1]*p[2]);
 if(!p[5])AssertFailed(&data_020fcc98,&data_020fcca4,&data_020fcbec,0x5e);

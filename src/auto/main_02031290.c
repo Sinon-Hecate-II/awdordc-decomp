@@ -686,7 +686,7 @@ StringFormatN((M2C_UNK)arg2,21,&data_020fb2e8,sp29,(arg1>>24)&255,(arg1>>16)&255
 
 void func_020321ac(void *arg0, s32 arg1) {
     void MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_02032228(void *);
+    void InitNasLoginKey(void *);
     void func_02031e94(M2C_UNK, M2C_UNK);
     void func_02076794(M2C_UNK *, s32);
     s32 func_02076860(M2C_UNK *, void *, M2C_UNK);
@@ -696,7 +696,7 @@ void func_020321ac(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0) = 0x40;
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
     M2C_FIELD(arg0, s32 *, 0x24) = arg1;
-    func_02032228((u8 *)arg0 + 4);
+    InitNasLoginKey((u8 *)arg0 + 4);
     func_02031e94((M2C_UNK)((u8 *)arg0 + 0x10), 0);
     func_02076794((M2C_UNK *)table, 0xEDB88320);
     M2C_FIELD(arg0, s32 *, 0x3C) = func_02076860((M2C_UNK *)table, arg0, 0x3C);

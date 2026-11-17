@@ -252,19 +252,28 @@ loop_1:
     goto loop_1;
 }
 
-s32 GetWinningPlayer(void){
-extern u8 gBattleEndState;extern s32 *gCurrentMap;s32 i;
-if(!gBattleEndState && GetPlayerResult(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==1)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-for(i=1;i<5;i++)if(IsPlayerHuman(i) && GetPlayerResult(i)==1)return i;
-for(i=1;i<5;i++)if(IsPlayerPresent(i) && GetPlayerResult(i)==1)return i;
-return 0;
+/* The player who won the battle: the map's current player while the battle is
+ * still running, otherwise the first human player (then the first present
+ * player) whose result is a win; 0 when nobody won. */
+s32 GetWinningPlayer(void) {
+    extern u8 gBattleEndState;
+    extern s32 *gCurrentMap;
+    s32 player;
+
+    if (!gBattleEndState && GetPlayerResult(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == BATTLE_RESULT_WIN) return M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
+    for (player = 1; player < MAX_PLAYERS; player++) if (IsPlayerHuman(player) && GetPlayerResult(player) == BATTLE_RESULT_WIN) return player;
+    for (player = 1; player < MAX_PLAYERS; player++) if (IsPlayerPresent(player) && GetPlayerResult(player) == BATTLE_RESULT_WIN) return player;
+    return BATTLE_RESULT_NONE;
 }
 
+/* Returns the id of the player who lost the battle (0 when nobody did): the
+ * current player while the battle is still running, then the first human player
+ * and then the first present player whose result is BATTLE_RESULT_LOSE. */
 s32 GetLosingPlayer(void){
 extern u8 gBattleEndState;extern s32 *gCurrentMap;s32 i;
-if(!gBattleEndState && GetPlayerResult(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==2)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-for(i=1;i<5;i++)if(IsPlayerHuman(i) && GetPlayerResult(i)==2)return i;
-for(i=1;i<5;i++)if(IsPlayerPresent(i) && GetPlayerResult(i)==2)return i;
+if(!gBattleEndState && GetPlayerResult(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))==BATTLE_RESULT_LOSE)return M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER);
+for(i=1;i<5;i++)if(IsPlayerHuman(i) && GetPlayerResult(i)==BATTLE_RESULT_LOSE)return i;
+for(i=1;i<5;i++)if(IsPlayerPresent(i) && GetPlayerResult(i)==BATTLE_RESULT_LOSE)return i;
 return 0;
 }
 

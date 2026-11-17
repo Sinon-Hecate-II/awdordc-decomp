@@ -139,7 +139,7 @@ extern void **gCurrentMap;
 extern u8 data_ov005_02220f1c[],data_ov005_02220e5c[],data_ov005_02220eec[],data_ov005_02220d50[];
 void func_02088044(void *);
 void func_02087ec0(void *,s16);
-void func_01ff9e44(s32,s32,s32);
+void CopyToObjPaletteShadow(s32,s32,s32);
 s32 func_020a72e8(u8);
 s32 func_ov000_0216cdec(s32,u8);
 s32 func_020cfb94(void);
@@ -174,9 +174,9 @@ void func_ov005_0221d160(void *arg0){
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                func_01ff9e44(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
             }
@@ -199,9 +199,9 @@ void func_ov005_0221d160(void *arg0){
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                func_01ff9e44(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
             }
@@ -218,9 +218,9 @@ void func_ov005_0221d160(void *arg0){
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                func_01ff9e44(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
             }

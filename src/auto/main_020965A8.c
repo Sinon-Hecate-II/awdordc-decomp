@@ -85,9 +85,9 @@ done:
 void func_0209670c(void *arg0, s32 arg1) { (void)arg0; (void)arg1; }
 
 void func_02096b24(void) {
-    M2C_UNK func_02086720();
+    M2C_UNK SetUiMessageText();
     extern M2C_UNK data_02102e14;
-    func_02086720();
+    SetUiMessageText();
     func_020948c4(&data_02102e14);
 }
 
@@ -100,19 +100,19 @@ void func_02096b3c(void) {
 void func_02096b50(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102dbc;
-    func_02086720();
+    SetUiMessageText();
     func_01ffa3dc(&data_02102dbc, 7);
 }
 
 void func_02096b6c(void) {
     extern M2C_UNK data_02102d4c;
-    func_02086720();
+    SetUiMessageText();
     func_01ffa3dc(&data_02102d4c, 7);
 }
 
 void func_02096b88(void) {
     extern M2C_UNK data_02102d84;
-    func_02086720();
+    SetUiMessageText();
     func_01ffa3dc(&data_02102d84, 7);
 }
 

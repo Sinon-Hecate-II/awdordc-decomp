@@ -137,7 +137,7 @@ CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_0208ca2c(0x1000,1,GetUiColor(9),2);
 n=func_020a7290()<<5;dst=M2C_FIELD(g3DSpriteEngineMain,void **,0x10);p=func_020a7278();MI_CpuCopy32(p,(u8 *)dst+0x1980,n);
-func_01ff9e44(func_020a72e8(1),0x60,0x80);
+CopyToObjPaletteShadow(func_020a72e8(1),0x60,0x80);
 OpenNarcArchive(&data_ov005_02220394);
 LoadNarcFileDecompressed(&data_ov005_022203a4,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1880);
 LoadNarcFileDecompressed(&data_ov005_022203b8,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1900);

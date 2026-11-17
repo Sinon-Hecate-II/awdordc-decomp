@@ -3,6 +3,27 @@
 typedef struct { s32 v[4]; } Ov006Date;
 extern const Ov006Date data_ov006_02218394;
 
+/* The ov006 map-transfer object: the campaign map id it exchanges, its transfer
+ * mode, and the buffers it receives player entries (0x310 bytes each) and
+ * expanded map records (0x6F8 bytes each) into. */
+#define MAP_TRANSFER_MAP_ID      0x34 /* s32 campaign map id whose record is transferred */
+#define MAP_TRANSFER_MODE        0x38 /* s32 transfer mode selecting the operation */
+#define MAP_TRANSFER_COUNT       0x3C /* s32 number of player entries collected */
+#define MAP_TRANSFER_SOURCE      0x48 /* s32 source map record for the local mode */
+#define MAP_TRANSFER_ENTRIES     0x4C /* u8 * received player entries, MAP_TRANSFER_SLOTS of them */
+#define MAP_TRANSFER_RECORDS     0x50 /* u8 * expanded received map records */
+#define MAP_TRANSFER_CHOSEN      0x54 /* u8 * received map record picked for play */
+#define MAP_TRANSFER_SLOTS       10
+#define MAP_TRANSFER_ENTRY_SIZE  0x310
+#define MAP_TRANSFER_RECORD_SIZE 0x6F8
+
+/* Status texts of the map-transfer screen: the valid pair is shown when the
+ * campaign map record exists, the missing pair otherwise, one per transfer mode. */
+#define MAP_TRANSFER_MSG_VALID_0   0x4600002C
+#define MAP_TRANSFER_MSG_VALID_1   0x4600002D
+#define MAP_TRANSFER_MSG_MISSING_0 0x46000020
+#define MAP_TRANSFER_MSG_MISSING_1 0x46000021
+
 void func_ov006_022172b0(M2C_UNK arg0) {s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
@@ -128,8 +149,8 @@ else if(M2C_FIELD(q,s32 *,4)==0) ready=0;
 else ready=1;
 if(ready) M2C_FIELD(&data_ov006_02218e20,u8 *,0)=1;
 }
-if(M2C_FIELD(&data_ov006_02218e20,u8 *,0)) func_02086720(0x46000017);
-else func_02086720(0x46000016);
+if(M2C_FIELD(&data_ov006_02218e20,u8 *,0)) SetUiMessageText(0x46000017);
+else SetUiMessageText(0x46000016);
 M2C_FIELD(&data_ov006_02218e20,s32 *,8)=1;
 }
 
@@ -199,11 +220,11 @@ void func_ov006_022177e4(void) {
     LoadUiGraphicsBank(4);
     func_02089728();
     if (func_02086a30(0x21) == 0) {
-        func_02086720(0x46000026);
+        SetUiMessageText(0x46000026);
         func_02086740(0x21, 1);
         return;
     }
-    func_02086720(0);
+    SetUiMessageText(0);
 }
 
 void func_ov006_0221782c(void) {
@@ -218,17 +239,29 @@ void func_ov006_02217840(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov006_02218a78, arg0);
 }
 
-void func_ov006_02217858(void *arg0) {
-s32 IsCampaignMapRecordValid(s32);
-M2C_FIELD(arg0,s32 *,0x4c)=HeapAllocBlock(0x1ea0);
-M2C_FIELD(arg0,s32 *,0x50)=HeapAllocBlock(0x45b0);
-M2C_FIELD(arg0,s32 *,0x54)=0;
-func_020e36dc(arg0); LoadUiGraphicsBank(4); func_02089728(); DisableMapConfirm();
-if(IsCampaignMapRecordValid(M2C_FIELD(arg0,s32 *,0x34))){
-switch(M2C_FIELD(arg0,s32 *,0x38)){case 0:func_02086720(0x4600002c);return;case 1:func_02086720(0x4600002d);return;}
-}else{
-switch(M2C_FIELD(arg0,s32 *,0x38)){case 0:func_02086720(0x46000020);return;case 1:func_02086720(0x46000021);return;}
-}
+/* Set up the map-transfer object: allocate the received-player and map-record
+ * buffers, initialise its graphics, then show the status text of the selected
+ * campaign map for this transfer mode. */
+void InitMapTransferObject(void *object) {
+    s32 IsCampaignMapRecordValid(s32);
+    M2C_FIELD(object, s32 *, MAP_TRANSFER_ENTRIES) = HeapAllocBlock(MAP_TRANSFER_SLOTS * MAP_TRANSFER_ENTRY_SIZE);
+    M2C_FIELD(object, s32 *, MAP_TRANSFER_RECORDS) = HeapAllocBlock(MAP_TRANSFER_SLOTS * MAP_TRANSFER_RECORD_SIZE);
+    M2C_FIELD(object, s32 *, MAP_TRANSFER_CHOSEN) = 0;
+    func_020e36dc(object);
+    LoadUiGraphicsBank(4);
+    func_02089728();
+    DisableMapConfirm();
+    if (IsCampaignMapRecordValid(M2C_FIELD(object, s32 *, MAP_TRANSFER_MAP_ID))) {
+        switch (M2C_FIELD(object, s32 *, MAP_TRANSFER_MODE)) {
+        case 0: SetUiMessageText(MAP_TRANSFER_MSG_VALID_0); return;
+        case 1: SetUiMessageText(MAP_TRANSFER_MSG_VALID_1); return;
+        }
+    } else {
+        switch (M2C_FIELD(object, s32 *, MAP_TRANSFER_MODE)) {
+        case 0: SetUiMessageText(MAP_TRANSFER_MSG_MISSING_0); return;
+        case 1: SetUiMessageText(MAP_TRANSFER_MSG_MISSING_1); return;
+        }
+    }
 }
 
 void func_ov006_0221791c(void *arg0) {
@@ -413,19 +446,19 @@ void func_ov006_02217c64(void) {
 }
 
 void func_ov006_02217c74(M2C_UNK arg0) {
-    M2C_UNK func_02086720(s32);
+    M2C_UNK SetUiMessageText(s32);
     M2C_UNK func_02086740(M2C_UNK, M2C_UNK);
     s32 func_02086a30(M2C_UNK);
     extern M2C_UNK data_ov006_02218ba8;
     if (func_02086a30(0x22) != 0) {
         return;
     }
-    func_02086720(0x46000027);
+    SetUiMessageText(0x46000027);
     func_02086740(0x22, 1);
     CreateSpriteObject(&data_ov006_02218ba8, arg0);
 }
 
-void func_ov006_02217cb8(M2C_UNK arg0) { M2C_UNK func_02086720(s32); M2C_UNK func_02086740(M2C_UNK,M2C_UNK); s32 func_02086a30(M2C_UNK); extern M2C_UNK data_ov006_02218ba8; if(func_02086a30(0x23)!=0)return; func_02086720(0x46000028); func_02086740(0x23,1); CreateSpriteObject(&data_ov006_02218ba8,arg0); }
+void func_ov006_02217cb8(M2C_UNK arg0) { M2C_UNK SetUiMessageText(s32); M2C_UNK func_02086740(M2C_UNK,M2C_UNK); s32 func_02086a30(M2C_UNK); extern M2C_UNK data_ov006_02218ba8; if(func_02086a30(0x23)!=0)return; SetUiMessageText(0x46000028); func_02086740(0x23,1); CreateSpriteObject(&data_ov006_02218ba8,arg0); }
 
 void func_ov006_02217cfc(s32 arg0) {
     extern s32 data_ov006_02218e2c;

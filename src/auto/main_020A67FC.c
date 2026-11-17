@@ -10,7 +10,7 @@ extern void **gCurrentMap;
 s32 ProduceUnit(s32 a, s32 b, s32 c) {
     s32 GetUnitBuildCost(u16, s32);
     s32 func_020a6658(s32, s32, s32);
-    void func_020d2b10(u16, s32);
+    void PayPlayerFunds(u16, s32);
     s32 IsPlayerHuman(u16);
     void AddRecordValue(s32, s32);
     void RefreshMapView(void);
@@ -26,7 +26,7 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
     }
     r = func_020a6658(a, b, c);
     if (!r) return 0;
-    func_020d2b10(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), cost);
+    PayPlayerFunds(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), cost);
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
         AddRecordValue(c + 0x28, 1);
     }

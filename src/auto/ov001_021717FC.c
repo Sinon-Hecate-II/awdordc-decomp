@@ -134,13 +134,13 @@ void func_ov001_02171c10(void) {
  * panel was built, 0 when it was already showing. */
 s32 Ov001_ShowMessagePanel(s32 messageId,s32 value,s32 index){
 extern u8 data_ov001_0218feb0[];extern s32 gOv001MessageArchive;void func_0200436c(s32,s32,s32);
-void Ov001_LoadAsset(u8 *,void (*)(s32,s32,s32));s32 CreateTextPanel(s32,s32);s32 func_ov001_02175f60(s32,s32,s32,s32);s32 func_ov001_02171f88(void);s32 DrawPanelText(s32,s32,s32,s32,s32,s32,s32,s32);s32 CloseTextPanel(s32);
+void Ov001_LoadAsset(u8 *,void (*)(s32,s32,s32));s32 CreateTextPanel(s32,s32);s32 func_ov001_02175f60(s32,s32,s32,s32);s32 Ov001_GetTextFontId(void);s32 DrawPanelText(s32,s32,s32,s32,s32,s32,s32,s32);s32 CloseTextPanel(s32);
 s32 panel,text;
 if(*(u8 *)&gOv001MessagePanelActive)return 0;
 Ov001_LoadAsset(data_ov001_0218feb0,func_0200436c);
 *(volatile u32 *)0x4001010=0x1920000;
 panel=CreateTextPanel(1,0);text=func_ov001_02175f60(gOv001MessageArchive,messageId,value,index);
-DrawPanelText(panel,20,0,216,64,2,func_ov001_02171f88(),text);CloseTextPanel(panel);
+DrawPanelText(panel,20,0,216,64,2,Ov001_GetTextFontId(),text);CloseTextPanel(panel);
 gOv001MessagePanelActive=1;return 1;
 }
 
@@ -194,8 +194,8 @@ void func_ov001_02171e20(M2C_UNK arg0) {
 }
 
 void func_ov001_02171e58(M2C_UNK arg0) {
-    s32 func_ov001_02171f88();
-    s32 func_ov001_02175f48(s32, M2C_UNK);
+    s32 Ov001_GetTextFontId();
+    s32 Ov001_GetMessageText(s32, M2C_UNK);
     s32 CreateTextPanel(M2C_UNK, M2C_UNK);
     M2C_UNK DrawPanelText(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK CloseTextPanel(s32);
@@ -204,8 +204,8 @@ void func_ov001_02171e58(M2C_UNK arg0) {
     s32 temp_r5;
 
     temp_r5 = CreateTextPanel(0, 0);
-    temp_r4 = func_ov001_02175f48(gOv001MessageArchive, arg0);
-    DrawPanelText(temp_r5, 0xD, 0x28, 0xE6, 0x70, 2, func_ov001_02171f88(), temp_r4);
+    temp_r4 = Ov001_GetMessageText(gOv001MessageArchive, arg0);
+    DrawPanelText(temp_r5, 0xD, 0x28, 0xE6, 0x70, 2, Ov001_GetTextFontId(), temp_r4);
     CloseTextPanel(temp_r5);
 }
 
@@ -216,14 +216,14 @@ extern u16 data_ov001_0218f2de[],data_ov001_0218f2dc[];
 
 void func_ov001_0218af94(s32,s32,s32,s32,s32,s32);
 s32 p,t,x,y;
-p=CreateTextPanel(0,0);t=func_ov001_02175f48(gOv001MessageArchive,b);
-DrawPanelText(p,13,60,230,94,2,func_ov001_02171f88(),t);
+p=CreateTextPanel(0,0);t=Ov001_GetMessageText(gOv001MessageArchive,b);
+DrawPanelText(p,13,60,230,94,2,Ov001_GetTextFontId(),t);
 x=((s32 (*)(void))Ov001_GetLanguage)();y=((s32 (*)(void))Ov001_GetLanguage)();
 func_ov001_0218af94(p,data_ov001_0218f2dc[x*2],data_ov001_0218f2de[y*2],2,0x209,a);
 CloseTextPanel(p);
 }
 
-s32 func_ov001_02171f88(void) {
+s32 Ov001_GetTextFontId(void) {
     s32 Ov001_GetLanguage(s32);
     extern s32 data_ov001_0218f2c0[];
     s32 index = ((s32 (*)(void))Ov001_GetLanguage)();

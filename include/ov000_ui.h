@@ -17,6 +17,12 @@ typedef struct UiNodeVTable {
 #define ARMY_INFO_ICONS 0x44 /* void *[7] icon animations, four bytes apart */
 #define ARMY_INFO_ICON_COUNT 7
 
+/* Per-frame animation state of the window, set by its update method in
+ * ov000_0216B898, which the window's draw code reads. */
+#define ARMY_INFO_FRAME    0x34 /* u16 frame counter of the open animation */
+#define ARMY_INFO_SHOWN    0x36 /* u8 nonzero while the window is on screen */
+#define ARMY_INFO_DETAILED 0x3D /* u8 nonzero for the detailed layout */
+
 /* The army/CO info window state (gArmyInfoState, 0x24 bytes, built by
  * func_ov000_0216e178): per listed player a record index (+0x00), a CO face id
  * (+0x04) and an army colour (+0x08), then the selection and face animation. */

@@ -359,5 +359,8 @@ typedef struct ToggleWidget {
 #define FACE_EFFECT_DIM   0x01 /* inactive face: blend towards dark blue */
 #define FACE_EFFECT_SEPIA 0x02 /* warm tint */
 #define FACE_EFFECT_GRAY  0x04 /* grayscale */
+#define FACE_EFFECT_DIM_HALF 0x08 /* blend half way towards black */
+#define FACE_EFFECT_DIM_MOST 0x10 /* blend down to a quarter brightness */
+#define FACE_EFFECT_BLACK 0x20 /* blend all the way to black */
 
 #endif

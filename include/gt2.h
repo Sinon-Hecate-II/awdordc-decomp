@@ -18,6 +18,8 @@
  * destroyed once the outermost callback returns. */
 #define GT2_CONNECTION_CALLBACK    0x28 /* void (*)(connection, event type, data, length) */
 #define GT2_CONNECTION_CALLBACK_MSG 0x2C /* void (*)(connection, message, length, unk) */
+#define GT2_CONNECTION_CALLBACK_CLOSED 0x30 /* void (*)(connection, close reason) */
+#define GT2_CONNECTION_CALLBACK_PING   0x34 /* void (*)(connection, ping time in milliseconds) */
 #define GT2_CONNECTION_CALLBACKS   0x24 /* s32 connection callbacks running */
 #define GT2_SOCKET_CALLBACKS       0x1C /* s32 callbacks running on the socket */
 #define GT2_SOCKET_DIRTY           0x14 /* s32 set when the socket was asked to be freed */

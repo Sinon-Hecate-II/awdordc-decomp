@@ -174,7 +174,7 @@ void func_020cb018(s16 arg0) {
    paid for out of the current player's funds (stopping when they run short); when it
    is clear the per-point value is just the unit's health bracket. */
 s32 RefillUnitAmmo(void *unit,s32 pay){
-s32 Divide(s32,s32); M2C_UNK func_020d2b10(s32,u16);
+s32 Divide(s32,s32); M2C_UNK PayPlayerFunds(s32,u16);
 extern void **gCurrentMap; extern u16 data_ov000_021b5c02[];extern M2C_UNK gUnitKindStats;
 u8 *tab;s32 total=0;u16 cost;u32 health=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25);u16 ammoWord,player;void *map;
 if(pay){health >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE)*(health?Divide(health-1,10)+1:total);
@@ -182,7 +182,7 @@ if(pay){health >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(un
 tab=(u8 *)&gUnitKindStats;
 loop:
 if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)<<21)>>28)!=tab[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_AMMO]){
-if(pay){map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);if(M2C_FIELD((u8*)map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF)>=(s32)cost){func_020d2b10(player,cost);goto update;}}
+if(pay){map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);if(M2C_FIELD((u8*)map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF)>=(s32)cost){PayPlayerFunds(player,cost);goto update;}}
 else{update:ammoWord=M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO);total+=cost;M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)=(ammoWord&~0x780)|((u32)((u16)(((u32)(ammoWord<<21)>>28)+1)<<28)>>21);goto loop;}}
 return total;}
 
@@ -192,7 +192,7 @@ return total;}
    the refill stops as soon as the player cannot afford the next unit of fuel. */
 s32 RefillUnitFuel(void *unit, s32 pay) {
     s32 Divide(s32, M2C_UNK);
-    M2C_UNK func_020d2b10(s32, u16);
+    M2C_UNK PayPlayerFunds(s32, u16);
     extern void **gCurrentMap;
     extern M2C_UNK gUnitKindStats;
     u8 *tab;
@@ -213,7 +213,7 @@ loop_4:
             map = *gCurrentMap;
             player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
             if ((s32) M2C_FIELD(((player * 0x8C) + (s32) map), s32 *, PLAYER_FUNDS_OFF) >= (s32) cost) {
-                func_020d2b10(player, cost);
+                PayPlayerFunds(player, cost);
                 goto block_8;
             }
         } else {
@@ -235,7 +235,7 @@ s32 LevelUpUnit(void *unit,s32 levels,s32 charge){
 s32 GetUnitOwner(void);
 s32 GetUnitBuildCost(s32,u32);
 s32 Divide(s32,s32);
-M2C_UNK func_020d2b10(s32,u16);
+M2C_UNK PayPlayerFunds(s32,u16);
 extern void **gCurrentMap;
 s32 owner,totalCost,health,level,ownerOffset;u16 cost,attr;
 owner=GetUnitOwner();totalCost=0;
@@ -247,7 +247,7 @@ if(!health)level=0;else level=Divide(health-1,10)+1;
 if(level==10)break;
 if(charge){
 if(M2C_FIELD(ownerOffset+(s32)*gCurrentMap,s32*,0x67a4)<(s32)cost)break;
-func_020d2b10(owner,cost);totalCost+=cost;
+PayPlayerFunds(owner,cost);totalCost+=cost;
 }
 attr=M2C_FIELD(unit,u16*,6);
 M2C_FIELD(unit,u16*,6)=(attr&~127)|((u16)(((u32)(attr<<25)>>25)+10)&127);

@@ -367,7 +367,7 @@ void BeginAiTurn(void) {
     void func_ov000_0219a618(void);
     void func_ov000_0219a6c8(void);
     void func_ov000_0219a584(void);
-    void func_ov000_0219c444(void);
+    void Ov000_AssignAiOrders(void);
     void func_ov000_02181c88(void);
     void func_ov000_0219a350(void);
     void UpdateAiSupplyStates(void);
@@ -399,7 +399,7 @@ void BeginAiTurn(void) {
     func_ov000_0219a618();
     func_ov000_0219a6c8();
     func_ov000_0219a584();
-    func_ov000_0219c444();
+    Ov000_AssignAiOrders();
     func_ov000_02181c88();
     func_ov000_0219a350();
     UpdateAiSupplyStates();

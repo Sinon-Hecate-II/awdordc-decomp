@@ -15,7 +15,7 @@ extern u8 data_ov002_021f30fd[],data_ov002_021f30fe[],data_ov002_021f3107[],data
 extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data_ov002_021f3044[],data_ov002_021f3018[];
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_0208718c(void);
-void func_020871a8(s32,s32,s32,s32,s32,u16);
+void DrawSolidQuad(s32,s32,s32,s32,s32,u16);
 void func_ov002_021e5974(s32 *,s32 *);
 void DrawFlatQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawGradientQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
@@ -29,7 +29,7 @@ void func_ov002_021e4674(s32,s32,s32,s32,s32);
 void func_ov002_021e4b94(void *arg0) {
 u8 *p=arg0; s32 width,b,a,color,tiles,offset,yy,i,xx;s16 x,y;
 width=EaseInterpolate(0,data_ov002_021f30fd[((u32)(p[3]<<28)>>28)*24],data_ov002_021f30fe[((u32)(p[3]<<28)>>28)*24],p[0],p[1]);
-y=166-(s8)p[2];func_0208718c();func_020871a8(0,y,10,256,20,0x1cc2);
+y=166-(s8)p[2];func_0208718c();DrawSolidQuad(0,y,10,256,20,0x1cc2);
 offset=((u32)(p[3]<<28)>>28)*24;
 color=data_ov002_021f3107[offset]?M2C_FIELD(p,u16 *,6):0x7fff;
 if(data_ov002_021f3105[offset]){

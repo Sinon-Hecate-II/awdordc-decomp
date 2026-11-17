@@ -128,9 +128,9 @@ void func_ov007_02213378(void *arg0) {
 
 void func_ov007_022133a8(s32 arg0, s32 arg1) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    void func_02086720(s32);
+    void SetUiMessageText(s32);
     extern M2C_UNK data_ov007_0221f7c0;
-    func_02086720(arg0);
+    SetUiMessageText(arg0);
     M2C_FIELD(func_01ffa3dc(&data_ov007_0221f7c0, 7), s32 *, 0x5C) = arg1;
 }
 

@@ -299,7 +299,7 @@ case SIDE_NONE:default:break;
  * is the unit's threat range for the current weather, and the owner's side picks which
  * threat bitmap it is marked into.  Units that are mid-action are skipped, and a unit
  * whose commander may use its kind gets the stricter marker. */
-void func_020ce508(void *unit,s32 x,s32 y) {
+void MarkUnitThreatAt(void *unit,s32 x,s32 y) {
 s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),GetUnitMoveScoreWeather(void *,s32,s32);
 extern void **gCurrentMap;
 s32 owner=GetUnitOwner(unit);
@@ -316,25 +316,34 @@ MarkThreatBitmap((s16)x,(s16)y,(s16)radius,M2C_FIELD(*gCurrentMap+owner*MAP_PLAY
 }
 
 void MarkUnitThreatRange(void *arg0) {
-    void func_020ce508(void *, s32, s32);
-    func_020ce508(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    void MarkUnitThreatAt(void *, s32, s32);
+    MarkUnitThreatAt(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-void func_020ce630(s16 a, s16 b, s8 *c) {
-void func_020ce508(void *, s32, s32);
-extern void **gCurrentMap;
-s16 x=a,y=b; s8 *p=c;
-for (;;) {
-switch (*p++ + 1) {
-case 1: x--; break;
-case 2: x++; break;
-case 4: y--; break;
-case 3: y++; break;
-case 0: case 5: case 11: return;
-default: break;
-}
-func_020ce508(M2C_FIELD(*gCurrentMap, void **, 0x52d0),x,y);
-}
+/* Marks the cursor unit's threat range on every tile of a movement path: walks
+ * the path's direction codes from (startX, startY) and marks each tile the path
+ * enters, so a map highlight shows where an enemy along the way could strike. */
+void MarkPathThreatRange(s16 startX, s16 startY, s8 *path) {
+    void MarkUnitThreatAt(void *, s32, s32);
+    extern void **gCurrentMap;
+    s16 x = startX, y = startY;
+    s8 *p = path;
+
+    for (;;) {
+        switch (*p++ + 1) {
+        case MOVE_DIR_LEFT + 1: x--; break;
+        case MOVE_DIR_RIGHT + 1: x++; break;
+        case MOVE_DIR_UP + 1: y--; break;
+        case MOVE_DIR_DOWN + 1: y++; break;
+        case MOVE_DIR_NONE + 1:
+        case MOVE_DIR_STOP + 1:
+        case MOVE_DIR_ATTACK + 1:
+            return;
+        default:
+            break;
+        }
+        MarkUnitThreatAt(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), x, y);
+    }
 }
 
 s32 GetTerrainThreatRadius(s32 a,s32 b) {

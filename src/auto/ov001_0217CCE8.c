@@ -9,8 +9,71 @@ void func_ov001_0217dc44(s32);
 
 void *GetCurrentMapRecord();
 
-M2C_UNK func_ov001_0217cce8(void) {
-    return 0;
+/* Draws the ov001 Wi-Fi failure panel: the error code as a number above the
+ * panel, then the message that explains that kind of failure, and closes the
+ * panel again.  gOv001WfcErrorCode is the negated WFC error code the failed
+ * connection step left (a failure reports -50000 - detail and so on), so each
+ * range of codes picks a message index of the overlay's text archive; a
+ * failure that came from mode 2 gets a message of its own. */
+void DrawWfcErrorPanel(void) {
+extern s32 gOv001WfcErrorCode;
+extern const u8 gOv001PanelBackgroundIndex[];
+extern s32 gOv001MessageArchive;
+extern u16 gOv001ErrorCodeFormat[];
+extern const u16 gOv001ErrorCodeTextY[], gOv001ErrorCodeTextX[];
+void *CreateTextPanel(s32,s32);
+s32 Ov001_GetMessageText(s32,s32);
+s32 StringFormatWide(void *,s32,void *,...);
+void DrawTextRun(void *,s32,s32,s32,s32,u16 *,s32);
+void DrawPanelText(void *,s32,s32,s32,s32,s32,s32,s32);
+void CloseTextPanel(void *);
+s32 Ov001_GetTextFontId(void);
+u8 Ov001_GetLanguage(void);
+s32 mode, messageCode, messageText; void *panel; u16 text[8]; u16 textY; s32 textX;
+Ov001_GetNameEntryMode(0,&mode);
+if(gOv001WfcErrorCode >= -20099) messageCode = 0;
+else if(gOv001WfcErrorCode >= -20100) messageCode = 2;
+else if(gOv001WfcErrorCode >= -20101) messageCode = 19;
+else if(gOv001WfcErrorCode >= -20107) messageCode = 2;
+else if(gOv001WfcErrorCode >= -20108) messageCode = 18;
+else if(gOv001WfcErrorCode >= -20109) messageCode = 2;
+else if(gOv001WfcErrorCode >= -20110) messageCode = 3;
+else if(gOv001WfcErrorCode >= -20999) messageCode = 2;
+else if(gOv001WfcErrorCode >= -22999) messageCode = 0;
+else if(gOv001WfcErrorCode >= -23999) messageCode = 19;
+else if(gOv001WfcErrorCode >= -49999) messageCode = 0;
+else if(gOv001WfcErrorCode >= -50002) messageCode = 7;
+else if(gOv001WfcErrorCode >= -50003) messageCode = 5;
+else if(gOv001WfcErrorCode >= -50098) messageCode = 0;
+else if(gOv001WfcErrorCode >= -50099) messageCode = mode == 2 ? 5 : 7;
+else if(gOv001WfcErrorCode >= -51098) messageCode = 0;
+else if(gOv001WfcErrorCode >= -51099) messageCode = mode == 2 ? 5 : 8;
+else if(gOv001WfcErrorCode >= -51102) messageCode = 9;
+else if(gOv001WfcErrorCode >= -51103) messageCode = 5;
+else if(gOv001WfcErrorCode >= -51199) messageCode = 0;
+else if(gOv001WfcErrorCode >= -51299) messageCode = 20;
+else if(gOv001WfcErrorCode >= -51302) messageCode = 21;
+else if(gOv001WfcErrorCode >= -51303) messageCode = 4;
+else if(gOv001WfcErrorCode >= -51999) messageCode = 0;
+else if(gOv001WfcErrorCode >= -52002) messageCode = 10;
+else if(gOv001WfcErrorCode >= -52003) messageCode = 22;
+else if(gOv001WfcErrorCode >= -52099) messageCode = 0;
+else if(gOv001WfcErrorCode >= -52103) messageCode = 11;
+else if(gOv001WfcErrorCode >= -52199) messageCode = 0;
+else if(gOv001WfcErrorCode >= -52203) messageCode = 11;
+else if(gOv001WfcErrorCode >= -52299) messageCode = 0;
+else if(gOv001WfcErrorCode >= -52399) messageCode = 2;
+else if(gOv001WfcErrorCode >= -52999) messageCode = 0;
+else if(gOv001WfcErrorCode >= -53299) messageCode = 2;
+else messageCode=0;
+panel=CreateTextPanel(0,gOv001PanelBackgroundIndex[Ov001_GetLanguage()]);
+messageText=Ov001_GetMessageText(gOv001MessageArchive,messageCode);
+StringFormatWide(text,8,gOv001ErrorCodeFormat,-gOv001WfcErrorCode);
+textY=gOv001ErrorCodeTextY[Ov001_GetLanguage()*2];
+textX=gOv001ErrorCodeTextX[Ov001_GetLanguage()*2];
+DrawTextRun(panel,textX,textY,2,10,text,0);
+DrawPanelText(panel,13,60,230,94,2,Ov001_GetTextFontId(),messageText);
+CloseTextPanel(panel);
 }
 
 void func_ov001_0217d044(void) {
@@ -132,8 +195,8 @@ void func_ov001_0217d1ac(void) {
 }
 
 void func_ov001_0217d260(s32 arg0) {
-    extern s32 data_ov001_02193da8;
-    data_ov001_02193da8 = arg0;
+    extern s32 gOv001WfcErrorCode;
+    gOv001WfcErrorCode = arg0;
 }
 
 /* Build the map-list screen: allocate its list object, load its backgrounds and
@@ -403,7 +466,7 @@ s32 func_ov001_0217d9d4(void) {
     s32 func_ov001_0217e5e8();
     u32 func_ov001_0217eb6c();
     M2C_UNK func_ov001_0217f1c0(u32);
-    M2C_UNK func_ov001_0217f568();
+    M2C_UNK MapListHighlightCustomRow();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     u32 temp_r0;
 
@@ -424,7 +487,7 @@ s32 func_ov001_0217d9d4(void) {
     case 3:
     case 7:
     case 8:
-        func_ov001_0217f568();
+        MapListHighlightCustomRow();
         break;
     }
     func_ov001_0217da58(temp_r0);

@@ -395,7 +395,7 @@ return M2C_FIELD(gSpriteBatch,s32 *,0x50)+arg0;
 
 void func_0207bdc4(void) {
     s32 GetBatchTile(s32);
-    void func_01ff9e44(void *, s32, s32);
+    void CopyToObjPaletteShadow(void *, s32, s32);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK GetLocalizedFileName(M2C_UNK *);
     void OpenNarcArchive(M2C_UNK *);
@@ -418,7 +418,7 @@ void func_0207bdc4(void) {
     s32 count;
     s8 *p;
 
-    func_01ff9e44(&data_0211e12c, GetBatchTile(0) << 5, 0x60);
+    CopyToObjPaletteShadow(&data_0211e12c, GetBatchTile(0) << 5, 0x60);
     r4 = 0;
 
     base = gSpriteBatch;

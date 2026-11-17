@@ -112,7 +112,7 @@ M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
 }
 }
 #pragma pop
-void func_0205cef8(void *arg0) {
+void gti2FreeSocket(void *arg0) {
 M2C_UNK gpiFree(void *);M2C_UNK func_02048dc4(s32);M2C_UNK func_02049270();M2C_UNK func_020496b8(s32);
 if(M2C_FIELD(arg0,s32 *,0x1c)!=0){M2C_FIELD(arg0,s32 *,0x14)=1;return;}
 func_020496b8(M2C_FIELD(arg0,s32 *,0));func_02048dc4(M2C_FIELD(arg0,s32 *,0xc));Vector_Free(M2C_FIELD(arg0,s32 *,0x10));gpiFree(arg0);func_02049270();
@@ -374,7 +374,7 @@ void func_0205d49c(void *a) {
     M2C_FIELD(a, s32 *, 0x18) = 1;
     GT2NotifyConnectionClosed(a);
     if (!func_02059f18(a)) return;
-    func_0205cef8(a);
+    gti2FreeSocket(a);
 }
 
 char *Gt2AddressToString(s32 a,s32 b,char *p) {

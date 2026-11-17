@@ -9,12 +9,12 @@ s32 func_ov001_0217eb6c(void){
  s32 TouchRectPressed(void *);s32 func_ov001_0218bd1c(FourShorts *);
  s32 func_02002088(u16,s32);
  extern M2C_UNK gTouchScreenRect,gMapListState;
- extern FourBytes data_ov001_0218f8c4;
+ extern FourBytes gOv001MapListLayout;
  extern u8 data_ov001_0218f9a4[],data_ov001_0218f952[];
  FourShorts rect; s32 value,i,j,k;u8 *p;
  if(!TouchRectPressed(&gTouchScreenRect))return 14;
  value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
- rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+4);
+ rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+4);
  for(i=0;i<4;i++,value++){
  if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return data_ov001_0218f9a4[value];}
  rect.b+=29;
@@ -22,10 +22,10 @@ s32 func_ov001_0217eb6c(void){
  value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
  for(j=0;j<4;j++,value++){
  if(value==2){
- rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
+ rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+20);
  rect.b+=j*29;
  if(func_ov001_0218bd1c(&rect))return 2;
- rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
+ rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+12);
  rect.b+=j*29;
  if(func_ov001_0218bd1c(&rect))return 3;
  break;
@@ -34,10 +34,10 @@ s32 func_ov001_0217eb6c(void){
  value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
  for(k=0;k<4;k++,value++){
  if(value==6){
- rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
+ rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+20);
  rect.b+=k*29;
  if(func_ov001_0218bd1c(&rect))return 7;
- rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
+ rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+12);
  rect.b+=k*29;
  if(func_ov001_0218bd1c(&rect))return 8;
  break;
@@ -271,15 +271,19 @@ void func_ov001_0217f4e0(void){void Ov001_LoadObjTile(s32,u8,u8);extern M2C_UNK 
 
 void func_ov001_0217f514(void){extern M2C_UNK gMapListState;M2C_UNK MapListRedrawInfoPanel();s32 i=0;do{u8 *p=(u8 *)M2C_FIELD(&gMapListState,void **,8)+i;if(p[4]){p[4]--;if(!M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i,u8 *,4))MapListRedrawInfoPanel();}i++;}while(i<4);}
 
-void func_ov001_0217f568(void) {
+/* Highlights the custom-map row the player just picked on the map list: the
+ * four entries that open a custom-map list come as two pairs (local maps 2 and
+ * 3, link maps 7 and 8), so the picked entry's highlight timer is started (20
+ * frames, counted down by the row update task) and its pair's timer cleared. */
+void MapListHighlightCustomRow(void) {
 extern M2C_UNK gMapListState;
-extern FourBytes data_ov001_0218f8c4;
-FourBytes values=data_ov001_0218f8c4; s32 i;
-for(i=0;i<4;i++) {
-if(M2C_FIELD(&gMapListState,u8 *,0)==values.bytes[i]){
-M2C_FIELD(M2C_FIELD(&gMapListState,void **,8)+i,u8 *,4)=20;
-if(i&1) { M2C_FIELD(M2C_FIELD(&gMapListState,void **,8)+(i-1),u8 *,4)=0; return; }
-else M2C_FIELD(M2C_FIELD(&gMapListState,void **,8)+(i+1),u8 *,4)=0;
+extern FourBytes gOv001MapListLayout;
+FourBytes entries=gOv001MapListLayout; s32 slot;
+for(slot=0;slot<4;slot++) {
+if(M2C_FIELD(&gMapListState,u8 *,0)==entries.bytes[slot]){
+M2C_FIELD(M2C_FIELD(&gMapListState,void **,8)+slot,u8 *,4)=20;
+if(slot&1) { M2C_FIELD(M2C_FIELD(&gMapListState,void **,8)+(slot-1),u8 *,4)=0; return; }
+else M2C_FIELD(M2C_FIELD(&gMapListState,void **,8)+(slot+1),u8 *,4)=0;
 return;
 }
 }

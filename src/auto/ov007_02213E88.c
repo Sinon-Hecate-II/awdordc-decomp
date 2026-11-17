@@ -264,7 +264,7 @@ u8 func_ov007_02214448(void) {
 void func_ov007_0221446c(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
-    M2C_UNK func_02086720(M2C_UNK);
+    M2C_UNK SetUiMessageText(M2C_UNK);
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_0221f780;
@@ -273,9 +273,9 @@ void func_ov007_0221446c(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     RefreshMapView();
     if (MapEditor_IsMapModified() != 0) {
-        func_02086720(0x46000006);
+        SetUiMessageText(0x46000006);
     } else {
-        func_02086720(0x46000005);
+        SetUiMessageText(0x46000005);
     }
     func_01ffa3dc(&data_ov007_0221f780, 7);
 }

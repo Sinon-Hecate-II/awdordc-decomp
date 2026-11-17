@@ -11,8 +11,11 @@ AddSprite((u16)x,(u16)y,(u16)Tile6e0c(tile,offset),data,10);
 }
 static inline void DrawSecond7944(u16 x,u16 y) { extern void *gCur3DSpriteEngine;extern M2C_UNK gSpriteDesc16x16;void AddSprite(u16,u16,u16,void *,s32);AddSprite(x,y,(u16)(((1023&(0x150>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))|0x9000)+(1023&(0x60>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),&gSpriteDesc16x16,10); }
 static inline s32 SpriteTile7944(s32 tile) { extern void *gCur3DSpriteEngine;return (tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023; }
+/* X offsets from the info panel's x to the icons of the units it carries:
+ * [panel side][carried icon slot].  The icons sit 16 pixels apart and grow
+ * away from a left-hand panel; a right-hand panel fills them leftwards. */
 typedef struct { s32 v[2][2]; } OffsetTable;
-extern OffsetTable data_020f4e98;
+extern OffsetTable gCarriedUnitIconOffsets;
 extern s32 *gCurrentMap;
 void DrawUnitIcon(s32, s32, s32, s32);
 
@@ -90,13 +93,25 @@ if(healthBars==10)return;
 DrawDecimalNumber((x+8)&511,(y+8)&255,healthBars);
 }
 #pragma opt_common_subs reset
-void DrawCarriedUnits(s32 x, s32 y, s32 kind, void *p) {
-OffsetTable offsets = data_020f4e98; s32 n = 0; u32 v;
-v = ((u8 *)p)[12];
-if (v) { DrawUnitIcon(x + offsets.v[kind][0], y-16, n, *gCurrentMap + 0x59a4 + v*14); n++; }
-v = ((u8 *)p)[13];
-if (!v) return;
-DrawUnitIcon(x + offsets.v[kind][n], y-16, n, *gCurrentMap + 0x59a4 + v*14);
+/* Draws the icons of the units `unit` carries, just above the info panel at
+ * (x,y): the first carried unit goes in the icon slot of the panel's side,
+ * then the next one in the slot beside it.  panelSide is 0 for a left-hand
+ * panel and 1 for a right-hand one. */
+void DrawCarriedUnits(s32 x, s32 y, s32 panelSide, BattleMapUnit *unit) {
+    OffsetTable offsets = gCarriedUnitIconOffsets;
+    s32 slot = 0;
+    u32 carriedId;
+
+    carriedId = unit->firstCarried;
+    if (carriedId) {
+        DrawUnitIcon(x + offsets.v[panelSide][0], y - 16, slot,
+                     *gCurrentMap + MAP_UNIT_RECORDS + carriedId * MAP_UNIT_STRIDE);
+        slot++;
+    }
+    carriedId = unit->nextCarried;
+    if (!carriedId) return;
+    DrawUnitIcon(x + offsets.v[panelSide][slot], y - 16, slot,
+                 *gCurrentMap + MAP_UNIT_RECORDS + carriedId * MAP_UNIT_STRIDE);
 }
 static inline s32 SecondTile7944(void) {
 extern void *gCur3DSpriteEngine;

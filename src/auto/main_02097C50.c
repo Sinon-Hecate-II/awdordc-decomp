@@ -1,5 +1,6 @@
 /* 20 functions from 0x02097C50 to 0x02098BD4 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_02097c50(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
@@ -387,34 +388,37 @@ void FillFaceTileMap(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, 
     func_02080b38(offset, (u16) tileWidth, (u16) tileHeight);
 }
 
-void func_02098970(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    M2C_UNK BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020ae67c(M2C_UNK, s32);
-    M2C_UNK func_020ae728(M2C_UNK, s32);
-    if (arg1 & 1) {
-        BlendPalette(arg0, 0, 0xA, 6, arg2);
+/* Applies the selected face palette effects in place to `palette`: `effects` holds
+ * FACE_EFFECT_* bits (dim levels, sepia, grayscale) and `length` is the palette's
+ * size in bytes. */
+void ApplyPaletteEffects(u16 *palette, u32 effects, s32 length) {
+    void BlendPalette(u16 *, s32, s32, s32, s32);
+    void ApplySepiaToPalette(u16 *, s32);
+    void ApplyGrayscaleToPalette(u16 *, s32);
+    if (effects & FACE_EFFECT_DIM) {
+        BlendPalette(palette, 0, 0xA, 6, length);
     }
-    if (arg1 & 8) {
-        BlendPalette(arg0, 0, 8, 8, arg2);
+    if (effects & FACE_EFFECT_DIM_HALF) {
+        BlendPalette(palette, 0, 8, 8, length);
     }
-    if (arg1 & 0x10) {
-        BlendPalette(arg0, 0, 4, 0xC, arg2);
+    if (effects & FACE_EFFECT_DIM_MOST) {
+        BlendPalette(palette, 0, 4, 0xC, length);
     }
-    if (arg1 & 0x20) {
-        BlendPalette(arg0, 0, 0, 0x10, arg2);
+    if (effects & FACE_EFFECT_BLACK) {
+        BlendPalette(palette, 0, 0, 0x10, length);
     }
-    if (arg1 & 2) {
-        func_020ae67c(arg0, arg2);
+    if (effects & FACE_EFFECT_SEPIA) {
+        ApplySepiaToPalette(palette, length);
     }
-    if (!(arg1 & 4)) {
+    if (!(effects & FACE_EFFECT_GRAY)) {
         return;
     }
-    func_020ae728(arg0, arg2);
+    ApplyGrayscaleToPalette(palette, length);
 }
 
-void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,e,512);func_0207c650(q,c,off,512,1);}
+void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);ApplyPaletteEffects(q,e,512);func_0207c650(q,c,off,512,1);}
 
-void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
+void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);ApplyPaletteEffects(q,d,512);func_0207c728(q,0,off,512,1);}
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SetFileDirectory(s32);

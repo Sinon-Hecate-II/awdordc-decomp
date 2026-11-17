@@ -1,5 +1,6 @@
 /* 17 functions from 0x022144AC to 0x022153FC (ov006), found by ds-decomp. */
 #include "common.h"
+#include "ov006_menu_sprite.h"
 
 int func_ov006_022144ac(void *arg0) {
     if (IsMapConfirmEnabled() != 0) {

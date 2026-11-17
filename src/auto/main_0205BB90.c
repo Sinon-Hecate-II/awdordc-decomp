@@ -100,7 +100,7 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
     return func_0205cb38(a,b,c);
 }
 
-s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 GetTickCountMs(); s32 func_0205a360(void *,s32); s32 ByteCompareN(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(ByteCompareN(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,GetTickCountMs()-sp0)!=0; }
+s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 GetTickCountMs(); s32 gti2PingCallback(void *,s32); s32 ByteCompareN(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(ByteCompareN(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return gti2PingCallback(arg0,GetTickCountMs()-sp0)!=0; }
 
 #pragma push
 #pragma scheduling off

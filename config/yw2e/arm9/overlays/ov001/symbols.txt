@@ -217,7 +217,7 @@ func_ov001_02171dd0 kind:function(arm,size=0x50) addr:0x02171dd0
 func_ov001_02171e20 kind:function(arm,size=0x38) addr:0x02171e20
 func_ov001_02171e58 kind:function(arm,size=0x74) addr:0x02171e58
 func_ov001_02171ecc kind:function(arm,size=0xbc) addr:0x02171ecc
-func_ov001_02171f88 kind:function(arm,size=0x18) addr:0x02171f88
+Ov001_GetTextFontId kind:function(arm,size=0x18) addr:0x02171f88
 func_ov001_02171fa0 kind:function(arm,size=0x20) addr:0x02171fa0
 func_ov001_02171fc0 kind:function(arm,size=0x18) addr:0x02171fc0
 func_ov001_02171fd8 kind:function(arm,size=0xbc) addr:0x02171fd8
@@ -314,7 +314,7 @@ func_ov001_02175e74 kind:function(arm,size=0x3c) addr:0x02175e74
 func_ov001_02175eb0 kind:function(arm,size=0x14) addr:0x02175eb0
 Ov001_LoadMessageArchive kind:function(arm,size=0x58) addr:0x02175ec4
 func_ov001_02175f1c kind:function(arm,size=0x2c) addr:0x02175f1c
-func_ov001_02175f48 kind:function(arm,size=0x18) addr:0x02175f48
+Ov001_GetMessageText kind:function(arm,size=0x18) addr:0x02175f48
 func_ov001_02175f60 kind:function(arm,size=0x2c) addr:0x02175f60
 func_ov001_02175f8c kind:function(arm,size=0xec) addr:0x02175f8c
 func_ov001_02176078 kind:function(arm,size=0x20) addr:0x02176078
@@ -593,7 +593,7 @@ func_ov001_0217cbdc kind:function(arm,size=0x2c) addr:0x0217cbdc
 func_ov001_0217cc08 kind:function(arm,size=0x44) addr:0x0217cc08
 func_ov001_0217cc4c kind:function(arm,size=0x1c) addr:0x0217cc4c
 func_ov001_0217cc68 kind:function(arm,size=0x80) addr:0x0217cc68
-func_ov001_0217cce8 kind:function(arm,size=0x35c) addr:0x0217cce8
+DrawWfcErrorPanel kind:function(arm,size=0x35c) addr:0x0217cce8
 func_ov001_0217d044 kind:function(arm,size=0x34) addr:0x0217d044
 func_ov001_0217d078 kind:function(arm,size=0x3c) addr:0x0217d078
 func_ov001_0217d0b4 kind:function(arm,size=0x28) addr:0x0217d0b4
@@ -640,7 +640,7 @@ func_ov001_0217f1c0 kind:function(arm,size=0x30) addr:0x0217f1c0
 func_ov001_0217f1f0 kind:function(arm,size=0x2f0) addr:0x0217f1f0
 func_ov001_0217f4e0 kind:function(arm,size=0x34) addr:0x0217f4e0
 func_ov001_0217f514 kind:function(arm,size=0x54) addr:0x0217f514
-func_ov001_0217f568 kind:function(arm,size=0xc4) addr:0x0217f568
+MapListHighlightCustomRow kind:function(arm,size=0xc4) addr:0x0217f568
 func_ov001_0217f62c kind:function(arm,size=0xa0) addr:0x0217f62c
 func_ov001_0217f6cc kind:function(arm,size=0x40) addr:0x0217f6cc
 func_ov001_0217f70c kind:function(arm,size=0x20) addr:0x0217f70c
@@ -1238,11 +1238,11 @@ data_ov001_0218f848 kind:data(any) addr:0x0218f848
 data_ov001_0218f860 kind:data(any) addr:0x0218f860
 data_ov001_0218f874 kind:data(any) addr:0x0218f874
 data_ov001_0218f888 kind:data(any) addr:0x0218f888
-data_ov001_0218f894 kind:data(any) addr:0x0218f894
-data_ov001_0218f8a4 kind:data(any) addr:0x0218f8a4
-data_ov001_0218f8a6 kind:data(any) addr:0x0218f8a6
+gOv001PanelBackgroundIndex kind:data(any) addr:0x0218f894
+gOv001ErrorCodeTextX kind:data(any) addr:0x0218f8a4
+gOv001ErrorCodeTextY kind:data(any) addr:0x0218f8a6
 data_ov001_0218f8c0 kind:data(any) addr:0x0218f8c0
-data_ov001_0218f8c4 kind:data(any) addr:0x0218f8c4
+gOv001MapListLayout kind:data(any) addr:0x0218f8c4
 data_ov001_0218f8e0 kind:data(any) addr:0x0218f8e0
 data_ov001_0218f8ee kind:data(any) addr:0x0218f8ee
 data_ov001_0218f8fe kind:data(any) addr:0x0218f8fe
@@ -1419,7 +1419,7 @@ data_ov001_021907a0 kind:data(any) addr:0x021907a0
 data_ov001_021907b8 kind:data(any) addr:0x021907b8
 data_ov001_021907d0 kind:data(any) addr:0x021907d0
 data_ov001_021907e8 kind:data(any) addr:0x021907e8
-data_ov001_021907fc kind:data(any) addr:0x021907fc
+gOv001ErrorCodeFormat kind:data(any) addr:0x021907fc
 sYbObjKbPath kind:data(any) addr:0x02190804
 sJbBgStep2NcgPath kind:data(any) addr:0x02190818
 sJbBgStep21NcgPath kind:data(any) addr:0x02190830
@@ -1653,7 +1653,7 @@ gMapSelectState kind:bss addr:0x02193d98
 data_ov001_02193d9c kind:bss addr:0x02193d9c
 gNameEntryState kind:bss addr:0x02193da0
 data_ov001_02193da4 kind:bss addr:0x02193da4
-data_ov001_02193da8 kind:bss addr:0x02193da8
+gOv001WfcErrorCode kind:bss addr:0x02193da8
 gMapListState kind:bss addr:0x02193dac
 data_ov001_02193db4 kind:bss addr:0x02193db4
 data_ov001_02193db8 kind:bss addr:0x02193db8

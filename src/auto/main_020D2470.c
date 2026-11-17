@@ -255,7 +255,7 @@ y++;
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-void func_020d2b10(s32 arg0,s32 arg1) {
+void PayPlayerFunds(s32 arg0,s32 arg1) {
 extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); void func_02091c54(s32,s32);
 if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c54(11,arg1);
 *((s32 *)((u8 *)*gCurrentMap+0x67a4+arg0*0x8c))-=arg1;
@@ -330,7 +330,7 @@ s32 GetUnitBuildCostTimes10(void) {
     return GetUnitBuildCost() * 0xA;
 }
 
-s32 func_020d2d50(void) {
+s32 GetUnitActionCost(void) {
     s32 GetUnitBuildCost();
     return GetUnitBuildCost() * 5;
 }

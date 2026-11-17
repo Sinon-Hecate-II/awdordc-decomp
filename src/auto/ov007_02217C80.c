@@ -414,14 +414,14 @@ void func_ov007_0221863c(void *arg0) {
     void *HeapAllocBlock(s32);
     void MI_CpuFill8(void *, s32, s32);
     void MI_CpuCopy32(void *, void *, s32);
-    void func_01ff9e44(M2C_UNK, s32, M2C_UNK);
+    void CopyToObjPaletteShadow(M2C_UNK, s32, M2C_UNK);
     M2C_UNK HeapFreeBlock(s32);
     s32 func_ov000_0216cda4(s32);
     void *func_ov000_0216cdcc(s32);
     void *func_ov000_0216cdec(s32, s32);
     s32 func_ov000_0216cd4c(s32);
     void *GetUnitIconTiles(s32, s32);
-    void *func_ov000_0216cd90(s32);
+    void *GetArmyPalette(s32);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void **gCurrentMap;
@@ -475,7 +475,7 @@ void func_ov007_0221863c(void *arg0) {
             MI_CpuCopy32(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x100);
             MI_CpuCopy32((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+8)*32,0x200);
             offset+=0x300; tile+=0x18;
-            func_01ff9e44((s32)v2,((u8)table[3]+0x16)*32,0x20);
+            CopyToObjPaletteShadow((s32)v2,((u8)table[3]+0x16)*32,0x20);
             AddSpriteCell((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
         table+=5;i++;
         } while(table[0]>=0);
@@ -500,7 +500,7 @@ void func_ov007_0221863c(void *arg0) {
         table+=5;j++;
         } while(table[0]>=0);
         }
-        func_01ff9e44((s32)func_ov000_0216cd90(i),0x2c0,32);
+        CopyToObjPaletteShadow((s32)GetArmyPalette(i),0x2c0,32);
         break;
     }
     }

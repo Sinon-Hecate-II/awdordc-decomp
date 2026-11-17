@@ -320,7 +320,7 @@ u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
  extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
- s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 func_020d2d50(s32,s32); s32 func_020a7bbc(s32); s32 func_ov000_021aa2c4(s32,s32);
+ s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 func_020a7bbc(s32); s32 func_ov000_021aa2c4(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
  GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
@@ -341,7 +341,7 @@ s32 FindBestSelectableUnit(void) {
  if(!func_020cf908(unit[1],unit[2],M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),(u32)(unit[0]<<26)>>26))continue;
  if(!func_020a2788(commander,(u32)(unit[0]<<26)>>26))continue;
  {u8 *map=*gCurrentMap; s32 player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
- if(func_020d2d50(player,(u32)(unit[0]<<26)>>26)>M2C_FIELD(map+player*140,s32 *,0x67a4))continue;}
+ if(GetUnitActionCost(player,(u32)(unit[0]<<26)>>26)>M2C_FIELD(map+player*140,s32 *,0x67a4))continue;}
  if(*gAiSettings==0){if(func_ov000_021aa2c4(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
  else {if((*gAiSettings)(commander,(u32)(unit[0]<<26)>>26))goto select;goto next;}
  select:

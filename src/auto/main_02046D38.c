@@ -129,7 +129,7 @@ register u32 tmp4, tmp3;
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-void func_020472cc(Unk046State *p) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
+void GetWfcProfileIds(Unk046State *p) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
 
 s32 func_02047320(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
 

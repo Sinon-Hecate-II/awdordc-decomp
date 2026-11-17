@@ -252,23 +252,34 @@ void gpiCloseConnection(void **arg0) {
     }
 }
 
-s32 gpiProfileSearch(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(void **,s32 *,s32),s32 h){
- s32 gpiSearchProfiles(void **,s32,s32,s32,s32,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
- void gpiSetErrorString(void **,void *);extern M2C_UNK gpiErrorNoCallback;
- s32 buf[4];s32 *result;void *q;
- if(!p || !(q=*p))return 2;
- if(!cb){gpiSetErrorString(p,&gpiErrorNoCallback);return 2;}
- if(M2C_FIELD(q,s32 *,0x108)){
- result=(s32 *)buf;
- *(volatile s32 *)(result+2)=0;
- result[0]=0;
- result[1]=0;
- result[3]=0;
- buf[2]=0x601;
- cb(p,result,h);
- return 0;
- }
- return gpiSearchProfiles(p,a,b,c,d,e,f,0,g,cb,h);
+/* Validate a gpi profile-search request and, in simulation mode, deliver an
+   empty result list to the callback; otherwise start the real search (with a
+   default country code).  Fails with "No callback." when no callback is given. */
+s32 gpiProfileSearch(void **gpi, s8 *nick, s8 *uniquenick, s8 *email,
+                     s8 *firstname, s8 *lastname, s32 icq, s32 flags,
+                     void (*callback)(void **, s32 *, s32), s32 callbackArg) {
+    s32 gpiSearchProfiles(void **, s8 *, s8 *, s8 *, s8 *, s8 *, s32, s32, s32, void (*)(void **, s32 *, s32), s32);
+    void gpiSetErrorString(void **, void *);
+    extern M2C_UNK gpiErrorNoCallback;
+    s32 result[GPI_SEARCH_RESULT_WORDS];
+    s32 *response;
+    void *connection;
+    if (!gpi || !(connection = *gpi)) return 2;
+    if (!callback) {
+        gpiSetErrorString(gpi, &gpiErrorNoCallback);
+        return 2;
+    }
+    if (M2C_FIELD(connection, s32 *, GPI_CONN_SIMULATION)) {
+        response = (s32 *)result;
+        *(volatile s32 *)(response + 2) = 0;
+        response[0] = 0;
+        response[1] = 0;
+        response[3] = 0;
+        result[2] = GPI_SEARCH_MORE;
+        callback(gpi, response, callbackArg);
+        return 0;
+    }
+    return gpiSearchProfiles(gpi, nick, uniquenick, email, firstname, lastname, icq, 0, flags, callback, callbackArg);
 }
 
 /* Validate a profile-info request, delivering an empty result in simulation mode. */

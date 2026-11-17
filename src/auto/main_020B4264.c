@@ -294,10 +294,10 @@ void func_020b4b40(void *arg0){void *func_020be120();s32 func_020bf084(u8);s32 f
 
 void func_020b4b98(void *arg0) {
     if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {
-        func_02086720(0xC000034C);
+        SetUiMessageText(0xC000034C);
         return;
     }
-    func_02086720(0);
+    SetUiMessageText(0);
 }
 
 void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_UNK data_0212882c;func_020b3c44();if(gBattleEndState)return;M2C_FIELD(func_01ffa444(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
@@ -310,10 +310,10 @@ void func_020b4ca0(void) {
     s32 IsUnitAvailable();
     func_020befd8();
     if (IsUnitAvailable() == 0) {
-        func_02086720(0xC000032D);
+        SetUiMessageText(0xC000032D);
         return;
     }
-    func_02086720(0xC000032E);
+    SetUiMessageText(0xC000032E);
 }
 
 void func_020b4cd4(M2C_UNK arg0) {
@@ -362,13 +362,13 @@ void func_020b4d3c(void *arg0) {
 }
 
 void func_020b4d80(void) {
-    M2C_UNK func_02086720(s32);
+    M2C_UNK SetUiMessageText(s32);
     s32 func_020be4c0(M2C_UNK);
     if (func_020be4c0(4) == 0) {
-        func_02086720(0xC000034C);
+        SetUiMessageText(0xC000034C);
         return;
     }
-    func_02086720(0);
+    SetUiMessageText(0);
 }
 
 void func_020b4db0(s32 arg0) {
@@ -409,7 +409,7 @@ void Init3DSpriteDisplay(void) {
     void func_020d4d78(void);
     void func_020994e0(s32);
     void func_020c0a88(void);
-    void func_01ff9e44(void *, s32, s32);
+    void CopyToObjPaletteShadow(void *, s32, s32);
     void func_020af1c0(s32, s32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *g3DSpriteBankMain;
     extern u16 gMapSpritePalette[];
@@ -443,7 +443,7 @@ void Init3DSpriteDisplay(void) {
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1) | 1;
     func_020994e0(0);
     func_020c0a88();
-    func_01ff9e44(gMapSpritePalette, 32, 32);
+    CopyToObjPaletteShadow(gMapSpritePalette, 32, 32);
     func_020af1c0(3, 15);
 }
 

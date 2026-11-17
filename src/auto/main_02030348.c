@@ -200,35 +200,39 @@ u8 Wfc_StepLink(void) {
     return result;
 }
 
+/* Drives the WFC friend connection one step: asks for the chosen friend's code,
+ * sends the friend records and the friend-list entries, and while the WFC link
+ * is up hands each friend record whose result arrived over to the link step.
+ * Returns the session state to continue in. */
 s32 Wfc_StepSession(void) {
     void *Wfc_GetWorkBlock(s32);
     s32 Wfc_GetSessionState(void);
     u32 Wfc_GetLinkState(void);
-    s32 func_02030c78(void *);
-    s32 func_02030cc8(void *);
+    s32 Wfc_StartFriendCodeMessage(void *);
+    s32 Wfc_StepFriendCodeMessage(void *);
     s32 Wfc_SendFriendRecords(void *);
     s32 Wfc_SendFriendEntries(void *);
-    s32 func_020310c0(void *, s32);
-    void *ctx;
+    s32 Wfc_StepFriendResults(void *, s32);
+    void *friends;
     s32 state;
-    u32 val;
+    u32 link;
 
-    ctx = Wfc_GetWorkBlock(0x10);
+    friends = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
     state = Wfc_GetSessionState();
-    val = Wfc_GetLinkState();
-    if (state == 2 && val == 3) {
-        state = func_02030c78(ctx);
-    } else if (state == 6) {
-        state = func_020310c0(ctx, state);
-    } else if (val == 3 || val == 6) {
-        state = func_020310c0(ctx, state);
-        if (state != 7) {
-            if (state == 3) {
-                state = func_02030cc8(ctx);
-            } else if (state == 4) {
-                state = Wfc_SendFriendRecords(ctx);
-            } else if (state == 5) {
-                state = Wfc_SendFriendEntries(ctx);
+    link = Wfc_GetLinkState();
+    if (state == WFC_STEP_FRIEND_CONNECT && link == 3) {
+        state = Wfc_StartFriendCodeMessage(friends);
+    } else if (state == WFC_STEP_FRIEND_RESULTS) {
+        state = Wfc_StepFriendResults(friends, state);
+    } else if (link == 3 || link == 6) {
+        state = Wfc_StepFriendResults(friends, state);
+        if (state != WFC_STEP_LINK) {
+            if (state == WFC_STEP_FRIEND_CODE) {
+                state = Wfc_StepFriendCodeMessage(friends);
+            } else if (state == WFC_STEP_FRIEND_RECORDS) {
+                state = Wfc_SendFriendRecords(friends);
+            } else if (state == WFC_STEP_FRIEND_ENTRIES) {
+                state = Wfc_SendFriendEntries(friends);
             }
         }
     }
@@ -282,7 +286,7 @@ s32 Wfc_SendConnectionMessage(u8 mode) {
     }
 }
 
-s32 func_02030c78(void *a) {
+s32 Wfc_StartFriendCodeMessage(void *a) {
  u64 GetSystemTick(void);
  void func_020311e4(s32,s32,s32,s32);
  extern u8 data_020ea758[],data_020ea760[];
@@ -293,7 +297,7 @@ s32 func_02030c78(void *a) {
  return 3;
 }
 
-s32 func_02030cc8(void *a) {
+s32 Wfc_StepFriendCodeMessage(void *a) {
  u64 GetSystemTick(void);
  void func_020311e4(s32,s32,s32,s32);
  s32 func_02030ffc(void *,s32);
@@ -393,7 +397,7 @@ s32 func_02030ffc(void *arg0, s32 arg1) {
     return var_r4;
 }
 
-s32 func_020310c0(void *arg0,s32 arg1){
+s32 Wfc_StepFriendResults(void *arg0,s32 arg1){
 s32 func_020276b0();M2C_UNK func_0202f558(M2C_UNK);
 s32 var_r4=arg1;u8 temp_r2;u8 var_r1;
 if(var_r4==17)return var_r4;

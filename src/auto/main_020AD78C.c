@@ -510,7 +510,7 @@ u16 ConvertRgb555ToSepia(u16 color) {
     return (red & GX_RGB_CHANNEL_MASK) | ((green & GX_RGB_CHANNEL_MASK) << GX_RGB_GREEN_SHIFT) | ((blue & GX_RGB_CHANNEL_MASK) << GX_RGB_BLUE_SHIFT);
 }
 
-void func_020ae67c(u16 *arg0, s32 arg1) {
+void ApplySepiaToPalette(u16 *arg0, s32 arg1) {
     u16 ConvertRgb555ToSepia(u16);
     s32 i;
     u16 *ptr;
@@ -532,7 +532,7 @@ s32 c=v&31;
 return c|(c<<5)|(c<<10);
 }
 
-void func_020ae728(u16 *arg0, s32 arg1) {
+void ApplyGrayscaleToPalette(u16 *arg0, s32 arg1) {
     u16 func_020ae6bc(u16);
     s32 i;
     u16 *ptr;

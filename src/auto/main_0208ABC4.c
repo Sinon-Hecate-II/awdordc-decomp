@@ -366,7 +366,7 @@ void func_0208b778(void *entity) {
             (mode != 1 || bank == g3DSpriteEngineSub) &&
             (mode != 3 || bank == savedBank)) {
             func_0207c780(data_0211e1ec, M2C_FIELD(bank, u8 **, 0x1C) + (M2C_FIELD(entity, u16 *, 0x3E) << 5));
-            func_01ff9e44(data_0211e12c, ((u16)((u32)(M2C_FIELD(entity, u32 *, 0x40) << 6) >> 24) + 16) << 5, 32);
+            CopyToObjPaletteShadow(data_0211e12c, ((u16)((u32)(M2C_FIELD(entity, u32 *, 0x40) << 6) >> 24) + 16) << 5, 32);
             LoadScenePanelPalette(18);
         }
         i++;

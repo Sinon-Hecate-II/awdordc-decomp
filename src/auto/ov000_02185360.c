@@ -145,10 +145,47 @@ gMoveSearchWrite[2]=dir;
 gMoveSearchWrite+=4;gMoveSearchCount++;
 }
 
-M2C_UNK func_ov000_02185c20(M2C_UNK arg0, M2C_UNK arg1) {
-    (void)arg0;
-    (void)arg1;
-    return 0;
+void func_ov000_02185c20(s32 x,s32 y) {
+extern u8 *gMoveSearchState,*gMoveSearchWrite,*gMoveSearchCurrent;
+extern s32 gMoveSearchCount;extern s8 gMoveSearchBuffer;
+void MI_CpuFill8(void *,s32,s32);
+s32 left,right,xx,yy,bottom,top,dist,cost;
+MI_CpuFill8(gAiRangeLayer,255,1288);
+gMoveSearchCount=0;gMoveSearchBuffer=0;
+gMoveSearchWrite=gMoveSearchState+0x28;gMoveSearchCurrent=gMoveSearchState+0x5a0;
+gMoveSearchWrite[0]=x;left=0;gMoveSearchWrite[1]=y;gMoveSearchWrite[2]=1;
+gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x];
+if(gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>110){
+if(x-1>=0)left=x-1;
+yy = y-1 < 0 ? 0 : y-1;
+right = M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1; right = x+1 >= right ? right : x+1;
+bottom = M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1; bottom = y+1 >= bottom ? bottom : y+1;
+for(;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
+dist=0;if(x-xx>0)dist+=x-xx;else dist+=xx-x;
+if(y-yy>0)dist+=y-yy;else dist+=yy-y;
+if(dist>=1 && dist<=1){
+if(M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,0x52e8)[xx]>=0){if(gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,0x52e8)[xx]+1)gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,0x52e8)[xx]+1;}
+}}
+}
+gMoveSearchWrite+=4;gMoveSearchWrite[2]=0;
+for(;;){
+if(gMoveSearchBuffer==0){gMoveSearchWrite=gMoveSearchState+0x5a0;gMoveSearchCurrent=gMoveSearchState+0x28;gMoveSearchBuffer=1;gMoveSearchCount=0;}
+else {gMoveSearchWrite=gMoveSearchState+0x28;gMoveSearchCurrent=gMoveSearchState+0x5a0;gMoveSearchBuffer=0;gMoveSearchCount=0;}
+if(!gMoveSearchCurrent[2])break;
+while(gMoveSearchCurrent[2]){
+switch(gMoveSearchCurrent[2]){
+case 1:func_ov000_02185a74(2);func_ov000_02185a74(3);func_ov000_02185a74(4);func_ov000_02185a74(5);break;
+case 2:func_ov000_02185a74(2);func_ov000_02185a74(4);func_ov000_02185a74(5);break;
+case 3:func_ov000_02185a74(3);func_ov000_02185a74(4);func_ov000_02185a74(5);break;
+case 4:func_ov000_02185a74(2);func_ov000_02185a74(3);func_ov000_02185a74(4);break;
+case 5:func_ov000_02185a74(2);func_ov000_02185a74(3);func_ov000_02185a74(5);break;
+}
+gMoveSearchWrite[2]=0;gMoveSearchCurrent+=4;
+}
+}
+gMoveSearchState[36]=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
+gMoveSearchState[37]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
+gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=-1;
 }
 
 s32 IsWithinAttackRange(u8 *a,u8 *b,s32 c){

@@ -1,7 +1,41 @@
 /* 8 functions from 0x02068C50 to 0x02069048 (main), found by ds-decomp. */
 #include "common.h"
 
-unsigned char *StringCopy(unsigned char *dst,const unsigned char *src){unsigned char *p=dst;u32 n=(u32)src&3;u32 w,t,v;if(((u32)dst&3)==n){if(n){if(!(*p=*src))return dst;n=3-n;while(n){if(!(*++p=*++src))return dst;--n;}++p;++src;}w=*(const u32*)src;if(!((w+0xfefefeff)&~w&0x80808080)){p-=4;do{*(u32*)(p+=4)=w;src+=4;w=*(const u32*)src;t=w+0xfefefeff;v=~w;t=v&t;}while(!(t&0x80808080));p+=4;}}if(!(*p=*src))return dst;while((*++p=*++src)!=0){}return dst;}
+/* Copy a NUL-terminated string: byte by byte until both pointers share an
+ * alignment, then a word at a time while no word of the source holds a NUL
+ * byte.  Returns the destination. */
+unsigned char *StringCopy(unsigned char *dst, const unsigned char *src) {
+    unsigned char *out = dst;
+    u32 lead = (u32)src & 3;
+    u32 word, zeros, notWord;
+    if (((u32)dst & 3) == lead) {
+        if (lead) {
+            if (!(*out = *src)) return dst;
+            lead = 3 - lead;
+            while (lead) {
+                if (!(*++out = *++src)) return dst;
+                --lead;
+            }
+            ++out; ++src;
+        }
+        word = *(const u32 *)src;
+        if (!((word + STRING_ZERO_BIAS) & ~word & STRING_ZERO_MASK)) {
+            out -= 4;
+            do {
+                *(u32 *)(out += 4) = word;
+                src += 4;
+                word = *(const u32 *)src;
+                zeros = word + STRING_ZERO_BIAS;
+                notWord = ~word;
+                zeros = notWord & zeros;
+            } while (!(zeros & STRING_ZERO_MASK));
+            out += 4;
+        }
+    }
+    if (!(*out = *src)) return dst;
+    while ((*++out = *++src) != 0) {}
+    return dst;
+}
 
 s8 *StringCopyPad(s8 *a,s8 *b,s32 n) {
 s8 *p=a;

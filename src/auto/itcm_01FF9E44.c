@@ -2,7 +2,7 @@
 #include "common.h"
 
 /* Copy data via MI_CpuCopy32 using the current 3D sprite engine's buffer, then mark engine busy (bit 0x10). */
-void func_01ff9e44(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+void CopyToObjPaletteShadow(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     M2C_UNK MI_CpuCopy32(M2C_UNK, s32, M2C_UNK);
     extern u16 **gCur3DSpriteEngine;
     MI_CpuCopy32(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, arg2);

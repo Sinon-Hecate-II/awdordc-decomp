@@ -171,7 +171,31 @@ extern void **gCurrentMap;
 extern u8 *gAiCommandState;
 extern u8 gBattleEndState[8];
 
-void func_ov000_0219c444(void){extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];s32 found=0,i;void *base=*gCurrentMap;u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];u8 *p;u32 type;for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){p=((u8 (*)[14])(base+0x59a4))[i];type=(u32)(p[0]<<26)>>26;if(type!=0&&(u8)(type+255)<=2&&((u32)(p[11]<<28)>>28)==0){found=1;break;}}if(!found)return;while(func_ov000_0219b848()){} }
+/* Gives out the AI orders of the side whose turn it is.  If any unit of the
+ * current player's group is a foot unit (kinds 1..3) that has no order yet
+ * (MAP_UNIT_AI_STATE nibble 0) the AI action chooser is run until it finds
+ * nothing left to order. */
+void Ov000_AssignAiOrders(void) {
+    s32 found = 0, i;
+    void *base = *gCurrentMap;
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+    u8 (*units)[MAP_UNIT_STRIDE];
+    u8 *unit;
+    u32 kind;
+
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+        units = (void *)((u8 *)base + MAP_UNIT_RECORDS);
+        unit = units[i];
+        kind = (u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26;
+        if (kind != 0 && (u8)(kind + 255) <= 2 &&
+            ((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 0) {
+            found = 1;
+            break;
+        }
+    }
+    if (!found) return;
+    while (func_ov000_0219b848()) {}
+}
 
 /* Fills every cell of a byte-per-cell map layer (`layerBase`) with `value`, using
  * the map's row-offset table to find the start of each row, then selects the

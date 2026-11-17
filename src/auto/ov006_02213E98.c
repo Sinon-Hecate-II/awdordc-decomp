@@ -1,12 +1,6 @@
 /* 2 functions from 0x02213E98 to 0x022144AC (ov006), found by ds-decomp. */
 #include "common.h"
-typedef struct {
- u8 pad[0x40];
- u32 low:18;u32 frame:8;u32 high:6;
- u8 pad44[0x15];
- u8 base:4;u8 upper:4;
- u8 timer;
-} MenuSprite_02213e98;
+#include "ov006_menu_sprite.h"
 static inline void SetMenuFrame_02213e98(MenuSprite_02213e98 *s,u16 frame) {
  s->frame=(u16)frame;s->timer=0;
 }

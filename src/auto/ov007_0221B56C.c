@@ -347,10 +347,10 @@ loop_1:
 
 void func_ov007_0221c2b0(void *a) {
  extern s32 *gCurrentMap;
- s32 func_020c8054(s32); s32 func_ov007_0221216c(s32); void func_02086720(u32);
- if(func_020c8054(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))func_02086720(0x4600000C);
- else if(func_ov007_0221216c(-1))func_02086720(0x46000008);
- else func_02086720(0x46000009);
+ s32 func_020c8054(s32); s32 func_ov007_0221216c(s32); void SetUiMessageText(u32);
+ if(func_020c8054(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))SetUiMessageText(0x4600000C);
+ else if(func_ov007_0221216c(-1))SetUiMessageText(0x46000008);
+ else SetUiMessageText(0x46000009);
  M2C_FIELD(a,s32 *,0x5C)=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
  M2C_FIELD(a,u16 *,0x6C)=0;
 }
@@ -389,9 +389,9 @@ void StartNextMap(void *p) {
 
 void func_ov007_0221c4d4(void) {
  extern s32 *gCurrentMap;
- s32 func_020c7ea8(s32); s32 func_020be4c0(s32); void func_02086720(u32);
- if(func_020be4c0(func_020c7ea8(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))==0){func_02086720(0xC000034C);return;}
- func_02086720(0);
+ s32 func_020c7ea8(s32); s32 func_020be4c0(s32); void SetUiMessageText(u32);
+ if(func_020be4c0(func_020c7ea8(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))==0){SetUiMessageText(0xC000034C);return;}
+ SetUiMessageText(0);
 }
 
 #pragma push

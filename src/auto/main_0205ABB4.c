@@ -24,10 +24,10 @@ s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 M2C_UNK func_0205ac1c(s32 a,s32 b) {
-void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 func_0205a29c(s32,s32);void func_0205d164(s32);void func_0205c8c8(s32);
+void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 gti2ClosedCallback(s32,s32);void func_0205d164(s32);void func_0205c8c8(s32);
 if(b){
 if(M2C_FIELD(a,s32 *,12)>=7)return;
-gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);func_0205a29c(a,0);func_0205d164(a);
+gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);func_0205d164(a);
 }else {M2C_FIELD(a,s32 *,12)=6;func_0205c8c8(a);}
 }
 
@@ -58,9 +58,9 @@ gti2CreateSocket(a,b,c,d,e);
 
 void func_0205ad60(M2C_UNK arg0) {
     void GT2NotifyConnectionClosed();
-    M2C_UNK func_0205cef8(M2C_UNK);
+    M2C_UNK gti2FreeSocket(M2C_UNK);
     GT2NotifyConnectionClosed();
-    func_0205cef8(arg0);
+    gti2FreeSocket(arg0);
 }
 
 void func_0205ad78(M2C_UNK arg0) {
@@ -180,12 +180,12 @@ s16 Gt2CompareSequence(s32 arg0, s32 arg1) {
 }
 
 s32 func_0205b110(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
-s32 Gt2ConnectionCallCallback(s32,s32,s32,s32);s32 func_0205a29c(s32,s32);
+s32 Gt2ConnectionCallCallback(s32,s32,s32,s32);s32 gti2ClosedCallback(s32,s32);
 s32 n=M2C_FIELD(a,s32 *,12);
 if(n<5){
 if(M2C_FIELD(a,s32 *,16)){gti2MarkConnectionClosed((void *)a);if(!Gt2ConnectionCallCallback(a,b,0,0))return 0;}
 else {if(n==4)M2C_FIELD(a,s32 *,20)=1;gti2MarkConnectionClosed((void *)a);}
-}else if(n!=7){gti2MarkConnectionClosed((void *)a);if(!func_0205a29c(a,c))return 0;}
+}else if(n!=7){gti2MarkConnectionClosed((void *)a);if(!gti2ClosedCallback(a,c))return 0;}
 return 1;
 }
 

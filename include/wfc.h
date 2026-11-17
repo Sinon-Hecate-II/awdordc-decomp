@@ -233,6 +233,12 @@ enum {
 #define NAS_LOGIN_KEY_TYPE       0x0C /* s32 key passed to FormatNasId */
 #define NAS_LOGIN_SESSION        0x1C /* void *local session/profile record */
 #define NAS_LOGIN_KEY            0x3C /* 12-byte profile key record */
+
+/* The key record's check word at +8 is the high half of one 64-bit LCG step over
+ * a console-entropy seed; StartNasRequest uses the same generator to refresh the
+ * login id from the system tick. */
+#define NAS_KEY_SEED_MULT 0x5D588B656C078965ULL
+#define NAS_KEY_SEED_ADD  0x269EC3
 #define NAS_LOGIN_CONNECT_RESULT 0x260 /* connection result record */
 
 /* Login context state (NAS_LOGIN_STATE). */
@@ -320,5 +326,18 @@ typedef struct NasRequest {
 
 #define WFC_CODE_LEN_FRIEND    0x20 /* 32-byte friend code */
 #define WFC_CODE_LEN_FREESPOT  0x08 /* 8-byte FREESPOT code */
+
+/* Session states the friend connection walks through (Wfc_StepSession, main_02030348):
+ * after the connect step (2) it asks for the chosen friend's code (3), sends the
+ * friend records (4) and the friend-list entries (5), collects each record's
+ * result (6) and state 7 hands over to the link step (Wfc_StepLink). */
+enum {
+    WFC_STEP_FRIEND_CONNECT = 2,
+    WFC_STEP_FRIEND_CODE    = 3,
+    WFC_STEP_FRIEND_RECORDS = 4,
+    WFC_STEP_FRIEND_ENTRIES = 5,
+    WFC_STEP_FRIEND_RESULTS = 6,
+    WFC_STEP_LINK           = 7
+};
 
 #endif

@@ -59,7 +59,7 @@ extern void **gCurrentMap; extern u16 gMapConfig;
 s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
 s32 func_020a8a14(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 func_020a3150(s32);
 s32 func_020a88e8(s32);s32 GetPlayerCommanderId(s32);s32 func_020a735c(void *);
-s32 func_020a2788(s32,s32);s32 func_020d2d50(s32,s32);
+s32 func_020a2788(s32,s32);s32 GetUnitActionCost(s32,s32);
 u8 *map; s32 value; s32 unitKind; s32 player;
 if(((u32)(gMapConfig<<18)>>31)==0)return 2;
 map=*gCurrentMap;
@@ -78,7 +78,7 @@ value=GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
 unitKind=func_020a735c(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT));
 if(!func_020a2788(value,unitKind))return 2;
 map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
-value=func_020d2d50(player,(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26);
+value=GetUnitActionCost(player,(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26);
 return value>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES)?2:0;
 }
 
@@ -168,26 +168,30 @@ void func_020c727c(void) {
  SetBattleCommand(0x18,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
-void func_020c72b4(void) {
- s32 GetUnitIconTiles(s32,s32); s32 func_ov000_0216cd90(s32);
- void QueueMemoryCopy(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
+/* Draw the icon of the first unit loaded in the unit under the cursor: copy the
+ * carried unit's kind icon, in the colour variant of the army that owns it, to
+ * sprite tile 0x23c and set that entry and its palette up.  Nothing to do when
+ * the unit carries nothing. */
+void DrawFirstCarriedUnitIcon(void) {
+ s32 GetUnitIconTiles(s32,s32); s32 GetArmyPalette(s32);
+ void QueueMemoryCopy(s32,void *,s32,s32); void CopyToObjPaletteShadow(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
- u8 *base; u8 *p; s32 n; s32 a; s32 b;
+ u8 *base; u8 *player; s32 carriedId; s32 tiles; s32 armyIndex;
  base = *gCurrentMap;
- n = M2C_FIELD(M2C_FIELD(base,void **,0x52d0),u8 *,0xc);
- if(n == 0) return;
- p = base + 0x67a4 + ((n >> 6)+1)*0x8c;
- a = M2C_FIELD(base + n*14,u8 *,0x59a4);
- b = p[0x1d];
- a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
- QueueMemoryCopy(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4780,0x80,0);
- func_01ff9e44(func_ov000_0216cd90(b),0x340,0x20);
+ carriedId = M2C_FIELD(M2C_FIELD(base,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_CARRIED);
+ if(carriedId == 0) return;
+ player = base + MAP_PLAYER_STATES + ((carriedId >> 6)+1)*MAP_PLAYER_STRIDE;
+ tiles = M2C_FIELD(base + carriedId*MAP_UNIT_STRIDE,u8 *,MAP_UNIT_RECORDS);
+ armyIndex = player[PLAYER_REC_ARMY_INDEX];
+ tiles = GetUnitIconTiles((u32)(tiles << 26) >> 26,player[PLAYER_REC_SPRITE_STATE]);
+ QueueMemoryCopy(tiles,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4780,0x80,0);
+ CopyToObjPaletteShadow(GetArmyPalette(armyIndex),0x340,0x20);
  func_0209c720(0,0x23c,10,2,2);
 }
 
-void func_020c7378(void) {
- s32 GetUnitIconTiles(s32,s32); s32 func_ov000_0216cd90(s32);
- void QueueMemoryCopy(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
+void DrawSecondCarriedUnitIcon(void) {
+ s32 GetUnitIconTiles(s32,s32); s32 GetArmyPalette(s32);
+ void QueueMemoryCopy(s32,void *,s32,s32); void CopyToObjPaletteShadow(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  u8 *base; u8 *p; s32 n; s32 a; s32 b;
  base = *gCurrentMap;
@@ -198,7 +202,7 @@ void func_020c7378(void) {
  b = p[0x1d];
  a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
  QueueMemoryCopy(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4800,0x80,0);
- func_01ff9e44(func_ov000_0216cd90(b),0x340,0x20);
+ CopyToObjPaletteShadow(GetArmyPalette(b),0x340,0x20);
  func_0209c720(1,0x240,10,2,2);
 }
 

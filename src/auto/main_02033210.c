@@ -290,10 +290,10 @@ void func_02033f3c(void *arg0) {
 
 s32 func_02033f98(void *arg0) {
     void func_02006030(s32);
-    void func_02007888(void *);
+    void GetConsoleEntropy(void *);
     void Random_AddEntropy(void *,s32);
     if(M2C_FIELD(arg0,s32 *,0x1130)==1) {
-        func_02007888(arg0+0x19d4);
+        GetConsoleEntropy(arg0+0x19d4);
         Random_AddEntropy(arg0+0x19d4,0x20);
     }
     LockMutex(arg0+0x1bf8);

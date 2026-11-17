@@ -169,7 +169,7 @@ void DrawInfoPanelBackdrop(void *entry) {
 }
 
 void func_ov000_02175878(void *arg0) {
-    void func_01ff9e44(void *, s32, s32);
+    void CopyToObjPaletteShadow(void *, s32, s32);
     M2C_UNK func_0207c780(M2C_UNK *, s32);
     void func_0209b26c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
     extern void *g3DSpriteEngineSub;
@@ -202,7 +202,7 @@ void func_ov000_02175878(void *arg0) {
         base += 0xA40;
     }
     func_0207c780((M2C_UNK *)data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag + 2], base);
-    func_01ff9e44(data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag] + idx, 0x180, 0x20);
+    CopyToObjPaletteShadow(data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag] + idx, 0x180, 0x20);
     func_0209b26c(2, 0xD, 1, data_ov000_021debc8[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)], 0xF000, color);
     gCur3DSpriteEngine = saved;
 }

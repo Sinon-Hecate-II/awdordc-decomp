@@ -414,10 +414,10 @@ void func_ov001_0217cc08(void) {
 
 void func_ov001_0217cc4c(void) {
     void func_ov001_0217cc68(void);
-    M2C_UNK func_ov001_0217cce8();
+    M2C_UNK DrawWfcErrorPanel();
     extern M2C_UNK func_ov001_0217d044;
     func_ov001_0217cc68();
-    func_ov001_0217cce8();
+    DrawWfcErrorPanel();
     Ov001_SetStepCallback(&func_ov001_0217d044);
 }
 

@@ -96,15 +96,23 @@ void func_020bbd98(void) {
  if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))AddRecordValue(36,1);
 }
 
-void func_020bbe10(void){
-void func_020c98d8(u8,u8,s32); void SetPlayerSelectedUnit(u16,void *); s32 func_020d2d50(u16,u32); void func_020d2b10(u16,s32); M2C_UNK AddRecordValue(M2C_UNK,M2C_UNK);
-extern s32 *gCurrentMap;
-void *p;
-p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-func_020c98d8(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),3);
-SetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),M2C_FIELD(*gCurrentMap,void **,0x52d0));
-func_020d2b10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),func_020d2d50(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26));
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))AddRecordValue(27,1);
+/* Begin acting with the cursor unit: show its tile's action effect, make it the
+ * current player's selected unit, pay the unit's action cost, and count one
+ * record entry when a human player is acting. */
+void BeginUnitAction(void) {
+    void func_020c98d8(u8, u8, s32);
+    void SetPlayerSelectedUnit(u16, void *);
+    s32 GetUnitActionCost(u16, u32);
+    void PayPlayerFunds(u16, s32);
+    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
+    extern s32 *gCurrentMap;
+    void *unit;
+
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    func_020c98d8(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y), 3);
+    SetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT));
+    PayPlayerFunds(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), GetUnitActionCost(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26));
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) AddRecordValue(27, 1);
 }
 
 /* AI command 22: produce a kind-17 unit on the cursor unit's tile, chain it as

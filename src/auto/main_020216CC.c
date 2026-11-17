@@ -81,9 +81,9 @@ void func_02021960(void) {
 }
 
 s32 func_0202196c(M2C_UNK a,void *b){
-s32 func_0201f7d8(M2C_UNK,u16 *,u32 *);
+s32 SocketCreateListen(M2C_UNK,u16 *,u32 *);
 u32 v;u16 h;
-s32 result=func_0201f7d8(a,&h,&v);
+s32 result=SocketCreateListen(a,&h,&v);
 if(result<0)return result;
 M2C_FIELD(b,u16 *,2)=((h>>8)&255)|((h<<8)&0xff00);
 M2C_FIELD(b,u32 *,4)=((v>>24)&255)|((v>>8)&0xff00)|((v<<8)&0xff0000)|((v<<24)&0xff000000);

@@ -239,7 +239,7 @@ s32 GetLocalizedText(u32 arg0) {
  extern u32 data_02102448;
  extern M2C_UNK gUiGraphicsBanks[];
  u32 *p = &data_02102448;
- if (arg0 == -1U) arg0 = func_02086730();
+ if (arg0 == -1U) arg0 = GetUiMessageText();
  for (; p[1] != 0; p += 2) {
   if (arg0 >= p[0]) {
    s32 base = ((s32 *)&gUiGraphicsBanks)[((s32)p - (s32)&data_02102448) / 8];
@@ -254,7 +254,7 @@ s32 func_020866fc(s32 arg0) {
 
     var_r0 = arg0;
     if (var_r0 == -1) {
-        var_r0 = func_02086730();
+        var_r0 = GetUiMessageText();
     }
     if (var_r0 == 0) {
         return 0;
@@ -262,14 +262,14 @@ s32 func_020866fc(s32 arg0) {
     return 1;
 }
 
-void func_02086720(s32 arg0) {
-    extern s32 data_02157674;
-    data_02157674 = arg0;
+void SetUiMessageText(s32 arg0) {
+    extern s32 gUiMessageText;
+    gUiMessageText = arg0;
 }
 
-s32 func_02086730(void) {
-    extern s32 data_02157674;
-    return data_02157674;
+s32 GetUiMessageText(void) {
+    extern s32 gUiMessageText;
+    return gUiMessageText;
 }
 
 void func_02086740(u32 arg0, s32 arg1) {

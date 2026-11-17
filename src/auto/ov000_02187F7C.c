@@ -60,7 +60,7 @@ void func_ov000_02188370(void) {
 }
 
 u8 CanDoFootAiAction(s32 arg0, s32 arg1) {
-    s32 func_ov000_02179ce4(void *);
+    s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
@@ -68,7 +68,7 @@ u8 CanDoFootAiAction(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
     current = func_ov000_0218a230();
     if (current < CountCapturableProperties() + 2) result = 1;
     else result = 0;
@@ -139,7 +139,7 @@ void func_ov000_021884e4(void) {
 }
 
 u8 CanDoAiAction01(s32 arg0, s32 arg1) {
-    s32 func_ov000_02179ce4(void *);
+    s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
@@ -147,7 +147,7 @@ u8 CanDoAiAction01(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
 
     current = CountAiAttackTargetUnits();
     if (current == 0) return 0;
@@ -191,7 +191,7 @@ void func_ov000_02188688(void) {
 
 void CanDoAiAction2(s32 arg0, s32 arg1) {
     s32 func_ov000_021885c8(void);
-    s32 func_ov000_02179ce4(void *);
+    s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
@@ -199,7 +199,7 @@ void CanDoAiAction2(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
 
     func_ov000_021885c8();
 }
@@ -242,7 +242,7 @@ void func_ov000_02188790(void) {
 }
 
 void CanDoAiAction34(s32 arg0, s32 arg1) {
-    s32 func_ov000_02179ce4(void *);
+    s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
@@ -250,7 +250,7 @@ void CanDoAiAction34(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
     func_ov000_02188744();
 }
 
@@ -284,7 +284,7 @@ void func_ov000_021888ec(void) {
 }
 
 void CanDoAiAction5(s32 arg0, s32 arg1) {
-    s32 func_ov000_02179ce4(void *);
+    s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
@@ -292,7 +292,7 @@ void CanDoAiAction5(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
     func_ov000_02188850();
 }
 
@@ -328,24 +328,27 @@ void func_ov000_02188a38(void) {
     func_ov000_021884e4();
 }
 
-u8 CanDoAiAction789(s32 arg0, s32 arg1) {
-    s32 func_ov000_02179ce4(void *);
+/* For AI states 7..9: checks that the acting unit has an assigned move target
+ * and that the target cell is inside the movement area just flood-filled. */
+u8 CanDoAiAction789(s32 x, s32 y) {
+    s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
-    s32 offset;
-    void *base, *table;
-    u16 value;
-    s8 *bank;
+    s32 unitOffset;
+    void *map, *unitRecords;
+    u16 target;
+    s8 *targetRow;
     u8 result;
-    base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
 
-    value = M2C_FIELD((u8 *)table + offset, u16 *, 8);
-    if (((u32)(value << 26) >> 26) == 0x3F) return 0;
+    map = *gCurrentMap;
+    unitRecords = (u8 *)map + MAP_UNIT_RECORDS;
+    unitOffset = M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_NEXT_CARRIED) * MAP_UNIT_STRIDE;
+    FloodFillUnitRange(x, y, (u32)(M2C_FIELD(unitRecords, u8 *, unitOffset) << 26) >> 26, GetAiUnitSearchRange((u8 *)unitRecords + unitOffset), 0);
 
-    bank = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
-    if (bank[((u32)(value << 26) >> 26)] > 0) result = 1;
+    target = M2C_FIELD((u8 *)unitRecords + unitOffset, u16 *, MAP_UNIT_TARGET);
+    if (((u32)(target << 26) >> 26) == MAP_UNIT_TARGET_NONE) return 0;
+
+    targetRow = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(target << 20) >> 26) * 4), s8 **, MAP_GRID);
+    if (targetRow[((u32)(target << 26) >> 26)] > 0) result = 1;
     else result = 0;
     return result;
 }

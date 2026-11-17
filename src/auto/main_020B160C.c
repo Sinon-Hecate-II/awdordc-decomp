@@ -8,17 +8,17 @@
  * palettes 4..7 and the current player's palette into OBJ palette 3. */
 void UploadBattleMapGraphics(void){
 s32 func_020a7290(void);void *func_020a7278(void);void *func_020a7284(void);
-M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);void func_01ff9e44(void *,s32,s32);void func_020c09c0(s32);
+M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);void CopyToObjPaletteShadow(void *,s32,s32);void func_020c09c0(s32);
 extern void *gCur3DSpriteEngine;extern void *gCurrentMap;extern u8 gArmyPalettes[];
 s32 tileBytes;void *engine;
 tileBytes=func_020a7290()<<5;engine=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10);
 MI_CpuCopy32(func_020a7278(),engine+0x25c0,tileBytes);
 engine=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10)+0x4e0;
 MI_CpuCopy32(func_020a7284(),engine+0x3000,0x3c0);
-func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+1*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,384,32);
-func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+2*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,416,32);
-func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+3*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,448,32);
-func_01ff9e44(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+4*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,480,32);
+CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+1*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,384,32);
+CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+2*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,416,32);
+CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+3*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,448,32);
+CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+4*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,480,32);
 func_020c09c0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER));}
 
 void func_020b172c(void) {

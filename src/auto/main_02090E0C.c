@@ -704,7 +704,7 @@ extern void *gCur3DSpriteEngine;
 extern M2C_UNK data_0211e738;
 extern M2C_UNK data_0211e068;
 func_0207c780(&data_0211e738,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
-func_01ff9e44(&data_0211e068,0x200,0x20);
+CopyToObjPaletteShadow(&data_0211e068,0x200,0x20);
 }
 
 void func_02091cd0(void) {
@@ -725,9 +725,9 @@ gCur3DSpriteEngine=save;
 void func_02091d20(void) {M2C_UNK CopyU16(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK data_020f41e0;extern void *gCur3DSpriteEngine;CopyU16(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
 #pragma scheduling reset
 void LoadScenePanelPalette(s32 arg0) {
-    M2C_UNK func_01ff9e44(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_0211e088;
-    func_01ff9e44(&data_0211e088, arg0 << 5, 0x20);
+    CopyToObjPaletteShadow(&data_0211e088, arg0 << 5, 0x20);
 }
 
 void func_02091d6c(s32 a,s32 b) {

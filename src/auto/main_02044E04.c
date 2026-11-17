@@ -317,9 +317,9 @@ s32 SendWebGetRequest(s32 kind, u32 playerId, s32 field2, void *payload) {
     }
 }
 
-s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
+s32 SendWebSyncRequest(s32 a, s32 b, u32 c, s32 d) {
     s32 HasNetError();
-    s32 func_02047dd4(s32, u32, s32, s32);
+    s32 BuildWebSyncRequest(s32, u32, s32, s32);
     extern s32 gWebTransaction;
     if (HasNetError() != 0) return 1;
     if (gWebTransaction != 1 && gWebTransaction != 5) return 10;
@@ -327,7 +327,7 @@ s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
     if (a < 0 || a >= 9) return 2;
     if (b < 0) return 2;
     {
-        s32 r = func_02047dd4(a, c, b, d);
+        s32 r = BuildWebSyncRequest(a, c, b, d);
         switch (r) {
             case 3:
                 return 11;

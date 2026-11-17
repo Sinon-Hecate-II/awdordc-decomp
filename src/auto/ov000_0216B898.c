@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
+#include "ov000_ui.h"
 typedef struct PanelInitFlags { unsigned char bit0:1; unsigned char mid:4; unsigned char high:3; } PanelInitFlags;
 extern void *gCur3DSpriteEngine;
 extern u8 data_ov000_021b8384[],data_ov000_021b83a0[],data_ov000_021b837c[],data_ov000_021b83d8[],data_ov000_021b8392[];
@@ -72,22 +73,28 @@ if(M2C_FIELD(arg0,u8*,0x3d)&&func_ov000_0216b15c(xa,ya,48,16))
 #pragma peephole reset
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-void func_ov000_0216bfa4(void *arg0) {
+/* Per-frame update of the army info window: steps each of its seven icon
+ * animations, plays the open animation's sound at frames 8 and 104, and lets the
+ * player skip the rest of it with A/START or a screen tap (frame 131 finishes it
+ * by itself).  Advances the window's own frame counter. */
+void ArmyInfo_UpdateWindow(void *arg0) {
 extern u16 *gKeyState;
 extern u8 *gTouchState;
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x44));
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x48));
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x4c));
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x50));
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x54));
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x58));
-func_020a91a8(M2C_FIELD(arg0,s32 *,0x5c));
-switch(M2C_FIELD(arg0,u16 *,0x34)){
+MapInfoWindow *window = arg0;
+void StepAnimationFrames(void *);
+StepAnimationFrames(window->icons[0]);
+StepAnimationFrames(window->icons[1]);
+StepAnimationFrames(window->icons[2]);
+StepAnimationFrames(window->icons[3]);
+StepAnimationFrames(window->icons[4]);
+StepAnimationFrames(window->icons[5]);
+StepAnimationFrames(window->icons[6]);
+switch(M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)){
 case 8:PlaySoundEffect(0x1003e);
 case 0x68:PlaySoundEffect(0x1003f);
 }
-if((*gKeyState &9)||gTouchState[0x14]||M2C_FIELD(arg0,u16 *,0x34)==0x83)func_01ffa6fc(arg0);
-M2C_FIELD(arg0,u16 *,0x34)++;
+if((*gKeyState &(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]||M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)==0x83)func_01ffa6fc(arg0);
+M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)++;
 }
 
 void func_ov000_0216c068(void *arg0) {
@@ -139,8 +146,8 @@ void func_ov000_0216c1e8(void) {
 }
 
 void func_ov000_0216c1f4(void) {
-    void func_ov000_0216bfa4();
-    func_ov000_0216bfa4();
+    void ArmyInfo_UpdateWindow();
+    ArmyInfo_UpdateWindow();
 }
 
 /* Builds the ov000 army info window for the player whose turn it is: a UI node

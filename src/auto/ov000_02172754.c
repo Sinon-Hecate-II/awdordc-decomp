@@ -142,7 +142,7 @@ void DrawInfoWindowFrame(void *unused) {
    and its localized name. */
 void DrawTerrainInfoBanner(void *entry) {
     M2C_UNK func_0207c780(M2C_UNK *, s32);
-    void func_01ff9e44(M2C_UNK, s32, s32);
+    void CopyToObjPaletteShadow(M2C_UNK, s32, s32);
     void func_0209b26c(s32, s32, s32, s32, s32, u16);
     s32 func_ov000_0217244c();
     s32 GetTerrainGraphic(s32, s32);
@@ -165,16 +165,16 @@ void DrawTerrainInfoBanner(void *entry) {
     if (GetTerrainGraphic(context, *M2C_FIELD(entry, s32 **, 0x18))) {
         switch (M2C_FIELD(M2C_FIELD(gCurrentMap, s32 *, 0) + 0x5000, u8 *, 0x157)) {
         case 0: case 5: case 7: case 8: case 9:
-            func_01ff9e44(func_ov000_02172478(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
+            CopyToObjPaletteShadow(func_ov000_02172478(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
         case 1:
-            func_01ff9e44(func_ov000_02172498(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
+            CopyToObjPaletteShadow(func_ov000_02172498(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
         case 2:
-            func_01ff9e44(func_ov000_021724a8(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
+            CopyToObjPaletteShadow(func_ov000_021724a8(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
         case 3: case 4: case 6:
-            func_01ff9e44(func_ov000_02172488(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
+            CopyToObjPaletteShadow(func_ov000_02172488(context, *M2C_FIELD(entry, s32 **, 0x18)), 0x80, 0xc0); break;
         }
     } else {
-        func_01ff9e44((s32)&data_ov000_021b8f5c, 0x80, 0xc0);
+        CopyToObjPaletteShadow((s32)&data_ov000_021b8f5c, 0x80, 0xc0);
     }
     func_0209b26c(2, 0xa, 1, GetTerrainNameId(context, *M2C_FIELD(entry, s32 **, 0x18)), 0xf000, (u16)palette);
     gCur3DSpriteEngine = savedEngine;

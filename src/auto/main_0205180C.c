@@ -119,22 +119,41 @@ M2C_FIELD(p,s32 *,0x1d8)=2;
 return 0;
 }
 
-s32 func_02051f74(void **a,void *b){M2C_UNK gpiFree(void *);M2C_UNK gpiFreeBuddyList(void **,void *);void *p=M2C_FIELD(b,void **,8);void *q=*a;
-if(p&&M2C_FIELD(q,s32 *,260)==0){
-gpiFree(M2C_FIELD(p,void **,8));M2C_FIELD(M2C_FIELD(b,void **,8),void **,8)=0;
-gpiFree(M2C_FIELD(M2C_FIELD(b,void **,8),void **,12));M2C_FIELD(M2C_FIELD(b,void **,8),void **,12)=0;
-gpiFree(M2C_FIELD(b,void **,8));M2C_FIELD(b,void **,8)=0;
-}
-gpiFree(M2C_FIELD(b,void **,16));M2C_FIELD(b,void **,16)=0;
-gpiFree(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=0;M2C_FIELD(b,s32 *,20)=0;
-if(!M2C_FIELD(b,s32 *,12)||(M2C_FIELD(q,s32 *,260)==1&&!M2C_FIELD(b,void **,8))){gpiFreeBuddyList(a,b);return 0;}
-return 1;
+/* Release one record of the connection's buddy-status table: free its presence
+ * details (unless the connection keeps them), its signature and its extra
+ * string, and remove the record when no operation holds it and no profile info
+ * is cached for it.  Returns 0 when the record was removed, so the table scan
+ * restarts, and 1 when it stays. */
+s32 gpiReleaseBuddyStatusRecord(void **connection, void *record) {
+    M2C_UNK gpiFree(void *);
+    M2C_UNK gpiFreeBuddyList(void **, void *);
+    void *details = M2C_FIELD(record, void **, GPI_BUDDY_DETAILS);
+    void *session = *connection;
+
+    if (details && M2C_FIELD(session, s32 *, GPI_CONN_KEEP_BUDDY_DETAILS) == 0) {
+        gpiFree(M2C_FIELD(M2C_FIELD(record, void **, GPI_BUDDY_DETAILS), void **, GPI_BUDDY_STATUS_STRING));
+        M2C_FIELD(M2C_FIELD(record, void **, GPI_BUDDY_DETAILS), void **, GPI_BUDDY_STATUS_STRING) = 0;
+        gpiFree(M2C_FIELD(M2C_FIELD(record, void **, GPI_BUDDY_DETAILS), void **, GPI_BUDDY_LOCATION_STRING));
+        M2C_FIELD(M2C_FIELD(record, void **, GPI_BUDDY_DETAILS), void **, GPI_BUDDY_LOCATION_STRING) = 0;
+        gpiFree(M2C_FIELD(record, void **, GPI_BUDDY_DETAILS));
+        M2C_FIELD(record, void **, GPI_BUDDY_DETAILS) = 0;
+    }
+    gpiFree(M2C_FIELD(record, void **, GPI_BUDDY_SIGNATURE));
+    M2C_FIELD(record, void **, GPI_BUDDY_SIGNATURE) = 0;
+    gpiFree(M2C_FIELD(record, void **, GPI_BUDDY_UNK18));
+    M2C_FIELD(record, void **, GPI_BUDDY_UNK18) = 0;
+    M2C_FIELD(record, s32 *, GPI_BUDDY_USE_COUNT) = 0;
+    if (!M2C_FIELD(record, s32 *, GPI_BUDDY_CACHED_INFO) || (M2C_FIELD(session, s32 *, GPI_CONN_KEEP_BUDDY_DETAILS) == 1 && !M2C_FIELD(record, void **, GPI_BUDDY_DETAILS))) {
+        gpiFreeBuddyList(connection, record);
+        return 0;
+    }
+    return 1;
 }
 
 extern u32 gGsKeyFinal;
 extern u32 data_020fe668;
 extern u32 data_020fe67c;
-extern s32 func_02051f74(void **, void *);
+extern s32 gpiReleaseBuddyStatusRecord(void **, void *);
 void gpiDisconnect(void **arg0, s32 arg1) {
     s32 v;
     void *temp_r4;
@@ -197,7 +216,7 @@ void gpiDisconnect(void **arg0, s32 arg1) {
         } while (var_r6 != NULL);
     }
     *(s32 *)((char *)temp_r4 + 0x434) = 0;
-    while (func_02055cd0(arg0, func_02051f74, 0) == 0) {
+    while (func_02055cd0(arg0, gpiReleaseBuddyStatusRecord, 0) == 0) {
     }
 }
 

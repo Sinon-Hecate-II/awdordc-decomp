@@ -288,7 +288,7 @@ s32 func_020a8e28(s32 arg0, s32 arg1) {
     return (s32) ((arg0 - ((s32) (arg0 * arg1) >> 8)) << 0xF) >> 0x10;
 }
 
-void func_020a8e3c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 i,s32 j){void func_0208718c();void func_020871a8(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;px=a-(func_020a8ce4(d,g)>>1);py=b-(func_020a8ce4(e,h)>>1);x=func_020a8ce4(d,g);y=func_020a8ce4(e,h);if(i!=256)x=func_020a8ce4(x,i);if(j!=256)y=func_020a8ce4(y,j);func_0208718c();func_020871a8(px,py,c,x,y,(u16)f);}
+void func_020a8e3c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 i,s32 j){void func_0208718c();void DrawSolidQuad(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;px=a-(func_020a8ce4(d,g)>>1);py=b-(func_020a8ce4(e,h)>>1);x=func_020a8ce4(d,g);y=func_020a8ce4(e,h);if(i!=256)x=func_020a8ce4(x,i);if(j!=256)y=func_020a8ce4(y,j);func_0208718c();DrawSolidQuad(px,py,c,x,y,(u16)f);}
 
 u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
 
@@ -356,7 +356,7 @@ void func_020a9188(void *arg0, u16 arg1) {
     M2C_FIELD(arg0, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 4);
 }
 
-void func_020a91a8(void *arg0) {
+void StepAnimationFrames(void *arg0) {
 void UpdateSpriteAnimation(void *);
 void func_020a9218(void *);
 u8 *p;

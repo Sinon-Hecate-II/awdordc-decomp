@@ -1,5 +1,6 @@
 /* 46 functions from 0x022138B0 to 0x022148A4 (ov004), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 s32 func_ov004_022138b0(void) {
     extern void **gCurrentMap;
@@ -120,28 +121,31 @@ else func_02086930(0,0);
 }
 
 void func_ov004_02213d90(void) {
-    M2C_UNK func_02086720(s32);
+    M2C_UNK SetUiMessageText(s32);
     s32 func_02086a20(M2C_UNK);
     extern s32 data_ov004_02225f70[];
-    func_02086720(data_ov004_02225f70[func_02086a20(0)]);
+    SetUiMessageText(data_ov004_02225f70[func_02086a20(0)]);
 }
 
 void func_ov004_02213db0(void) {
-    M2C_UNK func_02086720(s32);
+    M2C_UNK SetUiMessageText(s32);
     s32 func_02086a20(M2C_UNK);
     extern s32 data_ov004_02225fdc[];
-    func_02086720(data_ov004_02225fdc[func_02086a20(0)]);
+    SetUiMessageText(data_ov004_02225fdc[func_02086a20(0)]);
 }
 
-void func_ov004_02213dd0(void) {
+/* Mark every unit of the current player whose kind is the AI's chosen kind as
+ * having acted, so it is skipped for the rest of the turn.  Does nothing when
+ * no kind was chosen (kind 0). */
+void Ov004_MarkChosenKindActed(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
 s32 func_02086a20(M2C_UNK);
 s32 i; u8 *p;
 if(func_02086a20(0)==0)return;
-for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52A4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52A4)]+0x33;i++){
-p=(u8 *)*gCurrentMap+0x59A4+i*14;
+for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_GROUP_SCAN;i++){
+p=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
 if((u32)(p[0]<<26)>>26) {
-if(func_02086a20(0)==((u32)(p[0]<<26)>>26)) M2C_FIELD(p,u16 *,4)|=1;
+if(func_02086a20(0)==((u32)(p[0]<<26)>>26)) M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)|=UNIT_FLAG_ACTED;
 }
 }
 }

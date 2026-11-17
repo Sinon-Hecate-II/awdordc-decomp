@@ -285,27 +285,31 @@ block_41:
 }
 }
 #pragma pop
-s32 func_02052e18(void **arg0, M2C_UNK arg1) {
+/* Flush the accumulated profile ("updatepro") and user-info ("updateui") fields
+ * to the connection's outgoing buffer: each pending block gets its command
+ * header, the session key and the accumulated fields, then a "\final\"
+ * terminator, and is emptied. */
+s32 gpiFlushUpdateBuffers(void **connection, void *outputBuffer) {
     M2C_UNK gpiAppendIntField(void **, M2C_UNK, s32);
-    extern M2C_UNK data_020fe834;
-    extern M2C_UNK data_020fe84c;
-    extern M2C_UNK data_020fe854;
-    void *temp_r4;
+    extern M2C_UNK gGpiUpdateProHeader;
+    extern M2C_UNK gGpiUpdateFinal;
+    extern M2C_UNK gGpiUpdateUiHeader;
+    void *session;
 
-    temp_r4 = *arg0;
-    if ((s32) M2C_FIELD(temp_r4, s32 *, 0x448) > 0) {
-        gpiAppendStringField(arg0, arg1, &data_020fe834);
-        gpiAppendIntField(arg0, arg1, M2C_FIELD(temp_r4, s32 *, 0x198));
-        gpiAppendStringField(arg0, arg1, M2C_FIELD(temp_r4, M2C_UNK **, 0x440));
-        gpiAppendStringField(arg0, arg1, &data_020fe84c);
-        M2C_FIELD(temp_r4, s32 *, 0x448) = 0;
+    session = *connection;
+    if ((s32) M2C_FIELD(session, s32 *, GPI_CONN_UPDATE_PRO_LEN) > 0) {
+        gpiAppendStringField(connection, outputBuffer, &gGpiUpdateProHeader);
+        gpiAppendIntField(connection, outputBuffer, M2C_FIELD(session, s32 *, GPI_CONN_SESSION_KEY));
+        gpiAppendStringField(connection, outputBuffer, M2C_FIELD(session, M2C_UNK **, GPI_CONN_UPDATE_PRO_BUFFER));
+        gpiAppendStringField(connection, outputBuffer, &gGpiUpdateFinal);
+        M2C_FIELD(session, s32 *, GPI_CONN_UPDATE_PRO_LEN) = 0;
     }
-    if ((s32) M2C_FIELD(temp_r4, s32 *, 0x458) > 0) {
-        gpiAppendStringField(arg0, arg1, &data_020fe854);
-        gpiAppendIntField(arg0, arg1, M2C_FIELD(temp_r4, s32 *, 0x198));
-        gpiAppendStringField(arg0, arg1, M2C_FIELD(temp_r4, M2C_UNK **, 0x450));
-        gpiAppendStringField(arg0, arg1, &data_020fe84c);
-        M2C_FIELD(temp_r4, s32 *, 0x458) = 0;
+    if ((s32) M2C_FIELD(session, s32 *, GPI_CONN_UPDATE_UI_LEN) > 0) {
+        gpiAppendStringField(connection, outputBuffer, &gGpiUpdateUiHeader);
+        gpiAppendIntField(connection, outputBuffer, M2C_FIELD(session, s32 *, GPI_CONN_SESSION_KEY));
+        gpiAppendStringField(connection, outputBuffer, M2C_FIELD(session, M2C_UNK **, GPI_CONN_UPDATE_UI_BUFFER));
+        gpiAppendStringField(connection, outputBuffer, &gGpiUpdateFinal);
+        M2C_FIELD(session, s32 *, GPI_CONN_UPDATE_UI_LEN) = 0;
     }
     return 0;
 }

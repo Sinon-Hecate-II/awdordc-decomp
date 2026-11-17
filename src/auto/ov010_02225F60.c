@@ -363,15 +363,36 @@ s32 func_ov010_02226560(void) {
     return res;
 }
 
-s32 func_ov010_022265ac(s32 a,s32 b,s32 c,s32 d){
-s32 GetServerTime(M2C_UNK *,M2C_UNK *); s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *); s32 func_02085c18(); u32 func_02045934(s32,s32,s32,s32);
-M2C_UNK time[3]; M2C_UNK date[4]; s32 result; u32 status;
-result=1;
-if(GetServerTime(date,time)!=0)GetElapsedSeconds(func_02085c18(),date,time);
-status=func_02045934(a,b,c,d);
-switch(status){default:break;case 1:result=0;break;case 7:result=0;break;case 2:result=0;break;case 8:result=0;break;case 9:result=0;break;}
-if(status!=0)SetWebRequestError(status);
-return result;
+/* Refresh the clock from the server, then send a sync web request for `kind`,
+ * `playerId` and `recordCount` with `payload` and record its error: returns 0
+ * when the request failed (statuses 1, 2, 7, 8 and 9), 1 once it is on its way. */
+s32 SubmitWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
+    s32 GetServerTime(M2C_UNK *, M2C_UNK *);
+    s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
+    s32 func_02085c18();
+    u32 SendWebSyncRequest(s32, s32, u32, s32);
+    M2C_UNK time[3];
+    M2C_UNK date[4];
+    s32 result;
+    u32 status;
+
+    result = 1;
+    if (GetServerTime(date, time) != 0) {
+        GetElapsedSeconds(func_02085c18(), date, time);
+    }
+    status = SendWebSyncRequest(kind, playerId, recordCount, payload);
+    switch (status) {
+    default: break;
+    case 1: result = 0; break;
+    case 7: result = 0; break;
+    case 2: result = 0; break;
+    case 8: result = 0; break;
+    case 9: result = 0; break;
+    }
+    if (status != 0) {
+        SetWebRequestError(status);
+    }
+    return result;
 }
 
 s32 func_ov010_02226670(void) {
@@ -402,9 +423,9 @@ s32 func_ov010_02226670(void) {
 
 s32 func_ov010_022266c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
-    s32 func_ov010_022265ac();
+    s32 SubmitWebSyncRequest();
     extern M2C_UNK data_ov010_0222c060;
-    if (func_ov010_022265ac() == 0) return 0;
+    if (SubmitWebSyncRequest() == 0) return 0;
     return CreateSpriteObject(&data_ov010_0222c060, arg4);
 }
 

@@ -51,7 +51,7 @@ void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {
 void func_ov007_02219bd8(void) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 void *func_ov000_0216ce84(s32);
-void func_01ff9e44(void *,s32,s32);
+void CopyToObjPaletteShadow(void *,s32,s32);
 s32 func_ov007_0221216c(s32);
 void func_020ae528(void *);
 s32 old=gCur3DSpriteEngine;
@@ -59,7 +59,7 @@ s32 i,offset;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 for(i=0;i<4;i++){
 offset=(i+0x15)<<5;
-func_01ff9e44(func_ov000_0216ce84(i+1),offset,0x20);
+CopyToObjPaletteShadow(func_ov000_0216ce84(i+1),offset,0x20);
 if(!func_ov007_0221216c(i+1))
 func_020ae528(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+(offset&~1));
 }
@@ -127,7 +127,7 @@ void MapEditor_LoadTerrainBrushGraphics(void) {
     void *func_ov000_0216cdcc(s32);
     void *func_ov000_0216cdec(s32, s32);
     void QueueMemoryCopy(s32, s32, s32, s32);
-    void func_01ff9e44(void *, s32, s32);
+    void CopyToObjPaletteShadow(void *, s32, s32);
     void func_020ae528(void *);
     u8 GetMapEditorMode(void);
     extern s32 gCur3DSpriteEngine;
@@ -148,7 +148,7 @@ void MapEditor_LoadTerrainBrushGraphics(void) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     QueueMemoryCopy((s32)tileData, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2D80, 0x100, 0);
     QueueMemoryCopy(tileBase, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F80, 0x200, 0);
-    func_01ff9e44(palette, 0x340, 0x20);
+    CopyToObjPaletteShadow(palette, 0x340, 0x20);
     if (GetMapEditorMode() != 0) {
         func_020ae528((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x340));
     }
@@ -161,9 +161,9 @@ void func_ov007_0221a018(void) {
     u8 GetMapEditorUnitOwner(void);
     s32 func_ov000_0216cd4c(s32);
     void *GetUnitIconTiles(s32, s32);
-    void *func_ov000_0216cd90(s32);
+    void *GetArmyPalette(s32);
     void QueueMemoryCopy(s32, s32, s32, s32);
-    void func_01ff9e44(void *, s32, s32);
+    void CopyToObjPaletteShadow(void *, s32, s32);
     void func_020ae528(void *);
     u8 GetMapEditorMode(void);
     extern void *gCurrentMap;
@@ -182,12 +182,12 @@ void func_ov007_0221a018(void) {
     tileAttr = (u8) M2C_FIELD((M2C_FIELD(gCurrentMap, s32 *, 0) + slot * 0x8C + 0x6000), u8 *, 0x7CD);
     baseAddr = func_ov000_0216cd4c(tileGroup);
     srcPtr = GetUnitIconTiles(tileGroup, tileAttr);
-    dstPtr = func_ov000_0216cd90(slot);
+    dstPtr = GetArmyPalette(slot);
     savedBank = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     QueueMemoryCopy((s32)srcPtr, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2D00, 0x80, 0);
     QueueMemoryCopy(baseAddr, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2E80, 0x100, 0);
-    func_01ff9e44(dstPtr, 0x320, 0x20);
+    CopyToObjPaletteShadow(dstPtr, 0x320, 0x20);
     if (GetMapEditorMode() != 1) {
         func_020ae528((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x320));
     }

@@ -367,7 +367,7 @@ void Ov003_RefreshListRowAnimations(void *arg0, s32 arg1, s32 arg2) {
 }
 #pragma pop
 void func_ov003_022084f0(void *arg0) {
-    M2C_UNK func_020a91a8(s32);
+    M2C_UNK StepAnimationFrames(s32);
     void UpdateMapSelectLabelTransform(void *);
     void *temp_r6;
     void *var_r5;
@@ -380,15 +380,15 @@ void func_ov003_022084f0(void *arg0) {
         var_r7 = 0;
         do {
             temp_r6 = M2C_FIELD(var_r5, s32 *, 0x48) + var_r7;
-            func_020a91a8(M2C_FIELD(temp_r6, s32 *, 0x18));
-            func_020a91a8(M2C_FIELD(temp_r6, s32 *, 0x1C));
-            func_020a91a8(M2C_FIELD(temp_r6, s32 *, 0x20));
+            StepAnimationFrames(M2C_FIELD(temp_r6, s32 *, 0x18));
+            StepAnimationFrames(M2C_FIELD(temp_r6, s32 *, 0x1C));
+            StepAnimationFrames(M2C_FIELD(temp_r6, s32 *, 0x20));
             ++var_r4;
             var_r7 += 0x24;
         } while (var_r4 < (s32) *M2C_FIELD(var_r5, u8 **, 0x44));
     }
-    func_020a91a8(M2C_FIELD(M2C_FIELD(var_r5, void **, 0x4C), s32 *, 0x18));
-    func_020a91a8(M2C_FIELD(M2C_FIELD(var_r5, void **, 0x4C), s32 *, 0x1C));
+    StepAnimationFrames(M2C_FIELD(M2C_FIELD(var_r5, void **, 0x4C), s32 *, 0x18));
+    StepAnimationFrames(M2C_FIELD(M2C_FIELD(var_r5, void **, 0x4C), s32 *, 0x1C));
     UpdateMapSelectLabelTransform(var_r5);
 }
 

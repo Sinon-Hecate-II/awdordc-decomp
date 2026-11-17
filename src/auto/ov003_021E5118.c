@@ -6,7 +6,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK func_01ff9b38();
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
-    M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_0207c780(s32, s32);
@@ -206,8 +206,8 @@ void func_ov003_021e5118(void *arg0) {
         MI_CpuCopy32(func_ov000_0216cdcc(func_ov003_02200b5c(var_r4)), temp_r8, 0x100);
         var_r4 += 1;
     } while ((u32) var_r4 <= 7U);
-    func_01ff9e44(func_ov000_0216cdec(0xF, 0), 0x2E0, 0x20);
-    func_01ff9e44(func_ov000_0216cdec(0xF, 0), 0x300, 0x20);
+    CopyToObjPaletteShadow(func_ov000_0216cdec(0xF, 0), 0x2E0, 0x20);
+    CopyToObjPaletteShadow(func_ov000_0216cdec(0xF, 0), 0x300, 0x20);
     func_020ae528(M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x300);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 0x10);
     data_027e01d8 = temp_r5_2;

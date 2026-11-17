@@ -1,5 +1,6 @@
 /* 35 functions from 0x0201E944 to 0x0201F89C (main), found by ds-decomp. */
 #include "common.h"
+#include "net_socket.h"
 /* DNS wire format kinds, as used by the resolver in this file. */
 #define DNS_MAX_NAME        60  /* longest name a query packet holds (name + length bytes) */
 #define DNS_HEADER_BYTES    12  /* id, flags, question count, answer count */
@@ -169,14 +170,14 @@ s32 func_0201ee58(s32 arg0) {
 
 s32 func_0201ee94(void) {
     s32 func_0201f0cc(s32);
-    s32 func_0201f400();
+    s32 SocketCreateFromConfig();
     extern s32 gNetAllocator;
     extern M2C_UNK data_020fafd0;
     extern M2C_UNK data_02138ac0;
     s32 result;
     result = func_0201f0cc(M2C_FIELD(gNetAllocator, s32 *, 0x20));
     if (result >= 0) {
-        M2C_FIELD(&data_02138ac0, s32 *, 0xC) = func_0201f400(&data_020fafd0);
+        M2C_FIELD(&data_02138ac0, s32 *, 0xC) = SocketCreateFromConfig(&data_020fafd0);
     }
     return result;
 }
@@ -195,7 +196,7 @@ void func_0201eed4(void) {
     extern s32 gNetAllocator;
     extern s32 data_02138ad0;
     extern s32 data_02138ac0;
-    extern s32 data_020fafb8;
+    extern s32 gTcpSocketConfig;
     extern s32 data_021372e0;
     void *base;
     void *ctx;
@@ -222,8 +223,8 @@ void func_0201eed4(void) {
         if (v30 == 0) v30 = 0x240;
         r12 = v30 - 0x28;
         if (lr == 0) lr = 0x10C0;
-        M2C_FIELD(&data_020fafb8, s16 *, 0x2) = (s16)lr;
-        M2C_FIELD(&data_020fafb8, s16 *, 0x4) = (s16)((lr + (lr >> 31)) >> 1);
+        M2C_FIELD(&gTcpSocketConfig, s16 *, 0x2) = (s16)lr;
+        M2C_FIELD(&gTcpSocketConfig, s16 *, 0x4) = (s16)((lr + (lr >> 31)) >> 1);
         M2C_FIELD(base, s32 *, 0x24) = r12;
         M2C_FIELD(&data_021372e0, s32 *, 0x0) = 0;
         if (M2C_FIELD(ctx, s32 *, 0x0) != 0) {
@@ -423,7 +424,7 @@ if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
 if(M2C_FIELD(p,s32*,8))func_020062fc(M2C_FIELD(p,s32*,8),v,0);
 func_0201f210(p);func_02006164();OS_RestoreInterrupts(old); goto loop; done: return; }
 
-s32 func_0201f400(void) {
+s32 SocketCreateFromConfig(void) {
     s32 SocketAllocTask(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_0201f338(s32, s32);
     s32 func_0201f4b0();
@@ -568,25 +569,34 @@ if(!b)return -28;
 return M2C_FIELD(arg0,s8*,0x72)==1?0:-6;
 }
 
-s32 func_0201f7d8(void *arg0, s32 arg1, s32 arg2) {
-s32 SocketIsUnregistered(); s32 func_0201f400(); s32 func_0201f9e4(); s32 SocketListen();
-extern M2C_UNK data_020fafb8;
-s32 a,b,r,h; s8 v;
-if(SocketIsUnregistered()!=0)return -28;
-a=0;
-if(arg0!=0)a=(M2C_FIELD(arg0,volatile s16*,0x70)&1)!=0;
-if(!a)return -39;
-if(M2C_FIELD(arg0,s16*,0x70)&2)return -28;
-v=M2C_FIELD(arg0,s8*,0x73);b=1;
-if(v!=0 && v!=4)b=0;
-if(!b)return -28;
-if(M2C_FIELD(arg0,s8*,0x72)!=1)return -6;
-h=func_0201f400(&data_020fafb8);
-if(h<0)return h;
-r=func_0201f9e4(h,M2C_FIELD(arg0,u16*,0x74));
-if(r<0)return r;
-r=SocketListen(h,arg1,arg2);
-if(r<0)return r;
-return h;
+/* Validate the template socket, create the real TCP socket from
+ * gTcpSocketConfig on the template's receive port and put it into listen,
+ * returning the new socket handle and the peer endpoint it ends up with. */
+s32 SocketCreateListen(void *tmpl, u16 *peerPort, s32 *peerAddr) {
+    s32 SocketIsUnregistered();
+    s32 SocketCreateFromConfig();
+    s32 SocketSetReceivePort();
+    s32 SocketListen();
+    extern M2C_UNK gTcpSocketConfig;
+    s32 ready, usable, result, sock;
+    s8 state;
+
+    if (SocketIsUnregistered() != 0) return -28;
+    ready = 0;
+    if (tmpl != 0) ready = (M2C_FIELD(tmpl, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) != 0;
+    if (!ready) return -39;
+    if (M2C_FIELD(tmpl, s16 *, SOCK_FLAGS) & SOCK_FLAG_BUSY) return -28;
+    state = M2C_FIELD(tmpl, s8 *, SOCK_STATE);
+    usable = 1;
+    if (state != 0 && state != 4) usable = 0;
+    if (!usable) return -28;
+    if (M2C_FIELD(tmpl, s8 *, SOCK_KIND) != SOCK_KIND_TCP) return -6;
+    sock = SocketCreateFromConfig(&gTcpSocketConfig);
+    if (sock < 0) return sock;
+    result = SocketSetReceivePort(sock, M2C_FIELD(tmpl, u16 *, SOCK_RECV_PORT));
+    if (result < 0) return result;
+    result = SocketListen(sock, peerPort, peerAddr);
+    if (result < 0) return result;
+    return sock;
 }
 

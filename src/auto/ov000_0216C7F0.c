@@ -140,7 +140,7 @@ void *GetUnitIconTiles(void) {
  return (u8 *)&data_02121e08 + (func_020a7298() << 7);
 }
 
-void *func_ov000_0216cd90(s32 arg0) {
+void *GetArmyPalette(s32 arg0) {
     extern M2C_UNK gArmyPalettes;
     return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
@@ -266,14 +266,14 @@ void func_ov000_0216d130(void) {
 
 void func_ov000_0216d1c8(void) {
  void MI_CpuCopy32(void *,s32,s32);
- void func_01ff9e44(void *,s32,s32);
+ void CopyToObjPaletteShadow(void *,s32,s32);
  extern void *gArmyInfoState;
  extern s32 *gCurrentMap;
  extern void *g3DSpriteEngineSub;
  s32 p = *gCurrentMap + 0x67a4 + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,13))*140;
  s32 dest = M2C_FIELD(g3DSpriteEngineSub,volatile s32 *,28);
  MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(p,u8 *,39)),dest+0x3000,128);
- func_01ff9e44(func_ov000_0216ce84(M2C_FIELD(p,u8 *,29)),0x2e0,32);
+ CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD(p,u8 *,29)),0x2e0,32);
 }
 
 void func_ov000_0216d23c(void) {

@@ -15,7 +15,7 @@ func_02004cf0();func_02004d3c();M2C_FIELD(dest,u8 *,202)=pal;
 func_02081080(data_ov002_021f2da0,0x6890000+(pal<<5),128,32);pal=(u16)(pal+1);func_02004ddc();
 LoadDecompressedFileTo(GetLocalizedFileName(data_ov002_021f2dac),M2C_FIELD(gCur3DSpriteEngine,s32 *,28)+2048);
 palette=LoadFileToBuffer(data_ov002_021f2db8,1);
-func_01ff9e44(palette+(gPlayerSettings[25]<<5),544,32);func_01ff9e44(palette+(gPlayerSettings[49]<<5),576,32);
+CopyToObjPaletteShadow(palette+(gPlayerSettings[25]<<5),544,32);CopyToObjPaletteShadow(palette+(gPlayerSettings[49]<<5),576,32);
 M2C_FIELD(gUnitViews,u16 *,6)=M2C_FIELD(palette+(gPlayerSettings[25]<<5),u16 *,30);
 M2C_FIELD(gUnitViews,u16 *,50)=M2C_FIELD(palette+(gPlayerSettings[49]<<5),u16 *,30);
 HeapFreeBlock(palette);

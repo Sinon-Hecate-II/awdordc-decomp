@@ -4,15 +4,15 @@
 static inline u16 SpriteTileSize(s32 n) { return n << 12; }
 
 void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020ae67c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020ae728(M2C_UNK, M2C_UNK);
+    M2C_UNK ApplySepiaToPalette(M2C_UNK, M2C_UNK);
+    M2C_UNK ApplyGrayscaleToPalette(M2C_UNK, M2C_UNK);
     if (arg0 == 1) {
-        func_020ae67c(arg1, arg2);
+        ApplySepiaToPalette(arg1, arg2);
     }
     if (arg0 != 2) {
         return;
     }
-    func_020ae728(arg1, arg2);
+    ApplyGrayscaleToPalette(arg1, arg2);
 }
 
 #pragma opt_lifetimes off

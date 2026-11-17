@@ -78,7 +78,7 @@ s32 SocketListenTask(void *arg0) {
     return 0;
 }
 
-s32 func_0201f9e4(void *arg0,s32 arg1) {
+s32 SocketSetReceivePort(void *arg0,s32 arg1) {
 s32 SocketIsUnregistered(); s32 func_0201fb3c(void *);s32 a;
 if(SocketIsUnregistered()!=0)return -28;
 a=0;if(arg0)a=(M2C_FIELD(arg0,volatile s16 *,0x70)&1)!=0;

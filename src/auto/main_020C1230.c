@@ -21,20 +21,20 @@ void func_020c127c(void) {
 }
 
 M2C_UNK func_020c1298(s32 arg0,M2C_UNK arg1,s32 arg2,M2C_UNK arg3) {
- M2C_UNK func_01ff9e44(M2C_UNK *, s32, M2C_UNK);
+ M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
  M2C_UNK func_020c1078();
  void func_020c13a8(M2C_UNK);
  M2C_UNK func_020c13c0(M2C_UNK,s32);
  extern M2C_UNK data_0211e18c; extern s32 data_02163f98;
  data_02163f98=arg3;
  func_020c1078();
- func_01ff9e44(&data_0211e18c,arg3<<5,0x20);
+ CopyToObjPaletteShadow(&data_0211e18c,arg3<<5,0x20);
  func_020c13a8(arg0+(arg2<<5));
  return func_020c13c0(arg1,(arg2&0x3ff)|(u16)(arg3<<12));
 }
 
 void func_020c12f8(s32 arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
-    M2C_UNK func_01ff9e44(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_020c1078();
     M2C_UNK func_020c13c0(M2C_UNK, s32);
     extern M2C_UNK data_0211e18c;
@@ -43,7 +43,7 @@ void func_020c12f8(s32 arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
 
     data_02163f98 = arg3;
     func_020c1078();
-    func_01ff9e44(&data_0211e18c, arg3 << 5, 0x20);
+    CopyToObjPaletteShadow(&data_0211e18c, arg3 << 5, 0x20);
     temp_r4 = arg0 + (arg2 << 5);
     func_020c15ec(temp_r4);
     func_020c1768(temp_r4);

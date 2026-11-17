@@ -147,13 +147,13 @@ void SpawnRippleOut(M2C_UNK arg0) {
 }
 
 void func_020cbfb4(void) {
-    M2C_UNK func_02086720(s32);
+    M2C_UNK SetUiMessageText(s32);
     s32 func_020cd6d4();
     if (func_020cd6d4() != 0) {
-        func_02086720(0xC000032F);
+        SetUiMessageText(0xC000032F);
         return;
     }
-    func_02086720(0xC0000328);
+    SetUiMessageText(0xC0000328);
 }
 
 void func_020cbfe4(void) {

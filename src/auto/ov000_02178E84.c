@@ -174,7 +174,7 @@ else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale;if(value>110)value=110;return value;
 }
 
-s32 func_ov000_02179ce4(u8 *arg0) {
+s32 GetAiUnitSearchRange(u8 *arg0) {
     s32 GetAiUnitRange(u8 *, void *, u32);
     extern void **gCurrentMap;
     s32 result;

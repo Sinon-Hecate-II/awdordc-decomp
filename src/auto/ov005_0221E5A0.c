@@ -89,19 +89,19 @@ i=0;
 if(func_020cfb94()>0) { j=0x388; k=0; do {
 dst=M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+((volatile s32)j<<5);
 MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x6857)),dst,0x80);
-func_01ff9e44(func_ov000_0216ce84(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x684d)),(i+24)<<5,32);
+CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x684d)),(i+24)<<5,32);
 i++; j+=4; k+=0x8c;
 } while(i<func_020cfb94()); }
 gCur3DSpriteEngine=*(void ***)&g3DSpriteEngineMain;
 k=func_020a7290()<<5; saved=(void **) (M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+0x3580);
 MI_CpuCopy32(func_020a7278(),(u8 *)saved+0x4000,k);
-func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
+CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
 b=data_ov005_02220a1c; gCur3DSpriteEngine=g3DSpriteEngineSub;
 k=0; if(*b) { saved=(void **)0x3ac; do {
 dst=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+((s32)saved<<5);
 MI_CpuCopy32(func_ov000_0216cdcc(*b),dst,256);
 b++; saved=(void **)((s32)saved+8); k++; } while(*b); }
-func_01ff9e44(func_ov000_0216cdec(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
+CopyToObjPaletteShadow(func_ov000_0216cdec(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
 gCur3DSpriteEngine=g3DSpriteEngineSub; func_02099450(0,0,0);
 v=GetCurrentMapName(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
 if(func_020cd6d4()) {

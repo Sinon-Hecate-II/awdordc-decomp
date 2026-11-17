@@ -793,12 +793,21 @@ typedef struct GpiStringListData {
 #define GPI_CONN_STATE 0x1D8 /* s32 connection state */
 #define GPI_STATE_DISCONNECTED 4
 #define GPI_INFO_RESULT_WORDS 129 /* 0x204-byte profile-info callback record */
+#define GPI_SEARCH_RESULT_WORDS 4 /* s32 words in a search callback record */
+#define GPI_SEARCH_MORE 0x601 /* search status: more result pages follow (0x600 when complete) */
 
 /* Server-message fields in the GameSpy gpi connection. */
 #define GPI_CONN_SESSION_KEY 0x198 /* s32 server-issued session key */
 #define GPI_CONN_OUTPUT_BUFFER 0x1F4 /* server command send buffer */
 #define GPI_MESSAGE_COPY_SIZE 0xDAD /* bounded message copy, including terminator */
 #define GPI_MESSAGE_STACK_SIZE 0xDB0 /* aligned temporary message storage */
+
+/* Pending profile updates: AppendUpdateProField/AppendUpdateUiField accumulate
+ * fields here and gpiFlushUpdateBuffers moves them to the outgoing buffer. */
+#define GPI_CONN_UPDATE_PRO_BUFFER 0x440 /* GPIBuffer: accumulated "updatepro" fields */
+#define GPI_CONN_UPDATE_PRO_LEN    0x448 /* s32: bytes pending in it (the buffer's len) */
+#define GPI_CONN_UPDATE_UI_BUFFER  0x450 /* GPIBuffer: accumulated "updateui" fields */
+#define GPI_CONN_UPDATE_UI_LEN     0x458 /* s32: bytes pending in it (the buffer's len) */
 
 /* A gpi connection's error state and callback queue. */
 #define GPI_CONN_ERROR_CALLBACK 0x1A4 /* s32 registered error callback function */
@@ -990,10 +999,48 @@ typedef struct GpiBuddyStatusDetails {
 } GpiBuddyStatusDetails;
 
 typedef struct GpiBuddyStatus {
-    s32 profileId;                  /* +0x00 the buddy's profile id */
+    s32 profileId;                  /* +0x00 the buddy's profile id (the table key) */
     s32 unk04;                      /* +0x04 */
-    GpiBuddyStatusDetails *details; /* +0x08 */
+    GpiBuddyStatusDetails *details; /* +0x08 presence and address, NULL once released */
+    void *cachedInfo;               /* +0x0C cached profile info (GPI_INFO_RESULT_WORDS words) */
+    s8  *signature;                 /* +0x10 owned status signature */
+    s32  useCount;                  /* +0x14 operations still holding the record */
+    s8  *unk18;                     /* +0x18 owned string */
 } GpiBuddyStatus;
+
+/* GpiBuddyStatus field offsets, for the code that reaches the record through a
+ * raw pointer. */
+#define GPI_BUDDY_DETAILS     0x08
+#define GPI_BUDDY_CACHED_INFO 0x0C
+#define GPI_BUDDY_SIGNATURE   0x10
+#define GPI_BUDDY_USE_COUNT   0x14
+#define GPI_BUDDY_UNK18       0x18
+
+/* GpiBuddyStatusDetails field offsets (the two owned strings). */
+#define GPI_BUDDY_STATUS_STRING   0x08
+#define GPI_BUDDY_LOCATION_STRING 0x0C
+
+/* While set, a released buddy-status record keeps its presence details instead
+ * of dropping them, so the details alone can keep the record in the table. */
+#define GPI_CONN_KEEP_BUDDY_DETAILS 0x104
+
+/* The voice-chat ("VCHT") option menu entity (main_020E0194): the option row
+ * that starts selected and the widget sprites the setup creates. */
+#define VCHT_MENU_SELECTED_ROW 0x3C /* s32 id of the row the toggle starts on */
+#define VCHT_MENU_FLAGS        0x48 /* u16: VCHT_FLAG_* */
+#define VCHT_MENU_TOGGLE0      0x50 /* void *first toggle-option widget */
+#define VCHT_MENU_TOGGLE1      0x58 /* void *second toggle-option widget */
+#define VCHT_MENU_LABEL        0x64 /* void *the option's label text */
+#define VCHT_MENU_ANIM         0x68 /* void *the option's animation widget */
+
+/* VCHT_MENU_FLAGS bits. */
+#define VCHT_FLAG_CONFIRMED 0x0008 /* the option was confirmed; the update waits on it */
+#define VCHT_FLAG_BUILDING  0x0020 /* the menu was just built; the next update clears it */
+#define VCHT_FLAG_OVERLAY   0x1000 /* the link overlay event the shared update records */
+
+/* The local player's link status (GetLocalPlayerStatus): its option bits. */
+#define LOCAL_STATUS_OPTIONS    0x1A /* u8 option bits the link menus edit */
+#define LOCAL_OPTION_VOICE_CHAT 0x04 /* voice chat is on */
 
 /* Per-slot peer record (gPlayerPeers[slot], 8 bytes): the connection slot the
  * player came in on and the peer id assigned to it in the match. */

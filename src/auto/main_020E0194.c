@@ -235,13 +235,104 @@ gCur3DSpriteEngine=savedEngine;DisableMapConfirm();break;
 if(IsMapConfirmEnabled() && FindTextLayer())func_0208af20();
 }
 
-M2C_UNK func_020e06fc() {
-    return 0;
+/* Build the voice-chat ("VCHT") option menu entity: load the menu's screen
+ * file into the main sprite engine's layer, create the option row sprites, draw
+ * the toggle bar in its palette, apply the option to the local player's link
+ * status, then refresh the entity's child widgets. */
+void SetupVoiceChatMenu(void *entity) {
+extern s32 gCur3DSpriteEngine, g3DSpriteEngineMain;
+extern M2C_UNK gVoiceChatPath, gVoiceChatNarcName, gVoiceChatScreenName, gVoiceChatRowTemplate;
+M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
+s32 GetLocalizedFileName(void *);
+M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void), LoadNarcFileDecompressed(s32, s32), AddTileRectPalette(s32, s32, s32, s32);
+s32 FindSpriteSlotById(s32); void *AddSpriteSlot(s32, s32, void *, s32), *SelectSpriteSlot(s32);
+M2C_UNK SetTileRectPalette(s32, s32, u16, u16);
+s32 GetActiveOverlay(void); void *GetLocalPlayerStatus(void);
+void PlaySoundEffect(s32); M2C_UNK func_020b1c44(s32, s32), func_02088f1c(void *), SetTextById(void *, s32);
+s32 row, rowX, bar;
+void *selectedRow;
+s32 barX, barEnd, barColor, hasRows, savedEngine, savedBarEngine, status;
+void *sprite;
+u8 selectedId;
+
+savedEngine = gCur3DSpriteEngine;
+gCur3DSpriteEngine = g3DSpriteEngineMain;
+Clear3DSpriteLayer(1);
+M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
+SetFileDirectory(&gVoiceChatPath);
+GetLocalizedFileName(&gVoiceChatNarcName);
+OpenNarcArchive();
+LoadNarcFileDecompressed(GetLocalizedFileName(&gVoiceChatScreenName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+CloseNarcArchive();
+AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 32, 24, 5);
+M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
+gCur3DSpriteEngine = savedEngine;
+M2C_FIELD(entity, u16 *, VCHT_MENU_FLAGS) |= VCHT_FLAG_BUILDING;
+if (FindSpriteSlotById(0) == 0) hasRows = 1; else hasRows = 0;
+if (hasRows) {
+    row = 0; rowX = 0;
+    do {
+        sprite = AddSpriteSlot(0, rowX, &gVoiceChatRowTemplate, row);
+        row++;
+        M2C_FIELD(sprite, void **, 0x10) = entity;
+        rowX += 40;
+    } while (row < 2);
+}
+selectedRow = SelectSpriteSlot(M2C_FIELD(entity, s32 *, VCHT_MENU_SELECTED_ROW));
+if (selectedRow) {
+    savedBarEngine = gCur3DSpriteEngine;
+    barX = 10;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    barEnd = 14;
+    bar = 0;
+    do {
+        if (M2C_FIELD(selectedRow, u8 *, 0) != bar) barColor = 7; else barColor = 8;
+        SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 8 + (barX << 6), 24, (u16)(barEnd - barX), (u16)barColor);
+        bar++;
+        barX = (s16)(barX + 5);
+        barEnd = (s16)(barEnd + 5);
+    } while (bar < 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
+    gCur3DSpriteEngine = savedBarEngine;
+    if (GetActiveOverlay() == 2) status = (M2C_FIELD(GetLocalPlayerStatus(), u8 *, LOCAL_STATUS_OPTIONS) & LOCAL_OPTION_VOICE_CHAT) != 0; else status = 0;
+    selectedId = M2C_FIELD(selectedRow, u8 *, 0);
+    if (selectedId != status) {
+        if (GetActiveOverlay() == 2) {
+            sprite = GetLocalPlayerStatus();
+            if (selectedId == 1) M2C_FIELD(sprite, u8 *, LOCAL_STATUS_OPTIONS) |= LOCAL_OPTION_VOICE_CHAT;
+            else M2C_FIELD(sprite, u8 *, LOCAL_STATUS_OPTIONS) &= ~LOCAL_OPTION_VOICE_CHAT;
+        }
+        PlaySoundEffect(0x10019);
+    }
+}
+func_020b1c44(0, 0);
+func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0));
+sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0);
+if (func_020e_check(sprite)) M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)func_020e_low(sprite);
+else M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)(func_020e_low(sprite) + 2);
+M2C_FIELD(sprite, u8 *, 0x5a) = 0;
+func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE1));
+sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE1);
+M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)(func_020e_low(sprite) + 2);
+M2C_FIELD(sprite, u8 *, 0x5a) = 0;
+sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0);
+if (!func_020e_check(sprite)) { M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)func_020e_low(sprite); M2C_FIELD(sprite, u8 *, 0x5a) = 0; }
+SetTextById(M2C_FIELD(entity, void **, VCHT_MENU_LABEL), 0x44000013);
+func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_LABEL));
+if (GetSpriteAnimValue(M2C_FIELD(entity, void **, VCHT_MENU_ANIM))) {
+    s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, VCHT_MENU_ANIM));
+    sprite = M2C_FIELD(entity, void **, VCHT_MENU_ANIM);
+    M2C_FIELD(sprite, u16 *, 0xe) = result;
+    M2C_FIELD(sprite, u16 *, 0x10) = 0;
+    M2C_FIELD(sprite, u16 *, 0xc) = 12;
+    M2C_FIELD(sprite, u16 *, 2) = M2C_FIELD(sprite, u16 *, 4);
+}
+M2C_FIELD(entity, u16 *, VCHT_MENU_FLAGS) &= ~VCHT_FLAG_CONFIRMED;
+M2C_FIELD(entity, u16 *, VCHT_MENU_FLAGS) &= ~VCHT_FLAG_OVERLAY;
 }
 
 void func_020e0aa4(void) {
-    M2C_UNK func_020e06fc();
-    func_020e06fc();
+    ((M2C_UNK (*)())SetupVoiceChatMenu)();
 }
 
 void func_020e0ab0(void) {
@@ -249,11 +340,11 @@ void func_020e0ab0(void) {
 }
 
 void func_020e0abc(void) {
-    func_020e06fc();
+    ((M2C_UNK (*)())SetupVoiceChatMenu)();
 }
 
 void func_020e0ac8(void) {
-    func_020e06fc();
+    ((M2C_UNK (*)())SetupVoiceChatMenu)();
 }
 
 void func_020e0ad4(void) {

@@ -333,7 +333,7 @@ void func_ov001_02175f1c(M2C_UNK arg0) {
     Ov001_QueuePush(M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60), arg0);
 }
 
-s32 func_ov001_02175f48(M2C_UNK arg0, u32 arg1) {
+s32 Ov001_GetMessageText(M2C_UNK arg0, u32 arg1) {
     void **p = (void **)arg0;
     arg1 = (arg1 << 16) >> 16;
     return ((s32 *)p[0])[(u32)arg1] + (s32)p[1];

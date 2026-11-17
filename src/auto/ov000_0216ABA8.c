@@ -102,7 +102,7 @@ s32 func_ov000_0216b15c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void func_ov000_0216b194(void *arg0) {
-    M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
@@ -206,7 +206,7 @@ void func_ov000_0216b194(void *arg0) {
     LoadNarcFileDecompressed(res, off + 0x87C0);
     CloseNarcArchive();
     temp_r0_18 = LoadFileToBuffer(&data_ov000_021b86e0, 1);
-    func_01ff9e44(temp_r0_18 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0x360, 0x20);
+    CopyToObjPaletteShadow(temp_r0_18 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0x360, 0x20);
     HeapFreeBlock(temp_r0_18);
     func_0209b59c(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
     temp_r6_5 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
@@ -304,7 +304,7 @@ block_24:
     }
     SetTileRectPalette(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
     temp_r0_23 = LoadFileToBuffer(&data_ov000_021b8708, 1);
-    func_01ff9e44(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
+    CopyToObjPaletteShadow(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
     HeapFreeBlock(temp_r0_23);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3E) = 0;
