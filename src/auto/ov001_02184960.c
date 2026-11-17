@@ -174,10 +174,10 @@ s32 HexCharValue(u32 arg0) {
     return arg0 - 0x57;
 }
 
-void func_ov001_02184f68(void){void func_ov001_021850ac(void);extern s32 data_ov001_02193e08;extern M2C_UNK data_ov001_02190b68;s32 Ov001_Alloc(s32,s32);s32 Ov001_LoadFile(void *,void *,s32);void func_0202a968(void);M2C_UNK func_0202bf54(s32,s32);M2C_UNK func_0202d294(s32);M2C_UNK func_0202acb0(s32);s32 Ov001_AddTask(s32,void (*)(void),s32,s32);s32 local;
+void func_ov001_02184f68(void){void func_ov001_021850ac(void);extern s32 data_ov001_02193e08;extern M2C_UNK data_ov001_02190b68;s32 Ov001_Alloc(s32,s32);s32 Ov001_LoadFile(void *,void *,s32);void func_0202a968(void);M2C_UNK InitSoundArchive(s32,s32);M2C_UNK func_0202d294(s32);M2C_UNK func_0202acb0(s32);s32 Ov001_AddTask(s32,void (*)(void),s32,s32);s32 local;
 data_ov001_02193e08=Ov001_Alloc(0x9c,4);
 M2C_FIELD(data_ov001_02193e08,s32 *,0x94)=Ov001_LoadFile(&data_ov001_02190b68,&local,32);
-func_0202a968();func_0202bf54(data_ov001_02193e08,M2C_FIELD(data_ov001_02193e08,s32 *,0x94));func_0202d294(0);func_0202acb0(data_ov001_02193e08+0x90);M2C_FIELD(data_ov001_02193e08,s32 *,0x98)=Ov001_AddTask(0,func_ov001_021850ac,0,200);}
+func_0202a968();InitSoundArchive(data_ov001_02193e08,M2C_FIELD(data_ov001_02193e08,s32 *,0x94));func_0202d294(0);func_0202acb0(data_ov001_02193e08+0x90);M2C_FIELD(data_ov001_02193e08,s32 *,0x98)=Ov001_AddTask(0,func_ov001_021850ac,0,200);}
 
 void func_ov001_02184ff8(void){extern s32 data_ov001_02193e08;M2C_UNK Ov001_PostTaskMessage(s32,s32);M2C_UNK Ov001_FreeAlloc(void *);Ov001_PostTaskMessage(0,M2C_FIELD(data_ov001_02193e08,s32 *,0x98));Ov001_FreeAlloc((void *)0x02193e08);}
 

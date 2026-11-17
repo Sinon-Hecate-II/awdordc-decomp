@@ -118,11 +118,11 @@ void func_020d867c(void) {
 }
 
 s32 func_020d8764(void) {
-    void func_02079c6c(s16,s16,s32 *);
+    void MapTileToScreen(s16,s16,s32 *);
     extern void **gCurrentMap;
     s32 sp0[3];
     void *temp_r0 = *gCurrentMap;
-    func_02079c6c(M2C_FIELD(temp_r0,s16 *,0x52C2),M2C_FIELD(temp_r0,s16 *,0x52C4),sp0);
+    MapTileToScreen(M2C_FIELD(temp_r0,s16 *,0x52C2),M2C_FIELD(temp_r0,s16 *,0x52C4),sp0);
     if (sp0[1] > 128) return sp0[0] < 128 ? 1 : 0;
     return (u32)(M2C_FIELD(*gCurrentMap,u16 *,0x52E6) << 30) >> 30;
 }

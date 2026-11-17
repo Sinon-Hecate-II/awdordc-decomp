@@ -81,7 +81,7 @@ s32 LoadNarcFileDecompressed(void *arg0, void *arg1) {
     return LoadDecompressedFileTo(BuildNarcPath(arg0), arg1);
 }
 
-void func_020815a8(void) {
+void LoadNarcMemberToBuffer(void) {
     M2C_UNK func_02081070(s32, M2C_UNK);
     func_02081070(BuildNarcPath(), 1);
 }

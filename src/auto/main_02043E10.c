@@ -19,7 +19,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
     void func_02043230(void);
     s32 func_020431e0(s32);
     s32 RestartConnection(s32);
-    s32 func_0203ef9c(void *);
+    s32 StartPeerConnect(void *);
     s32 func_02043184();
     u64 GetSystemTick(void);
     extern M2C_UNK data_020fc908;
@@ -109,7 +109,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
                 return;
             } else {
                 attempt->retries++;
-                func_0203ef9c(attempt);
+                StartPeerConnect(attempt);
                 if (func_02043184() == 0) {
                     return;
                 }

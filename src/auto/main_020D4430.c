@@ -417,7 +417,7 @@ void UpdateUnitSelectCursor(void) {
 extern void **gCurrentMap;
 s32 IsSelectableUnitAt(s32,s32);
 s32 func_020bcaf0(void);
-s32 func_020bdd18(void);
+s32 GetAimCursorTouchAction(void);
 s32 valid, keys;
 u32 unitId;
 void *map;
@@ -428,7 +428,7 @@ valid=IsSelectableUnitAt(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_F
 if(valid) MoveMapCursorToTarget(4); else MoveMapCursorToTarget(5);
 if(!func_020d4dd0()) return;
 keys |= func_020bcaf0();
-keys |= func_020bdd18();
+keys |= GetAimCursorTouchAction();
 if(keys&0x20) {CloseAimingCursor();return;}
 if(keys&0x100) {CreateMapMenu();return;}
 if(keys&0x40) {func_020d8fa0();return;}

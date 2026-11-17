@@ -234,23 +234,27 @@ s32 LoadWaveArchiveEntry(s32 archive, u16 entryIndex, s32 fileId, s32 pool) {
     return 1;
 }
 
-s32 func_0202d1d4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
-void func_02009aec(void *);
-s32 func_02009b0c(s32,void *,void *);
+/* Load every entry of the wave archive that the sound bank's packed entry table
+   references for archive slot `archiveSlot`: for each type-1 record whose wave
+   archive slot matches, load that entry (from file `waveFileId`) into `archive`.
+   Returns 0 when a load fails, 1 when all are loaded. */
+s32 LoadBankWaveArchiveEntries(s32 archive,s32 bankTable,s32 archiveSlot,s32 waveFileId,s32 pool) {
+void InitPackedTableCursor(void *);
+s32 IteratePackedTableRecord(s32,void *,void *);
 s32 LoadWaveArchiveEntry(s32,u16,s32,s32);
-u8 entry[12];
+PackedBankEntry entry;
 u32 iter[2];
 u32 initial[2];
 void *cursor;
-func_02009aec(initial);
+InitPackedTableCursor(initial);
 iter[0]=initial[0];iter[1]=initial[1];
 cursor=iter;
-if(!arg1)return 0;
-if(func_02009b0c(arg1,entry,cursor)) do {
-if(entry[0]==1 && arg2==*(u16 *)(entry+4)) {
-if(!LoadWaveArchiveEntry(arg0,*(u16 *)(entry+2),arg3,arg4))return 0;
+if(!bankTable)return 0;
+if(IteratePackedTableRecord(bankTable,&entry,cursor)) do {
+if(entry.type==1 && archiveSlot==entry.waveSlot) {
+if(!LoadWaveArchiveEntry(archive,entry.waveEntry,waveFileId,pool))return 0;
 }
-} while(func_02009b0c(arg1,entry,iter));
+} while(IteratePackedTableRecord(bankTable,&entry,iter));
 return 1;
 }
 

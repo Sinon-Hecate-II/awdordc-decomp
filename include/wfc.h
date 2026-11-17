@@ -94,6 +94,21 @@ enum {
 #define WFC_SESSION_RESULT   0x22F8 /* u16 result value of the last link request */
 #define WFC_SESSION_SEND_BUFFER 0xF00 /* byte buffer the sender fills before sending */
 
+/* The session's player-record list: a header followed by fixed 0xD0-byte nodes
+ * in a buffer of capacity bytes (session +0x2270/+0x2274, also addressed as
+ * +0x2000+0x270/+0x274). Nodes form a doubly linked list ordered least to most
+ * recently updated (WFC_TouchPlayerNode moves a node to the tail); a node's
+ * +0x10 holds a 0xC0-byte connection-data record whose first word is the
+ * player id, +4 the id the list is searched by. */
+#define WFC_PLAYER_LIST_HEADER_SIZE 0xC  /* header bytes before the node array */
+#define WFC_PLAYER_NODE_SIZE        0xD0 /* bytes per player-record node */
+#define WFC_PLAYER_NODE_IN_USE      0x00 /* u8: 1 while the slot is taken */
+#define WFC_PLAYER_NODE_INDEX       0x04 /* s32: node index, assigned on first insert */
+#define WFC_PLAYER_NODE_PREV        0x08 /* older neighbour, NULL at the head */
+#define WFC_PLAYER_NODE_NEXT        0x0C /* newer neighbour, NULL at the tail */
+#define WFC_PLAYER_NODE_RECORD      0x10 /* 0xC0-byte connection-data record */
+#define WFC_PLAYER_RECORD_ID        0x04 /* s32 player id within the record */
+
 /* The outgoing match request descriptor: the buffer the packet is built in and
  * its size come first, then the packet fields the request builder fills. */
 #define WFC_SESSION_PACKET        0x2288 /* descriptor base */

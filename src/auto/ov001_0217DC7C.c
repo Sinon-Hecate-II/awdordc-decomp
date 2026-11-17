@@ -89,9 +89,9 @@ func_ov001_0218c94c(0,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0));
 func_ov001_0218c94c(1,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,60));
 for(i=0;i<7;i++)Ov001_ReleaseSprite(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,24));
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52))Ov001_ReleaseSprite(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52));
-func_ov001_02183980();func_ov001_0218af70(0);Ov001_FreeSpriteObjects();
+func_ov001_02183980();Ov001_FreePageBackground(0);Ov001_FreeSpriteObjects();
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)!=12)Ov001_FreeOptionBackground();
-func_ov001_021836f4();
+FreeMapPreview();
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,8));
 for(i=0;i<2;i++)Ov001_FreeFile(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,12));
 Ov001_LoadAsset(&data_ov001_0219085c,&GX_LoadOBJPltt);
@@ -115,39 +115,43 @@ else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);Ov001_SetNextScreenMod
 Ov001_FreeAlloc(&data_ov001_02193db4);
 }
 #pragma pop
+/* Redraw the map list's info panel: work out the list's top row from its pixel
+ * scroll position, redraw the five visible rows' text and icon sprites, copy the
+ * matching slice of the list background into the map-preview tilemap, queue that
+ * tilemap's upload and place the row sprites. */
 void MapListRedrawInfoPanel(void) {
     s32 func_02002088(u16, s32);
     void DrawMapInfoRowText(s32, s32);
-    void func_ov001_0217e494(s32, s32);
+    void DrawMapInfoRowIcon(s32, s32);
     void MapListUpdateRowSprites(void);
-    M2C_UNK func_ov001_02183720();
-    M2C_UNK func_ov001_02183738(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK RequestMapPreviewUpdate();
+    M2C_UNK CopyMapPreviewRows(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK TextPanel_ClearText(s32, M2C_UNK);
     M2C_UNK CloseTextPanel(s32);
-    extern u16 data_ov001_0218f8fe[];
+    extern u16 gMapPreviewRowOffsets[];
     extern M2C_UNK gMapListState;
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
+    s32 topRow;
+    s32 row;
+    s32 line;
 
-    var_r4 = func_02002088(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
-    TextPanel_ClearText(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14), 0);
-    var_r5 = var_r4;
-    var_r6 = 0;
+    topRow = func_02002088(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    TextPanel_ClearText(M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_TEXT_PANEL), 0);
+    row = topRow;
+    line = 0;
     do {
-        DrawMapInfoRowText(var_r5, var_r6);
-        var_r6 += 1;
-        var_r5 += 1;
-    } while (var_r6 < 5);
-    func_ov001_02183738(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 8) + (data_ov001_0218f8fe[var_r4] * 2), 0, 0x1E, 0x13);
-    var_r5 = 0;
+        DrawMapInfoRowText(row, line);
+        line += 1;
+        row += 1;
+    } while (line < 5);
+    CopyMapPreviewRows(M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_BG_TILEMAP) + (gMapPreviewRowOffsets[topRow] * 2), 0, 0x1E, 0x13);
+    line = 0;
     do {
-        func_ov001_0217e494(var_r4, var_r5);
-        var_r5 += 1;
-        var_r4 += 1;
-    } while (var_r5 < 5);
-    func_ov001_02183720();
-    CloseTextPanel(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14));
+        DrawMapInfoRowIcon(topRow, line);
+        line += 1;
+        topRow += 1;
+    } while (line < 5);
+    RequestMapPreviewUpdate();
+    CloseTextPanel(M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_TEXT_PANEL));
     MapListUpdateRowSprites();
 }
 
@@ -174,7 +178,7 @@ case 8:if(record[0xf6])return;DrawMapInfoDottedValue(record+0xcc,line);break;
 }
 }
 
-void func_ov001_0217e494(s32 arg0, s32 arg1) {
+void DrawMapInfoRowIcon(s32 arg0, s32 arg1) {
     void *GetCurrentMapRecord(void);
     s32 func_ov001_0217e5e8(u32);
     void func_ov001_0217e67c(s32, s32, s32);

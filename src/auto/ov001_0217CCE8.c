@@ -163,7 +163,7 @@ void func_ov001_0217d1ac(void) {
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0217f72c(M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK InitMapListScreen;
     extern M2C_UNK func_ov001_02180d44;
@@ -178,7 +178,7 @@ void func_ov001_0217d1ac(void) {
     if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -280,8 +280,8 @@ void InitMapListGraphics(void) {
     M2C_UNK Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK Ov001_LoadFile(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02183694(M2C_UNK);
-    M2C_UNK func_ov001_02183720(void);
+    M2C_UNK InitMapPreview(M2C_UNK);
+    M2C_UNK RequestMapPreviewUpdate(void);
     extern u8 sJb3ListBackPath[];
     extern u8 sYbBgStep2NclPath[];
     extern u8 sYbBgStep21NclPath[];
@@ -307,8 +307,8 @@ void InitMapListGraphics(void) {
 
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8) =
         Ov001_LoadFile(Ov001_LocalizePath((void *)&listBackPath), 0, 4);
-    func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8));
-    func_ov001_02183720();
+    InitMapPreview(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8));
+    RequestMapPreviewUpdate();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 12) =
         Ov001_LoadFile(Ov001_LocalizePath((void *)&bgStep2Path), 0, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 16) =

@@ -32,13 +32,13 @@ s32 PrevMapCursorOption(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&gMapCursorDirs[a][0
 
 void func_020cac5c(void *arg0) {
  M2C_UNK FillMapLayer(M2C_UNK); M2C_UNK SelectMapLayer(void *); M2C_UNK func_0207a748(M2C_UNK);
- s32 GetUnitMoveDirections(s16,s16,u8); M2C_UNK func_020cdf30(s16,s16,s32);
+ s32 GetUnitMoveDirections(s16,s16,u8); M2C_UNK ClearMapCursorOptionCells(s16,s16,s32);
  extern void **gCurrentMap;
  s32 n;void *p;
  p=*gCurrentMap;
  n=GetUnitMoveDirections(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD((M2C_FIELD(p,s32 *,0x52d0)+M2C_FIELD(arg0,s16 *,0x70)),u8 *,0xc));
  SelectMapLayer((u8 *)*gCurrentMap+0x1e30);FillMapLayer(-1);
- p=*gCurrentMap;func_020cdf30(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);func_0207a748(0);
+ p=*gCurrentMap;ClearMapCursorOptionCells(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);func_0207a748(0);
  M2C_FIELD(arg0,s16 *,0x6c)=n;M2C_FIELD(arg0,s16 *,0x6e)=3;
  M2C_FIELD(arg0,s16 *,0x6e)=NextMapCursorOption(M2C_FIELD(arg0,s16 *,0x6e),n);
 }

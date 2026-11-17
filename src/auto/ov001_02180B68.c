@@ -63,7 +63,7 @@ void func_ov001_02180bdc(void) {
  * hands over to the friend map list when a friend can be picked, or back to the
  * Wi-Fi mode menu otherwise. */
 void Ov001_LeaveFriendList(void) {
-    M2C_UNK func_ov001_02171494();
+    M2C_UNK Ov001_FreeOptionSprites();
     s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
@@ -72,7 +72,7 @@ void Ov001_LeaveFriendList(void) {
     s32 func_ov001_021840d4();
     void *GetCurrentMapRecord();
     M2C_UNK func_ov001_02184880(u8);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001FriendListState;
     extern M2C_UNK MapSelectList_Init;
@@ -89,8 +89,8 @@ void Ov001_LeaveFriendList(void) {
     do {
 
     } while (func_ov001_021840d4() == 0);
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);

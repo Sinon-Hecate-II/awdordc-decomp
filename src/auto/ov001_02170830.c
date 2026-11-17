@@ -6,7 +6,7 @@ extern u8 data_ov001_0219283c[];
 typedef struct { u32 words[58]; } NetworkClearState;
 typedef struct { u32 w[8]; } ClearBlk8;
 typedef struct { u32 w[2]; } ClearBlk2;
-extern u32 data_ov001_021928fc[];
+extern u32 gOv001LinkMatchSetup[];
 void func_ov001_0216f78c(void);
 s32 func_ov001_0216e34c(s32);
 s32 func_02005ab0(void);
@@ -70,7 +70,7 @@ data_ov001_0218fde8[4]=b;data_ov001_02192790[14]=7;data_ov001_02192790[31]=c;((s
 r=func_ov001_0216e34c(b);data_ov001_02192790[29]=1;if(r<0){data_ov001_02192790[30]=r;return r;}
 r=((s32 (**)(s32))data_ov001_02192790)[1](data_ov001_0218fde8[2]);data_ov001_02192790[12]=r;if(!r){data_ov001_02192790[30]=-1;return -1;}if(func_02005ab0()!=1){data_ov001_02192790[30]=-9;return -9;}
 func_02005ac0(data_ov001_0219283c,func_ov001_0216f78c,0,data_ov001_02192790[12]+(data_ov001_0218fde8[2]&~7),data_ov001_0218fde8[2],a);data_ov001_02192790[14]=1;data_ov001_0218fde8[3]=((s32 (*)(void))WhGetTime)()+60000;data_ov001_02192790[4]=0;
-p=data_ov001_021928fc;i=58;do{*p++=0;}while(--i);
+p=gOv001LinkMatchSetup;i=58;do{*p++=0;}while(--i);
 func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;return 1;
 }
 #pragma optimize_for_size reset
@@ -91,7 +91,7 @@ r=M2C_FIELD(gOv001AnimSprite,s32 **,4);*r=(*r&0xfe00ff00)|0xe6008b;
 M2C_FIELD(gOv001AnimSprite,s32 *,0)=Ov001_AddTask(1,Ov001_AnimSpriteTask,0,120);
 }
 #pragma merge_constants off
-void func_ov001_02171494(void) {
+void Ov001_FreeOptionSprites(void) {
     M2C_UNK Ov001_FreeAlloc(void **);
     M2C_UNK Ov001_ReleaseSprite(s32);
     M2C_UNK func_ov001_0218c94c(M2C_UNK, s32);

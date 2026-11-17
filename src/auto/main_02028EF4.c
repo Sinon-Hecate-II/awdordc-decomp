@@ -191,7 +191,7 @@ s32 func_02029348(void *arg0) {
 }
 
 void func_020293a0(void *arg0,s32 arg1){
-void *GetSession(void);void *func_02029528(s32);void *func_0202942c(void);s32 func_020294f8(void);void func_020295e4(void*);void MI_CpuCopy32(void*,void*,u32);
+void *GetSession(void);void *func_02029528(s32);void *func_0202942c(void);s32 func_020294f8(void);void WFC_TouchPlayerNode(void*);void MI_CpuCopy32(void*,void*,u32);
 void *base;void *node;
 base=GetSession();if(!base)return;
 if(M2C_FIELD(base,u8*,0x226a)||M2C_FIELD(arg0,u16*,0x3c))return;
@@ -200,7 +200,7 @@ if(!node)node=func_0202942c();
 if(!node && M2C_FIELD(base,u32*,0x2278)==1)node=(void*)func_020294f8();
 if(!node)return;
 M2C_FIELD(node,u16*,2)=arg1;
-MI_CpuCopy32(arg0,(u8*)node+0x10,0xc0);func_020295e4(node);
+MI_CpuCopy32(arg0,(u8*)node+0x10,0xc0);WFC_TouchPlayerNode(node);
 }
 
 #pragma opt_strength_reduction off
@@ -310,7 +310,7 @@ void *func_02029594(void *arg0) {
  return p;
 }
 
-void func_020295e4(void *arg0) {
+void WFC_TouchPlayerNode(void *arg0) {
     void *temp_r0;
     void *temp_r2_2;
     void *temp_r1;

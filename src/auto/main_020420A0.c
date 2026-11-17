@@ -14,7 +14,7 @@ s32 UpdateConnectionSyncWait(void) {
  s32 RestartConnection(s32);
  void SendConnectionPacket(s32,s32);
  s32 PruneConnectionPeers(s32);
- void func_02041e44(void);
+ void CloseGt2Connection(void);
  void func_02041be0(s32);
  void func_020411dc(s32);
  s32 func_02040e1c(s32);
@@ -43,7 +43,7 @@ s32 UpdateConnectionSyncWait(void) {
  M2C_FIELD(GetConnection(),u8 *,0x1ab)++;
  if(M2C_FIELD(GetConnection(),u8 *,0x1ab)>5){
  if(M2C_FIELD(GetConnection(),u8 *,0x15)==0 || M2C_FIELD(GetConnection(),u8 *,0x15)==1){
- func_02041e44();
+ CloseGt2Connection();
  func_02041be0(1);
  } else {
  if(PruneConnectionPeers(M2C_FIELD(GetConnection(),s32 *,0x1d4))==0) return 0;
@@ -271,7 +271,7 @@ SetConnectionState(4); TryConnectToPeer(1,0,0); return;
 n=M2C_FIELD(mgr,u8*,2);
 elapsed=U64Divide((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6,0x82ea);
 if(elapsed<(u64)(s64)(n*6000)) return;
-if((u32)n>5) {ResetConnectionSync(1);func_02041e44();func_02041be0(1);return;}
+if((u32)n>5) {ResetConnectionSync(1);CloseGt2Connection();func_02041be0(1);return;}
 for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++) {
 if(!(M2C_FIELD(gConnectionMgr,u32*,8)&(1<<M2C_FIELD(GetConnection()+i,u8*,0x2d0)))) {
 connA=GetConnection(); connB=GetConnection(); conn=GetConnection();
@@ -303,7 +303,7 @@ if(func_0204084c()) return;
 mgr=gConnectionMgr;M2C_FIELD(mgr,u64*,24)=GetSystemTick();M2C_FIELD(mgr,u8*,2)=1;
 }
 #pragma pop
-u32 func_02042f94(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}ReportConnectionError(code,off+0xfffec398);return ret;}
+u32 ReportConnectionStatusResult(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}ReportConnectionError(code,off+0xfffec398);return ret;}
 
 u32 func_02043008(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=6;off=code-56;break;case 2:code=6;off=code-36;break;case 3:code=6;off=code-26;break;case 4:code=6;off=code-46;break;case 5:code=9;off=code-10;break;case 6:code=9;off=code-11;break;}ReportConnectionError(code,off+0xfffeb3f8);return ret;}
 

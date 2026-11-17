@@ -465,8 +465,8 @@ void func_ov001_02182514(void) {
     s32 func_0202f28c();
     s32 func_02046878();
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    M2C_UNK func_ov001_02171494();
-    M2C_UNK func_ov001_0218af70(s32);
+    M2C_UNK Ov001_FreeOptionSprites();
+    M2C_UNK Ov001_FreePageBackground(s32);
     M2C_UNK Ov001_DisableVisiblePlanes(s32, s32);
     M2C_UNK Ov001_SetNextScreenMode(s32, s32);
     extern s8 data_ov001_02193ddc;
@@ -477,8 +477,8 @@ void func_ov001_02182514(void) {
     if (func_0202f28c() == 0) return;
     MI_CpuCopy8(func_02046878(), temp_r4 + 0xF0, 0xE);
     MI_CpuCopy8(func_02046878(), temp_r4 + 0x1F0, 0xE);
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     Ov001_DisableVisiblePlanes(0, 0x15);
     if ((u8)data_ov001_02193ddc == 0) {
         Ov001_SetNextScreenMode(0, 1);
@@ -588,7 +588,7 @@ void func_ov001_02182798(void) {
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     s32 func_ov001_02185b34();
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_OpenWifiMenu;
     extern M2C_UNK InitMapListScreen;
@@ -603,7 +603,7 @@ void func_ov001_02182798(void) {
     if (func_ov001_02185b34() == 0) {
         return;
     }
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);

@@ -130,8 +130,8 @@ u32 GetUnitAmmo(void *arg0) {
 }
 
 s32 func_ov000_0216cd4c(s32 arg0) {
-s32 func_020e3438(s32);extern u8 data_ov000_021b5c69;
-return func_020e3438(1)+((&data_ov000_021b5c69)[arg0*0x70]<<8);
+s32 GetNameGraphicFile(s32);extern u8 data_ov000_021b5c69;
+return GetNameGraphicFile(1)+((&data_ov000_021b5c69)[arg0*0x70]<<8);
 }
 
 void *GetUnitIconTiles(void) {
@@ -146,8 +146,8 @@ void *GetArmyPalette(s32 arg0) {
 }
 
 s32 func_ov000_0216cda4(s32 arg0) {
-s32 func_020e3438(s32);extern u8 data_ov000_021b8711;
-return func_020e3438(0)+((&data_ov000_021b8711)[arg0*3]<<9);
+s32 GetNameGraphicFile(s32);extern u8 data_ov000_021b8711;
+return GetNameGraphicFile(0)+((&data_ov000_021b8711)[arg0*3]<<9);
 }
 
 void *func_ov000_0216cdcc(s32 arg0) {

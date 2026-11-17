@@ -175,11 +175,11 @@ M2C_UNK func_0209902c(void *arg0) {
 }
 
 M2C_UNK func_02099040(void *arg0) {
- void func_02088964(void *);
+ void UpdateSpriteFade(void *);
  void UpdateSpriteSlide(void *);
  void func_020887ec(void *);
  if(IsFaceSpriteLoaded(arg0)==0) return;
- func_02088964(arg0);
+ UpdateSpriteFade(arg0);
  UpdateSpriteSlide(arg0);
  func_020887ec(arg0);
 }
@@ -319,13 +319,13 @@ M2C_UNK func_02099338(void *arg0) {
 }
 
 M2C_UNK func_0209936c(void *a){
- void func_02088964(void*);void UpdateSpriteSlide(void*);
+ void UpdateSpriteFade(void*);void UpdateSpriteSlide(void*);
  s32 func_02098bd4(M2C_UNK,u8);
- void func_020887a8(void*,s32,s32,s32,s32);
+ void DrawSpriteActorAt(void*,s32,s32,s32,s32);
  s32 v;if(!FaceSpriteIsLoaded(a))return;
  v=func_02098bd4(M2C_FIELD(a,u8*,0x59),M2C_FIELD(a,u8*,0x5b));
- func_02088964(a);UpdateSpriteSlide(a);
- func_020887a8(a,M2C_FIELD(a,s16*,0x34),M2C_FIELD(a,s16*,0x36),M2C_FIELD(a,s8*,0x49),v);
+ UpdateSpriteFade(a);UpdateSpriteSlide(a);
+ DrawSpriteActorAt(a,M2C_FIELD(a,s16*,0x34),M2C_FIELD(a,s16*,0x36),M2C_FIELD(a,s8*,0x49),v);
 }
 
 void func_020993bc(void) {

@@ -129,7 +129,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
 }
 
 void func_0201cfdc(void) {
-    u8 *func_0201aacc(s32 *);
+    u8 *NetStackPeekFrame(s32 *);
     void func_0201ce18(u8 *, s32);
     void HandleArpPacket(u8 *, s32);
     void func_0201ab8c(void);
@@ -139,7 +139,7 @@ void func_0201cfdc(void) {
     u32 magic;
 
     for (;;) {
-        buf = func_0201aacc(&size);
+        buf = NetStackPeekFrame(&size);
         if (size <= 0x22) {
             break;
         }

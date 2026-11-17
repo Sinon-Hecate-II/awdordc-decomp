@@ -265,7 +265,7 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
     M2C_UNK FormatKeyValue(void *, void *, void *, s32);
     M2C_UNK AppendKeyValue(void *, void *, void *, s32);
     M2C_UNK SetGpiStatus(M2C_UNK, M2C_UNK *, M2C_UNK);
-    s32 func_02042f94(void);
+    s32 ReportConnectionStatusResult(void);
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0204084c(void);
@@ -324,7 +324,7 @@ error:
                 StringFormatN(sp34, 12, &data_020fc908, 3);
                 AppendKeyValue(&gKeyVER, sp34, sp14, 0x2F);
                 SetGpiStatus(4, sp14, 0);
-                if (func_02042f94() != 0) {
+                if (ReportConnectionStatusResult() != 0) {
                     goto done;
                 }
     }
@@ -351,7 +351,7 @@ void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK ReportGpiSessionStatus();
     M2C_UNK BeginMatchmakingSession(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02042f94();
+    s32 ReportConnectionStatusResult();
     M2C_UNK SetConnectionState(M2C_UNK);
     extern M2C_UNK gConnectionMgr;
     void *temp_r4;
@@ -366,7 +366,7 @@ void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
     M2C_FIELD(&gConnectionMgr, s8 *, 0x1D) = 0;
     SetConnectionState(0xA);
     ReportGpiSessionStatus();
-    if (func_02042f94() != 0) {
+    if (ReportConnectionStatusResult() != 0) {
         return;
     }
     if (M2C_FIELD(GetConnection(), s32 *, 0x10) != 0) {
@@ -386,7 +386,7 @@ M2C_UNK SetGpiStatus(M2C_UNK,M2C_UNK *,M2C_UNK);
 M2C_UNK func_0204084c(void);
 M2C_UNK SendJoinRequest(s32,M2C_UNK);
 s32 func_02043008(M2C_UNK);
-s32 func_02042f94(void);
+s32 ReportConnectionStatusResult(void);
 s32 StartQr2Reporting(s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK *,s32);
 extern M2C_UNK sEmptyString,func_020432d4;
@@ -405,7 +405,7 @@ M2C_FIELD(t,s32 *,CONN_SESSION_SERVER_BROWSER)=func_020613dc(M2C_FIELD(q,s32 *,C
 }
 if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_SERVER_BROWSER)&&func_02043008(5))return;
 SetGpiStatus(5,&sEmptyString,0);
-if(func_02042f94())return;
+if(ReportConnectionStatusResult())return;
 if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_RECORD)&&StartQr2Reporting(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_PARAM)))return;
 SendJoinRequest(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_IDS),0);
 if(func_0204084c())return;

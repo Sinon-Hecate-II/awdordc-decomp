@@ -283,7 +283,7 @@ u8 func_ov003_021e9ce0(void *arg0) {
  * and shows or hides the trailing label sprite depending on the state. */
 void SetWaypointPanelState(void *panel,s32 state){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
-void Ov003_SetPanelPlayerFlagTile(s32,u8); void func_02089438(void*); void Show3DSprite(void*); void Hide3DSprite(void*);
+void Ov003_SetPanelPlayerFlagTile(s32,u8); void Sync3DSpriteToTarget(void*); void Show3DSprite(void*); void Hide3DSprite(void*);
 void *savedEngine;
 M2C_FIELD(panel,u8*,0x39)=(M2C_FIELD(panel,u8*,0x39)&~0xf0)|((u32)((u8)state<<28)>>24);
 M2C_FIELD(panel,u8*,0x3a)=(M2C_FIELD(panel,u8*,0x3a)&~0x70)|0x10;
@@ -296,7 +296,7 @@ if(E9638Mode(panel,1)||E9638Mode(panel,3))M2C_FIELD(M2C_FIELD(panel,void**,0x58)
 else M2C_FIELD(M2C_FIELD(panel,void**,0x58),u8*,0x59)=1;
 if(E9638Mode(panel,2)){
 void *waypoints=M2C_FIELD(panel,void**,0x6c);M2C_FIELD(waypoints,u8*,9)=M2C_FIELD(waypoints,u8*,8);
-func_02089438(M2C_FIELD(panel,void**,0x5c));Show3DSprite(M2C_FIELD(panel,void**,0x5c));
+Sync3DSpriteToTarget(M2C_FIELD(panel,void**,0x5c));Show3DSprite(M2C_FIELD(panel,void**,0x5c));
 }else Hide3DSprite(M2C_FIELD(panel,void**,0x5c));
 }
 

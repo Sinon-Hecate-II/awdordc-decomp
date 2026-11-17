@@ -242,7 +242,7 @@ M2C_UNK func_02079c50(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_FIELD(CreateSpriteObject(&data_02100a88, arg1), s16 *, 0x6E) = arg0;
 }
 
-void func_02079c6c(s32 arg0, s32 arg1) {
+void MapTileToScreen(s32 arg0, s32 arg1) {
     void func_02079c90();
     func_02079c90((arg0 * 0x300) + 0x180, (arg1 * 0x300) + 0x180);
 }

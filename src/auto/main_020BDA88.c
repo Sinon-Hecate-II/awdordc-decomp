@@ -91,24 +91,29 @@ s32 func_020bdcd0(void) {
     return 0;
 }
 
-s32 func_020bdd18(void) {
- s32 IsTouchInputDisabled(void);
- void DeleteTouchCursor(void);
- void HideTouchCursor(void);
- extern void *gTouchState;
- extern void **gCurrentMap;
- if (IsTouchInputDisabled()) return 0;
- if (M2C_FIELD(gTouchState,u8 *,0x12) && M2C_FIELD(gTouchState,u8 *,0x10)==20) {
- DeleteTouchCursor();
- M2C_FIELD(*gCurrentMap,s16 *,0x52ca)=255;
- M2C_FIELD(*gCurrentMap,s16 *,0x52cc)=255;
- }
- if (M2C_FIELD(gTouchState,u8 *,0x16) &&
- M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca) &&
- M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)) {
- HideTouchCursor(); return 16;
- }
- return 0;
+/* Touch handler for the aiming cursor. Once a touch is held to a drag, delete the
+ * touch cursor and clear the touched tile; when the stylus is released on the tile
+ * the drag started on, hide the touch cursor and report a confirm action. */
+s32 GetAimCursorTouchAction(void) {
+    s32 IsTouchInputDisabled(void);
+    void DeleteTouchCursor(void);
+    void HideTouchCursor(void);
+    extern void *gTouchState;
+    extern void **gCurrentMap;
+
+    if (IsTouchInputDisabled()) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE) && M2C_FIELD(gTouchState, u8 *, TOUCH_HOLD_FRAMES) == TOUCH_DRAG_FRAMES) {
+        DeleteTouchCursor();
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_X) = MAP_TOUCH_NO_TILE;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_Y) = MAP_TOUCH_NO_TILE;
+    }
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_RELEASED) &&
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) == M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_X) &&
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) == M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_Y)) {
+        HideTouchCursor();
+        return MAP_ACTION_CONFIRM;
+    }
+    return 0;
 }
 
 /* Update the selection cursor from the current stylus position and return any resulting action code. */

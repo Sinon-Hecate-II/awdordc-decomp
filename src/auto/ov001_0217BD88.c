@@ -1,5 +1,6 @@
 /* 26 functions from 0x0217BD88 to 0x0217CCE8 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 
 typedef struct { void (*handlers[5])(void *); } CodeHandlers;
 extern const CodeHandlers data_ov001_0218f874;
@@ -74,7 +75,7 @@ void func_ov001_0217bf40(void) {
 void func_ov001_0217bf84(void) {
 void *Ov001_Alloc(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
 void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
-void func_ov001_0217c0f8(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
+void Ov001_LoadCodeEntryGraphics(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
 CodeHandlers handlers=data_ov001_0218f860;
 u8 choices[5]={((u8*)data_ov001_0218f848)[8],((u8*)data_ov001_0218f848)[9],((u8*)data_ov001_0218f848)[10],((u8*)data_ov001_0218f848)[11],((u8*)data_ov001_0218f848)[12]};
 s32 a;void *p;
@@ -84,31 +85,34 @@ handlers.handlers[a](data_ov001_02193da4+8);
 p=data_ov001_02193da4;
 if(ByteCompareN(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
 else {MI_CpuFill8(p+8,0,12);M2C_FIELD(data_ov001_02193da4,u8*,20)=0;}
-func_ov001_0217c0f8();func_ov001_02172250(a+11);Ov001_ShowMessagePanel(choices[a],-1,0);func_ov001_02171dd0(2);
+Ov001_LoadCodeEntryGraphics();func_ov001_02172250(a+11);Ov001_ShowMessagePanel(choices[a],-1,0);func_ov001_02171dd0(2);
 M2C_FIELD(data_ov001_02193da4,void**,0)=CreateTextPanel(0,0);
 M2C_FIELD(data_ov001_02193da4,void**,4)=func_ov001_0218a5f0(0,63);
 M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)&~0xc00)|0xc00;
 func_ov001_0217c8ac();func_ov001_0217c7e8();Ov001_SetStepCallback((s32*)func_ov001_0217c1b4);
 }
-void func_ov001_0217c0f8(void) {
+/* Load the code-entry screen's OBJ palette, background tiles, palette and
+ * tilemap, and set its background layers' priorities: the sub BG0/BG1 and main
+ * BG1/BG2 layers lowest (3), the main BG0 layer above them (2). */
+void Ov001_LoadCodeEntryGraphics(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190774;
-    extern M2C_UNK data_ov001_02190788;
-    extern M2C_UNK data_ov001_021907a0;
-    extern M2C_UNK data_ov001_021907b8;
+    extern M2C_UNK gOv001CodeEntryObjPalettePath;
+    extern M2C_UNK gOv001CodeEntryTilesPath;
+    extern M2C_UNK gOv001CodeEntryPalettePath;
+    extern M2C_UNK gOv001CodeEntryTilemapPath;
     extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK GX_LoadOBJPltt;
     extern M2C_UNK GX_LoadBG2Scr;
     extern M2C_UNK GX_LoadBG2Char;
-    Ov001_LoadAsset(&data_ov001_02190774, &GX_LoadOBJPltt);
-    Ov001_LoadAsset(&data_ov001_02190788, &GX_LoadBG2Char);
-    Ov001_LoadAsset(&data_ov001_021907a0, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_021907b8, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 2;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001CodeEntryObjPalettePath, &GX_LoadOBJPltt);
+    Ov001_LoadAsset(&gOv001CodeEntryTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001CodeEntryPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001CodeEntryTilemapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (u16)((REG_BG0CNT & ~BG_PRIORITY_MASK) | 2);
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_0217c1b4(void) {
@@ -292,7 +296,7 @@ extern M2C_UNK data_ov001_021907d0,GX_LoadOBJPltt,InitMapListScreen;
 s32 sp0;void *state;
 Ov001_FreeOptionBackground();
 state=data_ov001_02193da4;Ov001_ReleaseSprite(M2C_FIELD(state,s32 *,4));
-func_ov001_0218af70(0);Ov001_LoadAsset(&data_ov001_021907d0,&GX_LoadOBJPltt);
+Ov001_FreePageBackground(0);Ov001_LoadAsset(&data_ov001_021907d0,&GX_LoadOBJPltt);
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,0x15);
 Ov001_GetNameEntryMode(&sp0,0);if(sp0>=3)sp0++;
 Ov001_SetNextScreenMode(2,1);Ov001_SetNameEntryMode(0,sp0+3);

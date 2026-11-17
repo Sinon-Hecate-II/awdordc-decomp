@@ -157,7 +157,7 @@ void func_0208af20(void *arg0) {
 }
 
 void func_0208af98(void *p) {
- s32 EaseInterpolate(s32,s32,s32,s32,s32); void Show3DSprite(void*);void func_02089c80(void*);s32 func_020890d4();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32); void Show3DSprite(void*);void func_02089c80(void*);s32 Is3DSpriteAnimating();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
  s32 bottom,right,tx,ty,j,maxw,i,depth,y,x,height,width; u8 alpha;u32 tile,mode,count;u16 frame;void *old,*engine; WindowControl0208 *volatile control;u8 *widths,*aligns;s32 w; u16 kind;
  frame=(u16)(0x1000|(0x3ff&(0xa0>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
  tile=M2C_FIELD(p,u16*,0x3e)<<5;
@@ -200,7 +200,7 @@ void func_0208af98(void *p) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x52)=0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x53)=alpha;
    }
-   if(!func_020890d4(p)){
+   if(!Is3DSpriteAnimating(p)){
     maxw=0;count=(u32)(M2C_FIELD(p,u32*,0x58)<<10)>>28;
     if(count){widths=M2C_FIELD(p,u8**,0x68);for(j=0;j<count;j++)if(maxw<*widths++)maxw=M2C_FIELD(p,u8**,0x68)[j];}
     j=0;if(j<count){ty=y+8;tx=x+(width-maxw)/2;
@@ -279,8 +279,8 @@ u8 func_0208b5a8(void) {
 }
 
 s32 func_0208b5c4(void) {
-    s32 func_020890d4(void);
-    if ((FindTextLayer() != 0) && (func_020890d4() != 0)) return 1;
+    s32 Is3DSpriteAnimating(void);
+    if ((FindTextLayer() != 0) && (Is3DSpriteAnimating() != 0)) return 1;
     return 0;
 }
 
@@ -321,9 +321,12 @@ void *func_0208b630(void *arg0) {
     return arg0;
 }
 
-void func_0208b698(M2C_UNK arg0, M2C_UNK arg1) {
+/* Render `text` into a sprite actor's text texture on every display engine the
+   actor's screen mode selects, storing the rendered width and resetting the
+   actor's text animation. */
+void SetSpriteText(M2C_UNK arg0, M2C_UNK arg1) {
 extern void *g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern void *gCur3DSpriteEngine;
-s16 func_0209b91c(M2C_UNK,M2C_UNK);
+s16 RenderTextToBitmap(M2C_UNK,M2C_UNK);
 void *old; s32 i; void *p; u32 mode;
 old=gCur3DSpriteEngine;i=0;
 do {
@@ -331,7 +334,7 @@ if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
 gCur3DSpriteEngine=p;
 mode=(u32)(M2C_FIELD(arg0,u8 *,0x48)<<28)>>29;
 if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old))){
-M2C_FIELD(arg0,s16 *,0x58)=func_0209b91c((u8 *)M2C_FIELD(p,void **,0x1c)+((M2C_FIELD(arg0,u16 *,0x3e)<<5)+0x400),arg1);
+M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_TEXT_WIDTH)=RenderTextToBitmap((u8 *)M2C_FIELD(p,void **,0x1c)+((M2C_FIELD(arg0,u16 *,SPRITE_ACTOR_TILE_ROW)<<5)+0x400),arg1);
 M2C_FIELD(arg0,s16 *,0x5a)=0;M2C_FIELD(arg0,u8 *,0x5c)=0;
 }i++;
 }while(i<2);
@@ -340,7 +343,7 @@ gCur3DSpriteEngine=old;
 
 void SetTextById(M2C_UNK arg0, M2C_UNK arg1) {
     s32 GetLocalizedText(M2C_UNK);
-    func_0208b698(arg0, GetLocalizedText(arg1));
+    SetSpriteText(arg0, GetLocalizedText(arg1));
 }
 
 /* Refresh the display banks selected by the entity's mode, then allocate and link a handle for it. */

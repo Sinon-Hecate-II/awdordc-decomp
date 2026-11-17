@@ -119,33 +119,48 @@ if(M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)==3 && WFC_StartConnection(M2C_FIEL
 OS_RestoreInterrupts(t);return 0;
 }
 
-s32 func_ov001_0216e190(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_ov001_02192790;
-extern s32 data_ov001_02192810;
-void func_ov001_0216dbdc(void);
-s32 t,x,y,z;
-t=OS_DisableInterrupts();
-x=(b+0x63)&~3;
-M2C_FIELD(&data_ov001_02192790,s32 *,0x28)=b;
-M2C_FIELD(&data_ov001_02192790,s32 *,8)=x;
-y=(x+0x2f)&~31;
-M2C_FIELD(&data_ov001_02192790,s32 *,0x3c)=y;
-z=(y+0x231f)&~31;
-M2C_FIELD(&data_ov001_02192790,s32 *,0x4c)=z;
-M2C_FIELD(x,s32 *,4)=(z+0xdf)&~31;
-M2C_FIELD(M2C_FIELD(&data_ov001_02192790,s32 *,8),s32 *,8)=b+c-M2C_FIELD(M2C_FIELD(&data_ov001_02192790,s32 *,8),s32 *,4);
-M2C_FIELD(M2C_FIELD(&data_ov001_02192790,s32 *,8),s32 *,12)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02192790,s32 *,8),s32 *,0)=3;
-data_ov001_02192810=a;
-if(M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)==0){
-if(WFC_InitSession(M2C_FIELD(&data_ov001_02192790,s32 *,0x3c),0x2300)){OS_RestoreInterrupts(t);return 0;}
-M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)=1;
-}
-if(M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)==1){
-if(WFC_ConnectStep(M2C_FIELD(&data_ov001_02192790,void **,8),func_ov001_0216dbdc)!=3){OS_RestoreInterrupts(t);return 0;}
-M2C_FIELD(&data_ov001_02192790,s32 *,0x2c)=4;OS_RestoreInterrupts(t);return 1;
-}
-OS_RestoreInterrupts(t);return 0;
+/* Start the Nintendo WFC session on the caller's work block: carve the block
+ * into the 0x60-byte peer-address area, the connection parameters, the
+ * 0x2300-byte WFC session area and the 0xC0-byte aux area, initialise the
+ * session once, then run the connection step.  Returns 1 once the connect step
+ * has started, 0 while it has to be retried. */
+s32 WhStartSession(s32 eventCallback, s32 workBlock, s32 extraLength) {
+    extern M2C_UNK data_ov001_02192790;
+    extern s32 gWhEventCallback;
+    void func_ov001_0216dbdc(void);
+    s32 savedInterrupts, connectParams, session, aux;
+
+    savedInterrupts = OS_DisableInterrupts();
+    connectParams = (workBlock + 0x63) & ~3;
+    M2C_FIELD(&data_ov001_02192790, s32 *, 0x28) = workBlock;
+    M2C_FIELD(&data_ov001_02192790, s32 *, 8) = connectParams;
+    session = (connectParams + 0x2f) & ~31;
+    M2C_FIELD(&data_ov001_02192790, s32 *, 0x3c) = session;
+    aux = (session + 0x231f) & ~31;
+    M2C_FIELD(&data_ov001_02192790, s32 *, 0x4c) = aux;
+    M2C_FIELD(connectParams, s32 *, 4) = (aux + 0xdf) & ~31;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02192790, s32 *, 8), s32 *, 8) = workBlock + extraLength - M2C_FIELD(M2C_FIELD(&data_ov001_02192790, s32 *, 8), s32 *, 4);
+    M2C_FIELD(M2C_FIELD(&data_ov001_02192790, s32 *, 8), s32 *, 12) = 0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02192790, s32 *, 8), s32 *, 0) = 3;
+    gWhEventCallback = eventCallback;
+    if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x2c) == 0) {
+        if (WFC_InitSession(M2C_FIELD(&data_ov001_02192790, s32 *, 0x3c), 0x2300)) {
+            OS_RestoreInterrupts(savedInterrupts);
+            return 0;
+        }
+        M2C_FIELD(&data_ov001_02192790, s32 *, 0x2c) = 1;
+    }
+    if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x2c) == 1) {
+        if (WFC_ConnectStep(M2C_FIELD(&data_ov001_02192790, void **, 8), func_ov001_0216dbdc) != 3) {
+            OS_RestoreInterrupts(savedInterrupts);
+            return 0;
+        }
+        M2C_FIELD(&data_ov001_02192790, s32 *, 0x2c) = 4;
+        OS_RestoreInterrupts(savedInterrupts);
+        return 1;
+    }
+    OS_RestoreInterrupts(savedInterrupts);
+    return 0;
 }
 
 void func_ov001_0216e288(s32 a,s32 b,s32 c) {
@@ -195,7 +210,7 @@ M2C_FIELD(&data_ov001_02192790,s32 *,0x54)=r;
 if(!r)return -1;
 y=(r+v)&(v-0x3f);M2C_FIELD(&data_ov001_02192790,s32 *,0x40)=y;
 M2C_FIELD(&data_ov001_02192790,s32 *,0x5c)=(y+x+0x2490+v)&(v-0x3f);
-if(!func_ov001_0216e190((s32)WhPushEvent,y,0))return -2;
+if(!WhStartSession((s32)WhPushEvent,y,0))return -2;
 do {func_02006030(10);r=WhPopEvent();
 while(r) { if(r==4 || r==5) {} else if(r==6) {active=0;result=1;} else {active=0;result=-2;} r=WhPopEvent(); }
 }while(active);return result;

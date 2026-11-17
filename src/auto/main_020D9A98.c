@@ -5,7 +5,7 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 func_ov010_022282b4(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
+void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 func_ov010_022282b4(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 func_02084fc0(0);
@@ -37,7 +37,7 @@ if(M2C_FIELD(a,s32 *,0x54)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x54));M2C_FIEL
 if(M2C_FIELD(a,s32 *,0x58)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x58));M2C_FIELD(a,s32 *,0x58)=0;}
 if(M2C_FIELD(a,s32 *,0x5c)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x5c));M2C_FIELD(a,s32 *,0x5c)=0;}
 if(M2C_FIELD(a,s32 *,0x60)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x60));M2C_FIELD(a,s32 *,0x60)=0;}
-func_020b1c44(0,0);
+SetSpriteSlotScroll(0,0);
 }
 
 void func_020d9d5c(void *arg0) {
@@ -461,7 +461,7 @@ void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, vo
 void func_020daa0c(void *arg0) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
-    M2C_UNK func_020b1c44(s32, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
     s32 temp_r0;
@@ -470,7 +470,7 @@ void func_020daa0c(void *arg0) {
 
     UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
     temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    func_020b1c44(temp_r0, 0);
+    SetSpriteSlotScroll(temp_r0, 0);
     temp_ip = gCur3DSpriteEngine;
     temp_r3 = 0 - temp_r0;
     gCur3DSpriteEngine = g3DSpriteEngineMain;

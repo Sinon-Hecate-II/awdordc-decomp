@@ -356,6 +356,15 @@ typedef struct MapTargetEntry {
 #define MAP_TILE_SIZE 768 /* 3 * 256: one map tile's on-screen size in pixels */
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
 #define MAP_TOUCH_TILE_Y    0x52cc
+#define MAP_TOUCH_NO_TILE   0xff   /* MAP_TOUCH_TILE_X/Y value while no tile is touched */
+
+/* The battle help/status panel state (gBattleHelpPanel): the page it shows, a flag
+ * that the panel is up, and the cursor position saved around the panel's unit
+ * cursor (func_020c5b24 saves it, func_020c5b5c restores it). */
+#define MAP_HELP_PAGE       0 /* u8 page/tile the panel shows, toggled by func_020c5b98 */
+#define MAP_HELP_SHOWN      1 /* u8 nonzero while the panel covers part of the screen */
+#define MAP_HELP_SAVED_X    2 /* s16 cursor old x saved while the panel's unit cursor runs */
+#define MAP_HELP_SAVED_Y    4 /* s16 cursor old y */
 #define MAP_TILE_SUBPIXEL   0x300  /* map-position units per tile, from ScreenToMapPosition */
 
 /* Action flags shared by map keyboard and stylus input. */

@@ -450,7 +450,7 @@ M2C_UNK func_ov001_0218af0c(s32 arg0) {
     return Ov001_FreeAlloc((u8 *)arg0 + 0x28);
 }
 
-void func_ov001_0218af70(s32 arg0) {
+void Ov001_FreePageBackground(s32 arg0) {
     M2C_UNK func_ov001_0218af0c(s32);
     extern s32 data_ov001_02193e40;
     func_ov001_0218af0c((0x30 * arg0) + (data_ov001_02193e40 + 0x610));

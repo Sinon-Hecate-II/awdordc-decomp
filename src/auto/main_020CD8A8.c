@@ -181,12 +181,15 @@ if(*(&data_ov000_021b5c09+off)==1)return;
 MarkAttackRangeCells(a,b,(s16)(*(&gUnitMinAttackRange+off)-1),-1);
 }
 
-void func_020cdf30(s32 x,s32 y,s32 f) {
-extern void **gCurrentMap;
-if(f&4)M2C_FIELD(*gCurrentMap+y*4,u8 **,0x52e8)[x-1]=0;
-if(f&8)M2C_FIELD(*gCurrentMap+y*4,u8 **,0x52e8)[x+1]=0;
-if(f&1)M2C_FIELD(*gCurrentMap+(y-1)*4,u8 **,0x52e8)[x]=0;
-if(f&2)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **,0x52e8)[x]=0;
+/* Clear the cursor-direction marker (MAP_GRID cell value) on each neighbour of
+ * (x, y) whose direction bit is set in the mask (MAP_DIR_UP/DOWN/LEFT/RIGHT),
+ * removing that tile from the directional-cursor options. */
+void ClearMapCursorOptionCells(s32 x, s32 y, s32 dirMask) {
+    extern void **gCurrentMap;
+    if (dirMask & MAP_DIR_LEFT) M2C_FIELD(*gCurrentMap + y * 4, u8 **, MAP_GRID)[x - 1] = 0;
+    if (dirMask & MAP_DIR_RIGHT) M2C_FIELD(*gCurrentMap + y * 4, u8 **, MAP_GRID)[x + 1] = 0;
+    if (dirMask & MAP_DIR_UP) M2C_FIELD(*gCurrentMap + (y - 1) * 4, u8 **, MAP_GRID)[x] = 0;
+    if (dirMask & MAP_DIR_DOWN) M2C_FIELD(*gCurrentMap + (y + 1) * 4, u8 **, MAP_GRID)[x] = 0;
 }
 
 // Clears the walkable-flag (sets to 0) of each in-bounds neighbor of (x,y) that the given unit can enter.

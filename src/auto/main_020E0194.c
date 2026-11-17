@@ -248,7 +248,7 @@ M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void), LoadNarcFileDecompressed(
 s32 FindSpriteSlotById(s32); void *AddSpriteSlot(s32, s32, void *, s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32, s32, u16, u16);
 s32 GetActiveOverlay(void); void *GetLocalPlayerStatus(void);
-void PlaySoundEffect(s32); M2C_UNK func_020b1c44(s32, s32), func_02088f1c(void *), SetTextById(void *, s32);
+void PlaySoundEffect(s32); M2C_UNK SetSpriteSlotScroll(s32, s32), func_02088f1c(void *), SetTextById(void *, s32);
 s32 row, rowX, bar;
 void *selectedRow;
 s32 barX, barEnd, barColor, hasRows, savedEngine, savedBarEngine, status;
@@ -305,7 +305,7 @@ if (selectedRow) {
         PlaySoundEffect(0x10019);
     }
 }
-func_020b1c44(0, 0);
+SetSpriteSlotScroll(0, 0);
 func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0));
 sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0);
 if (func_020e_check(sprite)) M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)func_020e_low(sprite);
@@ -476,11 +476,11 @@ void func_020e0e6c(M2C_UNK arg0) {
 }
 
 M2C_UNK func_020e0e8c(void *arg0) { M2C_UNK func_020b2178();
-M2C_UNK func_020b1c44();
+M2C_UNK SetSpriteSlotScroll();
 func_ov010_022294ec();
 func_ov010_02228c88(arg0);
 func_020b2178();
-return func_020b1c44(0,0);
+return SetSpriteSlotScroll(0,0);
 }
 
 void func_020e0eb4(void) {

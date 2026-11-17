@@ -338,7 +338,7 @@ for(;i<GetTargetCount();i++){id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurr
 if(n>0)PanMapViewToTile(func_020720f0(x,n),func_020720f0(y,n));
 }
 
-void func_020b6b40(void *arg0) {
+void UpdateAuroraAimMarker(void *arg0) {
 s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
 s32 a; s32 t; u32 bits=M2C_FIELD(arg0,u32 *,0x48);
 u16 count=(u16)(bits>>21);
@@ -356,16 +356,30 @@ if(!b)return a;
 ApplyPendingDamageToTargets(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
 }
 
-void AuroraBombardTargets(void *arg0) {
-s32 GetTargetCount(void);void *GetTargetPosition(s32);
-void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
-extern void **gCurrentMap;extern M2C_UNK data_02128efc;
-s32 v,n,i;void *p,*q;
-i=M2C_FIELD(arg0,s32 *,0x58);v=M2C_FIELD(arg0,s32 *,0x5c);n=0;
-for(;i<GetTargetCount();i++){u16 id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;
-q=func_020b5188(&data_02128efc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),16,v,0,arg0);
-M2C_FIELD(q,u32 *,0x48)=(M2C_FIELD(q,u32 *,0x48)&~1023)|((u8)n&1023);
-M2C_FIELD(q,void (**)(void *),0x6c)=func_020b6b40;n+=8;}
+/* Aim the Aurora strike at the remaining targets: each target's unit cell gets
+ * an "arura_aim" marker made with the strike's aim graphic, its start delayed by
+ * 8 frames per marker, and UpdateAuroraAimMarker as its update callback. */
+void AuroraBombardTargets(void *strike) {
+    s32 GetTargetCount(void);
+    void *GetTargetPosition(s32);
+    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    extern void **gCurrentMap;
+    extern M2C_UNK gAuroraAimName;
+
+    s32 aimGraphic, delay, i;
+    void *unit, *marker;
+
+    i = M2C_FIELD(strike, s32 *, 0x58);
+    aimGraphic = M2C_FIELD(strike, s32 *, 0x5c);
+    delay = 0;
+    for (; i < GetTargetCount(); i++) {
+        u16 id = M2C_FIELD(GetTargetPosition(i), u16 *, 0);
+        unit = *gCurrentMap + MAP_UNIT_RECORDS + id * MAP_UNIT_STRIDE;
+        marker = func_020b5188(&gAuroraAimName, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y), 16, aimGraphic, 0, strike);
+        M2C_FIELD(marker, u32 *, 0x48) = (M2C_FIELD(marker, u32 *, 0x48) & ~1023) | ((u8)delay & 1023);
+        M2C_FIELD(marker, void (**)(void *), 0x6c) = UpdateAuroraAimMarker;
+        delay += 8;
+    }
 }
 
 #pragma opt_common_subs off

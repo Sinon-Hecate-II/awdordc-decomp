@@ -73,13 +73,32 @@ s32 LoadResourceArchive(void *archiveData, s32 pool, s32 loadExtra) {
     return 1;
 }
 
-void func_0202bf54(void *arg0,s32 arg1){extern s32 gCurrentArchive;u32 i; s32 off;void *p;
-func_02007e70(arg1,arg0,0x30);
-off=M2C_FIELD(arg0,s32 *,0x18);M2C_FIELD(arg0,s32 *,0x8c)=off==0?0:arg1+off;
-off=M2C_FIELD(arg0,s32 *,0x20);M2C_FIELD(arg0,s32 *,0x84)=off==0?0:arg1+off;
-off=M2C_FIELD(arg0,s32 *,0x10);M2C_FIELD(arg0,s32 *,0x88)=off==0?0:arg1+off;
-for(i=0;i<M2C_FIELD(M2C_FIELD(arg0,void **,0x84),u32 *,8);i++){p=M2C_FIELD(arg0,void **,0x84)+12+i*16;off=M2C_FIELD(p,s32 *,0);M2C_FIELD(p,s32 *,8)=off==0?0:arg1+off;}
-M2C_FIELD(arg0,s32 *,0x30)=0;gCurrentArchive=(s32)arg0;}
+/* Initialises the current sound archive `archive` from the archive file loaded
+ * at `base`: copies the 0x30-byte header into the archive, turns the header's
+ * offsets (data block, object table, object file) into pointers into `base`, and
+ * does the same for every object table entry's data offset. */
+void InitSoundArchive(void *archive, s32 base) {
+    extern s32 gCurrentArchive;
+    u32 i;
+    s32 offset;
+    void *entry;
+
+    func_02007e70(base, archive, 0x30);
+    offset = M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_OFFSET);
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_BLOCK) = offset == 0 ? 0 : base + offset;
+    offset = M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_TABLE_OFFSET);
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_TABLE) = offset == 0 ? 0 : base + offset;
+    offset = M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_FILE_OFFSET);
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_FILE) = offset == 0 ? 0 : base + offset;
+    /* Relocate each object's data offset to a pointer as well. */
+    for (i = 0; i < M2C_FIELD(M2C_FIELD(archive, void **, SOUND_ARCHIVE_TABLE), u32 *, SOUND_ARCHIVE_ENTRY_COUNT); i++) {
+        entry = M2C_FIELD(archive, void **, SOUND_ARCHIVE_TABLE) + SOUND_ARCHIVE_ENTRIES + i * SOUND_ARCHIVE_ENTRY_SIZE;
+        offset = M2C_FIELD(entry, s32 *, SOUND_ARCHIVE_ENTRY_OFFSET);
+        M2C_FIELD(entry, s32 *, SOUND_ARCHIVE_ENTRY_DATA) = offset == 0 ? 0 : base + offset;
+    }
+    M2C_FIELD(archive, s32 *, 0x30) = 0;
+    gCurrentArchive = (s32)archive;
+}
 
 s32 func_0202c014(s32 arg0){extern s32 gCurrentArchive;s32 old=gCurrentArchive;gCurrentArchive=arg0;return old;}
 
@@ -344,7 +363,7 @@ if(out)*(s32 *)out=r;return 0;
  * wave archives the bank references.  Returns 0 or a nonzero error code
  * (4 = no bank record, 5 = no wave archive record, 8/9 = load failed). */
 s32 LoadSoundBank(s32 bankId,s32 flags,s32 pool,s32 create,s32 out) {
-s32 func_0202cde4(s32,s32,s32);s32 func_0202d1d4(s32,s32,s32,s32,s32);
+s32 func_0202cde4(s32,s32,s32);s32 LoadBankWaveArchiveEntries(s32,s32,s32,s32,s32);
 void *bankRecord;void *waveRecord;s32 bank;s32 i;s32 loadWaveArchives;s32 result;s32 waveObject;
 bankRecord=GetSoundBankRecord(bankId);if(!bankRecord)return 4;
 if(flags&2){bank=func_0202cde4(M2C_FIELD(bankRecord,s32 *,0),pool,create);if(!bank)return 8;}
@@ -355,7 +374,7 @@ if(((u16 *)bankRecord)[i+2]==SOUND_FILE_NONE)continue;
 waveRecord=GetWaveArchiveRecord(((u16 *)bankRecord)[i+2]);if(!waveRecord)return 5;
 result=LoadWaveArchive(((u16 *)bankRecord)[i+2],flags,pool,create,&waveObject);if(result)return result;
 if(((Unk0202PackedId *)waveRecord)->flags&1 && loadWaveArchives){
-if(!func_0202d1d4(waveObject,bank,i,((Unk0202PackedId *)waveRecord)->id,pool))return 9;
+if(!LoadBankWaveArchiveEntries(waveObject,bank,i,((Unk0202PackedId *)waveRecord)->id,pool))return 9;
 }
 if(bank&&waveObject)Link_SetSlotOwner(bank,i,waveObject);
 }

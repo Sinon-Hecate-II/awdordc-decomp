@@ -75,7 +75,7 @@ u8 func_020890b8(void *arg0) {
     return var_r0;
 }
 
-u8 func_020890d4(void *arg0) {
+u8 Is3DSpriteAnimating(void *arg0) {
  u8 result;
  if (func_0208909c(arg0) != 0) return 1;
  if (func_020890b8(arg0) != 0) result = 1;
@@ -170,10 +170,10 @@ void func_020891fc(void *arg0)
 }
 
 M2C_UNK func_020892f0(void *arg0, s32 arg1) {
- void func_02088964(void *,s32);
+ void UpdateSpriteFade(void *,s32);
  M2C_UNK UpdateSpriteSlide(M2C_UNK);
  void func_020887ec(void *);
- func_02088964(arg0,arg1);UpdateSpriteSlide((M2C_UNK)arg0);func_020887ec(arg0);
+ UpdateSpriteFade(arg0,arg1);UpdateSpriteSlide((M2C_UNK)arg0);func_020887ec(arg0);
 }
 
 void func_02089310(void) {
@@ -243,7 +243,7 @@ void func_02089424(M2C_UNK arg0) {
     func_020893f4(arg0, 0x1000, 1);
 }
 
-void func_02089438(void *arg0) {
+void Sync3DSpriteToTarget(void *arg0) {
     *(volatile s16 *)((volatile s8 *)arg0 + 0x5E) = *(volatile s16 *)((volatile s8 *)arg0 + 0x34);
     *(volatile s16 *)((volatile s8 *)arg0 + 0x60) = *(volatile s16 *)((volatile s8 *)arg0 + 0x36);
     *(volatile s16 *)((volatile s8 *)arg0 + 0x62) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)arg0 + 0x40))[0] << 0x17) >> 0x17);
@@ -259,7 +259,7 @@ void DrawFrameBorderPulse(s16,s16,s16,s16,u16,s32);
 void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);
 s32 d,a,b,screen;s32 attr;s32 *engineA,*engineB;u16 tile;void *old;s32 i,priority,drawMode;u32 target,delta;void *cur;
 if(func_02089080(p))return;
-if(M2C_FIELD(p,u8 *,0x5a)){func_02089438(p);M2C_FIELD(p,u8 *,0x5a)=0;}
+if(M2C_FIELD(p,u8 *,0x5a)){Sync3DSpriteToTarget(p);M2C_FIELD(p,u8 *,0x5a)=0;}
 attr=(u16)((u32)(M2C_FIELD(p,s32 *,0x40)<<6)>>24);
 a=0x3ff&((u32)M2C_FIELD(p,u16 *,0x3e)>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30));
 tile=(u16)(a+(M2C_FIELD(p,u16 *,0x3c)+((u32)(attr<<28)>>16)));

@@ -1,6 +1,7 @@
 /* 28 functions from 0x0217AE38 to 0x0217BD88 (ov001), found by ds-decomp. */
 #include "common.h"
-void func_ov001_0217b578(void);
+#include "gx.h"
+void Ov001_LoadNameEntryGraphics(void);
 void UpdateNameEntryCursor(void);
 void RedrawNameEntryText(void);
 
@@ -36,36 +37,44 @@ position+=28;
 M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x56)=1;
 }
 
-void func_ov001_0217af80(s32 arg0) {
-    s32 func_020020c4(u16, s32);
+/* Page the map-select list up towards its first row: pull the scroll position
+ * back four units a frame; when the step crosses a row boundary, snap the scroll
+ * back to the row and stop there.  Keep the row labels in step with the scroll,
+ * and at the end of the step redraw the visible rows, release the scroll bar and
+ * report the task's result.  Runs as the repeated-key scroll task. */
+void MapSelectList_ScrollUp(s32 task) {
+    s32 func_020020c4(u16, s32); /* hardware divide unit: remainder */
+    s32 func_02002088(s32, s32); /* hardware divide unit: quotient */
     extern M2C_UNK gMapSelectState;
-    s32 delta, remainder;
-    u32 position;
+    s32 remainder;
+
     Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
-    if ((u32)M2C_FIELD(&gMapSelectState, u16 *, 2) > 4U) M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - 4;
-    else M2C_FIELD(&gMapSelectState, u16 *, 2) = 0;
-    remainder = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
-    if (remainder == 0x18) {
-        func_ov001_0217ac18();
+    if ((u32)M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) > 4U) {
+        M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) - 4;
+    } else {
+        M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = 0;
+    }
+    remainder = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
+    if (remainder == MAPSELECT_ROW_UNITS - 4) {
+        MapSelectList_Redraw();
         return;
     }
-    if (remainder > 0x18) {
-        delta = 0x1C - remainder;
-        M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) + (0x1C - remainder);
+    if (remainder > MAPSELECT_ROW_UNITS - 4) {
+        M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) + (MAPSELECT_ROW_UNITS - remainder);
         remainder = 0;
     }
     func_ov001_0217aec4();
     if (remainder != 0) return;
-    func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
+    func_02002088(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
     func_ov001_021839e4();
     Ov001_UnblockScrollBar();
     func_ov001_0217b130();
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
-    Ov001_PostTaskMessage(0, arg0);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = 0;
+    Ov001_PostTaskMessage(0, task);
 }
 
-void func_ov001_0217b03c(s32 arg0) {
+void MapSelectList_ScrollDown(s32 arg0) {
     s32 func_020020c4(u16, s32);
     extern M2C_UNK gMapSelectState;
     s32 result;
@@ -78,7 +87,7 @@ void func_ov001_0217b03c(s32 arg0) {
         return;
     }
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - result;
-    func_ov001_0217ac18();
+    MapSelectList_Redraw();
     func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
     func_ov001_021839e4();
     Ov001_UnblockScrollBar();
@@ -122,11 +131,11 @@ s32 moved=1;s32 row=M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR);
 switch(row) {
 case 0: if(dir==1) {if(!M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)) M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=4;else {
 Ov001_PlaySound(19);
-M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELECT_SCROLL_ANIM)=Ov001_AddTask(0,func_ov001_0217af80,0,120);return;
+M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELECT_SCROLL_ANIM)=Ov001_AddTask(0,MapSelectList_ScrollUp,0,120);return;
 }} else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 1:case 2: if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>(row+1))M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {func_ov001_0217b33c();return;}break;
-case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;func_ov001_0217ac18();func_ov001_021839e4(0);}break;
+case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;MapSelectList_Redraw();func_ov001_021839e4(0);}break;
 }
 if(!moved){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH))return;Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH)=1;return;}
 Ov001_PlaySound(8);func_ov001_0217b130();
@@ -143,7 +152,7 @@ void func_ov001_0217b2c8(void) {
         return;
     }
     Ov001_PlaySound(0x13);
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217af80, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, MapSelectList_ScrollUp, 0, 0x78);
 }
 
 void func_ov001_0217b33c(void) {
@@ -157,7 +166,7 @@ void func_ov001_0217b33c(void) {
         return;
     }
     Ov001_PlaySound(0x13);
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217b03c, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, MapSelectList_ScrollDown, 0, 0x78);
 }
 
 void func_ov001_0217b3c0(void) {
@@ -209,7 +218,7 @@ u8 modeMessages[2]={M2C_FIELD(&gOv001NameEntryConfig,u8 *,0),M2C_FIELD(&gOv001Na
 gNameEntryState=Ov001_Alloc(44,4);
 Ov001_GetNameEntryMode(&mode,(s32)&variant);
 if(mode==0) {func_ov001_021846f8((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
-func_ov001_0217b578();func_ov001_02172250(mode+9);
+Ov001_LoadNameEntryGraphics();func_ov001_02172250(mode+9);
 if(variant==1)Ov001_ShowMessagePanel(53,-1,0);else Ov001_ShowMessagePanel(modeMessages[mode],-1,0);
 func_ov001_02171dd0(2);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_PANEL)=CreateTextPanel(0,0);
@@ -218,25 +227,28 @@ M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)=(M2C_FIE
 UpdateNameEntryCursor();RedrawNameEntryText();Ov001_SetStepCallback((s32 *)func_ov001_0217b634);
 }
 
-void func_ov001_0217b578(void) {
+/* Load the name-entry screen's graphics: keyboard OBJ palette, BG2 tiles,
+ * BG palette and tilemap, then set background priorities (sub BG0/BG1 and
+ * main BG1 lowest at 3, main BG0 at 2) so the keyboard sits in front. */
+void Ov001_LoadNameEntryGraphics(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190700;
-    extern M2C_UNK data_ov001_02190714;
-    extern M2C_UNK data_ov001_0219072c;
-    extern M2C_UNK data_ov001_02190744;
+    extern M2C_UNK gOv001NameEntryObjPalettePath;
+    extern M2C_UNK gOv001NameEntryBgTilesPath;
+    extern M2C_UNK gOv001NameEntryBgPalettePath;
+    extern M2C_UNK gOv001NameEntryBgMapPath;
     extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK GX_LoadOBJPltt;
     extern M2C_UNK GX_LoadBG2Scr;
     extern M2C_UNK GX_LoadBG2Char;
-    Ov001_LoadAsset(&data_ov001_02190700, &GX_LoadOBJPltt);
-    Ov001_LoadAsset(&data_ov001_02190714, &GX_LoadBG2Char);
-    Ov001_LoadAsset(&data_ov001_0219072c, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_02190744, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 2;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001NameEntryObjPalettePath, &GX_LoadOBJPltt);
+    Ov001_LoadAsset(&gOv001NameEntryBgTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001NameEntryBgPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001NameEntryBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 2;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
 void func_ov001_0217b634(void) {
@@ -393,7 +405,7 @@ void func_ov001_0217ba1c(void) {
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK Ov001_ReleaseSprite(M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     void Ov001_DisableVisiblePlanes(s32, s32);
     void Ov001_GetNameEntryMode(s32 *, s32);
     void Ov001_SetNextScreenMode(s32, s32);
@@ -410,7 +422,7 @@ void func_ov001_0217ba1c(void) {
     void *p;
     Ov001_FreeOptionBackground();
     Ov001_ReleaseSprite(M2C_FIELD(gNameEntryState, void **, 4));
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     Ov001_LoadAsset((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&GX_LoadOBJPltt);
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);

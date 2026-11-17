@@ -32,7 +32,7 @@ M2C_UNK HeapFreeBlock();
 void func_02098b94();
 void CreateMenuTextSprite();
 void func_0208ca2c();
-void func_020aeebc();
+void CreateMainWallpaperSprite();
 void func_020a9a30(s32,s32,u8,void *);
 void SetTextById();
 void func_02088f1c();
@@ -104,7 +104,7 @@ CreateMenuTextSprite((char*)gOv005MenuState+40,224,160,2,0x36c,3,2,arg0,0);
 {Pos180 pos={{43,44,45,46}};
 for(i=0,j=0x37c,k=14,m=0;i<4;i++,j+=36,k+=60,m+=4)CreateMenuTextSprite((char*)gOv005MenuState+44+m,M2C_FIELD(gOv005MenuState,s16 *,10)+k,90,pos.h[i]&255,j,3,-1,arg0,0);
 }
-func_0208ca2c(4096,1,GetUiColor(9),2);func_020aeebc(3,15,6);
+func_0208ca2c(4096,1,GetUiColor(9),2);CreateMainWallpaperSprite(3,15,6);
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&second);
 v6=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v6 = *v6 | 16;
 v7=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v7 = *v7 &~ 32;

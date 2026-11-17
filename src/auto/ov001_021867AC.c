@@ -1,6 +1,7 @@
 /* 21 functions from 0x021867AC to 0x02187590 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "ov001_link.h"
+#include "ov001_menu.h"
 /* The ov001 wireless-link work header: the seven status words the link code
  * (Ov001_GetLinkStatus and friends) clears when the link is set up. */
 typedef struct { u16 value[7]; } Ov001LinkHeader;
@@ -21,7 +22,7 @@ extern const s8 data_ov001_0218fc5c[], data_ov001_0218fc5d[];
 s32 TouchRectPressed(void *);
 s32 KeyPressed(s32);
 void BuildTouchRect(const void *, const void *, void *);
-void func_ov001_02186ba8(s32);
+void Ov001_ShowRegionMenuItem(s32);
 s32 i;
 u32 rect[2];
 for (i = 0; i < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; i++) {
@@ -35,7 +36,7 @@ if (KeyPressed(1)) M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = data_ov001_0218fc5c
 if (KeyPressed(2)) M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = data_ov001_0218fc5d[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c) * 2];
 for (i = 0; i < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; i++) {
     if (i == M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b)) {
-        func_ov001_02186ba8(i);
+        Ov001_ShowRegionMenuItem(i);
         return;
     }
 }
@@ -102,11 +103,14 @@ func_ov001_0218a260(arg0,var_r8,var_r2,0);var_r8++;
 }while(var_r8<temp_r0);
 }
 
-void func_ov001_02186ba8(s32 arg0) {
+/* Give the region menu item `item` its selected look: load its highlighted sprite
+ * frame, move the item's sprite onto the item's slot position in the open column
+ * and reset its palette. */
+void Ov001_ShowRegionMenuItem(s32 item) {
 s32 Ov001_GetSpriteObjEntry(s32,s32);
-Ov001_LoadSpriteObjLayout(0,((const u8 (*)[2])data_ov001_0218fc66)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][arg0]+1,Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001RegionMenu+arg0*4,s32 *,8),0));
-Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu+arg0*4,s32 *,8),-1,((const u16 (*)[4])gOv001RegionItemPos)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][arg0]*2],((const u16 (*)[4])data_ov001_0218fcce)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu,u8 *,0x1c)][arg0]*2]);
-Ov001_SetSpritePalette(M2C_FIELD(gOv001RegionMenu+arg0*4,s32 *,8),-1,0);
+Ov001_LoadSpriteObjLayout(0,((const u8 (*)[2])data_ov001_0218fc66)[M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_INDEX)][item]+1,Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM_SPRITES),0));
+Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM_SPRITES),-1,((const u16 (*)[4])gOv001RegionItemPos)[M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_INDEX)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_INDEX)][item]*2],((const u16 (*)[4])data_ov001_0218fcce)[M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_INDEX)][((const u8 (*)[2])gOv001RegionItemSlot)[M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_INDEX)][item]*2]);
+Ov001_SetSpritePalette(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM_SPRITES),-1,0);
 }
 
 void func_ov001_02186c68(M2C_UNK arg0) {

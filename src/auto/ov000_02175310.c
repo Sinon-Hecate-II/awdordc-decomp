@@ -222,7 +222,7 @@ void func_ov000_021759b8(s32 *arg0) {
 
 void func_ov000_02175ed8(void *arg0) {
     M2C_UNK MI_CpuCopy32(s32, s32);
-    s32 func_020e3438(M2C_UNK);
+    s32 GetNameGraphicFile(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern s16 data_ov000_021deb46[];
@@ -234,12 +234,12 @@ void func_ov000_02175ed8(void *arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r6 = data_ov000_021deb46[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x4)];
     if (temp_r6 != -1) {
-        source=func_020e3438(3);
+        source=GetNameGraphicFile(3);
         MI_CpuCopy32(source + temp_r6 * 0x4E0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2880);
     }
-    source=func_020e3438(4);
+    source=GetNameGraphicFile(4);
     MI_CpuCopy32(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x58), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2D60);
-    source=func_020e3438(4);
+    source=GetNameGraphicFile(4);
     MI_CpuCopy32(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x5C), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F20);
     gCur3DSpriteEngine = temp_r4;
 }

@@ -249,7 +249,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     s32 IsLinkSessionActive();
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02089438(void *);
+    M2C_UNK Sync3DSpriteToTarget(void *);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 GetUnitSpriteWidth(void *);
@@ -416,7 +416,7 @@ block_79:
         if (var_r0_5 & 0xFF) {
             temp_r1_3 = M2C_FIELD(arg0, void **, 0x6C);
             M2C_FIELD(temp_r1_3, u8 *, 9) = (u8) M2C_FIELD(temp_r1_3, u8 *, 8);
-            func_02089438(M2C_FIELD(arg0, void **, 0x5C));
+            Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5C));
             Show3DSprite(M2C_FIELD(arg0, void **, 0x5C));
             return;
         }
@@ -477,7 +477,7 @@ block_100:
         if (var_r0_8 & 0xFF) {
             temp_r1_4 = M2C_FIELD(arg0, void **, 0x6C);
             M2C_FIELD(temp_r1_4, u8 *, 9) = (u8) M2C_FIELD(temp_r1_4, u8 *, 8);
-            func_02089438(M2C_FIELD(arg0, void **, 0x5C));
+            Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5C));
             Show3DSprite(M2C_FIELD(arg0, void **, 0x5C));
             return;
         }
@@ -529,7 +529,7 @@ block_121:
         if (var_r0_11 & 0xFF) {
             temp_r1_5 = M2C_FIELD(arg0, void **, 0x6C);
             M2C_FIELD(temp_r1_5, u8 *, 9) = (u8) M2C_FIELD(temp_r1_5, u8 *, 8);
-            func_02089438(M2C_FIELD(arg0, void **, 0x5C));
+            Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5C));
             Show3DSprite(M2C_FIELD(arg0, void **, 0x5C));
             return;
         }

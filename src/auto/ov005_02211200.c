@@ -41,7 +41,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void CloseNarcArchive(void);
     void LoadBattleMap(u16);
     void func_ov003_021ff3d4(void *);
-    void func_02089438(void *);
+    void Sync3DSpriteToTarget(void *);
     void LoadUiGraphicsBank(s32);
 
     func_020885fc();
@@ -155,7 +155,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         M2C_FIELD(p, s16 *, 0x34) = (s16)M2C_FIELD((void*)arg0,s32*,0x34)*(s16)0x28+0x20;
         M2C_FIELD(p, s16 *, 0x36) = 0x58;
     }
-    func_02089438(M2C_FIELD((void *)arg0, void **, 0x4C));
+    Sync3DSpriteToTarget(M2C_FIELD((void *)arg0, void **, 0x4C));
     LoadUiGraphicsBank(4);
 }
 #pragma opt_propagation reset
@@ -317,7 +317,7 @@ extern s32 gHistoryMenu, g3DSpriteEngineSub;
 extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov005_02220270;
 s32 GetRecordDefinition(s32,s32); s32 GetRecordTier(s32,s32);
-void SetTextById(s32,s32); void func_0208b698(s32,void *);
+void SetTextById(s32,s32); void SetSpriteText(s32,void *);
 s32 q, index, old;
 s32 p=gHistoryMenu;
 s32 table = HistoryTabAt(M2C_FIELD(p,s8 *,1));
@@ -329,7 +329,7 @@ old = gCur3DSpriteEngine;
 gCur3DSpriteEngine = g3DSpriteEngineSub;
 if (func_ov005_02211a54(M2C_FIELD(gHistoryMenu,s8 *,1),a+b)==0)
 SetTextById(M2C_FIELD(gHistoryMenu,s32 *,0x48),M2C_FIELD(q+index*4,s32 *,0x1c));
-else func_0208b698(M2C_FIELD(gHistoryMenu,s32 *,0x48),&data_ov005_02220270);
+else SetSpriteText(M2C_FIELD(gHistoryMenu,s32 *,0x48),&data_ov005_02220270);
 gCur3DSpriteEngine = old;
 }
 

@@ -204,8 +204,8 @@ void func_ov006_02216bfc(void **arg0) {
 }
 
 void func_ov006_02216c10(void) {
-    M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
-    func_020b1c44(0, 0);
+    M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
+    SetSpriteSlotScroll(0, 0);
 }
 
 /* Creates and fully initializes a map/UI cursor object from the overlay's object pool,

@@ -41,17 +41,29 @@ if(v){fn(&data_020fb5e8,v,0);arg0->unk19d0=0;}
 MI_CpuFill8(arg0,0,0x1c14);
 }
 
-s32 func_02034534(Unk02034164 *arg0) {
-s32 func_02034870(void *,void *,s32);
-extern M2C_UNK data_020fb600;extern M2C_UNK data_020fb654;
-M2C_UNK *fmt; s32 a,n; u32 b; void *p=arg0->buffer;
-if(arg0->unk1008==0)fmt=&data_020fb600;else fmt=&data_020fb654;
-a=StringLength(arg0->host);
-b=StringLength((s32)fmt);
-if(func_02034870(arg0,(u8*)arg0 + 0x19f8,a+(s32)((b-4)+(u32)StringLength(arg0->path))+0x400)!=1)return 1;
-n=StringFormatN(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,12),fmt,arg0->path,arg0->host);
-M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,4)+n;
-return 0;
+/* Formats the request line and Host header into the request buffer: chooses the
+ * POST or GET format (client->unk1008 is 0 for POST), reserves room for it plus
+ * the host and path (with 0x400 bytes of header slack), and writes the formatted
+ * text, advancing the buffer's write position.  Returns 1 when the buffer cannot
+ * be reserved, else 0. */
+s32 HttpBuildRequest(Unk02034164 *client) {
+    s32 HttpBufferReserve(void *, void *, s32);
+    extern M2C_UNK sHttpPostRequestFormat;
+    extern M2C_UNK sHttpGetRequestFormat;
+    M2C_UNK *format;
+    s32 hostLength;
+    s32 written;
+    u32 formatLength;
+    Buffer02034164 *buffer = (Buffer02034164 *)client->buffer;
+
+    if (client->unk1008 == 0) format = &sHttpPostRequestFormat;
+    else format = &sHttpGetRequestFormat;
+    hostLength = StringLength(client->host);
+    formatLength = StringLength((s32)format);
+    if (HttpBufferReserve(client, (void *)client->buffer, hostLength + (s32)((formatLength - 4) + (u32)StringLength(client->path)) + 0x400) != 1) return 1;
+    written = StringFormatN(buffer->current, buffer->size, format, client->path, client->host);
+    buffer->current = buffer->current + written;
+    return 0;
 }
 
 /* Insert a "name: value\r\n" header line at the end of the request's header
@@ -172,7 +184,7 @@ s32 func_02034864(s32 arg0) {
     return var_r0;
 }
 
-s32 func_02034870(void *arg0,void *arg1,s32 arg2) {
+s32 HttpBufferReserve(void *arg0,void *arg1,s32 arg2) {
 extern M2C_UNK data_020fb690;
 s32 (*fn)(M2C_UNK *,s32)=M2C_FIELD(arg0,s32 (**)(M2C_UNK *,s32),0x1010);
 s32 v;

@@ -105,10 +105,10 @@ Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,0x15,8);Ov001_SetStepCallback((M2C_
 void func_ov001_02182c68(void) {
 s32 Ov001_IsFadeActive(M2C_UNK);M2C_UNK Ov001_FreeOptionBackground();
 M2C_UNK Ov001_SetNextScreenMode(M2C_UNK,M2C_UNK);M2C_UNK Ov001_SetNameEntryMode(M2C_UNK,M2C_UNK);
-M2C_UNK func_ov001_0218af70(M2C_UNK);M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK,M2C_UNK);
+M2C_UNK Ov001_FreePageBackground(M2C_UNK);M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK,M2C_UNK);
 extern M2C_UNK func_ov001_021828ac;
 if(Ov001_IsFadeActive(1)!=0)return;if(Ov001_IsFadeActive(0)!=0)return;
-func_ov001_0218af70(0);Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,0x15);
+Ov001_FreePageBackground(0);Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,0x15);
 Ov001_SetNextScreenMode(0,0);Ov001_SetNameEntryMode(0,2);Ov001_SetStepCallback(&func_ov001_021828ac);
 }
 #pragma pop
@@ -253,7 +253,7 @@ void func_ov001_02182fe0(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 data_ov001_02193de8;
     extern M2C_UNK func_ov001_02180d44;
@@ -261,7 +261,7 @@ void func_ov001_02182fe0(void) {
     if (Ov001_IsFadeActive(0) != 0) return;
     if (data_ov001_02193de8 == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     if (data_ov001_02193de8 == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
@@ -400,13 +400,13 @@ void func_ov001_02183338(void){extern u8 gOv001WfcScreenState;extern M2C_UNK fun
 
 /* Sets up the overlay 001 mode based on the selected slot/state, runs init hooks, then schedules render callbacks. */
 void func_ov001_021833a4(void) {
-    M2C_UNK func_ov001_02171494(void);
+    M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_IsFadeActive(M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     void func_ov001_02185dac(void);
     extern u8 gOv001WfcScreenState;
@@ -424,8 +424,8 @@ void func_ov001_021833a4(void) {
         return;
     }
     func_ov001_02185dac();
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     if (gOv001WfcScreenState == 2 || gOv001WfcScreenState == 3) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
@@ -535,48 +535,48 @@ void func_ov001_0218362c(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218327c);
 }
 
-void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 Ov001_AddTask(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=Ov001_Alloc(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=Ov001_AddTask(1,func_ov001_02183790,0,120);}
+void InitMapPreview(void *a){extern void *gOv001MapPreview;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 Ov001_AddTask(s32,void (*)(),s32,s32);void FlushMapPreview(void);void *p=Ov001_Alloc(0x608,4);gOv001MapPreview=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(gOv001MapPreview,s32 *,0)=Ov001_AddTask(1,FlushMapPreview,0,120);}
 
 #pragma opt_propagation off
-void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *gOv001Scrollbar;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);Ov001_FreeAlloc(&gOv001Scrollbar-3);}
+void FreeMapPreview(void){extern void *gOv001MapPreview;extern void *gOv001Scrollbar;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&gOv001MapPreview);Ov001_FreeAlloc(&gOv001Scrollbar-3);}
 #pragma opt_propagation reset
-void func_ov001_02183720(void) {
-    extern void *data_ov001_02193df0;
-    M2C_FIELD(data_ov001_02193df0, s8 *, 0x604) = 1;
+void RequestMapPreviewUpdate(void) {
+    extern void *gOv001MapPreview;
+    M2C_FIELD(gOv001MapPreview, s8 *, 0x604) = 1;
 }
 
-void func_ov001_02183738(void *a,s32 b,s32 c,s32 d){extern void *data_ov001_02193df0;u8 *src=a;u8 *dst=(u8 *)data_ov001_02193df0+4+b*2;s32 i;for(i=0;i<d;i++){CopyU16(src,dst,c*2);src+=64;dst+=64;}}
+void CopyMapPreviewRows(void *a,s32 b,s32 c,s32 d){extern void *gOv001MapPreview;u8 *src=a;u8 *dst=(u8 *)gOv001MapPreview+4+b*2;s32 i;for(i=0;i<d;i++){CopyU16(src,dst,c*2);src+=64;dst+=64;}}
 
-void func_ov001_02183790(void){
-extern void *data_ov001_02193df0;void DC_FlushRange();void GX_LoadBG2Scr();
-if(!M2C_FIELD(data_ov001_02193df0,u8 *,0x604))return;
-DC_FlushRange((u8 *)data_ov001_02193df0+4,0x600);
-GX_LoadBG2Scr((u8 *)data_ov001_02193df0+4,0,0x600);
-M2C_FIELD(data_ov001_02193df0,u8 *,0x604)=0;
+void FlushMapPreview(void){
+extern void *gOv001MapPreview;void DC_FlushRange();void GX_LoadBG2Scr();
+if(!M2C_FIELD(gOv001MapPreview,u8 *,0x604))return;
+DC_FlushRange((u8 *)gOv001MapPreview+4,0x600);
+GX_LoadBG2Scr((u8 *)gOv001MapPreview+4,0,0x600);
+M2C_FIELD(gOv001MapPreview,u8 *,0x604)=0;
 }
 
 void Ov001_LoadObjTile(s32 a,s32 b,s32 c){
-extern void *data_ov001_02193df0;void func_ov001_02183820();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
-M2C_FIELD(&data_ov001_02193df0,s32 *,4)=a+(b<<5);
-M2C_FIELD(&data_ov001_02193df0,s32 *,8)=(c<<5)+0x5000000;
+extern void *gOv001MapPreview;void func_ov001_02183820();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
+M2C_FIELD(&gOv001MapPreview,s32 *,4)=a+(b<<5);
+M2C_FIELD(&gOv001MapPreview,s32 *,8)=(c<<5)+0x5000000;
 Ov001_AddTask(1,func_ov001_02183820,0,0x78);
 }
 
 void func_ov001_02183820(s32 a){
-extern void *data_ov001_02193df0;
-CopyU16(M2C_FIELD(&data_ov001_02193df0,s32 *,4),M2C_FIELD(&data_ov001_02193df0,s32 *,8),32);
+extern void *gOv001MapPreview;
+CopyU16(M2C_FIELD(&gOv001MapPreview,s32 *,4),M2C_FIELD(&gOv001MapPreview,s32 *,8),32);
 Ov001_PostTaskMessage(1,a);
 }
 
 void func_ov001_0218384c(s32 a){
-extern void *data_ov001_02193df0;void func_ov001_02183878();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
-M2C_FIELD(&data_ov001_02193df0,s32 *,4)=a;
+extern void *gOv001MapPreview;void func_ov001_02183878();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
+M2C_FIELD(&gOv001MapPreview,s32 *,4)=a;
 Ov001_AddTask(1,func_ov001_02183878,0,0x78);
 }
 
 void func_ov001_02183878(s32 a){
-extern void *data_ov001_02193df0;
-CopyU16(M2C_FIELD(&data_ov001_02193df0,s32 *,4),0x5000000,0x200);Ov001_PostTaskMessage(1,a);
+extern void *gOv001MapPreview;
+CopyU16(M2C_FIELD(&gOv001MapPreview,s32 *,4),0x5000000,0x200);Ov001_PostTaskMessage(1,a);
 }
 
 /* Build the ov001 friend-roster screen's vertical scroll bar: allocate its

@@ -1,7 +1,7 @@
 /* 23 functions from 0x0203AEB4 to 0x0203BE54 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_0203aeb4(s32 a) {
+s32 GetSessionPlayerSlot(s32 a) {
  extern M2C_UNK gMatchSessionMgr; s32 GetSessionPlayerId(s32);
  s32 i;
  if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!a)return -1;

@@ -224,7 +224,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
  * allocator, parses the request URL and starts the request state machine.
  * Returns the request status (1 on an allocation or setup failure). */
 s32 HttpClientInit(void *client, HttpClientOptions *options) {
-s32 func_02034534(void *); s32 func_02034870(void *,void *,s32); s32 HttpParseUrl(void *,s32);
+s32 HttpBuildRequest(void *); s32 HttpBufferReserve(void *,void *,s32); s32 HttpParseUrl(void *,s32);
 s32 (*alloc)(void *,s32)=(s32 (*)(void *,s32))options->words[3];
 MI_CpuFill8(client,0,0x1c14);
 M2C_FIELD(client,s32 *,0x1a30)=-1;M2C_FIELD(client,s32 *,0x1a34)=-1;
@@ -233,9 +233,9 @@ M2C_FIELD(client,s32 *,0x19cc)=alloc(gHttpLowRecvBufName,0xb68);
 if(!M2C_FIELD(client,s32 *,0x19cc)){((HttpClientState*)client)->status=1;return 1;}
 M2C_FIELD(client,s32 *,0x19d0)=alloc(gHttpLowSendBufName,0x5ea);
 if(!M2C_FIELD(client,s32 *,0x19d0)){((HttpClientState*)client)->status=1;return 1;}
-if(!func_02034870(client,client+0x1a08,M2C_FIELD(client,s32 *,0x100c))){((HttpClientState*)client)->status=1;return 1;}
+if(!HttpBufferReserve(client,client+0x1a08,M2C_FIELD(client,s32 *,0x100c))){((HttpClientState*)client)->status=1;return 1;}
 if(!HttpParseUrl(client,options->words[0])){((HttpClientState*)client)->status=1;return 1;}
-((HttpClientState*)client)->status=func_02034534(client);
+((HttpClientState*)client)->status=HttpBuildRequest(client);
 if(!((HttpClientState*)client)->status)((HttpClientState*)client)->flag=255;
 return ((HttpClientState*)client)->status;
 }

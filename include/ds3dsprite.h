@@ -145,7 +145,7 @@ typedef struct DS3DSpriteEngine {
     u8   filler_4E;
     u8   filler_4F;
     void *filler_50;
-    void *filler_54;
+    void *filler_54; /* +0x54 this screen's shared default text object (TextState, main_0209ACC4) */
 } DS3DSpriteEngine;
 
 /* The engine a gCur3DSpriteEngine / g3DSpriteEngineMain pointer refers to, and
@@ -163,6 +163,23 @@ typedef struct WallpaperFileSet {
     s16  offsetA;      /* +0x10 copied to the wallpaper object */
     s16  offsetB;      /* +0x12 copied to the wallpaper object */
 } WallpaperFileSet;
+
+/* The wallpaper sprite objects built for the main and sub screens: the wallpaper
+ * set it shows, that set's file record, the sprite layer and palette its graphics
+ * load into, and two position offsets taken from the set (the sub-screen copy adds
+ * the set's screen gap). */
+#define WALLPAPER_SET            0x34 /* u8 index into gWallpaperFileSets */
+#define WALLPAPER_FILE_SET       0x38 /* WallpaperFileSet *the set's files */
+#define WALLPAPER_MAIN_LAYER     0x3c /* u8 main-screen sprite layer */
+#define WALLPAPER_MAIN_PALETTE   0x3d /* u8 main-screen palette index */
+#define WALLPAPER_MAIN_OFFSET_A  0x3e /* s16 main-screen first offset (set offsetA) */
+#define WALLPAPER_MAIN_OFFSET_B  0x40 /* s16 main-screen second offset (set offsetB) */
+#define WALLPAPER_MAIN_STATE     0x42 /* s16 main-screen scroll state, starts at 0 */
+#define WALLPAPER_SUB_LAYER      0x44 /* u8 sub-screen sprite layer */
+#define WALLPAPER_SUB_PALETTE    0x45 /* u8 sub-screen palette index */
+#define WALLPAPER_SUB_OFFSET_A   0x46 /* s16 sub-screen first offset (set offsetA + screenGap) */
+#define WALLPAPER_SUB_OFFSET_B   0x48 /* s16 sub-screen second offset (set offsetB + screenGap) */
+#define WALLPAPER_SUB_STATE      0x4a /* s16 sub-screen scroll state, starts at 0 */
 
 /* DS3DSpriteEngine::layerDirty bit of the OBJ palette shadow. */
 #define DS3D_DIRTY_PALETTE 0x10

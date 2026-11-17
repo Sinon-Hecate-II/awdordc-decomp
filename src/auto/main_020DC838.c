@@ -123,7 +123,7 @@ void func_020dca80(void) {
 
 M2C_UNK func_020dca8c(void *arg0) {
     M2C_UNK func_020b2178();
-    M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s16 temp_r0;
@@ -131,7 +131,7 @@ M2C_UNK func_020dca8c(void *arg0) {
     u16 value;
 
     func_020b2178();
-    func_020b1c44(0, 0);
+    SetSpriteSlotScroll(0, 0);
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
@@ -147,7 +147,7 @@ M2C_UNK func_020dca8c(void *arg0) {
 
 M2C_UNK func_020dcae8(void *arg0) {
     M2C_UNK func_020b2178();
-    M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s16 temp_r0;
@@ -155,7 +155,7 @@ M2C_UNK func_020dcae8(void *arg0) {
     u16 value;
 
     func_020b2178();
-    func_020b1c44(0, 0);
+    SetSpriteSlotScroll(0, 0);
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
@@ -203,7 +203,7 @@ s32 FindSpriteSlotById(s32);
 void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
-M2C_UNK func_020b1c44(s32,s32);
+M2C_UNK SetSpriteSlotScroll(s32,s32);
 M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
@@ -264,7 +264,7 @@ if (selectedRow) {
         PlaySoundEffect(0x10019);
     }
 }
-func_020b1c44(0, 0);
+SetSpriteSlotScroll(0, 0);
 sprite = M2C_FIELD(entity, void **, 0x50);
 func_02088f1c(sprite);
 sprite = M2C_FIELD(entity, void **, 0x50);
@@ -319,7 +319,7 @@ s32 FindSpriteSlotById(s32);
 void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
-M2C_UNK func_020b1c44(s32,s32);
+M2C_UNK SetSpriteSlotScroll(s32,s32);
 M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
@@ -380,7 +380,7 @@ if (selectedRow) {
         PlaySoundEffect(0x10019);
     }
 }
-func_020b1c44(0, 0);
+SetSpriteSlotScroll(0, 0);
 sprite = M2C_FIELD(entity, void **, 0x50);
 func_02088f1c(sprite);
 sprite = M2C_FIELD(entity, void **, 0x50);

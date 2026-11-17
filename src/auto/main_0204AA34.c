@@ -47,7 +47,7 @@ MemSet(conn,0,0x184);
 M2C_FIELD(conn,volatile s32 *,0)=1;
 M2C_FIELD(conn,volatile s32 *,4)=i;
 {s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,8); M2C_FIELD(&gGhiConnectionList,s32 *,8)=old+1; conn->id=old;}
-conn->pad0C=0;
+M2C_FIELD(conn,s32 *,12)=0;
 conn->state=0;
 conn->url=0;
 conn->host=0;

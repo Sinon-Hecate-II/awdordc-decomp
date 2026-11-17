@@ -97,7 +97,7 @@ data_ov000_021e1474[kind] += value >> 25;
 
 s32 func_ov000_021a7e98(s32 arg0) {
     s32 GetUnitBuildCost(u16, M2C_UNK);
-    s32 func_ov000_021a6c8c();
+    s32 FindNearestTargetCandidate();
     s32 func_ov000_021a72c0(M2C_UNK);
     s32 func_ov000_021a8784(M2C_UNK);
     extern void **gCurrentMap;
@@ -117,7 +117,7 @@ s32 func_ov000_021a7e98(s32 arg0) {
     if (func_ov000_021a8784(0x15) != 0) {
         return -1;
     }
-    return func_ov000_021a6c8c();
+    return FindNearestTargetCandidate();
 }
 
 s32 func_ov000_021a7f1c(s32 arg0) {

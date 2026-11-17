@@ -316,10 +316,10 @@ func_020a15e4();
 }
 
 void func_020c960c(s32 a,s32 b,s32 c,void *d) {
-void func_02079c6c(s32,s32,s32 *);
+void MapTileToScreen(s32,s32,s32 *);
 void SetSpriteAnimFrame(void *,s32);
 s32 v[3];
-func_02079c6c(a,b,v);
+MapTileToScreen(a,b,v);
 if(v[0]<128) {SetSpriteAnimFrame(d,c);return;}
 SetSpriteAnimFrame(d,c+1);
 }

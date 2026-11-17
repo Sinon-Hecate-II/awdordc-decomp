@@ -393,7 +393,30 @@ void NetStackQueuePacket(s32 srcLink, s32 dstLink, s32 frame, s32 frameLen, s32 
 
 void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void NetStackQueuePacket(s32,s32,s32,s32,s32,s32);s32 func_02005d90(s32);void TaskWake(s32);extern M2C_UNK gNetStack;NetStackQueuePacket(a,b,c,d,0,0);if(!M2C_FIELD(&gNetStack,volatile s32 *,84))return;if(func_02005d90(M2C_FIELD(&gNetStack,volatile s32 *,84)))return;TaskWake(M2C_FIELD(&gNetStack,volatile s32 *,84));}
 
-u8 *func_0201aacc(s32 *out){s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);extern M2C_UNK gNetStack,gSocketManager;s32 key;u32 size;u8 *p;u32 len;key=OS_DisableInterrupts();while(M2C_FIELD(&gNetStack,u32 *,48)==M2C_FIELD(&gNetStack,u32 *,40)){M2C_FIELD(&gNetStack,s32 *,84)=M2C_FIELD(&gSocketManager,s32 *,4);OS_SleepThread(0);M2C_FIELD(&gNetStack,s32 *,84)=0;}OS_RestoreInterrupts(key);p=M2C_FIELD(&gNetStack,u8 **,88);do{size=M2C_FIELD(&gNetStack,u32 *,92);if(size-M2C_FIELD(&gNetStack,u32 *,48)<2)M2C_FIELD(&gNetStack,u32 *,48)=0;len=M2C_FIELD(p,u16 *,M2C_FIELD(&gNetStack,u32 *,48));if(!len)M2C_FIELD(&gNetStack,u32 *,48)=0;}while(!len);*out=len-2;return M2C_FIELD(&gNetStack,u8 **,88)+M2C_FIELD(&gNetStack,u32 *,48)+2;}
+/* Wait until a frame record is queued in the network stack's transmit ring,
+   then return a pointer to its Ethernet frame (past the u16 record length) and
+   store the frame length.  The record is left for the reader to consume. */
+u8 *NetStackPeekFrame(s32 *out){
+ s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);
+ extern M2C_UNK gNetStack,gSocketManager;
+ s32 key;u32 size;u8 *ring;u32 len;
+ key=OS_DisableInterrupts();
+ while(M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_READ)==M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_WRITE)){
+  M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_WAITER)=M2C_FIELD(&gSocketManager,s32 *,4);
+  OS_SleepThread(0);
+  M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_WAITER)=0;
+ }
+ OS_RestoreInterrupts(key);
+ ring=M2C_FIELD(&gNetStack,u8 **,NETSTACK_RING_BUF);
+ do{
+  size=M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_SIZE);
+  if(size-M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_READ)<2)M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_READ)=0;
+  len=M2C_FIELD(ring,u16 *,M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_READ));
+  if(!len)M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_READ)=0;
+ }while(!len);
+ *out=len-2;
+ return M2C_FIELD(&gNetStack,u8 **,NETSTACK_RING_BUF)+M2C_FIELD(&gNetStack,u32 *,NETSTACK_RING_READ)+2;
+}
 
 #pragma opt_strength_reduction off
 void func_0201ab8c(void){

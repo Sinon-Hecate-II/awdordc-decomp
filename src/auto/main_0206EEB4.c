@@ -1,6 +1,6 @@
 /* 24 functions from 0x0206EEB4 to 0x0206FC18 (main), found by ds-decomp. */
 #include "common.h"
-typedef union { struct { u32 flag:1; u32 capacity:31; u32 length; u8 *data; } large; struct { u8 flag:1; u8 length:7; u8 data[11]; } small; } StringStorage;
+#include "string_storage.h"
 extern u8 data_02100894[],data_02100888[],data_02100874[],data_021008b8[];
 typedef union {double d;u64 u;} DoubleBits;
 typedef struct Decimal38 { s8 sign;u8 pad;s16 exponent;u8 length;u8 digits[33]; } Decimal38;

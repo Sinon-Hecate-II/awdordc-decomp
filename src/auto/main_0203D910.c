@@ -178,18 +178,29 @@ void func_0203dc18(void) {
  M2C_FIELD(GetConnection(),u8 *,0x3cd)=0;
 }
 
-void ReportConnectionError(s32 arg0,s32 arg1) {
- extern s32 sEmptyString;
- s32 func_0203aeb4(); void func_02041e44(); void SetNetError(s32,s32); s32 SetGpiStatus(s32,s32 *,s32); void func_0203e9b0();
- s32 a,b,c; void *p;
- if(GetConnection()==0 || arg0==0) return;
- func_02041e44(); SetNetError(arg0,arg1); SetGpiStatus(1,&sEmptyString,0);
- a=M2C_FIELD(GetConnection(),u8 *,0x15)==2;
- b=M2C_FIELD(GetConnection(),s32 *,0x20c)==0;
- p=GetConnection();
- c=func_0203aeb4(M2C_FIELD(GetConnection(),s32 *,0x20c));
- ((void (*)(s32,s32,s32,s32,s32,s32))M2C_FIELD(p,void **,0x464))(arg0,0,b,a,c,M2C_FIELD(GetConnection(),s32 *,0x468));
- func_0203e9b0();
+/* Report a match-making error to the game's connection-event callback - with
+ * whether this side was serving and whether the connect target is already
+ * cleared, plus the target's player slot - and tear the session down. */
+void ReportConnectionError(s32 errorCode, s32 errorDetail) {
+    extern s32 sEmptyString;
+    s32 GetSessionPlayerSlot();
+    void CloseGt2Connection();
+    void SetNetError(s32, s32);
+    s32 SetGpiStatus(s32, s32 *, s32);
+    void TeardownConnectionSession();
+    s32 serving, targetCleared, slot;
+    void *connection;
+
+    if (GetConnection() == 0 || errorCode == 0) return;
+    CloseGt2Connection();
+    SetNetError(errorCode, errorDetail);
+    SetGpiStatus(1, &sEmptyString, 0);
+    serving = M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 2;
+    targetCleared = M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_TARGET_ID) == 0;
+    connection = GetConnection();
+    slot = GetSessionPlayerSlot(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_TARGET_ID));
+    ((void (*)(s32, s32, s32, s32, s32, s32))M2C_FIELD(connection, void **, CONN_SESSION_EVENT_CALLBACK))(errorCode, 0, targetCleared, serving, slot, M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_EVENT_DATA));
+    TeardownConnectionSession();
 }
 
 void func_0203dcf4(void) {

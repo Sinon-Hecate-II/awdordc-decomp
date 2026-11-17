@@ -190,7 +190,7 @@ void func_020dde90(void) {
 M2C_UNK func_020dde9c(void *arg0) {
     M2C_UNK func_ov009_02224688();
     M2C_UNK func_020b2178();
-    M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s16 temp_r0;
@@ -198,7 +198,7 @@ M2C_UNK func_020dde9c(void *arg0) {
     u16 value;
 
     func_020b2178();
-    func_020b1c44(0, 0);
+    SetSpriteSlotScroll(0, 0);
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x5C));
@@ -219,7 +219,7 @@ void func_020ddf04(void) {
 
 M2C_UNK func_020ddf08(void *arg0) {
     M2C_UNK func_020b2178();
-    M2C_UNK func_020b1c44(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
     s16 temp_r0;
@@ -227,7 +227,7 @@ M2C_UNK func_020ddf08(void *arg0) {
     u16 value;
 
     func_020b2178();
-    func_020b1c44(0, 0);
+    SetSpriteSlotScroll(0, 0);
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
     Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x5C));

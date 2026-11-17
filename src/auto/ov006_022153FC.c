@@ -606,11 +606,11 @@ extern u16 **g3DSpriteEngineMain;
 #pragma optimization_level 2
 void func_ov006_0221619c(void *arg0) {
 M2C_UNK DrawFrameBorderPulse(s16,s16,s32,s32,s32,s32);
-s32 GetSpriteAnimValue(s32);M2C_UNK SetTextSpriteValue(void *,s32);M2C_UNK DrawTextSprite(void *);M2C_UNK func_020b1c44(s32,s32);
+s32 GetSpriteAnimValue(s32);M2C_UNK SetTextSpriteValue(void *,s32);M2C_UNK DrawTextSprite(void *);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;extern s8 gFriendCodeInput[];
 u16 **saved;u16 neg;s32 i,x,y,reset;void *p;s32 offset;
 offset=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x48));
-func_020b1c44(offset,0);
+SetSpriteSlotScroll(offset,0);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;neg=-offset;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x3a)=neg;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x42)=0;

@@ -145,9 +145,9 @@ gOv001MessagePanelActive=1;return 1;
 }
 
 s32 Ov001_FreeOptionBackground(void) {
- void func_ov001_0218af70(s32);
+ void Ov001_FreePageBackground(s32);
  if((u8)gOv001MessagePanelActive==0) return 0;
- func_ov001_0218af70(1);
+ Ov001_FreePageBackground(1);
  gOv001MessagePanelActive=0;
  return 1;
 }

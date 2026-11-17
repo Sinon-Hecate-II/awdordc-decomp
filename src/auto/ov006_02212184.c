@@ -21,7 +21,7 @@ void FillU16(int,void *,int);
 void CopyU16(void *,void *,int);
 void MI_CpuCopy8(void *,void *,int);
 void func_02019e64(void *,int,void *,int,int);
-void func_020e4cd8(void *,void *,void *,int,int,int,int);
+void DrawGlyphString(void *,void *,void *,int,int,int,int);
 extern u8 *gCur3DSpriteEngine;
 extern u8 *g3DSpriteEngineMain;
 extern u32 g3DSpriteEngineSub;
@@ -89,7 +89,7 @@ if(id) {func_020c5498(name,id);func_02019e64(text,0,name,0,0);}
 else MI_CpuCopy8(data_ov006_022186b4,text,26);
 }
 } else MI_CpuCopy8(data_ov006_022186d0,text,26);
-func_020e4cd8(text,M2C_FIELD(gCur3DSpriteEngine,void **,16),M2C_FIELD(gCur3DSpriteEngine,void **,36),6,5,(u16)ty,tile);
+DrawGlyphString(text,M2C_FIELD(gCur3DSpriteEngine,void **,16),M2C_FIELD(gCur3DSpriteEngine,void **,36),6,5,(u16)ty,tile);
 tile+=48;row=0;col=0;
 j=0;do {if(j==32) {row++;col=0;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,u8 **,44)+col*2,u16 *,(ty+row)<<6)=(data_ov006_022183e0[j]&0x3ff)|0x7000;

@@ -134,23 +134,34 @@ s32 FindBestTargetCandidate(void) {
   return result;
 }
 #pragma opt_strength_reduction on
-s32 func_ov000_021a6c8c(void) {
- extern s32 *gCurrentMap;
- extern u8 *gAiState;
- extern M2C_UNK gAiTargetCandidates;
- u8 *p;
- s32 best,result,i;
- best=32767; result=-1; p=(u8 *)&gAiTargetCandidates;
- func_ov000_021998f0();
- for(i=0;i<*gAiState;i++,p+=12) {
- if(p[3]<252 && p[2]==3 && best>=p[7]) {
- s32 base=*gCurrentMap;
- s32 off=base+p[0];
- off+=M2C_FIELD(base+p[1]*2,u16 *,0x3758);
- if(M2C_FIELD(off,u8 *,0x2840)+M2C_FIELD(off,u8 *,0x2d48)<40) {best=p[7];result=i;}
- }
- }
- return result;
+/* Choose the type-3 AI target candidate closest to an enemy: among the tiles
+ * whose direct and indirect threat adds up to less than 40, keep the one with the
+ * lowest enemy distance (the first one on a tie). */
+s32 FindNearestTargetCandidate(void) {
+    extern s32 *gCurrentMap;
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetCandidates;
+    u8 *p;
+    s32 best;
+    s32 result;
+    s32 i;
+
+    best = 32767;
+    result = -1;
+    p = (u8 *)&gAiTargetCandidates;
+    func_ov000_021998f0();
+    for (i = 0; i < *gAiState; i++, p += AI_CANDIDATE_STRIDE) {
+        if (p[AI_CANDIDATE_STATUS] < AI_CANDIDATE_REJECTED && p[AI_CANDIDATE_TYPE] == 3 && best >= p[AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE]) {
+            s32 base = *gCurrentMap;
+            s32 off = base + p[AI_CANDIDATE_X];
+            off += M2C_FIELD(base + p[AI_CANDIDATE_Y] * 2, u16 *, MAP_ROW_OFFSETS);
+            if (M2C_FIELD(off, u8 *, MAP_CELL_THREAT_DIRECT) + M2C_FIELD(off, u8 *, MAP_CELL_THREAT_INDIRECT) < 40) {
+                best = p[AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE];
+                result = i;
+            }
+        }
+    }
+    return result;
 }
 
 extern unsigned char *gAiState;

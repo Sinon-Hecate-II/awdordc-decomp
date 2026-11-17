@@ -174,7 +174,7 @@ void func_020c727c(void) {
  * the unit carries nothing. */
 void DrawFirstCarriedUnitIcon(void) {
  s32 GetUnitIconTiles(s32,s32); s32 GetArmyPalette(s32);
- void QueueMemoryCopy(s32,void *,s32,s32); void CopyToObjPaletteShadow(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
+ void QueueMemoryCopy(s32,void *,s32,s32); void CopyToObjPaletteShadow(s32,s32,s32); void SetCarriedUnitIconSprite(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  u8 *base; u8 *player; s32 carriedId; s32 tiles; s32 armyIndex;
  base = *gCurrentMap;
@@ -186,24 +186,28 @@ void DrawFirstCarriedUnitIcon(void) {
  tiles = GetUnitIconTiles((u32)(tiles << 26) >> 26,player[PLAYER_REC_SPRITE_STATE]);
  QueueMemoryCopy(tiles,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4780,0x80,0);
  CopyToObjPaletteShadow(GetArmyPalette(armyIndex),0x340,0x20);
- func_0209c720(0,0x23c,10,2,2);
+ SetCarriedUnitIconSprite(0,0x23c,10,2,2);
 }
 
+/* Draw the icon of the second unit loaded in the unit under the cursor: copy the
+ * carried unit's kind icon, in the colour variant of the army that owns it, to
+ * sprite tile 0x240 and set that entry and its palette up.  Nothing to do when
+ * the unit carries no second unit. */
 void DrawSecondCarriedUnitIcon(void) {
  s32 GetUnitIconTiles(s32,s32); s32 GetArmyPalette(s32);
- void QueueMemoryCopy(s32,void *,s32,s32); void CopyToObjPaletteShadow(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
+ void QueueMemoryCopy(s32,void *,s32,s32); void CopyToObjPaletteShadow(s32,s32,s32); void SetCarriedUnitIconSprite(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
- u8 *base; u8 *p; s32 n; s32 a; s32 b;
+ u8 *base; u8 *player; s32 carriedId; s32 tiles; s32 armyIndex;
  base = *gCurrentMap;
- n = M2C_FIELD(M2C_FIELD(base,void **,0x52d0),u8 *,0xd);
- if(n == 0) return;
- p = base + 0x67a4 + ((n >> 6)+1)*0x8c;
- a = M2C_FIELD(base + n*14,u8 *,0x59a4);
- b = p[0x1d];
- a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
- QueueMemoryCopy(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4800,0x80,0);
- CopyToObjPaletteShadow(GetArmyPalette(b),0x340,0x20);
- func_0209c720(1,0x240,10,2,2);
+ carriedId = M2C_FIELD(M2C_FIELD(base,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_NEXT_CARRIED);
+ if(carriedId == 0) return;
+ player = base + MAP_PLAYER_STATES + ((carriedId >> 6)+1)*MAP_PLAYER_STRIDE;
+ tiles = M2C_FIELD(base + carriedId*MAP_UNIT_STRIDE,u8 *,MAP_UNIT_RECORDS);
+ armyIndex = player[PLAYER_REC_ARMY_INDEX];
+ tiles = GetUnitIconTiles((u32)(tiles << 26) >> 26,player[PLAYER_REC_SPRITE_STATE]);
+ QueueMemoryCopy(tiles,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4800,0x80,0);
+ CopyToObjPaletteShadow(GetArmyPalette(armyIndex),0x340,0x20);
+ SetCarriedUnitIconSprite(1,0x240,10,2,2);
 }
 
 s32 func_020c7438(s32 arg0) {
@@ -217,7 +221,7 @@ s32 func_020c744c(void) {
     return 0x10;
 }
 
-s32 func_020c7454(s32 arg0, s32 arg1, s32 arg2) {
+s32 ClampInt(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_r2;
 
     var_r2 = arg2;
@@ -230,15 +234,21 @@ s32 func_020c7454(s32 arg0, s32 arg1, s32 arg2) {
     return var_r2;
 }
 
-void func_020c7470(s32 arg0,s32 arg1,s32 *arg2) {
- s32 GetViewZoom(void *); void func_02079c6c(s32,s32,s32 *);
- extern void **gCurrentMap; extern u8 data_02164d5c[];
- s32 n;
- if(GetViewZoom((u8 *)*gCurrentMap+0x6ef8)<=0) n=16; else n=24;
- func_02079c6c(arg0,arg1,arg2);
- if(data_02164d5c[1]) { arg2[0]-=24; arg2[0]=func_020c7454(arg2[0],0,128); return; }
- if(arg2[0]<160) arg2[0]+=n/2; else arg2[0]-=n/2+48;
- arg2[1]-=n/2;
+/* Screen position for the cursor sprite over the targeted map tile: project the
+ * tile to screen space, then centre the cursor on the cell (or keep it inside the
+ * visible area when the battle help panel covers part of the screen). */
+void GetMapCursorScreenPosition(s32 tileX, s32 tileY, s32 *screenPos) {
+    s32 GetViewZoom(void *);
+    void MapTileToScreen(s32, s32, s32 *);
+    extern void **gCurrentMap;
+    extern u8 gBattleHelpPanel[];
+    s32 cellSize;
+
+    if (GetViewZoom((u8 *)*gCurrentMap + 0x6ef8) <= 0) cellSize = 16; else cellSize = 24;
+    MapTileToScreen(tileX, tileY, screenPos);
+    if (gBattleHelpPanel[MAP_HELP_SHOWN]) { screenPos[0] -= 24; screenPos[0] = ClampInt(screenPos[0], 0, 128); return; }
+    if (screenPos[0] < 160) screenPos[0] += cellSize / 2; else screenPos[0] -= cellSize / 2 + 48;
+    screenPos[1] -= cellSize / 2;
 }
 
 void func_020c752c(void) {
@@ -273,7 +283,7 @@ void func_020c75cc(void) {
  s32 xy[3]; void *p;
  func_020994e0(0);
  p=*gCurrentMap;
- func_020c7470(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4),xy);
+ GetMapCursorScreenPosition(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4),xy);
  func_020c0748(&data_0212ab34,xy[0],xy[1],0x30);
  FillMapLayer(-1);
  p=*gCurrentMap;

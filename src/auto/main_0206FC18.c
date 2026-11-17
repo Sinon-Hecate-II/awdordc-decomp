@@ -1,10 +1,79 @@
 /* 18 functions from 0x0206FC18 to 0x02070B70 (main), found by ds-decomp. */
 #include "common.h"
+#include "string_storage.h"
 
 typedef struct { u8 value; } Flag;
+#pragma optimization_level 0
+static inline void *AllocateStringElements(u32 count,u32 width) {
+void *MemAllocArray(u32);
+return MemAllocArray(count*width);
+}
+static inline void InitStringException(u32 *object,u8 *message,void *vtable) {
+u32 StringLength(void *);void StringCopy(void *,void *);
+void func_0206f8c4(u32 *,u32,Flag);
+extern u8 data_02100888[];
+u32 *text=object+1;void *p;Flag zero;
+object[0]=(u32)data_02100888;
+p=AllocateStringElements(StringLength(message)+1,1);
+zero.value=0;
+func_0206f8c4(text,(u32)p,zero);
+StringCopy((void *)text[0],message);
+object[0]=(u32)vtable;
+}
+#pragma optimization_level reset
 
-void func_0206fc18(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, Flag arg5) { return; }
-
+#pragma optimization_level 3
+void *func_0206fc18(StringStorage *self, u32 pos, u32 remove, u8 *first, u8 *last, Flag unused) {
+u32 StringLength(void *);void *MemAllocArray(u32),*MemAlloc(u32);
+void StringCopy(void *,void *);void func_0206f8c4(u32 *,u32,Flag);
+void func_0207465c(void *,void *,void *);
+s32 func_020700a0(s32),func_02070068(s32);
+void MemCopy(void *,void *,u32),MemMove(void *,void *,u32);s32 MemFree(s32);
+void func_0206ffc4(void *,s32,s32);void *func_0206fa14(void *);
+extern u8 data_021008f0[],data_02100888[],data_02100860[],data_0210090c[],data_02100944[],data_02100874[],data_021008b8[],data_021007f4[];
+u32 exception1[3],exception2[3];StringStorage temp;
+u32 required,remaining,oldcap,oldsize,removed,newsize,capacity,inserted,tail,i;
+u8 *data,*buffer,*middle,*end=last; s32 large;Flag zero1,zero2;
+large=self->large.flag?1:0;
+if(!large){oldcap=11;data=self->small.data;oldsize=self->small.length;}
+else {oldcap=self->large.capacity;oldsize=self->large.length;data=self->large.data;}
+if(pos>oldsize){
+InitStringException(exception1,data_021008f0,data_02100860);
+func_0207465c(data_0210090c,exception1,func_020700a0);
+}
+remaining=oldsize-pos;
+removed=*(remaining<remove?&remaining:&remove);
+inserted=end-first;
+if(inserted>0x7ffffffeU || oldsize-removed>0x7ffffffeU-inserted){
+InitStringException(exception2,data_02100944,data_02100874);
+func_0207465c(data_021008b8,exception2,func_02070068);
+}
+newsize=inserted+(oldsize-removed);tail=oldsize-(pos+removed);
+if(newsize>=oldcap){
+required=newsize+1;capacity=(oldcap+15)&~15;
+while(capacity<required)capacity=(capacity*2+15)&~15;
+buffer=MemAlloc(capacity);
+if(pos)MemCopy(buffer,data,pos);
+middle=buffer+pos;MemMove(middle,first,end-first);
+if(tail)MemCopy(middle+inserted,data+pos+removed,tail);
+buffer[newsize]=data_021007f4[1];
+if(large)MemFree(data);else self->large.flag=1;
+self->large.data=buffer;self->large.length=newsize;self->large.capacity=capacity;
+}else {
+for(i=0;i<3;i++)((u32 *)&temp)[i]=0;
+if(tail && data+pos+inserted<end && end<=data+oldsize){
+func_0206ffc4(&temp,(s32)first,(s32)end);
+if(!temp.large.flag)first=temp.small.data;else first=temp.large.data;
+}
+if(tail)MemMove(data+pos+inserted,data+pos+removed,tail);
+MemMove(data+pos,first,inserted);
+data[newsize]=data_021007f4[0];
+if(large)self->large.length=newsize;else self->small.length=(u8)newsize;
+func_0206fa14(&temp);
+}
+return self;
+}
+#pragma optimization_level reset
 void func_0206ffc4(void *a, s32 b, s32 c) {
     void func_0207000c(void *, s32, u32, s32, s32, s32);
     u32 n;
@@ -15,7 +84,6 @@ void func_0206ffc4(void *a, s32 b, s32 c) {
 }
 
 void func_0207000c(void *a, s32 b, u32 c, s32 d, s32 e, s32 f) {
-    void func_0206fc18(void *, s32, u32, s32, s32, Flag);
     Flag unused;
     func_0206fc18(a,b,c,d,e,unused);
 }
@@ -69,8 +137,8 @@ if (!a) return;
 M2C_FIELD(*(void **)a,void (**)(void *),4)(a);
 }
 
-void func_02070134(void) {
-    return;
+double func_02070134(double a, double b) {
+    return a + b;
 }
 
 s32 func_0207044c(u32 r0, u32 r1) {

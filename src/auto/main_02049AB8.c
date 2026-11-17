@@ -251,18 +251,22 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_0204a3dc(s32 *p,u8 *dst,s32 *len) {
-extern M2C_UNK data_020fcf84,gGhttpBufferFileName,data_020fceac,data_020fcf98;
-s32 n,left;
-if(!p)AssertFailed(&data_020fcf84,&gGhttpBufferFileName,&data_020fceac,0x1b7);
-if(!len)AssertFailed(&data_020fcf98,&gGhttpBufferFileName,&data_020fceac,0x1b8);
-n=*len;
-if(!n)return 0;
-left=p[3]-p[4];
-if(left<=0)return 0;
-if(n>=left)n=left;
-MemCopy(dst,(void *)(p[1]+p[4]),n);
-dst[n]=0;*len=n;p[4]+=n;return 1;
+/* ghttp ghiReadBuffer: copy up to *bufferLen unread bytes out of a GHIBuffer
+ * (as a NUL-terminated string), store the count actually copied back in
+ * *bufferLen and advance the buffer's read position. Returns 1 when bytes were
+ * copied, 0 when nothing was requested or nothing is left. */
+s32 ghiReadBuffer(s32 *bufferIn, u8 *bufferOut, s32 *bufferLen) {
+    extern M2C_UNK sAssertBufferInNotNull, gGhttpBufferFileName, sGhttpBufferFuncName, sAssertLenNotNull;
+    s32 bytes, bytesLeft;
+    if (!bufferIn) AssertFailed(&sAssertBufferInNotNull, &gGhttpBufferFileName, &sGhttpBufferFuncName, 0x1b7);
+    if (!bufferLen) AssertFailed(&sAssertLenNotNull, &gGhttpBufferFileName, &sGhttpBufferFuncName, 0x1b8);
+    bytes = *bufferLen;
+    if (!bytes) return 0;
+    bytesLeft = bufferIn[3] - bufferIn[4]; /* len - pos */
+    if (bytesLeft <= 0) return 0;
+    if (bytes >= bytesLeft) bytes = bytesLeft;
+    MemCopy(bufferOut, (void *)(bufferIn[1] + bufferIn[4]), bytes); /* data + pos */
+    bufferOut[bytes] = 0; *bufferLen = bytes; bufferIn[4] += bytes; return 1;
 }
 
 void func_0204a498(void *p) {
@@ -367,7 +371,7 @@ M2C_FIELD(p,u32 *,0x138)=now;
 if(n>=gGhiRecvTimeoutMs[1])n=gGhiRecvTimeoutMs[1];
 }
 if(M2C_FIELD(p,s32 *,0x84)<M2C_FIELD(p,s32 *,0x80)){
-func_0204a3dc(p+0x74,dst,len);
+ghiReadBuffer(p+0x74,dst,len);
 if(M2C_FIELD(p,s32 *,0x84)==M2C_FIELD(p,s32 *,0x80)){
 M2C_FIELD(p,s32 *,0x80)=M2C_FIELD(p,s32 *,0xf8);
 M2C_FIELD(p,s32 *,0x84)=M2C_FIELD(p,s32 *,0xf8);
@@ -387,7 +391,7 @@ if(!((s32 (*)(void *,u8 *))ghiAppendDataToBuffer)(p+0x98,dst))return 3;
 if(!ghiDecryptBuffer(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=17;return 3;}
 if(M2C_FIELD(p,s32 *,0x80)-M2C_FIELD(p,s32 *,0x84)<=0){*dst=0;*len=0;return 1;}
 r=*len-1;
-if(!func_0204a3dc(p+0x74,dst,&r))return 3;
+if(!ghiReadBuffer(p+0x74,dst,&r))return 3;
 if(M2C_FIELD(p,s32 *,0x84)==M2C_FIELD(p,s32 *,0x80)){
 M2C_FIELD(p,s32 *,0x80)=M2C_FIELD(p,s32 *,0xf8);
 M2C_FIELD(p,s32 *,0x84)=M2C_FIELD(p,s32 *,0xf8);

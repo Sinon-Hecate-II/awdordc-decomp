@@ -29,7 +29,7 @@ void BeginMatchmakingSession(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
     func_0205fdbc(0x36, (s8 *)&sDwcKeyEval);
 }
 
-void func_0203e9b0(void) {
+void TeardownConnectionSession(void) {
     M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_0203bd0c();
     M2C_UNK ClearSessionPlayers();
@@ -137,7 +137,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     u16 GT2SocketPort(void *);
     s32 GT2SocketHandle(s32);
     s32 SendConnectionCommand(u8, s32, s32, u16, s32 *, s32);
-    s32 func_0203ef9c(void *);
+    s32 StartPeerConnect(void *);
     void OnPeerConnect(s32,s32,s32,void *);
     s32 index, deferred, result;
     u8 *session;
@@ -212,7 +212,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
         deferred = 1;
     }
     if (deferred) {
-        result = func_0203ef9c((u8 *)GetConnection() + 0x194);
+        result = StartPeerConnect((u8 *)GetConnection() + 0x194);
     } else {
         value = GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4));
         OnPeerConnect(0, value, 0, (u8 *)GetConnection() + 0x194);
@@ -223,7 +223,13 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     return result;
 }
 
-s32 func_0203ef9c(void *arg0) {
+/* Send the socket connect described by the connection's in-flight attempt.  A join
+ * attempt uses the address the master gave it; any other attempt first tells the
+ * QR2 server browser the peer's address, port and NAT-negotiation session.
+ * Retries the send up to five times while the NAT-negotiation helpers the
+ * transport needs are not ready yet (3). */
+s32 StartPeerConnect(void *arg0) {
+    ConnAttempt *attempt = (ConnAttempt *)arg0;
     s32 func_02043008();
     s32 GT2SocketHandle(s32);
     s32 Gt2AddressToString(s32, M2C_UNK, M2C_UNK);
@@ -231,29 +237,29 @@ s32 func_0203ef9c(void *arg0) {
     M2C_UNK func_02061690(s32, s32, u16, s32);
     extern M2C_UNK func_02043e0c;
     void OnPeerConnect(s32,s32,s32,void *);
-    s32 temp_r0;
-    s32 var_r6;
-    void *temp_r4;
+    s32 result;
+    s32 retries;
+    void *connection;
 
-    if (M2C_FIELD(arg0, u8 *, 0) == 0) {
-        temp_r4 = GetConnection();
-        func_02061690(M2C_FIELD(temp_r4, s32 *, 0xE4), Gt2AddressToString(M2C_FIELD(arg0, s32 *, 4), 0, 0), M2C_FIELD(arg0, u16 *, 2), M2C_FIELD(arg0, s32 *, 8));
+    if (attempt->isJoin == 0) {
+        connection = GetConnection();
+        func_02061690(M2C_FIELD(connection, s32 *, CONN_SESSION_SERVER_BROWSER), Gt2AddressToString(attempt->address, 0, 0), attempt->port, attempt->natNeg);
         if (func_02043008() != 0) {
             return 2;
         }
     }
-    var_r6 = 0;
+    retries = 0;
 loop_4:
-    temp_r0 = func_0205de88(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, 4)), M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, u8 *, 0), &func_02043e0c, (M2C_UNK *)&OnPeerConnect, arg0);
-    if (temp_r0 == 0) {
-        return temp_r0;
+    result = func_0205de88(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET)), attempt->natNeg, attempt->isJoin, &func_02043e0c, (M2C_UNK *)&OnPeerConnect, attempt);
+    if (result == 0) {
+        return result;
     }
-    if (temp_r0 != 3) {
-        return temp_r0;
+    if (result != 3) {
+        return result;
     }
-    var_r6 += 1;
-    if (var_r6 >= 5) {
-        return temp_r0;
+    retries += 1;
+    if (retries >= 5) {
+        return result;
     }
     goto loop_4;
 }

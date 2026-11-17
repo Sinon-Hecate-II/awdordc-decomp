@@ -361,12 +361,15 @@ typedef struct MapSelectScreen {
 #define MAPSELECT_ROW_OBJS_A    0x10 /* void *[MAPSELECT_ROWS] row labels */
 #define MAPSELECT_ROW_OBJS_B    0x24 /* void *[MAPSELECT_ROWS] map names */
 #define MAPSELECT_ROWS          5    /* rows shown at once */
+#define MAPSELECT_ROW_UNITS     0x1c /* scroll units of one list row */
 #define MAPSELECT_COUNT         0x51 /* u8 number of maps in the list */
 #define MAPSELECT_INDEX         0x52 /* u8 selected row */
 #define MAPSELECT_CHOSEN        0x54 /* u8 a map has been chosen */
 #define MAPSELECT_TEXT_PANEL    0x0C /* void *: panel the row names are drawn into */
 #define MAPSELECT_SCROLL_ANIM   0x38 /* s32 token of the running list-scroll animation */
 #define MAPSELECT_TASK          0x3C /* s32 handle of the row-scroll task */
+#define MAPSELECT_MAX_SCROLL    0x40 /* u16 scroll position of the last row */
+#define MAPSELECT_LAST_ROW      0x53 /* u8 index of the last row */
 #define MAPSELECT_BUMP_LATCH    0x59 /* u8 set once the no-move sound played for a held key */
 
 /* The fields of gMapSelectState in front of that object. */
@@ -874,6 +877,8 @@ enum {
 #define CONN_SESSION_MATCH_ADDRESS 0x20 /* s32 address reported for the match (usually our QR2 parameter at 0x200) */
 #define CONN_SESSION_ADDRESS_VALID 0x17 /* u8 nonzero once MATCH_ADDRESS may be announced to the peer */
 #define CONN_SESSION_SERVER_BROWSER 0xE4 /* s32 GameSpy server-browser/QR2 object built by func_020613dc */
+#define CONN_SESSION_EVENT_CALLBACK     0x464 /* s32 match event callback: (status, closed, targetCleared, serving, slot, data) */
+#define CONN_SESSION_EVENT_DATA         0x468 /* s32 data passed to EVENT_CALLBACK */
 #define CONN_SESSION_PEER_CALLBACK      0x46C /* s32 callback (slot, data) run when a peer joins while serving */
 #define CONN_SESSION_PEER_CALLBACK_DATA 0x470 /* s32 data passed to PEER_CALLBACK */
 #define CONN_SESSION_SCORE_CALLBACK     0x474 /* s32 callback (index, data) scoring browsed sessions */
@@ -1117,7 +1122,7 @@ enum {
 #define SAVE_SLOT_EMPTY_B      0xF6 /* offset within one slot image of SAVE_EXTRA_EMPTY_B */
 
  /* The link-match setup sent before a saved battle (the 0xE8-byte state that
-  * func_ov001_02171394 copies out of the receive buffer): the map name, the
+  * Ov001_CopyLinkMatchSetup copies out of the receive buffer): the map name, the
   * name-length class shared by the four player names, and the name texts. */
  #define MATCH_SETUP_MAP_NAME   0x00 /* u8[32]: map name text */
  #define MATCH_SETUP_NAME_CLASS 0x20 /* s32: 1 = 5, 2 = 13, 3 = 16 bytes per name */
@@ -1445,6 +1450,22 @@ enum {
 #define SPRITE_ACTOR_TARGET_Y    0x52 /* s16 slide destination y */
 #define SPRITE_ACTOR_START_X     0x54 /* s16 slide origin x */
 #define SPRITE_ACTOR_START_Y     0x56 /* s16 slide origin y */
+#define SPRITE_ACTOR_SPLIT       0x40 /* u32 bits 26..31: row where the cell grid is split in halves (16 = whole sprite) */
+#define SPRITE_ACTOR_PRIORITY    0x49 /* u8 OBJ priority passed to AddSprite */
+#define SPRITE_ACTOR_TILE_ROW    0x3e /* u16 texture row the actor draws */
+#define SPRITE_ACTOR_TEXT_WIDTH  0x58 /* s16 width in pixels of the text the actor drew */
+
+/* A scene panel: a 3D sprite actor whose two halves (the sprite sources at
+ * +0x60 and +0x64) show a pair of CO faces.  The face sprites themselves are its
+ * two children (reached through Get3DSpriteChild). */
+#define SCENE_PANEL_FLIP       0x58 /* u8 nonzero: swap the two face children */
+#define SCENE_PANEL_FACE_STATE 0x59 /* u8 face display state (0 none, 5..10 the pose layouts) */
+#define SCENE_PANEL_LAYOUT     0x5a /* u8 face layout index */
+#define SCENE_PANEL_MOTION     0x5b /* u8 motion variant: 1 offsets x, 2 offsets y */
+#define SCENE_PANEL_MOTION_X   0x5c /* s16 x the motion offset applies to */
+#define SCENE_PANEL_MOTION_Y   0x5e /* s16 y the motion offset applies to */
+#define SCENE_PANEL_HALF0      0x60 /* void *sprite source of the first half */
+#define SCENE_PANEL_HALF1      0x64 /* void *sprite source of the second half */
 
 /* Slide mode (SPRITE_ACTOR_STATE bits 6-7). */
 enum {
@@ -2074,6 +2095,17 @@ typedef struct FifoMessage {
 #define RECT_TOP    0x2 /* u16 y of the top edge */
 #define RECT_RIGHT  0x4 /* u16 x of the right edge */
 #define RECT_BOTTOM 0x6 /* u16 y of the bottom edge */
+
+/* The ov001 map-list screen's state (gMapListState): the list's pixel scroll
+ * position and a pointer to the screen's 0x48-byte object.  That object holds
+ * the loaded background tilemaps, the text panel the info rows are drawn in,
+ * the seven row/selection sprite slots at +0x18 and, after them, the scroll
+ * bar, task handles and button flags. */
+#define OV001_MAP_LIST_SCROLL     0x04 /* u16: scroll position in pixels */
+#define OV001_MAP_LIST_OBJECT     0x08 /* void *: the screen's 0x48-byte object */
+#define OV001_MAP_LIST_ROW_HEIGHT 29   /* pixels of one list row; five are visible */
+#define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
+#define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
 
 /* The ov001 friend-roster screen's vertical scroll bar (gOv001Scrollbar, a
  * 0x20-byte object built by Ov001_CreateScrollBar): a sprite whose touch

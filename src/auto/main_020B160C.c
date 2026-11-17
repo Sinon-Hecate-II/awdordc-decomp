@@ -239,7 +239,7 @@ M2C_FIELD(gSpriteSlotManager,s16 *,0x1c)=c;
 M2C_FIELD(gSpriteSlotManager,s16 *,0x1e)=d;
 }
 
-void func_020b1c44(s16 a,s16 b) {
+void SetSpriteSlotScroll(s16 a,s16 b) {
 extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,s16 *,0x20)=a;
 M2C_FIELD(gSpriteSlotManager,s16 *,0x22)=b;

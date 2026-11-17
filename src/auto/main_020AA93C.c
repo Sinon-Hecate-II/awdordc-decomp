@@ -332,7 +332,7 @@ M2C_UNK *func_020aaf74(void) {
  * state, advances the idle frame on its timer and plays the press animation when
  * the sprite's button is held. */
 void UpdateUnitSpriteAnimation(void *task) {
-    s32 func_01ffa14c(void *);s32 func_020890d4(void *);s32 func_02089080(void *);
+    s32 func_01ffa14c(void *);s32 Is3DSpriteAnimating(void *);s32 func_02089080(void *);
     s32 func_020ad3f0(void);u8 func_020ab2a4(void);
     void MenuSpriteUpdate(void *);void UpdateUnitSpriteFrame(void *);
     u16 GetSpriteButtonMask(void *);void func_020819e8(u16);
@@ -346,7 +346,7 @@ void UpdateUnitSpriteAnimation(void *task) {
         cond=M2C_FIELD(M2C_FIELD(sprite,void **,0x18),u8 *,0x31)!=0?1:0;
         if(cond&255)goto fail;
     }
-    if(func_020890d4(sprite)!=0)goto fail;
+    if(Is3DSpriteAnimating(sprite)!=0)goto fail;
     if(func_02089080(sprite)!=0)goto fail;
     if(func_020ad3f0()!=0)goto fail;
     cond=M2C_FIELD(M2C_FIELD(sprite,void **,MENU_SPRITE_OWNER),u8 *,0x12)!=0?1:0;

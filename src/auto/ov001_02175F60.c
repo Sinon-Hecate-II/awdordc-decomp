@@ -164,31 +164,36 @@ void func_ov001_021763cc(void) {
     void func_ov001_02176544(void *);
     void func_ov001_0217655c(s32);
     void func_ov001_0217656c(void);
-    extern M2C_UNK data_ov001_02193d54;
+    extern M2C_UNK gOv001OptionPageState;
     s32 v = 0xC;
-    data_ov001_02193d54 = Ov001_Alloc(v, v - 0x10);
+    gOv001OptionPageState = Ov001_Alloc(v, v - 0x10);
     if (func_ov001_021711e0(0xF, 0x40, func_ov001_02176544, func_ov001_0217655c, func_ov001_0217656c, 0x800) != 1) {
         SystemHalt();
     }
     func_02006030(0xA);
 }
 
-void func_ov001_02176438(void) {
+void Ov001_FreeOptionPage(void) {
     M2C_UNK SystemHalt();
     s32 func_ov001_021712c8();
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193d54;
+    extern M2C_UNK gOv001OptionPageState;
     if (func_ov001_021712c8() != 1) {
         SystemHalt();
     }
-    Ov001_FreeAlloc(&data_ov001_02193d54);
+    Ov001_FreeAlloc(&gOv001OptionPageState);
 }
 
-s32 Ov001_GetOptionChoice(s32 arg0) {
-    s32 func_ov001_02171394(void *);
-    extern M2C_UNK data_ov001_02193d54;
-    s32 state[58];
-    switch (*(u32 *)data_ov001_02193d54) {
+/* Map the option page's current state to the caller's selection code:
+ * 1/2 = the two menu items, 4 = leave; state 6 is the download-play confirm,
+ * where a valid received link-match setup (name class 0..3 and the flag at
+ * +0x24 set) yields 3 (proceed and store the setup) and anything else yields
+ * 5 (cancel). Any other state returns the caller's default. */
+s32 Ov001_GetOptionChoice(s32 defaultChoice) {
+    s32 Ov001_CopyLinkMatchSetup(void *);
+    extern M2C_UNK gOv001OptionPageState;
+    s32 setup[58];
+    switch (*(u32 *)gOv001OptionPageState) {
     case 0:
     case 1:
     case 3:
@@ -196,26 +201,26 @@ s32 Ov001_GetOptionChoice(s32 arg0) {
     case 2: return 1;
     case 4: return 2;
     case 6:
-        if (func_ov001_02171394(state) != 1) SystemHalt();
-        if (state[8] >= 0 && state[8] <= 3 && state[9] == 1) return 3;
+        if (Ov001_CopyLinkMatchSetup(setup) != 1) SystemHalt();
+        if (setup[8] >= 0 && setup[8] <= 3 && setup[9] == 1) return 3;
         return 5;
     case 7: return 4;
     }
-    return arg0;
+    return defaultChoice;
 }
 
 void Ov001_StoreMatchSetup(void) {
- s32 func_ov001_02171394(void *);
+ s32 Ov001_CopyLinkMatchSetup(void *);
  M2C_UNK StoreLinkMatchSetup(void *);
  s32 state[58];
- if(func_ov001_02171394(state) != 1) SystemHalt();
+ if(Ov001_CopyLinkMatchSetup(state) != 1) SystemHalt();
  StoreLinkMatchSetup(state);
 }
 
 void func_ov001_02176544(void *arg0) {
  typedef struct { s32 values[3]; } State;
- extern M2C_UNK data_ov001_02193d54;
- *(State *)data_ov001_02193d54 = *(State *)arg0;
+ extern M2C_UNK gOv001OptionPageState;
+ *(State *)gOv001OptionPageState = *(State *)arg0;
 }
 
 void func_ov001_0217655c(M2C_UNK arg0) {

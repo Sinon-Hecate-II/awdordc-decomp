@@ -11,7 +11,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *func_0208931c(void *);
-    M2C_UNK func_0208b698(void *, M2C_UNK *);
+    M2C_UNK SetSpriteText(void *, M2C_UNK *);
     void *func_0208bc24(void *);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
@@ -202,7 +202,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
     M2C_FIELD(temp_r2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
-    func_0208b698(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
+    SetSpriteText(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
     Hide3DSprite(M2C_FIELD(temp_r0, void **, 0x64));
     gCur3DSpriteEngine = temp_r5;
     func_020e4c64();
@@ -215,7 +215,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *func_0208931c(void *);
-    M2C_UNK func_0208b698(void *, M2C_UNK *);
+    M2C_UNK SetSpriteText(void *, M2C_UNK *);
     void *func_0208bc24(void *);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
@@ -408,7 +408,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
     M2C_FIELD(temp_r2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
-    func_0208b698(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
+    SetSpriteText(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
     Hide3DSprite(M2C_FIELD(temp_r0, void **, 0x64));
     gCur3DSpriteEngine = temp_r5;
     func_020e4c64();

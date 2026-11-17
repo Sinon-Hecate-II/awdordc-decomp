@@ -13,7 +13,7 @@ void func_ov001_02178e80(void) {
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     if (M2C_FIELD(&data_ov001_02193d80, u8 *, 1) == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
@@ -168,7 +168,7 @@ extern s8 gOv001ProfileChoice;
 extern M2C_UNK func_ov001_02178bc0, Ov001_InitOptionMenu, func_ov001_02177fd8;
 if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED) || !M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION))
 if(!Ov001_IsProfileScreenDone())return;
-func_ov001_0218af70(0);
+Ov001_FreePageBackground(0);
 Ov001_DisableVisiblePlanes(0,21);
 if(!M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION)) {
 Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);
@@ -327,8 +327,8 @@ void func_ov001_021795a4(void) {
     if (data_ov001_02193d88 == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     if (data_ov001_02193d88 == 0 && Ov001_IsProfileScreenDone() == 0) return;
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     if (data_ov001_02193d88 == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
@@ -547,8 +547,8 @@ void func_ov001_02179af4(void) {
     }
 
     func_ov001_021757d0(data_ov001_02193d8c != 0);
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
 
     if (data_ov001_02193d8c == 0) {
         Ov001_FreeOptionBackground();
@@ -682,7 +682,7 @@ void func_ov001_02179e04(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021828ac;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -691,7 +691,7 @@ void func_ov001_02179e04(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);

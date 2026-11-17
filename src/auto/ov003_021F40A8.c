@@ -10,7 +10,7 @@ void func_ov003_021f40a8(void *arg0) {
     void func_01ff9b38(void);
     void *func_020896f0(void *);
     void func_020893f4(void *, void *, s32);
-    void func_02089438(void *);
+    void Sync3DSpriteToTarget(void *);
     void Hide3DSprite(void *);
     void *func_0208bc24(void *);
     void SetTextById(void *, s32);
@@ -63,7 +63,7 @@ void func_ov003_021f40a8(void *arg0) {
     M2C_FIELD(o, u16 *, 0x36) = 0x28;
     M2C_FIELD(o, u32 *, 0x40) =
         (((M2C_FIELD(o, u32 *, 0x40) & 0xFFFFFE00) | 0x70) & 0xFFFC01FF) | 0x1E00;
-    func_02089438(M2C_FIELD(q, void **, 0));
+    Sync3DSpriteToTarget(M2C_FIELD(q, void **, 0));
     o = M2C_FIELD(q, void **, 0);
     M2C_FIELD(o, u16 *, 0x3c) = 0x400;
     o = M2C_FIELD(q, void **, 0);

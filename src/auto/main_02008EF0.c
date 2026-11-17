@@ -347,7 +347,7 @@ void func_02009aa4(void *arg0) {
     Sound_UnlockMutex();
 }
 
-void func_02009aec(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=0;}
+void InitPackedTableCursor(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=0;}
 
 /* Iterate the entries of a packed animation table: read the entry-table word
    (entry type in the low byte, data offset in the upper 24 bits) and copy the
@@ -355,7 +355,7 @@ void func_02009aec(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=
    block; type 16 walks a variable run of 12-byte records; type 17 up to eight
    12-byte records prefixed by a present-flags table. cursor holds the iterator
    state (entry index, intra-entry index); returns 1 while entries remain. */
-s32 func_02009b0c(void *animation,u8 *outEntry,s32 *cursor) {
+s32 IteratePackedTableRecord(void *animation,u8 *outEntry,s32 *cursor) {
 while((u32)cursor[0]<M2C_FIELD(animation,u32*,0x38)){
 u32 entry=M2C_FIELD((u8*)animation+cursor[0]*4,u32*,0x3c);
 s32 entryType=entry&255;

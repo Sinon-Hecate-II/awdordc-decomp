@@ -25,13 +25,27 @@ typedef struct GhiSocketAddress {
     u32 addr;     /* +0x04 */
 } GhiSocketAddress;
 
+/* How ghttp delivers the response body (GHIConnection.transferMode).  In the
+ * buffered mode the body is collected in the connection's body buffer and the
+ * callback receives everything collected so far; stream mode passes each
+ * received piece on at once.  File mode (saving the body to a file) never works
+ * in this port, so any body byte fails the request.  Mode 3 is the value
+ * ghiSendRequest turns into a HEAD request, and func_0204d5c0 finishes modes 3
+ * and 4 as soon as the headers have been parsed. */
+enum {
+    GHI_TRANSFER_BUFFERED = 0, /* collect the body, then deliver it whole */
+    GHI_TRANSFER_FILE     = 1, /* would save the body to a file; unsupported here */
+    GHI_TRANSFER_STREAM   = 2, /* deliver each piece as it arrives */
+    GHI_TRANSFER_HEAD     = 3  /* HEAD: the response carries no body */
+};
+
 /* GameSpy ghttp's per-request connection state machine.  Only the fields the
  * game's matched code touches so far are named; the rest is padding. */
 typedef struct GHIConnection {
     s32  inUse;            /* +0x00: nonzero while this slot holds a request */
     s32  request;          /* +0x04: index of this connection in gGhiConnectionList */
     s32  id;               /* +0x08: unique id handed out when the slot was taken */
-    s32  pad0C;
+    s32  transferMode;     /* +0x0C: GHI_TRANSFER_* how the body is delivered */
     s32  state;            /* +0x10: GHTTPState */
     char *url;             /* +0x14: URL the caller asked for */
     char *host;            /* +0x18: host name from that URL */
@@ -140,6 +154,7 @@ enum {
 #define GHTTP_RESULT_OUT_OF_MEMORY       1  /* a buffer could not be allocated */
 #define GHTTP_RESULT_SOCKET_FAILED       5  /* a socket call failed; the saved errno says why */
 #define GHTTP_RESULT_FILE_NOT_FOUND      11 /* the server answered 3xx/404 */
+#define GHTTP_RESULT_FILE_WRITE_FAILED   13 /* the body could not be saved to a file */
 #define GHTTP_RESULT_DOWNLOAD_INCOMPLETE 15 /* the peer closed before contentLength bytes arrived */
 #define GHTTP_RESULT_BUFFER_TOO_SMALL    16 /* Content-Length exceeded the caller's buffer size */
 

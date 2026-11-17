@@ -93,9 +93,9 @@ M2C_FIELD(GetConnection(),s32 *,0x34c)=arg0;
 }
 
 void func_0204084c(s32 arg0) {
-void func_02042f94(s32); void func_02043008(s32); void *GetConnection(void);
+void ReportConnectionStatusResult(s32); void func_02043008(s32); void *GetConnection(void);
 if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) { func_02043008(arg0); return; }
-func_02042f94(arg0);
+ReportConnectionStatusResult(arg0);
 }
 
 /* Starts a connection to peer `peerId`.  When forced (or when no opponent is
@@ -383,7 +383,7 @@ s32 RestartConnection(void) {
     M2C_UNK ReportConnectionError(M2C_UNK, s32);
     s32 StartConnection(M2C_UNK);
     M2C_UNK ReconnectUnlessServing();
-    M2C_UNK func_02041e44();
+    M2C_UNK CloseGt2Connection();
     M2C_UNK SetConnectionState(M2C_UNK);
     M2C_UNK func_0205df50(s32);
     s32 result;
@@ -392,7 +392,7 @@ s32 RestartConnection(void) {
     result = 1;
     if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3) {
         if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
-            func_02041e44();
+            CloseGt2Connection();
         }
         ReportConnectionError(6, 0xFFFEC5D2);
         return 0;

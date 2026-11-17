@@ -238,7 +238,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK GetUiColor(M2C_UNK);
-    M2C_UNK func_020aeebc(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreateMainWallpaperSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GetLocalizedFileNameDefault(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
@@ -345,7 +345,7 @@ loop_1:
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
     LoadScenePanelPalette(4);
     LoadScenePanelPalette(0x17);
-    func_020aeebc(2, 0xF, 6);
+    CreateMainWallpaperSprite(2, 0xF, 6);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);

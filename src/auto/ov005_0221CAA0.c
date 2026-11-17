@@ -127,7 +127,7 @@ M2C_FIELD(arg0,void**,0x38)=func_020896f0(arg0);
 func_020893a8(M2C_FIELD(arg0,void**,0x38),4096,1,GetUiColor(9));
 sprite=M2C_FIELD(arg0,void**,0x38);p=*(void**)M2C_FIELD(arg0,void**,0x34);
 boxBounds(boxX(p)-1,boxY(p)-1,boxWidth(p)+2,boxHeight(p)+2,sprite);
-func_02089438(M2C_FIELD(arg0,void**,0x38));
+Sync3DSpriteToTarget(M2C_FIELD(arg0,void**,0x38));
 }
 
 extern u8 *gTouchState;

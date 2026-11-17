@@ -1,6 +1,6 @@
 /* 32 functions from 0x020216CC to 0x020222D8 (main), found by ds-decomp. */
 #include "common.h"
-extern M2C_UNK data_02138bbc, data_02138b34, data_02138b4c, data_02138b54;
+extern M2C_UNK gHostName, gHostRecord, gHostAddressList, gHostEntry;
 
 #pragma scheduling off
 void func_020216cc(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3,void *arg4) {
@@ -24,23 +24,30 @@ void func_0202175c(void) {
     SocketClose();
 }
 
-void *ghiResolveHostname(void *p) {
-u32 func_02021134(void *);
-void MI_CpuFill8(void *,s32,s32);
-void func_02019458(void *,void *,s32);
-u32 v=func_02021134(p);
-if(!v)return 0;
-MI_CpuFill8(&data_02138bbc,0,0x101);
-func_02019458(&data_02138bbc,p,0x101);
-M2C_FIELD(&data_02138b34,void **,0x20)=&data_02138bbc;
-M2C_FIELD(&data_02138b34,u32 *,0x24)=0;
-M2C_FIELD(&data_02138b34,u16 *,0x28)=2;
-M2C_FIELD(&data_02138b34,u16 *,0x2a)=4;
-M2C_FIELD(&data_02138b34,void **,0x2c)=&data_02138b4c;
-M2C_FIELD(&data_02138b34,void **,0x18)=&data_02138b4c - 24;
-M2C_FIELD(&data_02138b34,u32 *,0x1c)=0;
-M2C_FIELD(&data_02138b34,u32 *,0)=((v << 24) & 0xFF000000) | (((v << 8) & 0xFF0000) | ((u8)(v >> 24) | ((v >> 8) & 0xFF00)));
-return &data_02138b54;
+/* Resolve `hostname` to an IPv4 address and fill in the shared host record:
+ * copy the name into the name buffer, point the record's name at it, set the
+ * address type (2 = AF_INET), address length (4) and address list (the address
+ * followed by NULL), and store the address in network byte order.  Returns 0
+ * when the name does not resolve. */
+void *ghiResolveHostname(void *hostname) {
+    u32 LookupHostAddress(void *);
+    void MI_CpuFill8(void *, s32, s32);
+    void func_02019458(void *, void *, s32);
+    u32 address = LookupHostAddress(hostname);
+    if (!address) return 0;
+    MI_CpuFill8(&gHostName, 0, 0x101);
+    func_02019458(&gHostName, hostname, 0x101);
+    /* The host entry at +0x20 of the record: name, aliases, address type,
+       address length and address list. */
+    M2C_FIELD(&gHostRecord, void **, 0x20) = &gHostName;
+    M2C_FIELD(&gHostRecord, u32 *, 0x24) = 0;
+    M2C_FIELD(&gHostRecord, u16 *, 0x28) = 2;
+    M2C_FIELD(&gHostRecord, u16 *, 0x2a) = 4;
+    M2C_FIELD(&gHostRecord, void **, 0x2c) = &gHostAddressList;
+    M2C_FIELD(&gHostRecord, void **, 0x18) = &gHostAddressList - 24;
+    M2C_FIELD(&gHostRecord, u32 *, 0x1c) = 0;
+    M2C_FIELD(&gHostRecord, u32 *, 0) = ((address << 24) & 0xFF000000) | (((address << 8) & 0xFF0000) | ((u8)(address >> 24) | ((address >> 8) & 0xFF00)));
+    return &gHostEntry;
 }
 
 s32 func_02021828(void *p,void *q) {
@@ -117,19 +124,19 @@ s32 func_020219e8(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 *func_02021a38(s32 a){
-extern M2C_UNK data_02138b34;
+extern M2C_UNK gHostRecord;
 s32 *p; s32 size=a+4;
-p=M2C_FIELD(&data_02138b34,s32 *(**)(M2C_UNK,s32),12)(0,size);
+p=M2C_FIELD(&gHostRecord,s32 *(**)(M2C_UNK,s32),12)(0,size);
 if(p){*p=size;p++;}
 return p;
 }
 
 void func_02021a64(void *arg0) {
-    extern M2C_UNK data_02138b34;
+    extern M2C_UNK gHostRecord;
     if (arg0 == NULL) {
         return;
     }
-    M2C_FIELD(&data_02138b34, M2C_UNK (**)(M2C_UNK, s32, s32), 4)(0, arg0 - 4, M2C_FIELD(arg0, s32 *, -4));
+    M2C_FIELD(&gHostRecord, M2C_UNK (**)(M2C_UNK, s32, s32), 4)(0, arg0 - 4, M2C_FIELD(arg0, s32 *, -4));
 }
 
 /* Copy a (possibly network) configuration record into the shared context and
@@ -140,19 +147,19 @@ s32 *func_02021a38(s32);
 void func_02021a64(void *);
 void func_0201ee58(void *);
 u32 v;
-M2C_FIELD(&data_02138b34,u32 *,0x40)=M2C_FIELD(cfg,u32 *,12)==1;
-v=M2C_FIELD(cfg,u32 *,16);M2C_FIELD(&data_02138b34,u32 *,68)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
-v=M2C_FIELD(cfg,u32 *,20);M2C_FIELD(&data_02138b34,u32 *,72)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
-v=M2C_FIELD(cfg,u32 *,24);M2C_FIELD(&data_02138b34,u32 *,76)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
-v=M2C_FIELD(cfg,u32 *,28);M2C_FIELD(&data_02138b34,u32 *,80)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
-v=M2C_FIELD(cfg,u32 *,32);M2C_FIELD(&data_02138b34,u32 *,84)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
-M2C_FIELD(&data_02138b34,s32 *(**)(s32),0x58)=func_02021a38;
-M2C_FIELD(&data_02138b34,void (**)(void *),0x5c)=func_02021a64;
-M2C_FIELD(&data_02138b34,u32 *,12)=M2C_FIELD(cfg,u32 *,4);
-M2C_FIELD(&data_02138b34,u32 *,4)=M2C_FIELD(cfg,u32 *,8);
-M2C_FIELD(&data_02138b34,u32 *,0x60)=0x40;
-M2C_FIELD(&data_02138b34,u32 *,0x70)=M2C_FIELD(cfg,u32 *,0x2c);
-M2C_FIELD(&data_02138b34,u32 *,0x74)=M2C_FIELD(cfg,u32 *,0x30);
+M2C_FIELD(&gHostRecord,u32 *,0x40)=M2C_FIELD(cfg,u32 *,12)==1;
+v=M2C_FIELD(cfg,u32 *,16);M2C_FIELD(&gHostRecord,u32 *,68)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,20);M2C_FIELD(&gHostRecord,u32 *,72)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,24);M2C_FIELD(&gHostRecord,u32 *,76)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,28);M2C_FIELD(&gHostRecord,u32 *,80)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,32);M2C_FIELD(&gHostRecord,u32 *,84)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+M2C_FIELD(&gHostRecord,s32 *(**)(s32),0x58)=func_02021a38;
+M2C_FIELD(&gHostRecord,void (**)(void *),0x5c)=func_02021a64;
+M2C_FIELD(&gHostRecord,u32 *,12)=M2C_FIELD(cfg,u32 *,4);
+M2C_FIELD(&gHostRecord,u32 *,4)=M2C_FIELD(cfg,u32 *,8);
+M2C_FIELD(&gHostRecord,u32 *,0x60)=0x40;
+M2C_FIELD(&gHostRecord,u32 *,0x70)=M2C_FIELD(cfg,u32 *,0x2c);
+M2C_FIELD(&gHostRecord,u32 *,0x74)=M2C_FIELD(cfg,u32 *,0x30);
 func_0201ee58(&data_02138b74);
 }
 

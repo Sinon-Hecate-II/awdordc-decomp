@@ -410,11 +410,11 @@ s32 func_0203ad70(M2C_UNK arg0, void *arg1) {
 
 void func_0203adcc(s32 a,void *b) {
 extern M2C_UNK gMatchSessionMgr;
-s32 func_0203aeb4(s32);
+s32 GetSessionPlayerSlot(s32);
 void gpGetBuddyStatus(s32,s32,void *);
 u32 out[66]; u32 buf[66];s32 n;void *p;
 if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,0x34))return;
-n=func_0203aeb4(M2C_FIELD(b,s32 *,0));
+n=GetSessionPlayerSlot(M2C_FIELD(b,s32 *,0));
 if(n==-1)return;
 gpGetBuddyStatus(a,M2C_FIELD(b,s32 *,8),buf);
 p=M2C_FIELD(&gMatchSessionMgr,void **,8);

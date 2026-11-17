@@ -48,7 +48,7 @@ gAiUnitAction = &RunAiRole3Action;
 
 void func_ov000_0219d848(void) {
     /* Collect the indices of type-6 map entries into a list, then install the
-       func_ov000_021811e8 callback. */
+       RunAiRole4Or6Action callback. */
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
@@ -56,7 +56,7 @@ void func_ov000_0219d848(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_021811e8;
+    extern M2C_UNK RunAiRole4Or6Action;
     s32 index;
     s32 stride;
     s8 *out;
@@ -88,7 +88,7 @@ void func_ov000_0219d848(void) {
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = &gAiUnitList;
-    gAiUnitAction = &func_ov000_021811e8;
+    gAiUnitAction = &RunAiRole4Or6Action;
     *gAiCommandState = 2;
 }
 

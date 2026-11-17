@@ -499,7 +499,7 @@ void *func_0209c6d8(s32 arg0) {
  return base+(flag<<7)+(arg0<<2);
 }
 
-void func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
+void SetCarriedUnitIconSprite(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
  void *func_0209c6d8(s32);
  SpriteAttribute0209 *p=func_0209c6d8(arg0);
  p->value=arg1;p->mode=arg2;p->low=arg4;p->high=arg4;

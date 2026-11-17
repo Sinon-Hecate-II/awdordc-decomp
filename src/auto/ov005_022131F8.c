@@ -142,7 +142,7 @@ OpenNarcArchive(&data_ov005_02220394);
 LoadNarcFileDecompressed(&data_ov005_022203a4,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1880);
 LoadNarcFileDecompressed(&data_ov005_022203b8,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1900);
 LoadNarcFileToSpriteBuffer(&data_ov005_022203cc,0x40,0x20);CloseNarcArchive();LoadScenePanelPalette(1);
-func_0208ca2c(0x2800,6,GetUiColor(12),2);func_020aeebc(3,15,6);
+func_0208ca2c(0x2800,6,GetUiColor(12),2);CreateMainWallpaperSprite(3,15,6);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x54,0xa0,0,14,0x188,3,0x200,arg0,0);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);

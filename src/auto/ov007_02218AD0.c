@@ -467,33 +467,36 @@ gCur3DSpriteEngine=old;
 if(M2C_FIELD(arg,s16 *,0x54)>=8) DeleteSpriteObject(arg);
 }
 
-void func_ov007_02219634(void) {
+/* Show the co-power panel without an animation: clear the main 3D sprite bank's
+ * per-layer flags, make the panel's two sprites visible, snap them onto their
+ * target position and size, and drop the panel's first graphic variant flag. */
+void ShowCoPowerPanel(void) {
     M2C_UNK GetPanelObject(void);
     void Show3DSprite(void *);
-    void func_02089438(void *);
+    void Sync3DSpriteToTarget(void *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
-    u16 * volatile sp8;
-    u16 * volatile sp4;
-    u16 * volatile sp0;
-    u16 **old;
-    void *r4;
+    u16 * volatile layer1;
+    u16 * volatile layer2;
+    u16 * volatile layer3;
+    u16 **savedEngine;
+    void *panel;
 
-    r4 = (void *)GetPanelObject();
-    old = gCur3DSpriteEngine;
+    panel = (void *)GetPanelObject();
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    sp8 = *g3DSpriteEngineMain;
-    *sp8 = (*sp8 & ~0x200);
-    sp4 = *gCur3DSpriteEngine;
-    *sp4 = (*sp4 & ~0x400);
-    sp0 = *gCur3DSpriteEngine;
-    *sp0 = (*sp0 & ~0x800);
-    Show3DSprite(M2C_FIELD(r4, void **, 0x50));
-    Show3DSprite(M2C_FIELD(r4, void **, 0x54));
-    func_02089438(M2C_FIELD(r4, void **, 0x50));
-    func_02089438(M2C_FIELD(r4, void **, 0x54));
-    M2C_FIELD(r4, u8 *, 0x34) = 0;
-    gCur3DSpriteEngine = old;
+    layer1 = *g3DSpriteEngineMain;
+    *layer1 = (*layer1 & ~0x200);
+    layer2 = *gCur3DSpriteEngine;
+    *layer2 = (*layer2 & ~0x400);
+    layer3 = *gCur3DSpriteEngine;
+    *layer3 = (*layer3 & ~0x800);
+    Show3DSprite(M2C_FIELD(panel, void **, OV007_PANEL_SPRITE_A));
+    Show3DSprite(M2C_FIELD(panel, void **, OV007_PANEL_SPRITE_B));
+    Sync3DSpriteToTarget(M2C_FIELD(panel, void **, OV007_PANEL_SPRITE_A));
+    Sync3DSpriteToTarget(M2C_FIELD(panel, void **, OV007_PANEL_SPRITE_B));
+    M2C_FIELD(panel, u8 *, OV007_PANEL_VARIANT_A) = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov007_022196f4(void *arg0) { M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))CreateSpriteObject; extern M2C_UNK data_ov007_0221fdf8; f((void **)&data_ov007_0221fdf8,arg0); }

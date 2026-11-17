@@ -296,7 +296,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     s32 RemoveConnectionPeer();
     M2C_UNK SetGpiStatus();
     M2C_UNK func_0205ea70();
-    M2C_UNK func_0203aeb4();
+    M2C_UNK GetSessionPlayerSlot();
     M2C_UNK func_0203bd0c();
     M2C_UNK func_0203dcf4();
     void SetNetState(s32);
@@ -448,7 +448,7 @@ void func_02039844(s32 arg0, s32 arg1) {
         void (*cb)(s32, s32, s32, s32, s32, s32) = NULL;
         if (M2C_FIELD(base, s32 *, 0x90) != 0 && r7 != 0) {
             if (arg1v == 0) r7 = 1; else r7 = 0;
-            ae = func_0203aeb4(r5);
+            ae = GetSessionPlayerSlot(r5);
             cb = (void (*)(s32, s32, s32, s32, s32, s32))M2C_FIELD(base, void **, 0x90);
             cb(r8, r7, r10, r4, ae, M2C_FIELD(base, s32 *, 0x94));
         }

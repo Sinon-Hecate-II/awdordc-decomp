@@ -10,6 +10,9 @@ extern u8 gUnitKindMaxAmmo[];
 extern u8 gUnitKindMaxFuel[];
 extern void *gAiSettings;
 extern void *gAiUnitTypeTuning;
+extern const u8 data_ov000_021ae91c[4];
+extern s8 gTerrainPropertyType[];
+extern u8 gUnitKindStats[];
 
 void func_ov000_0219a584(void) {
 s32 func_ov000_0219a3b0(s32); s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32);
@@ -107,6 +110,37 @@ void UpdateAiSupplyStates(void) {
 }
 
 void func_ov000_0219a9b0(void) {
+s32 func_020d280c(u16,s32,s32); s32 IsPlayerActive(s32); s32 IsCurrentPlayerUnit(s16); s32 IsSameTeam(u16,s32);
+u8 propertyFlags[4]; s32 y,x,player,unitId; u8 *unit; u32 kind;
+propertyFlags[0]=data_ov000_021ae91c[0];propertyFlags[1]=data_ov000_021ae91c[1];propertyFlags[2]=data_ov000_021ae91c[2];propertyFlags[3]=data_ov000_021ae91c[3];
+M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)((0)<<29)>>29);M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)((0)<<29)>>26);M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)((0)<<29)>>23);
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
+if(!func_020d280c(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),x,y)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29)|propertyFlags[gTerrainPropertyType[((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+y*2,u16*,0x3758)+x+0x1420]&31]])<<29)>>23);}
+if((((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+y*2,u16*,0x3758)+x+0x1420]&224)==M2C_FIELD(*gCurrentMap,u16*,0x52a6)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)|propertyFlags[gTerrainPropertyType[((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+y*2,u16*,0x3758)+x+0x1420]&31]])<<29)>>26);}
+M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)|propertyFlags[gTerrainPropertyType[((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+y*2,u16*,0x3758)+x+0x1420]&31]])<<29)>>29);
+}}
+M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~3584)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29))<<29)>>20);M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~28672)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29))<<29)>>17);
+for(player=1;player<5;player++) if(IsPlayerActive(player)){
+for(unitId=gPlayerUnitIdBase[player]+1;unitId<gPlayerUnitIdBase[player]+0x33;unitId++){
+unit=(u8*)*gCurrentMap+0x59a4;
+kind=(u32)(unit[unitId*14]<<26)>>26;
+if(kind){
+if(gUnitKindStats[kind*112+19]&32){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)|4))<<29)>>29);
+if(IsCurrentPlayerUnit((s16)unitId)==1){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)|4))<<29)>>26);}
+if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29)|4))<<29)>>23);}
+if(((u32)(unit[unitId*14]<<26)>>26)==21){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)|8))<<29)>>29);
+if(IsCurrentPlayerUnit((s16)unitId)==1){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)|8))<<29)>>26);}
+if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29)|8))<<29)>>23);}}}
+else if(kind==17){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)|8))<<29)>>29);
+if(IsCurrentPlayerUnit((s16)unitId)==1){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)|8))<<29)>>26);}
+if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29)|8))<<29)>>23);}}
+else if(gUnitKindStats[kind*112+19]&16){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)|2))<<29)>>29);
+if(IsCurrentPlayerUnit((s16)unitId)==1){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)|2))<<29)>>26);}
+if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)(((u16)(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29)|2))<<29)>>23);}}
+}
+}
+}
 }
 
 s32 ApplyStatSpread(s32 arg0, s32 arg1, s32 arg2) {

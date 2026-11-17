@@ -521,13 +521,15 @@ M2C_FIELD(gAiCommandState,u16 *,8)|=0x20;
 func_ov000_02190094();func_ov000_021954a4();func_ov000_0218b02c();
 }
 #pragma opt_strength_reduction reset
-void func_ov000_021811e8(void) {
+/* Action callback shared by AI role-4 and role-6 units: flag the action plan when
+ * the acting unit is set to act in place, then run the handler for its AI step. */
+void RunAiRole4Or6Action(void) {
  s32 IsAiMap175Player2Override(); M2C_UNK func_ov000_0218049c(); M2C_UNK func_ov000_021804b0(); M2C_UNK func_ov000_021804c4();
  extern void **gCurrentMap; extern void *gAiCommandState;
  if(IsAiMap175Player2Override()) return;
- if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,8)<<18)>>30)==2)
- M2C_FIELD(gAiCommandState,u16 *,8)|=128;
- switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28) {
+ if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_ACTION)<<18)>>30)==MAP_UNIT_ACTION_STAY)
+ M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_ACTION_FLAGS)|=0x80;
+ switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28) {
  case 0: case 2: case 3: case 4: case 5: case 7: case 8: func_ov000_0218049c(); return;
  case 1: case 9: func_ov000_021804b0(); return;
  case 6: func_ov000_021804c4(); return;

@@ -155,7 +155,10 @@ s32 func_020c5f94(void) {
     return func_020c5efc();
 }
 
-s32 func_020c5fb0(void) {
+/* Whether the current player has no units left: 1 when none of the player's
+ * unit-group records is occupied, 0 when at least one is. Returns 2 up front
+ * when the map data's +4 flag bit 3 is set. */
+s32 IsCurrentPlayerOutOfUnits(void) {
     s32 func_020a8910(u16);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
@@ -164,13 +167,13 @@ s32 func_020c5fb0(void) {
     void *base;
     u16 start;
 
-    if (func_020a8910(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) != 0) {
+    if (func_020a8910(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
         return 2;
     }
     base = *gCurrentMap;
-    start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
-    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33; i++) {
-        UnkStruct_020C5D0C *entry = &((UnkStruct_020C5D0C *)((u8 *)base + 0x59A4))[i];
+    start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+        UnkStruct_020C5D0C *entry = &((UnkStruct_020C5D0C *)((u8 *)base + MAP_UNIT_RECORDS))[i];
         if (entry->unk0 != 0) { count += 1; }
     }
     if (count == 0) { return 1; }
@@ -178,11 +181,11 @@ s32 func_020c5fb0(void) {
 }
 
 s32 func_020c606c(void) {
-    s32 func_020c5fb0();
+    s32 IsCurrentPlayerOutOfUnits();
     if (func_020c5cd4() == 2) {
         return 2;
     }
-    return func_020c5fb0();
+    return IsCurrentPlayerOutOfUnits();
 }
 
 s32 func_020c6088(void) {

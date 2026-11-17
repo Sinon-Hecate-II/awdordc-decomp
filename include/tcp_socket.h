@@ -20,6 +20,7 @@
 #define NETSTACK_RING_READ  0x30 /* u32 byte offset of the next record to read */
 #define NETSTACK_RING_BUF   0x58 /* u8 *ring buffer */
 #define NETSTACK_RING_SIZE  0x5c /* u32 ring buffer size in bytes */
+#define NETSTACK_RING_WAITER 0x54 /* void *running thread object while the reader sleeps for a record, else 0 */
 #define NETSTACK_MAX_PACKET 0x5e4 /* largest record the ring accepts */
 
 /* More gNetStack fields used by the IPv4 sender in main_0201AE0C. */

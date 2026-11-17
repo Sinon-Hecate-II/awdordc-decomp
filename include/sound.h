@@ -116,6 +116,20 @@ enum {
 #define WAVE_ARCHIVE_ENTRIES   0x3C /* s32[count] per-entry data pointers (then the offsets) */
 #define WAVE_ARCHIVE_FILE_SIZE 0x08 /* s32 total size of the archive file */
 
+/* One record of the packed entry table a sound bank shares with the animation
+ * system; the packed-table iterator reads it.  A type-1 record copies five u16
+ * values at +0x02, of which the wave archive loader uses the first two: the
+ * entry index in the archive and the archive slot it belongs to. */
+typedef struct PackedBankEntry {
+    u8  type;       /* +0x00 entry type: 1..5, 16 or 17 */
+    u8  filler_01;
+    u16 waveEntry;  /* +0x02 wave archive entry index */
+    u16 waveSlot;   /* +0x04 wave archive slot (0..3) */
+    u16 unk_06;
+    u16 unk_08;
+    u16 unk_0A;
+} PackedBankEntry;
+
 /* Menu sounds handed to PlaySoundEffect. */
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
 #define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */

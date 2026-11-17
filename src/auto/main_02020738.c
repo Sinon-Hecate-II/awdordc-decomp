@@ -468,7 +468,7 @@ s32 func_020210b8(void) {
     return var_r4;
 }
 
-s32 func_02021134(s32 arg0) {
+s32 LookupHostAddress(s32 arg0) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d138(void *);
     M2C_UNK func_0201d14c();

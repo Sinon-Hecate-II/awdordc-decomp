@@ -115,7 +115,7 @@ void func_ov001_021770ec(void) {
     if (Ov001_IsFadeActive(0) != 0) return;
     if (data_ov001_02193d64 == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     if (data_ov001_02193d64 == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
@@ -393,7 +393,7 @@ void func_ov001_02177850(void) {
     s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_InitOptionMenu;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -405,7 +405,7 @@ void func_ov001_02177850(void) {
     if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);

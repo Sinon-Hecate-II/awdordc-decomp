@@ -141,7 +141,7 @@ void func_ov003_021e8958(void *arg0) {
     void *func_020896f0(void *);
     void func_020893f4(void *, s32, s32);
     void func_ov003_021e97bc(void *, s32, s32, s32, s32);
-    void func_02089438(void *);
+    void Sync3DSpriteToTarget(void *);
     void func_ov003_021e97fc(void *, s32);
     void func_ov003_021e9804(void *);
     s32 Hide3DSprite(void *);
@@ -204,13 +204,13 @@ void func_ov003_021e8958(void *arg0) {
     M2C_FIELD(arg0, void **, 0x58) = func_020896f0(arg0);
     func_020893f4(M2C_FIELD(arg0, void **, 0x58), 0xb000, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x58), 0xa, 0x10, 0x38, 0x38);
-    func_02089438(M2C_FIELD(arg0, void **, 0x58));
+    Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x58));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x58), 1);
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
     M2C_FIELD(arg0, void **, 0x5c) = func_020896f0(arg0);
     func_020893f4(M2C_FIELD(arg0, void **, 0x5c), 0xb400, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x5c), 0x38, 0x10, 0x38, 0x38);
-    func_02089438(M2C_FIELD(arg0, void **, 0x5c));
+    Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5c));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x5c), 1);
     func_ov003_021e9804(M2C_FIELD(arg0, void **, 0x5c));
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x5c));
@@ -245,8 +245,8 @@ void func_ov003_021e8958(void *arg0) {
     }
     SetWaypointPanelState(arg0, 0);
     func_ov003_021e9c50(arg0);
-    func_02089438(M2C_FIELD(arg0, void **, 0x58));
-    func_02089438(M2C_FIELD(arg0, void **, 0x5c));
+    Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x58));
+    Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5c));
     {
         s32 a = GetWaypointSlotIndex(M2C_FIELD(arg0, void **, 0x6c));
         s32 b = func_ov003_021e7450(M2C_FIELD(arg0, void **, 0x6c));

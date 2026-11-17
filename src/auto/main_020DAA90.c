@@ -30,9 +30,9 @@ void func_020daac0(void) {
 DAACC_RET func_020daacc(void *arg0) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
-    M2C_UNK func_020b1c44(s32, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     M2C_UNK ClearTileRect(u16 *, s32, s32);
-    M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
+    M2C_UNK DrawGlyphString(u16 *, u32, u32, u32, u16, u16, u32);
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     s32 func_ov009_022246ac(s32);
@@ -61,7 +61,7 @@ DAACC_RET func_020daacc(void *arg0) {
 
     UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
     temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    func_020b1c44(temp_r0, 0);
+    SetSpriteSlotScroll(temp_r0, 0);
     saved = gCur3DSpriteEngine;
     temp_r3 = 0 - temp_r0;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -108,7 +108,7 @@ DAACC_RET func_020daacc(void *arg0) {
             v6b = M2C_FIELD(unit, u8 *, 0x6B);
             v6c = M2C_FIELD(unit, u8 *, 0x6C);
             ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 6 + (z << 1)), 0x14, 2);
-            func_020e4cd8((u16 *)((u8 *)unit + 0x50), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
+            DrawGlyphString((u16 *)((u8 *)unit + 0x50), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
             StringFormat(buf2, data_0212d24c, data_0212d248[0], data_0212d244[1] + v6b, data_0212d248[0], data_0212d244[1] + v6c);
             DrawTextLine(0x1A, (s16)y, 1, buf2, 0x9000, (u16)(x + 0x28));
             M2C_FIELD(arg0, s8 *, 0x42)++;
@@ -125,7 +125,7 @@ DAACC_RET func_020daacc(void *arg0) {
         }
         for (j = M2C_FIELD(arg0, s8 *, 0x42); j < 4; j++) {
             gUnitSlotIds[j] = -1;
-            func_020e4cd8(data_0212d258, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
+            DrawGlyphString(data_0212d258, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
             StringFormat(buf, data_0212d270);
             DrawTextLine(0x1A, (s16)y, 1, buf, 0x9000, (u16)(x + 0x28));
             x += 0x34;
@@ -148,9 +148,9 @@ M2C_UNK func_020dae28(void *arg0) {
 DAE_RET DrawUnitSlotList(void *menu) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
-    M2C_UNK func_020b1c44(s32, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     M2C_UNK ClearTileRect(u16 *, s32, s32);
-    M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
+    M2C_UNK DrawGlyphString(u16 *, u32, u32, u32, u16, u16, u32);
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     s32 func_020c52ec(s32);
@@ -177,7 +177,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
 
     UpdateSpriteAnimation(M2C_FIELD(menu, s32 *, 0x68));
     animValue = GetSpriteAnimValue(M2C_FIELD(menu, s32 *, 0x68));
-    func_020b1c44(animValue, 0);
+    SetSpriteSlotScroll(animValue, 0);
     savedEngine = gCur3DSpriteEngine;
     scroll = -animValue;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -201,7 +201,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
             if (M2C_FIELD(menu, s32 *, 0x38) != M2C_FIELD(info, s8 *, 0x28)) continue;
             gUnitSlotIds[M2C_FIELD(menu, s8 *, 0x42)] = i;
             ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 6 + (z << 1)), 20, 2);
-            func_020e4cd8((u16 *)info, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
+            DrawGlyphString((u16 *)info, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
             StringFormat(nameBuf, gUnitListNameFormat, data_0212d27c[0], data_0212d278[1] + glyphB, data_0212d27c[0], data_0212d278[1] + glyphA);
             DrawTextLine(26, (s16)y, 1, nameBuf, 0x9000, (u16)(x + 0x28));
             M2C_FIELD(menu, s8 *, 0x42)++;
@@ -212,7 +212,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
         }
         for (j = M2C_FIELD(menu, s8 *, 0x42); j < 4; j++) {
             gUnitSlotIds[j] = -1;
-            func_020e4cd8(data_0212d28c, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
+            DrawGlyphString(data_0212d28c, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
             StringFormat(emptyBuf, gUnitListEmptyName);
             DrawTextLine(26, (s16)y, 1, emptyBuf, 0x9000, (u16)(x + 0x28));
             x += 0x34;
@@ -264,8 +264,8 @@ void func_020db194(void) {
 #pragma opt_propagation off
 void func_020db1a0(void *arg0) {
  M2C_UNK UpdateSpriteAnimation(s32);s32 GetSpriteAnimValue(s32);
- M2C_UNK func_020b1c44(s32,M2C_UNK);M2C_UNK ClearTileRect(u16 *,s32,s32);
- M2C_UNK func_020e4cd8(u16 *,u32,u32,u32,u16,u16,u32);
+ M2C_UNK SetSpriteSlotScroll(s32,M2C_UNK);M2C_UNK ClearTileRect(u16 *,s32,s32);
+ M2C_UNK DrawGlyphString(u16 *,u32,u32,u32,u16,u16,u32);
  M2C_UNK StringFormat(void *,const char *,...);M2C_UNK DrawTextLine(s32,s32,s32,void *,s32,s32);
  s32 func_ov009_02224064(void);s32 func_ov009_022246ac(s32);s32 func_ov009_02225470(void);s32 GetLinkPhase(void);s32 func_ov009_022241b4(void);s32 func_ov009_02224070(s32);
  extern void **gCur3DSpriteEngine,**g3DSpriteEngineMain;
@@ -278,7 +278,7 @@ void func_020db1a0(void *arg0) {
  s32 anim,x,glyphA,glyphB,y,i,z,count,mode;
  u16 scroll;
  UpdateSpriteAnimation(M2C_FIELD(arg0,s32 *,0x68));anim=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68));
- func_020b1c44(anim,0);scroll=-anim;
+ SetSpriteSlotScroll(anim,0);scroll=-anim;
  saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
  M2C_FIELD(*g3DSpriteEngineMain,u16 *,0x3a)=scroll;
  M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x42)=0;
@@ -288,7 +288,7 @@ void func_020db1a0(void *arg0) {
  if(M2C_FIELD(arg0,u16 *,0x48)&1) {
  unit=(void *)func_ov009_02224064();count=M2C_FIELD(unit,u8 *,0x1c);glyphA=M2C_FIELD(unit,u8 *,0x1b);
  ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+0x86),20,2);
- func_020e4cd8(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
+ DrawGlyphString(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
  StringFormat(buf0,data_0212d2b4,data_0212d2b0[0],data_0212d2ac[1]+glyphA,data_0212d2b0[0],data_0212d2ac[1]+count);
  DrawTextLine(26,2,1,buf0,0x9000,(u16)(x+40));x+=52;
  } else {
@@ -302,7 +302,7 @@ void func_020db1a0(void *arg0) {
  {u32 oldIme=ime;RestoreUnitListIme(oldIme);}return;
  }
  ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+0x86),20,2);
- func_020e4cd8((u16 *)((u8 *)unit+0x50),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
+ DrawGlyphString((u16 *)((u8 *)unit+0x50),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
  StringFormat(buf1,data_0212d2c8,data_0212d2c4[0],data_0212d2c0[1]+glyphA,data_0212d2c4[0],data_0212d2c0[1]+count);
  DrawTextLine(26,2,1,buf1,0x9000,(u16)(x+40));
  {u32 oldIme=ime;RestoreUnitListIme(oldIme);}x+=52;
@@ -313,11 +313,11 @@ void func_020db1a0(void *arg0) {
  unit=(void *)func_ov009_02224070(i);
  if(unit&&func_ov009_02225470()>=2U) {
  ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+14+(z<<1)),20,2);
- func_020e4cd8(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,7,(u16)y,x);
+ DrawGlyphString(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,7,(u16)y,x);
  x+=40;
  } else {
  ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+14+(z<<1)),20,2);
- func_020e4cd8(data_0212d2d4,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,7,(u16)y,x);
+ DrawGlyphString(data_0212d2d4,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,7,(u16)y,x);
  x+=40;
  }
  z+=0x60;y+=3;i++;
@@ -329,9 +329,9 @@ void func_020db1a0(void *arg0) {
 M2C_UNK func_020db5e8(void *arg0) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
-    M2C_UNK func_020b1c44(s32, M2C_UNK);
+    M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     M2C_UNK ClearTileRect(u16 *, s32, s32);
-    M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
+    M2C_UNK DrawGlyphString(u16 *, u32, u32, u32, u16, u16, u32);
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     M2C_UNK GetLocalPlayerStatus(void);
@@ -363,7 +363,7 @@ M2C_UNK func_020db5e8(void *arg0) {
 
     UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
     temp = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    func_020b1c44(temp, 0);
+    SetSpriteSlotScroll(temp, 0);
     saved = gCur3DSpriteEngine;
     scroll = (u16)(-temp);
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -376,7 +376,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     r10 = func_ov010_02229a38();
     threshold = func_ov010_02229a40();
     ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x86), 0x14, 2);
-    func_020e4cd8((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, 2, x);
+    DrawGlyphString((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, 2, x);
     StringFormat(buf, data_0212d2f4, data_0212d2f0[0], data_0212d2ec[1] + threshold, data_0212d2f0[0], data_0212d2ec[1] + r10);
     DrawTextLine(0x1a, 2, 1, buf, 0x9000, (u16)(x + 0x28));
     x = x + 0x34;
@@ -389,10 +389,10 @@ M2C_UNK func_020db5e8(void *arg0) {
             r5 = (s32)func_ov010_02229b0c(r8);
             if (r5 != 0 && func_ov010_02229a40() >= 2) {
                 ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (r9 << 1)), 0x14, 2);
-                func_020e4cd8((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
+                DrawGlyphString((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
             } else {
                 ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (r9 << 1)), 0x14, 2);
-                func_020e4cd8((u16 *)data_0212d300, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
+                DrawGlyphString((u16 *)data_0212d300, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
             }
             x = x + 0x28;
             r9 = r9 + 0x60;

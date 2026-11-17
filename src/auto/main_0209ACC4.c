@@ -296,31 +296,33 @@ void func_0209b190(M2C_UNK arg0) {
     func_01ffa6fc(arg0);
 }
 
-void func_0209b1b0(void *arg0) {
+/* Initialise a new text object from the current screen engine's shared default
+ * text object (its script pointer, layout, glyph attributes, timing and flags). */
+void InitTextState(TextState *st) {
     extern s32 gCur3DSpriteEngine;
-    void *src = M2C_FIELD(gCur3DSpriteEngine, void **, 0x54);
+    TextState *defaults = M2C_FIELD(gCur3DSpriteEngine, TextState **, 0x54);
 
-    M2C_FIELD(arg0, s32 *, 0x34) = M2C_FIELD(src, s32 *, 0x34);
-    M2C_FIELD(arg0, s32 *, 0x38) = M2C_FIELD(src, s32 *, 0x38);
-    M2C_FIELD(arg0, s8 *, 0x57) = M2C_FIELD(src, s8 *, 0x57);
-    M2C_FIELD(arg0, s32 *, 0x3C) = M2C_FIELD(src, s32 *, 0x3C);
-    M2C_FIELD(arg0, s32 *, 0x40) = M2C_FIELD(src, s32 *, 0x40);
-    M2C_FIELD(arg0, u16 *, 0x44) = M2C_FIELD(src, u16 *, 0x44);
-    M2C_FIELD(arg0, u16 *, 0x46) = M2C_FIELD(src, u16 *, 0x46);
-    M2C_FIELD(arg0, u16 *, 0x4E) = M2C_FIELD(src, u16 *, 0x4C);
-    M2C_FIELD(arg0, u16 *, 0x4C) = M2C_FIELD(src, u16 *, 0x4C);
-    M2C_FIELD(arg0, s32 *, 0x60) = M2C_FIELD(src, s32 *, 0x60);
-    M2C_FIELD(arg0, u8 *, 0x48) = M2C_FIELD(src, u8 *, 0x48);
-    M2C_FIELD(arg0, u8 *, 0x49) = M2C_FIELD(src, u8 *, 0x49);
-    M2C_FIELD(arg0, u8 *, 0x4A) = M2C_FIELD(src, u8 *, 0x4A);
-    M2C_FIELD(arg0, u8 *, 0x4B) = M2C_FIELD(src, u8 *, 0x4B);
-    M2C_FIELD(arg0, s8 *, 0x54) = M2C_FIELD(src, s8 *, 0x54);
-    M2C_FIELD(arg0, s8 *, 0x55) = M2C_FIELD(src, s8 *, 0x55);
-    M2C_FIELD(arg0, s32 *, 0x50) = M2C_FIELD(src, s32 *, 0x50);
-    M2C_FIELD(arg0, u8 *, 0x56) = M2C_FIELD(src, u8 *, 0x56);
-    M2C_FIELD(arg0, u8 *, 0x58) = M2C_FIELD(src, u8 *, 0x58);
-    M2C_FIELD(arg0, u8 *, 0x59) = M2C_FIELD(src, u8 *, 0x59);
-    M2C_FIELD(arg0, u8 *, 0x5C) = M2C_FIELD(src, u8 *, 0x5C);
+    st->cursor = defaults->cursor;
+    st->next = defaults->next;
+    st->palette = defaults->palette;
+    st->pixelX = defaults->pixelX;
+    st->cells = defaults->cells;
+    st->baseAttr = defaults->baseAttr;
+    st->attr16 = defaults->attr16;
+    st->lineStart = defaults->linePixel;
+    st->linePixel = defaults->linePixel;
+    st->sound = defaults->sound;
+    st->lineX = defaults->lineX;
+    st->lineY = defaults->lineY;
+    st->cellX = defaults->cellX;
+    st->cellY = defaults->cellY;
+    st->delay = defaults->delay;
+    st->speed = defaults->speed;
+    st->callback = defaults->callback;
+    st->column = defaults->column;
+    st->unk58 = defaults->unk58;
+    st->unk59 = defaults->unk59;
+    st->flags = defaults->flags;
 }
 
 void func_0209b26c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
@@ -463,7 +465,7 @@ void func_0209b8ec(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
 }
 
-s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
+s32 RenderTextToBitmap(M2C_UNK arg0, s32 arg1) {
     M2C_UNK func_0209b370(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
     s32 MeasureMessageLinesWidth(s32, M2C_UNK);
     s32 HeapAllocBlock();

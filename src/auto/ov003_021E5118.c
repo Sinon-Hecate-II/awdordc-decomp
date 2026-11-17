@@ -37,7 +37,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK DrawMapPreview(s32, s32, M2C_UNK, M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     M2C_UNK HeapFreeBlock(s32);
-    M2C_UNK func_020e4cd8(s32, s32, s32, M2C_UNK, s32, s32, s32);
+    M2C_UNK DrawGlyphString(s32, s32, s32, M2C_UNK, s32, s32, s32);
     M2C_UNK func_ov000_0216a30c(s32, s32, M2C_UNK);
     M2C_UNK func_ov000_0216a470();
     s32 func_ov000_0216a564();
@@ -166,7 +166,7 @@ void func_ov003_021e5118(void *arg0) {
     func_01ff9dd8(0);
     LoadScenePanelPalette(7);
     temp_r6_2 = data_027e01d8;
-    func_020e4cd8(GetLocalPlayerName(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
+    DrawGlyphString(GetLocalPlayerName(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
     func_ov000_0216a470();
     func_ov000_0216a30c(func_ov000_0216a564(), 0x5F80, 9);
     if ((func_ov000_0216a76c() != -2) && (func_ov000_0216a76c() != -1)) {

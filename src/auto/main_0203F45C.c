@@ -14,7 +14,7 @@ if(M2C_FIELD(GetConnection(),u8 *,21)){a=payload[1];b=(u16)payload[2];}
 count=ConnectionHandleJoin(peer,a,b,payload[0],type==11);
 if(count==2){
 M2C_FIELD(GetConnection(),s32 *,476)=0;func_0204063c(peer,a,b);if(func_0204084c())return 0;
-if(M2C_FIELD(GetConnection(),u8 *,21)==2&&M2C_FIELD(GetConnection(),s32 *,1132)){p=GetConnection();i=func_0203aeb4(peer);M2C_FIELD(p,void (**)(s32,s32),1132)(i,M2C_FIELD(GetConnection(),s32 *,1136));}
+if(M2C_FIELD(GetConnection(),u8 *,21)==2&&M2C_FIELD(GetConnection(),s32 *,1132)){p=GetConnection();i=GetSessionPlayerSlot(peer);M2C_FIELD(p,void (**)(s32,s32),1132)(i,M2C_FIELD(GetConnection(),s32 *,1136));}
 packet[0]=M2C_FIELD(GetConnection(),u8 *,20);
 for(n=1;n<=M2C_FIELD(GetConnection(),u8 *,20);n++)packet[n]=M2C_FIELD((u8 *)GetConnection()+((u32)n)*4,s32 *,244);
 packet[n++]=M2C_FIELD(GetConnection(),s32 *,28);packet[n++]=M2C_FIELD(GetConnection(),u16 *,26);SetConnectionState(11);
@@ -67,7 +67,7 @@ if(M2C_FIELD(GetConnection(),u8 *,21)==1&&!M2C_FIELD(GetConnection(),u8 *,422)){
 p=GetConnection();i=M2C_FIELD(GetConnection(),u8 *,20)+1;M2C_FIELD((u8 *)p+i*4,s32 *,244)=packet0;
 p=GetConnection();i=M2C_FIELD(GetConnection(),u8 *,20)+1;M2C_FIELD((u8 *)p+i,u8 *,720)=j;
 func_0205ea70(M2C_FIELD(GetConnection(),s32 *,16));
-if(M2C_FIELD(GetConnection(),s32 *,1132)){p=GetConnection();i=func_0203aeb4(packet0);M2C_FIELD(p,void (**)(s32,s32),1132)(i,M2C_FIELD(GetConnection(),s32 *,1136));}break;
+if(M2C_FIELD(GetConnection(),s32 *,1132)){p=GetConnection();i=GetSessionPlayerSlot(packet0);M2C_FIELD(p,void (**)(s32,s32),1132)(i,M2C_FIELD(GetConnection(),s32 *,1136));}break;
 case 8:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=1||M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;
 packet0=payload[0];
@@ -99,7 +99,7 @@ break;
 case 12:
 if(M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;
 if(!M2C_FIELD(GetConnection(),u8 *,21)||M2C_FIELD(GetConnection(),u8 *,21)==1){if(!RestartConnection(peer))return 0;}
-else if(M2C_FIELD(GetConnection(),u8 *,21)==3){M2C_FIELD(GetConnection(),s32 *,524)=peer;func_02041e44();func_02041be0(0);}
+else if(M2C_FIELD(GetConnection(),u8 *,21)==3){M2C_FIELD(GetConnection(),s32 *,524)=peer;CloseGt2Connection();func_02041be0(0);}
 break;
 case 13:case 14:case 15:if(!HandlePeerSyncNotice(peer,type,payload[0]))return 0;break;
 case 16:

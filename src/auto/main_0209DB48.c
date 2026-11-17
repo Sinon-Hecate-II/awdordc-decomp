@@ -1,8 +1,10 @@
 /* 37 functions from 0x0209DB48 to 0x0209EAF4 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 typedef struct { s32 values[16]; } ScenePanelMotionTable;
 extern const ScenePanelMotionTable data_020f3b04;
+
 
 typedef struct {
     void *next;
@@ -431,22 +433,27 @@ M2C_UNK func_0209e5d0(void *arg0) {
 
 M2C_UNK func_0209e640(void *a){u8 v=M2C_FIELD(a,u32 *,0x40)>>26;if(v==16)return v;return Reset3DSpriteBankState(v);}
 
-s32 func_0209e660(void *arg0) {
-void func_02088964(void *),UpdateSpriteSlide(void *);
-s32 func_020890d4(void *);
-void func_020887a8(void *,s32,s32,s32,void *);
+/* Per-frame update of a scene panel: advance its fade and slide, re-split the
+   sprite bank, bob the panel with the motion table, place its two face children
+   with their linked faces and draw the two panel halves. */
+void UpdateScenePanel(void *arg0) {
+void UpdateSpriteFade(void *),UpdateSpriteSlide(void *);
+s32 Is3DSpriteAnimating(void *);
+void DrawSpriteActorAt(void *,s32,s32,s32,void *);
 s32 Is3DSpriteVisible(void *);
 extern void *g3DSpriteBankMain;extern u32 gFrameCounter;
 extern u8 data_020f39cc[],data_020f39c4[];
-ScenePanelMotionTable table;
-s32 index,offset;void *child,*sprite;u8 mode;
-func_02088964(arg0);UpdateSpriteSlide(arg0);
-if((u8)(M2C_FIELD(arg0,u32 *,0x40)>>26)!=16){
+ScenePanelMotionTable motionTable;
+s32 childIndex,offset,x,y;void *child,*sprite;u8 mode;
+UpdateSpriteFade(arg0);UpdateSpriteSlide(arg0);
+if((u8)(M2C_FIELD(arg0,u32 *,SPRITE_ACTOR_SPLIT)>>26)!=16){
+u16 *flags;u8 splitRow;
 Reset3DSpriteBankState();
-mode=(u8)(M2C_FIELD(arg0,u32 *,0x40)>>26);
-M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)=(M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)&~0xc0)|0x40;
-M2C_FIELD(g3DSpriteBankMain,u8 *,0x51)=mode;
-M2C_FIELD(g3DSpriteBankMain,u8 *,0x52)=16-mode;
+flags=(u16 *)((u8 *)g3DSpriteBankMain+0x12);
+splitRow=(u8)(M2C_FIELD(arg0,u32 *,SPRITE_ACTOR_SPLIT)>>26);
+*flags=(*flags&~0xc0)|0x40;
+M2C_FIELD(g3DSpriteBankMain,u8 *,0x51)=splitRow;
+M2C_FIELD(g3DSpriteBankMain,u8 *,0x52)=16-splitRow;
 M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)&=~1;
 M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)&=~2;
 M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)&=~4;
@@ -458,35 +465,38 @@ M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)|=0x400;
 M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)|=0x800;
 M2C_FIELD(g3DSpriteBankMain,u16 *,0x12)|=0x1000;
 }
-if(M2C_FIELD(arg0,u8 *,0x59) && !func_020890d4(arg0)){
-table=data_020f3b04;
-offset=table.values[(gFrameCounter>>2)&15];
-switch(M2C_FIELD(arg0,u8 *,0x5b)){
-case 1:func_020887a8(arg0,M2C_FIELD(arg0,s16 *,0x5c)-offset,M2C_FIELD(arg0,s16 *,0x5e),2,data_020f39cc);break;
-case 2:func_020887a8(arg0,M2C_FIELD(arg0,s16 *,0x5c),M2C_FIELD(arg0,s16 *,0x5e)-offset,2,data_020f39c4);break;
+if(M2C_FIELD(arg0,u8 *,SCENE_PANEL_FACE_STATE) && !Is3DSpriteAnimating(arg0)){
+motionTable=data_020f3b04;
+offset=motionTable.values[(gFrameCounter>>2)&15];
+switch(M2C_FIELD(arg0,u8 *,SCENE_PANEL_MOTION)){
+case 1:DrawSpriteActorAt(arg0,M2C_FIELD(arg0,s16 *,SCENE_PANEL_MOTION_X)-offset,M2C_FIELD(arg0,s16 *,SCENE_PANEL_MOTION_Y),2,data_020f39cc);break;
+case 2:DrawSpriteActorAt(arg0,M2C_FIELD(arg0,s16 *,SCENE_PANEL_MOTION_X),M2C_FIELD(arg0,s16 *,SCENE_PANEL_MOTION_Y)-offset,2,data_020f39c4);break;
 }
 }
-index=0;do{
-child=(void *)Get3DSpriteChild(arg0,index);
-mode=M2C_FIELD(child,u8 *,0x5a);
-sprite=M2C_FIELD(child,void **,0x60);
-switch(M2C_FIELD(child,u8 *,0x59)){
+childIndex=0;do{
+child=(void *)Get3DSpriteChild(arg0,childIndex);
+mode=M2C_FIELD(child,u8 *,FACE_SPRITE_LAYOUT);
+sprite=M2C_FIELD(child,void **,FACE_SPRITE_CHILD);
+switch(M2C_FIELD(child,u8 *,FACE_SPRITE_EXPRESSION)){
 case 5:case 6:case 7:
-M2C_FIELD(child,s16 *,0x34)=M2C_FIELD(arg0,s16 *,0x34)+mode*192+8;
-M2C_FIELD(child,s16 *,0x36)=M2C_FIELD(arg0,s16 *,0x36)+8;
-M2C_FIELD(sprite,s16 *,0x34)=M2C_FIELD(arg0,s16 *,0x34)+mode*192;
-M2C_FIELD(sprite,s16 *,0x36)=M2C_FIELD(arg0,s16 *,0x36)+48;
+x=M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_X);y=M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_Y);
+M2C_FIELD(child,s16 *,SPRITE_ACTOR_X)=x+mode*192+8;
+M2C_FIELD(child,s16 *,SPRITE_ACTOR_Y)=y+8;
+x=M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_X);y=M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_Y);
+M2C_FIELD(sprite,s16 *,SPRITE_ACTOR_X)=x+mode*192;
+M2C_FIELD(sprite,s16 *,SPRITE_ACTOR_Y)=y+48;
 if(Is3DSpriteVisible(arg0)){Show3DSprite((s32)child);Show3DSprite((s32)sprite);}else{Hide3DSprite((s32)child);Hide3DSprite((s32)sprite);}
 break;
 case 8:case 9:case 10:
-M2C_FIELD(child,s16 *,0x34)=mode*96;M2C_FIELD(child,s16 *,0x36)=0;
-M2C_FIELD(sprite,s16 *,0x34)=M2C_FIELD(arg0,s16 *,0x34)+mode*184+4;
-M2C_FIELD(sprite,s16 *,0x36)=M2C_FIELD(arg0,s16 *,0x36)+2;break;
+M2C_FIELD(child,s16 *,SPRITE_ACTOR_X)=mode*96;M2C_FIELD(child,s16 *,SPRITE_ACTOR_Y)=0;
+x=M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_X);y=M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_Y);
+M2C_FIELD(sprite,s16 *,SPRITE_ACTOR_X)=x+mode*184+4;
+M2C_FIELD(sprite,s16 *,SPRITE_ACTOR_Y)=y+2;break;
 }
-index++;
-}while(index<2);
-func_020887a8(arg0,M2C_FIELD(arg0,s16 *,0x34),M2C_FIELD(arg0,s16 *,0x36),M2C_FIELD(arg0,s8 *,0x49),M2C_FIELD(arg0,void **,0x60));
-func_020887a8(arg0,M2C_FIELD(arg0,s16 *,0x34)+128,M2C_FIELD(arg0,s16 *,0x36),M2C_FIELD(arg0,s8 *,0x49),M2C_FIELD(arg0,void **,0x64));
+childIndex++;
+}while(childIndex<2);
+DrawSpriteActorAt(arg0,M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_X),M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_Y),M2C_FIELD(arg0,s8 *,SPRITE_ACTOR_PRIORITY),M2C_FIELD(arg0,void **,SCENE_PANEL_HALF0));
+DrawSpriteActorAt(arg0,M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_X)+128,M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_Y),M2C_FIELD(arg0,s8 *,SPRITE_ACTOR_PRIORITY),M2C_FIELD(arg0,void **,SCENE_PANEL_HALF1));
 }
 
 void func_0209e980(void) {
@@ -500,8 +510,7 @@ void func_0209e98c(void) {
 }
 
 void func_0209e998(void) {
-    M2C_UNK func_0209e660();
-    func_0209e660();
+    ((void (*)())UpdateScenePanel)();
 }
 
 void **Alloc3DSprite(s32 arg0) {

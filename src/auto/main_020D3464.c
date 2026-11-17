@@ -408,16 +408,16 @@ void func_020d3b24(void) {
 
 void func_020d3cec(void) {
     M2C_UNK LoadMapTileset();
-    M2C_UNK func_020e3320();
-    M2C_UNK func_020e3344();
+    M2C_UNK ClearNameGraphicFiles();
+    M2C_UNK LoadNameGraphicFiles();
     extern s32 data_0211fb58;
     extern s32 data_0215be00;
     extern s32 gSelectionQueue;
     gSelectionQueue = data_0211fb58;
     data_0215be00 = data_0211fb58;
     LoadMapTileset();
-    func_020e3320();
-    func_020e3344();
+    ClearNameGraphicFiles();
+    LoadNameGraphicFiles();
 }
 
 void func_020d3d24(void) {

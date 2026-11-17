@@ -273,21 +273,27 @@ void ghiReceiveStatusLine(GHIConnection *connection){
  connection->lastSocketError=ghiGetLastSocketError(connection->socket);
 }
 
-s32 ghiDeliverFileData(void *arg0,s32 arg1,s32 arg2) {
+/* Hand one piece of a response body to the request's callback according to the
+ * connection's transfer mode: buffered mode appends the piece to the body buffer
+ * and passes on everything collected so far, stream mode passes the piece
+ * straight through, and file mode (unsupported in this port) fails the request
+ * if there is any body to save.  Returns 0 once the request has failed. */
+s32 ghiDeliverFileData(void *p,s32 data,s32 length) {
  s32 ghiAppendDataToBuffer();
  M2C_UNK InvokeRequestCallback(void *,s32,s32);
- s32 a=0,b=0;
- s32 c=M2C_FIELD(arg0,s32 *,0x100)+arg2;
- M2C_FIELD(arg0,s32 *,0x100)=c;
- if(c==M2C_FIELD(arg0,s32 *,0x104)||M2C_FIELD(arg0,s32 *,0x130)) M2C_FIELD(arg0,s32 *,0xFC)=1;
- if(M2C_FIELD(arg0,s32 *,0xC)==0) {
- if(!ghiAppendDataToBuffer(arg0+0xBC)) return 0;
- a=M2C_FIELD(arg0,s32 *,0xC0); b=M2C_FIELD(arg0,s32 *,0xC8);
- } else if(M2C_FIELD(arg0,s32 *,0xC)==1) {
- if(arg2) { M2C_FIELD(arg0,s32 *,0xFC)=1; M2C_FIELD(arg0,s32 *,0x38)=13; return 0; }
- a=arg1;b=arg2;
- } else if(M2C_FIELD(arg0,s32 *,0xC)==2) {a=arg1;b=arg2;}
- InvokeRequestCallback(arg0,a,b); return 1;
+ GHIConnection *connection=(GHIConnection *)p;
+ s32 deliveredData=0,deliveredLen=0;
+ s32 received=connection->bytesReceived+length;
+ connection->bytesReceived=received;
+ if(received==connection->contentLength||connection->skipTransfer) connection->completed=1;
+ if(connection->transferMode==GHI_TRANSFER_BUFFERED) {
+  if(!ghiAppendDataToBuffer(&connection->bodyBuffer)) return 0;
+  deliveredData=(s32)connection->bodyBuffer.data; deliveredLen=connection->bodyBuffer.len;
+ } else if(connection->transferMode==GHI_TRANSFER_FILE) {
+  if(length) { connection->completed=1; connection->result=GHTTP_RESULT_FILE_WRITE_FAILED; return 0; }
+  deliveredData=data;deliveredLen=length;
+ } else if(connection->transferMode==GHI_TRANSFER_STREAM) {deliveredData=data;deliveredLen=length;}
+ InvokeRequestCallback(connection,deliveredData,deliveredLen); return 1;
 }
 
 s32 ghiParseChunkSize(void *arg0) {

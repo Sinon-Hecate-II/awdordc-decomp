@@ -408,7 +408,7 @@ extern s8 *gAiCommandState;
 extern M2C_UNK *gAiUnitAction;
 extern s8 *gAiUnitListCursor;
 extern u8 gAiUnitList;
-extern M2C_UNK func_ov000_021811e8;
+extern M2C_UNK RunAiRole4Or6Action;
 void ScoreAiUnitsByHp(void);
 void ScoreAiUnitsByPosition(s32);
 void ScoreAiUnitsByMoveRange(s32);
@@ -444,7 +444,7 @@ if (M2C_FIELD(*gCurrentMap, u8 *, MAP_FOG) != 0 || M2C_FIELD(*gCurrentMap, u8 *,
     ScoreAiUnitsByMoveRange(0);
 }
 MoveChosenAiUnitFirst();
-gAiUnitAction = &func_ov000_021811e8;
+gAiUnitAction = &RunAiRole4Or6Action;
 *gAiCommandState = 2;
 }
 

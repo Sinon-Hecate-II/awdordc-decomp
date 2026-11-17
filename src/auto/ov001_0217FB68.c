@@ -23,12 +23,12 @@ void func_ov001_0217fb68(void) {
  * friend-list screen (mode 2) or the connection screen (mode 0), according to
  * data_ov001_02193db8. */
 void Ov001_CloseOptionScreen(void) {
-    M2C_UNK func_ov001_02171494(void);
+    M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02176438(void);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreeOptionPage(void);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 data_ov001_02193db8;
     extern M2C_UNK func_ov001_0217fd94;
@@ -36,15 +36,15 @@ void Ov001_CloseOptionScreen(void) {
     if (Ov001_IsFadeActive(0) != 0) return;
     if ((data_ov001_02193db8 == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     if (data_ov001_02193db8 == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193db8 == 0) {
-        func_ov001_02176438();
+        Ov001_FreeOptionPage();
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;
@@ -216,7 +216,7 @@ void func_ov001_0217ff60(void) {
 void func_ov001_0217ff80(void) {
     M2C_UNK func_ov001_02171694();
     extern u8 data_ov001_02193dbc;
-    extern M2C_UNK func_ov001_0217ffe4;
+    extern M2C_UNK Ov001_CloseMatchSetupScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
@@ -225,37 +225,41 @@ void func_ov001_0217ff80(void) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_0217ffe4);
+    Ov001_SetStepCallback(&Ov001_CloseMatchSetupScreen);
 }
 
-void func_ov001_0217ffe4(void) {
-    M2C_UNK func_ov001_02171494(void);
+/* Step callback that runs once the match-setup option page's fades and the
+   icon-row animation have finished: it releases the page's sprites and
+   background, then opens either the download-play screen (mode 2) when the
+   branch flag is clear, or advances the match setup (mode 0) when it is set. */
+void Ov001_CloseMatchSetupScreen(void) {
+    M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02176438(void);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreeOptionPage(void);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 data_ov001_02193dbc;
-    extern M2C_UNK func_ov001_021801c4;
+    extern M2C_UNK Ov001_AdvanceMatchSetup;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(0) != 0) return;
     if ((data_ov001_02193dbc == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     if (data_ov001_02193dbc == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
-    func_ov001_02176438();
+    Ov001_FreeOptionPage();
     if (data_ov001_02193dbc == 0) {
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;
     }
     Ov001_SetNextScreenMode(0, 0);
-    Ov001_SetStepCallback(&func_ov001_021801c4);
+    Ov001_SetStepCallback(&Ov001_AdvanceMatchSetup);
 }
 
 /* Second page of the ov001 download-play setup wizard: on selection 3 it stores
@@ -293,7 +297,7 @@ void func_ov001_021801a4(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);
 }
 
-void func_ov001_021801c4(void) {
+void Ov001_AdvanceMatchSetup(void) {
 M2C_UNK func_ov001_02171e58(M2C_UNK);
 M2C_UNK func_ov001_021722ac(void);
 M2C_UNK Ov001_PlaySound(M2C_UNK);
@@ -360,7 +364,7 @@ void func_ov001_02180328(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021828ac;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -369,7 +373,7 @@ void func_ov001_02180328(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_0218af70(0);
+    Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -531,12 +535,12 @@ void func_ov001_02180654(void) {
  * either the friend-list screen (mode 2) or the connection screen (mode 0),
  * according to data_ov001_02193dc4. */
 void Ov001_CloseOptionScreen2(void) {
-    M2C_UNK func_ov001_02171494(void);
+    M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02176438(void);
-    M2C_UNK func_ov001_0218af70(M2C_UNK);
+    M2C_UNK Ov001_FreeOptionPage(void);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 data_ov001_02193dc4;
     extern M2C_UNK func_ov001_0217f97c;
@@ -544,15 +548,15 @@ void Ov001_CloseOptionScreen2(void) {
     if (Ov001_IsFadeActive(0) != 0) return;
     if ((data_ov001_02193dc4 == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    func_ov001_02171494();
-    func_ov001_0218af70(0);
+    Ov001_FreeOptionSprites();
+    Ov001_FreePageBackground(0);
     if (data_ov001_02193dc4 == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193dc4 == 0) {
-        func_ov001_02176438();
+        Ov001_FreeOptionPage();
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;

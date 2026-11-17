@@ -583,11 +583,11 @@ void ClearScenePanelRows(M2C_UNK arg0) {
 }
 
 s32 func_02097be0(void) {
-s32 func_020890d4(s32);
+s32 Is3DSpriteAnimating(s32);
 s32 i,p,j;
 i=0;do {p=FindScenePanel((u16)i);if(p) {
-if(func_020890d4(p))return 1;
-j=0;do {if(func_020890d4(Get3DSpriteChild(p,j)))return 1;j++;}while(j<2);
+if(Is3DSpriteAnimating(p))return 1;
+j=0;do {if(Is3DSpriteAnimating(Get3DSpriteChild(p,j)))return 1;j++;}while(j<2);
 }i++;}while(i<3);return 0;
 }
 

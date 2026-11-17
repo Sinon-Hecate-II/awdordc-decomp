@@ -367,7 +367,7 @@ void func_ov007_0221470c(void) {
 /* Spawn an object on the map tile (x,y) if that tile is non-empty,
    returning 1 on success and 0 when the tile has no entry. */
 s32 func_ov007_02214718(s32 x, s32 y) {
-    void func_020c7470(s32, s32, s32 *);
+    void GetMapCursorScreenPosition(s32, s32, s32 *);
     s32 func_020c0748(s32 *, s32, s32, s32);
     extern s32 *gCurrentMap;
     extern u8 data_ov007_0221fb30[];
@@ -379,7 +379,7 @@ s32 func_ov007_02214718(s32 x, s32 y) {
     index = base[x + M2C_FIELD(base + y * 2, u16 *, 0x3758)];
     if (index == 0) return 0;
     M2C_FIELD(base, void **, 0x52D0) = base + 0x59A4 + index * 14;
-    func_020c7470(x, y, coords);
+    GetMapCursorScreenPosition(x, y, coords);
     obj = (void *)func_020c0748((s32 *)data_ov007_0221fb30, coords[0], coords[1], 0x30);
     switch (((MapEntry14718 *)M2C_FIELD((void *)*gCurrentMap, void **, 0x52D0))->kind) {
     case 0: M2C_FIELD(obj, u8 *, 0x4E) = 0; break;

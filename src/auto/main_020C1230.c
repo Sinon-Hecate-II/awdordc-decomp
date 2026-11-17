@@ -213,7 +213,27 @@ s32 GetUnitCategoryCount(s32 offset,u8 *base,s32 index) {
  return sum;
 }
 #pragma opt_strength_reduction reset
-s32 GetDestroyedPipeTile(s32 a){switch((u32)(a&31)){case 15:return 0;case 16:return 1;case 17:return 2;case 18:return 3;case 19:return 4;case 20:return 5;case 21:return 6;case 22:return 7;case 23:return 9;case 24:return 8;case 25:return 8;case 28:return 10;case 26:return 11;default:return -1;}}
+/* Map a cell's terrain kind (the low five bits of its terrain byte) to the slot
+ * it occupies in the per-player 12-entry terrain tally, or -1 when the kind is
+ * not tallied. */
+s32 GetDestroyedPipeTile(s32 terrain) {
+    switch ((u32)(terrain & 31)) {
+    case 15: return 0;
+    case 16: return 1;
+    case 17: return 2;
+    case 18: return 3;
+    case 19: return 4;
+    case 20: return 5;
+    case 21: return 6;
+    case 22: return 7;
+    case 23: return 9;
+    case 24: return 8;
+    case 25: return 8;
+    case 28: return 10;
+    case 26: return 11;
+    default: return -1;
+    }
+}
 
 u8 IsDestroyedPipeTile(void) {
     s32 GetDestroyedPipeTile();

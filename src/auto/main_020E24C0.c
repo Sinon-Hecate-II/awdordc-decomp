@@ -8,8 +8,8 @@ static inline void MenuSpriteOrigin(void *p,u16 x,u16 y) { M2C_FIELD(p,MenuSprit
 static inline void MenuSetFrame(void *p,u16 frame) { M2C_FIELD(p,u16*,0x3e)=frame; }
 static inline void MenuSetResource(void *p,void *resource) { M2C_FIELD(p,void**,0x44)=resource; }
 
-extern s32 data_02168fd0[];
-extern M2C_UNK data_0212d6c8, data_0212d6d4, data_0212d6e0, data_0212d6f0, data_0212d704, data_0212d714, data_0212d724, data_0212d734;
+extern s32 gNameGraphicFiles[];
+extern M2C_UNK sBmapDir, sTerrainMojiFile, sUnitMojiFile, sGroundUnitDir, sCgNameNarc, sTerrainNameFile, sUnitNameFile, sWeaponNameFile;
 
 #pragma opt_propagation off
 void func_020e24c0(s32 arg0) {
@@ -17,7 +17,7 @@ void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
+void *func_0208931c(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
@@ -81,7 +81,7 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,vo
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
-func_0208b698(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
+SetSpriteText(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;func_020e4c64();
 }
 #pragma opt_propagation reset
@@ -90,7 +90,7 @@ void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
+void *func_0208931c(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *p; void *q; void *saved;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
@@ -154,7 +154,7 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,vo
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
-func_0208b698(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
+SetSpriteText(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;func_020e4c64();
 }
 
@@ -335,44 +335,47 @@ M2C_UNK *GetLocalizedFileNameDefault(s32 arg0) {
  return r;
 }
 
-void func_020e3320(void) {
- extern s32 data_02168fd0[];
+void ClearNameGraphicFiles(void) {
+ extern s32 gNameGraphicFiles[];
  s32 i=0;
- do { data_02168fd0[i]=0; i++; } while(i<5);
+ do { gNameGraphicFiles[i]=0; i++; } while(i<5);
 }
 
-void func_020e3344(void) {
- void func_020e3400(void);
+/* Reload the name/character graphics: the two standalone .cg files
+   "ter_moji.cg" and "unit_moji.cg", then the terrain, unit and weapon name
+   tables held in cg_name.narc. */
+void LoadNameGraphicFiles(void) {
+ void FreeNameGraphicFiles(void);
  M2C_UNK SetFileDirectory();
  s32 LoadFileToBuffer();
  void OpenNarcArchive();
- s32 func_020815a8();
+ s32 LoadNarcMemberToBuffer();
  void CloseNarcArchive();
- func_020e3400();
- SetFileDirectory(&data_0212d6c8);
- data_02168fd0[0]=LoadFileToBuffer(GetLocalizedFileName((s32)&data_0212d6d4),1);
- data_02168fd0[1]=LoadFileToBuffer(GetLocalizedFileName((s32)&data_0212d6e0),1);
- SetFileDirectory(&data_0212d6f0);
- OpenNarcArchive(GetLocalizedFileName((s32)&data_0212d704));
- data_02168fd0[2]=func_020815a8(GetLocalizedFileName((s32)&data_0212d714));
- data_02168fd0[3]=func_020815a8(GetLocalizedFileName((s32)&data_0212d724));
- data_02168fd0[4]=func_020815a8(GetLocalizedFileName((s32)&data_0212d734));
+ FreeNameGraphicFiles();
+ SetFileDirectory(&sBmapDir);
+ gNameGraphicFiles[0]=LoadFileToBuffer(GetLocalizedFileName((s32)&sTerrainMojiFile),1);
+ gNameGraphicFiles[1]=LoadFileToBuffer(GetLocalizedFileName((s32)&sUnitMojiFile),1);
+ SetFileDirectory(&sGroundUnitDir);
+ OpenNarcArchive(GetLocalizedFileName((s32)&sCgNameNarc));
+ gNameGraphicFiles[2]=LoadNarcMemberToBuffer(GetLocalizedFileName((s32)&sTerrainNameFile));
+ gNameGraphicFiles[3]=LoadNarcMemberToBuffer(GetLocalizedFileName((s32)&sUnitNameFile));
+ gNameGraphicFiles[4]=LoadNarcMemberToBuffer(GetLocalizedFileName((s32)&sWeaponNameFile));
  CloseNarcArchive();
 }
 
-void func_020e3400(void) {
+void FreeNameGraphicFiles(void) {
  void HeapFreeBlock(s32);
  s32 i=0;
  do {
- if(data_02168fd0[i]!=0)HeapFreeBlock(data_02168fd0[i]);
- data_02168fd0[i]=0;
+ if(gNameGraphicFiles[i]!=0)HeapFreeBlock(gNameGraphicFiles[i]);
+ gNameGraphicFiles[i]=0;
  i++;
  }while(i<5);
 }
 
-s32 func_020e3438(s32 arg0) {
-    extern s32 data_02168fd0[];
-    return data_02168fd0[arg0];
+s32 GetNameGraphicFile(s32 arg0) {
+    extern s32 gNameGraphicFiles[];
+    return gNameGraphicFiles[arg0];
 }
 
 void func_020e3448(void) {

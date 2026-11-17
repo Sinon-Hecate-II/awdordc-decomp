@@ -14,6 +14,7 @@
 #define REG_VRAM_I_CR (*(volatile u8 *)0x04000249)
 
 /* Background priority is held in bits 0..1 of each control register. */
+#define REG_BG0CNT (*(volatile u16 *)0x04000008)
 #define REG_BG1CNT (*(volatile u16 *)0x0400000A)
 #define REG_BG2CNT (*(volatile u16 *)0x0400000C)
 #define REG_SUB_BG0CNT (*(volatile u16 *)0x04001008)

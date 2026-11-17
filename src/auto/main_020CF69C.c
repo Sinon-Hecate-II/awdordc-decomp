@@ -468,9 +468,9 @@ void func_020d0538(void) {
 }
 
 s32 func_020d0548(s32 arg0,s32 arg1) {
- void func_02079c6c(s32,s32,void *);
+ void MapTileToScreen(s32,s32,void *);
  s32 temp[3];
- func_02079c6c(arg0,arg1,temp);
+ MapTileToScreen(arg0,arg1,temp);
  if(arg0<0 || arg1<0 || arg0>256 || arg1>192) return 0;
  return 1;
 }
