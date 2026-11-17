@@ -1120,7 +1120,7 @@ func_ov001_0218c0b8 kind:function(arm,size=0x2c) addr:0x0218c0b8
 func_ov001_0218c0e4 kind:function(arm,size=0x20) addr:0x0218c0e4
 Ov001_ReleaseSprite kind:function(arm,size=0x4c) addr:0x0218c104
 Ov001_SpriteObjAddr kind:function(arm,size=0x18) addr:0x0218c150
-func_ov001_0218c168 kind:function(arm,size=0xc0) addr:0x0218c168
+Ov001_InitTilePools kind:function(arm,size=0xc0) addr:0x0218c168
 func_ov001_0218c228 kind:function(arm,size=0x178) addr:0x0218c228
 func_ov001_0218c3a0 kind:function(arm,size=0x40) addr:0x0218c3a0
 StringLengthUpTo kind:function(arm,size=0x2c) addr:0x0218c3e0
@@ -1692,6 +1692,6 @@ data_ov001_02193e4c kind:bss addr:0x02193e4c
 data_ov001_02193e50 kind:bss addr:0x02193e50
 data_ov001_02193e60 kind:bss addr:0x02193e60
 data_ov001_02193e68 kind:bss addr:0x02193e68
-data_ov001_02193e6c kind:bss addr:0x02193e6c
+gOv001TilePools kind:bss addr:0x02193e6c
 data_ov001_02193e70 kind:bss addr:0x02193e70
 gOv001Tasks kind:bss addr:0x02193ea4

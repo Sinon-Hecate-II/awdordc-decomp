@@ -327,21 +327,26 @@ s32 PadPacket(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
 }
 
 #pragma opt_common_subs off
+/* Builds and sends a DHCPDISCOVER (message type 1) from gDhcpPacketBuffer:
+ * when the client asked for an address before (NETSTACK_REQUESTED_IP), option 50
+ * asks for it again; the options end with the end marker and the packet is
+ * padded to DHCP_PACKET_MIN bytes before it is sent.  Returns the transaction
+ * id the request was built with. */
 s32 BuildDhcpDiscover(void) {
 extern M2C_UNK gNetStack; extern u8 gDhcpPacketBuffer[];
 u8 *BuildDhcpPacket(u8 *,s32,s32);
 u8 *p; s32 result; s32 base=(s32)gDhcpPacketBuffer;
-p=BuildDhcpPacket((u8 *)base,1,(s32)&result);
-if(M2C_FIELD(&gNetStack,u32 *,0x34)) {
-p[0]=0x32; p[1]=4;
-p[2]=(u16)(M2C_FIELD(&gNetStack,u32 *,0x34)>>16)>>8;
-p[3]=M2C_FIELD(&gNetStack,u32 *,0x34)>>16;
-p[4]=(u16)M2C_FIELD(&gNetStack,u32 *,0x34)>>8;
-p[5]=M2C_FIELD(&gNetStack,u32 *,0x34);
+p=BuildDhcpPacket((u8 *)base,DHCP_MSG_DISCOVER,(s32)&result);
+if(M2C_FIELD(&gNetStack,u32 *,NETSTACK_REQUESTED_IP)) {
+p[0]=DHCP_OPT_REQUESTED_IP; p[1]=4;
+p[2]=(u16)(M2C_FIELD(&gNetStack,u32 *,NETSTACK_REQUESTED_IP)>>16)>>8;
+p[3]=M2C_FIELD(&gNetStack,u32 *,NETSTACK_REQUESTED_IP)>>16;
+p[4]=(u16)M2C_FIELD(&gNetStack,u32 *,NETSTACK_REQUESTED_IP)>>8;
+p[5]=M2C_FIELD(&gNetStack,u32 *,NETSTACK_REQUESTED_IP);
 p+=6;
 }
-*p++=255;
-p=(u8 *)PadPacket(0,300,(s32)p,(s32)p-base);
+*p++=DHCP_OPTION_END;
+p=(u8 *)PadPacket(0,DHCP_PACKET_MIN,(s32)p,(s32)p-base);
 SendNetPacket(base,(s32)p-base);
 return result;
 }

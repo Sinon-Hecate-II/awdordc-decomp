@@ -11,4 +11,17 @@ typedef struct UnitSpriteDef {
     u32 flags;   /* +0x08 bit 4: read the other screen's key state */
 } UnitSpriteDef; /* 12 bytes */
 
+/* The frame word and base-frame byte of a sprite object (at the offsets
+ * MENU_SPRITE_FRAME / MENU_SPRITE_BASE in common.h).  The pressed frame is the
+ * base frame plus one. */
+typedef struct SpriteFrameBits {
+    u32 low:18;
+    u32 frame:8;   /* displayed frame index */
+    u32 high:6;
+} SpriteFrameBits;
+
+typedef struct SpriteBaseBits {
+    u8 base:4;     /* base frame index */
+} SpriteBaseBits;
+
 #endif

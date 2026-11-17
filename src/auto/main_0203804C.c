@@ -9,7 +9,7 @@ void InitNetSession(void *session,void *config,s32 gameId,char *gameName,char *g
 extern void *gNetSession;
 extern u8 gSessionGameName[];
 extern u8 gSessionGamePassword[];
-void func_020375fc(void);
+void ClearNetError(void);
 void ResetPlayerSlots(void);
 void func_0203d910(void);
 void func_02039838(void);
@@ -22,7 +22,7 @@ void InitConnection(void *,void *,void *,void *,void *,void *,s32,s32);
 void func_02044708(void *);
 u32 len;
 gNetSession=session;
-func_020375fc();
+ClearNetError();
 M2C_FIELD(gNetSession,s32 *,0)=0;
 M2C_FIELD(gNetSession,s32 *,4)=(s32)func_0203d910;
 M2C_FIELD(gNetSession,s32 *,8)=(s32)func_02039838;

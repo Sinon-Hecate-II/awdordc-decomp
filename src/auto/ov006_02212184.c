@@ -40,7 +40,7 @@ int func_020c5464(int);
 void ClearTileRect(void *,int,int);
 void func_ov000_0216a30c(int,int,int);
 void DrawTextLine(int,int,int,void *,int,int);
-void func_0209b3e8(int,int,int,int,int,int);
+void DrawNumber(int,int,int,int,int,int);
 u64 func_020c53e4(int);
 extern u8 data_ov006_022186ec[],data_ov006_022186f8[],data_ov006_02218704[],data_ov006_02218710[],data_ov006_02218718[],data_ov006_02218720[];
 void func_ov006_02212184(void *arg0) {
@@ -176,11 +176,11 @@ AddSprite32x16(64,168,(u16)(((i>>a)&0x3ff)|0x8000),11);
 DrawTextLine(8,21,1,data_ov006_022186ec,0x7000,(u16)tile);
 } else DrawTextLine(8,21,1,data_ov006_022186f8,0x7000,(u16)tile);
 i=M2C_FIELD(item,u16 *,26);if((u32)i>9999)i=9999;
-func_0209b3e8(16,21,1,i,0x7000,(u16)(tile+8));
+DrawNumber(16,21,1,i,0x7000,(u16)(tile+8));
 i=M2C_FIELD(item,u16 *,28);if((u32)i>9999)i=9999;
-func_0209b3e8(22,21,1,i,0x7000,(u16)(tile+16));
+DrawNumber(22,21,1,i,0x7000,(u16)(tile+16));
 i=M2C_FIELD(item,u16 *,30);if((u32)i>9999)i=9999;
-func_0209b3e8(28,21,1,i,0x7000,(u16)(tile+24));
+DrawNumber(28,21,1,i,0x7000,(u16)(tile+24));
 } else {
 DrawTextLine(8,21,1,data_ov006_02218704,0x7000,(u16)(tile+0));
 DrawTextLine(14,21,1,data_ov006_02218710,0x7000,(u16)(tile+8));

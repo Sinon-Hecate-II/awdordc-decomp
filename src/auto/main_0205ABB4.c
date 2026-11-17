@@ -194,7 +194,7 @@ s32 Gt2CloseConnection(M2C_UNK arg0) {
     return func_0205b110(arg0, 7, 2);
 }
 
-s32 func_0205b1b8(M2C_UNK arg0) {
+s32 gti2SendClosedAndClose(M2C_UNK arg0) {
     s32 gti2SendClosed();
     if (gti2SendClosed() == 0) {
         return 0;

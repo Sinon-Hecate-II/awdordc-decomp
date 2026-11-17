@@ -1,5 +1,6 @@
 /* 2 functions from 0x02213E98 to 0x022144AC (ov006), found by ds-decomp. */
 #include "common.h"
+#define OV006_MENU_FRAME_HELPERS_LOCAL
 #include "ov006_menu_sprite.h"
 static inline void SetMenuFrame_02213e98(MenuSprite_02213e98 *s,u16 frame) {
  s->frame=(u16)frame;s->timer=0;

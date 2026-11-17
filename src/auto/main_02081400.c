@@ -378,7 +378,7 @@ void func_02081d38(void) {
     func_01ffa3dc(&data_02101e8c, 7);
 }
 
-void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK func_01ffa9e4(M2C_UNK *);M2C_UNK func_0200ec24(s32);func_01ffa9e4(&data_02101e8c);func_0200ec24(0);}
+void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK func_0200ec24(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);func_0200ec24(0);}
 
 void func_02081d6c(void){extern M2C_UNK data_0214c18c;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&data_0214c18c,u8 *,1)=1;}
 
@@ -485,9 +485,9 @@ void func_02081f78(void) {
 void func_02081fd4(void){extern M2C_UNK data_02101edc;M2C_UNK func_01ffa3dc(M2C_UNK *,s32);func_01ffa3dc(&data_02101edc,3);}
 
 void func_02081fec(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02101edc;
-    func_01ffa9e4(&data_02101edc);
+    DeleteSpriteObjectsOfClass(&data_02101edc);
 }
 
 void func_02082000(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u8 *,2)=1;}

@@ -52,7 +52,7 @@ void func_020cbc20(void *arg0) {
  func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5,arg0);
  if (!p) n=0;
  else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
- func_020a6728(n);
+ DestroyUnit(n);
  RefreshMapView();
 }
 #pragma opt_common_subs reset
@@ -355,9 +355,9 @@ M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
 }
 
 void CancelMapCursorAnimation(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_0212b1dc;
-    func_01ffa9e4(&data_0212b1dc);
+    DeleteSpriteObjectsOfClass(&data_0212b1dc);
 }
 
 /* Confirms the action on the battle map's current target: an empty cell queues a

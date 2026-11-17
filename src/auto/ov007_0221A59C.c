@@ -71,9 +71,9 @@ void func_ov007_0221ab20(void) {
 }
 
 void func_ov007_0221ab38(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_ov007_022200b0;
-    func_01ffa9e4(&data_ov007_022200b0);
+    DeleteSpriteObjectsOfClass(&data_ov007_022200b0);
 }
 
 void MapEditor_RefreshGraphics(void) {

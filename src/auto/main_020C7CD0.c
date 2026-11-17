@@ -76,15 +76,15 @@ void ExpandMapRecord(void *arg0, void *arg1) {
 }
 
 s32 func_020c7e58(s32 arg0) {
-    extern M2C_UNK data_02164d64;
-    return (0x54 * arg0) + (s32) &data_02164d64;
+    extern M2C_UNK gCampaignMapHeaders;
+    return (0x54 * arg0) + (s32) &gCampaignMapHeaders;
 }
 
 s32 GetMapRecord(a)
 s32 a;
 {
- extern M2C_UNK data_02164d64;
- return (s32)&data_02164d64+0x54*func_020c8018(a);
+ extern M2C_UNK gCampaignMapHeaders;
+ return (s32)&gCampaignMapHeaders+0x54*GetCampaignMapIndex(a);
 }
 
 s32 GetMapRecordStamp(a)
@@ -99,7 +99,7 @@ s32 GetMapRecordSettings(void) {
 
 s32 func_020c7ea8(a)
 s32 a; {
-    return func_020c8018() + 9;
+    return GetCampaignMapIndex() + 9;
 }
 
 u8 IsCampaignMapRecordValid(s32 arg0) {
@@ -150,7 +150,7 @@ s32 func_020c7fe4(M2C_UNK arg0) {
     return GetLocalizedText(0xC00002EC);
 }
 
-s32 func_020c8018(s32 arg0) {
+s32 GetCampaignMapIndex(s32 arg0) {
     return arg0 - 0xE1;
 }
 
@@ -187,7 +187,7 @@ u8 func_020c80ec(s32 a) {
  s32 func_02086980(s32);
  s32 p,q; u8 r;
  if(a>=0xe1&&a<0x1a9) {
- p=GetMapRecordStamp(a);q=func_020c8018(a);
+ p=GetMapRecordStamp(a);q=GetCampaignMapIndex(a);
  if(!IsCampaignMapRecordValid(a))return 0;
  if(IsLocalCampaignMapRecord(a))return 0;
  if(func_02086980(q))return 0;
@@ -201,7 +201,7 @@ s32 func_020c818c(s32 a,s32 b) {
  s32 GetMapRecordBuffer(); s32 func_020c7a14(); s32 LoadMapRecord(s32,s32); void func_020868ac(s32,s32);
  s32 q,p,t;
  if(a<0xe1||a>=0x1a9)return 0;
- q=func_020c8018(a);p=GetMapRecordBuffer();t=func_020c7a14();
+ q=GetCampaignMapIndex(a);p=GetMapRecordBuffer();t=func_020c7a14();
  if(!LoadMapRecord(a,p))return 0;
  M2C_FIELD(t,u32 *,0xc)=(M2C_FIELD(t,u32 *,0xc)&~0xe0000000)|(b<<29);
  func_020868ac(q,1);
@@ -301,7 +301,7 @@ s32 LoadMapById(M2C_UNK arg0) {
     return 1;
 }
 
-s32 LoadMapRecord(s32 a,s32 b){u8 DoesMapRecordMatchBuffer(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(DoesMapRecordMatchBuffer(a,b))r=1;else r=0;return r;}
+s32 LoadMapRecord(s32 a,s32 b){u8 DoesMapRecordMatchBuffer(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 LoadNewestSaveRecord(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!LoadNewestSaveRecord(p,b))return 0;if(DoesMapRecordMatchBuffer(a,b))r=1;else r=0;return r;}
 
 s32 func_020c8624(s32 a,s32 b) {
  s32 IsValidMapRecord(s32); void func_020be438(s32,s32,s32);

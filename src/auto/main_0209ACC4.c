@@ -32,7 +32,7 @@ extern s32 gCur3DSpriteEngine;
 }
 #pragma pop
 typedef struct { s32 digits[10]; } DigitTable;
-extern const DigitTable data_020f399c;
+extern const DigitTable gDigitStrings;
 
 /* State of a text object: a cursor into a byte-code text script and the glyph
  * cell buffer of the current line that the script is drawn into. */
@@ -241,7 +241,7 @@ void UpdateTextObject(TextState *st) {
 void func_0209b084(void *entity) {
     s32 func_02095fe8(void);
     void func_02095ff8(s8);
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     void Clear3DSpriteLayer(u8);
     void func_02095fc0(void);
     void func_02097768(void);
@@ -257,8 +257,8 @@ void func_0209b084(void *entity) {
             func_02095ff8(0);
         }
     }
-    func_01ffa9e4(&data_02102eac);
-    func_01ffa9e4(&data_02102e74);
+    DeleteSpriteObjectsOfClass(&data_02102eac);
+    DeleteSpriteObjectsOfClass(&data_02102e74);
 
     if (!(M2C_FIELD(entity, u8 *, 0x5c) & 0x4)) {
         saved = gCur3DSpriteEngine;
@@ -359,12 +359,15 @@ func_0209be10(p,a,b,c,d,e,f,g,h,i);
 StopTextObject(p);func_01ffa3dc(&data_021032d8,7);
 }
 #pragma opt_propagation reset
-void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
+/* Draws a decimal number into text-line cells: one digit per column, starting
+ * at column/row and moving one column left per digit, each digit written two
+ * tiles on from the last. */
+void DrawNumber(s16 column, s32 row, s32 layer, s32 number, u16 attr, u16 tile) {
  s32 Divide(s32,s32);
- DigitTable table=data_020f399c;
- do {DrawTextLine(a,b,c,table.digits[d%10],e,f);
- d=Divide(d,10); if(!d) return;
- f+=2; a--;
+ DigitTable table=gDigitStrings;
+ do {DrawTextLine(column,row,layer,table.digits[number%10],attr,tile);
+ number=Divide(number,10); if(!number) return;
+ tile+=2; column--;
  } while(1);
 }
 

@@ -7,19 +7,21 @@ extern u8 gAiTargetCandidateType[];
 extern u8 gUnitKindFlags[];
 extern void **gCurrentMap;
 
-u8 CountFootUnitsWithAiFlag(s32 a,s32 b) {
-extern void **gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-s32 IsFootUnitKind(void);
-s32 count=0;
-s32 i;
-void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
-UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-if(entry->unk0!=0 && i!=a && IsFootUnitKind()!=0 && b==entry->unkB_4) count++;
-}
-return count;
+/* Count the current player's foot units whose AI role flag (bit 4 of the unit's
+ * AI state byte) equals holdFlag, skipping unit excludedUnitId. */
+u8 CountFootUnitsWithAiFlag(s32 excludedUnitId, s32 holdFlag) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 IsFootUnitKind(void);
+    s32 count = 0;
+    s32 unitId;
+    void *map = *gCurrentMap;
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+    for (unitId = start + 1; unitId < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; unitId++) {
+        UnkStruct_ov000_021A860C *entry = &((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[unitId];
+        if (entry->unk0 != 0 && unitId != excludedUnitId && IsFootUnitKind() != 0 && holdFlag == entry->unkB_4) count++;
+    }
+    return count;
 }
 
 /* Returns the AI state (MAP_UNIT_AI_STATE) a unit of kind `kind` starts with:

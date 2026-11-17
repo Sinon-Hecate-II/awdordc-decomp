@@ -1,6 +1,15 @@
 /* 11 functions from 0x02218FD0 to 0x02219FA0 (ov005), found by ds-decomp. */
 #include "common.h"
 
+/* A result-screen spark (SpawnResultSpark in ov005_02219FA0.c): a two-screen
+ * particle that drifts towards the top-right corner and is deleted once it has
+ * left the 256x384 view. */
+#define RESULT_SPARK_X       0x3C /* s32 horizontal position in the view */
+#define RESULT_SPARK_Y       0x40 /* s32 vertical position in the two-screen view */
+#define RESULT_SPARK_VARIANT 0x44 /* s32 sprite/motion variant */
+#define RESULT_SPARK_END_X   0x108 /* x at which the spark has left the right edge */
+#define RESULT_SPARK_END_Y   (-8)  /* y at which the spark has left the top edge */
+
 void func_ov005_02218fd0(void *arg0) {
     M2C_UNK AddToU16Array(s32, M2C_UNK, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
@@ -479,7 +488,7 @@ void func_ov005_02219e4c(void) {
 }
 
 #pragma opt_strength_reduction off
-void func_ov005_02219e58(void *arg0){
+void DrawResultSpark(void *arg0){
 M2C_UNK func_02090810(s32,s32,s16);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 *second=&g3DSpriteEngineSub,*first=&g3DSpriteEngineMain,*eng=&gCur3DSpriteEngine;
@@ -496,35 +505,39 @@ i++;
 gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction on
-void func_ov005_02219ee0(void *arg0) {
+/* Advance a result-screen spark one frame: the sprite variant chooses how fast it
+ * drifts along each axis (variant 1 moves x every other frame, variant 3 y every
+ * other frame, any other variant both every frame), then redraw it and delete it
+ * once it has left the top or right edge of the view. */
+void UpdateResultSpark(void *spark) {
     M2C_UNK DeleteSpriteObject(void *);
-    void func_ov005_02219e58(void *);
+    void DrawResultSpark(void *);
     extern s32 gFrameCounter;
-    s32 temp_r0;
+    s32 variant;
 
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x44);
-    switch (temp_r0) {                              /* irregular */
+    variant = M2C_FIELD(spark, s32 *, RESULT_SPARK_VARIANT);
+    switch (variant) {                              /* irregular */
     case 1:
         if (gFrameCounter & 1) {
-            M2C_FIELD(arg0, s32 *, 0x3C) = (s32) (M2C_FIELD(arg0, s32 *, 0x3C) + 1);
+            M2C_FIELD(spark, s32 *, RESULT_SPARK_X) = (s32) (M2C_FIELD(spark, s32 *, RESULT_SPARK_X) + 1);
         }
-        M2C_FIELD(arg0, s32 *, 0x40) = (s32) (M2C_FIELD(arg0, s32 *, 0x40) - 1);
+        M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) = (s32) (M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) - 1);
         break;
     case 3:
-        M2C_FIELD(arg0, s32 *, 0x3C) = (s32) (M2C_FIELD(arg0, s32 *, 0x3C) + 1);
+        M2C_FIELD(spark, s32 *, RESULT_SPARK_X) = (s32) (M2C_FIELD(spark, s32 *, RESULT_SPARK_X) + 1);
         if (gFrameCounter & 1) {
-            M2C_FIELD(arg0, s32 *, 0x40) = (s32) (M2C_FIELD(arg0, s32 *, 0x40) - 1);
+            M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) = (s32) (M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) - 1);
         }
         break;
     default:
-        M2C_FIELD(arg0, s32 *, 0x3C) = (s32) (M2C_FIELD(arg0, s32 *, 0x3C) + 1);
-        M2C_FIELD(arg0, s32 *, 0x40) = (s32) (M2C_FIELD(arg0, s32 *, 0x40) - 1);
+        M2C_FIELD(spark, s32 *, RESULT_SPARK_X) = (s32) (M2C_FIELD(spark, s32 *, RESULT_SPARK_X) + 1);
+        M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) = (s32) (M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) - 1);
         break;
     }
-    func_ov005_02219e58(arg0);
-    if (((s32) M2C_FIELD(arg0, s32 *, 0x3C) < 0x108) && ((s32) M2C_FIELD(arg0, s32 *, 0x40) >= -8)) {
+    DrawResultSpark(spark);
+    if (((s32) M2C_FIELD(spark, s32 *, RESULT_SPARK_X) < RESULT_SPARK_END_X) && ((s32) M2C_FIELD(spark, s32 *, RESULT_SPARK_Y) >= RESULT_SPARK_END_Y)) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(spark);
 }
 

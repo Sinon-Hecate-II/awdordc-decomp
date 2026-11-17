@@ -80,5 +80,30 @@ p=Selected149(M2C_FIELD(arg0,void **,92));if(p){ResetBattleMap();func_020cf278(M
 M2C_FIELD(arg0,s16 *,76)=0;M2C_FIELD(arg0,s16 *,78)=0;n=0;state=0x10019;for(i=0;i<26;i++){if((data_0215d8a8[i]<<29)>>29>=3)n=i+1;}
 if(n>=10)state=0x1001a;if(n>=16)state=0x1001b;if(n>=21)state=0x1001c;func_0208f780(state);}
 #pragma opt_strength_reduction reset
-void func_ov004_02215754(void *a){extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,data_0215d8a0;void func_ov004_022148a4(void);void func_ov004_02214904(void);s32 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Reset3DSpriteBankState(a);gCur3DSpriteEngine=old;func_ov003_021ff3ac();func_020ab200();func_0209cd00(func_ov004_022148a4);func_0209cd00(func_ov004_02214904);func_0209e9f4();func_0209bf7c();func_0208f890();func_0209c868();if(M2C_FIELD(a,s32*,0x40)==0x1000)data_0215d8a0 &=0xffffff;if(M2C_FIELD(a,s32*,0x40)==0x800)data_0215d8a0=(data_0215d8a0&0xffffff)|0x1000000;if(M2C_FIELD(a,s32*,0x5c))MemFree(M2C_FIELD(a,s32*,0x5c));M2C_FIELD(a,s32*,0x5c)=0;func_02088624();}
+/* Tear down a map view: reset the 3D sprite engine state, run the map's teardown
+ * steps, unregister the two 3D display callbacks, remember the view's zoom in the
+ * saved map-view state and free its work buffer. */
+void MapView_Destroy(void *view) {
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineMain, data_0215d8a0;
+    void func_ov004_022148a4(void);
+    void func_ov004_02214904(void);
+    s32 oldEngine = gCur3DSpriteEngine;
+
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    Reset3DSpriteBankState(view);
+    gCur3DSpriteEngine = oldEngine;
+    func_ov003_021ff3ac();
+    func_020ab200();
+    func_0209cd00(func_ov004_022148a4);
+    func_0209cd00(func_ov004_02214904);
+    func_0209e9f4();
+    func_0209bf7c();
+    func_0208f890();
+    func_0209c868();
+    if (M2C_FIELD(view, s32 *, 0x40) == 0x1000) data_0215d8a0 &= 0xffffff;
+    if (M2C_FIELD(view, s32 *, 0x40) == 0x800) data_0215d8a0 = (data_0215d8a0 & 0xffffff) | 0x1000000;
+    if (M2C_FIELD(view, s32 *, 0x5c)) MemFree(M2C_FIELD(view, s32 *, 0x5c));
+    M2C_FIELD(view, s32 *, 0x5c) = 0;
+    func_02088624();
+}
 

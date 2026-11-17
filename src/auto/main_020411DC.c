@@ -5,7 +5,7 @@ void func_02041e44(void);
 
 void func_020411dc(s32 arg0){
 extern s32 sEmptyString;extern u8 gConnectionMgr[];
-s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void ReportGpiSessionStatus(void);s32 func_02042f94(void);void ResetSessionList(s32);
+s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void ReconnectUnlessServing(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void ReportGpiSessionStatus(void);s32 func_02042f94(void);void ResetSessionList(s32);
 s32 n=3,update=0; s32 values[5];s32 b,c;u8 *a,*d,*e,*f,*g,*h;s32 i;
 switch(arg0){
 case 0:
@@ -28,7 +28,7 @@ SetConnectionState(16);M2C_FIELD(GetConnection(),s32*,468)=0;for(i=1;i<=M2C_FIEL
 }else{
 values[0]=0;values[1]=M2C_FIELD(GetConnection(),u8*,13);a=GetConnection();values[2]=M2C_FIELD(a+M2C_FIELD(GetConnection(),u8*,13),u8*,720);
 if(M2C_FIELD(GetConnection(),u8*,21)==0){M2C_FIELD(GetConnection(),s32*,232)=2;a=GetConnection();M2C_FIELD(a,u64*,236)=GetSystemTick();}
-else if(M2C_FIELD(GetConnection(),u8*,21)==1){TryConnectToPeer(1,0,0);if(M2C_FIELD(GetConnection(),u8*,422)==0&&M2C_FIELD(GetConnection(),u8*,13)>=2){a=GetConnection();b=GetConnectedPlayerMask(0);d=GetConnection();if(M2C_FIELD(a,u32*,476)!=(b&~(1<<M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13),u8*,720)))){func_02041ce0();break;}}}
+else if(M2C_FIELD(GetConnection(),u8*,21)==1){TryConnectToPeer(1,0,0);if(M2C_FIELD(GetConnection(),u8*,422)==0&&M2C_FIELD(GetConnection(),u8*,13)>=2){a=GetConnection();b=GetConnectedPlayerMask(0);d=GetConnection();if(M2C_FIELD(a,u32*,476)!=(b&~(1<<M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13),u8*,720)))){ReconnectUnlessServing();break;}}}
 }
 if(M2C_FIELD(GetConnection(),u8*,21)!=2)update=1;
 }
@@ -167,26 +167,42 @@ void func_02041be0(s32 refresh) {
     } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1 && refresh==1)TryConnectToPeer(0,0,0);
 }
 
-void func_02041ce0(void) {
+void ReconnectUnlessServing(void) {
  if(M2C_FIELD(GetConnection(),u8*,0x15)==2)return;
  if(M2C_FIELD(GetConnection(),u8*,0x15)==3)return;
  func_02041e44();func_02041be0(1);
 }
 
-s32 func_02041d14(void) {
- s32 SendMatchmakingParameter(); s32 func_02043008(); s32 SendJoinRequest(); s32 func_0204084c();
- s32 r;
- M2C_FIELD(GetConnection(),u8*,0x17)=0;
- M2C_FIELD(GetConnection(),s32*,0x20)=0;
- M2C_FIELD(GetConnection(),u8*,0x1a8)=0;
- if(M2C_FIELD(GetConnection(),s32*,0x208)!=0) {
- if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {
- SetConnectionState(3);r=SendMatchmakingParameter(0);if(func_02043008())return r;
- } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1) {
- SetConnectionState(4);r=SendJoinRequest(M2C_FIELD(GetConnection(),s32*,0x208),0);if(func_0204084c())return r;
- }
- }else func_02041be0(1);
- return 0;
+/* Starts the matchmaking step after a finished connection attempt: clears the
+ * reported match address and teardown flag, then sends the matchmaking parameter
+ * (mode 0) or the join request for our own player id (mode 1) and returns what
+ * its error report gave; with no player id yet, restarts the connection chain
+ * instead.  Returns 0 unless a send error was reported. */
+s32 StartMatchmaking(void) {
+    s32 SendMatchmakingParameter();
+    s32 func_02043008();
+    s32 SendJoinRequest();
+    s32 func_0204084c();
+    s32 result;
+
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_ADDRESS_VALID) = 0;
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_MATCH_ADDRESS) = 0;
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TEARDOWN) = 0;
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SELF_ID) != 0) {
+        if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 0) {
+            SetConnectionState(3);
+            result = SendMatchmakingParameter(0);
+            /* The error report takes the code left in r0 by the send above. */
+            if (func_02043008()) return result;
+        } else if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 1) {
+            SetConnectionState(4);
+            result = SendJoinRequest(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SELF_ID), 0);
+            if (func_0204084c()) return result;
+        }
+    } else {
+        func_02041be0(1);
+    }
+    return 0;
 }
 
 s32 func_02041dd4(s32 arg0) {

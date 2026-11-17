@@ -411,16 +411,16 @@ s32 GetMapRecordBuffer(void) {
     return func_020be120();
 }
 
-s32 func_020c79f8(void) {
+s32 GetMapRecordTerrain(void) {
     return GetMapRecordBuffer() + 0x54;
 }
 
-s32 func_020c7a08(void) {
+s32 GetMapRecordHeader(void) {
     return GetMapRecordBuffer();
 }
 
 s32 func_020c7a14(void) {
-    return func_020c7a08() + 0x40;
+    return GetMapRecordHeader() + 0x40;
 }
 
 s32 ComputeMapRecordChecksum(s32 arg0) {

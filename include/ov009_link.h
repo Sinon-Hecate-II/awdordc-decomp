@@ -14,6 +14,7 @@
 /* Phases of the link state machine (gLinkState +0x10). */
 enum {
     LINK_PHASE_IDLE    = 0,
+    LINK_PHASE_READY   = 1, /* a setup command finished; the next step may start */
     LINK_PHASE_ACTIVE  = 4, /* link established; the menu treats 4/5 as in-game */
     LINK_PHASE_INGAME  = 5, /* second in-game phase; every check accepts 4 or 5 */
     LINK_PHASE_RESULT  = 7, /* showing the result/status screen */
@@ -39,6 +40,8 @@ enum {
 /* gLinkState +0x28: u16 * mask of the player announcement in flight; the actor
  * stores its own bit there until every connected peer has answered. */
 #define LINK_STATE_ANNOUNCE 0x28
+/* gLinkState +0x50: s32 bit per player slot whose link result has been handled. */
+#define LINK_STATE_RESULT_FLAGS 0x50
 
 /* The link overlay's status-text layer (generic text-layer fields at 0x34..0x36
  * are in ds3dsprite.h): it shows a localized message while the link result is

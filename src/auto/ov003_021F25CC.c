@@ -180,7 +180,7 @@ s32 func_ov003_021f2a9c(s32 entry) {
     s32 func_ov010_02228314(s32 *, s32 *);
     void func_ov010_0222a808(s32, s32, s32, s32, s32, void *);
     void func_ov010_02228320(void);
-    void func_ov010_022282d4(s32);
+    void Ov010Online_ClearStepFlag(s32);
     s32 result, spare;
 
     if (!IsLinkSessionActive()) {
@@ -203,7 +203,7 @@ s32 func_ov003_021f2a9c(s32 entry) {
         case 0:
         case 1:
         case 2:
-            func_ov010_022282d4(6);
+            Ov010Online_ClearStepFlag(6);
             break;
         case 3:
         case 4:

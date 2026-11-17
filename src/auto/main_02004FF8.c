@@ -66,7 +66,7 @@ s32 OS_GetFifoReceiveHandler(u32 arg0) {
 }
 
 #pragma scheduling on
-void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
+void OS_SetDmaHandler(s32 arg0, s32 arg1, s32 arg2) {
     s32 OS_EnableIrqMask(s32);
     extern M2C_UNK data_0212dc1c;
     extern M2C_UNK data_0212dc20;

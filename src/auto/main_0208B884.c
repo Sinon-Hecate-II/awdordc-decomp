@@ -408,11 +408,11 @@ u8 func_0208c724(void) {
 
 void func_0208c748(void)
 {
-  M2C_UNK func_01ffa9e4(M2C_UNK *);
+  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
   M2C_UNK *new_var;
   extern M2C_UNK data_02102790;
   new_var = &data_02102790;
-  func_01ffa9e4(new_var);
+  DeleteSpriteObjectsOfClass(new_var);
 }
 
 void func_0208c75c(void *arg0, s32 arg1) {

@@ -392,11 +392,11 @@ void func_0208f8d8(void) {
 s32 func_0208f8ec(s32 a,s32 b){s32 func_020902a8(s32,s32,s32);return func_020902a8(-1,a,b);}
 
 void func_0208f904(void){
- M2C_UNK func_01ffa9e4(M2C_UNK*);
+ M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK*);
  void func_02090248(s32);
  extern M2C_UNK data_02102934,data_0210295c;
  extern s32 data_02102910;
- func_01ffa9e4(&data_02102934);func_01ffa9e4(&data_0210295c);
+ DeleteSpriteObjectsOfClass(&data_02102934);DeleteSpriteObjectsOfClass(&data_0210295c);
  func_02090248(0);data_02102910=0xffff;
 }
 
@@ -449,9 +449,9 @@ void func_0208fa00(s32 a,s32 b){
 }
 
 void func_0208fa28(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102914;
-    func_01ffa9e4(&data_02102914);
+    DeleteSpriteObjectsOfClass(&data_02102914);
 }
 
 s32 func_0208fa3c(void) {

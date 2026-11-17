@@ -157,19 +157,22 @@ void func_020d0bf8(M2C_UNK arg0) {
     RandomIntRange(func_020a7914(arg0), temp_r4);
 }
 
-void func_020d0c1c(void *a,void *b) {
-u32 n=(u32)(M2C_FIELD(M2C_FIELD(b,void **,0),u16 *,6)<<25)>>25;
-s32 x;
-if(n==0)x=0;else x=Divide(n-1,10)+1;
-M2C_FIELD(b,s16 *,0x1c)=Divide(M2C_FIELD(b,s16 *,0x1c)*x,10);
-if(M2C_FIELD(a,s16 *,0x16)==0)x=999;
-else x=Divide(M2C_FIELD(b,s16 *,0x1c)*100,M2C_FIELD(a,s16 *,0x16));
-M2C_FIELD(b,s16 *,0x1c)=x;
-if(M2C_FIELD(b,s16 *,0x1c)>=999)M2C_FIELD(b,s16 *,0x1c)=999;
-if(M2C_FIELD(a,s16 *,0x16)==0)x=999;
-else x=Divide(M2C_FIELD(b,s16 *,0x14)*100,M2C_FIELD(a,s16 *,0x16));
-M2C_FIELD(a,s16 *,0x1a)=x;
-M2C_FIELD(a,s16 *,0xe)=((u32)(M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,6)<<25)>>25)-M2C_FIELD(a,s16 *,0x1a);
+/* Settle one side's counter hit on the other battle participant: scale the
+ * source's recorded damage by its health level, express it against the target's
+ * attack power (capped at 999) and drop the target's health by the source's share. */
+void ApplyCounterHit(void *target, void *source) {
+    u32 health = (u32) (M2C_FIELD(M2C_FIELD(source, void **, 0), u16 *, 6) << 25) >> 25;
+    s32 level;
+    if (health == 0) level = 0; else level = Divide(health - 1, 10) + 1;
+    M2C_FIELD(source, s16 *, 0x1c) = Divide(M2C_FIELD(source, s16 *, 0x1c) * level, 10);
+    if (M2C_FIELD(target, s16 *, 0x16) == 0) level = 999;
+    else level = Divide(M2C_FIELD(source, s16 *, 0x1c) * 100, M2C_FIELD(target, s16 *, 0x16));
+    M2C_FIELD(source, s16 *, 0x1c) = level;
+    if (M2C_FIELD(source, s16 *, 0x1c) >= 999) M2C_FIELD(source, s16 *, 0x1c) = 999;
+    if (M2C_FIELD(target, s16 *, 0x16) == 0) level = 999;
+    else level = Divide(M2C_FIELD(source, s16 *, 0x14) * 100, M2C_FIELD(target, s16 *, 0x16));
+    M2C_FIELD(target, s16 *, 0x1a) = level;
+    M2C_FIELD(target, s16 *, 0xe) = ((u32) (M2C_FIELD(M2C_FIELD(target, void **, 0), u16 *, 6) << 25) >> 25) - M2C_FIELD(target, s16 *, 0x1a);
 }
 
 void ApplyCounterDamage(void *arg0, void *arg1) {
@@ -186,7 +189,7 @@ void ApplyCounterDamage(void *arg0, void *arg1) {
         var_r0 = Divide(temp_r0 - 1, 0xA) + 1;
     }
     M2C_FIELD(arg0, s16 *, 0x14) = Divide(M2C_FIELD(arg0, s16 *, 0x14) * var_r0, 0xA);
-    func_020d0c1c(arg1, arg0);
+    ApplyCounterHit(arg1, arg0);
     var_r0_2 = M2C_FIELD(arg1, s16 *, 0xE);
     if ((s32) var_r0_2 < 0) {
         var_r0_2 = 0;
@@ -197,7 +200,7 @@ void ApplyCounterDamage(void *arg0, void *arg1) {
         var_r0_3 = Divide(var_r0_2 - 1, 0xA) + 1;
     }
     M2C_FIELD(arg1, s16 *, 0x14) = Divide(M2C_FIELD(arg1, s16 *, 0x14) * var_r0_3, 0xA);
-    func_020d0c1c(arg0, arg1);
+    ApplyCounterHit(arg0, arg1);
 }
 
 void ResolveBattleTie(void *arg0, void *arg1) {
@@ -259,7 +262,7 @@ void RunBattle(s16 attacker,s16 defender,s16 *destination) {
 
 void func_020d1034(void *arg0) {
     s32 Divide(s32, M2C_UNK);
-    M2C_UNK func_020a6328(void *, s32);
+    M2C_UNK AddPlayerUnitValue(void *, s32);
     s16 temp_r0;
     s32 var_r1;
     s32 var_r5;
@@ -277,7 +280,7 @@ void func_020d1034(void *arg0) {
     } else {
         var_r1 = Divide(temp_r0_2 - 1, 0xA) + 1;
     }
-    func_020a6328(M2C_FIELD(arg0, void **, 0), var_r1 - var_r5);
+    AddPlayerUnitValue(M2C_FIELD(arg0, void **, 0), var_r1 - var_r5);
 }
 
 /* Writes a battle participant's displayed HP and ammo back to its unit record,

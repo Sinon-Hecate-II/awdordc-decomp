@@ -57,7 +57,7 @@ void func_ov010_02228d1c(M2C_UNK arg0) {
 #pragma opt_propagation off
 extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     void func_ov010_02226a88(void);
-    void func_ov010_022282d4(s32);
+    void Ov010Online_ClearStepFlag(s32);
     s32 func_ov010_02229450(s32);
     s32 func_ov010_02229438(s32);
     void func_ov010_02229a50(void);
@@ -100,8 +100,8 @@ volatile Ov010CallbackFn d;
 
     func_ov010_02226a88();
     func_020c4acc();
-    func_ov010_022282d4(3);
-    func_ov010_022282d4(4);
+    Ov010Online_ClearStepFlag(3);
+    Ov010Online_ClearStepFlag(4);
     func_ov010_02229450(arg2);
     func_ov010_02229438(arg4);
     func_ov010_02229a50();
@@ -152,7 +152,7 @@ volatile Ov010CallbackFn d;
 #pragma opt_propagation off
 extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     void func_ov010_02226a88(void);
-    void func_ov010_022282d4(s32);
+    void Ov010Online_ClearStepFlag(s32);
     s32 func_ov010_02229450(s32);
     s32 func_ov010_02229438(s32);
     void func_ov010_02229a50(void);
@@ -195,8 +195,8 @@ volatile Ov010CallbackFn d;
 
     func_ov010_02226a88();
     func_020c4acc();
-    func_ov010_022282d4(3);
-    func_ov010_022282d4(4);
+    Ov010Online_ClearStepFlag(3);
+    Ov010Online_ClearStepFlag(4);
     func_ov010_02229450(arg3);
     func_ov010_02229438(arg5);
     func_ov010_02229a50();
@@ -238,7 +238,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  void func_ov010_02229a50(void);
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
- void func_ov010_022282d4(s32);
+ void Ov010Online_ClearStepFlag(s32);
  s32 func_ov000_0216a470(void);
  s32 func_ov000_0216a564(void);
  s32 func_ov000_0216a76c(void);
@@ -256,8 +256,8 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  Ov010CallbackFn a,b,c,d;
  u8 *p;
  func_ov010_02226a88();
- func_ov010_022282d4(3);
- func_ov010_022282d4(4);
+ Ov010Online_ClearStepFlag(3);
+ Ov010Online_ClearStepFlag(4);
  func_ov010_02229468(arg2);
  func_ov010_02229480(arg4);
  func_ov010_02229a50();
@@ -284,7 +284,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  void func_ov010_02229a50(void);
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
- void func_ov010_022282d4(s32);
+ void Ov010Online_ClearStepFlag(s32);
  s32 func_ov000_0216a470(void);
  s32 func_ov000_0216a564(void);
  s32 func_ov000_0216a76c(void);
@@ -302,8 +302,8 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  Ov010CallbackFn c,a,b,d;
  u8 *p;
  func_ov010_02226a88();
- func_ov010_022282d4(3);
- func_ov010_022282d4(4);
+ Ov010Online_ClearStepFlag(3);
+ Ov010Online_ClearStepFlag(4);
  func_ov010_02229468(arg2);
  func_ov010_02229480(arg4);
  func_ov010_02229a50();

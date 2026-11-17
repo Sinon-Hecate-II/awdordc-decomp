@@ -46,7 +46,7 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
     s32 func_ov005_02211a54(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209b26c(M2C_UNK, s16, M2C_UNK, s32, s32, s32);
     M2C_UNK func_0209b2dc(M2C_UNK, s16, M2C_UNK, M2C_UNK, s32, s32, s32);
-    M2C_UNK func_0209b3e8(M2C_UNK, s16, M2C_UNK, u32, s32, s32);
+    M2C_UNK DrawNumber(M2C_UNK, s16, M2C_UNK, u32, s32, s32);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov005_02212244(s32, s32);
     void StringFormat(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -73,7 +73,7 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
     if (func_ov005_02211a54(0, arg1) == 0) {
         func_0209b26c(2, (s16)(arg0 + 5), 1, M2C_FIELD(p, s32 *, 0), 0x1000, (u16)y);
         if (M2C_FIELD(p, u16 *, 0x4) == 0) {
-            func_0209b3e8(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(data_ov005_02220274, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
+            DrawNumber(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(data_ov005_02220274, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
             DrawTextLine(0x11, (s16)(arg0 + 5), 1, (M2C_UNK)data_ov005_02220278, 0x1000, (u16)(y + 0x24));
             StringFormat((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
             lo[0] = buf[0];
@@ -88,11 +88,11 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
             DrawTextLine(0x16, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[0], 0x1000, (u16)(y + 0x2E));
         } else {
             if (money > 0x5F5E0FFU) money = 0x5F5E0FF;
-            func_0209b3e8(0x16, (s16)(arg0 + 5), 1, money, 0x1000, (u16)(y + 0x1E));
+            DrawNumber(0x16, (s16)(arg0 + 5), 1, money, 0x1000, (u16)(y + 0x1E));
         }
     } else {
         if (money > 0x5F5E0FFU) money = 0x5F5E0FF;
-        func_0209b3e8(0x16, (s16)(arg0 + 5), 1, money, 0x1000, (u16)(y + 0x1E));
+        DrawNumber(0x16, (s16)(arg0 + 5), 1, money, 0x1000, (u16)(y + 0x1E));
     }
     func_ov005_02212244(arg0 + 5, status);
     gCur3DSpriteEngine = saved;
@@ -103,7 +103,7 @@ void func_ov005_02212624(s32 arg0,M2C_UNK arg1) {
 M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
 M2C_UNK func_0209b26c(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
 M2C_UNK func_0209b2dc(M2C_UNK,s16,M2C_UNK,M2C_UNK,s32,s32,s32);
-M2C_UNK func_0209b3e8(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
+M2C_UNK DrawNumber(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
 s32 func_020a7298(u16,M2C_UNK);
 void *GetRecordDefinition(M2C_UNK);
 u32 GetRecordValue(M2C_UNK,M2C_UNK);
@@ -117,7 +117,7 @@ if(func_ov005_02211a54(1,last)==0){
 FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
-func_0209b3e8(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
+DrawNumber(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
 }else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,0x1000,3,(u16)arg1);
 func_ov005_02212244(arg0+5,t);gCur3DSpriteEngine=(void *)saved;
 }
@@ -127,7 +127,7 @@ void func_ov005_022127b4(s32 arg0,s32 arg1){
 M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
 M2C_UNK func_0209b26c(s32,s16,s32,s32,s32,s32);
 M2C_UNK func_0209b2dc(s32,s16,s32,s32,s32,s32,s32);
-M2C_UNK func_0209b3e8(s32,s16,s32,u32,s32,s32);
+M2C_UNK DrawNumber(s32,s16,s32,u32,s32,s32);
 s32 func_020a7298(u16,s32);
 void *GetRecordDefinition(s32);
 u32 GetRecordValue(s32,s32);s32 GetRecordTier(s32,s32);s32 func_ov005_02211a54(s32,s32);
@@ -141,7 +141,7 @@ if(!func_ov005_02211a54(2,index)){
 FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
-func_0209b3e8(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
+DrawNumber(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
 }else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,4096,3,(u16)position);
 func_ov005_02212244(arg0+5,status);gCur3DSpriteEngine=saved;
 }}

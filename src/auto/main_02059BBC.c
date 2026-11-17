@@ -77,14 +77,14 @@ s32 gti2GetBufferFreeSpace(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 4) - M2C_FIELD(arg0, s32 *, 8);
 }
 
-void func_02059d34(void *p,s32 a) {
+void gti2AddByteToBuffer(void *p,s32 a) {
 extern M2C_UNK data_020ff5d4,data_020ff5f0,data_020ff5a8;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
 if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5d4,&data_020ff5f0,&data_020ff5a8,35);
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
-void func_02059d84(void *p,s32 a) {
+void gti2AddShortToBuffer(void *p,s32 a) {
 extern M2C_UNK data_020ff5fc,data_020ff5f0,data_020ff5bc;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
 if(M2C_FIELD(p,s32 *,8)+2>M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5fc,&data_020ff5f0,&data_020ff5bc,46);
@@ -214,35 +214,38 @@ if(M2C_FIELD(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET),int *,GT2_SOCKE
 gti2FreeSocket(M2C_FIELD(connection,void **,GT2_CONNECTION_SOCKET));return 0;
 }return 1;}
 
-int gti2ClosedCallback(void *arg0, int arg1) {
+/* GameSpy GT2's gti2ClosedCallback: report a connection close to the
+ * connection's closed callback, nested via the connection and socket callback
+ * counters so that a socket marked for destruction is freed once the outermost
+ * callback returns.  Returns 0 when the socket was freed, 1 otherwise. */
+int gti2ClosedCallback(void *connection, int reason) {
     M2C_UNK gti2FreeSocket(void *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK gAssertNameConnection;
     extern M2C_UNK gAssertFileName;
-    extern M2C_UNK data_020ff6a8;
-    void *temp;
-    void *base;
+    extern M2C_UNK gAssertExprClosedCallback;
+    void *socket;
 
-    if (arg0 == NULL) {
-        AssertFailed(&gAssertNameConnection, &gAssertFileName, &data_020ff6a8, 0xBA);
+    if (connection == NULL) {
+        AssertFailed(&gAssertNameConnection, &gAssertFileName, &gAssertExprClosedCallback, 0xBA);
     }
-    if (arg0 == NULL) {
+    if (connection == NULL) {
         return 1;
     }
-    if (!*(void **)((char *)arg0 + 0x30)) {
+    if (!M2C_FIELD(connection, void **, GT2_CONNECTION_CALLBACK_CLOSED)) {
         return 1;
     }
-    *(int *)((char *)arg0 + 0x24) = *(int *)((char *)arg0 + 0x24) + 1;
-    temp = *(void **)((char *)arg0 + 0x8);
-    *(int *)((char *)temp + 0x1C) = *(int *)((char *)temp + 0x1C) + 1;
-    ((void (*)(void *, int))*(void **)((char *)arg0 + 0x30))(arg0, arg1);
-    *(int *)((char *)arg0 + 0x24) = *(int *)((char *)arg0 + 0x24) - 1;
-    base = *(void **)((char *)arg0 + 0x8);
-    *(int *)((char *)base + 0x1C) = *(int *)((char *)base + 0x1C) - 1;
-    temp = *(void **)((char *)arg0 + 0x8);
-    if (*(int *)((char *)temp + 0x14)) {
-        if (!*(int *)((char *)temp + 0x1C)) {
-            gti2FreeSocket((void *) temp);
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) + 1;
+    socket = M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET);
+    M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) = M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) + 1;
+    ((void (*)(void *, int))M2C_FIELD(connection, void **, GT2_CONNECTION_CALLBACK_CLOSED))(connection, reason);
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) - 1;
+    socket = M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET);
+    M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) = M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) - 1;
+    socket = M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET);
+    if (M2C_FIELD(socket, s32 *, GT2_SOCKET_DIRTY)) {
+        if (!M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS)) {
+            gti2FreeSocket((void *) socket);
             return 0;
         }
     }

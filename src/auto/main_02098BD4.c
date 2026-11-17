@@ -209,9 +209,9 @@ void **func_02099088(s32 arg0) {
 }
 
 void func_020990c0(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102fd4;
-    func_01ffa9e4(&data_02102fd4);
+    DeleteSpriteObjectsOfClass(&data_02102fd4);
 }
 
 void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
@@ -353,9 +353,9 @@ void **func_020993d4(s32 arg0) {
 }
 
 void func_0209940c(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102fac;
-    func_01ffa9e4(&data_02102fac);
+    DeleteSpriteObjectsOfClass(&data_02102fac);
 }
 
 void func_02099420(void) {

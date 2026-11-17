@@ -116,7 +116,7 @@ M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;
 
 #pragma cplusplus on
 #pragma optimization_level 2
-extern "C" void func_ov009_022224e0(void) {
+extern "C" void ResetLinkQueues(void) {
  s32 func_ov009_02221338(void *,s32);
  extern s32 gLinkState;
  extern s32 data_ov009_02226980;

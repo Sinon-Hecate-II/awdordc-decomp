@@ -277,7 +277,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0x48)=b;
 return 1;
 }
 
-void func_0203a9d0(void) {
+void DecodeNasBase64(void) {
     M2C_UNK func_0203739c();
     func_0203739c();
 }

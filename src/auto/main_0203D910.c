@@ -11,7 +11,7 @@ void func_0203d910(s32 a, s32 b)
     s32 Gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
-    void func_0203dc38(s32, s32);
+    void ReportConnectionError(s32, s32);
     s32 FindFreePlayerSlot(void);
     s32 *GetPlayerConnectionSlot(s32);
     u8 *GetPlayerPeer(s32);
@@ -127,7 +127,7 @@ void func_0203d910(s32 a, s32 b)
         slot = FindFreePlayerSlot();
 
         if (slot == -1) {
-            func_0203dc38(6, 0xfffeabc4);
+            ReportConnectionError(6, 0xfffeabc4);
             return;
         }
 
@@ -178,7 +178,7 @@ void func_0203dc18(void) {
  M2C_FIELD(GetConnection(),u8 *,0x3cd)=0;
 }
 
-void func_0203dc38(s32 arg0,s32 arg1) {
+void ReportConnectionError(s32 arg0,s32 arg1) {
  extern s32 sEmptyString;
  s32 func_0203aeb4(); void func_02041e44(); void SetNetError(s32,s32); s32 SetGpiStatus(s32,s32 *,s32); void func_0203e9b0();
  s32 a,b,c; void *p;
@@ -277,19 +277,19 @@ void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
 /* Handles deferred battle/action state transitions after the active phase check. */
 s32 func_0203dee8(s32 command, s32 parameter) {
 u64 GetSystemTick(void); s32 GetNetSessionState(void);
-M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void func_02041d14(void); void GT2NotifyConnectionClosed(s32); void func_0205df50(s32);
+M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void StartMatchmaking(void); void GT2NotifyConnectionClosed(s32); void func_0205df50(s32);
 void *state;
 if(GetNetSessionState()!=5)return 0;
 if(M2C_FIELD(GetConnection(),u8 *,21)==2)return 1;
-if(command){func_0203dc38(command,parameter+0xfffec780);return 1;}
+if(command){ReportConnectionError(command,parameter+0xfffec780);return 1;}
 M2C_FIELD(GetConnection(),u8 *,0x2d0)=0;
 if(M2C_FIELD(GetConnection(),u8 *,0x1a9)==1 || M2C_FIELD(GetConnection(),u8 *,0x1a8)==1 || M2C_FIELD(GetConnection(),u8 *,0x1a8)==2)return 1;
 if(M2C_FIELD(GetConnection(),s32 *,0x19c)){
 func_0205df50(M2C_FIELD(GetConnection(),s32 *,0x19c));M2C_FIELD(GetConnection(),s32 *,0x19c)=0;}
 if(M2C_FIELD(GetConnection(),u8 *,13)){
 if(!M2C_FIELD(GetConnection(),u8 *,0x1a8)){M2C_FIELD(GetConnection(),u8 *,0x1a8)=3;GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(),s32 **,4));}
-}else if(M2C_FIELD(GetConnection(),u8 *,21)==3)func_0203dc38(6,0xfffec5d2);
-else if(M2C_FIELD(GetConnection(),s32 *,0x208))func_02041d14();
+}else if(M2C_FIELD(GetConnection(),u8 *,21)==3)ReportConnectionError(6,0xfffec5d2);
+else if(M2C_FIELD(GetConnection(),s32 *,0x208))StartMatchmaking();
 else if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==1){SetConnectionState(18);state=(void *)GetConnection();M2C_FIELD(state,u64 *,0x1f0)=GetSystemTick();}
 else func_02041be0(1);
 return 1;

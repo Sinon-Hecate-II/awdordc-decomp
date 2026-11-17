@@ -381,11 +381,11 @@ void func_020da480(void *arg0) {
 }
 
 void func_020da8e4(s32,void *);
-void func_020da948(s32,M2C_UNK,u32,void *);
+void HandleOnlineLinkResult(s32,M2C_UNK,u32,void *);
 /* Dispatch an entity's driver based on its type field (+0x34) and sub-state (+0x38). */
 void func_020da7e8(void *entity) {
     void func_020da8e4(s32, void *);
-    void func_020da948(s32, M2C_UNK, u32, void *);
+    void HandleOnlineLinkResult(s32, M2C_UNK, u32, void *);
 
     switch (M2C_FIELD(entity, s32 *, 0x34)) {
     case 0:
@@ -396,14 +396,14 @@ void func_020da7e8(void *entity) {
         }
         break;
     case 1:
-        func_ov010_0222a20c(func_020da948, entity);
+        func_ov010_0222a20c(HandleOnlineLinkResult, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
         case 0: SetSpriteAnimation(entity, 2); break;
         case 1: SetSpriteAnimation(entity, 17); break;
         }
         break;
     case 2:
-        func_ov010_0222a20c(func_020da948, entity);
+        func_ov010_0222a20c(HandleOnlineLinkResult, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
         case 0: SetSpriteAnimation(entity, 12); break;
         case 1: SetSpriteAnimation(entity, 13); break;
@@ -417,9 +417,9 @@ void func_020da8e4(s32 arg0, void *arg1) {
     s32 func_020ad3f0();
     M2C_UNK DisableMapConfirm();
     M2C_UNK func_ov009_02225fb4(s8, u16, s32, void *);
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     if ((func_020abe90(M2C_FIELD(arg1, u8 *, 0x44)) == 1) || (func_020ad3f0() != 0)) {
-        func_ov010_022282d4(6);
+        Ov010Online_ClearStepFlag(6);
         return;
     }
     if (arg0 == 0) {
@@ -430,22 +430,32 @@ void func_020da8e4(s32 arg0, void *arg1) {
     SetSpriteAnimation(arg1, 1);
 }
 
-void func_020da948(s32 arg0,M2C_UNK arg1,u32 arg2,void *arg3){
-s32 func_020abe90(u8); s32 func_020ad3f0(void);
-M2C_UNK func_ov009_02224528(M2C_UNK); void func_ov010_02228320(void);
-M2C_UNK func_ov010_0222a808(s8,u16,s32,M2C_UNK,u32,void *);
-M2C_UNK func_ov010_022282d4(M2C_UNK); M2C_UNK DisableMapConfirm(void); M2C_UNK SetSpriteAnimation(void *,M2C_UNK);
-if(func_020abe90(M2C_FIELD(arg3,u8 *,0x44))==1 || func_020ad3f0()!=0){
-func_ov009_02224528(1); return;
-}
-if(arg0==0)return;
-func_ov010_0222a808(M2C_FIELD(arg3,s8 *,0x44),M2C_FIELD(arg3,u16 *,0x46),arg0,arg1,arg2,arg3);
-func_ov010_02228320();
-switch(arg2){
-case 0:case 1:case 2:func_ov010_022282d4(6);return;
-case 3:case 4:case 5:case 6:DisableMapConfirm();SetSpriteAnimation(arg3,1);return;
-case 7:default:return;
-}
+/* Online session result callback: when the menu state no longer allows the link
+ * (or a dialog is open) clear the link step flag; otherwise report the network
+ * error into the session's result object and react to its class - the quiet
+ * classes clear the session step flag, a connection failure starts the error
+ * animation, and a cancel is ignored. */
+void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, void *entity) {
+    s32 func_020abe90(u8);
+    s32 func_020ad3f0(void);
+    M2C_UNK func_ov009_02224528(M2C_UNK);
+    void func_ov010_02228320(void);
+    M2C_UNK func_ov010_0222a808(s8, u16, s32, M2C_UNK, u32, void *);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
+    M2C_UNK DisableMapConfirm(void);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+
+    if (func_020abe90(M2C_FIELD(entity, u8 *, 0x44)) == 1 || func_020ad3f0() != 0) {
+        func_ov009_02224528(1); return;
+    }
+    if (netError == 0) return;
+    func_ov010_0222a808(M2C_FIELD(entity, s8 *, 0x44), M2C_FIELD(entity, u16 *, 0x46), netError, errorParam, errorClass, entity);
+    func_ov010_02228320();
+    switch (errorClass) {
+    case 0: case 1: case 2: Ov010Online_ClearStepFlag(6); return;
+    case 3: case 4: case 5: case 6: DisableMapConfirm(); SetSpriteAnimation(entity, 1); return;
+    case 7: default: return;
+    }
 }
 
 void func_020daa0c(void *arg0) {

@@ -34,7 +34,7 @@ SetConnectionState(6);func_0203ecb0(0,0,SBServerListGetServer(M2C_FIELD(GetConne
 }else{SetConnectionState(5);if(func_02043008(SendMatchmakingParameter(peer)))return 0;}break;
 case 3:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;
-if(count>0&&payload[0]==16){func_0203dc38(13,0);return 0;}
+if(count>0&&payload[0]==16){ReportConnectionError(13,0);return 0;}
 return StartConnection(M2C_FIELD(GetConnection(),s32 *,516));
 case 4:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;
@@ -94,11 +94,11 @@ p=GetConnection();M2C_FIELD(p,u8 *,420)++;func_020411dc(0);break;
 case 10:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=1&&M2C_FIELD(GetConnection(),s32 *,416)!=18)break;
 if(!M2C_FIELD(GetConnection(),u8 *,21)||func_0204183c(payload+1,payload[0])){M2C_FIELD(GetConnection(),s32 *,520)=payload[1];M2C_FIELD(GetConnection(),u8 *,423)=0;}else M2C_FIELD(GetConnection(),s32 *,520)=0;
-if(M2C_FIELD(GetConnection(),u8 *,13))GT2NotifyConnectionClosed(M2C_FIELD(M2C_FIELD(GetConnection(),void * *,4),s32 *,0));else if(func_02041d14())return 0;
+if(M2C_FIELD(GetConnection(),u8 *,13))GT2NotifyConnectionClosed(M2C_FIELD(M2C_FIELD(GetConnection(),void * *,4),s32 *,0));else if(StartMatchmaking())return 0;
 break;
 case 12:
 if(M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;
-if(!M2C_FIELD(GetConnection(),u8 *,21)||M2C_FIELD(GetConnection(),u8 *,21)==1){if(!func_02041038(peer))return 0;}
+if(!M2C_FIELD(GetConnection(),u8 *,21)||M2C_FIELD(GetConnection(),u8 *,21)==1){if(!RestartConnection(peer))return 0;}
 else if(M2C_FIELD(GetConnection(),u8 *,21)==3){M2C_FIELD(GetConnection(),s32 *,524)=peer;func_02041e44();func_02041be0(0);}
 break;
 case 13:case 14:case 15:if(!HandlePeerSyncNotice(peer,type,payload[0]))return 0;break;
@@ -113,7 +113,7 @@ case 18:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=19)break;
 i=FindPeerSlot(peer,0);if(i==255)break;
 M2C_FIELD(gConnectionMgr,u32 *,8)|=1<<i;if(payload[0])M2C_FIELD(gConnectionMgr,u32 *,12)|=1<<i;break;
-case 19:func_0203dc38(12,0);return 0;
+case 19:ReportConnectionError(12,0);return 0;
 case 32:
 if(M2C_FIELD(GetConnection(),u8 *,21)!=1||M2C_FIELD(GetConnection(),u8 *,422))break;
 for(n=1;n<=M2C_FIELD(GetConnection(),u8 *,13);n++){
@@ -121,7 +121,7 @@ if(M2C_FIELD((u8 *)GetConnection()+((u32)n)*4,s32 *,244)==peer){
 if(!payload[0]){
 if(M2C_FIELD(GetConnection(),s32 *,416)==11||M2C_FIELD(GetConnection(),s32 *,416)==12){SendMatchAddress();if(func_0204084c())return 0;}
 if(M2C_FIELD(GetConnection(),s32 *,412)){func_0205df50(M2C_FIELD(GetConnection(),s32 *,412));M2C_FIELD(GetConnection(),s32 *,412)=0;}
-func_02041ce0();
+ReconnectUnlessServing();
 }else{p=GetConnection();i=FindPeerSlot(peer,0);M2C_FIELD(p,u32 *,476)|=1<<i;}
 goto done;
 }}

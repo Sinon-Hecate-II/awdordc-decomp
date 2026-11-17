@@ -165,7 +165,7 @@ void func_020d3830(void) {
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
     void func_ov010_0222a808(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     void func_ov010_02228320();
-    void func_ov010_022282d4(M2C_UNK);
+    void Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK func_02081fec();
     extern void **gCurrentMap;
     extern M2C_UNK gMapData;
@@ -194,7 +194,7 @@ void func_020d3830(void) {
         case 0:
         case 1:
         case 2:
-            func_ov010_022282d4(6);
+            Ov010Online_ClearStepFlag(6);
             M2C_FIELD(&gMapData, u8 *, 5) = 0;
             { u16 t = M2C_FIELD(*gCurrentMap, u16 *, 0x52B2);
               M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = t; }

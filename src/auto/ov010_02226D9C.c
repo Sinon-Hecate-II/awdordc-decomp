@@ -439,13 +439,13 @@ cb(a,b);
 
 #pragma opt_common_subs on
 void func_ov010_02227c5c(s32 arg0, s32 arg1, s32 arg2) {
-void *func_020c4b60(void);
+void *GetBattleSaveBlock(void);
 void FillU16(s32,void *,s32);
 extern M2C_UNK gOv010OnlineSession;
 Ov010State *base;
 u32 offset;
 void (*cb)(s32,s32,s32);
-base=func_020c4b60();
+base=GetBattleSaveBlock();
 offset=arg0*40;
 M2C_FIELD((u8 *)base+0x2ee,u16 *,arg1*40)=M2C_FIELD((u8 *)base+offset+0x200,u16 *,0xee)+M2C_FIELD((u8 *)base+0x2ee,u16 *,arg1*40);
 M2C_FIELD((u8 *)base+0x2f0,u16 *,arg1*40)=M2C_FIELD((u8 *)base+offset+0x200,u16 *,0xf0)+M2C_FIELD((u8 *)base+0x2f0,u16 *,arg1*40);

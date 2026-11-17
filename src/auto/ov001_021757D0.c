@@ -109,7 +109,7 @@ void Ov001_SetupDisplay(void) {
     void GX_SetSubBgMode(s32);
     void func_ov001_0218aab4(void);
     void func_ov001_0218bfd4(void);
-    void func_ov001_0218c168(void);
+    void Ov001_InitTilePools(void);
     void Ov001_InitSpritePools(void);
     void GX_TurnOnDisplay(void);
 
@@ -175,7 +175,7 @@ void Ov001_SetupDisplay(void) {
 
     func_ov001_0218aab4();
     func_ov001_0218bfd4();
-    func_ov001_0218c168();
+    Ov001_InitTilePools();
     Ov001_InitSpritePools();
     GX_TurnOnDisplay();
 

@@ -224,6 +224,12 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_UNIT_GROUP_SIZE 64     /* records per player slot; a record's owner (player << 6) picks its group */
 #define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
+/* One command of a battle event script: the interpreter keeps the current command
+ * in its context's +4 cursor and runs 0x10-byte commands.  +0x08 is an s16 player
+ * slot, +0x0A an s16 parameter (kind, tile coordinate...) and +0x0C an s32 argument,
+ * their meaning depending on the opcode. */
+#define MAP_SCRIPT_COMMAND_SIZE 0x10
+
 /* One bit per neighbour direction of a map tile, as set in the cursor and unit
  * move direction masks.  The direction table at gMapCursorDirs maps each cursor
  * direction index to its bit and its (dx, dy) step in this encoding. */
@@ -336,6 +342,7 @@ typedef struct MapTargetEntry {
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
 #define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
+#define MAP_CELL_LAYER_BYTES 0x508 /* bytes of one per-cell byte layer (the largest map's cell count) */
 #define MAP_CELL_ORDER      0x1e30 /* s8 per cell: working order/overlay layer */
 #define MAP_CELL_THREAT_DIRECT   0x2840 /* u8 per cell: threat from direct attackers */
 #define MAP_CELL_THREAT_INDIRECT 0x2d48 /* u8 per cell: threat from indirect attackers */
@@ -484,7 +491,7 @@ typedef struct MapRecordHeader {
     u8  propertyCount;  /* +0x2D terrain cells carrying a property flag */
     u8  unitsPerPlayer; /* +0x2E one more than the largest army's unit count */
     u8  unitCount;      /* +0x2F packed unit entries in the record */
-    u8  settings[0x10]; /* +0x30 map settings block */
+    MapSettings settings; /* +0x30 map settings block (rules at record +0x38) */
     u8  stamp[0x14];    /* +0x40 date, checksum and console id stamp */
 } MapRecordHeader;
 

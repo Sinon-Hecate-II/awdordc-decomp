@@ -576,11 +576,11 @@ void func_02091a40(void *arg0) {
 }
 #pragma scheduling reset
 void func_02091a50(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102a28;
     extern M2C_UNK data_021029f0;
-    func_01ffa9e4(&data_02102a28);
-    func_01ffa9e4(&data_021029f0);
+    DeleteSpriteObjectsOfClass(&data_02102a28);
+    DeleteSpriteObjectsOfClass(&data_021029f0);
 }
 
 u16 func_02091a70(void *arg0) {

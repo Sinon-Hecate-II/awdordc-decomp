@@ -436,24 +436,28 @@ s32 y=M2C_FIELD(p,s16 *,10);
 s32 x=M2C_FIELD(p,s16 *,8);
 void *base=*gCurrentMap;
 u8 id=M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758)),u8 *,0x508);
-if(id) {RefreshMapView(func_020a6718(id));}
+if(id) {RefreshMapView(RemoveUnit(id));}
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-s32 func_020939e0(void *arg0) {
+/* Battle event command: remove units from the current player's group, optionally
+ * only those of one kind (kind 0 matches any unit).  A non-zero argument word
+ * removes just the first match; the map view is refreshed afterwards. */
+s32 RemovePlayerUnitsOfKind(void *ctx) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-void *p=M2C_FIELD(arg0,void **,4);
+void *cmd=M2C_FIELD(ctx,void **,4);
 s32 i;
-for(i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;i++){
-u32 bits=(u32)(M2C_FIELD((u8 *)*gCurrentMap+i*14,u8 *,0x59A4)<<26)>>26;
-if(bits && (M2C_FIELD(p,s16 *,10)==0 || bits==M2C_FIELD(p,s16 *,10))) {
-func_020a6718(i);p=M2C_FIELD(arg0,void **,4);
-if(M2C_FIELD(p,s32 *,12)!=0)break;
+for(i=gPlayerUnitIdBase[M2C_FIELD(cmd,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(cmd,s16 *,8)]+MAP_UNIT_GROUP_SCAN;i++){
+u32 kind=(u32)(M2C_FIELD((u8 *)*gCurrentMap+i*MAP_UNIT_STRIDE,u8 *,MAP_UNIT_RECORDS)<<26)>>26;
+if(kind && (M2C_FIELD(cmd,s16 *,10)==0 || kind==M2C_FIELD(cmd,s16 *,10))) {
+RemoveUnit(i);cmd=M2C_FIELD(ctx,void **,4);
+if(M2C_FIELD(cmd,s32 *,12)!=0)break;
 }
 }
 RefreshMapView();
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+M2C_FIELD(ctx,s32 *,4)+=MAP_SCRIPT_COMMAND_SIZE;
+return 1;
 }
 
 s32 func_02093aa0(void *arg0) {

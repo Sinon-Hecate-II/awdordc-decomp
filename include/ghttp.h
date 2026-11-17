@@ -135,6 +135,8 @@ enum {
 
 /* Values stored in GHIConnection.result (GHTTPResult). */
 #define GHTTP_RESULT_SUCCESS             0  /* request finished normally */
+#define GHTTP_RESULT_PARSE_URL_FAILED    3  /* ghiParseURL rejected the request URL */
+#define GHTTP_RESULT_HOST_UNRESOLVED     4  /* the URL's host name did not resolve */
 #define GHTTP_RESULT_OUT_OF_MEMORY       1  /* a buffer could not be allocated */
 #define GHTTP_RESULT_SOCKET_FAILED       5  /* a socket call failed; the saved errno says why */
 #define GHTTP_RESULT_FILE_NOT_FOUND      11 /* the server answered 3xx/404 */

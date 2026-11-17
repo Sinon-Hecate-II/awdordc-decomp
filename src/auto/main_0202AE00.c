@@ -93,7 +93,7 @@ void func_0202aeb4(void) {
     } while (r7 != 0);
 }
 
-void *func_0202b018(void *a,s32 b,s32 c){
+void *Sound_AcquireVoice(void *a,s32 b,s32 c){
 extern M2C_UNK data_0213b704;void *func_02029ddc();void *func_0202b2d0();void func_0202acbc();
 void func_0202b298(void *);M2C_UNK func_0202b1f4(M2C_UNK *,void *);void *old=M2C_FIELD(a,void **,0);void *p=(u8 *)&data_0213b704+b*36;void *q;
 if(old)func_0202acbc(a);
@@ -101,12 +101,12 @@ if(M2C_FIELD(p,u16 *,8)>=M2C_FIELD(p,u32 *,24)){q=func_02029ddc(p,0);if(!q)retur
 q=func_0202b2d0(c);if(!q)return 0;func_0202b1f4(p,q);M2C_FIELD(q,void **,0)=a;M2C_FIELD(a,void **,0)=q;return q;
 }
 
-void func_0202b0b0(void) {
+void Sound_FreeVoice(void) {
     void func_0202b338();
     func_0202b338();
 }
 
-void func_0202b0bc(void *a){
+void Sound_StartSequence(void *a){
 void func_0202b1ac(void *);void func_02008bf0();void func_02008ca0();s32 Sound_GetCommandCounter();void *p=M2C_FIELD(a,void **,4);
 func_02008bf0(M2C_FIELD(a,u8 *,60));if(M2C_FIELD(p,s32 *,28))func_02008ca0(M2C_FIELD(a,u8 *,60),65535,M2C_FIELD(p,s32 *,28));
 func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
@@ -114,7 +114,7 @@ func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 
 
 void func_0202b10c(void *a,s32 b){void func_0202b298(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void func_0202b40c(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){func_0202b298(a);return;}func_0202eed8(a+28,0,b);func_0202b40c(a,0);M2C_FIELD(a,u8 *,44)=2;}
 
-void *func_0202b158(s32 a,void *b){extern M2C_UNK data_0213b704;void *func_02029ddc();M2C_UNK func_02029d7c();M2C_UNK func_0202c534();void *p=(u8 *)&data_0213b704+a*36;void *q=func_02029ddc(p+12,0);if(!q)return 0;func_02029d7c(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;func_0202c534(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
+void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK data_0213b704;void *func_02029ddc();M2C_UNK func_02029d7c();M2C_UNK func_0202c534();void *p=(u8 *)&data_0213b704+a*36;void *q=func_02029ddc(p+12,0);if(!q)return 0;func_02029d7c(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;func_0202c534(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
 
 void func_0202b1ac(void *arg0) {
     M2C_UNK func_0202eec0(void *);

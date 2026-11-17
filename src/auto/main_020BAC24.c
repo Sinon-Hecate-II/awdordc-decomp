@@ -8,7 +8,7 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK func_020baa64();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK func_020babfc(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void func_020a6718(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void func_020cbdbc(void);
+M2C_UNK func_020baa64();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK func_020babfc(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void func_020cbdbc(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
 func_020baa64();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
@@ -46,7 +46,7 @@ MarkPathThreatRange(M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_X),M2C_FIELD(*gCurrentM
 func_020a8050(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),(u8*)*gCurrentMap+MAP_PATH_X,(u8*)*gCurrentMap+MAP_CURSOR_X,(u8*)*gCurrentMap+MAP_CURSOR_PATH);
 unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);
 /* a unit without health is taken off the map */
-if(!unit->health){if(unit)carrierId=unit-(BattleMapUnit*)((u8*)*gCurrentMap+MAP_UNIT_RECORDS);else carrierId=0;func_020a6718(carrierId);}
+if(!unit->health){if(unit)carrierId=unit-(BattleMapUnit*)((u8*)*gCurrentMap+MAP_UNIT_RECORDS);else carrierId=0;RemoveUnit(carrierId);}
 RefreshMapView();
 if(func_020d66fc((u8*)*gCurrentMap+MAP_CURSOR_PATH))func_ov000_0216aa04(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
 else func_ov000_0216a9bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));

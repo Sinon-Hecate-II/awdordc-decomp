@@ -159,21 +159,27 @@ M2C_UNK TlsComputeFinishedSha1(void *tls, void *digest, s32 peerFinished) {
     SHA1_Final(tls + TLS_TRANSCRIPT_SHA1, digest);
 }
 
-void TlsProcessFinished(void *p,void *q) {
- M2C_UNK MI_CpuCopy8(s32,s32,u32);
- M2C_UNK TlsComputeFinishedMd5(void *,void *,s32);
- M2C_UNK TlsComputeFinishedSha1(void *,void *,s32);
- s32 ByteCompareN(void *,void *,s32);
- u8 buf[20];
- MI_CpuCopy8((s32)p+0x3A4,(s32)p+0x3FC,0x58);
- TlsComputeFinishedMd5(p,buf,1);
- MI_CpuCopy8((s32)p+0x3FC,(s32)p+0x3A4,0x58);
- if(ByteCompareN(q,buf,16)) { M2C_FIELD(p,s8 *,0x455)=9;return;}
- MI_CpuCopy8((s32)p+0x2EC,(s32)p+0x348,0x5C);
- TlsComputeFinishedSha1(p,buf,1);
- MI_CpuCopy8((s32)p+0x348,(s32)p+0x2EC,0x5C);
- if(ByteCompareN(q+16,buf,20)) M2C_FIELD(p,s8 *,0x455)=9;
- else M2C_FIELD(p,s8 *,0x455)=6;
+/* Verifies the peer's Finished handshake message: hash a saved copy of the MD5
+ * transcript (swapped into the live context, hashed, swapped back) and compare
+ * its 16-byte digest with `verifyData`, then do the same for the SHA1 transcript
+ * and its 20-byte digest; sets the handshake state to TLS_STATE_ERROR on a
+ * mismatch, TLS_STATE_FINISHED when both match. */
+void TlsProcessFinished(void *tls, void *verifyData) {
+    M2C_UNK MI_CpuCopy8(s32,s32,u32);
+    M2C_UNK TlsComputeFinishedMd5(void *,void *,s32);
+    M2C_UNK TlsComputeFinishedSha1(void *,void *,s32);
+    s32 ByteCompareN(void *,void *,s32);
+    u8 digest[TLS_SHA1_FINISHED_SIZE];
+
+    MI_CpuCopy8((s32)tls+TLS_TRANSCRIPT_MD5,(s32)tls+TLS_MD5_CTX,TLS_MD5_CTX_SIZE);
+    TlsComputeFinishedMd5(tls,digest,1);
+    MI_CpuCopy8((s32)tls+TLS_MD5_CTX,(s32)tls+TLS_TRANSCRIPT_MD5,TLS_MD5_CTX_SIZE);
+    if(ByteCompareN(verifyData,digest,TLS_MD5_FINISHED_SIZE)) { M2C_FIELD(tls,s8 *,TLS_STATE)=TLS_STATE_ERROR;return;}
+    MI_CpuCopy8((s32)tls+TLS_TRANSCRIPT_SHA1,(s32)tls+TLS_SHA1_CTX,TLS_SHA1_CTX_SIZE);
+    TlsComputeFinishedSha1(tls,digest,1);
+    MI_CpuCopy8((s32)tls+TLS_SHA1_CTX,(s32)tls+TLS_TRANSCRIPT_SHA1,TLS_SHA1_CTX_SIZE);
+    if(ByteCompareN((u8 *)verifyData+16,digest,TLS_SHA1_FINISHED_SIZE)) M2C_FIELD(tls,s8 *,TLS_STATE)=TLS_STATE_ERROR;
+    else M2C_FIELD(tls,s8 *,TLS_STATE)=TLS_STATE_FINISHED;
 }
 
 void IncrementBe64(u8 *arg0) {

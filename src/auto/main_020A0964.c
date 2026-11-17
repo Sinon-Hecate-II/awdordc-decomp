@@ -444,9 +444,9 @@ void func_020a15b4(s32 arg0, s32 arg1, s16 arg2) {
 }
 
 void func_020a15e4(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_0211fb60;
-    func_01ffa9e4(&data_0211fb60);
+    DeleteSpriteObjectsOfClass(&data_0211fb60);
 }
 
 #pragma opt_strength_reduction off

@@ -249,10 +249,10 @@ void func_020c0748(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 
 void func_020c0784(void) {
     M2C_UNK func_0209bfa8();
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
     func_0209bfa8();
-    func_01ffa9e4(&data_02129630);
+    DeleteSpriteObjectsOfClass(&data_02129630);
 }
 
 /* Stamps a filled window frame into the 32-column tile map `tilemap`: the frame
@@ -568,8 +568,8 @@ return 1;
 }
 
 void func_020c121c(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02129690;
-    func_01ffa9e4(&data_02129690);
+    DeleteSpriteObjectsOfClass(&data_02129690);
 }
 

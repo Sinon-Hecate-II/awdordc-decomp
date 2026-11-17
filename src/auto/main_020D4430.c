@@ -399,7 +399,7 @@ void UpdateAimingCursor(void) {
  }
  RefreshMapView();func_0207a768();func_0207b040();
  M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)=0;
- func_01ffa9e4(data_0211fbc4);
+ DeleteSpriteObjectsOfClass(data_0211fbc4);
  PlaySoundEffect(0x1000f);
  } else if(keys&0x100)CreateMapMenu(); /* R menu */
  else if(keys&0x40)func_020d8fa0(); /* X close */

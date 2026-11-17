@@ -291,7 +291,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
     s32 StringFormatN(void *, s32, void *, ...);
     s32 ByteCompareN(void *, void *, s32);
     s32 DropSessionPlayer(s32);
-    s32 func_0204e0c4(void **, s32);
+    s32 gpiReleaseProfile(void **, s32);
 
     u8 keyText[0x1c];
     void *manager;
@@ -353,7 +353,7 @@ after_loop:
     if (found) {
         DropSessionPlayer(M2C_FIELD(buf, s32 *, 4));
     } else {
-        func_0204e0c4(conn, M2C_FIELD(buf, s32 *, 4));
+        gpiReleaseProfile(conn, M2C_FIELD(buf, s32 *, 4));
     }
 }
 #pragma opt_strength_reduction reset

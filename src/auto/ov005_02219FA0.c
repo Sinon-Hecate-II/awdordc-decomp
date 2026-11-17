@@ -10,7 +10,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     void *FindObjectByClass(void *);
     void *func_01ffa3dc(void *, void *);
     s32 func_02090e0c(s32, u8, s32, s32, s32, s32, s32, void *);
-    void func_ov005_02219e58(void *);
+    void DrawResultSpark(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02220d50, data_ov005_02220fa4, data_0211e058;
     void *spark;
@@ -32,7 +32,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     M2C_FIELD(spark, s32 *, 0x3c) = x;
     M2C_FIELD(spark, s32 *, 0x40) = y;
     M2C_FIELD(spark, s32 *, 0x44) = variant;
-    func_ov005_02219e58(spark);
+    DrawResultSpark(spark);
 }
 
 /* Draws the sprites of the medals being awarded.  Four flags at +0x44..+0x47

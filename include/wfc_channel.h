@@ -9,6 +9,17 @@
 #define WFC_INFO_CHANNEL_CALLBACK 0xcc  /* void *: the channel's event callback */
 #define WFC_INFO_CHANNEL_OBJECT   0x10c /* void *: the object the callback receives */
 
+/* The info block WFC_GetInfoBlock returns: its +4 word points at the link's own
+ * state object, whose first word is the channel state WFC_CheckChannelState
+ * matches. */
+#define WFC_INFO_LINK             0x04  /* void *: the link state object */
+
+/* Link state object fields (u16 unless noted). */
+#define WFC_LINK_TEARDOWN         0x0C  /* s32 1 while the link is being torn down */
+#define WFC_LINK_BLOCK_WORDS      0x3E  /* one player's transfer block, in 16-bit words */
+#define WFC_LINK_PLAYERS          0xF8  /* players taking part in the transfer */
+#define WFC_LINK_RESET            0x188 /* nonzero while the link is being reset */
+
 /* Completion event handed to a channel's callback. */
 #define WFC_EVENT_RESULT      0x02 /* u16 WFC_EVENT_RESULT_* */
 #define WFC_EVENT_COMMAND     0x04 /* u16 command the event belongs to */

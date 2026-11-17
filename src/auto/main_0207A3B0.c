@@ -98,9 +98,9 @@ void func_0207a748(s16 arg0) {
 }
 
 void func_0207a768(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02100bb0;
-    func_01ffa9e4(&data_02100bb0);
+    DeleteSpriteObjectsOfClass(&data_02100bb0);
 }
 
 void func_0207a77c(s32 arg0) {
@@ -555,9 +555,9 @@ void func_0207b028(M2C_UNK arg0) {
 }
 
 void func_0207b040(void) {
- M2C_UNK func_01ffa9e4(M2C_UNK *);
+ M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
  extern M2C_UNK data_02100bd0;
- func_01ffa9e4(&data_02100bd0);
+ DeleteSpriteObjectsOfClass(&data_02100bd0);
  func_0207a768();
 }
 

@@ -112,7 +112,7 @@ gLocalIpCount=++i;
 #pragma opt_common_subs reset
 s32 ResolveHostAddress(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&StringCompare(a,data_020ffa44)){p=ghiResolveHostname(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
 
-void func_0205ed28(u8 *arg0, u8 *arg1) {
+void SwapBytes(u8 *arg0, u8 *arg1) {
     u8 temp_r3;
 
     temp_r3 = *arg0;
@@ -120,9 +120,13 @@ void func_0205ed28(u8 *arg0, u8 *arg1) {
     *arg1 = temp_r3;
 }
 
-u8 func_0205ed3c(u32 a){if(a<26)return a+65;if(a<52)return a+71;if(a<62)return a-4;if(a==62)return 43;if(a==63)return 47;return 0;}
+u8 Base64EncodeChar(u32 a){if(a<26)return a+65;if(a<52)return a+71;if(a<62)return a-4;if(a==62)return 43;if(a==63)return 47;return 0;}
 
-void func_0205ed84(void *src_void, s32 count, void *dst_void) {
+/* Base64-encode `count` bytes from `src_void` into `dst_void`, QR2 style:
+   every 3-byte group (zero padded when the input runs out) becomes 4 six-bit
+   values, each mapped through the standard alphabet by Base64EncodeChar.
+   No '=' padding is emitted; the result is NUL-terminated. */
+void Base64EncodeRaw(void *src_void, s32 count, void *dst_void) {
     u8 *src = (u8 *) src_void;
     u8 *dst = (u8 *) dst_void;
     u8 buf[3];
@@ -133,6 +137,7 @@ void func_0205ed84(void *src_void, s32 count, void *dst_void) {
     if (count <= 0) goto end;
     for (;;) {
         j = 0;
+        /* Fill one 3-byte group, zero-padding past the end of the input. */
         for (;;) {
             if (i < count) {
                 buf[j] = *src++;
@@ -149,7 +154,7 @@ void func_0205ed84(void *src_void, s32 count, void *dst_void) {
         out[3] = (u8) (buf[2] & 0x3f);
         j = 0;
         for (;;) {
-            *dst++ = func_0205ed3c(out[j]);
+            *dst++ = Base64EncodeChar(out[j]);
             j++;
             if (j > 3) break;
         }
@@ -188,7 +193,7 @@ void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     for (i = 0; i < 256; i++) {
         j = (u8)((j + *p + key[idx]) % 256);
         idx = (u8)(func_020720f0(idx + 1, keyLen) >> 32);
-        func_0205ed28(p, S + j);
+        SwapBytes(p, S + j);
         p++;
     }
 
@@ -200,7 +205,7 @@ void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     for (i = 0; i < dataLen; ) {
         j = (u8)((j + data[i] + 1) % 256);
         k = (u8)((k + S[j]) % 256);
-        func_0205ed28(S + j, S + k);
+        SwapBytes(S + j, S + k);
         t = (u8)((S[j] + S[k]) % 256);
         data[i] = (u8)(data[i] ^ S[t]);
         i++;
@@ -213,14 +218,14 @@ void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
  void StringCopy(void *,void *);
  s32 StringLength(void *);
  void func_0205ee48(void *,s32,void *,s32);
- void func_0205ed84(void *,s32,void *);
+ void Base64EncodeRaw(void *,s32,void *);
  s8 buf[65];
  if(n<1)return;
  if(n>65)return;
  if(p[n-1])return;
  StringCopy(buf,p);
  func_0205ee48((u8 *)a+68,StringLength((u8 *)a+68),buf,n-1);
- func_0205ed84(buf,n-1,(u8 *)b+M2C_FIELD(b,s32 *,0x800));
+ Base64EncodeRaw(buf,n-1,(u8 *)b+M2C_FIELD(b,s32 *,0x800));
  M2C_FIELD(b,s32 *,0x800)+=StringLength((u8 *)b+M2C_FIELD(b,s32 *,0x800))+1;
 }
 

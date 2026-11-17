@@ -165,7 +165,7 @@ s32 func_02037508(s32 *outParam, s32 *outType) {
     return M2C_FIELD(&gNetError, s32 *, 0);
 }
 
-void func_020375fc(void) {
+void ClearNetError(void) {
     extern M2C_UNK gNetError;
     if (M2C_FIELD(&gNetError, s32 *, 0) != 9) {
         M2C_FIELD(&gNetError, s32 *, 0) = 0;

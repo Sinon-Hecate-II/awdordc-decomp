@@ -142,7 +142,7 @@ case 4:errCode=6;detail=errCode-26;break;
 switch(M2C_FIELD(gNetSession,u32 *,0x24)){
 case 1:detail+=0xffff11b8;ReportNasLoginError(errCode,detail);break;
 case 2:detail+=0xffff11b8;if(M2C_FIELD(gNetSession,s32 *,0x9c)<1)ReportNasLoginError(errCode,detail);break;
-case 5:detail+=0xfffec398;func_0203dc38(errCode,detail);break;
+case 5:detail+=0xfffec398;ReportConnectionError(errCode,detail);break;
 case 4:detail+=0xfffeeaa8;break;
 default:detail+=0xfffe9c88;break;
 }

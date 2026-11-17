@@ -10,16 +10,16 @@ s32 OS_DisableIrqMask(s32);
 void OS_EnableIrqMask(s32);
 void SystemHalt(void);
 void func_ov001_0218bf84(void *,void *);
-extern s32 data_ov001_02193e6c;
+extern s32 gOv001TilePools;
 RuntimeRangeNode *node,*p;
 s32 old,units;
-node=(RuntimeRangeNode *)Ov001_QueuePop(M2C_FIELD(data_ov001_02193e6c+n*0x1a0,s32 *,0x19c));
+node=(RuntimeRangeNode *)Ov001_QueuePop(M2C_FIELD(gOv001TilePools+n*0x1a0,s32 *,0x19c));
 units=((size+3)&~3)>>2;
 node->size=units;
 old=OS_DisableIrqMask(1);
 if(forward) {
-p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].head;
-if(p!=&((RuntimeRangePool *)data_ov001_02193e6c)[n].tail) do {
+p=&((RuntimeRangePool *)gOv001TilePools)[(u32)n].head;
+if(p!=&((RuntimeRangePool *)gOv001TilePools)[n].tail) do {
 RuntimeRangeNode *next=p->next;
 s32 pos=p->start+p->size;
 if(pos+units<=next->start) {
@@ -28,11 +28,11 @@ func_ov001_0218bf84(next,node);
 break;
 }
 p=next;
-} while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c));
-if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c)) SystemHalt();
+} while(p!=(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x18c));
+if(p==(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x18c)) SystemHalt();
 } else {
-p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].tail;
-if(p!=&((RuntimeRangePool *)data_ov001_02193e6c)[n].head) do {
+p=&((RuntimeRangePool *)gOv001TilePools)[(u32)n].tail;
+if(p!=&((RuntimeRangePool *)gOv001TilePools)[n].head) do {
 RuntimeRangeNode *prev=p->prev;
 s32 pos=p->start-units;
 if(pos>=prev->start+prev->size) {
@@ -41,8 +41,8 @@ func_ov001_0218bf84(p,node);
 break;
 }
 p=prev;
-} while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180));
-if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180)) SystemHalt();
+} while(p!=(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x180));
+if(p==(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x180)) SystemHalt();
 }
 *out=node->start;
 OS_EnableIrqMask(old);
@@ -52,15 +52,15 @@ return node;
 void func_ov001_0218c3a0(u32 arg0) {
     M2C_UNK Ov001_QueuePush(s32, u32);
     M2C_UNK func_ov001_0218bf4c();
-    extern s32 data_ov001_02193e6c;
+    extern s32 gOv001TilePools;
     s32 var_r4;
 
     var_r4 = 0;
     func_ov001_0218bf4c();
-    if (arg0 >= (u32) (data_ov001_02193e6c + 0x1A0)) {
+    if (arg0 >= (u32) (gOv001TilePools + 0x1A0)) {
         var_r4 = 1;
     }
-    Ov001_QueuePush(M2C_FIELD(((var_r4 * 0x1A0) + data_ov001_02193e6c), s32 *, 0x19C), arg0);
+    Ov001_QueuePush(M2C_FIELD(((var_r4 * 0x1A0) + gOv001TilePools), s32 *, 0x19C), arg0);
 }
 
 s32 StringLengthUpTo(u8 *p,s32 n) {

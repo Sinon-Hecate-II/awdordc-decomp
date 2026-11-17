@@ -230,7 +230,7 @@ s32 func_0209cfb8(void *arg0) {
 }
 
 s32 func_0209cfe4(void *arg0) {
-    M2C_UNK func_01ffa9e4(s32);
+    M2C_UNK DeleteSpriteObjectsOfClass(s32);
     M2C_UNK func_01ffa9f8(s32);
     void *temp_r1;
 
@@ -238,7 +238,7 @@ s32 func_0209cfe4(void *arg0) {
     if (M2C_FIELD(temp_r1, s16 *, 2) != 0) {
         func_01ffa9f8(M2C_FIELD(temp_r1, s32 *, 4));
     } else {
-        func_01ffa9e4(M2C_FIELD(temp_r1, s32 *, 4));
+        DeleteSpriteObjectsOfClass(M2C_FIELD(temp_r1, s32 *, 4));
     }
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;

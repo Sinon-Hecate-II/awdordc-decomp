@@ -156,7 +156,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
     s32 func_020c52ec(s32);
     s32 func_020c544c(s32);
     s32 func_0203a68c(s32, s32);
-    void func_ov010_0222697c(void *);
+    void InitOnlinePlayerRecord(void *);
     s32 func_0203a7c0(s32, u8 *, u8 *, void *, s32 *);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
@@ -195,7 +195,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
             if (!unit) continue;
             if (func_020c544c(unit) != 3) continue;
             if (func_0203a68c(unit, 0) != 6) continue;
-            func_ov010_0222697c(info);
+            InitOnlinePlayerRecord(info);
             if (func_0203a7c0(unit, &glyphA, &glyphB, info, &code) != 6) continue;
             if (!(info[0x1a] & 2) || glyphA == glyphB) continue;
             if (M2C_FIELD(menu, s32 *, 0x38) != M2C_FIELD(info, s8 *, 0x28)) continue;

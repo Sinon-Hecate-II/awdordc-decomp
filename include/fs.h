@@ -34,6 +34,7 @@ struct FSFileRequest {
 #define FS_REQ_DIR_SKIP   0x34 /* s32 nonzero to skip the entry's name */
 
 /* Request flags at FSFileRequest::flags. */
+#define FS_REQ_ACTIVE    0x00000001 /* submitted and not yet finished by the worker */
 #define FS_REQ_QUEUED    0x00000002 /* still queued, dropped by a cancel */
 #define FS_REQ_COMPLETED 0x00000004 /* wake the caller waiting at +0x18 */
 #define FS_REQ_NOTIFIED  0x00000040 /* the file callback has seen this request */

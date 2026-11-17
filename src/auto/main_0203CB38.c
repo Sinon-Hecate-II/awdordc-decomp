@@ -19,7 +19,7 @@ s32 func_02061750(s32);
 void func_0203ca88(s32);
 void func_0205e178(void);
 void func_0205d8f4(void);
-s32 func_02041d14(void);
+s32 StartMatchmaking(void);
 s32 UpdateConnectionSyncWait(void);
 s32 UpdateConnectionSyncTimers(void);
 void UpdateConnectionSync(void);
@@ -34,13 +34,13 @@ void func_0203cb38(void *arg0) {
     s32 SendJoinRequest(s32, s32);
     s32 func_0204084c(void);
     s32 StartConnection(s32);
-    s32 func_02041038(s32);
+    s32 RestartConnection(s32);
     s32 func_02040e1c(s32);
     s32 SendMatchmakingParameter(s32);
     s32 func_02043008(s32);
-    s32 func_02041ce0(void);
+    s32 ReconnectUnlessServing(void);
     void func_0203dc18(void);
-    void func_0203dc38(s32, s32);
+    void ReportConnectionError(s32, s32);
     s32 SendConnectionCommand(u8, s32, s32, u16, s32 *, s32);
     s32 GetNetSessionState(void);
     void *timerState;
@@ -70,7 +70,7 @@ void func_0203cb38(void *arg0) {
                 if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 3) {
                     M2C_FIELD(GetConnection(), u8 *, 0x1aa)++;
                     if (M2C_FIELD(GetConnection(), u8 *, 0x1aa) > 5) {
-                        func_0203dc38(6, (s32)0xfffec5d2);
+                        ReportConnectionError(6, (s32)0xfffec5d2);
                         return;
                     }
                     SendJoinRequest(M2C_FIELD(GetConnection(), s32 *, 0xf4), 0);
@@ -111,7 +111,7 @@ void func_0203cb38(void *arg0) {
             now = GetSystemTick();
             if (U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x18c))<<6,0x82ea)>25000) {
                 M2C_FIELD(GetConnection(),u64 *,0x18c)=0;
-                if (!func_02041038(M2C_FIELD(GetConnection(),s32 *,0xf4))) return;
+                if (!RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4))) return;
             }
             break;
         }
@@ -121,7 +121,7 @@ void func_0203cb38(void *arg0) {
         M2C_FIELD(GetConnection(),u8 *,0x3cd)++;
         if(M2C_FIELD(GetConnection(),u8 *,0x3cd)>5) {
             func_0203dc18();
-            if(!func_02041038(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
+            if(!RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
         } else {
             SendConnectionCommand(6,M2C_FIELD(GetConnection(),s32 *,0x454),M2C_FIELD(GetConnection(),s32 *,0x3d0),M2C_FIELD(GetConnection(),u16 *,0x3ce),(s32 *)((u8 *)GetConnection()+0x3d4),M2C_FIELD(GetConnection(),s32 *,0x458));
             if(func_0204084c())return;
@@ -146,7 +146,7 @@ void func_0203cb38(void *arg0) {
             func_0203dc18();
             if(M2C_FIELD(GetConnection(),u8 *,0x15)==2) {
                 if(!func_02040e1c(M2C_FIELD((u8 *)GetConnection()+(M2C_FIELD(GetConnection(),u8 *,0xd)<<2),s32 *,0xf4)))return;
-            } else func_02041ce0();
+            } else ReconnectUnlessServing();
         } else {
             SendConnectionCommand(8,M2C_FIELD(GetConnection(),s32 *,0x454),M2C_FIELD(GetConnection(),s32 *,0x3d0),M2C_FIELD(GetConnection(),u16 *,0x3ce),(s32 *)((u8 *)GetConnection()+0x3d4),M2C_FIELD(GetConnection(),s32 *,0x458));
             if(func_0204084c())return;
@@ -157,7 +157,7 @@ void func_0203cb38(void *arg0) {
         now=GetSystemTick();
         if(U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x1f8))<<6,0x82ea)<=30000)break;
         if(M2C_FIELD(GetConnection(),u8 *,0x1ad)>=5) {
-            if(!func_02041038(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
+            if(!RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
         } else {
             SendConnectionCommand(0x40,M2C_FIELD(GetConnection(),s32 *,0xf4),M2C_FIELD(GetConnection(),s32 *,0x24),M2C_FIELD(GetConnection(),u16 *,0xa4),0,0);
             if(func_0204084c())return;
@@ -188,7 +188,7 @@ void func_0203cb38(void *arg0) {
            func_02061750(M2C_FIELD(GetConnection(),s32 *,0xe4)) &&
            M2C_FIELD(GetConnection(),u64 *,0x174)) {
             now=GetSystemTick();
-            if(now>M2C_FIELD(GetConnection(),u64 *,0x174))func_0203dc38(6,0xfffeb3ee);
+            if(now>M2C_FIELD(GetConnection(),u64 *,0x174))ReportConnectionError(6,0xfffeb3ee);
         }
     }
     func_0203ca88(M2C_FIELD(GetConnection(),s32 *,0x10));
@@ -204,7 +204,7 @@ void func_0203cb38(void *arg0) {
         func_0205ad78(M2C_FIELD(M2C_FIELD(GetConnection(),s32 *,4),s32 *,0));
     if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==18) {
         now=GetSystemTick();
-        if(U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x1f0))<<6,0x82ea)>3000 && func_02041d14())return;
+        if(U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x1f0))<<6,0x82ea)>3000 && StartMatchmaking())return;
     }
     if(!UpdateConnectionSyncWait())return;
     if(!UpdateConnectionSyncTimers())return;
@@ -247,7 +247,7 @@ void HandleGt2ConnectAttempt(s32 unused, s32 connectionArg, s32 remoteAddressArg
     void *GetConnection(void);
     s32 FindFreePlayerSlot(void);
     void func_0205adc0(s32, void *, s32);
-    void func_0203dc38(s32, s32);
+    void ReportConnectionError(s32, s32);
     void func_0203dc18(void);
     void *GetPlayerConnectionSlot(s32);
     void *GetPlayerPeer(s32);
@@ -284,7 +284,7 @@ find_slot:
     connectionSlot = FindFreePlayerSlot();
     if (connectionSlot == -1) {
         func_0205adc0(connection, data_020fc92c, -1);
-        func_0203dc38(6, (s32)0xfffeabc4);
+        ReportConnectionError(6, (s32)0xfffeabc4);
         return;
     }
     entry = GetConnection();
@@ -324,7 +324,7 @@ accept_connection:
     M2C_FIELD(matchState, s32 *, 0x190) = 0;
     matchState = GetConnection();
     if (func_0205adb4(connection, M2C_FIELD(matchState, s32 *, 0x08)) == 0) {
-        func_0203dc38(6, (s32)0xfffec5e6);
+        ReportConnectionError(6, (s32)0xfffec5e6);
         return;
     }
     func_0203dc18();

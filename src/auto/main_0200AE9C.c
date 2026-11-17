@@ -30,7 +30,7 @@ static inline s32 TestFileFlag(void *a, s32 mask) {
 
 M2C_UNK func_0200ae9c(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 ExecuteFileCommand(void *,s32);s32 GetNextFileRequest(s32);s32 b=M2C_FIELD(a,s32 *,8),key;if(!a)return;do{key=OS_DisableInterrupts();M2C_FIELD(a,volatile s32 *,12)|=64;if((M2C_FIELD(a,volatile s32 *,12)&4)?1:0){OS_WakeupThread(a+24);OS_RestoreInterrupts(key);return;}M2C_FIELD(a,volatile s32 *,12)|=8;OS_RestoreInterrupts(key);if(ExecuteFileCommand(a,M2C_FIELD(a,s32 *,16))==6)return;a=(void *)GetNextFileRequest(b);}while(a);}
 
-s32 func_0200af30(void *arg0) {
+s32 FinishFileRequest(void *arg0) {
     M2C_UNK CompleteFileRequest(void *, s32);
     s32 ExecuteFileCommand(void *, s32);
     s32 GetNextFileRequest(s32);
@@ -68,7 +68,7 @@ if(!TestRequestFlag(req,4)){OS_RestoreInterrupts(key);return 1;}
 do{OS_SleepThread((u8 *)req+24);}while(!(M2C_FIELD(req,volatile s32 *,12)&64));
 OS_RestoreInterrupts(key);
 }
-return func_0200af30(req);
+return FinishFileRequest(req);
 }
 
 void func_0200b118(void *arg0) {
@@ -286,7 +286,7 @@ return SubmitFileRequest(request,4);
 }
 
 M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
-    s32 func_0200bad8(void *);
+    s32 WaitForFileRequest(void *);
     void *self = (void *)a;
     s32 old = M2C_FIELD(self, s32 *, 0x2c);
     s32 limit = M2C_FIELD(self, s32 *, 0x28) - old;
@@ -299,7 +299,7 @@ M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
     if (!d) M2C_FIELD(self, volatile s32 *, 0xc) |= 4;
     SubmitFileRequest(self, 0);
     if (!d) {
-        if (func_0200bad8(self)) n = M2C_FIELD(self, s32 *, 0x2c) - old;
+        if (WaitForFileRequest(self)) n = M2C_FIELD(self, s32 *, 0x2c) - old;
         else n = -1;
     }
     return n;
@@ -339,7 +339,31 @@ s32 CloseFileRequest(void *arg0) {
     return 1;
 }
 
-s32 func_0200bad8(void *a){void OS_SleepThread(void *);s32 r=0,key=OS_DisableInterrupts();if((M2C_FIELD(a,volatile s32 *,12)&1)?1:0){r=!(M2C_FIELD(a,volatile s32 *,12)&0x44);if(r){M2C_FIELD(a,volatile s32 *,12)|=4;do{OS_SleepThread(a+24);}while(!(M2C_FIELD(a,volatile s32 *,12)&64));}else{do{OS_SleepThread(a+24);}while((M2C_FIELD(a,volatile s32 *,12)&1)?1:0);}}OS_RestoreInterrupts(key);if(r)return func_0200af30(a);return M2C_FIELD(a,s32 *,20)==0;}
+/* Wait for a submitted file request to finish: mark it completed if the worker
+ * has not, wait for the worker to acknowledge, then run the request to
+ * completion. Returns whether the request succeeded (result 0). */
+s32 WaitForFileRequest(void *request) {
+    void OS_SleepThread(void *);
+    s32 FinishFileRequest(void *);
+    s32 completed = 0;
+    s32 key = OS_DisableInterrupts();
+    if ((M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & FS_REQ_ACTIVE) ? 1 : 0) {
+        completed = !(M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & (FS_REQ_COMPLETED | FS_REQ_NOTIFIED));
+        if (completed) {
+            M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) |= FS_REQ_COMPLETED;
+            do {
+                OS_SleepThread((u8 *)request + FS_REQ_QUEUE);
+            } while (!(M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & FS_REQ_NOTIFIED));
+        } else {
+            do {
+                OS_SleepThread((u8 *)request + FS_REQ_QUEUE);
+            } while ((M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & FS_REQ_ACTIVE) ? 1 : 0);
+        }
+    }
+    OS_RestoreInterrupts(key);
+    if (completed) return FinishFileRequest(request);
+    return M2C_FIELD(request, s32 *, FS_REQ_RESULT) == 0;
+}
 
 void func_0200bb98(void *a){s32 key=OS_DisableInterrupts();void *p;if((M2C_FIELD(a,volatile s32 *,12)&1)?1:0){M2C_FIELD(a,volatile s32 *,12)|=2;p=M2C_FIELD(a,void **,8);M2C_FIELD(p,s32 *,28)|=32;}OS_RestoreInterrupts(key);}
 

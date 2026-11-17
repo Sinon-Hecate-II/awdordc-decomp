@@ -131,14 +131,14 @@ M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
 
 void func_020b55c4(void *arg0) {
 s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
-void func_020a6718(u8); void func_020a6728(u8);
+void RemoveUnit(u8); void DestroyUnit(u8);
 void func_020b5314(u8,s32,s32); void func_020ca484(void); void func_ov000_0216ab2c(void);
 s32 x; u8 a,b,c;
 a=M2C_FIELD(arg0,s32 *,0x5c); b=M2C_FIELD(arg0,s32 *,0x60); c=M2C_FIELD(arg0,s32 *,0x64);
 if(M2C_FIELD(arg0,s32 *,0x58)&255) return;
 x=GetObjectTileX(arg0);
 func_020b5314(a,x,GetObjectTileY(arg0));
-if(b) func_020a6728(c); else func_020a6718(c);
+if(b) DestroyUnit(c); else RemoveUnit(c);
 RefreshMapView();
 M2C_FIELD(arg0,s32 *,0x58)=1; func_020ca484(); func_ov000_0216ab2c();
 }

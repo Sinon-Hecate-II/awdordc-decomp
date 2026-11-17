@@ -162,14 +162,14 @@ s32 func_020c477c(s32 arg0) {
 }
 
 s32 func_020c4798(void) {
- M2C_UNK *func_020c4b60(void);
+ M2C_UNK *GetBattleSaveBlock(void);
  s32 func_02032380(s32);
  s32 temp_r0;
  s32 var_r4;
  s32 var_r5;
  s32 var_r6;
  var_r4=-1;
- temp_r0=(s32)func_020c4b60();
+ temp_r0=(s32)GetBattleSaveBlock();
  if(temp_r0==0)return var_r4;
  var_r6=temp_r0+4;
  var_r5=0;
@@ -325,7 +325,7 @@ s32 func_020c4ad8(s32 *arg0) {
     return 1;
 }
 
-M2C_UNK *func_020c4b60(void) {
+M2C_UNK *GetBattleSaveBlock(void) {
     extern M2C_UNK data_02164128;
     return &data_02164128;
 }

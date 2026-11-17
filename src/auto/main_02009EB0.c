@@ -156,47 +156,51 @@ done:
 
 s32 CompareNamesNoCase(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
 
-s32 FileStreamRead(void *arg0, M2C_UNK arg1, s32 arg2) {
+/* Read length bytes through a stream position: arm the file's request event,
+ * run its active read proc at the stream's current offset, and if the proc says
+ * the read is asynchronous wait until the queued request has finished. The
+ * read's result is returned and the position advances by length bytes. */
+s32 FileStreamRead(void *stream, void *buffer, s32 length) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_SleepThread(void *);
     M2C_UNK OS_RestoreInterrupts(s32);
-    void *temp_r4;
-    s32 var_r0;
-    u32 var_r0_2;
-    unsigned long var_r0_3;
-    s32 temp_r5;
+    void *file;
+    s32 result;
+    u32 pending;
+    unsigned long waiting;
+    s32 key;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0);
-    M2C_FIELD(temp_r4, s32 *, 0x1C) = (s32) (M2C_FIELD(temp_r4, s32 *, 0x1C) | 0x200);
-    var_r0 = M2C_FIELD(temp_r4, s32 (**)(void *, M2C_UNK, s32, s32), 0x50)(temp_r4, arg1, M2C_FIELD(arg0, s32 *, 4), arg2);
-    switch (var_r0) {                               /* irregular */
+    file = M2C_FIELD(stream, void **, 0);
+    M2C_FIELD(file, s32 *, FS_FILE_STATE) = (s32) (M2C_FIELD(file, s32 *, FS_FILE_STATE) | FS_EVENT_REQUEST_MASK);
+    result = M2C_FIELD(file, s32 (**)(void *, void *, s32, s32), 0x50)(file, buffer, M2C_FIELD(stream, s32 *, 4), length);
+    switch (result) {                               /* irregular */
     case 0:
     case 1:
-        M2C_FIELD(temp_r4, s32 *, 0x1C) = (s32) (M2C_FIELD(temp_r4, s32 *, 0x1C) & ~0x200);
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = (s32) (M2C_FIELD(file, s32 *, FS_FILE_STATE) & ~FS_EVENT_REQUEST_MASK);
         break;
     case 6:
-        temp_r5 = OS_DisableInterrupts();
-        if (M2C_FIELD(temp_r4, s32 *, 0x1C) & 0x200) {
-            var_r0_2 = 1;
+        key = OS_DisableInterrupts();
+        if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_EVENT_REQUEST_MASK) {
+            pending = 1;
         } else {
-            var_r0_2 = 0;
+            pending = 0;
         }
-        if (var_r0_2 != 0) {
+        if (pending != 0) {
             do {
-                OS_SleepThread(temp_r4 + 0xC);
-                if (M2C_FIELD(temp_r4, s32 *, 0x1C) & 0x200) {
-                    var_r0_3 = 1;
+                OS_SleepThread((u8 *)file + 0xC);
+                if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_EVENT_REQUEST_MASK) {
+                    waiting = 1;
                 } else {
-                    var_r0_3 = 0;
+                    waiting = 0;
                 }
-            } while (var_r0_3 != 0);
+            } while (waiting != 0);
         }
-        OS_RestoreInterrupts(temp_r5);
-        var_r0 = M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x24), s32 *, 0x14);
+        OS_RestoreInterrupts(key);
+        result = M2C_FIELD(M2C_FIELD(file, void **, FS_FILE_REQUESTS), s32 *, FS_REQ_RESULT);
         break;
     }
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + arg2);
-    return var_r0;
+    M2C_FIELD(stream, s32 *, 4) = (s32) (M2C_FIELD(stream, s32 *, 4) + length);
+    return result;
 }
 
 void StartDirectoryRead(void *arg0, s32 arg1) {

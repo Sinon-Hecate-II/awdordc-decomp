@@ -365,25 +365,31 @@ s32 func_0204e074(void **arg0,s32 arg1) {
  return gpiAuthAddProfile(arg0,arg1);
 }
 
-s32 func_0204e0c4(void **arg0,s32 arg1) {
- void gpiFree(s32);
- s32 gpiFindBuddyStatus(void **,s32,void **);
- void gpiFreeBuddyList(void **,void *);
- s32 gpiPeerConnectionDone(void *);
- extern s32 gGpiMsgDisconnected;
- void *sp0;
- void *p;
- if(arg0==0 || (p=*arg0)==0) return 2;
- if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
- if(gpiFindBuddyStatus(arg0,arg1,&sp0)==0) return 0;
- M2C_FIELD(sp0,s32 *,0x14)--;
- if(M2C_FIELD(p,s32 *,0x100)==0 && M2C_FIELD(sp0,s32 *,0x14)<=0) {
- gpiFree(M2C_FIELD(sp0,s32 *,0x10));
- M2C_FIELD(sp0,s32 *,0x10)=0;
- if(gpiPeerConnectionDone(sp0)!=0) gpiFreeBuddyList(arg0,sp0);
- }
- return 0;
+/* Release a profile record: drop one reference to it and, once the session no
+ * longer keeps buddy details and the last reference is gone, free its signature
+ * string and the record itself. Returns 2 when no connection is available. */
+s32 gpiReleaseProfile(void **connection, s32 profileId) {
+    void gpiFree(s32);
+    s32 gpiFindBuddyStatus(void **, s32, void **);
+    void gpiFreeBuddyList(void **, void *);
+    s32 gpiPeerConnectionDone(void *);
+    extern s32 gGpiMsgDisconnected;
+    void *profile;
+    void *gpi;
+    if (connection == 0 || (gpi = *connection) == 0) return 2;
+    if (M2C_FIELD(gpi, s32 *, GPI_CONN_SIMULATION) != 0) return 0;
+    if (M2C_FIELD(gpi, s32 *, GPI_CONN_STATE) == GPI_STATE_DISCONNECTED) {
+        gpiSetErrorString(connection, &gGpiMsgDisconnected);
+        return 2;
+    }
+    if (gpiFindBuddyStatus(connection, profileId, &profile) == 0) return 0;
+    M2C_FIELD(profile, s32 *, GPI_BUDDY_USE_COUNT)--;
+    if (M2C_FIELD(gpi, s32 *, 0x100) == 0 && M2C_FIELD(profile, s32 *, GPI_BUDDY_USE_COUNT) <= 0) {
+        gpiFree(M2C_FIELD(profile, s32 *, GPI_BUDDY_SIGNATURE));
+        M2C_FIELD(profile, s32 *, GPI_BUDDY_SIGNATURE) = 0;
+        if (gpiPeerConnectionDone(profile) != 0) gpiFreeBuddyList(connection, profile);
+    }
+    return 0;
 }
 
 s32 func_0204e184(void **arg0,volatile s32 *arg1) {

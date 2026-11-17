@@ -507,10 +507,10 @@ s32 func_ov010_0222681c(void) {
 }
 
 s32 func_ov010_02226888(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     s32 func_02045620();
     s32 func_ov010_022282b4(M2C_UNK);
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     extern M2C_UNK data_ov010_0222c0c0;
     s32 temp_r0;
     s32 var_r5;
@@ -524,11 +524,11 @@ s32 func_ov010_02226888(void) {
     } else {
         var_r5 = 0;
     }
-    func_01ffa9e4(&data_ov010_0222c0c0);
+    DeleteSpriteObjectsOfClass(&data_ov010_0222c0c0);
     if (temp_r0 != 0) {
         SetWebRequestError(temp_r0);
     }
-    func_ov010_022282d4(5);
+    Ov010Online_ClearStepFlag(5);
     return var_r5;
 }
 
@@ -568,7 +568,7 @@ void func_ov010_02226920(void *arg0) {
     MI_CpuFill8(arg0 + 0x2C, 0, 0x40);
 }
 
-void *func_ov010_0222697c(void *arg0) {
+void *InitOnlinePlayerRecord(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x1A) = 0;
     M2C_FIELD(arg0, s8 *, 0x1B) = -1;
     M2C_FIELD(arg0, s32 *, 0x1C) = -1;

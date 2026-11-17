@@ -18,7 +18,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
     s32 func_020431e0(s32);
-    s32 func_02041038(s32);
+    s32 RestartConnection(s32);
     s32 func_0203ef9c(void *);
     s32 func_02043184();
     u64 GetSystemTick(void);
@@ -103,7 +103,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
                 }
                 sessionA = GetConnection();
                 sessionB = GetConnection();
-                if (func_02041038(M2C_FIELD(sessionA + M2C_FIELD(sessionB, u8 *, CONN_SESSION_PLAYER_COUNT) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+                if (RestartConnection(M2C_FIELD(sessionA + M2C_FIELD(sessionB, u8 *, CONN_SESSION_PLAYER_COUNT) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
                     return;
                 }
                 return;
@@ -152,7 +152,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
 }
 
 s32 func_020441e8(s32 arg0) {
-    M2C_UNK func_0203dc38(M2C_UNK, s32);
+    M2C_UNK ReportConnectionError(M2C_UNK, s32);
     void *temp_r0;
 
     if (arg0 != 0) {
@@ -163,7 +163,7 @@ s32 func_020441e8(s32 arg0) {
         M2C_FIELD(temp_r0, u8 *, 0x17D) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x17D) + 1);
     }
     if ((M2C_FIELD(GetConnection(), u8 *, 0x15) == 3) || ((u32) M2C_FIELD(GetConnection(), u8 *, 0x17D) >= 5U)) {
-        func_0203dc38(6, 0xFFFEAE6C);
+        ReportConnectionError(6, 0xFFFEAE6C);
         return 0;
     }
     return 1;
@@ -210,7 +210,7 @@ s32 CanStartTransfer(M2C_UNK arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_0204431c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 SendTransferToPeer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SendTransfer(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     return SendTransfer(1, arg0, arg1, arg2);
 }
@@ -261,7 +261,7 @@ s32 func_0204445c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  do {
   if (var_r9 != 0) var_r10 = 1 << var_r9;
   else var_r10 = 1;
-  if ((var_r6 & var_r10) && (var_r9 != GetLocalPlayerId()) && (func_0204431c(var_r9, arg1, arg2) == 0)) var_r6 &= ~var_r10;
+  if ((var_r6 & var_r10) && (var_r9 != GetLocalPlayerId()) && (SendTransferToPeer(var_r9, arg1, arg2) == 0)) var_r6 &= ~var_r10;
   var_r9 += 1;
  } while ((u32)var_r9 < 0x20U);
  return var_r6;

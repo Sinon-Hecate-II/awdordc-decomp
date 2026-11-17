@@ -236,7 +236,7 @@ void func_ov000_02174c88(void) {
     void func_ov000_021743ec(void *);
     void func_ov000_02173f30(void *);
     M2C_UNK MemFree(s32);
-    void func_01ffa9e4(void *);
+    void DeleteSpriteObjectsOfClass(void *);
     void func_020c127c(void);
     extern Ov000MenuState *gOv000InfoWindow;
     extern M2C_UNK data_ov000_021b8e5c;
@@ -249,7 +249,7 @@ void func_ov000_02174c88(void) {
         MemFree((s32)temp);
     }
     gOv000InfoWindow = 0;
-    func_01ffa9e4(&data_ov000_021b8e5c);
+    DeleteSpriteObjectsOfClass(&data_ov000_021b8e5c);
     func_020c127c();
 }
 

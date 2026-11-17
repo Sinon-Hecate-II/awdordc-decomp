@@ -113,24 +113,28 @@ if(b!=0) return 0;
 return a-1;
 }
 
-s32 StringSpanUntil(u8 *a,u8 *b) {
-u8 bits[32];
-u32 i=8;
-u8 *p=bits;
-s32 c;
-u8 *q;
-do {p[0]=0;p[1]=0;p[2]=0;p[3]=0;p+=4;} while(--i);
-c=*b;q=b+1;
-while(c) {
-bits[(s32)(u8)c>>3] |= (u8)(1<<(c&7));
-c=*q++;
-}
-c=*a;q=a+1;
-while(c) {
-if(bits[(s32)(u8)c>>3] & (u8)(1<<(c&7))) break;
-c=*q++;
-}
-return q-a-1;
+/* strspn: returns the length of the leading run of `string` made up only of
+ * bytes that also occur in `accept` (the bytes up to the first one that does
+ * not), marking the accept set in a 256-bit bitmap first. */
+s32 StringSpanUntil(u8 *string, u8 *accept) {
+    u8 bitmap[32];
+    u32 i = 8;
+    u8 *p = bitmap;
+    s32 c;
+    u8 *q;
+
+    do { p[0]=0; p[1]=0; p[2]=0; p[3]=0; p+=4; } while (--i);
+    c=*accept; q=accept+1;
+    while (c) {
+        bitmap[(s32)(u8)c>>3] |= (u8)(1<<(c&7));
+        c=*q++;
+    }
+    c=*string; q=string+1;
+    while (c) {
+        if (bitmap[(s32)(u8)c>>3] & (u8)(1<<(c&7))) break;
+        c=*q++;
+    }
+    return q-string-1;
 }
 
 u8 *StringFind(u8 *a,u8 *b) {

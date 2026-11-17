@@ -16,10 +16,18 @@ typedef struct SpriteCell {
     u16 attr;   /* +0x0A attribute passed by the caller; 0 = cell is free */
 } SpriteCell;
 
+/* SpriteCell::tile, as an offset: the id a cell list points cells by. */
+#define SPRITE_CELL_TILE 0x08
+
 /* Fields of a fixed-capacity block of SpriteCell records. */
 #define SPRITE_CELL_LIST_CAPACITY 0x10 /* u16 cells in the block */
 #define SPRITE_CELL_LIST_USED     0x12 /* u8 cells filled */
 #define SPRITE_CELL_LIST_CELLS    0x14 /* SpriteCell * the cells */
+
+/* Cells a touch left current: the list points at the cell it is on, and keeps
+ * the tile id of the cell the touch last hit (-1 when there is none). */
+#define SPRITE_CELL_LIST_CURRENT  0x00 /* SpriteCell * cell the list is on */
+#define SPRITE_CELL_LIST_HIT_ID   0x0C /* s8 tile id of the cell the touch last hit, -1 = none */
 
 /* Fields the widget that owns the list adds: the box a touch must fall in for
  * the list to respond at all, and the tolerance added around each cell when a

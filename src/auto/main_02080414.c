@@ -110,9 +110,9 @@ M2C_UNK func_02080774(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,s32 e) {
 }
 
 void func_020807d0(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02101cf8;
-    func_01ffa9e4(&data_02101cf8);
+    DeleteSpriteObjectsOfClass(&data_02101cf8);
 }
 
 #pragma opt_common_subs off

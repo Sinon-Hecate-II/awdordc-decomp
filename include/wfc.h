@@ -310,10 +310,14 @@ typedef struct NasRequest {
 #define WFC_ENTRY_CODE         0x04 /* u8[] code bytes */
 
 #define WFC_STATE_CONN_FLAGS   0xD0B /* u8: bits 2-3 connection status, bits 4-5 mode, high nibble attempts */
+#define WFC_STATE_FRIEND_MASK  0xD16 /* u16: one bit per friend id taking part in the friend connection */
 #define WFC_STATE_CONN_EVENT   0xD14 /* u8 outcome of the friend connection: 1 cancelled, 2/3/4 results */
 #define WFC_STATE_CONN_RETRY   0xD15 /* u8 friend-connection attempts made, wraps at 3 */
+#define WFC_STATE_LINK_RETURN  0xD0E /* u8 session state to resume after the link step */
 #define WFC_STATE_RECORD_RESULT 0x444 /* u8 per friend record, stride 4: the record's connection result */
+#define WFC_STATE_RECORD_SCORE  0x446 /* u8 per friend record, stride 4: connection score, higher first */
 #define WFC_STATE_RECORD_FLAGS  0x447 /* u8 per friend record, stride 4: bit 7 marks the record as sent */
+#define WFC_MIN_CONNECT_SCORE   20    /* lowest record score a friend connection is started for */
 #define WFC_STATE_TIMER        0xCB0 /* u64 tick the friend connection started at */
 #define WFC_STATE_CMD_BUFFER   0xCB8 /* outgoing command/settings block built by func_020300e8 (0x52 bytes) */
 
@@ -337,7 +341,8 @@ enum {
     WFC_STEP_FRIEND_RECORDS = 4,
     WFC_STEP_FRIEND_ENTRIES = 5,
     WFC_STEP_FRIEND_RESULTS = 6,
-    WFC_STEP_LINK           = 7
+    WFC_STEP_LINK           = 7,
+    WFC_STEP_DONE           = 17 /* the friend connection has finished */
 };
 
 #endif

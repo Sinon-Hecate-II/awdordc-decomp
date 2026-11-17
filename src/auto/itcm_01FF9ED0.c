@@ -472,7 +472,7 @@ void func_01ffa9d0(M2C_UNK arg0) {
     func_01ffa968(arg0, (M2C_UNK *)&func_01ffa6fc);
 }
 
-void func_01ffa9e4(M2C_UNK arg0) {
+void DeleteSpriteObjectsOfClass(M2C_UNK arg0) {
     void DeleteSpriteObject(void *);
     func_01ffa928(arg0, (M2C_UNK *) &DeleteSpriteObject);
 }

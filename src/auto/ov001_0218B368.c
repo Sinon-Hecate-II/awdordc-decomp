@@ -1,7 +1,7 @@
 /* 40 functions from 0x0218B368 to 0x0218C228 (ov001), found by ds-decomp. */
 #include "common.h"
 void OS_EnableIrqMask(s32);
-extern s32 data_ov001_02193e6c;
+extern s32 gOv001TilePools;
 
 typedef struct ListLink { struct ListLink *prev; struct ListLink *next; } ListLink;
 extern s32 data_ov001_02193e60[2];
@@ -404,9 +404,9 @@ DC_FlushRange(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x4
 #pragma pool_constants off
 void func_ov001_0218c0b8(void) {
     extern s32 data_ov001_02193e68;
-    extern s32 data_ov001_02193e6c;
+    extern s32 gOv001TilePools;
     func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193e68, s32 *, 0x808));
-    Ov001_FreeAlloc(&data_ov001_02193e6c-1);
+    Ov001_FreeAlloc(&gOv001TilePools-1);
 }
 #pragma pool_constants reset
 void func_ov001_0218c0e4(s32 n){
@@ -428,16 +428,19 @@ s32 Ov001_SpriteObjAddr(s32 arg0, s32 arg1) {
     return data_ov001_02193e68 + (arg0 << 0xA) + (arg1 * 8);
 }
 
-void func_ov001_0218c168(void){
+/* Creates the two ov001 tile-range pools (one per tile screen): each gets a list
+ * of the ranges in use, a queue of free range nodes and the initial free tile
+ * range OV001_TILE_POOL_FREE_START .. OV001_TILE_POOL_FREE_END. */
+void Ov001_InitTilePools(void){
 s32 i;
-data_ov001_02193e6c=((s32 (*)(s32,s32))Ov001_Alloc)(0x340,4);
-for(i=0;i<2;i++){
-M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x19c)=Ov001_QueueCreateFromBuffer(0x20,data_ov001_02193e6c+i*0x1a0,12);
-M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198)=Ov001_ListCreate();
-M2C_FIELD(data_ov001_02193e6c+i*0x1a0,u16 *,0x188)=0x300;
-M2C_FIELD(data_ov001_02193e6c+i*0x1a0,u16 *,0x194)=0x400;
-((void (*)(s32,s32))Ov001_ListPushFront)(M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198),data_ov001_02193e6c+i*0x1a0+0x180);
-((void (*)(s32,s32))Ov001_ListPushBack)(M2C_FIELD(data_ov001_02193e6c+i*0x1a0,s32 *,0x198),data_ov001_02193e6c+i*0x1a0+0x18c);
+gOv001TilePools=((s32 (*)(s32,s32))Ov001_Alloc)(OV001_TILE_POOL_STRIDE*OV001_TILE_POOL_COUNT,4);
+for(i=0;i<OV001_TILE_POOL_COUNT;i++){
+M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_FREE_NODES)=Ov001_QueueCreateFromBuffer(OV001_TILE_POOL_NODE_COUNT,gOv001TilePools+i*OV001_TILE_POOL_STRIDE,sizeof(Ov001RangeNode));
+M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_USED_LIST)=Ov001_ListCreate();
+M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,u16 *,OV001_TILE_POOL_HEAD_START)=OV001_TILE_POOL_FREE_START;
+M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,u16 *,OV001_TILE_POOL_TAIL_START)=OV001_TILE_POOL_FREE_END;
+((void (*)(s32,s32))Ov001_ListPushFront)(M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_USED_LIST),gOv001TilePools+i*OV001_TILE_POOL_STRIDE+OV001_TILE_POOL_HEAD);
+((void (*)(s32,s32))Ov001_ListPushBack)(M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_USED_LIST),gOv001TilePools+i*OV001_TILE_POOL_STRIDE+OV001_TILE_POOL_TAIL);
 }
 }
 

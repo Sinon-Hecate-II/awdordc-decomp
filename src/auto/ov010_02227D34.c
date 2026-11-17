@@ -7,37 +7,42 @@ class Ov010Callback { public: void run(); };
 typedef void (Ov010Callback::*Ov010CallbackFn)();
 #pragma cplusplus off
 
-void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
-    void func_ov010_0222697c(void *);
+/* NAS callback for a player record received by the ov010 online session:
+ * base64-decode the message into a player record, store its name and option
+ * bytes in the battle save block's slot `slot`, then pass the message on to
+ * the session's installed record callback. */
+void func_ov010_02227d34(s32 slot, void *data, char *text, s32 size) {
+    void InitOnlinePlayerRecord(void *);
     s32 StringLength(char *);
-    s32 func_0203a9d0(char *, s32, void *, s32);
-    void *func_020c4b60(void);
+    s32 DecodeNasBase64(char *, s32, void *, s32);
+    void *GetBattleSaveBlock(void);
     void CopyU16(void *, void *, s32);
     extern M2C_UNK gOv010OnlineSession;
-    char buf[0x6c];
-    s32 r;
-    void *p;
-    s32 off;
-    char *dst;
-    void (*cb)(s32, void *, char *, s32);
+    char record[0x6c];
+    s32 length;
+    void *saveBlock;
+    s32 offset;
+    char *slotRecord;
+    void (*callback)(s32, void *, char *, s32);
 
-    if (arg2 != 0 && *arg2 != 0) {
-        func_ov010_0222697c(buf);
-        r = StringLength(arg2);
-        if (func_0203a9d0(arg2, r, buf, 0x6c) == 0x6c) {
-            p = func_020c4b60();
-            off = arg0 * 0x28;
-            CopyU16(buf, (char *)p + 0x2d4 + off, 0x18);
-            dst = (char *)p + off;
-            dst[0x2f4] = (signed char)buf[0x24];
-            dst[0x2f5] = (signed char)buf[0x25];
-            dst[0x2f6] = (signed char)buf[0x26];
+    if (text != 0 && *text != 0) {
+        InitOnlinePlayerRecord(record);
+        length = StringLength(text);
+        if (DecodeNasBase64(text, length, record, 0x6c) == 0x6c) {
+            saveBlock = GetBattleSaveBlock();
+            offset = slot * 0x28;
+            CopyU16(record, (char *)saveBlock + SAVE_RECORDS_OFFSET + offset, 0x18);
+            slotRecord = (char *)saveBlock + offset;
+            /* the record's option bytes, at record +0x20 */
+            slotRecord[0x2f4] = (signed char)record[0x24];
+            slotRecord[0x2f5] = (signed char)record[0x25];
+            slotRecord[0x2f6] = (signed char)record[0x26];
         }
     }
 
-    cb = *(void (**)(s32, void *, char *, s32))((char *)&gOv010OnlineSession + 4);
-    if (cb != 0) {
-        cb(arg0, arg1, arg2, arg3);
+    callback = *(void (**)(s32, void *, char *, s32))((char *)&gOv010OnlineSession + 4);
+    if (callback != 0) {
+        callback(slot, data, text, size);
     }
 }
 
@@ -133,10 +138,10 @@ void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {
-s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK func_ov010_022282d4(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK gOv010OnlineSession; extern M2C_UNK gLocalPlayerStatus;
+s32 func_ov010_022282f8(void); void func_ov010_02228298(s32); M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK gOv010OnlineSession; extern M2C_UNK gLocalPlayerStatus;
 s32 t; void (*cb)(s32,s32,s32);
 t=func_ov010_022282f8();t=(t!=0);
-if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&gOv010OnlineSession,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);func_ov010_022282d4(3);}
+if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&gOv010OnlineSession,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{func_ov010_02228298(4);}}else{func_ov010_02228298(4);Ov010Online_ClearStepFlag(3);}
 cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
 }
 
@@ -149,7 +154,7 @@ s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK gOv010OnlineSession; s32 r
 void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_ov010_022282f8(void);
     void func_ov010_02228298(s32);
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     s32 GetOnlineTransportPlayerId(void);
     s32 func_0203a850(void *, s32);
     void func_ov010_02227f14(void);
@@ -178,12 +183,12 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
         }
 
         func_ov010_02228298(4);
-        func_ov010_022282d4(3);
+        Ov010Online_ClearStepFlag(3);
         goto callback_call;
     }
 
     func_ov010_02228298(4);
-    func_ov010_022282d4(3);
+    Ov010Online_ClearStepFlag(3);
 
 callback_call:
     if (M2C_FIELD(
@@ -292,7 +297,7 @@ s32 func_ov010_022282b4(s32 arg0) {
     return var_r2;
 }
 
-M2C_UNK func_ov010_022282d4(M2C_UNK arg0) {
+M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK arg0) {
     extern M2C_UNK gOv010OnlineSession;
     s32 v;
     v = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54);
@@ -313,8 +318,8 @@ void func_ov010_02228314(void) {
 }
 
 void func_ov010_02228320(void) {
-    M2C_UNK func_020375fc();
-    func_020375fc();
+    M2C_UNK ClearNetError();
+    ClearNetError();
 }
 
 #pragma optimize_ifs off
@@ -372,7 +377,7 @@ void func_ov010_02228614(void) {
     M2C_UNK func_020378a4();
     M2C_UNK func_ov010_02226a88();
     extern M2C_UNK data_ov010_0222ef4c;
-    func_ov010_022282d4(1);
+    Ov010Online_ClearStepFlag(1);
     func_ov010_02226a88();
     func_0203783c(&data_ov010_0222ef4c);
     func_02037854(2);
@@ -449,7 +454,7 @@ s32 func_ov010_02228720(void) {
 
     temp_r0 = func_02037b1c();
     if (temp_r0 != 0) {
-        func_ov010_022282d4(1);
+        Ov010Online_ClearStepFlag(1);
     }
     if (temp_r0 == 0) {
         return 1;
@@ -482,10 +487,10 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     extern M2C_UNK data_ov010_0222c3bc;
     extern M2C_UNK data_ov010_0222c330;
     extern M2C_UNK data_ov010_0222c3a8;
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     void func_ov010_0222791c(M2C_UNK);
     void *func_020c4acc(void);
-    void *func_020c4b60(void);
+    void *GetBattleSaveBlock(void);
     M2C_UNK func_ov010_02228b20(M2C_UNK);
     M2C_UNK func_ov010_02228b38(M2C_UNK);
     M2C_UNK func_ov010_02228b68(M2C_UNK);
@@ -518,11 +523,11 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     u8 *p;
     Ov010CallbackFn cc, aa, bb;
     volatile Ov010CallbackFn dd;
-    func_ov010_022282d4(2);
+    Ov010Online_ClearStepFlag(2);
     func_ov010_0222791c(a);
     func_ov010_02226a88();
     r4=func_020c4acc();
-    obj=func_020c4b60();
+    obj=GetBattleSaveBlock();
     InitNetSession(&data_ov010_0222f1dc,(u8 *)r4+4,0x2b96,&data_ov010_0222c3f0,&data_ov010_0222c3fc,0,0,(u8 *)obj+4,60);
     func_ov010_02228b20(b);
     func_ov010_02228b38(c);
@@ -599,7 +604,7 @@ void *func_ov010_02228a48(void *arg0) {
 }
 
 void func_ov010_02228a70(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK);
     void func_020382d0(void);
     void func_ov010_0222791c(M2C_UNK);
     s32 func_ov010_02228b20(M2C_UNK);
@@ -616,13 +621,13 @@ void func_ov010_02228a70(void) {
     void func_ov010_02229498(M2C_UNK);
     void func_ov010_022294b0(M2C_UNK);
     void func_ov010_022294c8(M2C_UNK);
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     extern M2C_UNK data_ov010_0222c160;
     extern M2C_UNK data_ov010_0222c330;
     extern M2C_UNK data_ov010_0222c2f8;
-    func_01ffa9e4(&data_ov010_0222c160);
-    func_01ffa9e4(&data_ov010_0222c330);
-    func_01ffa9e4(&data_ov010_0222c2f8);
+    DeleteSpriteObjectsOfClass(&data_ov010_0222c160);
+    DeleteSpriteObjectsOfClass(&data_ov010_0222c330);
+    DeleteSpriteObjectsOfClass(&data_ov010_0222c2f8);
     func_020382d0();
     func_ov010_0222791c(0);
     func_ov010_02228b20(0);
@@ -639,7 +644,7 @@ void func_ov010_02228a70(void) {
     func_ov010_02229498(0);
     func_ov010_022294b0(0);
     func_ov010_022294c8(0);
-    func_ov010_022282d4(2);
+    Ov010Online_ClearStepFlag(2);
 }
 
 s32 func_ov010_02228b20(s32 arg0) {
@@ -699,9 +704,9 @@ s32 func_ov010_02228bb0(s32 arg0) {
 
 void func_ov010_02228bc8(void) {
     M2C_UNK func_02038d40();
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     func_02038d40();
-    func_ov010_022282d4(3);
+    Ov010Online_ClearStepFlag(3);
 }
 
 void func_ov010_02228bdc(M2C_UNK arg0) {

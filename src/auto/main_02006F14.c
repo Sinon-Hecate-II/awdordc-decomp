@@ -1,5 +1,6 @@
 /* 51 functions from 0x02006F14 to 0x02007EF4 (main), found by ds-decomp. */
 #include "common.h"
+#include "dma.h"
 extern s32 data_0212dfe8;
 extern u32 data_0212dfbc[2];
 extern u16 data_0212dfec[10];
@@ -496,40 +497,44 @@ void func_02007a74(s32 a,s32 b,s32 c,u32 n) {
  while (*p & 0x80000000) {}
 }
 
-void DmaFillAsync(s32 arg0, M2C_UNK arg1, s32 arg2, u32 arg3, void (*arg4)(s32), s32 arg5) {
-    void func_02007c3c(s32);
-    void func_0200510c(s32, s32, s32);
+/* Starts a fill of `size` bytes at `dst` with the 32-bit value `fillValue` on DMA
+ * channel `channel`.  With a completion handler the fill runs asynchronously: the
+ * handler is installed for the channel's interrupt and called with `handlerArg`
+ * when the transfer ends (immediately, if there is nothing to fill). */
+void DmaFillAsync(s32 channel, M2C_UNK dst, s32 fillValue, u32 size, void (*handler)(s32), s32 handlerArg) {
+    void DmaWaitChannel(s32);
+    void OS_SetDmaHandler(s32, s32, s32);
     u32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(u32);
-    void func_01ff8530(s32, s32, M2C_UNK, s32);
+    void DmaStartTransfer(s32, s32, M2C_UNK, s32);
     u32 state;
 
-    if (arg3 == 0) {
-        if (arg4 == 0) {
+    if (size == 0) {
+        if (handler == 0) {
             return;
         }
-        arg4(arg5);
+        handler(handlerArg);
         return;
     }
-    func_02007c3c(arg0);
-    if (arg4 != 0) {
-        func_0200510c(arg0, (s32)arg4, arg5);
+    DmaWaitChannel(channel);
+    if (handler != 0) {
+        OS_SetDmaHandler(channel, (s32)handler, handlerArg);
         state = OS_DisableInterrupts();
-        M2C_FIELD((arg0 * 4 + 0x04000000), s32 *, 0xE0) = arg2;
-        func_01ff8530(arg0, arg0 * 4 + 0x040000E0, arg1, (arg3 >> 2) | 0xC5000000);
+        *(volatile u32 *) DMA_FILL_REG(channel) = fillValue;
+        DmaStartTransfer(channel, DMA_FILL_REG(channel), dst, DMA_FILL_CTRL_IRQ(size));
         OS_RestoreInterrupts(state);
         return;
     }
     state = OS_DisableInterrupts();
-    M2C_FIELD((arg0 * 4 + 0x04000000), s32 *, 0xE0) = arg2;
-    func_01ff8530(arg0, arg0 * 4 + 0x040000E0, arg1, (arg3 >> 2) | 0x85000000);
+    *(volatile u32 *) DMA_FILL_REG(channel) = fillValue;
+    DmaStartTransfer(channel, DMA_FILL_REG(channel), dst, DMA_FILL_CTRL(size));
     OS_RestoreInterrupts(state);
 }
 
 void func_02007ba4(s32 a, s32 b, s32 c, s32 d, void (*e)(s32), s32 f) {
     void func_02007da4(s32, s32, s32, s32);
-    void func_02007c3c(s32);
-    void func_0200510c(s32, s32, s32);
+    void DmaWaitChannel(s32);
+    void OS_SetDmaHandler(s32, s32, s32);
     void func_01ff8480(s32, s32, s32, s32);
     func_02007da4(a, b, d, 0);
     if (d == 0) {
@@ -538,16 +543,16 @@ void func_02007ba4(s32 a, s32 b, s32 c, s32 d, void (*e)(s32), s32 f) {
         }
         return;
     }
-    func_02007c3c(a);
+    DmaWaitChannel(a);
     if (e != 0) {
-        func_0200510c(a, (s32)e, f);
+        OS_SetDmaHandler(a, (s32)e, f);
         func_01ff8480(a, b, c, ((u32)d >> 2) | 0xC4000000);
         return;
     }
     func_01ff8480(a, b, c, ((u32)d >> 2) | 0x84000000);
 }
 
-void func_02007c3c(s32 a) {
+void DmaWaitChannel(s32 a) {
  u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32);
  u32 state=OS_DisableInterrupts();
  while (*(volatile u32 *)(0x040000B0 + (a*3+2)*4) & 0x80000000) {}

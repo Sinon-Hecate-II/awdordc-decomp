@@ -23,7 +23,7 @@ void MapEditor_StartMap(void *editor) {
  if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
  map=*gCurrentMap;
  text=GetLocalizedText(0xc00002eb);
- StringFormat((u8*)map+MAP_NAME,gMapNameFormat,text,func_020c8018(M2C_FIELD(map,u16*,MAP_ID))+1);
+ StringFormat((u8*)map+MAP_NAME,gMapNameFormat,text,GetCampaignMapIndex(M2C_FIELD(map,u16*,MAP_ID))+1);
  }else{
  map=*gCurrentMap;
  text=GetMapName(M2C_FIELD(map,u16*,MAP_ID));

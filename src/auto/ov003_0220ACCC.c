@@ -58,7 +58,7 @@ u8 func_ov003_0220b7fc(void *,s32);
 u8 func_ov003_0220b8ac(void *,s32);
 u8 func_ov003_0220bb40(void *,s32);
 void func_ov003_0220b830(void *,s32);
-void func_ov003_0220b8e0(void *,s32);
+void Ov003_StepOptionCounter0(void *,s32);
 void Ov003_StepOptionCounter1(void *,s32);
 void ScrollA9SliderBy(void *,s32);
 void func_ov003_0220bb88(void *);
@@ -80,14 +80,14 @@ held=M2C_FIELD(gKeyState,u16 *,2);
 if((held&32)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_0220b7fc(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x60),-8);
 if(func_ov003_0220b8ac(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x64),-8);
-if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
+if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
 if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
 func_ov003_0220bb88(a);
 }
 else if((held&16)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_0220b7fc(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x60),8);
 if(func_ov003_0220b8ac(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x64),8);
-if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
+if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
 if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
 func_ov003_0220bb88(a);
 }
@@ -127,10 +127,10 @@ M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);func_ov003_022
 }
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));
-if(func_ov003_02209274(a,(u8)old))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));
-if(func_ov003_02209274(a,(u8)old))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
 
 if(left!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60))){PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
 if(right!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64))){PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
@@ -174,15 +174,29 @@ void func_ov003_0220b830(void *arg0, s32 arg1) {
 
 u8 func_ov003_0220b8ac(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 1) result=1; else result=0; return result; }
 
-void func_ov003_0220b8e0(void *arg0,s32 arg1){
- s32 func_ov003_02206690(s32,s32,s32); s32 value,limit;
- value=arg1+M2C_FIELD(arg0,s32 *,4);
- func_ov003_02206690((s16)value,(s16)M2C_FIELD(arg0,s32 *,12),(s16)M2C_FIELD(arg0,s32 *,8));
- M2C_FIELD(arg0,s32 *,4)=value;
- if(M2C_FIELD(arg0,u8 *,20)){
- while(M2C_FIELD(arg0,s32 *,4)>M2C_FIELD(arg0,s32 *,8)) M2C_FIELD(arg0,s32 *,4)-=M2C_FIELD(arg0,s32 *,8)-M2C_FIELD(arg0,s32 *,12)+1;
- while(M2C_FIELD(arg0,s32 *,4)<M2C_FIELD(arg0,s32 *,12)) M2C_FIELD(arg0,s32 *,4)+=M2C_FIELD(arg0,s32 *,8)-M2C_FIELD(arg0,s32 *,12)+1;
- }else{value=M2C_FIELD(arg0,s32 *,4);limit=M2C_FIELD(arg0,s32 *,8);if(value<=limit){limit=M2C_FIELD(arg0,s32 *,12);if(value>=limit)limit=value;}M2C_FIELD(arg0,s32 *,4)=limit;}
+/* Step the first of the unit-list menu's three option counters by `delta`: the
+ * value always takes the step, then wraps around its range (when the counter's
+ * wrap flag is set) or clamps into it.  The range test is the shared counter
+ * code's; its result is not used here. */
+void Ov003_StepOptionCounter0(void *arg0, s32 delta) {
+    s32 func_ov003_02206690(s32, s32, s32);
+    OptionCounter *counter = (OptionCounter *)arg0;
+    s32 value, limit;
+    value = delta + counter->value;
+    func_ov003_02206690((s16) value, (s16) counter->minimum, (s16) counter->maximum);
+    counter->value = value;
+    if (counter->wrap) {
+        while (counter->value > counter->maximum) counter->value -= counter->maximum - counter->minimum + 1;
+        while (counter->value < counter->minimum) counter->value += counter->maximum - counter->minimum + 1;
+    } else {
+        value = counter->value;
+        limit = counter->maximum;
+        if (value <= limit) {
+            limit = counter->minimum;
+            if (value >= limit) limit = value;
+        }
+        counter->value = limit;
+    }
 }
 
 /* Step the second of the unit-list menu's three option counters by `delta`: the

@@ -11,7 +11,7 @@ Unk05Pair *Vector_GetItem(s32,s32);
  * next one expected, drops it when it is stale, or buffers it until its turn. */
 s32 gti2HandleSmallMessage(void *session, s32 command, s32 buf, s32 len) {
     s32 Gt2CompareSequence(u16, s32);
-    s32 func_0205b1b8(s32);
+    s32 gti2SendClosedAndClose(s32);
     s32 Gt2DispatchCommand(void *, s32, s32, s32);
     s32 Gt2QueuePendingCommand(void *, s32, s32, s32, s32, s32 *);
     s32 Gt2DispatchPendingCommands(void *);
@@ -36,7 +36,7 @@ s32 gti2HandleSmallMessage(void *session, s32 command, s32 buf, s32 len) {
         return 1;
     }
     if (!Gt2QueuePendingCommand(session,command,sequence,buf+7,len-7,&queueError)) return 0;
-    if (queueError && !func_0205b1b8((s32)session)) return 0;
+    if (queueError && !gti2SendClosedAndClose((s32)session)) return 0;
     return 1;
 }
 
@@ -257,43 +257,49 @@ s32 func_0205c344(void *conn) {
     }
 }
 
-s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Vector_AddItem(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
+s32 gti2QueueSentCommand(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Vector_AddItem(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
 
-s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
+/* Starts the next command in the connection's send buffer: queues the command's
+ * acknowledgement record, then writes the GT2 magic, the command type, the
+ * command's sequence number and the sequence number being acknowledged.  When
+ * the buffer has no room for the command the connection is closed instead, and
+ * *status is set to 1; *status is 0 when the command was started.  Returns 1
+ * when the caller may go on, 0 when the connection was freed. */
+s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     extern M2C_UNK gGt2Magic;
     s32 gti2GetBufferFreeSpace(void *);
-    s32 func_0205b1b8(M2C_UNK);
-    s32 func_0205c474(void *, s16, s32);
+    s32 gti2SendClosedAndClose(M2C_UNK);
+    s32 gti2QueueSentCommand(void *, s16, s32);
     void gti2AddToBuffer(void *, M2C_UNK, s32);
-    void func_02059d34(void *, s32);
-    void func_02059d84(void *, s32);
+    void gti2AddByteToBuffer(void *, s32);
+    void gti2AddShortToBuffer(void *, s32);
     s32 free;
 
-    free = gti2GetBufferFreeSpace((void *)((char *)p + 0x50));
+    free = gti2GetBufferFreeSpace((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER));
     if (free < arg2) {
-        s32 r = func_0205b1b8(p);
+        s32 r = gti2SendClosedAndClose(p);
         if (r == 0) {
             return 0;
         }
         *status = 1;
         return 1;
     }
-    if (!((s32 (*)(void *,u32,s32))func_0205c474)((void *)p, M2C_FIELD(p, u16 *, 0x64), arg2)) {
-        s32 r = func_0205b1b8(p);
+    if (!((s32 (*)(void *,u32,s32))gti2QueueSentCommand)((void *)p, M2C_FIELD(p, u16 *, GT2_CONNECTION_SEND_SEQUENCE), arg2)) {
+        s32 r = gti2SendClosedAndClose(p);
         if (r == 0) {
             return 0;
         }
         *status = 1;
         return 1;
     }
-    gti2AddToBuffer((void *)((char *)p + 0x50), &gGt2Magic, 2);
-    func_02059d34((void *)((char *)p + 0x50), (s32)(mode & 0xff));
+    gti2AddToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), &gGt2Magic, 2);
+    gti2AddByteToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), (s32)(mode & 0xff));
     {
-        u16 old64 = M2C_FIELD(p, u16 *, 0x64);
-        M2C_FIELD(p, u16 *, 0x64) = old64 + 1;
-        func_02059d84((void *)((char *)p + 0x50), old64);
+        u16 sequence = M2C_FIELD(p, u16 *, GT2_CONNECTION_SEND_SEQUENCE);
+        M2C_FIELD(p, u16 *, GT2_CONNECTION_SEND_SEQUENCE) = sequence + 1;
+        gti2AddShortToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), sequence);
     }
-    func_02059d84((void *)((char *)p + 0x50), M2C_FIELD(p, u16 *, 0x66));
+    gti2AddShortToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), M2C_FIELD(p, u16 *, GT2_RECV_SEQUENCE));
     *status = 0;
     return 1;
 }
@@ -304,7 +310,7 @@ s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 0, arg2 + 7, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 0, arg2 + 7, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {
@@ -321,7 +327,7 @@ s32 func_0205c694(s32 arg0, M2C_UNK arg1) {
     M2C_UNK gti2AddToBuffer(s32, M2C_UNK, M2C_UNK);
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 1, 0x27, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 1, 0x27, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {
@@ -334,12 +340,12 @@ s32 func_0205c694(s32 arg0, M2C_UNK arg1) {
     return 0;
 }
 
-s32 func_0205c6f4(s32 p,s32 a,s32 b){s32 s; s32 v;if(!func_0205c4e8(p,2,0x47,&s))return 0;if(s)return 1;gti2AddToBuffer(p+0x50,a,0x20);gti2AddToBuffer(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
+s32 func_0205c6f4(s32 p,s32 a,s32 b){s32 s; s32 v;if(!gti2BeginCommand(p,2,0x47,&s))return 0;if(s)return 1;gti2AddToBuffer(p+0x50,a,0x20);gti2AddToBuffer(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
 
 s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 3, arg3 + 0x27, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 3, arg3 + 0x27, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {
@@ -354,11 +360,11 @@ s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 s32 func_0205c7f8(M2C_UNK arg0) {
-    s32 func_0205c4e8(M2C_UNK, M2C_UNK, M2C_UNK, s32 *);
+    s32 gti2BeginCommand(M2C_UNK, M2C_UNK, M2C_UNK, s32 *);
     s32 func_0205c5ac(M2C_UNK);
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 4, 7, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 4, 7, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {
@@ -373,7 +379,7 @@ s32 func_0205c7f8(M2C_UNK arg0) {
 s32 func_0205c854(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 5, arg2 + 7, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 5, arg2 + 7, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {
@@ -389,7 +395,7 @@ s32 func_0205c854(s32 arg0, M2C_UNK arg1, s32 arg2) {
 s32 func_0205c8c8(M2C_UNK arg0) {
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 6, 7, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 6, 7, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {
@@ -404,7 +410,7 @@ s32 func_0205c8c8(M2C_UNK arg0) {
 s32 func_0205c924(M2C_UNK arg0) {
     s32 sp0;
 
-    if (func_0205c4e8(arg0, 7, 7, &sp0) == 0) {
+    if (gti2BeginCommand(arg0, 7, 7, &sp0) == 0) {
         return 0;
     }
     if (sp0 != 0) {

@@ -1,5 +1,6 @@
 /* 28 functions from 0x02011BB0 to 0x02012B70 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc_channel.h"
 typedef struct {u8 kind,length; u16 pad; u8 *data;} ParsedItem;
 typedef struct {u8 count; u8 pad[3]; ParsedItem items[16];} ParsedItems;
 typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } PacketParams_02012a64;
@@ -10,40 +11,46 @@ typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } PacketParams_02012a64;
 #define SESSION_SIZE_A      0x34 /* u16: transfer A size, header included (max 512) */
 #define SESSION_SIZE_B      0x36 /* u16: transfer B size, header included (max 512) */
 
-s32 func_02011bb0(void) {
+/* Smallest payload a download-play (multiboot) transfer may use, in bytes: it has
+ * to hold a 12-word header plus WFC_LINK_BLOCK_WORDS per player, times
+ * WFC_LINK_PLAYERS players, plus 41 words of fixed overhead, rounded down to
+ * 32 words and converted to bytes (hence always a multiple of 64).  Only players
+ * whose WFC_LINK_RESET word is clear get the per-player term.  Returns 0 while
+ * the channel is not in state 7 or 8, or while the link is being torn down. */
+s32 MultiBoot_GetMinPayloadSize(void) {
     void *WFC_GetInfoBlock();
     void DC_InvalidateRange(void *, s32);
-    void *p;
-    void *q;
-    s32 flag;
-    u16 v;
-    u16 w;
-    p = WFC_GetInfoBlock();
+    void *info;
+    void *link;
+    s32 usePlayers;
+    u16 blockWords;
+    u16 players;
+    info = WFC_GetInfoBlock();
     if (WFC_CheckChannelState(2, 7, 8) != 0) {
         return 0;
     }
-    DC_InvalidateRange(M2C_FIELD(p, void **, 4) + 0xC, 4);
-    q = M2C_FIELD(p, void **, 4);
-    if (M2C_FIELD(q, s32 *, 0xC) == 1) {
+    DC_InvalidateRange(M2C_FIELD(info, void **, WFC_INFO_LINK) + WFC_LINK_TEARDOWN, 4);
+    link = M2C_FIELD(info, void **, WFC_INFO_LINK);
+    if (M2C_FIELD(link, s32 *, WFC_LINK_TEARDOWN) == 1) {
         return 0;
     }
-    DC_InvalidateRange((u8 *)q + 0x188, 2);
-    q = M2C_FIELD(p, void **, 4);
-    if (M2C_FIELD(q, u16 *, 0x188) == 0) {
-        flag = 1;
+    DC_InvalidateRange((u8 *)link + WFC_LINK_RESET, 2);
+    link = M2C_FIELD(info, void **, WFC_INFO_LINK);
+    if (M2C_FIELD(link, u16 *, WFC_LINK_RESET) == 0) {
+        usePlayers = 1;
     } else {
-        flag = 0;
+        usePlayers = 0;
     }
-    DC_InvalidateRange((u8 *)q + 0x3E, 2);
-    q = M2C_FIELD(p, void **, 4);
-    v = M2C_FIELD(q, u16 *, 0x3E);
-    if (flag == 1) {
-        DC_InvalidateRange((u8 *)q + 0xF8, 2);
-        q = M2C_FIELD(p, void **, 4);
-        w = M2C_FIELD(q, u16 *, 0xF8);
-        return (((v + 0xC) * w + 0x29) & ~0x1F) << 1;
+    DC_InvalidateRange((u8 *)link + WFC_LINK_BLOCK_WORDS, 2);
+    link = M2C_FIELD(info, void **, WFC_INFO_LINK);
+    blockWords = M2C_FIELD(link, u16 *, WFC_LINK_BLOCK_WORDS);
+    if (usePlayers == 1) {
+        DC_InvalidateRange((u8 *)link + WFC_LINK_PLAYERS, 2);
+        link = M2C_FIELD(info, void **, WFC_INFO_LINK);
+        players = M2C_FIELD(link, u16 *, WFC_LINK_PLAYERS);
+        return (((blockWords + 0xC) * players + 0x29) & ~0x1F) << 1;
     } else {
-        return ((v + 0x51) & ~0x1F) << 1;
+        return ((blockWords + 0x51) & ~0x1F) << 1;
     }
 }
 
@@ -221,7 +228,7 @@ s32 func_02012274(M2C_UNK arg0) {
     return var_r0;
 }
 
-s32 func_020122ac(M2C_UNK arg0) {
+s32 WFC_EndLink(M2C_UNK arg0) {
     s32 temp_r0;
     s32 var_r0;
 
@@ -430,7 +437,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     if (tag & 31) return 6;
     DC_InvalidateRange(ctx + 0x9C, 2);
     if (!M2C_FIELD(ctx, u16 *, 0x9C)) {
-        if (payloadSize < func_02011bb0()) return 6;
+        if (payloadSize < MultiBoot_GetMinPayloadSize()) return 6;
         if ((s32)tag < func_02011b44()) return 6;
     }
     WFC_SetChannelParam(14, index);

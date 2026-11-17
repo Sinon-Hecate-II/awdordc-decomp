@@ -353,7 +353,7 @@ s32 func_ov001_021840a0(void) {
 s32 func_ov001_021840d4(void) {
     s32 func_02011af8(void *);
     s32 func_02012274(void (*)(void));
-    s32 func_020122ac(void (*)(void));
+    s32 WFC_EndLink(void (*)(void));
     void func_ov001_021841cc();
     extern s32 gWfcFriendRoster;
 
@@ -367,7 +367,7 @@ s32 func_ov001_021840d4(void) {
             func_02011af8((void *)((s8 *)gWfcFriendRoster + 0x168c));
         } while (*(u16 *)((s8 *)gWfcFriendRoster + 0x168c) != 2);
     }
-    if (func_020122ac(func_ov001_021841cc) != 2) {
+    if (WFC_EndLink(func_ov001_021841cc) != 2) {
         return 0;
     }
     return 1;

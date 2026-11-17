@@ -173,7 +173,7 @@ s32 VoiceLink_SendPacket(void *arg0,s32 arg1) {
  return -4;
 }
 
-void func_ov010_022244a4(void *arg0, void *arg1) {
+void VoiceLink_SetPacketFromContext(void *arg0, void *arg1) {
     extern M2C_UNK gVoiceLinkState;
 
     if (M2C_FIELD(arg1, u8 *, 0xa) != 1) {
@@ -183,43 +183,46 @@ void func_ov010_022244a4(void *arg0, void *arg1) {
     M2C_FIELD(arg1, s32 *, 0xc) = M2C_FIELD(&gVoiceLinkState, s32 *, 4);
 }
 
-s32 func_ov010_022244cc(void *arg0, void *arg1) {
-    s32 func_0204431c(u8, void *, u32);
-    void func_ov010_022244a4(void *, void *);
+/* Send the reply packet to every connected peer except ourselves, counting the
+ * sends that succeed; when the packet's flag asks for it, record the connected
+ * peer set in the exchange context. Returns -4 when nothing could be sent. */
+s32 VoiceLink_BroadcastPacket(void *context, void *packet) {
+    s32 SendTransferToPeer(u8, void *, u32);
+    void VoiceLink_SetPacketFromContext(void *, void *);
     extern M2C_UNK gLinkConfig;
     extern M2C_UNK gVoiceLinkState;
-    M2C_UNK sp0;
-    s32 var_r1;
-    s32 var_r8;
-    u8 var_r9;
-    u8 temp_r0;
+    M2C_UNK contextPtr;
+    s32 mask;
+    s32 sent;
+    u8 peer;
+    u8 flag;
 
-    sp0 = (M2C_UNK) arg0;
-    var_r8 = 0;
-    func_ov010_022244a4(arg0, arg1);
-    var_r9 = 0;
+    contextPtr = (M2C_UNK) context;
+    sent = 0;
+    VoiceLink_SetPacketFromContext(context, packet);
+    peer = 0;
     do {
-        if (var_r9 != 0) {
-            var_r1 = 1 << var_r9;
+        if (peer != 0) {
+            mask = 1 << peer;
         } else {
-            var_r1 = 1;
+            mask = 1;
         }
-        if ((M2C_FIELD(&gVoiceLinkState, u32 *, 4) & var_r1) &&
-            (var_r9 != M2C_FIELD(&gLinkConfig, u8 *, 0))) {
-            M2C_FIELD(arg1, u8 *, 9) = var_r9;
-            if (func_0204431c(var_r9, arg1, 0x10) != 0) {
-                var_r8 += 1;
+        if ((M2C_FIELD(&gVoiceLinkState, u32 *, 4) & mask) &&
+            (peer != M2C_FIELD(&gLinkConfig, u8 *, 0))) {
+            M2C_FIELD(packet, u8 *, 9) = peer;
+            if (SendTransferToPeer(peer, packet, 0x10) != 0) {
+                sent += 1;
             }
         }
-        var_r9 += 1;
-    } while (var_r9 < 0x20);
-    temp_r0 = M2C_FIELD(arg1, u8 *, 0xa);
-    if (temp_r0 == 1) {
-        M2C_FIELD((void *) sp0, s32 *, 8) = M2C_FIELD(&gVoiceLinkState, s32 *, 4);
-    } else if (temp_r0 == 0) {
-        M2C_FIELD((void *) sp0, s32 *, 8) = 0;
+        peer += 1;
+    } while (peer < 0x20);
+    flag = M2C_FIELD(packet, u8 *, 0xa);
+    if (flag == 1) {
+        M2C_FIELD((void *) contextPtr, s32 *, 8) = M2C_FIELD(&gVoiceLinkState, s32 *, 4);
+    } else if (flag == 0) {
+        M2C_FIELD((void *) contextPtr, s32 *, 8) = 0;
     }
-    if (var_r8 == 0) {
+    if (sent == 0) {
         return -4;
     }
     return 0;
@@ -232,7 +235,7 @@ M2C_UNK VoiceLink_SendControl(s32 arg0) {
  sp0[4]=0xff;
  func_ov010_02224700(&gVoiceLinkContext,sp0,4);
  sp0[0xa]=arg0;
- func_ov010_022244cc(&gVoiceLinkContext,sp0);
+ VoiceLink_BroadcastPacket(&gVoiceLinkContext,sp0);
 }
 
 #pragma opt_propagation off
@@ -249,11 +252,11 @@ M2C_FIELD(arg0,s8 *,4)=arg1;
 }
 #pragma opt_propagation reset
 s32 func_ov010_02224614(void *arg0,void *arg1) {
- s32 func_0204431c(u8,void *,u32);
+ s32 SendTransferToPeer(u8,void *,u32);
  if(M2C_FIELD(arg1,u8 *,4)==0xff && M2C_FIELD(arg1,u8 *,6)==4) {
- func_ov010_022244cc(arg0,arg1);
+ VoiceLink_BroadcastPacket(arg0,arg1);
  } else {
- if(func_0204431c(M2C_FIELD(arg0,u8 *,4),arg1,0x10)==0) return 0;
+ if(SendTransferToPeer(M2C_FIELD(arg0,u8 *,4),arg1,0x10)==0) return 0;
  }
  return 1;
 }

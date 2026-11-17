@@ -204,6 +204,11 @@ enum {
 #define TLS_PENDING_READ   0x82c /* s32 bytes of it read so far */
 #define TLS_PENDING_KEEP   0x456 /* u8 keep the reassembled record for the caller */
 #define TLS_STATE_SERVER_HELLO_DONE 4 /* TLS_STATE value: the peer sent ServerHelloDone */
+#define TLS_STATE_FINISHED  6     /* TLS_STATE value: the peer's Finished digest verified */
+#define TLS_MD5_CTX_SIZE    0x58  /* bytes of a saved MD5 transcript context */
+#define TLS_SHA1_CTX_SIZE   0x5C  /* bytes of a saved SHA1 transcript context */
+#define TLS_MD5_FINISHED_SIZE  16 /* bytes of a Finished MD5 digest */
+#define TLS_SHA1_FINISHED_SIZE 20 /* bytes of a Finished SHA1 digest */
 #define TLS_STATE_DONE     8     /* TLS_STATE value meaning the handshake completed */
 #define TLS_STATE_ERROR    9     /* TLS_STATE value meaning the handshake failed */
 #define TLS_RECORD_HEADER  5     /* bytes of a TLS record header */
@@ -847,6 +852,7 @@ enum {
 /* Connection session fields (in the context returned by GetConnection()) used
  * by the synchronization handshake. */
 #define CONN_SESSION_STATE        0x1A0 /* s32 state, one of CONN_STATE_* */
+#define CONN_SESSION_SLOT         0x14  /* u8 peer slots in use: the slot arrays are indexed 1..this */
 #define CONN_SESSION_PLAYER_COUNT 0x0D  /* u8  number of connected peers */
 #define CONN_SESSION_PEER_IDS     0xF4  /* s32 peer ids, 4 bytes per slot */
 #define CONN_SESSION_SYNC_ACKS    0x1D8 /* u32 bitmask of peers that answered */
@@ -1139,6 +1145,7 @@ enum {
 #define SAVE_RECORD_TIME        4          /* u32 timestamp inside a directory record */
 #define SAVE_TYPE_PLAYER        2          /* player/profile save */
 #define SAVE_TYPE_BATTLE        3          /* battle save */
+#define SAVE_TYPE_CAMPAIGN_MAP  9          /* campaign map index 0; record type = 9 + map index */
 
 /* Save-chip configuration the save manager asks the device for before it reads
  * the archive: the chip kind in the low byte and the size/variant bit index in
@@ -1946,6 +1953,33 @@ typedef struct Ov001TextState {
     s32         letterSpacing; /* +0x08: extra pixels added after each glyph */
     s32         lineSpacing;   /* +0x0C: extra pixels between lines */
 } Ov001TextState;              /* 0x10 bytes */
+
+typedef struct Ov001RangeNode {
+    struct Ov001RangeNode *prev; /* +0x00 */
+    struct Ov001RangeNode *next; /* +0x04 */
+    u16 start;                   /* +0x08 first word of the range */
+    u16 size;                    /* +0x0A length in words */
+} Ov001RangeNode;
+
+typedef struct Ov001TilePool {
+    u8 nodes[0x180];     /* +0x000 storage of the 32 range nodes the queue hands out */
+    Ov001RangeNode head; /* +0x180 sentinel before the first used range */
+    Ov001RangeNode tail; /* +0x18C sentinel after the last used range */
+    s32 usedList;        /* +0x198 list of the ranges in use (head and tail are its sentinels) */
+    s32 freeNodes;       /* +0x19C queue of the unused range nodes */
+} Ov001TilePool;         /* 0x1A0 bytes */
+
+#define OV001_TILE_POOL_COUNT      2
+#define OV001_TILE_POOL_STRIDE     0x1A0 /* bytes per pool */
+#define OV001_TILE_POOL_NODE_COUNT 32 /* range nodes available per pool (0x180 bytes / 12) */
+#define OV001_TILE_POOL_HEAD       0x180 /* Ov001RangeNode: sentinel before the first used range */
+#define OV001_TILE_POOL_TAIL       0x18C /* Ov001RangeNode: sentinel after the last used range */
+#define OV001_TILE_POOL_HEAD_START 0x188 /* u16 head.start: first range word in use */
+#define OV001_TILE_POOL_TAIL_START 0x194 /* u16 tail.start: one past the last free range word */
+#define OV001_TILE_POOL_USED_LIST  0x198 /* s32 list of the ranges in use */
+#define OV001_TILE_POOL_FREE_NODES 0x19C /* s32 queue of the free range nodes */
+#define OV001_TILE_POOL_FREE_START 0x300 /* first free range word of a fresh pool */
+#define OV001_TILE_POOL_FREE_END   0x400 /* one past its last free range word */
 
 /* The Nintendo WFC web request state (gWebRequestState), used by the put.asp and
  * get.asp request builders in main_02046D38/main_02047B84.  The request text is

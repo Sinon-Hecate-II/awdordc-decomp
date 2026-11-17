@@ -11,7 +11,7 @@ s32 UpdateConnectionSyncWait(void) {
  u64 GetSystemTick(void);
  u64 U64Divide(u64,u64);
  s32 GetNetSessionState(void);
- s32 func_02041038(s32);
+ s32 RestartConnection(s32);
  void SendConnectionPacket(s32,s32);
  s32 PruneConnectionPeers(s32);
  void func_02041e44(void);
@@ -31,7 +31,7 @@ s32 UpdateConnectionSyncWait(void) {
  case CONN_STATE_WAIT_SLOT:
  if(elapsed>6000ULL){
  if(GetNetSessionState()==5 && M2C_FIELD(GetConnection(),u8 *,0x1ad)>=5){
- if(func_02041038(M2C_FIELD(GetConnection(),s32 *,0xf4))==0) return 0;
+ if(RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4))==0) return 0;
  } else {
  M2C_FIELD(GetConnection(),u8 *,0x1ad)++;
  SendConnectionPacket(M2C_FIELD(GetConnection(),u8 *,0x2d0),CONN_NOTICE_SYNC_STATUS);
@@ -303,7 +303,7 @@ if(func_0204084c()) return;
 mgr=gConnectionMgr;M2C_FIELD(mgr,u64*,24)=GetSystemTick();M2C_FIELD(mgr,u8*,2)=1;
 }
 #pragma pop
-u32 func_02042f94(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}func_0203dc38(code,off+0xfffec398);return ret;}
+u32 func_02042f94(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}ReportConnectionError(code,off+0xfffec398);return ret;}
 
-u32 func_02043008(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=6;off=code-56;break;case 2:code=6;off=code-36;break;case 3:code=6;off=code-26;break;case 4:code=6;off=code-46;break;case 5:code=9;off=code-10;break;case 6:code=9;off=code-11;break;}func_0203dc38(code,off+0xfffeb3f8);return ret;}
+u32 func_02043008(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=6;off=code-56;break;case 2:code=6;off=code-36;break;case 3:code=6;off=code-26;break;case 4:code=6;off=code-46;break;case 5:code=9;off=code-10;break;case 6:code=9;off=code-11;break;}ReportConnectionError(code,off+0xfffeb3f8);return ret;}
 

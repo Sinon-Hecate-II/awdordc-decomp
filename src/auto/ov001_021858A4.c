@@ -173,7 +173,7 @@ s32 Ov001_SendServerRequest(void) {
 s32 func_ov001_02185dac(void) {
     s32 func_02011af8(void *);
     s32 func_02012274(void (*)(void));
-    s32 func_020122ac(void (*)(void));
+    s32 WFC_EndLink(void (*)(void));
     void func_ov001_02185ea8(u16 *);
     void func_ov001_0218c94c(s32,s32);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK);
@@ -191,7 +191,7 @@ u32 state;
             func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
         } while (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2);
     }
-    if (func_020122ac((void (*)(void))func_ov001_02185ea8) != 2) {
+    if (WFC_EndLink((void (*)(void))func_ov001_02185ea8) != 2) {
         return 0;
     }
     if (M2C_FIELD((s8*)gOv001ConnectionState+0x1000,s32*,0xb90) != 0) {

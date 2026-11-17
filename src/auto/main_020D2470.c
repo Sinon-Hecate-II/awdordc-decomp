@@ -493,7 +493,7 @@ u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
 if((u32)p[0x31]<255)p[0x31]++;
 }
 
-s32 func_020d3120(s32 a) {
+s32 DecrementPlayerUnitCount(s32 a) {
 extern s32 *gCurrentMap;
 u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
 s32 v=p[0x31];
@@ -513,15 +513,15 @@ if(p[b]!=255)p[b]++;
 void func_020d319c(s32 a,s32 b) {
 extern s32 *gCurrentMap;
 u8 *p;
-func_020d3120(a);
+DecrementPlayerUnitCount(a);
 p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
 p+=0x4e;
 if(p[b]!=255)p[b]++;
 }
 
 void func_020d31e4(void) {
-    M2C_UNK func_020d3120();
-    func_020d3120();
+    M2C_UNK DecrementPlayerUnitCount();
+    DecrementPlayerUnitCount();
 }
 
 void func_020d31f0(s32 a, u8 b) {

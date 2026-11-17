@@ -9,6 +9,7 @@
 #define GT2_CONNECTION_ACK_QUEUE   0x60 /* Vector *of sent commands awaiting the peer's acknowledgement, sorted by sequence */
 #define GT2_CONNECTION_STATE       0x0C /* s32 handshake/connection state */
 #define GT2_CONNECTION_RESPONSE    0x68 /* 32-byte expected challenge response */
+#define GT2_CONNECTION_SEND_SEQUENCE 0x64 /* u16 sequence number the next sent command carries */
 #define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds */
 #define GT2_CONNECTION_DATA        0x38 /* void *data to send with our handshake message */
 #define GT2_CONNECTION_DATA_LEN    0x3C /* s32 length of GT2_CONNECTION_DATA */

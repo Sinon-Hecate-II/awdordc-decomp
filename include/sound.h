@@ -56,6 +56,32 @@
 #define STREAM_VOICE_REFILL   0x4C /* s32 nonzero while a buffer is being refilled */
 #define STREAM_VOICE_VOLUME   0x50 /* s32 last volume written to the hardware */
 
+/* A loaded sound-archive file: the word at +0x18 of its header is the offset
+ * from the file to the data block its entries live in. */
+#define SOUND_ARCHIVE_DATA_OFFSET  0x18 /* s32 offset in the file of the archive's data block */
+#define SOUND_ARCHIVE_DATA_BLOCK   0x8C /* void * the data block (from DATA_OFFSET) */
+#define SOUND_ARCHIVE_TABLE_OFFSET 0x20 /* s32 offset in the file of the object table */
+#define SOUND_ARCHIVE_TABLE        0x84 /* s32 * the object table (from TABLE_OFFSET) */
+#define SOUND_ARCHIVE_FILE_OFFSET  0x10 /* s32 offset in the file of the object file */
+#define SOUND_ARCHIVE_FILE         0x88 /* void * the object file (from FILE_OFFSET) */
+#define SOUND_ARCHIVE_ENTRY_COUNT  8    /* s32 objects in the table */
+#define SOUND_ARCHIVE_ENTRIES      12   /* the objects: 16 bytes each */
+#define SOUND_ARCHIVE_ENTRY_SIZE   16
+#define SOUND_ARCHIVE_ENTRY_OFFSET 0    /* s32 offset in the file of the object's data */
+#define SOUND_ARCHIVE_ENTRY_DATA   8    /* void * the object's data (from ENTRY_OFFSET) */
+
+/* One entry of a loaded sound archive (12 bytes): the sound it names, the bank
+ * it is played with, its volume, pan, priority, and the player channel it is
+ * played on. */
+typedef struct SoundArchiveEntry {
+    s32 soundId;  /* +0x00 sound id of the entry */
+    u16 bankId;   /* +0x04 sound bank the entry is played with */
+    u8  volume;   /* +0x06 volume */
+    u8  pan;      /* +0x07 pan */
+    u8  priority; /* +0x08 priority: a voice of higher priority replaces a lower one */
+    u8  channel;  /* +0x09 player channel/slot the entry is played on */
+} SoundArchiveEntry; /* 12 bytes */
+
 /* A sound group of the sound archive: a count and that many items, each saying
  * which kind of sound resource it names and the load flags its loader gets. */
 typedef struct SoundGroupItem {

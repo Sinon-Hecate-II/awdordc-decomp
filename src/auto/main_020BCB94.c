@@ -163,7 +163,7 @@ void func_020bd084(void *arg0) {
 
 void CreateTouchCursor(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *func_01ffa3dc(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=func_01ffa3dc(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
 
-void DeleteTouchCursor(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa9e4(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;func_01ffa9e4(&data_021293d4);}
+void DeleteTouchCursor(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;DeleteSpriteObjectsOfClass(&data_021293d4);}
 
 void HideTouchCursor(void) {
     M2C_UNK func_01ffa9bc(M2C_UNK *);

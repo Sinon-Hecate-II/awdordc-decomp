@@ -260,7 +260,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
    to the preferred peer (mode 1), or report that the serving session has none
    (mode 3).  Returns 0 when the step failed, 1 otherwise. */
 s32 StartConnection(M2C_UNK preferredPeer) {
- void *GetConnection(); unsigned long long GetSystemTick(); s32 SendMatchmakingParameter(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK func_0203dc38(M2C_UNK,s32);
+ void *GetConnection(); unsigned long long GetSystemTick(); s32 SendMatchmakingParameter(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK ReportConnectionError(M2C_UNK,s32);
  void func_02043008(s32); void *p;
  M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SELF_ID)=0;
  M2C_FIELD(GetConnection(),s32*,CONN_SESSION_JOIN_PEER)=0;
@@ -272,7 +272,7 @@ s32 StartConnection(M2C_UNK preferredPeer) {
  } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1) {
  TryConnectToPeer(0,0,preferredPeer); if(((s32 (*)())func_0204084c)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==3) {
- func_0203dc38(6,0xfffec5e6);return 0;
+ ReportConnectionError(6,0xfffec5e6);return 0;
  }
  return 1;
 }
@@ -294,7 +294,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     u64 GetSystemTick(void);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02041be0(M2C_UNK);
-    M2C_UNK func_02041ce0(void);
+    M2C_UNK ReconnectUnlessServing(void);
     M2C_UNK func_02041dd4(M2C_UNK);
     s32 SendPeerSyncNotice(s32, M2C_UNK);
     void func_0205ea70(s32);
@@ -331,7 +331,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     }
     if (var_r4 == 0) {
         if (M2C_FIELD(GetConnection(), u8 *, 0x15) != 3) {
-            func_02041ce0();
+            ReconnectUnlessServing();
         }
         goto done;
     }
@@ -374,38 +374,43 @@ done:
     return 1;
 }
 #pragma opt_strength_reduction reset
-s32 func_02041038(void) {
-    M2C_UNK func_0203dc38(M2C_UNK, s32);
+/* Restarts a stalled connection attempt: in serving mode (3) there is nobody to
+ * join, so it tells the peers the connection closed and reports error 6;
+ * otherwise it resets the peer slot counter and own id, frees any NAT
+ * negotiation session and either reconnects to the existing peers or starts a
+ * fresh connection.  Returns 0 once the error was reported. */
+s32 RestartConnection(void) {
+    M2C_UNK ReportConnectionError(M2C_UNK, s32);
     s32 StartConnection(M2C_UNK);
-    M2C_UNK func_02041ce0();
+    M2C_UNK ReconnectUnlessServing();
     M2C_UNK func_02041e44();
     M2C_UNK SetConnectionState(M2C_UNK);
     M2C_UNK func_0205df50(s32);
-    s32 var_r4;
-    void *temp_r5;
+    s32 result;
+    void *conn;
 
-    var_r4 = 1;
-    if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 3) {
-        if (M2C_FIELD(GetConnection(), u8 *, 0xD) != 0) {
+    result = 1;
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3) {
+        if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
             func_02041e44();
         }
-        func_0203dc38(6, 0xFFFEC5D2);
+        ReportConnectionError(6, 0xFFFEC5D2);
         return 0;
     }
-    temp_r5 = GetConnection();
-    M2C_FIELD(temp_r5, u8 *, 0x14) = (u8) M2C_FIELD(GetConnection(), u8 *, 0xD);
-    M2C_FIELD(GetConnection(), s32 *, 0x208) = 0;
-    if (M2C_FIELD(GetConnection(), s32 *, 0x19C) != 0) {
-        func_0205df50(M2C_FIELD(GetConnection(), s32 *, 0x19C));
-        M2C_FIELD(GetConnection(), s32 *, 0x19C) = 0;
+    conn = GetConnection();
+    M2C_FIELD(conn, u8 *, CONN_SESSION_SLOT) = (u8) M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT);
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SELF_ID) = 0;
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) != 0) {
+        func_0205df50(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG));
+        M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) = 0;
     }
-    if (M2C_FIELD(GetConnection(), u8 *, 0xD) != 0) {
-        func_02041ce0();
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
+        ReconnectUnlessServing();
     } else {
         SetConnectionState(4);
-        var_r4 = StartConnection(0);
+        result = StartConnection(0);
     }
-    return var_r4;
+    return result;
 }
 
 #pragma opt_strength_reduction off

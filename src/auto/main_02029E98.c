@@ -732,7 +732,7 @@ M2C_FIELD(*(void * volatile *)arg0,s8 *,0x41)=arg1;
 }
 }
 
-void func_0202acf0(void **arg0, s8 arg1) {
+void Sound_SetVoiceVolume(void **arg0, s8 arg1) {
     if (*(void * volatile *)arg0 != NULL) {
         M2C_FIELD(*(void * volatile *)arg0, s8 *, 0x40) = arg1;
     }
@@ -747,7 +747,7 @@ void func_0202ad04(void * volatile *arg0, s32 arg1, s32 arg2) {
  if (*arg0 != 0) { p=*arg0; if (M2C_FIELD(p,u8 *,0x2C)!=2) func_0202eed8((u8 *)p+0x1C,arg1<<8,arg2); }
 }
 #pragma pop
-void func_0202ad30(void * volatile *arg0, s32 arg1) {
+void Sound_SetChannelPan(void * volatile *arg0, s32 arg1) {
 M2C_UNK func_02008c50(u8,s32);
 if(*arg0==NULL)return;
 func_02008c50(M2C_FIELD(*arg0,u8 *,0x3c),arg1);
@@ -780,7 +780,7 @@ void func_0202adb0(void **arg0, s16 arg1) {
     M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x38) = arg1;
 }
 #pragma opt_common_subs reset
-void func_0202add4(void **arg0, s16 arg1, s16 arg2) {
+void Sound_SetSoundSource(void **arg0, s16 arg1, s16 arg2) {
     if (*(void * volatile *)arg0 == NULL) {
         return;
     }

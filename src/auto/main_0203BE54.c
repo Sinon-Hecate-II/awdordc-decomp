@@ -6,7 +6,7 @@
 s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     s32 HeapAlloc(M2C_UNK, s32);
     M2C_UNK HeapFree(M2C_UNK);
-    M2C_UNK func_0203dc38(M2C_UNK, s32);
+    M2C_UNK ReportConnectionError(M2C_UNK, s32);
     s8 func_020427b4(void);
     M2C_UNK StringLength(s32);
     M2C_UNK StringCopy(M2C_UNK, s32);
@@ -47,7 +47,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     temp_r0 = HeapAlloc(4, StringLength(var_r6) + 1);
     *((volatile s32 *)(data_0213d3c0 + temp_r4)) = temp_r0;
     if (temp_r0 == 0) {
-        func_0203dc38(9, 0xFFFEC77F);
+        ReportConnectionError(9, 0xFFFEC77F);
         return 0;
     }
     StringCopy(temp_r0, var_r6);
@@ -59,7 +59,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
 s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     s32 HeapAlloc(M2C_UNK, s32);
     M2C_UNK HeapFree(M2C_UNK);
-    M2C_UNK func_0203dc38(M2C_UNK, s32);
+    M2C_UNK ReportConnectionError(M2C_UNK, s32);
     s8 func_020427b4(void);
     M2C_UNK StringLength(s32);
     M2C_UNK StringCopy(M2C_UNK, s32);
@@ -107,7 +107,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
         var_r8 = data_0213d3c0;
         *((s32 *)(var_r8 + temp_r4)) = temp_r0;
         if (temp_r0 == 0) {
-            func_0203dc38(9, 0xFFFEC77F);
+            ReportConnectionError(9, 0xFFFEC77F);
             return 0;
         }
         StringCopy(temp_r0, var_r6);
@@ -230,7 +230,7 @@ len=FormatMatchmakingMessage(text,-1,32,3);
 len=256-len-StringLength((s32)&sMatchMessageSuffix);
 value=HeapAlloc(4,len);
 M2C_FIELD(&gConnectionMgr,s32*,8)=value;
-if(!value){func_0203dc38(9,0xfffec77f);return;}
+if(!value){ReportConnectionError(9,0xfffec77f);return;}
 MI_CpuCopy8(playerList,value,len);
 ((u8*)M2C_FIELD(&gConnectionMgr,void**,8)+len)[-1]=0;
 }
@@ -258,7 +258,7 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
     s32 SetConnectionState(s32);
     s32 BeginMatchmakingSession(s32, s32, M2C_UNK, M2C_UNK);
     s32 MI_CpuCopy8(M2C_UNK, void *, s32);
-    M2C_UNK func_0203dc38(M2C_UNK, s32);
+    M2C_UNK ReportConnectionError(M2C_UNK, s32);
     s32 func_02043008(s32);
     s32 func_020613dc(s32, s32, s32, s32, s32, s32, s32, M2C_UNK *, s32);
     M2C_UNK StringFormatN(void *, s32, void *, s32);
@@ -295,7 +295,7 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
             {
                 if (listLength < (s32)(((u8 *)gp)[1]) - 1) {
 error:
-                    func_0203dc38(10, 0);
+                    ReportConnectionError(10, 0);
                     goto done;
                 }
             }

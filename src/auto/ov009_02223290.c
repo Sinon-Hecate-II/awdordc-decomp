@@ -375,7 +375,7 @@ void func_ov009_02223c98(void *arg0) {
     SetLinkPhase(1);
 }
 
-void func_ov009_02223cbc(void *arg0) {
+void HandleLinkEndTaskEvent(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SetLinkPhase(9);
         return;

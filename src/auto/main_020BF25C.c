@@ -27,7 +27,7 @@ extern M2C_UNK gGameSettings, data_0215deec, gMovementCostTable;
 void *BuildSaveSlotText(s32 arg0,s32 arg1) {
 s32 func_020bf054(s32); void *func_020bfa60(s32);
 s32 IsUnitAvailable(s32); s32 GetLocalizedText(s32); void StringAppend(char*,const char*); void StringFormat(char*,const char*,...);
-s32 func_020a8a84(s32); s32 GetMapName(s32); void FormatDateTime(char*,void*); s32 func_020e4b28(s32); void func_020c8d7c(s32);
+s32 func_020a8a84(s32); s32 GetMapName(s32); void FormatDateTime(char*,void*); s32 func_020e4b28(s32); void LoadCampaignMapHeader(s32);
 char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
 buf[0x100]=0; n=func_020bf054(a);
 p=func_020bfa60(n);
@@ -57,7 +57,7 @@ StringAppend(buf+256,data_021295f4);StringAppend(buf+256,GetLocalizedText(0x4800
 break;
 case 1:
 if(IsUnitAvailable(n)&&b) {
-func_020c8d7c(p[0]);StringAppend(buf+256,GetLocalizedText(0x4800003f));
+LoadCampaignMapHeader(p[0]);StringAppend(buf+256,GetLocalizedText(0x4800003f));
 StringFormat(buf,data_021295f8,GetMapName(p[0]));StringAppend(buf+256,buf);
 StringAppend(buf+256,GetLocalizedText(0x4800003f));StringAppend(buf+256,GetLocalizedText(0x4800003e));
 StringFormat(buf,data_021295fc,p[1]);StringAppend(buf+256,buf);StringAppend(buf+256,data_02129604);
@@ -80,8 +80,8 @@ void func_020bf798(void) {
 #pragma opt_propagation reset
 M2C_UNK func_020bf7c4(void){
 void func_020bfa08(void);void func_020bfa48(void);
-s32 func_020be324(s32,void *);void func_020beabc(void *);void InitDefaultGameSettings(void);
-if(!func_020be324(4,&data_0215deec))return;
+s32 LoadNewestSaveRecord(s32,void *);void func_020beabc(void *);void InitDefaultGameSettings(void);
+if(!LoadNewestSaveRecord(4,&data_0215deec))return;
 func_020beabc(&data_0215deec);
 if(M2C_FIELD(&gGameSettings,u32 *,0x128)!=0x20070810)InitDefaultGameSettings();
 func_020bfa08();func_020bfa48();

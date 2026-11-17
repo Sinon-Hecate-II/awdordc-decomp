@@ -133,19 +133,19 @@ u8 func_0209bf28(void) {
 }
 
 void func_0209bf7c(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02103328, data_021032d8, data_02103300;
-    func_01ffa9e4(&data_02103328);
-    func_01ffa9e4(&data_021032d8);
-    func_01ffa9e4(&data_02103300);
+    DeleteSpriteObjectsOfClass(&data_02103328);
+    DeleteSpriteObjectsOfClass(&data_021032d8);
+    DeleteSpriteObjectsOfClass(&data_02103300);
 }
 
 void func_0209bfa8(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_021032d8;
     extern M2C_UNK data_02103300;
-    func_01ffa9e4(&data_021032d8);
-    func_01ffa9e4(&data_02103300);
+    DeleteSpriteObjectsOfClass(&data_021032d8);
+    DeleteSpriteObjectsOfClass(&data_02103300);
 }
 
 void func_0209bfc8(void) {

@@ -236,9 +236,9 @@ void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_020af1e4(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gWallpaperSpriteClass;
-    func_01ffa9e4(&gWallpaperSpriteClass);
+    DeleteSpriteObjectsOfClass(&gWallpaperSpriteClass);
 }
 
 void DeleteMainWallpaperSprites(void) {
@@ -383,9 +383,9 @@ void func_020af62c(s32 a, s32 b, s32 c, s32 d, s16 e, u8 f, s16 g, s16 h, s16 i,
 }
 
 void func_020af71c(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02127e7c;
-    func_01ffa9e4(&data_02127e7c);
+    DeleteSpriteObjectsOfClass(&data_02127e7c);
 }
 
 s32 func_020af730(s32 arg0) {

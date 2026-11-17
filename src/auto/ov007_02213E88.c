@@ -467,8 +467,8 @@ void FillMapTerrain(s32 preset) {
  * column with the default terrain. */
 void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK GetMapRecordBuffer(void);
-    M2C_UNK func_020c79f8(void);
-    M2C_UNK func_020c7a08(void);
+    M2C_UNK GetMapRecordTerrain(void);
+    M2C_UNK GetMapRecordHeader(void);
     M2C_UNK func_020c879c(M2C_UNK);
     M2C_UNK ResetMapUnits(void);
     M2C_UNK InitPlayerStates(void);
@@ -494,8 +494,8 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     s32 lastY,lastX;
     s32 width=arg0,height=arg1;
     exportBlock = GetMapRecordBuffer();
-    blockData = (void *)func_020c79f8();
-    blockHeader = (void *)func_020c7a08();
+    blockData = (void *)GetMapRecordTerrain();
+    blockHeader = (void *)GetMapRecordHeader();
     func_020c879c(exportBlock);
 
     M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)=width;

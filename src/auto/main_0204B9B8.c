@@ -346,19 +346,45 @@ if(hit){do{*hit=43;path=M2C_FIELD(connection,s32 *,GHI_PATH);hit=StringFindChar(
 if(path==0)return 0;return 1;
 }
 
-void func_0204c738(void *p) {
-void InvokeRequestCallback(void *,s32,s32); void func_0204926c(void); s32 ghiParseURL(void *);s32 func_020498e4(s32);void *ghiResolveHostname(s32);extern s32 gHttpServerOverride;
-s32 id,v;void *q;
-InvokeRequestCallback(p,0,0);func_0204926c();
-if(!ghiParseURL(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=3;return;}
-id=M2C_FIELD(p,s32 *,0x15c);
-if(id==0) { id=gHttpServerOverride ? gHttpServerOverride : M2C_FIELD(p,s32 *,0x18); }
-v=func_020498e4(id);M2C_FIELD(p,s32 *,0x1c)=v;
-if(v==-1){
-q=ghiResolveHostname(id);
-if(!q){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=4;return;}
-M2C_FIELD(p,s32 *,0x1c)=**M2C_FIELD(q,s32 ***,12);
-}
-M2C_FIELD(p,s32 *,0x10)=1;InvokeRequestCallback(p,0,0);
+/* GHI_STATE_HOST_LOOKUP: fires the request's callbacks, parses the request URL and
+ * finds the address to connect to - the server override or the URL's host, first
+ * from the host table and then from a blocking lookup - then moves the connection
+ * on to GHI_STATE_CONNECTING.  A URL that does not parse or a host that does not
+ * resolve finishes the request with the matching result. */
+void func_0204c738(void *arg0) {
+    GHIConnection *connection = arg0;
+    void InvokeRequestCallback(void *, s32, s32);
+    void func_0204926c(void);
+    s32 ghiParseURL(void *);
+    s32 func_020498e4(s32);
+    void *ghiResolveHostname(s32);
+    extern s32 gHttpServerOverride;
+    s32 host, address;
+    void *hostEntry;
+
+    InvokeRequestCallback(connection, 0, 0);
+    func_0204926c();
+    if (!ghiParseURL(connection)) {
+        connection->completed = 1;
+        connection->result = GHTTP_RESULT_PARSE_URL_FAILED;
+        return;
+    }
+    host = (s32) connection->serverOverride;
+    if (host == 0) {
+        host = gHttpServerOverride ? gHttpServerOverride : (s32) connection->host;
+    }
+    address = func_020498e4(host);
+    connection->addr = address;
+    if (address == -1) {
+        hostEntry = ghiResolveHostname(host);
+        if (!hostEntry) {
+            connection->completed = 1;
+            connection->result = GHTTP_RESULT_HOST_UNRESOLVED;
+            return;
+        }
+        connection->addr = **M2C_FIELD(hostEntry, s32 ***, 12);
+    }
+    connection->state = GHI_STATE_CONNECTING;
+    InvokeRequestCallback(connection, 0, 0);
 }
 

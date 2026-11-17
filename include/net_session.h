@@ -15,7 +15,7 @@
 enum {
     NET_STATE_LOGIN         = 2, /* logging in: errors go to the NAS login callback */
     NET_STATE_MATCHMAKING   = 4, /* matchmaking: errors go through func_0203accc */
-    NET_STATE_SESSION       = 5  /* online session: errors go through func_0203dc38 */
+    NET_STATE_SESSION       = 5  /* online session: errors go through ReportConnectionError */
 };
 #define NET_LOGIN_NAME_MAX         25
 #define NET_LOGIN_NAME_BYTES       52

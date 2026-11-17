@@ -343,12 +343,12 @@ void func_020d8b34(void) {
 
 s32 func_020d8b84(s32 arg0) {
     s32 func_020be120();
-    M2C_UNK func_020be324(M2C_UNK, s32);
+    M2C_UNK LoadNewestSaveRecord(M2C_UNK, s32);
     func_020be120();
     if (arg0 != 1) {
         return 1;
     }
-    func_020be324(8, func_020be120());
+    LoadNewestSaveRecord(8, func_020be120());
     return 1;
 }
 

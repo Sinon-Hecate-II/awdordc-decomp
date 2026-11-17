@@ -285,10 +285,10 @@ void func_020d61ac(void) {
 }
 
 void func_020d61f0(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK func_ov000_021696d4();
     extern M2C_UNK data_0211fbc4;
-    func_01ffa9e4(&data_0211fbc4);
+    DeleteSpriteObjectsOfClass(&data_0211fbc4);
     func_ov000_021696d4();
 }
 

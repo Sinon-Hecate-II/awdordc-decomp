@@ -236,18 +236,20 @@ s32 CountUnusedCapturableProperties(void) {
 #pragma pop
 
 #pragma pop
-s32 func_ov000_0218a080(u8 arg0) {
+/* Counts a player's deployed foot units: unloaded infantry/mech records in the
+ * player's unit-id group that stand on a cell the movement grid marks passable. */
+s32 CountPlayerFootUnits(u8 player) {
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     s32 count = 0;
     s32 i;
-    u16 start = gPlayerUnitIdBase[arg0];
+    u16 start = gPlayerUnitIdBase[player];
 
-    for (i = start + 1; i < gPlayerUnitIdBase[arg0] + 0x33; i++) {
-        UnkStruct_ov000_02189A08 *entry = &((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap + 0x59A4))[i];
-        u32 type = entry->unk0;
-        if (type != 0 && !(entry->unk4 & 8) && IsFootUnitKind(type) != 0 && ((s8 **)((u8 *)*gCurrentMap + 0x52E8))[entry->unk2][entry->unk1] != -1) {
+    for (i = start + 1; i < gPlayerUnitIdBase[player] + MAP_UNIT_GROUP_SCAN; i++) {
+        BattleMapUnitHead *entry = &((BattleMapUnitHead *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[i];
+        u32 kind = entry->kind;
+        if (kind != 0 && !(entry->flags & UNIT_FLAG_LOADED) && IsFootUnitKind(kind) != 0 && ((s8 **)((u8 *)*gCurrentMap + MAP_GRID))[entry->y][entry->x] != -1) {
             count += 1;
         }
     }
@@ -280,7 +282,7 @@ s32 func_ov000_0218a140(u8 arg0) {
 s32 func_ov000_0218a230(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
-    s32 func_ov000_0218a080(u8);
+    s32 CountPlayerFootUnits(u8);
     extern void **gCurrentMap;
     s32 count = 0;
     s32 i;
@@ -288,7 +290,7 @@ s32 func_ov000_0218a230(void) {
     i = 1;
     do {
         if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && IsPlayerActive(i) != 0) {
-            count += func_ov000_0218a080(i);
+            count += CountPlayerFootUnits(i);
         }
         i += 1;
     } while (i < 5);

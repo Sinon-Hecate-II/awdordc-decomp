@@ -128,9 +128,9 @@ StringCopy((u8 *)p+0x36,arg0);
 }
 
 void func_02095fc0(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102b18;
-    func_01ffa9e4(&data_02102b18);
+    DeleteSpriteObjectsOfClass(&data_02102b18);
 }
 
 void func_02095fd4(void) {

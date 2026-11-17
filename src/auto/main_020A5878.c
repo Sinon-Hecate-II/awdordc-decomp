@@ -282,19 +282,24 @@ s32 IsUnitInSight(s32 arg0) {
 }
 
 #pragma scheduling off
+/* Whether the unit is drawn on the map at all: a unit playing its move
+ * animation is skipped (flags bit 0x04); otherwise a unit on a cell of the
+ * second team's sight bitmap counts when it is really in sight, and so does one
+ * whose flags bit 0x80 is set; a unit of the human side counts while its
+ * visible flag is still set. */
 s32 IsUnitVisible(void *arg0){
 s32 func_020a5d8c(s32,u8,u8);extern s32 *gCurrentMap;
-u8 *p=arg0;u16 w;u8 b2,b1;u8 *base;u32 idx;u8 byte;u16 r2;u8 val;
-w=*(u16 *)(p+4);if(w&4)return 0;
-b2=p[2];base=(u8 *)*gCurrentMap;b1=p[1];
-idx=b1+M2C_FIELD(base+b2*2,u16 *,0x3758);
-byte=M2C_FIELD(base+(idx>>3),u8 *,0x5201)&(1u<<(idx&7));
-if(byte){if(func_020a5d8c((s32)p,b1,b2)!=0)goto ret1;}
-w=*(u16 *)(p+4);if(w&128)return 1;
+u8 *p=arg0;u16 flags;u8 y,x;u8 *base;u32 idx;u8 seen;u16 player;u8 side;
+flags=*(u16 *)(p+MAP_UNIT_FLAGS);if(flags&4)return 0;
+y=p[MAP_UNIT_Y];base=(u8 *)*gCurrentMap;x=p[MAP_UNIT_X];
+idx=x+M2C_FIELD(base+y*2,u16 *,MAP_ROW_OFFSETS);
+seen=M2C_FIELD(base+(idx>>3),u8 *,MAP_CELL_BITMAP)&(1u<<(idx&7));
+if(seen){if(func_020a5d8c((s32)p,x,y)!=0)goto ret1;}
+flags=*(u16 *)(p+MAP_UNIT_FLAGS);if(flags&128)return 1;
 base=*gCurrentMap;
-r2=M2C_FIELD(base,u16 *,0x52a4);
-val=M2C_FIELD(base+r2*140,u8 *,0x67c3);
-if(val==3){if(w&64)return 1;}
+player=M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER);
+side=M2C_FIELD(base+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF);
+if(side==SIDE_HUMAN){if(flags&UNIT_FLAG_VISIBLE)return 1;}
 return 0;
 ret1:return 1;
 }
@@ -302,7 +307,7 @@ ret1:return 1;
 s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitVisible(void *);u8 *p;u8 v;if(a<0||b<0)goto fail;p=(u8 *)*gCurrentMap;if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;goto valid;fail:return 0;valid:v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return IsUnitVisible(p+0x59a4+v*14);}
 
 /* Adds `amount`-scaled income to the funds of the player/commander that owns terrain entry `entry`, capped at 999999999, and notifies the funds display if applicable. */
-s32 func_020a6328(u8 *entry, s32 amount) {
+s32 AddPlayerUnitValue(u8 *entry, s32 amount) {
 extern s32 *gCurrentMap;
 s32 GetUnitBuildCost(s32,u32);
 s32 IsPlayerHuman(s32);
@@ -354,29 +359,32 @@ void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *Creat
 
 void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *CreateMapUnit(s32,s32,s32,s32);void RefreshMapView(void *);void *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
 
-void func_020a6718(M2C_UNK arg0) {
-    void func_020a6738(M2C_UNK, M2C_UNK);
-    func_020a6738(arg0, 0);
+void RemoveUnit(M2C_UNK arg0) {
+    void RemoveMapUnit(M2C_UNK, M2C_UNK);
+    RemoveMapUnit(arg0, 0);
 }
 
-void func_020a6728(M2C_UNK arg0) {
-    void func_020a6738(M2C_UNK, M2C_UNK);
-    func_020a6738(arg0, 1);
+void DestroyUnit(M2C_UNK arg0) {
+    void RemoveMapUnit(M2C_UNK, M2C_UNK);
+    RemoveMapUnit(arg0, 1);
 }
 
-void func_020a6738(M2C_UNK a,M2C_UNK b) {
-extern s32 *gCurrentMap;
-s32 Divide(s32,s32);
-u8 *p=(u8 *)*gCurrentMap+0x1a4+0x5800+a*14;
-if(b) {
-u32 v;
-func_020d319c((a>>6)+1,(u32)(p[0]<<26)>>26);
-v=(u32)(M2C_FIELD(p,u16 *,6)<<25)>>25;
-func_020a6328(p,v==0?0:Divide(v-1,10)+1);
-}else func_020d3120((a>>6)+1);
-if(p[12])func_020a6738(p[12],b);
-if(p[13])func_020a6738(p[13],b);
-ClearPlayerSelectedUnit(p,1);
-p[0]&=~63;
+/* Remove the unit with id `unitId` (and every unit it carries) from the battle
+ * map.  When `destroyed` is set its owner's per-kind loss count and unit value
+ * are recorded; the player's selected-unit slot is cleared in either case. */
+void RemoveMapUnit(s32 unitId, s32 destroyed) {
+    extern s32 *gCurrentMap;
+    s32 Divide(s32, s32);
+    u8 *unit = (u8 *)*gCurrentMap + 0x1a4 + 0x5800 + unitId * 14;
+    if (destroyed) {
+        u32 health;
+        func_020d319c((unitId >> MAP_UNIT_OWNER_SHIFT) + 1, (u32)(unit[MAP_UNIT_KIND] << 26) >> 26);
+        health = (u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25;
+        AddPlayerUnitValue(unit, health == 0 ? 0 : Divide(health - 1, 10) + 1);
+    } else DecrementPlayerUnitCount((unitId >> MAP_UNIT_OWNER_SHIFT) + 1);
+    if (unit[MAP_UNIT_CARRIED]) RemoveMapUnit(unit[MAP_UNIT_CARRIED], destroyed);
+    if (unit[MAP_UNIT_NEXT_CARRIED]) RemoveMapUnit(unit[MAP_UNIT_NEXT_CARRIED], destroyed);
+    ClearPlayerSelectedUnit(unit, 1);
+    unit[MAP_UNIT_KIND] &= ~MAP_UNIT_KIND_MASK;
 }
 

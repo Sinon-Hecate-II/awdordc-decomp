@@ -392,13 +392,13 @@ if(p)M2C_FIELD(p,s32 *,0x5c)=arg0;
 }
 
 void func_020ae20c(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     s32 func_020adfd0();
     extern M2C_UNK data_02127bc8;
     if (func_020adfd0() == 0) {
         return;
     }
-    func_01ffa9e4(&data_02127bc8);
+    DeleteSpriteObjectsOfClass(&data_02127bc8);
 }
 
 /* Look up a UI colour id in the game's fixed 15-bit BGR555 theme palette:

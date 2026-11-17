@@ -299,7 +299,7 @@ return func_0202d514(arg0,arg1,arg2,arg3,p,arg4);
 
 s32 func_0202d3e8(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 *func_0202c0a0(s32);
-    s32 func_0202d610(M2C_UNK, s32, s32, s32, void *, s32, s32, s32);
+    s32 Sound_PlaySequenceEntry(M2C_UNK, s32, s32, s32, void *, s32, s32, s32);
     void *func_0202ee80(s32, s32);
     s32 *temp_r0_3;
     s32 temp_r0_2;
@@ -317,13 +317,13 @@ s32 func_0202d3e8(M2C_UNK arg0, s32 arg1, s32 arg2) {
     if (temp_r0 == NULL) {
         return 0;
     }
-    return func_0202d610(arg0, M2C_FIELD(temp_r0, u8 *, 9), M2C_FIELD(temp_r0, u16 *, 4), M2C_FIELD(temp_r0, u8 *, 8), temp_r0, temp_r0_2, arg1, arg2);
+    return Sound_PlaySequenceEntry(arg0, M2C_FIELD(temp_r0, u8 *, 9), M2C_FIELD(temp_r0, u16 *, 4), M2C_FIELD(temp_r0, u8 *, 8), temp_r0, temp_r0_2, arg1, arg2);
 }
 
 s32 func_0202d468(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
 s32 *func_0202c0a0(s32);
 void *func_0202ee80(s32,s32);
-s32 func_0202d610(s32,s32,s32,s32,void *,s32,s32,s32);
+s32 Sound_PlaySequenceEntry(s32,s32,s32,s32,void *,s32,s32,s32);
 s32 *q; s32 h; void *p;
 q=func_0202c0a0(arg4);
 if(!q)return 0;
@@ -334,18 +334,18 @@ if(!p)return 0;
 if(arg3<0)arg3=M2C_FIELD(p,u8 *,8);
 if(arg2<0)arg2=M2C_FIELD(p,u16 *,4);
 if(arg1<0)arg1=M2C_FIELD(p,u8 *,9);
-return func_0202d610(arg0,arg1,arg2,arg3,p,h,arg4,arg5);
+return Sound_PlaySequenceEntry(arg0,arg1,arg2,arg3,p,h,arg4,arg5);
 }
 
 s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) {
-    void *func_0202b018(void *, s32, s32);
-    void *func_0202b158(s32, void *);
+    void *Sound_AcquireVoice(void *, s32, s32);
+    void *Sound_LinkVoiceChannel(s32, void *);
     s32 LoadSoundBank(void *, s32, s32, s32, s32 *);
     s32 LoadSoundSequence(s32, s32, s32, s32, s32 *);
-    void func_0202b0b0(void *);
-    void func_0202b0bc(void *, void *, s32);
-    void func_0202acf0(void *, s8);
-    void func_0202ad30(void *, s32);
+    void Sound_FreeVoice(void *);
+    void Sound_StartSequence(void *, void *, s32);
+    void Sound_SetVoiceVolume(void *, s8);
+    void Sound_SetChannelPan(void *, s32);
     void func_0202adb0(void **, s16);
 
     void *handle;
@@ -353,36 +353,65 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     s32 slot8;
     s32 slot4;
 
-    handle = func_0202b018((void *)arg0, arg1, arg3);
+    handle = Sound_AcquireVoice((void *)arg0, arg1, arg3);
     if (handle == 0) {
         return 0;
     }
-    p = func_0202b158(arg1, handle);
+    p = Sound_LinkVoiceChannel(arg1, handle);
     slot4 = 0;
     slot8 = 0;
     if (LoadSoundBank((void *)arg2, 6, (s32)p, 0, &slot4) != 0) {
-        func_0202b0b0(handle);
+        Sound_FreeVoice(handle);
         return 0;
     }
     if (LoadSoundSequence(arg5, 1, (s32)p, 0, &slot8) != 0) {
-        func_0202b0b0(handle);
+        Sound_FreeVoice(handle);
         return 0;
     }
-    func_0202b0bc(handle, (void *)((u8 *)slot8 + *(s32 *)((u8 *)slot8 + 0x18)), 0);
-    func_0202acf0((void *)arg0, (s8)*((u8 *)arg4 + 6));
-    func_0202ad30((void *)arg0, (s32)*((u8 *)arg4 + 7));
+    Sound_StartSequence(handle, (void *)((u8 *)slot8 + *(s32 *)((u8 *)slot8 + 0x18)), 0);
+    Sound_SetVoiceVolume((void *)arg0, (s8)*((u8 *)arg4 + 6));
+    Sound_SetChannelPan((void *)arg0, (s32)*((u8 *)arg4 + 7));
     func_0202adb0((void **)arg0, (s16)arg5);
     return 1;
 }
 
-s32 func_0202d610(s32 a,s32 b,s32 c,s32 d,void *e,s32 f,s32 g,s32 h){
-void *func_0202b018(void*,s32,s32);void *func_0202b158(s32,void*);s32 LoadSoundBank();void func_0202b0b0();void func_0202b0bc();void func_0202add4();
-void func_0202acf0(void*,s8);void func_0202ad30(void*,s32);register u8 *entry=e;s32 local; void *v=func_0202b018((void*)a,b,d);void *t;
-if(!v)return 0;
-t=func_0202b158(b,v);
-if(LoadSoundBank(c,6,t,0,&local)){func_0202b0b0(v);return 0;}
-func_0202b0bc(v,f+M2C_FIELD(f,s32*,0x18),M2C_FIELD(entry,s32*,0),local);
-((void(*)(void*,s32))func_0202acf0)((void*)a,M2C_FIELD(entry,u8*,6));func_0202ad30((void*)a,M2C_FIELD(entry,u8*,7));func_0202add4(a,g,h);return 1;
+/* Plays entry `entry` of the loaded sound archive `archive` on `player`: takes a
+ * voice for player channel `channel` at `priority` (a priority below the voice's
+ * own is refused), loads sound bank `bankId` into it, starts the voice on the
+ * archive's sequence data, applies the entry's volume and pan, and records the
+ * sound (archive id + entry index) on the player so its restart callback can
+ * find it again.  Returns 1, or 0 when no voice or no bank could be taken. */
+s32 Sound_PlaySequenceEntry(s32 player, s32 channel, s32 bankId, s32 priority,
+                            void *entry, s32 archive, s32 archiveId, s32 entryIndex) {
+    void *Sound_AcquireVoice(void*,s32,s32);
+    void *Sound_LinkVoiceChannel(s32,void*);
+    s32 LoadSoundBank();
+    void Sound_FreeVoice();
+    void Sound_StartSequence();
+    void Sound_SetSoundSource();
+    void Sound_SetVoiceVolume(void*,s8);
+    void Sound_SetChannelPan(void*,s32);
+
+    register SoundArchiveEntry *e = (SoundArchiveEntry *)entry;
+    s32 bank;
+    void *voice;
+    void *list;
+
+    voice = Sound_AcquireVoice((void *)player, channel, priority);
+    if (!voice) return 0;
+    /* Link the voice into the channel's list, then load the entry's bank. */
+    list = Sound_LinkVoiceChannel(channel, voice);
+    if (LoadSoundBank(bankId, 6, list, 0, &bank)) {
+        Sound_FreeVoice(voice);
+        return 0;
+    }
+    /* Start the voice on the archive's sequence data, then apply the entry's
+       volume and pan and record the sound on the player. */
+    Sound_StartSequence(voice, archive + M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_OFFSET), e->soundId, bank);
+    ((void (*)(void *, s32))Sound_SetVoiceVolume)((void *)player, e->volume);
+    Sound_SetChannelPan((void *)player, e->pan);
+    Sound_SetSoundSource(player, archiveId, entryIndex);
+    return 1;
 }
 
 void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {

@@ -121,7 +121,7 @@ if(((u32)(unit[0]<<26)>>26)==5)func_ov000_021854e0(unit[1],unit[2],5,2);
    and cells whose range layer is already at most this cell's cost, then store
    the cost and enqueue (x, y, dir) as the next search node while the queue has
    room (349 nodes). */
-void func_ov000_02185a74(u32 dir) {
+void ExpandAiRangeNode(u32 dir) {
 extern u8 *gMoveSearchCurrent; extern u8 *gMoveSearchState; extern s32 gMoveSearchCount; extern u8 *gMoveSearchWrite;
 u8 *state; void *map; s32 width,x,y,height,cost,oldCost;
 gMoveSearchState[36]=gMoveSearchCurrent[0];
@@ -145,47 +145,53 @@ gMoveSearchWrite[2]=dir;
 gMoveSearchWrite+=4;gMoveSearchCount++;
 }
 
-void func_ov000_02185c20(s32 x,s32 y) {
+/* Flood-fills the AI range layer with the movement cost from tile (x,y) to
+ * every tile of the map: the start tile takes its grid value and, when that
+ * holds a unit, its cheapest neighbour's value plus one; the search then
+ * expands every node's neighbours (never straight back the way it came) while
+ * they would be reached more cheaply.  The start tile ends at -1, so a unit
+ * never scores the tile it stands on. */
+void FloodFillRangeFromTile(s32 x,s32 y) {
 extern u8 *gMoveSearchState,*gMoveSearchWrite,*gMoveSearchCurrent;
 extern s32 gMoveSearchCount;extern s8 gMoveSearchBuffer;
 void MI_CpuFill8(void *,s32,s32);
 s32 left,right,xx,yy,bottom,top,dist,cost;
-MI_CpuFill8(gAiRangeLayer,255,1288);
+MI_CpuFill8(gAiRangeLayer,255,MAP_CELL_LAYER_BYTES);
 gMoveSearchCount=0;gMoveSearchBuffer=0;
-gMoveSearchWrite=gMoveSearchState+0x28;gMoveSearchCurrent=gMoveSearchState+0x5a0;
-gMoveSearchWrite[0]=x;left=0;gMoveSearchWrite[1]=y;gMoveSearchWrite[2]=1;
-gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x];
-if(gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>110){
+gMoveSearchWrite=gMoveSearchState+MOVE_SEARCH_QUEUE_A;gMoveSearchCurrent=gMoveSearchState+MOVE_SEARCH_QUEUE_B;
+gMoveSearchWrite[0]=x;left=0;gMoveSearchWrite[1]=y;gMoveSearchWrite[2]=MOVE_SEARCH_DIR_START;
+gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x];
+if(gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]>MAP_GRID_NO_UNIT_MAX){
 if(x-1>=0)left=x-1;
 yy = y-1 < 0 ? 0 : y-1;
-right = M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1; right = x+1 >= right ? right : x+1;
-bottom = M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1; bottom = y+1 >= bottom ? bottom : y+1;
+right = M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)-1; right = x+1 >= right ? right : x+1;
+bottom = M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)-1; bottom = y+1 >= bottom ? bottom : y+1;
 for(;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
 dist=0;if(x-xx>0)dist+=x-xx;else dist+=xx-x;
 if(y-yy>0)dist+=y-yy;else dist+=yy-y;
 if(dist>=1 && dist<=1){
-if(M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,0x52e8)[xx]>=0){if(gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,0x52e8)[xx]+1)gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,0x52e8)[xx]+1;}
+if(M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,MAP_GRID)[xx]>=0){if(gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]>M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,MAP_GRID)[xx]+1)gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]=M2C_FIELD((u8 *)*gCurrentMap+(u32)yy*4,s8 **,MAP_GRID)[xx]+1;}
 }}
 }
 gMoveSearchWrite+=4;gMoveSearchWrite[2]=0;
 for(;;){
-if(gMoveSearchBuffer==0){gMoveSearchWrite=gMoveSearchState+0x5a0;gMoveSearchCurrent=gMoveSearchState+0x28;gMoveSearchBuffer=1;gMoveSearchCount=0;}
-else {gMoveSearchWrite=gMoveSearchState+0x28;gMoveSearchCurrent=gMoveSearchState+0x5a0;gMoveSearchBuffer=0;gMoveSearchCount=0;}
+if(gMoveSearchBuffer==0){gMoveSearchWrite=gMoveSearchState+MOVE_SEARCH_QUEUE_B;gMoveSearchCurrent=gMoveSearchState+MOVE_SEARCH_QUEUE_A;gMoveSearchBuffer=1;gMoveSearchCount=0;}
+else {gMoveSearchWrite=gMoveSearchState+MOVE_SEARCH_QUEUE_A;gMoveSearchCurrent=gMoveSearchState+MOVE_SEARCH_QUEUE_B;gMoveSearchBuffer=0;gMoveSearchCount=0;}
 if(!gMoveSearchCurrent[2])break;
 while(gMoveSearchCurrent[2]){
 switch(gMoveSearchCurrent[2]){
-case 1:func_ov000_02185a74(2);func_ov000_02185a74(3);func_ov000_02185a74(4);func_ov000_02185a74(5);break;
-case 2:func_ov000_02185a74(2);func_ov000_02185a74(4);func_ov000_02185a74(5);break;
-case 3:func_ov000_02185a74(3);func_ov000_02185a74(4);func_ov000_02185a74(5);break;
-case 4:func_ov000_02185a74(2);func_ov000_02185a74(3);func_ov000_02185a74(4);break;
-case 5:func_ov000_02185a74(2);func_ov000_02185a74(3);func_ov000_02185a74(5);break;
+case MOVE_SEARCH_DIR_START:ExpandAiRangeNode(MOVE_SEARCH_DIR_UP);ExpandAiRangeNode(MOVE_SEARCH_DIR_DOWN);ExpandAiRangeNode(MOVE_SEARCH_DIR_LEFT);ExpandAiRangeNode(MOVE_SEARCH_DIR_RIGHT);break;
+case MOVE_SEARCH_DIR_UP:ExpandAiRangeNode(MOVE_SEARCH_DIR_UP);ExpandAiRangeNode(MOVE_SEARCH_DIR_LEFT);ExpandAiRangeNode(MOVE_SEARCH_DIR_RIGHT);break;
+case MOVE_SEARCH_DIR_DOWN:ExpandAiRangeNode(MOVE_SEARCH_DIR_DOWN);ExpandAiRangeNode(MOVE_SEARCH_DIR_LEFT);ExpandAiRangeNode(MOVE_SEARCH_DIR_RIGHT);break;
+case MOVE_SEARCH_DIR_LEFT:ExpandAiRangeNode(MOVE_SEARCH_DIR_UP);ExpandAiRangeNode(MOVE_SEARCH_DIR_DOWN);ExpandAiRangeNode(MOVE_SEARCH_DIR_LEFT);break;
+case MOVE_SEARCH_DIR_RIGHT:ExpandAiRangeNode(MOVE_SEARCH_DIR_UP);ExpandAiRangeNode(MOVE_SEARCH_DIR_DOWN);ExpandAiRangeNode(MOVE_SEARCH_DIR_RIGHT);break;
 }
 gMoveSearchWrite[2]=0;gMoveSearchCurrent+=4;
 }
 }
-gMoveSearchState[36]=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
-gMoveSearchState[37]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
-gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=-1;
+gMoveSearchState[MOVE_SEARCH_WIDTH]=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);
+gMoveSearchState[MOVE_SEARCH_HEIGHT]=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);
+gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]=-1;
 }
 
 s32 IsWithinAttackRange(u8 *a,u8 *b,s32 c){
@@ -224,7 +230,7 @@ void MarkPlayerThreatsToUnit(u8 player, s32 target) {
  FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,value,12);
  MarkAdjacentCells(0x6f);
  if(M2C_FIELD(((s8 **)((u8 *)*gCurrentMap+MAP_GRID))[q[2]],s8 *,q[1])<0)continue;
- func_ov000_02185c20(q[1],q[2]);
+ FloodFillRangeFromTile(q[1],q[2]);
  for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
  for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
  value=(s8)gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)];

@@ -536,9 +536,9 @@ void func_ov004_02211ff4(void) {
 }
 
 void func_ov004_02212048(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_ov004_02218c20;
-    func_01ffa9e4(&data_ov004_02218c20);
+    DeleteSpriteObjectsOfClass(&data_ov004_02218c20);
 }
 
 s32 func_ov004_0221205c(void) {

@@ -1,5 +1,6 @@
 /* 37 functions from 0x020C8CBC to 0x020C9B9C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline u64 Pack_020c91ac(u64 x, u64 y, u64 z, u32 w) {
     return (x<<20) | (y<<36) | (z<<4) | (w&15);
 }
@@ -36,26 +37,32 @@ void func_020c8d50(M2C_UNK arg0) {
     func_020c8624(arg0, temp_r4);
 }
 
-s32 func_020c8d7c(s32 a){
-s32 GetMapRecordBuffer();void *func_020c7a08();s32 func_020c8018(s32);
-s32 func_020be324(u8,s32);s32 StringHasTerminator(void *,s32);
-extern u8 data_02164d64[];
-s32 n=GetMapRecordBuffer(),v,b;u32 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
-if(a>=225) b=(a<425);c=(b==0)?0:1;if(!c)return 0;
-v=func_020c8018(a);if(!func_020be324((u8)(v+9),n))return 0;
-if(!StringHasTerminator(p+6,33))return 0;
-MI_CpuCopy32(p,data_02164d64+v*84,84,M2C_FIELD(p,u32 *,56)&=0xfffff001);
+/* Refresh one campaign map's cached header from its save record: accept only
+ * campaign map ids, load the newest record of that map's save type, require a
+ * terminated name, then cache the record's 0x54-byte header.  Returns 0 when
+ * any step fails. */
+s32 LoadCampaignMapHeader(s32 mapId) {
+s32 GetMapRecordTerrain();MapRecordHeader *GetMapRecordHeader();s32 GetCampaignMapIndex(s32);
+s32 LoadNewestSaveRecord(u8,s32);s32 StringHasTerminator(void *,s32);
+extern u8 gCampaignMapHeaders[];
+s32 recordBuffer=GetMapRecordBuffer(),index,inRange;u32 valid;MapRecordHeader *record;
+GetMapRecordTerrain();record=GetMapRecordHeader();inRange=0;
+if(mapId>=MAP_ID_CAMPAIGN_FIRST) inRange=(mapId<MAP_ID_CAMPAIGN_END);
+valid=(inRange==0)?0:1;if(!valid)return 0;
+index=GetCampaignMapIndex(mapId);if(!LoadNewestSaveRecord((u8)(index+SAVE_TYPE_CAMPAIGN_MAP),recordBuffer))return 0;
+if(!StringHasTerminator(record->name,0x21))return 0;
+MI_CpuCopy32(record,(MapRecordHeader *)gCampaignMapHeaders+index,sizeof(MapRecordHeader),record->settings.rules&=~MAP_SETTINGS_MAP_ID);
 return 1;
 }
 
 void func_020c8e40(void) {
-    M2C_UNK func_020c8d7c(s32);
+    M2C_UNK LoadCampaignMapHeader(s32);
     s32 var_r4;
 
     func_020c8eec();
     var_r4 = 0;
     do {
-        func_020c8d7c(var_r4 + 0xE1);
+        LoadCampaignMapHeader(var_r4 + 0xE1);
         var_r4 += 1;
     } while (var_r4 < 0x32);
 }
@@ -74,7 +81,7 @@ void func_020c8e78(void *arg0) {
         return;
     }
     do {
-        func_020c8d7c(var_r4 + 0xE1);
+        LoadCampaignMapHeader(var_r4 + 0xE1);
         var_r4 += 1;
     } while (var_r4 < 0x32);
 }
@@ -83,7 +90,7 @@ void func_020c8ea0(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     s32 temp_r0;
 
-    func_020c8d7c(M2C_FIELD(arg0, s32 *, 0x5C) + 0xE1);
+    LoadCampaignMapHeader(M2C_FIELD(arg0, s32 *, 0x5C) + 0xE1);
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x5C) + 1;
     M2C_FIELD(arg0, s32 *, 0x5C) = temp_r0;
     if (temp_r0 != 0x32) {
@@ -94,7 +101,7 @@ void func_020c8ea0(void *arg0) {
 
 #pragma optimization_level 2
 void func_020c8ed4(M2C_UNK arg0) { M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; func_01ffa3dc(&data_0212b07c,arg0); }
-s32 func_020c8eec(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 data_02164d64[]; return MI_CpuFill32(0,data_02164d64,0x41a0); }
+s32 func_020c8eec(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 gCampaignMapHeaders[]; return MI_CpuFill32(0,gCampaignMapHeaders,0x41a0); }
 
 /* Decodes a game text string into the font's glyph codes: ordinary characters go
  * through the shared text decoder, while the 0x1F escape supplies a raw glyph code

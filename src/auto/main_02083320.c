@@ -197,11 +197,11 @@ else x+=gGlyphAdvance[M2C_FIELD(p,s8 *,0x34)]-2;
 }}
 
 void func_020842b4(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02101ff8;
     extern M2C_UNK data_02102040;
-    func_01ffa9e4(&data_02101ff8);
-    func_01ffa9e4(&data_02102040);
+    DeleteSpriteObjectsOfClass(&data_02101ff8);
+    DeleteSpriteObjectsOfClass(&data_02102040);
 }
 
 void func_020842d4(void) {

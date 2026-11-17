@@ -1,11 +1,15 @@
 /* 29 functions from 0x020AA93C to 0x020AB884 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_grid.h"
 #include "unit_sprite.h"
-static inline u32 aaeb0State(void *p) {
-    u32 q;
-    q = M2C_FIELD(p, u32 *, 0);
-    return (q != 0) ? M2C_FIELD((void *) q, u16 *, 8) : 0xFFFFFFFF;
+
+/* Tile id of the sprite cell a cell list points at, -1 when it points at none. */
+static inline u32 GetSpriteCellTile(void *cells) {
+    u32 cell;
+    cell = M2C_FIELD(cells, u32 *, SPRITE_CELL_LIST_CURRENT);
+    return (cell != 0) ? M2C_FIELD((void *) cell, u16 *, SPRITE_CELL_TILE) : 0xFFFFFFFF;
 }
+
 static inline void *allocAAB(void) {
 void *MemAlloc(s32); s32 HeapAllocBlock(s32); s32 MI_CpuFill8(s32,s32,s32);
     void *temp_r0;
@@ -49,8 +53,6 @@ extern void *data_027e01d8;
 extern void *gCur3DSpriteEngine;
 typedef struct { u32 x:9; u32 y:9; u32 rest:14; } UnkAAFields;
 typedef struct { u8 kind:7; u8 hidden:1; u8 style:4; u8 a:1; u8 b:1; u8 c:1; u8 d:1; } FlagsAAB;
-typedef struct { u8 value:4; } E0194Bits;
-typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 
 #pragma opt_dead_stores off
 /* Return the UnitSpriteDef record for a unit kind.  Kinds that share a sprite
@@ -292,29 +294,33 @@ s32 func_020aae94(void *arg0) {
 }
 
 #pragma opt_common_subs off
-void UpdateUnitSpriteFrame(void *arg0) {
-    u32 nibble;
-    s8 v5a;
-    s32 test;
-    void *p;
+/* Keeps a unit sprite's displayed frame in step with its base frame: while the
+ * sprite's cell is the one the touch last hit (or the list's current cell), it
+ * shows the pressed frame, base + 1; otherwise it falls back to the base frame
+ * once the press timer has run out.  Ticks the timer down. */
+void UpdateUnitSpriteFrame(void *sprite) {
+    u32 baseFrame;
+    s8 timer;
+    s32 mismatch;
+    void *cells;
 
-    v5a = M2C_FIELD(arg0, s8 *, 0x5A);
-    if (v5a < 0) {
+    timer = M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER);
+    if (timer < 0) {
         return;
     }
-    nibble = M2C_FIELD(arg0, E0194Bits *, 0x59).value;
-    if (nibble + 2 != (u16) ((M2C_FIELD(arg0, u32 *, 0x40) << 6) >> 24)) test = 1; else test = 0;
-    if (test & 255) {
-        p = M2C_FIELD(arg0, void **, 0x64);
-        if (M2C_FIELD(p, s8 *, 0xC) == 1 || aaeb0State(p) == 1) {
-            M2C_FIELD(arg0, E0B04Bits *, 0x40).value = (u16) (nibble + 1);
-        } else if (v5a == 0) {
-            M2C_FIELD(arg0, E0B04Bits *, 0x40).value = (u16) nibble;
+    baseFrame = M2C_FIELD(sprite, SpriteBaseBits *, MENU_SPRITE_BASE).base;
+    if (baseFrame + 2 != (u16) ((M2C_FIELD(sprite, u32 *, MENU_SPRITE_FRAME) << 6) >> 24)) mismatch = 1; else mismatch = 0;
+    if (mismatch & 255) {
+        cells = M2C_FIELD(sprite, void **, MENU_SPRITE_OWNER);
+        if (M2C_FIELD(cells, s8 *, SPRITE_CELL_LIST_HIT_ID) == 1 || GetSpriteCellTile(cells) == 1) {
+            M2C_FIELD(sprite, SpriteFrameBits *, MENU_SPRITE_FRAME).frame = (u16) (baseFrame + 1);
+        } else if (timer == 0) {
+            M2C_FIELD(sprite, SpriteFrameBits *, MENU_SPRITE_FRAME).frame = (u16) baseFrame;
         }
     }
-    v5a = M2C_FIELD(arg0, s8 *, 0x5A);
-    if (v5a > 0) {
-        M2C_FIELD(arg0, s8 *, 0x5A) = (s8) (v5a - 1);
+    timer = M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER);
+    if (timer > 0) {
+        M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) = (s8) (timer - 1);
     }
 }
 M2C_UNK *func_020aaf74(void) {
@@ -428,9 +434,9 @@ void *func_020ab1c4(s32 arg0) {
 }
 
 void func_020ab200(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02126b94;
-    M2C_UNK (*fp)(M2C_UNK *) = (M2C_UNK (*)(M2C_UNK *))func_01ffa9e4;
+    M2C_UNK (*fp)(M2C_UNK *) = (M2C_UNK (*)(M2C_UNK *))DeleteSpriteObjectsOfClass;
     M2C_UNK *p = &data_02126b94;
     fp(p);
 }

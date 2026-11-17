@@ -20,7 +20,7 @@ case 5:code=6;detail=code-26;break;
 switch(GetNetSessionState()){
 case NET_STATE_LOGIN:ReportNasLoginError(code,detail-0xfa00);break;
 case NET_STATE_MATCHMAKING:func_0203accc(code,detail+0xfffedef0);break;
-case NET_STATE_SESSION:func_0203dc38(code,detail+0xfffeb7e0);break;
+case NET_STATE_SESSION:ReportConnectionError(code,detail+0xfffeb7e0);break;
 default:SetNetError(code,detail+0xfffe90d0);break;
 }
 return result;
@@ -34,7 +34,7 @@ case 1:code=9;off=code-10;break;
 case 2:code=6;off=code-56;break;
 case 3:code=6;off=code-36;break;
 }
-func_0203dc38(code,off+0xfffeb010);
+ReportConnectionError(code,off+0xfffeb010);
 return a;
 }
 
@@ -47,7 +47,7 @@ case 1:return 1;
 case 2:return 2;
 default:code=6;break;
 }
-if(code)func_0203dc38(code,0xfffeb007);
+if(code)ReportConnectionError(code,0xfffeb007);
 return a;
 }
 #pragma opt_propagation reset
@@ -64,7 +64,7 @@ case 4:code=6;off=code-36;break;
 case 6:code=6;off=code-76;break;
 case 7:code=6;off=code-86;break;
 }
-if(code)func_0203dc38(code,off+0xfffeac28);
+if(code)ReportConnectionError(code,off+0xfffeac28);
 return ret;
 }
 

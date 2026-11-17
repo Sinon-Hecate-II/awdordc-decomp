@@ -33,7 +33,7 @@ s32 var_r5;
 void *temp_r0;
 void *temp_r0_2;
 var_r5=arg0;
-if(var_r5==0) var_r5=func_020c4b60();
+if(var_r5==0) var_r5=GetBattleSaveBlock();
 if(arg1!=0) {
 temp_r0=CreateSpriteObject(&data_0212a65c,arg1);
 if(temp_r0==NULL) return;
@@ -213,7 +213,7 @@ s32 var_r5;
 void *temp_r0;
 void *temp_r0_2;
 var_r5=arg0;
-if(var_r5==0) var_r5=func_020c4b60();
+if(var_r5==0) var_r5=GetBattleSaveBlock();
 if(arg1!=0) {
 temp_r0=CreateSpriteObject(&data_0212a594,arg1);
 if(temp_r0==NULL) return;
@@ -234,11 +234,11 @@ void func_020c52d8(M2C_UNK arg0) {
 }
 
 s32 func_020c52ec(s32 arg0) {
-    s32 func_020c4b60();
+    s32 GetBattleSaveBlock();
     s32 temp_r0;
     s32 var_r4;
 
-    temp_r0 = func_020c4b60();
+    temp_r0 = GetBattleSaveBlock();
     if (temp_r0 == 0) {
         return 0;
     }
@@ -251,7 +251,7 @@ s32 func_020c52ec(s32 arg0) {
 
 #pragma optimize_for_size off
 s32 func_020c5328(s32 arg0) {
-s32 p=func_020c4b60();
+s32 p=GetBattleSaveBlock();
 if(p==0) return 0;
 if(!func_02032380(arg0*12+(p+4))) { p=0; return p; }
 return arg0*40+(p+0x2d4);
@@ -263,7 +263,7 @@ s32 func_020c536c(s32 arg0, M2C_UNK arg1) {
     s32 temp_r4;
     s32 temp_r5;
 
-    temp_r0 = func_020c4b60();
+    temp_r0 = GetBattleSaveBlock();
     if (temp_r0 == 0) {
         return 0;
     }
@@ -274,7 +274,7 @@ s32 func_020c536c(s32 arg0, M2C_UNK arg1) {
 }
 
 s32 func_020c53ac(s32 arg0) {
-s32 p=func_020c4b60();
+s32 p=GetBattleSaveBlock();
 if(!p)return 0;
 p+=0x2d4;
 if(M2C_FIELD(p+arg0*0x28,u16 *,0)==0)return 0;
@@ -358,7 +358,7 @@ s32 func_020c54b8(void) {
 s32 func_020c54e8(s32 arg0) {
 s32 func_02032710(s32,s32);
 s32 p, result=0, i, id;
-p=func_020c4b60();
+p=GetBattleSaveBlock();
 if(p==0)return result;
 i=result;
 id=func_020c477c(arg0);
@@ -374,11 +374,11 @@ return result;
 s32 func_020c5574(s32 arg0, M2C_UNK arg1) {
 M2C_UNK FillU16(M2C_UNK,s32,M2C_UNK);
 M2C_UNK MI_CpuCopy8(M2C_UNK,s32,u32);
-s32 func_020c54b8(void);s32 func_020c54e8(M2C_UNK);s32 func_020c4b60(void);
+s32 func_020c54b8(void);s32 func_020c54e8(M2C_UNK);s32 GetBattleSaveBlock(void);
 void *p;
 if(func_020c54b8()==0)return -1;
 if(func_020c54e8(arg1)!=0)return -1;
-p=(void*)func_020c4b60();if(!p)return -1;
+p=(void*)GetBattleSaveBlock();if(!p)return -1;
 MI_CpuCopy8(arg1,p+4+arg0*12,12);
 { s32 offset=arg0*0x28;FillU16(0,p+0x2d4+offset,0x1a);
 {void *q=p+offset;
@@ -410,7 +410,7 @@ s32 func_020c5664(s32 arg0) {
 s32 base,p,off,result;
 if(!func_020c54b8()) return 0;
 result=0;
-base=func_020c4b60();
+base=GetBattleSaveBlock();
 if(!base)return result;
 p=func_020c52ec(arg0);
 if(p && func_02032380(p)) {
@@ -440,7 +440,7 @@ s32 func_020c5708(s32 arg0) {
     if (arg0 < 0) {
         return -1;
     }
-    temp_r0 = func_020c4b60();
+    temp_r0 = GetBattleSaveBlock();
     if (temp_r0 == 0) {
         return -1;
     }

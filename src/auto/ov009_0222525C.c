@@ -3,15 +3,15 @@
 #include "ov009_link.h"
 
 void func_ov009_0222525c(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
     s32 func_ov009_02223ce4();
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022264e0;
     extern M2C_UNK data_ov009_02226638;
-    func_01ffa9e4(&gLinkActorClass);
-    func_01ffa9e4(&data_ov009_02226638);
-    func_01ffa9e4(&data_ov009_022264e0);
+    DeleteSpriteObjectsOfClass(&gLinkActorClass);
+    DeleteSpriteObjectsOfClass(&data_ov009_02226638);
+    DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
     if (func_ov009_02223ce4() != 0) {
         return;
     }
@@ -24,7 +24,7 @@ void func_ov009_0222529c(void) {
     s32 func_ov009_02224688();
     s32 func_ov009_02223b5c();
     s32 func_ov009_02223c08();
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
     extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
     s32 state = GetLinkPhase();
@@ -39,9 +39,9 @@ void func_ov009_0222529c(void) {
         return;
     }
     SetLinkPhase(3);
-    func_01ffa9e4(&gLinkActorClass);
-    func_01ffa9e4(&data_ov009_02226638);
-    func_01ffa9e4(&data_ov009_022264e0);
+    DeleteSpriteObjectsOfClass(&gLinkActorClass);
+    DeleteSpriteObjectsOfClass(&data_ov009_02226638);
+    DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
     switch (func_ov009_022241a4()) {
     case 0:
         if (func_ov009_02223b5c() != 0) return;
@@ -60,37 +60,41 @@ void func_ov009_02225348(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov009_02226440, arg0);
 }
 
-s32 func_ov009_02225360(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+/* Ends the single-card link session: flushes the packet queues, deletes the
+ * link's live sprites, drops both WFC channel event handlers and asks Wi-Fi to
+ * close the link.  Returns 1 once the close command is queued, 0 after a link
+ * error. */
+s32 EndLinkSession(void) {
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
-    M2C_UNK func_ov009_022224e0();
+    M2C_UNK ResetLinkQueues();
     M2C_UNK SignalLinkError();
-    M2C_UNK func_ov009_022244c0();
+    M2C_UNK ClearLinkResultFlags();
     s32 WFC_SetChannelHandler(s32, s32, s32);
-    s32 func_020122ac(void *);
-    void func_ov009_02223cbc(void);
+    s32 WFC_EndLink(void *);
+    void HandleLinkEndTaskEvent(void);
     extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
-    SetLinkPhase(1);
-    func_ov009_022224e0();
-    func_01ffa9e4(&gLinkActorClass);
-    func_01ffa9e4(&data_ov009_02226638);
-    func_01ffa9e4(&data_ov009_022264e0);
+    SetLinkPhase(LINK_PHASE_READY);
+    ResetLinkQueues();
+    DeleteSpriteObjectsOfClass(&gLinkActorClass);
+    DeleteSpriteObjectsOfClass(&data_ov009_02226638);
+    DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
     if (WFC_SetChannelHandler(0xC, 0, 0) != 0) {
         SignalLinkError();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return 0;
     }
     if (WFC_SetChannelHandler(4, 0, 0) != 0) {
         SignalLinkError();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return 0;
     }
-    if (func_020122ac(&func_ov009_02223cbc) != 2) {
+    if (WFC_EndLink(&HandleLinkEndTaskEvent) != 2) {
         SignalLinkError();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return 0;
     }
-    func_ov009_022244c0();
+    ClearLinkResultFlags();
     return 1;
 }
 

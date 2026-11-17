@@ -68,7 +68,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_020ad3f0(void);
     M2C_UNK func_ov010_0222a808(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228320(void);
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     if (func_020abe90(M2C_FIELD(arg3, u8 *, 0x35)) == 1) {
         return;
@@ -85,7 +85,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     case 0:
     case 1:
     case 2:
-        func_ov010_022282d4(6);
+        Ov010Online_ClearStepFlag(6);
         break;
     case 3:
     case 4:
@@ -511,11 +511,11 @@ void func_ov010_0222b92c(void *arg0) {
 void func_ov010_0222b998(void) {
     M2C_UNK func_020852a8();
     M2C_UNK DisableMapConfirm();
-    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK func_ov010_02228320();
     DisableMapConfirm();
     func_ov010_02228320();
-    func_ov010_022282d4(6);
+    Ov010Online_ClearStepFlag(6);
     func_020852a8();
 }
 

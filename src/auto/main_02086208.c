@@ -51,9 +51,9 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_02086330(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gVoiceChatWidgetClass;
-    func_01ffa9e4(&gVoiceChatWidgetClass);
+    DeleteSpriteObjectsOfClass(&gVoiceChatWidgetClass);
 }
 
 void func_02086344(void) {

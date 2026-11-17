@@ -285,7 +285,7 @@ void func_020be2f8(M2C_UNK arg0) {
 /* Load the newest save-directory record of type `type`: walk the save directory,
  * keep the record of that type with the largest timestamp, load it, and show the
  * load-failure message when the load reports a problem. */
-u8 func_020be324(s32 type,M2C_UNK arg1){
+u8 LoadNewestSaveRecord(s32 type,M2C_UNK arg1){
 void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);s32 LoadSaveRecord(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK GetLocalizedText(s32);M2C_UNK func_02076244();
 u8 *record,*best;s32 n,i,id; s32 isNewer;u8 result;
 record=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;

@@ -171,14 +171,14 @@ return 1;
 s32 func_ov007_0221bc18(s32 a,s32 b,s32 c,s32 d,s32 e) {
  extern s32 *gCurrentMap;
  s32 MapEditor_CanPlaceUnit(s32,s32,s32,s32,s32);
- M2C_UNK func_020a6728(s32);
+ M2C_UNK DestroyUnit(s32);
  void *CreateMapUnit(s16,s16,s16,s32);
  s32 p,r; u8 id; Unk_0221BC18 *entry;
  r=MapEditor_CanPlaceUnit(a,b,c,d,e);
  if(r!=1)return r;
  p=*gCurrentMap;
  id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
- if(id)func_020a6728(id);
+ if(id)DestroyUnit(id);
  entry=CreateMapUnit((s16)a,(s16)b,(s16)c,d);
  if(!entry)return 0;
  entry->low=(u8)e;
@@ -186,11 +186,11 @@ s32 func_ov007_0221bc18(s32 a,s32 b,s32 c,s32 d,s32 e) {
 }
 
 s32 func_ov007_0221bcc0(s32 a,s32 b) {
- extern s32 *gCurrentMap; M2C_UNK func_020a6728(s32);
+ extern s32 *gCurrentMap; M2C_UNK DestroyUnit(s32);
  s32 p=*gCurrentMap;
  u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
  if(!id)return 0;
- func_020a6728(id); return 1;
+ DestroyUnit(id); return 1;
 }
 
 u8 Map_CanUnitKindStandOnCell(s32 a,s32 b,s32 c) {

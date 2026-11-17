@@ -121,10 +121,10 @@ case 0:case 4: if(!func_ov001_02188100())func_ov001_02188b04();break;
 s32 func_ov001_02188c28(void){
 extern M2C_UNK gWhWork;
 extern M2C_UNK func_ov001_02188344;
-s32 func_020122ac(void *);
+s32 WFC_EndLink(void *);
 if(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40)!=1)SystemHalt();
 SetWhStatus(3);
-if(func_020122ac(&func_ov001_02188344)==2)return 1;
+if(WFC_EndLink(&func_ov001_02188344)==2)return 1;
 SetWhStatus(9);return 0;
 }
 

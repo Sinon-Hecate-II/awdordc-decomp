@@ -44,7 +44,7 @@ u16 func_ov009_0222429c(void) {
 #pragma scheduling off
 s32 func_ov009_022242c8(void) {
     s32 func_ov009_02224508(s32);
-    M2C_UNK func_ov009_022224e0(void);
+    M2C_UNK ResetLinkQueues(void);
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     void func_ov009_022213f0(M2C_UNK, M2C_UNK);
     void *GetLocalPlayerName(void);
@@ -89,7 +89,7 @@ s32 func_ov009_022242c8(void) {
     }
     M2C_FIELD(&gLinkState, s32 *, 0x14) = 0;
     M2C_FIELD(&gLinkState, s32 *, 0x34) = 0;
-    func_ov009_022224e0();
+    ResetLinkQueues();
 
     M2C_FIELD(&gLinkState, s32 *, 0x48) = 0;
     M2C_FIELD(&gLinkState, s32 *, 0x20) = 0;
@@ -166,7 +166,7 @@ s32 func_ov009_022242c8(void) {
     return 0;
 }
 #pragma scheduling reset
-void func_ov009_022244c0(void) {
+void ClearLinkResultFlags(void) {
     extern M2C_UNK gLinkState;
     M2C_FIELD(&gLinkState, s32 *, 0x50) = 0;
 }
@@ -307,7 +307,7 @@ s32 func_ov009_02224718(s32 arg0) {
 #pragma optimization_level 2
 s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK SetLinkPhase(M2C_UNK);
-    M2C_UNK func_ov009_022224e0(void);
+    M2C_UNK ResetLinkQueues(void);
     void *func_01ffa3dc(M2C_UNK, M2C_UNK);
     void MI_CpuFill32(s32, void *, s32);
     void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
@@ -347,7 +347,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(&gLinkState, s32 *, 0x38) = arg0;
 
     SetLinkPhase(3);
-    func_ov009_022224e0();
+    ResetLinkQueues();
 
     slotptr = (s32 *)&stk[3];
     y = M2C_FIELD(&gLinkSession, s32 *, 0x34);
@@ -456,7 +456,7 @@ void *func_ov009_0222497c(void *arg0) {
 #pragma opt_propagation off
 s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK SetLinkPhase(M2C_UNK);
-    M2C_UNK func_ov009_022224e0(void);
+    M2C_UNK ResetLinkQueues(void);
     void *func_01ffa3dc(M2C_UNK, M2C_UNK);
     void MI_CpuFill32(s32, void *, s32);
     void func_02074114(s32, s32, s32, M2C_UNK (*)(s32), s32);
@@ -491,7 +491,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(&gLinkState, s32 *, 0x38) = arg0;
 
     SetLinkPhase(3);
-    func_ov009_022224e0();
+    ResetLinkQueues();
 
     slotptr = (s32 *)&stk[3];
     y = M2C_FIELD(&gLinkSession, s32 *, 0x34);
