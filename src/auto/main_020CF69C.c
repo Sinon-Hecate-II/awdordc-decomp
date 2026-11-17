@@ -207,11 +207,11 @@ void ClampCursorToMap(void) {
 
 void func_020cfd14(void) {
     M2C_UNK func_020cf2c8();
-    M2C_UNK func_ov000_0219a9b0();
+    M2C_UNK UpdateAiCapabilityFlags();
     M2C_UNK func_020d2470();
     func_020cf2c8();
     func_020d2470();
-    func_ov000_0219a9b0();
+    UpdateAiCapabilityFlags();
 }
 
 void RefreshMapView(void) {

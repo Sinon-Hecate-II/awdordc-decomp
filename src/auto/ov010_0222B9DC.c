@@ -11,8 +11,8 @@ void func_ov010_0222b9dc(void) {
 void func_ov010_0222b9e8(void) {
     M2C_UNK func_020852e0();
     M2C_UNK EnableMapConfirm();
-    s32 func_ov010_022282b4(M2C_UNK);
-    if (func_ov010_022282b4(0) == 0) {
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
+    if (IsOnlineSessionFlagSet(0) == 0) {
         EnableMapConfirm();
     } else {
         DisableMapConfirm();
@@ -28,7 +28,7 @@ void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_ov010_0222c928;
     void *temp_r0;
 
-    if (func_ov010_022282b4(2) != 0) {
+    if (IsOnlineSessionFlagSet(2) != 0) {
         EnableMapConfirm();
         return;
     }
@@ -55,7 +55,7 @@ void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_ov010_0222c5d4;
     extern M2C_UNK data_ov010_0222c928;
     void *temp_r0;
-    if (func_ov010_022282b4(0) == 0) {
+    if (IsOnlineSessionFlagSet(0) == 0) {
         EnableMapConfirm();
         return;
     }
@@ -79,7 +79,7 @@ void func_ov010_0222bb18(M2C_UNK arg0) {
     M2C_UNK func_ov010_02229eb4(M2C_UNK);
     s32 temp_r4;
 
-    if (func_ov010_022282b4(3) == 0) {
+    if (IsOnlineSessionFlagSet(3) == 0) {
         return;
     }
     temp_r4 = GetLocalPlayerStatus();

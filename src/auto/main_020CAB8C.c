@@ -136,8 +136,8 @@ void ConfirmAttackCommand(void *option) {
     M2C_UNK func_020c75cc();
     M2C_UNK func_020c9580(u8);
     M2C_UNK func_020d468c();
-    M2C_UNK func_020a15e4();
-    u8 func_020c9440(s16, s16, s32);
+    M2C_UNK DeleteDirectionMarkerSprites();
+    u8 ResolveHeldDirection(s16, s16, s32);
     M2C_UNK SetBattleCommand(s32, u8, u8, u8);
     extern void **gCurrentMap;
     void *map;
@@ -152,10 +152,10 @@ void ConfirmAttackCommand(void *option) {
         return;
     }
     func_020d468c();
-    func_020a15e4();
+    DeleteDirectionMarkerSprites();
     map = *gCurrentMap;
-    dir0 = func_020c9440(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 0);
-    dir1 = func_020c9440(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 1);
+    dir0 = ResolveHeldDirection(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 0);
+    dir1 = ResolveHeldDirection(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 1);
     SetBattleCommand(8, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), (u8) dir0, (u8) dir1);
 }
 

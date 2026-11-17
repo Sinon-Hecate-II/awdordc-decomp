@@ -20,6 +20,7 @@
 #define SPRITE_SLOT_COUNT    85   /* slots in the gSpriteSlots pool */
 
 /* Fields of the sprite-slot manager (gSpriteSlotManager). */
+#define SPRITE_SLOT_MGR_FOCUS     0x0C /* void *slot that currently has focus, 0 when none */
 #define SPRITE_SLOT_MGR_SCREEN    0x24 /* u8 screen the active slots belong to (0 main, 1 sub, 3 either) */
 #define SPRITE_SLOT_MGR_HAS_FOCUS 0x25 /* u8 nonzero while a slot took focus */
 

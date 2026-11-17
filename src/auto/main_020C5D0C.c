@@ -230,10 +230,10 @@ s32 CanLoadUnitAtCursor(void) {
 }
 
 s32 func_020c6384(void) {
- s32 func_020c9430(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba770(void *,s32,s32);
+ s32 GetHeldDirection(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba770(void *,s32,s32);
  extern void **gCurrentMap;
  void *base;
- if(func_020c9430(0)!=0)return 2;
+ if(GetHeldDirection(0)!=0)return 2;
  if(CanLoadUnitAtCursor()==0)return 2;
  if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
  base=*gCurrentMap;
@@ -242,10 +242,10 @@ s32 func_020c6384(void) {
 }
 
 s32 func_020c6414(void) {
- s32 func_020c9430(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba780(void *,s32,s32);
+ s32 GetHeldDirection(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba780(void *,s32,s32);
  extern void **gCurrentMap;
  void *base;
- if(func_020c9430(1)!=0)return 2;
+ if(GetHeldDirection(1)!=0)return 2;
  if(CanLoadUnitAtCursor()==0)return 2;
  if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
  base=*gCurrentMap;
@@ -381,7 +381,7 @@ s32 func_020c61a4(void) {
 s32 func_020c6214(void) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5c09[], gUnitMinAttackRange[];
-    s32 func_020c9430(s32);
+    s32 GetHeldDirection(s32);
     s32 func_020a85c8(s32);
     s32 func_0209f990(void);
     s32 FillMapLayer(s32);
@@ -389,7 +389,7 @@ s32 func_020c6214(void) {
     void *base;
     s32 x, y;
 
-    if (func_020c9430(0) != 0 || func_020c9430(1) != 0) {
+    if (GetHeldDirection(0) != 0 || GetHeldDirection(1) != 0) {
         return 2;
     }
     base = *gCurrentMap;
@@ -553,21 +553,31 @@ void func_020c6a64(void) {
     func_020b4d24();
 }
 
-void func_020c6a74(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_020a15e4();
- s32 func_020c9430(s32); s32 func_020c9440(s32,s32,s32);
- M2C_UNK SetBattleCommand(s32,u8,s32,s32);
- extern void **gCurrentMap;
- void *base; s32 a,b;
- func_020d468c(); func_020c0784();
- if(!func_020c9430(0) && !func_020c9430(1)) {
- SetBattleCommand(2,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0); return;
- }
- func_020a15e4();
- base=*gCurrentMap;
- a=func_020c9440(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE),0);
- b=func_020c9440(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE),1);
- SetBattleCommand(8,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),(u8)a,(u8)b);
+/* Confirm the pending directional action: drop the cursor UI, and when no cursor
+ * direction is held send battle command 2; otherwise send command 8 with each
+ * held direction resolved against the cursor tile. */
+void ConfirmHeldDirectionCommand(void) {
+    M2C_UNK func_020d468c();
+    M2C_UNK func_020c0784();
+    M2C_UNK DeleteDirectionMarkerSprites();
+    s32 GetHeldDirection(s32);
+    s32 ResolveHeldDirection(s32, s32, s32);
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
+    extern void **gCurrentMap;
+    void *base;
+    s32 dir0, dir1;
+
+    func_020d468c();
+    func_020c0784();
+    if (!GetHeldDirection(0) && !GetHeldDirection(1)) {
+        SetBattleCommand(2, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
+        return;
+    }
+    DeleteDirectionMarkerSprites();
+    base = *gCurrentMap;
+    dir0 = ResolveHeldDirection(M2C_FIELD(base, s16 *, MAP_CURSOR_X), M2C_FIELD(base, s16 *, MAP_CURSOR_Y), 0);
+    dir1 = ResolveHeldDirection(M2C_FIELD(base, s16 *, MAP_CURSOR_X), M2C_FIELD(base, s16 *, MAP_CURSOR_Y), 1);
+    SetBattleCommand(8, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), (u8)dir0, (u8)dir1);
 }
 
 void func_020c6b30(void) {

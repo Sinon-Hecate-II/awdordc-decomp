@@ -153,7 +153,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
     M2C_UNK DrawGlyphString(u16 *, u32, u32, u32, u16, u16, u32);
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
-    s32 func_020c52ec(s32);
+    s32 GetBattleSlotSummary(s32);
     s32 func_020c544c(s32);
     s32 func_0203a68c(s32, s32);
     void InitOnlinePlayerRecord(void *);
@@ -191,7 +191,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
         y = 2;
         z = 0x40;
         for (i = 0; i < 60; i++) {
-            unit = func_020c52ec(i);
+            unit = GetBattleSlotSummary(i);
             if (!unit) continue;
             if (func_020c544c(unit) != 3) continue;
             if (func_0203a68c(unit, 0) != 6) continue;
@@ -335,10 +335,10 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     M2C_UNK GetLocalPlayerStatus(void);
-    s32 func_ov010_02229a38(void);
-    s32 func_ov010_02229a40(void);
-    u32 func_ov010_02229b0c(s32);
-    s32 func_ov010_022282b4(s32);
+    s32 GetLinkPlayerCount(void);
+    s32 GetConnectedPlayerCount(void);
+    u32 GetOnlinePlayerRecord(s32);
+    s32 IsOnlineSessionFlagSet(s32);
     s32 func_ov010_02229bdc(void);
     M2C_UNK DrawTimerDigits(s32, s32, u16, s32, s32);
     extern void **gCur3DSpriteEngine;
@@ -373,8 +373,8 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
     x = (*(s32 *)0x027ffc3c & 1) * 0x180 + 0x124;
     r5 = (s32)GetLocalPlayerStatus();
-    r10 = func_ov010_02229a38();
-    threshold = func_ov010_02229a40();
+    r10 = GetLinkPlayerCount();
+    threshold = GetConnectedPlayerCount();
     ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x86), 0x14, 2);
     DrawGlyphString((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, 2, x);
     StringFormat(buf, data_0212d2f4, data_0212d2f0[0], data_0212d2ec[1] + threshold, data_0212d2f0[0], data_0212d2ec[1] + r10);
@@ -386,8 +386,8 @@ M2C_UNK func_020db5e8(void *arg0) {
         r7 = 7;
         r8 = 0;
         while (r8 < r10) {
-            r5 = (s32)func_ov010_02229b0c(r8);
-            if (r5 != 0 && func_ov010_02229a40() >= 2) {
+            r5 = (s32)GetOnlinePlayerRecord(r8);
+            if (r5 != 0 && GetConnectedPlayerCount() >= 2) {
                 ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (r9 << 1)), 0x14, 2);
                 DrawGlyphString((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
             } else {
@@ -403,8 +403,8 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
 
-    if (func_ov010_02229a40() >= 2) {
-        if (func_ov010_022282b4(3) != 0) {
+    if (GetConnectedPlayerCount() >= 2) {
+        if (IsOnlineSessionFlagSet(3) != 0) {
             if (func_ov010_02229bdc() != 0) {
                 vval = (s16)M2C_FIELD(arg0, s16 *, 0x4c);
                 if (vval < 0x708) {
@@ -414,14 +414,14 @@ M2C_UNK func_020db5e8(void *arg0) {
                     r2 = r2 | 0x7000;
                     DrawTimerDigits(0xc0, 0xa4, (u16)r2, 0, vval);
                     gCur3DSpriteEngine = saved;
-                    if (func_ov010_02229a40() >= 2) {
+                    if (GetConnectedPlayerCount() >= 2) {
                         return 0;
                     }
                 }
             }
         }
     }
-    if (func_ov010_022282b4(3) != 0) {
+    if (IsOnlineSessionFlagSet(3) != 0) {
         M2C_FIELD(arg0, u16 *, 0x48) |= 0x100;
     }
     return 0;

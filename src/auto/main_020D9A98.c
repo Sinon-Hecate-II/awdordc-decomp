@@ -5,7 +5,7 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 func_ov010_022282b4(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
+void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 func_02084fc0(0);
@@ -15,7 +15,7 @@ if(!func_ov009_02224508(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(
 func_02085414();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 case 1:case 2:
-if(!func_ov010_022282b4(6)&&func_ov010_022282b4(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
+if(!IsOnlineSessionFlagSet(6)&&IsOnlineSessionFlagSet(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)CreateVoiceChatWidget(7);
 func_02085414();func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;

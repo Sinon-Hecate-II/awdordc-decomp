@@ -223,7 +223,7 @@ void func_ov010_0222817c(void) {
  * (0x5b9) and clears the session's callbacks so the session starts fresh.  The
  * status is returned (3 = not available here). */
 s32 func_ov010_02228180(void) {
-    M2C_UNK func_ov010_022282b4(M2C_UNK);
+    M2C_UNK IsOnlineSessionFlagSet(M2C_UNK);
     M2C_UNK func_ov010_022268f4(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov010_02226908(M2C_UNK, s32, s32);
     s32 func_02031d00(M2C_UNK);
@@ -238,7 +238,7 @@ s32 func_ov010_02228180(void) {
     M2C_UNK workBlock;
     s32 status;
 
-    if (func_ov010_022282b4(0) != 0) {
+    if (IsOnlineSessionFlagSet(0) != 0) {
         return 0;
     }
     statusBuffer = func_ov010_022268f4(0, 0x700, 0x20);
@@ -288,7 +288,7 @@ void func_ov010_02228298(s32 arg0) {
         (M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) | (1 << arg0));
 }
 
-s32 func_ov010_022282b4(s32 arg0) {
+s32 IsOnlineSessionFlagSet(s32 arg0) {
     extern M2C_UNK gOv010OnlineSession;
     s32 var_r2 = 1;
     if (!(M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) & (1 << arg0))) {
@@ -711,7 +711,7 @@ void func_ov010_02228bc8(void) {
 
 void func_ov010_02228bdc(M2C_UNK arg0) {
     s32 func_0204428c(u8);
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     s32 func_ov010_022282f8();
     s32 func_ov010_02229850();
     s32 GetOnlineTransportPlayerId();
@@ -722,14 +722,14 @@ void func_ov010_02228bdc(M2C_UNK arg0) {
     s32 var_r6;
     s32 c;
 
-    if (func_ov010_022282b4(3) == 0) goto end;
+    if (IsOnlineSessionFlagSet(3) == 0) goto end;
     if (func_ov010_022282f8() != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
     }
     if (var_r0 != 0) goto end;
-    if (func_ov010_022282b4(6) != 0) goto end;
+    if (IsOnlineSessionFlagSet(6) != 0) goto end;
     if (func_ov010_02229850() == 0) {
         return;
     }

@@ -112,11 +112,11 @@ M2C_FIELD(entry,u32 *,8)++;
 
 #pragma opt_common_subs off
 void func_ov010_02226d9c(void *a){
-s32 func_ov010_022282b4(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 func_0204428c(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
+s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 func_0204428c(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
 void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK func_01ffa6fc(void *);
 extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
-if(!func_ov010_022282b4(3))return;
+if(!IsOnlineSessionFlagSet(3))return;
 self=GetOnlineTransportPlayerId();
 if(!M2C_FIELD(a,void **,0x38)){
 if(!QueueCount26d9c())return;
@@ -189,7 +189,7 @@ func_01ffa6fc(arg0);
 
 #pragma opt_common_subs off
 void func_ov010_022272cc(void *arg0) {
-s32 func_ov010_022282b4(s32);
+s32 IsOnlineSessionFlagSet(s32);
 s32 GetOnlineTransportPlayerId();
 s32 func_ov010_02229bdc();
 s32 func_ov010_02229b48(s32);
@@ -216,7 +216,7 @@ Ov010Packet *hp,*hb;
 s32 keep;
 Ov010Packet hdr;
 u8 *entry;
-if(!func_ov010_022282b4(3))return;
+if(!IsOnlineSessionFlagSet(3))return;
 state=(u8 *)&gOv010OnlineSession;
 for(i=0;i<4;i++){
 entry=data_ov010_0222ef58+(u8)i*12;

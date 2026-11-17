@@ -361,7 +361,7 @@ void MarkKnownEnemyUnits(void) {
 void BeginAiTurn(void) {
     void func_020c93cc(void);
     void SetupAiUnitParameters(u16);
-    void func_ov000_0219a9b0(void);
+    void UpdateAiCapabilityFlags(void);
     void func_ov000_0219a370(void);
     void MarkAiTargetAreas(void);
     void func_ov000_0219a618(void);
@@ -393,7 +393,7 @@ void BeginAiTurn(void) {
         gAiCommandState[AI_COMMAND_STATE_PLAYER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
     }
     SetupAiUnitParameters(*(u16 *)(*(u8 **)gCurrentMap + MAP_CURRENT_PLAYER));
-    func_ov000_0219a9b0();
+    UpdateAiCapabilityFlags();
     func_ov000_0219a370();
     MarkAiTargetAreas();
     func_ov000_0219a618();

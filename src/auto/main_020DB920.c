@@ -51,27 +51,31 @@ typedef struct MenuSprite {
 static inline u8 MenuSpriteIsActive(void *p) { return ((MenuSprite *)p)->baseFrame + 2 != (u16)((MenuSprite *)p)->frame; }
 static inline void MenuSpriteSetFrame(void *p, u16 frame, s8 timer) { ((MenuSprite *)p)->frame = frame; M2C_FIELD(p, s8 *, 0x5a) = timer; }
 
+/* Draw the communication player-list panel: scroll with the sprite animation,
+   then draw the header record (our own when bit 0 of the flags is set, else the
+   selected online player's) with its player counts, followed by one name row per
+   player.  Sets bit 8/9 of the flags when the online record cannot be shown. */
 void DrawPlayerListPanel(void *arg0) {
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-extern s8 data_0212d318[],data_0212d31c[],data_0212d320[],data_0212d32c[],data_0212d330[],data_0212d334[],data_0212d340[];
+extern s8 sLocalCountUnits[],sLocalCountTens[],sLocalCountFormat[],sOnlineCountUnits[],sOnlineCountTens[],sOnlineCountFormat[],sZeroPlayerText[];
 extern s32 gUnitSlotIds[];
 M2C_UNK UpdateSpriteAnimation(s32),SetSpriteSlotScroll(s32,s32),ClearTileRect(void *,s32,s32),DrawGlyphString(void *,s32,void *,s32,s32,u16,s32),StringFormat(char *,void *,s32,...),DrawTextLine(s32,s32,s32,char *,s32,u16),InitOnlinePlayerRecord(void *);
-s32 GetSpriteAnimValue(s32),func_020c52ec(s32),func_0203a7c0(s32,u8 *,u8 *,void *,s32 *),func_ov010_022282b4(s32);
-void *GetLocalPlayerStatus(void),*func_ov010_02229b0c(s32);
-u32 func_ov010_02229a38(void),func_ov010_02229a40(void);
-void **saved;
-u8 count, other;
-s32 result;
-char text2[16],text1[16];
-u8 record[0x6c];
-s32 anim, tile, y, i, row;
+s32 GetSpriteAnimValue(s32),GetBattleSlotSummary(s32),func_0203a7c0(s32,u8 *,u8 *,void *,s32 *),IsOnlineSessionFlagSet(s32);
+void *GetLocalPlayerStatus(void),*GetOnlinePlayerRecord(s32);
+u32 GetLinkPlayerCount(void),GetConnectedPlayerCount(void);
+void **savedEngine;
+u8 playerCount, connectedCount;
+s32 fitWidth;
+char localText[16],onlineText[16];
+u8 playerInfo[0x6c];
+s32 anim, tile, rowY, rowIndex, row;
 u16 scroll;
-void *p;
+void *player;
 UpdateSpriteAnimation(M2C_FIELD(arg0,s32 *,0x68));
 anim=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68));
 SetSpriteSlotScroll(anim,0);
 scroll=-anim;
-saved=gCur3DSpriteEngine;
+savedEngine=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 M2C_FIELD(*g3DSpriteEngineMain,u16 *,0x3a)=scroll;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x42)=0;
@@ -79,38 +83,38 @@ M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=scroll;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
 tile=0x124+(*(u32 *)0x027ffc3c&1)*0x180;
 if(M2C_FIELD(arg0,u16 *,0x48)&1){
-p=GetLocalPlayerStatus();
-count=func_ov010_02229a38();
-other=func_ov010_02229a40();
+player=GetLocalPlayerStatus();
+playerCount=GetLinkPlayerCount();
+connectedCount=GetConnectedPlayerCount();
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x86,20,2);
-DrawGlyphString(p,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,3,2,tile);
-StringFormat(text2,data_0212d320,data_0212d31c[0],data_0212d318[1]+other,data_0212d31c[0],data_0212d318[1]+count);
-DrawTextLine(26,2,1,text2,0x9000,(u16)(tile+40));
+DrawGlyphString(player,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,3,2,tile);
+StringFormat(localText,sLocalCountFormat,sLocalCountTens[0],sLocalCountUnits[1]+connectedCount,sLocalCountTens[0],sLocalCountUnits[1]+playerCount);
+DrawTextLine(26,2,1,localText,0x9000,(u16)(tile+40));
 tile+=52;
 }else{
-anim=func_020c52ec(gUnitSlotIds[M2C_FIELD(arg0,s8 *,0x43)]);
-InitOnlinePlayerRecord(record);
-if(func_0203a7c0(anim,&count,&other,record,&result)!=6){M2C_FIELD(arg0,u16 *,0x48)|=0x100;return;}
-if(!func_ov010_022282b4(3)&&(!(record[0x1a]&2)||count==other)){M2C_FIELD(arg0,u16 *,0x48)|=0x200;return;}
+anim=GetBattleSlotSummary(gUnitSlotIds[M2C_FIELD(arg0,s8 *,0x43)]);
+InitOnlinePlayerRecord(playerInfo);
+if(func_0203a7c0(anim,&playerCount,&connectedCount,playerInfo,&fitWidth)!=6){M2C_FIELD(arg0,u16 *,0x48)|=0x100;return;}
+if(!IsOnlineSessionFlagSet(3)&&(!(playerInfo[0x1a]&2)||playerCount==connectedCount)){M2C_FIELD(arg0,u16 *,0x48)|=0x200;return;}
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x86,20,2);
-DrawGlyphString(record,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,3,2,tile);
-StringFormat(text1,data_0212d334,data_0212d330[0],data_0212d32c[1]+other,data_0212d330[0],data_0212d32c[1]+count);
-DrawTextLine(26,2,1,text1,0x9000,(u16)(tile+40));
+DrawGlyphString(playerInfo,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,3,2,tile);
+StringFormat(onlineText,sOnlineCountFormat,sOnlineCountTens[0],sOnlineCountUnits[1]+connectedCount,sOnlineCountTens[0],sOnlineCountUnits[1]+playerCount);
+DrawTextLine(26,2,1,onlineText,0x9000,(u16)(tile+40));
 tile+=52;
 }
-for(y=7,i=0;i<count;y+=3,i++){
-p=func_ov010_02229b0c(i);
-if(p&&func_ov010_02229a40()>=2){
-ClearTileRect((u16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+7+(y<<5),20,2);
-DrawGlyphString(p,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,7,(u16)y,tile);
+for(rowY=7,rowIndex=0;rowIndex<playerCount;rowY+=3,rowIndex++){
+player=GetOnlinePlayerRecord(rowIndex);
+if(player&&GetConnectedPlayerCount()>=2){
+ClearTileRect((u16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+7+(rowY<<5),20,2);
+DrawGlyphString(player,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,7,(u16)rowY,tile);
 tile+=40;
 }else{
-ClearTileRect((u16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+7+(y<<5),20,2);
-DrawGlyphString(data_0212d340,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,7,(u16)y,tile);
+ClearTileRect((u16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+7+(rowY<<5),20,2);
+DrawGlyphString(sZeroPlayerText,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,7,(u16)rowY,tile);
 tile+=40;
 }}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-gCur3DSpriteEngine=saved;
+gCur3DSpriteEngine=savedEngine;
 }
 
 void func_020dbd00(void) {

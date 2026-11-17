@@ -113,7 +113,7 @@ void func_ov003_021f2878(s32 entry) {
     s32 GetActiveOverlay(void);
     void func_ov009_022244ec(M2C_UNK);
     s32 func_ov009_02224508(M2C_UNK);
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     void func_ov010_02228298(M2C_UNK);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
     s32 GetOverlayEventFlags(void);
@@ -149,7 +149,7 @@ ready:
                 M2C_FIELD(entry, u8 *, 0x45) = 1;
             }
         break; case 2:
-            if (func_ov010_022282b4(6) == 0) {
+            if (IsOnlineSessionFlagSet(6) == 0) {
                 func_ov010_02228298(6);
                 func_ov010_02228314(&var_sp4, &var_sp0);
                 switch (var_sp0) {

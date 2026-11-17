@@ -101,6 +101,11 @@ enum {
  * +0x10 holds a 0xC0-byte connection-data record whose first word is the
  * player id, +4 the id the list is searched by. */
 #define WFC_PLAYER_LIST_HEADER_SIZE 0xC  /* header bytes before the node array */
+#define WFC_PLAYER_LIST_COUNT       0x00 /* s32: number of nodes ever inserted */
+#define WFC_PLAYER_LIST_HEAD        0x04 /* oldest node (list head), NULL when empty */
+#define WFC_PLAYER_LIST_TAIL        0x08 /* newest node (list tail), NULL when empty */
+#define WFC_SESSION_PLAYER_LIST     0x2270 /* void *: player-list buffer (header + nodes) */
+#define WFC_SESSION_PLAYER_LIST_CAP 0x2274 /* u32: capacity of that buffer in bytes */
 #define WFC_PLAYER_NODE_SIZE        0xD0 /* bytes per player-record node */
 #define WFC_PLAYER_NODE_IN_USE      0x00 /* u8: 1 while the slot is taken */
 #define WFC_PLAYER_NODE_INDEX       0x04 /* s32: node index, assigned on first insert */
@@ -345,6 +350,24 @@ typedef struct NasRequest {
 
 #define WFC_CODE_LEN_FRIEND    0x20 /* 32-byte friend code */
 #define WFC_CODE_LEN_FREESPOT  0x08 /* 8-byte FREESPOT code */
+
+/* The save-slot images the roster was built from: three 0x100-byte copies of the
+ * game's save slots, each holding a 0x20-byte friend code at +0x40 and a second
+ * one at +0x60 (friend id = slot, or slot + 3 for the second code). */
+#define WFC_STATE_SLOTS        0x000 /* WFC_STATE_SLOT_STRIDE bytes per slot image */
+#define WFC_STATE_SLOT_STRIDE  0x100
+#define WFC_FRIEND_CODE_IDS    6     /* friend ids: three slots, two codes each */
+
+/* The WFC host configuration (the WFC_WORK_AUX block, WFC_AUX_SIZE bytes): the
+ * default template gWfcHostConfigDefaults filled with the player codes of the save
+ * slot the selected friend code belongs to, then copied into the shared host record
+ * by func_02021a90. */
+#define WFC_HOST_CONFIG_NEW    0x0C /* s32 1 when the slot holds no player codes */
+#define WFC_HOST_CONFIG_CODE0  0x10 /* s32 first player code */
+#define WFC_HOST_CONFIG_MASK   0x14 /* s32 mask of the slot code's set-bit count */
+#define WFC_HOST_CONFIG_CODE1  0x18 /* s32 second player code */
+#define WFC_HOST_CONFIG_CODE2  0x1C /* s32 third player code */
+#define WFC_HOST_CONFIG_CODE3  0x20 /* s32 fourth player code */
 
 /* Session states the friend connection walks through (Wfc_StepSession, main_02030348):
  * after the connect step (2) it asks for the chosen friend's code (3), sends the

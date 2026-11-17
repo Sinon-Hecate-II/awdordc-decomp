@@ -144,7 +144,7 @@ void func_ov010_02226130(void) {
 }
 
 s32 func_ov010_0222613c(void) {
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     void func_ov010_02226204();
     u8 *func_020c4acc();
     s32 RegisterWebRequest(M2C_UNK *, u8 *);
@@ -159,7 +159,7 @@ s32 func_ov010_0222613c(void) {
     M2C_UNK **temp_r0_2;
 
     var_r4 = 1;
-    if (func_ov010_022282b4(5) != 0) return 1;
+    if (IsOnlineSessionFlagSet(5) != 0) return 1;
     func_ov010_02226204();
     temp_r0 = RegisterWebRequest(&data_ov010_0222c0e8, func_020c4acc() + 4);
     switch (temp_r0) {
@@ -509,13 +509,13 @@ s32 func_ov010_0222681c(void) {
 s32 func_ov010_02226888(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     s32 func_02045620();
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     extern M2C_UNK data_ov010_0222c0c0;
     s32 temp_r0;
     s32 var_r5;
 
-    if (func_ov010_022282b4(5) == 0) {
+    if (IsOnlineSessionFlagSet(5) == 0) {
         return 1;
     }
     temp_r0 = func_02045620();

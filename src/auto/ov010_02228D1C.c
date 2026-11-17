@@ -42,9 +42,9 @@ typedef struct QueueNode { struct QueueNode *next; u32 unk4; u8 kind; u8 low:4; 
 
 void func_ov010_02228d1c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern M2C_UNK data_ov010_0222c218;
-    if (func_ov010_022282b4(0) == 0) {
+    if (IsOnlineSessionFlagSet(0) == 0) {
         return;
     }
     CreateSpriteObject(&data_ov010_0222c218, arg0);
@@ -433,7 +433,7 @@ void *func_ov010_0222959c(void *arg0, u8 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 }
 
 s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
-    s32 func_ov010_022282b4(s32);
+    s32 IsOnlineSessionFlagSet(s32);
     u16 GetOnlinePeerMask();
     s32 GetOnlineTransportPlayerId();
     M2C_UNK func_ov010_022268f4(M2C_UNK, s32, s32);
@@ -445,7 +445,7 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     void *force;
     s32 ret;
 
-    if (func_ov010_022282b4(3) == 0) return 0;
+    if (IsOnlineSessionFlagSet(3) == 0) return 0;
     arg3 &= GetOnlinePeerMask();
     arg3 = (u16)(arg3 & (-1 ^ (1 << GetOnlineTransportPlayerId())));
     mode = GetOnlineTransportPlayerId();
@@ -477,7 +477,7 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
 }
 
 s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
-    s32 func_ov010_022282b4(s32);
+    s32 IsOnlineSessionFlagSet(s32);
     u16 GetOnlinePeerMask();
     s32 GetOnlineTransportPlayerId();
     M2C_UNK func_ov010_022268f4(s32, s32, s32);
@@ -489,7 +489,7 @@ s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     u16 v;
     s32 ret;
 
-    if (func_ov010_022282b4(3) == 0) return 0;
+    if (IsOnlineSessionFlagSet(3) == 0) return 0;
     arg3 = arg3 & GetOnlinePeerMask();
     v = (u16)(arg3 & (-1 ^ (1 << GetOnlineTransportPlayerId())));
     mode = GetOnlineTransportPlayerId();
@@ -519,11 +519,11 @@ s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
 }
 
 s32 func_ov010_02229850(void) {
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern u16 gOv010OnlineSession;
     s32 result;
     u16 saved;
-    if (func_ov010_022282b4(3) == 0) return 1;
+    if (IsOnlineSessionFlagSet(3) == 0) return 1;
     result = 0;
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -592,11 +592,11 @@ u16 GetOnlinePeerMask(void) {
     return (u16)func_02038f00();
 }
 
-s32 func_ov010_02229a38(void) {
+s32 GetLinkPlayerCount(void) {
     return 2;
 }
 
-s32 func_ov010_02229a40(void) {
+s32 GetConnectedPlayerCount(void) {
     s32 func_02038e4c();
     return func_02038e4c() & 0xFF;
 }
@@ -619,10 +619,10 @@ void func_ov010_02229a74(M2C_UNK arg0, M2C_UNK arg1) {
 
 s32 func_ov010_02229a94(void) {
 extern M2C_UNK gLocalPlayerStatus;
-if(func_ov010_022282b4(2)) {
+if(IsOnlineSessionFlagSet(2)) {
 if(!func_0203a850(&gLocalPlayerStatus,0x6c))return 0;
 }
-if(func_ov010_022282b4(3)) {
+if(IsOnlineSessionFlagSet(3)) {
 func_ov010_02227f88(GetOnlineTransportPlayerId(),&gLocalPlayerStatus);
 func_ov010_02229608(7,&gLocalPlayerStatus,0x6c,0xffff);
 }
@@ -634,7 +634,7 @@ M2C_UNK *GetLocalPlayerStatus(void) {
     return &gLocalPlayerStatus;
 }
 
-s32 func_ov010_02229b0c(s32 a) {
+s32 GetOnlinePlayerRecord(s32 a) {
 extern M2C_UNK data_ov010_0222f02c;
 s32 p;
 if(!(GetOnlinePeerMask()&(1<<a)))return 0;
@@ -661,10 +661,10 @@ s32 func_ov010_02229b5c(s32 arg0, M2C_UNK arg1) {
 }
 
 s32 func_ov010_02229b90(void) {
-    s32 func_ov010_02229b0c();
+    s32 GetOnlinePlayerRecord();
     s32 temp_r0;
 
-    temp_r0 = func_ov010_02229b0c();
+    temp_r0 = GetOnlinePlayerRecord();
     if (temp_r0 != 0) {
         return temp_r0 + 0x2C;
     }
@@ -672,7 +672,7 @@ s32 func_ov010_02229b90(void) {
 }
 
 s32 func_ov010_02229ba8(s32 a,s32 b,s32 c) {
-s32 p=func_ov010_02229b0c(a);
+s32 p=GetOnlinePlayerRecord(a);
 if(!p)return 0;MI_CpuCopy8(p+0x2c,b,c);return b;
 }
 
@@ -688,7 +688,7 @@ s32 func_ov010_02229bf4(void) {
 
 void func_ov010_02229c0c(void *p,s32 a) {
 extern u16 gOv010OnlineSession;
-if(!func_ov010_022282b4(3))return;
+if(!IsOnlineSessionFlagSet(3))return;
 M2C_FIELD(p,s32 *,0)=a;
 M2C_FIELD(p,s16 *,4)=1<<GetOnlineTransportPlayerId();
 M2C_FIELD(&gOv010OnlineSession,void **,0x18)=p;
@@ -698,7 +698,7 @@ func_ov010_02229608(2,M2C_FIELD(&gOv010OnlineSession,void **,0x18),8,0xffff);
 
 s32 func_ov010_02229c74(void) {
     u16 GetOnlinePeerMask();
-    s32 func_ov010_022282b4(s32);
+    s32 IsOnlineSessionFlagSet(s32);
     s32 func_ov010_022282f8();
     s32 func_ov010_02229bdc();
     extern u16 gOv010OnlineSession;
@@ -709,7 +709,7 @@ s32 func_ov010_02229c74(void) {
     var_r5 = 0;
     if (M2C_FIELD(&gOv010OnlineSession, void **, 0x18) != NULL &&
         temp_r4 != (temp_r4 & M2C_FIELD(M2C_FIELD(&gOv010OnlineSession, void **, 0x18), u16 *, 4))) var_r5 = 1;
-    if (func_ov010_022282b4(3) == 0) var_r5 = 0;
+    if (IsOnlineSessionFlagSet(3) == 0) var_r5 = 0;
     t = (func_ov010_022282f8() != 0);
     if (t) var_r5 = 0;
     if (!(temp_r4 & 1)) var_r5 = 0;

@@ -13,7 +13,7 @@ void Clear3DSpriteLayer(int);
 int func_020b3960(void *,s16);
 void SetTextSpriteValue(void *,int);
 void DrawTextSprite(void *);
-void *func_020c52ec(int);
+void *GetBattleSlotSummary(int);
 u16 *func_020c53ac(int);
 u64 func_020c5430(void *);
 void func_020c5498(char *,u64);
@@ -78,7 +78,7 @@ engine=M2C_FIELD(p,u8 **,0x40);M2C_FIELD(engine,s16 *,6)=right;M2C_FIELD(engine,
 SetTextSpriteValue(M2C_FIELD(p,void **,0x40),i+1);
 engine=M2C_FIELD(p,u8 **,0x40);engine[40]=(engine[40]&~0xe0)|0x40;DrawTextSprite(M2C_FIELD(p,void **,0x40));
 ty=((s16)chartop)>>3;
-item=func_020c52ec(i);
+item=GetBattleSlotSummary(i);
 FillU16(0,text,26);
 if(item) {
 u16 *custom=func_020c53ac(i);

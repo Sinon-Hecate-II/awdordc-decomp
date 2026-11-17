@@ -233,7 +233,7 @@ void func_020c52d8(M2C_UNK arg0) {
     func_020c526c(0, arg0);
 }
 
-s32 func_020c52ec(s32 arg0) {
+s32 GetBattleSlotSummary(s32 arg0) {
     s32 GetBattleSaveBlock();
     s32 temp_r0;
     s32 var_r4;
@@ -321,8 +321,8 @@ s32 func_020c544c(s32 arg0) {
 
 void func_020c5464(void) {
     M2C_UNK func_020c544c();
-    M2C_UNK func_020c52ec();
-    func_020c52ec();
+    M2C_UNK GetBattleSlotSummary();
+    GetBattleSlotSummary();
     func_020c544c();
 }
 
@@ -345,11 +345,11 @@ void func_020c54ac(void) {
 s32 func_020c54b8(void) {
     s32 func_0203a8dc();
     s32 GetActiveOverlay();
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     if (GetActiveOverlay() != 2) {
         return 1;
     }
-    if (func_ov010_022282b4(2) == 0) {
+    if (IsOnlineSessionFlagSet(2) == 0) {
         return 1;
     }
     return func_0203a8dc();
@@ -412,7 +412,7 @@ if(!func_020c54b8()) return 0;
 result=0;
 base=GetBattleSaveBlock();
 if(!base)return result;
-p=func_020c52ec(arg0);
+p=GetBattleSlotSummary(arg0);
 if(p && func_02032380(p)) {
 func_0203a910(p);
 off=arg0*0x28;

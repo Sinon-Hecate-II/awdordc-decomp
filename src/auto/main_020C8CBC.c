@@ -266,14 +266,14 @@ else M2C_FIELD(&data_02168f04,u8 *,3)=a;
 M2C_FIELD(&data_02168f04,u8 *,a)=b;
 }
 
-u8 func_020c9430(s32 arg0) {
+u8 GetHeldDirection(s32 arg0) {
     extern M2C_UNK data_02168f04;
     return M2C_FIELD(&data_02168f04, u8 *, arg0);
 }
 
-s32 func_020c9440(u32 x,s32 y,s32 a) {
+s32 ResolveHeldDirection(u32 x,s32 y,s32 a) {
 extern void **gCurrentMap;
-s32 d=func_020c9430(a);
+s32 d=GetHeldDirection(a);
 void *p;
 switch(d) {case 0: break; case 1: y--; break; case 2: x++; break; case 3: y++; break; case 4: x--; break;}
 if(!d) return d;
@@ -284,12 +284,12 @@ if(M2C_FIELD(p+x,u8 *,0x508)) d=5;
 return d;
 }
 
-s32 GetHeldMapDirections(void) { extern M2C_UNK gMapCursorDirs;s32 v=0;if(func_020c9430(0))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(func_020c9430(0)-1)*4);if(func_020c9430(1))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(func_020c9430(1)-1)*4);return v;}
+s32 GetHeldMapDirections(void) { extern M2C_UNK gMapCursorDirs;s32 v=0;if(GetHeldDirection(0))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(GetHeldDirection(0)-1)*4);if(GetHeldDirection(1))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(GetHeldDirection(1)-1)*4);return v;}
 
 s32 func_020c9550(s32 a) {
 s32 v=0;
-if(func_020c9430(0)) v++;
-if(func_020c9430(1)) v++;
+if(GetHeldDirection(0)) v++;
+if(GetHeldDirection(1)) v++;
 return v;
 }
 
@@ -298,7 +298,7 @@ void func_020c9580(s32 a) {
 extern void **gCurrentMap;
 extern M2C_UNK gMapCursorDirDX,gMapCursorDirDY,data_ov000_021e146c;
 s32 func_020a15b4(s32,s32);
-s32 i = (s32)func_020c9430(a) - 1;
+s32 i = (s32)GetHeldDirection(a) - 1;
 volatile void *p = *gCurrentMap;
 s32 x = M2C_FIELD(p,s16 *,0x52dc);
 s32 y = M2C_FIELD(p,s16 *,0x52de);
@@ -312,7 +312,7 @@ u32 i=func_020c9550()+1;
 u8 *p=(u8 *)&data_02168f04;
 i=p[i];
 p[i]=0;
-func_020a15e4();
+DeleteDirectionMarkerSprites();
 }
 
 void func_020c960c(s32 a,s32 b,s32 c,void *d) {

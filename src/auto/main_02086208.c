@@ -119,10 +119,10 @@ void func_020863f0(void) {
 
 s32 func_02086420(M2C_UNK arg0) {
     s32 GetActiveOverlay();
-    void *func_ov010_02229b0c(M2C_UNK);
+    void *GetOnlinePlayerRecord(M2C_UNK);
     void *temp_r0;
     if (GetActiveOverlay() == 2) {
-        temp_r0 = func_ov010_02229b0c(arg0);
+        temp_r0 = GetOnlinePlayerRecord(arg0);
         if (temp_r0 != NULL && M2C_FIELD(temp_r0, s8 *, 0x27) == 1 && M2C_FIELD(temp_r0, s8 *, 0x28) == 0) {
             if (M2C_FIELD(temp_r0, u8 *, 0x1A) & 4) {
                 return 1;

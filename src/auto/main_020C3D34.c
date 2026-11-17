@@ -278,7 +278,7 @@ return 1;
 s32 func_020c4a74(void *arg0) {
  M2C_UNK *func_020c4acc(void);
  void func_020323a4(void *,u32);
- s32 func_020c52ec(s32);
+ s32 GetBattleSlotSummary(s32);
  void func_02031ee4(void);
  void func_0203287c(void *);
  s32 i;
@@ -286,7 +286,7 @@ s32 func_020c4a74(void *arg0) {
  func_020323a4((u8*)arg0+4,0x5957324a);
  i=0;
  do {
- if(func_020c52ec(i)!=0)func_02031ee4();
+ if(GetBattleSlotSummary(i)!=0)func_02031ee4();
  i++;
  }while(i<60);
  func_0203287c((u8*)arg0+4);

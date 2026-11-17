@@ -257,11 +257,11 @@ void func_02085788(s32 arg0) {
     void *func_020c5328();
     s32 func_020c5708(s32);
     M2C_UNK func_020c5770(M2C_UNK, s32 *, s32 *);
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     s8 GetOnlineTransportPlayerId();
     s32 GetOnlinePeerMask();
     void *GetLocalPlayerStatus();
-    void *func_ov010_02229b0c(u8);
+    void *GetOnlinePlayerRecord(u8);
     extern s32 data_021020b8;
     extern M2C_UNK data_02157634;
     extern M2C_UNK data_02157638;
@@ -295,7 +295,7 @@ void func_02085788(s32 arg0) {
     if (M2C_FIELD(temp_r0, s8 *, 0x28) != 0) {
         return;
     }
-    if (func_ov010_022282b4(3) == 0) {
+    if (IsOnlineSessionFlagSet(3) == 0) {
         return;
     }
     temp_r10 = GetOnlinePeerMask();
@@ -306,7 +306,7 @@ void func_02085788(s32 arg0) {
         temp_r5 = func_020c4acc();
         var_r7 = 0;
 loop_10:
-        if ((var_r7 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r7)) && (temp_r0_3 = func_ov010_02229b0c(var_r7), (temp_r0_3 != NULL))) {
+        if ((var_r7 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r7)) && (temp_r0_3 = GetOnlinePlayerRecord(var_r7), (temp_r0_3 != NULL))) {
             M2C_FIELD(&data_02157634, u8 *, 4) = var_r7;
             temp_r6 = M2C_FIELD(temp_r0, s32 *, 0x20);
             sp8 = temp_r6;
@@ -348,7 +348,7 @@ loop_10:
             if ((var_r9 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r9))) {
                 temp_r6_2 = GetPlayerArmyId(temp_r8 + 1);
                 if (temp_r6_2 != GetPlayerArmyId(var_r9 + 1)) {
-                    temp_r0_4 = func_ov010_02229b0c(var_r9);
+                    temp_r0_4 = GetOnlinePlayerRecord(var_r9);
                     if (temp_r0_4 != NULL) {
                         temp_r0_5 = func_020c5708(M2C_FIELD(temp_r0_4, s32 *, 0x1C));
                         if (temp_r0_5 >= 0) {

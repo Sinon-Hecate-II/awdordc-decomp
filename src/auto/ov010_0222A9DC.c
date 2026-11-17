@@ -148,7 +148,7 @@ void func_ov010_0222af18(void) {
 
 void func_ov010_0222af58(M2C_UNK arg0) {
     s32 func_020c4bc0(M2C_UNK);
-    if (func_ov010_022282b4(2) == 0) {
+    if (IsOnlineSessionFlagSet(2) == 0) {
         return;
     }
     if (func_020c4bc0(0) != 0) {
@@ -522,8 +522,8 @@ void func_ov010_0222b998(void) {
 void func_ov010_0222b9b4(void) {
     M2C_UNK func_020852e0();
     M2C_UNK EnableMapConfirm();
-    s32 func_ov010_022282b4(M2C_UNK);
-    if (func_ov010_022282b4(2) != 0) {
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
+    if (IsOnlineSessionFlagSet(2) != 0) {
         EnableMapConfirm();
         return;
     }

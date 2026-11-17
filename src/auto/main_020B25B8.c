@@ -77,20 +77,26 @@ s32 SpriteSlotHitTest(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 TryFocusSpriteSlot(void *p) {
-extern void *gTouchState,*gSpriteSlotManager;
-s32 IsDialogActive(void);s32 SpriteSlotHasFlags(void *,M2C_UNK);
-void FocusSpriteSlot(void *);
-u16 x=M2C_FIELD(gTouchState,u16 *,0);
-u16 y=M2C_FIELD(gTouchState,u16 *,2);
-if(IsDialogActive())return 0;
-if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
-if(!SpriteSlotHasFlags(p,1))return 0;
-if(!SpriteSlotHitTest(p,x,y))return 0;
-if(M2C_FIELD(gSpriteSlotManager,void **,0xc)==p)return 0;
-if(SpriteSlotHasFlags(p,0x400))return 0;
-FocusSpriteSlot(p);
-return 1;
+/* Give keyboard focus to the touchable sprite slot under the current touch, if
+ * the slot may take it: no dialog is up, the touch is down, and the slot is
+ * enabled, hit by the touch, not already focused and not disabled.  Returns 1
+ * when the slot was focused. */
+s32 TryFocusSpriteSlot(void *slot) {
+    extern void *gTouchState, *gSpriteSlotManager;
+    s32 IsDialogActive(void);
+    s32 SpriteSlotHasFlags(void *, M2C_UNK);
+    void FocusSpriteSlot(void *);
+    u16 touchX = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_X);
+    u16 touchY = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_Y);
+
+    if (IsDialogActive()) return 0;
+    if (!M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE)) return 0;
+    if (!SpriteSlotHasFlags(slot, SPRITE_SLOT_FLAG_ENABLED)) return 0;
+    if (!SpriteSlotHitTest(slot, touchX, touchY)) return 0;
+    if (M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS) == slot) return 0;
+    if (SpriteSlotHasFlags(slot, SPRITE_SLOT_FLAG_DISABLED)) return 0;
+    FocusSpriteSlot(slot);
+    return 1;
 }
 
 /* Touch handler for one sprite-button slot.  Its state machine reaches

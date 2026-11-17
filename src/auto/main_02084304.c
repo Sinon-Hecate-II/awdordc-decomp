@@ -80,7 +80,7 @@ s32 GetLinkMode(void) {
     return 0;
 }
 
-s32 GetActiveOverlay(void){s32 func_0208858c(s32);s32 GetLinkPhase(void);s32 func_ov010_022282b4(s32);s32 b;if(func_0208858c(9)){if(GetLinkPhase())b=1;else b=0;if(b)return 1;}else if(func_0208858c(10)&&func_ov010_022282b4(0))return 2;return 0;}
+s32 GetActiveOverlay(void){s32 func_0208858c(s32);s32 GetLinkPhase(void);s32 IsOnlineSessionFlagSet(s32);s32 b;if(func_0208858c(9)){if(GetLinkPhase())b=1;else b=0;if(b)return 1;}else if(func_0208858c(10)&&IsOnlineSessionFlagSet(0))return 2;return 0;}
 
 s32 IsLinkSessionActive(void) {
     s32 GetLinkPhase();
@@ -97,7 +97,7 @@ s32 IsLinkSessionActive(void) {
         }
         return var_r0;
     case 2:
-        return func_ov010_022282b4(0);
+        return IsOnlineSessionFlagSet(0);
     default:
         return 0;
     }
@@ -145,7 +145,7 @@ s32 func_0208471c(void) {
 
 s32 func_0208477c(void) {
     s32 func_ov009_02224508(M2C_UNK);
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -153,7 +153,7 @@ s32 func_0208477c(void) {
     case 1:
         return func_ov009_02224508(1);
     case 2:
-        return func_ov010_022282b4(6);
+        return IsOnlineSessionFlagSet(6);
     default:
         return 0;
     }
@@ -277,7 +277,7 @@ u16 GetActivePlayerMask(void) {
         var_r6_2 = 0;
         bit = 1;
         do {
-            temp_r0_3 = func_ov010_02229b0c(var_r6_2);
+            temp_r0_3 = GetOnlinePlayerRecord(var_r6_2);
             if (temp_r0_3 != NULL) {
                 var_r5 = (u16)(var_r5 | ((u32) bit << M2C_FIELD(temp_r0_3, s8 *, 0x1B)));
             }
@@ -290,7 +290,7 @@ u16 GetActivePlayerMask(void) {
 
 s32 func_02084a0c(void) {
     s32 func_ov009_02225470();
-    s32 func_ov010_02229a40();
+    s32 GetConnectedPlayerCount();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -298,7 +298,7 @@ s32 func_02084a0c(void) {
     case 1:
         return func_ov009_02225470();
     case 2:
-        return func_ov010_02229a40();
+        return GetConnectedPlayerCount();
     default:
         return 0;
     }
@@ -340,7 +340,7 @@ s32 IsOverlayEventSet(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a))
 
 s32 func_02084ac0(M2C_UNK arg0) {
     s32 func_ov009_02224070(M2C_UNK);
-    s32 func_ov010_02229b0c(M2C_UNK);
+    s32 GetOnlinePlayerRecord(M2C_UNK);
     s32 temp_r0;
     s32 temp_r0_2;
     s32 temp_r0_3;
@@ -353,7 +353,7 @@ s32 func_02084ac0(M2C_UNK arg0) {
             return temp_r0_2;
         }
     case 2:
-        temp_r0 = func_ov010_02229b0c(arg0);
+        temp_r0 = GetOnlinePlayerRecord(arg0);
         if (temp_r0 != 0) {
             return temp_r0;
         }
@@ -375,7 +375,7 @@ s8 func_02084b08(M2C_UNK arg0) {
             return M2C_FIELD(temp_r0_2, s8 *, 0x18);
         }
     case 2:
-        temp_r0 = func_ov010_02229b0c(arg0);
+        temp_r0 = GetOnlinePlayerRecord(arg0);
         if (temp_r0 != NULL) {
             return M2C_FIELD(temp_r0, s8 *, 0x24);
         }
@@ -397,7 +397,7 @@ s8 func_02084b58(M2C_UNK arg0) {
             return M2C_FIELD(temp_r0_2, s8 *, 0x19);
         }
     case 2:
-        temp_r0 = func_ov010_02229b0c(arg0);
+        temp_r0 = GetOnlinePlayerRecord(arg0);
         if (temp_r0 != NULL) {
             return M2C_FIELD(temp_r0, s8 *, 0x25);
         }
@@ -419,7 +419,7 @@ s8 func_02084ba8(M2C_UNK arg0) {
             return M2C_FIELD(temp_r0_2, s8 *, 0x1A);
         }
     case 2:
-        temp_r0 = func_ov010_02229b0c(arg0);
+        temp_r0 = GetOnlinePlayerRecord(arg0);
         if (temp_r0 != NULL) {
             return M2C_FIELD(temp_r0, s8 *, 0x26);
         }

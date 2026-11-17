@@ -47,7 +47,7 @@ void *Wfc_GetWorkBlock(s32 arg0) {
 }
 
 void *Wfc_GetWorkBlock(s32);
-u32 func_0202f5ac(u32);
+u32 Wfc_FriendIdToSlot(u32);
 void Wfc_PublishState(u8 arg0) {
  void *a = Wfc_GetWorkBlock(1);
  void *b = Wfc_GetWorkBlock(0x10);
@@ -56,7 +56,7 @@ void Wfc_PublishState(u8 arg0) {
   if (arg0 > M2C_FIELD(a,u8 *,0x16)) {
    M2C_FIELD(a,u8 *,0x16) = arg0;
    if (arg0 > 7) {
-    M2C_FIELD(a,u8 *,0x15) = func_0202f5ac(M2C_FIELD(b,u8 *,0xD0D));
+    M2C_FIELD(a,u8 *,0x15) = Wfc_FriendIdToSlot(M2C_FIELD(b,u8 *,0xD0D));
     M2C_FIELD(a,u8 *,0x14) = M2C_FIELD((u8 *)b + M2C_FIELD(b,u8 *,0xD13)*4,u8 *,0x444);
    }
   }
@@ -84,10 +84,10 @@ s32 func_0202f57c(void) {
 
 void func_0202f590(u32 arg0) {
  extern M2C_UNK gWfcManager;
- M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17) = func_0202f5ac(arg0);
+ M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17) = Wfc_FriendIdToSlot(arg0);
 }
 
-u32 func_0202f5ac(u32 arg0) {
+u32 Wfc_FriendIdToSlot(u32 arg0) {
  if (arg0 > 2) arg0 = (u8)(arg0 - 3);
  return arg0;
 }

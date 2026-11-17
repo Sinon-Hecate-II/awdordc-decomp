@@ -274,4 +274,67 @@ void func_ov000_021906a0(int arg0) {
  }
  SetMapCursor((s16)sx, (s16)sy, 7, 0, 0);
 }
-void func_ov000_02190b54(void) { }
+int func_ov000_0217d86c(void);
+void func_ov000_02190b54(void) {
+ u8 *unit;
+ int sx = -1, sy = -1, kind = 0, x, y;
+ u8 *m;
+ u16 pos[2];
+ if (((u32)((*(u8 **)((u8 *)*gCurrentMap+0x52d0))[11]<<24)>>31) || func_ov000_0217d86c()==1) {
+ ((Position_021906a0 *)((u8 *)*(void **)((u8 *)*gCurrentMap+0x52d0)+8))->state=0;return;
+ }
+ BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap+0x52d0));
+ for (y = kind; y < *(u16 *)((u8 *)*gCurrentMap + 0x5146); y++) {
+  for (x = 0; x < *(u16 *)((u8 *)*gCurrentMap + 0x5144); x++) {
+   m = *gCurrentMap;
+   if ((*(s8 **)(m + 0x52e8 + y * 4))[x] < 0) continue;
+   if (!m[x + *(u16 *)(m + 0x3758 + y * 2)]) continue;
+   if (!IsCurrentPlayerUnit(m[x + *(u16 *)(m + 0x3758 + y * 2) + 0x508])) continue;
+   m = *gCurrentMap;
+   unit = m + 0x59a4 + 14 * m[x + *(u16 *)(m + 0x3758 + y * 2)];
+   if (func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB)) continue;
+   if (!CanUnitAttackKind(unit, ((UnkStruct_ov000_021A860C *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->unk0)) continue;
+   if (((Health_021906a0 *)(unit + 6))->high != 0) continue;
+   switch (kind) {
+   case 25:
+    if (((UnkStruct_ov000_021A860C *)unit)->unk0 == 24) continue;
+   case 24:
+    if (((UnkStruct_ov000_021A860C *)unit)->unk0 == 13) continue;
+   case 0:
+   case 13:
+    sx = x;
+    sy = y;
+    kind = ((UnkStruct_ov000_021A860C *)unit)->unk0;
+    break;
+   case 19:
+    break;
+   default:
+    break;
+   }
+  }
+ }
+ if (sx == -1) return;
+ m = *gCurrentMap;
+ if (kind == 13 && !UnitCanReachPropertyCell(m + 0x59a4 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)])) return;
+ if (kind == 24 || kind == 25) {
+  m = *gCurrentMap;
+  unit = m + 0x59a4 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)];
+  ((Position_021906a0 *)(unit + 8))->x = (u16)sx;
+  ((Position_021906a0 *)(unit + 8))->y = (u16)sy;
+ }
+ unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+ ((Position_021906a0 *)(unit + 8))->state = 0;
+ ClearUnitMoveTarget();
+ if (kind == 19) {
+  m = *gCurrentMap;
+  if (func_ov000_0217de64((s16)sx, (s16)sy, 19, (u8)((*(u16 *)(m + 0x59a8 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)]) & 1) != 0), pos) == 1) {
+   unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+   *(u16 *)(unit + 8) = (*(u16 *)(unit + 8) & ~63) | (pos[0] & 63);
+   unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+   *(u16 *)(unit + 8) = (*(u16 *)(unit + 8) & ~0xfc0) | ((pos[1] & 63) << 6);
+   unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+   unit[11] = (unit[11] & ~15) | 2;
+  }
+ }
+ SetMapCursor((s16)sx, (s16)sy, 7, 0, 0);
+}

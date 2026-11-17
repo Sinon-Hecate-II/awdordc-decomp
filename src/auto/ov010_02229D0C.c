@@ -26,11 +26,11 @@ void func_ov010_02229d44(s32 arg0) {
 
 M2C_UNK **func_ov010_02229d54(s32 arg0, M2C_UNK arg1) {
 M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
-s32 func_ov010_022282b4(M2C_UNK);
+s32 IsOnlineSessionFlagSet(M2C_UNK);
 extern M2C_UNK data_ov010_0222c250;
 extern M2C_UNK data_ov010_0222c394;
 M2C_UNK **temp_r0;
-if (func_ov010_022282b4(3) == 0) return NULL;
+if (IsOnlineSessionFlagSet(3) == 0) return NULL;
 temp_r0 = CreateSpriteObject(&data_ov010_0222c250, arg1);
 if (temp_r0 != NULL) {
 *temp_r0 = &data_ov010_0222c394;
@@ -43,7 +43,7 @@ M2C_UNK func_ov010_02229d9c(s32 arg0) {
     s32 GetOnlineTransportPlayerId();
     s8 func_ov010_02229a94();
     extern M2C_UNK gOv010OnlineSession;
-    if (func_ov010_022282b4(3) == 0) return;
+    if (IsOnlineSessionFlagSet(3) == 0) return;
     M2C_FIELD(arg0, u16 *, 2) = 1 << GetOnlineTransportPlayerId();
     M2C_FIELD(arg0, u8 *, 0) = func_ov010_02229a94();
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x24) = arg0;
@@ -52,7 +52,7 @@ M2C_UNK func_ov010_02229d9c(s32 arg0) {
 s32 func_ov010_02229ddc(s32 arg0){s32 GetOnlinePeerMask();s32 func_ov010_022282f8();extern M2C_UNK gOv010OnlineSession;s32 v,b,t;
 if(M2C_FIELD(&gOv010OnlineSession,void * volatile *,0x24)){v=GetOnlinePeerMask();t=GetOnlinePeerMask();if(v!=(M2C_FIELD(M2C_FIELD(&gOv010OnlineSession,void **,0x24),u16 *,2)&t)){v=1;goto ready;}}v=0;ready:;
 if(!M2C_FIELD(M2C_FIELD(&gOv010OnlineSession,void **,0x24),u8 *,0))v=0;
-if(!func_ov010_022282b4(3))v=0;
+if(!IsOnlineSessionFlagSet(3))v=0;
 if(func_ov010_022282f8())b=1;else b=0;if(b)v=0;if(!v)func_ov010_02229bdc();return v;}
 
 void func_ov010_02229e70(s32 arg0) {
@@ -77,12 +77,12 @@ void func_ov010_02229ea4(s32 arg0) {
 
 M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
     M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    s32 func_ov010_022282b4(M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern M2C_UNK data_ov010_0222c288;
     extern M2C_UNK data_ov010_0222c380;
     M2C_UNK **temp_r0;
 
-    if (func_ov010_022282b4(3) == 0) {
+    if (IsOnlineSessionFlagSet(3) == 0) {
         return NULL;
     }
     temp_r0 = CreateSpriteObject(&data_ov010_0222c288, arg0);
@@ -92,7 +92,7 @@ M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
     return temp_r0;
 }
 
-s32 func_ov010_02229ef4(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!func_ov010_022282b4(1))return 0;MI_CpuFill8(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
+s32 func_ov010_02229ef4(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(1))return 0;MI_CpuFill8(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
 
 s32 func_ov010_02229f64(void) {
     u32 func_02036f14();
@@ -134,7 +134,7 @@ void *func_ov010_02229fd0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 
     extern M2C_UNK data_ov010_0222c3e4;
     void *temp_r0;
 
-    if (func_ov010_022282b4(1) == 0) {
+    if (IsOnlineSessionFlagSet(1) == 0) {
         return NULL;
     }
     temp_r0 = CreateSpriteObject(&data_ov010_0222c2c0, arg5);
@@ -230,7 +230,7 @@ void func_ov010_0222a148(void *arg0) {
 }
 
 void func_ov010_0222a15c(void *arg0){s32 func_ov010_022282f8();s32 func_ov010_02228314(s32 *,u32 *);s32 sp4;u32 sp0;void (*fn)(s32,s32,u32,s32);s32 v,b;
-if(func_ov010_022282f8())b=1;else b=0;if(!b)return;v=func_ov010_02228314(&sp4,&sp0);if(func_ov010_022282b4(6))return;
+if(func_ov010_022282f8())b=1;else b=0;if(!b)return;v=func_ov010_02228314(&sp4,&sp0);if(IsOnlineSessionFlagSet(6))return;
 switch(sp0){case 0:break;case 1:case 2:case 3:case 4:case 5:case 6:case 7:func_ov010_02228298(6);fn=M2C_FIELD(arg0,void (**)(s32,s32,u32,s32),0x34);if(!fn)return;fn(v,sp4,sp0,M2C_FIELD(arg0,s32 *,0x18));break;default:break;}}
 
 void func_ov010_0222a20c(s32 arg0) {

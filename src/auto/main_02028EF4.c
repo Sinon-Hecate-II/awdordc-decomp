@@ -310,63 +310,69 @@ void *func_02029594(void *arg0) {
  return p;
 }
 
-void WFC_TouchPlayerNode(void *arg0) {
-    void *temp_r0;
-    void *temp_r2_2;
-    void *temp_r1;
-    void *temp_r1_2;
-    void *temp_r1_3;
-    void *temp_r1_4;
-    void *temp_r2;
-    void *var_r3;
-    register void *temp_r0_2;
+/* Move a player-record node to the tail (most recently updated end) of the
+ * session's player list: unlink it if it is already in the list, then re-link
+ * it at the tail. A node that was not in the list is new, so it also gets the
+ * next node index and bumps the list's insert count. */
+void WFC_TouchPlayerNode(void *node) {
+    void *session;
+    void *oldPrev;
+    void *listBase;
+    void *prev;
+    void *next;
+    void *oldNext;
+    void *tail;
+    void *cursor;
+    register void *list;
 
-    temp_r0 = GetSession();
-    temp_r1 = temp_r0 + 0x2000;
-    temp_r0_2 = M2C_FIELD(temp_r0, void **, 0x2270);
-    if ((arg0 != NULL) && (temp_r0_2 != NULL)) {
-        if ((u32) M2C_FIELD(temp_r1, u32 *, 0x274) <= 0xCU) {
+    session = GetSession();
+    listBase = session + 0x2000;
+    list = M2C_FIELD(session, void **, WFC_SESSION_PLAYER_LIST);
+    if ((node != NULL) && (list != NULL)) {
+        if ((u32) M2C_FIELD(listBase, u32 *, 0x274) <= 0xCU) { /* buffer too small for any node */
             return;
         }
-        var_r3 = M2C_FIELD(temp_r0_2, void **, 4);
-        if (var_r3 != NULL) {
+        cursor = M2C_FIELD(list, void **, WFC_PLAYER_LIST_HEAD);
+        if (cursor != NULL) {
 loop_7:
-            if (var_r3 == arg0) {
-                temp_r2 = M2C_FIELD(var_r3, void **, 8);
-                temp_r1_2 = M2C_FIELD(var_r3, void **, 0xC);
-                if (temp_r2 != NULL) {
-                    M2C_FIELD(temp_r2, void **, 0xC) = temp_r1_2;
+            if (cursor == node) {
+                /* already listed: unlink it */
+                oldPrev = M2C_FIELD(cursor, void **, WFC_PLAYER_NODE_PREV);
+                oldNext = M2C_FIELD(cursor, void **, WFC_PLAYER_NODE_NEXT);
+                if (oldPrev != NULL) {
+                    M2C_FIELD(oldPrev, void **, WFC_PLAYER_NODE_NEXT) = oldNext;
                 } else {
-                    M2C_FIELD(temp_r0_2, void **, 4) = temp_r1_2;
+                    M2C_FIELD(list, void **, WFC_PLAYER_LIST_HEAD) = oldNext;
                 }
-                temp_r2_2 = M2C_FIELD(var_r3, void **, 0xC);
-                temp_r1_3 = M2C_FIELD(var_r3, void **, 8);
-                if (temp_r2_2 != NULL) {
-                    M2C_FIELD(temp_r2_2, void **, 8) = temp_r1_3;
+                next = M2C_FIELD(cursor, void **, WFC_PLAYER_NODE_NEXT);
+                prev = M2C_FIELD(cursor, void **, WFC_PLAYER_NODE_PREV);
+                if (next != NULL) {
+                    M2C_FIELD(next, void **, WFC_PLAYER_NODE_PREV) = prev;
                 } else {
-                    M2C_FIELD(temp_r0_2, void **, 8) = temp_r1_3;
+                    M2C_FIELD(list, void **, WFC_PLAYER_LIST_TAIL) = prev;
                 }
             } else {
-                var_r3 = M2C_FIELD(var_r3, void **, 0xC);
-                if (var_r3 != NULL) {
+                cursor = M2C_FIELD(cursor, void **, WFC_PLAYER_NODE_NEXT);
+                if (cursor != NULL) {
                     goto loop_7;
                 }
             }
         }
-        M2C_FIELD(arg0, s32 *, 0xC) = 0;
-        M2C_FIELD(arg0, void **, 8) = (void *) M2C_FIELD(temp_r0_2, void **, 8);
-        M2C_FIELD(temp_r0_2, void **, 8) = arg0;
-        temp_r1_4 = M2C_FIELD(arg0, void **, 8);
-        if (temp_r1_4 != NULL) {
-            M2C_FIELD(temp_r1_4, void **, 0xC) = arg0;
+        /* link the node at the tail */
+        M2C_FIELD(node, s32 *, WFC_PLAYER_NODE_NEXT) = 0;
+        M2C_FIELD(node, void **, WFC_PLAYER_NODE_PREV) = (void *) M2C_FIELD(list, void **, WFC_PLAYER_LIST_TAIL);
+        M2C_FIELD(list, void **, WFC_PLAYER_LIST_TAIL) = node;
+        tail = M2C_FIELD(node, void **, WFC_PLAYER_NODE_PREV);
+        if (tail != NULL) {
+            M2C_FIELD(tail, void **, WFC_PLAYER_NODE_NEXT) = node;
         } else {
-            M2C_FIELD(temp_r0_2, void **, 4) = arg0;
+            M2C_FIELD(list, void **, WFC_PLAYER_LIST_HEAD) = node;
         }
-        if (var_r3 != NULL) {
+        if (cursor != NULL) { /* was already in the list: keep its index */
             return;
         }
-        M2C_FIELD(arg0, s32 *, 4) = (s32) M2C_FIELD(temp_r0_2, s32 *, 0);
-        M2C_FIELD(temp_r0_2, s32 *, 0) = (s32) (M2C_FIELD(temp_r0_2, s32 *, 0) + 1);
+        M2C_FIELD(node, s32 *, WFC_PLAYER_NODE_INDEX) = (s32) M2C_FIELD(list, s32 *, WFC_PLAYER_LIST_COUNT);
+        M2C_FIELD(list, s32 *, WFC_PLAYER_LIST_COUNT) = (s32) (M2C_FIELD(list, s32 *, WFC_PLAYER_LIST_COUNT) + 1);
     }
 }
 

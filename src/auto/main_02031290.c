@@ -1,5 +1,6 @@
 /* 48 functions from 0x02031290 to 0x02032228 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
 
@@ -63,14 +64,14 @@ s32 Wfc_StepMatch(void) {
 
 s32 func_0203138c(M2C_UNK arg0) {
     s32 func_02021a90(s32);
-    void func_0203155c(M2C_UNK, M2C_UNK, M2C_UNK);
+    void Wfc_BuildHostConfig(M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 data_02138ac0;
     s32 temp_r0;
     s32 temp_r5;
 
     temp_r5 = Wfc_GetWorkBlock(1);
     temp_r0 = Wfc_GetWorkBlock(4);
-    func_0203155c(temp_r5, arg0, temp_r0);
+    Wfc_BuildHostConfig(temp_r5, arg0, temp_r0);
     data_02138ac0 = 4;
     if (func_02021a90(temp_r0) == 0) {
         return 0xC;
@@ -111,7 +112,7 @@ s32 func_02031480(void) {
 }
 
 s32 func_020314ac(void *arg0) {
-    s32 func_0202f5ac(u8);
+    s32 Wfc_FriendIdToSlot(u8);
     M2C_UNK func_0203514c();
     s32 func_020352ac();
     s32 func_020352ec();
@@ -121,7 +122,7 @@ s32 func_020314ac(void *arg0) {
     temp_r4 = (void *)Wfc_GetWorkBlock(1);
     temp_r0 = func_020352ac();
     if (temp_r0 != 0) {
-        if (M2C_FIELD(temp_r4, u8 *, 0x15) == func_0202f5ac(M2C_FIELD(arg0, u8 *, 0xD0D))) {
+        if (M2C_FIELD(temp_r4, u8 *, 0x15) == Wfc_FriendIdToSlot(M2C_FIELD(arg0, u8 *, 0xD0D))) {
             M2C_FIELD(temp_r4, s32 *, 0x10) = func_020352ec();
         }
         func_0203514c();
@@ -146,29 +147,29 @@ s32 func_0203152c(void) {
  v=func_02021c04();return v==0 || v==(u32)-39 ?9:11;
 }
 
-void func_0203155c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    extern u8 data_020ea894[];
+void Wfc_BuildHostConfig(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    extern u8 gWfcHostConfigDefaults[];
     void MI_CpuCopy8(void *, void *, u32);
-    s32 func_0202f5ac(u8);
-    s32 func_0203161c(void *);
-    s32 func_02031670(s32);
+    s32 Wfc_FriendIdToSlot(u8);
+    s32 Wfc_EncodePlayerCode(void *);
+    s32 Wfc_EncodeCodeMask(s32);
     u8 idx;
 
-    MI_CpuCopy8(data_020ea894, (void *)arg2, 0x58);
+    MI_CpuCopy8(gWfcHostConfigDefaults, (void *)arg2, 0x58);
     M2C_FIELD(arg2, s32 *, 4) = M2C_FIELD(arg0, s32 *, 0);
     M2C_FIELD(arg2, s32 *, 8) = M2C_FIELD(arg0, s32 *, 4);
     idx = M2C_FIELD(arg1, u8 *, 0xD0D);
     if (idx >= 6) {
         return;
     }
-    arg1 = (M2C_UNK) ((u8 *) arg1 + (func_0202f5ac(idx) << 8));
+    arg1 = (M2C_UNK) ((u8 *) arg1 + (Wfc_FriendIdToSlot(idx) << 8));
     if (M2C_FIELD(arg1, u8 *, 0xC0) != 0) {
         M2C_FIELD(arg2, s32 *, 0xC) = 0;
-        M2C_FIELD(arg2, s32 *, 0x10) = func_0203161c((u8 *) arg1 + 0xC0);
-        M2C_FIELD(arg2, s32 *, 0x14) = func_02031670(M2C_FIELD(arg1, u8 *, 0xD0));
-        M2C_FIELD(arg2, s32 *, 0x18) = func_0203161c((u8 *) arg1 + 0xC4);
-        M2C_FIELD(arg2, s32 *, 0x1C) = func_0203161c((u8 *) arg1 + 0xC8);
-        M2C_FIELD(arg2, s32 *, 0x20) = func_0203161c((u8 *) arg1 + 0xCC);
+        M2C_FIELD(arg2, s32 *, 0x10) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xC0);
+        M2C_FIELD(arg2, s32 *, 0x14) = Wfc_EncodeCodeMask(M2C_FIELD(arg1, u8 *, 0xD0));
+        M2C_FIELD(arg2, s32 *, 0x18) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xC4);
+        M2C_FIELD(arg2, s32 *, 0x1C) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xC8);
+        M2C_FIELD(arg2, s32 *, 0x20) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xCC);
         return;
     }
     M2C_FIELD(arg2, s32 *, 0xC) = 1;
@@ -179,9 +180,9 @@ void func_0203155c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_FIELD(arg2, s32 *, 0x20) = 0;
 }
 
-/* func_0203155c (void) is written by compile_and_diff below */
+/* Wfc_BuildHostConfig (void) is written by compile_and_diff below */
 
-s32 func_0203161c(void *arg0) {
+s32 Wfc_EncodePlayerCode(void *arg0) {
     u32 temp_r3;
 
     temp_r3 = 0;
@@ -192,7 +193,7 @@ s32 func_0203161c(void *arg0) {
     return ((temp_r3 << 0x18) & 0xFF000000) | (((temp_r3 << 8) & 0xFF0000) | ((u8) (temp_r3 >> 0x18) | ((temp_r3 >> 8) & 0xFF00)));
 }
 
-s32 func_02031670(s32 arg0) {
+s32 Wfc_EncodeCodeMask(s32 arg0) {
     u32 var_r3;
     s32 var_r0;
     s32 temp_r1;
@@ -212,8 +213,8 @@ s32 func_02031670(s32 arg0) {
 #pragma opt_strength_reduction off
 void func_020316c4(void *arg0) {
     void func_020218f4(M2C_UNK *, M2C_UNK *);
-    s32 func_0202f5ac(u8);
-    s32 func_0203161c(void *);
+    s32 Wfc_FriendIdToSlot(u8);
+    s32 Wfc_EncodePlayerCode(void *);
     s32 sp4;
     s32 sp0;
     u8 *p;
@@ -224,7 +225,7 @@ void func_020316c4(void *arg0) {
     if (M2C_FIELD(p, u8 *, 0xD0D) >= 6) {
         return;
     }
-    p += func_0202f5ac(M2C_FIELD(p, u8 *, 0xD0D)) << 8;
+    p += Wfc_FriendIdToSlot(M2C_FIELD(p, u8 *, 0xD0D)) << 8;
     c0 = M2C_FIELD(p, u8 *, 0xC0);
     sum = M2C_FIELD(p, u8 *, 0xC8) + M2C_FIELD(p, u8 *, 0xC9) + M2C_FIELD(p, u8 *, 0xCA) + M2C_FIELD(p, u8 *, 0xCB);
     if (c0 != 0) {
@@ -233,8 +234,8 @@ void func_020316c4(void *arg0) {
     if (sum == 0) {
         return;
     }
-    sp4 = func_0203161c(p + 0xC8);
-    sp0 = func_0203161c(p + 0xCC);
+    sp4 = Wfc_EncodePlayerCode(p + 0xC8);
+    sp0 = Wfc_EncodePlayerCode(p + 0xCC);
     func_020218f4(&sp4, &sp0);
 }
 #pragma opt_strength_reduction reset
