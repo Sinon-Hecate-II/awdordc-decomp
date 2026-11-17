@@ -168,7 +168,7 @@ void func_0201a26c(void *arg0) {
     void func_02000b9c(s32);
     unsigned long long GetSystemTick(void);
     void GetMacAddress(s32);
-    void func_02005ac0(void *, void *, s32, void *, s32, s32);
+    void TaskCreate(void *, void *, s32, void *, s32, s32);
     void TaskWake(s32);
     s32 func_0201a264(void);
     void func_0201a260(void);
@@ -249,8 +249,8 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
 
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;
     {
-        func_02005ac0((void *)&data_021374f8, (void *)func_0201cfdc, 0, (void *)&data_02138ac0, 0x800, data_020faf74);
-        func_02005ac0((void *)&data_02137438, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, data_020faf74);
+        TaskCreate((void *)&data_021374f8, (void *)func_0201cfdc, 0, (void *)&data_02138ac0, 0x800, data_020faf74);
+        TaskCreate((void *)&data_02137438, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, data_020faf74);
     }
     TaskWake((s32)&data_021374f8);
     TaskWake((s32)&data_02137438);
@@ -258,10 +258,10 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
 
 #pragma opt_common_subs off
 void *func_0201a4a8(void) {
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 func_02005d90(s32);void TaskWake(s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 TaskIsFinished(s32);void TaskWake(s32);
 extern M2C_UNK data_02137438;extern M2C_UNK gNetStack;
 s32 saved=OS_DisableInterrupts();
-s32 result=func_02005d90((s32)&data_02137438);
+s32 result=TaskIsFinished((s32)&data_02137438);
 if(result==0 && M2C_FIELD(&gNetStack,s32 *,0x44)==0) {
 M2C_FIELD(&gNetStack,s32 *,0x44)=1;
 TaskWake((s32)&data_02137438);
@@ -391,7 +391,7 @@ void NetStackQueuePacket(s32 srcLink, s32 dstLink, s32 frame, s32 frameLen, s32 
     M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) = nextWrite;
 }
 
-void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void NetStackQueuePacket(s32,s32,s32,s32,s32,s32);s32 func_02005d90(s32);void TaskWake(s32);extern M2C_UNK gNetStack;NetStackQueuePacket(a,b,c,d,0,0);if(!M2C_FIELD(&gNetStack,volatile s32 *,84))return;if(func_02005d90(M2C_FIELD(&gNetStack,volatile s32 *,84)))return;TaskWake(M2C_FIELD(&gNetStack,volatile s32 *,84));}
+void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void NetStackQueuePacket(s32,s32,s32,s32,s32,s32);s32 TaskIsFinished(s32);void TaskWake(s32);extern M2C_UNK gNetStack;NetStackQueuePacket(a,b,c,d,0,0);if(!M2C_FIELD(&gNetStack,volatile s32 *,84))return;if(TaskIsFinished(M2C_FIELD(&gNetStack,volatile s32 *,84)))return;TaskWake(M2C_FIELD(&gNetStack,volatile s32 *,84));}
 
 /* Wait until a frame record is queued in the network stack's transmit ring,
    then return a pointer to its Ethernet frame (past the u16 record length) and

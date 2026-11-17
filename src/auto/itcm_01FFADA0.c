@@ -111,7 +111,7 @@ void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
     extern u8 data_ov000_021b55c0[];
     extern s32 gMoveSearchCount;
     extern void *gMoveSearchWrite;
-    s32 func_020d280c(s32, s32, s32);
+    s32 IsPropertyOwnedByTeam(s32, s32, s32);
 
     u8 *q = (u8 *)gMoveSearchCurrent;
     s8 *terrain = gMoveSearchState;
@@ -152,7 +152,7 @@ void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
     if (field22 & 0x10) {
         if (data_ov000_021b55c0[terrainType] != 0) {
             mapField = *(u16 *)((u8 *)m + 0x52b6);
-            if (func_020d280c(mapField, x, y) == 0) {
+            if (IsPropertyOwnedByTeam(mapField, x, y) == 0) {
                 score = 0x00ff;
             }
             m = *gCurrentMap;

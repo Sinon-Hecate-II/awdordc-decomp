@@ -180,12 +180,12 @@ void Sound_ReleaseChannel(void *arg0) {
 }
 
 void func_0202dfcc(void *arg0, s32 arg1) {
-    M2C_UNK func_02005ac0(void *, M2C_UNK *, void *, s32, s32, s32);
+    M2C_UNK TaskCreate(void *, M2C_UNK *, void *, s32, s32, s32);
     M2C_UNK TaskWake(void *);
     M2C_UNK InitMutex(void *);
     M2C_UNK func_02029c30(void *, M2C_UNK);
     extern M2C_UNK func_0202ee30;
-    func_02005ac0(arg0, &func_0202ee30, arg0, arg0 + 0x4C0, 0x400, arg1);
+    TaskCreate(arg0, &func_0202ee30, arg0, arg0 + 0x4C0, 0x400, arg1);
     func_02029c30(arg0 + 0x4E0, 0);
     InitMutex(arg0 + 0x4C8);
     M2C_FIELD(arg0, s32 *, 0x4C4) = 0;
@@ -195,20 +195,20 @@ void func_0202dfcc(void *arg0, s32 arg1) {
 
 void func_0202e02c(M2C_UNK arg0,void *arg1) {
 s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);
-void *func_02029ddc(M2C_UNK,M2C_UNK); M2C_UNK func_02029d7c(M2C_UNK,void *);
+void *func_02029ddc(M2C_UNK,M2C_UNK); M2C_UNK ListRemove(M2C_UNK,void *);
 s32 saved; void *node,*next;
 saved=OS_DisableInterrupts();
 node=func_02029ddc(arg0,0);
 while(node) {
 next=func_02029ddc(arg0,(M2C_UNK)node);
-if(M2C_FIELD(node,void **,8)==arg1) {func_02029d7c(arg0,node);func_0202e12c((M2C_UNK)node);}
+if(M2C_FIELD(node,void **,8)==arg1) {ListRemove(arg0,node);func_0202e12c((M2C_UNK)node);}
 node=next;
 }
 OS_RestoreInterrupts(saved);
 }
 
 void *func_0202e09c(M2C_UNK arg0) {
-    M2C_UNK func_02029d7c(M2C_UNK, void *);
+    M2C_UNK ListRemove(M2C_UNK, void *);
     void *func_02029ddc(M2C_UNK, M2C_UNK);
     s32 temp_r4;
     void *temp_r0;
@@ -217,7 +217,7 @@ void *func_0202e09c(M2C_UNK arg0) {
     temp_r4 = OS_DisableInterrupts();
     temp_r0 = func_02029ddc(arg0, 0);
     if (temp_r0 != NULL) {
-        func_02029d7c(arg0, temp_r0);
+        ListRemove(arg0, temp_r0);
         temp_r1 = M2C_FIELD(temp_r0, void **, 8);
         M2C_FIELD(temp_r1, s32 *, 0x11C) = (s32) (M2C_FIELD(temp_r1, s32 *, 0x11C) - 1);
     }
@@ -231,7 +231,7 @@ extern M2C_UNK data_0213c29c[];
 s32 saved; M2C_UNK node;
 saved=OS_DisableInterrupts();
 node=(M2C_UNK)func_02029ddc((M2C_UNK)data_0213c29c,0);
-if(node!=0) func_02029d7c((M2C_UNK)&data_0213c29c,(void *)node);
+if(node!=0) ListRemove((M2C_UNK)&data_0213c29c,(void *)node);
 OS_RestoreInterrupts(saved);
 return node;
 }
@@ -266,7 +266,7 @@ UnlockMutex(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
 
 void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *arg4) {
     M2C_UNK func_02029ddc(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02029d7c(M2C_UNK, void *);
+    M2C_UNK ListRemove(M2C_UNK, void *);
     void func_0202e12c(M2C_UNK);
     M2C_UNK func_0202e0ec(void);
     M2C_UNK func_02029c74(M2C_UNK *, M2C_UNK);
@@ -298,7 +298,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
                 }
             }
         }
-        func_02029d7c((M2C_UNK)&data_0213c920, (void *)node);
+        ListRemove((M2C_UNK)&data_0213c920, (void *)node);
         *(s32 *)((u8 *)arg4 + 0x11c) = *(s32 *)((u8 *)arg4 + 0x11c) - 1;
         func_0202e12c(node);
     }

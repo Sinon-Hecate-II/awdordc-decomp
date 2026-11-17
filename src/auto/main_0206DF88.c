@@ -5,15 +5,19 @@ double func_0206df88(double x,double y) { ((u32 *)&x)[1] = (((u32 *)&x)[1] & 0x7
 
 double fabs(double x) { ((u32 *)&x)[1] &= 0x7fffffff; return x; }
 
-double func_0206dfd0(double x,s32 *exp) {
+/* frexp: split `value` into a mantissa in [0.5, 1) and the exponent `exponent`
+ * it is scaled by, so value == mantissa * 2^exponent.  Zero, infinity and NaN
+ * come back unchanged with exponent 0; a subnormal is first scaled up by 2^54
+ * (18014398509481984.0) and its exponent corrected by -54. */
+double Frexp(double value,s32 *exponent) {
  double func_02070658(double,double);
- s32 hi,word,lo;
- word=((s32 *)&x)[1]; hi=word & 0x7fffffff; *exp=0; lo=((s32 *)&x)[0];
- if(hi>=0x7ff00000 || (hi|lo)==0) return x;
- if(hi<0x100000) { x=func_02070658(x,18014398509481984.0); *exp=-54; word=((s32 *)&x)[1]; hi=word & 0x7fffffff; }
- *exp += (hi>>20)-1022;
- ((u32 *)&x)[1]=(word & 0x800fffff) | 0x3fe00000;
- return x;
+ s32 absHigh,highWord,lowWord;
+ highWord=((s32 *)&value)[1]; absHigh=highWord & 0x7fffffff; *exponent=0; lowWord=((s32 *)&value)[0];
+ if(absHigh>=0x7ff00000 || (absHigh|lowWord)==0) return value;
+ if(absHigh<0x100000) { value=func_02070658(value,18014398509481984.0); *exponent=-54; highWord=((s32 *)&value)[1]; absHigh=highWord & 0x7fffffff; }
+ *exponent += (absHigh>>20)-1022;
+ ((u32 *)&value)[1]=(highWord & 0x800fffff) | 0x3fe00000;
+ return value;
 }
 
 double func_02070134(double,double);

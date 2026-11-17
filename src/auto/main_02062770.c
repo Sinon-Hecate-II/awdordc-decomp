@@ -171,7 +171,7 @@ void func_02062e28(void *arg0, s32 arg1) {
 
 s32 func_02062e30(void *a){
 s32 Vector_New(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 StringIntern(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
-extern s32 data_0213e4b4;extern s32 data_021001a8,data_021000ec;
+extern s32 sSbNoServer;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
 case 0:
@@ -179,12 +179,12 @@ if(n<1)break;off=(p[0]^0xec)+2;if(n<off)break;len=p[off-1]^0xea;r=off+len;if(n<r
 case 1:
 if(n<6)break;
 copy633((u8 *)a+0x4a0,p);
-M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,6,data_0213e4b4,M2C_FIELD(a,s32 *,0x494));
+M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,6,sSbNoServer,M2C_FIELD(a,s32 *,0x494));
 copy633h((u8 *)a+0x4a8,p+4);
 if(M2C_FIELD(a,u16 *,0x4a8)==0xffff){
 if(BoundedStringLength(p+6,n-6)==-1)break;
 func_02062e28(a,p+6);
-M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4,M2C_FIELD(a,s32 *,0x494));
+M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,5,sSbNoServer,M2C_FIELD(a,s32 *,0x494));
 if(!M2C_FIELD(a,void **,0x7c))break;
 }
 p+=6;n-=6;
@@ -206,7 +206,7 @@ if(M2C_FIELD(a,s32 *,0x484)>M2C_FIELD(a,s32 *,0x480))break;
 M2C_FIELD(a,s32 *,0x5c8)=4;
 case 4:
 if(n<5)break;
-do{r=func_02062cf8(a,p,n);if(r==-2)return 5;if(r==-1){M2C_FIELD(a,s32 *,0x5c8)=5;M2C_FIELD(a,s32 *,0)=2;n-=5;p+=5;M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,3,data_0213e4b4,M2C_FIELD(a,s32 *,0x494));break;}
+do{r=func_02062cf8(a,p,n);if(r==-2)return 5;if(r==-1){M2C_FIELD(a,s32 *,0x5c8)=5;M2C_FIELD(a,s32 *,0)=2;n-=5;p+=5;M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,3,sSbNoServer,M2C_FIELD(a,s32 *,0x494));break;}
 p+=r;n-=r;if(!M2C_FIELD(a,void **,0x7c))r=0;
 }while(r);break;
 }

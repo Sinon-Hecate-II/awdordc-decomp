@@ -61,25 +61,33 @@ if (type != 0 && type == arg0 && entry->unkB != arg1) { count += 1; }
 return count;
 }
 
-s32 CountPlayerUnitsOfKind(s32 arg0) {
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];u8 func_ov000_021a8984(s32);
-s32 count=0,i;void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
-UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-u32 type=entry->unk0;
-if(type!=0&&type==arg0&&func_ov000_021a8984(entry->unkB)==0)count++;
+/* How many units the current player has of one kind that are not busy with an
+ * action (IsMidActionStep): the AI's "do I still have a unit of kind X free?". */
+s32 CountPlayerUnitsOfKind(s32 kind) {
+extern void **gCurrentMap;
+extern u16 gPlayerUnitIdBase[];
+u8 IsMidActionStep(s32);
+s32 count=0,i;
+void *base=*gCurrentMap;
+/* the player's units are the ids after its base id up to the per-player limit */
+u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER)];
+for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_LIMIT+1;i++){
+BattleMapUnitHead *unit=&((BattleMapUnitHead *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[i];
+u32 unitKind=unit->kind;
+if(unitKind!=0&&unitKind==kind&&IsMidActionStep(unit->aiState)==0)count++;
 }
 return count;
 }
 
-u8 func_ov000_021a8984(s32 arg0) {
+/* True while a unit is in an AI step that carries out its chosen action, i.e.
+ * the unit is busy with the attack or the capture it started. */
+u8 IsMidActionStep(s32 aiStep) {
     u8 var_r0;
 
-    if (arg0 == 6) {
+    if (aiStep == AI_STEP_ATTACK) {
         return 1U;
     }
-    if (arg0 == 8) {
+    if (aiStep == AI_STEP_CAPTURE) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -122,21 +130,21 @@ s32 func_ov000_021a8a38(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return var_r0;
 }
 
-s32 func_ov000_021a8a60(void *arg0) {
-    M2C_UNK func_020a7568(void *, u8, u8);
-    func_020a7568(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+s32 GetUnitCaptureRateAtOwnTile(void *arg0) {
+    M2C_UNK GetUnitCaptureRate(void *, u8, u8);
+    GetUnitCaptureRate(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-s32 func_ov000_021a8a74(void *arg0) {
-    M2C_UNK func_020a7568(void *, u8, u8);
-    func_020a7568(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+s32 GetUnitCaptureRateHere(void *arg0) {
+    M2C_UNK GetUnitCaptureRate(void *, u8, u8);
+    GetUnitCaptureRate(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-u8 func_ov000_021a8a88(void *a){u8 r;if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;if(func_ov000_021a8a74(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20)r=1;else r=0;return r;}
+u8 WillCaptureCompleteThisTurn(void *a){u8 r;if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;if(GetUnitCaptureRateHere(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20)r=1;else r=0;return r;}
 
-s32 func_ov000_021a8ac8(void *a){extern void **gCurrentMap;s32 n;if(a){if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(M2C_FIELD(*gCurrentMap,u16 *,0x52a8)!=n){if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;}return func_ov000_021a8a60(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20;}
+s32 func_ov000_021a8ac8(void *a){extern void **gCurrentMap;s32 n;if(a){if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(M2C_FIELD(*gCurrentMap,u16 *,0x52a8)!=n){if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;}return GetUnitCaptureRateAtOwnTile(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20;}
 
-s32 GetCaptureTurnsLeft(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=func_ov000_021a8a60(a);while(x<20){x+=n;i++;}return i;}
+s32 GetCaptureTurnsLeft(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=GetUnitCaptureRateAtOwnTile(a);while(x<20){x+=n;i++;}return i;}
 
 #pragma opt_strength_reduction off
 s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
@@ -273,16 +281,16 @@ s32 func_ov000_021a91d0(s32 a){switch(a&31){case 15:case 17:case 18:case 19:case
 /* Returns 1 when tile (x, y) holds a property the unit could capture: a capturable
    cell owned by another army, and the unit's kind may capture that terrain. */
 s32 IsCaptureTargetAt(void *unit,s32 x,s32 y){
-extern void **gCurrentMap;s32 func_020d280c();
+extern void **gCurrentMap;s32 IsPropertyOwnedByTeam();
 u8 *p=*gCurrentMap;s32 n;
 if(IsPropertyTerrain(M2C_FIELD(p+(x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN))==1){
 if(!unit)n=0;else n=((s32)unit-(s32)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/14;
-if(func_020d280c((n>>6)+1,x,y)){
+if(IsPropertyOwnedByTeam((n>>6)+1,x,y)){
 p=*gCurrentMap;
 if(M2C_FIELD(data_ov000_021b5c54,s8 **,((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)*UNIT_KIND_STATS_SIZE)[M2C_FIELD(p+(x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK])return 1;
 }}return 0;}
 
-u8 func_ov000_021a9318(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 func_020d280c(s32);void *p;if(!func_020d280c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;p=*gCurrentMap;return M2C_FIELD(data_ov000_021b5c54,s8 **,a*112)[M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420)&31]!=0;}
+u8 func_ov000_021a9318(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 IsPropertyOwnedByTeam(s32);void *p;if(!IsPropertyOwnedByTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;p=*gCurrentMap;return M2C_FIELD(data_ov000_021b5c54,s8 **,a*112)[M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420)&31]!=0;}
 
 s32 func_ov000_021a93a8(void) {
     return 0;

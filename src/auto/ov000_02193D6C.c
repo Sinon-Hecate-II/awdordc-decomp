@@ -34,7 +34,7 @@ void SelectAttackingUnit(void) {
    map=MAP;
    unit=map+0x59a4+14*(s16)map[cellX+*(u16*)(map+0x3758+cellY*2)];
    if(!(INFO[((UnkStruct_ov000_021A860C*)unit)->unk0*0x70+0x13]&0x20))continue;
-   if(func_ov000_021a8984(((UnkStruct_ov000_021A860C*)unit)->unkB))continue;
+   if(IsMidActionStep(((UnkStruct_ov000_021A860C*)unit)->unkB))continue;
    if(!CanUnitAttackKind(unit,((UnkStruct_ov000_021A860C*)SEL)->unk0))continue;
    if(foundKind!=0 && foundKind!=24){
     if(foundKind!=25)continue;
@@ -65,7 +65,7 @@ s32 IsPlayerHuman(s32);s32 GetUnitAttackClass(u32);
 s32 func_ov000_021a43c4(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindAttack(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,s32,s32,s32);void FillMapLayer(s32);
-s32 func_ov000_021a8984(u32);s32 CanUnitAttackKind(u8*,u32);
+s32 IsMidActionStep(u32);s32 CanUnitAttackKind(u8*,u32);
 s32 func_ov000_021a9084(u32);s32 func_ov000_021a911c(s16,s16,s16);
 void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,best=32767,index,offset,found,distance;
@@ -93,7 +93,7 @@ index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
 if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){offset=index*14;
 for(;index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=(u8*)(MAP+0x59a4)+offset;
-if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||func_ov000_021a8984((u32)(unit[11]<<28)>>28)||!CanUnitAttackKind(unit,KIND(SEL)))continue;
+if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||IsMidActionStep((u32)(unit[11]<<28)>>28)||!CanUnitAttackKind(unit,KIND(SEL)))continue;
 if(unit[12]){
 if(mode==1)continue;
 if(COST(unit[1],unit[2],0x3250)<0)continue;

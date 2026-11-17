@@ -406,7 +406,7 @@ case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);
 Ov001_FreeAlloc(&data_ov001_02193dd0);
 }
 void Ov001_UpdateMenuCursor(void) {
-    void func_ov001_02171fd8(s32, u16, u16, u16);
+    void Ov001_LayoutChoiceFrameRow(s32, u16, u16, u16);
     void Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
     extern M2C_UNK gOv001MenuRegion;
     extern u16 data_ov001_0218fa3a[];
@@ -421,7 +421,7 @@ void Ov001_UpdateMenuCursor(void) {
         return;
     }
     temp_r3 = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) * 4;
-    func_ov001_02171fd8(0, data_ov001_0218fa3a[temp_r3], data_ov001_0218fa3e[temp_r3], data_ov001_0218fa3c[temp_r3]);
+    Ov001_LayoutChoiceFrameRow(0, data_ov001_0218fa3a[temp_r3], data_ov001_0218fa3e[temp_r3], data_ov001_0218fa3c[temp_r3]);
 }
 
 /* Moves the selection around the ov001 menu screen's seven touch regions by

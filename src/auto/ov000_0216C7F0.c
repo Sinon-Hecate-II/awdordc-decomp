@@ -45,7 +45,7 @@ icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x18);if(icon){if(M2C_FIELD(icon,v
 return window;
 }
 
-s32 func_ov000_0216ca58(s32 arg0, s32 arg1) {
+s32 GetCellTerrainKind(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 temp_r2;
 
@@ -88,14 +88,14 @@ s32 func_ov000_0216cbc4(s32 arg0) {
  return arg0;
 }
 
-s32 func_ov000_0216cc4c(s32 arg0, s32 arg1) {
+s32 GetCellPropertyArmy(s32 arg0, s32 arg1) {
  s32 Map_GetPropertyOwnerArmy(s32);
  extern s32 *gCurrentMap;
  s32 temp_r2 = *gCurrentMap;
  return Map_GetPropertyOwnerArmy(M2C_FIELD(temp_r2 + (arg0 + M2C_FIELD(temp_r2 + arg1 * 2, u16 *, 0x3758)), u8 *, 0x1420));
 }
 
-s32 func_ov000_0216cc84(s32 arg0, s32 arg1) {
+s32 GetCellTerrainDefense(s32 arg0, s32 arg1) {
  s32 GetTerrainDefenseScore(s32,s32,s32);
  s32 Divide(s32,s32);
  extern s32 *gCurrentMap;
@@ -145,17 +145,17 @@ void *GetArmyPalette(s32 arg0) {
     return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
 
-s32 func_ov000_0216cda4(s32 arg0) {
+s32 GetTerrainTileBase(s32 arg0) {
 s32 GetNameGraphicFile(s32);extern u8 data_ov000_021b8711;
 return GetNameGraphicFile(0)+((&data_ov000_021b8711)[arg0*3]<<9);
 }
 
-void *func_ov000_0216cdcc(s32 arg0) {
+void *GetTerrainTileData(s32 arg0) {
 extern u8 data_02123c40;extern u8 data_ov000_021b8710;
 return &data_02123c40+((&data_ov000_021b8710)[arg0*3]<<8);
 }
 
-void *func_ov000_0216cdec(s32 arg0,s32 arg1) {
+void *GetTerrainPalette(s32 arg0,s32 arg1) {
 extern u8 data_02120b20;extern u8 data_ov000_021b8712;
 return &data_02120b20+((arg1+(&data_ov000_021b8712)[arg0*3])<<5);
 }

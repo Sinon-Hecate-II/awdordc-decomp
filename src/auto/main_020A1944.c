@@ -234,24 +234,32 @@ s32 func_020a1f88(s32 player) {
     return result;
 }
 
-void func_020a2148(u16 *arg0) {
- s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
- u16 *GetMapSettings(void); void MapSettings_SetDefaults(u16 *); void MapSettings_Capture(u16 *);
- s32 GetPlayerCoId(s32); s32 GetPlayerArmyId(s32); s32 GetPlayerTeam(s32);
- s32 i; u16 *p; u16 value;
- p=arg0;
- if(p==0) p=GetMapSettings();
- if(IsLinkSessionActive()!=0) return;
- if(func_020cd6d4()!=0) return;
- MapSettings_SetDefaults(p); MapSettings_Capture(p);
- i=0;
- do {
- *p=(*p & ~0xff) | (u8)(u16)GetPlayerCoId(i+1);
- *p=(*p & ~0xf00) | ((u32)((u16)GetPlayerArmyId(i+1)<<28)>>20);
- value=GetPlayerTeam(i+1); i++;
- *p=(*p & ~0xf000) | ((u32)(value<<28)>>16);
- p++;
- }while(i<4);
+/* Fill the four player slots (MapSettings.players) of a map-settings record, the
+ * current one when NULL, with the CO, army and team of the four players, after
+ * resetting the rest of the record to its defaults.  A link session keeps the
+ * slots the other consoles sent, and a map that sets no player control mode
+ * (func_020cd6d4) keeps the saved slots. */
+void MapSettings_SavePlayers(u16 *settings) {
+    s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
+    u16 *GetMapSettings(void); void MapSettings_SetDefaults(u16 *); void MapSettings_Capture(u16 *);
+    s32 GetPlayerCoId(s32); s32 GetPlayerArmyId(s32); s32 GetPlayerTeam(s32);
+    u16 *p;
+    s32 i;
+    u16 value;
+    p = settings;
+    if (p == 0) p = GetMapSettings();
+    if (IsLinkSessionActive() != 0) return;
+    if (func_020cd6d4() != 0) return;
+    MapSettings_SetDefaults(p);
+    MapSettings_Capture(p);
+    i = 0;
+    do {
+        *p = (*p & ~MAP_SETTINGS_PLAYER_CO) | (u8)(u16)GetPlayerCoId(i + 1);
+        *p = (*p & ~MAP_SETTINGS_PLAYER_ARMY) | ((u32)((u16)GetPlayerArmyId(i + 1) << 28) >> 20);
+        value = GetPlayerTeam(i + 1); i++;
+        *p = (*p & ~MAP_SETTINGS_PLAYER_TEAM) | ((u32)(value << 28) >> 16);
+        p++;
+    } while (i < 4);
 }
 
 /* Applies a map-settings block (the current one when NULL) to the per-player

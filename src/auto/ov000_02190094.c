@@ -1,6 +1,18 @@
 /* 3 functions from 0x02190094 to 0x02190F74 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "ov000_unit_entry.h"
+#include "battle_map.h"
+/* The AI target word at MAP_UNIT_TARGET.  It is the layout the other functions
+ * in this file still spell Position_021906a0. */
+typedef struct {
+ u16 x:6;         /* bits 0..5: target tile x, MAP_UNIT_TARGET_NONE when unset */
+ u16 y:6;         /* bits 6..11: target tile y */
+ u16 needState:2; /* bits 12..13: MAP_UNIT_NEED_STATE (0 none, 1 resupply, 2 repair) */
+ u16 action:2;    /* bits 14..15: MAP_UNIT_ACTION_* (0 none, 1 move then act, 2 act in place) */
+} MapUnitTarget;
+/* The health word at MAP_UNIT_HEALTH: health and ammo below the capture points,
+ * which are its top five bits (the layout of Health_021906a0). */
+typedef struct { u16 base:11; u16 capture:5; } MapUnitHealthWord;
 typedef struct {
  u16 x:6;
  u16 y:6;
@@ -13,7 +25,7 @@ typedef struct { u8 a[3]; u8 count; u8 b[2]; } Supply_021906a0;
 extern void **gCurrentMap;
 void BuildUnitMoveRange(void *);
 int IsCurrentPlayerUnit(int);
-int func_ov000_021a8984(int);
+int IsMidActionStep(int);
 int CanUnitAttackKind(void *,int);
 int UnitCanReachPropertyCell(void *);
 void ClearUnitMoveTarget(void);
@@ -31,7 +43,7 @@ s32 func_020a7694(void *);
 void func_ov000_02199f38(void);
 void PlanMoveDestination(s32,s32);
 s32 func_ov000_021a91d0(s32);
-void func_ov000_02190b54(void);
+void SelectAttackingUnitFallback(void);
 #pragma push
 #pragma opt_common_subs off
 #pragma scheduling off
@@ -195,7 +207,7 @@ void func_ov000_02190094(void)
     {
       return;
     }
-    func_ov000_02190b54();
+    SelectAttackingUnitFallback();
     ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->state = 2;
   }
 }
@@ -215,7 +227,7 @@ void func_ov000_021906a0(int arg0) {
    if (!IsCurrentPlayerUnit(m[x + *(u16 *)(m + 0x3758 + y * 2) + 0x508])) continue;
    m = *gCurrentMap;
    unit = m + 0x59a4 + 14 * m[x + *(u16 *)(m + 0x3758 + y * 2)];
-   if (func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB)) continue;
+   if (IsMidActionStep(((UnkStruct_ov000_021A860C *)unit)->unkB)) continue;
    if (!CanUnitAttackKind(unit, ((UnkStruct_ov000_021A860C *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->unk0)) continue;
    if (((Health_021906a0 *)(unit + 6))->high != 0) continue;
    switch (kind) {
@@ -275,30 +287,37 @@ void func_ov000_021906a0(int arg0) {
  SetMapCursor((s16)sx, (s16)sy, 7, 0, 0);
 }
 int func_ov000_0217d86c(void);
-void func_ov000_02190b54(void) {
+/* Fallback of the AI capture planner (func_ov000_02190094): when no reachable
+ * property can be captured, choose a reachable friendly unit that can attack a
+ * unit of the acting unit's kind (kind 25 first, then 24, then 13), have it act
+ * from where it stands, clear the acting unit's action and move the cursor onto
+ * it.  A transport (kind 19) also gets the drop tile the candidate scan picks. */
+void SelectAttackingUnitFallback(void) {
  u8 *unit;
  int sx = -1, sy = -1, kind = 0, x, y;
  u8 *m;
  u16 pos[2];
- if (((u32)((*(u8 **)((u8 *)*gCurrentMap+0x52d0))[11]<<24)>>31) || func_ov000_0217d86c()==1) {
- ((Position_021906a0 *)((u8 *)*(void **)((u8 *)*gCurrentMap+0x52d0)+8))->state=0;return;
+ /* bit 7 of the AI step byte is the hold flag (set by func_ov000_0217d86c): the
+  * unit should not move, so plan no action for it */
+ if (((u32)((*(u8 **)((u8 *)*gCurrentMap+MAP_CURSOR_UNIT))[MAP_UNIT_AI_STATE]<<24)>>31) || func_ov000_0217d86c()==1) {
+  ((MapUnitTarget *)((u8 *)*(void **)((u8 *)*gCurrentMap+MAP_CURSOR_UNIT)+MAP_UNIT_TARGET))->action=MAP_UNIT_ACTION_NONE;return;
  }
- BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap+0x52d0));
- for (y = kind; y < *(u16 *)((u8 *)*gCurrentMap + 0x5146); y++) {
-  for (x = 0; x < *(u16 *)((u8 *)*gCurrentMap + 0x5144); x++) {
+ BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap+MAP_CURSOR_UNIT));
+ for (y = kind; y < *(u16 *)((u8 *)*gCurrentMap + MAP_HEIGHT); y++) {
+  for (x = 0; x < *(u16 *)((u8 *)*gCurrentMap + MAP_WIDTH); x++) {
    m = *gCurrentMap;
-   if ((*(s8 **)(m + 0x52e8 + y * 4))[x] < 0) continue;
-   if (!m[x + *(u16 *)(m + 0x3758 + y * 2)]) continue;
-   if (!IsCurrentPlayerUnit(m[x + *(u16 *)(m + 0x3758 + y * 2) + 0x508])) continue;
+   if ((*(s8 **)(m + MAP_GRID + y * 4))[x] < 0) continue;
+   if (!m[x + *(u16 *)(m + MAP_ROW_OFFSETS + y * 2)]) continue;
+   if (!IsCurrentPlayerUnit(m[x + *(u16 *)(m + MAP_ROW_OFFSETS + y * 2) + MAP_CELL_UNIT_ID])) continue;
    m = *gCurrentMap;
-   unit = m + 0x59a4 + 14 * m[x + *(u16 *)(m + 0x3758 + y * 2)];
-   if (func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB)) continue;
-   if (!CanUnitAttackKind(unit, ((UnkStruct_ov000_021A860C *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->unk0)) continue;
-   if (((Health_021906a0 *)(unit + 6))->high != 0) continue;
+   unit = m + MAP_UNIT_RECORDS + MAP_UNIT_STRIDE * m[x + *(u16 *)(m + MAP_ROW_OFFSETS + y * 2)];
+   if (IsMidActionStep(((UnkStruct_ov000_021A860C *)unit)->unkB)) continue;
+   if (!CanUnitAttackKind(unit, ((UnkStruct_ov000_021A860C *)*(void **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT))->unk0)) continue;
+   if (((MapUnitHealthWord *)(unit + MAP_UNIT_HEALTH))->capture != 0) continue;
    switch (kind) {
-   case 25:
+   case 25: /* keep the better candidate: 25 over 24 */
     if (((UnkStruct_ov000_021A860C *)unit)->unk0 == 24) continue;
-   case 24:
+   case 24: /* and 24 over 13 */
     if (((UnkStruct_ov000_021A860C *)unit)->unk0 == 13) continue;
    case 0:
    case 13:
@@ -315,25 +334,28 @@ void func_ov000_02190b54(void) {
  }
  if (sx == -1) return;
  m = *gCurrentMap;
- if (kind == 13 && !UnitCanReachPropertyCell(m + 0x59a4 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)])) return;
+ /* a capturing unit must be able to walk onto the cell it attacks from */
+ if (kind == 13 && !UnitCanReachPropertyCell(m + MAP_UNIT_RECORDS + MAP_UNIT_STRIDE * m[sx + *(u16 *)(m + MAP_ROW_OFFSETS + sy * 2)])) return;
  if (kind == 24 || kind == 25) {
+  /* an indirect unit has no separate move target: it fires in place */
   m = *gCurrentMap;
-  unit = m + 0x59a4 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)];
-  ((Position_021906a0 *)(unit + 8))->x = (u16)sx;
-  ((Position_021906a0 *)(unit + 8))->y = (u16)sy;
+  unit = m + MAP_UNIT_RECORDS + MAP_UNIT_STRIDE * m[sx + *(u16 *)(m + MAP_ROW_OFFSETS + sy * 2)];
+  ((MapUnitTarget *)(unit + MAP_UNIT_TARGET))->x = (u16)sx;
+  ((MapUnitTarget *)(unit + MAP_UNIT_TARGET))->y = (u16)sy;
  }
- unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
- ((Position_021906a0 *)(unit + 8))->state = 0;
+ unit = *(u8 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
+ ((MapUnitTarget *)(unit + MAP_UNIT_TARGET))->action = MAP_UNIT_ACTION_NONE;
  ClearUnitMoveTarget();
  if (kind == 19) {
+  /* a transport: place the drop tile and step it to the drop state */
   m = *gCurrentMap;
-  if (func_ov000_0217de64((s16)sx, (s16)sy, 19, (u8)((*(u16 *)(m + 0x59a8 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)]) & 1) != 0), pos) == 1) {
-   unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-   *(u16 *)(unit + 8) = (*(u16 *)(unit + 8) & ~63) | (pos[0] & 63);
-   unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-   *(u16 *)(unit + 8) = (*(u16 *)(unit + 8) & ~0xfc0) | ((pos[1] & 63) << 6);
-   unit = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-   unit[11] = (unit[11] & ~15) | 2;
+  if (func_ov000_0217de64((s16)sx, (s16)sy, 19, (u8)((*(u16 *)(m + MAP_UNIT_RECORDS + MAP_UNIT_FLAGS + MAP_UNIT_STRIDE * m[sx + *(u16 *)(m + MAP_ROW_OFFSETS + sy * 2)]) & 1) != 0), pos) == 1) {
+   unit = *(u8 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
+   *(u16 *)(unit + MAP_UNIT_TARGET) = (*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_X_MASK) | (pos[0] & MAP_UNIT_TARGET_X_MASK);
+   unit = *(u8 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
+   *(u16 *)(unit + MAP_UNIT_TARGET) = (*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_Y_MASK) | ((pos[1] & MAP_UNIT_TARGET_X_MASK) << 6);
+   unit = *(u8 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
+   unit[MAP_UNIT_AI_STATE] = (unit[MAP_UNIT_AI_STATE] & ~MAP_UNIT_AI_STATE_MASK) | 2;
   }
  }
  SetMapCursor((s16)sx, (s16)sy, 7, 0, 0);

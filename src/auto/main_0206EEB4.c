@@ -11,14 +11,14 @@ extern u32 data_0210074c[4];
 #pragma opt_strength_reduction off
 void func_0206eeb4(u8 *out,double x){
 u32 func_0206f794(double,...);s32 func_0206f7a8(double,...);s32 func_0206f700(u64);
-double func_0206dfd0(double,s32 *);double ScaleDoubleByExp(double,s32);u64 func_02070550(double);
+double Frexp(double,s32 *);double ScaleDoubleByExp(double,s32);u64 func_02070550(double);
 void func_0206e6cc(void *,s32);void DecimalFromU64(void *,u64);void func_0206e4ac(void *,void *,void *);
 s32 exp,n;u8 b[38],a[38];u64 bits;DoubleBits value; s8 sign;
 sign=func_0206f794(x)!=0;
 if(x==0.0){out[0]=sign;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=0;return;}
 if(func_0206f7a8(x)<=2){out[0]=sign;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=func_0206f7a8(x)==1?'N':'I';return;}
 if(sign)x=-x;
-x=func_0206dfd0(x,&exp);
+x=Frexp(x,&exp);
 value.d=x;bits=value.u|0x10000000000000ULL;
 n=53-func_0206f700((bits & -bits)-1);
 func_0206e6cc(a,exp-n);
@@ -124,10 +124,10 @@ s32 func_0206f7a8(double x, ...) {
 }
 
 double func_0206f818(double x, s32 n) {
- double func_0206dfd0(double, s32 *);
+ double Frexp(double, s32 *);
  double ScaleDoubleByExp(double, s32);
  s32 exponent;
- x=func_0206dfd0(x,&exponent);
+ x=Frexp(x,&exponent);
  exponent+=n;
  return ScaleDoubleByExp(x,exponent);
 }

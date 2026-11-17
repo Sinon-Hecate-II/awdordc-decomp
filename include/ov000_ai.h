@@ -68,6 +68,12 @@
 #define UNIT_KIND_FLAGS_AIR  0x20 /* air kind */
 #define UNIT_KIND_FLAGS_FUEL_CRITICAL (UNIT_KIND_FLAGS_SEA | UNIT_KIND_FLAGS_AIR)
 
+/* The AI steps in which a unit is carrying out the action it chose earlier: the
+ * attack step resolves its attack, the capture step walks it onto the property.
+ * The per-turn handlers run these; unit scans skip units that are in them. */
+#define AI_STEP_ATTACK      6
+#define AI_STEP_CAPTURE     8
+
 /* Attack-distance rings added outside a movement flood fill start above its cost values. */
 #define AI_THREAT_RING_FIRST 111
 

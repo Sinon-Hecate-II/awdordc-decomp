@@ -10,10 +10,15 @@ extern u8 gUnitKindMaxAmmo[];
 extern u8 gUnitKindMaxFuel[];
 extern void *gAiSettings;
 extern void *gAiUnitTypeTuning;
-extern const u8 data_ov000_021ae91c[4];
+extern const u8 gPropertyCapabilityBits[4];
 extern s8 gTerrainPropertyType[];
 extern u8 gUnitKindStats[];
 typedef struct AiCapabilityFields { u16 all : 3; u16 own : 3; u16 enemy : 3; u16 ownProperties : 3; u16 enemyProperties : 3; u16 unused : 1; } AiCapabilityFields;
+/* The AI's capability word in the command state, and the property-capability
+ * bits of the map cell at (x, y) (propertyFlags holds gPropertyCapabilityBits). */
+#define AI_CAP ((AiCapabilityFields *)(gAiCommandState + 10))
+#define CELL_TERRAIN(x, y) ((u8 *)*gCurrentMap)[M2C_FIELD((u8 *)*gCurrentMap + ((y) << 1), u16 *, MAP_ROW_OFFSETS) + (x) + MAP_CELL_TERRAIN]
+#define CELL_PROPERTY_BITS(x, y) propertyFlags[gTerrainPropertyType[CELL_TERRAIN(x, y) & MAP_TERRAIN_KIND_MASK]]
 
 void func_ov000_0219a584(void) {
 s32 func_ov000_0219a3b0(s32); s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32);
@@ -111,41 +116,73 @@ void UpdateAiSupplyStates(void) {
 }
 
 #pragma opt_strength_reduction off
+/* Rebuild the AI's capability word for the current map: the property types the
+ * AI team and its enemies own, then the movement capabilities (sea, air and the
+ * special kinds) of every active player's units. */
 void UpdateAiCapabilityFlags(void) {
-s32 func_020d280c(u16,s32,s32); s32 IsPlayerActive(s32); s32 IsCurrentPlayerUnit(s16); s32 IsSameTeam(u16,s32);
-u8 propertyFlags[4]; s32 y,x,player,unitId,unitOffset; u8 *unit; u32 kind;
-propertyFlags[0]=data_ov000_021ae91c[0];propertyFlags[1]=data_ov000_021ae91c[1];propertyFlags[2]=data_ov000_021ae91c[2];propertyFlags[3]=data_ov000_021ae91c[3];
-M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)((0)<<29)>>29);M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)((0)<<29)>>26);M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)((0)<<29)>>23);
-for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++){
-for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
-if(!func_020d280c(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),x,y)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~448)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<23)>>29)|propertyFlags[gTerrainPropertyType[((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+(y<<1),u16*,0x3758)+x+0x1420]&31]])<<29)>>23);}
-if((((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+(y<<1),u16*,0x3758)+x+0x1420]&224)==M2C_FIELD(*gCurrentMap,u16*,0x52a6)){M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~56)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)|propertyFlags[gTerrainPropertyType[((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+(y<<1),u16*,0x3758)+x+0x1420]&31]])<<29)>>26);}
-M2C_FIELD(gAiCommandState,u16*,10)=(M2C_FIELD(gAiCommandState,u16*,10)&~7)|((u32)((((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)|propertyFlags[gTerrainPropertyType[((u8*)*gCurrentMap)[M2C_FIELD((u8*)*gCurrentMap+(y<<1),u16*,0x3758)+x+0x1420]&31]])<<29)>>29);
-}}
-((AiCapabilityFields *)(gAiCommandState+10))->ownProperties=((AiCapabilityFields *)(gAiCommandState+10))->own;((AiCapabilityFields *)(gAiCommandState+10))->enemyProperties=((AiCapabilityFields *)(gAiCommandState+10))->enemy;
-for(player=1;player<5;player++) if(IsPlayerActive(player)){
-unitId=gPlayerUnitIdBase[player]+1;
-if(unitId<gPlayerUnitIdBase[player]+0x33){unitOffset=unitId*14; do {
-unit=(u8*)*gCurrentMap+0x59a4;
-kind=(u32)(unit[unitOffset]<<26)>>26;
-if(kind){
-if(gUnitKindStats[kind*112+19]&32){((AiCapabilityFields *)(gAiCommandState+10))->all=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->all|4);
-if(IsCurrentPlayerUnit((s16)unitId)==1){((AiCapabilityFields *)(gAiCommandState+10))->own=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->own|4);}
-if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){((AiCapabilityFields *)(gAiCommandState+10))->enemy=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->enemy|4);}
-if(((u32)(unit[unitOffset]<<26)>>26)==21){((AiCapabilityFields *)(gAiCommandState+10))->all=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->all|8);
-if(IsCurrentPlayerUnit((s16)unitId)==1){((AiCapabilityFields *)(gAiCommandState+10))->own=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->own|8);}
-if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){((AiCapabilityFields *)(gAiCommandState+10))->enemy=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->enemy|8);}}}
-else if(kind==17){((AiCapabilityFields *)(gAiCommandState+10))->all=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->all|8);
-if(IsCurrentPlayerUnit((s16)unitId)==1){((AiCapabilityFields *)(gAiCommandState+10))->own=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->own|8);}
-if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){((AiCapabilityFields *)(gAiCommandState+10))->enemy=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->enemy|8);}}
-else if(gUnitKindStats[kind*112+19]&16){((AiCapabilityFields *)(gAiCommandState+10))->all=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->all|2);
-if(IsCurrentPlayerUnit((s16)unitId)==1){((AiCapabilityFields *)(gAiCommandState+10))->own=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->own|2);}
-if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),player)){((AiCapabilityFields *)(gAiCommandState+10))->enemy=(u16)(((AiCapabilityFields *)(gAiCommandState+10))->enemy|2);}}
-}
-unitId++;unitOffset+=14;
-}while(unitId<gPlayerUnitIdBase[player]+0x33);
-}
-}
+    s32 IsPropertyOwnedByTeam(u16, s32, s32);
+    s32 IsPlayerActive(s32);
+    s32 IsCurrentPlayerUnit(s16);
+    s32 IsSameTeam(u16, s32);
+    u8 propertyFlags[4];
+    s32 y, x, player, unitId, unitOffset;
+    u8 *unit;
+    u32 kind;
+
+    propertyFlags[0] = gPropertyCapabilityBits[0];
+    propertyFlags[1] = gPropertyCapabilityBits[1];
+    propertyFlags[2] = gPropertyCapabilityBits[2];
+    propertyFlags[3] = gPropertyCapabilityBits[3];
+    AI_CAP->all = 0;
+    AI_CAP->own = 0;
+    AI_CAP->enemy = 0;
+    for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+            if (!IsPropertyOwnedByTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), x, y)) {
+                AI_CAP->enemy |= CELL_PROPERTY_BITS(x, y);
+            }
+            if ((CELL_TERRAIN(x, y) & MAP_TERRAIN_OWNER_MASK) == M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_OWNER)) {
+                AI_CAP->own |= CELL_PROPERTY_BITS(x, y);
+            }
+            AI_CAP->all |= CELL_PROPERTY_BITS(x, y);
+        }
+    }
+    AI_CAP->ownProperties = AI_CAP->own;
+    AI_CAP->enemyProperties = AI_CAP->enemy;
+    for (player = 1; player < 5; player++) if (IsPlayerActive(player)) {
+        unitId = gPlayerUnitIdBase[player] + 1;
+        if (unitId < gPlayerUnitIdBase[player] + MAP_UNIT_GROUP_SCAN) {
+            unitOffset = unitId * MAP_UNIT_STRIDE;
+            do {
+                unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS;
+                kind = (u32)(unit[unitOffset] << 26) >> 26;
+                if (kind) {
+                    if (gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_FLAGS] & UNIT_KIND_FLAGS_AIR) {
+                        AI_CAP->all = (u16)(AI_CAP->all | 4);
+                        if (IsCurrentPlayerUnit((s16)unitId) == 1) { AI_CAP->own = (u16)(AI_CAP->own | 4); }
+                        if (!IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player)) { AI_CAP->enemy = (u16)(AI_CAP->enemy | 4); }
+                        if (((u32)(unit[unitOffset] << 26) >> 26) == 21) {
+                            AI_CAP->all = (u16)(AI_CAP->all | 8);
+                            if (IsCurrentPlayerUnit((s16)unitId) == 1) { AI_CAP->own = (u16)(AI_CAP->own | 8); }
+                            if (!IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player)) { AI_CAP->enemy = (u16)(AI_CAP->enemy | 8); }
+                        }
+                    }
+                    else if (kind == 17) {
+                        AI_CAP->all = (u16)(AI_CAP->all | 8);
+                        if (IsCurrentPlayerUnit((s16)unitId) == 1) { AI_CAP->own = (u16)(AI_CAP->own | 8); }
+                        if (!IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player)) { AI_CAP->enemy = (u16)(AI_CAP->enemy | 8); }
+                    }
+                    else if (gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_FLAGS] & UNIT_KIND_FLAGS_SEA) {
+                        AI_CAP->all = (u16)(AI_CAP->all | 2);
+                        if (IsCurrentPlayerUnit((s16)unitId) == 1) { AI_CAP->own = (u16)(AI_CAP->own | 2); }
+                        if (!IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player)) { AI_CAP->enemy = (u16)(AI_CAP->enemy | 2); }
+                    }
+                }
+                unitId++;
+                unitOffset += MAP_UNIT_STRIDE;
+            } while (unitId < gPlayerUnitIdBase[player] + MAP_UNIT_GROUP_SCAN);
+        }
+    }
 }
 s32 ApplyStatSpread(s32 arg0, s32 arg1, s32 arg2) {
     s32 Divide(s32, M2C_UNK);

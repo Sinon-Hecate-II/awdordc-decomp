@@ -252,7 +252,7 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020a8ce4(s32 arg0, s32 arg1) {
+s32 ScaleFixed8(s32 arg0, s32 arg1) {
     return (s32) (arg0 * arg1) >> 8;
 }
 
@@ -265,11 +265,11 @@ void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg
  width=arg3;z=arg2;origin=arg0;
  if(width && (height=arg4)!=0) {
  remaining=width; index=arg6;
- y=arg1-(func_020a8ce4(height,arg9)>>1);
+ y=arg1-(ScaleFixed8(height,arg9)>>1);
  scaleX=arg8;flags=arg7;scaleY=arg9;
  do {
  tileH=func_020a8cc0((u16)height);
- x=origin-(func_020a8ce4(width,scaleX)>>1);
+ x=origin-(ScaleFixed8(width,scaleX)>>1);
  dy=(tileH*scaleY)>>8;
  do {
  tileW=func_020a8cc0((u16)remaining);
@@ -288,7 +288,16 @@ s32 func_020a8e28(s32 arg0, s32 arg1) {
     return (s32) ((arg0 - ((s32) (arg0 * arg1) >> 8)) << 0xF) >> 0x10;
 }
 
-void func_020a8e3c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 i,s32 j){void func_0208718c();void DrawSolidQuad(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;px=a-(func_020a8ce4(d,g)>>1);py=b-(func_020a8ce4(e,h)>>1);x=func_020a8ce4(d,g);y=func_020a8ce4(e,h);if(i!=256)x=func_020a8ce4(x,i);if(j!=256)y=func_020a8ce4(y,j);func_0208718c();DrawSolidQuad(px,py,c,x,y,(u16)f);}
+/* Draw a solid-colour quad centred on (centerX, centerY) at depth z: the base
+ * width and height are scaled by scaleX and scaleY (8.8 fixed point, 256 =
+ * unchanged), then by widthScale and heightScale (256 = unchanged), which grow
+ * the quad from its top-left corner. */
+void DrawSolidQuadScaled(s32 centerX,s32 centerY,s32 z,s32 width,s32 height,s32 color,s32 scaleX,s32 scaleY,s32 widthScale,s32 heightScale){
+void func_0208718c();void DrawSolidQuad(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;
+px=centerX-(ScaleFixed8(width,scaleX)>>1);py=centerY-(ScaleFixed8(height,scaleY)>>1);x=ScaleFixed8(width,scaleX);y=ScaleFixed8(height,scaleY);
+if(widthScale!=256)x=ScaleFixed8(x,widthScale);
+if(heightScale!=256)y=ScaleFixed8(y,heightScale);
+func_0208718c();DrawSolidQuad(px,py,z,x,y,(u16)color);}
 
 u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
 

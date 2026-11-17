@@ -279,7 +279,7 @@ void MoveCursorTo(s32 x, s32 y) {
 void func_020d61ac(void) {
  extern void *gCurrentMap;
  void *p=M2C_FIELD(gCurrentMap,void **,0);
- func_020cf498(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
+ SetMapCursorTargetTile(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
  func_020c75cc();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=5;
 }
@@ -350,7 +350,7 @@ void func_020d6310(void) {
 void func_020d6350(void) {
  extern void *gCurrentMap;
  void *p=M2C_FIELD(gCurrentMap,void **,0);
- func_020cf498(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
+ SetMapCursorTargetTile(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
  func_020d468c();BattleUpdateUnitCursor();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }

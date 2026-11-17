@@ -424,7 +424,7 @@ func_02006270((s32)next);
 void func_02005968(void) {
 extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,data_027e0000,gSocketManager,data_0212dcb4,data_0212defc;
 extern char data_00000000[],data_00000800[]; void func_02006120(void);
-void func_02005ac0(void *,void *,s32,u8 *,u32,s32);
+void TaskCreate(void *,void *,s32,u8 *,u32,s32);
 s32 size;u8 *end,*start;
 if(M2C_FIELD(&gThreadManager,s32 *,12))return;
 M2C_FIELD(&gThreadManager,s32 *,12)=1;
@@ -451,7 +451,7 @@ M2C_FIELD(&gThreadManager,u16 *,36)=0;
 M2C_FIELD(&gThreadManager,u16 *,38)=0;
 *(void **)0x027fffa0=&gSocketManager;
 func_020060f8(0);
-func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
+TaskCreate(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
 M2C_FIELD(&gThreadManager,s32 *,164)=32;
 M2C_FIELD(&gThreadManager,s32 *,152)=1;
 }
@@ -462,7 +462,7 @@ s32 func_02005ab0(void) {
 }
 
 /* Initializes a managed memory-block object (obj) backed by buffer (buf) of (bufLen) bytes, with priority (priority) and callback (callback); registers it in the global block list. */
-void func_02005ac0(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
+void TaskCreate(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 void func_020061a0(); void func_02006198();
 void CpuFill(s32,void *,s32); void func_02005bbc(void);
@@ -571,7 +571,7 @@ void func_02005d60(void *arg0) {
     OS_RestoreInterrupts(temp_r4);
 }
 
-s32 func_02005d90(void *arg0) {
+s32 TaskIsFinished(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x64) == 2) {
         return 1;
     }

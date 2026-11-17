@@ -127,14 +127,14 @@ extern M2C_UNK data_02136e6c,gNetStack;
 void func_02019334();
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
-void func_02005ac0(M2C_UNK,void (*)(void),M2C_UNK,void *,s32,s32);
+void TaskCreate(M2C_UNK,void (*)(void),M2C_UNK,void *,s32,s32);
 s32 saved=OS_DisableInterrupts();
 if(!data_02136e68){
 data_02136e68=a;
 func_02019320(a+0xc4);
 func_02019320((s32)&data_02136e6c);
 M2C_FIELD(a,s32 *,0xc0)=0;
-func_02005ac0(a,func_02019334,a,&gNetStack,0x400,20);
+TaskCreate(a,func_02019334,a,&gNetStack,0x400,20);
 TaskWake(a);
 }
 OS_RestoreInterrupts(saved);

@@ -10,7 +10,7 @@ s32 func_020a85c8(u32);
 s32 IsCarrierUnitKind(u32);
 s32 func_020d0164(s32, s32);
 s32 IsUnitOnCurrentTeam(s32);
-s32 func_020d280c(u16, u8, s32);
+s32 IsPropertyOwnedByTeam(u16, u8, s32);
 s32 GetUnitBuildCost(u16, s32);
 s32 FillMapCellLayer(s32, s32);
 s32 GetUnitDamagePercent(u32, s32);
@@ -845,7 +845,7 @@ void func_ov000_02181c88(void) {
                 sp40 = sp38 - 5;
                 sp44 = sp38 + 5;
                 do {
-                    if (((M2C_FIELD((M2C_FIELD((var_r7_8 + (sp38 * 2)), u16 *, 0x3758) + (var_r7_8 + var_r4)), u8 *, 0x1420) & 0x1F) == 0x11) && (func_020d280c(M2C_FIELD(var_r7_8, u16 *, 0x52A4), var_r4, sp38) != 0)) {
+                    if (((M2C_FIELD((M2C_FIELD((var_r7_8 + (sp38 * 2)), u16 *, 0x3758) + (var_r7_8 + var_r4)), u8 *, 0x1420) & 0x1F) == 0x11) && (IsPropertyOwnedByTeam(M2C_FIELD(var_r7_8, u16 *, 0x52A4), var_r4, sp38) != 0)) {
                         FloodFillUnitRange(var_r4, (u8) sp38, 7U, GetUnitMoveRange(M2C_FIELD((*gCurrentMap), u16 *, 0x52A4), 7U), 0);
                         var_r1_4 = 0;
                         if ((s32) M2C_FIELD((*gCurrentMap), u16 *, 0x5146) > 0) {

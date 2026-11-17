@@ -97,7 +97,7 @@ void func_020d482c(void) {
             M2C_FIELD(&gMapConfig, u16 *, 4) = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     }
     ResetDialogUI();
-    func_020a2148(0);
+    MapSettings_SavePlayers(0);
     AddRecordValue(25, 1);
 }
 

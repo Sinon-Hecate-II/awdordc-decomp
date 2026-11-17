@@ -99,7 +99,7 @@ void func_ov000_021692a8(void *arg0) {
 void func_ov000_021692c0(void *p) {
  void func_ov000_02169138(void *);
  s32 UnitMove_CanStepOntoCell(void *);
- void func_ov000_02169a28(void *);
+ void DrawUnitMoveSprite(void *);
  extern void (*data_ov000_021ae970[])(void *);
  u32 n=M2C_FIELD(p,u8 *,0x41);
  if(n!=0) {
@@ -109,7 +109,7 @@ void func_ov000_021692c0(void *p) {
  }
  data_ov000_021ae970[M2C_FIELD(p,u8 *,0x41)](p);
  }
- if(UnitMove_CanStepOntoCell(p))func_ov000_02169a28(p);
+ if(UnitMove_CanStepOntoCell(p))DrawUnitMoveSprite(p);
 }
 
 void func_ov000_02169334(void *p) {
@@ -377,20 +377,24 @@ void func_ov000_02169a24(void) {
 
 }
 
-void func_ov000_02169a28(void *p) {
+/* Draws the moving unit's 3D sprite at its current position: picks the sprite
+ * object and graphics-block size for the current view zoom (marking the
+ * graphics for reload when the mode changed), then draws it with the map's
+ * cell palette. */
+void DrawUnitMoveSprite(void *move) {
  s32 GetViewZoom(void *);
  void SetSpritePaletteIndex(s32);
  void DrawSprite3D(void *,s32 *,s32,s32);
- s32 v[3]; void *q; s32 n;
- u8 mode=GetViewZoom((void *)(*gCurrentMap+0x6EF8))<=0?0x10:0x18;
- if(mode==0x10){q=M2C_FIELD(p,void **,0x34);n=0x30000;}
- else{q=M2C_FIELD(p,void **,0x38);n=0x20000;}
- if(M2C_FIELD(p,u8 *,0x47)!=mode){M2C_FIELD(q,u8 *,0x22)|=1;M2C_FIELD(p,u8 *,0x47)=mode;}
- v[0]=(M2C_FIELD(p,s16 *,0x4C)+8)*48;
- v[1]=(M2C_FIELD(p,s16 *,0x4E)+16)*48;
- v[2]=0x871;
- SetSpritePaletteIndex(31);
- DrawSprite3D(q,v,n,0);
+ s32 pos[3]; void *sprite; s32 gfxSize;
+ u8 mode=GetViewZoom((void *)(*gCurrentMap+MAP_VIEW_ZOOM))<=0?MAP_SPRITE_ZOOM_SMALL:MAP_SPRITE_ZOOM_LARGE;
+ if(mode==MAP_SPRITE_ZOOM_SMALL){sprite=M2C_FIELD(move,void **,UNIT_MOVE_SPRITE);gfxSize=MAP_SPRITE_GFX_SIZE_SMALL;}
+ else{sprite=M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2);gfxSize=MAP_SPRITE_GFX_SIZE_LARGE;}
+ if(M2C_FIELD(move,u8 *,UNIT_MOVE_PALETTE_MODE)!=mode){M2C_FIELD(sprite,u8 *,0x22)|=1;M2C_FIELD(move,u8 *,UNIT_MOVE_PALETTE_MODE)=mode;}
+ pos[0]=(M2C_FIELD(move,s16 *,UNIT_MOVE_X)+UNIT_MOVE_SPRITE_OFFSET_X)*MAP_SPRITE_CELL_SIZE;
+ pos[1]=(M2C_FIELD(move,s16 *,UNIT_MOVE_Y)+UNIT_MOVE_SPRITE_OFFSET_Y)*MAP_SPRITE_CELL_SIZE;
+ pos[2]=UNIT_MOVE_SPRITE_ATTR;
+ SetSpritePaletteIndex(MAP_SPRITE_PALETTE);
+ DrawSprite3D(sprite,pos,gfxSize,0);
 }
 
 /* Whether the moving unit may still step onto tile (cx,cy) and be drawn: open

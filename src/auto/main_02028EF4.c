@@ -762,7 +762,7 @@ M2C_FIELD(arg1,s32 *,M2C_FIELD(arg0,u16 *,10))=(s32)arg2;
 M2C_FIELD(arg0,u16 *,8)++;
 }
 
-void func_02029d7c(void *arg0, void *arg1) {
+void ListRemove(void *arg0, void *arg1) {
     u16 idx;
     u32 *node;
     u32 *prev;
@@ -796,7 +796,7 @@ s32 func_02029ddc(void *arg0, s32 arg1) {
     return M2C_FIELD((arg1 + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 4);
 }
 
-s32 func_02029df4(void *arg0, s32 arg1) {
+s32 ListNext(void *arg0, s32 arg1) {
     if (arg1 == 0) {
         return M2C_FIELD(arg0, s32 *, 4);
     }

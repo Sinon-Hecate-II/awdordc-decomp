@@ -231,7 +231,7 @@ void func_0201869c(M2C_UNK arg0, s32 arg1) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void func_02018738(M2C_UNK);
-    void func_02005ac0(M2C_UNK, void (*)(void *), M2C_UNK, M2C_UNK, s32, s32);
+    void TaskCreate(M2C_UNK, void (*)(void *), M2C_UNK, M2C_UNK, s32, s32);
     void TaskWake(M2C_UNK);
     void func_02018584(void *);
     s32 saved;
@@ -240,7 +240,7 @@ void func_0201869c(M2C_UNK arg0, s32 arg1) {
         data_02136c80 = arg0;
         func_02018738(arg0 + 0x000000C4);
         M2C_FIELD(arg0, s32 *, 0x000000C0) = 0;
-        func_02005ac0(arg0, func_02018584, arg0, arg0 + 0x000000E4 + ((arg1 - 0x000000E4) & ~3), (arg1 - 0x000000E4) & ~3, 0);
+        TaskCreate(arg0, func_02018584, arg0, arg0 + 0x000000E4 + ((arg1 - 0x000000E4) & ~3), (arg1 - 0x000000E4) & ~3, 0);
         TaskWake(arg0);
     }
     OS_RestoreInterrupts(saved);

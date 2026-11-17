@@ -9,7 +9,7 @@ void func_0200fc58(void) {
     void MI_CpuFill32(M2C_UNK, M2C_UNK, M2C_UNK);
     void DC_FlushRange(void *, u32);
     void MI_CpuCopy8(void *, void *, u32);
-    void func_02005ac0(void *, void *, s32, u8 *, u32, s32);
+    void TaskCreate(void *, void *, s32, u8 *, u32, s32);
     void TaskWake(void *);
     void func_02009e40(s32, void *);
     void func_0200fd90(s32);
@@ -40,7 +40,7 @@ void func_0200fc58(void) {
         *(s32 *)((u8 *)base + 0x10) = 0;
         *(s32 *)((u8 *)base + 0x110) = 0;
         *(s32 *)((u8 *)base + 0x10C) = 0;
-        func_02005ac0((u8 *)base + 0x44, (void *)func_02010cc4, 0,
+        TaskCreate((u8 *)base + 0x44, (void *)func_02010cc4, 0,
                       (u8 *)data_02130400, 0x400,
                       *(s32 *)((u8 *)base + 0x108));
         TaskWake((u8 *)base + 0x44);

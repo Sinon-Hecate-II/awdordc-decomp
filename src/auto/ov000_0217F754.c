@@ -2,6 +2,12 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
+static inline s32 SearchStart(s32 value) { return value; }
+static inline void *SearchMapDimensions(void *map) { return (u8*)map+0x5120; }
+static inline u16 SearchMapWidth(void *map) { return M2C_FIELD(map,u16*,0x5144); }
+static inline u16 SearchMapHeight(void *map) { return M2C_FIELD(map,u16*,0x5146); }
+static inline u16 SearchMapDimension(void *dims,s32 axis) { return M2C_FIELD(dims,u16*,0x24+axis*2); }
+static inline s32 UnitSearchDistance(u8 *unit,s32 x,s32 y) { s32 d=0;if(unit[1]-x>0)d+=unit[1]-x;else d+=x-unit[1];if(unit[2]-y>0)d+=unit[2]-y;else d+=y-unit[2];return d; }
 static inline s32 MapSearchDistance(s32 x0, s32 y0, s32 x1, s32 y1) {
  s32 distance=0;
  if(x0-x1>0)distance+=x0-x1;else distance+=x1-x0;
@@ -133,11 +139,36 @@ func_01ffc2e8(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
 func_ov000_0218d040(1);
 }
-#pragma opt_strength_reduction reset
+#pragma opt_strength_reduction off
 void func_ov000_0217fe68(void *arg0) {
-    (void)arg0;
+extern void **gCurrentMap;extern u8 gUnitKindStats[];
+s32 GetUnitAttackRangeMax(void*); s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02176e28(s32,s16*);
+void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void func_01ffc2e8(void*);void func_ov000_0218d040(s32);
+s32 best=0,id=0; s16 pos[2];s32 minX,minY,maxX,maxY,x,y,distance,score,index;u8 *unit,*map;
+pos[0]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1];pos[1]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2];
+minX=(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))<0?0:(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)));
+minY=(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))<0?0:(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)));
+if((M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]+GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))>=M2C_FIELD(SearchMapDimensions(*gCurrentMap),u16*,0x24)-1) maxX=M2C_FIELD(*gCurrentMap,u16*,0x5144)-1;else maxX=(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]+GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)));
+if((M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2]+GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))>=M2C_FIELD(SearchMapDimensions(*gCurrentMap),u16*,0x26)-1) maxY=M2C_FIELD(*gCurrentMap,u16*,0x5146)-1;else maxY=(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2]+GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)));
+for(y=minY;y<=maxY;y++)for(x=minX;x<=maxX;x++){
+unit=M2C_FIELD(*gCurrentMap,u8**,0x52d0);
+distance=0;if(unit[1]-x>0)distance+=unit[1]-x;else distance+=x-unit[1];if(unit[2]-y>0)distance+=unit[2]-y;else distance+=y-unit[2];
+if(distance<gUnitKindStats[((u32)(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[0]<<26)>>26)*112+12])continue;
+if(distance>GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))continue;
+map=*gCurrentMap;unit=map+0x59a4+14*(s16)map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
+if(!((u32)(unit[0]<<26)>>26))continue;
+index=unit?(unit-(map+0x59a4))/14:0;
+if(func_020d27a4(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
+if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
+map=*gCurrentMap;
+score=func_ov000_02176e28(map[unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758)]|0x30000,pos);
+if(!score||score<best)continue;
+best=score;map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }
-
+if(best)SetMapCursor(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1],M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2],4,(u8)id,0);
+SelectMapLayer((u8*)*gCurrentMap+0x2338);func_01ffc2e8(arg0);SelectMapLayer((u8*)*gCurrentMap+0x1e30);func_ov000_0218d040(1);
+}
+#pragma opt_strength_reduction reset
 void func_ov000_02180268(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 *gAiCommandState;extern u8 *gAiUnitListCursor;
 s32 func_ov000_021a9904(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void SetMapCursor(s32,s32,s32,s32,s32);

@@ -22,7 +22,7 @@ return result;
 
 /* Initialize the map scene: load map data, fill tile slots, and center the viewport. */
 void func_ov007_0221c534(void) {
-M2C_UNK func_0207b754(u32,u32); M2C_UNK func_020cf498(s16,s16);
+M2C_UNK func_0207b754(u32,u32); M2C_UNK SetMapCursorTargetTile(s16,s16);
 M2C_UNK RefreshMapView(); M2C_UNK RefreshMapEditor();
 M2C_UNK MapEditor_SetMapModified(M2C_UNK); M2C_UNK func_ov007_0221ab68();
 extern void **gCurrentMap;
@@ -40,7 +40,7 @@ ResetPlayerOrder(); RefreshMapView(); RefreshMapEditor(); func_ov007_0221ab68();
 state=*gCurrentMap;
 viewX=(u32)M2C_FIELD(state,u16 *,0x5144)>>1;
 viewY=(u32)M2C_FIELD(state,u16 *,0x5146)>>1;
-func_020cf498((s16)viewX,(s16)viewY);func_0207b754(viewX,viewY);MapEditor_SetMapModified(0);
+SetMapCursorTargetTile((s16)viewX,(s16)viewY);func_0207b754(viewX,viewY);MapEditor_SetMapModified(0);
 }
 
 void func_ov007_0221c630(void) {

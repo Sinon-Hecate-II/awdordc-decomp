@@ -1,5 +1,6 @@
 /* 7 functions from 0x02209D0C to 0x0220ACCC (ov003), found by ds-decomp. */
 #include "common.h"
+static inline u8 AdvanceLabelX(u8 x,u16 width) { return x+(width+8); }
 
 
 static inline void UpdateA9Slider(void *p, s16 value) {
@@ -216,8 +217,86 @@ remaining=M2C_FIELD(screen,u8 *,0x34)-1;M2C_FIELD(screen,u8 *,0x34)=remaining;ac
 DrawMapSelectLabel(screen);return UpdateMapSelectLabelTransform(screen);
 }
 
-void func_ov003_0220a864(M2C_UNK arg0) { (void)arg0; }
-
+#pragma push
+#pragma opt_lifetimes off
+#pragma opt_strength_reduction off
+void func_ov003_0220a864(M2C_UNK arg0) {
+  void AddSpriteCell(void *,s32,s32,s32,u16,u16,u16);
+  void func_02087e34(void *);
+  void func_02087ec0(void *,s16);
+  s32 ScaleFixed8(s32,s32);
+  s32 func_020a8e28(s32,s32);
+  s32 GetLanguage(void);
+  s32 GetLocalizedText(void *);
+  s32 MeasureStringWidth(s32);
+  void func_020a99f4(void *);
+  void func_020a9a08(void *);
+  s32 minus=-1;
+  s32 constant=0xcd;
+  void *inner;
+  void *cur;
+  u16 selected;
+  s32 i,k,mode;
+  s32 xpre,x;
+  s32 width,rawWidth;
+  void *text;
+  inner=M2C_FIELD(arg0,void **,0x5c);
+  cur=M2C_FIELD(inner,void **,0);
+  selected=cur?M2C_FIELD(cur,u16 *,8):minus;
+  func_02087e34(inner);
+  xpre=func_020a8e28(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
+  i=11;
+if(i<M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0)+11){s16 selectionX=(s16)xpre;
+ do {
+  rawWidth=M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1);
+width=ScaleFixed8(rawWidth,constant);
+  if(i==selected) {
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),16,(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,4)*(i-11)+6),(u16)rawWidth,(u16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,2)-8),(u16)i,14);
+  func_02087ec0(M2C_FIELD(arg0,void **,0x5c),(s16)i);
+  } else {
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),selectionX,(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,4)*(i-11)+6),(u16)width,(u16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,2)-8),(u16)i,14);
+  }}while(++i<M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0)+11);}
+  if(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,0)) {
+  switch(GetLanguage()){case 1:case 2:case 3:case 4:case 5:mode=1;break;default:mode=0;break;}
+  x=0;
+  if(mode) {
+  text=M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),void **,12),void **,0);
+  width=MeasureStringWidth(GetLocalizedText(text));
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),x,M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,4),(u16)width,16,3,2);
+  if(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,8)>2) {
+  x=(u8)(x+((u16)width+8));
+  text=M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),void **,16),void **,0);
+  width=MeasureStringWidth(GetLocalizedText(text));
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),x,M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,4),(u8)width,16,4,2);
+  x=0;
+  }
+  for(k=2;k<M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,8)-1;k++) {
+  text=M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x58)+k*4,void **,0xc);
+  width=MeasureStringWidth(GetLocalizedText(M2C_FIELD(text,void **,0)));
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),x,(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,4)+16),(u8)width,16,(u16)(k+3),2);
+  x=(u8)(x+((u8)width+8));
+  }
+  } else {
+  text=M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),void **,12),void **,0);
+  width=MeasureStringWidth(GetLocalizedText(text));
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),x,M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,4),(u16)width,16,3,2);
+  for(k=1;k<M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,8)-1;k++) {
+  text=M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x58)+k*4,void **,0xc);
+  width=MeasureStringWidth(GetLocalizedText(M2C_FIELD(text,void **,0)));
+  AddSpriteCell(M2C_FIELD(arg0,void **,0x5c),x,(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,4)+16),(u8)width,16,(u16)(k+3),2);
+  x=(u8)(x+((u8)width+8));
+  }
+  }
+  }
+  if((u8)(M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,15)==8)) {
+  func_020a99f4(M2C_FIELD(arg0,void **,0x60));
+  func_020a99f4(M2C_FIELD(arg0,void **,0x64));
+  } else {
+  func_020a9a08(M2C_FIELD(arg0,void **,0x60));
+  func_020a9a08(M2C_FIELD(arg0,void **,0x64));
+  }
+}
+#pragma pop
 void func_ov003_0220ac58(void *arg0) {
 void *p=M2C_FIELD(arg0,void **,0x58);
 s16 current=M2C_FIELD(p,s16 *,2);

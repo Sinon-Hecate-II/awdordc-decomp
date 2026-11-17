@@ -190,8 +190,8 @@ s32 GetPanelTouchAction(void) {
 
 void func_0209dfe4(void *arg0) {
     M2C_UNK DeleteSpriteObject(void *);
-    s32 func_02005d90(s32);
-    if (func_02005d90(M2C_FIELD(arg0, s32 *, 0x34)) == 0) {
+    s32 TaskIsFinished(s32);
+    if (TaskIsFinished(M2C_FIELD(arg0, s32 *, 0x34)) == 0) {
         return;
     }
     DeleteSpriteObject(arg0);
@@ -218,7 +218,7 @@ void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     void **func_01ffa3dc(M2C_UNK *, s32);
     s32 HeapAllocBlock(u32);
     void func_01ffa8bc(void *, s32);
-    void func_02005ac0(s32, void (*)(void *), void *, s32, u32, s32);
+    void TaskCreate(s32, void (*)(void *), void *, s32, u32, s32);
     void TaskWake(s32);
     extern M2C_UNK data_0211f7dc;
     void *p;
@@ -229,7 +229,7 @@ void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     func_01ffa8bc(p, arg1);
     M2C_FIELD(p, s32 *, 0x40) = arg0;
     M2C_FIELD(p, s32 *, 0x44) = arg1;
-    func_02005ac0(M2C_FIELD(p, s32 *, 0x34), func_0209e034, p + 0x40, M2C_FIELD(p, s32 *, 0x38) + (arg2 & ~3), arg2, arg3);
+    TaskCreate(M2C_FIELD(p, s32 *, 0x34), func_0209e034, p + 0x40, M2C_FIELD(p, s32 *, 0x38) + (arg2 & ~3), arg2, arg3);
     TaskWake(M2C_FIELD(p, s32 *, 0x34));
 }
 

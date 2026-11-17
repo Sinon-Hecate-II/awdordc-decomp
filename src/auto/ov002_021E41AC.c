@@ -166,16 +166,20 @@ void func_ov002_021e47b0(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
  } while(i<3);
 }
 
-void func_ov002_021e482c(u8 *x,s32 y,s32 z,s32 w) {
+/* Draw a versus-screen player panel's gauge fill, anchored at its right edge:
+ * a 16-pixel-high textured body whose right edge stays at x+128 and whose left
+ * edge moves left with `fill` (0..116), then five one-pixel strips that taper
+ * the fill's left end.  y is the top edge, z the depth. */
+void DrawGaugeFillAnchoredRight(s32 x,s32 y,s32 z,s32 fill) {
  M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 t,k,h,i;
- h=16;t=116-w;
- DrawTexturedQuadUV((s32)(x+t),y,z,w+12,h,t,0,128,h);
- k=w+12; y+=4; h-=4;i=0;
+ s32 u,edge,height,i;
+ height=16;u=116-fill;
+ DrawTexturedQuadUV((s32)(x+u),y,z,fill+12,height,u,0,128,height);
+ edge=fill+12; y+=4; height-=4;i=0;
  do {
- t=128-k;
- DrawTexturedQuadUV((s32)(x+128-k)-1,y,z,1,h,t-1,16-h,t,16);
- i++; k++;y+=2;h-=2;
+ u=128-edge;
+ DrawTexturedQuadUV((s32)(x+128-edge)-1,y,z,1,height,u-1,16-height,u,16);
+ i++; edge++;y+=2;height-=2;
  }while(i<5);
 }
 

@@ -10,7 +10,7 @@ extern u32 gOv001LinkMatchSetup[];
 void func_ov001_0216f78c(void);
 s32 func_ov001_0216e34c(s32);
 s32 func_02005ab0(void);
-void func_02005ac0(void *,void (*)(void),s32,s32,s32,s32);
+void TaskCreate(void *,void (*)(void),s32,s32,s32,s32);
 void TaskWake(void *);
 void func_ov001_021713a8(void);
 extern void *gOv001IconRow;
@@ -69,7 +69,7 @@ if(data_ov001_02192790[14]>=1 && data_ov001_02192790[14]<=5)return -10;
 data_ov001_0218fde8[4]=b;data_ov001_02192790[14]=7;data_ov001_02192790[31]=c;((s32 (**)(s32))data_ov001_02192790)[1]=d;data_ov001_02192790[3]=e;data_ov001_0218fde8[2]=f;
 r=func_ov001_0216e34c(b);data_ov001_02192790[29]=1;if(r<0){data_ov001_02192790[30]=r;return r;}
 r=((s32 (**)(s32))data_ov001_02192790)[1](data_ov001_0218fde8[2]);data_ov001_02192790[12]=r;if(!r){data_ov001_02192790[30]=-1;return -1;}if(func_02005ab0()!=1){data_ov001_02192790[30]=-9;return -9;}
-func_02005ac0(data_ov001_0219283c,func_ov001_0216f78c,0,data_ov001_02192790[12]+(data_ov001_0218fde8[2]&~7),data_ov001_0218fde8[2],a);data_ov001_02192790[14]=1;data_ov001_0218fde8[3]=((s32 (*)(void))WhGetTime)()+60000;data_ov001_02192790[4]=0;
+TaskCreate(data_ov001_0219283c,func_ov001_0216f78c,0,data_ov001_02192790[12]+(data_ov001_0218fde8[2]&~7),data_ov001_0218fde8[2],a);data_ov001_02192790[14]=1;data_ov001_0218fde8[3]=((s32 (*)(void))WhGetTime)()+60000;data_ov001_02192790[4]=0;
 p=gOv001LinkMatchSetup;i=58;do{*p++=0;}while(--i);
 func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;return 1;
 }

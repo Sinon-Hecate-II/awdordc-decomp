@@ -12,7 +12,7 @@ s32 PlanUnitKind24Action(void) {
  s32 func_ov000_021a6264(s32);void ResetAiTargetCandidates(void);
  void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void MarkAdjacentCellsForKind24(u8);
  s32 GetTerrainPropertyFlagsAt(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 IsCaptureKind(s32);
- s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void CommitAiAction(s32);
+ s32 IsCurrentPlayerUnit(s16);s32 IsMidActionStep(s32);void CommitAiAction(s32);
  extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 gUnitKindStats[];extern M2C_UNK gAiCommand;
  s32 other,armed,transport,flag,index,i;
  u8 *candidate;
@@ -60,8 +60,8 @@ s32 PlanUnitKind24Action(void) {
  else if(M2C_FIELD(gUnitKindStats+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7)armed=(s8)(armed+1);
  }
  }
- if((((UnkStruct_ov000_021A860C *)unit)->unk0)==24&&!unit[12]&&!func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB))transport=(s8)(transport+1);
- if((((UnkStruct_ov000_021A860C *)unit)->unk0)==25&&!unit[12]&&!func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB))carrier=(s8)(carrier+1);
+ if((((UnkStruct_ov000_021A860C *)unit)->unk0)==24&&!unit[12]&&!IsMidActionStep(((UnkStruct_ov000_021A860C *)unit)->unkB))transport=(s8)(transport+1);
+ if((((UnkStruct_ov000_021A860C *)unit)->unk0)==25&&!unit[12]&&!IsMidActionStep(((UnkStruct_ov000_021A860C *)unit)->unkB))carrier=(s8)(carrier+1);
  nextCell:x++;map=*gCurrentMap;
  }
  }

@@ -3,7 +3,7 @@
 s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
 
 extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],gUnitKindFlags[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],gAiIndirectRangeBitmap[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
-void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 func_ov000_021a9904(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 func_ov000_021a8a88(void *);
+void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 func_ov000_021a9904(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 WillCaptureCompleteThisTurn(void *);
 static inline u8 Tile76(s32 x,s32 y,s32 offset){u8 *map=*gCurrentMap;return M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,offset);}
 static inline u8 Bit76(u8 *bits,s32 x,s32 y){u32 index=x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144);return bits[index>>3]&(1<<(index&7));}
 
@@ -24,7 +24,7 @@ if(IsUnitSelected(b)&&!M2C_FIELD((*gCurrentMap),s16 *,28390))vb=M2C_FIELD(data_o
 cost=func_ov000_021976ac(pos[0],pos[1],b,M2C_FIELD((*gCurrentMap),s16 *,28390));
 if((u32)(M2C_FIELD(b,u16 *,6)<<16)>>27){
 map=*gCurrentMap;index=b[1]+M2C_FIELD(map+b[2]*2,u16 *,0x3758);terrain=M2C_FIELD(map+index,u8 *,0x1420)&31;
-if(terrain==15){index=a[1]+M2C_FIELD(map+a[2]*2,u16 *,0x3758);if(!func_ov000_021a90a8(M2C_FIELD(map+index,u8 *,0x508),b[1],b[2])&&func_ov000_021a8a88(b)==1)goto special;}
+if(terrain==15){index=a[1]+M2C_FIELD(map+a[2]*2,u16 *,0x3758);if(!func_ov000_021a90a8(M2C_FIELD(map+index,u8 *,0x508),b[1],b[2])&&WillCaptureCompleteThisTurn(b)==1)goto special;}
 }
 if(arg0&0x40000){if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2)return 0;if(vb<Divide(M2C_FIELD(data_ov000_021b5efc,u16 *,20)*60,100))return 0;}
 if(arg0&0xc00000){
@@ -84,7 +84,7 @@ map=*gCurrentMap;index=a[1]+M2C_FIELD(map+a[2]*2,u16 *,0x3758);
 if(func_ov000_021a90a8(M2C_FIELD(map+index,u8 *,0x508),b[1],b[2])!=1){
 map=*gCurrentMap;index=b[1]+M2C_FIELD(map+b[2]*2,u16 *,0x3758);terrain=M2C_FIELD(map+index,u8 *,0x1420)&31;
 if(terrain==15)value<<=3;else if(terrain==17)value<<=2;else if(terrain==18||terrain==19||terrain==22)value<<=1;
-if(func_ov000_021a8a88(b)==1){
+if(WillCaptureCompleteThisTurn(b)==1){
 if(!M2C_FIELD((*gCurrentMap),s16 *,28390)&&((u32)(M2C_FIELD(b,u16 *,6)<<25)>>25)<50)vb=Divide(vb*50,((u32)(M2C_FIELD(b,u16 *,6)<<25)>>25));
 value<<=1;
 map=*gCurrentMap;index=b[1]+M2C_FIELD(map+b[2]*2,u16 *,0x3758);

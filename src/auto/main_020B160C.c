@@ -1,5 +1,6 @@
 /* 44 functions from 0x020B160C to 0x020B25B8 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #include "sprite_slot.h"
 #include "battle_map.h"
 
@@ -122,12 +123,16 @@ void func_020b185c(void) {
     gCur3DSpriteEngine = saved;
 }
 
-void func_020b18ec(void) {
+/* Sets up the battle-map view on the current 3D sprite engine: configures the
+ * screen engine and the sprite bank's OBJ mapping, resets the sprite corners,
+ * runs the map-view controller's two callbacks, and uploads the map's tiles,
+ * palettes and layer data. */
+void InitMapViewScreen(void) {
 extern void *gCurrentMap,*gCur3DSpriteEngine;
-u16 *volatile sp4;u16 *volatile sp0;void (*callback)(void);
+u16 *volatile bank1;u16 *volatile bank2;void (*callback)(void);
 func_020aca8c(3);func_0207b940();
-sp4=(u16 *)*(void **)gCur3DSpriteEngine;*sp4=*sp4|0x1000;
-sp0=(u16 *)*(void **)gCur3DSpriteEngine;*sp0=*sp0&~0x6000;
+bank1=(u16 *)*(void **)gCur3DSpriteEngine;*bank1=*bank1|DS3D_BANK_OBJ_1D;
+bank2=(u16 *)*(void **)gCur3DSpriteEngine;*bank2=*bank2&~DS3D_BANK_OBJ_BOUNDARY_MASK;
 Reset3DSpriteCorners();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
 func_01ff9b38();func_02091cd0();

@@ -45,7 +45,7 @@ s32 func_ov000_021a21f8(s32 arg0) {
 s32 func_020a8a14(u16,u16); s32 IsTerrainOnUnitTeam(s16,u8);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
-s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
+s32 IsFootUnitKind(s32); s32 IsMidActionStep(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out=&gAiTargetCandidates+*gAiState*12;
 u8 *entry; u8 *unit; u8 *enemyUnit; s32 enemyPlayer,enemyIndex; u8 *candidate,*scan,*best; void *map; s32 player,index,count=0,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row; u8 funds; unsigned int penalty; u32 kind;
@@ -75,7 +75,7 @@ if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player)&&IsPlayerActive(playe
 for(index=gPlayerUnitIdBase[player]+1;index<gPlayerUnitIdBase[player]+51;index++){
 unit=(u8 *)*gCurrentMap+0x59a4+index*14;
 kind=(u32)(unit[0]<<26)>>26;
-if(!kind||!IsFootUnitKind(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))continue;
+if(!kind||!IsFootUnitKind(kind)||IsMidActionStep((u32)(unit[11]<<28)>>28))continue;
 if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27))goto nextEntry;
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
@@ -151,7 +151,7 @@ if(!kind||kind!=data_ov000_021df590[pass])continue;
 cost=M2C_FIELD(map+enemyUnit[1]+M2C_FIELD(map+enemyUnit[2]*2,u16 *,0x3758),s8 *,0x2338);
 if(cost<0||(M2C_FIELD(enemyUnit,u16 *,4)&8))continue;
 if(kind==19){
-if(!enemyUnit[12]&&func_ov000_021a8984(19))continue;
+if(!enemyUnit[12]&&IsMidActionStep(19))continue;
 map=*gCurrentMap;cost=1+M2C_FIELD(map+enemyUnit[1]+M2C_FIELD(map+enemyUnit[2]*2,u16 *,0x3758),s8 *,0x2338);
 if(out[5]<cost)continue;out[5]=cost;
 }else {if(out[5]<cost)continue;out[5]=cost;}
@@ -197,7 +197,7 @@ s32 func_ov000_021a2db8(void) {
  void FloodFillUnitRange(s32,s32,s32,s32,s32);
  s32 PlayerHasHq(u16); s32 GetUnitBuildCost(u16,u8);
  s32 func_ov000_0217bc84(s32,s32,s32);
- void CommitAiAction(s32); s32 func_ov000_021a6d4c(void);
+ void CommitAiAction(s32); s32 FindBaseTargetCandidate(void);
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  extern void *gAiCommandState; extern u8 gAiCommand[];
  s32 unitIndex,choice; u32 unitKind; u8 *unit; void *map; void *lastMap; u16 player;
@@ -220,7 +220,7 @@ s32 func_ov000_021a2db8(void) {
  if(func_ov000_0217bc84(unit[43]&127,unit[44]&127,4)!=0 && (s32)M2C_FIELD(*gCurrentMap,u16 *,0x52a2)<10)return 0;
  map=*gCurrentMap;unit=map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;
  FloodFillUnitRange(unit[43]&127,unit[44]&127,7,110,0);
- choice=func_ov000_021a6d4c();if(choice==-1)return 0;
+ choice=FindBaseTargetCandidate();if(choice==-1)return 0;
  if(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<23)>>29)&2)gAiCommand[6]=6;
  else gAiCommand[6]=7;
  lastMap=*gCurrentMap;player=M2C_FIELD(lastMap,u16 *,0x52a4);

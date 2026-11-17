@@ -17,6 +17,13 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 #define HTTP_BODY_OFF  0x1a34 /* s32 POST body offset in the header block */
 #define HTTP_BODY_LEN  0x1a30 /* s32 body length from Content-Length */
 #define HTTP_LOCK      0x1a18 /* OS mutex guarding the two fields above */
+#define HTTP_OPTION_FLAG 0x1018 /* s32 the client-task option word 5, copied to data_0213d134 */
+#define HTTP_TASK_STACK     0x1000 /* the driving task's stack region */
+#define HTTP_TASK_STACK_SIZE 0x1000 /* bytes of that stack */
+#define HTTP_TASK       0x1b38 /* the task that drives the request */
+#define HTTP_TASK_READY 0x1ba4 /* s32 nonzero once the task has been created */
+#define HTTP_TASK_MUTEX 0x1bf8 /* OS mutex guarding the abort flag */
+#define HTTP_TASK_ABORT 0x1c10 /* s32 set to 1 to ask the task to stop */
 
 #pragma push
 #pragma opt_common_subs on
@@ -257,21 +264,24 @@ s32 func_02033de8(void *arg0) {
     return 0;
 }
 
-void func_02033e80(void *arg0, s32 arg1) {
-    void func_02005ac0(void *, void *, void *, void *, s32, s32);
-    s32 func_02005d90(void *);
+/* Initialises the HTTP client object `client` and starts the task that drives
+ * the request: clears the task's abort flag, initialises its mutexes, mirrors
+ * option word 5 into data_0213d134 and, unless a previous task is still
+ * running, creates the task with priority `priority` and wakes it. */
+void HttpClientStartTask(void *client, s32 priority) {
+    void TaskCreate(void *, void *, void *, void *, s32, s32);
+    s32 TaskIsFinished(void *);
     void TaskWake(void *);
     void InitMutex(void *);
     extern s32 data_0213d134;
-    extern u8 func_02034164[];
-    s32 var_r1;
-    M2C_FIELD(arg0,s32 *,0x1c10)=0;
-    InitMutex(arg0+0x1bf8);
-    InitMutex(arg0+0x1a18);
-    if(M2C_FIELD(arg0,s32 *,0x1018)==1) data_0213d134=1; else data_0213d134=0;
-    if(M2C_FIELD(arg0,s32 *,0x1ba4)!=0 && func_02005d90(arg0+0x1b38)==0) return;
-    func_02005ac0(arg0+0x1b38,func_02034164,arg0,arg0+0x1000,0x1000,arg1);
-    TaskWake(arg0+0x1b38);
+    extern u8 HttpClientTask[];
+    M2C_FIELD(client, s32 *, HTTP_TASK_ABORT) = 0;
+    InitMutex(client + HTTP_TASK_MUTEX);
+    InitMutex(client + HTTP_LOCK);
+    if (M2C_FIELD(client, s32 *, HTTP_OPTION_FLAG) == 1) data_0213d134 = 1; else data_0213d134 = 0;
+    if (M2C_FIELD(client, s32 *, HTTP_TASK_READY) != 0 && TaskIsFinished(client + HTTP_TASK) == 0) return;
+    TaskCreate(client + HTTP_TASK, HttpClientTask, client, client + HTTP_TASK_STACK, HTTP_TASK_STACK_SIZE, priority);
+    TaskWake(client + HTTP_TASK);
 }
 
 void func_02033f3c(void *arg0) {

@@ -1,7 +1,47 @@
 /* 35 functions from 0x021E5E24 to 0x021E6E18 (ov003), found by ds-decomp. */
 #include "common.h"
+typedef struct { u32 played:1;u32 rest:31; } MapPlayedFlag;
+typedef struct {u32 first:8;u32 second:6;u32 third:6;u32 rest:12;} MapStampCounts;
 
-void func_ov003_021e5e24(void *arg0, s32 arg1) {
+void func_ov003_021e5e24(void *arg0,s32 slide) {
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern u8 data_ov003_0220f60e[],gSpriteDesc16x16[];
+void *GetMapRecord(s32);void *GetMapRecordStamp(s32);s32 func_ov003_02200968(s32);s32 GetMapListIconTile(s32,s32);
+void AddSprite(u16,u16,u16,void*,s32);void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);
+s32 captured=0,played=0,offset=0;void *record;void *saved;u16 tile;u8 row,column;s32 width,height,labelX;void *text;
+record=GetMapRecord(225);
+if(M2C_FIELD(record,u8*,0x2f))captured=1;
+if(((MapPlayedFlag*)((u8*)record+0x38))->played)played=1;
+if(captured){if(played)offset=-64;tile=(u16)((func_ov003_02200968(7)<<4)+0x140);
+AddSprite((u16)((slide+192+offset)&511),28,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0x6000),data_ov003_0220f60e,11);
+}
+if(played){tile=(u16)((func_ov003_02200968(12)<<4)+0x140);
+AddSprite((u16)((slide+192)&511),28,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0x6000),data_ov003_0220f60e,11);}
+width=M2C_FIELD(arg0,s16*,0x62);height=M2C_FIELD(arg0,s16*,0x64);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x38)=-(164-width/2+slide);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x40)=-(108-height/2);
+DrawFrameBorder((s16)(163-M2C_FIELD(arg0,s16*,0x62)/2+slide),(s16)(107-M2C_FIELD(arg0,s16*,0x64)/2),(s16)(M2C_FIELD(arg0,s16*,0x62)+2),(s16)(M2C_FIELD(arg0,s16*,0x64)+2),(u16)((1023&(0x288>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0xa000),17,1);
+tile=(u16)(GetMapListIconTile(7,225)*4+0x328);
+AddSprite((u16)((slide+3)&511),21,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0x9800),gSpriteDesc16x16,17);
+record=GetMapRecordStamp(225);labelX=slide+64;
+for(row=0;row<2;row++){
+s32 value;
+switch(row){
+case 0:
+value=(u32)(M2C_FIELD(record,u32*,12)<<4)>>22;saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
+SetTextSpriteValue(M2C_FIELD(arg0,s32*,0x50),value);
+text=M2C_FIELD(arg0,void**,0x50);M2C_FIELD(text,u16*,6)=labelX;M2C_FIELD(text,u16*,8)=59;
+DrawTextSprite(M2C_FIELD(arg0,void**,0x50));gCur3DSpriteEngine=saved;break;
+case 1:
+M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x29)=2;saved=gCur3DSpriteEngine;
+for(column=0;column<3;column++){
+if(column==0)value=((MapStampCounts*)((u8*)record+8))->first;else if(column==1)value=((MapStampCounts*)((u8*)record+8))->second;else if(column==2)value=((MapStampCounts*)((u8*)record+8))->third;
+gCur3DSpriteEngine=g3DSpriteEngineSub;SetTextSpriteValue(M2C_FIELD(arg0,s32*,0x50),(s16)value);
+text=M2C_FIELD(arg0,void**,0x50);M2C_FIELD(text,u16*,6)=column*22+slide+20;
+M2C_FIELD(text,u16*,8)=69;
+DrawTextSprite(M2C_FIELD(arg0,void**,0x50));gCur3DSpriteEngine=saved;
+}M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x29)=0;break;
+}
+}
 }
 
 M2C_UNK func_ov003_021e6204(M2C_UNK arg0) {

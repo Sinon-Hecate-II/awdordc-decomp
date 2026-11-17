@@ -147,37 +147,41 @@ s32 func_0203152c(void) {
  v=func_02021c04();return v==0 || v==(u32)-39 ?9:11;
 }
 
-void Wfc_BuildHostConfig(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Build the WFC host configuration block (WFC work block 4) for the save slot the
+ * selected friend code belongs to: start from the default template, give the record
+ * the control block's allocator pair, then store the slot's four player codes and
+ * the mask of its code's set-bit count. A slot with no player code is marked empty. */
+void Wfc_BuildHostConfig(M2C_UNK control, M2C_UNK state, M2C_UNK config) {
     extern u8 gWfcHostConfigDefaults[];
     void MI_CpuCopy8(void *, void *, u32);
     s32 Wfc_FriendIdToSlot(u8);
     s32 Wfc_EncodePlayerCode(void *);
     s32 Wfc_EncodeCodeMask(s32);
-    u8 idx;
+    u8 friendId;
 
-    MI_CpuCopy8(gWfcHostConfigDefaults, (void *)arg2, 0x58);
-    M2C_FIELD(arg2, s32 *, 4) = M2C_FIELD(arg0, s32 *, 0);
-    M2C_FIELD(arg2, s32 *, 8) = M2C_FIELD(arg0, s32 *, 4);
-    idx = M2C_FIELD(arg1, u8 *, 0xD0D);
-    if (idx >= 6) {
+    MI_CpuCopy8(gWfcHostConfigDefaults, (void *)config, WFC_AUX_SIZE);
+    M2C_FIELD(config, s32 *, 4) = M2C_FIELD(control, s32 *, 0);
+    M2C_FIELD(config, s32 *, 8) = M2C_FIELD(control, s32 *, 4);
+    friendId = M2C_FIELD(state, u8 *, WFC_STATE_RESULT_ID);
+    if (friendId >= WFC_FRIEND_CODE_IDS) {
         return;
     }
-    arg1 = (M2C_UNK) ((u8 *) arg1 + (Wfc_FriendIdToSlot(idx) << 8));
-    if (M2C_FIELD(arg1, u8 *, 0xC0) != 0) {
-        M2C_FIELD(arg2, s32 *, 0xC) = 0;
-        M2C_FIELD(arg2, s32 *, 0x10) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xC0);
-        M2C_FIELD(arg2, s32 *, 0x14) = Wfc_EncodeCodeMask(M2C_FIELD(arg1, u8 *, 0xD0));
-        M2C_FIELD(arg2, s32 *, 0x18) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xC4);
-        M2C_FIELD(arg2, s32 *, 0x1C) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xC8);
-        M2C_FIELD(arg2, s32 *, 0x20) = Wfc_EncodePlayerCode((u8 *) arg1 + 0xCC);
+    state = (M2C_UNK) ((u8 *) state + (Wfc_FriendIdToSlot(friendId) << 8));
+    if (M2C_FIELD(state, u8 *, SAVE_SLOT_PLAYER_CODES) != 0) {
+        M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_NEW) = 0;
+        M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE0) = Wfc_EncodePlayerCode((u8 *) state + SAVE_SLOT_PLAYER_CODES);
+        M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_MASK) = Wfc_EncodeCodeMask(M2C_FIELD(state, u8 *, SAVE_SLOT_CODE_BITS));
+        M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE1) = Wfc_EncodePlayerCode((u8 *) state + SAVE_SLOT_PLAYER_CODES + 4);
+        M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE2) = Wfc_EncodePlayerCode((u8 *) state + SAVE_SLOT_PLAYER_CODES + 8);
+        M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE3) = Wfc_EncodePlayerCode((u8 *) state + SAVE_SLOT_PLAYER_CODES + 0xC);
         return;
     }
-    M2C_FIELD(arg2, s32 *, 0xC) = 1;
-    M2C_FIELD(arg2, s32 *, 0x10) = 0;
-    M2C_FIELD(arg2, s32 *, 0x14) = 0;
-    M2C_FIELD(arg2, s32 *, 0x18) = 0;
-    M2C_FIELD(arg2, s32 *, 0x1C) = 0;
-    M2C_FIELD(arg2, s32 *, 0x20) = 0;
+    M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_NEW) = 1;
+    M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE0) = 0;
+    M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_MASK) = 0;
+    M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE1) = 0;
+    M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE2) = 0;
+    M2C_FIELD(config, s32 *, WFC_HOST_CONFIG_CODE3) = 0;
 }
 
 /* Wfc_BuildHostConfig (void) is written by compile_and_diff below */

@@ -12,7 +12,7 @@ void MapEditor_StartMap(void *editor) {
  void SetMapEditorMode(s32);void SetMapEditorTool(s32);
  void SetMapEditorUnitKind(s32);void SetMapEditorUnitOwner(s32);void SetMapEditorUnitFlags(s32);void SetMapEditorTerrainKind(s32);void SetMapEditorTerrainOwner(s32);
  void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);void func_ov007_022121e4(void);
- void func_020cf498(s16,s16);
+ void SetMapCursorTargetTile(s16,s16);
  void *map;
  s32 text;
  s32 centerX,centerY;
@@ -33,7 +33,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- LoadMapTileset();LoadUiGraphicsBank(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
+ LoadMapTileset();LoadUiGraphicsBank(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();InitPlayerTurnState();
  MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -41,7 +41,7 @@ void MapEditor_StartMap(void *editor) {
  map=*gCurrentMap;
  centerX=(u32)M2C_FIELD(map,u16*,MAP_WIDTH)>>1;
  centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
- func_020cf498((s16)centerX,(s16)centerY);func_0207b754(centerX,centerY);
+ SetMapCursorTargetTile((s16)centerX,(s16)centerY);func_0207b754(centerX,centerY);
  SetMapEditorMode(0);SetMapEditorTool(0);SetMapEditorUnitKind(1);SetMapEditorUnitOwner(1);SetMapEditorUnitFlags(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
  RefreshMapEditor();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
  M2C_FIELD(editor,u8*,0x34)=1;
@@ -222,7 +222,7 @@ void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
  * spawns the editor's explosion effect; plays the error sound when the cell
  * cannot be erased and `sound` is set. */
 void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
-    s32 func_ov007_0221b754(s32, s32);
+    s32 Map_IsWastelandTile(s32, s32);
     s32 Map_PaintTile(s32, s32, s32, s32, s32);
     M2C_UNK func_020cfe2c();
     void RefreshMapEditor(void);
@@ -232,7 +232,7 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov007_0221f690;
     s32 terrain = MAP_TERRAIN_PLAIN;
-    if (func_ov007_0221b754(x, y)) terrain = MAP_TERRAIN_WASTELAND;
+    if (Map_IsWastelandTile(x, y)) terrain = MAP_TERRAIN_WASTELAND;
     if (Map_PaintTile(x, y, terrain, 0, 1) == 1) {
         func_020cfe2c();
         RefreshMapEditor();

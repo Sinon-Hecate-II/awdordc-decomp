@@ -141,7 +141,7 @@ void func_02088044(void *);
 void func_02087ec0(void *,s16);
 void CopyToObjPaletteShadow(s32,s32,s32);
 s32 func_020a72e8(u8);
-s32 func_ov000_0216cdec(s32,u8);
+s32 GetTerrainPalette(s32,u8);
 s32 func_020cfb94(void);
 void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void);
@@ -176,7 +176,7 @@ void func_ov005_0221d160(void *arg0){
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
                 CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                CopyToObjPaletteShadow(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(GetTerrainPalette(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
             }
@@ -201,7 +201,7 @@ void func_ov005_0221d160(void *arg0){
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
                 CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                CopyToObjPaletteShadow(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(GetTerrainPalette(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
             }
@@ -220,7 +220,7 @@ void func_ov005_0221d160(void *arg0){
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
                 CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
-                CopyToObjPaletteShadow(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(GetTerrainPalette(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
             }

@@ -195,7 +195,7 @@ void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_02063aa8((void *)arg0, (u32)arg1, (u32)arg2, (void *)&sp4, 0xA);
 }
 #pragma scheduling reset
-extern s32 data_0213e4b4[];
+extern s32 sSbNoServer[];
 /* Server-list state 0: collect the servers that announce themselves on the query
    socket.  The sender of each announcement becomes a new list entry (flagged 0x11,
    which notifies the callback); once the 2-second collection window is over the
@@ -229,7 +229,7 @@ s32 SBServerListProcessAdHocServers(void *list) {
         func_020496b8(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET));
         M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) = -1;
         M2C_FIELD(list, s32 *, SB_SLIST_STATE) = SB_SLIST_STATE_IDLE;
-        M2C_FIELD(list, void (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_QUERY_COMPLETE, data_0213e4b4[0], M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
+        M2C_FIELD(list, void (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_QUERY_COMPLETE, sSbNoServer[0], M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
     }
     return 0;
 }

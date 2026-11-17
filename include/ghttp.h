@@ -157,6 +157,10 @@ enum {
 #define GHTTP_RESULT_FILE_WRITE_FAILED   13 /* the body could not be saved to a file */
 #define GHTTP_RESULT_DOWNLOAD_INCOMPLETE 15 /* the peer closed before contentLength bytes arrived */
 #define GHTTP_RESULT_BUFFER_TOO_SMALL    16 /* Content-Length exceeded the caller's buffer size */
+#define GHTTP_RESULT_UPDATE_ERROR        8  /* a 4xx other than the ones named below */
+#define GHTTP_RESULT_UNAUTHORIZED        9  /* the server answered 401 */
+#define GHTTP_RESULT_FORBIDDEN           10 /* the server answered 403 */
+#define GHTTP_RESULT_SERVER_ERROR        12 /* the server answered 5xx */
 
 /* Steps of the request state machine in GHIConnection.state; the dispatcher
  * runs one step per tick. */

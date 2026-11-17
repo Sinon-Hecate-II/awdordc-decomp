@@ -58,7 +58,7 @@ s32 Map_GetCellTerrainOwner(s32 a,s32 b) {
  return 0;
 }
 
-s32 func_ov007_0221b754(s32 arg0, s32 arg1) {
+s32 Map_IsWastelandTile(s32 arg0, s32 arg1) {
     extern s32 *data_027e0058;
     s32 p;
     u16 t;

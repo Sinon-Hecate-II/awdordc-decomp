@@ -133,7 +133,7 @@ s32 IsTerrainOnUnitTeam(s32 arg0, s32 arg1) {
     return IsSameTeam(temp + 1, arg1 >> 5);
 }
 
-s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
+s32 IsPropertyOwnedByTeam(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
     u8 IsSameTeam(s32, s32);
     s32 p;
@@ -349,7 +349,7 @@ void func_020d2d80(M2C_UNK arg0) {
     func_020a33f0(arg0, 0);
 }
 
-void func_020d2d90(s32 arg0) {
+void PayPlayerIncome(s32 arg0) {
     extern s32 *gCurrentMap;
     void func_020d2bc0(s32, s32);
     s32 base = *gCurrentMap;

@@ -7,7 +7,7 @@ void BuildUnitMoveRange(void *);
 void MarkAdjacentCells(int);
 int func_020d27a4(int,int);
 int IsFootUnitKind(int);int GetUnitAttackClass(int);
-int func_ov000_021a8a88(void *);
+int WillCaptureCompleteThisTurn(void *);
 int func_ov000_021a93ec(s16,s16);
 int func_ov000_02177f24(int,int,s16 *);
 int func_ov000_02176e28(int,s16 *);
@@ -154,7 +154,7 @@ void func_ov000_0219137c(void){
  if(GetUnitAttackClass(unit->kind)==1)goto candidate_checks;
  if(!IsFootUnitKind(((Map1911 *)*gCurrentMap)->selected->kind))goto candidate_checks;
  switch(((Map1911 *)*gCurrentMap)->selected->flags2){case 0:continue;default:goto candidate_checks;}
- }else if(!func_ov000_021a8a88(unit)){
+ }else if(!WillCaptureCompleteThisTurn(unit)){
  if(unit->health<=30)continue;
  if(!unit->value && unit->health<=60)continue;
  }

@@ -105,27 +105,27 @@ void Map_SetCellTile(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 Map_ScoreNeighborPattern(s32 x,s32 y){
-s32 func_ov007_0221b754(s32,s32);
+s32 Map_IsWastelandTile(s32,s32);
 s32 vertical=0,horizontal=0,n;
 Map14E24 *m;
-if(func_ov007_0221b754(x-1,y)) {
-if(func_ov007_0221b754(x,y-1) && !func_ov007_0221b754(x-1,y-1)) return -1;
-if(func_ov007_0221b754(x,y+1) && !func_ov007_0221b754(x-1,y+1)) return -1;
+if(Map_IsWastelandTile(x-1,y)) {
+if(Map_IsWastelandTile(x,y-1) && !Map_IsWastelandTile(x-1,y-1)) return -1;
+if(Map_IsWastelandTile(x,y+1) && !Map_IsWastelandTile(x-1,y+1)) return -1;
 horizontal++;
 }
-if(func_ov007_0221b754(x+1,y)) {
-if(func_ov007_0221b754(x,y-1) && !func_ov007_0221b754(x+1,y-1)) return -1;
-if(func_ov007_0221b754(x,y+1) && !func_ov007_0221b754(x+1,y+1)) return -1;
+if(Map_IsWastelandTile(x+1,y)) {
+if(Map_IsWastelandTile(x,y-1) && !Map_IsWastelandTile(x+1,y-1)) return -1;
+if(Map_IsWastelandTile(x,y+1) && !Map_IsWastelandTile(x+1,y+1)) return -1;
 horizontal++;
 }
-if(func_ov007_0221b754(x,y-1)) {
-if(func_ov007_0221b754(x-1,y) && !func_ov007_0221b754(x-1,y-1)) return -1;
-if(func_ov007_0221b754(x+1,y) && !func_ov007_0221b754(x+1,y-1)) return -1;
+if(Map_IsWastelandTile(x,y-1)) {
+if(Map_IsWastelandTile(x-1,y) && !Map_IsWastelandTile(x-1,y-1)) return -1;
+if(Map_IsWastelandTile(x+1,y) && !Map_IsWastelandTile(x+1,y-1)) return -1;
 vertical++;
 }
-if(func_ov007_0221b754(x,y+1)) {
-if(func_ov007_0221b754(x-1,y) && !func_ov007_0221b754(x-1,y+1)) return -1;
-if(func_ov007_0221b754(x+1,y) && !func_ov007_0221b754(x+1,y+1)) return -1;
+if(Map_IsWastelandTile(x,y+1)) {
+if(Map_IsWastelandTile(x-1,y) && !Map_IsWastelandTile(x-1,y+1)) return -1;
+if(Map_IsWastelandTile(x+1,y) && !Map_IsWastelandTile(x+1,y+1)) return -1;
 vertical++;
 }
 if(!horizontal || !vertical)return -1;
@@ -138,32 +138,32 @@ if(m->cells[x+m->rows[y-1]]==34)n++;
 if(m->cells[x+m->rows[y+1]]==34)n++;
 return n;
 case 3:n=0;
-if(((Map14E24 *)*gCurrentMap)->cells[x-1+((Map14E24 *)*gCurrentMap)->rows[y]]==34 && func_ov007_0221b754(x+1,y)==1)n++;
-if(((Map14E24 *)*gCurrentMap)->cells[x+1+((Map14E24 *)*gCurrentMap)->rows[y]]==34 && func_ov007_0221b754(x-1,y)==1)n++;
-if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y-1]]==34 && func_ov007_0221b754(x,y+1)==1)n++;
-if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y+1]]==34 && func_ov007_0221b754(x,y-1)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x-1+((Map14E24 *)*gCurrentMap)->rows[y]]==34 && Map_IsWastelandTile(x+1,y)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x+1+((Map14E24 *)*gCurrentMap)->rows[y]]==34 && Map_IsWastelandTile(x-1,y)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y-1]]==34 && Map_IsWastelandTile(x,y+1)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y+1]]==34 && Map_IsWastelandTile(x,y-1)==1)n++;
 return n;default:return -1;}}
 
-s32 func_ov007_022156a4(s32 x,s32 y) {
- s32 func_ov007_0221b754(s32,s32);
+s32 Map_IsWastelandArea(s32 x,s32 y) {
+ s32 Map_IsWastelandTile(s32,s32);
  s32 i,j;
  for(j=y-1;j<=y+1;j++)
  for(i=x-1;i<=x+1;i++)
- if(!func_ov007_0221b754(i,j)) return 0;
+ if(!Map_IsWastelandTile(i,j)) return 0;
  return 1;
 }
 
 /* Places value 36 at (x,y) if it sits in an open straight corridor
    (left+right or up+down tiles passable with no unit in between). */
 s32 Map_PlaceStraightCorridor(s32 x, s32 y) {
-    s32 func_ov007_0221b754(s32, s32);
-    if (func_ov007_0221b754(x - 1, y) == 1 && ((s8 *)gMapMarkerGrid + y * 30)[x - 1] != 2 &&
-        func_ov007_0221b754(x + 1, y) == 1 && ((s8 *)gMapMarkerGrid + y * 30)[x + 1] != 2) {
+    s32 Map_IsWastelandTile(s32, s32);
+    if (Map_IsWastelandTile(x - 1, y) == 1 && ((s8 *)gMapMarkerGrid + y * 30)[x - 1] != 2 &&
+        Map_IsWastelandTile(x + 1, y) == 1 && ((s8 *)gMapMarkerGrid + y * 30)[x + 1] != 2) {
         Map_SetCellTile(x, y, 36);
         return 1;
     }
-    if (func_ov007_0221b754(x, y - 1) == 1 && ((s8 *)gMapMarkerGrid + (y - 1) * 30)[x] != 2 &&
-        func_ov007_0221b754(x, y + 1) == 1 && ((s8 *)gMapMarkerGrid + (y + 1) * 30)[x] != 2) {
+    if (Map_IsWastelandTile(x, y - 1) == 1 && ((s8 *)gMapMarkerGrid + (y - 1) * 30)[x] != 2 &&
+        Map_IsWastelandTile(x, y + 1) == 1 && ((s8 *)gMapMarkerGrid + (y + 1) * 30)[x] != 2) {
         Map_SetCellTile(x, y, 36);
         return 1;
     }

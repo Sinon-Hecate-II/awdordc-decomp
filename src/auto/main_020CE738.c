@@ -385,7 +385,7 @@ void func_020cf2c8(void) {
     M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c60) = 0xff;
 }
 
-void func_020cf498(s16 arg0, s16 arg1) {
+void SetMapCursorTargetTile(s16 arg0, s16 arg1) {
     extern void **gCurrentMap;
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = arg0;
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = arg1;

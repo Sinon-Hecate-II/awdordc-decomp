@@ -36,15 +36,15 @@ s32 func_020352ec(void) {
 }
 
 void func_02035304(void) {
-    M2C_UNK func_02005ac0(void *, void (*)(void), void *, void *, s32, s32);
-    s32 func_02005d90(void *);
+    M2C_UNK TaskCreate(void *, void (*)(void), void *, void *, s32, s32);
+    s32 TaskIsFinished(void *);
     M2C_UNK TaskWake(void *);
     void func_0203538c(void);
     extern void *gWfcNet;
-    if (M2C_FIELD(gWfcNet, s32 *, 0x1188) != 0 && func_02005d90(gWfcNet + 0x111C) == 0) {
+    if (M2C_FIELD(gWfcNet, s32 *, 0x1188) != 0 && TaskIsFinished(gWfcNet + 0x111C) == 0) {
         return;
     }
-    func_02005ac0(gWfcNet + 0x111C, func_0203538c, gWfcNet, gWfcNet + 0x1000, 0x1000, 0x10);
+    TaskCreate(gWfcNet + 0x111C, func_0203538c, gWfcNet, gWfcNet + 0x1000, 0x1000, 0x10);
     TaskWake(gWfcNet + 0x111C);
 }
 

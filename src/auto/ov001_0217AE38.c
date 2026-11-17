@@ -19,7 +19,7 @@ void func_ov001_0217ae38(s32 arg0, s32 arg1) {
     M2C_FIELD(second, u16 *, 4) = (M2C_FIELD(second, u16 *, 4) & ~0x3FF) | M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, 4) + 2 * M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), void **, 0) + offset, u16 *, 0x26), u16 *, 0x48);
 }
 
-void func_ov001_0217aec4(void) {
+void MapSelectList_PositionRows(void) {
 s32 func_020020c4(u16,s32);extern M2C_UNK gMapSelectState;
 s32 *first,*second; s32 position; s32 count; s32 i;
 position=0x36-func_020020c4(M2C_FIELD(&gMapSelectState,u16 *,2),28);
@@ -64,7 +64,7 @@ void MapSelectList_ScrollUp(s32 task) {
         M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) + (MAPSELECT_ROW_UNITS - remainder);
         remainder = 0;
     }
-    func_ov001_0217aec4();
+    MapSelectList_PositionRows();
     if (remainder != 0) return;
     func_02002088(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
     func_ov001_021839e4();
@@ -83,7 +83,7 @@ void MapSelectList_ScrollDown(s32 arg0) {
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) + 4;
     result = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
     if (result >= 4) {
-        func_ov001_0217aec4();
+        MapSelectList_PositionRows();
         return;
     }
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - result;
@@ -111,11 +111,11 @@ void func_ov001_0217b0d4(void) {
 }
 
 void func_ov001_0217b130(void) {
-    void func_ov001_02171fd8(s32, u16, u16, u16);
+    void Ov001_LayoutChoiceFrameRow(s32, u16, u16, u16);
     extern u16 data_ov001_0218f7ec[], data_ov001_0218f7ee[], data_ov001_0218f7f0[];
     extern M2C_UNK gMapSelectState;
     u32 index = M2C_FIELD(&gMapSelectState, u8 *, 0);
-    func_ov001_02171fd8(index < 4 ? 2 : 3, data_ov001_0218f7ec[index * 4], data_ov001_0218f7f0[index * 4], data_ov001_0218f7ee[index * 4]);
+    Ov001_LayoutChoiceFrameRow(index < 4 ? 2 : 3, data_ov001_0218f7ec[index * 4], data_ov001_0218f7f0[index * 4], data_ov001_0218f7ee[index * 4]);
 }
 
 /* Map-select list D-pad handler: moves the highlighted row up (dir == 1) or

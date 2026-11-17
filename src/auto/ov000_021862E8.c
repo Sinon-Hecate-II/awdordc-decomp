@@ -1,6 +1,7 @@
 /* 8 functions from 0x021862E8 to 0x02187188 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 void func_ov000_021862e8(s32 arg0) {
 void FillMapLayer(s32); void SelectMapLayer(void *);
@@ -103,18 +104,23 @@ void func_ov000_02186940(void *arg0) {
     func_ov000_02186624(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-u8 func_ov000_0218695c(void *arg0) {
-s32 IsUnitSelected(void *); s32 func_ov000_021a8a88(void *); s32 GetUnitAttackClass(u32);
-extern u8 gUnitKindFlags;
-u16 flags; u8 result;
-flags=M2C_FIELD(arg0,u16 *,4);
-if(flags&8)return 0;
-if(!(flags&1) && ((u32)(M2C_FIELD(arg0,u8 *,10)<<24)>>31)==0)return 0;
-if(((u32)(M2C_FIELD(arg0,u16 *,6)<<16)>>27)!=0 && func_ov000_021a8a88(arg0)==1)return 1;
-if(IsUnitSelected(arg0)!=0)return 1;
-if(GetUnitAttackClass((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)!=1)return 0;
-result= !(*(&gUnitKindFlags+(((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70))&32);
-return result;
+/* Whether the enemy unit is a worthwhile attack target for the AI's selected
+ * ground unit: skip loaded units and units that have neither acted nor had a
+ * move planned (bit 7 of the fuel byte); a unit whose capture completes this
+ * turn, or the player's currently selected unit, always counts; otherwise only
+ * indirect attackers that are not air kinds are considered. */
+u8 IsAiAttackTarget(void *unit) {
+    s32 IsUnitSelected(void *); s32 WillCaptureCompleteThisTurn(void *); s32 GetUnitAttackClass(u32);
+    extern u8 gUnitKindFlags;
+    u16 flags; u8 result;
+    flags = M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS);
+    if (flags & UNIT_FLAG_LOADED) return 0;
+    if (!(flags & UNIT_FLAG_ACTED) && ((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL) << 24) >> 31) == 0) return 0;
+    if (((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27) != 0 && WillCaptureCompleteThisTurn(unit) == 1) return 1;
+    if (IsUnitSelected(unit) != 0) return 1;
+    if (GetUnitAttackClass((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) != UNIT_ATTACK_INDIRECT) return 0;
+    result = !(*(&gUnitKindFlags + (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE)) & UNIT_KIND_FLAGS_AIR);
+    return result;
 }
 
 void func_ov000_02186a18(void) {
@@ -125,7 +131,7 @@ void func_ov000_02186a18(void) {
     extern u8 *gAiUnitTypeTuning;
     extern s8 gAiRangeLayer[];
     s32 GetUnitAttackClass(u32);
-    u8 func_ov000_0218695c(void *);
+    u8 IsAiAttackTarget(void *);
     s32 IsWithinAttackRange(void *, void *, s32);
     void func_ov000_02186940(void *);
     void BuildUnitMoveRange(void *);
@@ -148,7 +154,7 @@ void func_ov000_02186a18(void) {
     for (; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)] + 0x33; i++) {
         unit = (u8 *)*gCurrentMap + 0x59a4;
         if (((u32)(unit[i * 0xe] << 26) >> 26) == 0) continue;
-        if (!func_ov000_0218695c(unit + i * 0xe)) continue;
+        if (!IsAiAttackTarget(unit + i * 0xe)) continue;
         if (!IsWithinAttackRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), unit + i * 0xe, 0)) continue;
         func_ov000_02186940(unit + i * 0xe);
         BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));

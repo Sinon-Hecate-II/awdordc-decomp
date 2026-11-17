@@ -407,44 +407,47 @@ if(state==0 || state==2) return 0;
 return VoiceLink_AllocContext(a);
 }
 
-s32 VoiceLink_ReleaseContext(void *arg0) {
+/* Release a voice-chat context: clear its valid flag and put it back at the head
+ * of the link state's free list (unlinking it from the active list), or in the
+ * link's single-context mode only clear the global context's session state. */
+s32 VoiceLink_ReleaseContext(VoiceLinkContext *context) {
     extern M2C_UNK gVoiceLinkState;
     extern M2C_UNK gVoiceLinkContext;
     extern M2C_UNK gLinkConfig;
-    void *var_ip;
-    void *var_lr;
+    VoiceLinkContext *prev;
+    VoiceLinkContext *ctx;
 
-    var_ip = NULL;
-    var_lr = M2C_FIELD(&gVoiceLinkState, void **, 0x14);
-    if (arg0 == NULL) {
+    prev = NULL;
+    ctx = ((VoiceLinkState *)&gVoiceLinkState)->activeList;
+    if (context == NULL) {
         return 0;
     }
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) {
-        if (arg0 == &gVoiceLinkContext) {
-            M2C_FIELD(&gVoiceLinkState, s32 *, 0x3C) = 0;
+    if (M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE) == 2) {
+        if (context == (VoiceLinkContext *)&gVoiceLinkContext) {
+            ((VoiceLinkState *)&gVoiceLinkState)->sessionState = 0;
         }
         return 1;
     }
-    while (var_lr != NULL) {
-        if (var_lr == arg0) {
-            void *temp_r2;
-            M2C_FIELD(arg0, s32 *, 0) = 0;
-            if (var_ip != NULL) {
-                M2C_FIELD(var_ip, void **, 0x14) = M2C_FIELD(arg0, void **, 0x14);
+    while (ctx != NULL) {
+        if (ctx == context) {
+            VoiceLinkContext *next;
+            context->valid = 0;
+            if (prev != NULL) {
+                prev->next = context->next;
             } else {
-                temp_r2 = M2C_FIELD(var_lr, void **, 0x14);
-                if (temp_r2 != NULL) {
-                    M2C_FIELD(&gVoiceLinkState, void **, 0x14) = temp_r2;
+                next = ctx->next;
+                if (next != NULL) {
+                    ((VoiceLinkState *)&gVoiceLinkState)->activeList = next;
                 } else {
-                    M2C_FIELD(&gVoiceLinkState, void **, 0x14) = NULL;
+                    ((VoiceLinkState *)&gVoiceLinkState)->activeList = NULL;
                 }
             }
-            M2C_FIELD(arg0, void **, 0x14) = M2C_FIELD(&gVoiceLinkState, void **, 0x10);
-            M2C_FIELD(&gVoiceLinkState, void **, 0x10) = arg0;
+            context->next = ((VoiceLinkState *)&gVoiceLinkState)->freeList;
+            ((VoiceLinkState *)&gVoiceLinkState)->freeList = context;
             return 1;
         }
-        var_ip = var_lr;
-        var_lr = M2C_FIELD(var_lr, void **, 0x14);
+        prev = ctx;
+        ctx = ctx->next;
     }
     return 0;
 }

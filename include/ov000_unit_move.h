@@ -15,6 +15,10 @@
 #define UNIT_MOVE_SLOT        0x45 /* u8 pool slot of the controller */
 #define UNIT_MOVE_ACTIVE      0x46 /* u8 nonzero while the move runs */
 #define UNIT_MOVE_PALETTE_MODE 0x47 /* u8 cached sprite palette mode: 0x10 normal, 0x18 zoomed */
+#define UNIT_MOVE_SPRITE_ATTR  0x871 /* attribute word of the moving unit's 3D sprite */
+/* 1/16-cell offsets added to the unit's position before it is scaled by MAP_SPRITE_CELL_SIZE. */
+#define UNIT_MOVE_SPRITE_OFFSET_X 8
+#define UNIT_MOVE_SPRITE_OFFSET_Y 16
 #define UNIT_MOVE_GFX         0x50 /* s32 unit tile-graphics buffer (freed with HeapFreeBlock) */
 #define UNIT_MOVE_ANIM        0x54 /* s32 unit sprite animation data buffer */
 #define UNIT_MOVE_PHASE       0x48 /* u16 progress through the current step */

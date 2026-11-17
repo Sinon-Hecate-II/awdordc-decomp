@@ -100,7 +100,7 @@ void DrawUnitInfoPanel(s32 mode) {
  void func_020d87d8(void); s32 GetUnitPanelKind(void *);
  void func_020d6a20(s32,s32,u32,u32); void func_020d759c(s32,s32,s32);
  void DrawCarriedUnits(s32,s32,s32,void *);void DrawUnitStatus(s32,s32,s32,void *);
- void func_020d8084(s32,s32,u32,u32,s32, void *);void DrawUnitInfoFrame(s32,s32,s32,s32);
+ void DrawTerrainStatus(s32,s32,u32,u32,s32, void *);void DrawUnitInfoFrame(s32,s32,s32,s32);
  u32 panelVisible=(u32)(*(u16 *)gMapConfig<<21)>>31;
  MenuBounds bounds=data_020f4e88;
  u8 *unit=0; u8 *map; s16 panelY; s32 side; u32 cursorRow; s16 panelX,panelKind; u32 cursorCol,unitId;
@@ -115,7 +115,7 @@ void DrawUnitInfoPanel(s32 mode) {
  map=*gCurrentMap;panelX=*(s16 *)(map+0x52e4);
  if(panelX<=bounds.v[0]) {panelY=bounds.v[1];side=0;}else {panelY=bounds.v[3];side=1;}
  switch(mode) {case 0:func_020d6a20(2,2,*(u16 *)(map+0x52a2),gMapConfig[3]);break;case 1:func_020d759c(panelX,panelY,side);break;case 2:break;}
- switch(panelKind) {case 2:DrawCarriedUnits(panelX,panelY,side,unit);case 1:DrawUnitStatus(panelX,panelY,side,unit);case 0:func_020d8084(panelX,panelY,cursorCol,cursorRow,side,unit);break;}
+ switch(panelKind) {case 2:DrawCarriedUnits(panelX,panelY,side,unit);case 1:DrawUnitStatus(panelX,panelY,side,unit);case 0:DrawTerrainStatus(panelX,panelY,cursorCol,cursorRow,side,unit);break;}
  DrawUnitInfoFrame(panelX,panelY,side,panelKind);
 }
 

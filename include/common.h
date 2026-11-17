@@ -371,6 +371,10 @@ typedef struct MapSelectScreen {
 #define MAPSELECT_MAX_SCROLL    0x40 /* u16 scroll position of the last row */
 #define MAPSELECT_LAST_ROW      0x53 /* u8 index of the last row */
 #define MAPSELECT_BUMP_LATCH    0x59 /* u8 set once the no-move sound played for a held key */
+#define MAPSELECT_SCROLL_DIRTY  0x56 /* u8 set when the list moved: refresh the BG scroll registers */
+#define MAPSELECT_ROW_BASE_Y    0x36 /* y of the first visible row with the list at scroll 0 */
+#define MAPSELECT_ROW_LABEL_X   0xB3 /* x of a row's label sprite */
+#define MAPSELECT_ROW_NAME_X    0xD2 /* x of a row's map-name sprite */
 
 /* The fields of gMapSelectState in front of that object. */
 #define MAPSELECT_STATE_CURSOR  0x00 /* u8 highlighted row (0..4) */
@@ -1860,6 +1864,13 @@ typedef struct VoiceLinkState {
     u32 peerMask2;                   /* +0x44 */
     s32 substate;                    /* +0x48 */
 } VoiceLinkState;
+
+/* The link layer's shared configuration block, gLinkConfig, which the voice-chat
+ * code reads beside its own state.  In mode 2 the link talks through the single
+ * shared gVoiceLinkContext: VoiceLink_FindContext returns it for every peer and
+ * no per-peer context is allocated. */
+#define LINK_CONFIG_LOCAL_ID  0x00 /* u8 local player id */
+#define LINK_CONFIG_MODE      0x10 /* s32 link mode; 2 = single shared context */
 
 /* Header of a voice-chat link packet (magic 0x5F564354). */
 typedef struct VoiceLinkPacket {

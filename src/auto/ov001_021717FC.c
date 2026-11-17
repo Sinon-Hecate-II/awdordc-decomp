@@ -209,18 +209,21 @@ void func_ov001_02171e58(M2C_UNK arg0) {
     CloseTextPanel(temp_r5);
 }
 
-void func_ov001_02171ecc(s32 a,s32 b){
+/* Builds the ov001 message panel showing message `messageId` and draws the
+ * speaker's name `name` over it at the name line position of the player's
+ * language. */
+void Ov001_ShowMessageWithName(s32 name,s32 messageId){
 extern s32 gOv001MessageArchive;
 s32 Ov001_GetLanguage(s32);
-extern u16 data_ov001_0218f2de[],data_ov001_0218f2dc[];
+extern u16 gOv001NameTextY[],gOv001NameTextX[];
 
 void func_ov001_0218af94(s32,s32,s32,s32,s32,s32);
-s32 p,t,x,y;
-p=CreateTextPanel(0,0);t=Ov001_GetMessageText(gOv001MessageArchive,b);
-DrawPanelText(p,13,60,230,94,2,Ov001_GetTextFontId(),t);
-x=((s32 (*)(void))Ov001_GetLanguage)();y=((s32 (*)(void))Ov001_GetLanguage)();
-func_ov001_0218af94(p,data_ov001_0218f2dc[x*2],data_ov001_0218f2de[y*2],2,0x209,a);
-CloseTextPanel(p);
+s32 panel,text,langX,langY;
+panel=CreateTextPanel(0,0);text=Ov001_GetMessageText(gOv001MessageArchive,messageId);
+DrawPanelText(panel,13,60,230,94,2,Ov001_GetTextFontId(),text);
+langX=((s32 (*)(void))Ov001_GetLanguage)();langY=((s32 (*)(void))Ov001_GetLanguage)();
+func_ov001_0218af94(panel,gOv001NameTextX[langX*2],gOv001NameTextY[langY*2],2,0x209,name);
+CloseTextPanel(panel);
 }
 
 s32 Ov001_GetTextFontId(void) {
@@ -242,21 +245,24 @@ void func_ov001_02171fc0(void) {
     Ov001_FreeAlloc(&gOv001ChoiceFrameSprites);
 }
 
-void func_ov001_02171fd8(s32 a,s32 b,s32 c,s32 d){
-extern u8 data_ov001_0218f300[];
+/* Rebuilds the two end sprites of an ov001 choice-frame row (the left and right
+ * end pieces selected by `rowStyle`) and places them at the given left and
+ * right edges, both on row `y`. */
+void Ov001_LayoutChoiceFrameRow(s32 rowStyle,s32 left,s32 right,s32 y){
+extern u8 gOv001ChoiceFrameRowTiles[];
 extern s32 gOv001ChoiceFrameSprites;
 s32 Ov001_CreateSprite(s32,s32,s32);
 void Ov001_SetSpritePalette(s32,s32,s32);
 void Ov001_MoveSpriteLayout(s32,s32,s32,s32);
 s32 i;u8 *p;
 Ov001_FreeSpriteObjects();
-p=&data_ov001_0218f300[a*2];
+p=&gOv001ChoiceFrameRowTiles[rowStyle*2];
 for(i=0;i<2;i++){
 ((s32 *)gOv001ChoiceFrameSprites)[i]=Ov001_CreateSprite(0,*p++,1);
 Ov001_SetSpritePalette(((s32 *)gOv001ChoiceFrameSprites)[i],-1,1);
 }
-Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[0],-1,b,d);
-Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[1],-1,c,d);
+Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[0],-1,left,y);
+Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[1],-1,right,y);
 }
 
 /* Rebuilds the four sprites of the ov001 choice frame (corner pieces 7..10:

@@ -222,20 +222,24 @@ void func_0204b0dc(void) {
  M2C_FIELD(&gGhiConnectionList,s32 *,0)=0;
 }
 
-void func_0204b154(void *arg0) {
- s32 v=M2C_FIELD(arg0,s32 *,0xec);
- switch(v/100) {
- case 0: break;
- case 1: case 2: case 3: return;
- case 4:
- switch(v) {
- case 401: M2C_FIELD(arg0,s32 *,0x38)=9;return;
- case 403: M2C_FIELD(arg0,s32 *,0x38)=10;return;
- case 404: case 410: M2C_FIELD(arg0,s32 *,0x38)=11;return;
- default: M2C_FIELD(arg0,s32 *,0x38)=8;return;
- } 
- case 5: M2C_FIELD(arg0,s32 *,0x38)=12;return;
- }
+/* Map a finished request's HTTP status code to a GHTTPResult: 1xx-3xx are not
+ * errors, 4xx pick a specific result (the generic update error when unhandled)
+ * and 5xx is a server error. */
+void ghiSetResultFromStatusCode(GHIConnection *conn) {
+    s32 status = conn->statusCode;
+
+    switch (status / 100) {
+    case 0: break;
+    case 1: case 2: case 3: return;
+    case 4:
+        switch (status) {
+        case 401: conn->result = GHTTP_RESULT_UNAUTHORIZED; return;
+        case 403: conn->result = GHTTP_RESULT_FORBIDDEN; return;
+        case 404: case 410: conn->result = GHTTP_RESULT_FILE_NOT_FOUND; return;
+        default: conn->result = GHTTP_RESULT_UPDATE_ERROR; return;
+        }
+    case 5: conn->result = GHTTP_RESULT_SERVER_ERROR; return;
+    }
 }
 
 void func_0204c738(void *);
@@ -273,7 +277,7 @@ s32 func_0204b210(void *operation) {
     if (status == 0)
         M2C_FIELD(operation, s32 *, 0x12C) = 0;
     else {
-        func_0204b154(operation);
+        ghiSetResultFromStatusCode(operation);
         func_0204a498(operation);
         ghiFreeConnection(operation);
     }

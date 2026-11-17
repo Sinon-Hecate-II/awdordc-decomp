@@ -142,7 +142,7 @@ s32 Map_CanPlaceTile(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
 }
 
 s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
- s32 func_ov007_0221b754(s32,s32);
+ s32 Map_IsWastelandTile(s32,s32);
  s32 func_ov007_0221bad0(s32,s32);
  extern u8 data_ov007_0221f544[],data_ov007_0221f52c[],data_ov007_0221f514[];
  s32 i;
@@ -153,19 +153,19 @@ s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
  i=0;count=0;diagonal=0;mask=0;
  switch(kind) {
  case 13:case 14:
- if(func_ov007_0221b754(x,y))return 1;
+ if(Map_IsWastelandTile(x,y))return 1;
  return (u8)(func_ov007_0221bad0(x,y)!=0);
  case 10:case 12:
  all=*(const struct TileNeighbors_0221 *)data_ov007_0221f544;
  p=(u8 *)&all;
  for(i=0;i<8;i++,p+=6)
- if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2)))return 0;
+ if(!Map_IsWastelandTile(x+*(s16 *)p,y+*(s16 *)(p+2)))return 0;
  break;
  case 9:
  cardinal=*(const struct TileCardinalNeighbors_0221 *)data_ov007_0221f52c;
  p=(u8 *)&cardinal;
  for(i=0;i<4;i++,p+=6) {
- if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2))) {mask|=1<<i;count++;}
+ if(!Map_IsWastelandTile(x+*(s16 *)p,y+*(s16 *)(p+2))) {mask|=1<<i;count++;}
  }
  if(count==0)return 0;
  if(count==4)return 0;
@@ -175,7 +175,7 @@ s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
  corners=*(const struct TileCardinalNeighbors_0221 *)data_ov007_0221f514;
  p=(u8 *)&corners;
  for(i=0;i<4;i++,p+=6)
- if(!func_ov007_0221b754(x+*(s16 *)p,y+*(s16 *)(p+2)))diagonal|=1<<i;
+ if(!Map_IsWastelandTile(x+*(s16 *)p,y+*(s16 *)(p+2)))diagonal|=1<<i;
  if(mask&1) {
  if(!(mask&2) && (diagonal&4))return 0;
  if(!(mask&4) && (diagonal&8))return 0;
@@ -230,7 +230,7 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     s32 Map_CanPlaceTile(s32, s32, s32, s32);
     void Map_SetTileAndRefresh(s32, s32, u16, u16);
     void Map_RefreshCellTile(s32, s32);
-    s32 func_ov007_0221b754(s32, s32);
+    s32 Map_IsWastelandTile(s32, s32);
     s32 func_ov007_0221bad0(s32, s32);
     extern void **gCurrentMap;
     extern u8 data_ov007_0221f574[];
@@ -251,13 +251,13 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     }
     switch (tile) {
     case 0x1b:
-        if (func_ov007_0221b754(x, y) != 0) {
+        if (Map_IsWastelandTile(x, y) != 0) {
             encodedTile = 0x3b;
             graphic = 0x146;
         }
         break;
     case 0x1c:
-        if (func_ov007_0221b754(x, y) != 0) {
+        if (Map_IsWastelandTile(x, y) != 0) {
             encodedTile = 0x3c;
             graphic = 0x166;
         }

@@ -355,7 +355,7 @@ void func_ov000_0219d220(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
-    u8 func_ov000_021a8984(s32);
+    u8 IsMidActionStep(s32);
     void func_ov000_0219c8fc(void);
     extern M2C_UNK RunAIUnitAction;
     s32 index;
@@ -378,7 +378,7 @@ void func_ov000_0219d220(void) {
                 if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1)
                     && gUnitKindStats[type * 0x70 + 0x14] == 1) {
                     u32 nibble = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C;
-                    if (nibble != 0 && func_ov000_021a8984((s32)nibble) != 0) {
+                    if (nibble != 0 && IsMidActionStep((s32)nibble) != 0) {
                         out = gAiUnitListCursor;
                         gAiUnitListCursor = out + 1;
                         *out = index;

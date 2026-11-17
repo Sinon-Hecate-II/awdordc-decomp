@@ -29,7 +29,7 @@ void *GetLocalizedFileName(void*);void LoadDecompressedFileTo(void*,void*);void 
 void func_020a9a30(s32,s32,s32,void*);void LoadScenePanelPalette(s32);void func_02091d6c(s32,s32);
 void *LoadFileToBuffer(void*,s32);void func_0207c780(void*,void*);void HeapFreeBlock(void*);
 void DrawMapPreview(void*,void*,s32,s32);void *GetUiColor(s32);void func_0208ca2c(s32,s32,void*,s32);
-u8 func_ov003_02200b5c(u8);void *func_ov000_0216cdcc(u8);void *func_ov000_0216cdec(s32,s32);void CopyToObjPaletteShadow(void*,s32,s32);void func_020ae528(void*);
+u8 func_ov003_02200b5c(u8);void *GetTerrainTileData(u8);void *GetTerrainPalette(s32,s32);void CopyToObjPaletteShadow(void*,s32,s32);void func_020ae528(void*);
 static inline u8 *MenuButton(void *menu,s32 index) {return M2C_FIELD(menu+index*4,u8**,12);}
 static inline void SetupLayer(void *engine,s32 layer,s32 bank,s32 slot,s32 field,s32 offset){
 u8 *base=M2C_FIELD(engine,u8**,field);func_020a9a30(layer,bank,slot,base+offset);
@@ -130,8 +130,8 @@ func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x360);
 func_020a9a30(1,0,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4b00);
 func_020a9a30(1,0,2,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4e00);
 func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x320);
-for(i=0;i<=7;i++){u8 *dest=M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+((u16)((i<<3)+0x210)<<5);MI_CpuCopy32(func_ov000_0216cdcc(func_ov003_02200b5c(i)),dest,256);}
-CopyToObjPaletteShadow(func_ov000_0216cdec(15,0),0x2e0,32);CopyToObjPaletteShadow(func_ov000_0216cdec(15,0),0x300,32);
+for(i=0;i<=7;i++){u8 *dest=M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+((u16)((i<<3)+0x210)<<5);MI_CpuCopy32(GetTerrainTileData(func_ov003_02200b5c(i)),dest,256);}
+CopyToObjPaletteShadow(GetTerrainPalette(15,0),0x2e0,32);CopyToObjPaletteShadow(GetTerrainPalette(15,0),0x300,32);
 func_020ae528(M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x300);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;
 gCur3DSpriteEngine=saved;
 }

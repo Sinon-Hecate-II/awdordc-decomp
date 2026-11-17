@@ -167,7 +167,7 @@ s32 FindNearestTargetCandidate(void) {
 extern unsigned char *gAiState;
 extern int gAiTargetCandidates;
 extern int *gCurrentMap;
-int func_ov000_021a6d4c(void) {
+int FindBaseTargetCandidate(void) {
 unsigned char *entry; int i; int min; int result;
 min=0x7fff;result=-1;entry=(unsigned char *)&gAiTargetCandidates;
 for(i=0;i<gAiState[0];i++,entry+=12) {

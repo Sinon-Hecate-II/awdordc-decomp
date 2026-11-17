@@ -1,5 +1,6 @@
 /* 23 functions from 0x020D166C to 0x020D2470 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6, flags:2; } UnitKindD1690;
 typedef struct { u16 hp:7, flags:9; } UnitHpD1690;
 static inline u8 PlayerStatusIndex(void *p) { return M2C_FIELD(p,s32 *,0x6810); }
@@ -192,18 +193,33 @@ M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
 SetupPlayerTeams();func_020cd754((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));func_020d0270();RefreshUnitVisibility();
 }
 
-void func_020d1ce0(void){
-extern void **gCurrentMap;void func_020d2d80(s32);void func_020d2d60(s32);void func_020d2d90(s32);s32 func_020d0590(s32);void func_020cf498(s16,s16);void func_020d1d9c(void);u8 *p;
-M2C_FIELD(*gCurrentMap,u16 *,0x52c0)=0;
-func_020d2d80(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-func_020d2d60(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-func_020d2d90(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-if(func_020d0590(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){
-p=*gCurrentMap;p=p+0x67a4+M2C_FIELD(p,u16 *,0x52a4)*0x8c;func_020cf498(p[0x2d],p[0x2e]);}
-func_020d1d9c();
+/* Start the current player's turn: rewind the unit-slot allocation cursor, reset
+ * the player's unit-sprite state, re-enable picking units while none is selected,
+ * pay out the income of the properties the player owns, put the map cursor back on
+ * the tile the player left it on and reload the player's palettes. */
+void InitPlayerTurnState(void) {
+    extern void **gCurrentMap;
+    void func_020d2d80(s32);  /* clears the player's unit-sprite state bits 8..9 */
+    void func_020d2d60(s32);  /* re-enables selection while the player has none */
+    void PayPlayerIncome(s32);
+    s32 func_020d0590(s32);   /* nonzero when the map cursor belongs to the player */
+    void SetMapCursorTargetTile(s16, s16);
+    void LoadPlayerPalettes(void);
+    u8 *p; /* the player's record at MAP_PLAYER_STATES */
+
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_UNIT_SLOT_CURSOR) = 0;
+    func_020d2d80(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    func_020d2d60(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    PayPlayerIncome(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    if (func_020d0590(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+        p = *gCurrentMap;
+        p = p + MAP_PLAYER_STATES + M2C_FIELD(p, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE;
+        SetMapCursorTargetTile(p[PLAYER_REC_CURSOR_X], p[PLAYER_REC_CURSOR_Y]);
+    }
+    LoadPlayerPalettes();
 }
 
-void func_020d1d9c(void) {
+void LoadPlayerPalettes(void) {
  void func_020c0a1c(s32); void func_020c09c0(s32);
  extern void **gCurrentMap;
  func_020c0a1c(3);

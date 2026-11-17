@@ -45,8 +45,8 @@ void func_ov003_021e5118(void *arg0) {
     s32 func_ov000_0216a77c();
     M2C_UNK func_ov000_0216a7c4();
     s32 func_ov000_0216a7d4();
-    s32 func_ov000_0216cdcc(u8);
-    s32 func_ov000_0216cdec(M2C_UNK, M2C_UNK);
+    s32 GetTerrainTileData(u8);
+    s32 GetTerrainPalette(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f1b38(M2C_UNK, M2C_UNK *);
     M2C_UNK func_ov003_021f1b7c(M2C_UNK, M2C_UNK *);
     u8 func_ov003_02200b5c(u8);
@@ -203,11 +203,11 @@ void func_ov003_021e5118(void *arg0) {
     var_r4 = 0;
     do {
         temp_r8 = M2C_FIELD(data_027e01d8, s32 *, 0x1C) + ((u32) (((var_r4 * 8) + 0x210) << 0x10) >> 0xB);
-        MI_CpuCopy32(func_ov000_0216cdcc(func_ov003_02200b5c(var_r4)), temp_r8, 0x100);
+        MI_CpuCopy32(GetTerrainTileData(func_ov003_02200b5c(var_r4)), temp_r8, 0x100);
         var_r4 += 1;
     } while ((u32) var_r4 <= 7U);
-    CopyToObjPaletteShadow(func_ov000_0216cdec(0xF, 0), 0x2E0, 0x20);
-    CopyToObjPaletteShadow(func_ov000_0216cdec(0xF, 0), 0x300, 0x20);
+    CopyToObjPaletteShadow(GetTerrainPalette(0xF, 0), 0x2E0, 0x20);
+    CopyToObjPaletteShadow(GetTerrainPalette(0xF, 0), 0x300, 0x20);
     func_020ae528(M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x300);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 0x10);
     data_027e01d8 = temp_r5_2;

@@ -375,7 +375,7 @@ s32 func_ov000_0219efa4(void) {
 #pragma opt_propagation off
 s32 func_ov000_0219f0d8(void) {
     s32 IsPlayerHuman(s32);
-    void func_020cf498(s32, s32);
+    void SetMapCursorTargetTile(s32, s32);
     void func_020babfc(s32, s32, void *);
     void MarkPathThreatRange(s32, s32, void *);
     void RefreshMapView(void);
@@ -415,7 +415,7 @@ s32 func_ov000_0219f0d8(void) {
         *(s8 *)(*(u8 **)((u8 *)*gCurrentMap + 0x52d0) + 1) = *(s16 *)((u8 *)*gCurrentMap + 0x52dc);
         *(s8 *)(*(u8 **)((u8 *)*gCurrentMap + 0x52d0) + 2) = *(s16 *)((u8 *)*gCurrentMap + 0x52de);
         if (IsPlayerHuman(*(u16 *)((u8 *)*gCurrentMap + 0x52a4)) != 0) {
-            func_020cf498(*(s16 *)((u8 *)*gCurrentMap + 0x52dc), *(s16 *)((u8 *)*gCurrentMap + 0x52de));
+            SetMapCursorTargetTile(*(s16 *)((u8 *)*gCurrentMap + 0x52dc), *(s16 *)((u8 *)*gCurrentMap + 0x52de));
             func_020babfc(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
             MarkPathThreatRange(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
         }

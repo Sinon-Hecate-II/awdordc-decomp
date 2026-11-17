@@ -15,8 +15,8 @@ static inline void Copy617BC(u8 *d,u8 *s) { *(Bytes617BC *)d=*(Bytes617BC *)s; }
 extern u8 data_02100120[];
 extern u8 sSbFileName[];
 extern u8 data_02100094[];
-extern void *data_02100090;
-extern s32 data_0213e4b4[2];
+extern void *sSbQueryErrorPrefix;
+extern s32 sSbNoServer[2];
 
 s32 func_020617bc(s32 *arg0, s32 *arg1) {
     s32 SBServerGetIntValue(s32, s32, M2C_UNK);
@@ -224,7 +224,7 @@ func_02062e28(list,&sSbEmptyString);M2C_FIELD(list,s32*,0x5cc)=0;
 SetRandSeed(GetTickCountMs());func_0204926c();
 }
 
-s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 StringCompareN(void *,void *,u32);void func_02062e28(void *,void *);s32 SBServerListDisconnect(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!StringCompareN(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));SBServerListDisconnect(a);}
+s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 StringCompareN(void *,void *,u32);void func_02062e28(void *,void *);s32 SBServerListDisconnect(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=sSbQueryErrorPrefix;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=sSbQueryErrorPrefix;if(!StringCompareN(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,sSbNoServer[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,sSbNoServer[0],M2C_FIELD(a,s32 *,0x494));SBServerListDisconnect(a);}
 
 s32 func_02061fb8(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];

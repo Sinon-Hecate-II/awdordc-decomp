@@ -123,9 +123,9 @@ void func_ov007_02219d10(void){
 void MapEditor_LoadTerrainBrushGraphics(void) {
     u8 GetMapEditorTerrainKind(void);
     u8 GetMapEditorTerrainOwner(void);
-    s32 func_ov000_0216cda4(s32);
-    void *func_ov000_0216cdcc(s32);
-    void *func_ov000_0216cdec(s32, s32);
+    s32 GetTerrainTileBase(s32);
+    void *GetTerrainTileData(s32);
+    void *GetTerrainPalette(s32, s32);
     void QueueMemoryCopy(s32, s32, s32, s32);
     void CopyToObjPaletteShadow(void *, s32, s32);
     void func_020ae528(void *);
@@ -141,9 +141,9 @@ void MapEditor_LoadTerrainBrushGraphics(void) {
 
     kind = GetMapEditorTerrainKind();
     owner = GetMapEditorTerrainOwner();
-    tileBase = func_ov000_0216cda4(kind);
-    tileData = func_ov000_0216cdcc(kind);
-    palette = func_ov000_0216cdec(kind, owner);
+    tileBase = GetTerrainTileBase(kind);
+    tileData = GetTerrainTileData(kind);
+    palette = GetTerrainPalette(kind, owner);
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     QueueMemoryCopy((s32)tileData, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2D80, 0x100, 0);

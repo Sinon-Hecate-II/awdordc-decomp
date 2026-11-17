@@ -39,8 +39,8 @@ s32 func_020a8a84(s32);
 s32 func_0207cb88(s32);
 s32 func_ov000_0216ce10(s32);
 s32 func_ov000_0216ce84(s32);
-s32 func_ov000_0216cdcc(s32);
-s32 func_ov000_0216cdec(s32,s32);
+s32 GetTerrainTileData(s32);
+s32 GetTerrainPalette(s32,s32);
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain, **g3DSpriteEngineSub, **gCurrentMap;
 void *p, *q; void **saved, **saved2;
 u8 *dst; s32 n; u8 *b; s32 i,j,k,v,t;
@@ -99,9 +99,9 @@ CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s
 b=data_ov005_02220a1c; gCur3DSpriteEngine=g3DSpriteEngineSub;
 k=0; if(*b) { saved=(void **)0x3ac; do {
 dst=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+((s32)saved<<5);
-MI_CpuCopy32(func_ov000_0216cdcc(*b),dst,256);
+MI_CpuCopy32(GetTerrainTileData(*b),dst,256);
 b++; saved=(void **)((s32)saved+8); k++; } while(*b); }
-CopyToObjPaletteShadow(func_ov000_0216cdec(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
+CopyToObjPaletteShadow(GetTerrainPalette(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
 gCur3DSpriteEngine=g3DSpriteEngineSub; func_02099450(0,0,0);
 v=GetCurrentMapName(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
 if(func_020cd6d4()) {

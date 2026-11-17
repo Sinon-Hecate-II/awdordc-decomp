@@ -29,7 +29,7 @@ void func_0207b754(M2C_UNK, M2C_UNK);
 s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
     s32 GetMapViewWidth(void);
     s32 GetMapViewHeight(void);
-    void func_020cf498(s32, s32);
+    void SetMapCursorTargetTile(s32, s32);
     extern void *gCurrentMap;
     s32 deltaX = 0;
     s32 deltaY = deltaX;
@@ -39,7 +39,7 @@ s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
     s32 tileY = rawY / 16;
     s32 halfX = GetMapViewWidth();
     s32 halfY = GetMapViewHeight();
-    func_020cf498((s16)*px, (s16)*py);
+    SetMapCursorTargetTile((s16)*px, (s16)*py);
     if (third != 0) {
         *px -= halfX >> 1;
         *py -= halfY >> 1;

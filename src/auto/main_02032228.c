@@ -258,13 +258,13 @@ return 0;
 }
 
 void NasStartTask(void) {
-M2C_UNK InitMutex(void *); M2C_UNK func_02005ac0(void *,void (*)(void),void *,void *,s32,s32);
-s32 func_02005d90(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
+M2C_UNK InitMutex(void *); M2C_UNK TaskCreate(void *,void (*)(void),void *,void *,s32,s32);
+s32 TaskIsFinished(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
 extern M2C_UNK gNasConnection; extern M2C_UNK data_0213d11c;
 InitMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=0;
-if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384)!=0 && func_02005d90(M2C_FIELD(&gNasConnection,void **,8)+0x1318)==0)return;
-func_02005ac0(M2C_FIELD(&gNasConnection,void **,8)+0x1318,NasConnectTask,&data_0213d11c,M2C_FIELD(&gNasConnection,void **,8)+0x1000,0x1000,0x10);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384)!=0 && TaskIsFinished(M2C_FIELD(&gNasConnection,void **,8)+0x1318)==0)return;
+TaskCreate(M2C_FIELD(&gNasConnection,void **,8)+0x1318,NasConnectTask,&data_0213d11c,M2C_FIELD(&gNasConnection,void **,8)+0x1000,0x1000,0x10);
 TaskWake(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
 }
 
@@ -335,7 +335,7 @@ void func_02032be4(void *arg0) {
 
 s32 NasConnect(s32 arg0){
 extern M2C_UNK gNasServer,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
-s32 StringCompare(void *,void *);s32 HttpClientInit(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
+s32 StringCompare(void *,void *);s32 HttpClientInit(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void HttpClientStartTask(void *,s32);
 if(StringCompare(M2C_FIELD(&gNasServer,void **,0),&data_020fb35c))M2C_FIELD(&gNasServer,s32 *,20)=1;
 { void *p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(&gNasServer,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);
@@ -346,7 +346,7 @@ if(arg0==1)GetWfcProfile(&data_0213d120);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x1200,(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x11cc);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return 4;
 if(func_02033de8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314)))return 4;
-func_02033e80(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&gSocketManager,s32 *,4))-1);
+HttpClientStartTask(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&gSocketManager,s32 *,4))-1);
 return 0;
 }
 

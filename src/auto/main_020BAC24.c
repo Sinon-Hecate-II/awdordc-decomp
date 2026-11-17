@@ -100,7 +100,7 @@ void func_020bb0ec(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_020bb110(void) {
     extern void **gCurrentMap;
-    M2C_UNK func_020a7568(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK GetUnitCaptureRate(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020baa64();
     M2C_UNK func_020baaac();
     M2C_UNK IsPlayerHuman(u16);
@@ -125,7 +125,7 @@ void func_020bb110(void) {
     sel = (u8 *)M2C_FIELD(map, u8 **, 0x52D0);
     cx = M2C_FIELD(map, s16 *, 0x52DC);
     cy = M2C_FIELD(map, s16 *, 0x52DE);
-    r4 = (s32)func_020a7568((M2C_UNK)sel, cx, cy);
+    r4 = (s32)GetUnitCaptureRate((M2C_UNK)sel, cx, cy);
     selIndex = 0;
     rowoff = M2C_FIELD(map, u16 *, 0x3758 + cy * 2);
     terrain = map[0x1420 + cx + rowoff];

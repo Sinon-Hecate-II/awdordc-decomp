@@ -370,7 +370,7 @@ map=*gCurrentMap;
 unit=(UnitCB9 *)(map+MAP_UNIT_RECORDS+(M2C_FIELD(map,u16 *,0x52a8)+i)*MAP_UNIT_STRIDE);
 if(!unit->kind || (unit->flags&8))continue;
 a=0;b=0;
-if(func_020d280c(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),unit->x,unit->y)){
+if(IsPropertyOwnedByTeam(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),unit->x,unit->y)){
 s32 kind=unit->kind; s32 x; s32 y; s32 terrain; s8 *table;
 map=*gCurrentMap; x=unit->x;y=unit->y;
 terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN)&31;

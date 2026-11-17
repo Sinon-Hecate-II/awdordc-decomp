@@ -316,29 +316,29 @@ void func_ov007_02217774(void) {
 
 M2C_UNK func_ov007_022178f4(void) {
  s32 Map_RandomScaledValue(s32,s32);
- s32 func_ov007_02215dd8(s32 *,s32 *,s32);
+ s32 Map_PickRandomWastelandTile(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=Map_RandomScaledValue(5,10);
  for(i=0;i<n;i++){
- if(func_ov007_02215dd8(&sp4,&sp0,3)==0)return;
+ if(Map_PickRandomWastelandTile(&sp4,&sp0,3)==0)return;
  Map_SetCellTile(sp4,sp0,360);
  }
 }
 
 M2C_UNK func_ov007_0221796c(void) {
  s32 Map_RandomScaledValue(s32,s32);
- s32 func_ov007_02215dd8(s32 *,s32 *,s32);
+ s32 Map_PickRandomWastelandTile(s32 *,s32 *,s32);
  M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=Map_RandomScaledValue(5,10);
  for(i=0;i<n;i++){
- if(func_ov007_02215dd8(&sp4,&sp0,3)==0)return;
+ if(Map_PickRandomWastelandTile(&sp4,&sp0,3)==0)return;
  Map_SetCellTile(sp4,sp0,39);
  }
 }
 
-M2C_UNK func_ov007_022179e4(void){s32 Map_RandomScaledValue(s32,s32);s32 func_ov007_02215dd8(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);s32 sp4,sp0,i,n;n=Map_RandomScaledValue(8,15);for(i=0;i<n;i++){if(!func_ov007_02215dd8(&sp4,&sp0,3))return;Map_SetCellTile(sp4,sp0,7);}}
+M2C_UNK func_ov007_022179e4(void){s32 Map_RandomScaledValue(s32,s32);s32 Map_PickRandomWastelandTile(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);s32 sp4,sp0,i,n;n=Map_RandomScaledValue(8,15);for(i=0;i<n;i++){if(!Map_PickRandomWastelandTile(&sp4,&sp0,3))return;Map_SetCellTile(sp4,sp0,7);}}
 
 /* Fill every tile of the current map with type 1, then populate enemies, items and other map content. */
 void func_ov007_02217a5c(void) {

@@ -181,32 +181,35 @@ u32 func_0202c4ac(s32 arg0, s32 arg1) {
 
 void func_0202c51c(s32 *arg0) {
     M2C_UNK func_0202a670(s32);
-    M2C_UNK func_0202c534();
-    func_0202c534();
+    M2C_UNK Sound_FreeAllBlocks();
+    Sound_FreeAllBlocks();
     func_0202a670(*arg0);
 }
 
-s32 func_0202c534(void *p){
-s32 func_02029df4(void *,M2C_UNK);void func_02029d7c(void *,void *);void func_0202a6b0(s32,s32);void func_0202c828(void);s32 func_0202c7ec(void *);
-void *a;s32 changed=0;void *b;
-a=(void *)func_02029df4(p+4,0);
-while(a){
-b=(void *)func_02029df4(a,0);
-while(b){
-if(M2C_FIELD(b,void (**)(void *,s32,s32,s32),12)){
-M2C_FIELD(b,void (**)(void *,s32,s32,s32),12)(b+32,M2C_FIELD(b,s32 *,8),M2C_FIELD(b,s32 *,16),M2C_FIELD(b,s32 *,20));changed=1;
+/* Frees every block group of the sound player `player`: calls each block's
+ * release callback, unlinks the group from the player's list, resets the
+ * player's heap and flushes the sound commands, then adds a fresh block. */
+s32 Sound_FreeAllBlocks(void *player){
+s32 ListNext(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 func_0202c7ec(void *);
+void *group;s32 changed=0;void *block;
+group=(void *)ListNext(player+4,0);
+while(group){
+block=(void *)ListNext(group,0);
+while(block){
+if(M2C_FIELD(block,void (**)(void *,s32,s32,s32),12)){
+M2C_FIELD(block,void (**)(void *,s32,s32,s32),12)(block+32,M2C_FIELD(block,s32 *,8),M2C_FIELD(block,s32 *,16),M2C_FIELD(block,s32 *,20));changed=1;
 }
-b=(void *)func_02029df4(a,(s32)b);
+block=(void *)ListNext(group,(s32)block);
 }
-func_02029d7c(p+4,a);a=(void *)func_02029df4(p+4,0);
+ListRemove(player+4,group);group=(void *)ListNext(player+4,0);
 }
-func_0202a6b0(M2C_FIELD(p,s32 *,0),3);if(changed)func_0202c828();return func_0202c7ec(p);
+func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return func_0202c7ec(player);
 }
 
 void *func_0202c5f0(s32 *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 func_02029df4(void *,M2C_UNK);M2C_UNK func_02029c74(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
+s32 ListNext(void *,M2C_UNK);M2C_UNK func_02029c74(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
 temp_r0=func_0202a67c(*arg0,((arg1+31)&~31)+32,32);if(!temp_r0)return 0;
-temp_r0_2=func_02029df4(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;func_02029c74(temp_r0_2,temp_r0);return temp_r0+32;
+temp_r0_2=ListNext(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;func_02029c74(temp_r0_2,temp_r0);return temp_r0+32;
 }
 
 s32 func_0202c658(void *arg0) {
@@ -224,13 +227,13 @@ s32 func_0202c658(void *arg0) {
 }
 
 void func_0202c6a4(void *p, s32 count) {
-    s32 func_02029df4(void *, M2C_UNK);
-    void func_02029d7c(void *, void *);
+    s32 ListNext(void *, M2C_UNK);
+    void ListRemove(void *, void *);
     s32 func_0202a764(s32, s32);
     s32 func_0202a714(s32, u16);
-    void func_0202c828(void);
+    void Sound_FlushAndWait(void);
     s32 func_0202c7ec(void *);
-    s32 func_0202c534(void *);
+    s32 Sound_FreeAllBlocks(void *);
     void *a;
     s32 changed;
     void *b;
@@ -238,24 +241,24 @@ void func_0202c6a4(void *p, s32 count) {
     b = 0;
     changed = 0;
     if (count == 0) {
-        func_0202c534(p);
+        Sound_FreeAllBlocks(p);
         return;
     }
     while (count < M2C_FIELD(p, u16 *, 12)) {
-        a = (void *)func_02029df4(p + 4, 0);
-        b = (void *)func_02029df4(a, (s32)b);
+        a = (void *)ListNext(p + 4, 0);
+        b = (void *)ListNext(a, (s32)b);
         while (b) {
             if (M2C_FIELD(b, void (**)(void *, s32, s32, s32), 12)) {
                 M2C_FIELD(b, void (**)(void *, s32, s32, s32), 12)(b + 32, M2C_FIELD(b, s32 *, 8), M2C_FIELD(b, s32 *, 16), M2C_FIELD(b, s32 *, 20));
                 changed = 1;
             }
-            b = (void *)func_02029df4(a, (s32)b);
+            b = (void *)ListNext(a, (s32)b);
         }
-        func_02029d7c(p + 4, a);
+        ListRemove(p + 4, a);
     }
     func_0202a764(M2C_FIELD(p, s32 *, 0), count);
     if (changed) {
-        func_0202c828();
+        Sound_FlushAndWait();
     }
     func_0202a714(M2C_FIELD(p, s32 *, 0), M2C_FIELD(p, u16 *, 12));
     func_0202c7ec(p);
@@ -288,7 +291,7 @@ void *func_0202a67c(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK func_02029c
 void *q=func_0202a67c(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);func_02029c74((s32)(p+4),q);return 1;
 }
 
-void func_0202c828(void) {
+void Sound_FlushAndWait(void) {
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
     s32 Sound_GetCommandCounter();

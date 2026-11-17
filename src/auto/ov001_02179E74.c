@@ -425,7 +425,7 @@ void MapSelectList_Redraw(void) {
     s32 func_02002088(s32, u16);
           void MapSelectList_DrawMapName(s32, s32);
     M2C_UNK func_ov001_0217ae38(s32, s32);
-    M2C_UNK func_ov001_0217aec4();
+    M2C_UNK MapSelectList_PositionRows();
     M2C_UNK TextPanel_ClearText(M2C_UNK, M2C_UNK);
     M2C_UNK CloseTextPanel(M2C_UNK);
     extern M2C_UNK gMapSelectState;
@@ -458,7 +458,7 @@ void MapSelectList_Redraw(void) {
         } while (var_r5 < var_r4);
     }
     CloseTextPanel(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc));
-    func_ov001_0217aec4();
+    MapSelectList_PositionRows();
 }
 
 /* Draws the name of the map at list position `index` on row `row` of the

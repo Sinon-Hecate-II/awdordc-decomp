@@ -133,7 +133,21 @@ void SpawnUnitSprite(s32 arg0, void *unused) {
     M2C_FIELD(CreateSpriteObject(&data_02120670), s32 *, 0x54) = arg0;
 }
 
-void func_020a6c00(void *p){u8 *HeapAllocBlock(s32);u8 *bits;s32 x; s32 y; s32 base; u32 pos;M2C_FIELD(p,s32 *,0x5c)=1;M2C_FIELD(p,s32 *,0x60)=1;bits=HeapAllocBlock(0xa1);M2C_FIELD(p,u8 **,0x54)=bits;base=*gCurrentMap;for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){pos=x+M2C_FIELD((base+((u32)y<<1)),u16 *,0x3758);bits[pos>>3]&=((1<<(pos&7)) ^ -1);base=*gCurrentMap;}}}
+/* Initialise an area-damage battle effect: set its two active flags, allocate
+ * one bit per map cell for the cells it has already damaged and clear them. */
+void InitAreaDamageEffect(void *effect){
+u8 *HeapAllocBlock(s32);
+u8 *covered; s32 x; s32 y; u8 *map; u32 cell;
+M2C_FIELD(effect,s32 *,0x5c)=1;M2C_FIELD(effect,s32 *,0x60)=1;
+covered=HeapAllocBlock(MAP_CELL_LAYER_BYTES/8);M2C_FIELD(effect,u8 **,0x54)=covered;
+map=*gCurrentMap;
+for(y=0;y<M2C_FIELD(map,u16 *,MAP_HEIGHT);y++){
+for(x=0;x<M2C_FIELD(map,u16 *,MAP_WIDTH);x++){
+cell=x+M2C_FIELD((map+((u32)y<<1)),u16 *,MAP_ROW_OFFSETS);
+covered[cell>>3]&=((1<<(cell&7)) ^ -1);
+map=*gCurrentMap;
+}}
+}
 
 void func_020a6cbc(void *arg0) {
     M2C_UNK HeapFreeBlock(s32);
@@ -304,7 +318,7 @@ s32 func_020a7558(void) {
     return 2;
 }
 
-s32 func_020a7568(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 GetUnitCaptureRate(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 Divide(s32, M2C_UNK);
     s32 func_020a2638(void *, M2C_UNK, M2C_UNK);
     s32 var_r4;

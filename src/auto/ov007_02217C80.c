@@ -416,9 +416,9 @@ void func_ov007_0221863c(void *arg0) {
     void MI_CpuCopy32(void *, void *, s32);
     void CopyToObjPaletteShadow(M2C_UNK, s32, M2C_UNK);
     M2C_UNK HeapFreeBlock(s32);
-    s32 func_ov000_0216cda4(s32);
-    void *func_ov000_0216cdcc(s32);
-    void *func_ov000_0216cdec(s32, s32);
+    s32 GetTerrainTileBase(s32);
+    void *GetTerrainTileData(s32);
+    void *GetTerrainPalette(s32, s32);
     s32 func_ov000_0216cd4c(s32);
     void *GetUnitIconTiles(s32, s32);
     void *GetArmyPalette(s32);
@@ -469,9 +469,9 @@ void func_ov007_0221863c(void *arg0) {
         offset=0x7b80;
         do {
             s32 id=MapEditor_GetPaletteOwner(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
-            s32 v0=func_ov000_0216cda4(table[0]);
-            void *v1=func_ov000_0216cdcc(table[0]);
-            void *v2=func_ov000_0216cdec(table[0],id);
+            s32 v0=GetTerrainTileBase(table[0]);
+            void *v1=GetTerrainTileData(table[0]);
+            void *v2=GetTerrainPalette(table[0],id);
             MI_CpuCopy32(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x100);
             MI_CpuCopy32((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+8)*32,0x200);
             offset+=0x300; tile+=0x18;

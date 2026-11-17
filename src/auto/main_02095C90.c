@@ -346,7 +346,7 @@ block_8:
  * unit, then the map view is refreshed. */
 void LoadCurrentMap(void){
 extern s32 *gCurrentMap;
-s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 LoadFileToBuffer(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
+s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 LoadFileToBuffer(s32,s32);M2C_UNK PlaceMapDeployment(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID);
 s32 p,i;BattleMapUnitHead *unit; s32 off;
 if(id>=MAP_ID_CAMPAIGN_FIRST&&id<MAP_ID_CAMPAIGN_END){
@@ -359,7 +359,7 @@ func_020c8564(p);
 if(!func_020a8b2c(id))return;
 SetFileDirectory((M2C_UNK *)data_02102ee4);
 p=LoadFileToBuffer(func_020a8b2c(id),1);
-func_0209670c(p,0);
+PlaceMapDeployment(p,0);
 HeapFreeBlock(p);
 }
 if(!((u32)(gMapConfig[0]<<23)>>31)){
@@ -379,14 +379,14 @@ RefreshMapView();
 void func_0209656c(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209670c(s32, M2C_UNK);
+    M2C_UNK PlaceMapDeployment(s32, M2C_UNK);
     M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK data_02102eec;
     s32 temp_r0;
 
     SetFileDirectory(&data_02102eec);
     temp_r0 = LoadFileToBuffer(arg0, 1);
-    func_0209670c(temp_r0, arg1);
+    PlaceMapDeployment(temp_r0, arg1);
     HeapFreeBlock(temp_r0);
 }
 

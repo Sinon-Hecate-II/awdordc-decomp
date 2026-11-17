@@ -133,22 +133,22 @@ void MapListScrollDown(s32 arg0) {
 
 void func_ov001_0217efb4(void){s32 func_02002088(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);x=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
 
-/* Selects a map-layout entry from the state index and applies it via func_ov001_02171fd8. */
+/* Selects a map-layout entry from the state index and applies it via Ov001_LayoutChoiceFrameRow. */
 void func_ov001_0217f038(void) {
     extern FourteenBytes data_ov001_0218f8e0;
     extern M2C_UNK gMapListState;
     extern u16 data_ov001_0218f96a[], data_ov001_0218f96e[], data_ov001_0218f96c[];
-    void func_ov001_02171fd8(s32, u16, u16, u16);
+    void Ov001_LayoutChoiceFrameRow(s32, u16, u16, u16);
     FourteenBytes layout = data_ov001_0218f8e0;
     FourShorts entry;
     s32 i = layout.bytes[M2C_FIELD(&gMapListState, u8 *, 0)];
     if (i >= 3) {
-        func_ov001_02171fd8(3, data_ov001_0218f96a[i * 4], data_ov001_0218f96e[i * 4], data_ov001_0218f96c[i * 4]);
+        Ov001_LayoutChoiceFrameRow(3, data_ov001_0218f96a[i * 4], data_ov001_0218f96e[i * 4], data_ov001_0218f96c[i * 4]);
         return;
     }
     entry = ((FourShorts *)data_ov001_0218f96a)[i];
     entry.b += M2C_FIELD(&gMapListState, u8 *, 2) * 29;
-    func_ov001_02171fd8(1, entry.a, entry.c, entry.b);
+    Ov001_LayoutChoiceFrameRow(1, entry.a, entry.c, entry.b);
 }
 
 M2C_UNK func_ov001_0217f110(void){void *GetCurrentMapRecord(void);s32 func_02002088(u16,s32);void func_ov001_0217f038(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9a4[];void *p;s32 i,j;if((u8)(M2C_FIELD(&gMapListState,u8 *,0)+245)<=2){func_ov001_0217f038();return;}p=GetCurrentMapRecord();i=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);j=M2C_FIELD(&gMapListState,u8 *,2);j+=i;switch(j){case 2:if(M2C_FIELD(p,u8 *,0xf5))M2C_FIELD(&gMapListState,u8 *,0)=2;else M2C_FIELD(&gMapListState,u8 *,0)=3;break;case 6:if(M2C_FIELD(p,u8 *,0xf6))M2C_FIELD(&gMapListState,u8 *,0)=7;else M2C_FIELD(&gMapListState,u8 *,0)=8;break;default:M2C_FIELD(&gMapListState,u8 *,0)=data_ov001_0218f9a4[j];break;}func_ov001_0217f038();}

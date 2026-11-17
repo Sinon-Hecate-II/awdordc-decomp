@@ -216,11 +216,11 @@ Ov001_LoadAsset kind:function(arm,size=0x40) addr:0x02171d90
 func_ov001_02171dd0 kind:function(arm,size=0x50) addr:0x02171dd0
 func_ov001_02171e20 kind:function(arm,size=0x38) addr:0x02171e20
 func_ov001_02171e58 kind:function(arm,size=0x74) addr:0x02171e58
-func_ov001_02171ecc kind:function(arm,size=0xbc) addr:0x02171ecc
+Ov001_ShowMessageWithName kind:function(arm,size=0xbc) addr:0x02171ecc
 Ov001_GetTextFontId kind:function(arm,size=0x18) addr:0x02171f88
 func_ov001_02171fa0 kind:function(arm,size=0x20) addr:0x02171fa0
 func_ov001_02171fc0 kind:function(arm,size=0x18) addr:0x02171fc0
-func_ov001_02171fd8 kind:function(arm,size=0xbc) addr:0x02171fd8
+Ov001_LayoutChoiceFrameRow kind:function(arm,size=0xbc) addr:0x02171fd8
 Ov001_LayoutChoiceFrame kind:function(arm,size=0xf0) addr:0x02172094
 Ov001_FreeSpriteObjects kind:function(arm,size=0x40) addr:0x02172184
 func_ov001_021721c4 kind:function(arm,size=0x78) addr:0x021721c4
@@ -1164,10 +1164,10 @@ gOv001IconRowLayout kind:data(any) addr:0x0218f28c
 gOv001IconRowSlot kind:data(any) addr:0x0218f29a
 gOv001IconRowCount kind:data(any) addr:0x0218f2a8
 data_ov001_0218f2c0 kind:data(any) addr:0x0218f2c0
-data_ov001_0218f2dc kind:data(any) addr:0x0218f2dc
-data_ov001_0218f2de kind:data(any) addr:0x0218f2de
+gOv001NameTextX kind:data(any) addr:0x0218f2dc
+gOv001NameTextY kind:data(any) addr:0x0218f2de
 data_ov001_0218f2f8 kind:data(any) addr:0x0218f2f8
-data_ov001_0218f300 kind:data(any) addr:0x0218f300
+gOv001ChoiceFrameRowTiles kind:data(any) addr:0x0218f300
 data_ov001_0218f30c kind:data(any) addr:0x0218f30c
 data_ov001_0218f314 kind:data(any) addr:0x0218f314
 data_ov001_0218f318 kind:data(any) addr:0x0218f318

@@ -1,6 +1,7 @@
 /* 30 functions from 0x022162F4 to 0x022172B0 (ov006), found by ds-decomp. */
 #include "common.h"
 
+static inline u16 NegativePanelScroll(s32 value) { return -value; }
 typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 
 /* Attaches a shared argument to a block of 3D sprite entries in three tables, then draws a 6x2 grid of 24x24 sprites from a sprite list. */
@@ -175,8 +176,52 @@ void func_ov006_022167b8(void) {
     func_ov006_0221619c();
 }
 
-void func_ov006_022167c4(void *arg0) { (void)arg0; }
-
+#pragma push
+#pragma scheduling off
+void func_ov006_022167c4(void *arg0) {
+extern s8 gFriendCodeInput[];extern u8 data_ov006_022188a8[],data_ov006_02218776[],data_ov006_02218774[],data_ov006_022188a0[],data_ov006_022188cc[],data_ov006_022188dc[],data_ov006_022188b0[],data_ov006_022188bc[];
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+void *func_0208bc24(void*);s32 GetSpriteAnimValue(void*);s32 GetLocalizedFileName(void*);s32 GetUiColor(s32);
+void *w,*saved;s32 scroll;
+MI_CpuCopy8(M2C_FIELD(arg0,void**,0x34),gFriendCodeInput,13);
+M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x16)=4;M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x14)=16;M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x17)=16;
+SetTextSpriteValue(M2C_FIELD(arg0,void**,0x44),0);
+w=M2C_FIELD(arg0,void**,0x44);M2C_FIELD(w,u8*,0x20)&=~0xe0;w=M2C_FIELD(arg0,void**,0x44);M2C_FIELD(w,u8*,0x28)&=~0xe0;
+M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u16*,0x12)=0x1d0;M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x21)=22;M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x24)=data_ov006_022188a8;
+w=M2C_FIELD(arg0,void**,0x48);M2C_FIELD(w,u16*,14)=256;M2C_FIELD(w,u16*,16)=0;M2C_FIELD(w,u16*,12)=12;M2C_FIELD(w,u16*,2)=M2C_FIELD(w,u16*,4);
+scroll=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x48));SetSpriteSlotScroll(scroll,0);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
+Configure3DSpriteLayer(0,data_ov006_02218776);Configure3DSpriteLayer(1,data_ov006_02218774);
+{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,void**,0);*reg=*reg|16;}
+{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,void**,0);*reg=*reg|32;}
+{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,void**,0);*reg=*reg|64;}
+{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,void**,0);*reg=*reg|128;}
+{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,void**,0);*reg=*reg|256;}
+{u16 *volatile reg=(u16*)((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0)+18);*reg=*reg&~192;}
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,81)=0;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,82)=0;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,83)=0;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,58)=NegativePanelScroll(scroll);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,66)=0;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,56)=NegativePanelScroll(scroll);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,64)=0;
+Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(3);
+SetFileDirectory(data_ov006_022188a0);OpenNarcArchive(GetLocalizedFileName(data_ov006_022188cc));
+LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_022188dc),M2C_FIELD(gCur3DSpriteEngine,s32*,0x20));
+LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_022188b0),M2C_FIELD(gCur3DSpriteEngine,s32*,0x24));CloseNarcArchive();
+LoadFileToSpriteBuffer(data_ov006_022188bc,0,96);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x20),32,24,0);SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),32,24,0);func_01ff9dd8(3);
+M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
+func_020a9a30(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x3a00);
+func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+0x2c0);
+func_0208ca2c(0x1000,1,GetUiColor(9),2);
+gCur3DSpriteEngine=g3DSpriteEngineSub;
+M2C_FIELD(arg0,void**,0x4c)=func_0208bc24(arg0);
+M2C_FIELD(M2C_FIELD(arg0,void**,0x4c),u16*,0x3e)=320;
+w=M2C_FIELD(arg0,void**,0x4c);M2C_FIELD(w,u32*,0x40)=(M2C_FIELD(w,u32*,0x40)&~0x3fc0000)|0x180000;
+SetTextById(M2C_FIELD(arg0,void**,0x4c),0x4400000f);func_02088f1c(M2C_FIELD(arg0,void**,0x4c));gCur3DSpriteEngine=saved;func_020b2178();
+}
+#pragma pop
 void func_ov006_02216bac(void) {
     void func_ov006_0221661c();
     func_ov006_0221661c();

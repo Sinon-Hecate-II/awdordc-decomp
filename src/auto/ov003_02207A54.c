@@ -118,7 +118,7 @@ u8 Ov003_GetSelectedRowIndex(void *arg0) {
 
 void func_ov003_02207c7c(void *arg0) {
 void func_02087d84(void *,u16,s32,s16,u16,s32);
-s32 func_020a8ce4(s32,s32);
+s32 ScaleFixed8(s32,s32);
 s32 func_020a8e28(s32,s32);
 s32 func_ov003_02206690(s32,s32,s32);
 void *inner,*inner2;
@@ -138,7 +138,7 @@ if(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,0)+11<=11)return;
 x=(s16)xpre;
 do {
 width=M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1);
-value=func_020a8ce4(width,constant);
+value=ScaleFixed8(width,constant);
 if(i==selected){
 inner2=*M2C_FIELD(arg0,void ***,0x5c);
 cond=0;

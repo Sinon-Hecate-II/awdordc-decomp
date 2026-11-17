@@ -25,8 +25,8 @@ M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
 
 M2C_UNK func_02029f14(void *arg0) {
     M2C_UNK func_02029e70(void *);
-    M2C_UNK func_02029d7c(M2C_UNK, void *);
-    func_02029d7c(func_02029e70(arg0), arg0);
+    M2C_UNK ListRemove(M2C_UNK, void *);
+    ListRemove(func_02029e70(arg0), arg0);
 }
 
 void GetBlockRange(void *arg0, void *arg1) {

@@ -1,12 +1,17 @@
 /* 28 functions from 0x02095C90 to 0x02096C7C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u16 unk0, unk2, unk4, unk6; } Unk0209Rect;
 typedef struct { u8 kind:6; u8 owner:2; u8 rest[13]; } Unit964;
 extern u8 data_02102ee4[];
 extern u16 gMapConfig[];
+static inline u32 MinUnitResource(u32 a,u32 b) { if(a<=b)b=a;return b; }
 
-s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
+/* The word at a player record's +0x6C (PLAYER_REC_SPRITE): low byte the player's army id. */
+typedef struct { u32 armyId:8; u32 rest:24; } PlayerSpriteWord;
+
+s32 FindNearestFreeCell(void *arg0, s16 *arg1, s32 arg2) {
     M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *data_027e0058;
     extern s32 gFrameCounter;
@@ -82,7 +87,47 @@ done:
     return found;
 }
 
-void func_0209670c(void *arg0, s32 arg1) { (void)arg0; (void)arg1; }
+/* Place a map's units from its deployment ("dispos") file: each 16-byte entry
+ * gives one unit's tile, kind, owner and starting state.  An entry at 0xfe
+ * selects the player the following entries belong to (and resets the ids the
+ * carried-unit links refer to), 0xff ends the list.  A unit whose tile is
+ * taken moves to the nearest free cell when `displace` is set and is skipped
+ * otherwise; a loaded unit (UNIT_FLAG_LOADED) occupies no cell at all. */
+void PlaceMapDeployment(MapDeploymentEntry *entries,s32 displace) {
+extern s32 *gCurrentMap; extern u8 gUnitKindStats[];
+BattleMapUnitHead *CreateMapUnit(s32,s32,s32,s32); void SetPlayerSelectedUnit(s32,void*);void RefreshMapView(void);
+MapDeploymentEntry *entry=entries; s32 oldPlayer=M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER); u8 unitIds[MAP_UNIT_LIMIT]; u8 unitCount=0; s16 freePos[2]; BattleMapUnitHead *unit; u8 fuel; u16 ammo;
+nextEntry:
+if(entry->x==MAP_DEPLOY_END)goto done;
+{
+if(entry->x==MAP_DEPLOY_SWITCH_PLAYER) {
+M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=entry->y;
+M2C_FIELD(*gCurrentMap,u16*,MAP_CURSOR_OWNER)=(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)-1)<<6;
+entry++;unitCount=0;goto nextEntry;
+}
+if(((u8*)*gCurrentMap)[entry->x+M2C_FIELD((u8*)*gCurrentMap+entry->y*2,u16*,MAP_ROW_OFFSETS)+MAP_CELL_UNIT_ID]) {
+if(!displace){entry++;goto nextEntry;}
+if(FindNearestFreeCell(entry,freePos,unitCount)) unit=CreateMapUnit(freePos[0],freePos[1],entry->kind,M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER));
+else {entry++;goto nextEntry;}
+} else unit=CreateMapUnit(entry->x,entry->y,entry->kind,M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER));
+if(!unit)goto done;
+if(!(entry->flags&UNIT_FLAG_LOADED)) ((u8*)*gCurrentMap)[unit->x+M2C_FIELD((u8*)*gCurrentMap+unit->y*2,u16*,MAP_ROW_OFFSETS)+MAP_CELL_UNIT_ID]=unit ? unit-(BattleMapUnitHead*)((u8*)*gCurrentMap+MAP_UNIT_RECORDS):0;
+unitIds[unitCount++]=unit ? unit-(BattleMapUnitHead*)((u8*)*gCurrentMap+MAP_UNIT_RECORDS):0;
+unit->owner=entry->owner;unit->health=entry->health;unit->flags=entry->flags;
+fuel=(u8)MinUnitResource(entry->fuel,gUnitKindStats[unit->kind*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_FUEL]);unit->fuel=fuel;
+ammo=(u16)MinUnitResource(entry->ammo,gUnitKindStats[unit->kind*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_AMMO]);unit->ammo=ammo;
+unit->aiState=entry->aiState;
+switch(unit->aiState){case 7:case 8:case 9:unit->targetX=entry->targetX;unit->targetY=entry->targetY;break;default:unit->targetX=MAP_UNIT_TARGET_NONE;unit->targetY=MAP_UNIT_TARGET_NONE;break;}
+unit->unkB4=entry->unkB4;unit->unk8_12=0;unit->unk8_14=0;unit->unkA_7=0;unit->unkB5=0;unit->unkB6=0;unit->unkB7=0;
+if(entry->firstCarried)unit->firstCarried=unitIds[entry->firstCarried-1];if(entry->nextCarried)unit->nextCarried=unitIds[entry->nextCarried-1];
+if(entry->selected&&((PlayerSpriteWord*)((u8*)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE+MAP_PLAYER_STATES+PLAYER_REC_SPRITE))->armyId) SetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER),unit);
+entry++;goto nextEntry;
+}
+done:
+M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=oldPlayer;
+RefreshMapView();
+M2C_FIELD(*gCurrentMap,u16*,MAP_CURSOR_OWNER)=(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)-1)<<6;
+}
 
 void func_02096b24(void) {
     M2C_UNK SetUiMessageText();

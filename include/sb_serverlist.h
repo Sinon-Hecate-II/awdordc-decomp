@@ -33,6 +33,9 @@
 #define SB_SLIST_SORT_FIELD  0x498 /* char[] key the server list is sorted on */
 #define SB_SLIST_SORT_DESC   0x49c /* s32 nonzero to sort descending */
 #define SB_SLIST_START_TICK  0x4b4 /* u32 GetTickCountMs() the 2 s collection window starts at */
+#define SB_SLIST_RECV_BUFFER 0x7c  /* char *reply buffer (SBServerListConnectAndQuery allocates it) */
+#define SB_SLIST_RECV_LENGTH 0x80  /* s32 bytes held in SB_SLIST_RECV_BUFFER */
+#define SB_SLIST_ERROR      0x4ac /* char *error message, NULL while none (SBServerListSetErrorString) */
 
 /* One entry of the list's key schema (SB_SLIST_KEY_LIST): a key the master or
  * game server announces, interned, together with the type of the values
@@ -48,6 +51,8 @@ typedef struct SBServerListKey {
  * (list, event, server, SB_SLIST_INSTANCE). */
 #define SB_LIST_EVENT_SERVER_ADDED   0 /* a server was added to the list */
 #define SB_LIST_EVENT_QUERY_COMPLETE 3 /* the running query finished */
+#define SB_LIST_EVENT_DISCONNECTED   4 /* the list is being disconnected from the master */
+#define SB_LIST_EVENT_QUERY_ERROR    5 /* the master reported an error, see SB_SLIST_ERROR */
 
 /* SB_SLIST_STATE values. */
 #define SB_SLIST_STATE_IDLE     1 /* disconnected, ready for a new query */

@@ -119,6 +119,7 @@ enum {
 
 /* Fields of the battle map. */
 #define MAP_CURRENT_PLAYER  0x52a4 /* u16 the player the view belongs to */
+#define MAP_UNIT_SLOT_CURSOR 0x52c0 /* s16 unit slot the free-slot search starts after, 0 = none used yet */
 #define MAP_CURRENT_OWNER   0x52a6 /* u16 the current player's owner bits (MAP_CURRENT_PLAYER << 5) */
 #define MAP_ACTIVE_PLAYER   0x52b6 /* u16 player whose units are being processed, saved and restored around influence builds */
 #define MAP_CURSOR_UNIT     0x52d0 /* BattleMapUnit * of the unit under the cursor */
@@ -255,10 +256,23 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_PROPERTY_COUNT  0x03   /* u8 times the cell was used */
 #define MAP_PROPERTY_END    0xff   /* terrain kind that ends the list */
 
+/* One player's slot in a map-settings record: the CO, army and team that player
+ * chose for the map.  MapSettings_SavePlayers fills the four slots. */
+typedef struct MapSettingsPlayer {
+    u16 co:8;   /* CO id */
+    u16 army:4; /* army id (colour) */
+    u16 team:4; /* team number */
+} MapSettingsPlayer;
+
+/* Bit masks of a player slot's packed word (the fields of MapSettingsPlayer). */
+#define MAP_SETTINGS_PLAYER_CO   0x00FF /* bits 0..7: CO id */
+#define MAP_SETTINGS_PLAYER_ARMY 0x0F00 /* bits 8..11: army id */
+#define MAP_SETTINGS_PLAYER_TEAM 0xF000 /* bits 12..15: team number */
+
 /* Packed per-map settings, saved with a slot and copied into the battle map and
  * gMapConfig by ApplyMapSettings. */
 typedef struct MapSettings {
-    u8  pad00[8];
+    MapSettingsPlayer players[4]; /* +0x00: per-player CO, army and team */
     u32 rules;   /* +0x08: packed map id and rule bits, MAP_SETTINGS_* */
     u32 values;  /* +0x0C: packed value limits */
 } MapSettings;
@@ -285,6 +299,8 @@ typedef struct MapSettings {
 #define MAP_UNIT_AMMO       0x06 /* u16: ammo in bits 7..10 (health in bits 0..6) */
 #define MAP_UNIT_CAPTURE    0x06 /* u16: capture points in bits 11..15, 0 when the unit is not capturing (20 finishes it) */
 #define MAP_UNIT_FUEL       0x0A /* u8 fuel in the low seven bits */
+#define MAP_UNIT_MOVE_PLANNED 0x80 /* bit 7 of the fuel byte: the AI has planned a move for the unit (SetMapCursor sets it) */
+#define MAP_UNIT_CAPTURE_COMPLETE 20 /* capture points at which a property is captured */
 #define MAP_UNIT_CARRIED    0x0C /* u8 first carried unit, 0 if none */
 #define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
 #define MAP_UNIT_TARGET     0x08 /* u16 packed AI move target: x in low six bits, y in bits 6..11 */
@@ -304,6 +320,34 @@ typedef struct MapSettings {
 #define MAP_UNIT_OWNER_MASK  0xC0 /* top two bits of MAP_UNIT_KIND: the owner group */
 #define MAP_UNIT_OWNER_SHIFT 6    /* player = (owner group >> this) + 1 */
 #define MAP_UNIT_LIMIT       50   /* most units one player may have; the map editor refuses to place past it */
+
+/* One 16-byte entry of a map's unit deployment ("dispos") file, the list
+ * file, the list PlaceMapDeployment places the map's units from.  Entries are
+* read in order; MAP_DEPLOY_SWITCH_PLAYER starts the next player's block, MAP_DEPLOY_END ends
+ * the list.  The carried-unit fields are 1-based indices into the units the
+ * current player's block placed so far. */
+#define MAP_DEPLOY_STRIDE        0x10
+#define MAP_DEPLOY_SWITCH_PLAYER 0xfe /* x of the entry that selects the player the next entries belong to */
+#define MAP_DEPLOY_END           0xff /* x of the entry that ends the list */
+
+typedef struct MapDeploymentEntry {
+    u8 x;           /* +0x00 tile x, or MAP_DEPLOY_* */
+    u8 y;           /* +0x01 tile y (the player slot after a switch) */
+    u8 kind;        /* +0x02 unit kind */
+    u8 flags;       /* +0x03 per-unit flags (UNIT_FLAG_LOADED: the unit rides in a transport) */
+    u8 owner;       /* +0x04 owner (player) of the unit */
+    u8 health;      /* +0x05 starting HP */
+    u8 ammo;        /* +0x06 starting ammo, capped by the kind's maximum */
+    u8 fuel;        /* +0x07 starting fuel, capped by the kind's maximum */
+    u8 firstCarried; /* +0x08 1-based index of the unit this unit carries, 0 if none */
+    u8 nextCarried;  /* +0x09 1-based index of the next unit in the carry chain, 0 if none */
+    u8 selected;    /* +0x0A nonzero to make the unit the player's selected unit */
+    u8 unk0B;       /* +0x0B unused */
+    u8 aiState;     /* +0x0C AI state (MAP_UNIT_AI_STATE) */
+    u8 unkB4;       /* +0x0D copied to the unit's unkB4 bit */
+    u8 targetX;     /* +0x0E AI target x for aiState 7..9, MAP_UNIT_TARGET_NONE when unset */
+    u8 targetY;     /* +0x0F AI target y for aiState 7..9, MAP_UNIT_TARGET_NONE when unset */
+} MapDeploymentEntry;
 
 /* One entry of the battle map's target list: the unit on a cell (0 when the
  * cell holds none), a value that is the damage to deal when the cell holds a
@@ -389,6 +433,8 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_PROPERTY_ARMY 0x1D /* u8 1-based army id that owns the player's properties (property records), 0 = none */
 #define PLAYER_REC_ARMY_INDEX 0x1D /* u8 1-based army index that picks its colour */
 #define PLAYER_REC_ARMY_STATE 0x27 /* u8 per-player army state shown by the army info window */
+#define PLAYER_REC_CURSOR_X  0x2D /* u8 tile x the map cursor was left on */
+#define PLAYER_REC_CURSOR_Y  0x2E /* u8 tile y the map cursor was left on */
 #define PLAYER_REC_TURN_TIME 0x88 /* u32 elapsed turn time in frames (0 when untimed) */
 #define PLAYER_REC_AI_MODE    0x2A /* u8 AI behaviour mode (0..3) */
 #define PLAYER_REC_HQ_X       0x2B /* u8 HQ tile x in the low seven bits; bit 7 set when the player has no HQ */

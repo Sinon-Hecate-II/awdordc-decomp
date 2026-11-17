@@ -289,7 +289,7 @@ void func_ov001_021830b8(void) {
     M2C_UNK CopyU16(u8 *, u8 *, s32);
     M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
-    M2C_UNK func_ov001_02171ecc(u8 *, M2C_UNK);
+    M2C_UNK Ov001_ShowMessageWithName(u8 *, M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0218314c(void);
@@ -307,7 +307,7 @@ void func_ov001_021830b8(void) {
     func_02007740(&sp[0x16]);
     FillU16(0, &sp[0], 0x16);
     CopyU16(&sp[0x1A], &sp[0], M2C_FIELD(sp, u16 *, 0x30) * 2);
-    func_ov001_02171ecc(&sp[0], 0x28);
+    Ov001_ShowMessageWithName(&sp[0], 0x28);
     Ov001_CreateAnimSprite(0);
     Ov001_ConnectToWfcServer((M2C_UNK *)&Ov001_HandleConnectionStatus);
     Ov001_PlaySound(0xB);

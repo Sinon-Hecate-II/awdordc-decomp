@@ -1,6 +1,7 @@
 /* 46 functions from 0x022138B0 to 0x022148A4 (ov004), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 s32 func_ov004_022138b0(void) {
     extern void **gCurrentMap;
@@ -57,17 +58,21 @@ s32 func_ov004_022139a8(void) {
     return 0;
 }
 
-s32 func_ov004_02213a1c(void) {
+/* Battle-script condition for player 1's opening move: on the first turn only,
+ * returns 0 when exactly two of player 1's infantry stand east of column 13 and
+ * one kind-4 unit stands east of column 12; 1 on any later turn or any other
+ * arrangement. */
+s32 CheckPlayerOneOpeningFormation(void) {
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 a=0,b=0; u8 *base=*gCurrentMap; s32 i,end; u8 *p; u32 bits;
- if ((s32)M2C_FIELD(base,u16 *,0x52A2)>1) return 0;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=base+0x59A4+i*14;
- do {bits=(u32)(*p<<26)>>26;
- if(bits) {switch(bits) {case 1: if(p[1]>=13U)a++;break; case 4:if(p[1]>=12U)b++;break;}}
- i++; p+=14;
+ s32 infantryCount=0,kind4Count=0; u8 *map=*gCurrentMap; s32 i,end; u8 *unit; u32 kind;
+ if ((s32)M2C_FIELD(map,u16 *,MAP_TURN)>1) return 0;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+MAP_UNIT_GROUP_SCAN;
+ if(i<end) {unit=map+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
+ do {kind=(u32)(unit[MAP_UNIT_KIND]<<26)>>26;
+ if(kind) {switch(kind) {case UNIT_KIND_INFANTRY: if(unit[MAP_UNIT_X]>=13U)infantryCount++;break; case 4:if(unit[MAP_UNIT_X]>=12U)kind4Count++;break;}}
+ i++; unit+=MAP_UNIT_STRIDE;
  }while(i<end);}
- if(a==2 && b==1)return 0;
+ if(infantryCount==2 && kind4Count==1)return 0;
  return 1;
 }
 
