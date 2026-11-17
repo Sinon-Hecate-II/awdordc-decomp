@@ -12,8 +12,8 @@ static inline void CallPanelUpdate(void *p) {
 #pragma opt_common_subs off
 void func_ov003_021eccd4(void *arg0) {
     s32 IsLinkSessionActive();
-    s32 func_02084d3c(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02084d88(M2C_UNK *, M2C_UNK);
+    s32 Link_ReceivePacket(M2C_UNK *, M2C_UNK);
+    M2C_UNK Link_SendPacket(M2C_UNK *, M2C_UNK);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088f1c(s32);
@@ -64,7 +64,7 @@ void func_ov003_021eccd4(void *arg0) {
 
     PlaySoundEffect(0x1000D);
     if (IsLinkSessionActive() != 0) {
-        if (func_02084d3c(sp0, 0x24) == 0) {
+        if (Link_ReceivePacket(sp0, 0x24) == 0) {
             return;
         }
         temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
@@ -75,7 +75,7 @@ void func_ov003_021eccd4(void *arg0) {
         }
         if (var_r1 & 0xFF) {
             sp0[6] = 1;
-            func_02084d88(sp0, 0x24);
+            Link_SendPacket(sp0, 0x24);
             temp_r3 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), void **, 4);
             if ((s32) M2C_FIELD(temp_r3, s8 *, 0x5A) < 0) {
                 return;

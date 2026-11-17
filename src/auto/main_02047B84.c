@@ -1,5 +1,6 @@
 /* 25 functions from 0x02047B84 to 0x02048B74 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 len, family; u16 port; s32 address; } SockAddr;
 extern M2C_UNK sWebGetPath;
 extern M2C_UNK gWebRequestState, data_020fca68;
 extern M2C_UNK gWebRequestState, data_020fca68;
@@ -8,7 +9,7 @@ extern u8 data_020fca88[56];
 extern M2C_UNK data_020fcd10, data_020fcc5c, data_020fcc84;
 extern M2C_UNK data_020fcc4c,data_020fcd04,data_020fcc70,data_020fcc1c;
 extern M2C_UNK data_020fccc4, data_020fcc2c, data_020fccb0, data_020fcbf8, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
-extern M2C_UNK data_0213db90, data_020fcbdc;
+extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
 extern M2C_UNK data_020fcc98, sDarrayFileName, data_020fcc04;
 
@@ -269,14 +270,28 @@ void InitServiceAvailabilityQuery(s8 *serviceName) {
     M2C_FIELD(&gDnsQueryState, s32 *, 0x58) = 0;
 }
 
-s32 func_020482c4(s8 *a,s32 b,void *c,u32 *d) {
-s32 ByteCompareN(void *,void *,s32);
-if(b<7)return 1;
-if(ByteCompareN((u8 *)c+4,&data_0213db90,4))return 1;
-if(M2C_FIELD(c,u16 *,2)!=M2C_FIELD(&gDnsQueryState,u16 *,10))return 1;
-if(ByteCompareN(a,&data_020fcbdc,3))return 1;
-{u32 x=(a[3]<<24)&0xff000000; u32 y=(a[4]<<16)&0xff0000; u32 z=(a[5]<<8)&0xff00; u32 w=(u8)a[6]; x|=y; x|=z; *d=x|w;}
-return 0;
+/* Checks one datagram received on the service-availability query socket: it must
+ * be at least 7 bytes long, come from the address kept in data_0213db90 and from
+ * the query's port, and start with sServiceReplyPrefix. The reply's status word
+ * follows those 3 prefix bytes, big-endian; it goes to *status. Returns 0 when the
+ * datagram is that reply, nonzero when it is something else. */
+s32 ParseServiceAvailabilityReply(s8 *packet, s32 length, void *source, u32 *status) {
+    s32 ByteCompareN(void *, void *, s32);
+
+    if (length < 7) return 1;
+    if (ByteCompareN((u8 *)source + 4, &data_0213db90, 4)) return 1;
+    if (((SockAddr *)source)->port != M2C_FIELD(&gDnsQueryState, u16 *, 10)) return 1;
+    if (ByteCompareN(packet, &sServiceReplyPrefix, 3)) return 1;
+    {
+        u32 b3 = (packet[3] << 24) & 0xff000000;
+        u32 b4 = (packet[4] << 16) & 0xff0000;
+        u32 b5 = (packet[5] << 8) & 0xff00;
+        u32 b6 = (u8)packet[6];
+        b3 |= b4;
+        b3 |= b5;
+        *status = b3 | b6;
+    }
+    return 0;
 }
 
 s32 func_0204837c(void) {
@@ -293,7 +308,7 @@ if(gDnsQueryState[1]==-1){
 gDnsQueryState[0]=1;
 return 1;
 }
-if(func_02049534() && func_020482c4(buffer,func_020497e0(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
+if(func_02049534() && ParseServiceAvailabilityReply(buffer,func_020497e0(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
 func_020496b8(gDnsQueryState[1]);
 if(flags&1)gDnsQueryState[0]=2;
 else if(flags&2)gDnsQueryState[0]=3;
@@ -401,7 +416,7 @@ s32 Vector_InsertAt(s32 *array, s32 item, s32 index) {
     Vector_SetItem(array, item, index);
 }
 
-void func_020487fc(s32 *a,s32 b,s32 c){s32 AssertFailed();s32 func_02048bf8(s32,s32,s32,s32,s32,s32 *);s32 func_020720f0(s32,s32);s32 x,r;if(!c)AssertFailed(&data_020fcd04,&sDarrayFileName,&data_020fcc70,0xb7);r=func_02048bf8(b,a[5],a[0],a[2],c,&x);Vector_InsertAt(a,b,func_020720f0(r-a[5],a[2]));}
+void func_020487fc(s32 *a,s32 b,s32 c){s32 AssertFailed();s32 Vector_SearchSorted(s32,s32,s32,s32,s32,s32 *);s32 func_020720f0(s32,s32);s32 x,r;if(!c)AssertFailed(&data_020fcd04,&sDarrayFileName,&data_020fcc70,0xb7);r=Vector_SearchSorted(b,a[5],a[0],a[2],c,&x);Vector_InsertAt(a,b,func_020720f0(r-a[5],a[2]));}
 
 s32 func_0204887c(s32 *a,s32 b){s32 AssertFailed();s32 MemMove(s32,s32,s32);s32 n,p,q;if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc1c,0xc0);n=a[0]-1;if(b<n){p=Vector_GetItem(a,b);q=Vector_GetItem(a,b+1);MemMove(p,q,a[2]*(n-b));}return --a[0];}
 
@@ -418,7 +433,26 @@ void func_020489c4(void *arg0, M2C_UNK arg1) {
     func_02067610(M2C_FIELD(arg0, s32 *, 0x14), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, s32 *, 8), arg1);
 }
 
-s32 Vector_Search(void *a,s32 b,s32 c,s32 d,s32 e){s32 func_02048bf8(s32,s32,s32,s32,s32,s32 *);s32 func_02048ba0(s32,s32,s32,s32,s32);s32 func_020720f0(s32,s32);s32 x=1,n,r;if(!a||!(n=M2C_FIELD(a,s32 *,0)))return -1;if(e)r=func_02048bf8(b,Vector_GetItem(a,d),n-d,M2C_FIELD(a,s32 *,8),c,&x);else r=func_02048ba0(b,Vector_GetItem(a,d),n-d,M2C_FIELD(a,s32 *,8),c);if(!r||!x)return -1;return func_020720f0(r-M2C_FIELD(a,s32 *,20),M2C_FIELD(a,s32 *,8));}
+/* GameSpy darray ArraySearch: returns the index of `item` in `array`, searching
+ * from item `startIndex` on - a binary search when `isSorted` is set (then only an
+ * exact hit counts), a linear scan otherwise - or -1 when it is not there. */
+s32 Vector_Search(void *array, s32 item, s32 compare, s32 startIndex, s32 isSorted) {
+    s32 Vector_SearchSorted(s32, s32, s32, s32, s32, s32 *);
+    s32 Vector_SearchLinear(s32, s32, s32, s32, s32);
+    s32 func_020720f0(s32, s32);
+    s32 found = 1;
+    s32 count, offset;
+
+    if (!array || !(count = M2C_FIELD(array, s32 *, 0))) return -1;
+    if (isSorted)
+        offset = Vector_SearchSorted(item, Vector_GetItem(array, startIndex), count - startIndex,
+                                     M2C_FIELD(array, s32 *, 8), compare, &found);
+    else
+        offset = Vector_SearchLinear(item, Vector_GetItem(array, startIndex), count - startIndex,
+                                     M2C_FIELD(array, s32 *, 8), compare);
+    if (!offset || !found) return -1;
+    return func_020720f0(offset - M2C_FIELD(array, s32 *, 20), M2C_FIELD(array, s32 *, 8));
+}
 
 void func_02048a9c(s32 *a,void (*b)(s32,s32),s32 c) {
 s32 AssertFailed();s32 i;

@@ -103,7 +103,10 @@ typedef struct ResourceArchive {
  * pool (+0x44, +0x2C/+0x34 become their addresses there) and switches the
  * handle's read callback (+0x50) to a plain memory copy. */
 typedef struct FSArchive {
-    u8 pad00[0x1C];
+    s32 id;            /* +0x00 id the archive is registered under (its packed name) */
+    struct FSArchive *next; /* +0x04 next open archive, NULL at the end */
+    struct FSArchive *prev; /* +0x08 previous open archive, NULL at the start */
+    u8 pad0C[0x10];    /* +0x0C */
     u32 state;         /* +0x1C FS_ARCHIVE_* bits */
     u8 pad20[0x08];    /* +0x20 */
     void *image;       /* +0x28 archive image base in memory */
@@ -118,6 +121,17 @@ typedef struct FSArchive {
     void *writeProc;   /* +0x4C default write callback */
     void *proc;        /* +0x50 active read callback */
 } FSArchive;
+
+/* The archives the game has open, in the order they were opened
+ * (gOpenArchives).  The first archive added also becomes the last one, and its
+ * insertion clears the three bookkeeping fields after the links. */
+typedef struct FSArchiveList {
+    FSArchive *first; /* +0x00 first open archive, NULL when none is open */
+    FSArchive *last;  /* +0x04 last open archive */
+    u16 unk08;        /* +0x08 */
+    u16 unk0A;        /* +0x0A */
+    s32 unk0C;        /* +0x0C */
+} FSArchiveList;
 
 /* FSArchive::state bits. */
 #define FS_ARCHIVE_NAMED      1 /* registered under a name */

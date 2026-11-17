@@ -186,9 +186,9 @@ void func_ov003_022006dc(s32 arg0) {
     void MI_CpuFill32(s32, void *, s32);
     s8 GetPlayerArmyId(s32);
     s32 GetPlayerCoId(s32);
-    s32 func_ov003_02200808(u32);
+    s32 GetPlayerCoIconIndex(u32);
     s32 func_0208492c(void);
-    void func_02084d88(void *, s32);
+    void Link_SendPacket(void *, s32);
 
     u8 r5;
     u8 *r6;
@@ -216,14 +216,14 @@ void func_ov003_022006dc(s32 arg0) {
     do {
         r6 = sp + r5;
         r6[0xe] = (u8)GetPlayerArmyId(r5 + 1);
-        r6[0x12] = (u8)func_ov003_02200808(GetPlayerCoId(r5 + 1) & 0xFF);
+        r6[0x12] = (u8)GetPlayerCoIconIndex(GetPlayerCoId(r5 + 1) & 0xFF);
         r5 = (u8)(r5 + 1);
     } while (r5 < 4);
-    sp[0xd] = (u8)func_ov003_02200808(GetPlayerCoId(func_0208492c() + 1) & 0xFF);
-    func_02084d88(sp, 0x24);
+    sp[0xd] = (u8)GetPlayerCoIconIndex(GetPlayerCoId(func_0208492c() + 1) & 0xFF);
+    Link_SendPacket(sp, 0x24);
 }
 
-s32 func_ov003_02200808(u32 a) {
+s32 GetPlayerCoIconIndex(u32 a) {
 switch(a) {
 case 1:return 0;
 case 2:return 1;

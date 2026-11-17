@@ -5,14 +5,14 @@
 #pragma push
 #pragma scheduling off
 void func_ov003_021eaed0(void *arg0) {
-s32 func_02084d3c(void *,s32);void *func_02084e64();s32 GetLocalPlayerIdForOverlay();
+s32 Link_ReceivePacket(void *,s32);void *func_02084e64();s32 GetLocalPlayerIdForOverlay();
 s8 func_ov003_021e9c24(void *);void func_ov003_021ea4a8(void *,s32);
 s32 func_ov003_021e9c08(void *),func_ov003_021e9c30(void *);
 u8 func_ov003_021eba24(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
 s32 func_ov003_021eba74(void);s32 func_ov003_021eaeb0(void *);
 u8 func_ov003_021ebbcc(void *);void func_ov003_021ebc00(void *),func_ov003_021ebc54(void *),func_ov003_021ebb88(void *);
 u8 IsWaypointPanelIdle(void *);s32 func_ov003_021e9e58(void *);
-void func_ov003_021e984c(void *,s32);void func_02084d88(void *,s32);
+void func_ov003_021e984c(void *,s32);void Link_SendPacket(void *,s32);
 u8 func_ov003_021ebc88(void *);void func_ov003_021e9e4c(void *);
 u8 func_ov003_021ebc90(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
 s32 func_ov003_021e73bc(s32,s32);s8 func_ov003_021ebd64(void *,s32);
@@ -31,7 +31,7 @@ extern void *gTouchState;extern u16 *gKeyState;
 u8 packet[36],send[36];u16 keys;s32 ready,touch;u8 i;u16 held;s32 action,slot;
 if(IsLinkSessionActive()){
 void *remote;s32 player,current,desired;u8 j,i;s8 count;
-if(!func_02084d3c(packet,36))return;
+if(!Link_ReceivePacket(packet,36))return;
 remote=func_02084e64();if(!remote)return;
 player=GetLocalPlayerIdForOverlay();
 count=func_ov003_021e9c24(arg0);
@@ -52,7 +52,7 @@ if(func_ov003_021e9e58(arg0) && !func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,vo
 if(M2C_FIELD(remote,u8 *,8)==1){
 func_ov003_021e984c(arg0,1);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 if(func_ov003_021e6d28())Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
-M2C_FIELD(packet,s32 *,24)=1;func_02084d88(packet,36);return;
+M2C_FIELD(packet,s32 *,24)=1;Link_SendPacket(packet,36);return;
 }
 }
 if(func_ov003_021e9c30(arg0)){
@@ -65,10 +65,10 @@ PlaySoundEffect(0x1000f);func_ov003_021e984c(arg0,0);
 func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 func_ov003_021e9e4c(M2C_FIELD(arg0,void **,0x58));
 if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));
-func_02084d88(packet,36);return;
+Link_SendPacket(packet,36);return;
 }
 }
-func_02084d88(packet,36);
+Link_SendPacket(packet,36);
 for(i=0;i<count;i++){
 if(func_ov003_021e6d28()){
 current=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),i);desired=M2C_FIELD((u8 *)remote+i,u8 *,14);
@@ -149,9 +149,9 @@ else if(InRange(action,21,24)){func_ov003_021e8354(M2C_FIELD(arg0,s32 *,0x6c),sl
 }
 }
 if(IsLinkSessionActive()){
-if(!func_02084d3c(send,36))return;
+if(!Link_ReceivePacket(send,36))return;
 send[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),func_ov003_021eba24(M2C_FIELD(arg0,void **,0x6c)));
-func_02084d88(send,36);
+Link_SendPacket(send,36);
 }
 if(!func_ov003_021e6e40())return;
 if(!IsLinkSessionActive())return;
@@ -303,7 +303,7 @@ s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
  void *func_02084e24(s32);
  void *func_02084e64(s32);
  s32 GetPlayerCoId(s32);
- s32 func_ov003_02200808(u8);
+ s32 GetPlayerCoIconIndex(u8);
  s32 id=M2C_FIELD(M2C_FIELD(arg0,s32 *,0x6c)+arg1,u8 *,0x74);
  u8 missing;
  void *p;
@@ -311,11 +311,11 @@ s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
  if(!missing) {
   p=func_02084e24(id);
   if(p) return M2C_FIELD(p,s8 *,0xd);
-  return (s8)func_ov003_02200808((u8)GetPlayerCoId(arg1+1));
+  return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(arg1+1));
  }
  p=func_02084e64(id);
  if(p) return M2C_FIELD(p+arg1,s8 *,0x12);
- return (s8)func_ov003_02200808((u8)GetPlayerCoId(arg1+1));
+ return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(arg1+1));
 }
 
 void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {

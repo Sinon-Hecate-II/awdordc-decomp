@@ -343,8 +343,8 @@ void func_020cc62c(void) {
 }
 
 void func_020cc644(void *arg0) {
-    M2C_UNK func_020cf674(s16, s16, M2C_UNK);
-    func_020cf674((s16) (M2C_FIELD(arg0, s32 *, 0x38) * 0x10), (s16) (M2C_FIELD(arg0, s32 *, 0x3C) * 0x10), 2);
+    M2C_UNK MapView_SetCursorPosition(s16, s16, M2C_UNK);
+    MapView_SetCursorPosition((s16) (M2C_FIELD(arg0, s32 *, 0x38) * 0x10), (s16) (M2C_FIELD(arg0, s32 *, 0x3C) * 0x10), 2);
 }
 
 void CreateTargetCursor(s32 a,s32 b) {

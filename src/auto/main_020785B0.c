@@ -190,7 +190,7 @@ Map_SubmitCellQuads(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
    alpha-blended quad, 6/7/8 are sprites (optionally rotated) and 9 calls the
    map's cell callback. */
 void DrawMapEffectEntry(void *arg0) {
-s32 GetUiColor(s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 GetFacingOffset(s32);void func_020cf674(s16,s16,s32);
+s32 GetUiColor(s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 GetFacingOffset(s32);void MapView_SetCursorPosition(s16,s16,s32);
 MapRenderEntry *entry=arg0;u32 bits=M2C_FIELD(arg0,u16 *,2);s32 x=M2C_FIELD(arg0,u8 *,0),y=M2C_FIELD(arg0,u8 *,1);
 s32 offX=entry->dx,offY=entry->dy; s32 x0,y0,x1,y1,color; u32 alpha; s16 sx0,sy0,sx1,sy1;
 switch(entry->kind){
@@ -215,7 +215,7 @@ case 8:func_02078c60(x,y,M2C_FIELD(arg0,u8 *,4)<<8,0x382);return;
 case 9:
 *(volatile u32*)0x4000480=0x7fff;*(volatile u32*)0x4000444=0;
 *(volatile u32*)0x4000470=0;*(volatile u32*)0x4000470=0;*(volatile u32*)0x4000470=-16;
-func_020cf674((s16)(x<<4),(s16)(y<<4),M2C_FIELD(arg0,u8 *,4));
+MapView_SetCursorPosition((s16)(x<<4),(s16)(y<<4),M2C_FIELD(arg0,u8 *,4));
 *(volatile u32*)0x4000448=1;return;
 }
 }

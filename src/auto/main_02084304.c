@@ -485,7 +485,7 @@ void func_02084d1c(s32 arg0) {
     M2C_FIELD(GetLocalPlayerStatus(), s32 *, 0x1C) = arg0;
 }
 
-s32 func_02084d3c(M2C_UNK arg0, M2C_UNK arg1) {
+s32 Link_ReceivePacket(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_ov009_022240c0(M2C_UNK, M2C_UNK);
     s32 func_ov010_02229b5c(M2C_UNK, M2C_UNK);
     s32 temp_r0;
@@ -501,7 +501,7 @@ s32 func_02084d3c(M2C_UNK arg0, M2C_UNK arg1) {
     }
 }
 
-void func_02084d88(M2C_UNK arg0, M2C_UNK arg1) {
+void Link_SendPacket(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_ov009_02223f7c(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov010_02229a74(M2C_UNK, M2C_UNK);
     s32 temp_r0;
@@ -554,7 +554,7 @@ void func_02084e64(void) {
     func_02084e24(0);
 }
 
-void func_02084e74(void) {
+void Link_FlushSend(void) {
     M2C_UNK func_ov009_02223fbc();
     M2C_UNK func_ov010_02229a94();
     s32 temp_r0;

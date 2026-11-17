@@ -242,7 +242,7 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
 }
 #pragma opt_strength_reduction off
 void func_ov003_021fc26c(void *arg0) {
- s32 func_ov003_021f2780(void *,void *);
+ s32 CountMapPicks(void *,void *);
  void SetMenuPanelState(void *,u32);
  M2C_UNK PlaySoundEffect(s32);
  u32 func_020d886c(void);
@@ -263,8 +263,8 @@ void func_ov003_021fc26c(void *arg0) {
  s32 index;
  s32 row;
  if(PanelModeIs(arg0,4)) {
-  if(!func_ov003_021f2780((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+8) &&
-     !func_ov003_021f2780((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+0x12)) {
+  if(!CountMapPicks((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+8) &&
+     !CountMapPicks((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+0x12)) {
    PlaySoundEffect(0x1001d);
    SetMenuPanelState(arg0,6);
    return;
@@ -347,17 +347,17 @@ void func_ov003_021fc26c(void *arg0) {
 }
 #pragma opt_strength_reduction reset
 void func_ov003_021fc820(void *arg0) {
-    s32 func_02084d3c(s32 *, M2C_UNK);
-    M2C_UNK func_02084d88(s32 *, M2C_UNK);
-    M2C_UNK func_02084e74();
+    s32 Link_ReceivePacket(s32 *, M2C_UNK);
+    M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
+    M2C_UNK Link_FlushSend();
     s32 buffer[9];
 
-    if (func_02084d3c(buffer, 0x24) == 0) {
+    if (Link_ReceivePacket(buffer, 0x24) == 0) {
         return;
     }
     buffer[0] = 1;
-    func_02084d88(buffer, 0x24);
-    func_02084e74();
+    Link_SendPacket(buffer, 0x24);
+    Link_FlushSend();
 }
 
 void func_ov003_021fc860(void *arg0) {

@@ -36,7 +36,7 @@ static inline s32 ov003_entries_differ(void *arg0) {
 }
 
 void func_ov003_021e771c(void *arg0, s32 arg1) {
-s32 func_020cfb94(void); s32 GetPlayerCoId(s32); s32 func_ov003_02200808(u8);
+s32 func_020cfb94(void); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
 s32 IsLinkSessionActive(void);u8 *func_02084e64(void);s32 GetReadyPlayerMask(void);
 u8 *func_02084e24(s32); u8 GetLocalPlayerIdForOverlay(void);s32 GetPlayerTeam(s32);s32 GetPlayerArmyId(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
@@ -45,7 +45,7 @@ void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s3
 s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);
 u8 *p=arg0,*remote,*q;void *sprite;u16 bounds[4];u16 first;s16 x,y,w,h;s32 next;u8 i,j,k,tmp,n; s8 id; s32 mask;
 p[4]=func_020cfb94();p[5]=255;if(p[4]<2)p[4]=2;
-for(i=0;i<4;i++)p[10+i]=func_ov003_02200808((u8)GetPlayerCoId(i+1));
+for(i=0;i<4;i++)p[10+i]=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
 if(IsLinkSessionActive()){
 remote=func_02084e64();
 for(i=0;i<4;i++){p[0x74+i]=255;p[10+i]=remote?remote[0x12+i]:12;}

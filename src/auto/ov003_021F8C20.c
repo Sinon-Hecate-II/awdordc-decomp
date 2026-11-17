@@ -283,17 +283,17 @@ void func_ov003_021f8c20(void *arg0) {
 }
 
 void func_ov003_021f91a4(void *arg0) {
-    s32 func_02084d3c(void *, s32);
-    void func_02084d88(void *, s32);
+    s32 Link_ReceivePacket(void *, s32);
+    void Link_SendPacket(void *, s32);
     u8 buffer[0x24];
 
-    if (func_02084d3c(buffer, 0x24) == 0) {
+    if (Link_ReceivePacket(buffer, 0x24) == 0) {
         return;
     }
     buffer[9] = M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4);
     buffer[10] = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s16 *, 0xC);
     buffer[11] = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 0x14);
-    func_02084d88(buffer, 0x24);
+    Link_SendPacket(buffer, 0x24);
 }
 
 /* Advance obj's animation step, or reset it, depending on its kind. */

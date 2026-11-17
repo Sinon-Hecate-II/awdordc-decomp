@@ -177,33 +177,35 @@ void GX_ResetBankState(void) {
     M2C_FIELD((void *)0x04000240, s16 *, 8) = 0;
 }
 
-void GX_ReleaseBanks(s32 arg0) {
-    if (arg0 & 1) {
-        *(volatile u8 *)0x04000240 = 0x80;
+/* Releases every VRAM bank selected in the VRAM_BANK_* mask: the bank's control
+ * register goes back to 0x80, the unassigned value. */
+void GX_ReleaseBanks(s32 banks) {
+    if (banks & VRAM_BANK_A) {
+        REG_VRAM_A_CR = 0x80;
     }
-    if (arg0 & 2) {
-        *(volatile u8 *)0x04000241 = 0x80;
+    if (banks & VRAM_BANK_B) {
+        REG_VRAM_B_CR = 0x80;
     }
-    if (arg0 & 4) {
-        *(volatile u8 *)0x04000242 = 0x80;
+    if (banks & VRAM_BANK_C) {
+        REG_VRAM_C_CR = 0x80;
     }
-    if (arg0 & 8) {
-        *(volatile u8 *)0x04000243 = 0x80;
+    if (banks & VRAM_BANK_D) {
+        REG_VRAM_D_CR = 0x80;
     }
-    if (arg0 & 0x10) {
-        *(volatile u8 *)0x04000244 = 0x80;
+    if (banks & VRAM_BANK_E) {
+        REG_VRAM_E_CR = 0x80;
     }
-    if (arg0 & 0x20) {
-        *(volatile u8 *)0x04000245 = 0x80;
+    if (banks & VRAM_BANK_F) {
+        REG_VRAM_F_CR = 0x80;
     }
-    if (arg0 & 0x40) {
-        *(volatile u8 *)0x04000246 = 0x80;
+    if (banks & VRAM_BANK_G) {
+        REG_VRAM_G_CR = 0x80;
     }
-    if (arg0 & 0x80) {
-        *(volatile u8 *)0x04000248 = 0x80;
+    if (banks & VRAM_BANK_H) {
+        REG_VRAM_H_CR = 0x80;
     }
-    if (arg0 & 0x100) {
-        *(volatile u8 *)0x04000249 = 0x80;
+    if (banks & VRAM_BANK_I) {
+        REG_VRAM_I_CR = 0x80;
     }
 }
 

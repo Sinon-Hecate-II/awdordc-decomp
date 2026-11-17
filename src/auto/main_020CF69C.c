@@ -8,32 +8,40 @@ extern s8 data_ov000_021b5580[];
 extern s32 *gCurrentMap;
 extern s32 gMapData;
 
-void func_020cf69c(s32 arg0, s32 arg1) {
-    M2C_UNK func_020cf4f0(s16,s16,s16,s16 *,s16 *);
+/* Advance the map cursor's smoothed position toward the tile it is aimed at
+ * (MAP_CURSOR_TARGET_X/Y; both the target and the result are in 1/16-cell units)
+ * and hand that position to the map view's cursor callback, once for each of two
+ * cursor selectors: arg0, then arg1.  Both placements report the same point. */
+void StepMapCursorAndNotify(s32 arg0, s32 arg1) {
+    M2C_UNK StepMapCursorPosition(s16,s16,s16,s16 *,s16 *);
     extern s32 *gCurrentMap;
-    s16 sp6; s16 sp4;
+    s16 posX; s16 posY;
     void (*cb)(s16,s16,s32);
     void *p = (void *)*gCurrentMap;
-    s16 *pp = (s16 *)((u8 *)p + 0x52C2);
-    func_020cf4f0((s16)(pp[0]*16), (s16)(pp[1]*16), (s16)arg0, &sp6, &sp4);
-    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
-    if (cb != NULL) cb(sp6, sp4, arg0);
-    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    s16 *target = (s16 *)((u8 *)p + MAP_CURSOR_TARGET_X);
+    StepMapCursorPosition((s16)(target[0]*16), (s16)(target[1]*16), (s16)arg0, &posX, &posY);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), MAPVIEW_CURSOR_CB);
+    if (cb != NULL) cb(posX, posY, arg0);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), MAPVIEW_CURSOR_CB);
     if (cb == NULL) return;
-    cb(sp6, sp4, arg1);
+    cb(posX, posY, arg1);
 }
 
-void func_020cf754(s32 arg0, s32 arg1) {
-    M2C_UNK func_020cf4f0(s16,s16,s16,s16 *,s16 *);
+/* Advance the map cursor's smoothed position toward the tile it is aimed at
+ * (MAP_CURSOR_TARGET_X/Y; both the target and the result are in 1/16-cell units)
+ * and hand that position to the map view's cursor callback, once for each of two
+ * cursor selectors: arg0, then arg1 + 8.  Both placements report the same point. */
+void StepMapCursorAndNotifyOffset(s32 arg0, s32 arg1) {
+    M2C_UNK StepMapCursorPosition(s16,s16,s16,s16 *,s16 *);
     extern s32 *gCurrentMap;
     s16 sp6; s16 sp4;
     void (*cb)(s16,s16,s32);
     void *p = (void *)*gCurrentMap;
-    s16 *pp = (s16 *)((u8 *)p + 0x52C2);
-    func_020cf4f0((s16)(pp[0]*16), (s16)(pp[1]*16), (s16)arg0, &sp6, &sp4);
-    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    s16 *pp = (s16 *)((u8 *)p + MAP_CURSOR_TARGET_X);
+    StepMapCursorPosition((s16)(pp[0]*16), (s16)(pp[1]*16), (s16)arg0, &sp6, &sp4);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), MAPVIEW_CURSOR_CB);
     if (cb != NULL) cb(sp6, sp4, arg0);
-    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), MAPVIEW_CURSOR_CB);
     if (cb == NULL) return;
     cb(sp6, sp4, arg1 + 8);
 }

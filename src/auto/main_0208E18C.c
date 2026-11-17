@@ -21,34 +21,32 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     extern u8 gSpriteDesc8x8[];
     extern s16 gSinCosTable[];
     TileTable tbl;
-    s32 t;
     s32 v4, v8, vc, v10, v14, v18, v1c, v20, v38, v3c;
     s32 r4, r5, r6, r7, r11;
 
-    t = a4;
     tbl = data_020f35c8;
 
     r7 = a0 & 0x1ff;
     r4 = a1 & 0xff;
-    ADS((u16)r7, (u8)r4, (u16)(t + ((0x54 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    ADS((u16)r7, (u8)r4, (u16)(a4 + ((0x54 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
     v8 = a0 + a2 - 8;
     r7 = v8 & 0x1ff;
-    ADS((u16)r7, (u8)r4, (u16)(t + ((0x56 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    ADS((u16)r7, (u8)r4, (u16)(a4 + ((0x56 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
     vc = a1 + a3 - 8;
     r7 = vc & 0xff;
-    ADS((u16)(a0 & 0x1ff), (u8)r7, (u16)(t + ((0x58 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    ADS((u16)(a0 & 0x1ff), (u8)r7, (u16)(a4 + ((0x58 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
-    ADS((u16)(v8 & 0x1ff), (u8)r7, (u16)(t + ((0x5a >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    ADS((u16)(v8 & 0x1ff), (u8)r7, (u16)(a4 + ((0x5a >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
-    DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(t + ((0x4a >> SHIFT) & 0x3ff)), a5);
+    DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> SHIFT) & 0x3ff)), a5);
 
-    DrawVerticalBarReverse((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(t + ((0x4a >> SHIFT) & 0x3ff)), a5);
+    DrawVerticalBarReverse((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> SHIFT) & 0x3ff)), a5);
 
-    DrawHorizontalBar((s16)(a0 + 8), a1, (s16)(a2 - 16), (u16)(t + ((0x40 >> SHIFT) & 0x3ff)), a5);
+    DrawHorizontalBar((s16)(a0 + 8), a1, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> SHIFT) & 0x3ff)), a5);
 
-    DrawHorizontalBarReverse((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(t + ((0x40 >> SHIFT) & 0x3ff)), a5);
+    DrawHorizontalBarReverse((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> SHIFT) & 0x3ff)), a5);
 
     v1c = (s16)(a3 - 16);
     v20 = (s16)(a1 + 8);
@@ -93,13 +91,13 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
             while (r7 < 5) {
                 while (v14 >= r6) {
                     if (r6 >= 0x40 && r4 >= 0x40) {
-                        ADS((u16)((r5 & 0x1ff) | 0x3e00), (u16)r11, t, (void *)tbl.t[v18][r7], a5);
+                        ADS((u16)((r5 & 0x1ff) | 0x3e00), (u16)r11, a4, (void *)tbl.t[v18][r7], a5);
                     } else if (r6 >= 0x40) {
-                        ADS((u16)((r5 & 0x1ff) | 0x3800), (u16)v38, t, (void *)tbl.t[v18][r7], a5);
+                        ADS((u16)((r5 & 0x1ff) | 0x3800), (u16)v38, a4, (void *)tbl.t[v18][r7], a5);
                     } else if (r4 >= 0x40) {
-                        ADS((u16)(((r5 - (r6 >> 1)) & 0x1ff) | 0x3600), (u16)r11, t, (void *)tbl.t[v18][r7], a5);
+                        ADS((u16)(((r5 - (r6 >> 1)) & 0x1ff) | 0x3600), (u16)r11, a4, (void *)tbl.t[v18][r7], a5);
                     } else {
-                        ADS((u16)((r5 & 0x1ff)), (u16)v3c, t, (void *)tbl.t[v18][r7], a5);
+                        ADS((u16)((r5 & 0x1ff)), (u16)v3c, a4, (void *)tbl.t[v18][r7], a5);
                     }
                     r5 += r6;
                     v14 -= r6;

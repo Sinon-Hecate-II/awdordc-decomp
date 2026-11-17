@@ -1,6 +1,7 @@
 /* 30 functions from 0x020C7CD0 to 0x020C8CBC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 bytes[6]; u16 value; u32 year:8,month:6,day:6,hour:6,minute:6; u32 second:6,code:12,rest:14; u32 tail; } CompareRecord;
 typedef struct { u8 low:6, state:2; u8 pad[7]; u16 x:6,y:6,rest:4; u8 unkA; u8 kind:4, high:4; } RestoredUnit;
 static inline void RestoreKind(RestoredUnit *p,u8 v) {p->kind=v;}
@@ -208,7 +209,46 @@ s32 func_020c818c(s32 a,s32 b) {
  return func_020c8624(a,p);
 }
 
-s32 func_020c8214(void *p){extern M2C_UNK gUnitKindStats;s32 i;PackedEntry *q;for(i=0;i<M2C_FIELD(p,u8 *,0x2f);i++){q=(PackedEntry *)((u8 *)p+0x3d8)+i;if(M2C_FIELD((u8 *)&gUnitKindStats+q->bits.kind*112,u8 *,108)){switch(q->bits.mode){case 0:case 1:q->bits.mode=0;break;case 6:q->bits.mode=6;break;case 8:q->bits.mode=8;break;}}}}
+/* Normalizes the AI action steps saved with the units of a map record that has
+ * just been loaded: a unit still saved in step 0 or 1 drops back to step 0, and
+ * the attack and capture steps are kept so the action the unit was in the middle
+ * of is resumed.  Steps 2..5 and 7 are left alone, and the kinds whose unit-kind
+ * record leaves UNIT_KIND_STATS_UNK_6C clear are skipped. */
+s32 ResetSavedUnitActions(void *record) {
+    extern u8 gUnitKindStats[];
+    typedef union {
+        u32 word;
+        struct {
+            u32 x:5;      /* tile x */
+            u32 y:5;      /* tile y */
+            u32 kind:5;   /* unit kind */
+            u32 owner:3;  /* owner (player) */
+            u32 aiStep:4; /* AI action step (MAP_UNIT_AI_STATE) */
+            u32 state:2;  /* unit state */
+            u32 unused:8;
+        } bits;
+    } MapRecordUnit;
+    s32 i;
+    MapRecordUnit *unit;
+
+    for (i = 0; i < ((MapRecordHeader *)record)->unitCount; i++) {
+        unit = (MapRecordUnit *)((u8 *)record + MAP_RECORD_UNITS) + i;
+        if (gUnitKindStats[unit->bits.kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_UNK_6C]) {
+            switch (unit->bits.aiStep) {
+            case 0:
+            case 1:
+                unit->bits.aiStep = 0;
+                break;
+            case AI_STEP_ATTACK:
+                unit->bits.aiStep = AI_STEP_ATTACK;
+                break;
+            case AI_STEP_CAPTURE:
+                unit->bits.aiStep = AI_STEP_CAPTURE;
+                break;
+            }
+        }
+    }
+}
 
 /* Rebuild the battle-map units from a saved map record's packed entries, and
  * reselect the saved unit for every player that had one. */
@@ -277,9 +317,9 @@ void ApplyMapRecord(s32 arg0) {
 }
 
 void func_020c8564(M2C_UNK arg0) {
-    M2C_UNK func_020c8214();
+    M2C_UNK ResetSavedUnitActions();
 
-    func_020c8214();
+    ResetSavedUnitActions();
     RestoreMapUnits(arg0);
 }
 

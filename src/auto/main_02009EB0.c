@@ -371,7 +371,7 @@ s32 func_0200abd4(void) {
 }
 
 #pragma opt_propagation off
-u32 func_0200abdc(u8 *p,s32 n){u32 result=0; s32 i,shift;u32 c;if(n<=3){i=0;if(n>0){shift=0;do{c=p[i];if(!c)break;c=c-0x41;if(c<=25)c+=0x61;else c+=0x41;result|=c<<shift;i++;shift+=8;}while(i<n);}}return result;}
+u32 PackArchiveName(u8 *p,s32 n){u32 result=0; s32 i,shift;u32 c;if(n<=3){i=0;if(n>0){shift=0;do{c=p[i];if(!c)break;c=c-0x41;if(c<=25)c+=0x61;else c+=0x41;result|=c<<shift;i++;shift+=8;}while(i<n);}}return result;}
 #pragma opt_propagation reset
 s32 func_0200ac34(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     M2C_UNK MI_CpuCopy8(s32, M2C_UNK, M2C_UNK);

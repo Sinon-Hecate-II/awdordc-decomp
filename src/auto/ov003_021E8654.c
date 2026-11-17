@@ -112,21 +112,21 @@ return result;
 }
 
 void func_ov003_021e88e0(void) {
-s32 func_02084d3c(s32 *,M2C_UNK);
-M2C_UNK func_02084d88(s32 *,M2C_UNK);
+s32 Link_ReceivePacket(s32 *,M2C_UNK);
+M2C_UNK Link_SendPacket(s32 *,M2C_UNK);
 s32 buffer[9];
-if(func_02084d3c(buffer,0x24)==0)return;
+if(Link_ReceivePacket(buffer,0x24)==0)return;
 buffer[0]=1;
-func_02084d88(buffer,0x24);
+Link_SendPacket(buffer,0x24);
 }
 
 void func_ov003_021e891c(void) {
-s32 func_02084d3c(s32 *,M2C_UNK);
-M2C_UNK func_02084d88(s32 *,M2C_UNK);
+s32 Link_ReceivePacket(s32 *,M2C_UNK);
+M2C_UNK Link_SendPacket(s32 *,M2C_UNK);
 s32 buffer[9];
-if(func_02084d3c(buffer,0x24)==0)return;
+if(Link_ReceivePacket(buffer,0x24)==0)return;
 buffer[1]=1;
-func_02084d88(buffer,0x24);
+Link_SendPacket(buffer,0x24);
 }
 
 void func_ov003_021e8958(void *arg0) {

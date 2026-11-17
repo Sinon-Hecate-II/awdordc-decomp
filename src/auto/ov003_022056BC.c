@@ -26,9 +26,9 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02074114(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
-    M2C_UNK func_02084d88(M2C_UNK **, M2C_UNK);
+    M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
     M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
-    M2C_UNK func_02084e74();
+    M2C_UNK Link_FlushSend();
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     s32 func_ov003_02200c7c();
     extern M2C_UNK data_02102174;
@@ -151,8 +151,8 @@ void func_ov003_022056bc(M2C_UNK arg0) {
         if (func_ov003_02200c7c() != 0) {
             func_02084dcc(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
             M2C_FIELD(temp_r0_6, s32 *, 0x110) = 0;
-            func_02084d88((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
-            func_02084e74();
+            Link_SendPacket((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
+            Link_FlushSend();
         }
     }
     M2C_FIELD(temp_r0, M2C_UNK ***, 0x44) = temp_r0_6;
@@ -181,9 +181,9 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02074114(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
-    M2C_UNK func_02084d88(M2C_UNK **, M2C_UNK);
+    M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
     M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
-    M2C_UNK func_02084e74();
+    M2C_UNK Link_FlushSend();
     s32 func_ov003_02200c7c();
     extern M2C_UNK data_02102174;
     extern M2C_UNK gHeapObjectVTable;
@@ -300,8 +300,8 @@ void func_ov003_022059d0(M2C_UNK arg0) {
             if (func_ov003_02200c7c() != 0) {
                 func_02084dcc(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
                 M2C_FIELD(temp_r0_6, s32 *, 0x110) = 0;
-                func_02084d88((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
-                func_02084e74();
+                Link_SendPacket((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
+                Link_FlushSend();
             }
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x44) = temp_r0_6;

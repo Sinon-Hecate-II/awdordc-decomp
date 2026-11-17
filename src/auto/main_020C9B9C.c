@@ -334,7 +334,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     void DrawUnitInfoPanel(s32);
     M2C_UNK func_020cf828(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
-    M2C_UNK func_020cf69c(s32, s32);
+    M2C_UNK StepMapCursorAndNotify(s32, s32);
     extern void **gCurrentMap;
     extern s32 data_0215be0c;
 
@@ -451,7 +451,7 @@ void func_020caa34(void *dialog) {
     M2C_UNK CreateMapMenu(void);
     M2C_UNK func_020cf828(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
-    M2C_UNK func_020cf69c(s32, s32);
+    M2C_UNK StepMapCursorAndNotify(s32, s32);
     extern void **gCurrentMap;
     extern s32 data_0215be0c;
 
@@ -491,6 +491,6 @@ void func_020caa34(void *dialog) {
     }
     func_020cf828(0x1001a);
     func_0207a7a4(1, 4);
-    func_020cf69c(2, 10);
+    StepMapCursorAndNotify(2, 10);
 }
 

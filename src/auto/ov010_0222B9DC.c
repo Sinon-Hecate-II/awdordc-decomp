@@ -163,7 +163,7 @@ void func_ov010_0222bc54(void *arg0, M2C_UNK arg1) {
 }
 
 void *func_ov010_0222bc88(void *arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
-    void *func_0206fc18(void *, M2C_UNK, u32, void *, void *, Flag);
+    void *StringStorageReplace(void *, M2C_UNK, u32, void *, void *, Flag);
     u32 len;
     u8 *start;
     Flag unused;
@@ -174,14 +174,14 @@ void *func_ov010_0222bc88(void *arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
         start = (u8 *)arg3 + 1;
         len = (u32)(M2C_FIELD(arg3, u8 *, 0) << 24) >> 25;
     }
-    return func_0206fc18(arg0, arg1, arg2, start, start + len, unused);
+    return StringStorageReplace(arg0, arg1, arg2, start, start + len, unused);
 }
 
 M2C_UNK func_ov010_0222bcd8(void *arg0, M2C_UNK arg1, u32 arg2, M2C_UNK arg3) {
-    void *func_0206fc18(void *, M2C_UNK, u32, void *, void *, Flag);
+    void *StringStorageReplace(void *, M2C_UNK, u32, void *, void *, Flag);
     s32 StringLength(M2C_UNK);
     Flag unused;
-    return (M2C_UNK)func_0206fc18(arg0, arg1, arg2, (void *)arg3, (u8 *)arg3 + StringLength(arg3), unused);
+    return (M2C_UNK)StringStorageReplace(arg0, arg1, arg2, (void *)arg3, (u8 *)arg3 + StringLength(arg3), unused);
 }
 
 s32 func_ov010_0222bd24(s32 arg0) {

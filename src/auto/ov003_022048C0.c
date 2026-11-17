@@ -27,18 +27,18 @@ void func_ov003_02204ec4(void *obj) {
     packed->i = M2C_FIELD(M2C_FIELD(obj, void **, 0x44), u32 *, 0x84);
     packed->j = M2C_FIELD(M2C_FIELD(obj, void **, 0x44), u32 *, 0xB4);
 
-    func_02084d88((u8 *)packed + 0x110, 0x24);
+    Link_SendPacket((u8 *)packed + 0x110, 0x24);
 }
 
 void func_ov003_02204fac(void *arg0) {
-    M2C_UNK func_02084d88(void *, M2C_UNK);
+    M2C_UNK Link_SendPacket(void *, M2C_UNK);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s32 *, 0x110) = 1;
-    func_02084d88(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
+    Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
 }
 
 void func_ov003_02204fd0(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s32 *, 0x114) = 1;
-    func_02084d88(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
+    Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
 }
 
 void func_ov003_02204ff4(void *arg0) {

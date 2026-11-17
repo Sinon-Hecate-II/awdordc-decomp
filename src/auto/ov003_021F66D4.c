@@ -23,18 +23,18 @@ typedef struct UnkUnitOv003 {
 
 void func_ov003_021f66d4(M2C_UNK arg0) {
     M2C_UNK func_01ffa6fc(M2C_UNK);
-    s32 func_02084d3c(s32 *, M2C_UNK);
-    M2C_UNK func_02084d88(s32 *, M2C_UNK);
-    M2C_UNK func_02084e74();
+    s32 Link_ReceivePacket(s32 *, M2C_UNK);
+    M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
+    M2C_UNK Link_FlushSend();
     s32 buffer[9];
 
-    if (func_02084d3c(buffer, 0x24) == 0) {
+    if (Link_ReceivePacket(buffer, 0x24) == 0) {
         return;
     }
     buffer[0] = 0;
     buffer[1] = 0;
-    func_02084d88(buffer, 0x24);
-    func_02084e74();
+    Link_SendPacket(buffer, 0x24);
+    Link_FlushSend();
     func_01ffa6fc(arg0);
 }
 

@@ -413,7 +413,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
 #pragma opt_loop_invariants off
 #pragma opt_propagation off
 void func_ov003_021e3ff8(void *arg0,s32 arg1,s32 arg2){
-u32 func_ov003_021f2780(s32,s32);
+u32 CountMapPicks(s32,s32);
 u32 func_ov003_021f2574(void);
 s32 GetMapListIconTile(s32,u16);
 s32 Modulo(s32,s32);
@@ -436,7 +436,7 @@ u16 id;
 u16 tile;
 s16 offset;
 void *p;
-count0=func_ov003_021f2780(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);
+count0=CountMapPicks(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);
 count1=func_ov003_021f2574();
 p=M2C_FIELD(arg0,void**,0x6c);
 total=0;
@@ -485,7 +485,7 @@ headerY=arg2-12;
 h=0;
 do {
 switch(h){
-case 0:headerX=(s16)hx0;n=func_ov003_021f2780(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);break;
+case 0:headerX=(s16)hx0;n=CountMapPicks(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);break;
 case 1:headerX=(s16)hx1;n=5;break;
 case 2:headerX=(s16)hx2;n=func_ov003_021f2574();p=M2C_FIELD(arg0,void**,0x6c);total2=0;k2=0;do{if(M2C_FIELD((u8*)p+k2*0x6f8,u8*,0x27))total2++;k2++;}while(k2<5);if(n>=total2)n=total2;break;
 case 3:headerX=(s16)hx3;n=5;break;

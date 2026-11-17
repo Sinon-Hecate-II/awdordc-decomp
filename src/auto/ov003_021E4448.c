@@ -3,7 +3,7 @@
 #include "battle_map.h"
 
 void func_ov003_021e4448(void *arg0){
-M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
+M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK CountMapPicks(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
 extern M2C_UNK data_ov003_0220f47c;
 struct {void *data;u16 buf0[5];u16 buf1[5];}local;
 u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
@@ -12,7 +12,7 @@ for(i=0;i<5;i++){local.buf1[i]=65535;local.buf0[i]=local.buf1[i];}
 func_ov003_021f2860(&local);SetOv003SceneState(1);
 i=0;zero=i;block=&local;
 do{
-count=func_ov003_021f2780((M2C_UNK)block,local.buf0);
+count=CountMapPicks((M2C_UNK)block,local.buf0);
 base=M2C_FIELD(arg0,void **,0x68);
 if((u32)i>=count)M2C_FIELD((s32)base+i*0x6f8,u8 *,0x27)=zero;
 else{
@@ -198,7 +198,7 @@ u32 func_ov003_021e47bc(void *arg0) {
             count++;
         }
     }
-    if (count == 0 && func_ov003_021f2780((s32)&local, local.buf0) == 0) {
+    if (count == 0 && CountMapPicks((s32)&local, local.buf0) == 0) {
         M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) | 0x80);
     }
     count = 0;
@@ -207,7 +207,7 @@ u32 func_ov003_021e47bc(void *arg0) {
             count++;
         }
     }
-    if (count == 0 && func_ov003_021f2780((s32)&local, local.buf1) == 0) {
+    if (count == 0 && CountMapPicks((s32)&local, local.buf1) == 0) {
         M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) | 0x80);
     }
     return (u32)((u32)M2C_FIELD(arg0, u8 *, 0x60) << 24) >> 31;

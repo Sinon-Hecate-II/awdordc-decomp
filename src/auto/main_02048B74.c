@@ -18,7 +18,7 @@ void func_02048b74(M2C_UNK arg0) {
     } while (var_r4 >= 0);
 }
 
-s32 func_02048ba0(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(M2C_UNK, s32)) {
+s32 Vector_SearchLinear(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(M2C_UNK, s32)) {
     s32 var_r4;
     s32 var_r5;
 
@@ -36,7 +36,7 @@ s32 func_02048ba0(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(M2C_UN
     return 0;
 }
 
-s32 func_02048bf8(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(s32, M2C_UNK), s32 *arg5) {
+s32 Vector_SearchSorted(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(s32, M2C_UNK), s32 *arg5) {
     s32 var_r4;
     s32 var_r5;
     s32 temp_r6;

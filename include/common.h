@@ -153,6 +153,17 @@ typedef struct Sha1Context {
     u8  block[0x40];   /* +0x20 message block being filled */
 } Sha1Context; /* 0x60 bytes */
 
+/* Compact SHA1 context of the reference implementation in main_020251B8
+ * (SHA1_Init, SHA1_Update, SHA1_Final) that the TLS code hashes with. Unlike
+ * Sha1Context above it stores no buffered-byte count: the offset in the block
+ * is the low word of the bit count modulo 64. */
+typedef struct TlsSha1Context {
+    u32 state[5];    /* +0x00 A, B, C, D, E */
+    u32 bitCountHi;  /* +0x14 high word of the processed bit count */
+    u32 bitCountLo;  /* +0x18 low word of the processed bit count */
+    u8 block[0x40];  /* +0x1C message block being filled */
+} TlsSha1Context; /* 0x5C bytes */
+
 /* A fixed-point decimal number used by the software-float and BigNum layer (the
  * calculator, damage and gauge code): a sign, a binary exponent, the number of
  * digits in use and the digits themselves, each a byte 0..9, most significant
@@ -2198,6 +2209,21 @@ enum {
     LANGUAGE_ITALIAN = 4, /* i_ prefix */
     LANGUAGE_SPANISH = 5  /* s_ prefix */
 };
+
+/* One thread of the cooperative scheduler.  gThreadManager (a void * with
+ * gSocketManager straight after it) holds the running thread at
+ * THREAD_MANAGER_CURRENT and the ready list, kept in priority order and chained
+ * through Thread::next, at THREAD_MANAGER_READY. */
+#define THREAD_MANAGER_CURRENT 0x28 /* Thread *: the thread that is running */
+#define THREAD_MANAGER_READY   0x2c /* Thread *: first thread of the ready list */
+
+typedef struct Thread {
+    u8 pad00[0x64];
+    s32 state;           /* +0x64 0 waiting, 1 ready to run, 2 finished */
+    struct Thread *next; /* +0x68 next thread of the ready list */
+    u32 id;              /* +0x6c creation id */
+    s32 priority;        /* +0x70 run priority; equal priorities round-robin */
+} Thread;
 
 #endif
 

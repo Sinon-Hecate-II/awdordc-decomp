@@ -19,7 +19,7 @@ s32 Divide(s32,s32);
 void Clear3DSpriteLayer(s32);
 s32 func_ov003_021f3f5c(s16,s16,s32,s32,s32,s32,s32,s32);
 void ClearTileRect(void *,s32,s32);
-u8 func_ov003_021f269c(void *,void *,u16);
+u8 FindMapPick(void *,void *,u16);
 void func_ov003_021fac2c(u16,u16,s16,s16,s32);
 s32 func_ov003_021f3f0c(s16,s32,s32);
 void SetTextSpriteValue(void *,s16);
@@ -36,7 +36,7 @@ void func_0209b32c(s16,s16,s32,void *,s32,u8,u16);
 extern u8 gSpriteDesc16x16[];
 s32 func_020abb24(void *);
 void func_0208e0b8(s16,s16,s16,u16,s32);
-s16 func_ov003_021f2780(void *,void *);
+s16 CountMapPicks(void *,void *);
 void func_02088e84(void *,s16,s16,s16,s16);
 s32 GetUnitSpriteWidth(void *);
 s32 GetUnitSpriteHeight(void *);
@@ -81,10 +81,10 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  mode=M2C_FIELD(arg0,Ov003DrawNibble *,0x3b).low;
  if((u8)(mode==4)){
  p=M2C_FIELD(arg0,void **,0x44);
- if((u8)(func_ov003_021f269c((u8*)p+4,(u8*)p+8,item)!=255))
+ if((u8)(FindMapPick((u8*)p+4,(u8*)p+8,item)!=255))
  func_ov003_021fac2c((u16)i,item,(s16)tx,(s16)ty,4);
  else {p=M2C_FIELD(arg0,void **,0x44);
- if((u8)(func_ov003_021f269c((u8*)p+4,(u8*)p+18,item)!=255))
+ if((u8)(FindMapPick((u8*)p+4,(u8*)p+18,item)!=255))
  func_ov003_021fac2c((u16)i,item,(s16)tx,(s16)ty,8);}
  }
  if(!func_ov003_021f3f0c((s16)py,24,152)||i>M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18))continue;
@@ -108,7 +108,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  if((u8)(mode==6))shade=(u8)(IsCampaignMapAvailable(item)?0:3);
  else if((u8)(mode==4)||(u8)(mode==8)||(u8)(mode==7)){
  p=M2C_FIELD(arg0,void **,0x44);shade=0;
- if(!(u8)(func_ov003_021f269c((u8*)p+4,(u8*)p+18,item)!=255))
+ if(!(u8)(FindMapPick((u8*)p+4,(u8*)p+18,item)!=255))
  shade=(u8)(((s32)item>=225&&(s32)item<0x1a9&&!IsCampaignMapRecordValid(item))?3:0);
  } else if((u8)(mode==2))shade=(u8)(IsCampaignMapRecordPlayable(item)?0:3);
  else shade=(u8)(func_02086960(item)?0:3);
@@ -158,9 +158,9 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  for(a=0;a<4;a++){
  s16 xx,num;u8 color=8;
  switch(a){
- case 0:xx=x0;p=M2C_FIELD(arg0,void **,0x44);num=func_ov003_021f2780((u8*)p+4,(u8*)p+8);if((u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
+ case 0:xx=x0;p=M2C_FIELD(arg0,void **,0x44);num=CountMapPicks((u8*)p+4,(u8*)p+8);if((u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
  case 1:xx=x1;num=5;if((u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
- case 2:xx=x2;p=M2C_FIELD(arg0,void **,0x44);num=func_ov003_021f2780((u8*)p+4,(u8*)p+18);if(!(u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
+ case 2:xx=x2;p=M2C_FIELD(arg0,void **,0x44);num=CountMapPicks((u8*)p+4,(u8*)p+18);if(!(u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
  case 3:xx=x3;num=5;if(!(u8)((M2C_FIELD(arg0,Ov003DrawBits3 *,0x3e).low)==1))color=9;break;
  }
  SetTextSpriteValue(M2C_FIELD(arg0,void **,0x50),num);

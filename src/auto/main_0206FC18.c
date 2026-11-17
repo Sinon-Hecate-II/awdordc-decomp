@@ -23,7 +23,7 @@ object[0]=(u32)vtable;
 #pragma optimization_level reset
 
 #pragma optimization_level 3
-void *func_0206fc18(StringStorage *self, u32 pos, u32 remove, u8 *first, u8 *last, Flag unused) {
+void *StringStorageReplace(StringStorage *self, u32 pos, u32 remove, u8 *first, u8 *last, Flag unused) {
 u32 StringLength(void *);void *MemAllocArray(u32),*MemAlloc(u32);
 void StringCopy(void *,void *);void func_0206f8c4(u32 *,u32,Flag);
 void func_0207465c(void *,void *,void *);
@@ -85,7 +85,7 @@ void func_0206ffc4(void *a, s32 b, s32 c) {
 
 void func_0207000c(void *a, s32 b, u32 c, s32 d, s32 e, s32 f) {
     Flag unused;
-    func_0206fc18(a,b,c,d,e,unused);
+    StringStorageReplace(a,b,c,d,e,unused);
 }
 
 s32 func_02070030(s32 arg0) {

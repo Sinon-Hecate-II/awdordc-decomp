@@ -60,6 +60,7 @@
 #define UNIT_KIND_STATS_SUPPLY_FLAG 0x6A /* u8 nonzero when the kind can be resupplied */
 #define UNIT_KIND_STATS_CAPTURE_MASK 0x54 /* s8 *per terrain: nonzero when the kind may capture/enter that property */
 #define UNIT_KIND_STATS_FUEL_COST    0x58 /* s8 *per-terrain: fuel the kind spends per turn standing there (negative = cannot stand) */
+#define UNIT_KIND_STATS_UNK_6C       0x6C /* u8 nonzero when the save-load fix-up adjusts the kind's saved AI step */
 
 /* Bits of gUnitKindFlags, the +0x13 flag byte of a unit-kind record (indexed
  * by kind * UNIT_KIND_STATS_SIZE).  The sea and air kinds are the ones that

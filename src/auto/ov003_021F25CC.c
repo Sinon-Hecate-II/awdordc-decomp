@@ -1,5 +1,6 @@
 /* 19 functions from 0x021F25CC to 0x021F35B0 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_mapselect.h"
 static inline s32 IsTerrain2878(s32 v) { switch(v) { case 6: case 18: case 19: case 20: case 21: return 1; default: return 0; } }
 static inline s32 Active2878(void) { s32 func_ov003_021f14c8(void); return func_ov003_021f14c8()!=0; }
 static inline u8 Block2878(s32 entry) { void *p; if(Active2878()) return 1; p=M2C_FIELD(entry,void **,0x40); return IsTerrain2878(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)]) != 0; }
@@ -37,40 +38,45 @@ s32 func_ov003_021f2654(void) {
  }
 }
 
-u8 func_ov003_021f269c(s32 unused,u16 *array,s32 value) {
+u8 FindMapPick(s32 unused,u16 *array,s32 value) {
  u8 i=0;
  do { if(value==array[i]) return i; ++i;}while(i<5);
  return 255;
 }
 
-void func_ov003_021f26c8(s32 arg0,s32 arg1,M2C_UNK value) {
- u8 func_ov003_021f27b8();
- M2C_UNK PlaySoundEffect(s32);
- s32 func_ov003_021f27d4(s32,s32);
- s32 i; s32 other;
- i=func_ov003_021f269c(arg0,(u16 *)arg1,value);
- if(i!=255) {
- PlaySoundEffect(0x1000f); ((u16 *)arg1)[i]=65535; return;
- }
- if(func_ov003_021f27b8(arg0,arg1)) {PlaySoundEffect(0x1001d);return;}
- other=arg0+4; if(arg1==other) other=arg0+14;
- if(func_ov003_021f269c(arg0,(u16 *)other,value)!=255) {PlaySoundEffect(0x1001d);return;}
- i=func_ov003_021f27d4(arg0,arg1);
- PlaySoundEffect(0x1000d);
- ((u16 *)arg1)[i]=value;
+/* Pick one map for a side of the ov003 link map-select screen.  `block` holds
+ * both sides' pick lists (at +4 and +0xE) and `picks` is the list of the side
+ * that is choosing: a map that side already picked is unpicked (sound 0x1000F);
+ * a map the other side already picked, or a full list, is refused (0x1001D);
+ * otherwise the map fills the first free slot (sound 0x1000D). */
+void ToggleMapPick(s32 block, s32 picks, M2C_UNK map) {
+    u8 IsMapPickListFull();
+    M2C_UNK PlaySoundEffect(s32);
+    s32 FindFreeMapPick(s32,s32);
+    s32 i; s32 other;
+    i = FindMapPick(block, (u16 *)picks, map);
+    if (i != MAP_PICK_NOT_FOUND) {
+        PlaySoundEffect(0x1000f); ((u16 *)picks)[i] = MAP_PICK_EMPTY; return;
+    }
+    if (IsMapPickListFull(block, picks)) { PlaySoundEffect(0x1001d); return; }
+    other = block + 4; if (picks == other) other = block + 14;
+    if (FindMapPick(block, (u16 *)other, map) != MAP_PICK_NOT_FOUND) { PlaySoundEffect(0x1001d); return; }
+    i = FindFreeMapPick(block, picks);
+    PlaySoundEffect(0x1000d);
+    ((u16 *)picks)[i] = map;
 }
 
-s32 func_ov003_021f2780(s32 unused,u16 *array) {
+s32 CountMapPicks(s32 unused,u16 *array) {
     u8 count=0,i=0;
     do { if(array[i]!=0xffff) ++count; ++i; } while(i<5);
     return count;
 }
 
-u8 func_ov003_021f27b8(s32 arg0, s32 arg1) {
-    s32 func_ov003_021f2780();
+u8 IsMapPickListFull(s32 arg0, s32 arg1) {
+    s32 CountMapPicks();
     u8 var_r0;
 
-    if (func_ov003_021f2780() == 5) {
+    if (CountMapPicks() == 5) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -78,7 +84,7 @@ u8 func_ov003_021f27b8(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 func_ov003_021f27d4(s32 unused,s32 array) {
+s32 FindFreeMapPick(s32 unused,s32 array) {
     u8 i=0;
     do { if(((u16 *)array)[i]==0xffff) return i; ++i; } while(i<5);
     return 255;
@@ -87,12 +93,12 @@ s32 func_ov003_021f27d4(s32 unused,s32 array) {
 void func_ov003_021f2808(s32 arg0, M2C_UNK arg1) {
     M2C_UNK PlaySoundEffect(s32);
     s32 IsCampaignMapRecordValid(M2C_UNK);
-    void func_ov003_021f26c8(s32, s32, M2C_UNK);
+    void ToggleMapPick(s32, s32, M2C_UNK);
     if (IsCampaignMapRecordValid(arg1) == 0) {
         PlaySoundEffect(0x1001D);
         return;
     }
-    func_ov003_021f26c8(arg0, arg0 + 4, arg1);
+    ToggleMapPick(arg0, arg0 + 4, arg1);
 }
 
 void func_ov003_021f2848(s32 arg0) {

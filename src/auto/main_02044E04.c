@@ -317,26 +317,29 @@ s32 SendWebGetRequest(s32 kind, u32 playerId, s32 field2, void *payload) {
     }
 }
 
-s32 SendWebSyncRequest(s32 a, s32 b, u32 c, s32 d) {
+/* Queue a sync.asp web request once the web request API is ready (registered
+ * or complete) and the record parameters are in range. Marks the transaction
+ * "sync sent", or returns a web request status code. */
+s32 SendWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
     s32 HasNetError();
     s32 BuildWebSyncRequest(s32, u32, s32, s32);
     extern s32 gWebTransaction;
+    s32 buildResult;
+
     if (HasNetError() != 0) return 1;
     if (gWebTransaction != 1 && gWebTransaction != 5) return 10;
-    if (c > 1000) return 2;
-    if (a < 0 || a >= 9) return 2;
-    if (b < 0) return 2;
-    {
-        s32 r = BuildWebSyncRequest(a, c, b, d);
-        switch (r) {
-            case 3:
-                return 11;
-            case 2:
-                return 12;
-            default:
-                gWebTransaction = 4;
-                return 0;
-        }
+    if (recordCount > 1000) return 2;
+    if (kind < 0 || kind >= 9) return 2;
+    if (playerId < 0) return 2;
+    buildResult = BuildWebSyncRequest(kind, recordCount, playerId, payload);
+    switch (buildResult) {
+        case 3:
+            return 11;
+        case 2:
+            return 12;
+        default:
+            gWebTransaction = 4;
+            return 0;
     }
 }
 

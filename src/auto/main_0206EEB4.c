@@ -236,7 +236,7 @@ void *func_0206fa14(void *arg0) {
 }
 
 #pragma use_frame_pointer on
-void func_0206fa3c(StringStorage *self,u32 capacity) {
+void StringStorageReserve(StringStorage *self,u32 capacity) {
 u32 StringLength(void *);void *MemAllocArray(u32);void StringCopy(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void MemMove(void *,void *,u32);void *MemAlloc(u32);
 u8 context[20]; u32 exception[3]; u8 zero; int large; u32 size,oldcap; u8 *buffer; int allocated; u8 *old;
 if(capacity>0x7ffffffeU) {

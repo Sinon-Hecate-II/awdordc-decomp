@@ -67,25 +67,25 @@ void HandleWaypointPanelCancel(void *panel, u32 selection) {
 #pragma push
 #pragma opt_propagation on
 void ToggleWaypointPanelMode(void *p) {
- void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32);
+ void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
  void Show3DSprite(void*); void Hide3DSprite(void*); void func_02088f1c(s32); void Hide3DSpriteSlide(s32);
  s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 GetUnitSpriteHeight(void*); s32 GetUnitSpriteWidth(void*); s16 func_ov003_022004a8(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
  if(IsLinkSessionActive()){
-  if(!func_02084d3c(buf,0x24))return;
+  if(!Link_ReceivePacket(buf,0x24))return;
   mode=(u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30;
   flag=mode==0;
   if(flag){
-   if(M2C_FIELD(buf,s32*,24)){M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;func_02084d88(buf,0x24);return;}
+   if(M2C_FIELD(buf,s32*,24)){M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;Link_SendPacket(buf,0x24);return;}
    if(!func_ov003_021e6cfc())return;
-   M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;func_02084d88(buf,0x24);
+   M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;Link_SendPacket(buf,0x24);
    {void *self=p;M2C_FIELD(M2C_FIELD(self,void**,0),void(**)(void*),0x20)(self);}return;
   }
   flag=mode==1;if(!flag)return;
   if(!func_ov003_021e6cfc())return;
-  buf[8]=0;M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;func_02084d88(buf,0x24);return;
+  buf[8]=0;M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;Link_SendPacket(buf,0x24);return;
  }
  if(((u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30)==1){
  {u8 v=M2C_FIELD(p,u8*,0x39)&~12;flag=((u32)(v<<28)>>30)==0;M2C_FIELD(p,u8*,0x39)=v;}

@@ -63,7 +63,7 @@ void func_ov003_021f7164(void *arg0) {
 void MenuSpriteUpdate(void *);void func_02088044(void *);s32 Divide(s32,s32);
 void ListWidgetScrollUp(void *);void ListWidgetScrollDown(void *);void PlaySoundEffect(s32);void func_ov003_021f92f4(void *,s32);
 s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
-void ConfirmMapSelection(void *);void func_ov003_021f2808(void *,u16);void func_ov003_021f26c8(void *,void *,u16);
+void ConfirmMapSelection(void *);void func_ov003_021f2808(void *,u16);void ToggleMapPick(void *,void *,u16);
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
 void Hide3DSpriteSlide(void *);void func_02088f1c(void *);s32 GetUiColor(s32);void func_020893a8(void *,s32,s32,s32);
@@ -119,7 +119,7 @@ button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,4);ov003_animate_button(butto
 func_ov003_021f2808(M2C_FIELD(p,void **,0x44)+4,selection);
 }else if((u8)(mode==1)){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,8);ov003_animate_button(button);
-context=M2C_FIELD(p,void **,0x44);func_ov003_021f26c8(context+4,context+0x12,selection);
+context=M2C_FIELD(p,void **,0x44);ToggleMapPick(context+4,context+0x12,selection);
 }
 list=M2C_FIELD(p,void **,0x4c);context=M2C_FIELD(p,void **,0x44);
 i=(u8)(u16)(s16)M2C_FIELD(list,s32 *,0x14);
@@ -188,7 +188,7 @@ ov003_animate_button(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,4));
 func_ov003_021f2808(M2C_FIELD(p,void **,0x44)+4,selection);
 }else if((u8)(mode==1)){
 ov003_animate_button(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,8));
-context=M2C_FIELD(p,void **,0x44);func_ov003_021f26c8(context+4,context+18,selection);
+context=M2C_FIELD(p,void **,0x44);ToggleMapPick(context+4,context+18,selection);
 }
 list=M2C_FIELD(p,void **,0x4c);context=M2C_FIELD(p,void **,0x44);
 keyx=(u8)(u16)(s16)M2C_FIELD(list,s32 *,20);M2C_FIELD(context+0x186c,u8 *,keyx>>3)&=~(1<<(keyx&7));

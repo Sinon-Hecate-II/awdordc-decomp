@@ -1,5 +1,6 @@
 /* 26 functions from 0x020A48EC to 0x020A5878 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 a,b,c,d; } Unk020APosition;
 typedef struct { u8 pad[5]; u8 player:3; u8 rest:5; } Unk020APlayer;
 typedef struct { u8 x,y; u16 a:3; u16 b:3; u16 type:4; u16 rest:6; u8 value; u8 player:3; u8 enabled:1; u8 mode:4; u8 extra,last; } Unk020ABaseEntry;
@@ -59,12 +60,12 @@ void func_020a4c30(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_020a49cc(arg0, arg1, 1, 1, 7, arg2, 1, 0x63, arg3, arg4, 1, 0x50);
 }
 
-u8 IsActionEntryActive(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
+u8 IsMapOrderActive(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
 
 s32 func_020a4ce8(s32 a) {
 extern s32 *gCurrentMap;
 Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);s32 n=0;
-while(p->type){if(p->type==a){if(IsActionEntryActive(p))n++;}p++;}return n!=0;
+while(p->type){if(p->type==a){if(IsMapOrderActive(p))n++;}p++;}return n!=0;
 }
 
 void func_020a4d58(void) {
@@ -188,7 +189,7 @@ xx++;}while(xx<=right);}}
 s32 DrawOrderTargetArea(Unk020AEntry *order,s8 color,u8 extra) {
 void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
 Unk020ABaseEntry *base=(Unk020ABaseEntry *)order;
-if(!IsActionEntryActive(order))return 0;
+if(!IsMapOrderActive(order))return 0;
 switch(order->type) {
 case 4: {
 s32 centerX=GetOrderCenterOffsetX();s32 centerY=GetOrderCenterOffsetY();
@@ -238,12 +239,20 @@ void func_020a561c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x44) = 0;
 }
 
-void func_020a5648(void) {
-extern s32 *gCurrentMap;
-Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);
-while(p->type){if(IsActionEntryActive(p)&& ((Unk020APlayer *)p)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4)){
-switch(p->type){case 4:case 5:case 6:case 7: M2C_FIELD(p,s8 *,6)-=1;break;}
-}p++;}
+/* Ticks the order countdowns of the current player: every active order of type
+ * 4..7 has one frame taken off its timer, so the order's targets play when the
+ * timer reaches 0. */
+void TickMapOrderTimers(void) {
+    extern s32 *gCurrentMap;
+    Unk020AEntry *order = (Unk020AEntry *)(*gCurrentMap + MAP_ORDERS);
+    while (order->type) {
+        if (IsMapOrderActive(order) && ((Unk020APlayer *)order)->player == M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) {
+            switch (order->type) {
+            case 4: case 5: case 6: case 7: M2C_FIELD(order, s8 *, MAP_ORDER_TIMER) -= 1; break;
+            }
+        }
+        order++;
+    }
 }
 
 /* Plays back the queued orders: takes the next order of the current player that
@@ -255,7 +264,7 @@ extern s32 *gCurrentMap;
 void ClearSelectionQueue(void);s32 SetSpriteAnimation(void *,s32);
 ClearSelectionQueue();
 while(M2C_FIELD(anim,Unk020AEntry **,0x34)->type) {
-if(IsActionEntryActive(M2C_FIELD(anim,Unk020AEntry **,0x34))) {
+if(IsMapOrderActive(M2C_FIELD(anim,Unk020AEntry **,0x34))) {
 s32 orderType; Unk020AEntry *entry=M2C_FIELD(anim,Unk020AEntry **,0x34);
 if((s32)((Unk020ABaseEntry *)entry)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4) && M2C_FIELD(entry,s8 *,6)==0) {
 orderType=entry->type; switch(orderType) {

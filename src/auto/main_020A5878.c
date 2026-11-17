@@ -14,7 +14,7 @@ extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10
 void UpdateUnitMove(void *ctrl) {
 s32 func_0207b7c4(void);s32 GetFacingOffset(s32);
 void PlaySoundAtTile(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 IsActionEntryActive(void *);void PanMapViewToTile(u8,u8);void StepMapViewToTile(u8,u8);void func_01ffa6fc(void *);
+s32 IsMapOrderActive(void *);void PanMapViewToTile(u8,u8);void StepMapViewToTile(u8,u8);void func_01ffa6fc(void *);
 extern s32 *gCurrentMap;
 s32 startOffset,endOffset,facing,turnCount; u8 *unit; void *map; u8 *player;
 if(func_0207b7c4())return;
@@ -43,7 +43,7 @@ return;
 unit=M2C_FIELD(ctrl,u8 **,0x34);
 while(((u32)(M2C_FIELD(unit,u16 *,2)<<22)>>28)!=0){
 map=(void *)*gCurrentMap;
-if(M2C_FIELD(map,u16 *,0x52A4)==1 && (turnCount=M2C_FIELD(map,u16 *,0x52A2))>1 && ((u32)(M2C_FIELD(unit,u16 *,2)<<22)>>28)==7 && IsActionEntryActive(unit)){
+if(M2C_FIELD(map,u16 *,0x52A4)==1 && (turnCount=M2C_FIELD(map,u16 *,0x52A2))>1 && ((u32)(M2C_FIELD(unit,u16 *,2)<<22)>>28)==7 && IsMapOrderActive(unit)){
 M2C_FIELD(ctrl,void **,0x38)=M2C_FIELD(ctrl,void **,0x34);
 M2C_FIELD(ctrl,s32 *,0x3C)=0;
 unit=M2C_FIELD(ctrl,u8 **,0x38);

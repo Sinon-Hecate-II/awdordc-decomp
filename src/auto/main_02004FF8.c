@@ -624,23 +624,27 @@ void func_02005eac(void) {
     OS_RestoreInterrupts(temp_r4);
 }
 
-void TaskYield(void){
-extern M2C_UNK gThreadManager;
-void *prev=0,*last=0; s32 count=0;
-s32 irq;
-void *cur=M2C_FIELD(&gThreadManager,void **,0x28);
-void *p,*before;
-irq=OS_DisableInterrupts();
-p=M2C_FIELD(&gThreadManager,void **,0x2c);before=0;
-while(p){
-if(p==cur)prev=before;
-if(M2C_FIELD(cur,u32 *,0x70)==M2C_FIELD(p,u32 *,0x70)){last=p;count++;}
-before=p;p=M2C_FIELD(p,void **,0x68);
-}
-if(count<=1 || last==cur){OS_RestoreInterrupts(irq);return;}
-if(!prev)M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(cur,void **,0x68);
-else M2C_FIELD(prev,void **,0x68)=M2C_FIELD(cur,void **,0x68);
-M2C_FIELD(cur,void **,0x68)=M2C_FIELD(last,void **,0x68);M2C_FIELD(last,void **,0x68)=cur;
-RescheduleThreads();OS_RestoreInterrupts(irq);
+/* Round-robin between the ready threads of the running thread's priority: the
+ * running thread is moved behind the last thread of that priority in the ready
+ * list and the scheduler is run again.  Does nothing when it is the only thread
+ * at its priority. */
+void TaskYield(void) {
+    extern M2C_UNK gThreadManager;
+    Thread *previous = 0, *lastPeer = 0; s32 peerCount = 0;
+    s32 irq;
+    Thread *current = M2C_FIELD(&gThreadManager, Thread **, THREAD_MANAGER_CURRENT);
+    Thread *thread, *before;
+    irq = OS_DisableInterrupts();
+    thread = M2C_FIELD(&gThreadManager, Thread **, THREAD_MANAGER_READY); before = 0;
+    while (thread) {
+        if (thread == current) previous = before;
+        if (current->priority == thread->priority) { lastPeer = thread; peerCount++; }
+        before = thread; thread = thread->next;
+    }
+    if (peerCount <= 1 || lastPeer == current) { OS_RestoreInterrupts(irq); return; }
+    if (!previous) M2C_FIELD(&gThreadManager, Thread **, THREAD_MANAGER_READY) = current->next;
+    else previous->next = current->next;
+    current->next = lastPeer->next; lastPeer->next = current;
+    RescheduleThreads(); OS_RestoreInterrupts(irq);
 }
 

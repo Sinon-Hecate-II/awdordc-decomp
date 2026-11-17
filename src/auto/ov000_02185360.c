@@ -194,13 +194,18 @@ gMoveSearchState[MOVE_SEARCH_HEIGHT]=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);
 gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]=-1;
 }
 
-s32 IsWithinAttackRange(u8 *a,u8 *b,s32 c){
- s32 Abs(s32); s32 GetUnitMoveRange(s32,u32); extern void **gCurrentMap;
- s32 dist,n;
- dist=Abs(a[1]-b[1]);
- dist+=Abs(a[2]-b[2]);
- if(b){if(!b)n=0;else n=((s32)b-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
- if(dist>c+(GetUnitMoveRange(n,(u32)(b[0]<<26)>>26)+1))return 0;return 1;
+/* Cheap pre-check of the AI threat maps: true when unit `unit` could reach the
+ * cell at `cell` (Manhattan distance within the unit kind's range plus
+ * `extraRange`).  `cell` and `unit` are 14-byte unit records: [1]/[2] tile x/y,
+ * [0] low 6 bits the kind. */
+s32 IsWithinAttackRange(u8 *cell, u8 *unit, s32 extraRange) {
+    s32 Abs(s32); s32 GetUnitMoveRange(s32, u32); extern void **gCurrentMap;
+    s32 dist, player;
+    dist = Abs(cell[1] - unit[1]);
+    dist += Abs(cell[2] - unit[2]);
+    if (unit) { if (!unit) player = 0; else player = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / 14; player = (player >> 6) + 1; } else player = 0;
+    if (dist > extraRange + (GetUnitMoveRange(player, (u32)(unit[0] << 26) >> 26) + 1)) return 0;
+    return 1;
 }
 
 /* Mark the units of `player` that can attack `target`: for each eligible unit

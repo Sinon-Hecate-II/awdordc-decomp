@@ -40,8 +40,8 @@ void func_ov003_021ee8b8(void *arg0) {
 #pragma opt_common_subs off
 
     s32 IsLinkSessionActive();
-    s32 func_02084d3c(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02084d88(M2C_UNK *, M2C_UNK);
+    s32 Link_ReceivePacket(M2C_UNK *, M2C_UNK);
+    M2C_UNK Link_SendPacket(M2C_UNK *, M2C_UNK);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088f1c(s32);
@@ -103,12 +103,12 @@ void func_ov003_021ee8b8(void *arg0) {
     int player;
     s8 k, oldValue, newValue;
     int GetPlayerCoId(int);
-    int func_ov003_02200808(u8);
+    int GetPlayerCoIconIndex(u8);
     u32 mask;
     void *p, *q;
     int count;
     if (!IsLinkSessionActive()) return;
-    if (!func_02084d3c(sp0, 0x24)) return;
+    if (!Link_ReceivePacket(sp0, 0x24)) return;
     packet=func_02084e64();
     if (!packet) return;
     local=GetLocalPlayerIdForOverlay();
@@ -266,10 +266,10 @@ foundPlayer:
             func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
             M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,0x59)=1;
             if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
-            func_02084d88(sp0,0x24);return;
+            Link_SendPacket(sp0,0x24);return;
         }
     }
-    func_02084d88(sp0,0x24);
+    Link_SendPacket(sp0,0x24);
     for(i=0;i<count;i++){
         if(func_ov003_021e6d28()){
             offset=i*0x18;p=M2C_FIELD(arg0,void **,0x6c)+offset;n=M2C_FIELD((u8 *)packet+i,u8 *,0xe);
@@ -299,11 +299,11 @@ foundPlayer:
         if(!(u8)(id==255)){
             q=func_02084e24(id);
             if(q)newValue=M2C_FIELD(q,s8 *,0xd);
-            else newValue=func_ov003_02200808((u8)GetPlayerCoId(i+1));
+            else newValue=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }else{
             q=func_02084e64();
             if(q)newValue=M2C_FIELD(q+i,s8 *,0x12);
-            else newValue=func_ov003_02200808((u8)GetPlayerCoId(i+1));
+            else newValue=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }
         if(oldValue!=newValue){
             PlaySoundEffect(0x10011);

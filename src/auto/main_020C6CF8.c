@@ -329,7 +329,7 @@ SetSpriteAnimation(a,0);func_01ffa6fc(a);return;}
 if(flags&256){CreateMapMenu();return;}
 if(flags&64){func_020d8fa0();return;}
 }
-func_020cf828(0x1001a);func_0207a7a4(1,4);func_020cf69c(2,10);
+func_020cf828(0x1001a);func_0207a7a4(1,4);StepMapCursorAndNotify(2,10);
 }
 
 void func_020c77d4(void *arg0) {

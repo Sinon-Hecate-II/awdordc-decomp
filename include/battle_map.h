@@ -225,6 +225,13 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_UNIT_GROUP_SIZE 64     /* records per player slot; a record's owner (player << 6) picks its group */
 #define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
+/* The map's order queue: 8-byte MapOrder records at MAP_ORDERS, ended by one
+ * whose type is 0.  +0x06 is an order's countdown: it is loaded with the order's
+ * kind when the order's targets are played and ticked down one frame at a time. */
+#define MAP_ORDERS       0x58a4 /* first MapOrder record */
+#define MAP_ORDER_STRIDE 8      /* bytes per MapOrder record (see Unk020AEntry) */
+#define MAP_ORDER_TIMER  0x06   /* s8 frames left before the order's targets are played */
+
 /* One command of a battle event script: the interpreter keeps the current command
  * in its context's +4 cursor and runs 0x10-byte commands.  +0x08 is an s16 player
  * slot, +0x0A an s16 parameter (kind, tile coordinate...) and +0x0C an s32 argument,
@@ -397,6 +404,8 @@ typedef struct MapTargetEntry {
 #define MAP_CONFIRM_ENABLED 0x52ad /* u8 nonzero while the current map/choice is confirmed (IsMapConfirmEnabled) */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_TARGET_Y 0x52c4
+#define MAP_CURSOR_PIXEL_X  0x52c6 /* s16 smoothed cursor position the view draws, x in 1/16-cell units */
+#define MAP_CURSOR_PIXEL_Y  0x52c8 /* s16 smoothed cursor position the view draws, y in 1/16-cell units */
 #define MAP_TILE_SIZE 768 /* 3 * 256: one map tile's on-screen size in pixels */
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
 #define MAP_TOUCH_TILE_Y    0x52cc
@@ -468,6 +477,9 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 /* gCurrentMap[1] is the map-view controller: it owns the scroll task and gets
  * a callback run each time a scroll pan finishes. */
 #define MAPVIEW_SCROLL_DONE 0x1c /* void (*)(void): run when a view pan reaches its target */
+#define MAPVIEW_CURSOR_CB   0x08 /* void (*)(s16 x, s16 y, s32 kind): place a map cursor at a
+                                  * 1/16-cell position; kind selects which cursor, MAP_CURSOR_KIND_* */
+#define MAP_CURSOR_KIND_TARGET 2 /* cursor selector the target-cursor updater (main_020CBACC) passes */
 
 /* A map-view panning animation, one of the view controller's sprite tasks.  It
  * pans the view from the position saved at start (+0x34/+0x36) to the target

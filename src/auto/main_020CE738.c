@@ -395,7 +395,7 @@ void SetMapCursorTargetTile(s16 arg0, s16 arg1) {
 
 /* Advance the smoothed cursor position stored in the game state toward (targetX, targetY):
    snap to the target if farther than 16 pixels, otherwise step 4 pixels closer. */
-void func_020cf4f0(s16 targetX, s16 targetY, s32 unusedArg2, s16 *outX, s16 *outY) {
+void StepMapCursorPosition(s16 targetX, s16 targetY, s32 unusedArg2, s16 *outX, s16 *outY) {
     extern void **gCurrentMap;
     void *state = *gCurrentMap;
     u16 *cursor = (u16 *)((u8 *)state + 0x52C6);
@@ -422,21 +422,21 @@ void func_020cf4f0(s16 targetX, s16 targetY, s32 unusedArg2, s16 *outX, s16 *out
 }
 
 void MoveMapCursorToTarget(s32 arg0) {
-    void func_020cf4f0(s16, s16, s32, s16 *, s16 *);
+    void StepMapCursorPosition(s16, s16, s32, s16 *, s16 *);
     extern void **gCurrentMap;
     s16 sp6;
     s16 sp4;
     void (*cb)(s16, s16, s32);
     void *p = (void *)*gCurrentMap;
     s16 *pp = (s16 *)((u8 *)p + 0x52C2);
-    func_020cf4f0((s16)(pp[0] * 16), (s16)(pp[1] * 16), arg0, &sp6, &sp4);
+    StepMapCursorPosition((s16)(pp[0] * 16), (s16)(pp[1] * 16), arg0, &sp6, &sp4);
     cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16, s16, s32), 8);
     if (cb != NULL) {
         cb(sp6, sp4, arg0);
     }
 }
 
-void func_020cf674(s32 arg0,s32 arg1,s32 arg2) {
+void MapView_SetCursorPosition(s32 arg0,s32 arg1,s32 arg2) {
 extern void **gCurrentMap;
 void (*callback)(s32,s32,s32);
 callback=M2C_FIELD(gCurrentMap[1],void (**)(s32,s32,s32),8);

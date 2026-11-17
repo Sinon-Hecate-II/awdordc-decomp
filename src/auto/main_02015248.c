@@ -37,7 +37,7 @@ void AutoloadCallback(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
- s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 func_0200b144();void OpenFileDirect();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void CloseFileRequest();void func_02015724(void *,u32,u32,s32);void DC_FlushRange();
+ s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 FindArchive();void OpenFileDirect();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void CloseFileRequest();void func_02015724(void *,u32,u32,s32);void DC_FlushRange();
  extern u8 data_020f554c[];extern u32 *data_020f5548;
  u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
  size=arg2;result=0;
@@ -50,7 +50,7 @@ s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
  }else{
  base=((RomHeader_020152c8 *)0x027ffe00)->offset;if(!base)base=0x1000000;owned=1;
  InitFileRequest(file);
- n=func_0200b144(data_020f554c,3);
+ n=FindArchive(data_020f554c,3);
  OpenFileDirect(file,n,0,base+0x88,-1);
  arg0=file;origin=M2C_FIELD(arg0,u32 *,0x2c)-M2C_FIELD(arg0,u32 *,0x24);
  MI_CpuCopy8(0x027ffe00,(s32)arg1,0x160);

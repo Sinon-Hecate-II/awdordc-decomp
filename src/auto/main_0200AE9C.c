@@ -80,13 +80,13 @@ void func_0200b118(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
 }
 
-s32 func_0200b144(s32 a,s32 b){s32 func_0200abdc(s32,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);extern M2C_UNK data_0212fbe8;s32 id=func_0200abdc(a,b),key;void *p;key=OS_DisableInterrupts();p=M2C_FIELD(&data_0212fbe8,void **,0);while(p&&M2C_FIELD(p,s32 *,0)!=id)p=M2C_FIELD(p,void **,4);OS_RestoreInterrupts(key);return (s32)p;}
+s32 FindArchive(s32 a,s32 b){s32 PackArchiveName(s32,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);extern M2C_UNK data_0212fbe8;s32 id=PackArchiveName(a,b),key;void *p;key=OS_DisableInterrupts();p=M2C_FIELD(&data_0212fbe8,void **,0);while(p&&M2C_FIELD(p,s32 *,0)!=id)p=M2C_FIELD(p,void **,4);OS_RestoreInterrupts(key);return (s32)p;}
 
 s32 func_0200b184(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_0200abdc(M2C_UNK, M2C_UNK);
-    s32 func_0200b144(M2C_UNK, M2C_UNK);
+    s32 PackArchiveName(M2C_UNK, M2C_UNK);
+    s32 FindArchive(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0212fbe8;
     s32 temp_r4;
     s32 var_r8;
@@ -95,7 +95,7 @@ s32 func_0200b184(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
     var_r8 = 0;
     temp_r4 = OS_DisableInterrupts();
-    if (func_0200b144(arg1, arg2) == 0) {
+    if (FindArchive(arg1, arg2) == 0) {
         var_r1 = M2C_FIELD(&data_0212fbe8, void **, 0);
         if (var_r1 == NULL) {
             M2C_FIELD(&data_0212fbe8, void **, 0) = arg0;
@@ -114,7 +114,7 @@ s32 func_0200b184(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
             M2C_FIELD(var_r1, void **, 4) = arg0;
             M2C_FIELD(arg0, void **, 8) = var_r1;
         }
-        M2C_FIELD(arg0, s32 *, 0) = func_0200abdc(arg1, arg2);
+        M2C_FIELD(arg0, s32 *, 0) = PackArchiveName(arg1, arg2);
         var_r8 = 1;
         M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) | 1);
     }
@@ -271,7 +271,7 @@ for(i=0;i<=3;i++){
 u8 ch=path[i];
 if(ch==0||ch=='/'||ch=='\\')break;
 if(ch==':'){
-file=(void *)func_0200b144((s32)path,i);if(!file)return 0;
+file=(void *)FindArchive((s32)path,i);if(!file)return 0;
 flag=TestFileFlag(file,2);if(flag==0)return 0;
 rec.words[0]=(u32)file;rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;M2C_FIELD(&rec,u16 *,4)=0;
 path+=i+1;if(*path=='/'||*path=='\\')path++;break;

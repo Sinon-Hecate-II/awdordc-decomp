@@ -436,17 +436,17 @@ void func_ov003_021ea2ac(void) {
  * spend the rest of the frame stepping slot turns, then finish with the
  * overlay's post-sync hook. */
 void Ov003_SyncLinkSlots(void *p) {
-s32 func_020cfb94(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32); void func_02084e74(void); void func_01ffa6fc(void*); s32 func_02084a0c(void); s32 func_ov003_021f153c(void);
+s32 func_020cfb94(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void func_01ffa6fc(void*); s32 func_02084a0c(void); s32 func_ov003_021f153c(void);
 u32 buf[9]; u8 flag, n, start;
 if(func_020cfb94()==2) M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~1)|1;
-if(!func_02084d3c(buf,0x24))return;
+if(!Link_ReceivePacket(buf,0x24))return;
 flag=(((u32)(M2C_FIELD(p,u8*,0x39)<<31)>>31)==0);
 if(flag && func_ov003_021f153c()==-256) M2C_FIELD(buf,u8*,8)=1;
 else {M2C_FIELD(buf,u8*,8)=0;buf[6]=0;}
 buf[0]=0;buf[1]=0;
 start=func_02084a0c(); n=0;
 if(func_020cfb94()-start>0)do{n++;}while(n<func_020cfb94()-start);
-func_02084d88(buf,0x24);func_02084e74();func_01ffa6fc(p);
+Link_SendPacket(buf,0x24);Link_FlushSend();func_01ffa6fc(p);
 }
 
 void func_ov003_021ea3f4(void *arg0) {

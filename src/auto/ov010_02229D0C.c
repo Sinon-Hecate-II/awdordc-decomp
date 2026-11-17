@@ -1,5 +1,6 @@
 /* 47 functions from 0x02229D0C to 0x0222A9DC (ov010), found by ds-decomp. */
 #include "common.h"
+#include "string_storage.h"
 typedef struct { u8 value; } UnkA750Flag;
 typedef struct { u32 flag:1; u32 rest:31; } UnkA750Bits;
 static inline void *GetTextA320(void *s) { if (!((UnkA750Bits *)s)->flag) return (u8 *)s+1; return M2C_FIELD(s,void **,8); }
@@ -305,13 +306,13 @@ void func_ov010_0222a2b4(void *arg0) {
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void func_ov010_0222a750(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void func_0208af20(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void func_0208af20(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
 u8 sp[0x44];s32 v;
 func_ov010_0222bc54((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
-func_ov010_0222a750(sp+0x18,(u8 *)a+0x44,data_ov010_0222c8f4);
-func_ov010_0222a750(sp+0xc,sp+0x18,GetLocalizedText((void *)0x42000000));
-func_ov010_0222a750(sp,sp+0xc,sp+0x24);
+StringStorageConcat(sp+0x18,(u8 *)a+0x44,data_ov010_0222c8f4);
+StringStorageConcat(sp+0xc,sp+0x18,GetLocalizedText((void *)0x42000000));
+StringStorageConcat(sp,sp+0xc,sp+0x24);
 func_ov010_0222bbe8((u8 *)a+0x44,sp);func_0206fa14(sp);func_0206fa14(sp+0xc);func_0206fa14(sp+0x18);
 if(!M2C_FIELD(a,s32 *,0x38))return;
 switch(M2C_FIELD(a,s32 *,0x40)){
@@ -376,9 +377,31 @@ void func_ov010_0222a6e4(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
 }
 
-void func_ov010_0222a750(void *a,void *b,void *c){s32 StringLength(void *);void *func_0206fc18(void *,s32,s32,void *,void *,UnkA750Flag);u32 i,n; void *p; s32 len;UnkA750Flag flags[2];void *r;
-for(i=0;i<3;i++)((u32 *)a)[i]=0;len=StringLength(c);if(((UnkA750Bits *)b)->flag){p=M2C_FIELD(b,void **,8);n=M2C_FIELD(b,u32 *,4);}else{p=b+1;n=(u32)(M2C_FIELD(b,u8 *,0)<<24)>>25;}
-func_0206fa3c(a,n+len);r=func_0206fc18(a,0,0,p,p+n,flags[1]);func_0206fc18(r,n,0,c,c+len,flags[0]);}
+/* Builds the text string `out` as `first` (a stored text string, inline or on the
+ * heap) followed by the plain string `last`: clears `out`, reserves room for both,
+ * then inserts `first` at position 0 and `last` right after it. */
+void StringStorageConcat(void *out, void *first, void *last) {
+    s32 StringLength(void *);
+    void *StringStorageReplace(void *, s32, s32, void *, void *, UnkA750Flag);
+    u32 i, firstLen;
+    void *firstData;
+    s32 lastLen;
+    UnkA750Flag flags[2];
+    void *r;
+
+    for (i = 0; i < 3; i++) ((u32 *)out)[i] = 0;
+    lastLen = StringLength(last);
+    if (((StringStorage *)first)->large.flag) {
+        firstData = ((StringStorage *)first)->large.data;
+        firstLen = ((StringStorage *)first)->large.length;
+    } else {
+        firstData = ((StringStorage *)first)->small.data;
+        firstLen = ((StringStorage *)first)->small.length;
+    }
+    StringStorageReserve(out, firstLen + lastLen);
+    r = StringStorageReplace(out, 0, 0, firstData, firstData + firstLen, flags[1]);
+    StringStorageReplace(r, firstLen, 0, last, last + lastLen, flags[0]);
+}
 
 void func_ov010_0222a808(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *func_01ffa444(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=func_01ffa444(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
 

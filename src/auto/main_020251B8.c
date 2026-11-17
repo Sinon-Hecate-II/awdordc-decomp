@@ -1,5 +1,6 @@
 /* 16 functions from 0x020251B8 to 0x02026164 (main), found by ds-decomp. */
 #include "common.h"
+#include "md5.h"
 void func_020258ac(void *, u32 *, u32);
 
 void func_020251b8(s32 now) {
@@ -101,19 +102,34 @@ void MD5_Init(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 0x10325476;
 }
 
-void MD5_Update(void *arg0, s32 arg1, u32 arg2) {
-void MI_CpuCopy8(s32,void *,u32); void MD5_Transform(void *,s32);
-u32 index,low,old,count;
-old=M2C_FIELD(arg0,u32 *,0x10);
-index=(old>>3)&63;
-low=old+(arg2<<3); M2C_FIELD(arg0,u32 *,0x10)=low;
-if(low<(arg2<<3))M2C_FIELD(arg0,u32 *,0x14)++;
-count=64-index;
-M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
-if(arg2>=count){MI_CpuCopy8(arg1,(u8 *)arg0+24+index,count);index=0;MD5_Transform(arg0,(s32)arg0+24);
-while(count+63<arg2){MD5_Transform(arg0,arg1+(s32)count);count+=64;}
-}else count=0;
-MI_CpuCopy8(arg1+count,(u8 *)arg0+24+index,arg2-count);
+/* Feed `length` bytes at `input` into the running MD5 digest: advance the bit
+ * count, then mix in every complete MD5_BLOCK_SIZE-byte block with
+ * MD5_Transform - first the buffered remainder at the context's buffer, then
+ * whole blocks straight from `input` - and leave the tail in the buffer.
+ * `input` stays an integer because the block loop walks it by hand. */
+void MD5_Update(void *context, s32 input, u32 length) {
+    void MI_CpuCopy8(s32, void *, u32);
+    void MD5_Transform(void *, s32);
+    u32 index, low, old, count;
+    old = ((MD5Context *)context)->count[0];
+    index = (old >> 3) & 0x3f;
+    low = old + (length << 3);
+    ((MD5Context *)context)->count[0] = low;
+    if (low < (length << 3)) ((MD5Context *)context)->count[1]++;
+    count = MD5_BLOCK_SIZE - index;
+    ((MD5Context *)context)->count[1] += length >> 29;
+    if (length >= count) {
+        MI_CpuCopy8(input, &((MD5Context *)context)->buffer[index], count);
+        index = 0;
+        MD5_Transform(((MD5Context *)context)->state, (s32)&((MD5Context *)context)->buffer);
+        while (count + 63 < length) {
+            MD5_Transform(((MD5Context *)context)->state, input + (s32)count);
+            count += MD5_BLOCK_SIZE;
+        }
+    } else {
+        count = 0;
+    }
+    MI_CpuCopy8(input + count, &((MD5Context *)context)->buffer[index], length - count);
 }
 
 
@@ -257,21 +273,31 @@ void SHA1_Init(void *arg0) {
 }
 
 #pragma opt_strength_reduction off
-M2C_UNK SHA1_Update(void *arg0,s32 arg1,u32 arg2) {
-void MI_CpuCopy8(s32,void *,u32); void SHA1_Transform(void *,s32);
-s32 index; u32 low,old,count;
-old=M2C_FIELD(arg0,u32 *,0x18);
-index=(old>>3)&63;
-low=old+arg2*8;M2C_FIELD(arg0,u32 *,0x18)=low;
-if(low<arg2*8)M2C_FIELD(arg0,u32 *,0x14)++;
-count=64-index;
-M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
-if(arg2>=count) {
-MI_CpuCopy8(arg1,(u8 *)arg0+0x1c+index,count);
-index=0;SHA1_Transform(arg0,(s32)arg0+0x1c);
-while(count+63<arg2){SHA1_Transform(arg0,arg1+count);count+=64;}
-}else count=0;
-MI_CpuCopy8(arg1+count,(u8 *)arg0+0x1c+index,arg2-count);
+/* Feed length bytes of data into a SHA1 context: advance the bit count, fill
+ * the pending 64-byte block and compress it, compress further whole blocks
+ * straight from the source, then buffer the tail. */
+void SHA1_Update(TlsSha1Context *ctx, void *data, u32 length) {
+    void MI_CpuCopy8(s32 src, void *dest, u32 size);
+    void SHA1_Transform(void *state, s32 block);
+    s32 index; u32 low, old, count;
+
+    old = ctx->bitCountLo;
+    index = (old >> 3) & 63;
+    low = old + length * 8;
+    ctx->bitCountLo = low;
+    if (low < length * 8) ctx->bitCountHi++;
+    count = 64 - index;
+    ctx->bitCountHi += length >> 29;
+    if (length >= count) {
+        MI_CpuCopy8((s32)data, ctx->block + index, count);
+        index = 0;
+        SHA1_Transform(ctx, (s32)ctx->block);
+        while (count + 63 < length) {
+            SHA1_Transform(ctx, (s32)(u8 *)data + count);
+            count += 64;
+        }
+    } else count = 0;
+    MI_CpuCopy8((s32)(u8 *)data + count, ctx->block + index, length - count);
 }
 #pragma opt_strength_reduction reset
 void SHA1_Final(void *arg0, M2C_UNK *arg1) {
@@ -293,7 +319,6 @@ void SHA1_Final(void *arg0, M2C_UNK *arg1) {
 
 void func_02026134(M2C_UNK arg0, M2C_UNK arg1) {
     void func_020258ac(void *, u32 *, u32);
-    M2C_UNK SHA1_Update();
     extern M2C_UNK data_020fb1e5;
     SHA1_Update(arg0, &data_020fb1e5, 0x2C);
     func_020258ac(arg1, arg0, 0x14);
