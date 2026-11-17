@@ -7,7 +7,7 @@ void func_ov001_02181a84(void) {
     M2C_UNK Ov001_GetLanguage(void);
     void func_ov001_02181ba8(void);
     M2C_UNK func_ov001_021722ac(void);
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -48,7 +48,7 @@ void func_ov001_02181a84(void) {
         {
             u8 u = (u8)M2C_FIELD((void *)r4, u8 *, 0xF4);
             s8 d = (s8)M2C_FIELD(&data_ov001_0218fb38, s8 *, r5);
-            func_ov001_02171c24(0x32, d, u + 1);
+            Ov001_ShowMessagePanel(0x32, d, u + 1);
         }
         func_ov001_02171dd0(1);
     }
@@ -254,10 +254,10 @@ void func_ov001_02181f5c(void) {
 void Ov001_MenuConfirm(void){
 extern M2C_UNK data_ov001_02193dd4;
 extern M2C_UNK func_ov001_02180d44,func_ov001_02180860,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
-s32 Ov001_IsFadeActive(s32);s32 func_ov001_0217170c(void);
+s32 Ov001_IsFadeActive(s32);s32 Ov001_IsIconRowIdle(void);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
-if(!func_ov001_0217170c())return;
+if(!Ov001_IsIconRowIdle())return;
 Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();Ov001_FreeFile(M2C_FIELD(&data_ov001_02193dd4,void **,4));
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
 if(!M2C_FIELD(&data_ov001_02193dd4,u8 *,2)){Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&func_ov001_02180d44);return;}
@@ -320,18 +320,18 @@ void func_ov001_021820f0(M2C_UNK arg0) {
 }
 
 void func_ov001_021821e4(void) {
-    M2C_UNK func_ov001_021837e4(s32, u8, u8);
+    M2C_UNK Ov001_LoadObjTile(s32, u8, u8);
     struct Table { u8 values[4]; };
     extern struct Table data_ov001_0218fa7c;
     extern M2C_UNK data_ov001_02193dd4;
     struct Table table = data_ov001_0218fa7c;
     u8 value = table.values[M2C_FIELD(&data_ov001_02193dd4, s8 *, 1)];
-    func_ov001_021837e4(M2C_FIELD(&data_ov001_02193dd4, s32 *, 4), value, value);
+    Ov001_LoadObjTile(M2C_FIELD(&data_ov001_02193dd4, s32 *, 4), value, value);
 }
 
 void func_ov001_0218223c(void) {
-    M2C_UNK func_ov001_021713c4(M2C_UNK);
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK func_ov001_021722ac();
     M2C_UNK func_ov001_0217231c(M2C_UNK);
@@ -346,14 +346,14 @@ void func_ov001_0218223c(void) {
     func_ov001_021822c8();
     Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 0) {
-        func_ov001_02171c24(0x31, -1, 0);
+        Ov001_ShowMessagePanel(0x31, -1, 0);
     }
     func_ov001_02171dd0(2);
     if (sp0 == 0) {
         func_ov001_021722ac();
     }
     func_ov001_02171e58(0x2C);
-    func_ov001_021713c4(0);
+    Ov001_CreateAnimSprite(0);
     func_ov001_02182370();
     func_ov001_0217231c(0);
     Ov001_PlaySound(0xC);
@@ -490,9 +490,9 @@ void func_ov001_02182514(void) {
 }
 
 void func_ov001_021825a8(s32 arg0) {
-    s32 func_0202f10c(void);
+    s32 Wfc_ProcessStep(void);
     extern s8 data_ov001_02193ddc;
-    s32 result = func_0202f10c();
+    s32 result = Wfc_ProcessStep();
     if (result == 0) return;
     func_ov001_021723d4();
     Ov001_StopSound();
@@ -635,7 +635,7 @@ void func_ov001_0218283c(void) {
 
 void func_ov001_021828ac(void) {
     M2C_UNK func_ov001_02183fa0(void);
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_021722ac(void);
     M2C_UNK CommitSaveSlot(void);
     void func_ov001_02182904(void);
@@ -644,7 +644,7 @@ void func_ov001_021828ac(void) {
     func_ov001_02183fa0();
     Ov001_GetNameEntryMode(0, &sp0);
     func_ov001_02182904();
-    func_ov001_02171c24(0x31, -1, 0);
+    Ov001_ShowMessagePanel(0x31, -1, 0);
     if (sp0 != 2) func_ov001_021722ac();
     if (sp0 == 1) CommitSaveSlot();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182970);

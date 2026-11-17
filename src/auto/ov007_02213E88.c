@@ -474,7 +474,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK InitPlayerStates(void);
     M2C_UNK func_020d1f2c(void);
     M2C_UNK BuildMapRowOffsets(void);
-    s32 func_0207f460(u8);
+    s32 TerrainByteToTileId(u8);
     void *CreateMapUnit(s16, s16, s16, s32);
     void Map_RefreshCellTile(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cf2c8(void);
@@ -516,7 +516,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
                 terrain=M2C_FIELD(blockData+copyX,u8 *,copyY*M2C_FIELD(blockHeader,u8 *,4));
                 M2C_FIELD(M2C_FIELD(*gCurrentMap+2*copyY,u16 *,MAP_ROW_OFFSETS)+(*gCurrentMap+copyX),u8 *,0x1420)=terrain;
                 map=(void *)*gCurrentMap;
-                M2C_FIELD(map+2*(copyX+M2C_FIELD(map+2*copyY,u16 *,MAP_ROW_OFFSETS)),u16 *,MAP_CELL_TILE_ID)=func_0207f460(terrain);
+                M2C_FIELD(map+2*(copyX+M2C_FIELD(map+2*copyY,u16 *,MAP_ROW_OFFSETS)),u16 *,MAP_CELL_TILE_ID)=TerrainByteToTileId(terrain);
             }
         }
     }

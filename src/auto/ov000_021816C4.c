@@ -16,7 +16,7 @@ void RunAiRole2EmptyAction(void) {
         return;
     }
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0) << 26) >> 26) == 25) {
         func_ov000_0218ca94();
     }
@@ -121,7 +121,7 @@ void RunAiRole5Action(void) {
         return;
     }
     if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) == 24 && M2C_FIELD(unit, u8 *, MAP_UNIT_CARRIED) == 0) {
-        func_ov000_0218edd8();
+        SelectAiActionTarget();
     } else {
         func_ov000_0218eea8();
     }

@@ -5,34 +5,39 @@ typedef struct { s32 x, y; } FontSize;
 
 void *func_ov001_02169020(void *a,s32 b){u16 n,i;void *p; p=a+M2C_FIELD(a,u16 *,12);n=M2C_FIELD(a,u16 *,14);i=0;for(;i<n;i++){if(M2C_FIELD(p,s32 *,0)==b)return p;p+=M2C_FIELD(p,s32 *,4);}return 0;}
 
-s32 func_ov001_02169068(void *a, u32 b) {
-    u16 r = 0xffff;
-    switch (M2C_FIELD(a, u16 *, 4)) {
+/* Glyph index of character code `ch` inside one CMAP record of a font resource:
+ * the record lists the character range it maps and one of three lookup tables.
+ * Mode 0 adds the character's offset to the record's base index, mode 1 indexes a
+ * u16 table from the record's first character, and mode 2 binary-searches sorted
+ * (code, index) pairs.  Returns 0xffff when the record has no such character. */
+s32 GetFontCmapGlyphIndex(void *cmap, u32 ch) {
+    u16 glyph = 0xffff;
+    switch (M2C_FIELD(cmap, u16 *, 4)) {
     case 0:
-        r = (u16)(M2C_FIELD(a, u16 *, 12) + (b - M2C_FIELD(a, u16 *, 0)));
+        glyph = (u16)(M2C_FIELD(cmap, u16 *, 12) + (ch - M2C_FIELD(cmap, u16 *, 0)));
         break;
     case 1:
-        r = M2C_FIELD((u8 *)a + 12 + (b - M2C_FIELD(a, u16 *, 0)) * 2, u16 *, 0);
+        glyph = M2C_FIELD((u8 *)cmap + 12 + (ch - M2C_FIELD(cmap, u16 *, 0)) * 2, u16 *, 0);
         break;
     case 2: {
-        u8 *lo = (u8 *)a + 14;
-        u8 *hi = lo + (M2C_FIELD(a, u16 *, 12) - 1) * 4;
+        u8 *lo = (u8 *)cmap + 14;
+        u8 *hi = lo + (M2C_FIELD(cmap, u16 *, 12) - 1) * 4;
         while (lo <= hi) {
             u8 *mid = lo + (hi - lo) / 4 / 2 * 4;
-            u16 k = M2C_FIELD(mid, s16 *, 0);
-            if (k < b) {
+            u16 code = M2C_FIELD(mid, s16 *, 0);
+            if (code < ch) {
                 lo = mid + 4;
-            } else if (b < k) {
+            } else if (ch < code) {
                 hi = mid - 4;
             } else {
-                r = M2C_FIELD(mid, u16 *, 2);
+                glyph = M2C_FIELD(mid, u16 *, 2);
                 break;
             }
         }
         break;
     }
     }
-    return r;
+    return glyph;
 }
 
 void func_ov001_02169130(void *arg0, M2C_UNK arg1) {
@@ -42,7 +47,7 @@ void func_ov001_02169130(void *arg0, M2C_UNK arg1) {
     M2C_FIELD(arg0, M2C_UNK **, 4) = &func_ov001_0216ad40;
 }
 
-s32 GetFontGlyphIndex(void **a,u32 b){s32 func_ov001_02169068(void *,u32);void *p=M2C_FIELD(*a,void **,16);while(p){if(M2C_FIELD(p,u16 *,0)<=b && b<=M2C_FIELD(p,u16 *,2))return func_ov001_02169068(p,b);p=M2C_FIELD(p,void **,8);}return 65535;}
+s32 GetFontGlyphIndex(void **a,u32 b){s32 GetFontCmapGlyphIndex(void *,u32);void *p=M2C_FIELD(*a,void **,16);while(p){if(M2C_FIELD(p,u16 *,0)<=b && b<=M2C_FIELD(p,u16 *,2))return GetFontCmapGlyphIndex(p,b);p=M2C_FIELD(p,void **,8);}return 65535;}
 
 void *GetFontGlyphMetric(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD(base,void **,12);while(p){u16 lo=M2C_FIELD(p,u16 *,0);if(lo<=b && b<=M2C_FIELD(p,u16 *,2))return p+8+(b-lo)*3;p=M2C_FIELD(p,void **,4);}return base+4;}
 

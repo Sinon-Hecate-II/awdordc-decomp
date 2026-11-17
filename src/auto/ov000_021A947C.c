@@ -122,7 +122,7 @@ void GetUnitMaxAttackRange(M2C_UNK arg0, M2C_UNK arg1) {
     ComputeUnitMaxAttackRange(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
-s32 func_ov000_021a9860(s32 a,s32 b) {
+s32 IsPropertyCell(s32 a,s32 b) {
  extern void **data_027e0058;s32 GetTerrainPropertyFlagsAt(s32,s32);
  s32 p=(s32)*data_027e0058;
  if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)==24)return 1;

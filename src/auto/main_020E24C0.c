@@ -14,8 +14,8 @@ extern M2C_UNK data_0212d6c8, data_0212d6d4, data_0212d6e0, data_0212d6f0, data_
 #pragma opt_propagation off
 void func_020e24c0(s32 arg0) {
 void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
-void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
-s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
+void *func_020ab1c4(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
+s32 func_02088e84(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
 void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
@@ -32,40 +32,40 @@ saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,80)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,80),0,832,3,1);
+InitUnitSprite(M2C_FIELD(obj,void**,80),0,832,3,1);
 p=M2C_FIELD(obj,void**,80);func_02088e84(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,80));
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
 }
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,84)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,84),1,848,3,0);
+InitUnitSprite(M2C_FIELD(obj,void**,84),1,848,3,0);
 p=M2C_FIELD(obj,void**,84);func_02088e84(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,84));
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
 }
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,88)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,88),2,864,3,0);
+InitUnitSprite(M2C_FIELD(obj,void**,88),2,864,3,0);
 p=M2C_FIELD(obj,void**,88);func_02088e84(p,224,160,224,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,88);M2C_FIELD(q,s16*,0x34)=224;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,88));
 
 }
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,92)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,92),42,880,3,0);
+InitUnitSprite(M2C_FIELD(obj,void**,92),42,880,3,0);
 p=M2C_FIELD(obj,void**,92);func_02088e84(p,96,164,-159,164);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=164;
 func_020aad18(M2C_FIELD(obj,void**,92));
 
@@ -87,8 +87,8 @@ gCur3DSpriteEngine=saved;func_020e4c64();
 #pragma opt_propagation reset
 void func_020e2a2c(s32 arg0) {
 void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
-void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
-s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
+void *func_020ab1c4(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
+s32 func_02088e84(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
 void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *p; void *q; void *saved;
@@ -105,40 +105,40 @@ saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,80)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,80),0,832,3,1);
+InitUnitSprite(M2C_FIELD(obj,void**,80),0,832,3,1);
 p=M2C_FIELD(obj,void**,80);func_02088e84(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,80));
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
 }
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,84)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,84),1,848,3,0);
+InitUnitSprite(M2C_FIELD(obj,void**,84),1,848,3,0);
 p=M2C_FIELD(obj,void**,84);func_02088e84(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,84));
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
 }
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,88)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,88),2,864,3,0);
+InitUnitSprite(M2C_FIELD(obj,void**,88),2,864,3,0);
 p=M2C_FIELD(obj,void**,88);func_02088e84(p,224,160,224,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,88);M2C_FIELD(q,s16*,0x34)=224;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,88));
 
 }
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,92)=func_020ab1c4((s32)obj);
-func_020aab24(M2C_FIELD(obj,void**,92),42,880,3,0);
+InitUnitSprite(M2C_FIELD(obj,void**,92),42,880,3,0);
 p=M2C_FIELD(obj,void**,92);func_02088e84(p,96,164,-159,164);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=164;
 func_020aad18(M2C_FIELD(obj,void**,92));
 
@@ -213,10 +213,10 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
-    M2C_UNK func_020aab24(void *, M2C_UNK, s32, u8, s32);
+    M2C_UNK InitUnitSprite(void *, M2C_UNK, s32, u8, s32);
     M2C_UNK func_020aad18(void *);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     M2C_UNK func_020ab150(void *, u16);
     void *func_020ab1c4(s32);
     void *sprite;
@@ -234,7 +234,7 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
     } else {
         second = 0;
     }
-    func_020aab24(*outSprite, kind, resourceId, style, (s32) second);
+    InitUnitSprite(*outSprite, kind, resourceId, style, (s32) second);
     yPos = y;
     xPos = x;
     sprite = *outSprite;
@@ -247,8 +247,8 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
     if (hasFrame1 & 0xFF) {
         fh1 = M2C_FIELD(sprite, s16 *, 0x52);
         fw1 = M2C_FIELD(sprite, s16 *, 0x50);
-        fw = func_020aae10(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw1, fh1, (s32)(u16) fw, (s32)(u16) func_020aae44(sprite));
+        fw = GetUnitSpriteWidth(sprite);
+        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw1, fh1, (s32)(u16) fw, (s32)(u16) GetUnitSpriteHeight(sprite));
     }
     M2C_FIELD(sprite, s16 *, 0x34) = xPos;
     M2C_FIELD(sprite, s16 *, 0x36) = yPos;
@@ -260,8 +260,8 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
     if (hasFrame2 & 0xFF) {
         fh2 = M2C_FIELD(sprite, s16 *, 0x52);
         fw2 = M2C_FIELD(sprite, s16 *, 0x50);
-        fw3 = func_020aae10(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw2, fh2, (s32)(u16) fw3, (s32)(u16) func_020aae44(sprite));
+        fw3 = GetUnitSpriteWidth(sprite);
+        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw2, fh2, (s32)(u16) fw3, (s32)(u16) GetUnitSpriteHeight(sprite));
     }
     Show3DSprite(*outSprite);
     func_020aad18(*outSprite);
@@ -272,54 +272,57 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
 }
 
 u8 GetLanguage(void) {
-    extern u8 data_02168f8c;
-    return data_02168f8c;
+    extern u8 gLanguage;
+    return gLanguage;
 }
 
 void func_020e31f0(s32 arg0) {
- extern u8 data_02168f8c;
- data_02168f8c=1;
- if(arg0==1 || arg0==2 || arg0==5)data_02168f8c=arg0;
+ extern u8 gLanguage;
+ gLanguage=1;
+ if(arg0==1 || arg0==2 || arg0==5)gLanguage=arg0;
 }
 
-M2C_UNK *GetLocalizedFileName(s32 arg0) {
+/* Format `fileName` into the shared name buffer with the prefix of the console's
+ * current language ("e_%s", "f_%s", ...), or the plain name while no language is
+ * set.  Returns the buffer, or NULL for a null name. */
+M2C_UNK *GetLocalizedFileName(s32 fileName) {
     M2C_UNK StringFormat(M2C_UNK *, M2C_UNK *, s32);
-    extern M2C_UNK data_0212d69c;
-    extern M2C_UNK data_0212d6a0;
-    extern M2C_UNK data_0212d6a8;
-    extern M2C_UNK data_0212d6b0;
-    extern M2C_UNK data_0212d6b8;
-    extern M2C_UNK data_0212d6c0;
-    extern M2C_UNK data_02168f90;
-    u32 temp_r0;
+    extern M2C_UNK gFileNameFormatPlain;
+    extern M2C_UNK gFileNameFormatEnglish;
+    extern M2C_UNK gFileNameFormatFrench;
+    extern M2C_UNK gFileNameFormatGerman;
+    extern M2C_UNK gFileNameFormatItalian;
+    extern M2C_UNK gFileNameFormatSpanish;
+    extern M2C_UNK gLocalizedFileName;
+    u32 language;
 
-    if (arg0 == 0) {
+    if (fileName == 0) {
         return NULL;
     }
-    temp_r0 = GetLanguage();
-    switch (temp_r0) {
+    language = GetLanguage();
+    switch (language) {
     default:
         break;
-    case 0:
-        StringFormat(&data_02168f90, &data_0212d69c, arg0);
+    case LANGUAGE_UNSET:
+        StringFormat(&gLocalizedFileName, &gFileNameFormatPlain, fileName);
         break;
-    case 1:
-        StringFormat(&data_02168f90, &data_0212d6a0, arg0);
+    case LANGUAGE_ENGLISH:
+        StringFormat(&gLocalizedFileName, &gFileNameFormatEnglish, fileName);
         break;
-    case 2:
-        StringFormat(&data_02168f90, &data_0212d6a8, arg0);
+    case LANGUAGE_FRENCH:
+        StringFormat(&gLocalizedFileName, &gFileNameFormatFrench, fileName);
         break;
-    case 3:
-        StringFormat(&data_02168f90, &data_0212d6b0, arg0);
+    case LANGUAGE_GERMAN:
+        StringFormat(&gLocalizedFileName, &gFileNameFormatGerman, fileName);
         break;
-    case 4:
-        StringFormat(&data_02168f90, &data_0212d6b8, arg0);
+    case LANGUAGE_ITALIAN:
+        StringFormat(&gLocalizedFileName, &gFileNameFormatItalian, fileName);
         break;
-    case 5:
-        StringFormat(&data_02168f90, &data_0212d6c0, arg0);
+    case LANGUAGE_SPANISH:
+        StringFormat(&gLocalizedFileName, &gFileNameFormatSpanish, fileName);
         break;
     }
-    return &data_02168f90;
+    return &gLocalizedFileName;
 }
 
 M2C_UNK *GetLocalizedFileNameDefault(s32 arg0) {
@@ -341,14 +344,14 @@ void func_020e3320(void) {
 void func_020e3344(void) {
  void func_020e3400(void);
  M2C_UNK SetFileDirectory();
- s32 func_02080e30();
+ s32 LoadFileToBuffer();
  void OpenNarcArchive();
  s32 func_020815a8();
  void CloseNarcArchive();
  func_020e3400();
  SetFileDirectory(&data_0212d6c8);
- data_02168fd0[0]=func_02080e30(GetLocalizedFileName((s32)&data_0212d6d4),1);
- data_02168fd0[1]=func_02080e30(GetLocalizedFileName((s32)&data_0212d6e0),1);
+ data_02168fd0[0]=LoadFileToBuffer(GetLocalizedFileName((s32)&data_0212d6d4),1);
+ data_02168fd0[1]=LoadFileToBuffer(GetLocalizedFileName((s32)&data_0212d6e0),1);
  SetFileDirectory(&data_0212d6f0);
  OpenNarcArchive(GetLocalizedFileName((s32)&data_0212d704));
  data_02168fd0[2]=func_020815a8(GetLocalizedFileName((s32)&data_0212d714));

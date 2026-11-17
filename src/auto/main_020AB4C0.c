@@ -1,10 +1,11 @@
 /* 29 functions from 0x020AA93C to 0x020AB884 (main), found by ds-decomp. */
 #include "common.h"
+#include "list_widget.h"
 typedef struct { u32 x:9; u32 y:9; u32 rest:14; } UnkAAFields;
 
-void func_020ab4c0(void *arg0) {
+void ListWidgetScrollUp(void *arg0) {
     s32 Divide(s16, s16);
-    M2C_UNK func_020ab664(void *, s16, M2C_UNK, M2C_UNK);
+    M2C_UNK ListWidgetScrollBy(void *, s16, M2C_UNK, M2C_UNK);
     M2C_UNK UpdateListScroll(void *);
     s32 var_r4;
     s16 temp_r4;
@@ -19,7 +20,7 @@ void func_020ab4c0(void *arg0) {
         return;
     }
     M2C_FIELD(arg0, s16 *, 0xC) = (s16)(M2C_FIELD(arg0, s16 *, 0xC) - M2C_FIELD(arg0, s16 *, 8));
-    func_020ab664(arg0, (s16)(0 - M2C_FIELD(arg0, s16 *, 8)), 0, 0);
+    ListWidgetScrollBy(arg0, (s16)(0 - M2C_FIELD(arg0, s16 *, 8)), 0, 0);
     UpdateListScroll(arg0);
     temp_r0 = M2C_FIELD(arg0, u8 *, 0xA) * (s16)Divide(M2C_FIELD(arg0, s16 *, 0xC), M2C_FIELD(arg0, s16 *, 8));
     M2C_FIELD(arg0, s16 *, 0x28) = 0;
@@ -32,41 +33,43 @@ void func_020ab4c0(void *arg0) {
     M2C_FIELD(arg0, u16 *, 0x32) = (u16)M2C_FIELD(arg0, u16 *, 0x34);
 }
 
-void func_020ab598(void *arg0) {
+/* Move the cursor down one row when another row is visible below it, scroll the
+ * window by one row and retarget its slide tween to the new row's pixel offset. */
+void ListWidgetScrollDown(void *arg0) {
     s32 Divide(s16, s16);
-    M2C_UNK func_020ab664(void *, s16, M2C_UNK, M2C_UNK);
+    M2C_UNK ListWidgetScrollBy(void *, s16, M2C_UNK, M2C_UNK);
     M2C_UNK UpdateListScroll(void *);
     M2C_UNK GetSpriteAnimValue(void *);
-    s16 temp_r5_2;
-    s32 temp_r6;
-    s16 temp_r6_2;
-    s32 temp_r0;
-    s16 temp_r5;
-    s32 var_r0;
+    s16 targetY;
+    s32 visibleRows;
+    s16 frames;
+    s32 pixOffset;
+    s16 currentRow;
+    s32 canScroll;
 
-    temp_r6 = M2C_FIELD(arg0, s16 *, 6);
-    temp_r5 = Divide(M2C_FIELD(arg0, s16 *, 0xC), M2C_FIELD(arg0, s16 *, 8));
-    if ((s32)(temp_r6 + temp_r5) < (s32)((s16)Divide((s16)M2C_FIELD(arg0, s32 *, 0x18), M2C_FIELD(arg0, s16 *, 8)) + 1)) {
-        var_r0 = 1;
+    visibleRows = M2C_FIELD(arg0, s16 *, LIST_WIDGET_VISIBLE_ROWS);
+    currentRow = Divide(M2C_FIELD(arg0, s16 *, LIST_WIDGET_CURSOR), M2C_FIELD(arg0, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+    if ((s32)(visibleRows + currentRow) < (s32)((s16)Divide((s16)M2C_FIELD(arg0, s32 *, LIST_WIDGET_SCROLL_MAX), M2C_FIELD(arg0, s16 *, LIST_WIDGET_ITEMS_PER_ROW)) + 1)) {
+        canScroll = 1;
     } else {
-        var_r0 = 0;
+        canScroll = 0;
     }
-    if (!(var_r0 & 0xFF)) return;
-    M2C_FIELD(arg0, s16 *, 0xC) = (s16)(M2C_FIELD(arg0, s16 *, 0xC) + M2C_FIELD(arg0, s16 *, 8));
-    func_020ab664(arg0, M2C_FIELD(arg0, s16 *, 8), 0, 0);
+    if (!(canScroll & 0xFF)) return;
+    M2C_FIELD(arg0, s16 *, LIST_WIDGET_CURSOR) = (s16)(M2C_FIELD(arg0, s16 *, LIST_WIDGET_CURSOR) + M2C_FIELD(arg0, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+    ListWidgetScrollBy(arg0, M2C_FIELD(arg0, s16 *, LIST_WIDGET_ITEMS_PER_ROW), 0, 0);
     UpdateListScroll(arg0);
-    temp_r0 = M2C_FIELD(arg0, u8 *, 0xA) * (s16)Divide(M2C_FIELD(arg0, s16 *, 0xC), M2C_FIELD(arg0, s16 *, 8));
-    M2C_FIELD(arg0, s16 *, 0x28) = 0;
-    M2C_FIELD(arg0, s16 *, 0x2A) = (s16)(0 - temp_r0);
-    temp_r5_2 = M2C_FIELD(arg0, s16 *, 0x2A);
-    temp_r6_2 = M2C_FIELD(arg0, s16 *, 0x3C);
-    M2C_FIELD(arg0, s16 *, 0x3E) = GetSpriteAnimValue(arg0 + 0x30);
-    M2C_FIELD(arg0, s16 *, 0x40) = temp_r5_2;
-    M2C_FIELD(arg0, s16 *, 0x3C) = temp_r6_2;
-    M2C_FIELD(arg0, u16 *, 0x32) = (u16)M2C_FIELD(arg0, u16 *, 0x34);
+    pixOffset = M2C_FIELD(arg0, u8 *, LIST_WIDGET_ROW_HEIGHT) * (s16)Divide(M2C_FIELD(arg0, s16 *, LIST_WIDGET_CURSOR), M2C_FIELD(arg0, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+    M2C_FIELD(arg0, s16 *, LIST_WIDGET_OFFSET_X) = 0;
+    M2C_FIELD(arg0, s16 *, LIST_WIDGET_SLIDE_TARGET_Y) = (s16)(0 - pixOffset);
+    targetY = M2C_FIELD(arg0, s16 *, LIST_WIDGET_SLIDE_TARGET_Y);
+    frames = M2C_FIELD(arg0, s16 *, LIST_WIDGET_SCROLL_FRAMES);
+    M2C_FIELD(arg0, s16 *, LIST_WIDGET_SCROLL_FROM) = GetSpriteAnimValue(arg0 + 0x30);
+    M2C_FIELD(arg0, s16 *, LIST_WIDGET_SCROLL_TO) = targetY;
+    M2C_FIELD(arg0, s16 *, LIST_WIDGET_SCROLL_FRAMES) = frames;
+    M2C_FIELD(arg0, u16 *, LIST_WIDGET_SCROLL_CURRENT) = (u16)M2C_FIELD(arg0, u16 *, LIST_WIDGET_SCROLL_START);
 }
 
-s32 func_020ab664(void *arg0, s16 arg1, s32 flag, s32 arg3) {
+s32 ListWidgetScrollBy(void *arg0, s16 arg1, s32 flag, s32 arg3) {
     s16 oldHeight = (s16)M2C_FIELD(arg0, s32 *, 0x14);
     s16 row = (s16)(arg1 + oldHeight);
     s16 c0 = Divide(oldHeight, M2C_FIELD(arg0, s16 *, 0x8));

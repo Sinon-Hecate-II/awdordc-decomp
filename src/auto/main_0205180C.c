@@ -6,7 +6,7 @@ extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020f
 
 #pragma opt_strength_reduction off
 s32 func_0205180c(void **a, void *b, char *text) {
-s32 func_0205817c(void **,char *,s32);
+s32 gpiProcessErrorReply(void **,char *,s32);
 s32 gpiValueForKey(char *,M2C_UNK *,void *,s32);
 s32 ParseInt(char *);
 M2C_UNK func_02055bc0(void **,s32);
@@ -34,7 +34,7 @@ char *chosen;
 s32 *record;
 s32 result;
 Callback518 callback;
-if(func_0205817c(a,text,0)){
+if(gpiProcessErrorReply(a,text,0)){
 if(M2C_FIELD(p,s32 *,0x418)==0x106 && M2C_FIELD(p,s32 *,0x1a0)){
 func_02055bc0(a,M2C_FIELD(p,s32 *,0x1a0));
 M2C_FIELD(p,s32 *,0x19c)=0;M2C_FIELD(p,s32 *,0x1a0)=0;

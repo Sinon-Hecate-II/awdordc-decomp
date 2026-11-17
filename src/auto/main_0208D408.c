@@ -1,5 +1,6 @@
 /* 7 functions from 0x0208D408 to 0x0208E18C (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 #pragma push
 #pragma opt_strength_reduction off
@@ -274,14 +275,16 @@ void DrawFrameBorder(s16 x, s16 y, s16 width, s16 height, s32 tile, s32 priority
     }
 }
 
-void func_0208df84(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5) {
+/* Draw the animated highlight frame of a selected rectangle: a frame just outside
+ * (x, y, width, height) that pulses in and out by a pixel, about twice a second. */
+void DrawFrameBorderPulse(s32 x, s32 y, s32 width, s32 height, u16 tile, s32 priority) {
  s32 EaseInterpolate(s32,s32,s32,s32,s32);
  void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
  extern volatile u32 gFrameCounter;
- s32 n;
- n=((gFrameCounter>>1)&15)<8U ? EaseInterpolate(4,0,2,(gFrameCounter>>1)&15,8):EaseInterpolate(1,2,0,((gFrameCounter>>1)&15)-8,8);
- n--;
- DrawFrameBorder((s16)(arg0-n),(s16)(arg1-n),(s16)(arg2+n*2),(s16)(arg3+n*2),arg4,arg5,2);
+ s32 pulse;
+ pulse=((gFrameCounter>>1)&FRAME_BORDER_PULSE_MASK)<FRAME_BORDER_PULSE_STEPS ? EaseInterpolate(EASE_OUT_QUAD,0,FRAME_BORDER_PULSE_RANGE,(gFrameCounter>>1)&FRAME_BORDER_PULSE_MASK,FRAME_BORDER_PULSE_STEPS):EaseInterpolate(EASE_IN_QUAD,FRAME_BORDER_PULSE_RANGE,0,((gFrameCounter>>1)&FRAME_BORDER_PULSE_MASK)-FRAME_BORDER_PULSE_STEPS,FRAME_BORDER_PULSE_STEPS);
+ pulse--;
+ DrawFrameBorder((s16)(x-pulse),(s16)(y-pulse),(s16)(width+pulse*2),(s16)(height+pulse*2),tile,priority,FRAME_BORDER_OUTSIDE);
 }
 
 void func_0208e054(s32 arg0, s32 arg1, s16 arg2) {

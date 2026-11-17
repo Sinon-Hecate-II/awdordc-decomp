@@ -181,83 +181,90 @@ void func_02097164(s32 a,s8 b) { s32 *GetScenePanelState(); M2C_FIELD(GetScenePa
 
 void func_02097178(s32 a,s32 b) { s32 *GetScenePanelState(); s32 p; M2C_FIELD(GetScenePanelState(),u8 *,7)=b; p=FindScenePanel((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
 
-void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)func_02098e2c(r,0);else func_02098e2c(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
+void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)SetFaceSpriteFace(r,0);else SetFaceSpriteFace(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
 
-void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);func_02098e2c(r,b);func_0209e320(p); }
+void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);SetFaceSpriteFace(r,b);func_0209e320(p); }
 
-void func_02097280(s32 arg0) {
-    M2C_UNK func_02088db8(void *, s32);
+/* ShowPanelFace: shows face slot faceIndex (0 or 1) of the scene panel — the
+   slot's 3D sprite slides in from the side over eight frames, or snaps when the
+   screen mode asks for it — then shows the slot's linked face child and
+   refreshes the panel. */
+void ShowPanelFace(s32 faceIndex) {
+    M2C_UNK Show3DSpriteFade(void *, s32);
     M2C_UNK Show3DSprite(s32);
     M2C_UNK Slide3DSpriteIn(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 func_020abe90(u8);
-    void *temp_r0;
-    void *temp_r7;
-    s32 var_r8;
-    s32 temp_r4;
+    void *panel;
+    void *face;
+    s32 slideFrames;
+    s32 child;
 
-    temp_r0 = FindScenePanel(2);
-    if (temp_r0 == NULL) {
+    panel = FindScenePanel(2);
+    if (panel == NULL) {
         return;
     }
-    temp_r7 = Get3DSpriteChild(temp_r0, arg0);
-    var_r8 = 8;
-    temp_r4 = M2C_FIELD(temp_r7, s32 *, 0x60);
-    if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r0, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
-        var_r8 = 0;
+    face = Get3DSpriteChild(panel, faceIndex);
+    slideFrames = 8;
+    child = M2C_FIELD(face, s32 *, FACE_SPRITE_CHILD);
+    if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+        slideFrames = 0;
     }
-    switch (arg0) {                                 /* irregular */
+    switch (faceIndex) {                                 /* irregular */
     case 0:
-        Slide3DSpriteIn(temp_r7, -0x40, 0, 0, 0, var_r8);
-        func_02088db8(temp_r7, var_r8);
+        Slide3DSpriteIn(face, -0x40, 0, 0, 0, slideFrames);
+        Show3DSpriteFade(face, slideFrames);
         break;
     case 1:
-        Slide3DSpriteIn(temp_r7, 0xA0, 0, 0x60, 0, var_r8);
-        func_02088db8(temp_r7, var_r8);
+        Slide3DSpriteIn(face, 0xA0, 0, 0x60, 0, slideFrames);
+        Show3DSpriteFade(face, slideFrames);
         break;
     }
-    Show3DSprite(temp_r4);
-    func_0209e320(temp_r0);
+    Show3DSprite(child);
+    func_0209e320(panel);
 }
 
-void func_02097348(s32 arg0) {
-    M2C_UNK func_02088f8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+/* HidePanelFace: hides face slot faceIndex (0 or 1) of the scene panel — the
+   slot's 3D sprite slides out over eight frames, or snaps when the screen mode
+   asks for it — then hides the slot's linked face child and refreshes the panel. */
+void HidePanelFace(s32 faceIndex) {
+    M2C_UNK Slide3DSpriteOut(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     M2C_UNK Hide3DSprite(s32);
-    M2C_UNK func_02088e0c(void *, s32);
+    M2C_UNK Hide3DSpriteFade(void *, s32);
     s32 func_020abe90(u8);
-    void *temp_r0;
-    register void *temp_r7;
-    long var_r8;
-    register unsigned temp_r4;
+    void *panel;
+    register void *face;
+    long slideFrames;
+    register unsigned child;
 
-    temp_r0 = FindScenePanel(2);
-    if (temp_r0 == NULL) {
+    panel = FindScenePanel(2);
+    if (panel == NULL) {
         return;
     }
-    temp_r7 = Get3DSpriteChild(temp_r0, arg0);
-    var_r8 = 8;
-    temp_r4 = M2C_FIELD(temp_r7, s32 *, 0x60);
-    if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r0, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
-        var_r8 = 0;
+    face = Get3DSpriteChild(panel, faceIndex);
+    slideFrames = 8;
+    child = M2C_FIELD(face, s32 *, FACE_SPRITE_CHILD);
+    if (func_020abe90((u8) ((u32) (M2C_FIELD(panel, u8 *, SPRITE_ACTOR_STATE) << 0x1C) >> 0x1D)) == 1) {
+        slideFrames = 0;
     }
-    switch (arg0) {                                 /* irregular */
+    switch (faceIndex) {                                 /* irregular */
     case 0:
-        func_02088f8c(temp_r7, 0, 0, -0x40, 0, var_r8);
-        func_02088e0c(temp_r7, var_r8);
+        Slide3DSpriteOut(face, 0, 0, -0x40, 0, slideFrames);
+        Hide3DSpriteFade(face, slideFrames);
         break;
     case 1:
-        func_02088f8c(temp_r7, 0x60, 0, 0xA0, 0, var_r8);
-        func_02088e0c(temp_r7, var_r8);
+        Slide3DSpriteOut(face, 0x60, 0, 0xA0, 0, slideFrames);
+        Hide3DSpriteFade(face, slideFrames);
         break;
     }
-    Hide3DSprite(temp_r4);
-    func_0209e320(temp_r0);
+    Hide3DSprite(child);
+    func_0209e320(panel);
 }
 
 void func_02097410(void) {
 
 }
 
-void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);func_02098e2c(r,b); }
+void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);SetFaceSpriteFace(r,b); }
 
 void func_0209747c(M2C_UNK arg0, s32 arg1) {
     s32 temp_r0;
@@ -271,9 +278,9 @@ void func_0209747c(M2C_UNK arg0, s32 arg1) {
     temp_r0_2 = Get3DSpriteChild(temp_r0, arg0);
     temp_r0_3 = M2C_FIELD(temp_r0_2, s32 *, 0x60);
     if (arg1 != 0) {
-        func_02098e2c(temp_r0_3, 0U);
+        SetFaceSpriteFace(temp_r0_3, 0U);
     } else {
-        func_02098e2c(temp_r0_3, M2C_FIELD(temp_r0_2, u8 *, 0x58));
+        SetFaceSpriteFace(temp_r0_3, M2C_FIELD(temp_r0_2, u8 *, 0x58));
     }
     func_0209e320(temp_r0);
 }

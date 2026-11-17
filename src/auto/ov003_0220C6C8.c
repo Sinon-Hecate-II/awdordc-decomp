@@ -47,7 +47,7 @@ void MI_CpuFill8(void *, int, int);
 void func_020a9218(void *);
 void func_020a9188(void *, int);
 void func_020a9a1c(void *, int, int);
-void func_020a979c(void *, int, int);
+void ScrollBar_PlaceThumb(void *, int, int);
 int func_020bf9e0(void);
 int func_020bfa20(void);
 int Divide(int, int);
@@ -199,7 +199,7 @@ t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
 M2C_FIELD(t,s16 *,14)=0;M2C_FIELD(t,s16 *,12)=0;M2C_FIELD(t,s16 *,10)=0;M2C_FIELD(t,s16 *,8)=0;
 M2C_FIELD(t,s16 *,24)=0;M2C_FIELD(t,s16 *,22)=0;M2C_FIELD(t,s16 *,20)=0;
 M2C_FIELD(t,s16 *,18)=145;M2C_FIELD(t,s16 *,20)=215;M2C_FIELD(t,s16 *,22)=18;M2C_FIELD(t,s16 *,24)=18;
-t[16]=16;t[17]=32;func_020a979c(t,180,18);
+t[16]=16;t[17]=32;ScrollBar_PlaceThumb(t,180,18);
 }
 M2C_FIELD(q,u8 **,28)=t;
 }
@@ -208,7 +208,7 @@ i=func_020bf9e0(); q=M2C_FIELD(p,u8 **,96); M2C_FIELD(q,s16 *,18)=i;
 if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,18)<M2C_FIELD(q,s16 *,20)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
 base=M2C_FIELD(q,s16 *,8);
 i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
-func_020a979c(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
+ScrollBar_PlaceThumb(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
 q=MemAlloc(0x20);
 if(q) {
 M2C_FIELD(q,void **,0)=data_ov003_02211028;
@@ -224,7 +224,7 @@ t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
 M2C_FIELD(t,s16 *,14)=0;M2C_FIELD(t,s16 *,12)=0;M2C_FIELD(t,s16 *,10)=0;M2C_FIELD(t,s16 *,8)=0;
 M2C_FIELD(t,s16 *,24)=0;M2C_FIELD(t,s16 *,22)=0;M2C_FIELD(t,s16 *,20)=0;
 M2C_FIELD(t,s16 *,18)=145;M2C_FIELD(t,s16 *,20)=215;M2C_FIELD(t,s16 *,22)=48;M2C_FIELD(t,s16 *,24)=48;
-t[16]=16;t[17]=32;func_020a979c(t,180,48);
+t[16]=16;t[17]=32;ScrollBar_PlaceThumb(t,180,48);
 }
 M2C_FIELD(q,u8 **,28)=t;
 }
@@ -233,7 +233,7 @@ i=func_020bfa20(); q=M2C_FIELD(p,u8 **,100); M2C_FIELD(q,s16 *,18)=i;
 if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,18)<M2C_FIELD(q,s16 *,20)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
 base=M2C_FIELD(q,s16 *,8);
 i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
-func_020a979c(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
+ScrollBar_PlaceThumb(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
 q=MemAlloc(24);
 if(q) { M2C_FIELD(q,u32 *,0)=0;M2C_FIELD(q,u32 *,4)=0;M2C_FIELD(q,u32 *,8)=0;M2C_FIELD(q,u32 *,12)=0;M2C_FIELD(q,u32 *,16)=0;M2C_FIELD(q,u32 *,20)=0; }
 M2C_FIELD(p,u8 **,0x68)=q;

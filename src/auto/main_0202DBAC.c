@@ -13,7 +13,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     void *Sound_AcquirePlayer(void **, s32, s32);
     M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
     void Sound_ReleasePlayer(void *);
-    u64 func_02072088(u64, u64);
+    u64 U64Divide(u64, u64);
     void func_0202eec0(void *);
     void func_0202eed8(void *, s32, s32);
     s32 Sound_AcquireChannel(void *, s32, s32);
@@ -40,7 +40,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
         return 0;
     }
 
-    M2C_FIELD(player, s32 *, 0x160) = (s32)func_02072088((u64)(u32)M2C_FIELD(player, u16 *, 0xC4) * (u32)lengthMs, 0x3E8ULL);
+    M2C_FIELD(player, s32 *, 0x160) = (s32)U64Divide((u64)(u32)M2C_FIELD(player, u16 *, 0xC4) * (u32)lengthMs, 0x3E8ULL);
     if (M2C_FIELD(player, s32 *, 0x160) != 0 && M2C_FIELD(player, u8 *, 0xC0) == 2) {
         M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) | 0x10;
     } else {
@@ -338,7 +338,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
 void Sound_RequestNextSegment(void *player) {
     s32 *func_0202c1cc(s32);
     M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
-    u64 func_02072088(u64, u64);
+    u64 U64Divide(u64, u64);
     s32 *sample;
     u8 oldType;
     u16 oldRate;
@@ -372,7 +372,7 @@ void Sound_RequestNextSegment(void *player) {
         return;
     }
     M2C_FIELD(player, s32 *, SOUND_HANDLE_SOUND_ID) = segment[0];
-    M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLES_LEFT) = (s32)func_02072088((u64)(u32)M2C_FIELD(player, u16 *, SOUND_HANDLE_RATE) * (u32)segment[1], 0x3E8ULL);
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLES_LEFT) = (s32)U64Divide((u64)(u32)M2C_FIELD(player, u16 *, SOUND_HANDLE_RATE) * (u32)segment[1], 0x3E8ULL);
     if (M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLES_LEFT) != 0 && M2C_FIELD(player, u8 *, SOUND_HANDLE_TYPE) == 2) {
         M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) = (M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) | 0x10);
     } else {

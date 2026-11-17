@@ -63,7 +63,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
     void PlaySoundEffect(s32);
     void MoveMapCursorToTarget(s32);
     s32 GetKeyActionFlags(void);
-    s32 func_020bdbf4(s32);
+    s32 GetMapCursorOptionTouchAction(s32);
     extern void **gCurrentMap;
     extern s8 gMapCursorDirDX[];
     extern s8 gMapCursorDirDY[];
@@ -92,7 +92,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
     M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y) = (s16)(M2C_FIELD(map, s16 *, MAP_CURSOR_Y) + gMapCursorDirDY[selected * 4]);
     MoveMapCursorToTarget(1);
     keys = GetKeyActionFlags();
-    keys = keys | func_020bdbf4(optionMask);
+    keys = keys | GetMapCursorOptionTouchAction(optionMask);
     if (keys & 0x20) {
         return 0x20;
     }
@@ -126,7 +126,10 @@ map=*gCurrentMap;
 func_01ffa6fc(p);
 }
 
-void func_020caf3c(void *arg0) {
+/* Confirms the cursor's attack option: when neither attack target is available it
+ * snaps the target cursor back onto the cursor tile and re-arms the option; otherwise
+ * it issues battle command 8 (attack) with the direction chosen for each target. */
+void ConfirmAttackCommand(void *option) {
     M2C_UNK func_020d472c();
     s32 func_020c6384();
     s32 func_020c6414();
@@ -137,23 +140,23 @@ void func_020caf3c(void *arg0) {
     u8 func_020c9440(s16, s16, s32);
     M2C_UNK SetBattleCommand(s32, u8, u8, u8);
     extern void **gCurrentMap;
-    void *base;
-    s32 a, b;
+    void *map;
+    s32 dir0, dir1;
 
     func_020d472c();
     if ((func_020c6384() == 0) || (func_020c6414() == 0)) {
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
-        func_020c9580((u8) M2C_FIELD(arg0, s16 *, 0x70));
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X);
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y);
+        func_020c9580((u8) M2C_FIELD(option, s16 *, 0x70));
         func_020c75cc();
         return;
     }
     func_020d468c();
     func_020a15e4();
-    base = *gCurrentMap;
-    a = func_020c9440(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), 0);
-    b = func_020c9440(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), 1);
-    SetBattleCommand(8, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), (u8) a, (u8) b);
+    map = *gCurrentMap;
+    dir0 = func_020c9440(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 0);
+    dir1 = func_020c9440(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 1);
+    SetBattleCommand(8, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), (u8) dir0, (u8) dir1);
 }
 
 void func_020cb00c(void) {

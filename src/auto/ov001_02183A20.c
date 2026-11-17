@@ -7,17 +7,17 @@ void func_ov001_02183a20(void) {
     void func_ov001_02183cec(s8);
     s32 func_ov001_02183e0c(void);
     void func_ov001_02183d18(void);
-    void func_ov001_02183ba4(void);
+    void Ov001_UpdateScrollbarDrag(void);
     void Ov001_PlaySound(s32);
     void func_ov001_02185048(s32);
-    void func_ov001_0218bd64(M2C_UNK *);
-    extern void *data_ov001_02193dfc;
+    void Ov001_ReadTouchPoint(M2C_UNK *);
+    extern void *gOv001Scrollbar;
     s32 r;
 
-    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 0;
-    switch ((u8)M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1c)) {
+    M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 0;
+    switch ((u8)M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c)) {
         case 0: {
-            r = (s32)(u8)M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1e);
+            r = (s32)(u8)M2C_FIELD(gOv001Scrollbar, u8 *, 0x1e);
             if (r != 0) {
                 return;
             }
@@ -26,15 +26,15 @@ void func_ov001_02183a20(void) {
                 case 0:
                     break;
                 case 1: {
-                    if ((u8)M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1b) == 0) {
+                    if ((u8)M2C_FIELD(gOv001Scrollbar, u8 *, 0x1b) == 0) {
                         return;
                     }
                     Ov001_PlaySound(0x16);
                     func_ov001_02185048(0);
-                    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 1;
-                    func_ov001_0218bd64((M2C_UNK *)((u8 *)data_ov001_02193dfc + 0x14));
-                    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x18) = M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1a);
-                    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1c) = 1;
+                    M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 1;
+                    Ov001_ReadTouchPoint((M2C_UNK *)((u8 *)gOv001Scrollbar + 0x14));
+                    M2C_FIELD(gOv001Scrollbar, u8 *, 0x18) = M2C_FIELD(gOv001Scrollbar, u8 *, 0x1a);
+                    M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 1;
                     return;
                 }
                 case 2:
@@ -52,13 +52,13 @@ void func_ov001_02183a20(void) {
             return;
         }
         case 1:
-            func_ov001_02183ba4();
+            Ov001_UpdateScrollbarDrag();
             return;
         case 2: {
             r = ((s32 (*)(s32))func_ov001_02183e0c)(2);
             if (r != 2) {
-                M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 5;
-                M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1c) = 0;
+                M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 5;
+                M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 0;
                 return;
             }
             r = func_ov001_02183d80();
@@ -71,8 +71,8 @@ void func_ov001_02183a20(void) {
         case 3: {
             r = ((s32 (*)(s32))func_ov001_02183e0c)(3);
             if (r != 3) {
-                M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 7;
-                M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1c) = 0;
+                M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 7;
+                M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 0;
                 return;
             }
             r = func_ov001_02183d80();
@@ -87,59 +87,62 @@ void func_ov001_02183a20(void) {
     }
 }
 #pragma optimization_level 4
-void func_ov001_02183ba4(void) {
+/* The friend roster's scroll bar, drag state: while the stylus is down, move the
+ * handle to follow its y (clamped into the track); once it lifts, stop the drag
+ * sound and report the idle event. */
+void Ov001_UpdateScrollbarDrag(void) {
     s32 TouchRectReleased(M2C_UNK *);
-    void func_ov001_0218bd64(M2C_UNK *);
-    void func_ov001_02183c74(s32);
-    void func_ov001_02183f30(s32);
+    void Ov001_ReadTouchPoint(M2C_UNK *);
+    void Ov001_PlayScrollDragSound(s32);
+    void Ov001_SetScrollbarHandlePos(s32);
     void Ov001_StopSound(void);
-    extern void *data_ov001_02193dfc;
-    extern u8 data_ov001_0218fb5c[];
+    extern void *gOv001Scrollbar;
+    extern u8 gOv001ScrollbarHandleLengths[];
     extern u8 gTouchScreenRect[];
-    M2C_UNK sp0;
-    void *base;
-    s32 r4;
-    u16 spf0;
-    u16 spf2;
-    s32 thr;
+    M2C_UNK touch;
+    void *bar;
+    s32 handlePos;
+    u16 touchX;
+    u16 touchY;
+    s32 dragXLimit;
 
     if (TouchRectReleased((M2C_UNK *)gTouchScreenRect) != 0) {
-        func_ov001_0218bd64(&sp0);
-        spf0 = M2C_FIELD(&sp0, u16 *, 0x0);
-        base = data_ov001_02193dfc;
-        thr = M2C_FIELD(base, u16 *, 0x10) - 0x1e;
-        if (spf0 >= thr) {
-            spf2 = M2C_FIELD(&sp0, u16 *, 0x2);
-            r4 = (s32)(u8)M2C_FIELD(base, u8 *, 0x18) + ((s32)spf2 - (s32)(u16)M2C_FIELD(base, u16 *, 0x16));
-            if (r4 < 0) {
-                r4 = 0;
+        Ov001_ReadTouchPoint(&touch);
+        touchX = M2C_FIELD(&touch, u16 *, 0x0);
+        bar = gOv001Scrollbar;
+        dragXLimit = M2C_FIELD(bar, u16 *, OV001_SCROLLBAR_X) - 0x1e;
+        if (touchX >= dragXLimit) {
+            touchY = M2C_FIELD(&touch, u16 *, 0x2);
+            handlePos = (s32)(u8)M2C_FIELD(bar, u8 *, OV001_SCROLLBAR_DRAG_OFFSET) + ((s32)touchY - (s32)(u16)M2C_FIELD(bar, u16 *, OV001_SCROLLBAR_H));
+            if (handlePos < 0) {
+                handlePos = 0;
             } else {
-                s32 lim = (s32)(u8)M2C_FIELD(base, u8 *, 0x19) - (s32)(u8)data_ov001_0218fb5c[(u8)M2C_FIELD(base, u8 *, 0x1b)];
-                if (r4 >= lim) {
-                    r4 = lim;
+                s32 maxHandlePos = (s32)(u8)M2C_FIELD(bar, u8 *, OV001_SCROLLBAR_TRACK) - (s32)(u8)gOv001ScrollbarHandleLengths[(u8)M2C_FIELD(bar, u8 *, OV001_SCROLLBAR_KIND)];
+                if (handlePos >= maxHandlePos) {
+                    handlePos = maxHandlePos;
                 }
             }
-            func_ov001_02183c74(r4);
-            func_ov001_02183f30(r4);
-            M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 2;
+            Ov001_PlayScrollDragSound(handlePos);
+            Ov001_SetScrollbarHandlePos(handlePos);
+            M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_EVENT) = 2;
             return;
         }
     }
     Ov001_StopSound();
-    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1c) = 0;
-    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 3;
+    M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_STATE) = 0;
+    M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_EVENT) = 3;
 }
 
-void func_ov001_02183c74(s32 arg0) {
+void Ov001_PlayScrollDragSound(s32 arg0) {
     s32 func_02002088(s32, s32);
     void func_ov001_02185048(M2C_UNK);
     void func_ov001_02185068(s32, s32);
-    extern void *data_ov001_02193dfc;
+    extern void *gOv001Scrollbar;
     s32 field;
     s32 r4;
     s32 r1;
 
-    field = M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1A);
+    field = M2C_FIELD(gOv001Scrollbar, u8 *, 0x1A);
     r4 = field - arg0;
     if (r4 < 0) {
         r4 = -r4;
@@ -150,64 +153,64 @@ void func_ov001_02183c74(s32 arg0) {
 }
 
 void func_ov001_02183cec(s8 arg0) {
-    extern void *data_ov001_02193dfc;
+    extern void *gOv001Scrollbar;
     s8 var_r1;
 
-    M2C_FIELD(data_ov001_02193dfc, s8 *, 0x1C) = arg0;
+    M2C_FIELD(gOv001Scrollbar, s8 *, 0x1C) = arg0;
     if (arg0 == 2) {
         var_r1 = 4;
     } else {
         var_r1 = 6;
     }
-    M2C_FIELD(data_ov001_02193dfc, s8 *, 0x1D) = var_r1;
+    M2C_FIELD(gOv001Scrollbar, s8 *, 0x1D) = var_r1;
 }
 
 #pragma peephole off
 void func_ov001_02183d18(void) {
-void func_ov001_0218bd64(M2C_UNK *);
-void func_ov001_02183f30(s32);
-extern void *data_ov001_02193dfc;
-extern u8 data_ov001_0218fb5c[];
+void Ov001_ReadTouchPoint(M2C_UNK *);
+void Ov001_SetScrollbarHandlePos(s32);
+extern void *gOv001Scrollbar;
+extern u8 gOv001ScrollbarHandleLengths[];
 M2C_UNK sp0;
 u32 arrval;
 u16 field12,sp_half;
 s32 v; u8 field19; s32 lim;
-func_ov001_0218bd64(&sp0);
-arrval=data_ov001_0218fb5c[M2C_FIELD(data_ov001_02193dfc,u8 *,0x1b)];
-field12=M2C_FIELD(data_ov001_02193dfc,u16 *,0x12);
+Ov001_ReadTouchPoint(&sp0);
+arrval=gOv001ScrollbarHandleLengths[M2C_FIELD(gOv001Scrollbar,u8 *,0x1b)];
+field12=M2C_FIELD(gOv001Scrollbar,u16 *,0x12);
 sp_half=M2C_FIELD(&sp0,u16 *,2);
 v=(s32)sp_half-(s32)field12;
 v-=(s32)(arrval>>1);
 if(v<0) v=0;
 else {
-field19=M2C_FIELD(data_ov001_02193dfc,u8 *,0x19);
+field19=M2C_FIELD(gOv001Scrollbar,u8 *,0x19);
 lim=(s32)field19-(s32)arrval;
 if(v>=lim) v=lim;
 }
-func_ov001_02183f30(v);
-M2C_FIELD(data_ov001_02193dfc,u8 *,0x1d)=3;
+Ov001_SetScrollbarHandlePos(v);
+M2C_FIELD(gOv001Scrollbar,u8 *,0x1d)=3;
 }
 #pragma peephole reset
 s32 func_ov001_02183d80(void) {
-    void func_ov001_02183e58(s32, M2C_UNK *);
+    void Ov001_GetScrollbarPartRect(s32, M2C_UNK *);
     s32 TouchRectPressed(M2C_UNK *);
     s32 func_ov001_0218bc44(M2C_UNK *);
     s32 sp0[2];
     s32 var_r5;
 
-    func_ov001_02183e58(1, sp0);
+    Ov001_GetScrollbarPartRect(1, sp0);
     if (func_ov001_0218bc44(sp0) != 0) {
         return 1;
     }
     var_r5 = 2;
 loop_3:
-    func_ov001_02183e58(var_r5, sp0);
+    Ov001_GetScrollbarPartRect(var_r5, sp0);
     if (func_ov001_0218bc44(sp0) != 0) {
         return var_r5;
     }
     var_r5 += 1;
     if (var_r5 > 3) {
-        func_ov001_02183e58(4, sp0);
+        Ov001_GetScrollbarPartRect(4, sp0);
         if (TouchRectPressed(sp0) != 0) {
             return 4;
         }
@@ -217,14 +220,14 @@ loop_3:
 }
 
 s32 func_ov001_02183e0c(void) {
-    void func_ov001_02183e58(s32, M2C_UNK *);
+    void Ov001_GetScrollbarPartRect(s32, M2C_UNK *);
     s32 TouchRectReleased(M2C_UNK *);
     s32 sp0[2];
     s32 var_r5;
 
     var_r5 = 2;
 loop_1:
-    func_ov001_02183e58(var_r5, sp0);
+    Ov001_GetScrollbarPartRect(var_r5, sp0);
     if (TouchRectReleased(sp0) != 0) {
         return var_r5;
     }
@@ -235,56 +238,60 @@ loop_1:
     return 0;
 }
 
-void func_ov001_02183e58(s32 arg0, M2C_UNK *arg1) {
-    extern void *data_ov001_02193dfc;
-    extern u8 data_ov001_0218fb5c[];
-    u16 f10;
-    f10 = M2C_FIELD(data_ov001_02193dfc, u16 *, 0x10);
-    M2C_FIELD(arg1, u16 *, 0x0) = f10;
-    M2C_FIELD(arg1, u16 *, 0x4) = (u16)(f10 + 0xC);
-    switch (arg0) {
+/* Fill `rect` with the touch rectangle (left, top, right, bottom) of one part of
+ * the friend roster's vertical scroll bar: the handle, the cap above or below
+ * the track, or the track itself.  The bar is a 12-pixel-wide column. */
+void Ov001_GetScrollbarPartRect(s32 part, M2C_UNK *rect) {
+    extern void *gOv001Scrollbar;
+    extern u8 gOv001ScrollbarHandleLengths[];
+    u16 barX;
+
+    barX = M2C_FIELD(gOv001Scrollbar, u16 *, OV001_SCROLLBAR_X);
+    M2C_FIELD(rect, u16 *, RECT_LEFT) = barX;
+    M2C_FIELD(rect, u16 *, RECT_RIGHT) = (u16)(barX + 0xC);
+    switch (part) {
         case 0:
         default:
             break;
-        case 1: {
-            M2C_FIELD(arg1, u16 *, 0x2) = (u16)(M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12) + M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1A));
-            M2C_FIELD(arg1, u16 *, 0x6) = (u16)(M2C_FIELD(arg1, u16 *, 0x2) + (u16)data_ov001_0218fb5c[M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1B)]);
+        case OV001_SCROLLBAR_PART_HANDLE: {
+            M2C_FIELD(rect, u16 *, RECT_TOP) = (u16)(M2C_FIELD(gOv001Scrollbar, u16 *, OV001_SCROLLBAR_Y) + M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_HANDLE_POS));
+            M2C_FIELD(rect, u16 *, RECT_BOTTOM) = (u16)(M2C_FIELD(rect, u16 *, RECT_TOP) + (u16)gOv001ScrollbarHandleLengths[M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_KIND)]);
             break;
         }
-        case 2: {
-            M2C_FIELD(arg1, u16 *, 0x2) = (u16)(M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12) - 0xD);
-            M2C_FIELD(arg1, u16 *, 0x6) = M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12);
+        case OV001_SCROLLBAR_PART_UP: {
+            M2C_FIELD(rect, u16 *, RECT_TOP) = (u16)(M2C_FIELD(gOv001Scrollbar, u16 *, OV001_SCROLLBAR_Y) - 0xD);
+            M2C_FIELD(rect, u16 *, RECT_BOTTOM) = M2C_FIELD(gOv001Scrollbar, u16 *, OV001_SCROLLBAR_Y);
             break;
         }
-        case 3: {
-            M2C_FIELD(arg1, u16 *, 0x2) = (u16)(M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12) + M2C_FIELD(data_ov001_02193dfc, u8 *, 0x19));
-            M2C_FIELD(arg1, u16 *, 0x6) = (u16)(M2C_FIELD(arg1, u16 *, 0x2) + 0xD);
+        case OV001_SCROLLBAR_PART_DOWN: {
+            M2C_FIELD(rect, u16 *, RECT_TOP) = (u16)(M2C_FIELD(gOv001Scrollbar, u16 *, OV001_SCROLLBAR_Y) + M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_TRACK));
+            M2C_FIELD(rect, u16 *, RECT_BOTTOM) = (u16)(M2C_FIELD(rect, u16 *, RECT_TOP) + 0xD);
             break;
         }
-        case 4: {
-            u16 f12;
-            f12 = M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12);
-            M2C_FIELD(arg1, u16 *, 0x2) = f12;
-            M2C_FIELD(arg1, u16 *, 0x6) = (u16)(f12 + M2C_FIELD(data_ov001_02193dfc, u8 *, 0x19));
+        case OV001_SCROLLBAR_PART_TRACK: {
+            u16 barY;
+            barY = M2C_FIELD(gOv001Scrollbar, u16 *, OV001_SCROLLBAR_Y);
+            M2C_FIELD(rect, u16 *, RECT_TOP) = barY;
+            M2C_FIELD(rect, u16 *, RECT_BOTTOM) = (u16)(barY + M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_TRACK));
             break;
         }
     }
 }
 
-void func_ov001_02183f30(s32 arg0) {
+void Ov001_SetScrollbarHandlePos(s32 arg0) {
     s32 Ov001_MoveSpriteLayout(M2C_UNK, s32, u16, s32);
-    extern void *data_ov001_02193dfc;
+    extern void *gOv001Scrollbar;
     u16 f10;
     u16 f12;
     void *nested;
     void *base;
 
-    base = data_ov001_02193dfc;
+    base = gOv001Scrollbar;
     f12 = M2C_FIELD(base, u16 *, 0x12);
     f10 = M2C_FIELD(base, u16 *, 0x10);
     nested = M2C_FIELD(base, void **, 0x0);
     Ov001_MoveSpriteLayout(nested, -1, f10, arg0 + (s32)f12);
-    M2C_FIELD(data_ov001_02193dfc, s8 *, 0x1A) = (s8)arg0;
+    M2C_FIELD(gOv001Scrollbar, s8 *, 0x1A) = (s8)arg0;
 }
 
 void func_ov001_02183f6c(void) {
@@ -705,7 +712,7 @@ void func_ov001_02184824(s32 arg0) {
     func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4cc], q[1], t0, t1);
 }
 #pragma opt_strength_reduction reset
-u8 func_ov001_02184868(s32 arg0) {
+u8 Ov001_GetSaveSlotStatus(s32 arg0) {
     extern s32 gSaveData;
     return *((u8 *)((s8 *)gSaveData + (arg0 << 8) + 0xe7));
 }

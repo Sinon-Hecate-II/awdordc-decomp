@@ -413,41 +413,46 @@ default:return 0;
 return 1;
 }
 
-s32 func_ov010_02224dd8(void *p,u32 size) {
-extern M2C_UNK data_ov010_0222d908;
+/* Build the link's packet free list: the caller's 32-byte aligned buffer of
+ * size bytes is cleared and carved into LINK_PACKET_SIZE-byte packets that are
+ * threaded onto gLinkPacketPool.freeList. The packet count must be within
+ * LINK_PACKET_POOL_MIN..LINK_PACKET_POOL_MAX. Returns 1 on success, 0 when the
+ * buffer or its size is unusable. */
+s32 VoiceLink_InitPacketPool(void *buf,u32 size) {
+extern M2C_UNK gLinkPacketPool;
 void MI_CpuFill32(s32,void *,u32);
-u32 n=size/0x478; s32 i;
-M2C_FIELD(&data_ov010_0222d908,void **,8)=p;
-if(n<4 || n>0x48)return 0;
-if(!p)return 0;
-if((u32)p&31){M2C_FIELD(&data_ov010_0222d908,void **,8)=0;return 0;}
-MI_CpuFill32(0,p,size);
-for(i=0;i<n-1;i++) {
-void *base=M2C_FIELD(&data_ov010_0222d908,void **,8);
-M2C_FIELD(base+i*0x478,void **,0)=base+(i+1U)*0x478;
+u32 count=size/LINK_PACKET_SIZE; s32 i;
+((LinkPacketPool *)&gLinkPacketPool)->base=buf;
+if(count<LINK_PACKET_POOL_MIN||count>LINK_PACKET_POOL_MAX)return 0;
+if(!buf)return 0;
+if((u32)buf&31){((LinkPacketPool *)&gLinkPacketPool)->base=0;return 0;}
+MI_CpuFill32(0,buf,size);
+for(i=0;i<count-1;i++) {
+void *base=((LinkPacketPool *)&gLinkPacketPool)->base;
+M2C_FIELD(base+i*LINK_PACKET_SIZE,void **,0)=base+(i+1U)*LINK_PACKET_SIZE;
 }
-M2C_FIELD(M2C_FIELD(&data_ov010_0222d908,void **,8)+n*0x478,void **,-0x478)=0;
-M2C_FIELD(&data_ov010_0222d908,void **,4)=M2C_FIELD(&data_ov010_0222d908,void **,8);
+M2C_FIELD(((LinkPacketPool *)&gLinkPacketPool)->base+count*LINK_PACKET_SIZE,void **,-LINK_PACKET_SIZE)=0;
+((LinkPacketPool *)&gLinkPacketPool)->freeList=((LinkPacketPool *)&gLinkPacketPool)->base;
 return 1;
 }
 
 void func_ov010_02224ea0(void) {
-    extern M2C_UNK data_ov010_0222d908;
-    M2C_FIELD(&data_ov010_0222d908, s32 *, 4) = 0;
-    M2C_FIELD(&data_ov010_0222d908, s32 *, 8) = 0;
+    extern M2C_UNK gLinkPacketPool;
+    M2C_FIELD(&gLinkPacketPool, s32 *, 4) = 0;
+    M2C_FIELD(&gLinkPacketPool, s32 *, 8) = 0;
 }
 
 void *func_ov010_02224eb8(void) {
-extern M2C_UNK data_ov010_0222d908;
+extern M2C_UNK gLinkPacketPool;
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
 void *r=0; void *p;
-M2C_FIELD(&data_ov010_0222d908,s32 *,0)=OS_DisableInterrupts();
-p=M2C_FIELD(&data_ov010_0222d908,void **,4);
-if(p){r=p;M2C_FIELD(&data_ov010_0222d908,void **,4)=M2C_FIELD(p,void **,0);}
-OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));return r;
+M2C_FIELD(&gLinkPacketPool,s32 *,0)=OS_DisableInterrupts();
+p=M2C_FIELD(&gLinkPacketPool,void **,4);
+if(p){r=p;M2C_FIELD(&gLinkPacketPool,void **,4)=M2C_FIELD(p,void **,0);}
+OS_RestoreInterrupts(M2C_FIELD(&gLinkPacketPool,s32 *,0));return r;
 }
 
-void Link_FreePacket(void *p){extern M2C_UNK data_ov010_0222d908;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&data_ov010_0222d908,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&data_ov010_0222d908,void **,4);M2C_FIELD(&data_ov010_0222d908,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));}
+void Link_FreePacket(void *p){extern M2C_UNK gLinkPacketPool;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&gLinkPacketPool,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&gLinkPacketPool,void **,4);M2C_FIELD(&gLinkPacketPool,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&gLinkPacketPool,s32 *,0));}
 
 #pragma optimization_level 3
 #pragma peephole off

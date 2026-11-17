@@ -3,7 +3,7 @@
 typedef struct { u32 first, second; } Unk0200FilePair;
 
 void func_0200bda4(s32 arg0) {
-    s32 func_0200558c(void);
+    s32 OS_GetLockID(void);
     void func_02010c14(void);
     void func_0200b118(void *);
     s32 func_0200b184(void *, M2C_UNK, M2C_UNK);
@@ -20,7 +20,7 @@ void func_0200bda4(s32 arg0) {
     register u32 *base = (u32 *)0x27ffc40;
 
     M2C_FIELD(&data_0212fbfc, s32 *, 4) = arg0;
-    M2C_FIELD(&data_0212fbfc, s32 *, 0) = func_0200558c();
+    M2C_FIELD(&data_0212fbfc, s32 *, 0) = OS_GetLockID();
     M2C_FIELD(&data_0212fbfc, s32 *, 8) = 0;
     M2C_FIELD(&data_0212fbfc, s32 *, 0xc) = 0;
     M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = 0;

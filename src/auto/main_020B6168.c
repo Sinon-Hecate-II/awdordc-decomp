@@ -100,7 +100,7 @@ void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     M2C_FIELD(task, s16 *, 0x4E) = tileIdx;
     M2C_FIELD(task, s32 *, 0x50) = 0;
     StringCopy(task + 0x34, &data_02128e98);
-    func_0207b774(x, y);
+    PanMapViewToTile(x, y);
 }
 
 void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
@@ -116,7 +116,7 @@ void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     M2C_FIELD(p, s16 *, 0x4E) = arg3;
     M2C_FIELD(p, s32 *, 0x50) = 0;
     StringCopy(p + 0x34, &data_02128ea4);
-    func_0207b774(arg0, arg1);
+    PanMapViewToTile(arg0, arg1);
 }
 
 void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
@@ -132,7 +132,7 @@ void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     M2C_FIELD(p, s16 *, 0x4E) = arg3;
     M2C_FIELD(p, s32 *, 0x50) = 0;
     StringCopy(p + 0x34, &data_02128eb0);
-    func_0207b774(arg0, arg1);
+    PanMapViewToTile(arg0, arg1);
 }
 
 void func_020b6444(void *arg0) {
@@ -272,7 +272,7 @@ void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
  temp_r0 = CreateSpriteObject(&data_02128b8c, arg2);
     M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
-    func_0207b774(arg0, arg1);
+    PanMapViewToTile(arg0, arg1);
 }
 
 #pragma opt_propagation off
@@ -335,7 +335,7 @@ s32 GetTargetCount(void); void *GetTargetPosition(s32);s32 func_020720f0(s32,s32
 extern void **gCurrentMap;
 s32 x=0,y=0,n=0,i=start;void *p;u16 id;
 for(;i<GetTargetCount();i++){id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;x+=M2C_FIELD(p,u8 *,1);y+=M2C_FIELD(p,u8 *,2);n++;}
-if(n>0)func_0207b774(func_020720f0(x,n),func_020720f0(y,n));
+if(n>0)PanMapViewToTile(func_020720f0(x,n),func_020720f0(y,n));
 }
 
 void func_020b6b40(void *arg0) {
@@ -478,9 +478,9 @@ temp_r0 = CreateSpriteObject(&data_02128cac, arg3);
 }
 
 void func_020b6fd8(void *arg0) {
-    M2C_UNK func_0207b774(s32, s32);
+    M2C_UNK PanMapViewToTile(s32, s32);
     func_020b51dc();
-    func_0207b774(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_020b6ff4(void *arg0) {
@@ -499,7 +499,7 @@ void func_020b7050(void *arg0) {
     s32 temp_r4;
 
     temp_r4 = func_020b5134(&data_02128f64, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, func_020b5200(&data_02128f54, 1), 1, arg0);
-    func_0207b774(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
     func_0207b7e8(temp_r4);
 }
 

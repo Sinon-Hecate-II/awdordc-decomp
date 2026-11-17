@@ -181,18 +181,18 @@ void RunAiMap175MoveOverride(void) {
 void func_ov000_0218049c(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
 }
 
 void func_ov000_021804b0(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
 }
 
@@ -205,7 +205,7 @@ void func_ov000_021804c4(void) {
 
 void func_ov000_021804d4(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_021954a4();
@@ -219,7 +219,7 @@ void func_ov000_021804d4(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
@@ -267,7 +267,7 @@ void func_ov000_0218053c(void) {
 
 void func_ov000_021805a0(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219553c();
@@ -281,7 +281,7 @@ void func_ov000_021805a0(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
@@ -299,7 +299,7 @@ void func_ov000_021805a0(void) {
 
 void func_ov000_02180608(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_02195750();
@@ -313,7 +313,7 @@ void func_ov000_02180608(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
@@ -331,7 +331,7 @@ void func_ov000_02180608(void) {
 
 void func_ov000_02180670(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_02195ea4();
@@ -345,7 +345,7 @@ void func_ov000_02180670(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
@@ -363,7 +363,7 @@ void func_ov000_02180670(void) {
 
 void func_ov000_021806d8(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219604c();
@@ -375,7 +375,7 @@ void func_ov000_021806d8(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;

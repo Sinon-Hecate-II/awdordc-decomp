@@ -97,7 +97,7 @@ void BuildUnitMoveRange(void *);
 s32 GetCaptureTurnsLeft(void *);
 s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16);
-s32 func_ov000_021a9860(s32,s32);
+s32 IsPropertyCell(s32,s32);
 void func_ov000_02199f38(void);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);
 void ClearUnitMoveTarget(void);
@@ -123,7 +123,7 @@ if(!M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)continue;
 }
 terrainKind=M2C_FIELD(TileF468(cellX,cellY),u8 *,0x1420)&31;
 if(healthyUnit==1&&terrainKind!=24)continue;
-if(!func_ov000_021a9860(cellX,cellY))continue;
+if(!IsPropertyCell(cellX,cellY))continue;
 map=MapF468();
 if(cellX==M2C_FIELD(SelectedF468(),DestF468 *,8).x&&cellY==M2C_FIELD(SelectedF468(),DestF468 *,8).y)cellScore=M2C_FIELD(gAiCommandState,u8 *,5)+1;
 else cellScore=M2C_FIELD(M2C_FIELD(map+cellY*4,s8 **,0x52e8),s8 *,cellX);

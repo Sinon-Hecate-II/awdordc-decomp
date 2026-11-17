@@ -63,17 +63,21 @@ void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
     }
 }
 
-s32 func_02015c18(void *a,void *b) {
+/* Build a multiboot program's chunk index: three u32 byte offsets followed by
+ * three u16 cumulative block counts (the last doubling as the total at +0x12),
+ * derived from the program descriptor's three 16-byte chunk entries.  Returns 0
+ * if the descriptor is null or a chunk's source range is invalid. */
+s32 Mb_BuildChunkIndex(void *chunkIndex,void *program) {
 extern void *gMbWork;
 u32 func_020722fc(u32,u32);
-s32 func_02015e44(u32,u32,u32);
-void *entries;u16 *counts=a+12;u32 sum=0;u8 i;
-if(!b)return 0;
-for(i=0;i<3;i++){((u32 *)a)[i]=sum;sum+=M2C_FIELD(b+i*16,u32 *,0x14);}
-counts[0]=0;entries=b+12;
-for(i=0;i<3;i++){void *e=entries+i*16;u32 block=M2C_FIELD(gMbWork,u32 *,0x1318);u32 n=M2C_FIELD(e,u32 *,8);u16 end=counts[i]+(u16)func_020722fc(n+block-1,block);
-if(!func_02015e44(i,M2C_FIELD(e,u32 *,4),n))return 0;
-if(i<2)counts[i+1]=end;else M2C_FIELD(a,u16 *,0x12)=end;
+s32 Mb_ValidateChunkRange(u32,u32,u32);
+void *chunks;u16 *blockOffsets=chunkIndex+12;u32 byteOffset=0;u8 i;
+if(!program)return 0;
+for(i=0;i<3;i++){((u32 *)chunkIndex)[i]=byteOffset;byteOffset+=M2C_FIELD(program+i*16,u32 *,0x14);}
+blockOffsets[0]=0;chunks=program+12;
+for(i=0;i<3;i++){void *chunk=chunks+i*16;u32 blockSize=M2C_FIELD(gMbWork,u32 *,0x1318);u32 size=M2C_FIELD(chunk,u32 *,8);u16 end=blockOffsets[i]+(u16)func_020722fc(size+blockSize-1,blockSize);
+if(!Mb_ValidateChunkRange(i,M2C_FIELD(chunk,u32 *,4),size))return 0;
+if(i<2)blockOffsets[i+1]=end;else M2C_FIELD(chunkIndex,u16 *,0x12)=end;
 }return 1;
 }
 
@@ -98,9 +102,9 @@ found:
  M2C_FIELD(out,u8 *,0xC)=i;return 1;
 }
 
-s32 func_02015d98(s32 a,u32 p,u32 n) {
- extern const u32 data_020ea72c[];
- switch(data_020ea72c[a]){
+s32 Mb_ValidateChunkWindow(s32 a,u32 p,u32 n) {
+ extern const u32 sMbChunkKinds[];
+ switch(sMbChunkKinds[a]){
  case 2:if(p>=0x027FFE00 && p+n<=0x027FFF60)return 1;break;
  case 0:if(p>=0x02000000 && p+n<=0x022C0000)return 1;break;
  case 1:if(p>=0x022C0000 && p+n<=0x02300000)return 1;
@@ -109,27 +113,34 @@ s32 func_02015d98(s32 a,u32 p,u32 n) {
  }return 0;
 }
 
-s32 func_02015e44(u32 a, u32 p, u32 n) {
- extern const u32 data_020ea72c[];
- u32 end;
- switch(data_020ea72c[a]) {
- case 0:
- case 2: return func_02015d98(a,p,n);
- case 1:
- if(p>=0x02000000 && p<0x023FE800) {
- end=p+n;
- if(p<0x02300000 && end>0x02300000)return 0;
- if(end<=0x02300000)return 1;
- if(end<0x023FE800 && n<=0x40000)return 1;
- return 0;
- }
- if(p>=0x037F8000 && p<0x0380F000) {
- return p+n<=0x0380F000 ? 1:0;
- }
- break;
- default:return 0;
- }
- return 0;
+/* Validate a multiboot download chunk of `size` bytes at `addr`: sMbChunkKinds
+ * gives the chunk's memory kind and the range must fit that kind's address
+ * window (kinds 0 and 2 have fixed windows; kind 1 may sit in main RAM, crossing
+ * 0x02300000 only for a small block, or in the 0x037F8000 region).  Returns 1
+ * when the range is valid. */
+s32 Mb_ValidateChunkRange(u32 chunk, u32 addr, u32 size) {
+    extern const u32 sMbChunkKinds[];
+    u32 end;
+    switch (sMbChunkKinds[chunk]) {
+    case 0:
+    case 2:
+        return Mb_ValidateChunkWindow(chunk, addr, size);
+    case 1:
+        if (addr >= 0x02000000 && addr < 0x023FE800) {
+            end = addr + size;
+            if (addr < 0x02300000 && end > 0x02300000) return 0;
+            if (end <= 0x02300000) return 1;
+            if (end < 0x023FE800 && size <= 0x40000) return 1;
+            return 0;
+        }
+        if (addr >= 0x037F8000 && addr < 0x0380F000) {
+            return addr + size <= 0x0380F000 ? 1 : 0;
+        }
+        break;
+    default:
+        return 0;
+    }
+    return 0;
 }
 
 void SendMatchPacket(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {

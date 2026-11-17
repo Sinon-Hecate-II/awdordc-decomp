@@ -1,5 +1,6 @@
 /* 28 functions from 0x02095C90 to 0x02096C7C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 unk0, unk2, unk4, unk6; } Unk0209Rect;
 typedef struct { u8 kind:6; u8 owner:2; u8 rest[13]; } Unit964;
 extern u8 data_02102ee4[];
@@ -115,45 +116,48 @@ void func_02096b88(void) {
     func_01ffa3dc(&data_02102d84, 7);
 }
 
-void func_02096ba4(s32 arg0, M2C_UNK arg1) {
+/* Refresh the map records for `player`'s team when the view switches to it: count
+ * every active teammate's units into the first active opponent's opposing-unit
+ * total, refresh each teammate's record, then finish the view update. */
+void UpdateTeamRecords(s32 player, M2C_UNK flags) {
     M2C_UNK func_020c9b70();
     M2C_UNK func_020c9ebc(s32, M2C_UNK);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
     s32 temp_r0;
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
-    s32 var_r7;
-    s32 var_r8;
+    s32 opponent;
+    s32 scan;
+    s32 mate;
+    s32 offset;
+    s32 opponentOffset;
     void *temp_r1;
 
-    var_r5 = -1;
-    var_r4 = 1;
+    opponent = -1;
+    scan = 1;
 loop_1:
-    if ((IsPlayerActive(var_r4) != 0) && (IsSameTeam(arg0, var_r4) == 0)) {
-        var_r5 = var_r4;
+    if ((IsPlayerActive(scan) != 0) && (IsSameTeam(player, scan) == 0)) {
+        opponent = scan;
     } else {
-        var_r4 += 1;
-        if (var_r4 < 5) {
+        scan += 1;
+        if (scan < 5) {
             goto loop_1;
         }
     }
-    var_r7 = 0x8C;
-    var_r6 = 1;
-    var_r8 = var_r5 * 0x8C;
+    offset = MAP_PLAYER_STRIDE;
+    mate = 1;
+    opponentOffset = opponent * MAP_PLAYER_STRIDE;
     do {
-        if ((IsSameTeam(arg0, var_r6) != 0) && (IsPlayerActive(var_r6) != 0)) {
-            if (var_r5 != -1) {
+        if ((IsSameTeam(player, mate) != 0) && (IsPlayerActive(mate) != 0)) {
+            if (opponent != -1) {
                 temp_r0 = *gCurrentMap;
-                temp_r1 = var_r8 + temp_r0;
-                M2C_FIELD(temp_r1, u16 *, 0x67C6) = (u16) (M2C_FIELD(temp_r1, u16 *, 0x67C6) + M2C_FIELD((temp_r0 + var_r7), u8 *, 0x67D5));
+                temp_r1 = opponentOffset + temp_r0;
+                M2C_FIELD(temp_r1, u16 *, PLAYER_ENEMY_UNITS_OFF) = (u16) (M2C_FIELD(temp_r1, u16 *, PLAYER_ENEMY_UNITS_OFF) + M2C_FIELD((temp_r0 + offset), u8 *, PLAYER_UNIT_COUNT_OFF));
             }
-            func_020c9ebc(var_r6, arg1);
+            func_020c9ebc(mate, flags);
         }
-        var_r6 += 1;
-        var_r7 += 0x8C;
-    } while (var_r6 < 5);
+        mate += 1;
+        offset += MAP_PLAYER_STRIDE;
+    } while (mate < 5);
     func_020c9b70();
 }

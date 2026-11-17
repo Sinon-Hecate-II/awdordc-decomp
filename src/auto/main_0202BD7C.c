@@ -357,7 +357,7 @@ result=LoadWaveArchive(((u16 *)bankRecord)[i+2],flags,pool,create,&waveObject);i
 if(((Unk0202PackedId *)waveRecord)->flags&1 && loadWaveArchives){
 if(!func_0202d1d4(waveObject,bank,i,((Unk0202PackedId *)waveRecord)->id,pool))return 9;
 }
-if(bank&&waveObject)func_02009940(bank,i,waveObject);
+if(bank&&waveObject)Link_SetSlotOwner(bank,i,waveObject);
 }
 if(out)*(s32 *)out=bank;
 return 0;
@@ -372,12 +372,12 @@ if(out)*out=r;return 0;
 }
 
 s32 func_0202cc6c(s32 a,M2C_UNK *b,s32 c,s32 d,s32 pool) {
-void func_020067c4(void *,s32);
+void DC_CleanRange(void *,s32);
 s32 n=func_0202c384(a);void *p;
 if(!n)return 0;if(!pool)return 0;
 p=func_0202c5f0((s32 *)pool,n+32,(s32)b,c,d);if(!p)return 0;
 if(n!=func_0202c3ac(a,p,n,0))return 0;
-func_020067c4(p,n);return (s32)p;
+DC_CleanRange(p,n);return (s32)p;
 }
 
 s32 func_0202cd0c(M2C_UNK arg0, s32 arg1, s32 arg2) {

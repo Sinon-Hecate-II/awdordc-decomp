@@ -132,7 +132,7 @@ s32 func_0205585c(s32 *arg0, s32 *arg1) {
 
 void func_0205586c(void *arg0) {
     M2C_UNK gpiFree(void *);
-    M2C_UNK func_02053f18(void *);
+    M2C_UNK gpiFreeInfo(void *);
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 8);
@@ -144,7 +144,7 @@ void func_0205586c(void *arg0) {
         gpiFree(M2C_FIELD(arg0, void **, 8));
         M2C_FIELD(arg0, void **, 8) = NULL;
     }
-    func_02053f18(arg0);
+    gpiFreeInfo(arg0);
     gpiFree(M2C_FIELD(arg0, void **, 0x10));
     M2C_FIELD(arg0, void **, 0x10) = NULL;
     gpiFree(M2C_FIELD(arg0, void **, 0x18));
@@ -163,12 +163,12 @@ return p->handle!=0;
    check it reads the \profileid\ field and, if the player callback is set, queues
    it with the profile id; the packet is otherwise ignored. */
 s32 gpiProcessNewPlayer(void **connection,void *request,s32 command) {
-s32 func_0205817c(void **,s32,s32);void gpiSetError(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
+s32 gpiProcessErrorReply(void **,s32,s32);void gpiSetError(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
 s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
 s32 gpiValueForKey(s32,void *,void *,s32);s32 ParseInt(void *);
 extern M2C_UNK gGpiNewPlayerTag,gGpiMsgUnexpectedData,gGpiProfileIdKey,gGpiNewPlayerMsgOutOfMemory;
 char idText[16];Unk02050838Pair callback;s32 *data;s32 result;s32 profileId;
-if(func_0205817c(connection,command,1))return 4;
+if(gpiProcessErrorReply(connection,command,1))return 4;
 if(StringCompareN(command,&gGpiNewPlayerTag,5)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
 if(!gpiValueForKey(command,&gGpiProfileIdKey,idText,16)){gpiSetError(connection,1,(s32)&gGpiMsgUnexpectedData);gpiCallErrorCallback(connection,3,1);return 3;}
 profileId=ParseInt(idText);

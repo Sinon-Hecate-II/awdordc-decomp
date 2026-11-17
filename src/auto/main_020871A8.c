@@ -1,5 +1,6 @@
 /* 17 functions from 0x020871A8 to 0x02088044 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_grid.h"
 
 void func_020871a8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 arg5) {
     s32 x, y, z;
@@ -83,7 +84,7 @@ px=qx;py=qy;}}else {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>2);i++){func_
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 px=qx;py=qy;}}*(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;}
 #pragma pop
-void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
+void DrawTexturedQuadUV(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     u16 temp_r0;
     u16 temp_r10;
     u16 temp_r6;
@@ -145,16 +146,20 @@ vB=(u16)((s32)(((t2<<12)+0x800)<<8)>>16);
 *(volatile u32*)0x4000504=0;
 }
 #pragma pop
-void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);
-void func_02087b94(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10) {
-    if (arg9 != 0 && arg10 != 0) {
-        func_020878c4(arg0, arg1, arg2, arg3, arg4, arg7 - 1, arg8 - 1, arg5 - 1, arg6 - 1);
-    } else if (arg9 != 0) {
-        func_020878c4(arg0, arg1, arg2, arg3, arg4, arg7 - 1, arg6, arg5 - 1, arg8);
-    } else if (arg10 != 0) {
-        func_020878c4(arg0, arg1, arg2, arg3, arg4, arg5, arg8 - 1, arg7, arg6 - 1);
+void DrawTexturedQuadUV(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);
+/* Draws a textured quad (position x,y, depth z, size w x h) sampling texels
+ * (u0,v0)..(u1,v1), mirroring the texture on the S axis, the T axis or both when
+ * the matching flip flag is set; the -1 on a mirrored edge skips the last texel
+ * so the mirrored span stays inside the source rectangle. */
+void DrawTexturedQuadUVFlip(s32 x, s32 y, s32 z, s32 w, s32 h, s32 u0, s32 v0, s32 u1, s32 v1, s32 hFlip, s32 vFlip) {
+    if (hFlip != 0 && vFlip != 0) {
+        DrawTexturedQuadUV(x, y, z, w, h, u1 - 1, v1 - 1, u0 - 1, v0 - 1);
+    } else if (hFlip != 0) {
+        DrawTexturedQuadUV(x, y, z, w, h, u1 - 1, v0, u0 - 1, v1);
+    } else if (vFlip != 0) {
+        DrawTexturedQuadUV(x, y, z, w, h, u0, v1 - 1, u1, v0 - 1);
     } else {
-        func_020878c4(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        DrawTexturedQuadUV(x, y, z, w, h, u0, v0, u1, v1);
     }
 }
 
@@ -245,22 +250,35 @@ void func_02087f00(void *p, s32 id) { void func_02087ec0(void *, s32); func_0208
 
 s32 func_02087f20(s32 a,void *b,s32 c,s32 d) {s32 x=M2C_FIELD(b,s16 *,0);s32 y;if(c<x || x+M2C_FIELD(b,u16 *,4)<=c)return 0;y=M2C_FIELD(b,s16 *,2);if(d<y || y+M2C_FIELD(b,u16 *,6)<=d)return 0;return 1;}
 
-s32 func_02087f70(void *a,s32 x,s32 y){
-s32 left=M2C_FIELD(a,s16*,0x18);
-s32 top;u16 n;void *p;s32 i;u16 pad;s16 px,py;
-if(x<left || left+M2C_FIELD(a,u16*,0x1c)<=x)return 0;
-top=M2C_FIELD(a,s16*,0x1a);
-if(y<top || top+M2C_FIELD(a,u16*,0x1e)<=y)return 0;
-n=M2C_FIELD(a,u16*,0x10);p=M2C_FIELD(a,void**,0x14);
-for(i=0;i<n;i++,p=(u8*)p+12){
-if(M2C_FIELD(p,u16*,10)){
-pad=M2C_FIELD(a,u16*,0x20);px=M2C_FIELD(p,s16*,0);
-if(x<px-pad)continue;
-if(px+M2C_FIELD(p,u16*,4)+pad<=x)continue;
-py=M2C_FIELD(p,s16*,2);
-if(y<py-pad)continue;
-if(py+M2C_FIELD(p,u16*,6)+pad>y)return 0;
-}}
-return 1;
+/* Tests whether a point falls on a sprite cell list's background: it must lie
+ * inside the list's bounding box and on none of its active cells (each cell's
+ * rectangle expanded by the list's hit tolerance).  Returns 1 on a background
+ * hit, 0 when the point is outside the box or on a cell. */
+s32 SpriteCellListBackgroundHit(void *list, s32 x, s32 y) {
+    s32 left = M2C_FIELD(list, s16 *, SPRITE_CELL_LIST_BOX_LEFT);
+    s32 top;
+    u16 count;
+    SpriteCell *cell;
+    s32 i;
+    u16 pad;
+    s16 px, py;
+
+    if (x < left || left + M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_BOX_WIDTH) <= x) return 0;
+    top = M2C_FIELD(list, s16 *, SPRITE_CELL_LIST_BOX_TOP);
+    if (y < top || top + M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_BOX_HEIGHT) <= y) return 0;
+    count = M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_CAPACITY);
+    cell = M2C_FIELD(list, SpriteCell **, SPRITE_CELL_LIST_CELLS);
+    for (i = 0; i < count; i++, cell++) {
+        if (cell->attr) {
+            pad = M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_HIT_PAD);
+            px = cell->x;
+            if (x < px - pad) continue;
+            if (px + M2C_FIELD(cell, u16 *, 4) + pad <= x) continue;
+            py = cell->y;
+            if (y < py - pad) continue;
+            if (py + M2C_FIELD(cell, u16 *, 6) + pad > y) return 0;
+        }
+    }
+    return 1;
 }
 

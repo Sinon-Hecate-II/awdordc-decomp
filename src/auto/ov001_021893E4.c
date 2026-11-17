@@ -21,6 +21,12 @@
 #define PROFILE_ID_JOIN    0xBD   /* entry id: the joining player said yes */
 typedef struct A070Node { struct A070Node *prev; struct A070Node *next; s32 start; u8 size; u8 pad[3]; } A070Node;
 typedef struct A070Pool { u8 pad[0x200]; A070Node head; A070Node tail; s32 unk220; s32 handle; } A070Pool;
+/* The ov001 sprite-object pools (gOv001SpritePools): each pool recycles 0x10-byte
+ * sprite objects through freeObjs and keeps the blocks it has handed out in an
+ * address-ordered list bookended by the head/tail sentinels. */
+typedef struct Ov001SpritePool { u8 slots[0x200]; A070Node head; A070Node tail; s32 list; s32 freeObjs; } Ov001SpritePool;
+#define OV001_SPRITE_POOL_COUNT 2
+#define OV001_SPRITE_POOLS ((Ov001SpritePool *)gOv001SpritePools)
 
 /* Advances the download-play (single-card) setup from the multiboot link status:
  * starts the profile transfer, waits for the connected players or drops them when a
@@ -311,7 +317,7 @@ void func_ov001_02189ad0(void) {
     void InitFileRequest(void *);
     s32 OpenFileRequest(void *, void *);
     void SystemHalt(void);
-    s32 func_0200558c(void);
+    s32 OS_GetLockID(void);
     void FileRead(void *, void *, s32);
     void CloseFileRequest(void *);
     void func_0200b118(void *);
@@ -342,7 +348,7 @@ void func_ov001_02189ad0(void) {
     if (!OpenFileRequest(request, data_ov001_02191794)) {
         SystemHalt();
     }
-    M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4) = (u16)func_0200558c();
+    M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4) = (u16)OS_GetLockID();
     fileSize = *(s32 *)(request + 0x24);
     FileRead(request, hi, 8);
     FileRead(request, lo, 8);
@@ -371,13 +377,13 @@ void func_0200bc5c(void *);
 void func_0200b510(void *);
 void func_0200b32c(void *);
 void func_0200b238(void *);
-void func_020055f4(u16);
+void OS_ReleaseLockID(u16);
 void Ov001_FreeAlloc(void *);
 func_0200bc5c(data_ov001_021917b4);
 func_0200b510((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
 func_0200b238((u8 *)data_ov001_02193e2c+0x88);
-func_020055f4(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
+OS_ReleaseLockID(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
 M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4)=0;
 Ov001_FreeAlloc(data_ov001_02193e2c);
 M2C_FIELD(data_ov001_02193e2c,u32 *,0)=0;
@@ -385,16 +391,16 @@ Ov001_FreeAlloc((void *)0x02193e2c);
 }
 
 s32 func_ov001_02189d0c(s32 arg0, s32 arg1) {
-    M2C_UNK func_0200fe24(u16);
-    M2C_UNK func_0200fe40(u16);
+    M2C_UNK CARD_LockRom(u16);
+    M2C_UNK CARD_UnlockRom(u16);
     extern void *data_ov001_02193e2c;
     
     switch (arg1) {
     case 9:
-        func_0200fe24(M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4));
+        CARD_LockRom(M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4));
         return 0;
     case 10:
-        func_0200fe40(M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4));
+        CARD_UnlockRom(M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4));
         return 0;
     case 1:
         return 4;
@@ -426,7 +432,7 @@ s32 func_ov001_02189dc0(void) {
  * gets the size of the returned buffer; alignment is the caller's unless the buffer
  * must be freed with the compressed helper. */
 void *Ov001_LoadFile(void *path, u32 *outSize, s32 alignment) {
-s32 func_ov001_0218a74c(s32);
+s32 Ov001_QueuePop(s32);
 void InitFileRequest(void *);
 s32 OpenFileRequest(void *, void *);
 void SystemHalt(void);
@@ -442,7 +448,7 @@ u32 request[18];
 u32 size;
 s32 align;
 void *out;
-func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84));
+Ov001_QueuePop(M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84));
 InitFileRequest(request); if (!OpenFileRequest(request, path)) SystemHalt();
 size = request[10] - request[9]; if (outSize) *outSize = size;
 if (Ov001_FileHasSuffix(path, (s32)&data_ov001_021917bc, 2)) align = -4; else align = alignment;
@@ -454,9 +460,9 @@ out = (void *)Ov001_Alloc(size, alignment); Ov001_DecompressBuffer(raw, out); Ov
 }
 
 void Ov001_FreeFile(s32 arg0, ...) {
- M2C_UNK func_ov001_0218a6f4(s32,void*); void Ov001_FreeAlloc(void*); extern void *data_ov001_02193e2c;
+ M2C_UNK Ov001_QueuePush(s32,void*); void Ov001_FreeAlloc(void*); extern void *data_ov001_02193e2c;
  Ov001_FreeAlloc(&arg0);
- func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193e2c,s32*,0x84),(void*)arg0);
+ Ov001_QueuePush(M2C_FIELD(data_ov001_02193e2c,s32*,0x84),(void*)arg0);
 }
 
 s32 Ov001_FileHasSuffix(void *arg0, s32 arg1, s32 arg2) {
@@ -476,31 +482,45 @@ s32 Ov001_FileHasSuffix(void *arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-void func_ov001_02189f48(void) {
-s32 Ov001_QueueCreateFromBuffer(s32,s32,s32);s32 Ov001_Alloc(s32,s32);s32 Ov001_ListCreate();M2C_UNK Ov001_ListPushBack(s32,void *);M2C_UNK Ov001_ListPushFront(s32,void *);s32 func_ov001_0218c150(s32,s32);
-extern s32 data_ov001_02193e30;
-s32 i;void *p;
-data_ov001_02193e30=Ov001_Alloc(0x450,4);
-for(i=0;i<2;i++){
-M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x224)=Ov001_QueueCreateFromBuffer(0x20,data_ov001_02193e30+i*0x228,0x10);
-M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x220)=Ov001_ListCreate();
-M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x208)=func_ov001_0218c150(i,0x40);
-M2C_FIELD(data_ov001_02193e30+i*0x228,s32*,0x218)=func_ov001_0218c150(i,0x7f)+8;
-p=(void *)(data_ov001_02193e30+i*0x228);Ov001_ListPushFront(M2C_FIELD(p,s32*,0x220),p+0x200);
-p=(void *)(data_ov001_02193e30+i*0x228);Ov001_ListPushBack(M2C_FIELD(p,s32*,0x220),p+0x210);
-}
+/* Initializes the two ov001 sprite-object pools: allocates the pool array and,
+ * for each pool, wires up its free-object queue and its allocation list, seeding
+ * the list with the head and tail sentinels that bound the pool's 0x200-byte
+ * block region in the sprite arena. */
+void Ov001_InitSpritePools(void) {
+    s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    s32 Ov001_Alloc(s32, s32);
+    s32 Ov001_ListCreate(void);
+    void Ov001_ListPushBack(s32, void *);
+    void Ov001_ListPushFront(s32, void *);
+    s32 Ov001_SpriteObjAddr(s32, s32);
+    extern s32 gOv001SpritePools;
+    s32 i;
+    Ov001SpritePool *p;
+
+    gOv001SpritePools = Ov001_Alloc(sizeof(Ov001SpritePool) * OV001_SPRITE_POOL_COUNT, 4);
+    for (i = 0; i < OV001_SPRITE_POOL_COUNT; i++) {
+        /* 0x20 free-object slots of 0x10 bytes each fill the pool's first 0x200 bytes. */
+        OV001_SPRITE_POOLS[i].freeObjs = Ov001_QueueCreateFromBuffer(0x20, (s32)&OV001_SPRITE_POOLS[i], 0x10);
+        OV001_SPRITE_POOLS[i].list = Ov001_ListCreate();
+        OV001_SPRITE_POOLS[i].head.start = Ov001_SpriteObjAddr(i, 0x40);
+        OV001_SPRITE_POOLS[i].tail.start = Ov001_SpriteObjAddr(i, 0x7f) + 8;
+        p = &OV001_SPRITE_POOLS[i];
+        Ov001_ListPushFront(p->list, &p->head);
+        p = &OV001_SPRITE_POOLS[i];
+        Ov001_ListPushBack(p->list, &p->tail);
+    }
 }
 
 #pragma opt_propagation off
-void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 data_ov001_02193e30; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&data_ov001_02193e30); }
+void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 gOv001SpritePools; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(gOv001SpritePools+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(gOv001SpritePools+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&gOv001SpritePools); }
 #pragma opt_propagation reset
 void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
-    s32 func_ov001_0218a74c(s32);
+    s32 Ov001_QueuePop(s32);
     s32 OS_DisableIrqMask(s32);
     void OS_EnableIrqMask(s32);
     void SystemHalt(void);
     void func_ov001_0218bf84(void *, void *);
-    extern s32 data_ov001_02193e30;
+    extern s32 gOv001SpritePools;
     s32 idx = in_idx;
     s32 arg1 = in_arg1;
     s32 off = idx * 0x228;
@@ -515,11 +535,11 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     s32 curEnd;
     s32 need;
 
-    node = (A070Node *)func_ov001_0218a74c(*((s32 *)(data_ov001_02193e30 + off + 0x224)));
+    node = (A070Node *)Ov001_QueuePop(*((s32 *)(gOv001SpritePools + off + 0x224)));
     state = OS_DisableIrqMask(1);
     if (arg2 != 0) {
-        bound = (A070Node *)(data_ov001_02193e30 + off + 0x210);
-        cur = (A070Node *)(data_ov001_02193e30 + off + 0x200);
+        bound = (A070Node *)(gOv001SpritePools + off + 0x210);
+        cur = (A070Node *)(gOv001SpritePools + off + 0x200);
         if (cur != bound) {
             do {
                 next = cur->next;
@@ -537,8 +557,8 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
             SystemHalt();
         }
     } else {
-        bound = (A070Node *)(data_ov001_02193e30 + off + 0x210);
-        headBound = (A070Node *)(data_ov001_02193e30 + off + 0x200);
+        bound = (A070Node *)(gOv001SpritePools + off + 0x210);
+        headBound = (A070Node *)(gOv001SpritePools + off + 0x200);
         cur = bound;
         if (cur != headBound) {
             do {
@@ -562,10 +582,10 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     return node;
 }
 
-void func_ov001_0218a1cc(void *arg0) {
-    M2C_UNK func_ov001_0218a6f4(s32, void *);
+void Ov001_DestroySprite(void *arg0) {
+    M2C_UNK Ov001_QueuePush(s32, void *);
     M2C_UNK func_ov001_0218bf4c(void *);
-    extern s32 data_ov001_02193e30;
+    extern s32 gOv001SpritePools;
     u8 *var_r2;
     s32 var_r3;
     s32 var_r4;
@@ -581,10 +601,10 @@ void func_ov001_0218a1cc(void *arg0) {
         } while (var_r3 < (s32) M2C_FIELD(arg0, u8 *, 0xC));
     }
     func_ov001_0218bf4c(arg0);
-    if ((u32) arg0 >= (u32) (data_ov001_02193e30 + 0x228)) {
+    if ((u32) arg0 >= (u32) (gOv001SpritePools + 0x228)) {
         var_r4 = 1;
     }
-    func_ov001_0218a6f4(M2C_FIELD(((var_r4 * 0x228) + data_ov001_02193e30), s32 *, 0x224), arg0);
+    Ov001_QueuePush(M2C_FIELD(((var_r4 * 0x228) + gOv001SpritePools), s32 *, 0x224), arg0);
 }
 
 s32 Ov001_GetSpriteObjEntry(void *arg0, s32 arg1) {

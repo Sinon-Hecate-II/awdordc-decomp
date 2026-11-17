@@ -41,8 +41,8 @@ Link_GetQueueCount kind:function(arm,size=0x10) addr:0x0222392c
 func_ov010_0222393c kind:function(arm,size=0x8c) addr:0x0222393c
 func_ov010_022239c8 kind:function(arm,size=0x2c) addr:0x022239c8
 Link_AdvancePacket kind:function(arm,size=0x2c) addr:0x022239f4
-func_ov010_02223a20 kind:function(arm,size=0x20) addr:0x02223a20
-func_ov010_02223a40 kind:function(arm,size=0xd8) addr:0x02223a40
+Link_ResetChannelSequence kind:function(arm,size=0x20) addr:0x02223a20
+Link_AssignPacketSequence kind:function(arm,size=0xd8) addr:0x02223a40
 func_ov010_02223b18 kind:function(arm,size=0x3b0) addr:0x02223b18
 func_ov010_02223ec8 kind:function(arm,size=0x28) addr:0x02223ec8
 VoiceLink_ReleaseContext kind:function(arm,size=0xbc) addr:0x02223ef0
@@ -72,7 +72,7 @@ VoiceLink_HandlePeerPacket kind:function(arm,size=0x13c) addr:0x02224974
 VoiceLink_HandleControlPacket kind:function(arm,size=0x190) addr:0x02224ab0
 func_ov010_02224c40 kind:function(arm,size=0x78) addr:0x02224c40
 VoiceLink_HandleConnectPacket kind:function(arm,size=0x120) addr:0x02224cb8
-func_ov010_02224dd8 kind:function(arm,size=0xc8) addr:0x02224dd8
+VoiceLink_InitPacketPool kind:function(arm,size=0xc8) addr:0x02224dd8
 func_ov010_02224ea0 kind:function(arm,size=0x18) addr:0x02224ea0
 func_ov010_02224eb8 kind:function(arm,size=0x40) addr:0x02224eb8
 Link_FreePacket kind:function(arm,size=0x30) addr:0x02224ef8
@@ -118,7 +118,7 @@ func_ov010_02226130 kind:function(arm,size=0xc) addr:0x02226130
 func_ov010_0222613c kind:function(arm,size=0xb8) addr:0x0222613c
 GetWebRequestError kind:function(arm,size=0x10) addr:0x022261f4
 func_ov010_02226204 kind:function(arm,size=0x10) addr:0x02226204
-func_ov010_02226214 kind:function(arm,size=0xcc) addr:0x02226214
+SubmitWebPutRequest kind:function(arm,size=0xcc) addr:0x02226214
 func_ov010_022262e0 kind:function(arm,size=0x54) addr:0x022262e0
 func_ov010_02226334 kind:function(arm,size=0x30) addr:0x02226334
 func_ov010_02226364 kind:function(arm,size=0x4c) addr:0x02226364
@@ -297,7 +297,7 @@ func_ov010_0222a970 kind:function(arm,size=0x6c) addr:0x0222a970
 UpdateEntityCursor kind:function(arm,size=0x374) addr:0x0222a9dc
 func_ov010_0222ad50 kind:function(arm,size=0xb8) addr:0x0222ad50
 func_ov010_0222ae08 kind:function(arm,size=0x18) addr:0x0222ae08
-func_ov010_0222ae20 kind:function(arm,size=0xd8) addr:0x0222ae20
+Ov010_HideEntityLabel kind:function(arm,size=0xd8) addr:0x0222ae20
 func_ov010_0222aef8 kind:function(arm,size=0x20) addr:0x0222aef8
 func_ov010_0222af18 kind:function(arm,size=0x40) addr:0x0222af18
 func_ov010_0222af58 kind:function(arm,size=0x44) addr:0x0222af58
@@ -317,7 +317,7 @@ func_ov010_0222b520 kind:function(arm,size=0xe4) addr:0x0222b520
 func_ov010_0222b604 kind:function(arm,size=0xe8) addr:0x0222b604
 func_ov010_0222b6ec kind:function(arm,size=0xe4) addr:0x0222b6ec
 func_ov010_0222b7d0 kind:function(arm,size=0x10) addr:0x0222b7d0
-func_ov010_0222b7e0 kind:function(arm,size=0xcc) addr:0x0222b7e0
+Ov010_ShowEntityLabel kind:function(arm,size=0xcc) addr:0x0222b7e0
 func_ov010_0222b8ac kind:function(arm,size=0x40) addr:0x0222b8ac
 func_ov010_0222b8ec kind:function(arm,size=0x30) addr:0x0222b8ec
 func_ov010_0222b91c kind:function(arm,size=0x10) addr:0x0222b91c
@@ -429,7 +429,7 @@ gLinkQueueTail kind:bss addr:0x0222d8a8
 gVoiceLinkState kind:bss addr:0x0222d8b4
 gVoiceLinkScratchContext kind:bss addr:0x0222d8d8
 gVoiceLinkContext kind:bss addr:0x0222d8f0
-data_ov010_0222d908 kind:bss addr:0x0222d908
+gLinkPacketPool kind:bss addr:0x0222d908
 data_ov010_0222d914 kind:bss addr:0x0222d914
 data_ov010_0222d920 kind:bss addr:0x0222d920
 data_ov010_0222d930 kind:bss addr:0x0222d930

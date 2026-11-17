@@ -13,11 +13,11 @@ void func_02089d30(void *arg0) {
     s32 func_0209b5e4(s32,void *);
     s32 func_0209c690(void *);
     void *func_020ab1c4(s32);
-    void func_020aab24(void *,s32,s32,s32,s32);
+    void InitUnitSprite(void *,s32,s32,s32,s32);
     void func_02088e84(void *,s16,s32,s16,s32);
     void func_02087d84(void *,s32,s16,s16,u16,u16);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     void func_020ab150(void *,s32);
     void func_020aad18(void *);
     void func_020a9a30(s32,s32,s32,s32);
@@ -94,22 +94,22 @@ void func_02089d30(void *arg0) {
         switch((u32)((s32)flags<<29)>>29){
 case 1:
             sprite1=func_020ab1c4(6);
-            func_020aab24(sprite1,31,256,3,0);
+            InitUnitSprite(sprite1,31,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-64)/2+0;
             func_02088e84(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean1=1;else boolean1=0;
             if(boolean1&255){
                 sy1=M2C_FIELD(sprite1,s16 *,0x52);sx1=M2C_FIELD(sprite1,s16 *,0x50);
-                w1=func_020aae10(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx1,sy1,(u16)w1,(u16)func_020aae44(sprite1));
+                w1=GetUnitSpriteWidth(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx1,sy1,(u16)w1,(u16)GetUnitSpriteHeight(sprite1));
             }
             M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean2=1;else boolean2=0;
             if(boolean2&255){
                 sy2=M2C_FIELD(sprite1,s16 *,0x52);sx2=M2C_FIELD(sprite1,s16 *,0x50);
-                w2=func_020aae10(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx2,sy2,(u16)w2,(u16)func_020aae44(sprite1));
+                w2=GetUnitSpriteWidth(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx2,sy2,(u16)w2,(u16)GetUnitSpriteHeight(sprite1));
             }
             func_020ab150(sprite1,3);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
@@ -118,22 +118,22 @@ case 1:
 M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;break;
 case 2:
             sprite1=func_020ab1c4(6);
-            func_020aab24(sprite1,32,256,3,0);
+            InitUnitSprite(sprite1,32,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+0;
             func_02088e84(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean3=1;else boolean3=0;
             if(boolean3&255){
                 sy3=M2C_FIELD(sprite1,s16 *,0x52);sx3=M2C_FIELD(sprite1,s16 *,0x50);
-                w3=func_020aae10(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx3,sy3,(u16)w3,(u16)func_020aae44(sprite1));
+                w3=GetUnitSpriteWidth(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx3,sy3,(u16)w3,(u16)GetUnitSpriteHeight(sprite1));
             }
             M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean4=1;else boolean4=0;
             if(boolean4&255){
                 sy4=M2C_FIELD(sprite1,s16 *,0x52);sx4=M2C_FIELD(sprite1,s16 *,0x50);
-                w4=func_020aae10(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx4,sy4,(u16)w4,(u16)func_020aae44(sprite1));
+                w4=GetUnitSpriteWidth(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx4,sy4,(u16)w4,(u16)GetUnitSpriteHeight(sprite1));
             }
             func_020ab150(sprite1,3);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
@@ -142,22 +142,22 @@ case 2:
 M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;break;
 case 3:
             sprite1=func_020ab1c4(6);
-            func_020aab24(sprite1,33,256,3,0);
+            InitUnitSprite(sprite1,33,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+-32;
             func_02088e84(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean5=1;else boolean5=0;
             if(boolean5&255){
                 sy5=M2C_FIELD(sprite1,s16 *,0x52);sx5=M2C_FIELD(sprite1,s16 *,0x50);
-                w5=func_020aae10(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx5,sy5,(u16)w5,(u16)func_020aae44(sprite1));
+                w5=GetUnitSpriteWidth(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx5,sy5,(u16)w5,(u16)GetUnitSpriteHeight(sprite1));
             }
             M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean6=1;else boolean6=0;
             if(boolean6&255){
                 sy6=M2C_FIELD(sprite1,s16 *,0x52);sx6=M2C_FIELD(sprite1,s16 *,0x50);
-                w6=func_020aae10(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx6,sy6,(u16)w6,(u16)func_020aae44(sprite1));
+                w6=GetUnitSpriteWidth(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx6,sy6,(u16)w6,(u16)GetUnitSpriteHeight(sprite1));
             }
             func_020ab150(sprite1,1);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
@@ -165,22 +165,22 @@ case 3:
             func_020aad18(sprite1);
 
             sprite4=func_020ab1c4(6);
-            func_020aab24(sprite4,34,268,3,0);
+            InitUnitSprite(sprite4,34,268,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+32;
             func_02088e84(sprite4,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean7=1;else boolean7=0;
             if(boolean7&255){
                 sy7=M2C_FIELD(sprite4,s16 *,0x52);sx7=M2C_FIELD(sprite4,s16 *,0x50);
-                w7=func_020aae10(sprite4);
-                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx7,sy7,(u16)w7,(u16)func_020aae44(sprite4));
+                w7=GetUnitSpriteWidth(sprite4);
+                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx7,sy7,(u16)w7,(u16)GetUnitSpriteHeight(sprite4));
             }
             M2C_FIELD(sprite4,s16 *,0x34)=x1;M2C_FIELD(sprite4,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean8=1;else boolean8=0;
             if(boolean8&255){
                 sy8=M2C_FIELD(sprite4,s16 *,0x52);sx8=M2C_FIELD(sprite4,s16 *,0x50);
-                w8=func_020aae10(sprite4);
-                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx8,sy8,(u16)w8,(u16)func_020aae44(sprite4));
+                w8=GetUnitSpriteWidth(sprite4);
+                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx8,sy8,(u16)w8,(u16)GetUnitSpriteHeight(sprite4));
             }
             M2C_FIELD(sprite4,s8 *,0x49)=-100;
             func_020ab150(sprite4,2);

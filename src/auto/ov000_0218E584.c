@@ -5,7 +5,7 @@ typedef struct UnitKind18e584 { u8 kind:6; u8 flags:2; } UnitKind18e584;
 
 
 #pragma opt_strength_reduction off
-void func_ov000_0218e584(void) {
+void SelectAiActionTargetInPlace(void) {
 M2C_UNK FloodFillUnitRange(s32,s32,s32,s32,s32);
 void SetMapCursor(u32,u32,u32,u32,u32);
 u8 CanUnitAttackKind();
@@ -81,7 +81,7 @@ SetMapCursor(selected[1],selected[2],2,0,0);return;
 PlanMoveDestination(bestX,bestY);
 }
 #pragma opt_strength_reduction off
-void func_ov000_0218e9ac(void) {
+void SelectAiActionTargetAfterMove(void) {
 M2C_UNK FloodFillUnitRange(s32,s32,s32,s32,s32);
 void SetMapCursor(u32,u32,u32,u32,u32);
 u8 CanUnitAttackKind();
@@ -161,35 +161,39 @@ SetMapCursor((s16)bestX,(s16)bestY,2,0,0);return;
 PlanMoveDestination(bestX,bestY);
 }
 #pragma opt_strength_reduction reset
-void func_ov000_0218edd8(void) {
+/* Choose what the AI's acting unit does: fall back to joining a unit when the
+ * unit has no action yet, then find the attack or capture target for the action
+ * state in its target word (move-then-act, or act from where it stands). */
+void SelectAiActionTarget(void) {
     M2C_UNK func_ov000_0218dda4();
     M2C_UNK SelectJoinTarget();
-    void func_ov000_0218e9ac();
-    void func_ov000_0218e584();
+    void SelectAiActionTargetAfterMove();
+    void SelectAiActionTargetInPlace();
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    void *temp_r0;
-    void *temp_r1;
-    temp_r0 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    if (func_ov000_021a93a8(temp_r0, M2C_FIELD(temp_r0, u8 *, 1), M2C_FIELD(temp_r0, u8 *, 2)) == 0) {
+    void *unit;
+    void *acting;
+
+    unit = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
+    if (func_ov000_021a93a8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2)) == 0) {
         SelectJoinTarget();
     }
-    temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    if (((u32)(M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) == 0) return;
-    if (IsFootUnitKind((u32)(M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) func_ov000_0218dda4();
+    acting = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
+    if (((u32)(M2C_FIELD(acting, u16 *, 8) << 0x12) >> 0x1E) == 0) return;
+    if (IsFootUnitKind((u32)(M2C_FIELD(acting, u8 *, 0) << 0x1A) >> 0x1A) != 0) func_ov000_0218dda4();
     M2C_FIELD(gAiCommandState, u8 *, 7) = (u8)(M2C_FIELD(gAiCommandState, u8 *, 7) | 2);
     switch ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u16 *, 8) << 0x12) >> 0x1E) {
-    case 1: func_ov000_0218e9ac(); break;
-    case 2: func_ov000_0218e584(); break;
+    case MAP_UNIT_ACTION_MOVE: SelectAiActionTargetAfterMove(); break;
+    case MAP_UNIT_ACTION_STAY: SelectAiActionTargetInPlace(); break;
     }
 }
 
 void func_ov000_0218eea8(void) {
     M2C_UNK func_ov000_0218dda4();
     M2C_UNK SelectJoinTarget();
-    void func_ov000_0218e9ac();
+    void SelectAiActionTargetAfterMove();
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
@@ -209,7 +213,7 @@ void func_ov000_0218eea8(void) {
         func_ov000_0218dda4();
     }
     M2C_FIELD(gAiCommandState, u8 *, 7) = (u8) (M2C_FIELD(gAiCommandState, u8 *, 7) | 2);
-    func_ov000_0218e9ac();
+    SelectAiActionTargetAfterMove();
 }
 
 /* AI: builds the cursor unit's move range, scans the map for the reachable

@@ -317,7 +317,7 @@ return M2C_FIELD(a,s16 *,0x3a)-old;
 }
 
 void func_ov000_0216fb98(void *arg0) {
-    M2C_UNK func_0207b764(u8, u8);
+    M2C_UNK StepMapViewToTile(u8, u8);
     extern void **gCurrentMap;
     s16 temp_ip;
     s32 temp_r1;
@@ -329,7 +329,7 @@ void func_ov000_0216fb98(void *arg0) {
     }
     temp_r3 = *gCurrentMap;
     temp_r1 = ((M2C_FIELD(temp_r3, u16 *, 0x52A8) + temp_ip) * 0xE) + (s32) (temp_r3 + 0x59A4);
-    func_0207b764(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2));
+    StepMapViewToTile(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2));
 }
 
 void ScrollListConfirm(u8 *a) {

@@ -9,7 +9,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
     /* Queue a (possibly wrapped) send from connection's circular buffer and remember how much was taken. */
     u16 func_0201d04c();
     s32 SocketSendTask(void *);
-    s32 func_0201f1d0(void *, s32, s32);
+    s32 SocketAllocTask(void *, s32, s32);
     s32 func_0201f328(s32, s32);
     s32 MI_CpuCopy8(s32, s32, s32);
     void *ctx;
@@ -22,7 +22,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
     curBuffer = buffer;
     ctx = M2C_FIELD(connection, void **, 0x68);
 
-    entry = (void *)func_0201f1d0(SocketSendTask, M2C_FIELD(ctx, s32 *, 0x10c), mode);
+    entry = (void *)SocketAllocTask(SocketSendTask, M2C_FIELD(ctx, s32 *, 0x10c), mode);
     if (!entry) return -33;
 
     if ((mode & 1) && M2C_FIELD(connection, s8 *, 0x73) != 1)
@@ -186,13 +186,13 @@ s32 ReadSendRequest(s32 arg0, s32 arg1, void *arg2) {
 #pragma opt_common_subs off
 s32 func_02020b18(void *arg0) {
     s32 func_02020bc4(void *);
-    s32 func_0201f1d0(void *, s32, s32);
+    s32 SocketAllocTask(void *, s32, s32);
     s32 func_0201f328(s32, s32);
-    s32 func_020214a8(void);
+    s32 SocketIsUnregistered(void);
     void *temp_r5;
     s32 r1;
 
-    if (func_020214a8() != 0) {
+    if (SocketIsUnregistered() != 0) {
         return -0x1C;
     }
     if (arg0 == 0) {
@@ -214,7 +214,7 @@ s32 func_02020b18(void *arg0) {
     if (temp_r5 != NULL) {
         s32 temp_r1 = M2C_FIELD(temp_r5, s32 *, 0x10C);
         if (temp_r1 != 0) {
-            temp_r1 = func_0201f1d0(func_02020bc4, temp_r1, M2C_FIELD(arg0, s8 *, 0x72));
+            temp_r1 = SocketAllocTask(func_02020bc4, temp_r1, M2C_FIELD(arg0, s8 *, 0x72));
             if (temp_r1 == 0) {
                 return -0x21;
             }
@@ -241,43 +241,49 @@ s32 func_02020bc4(void *arg0) {
 }
 
 s32 func_02020bf4(s32 arg0) {
-    s32 func_020214a8();
-    s32 func_020214dc(s32);
-    if ((arg0 >= 0) && (func_020214a8() != 0) && (func_020214dc(arg0) == 0)) {
+    s32 SocketIsUnregistered();
+    s32 SocketIsClosed(s32);
+    if ((arg0 >= 0) && (SocketIsUnregistered() != 0) && (SocketIsClosed(arg0) == 0)) {
         return 1;
     }
     return 0;
 }
 
-s32 func_02020c28(s32 arg0) {
-M2C_UNK func_0201f244(s32, M2C_UNK); M2C_UNK func_0201f290();
+/* Close a socket: refuse an invalid handle (-28), a socket the stack reports as
+ * already closed (-26) and one it no longer knows (0, nothing to do); a socket
+ * that never opened gives -39, one whose close already started -26.  Otherwise
+ * mark it closing and failed, and while it is still duplex post a stop to its
+ * send connection's task queue; then queue the close task that tears both
+ * connections down and moves the socket to the closed list. */
+s32 SocketClose(s32 socket) {
+M2C_UNK SocketQueueTask(s32, M2C_UNK); M2C_UNK SocketSubmitTask();
 
-s32 func_02020cf8(void *);
-void *t;
-s32 a,b; s8 v;
-if(arg0<=0)return -28;
-if(func_020214dc()!=0)return -26;
-if(func_020214a8(arg0)!=0)return 0;
-a=0;
-if(arg0!=0)a=(M2C_FIELD(arg0,volatile s16*,0x70)&1)!=0;
-if(!a)return -39;
-if(M2C_FIELD(arg0,s16*,0x70)&16)return -26;
-b=1;
-M2C_FIELD(arg0,volatile s16*,0x70)=M2C_FIELD(arg0,volatile s16*,0x70)|24;
-v=M2C_FIELD(arg0,s8*,0x73);
-if(v!=0 && v!=4)b=0;
-if(b)func_0201f244(M2C_FIELD(arg0,s32*,0x68),0);
-t=(void*)func_0201f1d0(&func_02020cf8,arg0,1);
-M2C_FIELD(t,volatile s32*,8)=0;
-func_0201f290(arg0,t);
+s32 SocketCloseTask(void *);
+void *task;
+s32 ready,duplex; s8 state;
+if(socket<=0)return -28;
+if(SocketIsClosed(socket)!=0)return -26;
+if(SocketIsUnregistered(socket)!=0)return 0;
+ready=0;
+if(socket!=0)ready=(M2C_FIELD(socket,volatile s16*,SOCK_FLAGS)&SOCK_FLAG_READY)!=0;
+if(!ready)return -39;
+if(M2C_FIELD(socket,s16*,SOCK_FLAGS)&SOCK_FLAG_CLOSING)return -26;
+duplex=1;
+M2C_FIELD(socket,volatile s16*,SOCK_FLAGS)=M2C_FIELD(socket,volatile s16*,SOCK_FLAGS)|SOCK_FLAG_ERROR|SOCK_FLAG_CLOSING;
+state=M2C_FIELD(socket,s8*,SOCK_STATE);
+if(state!=0 && state!=4)duplex=0;
+if(duplex)SocketQueueTask(M2C_FIELD(socket,s32*,SOCK_TX_CONN),0);
+task=(void*)SocketAllocTask(&SocketCloseTask,socket,1);
+M2C_FIELD(task,s32*,TASK_RESULT)=0;
+SocketSubmitTask(socket,task);
 return 0;
 }
 
-s32 func_02020cf8(void *arg0) {
+s32 SocketCloseTask(void *arg0) {
     M2C_UNK func_0201d4c0();
     M2C_UNK func_0201d224();
     M2C_UNK func_0201d14c();
-    M2C_UNK func_0201f244(s32, s32);
+    M2C_UNK SocketQueueTask(s32, s32);
     void func_02021418(void *);
     void func_02021430(M2C_UNK);
     s32 temp_r5;
@@ -299,7 +305,7 @@ s32 func_02020cf8(void *arg0) {
     M2C_FIELD(temp_r4, s16 *, 0x70) &= ~6;
     if (M2C_FIELD(temp_r4, s8 *, 0x73) == 2) var_r0 = M2C_FIELD(temp_r4, s32 *, 0x68);
     else var_r0 = M2C_FIELD(temp_r4, s32 *, 0x64);
-    func_0201f244(var_r0, 0);
+    SocketQueueTask(var_r0, 0);
     temp_r5 = OS_DisableInterrupts();
     func_02021430((M2C_UNK)temp_r4);
     func_02021418(temp_r4);
@@ -415,7 +421,7 @@ s32 func_02020f6c(void) {
 s32 func_02021010(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    M2C_UNK func_02020c28(s32);
+    M2C_UNK SocketClose(s32);
     extern s32 data_02138acc;
     extern M2C_UNK data_02138b2c;
     extern M2C_UNK data_02138b30;
@@ -429,14 +435,14 @@ loop_1:
         var_r6 = M2C_FIELD(var_r6, s32 *, 0x7C);
     }
     OS_RestoreInterrupts(temp_r0);
-    if (var_r6 != 0) { func_02020c28(var_r6); goto loop_1; }
+    if (var_r6 != 0) { SocketClose(var_r6); goto loop_1; }
     if ((data_02138b2c == 0 || (data_02138b2c == data_02138acc && M2C_FIELD(data_02138b2c, s32 *, 0x7C) == 0)) && data_02138b30 == 0) { return 0; }
     return -0x1A;
 }
 
 s32 func_020210b8(void) {
     s32 func_0201a4a8();
-    M2C_UNK func_02020c28(s32);
+    M2C_UNK SocketClose(s32);
     M2C_UNK func_02020f30();
     s32 func_02021010();
     M2C_UNK func_02029828(M2C_UNK);
@@ -446,7 +452,7 @@ s32 func_020210b8(void) {
     if (data_02138acc != 0) {
         var_r4 = func_02021010();
         if (var_r4 == 0) {
-            func_02020c28(data_02138acc);
+            SocketClose(data_02138acc);
             if (func_02020bf4(data_02138acc) != 0) {
                 data_02138acc = 0;
             }
@@ -534,27 +540,36 @@ s32 func_02021264(void) {
     return data_021372e0;
 }
 
-s32 func_020212cc(void *arg0) {
-s32 func_02020714(void *); s32 func_0202139c(void *);
-s32 lock, flag, result=0; s8 type;
-if(func_020214a8()!=0) result|=0x80;
-else {
-if(M2C_FIELD(arg0,volatile s16 *,0x70)&0x40) result|=0x20;
-if(M2C_FIELD(arg0,s8 *,0x73)==1 || (M2C_FIELD(arg0,volatile s16 *,0x70)&4)){
-lock=OS_DisableInterrupts();
-if(func_0202139c(arg0)>0) result|=1;
-if(func_02020714(arg0)>0) result|=8;
-OS_RestoreInterrupts(lock);
-}
-type=M2C_FIELD(arg0,s8 *,0x73);flag=1;
-if(type!=0 && type!=4) flag=0;
-if(flag){
-if((M2C_FIELD(arg0,volatile s16 *,0x70)&4) && M2C_FIELD(arg0,u8 *,8)!=4){
-if(!(result&1)) M2C_FIELD(arg0,volatile s16 *,0x70)&=~6;
-}
-if(!(M2C_FIELD(arg0,volatile s16 *,0x70)&2) && !(M2C_FIELD(arg0,volatile s16 *,0x70)&4)) result|=0x40;
-}
-} return result;
+/* Polls a socket and returns a readiness bitmask: bit 0 readable (data queued),
+ * bit 3 writable (send space free), bit 5 the last receive timed out, bit 6 idle
+ * (no operation pending) and bit 7 the socket is no longer registered.  A finished
+ * operation that has not been read yet has its busy/done flags cleared. */
+s32 SocketPoll(void *sock) {
+    s32 func_02020714(void *);
+    s32 func_0202139c(void *);
+    s32 lock, pending, status = 0;
+    s8 state;
+
+    if (SocketIsUnregistered() != 0) status |= 0x80;
+    else {
+        if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_TIMEOUT) status |= 0x20;
+        if (M2C_FIELD(sock, s8 *, SOCK_STATE) == 1 || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE)) {
+            lock = OS_DisableInterrupts();
+            if (func_0202139c(sock) > 0) status |= 1;
+            if (func_02020714(sock) > 0) status |= 8;
+            OS_RestoreInterrupts(lock);
+        }
+        state = M2C_FIELD(sock, s8 *, SOCK_STATE);
+        pending = 1;
+        if (state != 0 && state != 4) pending = 0;
+        if (pending) {
+            if ((M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE) && M2C_FIELD(sock, u8 *, 8) != 4) {
+                if (!(status & 1)) M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) &= ~6;
+            }
+            if (!(M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_BUSY) && !(M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE)) status |= 0x40;
+        }
+    }
+    return status;
 }
 
 s32 func_0202139c(void *arg0) {
@@ -624,13 +639,13 @@ void func_02021490(M2C_UNK arg0) {
     func_02021448(&data_02138b30, arg0);
 }
 
-s32 func_020214a8(s32 arg0) {
+s32 SocketIsUnregistered(s32 arg0) {
  extern M2C_UNK data_02138b2c;
  if (arg0 <= 0 || func_02021464(&data_02138b2c, arg0) == NULL) return 1;
  return 0;
 }
 
-s32 func_020214dc(s32 arg0) {
+s32 SocketIsClosed(s32 arg0) {
  extern M2C_UNK data_02138b30;
  return func_02021464(&data_02138b30, arg0) != NULL;
 }

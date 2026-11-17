@@ -18,7 +18,7 @@ static inline void *Next021e8e8c(void *head, void *node) {
 #pragma opt_common_subs off
 #pragma scheduling off
 void func_ov002_021e8984(void *arg0){
-s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_02087048(s32,s32);void func_02087064(s32,s32,s32,s32,s32);void func_02087b94(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
+s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_02087048(s32,s32);void func_02087064(s32,s32,s32,s32,s32);void DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
 extern u16 **gCur3DSpriteEngine;extern u8 data_ov002_021f30f8[],data_ov002_021f30e4[],data_ov002_021f3043[],data_ov002_021f303c[];
 s32 j,x,y,alpha,t,i,depth;u8 used,best;void *p;volatile s32 *matrix=(volatile s32 *)0x4000444;
 x=M2C_FIELD(arg0,s16 *,0x1e)+M2C_FIELD(arg0,s16 *,0x22);y=M2C_FIELD(arg0,s16 *,0x24);
@@ -38,7 +38,7 @@ if(t<32)alpha=0;else if(t<64)alpha=(s16)EaseInterpolate(0,0,31,t-32,32);else if(
 if(alpha){func_02087048(31,alpha&255);
 t=(s16)M2C_FIELD(arg0,u8 *,0x27)*100;
 func_02087064(3,256,128,M2C_FIELD(data_ov002_021f303c,u16 *,t),data_ov002_021f3043[t]);
-func_02087b94(0,120,100,256,72,0,0,256,72,M2C_FIELD(arg0,u8 *,0x27)!=0,0);
+DrawTexturedQuadUVFlip(0,120,100,256,72,0,0,256,72,M2C_FIELD(arg0,u8 *,0x27)!=0,0);
 }
 func_02087048(0,31);
 }

@@ -1,5 +1,6 @@
 /* 13 functions from 0x0220ACCC to 0x0220BCAC (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
 
 /* Configures the path entries for the selected table index, using the simple path for 0/1 entries. */
 void func_ov003_0220accc(void *obj, s32 index) {
@@ -50,7 +51,7 @@ void func_ov003_0220accc(void *obj, s32 index) {
 void func_ov003_0220adb4(void *a) {
 #pragma opt_common_subs off
 extern void *gKeyState,*gTouchState;
-u8 func_ov003_02207c5c(void *);
+u8 Ov003_GetSelectedRowIndex(void *);
 s16 func_ov003_0220b7b8(void *);
 void func_ov003_0220b7c0(void *);
 u8 func_ov003_0220b7fc(void *,s32);
@@ -58,35 +59,35 @@ u8 func_ov003_0220b8ac(void *,s32);
 u8 func_ov003_0220bb40(void *,s32);
 void func_ov003_0220b830(void *,s32);
 void func_ov003_0220b8e0(void *,s32);
-void func_ov003_0220b9a0(void *,s32);
-void func_ov003_0220ba70(void *,s32);
+void Ov003_StepOptionCounter1(void *,s32);
+void ScrollA9SliderBy(void *,s32);
 void func_ov003_0220bb88(void *);
 void func_ov003_0220bbcc(void *);
 s32 i,left,right,active,pos,old;u16 held,press;
 if(!((u32)(M2C_FIELD(a,u8 *,0x38)<<31)>>31))return;
-i=func_ov003_02207c5c(a);
+i=Ov003_GetSelectedRowIndex(a);
 left=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60));
 right=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64));
 active=1;
 func_ov003_0220b7c0(M2C_FIELD(a,void **,0x68));
 held=M2C_FIELD(gKeyState,u16 *,2);press=M2C_FIELD(gKeyState,u16 *,0);
 if((((held&64)&&i!=0)||(press&64))&&!M2C_FIELD(gTouchState,u8 *,0x12)) {
-if(i==0){if(press&64)i=M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1;else i=func_ov003_02207c5c(a);}else i--;
+if(i==0){if(press&64)i=M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1;else i=Ov003_GetSelectedRowIndex(a);}else i--;
 }else if((((held&128)&&i!=M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1)||(press&128))&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(i==M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1){if(press&128)i=0;else i=func_ov003_02207c5c(a);}else i++;
+if(i==M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1){if(press&128)i=0;else i=Ov003_GetSelectedRowIndex(a);}else i++;
 }
 held=M2C_FIELD(gKeyState,u16 *,2);
 if((held&32)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_0220b7fc(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x60),-8);
 if(func_ov003_0220b8ac(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x64),-8);
-if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))func_ov003_0220b9a0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))func_ov003_0220ba70(M2C_FIELD(a,void **,0x40),-1);}
+if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
 if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
 func_ov003_0220bb88(a);
 }
 else if((held&16)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_0220b7fc(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x60),8);
 if(func_ov003_0220b8ac(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x64),8);
-if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))func_ov003_0220b9a0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))func_ov003_0220ba70(M2C_FIELD(a,void **,0x40),1);}
+if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
 if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
 func_ov003_0220bb88(a);
 }
@@ -101,13 +102,13 @@ if(func_020e4b28(i)){RequestMenuMode(a,2);func_ov003_021ebb88(M2C_FIELD(M2C_FIEL
 else PlaySoundEffect(0x1001d);
 } active=0;
 }
-if(i!=func_ov003_02207c5c(a)){func_02087ec0(M2C_FIELD(a,void **,0x5c),(s16)(i+11));PlaySoundEffect(0x10010);}
+if(i!=Ov003_GetSelectedRowIndex(a)){func_02087ec0(M2C_FIELD(a,void **,0x5c),(s16)(i+11));PlaySoundEffect(0x10010);}
 ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x60));
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60)))ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x64));
-if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_0220b7fc(a,func_ov003_02207c5c(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),11);
-if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!func_ov003_0220b8ac(a,func_ov003_02207c5c(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),12);
+if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_0220b7fc(a,Ov003_GetSelectedRowIndex(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),11);
+if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!func_ov003_0220b8ac(a,Ov003_GetSelectedRowIndex(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),12);
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))func_02088044(M2C_FIELD(a,void **,0x5c));
-old=func_ov003_02207c5c(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
+old=Ov003_GetSelectedRowIndex(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
 if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
 else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));Ov003_ConfirmRowValue(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
@@ -126,10 +127,10 @@ M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);func_ov003_022
 }
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));
-if(func_ov003_02209274(a,(u8)old))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))func_ov003_0220b9a0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))func_ov003_0220ba70(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+if(func_ov003_02209274(a,(u8)old))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));
-if(func_ov003_02209274(a,(u8)old))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))func_ov003_0220b9a0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))func_ov003_0220ba70(M2C_FIELD(a,void **,0x40),1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+if(func_ov003_02209274(a,(u8)old))func_ov003_0220b8e0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
 
 if(left!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60))){PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
 if(right!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64))){PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
@@ -137,7 +138,7 @@ M2C_FIELD(a,u8 *,0x37)=(M2C_FIELD(a,u8 *,0x37)&~0xf0)|((u32)((u8)old<<28)>>24);
 if(!((u32)(M2C_FIELD(a,u8 *,0x38)<<26)>>31)){
 if(((u32)(M2C_FIELD(a,u8 *,0x37)<<28)>>28)==((u32)(M2C_FIELD(a,u8 *,0x37)<<24)>>28))return;
 }
-func_ov003_02207b84(a);
+Ov003_ApplyRowSelectionAnimations(a);
 M2C_FIELD(a,u8 *,0x37)=(M2C_FIELD(a,u8 *,0x37)&~15)|(((u32)(M2C_FIELD(a,u8 *,0x37)<<24)>>28)&15);
 if(!func_ov003_0220801c(a)&&M2C_FIELD(gTouchState,u8 *,0x12))PlaySoundEffect(0x10010);
 M2C_FIELD(a,u8 *,0x38)&=~32;
@@ -160,7 +161,7 @@ void func_ov003_0220b7c0(void *arg0) {
 u8 func_ov003_0220b7fc(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 0) result=1; else result=0; return result; }
 
 void func_ov003_0220b830(void *arg0, s32 arg1) {
- s32 Divide(s32,s32); M2C_UNK func_020a979c(void *,s16,s16);
+ s32 Divide(s32,s32); M2C_UNK ScrollBar_PlaceThumb(void *,s16,s16);
  s32 current,limit; s32 x; s16 base; void *p;
  M2C_FIELD(arg0,s16 *,0x12) += arg1;
  limit=M2C_FIELD(arg0,s16 *,0x16); current=M2C_FIELD(arg0,s16 *,0x12);
@@ -168,7 +169,7 @@ void func_ov003_0220b830(void *arg0, s32 arg1) {
  M2C_FIELD(arg0,s16 *,0x12)=limit;
  p=M2C_FIELD(arg0,void **,0x1c);
  base=M2C_FIELD(arg0,s16 *,8); x=base+Divide(M2C_FIELD(arg0,s16 *,0x12)*(s16)(M2C_FIELD(p,s16 *,0x14)-M2C_FIELD(p,s16 *,0x12)),M2C_FIELD(arg0,s16 *,0x16)-M2C_FIELD(arg0,s16 *,0x14));
- p=M2C_FIELD(arg0,void **,0x1c); func_020a979c(p,(s16)x,M2C_FIELD(p,s16 *,0xa));
+ p=M2C_FIELD(arg0,void **,0x1c); ScrollBar_PlaceThumb(p,(s16)x,M2C_FIELD(p,s16 *,0xa));
 }
 
 u8 func_ov003_0220b8ac(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 1) result=1; else result=0; return result; }
@@ -184,26 +185,35 @@ void func_ov003_0220b8e0(void *arg0,s32 arg1){
  }else{value=M2C_FIELD(arg0,s32 *,4);limit=M2C_FIELD(arg0,s32 *,8);if(value<=limit){limit=M2C_FIELD(arg0,s32 *,12);if(value>=limit)limit=value;}M2C_FIELD(arg0,s32 *,4)=limit;}
 }
 
-void func_ov003_0220b9a0(void *arg0,s32 arg1){
- s32 func_ov003_02206690(s32,s32,s32); s32 value,limit;
- value=arg1+M2C_FIELD(arg0,s32 *,0x1c);
- func_ov003_02206690((s16)value,(s16)M2C_FIELD(arg0,s32 *,0x24),(s16)M2C_FIELD(arg0,s32 *,0x20));
- M2C_FIELD(arg0,s32 *,0x1c)=value;
- if(M2C_FIELD(arg0,u8 *,0x2c)){
- while(M2C_FIELD(arg0,s32 *,0x1c)>M2C_FIELD(arg0,s32 *,0x20)) M2C_FIELD(arg0,s32 *,0x1c)-=M2C_FIELD(arg0,s32 *,0x20)-M2C_FIELD(arg0,s32 *,0x24)+1;
- while(M2C_FIELD(arg0,s32 *,0x1c)<M2C_FIELD(arg0,s32 *,0x24)) M2C_FIELD(arg0,s32 *,0x1c)+=M2C_FIELD(arg0,s32 *,0x20)-M2C_FIELD(arg0,s32 *,0x24)+1;
- }else{limit=M2C_FIELD(arg0,s32 *,0x20);value=M2C_FIELD(arg0,s32 *,0x1c);if(value<=limit){limit=M2C_FIELD(arg0,s32 *,0x24);if(value>=limit)limit=value;}M2C_FIELD(arg0,s32 *,0x1c)=limit;}
+/* Step the second of the unit-list menu's three option counters by `delta`: the
+ * value always takes the step, then wraps around its range (when the counter's
+ * wrap flag is set) or clamps into it.  The range test is the shared counter
+ * code's; its result is not used here. */
+void Ov003_StepOptionCounter1(void *arg0,s32 delta){
+ s32 func_ov003_02206690(s32,s32,s32);
+ OptionCounter *counter=&((OptionCounter *)arg0)[1];
+ s32 value,limit;
+ value=delta+counter->value;
+ func_ov003_02206690((s16)value,(s16)counter->minimum,(s16)counter->maximum);
+ counter->value=value;
+ if(counter->wrap){
+ while(counter->value>counter->maximum) counter->value-=counter->maximum-counter->minimum+1;
+ while(counter->value<counter->minimum) counter->value+=counter->maximum-counter->minimum+1;
+ }else{limit=counter->maximum;value=counter->value;if(value<=limit){limit=counter->minimum;if(value>=limit)limit=value;}counter->value=limit;}
 }
 
-void func_ov003_0220ba70(void *arg0,s32 arg1){
- s32 func_ov003_02206690(s32,s32,s32); s32 value,limit;
- value=arg1+M2C_FIELD(arg0,s32 *,0x34);
- func_ov003_02206690((s16)value,(s16)M2C_FIELD(arg0,s32 *,0x3c),(s16)M2C_FIELD(arg0,s32 *,0x38));
- M2C_FIELD(arg0,s32 *,0x34)=value;
- if(M2C_FIELD(arg0,u8 *,0x44)){
- while(M2C_FIELD(arg0,s32 *,0x34)>M2C_FIELD(arg0,s32 *,0x38)) M2C_FIELD(arg0,s32 *,0x34)-=M2C_FIELD(arg0,s32 *,0x38)-M2C_FIELD(arg0,s32 *,0x3c)+1;
- while(M2C_FIELD(arg0,s32 *,0x34)<M2C_FIELD(arg0,s32 *,0x3c)) M2C_FIELD(arg0,s32 *,0x34)+=M2C_FIELD(arg0,s32 *,0x38)-M2C_FIELD(arg0,s32 *,0x3c)+1;
- }else{limit=M2C_FIELD(arg0,s32 *,0x38);value=M2C_FIELD(arg0,s32 *,0x34);if(value<=limit){limit=M2C_FIELD(arg0,s32 *,0x3c);if(value>=limit)limit=value;}M2C_FIELD(arg0,s32 *,0x34)=limit;}
+/* Move the third of the map-select screen's three sliders by delta, keeping
+ * the new value between the slider's limits (wrapping around them instead when
+ * the slider allows it).  The first two sliders have their own copies. */
+void ScrollA9SliderBy(void *slider, s32 delta){
+ s32 func_ov003_02206690(s32,s32,s32); s32 newValue,limit;
+ newValue=delta+M2C_FIELD(slider,s32 *,0x34);
+ func_ov003_02206690((s16)newValue,(s16)M2C_FIELD(slider,s32 *,0x3c),(s16)M2C_FIELD(slider,s32 *,0x38));
+ M2C_FIELD(slider,s32 *,0x34)=newValue;
+ if(M2C_FIELD(slider,u8 *,0x44)){
+ while(M2C_FIELD(slider,s32 *,0x34)>M2C_FIELD(slider,s32 *,0x38)) M2C_FIELD(slider,s32 *,0x34)-=M2C_FIELD(slider,s32 *,0x38)-M2C_FIELD(slider,s32 *,0x3c)+1;
+ while(M2C_FIELD(slider,s32 *,0x34)<M2C_FIELD(slider,s32 *,0x3c)) M2C_FIELD(slider,s32 *,0x34)+=M2C_FIELD(slider,s32 *,0x38)-M2C_FIELD(slider,s32 *,0x3c)+1;
+ }else{limit=M2C_FIELD(slider,s32 *,0x38);newValue=M2C_FIELD(slider,s32 *,0x34);if(newValue<=limit){limit=M2C_FIELD(slider,s32 *,0x3c);if(newValue>=limit)limit=newValue;}M2C_FIELD(slider,s32 *,0x34)=limit;}
 }
 
 u8 func_ov003_0220bb40(void *arg0, s32 arg1) {

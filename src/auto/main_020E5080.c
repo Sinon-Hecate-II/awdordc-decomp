@@ -6,13 +6,13 @@ void func_020e5080(void *arg0) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub,data_02168ff4;
 extern u8 data_0212da70[],data_0212da40[],data_0212db88[],data_0212db38[],data_0212db78[],data_0212da4c[],data_0212da7c[],data_0212da34[],data_0212db28[],data_0212db68[],data_0212db58[],data_0212da58[],data_0212db48[],data_0212da64[];
 void Set3DSpriteVramBanks(void);void func_02003560(void);void func_02002bb8(s32);
-void func_020822b8(void*);void func_020aeebc(s32,s32,s32);void func_020aef7c(s32,s32,s32);
+void func_020822b8(void*);void func_020aeebc(s32,s32,s32);void CreateSubWallpaperSprite(s32,s32,s32);
 void SetFileDirectory(void*);void *GetLocalizedFileName(void*);
 void OpenNarcArchive(void);void Clear3DSpriteLayer(s32);
 void LoadNarcFileDecompressed(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);
 void SetTileRectPalette(void*,s32,s32,s32);void CloseNarcArchive(void);
-void *func_020ab1c4(void*);void func_020aab24(void*,s32,s32,s32,s32);
-void func_02088e84(void*,s32,s32,s32,s32);s32 func_020aae10(void*);s32 func_020aae44(void*);
+void *func_020ab1c4(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
+void func_02088e84(void*,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
 void *func_0208931c(void*);void func_020a9a30(s32,s32,s32,void*);s32 func_020aaf74(void*);
 void func_01ff9b38(void);M2C_UNK func_02090640(M2C_UNK,M2C_UNK);
@@ -38,17 +38,17 @@ LoadFileToSpriteBuffer(data_0212da4c,0xa0,0x20);
 SetTileRectPalette(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20),0x20,0x18,5);
 M2C_FIELD((void*)gCur3DSpriteEngine,u8 *,0x46)|=1;CloseNarcArchive();
 M2C_FIELD(arg0,void **,0x38)=func_020ab1c4(arg0);
-func_020aab24(M2C_FIELD(arg0,void **,0x38),2,0x140,3,1);
+InitUnitSprite(M2C_FIELD(arg0,void **,0x38),2,0x140,3,1);
 obj=M2C_FIELD(arg0,void **,0x38);func_02088e84(obj,0xe0,0xa0,0xe0,0xa0);
 if((u8)(M2C_FIELD(M2C_FIELD(obj,void **,0x64),u8 *,0x12)!=0)){
 y=M2C_FIELD(obj,s16 *,0x52);x=M2C_FIELD(obj,s16 *,0x50);
-w=func_020aae10(obj);h=func_020aae44(obj);
+w=GetUnitSpriteWidth(obj);h=GetUnitSpriteHeight(obj);
 func_02087d84(M2C_FIELD(obj,void **,0x64),1,x,y,(u16)w,(u16)h);
 }
 M2C_FIELD(obj,s16 *,0x34)=0xe0;M2C_FIELD(obj,s16 *,0x36)=0xa0;
 if((u8)(M2C_FIELD(M2C_FIELD(obj,void **,0x64),u8 *,0x12)!=0)){
 y=M2C_FIELD(obj,s16 *,0x52);x=M2C_FIELD(obj,s16 *,0x50);
-w=func_020aae10(obj);h=func_020aae44(obj);
+w=GetUnitSpriteWidth(obj);h=GetUnitSpriteHeight(obj);
 func_02087d84(M2C_FIELD(obj,void **,0x64),1,x,y,(u16)w,(u16)h);
 }
 func_020aad18(M2C_FIELD(arg0,void **,0x38));
@@ -62,7 +62,7 @@ p11=((u16 *)((u8 *)M2C_FIELD((void*)gCur3DSpriteEngine,void **,0)+0x12)); *p11=*
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,81)=0;
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,82)=0;
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,83)=0;
-func_020aef7c(2,15,5);SetFileDirectory(data_0212da34);
+CreateSubWallpaperSprite(2,15,5);SetFileDirectory(data_0212da34);
 GetLocalizedFileName(data_0212db28);OpenNarcArchive();Clear3DSpriteLayer(0);
 LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db68),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0xc));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db58),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20));

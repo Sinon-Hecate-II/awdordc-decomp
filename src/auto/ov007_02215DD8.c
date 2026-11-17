@@ -1,5 +1,6 @@
 /* 8 functions from 0x02215DD8 to 0x02216C94 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern void **gCurrentMap;
 static inline u16 TileAt(s16 x,s16 y) {
 void *map=*gCurrentMap;
@@ -17,18 +18,18 @@ if(++n>100)return 0;
 return 1;
 }
 
-s32 func_ov007_02215e94(s32 *x, s32 *y, s32 value, void *arg3, s32 radius) {
+s32 PickRandomTileNear(s32 *x, s32 *y, s32 tileValue, void *center, s32 radius) {
     s32 RandomIntRange(s32, s32);
     s32 ManhattanDistance(s16, s16, s16, s16);
     extern void **gCurrentMap;
-    s32 n = 0;
-    s32 a = 0, b = 0;
+    s32 attempts = 0;
+    s32 minX = 0, minY = 0;
     do {
-        if (++n > 100) return 0;
-        *x = RandomIntRange(a, M2C_FIELD(*gCurrentMap, u16 *, 0x5144) - 1);
-        *y = RandomIntRange(b, M2C_FIELD(*gCurrentMap, u16 *, 0x5146) - 1);
-    } while (value != M2C_FIELD((*gCurrentMap + ((*x + M2C_FIELD((*gCurrentMap + (*y * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)
-            || ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*x, (s16)*y) > radius);
+        if (++attempts > 100) return 0;
+        *x = RandomIntRange(minX, M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) - 1);
+        *y = RandomIntRange(minY, M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT) - 1);
+    } while (tileValue != M2C_FIELD((*gCurrentMap + ((*x + M2C_FIELD((*gCurrentMap + (*y * 2)), u16 *, MAP_ROW_OFFSETS)) * 2)), u16 *, MAP_CELL_TILE_ID)
+            || ManhattanDistance(M2C_FIELD(center, s16 *, 0), M2C_FIELD(center, s16 *, 2), (s16)*x, (s16)*y) > radius);
     return 1;
 }
 

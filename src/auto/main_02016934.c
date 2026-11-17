@@ -7,7 +7,7 @@ extern M2C_UNK gMbParam;
 void func_020168a0(void);
 int func_02016840(void);
 void func_020168f0(void *);
-void *func_020122ec(void *, void *);
+void *WFC_StartDownloadPlay(void *, void *);
 void *func_02012418(void *, void *);
 void *func_02013cfc(void *, int);
 void *func_020122ac(void *);
@@ -15,7 +15,7 @@ void *func_02012a64(void *, int, int, void *, int, int, int, int, int, int, int)
 void Mb_ReportPacketResult(int, void *);
 void func_0200758c(int);
 void SystemHalt(void);
-void func_02011a20(int,int,int);
+void WFC_SetChannelHandler(int,int,int);
 void func_020119dc(int);
 
 #pragma opt_propagation off
@@ -24,7 +24,7 @@ void func_02016934(void *arg0) {
 u32 i,n; 
 switch ((s32)M2C_FIELD(arg0,u16 *,0)) {
 case 0: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else func_020168a0(); return;
-case 29: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(7,func_020122ec(func_02016934,M2C_FIELD(&gMbState,void **,8))); return;
+case 29: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(7,WFC_StartDownloadPlay(func_02016934,M2C_FIELD(&gMbState,void **,8))); return;
 case 7: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(21,arg0); Mb_ReportPacketResult(25,func_02013cfc(func_02016934,1)); return;
 case 25: if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(8,func_02012418(func_02016934,M2C_FIELD(&gMbParam,void **,12))); return;
 case 8:
@@ -66,7 +66,7 @@ if(M2C_FIELD(M2C_FIELD(&gMbState,void **,12),u32 *,0x1320)==0){
 if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);return;}
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)=0; M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;Mb_ReportPacketResult(2,func_020122ac(func_02016934));return;
 }
-func_02011a20(1,0,0);func_020119dc(0);
+WFC_SetChannelHandler(1,0,0);func_020119dc(0);
 case 2:if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);}else func_020168f0(arg0);return;
 case 13:if(M2C_FIELD(arg0,u16 *,2)==0)M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)&=~M2C_FIELD(arg0,u16 *,10);return;
 case 128:switch(M2C_FIELD(arg0,u16 *,4)){

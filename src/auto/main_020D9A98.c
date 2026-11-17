@@ -98,23 +98,26 @@ void func_020d9ee4(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeySta
 temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
 #pragma scheduling off
-void func_020d9f40(void *arg0) {
+/* Draw the option widget's four 5-wide progress bars (columns 1/6/11/16) onto
+   the UI screen in one flat palette, mark the sprite layer dirty, then cache the
+   widget's selected value; play the cursor sound when it changed. */
+void DrawOptionProgressBars(void *entry) {
  M2C_UNK SetTileRectPalette(u16 *,s32,s32,u32);
  M2C_UNK PlaySoundEffect(s32);
  extern void **gCur3DSpriteEngine;
  extern void **g3DSpriteEngineMain;
- void *panel; void **saved; s32 i,col,end;
- panel=M2C_FIELD(arg0,void **,0x10);
- saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
- col=1; end=5; i=0;
+ void *panel; void **savedEngine; s32 i,col,levelEnd;
+ panel=M2C_FIELD(entry,void **,0x10);
+ savedEngine=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
+ col=1; levelEnd=5; i=0;
  do {
- SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x20)+2+(col<<6)),30,(u16)(end-col),5);
- {s32 nextCol=col+5; s32 nextEnd=end+5; i++; col=(s16)nextCol; end=(s16)nextEnd;}
+ SetTileRectPalette((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x20)+2+(col<<6)),30,(u16)(levelEnd-col),5);
+ {s32 nextCol=col+5; s32 nextEnd=levelEnd+5; i++; col=(s16)nextCol; levelEnd=(s16)nextEnd;}
  }while(i<4);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
- gCur3DSpriteEngine=saved;
- if(M2C_FIELD(panel,s8 *,0x43)!=M2C_FIELD(arg0,u8 *,0)){
- M2C_FIELD(panel,s8 *,0x43)=M2C_FIELD(arg0,u8 *,0); PlaySoundEffect(0x10019);
+ gCur3DSpriteEngine=savedEngine;
+ if(M2C_FIELD(panel,s8 *,0x43)!=M2C_FIELD(entry,u8 *,0)){
+ M2C_FIELD(panel,s8 *,0x43)=M2C_FIELD(entry,u8 *,0); PlaySoundEffect(0x10019);
  }
 }
 #pragma scheduling reset

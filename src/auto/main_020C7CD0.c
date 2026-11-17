@@ -93,7 +93,7 @@ s32 a; {
     return GetMapRecord() + 0x40;
 }
 
-s32 func_020c7e98(void) {
+s32 GetMapRecordSettings(void) {
     return GetMapRecord() + 0x30;
 }
 
@@ -102,7 +102,7 @@ s32 a; {
     return func_020c8018() + 9;
 }
 
-u8 func_020c7eb8(s32 arg0) {
+u8 IsCampaignMapRecordValid(s32 arg0) {
     u8 var_r0;
 
     if ((arg0 < 0xE1) || (arg0 >= 0x1A9)) {
@@ -116,7 +116,7 @@ u8 func_020c7eb8(s32 arg0) {
     return var_r0;
 }
 
-s32 func_020c7ef4(s32 a) {
+s32 IsCampaignMapRecordPlayable(s32 a) {
  s32 x;
  if(a<0xE1||a>=0x1A9)return 0;
  x=func_020c8020(a);
@@ -125,12 +125,12 @@ s32 func_020c7ef4(s32 a) {
 }
 
 u8 IsCampaignMapAvailable(s32 a) {
- s32 func_020c80a4(s32); s32 func_02086960(s32);
+ s32 IsLocalCampaignMapRecord(s32); s32 func_02086960(s32);
  s32 p;
  if(a<0xE1||a>=0x1A9)return 0;
- if(!func_020c7eb8(a))return 0;
- if(!func_020c7ef4(a))return 0;
- if(!func_020c80a4(a))return 0;
+ if(!IsCampaignMapRecordValid(a))return 0;
+ if(!IsCampaignMapRecordPlayable(a))return 0;
+ if(!IsLocalCampaignMapRecord(a))return 0;
  if(!func_02086960(a))return 0;
  p=GetMapRecord(a);
  if(M2C_FIELD(p,u8 *,4)>10)return 0;
@@ -176,10 +176,10 @@ s32 func_020c8054(s32 arg0) {
     return 0;
 }
 
-s32 func_020c80a4(s32 a) {
+s32 IsLocalCampaignMapRecord(s32 a) {
  s32 IsLocalMacAddress(s32);
  if(a<0xe1||a>=0x1a9)return 0;
- if(!func_020c7eb8(a))return 0;
+ if(!IsCampaignMapRecordValid(a))return 0;
  return IsLocalMacAddress(GetMapRecordStamp(a));
 }
 
@@ -188,8 +188,8 @@ u8 func_020c80ec(s32 a) {
  s32 p,q; u8 r;
  if(a>=0xe1&&a<0x1a9) {
  p=GetMapRecordStamp(a);q=func_020c8018(a);
- if(!func_020c7eb8(a))return 0;
- if(func_020c80a4(a))return 0;
+ if(!IsCampaignMapRecordValid(a))return 0;
+ if(IsLocalCampaignMapRecord(a))return 0;
  if(func_02086980(q))return 0;
  if(M2C_FIELD(p,u32 *,0xc)>>29)return 0;
  if(M2C_FIELD(p,s32 *,0x10))r=1;else r=0;
@@ -249,18 +249,20 @@ unitIndex++;entry++;
 
 void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void *);void SetPlayerIdForSlot(s32,s32);s32 i;u8 *base;StringCopy((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)SetPlayerIdForSlot(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
 
-s32 func_020c8484(s32 arg) {
+/* Applies a saved map record's terrain bytes to the runtime map: for every cell it
+ * stores the byte as the cell's terrain and sets the cell's tile id from it. */
+s32 ApplyMapTerrain(s32 terrain) {
 extern void **gCurrentMap;
-void BuildMapRowOffsets(void); u16 func_0207f460(u32);
-s32 x,y; Map8484 *base; u8 *a=(u8 *)arg;
+void BuildMapRowOffsets(void); u16 TerrainByteToTileId(u32);
+s32 x,y; Map8484 *base; u8 *p=(u8 *)terrain;
 BuildMapRowOffsets();
 base=*gCurrentMap;
 for(y=0;y<base->height;y++) {
 for(x=0;x<base->width;x++) {
 u8 v;
-base->cells[base->rows[y]+x]=(v=*a++);
+base->cells[base->rows[y]+x]=(v=*p++);
 base=*gCurrentMap;
-base->tiles[x+base->rows[y]]=func_0207f460(v);
+base->tiles[x+base->rows[y]]=TerrainByteToTileId(v);
 base=*gCurrentMap;
 }
 }
@@ -269,9 +271,9 @@ return (s32)base;
 
 void ApplyMapRecord(s32 arg0) {
     void func_020c83f4();
-    M2C_UNK func_020c8484(s32);
+    M2C_UNK ApplyMapTerrain(s32);
     func_020c83f4();
-    func_020c8484(arg0 + 0x54);
+    ApplyMapTerrain(arg0 + 0x54);
 }
 
 void func_020c8564(M2C_UNK arg0) {
@@ -281,7 +283,7 @@ void func_020c8564(M2C_UNK arg0) {
     RestoreMapUnits(arg0);
 }
 
-s32 func_020c857c(M2C_UNK arg0) {
+s32 LoadMapById(M2C_UNK arg0) {
     s32 GetMapRecordBuffer();
     s32 LoadMapRecord(M2C_UNK, s32);
     M2C_UNK func_020cf2c8();

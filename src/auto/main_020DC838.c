@@ -200,7 +200,7 @@ s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), AddTileRectPalette(s32,s32,s32,s32);
 s32 FindSpriteSlotById(s32);
-void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
+void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
 M2C_UNK func_020b1c44(s32,s32);
@@ -233,15 +233,15 @@ if (FindSpriteSlotById(0) == 0) hasRows = 1; else hasRows = 0;
 if (hasRows) {
     row = 0; rowX = 0;
     do {
-        sprite = func_020b22a4(0, rowX, &gMatchRowTemplate, row);
+        sprite = AddSpriteSlot(0, rowX, &gMatchRowTemplate, row);
         row++;
         M2C_FIELD(sprite, void **, 0x10) = entity;
         rowX += 0x28;
     } while (row < 4);
 }
-sprite = func_020b22a4(0, 0, &gMatchWideRowTemplate, 4);
+sprite = AddSpriteSlot(0, 0, &gMatchWideRowTemplate, 4);
 M2C_FIELD(sprite, void **, 0x10) = entity;
-selectedRow = func_020b1c78(M2C_FIELD(entity, s8 *, 0x43));
+selectedRow = SelectSpriteSlot(M2C_FIELD(entity, s8 *, 0x43));
 if (selectedRow) {
     panel = M2C_FIELD(selectedRow, void **, 0x10);
     savedBarEngine = gCur3DSpriteEngine;
@@ -316,7 +316,7 @@ s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), AddTileRectPalette(s32,s32,s32,s32);
 s32 FindSpriteSlotById(s32);
-void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
+void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
 M2C_UNK func_020b1c44(s32,s32);
@@ -349,15 +349,15 @@ if (FindSpriteSlotById(0) == 0) hasRows = 1; else hasRows = 0;
 if (hasRows) {
     row = 0; rowX = 0;
     do {
-        sprite = func_020b22a4(0, rowX, &gMatchRowTemplate, row);
+        sprite = AddSpriteSlot(0, rowX, &gMatchRowTemplate, row);
         row++;
         M2C_FIELD(sprite, void **, 0x10) = entity;
         rowX += 0x28;
     } while (row < 4);
 }
-sprite = func_020b22a4(0, 0, &gMatchWideRowTemplate, 4);
+sprite = AddSpriteSlot(0, 0, &gMatchWideRowTemplate, 4);
 M2C_FIELD(sprite, void **, 0x10) = entity;
-selectedRow = func_020b1c78(M2C_FIELD(entity, s8 *, 0x43));
+selectedRow = SelectSpriteSlot(M2C_FIELD(entity, s8 *, 0x43));
 if (selectedRow) {
     panel = M2C_FIELD(selectedRow, void **, 0x10);
     savedBarEngine = gCur3DSpriteEngine;

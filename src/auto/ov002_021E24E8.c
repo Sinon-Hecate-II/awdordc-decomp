@@ -134,8 +134,8 @@ void func_ov002_021e299c(void *a,s32 b){void func_ov002_021e17b4(s32,s32,s32);ex
 
 void func_ov002_021e29d8(void *arg0) {
     M2C_UNK func_ov002_021e88a0(s32);
-    extern M2C_UNK data_ov002_021f3124;
-    func_ov002_021e88a0((M2C_FIELD(arg0, u8 *, 0x53) * 0x2C) + (s32) &data_ov002_021f3124);
+    extern M2C_UNK gUnitViews;
+    func_ov002_021e88a0((M2C_FIELD(arg0, u8 *, 0x53) * 0x2C) + (s32) &gUnitViews);
 }
 
 void func_ov002_021e29f8(void *arg0,s32 a,s32 b) {

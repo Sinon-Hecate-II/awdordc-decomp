@@ -2,11 +2,11 @@
 #include "common.h"
 typedef struct { u8 low:4; u8 high:4; } Packet14564;
 
-s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK func_020067c4(s32,M2C_UNK); s32 r=func_0201146c(); if(r)return r;if(b>3)return 6;if(b){if(!c)return 6;func_020067c4(c,80);}func_020112b4(20,a);r=func_02011324(20,2,b,c);if(!r)r=2;return r;}
+s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK DC_CleanRange(s32,M2C_UNK); s32 r=func_0201146c(); if(r)return r;if(b>3)return 6;if(b){if(!c)return 6;DC_CleanRange(c,80);}WFC_SetChannelParam(20,a);r=WFC_SendCommand(20,2,b,c);if(!r)r=2;return r;}
 
-s32 func_02013bc8(M2C_UNK a,u32 b,s32 c,s32 d){ s32 r=func_0201146c();if(r)return r;if(b>3)return 6;if(b){if(!d)return 6;func_020067c4(d,80);}func_020112b4(39,a);r=func_02011324(39,3,b,d,c);if(!r)r=2;return r;}
+s32 func_02013bc8(M2C_UNK a,u32 b,s32 c,s32 d){ s32 r=func_0201146c();if(r)return r;if(b>3)return 6;if(b){if(!d)return 6;DC_CleanRange(d,80);}WFC_SetChannelParam(39,a);r=WFC_SendCommand(39,3,b,d,c);if(!r)r=2;return r;}
 
-s32 func_02013c44(M2C_UNK a,s32 b,u32 c,s32 d,u16 e,u8 f){ M2C_UNK CopyU16(s32,M2C_UNK *,u32);extern M2C_UNK data_02131100;s32 r=func_020114b4(2,7,9);if(r)return r;if(!b)return 6;if(c>112)return 6;CopyU16(b,&data_02131100,c);func_020067c4(&data_02131100,c);func_020112b4(24,a);r=func_02011324(24,5,&data_02131100,c,d,(s32)e,(s32)f);if(!r)r=2;return r;}
+s32 func_02013c44(M2C_UNK a,s32 b,u32 c,s32 d,u16 e,u8 f){ M2C_UNK CopyU16(s32,M2C_UNK *,u32);extern M2C_UNK data_02131100;s32 r=WFC_CheckChannelState(2,7,9);if(r)return r;if(!b)return 6;if(c>112)return 6;CopyU16(b,&data_02131100,c);DC_CleanRange(&data_02131100,c);WFC_SetChannelParam(24,a);r=WFC_SendCommand(24,5,&data_02131100,c,d,(s32)e,(s32)f);if(!r)r=2;return r;}
 
 s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
     s32 func_0201146c();
@@ -20,8 +20,8 @@ s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
     if ((arg1 != 0) && (arg1 != 1)) {
         return 6;
     }
-    func_020112b4(0x19, arg0);
-    var_r0 = func_02011324(0x19, 1, arg1);
+    WFC_SetChannelParam(0x19, arg0);
+    var_r0 = WFC_SendCommand(0x19, 1, arg1);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -36,8 +36,8 @@ s32 func_02013d4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) 
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(0x1D, arg0);
-    var_r0 = func_02011324(0x1D, 4, arg1, arg2, arg3, (s32) arg4);
+    WFC_SetChannelParam(0x1D, arg0);
+    var_r0 = WFC_SendCommand(0x1D, 4, arg1, arg2, arg3, (s32) arg4);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -45,32 +45,32 @@ s32 func_02013d4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) 
 }
 
 s32 func_02013dac(s32 arg0,s16 arg1,s16 arg2,s16 arg3,u16 arg4) {
- s32 func_020113d0(s16 *,s32);
+ s32 WFC_SendCommandPacket(s16 *,s32);
  void WFC_GetInfoBlock();
  s16 packet[5]; s32 result;
  WFC_GetInfoBlock();
- result=func_020114b4(1,2);
+ result=WFC_CheckChannelState(1,2);
  if(result) return result;
- func_020112b4(0x1e,arg0);
+ WFC_SetChannelParam(0x1e,arg0);
  packet[0]=0x1e; packet[1]=arg1; packet[2]=arg2; packet[3]=arg3; packet[4]=arg4;
- result=func_020113d0(packet,10);
+ result=WFC_SendCommandPacket(packet,10);
  if(!result) result=2;
  return result;
 }
 
 s32 func_02013e24(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020112b4(M2C_UNK, M2C_UNK);
-    s32 func_02011324(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020114b4(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK WFC_SetChannelParam(M2C_UNK, M2C_UNK);
+    s32 WFC_SendCommand(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 WFC_CheckChannelState(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(2, 7, 9);
+    temp_r0 = WFC_CheckChannelState(2, 7, 9);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(0x21, arg0);
-    var_r0 = func_02011324(0x21, 1, arg1);
+    WFC_SetChannelParam(0x21, arg0);
+    var_r0 = WFC_SendCommand(0x21, 1, arg1);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -102,7 +102,7 @@ s32 func_02013f1c(s32 arg0) {
 /* Notes that player `player` has acknowledged a step of the multiboot match
  * setup (phase 0..3): only if the player is in the expected state does its
  * per-player pending value change. Returns 1 when it did. */
-s32 func_02013f70(s32 player, u32 phase) {
+s32 Mb_AckPlayerPhase(s32 player, u32 phase) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 func_02015214(s32);

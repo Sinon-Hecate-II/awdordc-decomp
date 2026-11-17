@@ -60,6 +60,38 @@
 #define IP_FRAGMENT_UNIT        8
 #define IP_FLAG_MOREFRAGMENTS   0x2000
 #define ETH_TYPE_IPV4           0x0800 /* Ethernet type of an IPv4 frame */
+#define ETH_TYPE_ARP            0x0806 /* Ethernet type of an ARP frame */
+
+/* Ethernet II header the stack builds in front of the IPv4 packet: destination
+ * MAC, source MAC, then the type.  Its offsets are from the header start, which
+ * sits ETH_HEADER_SIZE bytes before the IPv4 header. */
+#define ETH_HEADER_SIZE  14
+#define ETH_DEST_MAC     0x00 /* u8[6] destination hardware address */
+#define ETH_SRC_MAC      0x06 /* u8[6] source hardware address */
+#define ETH_TYPE         0x0C /* u16 Ethernet type, network byte order */
+#define ETH_MULTICAST_MAC_PREFIX 0x01 /* first byte: 01:00:5e:xx:xx:xx */
+#define ETH_MULTICAST_MAC_SECOND 0x00
+#define ETH_MULTICAST_MAC_THIRD  0x5E
+
+/* IPv4 header fields (RFC 791) the transport layer reads; the 16-bit fields are
+ * in network byte order in the packet. */
+#define IPH_SRC_IP    0x0C /* u32 source IPv4 address */
+#define IPH_SRC_IP_HI 0x0C /* u16 high half of the source address */
+#define IPH_SRC_IP_LO 0x0E /* u16 low half of the source address */
+#define IPH_DST_IP    0x10 /* u32 destination IPv4 address */
+#define IPH_DST_IP_HI 0x10 /* u16 high half of the destination address */
+#define IPH_DST_IP_LO 0x12 /* u16 low half of the destination address */
+
+/* ICMP message fields and the types the ICMP handler dispatches on. */
+#define ICMP_TYPE      0x00 /* u8 message type */
+#define ICMP_CHECKSUM  0x02 /* u16 message checksum */
+#define ICMP_TYPE_ECHO_REPLY   0
+#define ICMP_TYPE_ECHO_REQUEST 8
+#define CHECKSUM_VALID 0xFFFF /* sum over a message, checksum field included, when it is valid */
+
+/* TCP header fields (RFC 793), network byte order in the packet. */
+#define TCPH_SRC_PORT 0x00 /* u16 sender port */
+#define TCPH_DST_PORT 0x02 /* u16 receiver port */
 
 /* IPv4 protocol numbers used by the transport senders. */
 #define IP_PROTO_ICMP 1
@@ -70,6 +102,7 @@
 /* Fields of the datagram/stream socket object (gSocketManager->...+0xA4) the
  * transport senders share. */
 #define SOCK_KIND        0x08 /* u8 socket kind: 10 = UDP, 11 = ICMP, else a TCP stream */
+#define SOCK_TLS_ACTIVE  0x09 /* u8 nonzero once the socket's payload is wrapped in TLS records */
 #define SOCK_LOCAL_PORT  0x0A /* u16 local (source) port */
 #define SOCK_REMOTE_PORT 0x18 /* u16 remote (destination) port */
 #define SOCK_REMOTE_IP   0x1C /* u32 remote IPv4 address, host order */

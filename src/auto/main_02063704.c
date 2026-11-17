@@ -53,7 +53,7 @@ apply:
 s32 func_020637fc(void *arg0) {
     s32 func_02049810(s32, void *, s32, s32);
     M2C_UNK func_02061efc(void *);
-    s32 func_0206325c(void *, u8 *, s32);
+    s32 SBServerListParseKeyList(void *, u8 *, s32);
     s32 GpiHandleRecordList(void *, u8 *, s32);
     s32 GpiHandleServerInfoResponse(void *, u8 *, s32);
     s32 func_02063678(M2C_UNK, u8 *, s32);
@@ -80,7 +80,7 @@ s32 func_020637fc(void *arg0) {
         buf = M2C_FIELD(arg0, u8 **, 0x7C);
         switch (((s8 *) buf)[2]) {
         case 1:
-            result = func_0206325c(arg0, buf + 3, size - 3);
+            result = SBServerListParseKeyList(arg0, buf + 3, size - 3);
             break;
         case 2:
             result = func_02063704(arg0, buf + 3, size - 3);

@@ -36,7 +36,7 @@ void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
  M2C_UNK p[22];func_ov001_0217073c(p);func_ov001_02170764(p,b,c);func_ov001_021707dc(a,p);
 }
 
-void WhGetTime(void){u64 GetSystemTick(void);void func_02072088(u64,u64);func_02072088(GetSystemTick()<<6,0x82ea);}
+void WhGetTime(void){u64 GetSystemTick(void);void U64Divide(u64,u64);U64Divide(GetSystemTick()<<6,0x82ea);}
 
 #pragma thumb on
 s32 func_ov001_02171178(s8 *a, s32 b) {
@@ -74,57 +74,60 @@ p=data_ov001_021928fc;i=58;do{*p++=0;}while(--i);
 func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;return 1;
 }
 #pragma optimize_for_size reset
-void func_ov001_021714d0(void);
+void Ov001_AnimSpriteTask(void);
 #pragma thumb off
-void func_ov001_021713c4(s8 arg0) {
+void Ov001_CreateAnimSprite(s8 arg0) {
 s32 *func_ov001_0218a5f0(s32,s32); void *Ov001_Alloc(s32,s32); s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
-extern M2C_UNK data_ov001_0218f278; extern void *data_ov001_02193cc4;
+extern M2C_UNK gOv001AnimSpritePalette; extern void *gOv001AnimSprite;
 s32 *p,*q,*r; void *a; s8 v;
-a=Ov001_Alloc(12,4);data_ov001_02193cc4=a;M2C_FIELD(a,s8 *,8)=arg0;
-M2C_FIELD(data_ov001_02193cc4,s32 **,4)=func_ov001_0218a5f0(0,0x47);
-v=((u8 *)&data_ov001_0218f278)[arg0];
-p=M2C_FIELD(data_ov001_02193cc4,s32 **,4);
+a=Ov001_Alloc(12,4);gOv001AnimSprite=a;M2C_FIELD(a,s8 *,8)=arg0;
+M2C_FIELD(gOv001AnimSprite,s32 **,4)=func_ov001_0218a5f0(0,0x47);
+v=((u8 *)&gOv001AnimSpritePalette)[arg0];
+p=M2C_FIELD(gOv001AnimSprite,s32 **,4);
 M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xc00)|0x400;
-q=M2C_FIELD(data_ov001_02193cc4,s32 **,4);*q&=~0xc00;
+q=M2C_FIELD(gOv001AnimSprite,s32 **,4);*q&=~0xc00;
 M2C_FIELD(q,u16 *,4)=(M2C_FIELD(q,u16 *,4)&~0xf000)|((u8)v<<12);
-r=M2C_FIELD(data_ov001_02193cc4,s32 **,4);*r=(*r&0xfe00ff00)|0xe6008b;
-M2C_FIELD(data_ov001_02193cc4,s32 *,0)=Ov001_AddTask(1,func_ov001_021714d0,0,120);
+r=M2C_FIELD(gOv001AnimSprite,s32 **,4);*r=(*r&0xfe00ff00)|0xe6008b;
+M2C_FIELD(gOv001AnimSprite,s32 *,0)=Ov001_AddTask(1,Ov001_AnimSpriteTask,0,120);
 }
 #pragma merge_constants off
 void func_ov001_02171494(void) {
     M2C_UNK Ov001_FreeAlloc(void **);
     M2C_UNK Ov001_ReleaseSprite(s32);
     M2C_UNK func_ov001_0218c94c(M2C_UNK, s32);
-    extern void *data_ov001_02193cc4;
+    extern void *gOv001AnimSprite;
     extern void *gOv001IconRow;
-    func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193cc4, s32 *, 0));
-    Ov001_ReleaseSprite(M2C_FIELD(data_ov001_02193cc4, s32 *, 4));
+    func_ov001_0218c94c(1, M2C_FIELD(gOv001AnimSprite, s32 *, 0));
+    Ov001_ReleaseSprite(M2C_FIELD(gOv001AnimSprite, s32 *, 4));
     Ov001_FreeAlloc(&gOv001IconRow - 1);
 }
 #pragma merge_constants reset
-void func_ov001_021714d0(void) {
+/* Per-frame task of the animated icon sprite: step the frame tick (wrapping at
+ * 40), point the sprite's obj layout at the animation frame the tick selects,
+ * then apply the attribute and palette bits of the sprite's kind. */
+void Ov001_AnimSpriteTask(void) {
     s32 func_02002088(u8, M2C_UNK);
     u8 func_020020c4(s32, M2C_UNK);
     M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK, s32, s32 *);
-    extern M2C_UNK data_ov001_0218f278;
-    extern void *data_ov001_02193cc4;
-    s32 value;
-    u8 color;
-    s32 *temp_r2;
-    s32 *temp_r3;
-    s32 *temp_r3_2;
+    extern M2C_UNK gOv001AnimSpritePalette;
+    extern void *gOv001AnimSprite;
+    s32 frame;
+    u8 palette;
+    s32 *entry;
+    s32 *obj;
+    s32 *obj2;
 
-    M2C_FIELD(data_ov001_02193cc4, u8 *, 9) = func_020020c4(M2C_FIELD(data_ov001_02193cc4, u8 *, 9) + 1, (M2C_UNK)0x28);
-    value = func_02002088(M2C_FIELD(data_ov001_02193cc4, u8 *, 9), 5);
-    Ov001_LoadSpriteObjLayout(0, value + 0x47, M2C_FIELD(data_ov001_02193cc4, s32 **, 4));
-    temp_r3 = M2C_FIELD(data_ov001_02193cc4, s32 **, 4);
-    M2C_FIELD(temp_r3, u16 *, 4) = (u16) ((M2C_FIELD(temp_r3, u16 *, 4) & ~0xC00) | 0x400);
-    color = ((u8 *)&data_ov001_0218f278)[M2C_FIELD(data_ov001_02193cc4, u8 *, 8)];
-    temp_r3_2 = M2C_FIELD(data_ov001_02193cc4, s32 **, 4);
-    M2C_FIELD(temp_r3_2, s32 *, 0) &= ~0xC00;
-    M2C_FIELD(temp_r3_2, u16 *, 4) = (u16) ((M2C_FIELD(temp_r3_2, u16 *, 4) & ~0xF000) | (color << 0xC));
-    temp_r2 = M2C_FIELD(data_ov001_02193cc4, s32 **, 4);
-    *temp_r2 = (*temp_r2 & 0xFE00FF00) | 0xE6008B;
+    M2C_FIELD(gOv001AnimSprite, u8 *, 9) = func_020020c4(M2C_FIELD(gOv001AnimSprite, u8 *, 9) + 1, (M2C_UNK)0x28);
+    frame = func_02002088(M2C_FIELD(gOv001AnimSprite, u8 *, 9), 5);
+    Ov001_LoadSpriteObjLayout(0, frame + 0x47, M2C_FIELD(gOv001AnimSprite, s32 **, 4));
+    obj = M2C_FIELD(gOv001AnimSprite, s32 **, 4);
+    M2C_FIELD(obj, u16 *, 4) = (u16) ((M2C_FIELD(obj, u16 *, 4) & ~0xC00) | 0x400);
+    palette = ((u8 *)&gOv001AnimSpritePalette)[M2C_FIELD(gOv001AnimSprite, u8 *, 8)];
+    obj2 = M2C_FIELD(gOv001AnimSprite, s32 **, 4);
+    M2C_FIELD(obj2, s32 *, 0) &= ~0xC00;
+    M2C_FIELD(obj2, u16 *, 4) = (u16) ((M2C_FIELD(obj2, u16 *, 4) & ~0xF000) | (palette << 0xC));
+    entry = M2C_FIELD(gOv001AnimSprite, s32 **, 4);
+    *entry = (*entry & 0xFE00FF00) | 0xE6008B;
 }
 
 /* Build the state for a render effect indexed by id: allocate the 28-byte
@@ -178,7 +181,7 @@ void Ov001_LatchIconRowSelection(s8 a){if(M2C_FIELD(gOv001IconRow,s8 *,0x16)==-1
 
 void Ov001_SetIconRowSelection(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 
-s32 func_ov001_0217170c(void){if(gOv001IconRow==NULL)return 1;if(M2C_FIELD(gOv001IconRow,u8 *,0x19)==0)return 1;return 0;}
+s32 Ov001_IsIconRowIdle(void){if(gOv001IconRow==NULL)return 1;if(M2C_FIELD(gOv001IconRow,u8 *,0x19)==0)return 1;return 0;}
 
 #pragma thumb off
 void Ov001_UnlockIconRow(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,u8 *,0x18)=0;}

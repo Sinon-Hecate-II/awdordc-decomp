@@ -46,7 +46,7 @@ func_ov009_0222326c kind:function(arm,size=0x24) addr:0x0222326c
 func_ov009_02223290 kind:function(arm,size=0x74) addr:0x02223290
 HandleLinkTaskEvent kind:function(arm,size=0x1d0) addr:0x02223304
 StartLinkTransfer kind:function(arm,size=0xc8) addr:0x022234d4
-func_ov009_0222359c kind:function(arm,size=0xa4) addr:0x0222359c
+HandleLinkTransferTaskEvent kind:function(arm,size=0xa4) addr:0x0222359c
 func_ov009_02223640 kind:function(arm,size=0x80) addr:0x02223640
 func_ov009_022236c0 kind:function(arm,size=0x34) addr:0x022236c0
 func_ov009_022236f4 kind:function(arm,size=0x50) addr:0x022236f4
@@ -54,7 +54,7 @@ func_ov009_02223744 kind:function(arm,size=0x2e0) addr:0x02223744
 func_ov009_02223a24 kind:function(arm,size=0xc) addr:0x02223a24
 ClearPlayerActive kind:function(arm,size=0x60) addr:0x02223a30
 func_ov009_02223a90 kind:function(arm,size=0x38) addr:0x02223a90
-func_ov009_02223ac8 kind:function(arm,size=0x94) addr:0x02223ac8
+HandleLinkChannelEvent kind:function(arm,size=0x94) addr:0x02223ac8
 func_ov009_02223b5c kind:function(arm,size=0x30) addr:0x02223b5c
 func_ov009_02223b8c kind:function(arm,size=0x30) addr:0x02223b8c
 func_ov009_02223bbc kind:function(arm,size=0x28) addr:0x02223bbc
@@ -273,9 +273,9 @@ data_ov009_02226cc0 kind:bss addr:0x02226cc0
 data_ov009_02226d80 kind:bss addr:0x02226d80
 data_ov009_02226d84 kind:bss addr:0x02226d84
 data_ov009_02226fe0 kind:bss addr:0x02226fe0
-data_ov009_02227000 kind:bss addr:0x02227000
+gLinkTransferExtra kind:bss addr:0x02227000
 data_ov009_022270b0 kind:bss addr:0x022270b0 ambiguous
-data_ov009_022270e0 kind:bss addr:0x022270e0
+gLinkTransferData kind:bss addr:0x022270e0
 data_ov009_022277a0 kind:bss addr:0x022277a0
 data_ov009_02227ca4 kind:bss addr:0x02227ca4 ambiguous
 data_ov009_0222866c kind:bss addr:0x0222866c ambiguous

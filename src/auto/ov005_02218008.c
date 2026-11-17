@@ -4,7 +4,7 @@
 void Ov005RefreshEntryLabel(void);
 void Ov005RefreshEntryFace(void);
 void func_ov005_02217440(void);
-void func_020aef7c(int,int,int);
+void CreateSubWallpaperSprite(int,int,int);
 void func_020b1b3c(void);
 typedef struct Setup180 {u16 h[6];} Setup180;
 typedef struct Pos180 {s16 h[4];} Pos180;
@@ -40,7 +40,7 @@ void func_020e3004();
 void SetOv005FileDirectory(void);
 void *HeapAllocBlock(int);
 void *GetLocalizedFileName(void *);
-void *func_02080e30(void *,int);
+void *LoadFileToBuffer(void *,int);
 int GetUiColor(int);
 void *func_0208931c(void *);
 u32 func_020aaf74(void *);
@@ -95,7 +95,7 @@ OpenNarcArchive(GetLocalizedFileName(data_ov005_02220908));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_0222091c),M2C_FIELD(g3DSpriteEngineMain,void * *,20));
 LoadNarcFileToBuffer(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpriteEngineMain,void * *,40),0,0);CloseNarcArchive();
 LoadFileToSpriteBuffer(data_ov005_02220944,0,32);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;SetFileDirectory(data_ov005_02220958);
-p=func_02080e30(data_ov005_02220960,1);func_0207c780((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
+p=LoadFileToBuffer(data_ov005_02220960,1);func_0207c780((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
 LoadFileToSpriteBuffer(data_ov005_02220978,0x2e0,32);
 for(i=0,j=0;i<12;i++,j+=12)func_02098b94((s16)(i+1),0,0x9380+(j<<6),(u16)i);
 SetOv005FileDirectory();
@@ -127,15 +127,15 @@ func_020a9a30(2,2,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,48)+0x2e0);
 M2C_FIELD(sprite,u32 *,68)=func_020aaf74(sprite);M2C_FIELD(sprite,u16 *,62)=0x180;M2C_FIELD(sprite,u32 *,64)=(M2C_FIELD(sprite,u32 *,64)&~0x3fc0000)|0x5c0000;M2C_FIELD(sprite,u16 *,60)=0xc00;
 M2C_FIELD(gOv005MenuState,void * *,28)=func_0208bc24(arg0);M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u16 *,62)=0x200;M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)=(M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)&~0x3fc0000)|0x200000;
 SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);func_02088f1c(M2C_FIELD(gOv005MenuState,void * *,28));func_020e3004();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
-Ov005RefreshEntryFace();func_ov005_02217440();func_020aef7c(3,15,6);gCur3DSpriteEngine=saved;func_020b1b3c();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
+Ov005RefreshEntryFace();func_ov005_02217440();CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=saved;func_020b1b3c();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
 }
 #pragma opt_strength_reduction reset
 void func_ov005_0221885c(void) {
-    M2C_UNK func_020b1c78(s16);
+    M2C_UNK SelectSpriteSlot(s16);
     M2C_UNK func_ov005_02217f6c();
     extern void *gOv005MenuState;
     func_ov005_02217f6c();
-    func_020b1c78(M2C_FIELD(gOv005MenuState, s16 *, 0xE));
+    SelectSpriteSlot(M2C_FIELD(gOv005MenuState, s16 *, 0xE));
 }
 
 /* Apply the menu page/index changes made since the last frame. */
@@ -186,12 +186,12 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
  * detail page. */
 void Ov005ListMenuInput(M2C_UNK arg0){
 u32 func_020719d4(s32);u32 func_02071a64(u32,u32);u32 func_02071564(u32,u32);u32 func_02070f24(u32,u32);s32 func_020719a0(u32);
-M2C_UNK func_ov005_02217f6c();M2C_UNK func_020b1c78(s16);void func_01ffa6fc(s32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);s32 IsCoUnlocked(s16);void SetTextById(void *,u32);s16 func_020bf8cc(s16);void func_ov005_02217334(s16);
+M2C_UNK func_ov005_02217f6c();M2C_UNK SelectSpriteSlot(s16);void func_01ffa6fc(s32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);s32 IsCoUnlocked(s16);void SetTextById(void *,u32);s16 func_020bf8cc(s16);void func_ov005_02217334(s16);
 extern void *gOv005MenuState;extern u16 *gKeyState;
 void *menu=gOv005MenuState;s32 animTimer=M2C_FIELD(menu,s16 *,OV005_MENU_ANIM);u32 eased;
 eased=func_02071a64(OV005_FLOAT_NEG256,func_020719d4(animTimer));eased=func_02071a64(eased,func_020719d4(animTimer));eased=func_02071564(eased,func_020719d4(OV005_MENU_ANIM_FRAMES_SQ));M2C_FIELD(menu,s16 *,OV005_MENU_SLIDE_OUT)=func_020719a0(eased);
 eased=func_02071a64(OV005_FLOAT_NEG256,func_020719d4(animTimer));eased=func_02071a64(eased,func_020719d4(animTimer));eased=func_02071564(eased,func_020719d4(OV005_MENU_ANIM_FRAMES_SQ));M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SLIDE_IN)=func_020719a0(func_02070f24(OV005_FLOAT_256,eased));
-if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){func_ov005_02217f6c();func_020b1c78(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX));}
+if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){func_ov005_02217f6c();SelectSpriteSlot(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX));}
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)>0)return;
 if(*gKeyState&2){func_01ffa6fc(arg0);func_020b2178();PlaySoundEffect(0x1000f);return;}
 if((*gKeyState&1) && IsCoUnlocked(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX))){
@@ -209,13 +209,13 @@ func_ov005_02217334(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));func_
 void Ov005DetailMenuInput(M2C_UNK arg0){
 extern void *gOv005MenuState;extern u16 *gKeyState;
 u32 func_020719d4(s32);u32 func_02071a64(u32,u32);u32 func_02071564(u32,u32);u32 func_02070f24(u32,u32);s32 func_020719a0(u32);
-void Ov005AddDetailSprites(void);M2C_UNK func_020b1c78(s16);void func_020bf8fc(s32,s32);void Ov005DrawEntryList(s32);void SetTextById(void *,u32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);
+void Ov005AddDetailSprites(void);M2C_UNK SelectSpriteSlot(s16);void func_020bf8fc(s32,s32);void Ov005DrawEntryList(s32);void SetTextById(void *,u32);M2C_UNK func_020b2178();void PlaySoundEffect(s32);
 void *menu=gOv005MenuState;s32 animTimer=M2C_FIELD(menu,s16 *,OV005_MENU_ANIM);u32 eased;
 eased=func_02071a64(OV005_FLOAT_256,func_020719d4(animTimer));eased=func_02071a64(eased,func_020719d4(animTimer));eased=func_02071564(eased,func_020719d4(OV005_MENU_ANIM_FRAMES_SQ));
 M2C_FIELD(menu,s16 *,OV005_MENU_SLIDE_OUT)=func_020719a0(func_02070f24(OV005_FLOAT_NEG256,eased));
 eased=func_02071a64(OV005_FLOAT_256,func_020719d4(animTimer));eased=func_02071a64(eased,func_020719d4(animTimer));eased=func_02071564(eased,func_020719d4(OV005_MENU_ANIM_FRAMES_SQ));
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SLIDE_IN)=func_020719a0(eased);
-if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){Ov005AddDetailSprites();func_020b1c78(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION));}
+if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){Ov005AddDetailSprites();SelectSpriteSlot(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION));}
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)>0)return;
 if(*gKeyState&2){
 func_020bf8fc(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX),M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));

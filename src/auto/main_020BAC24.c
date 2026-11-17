@@ -93,9 +93,9 @@ void func_020bb0d0(M2C_UNK arg0) {
 }
 
 void func_020bb0ec(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0209ea20(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK StartBattlePreviewOnFeature(M2C_UNK, M2C_UNK, M2C_UNK);
     func_020bb03c();
-    func_0209ea20(arg0, arg1, 0);
+    StartBattlePreviewOnFeature(arg0, arg1, 0);
 }
 
 void func_020bb110(void) {
@@ -384,10 +384,10 @@ void func_020bbac8(void) {
 
 void func_020bbb08(void) {
  M2C_UNK RollNextWeather(); M2C_UNK GetRandomSeed(); M2C_UNK func_020a6fcc();
- extern void **gCurrentMap; extern u8 data_02156e50[];
+ extern void **gCurrentMap; extern u8 gBattleCommand[];
  u8 *p = (u8 *)*gCurrentMap + 0x5120;
  p[0x3a] = RollNextWeather();
- *(u32 *)(data_02156e50+8) = GetRandomSeed();
+ *(u32 *)(gBattleCommand+8) = GetRandomSeed();
  M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d1)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
  M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d2)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
  func_020a6fcc(); M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=1;

@@ -22,6 +22,7 @@
  * which the game keeps at SB_LIST_QUERY of its server-browser object). */
 #define SB_SLIST_STATE       0x00  /* s32: SB_SLIST_STATE_* */
 #define SB_SLIST_SERVERS     0x04  /* Vector *servers found so far */
+#define SB_SLIST_KEY_LIST    0x08  /* Vector *of SBServerListKey: the announced key schema */
 #define SB_SLIST_GAMENAME    0x0c  /* char[] game name reported to the master */
 #define SB_SLIST_SECRETKEY   0x30  /* char[] secret key sent in the connect packet */
 #define SB_SLIST_GAMEVERSION 0x54  /* char[] game version reported to the master */
@@ -32,6 +33,16 @@
 #define SB_SLIST_SORT_FIELD  0x498 /* char[] key the server list is sorted on */
 #define SB_SLIST_SORT_DESC   0x49c /* s32 nonzero to sort descending */
 #define SB_SLIST_START_TICK  0x4b4 /* u32 GetTickCountMs() the 2 s collection window starts at */
+
+/* One entry of the list's key schema (SB_SLIST_KEY_LIST): a key the master or
+ * game server announces, interned, together with the type of the values
+ * recorded for it.  Record parsing walks the schema in order and decodes each
+ * field's value according to the entry's type. */
+#define SB_SLIST_KEY_SIZE 8 /* bytes per key-schema entry */
+typedef struct SBServerListKey {
+    char *name; /* +0x00 interned key name (StringIntern) */
+    s32   type; /* +0x04 GPI_FIELD_* (common.h): how the value is encoded */
+} SBServerListKey;
 
 /* Events the list reports through SB_SLIST_CALLBACK:
  * (list, event, server, SB_SLIST_INSTANCE). */

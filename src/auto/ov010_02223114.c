@@ -355,40 +355,45 @@ void Link_AdvancePacket(void *arg0, s32 arg1) {
     Link_PopPacket(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-void func_ov010_02223a20(void *arg0, u32 arg1) {
+void Link_ResetChannelSequence(void *arg0, u32 arg1) {
     M2C_FIELD(arg0, s16 *, 0x68) = (s16)arg1;
     M2C_FIELD(arg0, s32 *, 0x64) = 0x10001;
     M2C_FIELD(arg0, s32 *, 0x60) = 0;
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
 }
 
-s32 func_ov010_02223a40(void *arg0, void *arg1, u32 arg2) {
-    u16 temp_ip;
-    u16 temp_r2;
+/* Keys an incoming link packet with its 32-bit sequence number: the wire carries
+ * only the low 16 bits, so the channel's last sequence (+0x68) and its 0x10000
+ * rollover accumulator (+0x60) extend it, and the result is stored as the
+ * packet's ordering key (+0x18). A sequence just behind the last one is expected
+ * after a gap (+0x64); anything else out of order returns 0 without keying. */
+s32 Link_AssignPacketSequence(void *channel, void *packet, u32 seq) {
+    u16 lastSeq;
+    u16 delta;
 
-    temp_ip = M2C_FIELD(arg0, u16 *, 0x68);
-    temp_r2 = (u16)(arg2 - temp_ip);
-    if (temp_r2 < 0xBB8U) {
-        if (arg2 < (u32)temp_ip) {
-            M2C_FIELD(arg0, s32 *, 0x60) = M2C_FIELD(arg0, s32 *, 0x60) + 0x10000;
+    lastSeq = M2C_FIELD(channel, u16 *, 0x68);
+    delta = (u16)(seq - lastSeq);
+    if (delta < 0xBB8U) {
+        if (seq < (u32)lastSeq) {
+            M2C_FIELD(channel, s32 *, 0x60) = M2C_FIELD(channel, s32 *, 0x60) + 0x10000;
         }
-        M2C_FIELD(arg0, u16 *, 0x68) = (u16)arg2;
-    } else if (temp_r2 <= 0xFF9CU) {
-        if (arg2 == M2C_FIELD(arg0, s32 *, 0x64)) {
-            func_ov010_02223a20(arg0, arg2);
-            M2C_FIELD(arg0, s32 *, 0x54) = (s32)(u16)(arg2 - 1);
+        M2C_FIELD(channel, u16 *, 0x68) = (u16)seq;
+    } else if (delta <= 0xFF9CU) {
+        if (seq == M2C_FIELD(channel, s32 *, 0x64)) {
+            Link_ResetChannelSequence(channel, seq);
+            M2C_FIELD(channel, s32 *, 0x54) = (s32)(u16)(seq - 1);
         } else {
-            M2C_FIELD(arg0, s32 *, 0x64) = (s32)(u16)(arg2 + 1);
+            M2C_FIELD(channel, s32 *, 0x64) = (s32)(u16)(seq + 1);
             return 0;
         }
     } else {
-        u32 temp_r1 = arg2 + M2C_FIELD(arg0, s32 *, 0x60);
-        if (temp_r1 > (u32)(M2C_FIELD(arg0, s32 *, 0x54) + 0xFF9C)) {
-            M2C_FIELD(arg1, s32 *, 0x18) = (s32)(temp_r1 - 0x10000);
+        u32 extendedSeq = seq + M2C_FIELD(channel, s32 *, 0x60);
+        if (extendedSeq > (u32)(M2C_FIELD(channel, s32 *, 0x54) + 0xFF9C)) {
+            M2C_FIELD(packet, s32 *, 0x18) = (s32)(extendedSeq - 0x10000);
             return 1;
         }
     }
-    M2C_FIELD(arg1, s32 *, 0x18) = (s32)(arg2 + M2C_FIELD(arg0, s32 *, 0x60));
+    M2C_FIELD(packet, s32 *, 0x18) = (s32)(seq + M2C_FIELD(channel, s32 *, 0x60));
     return 1;
 }
 

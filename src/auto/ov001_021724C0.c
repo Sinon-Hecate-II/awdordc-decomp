@@ -14,7 +14,7 @@ void func_ov001_021724c0(void) {
     M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218ac04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreatePooledTextPanel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK DrawPanelText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a070(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -93,7 +93,7 @@ void func_ov001_021724c0(void) {
         sp14 = 0;
         sp16 = t;
         (void)sp16;
-        obj = (void *)func_ov001_0218ac04(0, 0x1c, 2, 0, (M2C_UNK)psp, 0);
+        obj = (void *)CreatePooledTextPanel(0, 0x1c, 2, 0, (M2C_UNK)psp, 0);
         ((void **)((u8 *)gOv001MenuState + 0))[t * 4 + 0] = obj;
         obj = ((void **)((u8 *)gOv001MenuState + 0))[t * 4 + 0];
         sp10 = 0;
@@ -133,7 +133,7 @@ void func_ov001_021724c0(void) {
 void func_ov001_02172824(void) {
  extern void *gOv001MenuState;
  void func_ov001_02173e38(void);
- func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState, s32 *, 0x114));
+ Ov001_DestroySprite(M2C_FIELD(gOv001MenuState, s32 *, 0x114));
  Ov001_SetSlideStep(M2C_FIELD(gOv001MenuState, s32 *, 0x118), func_ov001_02173e38);
 }
 
@@ -152,7 +152,7 @@ void Ov001_SetKeyboardCanAdd(s8 arg0) {
  M2C_FIELD(gOv001MenuState, s8 *, 0x124) = arg0;
 }
 
-s32 func_ov001_02172894(void) {
+s32 Ov001_IsMenuActive(void) {
  extern void *gOv001MenuState;
  if (gOv001MenuState != 0) return 1;
  return 0;
@@ -227,7 +227,7 @@ void func_ov001_02172b00(s32 arg0) {
  pos[0]-=12;
  if(pos[0]>170) {func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,pos[0]);return;}
  func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,170);
- func_ov001_02173924(); Ov001_SetSlideStep(arg0,func_ov001_02172b8c);
+ Ov001_UpdateKeyboardCursor(); Ov001_SetSlideStep(arg0,func_ov001_02172b8c);
 }
 
 void func_ov001_02172b8c(void) {
@@ -331,7 +331,7 @@ s32 func_ov001_02172d8c(void) {
     void BuildTouchRect(void *, void *, void *);
     s32 TouchRectHeld(void *);
     void Ov001_SetKeyboardPage(s32);
-    s32 func_ov001_02173924(void);
+    s32 Ov001_UpdateKeyboardCursor(void);
     void Ov001_ToggleKeyboardCase(void);
     void Ov001_ToggleKeyboardSymbols(void);
 
@@ -359,7 +359,7 @@ s32 func_ov001_02172d8c(void) {
             if (M2C_FIELD(gOv001MenuState, u8 *, 0x11d) == 1) {
                 Ov001_SetKeyboardPage(0);
                 M2C_FIELD(gOv001MenuState, u8 *, 0x121) = 0;
-                func_ov001_02173924();
+                Ov001_UpdateKeyboardCursor();
                 return 0;
             }
         }
@@ -378,7 +378,7 @@ s32 func_ov001_02172d8c(void) {
             if (M2C_FIELD(gOv001MenuState, u8 *, 0x11d) == 1) {
                 Ov001_SetKeyboardPage(0);
                 M2C_FIELD(gOv001MenuState, u8 *, 0x121) = (u8)(i + 0x2f);
-                func_ov001_02173924();
+                Ov001_UpdateKeyboardCursor();
                 return 0;
             }
         }
@@ -396,7 +396,7 @@ s32 func_ov001_02172d8c(void) {
             }
             M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = (u8)gKeyboardActionKeySize[i];
             M2C_FIELD(gOv001MenuState, u8 *, 0x121) = (u8)(i + 0x33);
-            func_ov001_02173924();
+            Ov001_UpdateKeyboardCursor();
             return 0;
         }
         p += 4;
@@ -409,7 +409,7 @@ s32 func_ov001_02172d8c(void) {
         }
         Ov001_ToggleKeyboardCase();
         M2C_FIELD(gOv001MenuState, u8 *, 0x121) = 0x2f;
-        func_ov001_02173924();
+        Ov001_UpdateKeyboardCursor();
         return 0;
     }
 
@@ -420,7 +420,7 @@ s32 func_ov001_02172d8c(void) {
         }
         Ov001_ToggleKeyboardSymbols();
         M2C_FIELD(gOv001MenuState, u8 *, 0x121) = 0x30;
-        func_ov001_02173924();
+        Ov001_UpdateKeyboardCursor();
         return 0;
     }
     return 0;

@@ -124,7 +124,7 @@ void func_ov001_0218a6d8(s32 arg0, ...) {
  Ov001_FreeAlloc(&arg0);
 }
 
-void func_ov001_0218a6f4(void *arg0, s32 arg1) {
+void Ov001_QueuePush(void *arg0, s32 arg1) {
     u8 func_020020c4(s32, u16);
     M2C_UNK OS_EnableIrqMask(s32);
     s32 OS_DisableIrqMask(M2C_UNK);
@@ -142,7 +142,7 @@ void func_ov001_0218a6f4(void *arg0, s32 arg1) {
     OS_EnableIrqMask(temp_r6);
 }
 
-s32 func_ov001_0218a74c(void *arg0) {
+s32 Ov001_QueuePop(void *arg0) {
 M2C_UNK OS_EnableIrqMask(M2C_UNK);s32 OS_DisableIrqMask(M2C_UNK);u8 func_020020c4(s32,u16);
 s32 result=0,saved,value;u8 head,tail,idx;u16 size;
 
@@ -179,23 +179,28 @@ u8 Ov001_IsFadeActive(s32 arg0) {
     return ((u8 *)p)[9];
 }
 
-s32 Ov001_StartFade(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
+/* Starts one ov001 screen fade: sets the engine's blend control to the mode's
+ * starting BLDY value, then marks the engine's fade slot active and queues the
+ * Ov001_UpdateFade task that ramps it over `duration` frames. `engine` 1 targets
+ * the sub screen, anything else the main screen. Returns 0 when that engine is
+ * already fading, else 1. */
+s32 Ov001_StartFade(s32 mode,s32 engine,s32 blendControl,s32 duration) {
 extern u8 gOv001FadeTable[];
 extern M2C_UNK gOv001FadeStates;
 void GX_SetBlendControl(s32,s32,s32);
 void Ov001_UpdateFade(M2C_UNK, void *);
 void *Ov001_AddTask(s32,s32,void *,s32);
-s8 buf[4];
-void *p;
-buf[0]=gOv001FadeTable[8]; buf[1]=gOv001FadeTable[9]; buf[2]=gOv001FadeTable[10]; buf[3]=gOv001FadeTable[11];
-if(arg1==1) p=(void *)gOv001FadeStates; else p=(u8 *)gOv001FadeStates+12;
-if(M2C_FIELD(p,u8 *,9)) return 0;
-if(arg1==1) GX_SetBlendControl(0x4001050,arg2,buf[arg0]); else GX_SetBlendControl(0x4000050,arg2,buf[arg0]);
-M2C_FIELD(p,s32 *,0)=(s32)Ov001_AddTask(1,(s32)Ov001_UpdateFade,p,200);
-M2C_FIELD(p,u16 *,4)=0;
-M2C_FIELD(p,u8 *,8)=arg0;
-M2C_FIELD(p,u16 *,6)=arg3;
-M2C_FIELD(p,u8 *,9)=1;
+s8 startBlend[4];
+Ov001Fade *fade;
+startBlend[0]=gOv001FadeTable[8]; startBlend[1]=gOv001FadeTable[9]; startBlend[2]=gOv001FadeTable[10]; startBlend[3]=gOv001FadeTable[11];
+if(engine==1) fade=(Ov001Fade *)gOv001FadeStates; else fade=(Ov001Fade *)((u8 *)gOv001FadeStates+12);
+if(fade->active) return 0;
+if(engine==1) GX_SetBlendControl(0x4001050,blendControl,startBlend[mode]); else GX_SetBlendControl(0x4000050,blendControl,startBlend[mode]);
+fade->task=(s32)Ov001_AddTask(1,(s32)Ov001_UpdateFade,fade,200);
+fade->counter=0;
+fade->mode=mode;
+fade->duration=duration;
+fade->active=1;
 return 1;
 }
 
@@ -347,31 +352,44 @@ void func_ov001_0218abb8(void) {
  Ov001_FreeAlloc(&data_ov001_02193e44-1);
 }
 
-void *func_ov001_0218ac04(s32 a,s32 b,s32 c,s32 d,s32 *out,s32 e){
-extern M2C_UNK data_ov001_02193e40;
-s32 func_ov001_0218c228(s32,s32,s32,s32 *);s32 func_ov001_0216a33c(s32,s32);void func_ov001_0216a1a8(void *,s32,s32,s32,s32);
-u8 *p;s32 n; s32 base; s32 index;
-p=(u8 *)func_ov001_0218a74c((void *)M2C_FIELD(data_ov001_02193e40,s32 *,0x670));
-p[46]=b;p[47]=c;
-M2C_FIELD(p,s32 *,40)=func_ov001_0218c228(a,b*c,d,&n);
-M2C_FIELD(p,u16 *,44)=n;
-*out=func_ov001_0216a33c(b,c);
-index=n; if(a==1) base=0x6600000; else base=0x6400000;
-func_ov001_0216a1a8(p,base+(index<<7),b,c,4);
-((void (*)(void *,s32))M2C_FIELD(M2C_FIELD(p,void **,20),void **,4))(p,0);
-index=data_ov001_02193e40+e*8;
-M2C_FIELD(p,void **,24)=p;
-M2C_FIELD(p,s32 *,28)=index;
-M2C_FIELD(p,s32 *,32)=1;M2C_FIELD(p,s32 *,36)=1;
-return p;
+/* Take a text panel object from the ov001 context's queue, set its size and font
+ * and allocate its tile range in that screen's tile pool, point the panel's
+ * bitmap at the range, run its draw operation and publish the range's tile
+ * offset and the size-derived layout value.  Returns the panel. */
+void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 *layoutOut, s32 fontSet) {
+    extern M2C_UNK data_ov001_02193e40;
+    s32 func_ov001_0218c228(s32, s32, s32, s32 *);
+    s32 func_ov001_0216a33c(s32, s32);
+    void func_ov001_0216a1a8(void *, s32, s32, s32, s32);
+    Ov001TextPanel *panel;
+    s32 tiles;
+    s32 base;
+    s32 offset;
+
+    panel = (Ov001TextPanel *)Ov001_QueuePop((void *)M2C_FIELD(data_ov001_02193e40, s32 *, OV001_CTX_PANEL_QUEUE));
+    panel->width = width;
+    panel->height = height;
+    panel->tiles = (void *)func_ov001_0218c228(screen, width * height, forward, &tiles);
+    panel->tileCount = tiles;
+    *layoutOut = func_ov001_0216a33c(width, height);
+    offset = tiles;
+    if (screen == 1) base = 0x6600000; else base = 0x6400000;
+    func_ov001_0216a1a8(panel, base + (offset << 7), width, height, 4);
+    ((void (*)(void *, s32))M2C_FIELD(panel->ops, void **, 4))(panel, 0);
+    offset = data_ov001_02193e40 + fontSet * 8;
+    panel->self = panel;
+    panel->font = (Ov001Font *)offset;
+    panel->unk20 = 1;
+    panel->unk24 = 1;
+    return panel;
 }
 
 void func_ov001_0218ace0(M2C_UNK arg0) {
     M2C_UNK func_ov001_0218c3a0(M2C_UNK);
-    void func_ov001_0218a6f4(void *, s32);
+    void Ov001_QueuePush(void *, s32);
     extern M2C_UNK data_ov001_02193e40;
     func_ov001_0218c3a0(M2C_FIELD((void *)arg0, M2C_UNK *, 0x28));
-    func_ov001_0218a6f4((void *)M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x670), arg0);
+    Ov001_QueuePush((void *)M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x670), arg0);
 }
 
 #pragma opt_propagation off

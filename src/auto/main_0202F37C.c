@@ -48,7 +48,7 @@ void *Wfc_GetWorkBlock(s32 arg0) {
 
 void *Wfc_GetWorkBlock(s32);
 u32 func_0202f5ac(u32);
-void func_0202f4e4(u8 arg0) {
+void Wfc_PublishState(u8 arg0) {
  void *a = Wfc_GetWorkBlock(1);
  void *b = Wfc_GetWorkBlock(0x10);
  M2C_FIELD(a,u8 *,9) = arg0;
@@ -92,14 +92,14 @@ u32 func_0202f5ac(u32 arg0) {
  return arg0;
 }
 
-void func_0202f5bc(void) {
+void Wfc_ClearWorkFlags(void) {
  void func_0202f334(s32, void *, s32);
  extern M2C_UNK gWfcManager;
  func_0202f334(8, M2C_FIELD(&gWfcManager, void **, 0xC), 0xC);
  func_0202f334(0x10, M2C_FIELD(&gWfcManager, void **, 0), 0xD18);
 }
 
-s32 func_0202f5f4(void) {
+s32 Wfc_GetFriendConnectResult(void) {
  s32 StringCompareN(void *, void *, s32);
  extern M2C_UNK gWfcManager;
  s32 offset;
@@ -131,7 +131,7 @@ void Wfc_HandleFriendMessage(s32 arg0) {
  void *msg=(void *)arg0;
  void *Wfc_GetWorkBlock(s32); u8 Wfc_GetSessionState(void);
  void Wfc_MarkFriendId(u16); s32 func_0202f894(void *,s32,void *); s32 func_0202f910(void *,void *);
- s32 func_0202f9a0(s32,void *,M2C_UNK,void *); void Wfc_SortFriendRoster(s32,s32);
+ s32 Wfc_StoreFriendRecord(s32,void *,M2C_UNK,void *); void Wfc_SortFriendRoster(s32,s32);
  s32 result=-1; u8 friendId; void *wfc=Wfc_GetWorkBlock(16);
  M2C_FIELD(Wfc_GetWorkBlock(1),u8 *,11)=1;
  switch(Wfc_GetSessionState()) {
@@ -157,7 +157,7 @@ void Wfc_HandleFriendMessage(s32 arg0) {
  } break;
  default:return;
  }
- if(result>=0) Wfc_SortFriendRoster(func_0202f9a0(result,msg,friendId,wfc),(s32)wfc);
+ if(result>=0) Wfc_SortFriendRoster(Wfc_StoreFriendRecord(result,msg,friendId,wfc),(s32)wfc);
 }
 
 s32 Wfc_MatchFriendCode(void *arg0) {
@@ -201,42 +201,47 @@ s32 func_0202f910(void *arg0,void *arg1) {
  return -1;
 }
 
-s32 func_0202f9a0(s32 arg0, void *arg1, M2C_UNK arg2, void *arg3) {
+/* Matches an incoming friend message against the WFC friend records by the
+ * message's 6-byte friend code.  A matching record is updated (func_0202fab4);
+ * otherwise the message is stored as a new record (func_0202fa68) in the roster's
+ * scratch slot and the record count grows.  Returns the record index the roster
+ * must be re-sorted from (10 for a newly stored record). */
+s32 Wfc_StoreFriendRecord(s32 friendSlot, void *msg, M2C_UNK friendId, void *wfc) {
     void func_0202fa68(u8, void *, s32, s32);
     void func_0202fab4(s32, void *, s32, void *);
-    s32 var_r3;
-    s32 var_r4;
-    u8 temp_r0;
-    u8 temp_r5;
-    void *var_ip;
+    s32 i;
+    s32 index;
+    u8 count0;
+    u8 recordCount;
+    void *record;
 
-    temp_r5 = M2C_FIELD(arg3, u8 *, 0xD12);
-    var_r4 = -1;
-    var_r3 = 0;
-    if ((s32) temp_r5 > 0) {
-        var_ip = arg3 + 0x474;
+    recordCount = M2C_FIELD(wfc, u8 *, WFC_STATE_RECORD_COUNT);
+    index = -1;
+    i = 0;
+    if ((s32) recordCount > 0) {
+        record = wfc + 0x474;
 loop_2:
-        if ((M2C_FIELD(arg1, u8 *, 4) == M2C_FIELD(var_ip, u8 *, 0)) && (M2C_FIELD(arg1, u8 *, 5) == M2C_FIELD(var_ip, u8 *, 1)) && (M2C_FIELD(arg1, u8 *, 6) == M2C_FIELD(var_ip, u8 *, 2)) && (M2C_FIELD(arg1, u8 *, 7) == M2C_FIELD(var_ip, u8 *, 3)) && (M2C_FIELD(arg1, u8 *, 8) == M2C_FIELD(var_ip, u8 *, 4)) && (M2C_FIELD(arg1, u8 *, 9) == M2C_FIELD(var_ip, u8 *, 5))) {
-            var_r4 = var_r3;
+        if ((M2C_FIELD(msg, u8 *, 4) == M2C_FIELD(record, u8 *, 0)) && (M2C_FIELD(msg, u8 *, 5) == M2C_FIELD(record, u8 *, 1)) && (M2C_FIELD(msg, u8 *, 6) == M2C_FIELD(record, u8 *, 2)) && (M2C_FIELD(msg, u8 *, 7) == M2C_FIELD(record, u8 *, 3)) && (M2C_FIELD(msg, u8 *, 8) == M2C_FIELD(record, u8 *, 4)) && (M2C_FIELD(msg, u8 *, 9) == M2C_FIELD(record, u8 *, 5))) {
+            index = i;
         } else {
-            var_r3 += 1;
-            var_ip += 0xC0;
-            if (var_r3 < (s32) temp_r5) {
+            i += 1;
+            record += 0xC0;
+            if (i < (s32) recordCount) {
                 goto loop_2;
             }
         }
     }
-    if (var_r4 == -1) {
-        func_0202fa68(arg0, arg1, arg2, (s32)arg3);
-        temp_r0 = M2C_FIELD(arg3, u8 *, 0xD12);
-        var_r4 = 0xA;
-        if ((u32) temp_r0 < 0xAU) {
-            M2C_FIELD(arg3, u8 *, 0xD12) = (u8) (temp_r0 + 1);
+    if (index == -1) {
+        func_0202fa68(friendSlot, msg, friendId, (s32)wfc);
+        count0 = M2C_FIELD(wfc, u8 *, WFC_STATE_RECORD_COUNT);
+        index = 0xA;
+        if ((u32) count0 < 0xAU) {
+            M2C_FIELD(wfc, u8 *, WFC_STATE_RECORD_COUNT) = (u8) (count0 + 1);
         }
     } else {
-        func_0202fab4(var_r4, arg1, arg2, arg3);
+        func_0202fab4(index, msg, friendId, wfc);
     }
-    return var_r4;
+    return index;
 }
 
 #pragma opt_propagation off
@@ -337,7 +342,7 @@ void func_0202fc10(void *arg0) {
  } else if(type==7) Wfc_HandleFriendMessage(M2C_FIELD(arg0,s32 *,4));
 }
 
-s32 func_0202fc9c(void) {
+s32 Wfc_StepFriends(void) {
     s32 func_0202fce0();
     s32 Wfc_UpdateFriendConnection();
     s32 var_r4;
@@ -566,7 +571,7 @@ s32 func_020302f4(void) {
  return v==0 || v==-39;
 }
 
-s32 func_02030324(void) {
+s32 Wfc_StepWait(void) {
     s32 func_020301dc(s32);
     if (func_020301dc((s32)(Wfc_GetWorkBlock(1) + 0xA)) == 1) {
         return 0x12;

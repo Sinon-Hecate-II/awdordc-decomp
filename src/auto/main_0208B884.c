@@ -51,24 +51,27 @@ void func_0208bc24(M2C_UNK arg0) {
     M2C_FIELD(var_r0, u8 *, 0x48) = (u8) ((M2C_FIELD(var_r0, u8 *, 0x48) & ~0xE) | 2);
 }
 
-M2C_UNK func_0208bc58(void *p){
-extern M2C_UNK data_0210264c;extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
-u8 equal;Flags0208 *f=(Flags0208 *)((char *)p+0x44);Flags0208B *g=(Flags0208B *)((char *)p+0x48);
-M2C_FIELD(p,void **,0)=&data_0210264c;
-M2C_FIELD(p,s32 *,0x34)=0;M2C_FIELD(p,s32 *,0x38)=0;M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,s32 *,0x40)=0x1000;
-M2C_FIELD(p,u32 *,0x44)&=~0xffff;
-equal=gCur3DSpriteEngine==g3DSpriteEngineMain;
-f->mode=equal!=1;f->a=0;f->b=0;f->c=0;f->d=0;f->e=0;g->low=0;g->high=0;
-M2C_FIELD(p,s32 *,0x4c)=0;
-M2C_FIELD(p,s32 *,0x50)=0;
-M2C_FIELD(p,s32 *,0x54)=0;
-M2C_FIELD(p,s32 *,0x58)=0;
-M2C_FIELD(p,s32 *,0x5c)=0;
-M2C_FIELD(p,s32 *,0x60)=0;
-M2C_FIELD(p,s32 *,0x64)=0;
-M2C_FIELD(p,s32 *,0x68)=0;
-M2C_FIELD(p,s32 *,0x6c)=0;
-M2C_FIELD(p,s32 *,0x70)=0;
+/* Reset a newly allocated 3D sprite object: point it at the plain sprite class,
+ * clear its position, attributes and timers, bind it to whichever engine is
+ * current (main = screen 0, sub = screen 1) and drop its sprite and callbacks. */
+M2C_UNK Init3DSpriteObject(void *obj){
+extern void *g3DSpriteObjectClass;extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
+u8 isMain;SpriteFlags *flags=(SpriteFlags *)((char *)obj+0x44);SpriteTimer *timer=(SpriteTimer *)((char *)obj+0x48);
+M2C_FIELD(obj,void **,DS3D_SPRITE_CLASS)=&g3DSpriteObjectClass;
+M2C_FIELD(obj,s32 *,0x34)=0;M2C_FIELD(obj,s32 *,0x38)=0;M2C_FIELD(obj,s32 *,0x3c)=0;M2C_FIELD(obj,s32 *,0x40)=0x1000;
+M2C_FIELD(obj,u32 *,0x44)&=~0xffff;
+isMain=gCur3DSpriteEngine==g3DSpriteEngineMain;
+flags->screen=isMain!=1;flags->a=0;flags->closeOnInput=0;flags->yAttr=0;flags->drawMode=0;flags->easing=0;timer->delay=0;timer->elapsed=0;
+M2C_FIELD(obj,s32 *,0x4c)=0;
+M2C_FIELD(obj,s32 *,0x50)=0;
+M2C_FIELD(obj,s32 *,0x54)=0;
+M2C_FIELD(obj,s32 *,0x58)=0;
+M2C_FIELD(obj,s32 *,0x5c)=0;
+M2C_FIELD(obj,s32 *,0x60)=0;
+M2C_FIELD(obj,s32 *,0x64)=0;
+M2C_FIELD(obj,s32 *,0x68)=0;
+M2C_FIELD(obj,s32 *,0x6c)=0;
+M2C_FIELD(obj,s32 *,0x70)=0;
 }
 
 void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
@@ -117,7 +120,7 @@ void func_0208bddc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
 
 /* Set up a display object's buffers from three prepared lists. */
 void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 value, u16 count, u8 flag) {
-    s32 func_02080e30(M2C_UNK, M2C_UNK);
+    s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
     s32 func_02081070(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
     void *CreateSpriteAnim(s32, M2C_UNK, M2C_UNK);
@@ -127,7 +130,7 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
     void *ptr;
 
     size = count << 5;
-    M2C_FIELD(obj, s32 *, 0x54) = func_02080e30(list2, 1);
+    M2C_FIELD(obj, s32 *, 0x54) = LoadFileToBuffer(list2, 1);
     if (flag != 0) {
         M2C_FIELD(obj, s32 *, 0x50) = func_02081070(list1, 1);
         func_0208143c(list3, size, 0x20);
@@ -146,10 +149,10 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
 }
 
 void func_0208bf7c(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
-s32 func_02080e30(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
+s32 LoadFileToBuffer(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
 u16 packed;void *sub,*ptr;
 packed=(u16)((0x3ff&(value>>5))+(u16)(count<<12));
-M2C_FIELD(obj,s32 *,0x54)=func_02080e30(b,1);
+M2C_FIELD(obj,s32 *,0x54)=LoadFileToBuffer(b,1);
 if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);LoadFileToSpriteBuffer(c,(count+16)<<5,32);}
 sub=CreateSpriteAnim(M2C_FIELD(obj,s32 *,0x54),13,2);
 M2C_FIELD(obj,void **,0x4c)=sub;SetSpriteAnimFrame(sub,0);
@@ -287,22 +290,22 @@ void func_0208c51c(void) {
 
 void CreateAnimatedSpriteObject(M2C_UNK arg0) {
     s32 func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208bc58();
+    M2C_UNK Init3DSpriteObject();
     extern M2C_UNK data_02102790;
     if (func_01ffa3dc(&data_02102790, arg0) == 0) {
         return;
     }
-    func_0208bc58();
+    Init3DSpriteObject();
 }
 
 void func_0208c54c(M2C_UNK arg0) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208bc58();
+    M2C_UNK Init3DSpriteObject();
     extern M2C_UNK data_02102790;
     if (CreateSpriteObject(&data_02102790, arg0) == 0) {
         return;
     }
-    func_0208bc58();
+    Init3DSpriteObject();
 }
 
 s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {

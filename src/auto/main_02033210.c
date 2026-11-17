@@ -23,7 +23,7 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 s32 func_02033210(void){
 extern M2C_UNK gNasConnection;extern s32 gErrno;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
-void *FindHttpHeader(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 ReadHttpHeader(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 StringLength(s32);
+void *FindHttpHeader(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 ReadHttpHeader(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 strtol(void*,void**,s32);s32 StringLength(s32);
 void *end; s32 status; void *response;void *p;
 p=M2C_FIELD(&gNasConnection,void **,8);status=0;end=(void*)status;
 response=M2C_FIELD(p,void **,0x1314);end=FindHttpHeader(response,data_020fb398);if(end)ParseHttpDate(end);
@@ -31,7 +31,7 @@ p=M2C_FIELD(&gNasConnection,void **,8);end=0;gErrno=0;status=ParseInt(FindHttpHe
 if(gErrno==34){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 12;}
 if(status!=200){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=status+23000;return 18;}
 if(ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&gNasConnection,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 14;}
-status=func_0206ac70(M2C_FIELD(&gNasConnection,void **,8)+0x100c,&end,10);p=M2C_FIELD(&gNasConnection,void **,8);
+status=strtol(M2C_FIELD(&gNasConnection,void **,8)+0x100c,&end,10);p=M2C_FIELD(&gNasConnection,void **,8);
 if(end!=p+0x100c+StringLength((s32)(p+0x100c))){M2C_FIELD(p,s32*,0x1008)=0x4e85;return 12;}
 M2C_FIELD(p,s32*,0x1008)=status+20000;
 if(status<100){
@@ -96,7 +96,7 @@ void func_020336c0(s32 arg0) {
 /* Builds the ~0x94-byte Wi-Fi friend/profile record: friend code, DS MAC and
  * firmware ids, region, date and session code, then the connection-data block. */
 s32 BuildFriendProfile(s32 arg0, void *arg1) {
-    M2C_UNK func_0200567c();
+    M2C_UNK StringFormatN();
     void MI_CpuFill8(void *, s32, s32);
     void func_0200563c(void *, void *, ...);
     void GetMacAddress(void *);
@@ -126,15 +126,15 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
         u32 *raw = (u32 *)arg1;
         u32 low = raw[0], high = raw[1];
         if (high != 0 || low != 0) {
-            func_0200567c((void *)arg0, 0xe, gFmtFriendCode, low, high);
+            StringFormatN((void *)arg0, 0xe, gFmtFriendCode, low, high);
         } else {
             u64 id=*((u64*)arg1+1);low=id;high=id>>32;
-            func_0200567c((void *)arg0, 0xe, gFmtFriendCode, low, high);
+            StringFormatN((void *)arg0, 0xe, gFmtFriendCode, low, high);
         }
     }
     {
         u16 region = *((u16 *)((u8 *)arg1 + 0x10));
-        func_0200567c((void *)((u8 *)arg0 + 0xe), 7, gFmtU03, region);
+        StringFormatN((void *)((u8 *)arg0 + 0xe), 7, gFmtU03, region);
     }
     if (*(u8 *)0x027FFE0C == 0) {
         SystemHalt();
@@ -152,13 +152,13 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     if (userSettings[0] >= 8) {
         userSettings[0] = 1;
     }
-    func_0200567c((void *)((u8 *)arg0 + 0x2c), 3, gFmtHex02, userSettings[0]);
+    StringFormatN((void *)((u8 *)arg0 + 0x2c), 3, gFmtHex02, userSettings[0]);
     MI_CpuCopy8(userSettings + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
-    func_0200567c((void *)((u8 *)arg0 + 0x2f), 5, gFmtHex02Pair, userSettings[2], userSettings[3]);
+    StringFormatN((void *)((u8 *)arg0 + 0x2f), 5, gFmtHex02Pair, userSettings[2], userSettings[3]);
     if (GetLocalTime((s32)(dateVals + 3), (s32)(dateVals + 0)) != 0) {
         return 0;
     }
-    func_0200567c((void *)((u8 *)arg0 + 0x34), 0xd, gFmtDate6,
+    StringFormatN((void *)((u8 *)arg0 + 0x34), 0xd, gFmtDate6,
         dateVals[3], dateVals[4], dateVals[5], dateVals[0], dateVals[1], dateVals[2]);
     intrState = OS_DisableInterrupts();
     connInfo = func_02029784();
@@ -171,7 +171,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     for(i=0;i<6;i++,dst+=2) func_0200563c(dst,gFmtHex02,((u8*)connInfo)[i]);
     {
         u8 language = func_0202f248();
-        func_0200567c((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);
+        StringFormatN((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);
     }
     connData = func_020297c8(&connType);
     DC_InvalidateRange(connData, 0x20);
@@ -186,8 +186,8 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
 }
 #pragma pop
 s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
-    s32 func_0200567c(void *, s32, void *, s32, s32);
-    s32 func_020345f4(void *, void *, void *);
+    s32 StringFormatN(void *, s32, void *, s32, s32);
+    s32 HttpAppendHeader(void *, void *, void *);
     s32 func_020346d0(void *, void *, void *, s32);
     s32 StringLength(s32);
     s32 func_0206cd90(void *);
@@ -197,7 +197,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     extern u8 data_020fb4f4[], data_020fb50c[], data_020fb518[];
     u8 sp4[0x24];
 
-    func_0200567c(sp4, 0x21, data_020fb478, 2, 2);
+    StringFormatN(sp4, 0x21, data_020fb478, 2, 2);
     if (func_020346d0(arg0, data_020fb484, sp4, StringLength((s32)sp4)) != 0) return 0;
     if (func_020346d0(arg0, data_020fb48c, arg1, StringLength((s32)arg1)) != 0) return 0;
     if (func_020346d0(arg0, data_020fb494, (u8 *)arg1 + 0xe, StringLength((s32)arg1 + 0xe)) != 0) return 0;
@@ -214,9 +214,9 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     if (arg2 == 1) {
         if (func_020346d0(arg0, data_020fb4ec, (u8 *)arg1 + 0x4e, StringLength((s32)arg1 + 0x4e)) != 0) return 0;
     }
-    func_0200567c(sp4, 0x21, data_020fb4f4, 2, 2);
-    if (func_020345f4(arg0, data_020fb50c, sp4) != 0) return 0;
-    return func_020345f4(arg0, data_020fb518, (u8 *)arg1 + 0x15) == 0;
+    StringFormatN(sp4, 0x21, data_020fb4f4, 2, 2);
+    if (HttpAppendHeader(arg0, data_020fb50c, sp4) != 0) return 0;
+    return HttpAppendHeader(arg0, data_020fb518, (u8 *)arg1 + 0x15) == 0;
 }
 
 /* Initialises the HTTP client object `client`: zeroes it, copies the options
@@ -241,18 +241,18 @@ return ((HttpClientState*)client)->status;
 }
 
 s32 func_02033de8(void *arg0) {
-    M2C_UNK func_0200567c();
-    s32 func_020345f4(void *, void *, void *);
+    M2C_UNK StringFormatN();
+    s32 HttpAppendHeader(void *, void *, void *);
     s32 StringLength(s32);
     s32 StringFind(s32, void *);
     extern u8 data_020fb588[], data_020fb594[], gHttpHeaderEnd[], data_020fb5a4[], data_020fb5a8[];
     u8 sp0[8];
     s32 temp;
-    if (func_020345f4(arg0, data_020fb588, data_020fb594)) return 1;
+    if (HttpAppendHeader(arg0, data_020fb588, data_020fb594)) return 1;
     temp = StringLength(StringFind(M2C_FIELD(arg0,s32 *,0x19f8),gHttpHeaderEnd)+4);
     if (temp) {
-        func_0200567c(sp0,7,data_020fb5a4,temp);
-        if (func_020345f4(arg0,data_020fb5a8,sp0)) return 1;
+        StringFormatN(sp0,7,data_020fb5a4,temp);
+        if (HttpAppendHeader(arg0,data_020fb5a8,sp0)) return 1;
     }
     return 0;
 }

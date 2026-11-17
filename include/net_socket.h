@@ -6,6 +6,15 @@
 #ifndef NET_SOCKET_H
 #define NET_SOCKET_H
 
+/* A socket operation is a small request record the caller fills in and hands to
+ * the socket's task (func_0201f1d0 allocates one, func_0201f318/func_0201f328/
+ * func_0201f338 post it, the task calls the callback with the record).  Its
+ * fixed part is: +0x00 callback the task runs, +0x04 the socket, +0x08 the
+ * task's message queue, +0x0C the socket's state and +0x0D nonzero when the
+ * caller waits for the result; +0x10 onwards are the callback's own arguments.
+ * SocketListen shows the shape: it passes the receive port at +0x10 and the two
+ * out-pointers at +0x14/+0x18 to its task half SocketListenTask. */
+
 /* Socket object fields. */
 #define SOCK_RAW        0x64 /* void *raw connection holding the receive queue */
 #define SOCK_KIND       0x72 /* s8: SOCK_KIND_TCP (1) for TCP sockets */
@@ -15,6 +24,8 @@
 #define SOCK_FLAG_DONE  0x0004 /* the outstanding operation finished, its result is at SOCK_STATUS */
 #define SOCK_FLAG_ERROR 0x0008 /* the socket failed or was torn down */
 #define SOCK_FLAG_TIMEOUT 0x0040 /* the last receive timed out */
+#define SOCK_FLAG_CLOSING 0x0010 /* a close is under way (set by SocketClose) */
+#define SOCK_FLAG_CLOSED  0x0020 /* the close task finished tearing the socket down */
 
 /* A receive timeout request (SocketSetReceiveTimeout): while a read is in
  * progress (SOCK_FLAG_BUSY) the function reports instead of starting a new one. */
@@ -71,6 +82,13 @@
  * only the alloc/free slots are used so far. */
 #define NET_ALLOC_ALLOC 0x18 /* void *(*)(s32 size) */
 #define NET_ALLOC_FREE  0x1c /* void (*)(void *block) */
+
+/* One queued socket task (SocketAllocTask builds it from the task pool and
+ * SocketQueueTask posts it to a raw connection's queue); the socket task thread
+ * calls TASK_FUNC with TASK_SOCKET and forwards TASK_RESULT to the waiter. */
+#define TASK_FUNC   0x00 /* void *(*)(void *) the task's function */
+#define TASK_SOCKET 0x04 /* void *socket the task works on */
+#define TASK_RESULT 0x08 /* s32 result the task reports back */
 
 /* Receive-side drop counters. */
 #define RECV_STAT_NO_MEMORY  0x00 /* s32 records dropped because the allocator failed */

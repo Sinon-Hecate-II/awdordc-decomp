@@ -148,7 +148,7 @@ void *GetUnitSpriteDef(u32 unitKind) {
 }
 
 #pragma opt_common_subs reset
-void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_02088e68(void *, M2C_UNK);
@@ -225,8 +225,8 @@ void MenuSpriteUpdate(void *arg0) {
 void func_020aad18(void *unit) {
     void AddSpriteCell(void *, s16, s16, u16, u16, s32, u16);
     void func_02087d84(void *, s32, s32, s32, u16, u16);
-    u32 func_020aae10(void *);
-    u32 func_020aae44(void *);
+    u32 GetUnitSpriteWidth(void *);
+    u32 GetUnitSpriteHeight(void *);
     s32 func_020aae94(void *);
     u8 entry_count;
     s16 y;
@@ -245,20 +245,20 @@ void func_020aad18(void *unit) {
         }
         y = M2C_FIELD(unit, s16 *, 0x52);
         x = M2C_FIELD(unit, s16 *, 0x50);
-        width = func_020aae10(unit);
-        height = func_020aae44(unit);
+        width = GetUnitSpriteWidth(unit);
+        height = GetUnitSpriteHeight(unit);
         func_02087d84(M2C_FIELD(unit, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         return;
     }
     y = M2C_FIELD(unit, s16 *, 0x52);
     x = M2C_FIELD(unit, s16 *, 0x50);
-    width = func_020aae10(unit);
-    height = func_020aae44(unit);
+    width = GetUnitSpriteWidth(unit);
+    height = GetUnitSpriteHeight(unit);
     extra = func_020aae94(unit);
     AddSpriteCell(M2C_FIELD(unit, void **, 0x64), x, y, width, height, 1, (u16)extra);
 }
 
-u32 func_020aae10(void *arg0) {
+u32 GetUnitSpriteWidth(void *arg0) {
     void *GetUnitSpriteDef(u32);
     u32 idx;
     void *ptr;
@@ -273,7 +273,7 @@ u32 func_020aae10(void *arg0) {
     return value;
 }
 
-u32 func_020aae44(void *arg0) {
+u32 GetUnitSpriteHeight(void *arg0) {
  void *GetUnitSpriteDef(u32);
  u32 idx; void *ptr; u32 value;
  idx=(u32)(M2C_FIELD(arg0,u8 *,0x58)<<25)>>25;

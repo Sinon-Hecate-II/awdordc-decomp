@@ -1,11 +1,12 @@
 /* 32 functions from 0x0216BD08 to 0x0216CCE0 (ov001), found by ds-decomp. */
 #pragma ipa off
 #include "common.h"
+#include "ov001_room.h"
 extern unsigned char data_ov001_0218fd40[];
 extern unsigned char data_ov001_0218fdb0[];
 typedef struct PacketWork { signed char a; short b,c; unsigned short pad; unsigned char type,zero; short len; int value; } PacketWork;
-extern unsigned char data_ov001_02191ec0[];
-extern unsigned char data_ov001_02191840[];
+extern unsigned char gOv001RoomPlayerData[];
+extern unsigned char gOv001RoomRecords[];
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
 extern unsigned char gRoomState[];
 extern signed char data_ov001_02191820[];
@@ -13,24 +14,27 @@ extern short data_ov001_02192568;
 extern unsigned char data_ov001_0219256a[118];
 
 #pragma thumb on
-int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
+/* State-1 handler of the multiplayer room protocol: accept only a room-data
+ * packet addressed to this player, report the status of a failed request, else
+ * unpack the room records and move on to state 2 once a requested group arrived. */
+int Ov001_HandleRoomData(int state,unsigned char *packet,int *failures,unsigned char *session) {
  int func_ov001_0216c098(); int Ov001SwapEndian16(unsigned short); int func_ov001_0216cec8(int);
  void func_ov001_0216b918(int); void Ov001MemClear(); int func_ov001_0216c400();
- unsigned char *r,*t;
- if(a!=1) {++*n;return a;}
- r=p+12;t=p+36;
- if(func_ov001_0216c098(q+8,r+16)<0) {++*n;return a;}
- if(Ov001SwapEndian16(*(unsigned short *)(t+2))==0) {++*n;return a;}
- if(*t==7) {
- if(func_ov001_0216cec8(*(int *)(t+4))==-2) func_ov001_0216b918(20);
- else if(func_ov001_0216cec8(*(int *)(t+4))==-3) func_ov001_0216b918(21);
+ unsigned char *header,*chunk;
+ if(state!=1) {++*failures;return state;}
+ header=packet+OV001_PKT_PREFIX;chunk=packet+OV001_PKT_PREFIX+OV001_PKT_HEADER;
+ if(func_ov001_0216c098(session+8,header+OV001_PKT_TOKEN)<0) {++*failures;return state;}
+ if(Ov001SwapEndian16(*(unsigned short *)(chunk+OV001_CHUNK_LENGTH))==0) {++*failures;return state;}
+ if(*chunk==OV001_CHUNK_ERROR) {
+ if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-2) func_ov001_0216b918(20);
+ else if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-3) func_ov001_0216b918(21);
  else func_ov001_0216b918(24);
  return -1;
  }
- Ov001MemClear(data_ov001_02191ec0,0,0x6a0);
- if(func_ov001_0216c400(0,t,Ov001SwapEndian16(*(unsigned short *)(r+10)),data_ov001_02191ec0,data_ov001_02191840)<0) {++*n;return a;}
- if(!(*(int *)(gRoomState+48)&*(int *)(gRoomState+44))) return a;
- *n=0;return 2;
+ Ov001MemClear(gOv001RoomPlayerData,0,OV001_ROOM_PLAYER_DATA_SIZE);
+ if(func_ov001_0216c400(0,chunk,Ov001SwapEndian16(*(unsigned short *)(header+OV001_PKT_LENGTH)),gOv001RoomPlayerData,gOv001RoomRecords)<0) {++*failures;return state;}
+ if(!(*(int *)(gRoomState+48)&*(int *)(gRoomState+44))) return state;
+ *failures=0;return 2;
 }
 
 #pragma thumb on

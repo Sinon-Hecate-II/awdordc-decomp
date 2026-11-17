@@ -41,19 +41,25 @@ void BeginMapZoom(void *transition) {
  M2C_FIELD(transition,s32 *,0x64)=0;M2C_FIELD(transition,s32 *,0x68)=15;
 }
 
-void func_020ccbc0(void *arg0) {
-extern s32 *gCurrentMap;
-s32 EaseInterpolate(s32,s32,s32,s32,s32);
-void SetViewZoom(s32,s32);
-void func_01ffa6fc(void *);
-s32 base;
-M2C_FIELD(arg0,s32 *,0x64)++;
-SetViewZoom(*gCurrentMap+0x6ef8,EaseInterpolate(4,M2C_FIELD(arg0,s32 *,0x5c),M2C_FIELD(arg0,s32 *,0x60),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68)));
-base=*gCurrentMap+0x5120;
-M2C_FIELD(base,s16 *,0x28)=EaseInterpolate(4,M2C_FIELD(arg0,s16 *,0x6c),M2C_FIELD(arg0,s16 *,0x6e),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
-base=*gCurrentMap+0x5120;
-M2C_FIELD(base,s16 *,0x2a)=EaseInterpolate(4,M2C_FIELD(arg0,s16 *,0x70),M2C_FIELD(arg0,s16 *,0x72),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
-if(M2C_FIELD(arg0,s32 *,0x64)==M2C_FIELD(arg0,s32 *,0x68))func_01ffa6fc(arg0);
+/* One frame of the map-view zoom animation BeginMapZoom set up: advance the
+ * frame counter, ease the zoom level (transition+0x5c..0x60) and the view
+ * scroll (transition+0x6c/0x6e = x, +0x70/0x72 = y, from..to) towards their
+ * targets and, once the last frame is reached, run the transition's end
+ * callback. */
+void StepMapZoom(void *transition) {
+    extern s32 *gCurrentMap;
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
+    void SetViewZoom(s32, s32);
+    void func_01ffa6fc(void *);
+    s32 view;
+
+    M2C_FIELD(transition, s32 *, 0x64)++;
+    SetViewZoom(*gCurrentMap + 0x6ef8, EaseInterpolate(4, M2C_FIELD(transition, s32 *, 0x5c), M2C_FIELD(transition, s32 *, 0x60), M2C_FIELD(transition, s32 *, 0x64), M2C_FIELD(transition, s32 *, 0x68)));
+    view = *gCurrentMap + 0x5120;
+    M2C_FIELD(view, s16 *, 0x28) = EaseInterpolate(4, M2C_FIELD(transition, s16 *, 0x6c), M2C_FIELD(transition, s16 *, 0x6e), M2C_FIELD(transition, s32 *, 0x64), M2C_FIELD(transition, s32 *, 0x68));
+    view = *gCurrentMap + 0x5120;
+    M2C_FIELD(view, s16 *, 0x2a) = EaseInterpolate(4, M2C_FIELD(transition, s16 *, 0x70), M2C_FIELD(transition, s16 *, 0x72), M2C_FIELD(transition, s32 *, 0x64), M2C_FIELD(transition, s32 *, 0x68));
+    if (M2C_FIELD(transition, s32 *, 0x64) == M2C_FIELD(transition, s32 *, 0x68)) func_01ffa6fc(transition);
 }
 
 void func_020ccc94(void) {

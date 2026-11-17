@@ -12,7 +12,7 @@ extern u32 data_0210074c[4];
 void func_0206eeb4(u8 *out,double x){
 u32 func_0206f794(double,...);s32 func_0206f7a8(double,...);s32 func_0206f700(u64);
 double func_0206dfd0(double,s32 *);double ScaleDoubleByExp(double,s32);u64 func_02070550(double);
-void func_0206e6cc(void *,s32);void func_0206e3e0(void *,u64);void func_0206e4ac(void *,void *,void *);
+void func_0206e6cc(void *,s32);void DecimalFromU64(void *,u64);void func_0206e4ac(void *,void *,void *);
 s32 exp,n;u8 b[38],a[38];u64 bits;DoubleBits value; s8 sign;
 sign=func_0206f794(x)!=0;
 if(x==0.0){out[0]=sign;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=0;return;}
@@ -23,7 +23,7 @@ value.d=x;bits=value.u|0x10000000000000ULL;
 n=53-func_0206f700((bits & -bits)-1);
 func_0206e6cc(a,exp-n);
 x=ScaleDoubleByExp(x,n);
-func_0206e3e0(b,func_02070550(x));
+DecimalFromU64(b,func_02070550(x));
 func_0206e4ac(out,b,a);out[0]=sign;
 }
 

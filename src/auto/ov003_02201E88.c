@@ -14,7 +14,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     void Hide3DSprite(void *);
     void *func_0208931c(void *);
     void func_02098e04(void *, s32, s32);
-    void func_02098e2c(void *, s32);
+    void SetFaceSpriteFace(void *, s32);
     void *func_02099088(void *);
     M2C_UNK GetPlayerCoId(s32);
     M2C_UNK GetPlayerArmyId(s32);
@@ -78,7 +78,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         ((void **) spriteSlots)[player + 1] = sprite;
         func_02098e04(sprite, (0x1D0 + (player << 4)) << 5, 7);
         sprite = ((void **) spriteSlots)[player + 1];
-        func_02098e2c(sprite, appearance);
+        SetFaceSpriteFace(sprite, appearance);
         sprite = ((void **) spriteSlots)[player + 1];
         *(u16 *) ((u8 *) sprite + 0x3C) = 0x800;
         sprite = ((void **) spriteSlots)[player + 1];
@@ -145,10 +145,10 @@ u8 func_ov003_022021d8(void *arg0) {
 }
 
 void func_ov003_022021e8(void *arg0) {
-s32 func_020aae10(void *);s32 func_020aae44(void *);
+s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);
 s32 a,b;void *q;
 q=M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c);
-b=func_020aae44(q);a=func_020aae10(q);
+b=GetUnitSpriteHeight(q);a=GetUnitSpriteWidth(q);
 E9638Set(M2C_FIELD(arg0,void**,0x4c),M2C_FIELD(q,s16*,0x34),M2C_FIELD(q,s16*,0x36),a,b);
 }
 
@@ -245,7 +245,7 @@ void func_ov003_0220277c(void *arg0) {
     void func_ov003_02202ec0(void *, u32);
     void func_ov003_02203368();
     void func_ov003_022035fc(void *, s32);
-    void func_ov003_02200e1c(void *);
+    void Ov003_UpdateSetupMenuButtons(void *);
     u8 func_ov003_022036c8(void *);
     s8 func_ov003_022036e4(void *);
     u8 func_ov003_022036ec(void *);
@@ -310,7 +310,7 @@ void func_ov003_0220277c(void *arg0) {
         }
     }
 
-    func_ov003_02200e1c(M2C_FIELD(arg0, void **, 0x44));
+    Ov003_UpdateSetupMenuButtons(M2C_FIELD(arg0, void **, 0x44));
 
     if (r7 != 0) {
         if (func_ov003_022036c8(M2C_FIELD(arg0, void **, 0x44)) != 0) {

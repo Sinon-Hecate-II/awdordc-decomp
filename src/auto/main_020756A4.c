@@ -7,7 +7,7 @@ typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x
 #pragma push
 #pragma opt_common_subs off
 void func_020756a4(void *a) {
-void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 FindFreeNode(void *);void MI_CpuCopy32(void *,void *,s32);s32 func_020746fc(void *,void *);s32 func_0200558c(void);void MI_CpuCopy8(void *,void *);
+void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 FindFreeNode(void *);void MI_CpuCopy32(void *,void *,s32);s32 func_020746fc(void *,void *);s32 OS_GetLockID(void);void MI_CpuCopy8(void *,void *);
 s32 i,state;u8 *p; s32 shift;u8 byte;u32 mask;u8 *out;u16 id;u8 ok;u32 seq;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1)return;
 for(i=0;i<256;i++){
@@ -24,9 +24,9 @@ if(M2C_FIELD(a,s32 *,0xc04)==0)M2C_FIELD(out,u32 *,8)=M2C_FIELD((u8 *)a+M2C_FIEL
 M2C_FIELD(out,u16 *,12)=0x54;MI_CpuCopy32((u8 *)a+0xc0c,out+20,64);
 out[14]=1;out[15]=1;seq=M2C_FIELD(a,u32 *,0xc08);M2C_FIELD(out,u16 *,16)=seq;M2C_FIELD(out,u16 *,18)=seq>>16;
 M2C_FIELD(out,s32 *,4)=func_020746fc(a,out);
-id=func_0200558c();func_0200fe5c(id);
-func_0201033c(out,(M2C_FIELD(a,s32 *,0xc00)<<10)+(M2C_FIELD(a,s32 *,0xc04)<<8),M2C_FIELD(out,u16 *,12),0,0,1,7,10,2);
-ok=func_02010584()!=0;func_0200fe6c(id);func_020055f4(id);
+id=OS_GetLockID();CARD_LockBackup(id);
+SaveDevice_Transfer(out,(M2C_FIELD(a,s32 *,0xc00)<<10)+(M2C_FIELD(a,s32 *,0xc04)<<8),M2C_FIELD(out,u16 *,12),0,0,1,7,10,2);
+ok=func_02010584()!=0;CARD_UnlockBackup(id);OS_ReleaseLockID(id);
 if(!ok){M2C_FIELD(a,u8 *,0x2052)=1;HeapFreeBlock(out);return;}
 if(M2C_FIELD(a,s32 *,0xc04)==0)MI_CpuCopy8(out+8,(u8 *)a+M2C_FIELD(a,s32 *,0xc00)*12);
 HeapFreeBlock(out);M2C_FIELD(a,u8 *,0x2051)=0;
@@ -57,26 +57,26 @@ if(var_r5!=0xffff){var_r4=var_r5*12+(s32)arg0;goto loop;}
    past the 0x14- or 0x38-byte block header) is copied out before following the
    entry's next index.  Returns the bytes copied, or 0 when a read failed. */
 s32 ReadSaveBlockChain(M2C_UNK *manager,s32 head,s32 dest) {
-s32 func_0200558c(void);
+s32 OS_GetLockID(void);
 void *entry; s32 start=dest; u8 ok=1; u16 handle;
 if(M2C_FIELD(manager,u8*,0x2050)==0)return 0;
 if(M2C_FIELD(manager,u8*,0x2052)==1)return 0;
-handle=func_0200558c();
+handle=OS_GetLockID();
 while(head!=0xffff){
 entry=(void*)manager+head*12;
-func_0200fe5c(handle);
+CARD_LockBackup(handle);
 if(M2C_FIELD(entry,u16*,8)==0xffff)
-func_0201033c((head<<10)+0x38,dest,M2C_FIELD(entry,u16*,4)-0x38,0,0,1,6,1,0);
+SaveDevice_Transfer((head<<10)+0x38,dest,M2C_FIELD(entry,u16*,4)-0x38,0,0,1,6,1,0);
 else
-func_0201033c((head<<10)+0x14,dest,M2C_FIELD(entry,u16*,4)-0x14,0,0,1,6,1,0);
+SaveDevice_Transfer((head<<10)+0x14,dest,M2C_FIELD(entry,u16*,4)-0x14,0,0,1,6,1,0);
 ok=func_02010584()!=0;
-func_0200fe6c(handle);
+CARD_UnlockBackup(handle);
 if(!ok){M2C_FIELD(manager,u8*,0x2052)=1;break;}
 head=M2C_FIELD(entry,u16*,10);
 if(M2C_FIELD(entry,u16*,8)==0xffff)dest+=M2C_FIELD(entry,u16*,4)-0x38;
 else dest+=M2C_FIELD(entry,u16*,4)-0x14;
 }
-func_020055f4(handle);
+OS_ReleaseLockID(handle);
 return ok?dest-start:0;
 }
 #pragma opt_common_subs reset
@@ -166,38 +166,42 @@ void func_02075e84(M2C_UNK *arg0, s32 arg1) {
  }
 }
 
-void func_02075ecc(void) {
- M2C_UNK func_02074c58(void *);
- M2C_UNK func_02074dec(void *);
- extern M2C_UNK data_0213ea18;
- func_02074c58(&data_0213ea18);
- func_02074dec(&data_0213ea18);
+void SaveManager_InitTask(void) {
+ M2C_UNK SaveManager_CheckArchive(void *);
+ M2C_UNK SaveManager_ScanArchive(void *);
+ extern M2C_UNK gSaveManager;
+ SaveManager_CheckArchive(&gSaveManager);
+ SaveManager_ScanArchive(&gSaveManager);
 }
 
 void func_02075ee8(void) {
 
-    extern M2C_UNK data_0213ea18;
-    SaveList_Flush(&data_0213ea18);
+    extern M2C_UNK gSaveManager;
+    SaveList_Flush(&gSaveManager);
 }
 
-void func_02075efc(void) {
-s32 func_0200558c(void); s32 func_02010424(void); s32 func_0201044c(s32);
-s32 sp14;u16 a,b;u8 c;
-if(func_0200fe08()){
-a=func_0200558c();func_0200fe5c(a);
-c=func_0201044c(0x1202);func_0200fe6c(a);func_020055f4(a);
-if(c && (u8)func_02010424()==2){
-b=func_0200558c();func_0200fe5c(b);
-func_0201033c(0,&sp14,4,0,0,0,6,1,0);
-func_0200fe6c(b);func_020055f4(b);
+/* Boot-time save setup: when the save device is up, ask it for the save-chip
+ * configuration the game uses (state 2 = ready) and read its root header, then
+ * queue the task that opens and scans the save archive. */
+void SaveManager_Start(void) {
+s32 OS_GetLockID(void); s32 SaveDevice_GetState(void); s32 SaveDevice_Configure(s32);
+s32 rootHeader;u16 archiveLock,rootLock;u8 configured;
+if(SaveDevice_IsReady()){
+archiveLock=OS_GetLockID();CARD_LockBackup(archiveLock);
+configured=SaveDevice_Configure(SAVE_DEVICE_CONFIG);
+CARD_UnlockBackup(archiveLock);OS_ReleaseLockID(archiveLock);
+if(configured && (u8)SaveDevice_GetState()==SAVE_DEVICE_STATE_READY){
+rootLock=OS_GetLockID();CARD_LockBackup(rootLock);
+SaveDevice_Transfer(0,&rootHeader,4,0,0,0,6,1,0);
+CARD_UnlockBackup(rootLock);OS_ReleaseLockID(rootLock);
 }}
-func_0209e044(func_02075ecc,1,0x400,0x11,0);
+func_0209e044(SaveManager_InitTask,1,0x400,0x11,0);
 }
 
 void func_02075fd8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK func_02075cbc(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    extern M2C_UNK data_0213ea18;
-    func_02075cbc(&data_0213ea18, arg0, arg1, arg2, arg3);
+    extern M2C_UNK gSaveManager;
+    func_02075cbc(&gSaveManager, arg0, arg1, arg2, arg3);
 }
 
 /* Deletes the oldest save-directory records of `type` so that at most `maxKeep`
@@ -232,21 +236,21 @@ if(keptRecords)HeapFreeBlock(keptRecords);
 }
 
 void DeleteSaveRecord(M2C_UNK arg0) {
-    extern M2C_UNK data_0213ea18;
-    func_02075e84(&data_0213ea18, arg0);
+    extern M2C_UNK gSaveManager;
+    func_02075e84(&gSaveManager, arg0);
 }
 
 void func_02076198(void){func_0209e044(func_02075ee8,1,0x400,0x11,0);}
 
 void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK ReadSaveBlockChain(M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0213ea18;
-    ReadSaveBlockChain(&data_0213ea18, arg0, arg1);
+    extern M2C_UNK gSaveManager;
+    ReadSaveBlockChain(&gSaveManager, arg0, arg1);
 }
 
 void GetSaveRecordSize(M2C_UNK arg0) {
-    extern M2C_UNK data_0213ea18;
-    func_02075b58(&data_0213ea18, arg0);
+    extern M2C_UNK gSaveManager;
+    func_02075b58(&gSaveManager, arg0);
 }
 
 void func_020761f8(void) {

@@ -3,7 +3,7 @@
 extern u16 **gCur3DSpriteEngine;
 extern u8 gSpriteDesc32x32[],gSpriteDesc32x8[],gSpriteDesc16x8[],gSpriteDesc16x16[],data_ov002_021f30ff[],data_ov002_021f3101[],gPlayerSettings[];
 void func_02087064(s32,s32,s32,s32,s32);
-void func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_ov002_021e482c(s32,s32,s32,s32);
 void func_ov002_021e48e8(s32,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
@@ -67,7 +67,7 @@ else func_ov002_021e4674(184,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)
 }
 x=(((u32)(p[3]<<28)>>28)==0?100:28);y=170-(s8)p[2];
 func_02087064(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3018[202]);
-x=(s16)x;func_020878c4(x,y,1,128,16,0,0,128,16);
+x=(s16)x;DrawTexturedQuadUV(x,y,1,128,16,0,0,128,16);
 func_02087064(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3042[((u32)(p[3]<<28)>>28)*100]);
 if(width){if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e482c(x,y,0,width);else func_ov002_021e48e8(x,y,0,width);}
 x=((u32)(p[3]<<28)>>28)==0?221:3;y=150-(s8)p[2];width=(width+9)/10;

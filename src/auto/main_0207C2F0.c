@@ -2,7 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 typedef struct { s32 x,y,z; } Vec0207;
-extern Vec0207 data_020ebdb8;
+extern Vec0207 gMapViewUpVector;
 
 typedef struct Unk0207Color { u32 words[4]; } Unk0207Color;
 Unk0207Color func_0207cbd0(s32);
@@ -57,7 +57,7 @@ void func_0207c39c(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_0207c3dc(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void QueueMemoryCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK func_01ffa8bc(void *, s32);
     void *func_0209ccb8(M2C_UNK *, M2C_UNK);
     void func_0207c39c(void *);
@@ -420,26 +420,30 @@ M2C_UNK func_0207cc9c(M2C_UNK *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_FIELD(arg0, s32 *, 0x18) = arg3;
 }
 
-void func_0207cd0c(void *arg0) {
-void func_0200402c(void *,void *,void *,s32,void *);
-void func_02007f4c(void *,void *);
-M2C_UNK func_02000ca0(void *,s32);
-Vec0207 a = {0,0,0};
-Vec0207 b = {0,0,0};
-Vec0207 c = data_020ebdb8;
-s32 matrix[9];
-a.x = M2C_FIELD(arg0,s32 *,0x10);
-a.y = M2C_FIELD(arg0,s32 *,0x14);
-a.z = M2C_FIELD(arg0,s32 *,0x18);
-b.x = M2C_FIELD(arg0,s32 *,0x10);
-b.y = M2C_FIELD(arg0,s32 *,0x14);
-b.z = 0;
-*(Vec0207 *)((u8 *)arg0+0xf0)=a;
-*(Vec0207 *)((u8 *)arg0+0xfc)=b;
-*(Vec0207 *)((u8 *)arg0+0x108)=c;
-func_0200402c(&a,&c,&b,1,(u8 *)arg0+0x1c);
-func_02007f4c((u8 *)arg0+0x1c,matrix);
-func_02000ca0(matrix,(s32)arg0+0x4c);
+/* Rebuilds the map view's camera transform from its eye position: stores the eye
+ * point, its ground projection and the up axis into the view object, builds the
+ * view matrix from them and inverts it into the view's inverse matrix. */
+void BuildMapViewTransform(void *view) {
+    void func_0200402c(void *, void *, void *, s32, void *);
+    void func_02007f4c(void *, void *);
+    M2C_UNK func_02000ca0(void *, s32);
+    Vec0207 eye = {0, 0, 0};
+    Vec0207 ground = {0, 0, 0};
+    Vec0207 up = gMapViewUpVector;
+    s32 matrix[9];
+
+    eye.x = M2C_FIELD(view, s32 *, 0x10);
+    eye.y = M2C_FIELD(view, s32 *, 0x14);
+    eye.z = M2C_FIELD(view, s32 *, 0x18);
+    ground.x = M2C_FIELD(view, s32 *, 0x10);
+    ground.y = M2C_FIELD(view, s32 *, 0x14);
+    ground.z = 0;
+    *(Vec0207 *)((u8 *)view + 0xf0) = eye;
+    *(Vec0207 *)((u8 *)view + 0xfc) = ground;
+    *(Vec0207 *)((u8 *)view + 0x108) = up;
+    func_0200402c(&eye, &up, &ground, 1, (u8 *)view + 0x1c);
+    func_02007f4c((u8 *)view + 0x1c, matrix);
+    func_02000ca0(matrix, (s32)view + 0x4c);
 }
 
 void func_0207cddc(s32 arg0, M2C_UNK arg1) {

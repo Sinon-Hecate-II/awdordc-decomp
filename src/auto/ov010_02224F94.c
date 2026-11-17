@@ -259,7 +259,7 @@ v=a[i+3]+b[i+3];if(v>32767)v=32767;else if(v< -32768)v=-32768;out[i+3]=v;
 
 s32 func_ov010_02225640(void *arg) {
     void func_02000b9c(s32);
-    s32 func_ov010_02224dd8(void *, u32);
+    s32 VoiceLink_InitPacketPool(void *, u32);
     M2C_UNK func_ov010_02224ea0();
     s32 VoiceLink_Init(void *);
     s32 func_ov010_022224b4(void);
@@ -288,7 +288,7 @@ s32 func_ov010_02225640(void *arg) {
     if ((u32)b >= 0x20) return 0;
     M2C_FIELD(&data_ov010_0222edb4, u8 *, 0xC) = b;
     {
-        s32 r = func_ov010_02224dd8(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14));
+        s32 r = VoiceLink_InitPacketPool(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14));
         if (!r) { func_ov010_02224ea0(); return 0; }
     }
     {

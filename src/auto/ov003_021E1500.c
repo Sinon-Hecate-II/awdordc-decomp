@@ -48,42 +48,47 @@ void func_ov003_021e1530(void *state, s32 id) {
     M2C_FIELD(M2C_FIELD(entry, void **, 12), s16 *, 0x6A) = value;
 }
 
-void func_ov003_021e161c(void *arg0) {
+/* Update the map grid's eleven button sprites and latch the button that reports
+ * a click (MAPGRID_CLICKED) and the one showing its pressed frame
+ * (MAPGRID_PRESSED); the handler then moves the preview onto the pressed
+ * button.  A button is clicked when its owner says so, or when the button is
+ * enabled and its owner is being pressed. */
+void Ov003_UpdateMapGridButtons(void *menu) {
     M2C_UNK MenuSpriteUpdate(s32);
-    s32 var_r0;
-    s32 var_r0_2;
-    u8 var_r8;
-    void *temp_r0;
-    void *temp_r2;
-    void *temp_r3;
+    s32 clicked;
+    s32 pressed;
+    u8 index;
+    void *sprite;
+    void *owner;
+    void *button;
 
-    M2C_FIELD(arg0, s8 *, 4) = -1;
-    M2C_FIELD(arg0, s8 *, 5) = -1;
-    var_r8 = 0;
+    M2C_FIELD(menu, s8 *, MAPGRID_CLICKED) = -1;
+    M2C_FIELD(menu, s8 *, MAPGRID_PRESSED) = -1;
+    index = 0;
     do {
-        temp_r0 = M2C_FIELD((void *)((u8 *) arg0 + (var_r8 * 4)), void **, 0x0c);
-        if (temp_r0) {
-            MenuSpriteUpdate((s32) temp_r0);
-            temp_r3 = M2C_FIELD((arg0 + (var_r8 * 4)), void **, 0x0c);
-            var_r0 = 1;
-            temp_r2 = M2C_FIELD(temp_r3, void **, 0x64);
-            if ((M2C_FIELD(temp_r2, s8 *, 0x0b) != 1) && ((((u32) (M2C_FIELD(temp_r3, u8 *, 0x59) << 0x1B) >> 0x1F) == 0) || (M2C_FIELD(temp_r2, s8 *, 0x0c) != 1))) {
-                var_r0 = 0;
+        sprite = M2C_FIELD((void *)((u8 *) menu + (index * 4)), void **, MAPGRID_BUTTONS);
+        if (sprite) {
+            MenuSpriteUpdate((s32) sprite);
+            button = M2C_FIELD((menu + (index * 4)), void **, MAPGRID_BUTTONS);
+            clicked = 1;
+            owner = M2C_FIELD(button, void **, MENU_SPRITE_OWNER);
+            if ((M2C_FIELD(owner, s8 *, 0x0b) != 1) && ((((u32) (M2C_FIELD(button, u8 *, MENU_SPRITE_BASE) << 0x1B) >> 0x1F) == 0) || (M2C_FIELD(owner, s8 *, 0x0c) != 1))) {
+                clicked = 0;
             }
-            if (var_r0 & 0xFF) {
-                M2C_FIELD(arg0, u8 *, 4) = var_r8;
+            if (clicked & 0xFF) {
+                M2C_FIELD(menu, u8 *, MAPGRID_CLICKED) = index;
             }
-            temp_r0 = M2C_FIELD(&((u8 *) arg0)[var_r8 * 4], void **, 0x0c);
-            if ((((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) == (u16) ((u32) (M2C_FIELD(temp_r0, s32 *, 0x40) << 6) >> 0x18)) {
-                var_r0_2 = 1;
+            sprite = M2C_FIELD(&((u8 *) menu)[index * 4], void **, MAPGRID_BUTTONS);
+            if ((((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 1) == (u16) ((u32) (M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) << 6) >> 0x18)) {
+                pressed = 1;
             } else {
-                var_r0_2 = 0;
+                pressed = 0;
             }
-            if (var_r0_2 & 0xFF) {
-                M2C_FIELD(arg0, u8 *, 5) = var_r8;
+            if (pressed & 0xFF) {
+                M2C_FIELD(menu, u8 *, MAPGRID_PRESSED) = index;
             }
         }
-        var_r8++;
-    } while ((u32) var_r8 < 11U);
+        index++;
+    } while ((u32) index < 11U);
 }
 

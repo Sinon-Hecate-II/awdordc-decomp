@@ -52,4 +52,13 @@ enum {
     NATNEG_STATE_DONE    = 4  /* negotiation finished and the peer is released */
 };
 
+/* Fields the connect-ping/pong packets share (the layout NatNeg_SendConnectPong
+ * builds): the sending peer's own address, its remote address and port and the
+ * NAT state it reports. */
+#define NATNEG_PKT_PEER_ADDR 0x08 /* u32 the sending peer's address, byte-swapped */
+#define NATNEG_PKT_PEER_IP   0x0C /* s32 the sending peer's remote address */
+#define NATNEG_PKT_PEER_PORT 0x10 /* u16 the sending peer's remote port, byte-swapped */
+#define NATNEG_PKT_FLAG      0x12 /* u8 the sender's NATNEG_PEER_FLAG32 */
+#define NATNEG_PKT_MODE      0x13 /* u8 nonzero when the sender was not in its connect step */
+
 #endif

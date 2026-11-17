@@ -89,9 +89,9 @@ u8 func_ov000_021a8984(s32 arg0) {
 
 s32 GetAiUnitMoveRange(UnkValue_021a89a4 *a) {
 extern void **gCurrentMap;
-s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 func_020a75b8(void *);
+s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 GetUnitMovement(void *);
 s32 n=Divide(a->value,func_020a86f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
-if(func_020a75b8(a)<=n)n=func_020a75b8(a);
+if(GetUnitMovement(a)<=n)n=GetUnitMovement(a);
 return n;
 }
 

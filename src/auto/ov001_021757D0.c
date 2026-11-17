@@ -48,45 +48,49 @@ void Ov001_FreeWirelessWork(void) {
 s32 func_ov001_0217589c(M2C_UNK arg0, s32 arg1, s32 arg2) {
 void Ov001_InitScreen(void);
 s32 func_ov001_02175928(s32,s32);
-void func_ov001_021759c4(void); void Ov001_SetupDisplay(void); void func_ov001_02184f68(void);
+void Ov001_InitCore(void); void Ov001_SetupDisplay(void); void func_ov001_02184f68(void);
 void Ov001_SetStepCallback(s32); void func_ov001_0218b850(void); void func_ov001_0218c7d4(s32);
 void func_ov001_0218bdb0(void); void func_ov001_0218c63c(void); void func_02007598(void); void func_ov001_02175d04(void);
-extern u8 data_ov001_02193d2c;
-M2C_FIELD(&data_ov001_02193d2c,M2C_UNK*,4)=arg0;
+extern u8 gOv001ScreenState;
+M2C_FIELD(&gOv001ScreenState,M2C_UNK*,4)=arg0;
 if (!func_ov001_02175928(arg1,arg2)) return -1;
-M2C_FIELD(&data_ov001_02193d2c,u8*,1)=0;
-func_ov001_021759c4(); Ov001_SetupDisplay(); func_ov001_02184f68();
+M2C_FIELD(&gOv001ScreenState,u8*,1)=0;
+Ov001_InitCore(); Ov001_SetupDisplay(); func_ov001_02184f68();
 Ov001_SetStepCallback((s32)Ov001_InitScreen);
 do {
 func_ov001_0218b850();
-M2C_FIELD(&data_ov001_02193d2c,void(**)(void),12)();
+M2C_FIELD(&gOv001ScreenState,void(**)(void),12)();
 func_ov001_0218c7d4(0); func_ov001_0218bdb0(); func_ov001_0218c63c(); func_02007598();
-} while (!M2C_FIELD(&data_ov001_02193d2c,u8*,1));
+} while (!M2C_FIELD(&gOv001ScreenState,u8*,1));
 func_ov001_02175d04(); return 0;
 }
 
 #pragma scheduling off
 s32 func_ov001_02175928(s32 arg0,s32 arg1){
-extern u8 data_ov001_02193d2c;
-M2C_FIELD(&data_ov001_02193d2c,u8 *,0)=arg0;
-M2C_FIELD(&data_ov001_02193d2c,s32 *,8)=arg1;
+extern u8 gOv001ScreenState;
+M2C_FIELD(&gOv001ScreenState,u8 *,0)=arg0;
+M2C_FIELD(&gOv001ScreenState,s32 *,8)=arg1;
 if(arg0<0||arg0>6)return 0;
 if(arg0==1){if(((u32)arg1>>4)&~2U)return 0;}
-arg1=M2C_FIELD(&data_ov001_02193d2c,s32 *,8);
+arg1=M2C_FIELD(&gOv001ScreenState,s32 *,8);
 {u32 nibble=(u32)(arg1<<28); nibble>>=28; if(nibble>1U)return 0;}
 if(arg0!=0){if(((u32)arg1>>4)&1)return 0;}
-if(arg0==0){if(!(((u32)M2C_FIELD(&data_ov001_02193d2c,volatile s32 *,8)>>4)&1))return 0;}
+if(arg0==0){if(!(((u32)M2C_FIELD(&gOv001ScreenState,volatile s32 *,8)>>4)&1))return 0;}
 return 1;
 }
 #pragma scheduling reset
-void func_ov001_021759c4(void) {
-extern u8 data_ov001_02193d2c;
+/* Bring overlay 001 up: stop interrupts and the sub display, halt if a core
+ * device fails to initialise, reset the display and the vblank IRQ, then
+ * initialise the ov001 subsystems (tasks, fades, sound, streaming) and run the
+ * save-block initialiser on a temporary 0x700-byte scratch buffer. */
+void Ov001_InitCore(void) {
+extern u8 gOv001ScreenState;
 M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK func_ov001_0218c40c(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
-M2C_UNK p;
+M2C_UNK scratch;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
 if(!func_02006f8c())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
-func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();p=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&p);
+func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&scratch);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the
@@ -106,7 +110,7 @@ void Ov001_SetupDisplay(void) {
     void func_ov001_0218aab4(void);
     void func_ov001_0218bfd4(void);
     void func_ov001_0218c168(void);
-    void func_ov001_02189f48(void);
+    void Ov001_InitSpritePools(void);
     void GX_TurnOnDisplay(void);
 
     GX_SetVBlankIrq(0);
@@ -172,7 +176,7 @@ void Ov001_SetupDisplay(void) {
     func_ov001_0218aab4();
     func_ov001_0218bfd4();
     func_ov001_0218c168();
-    func_ov001_02189f48();
+    Ov001_InitSpritePools();
     GX_TurnOnDisplay();
 
     *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 | 0x10000);
@@ -210,74 +214,74 @@ void func_ov001_02175d04(void) {
 }
 
 void Ov001_SetStepCallback(s32 arg0) {
-    extern u8 data_ov001_02193d2c;
-    M2C_FIELD(&data_ov001_02193d2c, s32 *, 0xc) = arg0;
+    extern u8 gOv001ScreenState;
+    M2C_FIELD(&gOv001ScreenState, s32 *, 0xc) = arg0;
 }
 
 void Ov001_SetNextScreenMode(s32 arg0, s32 arg1) {
-    extern u8 data_ov001_02193d2c;
-    M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x10) = arg0;
-    M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x14) = arg1;
+    extern u8 gOv001ScreenState;
+    M2C_FIELD(&gOv001ScreenState, s32 *, 0x10) = arg0;
+    M2C_FIELD(&gOv001ScreenState, s32 *, 0x14) = arg1;
 }
 
 void func_ov001_02175d78(s32 *arg0, s32 *arg1) {
-    extern u8 data_ov001_02193d2c;
+    extern u8 gOv001ScreenState;
     if (arg0 != 0) {
-        *arg0 = M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x10);
+        *arg0 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x10);
     }
     if (arg1 != 0) {
-        *arg1 = M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x14);
+        *arg1 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x14);
     }
 }
 
 void Ov001_SetNameEntryMode(s32 arg0, s32 arg1) {
-    extern u8 data_ov001_02193d2c;
-    M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x18) = arg0;
-    M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x1c) = arg1;
+    extern u8 gOv001ScreenState;
+    M2C_FIELD(&gOv001ScreenState, s32 *, 0x18) = arg0;
+    M2C_FIELD(&gOv001ScreenState, s32 *, 0x1c) = arg1;
 }
 
 void Ov001_GetNameEntryMode(s32 *arg0, s32 *arg1) {
-    extern u8 data_ov001_02193d2c;
+    extern u8 gOv001ScreenState;
     if (arg0 != 0) {
-        *arg0 = M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x18);
+        *arg0 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x18);
     }
     if (arg1 != 0) {
-        *arg1 = M2C_FIELD(&data_ov001_02193d2c, s32 *, 0x1c);
+        *arg1 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x1c);
     }
 }
 
 u8 Ov001_GetLanguage(void) {
-    extern u8 data_ov001_02193d2c;
-    return data_ov001_02193d2c;
+    extern u8 gOv001ScreenState;
+    return gOv001ScreenState;
 }
 
 s32 Ov001_GetScreenLayout(void) {
-    extern u8 data_ov001_02193d2c;
+    extern u8 gOv001ScreenState;
     typedef struct { u32 a, b; unsigned val : 4; } S;
-    return ((S *)&data_ov001_02193d2c)->val;
+    return ((S *)&gOv001ScreenState)->val;
 }
 
 s32 Ov001_HasOptionFlag(s32 arg0) {
-    extern u8 data_ov001_02193d2c;
-    if (arg0 & ((u32)M2C_FIELD(&data_ov001_02193d2c, s32 *, 8) >> 4)) {
+    extern u8 gOv001ScreenState;
+    if (arg0 & ((u32)M2C_FIELD(&gOv001ScreenState, s32 *, 8) >> 4)) {
         return 1;
     }
     return 0;
 }
 
 void func_ov001_02175e20(void) {
-    extern u8 data_ov001_02193d2c;
-    M2C_FIELD(&data_ov001_02193d2c, u8 *, 1) = 1;
+    extern u8 gOv001ScreenState;
+    M2C_FIELD(&gOv001ScreenState, u8 *, 1) = 1;
 }
 
 s32 func_ov001_02175e34(void) {
-    extern u8 data_ov001_02193d2c;
-    u8 r1 = data_ov001_02193d2c;
+    extern u8 gOv001ScreenState;
+    u8 r1 = gOv001ScreenState;
     if (r1 == 6) {
         return 0x38;
     }
     if (r1 == 1) {
-        if (!(( ((u32)M2C_FIELD(&data_ov001_02193d2c, s32 *, 8)) >> 4) & 2)) {
+        if (!(( ((u32)M2C_FIELD(&gOv001ScreenState, s32 *, 8)) >> 4) & 2)) {
             return 0x37;
         }
     }
@@ -303,7 +307,7 @@ void func_ov001_02175eb0(void) {
 }
 
 M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {
-    M2C_UNK func_ov001_0218a74c(M2C_UNK);
+    M2C_UNK Ov001_QueuePop(M2C_UNK);
     M2C_UNK Ov001_LoadFile(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193d4c;
     M2C_UNK var_r4;
@@ -311,7 +315,7 @@ M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {
     M2C_UNK ret;
     M2C_UNK r2;
     M2C_UNK r1;
-    var_r4 = func_ov001_0218a74c(M2C_FIELD(data_ov001_02193d4c, M2C_UNK *, 0x60));
+    var_r4 = Ov001_QueuePop(M2C_FIELD(data_ov001_02193d4c, M2C_UNK *, 0x60));
     ret = Ov001_LoadFile(arg0, &local, 4);
     r2 = ret + 0x20;
     M2C_FIELD(var_r4, M2C_UNK *, 0x8) = ret;
@@ -323,10 +327,10 @@ M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {
 
 void func_ov001_02175f1c(M2C_UNK arg0) {
     M2C_UNK Ov001_FreeFile(M2C_UNK);
-    M2C_UNK func_ov001_0218a6f4(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_QueuePush(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193d4c;
     Ov001_FreeFile(M2C_FIELD((void *)arg0, M2C_UNK *, 0x8));
-    func_ov001_0218a6f4(M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60), arg0);
+    Ov001_QueuePush(M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60), arg0);
 }
 
 s32 func_ov001_02175f48(M2C_UNK arg0, u32 arg1) {

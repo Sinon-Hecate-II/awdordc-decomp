@@ -45,12 +45,16 @@ void Configure3DSpriteLayer(s32 layer, SpriteAttr *attr) {
     MI_CpuCopy32(M2C_FIELD(gCur3DSpriteEngine + layer, volatile s32 *, 0x20), src, size);
 }
 #pragma scheduling on
+/* Reset the current 3D sprite engine's bank for its layers: clear the bank flags
+ * and the four layer tile words, clear both 3-bit fields of the flags word at
+ * bank+0x02 (DS3D_BANK_MODE_WORD), and rebuild both layer matrices from the
+ * default transform. */
 void Reset3DSpriteLayerRegisters(void) {
     void Build3DSpriteTransform(void *, void *);
     extern void **gCur3DSpriteEngine;
     extern u8 sSpriteTransformDefault[];
-    u16 * volatile sp4;
-    u16 * volatile sp0;
+    u16 * volatile modeWord0;
+    u16 * volatile modeWord1;
 
     ((u16 *)*gCur3DSpriteEngine)[0] = 0;
     ((u16 *)*gCur3DSpriteEngine)[3] = 0;
@@ -58,11 +62,11 @@ void Reset3DSpriteLayerRegisters(void) {
     ((u16 *)*gCur3DSpriteEngine)[5] = 0;
     ((u16 *)*gCur3DSpriteEngine)[6] = 0;
 
-    sp4 = (u16 *)*gCur3DSpriteEngine + 1;
-    *sp4 = *sp4 & ~7;
+    modeWord0 = (u16 *)*gCur3DSpriteEngine + 1;
+    *modeWord0 = *modeWord0 & ~7;
 
-    sp0 = (u16 *)*gCur3DSpriteEngine + 1;
-    *sp0 = *sp0 & ~0x38;
+    modeWord1 = (u16 *)*gCur3DSpriteEngine + 1;
+    *modeWord1 = *modeWord1 & ~0x38;
 
     Build3DSpriteTransform(sSpriteTransformDefault, (u8 *)*gCur3DSpriteEngine + 0x14);
     Build3DSpriteTransform(sSpriteTransformDefault, (u8 *)*gCur3DSpriteEngine + 0x24);
@@ -334,7 +338,7 @@ void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;ext
 s32 func_02082f34(s32 arg0) {
     s32 IsLinkSessionActive();
     s32 func_02084a0c();
-    s32 func_020c7ef4(s32);
+    s32 IsCampaignMapRecordPlayable(s32);
     s32 GetMapPlayerCount(u16);
     s32 temp_r4;
 
@@ -349,7 +353,7 @@ s32 func_02082f34(s32 arg0) {
         return 0;
     }
 block_7:
-    if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (func_020c7ef4(arg0) == 0)) {
+    if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (IsCampaignMapRecordPlayable(arg0) == 0)) {
         return 0;
     }
     return 1;
@@ -359,7 +363,7 @@ s32 func_02082fc4(u32 x){switch(x){case 0:return 1;case 2:return 3;case 1:return
 
 s32 func_0208302c(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return 0;case 5:return 4;case 6:return 5;case 3:return 2;case 7:case 8:case 9:case 10:case 11:return 6;default:return 0;}}
 
-u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 func_020c7ef4(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!func_020c7ef4(x))return 7; return GetMapPlayerCount(x)+7; }
+u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 IsCampaignMapRecordPlayable(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!IsCampaignMapRecordPlayable(x))return 7; return GetMapPlayerCount(x)+7; }
 
 #pragma opt_common_subs off
 /* Build the available map categories, or a single list of local custom-map slots. */

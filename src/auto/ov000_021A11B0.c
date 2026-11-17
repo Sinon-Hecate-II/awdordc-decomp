@@ -10,7 +10,7 @@ void func_ov000_021a11b0(s32 arg0){
 extern void **gCurrentMap;
 extern void *gAiState,*gAiSettings;
 extern u8 gAiTargetCandidates[],gUnitKindStats[];
-s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a10e4(s32,void *);
+s32 IsUnitOnCurrentTeam(s32);s32 AiCandidateIncludesUnit(s32,void *);
 s32 ManhattanDistance(s32,s32,s16,s16);void SelectMapLayer(void *);
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
 s32 func_ov000_021a99dc(void *);s32 IsFootUnitKind(s32);
@@ -29,7 +29,7 @@ unit=map+0x59a4+id*14;
 if(IsUnitOnCurrentTeam(id)!=1){
 p=gAiTargetCandidates;
 for(i=0;i<M2C_FIELD(gAiState,u8 *,0);i++,p+=12){
-if(M2C_FIELD(p,s8 *,4)==arg0 && func_ov000_021a10e4(i,unit)){
+if(M2C_FIELD(p,s8 *,4)==arg0 && AiCandidateIncludesUnit(i,unit)){
 d=ManhattanDistance(p[0],p[1],(s16)x,(s16)y);
 if(p[7]>d)p[7]=d;
 }
@@ -61,7 +61,7 @@ if(d<0 || d>M2C_FIELD(gAiSettings,u8 *,16))continue;
 map=*gCurrentMap;id=map[((Map16E8 *)map)->rows[y]+x];
 if(!id)continue;
 unit=map+0x59a4+id*14;
-if(!func_ov000_021a10e4(i,unit))continue;
+if(!AiCandidateIncludesUnit(i,unit))continue;
 if(func_ov000_021a99dc(unit)==1)continue;
 if(gUnitKindStats[((u32)(unit[0]<<26)>>26)*112+19]&7){
 map=*gCurrentMap;if(M2C_FIELD(map+((Map16E8 *)map)->rows[y]+x,s8 *,0x2338)<0)continue;
@@ -118,20 +118,26 @@ d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[10]>d)p[10]=d;
 }
 }
 
+/* Fill gAiTargetCandidates from the map's property-cell list: one candidate
+ * per capturable property cell, with its type taken from the terrain and its
+ * status marked fresh and its group unset.  Returns how many were collected. */
 s32 CollectAiTargetCandidates(void) {
 s32 func_020cf878(u8,u8);
 extern void **gCurrentMap;
 extern s8 gTerrainPropertyType[];
 extern u8 gAiTargetCandidates[];
 s32 n=0;u8 *p;u8 *dst; u8 *base;
-dst=gAiTargetCandidates; base=*gCurrentMap;p=base+0x6c60;
-if(base[0x6c60]!=255) do {
-if(func_020cf878(p[1],p[2])==1) {
-n++;dst[0]=p[1];dst[1]=p[2];dst[2]=gTerrainPropertyType[p[0]];
-if((p[0]&31)==16)dst[2]=1;
-dst[3]=127;M2C_FIELD(dst,s8 *,4)=-1;dst[5]=0;dst[6]=0;dst[7]=255;dst[8]=255;dst[9]=255;dst[10]=255;dst+=12;
-}p+=6;
-}while(*p!=255);
+dst=gAiTargetCandidates; base=*gCurrentMap; p=base+MAP_PROPERTY_CELLS;
+if(base[MAP_PROPERTY_CELLS]!=MAP_PROPERTY_END) do {
+if(func_020cf878(p[MAP_PROPERTY_X],p[MAP_PROPERTY_Y])==1) {
+n++;
+dst[AI_CANDIDATE_X]=p[MAP_PROPERTY_X];
+dst[AI_CANDIDATE_Y]=p[MAP_PROPERTY_Y];
+dst[AI_CANDIDATE_TYPE]=gTerrainPropertyType[p[MAP_PROPERTY_KIND]];
+if((p[MAP_PROPERTY_KIND]&MAP_TERRAIN_KIND_MASK)==16)dst[AI_CANDIDATE_TYPE]=1;
+dst[AI_CANDIDATE_STATUS]=AI_CANDIDATE_FRESH;M2C_FIELD(dst,s8 *,4)=-1;dst[5]=0;dst[6]=0;dst[7]=255;dst[8]=255;dst[9]=255;dst[10]=255;dst+=AI_CANDIDATE_STRIDE;
+}p+=MAP_PROPERTY_STRIDE;
+}while(*p!=MAP_PROPERTY_END);
 return n;
 }
 
@@ -181,7 +187,7 @@ s32 func_ov000_021a1ab8(void) {
 }
 
 s32 func_ov000_021a1b1c(void){
-s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);M2C_UNK func_ov000_02199330();s32 func_ov000_021a686c();s32 func_ov000_021a86dc();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
+s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);M2C_UNK func_ov000_02199330();s32 FindPropertyTargetCandidate();s32 func_ov000_021a86dc();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
 extern void **gCurrentMap;extern void *gAiSettings,*gAiCommandState;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,0xa)<<20)>>29)&2))return 0;
@@ -192,7 +198,7 @@ if(GetUnitBuildCost(id,14)*10>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0
 if(func_ov000_021a86dc()==1)return 0;
 if(func_ov000_021a860c()==0)return 0;
 func_ov000_02199330();
-result=func_ov000_021a686c();if(result==-1)return 0;
+result=FindPropertyTargetCandidate();if(result==-1)return 0;
 M2C_FIELD(&gAiCommand,s8 *,6)=14;
 CommitAiAction(result);return 1;
 }

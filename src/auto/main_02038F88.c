@@ -1,22 +1,28 @@
 /* 33 functions from 0x02038F88 to 0x02039EFC (main), found by ds-decomp. */
 #include "common.h"
+#include "net_session.h"
 
-s32 func_02038f88(void) {
-extern void *gNetSession;
-s32 RandomBelow(s32);s32 func_0205d4d8(s32,u16,s32);
-s32 func_0205ad4c(void *,s32,s32,s32,void (*)(s32 *));
-void func_02039ba8(s32 *); void func_0203d6c8(void); void RouteIncomingGameSpyPacket(void);
-void func_0205ada8(s32,void (*)(void));void func_0205b050(s32,void (*)(void));
-u32 func_020393d4();
-void *base; s32 result;u16 angle;
-if(M2C_FIELD(gNetSession,s32 *,0))return 0;
-angle=RandomBelow(0x4000)+0xc000;
-base=gNetSession;
-result=func_0205ad4c(gNetSession,func_0205d4d8(0,angle,0),M2C_FIELD(base,s32 *,0x14),M2C_FIELD(base,s32 *,0x18),func_02039ba8);
-if(func_020393d4(result))return result;
-func_0205ada8(M2C_FIELD(gNetSession,s32 *,0),func_0203d6c8);
-func_0205b050(M2C_FIELD(gNetSession,s32 *,0),RouteIncomingGameSpyPacket);
-return result;
+/* Opens the GameSpy GT2 socket of the logged-in session: picks a random local
+ * port, creates the socket with the session's buffer sizes and the socket-error
+ * callback, then installs the connect-attempt and unrecognized-message (raw
+ * GameSpy/NAT packet) callbacks.  Does nothing when the socket is already open;
+ * returns the socket-open result (0 on success). */
+s32 OpenGameSpySocket(void){
+ extern void *gNetSession;
+ s32 RandomBelow(s32);s32 Gt2AddressToString(s32,u16,s32);
+ s32 Gt2CreateSocket(void *,s32,s32,s32,void (*)(s32 *));
+ void Gt2SocketErrorCallback(s32 *); void HandleGt2ConnectAttempt(void); void RouteIncomingGameSpyPacket(void);
+ void Gt2SocketSetConnectAttempt(s32,void (*)(void));void Gt2SocketSetUnrecognizedCallback(s32,void (*)(void));
+ u32 ReportGt2SocketResult();
+ void *session; s32 result;u16 angle;
+ if(M2C_FIELD(gNetSession,s32 *,NET_SESSION_SOCKET))return 0;
+ angle=RandomBelow(0x4000)+0xc000;
+ session=gNetSession;
+ result=Gt2CreateSocket(gNetSession,Gt2AddressToString(0,angle,0),M2C_FIELD(session,s32 *,NET_SESSION_RX_BUFFER),M2C_FIELD(session,s32 *,NET_SESSION_TX_BUFFER),Gt2SocketErrorCallback);
+ if(ReportGt2SocketResult(result))return result;
+ Gt2SocketSetConnectAttempt(M2C_FIELD(gNetSession,s32 *,NET_SESSION_SOCKET),HandleGt2ConnectAttempt);
+ Gt2SocketSetUnrecognizedCallback(M2C_FIELD(gNetSession,s32 *,NET_SESSION_SOCKET),RouteIncomingGameSpyPacket);
+ return result;
 }
 
 s32 FindPlayerConnection(s32 arg0) {
@@ -143,7 +149,7 @@ default:detail+=0xfffe9c88;break;
 func_0203accc(errCode,detail);return error;
 }
 
-u32 func_020393d4(u32 a, u32 unused, u32 off) {
+u32 ReportGt2SocketResult(u32 a, u32 unused, u32 off) {
     u32 ret = a;
     u32 code;
     code = ret;
@@ -285,7 +291,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     s32 func_02039224(s32);
     M2C_UNK func_0203dee8();
     void SetNetError(s32, s32);
-    M2C_UNK func_0203e410();
+    M2C_UNK ReportGpiSessionStatus();
     M2C_UNK func_0203e064();
     s32 RemoveConnectionPeer();
     M2C_UNK SetGpiStatus();
@@ -370,7 +376,7 @@ void func_02039844(s32 arg0, s32 arg1) {
             M2C_FIELD(base, u32 *, 0x24) == 6 && r7 == 0) {
             u8 d389 = M2C_FIELD(base, u8 *, 0x389);
             if (!(d389 != 2 && r8 != 0)) {
-                func_0203e410();
+                ReportGpiSessionStatus();
                 func_0203e064(r5);
                 return;
             }
@@ -411,7 +417,7 @@ void func_02039844(s32 arg0, s32 arg1) {
         u8 d389 = M2C_FIELD(base, u8 *, 0x389);
         if (d389 == 2) {
             if (M2C_FIELD(base, u8 *, 0x2d) == 0) {
-                func_0203e410();
+                ReportGpiSessionStatus();
             } else {
                 if (M2C_FIELD(base, u8 *, 0x381) == 0) {
                     SetGpiStatus(1, (s32)&gEmptyString, 0);
@@ -466,7 +472,7 @@ void func_02039b9c(void) {
     func_02044780();
 }
 
-void func_02039ba8(s32 *arg0) {
+void Gt2SocketErrorCallback(s32 *arg0) {
     extern void *gNetSession;
     void SetNetError(s32, s32);
     s32 GT2SocketHandle(s32 *);
@@ -510,7 +516,7 @@ void func_02039ca0(void) {
     void func_0203a2b4(void);
     void func_0204db50(void *);
     u64 GetSystemTick(void);
-    u64 func_02072088(u64, u64);
+    u64 U64Divide(u64, u64);
     void *p;
 
     if (!M2C_FIELD(&gNasLogin, void **, 4)) return;
@@ -526,7 +532,7 @@ void func_02039ca0(void) {
         if (p && M2C_FIELD(p, s32 *, 0)) func_0204db50(p);
         p = M2C_FIELD(&gNasLogin, void **, 4);
         if (!M2C_FIELD(p, s32 *, 0x30)) return;
-        if (func_02072088((GetSystemTick() - M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
+        if (U64Divide((GetSystemTick() - M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
             ReportNasLoginError(6, -61070);
             M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x30) = 0;
         }

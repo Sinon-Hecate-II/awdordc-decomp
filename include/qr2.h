@@ -60,6 +60,18 @@
 #define QR2_PLAYER_STRING    0x04 /* char *heap string for the key */
 #define QR2_PLAYER_VALUE     0x08 /* s32 value, or a pointer to one */
 
+/* The GameSpy stream cipher's state, 261 bytes: a 256-byte permutation followed by
+ * the five step bytes that index it.  Set up once per connection and advanced one
+ * byte at a time; the same step both encrypts and decrypts (an XOR keystream). */
+typedef struct GsCryptState {
+    u8 sbox[256]; /* +0x00 permutation, four entries shuffled by every step */
+    u8 a;         /* +0x100 counter, incremented every step */
+    u8 b;         /* +0x101 index accumulated from sbox[old a] */
+    u8 c;         /* +0x102 index accumulated from sbox[swapped entry] */
+    u8 d;         /* +0x103 cipher byte the previous step returned */
+    u8 e;         /* +0x104 data byte the previous step was given */
+} GsCryptState;   /* 0x105 bytes */
+
 /* Binary matchmaking commands received through the QR2 callback. */
 typedef struct Qr2MatchCommandHeader {
     char magic[4];    /* +0x00 "SBCM" */

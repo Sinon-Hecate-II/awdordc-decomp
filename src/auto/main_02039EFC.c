@@ -6,7 +6,7 @@ typedef struct { u32 words[8]; } Record39;
 
 void NasConnectionResultCallback(M2C_UNK a,Record39 *b){
 extern M2C_UNK gNasLogin,data_020fc8a8,NasLoginInfoCallback;
-s32 SetGpiStatus(s32,s32,void *);s32 ReportNasError(void);s32 func_02038f88(void);s32 StartQr2Reporting(s32);
+s32 SetGpiStatus(s32,s32,void *);s32 ReportNasError(void);s32 OpenGameSpySocket(void);s32 StartQr2Reporting(s32);
 void ReportNasLoginError(s32,s32);M2C_UNK gpiGetInfo(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
 void *p;
 M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,48)=0;
@@ -20,7 +20,7 @@ SetGpiStatus(1,(s32)&data_020fc8a8,0);
 if(ReportNasError())return;
 p=M2C_FIELD(&gNasLogin,void **,4);
 M2C_FIELD(p,void (**)(s32,u32,s32),20)(0,b->words[1],M2C_FIELD(p,s32 *,24));
-if(func_02038f88())return;
+if(OpenGameSpySocket())return;
 if(StartQr2Reporting(b->words[1]))return;
 }else ReportNasLoginError(6,-60000);
 }else if(M2C_FIELD(p,s32 *,4)==3){
@@ -90,7 +90,7 @@ void func_0203a2b4(void) {
     void func_02032be4(void *);
     void func_02032b10(void);
     u64 GetSystemTick(void);
-    u64 func_02072088(u64, u64);
+    u64 U64Divide(u64, u64);
     void StringCopy(void *, M2C_UNK);
     void HeapFree(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02032370(void *);
@@ -136,7 +136,7 @@ void func_0203a2b4(void) {
         now = GetSystemTick();
         stored = M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), u64 *, 0x28);
         diff = now - stored;
-        q = func_02072088(diff << 6, 0x82EAULL);
+        q = U64Divide(diff << 6, 0x82EAULL);
         if (q > 0x2710ULL) {
             func_02032be4(buf + 0x48);
             func_02032b10();

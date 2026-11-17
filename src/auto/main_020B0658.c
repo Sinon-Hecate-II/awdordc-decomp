@@ -1,6 +1,7 @@
 /* 13 functions from 0x020B0658 to 0x020B160C (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 
 /* Give the current 3D sprite engine's bank a symmetric 16/16-row split: force the
    OAM attribute mode bits and the standard layer-enable set, then restart the
@@ -152,19 +153,37 @@ void func_020b0af4(void *arg0) {
 }
 
 #pragma opt_strength_reduction off
-void BeginBrightEffectStereo(void *arg0) {
-M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-M2C_UNK func_0207a66c(s16,s16);
-M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
-extern M2C_UNK data_020f3d60; extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
-s16 y,x,row; s32 count,j,i; void *p;
-p=*gCurrentMap; y=M2C_FIELD(p,s16 *,0x514a); x=M2C_FIELD(p,s16 *,0x5148);
-if(M2C_FIELD(p,u16 *,0x5146)-(y>>4)>12)count=13;else count=12;
-Clear3DSpriteLayer(1);
-i=0; if(count>0) do { j=0; loop: func_0207a66c((s16)(j+(x>>4)),(s16)(i+(y>>4))); j++; if(j<16) goto loop; i++; }while(i<count);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-func_0207c3dc(&data_020f3d60,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+0x4900,0x80,0);
-M2C_FIELD(arg0,s16 *,0x6e)=2;
+/* Begin the screen-brighten effect's stereo (3D layer) half: clear the map layer,
+ * lay the bright 2x2 tile quads over the visible map at the current scroll, mark
+ * the layer dirty and start the first palette upload. */
+void BeginBrightEffectStereo(void *effect) {
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
+    M2C_UNK WriteMapTileQuad(s16, s16);
+    M2C_UNK QueueMemoryCopy(M2C_UNK *, s32, M2C_UNK, M2C_UNK);
+    extern M2C_UNK data_020f3d60;
+    extern void **gCurrentMap;
+    extern void *gCur3DSpriteEngine;
+    s16 viewY, viewX;
+    s32 rows, j, i;
+    void *map;
+
+    map = *gCurrentMap;
+    viewY = M2C_FIELD(map, s16 *, MAP_VIEW_Y);
+    viewX = M2C_FIELD(map, s16 *, MAP_VIEW_X);
+    if (M2C_FIELD(map, u16 *, MAP_HEIGHT) - (viewY >> 4) > 12) rows = 13; else rows = 12;
+    Clear3DSpriteLayer(1);
+    i = 0;
+    if (rows > 0) do {
+        j = 0;
+        loop:
+        WriteMapTileQuad((s16)(j + (viewX >> 4)), (s16)(i + (viewY >> 4)));
+        j++;
+        if (j < 16) goto loop;
+        i++;
+    } while (i < rows);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
+    QueueMemoryCopy(&data_020f3d60, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24) + 0x4900, 0x80, 0);
+    M2C_FIELD(effect, s16 *, 0x6e) = 2;
 }
 
 /* Stereo (3D layer) half of the screen-brighten effect's per-frame step: while
@@ -174,12 +193,12 @@ M2C_FIELD(arg0,s16 *,0x6e)=2;
  * mixer, choosing one of the two gradients by the effect's side flag (0x6C). */
 void DrawBrightEffectStereo(void *arg0) {
 M2C_UNK func_01ff9e78(void *,M2C_UNK,M2C_UNK);
-M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
+M2C_UNK QueueMemoryCopy(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
 extern M2C_UNK data_020f3d60; extern M2C_UNK data_020f4160; extern M2C_UNK data_020f41a0;
 extern void *gCur3DSpriteEngine; extern u32 gFrameCounter;
 s16 n=M2C_FIELD(arg0,s16 *,0x6e);
 if(n<8){
-func_0207c3dc((char *)&data_020f3d60+(n<<7),M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+0x2480,128,0);
+QueueMemoryCopy((char *)&data_020f3d60+(n<<7),M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+0x2480,128,0);
 M2C_FIELD(arg0,s16 *,0x6e)++;
 }
 if(M2C_FIELD(arg0,s16 *,0x6c)==0){

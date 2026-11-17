@@ -26,14 +26,14 @@ static inline s32 PanelCategory(u32 kind) {
 
 void func_ov003_021fbcf8(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020ab664(void *, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK ListWidgetScrollBy(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
     s16 temp_r4;
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 0x4C);
     temp_r4 = (s16) M2C_FIELD(temp_r0, s32 *, 0x14);
-    func_020ab664(temp_r0, arg1, arg2, 1);
+    ListWidgetScrollBy(temp_r0, arg1, arg2, 1);
     if (temp_r4 == (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 0x14)) {
         return;
     }
@@ -447,7 +447,7 @@ void func_ov003_021fc95c(void *arg0) {
 
 void SetMenuPanelState(void *arg0, u32 arg1) {
 void *CreateTextLayer(void *);
-void func_020899cc(void *, s32, s32, u32);
+void RenderTextLayerMessage(void *, s32, s32, u32);
 u8 byte;
 u32 r1tmp;
 u32 low;
@@ -467,22 +467,22 @@ case 2:
     return;
 case 3:
     r0 = CreateTextLayer(arg0);
-    func_020899cc(r0, 3, 0xDC00, 0x4200001D);
+    RenderTextLayerMessage(r0, 3, 0xDC00, 0x4200001D);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 case 4:
     r0 = CreateTextLayer(arg0);
-    func_020899cc(r0, 2, 0xDC00, 0x4700001E);
+    RenderTextLayerMessage(r0, 2, 0xDC00, 0x4700001E);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 case 5:
     r0 = CreateTextLayer(arg0);
-    func_020899cc(r0, 2, 0xDC00, 0x47000020);
+    RenderTextLayerMessage(r0, 2, 0xDC00, 0x47000020);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 case 6:
     r0 = CreateTextLayer(arg0);
-    func_020899cc(r0, 2, 0xDC00, 0x47000021);
+    RenderTextLayerMessage(r0, 2, 0xDC00, 0x47000021);
     M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
     return;
 default:

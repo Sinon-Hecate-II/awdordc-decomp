@@ -82,7 +82,7 @@ s32 func_0204612c(u8 *arg0) {
 s32 func_02046158(s32 arg0,s32 arg1,s32 arg2,s32 arg3){
 M2C_UNK DC_InvalidateRange(M2C_UNK,...);
 u64 GetSystemTick(void);
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 s32 SendFifoMessage(s32,u32,s32);
 extern M2C_UNK data_0213db28;
 extern u8 data_0213db60[];
@@ -148,7 +148,7 @@ if(!(data_0213db60[0]&1))return 1;
 if(data_0213db60[0]&32)goto set6;
 elapsed=GetSystemTick()-start;
 scale=(u64)(u32)64;
-if(func_02072088(elapsed*scale,0x82ea)<=4000)goto delay;
+if(U64Divide(elapsed*scale,0x82ea)<=4000)goto delay;
 set6:arg0=6;break;
 delay:WaitByLoop(0x4000);
 }
@@ -168,7 +168,7 @@ DC_InvalidateRange(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_
 len=(u16)arg1;
 loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
-void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK func_020067c4(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);func_020067c4(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
+void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK DC_CleanRange(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);DC_CleanRange(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 
 s32 func_020466d0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);

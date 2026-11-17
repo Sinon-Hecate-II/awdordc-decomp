@@ -3,7 +3,7 @@
 #include "ov009_link.h"
 
 s32 func_ov009_02223290(void) {
-    s32 func_02012740(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32, s32);
+    s32 WFC_SendConnectionData(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32, s32);
     M2C_UNK SetConnectedPlayers(s32);
     M2C_UNK func_ov009_02225480();
     extern M2C_UNK data_ov009_02226a80, data_ov009_02226fe0, HandleLinkTaskEvent;
@@ -13,7 +13,7 @@ s32 func_ov009_02223290(void) {
     case 5: return 1;
     default:
         SetLinkPhase(3);
-        if (func_02012740(&HandleLinkTaskEvent, &data_ov009_02226a80, &data_ov009_02226fe0, 1, 0) != 2) {
+        if (WFC_SendConnectionData(&HandleLinkTaskEvent, &data_ov009_02226a80, &data_ov009_02226fe0, 1, 0) != 2) {
             SignalLinkError();
             return 0;
         }
@@ -101,19 +101,23 @@ void HandleLinkTaskEvent(void *event) {
     }
 }
 
+/* StartLinkTransfer: registers the link event handler on WFC channels 4 and 12,
+   then starts the download-play transfer (WFC command 14) of the two link
+   buffers, whose lengths are held in gLinkState at +0x34 and +0x14.  Returns 1
+   once the transfer is queued, or signals a link error and returns 0. */
 s32 StartLinkTransfer(void) {
-void func_ov009_02223ac8(void *); void func_ov009_0222359c(void *);
-s32 func_02011a20(s32,void (*)(void *),s32);
+void HandleLinkChannelEvent(void *); void HandleLinkTransferTaskEvent(void *);
+s32 WFC_SetChannelHandler(s32,void (*)(void *),s32);
 s32 func_02012b08(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
-extern M2C_UNK gLinkState,data_ov009_022270e0,data_ov009_02227000;
-if(func_02011a20(4,func_ov009_02223ac8,0)!=0) {SignalLinkError();return 0;}
-if(func_02011a20(12,func_ov009_02223ac8,0)!=0) {SignalLinkError();return 0;}
+extern M2C_UNK gLinkState,gLinkTransferData,gLinkTransferExtra;
+if(WFC_SetChannelHandler(4,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
+if(WFC_SetChannelHandler(12,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
 M2C_FIELD(&gLinkState,u8 *,0)=0;
-if(func_02012b08(func_ov009_0222359c,&data_ov009_022270e0,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&data_ov009_02227000,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
+if(func_02012b08(HandleLinkTransferTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&gLinkTransferExtra,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
 SignalLinkError();return 0;
 }
 
-void func_ov009_0222359c(void *arg0) {
+void HandleLinkTransferTaskEvent(void *arg0) {
     M2C_UNK func_ov009_02224d9c(s32,s32,s32,s32);
     s8 GetLinkLocalPlayerId();
     extern M2C_UNK gLinkState;
@@ -146,9 +150,9 @@ void func_ov009_0222359c(void *arg0) {
 s32 func_ov009_02223640(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     M2C_UNK DC_FlushRange(M2C_UNK *, s32);
     s32 WFC_SendChannelData(M2C_UNK *,s32,s32,s32,s32,s32,s32);
-    extern M2C_UNK gLinkState, data_ov009_02227000, func_ov009_022236c0;
+    extern M2C_UNK gLinkState, gLinkTransferExtra, func_ov009_022236c0;
     s32 result;
-    DC_FlushRange(&data_ov009_02227000, M2C_FIELD(&gLinkState,s32 *,0x14));
+    DC_FlushRange(&gLinkTransferExtra, M2C_FIELD(&gLinkState,s32 *,0x14));
     result = WFC_SendChannelData(&func_ov009_022236c0,arg4,arg2,arg3,arg1,arg0,2);
     if (result != 2) {
         if (result != 7) SignalLinkError();
@@ -278,7 +282,7 @@ void func_ov009_02223a90(void *arg0) {
     func_ov009_022236f4(temp_r0, M2C_FIELD(arg0, u16 *, 0x18), M2C_FIELD(arg0, u16 *, 0x10));
 }
 
-void func_ov009_02223ac8(void *arg0) {
+void HandleLinkChannelEvent(void *arg0) {
  M2C_UNK func_ov009_02223744(u16,u8,s32,u16);
  u16 temp_r0;
  if(M2C_FIELD(arg0,u16 *,2)!=0) { SignalLinkEvent(); return; }

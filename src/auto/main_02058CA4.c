@@ -44,15 +44,19 @@ void func_02058df4(s8 *arg0, s32 arg1) {
     }
 }
 
-M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
+/* GameSpy gpi info string helper: find the field `key` in the server's
+ * \key\value\ response, copy the value up to the next delimiter into one of the
+ * two scratch banks (alternating so two results stay valid at once) and return
+ * it, or NULL when the response has no such field. */
+M2C_UNK *gpiGetInfoField(void *info, s8 *key) {
     s8 *StringAppend(s8 *, s8 *);
     s8 *StringFind(s8 *, s8 *);
     s32 StringLength(s8 *);
-    extern const u8 data_020eab2f[];
-    extern s8 data_020ff4ac[];
+    extern const u8 gGpiEmptyField[];
+    extern s8 gGpiFieldDelimiter[];
     extern M2C_UNK gGpiInfoState;
-    extern u8 data_0213dd10[];
-    s8 sp0[0x100];
+    extern u8 gGpiProfileScratch[];
+    s8 field[0x100];
     u32 count;
     s8 *dst;
     const u8 *src;
@@ -60,34 +64,34 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     s8 *base;
     s8 *p;
     s32 n;
-    s32 t;
+    s32 bank;
 
-    src = data_020eab2f;
-    dst = sp0;
+    src = gGpiEmptyField;
+    dst = field;
     count = 0x80;
     do { u8 a = src[0]; u8 b = src[1]; src += 2; dst[0] = a; dst[1] = b; dst += 2; count -= 1; } while (count != 0);
-    t = M2C_FIELD(&gGpiInfoState, volatile s32 *, 0x24);
-    t ^= 1;
-    M2C_FIELD(&gGpiInfoState, volatile s32 *, 0x24) = t;
-    StringAppend(sp0, arg1);
-    StringAppend(sp0, data_020ff4ac);
-    p = StringFind((s8 *)arg0, sp0);
+    bank = M2C_FIELD(&gGpiInfoState, volatile s32 *, GPI_INFO_SCRATCH_BANK);
+    bank ^= 1;
+    M2C_FIELD(&gGpiInfoState, volatile s32 *, GPI_INFO_SCRATCH_BANK) = bank;
+    StringAppend(field, key);
+    StringAppend(field, gGpiFieldDelimiter);
+    p = StringFind((s8 *)info, field);
     if (p == 0) return 0;
-    n = StringLength(sp0);
+    n = StringLength(field);
     str = p + n;
-    base = (s8 *)data_0213dd10 + (M2C_FIELD(&gGpiInfoState, volatile s32 *, 0x24) << 8);
+    base = (s8 *)gGpiProfileScratch + (M2C_FIELD(&gGpiInfoState, volatile s32 *, GPI_INFO_SCRATCH_BANK) << 8);
     dst = base;
-    while (*str != 0 && *str != 0x5c) *dst++ = *str++;
+    while (*str != 0 && *str != GPI_FIELD_DELIMITER) *dst++ = *str++;
     *dst = 0;
     return (M2C_UNK *)base;
 }
 
 M2C_UNK *func_02058f10(void *arg0, M2C_UNK *arg1) {
-    M2C_UNK *func_02058e3c();
+    M2C_UNK *gpiGetInfoField();
     extern M2C_UNK data_020ff4a8;
     M2C_UNK *var_r0;
 
-    var_r0 = func_02058e3c();
+    var_r0 = gpiGetInfoField();
     if (var_r0 == NULL) {
         var_r0 = &data_020ff4a8;
     }
@@ -314,7 +318,7 @@ s32 func_02059448(s32 profileIndex, s32 status, s32 secret, s32 text, s32 flags)
 
 #pragma opt_common_subs on
 void func_0205954c(void) {
-    s32 Vector_GetCount(s32); void func_0204861c(s32); void func_02058df4(s8 *, s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
+    s32 Vector_GetCount(s32); void Vector_Free(s32); void func_02058df4(s8 *, s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
     extern M2C_UNK gGpiInfoState, data_020ff498, gGpiInfoSocket;
     extern const u8 data_020ea9ac[];
     ByteBlock16 buf1, buf0; s32 i;
@@ -329,7 +333,7 @@ void func_0205954c(void) {
             func_02059448(i,0,0,(s32)&buf1,0);
         } while(--i>=0);
     }
-    func_0204861c(M2C_FIELD(&gGpiInfoState,s32 *,4));
+    Vector_Free(M2C_FIELD(&gGpiInfoState,s32 *,4));
     M2C_FIELD(&gGpiInfoState,s32 *,4)=0;
 }
 #pragma opt_common_subs off

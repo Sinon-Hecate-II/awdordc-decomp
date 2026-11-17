@@ -80,33 +80,36 @@ void InitTelopWindow(void *telop) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_02095eb4(void) {
-    M2C_UNK func_020af230();
+/* Close the telop (caption) window on the sub 3D sprite engine: delete its
+ * wallpaper sprites, apply the display config and set the five layer-mode bits
+ * of the engine's sprite bank, then give the engine back to the caller. */
+void CloseTelopWindow(void) {
+    M2C_UNK DeleteWallpaperSprites();
     M2C_UNK Apply3DSpriteDisplayConfig();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
-    u16 *volatile v0;
-    u16 *volatile v1;
-    u16 *volatile v2;
-    u16 *volatile v3;
-    u16 *volatile v4;
-    void *saved;
+    u16 *volatile layer0;
+    u16 *volatile layer1;
+    u16 *volatile layer2;
+    u16 *volatile layer3;
+    u16 *volatile layer4;
+    void *savedEngine;
 
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020af230();
+    DeleteWallpaperSprites();
     Apply3DSpriteDisplayConfig();
-    v0 = *(u16 **)gCur3DSpriteEngine;
-    *v0 = *v0 | 0x10;
-    v1 = *(u16 **)gCur3DSpriteEngine;
-    *v1 = *v1 | 0x20;
-    v2 = *(u16 **)gCur3DSpriteEngine;
-    *v2 = *v2 | 0x40;
-    v3 = *(u16 **)gCur3DSpriteEngine;
-    *v3 = *v3 | 0x80;
-    v4 = *(u16 **)gCur3DSpriteEngine;
-    *v4 = *v4 | 0x100;
-    gCur3DSpriteEngine = saved;
+    layer0 = *(u16 **)gCur3DSpriteEngine;
+    *layer0 = *layer0 | DS3D_BANK_MODE0;
+    layer1 = *(u16 **)gCur3DSpriteEngine;
+    *layer1 = *layer1 | DS3D_BANK_MODE1;
+    layer2 = *(u16 **)gCur3DSpriteEngine;
+    *layer2 = *layer2 | DS3D_BANK_MODE2;
+    layer3 = *(u16 **)gCur3DSpriteEngine;
+    *layer3 = *layer3 | DS3D_BANK_MODE3;
+    layer4 = *(u16 **)gCur3DSpriteEngine;
+    *layer4 = *layer4 | DS3D_BANK_MODE4;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_02095f90(void) {
@@ -343,7 +346,7 @@ block_8:
  * unit, then the map view is refreshed. */
 void LoadCurrentMap(void){
 extern s32 *gCurrentMap;
-s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
+s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 LoadFileToBuffer(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID);
 s32 p,i;BattleMapUnitHead *unit; s32 off;
 if(id>=MAP_ID_CAMPAIGN_FIRST&&id<MAP_ID_CAMPAIGN_END){
@@ -355,7 +358,7 @@ func_020c8564(p);
 }else{
 if(!func_020a8b2c(id))return;
 SetFileDirectory((M2C_UNK *)data_02102ee4);
-p=func_02080e30(func_020a8b2c(id),1);
+p=LoadFileToBuffer(func_020a8b2c(id),1);
 func_0209670c(p,0);
 HeapFreeBlock(p);
 }
@@ -375,14 +378,14 @@ RefreshMapView();
 
 void func_0209656c(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    s32 func_02080e30(M2C_UNK, M2C_UNK);
+    s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209670c(s32, M2C_UNK);
     M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK data_02102eec;
     s32 temp_r0;
 
     SetFileDirectory(&data_02102eec);
-    temp_r0 = func_02080e30(arg0, 1);
+    temp_r0 = LoadFileToBuffer(arg0, 1);
     func_0209670c(temp_r0, arg1);
     HeapFreeBlock(temp_r0);
 }

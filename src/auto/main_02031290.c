@@ -4,7 +4,7 @@
 M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
 
 /* Dispatch the next state depending on the current game mode. */
-s32 func_02031290(void) {
+s32 Wfc_StepMatch(void) {
     s32 Wfc_GetLinkState();
     s32 Wfc_GetSessionState();
     s32 func_020313f0(void *);
@@ -83,7 +83,7 @@ s32 func_020313f0(void *arg0) {
     s32 func_020218bc();
     void func_020316c4(void *);
     u64 GetSystemTick(void);
-    u64 func_02072088(u64, u64);
+    u64 U64Divide(u64, u64);
     u32 temp_r0;
 
     if (func_020218bc() != 0) {
@@ -91,7 +91,7 @@ s32 func_020313f0(void *arg0) {
         temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0xD0C) << 0x1A) >> 0x1E;
         return (temp_r0 == 1) ? 0xF : 0xD;
     }
-    if (func_02072088((GetSystemTick() - M2C_FIELD(arg0, u64 *, 0xCB0)) << 6, 0x1FF6210ULL) < 0xAULL) {
+    if (U64Divide((GetSystemTick() - M2C_FIELD(arg0, u64 *, 0xCB0)) << 6, 0x1FF6210ULL) < 0xAULL) {
         return 0xC;
     }
     *((u8 *)arg0 + (M2C_FIELD(arg0, u8 *, 0xD13) * 4) + 0x444) = 1;
@@ -622,9 +622,9 @@ return mask;
 }
 #pragma opt_propagation reset
 void func_02032004(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_0200567c(M2C_UNK, M2C_UNK, M2C_UNK *, ...);
+    M2C_UNK StringFormatN(M2C_UNK, M2C_UNK, M2C_UNK *, ...);
     extern M2C_UNK data_020fb2bc;
-    func_0200567c(arg0, 0xD, &data_020fb2bc, arg1, arg2);
+    StringFormatN(arg0, 0xD, &data_020fb2bc, arg1, arg2);
 }
 
 #pragma opt_strength_reduction off
@@ -676,12 +676,12 @@ void func_020320ac(u64 value, s32 arg2, char *arg3) {
 void FormatNasId(void *arg0, u32 arg1, void *arg2) {
 u64 func_02031d90(void *); s32 func_02031db0(void *);
 void func_020320ac(u64,s32,char *);
-M2C_UNK func_0200567c(M2C_UNK,M2C_UNK,M2C_UNK *,...);
+M2C_UNK StringFormatN(M2C_UNK,M2C_UNK,M2C_UNK *,...);
 extern M2C_UNK data_020fb2e8;
 char sp29[21]; char sp14[21];
 func_020320ac(func_02031d90(arg0),43,sp29);
 func_020320ac((u64)(u32)func_02031db0(arg0),32,sp14);
-func_0200567c((M2C_UNK)arg2,21,&data_020fb2e8,sp29,(arg1>>24)&255,(arg1>>16)&255,(arg1>>8)&255,arg1&255,sp14);
+StringFormatN((M2C_UNK)arg2,21,&data_020fb2e8,sp29,(arg1>>24)&255,(arg1>>16)&255,(arg1>>8)&255,arg1&255,sp14);
 }
 
 void func_020321ac(void *arg0, s32 arg1) {

@@ -197,6 +197,15 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_TERRAIN_PROPERTY_LAST  0x18 /* last property terrain kind */
 #define MAP_TERRAIN_IMPACT     0x1c /* destructible impact feature; its cell becomes a crater */
 
+/* The property tile ids (gPropertyTileIds): nine rows of
+ * MAP_PROPERTY_TILE_OWNERS tile ids, one row per capturable property kind in
+ * tileset sheet order; a row holds the kind's tile for owner 0 (unowned) up to
+ * owner 4, so the row of a kind starts at row * MAP_PROPERTY_TILE_OWNERS. */
+#define MAP_PROPERTY_TILE_OWNERS      5
+#define MAP_PROPERTY_TILE_OWNER_SHIFT 5  /* MAP_TERRAIN_OWNER_MASK >> this: the owner colour */
+#define MAP_PROPERTY_TILE_HQ_ROW      0  /* headquarters tiles (terrain kind 0x0f) */
+#define MAP_PROPERTY_TILE_REBUILT_ROW 2  /* tiles a cell shows once it is no longer a headquarters (terrain kind 0x10) */
+
 /* Remaining HP of destructible terrain (low seven bits, 0 where there is none). */
 #define MAP_CELL_TERRAIN_HP    0x539c /* u8 per cell */
 
@@ -275,6 +284,10 @@ typedef struct MapSettings {
 #define MAP_UNIT_TARGET     0x08 /* u16 packed AI move target: x in low six bits, y in bits 6..11 */
 #define MAP_UNIT_NEED_STATE 0x08 /* u16: resupply/repair need in bits 12..13 (0 none, 1 resupply, 2 repair) */
 #define MAP_UNIT_TARGET_NONE 0x3F /* a target coordinate of 0x3f means "no target" */
+#define MAP_UNIT_ACTION     0x08 /* u16 bits 14..15 of MAP_UNIT_TARGET: the AI's action state */
+#define MAP_UNIT_ACTION_NONE 0 /* the AI has chosen no action for the unit */
+#define MAP_UNIT_ACTION_MOVE 1 /* the AI moves the unit to its target, then acts there */
+#define MAP_UNIT_ACTION_STAY 2 /* the AI acts from where the unit stands */
 #define MAP_UNIT_TARGET_X_MASK 0x003F /* low six bits of MAP_UNIT_TARGET: target x */
 #define MAP_UNIT_TARGET_Y_MASK 0x0FC0 /* bits 6..11 of MAP_UNIT_TARGET: target y */
 #define MAP_UNIT_TARGET_Y_NONE 0x0FC0 /* all six target-y bits set: no target */
@@ -282,6 +295,9 @@ typedef struct MapSettings {
 #define MAP_UNIT_AI_STATE_MASK 0x0F /* low nibble of MAP_UNIT_AI_STATE */
 #define MAP_UNIT_AI_KNOWN   0x40 /* u8 bit 6 of MAP_UNIT_AI_STATE: the AI knows where this unit is even without sight of its cell */
 #define MAP_UNIT_KIND_MASK  0x3F /* low six bits of MAP_UNIT_KIND: the kind, the owner is above */
+#define MAP_UNIT_OWNER_MASK  0xC0 /* top two bits of MAP_UNIT_KIND: the owner group */
+#define MAP_UNIT_OWNER_SHIFT 6    /* player = (owner group >> this) + 1 */
+#define MAP_UNIT_LIMIT       50   /* most units one player may have; the map editor refuses to place past it */
 
 /* One entry of the battle map's target list: the unit on a cell (0 when the
  * cell holds none), a value that is the damage to deal when the cell holds a
@@ -315,6 +331,7 @@ typedef struct MapTargetEntry {
 #define MAP_BATTLE_DEFENDER 0x6ed8
 #define MAP_BATTLE_STRIDE   0x20
 #define MAP_BATTLE_WINNER   0x6ed6 /* s16: side that wins the previewed battle, 0 = no preview */
+#define MAP_BATTLE_DAMAGE   0x6ed4 /* s16: damage the previewed attacker deals to its target */
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
 #define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
@@ -332,6 +349,9 @@ typedef struct MapTargetEntry {
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
 #define MAP_TOUCH_TILE_Y    0x52cc
 #define MAP_TILE_SUBPIXEL   0x300  /* map-position units per tile, from ScreenToMapPosition */
+
+/* Action flags shared by map keyboard and stylus input. */
+enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_PREVIEW_UNIT_TILE_BASE 19 /* gTileGfxRowOffset index of the first unit-marker tile row */
 
 /* The battle map's per-player states: five 0x8c-byte records at map+0x67a4.
@@ -342,7 +362,10 @@ typedef struct MapTargetEntry {
 #define PLAYER_REC_FUNDS   0x00 /* s32 funds: builds cost ten times the unit's price */
 #define PLAYER_FUNDS_OFF (MAP_PLAYER_STATES + PLAYER_REC_FUNDS) /* s32 funds of a player record */
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
+#define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
+#define PLAYER_REC_ENEMY_UNITS 0x22 /* u16 running total of the opposing team's units */
+#define PLAYER_REC_UNIT_COUNT  0x31 /* u8 units the player has alive */
 #define PLAYER_REC_SIDE    0x1F /* u8 SIDE_*, within a record */
 #define PLAYER_REC_CROSS_ALL 0x1F /* u8 bits: terrain the player's units may enter regardless of movement type */
 #define PLAYER_REC_ARMY    0x26 /* u8 army (nation) id, within a record */
@@ -362,6 +385,8 @@ typedef struct MapTargetEntry {
 #define PLAYER_ATTACK_COUNT_OFF (MAP_PLAYER_STATES + PLAYER_REC_ATTACK_COUNT)
 #define PLAYER_BATTLE_COUNT_OFF (MAP_PLAYER_STATES + PLAYER_REC_BATTLE_COUNT)
 #define PLAYER_CONTROL_OFF (MAP_PLAYER_STATES + 0x1E) /* u8 PLAYER_CONTROL_* */
+#define PLAYER_ENEMY_UNITS_OFF (MAP_PLAYER_STATES + PLAYER_REC_ENEMY_UNITS) /* u16 opposing team's unit total */
+#define PLAYER_UNIT_COUNT_OFF (MAP_PLAYER_STATES + PLAYER_REC_UNIT_COUNT) /* u8 units the player has alive */
 #define PLAYER_SIDE_OFF    (MAP_PLAYER_STATES + 0x1F) /* u8 SIDE_* */
 #define PLAYER_ARMY_OFF    (MAP_PLAYER_STATES + 0x26) /* u8 army (nation) id */
 #define PLAYER_ARMY_INDEX_OFF (MAP_PLAYER_STATES + PLAYER_REC_ARMY_INDEX) /* u8 */

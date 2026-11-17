@@ -3,7 +3,7 @@
 #include "ov000_unit_entry.h"
 #include "ov000_ai.h"
 #include "battle_map.h"
-extern u8 data_ov000_021e00ae[];
+extern u8 gAiTargetCandidateType[];
 extern u8 gUnitKindFlags[];
 extern void **gCurrentMap;
 
@@ -22,19 +22,23 @@ if(entry->unk0!=0 && i!=a && IsFootUnitKind()!=0 && b==entry->unkB_4) count++;
 return count;
 }
 
-s32 func_ov000_021a06e4(M2C_UNK arg0) {
+/* Returns the AI state (MAP_UNIT_AI_STATE) a unit of kind `kind` starts with:
+ * 0 for foot units and kinds that cannot attack (and by default), 10 on the
+ * special map 0xae for player 3, 5 while the AI is in phase 12, and 4 for an
+ * indirect unit when fog of war or snow is up. */
+s32 SelectAiUnitState(M2C_UNK kind) {
 s32 IsFootUnitKind(); s32 GetUnitAttackClass(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
 extern u16 gMapConfig; extern void **gCurrentMap; extern void *gAiState;
-void *p;
-if(IsFootUnitKind()!=0 || func_ov000_021a9904(arg0)==2)return 0;
-if(!(((u32)(gMapConfig<<29)>>29)&255)) {
-p=*gCurrentMap;
-switch(M2C_FIELD(p,u16*,0x5142)) {case 0xae: if(M2C_FIELD(p,u16*,0x52a4)==3)return 10; break;default:break;}
+void *map;
+if(IsFootUnitKind()!=0 || func_ov000_021a9904(kind)==UNIT_ATTACK_NONE)return 0;
+if(!(((u32)(gMapConfig<<29)>>29)&255)) { /* gMapConfig low three bits: battle mode, 0 = team mode */
+map=*gCurrentMap;
+switch(M2C_FIELD(map,u16*,MAP_ID)) {case 0xae: if(M2C_FIELD(map,u16*,MAP_CURRENT_PLAYER)==3)return 10; break;default:break;}
 }
-if(M2C_FIELD(gAiState,u8*,2)==12)return 5;
-p=*gCurrentMap;
-if(M2C_FIELD(p,u8*,0x5156)!=0 || M2C_FIELD(p,u8*,0x5158)==2) {
-if(GetUnitAttackClass(arg0)==1)return 4;
+if(M2C_FIELD(gAiState,u8*,AI_STATE_PHASE)==12)return 5;
+map=*gCurrentMap;
+if(M2C_FIELD(map,u8*,MAP_FOG)!=0 || M2C_FIELD(map,u8*,MAP_WEATHER)==WEATHER_SNOW) {
+if(GetUnitAttackClass(kind)==UNIT_ATTACK_INDIRECT)return 4;
 }
 return 0;
 }
@@ -45,7 +49,7 @@ extern u8 gAiCommand[]; extern void *gAiState; extern u8 *gAiCommandState;
 extern u8 data_ov000_021e00af[],data_ov000_021dfd98[],data_ov000_021dfd99[],data_ov000_021dfd9a[];
 extern s8 gAiTargetCandidateGroup[];
 s32 offset; s32 index;
-gAiCommand[7]=func_ov000_021a06e4(gAiCommand[6]);
+gAiCommand[7]=SelectAiUnitState(gAiCommand[6]);
 offset=arg0*12;
 data_ov000_021e00af[offset]=252;
 M2C_FIELD(gAiState,u8*,7)++;
@@ -90,7 +94,7 @@ M2C_FIELD(gAiState,u8 *,AI_STATE_RESERVE_RETRY)=2;
 M2C_FIELD(gAiState,u8 *,AI_STATE_ACTION)=0;
 }
 
-s32 func_ov000_021a0aec(s32 a,s32 unused,s32 c) {
+s32 GetAiUnitKindValue(s32 a,s32 unused,s32 c) {
 s32 func_020a7bbc(s32);
 s32 func_020a886c(s32,s32);
 s32 Divide(s32,s32);
@@ -98,23 +102,27 @@ s32 n=func_020a7bbc(c);
 return Divide(n*(func_020a886c(a,0)+100),100);
 }
 
-s32 GetAiUnitValue(M2C_UNK arg0, M2C_UNK arg1, void *arg2) {
+/* Value the AI assigns to a map unit: the unit's stat-block value plus the
+ * capture value when it stands on a capture target, capped by its health (every
+ * ten health above zero lowers the cap by one), times the unit kind's
+ * player-adjusted value.  Units at 91 health or more are worth nothing. */
+s32 GetAiUnitValue(M2C_UNK player, M2C_UNK unused, void *unit) {
 s32 Divide(s32,M2C_UNK);
 s32 func_020a2668(void *,u8,u8);
 s32 func_020a7558(void *);
-s32 func_ov000_021a0aec(M2C_UNK,M2C_UNK,s32);
+s32 GetAiUnitKindValue(M2C_UNK,M2C_UNK,s32);
 s32 IsCaptureTargetAt(void *,u8,u8);
-s32 max,v,total;u32 n;
-if(((u32)(M2C_FIELD(arg2,u16 *,6)<<25)>>25)>=91)return 0;
-total=0;
-if(!(M2C_FIELD(arg2,u16 *,4)&8))total+=func_020a2668(arg2,M2C_FIELD(arg2,u8 *,1),M2C_FIELD(arg2,u8 *,2));
-if(IsCaptureTargetAt(arg2,M2C_FIELD(arg2,u8 *,1),M2C_FIELD(arg2,u8 *,2)))total+=func_020a7558(arg2);
-if(total==0)return 0;
-n=(u32)(M2C_FIELD(arg2,u16 *,6)<<25)>>25;
-if(n==0)v=0;else v=Divide(n-1,10)+1;
-max=10-v;
-if(total>max)total=max;
-return total*func_ov000_021a0aec(arg0,arg1,(u32)(M2C_FIELD(arg2,u8 *,0)<<26)>>26);
+s32 valueCap,hpPenalty,value;u32 health;
+if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>25)>=91)return 0;
+value=0;
+if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8))value+=func_020a2668(unit,M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
+if(IsCaptureTargetAt(unit,M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y)))value+=func_020a7558(unit);
+if(value==0)return 0;
+health=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>25;
+if(health==0)hpPenalty=0;else hpPenalty=Divide(health-1,10)+1;
+valueCap=10-hpPenalty;
+if(value>valueCap)value=valueCap;
+return value*GetAiUnitKindValue(player,unused,(u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26);
 }
 
 #pragma push
@@ -212,19 +220,23 @@ s32 BuildAiTargetGroups(void) {
     return groupCount;
 }
 #pragma pop
-s32 func_ov000_021a10e4(s32 arg0,void *arg1) {
-u32 type=data_ov000_021e00ae[arg0*12];
+/* Whether an enemy unit counts toward AI target candidate `candidateIndex`:
+ * a type-1 candidate wants a visible unit (an empty air unit never counts),
+ * a type-3 candidate wants only a kind that cannot attack; other types
+ * count nothing. */
+s32 AiCandidateIncludesUnit(s32 candidateIndex,void *unit) {
+u32 type=gAiTargetCandidateType[candidateIndex*12];
 if(type==1){
-u32 flags=gUnitKindFlags[((u32)(M2C_FIELD(arg1,u8 *,0)<<26)>>26)*112];
+u32 flags=gUnitKindFlags[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*112];
 if(flags&7){
 void *base=*gCurrentMap;
-s8 *row=((s8 **)((u8 *)base+0x52e8))[M2C_FIELD(arg1,u8 *,2)];
-if(row[M2C_FIELD(arg1,u8 *,1)]<0)return 0;
+s8 *row=((s8 **)((u8 *)base+0x52e8))[M2C_FIELD(unit,u8 *,MAP_UNIT_Y)];
+if(row[M2C_FIELD(unit,u8 *,MAP_UNIT_X)]<0)return 0;
 }
-if((flags&32) && M2C_FIELD(arg1,u8 *,12)==0)return 0;
+if((flags&32) && M2C_FIELD(unit,u8 *,12)==0)return 0;
 }
 if(type==3){
-if(gUnitKindFlags[((u32)(M2C_FIELD(arg1,u8 *,0)<<26)>>26)*112]&7)return 0;
+if(gUnitKindFlags[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*112]&7)return 0;
 }
 return 1;
 }

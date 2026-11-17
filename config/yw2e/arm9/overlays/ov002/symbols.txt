@@ -99,7 +99,7 @@ func_ov002_021e7120 kind:function(arm,size=0xc) addr:0x021e7120
 func_ov002_021e712c kind:function(arm,size=0x348) addr:0x021e712c
 func_ov002_021e7474 kind:function(arm,size=0x28) addr:0x021e7474
 func_ov002_021e749c kind:function(arm,size=0x340) addr:0x021e749c
-func_ov002_021e77dc kind:function(arm,size=0xc8) addr:0x021e77dc
+AreUnitViewsReady kind:function(arm,size=0xc8) addr:0x021e77dc
 func_ov002_021e78a4 kind:function(arm,size=0x40) addr:0x021e78a4
 func_ov002_021e78e4 kind:function(arm,size=0x78) addr:0x021e78e4
 func_ov002_021e795c kind:function(arm,size=0x14) addr:0x021e795c
@@ -1279,7 +1279,7 @@ data_ov002_021f3105 kind:bss addr:0x021f3105
 data_ov002_021f3106 kind:bss addr:0x021f3106
 data_ov002_021f3107 kind:bss addr:0x021f3107
 data_ov002_021f3108 kind:bss addr:0x021f3108
-data_ov002_021f3124 kind:bss addr:0x021f3124
+gUnitViews kind:bss addr:0x021f3124
 data_ov002_021f312c kind:bss addr:0x021f312c
 gEffectHasVariants kind:bss addr:0x021f314e
 data_ov002_021f3150 kind:bss addr:0x021f3150

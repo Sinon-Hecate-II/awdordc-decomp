@@ -336,12 +336,12 @@ test:if(i<16)goto loop;
 done:return result;
 }
 s32 func_ov009_02222ac4(void) {
-    s32 func_020122ec(M2C_UNK *, M2C_UNK *);
+    s32 WFC_StartDownloadPlay(M2C_UNK *, M2C_UNK *);
     void SignalLinkError();
     extern M2C_UNK data_ov009_022269e0;
     extern M2C_UNK func_ov009_02222b04;
     SetLinkPhase(3);
-    if (func_020122ec(&func_ov009_02222b04, &data_ov009_022269e0) == 2) return 1;
+    if (WFC_StartDownloadPlay(&func_ov009_02222b04, &data_ov009_022269e0) == 2) return 1;
     SignalLinkError();
     SetLinkPhase(8);
     return 0;
@@ -389,17 +389,17 @@ void func_ov009_02222b8c(void *arg0) {
  * up (phases 4/5), otherwise registers the event handler on tasks 4 and 12,
  * enters phase 4 and starts the connect task; a failure signals a link error. */
 s32 StartLinkSession(void) {
-void func_ov009_02223ac8(void *); void HandleLinkConnectTaskEvent(void *);
+void HandleLinkChannelEvent(void *); void HandleLinkConnectTaskEvent(void *);
 s32 GetLinkPhase(void); M2C_UNK SetLinkPhase(s32);
-s32 func_02011a20(s32,void (*)(void *),s32);
+s32 WFC_SetChannelHandler(s32,void (*)(void *),s32);
 s32 func_02012b08(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
-extern M2C_UNK gLinkState,data_ov009_022270e0,data_ov009_02227000;
+extern M2C_UNK gLinkState,gLinkTransferData,gLinkTransferExtra;
 s32 phase=GetLinkPhase();switch(phase){case 4:case 5:return 1;default:break;}
-if(func_02011a20(4,func_ov009_02223ac8,0)!=0) {SignalLinkError();return 0;}
-if(func_02011a20(12,func_ov009_02223ac8,0)!=0) {SignalLinkError();return 0;}
+if(WFC_SetChannelHandler(4,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
+if(WFC_SetChannelHandler(12,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
 M2C_FIELD(&gLinkState,u8 *,0)=0;
 SetLinkPhase(4);
-if(func_02012b08(HandleLinkConnectTaskEvent,&data_ov009_022270e0,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&data_ov009_02227000,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
+if(func_02012b08(HandleLinkConnectTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&gLinkTransferExtra,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
 SignalLinkError();return 0;
 }
 

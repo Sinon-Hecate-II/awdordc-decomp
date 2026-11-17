@@ -340,7 +340,7 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
 /* Send a type-2 (set) operation for profile profileId. When useLocal is set
  * and the profile is cached, update the cached record first; callback and
  * callbackArg are delivered on completion, and doFinish waits for the result. */
-s32 func_02053c9c(void **connection,s32 profileId,s32 useLocal,s32 doFinish,s32 callback,s32 callbackArg) {
+s32 gpiGetInfoInternal(void **connection,s32 profileId,s32 useLocal,s32 doFinish,s32 callback,s32 callbackArg) {
 s32 gpiFindBuddyStatus(void **,s32,void **);void *gpiMalloc(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void gpiCopyInfo(void *,void *);
 s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 gpiThink(void **,s32);
 extern M2C_UNK data_020fe824;
@@ -368,7 +368,7 @@ return 0;
 
 /* Allocates and initializes an object structure. */
 s32 func_02053e40(void **arg0, void *arg1, Unk02053e40 *arg2) {
-    void func_02053f18(void *);
+    void gpiFreeInfo(void *);
     void *gpiMalloc(s32);
     u32 gpiStringDup(u32);
     Unk02053e40 *p;
@@ -376,7 +376,7 @@ s32 func_02053e40(void **arg0, void *arg1, Unk02053e40 *arg2) {
     if (!M2C_FIELD(*arg0, s32 *, 0x100)) {
         return 1;
     }
-    func_02053f18(arg1);
+    gpiFreeInfo(arg1);
     p = M2C_FIELD(arg1, Unk02053e40 **, 12) = gpiMalloc(0xf0);
     if (p) {
         *p = *arg2;
@@ -391,30 +391,32 @@ s32 func_02053e40(void **arg0, void *arg1, Unk02053e40 *arg2) {
     return M2C_FIELD(arg1, void **, 12) != 0;
 }
 
-void func_02053f18(void *arg0) {
+/* Free the owned copy of a gpi profile-info response cached at record+0xC: its
+ * seven owned strings and then the response itself. */
+void gpiFreeInfo(void *record) {
     M2C_UNK gpiFree(void *);
-    void *temp_r0;
+    GpiInfoResponse *info;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0xC);
-    if (temp_r0 == NULL) {
+    info = M2C_FIELD(record, void **, 0xC);
+    if (info == NULL) {
         return;
     }
-    gpiFree(M2C_FIELD(temp_r0, void **, 0));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0) = NULL;
-    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 4));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 4) = NULL;
-    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 8));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 8) = NULL;
-    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC) = NULL;
-    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x10));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x10) = NULL;
-    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x14));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x14) = NULL;
-    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC8));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC8) = NULL;
-    gpiFree(M2C_FIELD(arg0, void **, 0xC));
-    M2C_FIELD(arg0, void **, 0xC) = NULL;
+    gpiFree(info->nick);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->nick = NULL;
+    gpiFree(((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->uniqueNick);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->uniqueNick = NULL;
+    gpiFree(((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->email);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->email = NULL;
+    gpiFree(((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->firstName);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->firstName = NULL;
+    gpiFree(((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->lastName);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->lastName = NULL;
+    gpiFree(((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->homepage);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->homepage = NULL;
+    gpiFree(((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->aim);
+    ((GpiInfoResponse *)M2C_FIELD(record, void **, 0xC))->aim = NULL;
+    gpiFree(M2C_FIELD(record, void **, 0xC));
+    M2C_FIELD(record, void **, 0xC) = NULL;
 }
 
 s32 gpiFinishOperation(void **arg0, void *arg1) {

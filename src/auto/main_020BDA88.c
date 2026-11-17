@@ -1,5 +1,6 @@
 /* 31 functions from 0x020BDA88 to 0x020BE718 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern M2C_UNK gGameSettings,data_0215d990,data_0215d9b8;
 typedef struct { s16 a,b,c,d; } EntryBE;
 
@@ -50,14 +51,32 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = 255;
 }
 
-s32 func_020bdbf4(s32 arg0) {
-s32 IsTouchInputDisabled(void); void ScreenToMapPosition(u16,u16,s32 *); s32 Divide(s32,s32); void HideTouchCursor(void); s32 FindMapCursorOptionAt(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
-s32 coords[3];u16 x,y;s32 scaledX,scaledY,result;
-x=M2C_FIELD(gTouchState,u16 *,0);y=M2C_FIELD(gTouchState,u16 *,2);
-if(IsTouchInputDisabled()!=0)return 0;
-ScreenToMapPosition(x,y,coords);scaledX=Divide(coords[0],0x300);scaledY=Divide(coords[1],0x300);
-if(M2C_FIELD(gTouchState,u8 *,0x16)==0)return 0;
-if(scaledX==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&scaledY==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){HideTouchCursor();if(FindMapCursorOptionAt(scaledX,scaledY,arg0)>=0)result=0x10;else result=0x20;}else result=0;return result;
+/* Return confirm or cancel when the stylus is released on its starting cursor-option tile. */
+s32 GetMapCursorOptionTouchAction(s32 optionMask) {
+    s32 IsTouchInputDisabled(void);
+    void ScreenToMapPosition(u16, u16, s32 *);
+    s32 Divide(s32, s32);
+    void HideTouchCursor(void);
+    s32 FindMapCursorOptionAt(s32, s32, s32);
+    extern void *gTouchState;
+    extern void **gCurrentMap;
+    s32 mapPosition[3];
+    u16 touchX, touchY;
+    s32 tileX, tileY, action;
+    touchX = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_X);
+    touchY = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_Y);
+    if (IsTouchInputDisabled() != 0) return 0;
+    ScreenToMapPosition(touchX, touchY, mapPosition);
+    tileX = Divide(mapPosition[0], MAP_TILE_SUBPIXEL);
+    tileY = Divide(mapPosition[1], MAP_TILE_SUBPIXEL);
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_RELEASED) == 0) return 0;
+    if (tileX == M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_X) &&
+        tileY == M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_Y)) {
+        HideTouchCursor();
+        if (FindMapCursorOptionAt(tileX, tileY, optionMask) >= 0) action = MAP_ACTION_CONFIRM;
+        else action = MAP_ACTION_CANCEL;
+    } else action = 0;
+    return action;
 }
 
 s32 func_020bdcd0(void) {

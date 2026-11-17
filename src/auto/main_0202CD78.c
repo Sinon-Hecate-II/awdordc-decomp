@@ -1,5 +1,6 @@
 /* 32 functions from 0x0202CD78 to 0x0202DBAC (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 
 s32 func_0202cd78(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 func_0202c444();
@@ -73,7 +74,7 @@ s32 func_0202ce50(M2C_UNK arg0, s32 arg1, s32 arg2) {
 M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     void *func_0202c5f0(s32 *, s32, s32, s32, s32);
     s32 func_0202c3ac(s32, void *, s32, s32);
-    M2C_UNK func_020067c4(M2C_UNK, M2C_UNK);
+    M2C_UNK DC_CleanRange(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_0202c02c();
@@ -119,7 +120,7 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     temp_r0 = r5 + 0x3C; /* cast ignored? */
     MI_CpuCopy8((M2C_UNK)((u8 *)r5 + 0x3C), (M2C_UNK)((u8 *)r5 + 0x3C + (M2C_FIELD(r5, s32 *, 0x38) * 4)), r6);
     MI_CpuFill8((M2C_UNK)((u8 *)r5 + 0x3C), 0, r6);
-    func_020067c4(r5, r4 + 0x3C);
+    DC_CleanRange(r5, r4 + 0x3C);
     if (r7 != 0) {
         func_0202c46c(r9, r5);
     }
@@ -171,60 +172,64 @@ func_0202cfc4(arg0,arg2,arg3);
 func_02009aa4(arg0);
 }
 
-void func_0202d0c4(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_02009cc4(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02009cf8(M2C_UNK, M2C_UNK);
-    if (arg0 == func_02009cf8(arg2, arg3)) {
-        func_02009cc4(arg2, arg3, 0);
+void FreeWaveArchiveEntry(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
+    M2C_UNK SetPackedTableEntry(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 GetPackedTableEntry(M2C_UNK, M2C_UNK);
+    if (arg0 == GetPackedTableEntry(arg2, arg3)) {
+        SetPackedTableEntry(arg2, arg3, 0);
     }
     func_02008ed0(arg0, arg0 + arg1);
 }
 
-s32 func_0202d10c(s32 arg0, u16 arg1, s32 arg2, s32 arg3) {
-    s32 func_02009cf8(M2C_UNK, M2C_UNK);
-    s32 func_02009cbc(M2C_UNK);
+/* LoadWaveArchiveEntry: give entry `entryIndex` of the wave archive its own
+ * buffer, reading that entry's slice of archive file `fileId` into a block from
+ * `pool` and recording the pointer in the table.  Returns 1 when the entry is
+ * already loaded or was loaded now, 0 when it could not be. */
+s32 LoadWaveArchiveEntry(s32 archive, u16 entryIndex, s32 fileId, s32 pool) {
+    s32 GetPackedTableEntry(M2C_UNK, M2C_UNK);
+    s32 GetPackedTableCount(M2C_UNK);
     void *func_0202c5f0(s32 *, s32, s32, s32, s32);
     s32 func_0202c3ac(s32, void *, s32, s32);
-    M2C_UNK func_020067c4(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02009cc4(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_0202d0c4(s32, s32, M2C_UNK, M2C_UNK);
-    s32 t;
-    s32 n;
-    s32 off;
-    s32 field;
+    M2C_UNK DC_CleanRange(M2C_UNK, M2C_UNK);
+    M2C_UNK SetPackedTableEntry(M2C_UNK, M2C_UNK, M2C_UNK);
+    void FreeWaveArchiveEntry(s32, s32, M2C_UNK, M2C_UNK);
+    s32 entryCount;
+    s32 size;
+    s32 start;
+    s32 count;
 
-    if (func_02009cf8((M2C_UNK)arg0, arg1) != 0) {
+    if (GetPackedTableEntry((M2C_UNK)archive, entryIndex) != 0) {
         return 1;
     }
-    t = func_02009cbc((M2C_UNK)arg0);
-    field = M2C_FIELD(arg0, s32 *, 0x38);
+    entryCount = GetPackedTableCount((M2C_UNK)archive);
+    count = M2C_FIELD(archive, s32 *, WAVE_ARCHIVE_COUNT);
     {
-        void *ptr;
-        s32 base;
-        s32 valm1 = t - 1;
-        ptr = (void *)(arg0 + (field + arg1) * 4);
-        off = M2C_FIELD(ptr, s32 *, 0x3C);
-        if ((u32)arg1 < (u32)valm1) {
-            base = M2C_FIELD(ptr, s32 *, 0x40);
+        void *sizeTable;
+        s32 end;
+        s32 lastIndex = entryCount - 1;
+        sizeTable = (void *)(archive + (count + entryIndex) * 4);
+        start = M2C_FIELD(sizeTable, s32 *, WAVE_ARCHIVE_ENTRIES);
+        if ((u32)entryIndex < (u32)lastIndex) {
+            end = M2C_FIELD(sizeTable, s32 *, WAVE_ARCHIVE_ENTRIES + 4);
         } else {
-            base = M2C_FIELD(arg0, s32 *, 0x8);
+            end = M2C_FIELD(archive, s32 *, WAVE_ARCHIVE_FILE_SIZE);
         }
-        n = base - off;
+        size = end - start;
     }
-    if (arg3 == 0) {
+    if (pool == 0) {
         return 0;
     }
     {
-        void *p;
-        p = func_0202c5f0((s32 *)arg3, n + 32, (s32)func_0202d0c4, arg0, arg1);
-        if (p == 0) {
+        void *buffer;
+        buffer = func_0202c5f0((s32 *)pool, size + 32, (s32)FreeWaveArchiveEntry, archive, entryIndex);
+        if (buffer == 0) {
             return 0;
         }
-        if (n != func_0202c3ac(arg2, p, n, off)) {
+        if (size != func_0202c3ac(fileId, buffer, size, start)) {
             return 0;
         }
-        func_020067c4((M2C_UNK)p, n);
-        func_02009cc4((M2C_UNK)arg0, arg1, (M2C_UNK)p);
+        DC_CleanRange((M2C_UNK)buffer, size);
+        SetPackedTableEntry((M2C_UNK)archive, entryIndex, (M2C_UNK)buffer);
     }
     return 1;
 }
@@ -232,7 +237,7 @@ s32 func_0202d10c(s32 arg0, u16 arg1, s32 arg2, s32 arg3) {
 s32 func_0202d1d4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
 void func_02009aec(void *);
 s32 func_02009b0c(s32,void *,void *);
-s32 func_0202d10c(s32,u16,s32,s32);
+s32 LoadWaveArchiveEntry(s32,u16,s32,s32);
 u8 entry[12];
 u32 iter[2];
 u32 initial[2];
@@ -243,7 +248,7 @@ cursor=iter;
 if(!arg1)return 0;
 if(func_02009b0c(arg1,entry,cursor)) do {
 if(entry[0]==1 && arg2==*(u16 *)(entry+4)) {
-if(!func_0202d10c(arg0,*(u16 *)(entry+2),arg3,arg4))return 0;
+if(!LoadWaveArchiveEntry(arg0,*(u16 *)(entry+2),arg3,arg4))return 0;
 }
 } while(func_02009b0c(arg1,entry,iter));
 return 1;

@@ -3,7 +3,7 @@
 #include "gt2.h"
 typedef struct { s32 v[4]; } Unk0205Copy;
 
-u8 *func_02059bbc(void *out_, void *in_)
+u8 *gti2ComputeResponse(void *out_, void *in_)
 {
   u64 func_020720f0(s32, s32);
   s32 StringLength(s32);
@@ -73,7 +73,7 @@ s32 func_02059cf8(void *arg0, s32 arg1) {
     return 1;
 }
 
-s32 func_02059d24(void *arg0) {
+s32 gti2GetBufferFreeSpace(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 4) - M2C_FIELD(arg0, s32 *, 8);
 }
 
@@ -92,7 +92,7 @@ M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a>>8;
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
-void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
+void gti2AddToBuffer(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(s32, s32, s32);
     s32 StringLength(s32);
@@ -114,7 +114,7 @@ void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void func_02059e78(void *p,s32 a,s32 b) {
+void gti2RemoveFromBuffer(void *p,s32 a,s32 b) {
 extern M2C_UNK data_020ff644,data_020ff5f0,data_020ff580,data_020ff65c;
 void MemMove(s32,s32,s32);s32 start;
 if(a==-1)a=M2C_FIELD(p,s32 *,8)-b;
@@ -359,12 +359,12 @@ s32 func_0205a830(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2Creat
 s32 func_0205a860(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
 
 s32 func_0205a890(void *p,s32 a,s32 b,Unk0205Copy *q,...) {
-s32 func_0205d70c(s32 *,s32 *);void gti2GetChallenge(void *);u8 *func_02059bbc(void *,void *);void func_0205c694(void *,void *);
+s32 func_0205d70c(s32 *,s32 *);void gti2GetChallenge(void *);u8 *gti2ComputeResponse(void *,void *);void func_0205c694(void *,void *);
 s32 local[8];s32 r;
 func_0205d70c(&a,&b);
 if(b>0){r=gpiMalloc(b);M2C_FIELD(p,s32 *,0x38)=r;if(!r)return 1;MemCopy(r,a,b);M2C_FIELD(p,s32 *,0x3c)=b;}
 if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q;
-gti2GetChallenge(local);func_02059bbc((u8 *)p+0x68,local);func_0205c694(p,local);M2C_FIELD(p,s32 *,12)=0;return 0;
+gti2GetChallenge(local);gti2ComputeResponse((u8 *)p+0x68,local);func_0205c694(p,local);M2C_FIELD(p,s32 *,12)=0;return 0;
 }
 
 s32 func_0205a938(void *p,Unk0205Copy *q) {
@@ -380,7 +380,7 @@ M2C_FIELD(p,s32 *,20)=0;if(M2C_FIELD(p,s32 *,12)!=4)return;
 func_0205d70c(&a,&b);func_0205c854(p,a,b);M2C_FIELD(p,s32 *,12)=6;
 }
 
-s32 func_0205a9ec(void *arg0, M2C_UNK arg1, s32 arg2) {
+s32 gti2SendRaw(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 GetTickCountMs();
     s32 func_0205d228(s32, s32, u16, M2C_UNK, s32);
     if (func_0205d228(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4), arg1, arg2) == 0) {
@@ -401,9 +401,9 @@ return 1;
 }
 
 s32 func_0205aad8(void *p,u32 t) {
-s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 func_0205cbb4(void *,void *);
+s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 gti2ResendPendingCommand(void *,void *);
 s32 i,n;n=Vector_GetCount(M2C_FIELD(p,s32 *,96));
-for(i=0;i<n;i++){void *q=Vector_GetItem(M2C_FIELD(p,s32 *,96),i);if(t-M2C_FIELD(q,u32 *,12)>1000){if(!func_0205cbb4(p,q))return 0;}}return 1;
+for(i=0;i<n;i++){void *q=Vector_GetItem(M2C_FIELD(p,s32 *,96),i);if(t-M2C_FIELD(q,u32 *,12)>1000){if(!gti2ResendPendingCommand(p,q))return 0;}}return 1;
 }
 
 s32 func_0205ab44(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}

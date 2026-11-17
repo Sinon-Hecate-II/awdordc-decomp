@@ -14,7 +14,7 @@ static inline u16 MapId92(void *obj) {
 static inline u8 IsUnavailable92(s32 id) {
     u8 result = 0;
     s32 range = id >= 225 && id < 425;
-    if (range) { if(func_020c7eb8(id)==0) result=1; }
+    if (range) { if(IsCampaignMapRecordValid(id)==0) result=1; }
     return result;
 }
 

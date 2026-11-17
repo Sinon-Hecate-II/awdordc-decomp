@@ -108,7 +108,7 @@ void func_0205fdbc(s32 arg0, s32 arg1) {
     gQr2KeyNames[arg0] = arg1;
 }
 
-u8 func_0205fddc(u8 *arg0,u32 arg1,u8 *arg2,u32 arg3,u8 *arg4,u32 *arg5){
+u8 GsCryptInitStep(u8 *arg0,u32 arg1,u8 *arg2,u32 arg3,u8 *arg4,u32 *arg5){
  u32 count;u32 mask;u32 result;
  if(arg1==0)return 0;
  count=0;mask=1;
@@ -124,41 +124,54 @@ u8 func_0205fddc(u8 *arg0,u32 arg1,u8 *arg2,u32 arg3,u8 *arg4,u32 *arg5){
  return result;
 }
 
-void func_0205fe90(u8 *arg0){
+void GsCryptInitDefault(u8 *arg0){
  s32 i,j;
  arg0[0x100]=1;arg0[0x101]=3;arg0[0x102]=5;arg0[0x103]=7;arg0[0x104]=11;
  for(i=0,j=255;i<256;i++,j--)arg0[i]=j;
 }
 
-void func_0205fed8(u8 *arg0,u8 *arg1,u32 arg2) {
-s32 i; u32 pos; u8 value; u8 j; u8 temp;
-if(arg2<1) {func_0205fe90(arg0); return;}
-for(i=0;i<256;i++) arg0[i]=i;
-pos=0;value=0;
-for(i=255;i>=0;i--) {
-j=func_0205fddc(arg0,i,arg1,arg2,&value,&pos);
-temp=arg0[i];arg0[i]=arg0[j];arg0[j]=temp;
-}
-arg0[256]=arg0[1];arg0[257]=arg0[3];arg0[258]=arg0[5];arg0[259]=arg0[7];arg0[260]=arg0[value];
-value=0;pos=0;
-}
-
-u8 func_0205ffa0(void *arg0,u8 arg1) {
-u8 *p=arg0; u8 temp; u8 old;
-old=p[256]++;
-p[257]+=p[old];
-temp=p[p[260]];
-p[p[260]]=p[p[257]];
-p[p[257]]=p[p[259]];
-p[p[259]]=p[p[256]];
-p[p[256]]=temp;
-p[258]+=p[temp];
-p[259]=arg1 ^ p[(u8)(p[p[258]]+p[p[256]])] ^ p[p[(u8)(p[p[259]]+p[p[260]]+p[p[257]])]];
-p[260]=arg1;
-return p[259];
+/* Initialise the GameSpy stream cipher's state from a key: fill the 256-byte
+ * permutation with 0..255, shuffle it with the key's bytes and seed the five
+ * step bytes after it; a key of no bytes uses the fixed default state. */
+void GsCryptInit(u8 *sbox, u8 *key, u32 keyLen) {
+    s32 i;
+    u32 pos;
+    u8 value;
+    u8 j;
+    u8 temp;
+    if (keyLen < 1) { GsCryptInitDefault(sbox); return; }
+    for (i = 0; i < 256; i++) sbox[i] = i;
+    pos = 0; value = 0;
+    for (i = 255; i >= 0; i--) {
+        j = GsCryptInitStep(sbox, i, key, keyLen, &value, &pos);
+        temp = sbox[i]; sbox[i] = sbox[j]; sbox[j] = temp;
+    }
+    sbox[256] = sbox[1]; sbox[257] = sbox[3]; sbox[258] = sbox[5]; sbox[259] = sbox[7]; sbox[260] = sbox[value];
+    value = 0; pos = 0;
 }
 
-void func_0206006c(void *a,u8 *b,s32 n){u8 func_0205ffa0(void *,u8);s32 i;for(i=0;i<n;i++)b[i]=func_0205ffa0(a,b[i]);}
+/* Advance the GameSpy stream cipher by one byte: shuffle four permutation entries
+ * using the step counters, then XOR the data byte with two permutation lookups
+ * and return the cipher byte, remembering both bytes for the next step. */
+u8 GsCryptByte(void *cipher, u8 data) {
+    GsCryptState *state = (GsCryptState *)cipher;
+    u8 swap;
+    u8 pos;
+
+    pos = state->a++;
+    state->b += state->sbox[pos];
+    swap = state->sbox[state->e];
+    state->sbox[state->e] = state->sbox[state->b];
+    state->sbox[state->b] = state->sbox[state->d];
+    state->sbox[state->d] = state->sbox[state->a];
+    state->sbox[state->a] = swap;
+    state->c += state->sbox[swap];
+    state->d = data ^ state->sbox[(u8)(state->sbox[state->c] + state->sbox[state->a])] ^ state->sbox[state->sbox[(u8)(state->sbox[state->d] + state->sbox[state->e] + state->sbox[state->b])]];
+    state->e = data;
+    return state->d;
+}
+
+void func_0206006c(void *a,u8 *b,s32 n){u8 GsCryptByte(void *,u8);s32 i;for(i=0;i<n;i++)b[i]=GsCryptByte(a,b[i]);}
 
 void func_020600a8(void *arg0, void *arg1) {
     void *temp_r2;

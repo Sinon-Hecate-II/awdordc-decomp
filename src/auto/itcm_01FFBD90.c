@@ -1,5 +1,6 @@
 /* 10 functions from 0x01FFBD90 to 0x01FFC778 (itcm), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 /* Fill a diamond (Manhattan circle) of the given radius centered at (x,y)
    in the map occupancy grid with value. */
@@ -97,12 +98,14 @@ func_01ffb5ec((u16)arg0,(u16)arg1,(u16)GetUnitAttackRangeMax(arg2),0);
 func_01ffb5ec((u16)arg0,(u16)arg1,(u16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
 }
 
-void func_01ffc3e8(s32 x,s32 y) {
-extern void **gCurrentMap;
-if(x>0)M2C_FIELD(*gCurrentMap+y*4,u8 **,0x52e8)[x-1]=0;
-if(x<M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1)M2C_FIELD(*gCurrentMap+y*4,u8 **,0x52e8)[x+1]=0;
-if(y>0)M2C_FIELD(*gCurrentMap+(y-1)*4,u8 **,0x52e8)[x]=0;
-if(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **,0x52e8)[x]=0;
+/* Clears the movement-direction marker of each of the four tiles beside (x, y)
+ * in the map's per-row direction grid, skipping the ones that fall off the map. */
+void ClearAdjacentMoveDirs(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    if (x > 0) M2C_FIELD(*gCurrentMap + y * 4, u8 **, MAP_GRID)[x - 1] = 0;
+    if (x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) - 1) M2C_FIELD(*gCurrentMap + y * 4, u8 **, MAP_GRID)[x + 1] = 0;
+    if (y > 0) M2C_FIELD(*gCurrentMap + (y - 1) * 4, u8 **, MAP_GRID)[x] = 0;
+    if (y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT) - 1) M2C_FIELD(*gCurrentMap + (y + 1) * 4, u8 **, MAP_GRID)[x] = 0;
 }
 
 #pragma opt_common_subs off

@@ -217,32 +217,35 @@ void ResetBuffer(void *arg0) {
     *M2C_FIELD(arg0, s8 **, 4) = 0;
 }
 
-s32 SendBufferedData(void *arg0) {
+/* Send the rest of a connection's request buffer: poll the socket until it is
+ * writable, write the bytes from the buffer's read position to its end and
+ * advance that position; a poll or send failure is saved as a socket error. */
+s32 SendBufferedData(void *connection) {
     s32 PollOneFd(s32, M2C_UNK, s32 *, s32 *);
-    s32 sp4;
-    s32 sp0;
-    s32 temp_r0;
-    s32 temp_r1;
-    s32 temp_r3;
+    s32 writable;
+    s32 error;
+    s32 sent;
+    s32 pos;
+    s32 newPos;
 
 loop_1:
-    if ((PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), 0, &sp4, &sp0) == -1) || (sp0 != 0)) {
-        M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-        M2C_FIELD(arg0, s32 *, 0x38) = 5;
-        M2C_FIELD(arg0, s32 *, 0x4C) = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
+    if ((PollOneFd(M2C_FIELD(connection, s32 *, 0x48), 0, &writable, &error) == -1) || (error != 0)) {
+        M2C_FIELD(connection, s32 *, GHI_COMPLETED) = 1;
+        M2C_FIELD(connection, s32 *, GHI_RESULT) = GHTTP_RESULT_SOCKET_FAILED;
+        M2C_FIELD(connection, s32 *, 0x4C) = ghiGetLastSocketError(M2C_FIELD(connection, s32 *, 0x48));
         return 0;
     }
-    if (sp4 == 0) {
+    if (writable == 0) {
         return 1;
     }
-    temp_r3 = M2C_FIELD(arg0, s32 *, 0x60);
-    temp_r0 = ghiSocketSend(arg0, M2C_FIELD(arg0, s32 *, 0x54) + temp_r3, M2C_FIELD(arg0, s32 *, 0x5C) - temp_r3);
-    if (temp_r0 == -1) {
+    pos = M2C_FIELD(connection, s32 *, GHI_BUFFER_POS);
+    sent = ghiSocketSend(connection, M2C_FIELD(connection, s32 *, GHI_BUFFER_DATA) + pos, M2C_FIELD(connection, s32 *, GHI_BUFFER_LEN) - pos);
+    if (sent == -1) {
         return 0;
     }
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0x60) + temp_r0;
-    M2C_FIELD(arg0, s32 *, 0x60) = temp_r1;
-    if (temp_r1 >= (s32) M2C_FIELD(arg0, s32 *, 0x5C)) {
+    newPos = M2C_FIELD(connection, s32 *, GHI_BUFFER_POS) + sent;
+    M2C_FIELD(connection, s32 *, GHI_BUFFER_POS) = newPos;
+    if (newPos >= (s32) M2C_FIELD(connection, s32 *, GHI_BUFFER_LEN)) {
         return 1;
     }
     goto loop_1;

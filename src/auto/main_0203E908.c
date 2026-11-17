@@ -65,7 +65,7 @@ void func_0203e9b0(void) {
  * arms the connection's retry deadline. */
 s32 SendMatchmakingParameter(s32 value) {
     void FormatMatchmakingMessage(M2C_UNK,s32,s32,s32);
-    M2C_UNK func_0200567c();
+    M2C_UNK StringFormatN();
     void ResetSessionList(s32);
     s32 SendToPlayerList(s32,s32,s32,void *,s32,void *,s32);
     u64 GetSystemTick(void);
@@ -92,12 +92,12 @@ s32 SendMatchmakingParameter(s32 value) {
             a=M2C_FIELD(p,volatile s32 *,0x200);b=M2C_FIELD(q,volatile u8 *,0x16);c=M2C_FIELD(r,volatile u8 *,0x15);
             FormatMatchmakingMessage((s32)message,a,b,c);
             value=M2C_FIELD(&gConnectionMgr,s32 *,8);
-            if(value!=0)func_0200567c(message,256,&sDwcFormatAnd,message,value);
+            if(value!=0)StringFormatN(message,256,&sDwcFormatAnd,message,value);
             break;
         }
         value=M2C_FIELD(GetConnection(),s32 *,0x208);
     case 2:case 4:case 5:
-        func_0200567c(message,256,&sDwcFormatParam,&sDwcKeyPid,value);
+        StringFormatN(message,256,&sDwcFormatParam,&sDwcKeyPid,value);
         M2C_FIELD(GetConnection(),s32 *,0x204)=value;
         break;
     default:break;
@@ -116,13 +116,13 @@ s32 SendMatchmakingParameter(s32 value) {
 }
 
 void FormatMatchmakingMessage(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
-    M2C_UNK func_0200567c(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *, s32, M2C_UNK *, s32, s32, s32, M2C_UNK *, s32, M2C_UNK *, M2C_UNK *);
+    M2C_UNK StringFormatN(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *, s32, M2C_UNK *, s32, s32, s32, M2C_UNK *, s32, M2C_UNK *, M2C_UNK *);
     extern M2C_UNK sDwcKeyPid;
     extern M2C_UNK sDwcKeyMType;
     extern M2C_UNK sDwcKeyMResv;
     extern M2C_UNK sDwcKeyMVer;
     extern M2C_UNK sDwcFormatMismatch;
-    func_0200567c(arg0, 0x100, &sDwcFormatMismatch, &sDwcKeyMVer, 3, &sDwcKeyPid, arg1, arg2, arg2, &sDwcKeyMType, arg3, &sDwcKeyMResv, &sDwcKeyPid);
+    StringFormatN(arg0, 0x100, &sDwcFormatMismatch, &sDwcKeyMVer, 3, &sDwcKeyPid, arg1, arg2, arg2, &sDwcKeyMType, arg3, &sDwcKeyMResv, &sDwcKeyPid);
 }
 
 s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
@@ -226,7 +226,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
 s32 func_0203ef9c(void *arg0) {
     s32 func_02043008();
     s32 GT2SocketHandle(s32);
-    s32 func_0205d4d8(s32, M2C_UNK, M2C_UNK);
+    s32 Gt2AddressToString(s32, M2C_UNK, M2C_UNK);
     s32 func_0205de88(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
     M2C_UNK func_02061690(s32, s32, u16, s32);
     extern M2C_UNK func_02043e0c;
@@ -237,7 +237,7 @@ s32 func_0203ef9c(void *arg0) {
 
     if (M2C_FIELD(arg0, u8 *, 0) == 0) {
         temp_r4 = GetConnection();
-        func_02061690(M2C_FIELD(temp_r4, s32 *, 0xE4), func_0205d4d8(M2C_FIELD(arg0, s32 *, 4), 0, 0), M2C_FIELD(arg0, u16 *, 2), M2C_FIELD(arg0, s32 *, 8));
+        func_02061690(M2C_FIELD(temp_r4, s32 *, 0xE4), Gt2AddressToString(M2C_FIELD(arg0, s32 *, 4), 0, 0), M2C_FIELD(arg0, u16 *, 2), M2C_FIELD(arg0, s32 *, 8));
         if (func_02043008() != 0) {
             return 2;
         }
@@ -266,7 +266,7 @@ s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *va
     void func_0203f31c(M2C_UNK,s32,M2C_UNK,u8 *);
     s32 func_0203f20c(s32,s32,s32,s32,s32);
     void func_02007e70(s32,void *,s32);
-    M2C_UNK func_0200567c();
+    M2C_UNK StringFormatN();
     void MI_CpuCopy8(u8 *,u8 *,u32);
     u64 GetSystemTick(void);
     extern M2C_UNK data_020fc908, data_020fc9fc;
@@ -280,9 +280,9 @@ s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *va
         result=func_0203f20c(command,address,port,(s32)values,count);
     } else {
         if (values != 0 && count != 0) {
-            length=func_0200567c(message,0x200,&data_020fc908,values[0]);
+            length=StringFormatN(message,0x200,&data_020fc908,values[0]);
             for(i=1;i<count;i++){
-                partLength=func_0200567c(valueText,0x10,&data_020fc9fc,values[i]);
+                partLength=StringFormatN(valueText,0x10,&data_020fc9fc,values[i]);
                 MI_CpuCopy8(valueText,message+length,partLength);
                 length+=partLength;
             }
@@ -306,7 +306,7 @@ s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *va
 s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     void func_02007e70(s32, void *, s32);
     void *GetConnection(void);
-    s32 func_0205d4d8(s32, s32, s32);
+    s32 Gt2AddressToString(s32, s32, s32);
     s32 func_02061638(s32, s32, s32, void *, s32);
     extern PacketTag5 sQr2MatchCommandMagic;
     SendPacket packet;
@@ -339,7 +339,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     packet.state = M2C_FIELD(GetConnection(), s32 *, 0x200);
     for (i = 0; i < 5; i++) {
         context = GetConnection();
-        result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), func_0205d4d8(dest, 0, 0), mode, tag, packet.length + 20);
+        result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), Gt2AddressToString(dest, 0, 0), mode, tag, packet.length + 20);
         if (result == 0) {
             return result;
         }
@@ -353,10 +353,10 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
 #pragma opt_common_subs off
 #pragma opt_instruction_scheduling off
 void func_0203f31c(M2C_UNK arg0,s32 arg1,M2C_UNK arg2,u8 *arg3) {
-M2C_UNK func_0200567c(); s32 StringLength(u8*); void MI_CpuCopy8(u8*,u8*,u32); void func_0204e634(M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK StringFormatN(); s32 StringLength(u8*); void MI_CpuCopy8(u8*,u8*,u32); void func_0204e634(M2C_UNK,M2C_UNK,M2C_UNK);
 extern M2C_UNK data_020fca08,data_020fca10,data_020fca18;
 char buf[512]; s32 len; u8 *tail;
-len=func_0200567c((M2C_UNK)buf,512,(M2C_UNK)&data_020fca08,(M2C_UNK)&data_020fca10,3,(M2C_UNK)&data_020fca18);
+len=StringFormatN((M2C_UNK)buf,512,(M2C_UNK)&data_020fca08,(M2C_UNK)&data_020fca10,3,(M2C_UNK)&data_020fca18);
 buf[len]=arg1; tail=(u8*)(buf+1);tail[len]=0;tail+=len;
 if(arg3){s32 alen=StringLength(arg3);MI_CpuCopy8(arg3,tail,alen);tail[alen]=0;}
 func_0204e634(arg0,arg2,(M2C_UNK)buf);

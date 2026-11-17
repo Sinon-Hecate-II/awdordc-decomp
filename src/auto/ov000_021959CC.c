@@ -404,13 +404,13 @@ loop_1:
 s32 func_ov000_02196398(s16 *arg0) {
     void GetAiUnitRange();
     void BuildAiUnitThreatRange();
-    s32 func_ov000_021786a8(s16 *);
+    s32 SelectEnemyHqDestination(s16 *);
     s32 FindAttackPosition(s16 *);
     s16 sp0[2];
 
     GetAiUnitRange();
     BuildAiUnitThreatRange();
-    if (func_ov000_021786a8(sp0) == 0) {
+    if (SelectEnemyHqDestination(sp0) == 0) {
         return 0;
     }
     if (FindAttackPosition(sp0) == 0) {

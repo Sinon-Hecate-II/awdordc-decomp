@@ -2,9 +2,9 @@
 #include "common.h"
 static inline u8 MenuIsFixed(void *p) { u8 result;if(((u32)(M2C_FIELD(p,u8*,0x3a)<<26)>>26)==1)result=1;else result=0;return result; }
 static inline void MenuCopyCursor(void *p) {
-s32 func_020aae44(void*);s32 func_020aae10(void*);
+s32 GetUnitSpriteHeight(void*);s32 GetUnitSpriteWidth(void*);
 void *sprite=M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c);
-s32 h=func_020aae44(sprite),w=func_020aae10(sprite);
+s32 h=GetUnitSpriteHeight(sprite),w=GetUnitSpriteWidth(sprite);
 s16 y=M2C_FIELD(sprite,s16*,0x36),x=M2C_FIELD(sprite,s16*,0x34);
 void *cursor=M2C_FIELD(p,void**,0x4c);
 M2C_FIELD(cursor,s16*,0x34)=x;M2C_FIELD(cursor,s16*,0x36)=y;

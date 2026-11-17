@@ -7,7 +7,7 @@ typedef struct {
     s16 unk2;
 } Unk0207F9F4;
 
-s32 func_0207f460(s32 id) {
+s32 TerrainByteToTileId(s32 id) {
     switch (id) {                                 /* irregular */
     case 0x1:
         return 1;

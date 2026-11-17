@@ -21,7 +21,7 @@ void func_ov000_02171774(void *p) {
  s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
  void MI_CpuCopy32(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
- void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void func_020c0fac(void*);
+ void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void CreateMenuUnitSprite(void*);
  void *old=gCur3DSpriteEngine;
  s32 k;void *object=p;s32 i,idx,a,b,pal,t;void *dst;
  gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -58,7 +58,7 @@ void func_ov000_02171774(void *p) {
  dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240;
  MI_CpuCopy32((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x340,dst,32);
  func_020ae528((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240);
- func_020c0fac(object);gCur3DSpriteEngine=old;
+ CreateMenuUnitSprite(object);gCur3DSpriteEngine=old;
 }
 
 #pragma opt_strength_reduction off

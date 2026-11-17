@@ -2,6 +2,9 @@
 #define NET_SESSION_H
 
 /* Login fields of the WFC session object pointed to by gNetSession. */
+#define NET_SESSION_SOCKET         0x00 /* void * the GameSpy GT2 socket, 0 until OpenGameSpySocket opens it */
+#define NET_SESSION_RX_BUFFER      0x14 /* s32 receive buffer size handed to the GT2 socket */
+#define NET_SESSION_TX_BUFFER      0x18 /* s32 send buffer size handed to the GT2 socket */
 #define NET_SESSION_STATE          0x24 /* s32 current NET_STATE_* */
 #define NET_SESSION_LOGIN_NAME     0x2e /* u16[26], NUL terminated */
 #define NET_SESSION_GAME_NAME      0x68 /* char * service name */
@@ -26,7 +29,12 @@ enum {
  * (gGpiInfoProfiles) that the server reports on, the receive buffer, and the
  * logged-in session. */
 #define GPI_INFO_PROFILES      0x04 /* Vector * of GpiProfile records */
+#define GPI_INFO_SCRATCH_BANK  0x24 /* s32 alternating index of the gGpiProfileScratch bank in use */
 #define GPI_INFO_SESSION       0x28 /* void * logged-in session, NULL until login */
+
+/* A GameSpy info string is a run of \key\value\ fields; the gpi info reader
+ * (gpiGetInfoField) extracts one value into gGpiProfileScratch. */
+#define GPI_FIELD_DELIMITER 0x5C /* the backslash between a field's key and value */
 
 /* Fields of a GpiProfile record: a server profile's id and name. */
 #define GPI_PROFILE_TYPE        0x00 /* s32 kind of the info request (GPI_PROFILE_, picks the update callback's argument list) */
@@ -45,7 +53,10 @@ enum {
     GPI_PROFILE_BUDDY       /* (id, status, online, ...) */
 };
 
-/* gGpiProfileScratch is 1 when its even buffer is in use. */
+/* gGpiProfileScratch is two banks of scratch strings holding the field values
+ * gpiGetInfoField last returned; GPI_INFO_SCRATCH_BANK alternates 0/1 so the two
+ * results stay valid at once.  gGpiEmptyField is the image of an empty field
+ * buffer: a delimiter followed by zeros. */
 #define GPI_SCRATCH_BANK_BYTES 0x100
 #define GPI_SCRATCH_BUFFER(bank) ((u8 *)gGpiProfileScratch + (bank) * GPI_SCRATCH_BANK_BYTES)
 

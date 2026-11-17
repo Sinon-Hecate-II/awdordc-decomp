@@ -18,7 +18,7 @@ void GX_SetOrthoProjection(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_02001114(void *,s32,s32,s32);void func_02001068(void *,void *,s32,s32,s32);
 void func_02001148(void *,void *,void *);void func_02007f68(void *,void *);void func_02003a70(void *);
 void func_02087048(s32,s32);void func_020870dc(s32,s32,s32,s32,s32,s32,s32,s32);
-void func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_0208718c(void);
+void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_0208718c(void);
 void func_02087c6c(s32,s32,s32,s32,s32,s32);void func_ov004_02214814(s32,s32,s32,s32,s32,s32);
 void func_02087a08(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_0200112c(void *,s32,s32);void func_02087064(s32,s32,s32,s32,s32);void func_02003aa8(void *);s32 func_0207cb88(s32);
@@ -56,7 +56,7 @@ func_0200100c(d);func_02001148(a,b,d);func_02007f68(d,c);
 gx[0]=3;gx[5]=0;gx[0]=2;func_02003a70(c);
 {volatile u32 *cmd=(volatile u32 *)0x04000484;cmd[0]=0x20000000;cmd[-14]=0;cmd[-16]=0;}
 func_02087048(0,31);func_020870dc(4,512,512,0,0,0,0,0);
-func_020878c4(0,0,0,512,304,0,0,512,304);
+DrawTexturedQuadUV(0,0,0,512,304,0,0,512,304);
 func_02087048(0,31);func_0208718c();
 func_02087c6c(0,M2C_FIELD(arg0,s16 *,70),512,M2C_FIELD(arg0,s16 *,70),2,32767);
 func_02087c6c(M2C_FIELD(arg0,s16 *,68),0,M2C_FIELD(arg0,s16 *,68),304,2,32767);
@@ -92,7 +92,7 @@ if(M2C_FIELD(link_0,s16 *,2)>cy_0){func_0200100c(pivot);func_02001068(pivot,pivo
 if(M2C_FIELD(link_0,s16 *,2)<cy_0){func_0200100c(pivot);func_02001068(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*38)/8,4096,4096);func_0200112c(rot,data_020e8b30[0],data_020e8b30[1]);func_0200100c(tr);func_02001068(tr,tr,cx_0,cy_0,0);}
 func_0200100c(p0);func_02001148(pivot,sz,p0);func_0200100c(p1);func_02001148(p0,rot,p1);func_0200100c(p2);func_02001148(p1,tr,p2);func_02007f68(p2,mat);
 func_02087064(3,8,8,7424,24);*(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(mat);
-func_020878c4(0,0,5,8,8,0,0,8,8);*(volatile u32 *)0x04000448=1;
+DrawTexturedQuadUV(0,0,5,8,8,0,0,8,8);*(volatile u32 *)0x04000448=1;
 }
 }
 {
@@ -108,10 +108,10 @@ amount_1=Divide(scale*M2C_FIELD(node_1,s32 *,8),4096);
 func_02001114(qs,amount_1,amount_1,4096);func_0200100c(qt);func_02001068(qt,qt,cx_1,cy_1,0);func_0200100c(q0);func_02001148(qs,qt,q0);func_02007f68(q0,qm);
 *(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(qm);
 flags_1=0;if(M2C_FIELD(node_1,u8 *,5)!=0)flags_1=2;if((u8)((M2C_FIELD(node_1,u8 *,4)&4)!=0))flags_1++;
-func_02087064(3,256,32,7168,flags_1+18);func_020878c4(-8,-8,6,16,16,tex_1,0,tex_1+16,16);
+func_02087064(3,256,32,7168,flags_1+18);DrawTexturedQuadUV(-8,-8,6,16,16,tex_1,0,tex_1+16,16);
 if(amount_1==4096&&(gFrameCounter&63)<48){func_02087064(3,256,32,7168,22);
-if((u8)((M2C_FIELD(node_1,u8 *,4)&16)!=0))func_020878c4(2,6,6,32,8,224,8,256,16);
-if((u8)((M2C_FIELD(node_1,u8 *,4)&8)!=0))func_020878c4(2,6,6,32,8,224,0,256,8);
+if((u8)((M2C_FIELD(node_1,u8 *,4)&16)!=0))DrawTexturedQuadUV(2,6,6,32,8,224,8,256,16);
+if((u8)((M2C_FIELD(node_1,u8 *,4)&8)!=0))DrawTexturedQuadUV(2,6,6,32,8,224,0,256,8);
 }
 *(volatile u32 *)0x04000444=1;
 }
@@ -128,8 +128,8 @@ if((u8)((M2C_FIELD(node_2,u8 *,4)&2)!=0)){spacing_2=12;tex_2=16;}
 cx_2-=((n_2+1)*spacing_2)/2;func_0200100c(qp);func_02001068(qp,qp,cx_2,cy_2-20,0);func_0200100c(q1);func_02001148(qr,qp,q1);func_02007f68(q1,q2);
 func_02087064(3,256,32,7296,23);*(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(q2);
 flags_2=(u8)((M2C_FIELD(node_2,u8 *,4)&4)!=0)?192:176;
-func_020878c4(0,0,8,16,16,flags_2,tex_2,flags_2+16,tex_2+16);
-for(j_2=0;j_2<n_2;j_2++){k_2=(value_2%10)*16;func_020878c4((n_2-j_2)*spacing_2,0,8,16,16,k_2,tex_2,k_2+16,tex_2+16);value_2/=10;}
+DrawTexturedQuadUV(0,0,8,16,16,flags_2,tex_2,flags_2+16,tex_2+16);
+for(j_2=0;j_2<n_2;j_2++){k_2=(value_2%10)*16;DrawTexturedQuadUV((n_2-j_2)*spacing_2,0,8,16,16,k_2,tex_2,k_2+16,tex_2+16);value_2/=10;}
 *(volatile u32 *)0x04000448=1;
 }
 }

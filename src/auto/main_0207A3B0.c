@@ -61,7 +61,7 @@ void func_0207a668(void) {
 
 }
 
-void func_0207a66c(s32 arg0, s32 arg1) {
+void WriteMapTileQuad(s32 arg0, s32 arg1) {
  extern void *gCurrentMap;
  extern void *gCur3DSpriteEngine;
  void *temp_r2;
@@ -374,42 +374,54 @@ void func_0207ab24(s32 arg0, s32 arg1) {
 }
 
 s32 func_0207ab84(s32 arg0, s32 arg1, u8 arg2) {
- extern u16 data_0211fafc[];
+ extern u16 gPropertyTileIds[];
  extern void *data_027e0058;
  s32 i=0;
  s32 base;
  u16 value;
  void *p;
- if(data_0211fafc[0] != 0xffff) {
+ if(gPropertyTileIds[0] != 0xffff) {
   p=M2C_FIELD(data_027e0058,void **,0);
   value=M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10);
   do {
-   if(data_0211fafc[i] != value) {
+   if(gPropertyTileIds[i] != value) {
     i++;
    } else {
     break;
    }
-  } while(data_0211fafc[i] != 0xffff);
+  } while(gPropertyTileIds[i] != 0xffff);
  }
  p=M2C_FIELD(data_027e0058,void **,0);
  base=(i/5)*5;
- M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10)=data_0211fafc[base+(arg2>>5)];
+ M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10)=gPropertyTileIds[base+(arg2>>5)];
  return (s16)base;
 }
 
-s32 func_0207ac54(s32 arg0,s32 arg1,s32 arg2){
-extern u16 data_0211fafc[];
-extern void *gCurrentMap;
-s32 i=0; s32 base; void *p;
-if(data_0211fafc[0]!=0xffff){
-p=M2C_FIELD(gCurrentMap,void **,0);
-do{if(data_0211fafc[i]==M2C_FIELD((u8*)p+2*(arg0+M2C_FIELD((u8*)p+arg1*2,u16 *,0x3758)),u16 *,0xa10))break;i++;}while(data_0211fafc[i]!=0xffff);
-}
-base=(i/5)*5;
-if(base<5){
-p=M2C_FIELD(gCurrentMap,void **,0);
-M2C_FIELD((u8*)p+2*(arg0+M2C_FIELD((u8*)p+arg1*2,u16 *,0x3758)),u16 *,0xa10)=data_0211fafc[base+10+(arg2>>5)];
-}return (s16)base;
+/* Rewrite a property cell's tile for a new owner: when the cell shows a
+   headquarters tile (the tile table's first row), the cell is given the tile of
+   the rebuilt property kind for the owner colour held in `owner`'s bits 5..7.
+   Returns the table row the cell's tile belonged to (0 for a headquarters). */
+s32 RebuildPropertyTile(s32 x, s32 y, s32 owner) {
+    extern u16 gPropertyTileIds[];
+    extern void *gCurrentMap;
+    s32 i = 0;
+    s32 row;
+    void *map;
+
+    if (gPropertyTileIds[0] != 0xffff) {
+        map = M2C_FIELD(gCurrentMap, void **, 0);
+        do {
+            if (gPropertyTileIds[i] == M2C_FIELD((u8 *)map + 2 * (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u16 *, MAP_CELL_TILE_ID)) break;
+            i++;
+        } while (gPropertyTileIds[i] != 0xffff);
+    }
+    row = (i / MAP_PROPERTY_TILE_OWNERS) * MAP_PROPERTY_TILE_OWNERS;
+    if (row < MAP_PROPERTY_TILE_OWNERS) {   /* row 0: a headquarters tile */
+        map = M2C_FIELD(gCurrentMap, void **, 0);
+        M2C_FIELD((u8 *)map + 2 * (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u16 *, MAP_CELL_TILE_ID) =
+            gPropertyTileIds[row + MAP_PROPERTY_TILE_REBUILT_ROW * MAP_PROPERTY_TILE_OWNERS + (owner >> MAP_PROPERTY_TILE_OWNER_SHIFT)];
+    }
+    return (s16)row;
 }
 
 /* Update each active entity (1..4) according to the state nibble packed in `value`. */

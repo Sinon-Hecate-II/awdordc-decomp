@@ -164,7 +164,28 @@ case 33:return (s32)data_021031cc;
 case 34:return (s32)data_021031dc;
 default:return 0;}}
 
-s32 GetFaceLayoutFile(s32 a){extern M2C_UNK data_021031e8,data_021031f0,data_021031fc,data_02103208,data_02103214,data_02103220,data_0210322c,data_02103238,data_02103244,data_02103250,data_0210325c,data_02103268;switch(a){case 0:return (s32)&data_021031e8;case 1:return (s32)&data_021031f0;case 2:return (s32)&data_021031fc;case 3:return (s32)&data_02103208;case 4:return (s32)&data_02103214;case 5:return (s32)&data_02103220;case 6:return (s32)&data_0210322c;case 7:return (s32)&data_02103238;case 8:return (s32)&data_02103244;case 9:return (s32)&data_02103250;case 10:return (s32)&data_0210325c;case 11:return (s32)&data_02103268;default:return 0;}}
+/* Name of the face layout graphics file to load for a face layout type, or 0
+ * for an unknown type.  The types are, in order: info.cg (0), select.cg (1),
+ * btl_n.cg (2), btl_s.cg (3), btl_a.cg (4), talk_n.cg (5), talk_s.cg (6),
+ * talk_a.cg (7), body_n.cg (8), body_s.cg (9), body_a.cg (10) and break.cg (11). */
+s32 GetFaceLayoutFile(s32 layout) {
+    extern M2C_UNK data_021031e8, data_021031f0, data_021031fc, data_02103208, data_02103214, data_02103220, data_0210322c, data_02103238, data_02103244, data_02103250, data_0210325c, data_02103268;
+    switch (layout) {
+    case 0: return (s32)&data_021031e8;
+    case 1: return (s32)&data_021031f0;
+    case 2: return (s32)&data_021031fc;
+    case 3: return (s32)&data_02103208;
+    case 4: return (s32)&data_02103214;
+    case 5: return (s32)&data_02103220;
+    case 6: return (s32)&data_0210322c;
+    case 7: return (s32)&data_02103238;
+    case 8: return (s32)&data_02103244;
+    case 9: return (s32)&data_02103250;
+    case 10: return (s32)&data_0210325c;
+    case 11: return (s32)&data_02103268;
+    default: return 0;
+    }
+}
 
 /* Returns a filename string from one of the face/skin filename tables based on a transformed index and type. */
 s32 func_0209834c(s32 index, s32 type) {
@@ -314,7 +335,7 @@ void FillFaceTileMap(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, 
     s32 widthPx;
     M2C_UNK func_02080b38(s32, u16, u16);
     s32 heightPx;
-    M2C_UNK func_02080a6c(s32, u16, u16, u16, s32, s32, s32);
+    M2C_UNK FillChunkedTileRect(s32, u16, u16, u16, s32, s32, s32);
     unsigned int offset;
     s32 tileWidth;
     register s32 tileHeight;
@@ -359,7 +380,7 @@ void FillFaceTileMap(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, 
         break;
     }
     offset = vramBase + (col * 2) + (row << 6);
-    func_02080a6c(offset, (u16) tileWidth, (u16) tileHeight, (u16) cols, (s32) (u16) rows, (s32) startTile, (s32) palette);
+    FillChunkedTileRect(offset, (u16) tileWidth, (u16) tileHeight, (u16) cols, (s32) (u16) rows, (s32) startTile, (s32) palette);
     if (!mirror) {
         return;
     }

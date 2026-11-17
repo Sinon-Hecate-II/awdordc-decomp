@@ -9,8 +9,8 @@ void func_ov003_0220bf98(void *);
 void func_ov003_0220ac58(void *);
 void func_ov003_0220856c(void *,s32,s32);
 void func_02088e84(void *,s16,s32,s16,s32);
-s32 func_020aae10(void *);
-s32 func_020aae44(void *);
+s32 GetUnitSpriteWidth(void *);
+s32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s16,s16,u16,u16);
 s32 GetSpriteAnimValue(void *);
 s32 Divide(s32,s32);
@@ -53,12 +53,12 @@ if(boolean&255){
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,0);
 func_02088e84(sprite,224,160,224,160);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
-if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
+if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
+func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 M2C_FIELD(sprite,s16 *,0x34)=224;M2C_FIELD(sprite,s16 *,0x36)=160;
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
-if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
+if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
+func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 }}
 kind=M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,15);if(kind==8)boolean=1;else boolean=0;
 if(boolean&255){state=(u32)(M2C_FIELD(arg0,u8 *,0x36)<<24)>>28;
@@ -141,12 +141,12 @@ y=(index-2)*30+62;
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4);
 func_02088e84(sprite,129,y,129,y);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
-if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
+if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
+func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 M2C_FIELD(sprite,s16 *,0x34)=129;M2C_FIELD(sprite,s16 *,0x36)=y;
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
-if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
+if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
+func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 }
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8);
 if(func_02089080(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8));
@@ -155,12 +155,12 @@ y=(index-2)*30+62;
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8);
 func_02088e84(sprite,223,y,223,y);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
-if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
+if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
+func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 M2C_FIELD(sprite,s16 *,0x34)=223;M2C_FIELD(sprite,s16 *,0x36)=y;
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
-if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae44(sprite));}
+if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
+func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 }
 }else{
 if(Is3DSpriteVisible(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4)))Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));

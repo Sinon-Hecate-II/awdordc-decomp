@@ -21,8 +21,8 @@ void func_ov003_021eccd4(void *arg0) {
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s16 GetSpriteAnimValue(void *);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6d28();
@@ -190,8 +190,8 @@ void func_ov003_021eccd4(void *arg0) {
             }
             func_ov003_021e74ac(M2C_FIELD(arg0, void **, 0x6C), 1);
             temp_r6_2 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
-            temp_r4_8 = func_020aae44(temp_r6_2);
-            temp_r3_2 = func_020aae10(temp_r6_2) & (-0x200U >> 0x17);
+            temp_r4_8 = GetUnitSpriteHeight(temp_r6_2);
+            temp_r3_2 = GetUnitSpriteWidth(temp_r6_2) & (-0x200U >> 0x17);
             y = M2C_FIELD(temp_r6_2, s16 *, 0x36);
             x = M2C_FIELD(temp_r6_2, s16 *, 0x34);
             temp_r1_2 = M2C_FIELD(arg0, void **, 0x58);
@@ -252,15 +252,15 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     M2C_UNK func_02089438(void *);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6e08(u32);
     M2C_UNK func_ov003_021e6e18(u32);
     M2C_UNK HandleWaypointInput(void *, u32);
     s16 func_ov003_022004a8(u8);
-    M2C_UNK func_ov003_022006b0(M2C_UNK, u8);
+    M2C_UNK Ov003_SetPanelPlayerFlagTile(M2C_UNK, u8);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void *temp_r7;
@@ -318,8 +318,8 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     if (temp_r5_2 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E)) {
         PlaySoundEffect(0x10019);
         temp_r7 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
-        temp_r5_3 = func_020aae44(temp_r7);
-        temp_r3=func_020aae10(temp_r7);mask=-512U;temp_r3&=mask>>23;ypos=M2C_FIELD(temp_r7,s16*,0x36);xpos=M2C_FIELD(temp_r7,s16*,0x34);
+        temp_r5_3 = GetUnitSpriteHeight(temp_r7);
+        temp_r3=GetUnitSpriteWidth(temp_r7);mask=-512U;temp_r3&=mask>>23;ypos=M2C_FIELD(temp_r7,s16*,0x36);xpos=M2C_FIELD(temp_r7,s16*,0x34);
         temp_r1 = M2C_FIELD(arg0, void **, 0x58);
         M2C_FIELD(temp_r1, s16 *, 0x34) = xpos;
         M2C_FIELD(temp_r1, s16 *, 0x36) = ypos;
@@ -384,7 +384,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
         if (var_r0_3 & 0xFF) {
             temp_r5_4 = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineMain;
-            func_ov003_022006b0(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            Ov003_SetPanelPlayerFlagTile(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
             gCur3DSpriteEngine = temp_r5_4;
         }
@@ -445,7 +445,7 @@ block_79:
         if (var_r0_6 & 0xFF) {
             temp_r5_5 = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineMain;
-            func_ov003_022006b0(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            Ov003_SetPanelPlayerFlagTile(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
             gCur3DSpriteEngine = temp_r5_5;
         }
@@ -497,7 +497,7 @@ block_100:
         if (var_r0_9 & 0xFF) {
             temp_r5_6 = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineMain;
-            func_ov003_022006b0(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            Ov003_SetPanelPlayerFlagTile(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
             gCur3DSpriteEngine = temp_r5_6;
         }

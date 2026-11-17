@@ -74,8 +74,8 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     s32 Hide3DSpriteSlide(s32);
     u32 SetTextById(s32, s32);
     s16 GetSpriteAnimValue(void *);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     u32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6d28();
     M2C_UNK func_ov003_021e74ac(void *, u8);
@@ -180,8 +180,8 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     }
     func_ov003_021e74ac(M2C_FIELD(arg0, void **, 0x6C), arg1);
     temp_r5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
-    temp_r4_9 = func_020aae44(temp_r5);
-    temp_r3 = func_020aae10(temp_r5) & (-0x200U >> 0x17);
+    temp_r4_9 = GetUnitSpriteHeight(temp_r5);
+    temp_r3 = GetUnitSpriteWidth(temp_r5) & (-0x200U >> 0x17);
     temp_r1_2 = M2C_FIELD(arg0, void **, 0x58);
     M2C_FIELD(temp_r1_2, s16 *, 0x34) = (s16) M2C_FIELD(temp_r5, s16 *, 0x34);
     M2C_FIELD(temp_r1_2, s16 *, 0x36) = (s16) M2C_FIELD(temp_r5, s16 *, 0x36);
@@ -255,10 +255,10 @@ u8 func_ov003_021e9c30(void *arg0) {
 }
 
 void func_ov003_021e9c50(void *p) {
- s32 func_020aae10(void *); s32 func_020aae44(void *); s16 func_ov003_022004a8(u8);
+ s32 GetUnitSpriteWidth(void *); s32 GetUnitSpriteHeight(void *); s16 func_ov003_022004a8(u8);
  void *q; s32 a,b;
  q=M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0);
- b=func_020aae44(q); a=func_020aae10(q);
+ b=GetUnitSpriteHeight(q); a=GetUnitSpriteWidth(q);
  E9638Set(M2C_FIELD(p,void**,0x58),M2C_FIELD(q,s16*,0x34),M2C_FIELD(q,s16*,0x36),a,b);
  M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=func_ov003_022004a8(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
 }
@@ -283,13 +283,13 @@ u8 func_ov003_021e9ce0(void *arg0) {
  * and shows or hides the trailing label sprite depending on the state. */
 void SetWaypointPanelState(void *panel,s32 state){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
-void func_ov003_022006b0(s32,u8); void func_02089438(void*); void Show3DSprite(void*); void Hide3DSprite(void*);
+void Ov003_SetPanelPlayerFlagTile(s32,u8); void func_02089438(void*); void Show3DSprite(void*); void Hide3DSprite(void*);
 void *savedEngine;
 M2C_FIELD(panel,u8*,0x39)=(M2C_FIELD(panel,u8*,0x39)&~0xf0)|((u32)((u8)state<<28)>>24);
 M2C_FIELD(panel,u8*,0x3a)=(M2C_FIELD(panel,u8*,0x3a)&~0x70)|0x10;
 if(E9638Mode(panel,1)){
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_ov003_022006b0(25,M2C_FIELD(M2C_FIELD(panel,void**,0x6c),u8*,7));
+Ov003_SetPanelPlayerFlagTile(25,M2C_FIELD(M2C_FIELD(panel,void**,0x6c),u8*,7));
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;gCur3DSpriteEngine=savedEngine;
 }
 if(E9638Mode(panel,1)||E9638Mode(panel,3))M2C_FIELD(M2C_FIELD(panel,void**,0x58),u8*,0x59)=0;

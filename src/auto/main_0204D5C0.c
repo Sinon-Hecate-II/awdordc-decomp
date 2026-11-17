@@ -1,5 +1,6 @@
 /* 19 functions from 0x0204D5C0 to 0x0204E408 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 void gpiSetErrorString(void **,void *);
 static inline s32 char_space(s32 c) { extern u16 gCharClassTable[]; if(c<0 || c>=128) return 0; return gCharClassTable[c] & 256; }
 
@@ -159,23 +160,27 @@ cleanup:
     gpiFree(buffer);
 }
 
-void func_0204da30(void *p){
+/* State-8 handler of a ghttp request: drain the response body into the read
+ * buffer until it is complete, there is nothing more to read or the transfer
+ * timeout runs out.  A close before Content-Length bytes arrived fails the
+ * request with GHTTP_RESULT_DOWNLOAD_INCOMPLETE. */
+void ghiReceiveFile(GHIConnection *conn){
 s32 gpiMalloc(s32);void gpiFree(s32);s32 GetTickCountMs();s32 ghiReceiveData(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);
-s32 size,buffer,status,n,start;u32 elapsed;
-start=GetTickCountMs();elapsed=0;buffer=gpiMalloc(0x2000);
-if(!buffer){M2C_FIELD(p,s32*,0xfc)=1;M2C_FIELD(p,s32*,0x38)=1;return;}
-while(!M2C_FIELD(p,s32*,0xfc) && elapsed<M2C_FIELD(p,u32*,0x158)){
-size=0x2000;status=ghiReceiveData(p,buffer,&size);
-if(status==3 || status==1)break;
-if(status==2){
-M2C_FIELD(p,s32*,0xfc)=1;n=M2C_FIELD(p,s32*,0x104);
-if(n>0 && M2C_FIELD(p,s32*,0x100)<n)M2C_FIELD(p,s32*,0x38)=15;
+s32 readSize,readBuf,status,contentLength,startTime;u32 elapsed;
+startTime=GetTickCountMs();elapsed=0;readBuf=gpiMalloc(0x2000);
+if(!readBuf){conn->completed=1;conn->result=GHTTP_RESULT_OUT_OF_MEMORY;return;}
+while(!conn->completed && elapsed<conn->timeout){
+readSize=0x2000;status=ghiReceiveData(conn,readBuf,&readSize);
+if(status==GHI_RECV_ERROR || status==GHI_RECV_NO_DATA)break;
+if(status==GHI_RECV_CLOSED){
+conn->completed=1;contentLength=conn->contentLength;
+if(contentLength>0 && conn->bytesReceived<contentLength)conn->result=GHTTP_RESULT_DOWNLOAD_INCOMPLETE;
 break;
 }
-if(!ghiProcessIncomingFileData(p,buffer,size))break;
-elapsed=GetTickCountMs()-start;
+if(!ghiProcessIncomingFileData(conn,readBuf,readSize))break;
+elapsed=GetTickCountMs()-startTime;
 }
-gpiFree(buffer);
+gpiFree(readBuf);
 }
 
 s32 func_0204db04(s32 arg0,s32 arg1,s32 arg2) {
@@ -247,7 +252,7 @@ void gpiCloseConnection(void **arg0) {
     }
 }
 
-s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(void **,s32 *,s32),s32 h){
+s32 gpiProfileSearch(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(void **,s32 *,s32),s32 h){
  s32 gpiSearchProfiles(void **,s32,s32,s32,s32,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
  void gpiSetErrorString(void **,void *);extern M2C_UNK gpiErrorNoCallback;
  s32 buf[4];s32 *result;void *q;
@@ -266,15 +271,28 @@ s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(
  return gpiSearchProfiles(p,a,b,c,d,e,f,0,g,cb,h);
 }
 
-s32 gpiGetInfo(void **p,s32 a,s32 b,s32 c,void (*cb)(void **,s32 *,s32),s32 d){
-s32 func_02053c9c(void **,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
-extern M2C_UNK gpiErrorNoCallback;extern s32 gGpiMsgDisconnected;
-void *q;
-if(!p || !(q=*p) || !a)return 2;
-if(!cb){gpiSetErrorString(p,&gpiErrorNoCallback);return 2;}
-if(M2C_FIELD(q,s32 *,0x108)){s32 buf[129]={0};cb(p,buf,d);return 0;}
-if(M2C_FIELD(q,s32 *,0x1d8)==4){gpiSetErrorString(p,&gGpiMsgDisconnected);return 2;}
-return func_02053c9c(p,a,b,c,cb,d);
+/* Validate a profile-info request, delivering an empty result in simulation mode. */
+s32 gpiGetInfo(void **gpi, s32 profileId, s32 useCache, s32 blocking,
+               void (*callback)(void **, s32 *, s32), s32 callbackArg) {
+    s32 gpiGetInfoInternal(void **, s32, s32, s32, void (*)(void **, s32 *, s32), s32);
+    extern M2C_UNK gpiErrorNoCallback;
+    extern s32 gGpiMsgDisconnected;
+    void *connection;
+    if (!gpi || !(connection = *gpi) || !profileId) return 2;
+    if (!callback) {
+        gpiSetErrorString(gpi, &gpiErrorNoCallback);
+        return 2;
+    }
+    if (M2C_FIELD(connection, s32 *, GPI_CONN_SIMULATION)) {
+        s32 result[GPI_INFO_RESULT_WORDS] = {0};
+        callback(gpi, result, callbackArg);
+        return 0;
+    }
+    if (M2C_FIELD(connection, s32 *, GPI_CONN_STATE) == GPI_STATE_DISCONNECTED) {
+        gpiSetErrorString(gpi, &gGpiMsgDisconnected);
+        return 2;
+    }
+    return gpiGetInfoInternal(gpi, profileId, useCache, blocking, callback, callbackArg);
 }
 
 s32 gpiSetInfoString(void **arg0,s32 arg1,s32 arg2) {
@@ -327,13 +345,13 @@ s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
 }
 
 s32 func_0204e074(void **arg0,s32 arg1) {
- s32 func_0204fa60(void **,s32);
+ s32 gpiAuthAddProfile(void **,s32);
  extern s32 gGpiMsgDisconnected;
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
  if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
- return func_0204fa60(arg0,arg1);
+ return gpiAuthAddProfile(arg0,arg1);
 }
 
 s32 func_0204e0c4(void **arg0,s32 arg1) {

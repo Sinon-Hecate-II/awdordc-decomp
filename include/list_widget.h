@@ -22,6 +22,18 @@
 #define LIST_WIDGET_PIXEL_OFFSET_X 0x2c /* s16 horizontal pixel offset of the window */
 #define LIST_WIDGET_PIXEL_OFFSET_Y 0x2e /* s16 vertical pixel offset of the window */
 
+/* The window's own slide: an x offset, the y offset the slide is heading to
+ * (compared against the tween to tell when the slide has arrived) and the
+ * SpriteTween at +0x30 that animates the window's vertical position. */
+#define LIST_WIDGET_OFFSET_X        0x28 /* s16 window x pixel offset */
+#define LIST_WIDGET_SLIDE_TARGET_Y  0x2a /* s16 y pixel offset the slide is heading to */
+#define LIST_WIDGET_SCROLL_TWEEN   0x30 /* SpriteTween: animated vertical position */
+#define LIST_WIDGET_SCROLL_CURRENT 0x32 /* u16 tween time */
+#define LIST_WIDGET_SCROLL_START   0x34 /* u16 time the tween restarts from */
+#define LIST_WIDGET_SCROLL_FRAMES  0x3c /* s16 tween length in frames */
+#define LIST_WIDGET_SCROLL_FROM    0x3e /* s16 pixel offset the tween starts at */
+#define LIST_WIDGET_SCROLL_TO      0x40 /* s16 pixel offset the tween ends at */
+
 /* The two sub-lists that carry the current and column/row animation values:
  * the offset the sprite is animating from and the offset it moves to. */
 #define LIST_WIDGET_ANIM_X         0x50 /* s16 column sub-list's current animation value */

@@ -46,7 +46,7 @@ M2C_FIELD(gOv005MenuState,s16 *,0x18)=-1;
 void func_ov005_022176a0(void){
 s32 IsCoUnlocked(s32);void AddSprite(u16,u16,u16,void*,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);void func_02098dc0(s16,s16,u16,s32);
-void func_02088e84(void*,s32,s32,s32,s32);u32 func_020aae10(void*);u32 func_020aae44(void*);
+void func_02088e84(void*,s32,s32,s32,s32);u32 GetUnitSpriteWidth(void*);u32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s16,s16,u16,u16);void func_ov005_02217440(void);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 i; s16 x,y;void *saved;
@@ -68,9 +68,9 @@ for(;i<4;i++,delta+=60){
 px=M2C_FIELD(STATE,s16*,10)+delta;
 p=M2C_FIELD(STATE+i*4,void**,0x2c);
 func_02088e84(p,px,90,px,90);
-if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 M2C_FIELD(p,s16*,0x34)=px;M2C_FIELD(p,s16*,0x36)=90;
-if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=func_020aae10(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p));}
+if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 }
 }
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -143,17 +143,17 @@ PlaySoundEffect(0x10019);
 }
 
 void func_ov005_02217f6c(void) {
-M2C_UNK func_020b22a4(s32,s32,M2C_UNK *,s32);
+M2C_UNK AddSpriteSlot(s32,s32,M2C_UNK *,s32);
 extern M2C_UNK data_ov005_02220800;
 s32 i=0;
 do {
-func_020b22a4((i%4)*50+30,(i/4)*18+87,&data_ov005_02220800,i);
+AddSpriteSlot((i%4)*50+30,(i/4)*18+87,&data_ov005_02220800,i);
 i++;
 }while(i<12);
 }
 
 void Ov005AddDetailSprites(void) {
-    M2C_UNK func_020b22a4(s32, M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK AddSpriteSlot(s32, M2C_UNK, M2C_UNK *, s32);
     extern M2C_UNK data_ov005_02220828;
     s32 var_r6;
     s32 var_r7;
@@ -161,7 +161,7 @@ void Ov005AddDetailSprites(void) {
     var_r6 = 0;
     var_r7 = 0xE;
     do {
-        func_020b22a4(var_r7, 0x5A, &data_ov005_02220828, var_r6);
+        AddSpriteSlot(var_r7, 0x5A, &data_ov005_02220828, var_r6);
         var_r6 += 1;
         var_r7 += 0x3C;
     } while (var_r6 < 4);

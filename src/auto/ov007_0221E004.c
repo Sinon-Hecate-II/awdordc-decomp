@@ -36,7 +36,7 @@ void func_02019424(void*,u32);
 int IsLeadByte(void*); int MeasureStringWidth(s32*);
 void func_020b269c(void);
 void *CreateTextLayer(void*);
-void func_020899cc(void*,s32,s32,u32);
+void RenderTextLayerMessage(void*,s32,s32,u32);
 void SetSpriteAnimation(void*,s32);
 M2C_UNK PlaySoundEffect(s32);
 void *editor; s32 oldIndex; u32 glyph,line[17],*glyphPtr; s32 found; u32 width; void *savedEngine,*dialog;
@@ -61,7 +61,7 @@ glyph=M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT
 if(M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)>=16){
 SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-dialog=CreateTextLayer(editor);func_020899cc(dialog,2,0x2800,0x46000012);
+dialog=CreateTextLayer(editor);RenderTextLayerMessage(dialog,2,0x2800,0x46000012);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
 gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
 }
@@ -73,7 +73,7 @@ if(*glyphPtr){do{if(!IsLeadByte(glyphPtr)&&width)width++;width+=MeasureStringWid
 if(width>64){
 SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-dialog=CreateTextLayer(editor);func_020899cc(dialog,2,0x2800,0x46000013);
+dialog=CreateTextLayer(editor);RenderTextLayerMessage(dialog,2,0x2800,0x46000013);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
 gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
 }
@@ -162,8 +162,8 @@ void func_ov007_0221e6bc(void) {
 void MapEditorInitGlyphKeyboard(void *editor) {
     extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     extern EditorCellDesc gMapEditorGlyphGridCells[], gMapEditorButtonCells1[], gMapEditorButtonCells2[], gMapEditorButtonCells3[];
-    void *func_020b22a4(s32, s32, void *, s32);
-    void func_020b1c78(s32);
+    void *AddSpriteSlot(s32, s32, void *, s32);
+    void SelectSpriteSlot(s32);
     void func_020b2158(s32);
     void AddSpriteCell(s32, s16, s16, s32, s32, u16, s32);
     void *saved = gCur3DSpriteEngine;
@@ -178,7 +178,7 @@ void MapEditorInitGlyphKeyboard(void *editor) {
     do {
         col = 0;
         do {
-            void *p = func_020b22a4(col * desc->width, row * desc->height, desc, id);
+            void *p = AddSpriteSlot(col * desc->width, row * desc->height, desc, id);
             col++;
             M2C_FIELD(p, void **, 0x10) = editor;
             id++;
@@ -188,26 +188,26 @@ void MapEditorInitGlyphKeyboard(void *editor) {
     a = 0;
     desc = gMapEditorButtonCells1;
     do {
-        void *p = func_020b22a4(a * desc->width, 0, desc, a + 100);
+        void *p = AddSpriteSlot(a * desc->width, 0, desc, a + 100);
         a++;
         M2C_FIELD(p, void **, 0x10) = editor;
     } while (a < 3);
     b = 0;
     desc = gMapEditorButtonCells2;
     do {
-        void *p = func_020b22a4(b * desc->width, 0, desc, b + 103);
+        void *p = AddSpriteSlot(b * desc->width, 0, desc, b + 103);
         b++;
         M2C_FIELD(p, void **, 0x10) = editor;
     } while (b < 2);
     c = 0;
     desc = gMapEditorButtonCells3;
     do {
-        void *p = func_020b22a4(c * desc->width, 0, desc, c + 105);
+        void *p = AddSpriteSlot(c * desc->width, 0, desc, c + 105);
         c++;
         M2C_FIELD(p, void **, 0x10) = editor;
     } while (c < 2);
     gCur3DSpriteEngine = saved;
-    func_020b1c78(0);
+    SelectSpriteSlot(0);
     func_020b2158(0);
     for (i = 0; i < 17; i++)
         AddSpriteCell(M2C_FIELD(editor, s32 *, 0x38), (s16)(i * 8 + 16), 16, 8, 16, i, 14);
@@ -365,7 +365,7 @@ extern u16 **g3DSpriteEngineMain;
 extern u16 **data_027e01d8;
 extern u16 **gCur3DSpriteEngine;
 void func_ov007_0221ec40(void *arg0) {
-    M2C_UNK func_0208df84(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK DrawFrameBorderPulse(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
     u16 func_0209b5e4(s32, M2C_UNK *);
     M2C_UNK DrawTileRow(u16, M2C_UNK, u16, u16, s32);
     s32 MeasureStringWidth(M2C_UNK *);
@@ -382,7 +382,7 @@ void func_ov007_0221ec40(void *arg0) {
 
     sp8 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_0208df84(M2C_FIELD(arg0, s16 *, 0x3E), M2C_FIELD(arg0, s16 *, 0x40), 8, 0x10, (s32) (u16) ((0x3FF & (0x80 >> ((u32) (**g3DSpriteEngineMain << 0x11) >> 0x1E))) | 0x1000), 0);
+    DrawFrameBorderPulse(M2C_FIELD(arg0, s16 *, 0x3E), M2C_FIELD(arg0, s16 *, 0x40), 8, 0x10, (s32) (u16) ((0x3FF & (0x80 >> ((u32) (**g3DSpriteEngineMain << 0x11) >> 0x1E))) | 0x1000), 0);
     var_r6 = 0x10;
     var_r8 = 0x4D00;
     var_r9 = 0;

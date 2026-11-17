@@ -90,30 +90,30 @@ s32 func_0200fdec(void) {
  return (M2C_FIELD(&data_0212fde0, u32 *, 0x114) & 4) == 0;
 }
 
-s32 func_0200fe08(void) {
+s32 SaveDevice_IsReady(void) {
  extern void *data_0212fde0;
  return M2C_FIELD(&data_0212fde0,u32 *,0x114) != 0;
 }
 
-void func_0200fe24(M2C_UNK arg0) {
+void CARD_LockRom(M2C_UNK arg0) {
     M2C_UNK func_0200551c(M2C_UNK);
     func_0200fb48(arg0, 1);
     func_0200551c(arg0);
 }
 
-void func_0200fe40(M2C_UNK arg0) {
+void CARD_UnlockRom(M2C_UNK arg0) {
     M2C_UNK func_02005538();
     M2C_UNK func_0200fbcc(M2C_UNK, M2C_UNK);
     func_02005538();
     func_0200fbcc(arg0, 1);
 }
 
-void func_0200fe5c(M2C_UNK arg0) {
+void CARD_LockBackup(M2C_UNK arg0) {
     M2C_UNK func_0200fb48(M2C_UNK, M2C_UNK);
     func_0200fb48(arg0, 2);
 }
 
-void func_0200fe6c(M2C_UNK arg0) {
+void CARD_UnlockBackup(M2C_UNK arg0) {
  s32 func_02010590(void); void func_02010584(void);
  M2C_UNK func_0200fbcc(M2C_UNK, M2C_UNK);
  if (func_02010590() == 0) { func_02010584(); }
@@ -254,7 +254,7 @@ block_23:
     callback(callbackArg);
 }
 #pragma opt_common_subs reset
-s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
+s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     extern void *data_0212fde0;
     extern M2C_UNK gSocketManager;
     void func_02000b9c(s32);
@@ -301,7 +301,7 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     return *M2C_FIELD(p, s32 **, 0) == 0;
 }
 
-s32 func_02010424(void) {
+s32 SaveDevice_GetState(void) {
     extern void *data_0212fde0;
     return M2C_FIELD(data_0212fde0, s32 *, 4);
 }
@@ -311,7 +311,7 @@ s32 func_02010438(void) {
     return M2C_FIELD(data_0212fde0, s32 *, 0x1C);
 }
 
-s32 func_0201044c(s32 arg0) {
+s32 SaveDevice_Configure(s32 arg0) {
 extern void *data_0212fde0;extern M2C_UNK gSocketManager;
 void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(void *);void OS_WakeupThread(void *);void TaskWake(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK SystemHalt();
 void *p=&data_0212fde0; s32 state,state2;s32 value;void (*callback)(s32);

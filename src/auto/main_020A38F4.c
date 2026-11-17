@@ -377,7 +377,7 @@ p=*gCurrentMap;
 return M2C_FIELD(p+(pos[0]+M2C_FIELD(p+pos[1]*2,u16 *,0x3758)),s8 *,0x1e30)>=0;
 }
 
-s32 func_020a4770(s32 a,s32 b) {
+s32 FindMapFeatureAtTile(s32 a,s32 b) {
 s16 pos[2];void *p=func_020a45f8(a,b);
 if(!p)return 0;
 if(!func_020a488c(p,pos))return 0;
@@ -387,14 +387,14 @@ return (s32)p;
 }
 
 s32 func_020a47e0(s32 a,s32 b) {
-extern s32 *gCurrentMap;s32 func_020a4770(s32,s32);s32 p=*gCurrentMap;
-if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=29)return 0;return func_020a4770(a,b);
+extern s32 *gCurrentMap;s32 FindMapFeatureAtTile(s32,s32);s32 p=*gCurrentMap;
+if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=29)return 0;return FindMapFeatureAtTile(a,b);
 }
 
 #pragma scheduling off
 s32 func_020a4828(s32 a,s32 b) {
 extern s32 *gCurrentMap;
-s32 q=func_020a4770(a,b);s32 p=*gCurrentMap; s32 result=0;u32 value;
+s32 q=FindMapFeatureAtTile(a,b);s32 p=*gCurrentMap; s32 result=0;u32 value;
 
 value=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x539c)&127;
 if(q)result=(u32)(M2C_FIELD(q,u16 *,2)<<22)>>28;

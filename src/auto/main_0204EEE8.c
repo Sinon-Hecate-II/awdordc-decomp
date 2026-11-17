@@ -98,26 +98,28 @@ gpiSendMessageToPlayer(arg0,id,103,&gpiChallengeAccept);break;
 return 0;
 }
 #pragma opt_instruction_scheduling reset
-s32 gpiSendMessageToServer(void **arg0,s32 arg1,s32 arg2,void *arg3) {
- void gpiAppendStringField(M2C_UNK,M2C_UNK,M2C_UNK);
- extern M2C_UNK gpiKeyBm;
- extern M2C_UNK data_020fdda0;
- extern M2C_UNK data_020fde5c;
- extern M2C_UNK gpiKeyMsg;
- extern M2C_UNK data_020fddc4;
- u8 buf[0xdb0]; void *p;
- p=*arg0;
- StringCopyN(buf,arg3,0xdad);
- gpiAppendStringField(arg0,p+0x1f4,&gpiKeyBm);
- gpiAppendIntField(arg0,p+0x1f4,arg2);
- gpiAppendStringField(arg0,p+0x1f4,&data_020fdda0);
- gpiAppendIntField(arg0,p+0x1f4,M2C_FIELD(p,s32*,0x198));
- gpiAppendStringField(arg0,p+0x1f4,&data_020fde5c);
- gpiAppendIntField(arg0,p+0x1f4,arg1);
- gpiAppendStringField(arg0,p+0x1f4,&gpiKeyMsg);
- gpiAppendStringField(arg0,p+0x1f4,(s32)buf);
- gpiAppendStringField(arg0,p+0x1f4,&data_020fddc4);
- return 0;
+/* Queue a buddy message for server delivery with session key and recipient fields. */
+s32 gpiSendMessageToServer(void **gpi, s32 playerId, s32 messageType, void *message) {
+    void gpiAppendStringField(M2C_UNK, M2C_UNK, M2C_UNK);
+    extern M2C_UNK gpiKeyBm;
+    extern M2C_UNK gpiKeySessionKey;
+    extern M2C_UNK gpiKeyTarget;
+    extern M2C_UNK gpiKeyMsg;
+    extern M2C_UNK gpiKeyFinal;
+    u8 messageCopy[GPI_MESSAGE_STACK_SIZE];
+    void *connection;
+    connection = *gpi;
+    StringCopyN(messageCopy, message, GPI_MESSAGE_COPY_SIZE);
+    gpiAppendStringField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, &gpiKeyBm);
+    gpiAppendIntField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, messageType);
+    gpiAppendStringField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, &gpiKeySessionKey);
+    gpiAppendIntField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, M2C_FIELD(connection, s32 *, GPI_CONN_SESSION_KEY));
+    gpiAppendStringField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, &gpiKeyTarget);
+    gpiAppendIntField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, playerId);
+    gpiAppendStringField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, &gpiKeyMsg);
+    gpiAppendStringField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, (s32)messageCopy);
+    gpiAppendStringField(gpi, connection + GPI_CONN_OUTPUT_BUFFER, &gpiKeyFinal);
+    return 0;
 }
 
 /* Queues an outgoing gpi message for a player: a peer that is already connected
@@ -143,37 +145,40 @@ else {r=gpiPeerBeginConnect(gpi,peer);if(r)return r;}
 r=gpiPeerAddMessage(gpi,peer,messageType,message);if(!r)return 0;return r;
 }
 
-s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
+/* Sends the \authadd\ message that adds the profile `profileId` to the buddy
+ * list, then releases the temporary profile record: its use count is decremented
+ * and, once it reaches zero, its signature string and the record are freed. */
+s32 gpiAuthAddProfile(void **connection, M2C_UNK profileId) {
     M2C_UNK gpiFree(s32);
-    s32 func_0204ee40(void **, void *);
+    s32 gpiAppendAuthAddCommand(void **, void *);
     s32 gpiFindBuddyStatus(void **, M2C_UNK, void **);
     M2C_UNK gpiFreeBuddyList(void **, void *);
     s32 gpiPeerConnectionDone(void *);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
-    extern M2C_UNK data_020fde60;
-    void *sp0;
-    s32 temp_r0;
-    void *temp_r5;
+    extern M2C_UNK gGpiMsgInvalidProfile;
+    void *profile;
+    s32 result;
+    void *gpi;
 
-    temp_r5 = *arg0;
-    if (gpiFindBuddyStatus(arg0, arg1, &sp0) == 0) {
-        gpiSetErrorString(arg0, &data_020fde60);
+    gpi = *connection;
+    if (gpiFindBuddyStatus(connection, profileId, &profile) == 0) {
+        gpiSetErrorString(connection, &gGpiMsgInvalidProfile);
         return 2;
     }
-    if (M2C_FIELD(sp0, s32 *, 0x10) == 0) {
-        gpiSetErrorString(arg0, &data_020fde60);
+    if (M2C_FIELD(profile, s32 *, 0x10) == 0) {
+        gpiSetErrorString(connection, &gGpiMsgInvalidProfile);
         return 2;
     }
-    temp_r0 = func_0204ee40(arg0,sp0);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    result = gpiAppendAuthAddCommand(connection,profile);
+    if (result != 0) {
+        return result;
     }
-    M2C_FIELD(sp0, s32 *, 0x14) = (s32) (M2C_FIELD(sp0, s32 *, 0x14) - 1);
-    if ((M2C_FIELD(temp_r5, s32 *, 0x100) == 0) && ((s32) M2C_FIELD(sp0, s32 *, 0x14) <= 0)) {
-        gpiFree(M2C_FIELD(sp0, s32 *, 0x10));
-        M2C_FIELD(sp0, s32 *, 0x10) = 0;
-        if (gpiPeerConnectionDone(sp0) != 0) {
-            gpiFreeBuddyList(arg0, sp0);
+    M2C_FIELD(profile, s32 *, 0x14) = (s32) (M2C_FIELD(profile, s32 *, 0x14) - 1);
+    if ((M2C_FIELD(gpi, s32 *, 0x100) == 0) && ((s32) M2C_FIELD(profile, s32 *, 0x14) <= 0)) {
+        gpiFree(M2C_FIELD(profile, s32 *, 0x10));
+        M2C_FIELD(profile, s32 *, 0x10) = 0;
+        if (gpiPeerConnectionDone(profile) != 0) {
+            gpiFreeBuddyList(connection, profile);
         }
     }
     return 0;
@@ -197,15 +202,15 @@ M2C_UNK gpiFreeBuddyList(void **,void *);
 M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 M2C_UNK gpiFree(s32);
 void AssertFailed(void *,void *,void *,s32);
-extern M2C_UNK data_020fde60,data_020fde74,data_020fdda0,data_020fde80,data_020fddc4,data_020fde90,data_020fde9c,data_020fdd84,data_020fdea8;
+extern M2C_UNK gGpiMsgInvalidProfile,data_020fde74,gpiKeySessionKey,data_020fde80,gpiKeyFinal,data_020fde90,data_020fde9c,data_020fdd84,data_020fdea8;
 void *session=*connection,*op; s32 refCount;
-if(!gpiFindBuddyStatus(connection,opId,&op)){gpiSetErrorString(connection,&data_020fde60);return 2;}
+if(!gpiFindBuddyStatus(connection,opId,&op)){gpiSetErrorString(connection,&gGpiMsgInvalidProfile);return 2;}
 gpiAppendStringField(connection,session+0x1f4,&data_020fde74);
-gpiAppendStringField(connection,session+0x1f4,&data_020fdda0);
+gpiAppendStringField(connection,session+0x1f4,&gpiKeySessionKey);
 gpiAppendIntField(connection,session+0x1f4,M2C_FIELD(session,s32 *,0x198));
 gpiAppendStringField(connection,session+0x1f4,&data_020fde80);
 gpiAppendIntField(connection,session+0x1f4,M2C_FIELD(op,s32 *,0));
-gpiAppendStringField(connection,session+0x1f4,&data_020fddc4);
+gpiAppendStringField(connection,session+0x1f4,&gpiKeyFinal);
 if(M2C_FIELD(op,void **,8)){
 refCount=M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,0);
 if(refCount<0)AssertFailed(&data_020fde90,&data_020fde9c,&data_020fdd84,0x1fd);

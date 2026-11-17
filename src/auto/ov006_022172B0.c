@@ -219,12 +219,12 @@ void func_ov006_02217840(M2C_UNK arg0) {
 }
 
 void func_ov006_02217858(void *arg0) {
-s32 func_020c7eb8(s32);
+s32 IsCampaignMapRecordValid(s32);
 M2C_FIELD(arg0,s32 *,0x4c)=HeapAllocBlock(0x1ea0);
 M2C_FIELD(arg0,s32 *,0x50)=HeapAllocBlock(0x45b0);
 M2C_FIELD(arg0,s32 *,0x54)=0;
 func_020e36dc(arg0); LoadUiGraphicsBank(4); func_02089728(); DisableMapConfirm();
-if(func_020c7eb8(M2C_FIELD(arg0,s32 *,0x34))){
+if(IsCampaignMapRecordValid(M2C_FIELD(arg0,s32 *,0x34))){
 switch(M2C_FIELD(arg0,s32 *,0x38)){case 0:func_02086720(0x4600002c);return;case 1:func_02086720(0x4600002d);return;}
 }else{
 switch(M2C_FIELD(arg0,s32 *,0x38)){case 0:func_02086720(0x46000020);return;case 1:func_02086720(0x46000021);return;}

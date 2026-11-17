@@ -85,7 +85,7 @@ void func_ov000_02170ca0(void) {
 void LoadSituationScreen(void *object){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK sSituationDir,sSituationNarcName,sSituationCgName,sSituationScName,sSituationClName;
-void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020c0fac(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void MI_CpuCopy32(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
+void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void MI_CpuCopy32(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
 void *oldEngine=gCur3DSpriteEngine;s32 i;void *dest;u8 *player;s32 tile,paletteOff;
 gCur3DSpriteEngine=g3DSpriteEngineMain;func_020994e0(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
@@ -93,7 +93,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=1;
 SetFileDirectory(&sSituationDir);OpenNarcArchive(GetLocalizedFileName(&sSituationNarcName));
 LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationCgName),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
 LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationScName),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
-AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);CloseNarcArchive();LoadFileToSpriteBuffer(&sSituationClName,192,32);func_020c0fac(object);
+AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);CloseNarcArchive();LoadFileToSpriteBuffer(&sSituationClName,192,32);CreateMenuUnitSprite(object);
 i=0;if(func_020cfb94()>0){tile=0x35c;do{
 player=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+(i+1)*MAP_PLAYER_STRIDE;dest=(u8 *)M2C_FIELD(g3DSpriteEngineMain,void * volatile *,0x1c)+(tile<<5);
 MI_CpuCopy32(func_ov000_0216ce10(player[PLAYER_REC_ARMY_STATE]),dest,128);
@@ -147,7 +147,7 @@ s32 func_020a8afc(s32);void func_0209b26c(s32,s32,s32,s32,u16,u16);
 void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 void CloseNarcArchive(void);void LoadScenePanelPalette(s32);
-s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void func_020c0fac(void *);
+s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void CreateMenuUnitSprite(void *);
 void *old=gCur3DSpriteEngine;s32 n;u16 v;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 n=func_020a8afc(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
@@ -162,7 +162,7 @@ CloseNarcArchive();
 v=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),v,0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-func_020c0fac(p);gCur3DSpriteEngine=old;
+CreateMenuUnitSprite(p);gCur3DSpriteEngine=old;
 }
 #pragma opt_common_subs reset
 void func_ov000_021711a4(void) {
@@ -231,7 +231,7 @@ extern M2C_UNK sUsernameDir,sUsernameNarcName,sUsernameCgName,sUsernameClName;
 void func_020e4c64(void);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 s32 func_ov000_0217122c(s32);void CloseNarcArchive(void);void LoadScenePanelPalette(s32);
-s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void func_020c0fac(void *);
+s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void CreateMenuUnitSprite(void *);
 void *oldEngine=gCur3DSpriteEngine;s32 i;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020e4c64();SetFileDirectory(&sUsernameDir);
@@ -244,7 +244,7 @@ AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),(u16)Get3DSpriteLayerSi
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=3;
-func_020c0fac(screen);gCur3DSpriteEngine=oldEngine;
+CreateMenuUnitSprite(screen);gCur3DSpriteEngine=oldEngine;
 }
 
 /* Draw the username entry rows set up by LoadUsernameScreen: for each player slot

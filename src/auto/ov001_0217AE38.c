@@ -41,7 +41,7 @@ void func_ov001_0217af80(s32 arg0) {
     extern M2C_UNK gMapSelectState;
     s32 delta, remainder;
     u32 position;
-    func_ov001_02183a08();
+    Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
     if ((u32)M2C_FIELD(&gMapSelectState, u16 *, 2) > 4U) M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - 4;
     else M2C_FIELD(&gMapSelectState, u16 *, 2) = 0;
@@ -59,7 +59,7 @@ void func_ov001_0217af80(s32 arg0) {
     if (remainder != 0) return;
     func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
     func_ov001_021839e4();
-    func_ov001_021839f0();
+    Ov001_UnblockScrollBar();
     func_ov001_0217b130();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
     Ov001_PostTaskMessage(0, arg0);
@@ -69,7 +69,7 @@ void func_ov001_0217b03c(s32 arg0) {
     s32 func_020020c4(u16, s32);
     extern M2C_UNK gMapSelectState;
     s32 result;
-    func_ov001_02183a08();
+    Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) + 4;
     result = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
@@ -81,7 +81,7 @@ void func_ov001_0217b03c(s32 arg0) {
     func_ov001_0217ac18();
     func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
     func_ov001_021839e4();
-    func_ov001_021839f0();
+    Ov001_UnblockScrollBar();
     func_ov001_0217b130();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
     Ov001_PostTaskMessage(0, arg0);
@@ -161,13 +161,13 @@ void func_ov001_0217b33c(void) {
 }
 
 void func_ov001_0217b3c0(void) {
-    M2C_UNK func_ov001_021837e4(s32, u8, u8);
+    M2C_UNK Ov001_LoadObjTile(s32, u8, u8);
     struct Table { u8 values[1]; };
     extern struct Table data_ov001_0218f794;
     extern M2C_UNK gMapSelectState;
     struct Table table = data_ov001_0218f794;
     u8 value = table.values[0];
-    func_ov001_021837e4(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8), value, value);
+    Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8), value, value);
 }
 
 void func_ov001_0217b3f0(void) {
@@ -185,14 +185,14 @@ void func_ov001_0217b3f0(void) {
 
 void func_ov001_0217b41c(void) {
     M2C_UNK Ov001_UnlockIconRow();
-    M2C_UNK func_ov001_021839f0();
+    M2C_UNK Ov001_UnblockScrollBar();
     s32 func_ov001_0218665c();
     extern M2C_UNK func_ov001_0217a3a8;
     if (func_ov001_0218665c() != 0) {
         return;
     }
     Ov001_UnlockIconRow();
-    func_ov001_021839f0();
+    Ov001_UnblockScrollBar();
     Ov001_SetStepCallback(&func_ov001_0217a3a8);
 }
 
@@ -201,16 +201,16 @@ void func_ov001_0217b41c(void) {
  * for the mode, creates the text panel and cursor sprite and installs the first
  * step callback. */
 void InitNameEntryScreen(void) {
-extern void *data_ov001_0218f81c; extern void *gNameEntryState;
+extern void *gOv001NameEntryConfig; extern void *gNameEntryState;
 void *Ov001_Alloc(s32,s32);void Ov001_GetNameEntryMode(s32 *,s32);
 s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217b634(void);
-u8 modeMessages[2]={M2C_FIELD(&data_ov001_0218f81c,u8 *,0),M2C_FIELD(&data_ov001_0218f81c,u8 *,1)};s32 mode,variant;
+u8 modeMessages[2]={M2C_FIELD(&gOv001NameEntryConfig,u8 *,0),M2C_FIELD(&gOv001NameEntryConfig,u8 *,1)};s32 mode,variant;
 gNameEntryState=Ov001_Alloc(44,4);
 Ov001_GetNameEntryMode(&mode,(s32)&variant);
 if(mode==0) {func_ov001_021846f8((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
 func_ov001_0217b578();func_ov001_02172250(mode+9);
-if(variant==1)func_ov001_02171c24(53,-1,0);else func_ov001_02171c24(modeMessages[mode],-1,0);
+if(variant==1)Ov001_ShowMessagePanel(53,-1,0);else Ov001_ShowMessagePanel(modeMessages[mode],-1,0);
 func_ov001_02171dd0(2);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_PANEL)=CreateTextPanel(0,0);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR)=func_ov001_0218a5f0(0,62);
@@ -343,43 +343,47 @@ void func_ov001_0217b8f8(void) {
 void func_ov001_0217b914(void) {
     M2C_UNK func_ov001_02172824();
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_0217b944;
+    extern M2C_UNK Ov001_HandleNameEntryResult;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02172824();
     Ov001_PlaySound(0x15);
-    Ov001_SetStepCallback(&func_ov001_0217b944);
+    Ov001_SetStepCallback(&Ov001_HandleNameEntryResult);
 }
 
-void func_ov001_0217b944(void) {
-    s32 func_ov001_02172894();
+/* Acts on the on-screen keyboard's name-entry result once the menu task has
+ * finished: a cancelled entry (0) moves straight on, a rejected name (2) shows
+ * the "invalid name" message and a valid name shows the completion message for
+ * the entry's mode (the two message ids at gOv001NameEntryConfig+8/+0xC). */
+void Ov001_HandleNameEntryResult(void) {
+    s32 Ov001_IsMenuActive();
     void Ov001_GetNameEntryMode(s32 *, s32);
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
-    extern void *data_ov001_0218f81c;
+    extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
     extern M2C_UNK func_ov001_0217ba1c;
     extern M2C_UNK func_ov001_0217bc7c;
     extern M2C_UNK func_ov001_0217bf14;
-    s32 sp8[2];
-    s32 sp4;
-    u8 temp_r0;
+    s32 modeMessages[2];
+    s32 mode;
+    u8 result;
 
-    sp8[0] = M2C_FIELD(&data_ov001_0218f81c, s32 *, 8);
-    sp8[1] = M2C_FIELD(&data_ov001_0218f81c, s32 *, 0xC);
-    if (func_ov001_02172894() != 0) return;
-    temp_r0 = M2C_FIELD(gNameEntryState, u8 *, 0x2A);
-    if (temp_r0 == 0) {
+    modeMessages[0] = M2C_FIELD(&gOv001NameEntryConfig, s32 *, 8);
+    modeMessages[1] = M2C_FIELD(&gOv001NameEntryConfig, s32 *, 0xC);
+    if (Ov001_IsMenuActive() != 0) return;
+    result = M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT);
+    if (result == 0) {
         Ov001_SetStepCallback(&func_ov001_0217ba1c);
         return;
     }
-    if (temp_r0 == 2) {
+    if (result == 2) {
         Ov001_ShowMessage(6, 3, 1, -1, 0);
         Ov001_SetStepCallback(&func_ov001_0217bf14);
         return;
     }
-    Ov001_GetNameEntryMode(0, &sp4);
-    Ov001_ShowMessage(sp8[sp4], 2, 1, -1, 0);
+    Ov001_GetNameEntryMode(0, &mode);
+    Ov001_ShowMessage(modeMessages[mode], 2, 1, -1, 0);
     Ov001_SetStepCallback(&func_ov001_0217bc7c);
 }
 
@@ -400,7 +404,7 @@ void func_ov001_0217ba1c(void) {
     extern void *data_ov001_02190758;
     extern void GX_LoadOBJPltt(void);
     extern void InitMapListScreen(void);
-    extern void func_ov001_02179ea8(void);
+    extern void MapSelectList_Init(void);
     extern void func_ov001_021828ac(void);
     s32 sp4, sp0;
     void *p;
@@ -419,7 +423,7 @@ void func_ov001_0217ba1c(void) {
         if (M2C_FIELD(gNameEntryState, u8 *, 0x2A) == 0) {
             Ov001_SetNextScreenMode(0, 1);
             Ov001_SetNameEntryMode(1, 0);
-            Ov001_SetStepCallback((s32 *)func_ov001_02179ea8);
+            Ov001_SetStepCallback((s32 *)MapSelectList_Init);
         } else {
             Ov001_SetNextScreenMode(0, 0);
             Ov001_SetNameEntryMode(0, 1);
@@ -490,14 +494,14 @@ void func_ov001_0217bcd8(void) {
     void Ov001_GetNameEntryMode(s32 *, s32);
     void func_ov001_0217b688(void);
     void func_ov001_0217ba1c(void);
-    extern void *data_ov001_0218f81c;
+    extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
 
     void *entries[2];
     s32 index;
 
-    entries[0] = M2C_FIELD(&data_ov001_0218f81c, void **, 0x10);
-    entries[1] = M2C_FIELD(&data_ov001_0218f81c, void **, 0x14);
+    entries[0] = M2C_FIELD(&gOv001NameEntryConfig, void **, 0x10);
+    entries[1] = M2C_FIELD(&gOv001NameEntryConfig, void **, 0x14);
 
     if (func_ov001_0218665c()) return;
     if (M2C_FIELD(gNameEntryState, u8 *, 0x2a) == 0) {

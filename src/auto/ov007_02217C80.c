@@ -1,5 +1,6 @@
 /* 8 functions from 0x02217C80 to 0x02218AD0 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "ov007_map_editor.h"
 typedef struct MenuPosition { s8 kind; u8 x, y, unk3, unk4; } MenuPosition;
 typedef struct MenuList007 { s32 first, second; s8 a,b,c,d,e; u8 alpha, flag, alpha2; u16 count; u8 flag2, pad; void *buffer; u8 rest[12]; } MenuList007;
 #pragma push
@@ -155,15 +156,15 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK func_02089424();
     void *func_020896f0(void *);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    u16 func_020aae10(void *);
-    u16 func_020aae44(void *);
+    M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    u16 GetUnitSpriteWidth(void *);
+    u16 GetUnitSpriteHeight(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
-    s8 func_ov007_02211f00();
-    s32 func_ov007_02211f30();
-    M2C_UNK func_ov007_02211f40();
+    s8 GetMapEditorMode();
+    s32 GetMapEditorUnitKind();
+    M2C_UNK GetMapEditorUnitOwner();
     s32 GetMapEditorTerrainKind();
     M2C_UNK GetMapEditorTerrainOwner();
     s8 func_ov007_02217b90(M2C_UNK, s32);
@@ -231,12 +232,12 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x34) = 1;
     M2C_FIELD(arg0, s8 *, 0x35) = 0;
     M2C_FIELD(arg0, s8 *, 0x36) = 0;
-    M2C_FIELD(arg0, s8 *, 0x37) = func_ov007_02211f00();
+    M2C_FIELD(arg0, s8 *, 0x37) = GetMapEditorMode();
     M2C_FIELD(arg0, s8 *, 0x3A) = func_ov007_02217b90(0, GetMapEditorTerrainKind());
-    M2C_FIELD(arg0, s8 *, 0x3B) = func_ov007_02217b90(1, func_ov007_02211f30());
+    M2C_FIELD(arg0, s8 *, 0x3B) = func_ov007_02217b90(1, GetMapEditorUnitKind());
     GetMapEditorTerrainOwner();
     M2C_FIELD(arg0, s8 *, 0x38) = func_ov007_02217c1c();
-    func_ov007_02211f40();
+    GetMapEditorUnitOwner();
     M2C_FIELD(arg0, s8 *, 0x39) = func_ov007_02217c1c();
     M2C_FIELD(arg0, s16 *, 0x3C) = 0;
     M2C_FIELD(arg0, s16 *, 0x3E) = 0;
@@ -247,7 +248,7 @@ void func_ov007_02217f8c(void *arg0) {
     data_027e01d8 = g3DSpriteEngineMain;
     func_020a9a30(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x30) + 0x260);
     M2C_FIELD(arg0, void **, 0x44) = func_020ab1c4(arg0);
-    func_020aab24(M2C_FIELD(arg0, void **, 0x44), 0, 0x35C, 3, 0);
+    InitUnitSprite(M2C_FIELD(arg0, void **, 0x44), 0, 0x35C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x44);
     func_02088e84(temp_r6, 0xC0, 0xA0, 0x100, 0xA0);
     if (M2C_FIELD(M2C_FIELD(temp_r6, void **, 0x64), u8 *, 0x12) != 0) {
@@ -258,12 +259,12 @@ void func_ov007_02217f8c(void *arg0) {
     if (var_r0 & 0xFF) {
         temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
-        temp_r9 = func_020aae10(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (s32) temp_r9, (s32) func_020aae44(temp_r6));
+        temp_r9 = GetUnitSpriteWidth(temp_r6);
+        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (s32) temp_r9, (s32) GetUnitSpriteHeight(temp_r6));
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x44), 1);
     M2C_FIELD(arg0, void **, 0x48) = func_020ab1c4(arg0);
-    func_020aab24(M2C_FIELD(arg0, void **, 0x48), 2, 0x36C, 3, 0);
+    InitUnitSprite(M2C_FIELD(arg0, void **, 0x48), 2, 0x36C, 3, 0);
     temp_r6_2 = M2C_FIELD(arg0, void **, 0x48);
     func_02088e84(temp_r6_2, 0xE0, 0xA0, 0x100, 0xA0);
     if (M2C_FIELD(M2C_FIELD(temp_r6_2, void **, 0x64), u8 *, 0x12) != 0) {
@@ -274,12 +275,12 @@ void func_ov007_02217f8c(void *arg0) {
     if (var_r0_2 & 0xFF) {
         temp_r7_2 = M2C_FIELD(temp_r6_2, s16 *, 0x52);
         temp_r8_2 = M2C_FIELD(temp_r6_2, s16 *, 0x50);
-        temp_r9_2 = func_020aae10(temp_r6_2);
-        func_02087d84(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (s32) temp_r9_2, (s32) func_020aae44(temp_r6_2));
+        temp_r9_2 = GetUnitSpriteWidth(temp_r6_2);
+        func_02087d84(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (s32) temp_r9_2, (s32) GetUnitSpriteHeight(temp_r6_2));
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x48), 2);
     M2C_FIELD(arg0, void **, 0x4C) = func_020ab1c4(arg0);
-    func_020aab24(M2C_FIELD(arg0, void **, 0x4C), 0x14, 0x37C, 3, 0);
+    InitUnitSprite(M2C_FIELD(arg0, void **, 0x4C), 0x14, 0x37C, 3, 0);
     temp_r6_3 = M2C_FIELD(arg0, void **, 0x4C);
     func_02088e84(temp_r6_3, 0xA0, 0xA0, 0x100, 0xA0);
     if (M2C_FIELD(M2C_FIELD(temp_r6_3, void **, 0x64), u8 *, 0x12) != 0) {
@@ -290,8 +291,8 @@ void func_ov007_02217f8c(void *arg0) {
     if (var_r0_3 & 0xFF) {
         temp_r7_3 = M2C_FIELD(temp_r6_3, s16 *, 0x52);
         temp_r8_3 = M2C_FIELD(temp_r6_3, s16 *, 0x50);
-        temp_r9_3 = func_020aae10(temp_r6_3);
-        func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (s32) temp_r9_3, (s32) func_020aae44(temp_r6_3));
+        temp_r9_3 = GetUnitSpriteWidth(temp_r6_3);
+        func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (s32) temp_r9_3, (s32) GetUnitSpriteHeight(temp_r6_3));
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x4C), 0x304);
     SetFileDirectory(&data_ov007_02220030);
@@ -354,53 +355,58 @@ void func_ov007_02217f8c(void *arg0) {
     PlaySoundEffect(0x10017);
 }
 
-void func_ov007_02218570(void *arg0) {
+/* Apply the palette entry the cursor picked on the editor's palette page to the
+ * active brush: set the terrain kind/owner (terrain page) or the unit kind/owner
+ * (unit page) from that entry, reset the tool and refresh the map graphics, with
+ * the confirm sound.  With no entry picked, just play the cancel sound.  Either
+ * way the palette panel is closed afterwards. */
+void MapEditor_ApplyPaletteSelection(void *editor) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_ov007_02211ea4(u8);
-    M2C_UNK func_ov007_02211f10(M2C_UNK);
-    M2C_UNK func_ov007_02211f60();
-    M2C_UNK func_ov007_02211f70();
+    M2C_UNK SetMapEditorMode(u8);
+    M2C_UNK SetMapEditorTool(M2C_UNK);
+    M2C_UNK SetMapEditorUnitKind();
+    M2C_UNK SetMapEditorUnitOwner();
     M2C_UNK SetMapEditorTerrainKind();
     M2C_UNK SetMapEditorTerrainOwner();
-    M2C_UNK func_ov007_02217bd0(M2C_UNK, u8);
-    M2C_UNK func_ov007_02217be8(M2C_UNK, s32, u8);
-    M2C_UNK func_ov007_0221ab4c();
-    u8 temp_r0;
-    void *temp_r2;
-    void *temp_r2_2;
+    M2C_UNK MapEditor_GetPaletteKind(M2C_UNK, u8);
+    M2C_UNK MapEditor_GetPaletteOwner(M2C_UNK, s32, u8);
+    M2C_UNK MapEditor_RefreshGraphics();
+    u8 page;
+    void *pageState;
+    void *pageState2;
 
-    if (M2C_FIELD(arg0, u8 *, 0x36) != 0) {
-        func_ov007_02211ea4(M2C_FIELD(arg0, u8 *, 0x37));
-        func_ov007_02211f10(0);
-        temp_r0 = M2C_FIELD(arg0, u8 *, 0x37);
-        switch (temp_r0) {                          /* irregular */
+    if (M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PENDING) != 0) {
+        SetMapEditorMode(M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE));
+        SetMapEditorTool(0);
+        page = M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE);
+        switch (page) {                             /* irregular */
         case 0:
-            func_ov007_02217bd0(0, M2C_FIELD((arg0 + temp_r0), u8 *, 0x3A));
+            MapEditor_GetPaletteKind(0, M2C_FIELD((editor + page), u8 *, MAP_EDITOR_PANEL_ENTRY));
             SetMapEditorTerrainKind();
-            temp_r2 = arg0 + M2C_FIELD(arg0, u8 *, 0x37);
-            func_ov007_02217be8(0, M2C_FIELD(temp_r2, u8 *, 0x3A), M2C_FIELD(temp_r2, u8 *, 0x38));
+            pageState = editor + M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE);
+            MapEditor_GetPaletteOwner(0, M2C_FIELD(pageState, u8 *, MAP_EDITOR_PANEL_ENTRY), M2C_FIELD(pageState, u8 *, MAP_EDITOR_PANEL_OWNER));
             SetMapEditorTerrainOwner();
             break;
         case 1:
-            func_ov007_02217bd0(1, M2C_FIELD((arg0 + temp_r0), u8 *, 0x3A));
-            func_ov007_02211f60();
-            temp_r2_2 = arg0 + M2C_FIELD(arg0, u8 *, 0x37);
-            func_ov007_02217be8(1, M2C_FIELD(temp_r2_2, u8 *, 0x3A), M2C_FIELD(temp_r2_2, u8 *, 0x38));
-            func_ov007_02211f70();
+            MapEditor_GetPaletteKind(1, M2C_FIELD((editor + page), u8 *, MAP_EDITOR_PANEL_ENTRY));
+            SetMapEditorUnitKind();
+            pageState2 = editor + M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE);
+            MapEditor_GetPaletteOwner(1, M2C_FIELD(pageState2, u8 *, MAP_EDITOR_PANEL_ENTRY), M2C_FIELD(pageState2, u8 *, MAP_EDITOR_PANEL_OWNER));
+            SetMapEditorUnitOwner();
             break;
         }
-        func_ov007_0221ab4c();
-        PlaySoundEffect(0x10016);
+        MapEditor_RefreshGraphics();
+        PlaySoundEffect(0x10016); /* palette entry applied */
     } else {
-        PlaySoundEffect(0x1000F);
+        PlaySoundEffect(0x1000F); /* SOUND_MENU_CANCEL */
     }
-    M2C_FIELD(arg0, s8 *, 0x35) = 1;
+    M2C_FIELD(editor, s8 *, MAP_EDITOR_PANEL_CLOSE) = 1;
 }
 
 #pragma opt_propagation off
 void func_ov007_0221863c(void *arg0) {
     s8 *func_ov007_02217b64(u8);
-    M2C_UNK func_ov007_02217be8(M2C_UNK, s32, u8);
+    M2C_UNK MapEditor_GetPaletteOwner(M2C_UNK, s32, u8);
     s32 func_ov007_02217c50(void *);
     void *MemAlloc(s32);
     M2C_UNK MemFree(void *);
@@ -462,7 +468,7 @@ void func_ov007_0221863c(void *arg0) {
         if(table[0]>=0) {
         offset=0x7b80;
         do {
-            s32 id=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
+            s32 id=MapEditor_GetPaletteOwner(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
             s32 v0=func_ov000_0216cda4(table[0]);
             void *v1=func_ov000_0216cdcc(table[0]);
             void *v2=func_ov000_0216cdec(table[0],id);
@@ -483,7 +489,7 @@ void func_ov007_0221863c(void *arg0) {
         if(table[0]>=0) {
         offset=0x7b80;
         do {
-            i=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),j,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
+            i=MapEditor_GetPaletteOwner(M2C_FIELD(arg0,u8 *,0x37),j,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
             variant=M2C_FIELD((u8 *)*gCurrentMap+i*140+0x6000,u8 *,0x7cd);
             v0=func_ov000_0216cd4c(table[0]);
             v1=GetUnitIconTiles(table[0],variant);

@@ -40,8 +40,8 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = func_020a25d8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = func_020a2608(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     kind = ((UnitKind75310 *)unit)->value;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = func_020a7b24((s32)kind);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = func_020a2698(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = GetUnitKindMoveRange((s32)kind);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = GetUnitMoveBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = func_020a7bf8((s32)kind);
     kind = ((UnitKind75310 *)unit)->value;
@@ -70,7 +70,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
 #pragma pop
 void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     s32 GetUnitKindByte0(s32);
-    s32 func_020a7b24(s32);
+    s32 GetUnitKindMoveRange(s32);
     s32 func_020a7bec(s32);
     s32 func_020a7bf8(s32);
     s32 func_020a7c50(s32);
@@ -91,7 +91,7 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = func_020a7c50(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = 0;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = func_020a7b24(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = GetUnitKindMoveRange(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = func_020a7bf8(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x34) = func_020a7bec(statIndex);

@@ -223,7 +223,7 @@ s32 gpiHandleServerData(void *ctx) {
     s32 ParseInt(void *);
     s32 func_020544d4(void **, void **, s32);
     s32 func_0205455c(void *, s32, void *);
-    s32 func_0205817c(void *, void *, s32);
+    s32 gpiProcessErrorReply(void *, void *, s32);
     s32 StringCompareN(void *, void *, s32);
     s32 func_0204eee8(void *, void *);
     s32 func_02054520(void *);
@@ -274,7 +274,7 @@ s32 gpiHandleServerData(void *ctx) {
                     if (result) return result;
                 }
             } else {
-                if (func_0205817c(ctx, scan, 1)) return 4;
+                if (gpiProcessErrorReply(ctx, scan, 1)) return 4;
                 scan = M2C_FIELD(conn, u8 **, 0x1ec);
                 if (!StringCompareN(scan, gGpiKeyBm, 4)) {
                     result = func_0204eee8(ctx, scan);
@@ -343,25 +343,25 @@ s32 gpiThink(void **connection, s32 waitId) {
     return result;
 }
 
-s32 func_0204ee40(void **arg0, void *arg1) {
+s32 gpiAppendAuthAddCommand(void **arg0, void *arg1) {
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, s32);
     extern M2C_UNK data_020fdd94;
-    extern M2C_UNK data_020fdda0;
+    extern M2C_UNK gpiKeySessionKey;
     extern M2C_UNK data_020fddac;
     extern M2C_UNK data_020fddbc;
-    extern M2C_UNK data_020fddc4;
+    extern M2C_UNK gpiKeyFinal;
     void *temp_r4;
 
     temp_r4 = *arg0;
     gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdd94);
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdda0);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &gpiKeySessionKey);
     gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
     gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddac);
     gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, s32 *, 0));
     gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddbc);
     gpiAppendStringField(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, M2C_UNK **, 0x10));
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddc4);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &gpiKeyFinal);
     return 0;
 }
 

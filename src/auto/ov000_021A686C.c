@@ -3,20 +3,23 @@
 #include "battle_map.h"
 #include "ov000_ai.h"
 
-s32 func_ov000_021a686c(void) {
+/* Pick the property (type-2) target candidate to aim a newly built kind-14
+ * unit at: among tiles whose direct and indirect threat are both below 40, the
+ * one the most enemy units can reach, then the one closest to an enemy. */
+s32 FindPropertyTargetCandidate(void) {
  extern s32 *gCurrentMap;
  extern u8 *gAiState;
  extern M2C_UNK gAiTargetCandidates;
- u8 *p; s32 i,rank,best,result;
- rank=0;i=0;best=32767;result=-1;p=(u8 *)&gAiTargetCandidates;
- for(;i<*gAiState;i++,p+=12) {
- if(p[3]<252 && p[2]==2) {
+ u8 *p; s32 i,reach,bestdistance,result;
+ reach=0;i=0;bestdistance=32767;result=-1;p=(u8 *)&gAiTargetCandidates;
+ for(;i<*gAiState;i++,p+=AI_CANDIDATE_STRIDE) {
+ if(p[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && p[AI_CANDIDATE_TYPE]==2) {
  s32 base=*gCurrentMap;
- s32 off=base+p[0];
- off+=M2C_FIELD(base+p[1]*2,u16 *,0x3758);
- if(M2C_FIELD(off,u8 *,0x2840)<40 && M2C_FIELD(off,u8 *,0x2d48)<40) {
- u8 r=p[6];
- if(rank<=r && (rank!=r || best>=p[7])) {best=p[7];rank=r;result=i;}
+ s32 off=base+p[AI_CANDIDATE_X];
+ off+=M2C_FIELD(base+p[AI_CANDIDATE_Y]*2,u16 *,MAP_ROW_OFFSETS);
+ if(M2C_FIELD(off,u8 *,MAP_CELL_THREAT_DIRECT)<40 && M2C_FIELD(off,u8 *,MAP_CELL_THREAT_INDIRECT)<40) {
+ u8 enemies=p[AI_PROPERTY_CANDIDATE_ENEMY_COUNT];
+ if(reach<=enemies && (reach!=enemies || bestdistance>=p[AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE])) {bestdistance=p[AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE];reach=enemies;result=i;}
  }
  }
  }
@@ -171,19 +174,21 @@ s32 HasAiTargetOfType(s32 a) {
  return 0;
 }
 
-s32 func_ov000_021a6e5c(u32 arg0) {
- switch(arg0) {
- case 1:case 2:case 3:return 0;
- case 4:case 10:case 11:case 12:case 13:return 1;
- case 6:case 7:case 9:case 26:return 2;
- case 14:case 15:case 16:case 17:return 3;
- case 18:case 19:return 4;
- case 20:case 21:return 5;
- case 23:return 6;
- case 24:case 25:return 7;
- case 22:return 8;
- default:return 10;
- }
+/* Return the index of a unit kind's representative in the AI's nine-entry
+ * threat-class table, or AI_THREAT_CLASS_NONE for a kind the AI does not model. */
+s32 GetUnitThreatClass(u32 kind) {
+    switch (kind) {
+    case 1: case 2: case 3: return 0;
+    case 4: case 10: case 11: case 12: case 13: return 1;
+    case 6: case 7: case 9: case 26: return 2;
+    case 14: case 15: case 16: case 17: return 3;
+    case 18: case 19: return 4;
+    case 20: case 21: return 5;
+    case 23: return 6;
+    case 24: case 25: return 7;
+    case 22: return 8;
+    default: return AI_THREAT_CLASS_NONE;
+    }
 }
 
 /* Scale an AI damage value by how much of the unit's range it can use: indirect

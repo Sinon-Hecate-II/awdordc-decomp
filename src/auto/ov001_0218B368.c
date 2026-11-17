@@ -327,7 +327,7 @@ return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 
 s32 func_ov001_0218bd1c(u16 *a){u16 box[4];box[0]=a[0];box[1]=a[1];box[2]=a[0]+a[2];box[3]=a[1]+a[3];return TouchRectPressed(box);}
 
-s32 func_ov001_0218bd64(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u16 x,y;
+s32 Ov001_ReadTouchPoint(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u16 x,y;
 if(!M2C_FIELD(p,TouchFlags *,0x38).active){x=M2C_FIELD(p,volatile u16 *,0x2c);y=M2C_FIELD(p,volatile u16 *,0x2e);a[0]=x;a[1]=y;return 0;}
 x=M2C_FIELD(p,volatile u16 *,0x28);y=M2C_FIELD(p,volatile u16 *,0x2a);a[0]=x;a[1]=y;return 1;
 }
@@ -410,20 +410,20 @@ void func_ov001_0218c0b8(void) {
 }
 #pragma pool_constants reset
 void func_ov001_0218c0e4(s32 n){
-extern s32 data_ov001_02193e68; void func_ov001_0218a74c(s32);
-func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e68+(n<<2),s32 *,0x800));
+extern s32 data_ov001_02193e68; void Ov001_QueuePop(s32);
+Ov001_QueuePop(M2C_FIELD(data_ov001_02193e68+(n<<2),s32 *,0x800));
 }
 
 void Ov001_ReleaseSprite(u32 *p){
 extern s32 data_ov001_02193e68;
-void func_ov001_0218a6f4(s32,void *);
+void Ov001_QueuePush(s32,void *);
 s32 i=0;
 *p=(*p&0xc1fffcff)|0x200;
 if((u32)p>=(u32)(data_ov001_02193e68+0x400))i=1;
-func_ov001_0218a6f4(M2C_FIELD(data_ov001_02193e68+(i<<2),s32 *,0x800),p);
+Ov001_QueuePush(M2C_FIELD(data_ov001_02193e68+(i<<2),s32 *,0x800),p);
 }
 
-s32 func_ov001_0218c150(s32 arg0, s32 arg1) {
+s32 Ov001_SpriteObjAddr(s32 arg0, s32 arg1) {
     extern s32 data_ov001_02193e68;
     return data_ov001_02193e68 + (arg0 << 0xA) + (arg1 * 8);
 }

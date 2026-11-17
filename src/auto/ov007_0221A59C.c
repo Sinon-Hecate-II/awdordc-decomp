@@ -17,7 +17,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc32x16[],gSpriteDesc64x32[];
 extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
 void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
-s32 GetCachedPlayerUnitCount(s32);s32 func_ov007_02211f00(void);s32 func_ov007_02211f40(void);s32 func_ov007_0221204c(void);
+s32 GetCachedPlayerUnitCount(s32);s32 GetMapEditorMode(void);s32 GetMapEditorUnitOwner(void);s32 func_ov007_0221204c(void);
 void DrawFrameRectBorder(s32,s32,s32,s32);void SetTextSpriteValue(void*,s32);void DrawTextSprite(void*);
 void DrawTileRow(u16,u8,u16,u16,s32);s32 func_ov007_0221216c(s32);
 u8 sp[44];void *saved;s32 i,x,tile,mode,width,height;
@@ -37,18 +37,18 @@ width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);height=M2C_FIELD(*gCurrentMap,u16 *,0
 DrawFrameRectBorder(64-((width*4)>>1),80-((height*4)>>1),0x80,1);
 AddSprite(8,157,(u16)((0x3ff&(360>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(9<<12)),gSpriteDesc16x16,15);
 AddSprite(72,141,(u16)((0x3ff&(364>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(10<<12)),gSpriteDesc16x32,15);
-mode=func_ov007_02211f00();
+mode=GetMapEditorMode();
 switch(mode){
 case 0:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
-func_020a9774(sp,0x38,0x92,4,50-GetCachedPlayerUnitCount(func_ov007_02211f40()));
+func_020a9774(sp,0x38,0x92,4,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
 func_020a9774(sp,0x78,0x92,3,99-func_ov007_0221204c());
 break;
 case 1:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
-func_020a9774(sp,0x38,0x92,3,50-GetCachedPlayerUnitCount(func_ov007_02211f40()));
+func_020a9774(sp,0x38,0x92,3,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
 func_020a9774(sp,0x78,0x92,4,99-func_ov007_0221204c());
 break;
 }
@@ -76,13 +76,13 @@ void func_ov007_0221ab38(void) {
     func_01ffa9e4(&data_ov007_022200b0);
 }
 
-void func_ov007_0221ab4c(void) {
+void MapEditor_RefreshGraphics(void) {
     M2C_UNK func_ov007_02219bd8();
     M2C_UNK func_ov007_02219d10();
-    M2C_UNK func_ov007_02219f4c();
+    M2C_UNK MapEditor_LoadTerrainBrushGraphics();
     M2C_UNK func_ov007_0221a018();
     M2C_UNK func_ov007_0221a104();
-    func_ov007_02219f4c();
+    MapEditor_LoadTerrainBrushGraphics();
     func_ov007_0221a018();
     func_ov007_02219bd8();
     func_ov007_02219d10();
@@ -106,13 +106,13 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s16 *,60)=-(64-((s32)(x*4)>>1)
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s16 *,68)=-(80-((s32)(y*4)>>1));
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;
 gCur3DSpriteEngine=saved;
-func_ov007_0221ab4c();
+MapEditor_RefreshGraphics();
 }
 
 void Map_SetTileAndRefresh(s32 a,s32 b,u16 c,u16 d) {
 extern void **gCurrentMap;
 s32 func_ov007_0221bd74(s32,s32);
-s32 func_ov007_0221bd00(s32,s32,s32);
+s32 Map_CanUnitKindStandOnCell(s32,s32,s32);
 void *p=*gCurrentMap;
 s32 t;
 M2C_FIELD((u8 *)p+2*(a+M2C_FIELD((u8 *)p+2*b,u16 *,0x3758)),s16 *,0xa10)=d;
@@ -120,7 +120,7 @@ p=*gCurrentMap;
 M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+2*b,u16 *,0x3758)),s8 *,0x1420)=c;
 t=func_ov007_0221bd74(a,b);
 if(t<0)return;
-if(func_ov007_0221bd00(a,b,t)!=0)return;
+if(Map_CanUnitKindStandOnCell(a,b,t)!=0)return;
 func_ov007_0221bcc0(a,b);
 }
 
@@ -224,7 +224,7 @@ ret1:
  * then optionally re-evaluate the eight neighbouring cells and redraw the 4x4
  * cells around the edited one. */
 s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
-    s32 func_0207f460(s32);
+    s32 TerrainByteToTileId(s32);
     void func_02076980(s32, s32, s32, s32);
     void func_0207843c(s32, s32, s32, s32);
     s32 Map_CanPlaceTile(s32, s32, s32, s32);
@@ -243,7 +243,7 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     u8 *offset;
 
     encodedTile = tile | (dir << 5);
-    graphic = func_0207f460(encodedTile);
+    graphic = TerrainByteToTileId(encodedTile);
 
     result = Map_CanPlaceTile(x, y, tile, dir);
     if (result != 1) {

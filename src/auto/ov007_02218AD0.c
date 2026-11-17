@@ -365,8 +365,8 @@ void func_ov007_02219398(void) {
 }
 
 void func_ov007_022193a4(void) {
-    M2C_UNK func_ov007_02218570();
-    func_ov007_02218570();
+    M2C_UNK MapEditor_ApplyPaletteSelection();
+    MapEditor_ApplyPaletteSelection();
 }
 
 void func_ov007_022193b0(void) {
@@ -417,26 +417,31 @@ M2C_UNK GetPanelObject(void) {
     return FindObjectByClass(&data_ov007_0221ff90);
 }
 
-void func_ov007_02219444(void *arg0) {
+/* Enter callback of the CO-power panel's open-animation driver: when the panel
+ * uses its first graphic variant, set the main engine's split state (the bank's
+ * OBJ priority, no rows above and the rows-below count the open starts from) and
+ * start the three row sprites' slide-in over the eight open frames; then hide the
+ * panel's two spare sprites and reset the driver's frame counter. */
+void BeginPanelOpen(void *driver) {
 M2C_UNK GetPanelObject(void); void func_02088eec(void *,s32); void Hide3DSprite(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
-u16 * volatile sp0; u16 **old; void *r4;
-r4=(void *)GetPanelObject();
-if(M2C_FIELD(r4,u8 *,0x34)!=0) {
-old=gCur3DSpriteEngine;
+u16 * volatile attrReg; u16 **savedEngine; void *panel;
+panel=(void *)GetPanelObject();
+if(M2C_FIELD(panel,u8 *,OV007_PANEL_VARIANT_A)!=0) {
+savedEngine=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-sp0=(u16 *)((u8 *)*g3DSpriteEngineMain+0x12);
-*sp0=(*sp0 & ~0xc0)|0x40;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=0x10;
-gCur3DSpriteEngine=old;
-func_02088eec(M2C_FIELD(r4,void **,0x44),8);
-func_02088eec(M2C_FIELD(r4,void **,0x48),8);
-func_02088eec(M2C_FIELD(r4,void **,0x4c),8);
+attrReg=(u16 *)((u8 *)*g3DSpriteEngineMain+DS3D_BANK_OAMATTR);
+*attrReg=(*attrReg & ~0xc0)|0x40;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_ABOVE)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_BELOW)=0x10;
+gCur3DSpriteEngine=savedEngine;
+func_02088eec(M2C_FIELD(panel,void **,OV007_PANEL_ROW0),8);
+func_02088eec(M2C_FIELD(panel,void **,OV007_PANEL_ROW1),8);
+func_02088eec(M2C_FIELD(panel,void **,OV007_PANEL_ROW2),8);
 }
-Hide3DSprite(M2C_FIELD(r4,void **,0x50));
-Hide3DSprite(M2C_FIELD(r4,void **,0x54));
-M2C_FIELD(arg0,u16 *,0x54)=0;
+Hide3DSprite(M2C_FIELD(panel,void **,OV007_PANEL_SPRITE_A));
+Hide3DSprite(M2C_FIELD(panel,void **,OV007_PANEL_SPRITE_B));
+M2C_FIELD(driver,u16 *,OV007_PANEL_ANIM_FRAME)=0;
 }
 
 /* Panel-open animation step: ease the CO panel's three values from 0 to 256 over
@@ -493,23 +498,27 @@ void func_ov007_02219634(void) {
 
 void func_ov007_022196f4(void *arg0) { M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))CreateSpriteObject; extern M2C_UNK data_ov007_0221fdf8; f((void **)&data_ov007_0221fdf8,arg0); }
 
-void func_ov007_0221970c(void *arg) {
+/* BeginPanelClose: prepare the CO panel for its close animation — when the
+   second panel variant is in use, configure the main 3D sprite bank's split and
+   start sliding the panel's three row sprites out, then hide its two small
+   sprites and reset the driver's frame counter. */
+void BeginPanelClose(void *driver) {
 M2C_UNK GetPanelObject(void);
-void func_02088fc4(void *, int); void Hide3DSprite(void *);
+void Start3DSpriteSlideOut(void *, int); void Hide3DSprite(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
-u16 * volatile sp0; u16 **old; void *r4;
-r4=(void *)GetPanelObject();
-if (M2C_FIELD(r4,u8 *,0x35)) {
-old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
-sp0=*g3DSpriteEngineMain+9; *sp0=(*sp0 & ~0xc0)|0x40;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=0; M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=4; gCur3DSpriteEngine=old;
-func_02088fc4(M2C_FIELD(r4,void **,0x44),6);
-func_02088fc4(M2C_FIELD(r4,void **,0x48),6);
-func_02088fc4(M2C_FIELD(r4,void **,0x4c),6);
+u16 * volatile bankAttr; u16 **savedEngine; void *panel;
+panel=(void *)GetPanelObject();
+if (M2C_FIELD(panel,u8 *,OV007_PANEL_VARIANT_B)) {
+savedEngine=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
+bankAttr=*g3DSpriteEngineMain+9; *bankAttr=(*bankAttr & ~0xc0)|0x40;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_ABOVE)=0; M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_BELOW)=4; gCur3DSpriteEngine=savedEngine;
+Start3DSpriteSlideOut(M2C_FIELD(panel,void **,0x44),6);
+Start3DSpriteSlideOut(M2C_FIELD(panel,void **,0x48),6);
+Start3DSpriteSlideOut(M2C_FIELD(panel,void **,0x4c),6);
 }
-Hide3DSprite(M2C_FIELD(r4,void **,0x50));
-Hide3DSprite(M2C_FIELD(r4,void **,0x54));
-M2C_FIELD(arg,u16 *,0x54)=0;
+Hide3DSprite(M2C_FIELD(panel,void **,0x50));
+Hide3DSprite(M2C_FIELD(panel,void **,0x54));
+M2C_FIELD(driver,u16 *,OV007_PANEL_ANIM_FRAME)=0;
 }
 
 /* Per-frame driver of the ov007 CO-power panel's close animation: eases the

@@ -2,10 +2,10 @@
 #include "common.h"
 extern u8 data_ov003_0220f12c[];
 static inline void ov003_refresh_sprite(void *sprite) {
-s32 func_020aae10(void *);s32 func_020aae44(void *);
+s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s16,s16,u16,u16);
 u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;
-if(active){s16 y=M2C_FIELD(sprite,s16 *,0x52);s16 x=M2C_FIELD(sprite,s16 *,0x50);s32 w=func_020aae10(sprite);s32 h=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,x,y,(u16)w,(u16)h);}
+if(active){s16 y=M2C_FIELD(sprite,s16 *,0x52);s16 x=M2C_FIELD(sprite,s16 *,0x50);s32 w=GetUnitSpriteWidth(sprite);s32 h=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,x,y,(u16)w,(u16)h);}
 }
 
 #pragma opt_propagation off
@@ -41,8 +41,8 @@ s32 IsLinkSessionActive(void);u8 *func_02084e64(void);s32 GetReadyPlayerMask(voi
 u8 *func_02084e24(s32); u8 GetLocalPlayerIdForOverlay(void);s32 GetPlayerTeam(s32);s32 GetPlayerArmyId(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
 void *func_020ab1c4(s32);s16 func_ov003_022004a8(u8);s32 Modulo(s32,s32);s32 Divide(s32,s32);
-void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void func_ov003_021e8354(s32,s32,s32);
-s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);
+void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void func_ov003_021e8354(s32,s32,s32);
+s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);
 u8 *p=arg0,*remote,*q;void *sprite;u16 bounds[4];u16 first;s16 x,y,w,h;s32 next;u8 i,j,k,tmp,n; s8 id; s32 mask;
 p[4]=func_020cfb94();p[5]=255;if(p[4]<2)p[4]=2;
 for(i=0;i<4;i++)p[10+i]=func_ov003_02200808((u8)GetPlayerCoId(i+1));
@@ -103,7 +103,7 @@ case 25:x=96;y=164;w=64;h=24;break;
 }
 sprite=M2C_FIELD(p+i*4,void **,0x78);
 M2C_FIELD(sprite,u16 *,0x2e)=i;
-func_020aab24(sprite,71,384,0,0);
+InitUnitSprite(sprite,71,384,0,0);
 sprite=M2C_FIELD(p+i*4,void **,0x78);
 func_02088e84(sprite,x,y,x,y);ov003_refresh_sprite(sprite);
 M2C_FIELD(sprite,s16 *,0x34)=x;M2C_FIELD(sprite,s16 *,0x36)=y;ov003_refresh_sprite(sprite);

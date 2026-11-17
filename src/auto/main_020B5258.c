@@ -103,8 +103,8 @@ void func_020b54c8(void *arg0) {
 }
 
 void func_020b5504(void *arg0) {
-    M2C_UNK func_0207b764(s32, s32);
-    func_0207b764(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
+    M2C_UNK StepMapViewToTile(s32, s32);
+    StepMapViewToTile(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
 }
 
 void func_020b551c(void *arg0) {

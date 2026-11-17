@@ -35,7 +35,7 @@ void func_020cbbac(void) {
  if (!func_020d0590(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) return;
  p=*gCurrentMap;
  q=(u8 *)p+0x67A4+M2C_FIELD(p,u16 *,0x52A4)*0x8C;
- func_0207b764(M2C_FIELD(q,u8 *,0x2D),M2C_FIELD(q,u8 *,0x2E));
+ StepMapViewToTile(M2C_FIELD(q,u8 *,0x2D),M2C_FIELD(q,u8 *,0x2E));
 }
 
 void func_020cbc08(void) {
@@ -417,7 +417,7 @@ func_020cdfec(M2C_FIELD(p,s32 *,0x52d0),M2C_FIELD(p,volatile s16 *,0x52dc),M2C_F
 func_0207a748(0);
 p=*data_027e0058;
 x=M2C_FIELD(p,volatile s16 *,0x52dc);y=M2C_FIELD(p,volatile s16 *,0x52de);
-M2C_FIELD(a,s16 *,0x6c)=func_020ba320(M2C_FIELD(p,volatile s32 *,0x52d0),x,y);
+M2C_FIELD(a,s16 *,0x6c)=GetAdjacentAllyDirections(M2C_FIELD(p,volatile s32 *,0x52d0),x,y);
 M2C_FIELD(a,s16 *,0x6e)=3;
 M2C_FIELD(a,s16 *,0x6e)=NextMapCursorOption(3,M2C_FIELD(a,s16 *,0x6c));
 }

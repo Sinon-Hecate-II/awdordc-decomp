@@ -5,7 +5,7 @@ void func_02041e44(void);
 
 void func_020411dc(s32 arg0){
 extern s32 sEmptyString;extern u8 gConnectionMgr[];
-s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void func_0203e410(void);s32 func_02042f94(void);void ResetSessionList(s32);
+s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 SendConnectionCommand();s32 func_0204084c(void);void func_02042ad0(void);void SetGpiStatus(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void ReportGpiSessionStatus(void);s32 func_02042f94(void);void ResetSessionList(s32);
 s32 n=3,update=0; s32 values[5];s32 b,c;u8 *a,*d,*e,*f,*g,*h;s32 i;
 switch(arg0){
 case 0:
@@ -44,7 +44,7 @@ b=M2C_FIELD(GetConnection(),s32*,524)==0;a=GetConnection();c=func_0203aeb4(M2C_F
 ((void (*)(s32,s32,s32,s32,s32,s32))M2C_FIELD(a,void **,1124))(0,0,b,0,c,M2C_FIELD(d,s32*,1128));
 if(M2C_FIELD(GetConnection(),u8*,21)==0||M2C_FIELD(GetConnection(),u8*,21)==1){func_0203e9b0();}else{
 if(M2C_FIELD(GetConnection(),s32*,228)!=0){func_020614b0(M2C_FIELD(GetConnection(),s32*,228));M2C_FIELD(GetConnection(),s32*,228)=0;}
-func_0203bd0c();if(M2C_FIELD(GetConnection(),u8*,21)==2){func_0203e410();if(func_02042f94())return;if(gConnectionMgr[28]==1)gConnectionMgr[29]=1;SetConnectionState(10);}else SetConnectionState(1);M2C_FIELD(GetConnection(),s32*,524)=0;
+func_0203bd0c();if(M2C_FIELD(GetConnection(),u8*,21)==2){ReportGpiSessionStatus();if(func_02042f94())return;if(gConnectionMgr[28]==1)gConnectionMgr[29]=1;SetConnectionState(10);}else SetConnectionState(1);M2C_FIELD(GetConnection(),s32*,524)=0;
 }M2C_FIELD(GetConnection(),u8*,425)=0;break;
 }
 if(update&&M2C_FIELD(GetConnection(),u8*,21)!=3)ResetSessionList(M2C_FIELD(GetConnection(),s32*,228));
@@ -66,7 +66,7 @@ s32 func_0204183c(s32 *p,u32 n) {
 void DisconnectConnection(void) {
     void *GetConnection(void);
     void CloseConnection(void);
-    s32 func_02041b0c(void);
+    s32 SendMatchAddress(void);
     M2C_UNK GT2NotifyConnectionClosed(s32);
     void func_0205df50(s32);
     s32 func_02040dc8(M2C_UNK);
@@ -99,7 +99,7 @@ void DisconnectConnection(void) {
             func_02040dc8(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
             if (((s32 (*)())func_0204084c)() != 0) return;
         }
-        func_02041b0c();
+        SendMatchAddress();
         if (((s32 (*)())func_0204084c)() != 0) return;
     }
     if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) != 0) {
@@ -128,24 +128,27 @@ void CloseConnection(void) {
  M2C_FIELD(GetConnection(),u8*,0x1a9)=0;
 }
 
-s32 func_02041b0c(void) {
+/* Announce this connection's match address to the peer (connection command 12)
+ * once it is valid and differs from the address reported to the master, then
+ * clear the pending state.  Returns the command's result. */
+s32 SendMatchAddress(void) {
 s32 SendConnectionCommand();
-s32 r=0;
-s32 local=0;
-void *a,*b,*c,*d;
-if(M2C_FIELD(GetConnection(),u8*,0x17)!=0 && M2C_FIELD(GetConnection(),s32*,0x20)!=0) {
-a=GetConnection();
-if(M2C_FIELD(a,s32*,0x20)!=M2C_FIELD(GetConnection(),s32*,0x200)) {
-a=GetConnection();
-b=GetConnection();
-c=GetConnection();
-d=GetConnection();
-r=SendConnectionCommand(12,M2C_FIELD(a,s32*,0x20),M2C_FIELD((u8*)b+4*(M2C_FIELD(c,u8*,0xd)+1),s32*,0x24),M2C_FIELD((u8*)d+2*(M2C_FIELD(GetConnection(),u8*,0xd)+1),u16*,0xa4),&local,1);
-M2C_FIELD(GetConnection(),u8*,0x17)=0;
-M2C_FIELD(GetConnection(),s32*,0x20)=0;
+s32 result=0;
+s32 scratch=0;
+void *connA,*connB,*connC,*connD;
+if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_ADDRESS_VALID)!=0 && M2C_FIELD(GetConnection(),s32*,CONN_SESSION_MATCH_ADDRESS)!=0) {
+connA=GetConnection();
+if(M2C_FIELD(connA,s32*,CONN_SESSION_MATCH_ADDRESS)!=M2C_FIELD(GetConnection(),s32*,CONN_SESSION_QR2_PARAM)) {
+connA=GetConnection();
+connB=GetConnection();
+connC=GetConnection();
+connD=GetConnection();
+result=SendConnectionCommand(12,M2C_FIELD(connA,s32*,CONN_SESSION_MATCH_ADDRESS),M2C_FIELD((u8*)connB+4*(M2C_FIELD(connC,u8*,CONN_SESSION_PLAYER_COUNT)+1),s32*,CONN_SESSION_PEER_DATA),M2C_FIELD((u8*)connD+2*(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT)+1),u16*,CONN_SESSION_PEER_DATA_PORT),&scratch,1);
+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_ADDRESS_VALID)=0;
+M2C_FIELD(GetConnection(),s32*,CONN_SESSION_MATCH_ADDRESS)=0;
 }
 }
-return r;
+return result;
 }
 
 /* Handle a connection state refresh: if the active mode is 2/3, invoke the mode callback; if mode 0, run the next connection step; if mode 1 with refresh requested, start a contextual action. */

@@ -1,6 +1,7 @@
 /* 21 functions from 0x02077624 to 0x020785B0 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "gx.h"
 
 static inline s32 MapCellIndex(s32 x,s32 y) { extern s32 *gCurrentMap; return x+M2C_FIELD(*gCurrentMap+y*2,u16 *,MAP_ROW_OFFSETS); }
 static inline u8 BaseCellCode(s8 elev) { return elev>=0 ? 2:0; }
@@ -20,46 +21,50 @@ s16 GetViewZoom(void *);
 s32 EaseInterpolate(s32, s32, s32, s32, s32);
 void func_0207d990(s32, void *, void *);
 
-void func_02077624(void) {
+/* Recomputes the GX toon table every frame: each RGB555 entry is interpolated
+ * between two reference tables with a 64-frame ping-pong phase taken from
+ * gFrameCounter (dim -> bright over the first half, back again over the second),
+ * then the table is uploaded. */
+void UpdateToonTableBlend(void) {
     M2C_UNK GX_LoadToonTable();
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     extern u32 gFrameCounter;
-    extern const u16 data_020eb210[];
-    extern const u16 data_020eb250[];
+    extern const u16 gToonTableDim[];
+    extern const u16 gToonTableBright[];
     extern u16 gToonTable[];
     s32 i;
-    s32 blend;
-    const u16 *src0;
-    const u16 *src1;
-    s32 a;
-    s32 b;
-    s32 lo;
-    s32 mid;
-    s32 hi;
+    s32 phase;
+    const u16 *from;
+    const u16 *to;
+    s32 packedFrom;
+    s32 packedTo;
+    s32 red;
+    s32 green;
+    s32 blue;
 
     i = 0;
-    blend = gFrameCounter & 0x3F;
-    if (blend < 0x20) {
-        src0 = data_020eb210;
-        src1 = data_020eb250;
+    phase = gFrameCounter & 0x3F;
+    if (phase < 0x20) {
+        from = gToonTableDim;
+        to = gToonTableBright;
     } else {
-        src0 = data_020eb250;
-        src1 = data_020eb210;
-        blend -= 0x20;
+        from = gToonTableBright;
+        to = gToonTableDim;
+        phase -= 0x20;
     }
     do {
-        a = src0[i];
-        b = src1[i];
-        lo = EaseInterpolate(0, a & 0x1F, b & 0x1F, blend, 0x20);
-        mid = EaseInterpolate(0, (a & 0x3E0) >> 5, (b & 0x3E0) >> 5, blend, 0x20);
-        hi = EaseInterpolate(0, (a & 0x7C00) >> 0xA, (b & 0x7C00) >> 0xA, blend, 0x20);
-        gToonTable[i] = lo | (mid << 5) | (hi << 10);
+        packedFrom = from[i];
+        packedTo = to[i];
+        red = EaseInterpolate(0, packedFrom & GX_RGB_CHANNEL_MASK, packedTo & GX_RGB_CHANNEL_MASK, phase, 0x20);
+        green = EaseInterpolate(0, (packedFrom & GX_RGB_GREEN_MASK) >> GX_RGB_GREEN_SHIFT, (packedTo & GX_RGB_GREEN_MASK) >> GX_RGB_GREEN_SHIFT, phase, 0x20);
+        blue = EaseInterpolate(0, (packedFrom & GX_RGB_BLUE_MASK) >> GX_RGB_BLUE_SHIFT, (packedTo & GX_RGB_BLUE_MASK) >> GX_RGB_BLUE_SHIFT, phase, 0x20);
+        gToonTable[i] = red | (green << GX_RGB_GREEN_SHIFT) | (blue << GX_RGB_BLUE_SHIFT);
         i++;
     } while (i < 0x20);
     GX_LoadToonTable();
 }
 
-void func_02077700(void) {
+void GetFrameStep(void) {
     M2C_UNK FX_Div(M2C_UNK, s32);
     extern M2C_UNK data_02140f70;
     FX_Div(0x60000, M2C_FIELD(&data_02140f70, s32 *, 0x18) * 3);
@@ -168,7 +173,7 @@ void ApplyMapViewProjection(s32 arg0) {void func_02003a8c();void func_02001034()
 void func_02077c10(void) {
     M2C_UNK func_02077ab8(s32);
     void ApplyMapViewProjection(s32);
-    M2C_UNK func_0207cd0c(s32);
+    M2C_UNK BuildMapViewTransform(s32);
     M2C_UNK func_0207cddc(s32, M2C_UNK *);
     M2C_UNK func_0207ce54(s32);
     M2C_UNK func_0207d95c(M2C_UNK);
@@ -180,7 +185,7 @@ void func_02077c10(void) {
     func_0207d95c(0);
     func_02077ab8(temp_r4 + 0x6C00);
     func_0207ce54(temp_r4 + 0x6C00);
-    func_0207cd0c(temp_r4 + 0x6C00);
+    BuildMapViewTransform(temp_r4 + 0x6C00);
     func_0207cddc(temp_r4 + 0x6C00, &data_02140f88);
     ApplyMapViewProjection(temp_r4 + 0x6C00);
 }

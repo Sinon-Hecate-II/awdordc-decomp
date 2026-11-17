@@ -1,6 +1,7 @@
 /* 9 functions from 0x0217BCD4 to 0x0217C9F4 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "ov000_unit_entry.h"
+#include "battle_map.h"
 static inline s32 DistanceUnitC4c8(u8 *p,s32 x,s32 y){s32 v=0;s32 a=p[1],b;s32 dx=a-x;if(dx<=0)dx=x-a;v+=dx;b=p[2];dx=b-y;if(dx<=0)dx=y-b;v+=dx;return v;}
 static inline s32 DistanceC4c8(s32 a,s32 b,s32 c,s32 d){s32 v=0;s32 dx=a-c;s32 dy;if(dx<=0)dx=c-a;v+=dx;dy=b-d;if(dy<=0)dy=d-b;v+=dy;return v;}
 extern void **gCurrentMap;
@@ -204,7 +205,7 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
 }
 #pragma opt_propagation off
 s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
-    s32 func_ov000_021a9860(s32, s32);
+    s32 IsPropertyCell(s32, s32);
     s32 func_ov000_0217bdb4(s32, s32);
     extern void **gCurrentMap;
 
@@ -249,7 +250,7 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
             if (dist < 0) goto next;
             if (dist > a2) goto next;
 
-            if (!func_ov000_021a9860(x, y)) goto next;
+            if (!IsPropertyCell(x, y)) goto next;
 
             map = *gCurrentMap;
             {
@@ -296,19 +297,25 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
     return 1;
 }
 #pragma opt_propagation on
-s32 func_ov000_0217c2d4(u8 *arg0) {
-s32 FloodFillUnitRange(s32,s32,s32,s32,s32); s32 func_ov000_021a9860(s32,s32); extern void **gCurrentMap;
-s32 x,y; void *base;
-FloodFillUnitRange(arg0[1],arg0[2],(u32)(arg0[0]<<26)>>26,0x6e,0);
-base=*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-if((((s8 **)((u8 *)base+0x52e8))[y])[x]>=0)
-if(func_ov000_021a9860(x,y)==1)return 1;
-base=*gCurrentMap;
-}
-}
-return 0;
+/* Whether the unit can reach a property cell: flood its move range, then report
+ * the first passable cell inside it that is a property. */
+s32 UnitCanReachPropertyCell(u8 *unit) {
+    s32 FloodFillUnitRange(s32, s32, s32, s32, s32);
+    s32 IsPropertyCell(s32, s32);
+    extern void **gCurrentMap;
+    s32 x, y;
+    void *base;
+
+    FloodFillUnitRange(unit[MAP_UNIT_X], unit[MAP_UNIT_Y], (u32)(unit[MAP_UNIT_KIND] << 26) >> 26, 0x6e, 0);
+    base = *gCurrentMap;
+    for (y = 0; y < M2C_FIELD(base, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
+            if (((s8 **)((u8 *)base + MAP_GRID))[y][x] >= 0)
+                if (IsPropertyCell(x, y) == 1) return 1;
+            base = *gCurrentMap;
+        }
+    }
+    return 0;
 }
 
 void ClearUnitMoveTarget(void) {

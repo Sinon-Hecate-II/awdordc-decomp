@@ -154,7 +154,7 @@ loop:
 }
 
 /* Chooses the next result code based on the current mode of the shared state. */
-u8 func_0203095c(void) {
+u8 Wfc_StepLink(void) {
     M2C_UNK func_020276b0();
     M2C_UNK WFC_ProcessLinkStep();
     M2C_UNK WFC_ProcessLinkState();
@@ -200,7 +200,7 @@ u8 func_0203095c(void) {
     return result;
 }
 
-s32 func_02030a38(void) {
+s32 Wfc_StepSession(void) {
     void *Wfc_GetWorkBlock(s32);
     s32 Wfc_GetSessionState(void);
     u32 Wfc_GetLinkState(void);
@@ -297,9 +297,9 @@ s32 func_02030cc8(void *a) {
  u64 GetSystemTick(void);
  void func_020311e4(s32,s32,s32,s32);
  s32 func_02030ffc(void *,s32);
- u64 func_02072088(u64,u64);
+ u64 U64Divide(u64,u64);
  extern u8 data_020ea758[],data_020ea760[];
- if(func_02072088((GetSystemTick()-M2C_FIELD(a,u64 *,0xcb0))<<6,0x82eaULL)>=300ULL){
+ if(U64Divide((GetSystemTick()-M2C_FIELD(a,u64 *,0xcb0))<<6,0x82eaULL)>=300ULL){
  M2C_FIELD(a,s8 *,0xd11)+=2;
  if(M2C_FIELD(a,s8 *,0xd11)>=13)return func_02030ffc(a,3);
  M2C_FIELD(a,u64 *,0xcb0)=GetSystemTick();
@@ -325,8 +325,8 @@ s32 func_02030d6c(void *a) {
  * WFC_STATE_RECORDS + index*WFC_RECORD_STRIDE and the code at +0xC is sent with
  * the u16 at +0x36 (minus one) as the entry count.  Returns the state to use. */
 s32 Wfc_SendFriendRecords(void *state) {
-void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 func_02072088(u64,u64);s32 offset;
-if(func_02072088((GetSystemTick()-M2C_FIELD(state,u64 *,WFC_STATE_TIMER))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,WFC_STATE_RECORD_FLAGS)<<24)>>31 ==1){
+void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 U64Divide(u64,u64);s32 offset;
+if(U64Divide((GetSystemTick()-M2C_FIELD(state,u64 *,WFC_STATE_TIMER))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,WFC_STATE_RECORD_FLAGS)<<24)>>31 ==1){
 M2C_FIELD(state+WFC_STATE_RECORD_FLAGS,u8 *,M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4)|=128;
 while(M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)<M2C_FIELD(state,u8 *,WFC_STATE_RECORD_COUNT)){
 if(!((u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,WFC_STATE_RECORD_FLAGS)<<24)>>31))break;
@@ -343,8 +343,8 @@ func_020311e4((s32)(state+0x474+offset),(s32)(state+0x47c+offset),M2C_FIELD(stat
    end of the list it picks the next friend with func_02030b30.  When no friend is
    left it asks func_02030ffc for the next state.  Returns the state to use. */
 s32 Wfc_SendFriendEntries(void *state){
-void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 func_02072088(u64,u64);extern u8 data_020ea758[];
-if(func_02072088((GetSystemTick()-M2C_FIELD(state,u64 *,WFC_STATE_TIMER))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE,u8 *,WFC_STATE_ENTRIES+WFC_ENTRY_FLAGS)<<28)>>28 ==1){
+void func_020311e4(s32,s32,s32,s32);u64 GetSystemTick(void);u64 U64Divide(u64,u64);extern u8 data_020ea758[];
+if(U64Divide((GetSystemTick()-M2C_FIELD(state,u64 *,WFC_STATE_TIMER))<<6,0x82eaULL)>=150ULL || (u32)(M2C_FIELD(state+M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE,u8 *,WFC_STATE_ENTRIES+WFC_ENTRY_FLAGS)<<28)>>28 ==1){
 M2C_FIELD(state+WFC_STATE_ENTRIES,u8 *,(s16)M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)*(s16)WFC_ENTRY_STRIDE)&=~15;
 M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)++;
 if(M2C_FIELD(state,u8 *,WFC_STATE_ENTRY_COUNT)<=M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)){
@@ -437,7 +437,7 @@ s32 func_02031184(void *arg0) {
 
 void func_020311e4(s32 a,s32 b,s32 c,s32 d){void func_02027518(s32,s32,s32);extern M2C_UNK data_020ea860;if(c>12)c=12;func_02027518(a,b,d|M2C_FIELD(&data_020ea860,s32 *,c*4));}
 
-s32 func_02031208(void) {
+s32 Wfc_StepConnect(void) {
  u32 Wfc_GetLinkState(void);
  void *Wfc_GetWorkBlock(s32);
  s32 WFC_ConnectStep(s32 *,void *);

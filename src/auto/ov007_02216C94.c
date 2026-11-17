@@ -33,7 +33,7 @@ void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
 
 M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UNK *out_b, M2C_UNK *out_c) {
     s32 Map_RandomScaledValue(s32, s32);
-    s32 func_ov007_02215e94(s32 *, s32 *, s32, void *, s32);
+    s32 PickRandomTileNear(s32 *, s32 *, s32, void *, s32);
     s32 func_ov007_02215f6c(s32 *, s32 *, s32, s16 *, s16 *, s32);
     M2C_UNK Map_SetCellTile(s32, s32, s32);
 
@@ -59,16 +59,16 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
         do {
             switch (mode) {
             case 0:
-                if (!func_ov007_02215e94(&x, &y, 1, arg0, 10)) goto done_inner;
+                if (!PickRandomTileNear(&x, &y, 1, arg0, 10)) goto done_inner;
                 Map_SetCellTile(x, y, 0x1c7);
-                if (!func_ov007_02215e94(&x, &y, 1, arg1, 10)) goto done_inner;
+                if (!PickRandomTileNear(&x, &y, 1, arg1, 10)) goto done_inner;
                 Map_SetCellTile(x, y, 0x1cc);
                 break;
             case 1:
-                if (!func_ov007_02215e94(&x, &y, 1, arg0, 8)) goto done_inner;
+                if (!PickRandomTileNear(&x, &y, 1, arg0, 8)) goto done_inner;
                 Map_SetCellTile(x, y, 0x1c2);
                 ((s16 *)out_a)[0] = (s16)x; ((s16 *)out_a)[1] = (s16)y;
-                if (!func_ov007_02215e94(&x, &y, 1, arg1, 8)) goto done_inner;
+                if (!PickRandomTileNear(&x, &y, 1, arg1, 8)) goto done_inner;
                 Map_SetCellTile(x, y, 0x1c2);
                 ((s16 *)out_b)[0] = (s16)x; ((s16 *)out_b)[1] = (s16)y;
                 break;
@@ -405,12 +405,12 @@ s8 *func_ov007_02217b64(s32 arg0) {
 
 s32 func_ov007_02217b90(s32 a,s32 b){s8 *p=func_ov007_02217b64(a);s32 i=0;while(*p>=0){if(*p==b)return i;p+=5;i++;}return -1;}
 
-s32 func_ov007_02217bd0(s32 a,s32 b){
+s32 MapEditor_GetPaletteKind(s32 a,s32 b){
  s8 *func_ov007_02217b64(s32);
  return func_ov007_02217b64(a)[b*5];
 }
 
-u8 func_ov007_02217be8(s32 a,s32 b,s32 c){extern u8 data_ov007_0221fdf0;u8 *p=(u8 *)func_ov007_02217b64(a)+b*5;if(p[4]==1)return (&data_ov007_0221fdf0)[c];return 0;}
+u8 MapEditor_GetPaletteOwner(s32 a,s32 b,s32 c){extern u8 data_ov007_0221fdf0;u8 *p=(u8 *)func_ov007_02217b64(a)+b*5;if(p[4]==1)return (&data_ov007_0221fdf0)[c];return 0;}
 
 s32 func_ov007_02217c1c(s32 arg0) {
     extern u8 data_ov007_0221fdf0;

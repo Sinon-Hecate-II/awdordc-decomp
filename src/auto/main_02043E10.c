@@ -13,8 +13,8 @@ void SetConnectionState(s32);
 void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *attempt)
 {
     M2C_UNK func_02040e1c(M2C_UNK);
-    s32 func_0200567c(void *, s32, void *, s32);
-    s32 func_0205d4d8(s32, s32, s32);
+    s32 StringFormatN(void *, s32, void *, s32);
+    s32 Gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
     s32 func_020431e0(s32);
@@ -58,11 +58,11 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
                 SetConnectionState(7);
             }
             M2C_FIELD(GetConnection(), u8 *, 0xC) = 0;
-            func_0200567c(buf, 12, &data_020fc908, M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_PARAM));
+            StringFormatN(buf, 12, &data_020fc908, M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_PARAM));
             sessionA = GetConnection();
             sessionB = GetConnection();
             sessionC = GetConnection();
-            res = func_0205d4d8(M2C_FIELD(sessionB + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(sessionC + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
+            res = Gt2AddressToString(M2C_FIELD(sessionB + slot * 4, s32 *, CONN_SESSION_PEER_IPS), M2C_FIELD(sessionC + slot * 2, u16 *, CONN_SESSION_PEER_PORTS), 0);
             res = func_0205adcc(*M2C_FIELD(sessionA, s32 **, 4), 0, res, buf, -1, 5000, M2C_FIELD(GetConnection(), s32 *, 8), 0);
             if (res == 1) {
                 func_02043230();
@@ -335,7 +335,7 @@ void func_02044780(s32 a,s32 b){extern s32 gTransferManager;s32 func_020390b4(s3
 void UpdateTransferSlots(void) {
 extern s32 gTransferManager;
 s32 GetActiveConnectionList(u8 **);s32 IsConnectionActive(s32);void *GetTransferSlot(s32);
-u64 GetSystemTick(void);u64 func_02072088(u64,u64);
+u64 GetSystemTick(void);u64 U64Divide(u64,u64);
 s32 GetLocalPlayerId(void);s32 IsTransferSending(s32);s32 GetSendSpace();
 void SendConnectionData(s32,s32,s32,s32);
 u8 *list; s32 connectionCount,index,playerId; void *p; void *q; s32 chunk; s32 total; u64 now;
@@ -347,7 +347,7 @@ if(IsConnectionActive(playerId)){
 p=GetTransferSlot(playerId);
 if(((TransferManager *)gTransferManager)->onTimeout && ((TransferSlot *)p)->timeoutMs){
 now=GetSystemTick();
-if((u32)func_02072088((now-((TransferSlot *)p)->lastTick)<<6,TICKS_TO_MS_DIVISOR)>((TransferSlot *)p)->timeoutMs){
+if((u32)U64Divide((now-((TransferSlot *)p)->lastTick)<<6,TICKS_TO_MS_DIVISOR)>((TransferSlot *)p)->timeoutMs){
 ((TransferManager *)gTransferManager)->onTimeout(playerId);
 ((TransferSlot *)p)->lastTick=now;
 }}

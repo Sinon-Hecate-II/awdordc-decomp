@@ -220,10 +220,10 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02091cd0();
-    M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
-    u16 func_020aae10(void *);
-    u16 func_020aae44(void *);
+    u16 GetUnitSpriteWidth(void *);
+    u16 GetUnitSpriteHeight(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
@@ -314,7 +314,7 @@ void func_ov005_0221f084(void *arg0) {
     CloseNarcArchive();
     data_027e01d8 = (void*)g3DSpriteEngineMain;
     M2C_FIELD(arg0, void **, 0x34) = func_020ab1c4(arg0);
-    func_020aab24(M2C_FIELD(arg0, void **, 0x34), 1, 0x120, 3, 1);
+    InitUnitSprite(M2C_FIELD(arg0, void **, 0x34), 1, 0x120, 3, 1);
     temp_r4 = M2C_FIELD(arg0, void **, 0x34);
     func_02088e84(temp_r4, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x64), u8 *, 0x12) != 0) {
@@ -325,8 +325,8 @@ void func_ov005_0221f084(void *arg0) {
     if (var_r0_2 & 0xFF) {
         temp_r5 = M2C_FIELD(temp_r4, s16 *, 0x52);
         temp_r6 = M2C_FIELD(temp_r4, s16 *, 0x50);
-        temp_r7 = func_020aae10(temp_r4);
-        func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (s32) temp_r7, (s32) func_020aae44(temp_r4));
+        temp_r7 = GetUnitSpriteWidth(temp_r4);
+        func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (s32) temp_r7, (s32) GetUnitSpriteHeight(temp_r4));
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x34), 1);
     func_020aad18(M2C_FIELD(arg0, void **, 0x34));

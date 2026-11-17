@@ -9,7 +9,7 @@ u32 func_ov011_02226658(void *arg0) {
     u8 func_01ffa6fc(void *);
     s32 EaseInterpolate(s32, s32, M2C_UNK, s32, s32);
     M2C_UNK func_ov011_022257b4(void *);
-    M2C_UNK func_ov011_022257c4(void *);
+    M2C_UNK DrawIntroMenuLabel(void *);
     M2C_UNK func_ov011_0222588c(void *);
     s32 func_ov011_02225a18(void *);
     M2C_UNK func_ov011_02225a24(void *, u16, u16);
@@ -141,7 +141,7 @@ u32 func_ov011_02226658(void *arg0) {
             }
         }
         if ((M2C_FIELD(arg0, s32 *, 0x50) != 0) && (((u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1E) >> 0x1F) != 0)) {
-            func_ov011_022257c4(arg0);
+            DrawIntroMenuLabel(arg0);
         }
         temp_r0_4 = M2C_FIELD(arg0, u8 *, 0x37);
         if ((u32) temp_r0_4 <= 0x1EU) {

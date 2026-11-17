@@ -27,6 +27,12 @@
 #define SPRITE_FLAG_DEFER        0x40 /* skip this frame's draw, then clear the bit */
 #define SPRITE_PALETTE_CYCLE_LEN 22 /* entries in gSpritePaletteCycle */
 
+/* Fields of a sprite object that is being drawn as an OBJ quad. */
+#define SPRITE_PRIORITY  0x20 /* s8 priority the quad is submitted with */
+#define SPRITE_TILE_BASE 0x23 /* u8 first tile of the sprite's quads (low five bits also enter the x word) */
+#define SPRITE_OAM_ATTR2 0x28 /* u32 OAM attribute word 2: tile id in bits 0..9, priority/palette above */
+#define SPRITE_PARTS     0x30 /* s32 extra quad parts of the sprite, 0 when it has none */
+
 /* Script commands (the second u16 of a zero-duration entry). */
 #define SPRITE_CMD_LOOP    0xFF
 #define SPRITE_CMD_STOP    0x00

@@ -351,12 +351,12 @@ void func_ov002_021e85b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 
 void func_ov002_021e85e8(void *p) {
     M2C_UNK func_ov002_021e3f2c(void *, u8);
-    extern M2C_UNK data_ov002_021f3124;
+    extern M2C_UNK gUnitViews;
     extern u8 data_ov002_021f2fa9[], data_ov002_021f30fd[];
     extern u8 *gEffectTable[];
     s32 i;
     u8 flag;
-    if (p != &data_ov002_021f3124) flag = 1; else flag = 0;
+    if (p != &gUnitViews) flag = 1; else flag = 0;
     M2C_FIELD(p, u8 *, 0x27) = flag;
     for (i = 0; i < 5; i++) ((ObjectSlots *)p)->slots[i] = 0;
     M2C_FIELD(p, u8 *, 0x2A) = data_ov002_021f2fa9[M2C_FIELD(p, u8 *, 0x27) * 104];

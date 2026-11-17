@@ -23,7 +23,7 @@ M2C_FIELD(state,u16 *,0x52b0)=1;return;
 func_020994e0(0);
 if(func_020d0590(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){
 state=(u8 *)*gCurrentMap+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c;
-func_0207b764(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
+StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
 if(func_0207b7c4())return;
 func_020a2b84(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
@@ -96,7 +96,7 @@ void func_020d482c(void) {
         if (func_02084830())
             M2C_FIELD(&gMapConfig, u16 *, 4) = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     }
-    func_020945f8();
+    ResetDialogUI();
     func_020a2148(0);
     AddRecordValue(25, 1);
 }
@@ -124,7 +124,11 @@ void func_020d4948(void) {
 
 void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084cc0(void *); void func_02086330(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;func_02086330(func_02084cc0(arg0));}
 
-void func_020d4984(void) {
+/* Hand the finished battle over to its ending: in team mode (config mode 0) pick
+ * the special ending when the player won on map BA with the clear counter at 1,
+ * otherwise the standard one; in free-play mode (mode 1) choose the ending from
+ * the recorded battle-end conditions and then clear that record. */
+void FinishBattle(void) {
     M2C_UNK func_02088634();
     M2C_UNK func_0209f858();
     s32 DidPlayerWin();
@@ -137,10 +141,10 @@ void func_020d4984(void) {
     extern s32 data_0215d8a0;
     extern M2C_UNK gBattleEndState;
     extern u16 gMapConfig;
-    u32 temp_r0;
+    u32 battleMode;
 
-    temp_r0 = (u32) (gMapConfig << 0x1D) >> 0x1D;
-    switch ((u8) temp_r0) {                         /* irregular */
+    battleMode = (u32) (gMapConfig << 0x1D) >> 0x1D;
+    switch ((u8) battleMode) {
     case 0:
         if ((DidPlayerWin() != 0) && (func_020e4b54() != 0) && (((u32) (data_0215d8a0 << 8) >> 0x18) == 1)) {
             func_020d88ac();
@@ -150,8 +154,8 @@ void func_020d4984(void) {
         func_020cd5ac();
         return;
     case 1:
-        if (M2C_FIELD(&gBattleEndState, u8 *, 0) != 0) {
-            if ((M2C_FIELD(&gBattleEndState, u8 *, 1) != 0) || ((M2C_FIELD(&gBattleEndState, u8 *, 2) != 0) && (M2C_FIELD(&gBattleEndState, u8 *, 3) == 0))) {
+        if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED) != 0) {
+            if ((M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG1) != 0) || ((M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG2) != 0) && (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG3) == 0))) {
                 func_020d887c();
             } else {
                 func_020d895c();
@@ -386,7 +390,7 @@ void UpdateAimingCursor(void) {
  func_0207b040();
  } else if(keys&0x20) { /* select the unit under the cursor */
  map=M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT);
- func_0207b764(M2C_FIELD(map,u8*,MAP_UNIT_X),M2C_FIELD(map,u8*,MAP_UNIT_Y));
+ StepMapViewToTile(M2C_FIELD(map,u8*,MAP_UNIT_X),M2C_FIELD(map,u8*,MAP_UNIT_Y));
  func_ov000_021696d4();
  map=*gCurrentMap;
  if(M2C_FIELD(map,u8*,MAP_CURSOR_CARRIER)) {

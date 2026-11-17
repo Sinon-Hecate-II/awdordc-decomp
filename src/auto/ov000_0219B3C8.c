@@ -7,7 +7,7 @@
 void func_ov000_0219b3c8(void) {
     void FloodFillUnitRange(s32, s32, s32, s32, s32);
     s32 GetUnitMoveRange(s32, s32);
-    void func_ov000_0219c508(void *, s32);
+    void FillMapCellLayer(void *, s32);
     s32 IsTerrainOnUnitTeam(s32, u8);
     s32 func_ov000_021a91d0(s32);
     s32 ManhattanDistance(s16, s16, s16, s16);
@@ -32,7 +32,7 @@ void func_ov000_0219b3c8(void) {
 
     maxDist = GetUnitMoveRange(*(u16 *)((u8 *)*gCurrentMap + 0x52a4), 2);
 
-    func_ov000_0219c508((u8 *)*gCurrentMap + 0x3250, 0);
+    FillMapCellLayer((u8 *)*gCurrentMap + 0x3250, 0);
 
     rec -= 6;
     for (;;) {

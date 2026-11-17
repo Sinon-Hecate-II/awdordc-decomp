@@ -650,7 +650,7 @@ loop_65:
 
 void func_ov002_021e2204(void *arg0) {
     M2C_UNK func_02087064(M2C_UNK, u16, u16, s32, s32);
-    M2C_UNK func_02087b94(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
+    M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
     u8 *p20;
     u8 temp_r5;
@@ -689,7 +689,7 @@ void func_ov002_021e2204(void *arg0) {
                 }
                 func_02087064(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)));
             }
-            func_02087b94(M2C_FIELD(var_r5, s16 *, 0), M2C_FIELD(var_r5, s16 *, 2), (u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x18) >> 0x1E, temp_r6_2, (s32) temp_r7, 0, 0, (s32) temp_r6_2, (s32) temp_r7, temp_r8, temp_r9);
+            DrawTexturedQuadUVFlip(M2C_FIELD(var_r5, s16 *, 0), M2C_FIELD(var_r5, s16 *, 2), (u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x18) >> 0x1E, temp_r6_2, (s32) temp_r7, 0, 0, (s32) temp_r6_2, (s32) temp_r7, temp_r8, temp_r9);
             var_r5 = (u8 *) var_r5 + 8;
             var_r3 = M2C_FIELD(var_r5, u16 *, 4);
         } while (var_r3 != 0xFFFF);
@@ -699,7 +699,7 @@ void func_ov002_021e2204(void *arg0) {
 
 void func_ov002_021e2364(void *arg0) {
     M2C_UNK func_02087064(M2C_UNK, u16, u16, s32, s32);
-    M2C_UNK func_02087b94(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
+    M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
     register void *var_r4;
     register s16 temp_r5_3;
@@ -742,7 +742,7 @@ void func_ov002_021e2364(void *arg0) {
                     var_ip = M2C_FIELD(arg0, u8 *, 0x3A);
                 }
                 func_02087064(3, temp_r9, temp_r6, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_ip + ((u32) (M2C_FIELD(var_r4, u8 *, 7) << 0x1C) >> 0x1C)));
-            func_02087b94(temp_r5_3, M2C_FIELD(var_r4, s16 *, 2), (u32) (M2C_FIELD(var_r4, u8 *, 7) << 0x18) >> 0x1E, temp_r9, (s32) temp_r6, 0, 0, (s32) temp_r9, (s32) temp_r6, (s32) var_r1, (u32) (temp_r5_2 << 0x1A) >> 0x1F);
+            DrawTexturedQuadUVFlip(temp_r5_3, M2C_FIELD(var_r4, s16 *, 2), (u32) (M2C_FIELD(var_r4, u8 *, 7) << 0x18) >> 0x1E, temp_r9, (s32) temp_r6, 0, 0, (s32) temp_r9, (s32) temp_r6, (s32) var_r1, (u32) (temp_r5_2 << 0x1A) >> 0x1F);
             var_r4 += 8;
             var_r3 = M2C_FIELD(var_r4, u16 *, 4);
         } while (var_r3 != 0xFFFF);

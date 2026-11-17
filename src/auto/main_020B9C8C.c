@@ -15,7 +15,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
  void AddToU16Array(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
- void PlaySoundEffect(s32); void func_020b9558(u8); void func_020c0fac(void *);
+ void PlaySoundEffect(s32); void func_020b9558(u8); void CreateMenuUnitSprite(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK sProductionMenuDir; extern M2C_UNK sProductionMenuNarcName;
  extern M2C_UNK sProductionMenuCgName; extern M2C_UNK sProductionMenuScName; extern M2C_UNK sProductionMenuClName;
@@ -43,7 +43,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  func_020b9bec(); func_020b9c40();
  PlaySoundEffect(0x10017);
  func_020b9558(gProductionMenuState[8]);
- func_020c0fac(screen);
+ CreateMenuUnitSprite(screen);
 }
 
 void func_020b9dc8(void) {
@@ -143,25 +143,29 @@ s32 func_020b9ec0(s32 unit, s32 facility) {
 }
 
 #pragma opt_common_subs off
-s32 CanUnitKindEnterTile(s32 x,s32 y,s32 type,s32 mode) {
+/* Report whether a unit of kind `kind` may enter tile (x, y): the tile must be
+ * on the map and hold no unit (the one a fogged viewer can see, or the real one
+ * when useVisibleUnits is 0), and the kind's movement-cost row must allow the
+ * tile's terrain. */
+s32 CanUnitKindEnterTile(s32 x,s32 y,s32 kind,s32 useVisibleUnits) {
 extern void **gCurrentMap;
 extern u8 gMovementTypeTable[];
 extern M2C_UNK gMovementCostTable;
-u8 *p; s32 index;
+u8 *p; s32 cell;
 if(x<0 || y<0)goto fail;
 p=*gCurrentMap;
-if(x>=M2C_FIELD(p,u16 *,0x5144)||y>=M2C_FIELD(p,u16 *,0x5146))goto fail;
+if(x>=M2C_FIELD(p,u16 *,MAP_WIDTH)||y>=M2C_FIELD(p,u16 *,MAP_HEIGHT))goto fail;
 goto valid;
 fail:return 0;
 valid:
-if(mode){
-index=x+M2C_FIELD(p+y*2,u16 *,0x3758);
-if(p[index])return 0;
+if(useVisibleUnits){
+cell=x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS);
+if(M2C_FIELD(p+cell,u8 *,MAP_CELL_VISIBLE_UNIT))return 0;
 }else{
-index=x+M2C_FIELD(p+y*2,u16 *,0x3758);
-if(M2C_FIELD(p+index,u8 *,0x508))return 0;
+cell=x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS);
+if(M2C_FIELD(p+cell,u8 *,MAP_CELL_UNIT_ID))return 0;
 }
-if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[type*0x70]*32,s8 *,M2C_FIELD(p+index,u8 *,0x1420)&31)<0)return 0;
+if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[kind*UNIT_KIND_STATS_SIZE]*32,s8 *,M2C_FIELD(p+cell,u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)<0)return 0;
 return 1;
 }
 
@@ -185,13 +189,13 @@ s32 GetUnitMoveDirections(s32 x, s32 y, s32 unitId) {
 }
 
 #pragma opt_common_subs reset
-s8 func_020ba320(s32 a,s32 b,s32 c) {
- s32 func_020ba448(s32,s32,s32);
+s8 GetAdjacentAllyDirections(s32 a,s32 b,s32 c) {
+ s32 IsFriendlyUnitAt(s32,s32,s32);
  s8 r=0;
- if(func_020ba448(a,b-1,c)==1)r|=4;
- if(func_020ba448(a,b+1,c)==1)r|=8;
- if(func_020ba448(a,b,c-1)==1)r|=1;
- if(func_020ba448(a,b,c+1)==1)r|=2;
+ if(IsFriendlyUnitAt(a,b-1,c)==1)r|=4;
+ if(IsFriendlyUnitAt(a,b+1,c)==1)r|=8;
+ if(IsFriendlyUnitAt(a,b,c-1)==1)r|=1;
+ if(IsFriendlyUnitAt(a,b,c+1)==1)r|=2;
  return r;
 }
 
@@ -220,23 +224,31 @@ u8 func_020ba414(void *arg0) {
     return var_r0;
 }
 
-s32 func_020ba448(s32 a,s32 x,s32 y) {
-extern void **gCurrentMap;
-s32 func_020a84b4(s32,s32);s32 func_020a81c8(void *);s32 func_020d277c(s32,void *);
-u8 *p,*base; s32 offset; u8 result;
-if(x<0 || y<0)goto fail;
-p=*gCurrentMap;
-if(x>=M2C_FIELD(p,u16 *,0x5144)||y>=M2C_FIELD(p,u16 *,0x5146))goto fail;
-goto valid;
-fail:return 0;
+/* Report whether the tile (x, y) holds a unit the viewing side can see that is
+ * on the same team as `unit`: the tile must be on the map and occupied, and its
+ * unit record must belong to the same owner. */
+s32 IsFriendlyUnitAt(s32 unit, s32 x, s32 y) {
+    extern void **gCurrentMap;
+    s32 IsCellUnitEmpty(s32, s32);
+    s32 func_020a81c8(void *);
+    s32 func_020d277c(s32, void *);
+    u8 *map, *base;
+    s32 offset;
+    u8 result;
+    if (x < 0 || y < 0) goto fail;
+    map = *gCurrentMap;
+    if (x >= M2C_FIELD(map, u16 *, MAP_WIDTH) || y >= M2C_FIELD(map, u16 *, MAP_HEIGHT)) goto fail;
+    goto valid;
+fail:
+    return 0;
 valid:
-if(func_020a84b4(x,y))return 0;
-p=*gCurrentMap;
-base=p+0x59a4;
-offset=(s16)p[x+M2C_FIELD(p+y*2,u16 *,0x3758)]*(s16)14;
-if(!func_020a81c8(base+offset))return 0;
-if(func_020d277c(a,base+offset))result=1;else result=0;
-return result;
+    if (IsCellUnitEmpty(x, y)) return 0;
+    map = *gCurrentMap;
+    base = map + MAP_UNIT_RECORDS;
+    offset = (s16)map[x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)] * (s16)MAP_UNIT_STRIDE;
+    if (!func_020a81c8(base + offset)) return 0;
+    if (func_020d277c(unit, base + offset)) result = 1; else result = 0;
+    return result;
 }
 
 /* True when the cell (x, y) holds a unit of the cursor's owner, other than the

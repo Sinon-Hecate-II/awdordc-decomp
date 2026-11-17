@@ -286,7 +286,7 @@ s32 func_020bc910(void) {
     void func_020d8fa0(void);
     void *func_020d2e3c(u16);
     void PlaySoundEffect(void *);
-    s32 func_0207b764(u8, u8);
+    s32 StepMapViewToTile(u8, u8);
     s32 ConfirmCursorTile(s16, s16, s32, s32, u8);
     void SelectCursorTarget(s32, s32);
 
@@ -319,7 +319,7 @@ s32 func_020bc910(void) {
         void *r6 = func_020d2e3c(w);
         if (r6 != 0) {
             PlaySoundEffect((void *)0x1001A);
-            return func_0207b764(*(u8 *)((char *)r6 + 1), *(u8 *)((char *)r6 + 2));
+            return StepMapViewToTile(*(u8 *)((char *)r6 + 1), *(u8 *)((char *)r6 + 2));
         }
     }
 

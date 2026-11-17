@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct Callbacks3506c { void *(*alloc)(void *,int); int b,c; } Callbacks3506c;
 extern M2C_UNK gWfcNet, data_020fb7dc, data_020fb7f0;
-extern M2C_UNK data_020fb674, gHttpHeaderEnd, data_020fb680, data_020fb684;
+extern M2C_UNK sHttpHeaderLineFormat, gHttpHeaderEnd, data_020fb680, data_020fb684;
 typedef struct Pair02034164 {s32 first, second;} Pair02034164;
 typedef struct Buffer02034164 { s32 start, current, end, size; } Buffer02034164;
 typedef struct Unk02034164 {
@@ -49,31 +49,43 @@ if(arg0->unk1008==0)fmt=&data_020fb600;else fmt=&data_020fb654;
 a=StringLength(arg0->host);
 b=StringLength((s32)fmt);
 if(func_02034870(arg0,(u8*)arg0 + 0x19f8,a+(s32)((b-4)+(u32)StringLength(arg0->path))+0x400)!=1)return 1;
-n=func_0200567c(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,12),fmt,arg0->path,arg0->host);
+n=StringFormatN(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,12),fmt,arg0->path,arg0->host);
 M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,4)+n;
 return 0;
 }
 
-s32 func_020345f4(Unk02034164 *obj,int a,int b) {
- void MemMove(void *,void *,int); char *StringFind(int,void *); int func_02034908(s32,void *,s32);
- Buffer02034164 *buf=(Buffer02034164 *)obj->buffer;
- int n=StringLength(b); unsigned int fmt=StringLength((int)&data_020fb674);
- signed char save; char *p; int room;
- n+= (int)((fmt-4)+(unsigned int)StringLength(a));
- room=buf->end-buf->current;
- if(n+1>room && func_02034908((int)obj,buf,n-room+1)==0)return 1;
- p=StringFind(buf->start,&gHttpHeaderEnd)+2;
- save=*p;
- MemMove(p+n,p,StringLength((int)p)+1);
- p[func_0200567c(p,n+1,&data_020fb674,a,b)]=save;
- buf->current+=n;return 0;
+/* Insert a "name: value\r\n" header line at the end of the request's header
+ * block, just before its terminating blank line, growing the buffer when it
+ * does not fit.  Returns 0, or 1 when the buffer cannot be grown. */
+s32 HttpAppendHeader(Unk02034164 *client, char *name, char *value) {
+    void MemMove(void *, void *, int);
+    char *StringFind(int, void *);
+    int HttpBufferGrow(s32, void *, s32);
+    Buffer02034164 *buf = (Buffer02034164 *)client->buffer;
+    int len = StringLength(value);
+    unsigned int fmtLen = StringLength((int)&sHttpHeaderLineFormat);
+    signed char saved;
+    char *pos;
+    int room;
+
+    len += (int)((fmtLen - 4) + (unsigned int)StringLength(name));
+    room = buf->end - buf->current;
+    if (len + 1 > room && HttpBufferGrow((int)client, buf, len - room + 1) == 0) {
+        return 1;
+    }
+    pos = StringFind(buf->start, &gHttpHeaderEnd) + 2;
+    saved = *pos;
+    MemMove(pos + len, pos, StringLength((int)pos) + 1);
+    pos[StringFormatN(pos, len + 1, &sHttpHeaderLineFormat, name, value)] = saved;
+    buf->current += len;
+    return 0;
 }
 
 s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   extern M2C_UNK data_020fb680, data_020fb684;
   s32 func_02037214(s32, s32, void *, s32);
   s32 StringLength(s32);
-  int func_02034908(s32, void *, s32);
+  int HttpBufferGrow(s32, void *, s32);
   s32 ctr = *(s32 *)((u8 *)obj + 0x19f4);
   Buffer02034164 *buf = (Buffer02034164 *)obj->buffer;
   char *fmtstr;
@@ -100,11 +112,11 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   room = buf->end - buf->current;
 
   if (total > room) {
-    if (func_02034908((s32)obj, buf, total - room + 1) == 0) return 1;
+    if (HttpBufferGrow((s32)obj, buf, total - room + 1) == 0) return 1;
     room = buf->end - buf->current;
   }
 
-  r = func_0200567c(buf->current, room, fmtstr, name);
+  r = StringFormatN(buf->current, room, fmtstr, name);
 
   buf->current += r;
 
@@ -122,8 +134,8 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
 }
 
 s32 func_020347dc(s32 arg0, M2C_UNK arg1) {
-    s32 func_0200567c(s32, s32, M2C_UNK *, M2C_UNK);
-    s32 func_02034908(s32, void *, s32);
+    s32 StringFormatN(s32, s32, M2C_UNK *, M2C_UNK);
+    s32 HttpBufferGrow(s32, void *, s32);
     s32 StringLength(M2C_UNK);
     extern M2C_UNK data_020fb68c;
     s32 temp_r0;
@@ -135,14 +147,14 @@ s32 func_020347dc(s32 arg0, M2C_UNK arg1) {
     temp_r0 = StringLength(arg1);
     var_r1 = M2C_FIELD(temp_r5, s32 *, 8) - M2C_FIELD(temp_r5, s32 *, 4);
     if (temp_r0 > var_r1) {
-        if (func_02034908(arg0, temp_r5, (temp_r0 - var_r1) + 1) == 0) {
+        if (HttpBufferGrow(arg0, temp_r5, (temp_r0 - var_r1) + 1) == 0) {
             return 1;
         }
         var_r1 = M2C_FIELD(temp_r5, s32 *, 8) - M2C_FIELD(temp_r5, s32 *, 4);
         goto block_4;
     }
 block_4:
-    temp_r0_2 = func_0200567c(M2C_FIELD(temp_r5, s32 *, 4), var_r1, &data_020fb68c, arg1);
+    temp_r0_2 = StringFormatN(M2C_FIELD(temp_r5, s32 *, 4), var_r1, &data_020fb68c, arg1);
     if (temp_r0_2 != temp_r0) {
         return 1;
     }
@@ -183,7 +195,7 @@ if(v)fn(&data_020fb6a4,v,0);
 MI_CpuFill8(arg1,0,16);
 }
 
-s32 func_02034908(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C_UNK data_020fb6a4;void MI_CpuCopy8(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&data_020fb6b8,b[3]+c);if(!p)return 0;MI_CpuCopy8(b[0],p,b[3]);freep(&data_020fb6a4,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
+s32 HttpBufferGrow(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C_UNK data_020fb6a4;void MI_CpuCopy8(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&data_020fb6b8,b[3]+c);if(!p)return 0;MI_CpuCopy8(b[0],p,b[3]);freep(&data_020fb6a4,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
 
 #pragma opt_common_subs off
 /* Parse "http[s]://host[:port][/path]" from urlText into the client: copy the

@@ -195,7 +195,7 @@ void func_ov000_0217d3b8(s32 arg0) {
 void AssignUnitMoveTargets(void) {
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 IsFootUnitKind(u32);s32 func_ov000_02179b08(void *);void FloodFillUnitRange(s32,s32,u32,s32,s32);
-s32 func_ov000_021a9860(s32,s32);s32 GetAiUnitMoveRange(void *);
+s32 IsPropertyCell(s32,s32);s32 GetAiUnitMoveRange(void *);
 s32 unitId,unitOffset,bestX,bestY,bestScore,x,y,value,tileId;Unit0217d428 *unit;u8 *rec;void *p;
 unitId=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
 if(unitId>=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
@@ -211,7 +211,7 @@ for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
 p=*gCurrentMap;
 if(M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x]<0)continue;
-if(!func_ov000_021a9860(x,y))continue;
+if(!IsPropertyCell(x,y))continue;
 p=*gCurrentMap;tileId=M2C_FIELD((u8*)p+x+M2C_FIELD((u8*)p+y*2,u16*,0x3758),s8*,0x1928);
 if(M2C_FIELD((u8*)p+tileId*6,u8*,0x6c63)!=0)continue;
 value=M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x];

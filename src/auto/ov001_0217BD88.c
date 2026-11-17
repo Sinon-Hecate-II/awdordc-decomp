@@ -18,7 +18,7 @@ s32 IsNameEntryValid(void) {
     extern void *gNameEntryState;
 
     Ov001_GetNameEntryMode(&mode, &variant);
-    if (variant == 1) func_ov001_02171c24(0x35, -1, 0);
+    if (variant == 1) Ov001_ShowMessagePanel(0x35, -1, 0);
     Ov001_GetNameEntryMode(&mode, &variant);
     if (mode == 0) return M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_TEXT) != 0;
     if (variant == 1 && M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_TEXT) == 0) return 0;
@@ -84,7 +84,7 @@ handlers.handlers[a](data_ov001_02193da4+8);
 p=data_ov001_02193da4;
 if(ByteCompareN(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
 else {MI_CpuFill8(p+8,0,12);M2C_FIELD(data_ov001_02193da4,u8*,20)=0;}
-func_ov001_0217c0f8();func_ov001_02172250(a+11);func_ov001_02171c24(choices[a],-1,0);func_ov001_02171dd0(2);
+func_ov001_0217c0f8();func_ov001_02172250(a+11);Ov001_ShowMessagePanel(choices[a],-1,0);func_ov001_02171dd0(2);
 M2C_FIELD(data_ov001_02193da4,void**,0)=CreateTextPanel(0,0);
 M2C_FIELD(data_ov001_02193da4,void**,4)=func_ov001_0218a5f0(0,63);
 M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)&~0xc00)|0xc00;

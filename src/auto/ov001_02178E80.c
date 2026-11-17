@@ -1,14 +1,18 @@
 /* 53 functions from 0x02178E80 to 0x02179E74 (ov001), found by ds-decomp. */
 #include "common.h"
 
+/* The ov001 profile screen's confirmation state (gOv001ProfileChoice). */
+#define OV001_CHOICE_CONFIRMED 0x00 /* u8: set once the player has confirmed an option */
+#define OV001_CHOICE_OPTION    0x01 /* u8: the option the player picked (0 or 1) */
+
 void func_ov001_02178e80(void) {
-    s32 func_ov001_0217170c();
+    s32 Ov001_IsIconRowIdle();
     extern M2C_UNK data_ov001_02193d80;
-    extern M2C_UNK func_ov001_021778c0;
+    extern M2C_UNK Ov001_InitOptionMenu;
     extern M2C_UNK func_ov001_02179320;
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (func_ov001_0217170c() == 0) return;
+    if (Ov001_IsIconRowIdle() == 0) return;
     func_ov001_0218af70(0);
     if (M2C_FIELD(&data_ov001_02193d80, u8 *, 1) == 0) {
         Ov001_FreeOptionBackground();
@@ -17,38 +21,43 @@ void func_ov001_02178e80(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (M2C_FIELD(&data_ov001_02193d80, u8 *, 1) == 0) {
         Ov001_SetNextScreenMode(0, 1);
-        Ov001_SetStepCallback(&func_ov001_021778c0);
+        Ov001_SetStepCallback(&Ov001_InitOptionMenu);
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
     Ov001_SetStepCallback(&func_ov001_02179320);
 }
 
-void func_ov001_02178f28(void) {
-void *func_ov001_02176114(void);
-void func_ov001_02178ff8(void);
-void func_ov001_021792ec(void);
-void func_ov001_02179078(void);
-s32 CreateTextPanel(s32,s32);
-M2C_UNK FillU16(s32,void *,s32);
-M2C_UNK CopyU16(void *,void *,s32);
-M2C_UNK DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);
-extern s8 data_ov001_02193d84;
-u8 buf[22];
-s32 handle;
-void *p;
-p=func_ov001_02176114();
-handle=CreateTextPanel(0,0);
-M2C_FIELD(&data_ov001_02193d84,u8 *,1)=0;
-M2C_FIELD(&data_ov001_02193d84,u8 *,0)=0;
-func_ov001_02178ff8();
-FillU16(0,buf,22);
-CopyU16(p+2,buf,M2C_FIELD(p,u8 *,1)*2);
-DrawPanelText(handle,8,53,240,28,2,0x480,buf);
-CloseTextPanel(handle);
-func_ov001_021760f0(func_ov001_021792ec);
-Ov001_ShowMessage(29,4,0,-1,0);
-Ov001_SetStepCallback(func_ov001_02179078);
+/* Step of the ov001 profile screen that shows the confirmation message: resets the
+ * choice state, loads the text background, copies the profile message into a local
+ * buffer and draws it in a text panel, then registers the continuation callback and
+ * shows message 29 before the fade-out step takes over. */
+void Ov001_ShowProfileMessage(void) {
+    void *func_ov001_02176114(void);
+    void func_ov001_02178ff8(void);
+    void func_ov001_021792ec(void);
+    void func_ov001_02179078(void);
+    s32 CreateTextPanel(s32, s32);
+    M2C_UNK FillU16(s32, void *, s32);
+    M2C_UNK CopyU16(void *, void *, s32);
+    M2C_UNK DrawPanelText(s32, s32, s32, s32, s32, s32, s32, void *);
+    extern s8 gOv001ProfileChoice;
+    u8 textBuf[22];
+    s32 panel;
+    void *message;
+
+    message = func_ov001_02176114();
+    panel = CreateTextPanel(0, 0);
+    M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_OPTION) = 0;
+    M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_CONFIRMED) = 0;
+    func_ov001_02178ff8();
+    FillU16(0, textBuf, 22);
+    CopyU16(message + 2, textBuf, M2C_FIELD(message, u8 *, 1) * 2);
+    DrawPanelText(panel, 8, 53, 240, 28, 2, 0x480, textBuf);
+    CloseTextPanel(panel);
+    func_ov001_021760f0(func_ov001_021792ec);
+    Ov001_ShowMessage(29, 4, 0, -1, 0);
+    Ov001_SetStepCallback(func_ov001_02179078);
 }
 
 void func_ov001_02178ff8(void) {
@@ -94,18 +103,18 @@ void func_ov001_021790f4(void) {
     void func_ov001_02179164(void);
     void func_ov001_02179168(void);
     void func_ov001_0217916c(void);
-    extern s8 data_ov001_02193d84;
+    extern s8 gOv001ProfileChoice;
     s32 temp_r0;
     func_ov001_02179164();
     func_ov001_02179168();
     temp_r0 = func_ov001_02186648();
     switch (temp_r0) {
     case 0:
-        M2C_FIELD(&data_ov001_02193d84, u8 *, 1) = 0;
+        M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) = 0;
         Ov001_PlaySound(7);
         break;
     case 1:
-        M2C_FIELD(&data_ov001_02193d84, u8 *, 1) = 1;
+        M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) = 1;
         Ov001_PlaySound(0xE);
         break;
     default: return;
@@ -124,10 +133,10 @@ void func_ov001_02179168(void) {
 }
 
 void func_ov001_0217916c(void) {
-    extern s8 data_ov001_02193d84;
+    extern s8 gOv001ProfileChoice;
     extern M2C_UNK func_ov001_021791c8;
     if (func_ov001_0218665c() != 0) return;
-    if (M2C_FIELD(&data_ov001_02193d84, u8 *, 1) == 0) {
+    if (M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
@@ -137,41 +146,47 @@ void func_ov001_0217916c(void) {
 void func_ov001_021791c8(void) {
  M2C_UNK func_ov001_02176078();
  M2C_UNK func_ov001_02176108();
- extern s8 data_ov001_02193d84;
- extern M2C_UNK func_ov001_02179224;
+ extern s8 gOv001ProfileChoice;
+ extern M2C_UNK Ov001_CloseProfileScreen;
  if(Ov001_IsFadeActive(1)!=0)return;
  if(Ov001_IsFadeActive(0)!=0)return;
- if(M2C_FIELD(&data_ov001_02193d84,u8 *,0)==0 && M2C_FIELD(&data_ov001_02193d84,u8 *,1)==1) {
+ if(M2C_FIELD(&gOv001ProfileChoice,u8 *,0)==0 && M2C_FIELD(&gOv001ProfileChoice,u8 *,1)==1) {
  func_ov001_02176108();
  }else {func_ov001_02176078();}
- Ov001_SetStepCallback(&func_ov001_02179224);
+ Ov001_SetStepCallback(&Ov001_CloseProfileScreen);
 }
 
-void func_ov001_02179224(void) {
-s32 func_ov001_021760d4(void);
-extern s8 data_ov001_02193d84;
-extern M2C_UNK func_ov001_02178bc0, func_ov001_021778c0, func_ov001_02177fd8;
-if(M2C_FIELD(&data_ov001_02193d84,u8 *,0) || !M2C_FIELD(&data_ov001_02193d84,u8 *,1))
-if(!func_ov001_021760d4())return;
+/* Step that leaves the ov001 online profile screen.  When the player confirmed
+ * an option or picked the first one it first waits for the profile task to finish;
+ * then it disables the screen's planes, frees the option background if the first
+ * option was picked, and installs the next step: the follow-up screen when an
+ * option was confirmed, the option menu when the first option was not picked, and
+ * the alternate screen otherwise. */
+void Ov001_CloseProfileScreen(void) {
+s32 Ov001_IsProfileScreenDone(void);
+extern s8 gOv001ProfileChoice;
+extern M2C_UNK func_ov001_02178bc0, Ov001_InitOptionMenu, func_ov001_02177fd8;
+if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED) || !M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION))
+if(!Ov001_IsProfileScreenDone())return;
 func_ov001_0218af70(0);
 Ov001_DisableVisiblePlanes(0,21);
-if(!M2C_FIELD(&data_ov001_02193d84,u8 *,1)) {
+if(!M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION)) {
 Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);
 }
 Ov001_SetNextScreenMode(0,1);
-if(M2C_FIELD(&data_ov001_02193d84,u8 *,0)) {
+if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED)) {
 Ov001_SetStepCallback(&func_ov001_02178bc0);return;
 }
-if(!M2C_FIELD(&data_ov001_02193d84,u8 *,1)) {
+if(!M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION)) {
 Ov001_DisableVisiblePlanes(1,1);
-Ov001_SetStepCallback(&func_ov001_021778c0);return;
+Ov001_SetStepCallback(&Ov001_InitOptionMenu);return;
 }
 Ov001_SetStepCallback(&func_ov001_02177fd8);
 }
 
 void func_ov001_021792ec(void) {
-    extern s8 data_ov001_02193d84;
-    data_ov001_02193d84 = 1;
+    extern s8 gOv001ProfileChoice;
+    gOv001ProfileChoice = 1;
 }
 
 s32 func_ov001_02179300(void) {
@@ -184,7 +199,7 @@ s32 func_ov001_02179300(void) {
 void func_ov001_02179320(void) {
  M2C_UNK func_ov001_02175f8c(M2C_UNK *);
  M2C_UNK func_ov001_02171e58(M2C_UNK);
- M2C_UNK func_ov001_021713c4(M2C_UNK);
+ M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
  void func_ov001_0217969c(s32);
  void func_ov001_0217936c(void);
  void func_ov001_021793ec(void);
@@ -193,7 +208,7 @@ void func_ov001_02179320(void) {
  data_ov001_02193d88=0;
  func_ov001_0217936c();
  func_ov001_02171e58(0x1C);
- func_ov001_021713c4(0);
+ Ov001_CreateAnimSprite(0);
  Ov001_PlaySound(11);
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021793ec);
 }
@@ -288,12 +303,12 @@ void func_ov001_021794ec(void) {
 }
 
 void func_ov001_02179524(void) {
-    s32 func_ov001_021760d4();
+    s32 Ov001_IsProfileScreenDone();
     M2C_UNK func_ov001_02171694();
     extern u8 data_ov001_02193d88;
     extern M2C_UNK func_ov001_021795a4;
     if (Ov001_IsFadeActive(1) != 0) return;
-    if (data_ov001_02193d88 == 0 && func_ov001_021760d4() == 0) return;
+    if (data_ov001_02193d88 == 0 && Ov001_IsProfileScreenDone() == 0) return;
     func_ov001_02171694();
     if (data_ov001_02193d88 == 0) Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
@@ -303,15 +318,15 @@ void func_ov001_02179524(void) {
 /* Starts the selected battle mode: validates state, then schedules the
  * appropriate per-mode update callback via the state dispatch. */
 void func_ov001_021795a4(void) {
-    s32 func_ov001_0217170c(void);
-    s32 func_ov001_021760d4(void);
+    s32 Ov001_IsIconRowIdle(void);
+    s32 Ov001_IsProfileScreenDone(void);
     extern u8 data_ov001_02193d88;
-    void func_ov001_021778c0(void);
+    void Ov001_InitOptionMenu(void);
     void func_ov001_02178bc0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     if (data_ov001_02193d88 == 0 && Ov001_IsFadeActive(1) != 0) return;
-    if (func_ov001_0217170c() == 0) return;
-    if (data_ov001_02193d88 == 0 && func_ov001_021760d4() == 0) return;
+    if (Ov001_IsIconRowIdle() == 0) return;
+    if (data_ov001_02193d88 == 0 && Ov001_IsProfileScreenDone() == 0) return;
     func_ov001_02171494();
     func_ov001_0218af70(0);
     if (data_ov001_02193d88 == 0) {
@@ -321,7 +336,7 @@ void func_ov001_021795a4(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193d88 == 0) {
         Ov001_SetNextScreenMode(0, 1);
-        Ov001_SetStepCallback(func_ov001_021778c0);
+        Ov001_SetStepCallback(Ov001_InitOptionMenu);
         return;
     }
     if (data_ov001_02193d88 == 2) {
@@ -330,7 +345,7 @@ void func_ov001_021795a4(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback(func_ov001_02178f28);
+    Ov001_SetStepCallback(Ov001_ShowProfileMessage);
 }
 
 void func_ov001_0217969c(s32 arg0) {
@@ -360,16 +375,16 @@ void func_ov001_02179718(void) {
     void func_ov001_02179778(void);
     void func_ov001_02179820(void);
     M2C_UNK func_ov001_021722ac();
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK Ov001_InitWirelessSetup();
     M2C_FIELD(&data_ov001_02193d8c, u16 *, 2) = 0;
     func_ov001_02179778();
     func_ov001_021722ac();
-    func_ov001_02171c24(0x36, -1, 0);
+    Ov001_ShowMessagePanel(0x36, -1, 0);
     func_ov001_02171dd0(2);
     func_ov001_02171e58(0x22);
-    func_ov001_021713c4(0);
+    Ov001_CreateAnimSprite(0);
     Ov001_InitWirelessSetup();
     Ov001_PlaySound(0xB);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179820);
@@ -527,7 +542,7 @@ void func_ov001_02179af4(void) {
     if (data_ov001_02193d8c == 0 && Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (func_ov001_0217170c() == 0) {
+    if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
 

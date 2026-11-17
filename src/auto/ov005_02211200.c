@@ -24,10 +24,10 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void *func_020896f0(void *);
     void func_02089424(void);
     void *func_020ab1c4(void *);
-    void func_020aab24(void *, s32, s32, s32, s32);
+    void InitUnitSprite(void *, s32, s32, s32, s32);
     void func_02088e84(void *, s16, s16, s16, s32);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     void func_020ab150(void *, s32);
     void func_02088f1c(void *);
     void func_020aad18(void *);
@@ -67,13 +67,13 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     }
     tile=0x140;
     { void *sprite; sprite = func_020ab1c4((void *)arg0);
-    func_020aab24(sprite, 0, tile, 3, 1);
+    InitUnitSprite(sprite, 0, tile, 3, 1);
     func_02088e84(sprite, 0xC0, 0xA0, 0xE0, 0xC0);
     if ((u8)(M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12)!=0)) {
         s16 a = M2C_FIELD(sprite, s16 *, 0x52);
         s16 b = M2C_FIELD(sprite, s16 *, 0x50);
-        s32 w=func_020aae10(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64),1,b,a,(u16)w,(u16)func_020aae44(sprite));
+        s32 w=GetUnitSpriteWidth(sprite);
+        func_02087d84(M2C_FIELD(sprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite));
     }
     func_020ab150(sprite, 1);
     func_02088f1c(sprite);
@@ -81,13 +81,13 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
 
     }
     { void *sprite2; sprite2 = func_020ab1c4((void *)arg0);
-    func_020aab24(sprite2, 3, 0x150, 3, 1);
+    InitUnitSprite(sprite2, 3, 0x150, 3, 1);
     func_02088e84(sprite2, 0xE0, 0xA0, 0xC0, 0xC0);
     if ((u8)(M2C_FIELD(M2C_FIELD(sprite2, void **, 0x64), u8 *, 0x12)!=0)) {
         s16 a = M2C_FIELD(sprite2, s16 *, 0x52);
         s16 b = M2C_FIELD(sprite2, s16 *, 0x50);
-        s32 w=func_020aae10(sprite2);
-        func_02087d84(M2C_FIELD(sprite2, void **, 0x64),1,b,a,(u16)w,(u16)func_020aae44(sprite2));
+        s32 w=GetUnitSpriteWidth(sprite2);
+        func_02087d84(M2C_FIELD(sprite2, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite2));
     }
     func_020ab150(sprite2, 2);
     func_02088f1c(sprite2);
@@ -103,23 +103,23 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         do {
             void *spSprite;
             M2C_FIELD((u8 *)(void *)arg0 + r9 * 4, void **, 0x38) = func_020ab1c4((void *)arg0);
-            func_020aab24(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38), (r9 + 0x3F) & 0xFF, tile, 3, 0);
+            InitUnitSprite(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38), (r9 + 0x3F) & 0xFF, tile, 3, 0);
             spSprite=M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38);
             pos = (s16)r8;
             func_02088e84(spSprite, pos, 0x58, pos, 0x58);
             if ((u8)(M2C_FIELD(M2C_FIELD(spSprite, void **, 0x64), u8 *, 0x12)!=0)) {
                 s16 a = M2C_FIELD(spSprite, s16 *, 0x52);
                 s16 b = M2C_FIELD(spSprite, s16 *, 0x50);
-                s32 w=func_020aae10(spSprite);
-        func_02087d84(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)func_020aae44(spSprite));
+                s32 w=GetUnitSpriteWidth(spSprite);
+        func_02087d84(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(spSprite));
                 }
             M2C_FIELD(spSprite, s16 *, 0x34) = pos;
             M2C_FIELD(spSprite, s16 *, 0x36) = 0x58;
             if ((u8)(M2C_FIELD(M2C_FIELD(spSprite, void **, 0x64), u8 *, 0x12)!=0)) {
                 s16 a = M2C_FIELD(spSprite, s16 *, 0x52);
                 s16 b = M2C_FIELD(spSprite, s16 *, 0x50);
-                s32 w=func_020aae10(spSprite);
-        func_02087d84(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)func_020aae44(spSprite));
+                s32 w=GetUnitSpriteWidth(spSprite);
+        func_02087d84(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(spSprite));
             }
             M2C_FIELD(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38),u8*,0x5a)=neg;
             func_020aad18(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38));

@@ -192,16 +192,16 @@ M2C_FIELD(gHistoryMenu,void **,0x48)=func_0208bc24(arg0);
 M2C_FIELD(M2C_FIELD(gHistoryMenu,void **,0x48),u16 *,0x3e)=0xdc;
 ((MenuAnimSprite *)M2C_FIELD(gHistoryMenu,void **,0x48))->frame=7;
 func_02088f1c(M2C_FIELD(gHistoryMenu,void **,0x48));
-func_020aef7c(3,15,6);gCur3DSpriteEngine=save;func_02091cd0();func_ov005_02212ef0();
+CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=save;func_02091cd0();func_ov005_02212ef0();
 }
 #pragma opt_instruction_scheduling reset
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
 void func_ov005_02213cf4(void) {
     M2C_UNK func_020b2224();
-    M2C_UNK func_020b1bf4(s32, s32, s32, s32);
-    M2C_UNK func_020b1c78(s32);
-    M2C_UNK func_020b22a4(s32, s32, M2C_UNK *, s32);
+    M2C_UNK SetSpriteSlotFrameRect(s32, s32, s32, s32);
+    M2C_UNK SelectSpriteSlot(s32);
+    M2C_UNK AddSpriteSlot(s32, s32, M2C_UNK *, s32);
     void *HistoryTabAt(s32);
     extern M2C_UNK data_ov005_022201e0;
     s32 var_r4;
@@ -209,7 +209,7 @@ void func_ov005_02213cf4(void) {
     s32 var_r7;
     s32 var_r8;
     func_020b2224();
-    func_020b1bf4(0, -0x10, 0x100, -0x10);
+    SetSpriteSlotFrameRect(0, -0x10, 0x100, -0x10);
     var_r4 = 0;
     do {
         if (M2C_FIELD(HistoryTabAt(var_r4), s16 *, 8) > var_r6) {
@@ -222,13 +222,13 @@ void func_ov005_02213cf4(void) {
         var_r7 = 0x28;
 loop:
         if (var_r8 != 7) {
-            func_020b22a4(4, var_r7, &data_ov005_022201e0, var_r8);
+            AddSpriteSlot(4, var_r7, &data_ov005_022201e0, var_r8);
             var_r8++;
             var_r7 += 0x10;
             if (var_r8 < var_r6) goto loop;
         }
     }
-    func_020b1c78(0);
+    SelectSpriteSlot(0);
 }
 
 #pragma opt_propagation off

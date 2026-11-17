@@ -14,7 +14,7 @@ extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10
 void UpdateUnitMove(void *ctrl) {
 s32 func_0207b7c4(void);s32 GetFacingOffset(s32);
 void PlaySoundAtTile(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 IsActionEntryActive(void *);void func_0207b774(u8,u8);void func_0207b764(u8,u8);void func_01ffa6fc(void *);
+s32 IsActionEntryActive(void *);void PanMapViewToTile(u8,u8);void StepMapViewToTile(u8,u8);void func_01ffa6fc(void *);
 extern s32 *gCurrentMap;
 s32 startOffset,endOffset,facing,turnCount; u8 *unit; void *map; u8 *player;
 if(func_0207b7c4())return;
@@ -47,7 +47,7 @@ if(M2C_FIELD(map,u16 *,0x52A4)==1 && (turnCount=M2C_FIELD(map,u16 *,0x52A2))>1 &
 M2C_FIELD(ctrl,void **,0x38)=M2C_FIELD(ctrl,void **,0x34);
 M2C_FIELD(ctrl,s32 *,0x3C)=0;
 unit=M2C_FIELD(ctrl,u8 **,0x38);
-func_0207b774(unit[0],unit[1]);
+PanMapViewToTile(unit[0],unit[1]);
 M2C_FIELD(ctrl,u8 **,0x34)+=8;
 M2C_FIELD(ctrl,u8 *,0x44)=1;
 return;
@@ -58,7 +58,7 @@ unit=M2C_FIELD(ctrl,u8 **,0x34);
 if(M2C_FIELD(ctrl,u8 *,0x44)){
 map=(void *)*gCurrentMap;
 player=(u8 *)map+0x67A4+M2C_FIELD(map,u16 *,0x52A4)*140;
-func_0207b764(player[0x2D],player[0x2E]);
+StepMapViewToTile(player[0x2D],player[0x2E]);
 }
 func_01ffa6fc(ctrl);
 }
@@ -376,7 +376,7 @@ func_020a6328(p,v==0?0:Divide(v-1,10)+1);
 }else func_020d3120((a>>6)+1);
 if(p[12])func_020a6738(p[12],b);
 if(p[13])func_020a6738(p[13],b);
-func_020a7e3c(p,1);
+ClearPlayerSelectedUnit(p,1);
 p[0]&=~63;
 }
 

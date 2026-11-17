@@ -179,7 +179,7 @@ result=gpiReceiveData(a,M2C_FIELD(request,s32*,4),request+8,&token,&status,&data
 if(result){if(result!=3)return result;gpiSetError(a,0xd01,data_020ff0dc);gpiCallErrorCallback(a,3,0);return 3;}
 if(StringFind(M2C_FIELD(request,void**,8),data_020ff0d4)!=0){
 previous=0;M2C_FIELD(b,s32*,20)=5;
-if(func_0205817c(a,M2C_FIELD(request,s32*,8),1)){M2C_FIELD(request,s32*,0x140)=1;return 4;}
+if(gpiProcessErrorReply(a,M2C_FIELD(request,s32*,8),1)){M2C_FIELD(request,s32*,0x140)=1;return 4;}
 if(M2C_FIELD(request,s32*,0)==1){
 done=0;response[0]=0;response[1]=0;response[2]=0x601;response[3]=0;
 do{

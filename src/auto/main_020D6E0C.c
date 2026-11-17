@@ -74,14 +74,14 @@ void func_020d759c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
  * record, 0 for an empty slot. */
 void DrawUnitIcon(s32 x,s32 y,s32 iconIndex,s32 unit){
 s32 GetUnitKind(s32);s32 GetUnitHealthBarCount(s32);s32 GetUnitIconTiles(s32,u8);
-void func_0207c3dc(s32,s32,s32,s32);void AddSprite(u16,u16,u16,void *,s32);void DrawDecimalNumber(s32,u8,s32);
+void QueueMemoryCopy(s32,s32,s32,s32);void AddSprite(u16,u16,u16,void *,s32);void DrawDecimalNumber(s32,u8,s32);
 extern void *gCur3DSpriteEngine;extern M2C_UNK gSpriteDesc16x16;
 extern s32 *gCurrentMap;
 s32 kind=GetUnitKind(unit);s32 unitIndex,variant,healthBars,tile;s32 screenY,screenX;
 if(unit==0)unitIndex=0;else unitIndex=(unit-(*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;
 variant=M2C_FIELD(*gCurrentMap+((unitIndex>>6)+1)*MAP_PLAYER_STRIDE,u8 *,0x67cd);
 healthBars=GetUnitHealthBarCount(unit);tile=(iconIndex+1)*4+0x218;
-func_0207c3dc(GetUnitIconTiles(kind,variant),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+(tile<<5),128,0);
+QueueMemoryCopy(GetUnitIconTiles(kind,variant),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+(tile<<5),128,0);
 screenY=y&255;screenX=x&511;
 AddSprite((u16)screenX,(u16)screenY,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),&gSpriteDesc16x16,9);
 screenY+=0x400;

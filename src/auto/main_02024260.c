@@ -163,9 +163,9 @@ void TlsSendFinished(void *transport) {
     gFree[0](record);
 }
 
-s32 func_02024a6c(void *p){s32 TlsReadRecord(void *);if(TlsReadRecord(p)!=7)return 1;return TlsReadRecord(p)!=6;}
+s32 TlsReadPeerFinished(void *p){s32 TlsReadRecord(void *);if(TlsReadRecord(p)!=7)return 1;return TlsReadRecord(p)!=6;}
 
-s32 func_02024a9c(void *p){s32 TlsReadRecord(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void TlsSendFinished(void *);if(TlsReadRecord(p)!=1)return 1;if(TlsSendServerHello(p)){TlsInitRecordKeys(M2C_FIELD(p,void **,12));TlsSendFinished(p);if(func_02024a6c(p))return 1;}else{if(TlsReadRecord(p)!=5)return 1;if(func_02024a6c(p))return 1;TlsSendFinished(p);}return 0;}
+s32 func_02024a9c(void *p){s32 TlsReadRecord(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void TlsSendFinished(void *);if(TlsReadRecord(p)!=1)return 1;if(TlsSendServerHello(p)){TlsInitRecordKeys(M2C_FIELD(p,void **,12));TlsSendFinished(p);if(TlsReadPeerFinished(p))return 1;}else{if(TlsReadRecord(p)!=5)return 1;if(TlsReadPeerFinished(p))return 1;TlsSendFinished(p);}return 0;}
 
 #pragma push
 #pragma peephole on
@@ -182,66 +182,78 @@ func_0201d434(p); M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a); M2C_FIELD(p,s
 goto retry;
 }
 #pragma pop
-s32 func_02024b94(void *arg0) {
- void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void TlsInitRecordKeys(void *);s32 TlsReadRecord(void *);void TlsSendFinished(void *);void TlsSendHandshake(void *);s32 func_02024a6c(void *);
- void *p=M2C_FIELD(arg0,void **,12);s32 state;
- TlsSendClientHello(arg0);
+/* Drives the client side of a TLS handshake: sends ClientHello, reads the
+ * server's flight until ServerHelloDone (or until the server resumes the cached
+ * session), then runs the resumed path (record keys + Finished) or the full path
+ * (client key exchange, master secret, optional session save, record keys +
+ * Finished), verifies the peer's Finished and marks the handshake done.
+ * Returns 1 on failure, 0 once the handshake has completed. */
+s32 TlsClientHandshake(void *transport) {
+ void TlsStoreSession(void *,s32,u16); void TlsComputeMasterSecret(void *);void TlsInitRecordKeys(void *);s32 TlsReadRecord(void *);void TlsSendFinished(void *);void TlsSendHandshake(void *);s32 TlsReadPeerFinished(void *);
+ void *channel=M2C_FIELD(transport,void **,12);s32 state;
+ TlsSendClientHello(transport);
  do {
- state=TlsReadRecord(arg0);
- if(state==9)return 1;
- }while(state!=4 && M2C_FIELD(p,u8 *,0x31)==0);
- if(M2C_FIELD(p,u8 *,0x31)) {
- TlsInitRecordKeys(p);
- if(func_02024a6c(arg0))return 1;
- TlsSendFinished(arg0);
+ state=TlsReadRecord(transport);
+ if(state==TLS_STATE_ERROR)return 1;
+ }while(state!=TLS_STATE_SERVER_HELLO_DONE && M2C_FIELD(channel,u8 *,TLS_SESSION_RESUMED)==0);
+ if(M2C_FIELD(channel,u8 *,TLS_SESSION_RESUMED)) {
+ TlsInitRecordKeys(channel);
+ if(TlsReadPeerFinished(transport))return 1;
+ TlsSendFinished(transport);
  } else {
- TlsSendHandshake(arg0);func_020232b8(p);
- if(M2C_FIELD(p,u8 *,0x30))func_02021f1c(p,M2C_FIELD(arg0,s32 *,0x1c),M2C_FIELD(arg0,u16 *,0x18));
- TlsInitRecordKeys(p);TlsSendFinished(arg0);
- if(func_02024a6c(arg0))return 1;
+ TlsSendHandshake(transport);TlsComputeMasterSecret(channel);
+ if(M2C_FIELD(channel,u8 *,TLS_SESSION_CACHED))TlsStoreSession(channel,M2C_FIELD(transport,s32 *,0x1c),M2C_FIELD(transport,u16 *,0x18));
+ TlsInitRecordKeys(channel);TlsSendFinished(transport);
+ if(TlsReadPeerFinished(transport))return 1;
  }
- M2C_FIELD(p,u8 *,0x455)=8;
+ M2C_FIELD(channel,u8 *,TLS_STATE)=TLS_STATE_DONE;
  return 0;
 }
 
-s32 func_02024c60(void *p){s32 func_0201d2f0(void *);s32 func_02024b94(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&func_0201d2f0(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return func_02024b94(p);}
+s32 func_02024c60(void *p){s32 func_0201d2f0(void *);s32 TlsClientHandshake(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&func_0201d2f0(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return TlsClientHandshake(p);}
 
-s32 func_02024cb4(s32 *arg0, void *arg1) {
+/* TLS-socket counterpart of PeekReceivedData: finishes the pending TLS record by
+ * reading its remaining bytes from the socket, hands the assembled record to
+ * TlsProcessRecord, and, once a record is ready, returns a pointer to its unread
+ * tail with the unread byte count in sizeOut. Reports sizeOut 0 and returns 0 if
+ * the read fails or the transport reaches TLS_STATE_ERROR. */
+s32 TlsPeekReceivedData(s32 *sizeOut, void *socket) {
     s32 ReceiveExactBytes(s32, u32, M2C_UNK);
           void TlsProcessRecord(void *, void *);
     s32 TlsReadRecord(void *);
     extern void (*gFree[])(void *);
-    void *r4;
-    void *ip;
+    void *channel;
+    void *record;
+    s32 readOffset;
 
-    r4 = M2C_FIELD(arg1, void **, 0xC);
-    ip = M2C_FIELD(r4, void **, 0x824);
-    if (ip != 0 && M2C_FIELD(r4, u8 *, 0x456) == 0) {
-        s32 r3 = M2C_FIELD(r4, s32 *, 0x82C);
-        if (ReceiveExactBytes((s32)ip + r3, (u32)(M2C_FIELD(r4, s32 *, 0x828) - r3), arg1) != 0) {
-            gFree[0](M2C_FIELD(r4, void **, 0x824));
-            M2C_FIELD(r4, void **, 0x824) = 0;
-            *arg0 = 0;
+    channel = M2C_FIELD(socket, void **, 0xC);
+    record = M2C_FIELD(channel, void **, TLS_PENDING_RECORD);
+    if (record != 0 && M2C_FIELD(channel, u8 *, TLS_PENDING_KEEP) == 0) {
+        readOffset = M2C_FIELD(channel, s32 *, TLS_PENDING_READ);
+        if (ReceiveExactBytes((s32)record + readOffset, (u32)(M2C_FIELD(channel, s32 *, TLS_PENDING_SIZE) - readOffset), socket) != 0) {
+            gFree[0](M2C_FIELD(channel, void **, TLS_PENDING_RECORD));
+            M2C_FIELD(channel, void **, TLS_PENDING_RECORD) = 0;
+            *sizeOut = 0;
             return 0;
         }
-        TlsProcessRecord(r4, M2C_FIELD(r4, void **, 0x824));
-        if (M2C_FIELD(r4, u8 *, 0x456) == 0) {
-            M2C_FIELD(r4, void **, 0x824) = 0;
+        TlsProcessRecord(channel, M2C_FIELD(channel, void **, TLS_PENDING_RECORD));
+        if (M2C_FIELD(channel, u8 *, TLS_PENDING_KEEP) == 0) {
+            M2C_FIELD(channel, void **, TLS_PENDING_RECORD) = 0;
         }
     }
-    if (M2C_FIELD(r4, void **, 0x824) == 0) {
+    if (M2C_FIELD(channel, void **, TLS_PENDING_RECORD) == 0) {
         for (;;) {
-            if (TlsReadRecord(arg1) == 9) {
-                *arg0 = 0;
+            if (TlsReadRecord(socket) == TLS_STATE_ERROR) {
+                *sizeOut = 0;
                 return 0;
             }
-            if (M2C_FIELD(r4, void **, 0x824) != 0) {
+            if (M2C_FIELD(channel, void **, TLS_PENDING_RECORD) != 0) {
                 break;
             }
         }
     }
-    *arg0 = M2C_FIELD(r4, s32 *, 0x828) - M2C_FIELD(r4, s32 *, 0x82C);
-    return (s32)M2C_FIELD(r4, void **, 0x824) + M2C_FIELD(r4, s32 *, 0x82C);
+    *sizeOut = M2C_FIELD(channel, s32 *, TLS_PENDING_SIZE) - M2C_FIELD(channel, s32 *, TLS_PENDING_READ);
+    return (s32)M2C_FIELD(channel, void **, TLS_PENDING_RECORD) + M2C_FIELD(channel, s32 *, TLS_PENDING_READ);
 }
 
 void func_02024d8c(u32 arg0, void *arg1) {

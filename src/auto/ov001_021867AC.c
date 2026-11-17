@@ -1,5 +1,6 @@
 /* 21 functions from 0x021867AC to 0x02187590 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_link.h"
 /* The ov001 wireless-link work header: the seven status words the link code
  * (Ov001_GetLinkStatus and friends) clears when the link is set up. */
 typedef struct { u16 value[7]; } Ov001LinkHeader;
@@ -13,7 +14,7 @@ extern const u8 data_ov001_0218fc66[], gOv001RegionItemSlot[];
 extern const u16 gOv001RegionItemPos[], data_ov001_0218fcce[];
 
 /* Selects the UI button under the cursor in the active button group, or deselects. */
-void func_ov001_021867ac(void) {
+void Ov001_UpdateRegionMenuInput(void) {
 extern u8 gOv001RegionItemCount[];
 extern const u16 data_ov001_0218fc70[];
 extern const s8 data_ov001_0218fc5c[], data_ov001_0218fc5d[];
@@ -41,7 +42,7 @@ for (i = 0; i < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; 
 M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = -1;
 }
 
-void func_ov001_02186908(s32 arg0) {
+void Ov001_RegionMenuEmptyTimeout(s32 arg0) {
 s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
 void func_ov001_02186c68(s32);
 M2C_FIELD(gOv001RegionMenu,s8 *,0x1b)=-1;
@@ -144,10 +145,10 @@ void func_ov001_02186d90(s32 a) {
     extern void *data_ov001_02193e18; extern u8 data_ov001_0218fcfc[];
     s32 i;
     *(volatile u32 *)0x4000000 &= ~0xe000;
-    func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[0]);
-    func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[1]);
+    Ov001_DestroySprite(((s32**)data_ov001_02193e18)[0]);
+    Ov001_DestroySprite(((s32**)data_ov001_02193e18)[1]);
     for (i = 0; i < data_ov001_0218fcfc[((u8*)data_ov001_02193e18)[0x1c]]; i++) {
-        if (((s32**)data_ov001_02193e18)[2 + i]) func_ov001_0218a1cc(((s32**)data_ov001_02193e18)[2 + i]);
+        if (((s32**)data_ov001_02193e18)[2 + i]) Ov001_DestroySprite(((s32**)data_ov001_02193e18)[2 + i]);
     }
     func_ov001_0218ace0(((s32**)data_ov001_02193e18)[4]);
     Ov001_PostTaskMessage(1, a);
@@ -195,46 +196,52 @@ Ov001_SetLinkStatus(1);
 void func_ov001_02186fa0(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SystemHalt();
     s32 func_02017f90(M2C_UNK);
-    s32 func_ov001_02186fe8(M2C_UNK);
+    s32 Ov001_LoadDownloadPlayProgram(M2C_UNK);
     Ov001_SetLinkStatus(2);
     if (func_02017f90(arg1) != 0) {
         Ov001_SetLinkStatus(7);
         return;
     }
-    if (func_ov001_02186fe8(arg0) != 0) {
+    if (Ov001_LoadDownloadPlayProgram(arg0) != 0) {
         return;
     }
     SystemHalt();
 }
 
-s32 func_ov001_02186fe8(M2C_UNK arg0) {
-s32 OpenFileRequest(void *,s32);
-s32 func_02015248(void *);
-s32 func_020152c8(void *,void *,s32);
-s32 func_0201579c(M2C_UNK,void *);
-u32 file[18];
-void *p;
-s32 result=0;
-if(M2C_FIELD(arg0,s32 *,0)==0) p=0;
-else {
-InitFileRequest(file);
-if(!OpenFileRequest(file,M2C_FIELD(arg0,s32 *,0))) return 0;
-p=file;
-}
-if(func_02015248(p)) {
-M2C_FIELD(gOv001LinkWork,void **,0x1b144)=(u8 *)gOv001LinkWork+0x2c;
-if(M2C_FIELD(gOv001LinkWork,void **,0x1b144) &&
-func_020152c8(p,M2C_FIELD(gOv001LinkWork,void **,0x1b144),0x10000) &&
-func_0201579c(arg0,M2C_FIELD(gOv001LinkWork,void **,0x1b144))) result=1;
-}
-if(p==file)CloseFileRequest(file);
-return result;
+/* Load the DS Download Play program image into the link work block and register
+ * it with the multiboot library: when the caller's file request block carries a
+ * path the image is read from that file, otherwise from the ROM's program area.
+ * A request block opened here is closed again; returns 1 once the image is
+ * registered, 0 when it could not be loaded. */
+s32 Ov001_LoadDownloadPlayProgram(s32 fileRequest) {
+    s32 OpenFileRequest(void *, s32);
+    s32 Mb_GetProgramSize(void *);
+    s32 Mb_LoadProgramImage(void *, void *, s32);
+    s32 Mb_RegisterProgram(M2C_UNK, void *);
+    u32 file[18];
+    void *request;
+    s32 result = 0;
+
+    if (M2C_FIELD(fileRequest, s32 *, 0) == 0) request = 0;
+    else {
+        InitFileRequest(file);
+        if (!OpenFileRequest(file, M2C_FIELD(fileRequest, s32 *, 0))) return 0;
+        request = file;
+    }
+    if (Mb_GetProgramSize(request)) {
+        M2C_FIELD(gOv001LinkWork, void **, OV001_LINK_PROGRAM) = (u8 *)gOv001LinkWork + 0x2c;
+        if (M2C_FIELD(gOv001LinkWork, void **, OV001_LINK_PROGRAM) &&
+            Mb_LoadProgramImage(request, M2C_FIELD(gOv001LinkWork, void **, OV001_LINK_PROGRAM), 0x10000) &&
+            Mb_RegisterProgram(fileRequest, M2C_FIELD(gOv001LinkWork, void **, OV001_LINK_PROGRAM))) result = 1;
+    }
+    if (request == file) CloseFileRequest(file);
+    return result;
 }
 
 void func_ov001_021870bc(s32 a) {
 extern void *gOv001LinkWork;
 u16 mask; s32 state;
-if(func_02013f70(a,1))return;
+if(Mb_AckPlayerPhase(a,1))return;
 mask=~(1<<a);
 state=OS_DisableInterrupts();
 M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
@@ -243,13 +250,17 @@ M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
-OS_RestoreInterrupts(state); func_020180c8(a);
+OS_RestoreInterrupts(state); Mb_RemovePlayer(a);
 }
 
-void func_ov001_0218715c(s32 a) {
+/* Reacts to a download-play child acknowledging link phase 0: if the child has
+ * not reached the phase's expected multiboot state, drop it from every link
+ * bitmap (players +2, +4, +6, +8, +10, +12) and close its connection; if it
+ * has, only clear its joined (+2) and kicked (+4) bits. */
+void Ov001_HandleChildPhase0(s32 player) {
 u16 mask; s32 state; s32 mask2;
-if(!func_02013f70(a,0)) {
-mask=~(1<<a);
+if(!Mb_AckPlayerPhase(player,0)) {
+mask=~(1<<player);
 state=OS_DisableInterrupts();
 M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
@@ -257,40 +268,46 @@ M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
-OS_RestoreInterrupts(state); func_020180c8(a);
+OS_RestoreInterrupts(state); Mb_RemovePlayer(player);
 } else {
 state=OS_DisableInterrupts();
-mask2=~(1<<a);
+mask2=~(1<<player);
 M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask2;
 M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask2;
 OS_RestoreInterrupts(state);
 }
 }
 
-void func_ov001_02187234(s32 a) {
-u16 mask; s32 state;
-if(!func_02013f70(a,2)) {
-mask=~(1<<a);
-state=OS_DisableInterrupts();
-M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
-OS_RestoreInterrupts(state); func_020180c8(a);
-} else {
-state=OS_DisableInterrupts();
-M2C_FIELD(gOv001LinkWork,u16 *,6) &= ~(1<<a);
-M2C_FIELD(gOv001LinkWork,u16 *,8) |= 1<<a;
-OS_RestoreInterrupts(state);
-}
+/* Finish a player's leave: if the child took the setup step, move its bit from
+ * kick-pending to kick-answered; if it did not, clear it from every link bitmap
+ * and close its connection. */
+void Ov001_CompletePlayerLeave(s32 player) {
+    u16 mask;
+    s32 state;
+
+    if (!func_02013f70(player, 2)) {
+        mask = ~(1 << player);
+        state = OS_DisableInterrupts();
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED) &= mask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICKED) &= mask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_PENDING) &= mask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_ANSWERED) &= mask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_READY) &= mask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED_COPY) &= mask;
+        OS_RestoreInterrupts(state);
+        func_020180c8(player);
+    } else {
+        state = OS_DisableInterrupts();
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_PENDING) &= ~(1 << player);
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_ANSWERED) |= 1 << player;
+        OS_RestoreInterrupts(state);
+    }
 }
 
 /* Drop every joined player (bit set in work+2) that has not been kicked (+4): once
    acknowledge (+6) is not pending, clear all six link-header bits with interrupts
    off and close that player's connection; players still mid-kick go through the
-   same echo-group check that may finish the drop (func_ov001_02187234). */
+   same echo-group check that may finish the drop (Ov001_CompletePlayerLeave). */
 void Ov001_DropUnacknowledgedPlayers(void) {
 u16 i,mask;
 s32 state;
@@ -306,8 +323,8 @@ M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
-OS_RestoreInterrupts(state); func_020180c8(i);
-} else func_ov001_02187234(i);
+OS_RestoreInterrupts(state); Mb_RemovePlayer(i);
+} else Ov001_CompletePlayerLeave(i);
 }
 }
 }
@@ -330,7 +347,7 @@ u16 i,mask,remainingPlayers=0;
 s32 savedState,ready;
 for(i=1;i<16;i++) {
 if(M2C_FIELD(gOv001LinkWork,u16 *,10)&(1<<i)) {
-if(!func_02013f70(i,3)) {
+if(!Mb_AckPlayerPhase(i,3)) {
 mask=~(1<<i);
 savedState=OS_DisableInterrupts();
 M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
@@ -339,7 +356,7 @@ M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
 M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
-OS_RestoreInterrupts(savedState); func_020180c8(i);
+OS_RestoreInterrupts(savedState); Mb_RemovePlayer(i);
 } else remainingPlayers |= 1<<i;
 }
 }

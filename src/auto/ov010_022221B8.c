@@ -164,7 +164,7 @@ M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
 #pragma opt_common_subs off
 s32 func_ov010_022227b0(void *src,s32 len){
 extern M2C_UNK data_ov010_0222c960; extern void *data_ov010_0222c98c[];extern u8 gLinkPacketBuffers[];
-void MI_CpuCopy32(void *,void *,s32);s64 GetSystemTick(void);s32 func_02072088(s64,s32,s32);
+void MI_CpuCopy32(void *,void *,s32);s64 GetSystemTick(void);s32 U64Divide(s64,s32,s32);
 s32 found=0; s32 off;u8 *p;u16 n;s32 mode;u32 magic=0x5f564354;
 if(len!=M2C_FIELD(&data_ov010_0222c960,s32 *,0x24))return found;
 if(!M2C_FIELD(&data_ov010_0222c960,s32 *,0x20))return found;
@@ -179,7 +179,7 @@ n=M2C_FIELD(&data_ov010_0222c960,u16 *,0);
 M2C_FIELD(p,u8 *,4)=64;
 M2C_FIELD(&data_ov010_0222c960,u16 *,0)=n+1;
 M2C_FIELD(p,u16 *,6)=n;
-M2C_FIELD(p,s32 *,8)=func_02072088(GetSystemTick(),64,0);
+M2C_FIELD(p,s32 *,8)=U64Divide(GetSystemTick(),64,0);
 {u32 count=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04);M2C_FIELD(&data_ov010_0222c960,s32 *,0xf04)=count+1;}
 return 1;
 }

@@ -17,7 +17,7 @@ u8 func_ov000_02173e6c(void *);
 s32 func_02086420(u8);
 s32 Divide(s32,s32);
 s32 func_020a88e8(s32);
-void func_0208df84(s16,s16,s32,s32,u16,s32);
+void DrawFrameBorderPulse(s16,s16,s32,s32,u16,s32);
 void func_ov000_02174da4(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
@@ -101,7 +101,7 @@ AddSprite(212,(u16)y6,(u16)((((b%4)*3+(b/4)*32+208)&1023)|0x6000),data_02101f3c,
 AddSprite(234,(u16)y6,(u16)((((a%4)*3+(a/4)*32+208)&1023)|0x6000),data_02101f3c,1);
 
 }
-if(counter+1==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))func_0208df84(175,(s16)y7,84,38,(u16)(((0x40>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0x1000),0);
+if(counter+1==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))DrawFrameBorderPulse(175,(s16)y7,84,38,(u16)(((0x40>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0x1000),0);
 next:
 y1+=40;y2+=40;y3+=40;y4+=40;y5+=40;y6+=40;y7+=40;
 }

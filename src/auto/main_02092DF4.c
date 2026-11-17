@@ -1,5 +1,6 @@
 /* 50 functions from 0x02092DF4 to 0x02093D9C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 s32 func_02092df4(void *arg0) {
  s32 (*temp_r0)();
@@ -130,7 +131,7 @@ s32 func_02093154(void *arg0) {
 
 s32 func_020931a8(void *arg0) {
     s32 func_02091ecc(s16);
-    M2C_UNK func_02096ba4(s32, M2C_UNK);
+    M2C_UNK UpdateTeamRecords(s32, M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
@@ -139,7 +140,7 @@ s32 func_020931a8(void *arg0) {
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_02096ba4(temp_r0, 0x80);
+    UpdateTeamRecords(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
@@ -147,7 +148,7 @@ s32 func_020931a8(void *arg0) {
 
 s32 func_020931fc(void *arg0) {
     s32 func_02091ecc(s16);
-    M2C_UNK func_02096ba4(s32, M2C_UNK);
+    M2C_UNK UpdateTeamRecords(s32, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
@@ -156,7 +157,7 @@ s32 func_020931fc(void *arg0) {
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_02096ba4(temp_r0, 0x80);
+    UpdateTeamRecords(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
@@ -328,27 +329,31 @@ void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
     func_ov000_02169998(arg0, arg1);
 }
 
-void func_02093614(void *arg0, u8 arg1, u8 arg2) {
+/* Send a unit along the path to tile (x, y): build the unit's movement range
+   over the whole map, build the path back from the target into the map's cursor
+   path, end that path with the -1 sentinel, start the unit's move along it and
+   move the unit record to the target. */
+void MoveUnitToTile(void *unit, u8 x, u8 y) {
     M2C_UNK FloodFillUnitRange(u8, u8, u32, s32, s32);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
     s32 func_ov000_0216939c();
     M2C_UNK StartUnitMove(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
-    u8 *r4 = arg0;
+    u8 *u = unit;
     signed char *ptr;
-    void *q;
+    void *move;
 
-    FloodFillUnitRange(r4[1], r4[2], (u32) (r4[0] << 0x1A) >> 0x1A, 0x6E, 1);
-    func_01ffc4b8(arg1, arg2, (s32) *gCurrentMap + 0x5388);
-    ptr = (signed char *) *gCurrentMap + 0x5388;
+    FloodFillUnitRange(u[1], u[2], (u32) (u[0] << 0x1A) >> 0x1A, 0x6E, 1);
+    func_01ffc4b8(x, y, (s32) *gCurrentMap + MAP_CURSOR_PATH);
+    ptr = (signed char *) *gCurrentMap + MAP_CURSOR_PATH;
     while (*ptr != 4 && *ptr != -1) {
         ptr++;
     }
     *ptr = (signed char) -1;
-    q = (void *) func_ov000_0216939c(r4);
-    StartUnitMove(q, (s32) *gCurrentMap + 0x5388);
-    func_ov000_02169998(r4, (s32) *gCurrentMap + 0x5388);
+    move = (void *) func_ov000_0216939c(u);
+    StartUnitMove(move, (s32) *gCurrentMap + MAP_CURSOR_PATH);
+    func_ov000_02169998(u, (s32) *gCurrentMap + MAP_CURSOR_PATH);
 }
 
 s32 func_020936ec(void *arg0){
@@ -383,7 +388,7 @@ void *base=*gCurrentMap;
 s32 packed=M2C_FIELD(p,s32 *,12);
 u8 a=packed,b=(u32)packed>>8;
 u32 index=M2C_FIELD((u8 *)base+(M2C_FIELD(p,s16 *,8)+M2C_FIELD((u8 *)base+M2C_FIELD(p,s16 *,10)*2,u16 *,0x3758)),u8 *,0x508);
-if(index)func_02093614((u8 *)base+0x59a4+index*14,a,b);
+if(index)MoveUnitToTile((u8 *)base+0x59a4+index*14,a,b);
 M2C_FIELD(arg0,s32 *,4)+=16;
 return 1;
 }
@@ -407,7 +412,7 @@ if(bits && (M2C_FIELD(p,s16 *,10)==0 || bits==M2C_FIELD(p,s16 *,10))) {found=bas
 i++;entry+=14;
 }while(i<end);
 }
-if(found)func_02093614(found,a,b);
+if(found)MoveUnitToTile(found,a,b);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 

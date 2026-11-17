@@ -195,7 +195,7 @@ s32 func_020c6088(void) {
     return 2;
 }
 
-s32 func_020c60c8(void) {
+s32 CanJoinUnitAtCursor(void) {
     s32 CanUnitsJoin(s32, s32);
     extern void **gCurrentMap;
     void *base = *gCurrentMap;
@@ -213,7 +213,7 @@ s32 func_020c60c8(void) {
     return 0;
 }
 
-s32 func_020c6350(void) {
+s32 CanLoadUnitAtCursor(void) {
     s32 func_020ba790(s16, s16);
     extern void **gCurrentMap;
     void *base = *gCurrentMap;
@@ -231,7 +231,7 @@ s32 func_020c6384(void) {
  extern void **gCurrentMap;
  void *base;
  if(func_020c9430(0)!=0)return 2;
- if(func_020c6350()==0)return 2;
+ if(CanLoadUnitAtCursor()==0)return 2;
  if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
  base=*gCurrentMap;
  if(func_020ba770(M2C_FIELD(base,void **,0x52D0),M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE))!=0)return 0;
@@ -243,7 +243,7 @@ s32 func_020c6414(void) {
  extern void **gCurrentMap;
  void *base;
  if(func_020c9430(1)!=0)return 2;
- if(func_020c6350()==0)return 2;
+ if(CanLoadUnitAtCursor()==0)return 2;
  if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
  base=*gCurrentMap;
  if(func_020ba780(M2C_FIELD(base,void **,0x52D0),M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE))!=0)return 0;
@@ -254,7 +254,7 @@ s32 func_020c64a4(void) {
  s32 IsCarrierUnitKind(s32);
  extern void **gCurrentMap;
  void *base; u32 index;
- if(func_020c6350()==0)return 2;
+ if(CanLoadUnitAtCursor()==0)return 2;
  if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
  base=*gCurrentMap;
  index=M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,12);
@@ -268,7 +268,7 @@ s32 func_020c6554(void) {
  s32 IsCarrierUnitKind(s32);
  extern void **gCurrentMap;
  void *base; u32 index;
- if(func_020c6350()==0)return 2;
+ if(CanLoadUnitAtCursor()==0)return 2;
  if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
  base=*gCurrentMap;
  index=M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,13);
@@ -300,29 +300,29 @@ return 0;
 
 s32 func_020c6718(void) {
  extern void **gCurrentMap;
- s32 func_020a7e08(void *); s32 FillMapLayer(s32); s32 func_01ffc3e8(s32,s32); s32 func_0209fe44(s32);
+ s32 func_020a7e08(void *); s32 FillMapLayer(s32); s32 ClearAdjacentMoveDirs(s32,s32); s32 func_0209fe44(s32);
  void *base;
  if(M2C_FIELD(*gCurrentMap,u16 *,0x52B4)==7)return 2;
- if(func_020c60c8()==0)return 2;
- if(func_020c6350()==0)return 2;
+ if(CanJoinUnitAtCursor()==0)return 2;
+ if(CanLoadUnitAtCursor()==0)return 2;
  if(func_020a7e08(M2C_FIELD(*gCurrentMap,void **,0x52D0))==0)return 2;
  FillMapLayer(-1);
  base=*gCurrentMap;
- if(func_0209fe44(func_01ffc3e8(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE)))!=0)return 0;
+ if(func_0209fe44(ClearAdjacentMoveDirs(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE)))!=0)return 0;
  return 2;
 }
 
 s32 func_020c67bc(void) {
  extern void **gCurrentMap;
  if(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u16 *,4)&0x20)return 2;
- if(func_020c60c8()==0)return 2;
- if(func_020c6350()==0)return 2;
+ if(CanJoinUnitAtCursor()==0)return 2;
+ if(CanLoadUnitAtCursor()==0)return 2;
  return 0;
 }
 
 s32 func_020c6134(void) {
-    s32 func_020c60c8();
-    s32 func_020c6350();
+    s32 CanJoinUnitAtCursor();
+    s32 CanLoadUnitAtCursor();
     M2C_UNK FillMapLayer(s32);
     s32 func_0209fd2c();
     extern void **gCurrentMap;
@@ -330,10 +330,10 @@ s32 func_020c6134(void) {
     s16 a;
     s16 b;
 
-    if (func_020c60c8() == 0) {
+    if (CanJoinUnitAtCursor() == 0) {
         return 2;
     }
-    if (func_020c6350() == 0) {
+    if (CanLoadUnitAtCursor() == 0) {
         return 2;
     }
     FillMapLayer(-1);
@@ -348,8 +348,8 @@ s32 func_020c6134(void) {
 }
 
 s32 func_020c61a4(void) {
-    s32 func_020c60c8();
-    s32 func_020c6350();
+    s32 CanJoinUnitAtCursor();
+    s32 CanLoadUnitAtCursor();
     M2C_UNK FillMapLayer(s32);
     s32 func_0209ff34();
     extern void **gCurrentMap;
@@ -357,10 +357,10 @@ s32 func_020c61a4(void) {
     s16 a;
     s16 b;
 
-    if (func_020c60c8() == 0) {
+    if (CanJoinUnitAtCursor() == 0) {
         return 2;
     }
-    if (func_020c6350() == 0) {
+    if (CanLoadUnitAtCursor() == 0) {
         return 2;
     }
     FillMapLayer(-1);
@@ -425,9 +425,9 @@ s32 func_020c680c(void) {
 }
 
 s32 func_020c684c(void) {
- s32 func_020c6350(); extern void **gCurrentMap;
- if (!func_020c60c8()) return 2;
- if (!func_020c6350()) return 2;
+ s32 CanLoadUnitAtCursor(); extern void **gCurrentMap;
+ if (!CanJoinUnitAtCursor()) return 2;
+ if (!CanLoadUnitAtCursor()) return 2;
  if (M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u16 *,4)&0x20) return 0;
  return 2;
 }

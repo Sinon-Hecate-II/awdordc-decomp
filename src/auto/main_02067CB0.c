@@ -8,7 +8,7 @@ static inline s32 ScanSpace67cb0(s32 c) {return ScanOutside67cb0(c)?0:gCharClass
 
 
 char *ParseScanConversion(char *,ScanSpec677b8 *);
-u32 func_0206a384(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
+u32 ScanUint(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 u64 func_0206a76c(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 f64 ScanFloatStrtod(int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *);
 f64 func_0207191c(f32);
@@ -52,7 +52,7 @@ signed_integer:
 if(failed){signedValue=0;wide=0;}
 else{
 if(spec.length==7 || spec.length==4)magnitude=func_0206a76c(base,spec.width,get,ctx,&used,&negative,&overflow);
-else value=func_0206a384(base,spec.width,get,ctx,&used,&negative,&overflow);
+else value=ScanUint(base,spec.width,get,ctx,&used,&negative,&overflow);
 if(used==0){
 if(!safe)goto done;
 failed=1;signedValue=0;wide=0;
@@ -83,7 +83,7 @@ unsigned_integer:
 if(failed){value=0;magnitude=0;}
 else{
 if(spec.length==7 ||spec.length==4)magnitude=func_0206a76c(base,spec.width,get,ctx,&used,&negative,&overflow);
-else value=func_0206a384(base,spec.width,get,ctx,&used,&negative,&overflow);
+else value=ScanUint(base,spec.width,get,ctx,&used,&negative,&overflow);
 if(used==0){
 if(!safe)goto done;
 failed=1;value=0;magnitude=0;

@@ -9,7 +9,7 @@
 s32 UpdateConnectionSyncWait(void) {
  void *GetConnection(void);
  u64 GetSystemTick(void);
- u64 func_02072088(u64,u64);
+ u64 U64Divide(u64,u64);
  s32 GetNetSessionState(void);
  s32 func_02041038(s32);
  void SendConnectionPacket(s32,s32);
@@ -25,7 +25,7 @@ s32 UpdateConnectionSyncWait(void) {
  M2C_FIELD(GetConnection(),s32 *,0x1a0)==CONN_STATE_WAIT_SYNC_ACK ||
  M2C_FIELD(GetConnection(),s32 *,0x1a0)==CONN_STATE_WAIT_SYNC_RTT) {
  now=GetSystemTick();
- elapsed=func_02072088((now-M2C_FIELD(GetConnection(),u64 *,0x1e0))<<6,0x82eaULL);
+ elapsed=U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x1e0))<<6,0x82eaULL);
  } else return 1;
  switch(M2C_FIELD(GetConnection(),s32 *,0x1a0)){
  case CONN_STATE_WAIT_SLOT:
@@ -84,7 +84,7 @@ void SetConnectionState(s32);
 void func_02041dd4(s32);
 s32 SendPeerSyncNotice(s32,s32);
 u64 GetSystemTick(void);
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 u8 FindPeerSlot(s32,s32);
 s32 GetConnectedPlayerMask(s32);
 void func_02041be0(s32);
@@ -99,8 +99,8 @@ break;
 case PEER_SYNC_ACK:
 if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)==CONN_STATE_SYNC_MEASURE){
 now=GetSystemTick();
-if((func_02072088((now-M2C_FIELD(GetConnection(),u64*,CONN_SESSION_SYNC_SENT))<<6,0x82eaULL)>>1)>300ULL){
-excess=(func_02072088((now-M2C_FIELD(GetConnection(),u64*,CONN_SESSION_SYNC_SENT))<<6,0x82eaULL)>>1)-300ULL;
+if((U64Divide((now-M2C_FIELD(GetConnection(),u64*,CONN_SESSION_SYNC_SENT))<<6,0x82eaULL)>>1)>300ULL){
+excess=(U64Divide((now-M2C_FIELD(GetConnection(),u64*,CONN_SESSION_SYNC_SENT))<<6,0x82eaULL)>>1)-300ULL;
 if(excess>M2C_FIELD(GetConnection(),u16*,CONN_SESSION_SYNC_EXCESS))M2C_FIELD(GetConnection(),u16*,CONN_SESSION_SYNC_EXCESS)=excess;
 }
 idx=FindPeerSlot(peerId,0);
@@ -131,7 +131,7 @@ return 1;
 s32 UpdateConnectionSyncTimers(void) {
  void *GetConnection(void);
  u64 GetSystemTick(void);
- u64 func_02072088(u64,u64);
+ u64 U64Divide(u64,u64);
  s32 SendPeerSyncNotice(s32,s32);
  s32 PruneConnectionPeers(s32);
  void func_02041be0(s32);
@@ -142,7 +142,7 @@ s32 UpdateConnectionSyncTimers(void) {
  M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_STATE)==CONN_STATE_SYNC_MEASURE ||
  M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_STATE)==CONN_STATE_SYNC_DONE) {
  now=GetSystemTick();
- elapsed=func_02072088((now-M2C_FIELD(GetConnection(),u64 *,CONN_SESSION_SYNC_SENT))<<6,0x82eaULL);
+ elapsed=U64Divide((now-M2C_FIELD(GetConnection(),u64 *,CONN_SESSION_SYNC_SENT))<<6,0x82eaULL);
  } else return 1;
  switch(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_STATE)){
  case CONN_STATE_SYNC_PREPARE:
@@ -244,7 +244,7 @@ void ResetConnectionSync(s32 a){u64 GetSystemTick(void);extern void *gConnection
  * ready state (19) once all players agree. */
 void UpdateConnectionSync(void) {
 u64 GetSystemTick(void);
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 void *GetConnection(void);
 extern void *gConnectionMgr;
 void *mgr,*conn,*connA,*connB;
@@ -269,7 +269,7 @@ conn=GetConnection(); M2C_FIELD(conn,u64*,0xec)=GetSystemTick(); return;
 SetConnectionState(4); TryConnectToPeer(1,0,0); return;
 }
 n=M2C_FIELD(mgr,u8*,2);
-elapsed=func_02072088((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6,0x82ea);
+elapsed=U64Divide((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6,0x82ea);
 if(elapsed<(u64)(s64)(n*6000)) return;
 if((u32)n>5) {ResetConnectionSync(1);func_02041e44();func_02041be0(1);return;}
 for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++) {
@@ -285,7 +285,7 @@ mgr=gConnectionMgr;
 if(M2C_FIELD(GetConnection(),u8*,13)<M2C_FIELD(mgr,u8*,1)-1) return;
 if(!M2C_FIELD(mgr,u8*,2)) {
 mgr=gConnectionMgr;
-if(func_02072088((GetSystemTick()-M2C_FIELD(mgr,u64*,16))<<6,0x82ea)>=M2C_FIELD(mgr,u32*,4)) goto send;
+if(U64Divide((GetSystemTick()-M2C_FIELD(mgr,u64*,16))<<6,0x82ea)>=M2C_FIELD(mgr,u32*,4)) goto send;
 }
 if(!M2C_FIELD(mgr,u8*,2)) return;
 mgr=gConnectionMgr;

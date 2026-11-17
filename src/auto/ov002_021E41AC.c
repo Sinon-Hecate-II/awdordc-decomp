@@ -115,13 +115,13 @@ REG_GX_COLOR=GX_RGB_WHITE;
 
 void func_ov002_021e45c0(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
- M2C_UNK func_02087b94(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ M2C_UNK DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 j,i,k,next;
  j=0;k=0;
  do {
  i=0; do {
  func_02087064(4,8,32,tiles+(i+k)*8,pal);
- func_02087b94(x+(8-i)*8,y,0,8,32,0,0,8,32,1,0);
+ DrawTexturedQuadUVFlip(x+(8-i)*8,y,0,8,32,0,0,8,32,1,0);
  i++; } while(i<9);
  k+=9; y+=32; next=j+1; j=next;
  } while(j<2);
@@ -130,7 +130,7 @@ void func_ov002_021e45c0(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
 #pragma opt_strength_reduction off
 void func_ov002_021e4674(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
- M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 j,i,k,pp;
  u32 xx;
  pp=pal;
@@ -138,7 +138,7 @@ void func_ov002_021e4674(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  do {
  xx=x;i=0;do {
  func_02087064(4,8,32,tiles+(i+k)*8,pp);
- func_020878c4(xx,y,0,8,32,0,0,8,32);
+ DrawTexturedQuadUV(xx,y,0,8,32,0,0,8,32);
  xx+=8;i++; if(i>=9) break; } while(1);
  k+=9;j++;y+=32;
  }while(j<2);
@@ -146,47 +146,47 @@ void func_ov002_021e4674(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
 #pragma opt_strength_reduction reset
 void func_ov002_021e4728(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
- M2C_UNK func_02087b94(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ M2C_UNK DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 i=0;
  do {
  func_02087064(4,16,16,tiles+((u32)i<<3),pal);
- func_02087b94(x+(2-i)*16,y,0,16,16,0,0,16,16,1,0);
+ DrawTexturedQuadUVFlip(x+(2-i)*16,y,0,16,16,0,0,16,16,1,0);
  i++;
  }while(i<3);
 }
 
 void func_ov002_021e47b0(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
- M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 i;
  i=0; do {
  func_02087064(4,16,16,tiles+((u32)i<<3),pal);
- func_020878c4(x,y,0,16,16,0,0,16,16);
+ DrawTexturedQuadUV(x,y,0,16,16,0,0,16,16);
  i++; x+=16;
  } while(i<3);
 }
 
 void func_ov002_021e482c(u8 *x,s32 y,s32 z,s32 w) {
- M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 t,k,h,i;
  h=16;t=116-w;
- func_020878c4((s32)(x+t),y,z,w+12,h,t,0,128,h);
+ DrawTexturedQuadUV((s32)(x+t),y,z,w+12,h,t,0,128,h);
  k=w+12; y+=4; h-=4;i=0;
  do {
  t=128-k;
- func_020878c4((s32)(x+128-k)-1,y,z,1,h,t-1,16-h,t,16);
+ DrawTexturedQuadUV((s32)(x+128-k)-1,y,z,1,h,t-1,16-h,t,16);
  i++; k++;y+=2;h-=2;
  }while(i<5);
 }
 
 void func_ov002_021e48e8(u8 *x,s32 y,s32 z,s32 w) {
- M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 k,h,i,o;
  h=16;
- func_020878c4((s32)x,y,z,w+12,h,0,0,w+12,h);
+ DrawTexturedQuadUV((s32)x,y,z,w+12,h,0,0,w+12,h);
  k=w+12; h-=4; i=0; o=1;
  do {
-  func_020878c4((s32)(x+k),y,z,o,h,k,0,k+1,h);
+  DrawTexturedQuadUV((s32)(x+k),y,z,o,h,k,0,k+1,h);
   i++; k++; h-=2;
  } while(i<5);
 }
@@ -212,8 +212,8 @@ AddSprite((u16)((x+8)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((u
 }
 #pragma scheduling reset
 s32 func_ov002_021e4b68(void) {
-    extern M2C_UNK data_ov002_021f3124;
-    if ((M2C_FIELD(&data_ov002_021f3124, u8 *, 0) == M2C_FIELD(&data_ov002_021f3124, u8 *, 1)) && (M2C_FIELD(&data_ov002_021f3124, u8 *, 0x2C) == M2C_FIELD(&data_ov002_021f3124, u8 *, 0x2D))) {
+    extern M2C_UNK gUnitViews;
+    if ((M2C_FIELD(&gUnitViews, u8 *, 0) == M2C_FIELD(&gUnitViews, u8 *, 1)) && (M2C_FIELD(&gUnitViews, u8 *, 0x2C) == M2C_FIELD(&gUnitViews, u8 *, 0x2D))) {
         return 1;
     }
     return 0;

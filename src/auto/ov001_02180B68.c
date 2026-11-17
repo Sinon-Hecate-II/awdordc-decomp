@@ -1,6 +1,7 @@
 /* 27 functions from 0x02180B68 to 0x02181A84 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "wfc.h"
 typedef struct { u8 bytes[22]; } PathBuffer80;
 extern u8 gOv001Step11PalettePath[];
 extern u16 data_ov001_0218f9ea[], data_ov001_0218f9ec[];
@@ -47,19 +48,23 @@ void func_ov001_02180bbc(void) {
 void func_ov001_02180bdc(void) {
     M2C_UNK func_ov001_02171694();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02180c2c;
+    extern M2C_UNK Ov001_LeaveFriendList;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02180c2c);
+    Ov001_SetStepCallback(&Ov001_LeaveFriendList);
 }
 
-void func_ov001_02180c2c(void) {
+/* Final step of the ov001 Wi-Fi friend-list screen: after the closing fade, the
+ * icon row and the WFC roster request have settled, it tears the screen down and
+ * hands over to the friend map list when a friend can be picked, or back to the
+ * Wi-Fi mode menu otherwise. */
+void Ov001_LeaveFriendList(void) {
     M2C_UNK func_ov001_02171494();
-    s32 func_ov001_0217170c();
+    s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
@@ -70,7 +75,7 @@ void func_ov001_02180c2c(void) {
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001FriendListState;
-    extern M2C_UNK func_ov001_02179ea8;
+    extern M2C_UNK MapSelectList_Init;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -78,7 +83,7 @@ void func_ov001_02180c2c(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (func_ov001_0217170c() == 0) {
+    if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
     do {
@@ -89,7 +94,7 @@ void func_ov001_02180c2c(void) {
     Ov001_FreeOptionBackground();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (gOv001FriendListState != 1) {
+    if (gOv001FriendListState != OV001_FRIEND_LIST_AVAILABLE) {
         func_ov001_02183fa0();
         func_ov001_02184880(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4));
         Ov001_SetNextScreenMode(2, 1);
@@ -98,7 +103,7 @@ void func_ov001_02180c2c(void) {
     }
     Ov001_SetNextScreenMode(0, 1);
     Ov001_SetNameEntryMode(0, 0);
-    Ov001_SetStepCallback(&func_ov001_02179ea8);
+    Ov001_SetStepCallback(&MapSelectList_Init);
 }
 
 void func_ov001_02180cf8(void) {
@@ -129,7 +134,7 @@ void func_ov001_02180d44(void) {
     void Ov001_UpdateMenuCursor(void);
     void func_ov001_02180fbc(void);
     void func_ov001_02172250(s32);
-    void func_ov001_02171c24(s32, s32, s32);
+    void Ov001_ShowMessagePanel(s32, s32, s32);
     void func_ov001_02171dd0(s32);
     extern M2C_UNK gOv001MenuRegion;
     void *temp_r0;
@@ -138,7 +143,7 @@ void func_ov001_02180d44(void) {
     M2C_FIELD(temp_r0, u8 *, 0x1D) = 0;
     Ov001_LoadAccessPointMenuGraphics();
     func_ov001_02172250(1);
-    func_ov001_02171c24(0x2F, -1, 0);
+    Ov001_ShowMessagePanel(0x2F, -1, 0);
     func_ov001_02171dd0(0);
     func_ov001_02180eb4();
     Ov001_UpdateMenuCursor();
@@ -165,7 +170,7 @@ void Ov001_LoadAccessPointMenuGraphics(void) {
 }
 
 void func_ov001_02180eb4(void) {
-    s32 func_ov001_02184868(void);
+    s32 Ov001_GetSaveSlotStatus(void);
     M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void Ov001_SetSpritePalette(s32, s32, s32);
@@ -178,7 +183,7 @@ void func_ov001_02180eb4(void) {
 
     i = 0;
     while (i < 3) {
-        idx = func_ov001_02184868();
+        idx = Ov001_GetSaveSlotStatus();
         if (idx == 0xff) {
             idx = 3;
             goto second;
@@ -307,11 +312,11 @@ void func_ov001_02181188(void) {
  * highlighted region, opening its map list or starting a new game when full. */
 void Ov001_HandleRegionMenuChoice(void) {
 s32 Ov001_GetIconRowSelection(void),Ov001_GetScreenLayout(void),Ov001_GetLanguage(void);
-s32 func_ov001_02184868();
+s32 Ov001_GetSaveSlotStatus();
 M2C_UNK Ov001_PlaySound(s32),Ov001_SetIconRowSelection(s32),Ov001_LockIconRow(void);
 M2C_UNK Ov001_ShowMessage(s32,s32,s32,s32,s32);
 M2C_UNK func_ov001_02184880(u8);
-void func_ov001_02181794(void),func_ov001_021819b4(void),func_ov001_021812c0(void);
+void func_ov001_02181794(void),Ov001_ShowRegionIcon(void),func_ov001_021812c0(void);
 extern s8 data_ov001_0218fa74[];
 extern M2C_UNK func_ov001_02176578,func_ov001_02181824;
 u8 region;
@@ -327,14 +332,14 @@ M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)=1;
 region=M2C_FIELD(&gOv001MenuRegion,u8 *,0);
 if(region>=4) {
 record=region-4;
-if(func_ov001_02184868(record)==255) {Ov001_PlaySound(9);Ov001_SetIconRowSelection(-1);return;}
+if(Ov001_GetSaveSlotStatus(record)==255) {Ov001_PlaySound(9);Ov001_SetIconRowSelection(-1);return;}
 Ov001_PlaySound(6);
 languageFrame = data_ov001_0218fa74[Ov001_GetLanguage()];
 Ov001_ShowMessage(70,0,1,languageFrame,record+1);
 func_ov001_02181794();Ov001_LockIconRow();Ov001_SetStepCallback(&func_ov001_02181824);return;
 }
 if(region<=2)func_ov001_02184880(region);
-Ov001_PlaySound(6);func_ov001_021819b4();
+Ov001_PlaySound(6);Ov001_ShowRegionIcon();
 done:
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021812c0);
 break;
@@ -376,15 +381,15 @@ void func_ov001_021812fc(void) {
 void Ov001_FinishRegionMenu(void){
 extern M2C_UNK data_ov001_021909f4,data_ov001_02193dd0;
 extern M2C_UNK Ov001_OpenWifiMenu,func_ov001_02181a84,InitMapListScreen,func_ov001_02182d0c;
-s32 Ov001_IsFadeActive(s32);s32 func_ov001_02185b34(void);s32 func_ov001_0217170c(void);void *GetCurrentMapRecord(void);
-void func_ov001_0218a1cc(s32);
+s32 Ov001_IsFadeActive(s32);s32 func_ov001_02185b34(void);s32 Ov001_IsIconRowIdle(void);void *GetCurrentMapRecord(void);
+void Ov001_DestroySprite(s32);
 u32 i;s32 p;
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 if(!func_ov001_02185b34())return;
-if(!func_ov001_0217170c())return;
-for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->top[i];if(p)func_ov001_0218a1cc(p);}
-for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->middle[i];if(p)func_ov001_0218a1cc(p);}
+if(!Ov001_IsIconRowIdle())return;
+for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->top[i];if(p)Ov001_DestroySprite(p);}
+for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->middle[i];if(p)Ov001_DestroySprite(p);}
 Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();
 Ov001_FreeFile(((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->obj);
 Ov001_LoadAsset(&data_ov001_021909f4,&GX_LoadOBJPltt);
@@ -474,7 +479,7 @@ s32 Ov001_GetSpriteObjEntry(s32,s32);
 void Ov001_LoadSpriteObjLayout(s32,s32,s32);
 void Ov001_MoveSpriteLayout(s32,s32,u16,u16);
 void Ov001_SetSpritePalette(s32,s32,s32);
-void func_ov001_0218a1cc(s32);
+void Ov001_DestroySprite(s32);
 M2C_UNK func_ov001_02186604();
 void func_ov001_02181990(void);
 register s32 i=M2C_FIELD(&gOv001MenuRegion,u8 *,0)-4;
@@ -485,7 +490,7 @@ func_ov001_02184c70(i);
 Ov001_LoadSpriteObjLayout(0,86,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),0));
 Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,data_ov001_0218f9ea[i*2],data_ov001_0218f9ec[i*2]);
 Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,3);
-func_ov001_0218a1cc(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16));
+Ov001_DestroySprite(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16));
 M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16)=0;
 break;
 case 0:
@@ -510,16 +515,20 @@ void func_ov001_02181990(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181080);
 }
 
-void func_ov001_021819b4(void) {
-void func_ov001_021837e4(s32,u8,u8);s32 func_ov001_02184868(void);void Ov001_SetSpriteAttrs(s32,s32,s32,u8);
-extern u8 data_ov001_0218f9cc[];extern M2C_UNK gOv001MenuRegion;
-u8 a[4]={data_ov001_0218f9cc[0],data_ov001_0218f9cc[1],data_ov001_0218f9cc[2],data_ov001_0218f9cc[3]};
-u8 b[4]={data_ov001_0218f9cc[4],data_ov001_0218f9cc[5],data_ov001_0218f9cc[6],data_ov001_0218f9cc[7]};s32 n;u8 value;u8 *values=a;
-if(M2C_FIELD(&gOv001MenuRegion,u8 *,0)>3)return;
-value=values[M2C_FIELD(&gOv001MenuRegion,u8 *,0)];
-func_ov001_021837e4(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),s32 *,0),value,value);
-if(M2C_FIELD(&gOv001MenuRegion,u8 *,0)==3)return;
-n=func_ov001_02184868();if(n>2)n=3;
-Ov001_SetSpriteAttrs(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion,void **,4)+M2C_FIELD(&gOv001MenuRegion,u8 *,0)*4,s32 *,4),-1,0,b[n]);
+/* Show the highlighted region's icon: upload that region's tile from the loaded
+ * menu graphics into OBJ VRAM, then give the region's item sprite the palette
+ * that matches its save-slot status (an empty or invalid slot uses the last
+ * palette).  Regions 4..6 have no icon here. */
+void Ov001_ShowRegionIcon(void) {
+void Ov001_LoadObjTile(s32,u8,u8);s32 Ov001_GetSaveSlotStatus();void Ov001_SetSpriteAttrs(s32,s32,s32,u8);
+extern u8 sOv001RegionIconTable[];extern M2C_UNK gOv001MenuRegion;
+u8 iconTiles[4]={sOv001RegionIconTable[0],sOv001RegionIconTable[1],sOv001RegionIconTable[2],sOv001RegionIconTable[3]};
+u8 statusPalettes[4]={sOv001RegionIconTable[4],sOv001RegionIconTable[5],sOv001RegionIconTable[6],sOv001RegionIconTable[7]};s32 palette;u8 tile;u8 *tiles=iconTiles;
+if(((Ov001MenuRegion *)&gOv001MenuRegion)->index>3)return;
+tile=tiles[((Ov001MenuRegion *)&gOv001MenuRegion)->index];
+Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),s32 *,0),tile,tile);
+if(((Ov001MenuRegion *)&gOv001MenuRegion)->index==3)return;
+palette=Ov001_GetSaveSlotStatus();if(palette>2)palette=3;
+Ov001_SetSpriteAttrs(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion,void **,4)+((Ov001MenuRegion *)&gOv001MenuRegion)->index*4,s32 *,4),-1,0,statusPalettes[palette]);
 }
 

@@ -69,55 +69,63 @@ s32 func_ov001_0217ee24(s32 arg0) {
     return result;
 }
 
-void func_ov001_0217ee48(s32 arg0) {
-s32 func_020020c4(u16,s32);
-extern M2C_UNK gMapListState;
-s32 delta, remainder;
-func_ov001_02183a08();
-Ov001_FreeSpriteObjects();
-if ((u32)M2C_FIELD(&gMapListState,u16 *,4)>6U)
-M2C_FIELD(&gMapListState,u16 *,4)=M2C_FIELD(&gMapListState,u16 *,4)-6;
-else M2C_FIELD(&gMapListState,u16 *,4)=0;
-remainder=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29);
-if(remainder==23){func_ov001_0217e238();return;}
-if(remainder>23){
-delta=29-remainder;
-M2C_FIELD(&gMapListState,u16 *,4)=M2C_FIELD(&gMapListState,u16 *,4)+(29-remainder);
-remainder=0;
-}
-func_ov001_0217e95c();
-if(remainder!=0)return;
-func_ov001_021839e4((M2C_FIELD(&gMapListState,u16 *,4)*55)/145);
-func_ov001_021839f0();
-func_ov001_0217f110();
-M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x38)=0;
-Ov001_PostTaskMessage(0,arg0);
+/* One step of the map-list scroll-up animation: move the scroll position a row
+ * step toward the top, and once it lands on a row boundary rebuild the row
+ * sprites, move the scroll bar handle and hand the finished scroll back to the
+ * list state machine. */
+void MapListScrollUp(s32 message) {
+    s32 func_020020c4(u16, s32);
+    extern M2C_UNK gMapListState;
+    s32 delta, remainder;
+    Ov001_BlockScrollBar();
+    Ov001_FreeSpriteObjects();
+    if ((u32)M2C_FIELD(&gMapListState, u16 *, 4) > 6U)
+        M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) - 6;
+    else
+        M2C_FIELD(&gMapListState, u16 *, 4) = 0;
+    remainder = func_020020c4(M2C_FIELD(&gMapListState, u16 *, 4), 29);
+    if (remainder == 23) {
+        MapListRedrawInfoPanel();
+        return;
+    }
+    if (remainder > 23) {
+        delta = 29 - remainder;
+        M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) + (29 - remainder);
+        remainder = 0;
+    }
+    MapListUpdateRowSprites();
+    if (remainder != 0) return;
+    func_ov001_021839e4((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
+    Ov001_UnblockScrollBar();
+    func_ov001_0217f110();
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = 0;
+    Ov001_PostTaskMessage(0, message);
 }
 
-void func_ov001_0217ef10(s32 arg0) {
+void MapListScrollDown(s32 arg0) {
     s32 func_020020c4(u16, s32);
-    M2C_UNK func_ov001_02183a08();
+    M2C_UNK Ov001_BlockScrollBar();
     M2C_UNK Ov001_FreeSpriteObjects();
-    M2C_UNK func_ov001_0217e95c();
-    M2C_UNK func_ov001_0217e238();
+    M2C_UNK MapListUpdateRowSprites();
+    M2C_UNK MapListRedrawInfoPanel();
     M2C_UNK func_ov001_021839e4(s32);
-    M2C_UNK func_ov001_021839f0();
+    M2C_UNK Ov001_UnblockScrollBar();
     M2C_UNK func_ov001_0217f110();
     M2C_UNK Ov001_PostTaskMessage(s32, s32);
     extern M2C_UNK gMapListState;
     s32 result;
-    func_ov001_02183a08();
+    Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
     M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) + 6;
     result = func_020020c4(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
     if (result >= 6) {
-        func_ov001_0217e95c();
+        MapListUpdateRowSprites();
         return;
     }
     M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) - result;
-    func_ov001_0217e238();
+    MapListRedrawInfoPanel();
     func_ov001_021839e4((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
-    func_ov001_021839f0();
+    Ov001_UnblockScrollBar();
     func_ov001_0217f110();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = 0;
     Ov001_PostTaskMessage(0, arg0);
@@ -191,7 +199,7 @@ void func_ov001_0217f1f0(s32 event) {
             M2C_FIELD(&gMapListState, u8 *, 0) = 0;
             M2C_FIELD(&gMapListState, u8 *, 2) = 0;
             M2C_FIELD(&gMapListState, u16 *, 4) = 0;
-            func_ov001_0217e238();
+            MapListRedrawInfoPanel();
             func_ov001_021839e4(0);
         } else {
             result = 2;
@@ -204,7 +212,7 @@ void func_ov001_0217f1f0(s32 event) {
             M2C_FIELD(&gMapListState, u8 *, 0) = 10;
             M2C_FIELD(&gMapListState, u8 *, 2) = 3;
             M2C_FIELD(&gMapListState, u16 *, 4) = 145;
-            func_ov001_0217e238();
+            MapListRedrawInfoPanel();
             func_ov001_021839e4(55);
         } else if (event == 3) {
             if (M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47)) return;
@@ -225,7 +233,7 @@ void func_ov001_0217f1f0(s32 event) {
                 M2C_FIELD(&gMapListState, u8 *, 2) = M2C_FIELD(&gMapListState, u8 *, 2) - 1;
             } else {
                 Ov001_PlaySound(19);
-                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217ee48, 0, 120);
+                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = Ov001_AddTask(0, MapListScrollUp, 0, 120);
                 return;
             }
         } else if (event == 3) {
@@ -233,7 +241,7 @@ void func_ov001_0217f1f0(s32 event) {
                 M2C_FIELD(&gMapListState, u8 *, 2) = M2C_FIELD(&gMapListState, u8 *, 2) + 1;
             } else {
                 Ov001_PlaySound(19);
-                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = Ov001_AddTask(0, func_ov001_0217ef10, 0, 120);
+                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = Ov001_AddTask(0, MapListScrollDown, 0, 120);
                 return;
             }
         } else {
@@ -259,9 +267,9 @@ void func_ov001_0217f1f0(s32 event) {
     if (result == 0) func_ov001_0217f110();
 }
 
-void func_ov001_0217f4e0(void){void func_ov001_021837e4(s32,u8,u8);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f8c0[];u8 v=data_ov001_0218f8c0[M2C_FIELD(&gMapListState,u8 *,0)-11];func_ov001_021837e4(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,16),v,v);}
+void func_ov001_0217f4e0(void){void Ov001_LoadObjTile(s32,u8,u8);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f8c0[];u8 v=data_ov001_0218f8c0[M2C_FIELD(&gMapListState,u8 *,0)-11];Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,16),v,v);}
 
-void func_ov001_0217f514(void){extern M2C_UNK gMapListState;M2C_UNK func_ov001_0217e238();s32 i=0;do{u8 *p=(u8 *)M2C_FIELD(&gMapListState,void **,8)+i;if(p[4]){p[4]--;if(!M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i,u8 *,4))func_ov001_0217e238();}i++;}while(i<4);}
+void func_ov001_0217f514(void){extern M2C_UNK gMapListState;M2C_UNK MapListRedrawInfoPanel();s32 i=0;do{u8 *p=(u8 *)M2C_FIELD(&gMapListState,void **,8)+i;if(p[4]){p[4]--;if(!M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i,u8 *,4))MapListRedrawInfoPanel();}i++;}while(i<4);}
 
 void func_ov001_0217f568(void) {
 extern M2C_UNK gMapListState;
@@ -373,7 +381,7 @@ s32 func_ov001_0217f95c(void) {
     return 0;
 }
 
-void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK func_ov001_021713c4(M2C_UNK);M2C_UNK func_ov001_02171e58(M2C_UNK);M2C_UNK func_ov001_021722ac(void);extern M2C_UNK data_ov001_02193db8;M2C_FIELD(&data_ov001_02193db8,u8 *,0)=0;func_ov001_0217f9b8();func_ov001_021722ac();func_ov001_02171e58(0x25);func_ov001_021713c4(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
+void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK func_ov001_02171e58(M2C_UNK);M2C_UNK func_ov001_021722ac(void);extern M2C_UNK data_ov001_02193db8;M2C_FIELD(&data_ov001_02193db8,u8 *,0)=0;func_ov001_0217f9b8();func_ov001_021722ac();func_ov001_02171e58(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
 
 void func_ov001_0217f9b8(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);

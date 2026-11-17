@@ -75,7 +75,7 @@ M2C_UNK TableNew2(M2C_UNK elemSize, M2C_UNK nBuckets, M2C_UNK bucketSize, M2C_UN
     extern M2C_UNK data_020fcd7c, data_020fcd84, data_020fcd14, data_020fcd90, data_020fcd98, data_020fcda4, data_020fcdb0, data_020fcdb8;
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK gpiMalloc(s32);
-    M2C_UNK func_02048558(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Vector_New(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK table;
     s32 i;
     if (hashFn == 0) AssertFailed(&data_020fcd7c, &data_020fcd84, &data_020fcd14, 0x38);
@@ -89,7 +89,7 @@ M2C_UNK TableNew2(M2C_UNK elemSize, M2C_UNK nBuckets, M2C_UNK bucketSize, M2C_UN
     i = 0;
     if ((s32)nBuckets <= 0) goto done;
     do {
-        M2C_FIELD(table, M2C_UNK **, 0)[i] = func_02048558(elemSize, bucketSize, userData);
+        M2C_FIELD(table, M2C_UNK **, 0)[i] = Vector_New(elemSize, bucketSize, userData);
         i++;
     } while (i < (s32)nBuckets);
 done:
@@ -102,7 +102,7 @@ done:
 
 void func_02048dc4(s32 **arg0) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0204861c(s32);
+    M2C_UNK Vector_Free(s32);
     M2C_UNK gpiFree(M2C_UNK);
     extern M2C_UNK data_020fcd20;
     extern M2C_UNK data_020fcd84;
@@ -118,7 +118,7 @@ void func_02048dc4(s32 **arg0) {
     var_r4 = 0;
     if (M2C_FIELD(arg0, s32 *, 4) > 0) {
         do {
-            func_0204861c(M2C_FIELD(arg0, s32 **, 0)[var_r4]);
+            Vector_Free(M2C_FIELD(arg0, s32 **, 0)[var_r4]);
             var_r4 += 1;
         } while (var_r4 < M2C_FIELD(arg0, s32 *, 4));
     }

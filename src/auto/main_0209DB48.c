@@ -1,5 +1,6 @@
 /* 37 functions from 0x0209DB48 to 0x0209EAF4 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct {
     void *next;
@@ -482,13 +483,38 @@ s32 func_0209ea0c(s32 arg0) {
 }
 
 #pragma opt_propagation off
-void func_0209ea20(s32 arg0,s32 arg1,s32 arg2){
-void *func_020a4770();void **func_01ffa3dc(M2C_UNK *,s32);extern void **gCurrentMap;extern M2C_UNK data_02156e50,data_0211f87c;
-void *p,*q,*t; s32 a,b,tick;void **base; s32 *save;
-p=func_020a4770();if(!p){func_0209eaf4(arg0,arg1,arg2);return;}
-tick=GetRandomSeed();base=gCurrentMap;save=(s32 *)&data_02156e50;save[2]=tick;t=*base;
-func_020d1690(M2C_FIELD(t,u8 *,0x52d4),(u32)(M2C_FIELD(p,u16 *,2)<<22)>>28,(u8 *)t+0x52dc);
-a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*gCurrentMap,s16 *,0x6ed4);if(a<b)M2C_FIELD(p,u8 *,4)=0;else M2C_FIELD(p,u8 *,4)=a-b;
-q=func_01ffa3dc(&data_0211f87c,7);M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);M2C_FIELD(q,s32 *,0x60)=arg2;M2C_FIELD(q,void **,0x34)=p;M2C_FIELD(q,s32 *,0x38)=arg0;M2C_FIELD(q,s32 *,0x3c)=arg1;
+/* Starts the battle preview for the target on tile (x, y): finds the map feature
+ * anchored there, saves the battle RNG seed, forecasts the fight against the
+ * cursor unit and subtracts the resulting damage from the feature's hit points,
+ * then opens the battle preview panel on it.  Falls back to the plain unit path
+ * when the tile holds no feature. */
+void StartBattlePreviewOnFeature(s32 x, s32 y, s32 arg2) {
+    void *FindMapFeatureAtTile();
+    void **func_01ffa3dc(M2C_UNK *, s32);
+    extern void **gCurrentMap;
+    extern M2C_UNK gBattleCommand, gBattlePreviewPanelDef;
+    void *feature, *panel, *map;
+    s32 hp, damage, seed;
+    void **mapRef;
+    s32 *seedSlot;
+
+    feature = FindMapFeatureAtTile();
+    if (!feature) { func_0209eaf4(x, y, arg2); return; }
+    seed = GetRandomSeed();
+    mapRef = gCurrentMap;
+    seedSlot = (s32 *)&gBattleCommand;
+    seedSlot[2] = seed;
+    map = *mapRef;
+    func_020d1690(M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID), (u32)(M2C_FIELD(feature, u16 *, 2) << 22) >> 28, (u8 *)map + MAP_CURSOR_X);
+    hp = M2C_FIELD(feature, u8 *, 4);
+    damage = M2C_FIELD(*gCurrentMap, s16 *, MAP_BATTLE_DAMAGE);
+    if (hp < damage) M2C_FIELD(feature, u8 *, 4) = 0;
+    else M2C_FIELD(feature, u8 *, 4) = hp - damage;
+    panel = func_01ffa3dc(&gBattlePreviewPanelDef, 7);
+    M2C_FIELD(panel, s32 *, 0x5c) = M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT);
+    M2C_FIELD(panel, s32 *, 0x60) = arg2;
+    M2C_FIELD(panel, void **, 0x34) = feature;
+    M2C_FIELD(panel, s32 *, 0x38) = x;
+    M2C_FIELD(panel, s32 *, 0x3c) = y;
 }
 #pragma opt_propagation reset

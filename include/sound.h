@@ -81,6 +81,15 @@ enum {
 /* An id field of a sound-archive record meaning "no file/entry". */
 #define SOUND_FILE_NONE 0xFFFF
 
+/* A loaded wave archive file, as LoadWaveArchiveEntry and the packed-table
+ * helpers read it: the entry count, then one data pointer per entry (a value
+ * below 0x02000000 is an offset from the object itself), followed by one word
+ * per entry giving where that entry's bytes start in the file (the next entry's
+ * word, or the file size for the last entry, is where they end). */
+#define WAVE_ARCHIVE_COUNT     0x38 /* s32 number of entries */
+#define WAVE_ARCHIVE_ENTRIES   0x3C /* s32[count] per-entry data pointers (then the offsets) */
+#define WAVE_ARCHIVE_FILE_SIZE 0x08 /* s32 total size of the archive file */
+
 /* Menu sounds handed to PlaySoundEffect. */
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
 #define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */

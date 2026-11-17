@@ -1,5 +1,6 @@
 /* 71 functions from 0x02091E04 to 0x02092DF4 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern u16 gPlayerUnitIdBase[];
 extern void **gCurrentMap;
 
@@ -259,7 +260,7 @@ s32 func_02092288(void *arg0) {
     return 1;
 }
 
-void func_020922b0(void *arg0) {
+void OnMapScrollDone(void *arg0) {
     s32 func_0207b7c4();
     if (func_0207b7c4() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
@@ -268,18 +269,18 @@ void func_020922b0(void *arg0) {
 
 s32 func_020922cc(void *arg0) {
     s32 func_0209600c();
-    M2C_UNK func_0207b764(s16, s16);
-    M2C_UNK func_0207b774(s16, s16);
+    M2C_UNK StepMapViewToTile(s16, s16);
+    M2C_UNK PanMapViewToTile(s16, s16);
     void *temp_r1;
 
     if (func_0209600c() == 0) {
         temp_r1 = M2C_FIELD(arg0, void **, 4);
         if (M2C_FIELD(temp_r1, s32 *, 0xC) != 0) {
-            func_0207b774(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+            PanMapViewToTile(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
         } else {
-            func_0207b764(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+            StepMapViewToTile(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
         }
-        M2C_FIELD(arg0, void (**)(void *), 8) = func_020922b0;
+        M2C_FIELD(arg0, void (**)(void *), 8) = OnMapScrollDone;
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 0;
@@ -300,27 +301,35 @@ s32 func_02092324(void *arg0) {
     return 1;
 }
 
-s32 func_02092364(void *arg0) {
-s32 func_0209600c(void);
-s32 func_0207b774(s16,s16);
-s32 func_0207b764(s16,s16);
-s32 i,limit; void *p,*entry; u8 (*entries)[14]; u32 bits;
-if(!func_0209600c()){
-p=M2C_FIELD(arg0,void **,4);
-for(i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;i++){
-entries=(void *)((u8 *)*gCurrentMap+0x59a4);
-entry=entries[i];
-bits=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;
-if(bits && (M2C_FIELD(p,s16 *,10)==0 || bits==M2C_FIELD(p,s16 *,10))){
-if(M2C_FIELD(p,s32 *,12))func_0207b774(M2C_FIELD(entry,u8 *,1),M2C_FIELD(entry,u8 *,2));
-else func_0207b764(M2C_FIELD(entry,u8 *,1),M2C_FIELD(entry,u8 *,2));
-M2C_FIELD(arg0,void **,8)=(void *)func_020922b0;
-break;
-}
-}
-}
-M2C_FIELD(arg0,s32 *,4)+=16;
-return 0;
+/* Script command: move the map view to the first unit of `kind` in the current
+ * player's group (kind 0 matches any unit).  The view pans unless the command's
+ * third word asks for an immediate step; the command then waits for the scroll. */
+s32 MoveMapViewToPlayerUnit(void *ctx) {
+    s32 func_0209600c(void);
+    s32 PanMapViewToTile(s16, s16);
+    s32 StepMapViewToTile(s16, s16);
+    s32 i;
+    void *cmd;
+    u8 (*units)[MAP_UNIT_STRIDE];
+    u8 *unit;
+    u32 kind;
+
+    if (!func_0209600c()) {
+        cmd = M2C_FIELD(ctx, void **, 4);
+        for (i = gPlayerUnitIdBase[M2C_FIELD(cmd, s16 *, 8)] + 1; i < gPlayerUnitIdBase[M2C_FIELD(cmd, s16 *, 8)] + MAP_UNIT_GROUP_SCAN; i++) {
+            units = (void *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS);
+            unit = units[i];
+            kind = (u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26;
+            if (kind && (M2C_FIELD(cmd, s16 *, 10) == 0 || kind == M2C_FIELD(cmd, s16 *, 10))) {
+                if (M2C_FIELD(cmd, s32 *, 12)) PanMapViewToTile(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
+                else StepMapViewToTile(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
+                M2C_FIELD(ctx, void **, 8) = (void *)OnMapScrollDone;
+                break;
+            }
+        }
+    }
+    M2C_FIELD(ctx, s32 *, 4) += 16;
+    return 0;
 }
 
 s32 func_02092434(void *arg0) {
@@ -441,11 +450,11 @@ s32 func_02092674(void *arg0) {
 }
 
 s32 func_02092694(void *arg0) {
-extern M2C_UNK data_02157fe8;
+extern M2C_UNK gDialogSequences;
 s32 func_020947d0();
-s32 n=((s32)arg0-(s32)&data_02157fe8)/24;
+s32 n=((s32)arg0-(s32)&gDialogSequences)/24;
 u8 i=0;
-do {if(i!=n)func_020947d0((u8 *)&data_02157fe8+i*24);i++;}while(i<8);
+do {if(i!=n)func_020947d0((u8 *)&gDialogSequences+i*24);i++;}while(i<8);
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 

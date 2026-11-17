@@ -198,7 +198,7 @@ void BeginUnitMove(s32 arg0) {
  * has ended, the path is blocked, the unit is in the state that forbids moving,
  * or a dialog is up. */
 void StartUnitMove(void *move, s32 commands){
-s32 IsUnitSubmerged(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
+s32 IsUnitSubmerged(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void StepMapViewToTile(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
 extern u8 gBattleEndState[];
 s32 CountMovePathSteps(volatile s8 *);s32 MovePathEndsInAttack(s8 *);int IsMovePathValid(int,int,const signed char *);void CopyMovePath(void *,void *);void StepUnitMove(void);
 s8 *path=(s8*)commands;
@@ -212,7 +212,7 @@ if(!(ok&255))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 if(!IsMovePathValid(x,y,path))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 if(M2C_FIELD(move,void **,UNIT_MOVE_UNIT) && IsUnitSubmerged(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)) && !func_020a7d68(M2C_FIELD(move,void **,UNIT_MOVE_UNIT)))M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 if(IsDialogActive())M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
-if(M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE))func_0207b764(x,y);
+if(M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE))StepMapViewToTile(x,y);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(15,CountMovePathSteps(path));
 CopyMovePath(path,(u8*)move+UNIT_MOVE_COMMANDS);
 func_020d4790();
@@ -472,11 +472,11 @@ s32 LoadUnitMoveGfx(M2C_UNK arg0) {
 }
 
 s32 LoadUnitMoveAnim(void *arg0) {
-    M2C_UNK func_02080e30(s32, M2C_UNK);
+    M2C_UNK LoadFileToBuffer(s32, M2C_UNK);
     s32 func_ov000_02169f64(u8);
     extern M2C_UNK data_ov000_021aeee4;
     SetFileDirectory(&data_ov000_021aeee4);
-    func_02080e30(func_ov000_02169f64(M2C_FIELD(arg0, u8 *, 0x42)), 1);
+    LoadFileToBuffer(func_ov000_02169f64(M2C_FIELD(arg0, u8 *, 0x42)), 1);
 }
 
 s32 UnitMoveTileOffset(void *arg0) {

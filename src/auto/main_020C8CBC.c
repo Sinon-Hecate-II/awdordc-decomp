@@ -6,13 +6,13 @@ static inline u64 Pack_020c91ac(u64 x, u64 y, u64 z, u32 w) {
 
 s32 FindCampaignMapId(M2C_UNK arg0) {
     s32 GetMapRecord(s32);
-    s32 func_020c7eb8(s32);
+    s32 IsCampaignMapRecordValid(s32);
     s32 MapRecordsMatch(M2C_UNK, s32);
     s32 var_r4;
 
     var_r4 = 0;
 loop_1:
-    if ((func_020c7eb8(var_r4 + 0xE1) != 0) && (MapRecordsMatch(arg0, GetMapRecord(var_r4 + 0xE1)) != 0)) {
+    if ((IsCampaignMapRecordValid(var_r4 + 0xE1) != 0) && (MapRecordsMatch(arg0, GetMapRecord(var_r4 + 0xE1)) != 0)) {
         return var_r4 + 0xE1;
     }
     var_r4 += 1;
@@ -206,9 +206,9 @@ void func_020c9190(s32 arg0) {
 
 #pragma opt_instruction_scheduling off
 u64 func_020c91ac(s32 a) {
-s32 func_020c7eb8(s32); void *GetMapRecordStamp(s32);
+s32 IsCampaignMapRecordValid(s32); void *GetMapRecordStamp(s32);
 void *p; s32 v;
-if (!func_020c7eb8(a)) return 0;
+if (!IsCampaignMapRecordValid(a)) return 0;
 p=GetMapRecordStamp(a); v=M2C_FIELD(p,s32 *,0x10);
 if (!v) return 0;
 return ((u64)(u16)~v<<36) | ((u64)(s32)M2C_FIELD(p,u16 *,6)<<20) | ((u64)(s32)(u16)(~v>>16)<<4) | ((M2C_FIELD(p,u32 *,0xc)<<14>>20)&15);
@@ -317,24 +317,27 @@ if(v[0]<128) {SetSpriteAnimFrame(d,c);return;}
 SetSpriteAnimFrame(d,c+1);
 }
 
-void func_020c9654(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-M2C_UNK PlaySoundAtTile(s32,M2C_UNK,M2C_UNK);
-switch(arg2) {
-
-case 0:PlaySoundAtTile(129,arg0,arg1);return;
-case 1:PlaySoundAtTile(228,arg0,arg1);return;
-case 2:PlaySoundAtTile(228,arg0,arg1);return;
-case 3:PlaySoundAtTile(276,arg0,arg1);return;
-case 4:PlaySoundAtTile(273,arg0,arg1);return;
-case 5:PlaySoundAtTile(273,arg0,arg1);return;
-case 6:PlaySoundAtTile(273,arg0,arg1);return;
-case 7:PlaySoundAtTile(273,arg0,arg1);return;
-}}
+/* Plays the map action sound effect belonging to an action mode at tile (x, y):
+ * the repair/refill and level-up popups, unit selection, and the army-specific
+ * production sound share this dispatcher. */
+void PlayMapActionSound(s32 x, s32 y, s32 mode) {
+    M2C_UNK PlaySoundAtTile(s32, M2C_UNK, M2C_UNK);
+    switch (mode) {
+    case 0: PlaySoundAtTile(0x81, x, y); return;
+    case 1: PlaySoundAtTile(0xE4, x, y); return;
+    case 2: PlaySoundAtTile(0xE4, x, y); return;
+    case 3: PlaySoundAtTile(0x114, x, y); return;
+    case 4: PlaySoundAtTile(0x111, x, y); return;
+    case 5: PlaySoundAtTile(0x111, x, y); return;
+    case 6: PlaySoundAtTile(0x111, x, y); return;
+    case 7: PlaySoundAtTile(0x111, x, y); return;
+    }
+}
 
 #pragma optimization_level 3
 void func_020c9730(void *arg0) {
 void *CreateSpriteAnim(M2C_UNK *,s32,s32);
-void func_020c9654(s32,s32,s32);
+void PlayMapActionSound(s32,s32,s32);
 extern M2C_UNK data_02120920;
 void *p=CreateSpriteAnim(&data_02120920,14,6);
 M2C_FIELD(arg0,void **,0x54)=p;
@@ -343,50 +346,54 @@ M2C_FIELD(M2C_FIELD(arg0,void **,0x54),s32 *,0x2c)=0x1560;
 func_020c960c(M2C_FIELD(arg0,s32 *,0x34)/16,M2C_FIELD(arg0,s32 *,0x38)/16,M2C_FIELD(arg0,s32 *,0x48),M2C_FIELD(arg0,void **,0x54));
 M2C_FIELD(arg0,s32 *,0x50)=0x200;
 M2C_FIELD(arg0,s32 *,0x4c)=-1;
-func_020c9654(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));
+PlayMapActionSound(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));
 func_020cc6a4();
 }
 #pragma optimization_level reset
-void func_020c97c0(void *arg0) {
-    s32 func_02077700(void);
+/* Per-frame update of a map action popup (repair/refill/level-up sprite): draw
+ * its 3D sprite zoomed by the popup's scale, then count down the popup timer
+ * or, while the zoom-in is still running, ease the scale toward 1x and start the
+ * timer once it gets there.  A face button or the timer running out deletes the
+ * popup. */
+void UpdateMapActionPopup(void *arg0) {
+    s32 GetFrameStep(void);
     s32 Divide(s32, s32);
     M2C_UNK DrawSprite3D(s32, s32 *, s32, M2C_UNK);
     s32 func_01ffa6fc(void *);
     extern u16 *gKeyState;
-    s32 sp[3];
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 temp_r1;
-    s32 var_r1;
-    u32 temp_r0_4;
-    s32 field;
+    s32 pos[3];
+    s32 step;
+    s32 timer;
+    s32 next;
+    s32 current;
+    s32 eased;
+    u32 delta;
 
-    temp_r0 = func_02077700();
-    field = M2C_FIELD(arg0, s32 *, 0x50);
-    temp_r0 = Divide(temp_r0 * field, 0x100);
-    sp[0] = M2C_FIELD(arg0, s32 *, 0x34) * 0x30;
-    sp[1] = M2C_FIELD(arg0, s32 *, 0x38) * 0x30;
-    sp[2] = 0x8B1;
-    DrawSprite3D(M2C_FIELD(arg0, s32 *, 0x54), sp, temp_r0, 0);
-    temp_r0_2 = M2C_FIELD(arg0, s32 *, 0x4C);
-    if (temp_r0_2 > 0) {
-        temp_r0_3 = temp_r0_2 - 1;
-        M2C_FIELD(arg0, s32 *, 0x4C) = temp_r0_3;
-        if ((temp_r0_3 != 0) && !(*gKeyState & 0xC0B)) {
+    step = GetFrameStep();
+    current = M2C_FIELD(arg0, s32 *, MAP_ACTION_SCALE);
+    step = Divide(step * current, 0x100);
+    pos[0] = M2C_FIELD(arg0, s32 *, MAP_ACTION_X) * 0x30;
+    pos[1] = M2C_FIELD(arg0, s32 *, MAP_ACTION_Y) * 0x30;
+    pos[2] = 0x8B1;
+    DrawSprite3D(M2C_FIELD(arg0, s32 *, MAP_ACTION_SPRITE), pos, step, 0);
+    timer = M2C_FIELD(arg0, s32 *, MAP_ACTION_TIMER);
+    if (timer > 0) {
+        next = timer - 1;
+        M2C_FIELD(arg0, s32 *, MAP_ACTION_TIMER) = next;
+        if ((next != 0) && !(*gKeyState & (KEY_A | KEY_B | KEY_START | KEY_X | KEY_Y))) {
             return;
         }
         func_01ffa6fc(arg0);
         return;
     }
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0x50);
-    temp_r0_4 = (u32)(temp_r1 - 0x100);
-    var_r1 = temp_r1 - ((s32)((temp_r0_4 + (temp_r0_4 >> 31)) ) >> 1);
-    if ((var_r1 - 0x100) == 4) {
-        M2C_FIELD(arg0, s32 *, 0x4C) = 0x1E;
-        var_r1 = 0x100;
+    current = M2C_FIELD(arg0, s32 *, MAP_ACTION_SCALE);
+    delta = (u32)(current - 0x100);
+    eased = current - ((s32)((delta + (delta >> 31))) >> 1);
+    if ((eased - 0x100) == 4) {
+        M2C_FIELD(arg0, s32 *, MAP_ACTION_TIMER) = MAP_ACTION_HOLD;
+        eased = 0x100;
     }
-    M2C_FIELD(arg0, s32 *, 0x50) = var_r1;
+    M2C_FIELD(arg0, s32 *, MAP_ACTION_SCALE) = eased;
 }
 
 void func_020c989c(void *arg0) {
@@ -416,9 +423,9 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_UNK func_020813c4(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
-    s32 func_0207b764(s32, s32);
+    s32 StepMapViewToTile(s32, s32);
     M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, s32);
-    void func_020c9654(s32, s32, s32);
+    void PlayMapActionSound(s32, s32, s32);
     extern void **gCurrentMap;
     extern M2C_UNK data_0212b3e4;
     extern M2C_UNK data_0212b77c;
@@ -473,7 +480,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_FIELD(obj, s32 *, 0x40) = y;
     M2C_FIELD(obj, s32 *, 0x44) = mode;
     switch(mode) { case 0: M2C_FIELD(obj,s32 *,0x48)=0;break; case 1:M2C_FIELD(obj,s32 *,0x48)=2;break; case 2:M2C_FIELD(obj,s32 *,0x48)=4;break; }
-    func_0207b764(x, y);
+    StepMapViewToTile(x, y);
     return 1;
 
 second_path:
@@ -485,7 +492,7 @@ second_path:
         case 7: func_020b5134(&data_0212b7c8, x, y, 8, 0, 0, 7); break;
         default: break;
     }
-    func_020c9654(x, y, mode);
+    PlayMapActionSound(x, y, mode);
     return 1;
 }
 

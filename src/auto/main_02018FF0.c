@@ -241,7 +241,7 @@ char *str;
 s32 flags,width,precision,base,alpha,n,prefixLen,len,c,pad;
 s32 left;
 u64 value;
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 out.left=capacity;out.start=dst;out.current=dst;
 while(*format){
 c=*format;
@@ -338,7 +338,7 @@ case 10:
 if((value & 0xffffffff00000000ULL)==0){
 u32 small=value;
 while(small){u32 q=small/10;c=small-q*10;small=q;digits[n++]=c+'0';}
-}else while(value){u64 quotient=func_02072088(value,10);digits[n++]=(u32)(value-quotient*10)+'0';value=quotient;}
+}else while(value){u64 quotient=U64Divide(value,10);digits[n++]=(u32)(value-quotient*10)+'0';value=quotient;}
 break;
 case 16:while(value){c=value&15;value>>=4;digits[n++]=c<10?c+'0':c+alpha;}break;
 }

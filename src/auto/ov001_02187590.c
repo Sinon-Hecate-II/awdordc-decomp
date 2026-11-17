@@ -112,11 +112,11 @@ if ((u32)(M2C_FIELD(p, s32 *, 0x40) - 9) > 1) M2C_FIELD(p, s32 *, 0x54) = arg0;
 }
 
 s32 func_ov001_02187bb0(void) {
-s32 func_020122ec(void *, void *);
+s32 WFC_StartDownloadPlay(void *, void *);
 void func_ov001_02187bf4(void *);
 extern M2C_UNK gWhWork;
 SetWhStatus(3);
-if (func_020122ec((void *)func_ov001_02187bf4, M2C_FIELD(&gWhWork, void **, 4)) == 2) return 1;
+if (WFC_StartDownloadPlay((void *)func_ov001_02187bf4, M2C_FIELD(&gWhWork, void **, 4)) == 2) return 1;
 SetWhError();
 SetWhStatus(9);
 return 0;
@@ -423,7 +423,7 @@ return M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
 s32 func_ov001_021883a8(void) {
     void GetMacAddress(u8 *);
     void SetWhStatus(s32);
-    u16 func_ov001_02188480(u16);
+    u16 ScanNextChild(u16);
     s32 SetWhError(s32);
     extern M2C_UNK gWhWork;
     u16 buf[3];
@@ -437,7 +437,7 @@ s32 func_ov001_021883a8(void) {
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x5c) = 0;
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x5e) = 0x65;
     SetWhStatus(3);
-    rv = func_ov001_02188480(1);
+    rv = ScanNextChild(1);
     if (rv == 0x18) {
         SetWhError(0x18);
         SetWhStatus(9);
@@ -451,10 +451,10 @@ s32 func_ov001_021883a8(void) {
     return 0;
 }
 
-u16 func_ov001_02188480(u16 arg0) {
+u16 ScanNextChild(u16 arg0) {
 s32 func_02011d58();
 s32 func_ov001_021885f4(void *,u16);
-extern M2C_UNK func_ov001_0218851c;
+extern M2C_UNK HandleChildScanResult;
 s32 mask=func_02011d58();
 if(mask==0x8000) {SetWhError(3);SetWhStatus(9);return 3;}
 if(mask==0) {SetWhError(0x16);SetWhStatus(9);return 0x18;}
@@ -462,6 +462,6 @@ while(!(mask & (1 << (arg0-1)))) {
 arg0++;
 if((u32)arg0>0x10) return 0x18;
 }
-return (u16)func_ov001_021885f4(&func_ov001_0218851c,arg0);
+return (u16)func_ov001_021885f4(&HandleChildScanResult,arg0);
 }
 

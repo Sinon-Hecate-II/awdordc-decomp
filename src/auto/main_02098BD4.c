@@ -71,14 +71,14 @@ void func_02098d78(M2C_UNK arg0, s32 arg1, s32 arg2) {
     func_02098d48(arg0, (u16) (arg2 + 0x10));
 }
 
-M2C_UNK *func_02098db4(void) {
+M2C_UNK *GetFaceSpriteTemplate(void) {
     extern M2C_UNK data_020f3650;
     return &data_020f3650;
 }
 
 void func_02098dc0(s32 arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
  M2C_UNK AddSprite(u16,u8,M2C_UNK,s32,s32);
- s32 result = (s32)func_02098db4();
+ s32 result = (s32)GetFaceSpriteTemplate();
  arg1 = (u8)arg1;
  arg0 &= 0x1FF;
  AddSprite((u16)arg0,arg1,arg2,result,arg3);
@@ -92,23 +92,26 @@ void func_02098e04(void *arg0, u32 arg1, s32 arg2) {
 }
 
 u8 IsFaceSpriteLoaded(void *);
-void func_02098e2c(void *arg0, s32 arg1) {
-extern void *data_027e01d8, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
-void *old; void *v; s32 i; u32 mode;
-M2C_FIELD(arg0,u8*,0x58)=arg1;
-M2C_FIELD(arg0,u8*,0x49)=3;
-M2C_FIELD(arg0,M2C_UNK **,0x44)=func_02098db4();
-if (!IsFaceSpriteLoaded(arg0)) return;
-old=data_027e01d8; i=0;
+/* Assigns face id `faceId` to a CO face sprite: resets its tile row and quad
+ * template and, when a face is loaded, reloads its texture and palette on every
+ * display engine it targets. */
+void SetFaceSpriteFace(void *face, s32 faceId) {
+extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
+void *oldEngine; void *engine; s32 bank; u32 screen;
+M2C_FIELD(face,u8*,FACE_SPRITE_FACE)=faceId;
+M2C_FIELD(face,u8*,FACE_SPRITE_TILE_ROW)=3;
+M2C_FIELD(face,M2C_UNK **,DS3D_SPRITE_TEMPLATE)=GetFaceSpriteTemplate();
+if (!IsFaceSpriteLoaded(face)) return;
+oldEngine=gCur3DSpriteEngine; bank=0;
 do {
-if(i==0) v=g3DSpriteEngineMain; else v=(int)g3DSpriteEngineSub;
-data_027e01d8=v;
-mode=((u32)M2C_FIELD(arg0,u8*,(s32)0x48)<<28)>>29;
-if ((mode!=0 || v==g3DSpriteEngineMain) && (mode!=1 || v==g3DSpriteEngineSub) && (mode!=3 || v==old))
-func_02098d78(arg1,M2C_FIELD(arg0,u16*,0x3e)<<5,(u16)((M2C_FIELD(arg0,u32*,0x40)<<6)>>24));
-i += 1;
-} while(i<2);
-data_027e01d8=old;
+if(bank==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
+gCur3DSpriteEngine=engine;
+screen=((u32)M2C_FIELD(face,u8*,FACE_SPRITE_SCREEN)<<28)>>29;
+if ((screen!=0 || engine==g3DSpriteEngineMain) && (screen!=1 || engine==g3DSpriteEngineSub) && (screen!=3 || engine==oldEngine))
+func_02098d78(faceId,M2C_FIELD(face,u16*,0x3e)<<5,(u16)((M2C_FIELD(face,u32*,FACE_SPRITE_TILE)<<6)>>24));
+bank += 1;
+} while(bank<2);
+gCur3DSpriteEngine=oldEngine;
 }
 
 void SetFaceSpriteExpression(void *arg0, u8 arg1) {
@@ -221,7 +224,7 @@ void func_020990fc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 u8 GetFaceTileRow(s32);
 u8 FaceSpriteIsLoaded(void *);
 void LoadFaceTexture(s32, s32, s32);
-void func_02098e2c(void *, s32);
+void SetFaceSpriteFace(void *, s32);
 void RefreshFaceSprite(void *);
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 
@@ -246,7 +249,7 @@ i++;
 gCur3DSpriteEngine = old;
 }
 if (arg3) {
-func_02098e2c(M2C_FIELD(arg0, void **, 0x60), arg1);
+SetFaceSpriteFace(M2C_FIELD(arg0, void **, 0x60), arg1);
 }
 RefreshFaceSprite(arg0);
 }

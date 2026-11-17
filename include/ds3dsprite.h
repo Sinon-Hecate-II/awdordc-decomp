@@ -43,6 +43,12 @@
 #define DS3D_BANK_LAYER_TILE2 0x0A
 #define DS3D_BANK_LAYER_TILE3 0x0C
 
+/* The flags word at bank+0x02 holds two 3-bit fields, which
+ * Reset3DSpriteLayerRegisters clears. */
+#define DS3D_BANK_MODE_WORD       0x02
+#define DS3D_BANK_MODE_WORD_BITS0 0x0007
+#define DS3D_BANK_MODE_WORD_BITS1 0x0038
+
 /* The window registers of the bank that the screen-split transition animates:
  * two bounds per window, all zero once the transition has finished. */
 #define DS3D_BANK_WINDOW0_H 0x48
@@ -236,6 +242,7 @@ enum {
 #define DS3D_SPRITE_Z            0x2E /* u16 */
 #define DS3D_SPRITE_FLAGS        0x30 /* u8 DS3D_SPRITE_FLAG_* */
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
+#define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
 
 /* DS3D_SPRITE_FLAGS bits. */
 #define DS3D_SPRITE_FLAG_DEAD       0x01 /* removed from its list; the walk stops for it */

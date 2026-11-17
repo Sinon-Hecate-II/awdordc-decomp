@@ -242,7 +242,7 @@ u64 func_020267e0(void *arg0) {
 void BigNumDivMod(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
 M2C_UNK MI_CpuCopy8(s32,s32,s32);
 M2C_UNK MemMove(M2C_UNK,M2C_UNK,M2C_UNK);
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 s32 i;u32 digit;u16 *q,*r;s32 nb,na,bytes;u64 divisor;
 q=work+n;r=q+n;
 MI_CpuFill8((u8 *)q,0,n*4);
@@ -257,7 +257,7 @@ else if(nb>1){bytes=nb*2;divisor=((u64(*)(volatile u16 *))func_020267bc)(b+nb-1)
 else {bytes=nb*2;divisor=func_020267b0(b+nb-1);}
 if(i<n) do {
 MemMove((s32)(q+1),(s32)q,(n*2-1)*2);
-digit=func_02072088(func_020267e0((u8 *)r+bytes),divisor);
+digit=U64Divide(func_020267e0((u8 *)r+bytes),divisor);
 if(digit>65535)digit=65535;
 again:
 func_02026604(work,b,(u16)digit,n);

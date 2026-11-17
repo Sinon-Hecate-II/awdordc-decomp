@@ -138,8 +138,8 @@ void func_ov006_0221661c(void *spriteList) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
     extern u8 data_ov006_02218340[], data_ov006_0221837c[], data_ov006_02218388[];
     extern u8 data_ov006_02218778[], data_ov006_022187a0[], data_ov006_022187c8[];
-    void *func_020b22a4(u8, u8, void *, s32);
-    void func_020b1c78(s32);
+    void *AddSpriteSlot(u8, u8, void *, s32);
+    void SelectSpriteSlot(s32);
     void func_020b2158(s32);
     void AddSpriteCell(s32, s16, s16, s32, s32, u16, s32);
     void *savedEngine = gCur3DSpriteEngine;
@@ -148,13 +148,13 @@ void func_ov006_0221661c(void *spriteList) {
     u8 *entry;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     for (entry = data_ov006_02218340, i = 0; i < 10; i++, entry += 6)
-        M2C_FIELD(func_020b22a4(entry[0], entry[1], data_ov006_02218778, i), void **, 0x10) = spriteList;
+        M2C_FIELD(AddSpriteSlot(entry[0], entry[1], data_ov006_02218778, i), void **, 0x10) = spriteList;
     for (entry = data_ov006_0221837c, j = 10; j <= 11; j++, entry += 6)
-        M2C_FIELD(func_020b22a4(entry[0], entry[1], data_ov006_022187a0, j), void **, 0x10) = spriteList;
+        M2C_FIELD(AddSpriteSlot(entry[0], entry[1], data_ov006_022187a0, j), void **, 0x10) = spriteList;
     for (entry = data_ov006_02218388, k = 12; k <= 13; k++, entry += 6)
-        M2C_FIELD(func_020b22a4(entry[0], entry[1], data_ov006_022187c8, k), void **, 0x10) = spriteList;
+        M2C_FIELD(AddSpriteSlot(entry[0], entry[1], data_ov006_022187c8, k), void **, 0x10) = spriteList;
     gCur3DSpriteEngine = savedEngine;
-    func_020b1c78(4);
+    SelectSpriteSlot(4);
     func_020b2158(0);
     for (y = 0; y < 2; y++)
         for (x = 0; x < 6; x++)

@@ -284,14 +284,14 @@ u16 func_02005584(void *arg0) {
 
 int __clz(unsigned int);
 #pragma intrinsic(__clz)
-s32 func_0200558c(void){
+s32 OS_GetLockID(void){
 u32 *p=(u32*)0x027fffb0;
 u32 n=__builtin_arm_clz(*p);
 s32 result=64;
 if(n==32){p++;n=__builtin_arm_clz(*p);if(n==32)return -3;result=96;}
 result+=n;*p=*p & ~(0x80000000U>>n);return result;
 }
-void func_020055f4(s32 a){u32 *p=(u32 *)0x027fffb0;u32 mask;if(a>=96)p++;if(a>=96)a-=96;else a-=64;mask=0x80000000U>>a;*p|=mask;}
+void OS_ReleaseLockID(s32 a){u32 *p=(u32 *)0x027fffb0;u32 mask;if(a>=96)p++;if(a>=96)a-=96;else a-=64;mask=0x80000000U>>a;*p|=mask;}
 #pragma optimization_level reset
 void func_0200563c(s32 arg0, s32 arg1, ...) {
     void func_02005664();
@@ -305,7 +305,7 @@ void func_02005664(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_020056a4(arg0, (M2C_UNK)0x7fffffff, arg1, arg2);
 }
 
-void func_0200567c(s32 arg0, s32 arg1, s32 arg2, ...) {
+void StringFormatN(s32 arg0, s32 arg1, s32 arg2, ...) {
     void func_020056a4();
     char *args;
     args = (char *)(((u32)&arg2 & ~3U) + 4);
@@ -319,7 +319,7 @@ void func_020056a4() {
 }
 
 s32 func_020056b0(void){
-extern s32 data_0212dc80;return ++M2C_FIELD(&data_0212dc80,s32 *,32);
+extern s32 gThreadManager;return ++M2C_FIELD(&gThreadManager,s32 *,32);
 }
 
 void func_020056c8(void *a,void *b){
@@ -384,72 +384,76 @@ void *func_020057c8(void *arg0) {
 }
 
 void func_020057f8(void *a) {
-extern M2C_UNK data_0212dc80;
+extern M2C_UNK gThreadManager;
 void *p, *prev, *head;
-prev=0; head=M2C_FIELD(&data_0212dc80,void **,0x2c); p=head;
+prev=0; head=M2C_FIELD(&gThreadManager,void **,0x2c); p=head;
 while(p && M2C_FIELD(p,u32 *,0x70)<M2C_FIELD(a,u32 *,0x70)){prev=p;p=M2C_FIELD(p,void **,0x68);}
-if(!prev){M2C_FIELD(a,void **,0x68)=head;M2C_FIELD(&data_0212dc80,void **,0x2c)=a;}else{M2C_FIELD(a,void **,0x68)=M2C_FIELD(prev,void **,0x68);M2C_FIELD(prev,void **,0x68)=a;}
+if(!prev){M2C_FIELD(a,void **,0x68)=head;M2C_FIELD(&gThreadManager,void **,0x2c)=a;}else{M2C_FIELD(a,void **,0x68)=M2C_FIELD(prev,void **,0x68);M2C_FIELD(prev,void **,0x68)=a;}
 }
 
 void func_02005858(void *a) {
-extern M2C_UNK data_0212dc80;
-void *prev=0,*p=M2C_FIELD(&data_0212dc80,void **,0x2c);
+extern M2C_UNK gThreadManager;
+void *prev=0,*p=M2C_FIELD(&gThreadManager,void **,0x2c);
 while(p && p!=a){prev=p;p=M2C_FIELD(p,void **,0x68);}
-if(!prev){M2C_FIELD(&data_0212dc80,void **,0x2c)=M2C_FIELD(a,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(a,void **,0x68);}
+if(!prev){M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(a,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(a,void **,0x68);}
 }
 
-void func_020058a0(void) {
-extern M2C_UNK data_0212dc80;
+/* RescheduleThreads: the scheduler's switch point — pick the next runnable thread
+   and switch to it after running the two thread-switch callbacks, unless the
+   current thread must keep running.  Switching is deferred (gSocketManager+0 set)
+   when scheduling is disabled or the CPU is in an interrupt mode (0x12 = IRQ). */
+void RescheduleThreads(void) {
+extern M2C_UNK gThreadManager;
 extern M2C_UNK gSocketManager;
-s32 func_02007580(void); void *func_02005e84(void); s32 func_02006224(void *); void func_02006270(s32);
-void *state; void *a,*b; void (*cb)(void *,void *);
-if(M2C_FIELD(&data_0212dc80,s32 *,4))return;
-state=&gSocketManager;
-if(M2C_FIELD(&data_0212dc80,u16 *,0x26) || func_02007580()==18){M2C_FIELD(state,u16 *,0)=1;return;}
-a=M2C_FIELD(M2C_FIELD(&data_0212dc80,void **,8),void **,0);
-b=func_02005e84();
-if(a==b || b==0)return;
-if(M2C_FIELD(a,s32 *,0x64)!=2 && func_02006224(a))return;
-cb=M2C_FIELD(&data_0212dc80,void (**)(void *,void *),0);if(cb)cb(a,b);
-cb=M2C_FIELD(state,void (**)(void *,void *),12);if(cb)cb(a,b);
-M2C_FIELD(&data_0212dc80,void **,0x28)=b;
-func_02006270((s32)b);
+s32 func_02007580(void); void *FindNextReadyThread(void); s32 func_02006224(void *); void func_02006270(s32);
+void *manager; void *current,*next; void (*cb)(void *,void *);
+if(M2C_FIELD(&gThreadManager,s32 *,4))return;
+manager=&gSocketManager;
+if(M2C_FIELD(&gThreadManager,u16 *,0x26) || func_02007580()==18){M2C_FIELD(manager,u16 *,0)=1;return;}
+current=M2C_FIELD(M2C_FIELD(&gThreadManager,void **,8),void **,0);
+next=FindNextReadyThread();
+if(current==next || next==0)return;
+if(M2C_FIELD(current,s32 *,0x64)!=2 && func_02006224(current))return;
+cb=M2C_FIELD(&gThreadManager,void (**)(void *,void *),0);if(cb)cb(current,next);
+cb=M2C_FIELD(manager,void (**)(void *,void *),12);if(cb)cb(current,next);
+M2C_FIELD(&gThreadManager,void **,0x28)=next;
+func_02006270((s32)next);
 }
 
 #pragma peephole off
 void func_02005968(void) {
-extern M2C_UNK data_0212dc80,data_0212dca8,data_0212dd74,data_027e0000,gSocketManager,data_0212dcb4,data_0212defc;
+extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,data_027e0000,gSocketManager,data_0212dcb4,data_0212defc;
 extern char data_00000000[],data_00000800[]; void func_02006120(void);
 void func_02005ac0(void *,void *,s32,u8 *,u32,s32);
 s32 size;u8 *end,*start;
-if(M2C_FIELD(&data_0212dc80,s32 *,12))return;
-M2C_FIELD(&data_0212dc80,s32 *,12)=1;
-M2C_FIELD(&data_0212dc80,void **,8)=&data_0212dca8;
-M2C_FIELD(&data_0212dc80,s32 *,356)=16;
-M2C_FIELD(&data_0212dc80,s32 *,352)=0;
-M2C_FIELD(&data_0212dc80,s32 *,344)=1;
-M2C_FIELD(&data_0212dc80,s32 *,348)=0;
-M2C_FIELD(&data_0212dc80,s32 *,360)=0;
-M2C_FIELD(&data_0212dc80,void **,44)=&data_0212dd74;
-M2C_FIELD(&data_0212dc80,void **,40)=&data_0212dd74;
+if(M2C_FIELD(&gThreadManager,s32 *,12))return;
+M2C_FIELD(&gThreadManager,s32 *,12)=1;
+M2C_FIELD(&gThreadManager,void **,8)=&data_0212dca8;
+M2C_FIELD(&gThreadManager,s32 *,356)=16;
+M2C_FIELD(&gThreadManager,s32 *,352)=0;
+M2C_FIELD(&gThreadManager,s32 *,344)=1;
+M2C_FIELD(&gThreadManager,s32 *,348)=0;
+M2C_FIELD(&gThreadManager,s32 *,360)=0;
+M2C_FIELD(&gThreadManager,void **,44)=&data_0212dd74;
+M2C_FIELD(&gThreadManager,void **,40)=&data_0212dd74;
 size=(s32)data_00000000;
 if(size<=0)start=(u8 *)0x027e15e0;else start=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
 start-=size;
 end=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
-M2C_FIELD(&data_0212dc80,void **,392)=end;
-M2C_FIELD(&data_0212dc80,void **,388)=start;
-M2C_FIELD(&data_0212dc80,s32 *,396)=0;
+M2C_FIELD(&gThreadManager,void **,392)=end;
+M2C_FIELD(&gThreadManager,void **,388)=start;
+M2C_FIELD(&gThreadManager,s32 *,396)=0;
 *(u32 *)(end-4)=0xfddb597d;
-*M2C_FIELD(&data_0212dc80,u32 **,388)=0x7bf9dd5b;
-M2C_FIELD(&data_0212dc80,s32 *,404)=0;
-M2C_FIELD(&data_0212dc80,s32 *,400)=0;
-M2C_FIELD(&data_0212dc80,u16 *,36)=0;
-M2C_FIELD(&data_0212dc80,u16 *,38)=0;
+*M2C_FIELD(&gThreadManager,u32 **,388)=0x7bf9dd5b;
+M2C_FIELD(&gThreadManager,s32 *,404)=0;
+M2C_FIELD(&gThreadManager,s32 *,400)=0;
+M2C_FIELD(&gThreadManager,u16 *,36)=0;
+M2C_FIELD(&gThreadManager,u16 *,38)=0;
 *(void **)0x027fffa0=&gSocketManager;
 func_020060f8(0);
 func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
-M2C_FIELD(&data_0212dc80,s32 *,164)=32;
-M2C_FIELD(&data_0212dc80,s32 *,152)=1;
+M2C_FIELD(&gThreadManager,s32 *,164)=32;
+M2C_FIELD(&gThreadManager,s32 *,152)=1;
 }
 #pragma peephole reset
 s32 func_02005ab0(void) {
@@ -492,17 +496,17 @@ OS_RestoreInterrupts(state);
 
 void func_02005bbc(void) {
     M2C_UNK func_02005bdc(s32, M2C_UNK);
-    extern M2C_UNK data_0212dc80;
+    extern M2C_UNK gThreadManager;
     OS_DisableInterrupts();
-    func_02005bdc(M2C_FIELD(&data_0212dc80, s32 *, 0x28), 0);
+    func_02005bdc(M2C_FIELD(&gThreadManager, s32 *, 0x28), 0);
 }
 
 M2C_UNK func_02005bdc(s32 a,s32 b){
-extern s32 data_0212dc80;
+extern s32 gThreadManager;
 void func_02005c38(s32);
 void func_020061a0();
 void func_02006270(s32);
-if(M2C_FIELD(&data_0212dc80,s32 *,28)){
+if(M2C_FIELD(&gThreadManager,s32 *,28)){
 func_020061a0(a,func_02005c38);
 M2C_FIELD(a,s32 *,4)=b;
 M2C_FIELD(a,s32 *,0)|=128;
@@ -512,16 +516,16 @@ func_02006270(a);
 }
 
 void func_02005c38(s32 a){
-extern s32 data_0212dc80;
+extern s32 gThreadManager;
 void func_02005c70(void);
-void *p=*M2C_FIELD(&data_0212dc80,void ***,8);
+void *p=*M2C_FIELD(&gThreadManager,void ***,8);
 void (*cb)(s32)=M2C_FIELD(p,void (**)(s32),0xB4);
 if(cb){M2C_FIELD(p,void (**)(s32),0xB4)=NULL;cb(a);
 OS_DisableInterrupts();}func_02005c70();
 }
 
 void func_02005c70(void){
-extern s32 data_0212dc80;
+extern s32 gThreadManager;
 void func_02006130(void);
 void func_02006644(void *);
 void func_02005858(void *);
@@ -529,7 +533,7 @@ void OS_WakeupThread(void *);
 void func_02006164(void);
 void SystemHalt(void);
 void func_02005eac(void);
-void *p=*M2C_FIELD(&data_0212dc80,void ***,8);
+void *p=*M2C_FIELD(&gThreadManager,void ***,8);
 func_02006130();func_02006644(p);
 if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
 M2C_FIELD(p,s32 *,100)=2;
@@ -539,9 +543,9 @@ OS_WakeupThread(p+156);func_02006164();func_02005eac();SystemHalt();
 void func_02005ccc(void *p){
 void func_02005d48(void *);
 void func_02005eac(void);
-extern s32 data_0212dc80;
+extern s32 gThreadManager;
 s32 old=OS_DisableInterrupts();
-if(M2C_FIELD(&data_0212dc80,void **,40)==p)func_02005c70();
+if(M2C_FIELD(&gThreadManager,void **,40)==p)func_02005c70();
 func_02006130();func_02006644(p);func_02005d48(p);
 if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
 M2C_FIELD(p,s32 *,100)=2;
@@ -575,11 +579,11 @@ s32 func_02005d90(void *arg0) {
 }
 
 M2C_UNK OS_SleepThread(void *a){
-extern M2C_UNK data_0212dc80;
+extern M2C_UNK gThreadManager;
 s32 irq=OS_DisableInterrupts();
-void *p=M2C_FIELD(M2C_FIELD(&data_0212dc80,void **,8),void **,0);
+void *p=M2C_FIELD(M2C_FIELD(&gThreadManager,void **,8),void **,0);
 if(a){M2C_FIELD(p,void **,0x78)=a;func_020056c8(a,p);}
-M2C_FIELD(p,s32 *,0x64)=0;func_020058a0();OS_RestoreInterrupts(irq);
+M2C_FIELD(p,s32 *,0x64)=0;RescheduleThreads();OS_RestoreInterrupts(irq);
 }
 
 M2C_UNK OS_WakeupThread(void *a){
@@ -589,7 +593,7 @@ while(M2C_FIELD(a,s32 *,0)){
 void *p=func_02005740(a);
 M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x78)=0;M2C_FIELD(p,s32 *,0x80)=0;M2C_FIELD(p,s32 *,0x7c)=0;
 }
-M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;func_020058a0();
+M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;RescheduleThreads();
 }OS_RestoreInterrupts(irq);
 }
 
@@ -598,13 +602,13 @@ void TaskWake(void *arg0) {
 
     temp_r4 = OS_DisableInterrupts();
     M2C_FIELD(arg0, s32 *, 0x64) = 1;
-    func_020058a0();
+    RescheduleThreads();
     OS_RestoreInterrupts(temp_r4);
 }
 
-void *func_02005e84(void) {
-extern M2C_UNK data_0212dc80;
-void *p = M2C_FIELD(&data_0212dc80, void **, 0x2c);
+void *FindNextReadyThread(void) {
+extern M2C_UNK gThreadManager;
+void *p = M2C_FIELD(&gThreadManager, void **, 0x2c);
 while (p && M2C_FIELD(p, s32 *, 0x64) != 1) p = M2C_FIELD(p, void **, 0x68);
 return p;
 }
@@ -616,27 +620,27 @@ void func_02005eac(void) {
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    func_020058a0();
+    RescheduleThreads();
     OS_RestoreInterrupts(temp_r4);
 }
 
 void TaskYield(void){
-extern M2C_UNK data_0212dc80;
+extern M2C_UNK gThreadManager;
 void *prev=0,*last=0; s32 count=0;
 s32 irq;
-void *cur=M2C_FIELD(&data_0212dc80,void **,0x28);
+void *cur=M2C_FIELD(&gThreadManager,void **,0x28);
 void *p,*before;
 irq=OS_DisableInterrupts();
-p=M2C_FIELD(&data_0212dc80,void **,0x2c);before=0;
+p=M2C_FIELD(&gThreadManager,void **,0x2c);before=0;
 while(p){
 if(p==cur)prev=before;
 if(M2C_FIELD(cur,u32 *,0x70)==M2C_FIELD(p,u32 *,0x70)){last=p;count++;}
 before=p;p=M2C_FIELD(p,void **,0x68);
 }
 if(count<=1 || last==cur){OS_RestoreInterrupts(irq);return;}
-if(!prev)M2C_FIELD(&data_0212dc80,void **,0x2c)=M2C_FIELD(cur,void **,0x68);
+if(!prev)M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(cur,void **,0x68);
 else M2C_FIELD(prev,void **,0x68)=M2C_FIELD(cur,void **,0x68);
 M2C_FIELD(cur,void **,0x68)=M2C_FIELD(last,void **,0x68);M2C_FIELD(last,void **,0x68)=cur;
-func_020058a0();OS_RestoreInterrupts(irq);
+RescheduleThreads();OS_RestoreInterrupts(irq);
 }
 

@@ -191,18 +191,18 @@ if(f&2)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **,0x52e8)[x]=0;
 
 // Clears the walkable-flag (sets to 0) of each in-bounds neighbor of (x,y) that the given unit can enter.
 void func_020cdfec(s32 unit, s32 x, s32 y) {
-    s32 func_020ba448(s32, s32, s32);
+    s32 IsFriendlyUnitAt(s32, s32, s32);
     extern void **gCurrentMap;
-    if (func_020ba448(unit, x, y - 1)) {
+    if (IsFriendlyUnitAt(unit, x, y - 1)) {
         M2C_FIELD(*gCurrentMap + (y - 1) * 4, u8 **, 0x52e8)[x] = 0;
     }
-    if (func_020ba448(unit, x - 1, y)) {
+    if (IsFriendlyUnitAt(unit, x - 1, y)) {
         M2C_FIELD(*gCurrentMap + y * 4, u8 **, 0x52e8)[x - 1] = 0;
     }
-    if (func_020ba448(unit, x, y + 1)) {
+    if (IsFriendlyUnitAt(unit, x, y + 1)) {
         M2C_FIELD(*gCurrentMap + (y + 1) * 4, u8 **, 0x52e8)[x] = 0;
     }
-    if (func_020ba448(unit, x + 1, y)) {
+    if (IsFriendlyUnitAt(unit, x + 1, y)) {
         M2C_FIELD(*gCurrentMap + y * 4, u8 **, 0x52e8)[x + 1] = 0;
     }
 }
@@ -282,7 +282,18 @@ y=(s16)(y+1);dy=(s16)(dy+1);
 }while(y<=ymax);
 }
 #pragma pop
-void MarkThreatBitmap(M2C_UNK a,M2C_UNK b,M2C_UNK c,u32 d,u8 e,u8 f){void MarkThreatCells(M2C_UNK,M2C_UNK,M2C_UNK,u8,s32,s32);extern void **gCurrentMap;switch(d){case 1:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);return;case 3:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);case 2:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52ba),e,f);case 0:default:break;}}
+/* Mark the threat range of a unit of the given radius at tile (x,y) into the
+ * threat bitmap of the side's team: team A marks its own bitmap, team B the
+ * other, and SIDE_HUMAN marks both.  owner and mark are handed to the cell
+ * marker; an unaligned side marks nothing. */
+void MarkThreatBitmap(M2C_UNK x,M2C_UNK y,M2C_UNK radius,u32 side,u8 owner,u8 mark){
+void MarkThreatCells(M2C_UNK,M2C_UNK,M2C_UNK,u8,s32,s32);extern void **gCurrentMap;
+switch(side){
+case SIDE_TEAM_A:MarkThreatCells(x,y,radius,(u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_A_PLAYER),owner,mark);return;
+case SIDE_HUMAN:MarkThreatCells(x,y,radius,(u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_A_PLAYER),owner,mark);
+case SIDE_TEAM_B:MarkThreatCells(x,y,radius,(u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_B_PLAYER),owner,mark);
+case SIDE_NONE:default:break;
+}}
 
 /* Mark the threat range of map unit `unit` as if it stood on tile (x,y): the radius
  * is the unit's threat range for the current weather, and the owner's side picks which

@@ -267,21 +267,33 @@ end:
     return 0;
 }
 #pragma pop
-s32 gpiSendQueuedMessages(void **arg0,void *arg1){
-s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32);
-M2C_UNK Vector_RemoveItem(s32,s32);
-s32 gpiSendFromBuffer(void **,s32,void *,s32 *,s32,M2C_UNK *);
-extern M2C_UNK data_020febb0;
-s32 sp8; void *p; s32 result;
-if(M2C_FIELD(arg1,s32 *,0x30))return 0;
-while(Vector_GetCount(M2C_FIELD(arg1,s32 *,0x38))){
-p=Vector_GetItem(M2C_FIELD(arg1,s32 *,0x38),0);
-result=gpiSendFromBuffer(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
-if(sp8 || result){M2C_FIELD(arg1,s32 *,0)=0x6a;return 0;}
-if(M2C_FIELD(p,s32 *,12)!=M2C_FIELD(p,s32 *,8))break;
-Vector_RemoveItem(M2C_FIELD(arg1,s32 *,0x38),0);
-}
-return 0;
+/* Send the send buffers queued on a gpi peer: hand each GPISendBuffer at the
+ * front of the peer's queue to the socket and drop it once it has gone out
+ * completely, stopping at the first one only partly sent.  A write error or a
+ * blocked send puts the peer in the error state.  Nothing is sent while the
+ * peer still has queued text of its own (+0x30). */
+s32 gpiSendQueuedMessages(void **gpi, void *peer) {
+    s32 Vector_GetCount(s32);
+    void *Vector_GetItem(s32, s32);
+    M2C_UNK Vector_RemoveItem(s32, s32);
+    s32 gpiSendFromBuffer(void **, s32, void *, s32 *, s32, M2C_UNK *);
+    extern M2C_UNK data_020febb0;
+    s32 wouldBlock;
+    GPISendBuffer *queued;
+    s32 result;
+
+    if (M2C_FIELD(peer, s32 *, 0x30)) return 0;
+    while (Vector_GetCount(M2C_FIELD(peer, s32 *, 0x38))) {
+        queued = Vector_GetItem(M2C_FIELD(peer, s32 *, 0x38), 0);
+        result = gpiSendFromBuffer(gpi, M2C_FIELD(peer, s32 *, 8), queued, &wouldBlock, 0, &data_020febb0);
+        if (wouldBlock || result) {
+            M2C_FIELD(peer, s32 *, 0) = GPI_PEER_STATE_ERROR;
+            return 0;
+        }
+        if (queued->pos != queued->len) break;
+        Vector_RemoveItem(M2C_FIELD(peer, s32 *, 0x38), 0);
+    }
+    return 0;
 }
 
 /* Advance one connected gpi peer: flush its queued output, read the peer
@@ -409,12 +421,12 @@ s32 func_02054f0c(M2C_UNK a,void *b) {
 }
 
 M2C_UNK func_02054fa8(void **a,void *b) {
- M2C_UNK func_0204861c(s32);
+ M2C_UNK Vector_Free(s32);
  func_020496cc(M2C_FIELD(b,s32 *,8),2);
  func_020496b8(M2C_FIELD(b,s32 *,8));
  gpiFree(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=NULL;
  gpiFree(M2C_FIELD(b,void **,40));M2C_FIELD(b,void **,40)=NULL;
- if(M2C_FIELD(b,s32 *,56)) {func_0204861c(M2C_FIELD(b,s32 *,56));M2C_FIELD(b,s32 *,56)=0;}
+ if(M2C_FIELD(b,s32 *,56)) {Vector_Free(M2C_FIELD(b,s32 *,56));M2C_FIELD(b,s32 *,56)=0;}
  gpiFree(b);
 }
 
@@ -559,7 +571,7 @@ void func_020552c4(s32 *arg0) {
 void *gpiCreatePeer(void **a,s32 b,s32 c) {
  void *gpiMalloc(s32);
  s32 gpiGetTime(s32);
- s32 func_02048558(s32,s32,void *);
+ s32 Vector_New(s32,s32,void *);
  void *base=*a;
  void *p=gpiMalloc(64);
  if(!p)return NULL;
@@ -570,7 +582,7 @@ void *gpiCreatePeer(void **a,s32 b,s32 c) {
  M2C_FIELD(p,s32 *,12)=b;
  M2C_FIELD(p,s32 *,16)=gpiGetTime(0)+300;
  M2C_FIELD(p,void **,60)=M2C_FIELD(base,void **,0x434);
- M2C_FIELD(p,s32 *,56)=func_02048558(24,0,func_020552c4);
+ M2C_FIELD(p,s32 *,56)=Vector_New(24,0,func_020552c4);
  M2C_FIELD(base,void **,0x434)=p;
  return p;
 }

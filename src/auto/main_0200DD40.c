@@ -196,13 +196,13 @@ s32 func_0200e21c(void) {
 s32 func_0200e234(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     s32 state = OS_DisableInterrupts();
-    if (M2C_FIELD(&data_0212fccc, s32 *, 0x18) != 0) {
+    if (M2C_FIELD(&gArm7CommandState, s32 *, 0x18) != 0) {
         OS_RestoreInterrupts(state);
         return 0;
     }
-    M2C_FIELD(&data_0212fccc, s32 *, 0x18) = 1;
+    M2C_FIELD(&gArm7CommandState, s32 *, 0x18) = 1;
     OS_RestoreInterrupts(state);
     return 1;
 }
@@ -210,10 +210,10 @@ s32 func_0200e234(void) {
 void func_0200e270(void) {
     s32 func_02007574();
     M2C_UNK FifoReceiveHandler();
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     extern s32 data_0212fce4;
     s32 *status=&data_0212fce4;
-    if(M2C_FIELD(&data_0212fccc,s32 *,0x18)==0) return;
+    if(M2C_FIELD(&gArm7CommandState,s32 *,0x18)==0) return;
     do {
         if(func_02007574()==0x80) FifoReceiveHandler();
     } while(*status!=0);
@@ -223,17 +223,17 @@ void func_0200e2b0(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
 }
 
-void func_0200e2b8(s32 arg0) {
-    extern M2C_UNK data_0212fccc;
+void Arm7FinishCommand(s32 arg0) {
+    extern M2C_UNK gArm7CommandState;
     s32 busy;
     void (*callback)(s32,s32);
     s32 value;
-    busy=M2C_FIELD(&data_0212fccc,s32 *,0x18);
-    callback=M2C_FIELD(&data_0212fccc,void (**)(s32,s32),0x1C);
-    value=M2C_FIELD(&data_0212fccc,s32 *,0x20);
-    if(busy!=0) M2C_FIELD(&data_0212fccc,s32 *,0x18)=0;
+    busy=M2C_FIELD(&gArm7CommandState,s32 *,0x18);
+    callback=M2C_FIELD(&gArm7CommandState,void (**)(s32,s32),0x1C);
+    value=M2C_FIELD(&gArm7CommandState,s32 *,0x20);
+    if(busy!=0) M2C_FIELD(&gArm7CommandState,s32 *,0x18)=0;
     if(callback==NULL) return;
-    M2C_FIELD(&data_0212fccc,void (**)(s32,s32),0x1C)=NULL;
+    M2C_FIELD(&gArm7CommandState,void (**)(s32,s32),0x1C)=NULL;
     callback(arg0,value);
 }
 
@@ -242,29 +242,36 @@ void func_0200e2f8(void) {
     M2C_UNK func_02009d34();
     M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
     s32 func_02009e8c(M2C_UNK,M2C_UNK);
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     extern M2C_UNK data_0212fcf4;
     extern M2C_UNK data_0212fd0c;
-    extern M2C_UNK func_0200e39c;
+    extern M2C_UNK Arm7CommandReply;
     s32 i;
-    if(M2C_FIELD(&data_0212fccc,u16 *,0)!=0) return;
-    M2C_FIELD(&data_0212fccc,u16 *,0)=1;
-    M2C_FIELD(&data_0212fccc,s32 *,0x18)=0;
-    M2C_FIELD(&data_0212fccc,s32 *,0x1C)=0;
+    if(M2C_FIELD(&gArm7CommandState,u16 *,0)!=0) return;
+    M2C_FIELD(&gArm7CommandState,u16 *,0)=1;
+    M2C_FIELD(&gArm7CommandState,s32 *,0x18)=0;
+    M2C_FIELD(&gArm7CommandState,s32 *,0x1C)=0;
     func_02009d34();
     do {} while(func_02009e8c(8,1)==0);
-    func_02009e40(8,&func_0200e39c);
+    func_02009e40(8,&Arm7CommandReply);
     for(i=0;i<5;i++) ((u16 (*)[4])&data_0212fd0c)[i][0]=0;
     InitMutex(&data_0212fcf4);
-    M2C_FIELD(&data_0212fccc,s32 *,0x10)=*(s32 *)0x027FFC3C;
+    M2C_FIELD(&gArm7CommandState,s32 *,0x10)=*(s32 *)0x027FFC3C;
 }
 
-void func_0200e39c(s32 arg0, u32 arg1, s32 arg2) {
-extern M2C_UNK data_0212fd10; extern M2C_UNK data_0212fd0c; extern M2C_UNK data_0212fccc;
+/* Arm7CommandReply: the ARM7 command service's FIFO handler (tag 8) for one reply
+   word — a command in bits 8..14 and a value in bits 0..7.  Commands 0x70..0x74
+   store the value into the matching reply slot (data_0212fd0c/data_0212fd10: a
+   u16 "written" flag and a u16 *destination per slot), 0x60/0x62 set the
+   service's done flags and 0x67 stores it through the caller's pointer; the
+   pending command is then finished with that value.  A non-zero error finishes
+   it as error 2 without touching anything. */
+void Arm7CommandReply(s32 tag, u32 word, s32 error) {
+extern M2C_UNK data_0212fd10; extern M2C_UNK data_0212fd0c; extern M2C_UNK gArm7CommandState;
 u32 command; u16 value; u16 *dest;
-if(arg2!=0) { func_0200e2b8(2); return; }
-command=(u16)((arg1 & 0x7F00)>>8);
-value=arg1&0xFF;
+if(error!=0) { Arm7FinishCommand(2); return; }
+command=(u16)((word & 0x7F00)>>8);
+value=word&0xFF;
 if(command>=0x70 && command<=0x74) {
 command-=0x70;
 dest=((u16 *(*)[2])&data_0212fd10)[command][0];
@@ -272,28 +279,28 @@ value=(u8)value;
 if(dest) *dest=value;
 ((u16 (*)[4])&data_0212fd0c)[command][0]=1;
 value=0;
-} else if(command==0x60) M2C_FIELD(&data_0212fccc,s32 *,4)=1;
-else if(command==0x62) M2C_FIELD(&data_0212fccc,s32 *,8)=1;
+} else if(command==0x60) M2C_FIELD(&gArm7CommandState,s32 *,4)=1;
+else if(command==0x62) M2C_FIELD(&gArm7CommandState,s32 *,8)=1;
 else if(command==0x67) {
-s32 *p=M2C_FIELD(&data_0212fccc,s32 **,0x24);
+s32 *p=M2C_FIELD(&gArm7CommandState,s32 **,0x24);
 if(p) *p=value;
 value=0;
 }
-func_0200e2b8(value);
+Arm7FinishCommand(value);
 }
 
 s32 func_0200e464(s32 arg0, s32 arg1) {
     void func_0200e8f4(s32);
-    extern M2C_UNK data_0212fccc;
-    M2C_UNK func_0200eb50(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    extern M2C_UNK gArm7CommandState;
+    M2C_UNK SetLcdPower(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     if (func_0200e234() == 0) return 1;
-    *(volatile s32 *)((u8 *)&data_0212fccc + 4) = 0;
+    *(volatile s32 *)((u8 *)&gArm7CommandState + 4) = 0;
     func_0200e8f4(0x03006000);
     do {
-    } while (*(volatile s32 *)((u8 *)&data_0212fccc + 4) == 0);
-    *(volatile s32 *)((u8 *)&data_0212fccc + 4) = 0;
-    *(volatile s32 *)((u8 *)&data_0212fccc + 8) = 0;
-    func_0200eb50(0, 2, 0, 1);
+    } while (*(volatile s32 *)((u8 *)&gArm7CommandState + 4) == 0);
+    *(volatile s32 *)((u8 *)&gArm7CommandState + 4) = 0;
+    *(volatile s32 *)((u8 *)&gArm7CommandState + 8) = 0;
+    SetLcdPower(0, 2, 0, 1);
     func_0200e8f4((u8)arg0 | 0x02006100);
     func_0200e8f4(0x01010000 | (u16)arg1);
     return 0;
@@ -301,10 +308,10 @@ s32 func_0200e464(s32 arg0, s32 arg1) {
 
 s32 func_0200e4f8(u32 arg0, s32 arg1, s32 arg2) {
     void func_0200e8f4(s32);
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     if (func_0200e234() == 0) return 1;
-    M2C_FIELD(&data_0212fccc, s32 *, 0x1C) = arg1;
-    M2C_FIELD(&data_0212fccc, s32 *, 0x20) = arg2;
+    M2C_FIELD(&gArm7CommandState, s32 *, 0x1C) = arg1;
+    M2C_FIELD(&gArm7CommandState, s32 *, 0x20) = arg2;
     func_0200e8f4((u8)(arg0 >> 16) | 0x02006300);
     func_0200e8f4(0x01010000 | (u16)arg0);
     return 0;
@@ -313,12 +320,12 @@ s32 func_0200e4f8(u32 arg0, s32 arg1, s32 arg2) {
 #pragma scheduling off
 s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     void func_0200e8f4(s32);
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     extern M2C_UNK data_0212fd0c;
     extern M2C_UNK data_0212fd10;
     if (func_0200e234() == 0) return 1;
-    M2C_FIELD(&data_0212fccc, void (**)(s32, s32 *), 0x1C) = arg2;
-    M2C_FIELD(&data_0212fccc, s32 **, 0x20) = arg3;
+    M2C_FIELD(&gArm7CommandState, void (**)(s32, s32 *), 0x1C) = arg2;
+    M2C_FIELD(&gArm7CommandState, s32 **, 0x20) = arg3;
     ((u16 (*)[4])&data_0212fd0c)[arg0][0] = 0;
     *(s32 *)((u8 *)&data_0212fd10 + arg0 * 8) = arg1;
     func_0200e8f4((u8)arg0 | 0x03006500);
@@ -338,10 +345,10 @@ s32 func_0200e5c4(M2C_UNK arg0, M2C_UNK arg1) {
 
 s32 func_0200e5ec(s32 arg0, M2C_UNK arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     void func_0200e8f4(s32);
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     if (func_0200e234() == 0) return 1;
-    M2C_FIELD(&data_0212fccc, void (**)(s32, s32 *), 0x1C) = arg2;
-    M2C_FIELD(&data_0212fccc, s32 **, 0x20) = arg3;
+    M2C_FIELD(&gArm7CommandState, void (**)(s32, s32 *), 0x1C) = arg2;
+    M2C_FIELD(&gArm7CommandState, s32 **, 0x20) = arg3;
     func_0200e8f4((u8)arg0 | 0x02006400);
     func_0200e8f4(0x01010000 | (u16)arg1);
     return 0;
@@ -358,7 +365,7 @@ s32 func_0200e64c(M2C_UNK arg0, M2C_UNK arg1) {
     return sp0;
 }
 
-s32 func_0200e674(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
+s32 SendPowerCommand(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
     s32 func_0200e4f8();
     s32 var_r0;
 
@@ -382,11 +389,11 @@ s32 func_0200e674(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
     return func_0200e4f8();
 }
 
-s32 func_0200e6c8(s32 arg0) {
+s32 SendPowerCommandWait(s32 arg0) {
     void func_0200e270(void);
     s32 sp0;
     s32 result;
-    result = func_0200e674(arg0, func_0200e2b0, &sp0);
+    result = SendPowerCommand(arg0, func_0200e2b0, &sp0);
     if (result != 0) return result;
     func_0200e270();
     return sp0;
@@ -493,11 +500,11 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_0200e76c(M2C_UNK, M2C_UNK);
     M2C_UNK func_0200e464(M2C_UNK, M2C_UNK);
     void func_02007968(void);
-    M2C_UNK func_0200eb50(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_0200e6c8(s32);
+    M2C_UNK SetLcdPower(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 SendPowerCommandWait(s32);
     void func_0200758c(M2C_UNK);
     s32 func_0200e840(void);
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
 
     M2C_UNK r10 = arg0;
     M2C_UNK r9 = arg1;
@@ -517,7 +524,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     volatile s32 sp12,sp8,sp4,sp0;
     M2C_UNK r4 = 0;
 
-    func_0200ede8(M2C_FIELD(&data_0212fccc, M2C_UNK *, 0xC));
+    func_0200ede8(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0xC));
 
     r8 = *hw208;
     *hw208 = 0;
@@ -574,9 +581,9 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
     if (r4 == 0) {
         if (sp0 == 1) {
-            func_0200eb50(1, 1, 1, 1);
+            SetLcdPower(1, 1, 1, 1);
         } else {
-            func_0200e6c8(1); 
+            SendPowerCommandWait(1); 
         }
 
     *p4m = r5;
@@ -590,39 +597,51 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     {u16 tmp=*hw208; *hw208=r8;}
     if(r4 != 0) func_0200e840();
 
-    func_0200ede8(M2C_FIELD(&data_0212fccc, M2C_UNK *, 0x14));
+    func_0200ede8(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0x14));
 
     (void)r8;
     (void)hw208;
     return;
 }
 #pragma pop
-s32 func_0200eb50(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
-extern M2C_UNK data_0212fccc;
-switch(arg0) {
-case 1:
-if(arg2==0 && (u32)(*(volatile u32 *)0x027FFC3C-M2C_FIELD(&data_0212fccc,u32 *,0x10))<=7) return 0;
-if(arg1!=0) { if(arg3!=0) func_0200e6c8(arg1); else func_0200e674(arg1,0,0); }
-*(volatile u16 *)0x04000304 |= 1;
-break;
-case 0:
-*(volatile u16 *)0x04000304 &= ~1;
-M2C_FIELD(&data_0212fccc,u32 *,0x10)=*(volatile u32 *)0x027FFC3C;
-if(arg1!=0) { if(arg3!=0) func_0200e6c8(arg1); else func_0200e674(arg1,0,0); }
-break;
-}
-return 1;
+/* Power the LCD on or off.  Switching it off stores the shared frame counter so
+ * that an immediate re-enable (a bouncing lid or power button) is ignored for
+ * seven frames, and either way the given power state is handed to the ARM7
+ * driver, waiting for its reply when wait is set.  Returns 0 when the re-enable
+ * was debounced, 1 otherwise. */
+s32 SetLcdPower(s32 on, s32 arm7State, s32 force, s32 wait) {
+    extern M2C_UNK gArm7CommandState;
+
+    switch (on) {
+    case 1:
+        if (force == 0 && (u32)(*(volatile u32 *)SHARED_FRAME_COUNTER - M2C_FIELD(&gArm7CommandState, u32 *, POWER_SERVICE_LAST_OFF)) <= 7) return 0;
+        if (arm7State != 0) {
+            if (wait != 0) SendPowerCommandWait(arm7State);
+            else SendPowerCommand(arm7State, 0, 0);
+        }
+        *(volatile u16 *)REG_POWCNT1 |= POWCNT1_LCD_ENABLE;
+        break;
+    case 0:
+        *(volatile u16 *)REG_POWCNT1 &= ~POWCNT1_LCD_ENABLE;
+        M2C_FIELD(&gArm7CommandState, u32 *, POWER_SERVICE_LAST_OFF) = *(volatile u32 *)SHARED_FRAME_COUNTER;
+        if (arm7State != 0) {
+            if (wait != 0) SendPowerCommandWait(arm7State);
+            else SendPowerCommand(arm7State, 0, 0);
+        }
+        break;
+    }
+    return 1;
 }
 
 s32 func_0200ec24(s32 arg0) {
-    M2C_UNK func_0200eb50(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetLcdPower(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 var_r0;
 
     var_r0 = arg0;
     if (var_r0 != 1) {
         var_r0 = 0;
     }
-    func_0200eb50(var_r0, 0, 0, 1);
+    SetLcdPower(var_r0, 0, 0, 1);
 }
 
 s32 func_0200ec44(void) {
@@ -635,10 +654,10 @@ s32 func_0200ec44(void) {
 s32 func_0200ec60(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
  s32 func_0200e234();
  void func_0200e8f4(s32);
- extern M2C_UNK data_0212fccc;
+ extern M2C_UNK gArm7CommandState;
  if (func_0200e234() == 0) return 1;
- M2C_FIELD(&data_0212fccc, void (**)(s32,s32 *), 0x1C) = arg1;
- M2C_FIELD(&data_0212fccc, s32 **, 0x20) = arg2;
+ M2C_FIELD(&gArm7CommandState, void (**)(s32,s32 *), 0x1C) = arg1;
+ M2C_FIELD(&gArm7CommandState, s32 **, 0x20) = arg2;
  func_0200e8f4((u8)arg0 | 0x03006600);
  return 0;
 }
@@ -655,13 +674,13 @@ s32 func_0200eca8(s32 arg0) {
 
 s32 func_0200ecd0(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0200e234();
-    extern M2C_UNK data_0212fccc;
+    extern M2C_UNK gArm7CommandState;
     if (func_0200e234() == 0) {
         return 1;
     }
-    M2C_FIELD(&data_0212fccc, s32 *, 0x1C) = arg1;
-    M2C_FIELD(&data_0212fccc, s32 *, 0x20) = arg2;
-    M2C_FIELD(&data_0212fccc, s32 *, 0x24) = arg0;
+    M2C_FIELD(&gArm7CommandState, s32 *, 0x1C) = arg1;
+    M2C_FIELD(&gArm7CommandState, s32 *, 0x20) = arg2;
+    M2C_FIELD(&gArm7CommandState, s32 *, 0x24) = arg0;
     func_0200e8f4(0x03006700);
     return 0;
 }

@@ -132,23 +132,23 @@ void func_0207b754(M2C_UNK arg0, M2C_UNK arg1) {
     func_0207b648(arg0, arg1, 1);
 }
 
-s32 func_0207b764(M2C_UNK arg0, M2C_UNK arg1) {
+s32 StepMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0207b5ac(M2C_UNK, M2C_UNK, M2C_UNK);
     return func_0207b5ac(arg0, arg1, 0);
 }
 
-s32 func_0207b774(M2C_UNK arg0, M2C_UNK arg1) {
+s32 PanMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
     return func_0207b5ac(arg0, arg1, 1);
 }
 
 s32 func_0207b784(void *arg0) {
     if (arg0 == NULL) return 0;
-    return func_0207b764(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    return StepMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
 s32 func_0207b7a4(void *arg0) {
     if (arg0 == NULL) return 0;
-    return func_0207b774(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    return PanMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
 u8 func_0207b7c4(void) {

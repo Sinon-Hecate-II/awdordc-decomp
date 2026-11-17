@@ -1,7 +1,7 @@
 /* 55 functions from 0x0208EE90 to 0x0208FE7C (main), found by ds-decomp. */
 #include "common.h"
-extern M2C_UNK data_021577e4;
-extern u32 data_021577e8[9], data_0215780c[9];
+extern M2C_UNK gSoundTimerState;
+extern u32 gSoundTimerTicks[9], gSoundTimerElapsed[9];
 
 #pragma push
 #pragma optimization_level 3
@@ -174,22 +174,27 @@ s32 func_0208f4c4(s32 arg0) {
 
 void func_0208f4d8(void) {
     s32 GetSystemTick();
-    extern M2C_UNK data_021577e4;
-    M2C_FIELD(&data_021577e4, s32 *, 4) = GetSystemTick();
+    extern M2C_UNK gSoundTimerState;
+    M2C_FIELD(&gSoundTimerState, s32 *, 4) = GetSystemTick();
 }
 
-void func_0208f4f0(void) {
-s32 GetSystemTick(void);
-u64 func_02072088(u64,u64);
-s32 i; u32 t;
-t=GetSystemTick()-M2C_FIELD(&data_021577e4,u32 *,4);
-M2C_FIELD(&data_021577e4,u32 *,4)=t;
-M2C_FIELD(&data_021577e4,u32 *,0x28)=func_02072088((u64)t*64000,33514);
-for(i=0;i<3;i++) {
-data_0215780c[i+1]=func_02072088((u64)data_021577e8[i+1]*64000,33514);
-data_021577e8[i+1]=0;
-}
-M2C_FIELD(&data_021577e4,u32 *,0x38)=func_02072088((u64)M2C_FIELD(&data_021577e4,u32 *,0x14)*64000,33514);
+/* End-of-frame sound driver tick: measures the system ticks elapsed since the
+ * frame start and converts that, plus the pending per-slot tick counts, to the
+ * sound engine's time base (1000 / TICKS_TO_MS_DIVISOR per tick). */
+void SoundEngineUpdateTimers(void) {
+    s32 GetSystemTick(void);
+    u64 U64Divide(u64, u64);
+    s32 i;
+    u32 elapsed;
+
+    elapsed = GetSystemTick() - M2C_FIELD(&gSoundTimerState, u32 *, 4);
+    M2C_FIELD(&gSoundTimerState, u32 *, 4) = elapsed;
+    M2C_FIELD(&gSoundTimerState, u32 *, 0x28) = U64Divide((u64)elapsed * 64000, TICKS_TO_MS_DIVISOR);
+    for (i = 0; i < 3; i++) {
+        gSoundTimerElapsed[i + 1] = U64Divide((u64)gSoundTimerTicks[i + 1] * 64000, TICKS_TO_MS_DIVISOR);
+        gSoundTimerTicks[i + 1] = 0;
+    }
+    M2C_FIELD(&gSoundTimerState, u32 *, 0x38) = U64Divide((u64)M2C_FIELD(&gSoundTimerState, u32 *, 0x14) * 64000, TICKS_TO_MS_DIVISOR);
 }
 
 void func_0208f5cc(void) {

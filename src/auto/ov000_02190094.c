@@ -15,7 +15,7 @@ void BuildUnitMoveRange(void *);
 int IsCurrentPlayerUnit(int);
 int func_ov000_021a8984(int);
 int CanUnitAttackKind(void *,int);
-int func_ov000_0217c2d4(void *);
+int UnitCanReachPropertyCell(void *);
 void ClearUnitMoveTarget(void);
 int func_ov000_0217de64(s16,s16,int,u8,void *);
 void SetMapCursor(s16,s16,int,int,int);
@@ -26,7 +26,7 @@ extern u16 gPlayerUnitIdBase[];
 void func_01ffc2e8(void *);
 s32 GetAiUnitRange(void);
 void func_ov000_0217a59c(s32,s32,s32,s32);
-s32 func_ov000_021a9860(s32,s32);
+s32 IsPropertyCell(s32,s32);
 s32 func_020a7694(void *);
 void func_ov000_02199f38(void);
 void PlanMoveDestination(s32,s32);
@@ -105,7 +105,7 @@ void func_ov000_02190094(void)
   if ((a != 63) && (((UnkStruct_ov000_021A860C *) new_var[0])->unk6 >= 61))
   {
     b = ((Position_021906a0 *) (new_var[0] + 8))->y;
-    if (((*((s8 **) ((new_var[1] + 0x52e8) + (b * 4))))[a] >= 0) && func_ov000_021a9860(a, b))
+    if (((*((s8 **) ((new_var[1] + 0x52e8) + (b * 4))))[a] >= 0) && IsPropertyCell(a, b))
     {
       new_var[1] = *gCurrentMap;
       index = a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2))));
@@ -139,7 +139,7 @@ void func_ov000_02190094(void)
   {
     for (x = 2 * 0; x < (*((u16 *) (new_var[1] + 0x5144))); x++, new_var[1] = *gCurrentMap)
     {
-      if (((*((s8 **) ((new_var[1] + 0x52e8) + (y * 4))))[x] < 0) || (!func_ov000_021a9860(x, y)))
+      if (((*((s8 **) ((new_var[1] + 0x52e8) + (y * 4))))[x] < 0) || (!IsPropertyCell(x, y)))
       {
         continue;
       }
@@ -242,7 +242,7 @@ void func_ov000_021906a0(int arg0) {
  }
  if (sx == -1) return;
  m = *gCurrentMap;
- if (kind == 13 && !func_ov000_0217c2d4(m + 0x59a4 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)])) return;
+ if (kind == 13 && !UnitCanReachPropertyCell(m + 0x59a4 + 14 * m[sx + *(u16 *)(m + 0x3758 + sy * 2)])) return;
  if (kind == 24 || kind == 25) {
   int a;
   s16 b;

@@ -5,7 +5,7 @@ void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_0207da60(s32, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02080e30(arg0, 0);
+    temp_r0 = LoadFileToBuffer(arg0, 0);
     DC_FlushRange(temp_r0, arg2);
     func_0207da60(temp_r0, arg1, arg2);
     HeapFreeBlock(temp_r0);
@@ -14,10 +14,10 @@ void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK DC_FlushRange(s32, M2C_UNK);
     M2C_UNK func_0207c55c(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02080e30(M2C_UNK, M2C_UNK);
+    s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02080e30(arg0, 0);
+    temp_r0 = LoadFileToBuffer(arg0, 0);
     DC_FlushRange(temp_r0, arg2);
     func_0207c55c(temp_r0, arg1, arg2, 1);
 }
@@ -26,7 +26,7 @@ void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_020807e4(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02080e30(arg0, 0);
+    temp_r0 = LoadFileToBuffer(arg0, 0);
     func_020807e4(temp_r0, arg1, arg2, arg3);
     HeapFreeBlock(temp_r0);
 }
@@ -45,7 +45,7 @@ u8 OpenNarcArchive(M2C_UNK arg0) {
     extern s32 data_0214c0e0;
     extern M2C_UNK data_0214c0e4;
     u8 var_r0;
-    data_0214c0e0 = func_02080e30(arg0, 0);
+    data_0214c0e0 = LoadFileToBuffer(arg0, 0);
     if (InitNarcArchive(&data_0214c0e4, &data_02101e78, data_0214c0e0) != 0) {
         var_r0 = 1;
     } else {

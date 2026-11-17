@@ -89,25 +89,28 @@ void func_0206e3a0(u8 *p,s32 n) {
  func_0206e350(p,n);
 }
 
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 u64 func_02072094(u64,u64);
-void func_0206e3e0(u8 *p, u64 value) {
+/* Stores the unsigned 64-bit `value` in `p` as a decimal number: converts it
+ * digit by digit (least significant first, growing the digit count), reverses
+ * the digits in place and sets the exponent to the digit count minus one. */
+void DecimalFromU64(DecimalNumber *p, u64 value) {
     u8 *lo;
     u8 *hi;
-    p[0] = 0;
-    p[4] = 0;
+    p->sign = 0;
+    p->length = 0;
     while (value) {
-        p[5 + p[4]++] = value % 10ULL;
+        p->digits[p->length++] = value % 10ULL;
         value /= 10ULL;
     }
-    lo = p + 5;
-    hi = lo + p[4] - 1;
+    lo = p->digits;
+    hi = lo + p->length - 1;
     while (lo < hi) {
         u8 t = *lo;
         *lo++ = *hi;
         *hi-- = t;
     }
-    *((s16 *)(p + 2)) = (s16)(p[4] - 1);
+    p->exponent = (s16)(p->length - 1);
 }
 
 #pragma scheduling off

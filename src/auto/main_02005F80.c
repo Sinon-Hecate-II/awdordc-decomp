@@ -10,14 +10,14 @@ typedef struct QueueFields {
 } QueueFields;
 
 s32 func_02005f80(void *arg0,s32 arg1) {
-M2C_UNK func_020057f8(void *); M2C_UNK func_020058a0(); s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern M2C_UNK data_0212dc80; extern M2C_UNK data_0212dcb4;
+M2C_UNK func_020057f8(void *); M2C_UNK RescheduleThreads(); s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern M2C_UNK gThreadManager; extern M2C_UNK data_0212dcb4;
 void *cur; void *prev; s32 state;
-cur=M2C_FIELD(&data_0212dc80,void **,0x2c);prev=0;state=OS_DisableInterrupts();
+cur=M2C_FIELD(&gThreadManager,void **,0x2c);prev=0;state=OS_DisableInterrupts();
 while(cur!=0 && cur!=arg0){prev=cur;cur=M2C_FIELD(cur,void **,0x68);}
 if(cur==0 || cur==&data_0212dcb4){OS_RestoreInterrupts(state);return 0;}
 if(M2C_FIELD(cur,s32 *,0x70)!=arg1){
-if(prev==0){M2C_FIELD(&data_0212dc80,void **,0x2c)=M2C_FIELD(arg0,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(arg0,void **,0x68);}
-M2C_FIELD(arg0,s32 *,0x70)=arg1;func_020057f8(arg0);func_020058a0();}
+if(prev==0){M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(arg0,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(arg0,void **,0x68);}
+M2C_FIELD(arg0,s32 *,0x70)=arg1;func_020057f8(arg0);RescheduleThreads();}
 OS_RestoreInterrupts(state);return 1;
 }
 
@@ -31,7 +31,7 @@ void func_02006030(s32 arg0) {
     void func_02007190(void *);
     void func_020072cc(void *, u64, void (*)(void **), void **);
     M2C_UNK OS_SleepThread(void *);
-    extern M2C_UNK data_0212dc80;
+    extern M2C_UNK gThreadManager;
     extern void func_020060d8(void **);
     register s32 argSaved = arg0;
     s32 buf[11];
@@ -40,7 +40,7 @@ void func_02006030(s32 arg0) {
     u64 delay;
 
     func_02007190(buf);
-    node = M2C_FIELD(M2C_FIELD(&data_0212dc80, void **, 8), void **, 0);
+    node = M2C_FIELD(M2C_FIELD(&gThreadManager, void **, 8), void **, 0);
     state = OS_DisableInterrupts();
     delay = ((u64)(u32)argSaved * 0x82EAULL) >> 6;
     M2C_FIELD(node, void **, 0xB0) = buf;
@@ -64,13 +64,13 @@ void func_020060d8(void **arg0) {
 s32 func_020060f8(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212dc80;
+    extern M2C_UNK gThreadManager;
     s32 state;
     s32 temp;
 
     state = OS_DisableInterrupts();
-    temp = M2C_FIELD(&data_0212dc80, s32 *, 0x30);
-    M2C_FIELD(&data_0212dc80, s32 *, 0x30) = arg0;
+    temp = M2C_FIELD(&gThreadManager, s32 *, 0x30);
+    M2C_FIELD(&gThreadManager, s32 *, 0x30) = arg0;
     OS_RestoreInterrupts(state);
     return temp;
 }
@@ -90,17 +90,17 @@ void func_02006120(void)
 s32 func_02006130(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212dc80;
+    extern M2C_UNK gThreadManager;
     s32 state;
     s32 r;
     s32 v;
     s32 limit = -1;
 
     state = OS_DisableInterrupts();
-    v = M2C_FIELD(&data_0212dc80, s32 *, 4);
+    v = M2C_FIELD(&gThreadManager, s32 *, 4);
     if ((u32)v < (u32)limit) {
         r = v;
-        M2C_FIELD(&data_0212dc80, s32 *, 4) = v + 1;
+        M2C_FIELD(&gThreadManager, s32 *, 4) = v + 1;
     }
     OS_RestoreInterrupts(state);
     return r;
@@ -109,17 +109,17 @@ s32 func_02006130(void) {
 s32 func_02006164(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212dc80;
+    extern M2C_UNK gThreadManager;
     s32 state;
     s32 r;
     s32 v;
 
     state = OS_DisableInterrupts();
     r = 0;
-    v = M2C_FIELD(&data_0212dc80, s32 *, 4);
+    v = M2C_FIELD(&gThreadManager, s32 *, 4);
     if (v != 0) {
         r = v;
-        M2C_FIELD(&data_0212dc80, s32 *, 4) = v - 1;
+        M2C_FIELD(&gThreadManager, s32 *, 4) = v - 1;
     }
     OS_RestoreInterrupts(state);
     return r;

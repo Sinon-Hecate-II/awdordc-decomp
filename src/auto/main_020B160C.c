@@ -227,7 +227,7 @@ if(!p || !M2C_FIELD(p,u8 *,1) || (u8)(M2C_FIELD(p,u8 *,4)+253)<=1) return 0;
 return 1;
 }
 
-void func_020b1bf4(s16 a,s16 b,s16 c,s16 d) {
+void SetSpriteSlotFrameRect(s16 a,s16 b,s16 c,s16 d) {
 extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,s16 *,0x10)=a;
 M2C_FIELD(gSpriteSlotManager,s16 *,0x12)=b;
@@ -251,7 +251,7 @@ s32 FocusSpriteSlotById(s32 arg0) {
     func_020b1ca0((u8 *)FindSpriteSlotById(), arg0);
 }
 
-s32 func_020b1c78(void) {
+s32 SelectSpriteSlot(void) {
     s32 FocusSpriteSlotById();
     void func_020b204c();
     s32 temp_r4;
@@ -285,7 +285,7 @@ void func_020b1d14(void){extern void *gSpriteSlotManager,*gKeyState,*gTouchState
 void func_020b1d84(void *arg0, s32 arg1, void *arg2) {
 extern void *gSpriteSlotManager, *gTouchState, *gCur3DSpriteEngine;
 s32 FindSpriteSlotById();
-void func_0208df84(s16,s16,s16,s16,u16,s32);
+void DrawFrameBorderPulse(s16,s16,s16,s16,u16,s32);
 void *p,*q; s32 x,y,r,b,d,v,n,out; s32 force; u16 flags;
 FocusSpriteSlotById(M2C_FIELD(gSpriteSlotManager,u8 *,8));
 if (!func_020b1bb0()) return;
@@ -317,7 +317,7 @@ SpriteSlotHasFlags(p,0x800);
 q=gSpriteSlotManager;
 x=M2C_FIELD(q,s16 *,16);y=M2C_FIELD(q,s16 *,18);
 flags=(u16)(((0x80 >> ((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x1000);
-func_0208df84((s16)(x+M2C_FIELD(q,s16 *,32)),(s16)(y+M2C_FIELD(q,s16 *,34)),(s16)(M2C_FIELD(q,s16 *,28)-x),(s16)(M2C_FIELD(q,s16 *,30)-y),flags,0);
+DrawFrameBorderPulse((s16)(x+M2C_FIELD(q,s16 *,32)),(s16)(y+M2C_FIELD(q,s16 *,34)),(s16)(M2C_FIELD(q,s16 *,28)-x),(s16)(M2C_FIELD(q,s16 *,30)-y),flags,0);
 }
 #pragma pop
 void func_020b204c(void){extern void *gSpriteSlotManager;void *p; s32 d,c,b,a,sum;p=M2C_FIELD(gSpriteSlotManager,void **,12);if(!p)return;a=M2C_FIELD(p,s16 *,20);b=M2C_FIELD(p,s16 *,22);c=M2C_FIELD(p,s16 *,24);d=M2C_FIELD(p,s16 *,26);M2C_FIELD(gSpriteSlotManager,s16 *,16)=(s16)a;M2C_FIELD(gSpriteSlotManager,s16 *,18)=(s16)b;M2C_FIELD(gSpriteSlotManager,s16 *,20)=(s16)(a+c);sum=b+d;M2C_FIELD(gSpriteSlotManager,s16 *,22)=(s16)b;M2C_FIELD(gSpriteSlotManager,s16 *,24)=(s16)a;M2C_FIELD(gSpriteSlotManager,s16 *,26)=(s16)sum;M2C_FIELD(gSpriteSlotManager,s16 *,28)=(s16)(a+c);M2C_FIELD(gSpriteSlotManager,s16 *,30)=(s16)sum;}
@@ -381,7 +381,7 @@ void func_020b2268(void) {
     } while (i < 0x55);
 }
 
-s32 func_020b22a4(s32 a,s32 b,void *c,s32 d) {
+s32 AddSpriteSlot(s32 a,s32 b,void *c,s32 d) {
 s32 func_020b2304(s32,s32,void *,void *,s32);
 extern u8 gSpriteSlots[];
 u8 *p=gSpriteSlots; s32 i=0;

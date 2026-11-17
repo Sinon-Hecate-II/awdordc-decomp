@@ -261,16 +261,16 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     s32 func_02043008(s32);
     s32 func_020613dc(s32, s32, s32, s32, s32, s32, s32, M2C_UNK *, s32);
-    M2C_UNK func_0200567c(void *, s32, void *, s32);
-    M2C_UNK func_02037d78(void *, void *, void *, s32);
-    M2C_UNK func_02037db0(void *, void *, void *, s32);
+    M2C_UNK StringFormatN(void *, s32, void *, s32);
+    M2C_UNK FormatKeyValue(void *, void *, void *, s32);
+    M2C_UNK AppendKeyValue(void *, void *, void *, s32);
     M2C_UNK SetGpiStatus(M2C_UNK, M2C_UNK *, M2C_UNK);
     s32 func_02042f94(void);
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0204084c(void);
     M2C_UNK ResetConnectionSync(M2C_UNK);
-    s32 func_0203e410(void);
+    s32 ReportGpiSessionStatus(void);
     extern M2C_UNK gConnectionMgr, data_020fc908, gKeyFME, data_020fc910, data_020fc914, gKeyMDF, gKeyVER, func_020432d4;
     u8 sp34[12];
     s32 sp14[8];
@@ -318,11 +318,11 @@ error:
                     goto done;
                 }
             }
-                func_0200567c(sp34, 12, &data_020fc908, matchType);
-                func_02037d78(&gKeyFME, sp34, sp14, 0x2F);
-                func_02037db0(&gKeyMDF, (flag != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
-                func_0200567c(sp34, 12, &data_020fc908, 3);
-                func_02037db0(&gKeyVER, sp34, sp14, 0x2F);
+                StringFormatN(sp34, 12, &data_020fc908, matchType);
+                FormatKeyValue(&gKeyFME, sp34, sp14, 0x2F);
+                AppendKeyValue(&gKeyMDF, (flag != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
+                StringFormatN(sp34, 12, &data_020fc908, 3);
+                AppendKeyValue(&gKeyVER, sp34, sp14, 0x2F);
                 SetGpiStatus(4, sp14, 0);
                 if (func_02042f94() != 0) {
                     goto done;
@@ -349,7 +349,7 @@ done:
 #pragma pop
 void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
     M2C_UNK StartQr2Reporting(s32);
-    M2C_UNK func_0203e410();
+    M2C_UNK ReportGpiSessionStatus();
     M2C_UNK BeginMatchmakingSession(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02042f94();
     M2C_UNK SetConnectionState(M2C_UNK);
@@ -365,7 +365,7 @@ void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
     M2C_FIELD(GetConnection(), s8 *, 0xE) = 0;
     M2C_FIELD(&gConnectionMgr, s8 *, 0x1D) = 0;
     SetConnectionState(0xA);
-    func_0203e410();
+    ReportGpiSessionStatus();
     if (func_02042f94() != 0) {
         return;
     }

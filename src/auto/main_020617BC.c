@@ -35,28 +35,29 @@ s32 func_020617bc(s32 *arg0, s32 *arg1) {
     return var_r0;
 }
 
-s32 func_02061818(s32 *arg0, s32 *arg1) {
-    double func_02060c10(void *, s32, double);
-    s32 func_0207044c(double);
+/* Server-list sort callback for a floating-point key: compare the two servers'
+ * values of the sort key as doubles and return the sign of their quotient
+ * (which stands in for the difference), inverted when the list sorts
+ * ascending. */
+s32 SBServerListCompareFloat(s32 *serverA, s32 *serverB) {
+    double SBServerGetFloatValue(void *, s32, double);
     double func_02070b70(double, double);
-    s32 func_02071438(s32, s32);
-    s32 func_02071494(s32, s32);
     extern void *data_0213e4bc;
-    double d0;
-    double d1;
-    double var;
-    s32 temp_r5;
-    s32 var_r0;
+    double valueA;
+    double valueB;
+    double diff;
+    s32 server;
+    s32 result;
 
-    temp_r5 = *arg1;
-    d0 = func_02060c10((void *) *arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), 0.0);
-    d1 = func_02060c10((void *) temp_r5, M2C_FIELD(data_0213e4bc, s32 *, 0x498), 0.0);
-    var = func_02070b70(d0, d1);
-    if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
-        var = func_02070b70(0.0, var);
+    server = *serverB;
+    valueA = SBServerGetFloatValue((void *) *serverA, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), 0.0);
+    valueB = SBServerGetFloatValue((void *) server, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), 0.0);
+    diff = func_02070b70(valueA, valueB);
+    if (M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_DESC) == 0) {
+        diff = func_02070b70(0.0, diff);
     }
-    if ((float)var > 0.0f) return 1;
-    return -((float)var < 0.0f);
+    if ((float)diff > 0.0f) return 1;
+    return -((float)diff < 0.0f);
 }
 
 /* Server-list sort callback for a string key: compare the two servers' values of
@@ -94,7 +95,7 @@ s32 func_02061958(s32 *arg0, s32 *arg1) {
 }
 
 void func_020619c0(void *arg0, s32 arg1, s32 arg2, u32 arg3) {
-    s32 func_02061818(s32 *, s32 *);
+    s32 SBServerListCompareFloat(s32 *, s32 *);
     s32 func_02061958(s32 *, s32 *);
     M2C_UNK func_020489c4(s32, s32 (*)(s32 *, s32 *));
     extern void *data_0213e4bc;
@@ -102,7 +103,7 @@ void func_020619c0(void *arg0, s32 arg1, s32 arg2, u32 arg3) {
 
     switch (arg3) {
     case 0: var_r3 = func_020617bc; break;
-    case 1: var_r3 = func_02061818; break;
+    case 1: var_r3 = SBServerListCompareFloat; break;
     case 2: var_r3 = SBServerListCompareString; break;
     case 3: var_r3 = func_02061958; break;
     default: var_r3 = func_02061958; break;
@@ -178,12 +179,12 @@ func_02061bdc(a);
 }
 
 void func_02061c8c(void *arg0) {
-    s32 func_02048558(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_FIELD(arg0, s32 *, 4) = func_02048558(4, 0x64, 0);
+    s32 Vector_New(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_FIELD(arg0, s32 *, 4) = Vector_New(4, 0x64, 0);
     M2C_FIELD(arg0, s32 *, 0x5D0) = 0;
 }
 
-s32 func_02061cb4(s32 a,s32 b) {
+s32 StringIntern(s32 a,s32 b) {
 s32 func_020609bc(s32);
 s32 *func_02048ff8(s32,s32 *);
 s32 gpiStringDup(s32);
@@ -197,7 +198,7 @@ func_02048eac(func_020609bc(a),pair);
 return pair[0];
 }
 
-void func_02061d24(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,sSbFileName,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
+void StringInternRelease(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,sSbFileName,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
 
 s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
 
@@ -363,14 +364,14 @@ if(!M2C_FIELD(slist,s32*,0x7c)){M2C_FIELD(slist,s32*,0x7c)=gpiMalloc(4096);if(!M
 return 0;
 }
 #pragma pop
-void func_0206262c(void *a) {void func_02061d24(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)func_02061d24(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
+void func_0206262c(void *a) {void StringInternRelease(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)StringInternRelease(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
 
-void func_02062670(void *a) {
-s32 Vector_GetCount(s32);s32 *Vector_GetItem();void func_02061d24(void *,s32);s32 func_0204861c();
+void SBServerListFreeKeyList(void *a) {
+s32 Vector_GetCount(s32);s32 *Vector_GetItem();void StringInternRelease(void *,s32);s32 Vector_Free();
 s32 i; s32 p=M2C_FIELD(a,s32 *,8);
 if(!p)return;
-for(i=0;i<Vector_GetCount(M2C_FIELD(a,s32 *,8));i++)func_02061d24(a,*Vector_GetItem(M2C_FIELD(a,s32 *,8),i));
-func_0204861c(M2C_FIELD(a,s32 *,8));M2C_FIELD(a,s32 *,8)=0;
+for(i=0;i<Vector_GetCount(M2C_FIELD(a,s32 *,8));i++)StringInternRelease(a,*Vector_GetItem(M2C_FIELD(a,s32 *,8),i));
+Vector_Free(M2C_FIELD(a,s32 *,8));M2C_FIELD(a,s32 *,8)=0;
 }
 
 s32 SBServerListDisconnect(void *a) {
@@ -379,11 +380,11 @@ if(M2C_FIELD(a,s32 *,0x7c))gpiFree(M2C_FIELD(a,s32 *,0x7c));
 M2C_FIELD(a,s32 *,0x7c)=0;M2C_FIELD(a,s32 *,0x80)=0;
 if(M2C_FIELD(a,s32 *,0x4b0)!=-1)func_020496b8(M2C_FIELD(a,s32 *,0x4b0));
 M2C_FIELD(a,s32 *,0x4b0)=-1;M2C_FIELD(a,s32 *,0)=1;
-func_02062670(a);M2C_FIELD(a,s32 *,0x484)=-1;func_0206262c(a);
+SBServerListFreeKeyList(a);M2C_FIELD(a,s32 *,0x484)=-1;func_0206262c(a);
 }
 
 void func_02062738(void *arg0) {
-    M2C_UNK func_0204861c();
+    M2C_UNK Vector_Free();
     M2C_UNK func_02060a20(void *);
     M2C_UNK func_02061c34(void *);
     M2C_UNK SBServerListDisconnect();
@@ -391,7 +392,7 @@ void func_02062738(void *arg0) {
     func_02061c34(arg0);
     func_02060a20(arg0);
     if (M2C_FIELD(arg0, s32 *, 4) != 0) {
-        func_0204861c();
+        Vector_Free();
     }
     M2C_FIELD(arg0, s32 *, 4) = 0;
 }

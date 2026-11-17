@@ -17,7 +17,7 @@ s32 GetUnitAmmo(void *);
 s32 func_ov000_0216cd4c(s32);
 s32 GetUnitIconTiles(s32,s32);
 s32 func_ov000_0216cd90(s32);
-void func_0207c3dc(s32,s32,s32,s32);
+void QueueMemoryCopy(s32,s32,s32,s32);
 void func_01ff9e44(s32,s32,s32);
 s32 func_020a8604(s32);
 s32 func_020a7c68(s32);
@@ -45,10 +45,10 @@ AddSprite((u16)((x+79)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FI
 }else{
 DrawDecimalNumber((x+79)&511,screenY,GetUnitAmmo(unit));
 }
-func_0207c3dc(func_ov000_0216cd4c(unitKind),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4480,256,0);
+QueueMemoryCopy(func_ov000_0216cd4c(unitKind),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4480,256,0);
 AddSprite((u16)((x+20)&511),(u16)((y+2)&255),(u16)((0x3ff & (0x224 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x9000),gSpriteDesc32x16,8);
 func_01ff9e44(func_ov000_0216cd90(colorIndex),0x300,32);
-func_0207c3dc(GetUnitIconTiles(unitKind,variantIndex),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4300,128,0);
+QueueMemoryCopy(GetUnitIconTiles(unitKind,variantIndex),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4300,128,0);
 AddSprite((u16)((x+4)&511),(u16)((y+4)&255),(u16)((0x3ff & (0x218 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),gSpriteDesc16x16,9);
 }
 #pragma pop

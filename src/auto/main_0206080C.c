@@ -124,11 +124,11 @@ void func_02060a60(void **arg0) {
 }
 
 M2C_UNK gpiPlayerSetString(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
-    s32 func_02061cb4(s32, M2C_UNK *);
+    s32 StringIntern(s32, M2C_UNK *);
     M2C_UNK func_02048eac(s32, s32 *);
     s32 values[2];
-    values[0] = func_02061cb4(0, arg1);
-    values[1] = func_02061cb4(0, arg2);
+    values[0] = StringIntern(0, arg1);
+    values[1] = StringIntern(0, arg2);
     func_02048eac(M2C_FIELD(arg0, s32 *, 0x18), values);
 }
 
@@ -169,7 +169,7 @@ s32 SBServerGetIntValue(void *arg0,s32 arg1,s32 arg2){
  return ParseInt(p);
 }
 
-double func_02060c10(void *arg0,s32 arg1,double arg2){
+double SBServerGetFloatValue(void *arg0,s32 arg1,double arg2){
  double atof(s32);
  s32 p=SBServerGetStringValue(arg0,arg1,0);
  if(p)arg2=atof(p);
@@ -294,9 +294,9 @@ if(c){do{if(c>=0 && c<128){c=(u32)data_020eac40[c];}else{c=(s32)c;}hash=hash*0x9
 return func_020722fc(hash,arg1)>>32;
 }
 void func_02061040(void *arg0) {
-    M2C_UNK func_02061d24(M2C_UNK, s32);
-    func_02061d24(0, M2C_FIELD(arg0, s32 *, 0));
-    func_02061d24(0, M2C_FIELD(arg0, s32 *, 4));
+    M2C_UNK StringInternRelease(M2C_UNK, s32);
+    StringInternRelease(0, M2C_FIELD(arg0, s32 *, 0));
+    StringInternRelease(0, M2C_FIELD(arg0, s32 *, 4));
 }
 
 void func_02061064(s8 **arg0, s32 arg1) {

@@ -78,6 +78,9 @@
 #define UNIT_KIND_SUBMARINE 22 /* created submerged and charged 5 fuel a turn while submerged */
 #define UNIT_KIND_SUBMARINE_FUEL 5 /* fuel a submerged submarine spends per turn */
 
+/* GetUnitThreatClass returns this for a kind the AI's threat table does not model. */
+#define AI_THREAT_CLASS_NONE 10
+
 /* An AI target candidate record, 12 bytes each. */
 #define AI_CANDIDATE_X        0x00 /* u8 tile x */
 #define AI_CANDIDATE_Y        0x01 /* u8 tile y */
@@ -85,6 +88,11 @@
 #define AI_CANDIDATE_STATUS   0x03 /* u8 AI_CANDIDATE_* status */
 #define AI_CANDIDATE_GROUP    0x04 /* s8 target group */
 #define AI_CANDIDATE_STRIDE   12
+/* Candidate fields 0x05..0x0A are reused per target type.  On a property
+ * candidate (type 2) the AI target-group scan files the number of enemy units
+ * that can reach the tile and the distance to the closest of them. */
+#define AI_PROPERTY_CANDIDATE_ENEMY_COUNT    0x06 /* u8 enemy units that can reach the tile */
+#define AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE 0x07 /* u8 Manhattan distance to the closest enemy (255 = none) */
 #define AI_CANDIDATE_FRESH    0x7f /* untouched candidate */
 #define AI_CANDIDATE_REJECTED 0xfc /* candidate given up on */
 #define AI_CANDIDATE_SKIPPED  0xfd /* candidate skipped this turn */

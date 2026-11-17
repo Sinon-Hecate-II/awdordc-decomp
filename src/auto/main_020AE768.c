@@ -1,5 +1,6 @@
 /* 26 functions from 0x020AE768 to 0x020AF760 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 static inline u16 SpriteTileSize(s32 n) { return n << 12; }
 
 void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -89,7 +90,7 @@ void LoadWallpaperGraphics(void *wallpaperSprite, s32 layerIndex, s32 paletteInd
 #pragma opt_common_subs reset
 M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-    extern M2C_UNK data_02127e4c, data_02127e40;
+    extern M2C_UNK gWallpaperSpriteClass, gWallpaperSpriteVtbl;
     void *func_01ffa3dc(M2C_UNK *, s32);
     M2C_UNK GetWallpaperFileSet(s32);
     /* LoadWallpaperGraphics is defined above. */
@@ -98,9 +99,9 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     void *saved2;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    p = func_01ffa3dc(&data_02127e4c, 1);
+    p = func_01ffa3dc(&gWallpaperSpriteClass, 1);
     if (p) {
-        M2C_FIELD(p, void **, 0) = &data_02127e40;
+        M2C_FIELD(p, void **, 0) = &gWallpaperSpriteVtbl;
         M2C_FIELD(p, u8 *, 0x34) = e;
         M2C_FIELD(p, s32 *, 0x38) = GetWallpaperFileSet(e);
         M2C_FIELD(p, u8 *, 0x3c) = a;
@@ -121,9 +122,9 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     }
 
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    p = func_01ffa3dc(&data_02127e4c, 1);
+    p = func_01ffa3dc(&gWallpaperSpriteClass, 1);
     if (p) {
-        M2C_FIELD(p, void **, 0) = &data_02127e40;
+        M2C_FIELD(p, void **, 0) = &gWallpaperSpriteVtbl;
         M2C_FIELD(p, u8 *, 0x34) = e;
         M2C_FIELD(p, s32 *, 0x38) = GetWallpaperFileSet(e);
         M2C_FIELD(p, u8 *, 0x44) = c;
@@ -148,15 +149,15 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
 
 void func_020aeebc(M2C_UNK a,M2C_UNK b,s32 c) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK data_02127e4c,data_02127e40;
+extern M2C_UNK gWallpaperSpriteClass,gWallpaperSpriteVtbl;
 void *func_01ffa3dc(M2C_UNK *,s32);
 void *saved=gCur3DSpriteEngine;
 void *p;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-p=func_01ffa3dc(&data_02127e4c,1);
+p=func_01ffa3dc(&gWallpaperSpriteClass,1);
 if(p) {
 void *saved2;
-M2C_FIELD(p,void **,0)=&data_02127e40;
+M2C_FIELD(p,void **,0)=&gWallpaperSpriteVtbl;
 M2C_FIELD(p,u8 *,0x34)=c;
 M2C_FIELD(p,s32 *,0x38)=GetWallpaperFileSet(c);
 M2C_FIELD(p,u8 *,0x3c)=a;
@@ -171,31 +172,34 @@ M2C_FIELD(p,s16 *,0x42)=0;
 gCur3DSpriteEngine=saved;
 }
 
-void func_020aef7c(M2C_UNK a,M2C_UNK b,s32 c) {
+/* Create the top-screen (sub engine) wallpaper sprite for wallpaper set `set` on
+ * layer `layer` with palette `palette`: its two position offsets are the set's
+ * reading offsets plus the set's second-screen gap. */
+void CreateSubWallpaperSprite(s32 layer,s32 palette,s32 set) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
-extern M2C_UNK data_02127e4c,data_02127e40;
+extern M2C_UNK gWallpaperSpriteClass,gWallpaperSpriteVtbl;
 void *func_01ffa3dc(M2C_UNK *,s32);
 void *saved=gCur3DSpriteEngine; void *p;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-p=func_01ffa3dc(&data_02127e4c,1);
+p=func_01ffa3dc(&gWallpaperSpriteClass,1);
 if(p) {void *saved2;
-M2C_FIELD(p,void **,0)=&data_02127e40;
-M2C_FIELD(p,u8 *,0x34)=c;
-M2C_FIELD(p,s32 *,0x38)=GetWallpaperFileSet(c);
-M2C_FIELD(p,u8 *,0x44)=a; M2C_FIELD(p,u8 *,0x45)=b;
+M2C_FIELD(p,void **,DS3D_SPRITE_CLASS)=&gWallpaperSpriteVtbl;
+M2C_FIELD(p,u8 *,0x34)=set;
+M2C_FIELD(p,s32 *,0x38)=GetWallpaperFileSet(set);
+M2C_FIELD(p,u8 *,0x44)=layer; M2C_FIELD(p,u8 *,0x45)=palette;
 M2C_FIELD(p,s16 *,0x46)=M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0x10)+M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0xa);
 M2C_FIELD(p,s16 *,0x48)=M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0x12)+M2C_FIELD(M2C_FIELD(p,void **,0x38),s16 *,0xa);
 saved2=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
-LoadWallpaperGraphics(p,a,b); gCur3DSpriteEngine=saved2;
+LoadWallpaperGraphics(p,layer,palette); gCur3DSpriteEngine=saved2;
 M2C_FIELD(p,s16 *,0x4a)=0;
 } gCur3DSpriteEngine=saved;
 }
 
 void func_020af04c(M2C_UNK a,M2C_UNK b,s32 c) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
-void func_020aef7c(M2C_UNK,M2C_UNK,s32);
+void CreateSubWallpaperSprite(M2C_UNK,M2C_UNK,s32);
 if((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain))func_020aeebc(a,b,c);
-if((u8)(gCur3DSpriteEngine==g3DSpriteEngineSub))func_020aef7c(a,b,c);
+if((u8)(gCur3DSpriteEngine==g3DSpriteEngineSub))CreateSubWallpaperSprite(a,b,c);
 }
 
 s32 func_020af0d4(void) {
@@ -222,8 +226,8 @@ void func_020af178(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_020af19c(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_020aef7c(M2C_UNK, M2C_UNK, s32);
-    func_020aef7c(arg0, arg1, func_020af0d4());
+    void CreateSubWallpaperSprite(M2C_UNK, M2C_UNK, s32);
+    CreateSubWallpaperSprite(arg0, arg1, func_020af0d4());
 }
 
 void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
@@ -233,24 +237,24 @@ void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_020af1e4(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
-    extern M2C_UNK data_02127e4c;
-    func_01ffa9e4(&data_02127e4c);
+    extern M2C_UNK gWallpaperSpriteClass;
+    func_01ffa9e4(&gWallpaperSpriteClass);
 }
 
 void DeleteMainWallpaperSprites(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK data_02127e4c;
+extern M2C_UNK gWallpaperSpriteClass;
 M2C_UNK func_01ffa9f8(M2C_UNK *);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_01ffa9f8(&data_02127e4c);
+func_01ffa9f8(&gWallpaperSpriteClass);
 gCur3DSpriteEngine=saved;
 }
 
-void func_020af230(void) {
+void DeleteWallpaperSprites(void) {
     M2C_UNK func_01ffa9f8(M2C_UNK *);
-    extern M2C_UNK data_02127e4c;
-    func_01ffa9f8(&data_02127e4c);
+    extern M2C_UNK gWallpaperSpriteClass;
+    func_01ffa9f8(&gWallpaperSpriteClass);
 }
 
 M2C_UNK func_020af244(void *p) {

@@ -26,12 +26,12 @@ M2C_UNK func_0207b754(u32,u32); M2C_UNK func_020cf498(s16,s16);
 M2C_UNK RefreshMapView(); M2C_UNK RefreshMapEditor();
 M2C_UNK MapEditor_SetMapModified(M2C_UNK); M2C_UNK func_ov007_0221ab68();
 extern void **gCurrentMap;
-M2C_UNK func_020c857c(M2C_UNK); M2C_UNK GetSlotForPlayerId(M2C_UNK);
+M2C_UNK LoadMapById(M2C_UNK); M2C_UNK GetSlotForPlayerId(M2C_UNK);
 M2C_UNK RemapUnitGroups(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK Map_ReassignPropertyOwners(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK ResetPlayerOrder();
 s32 slot1,slot2,slot3,slot1b,slot2b,slot3b; u32 viewX,viewY; void *state;
-func_020c857c(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
+LoadMapById(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
 slot1=GetSlotForPlayerId(1);slot2=GetSlotForPlayerId(2);slot3=GetSlotForPlayerId(3);
 RemapUnitGroups(slot1,slot2,slot3,GetSlotForPlayerId(4));
 slot1b=GetSlotForPlayerId(1);slot2b=GetSlotForPlayerId(2);slot3b=GetSlotForPlayerId(3);
@@ -49,41 +49,39 @@ void func_ov007_0221c630(void) {
     func_01ffa3dc(&data_ov007_02220178, 7);
 }
 
-void func_ov007_0221c648(M2C_UNK arg0) {
-    M2C_UNK MapSettings_Capture(M2C_UNK);
-    M2C_UNK MapSettings_Apply(s32);
-    s32 func_020c7e98(M2C_UNK);
-    s32 func_020c7eb8();
-    M2C_UNK func_020c857c(M2C_UNK);
-    M2C_UNK ResizeMap(M2C_UNK, M2C_UNK);
+/* Prepare the map the editor opens on: a campaign map record is loaded with
+ * its saved settings, its unit groups and its properties handed to the four
+ * players; any other map starts out blank at the default 20x20 size. */
+void MapEditor_LoadMapData(s32 mapId) {
+    void MapSettings_Capture(s32);
+    void MapSettings_Apply(s32);
+    s32 GetMapRecordSettings(s32);
+    s32 IsCampaignMapRecordValid(s32);
+    s32 LoadMapById(s32);
+    void ResizeMap(s32, s32);
     M2C_UNK RemapUnitGroups(s32, s32, s32, s32);
     M2C_UNK Map_ReassignPropertyOwners(s32, s32, s32, s32);
     M2C_UNK ResetPlayerOrder();
-    s32 GetSlotForPlayerId(M2C_UNK);
-    s32 temp_r4;
-    s32 temp_r4_2;
-    s32 temp_r4_3;
-    s32 temp_r5;
-    s32 temp_r5_2;
-    s32 temp_r6;
-    s32 temp_r6_2;
+    s32 GetSlotForPlayerId(s32);
+    s32 mapSettings;
+    s32 slot1, slot2, slot3;
 
-    if (func_020c7eb8() == 0) {
+    if (IsCampaignMapRecordValid(mapId) == 0) {
         ResizeMap(0x14, 0x14);
         return;
     }
-    temp_r4 = func_020c7e98(arg0);
-    func_020c857c(arg0);
-    MapSettings_Apply(temp_r4);
+    mapSettings = GetMapRecordSettings(mapId);
+    LoadMapById(mapId);
+    MapSettings_Apply(mapSettings);
     MapSettings_Capture(0);
-    temp_r6 = GetSlotForPlayerId(1);
-    temp_r5 = GetSlotForPlayerId(2);
-    temp_r4_2 = GetSlotForPlayerId(3);
-    RemapUnitGroups(temp_r6, temp_r5, temp_r4_2, GetSlotForPlayerId(4));
-    temp_r6_2 = GetSlotForPlayerId(1);
-    temp_r5_2 = GetSlotForPlayerId(2);
-    temp_r4_3 = GetSlotForPlayerId(3);
-    Map_ReassignPropertyOwners(temp_r6_2, temp_r5_2, temp_r4_3, GetSlotForPlayerId(4));
+    slot1 = GetSlotForPlayerId(1);
+    slot2 = GetSlotForPlayerId(2);
+    slot3 = GetSlotForPlayerId(3);
+    RemapUnitGroups(slot1, slot2, slot3, GetSlotForPlayerId(4));
+    slot1 = GetSlotForPlayerId(1);
+    slot2 = GetSlotForPlayerId(2);
+    slot3 = GetSlotForPlayerId(3);
+    Map_ReassignPropertyOwners(slot1, slot2, slot3, GetSlotForPlayerId(4));
     ResetPlayerOrder();
 }
 

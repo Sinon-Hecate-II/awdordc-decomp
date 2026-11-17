@@ -453,7 +453,7 @@ void Init3DSpriteDisplay(void) {
  * value at +0x40, bit 6 clears control bit 0x80000, and bit 4 picks the sprite
  * bank passed to the loader. */
 s32 PlaceMapSprite(s32 sprite,s32 kind,s32 x,s32 y,s32 rawFlags,s32 base,s32 tileIndex){
-s32 func_02077700(void);u32 flags=*(u16 *)&rawFlags;u16 tile;s32 saved=*(volatile s32 *)&tileIndex;
+s32 GetFrameStep(void);u32 flags=*(u16 *)&rawFlags;u16 tile;s32 saved=*(volatile s32 *)&tileIndex;
 if(!(flags&32)){x<<=4;y<<=4;}
 switch(flags&3){
 case 1:x=(x+8)*48;y=(y+16)*48;break;
@@ -461,7 +461,7 @@ case 0:x=(x+8)*48;y=(y+8)*48;break;
 case 2:x*=48;y*=48;break;
 }
 M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;M2C_FIELD(sprite,s32 *,0x3c)=0x8b1;
-M2C_FIELD(sprite,s32 *,0x40)=flags&8?func_02077700():0x20000;
+M2C_FIELD(sprite,s32 *,0x40)=flags&8?GetFrameStep():0x20000;
 if(flags&64)M2C_FIELD(sprite,u32 *,0x44)&=~0x80000;
 else M2C_FIELD(sprite,u32 *,0x44)|=0x80000;
 tile=(u16)(saved+0xab);

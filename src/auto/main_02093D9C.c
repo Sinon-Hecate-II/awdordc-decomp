@@ -224,7 +224,7 @@ s32 func_020941d4(void *arg0) {
 
 s32 func_02094214(void *arg0) {
  M2C_UNK func_0207843c(s32,s32,s32,s32);
- s16 func_0207f460(s32);
+ s16 TerrainByteToTileId(s32);
  extern s32 *data_027e0058;
  s16 packed;
  s32 base,base2;
@@ -238,7 +238,7 @@ s32 func_02094214(void *arg0) {
  x=(u8)packed;
  M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),s8 *,0x1420)=value;
  base2=*data_027e0058;
- M2C_FIELD(base2+(x+M2C_FIELD(base2+y*2,u16 *,0x3758))*2,s16 *,0xA10)=func_0207f460(value);
+ M2C_FIELD(base2+(x+M2C_FIELD(base2+y*2,u16 *,0x3758))*2,s16 *,0xA10)=TerrainByteToTileId(value);
  func_0207843c(x-1,y-1,x+1,y+1);
  M2C_FIELD(arg0,void **,4)+=0x10;
  return 1;
@@ -390,14 +390,18 @@ void Reset3DSpriteEngines(void) {
 }
 
 void func_020947ac(void);
-void func_020945f8(void) {
- extern M2C_UNK data_02157fe8;
+/* Resets the message/dialog overlay, e.g. when a message box or the map setup is
+ * finished: clears every dialog sequence (gDialogSequences), empties the 3D sprite
+ * manager's pending-message queue, resets the three scene panels and the menu
+ * cursor, and reinitialises the 3D sprite engines. */
+void ResetDialogUI(void) {
+ extern M2C_UNK gDialogSequences;
  void *GetScenePanelState(s32);
- s16 i; u8 *p;
+ s16 i; u8 *ptr;
  M2C_FIELD(Get3DSpriteManager(),u8*,0x4b)=0;
- p=(u8*)&data_02157fe8;
- for(i=0;i<8;i++,p+=0x18)*(s32*)p=0;
- for(i=0;i<8;) { p=Get3DSpriteManager(); p+=(u32)i*4; i++; M2C_FIELD(p,s32*,0x24)=0; }
+ ptr=(u8*)&gDialogSequences;
+ for(i=0;i<8;i++,ptr+=0x18)*(s32*)ptr=0;
+ for(i=0;i<8;) { ptr=Get3DSpriteManager(); ptr+=(u32)i*4; i++; M2C_FIELD(ptr,s32*,0x24)=0; }
  func_02086ac0();func_020947ac();func_02095fd4();
  for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
@@ -405,10 +409,10 @@ void func_020945f8(void) {
 }
 
 s32 IsDialogActive(void) {
- extern M2C_UNK data_02157fe8;
+ extern M2C_UNK gDialogSequences;
  s32 i;
  u8 *p;
- p=(u8 *)&data_02157fe8;i=0;
+ p=(u8 *)&gDialogSequences;i=0;
  do {
  if(M2C_FIELD(p,s32 *,0)) return 1;
  i++;p+=24;
@@ -429,10 +433,10 @@ u8 func_02094704(void) {
 }
 
 s32 func_02094724(s32 value) {
- extern M2C_UNK data_02157fe8;
+ extern M2C_UNK gDialogSequences;
  s32 i;
  u8 *p;
- p=(u8 *)&data_02157fe8;i=0;
+ p=(u8 *)&gDialogSequences;i=0;
  do {
  if(M2C_FIELD(p,s32 *,0)==value) return i;
  i++;p+=24;
@@ -517,14 +521,14 @@ void *func_020948c4(s32 arg0) {
 s32 func_02094724(s32);
 void SetMenuCursor(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
 M2C_UNK func_02095fd4(void);void func_02094798(void);void func_020d4704(void);
-extern M2C_UNK data_02157fe8,data_02157fec,data_02157ff0,data_02157ff4;
+extern M2C_UNK gDialogSequences,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
 index=func_02094724(0);
 if(index==-1)return NULL;
 SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
 func_02095fd4();func_02094798();func_020d4704();
 offset=index*24;
-base=(u8 *)&data_02157fe8;
+base=(u8 *)&gDialogSequences;
 *(void **)(base+offset)=(void *)arg0;
 *(s32 *)((u8 *)&data_02157ff0+offset)=0;
 *(void **)((u8 *)&data_02157fec+offset)=(void *)arg0;
@@ -562,7 +566,7 @@ void func_020949f8(void) {
     s32 func_0207b7c4();
     void func_02094958(void *);
     s32 func_020d8db0();
-    extern M2C_UNK data_02157fe8;
+    extern M2C_UNK gDialogSequences;
     M2C_UNK (*temp_r1)(void *);
     u8 *var_r4;
     s32 var_r5;
@@ -579,7 +583,7 @@ void func_020949f8(void) {
     if (func_020d8db0() != 0) {
         return;
     }
-    var_r4 = (u8 *) &data_02157fe8;
+    var_r4 = (u8 *) &gDialogSequences;
     var_r5 = 0;
     do {
         if (M2C_FIELD(var_r4, s32 *, 0) != 0) {
@@ -665,19 +669,19 @@ void func_02094ba0(M2C_UNK arg0) {
 }
 
 void func_02094bc0(M2C_UNK arg0) {
-    M2C_UNK func_02097280(M2C_UNK);
+    M2C_UNK ShowPanelFace(M2C_UNK);
     if (func_0209600c() != 0) {
         return;
     }
-    func_02097280(arg0);
+    ShowPanelFace(arg0);
 }
 
 void func_02094be0(M2C_UNK arg0) {
-    M2C_UNK func_02097348(M2C_UNK);
+    M2C_UNK HidePanelFace(M2C_UNK);
     if (func_0209600c() != 0) {
         return;
     }
-    func_02097348(arg0);
+    HidePanelFace(arg0);
 }
 
 void func_02094c00(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {

@@ -22,6 +22,12 @@
 #define MENU_ROW_COUNT     0x0F /* u8 *selection context: number of rows */
 #define MENU_MODE_IDLE     0xFF /* MENU_MODE value that means no mode switch is pending */
 
+/* The option counters of the unit-list menu object: three OptionCounters whose
+ * values are packed into the game settings word.  func_ov003_0220b8e0 steps the
+ * first, Ov003_StepOptionCounter1 the second and func_ov003_0220ba70 the third. */
+#define MENU_OPTION_COUNTERS 0x40 /* OptionCounter[3] in the menu object */
+#define MENU_OPTION_STRIDE   0x18 /* sizeof(OptionCounter) */
+
 #define MENU_ROW_STRIDE    0x24
 #define MENU_ROW_DESC      0x00 /* pointer to the row's MENU_DESC_* descriptor */
 #define MENU_ROW_ANIM_A    0x18 /* animations shown for an unselected row */

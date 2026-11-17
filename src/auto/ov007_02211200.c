@@ -9,8 +9,8 @@
 void MapEditor_StartMap(void *editor) {
  extern void **gCurrentMap;
  extern u8 gMapNameFormat[];
- void func_ov007_02211ea4(s32);void func_ov007_02211f10(s32);
- void func_ov007_02211f60(s32);void func_ov007_02211f70(s32);void func_ov007_02211f80(s32);void SetMapEditorTerrainKind(s32);void SetMapEditorTerrainOwner(s32);
+ void SetMapEditorMode(s32);void SetMapEditorTool(s32);
+ void SetMapEditorUnitKind(s32);void SetMapEditorUnitOwner(s32);void SetMapEditorUnitFlags(s32);void SetMapEditorTerrainKind(s32);void SetMapEditorTerrainOwner(s32);
  void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);void func_ov007_022121e4(void);
  void func_020cf498(s16,s16);
  void *map;
@@ -34,7 +34,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
  LoadMapTileset();LoadUiGraphicsBank(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
- func_ov007_0221c648(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
+ MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
  func_0207ce28((u8*)*gCurrentMap+0x6ef8);func_020d4b30();
@@ -42,7 +42,7 @@ void MapEditor_StartMap(void *editor) {
  centerX=(u32)M2C_FIELD(map,u16*,MAP_WIDTH)>>1;
  centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
  func_020cf498((s16)centerX,(s16)centerY);func_0207b754(centerX,centerY);
- func_ov007_02211ea4(0);func_ov007_02211f10(0);func_ov007_02211f60(1);func_ov007_02211f70(1);func_ov007_02211f80(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
+ SetMapEditorMode(0);SetMapEditorTool(0);SetMapEditorUnitKind(1);SetMapEditorUnitOwner(1);SetMapEditorUnitFlags(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
  RefreshMapEditor();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
  M2C_FIELD(editor,u8*,0x34)=1;
  func_ov007_022121e4();
@@ -88,9 +88,9 @@ void func_ov007_022114ac(M2C_UNK arg0) {
 }
 
 void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_ov007_02211f30();
-    s32 func_ov007_02211f40();
-    s32 func_ov007_02211f50();
+    s32 GetMapEditorUnitKind();
+    s32 GetMapEditorUnitOwner();
+    s32 GetMapEditorUnitFlags();
     s32 func_ov007_0221bc18(s32, s32, s32, s32, s32);
     M2C_UNK func_020cfe2c();
     void RefreshMapEditor(void);
@@ -100,9 +100,9 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_r0;
     s32 temp_r4;
     s32 temp_r5;
-    temp_r5 = func_ov007_02211f30();
-    temp_r4 = func_ov007_02211f40();
-    temp_r0 = func_ov007_0221bc18(arg1, arg2, temp_r5, temp_r4, func_ov007_02211f50());
+    temp_r5 = GetMapEditorUnitKind();
+    temp_r4 = GetMapEditorUnitOwner();
+    temp_r0 = func_ov007_0221bc18(arg1, arg2, temp_r5, temp_r4, GetMapEditorUnitFlags());
     switch (temp_r0) {
     case 1:
         func_020cfe2c();
@@ -122,11 +122,11 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov007_0221bd74(s32, s32);
     s32 func_ov007_0221bdc0(s32, s32);
     s32 func_ov007_0221be00(s32, s32);
-    void func_ov007_02211f60(s32);
-    void func_ov007_02211f70(s32);
-    void func_ov007_02211f80(s32);
+    void SetMapEditorUnitKind(s32);
+    void SetMapEditorUnitOwner(s32);
+    void SetMapEditorUnitFlags(s32);
     void RefreshMapEditor(void);
-    M2C_UNK func_ov007_0221ab4c();
+    M2C_UNK MapEditor_RefreshGraphics();
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 temp_r4;
@@ -136,11 +136,11 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     temp_r5 = func_ov007_0221bdc0(arg1, arg2);
     temp_r4 = func_ov007_0221be00(arg1, arg2);
     if (temp_r6 >= 0) {
-        func_ov007_02211f60(temp_r6);
-        func_ov007_02211f70(temp_r5);
-        func_ov007_02211f80(temp_r4);
+        SetMapEditorUnitKind(temp_r6);
+        SetMapEditorUnitOwner(temp_r5);
+        SetMapEditorUnitFlags(temp_r4);
         RefreshMapEditor();
-        func_ov007_0221ab4c();
+        MapEditor_RefreshGraphics();
         SpawnSoundEffectAtTile(0x11B, arg1, arg2, 1);
         return;
     }
@@ -203,7 +203,7 @@ void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     void SetMapEditorTerrainKind(s32);
     void SetMapEditorTerrainOwner(s32);
     void RefreshMapEditor(void);
-    M2C_UNK func_ov007_0221ab4c();
+    M2C_UNK MapEditor_RefreshGraphics();
     s32 Map_GetCellTerrainKind(M2C_UNK, M2C_UNK);
     s32 Map_GetCellTerrainOwner(M2C_UNK, M2C_UNK);
     s32 temp_r4;
@@ -213,31 +213,37 @@ void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     SetMapEditorTerrainKind(temp_r5);
     SetMapEditorTerrainOwner(temp_r4);
     RefreshMapEditor();
-    func_ov007_0221ab4c();
+    MapEditor_RefreshGraphics();
     SpawnSoundEffectAtTile(0x11B, arg1, arg2, 1);
 }
 
-void func_ov007_02211840(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
-s32 func_ov007_0221b754(s32,s32);
-s32 Map_PaintTile(s32,s32,s32,s32,s32);
-M2C_UNK func_020cfe2c();
-void RefreshMapEditor(void);
-void MapEditor_SetMapModified(s32);
-M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,M2C_UNK);
-M2C_UNK SpawnSoundEffectAtTile(s32,s32,s32,s32);
-M2C_UNK PlaySoundEffect(s32);
-extern M2C_UNK data_ov007_0221f690;
-s32 n=1;
-if(func_ov007_0221b754(arg1,arg2))n=8;
-if(Map_PaintTile(arg1,arg2,n,0,1)==1) {
-func_020cfe2c();RefreshMapEditor();MapEditor_SetMapModified(1);
-func_ov007_022114ac(arg0);
-func_020b5134(&data_ov007_0221f690,arg1,arg2,0x50,0,0,arg0);
-SpawnSoundEffectAtTile(0x8a,arg1,arg2,1);
-return;
-}
-if(arg3==0)return;
-PlaySoundEffect(0x1001d);
+/* Terrain-page erase tool: repaints the cell under the cursor as plain ground,
+ * or wasteland where the old tile was destructible, marks the map modified and
+ * spawns the editor's explosion effect; plays the error sound when the cell
+ * cannot be erased and `sound` is set. */
+void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
+    s32 func_ov007_0221b754(s32, s32);
+    s32 Map_PaintTile(s32, s32, s32, s32, s32);
+    M2C_UNK func_020cfe2c();
+    void RefreshMapEditor(void);
+    void MapEditor_SetMapModified(s32);
+    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
+    M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
+    M2C_UNK PlaySoundEffect(s32);
+    extern M2C_UNK data_ov007_0221f690;
+    s32 terrain = MAP_TERRAIN_PLAIN;
+    if (func_ov007_0221b754(x, y)) terrain = MAP_TERRAIN_WASTELAND;
+    if (Map_PaintTile(x, y, terrain, 0, 1) == 1) {
+        func_020cfe2c();
+        RefreshMapEditor();
+        MapEditor_SetMapModified(1);
+        func_ov007_022114ac(editor);
+        func_020b5134(&data_ov007_0221f690, x, y, 0x50, 0, 0, editor);
+        SpawnSoundEffectAtTile(0x8a, x, y, 1);
+        return;
+    }
+    if (sound == 0) return;
+    PlaySoundEffect(0x1001d);
 }
 
 void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
@@ -248,7 +254,7 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     u8 GetMapEditorTerrainOwner(void);
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
-    M2C_UNK func_ov007_0221ab4c();
+    M2C_UNK MapEditor_RefreshGraphics();
     s32 Map_TryPaintTile(M2C_UNK, M2C_UNK, s32, s32);
     s32 temp_r0;
     s32 temp_r4;
@@ -258,7 +264,7 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     case 1:
         RefreshMapView();
         RefreshMapEditor();
-        func_ov007_0221ab4c();
+        MapEditor_RefreshGraphics();
         MapEditor_SetMapModified(1);
         SpawnSoundEffectAtTile(0x11C, arg1, arg2, 1);
         return;
@@ -272,19 +278,19 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 /* Returns 0 if cell (x,y) is usable for the current action, else a nonzero status code (4/5). */
 s32 func_ov007_02211990(s32 x, s32 y) {
     extern void **gCurrentMap;
-    u8 func_ov007_02211f00(void); u8 func_ov007_02211f20(void);
-    s32 func_ov007_02211f30(void); s32 func_ov007_02211f40(void); s32 func_ov007_02211f50(void);
+    u8 GetMapEditorMode(void); u8 GetMapEditorTool(void);
+    s32 GetMapEditorUnitKind(void); s32 GetMapEditorUnitOwner(void); s32 GetMapEditorUnitFlags(void);
     u8 GetMapEditorTerrainKind(void); u8 GetMapEditorTerrainOwner(void);
-    s32 func_ov007_0221bb44(s32, s32, s32, s32, s32);
+    s32 MapEditor_CanPlaceUnit(s32, s32, s32, s32, s32);
     s32 Map_CanPlaceTile(s32, s32, s32, s32); s32 IsDestroyedPipeTile(s32);
     s32 a, b; void *p;
-    switch (func_ov007_02211f00()) {
+    switch (GetMapEditorMode()) {
     case 1:
-        switch (func_ov007_02211f20()) {
+        switch (GetMapEditorTool()) {
         case 0:
-            a = func_ov007_02211f30();
-            b = func_ov007_02211f40();
-            if (!func_ov007_0221bb44(x, y, a, b, func_ov007_02211f50()))
+            a = GetMapEditorUnitKind();
+            b = GetMapEditorUnitOwner();
+            if (!MapEditor_CanPlaceUnit(x, y, a, b, GetMapEditorUnitFlags()))
                 return 5;
             break;
         case 2:
@@ -298,7 +304,7 @@ s32 func_ov007_02211990(s32 x, s32 y) {
         }
         break;
     case 0:
-        switch (func_ov007_02211f20()) {
+        switch (GetMapEditorTool()) {
         case 0:
         case 1:
             a = GetMapEditorTerrainKind();
@@ -334,14 +340,14 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void func_ov007_02219418(void);
     void func_ov007_022144ec(void);
     void func_ov007_0221330c(void);
-    u8 func_ov007_02211f00(void);
-    u8 func_ov007_02211f20(void);
+    u8 GetMapEditorMode(void);
+    u8 GetMapEditorTool(void);
     void func_ov007_022114c4(M2C_UNK, s32, s32, s32);
     void PaintMapTerrain(M2C_UNK, s32, s32, s32);
     void func_ov007_02211560(M2C_UNK, s32, s32, s32);
     void func_ov007_022117e0(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov007_022115fc(M2C_UNK, s32, s32, s32);
-    void func_ov007_02211840(M2C_UNK, s32, s32, s32);
+    void MapEditor_EraseTerrain(M2C_UNK, s32, s32, s32);
     void func_ov007_022116a0(M2C_UNK, s32, s32, s32);
     void func_ov007_0221190c(M2C_UNK, s32, s32, s32);
     s32 r4;
@@ -380,11 +386,11 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     if (r4 & 0x4) { func_ov007_0221330c(); return; }
     if (!((u8 *)gTouchState)[0x12]) goto L_b4c;
     if (func_020ab240()) return;
-    t = func_ov007_02211f20();
+    t = GetMapEditorTool();
     switch (t) {
     case 0:
         if (!(r5 & 1)) return;
-        f = func_ov007_02211f00();
+        f = GetMapEditorMode();
         if (f == 0) goto L_c0;
         if (f != 1) return;
         func_ov007_022114c4(arg0, r6, r7, r4 & 1);
@@ -395,7 +401,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     case 1:
         if (!(r4 & 1)) return;
         r4 &= 1;
-        f = func_ov007_02211f00();
+        f = GetMapEditorMode();
         if (f == 0) goto L_c1;
         if (f != 1) return;
         func_ov007_02211560(arg0, r6, r7, r4);
@@ -405,18 +411,18 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         return;
     case 2:
         if (!(r5 & 1)) return;
-        f = func_ov007_02211f00();
+        f = GetMapEditorMode();
         if (f == 0) goto L_c2;
         if (f != 1) return;
         func_ov007_022115fc(arg0, r6, r7, r4 & 1);
         return;
     L_c2:
-        func_ov007_02211840(arg0, r6, r7, r4 & 1);
+        MapEditor_EraseTerrain(arg0, r6, r7, r4 & 1);
         return;
     case 3:
         if (!(r4 & 1)) return;
         r4 &= 1;
-        f = func_ov007_02211f00();
+        f = GetMapEditorMode();
         if (f == 0) goto L_c3;
         if (f != 1) return;
         func_ov007_022116a0(arg0, r6, r7, r4);
@@ -426,7 +432,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         return;
     }
 L_b4c:
-    f = func_ov007_02211f00();
+    f = GetMapEditorMode();
     if (f == 0) goto L_be4;
     if (f != 1) return;
     if (r5 & 1) { func_ov007_022114c4(arg0, r6, r7, r4 & 1); return; }
@@ -440,7 +446,7 @@ L_be4:
     if (r5 & 1) { PaintMapTerrain(arg0, r6, r7, r4 & 1); return; }
     mask = r4 & 2;
     if (mask) { func_ov007_022117e0(arg0, r6, r7); return; }
-    if (r5 & 0x400) { func_ov007_02211840(arg0, r6, r7, r4 & 0x400); return; }
+    if (r5 & 0x400) { MapEditor_EraseTerrain(arg0, r6, r7, r4 & 0x400); return; }
     mask = r4 & 0x800;
     if (mask) { func_ov007_0221190c(arg0, r6, r7, mask); return; }
 }
@@ -461,7 +467,7 @@ void func_ov007_02211e84(void) {
     func_01ffa6fc();
 }
 
-void func_ov007_02211ea4(s32 arg0) {
+void SetMapEditorMode(s32 arg0) {
     extern u8 gMapEditorState;
     extern void **gCurrentMap;
     gMapEditorState = arg0;
@@ -475,47 +481,47 @@ void func_ov007_02211ea4(s32 arg0) {
     }
 }
 
-u8 func_ov007_02211f00(void) {
+u8 GetMapEditorMode(void) {
     extern u8 gMapEditorState;
     return gMapEditorState;
 }
 
-void func_ov007_02211f10(s32 arg0) {
+void SetMapEditorTool(s32 arg0) {
     extern u8 gMapEditorState;
     M2C_FIELD(&gMapEditorState, u8 *, 9) = arg0;
 }
 
-u8 func_ov007_02211f20(void) {
+u8 GetMapEditorTool(void) {
     extern u8 gMapEditorState;
     return M2C_FIELD(&gMapEditorState, u8 *, 9);
 }
 
-s32 func_ov007_02211f30(void) {
+s32 GetMapEditorUnitKind(void) {
     extern u8 gMapEditorState;
     return M2C_FIELD(&gMapEditorState, u8 *, 8);
 }
 
-s32 func_ov007_02211f40(void) {
+s32 GetMapEditorUnitOwner(void) {
     extern u8 gMapEditorState;
     return M2C_FIELD(&gMapEditorState, u8 *, 7);
 }
 
-s32 func_ov007_02211f50(void) {
+s32 GetMapEditorUnitFlags(void) {
     extern u8 gMapEditorState;
     return M2C_FIELD(&gMapEditorState, u8 *, 6);
 }
 
-void func_ov007_02211f60(s32 arg0) {
+void SetMapEditorUnitKind(s32 arg0) {
     extern u8 gMapEditorState;
     M2C_FIELD(&gMapEditorState, u8 *, 8) = arg0;
 }
 
-void func_ov007_02211f70(s32 arg0) {
+void SetMapEditorUnitOwner(s32 arg0) {
     extern u8 gMapEditorState;
     M2C_FIELD(&gMapEditorState, u8 *, 7) = arg0;
 }
 
-void func_ov007_02211f80(s32 arg0) {
+void SetMapEditorUnitFlags(s32 arg0) {
     extern u8 gMapEditorState;
     M2C_FIELD(&gMapEditorState, u8 *, 6) = arg0;
 }

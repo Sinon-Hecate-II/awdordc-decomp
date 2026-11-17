@@ -1,5 +1,6 @@
 /* 13 functions from 0x02062770 to 0x02063704 (main), found by ds-decomp. */
 #include "common.h"
+#include "sb_serverlist.h"
 extern s32 data_0210019c, sSbFileName;
 extern u8 data_021000b4[16];
 typedef struct { u8 lo, hi; } PairBytes;
@@ -8,7 +9,7 @@ static inline void copy633h(void *dst, void *src) { *(PairBytes *)dst=*(PairByte
 
 void func_02062770(void *a,s8 *b,s32 n) {
 s32 StringLength(void *);
-void func_0205fed8(void *,void *,s32);
+void GsCryptInit(void *,void *,s32);
 s32 i;
 s32 size;
 s8 *p;
@@ -20,7 +21,7 @@ s32 j=(i*x)%8;
 s8 value=M2C_FIELD((s8 *)a+i%8,s8 *,0x74)^b[i];
 M2C_FIELD((s8 *)a+j,s8 *,0x74)^=value;
 }
-func_0205fed8((u8 *)a+0x4bc,(u8 *)a+0x74,8);
+GsCryptInit((u8 *)a+0x4bc,(u8 *)a+0x74,8);
 }
 
 s32 func_02062810(u8 a) {
@@ -169,7 +170,7 @@ void func_02062e28(void *arg0, s32 arg1) {
 }
 
 s32 func_02062e30(void *a){
-s32 func_02048558(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
+s32 Vector_New(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 StringIntern(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
 extern s32 data_0213e4b4;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
@@ -190,16 +191,16 @@ p+=6;n-=6;
 if((M2C_FIELD(a,s32 *,0x5c4)&2)||M2C_FIELD(a,u16 *,0x4a8)==0xffff){M2C_FIELD(a,s32 *,0x5c8)=5;M2C_FIELD(a,s32 *,0)=2;break;}
 M2C_FIELD(a,s32 *,0x5c8)=2;M2C_FIELD(a,s32 *,0x484)=-1;
 case 2:
-if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;i=p[0];M2C_FIELD(a,s32 *,0x484)=i;r=func_02048558(8,i,0);M2C_FIELD(a,s32 *,8)=r;if(!r)return 5;p++;n--;}
+if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;i=p[0];M2C_FIELD(a,s32 *,0x484)=i;r=Vector_New(8,i,0);M2C_FIELD(a,s32 *,8)=r;if(!r)return 5;p++;n--;}
 while(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8))){
-if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=func_02061cb4(a,p+1);Vector_AddItem(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
+if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=StringIntern(a,p+1);Vector_AddItem(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
 }
 if(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8)))break;
 M2C_FIELD(a,s32 *,0x5c8)=3;M2C_FIELD(a,s32 *,0x484)=-1;
 case 3:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;M2C_FIELD(a,s32 *,0x484)=*p++;n--;M2C_FIELD(a,s32 *,0x480)=0;}
 while(M2C_FIELD(a,s32 *,0x484)>M2C_FIELD(a,s32 *,0x480)){
-len=BoundedStringLength(p,n);if(len==-1)break;r=func_02061cb4(a,p);i=M2C_FIELD(a,s32 *,0x480);p+=len;M2C_FIELD(a,s32 *,0x480)++;M2C_FIELD((u8 *)a+i*4,s32 *,0x84)=r;n-=len;
+len=BoundedStringLength(p,n);if(len==-1)break;r=StringIntern(a,p);i=M2C_FIELD(a,s32 *,0x480);p+=len;M2C_FIELD(a,s32 *,0x480)++;M2C_FIELD((u8 *)a+i*4,s32 *,0x84)=r;n-=len;
 }
 if(M2C_FIELD(a,s32 *,0x484)>M2C_FIELD(a,s32 *,0x480))break;
 M2C_FIELD(a,s32 *,0x5c8)=4;
@@ -215,22 +216,44 @@ if(n)MemMove(buffer,p,n);
 M2C_FIELD(a,s32 *,0x80)=n;return 0;
 }
 
-s32 func_0206325c(void *a,u8 *p,s32 n) {
- s32 func_02048558(s32,s32,s32); void Vector_AddItem(s32,s32*); s32 func_02061cb4(void*,void*); s32 BoundedStringLength(s8*,s32); void func_02062670(void*);
- s32 entry[2]; s32 i,count,len;
- n--;count=*p++;
- if(M2C_FIELD(a,s32*,8))func_02062670(a);
- M2C_FIELD(a,s32*,8)=func_02048558(8,count,0);
- if(!M2C_FIELD(a,s32*,8))return 5;
- for(i=0;i<count;i++){
- if(n<2)return 4;
- len=BoundedStringLength((s8*)p+1,n-1);
- if(len==-1)return 4;
- entry[1]=*p;entry[0]=func_02061cb4(a,p+1);
- Vector_AddItem(M2C_FIELD(a,s32*,8),entry);
- p+=len+1;n-=len+1;
- }
- return 0;
+/* Decode the key-list message of a server-browser reply: a count byte, then one
+ * type byte and a NUL-terminated key name per key.  The names are interned and
+ * stored as the list's key schema (SB_SLIST_KEY_LIST), which the records that
+ * follow are decoded with.  Returns 0, or 4 on a short reply and 5 when the
+ * schema cannot be allocated. */
+s32 SBServerListParseKeyList(void *list, u8 *data, s32 size) {
+    s32 Vector_New(s32, s32, s32);
+    void Vector_AddItem(s32, s32 *);
+    s32 StringIntern(void *, void *);
+    s32 BoundedStringLength(s8 *, s32);
+    void SBServerListFreeKeyList(void *);
+    SBServerListKey entry;
+    s32 i, count, len;
+
+    size--;
+    count = *data++;
+    if (M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST)) {
+        SBServerListFreeKeyList(list);
+    }
+    M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST) = Vector_New(8, count, 0);
+    if (!M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST)) {
+        return 5;
+    }
+    for (i = 0; i < count; i++) {
+        if (size < 2) {
+            return 4;
+        }
+        len = BoundedStringLength((s8 *)data + 1, size - 1);
+        if (len == -1) {
+            return 4;
+        }
+        entry.type = *data;
+        entry.name = (char *)StringIntern(list, data + 1);
+        Vector_AddItem(M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST), (s32 *)&entry);
+        data += len + 1;
+        size -= len + 1;
+    }
+    return 0;
 }
 
 /* Handle an incoming GameSpy GPI record-list message (response type 6): reads a

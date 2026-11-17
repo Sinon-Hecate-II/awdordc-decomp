@@ -13,7 +13,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK AddTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
-    s32 func_02080e30(M2C_UNK *, M2C_UNK);
+    s32 LoadFileToBuffer(M2C_UNK *, M2C_UNK);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_02081340(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
@@ -28,9 +28,9 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     void *func_0209b26c(s16, M2C_UNK, M2C_UNK, s32, s32, u32);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    u16 func_020aae10(void *);
-    u16 func_020aae44(void *);
+    M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    u16 GetUnitSpriteWidth(void *);
+    u16 GetUnitSpriteHeight(void *);
     void *func_020ab1c4(void *);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK func_020ae528(s32);
@@ -105,7 +105,7 @@ void func_ov003_021e5118(void *arg0) {
     func_01ff9b38();
     temp_r4 = M2C_FIELD(arg0, void ***, 0x48);
     *temp_r4 = func_020ab1c4(arg0);
-    func_020aab24(*temp_r4, 2, 0x1A4, 3, 0);
+    InitUnitSprite(*temp_r4, 2, 0x1A4, 3, 0);
     temp_r5 = *temp_r4;
     func_02088e84(temp_r5, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
@@ -116,8 +116,8 @@ void func_ov003_021e5118(void *arg0) {
     if (var_r0 & 0xFF) {
         temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
         temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
-        temp_r9 = func_020aae10(temp_r5);
-        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (s32) temp_r9, (s32) func_020aae44(temp_r5));
+        temp_r9 = GetUnitSpriteWidth(temp_r5);
+        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (s32) temp_r9, (s32) GetUnitSpriteHeight(temp_r5));
     }
     Hide3DSprite(*temp_r4);
     temp_r0 = func_0208bc24(arg0);
@@ -191,7 +191,7 @@ void func_ov003_021e5118(void *arg0) {
     DrawMapPreview(M2C_FIELD(data_027e01d8, s32 *, 0xC), M2C_FIELD(data_027e01d8, s32 *, 0x20), 1, 5);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);
     func_0208ca2c(0x5100, 0xA, GetUiColor(0xA), 1);
-    temp_r0_3 = func_02080e30(GetLocalizedFileName(&data_ov003_0220f868), 1);
+    temp_r0_3 = LoadFileToBuffer(GetLocalizedFileName(&data_ov003_0220f868), 1);
     func_0207c780(temp_r0_3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
     HeapFreeBlock(temp_r0_3);
     LoadFileToSpriteBuffer(&data_ov003_0220f87c, 0x2C0, 0x20);

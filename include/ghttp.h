@@ -115,6 +115,7 @@ typedef struct GHIConnectionList {
 #define GHI_HOST          0x18  /* GHIConnection.host */
 #define GHI_PORT          0x20  /* GHIConnection.port */
 #define GHI_PATH          0x24  /* GHIConnection.path */
+#define GHI_BUFFER_DATA   0x54  /* GHIConnection.buffer.data */
 #define GHI_BUFFER_LEN    0x5c  /* GHIConnection.buffer.len */
 #define GHI_BUFFER_POS    0x60  /* GHIConnection.buffer.pos */
 #define GHI_COMPLETED     0xfc  /* GHIConnection.completed */
@@ -131,6 +132,14 @@ enum {
     GHI_RECV_CLOSED  = 2, /* the peer closed the connection */
     GHI_RECV_ERROR   = 3  /* socket or decrypt error; the request has already failed */
 };
+
+/* Values stored in GHIConnection.result (GHTTPResult). */
+#define GHTTP_RESULT_SUCCESS             0  /* request finished normally */
+#define GHTTP_RESULT_OUT_OF_MEMORY       1  /* a buffer could not be allocated */
+#define GHTTP_RESULT_SOCKET_FAILED       5  /* a socket call failed; the saved errno says why */
+#define GHTTP_RESULT_FILE_NOT_FOUND      11 /* the server answered 3xx/404 */
+#define GHTTP_RESULT_DOWNLOAD_INCOMPLETE 15 /* the peer closed before contentLength bytes arrived */
+#define GHTTP_RESULT_BUFFER_TOO_SMALL    16 /* Content-Length exceeded the caller's buffer size */
 
 /* Steps of the request state machine in GHIConnection.state; the dispatcher
  * runs one step per tick. */
@@ -151,6 +160,10 @@ enum {
     GHI_DECRYPT_OUTPUT = 2, /* the output buffer is full: grow it and retry */
     GHI_DECRYPT_ERROR  = 3  /* decrypt failure; the request has failed */
 };
+
+/* A chunk-size line is kept in chunkHeader up to this many bytes; if a line is
+ * longer, the rest of it is ignored (a valid chunk-size line is much shorter). */
+#define GHI_CHUNK_HEADER_MAX 10
 
 /* States of the chunked-transfer decoder (GHIConnection.chunkState). */
 enum {

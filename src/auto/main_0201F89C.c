@@ -2,51 +2,57 @@
 #include "common.h"
 #include "net_socket.h"
 
-s32 func_0201f89c(void *arg0, s32 arg1, s32 arg2) {
+/* Put the socket into listen on its receive port: the socket's task binds that
+ * port to the connection and starts the transport listening, then reports the
+ * peer endpoint the connection ends up with through peerPort and peerAddr.
+ * Fails with -28 when the network or the socket is gone, uninitialised or busy
+ * or has no receive port yet, -39 when the socket is not ready, and -6 when it
+ * is not a blocking stream socket. */
+s32 SocketListen(void *sock, u16 *peerPort, s32 *peerAddr) {
     s32 func_020214a8();
     void *func_0201f1d0(s32 (*)(void *), void *, s8);
     s32 func_0201f318(void *, void *);
-    s32 func_0201f96c(void *);
-    s32 a, b;
-    s8 v;
-    void *p;
+    s32 SocketListenTask(void *);
+    s32 ready, usable;
+    s8 state;
+    void *request;
 
     if (func_020214a8() != 0) {
         return -28;
     }
-    a = 0;
-    if (arg0 != 0) {
-        a = (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1) != 0;
+    ready = 0;
+    if (sock != 0) {
+        ready = (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) != 0;
     }
-    if (a == 0) {
+    if (ready == 0) {
         return -39;
     }
-    if (M2C_FIELD(arg0, s16 *, 0x70) & 2) {
+    if (M2C_FIELD(sock, s16 *, SOCK_FLAGS) & SOCK_FLAG_BUSY) {
         return -28;
     }
-    v = M2C_FIELD(arg0, s8 *, 0x73);
-    b = 1;
-    if (v != 0 && v != 4) {
-        b = 0;
+    state = M2C_FIELD(sock, s8 *, SOCK_STATE);
+    usable = 1;
+    if (state != 0 && state != 4) {
+        usable = 0;
     }
-    if (b == 0) {
+    if (usable == 0) {
         return -28;
     }
-    if (M2C_FIELD(arg0, s8 *, 0x72) != 1) {
+    if (M2C_FIELD(sock, s8 *, SOCK_KIND) != SOCK_KIND_TCP) {
         return -6;
     }
-    if (M2C_FIELD(arg0, u16 *, 0x74) == 0) {
+    if (M2C_FIELD(sock, u16 *, SOCK_RECV_PORT) == 0) {
         return -28;
     }
-    p = func_0201f1d0((s32 (*)(void *))func_0201f96c, arg0, (s8)M2C_FIELD(arg0, s8 *, 0x72));
-    M2C_FIELD(p, u16 *, 0x10) = M2C_FIELD(arg0, u16 *, 0x74);
-    M2C_FIELD(p, s32 *, 0x14) = arg1;
-    M2C_FIELD(p, s32 *, 0x18) = arg2;
-    M2C_FIELD(arg0, s16 *, 0x70) = (s16)(M2C_FIELD(arg0, s16 *, 0x70) | 2);
-    return func_0201f318(arg0, p);
+    request = func_0201f1d0((s32 (*)(void *))SocketListenTask, sock, (s8)M2C_FIELD(sock, s8 *, SOCK_KIND));
+    M2C_FIELD(request, u16 *, 0x10) = M2C_FIELD(sock, u16 *, SOCK_RECV_PORT);
+    M2C_FIELD(request, s32 *, 0x14) = (s32)peerPort;
+    M2C_FIELD(request, s32 *, 0x18) = (s32)peerAddr;
+    M2C_FIELD(sock, s16 *, SOCK_FLAGS) = (s16)(M2C_FIELD(sock, s16 *, SOCK_FLAGS) | SOCK_FLAG_BUSY);
+    return func_0201f318(sock, request);
 }
 
-s32 func_0201f96c(void *arg0) {
+s32 SocketListenTask(void *arg0) {
     M2C_UNK LockMutex(s32);
     M2C_UNK UnlockMutex(void *);
     M2C_UNK func_0201d190(u16, M2C_UNK, M2C_UNK);
@@ -73,8 +79,8 @@ s32 func_0201f96c(void *arg0) {
 }
 
 s32 func_0201f9e4(void *arg0,s32 arg1) {
-s32 func_020214a8(); s32 func_0201fb3c(void *);s32 a;
-if(func_020214a8()!=0)return -28;
+s32 SocketIsUnregistered(); s32 func_0201fb3c(void *);s32 a;
+if(SocketIsUnregistered()!=0)return -28;
 a=0;if(arg0)a=(M2C_FIELD(arg0,volatile s16 *,0x70)&1)!=0;
 if(!a)return -39;
 if(M2C_FIELD(arg0,s16 *,0x70)&2)return -7;
@@ -88,13 +94,13 @@ return func_0201fb3c(arg0);
  * operation reports its result, a running one asks for its timeout, and an idle
  * socket starts a receive that expires after timeout/token. */
 s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
-    s32 func_020214a8();
+    s32 SocketIsUnregistered();
     s32 func_0201fb3c(void *);
     extern s32 gSocketDefaultRecvTimeout;
     s32 ready, usable, result;
     s8 state;
 
-    if (func_020214a8() != 0 || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_ERROR)) return -28;
+    if (SocketIsUnregistered() != 0 || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_ERROR)) return -28;
     ready = 0;
     if (sock != 0) {
         ready = (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) != 0;
@@ -125,9 +131,9 @@ s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
 
 s32 func_0201fb3c(void *arg0) {
 s32 func_0201fb94(void *);
-void *func_0201f1d0(s32 (*)(void *),void *,s8);
+void *SocketAllocTask(s32 (*)(void *),void *,s8);
 s32 func_0201f318(void *,void *);
-void *p=func_0201f1d0(func_0201fb94,arg0,M2C_FIELD(arg0,s8 *,0x72));
+void *p=SocketAllocTask(func_0201fb94,arg0,M2C_FIELD(arg0,s8 *,0x72));
 if(!p)return -33;
 M2C_FIELD(p,u16 *,0x10)=M2C_FIELD(arg0,u16 *,0x74);
 M2C_FIELD(p,u16 *,0x12)=M2C_FIELD(arg0,u16 *,0x76);
@@ -155,14 +161,14 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
     s32 TryLockMutex();
     s32 func_02007580();
     s32 func_0201fd60(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
-    s32 func_020214a8();
+    s32 SocketIsUnregistered();
     void *temp_r4;
     s32 var_r5;
     s32 var_r1;
     s32 var_r1_2;
     s8 temp_r0;
 
-    if (func_020214a8() != 0) {
+    if (SocketIsUnregistered() != 0) {
         return -0x1C;
     }
     if (!(arg5 & 4) && M2C_FIELD(arg0, s8 *, 0x72) == 0) {
@@ -307,7 +313,7 @@ s32 func_0201ff78(void *p,s32 *remaining,u16 *a,u16 *b,s32 *c) {
 
 s32 func_0201ffec(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 s32 func_02020038(void *);
-void *p=func_0201f1d0(func_02020038,arg0,1);
+void *p=SocketAllocTask(func_02020038,arg0,1);
 M2C_FIELD(p,s32 *,0x10)=arg1;
 M2C_FIELD(p,s32 *,0x14)=arg2;
 M2C_FIELD(p,s32 *,0x18)=arg3;
@@ -389,7 +395,7 @@ s32 func_02020188(void *arg0) {
 void func_020201d4(void *);
 void *q=M2C_FIELD(arg0,void **,0x64),*p;
 if(M2C_FIELD(q,s32 *,0xf8)<M2C_FIELD(q,u16 *,0xfc))return 0;
-p=func_0201f1d0((s32 (*)(void *))func_020201d4,arg0,0);
+p=SocketAllocTask((s32 (*)(void *))func_020201d4,arg0,0);
 if(!p)return -33;
 return func_0201f318(arg0,p);
 }
@@ -414,7 +420,7 @@ s32 func_020201e4(s32 p) {
  * SOCK_WOULD_BLOCK.  The record is dequeued and freed unless the socket is
  * being peeked at. */
 s32 SocketRecv(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 flags) {
-s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32); M2C_UNK OS_SleepThread(void *); s32 func_020214a8(); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,s32); extern s32 gNetAllocator;
+s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32); M2C_UNK OS_SleepThread(void *); s32 SocketIsUnregistered(); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,s32); extern s32 gNetAllocator;
 void *raw=M2C_FIELD(sock,void **,SOCK_RAW);
 s32 irq=OS_DisableInterrupts(M2C_FIELD(raw,void **,CONN_RECV_HEAD));
 void *rec=M2C_FIELD(raw,void **,CONN_RECV_HEAD);
@@ -425,7 +431,7 @@ do {
 if(!wait) {result=SOCK_WOULD_BLOCK; break;}
 
 OS_SleepThread((char *)raw+CONN_RECV_THREAD);
-if(func_020214a8(sock) == 0) {
+if(SocketIsUnregistered(sock) == 0) {
 s32 ready=0;
 if(sock) ready=(M2C_FIELD(sock,s16 *,SOCK_FLAGS)&SOCK_FLAG_READY)!=0;
 if(ready) goto next;
@@ -501,7 +507,7 @@ s32 SocketQueueReceivedData(void *data, s16 len, void *sock) {
 }
 
 s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    s32 func_020214a8();
+    s32 SocketIsUnregistered();
     s32 TryLockMutex(s32);
     s32 func_0202058c(void *, s32, s32, s32, s32, s32);
     s32 temp_r4;
@@ -511,7 +517,7 @@ s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     s32 var_r1_2;
     s8 temp_r0;
 
-    if (func_020214a8() != 0) {
+    if (SocketIsUnregistered() != 0) {
         return -28;
     }
     var_r1 = 0;

@@ -31,7 +31,7 @@ u32 SendNetPacket(s32 a, s32 b) {
     if (p) {
         n = M2C_FIELD(p, u32 *, 0x60);
         if (n) {
-            used = func_0201da4c(M2C_FIELD(p, s32 *, 0x5C), n, a, b);
+            used = SendSocketData(M2C_FIELD(p, s32 *, 0x5C), n, a, b);
             n = M2C_FIELD(p, u32 *, 0x60);
             if (used < n) {
                 MemMove(M2C_FIELD(p, s32 *, 0x5C), M2C_FIELD(p, s32 *, 0x5C) + used, n - used);
@@ -41,7 +41,7 @@ u32 SendNetPacket(s32 a, s32 b) {
             M2C_FIELD(p, u32 *, 0x60) = 0;
             return used - n;
         }
-        return func_0201da4c(a, b, 0, 0);
+        return SendSocketData(a, b, 0, 0);
     }
     return 0;
 }
@@ -70,7 +70,7 @@ s32 func_0201dbb8(void) {
 }
 
 void func_0201dc28(void) {
-    M2C_UNK func_0201da4c(s32, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK SendSocketData(s32, s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK gSocketManager;
     s32 temp_r1;
     void *temp_r4;
@@ -79,7 +79,7 @@ void func_0201dc28(void) {
     if (temp_r4 != NULL) {
         temp_r1 = M2C_FIELD(temp_r4, s32 *, 0x60);
         if (temp_r1 != 0) {
-            func_0201da4c(M2C_FIELD(temp_r4, s32 *, 0x5C), temp_r1, 0, 0);
+            SendSocketData(M2C_FIELD(temp_r4, s32 *, 0x5C), temp_r1, 0, 0);
             M2C_FIELD(temp_r4, s32 *, 0x60) = 0;
         }
     }

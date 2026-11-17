@@ -8,7 +8,7 @@ typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 static inline s32 E0B04Process(void *entity) {
 s32 IsLinkSessionActive(void);s32 func_0208477c(void);s32 GetOverlayEventFlags(void);
 s32 FindTextLayer(void); M2C_UNK func_0208af20(void);void *CreateTextLayer(void *);
-M2C_UNK func_020899cc(void *,s32,s32,s32);
+M2C_UNK RenderTextLayerMessage(void *,s32,s32,s32);
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; s32 saved; u8 mode;
 if(!IsLinkSessionActive())return 0;
@@ -24,7 +24,7 @@ if(mode==0&&bank!=g3DSpriteEngineMain)goto next;
 if(mode==1&&bank!=g3DSpriteEngineSub)goto next;
 if(mode==3&&bank!=saved)goto next;
 created=CreateTextLayer(entity);
-func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x46)<<5,0x44000001);
+RenderTextLayerMessage(created,2,M2C_FIELD(entity,u16 *,0x46)<<5,0x44000001);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 next: ++i;
 }while(i<2);
@@ -162,7 +162,7 @@ void func_020e0480(void) {
 /* Processes two current-entity slots, creating objects for an entity when slot conditions allow. */
 void func_020e048c(void *entity) {
     M2C_UNK FillU16(M2C_UNK, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020899cc(void *, s32, s32, s32);
+    M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
     M2C_UNK func_0208af20();
     void *func_0208b520(void *);
     s32 FindTextLayer();
@@ -184,7 +184,7 @@ void func_020e048c(void *entity) {
         if (mode == 1 && bank != g3DSpriteEngineSub) goto next;
         if (mode == 3 && bank != savedEntity) goto next;
         created = func_0208b520(entity);
-        func_020899cc(created, 0, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000009);
+        RenderTextLayerMessage(created, 0, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000009);
         M2C_FIELD(created, s32 *, 0x58) |= 0x1800;
     next:
         ++i;
@@ -208,7 +208,7 @@ M2C_UNK func_020e0580(s32 arg0) {
 void RefreshLinkPlayerSprites(void *entity) {
 s32 GetLocalPlayerIdForOverlay(); void EnableMapConfirm(); void DisableMapConfirm();
 s32 FindTextLayer(); M2C_UNK func_0208af20(); void *CreateTextLayer(void *);
-M2C_UNK func_020899cc(void *,s32,s32,s32);
+M2C_UNK RenderTextLayerMessage(void *,s32,s32,s32);
 extern u16 *gLinkPlayerMasks[];
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *sprite; s32 engine; register s32 slot; u8 screenMode; s32 savedEngine; u16 playerMask; s32 player;
@@ -226,7 +226,7 @@ if(screenMode==0 && engine!=g3DSpriteEngineMain)goto next;
 if(screenMode==1 && engine!=g3DSpriteEngineSub)goto next;
 if(screenMode==3 && engine!=savedEngine)goto next;
 sprite=CreateTextLayer(entity);
-func_020899cc(sprite,2,M2C_FIELD(entity,u16*,0x46)<<5,0x4400000a);
+RenderTextLayerMessage(sprite,2,M2C_FIELD(entity,u16*,0x46)<<5,0x4400000a);
 M2C_FIELD(sprite,s32*,0x58)|=0x1000;
 next: ++slot;
 }while(slot<2);
@@ -276,7 +276,7 @@ void func_020e0af8(void) {
 void func_020e0b04(void *entity) {
     s32 IsLinkSessionActive(void); s32 func_0208477c(void); s32 GetOverlayEventFlags(void);
     s32 FindTextLayer(void); M2C_UNK func_0208af20(void); void *CreateTextLayer(void *);
-    M2C_UNK func_020899cc(void *, s32, s32, s32);
+    M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
     void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32); void func_01ffa6fc(void *);
     void MenuSpriteUpdate(void *);

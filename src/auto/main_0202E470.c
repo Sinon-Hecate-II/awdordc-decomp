@@ -475,23 +475,26 @@ status=WFC_InitSession(M2C_FIELD(&data_0213d100,void **,4),0x2300);
 if(status==1 || status>=4){Wfc_FreeWorkBlocks();return 0;}return 1;
 }
 
-s32 func_0202f10c(void) {
- u32 Wfc_GetSessionState();
- u32 func_02031208(); u32 func_02030a38(); u32 func_0202fc9c();
- u32 func_0203095c(); u32 func_02031290(); u32 func_02030324();
- s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32);
- void func_0202f4e4(u32); s32 func_0202f5f4(); void func_0202f5bc();
- u32 n=Wfc_GetSessionState(); s32 t;
- if(n==1)n=func_02031208();
- else if(n<7){t=OS_DisableInterrupts();n=func_02030a38();func_0202f4e4(n);OS_RestoreInterrupts(t);}
- else if(n<9)n=func_0202fc9c();
- else if(n<10)n=func_0203095c();
- else if(n<16)n=func_02031290();
- else if(n==17)n=func_02030324();
- func_0202f4e4(n);
- if(n==16){t=func_0202f5f4();func_0202f5bc();return t;}
- if(n==18){func_0202f5bc();return -1;}
- return 0;
+/* Drive the WFC connection one step: dispatch on the current session state,
+ * publish the state the step moved to, and finish the session when the state
+ * reaches 16 (returning the friend-connection result) or 18 (returning -1). */
+s32 Wfc_ProcessStep(void) {
+    u32 Wfc_GetSessionState();
+    u32 Wfc_StepConnect(); u32 Wfc_StepSession(); u32 Wfc_StepFriends();
+    u32 Wfc_StepLink(); u32 Wfc_StepMatch(); u32 Wfc_StepWait();
+    s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32);
+    void Wfc_PublishState(u32); s32 Wfc_GetFriendConnectResult(); void Wfc_ClearWorkFlags();
+    u32 state = Wfc_GetSessionState(); s32 irq;
+    if (state == 1) state = Wfc_StepConnect();
+    else if (state < 7) { irq = OS_DisableInterrupts(); state = Wfc_StepSession(); Wfc_PublishState(state); OS_RestoreInterrupts(irq); }
+    else if (state < 9) state = Wfc_StepFriends();
+    else if (state < 10) state = Wfc_StepLink();
+    else if (state < 16) state = Wfc_StepMatch();
+    else if (state == 17) state = Wfc_StepWait();
+    Wfc_PublishState(state);
+    if (state == 16) { irq = Wfc_GetFriendConnectResult(); Wfc_ClearWorkFlags(); return irq; }
+    if (state == 18) { Wfc_ClearWorkFlags(); return -1; }
+    return 0;
 }
 
 s32 func_0202f1dc(void) {
@@ -530,12 +533,12 @@ s32 func_0202f28c(void) {
  u32 Wfc_GetSessionState();
  void Wfc_FreeWorkBlocks(void);
  void func_020301dc(u8 *);
- void func_0202f4e4(u32);
+ void Wfc_PublishState(u32);
  u8 n=Wfc_GetSessionState();
  if(n==0 || n==18) {
  Wfc_FreeWorkBlocks(); return 1;
  }
- func_020301dc(&n);func_0202f4e4(n);return 0;
+ func_020301dc(&n);Wfc_PublishState(n);return 0;
 }
 
 void func_0202f2c8(s32 arg0, M2C_UNK arg1) {

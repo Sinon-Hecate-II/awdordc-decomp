@@ -219,18 +219,18 @@ void DamageUnitAtTile(s32 x,s32 y,s32 amount) {
 s32 func_020a8560(u32);
 void *base;
 u8 *p;
-u32 type; s16 n;
+u32 type; s16 health;
 if(x<0 || y<0)return;
 base=*gCurrentMap;
-if(x>=M2C_FIELD(base,u16 *,0x5144) || y>=M2C_FIELD(base,u16 *,0x5146))return;
-p=(u8 *)base+0x59a4+(s16)M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758)),u8 *,0x508)*(s16)14;
+if(x>=M2C_FIELD(base,u16 *,MAP_WIDTH) || y>=M2C_FIELD(base,u16 *,MAP_HEIGHT))return;
+p=(u8 *)base+MAP_UNIT_RECORDS+(s16)M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_UNIT_ID)*(s16)MAP_UNIT_STRIDE;
 type=(u32)(p[0]<<26)>>26;
 if(!type)return;
-if(M2C_FIELD(p,u16 *,4)&8)return;
+if(M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED)return;
 if(func_020a8560(type))return;
-n=((UnkStruct_ov000_021A860C *)p)->unk6;
-if(amount+1>n) ((UnkStruct_ov000_021A860C *)p)->unk6=1;
-else ((UnkStruct_ov000_021A860C *)p)->unk6=(u16)(n-amount);
+health=((UnkStruct_ov000_021A860C *)p)->unk6;
+if(amount+1>health) ((UnkStruct_ov000_021A860C *)p)->unk6=1;
+else ((UnkStruct_ov000_021A860C *)p)->unk6=(u16)(health-amount);
 }
 #pragma opt_instruction_scheduling reset
 M2C_UNK *func_020a7278(void) {
@@ -320,25 +320,29 @@ s32 func_020a7568(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return var_r4 + func_020a2638(arg0, arg1, arg2);
 }
 
-s32 func_020a75b8(void *arg0) {
-s32 func_020a7b24(u32);
-s32 func_020a2698(void *,u8,u8);
-u8 *p=arg0;
-s32 cap,bonus,n,penalty;
-GetUnitOwner(p);
-cap=func_020a7b24((u32)(p[0]<<26)>>26);
-bonus=func_020a2698(p,p[1],p[2]);
-penalty=0;
-if(p) {
-if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
-n=(n>>6)+1;
-}else n=0;
-if(((Bits020a8c10 *)((u8 *)*gCurrentMap+n*140+0x6810))->value!=10)
-penalty=-(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==1);
-return penalty+(cap+bonus);
+/* Effective movement of a unit: its kind's base movement plus the stat block's
+ * movement bonus, minus one in rain unless its owner's status index is 10. */
+s32 GetUnitMovement(void *arg0) {
+    s32 GetUnitKindMoveRange(u32);
+    s32 GetUnitMoveBonus(void *, u8, u8);
+    u8 *unit = arg0;
+    s32 base, bonus, owner, penalty;
+
+    GetUnitOwner(unit);
+    base = GetUnitKindMoveRange((u32)(unit[0] << 26) >> 26);
+    bonus = GetUnitMoveBonus(unit, unit[1], unit[2]);
+    penalty = 0;
+    if (unit) {
+        if (!unit) owner = 0;
+        else owner = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+        owner = (owner >> 6) + 1;
+    } else owner = 0;
+    if (((Bits020a8c10 *)((u8 *)*gCurrentMap + owner * MAP_PLAYER_STRIDE + MAP_PLAYER_STATES + PLAYER_REC_SPRITE))->value != 10)
+        penalty = -(M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER) == WEATHER_RAIN);
+    return penalty + (base + bonus);
 }
 
-s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
+s32 func_020a7694(void *p){s32 GetUnitMovement(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=GetUnitMovement(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
 
 s32 GetUnitAttackRangeMax(u8 *p){s32 GetUnitKindMaxAttackRange(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=GetUnitKindMaxAttackRange((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
 

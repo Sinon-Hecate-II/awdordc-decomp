@@ -173,7 +173,7 @@ s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
 M2C_UNK LoadNarcFileDecompressed(s32,s32), AddTileRectPalette(s32,s32,s32,s32);
 s32 FindSpriteSlotById(s32);
-void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
+void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 M2C_UNK PlaySoundEffect(s32), func_020b1c44(s32,s32);
 M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
@@ -205,13 +205,13 @@ if(FindSpriteSlotById(0)==0) test=1; else test=0;
 if(test) {
 i=0; x=0;
 do {
-p=func_020b22a4(0,x,&data_0212c658,i);
+p=AddSpriteSlot(0,x,&data_0212c658,i);
 i++;
 M2C_FIELD(p,void **,0x10)=arg0;
 x+=40;
 } while(i<2);
 }
-item=func_020b1c78(M2C_FIELD(arg0,s32 *,0x3c));
+item=SelectSpriteSlot(M2C_FIELD(arg0,s32 *,0x3c));
 if(item) {
 sp4=M2C_FIELD(item,void **,0x10);
 sp0=gCur3DSpriteEngine;
@@ -266,7 +266,7 @@ void *arg0;
     M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
     M2C_UNK LoadNarcFileDecompressed(s32,s32), AddTileRectPalette(s32,s32,s32,s32);
     s32 FindSpriteSlotById(s32);
-    void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
+    void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
     M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
     M2C_UNK PlaySoundEffect(s32), func_020b1c44(s32,s32);
     M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
@@ -300,13 +300,13 @@ void *arg0;
     if(test) {
         i=0; x=0;
         do {
-            p=func_020b22a4(0,x,&data_0212c658,i);
+            p=AddSpriteSlot(0,x,&data_0212c658,i);
             i++;
             M2C_FIELD(p,void **,0x10)=arg0;
             x+=40;
         } while(i<2);
     }
-    item=func_020b1c78(M2C_FIELD(arg0,s32 *,0x3c));
+    item=SelectSpriteSlot(M2C_FIELD(arg0,s32 *,0x3c));
     if(item) {
         sp4=M2C_FIELD(item,void **,0x10);
         sp0=gCur3DSpriteEngine;

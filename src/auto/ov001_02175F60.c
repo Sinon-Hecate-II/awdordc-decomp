@@ -55,17 +55,17 @@ void func_ov001_02176078(void) {
 }
 
 void func_ov001_02176098(M2C_UNK arg0) {
-    s32 func_ov001_02188d68();
+    s32 Ov001_LeaveProfileSetup();
     M2C_UNK Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
     extern void *data_ov001_02193d50;
-    if (func_ov001_02188d68() == 0) {
+    if (Ov001_LeaveProfileSetup() == 0) {
         return;
     }
     M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A1) = 1;
     Ov001_PostTaskMessage(0, arg0);
 }
 
-s32 func_ov001_021760d4(void) {
+s32 Ov001_IsProfileScreenDone(void) {
     extern void *data_ov001_02193d50;
     return data_ov001_02193d50 == 0;
 }
@@ -184,7 +184,7 @@ void func_ov001_02176438(void) {
     Ov001_FreeAlloc(&data_ov001_02193d54);
 }
 
-s32 func_ov001_0217645c(s32 arg0) {
+s32 Ov001_GetOptionChoice(s32 arg0) {
     s32 func_ov001_02171394(void *);
     extern M2C_UNK data_ov001_02193d54;
     s32 state[58];
@@ -204,7 +204,7 @@ s32 func_ov001_0217645c(s32 arg0) {
     return arg0;
 }
 
-void func_ov001_02176518(void) {
+void Ov001_StoreMatchSetup(void) {
  s32 func_ov001_02171394(void *);
  M2C_UNK StoreLinkMatchSetup(void *);
  s32 state[58];
@@ -387,8 +387,8 @@ void func_ov001_02176844(void) {
 void Ov001_OpenWifiMenu(void) {
  void func_ov001_02176934(void);
  M2C_UNK func_ov001_02172250(M2C_UNK);
- M2C_UNK func_ov001_02171c24(M2C_UNK,M2C_UNK,M2C_UNK);
- M2C_UNK func_ov001_02185b60(M2C_UNK);
+ M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
+ M2C_UNK Ov001_LoadMenuResource(M2C_UNK);
  M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
  void func_ov001_02176a20(void);
  extern u8 gOv001ChoiceState;
@@ -396,8 +396,8 @@ void Ov001_OpenWifiMenu(void) {
  s32 offset;
  func_ov001_02176934();
  func_ov001_02172250(0);
- func_ov001_02171c24(0x2e,-1,0);
- func_ov001_02185b60(4);
+ Ov001_ShowMessagePanel(0x2e,-1,0);
+ Ov001_LoadMenuResource(4);
  offset = gOv001ChoiceState * 8;
  Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameRight,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameTop,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameBottom,u16 *,offset));
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176a20);
@@ -564,7 +564,7 @@ void func_ov001_02176cd8(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 gOv001ChoiceState;
     extern M2C_UNK func_ov001_02180d44;
-    extern M2C_UNK func_ov001_021778c0;
+    extern M2C_UNK Ov001_InitOptionMenu;
 
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -584,7 +584,7 @@ void func_ov001_02176cd8(void) {
         return;
     case 1:
         Ov001_SetNextScreenMode(0, 0);
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021778c0);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_InitOptionMenu);
         return;
     }
 }
@@ -605,15 +605,15 @@ void Ov001_MoveChoiceSelection(s32 arg0) {
 }
 
 void func_ov001_02176df0(void) {
-M2C_UNK func_ov001_021837e4(s32,u8,u8);
+M2C_UNK Ov001_LoadObjTile(s32,u8,u8);
 extern u8 gOv001ChoiceState;
 struct MenuValues2 table=data_ov001_0218f6f4;
 u8 value=table.values[gOv001ChoiceState];
-func_ov001_021837e4(M2C_FIELD(&gOv001ChoiceState,s32 *,4),value,value);
+Ov001_LoadObjTile(M2C_FIELD(&gOv001ChoiceState,s32 *,4),value,value);
 }
 
 void Ov001_OpenWfcSettingsScreen(void) {
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171e58(M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_02176e78();
@@ -622,7 +622,7 @@ void Ov001_OpenWfcSettingsScreen(void) {
     data_ov001_02193d64 = 0;
     func_ov001_02176e78();
     func_ov001_02172250(0x12);
-    func_ov001_02171c24(0x3B, -1, 0);
+    Ov001_ShowMessagePanel(0x3B, -1, 0);
     func_ov001_02171e58(0x17);
     Ov001_SetStepCallback(&func_ov001_02176ef8);
 }

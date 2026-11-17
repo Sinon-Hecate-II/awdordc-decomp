@@ -35,30 +35,36 @@ M2C_FIELD(&gArpCacheAge,u16*,off)=now;
 }
 
 #pragma scheduling off
-void SendEthernetFrame(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
+/* Build the Ethernet II header in front of the IPv4 packet `payload` and send the
+ * frame on the link.  The type goes at header offset ETH_TYPE (0x0C, i.e. 2 bytes
+ * before the packet).  For a unicast destination the header takes the MAC the ARP
+ * cache resolves for its next hop (asking with an ARP request when it is missing:
+ * no MAC means the frame is dropped); a multicast destination gets the
+ * 01:00:5e:xx:xx:xx MAC built from the address.  The source is the local MAC. */
+void SendEthernetFrame(void *payload, s32 payloadLen, M2C_UNK extraData, M2C_UNK extraLen, u32 dstIp, u16 ethType) {
 M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
 s32 GetIpNextHop(u32); s32 IsMulticastAddress(u32);
 M2C_UNK SendLinkFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK *FindArpMacAddress(void); M2C_UNK *func_0201ad9c(s32);
+M2C_UNK *FindArpMacAddress(void); M2C_UNK *ResolveArpMacAddress(s32);
 extern M2C_UNK gLocalMacAddress;
-M2C_UNK *p; s32 n;
-M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);
-if(!IsMulticastAddress(ip)){
-n=GetIpNextHop(ip);if(!n)return;
-p=FindArpMacAddress();
-if(!p)p=func_0201ad9c(n);
-if(!p)return;
-MI_CpuCopy8(p,(u8 *)a-14,6);
+M2C_UNK *destMac; s32 nextHop;
+M2C_FIELD(payload,u16 *,-2)=(ethType>>8)|(ethType<<8);
+if(!IsMulticastAddress(dstIp)){
+nextHop=GetIpNextHop(dstIp);if(!nextHop)return;
+destMac=FindArpMacAddress();
+if(!destMac)destMac=ResolveArpMacAddress(nextHop);
+if(!destMac)return;
+MI_CpuCopy8(destMac,(u8 *)payload-14,6);
 }else{
-M2C_FIELD(a,u8 *,-14)=1;
-M2C_FIELD(a,u8 *,-13)=0;
-M2C_FIELD(a,u8 *,-12)=0x5e;
-M2C_FIELD(a,u8 *,-11)=(ip>>16)&127;
-M2C_FIELD(a,u8 *,-10)=ip>>8;
-M2C_FIELD(a,u8 *,-9)=ip;
+M2C_FIELD(payload,u8 *,-14)=1;
+M2C_FIELD(payload,u8 *,-13)=0;
+M2C_FIELD(payload,u8 *,-12)=0x5e;
+M2C_FIELD(payload,u8 *,-11)=(dstIp>>16)&127;
+M2C_FIELD(payload,u8 *,-10)=dstIp>>8;
+M2C_FIELD(payload,u8 *,-9)=dstIp;
 }
-MI_CpuCopy8(&gLocalMacAddress,(u8 *)a-8,6);
-SendLinkFrame((u8 *)a-14,b+14,c,d);
+MI_CpuCopy8(&gLocalMacAddress,(u8 *)payload-8,6);
+SendLinkFrame((u8 *)payload-14,payloadLen+14,extraData,extraLen);
 }
 #pragma scheduling on
 /* Finish the IPv4 header of one outgoing fragment (total length and
@@ -294,66 +300,74 @@ node=M2C_FIELD(node,void **,104);
 OS_RestoreInterrupts(saved);
 }
 
-s32 func_0201bb68(s32 arg0, s32 arg1) {
+s32 IsValidIpAddressPair(s32 arg0, s32 arg1) {
     if ((arg0 != 0) && (arg0 != -1) && (arg1 != 0) && (arg1 != -1)) {
         return 1;
     }
     return 0;
 }
 
-void func_0201bb88(void *arg0, u8 *arg1, M2C_UNK arg2) {
+/* Handle a received ICMP message: `ipHeader` is the IPv4 header in front of the
+ * `icmp` message of `len` bytes.  Drop the message unless its checksum is valid
+ * and both of the header's addresses are usable; then give an echo reply to the
+ * ICMP socket waiting for it, or answer an echo request. */
+void HandleIcmpPacket(void *ipHeader, u8 *icmp, M2C_UNK len) {
     s32 Checksum(u8 *, M2C_UNK);
     M2C_UNK SendIcmpEchoReply(void *, u8 *, M2C_UNK);
     M2C_UNK IcmpSocketReceive(void *, u8 *, M2C_UNK);
-    u16 a;
-    u16 b;
-    u16 c;
-    u16 d;
-    u32 p0;
-    u32 p1;
+    u16 dstIpLo;
+    u16 dstIpHi;
+    u16 srcIpLo;
+    u16 srcIpHi;
+    u32 srcIp;
+    u32 dstIp;
 
-    if (Checksum(arg1, arg2) != 0xFFFF) {
+    if (Checksum(icmp, len) != CHECKSUM_VALID) {
         return;
     }
-    a = M2C_FIELD(arg0, u16 *, 0x12);
-    b = M2C_FIELD(arg0, u16 *, 0x10);
-    c = M2C_FIELD(arg0, u16 *, 0xE);
-    d = M2C_FIELD(arg0, u16 *, 0xC);
-    p0 = ((u32)(u16)((d >> 8) | (d << 8)) << 16) | (u16)((c >> 8) | (c << 8));
-    p1 = ((u32)(u16)((b >> 8) | (b << 8)) << 16) | (u16)((a >> 8) | (a << 8));
-    if (func_0201bb68(p0, p1) == 0) {
+    dstIpLo = M2C_FIELD(ipHeader, u16 *, IPH_DST_IP_LO);
+    dstIpHi = M2C_FIELD(ipHeader, u16 *, IPH_DST_IP_HI);
+    srcIpLo = M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_LO);
+    srcIpHi = M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_HI);
+    srcIp = ((u32)(u16)((srcIpHi >> 8) | (srcIpHi << 8)) << 16) | (u16)((srcIpLo >> 8) | (srcIpLo << 8));
+    dstIp = ((u32)(u16)((dstIpHi >> 8) | (dstIpHi << 8)) << 16) | (u16)((dstIpLo >> 8) | (dstIpLo << 8));
+    if (IsValidIpAddressPair(srcIp, dstIp) == 0) {
         return;
     }
-    switch (*arg1) {
-        case 0:
-            IcmpSocketReceive(arg0, arg1, arg2);
+    switch (*icmp) {
+        case ICMP_TYPE_ECHO_REPLY:
+            IcmpSocketReceive(ipHeader, icmp, len);
             return;
-        case 8:
-            SendIcmpEchoReply(arg0, arg1, arg2);
+        case ICMP_TYPE_ECHO_REQUEST:
+            SendIcmpEchoReply(ipHeader, icmp, len);
             return;
         default:
             return;
     }
 }
 
-void *func_0201bc58(void *arg0, void *arg1) {
+/* Return the raw connection of the listening TCP socket a received SYN is for:
+ * walk the socket manager's list and take the first listening socket whose local
+ * port is the segment's destination port and, when the socket is bound to a
+ * peer, whose remote port and address are the segment's source. */
+void *TcpFindListeningSocket(void *ipHeader, void *tcpHeader) {
 extern M2C_UNK gSocketManager;
-void *entry,*node; u16 a,b,c,d,e;
-node=M2C_FIELD(&gSocketManager,void **,8);
+void *entry,*node; u16 localPort,remotePort,srcPort,srcIpLo,srcIpHi;
+node=M2C_FIELD(&gSocketManager,void **,SOCKMGR_SOCKETS);
 while(node){
-entry=M2C_FIELD(node,void **,0xa4);
-if(entry && M2C_FIELD(entry,s32 *,0) && M2C_FIELD(entry,u8 *,8)==1){
-a=M2C_FIELD(arg1,u16 *,2);
-if(M2C_FIELD(entry,u16 *,10)!=(u16)(((s32)a>>8)|(a<<8)))goto next;
-b=M2C_FIELD(entry,u16 *,24);
-if(b){c=M2C_FIELD(arg1,u16 *,0);if(b!=(u16)(((s32)c>>8)|(c<<8)))goto next;}
-if(M2C_FIELD(entry,u32 *,28)){
-d=M2C_FIELD(arg0,u16 *,14);e=M2C_FIELD(arg0,u16 *,12);
-if(M2C_FIELD(entry,u32 *,28)!=(((u16)(((s32)e>>8)|(e<<8))<<16)|(u16)(((s32)d>>8)|(d<<8))))goto next;
+entry=M2C_FIELD(node,void **,SOCK_OBJECT_RAW);
+if(entry && M2C_FIELD(entry,s32 *,CONN_ID) && M2C_FIELD(entry,u8 *,CONN_STATE)==CONN_STATE_LISTEN){
+localPort=M2C_FIELD(tcpHeader,u16 *,TCPH_DST_PORT);
+if(M2C_FIELD(entry,u16 *,CONN_LOCAL_PORT)!=(u16)(((s32)localPort>>8)|(localPort<<8)))goto next;
+remotePort=M2C_FIELD(entry,u16 *,CONN_REMOTE_PORT);
+if(remotePort){srcPort=M2C_FIELD(tcpHeader,u16 *,TCPH_SRC_PORT);if(remotePort!=(u16)(((s32)srcPort>>8)|(srcPort<<8)))goto next;}
+if(M2C_FIELD(entry,u32 *,CONN_REMOTE_IP)){
+srcIpLo=M2C_FIELD(ipHeader,u16 *,IPH_SRC_IP_LO);srcIpHi=M2C_FIELD(ipHeader,u16 *,IPH_SRC_IP_HI);
+if(M2C_FIELD(entry,u32 *,CONN_REMOTE_IP)!=(((u16)(((s32)srcIpHi>>8)|(srcIpHi<<8))<<16)|(u16)(((s32)srcIpLo>>8)|(srcIpLo<<8))))goto next;
 }
 return entry;
 }
-next: node=M2C_FIELD(node,void **,0x68);
+next: node=M2C_FIELD(node,void **,SOCK_OBJECT_NEXT);
 }
 return 0;
 }

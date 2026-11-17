@@ -1,11 +1,11 @@
 /* 9 functions from 0x0216FC60 to 0x021707D8 (ov000), found by ds-decomp. */
 #include "common.h"
 
-extern u8 data_ov000_021b8a00[40];
-extern u8 data_ov000_021b89d8[40];
-extern u8 data_ov000_021b8a28[40];
-extern u8 data_ov000_021b8a50[40];
-extern u8 data_ov000_021b89b0[40];
+extern u8 gScrollListTabDesc0[40];
+extern u8 gScrollListTabDesc1[40];
+extern u8 gScrollListTabDesc2[40];
+extern u8 gScrollListTabDesc3[40];
+extern u8 gScrollListRowDesc[40];
 
 void func_ov000_0216fc60(u8 *arg0) {
     void *GetScrollList(void);
@@ -148,29 +148,35 @@ void func_ov000_0217000c(void) {
     PlaySoundEffect(0x10019);
 }
 
-void func_ov000_02170020(void) {
-void *GetScrollList(void);
-M2C_UNK func_020b1bf4(s32,s32,s32,s32);
-M2C_UNK func_020b1c78(s32);
-M2C_UNK func_020b22a4(s32,s32,void *,s32);
-void *p; s32 i; s32 y;
-p=GetScrollList();
-func_020b1bf4(0,-16,256,-16);
-func_020b22a4(0,0,&data_ov000_021b8a00,251);
-func_020b22a4(0,0,&data_ov000_021b89d8,250);
-func_020b22a4(0,0,&data_ov000_021b8a28,249);
-func_020b22a4(0,0,&data_ov000_021b8a50,248);
-i=0;
-if(M2C_FIELD(p,s16 *,0x3c)>0) {
-y=39;
-loop:
-if(i!=6) {
-func_020b22a4(4,y,&data_ov000_021b89b0,i);
-i++; y+=16;
-if(i<M2C_FIELD(p,s16 *,0x3c)) goto loop;
-}
-}
-func_020b1c78(0);
+/* Create the unit list's four tab buttons and a highlight button for every visible
+ * row (at most six), then select the first row. */
+void ScrollListCreateButtons(void) {
+    void *GetScrollList(void);
+    M2C_UNK SetSpriteSlotFrameRect(s32,s32,s32,s32);
+    M2C_UNK SelectSpriteSlot(s32);
+    M2C_UNK AddSpriteSlot(s32,s32,void *,s32);
+    ScrollList *list;
+    s32 row;
+    s32 y;
+
+    list = (ScrollList *) GetScrollList();
+    SetSpriteSlotFrameRect(0, -16, 256, -16);
+    AddSpriteSlot(0, 0, &gScrollListTabDesc0, SCROLL_LIST_TAB_ID(0));
+    AddSpriteSlot(0, 0, &gScrollListTabDesc1, SCROLL_LIST_TAB_ID(1));
+    AddSpriteSlot(0, 0, &gScrollListTabDesc2, SCROLL_LIST_TAB_ID(2));
+    AddSpriteSlot(0, 0, &gScrollListTabDesc3, SCROLL_LIST_TAB_ID(3));
+    row = 0;
+    if (list->count > 0) {
+        y = SCROLL_LIST_ROW_Y;
+    loop:
+        if (row != SCROLL_LIST_VISIBLE_ROWS) {
+            AddSpriteSlot(SCROLL_LIST_ROW_X, y, &gScrollListRowDesc, row);
+            row++;
+            y += SCROLL_LIST_ROW_STEP;
+            if (row < list->count) goto loop;
+        }
+    }
+    SelectSpriteSlot(0);
 }
 
 void *GetScrollList(void) {
@@ -198,7 +204,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK func_0209c048(M2C_UNK, M2C_UNK, s32, s16, s32, s32);
     s32 func_020a8b3c(u8);
     s32 GetUiColor(M2C_UNK);
-    M2C_UNK func_020c0fac(void *);
+    M2C_UNK CreateMenuUnitSprite(void *);
     M2C_UNK CreateMenuTextSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, void *, s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     s32 HeapAllocBlock(M2C_UNK);
@@ -208,7 +214,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK ScrollListRebuild(s16, s16);
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListDrawTabs(void *);
-    void func_ov000_02170020();
+    void ScrollListCreateButtons();
     extern void *gCurrentMap;
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
@@ -261,7 +267,7 @@ void func_ov000_02170110(void *arg0) {
     ScrollListDrawTabs(arg0);
     CreateMenuTextSprite(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);
     CreateMenuTextSprite(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, zero);
-    func_020c0fac(arg0);
+    CreateMenuUnitSprite(arg0);
     func_02080c50(&data_ov000_021b8b64, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x7780);
     LoadFileToSpriteBuffer(&data_ov000_021b8b78, 0x380, 0x20);
     p = (void *) (M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x3880);
@@ -273,7 +279,7 @@ void func_ov000_02170110(void *arg0) {
     ScrollListDrawRows(M2C_FIELD(arg0, s16 *, 0x38));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    func_ov000_02170020();
+    ScrollListCreateButtons();
     gCur3DSpriteEngine = r;
 }
 #pragma pop

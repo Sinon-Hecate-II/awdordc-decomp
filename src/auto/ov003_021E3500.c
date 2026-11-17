@@ -11,7 +11,7 @@ typedef struct EngineBits3ff8 { u16 low:13; u16 shift:2; u16 high:1; } EngineBit
 
 void func_ov003_021e3500(void *arg0) {
     M2C_UNK Hide3DSprite(s32);
-    M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
+    M2C_UNK RenderTextLayerMessage(void *, M2C_UNK, s32, s32);
     M2C_UNK func_0208ae88(void *, M2C_UNK);
     void *CreateTextLayer(void *);
     M2C_UNK PlaySoundEffect(s32);
@@ -64,13 +64,13 @@ void func_ov003_021e3500(void *arg0) {
             switch ((u32)((u32)temp_r1 << 0x1A) >> 0x1E) {
             case 0:
                 temp_r6 = CreateTextLayer(r5);
-                func_020899cc(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000023);
+                RenderTextLayerMessage(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000023);
                 M2C_FIELD(temp_r6, s32 *, 0x58) = M2C_FIELD(temp_r6, s32 *, 0x58) | 0x400;
                 func_0208ae88(temp_r6, 0);
                 break;
             case 1:
                 temp_r6 = CreateTextLayer(r5);
-                func_020899cc(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000024);
+                RenderTextLayerMessage(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000024);
                 M2C_FIELD(temp_r6, s32 *, 0x58) = M2C_FIELD(temp_r6, s32 *, 0x58) | 0x400;
                 func_0208ae88(temp_r6, 1);
                 break;
@@ -280,7 +280,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     void *GetMapRecord(s32);
     s32 func_ov003_02200968(s32);
     void AddSprite(u16, u8, u16, void *, s32);
-    s32 func_ov003_02200a18(s32, u16);
+    s32 GetMapListIconTile(s32, u16);
     s32 Modulo(s32, s32);
     void SetTextSpriteValue(void *, s32);
     void DrawTextSprite(void *);
@@ -354,7 +354,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
         value2 = (u16)(id + 0x10e);
     }
 
-    tile = (u16)(func_ov003_02200a18(7, value2) * 4 + 0x328);
+    tile = (u16)(GetMapListIconTile(7, value2) * 4 + 0x328);
     shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
     color = (0x3ff & (tile >> shift)) | 0x9800;
     AddSprite((u16)((arg1 + 3) & 0x1ff), 0x15, (u16)color, &gSpriteDesc16x16, 0x11);
@@ -415,7 +415,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
 void func_ov003_021e3ff8(void *arg0,s32 arg1,s32 arg2){
 u32 func_ov003_021f2780(s32,s32);
 u32 func_ov003_021f2574(void);
-s32 func_ov003_02200a18(s32,u16);
+s32 GetMapListIconTile(s32,u16);
 s32 Modulo(s32,s32);
 void SetTextSpriteValue(void*,s32);
 extern u16 **gCur3DSpriteEngine;
@@ -468,7 +468,7 @@ M2C_FIELD(p,s16*,6)=px;M2C_FIELD(p,s16*,8)=top+5;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x50),s16*,0x12)=0x21c;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x21)=8;
 DrawTextSprite(M2C_FIELD(arg0,void**,0x50));
-tile=(u16)(func_ov003_02200a18(7,id)*4+0x234);
+tile=(u16)(GetMapListIconTile(7,id)*4+0x234);
 AddSprite(py,(u8)(top-2),(u16)((mask&((s32)tile>>((EngineBits3ff8*)*gCur3DSpriteEngine)->shift))|0x8800),&gSpriteDesc16x16,17);
 if(i==0)record=M2C_FIELD(arg0,s32*,0x68);else record=M2C_FIELD(arg0,s32*,0x6c);
 func_0209b32c(layer,offset,0,record+j*0x6f8+6,0x7000,0,(u16)(sequence+M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank*320));

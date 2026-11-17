@@ -46,8 +46,8 @@ void SetupEntityDisplay(void *entity) {
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02088f1c(void *);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     M2C_UNK func_ov003_021f2008();
     s32 func_ov003_021f400c();
     s32 func_ov003_021f4064();
@@ -145,8 +145,8 @@ void SetupEntityDisplay(void *entity) {
         if (hasSubflag & 0xFF) {
             posY = M2C_FIELD(part0, s16 *, 0x52);
             posX = M2C_FIELD(part0, s16 *, 0x50);
-            tileId = func_020aae10(part0);
-            func_02087d84(M2C_FIELD(part0, void **, 0x64), 1, posX, posY, (u16) tileId, (u16)func_020aae44(part0));
+            tileId = GetUnitSpriteWidth(part0);
+            func_02087d84(M2C_FIELD(part0, void **, 0x64), 1, posX, posY, (u16) tileId, (u16)GetUnitSpriteHeight(part0));
         }
     }
     partsC = M2C_FIELD(entity, void **, 0x6C);

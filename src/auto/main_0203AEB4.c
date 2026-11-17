@@ -48,10 +48,10 @@ void func_0203b088(void) {
 
 s32 func_0203b09c(void) {
  extern M2C_UNK gMatchSessionMgr; u64 GetSystemTick(void);
- u64 func_02072088(u64,u64);
+ u64 U64Divide(u64,u64);
  s32 func_0204db50(void *);
  s32 r=0; void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
- if(func_02072088((GetSystemTick()-M2C_FIELD(p,u64 *,0xC))<<6,0x82EA) >=300) {
+ if(U64Divide((GetSystemTick()-M2C_FIELD(p,u64 *,0xC))<<6,0x82EA) >=300) {
  M2C_FIELD(p,s32 *,8)++;
  r=func_0204db50(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4));
  M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u64 *,0xC)=GetSystemTick();
@@ -78,7 +78,7 @@ s32 func_0204e184(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 func_02
 u32 ReportNetError();s32 GetSessionPlayerId(s32);s32 IsPlayerRecordJoined(void *);void AssignPlayerRecordId(void *,s32);void MarkPlayerRecordJoined(void *);
 s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);
 s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,s32);void FormatPlayerNasId(s32,void *,void *);
-void HandlePeerConnectResult(s32,void *,s32);s32 func_0204dd0c(void *,s32,s32,s32,s32,void *,s32,s32,void (*)(s32,void *,s32),s32);
+void HandlePeerConnectResult(s32,void *,s32);s32 gpiProfileSearch(void *,s32,s32,s32,s32,void *,s32,s32,void (*)(s32,void *,s32),s32);
 s32 i,remoteCount,remoteIndex;u32 buddyInfo[132];u32 peerAddress[6];s32 slot,profileId;u8 *a=(u8 *)arg0;
 if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1e)){
 ReportNetError(func_0204e184(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),&remoteCount));
@@ -108,7 +108,7 @@ if(remoteIndex==-1)DropSessionPlayer(profileId);
 }else{
 if(GetPlayerRecordId(GetLocalPlayerInfo(),(s32)(a+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c)*12))==-1){
 FormatPlayerNasId(GetLocalPlayerInfo(),a+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c)*12,peerAddress);
-func_0204dd0c(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),0,0,0,0,peerAddress,0,0,HandlePeerConnectResult,M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c));
+gpiProfileSearch(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),0,0,0,0,peerAddress,0,0,HandlePeerConnectResult,M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c));
 M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1e)=2;return;
 }}
 M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c)++;
@@ -288,7 +288,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
     s32 func_0204e074(void **, s32);
     void AssignPlayerRecordId(void *, s32);
     s32 GetPlayerRecordId(s32, s32);
-    s32 func_0200567c(void *, s32, void *, ...);
+    s32 StringFormatN(void *, s32, void *, ...);
     s32 ByteCompareN(void *, void *, s32);
     s32 DropSessionPlayer(s32);
     s32 func_0204e0c4(void **, s32);
@@ -329,7 +329,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
                 GetPlayerRecordType((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset) == 2) {
                 self = GetLocalPlayerInfo();
                 selfKey = M2C_FIELD(self, u32 *, 0x24);
-                func_0200567c(keyText, 5, &data_020fc8f0,
+                StringFormatN(keyText, 5, &data_020fc8f0,
                               (selfKey >> 24) & 0xff,
                               (selfKey >> 16) & 0xff,
                               (selfKey >> 8) & 0xff,
@@ -485,12 +485,12 @@ s32 func_0203bd54(void) {
 }
 
 s32 func_0203bda0(void (*callback)(s32),s32 arg) {
-s32 HasNetError(void);void *GetConnection(void);s32 GetNetSessionState(void);void func_0203e410(void);
+s32 HasNetError(void);void *GetConnection(void);s32 GetNetSessionState(void);void ReportGpiSessionStatus(void);
 void *p;
 if(HasNetError()!=0||!GetConnection()||M2C_FIELD(GetConnection(),u8 *,0x15)!=2||(GetNetSessionState()!=5&&GetNetSessionState()!=6))return 0;
 if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==10){
 p=GetConnection();M2C_FIELD(p,u8 *,0x16)=M2C_FIELD(GetConnection(),u8 *,0xd);
-func_0203e410();if(callback)callback(arg);
+ReportGpiSessionStatus();if(callback)callback(arg);
 }else{
 M2C_FIELD(GetConnection(),void (**)(s32),0x47c)=callback;
 M2C_FIELD(GetConnection(),s32 *,0x480)=arg;

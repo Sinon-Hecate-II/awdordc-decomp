@@ -5,22 +5,26 @@ extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
 extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
 
-void func_ov001_0218851c(void *p) {
- s32 func_ov001_02188480(u16);
- u16 a,b,c; int n;
- if(M2C_FIELD(p,u16 *,2)){SetWhError();SetWhStatus(9);return;}
+/* Result of the child scan for one channel: log the channel and the ratio it
+   reported, keep in the connection only the channels that reached the best
+   (lowest) ratio so far, and then have the scan move on to the next channel.
+   A failed report ends the parent start; no further channel ends the scan. */
+void HandleChildScanResult(void *report) {
+ s32 ScanNextChild(u16);
+ u16 channel,ratio,best; s32 result;
+ if(M2C_FIELD(report,u16 *,WH_CHANNEL_STATUS)){SetWhError();SetWhStatus(WH_STATUS_PARENT_START);return;}
  if(M2C_FIELD(&gWhWork,void (**)(int,void *,int,int),0))
- M2C_FIELD(&gWhWork,void (**)(int,void *,int,int),0)(0x8000000,&data_ov001_0219169c,M2C_FIELD(p,u16 *,8),M2C_FIELD(p,u16 *,10));
- b=M2C_FIELD(p,u16 *,10);c=M2C_FIELD(p,u16 *,8);
- a=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,94);
- if(a>b) {
- M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,94)=b;
- M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,96)=1<<(c-1);
- }else if(a==b) M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,96)|=1<<(c-1);
- n=func_ov001_02188480((u16)(c+1));
- if(n==24){SetWhStatus(7);return;}
- if(n==2)return;
- SetWhStatus(9);
+ M2C_FIELD(&gWhWork,void (**)(int,void *,int,int),0)(0x8000000,&data_ov001_0219169c,M2C_FIELD(report,u16 *,WH_CHANNEL_INDEX),M2C_FIELD(report,u16 *,WH_CHANNEL_RATIO));
+ ratio=M2C_FIELD(report,u16 *,WH_CHANNEL_RATIO);channel=M2C_FIELD(report,u16 *,WH_CHANNEL_INDEX);
+ best=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,WH_CHILD_RATIO);
+ if(best>ratio) {
+ M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,WH_CHILD_RATIO)=ratio;
+ M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,WH_CHILD_BITS)=1<<(channel-1);
+ }else if(best==ratio) M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,WH_CHILD_BITS)|=1<<(channel-1);
+ result=ScanNextChild((u16)(channel+1));
+ if(result==24){SetWhStatus(WH_STATUS_MEASURECHAN);return;}
+ if(result==2)return;
+ SetWhStatus(WH_STATUS_PARENT_START);
 }
 
 void func_ov001_021885f4(M2C_UNK arg0, M2C_UNK arg1) {

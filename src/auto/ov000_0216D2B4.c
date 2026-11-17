@@ -179,19 +179,19 @@ void func_ov000_0216e0d0(u8 *arg0) {
 void func_ov000_0216e110(void) {
     extern void *gArmyInfoState;
     extern M2C_UNK data_ov000_021b8790;
-    M2C_UNK func_020b22a4(s32, M2C_UNK, M2C_UNK *, s32);
-    M2C_UNK func_020b1c78(u8);
+    M2C_UNK AddSpriteSlot(s32, M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK SelectSpriteSlot(u8);
     s32 i;
     s32 x;
     i = 0;
     if (i < M2C_FIELD(gArmyInfoState, u8 *, 0xC)) {
         x = 0x50;
         do {
-            func_020b22a4(x, 0xA8, &data_ov000_021b8790, i);
+            AddSpriteSlot(x, 0xA8, &data_ov000_021b8790, i);
             i++;
             x += 0x18;
         } while (i < M2C_FIELD(gArmyInfoState, u8 *, 0xC));
     }
-    func_020b1c78(M2C_FIELD(gArmyInfoState, u8 *, 0xD));
+    SelectSpriteSlot(M2C_FIELD(gArmyInfoState, u8 *, 0xD));
 }
 

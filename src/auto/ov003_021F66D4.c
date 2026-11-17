@@ -63,8 +63,8 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void func_020ab2c4(void *);
     s16 GetSpriteAnimValue(void *);
     void func_02088e84(void *, s16, s16, s16, s32);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     void func_02087d84(void *, s32, s32, s32, u16, u16);
     void AddSprite(s32, s32, u16, void *, s32);
     s32 func_ov003_021f400c(void);
@@ -257,8 +257,8 @@ L3:
                 if (var_r0 & 0xFF) {
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
-                    temp_r9 = func_020aae10(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) func_020aae44(temp_r6));
+                    temp_r9 = GetUnitSpriteWidth(temp_r6);
+                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 M2C_FIELD(temp_r6, s16 *, 0x34) = 0x38;
                 M2C_FIELD(temp_r6, s16 *, 0x36) = temp_r4;
@@ -270,8 +270,8 @@ L3:
                 if (var_r0_2 & 0xFF) {
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
-                    temp_r9 = func_020aae10(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) func_020aae44(temp_r6));
+                    temp_r9 = GetUnitSpriteWidth(temp_r6);
+                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 temp_r6 = M2C_FIELD(arg0->f68, void **, 0x14);
                 func_02088e84(temp_r6, 0xA8, temp_r4, 0xA8, temp_r4);
@@ -283,8 +283,8 @@ L3:
                 if (var_r0_3 & 0xFF) {
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
-                    temp_r9 = func_020aae10(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) func_020aae44(temp_r6));
+                    temp_r9 = GetUnitSpriteWidth(temp_r6);
+                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 M2C_FIELD(temp_r6, s16 *, 0x34) = 0xA8;
                 M2C_FIELD(temp_r6, s16 *, 0x36) = temp_r4;
@@ -296,8 +296,8 @@ L3:
                 if (var_r0_4 & 0xFF) {
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
-                    temp_r9 = func_020aae10(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) func_020aae44(temp_r6));
+                    temp_r9 = GetUnitSpriteWidth(temp_r6);
+                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
             }
         }

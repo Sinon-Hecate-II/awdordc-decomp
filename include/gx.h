@@ -41,6 +41,13 @@ enum {
     GX_PRIM_QUAD_STRIP = 3
 };
 
+/* Five-bit colour channels occupy bits 0..4, 5..9 and 10..14. */
+#define GX_RGB_CHANNEL_MASK 0x1F
+#define GX_RGB_GREEN_MASK 0x03E0
+#define GX_RGB_BLUE_MASK 0x7C00
+#define GX_RGB_GREEN_SHIFT 5
+#define GX_RGB_BLUE_SHIFT 10
+
 /* Opaque white in the GX 15-bit BGR555 colour format. */
 #define GX_RGB_WHITE 0x7FFF
 

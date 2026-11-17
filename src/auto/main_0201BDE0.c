@@ -91,7 +91,7 @@ func_0201bee4((s32)conn,20,arg);
  * address/port and the sequence numbers (the peer's sequence plus one in
  * TCP_CONN_ACK_NUM), copies the connection's SYN options into the reply and
  * sends it as segment type 18 with no flags. */
-M2C_UNK func_0201c0bc(void *ipHeader,void *seg,void *conn){
+M2C_UNK TcpSendSynAck(void *ipHeader,void *seg,void *conn){
 u64 GetSystemTick(void);
 u16 dstPortLo,dstPortHi,srcLo,srcHi,peerLo,peerHi,seqLo,seqHi;
 u64 tick;
@@ -106,26 +106,50 @@ M2C_FIELD(conn,u32 *,TCP_CONN_ACK_NUM)=(((u16)(((s32)peerHi>>8)|(peerHi<<8))<<16
 func_0201be44(seg,conn);func_0201bee4((s32)conn,18,0);
 }
 
-s32 func_0201c1a8(s32 a,s32 b,s32 c) {
+s32 TcpProcessSynExisting(s32 a,s32 b,s32 c) {
  void *p=TcpFindConnection(a,b);
  u8 v;
  if(p) {
  v=M2C_FIELD(p,u8 *,8);
- if(v==1)func_0201c0bc(a,b,p);
- else if((u8)(v+253)<=1) {M2C_FIELD(p,s32 *,40)--;func_0201c0bc(a,b,p);}
+ if(v==1)TcpSendSynAck(a,b,p);
+ else if((u8)(v+253)<=1) {M2C_FIELD(p,s32 *,40)--;TcpSendSynAck(a,b,p);}
  else TcpSendReset(a,b,c,0);
  return 1;
  }
  return 0;
 }
 
-void TcpProcessSyn(void *arg0, void *arg1, s32 arg2) {
-s32 func_0201bb68(s32,s32);s32 func_0201c1a8(s32,s32,s32);void *func_0201bc58();M2C_UNK func_0201c0bc();M2C_UNK TaskYield();
-u16 a,b,c,d;u32 p0,p1;void *r;
-a=M2C_FIELD(arg0,u16 *,0x12);b=M2C_FIELD(arg0,u16 *,0x10);c=M2C_FIELD(arg0,u16 *,0xe);d=M2C_FIELD(arg0,u16 *,0xc);
-p0=((u32)(u16)((d>>8)|(d<<8))<<16)|(u16)((c>>8)|(c<<8));p1=((u32)(u16)((b>>8)|(b<<8))<<16)|(u16)((a>>8)|(a<<8));
-if(!func_0201bb68(p0,p1))return;if(func_0201c1a8((s32)arg0,(s32)arg1,arg2))return;
-r=func_0201bc58(arg0,arg1);if(r){func_0201c0bc(arg0,arg1,r);return;}TaskYield();r=func_0201bc58(arg0,arg1);if(r)func_0201c0bc(arg0,arg1,r);
+/* Handle a received SYN segment: drop it when either IP address is unusable,
+ * let a connection that already exists answer a retransmitted SYN, otherwise
+ * look for a listening socket and answer the SYN on a new connection; the
+ * listening socket may only show up once other tasks have run, so look again
+ * after yielding. */
+void TcpProcessSyn(void *ipHeader, void *seg, s32 len) {
+    s32 IsValidIpAddressPair(s32, s32);
+    s32 TcpProcessSynExisting(s32, s32, s32);
+    void *TcpFindListeningSocket();
+    M2C_UNK TcpSendSynAck();
+    M2C_UNK TaskYield();
+    u16 ipDstLo, ipDstHi, ipSrcLo, ipSrcHi;
+    u32 srcAddress, dstAddress;
+    void *conn;
+
+    ipDstLo = M2C_FIELD(ipHeader, u16 *, 0x12);
+    ipDstHi = M2C_FIELD(ipHeader, u16 *, 0x10);
+    ipSrcLo = M2C_FIELD(ipHeader, u16 *, 0xe);
+    ipSrcHi = M2C_FIELD(ipHeader, u16 *, 0xc);
+    srcAddress = ((u32)(u16)((ipSrcHi >> 8) | (ipSrcHi << 8)) << 16) | (u16)((ipSrcLo >> 8) | (ipSrcLo << 8));
+    dstAddress = ((u32)(u16)((ipDstHi >> 8) | (ipDstHi << 8)) << 16) | (u16)((ipDstLo >> 8) | (ipDstLo << 8));
+    if (!IsValidIpAddressPair(srcAddress, dstAddress)) return;
+    if (TcpProcessSynExisting((s32)ipHeader, (s32)seg, len)) return;
+    conn = TcpFindListeningSocket(ipHeader, seg);
+    if (conn) {
+        TcpSendSynAck(ipHeader, seg, conn);
+        return;
+    }
+    TaskYield();
+    conn = TcpFindListeningSocket(ipHeader, seg);
+    if (conn) TcpSendSynAck(ipHeader, seg, conn);
 }
 
 /* Build a response packet from a received request and mark it ready. */
@@ -269,39 +293,43 @@ void TcpProcessAck(void *net, void *seg, s32 len) {
   TaskYield();
 }
 
-void TcpProcessFin(s32 arg0, s32 arg1, s32 arg2) {
+/* Handle a received FIN segment on an existing connection: acknowledge it and
+ * move the connection to the state its current state calls for (FIN_WAIT1 ->
+ * TIME_WAIT, FIN_WAIT2 -> CLOSED, ESTABLISHED -> LAST_ACK), waking the waiting
+ * task when the connection closes; a FIN in any other state gets a reset. */
+void TcpProcessFin(s32 ipHeader, s32 seg, s32 length) {
     void *TcpFindConnection(s32, s32);
     void TcpSendAck(M2C_UNK, M2C_UNK);
     void TcpSendFinAck(M2C_UNK, M2C_UNK);
     M2C_UNK TcpSendReset(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK TaskWake(M2C_UNK);
     void *p;
-    u8 v;
-    p = TcpFindConnection(arg0, arg1);
+    u8 state;
+    p = TcpFindConnection(ipHeader, seg);
     if (p == NULL) return;
-    v = M2C_FIELD(p, u8 *, 8);
-    switch (v) {
-    case 7:
-        M2C_FIELD(p, s32 *, 0x24)++;
+    state = M2C_FIELD(p, u8 *, SOCKET_STATE);
+    switch (state) {
+    case TCP_STATE_FIN_WAIT1:
+        M2C_FIELD(p, u32 *, TCP_CONN_ACK_NUM)++;
         TcpSendAck(p, 0);
-        M2C_FIELD(p, u8 *, 8) = 9;
+        M2C_FIELD(p, u8 *, SOCKET_STATE) = TCP_STATE_TIME_WAIT;
         break;
-    case 8:
-        M2C_FIELD(p, s32 *, 0x24)++;
+    case TCP_STATE_FIN_WAIT2:
+        M2C_FIELD(p, u32 *, TCP_CONN_ACK_NUM)++;
         TcpSendAck(p, 0);
-        M2C_FIELD(p, u8 *, 8) = 0;
-        if (M2C_FIELD(p, s32 *, 4) == 2) {
-            M2C_FIELD(p, s32 *, 4) = 0;
-            TaskWake(M2C_FIELD(p, M2C_UNK *, 0));
+        M2C_FIELD(p, u8 *, SOCKET_STATE) = TCP_STATE_CLOSED;
+        if (M2C_FIELD(p, s32 *, SOCKET_TASK_STATE) == 2) {
+            M2C_FIELD(p, s32 *, SOCKET_TASK_STATE) = 0;
+            TaskWake(M2C_FIELD(p, s32 *, SOCKET_OWNER));
         }
         break;
-    case 4:
-        M2C_FIELD(p, s32 *, 0x24)++;
+    case TCP_STATE_ESTABLISHED:
+        M2C_FIELD(p, u32 *, TCP_CONN_ACK_NUM)++;
         TcpSendFinAck(p, 0);
-        M2C_FIELD(p, u8 *, 8) = 6;
+        M2C_FIELD(p, u8 *, SOCKET_STATE) = TCP_STATE_LAST_ACK;
         break;
     default:
-        TcpSendReset(arg0, arg1, arg2, 0);
+        TcpSendReset(ipHeader, seg, length, 0);
         break;
     }
 }

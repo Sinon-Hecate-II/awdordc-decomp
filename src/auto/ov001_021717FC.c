@@ -9,7 +9,7 @@ extern const u8 data_ov001_0218f30c[];
 void func_ov001_02172418(s32);
 s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
 extern s32 gOv001ChoiceFrameSprites;
-extern s8 data_ov001_02193ccc;
+extern s8 gOv001MessagePanelActive;
 extern u8 data_ov001_02193cd0[64];
 extern const u8 data_ov001_0218f2f8[8];
 
@@ -92,12 +92,12 @@ Ov001_SetSlideStep(a,(M2C_UNK *)func_ov001_02171aa8);
 void func_ov001_02171aa8(s32 a){
 extern void *gOv001IconRow;
 void Ov001_PostTaskMessage(s32,s32);
-void func_ov001_0218a1cc(s32);
+void Ov001_DestroySprite(s32);
 s32 i;
 Ov001_PostTaskMessage(0,a);
 if(M2C_FIELD(gOv001IconRow,s32 *,16))Ov001_PostTaskMessage(0,M2C_FIELD(gOv001IconRow,s32 *,16));
-for(i=0;i<2;i++)if(((s32 *)gOv001IconRow)[i])func_ov001_0218a1cc(((s32 *)gOv001IconRow)[i]);
-func_ov001_0218a1cc(M2C_FIELD(gOv001IconRow,s32 *,8));
+for(i=0;i<2;i++)if(((s32 *)gOv001IconRow)[i])Ov001_DestroySprite(((s32 *)gOv001IconRow)[i]);
+Ov001_DestroySprite(M2C_FIELD(gOv001IconRow,s32 *,8));
 Ov001_FreeAlloc(&gOv001IconRow);
 }
 #pragma optimize_for_size reset
@@ -125,27 +125,30 @@ if(M2C_FIELD(gOv001IconRow,s32 *,16)){M2C_FIELD(gOv001IconRow,s32 *,16)=0;Ov001_
 }
 
 void func_ov001_02171c10(void) {
-    extern s8 data_ov001_02193ccc;
-    data_ov001_02193ccc = 0;
+    extern s8 gOv001MessagePanelActive;
+    gOv001MessagePanelActive = 0;
 }
 
-s32 func_ov001_02171c24(s32 a,s32 b,s32 c){
+/* Show the one-shot ov001 message panel for `messageId`, filling `value` and
+ * `index` into its text, unless one is already on screen.  Returns 1 when the
+ * panel was built, 0 when it was already showing. */
+s32 Ov001_ShowMessagePanel(s32 messageId,s32 value,s32 index){
 extern u8 data_ov001_0218feb0[];extern s32 gOv001MessageArchive;void func_0200436c(s32,s32,s32);
 void Ov001_LoadAsset(u8 *,void (*)(s32,s32,s32));s32 CreateTextPanel(s32,s32);s32 func_ov001_02175f60(s32,s32,s32,s32);s32 func_ov001_02171f88(void);s32 DrawPanelText(s32,s32,s32,s32,s32,s32,s32,s32);s32 CloseTextPanel(s32);
-s32 p,t;
-if(*(u8 *)&data_ov001_02193ccc)return 0;
+s32 panel,text;
+if(*(u8 *)&gOv001MessagePanelActive)return 0;
 Ov001_LoadAsset(data_ov001_0218feb0,func_0200436c);
 *(volatile u32 *)0x4001010=0x1920000;
-p=CreateTextPanel(1,0);t=func_ov001_02175f60(gOv001MessageArchive,a,b,c);
-DrawPanelText(p,20,0,216,64,2,func_ov001_02171f88(),t);CloseTextPanel(p);
-data_ov001_02193ccc=1;return 1;
+panel=CreateTextPanel(1,0);text=func_ov001_02175f60(gOv001MessageArchive,messageId,value,index);
+DrawPanelText(panel,20,0,216,64,2,func_ov001_02171f88(),text);CloseTextPanel(panel);
+gOv001MessagePanelActive=1;return 1;
 }
 
 s32 Ov001_FreeOptionBackground(void) {
  void func_ov001_0218af70(s32);
- if((u8)data_ov001_02193ccc==0) return 0;
+ if((u8)gOv001MessagePanelActive==0) return 0;
  func_ov001_0218af70(1);
- data_ov001_02193ccc=0;
+ gOv001MessagePanelActive=0;
  return 1;
 }
 
@@ -175,7 +178,7 @@ void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
 void func_ov001_02171dd0(s32 a){
 s32 x;func_ov001_02175d78(&x,0);
 if(x==1){Ov001_OpenMenu(a);return;}
-if(x==2)func_ov001_0218564c(a);
+if(x==2)Ov001_LoadMenuRows(a);
 }
 
 void func_ov001_02171e20(M2C_UNK arg0) {
@@ -274,12 +277,12 @@ Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[3],-1,right,bottom);
 }
 
 void Ov001_FreeSpriteObjects(void) {
- void func_ov001_0218a1cc(s32);
+ void Ov001_DestroySprite(s32);
  extern s32 gOv001ChoiceFrameSprites;
  s32 i,v;
  for(i=0;i<4;i++){
  v=((s32*)gOv001ChoiceFrameSprites)[i];
- if(v){func_ov001_0218a1cc(v);((s32*)gOv001ChoiceFrameSprites)[i]=0;}
+ if(v){Ov001_DestroySprite(v);((s32*)gOv001ChoiceFrameSprites)[i]=0;}
  }
 }
 

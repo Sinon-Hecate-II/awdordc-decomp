@@ -1,5 +1,9 @@
 /* 25 functions from 0x0218851C to 0x021893E4 (ov001), found by ds-decomp. */
 #include "common.h"
+/* The ov001 profile / download-play setup state (gOv001ProfileState). */
+#define PROFILE_STATE      0xA90 /* u8: current profile / download-play screen state */
+#define PROFILE_RESULT     0xAAC /* u8: result the state-2 list start acts on (1 start list, 2 leave) */
+#define PROFILE_LINK_FRAMES 0xA98 /* u32: frames the download-play link step has been running */
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
 extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
@@ -151,22 +155,32 @@ void func_ov001_02188c78(void *p, void *a) {
     M2C_FIELD(gOv001ProfileState, void **, 0xaa4) = func_ov001_02184c60();
 }
 
-int func_ov001_02188d68(void) {
- extern void *gOv001ProfileState; void func_0201808c(void);
- unsigned int state=M2C_FIELD(gOv001ProfileState,u8 *,0xa90);
- if(state==1||state==20||state==23||state==26||state==29){
- M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=34;
- M2C_FIELD(gOv001ProfileState,u8 *,0xaac)=0;return 1;
- }
- if(state==4||state==5||state==6||state==13){
- if(state==4 && M2C_FIELD(gOv001ProfileState,u32 *,0xa98)<6)return 0;
- func_0201808c();
- M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=16;
- M2C_FIELD(gOv001ProfileState,u8 *,0xaac)=2;return 1;
- }
- if((u8)(state+247)<=1){M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=32;return 1;}
- if(state==12){M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=34;return 1;}
- return 0;
+/* Leaves the profile / download-play setup screen from its current state: moves the
+ * state machine on to an exit state (ending the multiboot transfer when a download-play
+ * link is up) and returns whether the current state could be left. */
+int Ov001_LeaveProfileSetup(void) {
+    extern void *gOv001ProfileState;
+    void func_0201808c(void);
+    unsigned int state = M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE);
+
+    /* idle / list wait states: go straight to the exit state */
+    if (state == 1 || state == 20 || state == 23 || state == 26 || state == 29) {
+        M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 34;
+        M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_RESULT) = 0;
+        return 1;
+    }
+    /* download-play / link states: end the transfer and leave through state 16 */
+    if (state == 4 || state == 5 || state == 6 || state == 13) {
+        if (state == 4 && M2C_FIELD(gOv001ProfileState, u32 *, PROFILE_LINK_FRAMES) < 6) return 0;
+        func_0201808c();
+        M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 16;
+        M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_RESULT) = 2;
+        return 1;
+    }
+    /* (u8)(state + 247) <= 1 is state 9 or 10: the profile list is up */
+    if ((u8)(state + 247) <= 1) { M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 32; return 1; }
+    if (state == 12) { M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 34; return 1; }
+    return 0;
 }
 
 void func_ov001_02188e44(void) {

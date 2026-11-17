@@ -371,7 +371,7 @@ s32 func_0200bd20(void) {
     return 1;
 }
 
-s32 func_0200bd28(s32 a,s32 b){void func_0200fe24(u16);void func_0200fe40(u16);extern s32 data_0212fbfc;switch(b){case 9:func_0200fe24((u16)data_0212fbfc);return 0;case 10:func_0200fe40((u16)data_0212fbfc);return 0;case 1:return 4;default:return 8;}}
+s32 func_0200bd28(s32 a,s32 b){void CARD_LockRom(u16);void CARD_UnlockRom(u16);extern s32 data_0212fbfc;switch(b){case 9:CARD_LockRom((u16)data_0212fbfc);return 0;case 10:CARD_UnlockRom((u16)data_0212fbfc);return 0;case 1:return 4;default:return 8;}}
 
 s32 func_0200bd94(void) {
     return 1;

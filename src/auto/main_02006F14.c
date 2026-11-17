@@ -100,7 +100,7 @@ void func_02007190(void *arg0) {
 void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     u64 GetSystemTick(void);
     void func_020070b4(void *);
-    u64 func_02072088(u64, u64);
+    u64 U64Divide(u64, u64);
     extern u16 data_0212dfc4;
     u32 pa, pb;
     u64 now, period, stored, q, inc;
@@ -117,7 +117,7 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     stored = M2C_FIELD(arg0, u64 *, 0x24);
     if (stored >= now) return;
     period = M2C_FIELD(arg0, u64 *, 0x1c);
-    q = func_02072088(now - stored, period);
+    q = U64Divide(now - stored, period);
     inc = period * (q + 1);
     stored += inc;
     M2C_FIELD(arg0, u64 *, 0x0C) = stored;
@@ -337,17 +337,17 @@ void func_02007668(s32 arg0) {
     M2C_UNK func_01ff81e4();
     void func_0200519c(s32);
     void OS_SetIrqMask(s32);
-    u16 func_0200558c(void);
+    u16 OS_GetLockID(void);
     void func_0200763c(s32);
     M2C_UNK SystemHalt();
     void func_02007ca4(s32);
-    u16 func_0200fe24(u16);
+    u16 CARD_LockRom(u16);
 
     if (*(u16 *)0x027FFC40 == 2) {
         u16 x;
         SystemHalt();
-        x = func_0200558c();
-        func_0200fe24((u16)(x << 16 >> 16));
+        x = OS_GetLockID();
+        CARD_LockRom((u16)(x << 16 >> 16));
         func_02007ca4(0);
         func_02007ca4(1);
         func_02007ca4(2);

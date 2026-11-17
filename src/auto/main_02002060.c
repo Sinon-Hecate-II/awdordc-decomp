@@ -59,7 +59,7 @@ void func_020022d8(void) {
  * is installed, gGxInitTables+4 == -1) and sets both engines' BG2/BG3 affine
  * matrices to identity (0x100 = 1.0 in 8.8 fixed point). */
 void GX_InitDisplay(void) {
-void GX_ResetBankState(void); s32 func_0200558c(void); void SystemHalt(void); void DmaFill(s32,void *,s32,s32); void CpuFill(s32,void *,s32);
+void GX_ResetBankState(void); s32 OS_GetLockID(void); void SystemHalt(void); void DmaFill(s32,void *,s32,s32); void CpuFill(s32,void *,s32);
 extern s16 data_0212dbc0; extern s16 data_020f5200;
 s32 resourceId;
 *(volatile u16 *)0x4000304 |= 0x8000;                      /* POWCNT1: LCD on */
@@ -67,7 +67,7 @@ s32 resourceId;
 *(volatile u16 *)0x4000304 |= 1;
 GX_ResetBankState();
 while(M2C_FIELD(&data_0212dbc0,u16 *,2)==0) {
-resourceId=func_0200558c();
+resourceId=OS_GetLockID();
 if(resourceId==-3) SystemHalt();                        /* no id free: hang */
 M2C_FIELD(&data_0212dbc0,u16 *,2)=resourceId;
 }

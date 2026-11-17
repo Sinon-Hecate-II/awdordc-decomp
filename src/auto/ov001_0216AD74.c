@@ -122,7 +122,7 @@ M2C_FIELD(p,u16 *,6)=func_ov001_0216ceb0(M2C_FIELD(p,u16 *,6));
 
 s32 func_ov001_0216bc68(s32 a,void *b,s32 *c,s32 d) {
 s32 func_ov001_0216bd08(s32,void *,s32 *,s32);
-s32 func_ov001_0216bde4(s32,void *,s32 *,s32);
+s32 Ov001_HandleRoomData(s32,void *,s32 *,s32);
 s32 func_ov001_0216bebc(s32,void *,s32 *,s32);
 s32 func_ov001_0216bf60(void *);
 u32 Ov001SwapEndian16(u16);
@@ -132,7 +132,7 @@ if(M2C_FIELD(p,u8 *,15)!=17){++*c;return a;}
 if(func_ov001_0216bf60((u8 *)b+12)>0){++*c;return a;}
 switch(Ov001SwapEndian16(M2C_FIELD(p,u16 *,6))) {
 case 0x1010:a=func_ov001_0216bd08(a,b,c,d);break;
-case 0x2010:a=func_ov001_0216bde4(a,b,c,d);break;
+case 0x2010:a=Ov001_HandleRoomData(a,b,c,d);break;
 case 0x3010:a=func_ov001_0216bebc(a,b,c,d);break;
 }
 return a;

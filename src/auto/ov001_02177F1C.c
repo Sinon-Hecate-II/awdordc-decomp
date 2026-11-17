@@ -22,24 +22,24 @@ extern M2C_UNK gOv001OptionFrameBottom;
 }
 
 void func_ov001_02177fac(void) {
-    void func_ov001_021837e4(s32,u8,u8);
+    void Ov001_LoadObjTile(s32,u8,u8);
     extern M2C_UNK data_ov001_0218f72c;
     extern M2C_UNK gOv001OptionMenuState;
     u8 value;
     value = M2C_FIELD(&data_ov001_0218f72c, u8 *, M2C_FIELD(&gOv001OptionMenuState,u8 *,0));
-    func_ov001_021837e4(M2C_FIELD(&gOv001OptionMenuState,s32 *,4),value,value);
+    Ov001_LoadObjTile(M2C_FIELD(&gOv001OptionMenuState,s32 *,4),value,value);
 }
 
 void func_ov001_02177fd8(void) {
     void func_ov001_02178010(void);
     void func_ov001_02178090(void);
     M2C_UNK func_ov001_02171e58(s32);
-    M2C_UNK func_ov001_021713c4(s32);
+    M2C_UNK Ov001_CreateAnimSprite(s32);
     M2C_UNK func_ov001_0217231c(s32);
     M2C_UNK Ov001_PlaySound(s32);
     func_ov001_02178010();
     func_ov001_02171e58(30);
-    func_ov001_021713c4(0);
+    Ov001_CreateAnimSprite(0);
     func_ov001_0217231c(1);
     Ov001_PlaySound(11);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178090);
@@ -104,7 +104,7 @@ void func_ov001_02178134(void) {
     M2C_UNK func_ov001_02171494();
     M2C_UNK func_ov001_021723d4();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    s32 func_ov001_021760d4();
+    s32 Ov001_IsProfileScreenDone();
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern s8 data_ov001_02193d74;
@@ -112,7 +112,7 @@ void func_ov001_02178134(void) {
     void func_ov001_021789d8(void);
     void func_ov001_02178bc0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (func_ov001_021760d4() == 0) return;
+    if (Ov001_IsProfileScreenDone() == 0) return;
     func_ov001_021723d4();
     func_ov001_02171494();
     func_ov001_0218af70(0);
@@ -352,7 +352,7 @@ void func_ov001_02178600(void) {
 }
 
 void func_ov001_0217863c(void) {
-    s32 func_ov001_0217170c();
+    s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
@@ -360,7 +360,7 @@ void func_ov001_0217863c(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (func_ov001_0217170c() == 0) {
+    if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
     func_ov001_0218af70(0);
@@ -370,7 +370,7 @@ void func_ov001_0217863c(void) {
 }
 
 void Ov001_OpenWfcEraseScreen(void) {
-    s8 func_ov001_02171c24(s32, s32, s32);
+    s8 Ov001_ShowMessagePanel(s32, s32, s32);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_021786d4(void);
     void func_ov001_02178754(void);
@@ -378,7 +378,7 @@ void Ov001_OpenWfcEraseScreen(void) {
     data_ov001_02193d78 = 0;
     func_ov001_021786d4();
     func_ov001_02172250(0x13);
-    func_ov001_02171c24(0x3C, -1, 0);
+    Ov001_ShowMessagePanel(0x3C, -1, 0);
     func_ov001_02171e58(0x1B);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178754);
 }
@@ -484,13 +484,13 @@ void func_ov001_021788bc(void) {
 }
 
 void func_ov001_02178920(void) {
-    s32 func_ov001_0217170c();
-    extern M2C_UNK func_ov001_021778c0;
+    s32 Ov001_IsIconRowIdle();
+    extern M2C_UNK Ov001_InitOptionMenu;
     void func_ov001_02178460(void);
     extern u8 data_ov001_02193d78;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (data_ov001_02193d78 == 0 && Ov001_IsFadeActive(1) != 0) return;
-    if (func_ov001_0217170c() == 0) return;
+    if (Ov001_IsIconRowIdle() == 0) return;
     func_ov001_0218af70(0);
     if (data_ov001_02193d78 == 0) {
         Ov001_FreeOptionBackground();
@@ -499,7 +499,7 @@ void func_ov001_02178920(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193d78 == 0) {
         Ov001_SetNextScreenMode(0, 1);
-        Ov001_SetStepCallback(&func_ov001_021778c0);
+        Ov001_SetStepCallback(&Ov001_InitOptionMenu);
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
@@ -537,12 +537,12 @@ void func_ov001_02178a74(void) {
 }
 
 void func_ov001_02178aa8(void) {
-    s32 func_ov001_021760d4();
+    s32 Ov001_IsProfileScreenDone();
     extern M2C_UNK func_ov001_02178ad8;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (func_ov001_021760d4() == 0) {
+    if (Ov001_IsProfileScreenDone() == 0) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_02178ad8);
@@ -568,7 +568,7 @@ void func_ov001_02178aec(void) {
 
 void func_ov001_02178b28(void) {
     M2C_UNK Ov001_FreeOptionBackground();
-    extern M2C_UNK func_ov001_021778c0;
+    extern M2C_UNK Ov001_InitOptionMenu;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
@@ -580,7 +580,7 @@ void func_ov001_02178b28(void) {
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback(&func_ov001_021778c0);
+    Ov001_SetStepCallback(&Ov001_InitOptionMenu);
 }
 
 void func_ov001_02178b8c(void) {
@@ -592,13 +592,13 @@ void func_ov001_02178b8c(void) {
 }
 
 void func_ov001_02178bc0(void) {
-    s8 func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    s8 Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_02178bfc(void);
     extern s8 data_ov001_02193d80;
     extern M2C_UNK func_ov001_02178c7c;
     func_ov001_02178bfc();
     func_ov001_02171e58(0x20);
-    data_ov001_02193d80 = func_ov001_02171c24(0x3C, -1, 0);
+    data_ov001_02193d80 = Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_SetStepCallback(&func_ov001_02178c7c);
 }
 
@@ -641,7 +641,7 @@ void func_ov001_02178d20(void) {
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
-    if (func_ov001_021760d4() == 0) {
+    if (Ov001_IsProfileScreenDone() == 0) {
         return;
     }
     Ov001_UnlockIconRow();

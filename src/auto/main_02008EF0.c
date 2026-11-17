@@ -7,9 +7,9 @@ typedef struct Shared09d40 { u8 pad[0x388]; u32 value; } Shared09d40;
 extern u16 gLinkInitialized;
 extern s32 gFifoMessageHandlers[32];
 void FifoReceiveHandler(void);
-void func_0200902c(void);
-void func_0200962c(void);
-void *func_02009210(int);
+void InitSoundCommandQueue(void);
+void InitSoundCommandLink(void);
+void *AllocSoundCommand(int);
 s32 Sound_FlushCommands(s32);
 void func_02009854(void *);
 typedef struct Link09a0c { void *owner; struct Link09a0c *next; } Link09a0c;
@@ -36,67 +36,71 @@ void func_02008f60(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
     SendArm7Message(7, arg0 | (arg4 << 0x18), arg1, arg2, arg3);
 }
 
-s32 SendArm7Message(int a,int b,int c,int d,int e){void *func_02009210(int);void *p=func_02009210(1);if(!p)return (s32)p;M2C_FIELD(p,s32 *,4)=a;M2C_FIELD(p,s32 *,8)=b;M2C_FIELD(p,s32 *,12)=c;M2C_FIELD(p,s32 *,16)=d;M2C_FIELD(p,s32 *,20)=e;return func_02009298(p);}
+s32 SendArm7Message(int a,int b,int c,int d,int e){void *AllocSoundCommand(int);void *p=AllocSoundCommand(1);if(!p)return (s32)p;M2C_FIELD(p,s32 *,4)=a;M2C_FIELD(p,s32 *,8)=b;M2C_FIELD(p,s32 *,12)=c;M2C_FIELD(p,s32 *,16)=d;M2C_FIELD(p,s32 *,20)=e;return EnqueueSoundCommand(p);}
 
-void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;InitMutex(&data_0212e004);func_0200902c();func_0200973c();}
+void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;InitMutex(&data_0212e004);InitSoundCommandQueue();func_0200973c();}
 
-void func_02009004(void) {
+void Sound_LockMutex(void) {
     M2C_UNK LockMutex(M2C_UNK *);
     extern M2C_UNK data_0212e004;
     LockMutex(&data_0212e004);
 }
 
-void func_02009018(void){M2C_UNK UnlockMutex(M2C_UNK *);extern M2C_UNK data_0212e004;UnlockMutex(&data_0212e004);}
+void Sound_UnlockMutex(void){M2C_UNK UnlockMutex(M2C_UNK *);extern M2C_UNK data_0212e004;UnlockMutex(&data_0212e004);}
 
 #pragma opt_strength_reduction off
 #pragma peephole off
-void func_0200902c(void){
-extern u8 data_0212e300[];
-extern M2C_UNK data_0212e020,data_0212f020,data_0212fae8,data_0212e080;
-extern s32 *data_0212fb60;
-int i;void *p;
-func_0200962c();
-M2C_FIELD(&data_0212e020,void **,0)=&data_0212e300;
-i=0;goto check;
-loop:M2C_FIELD(&data_0212e300,void **,i*24)=(char *)&data_0212e300+(i+1)*24;
-i++;check: if(i<255)goto loop;
-M2C_FIELD(&data_0212f020,int *,0xac8)=0;
-M2C_FIELD(&data_0212e020,void **,16)=&data_0212fae8;
-M2C_FIELD(&data_0212e020,int *,8)=0;
-M2C_FIELD(&data_0212e020,int *,12)=0;
-M2C_FIELD(&data_0212e020,int *,28)=0;
-M2C_FIELD(&data_0212e020,int *,20)=0;
-M2C_FIELD(&data_0212e020,int *,24)=0;
-M2C_FIELD(&data_0212e020,int *,32)=1;
-M2C_FIELD(&data_0212e020,int *,4)=0;
-data_0212fb60=(s32 *)&data_0212e080;
-func_02009854((void *)data_0212fb60);
-p=func_02009210(1);
-if(!p)return;
-M2C_FIELD(p,int *,4)=29;
-M2C_FIELD(p,s32 **,8)=data_0212fb60;
-func_02009298(p);Sound_FlushCommands(1);
+/* Set up the ARM7 sound command queue: chain the node pool into a free list,
+ * reset the queue state and the driver work area, point the shared
+ * command-argument buffer at its base and post command 29 with that buffer so
+ * the ARM7 side knows where the arguments live. */
+void InitSoundCommandQueue(void){
+extern u8 gSoundCommandNodes[];
+extern M2C_UNK gSoundCommandQueueState,gSoundWork,gSoundCommandQueueEnd,gSoundCommandBuffer;
+extern s32 *gSoundCommandBufferPtr;
+int index;void *command;
+InitSoundCommandLink();
+M2C_FIELD(&gSoundCommandQueueState,void **,0)=&gSoundCommandNodes;
+index=0;goto check;
+loop:M2C_FIELD(&gSoundCommandNodes,void **,index*24)=(char *)&gSoundCommandNodes+(index+1)*24;
+index++;check: if(index<255)goto loop;
+M2C_FIELD(&gSoundWork,int *,0xac8)=0;
+M2C_FIELD(&gSoundCommandQueueState,void **,16)=&gSoundCommandQueueEnd;
+M2C_FIELD(&gSoundCommandQueueState,int *,8)=0;
+M2C_FIELD(&gSoundCommandQueueState,int *,12)=0;
+M2C_FIELD(&gSoundCommandQueueState,int *,28)=0;
+M2C_FIELD(&gSoundCommandQueueState,int *,20)=0;
+M2C_FIELD(&gSoundCommandQueueState,int *,24)=0;
+M2C_FIELD(&gSoundCommandQueueState,int *,32)=1;
+M2C_FIELD(&gSoundCommandQueueState,int *,4)=0;
+gSoundCommandBufferPtr=(s32 *)&gSoundCommandBuffer;
+func_02009854((void *)gSoundCommandBufferPtr);
+command=AllocSoundCommand(1);
+if(!command)return;
+M2C_FIELD(command,int *,4)=29;
+M2C_FIELD(command,s32 **,8)=gSoundCommandBufferPtr;
+EnqueueSoundCommand(command);Sound_FlushCommands(1);
 }
 #pragma opt_common_subs off
 s32 func_02009100(s32 flags){
-extern M2C_UNK data_0212e020;extern QueueNode09298 *data_0212e044[];
+extern M2C_UNK gSoundCommandQueueState;extern QueueNode09298 *data_0212e044[];
 s32 OS_DisableInterrupts(void);s32 func_0200982c(void);
 State09100 *state; s32 irq;QueueNode09298 *head,*tail;
 irq=OS_DisableInterrupts();
 if(flags&1){
-while(((State09100*)&data_0212e020)->count==func_0200982c()){
+while(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
 OS_RestoreInterrupts(irq);func_0200758c(100);irq=OS_DisableInterrupts();
 }
-}else if(((State09100*)&data_0212e020)->count==func_0200982c()){
+}else if(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
 OS_RestoreInterrupts(irq);return 0;
 }
-state=(State09100*)&data_0212e020;
+state=(State09100*)&gSoundCommandQueueState;
 head=data_0212e044[state->index];
 state->index++;
 if(state->index>8)state->index=0;
 tail=head;
 if(tail->next){do{tail=tail->next;}while(tail->next);}
-if(M2C_FIELD(&data_0212e020,QueueNode09298**,16))M2C_FIELD(&data_0212e020,QueueNode09298**,16)->next=head;
+if(M2C_FIELD(&gSoundCommandQueueState,QueueNode09298**,16))M2C_FIELD(&gSoundCommandQueueState,QueueNode09298**,16)->next=head;
 else state->head=head;
 state->tail=tail;
 state->pending--;
@@ -105,7 +109,7 @@ OS_RestoreInterrupts(irq);
 return (s32)head;
 }
 #pragma opt_common_subs reset
-void *func_02009210(int flags){
+void *AllocSoundCommand(int flags){
   void func_0200968c(void);
   s32 Sound_FlushCommands(s32);
   s32 func_020096fc(void);
@@ -137,9 +141,9 @@ return p;
 
 
 #pragma opt_common_subs off
-s32 func_02009298(M2C_UNK *arg0) {
-s32 OS_DisableInterrupts(void);extern M2C_UNK data_0212e020;
-s32 s=OS_DisableInterrupts(); M2C_UNK **p=(M2C_UNK **)&data_0212e020;
+s32 EnqueueSoundCommand(M2C_UNK *arg0) {
+s32 OS_DisableInterrupts(void);extern M2C_UNK gSoundCommandQueueState;
+s32 s=OS_DisableInterrupts(); M2C_UNK **p=(M2C_UNK **)&gSoundCommandQueueState;
 if(p[3]==0)p[2]=arg0;else *p[3]=arg0;
 p[3]=arg0;*arg0=0;return OS_RestoreInterrupts(s);
 }
@@ -148,43 +152,43 @@ s32 Sound_FlushCommands(s32 flags) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 s32 func_02009100(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
 s32 SendFifoMessage(s32,M2C_UNK,s32); void func_0200968c(void);
-extern M2C_UNK data_0212e020; extern u8 data_0212e300[]; extern QueueNode09298 *data_0212e044[];
+extern M2C_UNK gSoundCommandQueueState; extern u8 gSoundCommandNodes[]; extern QueueNode09298 *data_0212e044[];
 s32 irq=OS_DisableInterrupts();
 
-if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
-if(((State09100*)&data_0212e020)->pending>=8){
+if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
+if(((State09100*)&gSoundCommandQueueState)->pending>=8){
 if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
-do {func_02009100(1);} while(((State09100*)&data_0212e020)->pending>=8);
-if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
+do {func_02009100(1);} while(((State09100*)&gSoundCommandQueueState)->pending>=8);
+if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
-DC_FlushRange((M2C_UNK)data_0212e300,0x1800);
-if(SendFifoMessage(7,((State09100*)&data_0212e020)->unk8,0)<0){
+DC_FlushRange((M2C_UNK)gSoundCommandNodes,0x1800);
+if(SendFifoMessage(7,((State09100*)&gSoundCommandQueueState)->unk8,0)<0){
 u8 *buf;
 if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
-buf=data_0212e300;
+buf=gSoundCommandNodes;
 goto retry;
 again: {
 OS_RestoreInterrupts(irq);
 func_02009100(0);
 irq=OS_DisableInterrupts();
 DC_FlushRange((M2C_UNK)buf,0x1800);
-if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
+if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 retry:
-if(((State09100*)&data_0212e020)->pending>=8)goto again;
-if(SendFifoMessage(7,((State09100*)&data_0212e020)->unk8,0)<0)goto again;
+if(((State09100*)&gSoundCommandQueueState)->pending>=8)goto again;
+if(SendFifoMessage(7,((State09100*)&gSoundCommandQueueState)->unk8,0)<0)goto again;
 }
 {
 
-s32 idx=((State09100*)&data_0212e020)->unk18;
-data_0212e044[idx]=(QueueNode09298*)((State09100*)&data_0212e020)->unk8;
-((State09100*)&data_0212e020)->unk18=idx+1;
-if(((State09100*)&data_0212e020)->unk18>8)((State09100*)&data_0212e020)->unk18=0;
+s32 idx=((State09100*)&gSoundCommandQueueState)->unk18;
+data_0212e044[idx]=(QueueNode09298*)((State09100*)&gSoundCommandQueueState)->unk8;
+((State09100*)&gSoundCommandQueueState)->unk18=idx+1;
+if(((State09100*)&gSoundCommandQueueState)->unk18>8)((State09100*)&gSoundCommandQueueState)->unk18=0;
 }
-((State09100*)&data_0212e020)->unk8=0;
-((State09100*)&data_0212e020)->unkc=0;
-((State09100*)&data_0212e020)->pending++;
-((State09100*)&data_0212e020)->unk20++;
+((State09100*)&gSoundCommandQueueState)->unk8=0;
+((State09100*)&gSoundCommandQueueState)->unkc=0;
+((State09100*)&gSoundCommandQueueState)->pending++;
+((State09100*)&gSoundCommandQueueState)->unk20++;
 OS_RestoreInterrupts(irq);
 if(flags&2)func_0200968c();
 return 1;
@@ -201,17 +205,17 @@ do {func_02009100(1);}while(!func_02009524(a));
 }
 
 s32 Sound_GetCommandCounter(void) {
-s32 OS_DisableInterrupts(void);extern M2C_UNK data_0212e020;
+s32 OS_DisableInterrupts(void);extern M2C_UNK gSoundCommandQueueState;
 s32 s=OS_DisableInterrupts();s32 r;
-if(M2C_FIELD(&data_0212e020,s32 *,8)==0)r=M2C_FIELD(&data_0212e020,s32 *,4);else r=M2C_FIELD(&data_0212e020,s32 *,32);
+if(M2C_FIELD(&gSoundCommandQueueState,s32 *,8)==0)r=M2C_FIELD(&gSoundCommandQueueState,s32 *,4);else r=M2C_FIELD(&gSoundCommandQueueState,s32 *,32);
 OS_RestoreInterrupts(s);return r;
 }
 
-s32 func_02009524(u32 a){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();s32 r;u32 v=M2C_FIELD(&data_0212e020,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}OS_RestoreInterrupts(state);return r;}
+s32 func_02009524(u32 a){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 r;u32 v=M2C_FIELD(&gSoundCommandQueueState,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}OS_RestoreInterrupts(state);return r;}
 
-s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&data_0212e020,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
+s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 
-s32 func_020095b0(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&data_0212e020,void **,8);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
+s32 func_020095b0(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,8);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 
 s32 func_020095ec(void) {
     s32 func_02009574();
@@ -226,7 +230,7 @@ void func_02009608(int unused,int arg1) {
 s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);OS_RestoreInterrupts(s);
 }
 
-void func_0200962c(void){M2C_UNK func_0200758c(M2C_UNK);s32 func_020096fc();M2C_UNK func_02009e40(M2C_UNK,M2C_UNK *);s32 func_02009e8c(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);func_02009e40(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(func_02009e8c(7,1))return;do{func_0200758c(100);}while(!func_02009e8c(7,1));}
+void InitSoundCommandLink(void){M2C_UNK func_0200758c(M2C_UNK);s32 func_020096fc();M2C_UNK func_02009e40(M2C_UNK,M2C_UNK *);s32 func_02009e8c(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);func_02009e40(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(func_02009e8c(7,1))return;do{func_0200758c(100);}while(!func_02009e8c(7,1));}
 
 void func_0200968c(void) {
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -235,7 +239,7 @@ void func_0200968c(void) {
     } while (SendFifoMessage(7, 0, 0) < 0);
 }
 
-void *func_020096b4(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&data_0212e020,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&data_0212e020,void **,0)=next;if(!next)M2C_FIELD(&data_0212e020,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
+void *func_020096b4(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&gSoundCommandQueueState,void **,0)=next;if(!next)M2C_FIELD(&gSoundCommandQueueState,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
 
 s32 func_020096fc(void){s32 func_020062b4(void);s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 state,v,result;if(!func_020062b4())return 1;state=OS_DisableInterrupts();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;OS_RestoreInterrupts(state);if(v)result=1;else result=0;return result;}
 
@@ -257,13 +261,13 @@ if(M2C_FIELD(p,u8 *,8)!=(u8)(a>>8))return;
 if(M2C_FIELD(p,void (**)(int),0))M2C_FIELD(p,void (**)(int),0)(M2C_FIELD(p,int *,4));
 }
 
-s32 func_02009800(void){M2C_UNK DC_InvalidateRange(s32 *,M2C_UNK);extern s32 *data_0212fb60;DC_InvalidateRange(data_0212fb60+1,4);return data_0212fb60[1];}
+s32 func_02009800(void){M2C_UNK DC_InvalidateRange(s32 *,M2C_UNK);extern s32 *gSoundCommandBufferPtr;DC_InvalidateRange(gSoundCommandBufferPtr+1,4);return gSoundCommandBufferPtr[1];}
 
 s32 func_0200982c(void) {
     M2C_UNK DC_InvalidateRange(s32 *, M2C_UNK);
-    extern s32 *data_0212fb60;
-    DC_InvalidateRange(data_0212fb60, 4);
-    return *data_0212fb60;
+    extern s32 *gSoundCommandBufferPtr;
+    DC_InvalidateRange(gSoundCommandBufferPtr, 4);
+    return *gSoundCommandBufferPtr;
 }
 
 void func_02009854(void *a){
@@ -282,61 +286,65 @@ if(a < -240)n=3;else if(a < -120)n=2;else if(a < -60)n=1;else n=0;
 return v|(n<<8);
 }
 
-void func_02009940(void *a,int i,void *b){
-Link09a0c *entry,*p,*next;void *owner;
-func_02009004();
-owner=((Link09a0c *)a+i)[3].owner;
-if(owner){
-if(b==owner){func_02009018();return;}
-entry=(Link09a0c *)((char *)a+24)+i;
-p=M2C_FIELD(owner,Link09a0c **,24);
-if(entry==p){M2C_FIELD(owner,Link09a0c **,24)=((Link09a0c *)a+i)[3].next;func_020067c4(((Link09a0c *)a+i)[3].owner,60);}
+/* Make `newOwner` the owner of link slot `index` of `object`: detach the slot
+ * from its previous owner's linked list, prepend it to newOwner's list (both
+ * list heads live at +0x18) and clean the slot's and the owners' caches; holds
+ * the sound mutex throughout. */
+void Link_SetSlotOwner(void *object,int index,void *newOwner){
+Link09a0c *entry,*p,*next;void *previousOwner;
+Sound_LockMutex();
+previousOwner=((Link09a0c *)object+index)[3].owner;
+if(previousOwner){
+if(newOwner==previousOwner){Sound_UnlockMutex();return;}
+entry=(Link09a0c *)((char *)object+24)+index;
+p=M2C_FIELD(previousOwner,Link09a0c **,24);
+if(entry==p){M2C_FIELD(previousOwner,Link09a0c **,24)=((Link09a0c *)object+index)[3].next;DC_CleanRange(((Link09a0c *)object+index)[3].owner,60);}
 else{
 if(p){do{next=p->next;if(entry==next)break;p=next;}while(next);}
-p->next=((Link09a0c *)a+i)[3].next;func_020067c4(p,8);
+p->next=((Link09a0c *)object+index)[3].next;DC_CleanRange(p,8);
 }
 }
-p=M2C_FIELD(b,Link09a0c **,24);
-M2C_FIELD(b,Link09a0c **,24)=(Link09a0c *)((char *)a+24)+i;
-((Link09a0c *)a+i)[3].next=p;
-((Link09a0c *)a+i)[3].owner=b;
-func_02009018();func_020067c4(a,60);func_020067c4(b,60);
+p=M2C_FIELD(newOwner,Link09a0c **,24);
+M2C_FIELD(newOwner,Link09a0c **,24)=(Link09a0c *)((char *)object+24)+index;
+((Link09a0c *)object+index)[3].next=p;
+((Link09a0c *)object+index)[3].owner=newOwner;
+Sound_UnlockMutex();DC_CleanRange(object,60);DC_CleanRange(newOwner,60);
 }
 
 void func_02009a0c(void *a){
 int i;Link09a0c *entry,*p,*next;void *owner;
-func_02009004();
+Sound_LockMutex();
 entry=(Link09a0c *)((char *)a+24);
 for(i=0;i<4;i++,entry++){
 owner=((Link09a0c *)a+i)[3].owner;
 if(owner){
 p=M2C_FIELD(owner,Link09a0c **,24);
-if(entry==p){M2C_FIELD(owner,Link09a0c **,24)=((Link09a0c *)a+i)[3].next;func_020067c4(owner,60);}
+if(entry==p){M2C_FIELD(owner,Link09a0c **,24)=((Link09a0c *)a+i)[3].next;DC_CleanRange(owner,60);}
 else {
 if(p){do {next=p->next;if(entry==next)break;p=next;}while(next);}
-p->next=((Link09a0c *)a+i)[3].next;func_020067c4(p,8);
+p->next=((Link09a0c *)a+i)[3].next;DC_CleanRange(p,8);
 }
 }
 }
-func_02009018();
+Sound_UnlockMutex();
 }
 
 void func_02009aa4(void *arg0) {
     void *temp_r6;
     void *var_r0;
 
-    func_02009004();
+    Sound_LockMutex();
     var_r0 = M2C_FIELD(arg0, void **, 0x18);
     if (var_r0 != NULL) {
         do {
             temp_r6 = M2C_FIELD(var_r0, void **, 4);
             M2C_FIELD(var_r0, s32 *, 0) = 0;
             M2C_FIELD(var_r0, void **, 4) = NULL;
-            func_020067c4(var_r0, 8);
+            DC_CleanRange(var_r0, 8);
             var_r0 = temp_r6;
         } while (temp_r6 != NULL);
     }
-    func_02009018();
+    Sound_UnlockMutex();
 }
 
 void func_02009aec(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=0;}
@@ -380,22 +388,22 @@ cursor[0]++;cursor[1]=0;
 return 0;
 }
 
-s32 func_02009cbc(void *arg0) {
+s32 GetPackedTableCount(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x38);
 }
 
-void func_02009cc4(s32 arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_020067c4(s32, M2C_UNK);
-    func_02009004();
+void SetPackedTableEntry(s32 arg0, s32 arg1, s32 arg2) {
+    M2C_UNK DC_CleanRange(s32, M2C_UNK);
+    Sound_LockMutex();
     M2C_FIELD((arg0 + (arg1 * 4)), s32 *, 0x3C) = arg2;
-    func_020067c4(arg0 + 0x3C + (arg1 * 4), 4);
-    func_02009018();
+    DC_CleanRange(arg0 + 0x3C + (arg1 * 4), 4);
+    Sound_UnlockMutex();
 }
 
-void *func_02009cf8(char *a,s32 b){
-void *v;func_02009004();v=M2C_FIELD(a+b*4,void **,60);
+void *GetPackedTableEntry(char *a,s32 b){
+void *v;Sound_LockMutex();v=M2C_FIELD(a+b*4,void **,60);
 if(v){if((u32)v<0x2000000U)v=a+(u32)v;}else v=0;
-func_02009018();return v;
+Sound_UnlockMutex();return v;
 }
 
 void func_02009d34(void) {

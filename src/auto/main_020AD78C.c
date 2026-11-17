@@ -1,6 +1,7 @@
 /* 29 functions from 0x020AD78C to 0x020AE768 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "gx.h"
 #pragma push
 #pragma optimization_level 0
 static inline void DisplaySetBits(u16 *reg,u16 bits) { *reg |= bits; }
@@ -499,15 +500,18 @@ void func_020ae528(M2C_UNK arg0) {
 
 void BlendPalette(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=BlendRgb555_16(*p,a,b,c);p++;}}
 
-u16 func_020ae5a0(u16 a) {
-u16 r=a&31,g=(a&0x3e0)>>5,b=(a&0x7c00)>>10;
-u16 v=(r*299+g*587+b*114)/1000;
-r=v*255/255; g=v*200/255; b=v*150/255;
-return (r&31)|((g&31)<<5)|((b&31)<<10);
+/* Convert a palette colour to a warm sepia tint using weighted luminance. */
+u16 ConvertRgb555ToSepia(u16 color) {
+    u16 red = color & GX_RGB_CHANNEL_MASK, green = (color & GX_RGB_GREEN_MASK) >> GX_RGB_GREEN_SHIFT, blue = (color & GX_RGB_BLUE_MASK) >> GX_RGB_BLUE_SHIFT;
+    u16 luminance = (red * 299 + green * 587 + blue * 114) / 1000;
+    red = luminance * 255 / 255;
+    green = luminance * 200 / 255;
+    blue = luminance * 150 / 255;
+    return (red & GX_RGB_CHANNEL_MASK) | ((green & GX_RGB_CHANNEL_MASK) << GX_RGB_GREEN_SHIFT) | ((blue & GX_RGB_CHANNEL_MASK) << GX_RGB_BLUE_SHIFT);
 }
 
 void func_020ae67c(u16 *arg0, s32 arg1) {
-    u16 func_020ae5a0(u16);
+    u16 ConvertRgb555ToSepia(u16);
     s32 i;
     u16 *ptr;
     arg1 /= 2;
@@ -515,7 +519,7 @@ void func_020ae67c(u16 *arg0, s32 arg1) {
     i = 0;
     if (arg1 > 0) {
         for (; i < arg1; i++) {
-            *ptr = func_020ae5a0(*ptr);
+            *ptr = ConvertRgb555ToSepia(*ptr);
             ptr++;
         }
     }

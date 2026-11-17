@@ -28,7 +28,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *LoadFileToBuffer(void *,s32);void func_0207c780(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void StepMapViewToTile(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -72,7 +72,7 @@ statReg4=*(u16 **)gCur3DSpriteEngine;*statReg4=*statReg4|256;
 statReg5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg5=(*statReg5&~192)|64;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,81)=16;M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,82)=0;statReg6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg6=*statReg6&~1;statReg7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg7=*statReg7&~2;statReg8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg8=*statReg8&~4;statReg9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg9=*statReg9&~8;statReg10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg10=*statReg10&~16;statReg11=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg11=*statReg11|256;statReg12=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg12=*statReg12&~512;statReg13=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg13=*statReg13&~1024;statReg14=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg14=*statReg14&~2048;statReg15=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg15=*statReg15&~4096;
 
-objectRes=func_02080e30(GetLocalizedFileName(sOccupationObjectName),1);
+objectRes=LoadFileToBuffer(GetLocalizedFileName(sOccupationObjectName),1);
 func_0207c780(objectRes,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x6b80);
 func_0207c780(objectRes+0x3c0,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x7f80);
 if(screen[54]==0)func_0207c780(objectRes+0x478,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);else func_0207c780(objectRes+0x690,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);
@@ -116,7 +116,7 @@ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
 gCur3DSpriteEngine=savedEngine;
 screen[53]=1;
-func_0207b764(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)gCurrentMap,s16*,0x52de));
+StepMapViewToTile(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)gCurrentMap,s16*,0x52de));
 }
 
 /* Draws the CO occupation cut-in for one frame: tints the panel palette toward

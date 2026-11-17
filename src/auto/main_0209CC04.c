@@ -557,12 +557,12 @@ s32 func_0209d790(void *arg0) {
     s32 func_020866fc(s32);
     M2C_UNK ShowMessageText(s32);
     M2C_UNK func_02092888(void *);
-    M2C_UNK func_020945f8();
+    M2C_UNK ResetDialogUI();
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4);
     if (func_020866fc(temp_r4) != 0) {
-        func_020945f8();
+        ResetDialogUI();
         ShowMessageText(temp_r4);
         func_02092888(arg0);
     }
@@ -587,9 +587,9 @@ s32 func_0209d7d8(void *arg0) {
 
 void func_0209d818(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_0208999c(void *, u8, s32);
-    void func_020899cc(void *, u8, s32, s32);
+    void RenderTextLayerMessage(void *, u8, s32, s32);
     if (arg3 < 0) func_0208999c(arg0, (u8)arg1, arg2);
-    else func_020899cc(arg0, (u8)arg1, arg3 << 5, arg2);
+    else RenderTextLayerMessage(arg0, (u8)arg1, arg3 << 5, arg2);
     M2C_FIELD(arg0, s32 *, 0x58) |= 0x1000;
 }
 

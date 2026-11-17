@@ -34,6 +34,13 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
 #define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */
 #define WH_CHILD_BITS   0x60 /* u16: one bit per child still wanted */
+#define WH_CHILD_RATIO  0x5e /* u16: best (lowest) ratio a child scan reported so far, 101 = none */
+#define WH_CHILD_RATIO_NONE 0x65 /* no child reported a ratio yet */
+
+/* The per-channel report a child scan hands back to its callback. */
+#define WH_CHANNEL_STATUS 0x02 /* u16 nonzero = the channel failed with this code */
+#define WH_CHANNEL_INDEX  0x08 /* u16 one-based channel (child) index */
+#define WH_CHANNEL_RATIO  0x0a /* u16 the channel's ratio, lower is better */
 #define WH_RANDOM_SEED  0x58 /* u32: xorshift/LCG state for picking a child */
 #define WH_RANDOM_MUL   0x10dcd /* seed multiplier of the game's LCG */
 #define WH_RANDOM_ADD   0x3039 /* seed increment of the game's LCG */

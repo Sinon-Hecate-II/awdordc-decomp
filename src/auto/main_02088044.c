@@ -7,7 +7,7 @@ void func_02088044(void *arg0) {
     void *func_02087e68();
     M2C_UNK func_02087ea0(void *, void *);
     s32 func_02087f20(void *, void *, u16, u16);
-    s32 func_02087f70(void *, u16, u16);
+    s32 SpriteCellListBackgroundHit(void *, u16, u16);
     extern void *gTouchState;
     void *temp_r1_3;
     s8 temp_r1_2;
@@ -85,7 +85,7 @@ loop_2:
             }
         }
         if (var_r5 == M2C_FIELD(arg0, u16 *, 0x10)) {
-            if ((M2C_FIELD(arg0, u16 *, 0x22) != 0) && (func_02087f70(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0)) {
+            if ((M2C_FIELD(arg0, u16 *, 0x22) != 0) && (SpriteCellListBackgroundHit(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0)) {
                 if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
                     M2C_FIELD(arg0, s8 *, 8) = -2;
                     M2C_FIELD(arg0, u8 *, 0xE) = 0U;
@@ -113,7 +113,7 @@ loop_2:
                         M2C_FIELD(arg0, s8 *, 0xB) = (s8) M2C_FIELD(arg0, s8 *, 8);
                     }
                 }
-            } else if ((func_02087f70(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(arg0, u16 *, 0x22) & 2)) {
+            } else if ((SpriteCellListBackgroundHit(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(arg0, u16 *, 0x22) & 2)) {
                 M2C_FIELD(arg0, s8 *, 0xD) = 1;
             }
         }
@@ -504,9 +504,9 @@ void Hide3DSprite(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x48) = (u8) (M2C_FIELD(arg0, u8 *, 0x48) & ~1);
 }
 
-void func_02088db8(void *p,s32 a){void Show3DSprite(void *);if(!a){Show3DSprite(p);M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0xfc000000)|0x40000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x10;}
+void Show3DSpriteFade(void *p,s32 a){void Show3DSprite(void *);if(!a){Show3DSprite(p);M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0xfc000000)|0x40000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x10;}
 
-void func_02088e0c(void *p,s32 a){void Hide3DSprite(void *);if(!a){Hide3DSprite(p);M2C_FIELD(p,u32 *,0x40)&=~0xfc000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x20;}
+void Hide3DSpriteFade(void *p,s32 a){void Hide3DSprite(void *);if(!a){Hide3DSprite(p);M2C_FIELD(p,u32 *,0x40)&=~0xfc000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x20;}
 
 void func_02088e5c(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x50) = arg1;
@@ -536,5 +536,5 @@ void func_02088f1c(void *p){if(!M2C_FIELD(p,u8 *,0x4e)){M2C_FIELD(p,s16 *,0x34)=
 
 void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);func_02088e5c(p,a,b);func_02088e70(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
 
-void func_02088fc4(void *p,s8 a){void Hide3DSpriteSlide(void *);func_02088e70(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);Hide3DSpriteSlide(p);}
+void Start3DSpriteSlideOut(void *p,s8 a){void Hide3DSpriteSlide(void *);func_02088e70(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);Hide3DSpriteSlide(p);}
 

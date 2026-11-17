@@ -3,6 +3,12 @@
 typedef struct {u8 kind,length; u16 pad; u8 *data;} ParsedItem;
 typedef struct {u8 count; u8 pad[3]; ParsedItem items[16];} ParsedItems;
 typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } PacketParams_02012a64;
+/* Parameter block of a download-play (multiboot) session sent with WFC command 7. */
+#define SESSION_PAYLOAD     0x00 /* void *: optional data copied to the child */
+#define SESSION_PAYLOAD_LEN 0x04 /* u16: payload length in bytes */
+#define SESSION_HEADER      0x14 /* u16: nonzero when the session carries an extra header */
+#define SESSION_SIZE_A      0x34 /* u16: transfer A size, header included (max 512) */
+#define SESSION_SIZE_B      0x36 /* u16: transfer B size, header included (max 512) */
 
 s32 func_02011bb0(void) {
     void *WFC_GetInfoBlock();
@@ -13,7 +19,7 @@ s32 func_02011bb0(void) {
     u16 v;
     u16 w;
     p = WFC_GetInfoBlock();
-    if (func_020114b4(2, 7, 8) != 0) {
+    if (WFC_CheckChannelState(2, 7, 8) != 0) {
         return 0;
     }
     DC_InvalidateRange(M2C_FIELD(p, void **, 4) + 0xC, 4);
@@ -123,21 +129,21 @@ data_020f5540=(u16)(data_020f5540+1);return (u16)data_020f5540;
 }
 
 s32 func_020120f8(M2C_UNK a){
-s32 func_020114b4(s32,s32); void *WFC_GetInfoBlock();s32 r;void *p;
-r=func_020114b4(1,0);if(r)return r;func_020112b4(3,a);p=WFC_GetInfoBlock();r=func_02011324(3,3,M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,16));if(!r)r=2;return r;
+s32 WFC_CheckChannelState(s32,s32); void *WFC_GetInfoBlock();s32 r;void *p;
+r=WFC_CheckChannelState(1,0);if(r)return r;WFC_SetChannelParam(3,a);p=WFC_GetInfoBlock();r=WFC_SendCommand(3,3,M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,16));if(!r)r=2;return r;
 }
 
 s32 func_02012158(M2C_UNK arg0) {
-    s32 func_020114b4(M2C_UNK, M2C_UNK);
+    s32 WFC_CheckChannelState(M2C_UNK, M2C_UNK);
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(1, 1);
+    temp_r0 = WFC_CheckChannelState(1, 1);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(4, arg0);
-    var_r0 = func_02011324(4, 0);
+    WFC_SetChannelParam(4, arg0);
+    var_r0 = WFC_SendCommand(4, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -148,12 +154,12 @@ s32 func_02012198(M2C_UNK arg0) {
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(1, 1);
+    temp_r0 = WFC_CheckChannelState(1, 1);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(5, arg0);
-    var_r0 = func_02011324(5, 0);
+    WFC_SetChannelParam(5, arg0);
+    var_r0 = WFC_SendCommand(5, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -164,12 +170,12 @@ s32 func_020121d8(M2C_UNK arg0) {
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(1, 2);
+    temp_r0 = WFC_CheckChannelState(1, 2);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(6, arg0);
-    var_r0 = func_02011324(6, 0);
+    WFC_SetChannelParam(6, arg0);
+    var_r0 = WFC_SendCommand(6, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -187,9 +193,9 @@ s32 func_02012218(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(0, arg1);
+    WFC_SetChannelParam(0, arg1);
     temp_r0_2 = WFC_GetInfoBlock();
-    var_r0 = func_02011324(0, 3, M2C_FIELD(temp_r0_2, s32 *, 0), M2C_FIELD(temp_r0_2, s32 *, 4), M2C_FIELD(temp_r0_2, s32 *, 0x10));
+    var_r0 = WFC_SendCommand(0, 3, M2C_FIELD(temp_r0_2, s32 *, 0), M2C_FIELD(temp_r0_2, s32 *, 4), M2C_FIELD(temp_r0_2, s32 *, 0x10));
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -197,8 +203,8 @@ s32 func_02012218(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_02012274(M2C_UNK arg0) {
-    M2C_UNK func_020112b4(M2C_UNK, M2C_UNK);
-    s32 func_02011324();
+    M2C_UNK WFC_SetChannelParam(M2C_UNK, M2C_UNK);
+    s32 WFC_SendCommand();
     s32 func_0201146c();
     s32 temp_r0;
     s32 var_r0;
@@ -207,8 +213,8 @@ s32 func_02012274(M2C_UNK arg0) {
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(1, arg0);
-    var_r0 = func_02011324(1, 0);
+    WFC_SetChannelParam(1, arg0);
+    var_r0 = WFC_SendCommand(1, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -219,34 +225,43 @@ s32 func_020122ac(M2C_UNK arg0) {
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(1, 2);
+    temp_r0 = WFC_CheckChannelState(1, 2);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(2, arg0);
-    var_r0 = func_02011324(2, 0);
+    WFC_SetChannelParam(2, arg0);
+    var_r0 = WFC_SendCommand(2, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
     return var_r0;
 }
 
-s32 func_020122ec(s32 arg0,void *arg1){
-s32 func_020114b4(s32,s32);s32 func_020123c8(void *);void func_020067c4(void *,s32);
-s32 result=func_020114b4(1,2);s32 extra;
-if(result)return result;
-if(!arg1)return 6;
-if(M2C_FIELD(arg1,u16 *,4)&&!M2C_FIELD(arg1,void **,0))return 6;
-if(M2C_FIELD(arg1,u16 *,0x34)+(M2C_FIELD(arg1,u16 *,0x14)?42:0)>512 ||
-M2C_FIELD(arg1,u16 *,0x36)+(M2C_FIELD(arg1,u16 *,0x14)?6:0)>512)return 6;
-func_020123c8(arg1);func_020112b4(7,arg0);
-func_020067c4(arg1,64);
-if(M2C_FIELD(arg1,u16 *,4))func_020067c4(M2C_FIELD(arg1,void **,0),M2C_FIELD(arg1,u16 *,4));
-result=func_02011324(7,1,arg1);
-if(!result)result=2;return result;
+/* Starts a download-play (multiboot) session on the ARM7: checks the parameters,
+ * installs `handler` as the command-7 callback, writes the parameter block back to
+ * memory and queues it.  Returns 0 on success (2 once queued), 6 for bad parameters,
+ * or a Wi-Fi error code. */
+s32 WFC_StartDownloadPlay(s32 handler, void *params) {
+    s32 WFC_CheckChannelState(s32, s32);
+    s32 WFC_ValidateStartParams(void *);
+    void DC_CleanRange(void *, s32);
+    s32 result = WFC_CheckChannelState(1, 2);
+
+    if (result) return result;
+    if (!params) return 6;
+    if (M2C_FIELD(params, u16 *, SESSION_PAYLOAD_LEN) && !M2C_FIELD(params, void **, SESSION_PAYLOAD)) return 6;
+    if (M2C_FIELD(params, u16 *, SESSION_SIZE_A) + (M2C_FIELD(params, u16 *, SESSION_HEADER) ? 42 : 0) > 512 ||
+        M2C_FIELD(params, u16 *, SESSION_SIZE_B) + (M2C_FIELD(params, u16 *, SESSION_HEADER) ? 6 : 0) > 512) return 6;
+    WFC_ValidateStartParams(params);
+    WFC_SetChannelParam(7, handler);
+    DC_CleanRange(params, 64);
+    if (M2C_FIELD(params, u16 *, SESSION_PAYLOAD_LEN)) DC_CleanRange(M2C_FIELD(params, void **, SESSION_PAYLOAD), M2C_FIELD(params, u16 *, SESSION_PAYLOAD_LEN));
+    result = WFC_SendCommand(7, 1, params);
+    if (!result) result = 2;
+    return result;
 }
 
-s32 func_020123c8(void *arg0) {
+s32 WFC_ValidateStartParams(void *arg0) {
     u16 temp_r0;
     u16 temp_r1;
 
@@ -264,7 +279,7 @@ s32 func_020123c8(void *arg0) {
     return 1;
 }
 
-s32 func_02012418(M2C_UNK a,M2C_UNK b){void *WFC_GetInfoBlock();s32 r=func_020114b4(1,2);void *p;if(r)return r;p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(8,a);r=func_02011324(8,1,b);if(!r)r=2;return r;}
+s32 func_02012418(M2C_UNK a,M2C_UNK b){void *WFC_GetInfoBlock();s32 r=WFC_CheckChannelState(1,2);void *p;if(r)return r;p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;WFC_SetChannelParam(8,a);r=WFC_SendCommand(8,1,b);if(!r)r=2;return r;}
 
 void func_02012474(M2C_UNK arg0) {
     M2C_UNK func_02012418(M2C_UNK, M2C_UNK);
@@ -275,12 +290,12 @@ s32 func_02012484(M2C_UNK arg0) {
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(1, 7);
+    temp_r0 = WFC_CheckChannelState(1, 7);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(9, arg0);
-    var_r0 = func_02011324(9, 0);
+    WFC_SetChannelParam(9, arg0);
+    var_r0 = WFC_SendCommand(9, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
@@ -293,15 +308,15 @@ s32 func_02012484(M2C_UNK arg0) {
  * match id, player count, info word and the info bytes.  Returns 0 on success
  * (2 once handed to the queue), 6 for a bad profile. */
 s32 func_020124c4(s32 commandHandler,void *profile){
-s32 func_020114b4();s32 func_020113d0(void *,s32);
+s32 WFC_CheckChannelState();s32 WFC_SendCommandPacket(void *,s32);
 u32 packet[4];s32 result;u16 playerCount;
-result=func_020114b4(3,2,3,5);
+result=WFC_CheckChannelState(3,2,3,5);
 if(result)return result;
 if(!profile)return 6;
 if(!M2C_FIELD(profile,u32 *,0))return 6;
 playerCount=M2C_FIELD(profile,u16 *,4);
 if(playerCount<1U||playerCount>14U)return 6;
-func_020112b4(10,commandHandler);
+WFC_SetChannelParam(10,commandHandler);
 M2C_FIELD(packet,u16 *,0)=10;
 M2C_FIELD(packet,u16 *,2)=M2C_FIELD(profile,u16 *,4);
 M2C_FIELD(packet,u32 *,4)=M2C_FIELD(profile,u32 *,0);
@@ -312,21 +327,21 @@ M2C_FIELD(packet,u8 *,12)=M2C_FIELD(profile,u8 *,10);
 M2C_FIELD(packet,u8 *,13)=M2C_FIELD(profile,u8 *,11);
 M2C_FIELD(packet,u8 *,14)=M2C_FIELD(profile,u8 *,12);
 M2C_FIELD(packet,u8 *,15)=M2C_FIELD(profile,u8 *,13);
-result=func_020113d0(packet,16);
+result=WFC_SendCommandPacket(packet,16);
 if(!result)result=2;
 return result;
 }
 
 /* Wraps params into a packet and dispatches it to the host. */
 s32 WFC_SendRequestPacket(s32 sendCode, void *params) {
-s32 func_020114b4();
-s32 func_020113d0(void *, s32);
+s32 WFC_CheckChannelState();
+s32 WFC_SendCommandPacket(void *, s32);
 void MI_CpuCopy8(void *, void *, s32);
 u16 packet[30];
 s32 r;
 u16 type;
 
-r = func_020114b4(3, 2, 3, 5);
+r = WFC_CheckChannelState(3, 2, 3, 5);
 if (r) return r;
 if (!params) return 6;
 if (!M2C_FIELD(params, u32 *, 0)) return 6;
@@ -335,7 +350,7 @@ if (M2C_FIELD(params, u16 *, 18) > 32U) return 6;
 type = M2C_FIELD(params, u16 *, 16);
 if (type != 0 && type != 1 && type != 2 && type != 3) return 6;
 if ((u16)(type + 0xfffe) <= 1U && M2C_FIELD(params, u16 *, 52) > 32U) return 6;
-func_020112b4(38, sendCode);
+WFC_SetChannelParam(38, sendCode);
 M2C_FIELD(packet, u16 *, 0) = 38;
 M2C_FIELD(packet, u16 *, 2) = M2C_FIELD(params, u16 *, 6);
 M2C_FIELD(packet, u32 *, 4) = M2C_FIELD(params, u32 *, 0);
@@ -346,7 +361,7 @@ M2C_FIELD(packet, u16 *, 18) = M2C_FIELD(params, u16 *, 16);
 M2C_FIELD(packet, u16 *, 54) = M2C_FIELD(params, u16 *, 52);
 M2C_FIELD(packet, u16 *, 20) = M2C_FIELD(params, u16 *, 18);
 MI_CpuCopy8((u8 *)params + 20, &packet[11], 32);
-r = func_020113d0(packet, 60);
+r = WFC_SendCommandPacket(packet, 60);
 if (!r) r = 2;
 return r;
 }
@@ -355,50 +370,56 @@ s32 func_02012700(M2C_UNK arg0) {
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_020114b4(1, 5);
+    temp_r0 = WFC_CheckChannelState(1, 5);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020112b4(0xB, arg0);
-    var_r0 = func_02011324(0xB, 0);
+    WFC_SetChannelParam(0xB, arg0);
+    var_r0 = WFC_SendCommand(0xB, 0);
     if (var_r0 == 0) {
         var_r0 = 2;
     }
     return var_r0;
 }
 
-s32 func_02012740(s32 a,u16 *b,void *c,s32 d,u16 e){
+/* Sends this player's connection data to the ARM7 as WFC command 12: cleans
+ * `connData` (a 16-bit word count followed by the data), clears the info block's
+ * link fields, stores `commandHandler` as the command's completion callback, then
+ * queues a 40-byte packet carrying the data pointer, a 24-byte `extraData` block
+ * (zeroed when null) and the `option`/`flag` words. Returns 0 on success (2 once
+ * queued), 6 for bad parameters, or a Wi-Fi error code. */
+s32 WFC_SendConnectionData(s32 commandHandler,u16 *connData,void *extraData,s32 option,u16 flag){
 void *WFC_GetInfoBlock(void);
-void func_020067c4(void *,s32);void MI_CpuCopy8(void *,void *,s32);void MI_CpuFill8(void *,s32,s32);s32 func_020113d0(void *,s32);
+void DC_CleanRange(void *,s32);void MI_CpuCopy8(void *,void *,s32);void MI_CpuFill8(void *,s32,s32);s32 WFC_SendCommandPacket(void *,s32);
 u32 packet[10];s32 r;void *p;
-r=func_020114b4(1,2);if(r)return r;if(!b)return 6;
-func_020067c4(b,*b*2);p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(12,a);
-M2C_FIELD(packet,u16 *,0)=12;M2C_FIELD(packet,u16 **,4)=b;
-if(c)MI_CpuCopy8(c,&packet[2],24);else MI_CpuFill8(&packet[2],0,24);
-M2C_FIELD(packet,s32 *,32)=d;M2C_FIELD(packet,u16 *,38)=e;
-r=func_020113d0(packet,40);if(!r)r=2;return r;
+r=WFC_CheckChannelState(1,2);if(r)return r;if(!connData)return 6;
+DC_CleanRange(connData,*connData*2);p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;WFC_SetChannelParam(12,commandHandler);
+M2C_FIELD(packet,u16 *,0)=12;M2C_FIELD(packet,u16 **,4)=connData;
+if(extraData)MI_CpuCopy8(extraData,&packet[2],24);else MI_CpuFill8(&packet[2],0,24);
+M2C_FIELD(packet,s32 *,32)=option;M2C_FIELD(packet,u16 *,38)=flag;
+r=WFC_SendCommandPacket(packet,40);if(!r)r=2;return r;
 }
 
 /* Register connection profile number `b` of type `a` in the Wi-Fi info block: check
  * the block is a connected (kind 7 or 9) one, then record the profile's bit.  Returns
  * 0 on success, or a Wi-Fi error code (2 = add failed, 6 = bad profile number,
  * 7 = profile not in the block's list). */
-s32 func_0201280c(s32 a,u32 b){s32 func_020114b4();void *WFC_GetInfoBlock();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;s32 r=func_020114b4(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;DC_InvalidateRange((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;func_020112b4(13,a);r=func_02011324(13,1,1<<b);if(!r)r=2;return r;}
+s32 func_0201280c(s32 a,u32 b){s32 WFC_CheckChannelState();void *WFC_GetInfoBlock();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;s32 r=WFC_CheckChannelState(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;DC_InvalidateRange((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;WFC_SetChannelParam(13,a);r=WFC_SendCommand(13,1,1<<b);if(!r)r=2;return r;}
 
 s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void *data) {
     /* Register a pending uplink packet: validates camera/module state, builds packet header in a 64-byte buffer, returns status. */
-    s32 func_020114b4();
+    s32 WFC_CheckChannelState();
     void *WFC_GetInfoBlock();
     void DC_InvalidateRange(void *, s32);
     void CpuFill(s32, void *, s32);
     void func_02007e70(void *, void *, s32);
-    s32 func_020113d0(void *, s32);
+    s32 WFC_SendCommandPacket(void *, s32);
     s32 func_02011b44();
     u32 packet[16];
     s32 rc;
     void *ctx;
     ctx = M2C_FIELD(WFC_GetInfoBlock(), void **, 4);
-    rc = func_020114b4(2, 7, 8);
+    rc = WFC_CheckChannelState(2, 7, 8);
     if (rc) return rc;
     DC_InvalidateRange(ctx + 0x188, 2);
     DC_InvalidateRange(ctx + 0xC6, 2);
@@ -412,7 +433,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
         if (payloadSize < func_02011bb0()) return 6;
         if ((s32)tag < func_02011b44()) return 6;
     }
-    func_020112b4(14, index);
+    WFC_SetChannelParam(14, index);
     CpuFill(0, packet, 64);
     M2C_FIELD(packet, u16 *, 0) = 14;
     packet[1] = peer;
@@ -421,7 +442,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     packet[4] = tag;
     CpuFill(0, &packet[5], 28);
     func_02007e70(data, &packet[12], 16);
-    rc = func_020113d0(packet, 64);
+    rc = WFC_SendCommandPacket(packet, 64);
     if (!rc) rc = 2;
     return rc;
 }

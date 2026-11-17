@@ -324,11 +324,11 @@ void func_020b8910(void) {
     i = 0;
     y = 0x27;
     do {
-        func_020b22a4(4, y, data_021290b4, i);
+        AddSpriteSlot(4, y, data_021290b4, i);
         i++;
         y += 0x10;
     } while (i < 6);
-    func_020b1c78(0);
+    SelectSpriteSlot(0);
 }
 
 #pragma optimization_level 2
@@ -354,13 +354,13 @@ void func_020b8970(void *arg0) {
     void func_0209c024(s32, s32, void *, s32, s32, s32);
     void func_0209c048(s32, s32, void *, s32, s32, s32);
     s32 func_020a8b78(void);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     s32 GetUiColor(s32);
     u8 func_020b846c(s32);
     void RedrawListRows(s32);
     void func_020b8910(void);
-    void func_020c0fac(void *);
+    void CreateMenuUnitSprite(void *);
     s32 func_020cd6fc(void);
     void CreateMenuTextSprite(void *, s32, s32, s32, s32, s32, s32, void *, s32);
     void *GetLocalizedFileName(void *);
@@ -414,12 +414,12 @@ void func_020b8970(void *arg0) {
     if ((u8) (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0)) {
         temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
         temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
-        temp_r9 = func_020aae10(temp_r5);
-        temp_r10 = func_020aae44(temp_r5);
+        temp_r9 = GetUnitSpriteWidth(temp_r5);
+        temp_r10 = GetUnitSpriteHeight(temp_r5);
         func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r9, (u16) temp_r10);
     }
     func_02088f1c(M2C_FIELD(arg0, void **, 0x50));
-    func_020c0fac(arg0);
+    CreateMenuUnitSprite(arg0);
     func_0208ca2c((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
     func_0209c048(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
     func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);

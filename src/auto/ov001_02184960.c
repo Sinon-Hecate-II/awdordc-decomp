@@ -4,20 +4,24 @@
 typedef struct { u8 bytes[240]; } UnkOv001SaveBlock;
 typedef struct { u8 pad[0xe6]; u8 mode:2; u8 flags:6; u8 active; } SaveFlags84;
 
+/* Commits the working save slot into its physical slot: copies the slot image,
+ * keeps, blanks or recomputes the optional player-code fields and the code's
+ * set-bit count according to the "extra empty" flags, then refreshes the save
+ * checksums. */
 void CommitSaveSlot(void) {
 M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32);
-s32 CountSetBits(void *);void func_ov001_02184d5c(s32);extern s32 gSaveData;
+s32 CountSetBits(void *);void UpdateSaveChecksums(s32);extern s32 gSaveData;
 u8 *src,*dst;
-src=(u8 *)gSaveData+0x400;
-dst=(u8 *)(gSaveData+(src[244]<<8));
+src=(u8 *)gSaveData+SAVE_WORK_SLOT;
+dst=(u8 *)(gSaveData+(src[SAVE_SLOT_INDEX_REL]<<8));
 *(UnkOv001SaveBlock *)dst=*(UnkOv001SaveBlock *)src;
-if(src[245]){
-MI_CpuFill8(dst+192,0,4);MI_CpuFill8(dst+196,0,4);dst[208]=0;
+if(src[SAVE_SLOT_EMPTY_A]){
+MI_CpuFill8(dst+SAVE_SLOT_PLAYER_CODES,0,4);MI_CpuFill8(dst+SAVE_SLOT_PLAYER_CODES+4,0,4);dst[SAVE_SLOT_CODE_BITS]=0;
 }else{
-MI_CpuCopy8(src+192,dst+192,4);MI_CpuCopy8(src+196,dst+196,4);dst[208]=CountSetBits(src+240);
+MI_CpuCopy8(src+SAVE_SLOT_PLAYER_CODES,dst+SAVE_SLOT_PLAYER_CODES,4);MI_CpuCopy8(src+SAVE_SLOT_PLAYER_CODES+4,dst+SAVE_SLOT_PLAYER_CODES+4,4);dst[SAVE_SLOT_CODE_BITS]=CountSetBits(src+SAVE_SLOT_CODE);
 }
-if(src[246])MI_CpuFill8(dst+200,0,8);else MI_CpuCopy8(src+200,dst+200,8);
-func_ov001_02184d5c(src[244]);
+if(src[SAVE_SLOT_EMPTY_B])MI_CpuFill8(dst+SAVE_SLOT_PLAYER_CODES+8,0,8);else MI_CpuCopy8(src+SAVE_SLOT_PLAYER_CODES+8,dst+SAVE_SLOT_PLAYER_CODES+8,8);
+UpdateSaveChecksums(src[SAVE_SLOT_INDEX_REL]);
 }
 
 /* Store a received link-match setup - the map name, the shared name-length
@@ -102,22 +106,22 @@ s32 func_ov001_02184c60(void) {
     return gSaveData;
 }
 
-void func_ov001_02184c70(s32 a) {void func_ov001_02184d5c(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;func_ov001_02184d5c(a);}
+void func_ov001_02184c70(s32 a) {void UpdateSaveChecksums(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;UpdateSaveChecksums(a);}
 
 void func_ov001_02184cac(void) {
-void FillU16(s32,s32,s32);void func_02046ebc(void *);void *func_020467b8(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void func_ov001_02184d5c(s32);extern s32 gSaveData;
+void FillU16(s32,s32,s32);void func_02046ebc(void *);void *func_020467b8(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void UpdateSaveChecksums(s32);extern s32 gSaveData;
 u8 buf[20];register s32 i;void *p;register u8 *q;register u32 fill=255;s32 offset;
 FillU16(0,gSaveData,1024);
 i=0;do{q=(u8 *)(gSaveData+((u32)i<<8));q[0xe7]=fill;i++;}while(i<3);
 func_02046ebc(buf);p=func_020467b8(buf);
 i=0;offset=0;do{MI_CpuCopy8(p,(void *)(gSaveData+offset+0xf0),14);i++;offset+=256;}while(i<2);
-for(i=0;i<4;i++)func_ov001_02184d5c(i);
+for(i=0;i<4;i++)UpdateSaveChecksums(i);
 }
 
 #pragma push
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
-void func_ov001_02184d5c(s32 a) {
+void UpdateSaveChecksums(s32 a) {
  M2C_UNK MI_CpuFill8(void *, s32, s32);
  u16 func_02076838(void *, void *, s32);
  s32 func_02045ee0(s32, s32 *, s32);
@@ -210,7 +214,7 @@ void Ov001_MoveSpriteLayout();
 void Ov001_SetSpriteAttrs();
 void Ov001_SlideMenuStep0();
 s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
-void func_ov001_02185b60();
+void Ov001_LoadMenuResource();
 u8 *attrs;
 s32 i;
 u8 *tiles;
@@ -223,7 +227,7 @@ Ov001_MoveSpriteLayout(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,OV001_MENU_SP
 Ov001_SetSpriteAttrs(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,OV001_MENU_SPRITES))[i],-1,0,*attrs++);
 }
 ((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,OV001_MENU_SPRITES))[OV001_MENU_TASK_SLOT]=Ov001_AddTask(0,Ov001_SlideMenuStep0,0,120);
-func_ov001_02185b60(variant);Ov001_PlaySound(13);
+Ov001_LoadMenuResource(variant);Ov001_PlaySound(13);
 }
 
 /* First step of the ov001 option menu slide-in: slides the five option rows
@@ -315,20 +319,25 @@ void func_ov001_021855e4(s32 a) {
     *(s32 *)((u8 *)*(void **)((u8 *)&gOv001MenuLayout + 4) + 0x14) = 0;
 }
 #pragma opt_instruction_scheduling reset
-void func_ov001_0218560c(void){ s32 Ov001_AddTask(s32,void (*)(),s32,s32); void func_ov001_02185734(s32); extern M2C_UNK gOv001MenuLayout; s32 result; M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s8 *,24)=1; result=Ov001_AddTask(0,func_ov001_02185734,0,120); M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,20)=result; }
+void func_ov001_0218560c(void){ s32 Ov001_AddTask(s32,void (*)(),s32,s32); void Ov001_SlideMenuCloseStep0(s32); extern M2C_UNK gOv001MenuLayout; s32 result; M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s8 *,24)=1; result=Ov001_AddTask(0,Ov001_SlideMenuCloseStep0,0,120); M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,20)=result; }
 
-void func_ov001_0218564c(s32 arg0) {
+/* Load the ov001 option menu's row sprites for one variant, reusing the sprite
+ * objects the rows already have: for every second row (0, 2, 4) it loads the
+ * row's icon into that row's sprite object, then sets the sprite's palette, its
+ * position from the variant's row table and its attributes; it finishes by
+ * loading the menu layout resource. */
+void Ov001_LoadMenuRows(s32 variant) {
 extern u8 Ov001MenuIconTiles[],Ov001MenuRowAttrs[];extern const u16 Ov001MenuRowPositions[];extern M2C_UNK gOv001MenuLayout;
-s32 Ov001_GetSpriteObjEntry();void Ov001_LoadSpriteObjLayout();void Ov001_SetSpritePalette();void Ov001_MoveSpriteLayout();void Ov001_SetSpriteAttrs();void func_ov001_02185b60();
-s32 i,t;u8 *p,*q;
-p=Ov001MenuIconTiles+arg0*5;q=Ov001MenuRowAttrs+arg0*5;
+s32 Ov001_GetSpriteObjEntry();void Ov001_LoadSpriteObjLayout();void Ov001_SetSpritePalette();void Ov001_MoveSpriteLayout();void Ov001_SetSpriteAttrs();void Ov001_LoadMenuResource();
+s32 i,entry;u8 *icon,*attr;
+icon=Ov001MenuIconTiles+variant*OV001_MENU_ROWS;attr=Ov001MenuRowAttrs+variant*OV001_MENU_ROWS;
 i=0;do{
-t=Ov001_GetSpriteObjEntry(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],0);
-Ov001_LoadSpriteObjLayout(1,*p,t);p+=2;
+entry=Ov001_GetSpriteObjEntry(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],0);
+Ov001_LoadSpriteObjLayout(1,*icon,entry);icon+=2;
 Ov001_SetSpritePalette(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],-1,0);
 Ov001_MoveSpriteLayout(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],-1,((const u16(*)[2])Ov001MenuRowPositions)[i][0],((const u16(*)[2])Ov001MenuRowPositions)[i][1]);
-Ov001_SetSpriteAttrs(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],-1,0,*q);q+=2;
-i+=2;}while(i<5);func_ov001_02185b60(arg0);
+Ov001_SetSpriteAttrs(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],-1,0,*attr);attr+=2;
+i+=2;}while(i<5);Ov001_LoadMenuResource(variant);
 }
 
 s32 func_ov001_02185714(void) {
@@ -341,22 +350,25 @@ s32 func_ov001_02185714(void) {
 
 #pragma push
 #pragma scheduling off
-void func_ov001_02185734(s32 a){
-void Ov001_GetSpritePosition();void Ov001_MoveSpriteLayout();void Ov001_SetSlideStep();void func_ov001_021857c8();extern M2C_UNK gOv001MenuLayout;s32 pos[2];void *p; s32 n;
+void Ov001_SlideMenuCloseStep0(s32 a){
+void Ov001_GetSpritePosition();void Ov001_MoveSpriteLayout();void Ov001_SetSlideStep();void Ov001_SlideMenuCloseStep1();extern M2C_UNK gOv001MenuLayout;s32 pos[2];void *p; s32 n;
 Ov001_GetSpritePosition(M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,16),0,&pos[1],&pos[0]);pos[1]-=8;
 if(pos[1]>152){Ov001_MoveSpriteLayout(M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,16),-1,pos[1],33);return;}
-p=M2C_FIELD(&gOv001MenuLayout,void **,4);pos[1]=152; n=~(pos[1]-152);Ov001_MoveSpriteLayout(M2C_FIELD(p,s32 *,16),n,pos[1],33);Ov001_SetSlideStep(a,func_ov001_021857c8);
+p=M2C_FIELD(&gOv001MenuLayout,void **,4);pos[1]=152; n=~(pos[1]-152);Ov001_MoveSpriteLayout(M2C_FIELD(p,s32 *,16),n,pos[1],33);Ov001_SetSlideStep(a,Ov001_SlideMenuCloseStep1);
 }
 #pragma pop
-void func_ov001_021857c8(s32 arg0) {
+/* Second step of the ov001 option menu slide-out: slides rows 3 and 4 left by 8
+ * pixels a frame until the row at index 3 rests at x 104, then passes the slide
+ * task on to the next step. */
+void Ov001_SlideMenuCloseStep1(s32 task) {
 extern M2C_UNK gOv001MenuLayout; extern const u16 Ov001MenuRowPositions[];
-void Ov001_GetSpritePosition(); void Ov001_MoveSpriteLayout(); void Ov001_SetSlideStep(); void func_ov001_021858a4();
-s32 pos[2]; s32 i;
+void Ov001_GetSpritePosition(); void Ov001_MoveSpriteLayout(); void Ov001_SetSlideStep(); void Ov001_SlideMenuCloseStep2();
+s32 pos[2]; s32 row;
 Ov001_GetSpritePosition(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,4))[3],0,&pos[1],&pos[0]);
 pos[1]-=8;
-if(pos[1]>104){for(i=3;i<5;i++){Ov001_MoveSpriteLayout(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,4))[i],-1,pos[1],((const u16 (*)[2])Ov001MenuRowPositions)[i][1]);}return;}
+if(pos[1]>104){for(row=3;row<5;row++){Ov001_MoveSpriteLayout(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,4))[row],-1,pos[1],((const u16 (*)[2])Ov001MenuRowPositions)[row][1]);}return;}
 pos[1]=104;
-for(i=3;i<5;i++){Ov001_MoveSpriteLayout(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,4))[i],-1,pos[1],((const u16 (*)[2])Ov001MenuRowPositions)[i][1]);}
-Ov001_SetSlideStep(arg0,func_ov001_021858a4);
+for(row=3;row<5;row++){Ov001_MoveSpriteLayout(((s32 *)M2C_FIELD(&gOv001MenuLayout,void **,4))[row],-1,pos[1],((const u16 (*)[2])Ov001MenuRowPositions)[row][1]);}
+Ov001_SetSlideStep(task,Ov001_SlideMenuCloseStep2);
 }
 

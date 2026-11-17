@@ -240,7 +240,7 @@ s32 func_02045620(void){void func_020478b8(void);extern s32 gWebTransaction;func
 /* Validate and send a put.asp web request: the record count and payload size
  * must be in range (a payload needs a size), then the put request is built and
  * queued. Returns 0 once sent, otherwise a web error code (8/9 build failures). */
-s32 func_0204563c(u32 recordCount, s32 arg1, s32 arg2, s32 payload, u32 payloadSize) {
+s32 SendWebPutRequest(u32 recordCount, s32 arg1, s32 arg2, s32 payload, u32 payloadSize) {
     s32 HasNetError();
     s32 BuildWebPutRequest(s32, s32, s32, s32, s32, s32);
     extern s32 gWebTransaction;

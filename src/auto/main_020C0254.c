@@ -142,13 +142,13 @@ void func_020c04fc(void *arg0) {
     void func_020c0424(void *, s32);
     M2C_UNK func_020c0e94(void *);
     M2C_UNK func_020c0f24();
-    void *func_020c0fac(void *);
+    void *CreateMenuUnitSprite(void *);
 
     void func_020c04e4(void);
     s32 var_r4;
 
     func_020c0f24();
-    func_020c0fac(arg0);
+    CreateMenuUnitSprite(arg0);
     var_r4 = 0;
     if ((s32) M2C_FIELD(arg0, u8 *, 0x4D) > 0) {
         do {
@@ -433,12 +433,12 @@ func_020c0454(p,index);
 
 M2C_UNK func_020c0e94(void *p) {
 extern M2C_UNK data_02129608;
-void *func_020b22a4(s32,s32,M2C_UNK *,s32);
+void *AddSpriteSlot(s32,s32,M2C_UNK *,s32);
 s32 func_0207c1b4(s32); s32 func_0207c1d8(s32);
 M2C_UNK FocusSpriteSlotById(); M2C_UNK func_020b204c();
 s32 i,y; y=0; i=y;
 for(;i<M2C_FIELD(p,u8 *,0x4d);i++) {
-void *q=func_020b22a4(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56)+y*8,&data_02129608,i);
+void *q=AddSpriteSlot(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56)+y*8,&data_02129608,i);
 s32 w=func_0207c1b4(i);
 s32 h=func_0207c1d8(i);
 M2C_FIELD(q,s16 *,0x18)=w;M2C_FIELD(q,s16 *,0x1a)=h;
@@ -467,22 +467,25 @@ func_0207bdc4();
 func_0207bf00(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));
 }
 
-void *func_020c0fac(void *arg0) {
+/* Creates the fixed-geometry unit sprite a menu shows (style 2, size 0x120, kind
+ * 3), positions it at (0xe0, 0xa0) with a 0x100 x 0xa0 box, and, when it has a
+ * visible entry, sets that entry's cell rectangle. Returns the new sprite. */
+void *CreateMenuUnitSprite(void *owner) {
 void *func_020ab1c4(s32);
-void func_020aab24(void *,s32,s32,s32,s32);
+void InitUnitSprite(void *,s32,s32,s32,s32);
 void func_02088e84(void *,s16,s16,s16,s32);
-u32 func_020aae10(void *); u32 func_020aae44(void *);
+u32 GetUnitSpriteWidth(void *); u32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s32,s32,u16,u16);
 void func_020ab150(void *,s16); void func_020aad18(void *);void func_02088f1c(void *);
-void *unit; s16 y; s16 x; u32 a,b; u32 cond;
-unit=func_020ab1c4((s32)arg0);
-func_020aab24(unit,2,0x120,3,1);
+void *unit; s16 y; s16 x; u32 width,height; u32 visible;
+unit=func_020ab1c4((s32)owner);
+InitUnitSprite(unit,2,0x120,3,1);
 func_02088e84(unit,0xe0,0xa0,0x100,0xa0);
-cond=M2C_FIELD(M2C_FIELD(unit,void **,0x64),u8 *,0x12)!=0?1:0;
-if(cond & 0xff){
+visible=M2C_FIELD(M2C_FIELD(unit,void **,0x64),u8 *,0x12)!=0?1:0;
+if(visible & 0xff){
 y=M2C_FIELD(unit,s16 *,0x52);x=M2C_FIELD(unit,s16 *,0x50);
-a=func_020aae10(unit);b=func_020aae44(unit);
-func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)a,(u16)b);
+width=GetUnitSpriteWidth(unit);height=GetUnitSpriteHeight(unit);
+func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)height);
 }
 func_020ab150(unit,2);func_020aad18(unit);func_02088f1c(unit);return unit;
 }

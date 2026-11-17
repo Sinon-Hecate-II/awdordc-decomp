@@ -359,7 +359,7 @@ void func_020debf4(void *self){void MenuSpriteUpdate(void*);
  int FindTextLayer(void);
  void func_0208af20(void);
 void *CreateTextLayer(void*);
-void func_020899cc(void*,int,int,u32);
+void RenderTextLayerMessage(void*,int,int,u32);
 void DisableMapConfirm(void);
 void func_01ffa6fc(void*);
 void PlaySoundEffect(u32);
@@ -413,7 +413,7 @@ if(M2C_FIELD(self,u8 *,0x44)==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)contin
 if(M2C_FIELD(self,u8 *,0x44)==3 && gCur3DSpriteEngine!=old)continue;
 
 p=CreateTextLayer(self);
-func_020899cc(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000001);
+RenderTextLayerMessage(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000001);
 M2C_FIELD(p,u32 *,0x58)|=0x1000;
 
 }gCur3DSpriteEngine=old;
@@ -434,7 +434,7 @@ if(M2C_FIELD(self,u8 *,0x44)==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)contin
 if(M2C_FIELD(self,u8 *,0x44)==3 && gCur3DSpriteEngine!=old)continue;
 
 p=CreateTextLayer(self);
-func_020899cc(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000002);
+RenderTextLayerMessage(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000002);
 M2C_FIELD(p,u32 *,0x58)|=0x1000;
 
 }gCur3DSpriteEngine=old;

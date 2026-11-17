@@ -522,7 +522,7 @@ return result;
  * items as fit one page, sliding the item window down a row.  Each step plays
  * the cursor sound; the pixel offset is set to the row delta times the row
  * height.  Returns 1 when the grid moved. */
-u8 func_020b3410(void *grid){
+u8 ScrollSpriteGridPageDown(void *grid){
 s32 Divide(); M2C_UNK PlaySoundEffect(s32);
 s32 active,i,factor,delta; s16 total,count,pages; u8 cols,result; s32 itemsPerPage,oldScroll;
 if(M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0)active=1;else active=0;

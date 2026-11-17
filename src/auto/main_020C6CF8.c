@@ -119,29 +119,46 @@ void func_020c70b4(void) {
     SetBattleCommand(0xE, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
-s32 func_020c70ec(void){
- extern void **gCurrentMap;s32 func_020c60c8(void);s32 func_020c6350(void);s32 CanSaveHiddenTerrainMap(void);
- u8 *p;
- if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26)!=13)return 2;
- if(!func_020c60c8())return 2;
- if(!func_020c6350())return 2;
- p=*gCurrentMap;
- if((M2C_FIELD(p+(M2C_FIELD(p,s16 *,0x52dc)+M2C_FIELD(p+M2C_FIELD(p,s16 *,0x52de)*2,u16 *,0x3758)),u8 *,0x1420)&31)!=1)return 2;
- if(((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u16 *,6)<<21)>>28)==0)return 2;
+/* Availability check for the kind-13 unit (the Rig) command that builds a
+ * temporary airfield on the tile under the cursor: the acting unit must be a
+ * kind-13 transport that still has ammo, the cursor tile must be plain ground
+ * with no friendly unit the acting unit could join or load, and the map's hidden
+ * terrain must still be saveable.  Returns 0 when the command may be issued and
+ * 2 when it may not.  Its twin CanBuildTemporaryPort is the same check for a
+ * shoal tile. */
+s32 CanBuildTemporaryAirfield(void){
+ extern void **gCurrentMap;s32 CanJoinUnitAtCursor(void);s32 CanLoadUnitAtCursor(void);s32 CanSaveHiddenTerrainMap(void);
+ u8 *map;
+ if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26)!=13)return 2;
+ if(!CanJoinUnitAtCursor())return 2;
+ if(!CanLoadUnitAtCursor())return 2;
+ map=*gCurrentMap;
+ if((M2C_FIELD(map+(M2C_FIELD(map,s16 *,MAP_CURSOR_X)+M2C_FIELD(map+M2C_FIELD(map,s16 *,MAP_CURSOR_Y)*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)!=MAP_TERRAIN_PLAIN)return 2;
+ if(((u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_AMMO)<<21)>>28)==0)return 2;
  if(CanSaveHiddenTerrainMap())return 0;return 2;
 }
 
-s32 func_020c71b4(void){
-s32 func_020c60c8(void); s32 func_020c6350(void); s32 CanSaveHiddenTerrainMap(void);
-extern void **gCurrentMap; void *p; s32 x,y;
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26)!=13)return 2;
-if(!func_020c60c8())return 2;
-if(!func_020c6350())return 2;
-p=*gCurrentMap;
-y=M2C_FIELD(p,s16 *,0x52de);x=M2C_FIELD(p,s16 *,0x52dc);
-if((M2C_FIELD((char*)p+(x+M2C_FIELD((char*)p+y*2,u16 *,0x3758)),u8 *,0x1420)&31)!=9)return 2;
-if(((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u16 *,6)<<21)>>28)==0)return 2;
-return CanSaveHiddenTerrainMap()!=0?0:2;
+/* Availability check for a cursor-unit command: the cursor unit must be kind 13,
+ * the tile under the cursor must hold a same-kind unit it can combine with and be
+ * enterable by the selected unit, the tile's terrain must be kind 9, the unit must
+ * still have ammo and the map must still be saveable.  Returns 0 when the command
+ * may be issued and 2 when it may not. */
+s32 CanBuildTemporaryPort(void) {
+    s32 CanJoinUnitAtCursor(void);
+    s32 CanLoadUnitAtCursor(void);
+    s32 CanSaveHiddenTerrainMap(void);
+    extern void **gCurrentMap;
+    void *map;
+    s32 x, y;
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, 0) << 26) >> 26) != 13) return 2;
+    if (!CanJoinUnitAtCursor()) return 2;
+    if (!CanLoadUnitAtCursor()) return 2;
+    map = *gCurrentMap;
+    y = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
+    x = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+    if ((M2C_FIELD((char *)map + (x + M2C_FIELD((char *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) != 9) return 2;
+    if (((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_AMMO) << 21) >> 28) == 0) return 2;
+    return CanSaveHiddenTerrainMap() != 0 ? 0 : 2;
 }
 
 void func_020c727c(void) {
@@ -153,7 +170,7 @@ void func_020c727c(void) {
 
 void func_020c72b4(void) {
  s32 GetUnitIconTiles(s32,s32); s32 func_ov000_0216cd90(s32);
- void func_0207c3dc(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
+ void QueueMemoryCopy(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  u8 *base; u8 *p; s32 n; s32 a; s32 b;
  base = *gCurrentMap;
@@ -163,14 +180,14 @@ void func_020c72b4(void) {
  a = M2C_FIELD(base + n*14,u8 *,0x59a4);
  b = p[0x1d];
  a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
- func_0207c3dc(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4780,0x80,0);
+ QueueMemoryCopy(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4780,0x80,0);
  func_01ff9e44(func_ov000_0216cd90(b),0x340,0x20);
  func_0209c720(0,0x23c,10,2,2);
 }
 
 void func_020c7378(void) {
  s32 GetUnitIconTiles(s32,s32); s32 func_ov000_0216cd90(s32);
- void func_0207c3dc(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
+ void QueueMemoryCopy(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  u8 *base; u8 *p; s32 n; s32 a; s32 b;
  base = *gCurrentMap;
@@ -180,7 +197,7 @@ void func_020c7378(void) {
  a = M2C_FIELD(base + n*14,u8 *,0x59a4);
  b = p[0x1d];
  a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
- func_0207c3dc(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4800,0x80,0);
+ QueueMemoryCopy(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4800,0x80,0);
  func_01ff9e44(func_ov000_0216cd90(b),0x340,0x20);
  func_0209c720(1,0x240,10,2,2);
 }
@@ -279,7 +296,7 @@ void HandleMapCursorInput(void *a) {
 extern void **gCurrentMap;
 s32 IsDialogActive(void *); s32 func_020d4dd0(void); s32 GetMapCursorKeyAction(void); s32 GetMapCursorTouchAction(void);
 M2C_UNK func_020d468c(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
-M2C_UNK func_0207b764(s16,s16);
+M2C_UNK StepMapViewToTile(s16,s16);
 u32 flags=0;
 if(IsDialogActive(a))return;
 func_020bdfdc();
@@ -293,7 +310,7 @@ func_01ffa6fc(a);return;}
 if(flags&32){
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X);
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y);
-func_0207b764(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
+StepMapViewToTile(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 SetSpriteAnimation(a,0);func_01ffa6fc(a);return;}
 if(flags&256){CreateMapMenu();return;}
 if(flags&64){func_020d8fa0();return;}
@@ -302,13 +319,13 @@ func_020cf828(0x1001a);func_0207a7a4(1,4);func_020cf69c(2,10);
 }
 
 void func_020c77d4(void *arg0) {
-    M2C_UNK func_0207b764(s16, s16);
-    func_0207b764(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E));
+    M2C_UNK StepMapViewToTile(s16, s16);
+    StepMapViewToTile(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E));
 }
 
 void func_020c77ec(void *arg0) {
-    M2C_UNK func_0207b774(s32, s32);
-    func_0207b774(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    M2C_UNK PanMapViewToTile(s32, s32);
+    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_020c7804(void *arg0) {
@@ -340,7 +357,7 @@ void func_020c7874(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
 }
 
 void func_020c78ac(void *arg0) {
-    func_0207b774(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_020c78c4(void *arg0) {

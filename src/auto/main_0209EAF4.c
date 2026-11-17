@@ -14,12 +14,12 @@ typedef struct { s16 a,b,c,d; } Unk09Position;
 typedef struct { s32 unk; Unk09Position *p; s32 count; } Unk09List;
 
 void func_0209eaf4(s32 x,s32 y,s32 a){
-extern void **gCurrentMap;extern M2C_UNK data_02156e50;extern M2C_UNK data_0211f87c;
+extern void **gCurrentMap;extern M2C_UNK gBattleCommand;extern M2C_UNK gBattlePreviewPanelDef;
 s32 GetRandomSeed(s32,s32,s32);void func_020d1690(u8,s32,void *);void *func_01ffa3dc(void *,s32);
 s32 base;void *p;s32 v,n;u32 b; s32 result;
 result=GetRandomSeed(x,y,a);
 p=(void *)gCurrentMap;
-M2C_FIELD(&data_02156e50,s32 *,8)=result;
+M2C_FIELD(&gBattleCommand,s32 *,8)=result;
 base=M2C_FIELD((s32)p,s32 *,0);
 func_020d1690(M2C_FIELD(base,u8 *,0x52d4),1,(void *)(base+0x52dc));
 base=(s32)*gCurrentMap;
@@ -28,12 +28,12 @@ n=M2C_FIELD(base,s16 *,0x6ed4);
 v=b&127;
 if(v<n)v=0;else v-=n;
 M2C_FIELD(base+(x+M2C_FIELD((u32)base+(u32)y*2,u16 *,0x3758)),u8 *,0x539c)=v|(b&128);
-p=func_01ffa3dc(&data_0211f87c,7);
+p=func_01ffa3dc(&gBattlePreviewPanelDef,7);
 M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);
 M2C_FIELD(p,s32 *,0x60)=a;M2C_FIELD(p,s32 *,0x34)=0;M2C_FIELD(p,s32 *,0x38)=x;M2C_FIELD(p,s32 *,0x3c)=y;
 }
 
-void func_0209ebe0(void *p){extern M2C_UNK gBattleEndState;extern void **gCurrentMap;u32 v;if(M2C_FIELD(&gBattleEndState,u8 *,0)){if(M2C_FIELD(&gBattleEndState,u8 *,0))v=M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=19;else v=0;if(!(v&255))return;}func_0207b764(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
+void func_0209ebe0(void *p){extern M2C_UNK gBattleEndState;extern void **gCurrentMap;u32 v;if(M2C_FIELD(&gBattleEndState,u8 *,0)){if(M2C_FIELD(&gBattleEndState,u8 *,0))v=M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=19;else v=0;if(!(v&255))return;}StepMapViewToTile(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
 
 void func_0209ec44(void *p) {
 extern void **gCurrentMap;
@@ -59,7 +59,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     s32 func_020d468c(void);
     void BattleUpdateUnitCursor(void);
     extern void **gCurrentMap;
-    extern M2C_UNK data_02156e50;
+    extern M2C_UNK gBattleCommand;
     extern M2C_UNK data_0211f984;
     extern M2C_UNK data_0211f8fc;
 
@@ -92,7 +92,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
         return;
     }
 
-    M2C_FIELD(&data_02156e50, s32 *, 0x8) = GetRandomSeed();
+    M2C_FIELD(&gBattleCommand, s32 *, 0x8) = GetRandomSeed();
     func_020d166c((u8)M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), arg0, (u8 *)*gCurrentMap + 0x52dc);
 
     {

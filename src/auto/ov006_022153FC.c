@@ -574,7 +574,7 @@ done:
  * unreadable code picks the matching error state; then updates the panel sprite
  * and plays the result sound. */
 M2C_UNK ConfirmFriendCode(void *entry){
-void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *CreateTextLayer(void *);void func_020899cc(void *,s32,s32,s32);
+void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
 u32 codeWords[3];u64 enteredCode,ownCode;void *panel=M2C_FIELD(entry,void **,0x10);void *part;u16 **savedEngine;
 if(M2C_FIELD(entry,u8 *,0)==12){
@@ -586,12 +586,12 @@ func_020c5424(codeWords,enteredCode);if(!func_020c54e8(codeWords)){
 MI_CpuCopy8(gFriendCodeInput,M2C_FIELD(panel,s32 *,0x34),13);
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
 Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));EnableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000e);return;}
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);func_020899cc(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,5);PlaySoundEffect(0x1001d);return;
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,5);PlaySoundEffect(0x1001d);return;
 }
 if(ownCode!=0&&enteredCode!=0&&ownCode==enteredCode){
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);func_020899cc(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,4);
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,4);
 }else{
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);func_020899cc(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,6);}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,6);}
 PlaySoundEffect(0x1001d);
 }
 
@@ -605,7 +605,7 @@ extern u16 **gCur3DSpriteEngine;
 extern u16 **g3DSpriteEngineMain;
 #pragma optimization_level 2
 void func_ov006_0221619c(void *arg0) {
-M2C_UNK func_0208df84(s16,s16,s32,s32,s32,s32);
+M2C_UNK DrawFrameBorderPulse(s16,s16,s32,s32,s32,s32);
 s32 GetSpriteAnimValue(s32);M2C_UNK SetTextSpriteValue(void *,s32);M2C_UNK DrawTextSprite(void *);M2C_UNK func_020b1c44(s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;extern s8 gFriendCodeInput[];
 u16 **saved;u16 neg;s32 i,x,y,reset;void *p;s32 offset;
@@ -616,7 +616,7 @@ M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x3a)=neg;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x42)=0;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=neg;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
-func_0208df84((s16)(offset+(M2C_FIELD(arg0,s16 *,0x3a)+1)),(s16)(M2C_FIELD(arg0,s16 *,0x3c)+1),22,22,(u16)((0x3ff&(0x80>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x1000),0);
+DrawFrameBorderPulse((s16)(offset+(M2C_FIELD(arg0,s16 *,0x3a)+1)),(s16)(M2C_FIELD(arg0,s16 *,0x3c)+1),22,22,(u16)((0x3ff&(0x80>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x1000),0);
 i=0;x=60;y=12;
 if(gFriendCodeInput[0]){reset=x;do{
 if(i==6){y+=24;x=reset;}

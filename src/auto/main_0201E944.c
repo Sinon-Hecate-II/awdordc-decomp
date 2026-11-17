@@ -327,7 +327,7 @@ s32 func_0201f1a8(s32 arg0) {
     return 0;
 }
 
-s32 func_0201f1d0(M2C_UNK *arg0, s32 arg1, M2C_UNK arg2) {
+s32 SocketAllocTask(M2C_UNK *arg0, s32 arg1, M2C_UNK arg2) {
     s32 temp_r0 = func_0201f1a8(arg2);
     if (temp_r0 == 0) return temp_r0;
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = arg0;
@@ -357,7 +357,7 @@ s32 func_0201f230(void *arg0) {
     return var_r1;
 }
 
-s32 func_0201f244(M2C_UNK arg0, void *arg1) {
+s32 SocketQueueTask(M2C_UNK arg0, void *arg1) {
     M2C_UNK var_r2;
     s32 temp_r0;
 
@@ -376,8 +376,8 @@ s32 func_0201f244(M2C_UNK arg0, void *arg1) {
     return -0x2A;
 }
 
-s32 func_0201f290(void *arg0, void *arg1) {
-    return func_0201f244(func_0201f230(arg0), arg1);
+s32 SocketSubmitTask(void *arg0, void *arg1) {
+    return SocketQueueTask(func_0201f230(arg0), arg1);
 }
 
 s32 func_0201f2a8(arg0, arg1)
@@ -392,11 +392,11 @@ void *arg1;
     if (M2C_FIELD(arg1, s8 *, 0xD) == 1) {
         func_020062d4((s32)queue, (s32)&message, 1);
         M2C_FIELD(arg1, void **, 8) = queue;
-        func_0201f244(arg0, arg1);
+        SocketQueueTask(arg0, arg1);
         func_02006390((M2C_UNK *)queue, &result, 1);
     } else {
         M2C_FIELD(arg1, void **, 8) = NULL;
-        result = func_0201f244(arg0, arg1);
+        result = SocketQueueTask(arg0, arg1);
     }
     return result;
 }
@@ -424,7 +424,7 @@ if(M2C_FIELD(p,s32*,8))func_020062fc(M2C_FIELD(p,s32*,8),v,0);
 func_0201f210(p);func_02006164();OS_RestoreInterrupts(old); goto loop; done: return; }
 
 s32 func_0201f400(void) {
-    s32 func_0201f1d0(M2C_UNK *, s32, M2C_UNK);
+    s32 SocketAllocTask(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_0201f338(s32, s32);
     s32 func_0201f4b0();
     extern M2C_UNK func_0201f43c;
@@ -434,7 +434,7 @@ s32 func_0201f400(void) {
     if (temp_r0 == 0) {
         return -0x31;
     }
-    func_0201f338(temp_r0, func_0201f1d0(&func_0201f43c, temp_r0, 1));
+    func_0201f338(temp_r0, SocketAllocTask(&func_0201f43c, temp_r0, 1));
     return temp_r0;
 }
 
@@ -555,9 +555,9 @@ s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
 }
 
 s32 func_0201f758(void *arg0) {
-s32 func_020214a8();
+s32 SocketIsUnregistered();
 s32 a,b; s8 v;
-if(func_020214a8()!=0)return -28;
+if(SocketIsUnregistered()!=0)return -28;
 a=0;
 if(arg0!=0) a=(M2C_FIELD(arg0,volatile s16*,0x70)&1)!=0;
 if(!a)return -39;
@@ -569,10 +569,10 @@ return M2C_FIELD(arg0,s8*,0x72)==1?0:-6;
 }
 
 s32 func_0201f7d8(void *arg0, s32 arg1, s32 arg2) {
-s32 func_020214a8(); s32 func_0201f400(); s32 func_0201f9e4(); s32 func_0201f89c();
+s32 SocketIsUnregistered(); s32 func_0201f400(); s32 func_0201f9e4(); s32 SocketListen();
 extern M2C_UNK data_020fafb8;
 s32 a,b,r,h; s8 v;
-if(func_020214a8()!=0)return -28;
+if(SocketIsUnregistered()!=0)return -28;
 a=0;
 if(arg0!=0)a=(M2C_FIELD(arg0,volatile s16*,0x70)&1)!=0;
 if(!a)return -39;
@@ -585,7 +585,7 @@ h=func_0201f400(&data_020fafb8);
 if(h<0)return h;
 r=func_0201f9e4(h,M2C_FIELD(arg0,u16*,0x74));
 if(r<0)return r;
-r=func_0201f89c(h,arg1,arg2);
+r=SocketListen(h,arg1,arg2);
 if(r<0)return r;
 return h;
 }

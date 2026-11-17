@@ -139,7 +139,7 @@ if((u8)(M2C_FIELD(map+(tmp>>3),u8 *,MAP_CELL_BITMAP)&(1<<(tmp&7)))) {
 if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8))goto visible;
 }
 if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8)){
-func_0207b764(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
+StepMapViewToTile(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
 if(func_0207b7c4())return;
 }
 tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
@@ -148,7 +148,7 @@ armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
 ((void (*)(u8 *))M2C_FIELD(data_021261c8+armyId*156,s32 *,spriteSet*40))(unit);
 goto increment;
 visible:
-func_0207b764(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
+StepMapViewToTile(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
 if(func_0207b7c4())return;
 tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
 spriteSet=func_020a3460(player);

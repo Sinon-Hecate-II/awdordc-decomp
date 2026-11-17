@@ -246,7 +246,7 @@ void func_0204ce20(void *);
 void func_0204ceb8(void *);
 void ghiReceiveStatusLine(void *);
 void func_0204d5c0(void *);
-void func_0204da30(void *);
+void ghiReceiveFile(void *);
 /* Run one tick of an async operation/state machine: validate the handle, dispatch by its kind, then settle (signal completion and release the handle) unless it is still busy. */
 s32 func_0204b210(void *operation) {
     extern M2C_UNK data_020fd170, data_020fd17c, data_020fd158, data_020fd188;
@@ -267,7 +267,7 @@ s32 func_0204b210(void *operation) {
     if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 6) ghiReceiveStatusLine(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 7) func_0204d5c0(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 8) func_0204da30(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 8) ghiReceiveFile(operation);
     if (M2C_FIELD(operation, s32 *, 0x108)) func_0204afd8(operation);
     status = M2C_FIELD(operation, s32 *, 0xFC);
     if (status == 0)
@@ -386,8 +386,8 @@ s32 func_0204b688(void *arg0) {
 
 void func_0204b690(s32 *arg0) {
     M2C_UNK gpiFree(s32 *);
-    M2C_UNK func_0204861c(s32);
-    func_0204861c(*arg0);
+    M2C_UNK Vector_Free(s32);
+    Vector_Free(*arg0);
     gpiFree(arg0);
 }
 

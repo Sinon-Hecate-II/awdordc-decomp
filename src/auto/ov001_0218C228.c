@@ -5,7 +5,7 @@ typedef struct { u8 pad[0x180]; RuntimeRangeNode head, tail; s32 unk198, heap; }
 typedef struct { s32 a; u8 pad[4]; s32 b; u8 rest[52]; } RuntimePair64;
 
 RuntimeRangeNode *func_ov001_0218c228(s32 n,s32 size,s32 forward,s32 *out) {
-s32 func_ov001_0218a74c(s32);
+s32 Ov001_QueuePop(s32);
 s32 OS_DisableIrqMask(s32);
 void OS_EnableIrqMask(s32);
 void SystemHalt(void);
@@ -13,7 +13,7 @@ void func_ov001_0218bf84(void *,void *);
 extern s32 data_ov001_02193e6c;
 RuntimeRangeNode *node,*p;
 s32 old,units;
-node=(RuntimeRangeNode *)func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e6c+n*0x1a0,s32 *,0x19c));
+node=(RuntimeRangeNode *)Ov001_QueuePop(M2C_FIELD(data_ov001_02193e6c+n*0x1a0,s32 *,0x19c));
 units=((size+3)&~3)>>2;
 node->size=units;
 old=OS_DisableIrqMask(1);
@@ -50,7 +50,7 @@ return node;
 }
 
 void func_ov001_0218c3a0(u32 arg0) {
-    M2C_UNK func_ov001_0218a6f4(s32, u32);
+    M2C_UNK Ov001_QueuePush(s32, u32);
     M2C_UNK func_ov001_0218bf4c();
     extern s32 data_ov001_02193e6c;
     s32 var_r4;
@@ -60,7 +60,7 @@ void func_ov001_0218c3a0(u32 arg0) {
     if (arg0 >= (u32) (data_ov001_02193e6c + 0x1A0)) {
         var_r4 = 1;
     }
-    func_ov001_0218a6f4(M2C_FIELD(((var_r4 * 0x1A0) + data_ov001_02193e6c), s32 *, 0x19C), arg0);
+    Ov001_QueuePush(M2C_FIELD(((var_r4 * 0x1A0) + data_ov001_02193e6c), s32 *, 0x19C), arg0);
 }
 
 s32 StringLengthUpTo(u8 *p,s32 n) {
@@ -228,7 +228,7 @@ void func_ov001_0218c78c(void) {
 void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); extern s32 gOv001Tasks; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } Ov001_FreeAlloc(data_ov001_02193e70+13); }
 
 void func_ov001_0218c7d4(s32 n) {
-s32 func_ov001_0218a74c(s32);
+s32 Ov001_QueuePop(s32);
 M2C_UNK func_ov001_0218c958();
 extern s32 gOv001Tasks;
 void *node;
@@ -241,7 +241,7 @@ node=M2C_FIELD(node,void **,4);
 }
 offset=(s32)((u32)n*64);
 for(i=0;i<M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,0x34);i++) {
-s32 p=func_ov001_0218a74c(M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,4));
+s32 p=Ov001_QueuePop(M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,4));
 if(!p) return;
 func_ov001_0218c958(n,p);
 }
@@ -253,7 +253,7 @@ func_ov001_0218c898(a,b,c,d,0);
 }
 
 void *func_ov001_0218c898(s32 n,s32 callback,s32 arg,s32 priority,u8 owns) {
-s32 func_ov001_0218a74c(s32);
+s32 Ov001_QueuePop(s32);
 s32 OS_DisableIrqMask(s32);
 void OS_EnableIrqMask(s32);
 void func_ov001_0218bf84(void *,void *);
@@ -261,7 +261,7 @@ extern s32 gOv001Tasks;
 void *p;
 void *q;
 s32 saved;
-p=(void *)func_ov001_0218a74c(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0));
+p=(void *)Ov001_QueuePop(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0));
 M2C_FIELD(p,s32 *,8)=callback;
 M2C_FIELD(p,s32 *,12)=arg;
 M2C_FIELD(p,u8 *,16)=priority;
@@ -284,9 +284,9 @@ void Ov001_SetSlideStep(void *arg0, s32 arg1) {
 }
 
 void Ov001_PostTaskMessage(s32 n,u32 arg) {
-M2C_UNK func_ov001_0218a6f4(s32,u32);
+M2C_UNK Ov001_QueuePush(s32,u32);
 extern s32 gOv001Tasks;
-func_ov001_0218a6f4(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,4),arg);
+Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,4),arg);
 }
 
 void func_ov001_0218c94c(void) {
@@ -297,11 +297,11 @@ void func_ov001_0218c94c(void) {
 M2C_UNK func_ov001_0218c958(s32 n,void *p) {
 void Ov001_FreeAlloc(void *);
 M2C_UNK func_ov001_0218bf4c();
-M2C_UNK func_ov001_0218a6f4(s32,u32);
+M2C_UNK Ov001_QueuePush(s32,u32);
 extern s32 gOv001Tasks;
 if(M2C_FIELD(p,u8 *,17)) Ov001_FreeAlloc((u8 *)p+12);
 func_ov001_0218bf4c(p);
-func_ov001_0218a6f4(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
+Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
 }
 
 void func_ov001_0218c99c(s32 arg0, s8 arg1) {

@@ -153,6 +153,19 @@ typedef struct Sha1Context {
     u8  block[0x40];   /* +0x20 message block being filled */
 } Sha1Context; /* 0x60 bytes */
 
+/* A fixed-point decimal number used by the software-float and BigNum layer (the
+ * calculator, damage and gauge code): a sign, a binary exponent, the number of
+ * digits in use and the digits themselves, each a byte 0..9, most significant
+ * first.  Several source files declared their own copy of this layout
+ * (DecimalBD, Decimal38) before it lived here. */
+typedef struct DecimalNumber {
+    s8  sign;       /* +0x00 0 = positive, nonzero = negative */
+    u8  pad;        /* +0x01 */
+    s16 exponent;   /* +0x02 */
+    u8  length;     /* +0x04 number of digits in use (0..32) */
+    u8  digits[33]; /* +0x05 the digits, most significant first */
+} DecimalNumber;    /* 0x26 bytes */
+
 /* TLS connection (the channel object the TLS record code passes around).  The
  * hash and RC4 states are embedded; the key fields point into the channel's key
  * block, and each direction's sequence number is an 8-byte big-endian counter. */
@@ -175,11 +188,14 @@ enum {
 #define TLS_STATE          0x455 /* u8 TLS record/handshake state */
 #define TLS_HMAC_IPAD      0x36  /* inner HMAC pad byte */
 #define TLS_HMAC_OPAD      0x5c  /* outer HMAC pad byte */
+#define TLS_MD5_PAD_SIZE   0x30  /* bytes of inner/outer pad the MD5 Finished digest hashes */
+#define TLS_SHA1_PAD_SIZE  0x28  /* bytes of inner/outer pad the SHA1 Finished digest hashes */
 #define TLS_MASTER_SECRET  0x00  /* u8[48] the session's master secret */
 #define TLS_RANDOM_A       0x34  /* u8[32] one handshake random */
 #define TLS_RANDOM_B       0x54  /* u8[32] the other handshake random */
 #define TLS_KEY_BLOCK      0x74  /* per-direction MAC secrets and RC4 keys derived by TlsInitRecordKeys */
 #define TLS_SESSION_CACHED 0x30  /* u8 nonzero when a cached session was restored for the peer */
+#define TLS_SESSION_RESUMED 0x31 /* u8 nonzero when the server resumed the cached session */
 #define TLS_SESSION_ID     0x74  /* u8[32] session id echoed in a ClientHello; the key block reuses it later */
 #define TLS_SERVER_SIDE    0x454 /* u8 nonzero when this endpoint uses the server-side role */
 #define TLS_CLIENT_CERT_REQUESTED 0x5ac /* u8 set once a CertificateRequest was received */
@@ -187,6 +203,8 @@ enum {
 #define TLS_PENDING_SIZE   0x828 /* u32 total size of that record */
 #define TLS_PENDING_READ   0x82c /* s32 bytes of it read so far */
 #define TLS_PENDING_KEEP   0x456 /* u8 keep the reassembled record for the caller */
+#define TLS_STATE_SERVER_HELLO_DONE 4 /* TLS_STATE value: the peer sent ServerHelloDone */
+#define TLS_STATE_DONE     8     /* TLS_STATE value meaning the handshake completed */
 #define TLS_STATE_ERROR    9     /* TLS_STATE value meaning the handshake failed */
 #define TLS_RECORD_HEADER  5     /* bytes of a TLS record header */
 #define TLS_MAX_RECORD     0x4800 /* largest accepted record body */
@@ -263,6 +281,61 @@ typedef struct MapSelectScreen {
 #define MAP_SELECT_ROW_TEXT_KEY 0x0C /* s32 localized-text key in the object a row points at */
 #define MAP_SELECT_BLINK        0x04 /* flags38 bit toggled on every label redraw */
 
+/* The ov003 map-grid menu (the 0x3C-byte polymorphic object the map-select
+ * handler holds at +0x48): eleven button sprites -- ids 0..4 in the top row,
+ * 5..9 in the bottom row and 10 the wide button -- plus the entry ids its
+ * per-frame update latches.  Ov003_UpdateMapGridButtons animates the buttons
+ * every frame and records the button that reports a click (MAPGRID_CLICKED) and
+ * the one showing its pressed frame (MAPGRID_PRESSED); the handler then moves
+ * the map preview onto the pressed button.  func_ov003_021e1530 sets up the
+ * selected entry: MAPGRID_CURSOR is its sprite object, MAPGRID_ID the entry id,
+ * MAPGRID_COLUMN/ROW its grid position. */
+#define MAPGRID_CLICKED   0x04 /* s8: button clicked this frame, -1 = none */
+#define MAPGRID_PRESSED   0x05 /* s8: button showing its pressed frame, -1 = none */
+#define MAPGRID_ID        0x06 /* u8: selected entry id (0..10) */
+#define MAPGRID_COLUMN    0x07 /* u8: id % 5 */
+#define MAPGRID_ROW       0x08 /* u8: id / 5 */
+#define MAPGRID_COUNT     0x0B /* u8: number of visible map buttons */
+#define MAPGRID_BUTTONS   0x0C /* void *[11]: the button sprites */
+#define MAPGRID_BUTTON_STRIDE 4
+#define MAPGRID_CURSOR    0x38 /* void *: sprite object of the selected entry */
+
+/* The ov003 waypoint/segment list (the object the panel holds at +0x6C): 26 slot
+ * sprites, each with its own owner.  Ov003_UpdateWaypointSlotButtons animates
+ * every slot each frame and latches the slot that reports a click
+ * (WAYPOINT_LIST_CLICKED) and the one showing its pressed frame
+ * (WAYPOINT_LIST_PRESSED). */
+#define WAYPOINT_LIST_COUNT   0x04 /* u8: number of slots in use */
+#define WAYPOINT_LIST_CLICKED 0x05 /* s8: slot clicked this frame, -1 = none */
+#define WAYPOINT_LIST_PRESSED 0x06 /* s8: slot showing its pressed frame, -1 = none */
+#define WAYPOINT_LIST_SELECTED 0x07 /* u8: currently selected slot */
+#define WAYPOINT_LIST_SLOTS   0x78 /* void *[26]: the slot sprites */
+#define WAYPOINT_LIST_SLOT_COUNT 26
+
+/* The ov003 setup menu (the object the setup screen holds at +0x44): nine entry
+ * sprites -- the eight option rows plus a ninth button -- each with its own
+ * owner, plus the entry widget the selection currently points at.  The per-frame
+ * update animates every slot and latches the entry that reports a click
+ * (SETUP_MENU_CLICKED) and the one showing its pressed frame (SETUP_MENU_PRESSED);
+ * +6 is the selected entry, also read from SETUP_MENU_CURRENT's sprite id. */
+#define SETUP_MENU_CLICKED    0x04 /* s8: entry clicked this frame, -1 = none */
+#define SETUP_MENU_PRESSED    0x05 /* s8: entry showing its pressed frame, -1 = none */
+#define SETUP_MENU_SELECTED   0x06 /* u8: currently selected entry (0..7) */
+#define SETUP_MENU_CELLS      0xC8 /* void *[8]: the option-row widgets */
+#define SETUP_MENU_SLOTS      0xE8 /* void *[9]: the entry sprites */
+#define SETUP_MENU_SLOT_COUNT 9
+#define SETUP_MENU_CURRENT    0x10C /* void *: sprite of the selected entry */
+
+/* Per-row animation targets of a MapSelectRow (the tween fields in front of its
+ * three animation pointers). Ov003_ApplyRowSelectionAnimations stores the first
+ * value on the selected row and the second on every other row; the matching
+ * current fields follow the target as the tween runs. */
+#define MAP_SELECT_ROW_ANIM_VALUE   0x0E /* u16 main tween target (0x100 selected, 0xCD idle) */
+#define MAP_SELECT_ROW_ANIM_AUX     0x10 /* u8 auxiliary animation value (16 selected, 8 idle) */
+#define MAP_SELECT_ROW_ANIM_STEP    0x12 /* s8 step tween target (1 selected, 0 idle) */
+#define MAP_SELECT_ROW_ANIM_LEVEL   0x14 /* s8 level tween target (2 selected, 5 idle) */
+#define MAP_SELECT_ROW_ANIM_MODE    0x15 /* s8 row animation mode (3 selected, 1 idle) */
+
 /* ov003 map-info screen: the unit-category count grid filled by
  * func_020c1878 (5 player bands of 12 unit categories, the grid starting at
  * +4 of the block) and the text sprite that prints one category's total. */
@@ -288,6 +361,7 @@ typedef struct MapSelectScreen {
 #define MAPSELECT_CHOSEN        0x54 /* u8 a map has been chosen */
 #define MAPSELECT_TEXT_PANEL    0x0C /* void *: panel the row names are drawn into */
 #define MAPSELECT_SCROLL_ANIM   0x38 /* s32 token of the running list-scroll animation */
+#define MAPSELECT_TASK          0x3C /* s32 handle of the row-scroll task */
 #define MAPSELECT_BUMP_LATCH    0x59 /* u8 set once the no-move sound played for a held key */
 
 /* The fields of gMapSelectState in front of that object. */
@@ -571,6 +645,15 @@ typedef struct ScrollList {
     void *spriteDown; /* +0x48: list-down arrow sprite */
 } ScrollList;
 
+/* Geometry of the unit list's clickable buttons: one highlight sprite per visible
+ * row, 16 px apart and starting at y 39, 4 px in from the left; the four tab buttons
+ * sit across the top and carry the slot ids 251 (tab 0) down to 248 (tab 3). */
+#define SCROLL_LIST_VISIBLE_ROWS 6
+#define SCROLL_LIST_ROW_X        4
+#define SCROLL_LIST_ROW_Y        39
+#define SCROLL_LIST_ROW_STEP     16
+#define SCROLL_LIST_TAB_ID(tab)  (251 - (tab))
+
 /* Flags byte of a gpi player record (player + 0x15): which optional parts follow. */
 enum {
     GPI_REC_FLAG_ID     = 0x02, /* a 4-byte id follows */
@@ -705,6 +788,18 @@ typedef struct GpiStringListData {
     char **strings;   /* +0x08 owned array of allocated strings */
 } GpiStringListData;
 
+/* Public gpi operations return empty success results in simulation mode. */
+#define GPI_CONN_SIMULATION 0x108 /* s32 nonzero bypasses network operations */
+#define GPI_CONN_STATE 0x1D8 /* s32 connection state */
+#define GPI_STATE_DISCONNECTED 4
+#define GPI_INFO_RESULT_WORDS 129 /* 0x204-byte profile-info callback record */
+
+/* Server-message fields in the GameSpy gpi connection. */
+#define GPI_CONN_SESSION_KEY 0x198 /* s32 server-issued session key */
+#define GPI_CONN_OUTPUT_BUFFER 0x1F4 /* server command send buffer */
+#define GPI_MESSAGE_COPY_SIZE 0xDAD /* bounded message copy, including terminator */
+#define GPI_MESSAGE_STACK_SIZE 0xDB0 /* aligned temporary message storage */
+
 /* A gpi connection's error state and callback queue. */
 #define GPI_CONN_ERROR_CALLBACK 0x1A4 /* s32 registered error callback function */
 #define GPI_CONN_ERROR_DATA     0x1A8 /* s32 parameter passed to it */
@@ -772,6 +867,9 @@ enum {
 #define CONN_SESSION_CONNECT_TARGET  0x180 /* s32 peer id the outstanding connect targets */
 #define CONN_SESSION_JOIN_TICK       0x184 /* u64 time the outstanding join was opened */
 #define CONN_SESSION_CONNECT_TICK    0x18C /* u64 time the outgoing socket connect was started */
+#define CONN_SESSION_SELF_ID         0x208 /* s32 own player id, 0 before the master answered */
+#define CONN_SESSION_ATTEMPT_TICK    0x1CC /* u64 tick the current connect attempt started */
+#define CONN_SESSION_ATTEMPT_LIMIT   0x1C8 /* s32 time limit of the attempt, 0 when it has none */
 
 /* The in-flight peer-connect record at GetConnection()+0x194 (0xC bytes): what
  * the socket connect is for and how often it has been retried.  Its last word
@@ -958,6 +1056,12 @@ enum {
  #define SAVE_SLOT_INDEX     0x4f4 /* u8: physical slot the working copy belongs to */
  #define SAVE_EXTRA_EMPTY_A  0x4f5 /* u8: the +0xc0/+0xc4 codes are absent (cleared on commit) */
  #define SAVE_EXTRA_EMPTY_B  0x4f6 /* u8: the +0xc8/+0xcc codes are absent (cleared on commit) */
+#define SAVE_SLOT_PLAYER_CODES 0xC0 /* offset within one 0x100-byte slot image of the player-code fields */
+#define SAVE_SLOT_CODE_BITS    0xD0 /* offset within one slot image of the SAVE_CODE_BITS byte */
+#define SAVE_SLOT_CODE         0xF0 /* offset within one slot image of the SAVE_CODE word (working copy only) */
+#define SAVE_SLOT_INDEX_REL    0xF4 /* offset within one slot image of SAVE_SLOT_INDEX */
+#define SAVE_SLOT_EMPTY_A      0xF5 /* offset within one slot image of SAVE_EXTRA_EMPTY_A */
+#define SAVE_SLOT_EMPTY_B      0xF6 /* offset within one slot image of SAVE_EXTRA_EMPTY_B */
 
  /* The link-match setup sent before a saved battle (the 0xE8-byte state that
   * func_ov001_02171394 copies out of the receive buffer): the map name, the
@@ -988,6 +1092,12 @@ enum {
 #define SAVE_RECORD_TIME        4          /* u32 timestamp inside a directory record */
 #define SAVE_TYPE_PLAYER        2          /* player/profile save */
 #define SAVE_TYPE_BATTLE        3          /* battle save */
+
+/* Save-chip configuration the save manager asks the device for before it reads
+ * the archive: the chip kind in the low byte and the size/variant bit index in
+ * bits 8..15 (0x1202 = kind 2, bit 18).  The device must report state 2 after. */
+#define SAVE_DEVICE_CONFIG      0x1202
+#define SAVE_DEVICE_STATE_READY 2      /* SaveDevice_GetState result once configured */
 
 /* Kinds of 4-byte connection notice sent by SendConnectionPacket(kind, slot). */
 enum {
@@ -1418,6 +1528,13 @@ enum {
     FRAME_BORDER_OUTSIDE = 2  /* frame drawn one pixel outside the rectangle */
 };
 
+/* The animated highlight frame (DrawFrameBorderPulse): over each half period of
+ * FRAME_BORDER_PULSE_STEPS eased steps, one step every other frame, the border
+ * grows outward by FRAME_BORDER_PULSE_RANGE pixels and returns. */
+#define FRAME_BORDER_PULSE_RANGE 2
+#define FRAME_BORDER_PULSE_STEPS 8
+#define FRAME_BORDER_PULSE_MASK  0x0F /* steps in a full period, both halves */
+
 /* Window-frame tile ids stamped into a 32-column tile map by the frame-tile
  * drawer (the tiles of the frame tileset loaded for the window). A tile cell holds the
  * tile id in the low 10 bits plus the flip bits and the palette in bits 12-15. */
@@ -1615,6 +1732,18 @@ typedef struct TransferManager {
  * handshake state of the exchange currently being served. */
 #define VOICE_LINK_CONTEXT_MAX 8 /* exchange contexts a voice-chat link keeps */
 
+/* The link's packet allocator (VoiceLink_InitPacketPool and friends): a free list of
+ * fixed-size packet buffers carved out of the caller's VoiceLinkConfig.packetPool. */
+#define LINK_PACKET_SIZE     0x478 /* bytes in one link packet buffer */
+#define LINK_PACKET_POOL_MIN 4     /* fewest packets the pool may hold */
+#define LINK_PACKET_POOL_MAX 0x48  /* most packets the pool may hold */
+
+typedef struct LinkPacketPool {
+    s32   intrState; /* +0x00: saved interrupt state around a list change */
+    void *freeList;  /* +0x04: head of the free list */
+    void *base;      /* +0x08: start of the pool's buffer */
+} LinkPacketPool;
+
 typedef struct VoiceLinkContext {
     s32 valid;                       /* +0x00: nonzero while the context is in use */
     u8  peerId;                      /* +0x04: player id of the peer */
@@ -1729,11 +1858,40 @@ typedef struct Ov001TextOps {
     void (*unk04)(void *panel, s32 arg); /* +0x04 second operation (TextPanel_ClearText) */
 } Ov001TextOps;
 
-/* A text panel: the bitmap surface (CreateTextPanel) text is drawn into. */
+/* A text panel: the bitmap surface (CreateTextPanel) text is drawn into.
+ * CreatePooledTextPanel hands out 0x30-byte panels from the context's queue and
+ * fills in the size and tile fields; the fixed full-screen panels reuse +0x2C
+ * as their refresh task handle and leave width/height unused. */
 typedef struct Ov001TextPanel {
     u8 pad00[0x14];
     Ov001TextOps *ops; /* +0x14 drawing operations */
-} Ov001TextPanel;
+    void *self;        /* +0x18 the panel object itself, target of text drawing */
+    Ov001Font *font;   /* +0x1C font/glyph set decoding the panel's text */
+    s32 unk20;         /* +0x20 */
+    s32 unk24;         /* +0x24 */
+    void *tiles;       /* +0x28 allocated tile range (queued panels) or heap tile buffer (fixed panels) */
+    u16 tileCount;     /* +0x2C tiles allocated in the range (queued panels) */
+    u8  width;         /* +0x2E panel width in tiles */
+    u8  height;        /* +0x2F panel height in tiles */
+} Ov001TextPanel;      /* queued panels are 0x30 bytes */
+
+/* The map action popup object (the repair/refill/level-up sprite created by
+ * func_020c98d8): it briefly zooms from double size down to normal while drawing
+ * its 3D sprite, then waits out a timer (or a button press) and deletes itself. */
+#define MAP_ACTION_X       0x34 /* s32 pixel x of the popup */
+#define MAP_ACTION_Y       0x38 /* s32 pixel y of the popup */
+#define MAP_ACTION_TILE_X  0x3c /* s32 tile x the action happens on */
+#define MAP_ACTION_TILE_Y  0x40 /* s32 tile y the action happens on */
+#define MAP_ACTION_MODE    0x44 /* s32 PlayMapActionSound mode (0..2, sounds 0x81/0xE4) */
+#define MAP_ACTION_FRAME   0x48 /* s32 sprite animation frame */
+#define MAP_ACTION_TIMER   0x4c /* s32 frames left before the popup may end, -1 while zooming */
+#define MAP_ACTION_SCALE   0x50 /* s32 zoom in 8.8 fixed point, eases from 0x200 to 0x100 */
+#define MAP_ACTION_SPRITE  0x54 /* void *3D sprite the popup draws */
+#define MAP_ACTION_HOLD    0x1e /* frames the popup stays at normal size before it may end */
+
+/* The ov001 text/sprite context (data_ov001_02193e40, a 0x680-byte allocation). */
+#define OV001_CTX_FONTS       0x00  /* Ov001Font[2]: the parsed font sets */
+#define OV001_CTX_PANEL_QUEUE 0x670 /* ring queue of the 32 text-panel objects CreatePooledTextPanel hands out */
 
 typedef struct Ov001TextState {
     void       *panel;         /* +0x00: text panel whose ops blit one glyph */
@@ -1768,6 +1926,11 @@ typedef struct Ov001TextState {
 #define OV007_PANEL_ANIM1     0x3e /* u16: second eased value, 0..256 */
 #define OV007_PANEL_ANIM2     0x40 /* u16: split-region eased value, 0..256 */
 #define OV007_PANEL_ANIM_FRAME 0x54 /* s16: frame counter of a panel animation driver object */
+#define OV007_PANEL_ROW0      0x44 /* void *first of the panel's three row sprite actors */
+#define OV007_PANEL_ROW1      0x48 /* void *second row sprite actor */
+#define OV007_PANEL_ROW2      0x4c /* void *third row sprite actor */
+#define OV007_PANEL_SPRITE_A  0x50 /* void *one of the panel's two sprites */
+#define OV007_PANEL_SPRITE_B  0x54 /* void *the panel's other sprite */
 
 /* A number/text sprite. DrawTextSprite (main_020A94FC) draws it as a row of glyph
  * sprites and SetTextSpriteValue (main_020A86F8) fills in its numeric form. */
@@ -1810,6 +1973,53 @@ typedef struct FifoMessage {
 #define ARM7_XFER_WORD(n)  ((u32)(n) << 16) /* command index of a request word */
 #define ARM7_XFER_LAST_WORD 0x01000000      /* set on the last word of a request */
 
+/* The ARM7 command service's state object (gArm7CommandState, at 0x0212FCCC).
+ * The service talks to the ARM7 power/sound driver through the FIFO and
+ * remembers when the LCD was last switched off, so that an immediate re-enable
+ * (a bouncing lid or power button) can be debounced. */
+#define POWER_SERVICE_LAST_OFF 0x10 /* u32: shared frame counter at the last LCD power-off */
+
+/* POWCNT1, whose bit 0 enables the LCD. */
+#define REG_POWCNT1        0x04000304 /* u16 */
+#define POWCNT1_LCD_ENABLE 0x0001
+
+/* Frame counter the engine keeps in the shared work area (incremented once per
+ * frame, used for parity and short timeouts). */
+#define SHARED_FRAME_COUNTER 0x027FFC3C /* volatile u32 */
+
+/* A touch rectangle as the touch API's hit tests take it: the box's two
+ * corners, left/top first, each as u16 at these offsets. */
+#define RECT_LEFT   0x0 /* u16 x of the left edge */
+#define RECT_TOP    0x2 /* u16 y of the top edge */
+#define RECT_RIGHT  0x4 /* u16 x of the right edge */
+#define RECT_BOTTOM 0x6 /* u16 y of the bottom edge */
+
+/* The ov001 friend-roster screen's vertical scroll bar (gOv001Scrollbar, a
+ * 0x20-byte object built by Ov001_CreateScrollBar): a sprite whose touch
+ * rectangles are hit-tested for dragging (handle), paging (track) and the two
+ * arrow caps. */
+#define OV001_SCROLLBAR_SPRITE     0x00 /* M2C_UNK layout handle of the bar sprite */
+#define OV001_SCROLLBAR_TASK       0x0c /* s32 id of the task driving the bar */
+#define OV001_SCROLLBAR_X          0x10 /* u16 x of the track */
+#define OV001_SCROLLBAR_Y          0x12 /* u16 y of the track */
+#define OV001_SCROLLBAR_W          0x14 /* u16 width of the bar, 12 */
+#define OV001_SCROLLBAR_H          0x16 /* u16 y the track starts at for touch input */
+#define OV001_SCROLLBAR_DRAG_OFFSET 0x18 /* u8 handle offset when the drag started */
+#define OV001_SCROLLBAR_TRACK      0x19 /* u8 track length in pixels */
+#define OV001_SCROLLBAR_HANDLE_POS 0x1a /* u8 current handle offset in pixels */
+#define OV001_SCROLLBAR_KIND       0x1b /* u8 sprite kind: index of the handle length */
+#define OV001_SCROLLBAR_STATE      0x1c /* u8 0 idle, 1 dragging, 2/3 bar scroll */
+#define OV001_SCROLLBAR_EVENT      0x1d /* u8 event code the update task reports */
+#define OV001_SCROLLBAR_BLOCKED    0x1e /* u8 nonzero while the task must leave it alone */
+
+/* Parts of the scroll bar a touch rectangle can describe, in hit-test order. */
+enum {
+    OV001_SCROLLBAR_PART_HANDLE = 1, /* the draggable handle */
+    OV001_SCROLLBAR_PART_UP     = 2, /* the cap just above the track */
+    OV001_SCROLLBAR_PART_DOWN   = 3, /* the cap just below the track */
+    OV001_SCROLLBAR_PART_TRACK  = 4  /* the track itself, page by a touch */
+};
+
 /* Stream locking shared by ReadFileData, GetFilePosition and SetFilePosition.
  * gStreamMutexes holds one GsiMutex per stream class; the running thread object
  * (gSocketManager+0x04) carries its id at +0x6C, which gStreamLockOwner records
@@ -1819,6 +2029,18 @@ typedef struct FifoMessage {
 #define STREAM_LOCK_STDERR 4    /* ... for stderr */
 #define STREAM_LOCK_FILE   5    /* ... for every other stream */
 #define STREAM_THREAD_ID   0x6C /* s32 thread id inside the running thread object */
+
+/* The console's menu language (gLanguage, read by GetLanguage).  The localized
+ * file name built by GetLocalizedFileName takes the matching gFileNameFormat*
+ * prefix; 0 means no language is set yet and the plain name is used. */
+enum {
+    LANGUAGE_UNSET   = 0,
+    LANGUAGE_ENGLISH = 1, /* e_ prefix */
+    LANGUAGE_FRENCH  = 2, /* f_ prefix */
+    LANGUAGE_GERMAN  = 3, /* d_ prefix */
+    LANGUAGE_ITALIAN = 4, /* i_ prefix */
+    LANGUAGE_SPANISH = 5  /* s_ prefix */
+};
 
 #endif
 

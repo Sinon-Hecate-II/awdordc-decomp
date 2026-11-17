@@ -332,7 +332,7 @@ void func_02048534(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     MemCopy(Vector_GetItem(arg0, arg2), arg1, M2C_FIELD(arg0, s32 *, 8));
 }
 
-s32 *func_02048558(s32 a,s32 b,s32 c) {
+s32 *Vector_New(s32 a,s32 b,s32 c) {
 s32 *gpiMalloc(s32); s32 AssertFailed();
 extern M2C_UNK data_020fcbec,data_020fccb8;
 s32 *p=gpiMalloc(24);
@@ -347,7 +347,7 @@ if(!p[5])AssertFailed(&data_020fcc98,&data_020fcca4,&data_020fcbec,0x5e);
 return p;
 }
 
-void func_0204861c(s32 *a) {
+void Vector_Free(s32 *a) {
 s32 AssertFailed();s32 gpiFree();s32 i;
 if(!a)AssertFailed(&data_020fccb0,&data_020fcca4,&data_020fcbf8,0x69);
 for(i=0;i<a[0];i++)func_020484b8(a,i);

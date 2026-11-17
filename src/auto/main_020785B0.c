@@ -125,7 +125,7 @@ s32 base,tile,visible,v1,v2;
 u16 a,b;
 u32 index;
 mode=M2C_FIELD(*gCurrentMap,u16*,0x52b4)==10?1:0;
-func_02077624();func_02077a4c();DrawMapBackground();
+UpdateToonTableBlend();func_02077a4c();DrawMapBackground();
 *(volatile u32*)0x4000444=0;
 *(volatile u32*)0x4000440=3;
 *(volatile u32*)0x4000454=0;

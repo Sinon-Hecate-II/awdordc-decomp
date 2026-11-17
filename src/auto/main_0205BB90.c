@@ -1,5 +1,6 @@
 /* 26 functions from 0x0205BB90 to 0x0205CB68 (main), found by ds-decomp. */
 #include "common.h"
+#include "gt2.h"
 typedef struct { u8 a,b; } Unk05Bytes;
 typedef struct { s32 a,b; s16 c,pad; s32 d; } Unk05Record;
 typedef union { struct { s32 a,b; }; u64 whole; } Unk05Pair;
@@ -59,30 +60,35 @@ s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_0205bd28(void *arg0, void *arg1, s32 arg2) {
+/* Handle a resend request (GT2 control message 101): the payload holds the first
+ * sequence number to resend, and, when it is four bytes long, the last one.
+ * Resend every unacknowledged sent command whose sequence lies in that range;
+ * close the connection on a malformed length.  Returns 1 on success, 0 when a
+ * resend fails. */
+s32 gti2HandleResendRequest(void *session, void *message, s32 size) {
     s32 Vector_GetCount(s32);
     s32 Gt2CompareSequence(u16, s32);
-    s32 func_0205cbb4(void *, void *);
-    s32 lo;
-    s32 hi;
-    s32 n;
+    s32 gti2ResendPendingCommand(void *, void *);
+    s32 first;
+    s32 last;
+    s32 count;
     s32 i;
-    void *p;
+    void *command;
 
-    lo = Gt2ReadShort((s32)arg1, 0);
-    if (arg2 == 2) {
-        hi = lo;
-    } else if (arg2 == 4) {
-        hi = Gt2ReadShort((s32)arg1, 2);
+    first = Gt2ReadShort((s32)message, 0);
+    if (size == 2) {
+        last = first;
+    } else if (size == 4) {
+        last = Gt2ReadShort((s32)message, 2);
     } else {
-        return Gt2CloseConnection(arg0) != 0;
+        return Gt2CloseConnection(session) != 0;
     }
-    n = Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x60));
-    for (i = 0; i < n; i++) {
-        p = Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x60), i);
-        if ((Gt2CompareSequence(M2C_FIELD(p, u16 *, 8), lo) >= 0) &&
-            (Gt2CompareSequence(M2C_FIELD(p, u16 *, 8), hi) <= 0) &&
-            (func_0205cbb4(arg0, p) == 0)) {
+    count = Vector_GetCount(M2C_FIELD(session, s32 *, GT2_CONNECTION_ACK_QUEUE));
+    for (i = 0; i < count; i++) {
+        command = Vector_GetItem(M2C_FIELD(session, s32 *, GT2_CONNECTION_ACK_QUEUE), i);
+        if ((Gt2CompareSequence(M2C_FIELD(command, u16 *, GT2_SENT_COMMAND_SEQUENCE), first) >= 0) &&
+            (Gt2CompareSequence(M2C_FIELD(command, u16 *, GT2_SENT_COMMAND_SEQUENCE), last) <= 0) &&
+            (gti2ResendPendingCommand(session, command) == 0)) {
             return 0;
         }
     }
@@ -118,7 +124,7 @@ s32 func_0205bea4(void *arg0) {
     return 1;
 }
 #pragma pop
-s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
+s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 gti2HandleResendRequest(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!gti2HandleResendRequest(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
 
 /* GT2 message dispatcher for one received socket message: accept or reject new
    connections, close dead ones, and route the payload to the data handler or to
@@ -255,15 +261,15 @@ s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s
 
 s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     extern M2C_UNK gGt2Magic;
-    s32 func_02059d24(void *);
+    s32 gti2GetBufferFreeSpace(void *);
     s32 func_0205b1b8(M2C_UNK);
     s32 func_0205c474(void *, s16, s32);
-    void func_02059df0(void *, M2C_UNK, s32);
+    void gti2AddToBuffer(void *, M2C_UNK, s32);
     void func_02059d34(void *, s32);
     void func_02059d84(void *, s32);
     s32 free;
 
-    free = func_02059d24((void *)((char *)p + 0x50));
+    free = gti2GetBufferFreeSpace((void *)((char *)p + 0x50));
     if (free < arg2) {
         s32 r = func_0205b1b8(p);
         if (r == 0) {
@@ -280,7 +286,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
         *status = 1;
         return 1;
     }
-    func_02059df0((void *)((char *)p + 0x50), &gGt2Magic, 2);
+    gti2AddToBuffer((void *)((char *)p + 0x50), &gGt2Magic, 2);
     func_02059d34((void *)((char *)p + 0x50), (s32)(mode & 0xff));
     {
         u16 old64 = M2C_FIELD(p, u16 *, 0x64);
@@ -293,7 +299,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
 }
 
 #pragma scheduling off
-s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=Vector_GetItem(M2C_FIELD(p,s32 *,0x60),n-1);if(func_0205a9ec(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
+s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=Vector_GetItem(M2C_FIELD(p,s32 *,0x60),n-1);if(gti2SendRaw(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
 #pragma scheduling reset
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;
@@ -304,7 +310,7 @@ s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     if (sp0 != 0) {
         return 1;
     }
-    func_02059df0(arg0 + 0x50, arg1, arg2);
+    gti2AddToBuffer(arg0 + 0x50, arg1, arg2);
     if (func_0205c5ac(arg0) != 0) {
         return 1;
     }
@@ -312,7 +318,7 @@ s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0205c694(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_02059df0(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK gti2AddToBuffer(s32, M2C_UNK, M2C_UNK);
     s32 sp0;
 
     if (func_0205c4e8(arg0, 1, 0x27, &sp0) == 0) {
@@ -321,16 +327,16 @@ s32 func_0205c694(s32 arg0, M2C_UNK arg1) {
     if (sp0 != 0) {
         return 1;
     }
-    func_02059df0(arg0 + 0x50, arg1, 0x20);
+    gti2AddToBuffer(arg0 + 0x50, arg1, 0x20);
     if (func_0205c5ac(arg0) != 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_0205c6f4(s32 p,s32 a,s32 b){s32 s; s32 v;if(!func_0205c4e8(p,2,0x47,&s))return 0;if(s)return 1;func_02059df0(p+0x50,a,0x20);func_02059df0(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
+s32 func_0205c6f4(s32 p,s32 a,s32 b){s32 s; s32 v;if(!func_0205c4e8(p,2,0x47,&s))return 0;if(s)return 1;gti2AddToBuffer(p+0x50,a,0x20);gti2AddToBuffer(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
 
-s32 func_0205c780(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     s32 sp0;
 
     if (func_0205c4e8(arg0, 3, arg3 + 0x27, &sp0) == 0) {
@@ -339,8 +345,8 @@ s32 func_0205c780(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     if (sp0 != 0) {
         return 1;
     }
-    func_02059df0(arg0 + 0x50, arg1, 0x20);
-    func_02059df0(arg0 + 0x50, arg2, arg3);
+    gti2AddToBuffer(arg0 + 0x50, arg1, 0x20);
+    gti2AddToBuffer(arg0 + 0x50, arg2, arg3);
     if (func_0205c5ac(arg0) != 0) {
         return 1;
     }
@@ -373,7 +379,7 @@ s32 func_0205c854(s32 arg0, M2C_UNK arg1, s32 arg2) {
     if (sp0 != 0) {
         return 1;
     }
-    func_02059df0(arg0 + 0x50, arg1, arg2);
+    gti2AddToBuffer(arg0 + 0x50, arg1, arg2);
     if (func_0205c5ac(arg0) != 0) {
         return 1;
     }
@@ -410,35 +416,40 @@ s32 func_0205c924(M2C_UNK arg0) {
     return 0;
 }
 
-s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
-    s32 func_02059d24(void *);
+/* Send an application message the unreliable way, as a single datagram with no
+ * acknowledgement: a message that does not begin with the GT2 magic is sent
+ * exactly as given, while one that does is escaped with an extra magic first (so
+ * the peer does not take it for a control message) by copying it into the
+ * connection's send buffer, sending it from there and removing it again. */
+s32 gti2SendUnreliable(void *connection, M2C_UNK *message, s32 len) {
+    s32 gti2GetBufferFreeSpace(void *);
     s32 ByteCompareN(void *, M2C_UNK *, s32);
-    s32 func_0205a9ec(s32, void *, s32);
-    M2C_UNK func_02059df0(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_02059e78(void *, M2C_UNK, s32);
+    s32 gti2SendRaw(s32, void *, s32);
+    M2C_UNK gti2AddToBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
+    void gti2RemoveFromBuffer(void *, M2C_UNK, s32);
     extern M2C_UNK gGt2Magic;
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 temp_r6;
+    s32 sendPos;
+    s32 sendBase;
+    s32 escapedLen;
 
-    if ((arg2 < 2) || (ByteCompareN(arg1, &gGt2Magic, 2) != 0)) {
-        if (func_0205a9ec((s32)arg0, arg1, arg2) == 0) {
+    if ((len < 2) || (ByteCompareN(message, &gGt2Magic, 2) != 0)) {
+        if (gti2SendRaw((s32)connection, message, len) == 0) {
             return 0;
         }
         return 1;
     }
-    temp_r6 = arg2 + 2;
-    if (func_02059d24((void *)((char *)arg0 + 0x50)) < temp_r6) {
+    escapedLen = len + 2;
+    if (gti2GetBufferFreeSpace((Gt2Buffer *)((char *)connection + GT2_CONNECTION_SEND_BUFFER)) < escapedLen) {
         return 1;
     }
-    temp_r5 = M2C_FIELD(arg0, s32 *, 0x50);
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x58);
-    func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)&gGt2Magic, 2);
-    func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)arg1, arg2);
-    if (func_0205a9ec((s32)arg0, (void *)(temp_r5 + temp_r4), temp_r6) == 0) {
+    sendBase = M2C_FIELD(connection, s32 *, 0x50);
+    sendPos = M2C_FIELD(connection, s32 *, 0x58);
+    gti2AddToBuffer((M2C_UNK)((char *)connection + GT2_CONNECTION_SEND_BUFFER), (M2C_UNK)&gGt2Magic, 2);
+    gti2AddToBuffer((M2C_UNK)((char *)connection + GT2_CONNECTION_SEND_BUFFER), (M2C_UNK)message, len);
+    if (gti2SendRaw((s32)connection, (void *)(sendBase + sendPos), escapedLen) == 0) {
         return 0;
     }
-    func_02059e78((void *)((char *)arg0 + 0x50), -1, temp_r6);
+    gti2RemoveFromBuffer((Gt2Buffer *)((char *)connection + GT2_CONNECTION_SEND_BUFFER), -1, escapedLen);
     return 1;
 }
 
@@ -450,7 +461,7 @@ s32 func_0205ca48(void *p){
     u8 buf[5];
     buf[2]=0x64; buf[0]=a; buf[1]=b;
     func_0205b0ec(buf,3,M2C_FIELD(q,u16 *,0x66));
-    if(func_0205a9ec(q,buf,5)){M2C_FIELD(q,s32 *,0x90)=0;return 1;}
+    if(gti2SendRaw(q,buf,5)){M2C_FIELD(q,s32 *,0x90)=0;return 1;}
     return 0;
 }
 
@@ -461,10 +472,10 @@ u8 buf[8]; u32 n=0; u8 *q=buf;
 buf[2]=0x65;
 func_0205b0ec(buf, n+3, arg1); n+=5;
 if((u32)arg2!=(u32)arg1){func_0205b0ec(buf,n,arg2); n+=2;}
-if(func_0205a9ec(p,buf,n)==0)return 0; return 1;
+if(gti2SendRaw(p,buf,n)==0)return 0; return 1;
 }
 
-s32 func_0205cb38(s32 a,void *b,s32 c) { s32 func_0205a9ec(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return func_0205a9ec(a,b,c); }
+s32 func_0205cb38(s32 a,void *b,s32 c) { s32 gti2SendRaw(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return gti2SendRaw(a,b,c); }
 
 void gti2SendClosed(void *arg0) {
     M2C_UNK func_0205cb68(s32, s32, u16);

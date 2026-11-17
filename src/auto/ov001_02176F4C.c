@@ -108,13 +108,13 @@ void func_ov001_02177088(void) {
 }
 
 void func_ov001_021770ec(void) {
-    s32 func_ov001_0217170c();
-    extern M2C_UNK func_ov001_021778c0;
+    s32 Ov001_IsIconRowIdle();
+    extern M2C_UNK Ov001_InitOptionMenu;
     void func_ov001_02177214(void);
     extern u8 data_ov001_02193d64;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (data_ov001_02193d64 == 0 && Ov001_IsFadeActive(1) != 0) return;
-    if (func_ov001_0217170c() == 0) return;
+    if (Ov001_IsIconRowIdle() == 0) return;
     func_ov001_0218af70(0);
     if (data_ov001_02193d64 == 0) {
         Ov001_FreeOptionBackground();
@@ -123,7 +123,7 @@ void func_ov001_021770ec(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (data_ov001_02193d64 == 0) {
         Ov001_SetNextScreenMode(0, 1);
-        Ov001_SetStepCallback(&func_ov001_021778c0);
+        Ov001_SetStepCallback(&Ov001_InitOptionMenu);
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
@@ -269,14 +269,14 @@ void func_ov001_0217740c(void) {
 }
 
 void Ov001_OpenMacAddressScreen(void) {
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_02177474(void);
     M2C_UNK DrawMacAddressPanel();
     extern M2C_UNK func_ov001_021776c8;
     func_ov001_02177474();
     func_ov001_02172250(0x11);
-    func_ov001_02171c24(0x3A, -1, 0);
+    Ov001_ShowMessagePanel(0x3A, -1, 0);
     DrawMacAddressPanel();
     Ov001_SetStepCallback(&func_ov001_021776c8);
 }
@@ -390,19 +390,19 @@ void func_ov001_02177800(void) {
 }
 
 void func_ov001_02177850(void) {
-    s32 func_ov001_0217170c();
+    s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021778c0;
+    extern M2C_UNK Ov001_InitOptionMenu;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (func_ov001_0217170c() == 0) {
+    if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
     func_ov001_0218af70(0);
@@ -410,33 +410,37 @@ void func_ov001_02177850(void) {
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback(&func_ov001_021778c0);
+    Ov001_SetStepCallback(&Ov001_InitOptionMenu);
 }
 
-void func_ov001_021778c0(void) {
-extern M2C_UNK gOv001OptionMenuState;
-extern M2C_UNK gOv001OptionFrameLeft,gOv001OptionFrameRight,gOv001OptionFrameTop,gOv001OptionFrameBottom;
-void Ov001_LoadOptionMenuBg(void);
-void func_ov001_02177b24(void);
-void *func_ov001_0218a5f0(s32,s32);
-M2C_UNK func_ov001_02172250(s32);
-M2C_UNK func_ov001_02185b60(s32);
-M2C_UNK func_ov001_02171c24(s32,s32,s32);
-M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
-void *p; s32 offset;
-M2C_FIELD(&gOv001OptionMenuState,u8 *,1)=0;
-Ov001_LoadOptionMenuBg();
-func_ov001_02172250(16);
-func_ov001_02185b60(3);
-func_ov001_02171c24(0x39,-1,0);
-p=func_ov001_0218a5f0(0,0x5b);
-M2C_FIELD(&gOv001OptionMenuState,void **,8)=p;
-M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|0x84|0xe00000;
-p=M2C_FIELD(&gOv001OptionMenuState,void **,8);
-M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xc00)|0xc00;
-offset=M2C_FIELD(&gOv001OptionMenuState,u8 *,0)*8;
-Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset),M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset),M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset),M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset));
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177b24);
+/* Step callback that opens the ov001 Wi-Fi option menu: reset the menu state,
+ * load the background and panels, create the cursor sprite and place it on the
+ * current option, lay the choice frame over that option, then start the fade-in. */
+void Ov001_InitOptionMenu(void) {
+    extern M2C_UNK gOv001OptionMenuState;
+    extern M2C_UNK gOv001OptionFrameLeft, gOv001OptionFrameRight, gOv001OptionFrameTop, gOv001OptionFrameBottom;
+    void Ov001_LoadOptionMenuBg(void);
+    void Ov001_FadeInOptionMenu(void);
+    void *func_ov001_0218a5f0(s32, s32);
+    M2C_UNK func_ov001_02172250(s32);
+    M2C_UNK Ov001_LoadMenuResource(s32);
+    M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
+    M2C_UNK Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
+    void *p;
+    s32 offset;
+    ((Ov001OptionMenuState *)&gOv001OptionMenuState)->paletteLoaded = 0;
+    Ov001_LoadOptionMenuBg();
+    func_ov001_02172250(16);
+    Ov001_LoadMenuResource(3);
+    Ov001_ShowMessagePanel(0x39, -1, 0);
+    p = func_ov001_0218a5f0(0, 0x5b);
+    ((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite = p;
+    M2C_FIELD(p, u32 *, 0) = (M2C_FIELD(p, u32 *, 0) & 0xfe00ff00) | 0x84 | 0xe00000;
+    p = ((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite;
+    M2C_FIELD(p, u16 *, 4) = (M2C_FIELD(p, u16 *, 4) & ~0xc00) | 0xc00;
+    offset = ((Ov001OptionMenuState *)&gOv001OptionMenuState)->selected * 8;
+    Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft, u16 *, offset), M2C_FIELD(&gOv001OptionFrameRight, u16 *, offset), M2C_FIELD(&gOv001OptionFrameTop, u16 *, offset), M2C_FIELD(&gOv001OptionFrameBottom, u16 *, offset));
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInOptionMenu);
 }
 
 /* Loads the option screen's tiles, map and palette, copies the no-profile
@@ -476,7 +480,7 @@ void Ov001_LoadOptionMenuBg(void) {
     M2C_FIELD((void *)0x0400000a, u16 *, 2) = (M2C_FIELD((void *)0x0400000a, u16 *, 2) & ~3) | 3;
 }
 
-void func_ov001_02177b24(void) {
+void Ov001_FadeInOptionMenu(void) {
     extern M2C_UNK func_ov001_02177b78;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);
@@ -613,7 +617,7 @@ void Ov001_FreeSpriteObjects(void);M2C_UNK Ov001_FreeOptionBackground();M2C_UNK 
 s32 Ov001_IsFadeActive(M2C_UNK);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
-if(!func_ov001_0217170c())return;
+if(!Ov001_IsIconRowIdle())return;
 Ov001_ReleaseSprite(((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite);
 Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();
 Ov001_FreeFile(((Ov001OptionMenuState *)&gOv001OptionMenuState)->palette);

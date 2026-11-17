@@ -69,7 +69,7 @@ void InitBattleScene(void *state) {
     void func_02086d18(void);
     extern M2C_UNK gPlayerSettings;
     extern u8 gEffectVariants[];
-    extern M2C_UNK data_ov002_021f3124;
+    extern M2C_UNK gUnitViews;
     extern M2C_UNK data_ov002_021f3018;
     extern void *g3DSpriteBankMain;
 
@@ -79,7 +79,7 @@ void InitBattleScene(void *state) {
 
     {
         s32 side = 0;
-        void *unitView = &data_ov002_021f3124;
+        void *unitView = &gUnitViews;
         do {
             func_ov002_021e85e8(unitView);
             side++;
@@ -92,7 +92,7 @@ void InitBattleScene(void *state) {
     func_020af760();
 
     {
-        void *unitView = &data_ov002_021f3124;
+        void *unitView = &gUnitViews;
         void *settings = &gPlayerSettings;
         s32 side = 0;
         M2C_FIELD(state, u8 *, 8) = (u8)side;
@@ -173,7 +173,7 @@ void func_ov002_021e749c(void *);
 void func_ov002_021e8914(void *);
 void func_020af7dc(void);
 void func_ov002_021e78a4(void *);
-extern M2C_UNK data_ov002_021f3124;
+extern M2C_UNK gUnitViews;
 extern M2C_UNK data_ov002_021f3150;
 extern u8 data_ov002_021f2f40;
 switch(M2C_FIELD(arg0,u8 *,8)) {
@@ -182,7 +182,7 @@ case 1: func_ov002_021e712c(arg0); break;
 case 2: func_ov002_021e7474(arg0); break;
 case 3: func_ov002_021e749c(arg0); break;
 }
-func_ov002_021e8914(&data_ov002_021f3124);
+func_ov002_021e8914(&gUnitViews);
 func_ov002_021e8914(&data_ov002_021f3150);
 func_020af7dc();
 if(data_ov002_021f2f40) return;
@@ -200,26 +200,26 @@ void func_ov002_021e712c(void *arg0) {
     void func_ov002_021e8898(void *, s32);
     void func_ov002_021e42a8(void *, s32);
     void func_ov002_021e8d04(void *, s32);
-    extern s32 data_ov002_021f3124, data_ov002_021f3150, gPlayerSettings;
+    extern s32 gUnitViews, data_ov002_021f3150, gPlayerSettings;
     extern void *g3DSpriteBankMain, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     s32 v, i, j;
 
     // Advance transition timer and interpolate panel/sprite positions and alpha
     M2C_FIELD(arg0, s32 *, 0)++;
     v = EaseInterpolate(4, -256, 0, M2C_FIELD(arg0, s32 *, 0), 32);
-    func_ov002_021e8898(&data_ov002_021f3124, v);
+    func_ov002_021e8898(&gUnitViews, v);
     func_ov002_021e8898(&data_ov002_021f3150, v);
     v = EaseInterpolate(0, 16, 0, M2C_FIELD(arg0, s32 *, 0), 32);
     M2C_FIELD(g3DSpriteBankMain, u8 *, 0x51) = v;
     M2C_FIELD(g3DSpriteBankMain, u8 *, 0x52) = 16 - v;
     v = EaseInterpolate(4, -80, 0, M2C_FIELD(arg0, s32 *, 0), 32);
-    func_ov002_021e42a8(&data_ov002_021f3124, v);
+    func_ov002_021e42a8(&gUnitViews, v);
     func_ov002_021e42a8(&data_ov002_021f3150, v);
     v = EaseInterpolate(0, 512, 256, M2C_FIELD(arg0, s32 *, 0), 32);
-    if (M2C_FIELD(M2C_FIELD(&gPlayerSettings, void **, 4), u8 *, 0x3D) == 2 && M2C_FIELD(&data_ov002_021f3124, u8 *, 0x2A)) {
-        func_ov002_021e8d04(&data_ov002_021f3124, (u16)v);
+    if (M2C_FIELD(M2C_FIELD(&gPlayerSettings, void **, 4), u8 *, 0x3D) == 2 && M2C_FIELD(&gUnitViews, u8 *, 0x2A)) {
+        func_ov002_021e8d04(&gUnitViews, (u16)v);
     }
-    if (M2C_FIELD(M2C_FIELD(&gPlayerSettings, void **, 28), u8 *, 0x3D) == 2 && M2C_FIELD(&data_ov002_021f3124, u8 *, 0x56)) {
+    if (M2C_FIELD(M2C_FIELD(&gPlayerSettings, void **, 28), u8 *, 0x3D) == 2 && M2C_FIELD(&gUnitViews, u8 *, 0x56)) {
         func_ov002_021e8d04(&data_ov002_021f3150, (u16)v);
     }
     if (M2C_FIELD(arg0, s32 *, 0) != 32) {
@@ -274,22 +274,26 @@ void func_ov002_021e749c(void *arg0) {
     (void)arg0;
 }
 
-s32 func_ov002_021e77dc(void *arg0) {
-extern M2C_UNK gPlayerSettings,data_ov002_021f3124;
+/* AreUnitViewsReady: 1 once the battle scene's unit views have finished loading —
+   when gPlayerSettings+0x2C is set, unit view 0 must be ready, and when
+   gPlayerSettings+0x14 is set, unit view 1 must be ready.  The caller waits on
+   this before it finishes the scene transition. */
+s32 AreUnitViewsReady(void *state) {
+extern M2C_UNK gPlayerSettings,gUnitViews;
 if(M2C_FIELD(&gPlayerSettings,u8 *,0x2c)) {
-if(!IsEntryReady(&data_ov002_021f3124)) return 0;
+if(!IsEntryReady(&gUnitViews)) return 0;
 }
 if(M2C_FIELD(&gPlayerSettings,u8 *,0x14)) {
-if(!IsEntryReady((void *)&data_ov002_021f3124+0x2c)) return 0;
+if(!IsEntryReady((void *)&gUnitViews+0x2c)) return 0;
 }
 return 1;
 }
 
 void func_ov002_021e78a4(void *arg0) {
-s32 func_ov002_021e77dc(void *);
+s32 AreUnitViewsReady(void *);
 s32 temp;
 if(!M2C_FIELD(arg0,u8 *,9)) return;
-if(!func_ov002_021e77dc(arg0)) return;
+if(!AreUnitViewsReady(arg0)) return;
 temp=M2C_FIELD(arg0,s32 *,4)+1;
 M2C_FIELD(arg0,s32 *,4)=temp;
 if(temp!=0x4B) return;
@@ -304,20 +308,20 @@ void func_ov002_021e78e4(void) {
     M2C_UNK func_ov002_021e8984(s32);
     extern M2C_UNK data_ov002_021f3014;
     extern M2C_UNK gPlayerSettings;
-    extern M2C_UNK data_ov002_021f3124;
+    extern M2C_UNK gUnitViews;
     s32 var_r2;
 
     func_02086dfc();
     func_02087048(0, 0x1F);
     if (func_ov002_021e3e00(&data_ov002_021f3014) != 0) {
-        func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, 1) * 0x2C) + (s32) &data_ov002_021f3124);
+        func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, 1) * 0x2C) + (s32) &gUnitViews);
     } else {
         if (M2C_FIELD(&gPlayerSettings, u8 *, 1) == 0) {
             var_r2 = 1;
         } else {
             var_r2 = 0;
         }
-        func_ov002_021e8984((var_r2 * 0x2C) + (s32) &data_ov002_021f3124);
+        func_ov002_021e8984((var_r2 * 0x2C) + (s32) &gUnitViews);
     }
     func_02086ec8();
 }
@@ -331,11 +335,11 @@ void func_ov002_021e795c(void *arg0) {
 void func_ov002_021e7970(void) {
     void func_ov002_021e8ca4(void *);
     void func_020af79c(void);
-    extern M2C_UNK data_ov002_021f3124;
+    extern M2C_UNK gUnitViews;
     extern M2C_UNK data_ov002_021f3018;
     s32 i;
     void *p;
-    p=&data_ov002_021f3124;
+    p=&gUnitViews;
     i=0;
     do { func_ov002_021e8ca4(p); i++; p+=0x2C; } while(i<2);
     func_ov002_021e6d04(&data_ov002_021f3018);

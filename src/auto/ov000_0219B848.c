@@ -1,5 +1,6 @@
 /* 11 functions from 0x0219B848 to 0x0219C7EC (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates;
 extern s8 data_ov000_021b5580[],gTerrainPropertyType[],data_ov000_021b5500[],gAiRangeLayer[];
@@ -172,19 +173,22 @@ extern u8 gBattleEndState[8];
 
 void func_ov000_0219c444(void){extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];s32 found=0,i;void *base=*gCurrentMap;u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];u8 *p;u32 type;for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){p=((u8 (*)[14])(base+0x59a4))[i];type=(u32)(p[0]<<26)>>26;if(type!=0&&(u8)(type+255)<=2&&((u32)(p[11]<<28)>>28)==0){found=1;break;}}if(!found)return;while(func_ov000_0219b848()){} }
 
-void func_ov000_0219c508(s8 *arg0, s8 arg1) {
+/* Fills every cell of a byte-per-cell map layer (`layerBase`) with `value`, using
+ * the map's row-offset table to find the start of each row, then selects the
+ * order layer so the next redraw picks the change up. */
+void FillMapCellLayer(s8 *layerBase, s8 value) {
 extern void **gCurrentMap;
 s8 *rows[40]; s32 y, x;
-for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
+for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
  void *base=*gCurrentMap;
- rows[y] = (s8 *)(arg0 + ((u16 *)base)[y + 0x1bac]);
+ rows[y] = (s8 *)(layerBase + ((u16 *)base)[y + 0x1bac]);
 }
-for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
- for(x=0; x<M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
-  rows[y][x] = arg1;
+for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+ for(x=0; x<M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+  rows[y][x] = value;
  }
 }
-SelectMapLayer((void *)*gCurrentMap + 0x1e30);
+SelectMapLayer((void *)*gCurrentMap + MAP_CELL_ORDER);
 }
 
 void func_ov000_0219c5d4(void){for(;;){switch(*gAiCommandState){case 0:BeginAiTurn();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
@@ -220,7 +224,7 @@ u8 func_ov000_0219c7b0(void) {
     return *gAiCommandState;
 }
 
-void func_ov000_0219c7c4(u8 a){*gAiCommandState=a;}
+void SetAiCommandPhase(u8 a){*gAiCommandState=a;}
 
 void func_ov000_0219c7d8(u8 arg0) {
     gAiCommandState[1] = arg0;

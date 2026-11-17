@@ -134,8 +134,8 @@ DeleteSpriteObject(arg0);
 #pragma opt_propagation reset
 void func_0209106c(void *a) {void Sprite_ClearHandle(s32 *);void (*fp)(s32 *)=Sprite_ClearHandle;fp(M2C_FIELD(a,s32 **,0x58));}
 s32 DrawSpriteScript(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
-s32 func_02091af8(void *,s32,s32);s32 DrawSprite3DGeometry(s32,s32,s32,s32,s32,s32,u8);
-s32 r=func_02091af8(a,b,c);if(r) {DrawSprite3DGeometry(r,d,e,f,g,h,i);return 1;}return 0;
+s32 GetSpriteScriptFrameData(void *,s32,s32);s32 DrawSprite3DGeometry(s32,s32,s32,s32,s32,s32,u8);
+s32 r=GetSpriteScriptFrameData(a,b,c);if(r) {DrawSprite3DGeometry(r,d,e,f,g,h,i);return 1;}return 0;
 }
 #pragma optimization_level reset
 M2C_UNK DrawSprite3D(void *arg0) {
@@ -170,33 +170,36 @@ void Sprite_ClearHandle(s32 *arg0) {
 }
 
 s32 DrawSprite2D(s32 *arg0, s32 arg1, s32 arg2) {
-    void func_020912ec(M2C_UNK, M2C_UNK, M2C_UNK);
+    void DrawSprite2DFrame(M2C_UNK, M2C_UNK, M2C_UNK);
     void Sprite_TickTimer(void *);
     M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 
     if (arg0 != (void *)0 && *arg0 != 0) {
-        func_020912ec((M2C_UNK)arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
+        DrawSprite2DFrame((M2C_UNK)arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
         Sprite_TickTimer((void *)arg0);
         return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
     }
     return 0;
 }
 
-void func_020912ec(M2C_UNK a, M2C_UNK x, M2C_UNK y) {
+/* Draw the sprite as a plain 2D OBJ: submit its quad with the frame's template
+   and priority, adjusting the tile id to the engine's tile numbering, and then
+   draw the sprite's extra quad parts when it has any. */
+void DrawSprite2DFrame(M2C_UNK sprite, M2C_UNK x, M2C_UNK y) {
 void func_02091570(M2C_UNK);
 void DrawSprite3DParts(M2C_UNK);
 void AddSprite(u16,u16,u16,s32,s32);
 extern void *gCur3DSpriteEngine;
-void *p=(void *)a;
-u32 flags=0, v;
+void *p=(void *)sprite;
+u32 paletteBits=0, v;
 if (!p || !*(s32 *)p) return;
-if (M2C_FIELD(p,s32 *,0x14)) {
-func_02091570(a);
-flags=(M2C_FIELD(p,u8 *,0x23)&31)<<9;
+if (M2C_FIELD(p,s32 *,SPRITE_LOOP_FRAME)) {
+func_02091570(sprite);
+paletteBits=(M2C_FIELD(p,u8 *,SPRITE_TILE_BASE)&31)<<9;
 }
-v=M2C_FIELD(p,u32 *,0x28);
-AddSprite((u16)(x|flags),(u16)y,(u16)((v&0xfc00)|(((v&0x3ff)>>((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))&0x3ff)),M2C_FIELD(p,s32 *,0x10),M2C_FIELD(p,s8 *,0x20));
-if (M2C_FIELD(p,s32 *,0x30) && (M2C_FIELD(p,u8 *,0x22)&1)) DrawSprite3DParts(a);
+v=M2C_FIELD(p,u32 *,SPRITE_OAM_ATTR2);
+AddSprite((u16)(x|paletteBits),(u16)y,(u16)((v&0xfc00)|(((v&0x3ff)>>((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))&0x3ff)),M2C_FIELD(p,s32 *,SPRITE_FRAME),M2C_FIELD(p,s8 *,SPRITE_PRIORITY));
+if (M2C_FIELD(p,s32 *,SPRITE_PARTS) && (M2C_FIELD(p,u8 *,SPRITE_FLAGS)&SPRITE_FLAG_FRAME_SET)) DrawSprite3DParts(sprite);
 }
 
 void Sprite_TickTimer(void *arg0) {
@@ -405,7 +408,7 @@ func_02091928(arg0);
 }
 
 void DrawSprite3DParts(M2C_UNK a) {
-    void func_0207c3dc(s32, s32, s32, s32);
+    void QueueMemoryCopy(s32, s32, s32, s32);
     void func_0207c464(s32, s32, s32, s32);
     extern u8 data_02102a10[];
     extern void *gCur3DSpriteEngine;
@@ -461,7 +464,7 @@ loop:
             } else {
                 s32 spiritShifted = ((u32)*(s32 *)((char *)arg0+0x28) << 22) >> 17;
                 s32 secondArg = (*(s32 *)((char *)engine + 0x1C) + spiritShifted);secondArg+=r6;
-                func_0207c3dc(offsetVal, secondArg, product, 0);
+                QueueMemoryCopy(offsetVal, secondArg, product, 0);
             }
         
 
@@ -636,22 +639,25 @@ void func_02091af4(void) {
 
 }
 
-s32 func_02091af8(void *arg,s32 b,s32 c){
-u16 *a=arg;
+/* Resolve the frame data a sprite script (per-tag timed frame entries) draws at
+ * a given frame number: a looping script wraps the frame into its total, an
+ * ended one clamps it, a stopped one draws nothing. */
+s32 GetSpriteScriptFrameData(void *scripts,s32 tag,s32 frame){
+u16 *set=scripts;
 s32 Modulo(s32,s32);
-u16 *table,*seq,*p; s32 sum;
-table=(u16 *)((u8 *)a+(a[0]&~1));
-p=(u16 *)((u8 *)a+(a[1]&~1));
-seq=(u16 *)((u8 *)p+(p[b]&~1));
-p=seq;sum=0;
-while(p[0]){sum+=p[0];p+=2;}
-switch(p[1]){
-case 255:c=Modulo(c,sum);break;
-case 1:if(c>sum)c=sum;break;
-case 0:return 0;
+u16 *dataOffsets,*script,*terminator; s32 total;
+dataOffsets=(u16 *)((u8 *)set+(set[0]&~1));
+terminator=(u16 *)((u8 *)set+(set[1]&~1));
+script=(u16 *)((u8 *)terminator+(terminator[tag]&~1));
+terminator=script;total=0;
+while(terminator[0]){total+=terminator[0];terminator+=2;}
+switch(terminator[1]){
+case SPRITE_CMD_LOOP:frame=Modulo(frame,total);break;
+case SPRITE_CMD_END:if(frame>total)frame=total;break;
+case SPRITE_CMD_STOP:return 0;
 }
-if(seq[0]){do{c-=*(volatile u16 *)seq;if(c<=0)break;seq+=2;}while(seq[0]);}
-return (s32)((u8 *)table+(table[seq[1]]&~1));
+if(script[0]){do{frame-=*(volatile u16 *)script;if(frame<=0)break;script+=2;}while(script[0]);}
+return (s32)((u8 *)dataOffsets+(dataOffsets[script[1]]&~1));
 }
 
 void func_02091bcc(void) {

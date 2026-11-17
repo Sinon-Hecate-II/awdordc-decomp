@@ -278,7 +278,7 @@ void func_020d93e0(void *entity) {
     s32 FindTextLayer(void);
     void func_0208af20(void);
     void *CreateTextLayer(void *);
-    void func_020899cc(void *, s32, s32, u32);
+    void RenderTextLayerMessage(void *, s32, s32, u32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 
     void *savedEntity;
@@ -297,7 +297,7 @@ void func_020d93e0(void *entity) {
         if (M2C_FIELD(entity, u8 *, 0x44) == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) continue;
         if (M2C_FIELD(entity, u8 *, 0x44) == 3 && gCur3DSpriteEngine != savedEntity) continue;
         created = CreateTextLayer(entity);
-        func_020899cc(created, 2, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000001);
+        RenderTextLayerMessage(created, 2, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000001);
         M2C_FIELD(created, u32 *, 0x58) |= 0x1000;
     }
     gCur3DSpriteEngine = savedEntity;

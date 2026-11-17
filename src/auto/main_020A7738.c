@@ -155,7 +155,7 @@ u8 GetUnitKindByte0(s32 arg0) {
  return gUnitKindTable[arg0 * 0x70];
 }
 
-u8 func_020a7b24(s32 arg0) {
+u8 GetUnitKindMoveRange(s32 arg0) {
  extern u8 data_ov000_021b5c04[];
  return data_ov000_021b5c04[arg0 * 0x70];
 }
@@ -333,22 +333,25 @@ u8 func_020a7dc4(void *arg0) {
 
 u8 func_020a7e08(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}
 
-void func_020a7e3c(s32 arg0,s32 arg1){
+/* If `unit` is the unit its player has selected, drops that selection: the
+ * selected-unit slot is cleared and, when `clearState` is set, the selection
+ * state is cleared too; a human player's selection is counted in the records. */
+void ClearPlayerSelectedUnit(s32 unit,s32 clearState){
 s32 func_020a3550(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void AddRecordValue(s32,s32);
 extern void **gCurrentMap;
-s32 idx;u8 *base,*entry;
-if(!arg0)return;
-if(!arg0)idx=0;else idx=(arg0-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
-idx=(idx>>6)+1;
-base=(u8 *)*gCurrentMap;
-entry=base+0x67a4+idx*0x8c;
-if(!((u32)(*(s32 *)(entry+0x6c)<<24)>>24))return;
-if(arg0!=(s32)(base+0x59a4+entry[0x70]*14))return;
-entry[0x70]=0;
-if(arg1){
-func_020a3550(idx,0);func_020a3128(idx);
+s32 player;u8 *map,*record;
+if(!unit)return;
+if(!unit)player=0;else player=(unit-(s32)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;
+player=(player>>6)+1;
+map=(u8 *)*gCurrentMap;
+record=map+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE;
+if(!((u32)(*(s32 *)(record+PLAYER_REC_SPRITE)<<24)>>24))return;
+if(unit!=(s32)(map+MAP_UNIT_RECORDS+record[PLAYER_REC_SELECTED_UNIT]*MAP_UNIT_STRIDE))return;
+record[PLAYER_REC_SELECTED_UNIT]=0;
+if(clearState){
+func_020a3550(player,0);func_020a3128(player);
 }
-if(!IsPlayerHuman(idx))return;
+if(!IsPlayerHuman(player))return;
 AddRecordValue(28,1);
 }
 
@@ -488,7 +491,7 @@ void func_020a8474(void) {
 
 u8 func_020a8478(s32 a,s32 b){extern void **gCurrentMap;void *p=*gCurrentMap;return M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0x508)!=0;}
 
-u8 func_020a84b4(s32 a,s32 b){extern void **gCurrentMap;void *p=*gCurrentMap;return M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0x508)==0;}
+u8 IsCellUnitEmpty(s32 a,s32 b){extern void **gCurrentMap;void *p=*gCurrentMap;return M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0x508)==0;}
 
 u8 func_020a84f0(void) {
     s32 func_020a7c80();

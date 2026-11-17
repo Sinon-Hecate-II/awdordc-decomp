@@ -9,7 +9,7 @@ extern u8 data_02138e80[16];
 
 void func_02028ef4(void *arg0) {
     s32 func_020121d8(M2C_UNK *);
-    s32 func_02012740(M2C_UNK *, void *, M2C_UNK, M2C_UNK, s32);
+    s32 WFC_SendConnectionData(M2C_UNK *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK WFC_DispatchEvent(M2C_UNK, void *, u16, s32);
     M2C_UNK WFC_SetState(M2C_UNK);
     extern void *gWfcSession;
@@ -63,7 +63,7 @@ void func_02028ef4(void *arg0) {
                 } else {
                     var_r3 = 0;
                 }
-                temp_r0 = func_02012740(&func_0202899c, gWfcSession + 0x2140, 0, var_r3, (s32) var_r0);
+                temp_r0 = WFC_SendConnectionData(&func_0202899c, gWfcSession + 0x2140, 0, var_r3, (s32) var_r0);
                 switch (temp_r0) {
                 case 2:
                     return;

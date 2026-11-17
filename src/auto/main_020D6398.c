@@ -119,13 +119,16 @@ void DrawUnitInfoPanel(s32 mode) {
  DrawUnitInfoFrame(panelX,panelY,side,panelKind);
 }
 
-void DrawDecimalNumber(s32 arg0, s32 arg1, s32 arg2) {
+/* Draw a number in decimal with the 8x8 digit sprites: one sprite per digit
+ * at (x,y), moving eight pixels left for each digit, with a tile layout that
+ * depends on the screen's zoom. */
+void DrawDecimalNumber(s32 x, s32 y, s32 number) {
 M2C_UNK AddSprite(u16,u16,u16,M2C_UNK *,s32);
 extern M2C_UNK gSpriteDesc8x8;extern u16 **gCur3DSpriteEngine;
 do {
-AddSprite((u16)(arg0&511),(u16)(arg1&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((arg2%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&gSpriteDesc8x8,8);
-arg0-=8;arg2/=10;
-}while(arg2);
+AddSprite((u16)(x&511),(u16)(y&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((number%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&gSpriteDesc8x8,8);
+x-=8;number/=10;
+}while(number);
 }
 
 void func_020d6a20(s32 a, s32 b, u32 c, u32 d) {

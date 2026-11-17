@@ -271,7 +271,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 }
 #pragma opt_instruction_scheduling off
 void func_020b9b48(s32 a,s32 b,s32 c) {
-M2C_UNK func_020b22a4(s32,s32,M2C_UNK *,s32);
+M2C_UNK AddSpriteSlot(s32,s32,M2C_UNK *,s32);
 extern u8 data_0215d858[];extern M2C_UNK data_02129150;
 s32 i; s32 y; register s32 x;
 Unk020BChoice *p;
@@ -281,14 +281,14 @@ p=(Unk020BChoice *)data_0215d858;
 i=0;
 do {
 if(p[c+i].value==0)return;
-func_020b22a4(x,y,&data_02129150,c+i);
+AddSpriteSlot(x,y,&data_02129150,c+i);
 i++;y+=16;
 }while(i<7);
 }
 #pragma opt_instruction_scheduling reset
 void func_020b9bac(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK func_020c08f8(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);func_020c08f8(a,b,16,16,1);func_020b99ac(a,b,c);}
 
-void func_020b9bec(void){void func_020b9b48(s32,s32,s32);void func_020b1c78(s32);extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7)func_020b9b48(8,4,0);else{func_020b9b48(0,4,0);func_020b9b48(16,4,7);}func_020b1c78(0);}
+void func_020b9bec(void){void func_020b9b48(s32,s32,s32);void SelectSpriteSlot(s32);extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7)func_020b9b48(8,4,0);else{func_020b9b48(0,4,0);func_020b9b48(16,4,7);}SelectSpriteSlot(0);}
 
 void func_020b9c40(void){extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7){func_020b9bac(8,4,0);return;}func_020b9bac(0,4,0);func_020b9bac(16,4,7);}
 

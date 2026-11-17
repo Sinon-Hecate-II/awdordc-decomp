@@ -1,6 +1,6 @@
 /* 1 function from 0x0203F45C to 0x02040340 (main), found by ds-decomp. */
 #include "common.h"
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 extern u8 *gConnectionMgr;
 void *GetConnection(void);u64 GetSystemTick(void);
 
@@ -35,7 +35,7 @@ SetConnectionState(6);func_0203ecb0(0,0,SBServerListGetServer(M2C_FIELD(GetConne
 case 3:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;
 if(count>0&&payload[0]==16){func_0203dc38(13,0);return 0;}
-return func_02040cf0(M2C_FIELD(GetConnection(),s32 *,516));
+return StartConnection(M2C_FIELD(GetConnection(),s32 *,516));
 case 4:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;
 p=GetConnection();M2C_FIELD(p,u64 *,460)=GetSystemTick();
@@ -106,7 +106,7 @@ case 16:
 if(M2C_FIELD(GetConnection(),s32 *,244)!=peer)return 1;
 for(a=0;a<count;a++){i=FindPeerSlot(payload[a],0);if(i!=255)DisconnectPeerSlot(i);}break;
 case 17:p=gConnectionMgr;
-if(p&&M2C_FIELD(p,u8 *,0)){ticks=GetSystemTick()-M2C_FIELD(p,u64 *,16);if(func_02072088((u64)ticks<<6,0x82ea)>=M2C_FIELD(p,u32 *,4)){packet[0]=1;goto timer_ready;}}
+if(p&&M2C_FIELD(p,u8 *,0)){ticks=GetSystemTick()-M2C_FIELD(p,u64 *,16);if(U64Divide((u64)ticks<<6,0x82ea)>=M2C_FIELD(p,u32 *,4)){packet[0]=1;goto timer_ready;}}
 packet[0]=0;
 timer_ready:SendConnectionCommand(18,peer,a,b,packet,1);if(func_0204084c())return 0;break;
 case 18:
@@ -119,7 +119,7 @@ if(M2C_FIELD(GetConnection(),u8 *,21)!=1||M2C_FIELD(GetConnection(),u8 *,422))br
 for(n=1;n<=M2C_FIELD(GetConnection(),u8 *,13);n++){
 if(M2C_FIELD((u8 *)GetConnection()+((u32)n)*4,s32 *,244)==peer){
 if(!payload[0]){
-if(M2C_FIELD(GetConnection(),s32 *,416)==11||M2C_FIELD(GetConnection(),s32 *,416)==12){func_02041b0c();if(func_0204084c())return 0;}
+if(M2C_FIELD(GetConnection(),s32 *,416)==11||M2C_FIELD(GetConnection(),s32 *,416)==12){SendMatchAddress();if(func_0204084c())return 0;}
 if(M2C_FIELD(GetConnection(),s32 *,412)){func_0205df50(M2C_FIELD(GetConnection(),s32 *,412));M2C_FIELD(GetConnection(),s32 *,412)=0;}
 func_02041ce0();
 }else{p=GetConnection();i=FindPeerSlot(peer,0);M2C_FIELD(p,u32 *,476)|=1<<i;}

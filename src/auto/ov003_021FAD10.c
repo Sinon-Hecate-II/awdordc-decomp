@@ -24,12 +24,12 @@ void func_ov003_021fac2c(u16,u16,s16,s16,s32);
 s32 func_ov003_021f3f0c(s16,s32,s32);
 void SetTextSpriteValue(void *,s16);
 void DrawTextSprite(void *);
-s32 func_ov003_02200a18(u8,u16);
+s32 GetMapListIconTile(u8,u16);
 void AddSprite(u16,u8,u16,void *,s32);
 s32 func_ov003_021f2654(void);
 s32 IsCampaignMapAvailable(u16);
-s32 func_020c7eb8(u16);
-s32 func_020c7ef4(u16);
+s32 IsCampaignMapRecordValid(u16);
+s32 IsCampaignMapRecordPlayable(u16);
 s32 func_02086960(u16);
 void *GetMapName(u16);
 void func_0209b32c(s16,s16,s32,void *,s32,u8,u16);
@@ -38,8 +38,8 @@ s32 func_020abb24(void *);
 void func_0208e0b8(s16,s16,s16,u16,s32);
 s16 func_ov003_021f2780(void *,void *);
 void func_02088e84(void *,s16,s16,s16,s16);
-s32 func_020aae10(void *);
-s32 func_020aae44(void *);
+s32 GetUnitSpriteWidth(void *);
+s32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s16,s16,u16,u16);
 void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  s32 x,y,i,end,n,px,py,tx,ty,j; u16 item,neg; u8 idx,mode,shade; void *p;
@@ -97,7 +97,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  M2C_FIELD(M2C_FIELD(arg0,void **,0x50),u8 *,0x21)=8;
  DrawTextSprite(M2C_FIELD(arg0,void **,0x50));
  p=(u8*)M2C_FIELD(arg0,void **,0x44)+((u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4)<<9);
- {u16 tile=(u16)(func_ov003_02200a18(M2C_FIELD(p,u8 *,0x22c),Ov003DrawItem(arg0,i))*4+0x418);
+ {u16 tile=(u16)(GetMapListIconTile(M2C_FIELD(p,u8 *,0x22c),Ov003DrawItem(arg0,i))*4+0x418);
  AddSprite((u16)((px+3)&0x1ff),(u8)(py-2),(u16)(((tile>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0x8800),gSpriteDesc16x16,17);}
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))){
@@ -109,8 +109,8 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  else if((u8)(mode==4)||(u8)(mode==8)||(u8)(mode==7)){
  p=M2C_FIELD(arg0,void **,0x44);shade=0;
  if(!(u8)(func_ov003_021f269c((u8*)p+4,(u8*)p+18,item)!=255))
- shade=(u8)(((s32)item>=225&&(s32)item<0x1a9&&!func_020c7eb8(item))?3:0);
- } else if((u8)(mode==2))shade=(u8)(func_020c7ef4(item)?0:3);
+ shade=(u8)(((s32)item>=225&&(s32)item<0x1a9&&!IsCampaignMapRecordValid(item))?3:0);
+ } else if((u8)(mode==2))shade=(u8)(IsCampaignMapRecordPlayable(item)?0:3);
  else shade=(u8)(func_02086960(item)?0:3);
  }
  {u8 a=(u8)Modulo(i,20);void *b=GetMapName(item);
@@ -171,9 +171,9 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  }}
 {s16 xx=(s16)(arg1+90),yy=(s16)(arg2+116);void *q=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,24);
 func_02088e84(q,xx,yy,xx,yy);
-if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=func_020aae10(q);u16 d=(u16)func_020aae44(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}M2C_FIELD(q,s16 *,0x34)=xx;M2C_FIELD(q,s16 *,0x36)=yy;if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=func_020aae10(q);u16 d=(u16)func_020aae44(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}}{s16 xx=(s16)(arg1+122),yy=(s16)(arg2+116);void *q=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,28);
+if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=GetUnitSpriteWidth(q);u16 d=(u16)GetUnitSpriteHeight(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}M2C_FIELD(q,s16 *,0x34)=xx;M2C_FIELD(q,s16 *,0x36)=yy;if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=GetUnitSpriteWidth(q);u16 d=(u16)GetUnitSpriteHeight(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}}{s16 xx=(s16)(arg1+122),yy=(s16)(arg2+116);void *q=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,28);
 func_02088e84(q,xx,yy,xx,yy);
-if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=func_020aae10(q);u16 d=(u16)func_020aae44(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}M2C_FIELD(q,s16 *,0x34)=xx;M2C_FIELD(q,s16 *,0x36)=yy;if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=func_020aae10(q);u16 d=(u16)func_020aae44(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}}
+if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=GetUnitSpriteWidth(q);u16 d=(u16)GetUnitSpriteHeight(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}M2C_FIELD(q,s16 *,0x34)=xx;M2C_FIELD(q,s16 *,0x36)=yy;if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s16 *,0x52),b=M2C_FIELD(q,s16 *,0x50);s32 c=GetUnitSpriteWidth(q);u16 d=(u16)GetUnitSpriteHeight(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)c,d);}}
  p=M2C_FIELD(arg0,void **,0x4c);
  {s16 a=M2C_FIELD(p,s16 *,0x2a);
  if(!(u8)(a>GetSpriteAnimValue((u8*)p+0x30))){

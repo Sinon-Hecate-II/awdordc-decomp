@@ -345,13 +345,13 @@ s32 func_02037954(void) {
 
 void func_02037994(void) {
     extern void *data_0213d1dc;
-    s32 func_0202f10c(void);
+    s32 Wfc_ProcessStep(void);
     s32 Wfc_GetLinkState(void);
     s32 dummy = 0;
     (void)dummy;
     if (!data_0213d1dc) return;
     if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 2) {
-        M2C_FIELD(data_0213d1dc, s32 *, 0) = func_0202f10c();
+        M2C_FIELD(data_0213d1dc, s32 *, 0) = Wfc_ProcessStep();
         return;
     }
     if (M2C_FIELD(data_0213d1dc, u16 *, 4) == 4 && M2C_FIELD(data_0213d1dc, u16 *, 6) != 0) {
@@ -501,20 +501,20 @@ func_0200f9c4(a,b);
 return 1;
 }
 
-M2C_UNK func_02037d78(s32 a,s32 b,s32 c,s32 d){
- M2C_UNK func_0200567c(s32,s32,void *,...);M2C_UNK StringLength(s32);extern M2C_UNK data_020fc884;
- func_0200567c(c,0x1000,&data_020fc884,d,a,d,b);StringLength(c);
+M2C_UNK FormatKeyValue(s32 a,s32 b,s32 c,s32 d){
+ M2C_UNK StringFormatN(s32,s32,void *,...);M2C_UNK StringLength(s32);extern M2C_UNK data_020fc884;
+ StringFormatN(c,0x1000,&data_020fc884,d,a,d,b);StringLength(c);
 }
 
-void func_02037db0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_02037d78(M2C_UNK, M2C_UNK, s32, M2C_UNK);
+void AppendKeyValue(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+    M2C_UNK FormatKeyValue(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK StringLength(M2C_UNK);
     s32 StringFindChar(M2C_UNK, M2C_UNK);
     s32 temp_r0;
     s32 dummy = 0;
     (void)dummy;
     temp_r0 = StringFindChar(arg2, 0);
-    func_02037d78(arg0, arg1, temp_r0, arg3);
+    FormatKeyValue(arg0, arg1, temp_r0, arg3);
     StringLength(arg2);
 }
 

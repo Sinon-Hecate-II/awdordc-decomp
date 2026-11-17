@@ -208,11 +208,11 @@ s32 ghiGetLastSocketError(void) {
 
 void gpiGetTime(int *out) {
 int func_02006f8c(void); unsigned long long GetSystemTick(void);
-unsigned long long func_02072088(unsigned long long, unsigned long long);
+unsigned long long U64Divide(unsigned long long, unsigned long long);
 extern char data_020fcdf0[],data_020fce10[],data_020fcdd8[];
 unsigned int v;
 if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcdd8,0x667);
-v=func_02072088(GetSystemTick()<<6,0x1ff6210);
+v=U64Divide(GetSystemTick()<<6,0x1ff6210);
 if(out)*out=v;
 }
 

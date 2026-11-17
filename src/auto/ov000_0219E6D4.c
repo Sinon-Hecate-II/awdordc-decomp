@@ -5,7 +5,7 @@
 
 #pragma inline_depth(0)
 static inline s32 E6D4Offset(s16 index) { return index * (s16)14; }
-static inline s32 E6D4Call(u8 *p,s16 index) { s32 func_0207b764(u8,u8); u8 *q=p+0x59a4+E6D4Offset(index);return func_0207b764(q[1],q[2]); }
+static inline s32 E6D4Call(u8 *p,s16 index) { s32 StepMapViewToTile(u8,u8); u8 *q=p+0x59a4+E6D4Offset(index);return StepMapViewToTile(q[1],q[2]); }
 static inline s32 E6D4Check(u8 *p, s16 index) { u8 *q=p+0x59a4+E6D4Offset(index); s32 yes=M2C_FIELD(p+M2C_FIELD(p,u16*,0x52a4)*0x8c,u8*,0x67c3); s32 y=q[2]; u32 x=q[1],bit; if(yes&2)yes=1;else{bit=x+M2C_FIELD(p+y*2,u16*,0x3758);yes=1;if((u8)(M2C_FIELD(p+(bit>>3),u8*,0x5201)&(1<<(bit&7)))==0)yes=0;} return yes; }
 
 void func_ov000_0219e6d4(void) {
@@ -167,7 +167,7 @@ s32 func_ov000_0219e948(void) {
 
 s32 func_ov000_0219e9f4(void) {
     s32 func_0207c2d0(s32);
-    s32 func_0207b764(u8, u8);
+    s32 StepMapViewToTile(u8, u8);
     void func_020844a0(u8 *, u8 *);
     void func_020d61f0(void);
     s32 func_020d1a1c(s32);
@@ -229,7 +229,7 @@ s32 func_ov000_0219e9f4(void) {
             }
             r3 = 0;
             if (visible) {
-                r3 = func_0207b764(sel[1], sel[2]);
+                r3 = StepMapViewToTile(sel[1], sel[2]);
             }
         }
         gAiCommandState[1] = 2;
@@ -263,7 +263,7 @@ s32 func_ov000_0219e9f4(void) {
                 }
             }
             if (r12) {
-                r4 = func_0207b764(sel[1], sel[2]);
+                r4 = StepMapViewToTile(sel[1], sel[2]);
             }
         }
         func_020844a0(gCommandPath, (u8 *)map + 0x5388);
@@ -329,7 +329,7 @@ final_visibility:
     if (!func_020a7d68(sel)) {
         return 0;
     }
-    r4 = func_0207b764(sel[1], sel[2]);
+    r4 = StepMapViewToTile(sel[1], sel[2]);
     gAiCommandState[1] = 1;
     if (r4 == 0) return 1;
     return 0;
@@ -385,7 +385,7 @@ s32 func_ov000_0219f0d8(void) {
     void func_ov000_0219f448(void);
     void func_ov000_0219f494(void);
     u8 AiMoveCursorToCommandTile(void);
-    u8 func_ov000_0219f5fc(void);
+    u8 AiMoveCursorToCommandPoint(void);
     void func_020bb458(void);
     void func_ov000_0219fabc(s32);
     void func_020bb768(void);
@@ -451,7 +451,7 @@ s32 func_ov000_0219f0d8(void) {
     case 8:
         return AiMoveCursorToCommandTile();
     case 9:
-        return func_ov000_0219f5fc();
+        return AiMoveCursorToCommandPoint();
     case 10:
         func_020bb458();
         BattleUpdateUnitCursor();
@@ -562,7 +562,7 @@ extern void **gCurrentMap;
 extern u8 gAiCommand[];
 extern s8 *gAiCommandState;
 extern s32 gAiCommandTimer;
-s32 func_0207b764(u8,u8);
+s32 StepMapViewToTile(u8,u8);
 u8 result;
 s32 value;
 u8 *p;
@@ -586,24 +586,28 @@ if((u8)(M2C_FIELD(p+(bit>>3),u8 *,MAP_CELL_BITMAP)&(1<<(bit&7)))==0)yes=0;
 }
 if(yes){
 q=p+0x59a4+offset;
-value=func_0207b764(q[1],q[2]);
+value=StepMapViewToTile(q[1],q[2]);
 }
 gAiCommandTimer=0;
 M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_STEP)=7;
 result=value==0;
 return result;
 }
-u8 func_ov000_0219f5fc(void){
-s32 func_0207b764(u8,u8);extern void **gCurrentMap;extern u8 gAiCommand[];extern s8 *gAiCommandState;extern s32 gAiCommandTimer;
-void *p=*gCurrentMap;u8 y=gAiCommand[7],x=gAiCommand[6];s32 r=0;u32 n;u32 flags; s32 ok;
-flags=M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3);
-if(flags&2)ok=1;
+/* AI command 9: move the cursor to the tile named by the command's two
+ * parameters when the current player can see it; clear the command timer and
+ * advance to step 7, otherwise fail to step 3.  Returns 1 when the move
+ * failed. */
+u8 AiMoveCursorToCommandPoint(void){
+s32 StepMapViewToTile(u8,u8);extern void **gCurrentMap;extern u8 gAiCommand[];extern s8 *gAiCommandState;extern s32 gAiCommandTimer;
+void *map=*gCurrentMap;u8 y=gAiCommand[7],x=gAiCommand[6];s32 moved=0;u32 index;u32 flags; s32 visible;
+flags=M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,0x52a4)*140,u8 *,0x67c3);
+if(flags&2)visible=1;
 else {
-ok=1;
-n=x+M2C_FIELD((u8 *)p+y*2,u16 *,0x3758);
-if(!(u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,0x5201)&(1<<(n&7))))ok=0;
+visible=1;
+index=x+M2C_FIELD((u8 *)map+y*2,u16 *,MAP_ROW_OFFSETS);
+if(!(u8)(M2C_FIELD((u8 *)map+(index>>3),u8 *,MAP_CELL_BITMAP)&(1<<(index&7))))visible=0;
 }
-if(ok){r=func_0207b764(x,y);gAiCommandTimer=0;gAiCommandState[1]=7;}else gAiCommandState[1]=3;
-return r==0;
+if(visible){moved=StepMapViewToTile(x,y);gAiCommandTimer=0;gAiCommandState[1]=7;}else gAiCommandState[1]=3;
+return moved==0;
 }
 

@@ -242,7 +242,7 @@ s32 SelectUnitForTargetCandidate(s32 candidateIndex) {
  }
 }
 void func_ov000_021a7610(void) {
-u8 func_ov000_021a7348(void); s32 func_ov000_021a6e5c(u8); s32 func_ov000_021a72c0(s32);
+u8 func_ov000_021a7348(void); s32 GetUnitThreatClass(u8); s32 func_ov000_021a72c0(s32);
 s32 func_ov000_021a96f4(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
 s32 ScaleAiDamageByRange(s32,s32,s32); s32 Divide(s32,s32);
 s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 GetUnitBuildCost(u16,s32);
@@ -255,7 +255,7 @@ s32 kind;
 gAiState[6]=func_ov000_021a7348();
 for(a=0;a<27;a++)gUnitKindScores[a]=0;
 for(b=0;b<9;b++)values[b]=0;
-for(i=1;i<27;i++){j=func_ov000_021a6e5c((u8)i);if(j!=10)values[j]+=data_ov000_021e1474[i];}
+for(i=1;i<27;i++){j=GetUnitThreatClass((u8)i);if(j!=10)values[j]+=data_ov000_021e1474[i];}
 t=(u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29;
 if((t&4) && !(t&2))values[7]*=2;
 for(kind=1;kind<27;kind++){

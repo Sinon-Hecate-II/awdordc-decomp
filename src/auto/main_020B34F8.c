@@ -1,5 +1,6 @@
 /* 12 functions from 0x020B34F8 to 0x020B4264 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_grid.h"
 extern void **gCurrentMap;
 extern u16 data_0215d9b8[];
 extern u8 gMapConfig[];
@@ -15,15 +16,19 @@ typedef struct {u8 a[27];} Bytes27B3C;
 typedef struct {u8 a[2];} Bytes2B3C;
 typedef struct {u32 a[4];} Words4B3C;
 
-u8 func_020b34f8(void *arg0) {
+/* Pages the sprite grid up (towards the first item) by one screenful: moves the
+ * cursor and the scroll position back by up to SPRITE_GRID_ROWS rows and starts
+ * the scroll's pixel animation.  Returns 1 when the animation was started, 0 when
+ * it was already running or nothing moved. */
+u8 ScrollSpriteGridPageUp(void *grid) {
     s32 Divide();
     M2C_UNK PlaySoundEffect(s32);
     s32 active, i, factor, delta;
-    s16 old, n;
-    u8 step, result;
-    s32 limit;
+    s16 oldScroll, count;
+    u8 cols, result;
+    s32 itemsPerPage;
 
-    if (M2C_FIELD(arg0, s16 *, 0x12) != 0) {
+    if (M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) != 0) {
         active = 1;
     } else {
         active = 0;
@@ -31,26 +36,26 @@ u8 func_020b34f8(void *arg0) {
     if (active & 0xFF) {
         return 0U;
     }
-    step = M2C_FIELD(arg0, u8 *, 0x5);
-    limit = M2C_FIELD(arg0, u8 *, 0x4);
-    n = Divide(M2C_FIELD(arg0, s16 *, 0xA) + step - 1, step);
-    n = (old = M2C_FIELD(arg0, volatile s16 *, 0xC), limit >= n ? n : limit);
-    for (i = 0; i < n; i++) {
-        if (M2C_FIELD(arg0, s16 *, 0xC) != 0) {
-            M2C_FIELD(arg0, s16 *, 0xC) -= 1;
+    cols = M2C_FIELD(grid, u8 *, SPRITE_GRID_COLUMNS);
+    itemsPerPage = M2C_FIELD(grid, u8 *, SPRITE_GRID_ROWS);
+    count = Divide(M2C_FIELD(grid, s16 *, SPRITE_GRID_ITEM_COUNT) + cols - 1, cols);
+    count = (oldScroll = M2C_FIELD(grid, volatile s16 *, SPRITE_GRID_SCROLL), itemsPerPage >= count ? count : itemsPerPage);
+    for (i = 0; i < count; i++) {
+        if (M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL) != 0) {
+            M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL) -= 1;
         }
-        if (M2C_FIELD(arg0, s16 *, 0x8) - step >= 0) {
-            M2C_FIELD(arg0, s16 *, 0x8) -= step;
+        if (M2C_FIELD(grid, s16 *, SPRITE_GRID_SELECTED) - cols >= 0) {
+            M2C_FIELD(grid, s16 *, SPRITE_GRID_SELECTED) -= cols;
         }
     }
-    if (old != M2C_FIELD(arg0, s16 *, 0xC)) {
+    if (oldScroll != M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL)) {
         PlaySoundEffect(0x10019);
     }
-    delta = M2C_FIELD(arg0, s16 *, 0xC);
-    factor = M2C_FIELD(arg0, u8 *, 0x7);
-    delta -= old;
-    M2C_FIELD(arg0, s16 *, 0x12) = (s16)(delta * factor);
-    if (M2C_FIELD(arg0, s16 *, 0x12) != 0) {
+    delta = M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL);
+    factor = M2C_FIELD(grid, u8 *, SPRITE_GRID_CELL_HEIGHT);
+    delta -= oldScroll;
+    M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = (s16)(delta * factor);
+    if (M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) != 0) {
         result = 1;
     } else {
         result = 0;
@@ -62,7 +67,7 @@ u8 func_020b34f8(void *arg0) {
 void func_020b35d4(void *p) {
 s32 Divide(s32,s32);
 s32 Modulo(s32,s32);
-u8 func_020b3410(void *);
+u8 ScrollSpriteGridPageDown(void *);
 M2C_UNK PlaySoundEffect(s32);
 extern u16 *gKeyState;
 
@@ -93,8 +98,8 @@ if(col<n-1)M2C_FIELD(p,s16 *,8)++;
 else if(pressed==held)M2C_FIELD(p,s16 *,8)-=n-1;
 }
 }else{
-if(pressed&32){if(func_020b34f8(p))return;}
-else if(pressed&16){if(func_020b3410(p))return;}
+if(pressed&32){if(ScrollSpriteGridPageUp(p))return;}
+else if(pressed&16){if(ScrollSpriteGridPageDown(p))return;}
 }
 active=M2C_FIELD(p,s16 *,18)!=0;
 if(!(active&255)){
@@ -183,22 +188,28 @@ void func_020b3a58(M2C_UNK arg0) {
     func_020b38d0(arg0);
 }
 
-void func_020b3a80(void *arg0) {
+/* Eases the sprite grid's cursor toward the selected cell: the cell's screen
+ * position is its column (selected % columns) and its row relative to the scroll
+ * (selected / columns - scroll), times the cell size, plus the grid's base origin.
+ * The cursor is snapped onto the target once at most a pixel away, and otherwise
+ * moved half the remaining distance; its initial position (both coordinates
+ * -32768) snaps on the first update. */
+void UpdateSpriteGridCursor(void *grid) {
 s32 Divide();
 s32 Modulo(s32,s32);
-s16 a,b; s16 x,y,c,old; s16 delta; s32 d,e;
-a=M2C_FIELD(arg0,u8 *,6); b=M2C_FIELD(arg0,u8 *,7);
-x=Modulo(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5));
-c=M2C_FIELD(arg0,s16 *,12);
-delta=Divide(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5))-c;
-x=(s16)(M2C_FIELD(arg0,s16 *,20)+x*a);
-y=(s16)(M2C_FIELD(arg0,s16 *,22)+delta*b);
-old=M2C_FIELD(arg0,s16 *,14);
-if ((old==-32768 && M2C_FIELD(arg0,s16 *,16)==-32768) || (((d=old-x)<0?-d:d)<=1 && ((e=M2C_FIELD(arg0,s16 *,16)-y)<0?-e:e)<=1)) {
-M2C_FIELD(arg0,s16 *,14)=x; M2C_FIELD(arg0,s16 *,16)=y;
+s16 cellWidth,cellHeight; s16 targetX,targetY,scroll,cursorX; s16 rowDelta; s32 dx,dy;
+cellWidth=M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_WIDTH); cellHeight=M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_HEIGHT);
+targetX=Modulo(M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED),M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS));
+scroll=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);
+rowDelta=Divide(M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED),M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS))-scroll;
+targetX=(s16)(M2C_FIELD(grid,s16 *,SPRITE_GRID_BASE_X)+targetX*cellWidth);
+targetY=(s16)(M2C_FIELD(grid,s16 *,SPRITE_GRID_BASE_Y)+rowDelta*cellHeight);
+cursorX=M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_X);
+if ((cursorX==-32768 && M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_Y)==-32768) || (((dx=cursorX-targetX)<0?-dx:dx)<=1 && ((dy=M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_Y)-targetY)<0?-dy:dy)<=1)) {
+M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_X)=targetX; M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_Y)=targetY;
 } else {
-M2C_FIELD(arg0,s16 *,14)=(x+old+1)>>1;
-M2C_FIELD(arg0,s16 *,16)=(y+M2C_FIELD(arg0,s16 *,16)+1)>>1;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_X)=(targetX+cursorX+1)>>1;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_Y)=(targetY+M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_Y)+1)>>1;
 }
 }
 

@@ -80,30 +80,30 @@ void func_ov003_02207a8c(void *arg0) {
 }
 
 #pragma thumb off
-void func_ov003_02207b84(void *arg0) {
+void Ov003_ApplyRowSelectionAnimations(void *arg0) {
 void func_ov003_02207c7c(void *); void DrawMapSelectLabel(void *);
-s32 var_ip,var_lr,var_r5,var_r5_2,var_r6,var_r7; void *temp_r8; s32 var_r9,var_r10; void *temp_r1,*temp_r5;
-temp_r1=M2C_FIELD(arg0,void **,0x50);var_r9=0;
-M2C_FIELD(temp_r1,u16 *,2)=M2C_FIELD(temp_r1,u16 *,4);
+s32 selStep,selLevel,selId,selMode,selValue,selAux; void *row; s32 rowIndex,rowOffset; void *sprite,*pager;
+sprite=M2C_FIELD(arg0,void **,0x50);rowIndex=0;
+M2C_FIELD(sprite,u16 *,2)=M2C_FIELD(sprite,u16 *,4);
 if((s32)*M2C_FIELD(arg0,u8 **,0x44)>0){
-var_r10=0;
+rowOffset=0;
 do{
-temp_r8=M2C_FIELD(arg0,u8 **,0x48)+var_r10;
-temp_r5=*M2C_FIELD(arg0,void ***,0x5c);
-if(temp_r5!=NULL)var_r5=M2C_FIELD(temp_r5,u16 *,8);else var_r5=-1U;
-if(var_r9==(u8)(var_r5-11)){var_r6=256;var_r7=16;var_ip=1;var_lr=2;var_r5_2=3;}
-else{var_r6=205;var_r7=8;var_ip=0;var_lr=5;var_r5_2=1;}
-M2C_FIELD(temp_r8,s8 *,0x12)=var_ip;
-M2C_FIELD(temp_r8,s8 *,0x14)=var_lr;
-M2C_FIELD(temp_r8,s8 *,0x15)=var_r5_2;
-M2C_FIELD(temp_r8,s16 *,0xe)=var_r6;
-M2C_FIELD(temp_r8,s8 *,0x10)=var_r7;
-var_r10+=36;var_r9++;
-}while(var_r9<(s32)*M2C_FIELD(arg0,u8 **,0x44));
+row=M2C_FIELD(arg0,u8 **,0x48)+rowOffset;
+pager=*M2C_FIELD(arg0,void ***,0x5c);
+if(pager!=NULL)selId=M2C_FIELD(pager,u16 *,MAP_SELECT_ENTRY_ID);else selId=-1U;
+if(rowIndex==(u8)(selId-MAP_SELECT_ROW_ID_BASE)){selValue=256;selAux=16;selStep=1;selLevel=2;selMode=3;}
+else{selValue=205;selAux=8;selStep=0;selLevel=5;selMode=1;}
+M2C_FIELD(row,s8 *,MAP_SELECT_ROW_ANIM_STEP)=selStep;
+M2C_FIELD(row,s8 *,MAP_SELECT_ROW_ANIM_LEVEL)=selLevel;
+M2C_FIELD(row,s8 *,MAP_SELECT_ROW_ANIM_MODE)=selMode;
+M2C_FIELD(row,s16 *,MAP_SELECT_ROW_ANIM_VALUE)=selValue;
+M2C_FIELD(row,s8 *,MAP_SELECT_ROW_ANIM_AUX)=selAux;
+rowOffset+=MAP_SELECT_ROW_STRIDE;rowIndex++;
+}while(rowIndex<(s32)*M2C_FIELD(arg0,u8 **,0x44));
 }
 DrawMapSelectLabel(arg0);func_ov003_02207c7c(arg0);
 }
-u8 func_ov003_02207c5c(void *arg0) {
+u8 Ov003_GetSelectedRowIndex(void *arg0) {
     s32 var_r0;
     void *temp_r0;
 

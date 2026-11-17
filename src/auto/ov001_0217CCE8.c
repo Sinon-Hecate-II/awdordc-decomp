@@ -95,7 +95,7 @@ void func_ov001_0217d15c(void) {
 }
 
 void func_ov001_0217d1ac(void) {
-    s32 func_ov001_0217170c();
+    s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
@@ -112,7 +112,7 @@ void func_ov001_0217d1ac(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (func_ov001_0217170c() == 0) {
+    if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
     func_ov001_0218af70(0);
@@ -146,14 +146,14 @@ void InitMapListScreen(void) {
     void func_ov001_0217d680(void);
     void InitMapListGraphics(void);
     u8 Ov001_GetLanguage(void);
-    M2C_UNK func_ov001_02171c24(s32, s32, s32);
+    M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
     void func_ov001_02171dd0(M2C_UNK);
     void func_ov001_021722c4(void);
-    M2C_UNK func_ov001_021838a8(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Ov001_CreateScrollBar(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *CreateTextPanel(s32, s32);
     void *func_ov001_0218a5f0(s32, s32);
     void *Ov001_AddTask(s32, void (*)(void), s32, s32);
-    M2C_UNK func_ov001_0217e238(void);
+    M2C_UNK MapListRedrawInfoPanel(void);
     void func_ov001_0217f038(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern s8 data_ov001_0218f99c[];
@@ -174,13 +174,13 @@ void InitMapListScreen(void) {
     InitMapListGraphics();
     if (M2C_FIELD(&gMapListState, u8 *, 1) == 0) {
         value = Ov001_GetLanguage();
-        func_ov001_02171c24(0x30, (s32)data_ov001_0218f99c[value], M2C_FIELD(profile, u8 *, 0xf4) + 1);
+        Ov001_ShowMessagePanel(0x30, (s32)data_ov001_0218f99c[value], M2C_FIELD(profile, u8 *, 0xf4) + 1);
     } else {
-        func_ov001_02171c24(0x45, -1, 0);
+        Ov001_ShowMessagePanel(0x45, -1, 0);
     }
     func_ov001_02171dd0(1);
     func_ov001_021722c4();
-    func_ov001_021838a8(2, 0x55, 0xf1, 0x41,
+    Ov001_CreateScrollBar(2, 0x55, 0xf1, 0x41,
                         (M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x14) = CreateTextPanel(0, 1);
     for (i = 0; i < 7; i++) {
@@ -205,7 +205,7 @@ void InitMapListScreen(void) {
     }
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = Ov001_AddTask(1, (void (*)(void))func_ov001_0217efb4, 0, 0x6e);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
-    func_ov001_0217e238();
+    MapListRedrawInfoPanel();
     func_ov001_0217f038();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d6bc);
 }
@@ -308,8 +308,8 @@ void func_ov001_0217d744(void) {
 
 void func_ov001_0217d754(void) {
     extern M2C_UNK gMapListState;
-    extern M2C_UNK func_ov001_0217ef10;
-    extern M2C_UNK func_ov001_0217ee48;
+    extern M2C_UNK MapListScrollDown;
+    extern M2C_UNK MapListScrollUp;
     s32 func_ov001_0217d9d4(void);
     s32 KeyPressed(s32);
     s32 KeyHeld(s32);
@@ -348,7 +348,7 @@ void func_ov001_0217d754(void) {
         }
         Ov001_PlaySound(0x13);
         M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x38) =
-            Ov001_AddTask(0, (void (*)(void))&func_ov001_0217ef10, 0, 0x78);
+            Ov001_AddTask(0, (void (*)(void))&MapListScrollDown, 0, 0x78);
         return;
     }
     if (KeyReleased(0x200) != 0) {
@@ -365,7 +365,7 @@ void func_ov001_0217d754(void) {
         }
         Ov001_PlaySound(0x13);
         M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x38) =
-            Ov001_AddTask(0, (void (*)(void))&func_ov001_0217ee48, 0, 0x78);
+            Ov001_AddTask(0, (void (*)(void))&MapListScrollUp, 0, 0x78);
         return;
     }
     if (KeyReleased(0x100) != 0) {
@@ -447,12 +447,12 @@ Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK 
 }
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);
 }else if(a==13){func_ov001_0217f4e0();Ov001_PlaySound(7);}
-else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,func_ov001_0217ede0(data_ov001_0218f9bc[a]));func_ov001_0217e95c();}
-func_ov001_02183a08();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
+else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,func_ov001_0217ede0(data_ov001_0218f9bc[a]));MapListUpdateRowSprites();}
+Ov001_BlockScrollBar();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
 }
 
 void func_ov001_0217dbd8(s32 arg0) {
-    M2C_UNK func_ov001_0217e238();
+    M2C_UNK MapListRedrawInfoPanel();
     M2C_UNK func_ov001_02184470(s32);
     M2C_UNK func_ov001_02184484(s32);
     extern M2C_UNK gMapListState;
@@ -468,11 +468,11 @@ void func_ov001_0217dbd8(s32 arg0) {
     }
     func_ov001_02184470(arg0);
     func_ov001_02184484(var_r5);
-    func_ov001_0217e238();
+    MapListRedrawInfoPanel();
 }
 
 void func_ov001_0217dc44(s32 arg0) {
-    M2C_UNK func_ov001_0217e238();
+    M2C_UNK MapListRedrawInfoPanel();
     M2C_UNK func_ov001_02184484(s32);
     extern M2C_UNK gMapListState;
     s32 current;
@@ -480,6 +480,6 @@ void func_ov001_0217dc44(s32 arg0) {
     if (current == arg0) return;
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = arg0;
     func_ov001_02184484(arg0);
-    func_ov001_0217e238();
+    MapListRedrawInfoPanel();
 }
 

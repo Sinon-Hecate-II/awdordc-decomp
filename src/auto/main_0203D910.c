@@ -7,8 +7,8 @@ void func_0203d910(s32 a, s32 b)
 {
     s32 GetConnection(void);
     M2C_UNK func_02040e1c(M2C_UNK);
-    s32 func_0200567c(void *, s32, void *, s32);
-    s32 func_0205d4d8(s32, s32, s32);
+    s32 StringFormatN(void *, s32, void *, s32);
+    s32 Gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
     void func_0203dc38(s32, s32);
@@ -56,7 +56,7 @@ void func_0203d910(s32 a, s32 b)
                 return;
             }
 
-            func_0200567c(
+            StringFormatN(
                 buf,
                 12,
                 &data_020fc908,
@@ -73,7 +73,7 @@ void func_0203d910(s32 a, s32 b)
             i = (s32)M2C_FIELD(z, u8 *, 0x14);
             j = (s32)M2C_FIELD(t, u8 *, 0x14);
 
-            r = func_0205d4d8(
+            r = Gt2AddressToString(
                 M2C_FIELD(y + i * 4, s32 *, 0x210),
                 M2C_FIELD(w + j * 2, u16 *, 0x290),
                 0
@@ -401,18 +401,21 @@ i++;}while(i<=M2C_FIELD(GetConnection(),u8 *,14));}
 *a=data_0213daf4;return M2C_FIELD(GetConnection(),u8 *,14)+1;
 }
 
-s32 func_0203e410(void){
-M2C_UNK func_0200567c(void *,s32,void *,s32);M2C_UNK func_02037d78(void *,void *,void *,s32);M2C_UNK func_02037db0(void *,void *,void *,s32);s32 SetGpiStatus(s32,s32 *,s32);
-extern M2C_UNK data_020fc908,gKeyVER,data_020fc950,data_020fc954;
-u8 sp20[12];s32 sp0[8];
+/* Report the connected session's match type and player count to the master as
+ * gpi status 6: "/SCM/<match type>/SCN/<player count>/VER/3".  Only a fully
+ * connected session (mode 2) reports anything. */
+s32 ReportGpiSessionStatus(void){
+M2C_UNK StringFormatN(void *,s32,void *,s32);M2C_UNK FormatKeyValue(void *,void *,void *,s32);M2C_UNK AppendKeyValue(void *,void *,void *,s32);s32 SetGpiStatus(s32,s32 *,s32);
+extern M2C_UNK data_020fc908,gKeyVER,gKeyStatusSCM,gKeyStatusSCN;
+u8 valueText[12];s32 statusText[8];
 if(M2C_FIELD(GetConnection(),u8 *,21)!=2)return 0;
-func_0200567c(sp20,12,&data_020fc908,M2C_FIELD(GetConnection(),u8 *,22)+1);
-func_02037d78(&data_020fc950,sp20,sp0,47);
-func_0200567c(sp20,12,&data_020fc908,M2C_FIELD(GetConnection(),u8 *,13)+1);
-func_02037db0(&data_020fc954,sp20,sp0,47);
-func_0200567c(sp20,12,&data_020fc908,3);
-func_02037db0(&gKeyVER,sp20,sp0,47);
-return SetGpiStatus(6,sp0,0);
+StringFormatN(valueText,12,&data_020fc908,M2C_FIELD(GetConnection(),u8 *,22)+1);
+FormatKeyValue(&gKeyStatusSCM,valueText,statusText,47);
+StringFormatN(valueText,12,&data_020fc908,M2C_FIELD(GetConnection(),u8 *,13)+1);
+AppendKeyValue(&gKeyStatusSCN,valueText,statusText,47);
+StringFormatN(valueText,12,&data_020fc908,3);
+AppendKeyValue(&gKeyVER,valueText,statusText,47);
+return SetGpiStatus(6,statusText,0);
 }
 
 void func_0203e4e0(void) {

@@ -9,7 +9,7 @@ extern u16 *gAiCommandState;
 extern s8 gTerrainPropertyType[32];
 void BuildUnitMoveRange(void); void MarkAdjacentCells(s32);
 s32 IsAllyUnitAtCell(s16,s16); u8 IsPropertyTerrain(s32);
-s32 func_ov000_021a9860(s32,s32); s32 FindBestAdjacentDestination(s32,s32,s16 *);
+s32 IsPropertyCell(s32,s32); s32 FindBestAdjacentDestination(s32,s32,s16 *);
 s32 func_ov000_0217bdb4(s32,s32);s32 func_ov000_0217bd44(s32,s32,s32,s32);
 s32 SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 IsTerrainOnUnitTeam(s32,s32);
@@ -27,7 +27,7 @@ for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
 if(IsAllyUnitAtCell((s16)x,(s16)y))continue;
 if(IsPropertyTerrain(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
-if(!func_ov000_021a9860(x,y))continue;
+if(!IsPropertyCell(x,y))continue;
 if(!FindBestAdjacentDestination(x,y,pos))continue;
 if(M2C_FIELD(*gCurrentMap,u8 *,0x6c63+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x1928)*6) && !(gAiCommandState[4]&0x20)){
 if(func_ov000_0217bdb4(x,y)==1)continue;
@@ -55,10 +55,10 @@ kind=(u32)(unit[0]<<26)>>26;
 switch(kind){
 case 1:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x80))continue;
 if(!(gAiCommandState[4]&0x20)){if(!func_ov000_0217c08c(x,y,3,dest))continue;}
-else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
+else{if(!IsPropertyCell(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
 case 2:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x40))continue;
 if(!(gAiCommandState[4]&0x20)){if(!func_ov000_0217c08c(x,y,2,dest))continue;}
-else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
+else{if(!IsPropertyCell(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
 default:continue;}
 if(gTerrainPropertyType[M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31] && IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)))score=0;
 else score=M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x);
@@ -102,7 +102,7 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
     s32 IsSameTeam(s32, s32);
     u8 IsPropertyTerrain(s32);
     s32 ManhattanDistance(s32, s32, s32, s32);
-    u8 func_ov000_021786a8(s16 *);
+    u8 SelectEnemyHqDestination(s16 *);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     s16 x, y;
@@ -173,7 +173,7 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
     }
     {
         s16 c0, c1;
-        if (func_ov000_021786a8(coords)) {
+        if (SelectEnemyHqDestination(coords)) {
             best = 0x7fff - ManhattanDistance(x, y, coords[0], coords[1]);
         } else {
             s32 player;

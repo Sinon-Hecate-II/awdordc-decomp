@@ -22,7 +22,7 @@ loop:x=*p;if(x!=0){p++;(*q)=(u8)((u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>
 }
 
 void ScoreAiUnitsByMoveRange(s32 arg0) {
-    u8 func_020a7b24(s32);
+    u8 GetUnitKindMoveRange(s32);
     void func_ov000_0219c874(s32);
     void func_ov000_0219c7ec(s32);
     extern s32 *data_027e0058;
@@ -41,11 +41,11 @@ loop:
     var_r1 = *var_r9;
     if (!var_r1) goto done;
     if ((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A) == 0x11) {
-        *var_r10 = (s8)(func_020a7b24(14) + 1);
+        *var_r10 = (s8)(GetUnitKindMoveRange(14) + 1);
     } else if ((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A) == 0x0F) {
-        *var_r10 = (s8)(func_020a7b24(14) + 2);
+        *var_r10 = (s8)(GetUnitKindMoveRange(14) + 2);
     } else {
-        *var_r10 = (s8)func_020a7b24((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A));
+        *var_r10 = (s8)GetUnitKindMoveRange((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A));
     }
     var_r9 += 1;
     var_r10++;
@@ -64,7 +64,7 @@ done:
  * as its own kind; sea and air kinds not loaded on a transport lose ten points more.
  * The scored unit-id list is then sorted best-first. */
 void func_ov000_0219caac(void) {
-u8 func_020a7b24(s32);void func_ov000_0219c874(s32);
+u8 GetUnitKindMoveRange(s32);void func_ov000_0219c874(s32);
 extern u8 gAiUnitList;extern s8 gAiUnitScores;extern s32 *gCurrentMap;extern u8 gUnitKindStats[];
 s32 count;u8 *entry;u8 *p;u8 *q;u8 unit;u32 kind;
 p=&gAiUnitList;q=(u8 *)&gAiUnitScores;count=0;
@@ -72,9 +72,9 @@ while(1){
 unit=*p;if(!unit)break;
 entry=(u8 *)(*gCurrentMap+MAP_UNIT_RECORDS+unit*MAP_UNIT_STRIDE);
 kind=(u32)(*entry<<26)>>26;
-if(kind==17)*q=func_020a7b24(14)+1;
-else if(kind==15)*q=func_020a7b24(14)+2;
-else *q=func_020a7b24(kind);
+if(kind==17)*q=GetUnitKindMoveRange(14)+1;
+else if(kind==15)*q=GetUnitKindMoveRange(14)+2;
+else *q=GetUnitKindMoveRange(kind);
 kind=(u32)(*entry<<26)>>26;
 if(gUnitKindStats[kind*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_FLAGS]&UNIT_KIND_FLAGS_SEA)
 if(!(*(u16 *)(entry+MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED))*q=*(volatile u8 *)q+10;
@@ -507,7 +507,7 @@ void SelectAiRole3UnitByRange(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
-    extern M2C_UNK func_ov000_021813a4;
+    extern M2C_UNK RunAiRole3ActionByRange;
     void ScoreAiUnitsByHp(void);
     void ScoreAiUnitsByAttackRange(void);
     s32 index;
@@ -544,7 +544,7 @@ void SelectAiRole3UnitByRange(void) {
     gAiUnitListCursor = (s8 *)&gAiUnitList;
     ScoreAiUnitsByHp();
     ScoreAiUnitsByAttackRange();
-    gAiUnitAction = &func_ov000_021813a4;
+    gAiUnitAction = &RunAiRole3ActionByRange;
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 

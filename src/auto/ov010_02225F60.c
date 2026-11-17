@@ -203,15 +203,36 @@ void func_ov010_02226204(void) {
     SetWebRequestError(0);
 }
 
-s32 func_ov010_02226214(s32 a,s32 b,s32 c,s32 d,s32 e){
-s32 GetServerTime(M2C_UNK *,M2C_UNK *); s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *); s32 func_02085c18(); u32 func_0204563c(s32,s32,s32,s32,s32);
-M2C_UNK date[4]; M2C_UNK time[3]; s32 result; u32 status;
-result=1;
-if(GetServerTime(date,time)!=0)GetElapsedSeconds(func_02085c18(),date,time);
-status=func_0204563c(a,b,c,d,e);
-switch(status){default:break;case 1:result=0;break;case 7:result=0;break;case 2:result=0;break;case 8:result=0;break;case 9:result=0;break;}
-if(status!=0)SetWebRequestError(status);
-return result;
+/* Refresh the clock from the server, then send a put.asp request with the given
+ * fields and record its error: returns 0 when the request failed (statuses 1, 2,
+ * 7, 8 and 9), 1 once it is on its way. */
+s32 SubmitWebPutRequest(s32 playerId, s32 field2, s32 field3, s32 payload, s32 payloadSize) {
+    s32 GetServerTime(M2C_UNK *, M2C_UNK *);
+    s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
+    s32 func_02085c18();
+    u32 SendWebPutRequest(s32, s32, s32, s32, s32);
+    M2C_UNK date[4];
+    M2C_UNK time[3];
+    s32 result;
+    u32 status;
+
+    result = 1;
+    if (GetServerTime(date, time) != 0) {
+        GetElapsedSeconds(func_02085c18(), date, time);
+    }
+    status = SendWebPutRequest(playerId, field2, field3, payload, payloadSize);
+    switch (status) {
+    default: break;
+    case 1: result = 0; break;
+    case 7: result = 0; break;
+    case 2: result = 0; break;
+    case 8: result = 0; break;
+    case 9: result = 0; break;
+    }
+    if (status != 0) {
+        SetWebRequestError(status);
+    }
+    return result;
 }
 
 s32 func_ov010_022262e0(void) {
@@ -243,9 +264,9 @@ s32 func_ov010_022262e0(void) {
 
 s32 func_ov010_02226334(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, void *arg5) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
-    s32 func_ov010_02226214(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    s32 SubmitWebPutRequest(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern M2C_UNK data_ov010_0222c080;
-    if (func_ov010_02226214(arg0, arg1, arg2, arg3, arg4) == 0) {
+    if (SubmitWebPutRequest(arg0, arg1, arg2, arg3, arg4) == 0) {
         return 0;
     }
     return CreateSpriteObject(&data_ov010_0222c080, arg5);

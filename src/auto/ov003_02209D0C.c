@@ -4,7 +4,7 @@
 
 static inline void UpdateA9Slider(void *p, s16 value) {
     s32 Divide(s32, s32);
-    void func_020a979c(void *, s16, s16);
+    void ScrollBar_PlaceThumb(void *, s16, s16);
     void *object;
     s16 position, current, limit, base;
     M2C_FIELD(p,s16 *,0x12)=value;
@@ -18,7 +18,7 @@ static inline void UpdateA9Slider(void *p, s16 value) {
     object=M2C_FIELD(p,void **,0x1c);
     base=M2C_FIELD(p,s16 *,8);
     position=base+Divide(M2C_FIELD(p,s16 *,0x12)*(s16)(M2C_FIELD(object,s16 *,0x14)-M2C_FIELD(object,s16 *,0x12)),M2C_FIELD(p,s16 *,0x16)-M2C_FIELD(p,s16 *,0x14));
-    func_020a979c(M2C_FIELD(p,void **,0x1c),position,M2C_FIELD(M2C_FIELD(p,void **,0x1c),s16 *,0xa));
+    ScrollBar_PlaceThumb(M2C_FIELD(p,void **,0x1c),position,M2C_FIELD(M2C_FIELD(p,void **,0x1c),s16 *,0xa));
 }
 
 static inline void UpdateA9Value(void *p,s32 value) {
@@ -154,14 +154,14 @@ return Ov003_RefreshListRowAnimations(a,10,255);
 void func_ov003_0220a5fc(void *arg0, s32 arg1) {
 M2C_UNK SetFileDirectory(M2C_UNK *);
 M2C_UNK func_0207c780(s32,s32);
-s32 func_02080e30(s32,s32);
+s32 LoadFileToBuffer(s32,s32);
 s32 GetLocalizedFileName(s32);
 M2C_UNK HeapFreeBlock(s32);
 extern void *g3DSpriteEngineSub;
 extern M2C_UNK data_ov003_0220f240, data_ov003_0221118c, data_ov003_0221119c;
 s32 temp_r0;
 SetFileDirectory(&data_ov003_0221118c);
-temp_r0=func_02080e30(GetLocalizedFileName((s32)&data_ov003_0221119c),1);
+temp_r0=LoadFileToBuffer(GetLocalizedFileName((s32)&data_ov003_0221119c),1);
 func_0207c780(temp_r0+M2C_FIELD(&data_ov003_0220f240,s32 *,arg1*16),M2C_FIELD(g3DSpriteEngineSub,s32 *,0x14));
 HeapFreeBlock(temp_r0);
 }
@@ -170,12 +170,12 @@ void func_ov003_0220a658(void *arg0, s32 arg1) {
     M2C_UNK func_02004b54();
     M2C_UNK func_02004cf0();
     M2C_UNK func_0207c780(s32, s32);
-    s32 func_02080e30(s32, s32);
+    s32 LoadFileToBuffer(s32, s32);
     s32 GetLocalizedFileName(s32);
     M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK data_ov003_0220f244;
     s32 temp_r4;
-    temp_r4 = func_02080e30(GetLocalizedFileName(M2C_FIELD(&data_ov003_0220f244, s32 *, arg1 * 0x10)), 1);
+    temp_r4 = LoadFileToBuffer(GetLocalizedFileName(M2C_FIELD(&data_ov003_0220f244, s32 *, arg1 * 0x10)), 1);
     func_02004b54();
     func_0207c780(temp_r4, 0x06800000);
     func_02004cf0();

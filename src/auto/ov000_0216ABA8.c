@@ -106,7 +106,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
-    s32 func_02080e30(M2C_UNK *, M2C_UNK);
+    s32 LoadFileToBuffer(M2C_UNK *, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
@@ -205,7 +205,7 @@ void func_ov000_0216b194(void *arg0) {
     res = GetLocalizedFileName(&data_ov000_021b86d4);
     LoadNarcFileDecompressed(res, off + 0x87C0);
     CloseNarcArchive();
-    temp_r0_18 = func_02080e30(&data_ov000_021b86e0, 1);
+    temp_r0_18 = LoadFileToBuffer(&data_ov000_021b86e0, 1);
     func_01ff9e44(temp_r0_18 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0x360, 0x20);
     HeapFreeBlock(temp_r0_18);
     func_0209b59c(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
@@ -303,7 +303,7 @@ block_24:
         LoadDecompressedFileTo(data_ov000_021b83c4[var_r3_2], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
     }
     SetTileRectPalette(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
-    temp_r0_23 = func_02080e30(&data_ov000_021b8708, 1);
+    temp_r0_23 = LoadFileToBuffer(&data_ov000_021b8708, 1);
     func_01ff9e44(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
     HeapFreeBlock(temp_r0_23);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);

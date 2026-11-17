@@ -348,7 +348,7 @@ M2C_UNK LockMutex(void *);
 M2C_UNK UnlockMutex(void *);
 u64 GetSystemTick(void);
 M2C_UNK func_02006030(M2C_UNK);
-u64 func_02072088(u64,u64);
+u64 U64Divide(u64,u64);
 M2C_UNK func_0203367c(M2C_UNK);
 M2C_UNK Nas_UpdateRequest(void);
 M2C_UNK func_02034480(M2C_UNK);
@@ -418,7 +418,7 @@ for (;;) {
     startTick = GetSystemTick();
     nowTick = GetSystemTick();
     elapsedTicks = nowTick - startTick;
-    elapsedMs = func_02072088(elapsedTicks << 6, (u64)0x82ea);
+    elapsedMs = U64Divide(elapsedTicks << 6, (u64)0x82ea);
     if (elapsedMs < 0x1388ULL) {
         for (;;) {
             conn = M2C_FIELD(&gNasConnection, void **, 8);
@@ -435,7 +435,7 @@ for (;;) {
             func_02006030(0x1388);
             nowTick2 = GetSystemTick();
             elapsedTicks = nowTick2 - startTick;
-            elapsedMs2 = func_02072088(elapsedTicks << 6, (u64)0x82ea);
+            elapsedMs2 = U64Divide(elapsedTicks << 6, (u64)0x82ea);
             if (elapsedMs2 >= 0x1388ULL) break;
         }
     }

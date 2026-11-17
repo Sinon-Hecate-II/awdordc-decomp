@@ -8,12 +8,12 @@ static inline void SetSpriteXY(u32 *p,s32 y,s32 x){*p=(*p&0xfe00ff00)|(u8)y|((u3
  * that finish the movement. */
 void MapListHandleState(void) {
  extern M2C_UNK gMapListState;
- extern M2C_UNK func_ov001_0217ee48,func_ov001_0217ef10;
+ extern M2C_UNK MapListScrollUp,MapListScrollDown;
  s32 GetMenuState(void);
  s32 GetMenuRow(void);
  s32 func_020020c4(u16,s32);
  void Ov001_FreeSpriteObjects(void);
- void func_ov001_0217e238(void);
+ void MapListRedrawInfoPanel(void);
  void func_ov001_0217f110(void);
  M2C_UNK Ov001_PlaySound(s32);
  s32 Ov001_AddTask(s32,s32,s32,s32);
@@ -26,38 +26,38 @@ void MapListHandleState(void) {
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65))return;
  Ov001_FreeSpriteObjects();
  M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
- func_ov001_0217e238();M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65)=4;return;
+ MapListRedrawInfoPanel();M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65)=4;return;
  case 3:
  M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,69)=0;
  M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
- Ov001_PlaySound(19);func_ov001_0217e238();
+ Ov001_PlaySound(19);MapListRedrawInfoPanel();
  remainder=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29);
  if(remainder==0){func_ov001_0217f110();return;}
- if(remainder<16){M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&func_ov001_0217ee48,0,120);return;}
- M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&func_ov001_0217ef10,0,120);return;
+ if(remainder<16){M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollUp,0,120);return;}
+ M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollDown,0,120);return;
  case 4:
  if(M2C_FIELD(&gMapListState,u16 *,4)==0){
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,70))return;
  Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,70)=1;return;}
  Ov001_PlaySound(19);
- M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&func_ov001_0217ee48,0,120);return;
+ M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollUp,0,120);return;
  case 6:
  if(M2C_FIELD(&gMapListState,u16 *,4)==145){
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,70))return;
  Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,70)=1;return;}
  Ov001_PlaySound(19);
- M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&func_ov001_0217ef10,0,120);return;
+ M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollDown,0,120);return;
  case 5:case 7:M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,70)=0;return;
  default:return;
  }
 }
 
 void func_ov001_0217ded8(void) {
-    M2C_UNK func_ov001_02183a08();
+    M2C_UNK Ov001_BlockScrollBar();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_0217def8;
-    func_ov001_02183a08();
+    Ov001_BlockScrollBar();
     func_ov001_0218aa24(8);
     Ov001_SetStepCallback(&func_ov001_0217def8);
 }
@@ -115,11 +115,11 @@ else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);Ov001_SetNextScreenMod
 Ov001_FreeAlloc(&data_ov001_02193db4);
 }
 #pragma pop
-void func_ov001_0217e238(void) {
+void MapListRedrawInfoPanel(void) {
     s32 func_02002088(u16, s32);
     void DrawMapInfoRowText(s32, s32);
     void func_ov001_0217e494(s32, s32);
-    void func_ov001_0217e95c(void);
+    void MapListUpdateRowSprites(void);
     M2C_UNK func_ov001_02183720();
     M2C_UNK func_ov001_02183738(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK TextPanel_ClearText(s32, M2C_UNK);
@@ -148,7 +148,7 @@ void func_ov001_0217e238(void) {
     } while (var_r5 < 5);
     func_ov001_02183720();
     CloseTextPanel(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14));
-    func_ov001_0217e95c();
+    MapListUpdateRowSprites();
 }
 
 #pragma opt_common_subs off
@@ -362,7 +362,7 @@ void DrawMapInfoDottedValue(void *arg0, s32 arg1) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov001_0217e95c(void){
+void MapListUpdateRowSprites(void){
 s32 func_02002088(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;
 s32 row,y,i,v;u32 *p;u32 xy[2];
 row=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);

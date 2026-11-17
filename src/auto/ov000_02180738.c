@@ -1,6 +1,7 @@
 /* 29 functions from 0x02180738 to 0x021816C4 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 bytes[0x8c]; } PlayerRecord02180738;
 static inline u8 PlayerMode02180738(PlayerRecord02180738 *players, s32 index) { return players[index].bytes[0x2a]; }
 
@@ -18,7 +19,7 @@ SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 
 void func_ov000_02180778(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219619c();
@@ -30,7 +31,7 @@ void func_ov000_02180778(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
@@ -46,7 +47,7 @@ void func_ov000_02180778(void) {
 
 void func_ov000_021807d8(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK func_ov000_0218ca94();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_021962f8();
@@ -58,7 +59,7 @@ void func_ov000_021807d8(void) {
     extern void **gCurrentMap;
     void *temp_r3;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
     FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
@@ -98,7 +99,7 @@ func_ov000_0218b02c();
 
 void func_ov000_02180894(void) {
 M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK func_ov000_0218edd8();
+M2C_UNK SelectAiActionTarget();
 M2C_UNK func_ov000_0218ca94();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_021963f8();
@@ -113,7 +114,7 @@ M2C_UNK func_ov000_02186a18();
 extern void **gCurrentMap;
 void *temp_r3;
 BuildAiInfluenceMaps();
-func_ov000_0218edd8();
+SelectAiActionTarget();
 func_ov000_0218ca94();
 FindBestMoveTarget();
 temp_r3 = *gCurrentMap;
@@ -131,9 +132,9 @@ func_ov000_0218b02c();
 void func_ov000_02180900(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     func_ov000_0218ca94();
 }
 
@@ -153,7 +154,7 @@ void func_ov000_02180924(void) {
 
 void func_ov000_02180934(void) {
 M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK func_ov000_0218edd8();
+M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_02194370();
@@ -167,7 +168,7 @@ s32 func_020a85c8(u32);
 extern void **gCurrentMap;
 void *temp_r3;
 BuildAiInfluenceMaps();
-func_ov000_0218edd8();
+SelectAiActionTarget();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
 FindBestMoveTarget();
@@ -211,7 +212,7 @@ void func_ov000_021809b0(void) {
 
 void func_ov000_02180a28(void) {
 M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK func_ov000_0218edd8();
+M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_0219553c();
 M2C_UNK func_ov000_02194370();
@@ -225,7 +226,7 @@ s32 func_020a85c8(u32);
 extern void **gCurrentMap;
 void *temp_r3;
 BuildAiInfluenceMaps();
-func_ov000_0218edd8();
+SelectAiActionTarget();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
 FindBestMoveTarget();
@@ -240,7 +241,7 @@ func_ov000_0218b02c();
 
 void func_ov000_02180aa4(void) {
 M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK func_ov000_0218edd8();
+M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_02195750();
 M2C_UNK func_ov000_02194370();
@@ -254,7 +255,7 @@ s32 func_020a85c8(u32);
 extern void **gCurrentMap;
 void *temp_r3;
 BuildAiInfluenceMaps();
-func_ov000_0218edd8();
+SelectAiActionTarget();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
 FindBestMoveTarget();
@@ -269,7 +270,7 @@ func_ov000_0218b02c();
 
 void func_ov000_02180b20(void) {
 M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK func_ov000_0218edd8();
+M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_02195ea4();
 M2C_UNK SelectAttackMoveDestination();
@@ -283,7 +284,7 @@ s32 func_020a85c8(u32);
 extern void **gCurrentMap;
 void *temp_r3;
 BuildAiInfluenceMaps();
-func_ov000_0218edd8();
+SelectAiActionTarget();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
 FindBestMoveTarget();
@@ -298,7 +299,7 @@ func_ov000_0218b02c();
 
 void func_ov000_02180b9c(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219604c();
     M2C_UNK func_ov000_02194370();
@@ -310,7 +311,7 @@ void func_ov000_02180b9c(void) {
     extern void **gCurrentMap;
     void *temp_r0;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     temp_r0 = *gCurrentMap;
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
         func_ov000_0218ca94();
@@ -339,7 +340,7 @@ void func_ov000_02180c10(void) {
 
 void func_ov000_02180c74(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219619c();
     M2C_UNK func_ov000_02194370();
@@ -351,7 +352,7 @@ void func_ov000_02180c74(void) {
     extern void **gCurrentMap;
     void *temp_r0;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     temp_r0 = *gCurrentMap;
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
         func_ov000_0218ca94();
@@ -366,7 +367,7 @@ void func_ov000_02180c74(void) {
 
 void func_ov000_02180ce8(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK func_ov000_0218edd8();
+    M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_021962f8();
     M2C_UNK func_ov000_02194370();
@@ -378,7 +379,7 @@ void func_ov000_02180ce8(void) {
     extern void **gCurrentMap;
     void *temp_r0;
     BuildAiInfluenceMaps();
-    func_ov000_0218edd8();
+    SelectAiActionTarget();
     temp_r0 = *gCurrentMap;
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
         func_ov000_0218ca94();
@@ -417,9 +418,9 @@ void func_ov000_02180d5c(void) {
 }
 
 void func_ov000_02180dcc(void) {
- M2C_UNK BuildAiInfluenceMaps(); M2C_UNK func_ov000_0218edd8(); M2C_UNK func_ov000_0218ca94(); M2C_UNK FindBestMoveTarget(); M2C_UNK func_ov000_021963f8(); M2C_UNK func_ov000_021954a4(); M2C_UNK func_ov000_02194370(); M2C_UNK SelectAttackMoveDestination(); M2C_UNK SelectPropertyAttackDestination(); M2C_UNK func_ov000_0219553c(); M2C_UNK func_ov000_021967fc(); M2C_UNK func_ov000_0218b02c();
+ M2C_UNK BuildAiInfluenceMaps(); M2C_UNK SelectAiActionTarget(); M2C_UNK func_ov000_0218ca94(); M2C_UNK FindBestMoveTarget(); M2C_UNK func_ov000_021963f8(); M2C_UNK func_ov000_021954a4(); M2C_UNK func_ov000_02194370(); M2C_UNK SelectAttackMoveDestination(); M2C_UNK SelectPropertyAttackDestination(); M2C_UNK func_ov000_0219553c(); M2C_UNK func_ov000_021967fc(); M2C_UNK func_ov000_0218b02c();
  s32 func_020a85c8(u32); extern void **gCurrentMap; void *p;
- BuildAiInfluenceMaps(); func_ov000_0218edd8(); p=*gCurrentMap;
+ BuildAiInfluenceMaps(); SelectAiActionTarget(); p=*gCurrentMap;
  if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26)!=0) func_ov000_0218ca94();
  FindBestMoveTarget(); func_ov000_021963f8(); func_ov000_021954a4(); func_ov000_02194370(); SelectAttackMoveDestination(); SelectPropertyAttackDestination(); func_ov000_0219553c(); func_ov000_021967fc(); func_ov000_0218b02c();
 }
@@ -468,7 +469,7 @@ func_ov000_0218f0ec();
 func_ov000_0219137c();
 }
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)<=60)func_ov000_02190f74();
-func_ov000_0218edd8(); SelectCaptureStayDestination(); SelectAIDestination();
+SelectAiActionTarget(); SelectCaptureStayDestination(); SelectAIDestination();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60)func_ov000_02190f74();
 }
 
@@ -485,7 +486,7 @@ M2C_UNK func_ov000_0219137c();
 M2C_UNK func_ov000_0218ca94();
 M2C_UNK func_ov000_021962f8();
 M2C_UNK func_ov000_02190f74();
-M2C_UNK func_ov000_0218edd8();
+M2C_UNK SelectAiActionTarget();
 M2C_UNK SelectCaptureStayDestination();
 M2C_UNK SelectAIDestination();
 M2C_UNK func_ov000_02186a18();
@@ -505,7 +506,7 @@ if(state==6){func_ov000_0218cfec();return;}
 if(state==8){func_ov000_0218f0ec();func_ov000_0219137c();func_ov000_0218ca94();func_ov000_021962f8();return;}
 if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_02190f74();
-func_ov000_0218edd8();SelectCaptureStayDestination();SelectAIDestination();
+SelectAiActionTarget();SelectCaptureStayDestination();SelectAIDestination();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)>60)func_ov000_02190f74();
 map=*gCurrentMap;handled=0;
 playerRecord=(PlayerRecord02180738 *)((u8 *)map+MAP_PLAYER_STATES);
@@ -554,13 +555,17 @@ case 10: func_ov000_02180894(); return;
 }
 }
 
-void func_ov000_021813a4(void) {
+/* Role-3 AI action callback (the variant installed by SelectAiRole3UnitByRange):
+ * unless the map-175 override is active, mark an AI action-plan flag when the
+ * cursor unit's AI sub-state is not 2, then run the handler for that unit's AI
+ * step. */
+void RunAiRole3ActionByRange(void) {
  s32 IsAiMap175Player2Override();
  extern void **gCurrentMap; extern void *gAiCommandState;
  if(IsAiMap175Player2Override()) return;
- if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,8)<<18)>>30)!=2)
- M2C_FIELD(gAiCommandState,u16 *,8)|=128;
- switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28) {
+ if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,8)<<18)>>30)!=2)
+ M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_ACTION_FLAGS)|=128;
+ switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28) {
  case 0: case 2: case 3: case 4: case 5: case 7: case 8: func_ov000_02180900(); return;
  case 1: case 9: func_ov000_02180914(); return;
  case 6: func_ov000_02180924(); return;

@@ -29,7 +29,7 @@ void func_020e4490(void) {
     M2C_UNK func_020e4458();
     M2C_UNK func_0200ee70();
     M2C_UNK func_0207c240();
-    M2C_UNK func_02075efc();
+    M2C_UNK SaveManager_Start();
     void func_020e476c(void);
     M2C_UNK func_020e349c();
     extern s32 data_027e15bc;
@@ -78,7 +78,7 @@ void func_020e4490(void) {
     func_020e4458();
     func_0200ee70();
     func_0207c240();
-    func_02075efc();
+    SaveManager_Start();
     func_020e476c();
     func_020e349c();
 }
@@ -107,7 +107,7 @@ void func_02091bf4(void);
 void UpdateSpriteSlots(void);
 void DrawSpriteSlots(void);
 void func_0209db48(void);
-void func_0208f4f0(void);
+void SoundEngineUpdateTimers(void);
 void GetSpriteLayerHead(int);
 void Update3DSpriteObject(void);
 void func_02004e60(int,int);
@@ -128,7 +128,7 @@ GetSpriteLayerHead(10);Update3DSpriteObject();
 func_0209db48();
 if(data_02168fe8) data_02168fe8();
 data_027e15b4=0;
-func_0208f4f0();
+SoundEngineUpdateTimers();
 func_02004e60(1,1);
 }
 
@@ -178,7 +178,7 @@ void func_020e476c(void) {
     M2C_UNK func_0207b800();
     M2C_UNK func_0208337c();
     M2C_UNK func_020834c4();
-    M2C_UNK func_020945f8();
+    M2C_UNK ResetDialogUI();
     M2C_UNK func_020960b4();
     M2C_UNK func_0209f87c();
     M2C_UNK func_020abf94();
@@ -196,7 +196,7 @@ void func_020e476c(void) {
     s32 var_r9;
 
     InitDefaultGameSettings();
-    func_020945f8();
+    ResetDialogUI();
     func_020b1b3c();
     func_020834c4();
     func_0208337c();

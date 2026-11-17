@@ -103,6 +103,6 @@ func_01ffc294 kind:function(arm,size=0x54) addr:0x01ffc294
 func_01ffc2e8 kind:function(arm,size=0x40) addr:0x01ffc2e8
 BuildUnitMoveRange kind:function(arm,size=0x40) addr:0x01ffc328
 func_01ffc368 kind:function(arm,size=0x80) addr:0x01ffc368
-func_01ffc3e8 kind:function(arm,size=0xd0) addr:0x01ffc3e8
+ClearAdjacentMoveDirs kind:function(arm,size=0xd0) addr:0x01ffc3e8
 func_01ffc4b8 kind:function(arm,size=0x260) addr:0x01ffc4b8
 func_01ffc718 kind:function(arm,size=0x60) addr:0x01ffc718

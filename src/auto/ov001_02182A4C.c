@@ -121,7 +121,7 @@ void func_ov001_02182cd8(void) {
 
 void func_ov001_02182d0c(void) {
     M2C_UNK func_ov001_02172250(M2C_UNK);
-    M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK func_ov001_02171e58(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -131,7 +131,7 @@ void func_ov001_02182d0c(void) {
     data_ov001_02193de8 = 0;
     func_ov001_02182d5c();
     func_ov001_02172250(8);
-    func_ov001_02171c24(0x38, -1, 0);
+    Ov001_ShowMessagePanel(0x38, -1, 0);
     func_ov001_02171dd0(1);
     func_ov001_02171e58(0x27);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182e04);
@@ -248,7 +248,7 @@ void func_ov001_02182f7c(void) {
 }
 
 void func_ov001_02182fe0(void) {
-    s32 func_ov001_0217170c();
+    s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
@@ -260,7 +260,7 @@ void func_ov001_02182fe0(void) {
     extern M2C_UNK func_ov001_021830b8;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (data_ov001_02193de8 == 0 && Ov001_IsFadeActive(1) != 0) return;
-    if (func_ov001_0217170c() == 0) return;
+    if (Ov001_IsIconRowIdle() == 0) return;
     func_ov001_0218af70(0);
     if (data_ov001_02193de8 == 0) {
         Ov001_FreeOptionBackground();
@@ -287,7 +287,7 @@ void func_ov001_021830b8(void) {
     M2C_UNK func_02007740(u8 *);
     M2C_UNK FillU16(M2C_UNK, u8 *, s32);
     M2C_UNK CopyU16(u8 *, u8 *, s32);
-    M2C_UNK func_ov001_021713c4(M2C_UNK);
+    M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK func_ov001_02171ecc(u8 *, M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
@@ -308,7 +308,7 @@ void func_ov001_021830b8(void) {
     FillU16(0, &sp[0], 0x16);
     CopyU16(&sp[0x1A], &sp[0], M2C_FIELD(sp, u16 *, 0x30) * 2);
     func_ov001_02171ecc(&sp[0], 0x28);
-    func_ov001_021713c4(0);
+    Ov001_CreateAnimSprite(0);
     Ov001_ConnectToWfcServer((M2C_UNK *)&Ov001_HandleConnectionStatus);
     Ov001_PlaySound(0xB);
     Ov001_SetStepCallback(&func_ov001_021831f4);
@@ -401,7 +401,7 @@ void func_ov001_02183338(void){extern u8 gOv001WfcScreenState;extern M2C_UNK fun
 /* Sets up the overlay 001 mode based on the selected slot/state, runs init hooks, then schedules render callbacks. */
 void func_ov001_021833a4(void) {
     M2C_UNK func_ov001_02171494(void);
-    s32 func_ov001_0217170c(void);
+    s32 Ov001_IsIconRowIdle(void);
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -420,7 +420,7 @@ void func_ov001_021833a4(void) {
     if ((gOv001WfcScreenState == 2) && (Ov001_IsFadeActive(1) != 0)) {
         return;
     }
-    if (func_ov001_0217170c() == 0) {
+    if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
     func_ov001_02185dac();
@@ -538,7 +538,7 @@ void func_ov001_0218362c(void) {
 void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 Ov001_AddTask(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=Ov001_Alloc(0x608,4);data_ov001_02193df0=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=Ov001_AddTask(1,func_ov001_02183790,0,120);}
 
 #pragma opt_propagation off
-void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *data_ov001_02193dfc;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);Ov001_FreeAlloc(&data_ov001_02193dfc-3);}
+void func_ov001_021836f4(void){extern void *data_ov001_02193df0;extern void *gOv001Scrollbar;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&data_ov001_02193df0);Ov001_FreeAlloc(&gOv001Scrollbar-3);}
 #pragma opt_propagation reset
 void func_ov001_02183720(void) {
     extern void *data_ov001_02193df0;
@@ -555,7 +555,7 @@ GX_LoadBG2Scr((u8 *)data_ov001_02193df0+4,0,0x600);
 M2C_FIELD(data_ov001_02193df0,u8 *,0x604)=0;
 }
 
-void func_ov001_021837e4(s32 a,s32 b,s32 c){
+void Ov001_LoadObjTile(s32 a,s32 b,s32 c){
 extern void *data_ov001_02193df0;void func_ov001_02183820();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 M2C_FIELD(&data_ov001_02193df0,s32 *,4)=a+(b<<5);
 M2C_FIELD(&data_ov001_02193df0,s32 *,8)=(c<<5)+0x5000000;
@@ -579,9 +579,13 @@ extern void *data_ov001_02193df0;
 CopyU16(M2C_FIELD(&data_ov001_02193df0,s32 *,4),0x5000000,0x200);Ov001_PostTaskMessage(1,a);
 }
 
-void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
-    extern void *data_ov001_02193dfc;
-    extern u8 data_ov001_0218fb58[];
+/* Build the ov001 friend-roster screen's vertical scroll bar: allocate its
+ * 0x20-byte state, place and palettise its sprite at (x, y), and start the
+ * task that drives it.  kind picks the bar sprite, track its length in pixels
+ * and handlePos the starting handle offset. */
+void Ov001_CreateScrollBar(s32 kind, s32 track, s32 x, s32 y, s32 handlePos) {
+    extern void *gOv001Scrollbar;
+    extern u8 gOv001ScrollBarSpriteIds[];
     void *Ov001_Alloc(s32, s32);
     void func_ov001_0218b2bc(s32, s32, void *);
     M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -594,37 +598,37 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     M2C_UNK t;
 
     p = Ov001_Alloc(0x20, 0x4);
-    data_ov001_02193dfc = p;
-    *(u8 *)((char *)p + 0x1b) = (u8)a;
-    *(u8 *)((char *)data_ov001_02193dfc + 0x19) = (u8)b;
-    *(u8 *)((char *)data_ov001_02193dfc + 0x1a) = (u8)e;
-    func_ov001_0218b2bc(c, d, (char *)data_ov001_02193dfc + 0x10);
-    t = Ov001_CreateSprite(0, data_ov001_0218fb58[a], 1);
-    *(M2C_UNK *)data_ov001_02193dfc = t;
-    Ov001_MoveSpriteLayout(*(M2C_UNK *)data_ov001_02193dfc, -1, c, d + e);
-    Ov001_SetSpritePalette(*(M2C_UNK *)data_ov001_02193dfc, -1, 1);
-    *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = Ov001_AddTask(0, func_ov001_02183a20, 0, 0x80);
+    gOv001Scrollbar = p;
+    *(u8 *)((char *)p + OV001_SCROLLBAR_KIND) = (u8)kind;
+    *(u8 *)((char *)gOv001Scrollbar + OV001_SCROLLBAR_TRACK) = (u8)track;
+    *(u8 *)((char *)gOv001Scrollbar + OV001_SCROLLBAR_HANDLE_POS) = (u8)handlePos;
+    func_ov001_0218b2bc(x, y, (char *)gOv001Scrollbar + OV001_SCROLLBAR_X);
+    t = Ov001_CreateSprite(0, gOv001ScrollBarSpriteIds[kind], 1);
+    *(M2C_UNK *)gOv001Scrollbar = t;
+    Ov001_MoveSpriteLayout(*(M2C_UNK *)gOv001Scrollbar, -1, x, y + handlePos);
+    Ov001_SetSpritePalette(*(M2C_UNK *)gOv001Scrollbar, -1, 1);
+    *(M2C_UNK *)((char *)gOv001Scrollbar + OV001_SCROLLBAR_TASK) = Ov001_AddTask(0, func_ov001_02183a20, 0, 0x80);
 }
 
 void func_ov001_02183980(void) {
-extern void *data_ov001_02193dfc; extern void *gWfcFriendRoster;
+extern void *gOv001Scrollbar; extern void *gWfcFriendRoster;
 void func_ov001_0218c94c(s32, s32);
 void Ov001_FreeAlloc(void *);
-func_ov001_0218c94c(0,M2C_FIELD(data_ov001_02193dfc,s32*,12));
-func_ov001_0218a1cc(M2C_FIELD(data_ov001_02193dfc,s32*,0));
+func_ov001_0218c94c(0,M2C_FIELD(gOv001Scrollbar,s32*,12));
+Ov001_DestroySprite(M2C_FIELD(gOv001Scrollbar,s32*,0));
 Ov001_FreeAlloc(&gWfcFriendRoster-1);
 }
 
 u8 GetMenuRow(void) {
-    extern void *data_ov001_02193dfc;
-    return M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1A);
+    extern void *gOv001Scrollbar;
+    return M2C_FIELD(gOv001Scrollbar, u8 *, 0x1A);
 }
 
-u8 GetMenuState(void){extern void *data_ov001_02193dfc;return M2C_FIELD(data_ov001_02193dfc,u8 *,29);}
+u8 GetMenuState(void){extern void *gOv001Scrollbar;return M2C_FIELD(gOv001Scrollbar,u8 *,29);}
 
-void func_ov001_021839e4(void) { M2C_UNK func_ov001_02183f30(); func_ov001_02183f30(); }
+void func_ov001_021839e4(void) { M2C_UNK Ov001_SetScrollbarHandlePos(); Ov001_SetScrollbarHandlePos(); }
 
-void func_ov001_021839f0(void){extern void *data_ov001_02193dfc;M2C_FIELD(data_ov001_02193dfc,u8 *,30)=0;}
+void Ov001_UnblockScrollBar(void){extern void *gOv001Scrollbar;M2C_FIELD(gOv001Scrollbar,u8 *,30)=0;}
 
-void func_ov001_02183a08(void){extern void *data_ov001_02193dfc;M2C_FIELD(data_ov001_02193dfc,u8 *,30)=1;}
+void Ov001_BlockScrollBar(void){extern void *gOv001Scrollbar;M2C_FIELD(gOv001Scrollbar,u8 *,30)=1;}
 

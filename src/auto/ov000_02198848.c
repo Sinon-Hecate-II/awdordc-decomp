@@ -82,11 +82,11 @@ void AddPlayerThreatInfluence(u8 player) {
 
 void ClearAiInfluenceMaps(void) {
     M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, s32);
-    M2C_UNK func_ov000_0219c508(s32, M2C_UNK);
+    M2C_UNK FillMapCellLayer(s32, M2C_UNK);
     extern s32 *gCurrentMap;
     extern M2C_UNK gAiInfluenceMap;
-    func_ov000_0219c508(*gCurrentMap + 0x2840, 0);
-    func_ov000_0219c508(*gCurrentMap + 0x2D48, 0);
+    FillMapCellLayer(*gCurrentMap + 0x2840, 0);
+    FillMapCellLayer(*gCurrentMap + 0x2D48, 0);
     MI_CpuFill8(&gAiInfluenceMap, 0, 0x508);
 }
 

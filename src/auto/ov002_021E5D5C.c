@@ -2,8 +2,8 @@
 #include "common.h"
 extern u8 data_ov002_021f2dfc[],data_ov002_021f2e14[],data_ov002_021f2e2c[],data_ov002_021f2e34[];
 void *func_02081070(void *,s32);
-extern u8 data_ov002_021f2f40[],data_ov002_021f2d94[],data_ov002_021f2da0[],data_ov002_021f2dac[],data_ov002_021f2db8[],data_ov002_021f3124[],data_ov002_021f2dc4[],data_ov002_021f2dcc[],data_ov002_021f2dd4[],data_ov002_021f2de8[],gPlayerSettings[];extern s32 gCur3DSpriteEngine;
-void *GetLocalizedFileName(void *);u8 *func_02080e30(void *,s32);void *HeapAllocBlock(s32);
+extern u8 data_ov002_021f2f40[],data_ov002_021f2d94[],data_ov002_021f2da0[],data_ov002_021f2dac[],data_ov002_021f2db8[],gUnitViews[],data_ov002_021f2dc4[],data_ov002_021f2dcc[],data_ov002_021f2dd4[],data_ov002_021f2de8[],gPlayerSettings[];extern s32 gCur3DSpriteEngine;
+void *GetLocalizedFileName(void *);u8 *LoadFileToBuffer(void *,s32);void *HeapAllocBlock(s32);
 
 
 M2C_UNK func_ov002_021e5d5c(M2C_UNK arg0){
@@ -14,12 +14,12 @@ size=LoadDecompressedFileTo(data_ov002_021f2d94,0x6800000+(tiles<<5));size=(size
 func_02004cf0();func_02004d3c();M2C_FIELD(dest,u8 *,202)=pal;
 func_02081080(data_ov002_021f2da0,0x6890000+(pal<<5),128,32);pal=(u16)(pal+1);func_02004ddc();
 LoadDecompressedFileTo(GetLocalizedFileName(data_ov002_021f2dac),M2C_FIELD(gCur3DSpriteEngine,s32 *,28)+2048);
-palette=func_02080e30(data_ov002_021f2db8,1);
+palette=LoadFileToBuffer(data_ov002_021f2db8,1);
 func_01ff9e44(palette+(gPlayerSettings[25]<<5),544,32);func_01ff9e44(palette+(gPlayerSettings[49]<<5),576,32);
-M2C_FIELD(data_ov002_021f3124,u16 *,6)=M2C_FIELD(palette+(gPlayerSettings[25]<<5),u16 *,30);
-M2C_FIELD(data_ov002_021f3124,u16 *,50)=M2C_FIELD(palette+(gPlayerSettings[49]<<5),u16 *,30);
+M2C_FIELD(gUnitViews,u16 *,6)=M2C_FIELD(palette+(gPlayerSettings[25]<<5),u16 *,30);
+M2C_FIELD(gUnitViews,u16 *,50)=M2C_FIELD(palette+(gPlayerSettings[49]<<5),u16 *,30);
 HeapFreeBlock(palette);
-state=data_ov002_021f3124;country=dest;settings=gPlayerSettings;side=0;do{
+state=gUnitViews;country=dest;settings=gPlayerSettings;side=0;do{
 func_02004b54();
 M2C_FIELD(country,u16 *,24)=tiles;resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[24]*4,void **,0);if(resource){size=LoadDecompressedFileTo(M2C_FIELD(resource,void **,0),0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));}
 M2C_FIELD(country,u16 *,26)=tiles;resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[19]*4,void **,8);if(resource){size=LoadDecompressedFileTo(M2C_FIELD(resource,void **,0),0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));}

@@ -1,6 +1,11 @@
 /* 28 functions from 0x02057D80 to 0x02058CA4 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
+
+/* Fields a GPI server's error reply leaves on its connection. */
+#define GPI_ERROR_CODE    0x418 /* s32: code the last error reply carried */
+#define GPI_ERROR_MESSAGE 0x000 /* char[256]: text of the last error reply */
+
 extern M2C_UNK data_020ff3ec, gGpiInfoState;
 extern s32 gGpiInfoSocket;
 extern M2C_UNK data_0213dcd0, data_020ff410, data_020ff414, data_020ff3f4;
@@ -74,16 +79,16 @@ func_02057ed0(a,(s32)&x,b,2,0);
 }
 
 /* Handles a server message of type 4 (a player's "login" reply): any "rn" request
-   from the server is answered by the caller of func_0205817c, anything else must
+   from the server is answered by the caller of gpiProcessErrorReply, anything else must
    be the player's own "\rn\" reply.  A reply naming a player queues the login
    callback (the player's id is read into the connection at 0x418), otherwise the
    request is simply finished.  Returns 0 or an error code. */
 s32 gpiProcessLoginReply(void **a,void *b,s32 c) {
-s32 func_0205817c(void **,s32,s32);void gpiSetError(void **,s32,s32);void gpiSetErrorString(s32 *,s32);
+s32 gpiProcessErrorReply(void **,s32,s32);void gpiSetError(void **,s32,s32);void gpiSetErrorString(s32 *,s32);
 s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
 extern M2C_UNK gGsKeyRoomName,data_020ff260,data_020ff290;
 Unk02050838Pair pair;s32 *p;s32 r;
-if(func_0205817c(a,c,1))return 4;
+if(gpiProcessErrorReply(a,c,1))return 4;
 if(StringCompareN(c,&gGsKeyRoomName,4)){gpiSetError(a,1,(s32)&data_020ff260);gpiCallErrorCallback(a,3,1);return 3;}
 pair=*(Unk02050838Pair *)((u8 *)b+12);
 if(pair.unk_0){p=gpiMalloc(4);if(!p){gpiSetErrorString((s32 *)a,(s32)&data_020ff290);return 1;}*p=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
@@ -102,14 +107,18 @@ return a+n;
 
 void gpiLogMessage(s32 a, ...) {}
 
-s32 func_0205817c(void **a,s32 b,s32 c) {
+/* Handle a server error reply ("\error\<code>\errmsg\<text>"): store the code
+   and the message on the connection and, when asked to, report the error to the
+   application (an application-level error when the reply says it is fatal).
+   Returns 1 for an error reply, 0 for any other message. */
+s32 gpiProcessErrorReply(void **connection, s32 text, s32 report) {
 s32 StringCompareN(s32,void *,s32);s32 gpiValueForKey(s32,void *,void *,s32);s32 ParseInt(void *);void *StringFind(s32,void *);void gpiCallErrorCallback(void *,s32,s32);
-extern M2C_UNK data_020ff2f8,data_020ff300,data_020ff308,data_020ff314;
-u8 buf[16];void *p=*a;
-if(StringCompareN(b,&data_020ff2f8,7)==0){
-if(gpiValueForKey(b,&data_020ff300,buf,16))M2C_FIELD(p,s32 *,0x418)=ParseInt(buf);
-if(!gpiValueForKey(b,&data_020ff308,p,256))M2C_FIELD(p,u8 *,0)=0;
-if(c){s32 x=StringFind(b,&data_020ff314)!=0;gpiCallErrorCallback(a,4,x!=0);}
+extern M2C_UNK gGsKeyError,gGsKeyErr,gGsKeyErrMsg,gGsKeyFatal;
+u8 buf[16];void *info=*connection;
+if(StringCompareN(text,&gGsKeyError,7)==0){
+if(gpiValueForKey(text,&gGsKeyErr,buf,16))M2C_FIELD(info,s32 *,GPI_ERROR_CODE)=ParseInt(buf);
+if(!gpiValueForKey(text,&gGsKeyErrMsg,info,256))M2C_FIELD(info,u8 *,GPI_ERROR_MESSAGE)=0;
+if(report){s32 fatal=StringFind(text,&gGsKeyFatal)!=0;gpiCallErrorCallback(connection,4,fatal!=0);}
 return 1;}return 0;
 }
 
@@ -296,13 +305,41 @@ q=func_02058b94(p);n=StringLength(q);n+=StringLength(c);
 r=gpiMalloc(n+1);StringCopy(r,q);StringAppend(r,c);func_02058b18(p,r);gpiFree(r);return (s32)func_02058b94(p);
 }
 
-s32 func_020589e0(void *a,s32 b,void *c) {
-s64 func_020705dc(s32);s64 func_02070658(s64,s64);s64 func_02070134(s64,s64);s64 func_020724f8(s64,s64);s32 func_020720f0(s32,s32);void *func_02058bb4(void *,s32);void *func_02058b94(void *);s32 func_02058b18(void *,void *);M2C_UNK *func_02058ab4(s32);M2C_UNK *func_02058acc(s32,s32);
-void *p=func_02058bb4(a,b);void *q;s32 n;s64 v;
-if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=func_02058b94(p);n=++M2C_FIELD(p,s32 *,8);return func_02058b18(p,func_02058ab4(func_020720f0(n*M2C_FIELD(q,s32 *,0)+M2C_FIELD(c,s32 *,0),n)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=func_02058b94(p);n=++M2C_FIELD(p,s32 *,8);v=func_02070134(*(s64 *)c,func_02070658(func_020705dc(n),*(s64 *)q));v=func_020724f8(v,func_020705dc(n));return func_02058b18(p,func_02058acc((s32)v,(s32)(v>>32)));}
-return (s32)func_02058b94(p);
+/* Fold a new sample into a gpi key/value entry and store the entry's running
+ * average, then return the value.  The entry keeps its value type at +0x04 (0
+ * int, 1 double, 2 string), its sample count at +0x08 and the value at +0x0C;
+ * both numeric types average (count * old + new) / count, a string entry is
+ * left alone. */
+s32 gpiValueAverage(void *store, s32 key, void *value) {
+    s64 func_020705dc(s32);
+    s64 func_02070658(s64, s64);
+    s64 func_02070134(s64, s64);
+    s64 func_020724f8(s64, s64);
+    s32 func_020720f0(s32, s32);
+    void *func_02058bb4(void *, s32);
+    void *func_02058b94(void *);
+    s32 func_02058b18(void *, void *);
+    M2C_UNK *func_02058ab4(s32);
+    M2C_UNK *func_02058acc(s32, s32);
+    void *entry = func_02058bb4(store, key);
+    void *old;
+    s32 count;
+    s64 average;
+
+    if (!entry) return 0;
+    if (M2C_FIELD(entry, s32 *, 4) == 0) {
+        old = func_02058b94(entry);
+        count = ++M2C_FIELD(entry, s32 *, 8);
+        return func_02058b18(entry, func_02058ab4(func_020720f0(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
+    }
+    if (M2C_FIELD(entry, s32 *, 4) == 1) {
+        old = func_02058b94(entry);
+        count = ++M2C_FIELD(entry, s32 *, 8);
+        average = func_02070134(*(s64 *)value, func_02070658(func_020705dc(count), *(s64 *)old));
+        average = func_020724f8(average, func_020705dc(count));
+        return func_02058b18(entry, func_02058acc((s32)average, (s32)(average >> 32)));
+    }
+    return (s32)func_02058b94(entry);
 }
 
 M2C_UNK *func_02058ab4(s32 a) {

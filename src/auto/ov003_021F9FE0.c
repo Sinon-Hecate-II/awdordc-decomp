@@ -14,13 +14,13 @@ extern void *gCur3DSpriteEngine;
 
 void *GetMapRecord(int);
 int func_020a8b2c(int);
-int func_020c7eb8(int);
+int IsCampaignMapRecordValid(int);
 int func_ov003_02200968(int);
 void AddSprite(int,int,int,void *,int);
 int func_020a8ef8(int);
 int func_ov003_021f2654(void);
 void DrawFrameBorder(int,int,int,int,int,int,int);
-int func_ov003_02200a18(int,int);
+int GetMapListIconTile(int,int);
 int func_020a8958(int);
 int func_020830a8(int);
 int func_020a8a84(int);
@@ -56,7 +56,7 @@ shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite((u16)((b+192)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
 }
 flag=0;
-if(id>=225 && id<425 &&func_020c7eb8(id)==0)flag=1;
+if(id>=225 && id<425 &&IsCampaignMapRecordValid(id)==0)flag=1;
 if(((u8)flag && ((mode=(u32)(p[59]<<28)>>28),Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8))) ||
 (!func_ov003_021f400c() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !func_020a8ef8(id)) ||
 (func_ov003_021f2654() && ((u32)(p[57]<<24)>>31))) {
@@ -73,12 +73,12 @@ DrawFrameBorder(drawX,drawY,drawW,drawH,(u16)(((0x288>>shift)&1023)|0xa000),17,1
 }
 mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,0)||Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,3)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)){
-icon=(u16)((func_ov003_02200a18((M2C_FIELD(p,u8 **,68)+Unk021F9FE0PageIndex(M2C_FIELD(p,u8 **,92))*512)[556],id)<<2)+808);
+icon=(u16)((GetMapListIconTile((M2C_FIELD(p,u8 **,68)+Unk021F9FE0PageIndex(M2C_FIELD(p,u8 **,92))*512)[556],id)<<2)+808);
 }else if(Unk021F9FE0Eq(mode,1)){
 v=(u8)(func_020a8958(M2C_FIELD(p,u16 *,60))==0);
-icon=(u16)((func_ov003_02200a18((u16)(v==1?1:3),id)<<2)+808);
+icon=(u16)((GetMapListIconTile((u16)(v==1?1:3),id)<<2)+808);
 }else if(Unk021F9FE0Eq(mode,5)){
-icon=(u16)((func_ov003_02200a18(func_020830a8(id),id)<<2)+808);
+icon=(u16)((GetMapListIconTile(func_020830a8(id),id)<<2)+808);
 }
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite((u16)((b+3)&511),21,(u16)(((icon>>shift)&1023)|0x9800),gSpriteDesc16x16,17);
@@ -131,7 +131,7 @@ DrawTextSprite(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 mode=(u32)(p[59]<<28)>>28;
 if(!(Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,5)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)))return;
 flag=0;
-if(id>=225 && id<425 &&func_020c7eb8(id)==0)flag=1;
+if(id>=225 && id<425 &&IsCampaignMapRecordValid(id)==0)flag=1;
 if((u8)flag)return;
 r=GetMapRecordStamp(id);x=b+64;
 for(i=0;i<3;i++){

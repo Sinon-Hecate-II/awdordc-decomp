@@ -52,7 +52,7 @@ void func_020c9b9c(void *arg0) {
 extern void **gCurrentMap;
 extern u16 data_ov000_021aeee8[];
 extern s8 gTerrainPropertyFlags[];
-void func_0207ab84(s32,s32,u8); void func_0207ac54(s32,s32,s32);
+void func_0207ab84(s32,s32,u8); void RebuildPropertyTile(s32,s32,s32);
 void func_020cf2c8(void);void RefreshMapView(void);void func_020d2470(void);
 u32 player; u16 i; u8 x,y; s32 kind,unit; u8 *map,*p,*rec,*tile;u32 old; u16 *rows; s32 row;
 if(M2C_FIELD(arg0,s16 *,0x6e)!=2) player=0;
@@ -89,7 +89,7 @@ M2C_FIELD(p,u16 *,6)&=~0xf800;
 switch(kind){case 15:
 map=(u8 *)*gCurrentMap;
 M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)=data_ov000_021aeee8[player]|16;
-func_0207ac54(x,y,0);
+RebuildPropertyTile(x,y,0);
 func_0207ab84(x,y,(u8)data_ov000_021aeee8[player]);
 break;
 default:
@@ -316,7 +316,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     s32 GetTouchActionFlags(s16);
     s32 func_020d46cc(void);
     M2C_UNK DeleteSpriteObject(void *);
-    M2C_UNK func_0207b764(s16, s16);
+    M2C_UNK StepMapViewToTile(s16, s16);
     void *GetTargetPosition(s16);
     M2C_UNK CreateTargetCursor(s16, s16);
     s32 CreateMapMenu(void);
@@ -355,7 +355,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
         }
         data_0215be0c = -1;
         DeleteSpriteObject(dialog);
-        func_0207b764(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
+        StepMapViewToTile(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                       M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
         return;
     }
@@ -384,7 +384,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     target = GetTargetPosition(((SelectionMenu *)dialog)->selection);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(target, s16 *, 0x4);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(target, s16 *, 0x6);
-    func_0207b764(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
+    StepMapViewToTile(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
     if (func_0207b7c4() != 0) return;
     MoveMapCursorToTarget(2);
     DrawUnitInfoPanel(1);
@@ -435,7 +435,7 @@ void func_020caa34(void *dialog) {
     s32 func_020d4dd0(void);
     s32 GetMapCursorKeyAction(void);
     s32 GetMapCursorTouchAction(void);
-    M2C_UNK func_0207b764(s16, s16);
+    M2C_UNK StepMapViewToTile(s16, s16);
     M2C_UNK func_01ffa6fc(void *);
     s32 func_0209f944(s16, s16);
     M2C_UNK func_020d468c(void);
@@ -459,7 +459,7 @@ void func_020caa34(void *dialog) {
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
             data_0215be0c = -1;
-            func_0207b764(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
+            StepMapViewToTile(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                           M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
             func_01ffa6fc(dialog);
             return;

@@ -308,19 +308,24 @@ s32 ghiParseChunkSize(void *arg0) {
     return sp0;
 }
 
-void ghiAppendToChunkHeaderBuffer(void *p,void *src,s32 n) {
-extern M2C_UNK gGhttpAssertConnection,gGhttpProcessFileName,gGhiAppendToChunkHeaderBufferName,gGhttpAssertData,data_020fd9a8;
-s32 left;
-if(!p)AssertFailed(&gGhttpAssertConnection,&gGhttpProcessFileName,&gGhiAppendToChunkHeaderBufferName,0x333);
-if(!src)AssertFailed(&gGhttpAssertData,&gGhttpProcessFileName,&gGhiAppendToChunkHeaderBufferName,0x334);
-if(n<0)AssertFailed(&data_020fd9a8,&gGhttpProcessFileName,&gGhiAppendToChunkHeaderBufferName,0x335);
-if(!n)return;
-if(M2C_FIELD(p,s32 *,0x120)>=10)return;
-left=10-M2C_FIELD(p,s32 *,0x120);
-if(left>=n)left=n;
-MemCopy((u8 *)p+0x114+M2C_FIELD(p,s32 *,0x120),src,left);
-M2C_FIELD(p,s32 *,0x120)+=left;
-*((u8 *)p+M2C_FIELD(p,s32 *,0x120)+0x114)=0;
+/* Append n bytes of a chunk-size line to the request's chunk-header text, keeping
+ * at most GHI_CHUNK_HEADER_MAX bytes and a trailing NUL byte. */
+void ghiAppendToChunkHeaderBuffer(void *p, void *src, s32 n) {
+    extern M2C_UNK gGhttpAssertConnection, gGhttpProcessFileName, gGhiAppendToChunkHeaderBufferName,
+        gGhttpAssertData, gGhttpAssertLenNonNegative;
+    GHIConnection *connection = (GHIConnection *)p;
+    s32 left;
+
+    if (!connection) AssertFailed(&gGhttpAssertConnection, &gGhttpProcessFileName, &gGhiAppendToChunkHeaderBufferName, 0x333);
+    if (!src) AssertFailed(&gGhttpAssertData, &gGhttpProcessFileName, &gGhiAppendToChunkHeaderBufferName, 0x334);
+    if (n < 0) AssertFailed(&gGhttpAssertLenNonNegative, &gGhttpProcessFileName, &gGhiAppendToChunkHeaderBufferName, 0x335);
+    if (!n) return;
+    if (connection->chunkHeaderLen >= GHI_CHUNK_HEADER_MAX) return;
+    left = GHI_CHUNK_HEADER_MAX - connection->chunkHeaderLen;
+    if (left >= n) left = n;
+    MemCopy(connection->chunkHeader + connection->chunkHeaderLen, src, left);
+    connection->chunkHeaderLen += left;
+    connection->chunkHeader[connection->chunkHeaderLen] = 0;
 }
 
 /* Decode the body of a chunked HTTP response: accumulate each chunk-size line,

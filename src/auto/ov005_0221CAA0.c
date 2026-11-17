@@ -19,8 +19,8 @@ void *FindObjectByClass(void*);
 void func_01ffa6fc(void*);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s16,s32,s32);
-s32 func_020aae10(void*);
-s32 func_020aae44(void*);
+s32 GetUnitSpriteWidth(void*);
+s32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s16,s16,s32,s32);
 /* Results screen intro animation: over 32 frames it cuts the cell grid of the 3D sprite into
    an upper and a lower half (the cut travels down), scrolls the results in from the right and
@@ -76,12 +76,12 @@ void ResultsScreenAnimate(void *arg0) {
   func_02088e84(leftSprite,160,panelY,160,panelY);
   if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
   spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
-  width=func_020aae10(leftSprite); height=func_020aae44(leftSprite);
+  width=GetUnitSpriteWidth(leftSprite); height=GetUnitSpriteHeight(leftSprite);
   func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
   M2C_FIELD(leftSprite,s16*,0x34)=160; M2C_FIELD(leftSprite,s16*,0x36)=panelY;
   if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
   spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
-  width=func_020aae10(leftSprite); height=func_020aae44(leftSprite);
+  width=GetUnitSpriteWidth(leftSprite); height=GetUnitSpriteHeight(leftSprite);
   func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
   { void *rightSprite; s16 spriteY2,spriteX2,panelY2; s32 width2,height2;
   panelY2=(s16)M2C_FIELD(arg0,s32*,0x44);
@@ -89,12 +89,12 @@ void ResultsScreenAnimate(void *arg0) {
   func_02088e84(rightSprite,224,panelY2,224,panelY2);
   if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
   spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
-  width2=func_020aae10(rightSprite); height2=func_020aae44(rightSprite);
+  width2=GetUnitSpriteWidth(rightSprite); height2=GetUnitSpriteHeight(rightSprite);
   func_02087d84(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
   M2C_FIELD(rightSprite,s16*,0x34)=224; M2C_FIELD(rightSprite,s16*,0x36)=panelY2;
   if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
   spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
-  width2=func_020aae10(rightSprite); height2=func_020aae44(rightSprite);
+  width2=GetUnitSpriteWidth(rightSprite); height2=GetUnitSpriteHeight(rightSprite);
   func_02087d84(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
   }
   if(M2C_FIELD(arg0,s32*,0x3c)!=32)return;

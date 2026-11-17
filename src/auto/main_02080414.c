@@ -150,33 +150,37 @@ void func_02080a14(u16 *p,s32 w,s32 h,u16 *q){
 }
 
 #pragma opt_strength_reduction off
-void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, u16 bandH, u16 lowArg, u16 palArg) {
+/* Fill a totalCols x totalRows tile rectangle of the 32-wide `tilemap` with
+ * consecutive tile numbers, laid out column by column in chunkCols x chunkRows
+ * chunks; tile numbers start at the low 10 bits of `startTile` and take the
+ * palette from `palette`. */
+void FillChunkedTileRect(u16 *tilemap, s32 totalCols, s32 totalRows, s32 chunkCols, u16 chunkRows, u16 startTile, u16 palette) {
     u16 *base;
     s32 y, x, row, stack;
-    u16 cur = (u16)((lowArg & 0x3ff) | ((palArg & 0xf) << 12));
+    u16 cur = (u16)((startTile & 0x3ff) | ((palette & 0xf) << 12));
     y = 0;
-    for (;y < totalH;) {
+    for (;y < totalRows;) {
         stack = 0;
-        if (totalW > 0) {
+        if (totalCols > 0) {
             do {
                 row = 0;
-                if ((s32)bandH > 0) {
+                if ((s32)chunkRows > 0) {
                     do {
-                        base = p + stack;
+                        base = tilemap + stack;
                         x = 0;
-                        if (chunkW > 0) {
+                        if (chunkCols > 0) {
                             do {
                                 base[(y+row)*32+x] = cur++;
                                 x++;
-                            } while (x < chunkW);
+                            } while (x < chunkCols);
                         }
                         row++;
-                    } while (row < bandH);
+                    } while (row < chunkRows);
                 }
-                stack += chunkW;
-            } while (stack < totalW);
+                stack += chunkCols;
+            } while (stack < totalCols);
         }
-        y += bandH;
+        y += chunkRows;
     }
 }
 #pragma opt_strength_reduction reset
@@ -306,24 +310,29 @@ s32 LoadDecompressedFileTo(void *path, s32 dest) {
     return (s32)size;
 }
 
-void *func_02080e30(void *arg0, int arg1) {
-    void *sp0[18];
+/* Reads the whole file at `path` into a newly allocated buffer of exactly the
+ * file's size, in 0x2800-byte chunks, and returns it. A nonzero `persistent`
+ * takes the buffer from the permanent asset heap instead of the temporary one.
+ * Returns 0 after halting the system if the file cannot be opened or a read
+ * fails. */
+void *LoadFileToBuffer(void *path, int persistent) {
+    void *req[18];
     int off;
     int total;
     void *buf;
     int chunk;
-    int a;
-    int b;
+    int start;
+    int end;
 
-    InitFileRequest(sp0);
-    if (OpenFileRequest(sp0, arg0) == 0) {
+    InitFileRequest(req);
+    if (OpenFileRequest(req, path) == 0) {
         SystemHalt();
         return 0;
     }
-    b = (int)sp0[10];
-    a = (int)sp0[9];
-    total = b - a;
-    if (arg1 != 0) {
+    end = (int)req[10];
+    start = (int)req[9];
+    total = end - start;
+    if (persistent != 0) {
         buf = (void *)HeapAllocBlock(total);
     } else {
         buf = (void *)func_020e34f4(total);
@@ -335,14 +344,14 @@ void *func_02080e30(void *arg0, int arg1) {
             if ((unsigned int)chunk >= 0x2800) {
                 chunk = 0x2800;
             }
-            if (FileRead(sp0, (void *)((char *)buf + off), chunk) != chunk) {
+            if (FileRead(req, (void *)((char *)buf + off), chunk) != chunk) {
                 SystemHalt();
                 return 0;
             }
             off += chunk;
         } while (total - off != 0);
     }
-    CloseFileRequest(sp0);
+    CloseFileRequest(req);
     return buf;
 }
 

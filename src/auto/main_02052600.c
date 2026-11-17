@@ -31,7 +31,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     M2C_UNK func_02054484(void **, void *);
     void *func_02055aa0(void **, s32);
     M2C_UNK gpiFindBuddyStatus(void **, s32, void **);
-    s32 func_0205817c(void **, char *, s32);
+    s32 gpiProcessErrorReply(void **, char *, s32);
     s32 gpiValueForKey(char *, M2C_UNK *, void *, s32);
     M2C_UNK gpiSetError(void **, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
@@ -89,7 +89,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
 
     {s8 parse[64];
     temp_r6 = *arg0;
-    if (func_0205817c(arg0, arg2, 1) != 0) {
+    if (gpiProcessErrorReply(arg0, arg2, 1) != 0) {
         return 4;
     }
     if (StringCompareN(arg2, &data_020fe6d8, 4) != 0) {

@@ -86,9 +86,9 @@ s32 func_ov003_021f27d4(s32 unused,s32 array) {
 
 void func_ov003_021f2808(s32 arg0, M2C_UNK arg1) {
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_020c7eb8(M2C_UNK);
+    s32 IsCampaignMapRecordValid(M2C_UNK);
     void func_ov003_021f26c8(s32, s32, M2C_UNK);
-    if (func_020c7eb8(arg1) == 0) {
+    if (IsCampaignMapRecordValid(arg1) == 0) {
         PlaySoundEffect(0x1001D);
         return;
     }
@@ -221,12 +221,12 @@ s32 func_ov003_021f2b88(s32 a) {
     s32 IsLinkSessionActive(void);
     s32 func_0208b5a8(void);
     s32 CreateTextLayer(s32);
-    void func_020899cc(s32,s32,s32,u32);
+    void RenderTextLayerMessage(s32,s32,s32,u32);
     if(!IsLinkSessionActive()) return 0;
     if(M2C_FIELD(a,u8 *,0x45)) return 0;
     if(!M2C_FIELD(a,u8 *,0x46)) return 0;
     if(func_0208b5a8()) return 0;
-    func_020899cc(CreateTextLayer(a),2,0xdc00,0x44000001);
+    RenderTextLayerMessage(CreateTextLayer(a),2,0xdc00,0x44000001);
     return 1;
 }
 

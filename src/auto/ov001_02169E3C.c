@@ -248,7 +248,7 @@ void DrawVerticallyAnchoredText(void *state, s32 x, s32 y, s32 blockWidth, s32 a
 s32 func_ov001_0216aab0(void *font, void **outFinf) {
     M2C_UNK SystemHalt();
     s32 func_ov001_02169020(void *, s32);
-    M2C_UNK func_ov001_0216ac04(void *);
+    M2C_UNK RelocateFontPointers(void *);
     s32 temp_r0;
     s32 isNftr;
     s32 validV101;
@@ -317,7 +317,7 @@ s32 func_ov001_0216aab0(void *font, void **outFinf) {
         }
         backwardCompat = 1;
     }
-    func_ov001_0216ac04(font);
+    RelocateFontPointers(font);
     temp_r0 = func_ov001_02169020(font, 0x46494E46);
     if (temp_r0 == 0) {
         *outFinf = NULL;
@@ -330,9 +330,12 @@ s32 func_ov001_0216aab0(void *font, void **outFinf) {
     return 1;
 }
 
-s32 func_ov001_0216ac04(void *arg0) {
-    u8 *base = (u8 *) arg0;
-    u8 *p = base + M2C_FIELD(base, u16 *, 0xC);
+/* Relocates a NitroSDK NFTR font's internal pointers: adds the resource base
+ * address to the section-relative offsets held by the FINF, CWDH and CMAP
+ * blocks, walking the blocks through the header's block table. */
+s32 RelocateFontPointers(void *font) {
+    u8 *base = (u8 *) font;
+    u8 *block = base + M2C_FIELD(base, u16 *, 0xC);
     s32 count = M2C_FIELD(base, u16 *, 0xE);
     s32 i = 0;
 
@@ -340,30 +343,30 @@ s32 func_ov001_0216ac04(void *arg0) {
         return;
     }
     do {
-        switch (M2C_FIELD(p, u32 *, 0)) {
+        switch (M2C_FIELD(block, u32 *, 0)) {
         case 'FINF':
-            M2C_FIELD(p, u32 *, 0x10) += (u32) base;
-            if (M2C_FIELD(p, u32 *, 0x14) != 0) {
-                M2C_FIELD(p, u32 *, 0x14) += (u32) base;
+            M2C_FIELD(block, u32 *, 0x10) += (u32) base;
+            if (M2C_FIELD(block, u32 *, 0x14) != 0) {
+                M2C_FIELD(block, u32 *, 0x14) += (u32) base;
             }
-            if (M2C_FIELD(p, u32 *, 0x18) != 0) {
-                M2C_FIELD(p, u32 *, 0x18) += (u32) base;
+            if (M2C_FIELD(block, u32 *, 0x18) != 0) {
+                M2C_FIELD(block, u32 *, 0x18) += (u32) base;
             }
             break;
         case 'CWDH':
-            if (M2C_FIELD(p, u32 *, 0xC) != 0) {
-                M2C_FIELD(p, u32 *, 0xC) += (u32) base;
+            if (M2C_FIELD(block, u32 *, 0xC) != 0) {
+                M2C_FIELD(block, u32 *, 0xC) += (u32) base;
             }
             break;
         case 'CMAP':
-            if (M2C_FIELD(p, u32 *, 0x10) != 0) {
-                M2C_FIELD(p, u32 *, 0x10) += (u32) base;
+            if (M2C_FIELD(block, u32 *, 0x10) != 0) {
+                M2C_FIELD(block, u32 *, 0x10) += (u32) base;
             }
             break;
         case 'CGLP':
             break;
         }
-        p += M2C_FIELD(p, u32 *, 4);
+        block += M2C_FIELD(block, u32 *, 4);
         i++;
     } while (i < M2C_FIELD(base, u16 *, 0xE));
 }

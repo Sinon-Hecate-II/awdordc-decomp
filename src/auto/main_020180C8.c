@@ -2,7 +2,7 @@
 #include "common.h"
 
 #pragma optimization_level 2
-void func_020180c8(s32 arg0) {
+void Mb_RemovePlayer(s32 arg0) {
 extern M2C_UNK gMbState;
 void func_02016934(void *);
 void func_02018960(s32);
@@ -499,14 +499,14 @@ return 1;
 
 void func_02018c24(void) {
     M2C_UNK CpuSet(s32 *, M2C_UNK *, s32);
-    s16 func_0200558c();
+    s16 OS_GetLockID();
     extern M2C_UNK data_02136c98;
     extern M2C_UNK data_02136c9c;
     s32 sp0;
 
     sp0 = 0;
     CpuSet(&sp0, &data_02136c9c, 0x05000001);
-    M2C_FIELD(&data_02136c98, s16 *, 6) = func_0200558c();
+    M2C_FIELD(&data_02136c98, s16 *, 6) = OS_GetLockID();
 }
 
 s32 func_02018c5c(void) {

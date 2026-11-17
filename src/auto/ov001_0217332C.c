@@ -150,42 +150,45 @@ Ov001_SetSpriteAttrs(M2C_FIELD(gOv001MenuState+(arg0-0x33)*4,s32 *,0xfc),-1,0,da
 }
 #pragma scheduling reset
 #pragma opt_common_subs reset
-void func_ov001_02173924(void) {
+/* Refreshes the on-screen keyboard's selection cursor: loads the obj layout that
+ * matches the selected key's kind, sets its palette and moves it onto that key's
+ * position from the per-key position table. */
+void Ov001_UpdateKeyboardCursor(void) {
     s32 *Ov001_GetSpriteObjEntry(s32, s32);
     M2C_UNK Ov001_MoveSpriteLayout(s32, M2C_UNK, u16, u16);
     M2C_UNK Ov001_SetSpritePalette(s32, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
     extern void *gOv001MenuState;
-    extern u16 data_ov001_0218f428[];
-    extern u16 data_ov001_0218f42a[];
-    M2C_UNK var_r4;
-    s32 temp_ip;
+    extern u16 gKeyboardKeyCursorPosX[];
+    extern u16 gKeyboardKeyCursorPosY[];
+    M2C_UNK layout;
+    s32 keyIndex;
 
     switch (M2C_FIELD(gOv001MenuState, s8 *, 0x121) - 0x2F) {
     case 0:
-        var_r4 = 0x42;
+        layout = 0x42;
         break;
     case 1:
-        var_r4 = 0x41;
+        layout = 0x41;
         break;
     case 2:
-        var_r4 = 0x43;
+        layout = 0x43;
         break;
     case 3:
-        var_r4 = 0x41;
+        layout = 0x41;
         break;
     case 4:
     case 5:
-        var_r4 = 0x45;
+        layout = 0x45;
         break;
     default:
-        var_r4 = 0x40;
+        layout = 0x40;
         break;
     }
-    Ov001_LoadSpriteObjLayout(0, var_r4, Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001MenuState, s32 *, 0x114), 0));
+    Ov001_LoadSpriteObjLayout(0, layout, Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001MenuState, s32 *, 0x114), 0));
     Ov001_SetSpritePalette(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, 2);
-    temp_ip = M2C_FIELD(gOv001MenuState, s8 *, 0x121) * 2;
-    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, data_ov001_0218f428[temp_ip], data_ov001_0218f42a[temp_ip]);
+    keyIndex = M2C_FIELD(gOv001MenuState, s8 *, 0x121) * 2;
+    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001MenuState, s32 *, 0x114), -1, gKeyboardKeyCursorPosX[keyIndex], gKeyboardKeyCursorPosY[keyIndex]);
 }
 
 /* Moves the ov001 menu cursor by `direction` (0..3) using the per-state
@@ -206,7 +209,7 @@ else if(toState==-2) {switch(M2C_FIELD(state,s8 *,0x120)) {case 0:case 49:M2C_FI
 else if(toState==-3) {switch(M2C_FIELD(state,s8 *,0x120)) {case 6:case 41:M2C_FIELD(state,s8 *,0x121)=41;break;case 7:case 42:M2C_FIELD(state,s8 *,0x121)=42;break;case 9:case 44:M2C_FIELD(state,s8 *,0x121)=44;break;case 10:case 45:M2C_FIELD(state,s8 *,0x121)=45;break;case 11:case 34:case 35:case 50:M2C_FIELD(state,s8 *,0x121)=46;break;default:M2C_FIELD(state,s8 *,0x121)=43;break;}}
 else if(toState==-4) {switch(M2C_FIELD(state,s8 *,0x120)) {case 0:case 49:M2C_FIELD(state,s8 *,0x121)=0;break;case 1:case 36:M2C_FIELD(state,s8 *,0x121)=1;break;case 3:case 38:M2C_FIELD(state,s8 *,0x121)=3;break;case 4:case 39:M2C_FIELD(state,s8 *,0x121)=4;break;case 5:case 40:M2C_FIELD(state,s8 *,0x121)=5;break;default:M2C_FIELD(state,s8 *,0x121)=2;break;}}
 else if(toState==-5) {switch(M2C_FIELD(state,s8 *,0x120)) {case 6:case 41:M2C_FIELD(state,s8 *,0x121)=6;break;case 7:case 42:M2C_FIELD(state,s8 *,0x121)=7;break;case 9:case 44:M2C_FIELD(state,s8 *,0x121)=9;break;case 10:case 45:M2C_FIELD(state,s8 *,0x121)=10;break;case 11:case 34:M2C_FIELD(state,s8 *,0x121)=11;break;case 35:case 50:M2C_FIELD(state,s8 *,0x121)=50;break;default:M2C_FIELD(state,s8 *,0x121)=8;break;}}
-func_ov001_02173924();Ov001_PlaySound(8);}
+Ov001_UpdateKeyboardCursor();Ov001_PlaySound(8);}
 
 void func_ov001_02173e38(void *arg0) {
     typedef struct { s32 x; u32 y; } Position;
@@ -279,9 +282,9 @@ for(i=0;i<3;i++){
 for(j=0;j<4;j++){
 ptr=(unsigned int *)gOv001MenuState;
 func_ov001_0218ace0(((unsigned int (*)[4])ptr)[i][j]);
-if(i==0)func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState+j*4,void **,0x104));
+if(i==0)Ov001_DestroySprite(M2C_FIELD(gOv001MenuState+j*4,void **,0x104));
 }}
-for(i=0;i<2;i++)func_ov001_0218a1cc(M2C_FIELD(gOv001MenuState+i*4,void **,0xfc));
+for(i=0;i<2;i++)Ov001_DestroySprite(M2C_FIELD(gOv001MenuState+i*4,void **,0xfc));
 for(i=0;i<4;i++)Ov001_ReleaseSprite(M2C_FIELD(gOv001MenuState+i*4,void **,0xec));
 for(i=0; i!=0x2f; ++i)Ov001_ReleaseSprite(M2C_FIELD(gOv001MenuState+i*4,void **,0x30));
 Ov001_FreeAlloc(&gOv001MenuState);

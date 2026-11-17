@@ -71,7 +71,7 @@ void func_0202830c(u16 *p){extern void *gWfcSession;if(p[1]!=8||p[2]!=22||p[3]!=
  * result kind and the operation id, runs the matching continuation, then
  * advances the session state machine and reports the outcome. */
 void WFC_OperationCallback(u16 *msg) {
-s32 func_02011244(void);s32 func_02012158(void *);s32 func_02012198(void *);s32 func_02013cfc(void *,s32);s32 func_02013bc8(void *,s32,s32,void *);s32 func_02012740(void *,void *,s32,s32,u16);void func_0202899c(const u16 *);extern void *gWfcSession;
+s32 func_02011244(void);s32 func_02012158(void *);s32 func_02012198(void *);s32 func_02013cfc(void *,s32);s32 func_02013bc8(void *,s32,s32,void *);s32 WFC_SendConnectionData(void *,void *,s32,s32,u16);void func_0202899c(const u16 *);extern void *gWfcSession;
 s32 result=20;
 switch(msg[1]){
 case 0:
@@ -82,7 +82,7 @@ case 5:WFC_SetState(3);WFC_DispatchEvent(0,0,0,0x673);return;
 case 6:result=func_02012158(WFC_OperationCallback);break;
 case 29:result=func_02013cfc(WFC_OperationCallback,0);break;
 case 25:{u8 *session=gWfcSession;result=func_02013bc8(WFC_OperationCallback,session[0x2250],session[0x2251],session+0x2200);break;}
-case 39:{u8 *session=gWfcSession;u32 statusBits=M2C_FIELD(session,u32 *,0x2264);u16 bothSet=(statusBits&0xc0000)==0xc0000;result=func_02012740(func_0202899c,session+0x2140,0,(statusBits&0x30000)!=0x30000,bothSet);break;}
+case 39:{u8 *session=gWfcSession;u32 statusBits=M2C_FIELD(session,u32 *,0x2264);u16 bothSet=(statusBits&0xc0000)==0xc0000;result=WFC_SendConnectionData(func_0202899c,session+0x2140,0,(statusBits&0x30000)!=0x30000,bothSet);break;}
 }
 switch(result){case 2:return;case 3:break;case 8:WFC_SetState(12);{u8 *session=gWfcSession;WFC_DispatchEvent(1,M2C_FIELD(session,s16 *,0x2280)==5?session+0x2140:0,0,0x6af);}return;}
 WFC_SetState(11);{u8 *session=gWfcSession;WFC_DispatchEvent(7,M2C_FIELD(session,s16 *,0x2280)==5?session+0x2140:0,0,0x6b8);}return;
@@ -162,18 +162,23 @@ default:WFC_SetState(11);WFC_DispatchEvent(7,(s32)((u8 *)gWfcSession+0x2140),0,0
 done:return;
 }
 #pragma opt_strength_reduction reset
-void func_02028c00(u16 *p) {
+/* Completion callback of the WFC send started in WFC_ProcessLinkCallback (the
+ * player's packet to peer 0).  On success it finishes the session when it is
+ * already connected, otherwise it clears the link error, resumes the connection
+ * step and reports the connection data as an event; a dropped operation finishes
+ * the session and any other result raises the WFC error event. */
+void WFC_ProcessLinkSendCallback(u16 *msg) {
     extern void *gWfcSession;
-    switch (p[1]) {
+    switch (msg[1]) {
     case 0:
-        if (M2C_FIELD(gWfcSession, s32 *, 0x2260) == 0xc) {
+        if (M2C_FIELD(gWfcSession, s32 *, WFC_SESSION_STATE) == 0xc) {
             WFC_SetState(0xa);
             WFC_Finish();
             return;
         }
-        M2C_FIELD(gWfcSession, u16 *, 0x2282) = 0;
+        M2C_FIELD(gWfcSession, u16 *, WFC_SESSION_ERROR) = 0;
         WFC_SetState(3);
-        WFC_DispatchEvent(0, (u8 *)gWfcSession + 0x2140, 0, 0x83d);
+        WFC_DispatchEvent(0, (u8 *)gWfcSession + WFC_SESSION_CONN_DATA, 0, 0x83d);
         return;
     case 1:
     case 3:
@@ -184,7 +189,7 @@ void func_02028c00(u16 *p) {
     case 4:
     default:
         WFC_SetState(0xb);
-        WFC_DispatchEvent(7, (u8 *)gWfcSession + 0x2140, 0, 0x84f);
+        WFC_DispatchEvent(7, (u8 *)gWfcSession + WFC_SESSION_CONN_DATA, 0, 0x84f);
         return;
     }
 }
@@ -228,17 +233,17 @@ void func_02028cc8(u16 *p) {
     }
 }
 
-void func_02028c00(u16 *);
+void WFC_ProcessLinkSendCallback(u16 *);
 /* Completion callback for the DWC receive operation started in the session's
  * link step: on arrival it either finishes the session (state 12) or sends this
- * player's packet to peer 0 (completion handled by func_02028c00).  A dropped
+ * player's packet to peer 0 (completion handled by WFC_ProcessLinkSendCallback).  A dropped
  * operation finishes the session, and a failure raises the network error. */
 void WFC_ProcessLinkCallback(u16 *p) {
 extern void *gWfcSession;
 switch(p[1]){
 case 0:
 if(M2C_FIELD(gWfcSession,s32 *,WFC_SESSION_STATE)==12){WFC_SetState(10);WFC_Finish();return;}
-switch(func_0201280c(func_02028c00,0)){
+switch(func_0201280c(WFC_ProcessLinkSendCallback,0)){
 case 2:return;
 case 8:WFC_SetState(12);WFC_DispatchEvent(1,(u8 *)gWfcSession+WFC_SESSION_CONN_DATA,0,0x8b4);return;
 case 3:WFC_SetState(10);WFC_Finish();return;

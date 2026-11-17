@@ -52,7 +52,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
     s32 Checksum(u8 *, u32);
     s32 func_0201a778(void);
     M2C_UNK UpdateArpCache(void *, M2C_UNK, s32);
-    M2C_UNK func_0201bb88(void *, u8 *, M2C_UNK);
+    M2C_UNK HandleIcmpPacket(void *, u8 *, M2C_UNK);
     M2C_UNK TcpReceiveSegment(void *, void *, s32);
     M2C_UNK UdpReceiveDatagram(void *, void *, s32);
     void *func_0201cb4c(void *, s32 *);
@@ -116,7 +116,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
             UdpReceiveDatagram(rp, ptr, val);
         } else if (M2C_FIELD(&gNetStack, s32 *, 0x50) != 0) {
             if (type == 1) {
-                func_0201bb88(rp, (u8 *)ptr, val);
+                HandleIcmpPacket(rp, (u8 *)ptr, val);
             } else if (type == 6) {
                 TcpReceiveSegment(rp, ptr, val);
             }
@@ -472,7 +472,7 @@ s32 PeekReceivedData(u32 *arg0, M2C_UNK arg1) {
 s32 func_0201d618(s32 *arg0) {
     s32 func_0201d548(s32 *, void *);
     s32 PeekReceivedData(u32 *, M2C_UNK);
-    s32 func_02024cb4(s32 *, void *);
+    s32 TlsPeekReceivedData(s32 *, void *);
     extern M2C_UNK gSocketManager;
     void *inner;
     void *q;
@@ -486,7 +486,7 @@ s32 func_0201d618(s32 *arg0) {
         return func_0201d548(arg0, q);
     }
     if (((u8 *)q)[9] != 0) {
-        return func_02024cb4(arg0, q);
+        return TlsPeekReceivedData(arg0, q);
     }
     return PeekReceivedData((u32 *)arg0, (M2C_UNK)q);
 
@@ -706,17 +706,21 @@ ret:
     return total;
 }
 #pragma pop
-s32 func_0201da4c(s32 a,s32 b,s32 c,s32 d){
+/* Send up to two buffers through the current socket: a UDP (kind 10) or ICMP
+ * (kind 11) socket sends each buffer as its own datagram, while a stream socket
+ * (TLS or plain TCP) sends both in one call.  Returns the bytes sent, or 0 when
+ * the socket or the link is unavailable. */
+s32 SendSocketData(s32 src1,s32 len1,s32 src2,s32 len2){
 extern M2C_UNK gSocketManager;extern M2C_UNK gNetStack;
 void UdpSendSegment(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 TlsSendAppData(s32,s32,s32,s32,void *);s32 TcpSendData(s32,s32,s32,s32,void *);
-void *p; s32 result;
-p=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),void **,0xa4);
-if(p!=0){
-if(M2C_FIELD(p,u8 *,8)==10){if(b)UdpSendSegment(a,b,p);if(d)UdpSendSegment(c,d,p);result=b+d;}
-else if(M2C_FIELD(p,u8 *,8)==11){if(b)func_0201b338(a,b,p);if(d)func_0201b338(c,d,p);result=b+d;}
-else if(M2C_FIELD(p,u8 *,9))result=TlsSendAppData(a,b,c,d,p);
-else result=TcpSendData(a,b,c,d,p);
-if(M2C_FIELD(&gNetStack,u8 *,0)==0)return result;
+void *sock; s32 sent;
+sock=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),void **,0xa4);
+if(sock!=0){
+if(M2C_FIELD(sock,u8 *,SOCK_KIND)==10){if(len1)UdpSendSegment(src1,len1,sock);if(len2)UdpSendSegment(src2,len2,sock);sent=len1+len2;}
+else if(M2C_FIELD(sock,u8 *,SOCK_KIND)==11){if(len1)func_0201b338(src1,len1,sock);if(len2)func_0201b338(src2,len2,sock);sent=len1+len2;}
+else if(M2C_FIELD(sock,u8 *,SOCK_TLS_ACTIVE))sent=TlsSendAppData(src1,len1,src2,len2,sock);
+else sent=TcpSendData(src1,len1,src2,len2,sock);
+if(M2C_FIELD(&gNetStack,u8 *,0)==0)return sent;
 }return 0;
 }
 

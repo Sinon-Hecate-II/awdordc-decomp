@@ -10,29 +10,29 @@ void func_ov007_02212cc8(M2C_UNK arg0) {
     M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_020d46e8(void);
-    M2C_UNK func_ov007_02211f10(s32);
-    s32 func_ov007_02211f20(void);
+    M2C_UNK SetMapEditorTool(s32);
+    s32 GetMapEditorTool(void);
     M2C_UNK func_ov007_02212dcc(void);
     extern u16 *gKeyState;
     s32 initialTimer;
 
-    initialTimer = func_ov007_02211f20();
+    initialTimer = GetMapEditorTool();
     if (*gKeyState & 1) {
-        func_ov007_02211f10(0);
+        SetMapEditorTool(0);
     }
     if (*gKeyState & 2) {
-        func_ov007_02211f10(1);
+        SetMapEditorTool(1);
     }
     if (*gKeyState & 0x400) {
-        func_ov007_02211f10(2);
+        SetMapEditorTool(2);
     }
     if (*gKeyState & 0x800) {
-        func_ov007_02211f10(3);
+        SetMapEditorTool(3);
     }
     if (*gKeyState & 0xC0B) {
         func_ov007_02212dcc();
     }
-    if (initialTimer != func_ov007_02211f20()) {
+    if (initialTimer != GetMapEditorTool()) {
         PlaySoundEffect(0x10011);
     }
     if (func_020d46e8() == 0) {
@@ -54,12 +54,12 @@ void func_ov007_02212db8(void) {
 }
 
 M2C_UNK func_ov007_02212dcc(void) {
-    M2C_UNK func_ov007_02211f00(void);
-    M2C_UNK func_ov007_02211f20(void);
+    M2C_UNK GetMapEditorMode(void);
+    M2C_UNK GetMapEditorTool(void);
     extern M2C_UNK data_ov007_02221a50[];
     typedef struct { unsigned char value:4; } LowBits8;
 
-    M2C_UNK r = func_ov007_02211f00();
+    M2C_UNK r = GetMapEditorMode();
 
     if (r != 0) {
         if (r != 1) {
@@ -95,7 +95,7 @@ M2C_UNK func_ov007_02212dcc(void) {
             *(u32 *)((u8 *)p + 0x40) = f;
         }
 
-        switch (func_ov007_02211f20()) {
+        switch (GetMapEditorTool()) {
         case 0: {
             void *p = (void *)data_ov007_02221a50[3];
             u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
@@ -166,7 +166,7 @@ M2C_UNK func_ov007_02212dcc(void) {
         *(u32 *)((u8 *)p + 0x40) = f;
     }
 
-    switch (func_ov007_02211f20()) {
+    switch (GetMapEditorTool()) {
     case 0: {
         void *p = (void *)data_ov007_02221a50[8];
         u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;

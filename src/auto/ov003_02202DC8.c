@@ -43,8 +43,8 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_020aae10(void *);
-    s32 func_020aae44(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     s32 Ov003_GetEntryValueTextId(u8, u8);
     M2C_UNK func_ov003_02200dc8();
     extern void *data_027e01d8;
@@ -76,8 +76,8 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
     if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
         PlaySoundEffect(0x10019);
         temp_r7 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C);
-        temp_r4_2 = func_020aae44(temp_r7);
-        temp_r3 = func_020aae10(temp_r7) & (-0x200U >> 0x17);
+        temp_r4_2 = GetUnitSpriteHeight(temp_r7);
+        temp_r3 = GetUnitSpriteWidth(temp_r7) & (-0x200U >> 0x17);
         temp_r1 = M2C_FIELD(arg0, void **, 0x4C);
         M2C_FIELD(temp_r1, s16 *, 0x34) = (s16) M2C_FIELD(temp_r7, s16 *, 0x34);
         M2C_FIELD(temp_r1, s16 *, 0x36) = (s16) M2C_FIELD(temp_r7, s16 *, 0x36);
@@ -249,8 +249,8 @@ s32 Modulo(u8, M2C_UNK);
 M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
 M2C_UNK SetTextById(s32, s32);
 M2C_UNK PlaySoundEffect(s32);
-s32 func_020aae10(void *);
-s32 func_020aae44(void *);
+s32 GetUnitSpriteWidth(void *);
+s32 GetUnitSpriteHeight(void *);
 s32 Ov003_GetEntryValueTextId(u8, u8);
 M2C_UNK func_ov003_02200dc8(void *,u32);
 extern void *gCur3DSpriteEngine;
@@ -274,8 +274,8 @@ func_ov003_02200dc8(M2C_FIELD(r5,void **,0x44),arg1);
 if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
 PlaySoundEffect(0x10019);
 temp_r6 = M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C);
-temp_r4_2 = func_020aae44(temp_r6);
-temp_r3=func_020aae10(temp_r6);
+temp_r4_2 = GetUnitSpriteHeight(temp_r6);
+temp_r3=GetUnitSpriteWidth(temp_r6);
 temp_r1=M2C_FIELD(r5,void **,0x4c);
 {
 s16 y=M2C_FIELD(temp_r6,s16 *,0x36);s16 x=M2C_FIELD(temp_r6,s16 *,0x34);

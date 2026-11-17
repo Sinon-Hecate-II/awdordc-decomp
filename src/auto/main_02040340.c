@@ -254,19 +254,24 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     }
 }
 
-s32 func_02040cf0(M2C_UNK arg0) {
+/* Start the session's connection in the mode it was opened with: forget the
+   peer and own player ids, stamp the attempt time, then announce the
+   matchmaking parameter (mode 0, joining through the master), connect straight
+   to the preferred peer (mode 1), or report that the serving session has none
+   (mode 3).  Returns 0 when the step failed, 1 otherwise. */
+s32 StartConnection(M2C_UNK preferredPeer) {
  void *GetConnection(); unsigned long long GetSystemTick(); s32 SendMatchmakingParameter(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK func_0203dc38(M2C_UNK,s32);
  void func_02043008(s32); void *p;
- M2C_FIELD(GetConnection(),s32*,0x208)=0;
- M2C_FIELD(GetConnection(),s32*,0x204)=0;
+ M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SELF_ID)=0;
+ M2C_FIELD(GetConnection(),s32*,CONN_SESSION_JOIN_PEER)=0;
  M2C_FIELD(GetConnection(),u8*,0x1a7)=0;
  p=GetConnection();
- M2C_FIELD(p,unsigned long long*,0x1cc)=GetSystemTick();
- if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {
+ M2C_FIELD(p,unsigned long long*,CONN_SESSION_ATTEMPT_TICK)=GetSystemTick();
+ if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0) {
  SetConnectionState(3); SendMatchmakingParameter(0); if(((s32 (*)())func_02043008)())return 0;
- } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1) {
- TryConnectToPeer(0,0,arg0); if(((s32 (*)())func_0204084c)())return 0;
- } else if(M2C_FIELD(GetConnection(),u8*,0x15)==3) {
+ } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1) {
+ TryConnectToPeer(0,0,preferredPeer); if(((s32 (*)())func_0204084c)())return 0;
+ } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==3) {
  func_0203dc38(6,0xfffec5e6);return 0;
  }
  return 1;
@@ -371,7 +376,7 @@ done:
 #pragma opt_strength_reduction reset
 s32 func_02041038(void) {
     M2C_UNK func_0203dc38(M2C_UNK, s32);
-    s32 func_02040cf0(M2C_UNK);
+    s32 StartConnection(M2C_UNK);
     M2C_UNK func_02041ce0();
     M2C_UNK func_02041e44();
     M2C_UNK SetConnectionState(M2C_UNK);
@@ -398,7 +403,7 @@ s32 func_02041038(void) {
         func_02041ce0();
     } else {
         SetConnectionState(4);
-        var_r4 = func_02040cf0(0);
+        var_r4 = StartConnection(0);
     }
     return var_r4;
 }

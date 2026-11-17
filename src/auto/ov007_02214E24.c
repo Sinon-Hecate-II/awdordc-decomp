@@ -1,5 +1,6 @@
 /* 12 functions from 0x02214E24 to 0x02215DD8 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 x,y; } Point15A0C;
 #pragma opt_common_subs off
 #pragma opt_propagation off
@@ -10,23 +11,25 @@ typedef struct Map14E24 { u8 pad[0xa10]; u16 cells[(0x3758-0xa10)/2]; u16 rows[3
 extern s32 *gCurrentMap;
 extern u8 gMapMarkerGrid[800];
 
+/* Clear the map generator's marker grid and reserve its border: every cell of the
+   map's outline is marked as reserved so the generator keeps it free. */
 void Map_InitMarkerGrid(void) {
 s32 x,y; s32 *p; u8 *row;
 p=gCurrentMap;
 y=0;
-if(M2C_FIELD(*p,u16 *,0x5146)<=y)return;
+if(M2C_FIELD(*p,u16 *,MAP_HEIGHT)<=y)return;
 row=gMapMarkerGrid;
 do {
 
-for(x=0;x<M2C_FIELD(*p,u16 *,0x5144);x++){
+for(x=0;x<M2C_FIELD(*p,u16 *,MAP_WIDTH);x++){
 row[x]=0;
-if(x==0)row[x]=1;
-if(y==0)row[x]=1;
-if(x==M2C_FIELD(*p,u16 *,0x5144)-1)row[x]=1;
-if(y==M2C_FIELD(*p,u16 *,0x5146)-1)row[x]=1;
+if(x==0)row[x]=MAP_MARKER_RESERVED;
+if(y==0)row[x]=MAP_MARKER_RESERVED;
+if(x==M2C_FIELD(*p,u16 *,MAP_WIDTH)-1)row[x]=MAP_MARKER_RESERVED;
+if(y==M2C_FIELD(*p,u16 *,MAP_HEIGHT)-1)row[x]=MAP_MARKER_RESERVED;
 }
-y++; row+=30;
-}while(y<M2C_FIELD(*p,u16 *,0x5146));
+y++; row+=MAP_MARKER_STRIDE;
+}while(y<M2C_FIELD(*p,u16 *,MAP_HEIGHT));
 }
 
 /* Mark each unit standing on a tile of the tactical map (value 2 in the

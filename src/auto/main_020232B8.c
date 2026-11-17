@@ -1,7 +1,7 @@
 /* 16 functions from 0x020232B8 to 0x02024260 (main), found by ds-decomp. */
 #include "common.h"
 
-M2C_UNK func_020232b8(void *p) {
+M2C_UNK TlsComputeMasterSecret(void *p) {
  M2C_UNK func_0202321c(void *,void *,void *);
  M2C_UNK MI_CpuCopy8(s32,s32,u32);
  extern M2C_UNK data_020fb048,data_020fb04c,data_020fb050;
@@ -91,56 +91,72 @@ M2C_UNK TlsInitRecordKeys(void *arg0) {
 }
 
 void TlsProcessClientKeyExchange(void *arg0, M2C_UNK arg1) {
-    M2C_UNK func_02021f1c(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK TlsStoreSession(void *, M2C_UNK, M2C_UNK);
     M2C_UNK RsaCrtDecrypt(void *, M2C_UNK, s32);
-    M2C_UNK func_020232b8(void *);
+    M2C_UNK TlsComputeMasterSecret(void *);
     M2C_UNK TlsInitRecordKeys(void *);
     RsaCrtDecrypt(arg0, arg1, M2C_FIELD(arg0, s32 *, 0x81C));
-    func_020232b8(arg0);
-    func_02021f1c(arg0, 0, 0);
+    TlsComputeMasterSecret(arg0);
+    TlsStoreSession(arg0, 0, 0);
     TlsInitRecordKeys(arg0);
     M2C_FIELD(arg0, s8 *, 0x455) = 5;
 }
 
-M2C_UNK TlsComputeFinishedMd5(void *arg0, void *arg1, s32 arg2) {
+/* Compute the MD5 half of an SSLv3-style Finished digest: continue the handshake
+ * transcript with the sender label ("CLNT"/"SRVR"), the master secret and the
+ * inner pad, finish that inner digest, then hash the master secret, the outer pad
+ * and the inner digest into `digest`.  `peerFinished` selects the peer's label
+ * over the local one. */
+M2C_UNK TlsComputeFinishedMd5(void *tls, void *digest, s32 peerFinished) {
     M2C_UNK MD5_Init();
     M2C_UNK MD5_Update();
     M2C_UNK MD5_Final();
     M2C_UNK MI_CpuFill8();
-    extern u8 data_020fb054[], data_020fb05c[];
-    u8 sp0[0x30];
-    if ((M2C_FIELD(arg0, u8 *, 0x454) ^ arg2) != 0)
-        MD5_Update(arg0 + 0x3A4, data_020fb054, 4);
+    extern u8 sTlsServerFinishedLabel[], sTlsClientFinishedLabel[];
+    u8 pad[TLS_MD5_PAD_SIZE];
+    if ((M2C_FIELD(tls, u8 *, TLS_SERVER_SIDE) ^ peerFinished) != 0)
+        MD5_Update(tls + TLS_TRANSCRIPT_MD5, sTlsServerFinishedLabel, 4);
     else
-        MD5_Update(arg0 + 0x3A4, data_020fb05c, 4);
-    MD5_Update(arg0 + 0x3A4, arg0, 0x30);
-    MI_CpuFill8(sp0, 0x36, 0x30);
-    MD5_Update(arg0 + 0x3A4, sp0, 0x30);
-    MD5_Final(arg0 + 0x3A4, arg1);
-    MD5_Init(arg0 + 0x3A4);
-    MD5_Update(arg0 + 0x3A4, arg0, 0x30);
-    MI_CpuFill8(sp0, 0x5C, 0x30);
-    MD5_Update(arg0 + 0x3A4, sp0, 0x30);
-    MD5_Update(arg0 + 0x3A4, arg1, 0x10);
-    MD5_Final(arg0 + 0x3A4, arg1);
+        MD5_Update(tls + TLS_TRANSCRIPT_MD5, sTlsClientFinishedLabel, 4);
+    MD5_Update(tls + TLS_TRANSCRIPT_MD5, tls, 0x30);
+    MI_CpuFill8(pad, TLS_HMAC_IPAD, TLS_MD5_PAD_SIZE);
+    MD5_Update(tls + TLS_TRANSCRIPT_MD5, pad, TLS_MD5_PAD_SIZE);
+    MD5_Final(tls + TLS_TRANSCRIPT_MD5, digest);
+    MD5_Init(tls + TLS_TRANSCRIPT_MD5);
+    MD5_Update(tls + TLS_TRANSCRIPT_MD5, tls, 0x30);
+    MI_CpuFill8(pad, TLS_HMAC_OPAD, TLS_MD5_PAD_SIZE);
+    MD5_Update(tls + TLS_TRANSCRIPT_MD5, pad, TLS_MD5_PAD_SIZE);
+    MD5_Update(tls + TLS_TRANSCRIPT_MD5, digest, 0x10);
+    MD5_Final(tls + TLS_TRANSCRIPT_MD5, digest);
 }
 
-M2C_UNK TlsComputeFinishedSha1(void *arg0, void *arg1, s32 arg2) {
-M2C_UNK SHA1_Update(); M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK SHA1_Final(void *,void *); M2C_UNK SHA1_Init(void *);
-extern u8 data_020fb054[],data_020fb05c[];
-u8 sp0[40];
-if((M2C_FIELD(arg0,u8 *,0x454)^arg2)!=0) SHA1_Update(arg0+0x2ec,data_020fb054,4);
-else SHA1_Update(arg0+0x2ec,data_020fb05c,4);
-SHA1_Update(arg0+0x2ec,arg0,0x30);
-MI_CpuFill8(sp0,0x36,0x28);
-SHA1_Update(arg0+0x2ec,sp0,0x28);
-SHA1_Final(arg0+0x2ec,arg1);
-SHA1_Init(arg0+0x2ec);
-SHA1_Update(arg0+0x2ec,arg0,0x30);
-MI_CpuFill8(sp0,0x5c,0x28);
-SHA1_Update(arg0+0x2ec,sp0,0x28);
-SHA1_Update(arg0+0x2ec,arg1,0x14);
-SHA1_Final(arg0+0x2ec,arg1);
+/* Compute the SHA1 half of an SSLv3-style Finished digest: continue the handshake
+ * transcript with the sender label ("CLNT"/"SRVR"), the master secret and the
+ * inner pad, finish that inner digest, then hash the master secret, the outer pad
+ * and the inner digest into `digest`.  `peerFinished` selects the peer's label
+ * over the local one. */
+M2C_UNK TlsComputeFinishedSha1(void *tls, void *digest, s32 peerFinished) {
+    M2C_UNK SHA1_Update();
+    M2C_UNK MI_CpuFill8(void *, s32, s32);
+    M2C_UNK SHA1_Final(void *, void *);
+    M2C_UNK SHA1_Init(void *);
+    extern u8 sTlsServerFinishedLabel[], sTlsClientFinishedLabel[];
+    u8 pad[TLS_SHA1_PAD_SIZE];
+
+    if ((M2C_FIELD(tls, u8 *, TLS_SERVER_SIDE) ^ peerFinished) != 0)
+        SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, sTlsServerFinishedLabel, 4);
+    else
+        SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, sTlsClientFinishedLabel, 4);
+    SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, tls, 0x30);
+    MI_CpuFill8(pad, TLS_HMAC_IPAD, TLS_SHA1_PAD_SIZE);
+    SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, pad, TLS_SHA1_PAD_SIZE);
+    SHA1_Final(tls + TLS_TRANSCRIPT_SHA1, digest);
+    SHA1_Init(tls + TLS_TRANSCRIPT_SHA1);
+    SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, tls, 0x30);
+    MI_CpuFill8(pad, TLS_HMAC_OPAD, TLS_SHA1_PAD_SIZE);
+    SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, pad, TLS_SHA1_PAD_SIZE);
+    SHA1_Update(tls + TLS_TRANSCRIPT_SHA1, digest, 0x14);
+    SHA1_Final(tls + TLS_TRANSCRIPT_SHA1, digest);
 }
 
 void TlsProcessFinished(void *p,void *q) {

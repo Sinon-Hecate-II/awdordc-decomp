@@ -332,7 +332,7 @@ void func_020d6208(void) {
         }
     } else {
         M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x52b4) = 6;
-        func_ov000_0219c7c4(3);
+        SetAiCommandPhase(3);
         func_ov000_0219c7d8(0);
         func_020d6310();
         return;

@@ -14,7 +14,7 @@ void func_ov001_0217416c(void) {
     M2C_UNK Ov001_CreateSprite();
     M2C_UNK func_ov001_0218a260();
     M2C_UNK Ov001_SetSpritePalette();
-    M2C_UNK func_ov001_0218ac04();
+    M2C_UNK CreatePooledTextPanel();
     M2C_UNK func_ov001_0218a070();
     M2C_UNK func_ov001_02174f68();
     M2C_UNK Ov001_AddTask();
@@ -98,7 +98,7 @@ void func_ov001_0217416c(void) {
         sp4 = 2;
         sp8 = 0x480;
         spc = (void*)&sp14;
-        func_ov001_0218ac04(0, 0xc, 0x4, 0, 0, 0);
+        CreatePooledTextPanel(0, 0xc, 0x4, 0, 0, 0);
         sp1c = sp1c + 0x20;
         r8i++;
         r10++;
@@ -121,7 +121,7 @@ void func_ov001_0217416c(void) {
 void func_ov001_021744a8(void) {
     extern void *gOv001Keypad;
     void func_ov001_021753c8(void);
-    func_ov001_0218a1cc(M2C_FIELD(gOv001Keypad, s32 *, 0x58));
+    Ov001_DestroySprite(M2C_FIELD(gOv001Keypad, s32 *, 0x58));
     Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), func_ov001_021753c8);
 }
 

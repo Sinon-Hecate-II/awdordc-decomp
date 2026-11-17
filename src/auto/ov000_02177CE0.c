@@ -301,25 +301,33 @@ s32 FindBestAdjacentDestination(s32 arg0, s32 arg1, s16 *arg2) {
     return 1;
 }
 
-u8 func_ov000_021786a8(s16 *out) {
-s32 IsPlayerActive(s32); s32 PlayerHasHq(s32); s32 IsSameTeam(u16,s32);
-extern void **gCurrentMap;
-s32 best=0x7fff,i,offset,x,y,v;
-void *base,*entry;
-for(i=1,offset=0x8c;i<5;i++,offset+=0x8c) {
-if(IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i) && PlayerHasHq(i)) {
-base=*gCurrentMap;entry=(u8*)base+offset;
-x=M2C_FIELD(entry,u8*,0x67cf)&127;
-y=M2C_FIELD(entry,u8*,0x67d0)&127;
-v=M2C_FIELD(M2C_FIELD((u8*)base+y*4,s8**,0x52e8),s8*,x);
-if(v>=0) {
-if(v<=best) {
-out[0]=x;
-best=v;
-out[1]=y;
-}
-}
-}
-}
-return best!=0x7fff;
+/* Pick the enemy player's headquarters tile nearest by the move-cost grid: scan
+ * players 1..4 for an active opponent with a headquarters and keep the HQ whose
+ * tile has the lowest grid value.  Writes the tile to out[0] (x) and out[1] (y);
+ * returns nonzero when one was found. */
+u8 SelectEnemyHqDestination(s16 *out) {
+    s32 IsPlayerActive(s32);
+    s32 PlayerHasHq(s32);
+    s32 IsSameTeam(u16, s32);
+    extern void **gCurrentMap;
+    s32 best = 0x7fff, player, playerOffset, hqX, hqY, gridValue;
+    void *map, *playerRec;
+
+    for (player = 1, playerOffset = MAP_PLAYER_STRIDE; player < 5; player++, playerOffset += MAP_PLAYER_STRIDE) {
+        if (IsPlayerActive(player) && !IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) && PlayerHasHq(player)) {
+            map = *gCurrentMap;
+            playerRec = (u8 *)map + playerOffset;
+            hqX = M2C_FIELD(playerRec, u8 *, MAP_PLAYER_STATES + PLAYER_REC_HQ_X) & 127;
+            hqY = M2C_FIELD(playerRec, u8 *, MAP_PLAYER_STATES + PLAYER_REC_HQ_Y) & 127;
+            gridValue = M2C_FIELD(M2C_FIELD((u8 *)map + hqY * 4, s8 **, MAP_GRID), s8 *, hqX);
+            if (gridValue >= 0) {
+                if (gridValue <= best) {
+                    out[0] = hqX;
+                    best = gridValue;
+                    out[1] = hqY;
+                }
+            }
+        }
+    }
+    return best != 0x7fff;
 }

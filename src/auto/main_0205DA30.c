@@ -272,40 +272,44 @@ void NatNeg_HandleConnectPing(void *arg0, void *arg1, M2C_UNK arg2) {
     NatNeg_SendConnectPong(arg0);
 }
 
-void NatNeg_HandleConnectPong(void *arg0, void *arg1, void *arg2) {
+/* NatNeg_HandleConnectPong: handles a CONNECT_PONG packet from a peer — records
+   the packet's source address and port as the peer's remote address, then either
+   re-sends a pong or, in the connect step, moves on to the report step and tells
+   the send callback. */
+void NatNeg_HandleConnectPong(void *peer, void *packet, void *fromAddress) {
     s32 GetTickCountMs();
     void NatNeg_SendConnectPong(void *);
-    s32 temp_r1;
-    u16 temp_r3;
+    s32 socket2;
+    u16 port;
 
-    if ((s32) M2C_FIELD(arg0, s32 *, 0x10) < 2) {
+    if ((s32) M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) < NATNEG_STATE_CONNECT) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x2C) = (s32) M2C_FIELD(arg2, s32 *, 4);
-    temp_r3 = M2C_FIELD(arg2, u16 *, 2);
-    M2C_FIELD(arg0, s16 *, 0x30) = (s16) ((u8) ((s32) temp_r3 >> 8) | ((temp_r3 << 8) & 0xFF00));
-    M2C_FIELD(arg0, s8 *, 0x32) = 1;
-    if (M2C_FIELD(arg1, u8 *, 0x12) == 0) {
-        NatNeg_SendConnectPong(arg0);
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_REMOTE_IP) = (s32) M2C_FIELD(fromAddress, s32 *, 4);
+    port = M2C_FIELD(fromAddress, u16 *, 2);
+    M2C_FIELD(peer, s16 *, NATNEG_PEER_REMOTE_PORT) = (s16) ((u8) ((s32) port >> 8) | ((port << 8) & 0xFF00));
+    M2C_FIELD(peer, s8 *, NATNEG_PEER_FLAG32) = 1;
+    if (M2C_FIELD(packet, u8 *, NATNEG_PKT_FLAG) == 0) {
+        NatNeg_SendConnectPong(peer);
         return;
     }
-    if (M2C_FIELD(arg0, s32 *, 0x10) == 2) {
-        if (M2C_FIELD(arg0, u8 *, 0x33) == 0) {
-            NatNeg_SendConnectPong(arg0);
+    if (M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) == NATNEG_STATE_CONNECT) {
+        if (M2C_FIELD(peer, u8 *, NATNEG_PEER_FLAG33) == 0) {
+            NatNeg_SendConnectPong(peer);
         }
-        M2C_FIELD(arg0, s32 *, 0x10) = 3;
-        M2C_FIELD(arg0, s32 *, 0x28) = (s32) (GetTickCountMs() + 0x1388);
-        temp_r1 = M2C_FIELD(arg0, s32 *, 4);
-        if (temp_r1 == -1) {
+        M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_REPORT;
+        M2C_FIELD(peer, s32 *, NATNEG_PEER_DEADLINE) = (s32) (GetTickCountMs() + 0x1388);
+        socket2 = M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET2);
+        if (socket2 == -1) {
             return;
         }
-        M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, s32, void *, s32), 0x38)(0, temp_r1, arg2, M2C_FIELD(arg0, s32 *, 0x3C));
+        M2C_FIELD(peer, M2C_UNK (**)(M2C_UNK, s32, void *, s32), NATNEG_PEER_SEND)(0, socket2, fromAddress, M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND_DATA));
         return;
     }
-    if (M2C_FIELD(arg1, u8 *, 0x13) != 0) {
+    if (M2C_FIELD(packet, u8 *, NATNEG_PKT_MODE) != 0) {
         return;
     }
-    NatNeg_SendConnectPong(arg0);
+    NatNeg_SendConnectPong(peer);
 }
 
 /* Handles the two partner packets of the NAT negotiation: an INIT_ACK (kind 1)

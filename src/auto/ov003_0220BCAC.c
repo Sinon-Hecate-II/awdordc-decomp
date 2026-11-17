@@ -22,7 +22,7 @@ void RequestMenuMode(void *, s32);
 #pragma opt_propagation off
 void func_ov003_0220bcac(void *arg0) {
     extern s32 Divide(s32, s32);
-    extern void func_020a979c(void *, s16, s16);
+    extern void ScrollBar_PlaceThumb(void *, s16, s16);
     extern void func_ov003_0220c0e8(void *);
 
     void *sub;
@@ -45,7 +45,7 @@ void func_ov003_0220bcac(void *arg0) {
     q = Divide(val, f16 - f14);
     sum = r6 + q;
     p=M2C_FIELD(sub,void **,0x1c);
-    func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
+    ScrollBar_PlaceThumb(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
 
     sub = M2C_FIELD(arg0, void **, 0x64);
     SetSliderPosition(sub,95);
@@ -61,7 +61,7 @@ void func_ov003_0220bcac(void *arg0) {
     q = Divide(val, f16 - f14);
     sum = r6 + q;
     p=M2C_FIELD(sub,void **,0x1c);
-    func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
+    ScrollBar_PlaceThumb(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
 
     func_ov003_0220c0e8(arg0);
 

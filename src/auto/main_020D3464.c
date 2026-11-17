@@ -311,7 +311,7 @@ void func_020d3b24(void) {
     void func_020d42a8();
     void func_020d42d0();
     void func_020d42f8();
-    void func_020d432c();
+    void BeginPlayerTurn();
     M2C_UNK func_020d4dfc();
     M2C_UNK func_020d1a1c(M2C_UNK);
     M2C_UNK func_ov000_0219c6e0();
@@ -383,7 +383,7 @@ void func_020d3b24(void) {
             func_020d42f8();
             return;
         case 12:
-            func_020d432c();
+            BeginPlayerTurn();
             return;
         case 13:
             func_020d4dfc();
@@ -704,23 +704,27 @@ void func_020d42f8(void) {
 }
 
 #pragma merge_duplicate_code off
-void func_020d432c(void){
-M2C_UNK func_020c0a1c(M2C_UNK);void func_ov000_0219c7c4(s32);extern void **gCurrentMap;extern M2C_UNK gMapData;
-u8 *base,*p;u16 idx;u8 val;
+/* Battle-map state 12: start the current player's turn.  A human who may act
+ * plays it (state 13); a CPU, or a human the map does not let act on their own,
+ * goes to the AI turn path (state 14, restarting the AI command phase); the
+ * remaining link players skip to state 19. */
+void BeginPlayerTurn(void){
+M2C_UNK func_020c0a1c(M2C_UNK);void SetAiCommandPhase(s32);extern void **gCurrentMap;extern M2C_UNK gMapData;
+u8 *map,*state;u16 player;u8 control;
 func_020c0a1c(3);
-base=(u8*)*gCurrentMap;p=base+0x5200;
-idx=M2C_FIELD(p,u16*,0xa4);
-val=M2C_FIELD(base+idx*0x8c,u8*,0x67c2);
-switch(val){
-case 0:break;
-case 1:
-if((((u32)M2C_FIELD(&gMapData,u16*,12)<<22)>>31)==0){M2C_FIELD(p,u16*,0xb0)=13;return;}
-M2C_FIELD(p,u16*,0xb0)=14;func_ov000_0219c7c4(0);return;
-case 2:M2C_FIELD(p,u16*,0xb0)=14;func_ov000_0219c7c4(0);return;
-case 3:M2C_FIELD(p,u16*,0xb0)=19;return;
-case 4:M2C_FIELD(p,u16*,0xb0)=19;return;
-case 5:M2C_FIELD(p,u16*,0xb0)=19;return;
-case 6:M2C_FIELD(p,u16*,0xb0)=19;return;
+map=(u8*)*gCurrentMap;state=map+0x5200;
+player=M2C_FIELD(state,u16*,0xa4);
+control=M2C_FIELD(map+player*0x8c,u8*,PLAYER_CONTROL_OFF);
+switch(control){
+case PLAYER_CONTROL_NONE:break;
+case PLAYER_CONTROL_HUMAN:
+if((((u32)M2C_FIELD(&gMapData,u16*,12)<<22)>>31)==0){M2C_FIELD(state,u16*,0xb0)=13;return;}
+M2C_FIELD(state,u16*,0xb0)=14;SetAiCommandPhase(0);return;
+case PLAYER_CONTROL_CPU:M2C_FIELD(state,u16*,0xb0)=14;SetAiCommandPhase(0);return;
+case 3:M2C_FIELD(state,u16*,0xb0)=19;return;
+case 4:M2C_FIELD(state,u16*,0xb0)=19;return;
+case 5:M2C_FIELD(state,u16*,0xb0)=19;return;
+case 6:M2C_FIELD(state,u16*,0xb0)=19;return;
 default:break;
 }}
 #pragma merge_duplicate_code reset

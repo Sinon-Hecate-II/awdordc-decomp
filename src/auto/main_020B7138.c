@@ -25,7 +25,7 @@ void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
  * the next path cell, and spawn the entities along it. */
 void UpdateBeamEffect(void *task) {
     M2C_UNK func_02076910(u32, u32);
-    M2C_UNK func_0207b774(u32, u32);
+    M2C_UNK PanMapViewToTile(u32, u32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, u32, u32);
     s32 func_020b5200(M2C_UNK *, M2C_UNK);
     M2C_UNK ApplyPendingDamageToTargets(s32, s32, M2C_UNK);
@@ -74,14 +74,14 @@ loop_15:
         }
         break;
     }
-    func_0207b774(x, y);
+    PanMapViewToTile(x, y);
     ApplyPendingDamageToTargets(spawnIndex, func_020b5200(&data_02128f94, 8), 8);
 }
 
 /* Spawns the beam attack effect on a tile: a beam sprite whose task extends it
  * in the facing direction, plus a charge sprite and the cursor move. */
 void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) {
- M2C_UNK func_0207b774(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
+ M2C_UNK PanMapViewToTile(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
  u32 GetFacingOffset(u32);
  void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
  void func_020b51dc(void); s32 func_020b51f0(void);
@@ -99,13 +99,13 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
  switch(facing) {case 0:offsetX=-12;offsetY=12;break;case 1:offsetX=0;offsetY=16;break;case 2:offsetX=12;offsetY=offsetX;break;case 3:offsetX=0;offsetY=12;break;default:break;}
  charge=func_020b5188(&sBeamChargeSprite,offsetX+tileX*16,offsetY+tileY*16,32,chargeColor,1,parent);
  if(charge) {PlaySoundAtTile(0x103,tileX,tileY+2); ((SpriteTile *)charge)->tile=(u16)facingTile;}
- func_0207b774(tileX,tileY+2);func_0207b7e8(charge);
+ PanMapViewToTile(tileX,tileY+2);func_0207b7e8(charge);
 }
 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void LoadScenePanelPalette(s32);void *func_ov000_0216ce10(s32);void MI_CpuCopy32(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *CreateAnimatedSpriteObject(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
+s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void LoadScenePanelPalette(s32);void *func_ov000_0216ce10(s32);void MI_CpuCopy32(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *CreateAnimatedSpriteObject(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
@@ -119,10 +119,10 @@ LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_02128fdc),192,32);CloseNarc
 palette=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);{void *engine=gCur3DSpriteEngine;u32 value=palette;AddToU16Array(M2C_FIELD(engine,s32 *,0x28),value,0x6124);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=0;
-M2C_FIELD(a,void **,0x38)=func_020ab1c4(a);func_020aab24(M2C_FIELD(a,void **,0x38),1,0x120,3,1);
+M2C_FIELD(a,void **,0x38)=func_020ab1c4(a);InitUnitSprite(M2C_FIELD(a,void **,0x38),1,0x120,3,1);
 p=M2C_FIELD(a,void **,0x38);func_02088e84(p,0xe0,0xa0,0x100,0xa0);
 flag=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;
-if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=func_020aae10(p);n=func_020aae44(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
+if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=GetUnitSpriteWidth(p);n=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
 func_020ab150(M2C_FIELD(a,void **,0x38),1);func_020aad18(M2C_FIELD(a,void **,0x38));func_02088f1c(M2C_FIELD(a,void **,0x38));
 M2C_FIELD(a,void **,0x3c)=CreateAnimatedSpriteObject((s32)a);
 func_0208c5fc(GetLocalizedFileName(data_02128fe4),0x6c00,12);q=GetLocalizedFileName(data_02128ff0);func_0208bddc(M2C_FIELD(a,void **,0x3c),q,0x6c00,12,0);

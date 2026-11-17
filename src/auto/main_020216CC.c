@@ -20,8 +20,8 @@ void func_02021750(void) {
 }
 
 void func_0202175c(void) {
-    M2C_UNK func_02020c28();
-    func_02020c28();
+    M2C_UNK SocketClose();
+    SocketClose();
 }
 
 void *ghiResolveHostname(void *p) {
@@ -177,12 +177,12 @@ return 1;
 
 M2C_UNK func_02021c90(s32 a,void *b,void *c,s32 d){
 void MI_CpuCopy8(void *,void *,u32);void func_02021d14(u32,void *);
-void func_0200567c(void *,s32,void *,...);
+void StringFormatN(void *,s32,void *,...);
 extern M2C_UNK data_020fafe8;
 u32 value;u8 bytes[4];
 if(a!=2)return 0;if((u32)d<16)return 0;
 MI_CpuCopy8(b,&value,4);func_02021d14(value,bytes);
-func_0200567c(c,16,&data_020fafe8,bytes[3],bytes[2],bytes[1],bytes[0]);return (M2C_UNK)c;
+StringFormatN(c,16,&data_020fafe8,bytes[3],bytes[2],bytes[1],bytes[0]);return (M2C_UNK)c;
 }
 
 void func_02021d14(u32 arg0, void *arg1) {
@@ -193,14 +193,14 @@ M2C_FIELD(arg1,u8 *,3)=arg0;
 }
 
 s32 func_02021d34(void *a,u32 n,s64 timeout){
-s32 func_020212cc(s32);void func_02006030(s32);
+s32 SocketPoll(s32);void func_02006030(s32);
 s32 limited=timeout!=-1;
 void *p;u32 i;s32 count;
 for(;;){
 count=0;p=a;i=0;
 if(n>i) do {
 s32 mask=M2C_FIELD(p,s16 *,4)|0xe0;
-s32 v=mask&func_020212cc(M2C_FIELD(p,s32 *,0));
+s32 v=mask&SocketPoll(M2C_FIELD(p,s32 *,0));
 M2C_FIELD(p,s16 *,6)=v;if(v)count++;p+=8;i++;
 }while(n>i);
 if(count>0)break;
@@ -241,7 +241,7 @@ i++;q+=92;
 OS_RestoreInterrupts(old);
 }
 
-void func_02021f1c(u8 *arg0, s32 arg1, u16 arg2) {
+void TlsStoreSession(u8 *arg0, s32 arg1, u16 arg2) {
 u64 GetSystemTick(void); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void MI_CpuCopy8(void *,void *,u32);
 extern M2C_UNK data_02138cc8;
 s32 state; u32 now; u8 *best; s32 i; u32 maxage; u8 *p; u32 age; u64 ticks; u8 valid;

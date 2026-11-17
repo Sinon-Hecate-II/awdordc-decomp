@@ -119,10 +119,10 @@ u8 func_020cf9f0(s32 arg0,s32 arg1) {
 
 /* Load the decoded tile-graphics block for id into gMapData.  Ids in
    0xE1..0x1A8 come from a fixed 0x6F8-byte tile-set record (byte 4 = width,
-   byte 5 = height, then the per-tile ids at +0x54 mapped through func_0207f460);
+   byte 5 = height, then the per-tile ids at +0x54 mapped through TerrainByteToTileId);
    any other id is expanded from a resource by the generic loader. */
 void LoadMapTileData(u32 id) {
-s32 HeapAllocBlock(s32); void *func_020e34f4(s32); s32 LoadMapRecord(u32,void *); s32 func_0207f460(s32); M2C_UNK HeapFreeBlock(s32); void *func_020a8b1c(u32); void SetFileDirectory(void *); void LoadDecompressedFileTo(void *,s32);
+s32 HeapAllocBlock(s32); void *func_020e34f4(s32); s32 LoadMapRecord(u32,void *); s32 TerrainByteToTileId(s32); M2C_UNK HeapFreeBlock(s32); void *func_020a8b1c(u32); void SetFileDirectory(void *); void LoadDecompressedFileTo(void *,s32);
 s32 i; u8 *tileSet; u8 *tileIds; void *resource;
 gMapData=HeapAllocBlock(0xA12);
 if(id>=0xE1 && id<0x1A9){
@@ -133,7 +133,7 @@ M2C_FIELD(gMapData,u8 *,1)=tileSet[5];
 tileIds=tileSet+0x54;
 for(i=0;i<(s16)tileSet[4]*(s16)tileSet[5];i++){
 resource=(void *)gMapData;
-((u16 *)resource)[i+1]=func_0207f460(tileIds[i]);
+((u16 *)resource)[i+1]=TerrainByteToTileId(tileIds[i]);
 }
 }
 HeapFreeBlock((s32)tileSet);return;

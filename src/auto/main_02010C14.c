@@ -125,7 +125,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     void DmaFill();
     void func_020118f4(void);
     void func_020062d4();
-    void func_020067c4();
+    void DC_CleanRange();
     s32 func_020062fc();
     void func_02009e40();
     M2C_UNK func_02011548();
@@ -180,7 +180,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     buf = (u8 *)&data_02130700;
     for (j = 0; j < 10; j++) {
         *(u16 *)(buf + j * 256) = 0x8000;
-        func_020067c4(buf + j * 256, 2);
+        DC_CleanRange(buf + j * 256, 2);
         func_020062fc(&data_02130668, buf + j * 256, 1);
     }
     func_02009e40(10, func_02011548);
@@ -190,16 +190,16 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
 }
 #pragma pop
 s32 func_02011244(void) {
-s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);s32 func_020114b4(s32,...);void func_020118f4(void);extern M2C_UNK data_02130660;
+s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);s32 WFC_CheckChannelState(s32,...);void func_020118f4(void);extern M2C_UNK data_02130660;
 s32 saved=OS_DisableInterrupts();s32 result;
 if(WFC_CheckReady()!=0){OS_RestoreInterrupts(saved);return 3;}
-result=func_020114b4(1,0);if(result!=0)return result;
+result=WFC_CheckChannelState(1,0);if(result!=0)return result;
 func_020118f4();func_02009e40(10,0);
 M2C_FIELD(&data_02130660,s32 *,4)=0;M2C_FIELD(&data_02130660,u16 *,0)=0;
 OS_RestoreInterrupts(saved);return 0;
 }
 
-void func_020112b4(s32 a,s32 b){extern M2C_UNK data_02130660;M2C_FIELD(M2C_FIELD(&data_02130660,s32 *,4)+a*4,s32 *,24)=b;}
+void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK data_02130660;M2C_FIELD(M2C_FIELD(&data_02130660,s32 *,4)+a*4,s32 *,24)=b;}
 
 u16 *func_020112cc(void) {
     s32 func_02006390(M2C_UNK *, u16 **, M2C_UNK);
@@ -218,14 +218,14 @@ u16 *func_020112cc(void) {
     return NULL;
 }
 
-s32 func_02011324(u16 a,u16 n,...) {
-extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void func_020067c4();
-s32 *ap; s32 i,r; s32 count;u16 *p;p=func_020112cc();if(!p)return 8;*p=a;count=n;ap=(s32 *)((u32)&n&~3)+1;for(i=0;i<count;i++){ap++;((s32 *)p)[i+1]=ap[-1];}func_020067c4(p,256);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
+s32 WFC_SendCommand(u16 a,u16 n,...) {
+extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void DC_CleanRange();
+s32 *ap; s32 i,r; s32 count;u16 *p;p=func_020112cc();if(!p)return 8;*p=a;count=n;ap=(s32 *)((u32)&n&~3)+1;for(i=0;i<count;i++){ap++;((s32 *)p)[i+1]=ap[-1];}DC_CleanRange(p,256);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
 }
 
-s32 func_020113d0(void *a,s32 b) {
-extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void func_020067c4();void MI_CpuCopy8();
-u16 *p=func_020112cc();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);func_020067c4(p,b);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
+s32 WFC_SendCommandPacket(void *a,s32 b) {
+extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void DC_CleanRange();void MI_CpuCopy8();
+u16 *p=func_020112cc();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);DC_CleanRange(p,b);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
 }
 
 s32 WFC_GetInfoBlock(void) {
@@ -241,7 +241,7 @@ DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
 return M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0)<=1U?3:0;
 }
 
-s32 func_020114b4(s32 count,...) { extern M2C_UNK data_02130660; s32 result=WFC_CheckReady();s32 *args;u16 value;
+s32 WFC_CheckChannelState(s32 count,...) { extern M2C_UNK data_02130660; s32 result=WFC_CheckReady();s32 *args;u16 value;
 if(result)return result;
 DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
 value=M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0);
@@ -294,7 +294,7 @@ s32 func_020119dc(s32 arg0) {
 }
 
 /* Registers a callback and passes it some data under critical section. */
-s32 func_02011a20(s32 arg0, void (*callback)(void *), s32 arg2) {
+s32 WFC_SetChannelHandler(s32 arg0, void (*callback)(void *), s32 arg2) {
     u8 buf[0x44];
     s32 result;
     s32 irq;
@@ -352,12 +352,12 @@ s32 func_02011af8(s32 arg0) {
 }
 
 s32 func_02011b44(void) {
-    s32 func_020114b4(s32,...);
+    s32 WFC_CheckChannelState(s32,...);
     void *temp_r1;
     void *temp_r4;
 
     temp_r4 = WFC_GetInfoBlock();
-    if (func_020114b4(2, 7, 8) != 0) {
+    if (WFC_CheckChannelState(2, 7, 8) != 0) {
         return 0;
     }
     DC_InvalidateRange(M2C_FIELD(temp_r4, void **, 4) + 0xC, 4);

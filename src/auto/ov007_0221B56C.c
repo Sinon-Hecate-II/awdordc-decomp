@@ -151,26 +151,30 @@ s32 func_ov007_0221bad0(s32 a,s32 b) {
  switch(v) { case 0x23: case 0x25: return 1; default: return 0; }
 }
 
-s32 func_ov007_0221bb44(s32 a,s32 b,s32 c,s32 d,s32 e){
-u8 func_ov007_0221bd00(s32,s32,s32);s32 GetCachedPlayerUnitCount(s32);extern s32 *data_027e0058;
-s32 p,id;u8 *entry;
-if(!func_ov007_0221bd00(a,b,c))return 0;
-p=*data_027e0058;id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
-if(id){entry=(u8 *)(p+0x59a4)+id*14;
-if(((id&0xc0)>>6)+1==d){
-if(c==((u32)(entry[0]<<26)>>26)&&((u32)(entry[11]<<28)>>28)==(unsigned)e)return 2;
-}else{if(GetCachedPlayerUnitCount(d)>=50)return 0;}
-}else{if(GetCachedPlayerUnitCount(d)>=50)return 0;}
+/* Check whether the map editor's current unit brush may be placed on cell (x, y):
+ * the terrain must let a unit of `unitKind` stand there and the player must still
+ * have a free unit slot.  Returns 0 when the placement is refused, 2 when the very
+ * same unit (owner, kind and AI state) already stands on the cell, else 1. */
+s32 MapEditor_CanPlaceUnit(s32 x, s32 y, s32 unitKind, s32 player, s32 unitState) {
+u8 Map_CanUnitKindStandOnCell(s32,s32,s32);s32 GetCachedPlayerUnitCount(s32);extern s32 *gCurrentMap;
+s32 map,id;u8 *unit;
+if(!Map_CanUnitKindStandOnCell(x,y,unitKind))return 0;
+map=*gCurrentMap;id=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_VISIBLE_UNIT);
+if(id){unit=(u8 *)(map+MAP_UNIT_RECORDS)+id*MAP_UNIT_STRIDE;
+if(((id&MAP_UNIT_OWNER_MASK)>>MAP_UNIT_OWNER_SHIFT)+1==player){
+if(unitKind==((u32)(unit[MAP_UNIT_KIND]<<26)>>26)&&((u32)(unit[MAP_UNIT_AI_STATE]<<28)>>28)==(unsigned)unitState)return 2;
+}else{if(GetCachedPlayerUnitCount(player)>=MAP_UNIT_LIMIT)return 0;}
+}else{if(GetCachedPlayerUnitCount(player)>=MAP_UNIT_LIMIT)return 0;}
 return 1;
 }
 
 s32 func_ov007_0221bc18(s32 a,s32 b,s32 c,s32 d,s32 e) {
  extern s32 *gCurrentMap;
- s32 func_ov007_0221bb44(s32,s32,s32,s32,s32);
+ s32 MapEditor_CanPlaceUnit(s32,s32,s32,s32,s32);
  M2C_UNK func_020a6728(s32);
  void *CreateMapUnit(s16,s16,s16,s32);
  s32 p,r; u8 id; Unk_0221BC18 *entry;
- r=func_ov007_0221bb44(a,b,c,d,e);
+ r=MapEditor_CanPlaceUnit(a,b,c,d,e);
  if(r!=1)return r;
  p=*gCurrentMap;
  id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
@@ -189,7 +193,7 @@ s32 func_ov007_0221bcc0(s32 a,s32 b) {
  func_020a6728(id); return 1;
 }
 
-u8 func_ov007_0221bd00(s32 a,s32 b,s32 c) {
+u8 Map_CanUnitKindStandOnCell(s32 a,s32 b,s32 c) {
  extern s32 *gCurrentMap;
  extern u8 gMovementCostTable[];
  extern u8 gMovementTypeTable[];
@@ -270,7 +274,7 @@ HeapFreeBlock(backup);
  * then refresh the cell's tile graphic from the new terrain byte. */
 void Map_ReassignPropertyOwners(s32 slot1,s32 slot2,s32 slot3,s32 slot4){
 extern s32 *gCurrentMap;extern s8 gTerrainPropertyFlags[];
-s32 func_0207f460(s32);
+s32 TerrainByteToTileId(s32);
 s32 y,x,map,cell,terrain,kind;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
@@ -283,7 +287,7 @@ if(slot2==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_
 if(slot3==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN)=kind|96;}
 if(slot4==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN)=kind|128;}
 map=*gCurrentMap;
-M2C_FIELD(map+(x+M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS))*2,u16 *,MAP_CELL_TILE_ID)=func_0207f460(M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN));
+M2C_FIELD(map+(x+M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS))*2,u16 *,MAP_CELL_TILE_ID)=TerrainByteToTileId(M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN));
 }}}}
 void CompactPlayerSlots(void) {
     s32 GetPlayerTeam(s32);

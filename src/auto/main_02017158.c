@@ -41,11 +41,11 @@ void func_02017158(void *arg0) {
     s32 func_02017ff8(void);
     s32 func_02013d4c(void *, u16, u16, u16, u16);
     s32 func_020124c4(void *, void *);
-    s32 func_02012740(void *, s32, s32, s32, s32);
+    s32 WFC_SendConnectionData(void *, s32, s32, s32, s32);
     s32 func_020122ac(void *);
     s32 func_02012a64(void *, s32, u16, void *, u16, u16, u16, s32, s32, s32, s32);
     s32 Mb_ReportPacketResult(s32, s32);
-    s32 func_02011a20(s32, void *, s32);
+    s32 WFC_SetChannelHandler(s32, void *, s32);
     s32 func_020167d0(void *);
     s32 func_02016840(void);
     void func_020168f0(void *);
@@ -122,7 +122,7 @@ found:
         }
     case 11:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
-        Mb_ReportPacketResult(12,func_02012740(func_02017158,M2C_FIELD(base,s32 *,0x520),0,1,0)); return;
+        Mb_ReportPacketResult(12,WFC_SendConnectionData(func_02017158,M2C_FIELD(base,s32 *,0x520),0,1,0)); return;
     case 12:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base+0x500,u16 *,0xe0)=0; M2C_FIELD(base,void (**)(s32,void *),0x51c)(11,event); return; }
         switch((s32)M2C_FIELD(event,u16 *,8)){
@@ -131,7 +131,7 @@ found:
             M2C_FIELD(base+0x500,u16 *,0xe2)=M2C_FIELD(event,u16 *,10);
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(6,event);
             M2C_FIELD(base+0x500,u16 *,0x2a)=1;
-            if(func_02011a20(1,func_020170e8,0))return;
+            if(WFC_SetChannelHandler(1,func_020170e8,0))return;
             {u32 flag;
             if(M2C_FIELD(base+0x500,u16 *,0x2c))flag=0;else flag=1;
             Mb_ReportPacketResult(14,func_02012a64(func_02017158,M2C_FIELD(base,s32 *,0x504),M2C_FIELD(base+0x500,u16 *,0x1a),base+0x40,M2C_FIELD(base+0x500,u16 *,0x18),(u16)flag,0,0,0,1,1));}return;

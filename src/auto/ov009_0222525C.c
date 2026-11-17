@@ -66,7 +66,7 @@ s32 func_ov009_02225360(void) {
     M2C_UNK func_ov009_022224e0();
     M2C_UNK SignalLinkError();
     M2C_UNK func_ov009_022244c0();
-    s32 func_02011a20(s32, s32, s32);
+    s32 WFC_SetChannelHandler(s32, s32, s32);
     s32 func_020122ac(void *);
     void func_ov009_02223cbc(void);
     extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
@@ -75,12 +75,12 @@ s32 func_ov009_02225360(void) {
     func_01ffa9e4(&gLinkActorClass);
     func_01ffa9e4(&data_ov009_02226638);
     func_01ffa9e4(&data_ov009_022264e0);
-    if (func_02011a20(0xC, 0, 0) != 0) {
+    if (WFC_SetChannelHandler(0xC, 0, 0) != 0) {
         SignalLinkError();
         SetLinkPhase(8);
         return 0;
     }
-    if (func_02011a20(4, 0, 0) != 0) {
+    if (WFC_SetChannelHandler(4, 0, 0) != 0) {
         SignalLinkError();
         SetLinkPhase(8);
         return 0;

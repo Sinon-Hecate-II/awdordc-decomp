@@ -61,7 +61,7 @@ void func_020a9774(void *arg0, s16 arg1, s16 arg2, s8 arg3, s32 arg4) {
     DrawTextSprite(arg0);
 }
 
-M2C_UNK func_020a979c(void *arg0, s16 arg1, s16 arg2) {
+M2C_UNK ScrollBar_PlaceThumb(void *arg0, s16 arg1, s16 arg2) {
     s32 x;
     s32 y;
     x = M2C_FIELD(arg0, s16 *, 0x14);
@@ -80,34 +80,37 @@ M2C_UNK func_020a979c(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0xE) = M2C_FIELD(arg0, s16 *, 0xA) - M2C_FIELD(arg0, s16 *, 0x16);
 }
 
-void ScrollBar_HandleThumbTouch(void *arg0) {
+/* Drag a scrollbar's thumb: when the thumb is enabled and the touch begins on
+ * the thumb (its box is centred on the thumb position, touchWidth x touchHeight),
+ * grab it; a release lets go; while grabbed, move the thumb under the stylus. */
+void ScrollBar_HandleThumbTouch(void *thumb) {
     s32 IsPointInRect(s16, s16, s16, s16, s32, s32);
-    M2C_UNK func_020a979c(void *, s16, s16);
+    M2C_UNK ScrollBar_PlaceThumb(void *, s16, s16);
     extern void *gTouchState;
-    s16 temp_r4;
-    s16 temp_r5;
-    u8 temp_ip;
-    u8 temp_lr;
+    s16 touchX;
+    s16 touchY;
+    u8 touchWidth;
+    u8 touchHeight;
 
-    if (M2C_FIELD(arg0, u8 *, 5) == 0) {
+    if (M2C_FIELD(thumb, u8 *, 5) == 0) {
         return;
     }
-    temp_r4 = M2C_FIELD(gTouchState, s16 *, 0);
-    temp_r5 = M2C_FIELD(gTouchState, s16 *, 2);
-    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
-        temp_lr = M2C_FIELD(arg0, u8 *, 0x11);
-        temp_ip = M2C_FIELD(arg0, u8 *, 0x10);
-        if (IsPointInRect(temp_r4, temp_r5, (s16) (M2C_FIELD(arg0, s16 *, 8) - ((s32) temp_ip >> 1)), (s16) (M2C_FIELD(arg0, s16 *, 0xA) - ((s32) temp_lr >> 1)), (s32) temp_ip, (s32) temp_lr) != 0) {
-            M2C_FIELD(arg0, u8 *, 6) = 1U;
+    touchX = M2C_FIELD(gTouchState, s16 *, TOUCH_CUR_X);
+    touchY = M2C_FIELD(gTouchState, s16 *, TOUCH_CUR_Y);
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) != 0) {
+        touchHeight = M2C_FIELD(thumb, u8 *, 0x11);
+        touchWidth = M2C_FIELD(thumb, u8 *, 0x10);
+        if (IsPointInRect(touchX, touchY, (s16) (M2C_FIELD(thumb, s16 *, 8) - ((s32) touchWidth >> 1)), (s16) (M2C_FIELD(thumb, s16 *, 0xA) - ((s32) touchHeight >> 1)), (s32) touchWidth, (s32) touchHeight) != 0) {
+            M2C_FIELD(thumb, u8 *, 6) = 1U;
         }
     }
-    if ((M2C_FIELD(arg0, u8 *, 6) != 0) && (M2C_FIELD(gTouchState, u8 *, 0x16) != 0)) {
-        M2C_FIELD(arg0, u8 *, 6) = 0U;
+    if ((M2C_FIELD(thumb, u8 *, 6) != 0) && (M2C_FIELD(gTouchState, u8 *, TOUCH_RELEASED) != 0)) {
+        M2C_FIELD(thumb, u8 *, 6) = 0U;
     }
-    if (M2C_FIELD(arg0, u8 *, 6) == 0) {
+    if (M2C_FIELD(thumb, u8 *, 6) == 0) {
         return;
     }
-    func_020a979c(arg0, temp_r4, temp_r5);
+    ScrollBar_PlaceThumb(thumb, touchX, touchY);
 }
 
 /* Touch handling for a scrollbar: first lets the thumb itself be dragged (via
@@ -129,7 +132,7 @@ if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED)!=0){
 if(IsPointInRect(touchX,touchY,M2C_FIELD(bar,s16 *,8),M2C_FIELD(bar,s16 *,0xa),M2C_FIELD(bar,u8 *,0xc),M2C_FIELD(bar,u8 *,0xd))!=0)M2C_FIELD(bar,u8 *,6)=1;
 }
 if(M2C_FIELD(bar,u8 *,6)==0)return;
-func_020a979c(M2C_FIELD(bar,void **,0x1c),touchX,touchY);
+ScrollBar_PlaceThumb(M2C_FIELD(bar,void **,0x1c),touchX,touchY);
 thumb=M2C_FIELD(bar,void **,0x1c);
 offset=M2C_FIELD(thumb,s16 *,0xc); valueRange=M2C_FIELD(bar,s16 *,0x16)-M2C_FIELD(bar,s16 *,0x14); trackLength=(s16)(M2C_FIELD(thumb,s16 *,0x14)-M2C_FIELD(thumb,s16 *,0x12)); M2C_FIELD(bar,s16 *,0x12)=Divide(valueRange*offset,trackLength);
 if(M2C_FIELD(gTouchState,u8 *,TOUCH_RELEASED)!=0)M2C_FIELD(bar,u8 *,6)=0;
