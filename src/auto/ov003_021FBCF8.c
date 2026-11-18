@@ -436,13 +436,13 @@ DisableMapConfirm();
 }
 
 void func_ov003_021fc95c(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK SetOv003SceneState(M2C_UNK);
     Hide3DSprite(*M2C_FIELD(arg0, s32 **, 0x6C));
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void SetMenuPanelState(void *arg0, u32 arg1) {

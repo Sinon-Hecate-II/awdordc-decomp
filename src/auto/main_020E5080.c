@@ -5,7 +5,7 @@
 void func_020e5080(void *arg0) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub,data_02168ff4;
 extern u8 data_0212da70[],data_0212da40[],data_0212db88[],data_0212db38[],data_0212db78[],data_0212da4c[],data_0212da7c[],data_0212da34[],data_0212db28[],data_0212db68[],data_0212db58[],data_0212da58[],data_0212db48[],data_0212da64[];
-void Set3DSpriteVramBanks(void);void func_02003560(void);void func_02002bb8(s32);
+void Set3DSpriteVramBanks(void);void func_02003560(void);void GX_SetBankForObjExtPalette(s32);
 void func_020822b8(void*);void CreateMainWallpaperSprite(s32,s32,s32);void CreateSubWallpaperSprite(s32,s32,s32);
 void SetFileDirectory(void*);void *GetLocalizedFileName(void*);
 void OpenNarcArchive(void);void Clear3DSpriteLayer(s32);
@@ -18,7 +18,7 @@ void *func_0208931c(void*);void func_020a9a30(s32,s32,s32,void*);s32 func_020aaf
 void func_01ff9b38(void);M2C_UNK func_02090640(M2C_UNK,M2C_UNK);
 void func_0200dd40(void);void func_0200e2f8(void);M2C_UNK func_0200e868(M2C_UNK);void func_0200e880(s32);
 s32 saved;void *obj;s32 y,x,w,h;u16 *volatile p0, *volatile p1, *volatile p2, *volatile p3, *volatile p4, *volatile p5, *volatile p6, *volatile p7, *volatile p8, *volatile p9, *volatile p10, *volatile p11;
-Set3DSpriteVramBanks();func_02003560();func_02002bb8(0x40);
+Set3DSpriteVramBanks();func_02003560();GX_SetBankForObjExtPalette(0x40);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020822b8(data_0212da70);
 p0=(M2C_FIELD((void*)gCur3DSpriteEngine,u16 **,0)); *p0=*p0 | 16;

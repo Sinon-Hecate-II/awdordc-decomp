@@ -77,7 +77,7 @@ u8 func_020d8d00(void) {
 }
 
 void func_020d8d48(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_01ffa3dc(void *, s32);
+    M2C_UNK CreateSpriteFromClass(void *, s32);
     extern void *data_0212c36c;
     extern M2C_UNK data_0212c534;
     extern void *g3DSpriteEngineSub;
@@ -89,7 +89,7 @@ void func_020d8d48(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_FIELD(data_0212c36c, s16 *, 0) = 0;
     M2C_FIELD(data_0212c36c, s16 *, 2) = 0;
     M2C_FIELD(data_0212c36c, s16 *, 4) = arg0;
-    func_01ffa3dc(&data_0212c534, 8);
+    CreateSpriteFromClass(&data_0212c534, 8);
     gCur3DSpriteEngine = temp_r4;
 }
 
@@ -229,20 +229,20 @@ void func_020d92b8(void) {
 }
 
 void func_020d92c4(s32 arg0) {
-    M2C_UNK func_020ad348(s32, s32, s32, s32);
+    M2C_UNK StartScreenFadeChildren(s32, s32, s32, s32);
     extern void *data_0212c36c;
     if (M2C_FIELD(data_0212c36c, s16 *, 2) == 3) return;
-    func_020ad348(0, 8, 1, arg0);
+    StartScreenFadeChildren(0, 8, 1, arg0);
 }
 
 void func_020d92f8(s32 arg0) {
-    M2C_UNK func_020ad2a0(s32, s32, s32, s32);
+    M2C_UNK CreateScreenTransitionChildren(s32, s32, s32, s32);
     extern void *data_0212c36c;
     if (M2C_FIELD(data_0212c36c, s16 *, 2) == 3) return;
-    func_020ad2a0(0, 8, 1, arg0);
+    CreateScreenTransitionChildren(0, 8, 1, arg0);
 }
 
-void func_020d932c(void){M2C_UNK func_01ffa3dc(void *,s32);extern void *data_0212c36c;extern M2C_UNK data_0212c4fc;func_01ffa3dc(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(data_0212c36c,s16 *,2)*12),8);}
+void func_020d932c(void){M2C_UNK CreateSpriteFromClass(void *,s32);extern void *data_0212c36c;extern M2C_UNK data_0212c4fc;CreateSpriteFromClass(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(data_0212c36c,s16 *,2)*12),8);}
 
 void func_020d9360(s32 arg0) {
 M2C_UNK CreateSpriteObject(M2C_UNK *,s32);
@@ -304,11 +304,11 @@ void func_020d93e0(void *entity) {
 }
 
 void func_020d94dc(void *arg0) {
-M2C_UNK func_01ffa6fc(void *);
+M2C_UNK Sprite_ResumeAnimation(void *);
 void *p=M2C_FIELD(arg0,void **,0x68);
 u8 equal=M2C_FIELD(p,u16 *,2)==M2C_FIELD(p,s16 *,12);
 if(!equal)return;
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 
 void func_020d9508(void) {
@@ -454,7 +454,7 @@ void func_020d9658(void *arg0) {
     if ((M2C_FIELD(arg0, u16 *, 0x48) & 1) && (func_ov009_02224284() != 0)) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020d9684(void) {

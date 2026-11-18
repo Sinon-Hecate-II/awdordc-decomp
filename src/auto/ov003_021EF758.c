@@ -433,7 +433,7 @@ void func_ov003_021f01cc(void *arg0) {
 }
 
 void func_ov003_021f01f0(M2C_UNK arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK ConstructArray(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
@@ -454,7 +454,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     M2C_UNK *base;
 
     func_ov003_021f13ec(&data_ov003_0220f8e0);
-    temp_r0 = func_01ffa3dc(&data_ov003_0220f8e0, arg0);
+    temp_r0 = CreateSpriteFromClass(&data_ov003_0220f8e0, arg0);
     if (temp_r0 == NULL) return;
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
     M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;

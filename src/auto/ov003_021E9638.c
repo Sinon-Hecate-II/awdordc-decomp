@@ -436,7 +436,7 @@ void func_ov003_021ea2ac(void) {
  * spend the rest of the frame stepping slot turns, then finish with the
  * overlay's post-sync hook. */
 void Ov003_SyncLinkSlots(void *p) {
-s32 func_020cfb94(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void func_01ffa6fc(void*); s32 func_02084a0c(void); s32 func_ov003_021f153c(void);
+s32 func_020cfb94(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void Sprite_ResumeAnimation(void*); s32 func_02084a0c(void); s32 func_ov003_021f153c(void);
 u32 buf[9]; u8 flag, n, start;
 if(func_020cfb94()==2) M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~1)|1;
 if(!Link_ReceivePacket(buf,0x24))return;
@@ -446,7 +446,7 @@ else {M2C_FIELD(buf,u8*,8)=0;buf[6]=0;}
 buf[0]=0;buf[1]=0;
 start=func_02084a0c(); n=0;
 if(func_020cfb94()-start>0)do{n++;}while(n<func_020cfb94()-start);
-Link_SendPacket(buf,0x24);Link_FlushSend();func_01ffa6fc(p);
+Link_SendPacket(buf,0x24);Link_FlushSend();Sprite_ResumeAnimation(p);
 }
 
 /* Refreshes the waypoint panel's per-player ready flags from the link player

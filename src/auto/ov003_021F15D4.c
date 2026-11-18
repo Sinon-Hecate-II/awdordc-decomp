@@ -75,13 +75,13 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
 
 void func_ov003_021f17e0(void) {
     M2C_UNK func_ov003_021f13c8();
-    M2C_UNK func_01ffaa5c();
+    M2C_UNK IncrementSpriteChildCount();
     s32 func_ov003_021f13c8();
     if (func_ov003_021f13c8() == 0) {
         return;
     }
     func_ov003_021f13c8();
-    func_01ffaa5c();
+    IncrementSpriteChildCount();
 }
 
 u8 func_ov003_021f17fc(void) {
@@ -97,19 +97,19 @@ u8 func_ov003_021f17fc(void) {
 }
 
 void func_ov003_021f182c(void) {
-    M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     if (func_ov003_021f13c8() == 0) {
         return;
     }
-    func_020ad2a0(2, 8, 2, func_ov003_021f13c8());
+    CreateScreenTransitionChildren(2, 8, 2, func_ov003_021f13c8());
 }
 
 void func_ov003_021f1858(void) {
-    M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     if (func_ov003_021f13c8() == 0) {
         return;
     }
-    func_020ad348(2, 8, 2, func_ov003_021f13c8());
+    StartScreenFadeChildren(2, 8, 2, func_ov003_021f13c8());
 }
 
 void func_ov003_021f1884(s16 arg0) {

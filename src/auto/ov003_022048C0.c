@@ -43,9 +43,9 @@ void func_ov003_02204fd0(void *arg0) {
 }
 
 void func_ov003_02204ff4(void *arg0) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     if (M2C_FIELD(arg0, u8 *, 0x38) == 0xC) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
     }
     M2C_FIELD(arg0, u8 *, 0x38)++;
 }

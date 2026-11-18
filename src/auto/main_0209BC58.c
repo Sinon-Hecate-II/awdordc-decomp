@@ -17,7 +17,7 @@ extern s32 data_0215d8a8[58];  // 232 bytes / 4
 extern s32 data_0215d8a0[2];   // 8 bytes / 4
 
 void func_0209bc58(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
-    s32 func_01ffa3dc(M2C_UNK *, s32);
+    s32 CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK StopTextObject(s32);
     M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
     extern M2C_UNK data_02103300;
@@ -26,7 +26,7 @@ void func_0209bc58(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4,
     temp_r4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x54);
     func_0209bdcc(temp_r4, arg0, arg1, arg2, arg3, arg4, arg5, (s32)arg6, (s32)arg7);
     StopTextObject(temp_r4);
-    func_01ffa3dc(&data_02103300, 7);
+    CreateSpriteFromClass(&data_02103300, 7);
 }
 
 void func_0209bccc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
@@ -45,11 +45,11 @@ CreateMessageSprite(a,b,c,d,e,GetLocalizedText(f),g,h);
 }
 
 s32 CreateMessageSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
-    s32 func_01ffa3dc(M2C_UNK *, s32);
+    s32 CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
     extern M2C_UNK data_02103328;
     s32 temp_r0;
-    temp_r0 = func_01ffa3dc(&data_02103328, 7);
+    temp_r0 = CreateSpriteFromClass(&data_02103328, 7);
     func_0209bdcc(temp_r0, arg0, arg1, arg2, arg3, arg4, arg5, (s32)arg6, (s32)arg7);
     return temp_r0;
 }
@@ -186,7 +186,25 @@ void DrawTilemapNumber(s32 arg0, s32 arg1, s32 arg2, u32 arg3, u16 arg4, u16 arg
     } while (var_r3 != 0);
 }
 
-void func_0209c0bc(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,u16 arg5) { u16 var_r2;arg0=arg2+arg0*2+(arg1<<6);var_r2=0x10;switch(arg3){case 0x2b:var_r2+=0x14;break;case 0x2d:var_r2+=0x16;break;case 0x3d:var_r2+=0x18;break;case 0x47:var_r2+=0x1a;break;}if(arg5==3)var_r2+=0x1c;*(s16*)arg0=(s16)(var_r2|arg4);*(s16*)((u8*)arg0+0x40)=(s16)((var_r2+1)|arg4);}
+/* Write one symbol of the number font (a plus, minus, decimal point or comma
+ * character code) at tile column `x`, row `y` of the tilemap at `tiles`: the
+ * upper entry holds the glyph's first half and the entry one row below its second
+ * half, both OR'ed with `attrs`; `variant` 3 selects the alternate glyph set. */
+void DrawTilemapSymbol(s32 x, s32 y, s32 tiles, s32 symbol, u16 attrs, u16 variant) {
+    u16 tile;
+
+    x = tiles + x * 2 + (y << 6); /* x becomes the address of the tilemap entry */
+    tile = 0x10;
+    switch (symbol) {
+    case 0x2b: tile += 0x14; break;
+    case 0x2d: tile += 0x16; break;
+    case 0x3d: tile += 0x18; break;
+    case 0x47: tile += 0x1a; break;
+    }
+    if (variant == 3) tile += 0x1c;
+    *(s16 *)x = (s16)(tile | attrs);
+    *(s16 *)((u8 *)x + 0x40) = (s16)((tile + 1) | attrs);
+}
 
 s32 func_0209c168(void *arg0, s32 arg1) {
     s32 sum;

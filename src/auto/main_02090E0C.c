@@ -66,7 +66,7 @@ void DrawSprite3DFrame(void *obj,s32 *pos,s32 attr,s32 extra) {
 M2C_UNK CreateScriptedSprite(M2C_UNK script, M2C_UNK slot, M2C_UNK x, M2C_UNK y, u16 tile, s32 priority, s32 ownsScript, s32 mode) {
     extern M2C_UNK gScriptedSpriteClass;
     extern M2C_UNK gScriptedSpriteVtbl;
-    M2C_UNK func_01ffa3dc(M2C_UNK, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK, M2C_UNK);
     M2C_UNK MemAlloc(M2C_UNK);
     void SpritePlayer_Init(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void *object;
@@ -75,7 +75,7 @@ M2C_UNK CreateScriptedSprite(M2C_UNK script, M2C_UNK slot, M2C_UNK x, M2C_UNK y,
     if (mode == 0) {
         mode = 9;
     }
-    object = (void *)func_01ffa3dc((M2C_UNK)&gScriptedSpriteClass, mode);
+    object = (void *)CreateSpriteFromClass((M2C_UNK)&gScriptedSpriteClass, mode);
     if (object != 0) {
         *(M2C_UNK *)object = (M2C_UNK)&gScriptedSpriteVtbl;
         M2C_FIELD(object, M2C_UNK *, 0x40) = script;

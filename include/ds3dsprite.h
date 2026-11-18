@@ -360,6 +360,7 @@ enum {
 enum {
     DS3D_TARGET_MAIN   = 0,
     DS3D_TARGET_SUB    = 1,
+    DS3D_TARGET_BOTH   = 2, /* both engines, one after the other */
     DS3D_TARGET_ACTIVE = 3 /* whichever engine gCur3DSpriteEngine already holds */
 };
 

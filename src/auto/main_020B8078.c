@@ -274,14 +274,14 @@ return M2C_FIELD(arg0,s16*,0x40)-old;
 
 M2C_UNK func_020b8740(void) {
     void *GetMenuList(void);
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
     M2C_UNK func_020b2268();
     void *temp_r4;
     temp_r4 = GetMenuList();
     PlaySoundEffect(0x10018);
-    func_01ffa6fc(temp_r4);
+    Sprite_ResumeAnimation(temp_r4);
     func_020b21a0();
     func_020b2268();
 }

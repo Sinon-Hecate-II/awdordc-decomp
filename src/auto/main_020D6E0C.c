@@ -64,11 +64,84 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=8;M2C_FIELD(M2C_FIE
 {u16 *volatile p=(u16*)((u8*)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0x12); *p=*p | 0x800;}
 {u16 *volatile p=(u16*)((u8*)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0x12); *p=*p | 0x1000;}
 }
-#pragma pop
-void func_020d759c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    (void) arg0; (void) arg1; (void) arg2;
-}
+#pragma push
+#pragma opt_common_subs off
+void func_020d759c(s32 panelX, s32 panelY, s32 side) {
+    extern u32 gFrameCounter;
+    extern u16 data_02120700[16], data_02120720[16], data_02120740[16], data_02120760[16];
+    extern M2C_UNK gSpriteDesc32x8, gSpriteDesc32x16;
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
+    s32 func_020a4828(s32, s32);
+    void func_020d166c(s32, s32, void *);
+    void func_020d1690(s32, s32, void *);
+    void func_01ff9e78(const void *, s32, s32);
+    void AddSprite(u16, u16, u16, void *, s32);
+    void DrawDecimalNumber(s32, u8, s32);
+#define PULSE_PHASE ((gFrameCounter >> 1) & 0x1f)
+    u16 position[2];
+    s32 map, targetX, targetY, unitId, terrainTarget;
+    s32 x, y, shift, color, damage, targetHealth = 0, band;
+    s32 spriteX;
 
+    map = *gCurrentMap;
+    {
+        u16 cursorY = M2C_FIELD(map, u16 *, MAP_CURSOR_Y);
+        u16 cursorX = M2C_FIELD(map, u16 *, MAP_CURSOR_X);
+        position[0] = cursorX;
+        position[1] = cursorY;
+    }
+    if (PULSE_PHASE < 16)
+        shift = EaseInterpolate(4, 0, 4, PULSE_PHASE, 16);
+    else
+        shift = EaseInterpolate(1, 4, 0, PULSE_PHASE - 16, 16);
+    y = panelY - shift;
+    x = panelX + (side ? 0 : 40);
+
+    map = *gCurrentMap;
+    targetX = M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X);
+    targetY = M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y);
+    if (PULSE_PHASE < 16)
+        color = EaseInterpolate(4, 0, 15, PULSE_PHASE, 16);
+    else
+        color = EaseInterpolate(1, 15, 0, PULSE_PHASE - 16, 16);
+    map = *gCurrentMap;
+    unitId = M2C_FIELD(map, u8 *, targetX + M2C_FIELD(map + 2*targetY, u16 *, MAP_ROW_OFFSETS));
+    terrainTarget = func_020a4828(targetX, targetY);
+    if (unitId) {
+        func_020d166c(M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), unitId, position);
+        map = *gCurrentMap;
+        damage = M2C_FIELD(map, s16 *, MAP_BATTLE_DAMAGE);
+        targetHealth = M2C_FIELD(map, s16 *, 0x6ef4);
+    } else {
+        if (!terrainTarget)
+            return;
+        func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), terrainTarget, position);
+        map = *gCurrentMap;
+        y += 24;
+        damage = M2C_FIELD(map, s16 *, MAP_BATTLE_DAMAGE);
+    }
+    if (targetHealth >= 90)
+        band = 3;
+    else if (targetHealth >= 70)
+        band = 2;
+    else if (targetHealth > 0)
+        band = 1;
+    else
+        band = 0;
+
+    switch (band) {
+    case 0: func_01ff9e78(data_02120700 + color, 0x33e, 2); break;
+    case 1: func_01ff9e78(data_02120720 + color, 0x33e, 2); break;
+    case 2: func_01ff9e78(data_02120740 + color, 0x33e, 2); break;
+    case 3: func_01ff9e78(data_02120760 + color, 0x33e, 2); break;
+    }
+    spriteX = (x + 8) & 0x1ff;
+    AddSprite((u16)spriteX, (u16)((y - 24) & 0xff), (u16)Tile6e0c(0x150, 0x80), &gSpriteDesc32x8, 10);
+    AddSprite((u16)spriteX, (u16)((y - 16) & 0xff), (u16)Tile6e0c(0x150, 0x84), &gSpriteDesc32x16, 10);
+    ((void (*)(s32, s32, s32))DrawDecimalNumber)(x + 23, y - 15, damage);
+#undef PULSE_PHASE
+}
+#pragma pop
 /* Draws a unit's icon on the map at screen (x,y): copies the unit's 16x16 icon
  * tile for its kind and the owning player's colour variant into the sprite
  * engine, draws that sprite and a second one below it, and then the unit's

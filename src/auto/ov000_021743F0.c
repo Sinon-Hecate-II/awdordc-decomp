@@ -213,7 +213,7 @@ u8 func_ov000_02174c0c(void) {
 void func_ov000_02174c2c(void) {
     s32 *MemAlloc(M2C_UNK);
     void *func_ov000_02173ea8(void *);
-    M2C_UNK func_01ffa3dc(void *, s32);
+    M2C_UNK CreateSpriteFromClass(void *, s32);
     extern M2C_UNK data_ov000_021b8e5c;
     extern Ov000MenuState *gOv000InfoWindow;
     void *var_r0;
@@ -222,7 +222,7 @@ void func_ov000_02174c2c(void) {
         var_r0 = func_ov000_02173ea8(var_r0);
     }
     gOv000InfoWindow = var_r0;
-    func_01ffa3dc(&data_ov000_021b8e5c, 8);
+    CreateSpriteFromClass(&data_ov000_021b8e5c, 8);
 }
 
 void func_ov000_02174c64(void) {

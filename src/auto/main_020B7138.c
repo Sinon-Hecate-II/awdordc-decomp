@@ -151,21 +151,21 @@ void func_020b7824(void *arg0) {
 }
 
 void func_020b7860(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
     extern void *gTouchState;
     if (*gKeyState & 0xC0B) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020b78ac(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02128d2c;
-    func_01ffa3dc(&data_02128d2c, 7);
+    CreateSpriteFromClass(&data_02128d2c, 7);
 }
 
 void func_020b78c4(void *arg0) {

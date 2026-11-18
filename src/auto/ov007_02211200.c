@@ -82,9 +82,9 @@ void func_ov007_02211480(void) {
 }
 
 void func_ov007_022114ac(M2C_UNK arg0) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f5c0;
-    func_01ffa3dc(&data_ov007_0221f5c0, arg0);
+    CreateSpriteFromClass(&data_ov007_0221f5c0, arg0);
 }
 
 void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -458,13 +458,13 @@ void func_ov007_02211e6c(M2C_UNK arg0) {
 }
 
 void func_ov007_02211e84(void) {
-    M2C_UNK func_01ffa6fc();
+    M2C_UNK Sprite_ResumeAnimation();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov007_0221f5f8;
     if (FindObjectByClass(&data_ov007_0221f5f8) == 0) {
         return;
     }
-    func_01ffa6fc();
+    Sprite_ResumeAnimation();
 }
 
 void SetMapEditorMode(s32 arg0) {

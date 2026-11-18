@@ -447,7 +447,7 @@ void func_020ac65c(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void UpdateSplitTransition(u16, u16);
     void SetScreenMode(s32);
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     void func_020ac598(s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain;
@@ -488,7 +488,7 @@ void func_020ac65c(void *arg0) {
         }
         if (M2C_FIELD(arg0, u16 *, 0x38) >= M2C_FIELD(arg0, u16 *, 0x3a)) {
             SetScreenMode(M2C_FIELD(arg0, s32 *, 0x34) & 0xff);
-            func_01ffa6fc(arg0);
+            Sprite_ResumeAnimation(arg0);
         }
     next:
         ++i;

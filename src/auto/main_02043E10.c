@@ -184,7 +184,7 @@ void SetConnectionState(s32 arg0) {
  M2C_FIELD(M2C_FIELD(&gConnectionMgr, void **, 4), s32 *, 0x1A0) = arg0;
 }
 
-void func_0204428c(M2C_UNK arg0) {
+void CanStartSend(M2C_UNK arg0) {
     M2C_UNK CanStartTransfer(M2C_UNK, M2C_UNK);
     CanStartTransfer(arg0, 1);
 }

@@ -21,7 +21,7 @@ void func_ov003_021e3500(void *arg0) {
     u32 func_ov003_021f2574();
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f1bd4();
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
 
     register void *r5 asm("r5");
     register s32 r6 asm("r6");
@@ -100,7 +100,7 @@ void func_ov003_021e3500(void *arg0) {
     }
     SetOv003SceneState(2);
     M2C_FIELD(r5, s8 *, 0x38) = 0;
-    func_01ffa6fc(r5);
+    Sprite_ResumeAnimation(r5);
     func_ov003_021f1bd4();
 }
 
@@ -114,12 +114,12 @@ void func_ov003_021e36cc(void *arg0) {
     }
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov003_021e3708(void) {
-    M2C_UNK func_01ffa6fc();
-    func_01ffa6fc();
+    M2C_UNK Sprite_ResumeAnimation();
+    Sprite_ResumeAnimation();
 }
 
 #pragma push

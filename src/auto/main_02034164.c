@@ -206,14 +206,14 @@ return (v!=0);
 }
 
 void HttpBufferFree(void *arg0,s32 *arg1) {
-M2C_UNK MI_CpuFill8(void *,s32,s32); extern M2C_UNK data_020fb6a4;
+M2C_UNK MI_CpuFill8(void *,s32,s32); extern M2C_UNK sHttpFreeBufBufferName;
 s32 v=*arg1;
 M2C_UNK (*fn)(M2C_UNK *,s32,s32)=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
-if(v)fn(&data_020fb6a4,v,0);
+if(v)fn(&sHttpFreeBufBufferName,v,0);
 MI_CpuFill8(arg1,0,16);
 }
 
-s32 HttpBufferGrow(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C_UNK data_020fb6a4;void MI_CpuCopy8(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&data_020fb6b8,b[3]+c);if(!p)return 0;MI_CpuCopy8(b[0],p,b[3]);freep(&data_020fb6a4,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
+s32 HttpBufferGrow(s32 a,void *arg,s32 c){extern M2C_UNK sHttpAllocNewptrName;extern M2C_UNK sHttpFreeBufBufferName;void MI_CpuCopy8(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&sHttpAllocNewptrName,b[3]+c);if(!p)return 0;MI_CpuCopy8(b[0],p,b[3]);freep(&sHttpFreeBufBufferName,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
 
 #pragma opt_common_subs off
 /* Parse "http[s]://host[:port][/path]" from urlText into the client: copy the

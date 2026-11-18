@@ -26,7 +26,7 @@ typedef struct SpriteText {
     s8  priority;      /* +0x63 draw priority of the end caps */
 } SpriteText;
 
-u8 func_02083320(s32 arg0,s32 arg1) {
+u8 IsMapInLinkCategory(s32 arg0,s32 arg1) {
  s32 IsLinkSessionActive();
  if(IsLinkSessionActive()==0) return 1;
  return (u8)((s32)(u16)(arg0-225)/50)==(u8)(arg1-8);
@@ -108,7 +108,7 @@ void func_0208352c(void *arg0) {
 #pragma opt_strength_reduction off
 void func_020835d4(void *obj) {
  extern s16 gSinCosTable[];
- s32 Divide(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+ s32 Divide(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void Sprite_ResumeAnimation(void *);
  s32 i,e,d,a,b,s; u16 y,x; s32 c,offset,pos,glyph;
  x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
  c=gSinCosTable[1]<<4;s=*(volatile s16 *)gSinCosTable;
@@ -124,11 +124,11 @@ void func_020835d4(void *obj) {
  glyph=M2C_FIELD((u8 *)obj+i,s8 *,0x34);
  if(glyph==255)x+=14;else x+=gGlyphAdvance[glyph]-2;
  }
- if(M2C_FIELD(obj,u16 *,0x54)==56) {M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
+ if(M2C_FIELD(obj,u16 *,0x54)==56) {M2C_FIELD(obj,u16 *,0x54)=0;Sprite_ResumeAnimation(obj);}
 }
 void func_020837b4(void *obj) {
 extern s16 gSinCosTable[]; extern u8 gSpriteDesc64x64[];
-s32 Divide(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+s32 Divide(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void Sprite_ResumeAnimation(void *);
 s32 s; s16 c; s32 scale2,scale1,a,b,d,e,i,offset,pos,glyph; u16 y; s32 x;
 x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
 M2C_FIELD(obj,u16 *,0x54)++;
@@ -151,7 +151,7 @@ pos=x-19+offset;
 if(pos<256){
 AddSprite((u16)(pos&511),(u16)((y-16)&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),gSpriteDesc64x64,M2C_FIELD(obj,s8 *,0x63)+1);
 }
-if(M2C_FIELD(obj,u16 *,0x54)==16){M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
+if(M2C_FIELD(obj,u16 *,0x54)==16){M2C_FIELD(obj,u16 *,0x54)=0;Sprite_ResumeAnimation(obj);}
 }
 
 #pragma opt_strength_reduction off

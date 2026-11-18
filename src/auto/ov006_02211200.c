@@ -48,7 +48,7 @@ static inline u8 Visible02211388(void *p){return M2C_FIELD(M2C_FIELD(p,void **,0
 
 void func_ov006_02211200(void *arg0) {
 M2C_UNK func_01ff9b38();
-M2C_UNK func_02002bb8(M2C_UNK);
+M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
 M2C_UNK func_02003560();
 M2C_UNK func_020822b8(M2C_UNK *);
 M2C_UNK Set3DSpriteVramBanks();
@@ -63,7 +63,7 @@ extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov006_022183c8;
 extern M2C_UNK data_ov006_022183d4;
 s32 saved; void *p;
-Set3DSpriteVramBanks();func_02003560();func_02002bb8(64);
+Set3DSpriteVramBanks();func_02003560();GX_SetBankForObjExtPalette(64);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020822b8(&data_ov006_022183c8);CreateMainWallpaperSprite(2,15,5);
 gCur3DSpriteEngine=g3DSpriteEngineSub;

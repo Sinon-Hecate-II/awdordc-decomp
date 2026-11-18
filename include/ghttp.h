@@ -25,6 +25,14 @@ typedef struct GhiSocketAddress {
     u32 addr;     /* +0x04 */
 } GhiSocketAddress;
 
+/* The host record ghiResolveHostname (gethostbyname of this ghttp port) returns:
+ * a pointer to a BSD-style hostent at +0x0C, whose h_addr_list[0] points at the
+ * resolved IPv4 address in network byte order.  Only this field is read so far. */
+typedef struct GhiHostEntry {
+    u8 pad00[0x0C];
+    void **hostent; /* +0x0C hostent; *hostent = h_addr_list, **hostent = address */
+} GhiHostEntry;
+
 /* How ghttp delivers the response body (GHIConnection.transferMode).  In the
  * buffered mode the body is collected in the connection's body buffer and the
  * callback receives everything collected so far; stream mode passes each

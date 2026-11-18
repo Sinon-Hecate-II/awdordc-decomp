@@ -95,7 +95,7 @@ case 3:
 break;
 }
 {void *p=M2C_FIELD(arg0,void **,0x48);M2C_FIELD(p,s16 *,0xe)=-255;M2C_FIELD(p,s16 *,0x10)=0;M2C_FIELD(p,s16 *,0xc)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);}
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 #pragma optimization_level reset
 void func_ov006_02215010(void) {
@@ -150,12 +150,12 @@ void func_ov006_02215090(void *arg0) {
 }
 
 void func_ov006_022150a8(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK UpdateSpriteAnimation(void *);
     void *ptr = M2C_FIELD(arg0, void **, 0x48);
     u8 equal = M2C_FIELD(ptr, u16 *, 2) == M2C_FIELD(ptr, s16 *, 0xC);
     if (equal) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     UpdateSpriteAnimation(ptr);

@@ -209,28 +209,28 @@ s32 func_020d886c(void) {
 }
 
 void func_020d887c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212c058;
-    func_01ffa3dc(&data_0212c058, 7);
+    CreateSpriteFromClass(&data_0212c058, 7);
 }
 
 M2C_UNK func_020d8894(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212bfe8;
-    func_01ffa3dc(&data_0212bfe8, 7);
+    CreateSpriteFromClass(&data_0212bfe8, 7);
 }
 
 void func_020d88ac(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212c020;
-    func_01ffa3dc(&data_0212c020, 7);
+    CreateSpriteFromClass(&data_0212c020, 7);
 }
 
 M2C_UNK func_020d88c4(void) {
- M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+ M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
  extern u16 gMapConfig; extern M2C_UNK data_0212bfb8;
  gMapConfig=(gMapConfig&~7)|4;
- func_01ffa3dc(&data_0212bfb8,7);
+ CreateSpriteFromClass(&data_0212bfb8,7);
 }
 
 void func_020d88f4(void) {
@@ -267,10 +267,10 @@ void func_020d8928(void) {
 }
 
 M2C_UNK func_020d895c(void) {
- M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+ M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
  extern u16 gMapConfig; extern M2C_UNK data_0212c1a0;
  gMapConfig=(gMapConfig&~7)|1;
- func_01ffa3dc(&data_0212c1a0,7);
+ CreateSpriteFromClass(&data_0212c1a0,7);
 }
 
 void func_020d898c(void) {
@@ -284,22 +284,22 @@ void func_020d898c(void) {
 }
 
 M2C_UNK func_020d89b8(void) {
- M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+ M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
  extern u16 gMapConfig; extern M2C_UNK data_0212c098;
  gMapConfig=(gMapConfig&~7)|2;
- func_01ffa3dc(&data_0212c098,7);
+ CreateSpriteFromClass(&data_0212c098,7);
 }
 
 void func_020d89e8(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212bf38;
-    func_01ffa3dc(&data_0212bf38, 7);
+    CreateSpriteFromClass(&data_0212bf38, 7);
 }
 
 void func_020d8a00(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212bf78;
-    func_01ffa3dc(&data_0212bf78, 7);
+    CreateSpriteFromClass(&data_0212bf78, 7);
 }
 
 void func_020d8a18(void) {
@@ -316,9 +316,9 @@ void func_020d8a38(void) {
 }
 
 void func_020d8a48(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212bf58;
-    func_01ffa3dc(&data_0212bf58, 7);
+    CreateSpriteFromClass(&data_0212bf58, 7);
 }
 
 u8 func_020d8a60(void) {
@@ -334,10 +334,10 @@ u8 func_020d8a60(void) {
 }
 
 M2C_UNK func_020d8a8c(void) {
- M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+ M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
  extern u16 gMapConfig; extern M2C_UNK data_0212c0d8;
  gMapConfig=(gMapConfig&~7)|6;
- func_01ffa3dc(&data_0212c0d8,7);
+ CreateSpriteFromClass(&data_0212c0d8,7);
 }
 
 void func_020d8abc(void) {
@@ -346,22 +346,22 @@ void func_020d8abc(void) {
 }
 
 void func_020d8ac8(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212bf98;
-    func_01ffa3dc(&data_0212bf98, 7);
+    CreateSpriteFromClass(&data_0212bf98, 7);
 }
 
 M2C_UNK func_020d8ae0(void) {
- M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+ M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
  extern u16 gMapConfig; extern M2C_UNK data_0212c0d8;
  gMapConfig=(gMapConfig&~7)|7;
- func_01ffa3dc(&data_0212c0d8,7);
+ CreateSpriteFromClass(&data_0212c0d8,7);
 }
 
 void func_020d8b10(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212bf18;
-    func_01ffa3dc(&data_0212bf18, 7);
+    CreateSpriteFromClass(&data_0212bf18, 7);
 }
 
 void func_020d8b28(void) {

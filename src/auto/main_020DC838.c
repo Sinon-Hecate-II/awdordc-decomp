@@ -29,7 +29,7 @@ void MatchingMenuConfirmInput(void *menu) {
     void DisableMapConfirm(void);
     void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32);
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
     typedef struct { u32 low:18; u32 frame:8; u32 high:6; } SpriteFrameBits;
     typedef struct { unsigned char base:4; } SpriteBaseBits;
@@ -96,7 +96,7 @@ skip1:
             if (M2C_FIELD(menu, u16 *, 0x48) & 0x4) return;
             PlaySoundEffect(0x1000e);
             M2C_FIELD(menu, u16 *, 0x48) |= 0x4;
-            func_01ffa6fc(menu);
+            Sprite_ResumeAnimation(menu);
         }
     }
 }

@@ -8,7 +8,7 @@
  * build its heap sub-object, its two sprite blocks and its scratch buffer, and
  * derive the effect's size from the two value arguments. */
 void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy, u8 value0, u8 value1) {
-    void *func_01ffa3dc(M2C_UNK *, s32);
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
     void *MemAlloc(u32);
     void *HeapAllocBlock(u32);
     extern M2C_UNK gBattleEffectPool;
@@ -19,7 +19,7 @@ void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 un
     void *block;
     s32 extent;
 
-    effect = func_01ffa3dc(&gBattleEffectPool, 7);
+    effect = CreateSpriteFromClass(&gBattleEffectPool, 7);
     if (effect != 0) {
         M2C_FIELD(effect, void **, 0) = &data_02129890;
         M2C_FIELD(effect, u8 *, 0x34) = 0;
@@ -128,7 +128,7 @@ u8 func_020c306c(void) {
  * build its heap sub-object, its two sprite blocks and its scratch buffer, and
  * derive the effect's size from the two value arguments. */
 void CreateBattleEffect(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy, u8 value0, u8 value1) {
-    void *func_01ffa3dc(M2C_UNK *, s32);
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
     void *MemAlloc(u32);
     void *HeapAllocBlock(u32);
     extern M2C_UNK gBattleEffectPool;
@@ -139,7 +139,7 @@ void CreateBattleEffect(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy,
     void *block;
     s32 extent;
 
-    effect = func_01ffa3dc(&gBattleEffectPool, 7);
+    effect = CreateSpriteFromClass(&gBattleEffectPool, 7);
     if (effect != 0) {
         M2C_FIELD(effect, void **, 0) = &data_02129890;
         M2C_FIELD(effect, u8 *, 0x34) = 0;

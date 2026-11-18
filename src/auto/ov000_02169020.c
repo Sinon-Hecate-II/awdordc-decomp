@@ -150,7 +150,7 @@ void *func_ov000_0216939c(u8 *p) {
 
 void *func_ov000_0216941c(s32 a,s32 b,s32 c,s32 d,s32 e) {
  s32 func_ov000_0216975c(void);
- void *func_01ffa3dc(M2C_UNK *,s32);
+ void *CreateSpriteFromClass(M2C_UNK *,s32);
  s32 func_ov000_02169f08(void *);
  void InitUnitMoveSprites(void *);
  extern M2C_UNK data_ov000_021ae988;
@@ -158,7 +158,7 @@ void *func_ov000_0216941c(s32 a,s32 b,s32 c,s32 d,s32 e) {
  s32 slot=func_ov000_0216975c();
  if(slot==-1)return 0;
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,8),u8 *,slot)=1;
- p=func_01ffa3dc(&data_ov000_021ae988,9);
+ p=CreateSpriteFromClass(&data_ov000_021ae988,9);
  M2C_FIELD(p,u8 *,0x45)=slot;
  M2C_FIELD(p,u16 *,0x4C)=a<<4;
  M2C_FIELD(p,u16 *,0x4E)=b<<4;

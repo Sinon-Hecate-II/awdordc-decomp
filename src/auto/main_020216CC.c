@@ -15,8 +15,8 @@ func_02020478(arg0,arg1,arg2,var_r5,var_r4,arg3);
 }
 #pragma scheduling on
 void func_02021750(void) {
-    M2C_UNK func_02020b18();
-    func_02020b18();
+    M2C_UNK SocketShutdown();
+    SocketShutdown();
 }
 
 void func_0202175c(void) {

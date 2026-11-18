@@ -7,7 +7,7 @@
 #define NET_SOCKET_H
 
 /* A socket operation is a small request record the caller fills in and hands to
- * the socket's task (func_0201f1d0 allocates one, func_0201f318/func_0201f328/
+ * the socket's task (func_0201f1d0 allocates one, func_0201f318/SocketSubmitSendTask/
  * func_0201f338 post it, the task calls the callback with the record).  Its
  * fixed part is: +0x00 callback the task runs, +0x04 the socket, +0x08 the
  * task's message queue, +0x0C the socket's state and +0x0D nonzero when the
@@ -70,6 +70,13 @@
 #define SEND_RING_READ  0x102 /* u16 position the consumer reads at */
 #define SEND_RING_WAIT  0x104 /* OSThreadQueue producers sleep on when the ring is full */
 #define SEND_RING_OWNER 0x10c /* void *socket that owns this connection */
+
+/* The socket object's link in the socket layer's open/closed lists
+ * (gActiveSocketList / gClosedSocketList). */
+#define SOCK_LIST_NEXT  0x7c /* void *next socket in the list */
+
+/* A socket result meaning the socket layer is still tearing sockets down. */
+#define SOCK_BUSY (-0x1A)
 
 /* One queued received record: a 0xC-byte header followed by its payload. */
 #define REC_NEXT 0x00 /* void *next record, NULL at the tail */

@@ -25,13 +25,13 @@ typedef struct VoiceChatWidget {
  * overlay is active: place it, enable it from the local player's status and set
  * up its volume fade in the neutral (127) position. */
 void CreateVoiceChatWidget(s32 mode){
-void *FindObjectByClass(M2C_UNK *);s16 Divide(s32,s32);s32 func_01ffa3dc(M2C_UNK *,s32);void *GetLocalPlayerStatus(void);void *MemAlloc(s32);
+void *FindObjectByClass(M2C_UNK *);s16 Divide(s32,s32);s32 CreateSpriteFromClass(M2C_UNK *,s32);void *GetLocalPlayerStatus(void);void *MemAlloc(s32);
 extern M2C_UNK gVoiceChatWidgetClass,gVoiceChatWidgetVtbl;extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 s32 saved;VoiceChatWidget *p;SpriteTween *q;
 if(GetActiveOverlay()!=2)return;
 if(FindObjectByClass(&gVoiceChatWidgetClass))return;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-p=(VoiceChatWidget *)func_01ffa3dc(&gVoiceChatWidgetClass,mode);
+p=(VoiceChatWidget *)CreateSpriteFromClass(&gVoiceChatWidgetClass,mode);
 if(p){
 M2C_FIELD(p,void **,0)=&gVoiceChatWidgetVtbl;
 p->x=0xde;p->y=1;
@@ -164,9 +164,9 @@ void *func_020864c4(void *arg0) {
 }
 
 void Init3DSpriteScene(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102210;
-    func_01ffa3dc(&data_02102210, 7);
+    CreateSpriteFromClass(&data_02102210, 7);
 }
 
 s32 func_02086520(s32 arg0) {
@@ -299,7 +299,7 @@ void SetListRowFlag(u32 arg0, s32 arg1) {
  M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void func_02086810(u32 arg0, s32 arg1) {
+void SetMapListFlag(u32 arg0, s32 arg1) {
  extern M2C_UNK data_02157744;
  s32 shift = arg0 & 7;
  M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) = (M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
@@ -446,9 +446,9 @@ void func_02086b9c(void) {
     var_r7 = 0;
     do {
         if ((var_r7 >= 0xA1) && (var_r7 < 0xE1)) {
-            func_02086810(var_r7, 0);
+            SetMapListFlag(var_r7, 0);
         } else {
-            func_02086810(var_r7, 1);
+            SetMapListFlag(var_r7, 1);
         }
         var_r7 += 1;
     } while (var_r7 < 0x113);

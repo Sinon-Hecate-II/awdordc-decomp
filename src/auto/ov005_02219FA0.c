@@ -8,7 +8,7 @@ typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
    by `variant`), store its position, then let its per-frame handler take over. */
 void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     void *FindObjectByClass(void *);
-    void *func_01ffa3dc(void *, void *);
+    void *CreateSpriteFromClass(void *, void *);
     s32 CreateScriptedSprite(s32, u8, s32, s32, s32, s32, s32, void *);
     void DrawResultSpark(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
@@ -19,7 +19,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     s32 savedEngine, engine;
 
     parent = FindObjectByClass(&data_ov005_02220d50);
-    spark = func_01ffa3dc(&data_0211e058, parent);
+    spark = CreateSpriteFromClass(&data_0211e058, parent);
     if (!spark) return;
     M2C_FIELD(spark, void **, 0) = &data_ov005_02220fa4;
     savedEngine = gCur3DSpriteEngine;
@@ -93,7 +93,7 @@ void func_ov005_0221a38c(void **arg0) {
 void func_ov005_0221a410(void *arg0) {
 M2C_UNK PlaySoundEffect(s32);
 s32 RandomIntRange(s32, s32);
-M2C_UNK func_01ffa6fc(void *);
+M2C_UNK Sprite_ResumeAnimation(void *);
 M2C_FIELD(arg0,s32 *,0x40)++;
 if (M2C_FIELD(arg0,s32 *,0x40)==1) {
 M2C_FIELD(arg0,u8 *,0x46)=1;
@@ -105,13 +105,13 @@ if(M2C_FIELD(arg0,s32 *,0x40)!=0x10) return;
 M2C_FIELD(arg0,u16 *,0x50)=0;
 M2C_FIELD(arg0,u16 *,0x52)=0;
 M2C_FIELD(arg0,s32 *,0x40)=0;
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov005_0221a498(void *arg0) {
 M2C_UNK PlaySoundEffect(s32);
 s32 RandomIntRange(s32, s32);
-M2C_UNK func_01ffa6fc(void *);
+M2C_UNK Sprite_ResumeAnimation(void *);
 M2C_FIELD(arg0,s32 *,0x40)++;
 if (M2C_FIELD(arg0,s32 *,0x40)==1) {
 M2C_FIELD(arg0,u8 *,0x47)=1;
@@ -123,13 +123,13 @@ if(M2C_FIELD(arg0,s32 *,0x40)!=0x10) return;
 M2C_FIELD(arg0,u16 *,0x54)=0;
 M2C_FIELD(arg0,u16 *,0x56)=0;
 M2C_FIELD(arg0,s32 *,0x40)=0;
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov005_0221a520(void *arg0) {
 M2C_UNK PlaySoundEffect(s32);
 s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-M2C_UNK func_01ffa6fc(void *);
+M2C_UNK Sprite_ResumeAnimation(void *);
 void func_ov005_0221a38c(void **);
 M2C_FIELD(arg0,s32 *,0x40)++;
 if(M2C_FIELD(arg0,s32 *,0x40)==1) PlaySoundEffect(0xe8);
@@ -137,7 +137,7 @@ M2C_FIELD(arg0,s32 *,0x3c)=EaseInterpolate(0,0x1b0,0x58,M2C_FIELD(arg0,s32 *,0x4
 func_ov005_0221a38c(arg0);
 if(M2C_FIELD(arg0,s32 *,0x40)!=0x20) return;
 M2C_FIELD(arg0,s32 *,0x40)=0;
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 
 #pragma opt_strength_reduction off
@@ -150,7 +150,7 @@ void func_ov005_0221a598(void *award) {
     M2C_UNK EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     void func_ov005_0221a38c(void **);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
 
     s32 savedEngine;
@@ -174,7 +174,7 @@ void func_ov005_0221a598(void *award) {
     gCur3DSpriteEngine = savedEngine;
     M2C_FIELD(award, u8 *, 0x44) = 1;
     M2C_FIELD(award, s32 *, 0x40) = 0;
-    func_01ffa6fc(award);
+    Sprite_ResumeAnimation(award);
 }
 
 /* Create two sprite objects for a hit effect and play the appropriate sound. */
@@ -345,7 +345,7 @@ void func_ov005_0221ab8c(void) {
 }
 
 void func_ov005_0221ab98(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     M2C_FIELD(arg0, s32 *, 0x34) = (s32) (M2C_FIELD(arg0, s32 *, 0x34) + 1);
     M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(4, -0x100, 0, M2C_FIELD(arg0, s32 *, 0x34), 0x20);
@@ -353,6 +353,6 @@ void func_ov005_0221ab98(void *arg0) {
         return;
     }
     M2C_FIELD(arg0, s32 *, 0x34) = 0;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 

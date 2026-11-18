@@ -19,7 +19,7 @@ void func_02001114(void *,s32,s32,s32);void MTX_TransApply43(void *,void *,s32,s
 void func_02001148(void *,void *,void *);void MTX_Copy43(void *,void *);void func_02003a70(void *);
 void SetGxPolygonAttr(s32,s32);void func_020870dc(s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);void ResetGxTextureParams(void);
-void func_02087c6c(s32,s32,s32,s32,s32,s32);void func_ov004_02214814(s32,s32,s32,s32,s32,s32);
+void DrawGxLine(s32,s32,s32,s32,s32,s32);void func_ov004_02214814(s32,s32,s32,s32,s32,s32);
 void func_02087a08(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_0200112c(void *,s32,s32);void func_02087064(s32,s32,s32,s32,s32);void func_02003aa8(void *);s32 GetDigitCount(s32);
 s32 qp[12],qr[12],q2[12],q1[12],qt[12],qs[12],qm[12],q0[12],pivot[12],tr[12],sz[12],rot[12],mat[12],p2[12],p1[12],p0[12],d[12],c[12],b[12],a[12];s32 j,k,n,value,spacing,tex,flags,cx,cy,amount;void *link,*node; s32 scale,i,x,y,h,w,bottom,top;void *entry;
@@ -58,8 +58,8 @@ gx[0]=3;gx[5]=0;gx[0]=2;func_02003a70(c);
 SetGxPolygonAttr(0,31);func_020870dc(4,512,512,0,0,0,0,0);
 DrawTexturedQuadUV(0,0,0,512,304,0,0,512,304);
 SetGxPolygonAttr(0,31);ResetGxTextureParams();
-func_02087c6c(0,M2C_FIELD(arg0,s16 *,70),512,M2C_FIELD(arg0,s16 *,70),2,32767);
-func_02087c6c(M2C_FIELD(arg0,s16 *,68),0,M2C_FIELD(arg0,s16 *,68),304,2,32767);
+DrawGxLine(0,M2C_FIELD(arg0,s16 *,70),512,M2C_FIELD(arg0,s16 *,70),2,32767);
+DrawGxLine(M2C_FIELD(arg0,s16 *,68),0,M2C_FIELD(arg0,s16 *,68),304,2,32767);
 x=256;y=152;w=0;h=0;entry=RenderSelection(M2C_FIELD(arg0,void **,92));
 if(entry){w=M2C_FIELD(arg0,s16 *,76)/2;h=M2C_FIELD(arg0,s16 *,78)/2;x=M2C_FIELD(entry,s16 *,0);y=M2C_FIELD(entry,s16 *,2);}
 if(w>0||h>0){SetGxPolygonAttr(0,31);ResetGxTextureParams();if(M2C_FIELD(arg0,s32 *,64)==4096)func_ov004_02214814(x-w,y-h,x+w,y+h,1,32767);else func_ov004_02214814(x-w,y-h,x+w-1,y+h-1,1,32767);}

@@ -106,13 +106,13 @@ M2C_FIELD(arg0,s16 *,0x70)=1;
 }
 #pragma pop
 void func_020c9e14(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK func_020cbc88(void *, void *);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     s16 temp_r1;
     if (M2C_FIELD(arg0, s16 *, 0x6E) & 0x11) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     while ((temp_r1 = M2C_FIELD(arg0, s16 *, 0x70)) < 0x33) {
@@ -120,15 +120,15 @@ void func_020c9e14(void *arg0) {
         M2C_FIELD(arg0, s16 *, 0x70) += 1;
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020c9e94(u16 arg0, u16 arg1) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b304;
     void *temp_r0;
 
-    temp_r0 = func_01ffa3dc(&data_0212b304, 7);
+    temp_r0 = CreateSpriteFromClass(&data_0212b304, 7);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x6E) = arg1;
 }
@@ -451,7 +451,7 @@ void func_020caa34(void *dialog) {
     s32 GetMapCursorKeyAction(void);
     s32 GetMapCursorTouchAction(void);
     M2C_UNK StepMapViewToTile(s16, s16);
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s32 func_0209f944(s16, s16);
     M2C_UNK func_020d468c(void);
     M2C_UNK CreateTargetCursor(s16, s16);
@@ -476,7 +476,7 @@ void func_020caa34(void *dialog) {
             data_0215be0c = -1;
             StepMapViewToTile(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                           M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
-            func_01ffa6fc(dialog);
+            Sprite_ResumeAnimation(dialog);
             return;
         }
         if (flags & 0x10) {

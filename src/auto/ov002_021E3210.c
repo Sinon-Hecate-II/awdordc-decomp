@@ -4,10 +4,133 @@
 #include "ov002_effects.h"
 #include "ov002_panel.h"
 
-void func_ov002_021e3210(void *arg0) {
-    (void)arg0;
-}
+typedef struct PanelStat {
+    s16 value;
+    u8 stat : 3;
+    u8 order : 3;
+    u8 highlighted : 1;
+    u8 comparison : 1;
+    u8 padding;
+} PanelStat;
 
+extern u8 data_ov002_021f30fd[], data_ov002_021f30fe[];
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+void func_ov002_021e3210(void *arg0) {
+    s8 CountPanelEntries(void *);
+    extern u8 gPlayerSettings;
+    register void *panel = arg0;
+    register s32 outCount;
+    s32 scanned, count, marked;
+    s32 i;
+    PanelStat *out;
+    s32 slot;
+    void *other;
+    for (i = 0; i < 5; ++i) M2C_FIELD(panel + i * 4, s16 *, PANEL_STAT_SOURCE) = -1;
+    count = CountPanelEntries(M2C_FIELD(panel, void **, PANEL_OTHER) + PANEL_ENTRIES);
+    outCount = 0;
+    slot = outCount;
+    scanned = outCount;
+    out = (PanelStat *)(panel + PANEL_STAT_SOURCE);
+    if (data_ov002_021f30fd[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] != 0 && count != 0) {
+        do {
+            s32 stat = M2C_FIELD(panel + slot, u8 *, 0x1c);
+            if (M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE) || M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN)) {
+                other = M2C_FIELD(panel, void **, PANEL_OTHER);
+                out->value = M2C_FIELD(M2C_FIELD(other, void **, PANEL_STAT_TABLE), u8 *, 1) +
+                                           M2C_FIELD(other + outCount * 4, s16 *, PANEL_ENTRIES);
+                out->stat = (u8)stat;
+                other = M2C_FIELD(panel, void **, PANEL_OTHER);
+                out->order = M2C_FIELD(other + outCount, u8 *, PANEL_STAT_ORDER);
+                out->highlighted = 1;
+                out->comparison = 0;
+                ++outCount;
+                ++out;
+            }
+            if (++slot == 5) slot = 0;
+            ++scanned;
+        } while (outCount != count);
+    }
+    {
+        PanelStat *out;
+        u32 stat;
+        PanelStat *entries = (PanelStat *)(panel + PANEL_STAT_SOURCE);
+        i = 0;
+        if (i < outCount) {
+            out = entries;
+            do {
+            stat = out->stat;
+            if (M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE + 1) || M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN)) {
+                out->highlighted = 0;
+            } else {
+                s32 j;
+                PanelStat *next;
+                j = i + 1;
+                if (j < outCount) {
+                    next = entries + j;
+                    do {
+                    if (stat == next->stat) {
+                        out->highlighted = 0;
+                        break;
+                    }
+                    ++next;
+                    } while (++j < outCount);
+                }
+            }
+            ++out;
+            } while (++i < outCount);
+        }
+    }
+    if (CountPanelEntries(panel + PANEL_STAT_SOURCE) != 0 &&
+        M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN) &&
+        data_ov002_021f30fe[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] == 0) {
+        u8 *flags = panel + PANEL_STAT_SOURCE + 2;
+        flags[(CountPanelEntries(panel + PANEL_STAT_SOURCE) - 1) * 4] |= 0x40;
+        marked = 1;
+    } else {
+        marked = 0;
+    }
+    {
+    s32 stat;
+    PanelStat *out = (PanelStat *)(panel + PANEL_STAT_SOURCE);
+    out += outCount;
+    for (; scanned < 5; ++scanned) {
+        stat = M2C_FIELD(panel + scanned, u8 *, 0x1c);
+        if (M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE) != M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE + 1)) {
+            u8 *table;
+            s32 value;
+            if (M2C_FIELD(panel, u8 *, PANEL_PLAYER) == gPlayerSettings) {
+                table = M2C_FIELD(panel, u8 **, PANEL_STAT_TABLE);
+                other = M2C_FIELD(panel, void **, PANEL_OTHER);
+                value = M2C_FIELD(M2C_FIELD(other, void **, PANEL_STAT_TABLE), u8 *, 1) +
+                        (table[0] + table[outCount + 8]);
+            } else {
+                other = M2C_FIELD(panel, void **, PANEL_OTHER);
+                table = M2C_FIELD(other, u8 **, PANEL_STAT_TABLE);
+                value = table[1] + (table[0] + table[outCount + 3]);
+            }
+            out->value = value;
+            out->stat = (u8)stat;
+            other = M2C_FIELD(panel, void **, PANEL_OTHER);
+            out->order = M2C_FIELD(other + outCount, u8 *, PANEL_STAT_ORDER);
+            if (!M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE + 1) && !M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN))
+                out->highlighted = 1;
+            else
+                out->highlighted = 0;
+            out->comparison = 1;
+            ++outCount;
+            ++out;
+        }
+    }
+    }
+    if (!marked && M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN) &&
+        data_ov002_021f30fe[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] == 0) {
+        u8 *flags = panel + PANEL_STAT_SOURCE + 2;
+        flags[(CountPanelEntries(panel + PANEL_STAT_SOURCE) - 1) * 4] |= 0x40;
+    }
+}
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 void func_ov002_021e3578(void *arg0) {
     s8 CountPanelEntries(void *);
     extern u8 gPlayerSettings;

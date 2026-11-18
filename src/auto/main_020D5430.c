@@ -100,7 +100,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
     RefreshMapView();
     func_020d5554(x, y);
 finish:
-    func_0207a748(1);
+    SetMapCursorVisible(1);
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_MODE) = 8;
     PlaySoundEffect(0x1001c);
     return 1;
@@ -131,10 +131,10 @@ SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_CELL_ORDER);
 func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER);
 func_020d5868();
-func_0207a748(0);func_0207b028(7);
+SetMapCursorVisible(0);CreateCursorCellBurst(7);
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_MODE)=2;
 StartUnitMovePath(menuMode);
-func_01ffa3dc(&data_0211fbc4,6);
+CreateSpriteFromClass(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
 DrawUnitInfoPanel(2);
 if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(21,1);
@@ -169,10 +169,10 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER);
     func_020d5868();
-    func_0207a748(0); func_0207b028(7);
+    SetMapCursorVisible(0); CreateCursorCellBurst(7);
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_MODE) = 2;
     StartUnitMovePath(menuMode);
-    func_01ffa3dc(&data_0211fbc4, 6);
+    CreateSpriteFromClass(&data_0211fbc4, 6);
     PlaySoundEffect(0x1001c);
 }
 

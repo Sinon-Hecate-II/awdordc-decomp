@@ -1,5 +1,6 @@
 /* 42 functions from 0x02181A84 to 0x02182A4C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 
 /* Load the background-step character data and enable display backgrounds. */
 void func_ov001_02181a84(void) {
@@ -335,7 +336,7 @@ void func_ov001_0218223c(void) {
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK func_ov001_021722ac();
     M2C_UNK Ov001_ShowWfcIcon(M2C_UNK);
-    void func_ov001_021822c8(void);
+    void Ov001_LoadWfcConnectBg(void);
     void func_ov001_02182370(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     extern s8 data_ov001_02193ddc;
@@ -343,7 +344,7 @@ void func_ov001_0218223c(void) {
     s32 sp0;
 
     data_ov001_02193ddc = 0;
-    func_ov001_021822c8();
+    Ov001_LoadWfcConnectBg();
     Ov001_GetNameEntryMode(0, &sp0);
     if (sp0 == 0) {
         Ov001_ShowMessagePanel(0x31, -1, 0);
@@ -360,18 +361,21 @@ void func_ov001_0218223c(void) {
     Ov001_SetStepCallback(&func_ov001_02182408);
 }
 
-void func_ov001_021822c8(void) {
+/* Loads the WFC connection screen's background: tile graphics, palette and map,
+ * then puts BG0/BG1 on the lowest priority. */
+void Ov001_LoadWfcConnectBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190a50, data_ov001_02190a68, data_ov001_02190a80;
+    extern M2C_UNK gOv001WfcConnectBgTilesPath, gOv001WfcConnectBgPalettePath, gOv001WfcConnectBgMapPath;
     extern M2C_UNK GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190a50, &GX_LoadBG2Char);
-    Ov001_LoadAsset(&data_ov001_02190a68, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_02190a80, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
+
+    Ov001_LoadAsset(&gOv001WfcConnectBgTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001WfcConnectBgPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001WfcConnectBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
 void func_ov001_02182370(void) {

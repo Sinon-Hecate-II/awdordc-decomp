@@ -17,7 +17,7 @@ typedef struct { u8 unk_0 : 6; u8 unk_6 : 2; } Unk020cbc88;
    from the saved index and find the first one worth marking - a transport (kind 21/23)
    whose cargo has a cost or a value, or a unit a friendly supply unit can refill -
    highlight its tile and save the next index; at the end of the list retire the task. */
-void MarkSupplyUnitTiles(void *state){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 func_020cb6a4(void *);M2C_UNK func_01ffa6fc(void *);
+void MarkSupplyUnitTiles(void *state){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 func_020cb6a4(void *);M2C_UNK Sprite_ResumeAnimation(void *);
 u16 i;void *p,*q;u32 k;
 if(func_020c98b4(state))return;
 for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
@@ -25,7 +25,7 @@ p=*gCurrentMap;q=(u8 *)p+0x59a4+(M2C_FIELD(p,u16 *,0x52a8)+i)*14;
 k=((UnkCBUnit *)q)->kind;if(!k)continue;if(M2C_FIELD(q,u16 *,4)&8)continue;
 if(k==23||k==21){if(MarkTransportCargo(q)){M2C_FIELD(state,u16 *,0x50)=i+1;break;}}
 if(CanBeSupplied(q)&&func_020cb6a4(q)){M2C_FIELD(state,u16 *,0x50)=i+1;break;}
-}if(i==51)func_01ffa6fc(state);
+}if(i==51)Sprite_ResumeAnimation(state);
 }
 
 void func_020cbbac(void) {
@@ -39,9 +39,9 @@ void func_020cbbac(void) {
 }
 
 void func_020cbc08(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b534;
-    func_01ffa3dc(&data_0212b534, 7);
+    CreateSpriteFromClass(&data_0212b534, 7);
 }
 
 #pragma opt_common_subs off
@@ -86,20 +86,20 @@ void func_020cbcfc(void *arg0) {
 
 void func_020cbd08(void *a) {
 extern void **gCurrentMap;
-s32 ChargeUnitTurnFuel(void *);M2C_UNK func_01ffa6fc(void *);
+s32 ChargeUnitTurnFuel(void *);M2C_UNK Sprite_ResumeAnimation(void *);
 while(M2C_FIELD(a,s16 *,0x6c)<51) {
 void *p=(u8 *)*gCurrentMap+0x59a4;
 s32 n=(M2C_FIELD(a,s16 *,0x6c)+M2C_FIELD(*gCurrentMap,u16 *,0x52a8))*14;
 if((((UnkCBUnit *)((u8 *)p+n))->kind)&&ChargeUnitTurnFuel((u8 *)p+n)) {((void (*)(void *,void *))func_020cbce0)((u8 *)p+n,a);return;}
 M2C_FIELD(a,s16 *,0x6c)++;
 }
-if(M2C_FIELD(a,s16 *,0x6c)>=51)func_01ffa6fc(a);
+if(M2C_FIELD(a,s16 *,0x6c)>=51)Sprite_ResumeAnimation(a);
 }
 
 void func_020cbda4(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b25c;
-    func_01ffa3dc(&data_0212b25c, 7);
+    CreateSpriteFromClass(&data_0212b25c, 7);
 }
 
 void func_020cbdbc(void) {
@@ -157,9 +157,9 @@ void func_020cbfb4(void) {
 }
 
 void func_020cbfe4(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b5f4;
-    func_01ffa3dc(&data_0212b5f4, 7);
+    CreateSpriteFromClass(&data_0212b5f4, 7);
 }
 
 void func_020cbffc(void) {
@@ -181,9 +181,9 @@ SetBattleCommand(17,0,0,0);
 }
 
 void func_020cc08c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b4ec;
-    func_01ffa3dc(&data_0212b4ec, 7);
+    CreateSpriteFromClass(&data_0212b4ec, 7);
 }
 
 /* Sets up the map-view screen: resets the map view, saves the scroll position on
@@ -226,7 +226,7 @@ M2C_FIELD(*gCurrentMap,s16 *,MAP_MODE)=9;
  * its value into the 3D sprite bank's blend byte, clear every layer bit and set
  * the map view's, then finish the task once the timer reaches 12. */
 void MapFadeInStep(u8 *fade) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     extern void *gCur3DSpriteEngine;
     u16 *volatile oamC0;
     u16 *volatile oam1;
@@ -271,11 +271,11 @@ void MapFadeInStep(u8 *fade) {
     oam1000 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
     *oam1000 = *oam1000 & ~0x1000;
     if (*(s16 *)(fade + 0x34) < 12) return;
-    func_01ffa6fc(fade);
+    Sprite_ResumeAnimation(fade);
 }
 
 void func_020cc430(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020cf80c();
     extern u16 *gKeyState;
@@ -286,7 +286,7 @@ void func_020cc430(void *arg0) {
             return;
         }
         PlaySoundEffect(0x10018);
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     M2C_FIELD(arg0, s16 *, 0x3A) = 1;
@@ -309,7 +309,7 @@ void func_020cc490(void *arg0) {
 }
 
 void func_020cc504(void *a) {
-extern void *gCur3DSpriteEngine;M2C_UNK func_01ffa6fc(void *);
+extern void *gCur3DSpriteEngine;M2C_UNK Sprite_ResumeAnimation(void *);
 u16 *volatile p; s32 n;
 M2C_FIELD(a,s16 *,0x34)--;
 n=M2C_FIELD(a,s16 *,0x34);
@@ -318,7 +318,7 @@ p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0x12);
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=n;
-if(!M2C_FIELD(a,s16 *,0x34))func_01ffa6fc(a);
+if(!M2C_FIELD(a,s16 *,0x34))Sprite_ResumeAnimation(a);
 }
 
 void func_020cc584(void *a) {
@@ -337,9 +337,9 @@ M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;
 }
 
 void func_020cc62c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b664;
-    func_01ffa3dc(&data_0212b664, 7);
+    CreateSpriteFromClass(&data_0212b664, 7);
 }
 
 void func_020cc644(void *arg0) {
@@ -348,9 +348,9 @@ void func_020cc644(void *arg0) {
 }
 
 void CreateTargetCursor(s32 a,s32 b) {
-extern M2C_UNK data_0212b1dc;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);void *p;
+extern M2C_UNK data_0212b1dc;s32 FindObjectByClass(M2C_UNK *);M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);void *p;
 if(FindObjectByClass(&data_0212b1dc))return;
-p=(void *)func_01ffa3dc(&data_0212b1dc,7);
+p=(void *)CreateSpriteFromClass(&data_0212b1dc,7);
 M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
 }
 
@@ -386,9 +386,9 @@ if(distance==1)AddRecordValue(7,1);else AddRecordValue(8,1);
 }
 
 void func_020cc7e0(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b294;
-    func_01ffa3dc(&data_0212b294, 7);
+    CreateSpriteFromClass(&data_0212b294, 7);
 }
 
 s32 func_020cc7f8(void) {
@@ -414,7 +414,7 @@ void *p; s32 x,y;
 func_01ffb554((u8 *)*data_027e0058+0x1e30);func_01ffb3d0(-1);
 p=*data_027e0058;
 func_020cdfec(M2C_FIELD(p,s32 *,0x52d0),M2C_FIELD(p,volatile s16 *,0x52dc),M2C_FIELD(p,volatile s16 *,0x52de));
-func_0207a748(0);
+SetMapCursorVisible(0);
 p=*data_027e0058;
 x=M2C_FIELD(p,volatile s16 *,0x52dc);y=M2C_FIELD(p,volatile s16 *,0x52de);
 M2C_FIELD(a,s16 *,0x6c)=GetAdjacentAllyDirections(M2C_FIELD(p,volatile s32 *,0x52d0),x,y);
@@ -428,7 +428,7 @@ void func_020cc8d8(void *arg0) {
     void func_020d472c(void);
     void func_020c75cc(void);
     M2C_UNK func_020bbcec(s32);
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     extern void **gCurrentMap;
     s32 sp0;
     s32 ret;
@@ -448,7 +448,7 @@ void func_020cc8d8(void *arg0) {
     }
     if (ret & 0x10) {
         func_020bbcec(M2C_FIELD(arg0, s16 *, 0x6e));
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
     }
 }
 

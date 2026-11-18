@@ -167,6 +167,22 @@ typedef struct WfcSendState {
 
 #define WFC_SEND_OK 0 /* WfcSendState::result after a successful send */
 
+/* The WFC command channel to the ARM7 firmware (main_02010C14): the library
+ * keeps WFC_CMD_BLOCK_COUNT 0x100-byte command blocks in gWfcFreeBufferQueue,
+ * the queue of blocks the firmware is not using. WFC_SendCommand takes a block
+ * from it, writes the command id and its arguments into it and sends the
+ * block's address over the command FIFO; the firmware sets the block's free bit
+ * again when it is done with it, and WFC_AllocBuffer only hands out blocks whose
+ * bit is set (a busy block goes back to the queue). */
+#define WFC_CMD_FIFO_TAG    10     /* IPC FIFO tag of the command channel */
+#define WFC_CMD_BLOCK_SIZE  0x100  /* bytes per command block */
+#define WFC_CMD_BLOCK_COUNT 10     /* blocks in the channel's ring */
+#define WFC_CMD_BLOCK_FREE  0x8000 /* bit 15 of a block's first u16: the firmware is done with it */
+
+/* Results of the command API; a caller retries when it gets NO_BUFFER. */
+#define WFC_CMD_OK         2 /* the command was posted, its completion arrives as an event */
+#define WFC_CMD_NO_BUFFER  8 /* no free block, or the FIFO refused the message */
+
 /* The local player's connection data (0xC0 bytes). It is filled from the
  * connection-setup screen, copied into the session when a match is started,
  * reported to the event handlers and sent to the server. Two flag words live

@@ -103,16 +103,16 @@ void func_ov000_021723bc(void) {
 }
 
 void func_ov000_02172408(s32 arg0) {
-    M2C_UNK func_01ffa6fc(s32);
+    M2C_UNK Sprite_ResumeAnimation(s32);
     extern u16 *gKeyState;
     if (!(*gKeyState & 2)) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov000_0217242c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021b8d18;
-    func_01ffa3dc(&data_ov000_021b8d18, 7);
+    CreateSpriteFromClass(&data_ov000_021b8d18, 7);
 }
 
 void func_ov000_02172444(void) {

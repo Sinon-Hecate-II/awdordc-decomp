@@ -73,7 +73,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 Transfer_SetEndCallback(s32);
     s32 func_02038d14(s32, s32);
     s32 func_0203a9a4(s32, s32);
-    s32 func_02038790(s32, s32, s32, s32, s32, s32, s32);
+    s32 StartMatchMaking(s32, s32, s32, s32, s32, s32, s32);
     s32 GetLastNasError(void);
     void func_ov010_02227934(void);
     void func_ov010_02227954(void);
@@ -107,7 +107,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     func_02038d14((s32)func_ov010_02227bd4, 0);
     func_0203a9a4((s32)func_ov010_02227c3c, 0);
 
-    func_02038790(0, (s32)func_ov010_02227df8, 0, (s32)func_ov010_02227d34, 0,
+    StartMatchMaking(0, (s32)func_ov010_02227df8, 0, (s32)func_ov010_02227d34, 0,
                    (s32)func_ov010_02227c5c, 0);
 
     if (GetLastNasError() != 2) {
@@ -436,12 +436,12 @@ void func_ov010_022286cc(void *arg0) {
 }
 
 void func_ov010_022286f0(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s32 func_ov010_02228678(M2C_UNK *);
     if (func_ov010_02228678(M2C_FIELD(arg0, s32 *, 0x38)) != 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov010_02228714(void) {
@@ -504,7 +504,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     s32 func_ov000_0216a564(void);
     s32 func_ov000_0216a76c(void);
     s32 func_ov000_0216a7c4(void);
-    void *func_01ffa3dc(void *, s32);
+    void *CreateSpriteFromClass(void *, s32);
     void MI_CpuFill8(void *, s32, s32);
     void InitNetSession(void *, void *, s32, void *, void *, s32, s32, void *, s32);
     void StartNetLogin(void *, s32, void *, s32);
@@ -567,13 +567,13 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
     M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
     StartNetLogin(&gLocalPlayerStatus,0,(void *)Ov010Online_StartSession,0);
-    obj=func_01ffa3dc(&gOv010SessionStateClass,3);
+    obj=CreateSpriteFromClass(&gOv010SessionStateClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;
         M2C_FIELD(obj,s32 *,0x34)=0;
         MI_CpuFill32(0,(u8 *)obj+0x38,0x10);
     }
-    obj=func_01ffa3dc(&gOv010ConnectionClass,3);
+    obj=CreateSpriteFromClass(&gOv010ConnectionClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3a8;
         M2C_FIELD(obj,s32 *,0x34)=0;
@@ -582,7 +582,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
         M2C_FIELD(obj,s32 *,0x40)=0;
         M2C_FIELD(obj,u16 *,0x44)=0;
     }
-    obj=func_01ffa3dc(&gOv010PacketAssemblyClass,3);
+    obj=CreateSpriteFromClass(&gOv010PacketAssemblyClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3d0;
         ConstructArray((u8 *)obj+0x34,4,8,(void *)func_ov010_02228a38,(void *)func_ov010_02228a48);
@@ -713,44 +713,48 @@ void func_ov010_02228bc8(void) {
     Ov010Online_ClearStepFlag(3);
 }
 
-void func_ov010_02228bdc(M2C_UNK arg0) {
-    s32 func_0204428c(u8);
+/* One per-frame step of the ov010 online transfer sprite: while a packet is
+ * still queued, or any remote peer's send slot is busy, the sprite's animation
+ * is held on its current frame; once the link is idle it resumes.
+ * (1 - 2) is -1, which drops the local player's own bit from the peer mask. */
+void Ov010Online_AdvanceTransferSprite(void *sprite) {
+    s32 CanStartSend(u8);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     s32 GetNetErrorCode();
-    s32 func_ov010_02229850();
+    s32 Ov010Online_IsSendQueueEmpty();
     s32 GetOnlineTransportPlayerId();
     s32 GetOnlinePeerMask();
-    s32 temp_r5;
-    s32 var_r0;
-    u16 temp_r7;
-    s32 var_r6;
-    s32 c;
+    s32 peerMask;
+    s32 netError;
+    u16 remotePeers;
+    s32 player;
+    s32 one;
 
-    if (IsOnlineSessionFlagSet(3) == 0) goto end;
+    if (IsOnlineSessionFlagSet(OV010_FLAG_RUNNING) == 0) goto end;
     if (GetNetErrorCode() != 0) {
-        var_r0 = 1;
+        netError = 1;
     } else {
-        var_r0 = 0;
+        netError = 0;
     }
-    if (var_r0 != 0) goto end;
-    if (IsOnlineSessionFlagSet(6) != 0) goto end;
-    if (func_ov010_02229850() == 0) {
+    if (netError != 0) goto end;
+    if (IsOnlineSessionFlagSet(OV010_FLAG_ERROR) != 0) goto end;
+    if (Ov010Online_IsSendQueueEmpty() == 0) {
         return;
     }
-    temp_r5 = GetOnlinePeerMask();
-    c = 1;
-    temp_r7 = (u16)(temp_r5 & ((c - 2) ^ (c << GetOnlineTransportPlayerId())));
-    if (temp_r7 == 0) goto end;
-    var_r6 = 0;
-    c = 1;
+    peerMask = GetOnlinePeerMask();
+    one = 1;
+    remotePeers = (u16)(peerMask & ((one - 2) ^ (one << GetOnlineTransportPlayerId())));
+    if (remotePeers == 0) goto end;
+    player = 0;
+    one = 1;
 loop:
-    if ((temp_r7 & (c << var_r6)) && (func_0204428c((u8)var_r6) == 0)) {
+    if ((remotePeers & (one << player)) && (CanStartSend((u8)player) == 0)) {
         return;
     }
-    var_r6 = var_r6 + 1;
-    if (var_r6 < 4) goto loop;
+    player = player + 1;
+    if (player < 4) goto loop;
 end:
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_ov010_02228c88(M2C_UNK arg0) {

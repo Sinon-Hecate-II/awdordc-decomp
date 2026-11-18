@@ -49,7 +49,7 @@ void StartWeatherChange(M2C_UNK arg0) {
     void *temp_r4;
 
     func_020a3934();
-    temp_r4 = func_01ffa3dc(&data_021204f4, 7);
+    temp_r4 = CreateSpriteFromClass(&data_021204f4, 7);
     M2C_FIELD(temp_r4, s16 *, 0x36) = func_020a3790(arg0);
     M2C_FIELD(temp_r4, s16 *, 0x38) = 0;
 }
@@ -81,7 +81,7 @@ extern s32 *gCurrentMap;extern M2C_UNK data_021204f4;
 void *p;
 func_020a398c(M2C_FIELD(*gCurrentMap,u8 *,0x515a));
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==M2C_FIELD(*gCurrentMap,u8 *,0x515a))return;
-p=func_01ffa3dc(&data_021204f4,7);
+p=CreateSpriteFromClass(&data_021204f4,7);
 M2C_FIELD(p,u16 *,0x36)=M2C_FIELD(*gCurrentMap,u8 *,0x515a);
 M2C_FIELD(p,u16 *,0x38)=1;
 }
@@ -325,9 +325,9 @@ gCur3DSpriteEngine=old;
 
 #pragma scheduling reset
 void func_020a44d0(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021204d4;
-    func_01ffa3dc(&data_021204d4, 1);
+    CreateSpriteFromClass(&data_021204d4, 1);
 }
 
 void func_020a44e8(void) {

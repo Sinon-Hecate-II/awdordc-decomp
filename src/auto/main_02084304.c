@@ -729,7 +729,7 @@ func_01ff883c(M2C_FIELD(p,s32 *,0x34)&511,M2C_FIELD(p,s32 *,0x38),((tile>>shift)
 }
 }
 
-s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *func_01ffa3dc(void *,s32);extern M2C_UNK data_02102088;s32 r;void *p=func_01ffa3dc(&data_02102088,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;M2C_FIELD(p,u16 *,0x3c)=c;M2C_FIELD(p,u16 *,0x3e)=d;r=GetLinkMode();switch(r){case 1:r=M2C_FIELD(p,u16 *,0x3c)+0x10;M2C_FIELD(p,u16 *,0x3c)=r;break;case 2:default:break;}return r;}
+s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *CreateSpriteFromClass(void *,s32);extern M2C_UNK data_02102088;s32 r;void *p=CreateSpriteFromClass(&data_02102088,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;M2C_FIELD(p,u16 *,0x3c)=c;M2C_FIELD(p,u16 *,0x3e)=d;r=GetLinkMode();switch(r){case 1:r=M2C_FIELD(p,u16 *,0x3c)+0x10;M2C_FIELD(p,u16 *,0x3c)=r;break;case 2:default:break;}return r;}
 
 void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02085238(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);

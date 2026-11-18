@@ -152,21 +152,24 @@ s32 SBServerGetStringValue(void *arg0,s32 arg1,s32 arg2){
  return arg2;
 }
 
-s32 SBServerGetIntValue(void *arg0,s32 arg1,s32 arg2){
- s32 StringCompare(s32,void *);
- s32 ParseInt(void *);
- extern M2C_UNK data_02100078; extern u16 gCharClassTable[];
- s8 *p,*q; u8 c; s32 v;
- if(!arg0)return arg2;
- if(!StringCompare(arg1,&data_02100078))return SBServerGetPing(arg0);
- p=(s8 *)SBServerGetStringValue(arg0,arg1,0);
- if(!p)return arg2;
- if(*p!='-')q=p;else q=p+1;
- c=*(u8 *)q;
- if((s32)c<0 || (s32)c>=128)v=0;
- else v=gCharClassTable[c]&8;
- if(!v)return arg2;
- return ParseInt(p);
+s32 SBServerGetIntValue(GpiPlayer *server, s32 key, s32 defaultVal) {
+    /* Return the numeric value of the named server key, or defaultVal when the
+     * server has no such value or its string isn't a number.  The "ping" key
+     * is handled directly from the record's ping field.  (GameSpy sb_sbGetInt.) */
+    s32 StringCompare(s32, void *);
+    s32 ParseInt(void *);
+    extern M2C_UNK sPingKey; extern u16 gCharClassTable[];
+    s8 *p, *q; u8 c; s32 isDigit;
+    if (!server) return defaultVal;
+    if (!StringCompare(key, &sPingKey)) return SBServerGetPing(server);
+    p = (s8 *) SBServerGetStringValue(server, key, 0);
+    if (!p) return defaultVal;
+    if (*p != '-') q = p; else q = p + 1;
+    c = *(u8 *) q;
+    if ((s32) c < 0 || (s32) c >= 128) isDigit = 0;
+    else isDigit = gCharClassTable[c] & 8;
+    if (!isDigit) return defaultVal;
+    return ParseInt(p);
 }
 
 double SBServerGetFloatValue(void *arg0,s32 arg1,double arg2){
@@ -478,13 +481,13 @@ void SendToPlayerList(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
 
 void func_02061638(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_02063aa8(s32, s32, u16, M2C_UNK, s32);
-    func_02063aa8(arg0 + 0x4C, func_020498e4(arg1), (u16) ((u8) (arg2 >> 8) | ((arg2 << 8) & 0xFF00)), arg3, arg4);
+    func_02063aa8(arg0 + 0x4C, ghiInetAddr(arg1), (u16) ((u8) (arg2 >> 8) | ((arg2 << 8) & 0xFF00)), arg3, arg4);
 }
 
 void func_02061690(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    s32 func_020498e4(M2C_UNK);
+    s32 ghiInetAddr(M2C_UNK);
     M2C_UNK func_02063bd0(s32, s32, u16, M2C_UNK);
-    func_02063bd0(arg0 + 0x4C, func_020498e4(arg1), (u16) ((u8) (arg2 >> 8) | ((arg2 << 8) & 0xFF00)), arg3);
+    func_02063bd0(arg0 + 0x4C, ghiInetAddr(arg1), (u16) ((u8) (arg2 >> 8) | ((arg2 << 8) & 0xFF00)), arg3);
 }
 
 void SBServerListRemoveServer(s32 arg0){

@@ -448,13 +448,13 @@ volume=func_0202ef00(p+60)>>8;if(volume==M2C_FIELD(p,s32 *,80))return;func_02008
  * voice. */
 void StopStreamVoice(void) {
 extern M2C_UNK gStreamSoundState,gStreamVoice,gSoundCommandQueue;
-s32 func_02006390(); M2C_UNK func_0202aadc(); M2C_UNK func_0202aaac(); M2C_UNK func_0202ab40(s32); M2C_UNK func_02008f10();
+s32 OS_ReceiveMessage(); M2C_UNK func_0202aadc(); M2C_UNK func_0202aaac(); M2C_UNK func_0202ab40(s32); M2C_UNK func_02008f10();
 s32 Sound_GetCommandCounter(); M2C_UNK Sound_FlushCommands(M2C_UNK); M2C_UNK Sound_WaitForCommand(s32);
 void *voice=&gStreamVoice; s32 channelUsed,mark;
 if(!M2C_FIELD(&gStreamSoundState,s32 *,STREAM_STATE_VOICE))return;
 channelUsed=M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL)>=0;
 Sound_StopChannels(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B),channelUsed?1<<M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL):0,0);
-if(channelUsed){mark=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(mark);while(func_02006390(&gSoundCommandQueue,0,0)){}}
+if(channelUsed){mark=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(mark);while(OS_ReceiveMessage(&gSoundCommandQueue,0,0)){}}
 if(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B))func_0202aadc(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B));
 if(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED))func_0202aaac(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED));
 if(channelUsed)func_0202ab40(M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL));

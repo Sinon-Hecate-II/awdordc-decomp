@@ -10,9 +10,9 @@ typedef struct UnitHealthCB { u8 pad[6]; u16 health:7; u16 flags:9; } UnitHealth
 extern u8 gMapCursorDirs[][4];
 
 void func_020cab8c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b4a4;
-    func_01ffa3dc(&data_0212b4a4, 7);
+    CreateSpriteFromClass(&data_0212b4a4, 7);
 }
 
 #pragma optimization_level 4
@@ -31,14 +31,14 @@ s32 NextMapCursorOption(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&gMapCursorDirs[a][0
 s32 PrevMapCursorOption(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
 
 void func_020cac5c(void *arg0) {
- M2C_UNK FillMapLayer(M2C_UNK); M2C_UNK SelectMapLayer(void *); M2C_UNK func_0207a748(M2C_UNK);
+ M2C_UNK FillMapLayer(M2C_UNK); M2C_UNK SelectMapLayer(void *); M2C_UNK SetMapCursorVisible(M2C_UNK);
  s32 GetUnitMoveDirections(s16,s16,u8); M2C_UNK ClearMapCursorOptionCells(s16,s16,s32);
  extern void **gCurrentMap;
  s32 n;void *p;
  p=*gCurrentMap;
  n=GetUnitMoveDirections(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD((M2C_FIELD(p,s32 *,0x52d0)+M2C_FIELD(arg0,s16 *,0x70)),u8 *,0xc));
  SelectMapLayer((u8 *)*gCurrentMap+0x1e30);FillMapLayer(-1);
- p=*gCurrentMap;ClearMapCursorOptionCells(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);func_0207a748(0);
+ p=*gCurrentMap;ClearMapCursorOptionCells(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);SetMapCursorVisible(0);
  M2C_FIELD(arg0,s16 *,0x6c)=n;M2C_FIELD(arg0,s16 *,0x6e)=3;
  M2C_FIELD(arg0,s16 *,0x6e)=NextMapCursorOption(M2C_FIELD(arg0,s16 *,0x6e),n);
 }
@@ -104,7 +104,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
 
 void func_020cae2c(void *p){
 extern void **gCurrentMap; extern s32 data_0215be0c;
-M2C_UNK func_020d472c();M2C_UNK func_020c75cc();void DeleteSpriteObject(void *);void func_01ffa6fc(void *);void func_020c93fc(u8,u8);
+M2C_UNK func_020d472c();M2C_UNK func_020c75cc();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
 s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
 flags=UpdateMapCursorOption(&a,mask);
 M2C_FIELD(p,s16 *,0x6e)=a;
@@ -123,7 +123,7 @@ index=(s32)unit[12]*14;
 func_020c93fc((u8)selector,(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
 map=*gCurrentMap;
 ((void(*)(s32,s32,s32))func_020cad00)(((u32)(units[index]<<26)>>26),M2C_FIELD(map,s16 *,0x52dc),M2C_FIELD(map,s16 *,0x52de));
-func_01ffa6fc(p);
+Sprite_ResumeAnimation(p);
 }
 
 /* Confirms the cursor's attack option: when neither attack target is available it
@@ -166,7 +166,7 @@ void func_020cb00c(void) {
 
 void func_020cb018(s16 arg0) {
     extern M2C_UNK data_0212b374;
-    M2C_FIELD(func_01ffa3dc(&data_0212b374, 7), s16 *, 0x70) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_0212b374, 7), s16 *, 0x70) = arg0;
 }
 
 /* Refills a unit's ammo one point at a time up to its kind's maximum, accumulating
@@ -345,7 +345,7 @@ M2C_FIELD(arg0,s16 *,0x34)++;
 
 void func_020cb8cc(s32 a) {
 extern M2C_UNK data_0212b3ac;
-void *p=func_01ffa3dc(&data_0212b3ac,7);
+void *p=CreateSpriteFromClass(&data_0212b3ac,7);
 if(a) M2C_FIELD(p,s16 *,0x36)=0;
 else M2C_FIELD(p,s16 *,0x36)=1;
 }
@@ -360,7 +360,7 @@ void func_020cb8f8(void *arg0) {
  * cargo has value, 2 when only cost) and saves the next cursor; at the end of the
  * unit list the task retires itself. */
 u8 func_020c98d8(u8, u8, s32);
-void func_01ffa6fc(void *);
+void Sprite_ResumeAnimation(void *);
 void MarkUnitCargoTiles(void *state){
 extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;
 u16 i; s32 a,b; UnitCB9 *unit; s32 n;u8 *map;
@@ -392,6 +392,6 @@ M2C_FIELD(state,u16 *,0x50)=i+1;
 break;
 }
 }
-if(i==51)func_01ffa6fc(state);
+if(i==51)Sprite_ResumeAnimation(state);
 }
 

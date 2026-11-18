@@ -170,6 +170,18 @@ typedef struct PackedBankEntry {
 #define SOUND_CHANNEL_SAMPLE_ADDR   0 /* s32 address of the channel's current sample */
 #define SOUND_CHANNEL_TIMER_PERIOD  4 /* s32 timer period the channel plays at */
 
+/* The game's sound wrapper state (gSoundState): the SDK sound player it keeps
+ * running, the heap that player lives in, and the sound ids already started this
+ * frame (a sound effect plays at most once per frame). */
+#define SOUND_STATE_ENABLED      0x00 /* u8 nonzero once the sound system is up */
+#define SOUND_STATE_READY        0x04 /* u8 nonzero once the sound player can be addressed */
+#define SOUND_STATE_PLAYER       0x10 /* void *SDK sound player */
+#define SOUND_STATE_HEAP         0x14 /* s32 sound heap block */
+#define SOUND_STATE_PLAYED_COUNT 0x18 /* s32 sound ids started this frame */
+#define SOUND_STATE_FRAME        0x1C /* s32 gFrameCounter the count belongs to */
+#define SOUND_PLAYED_MAX         8    /* sound ids remembered per frame (gSoundFrameIds) */
+#define SOUND_SLOT_COUNT         4    /* sound effect slots (gSoundSlotHandles) */
+
 /* Menu sounds handed to PlaySoundEffect. */
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
 #define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */

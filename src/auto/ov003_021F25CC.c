@@ -244,7 +244,7 @@ void InitMapSelectScreen(s32 arg0) {
     void func_02082c84(void);
     void Set3DSpriteVramBanks(void);
     void func_02003560(void);
-    void func_02002bb8(s32);
+    void GX_SetBankForObjExtPalette(s32);
     void func_020035bc(void);
     void func_02002ab8(s32);
     void func_ov003_021f1ab8(s32);
@@ -275,7 +275,7 @@ void InitMapSelectScreen(s32 arg0) {
     func_02082c84();
     Set3DSpriteVramBanks();
     func_02003560();
-    func_02002bb8(0x40);
+    GX_SetBankForObjExtPalette(0x40);
     func_020035bc();
     func_02002ab8(0x20);
     func_ov003_021f1ab8((s32)&data_ov003_0220fcb4);
@@ -356,7 +356,7 @@ void InitMapSelectScreen(s32 arg0) {
 /* Advance the cursor/movement state machine for the current entry. */
 void func_ov003_021f2e98(s32 entry) {
  M2C_UNK func_ov003_021f17e0(); M2C_UNK SetSpriteAnimation(M2C_UNK,M2C_UNK);
- void func_01ffa6fc(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
+ void Sprite_ResumeAnimation(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
  s32 func_ov003_021f1bfc(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
  void func_02086330(void); void func_02085054(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
@@ -383,14 +383,14 @@ void func_ov003_021f2e98(s32 entry) {
  switch(func_ov003_021f1bfc()) {
  case 0: default: return;
  case 1:
- if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {EnableMapConfirm();func_01ffa6fc(entry);return;}
+ if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {EnableMapConfirm();Sprite_ResumeAnimation(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
  else {if(!GetSceneSlideOffset()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
- if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();func_02086330();func_02085054(0,0x6e0,entry);func_01ffa6fc(entry);return;}
+ if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();func_02086330();func_02085054(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);

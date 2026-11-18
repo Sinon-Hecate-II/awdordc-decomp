@@ -241,7 +241,7 @@ switch(M2C_FIELD(packet,PacketBits215a4*,5).high){
 case 0:func_ov009_02223640(12,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg0,u32*,0x40),func_ov009_02221538);break;
 case 1:func_ov009_02223640(4,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg0,u32*,0x40),func_ov009_02221538);break;
 }
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }else{
 func_ov009_02224d1c(M2C_FIELD(arg0,s32*,0x3c));
 M2C_FIELD(arg0,s32*,0x3c)=0;M2C_FIELD(arg0,u32*,0x40)=0;
@@ -250,7 +250,7 @@ M2C_FIELD(arg0,s32*,0x3c)=0;M2C_FIELD(arg0,u32*,0x40)=0;
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
 void func_ov009_02221a94(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK func_ov009_02224d1c(s32);
     s32 var_r2;
 
@@ -264,7 +264,7 @@ loop_1:
         func_ov009_02224d1c(M2C_FIELD(arg0, s32 *, 0x3C));
         M2C_FIELD(arg0, s32 *, 0x3C) = 0;
         M2C_FIELD(arg0, s32 *, 0x40) = 0;
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     goto loop_1;

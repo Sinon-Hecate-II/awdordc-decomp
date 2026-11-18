@@ -406,9 +406,9 @@ M2C_UNK func_ov007_022193e0(void *arg0) {
 }
 
 M2C_UNK func_ov007_02219418(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221ff90;
-    return func_01ffa3dc(&data_ov007_0221ff90, 7);
+    return CreateSpriteFromClass(&data_ov007_0221ff90, 7);
 }
 
 M2C_UNK GetPanelObject(void) {

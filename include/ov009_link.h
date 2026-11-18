@@ -19,6 +19,7 @@ enum {
     LINK_PHASE_PENDING = 3, /* a WFC command is in flight; its completion advances the phase */
     LINK_PHASE_ACTIVE  = 4, /* link established; the menu treats 4/5 as in-game */
     LINK_PHASE_INGAME  = 5, /* second in-game phase; every check accepts 4 or 5 */
+    LINK_PHASE_FOUND   = 6, /* the player announcement finished; the local player is picked next */
     LINK_PHASE_RESULT  = 7, /* showing the result/status screen */
     LINK_PHASE_ERROR   = 8,
     LINK_PHASE_ABORTED = 9
@@ -42,6 +43,16 @@ enum {
 /* gLinkState +0x28: u16 * mask of the player announcement in flight; the actor
  * stores its own bit there until every connected peer has answered. */
 #define LINK_STATE_ANNOUNCE 0x28
+/* gLinkState +0x04: u16 bit (player slot - 1) of every player the announcement
+ * found, and +0x0A the value those answers report: an answer that reports a lower
+ * value than the stored one starts the mask over, an equal one adds its bit. */
+#define LINK_STATE_PLAYER_MASK  0x04
+#define LINK_STATE_ANNOUNCE_KEY 0x0A
+
+/* Return code of the announcer when no further player slot is left to ask. */
+#define LINK_ANNOUNCE_DONE 0x19
+/* WFC commands whose task returned 2 are queued and still running. */
+#define LINK_TASK_QUEUED 2
 /* gLinkState +0x50: s32 bit per player slot whose link result has been handled. */
 #define LINK_STATE_RESULT_FLAGS 0x50
 

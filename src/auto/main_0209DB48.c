@@ -215,14 +215,14 @@ void func_0209e034(void *arg0) {
 }
 
 void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
-    void **func_01ffa3dc(M2C_UNK *, s32);
+    void **CreateSpriteFromClass(M2C_UNK *, s32);
     s32 HeapAllocBlock(u32);
     void func_01ffa8bc(void *, s32);
     void TaskCreate(s32, void (*)(void *), void *, s32, u32, s32);
     void TaskWake(s32);
     extern M2C_UNK data_0211f7dc;
     void *p;
-    p = func_01ffa3dc(&data_0211f7dc, 3);
+    p = CreateSpriteFromClass(&data_0211f7dc, 3);
     M2C_FIELD(p, s32 *, 0x34) = HeapAllocBlock(0xC0);
     M2C_FIELD(p, s32 *, 0x38) = HeapAllocBlock(arg2);
     M2C_FIELD(p, s32 *, 0x3C) = arg4;
@@ -518,12 +518,12 @@ void func_0209e998(void) {
 }
 
 void **Alloc3DSprite(s32 arg0) {
-    void **func_01ffa3dc(M2C_UNK *, s32);
+    void **CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK func_02089108();
     extern M2C_UNK data_0211f810, data_0211f804;
     void **result;
     if (arg0 == 0) arg0 = 7;
-    result = func_01ffa3dc(&data_0211f810, arg0);
+    result = CreateSpriteFromClass(&data_0211f810, arg0);
     if (result != 0) {
         func_02089108();
         *result = &data_0211f804;
@@ -561,7 +561,7 @@ s32 func_0209ea0c(s32 arg0) {
  * when the tile holds no feature. */
 void StartBattlePreviewOnFeature(s32 x, s32 y, s32 arg2) {
     void *FindMapFeatureAtTile();
-    void **func_01ffa3dc(M2C_UNK *, s32);
+    void **CreateSpriteFromClass(M2C_UNK *, s32);
     extern void **gCurrentMap;
     extern M2C_UNK gBattleCommand, gBattlePreviewPanelDef;
     void *feature, *panel, *map;
@@ -581,7 +581,7 @@ void StartBattlePreviewOnFeature(s32 x, s32 y, s32 arg2) {
     damage = M2C_FIELD(*gCurrentMap, s16 *, MAP_BATTLE_DAMAGE);
     if (hp < damage) M2C_FIELD(feature, u8 *, 4) = 0;
     else M2C_FIELD(feature, u8 *, 4) = hp - damage;
-    panel = func_01ffa3dc(&gBattlePreviewPanelDef, 7);
+    panel = CreateSpriteFromClass(&gBattlePreviewPanelDef, 7);
     M2C_FIELD(panel, s32 *, 0x5c) = M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT);
     M2C_FIELD(panel, s32 *, 0x60) = arg2;
     M2C_FIELD(panel, void **, 0x34) = feature;

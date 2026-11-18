@@ -22,7 +22,7 @@ typedef struct UnkUnitOv003 {
 } UnkUnitOv003;
 
 void func_ov003_021f66d4(M2C_UNK arg0) {
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 Link_ReceivePacket(s32 *, M2C_UNK);
     M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
     M2C_UNK Link_FlushSend();
@@ -35,7 +35,7 @@ void func_ov003_021f66d4(M2C_UNK arg0) {
     buffer[1] = 0;
     Link_SendPacket(buffer, 0x24);
     Link_FlushSend();
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov003_021f6724(void *arg0) {

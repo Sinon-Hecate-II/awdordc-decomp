@@ -396,14 +396,14 @@ void Ov001_OpenWifiMenu(void) {
  M2C_UNK Ov001_LoadMenuResource(M2C_UNK);
  M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
  void func_ov001_02176a20(void);
- extern u8 gOv001ChoiceState;
+ extern u8 gOv001WifiMenuSelection;
    extern u16 gOv001ChoiceFrameLeft, gOv001ChoiceFrameTop, gOv001ChoiceFrameRight, gOv001ChoiceFrameBottom;
  s32 offset;
  func_ov001_02176934();
  func_ov001_02172250(0);
  Ov001_ShowMessagePanel(0x2e,-1,0);
  Ov001_LoadMenuResource(4);
- offset = gOv001ChoiceState * 8;
+ offset = gOv001WifiMenuSelection * 8;
  Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameRight,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameTop,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameBottom,u16 *,offset));
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176a20);
 }
@@ -418,7 +418,7 @@ void func_ov001_02176934(void) {
     extern M2C_UNK data_ov001_021904f4;
     extern M2C_UNK data_ov001_0219050c;
     extern M2C_UNK GX_LoadBGPltt;
-    extern u8 gOv001ChoiceState;
+    extern u8 gOv001WifiMenuSelection;
     extern M2C_UNK GX_LoadBG2Scr;
     extern M2C_UNK GX_LoadBG2Char;
     typedef struct { u8 bytes[22]; } Text;
@@ -426,7 +426,7 @@ void func_ov001_02176934(void) {
     Ov001_LoadAsset(&data_ov001_021904f4, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_0219050c, &GX_LoadBG2Scr);
     Ov001_LoadAsset(&data_ov001_021904dc, &GX_LoadBG2Char);
-    M2C_FIELD(&gOv001ChoiceState, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&text), 0, 4);
+    M2C_FIELD(&gOv001WifiMenuSelection, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&text), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -489,7 +489,7 @@ extern u8 gOv001ChoiceTouchRects[];
 /* Frame rectangle of each option: its left, right, top and bottom edge, one
  * entry every 8 bytes. */
 extern u16 gOv001ChoiceFrameLeft,gOv001ChoiceFrameRight,gOv001ChoiceFrameTop,gOv001ChoiceFrameBottom;
-extern u8 gOv001ChoiceState;
+extern u8 gOv001WifiMenuSelection;
 u32 index;u8 *rect;s32 offset;u16 left,right,top,bottom;
 rect=gOv001ChoiceTouchRects;
 for(index=0;index<2;index++,rect+=8){
@@ -500,7 +500,7 @@ left=M2C_FIELD(&gOv001ChoiceFrameLeft,u16 *,offset);
 right=M2C_FIELD(&gOv001ChoiceFrameRight,u16 *,offset);
 top=M2C_FIELD(&gOv001ChoiceFrameTop,u16 *,offset);
 bottom=M2C_FIELD(&gOv001ChoiceFrameBottom,u16 *,offset);
-M2C_FIELD(&gOv001ChoiceState,s8 *,0)=index;
+M2C_FIELD(&gOv001WifiMenuSelection,s8 *,0)=index;
 Ov001_LayoutChoiceFrame(left,right,top,bottom);return;
 }
 }
@@ -550,16 +550,19 @@ void func_ov001_02176c6c(void) {
 }
 
 void func_ov001_02176c8c(void) {
-    extern M2C_UNK func_ov001_02176cd8;
+    extern M2C_UNK Ov001_FinishWifiMenu;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x16, 8);
-    Ov001_SetStepCallback(&func_ov001_02176cd8);
+    Ov001_SetStepCallback(&Ov001_FinishWifiMenu);
 }
 
-void func_ov001_02176cd8(void) {
+/* Runs after the Wi-Fi menu's fade-outs have finished: frees the menu's sprites,
+ * background and text file, hides its planes, and hands over to whichever menu
+ * the player picked (the access-point list or the options menu). */
+void Ov001_FinishWifiMenu(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_FreeSpriteObjects();
     M2C_UNK Ov001_FreeOptionBackground();
@@ -567,7 +570,7 @@ void func_ov001_02176cd8(void) {
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern u8 gOv001ChoiceState;
+    extern u8 gOv001WifiMenuSelection;
     extern M2C_UNK Ov001_OpenAccessPointMenu;
     extern M2C_UNK Ov001_InitOptionMenu;
 
@@ -579,15 +582,15 @@ void func_ov001_02176cd8(void) {
     }
     Ov001_FreeSpriteObjects();
     Ov001_FreeOptionBackground();
-    Ov001_FreeFile(M2C_FIELD(&gOv001ChoiceState, s32 *, 4));
+    Ov001_FreeFile(M2C_FIELD(&gOv001WifiMenuSelection, s32 *, OV001_WIFI_MENU_TEXT));
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x14);
-    switch (gOv001ChoiceState) {                  /* irregular */
-    case 0:
+    switch (M2C_FIELD(&gOv001WifiMenuSelection, u8 *, OV001_WIFI_MENU_CHOICE)) {
+    case OV001_WIFI_MENU_ACCESS_POINT:
         Ov001_SetNextScreenMode(1, 0);
         Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenAccessPointMenu);
         return;
-    case 1:
+    case OV001_WIFI_MENU_OPTIONS:
         Ov001_SetNextScreenMode(0, 0);
         Ov001_SetStepCallback((M2C_UNK *)&Ov001_InitOptionMenu);
         return;
@@ -598,23 +601,23 @@ void Ov001_MoveChoiceSelection(s32 arg0) {
     M2C_UNK Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     extern u16 gOv001ChoiceFrameLeft, gOv001ChoiceFrameTop, gOv001ChoiceFrameRight, gOv001ChoiceFrameBottom;
-    extern u8 gOv001ChoiceState;
+    extern u8 gOv001WifiMenuSelection;
     s32 offset;
 
     if ((arg0 != 1) && (arg0 != 3)) {
-        gOv001ChoiceState ^= 1;
+        gOv001WifiMenuSelection ^= 1;
         Ov001_PlaySound(8);
-        offset = gOv001ChoiceState * 8;
+        offset = gOv001WifiMenuSelection * 8;
         Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft, u16 *, offset), M2C_FIELD(&gOv001ChoiceFrameRight, u16 *, offset), M2C_FIELD(&gOv001ChoiceFrameTop, u16 *, offset), M2C_FIELD(&gOv001ChoiceFrameBottom, u16 *, offset));
     }
 }
 
 void func_ov001_02176df0(void) {
 M2C_UNK Ov001_LoadObjTile(s32,u8,u8);
-extern u8 gOv001ChoiceState;
+extern u8 gOv001WifiMenuSelection;
 struct MenuValues2 table=data_ov001_0218f6f4;
-u8 value=table.values[gOv001ChoiceState];
-Ov001_LoadObjTile(M2C_FIELD(&gOv001ChoiceState,s32 *,4),value,value);
+u8 value=table.values[gOv001WifiMenuSelection];
+Ov001_LoadObjTile(M2C_FIELD(&gOv001WifiMenuSelection,s32 *,4),value,value);
 }
 
 void Ov001_OpenWfcSettingsScreen(void) {

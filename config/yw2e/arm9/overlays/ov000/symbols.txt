@@ -129,7 +129,7 @@ func_ov000_0216ea1c kind:function(arm,size=0x160) addr:0x0216ea1c
 func_ov000_0216eb7c kind:function(arm,size=0x30) addr:0x0216eb7c
 func_ov000_0216ebac kind:function(arm,size=0x2c) addr:0x0216ebac
 func_ov000_0216ebd8 kind:function(arm,size=0x44) addr:0x0216ebd8
-func_ov000_0216ec1c kind:function(arm,size=0xac) addr:0x0216ec1c
+CountCurrentPlayerUnits kind:function(arm,size=0xac) addr:0x0216ec1c
 ScrollListRebuild kind:function(arm,size=0x4ec) addr:0x0216ecc8
 func_ov000_0216f1b4 kind:function(arm,size=0x21c) addr:0x0216f1b4
 func_ov000_0216f3d0 kind:function(arm,size=0x4f4) addr:0x0216f3d0
@@ -682,8 +682,8 @@ func_ov000_021a605c kind:function(arm,size=0x78) addr:0x021a605c
 func_ov000_021a60d4 kind:function(arm,size=0x7c) addr:0x021a60d4
 FindAiTargetByCost kind:function(arm,size=0x7c) addr:0x021a6150
 func_ov000_021a61cc kind:function(arm,size=0x98) addr:0x021a61cc
-func_ov000_021a6264 kind:function(arm,size=0xac) addr:0x021a6264
-func_ov000_021a6310 kind:function(arm,size=0xa8) addr:0x021a6310
+FindAiBuildTargetCandidate kind:function(arm,size=0xac) addr:0x021a6264
+FindNearestTargetCandidateOfType kind:function(arm,size=0xa8) addr:0x021a6310
 func_ov000_021a63b8 kind:function(arm,size=0x88) addr:0x021a63b8
 func_ov000_021a6440 kind:function(arm,size=0x84) addr:0x021a6440
 func_ov000_021a64c4 kind:function(arm,size=0x64) addr:0x021a64c4
@@ -711,7 +711,7 @@ func_ov000_021a7e98 kind:function(arm,size=0x84) addr:0x021a7e98
 func_ov000_021a7f1c kind:function(arm,size=0x51c) addr:0x021a7f1c
 SelectUnitForTargetCandidate kind:function(arm,size=0x1d4) addr:0x021a8438
 func_ov000_021a860c kind:function(arm,size=0xd0) addr:0x021a860c
-func_ov000_021a86dc kind:function(arm,size=0xa8) addr:0x021a86dc
+PlayerHasHealthyCounterUnit kind:function(arm,size=0xa8) addr:0x021a86dc
 func_ov000_021a8784 kind:function(arm,size=0x98) addr:0x021a8784
 CountPlayerUnitsOfKindNotInAiState kind:function(arm,size=0xac) addr:0x021a881c
 CountPlayerUnitsOfKind kind:function(arm,size=0xbc) addr:0x021a88c8
@@ -1960,7 +1960,7 @@ data_ov000_021df594 kind:data(any) addr:0x021df594
 data_ov000_021df598 kind:data(any) addr:0x021df598
 data_ov000_021df5c0 kind:bss addr:0x021df5c0
 gArmyInfoState kind:bss addr:0x021df5e0
-data_ov000_021df5e4 kind:bss addr:0x021df5e4
+gUnitListRows kind:bss addr:0x021df5e4
 data_ov000_021df5ec kind:bss addr:0x021df5ec
 data_ov000_021df5f0 kind:bss addr:0x021df5f0
 gOv000InfoWindow kind:bss addr:0x021df5fc

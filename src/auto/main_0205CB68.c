@@ -410,7 +410,7 @@ s32 gt2StringToAddress(char *string, s32 *ipOut, u16 *portOut) {
     M2C_UNK AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void MemCopy(void *, const void *, s32);
     s32 ParseInt(char *);
-    s32 func_020498e4(void *);
+    s32 ghiInetAddr(void *);
     void *ghiResolveHostname(void *);
     extern u16 gCharClassTable[];
     extern char sAssertLenHostLenMax[];
@@ -458,7 +458,7 @@ s32 gt2StringToAddress(char *string, s32 *ipOut, u16 *portOut) {
             }
         }
         if (host != 0) {
-            ipValue = func_020498e4(host);
+            ipValue = ghiInetAddr(host);
             if (ipValue == -1) {
                 void *hostent = ghiResolveHostname(host);
                 if (hostent == 0) {

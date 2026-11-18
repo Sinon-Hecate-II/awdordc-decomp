@@ -190,26 +190,26 @@ void func_ov001_0216d050(s32 *arg0, M2C_UNK arg1, s32 arg2) {
 #pragma thumb on
 
 void func_ov001_0216d060(s32 arg0) {
- void func_020062fc(void *, s32, s32);
+ void OS_SendMessage(void *, s32, s32);
  extern s32 data_ov001_02192600;
- func_020062fc(&data_ov001_02192600, arg0, 0);
+ OS_SendMessage(&data_ov001_02192600, arg0, 0);
 }
 
 void func_ov001_0216d074(s32 arg0) {
- void func_020062fc(void *, s32, s32);
+ void OS_SendMessage(void *, s32, s32);
  extern s32 data_ov001_02192600;
- func_020062fc(&data_ov001_02192600, arg0, 0);
+ OS_SendMessage(&data_ov001_02192600, arg0, 0);
 }
 
 s32 func_ov001_0216d1e4(void) {
-    s32 func_02006390(void *, s32 *, s32);
+    s32 OS_ReceiveMessage(void *, s32 *, s32);
     extern s32 data_ov001_02192600;
     s32 msg;
     s32 result = -1;
     s32 again;
     if (func_ov001_0216da10()) {
         do {
-            func_02006390(&data_ov001_02192600, &msg, 1);
+            OS_ReceiveMessage(&data_ov001_02192600, &msg, 1);
             if (msg == 14) {
                 again = 0;
                 result = again;
@@ -226,7 +226,7 @@ s32 func_ov001_0216d1e4(void) {
 #pragma opt_propagation off
 #pragma thumb on
 s32 func_ov001_0216d394(void *arg0,s32 *arg1){
- s32 func_02006390(void *,s32 *,s32);void func_02007190(void *);void func_020072cc(void *,s32,s32,void *,s32);void func_02007338(void *);
+ s32 OS_ReceiveMessage(void *,s32 *,s32);void func_02007190(void *);void func_020072cc(void *,s32,s32,void *,s32);void func_02007338(void *);
  void MI_CpuFill8(s32,u8);void func_02029220(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
  extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
@@ -249,7 +249,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  tries=0;func_02007190(timer);func_020072cc(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
  goto test;
  do {
- func_02006390(&data_ov001_02192600,&msg,1);
+ OS_ReceiveMessage(&data_ov001_02192600,&msg,1);
  switch(msg){
  case 18:if(!ready){active=0;}
  case 19:goto test;
@@ -273,7 +273,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  default:active=0;break;
  } next:; test:; }while(active);
  func_02007338(timer);
- while(func_02006390(&data_ov001_02192600,&msg,0)==1){}
+ while(OS_ReceiveMessage(&data_ov001_02192600,&msg,0)==1){}
  }
  func_ov001_0216d050(arg1,(s32)&data_ov001_02192620,result==0);
  return result;

@@ -123,7 +123,7 @@ void func_ov001_0218c4c0(void) {
     void GX_SetBankForBG(s32);
     void GX_SetBankForOBJ(s32);
     void func_02002ab8(s32);
-    void func_02002bb8(s32);
+    void GX_SetBankForObjExtPalette(s32);
     void GX_SetBankForTex(s32);
     void GX_SetBankForOBJExtPltt(s32);
     void GX_SetBankForTexExtPltt(s32);
@@ -141,7 +141,7 @@ void func_ov001_0218c4c0(void) {
     GX_SetBankForBG(gVramBankGrants[0]);
     GX_SetBankForOBJ(gVramBankGrants[1]);
     func_02002ab8(gVramBankGrants[2]);
-    func_02002bb8(gVramBankGrants[3]);
+    GX_SetBankForObjExtPalette(gVramBankGrants[3]);
     GX_SetBankForTex(gVramBankGrants[4]);
     GX_SetBankForOBJExtPltt(gVramBankGrants[5]);
     GX_SetBankForTexExtPltt(gVramBankGrants[6]);

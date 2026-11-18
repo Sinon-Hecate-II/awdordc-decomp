@@ -15,7 +15,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
-    M2C_UNK func_02002bb8(M2C_UNK);
+    M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
     M2C_UNK func_0200323c(M2C_UNK);
@@ -146,7 +146,7 @@ void func_ov005_02218fd0(void *arg0) {
     func_02003124(4);
     func_020031cc(8);
     func_02002ab8(0x40);
-    func_02002bb8(0x20);
+    GX_SetBankForObjExtPalette(0x20);
     func_0200323c(0x80);
     func_020032bc(0x100);
     func_02091cd0();
@@ -402,7 +402,7 @@ M2C_FIELD(p,u16 **,0x54)[i]=BlendRgb555_16(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32
 }
 M2C_FIELD(data_027e01d8,u8 *,0x46)|=16;
 if(M2C_FIELD(p,s32 *,0x5c)==M2C_FIELD(p,s32 *,0x60)){
-M2C_FIELD(p,s32 *,0x5c)=0;func_01ffa6fc(p);
+M2C_FIELD(p,s32 *,0x5c)=0;Sprite_ResumeAnimation(p);
 }
 }
 
@@ -420,7 +420,7 @@ M2C_FIELD(p,u16 **,0x54)[i]=BlendRgb555_16(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32
 i++; }while(i<16);
 M2C_FIELD(data_027e01d8,u8 *,0x46)|=16;
 if(M2C_FIELD(p,s32 *,0x5c)==M2C_FIELD(p,s32 *,0x64)){
-M2C_FIELD(p,s32 *,0x5c)=0;func_01ffa6fc(p);
+M2C_FIELD(p,s32 *,0x5c)=0;Sprite_ResumeAnimation(p);
 }
 }
 #pragma pop
@@ -458,7 +458,7 @@ SetFileDirectory(sResultDir);
 LoadDecompressedFileTo(sResultBackgroundFile,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
-func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;func_01ffa6fc(p);
+func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;Sprite_ResumeAnimation(p);
 }
 }
 

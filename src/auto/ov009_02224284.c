@@ -308,7 +308,7 @@ s32 func_ov009_02224718(s32 arg0) {
 s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK ResetLinkQueues(void);
-    void *func_01ffa3dc(M2C_UNK, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK, M2C_UNK);
     void MI_CpuFill32(s32, void *, s32);
     void ConstructArray(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
@@ -409,14 +409,14 @@ test:
     M2C_FIELD(&data_ov009_022269e0,u16 *,0x14)=0;
     M2C_FIELD(&gLinkState,s32 *,0x100)=(s32)&data_ov009_02226a20;
     M2C_FIELD(&data_ov009_022269e0,u16 *,4)=0x60;
-    ptr = func_01ffa3dc((s32)&gLinkActorClass, 3);
+    ptr = CreateSpriteFromClass((s32)&gLinkActorClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
         M2C_FIELD(ptr, u16 *, 0x34) = 0;
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
         MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
     }
-    ptr = func_01ffa3dc((s32)&data_ov009_02226638, 3);
+    ptr = CreateSpriteFromClass((s32)&data_ov009_02226638, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226688;
         M2C_FIELD(ptr, s32 *, 0x34) = 0;
@@ -426,7 +426,7 @@ test:
         M2C_FIELD(ptr, u16 *, 0x44) = 0;
         M2C_FIELD(ptr, u16 *, 0x46) = 0;
     }
-    ptr = func_01ffa3dc((s32)&data_ov009_022264e0, 3);
+    ptr = CreateSpriteFromClass((s32)&data_ov009_022264e0, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
@@ -457,7 +457,7 @@ void *func_ov009_0222497c(void *arg0) {
 s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK ResetLinkQueues(void);
-    void *func_01ffa3dc(M2C_UNK, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK, M2C_UNK);
     void MI_CpuFill32(s32, void *, s32);
     void ConstructArray(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
@@ -538,14 +538,14 @@ test:
     stk[0].second = y;
     M2C_FIELD(&gLinkState, s32 *, 0x24) = 0;
 
-    ptr = func_01ffa3dc((s32)&gLinkActorClass, 3);
+    ptr = CreateSpriteFromClass((s32)&gLinkActorClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
         M2C_FIELD(ptr, u16 *, 0x34) = 0;
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
         MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
     }
-    ptr = func_01ffa3dc((s32)&data_ov009_02226638, 3);
+    ptr = CreateSpriteFromClass((s32)&data_ov009_02226638, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226688;
         M2C_FIELD(ptr, s32 *, 0x34) = 0;
@@ -555,7 +555,7 @@ test:
         M2C_FIELD(ptr, u16 *, 0x44) = 0;
         M2C_FIELD(ptr, u16 *, 0x46) = 0;
     }
-    ptr = func_01ffa3dc((s32)&data_ov009_022264e0, 3);
+    ptr = CreateSpriteFromClass((s32)&data_ov009_022264e0, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;

@@ -134,7 +134,7 @@ void Ov001_UpdateScrollbarDrag(void) {
 }
 
 void Ov001_PlayScrollDragSound(s32 arg0) {
-    s32 func_02002088(s32, s32);
+    s32 HardwareDivide(s32, s32);
     void func_ov001_02185048(M2C_UNK);
     void func_ov001_02185068(s32, s32);
     extern void *gOv001Scrollbar;
@@ -147,8 +147,8 @@ void Ov001_PlayScrollDragSound(s32 arg0) {
     if (r4 < 0) {
         r4 = -r4;
     }
-    func_ov001_02185048(r4 < 2 ? 0 : (r4 >= 6 ? 0x7F : func_02002088(0x7F, 6 - r4)));
-    r1 = r4 < 2 ? -256 : (r4 >= 6 ? 0x100 : func_02002088(0x200, 6 - r4) - 0x100);
+    func_ov001_02185048(r4 < 2 ? 0 : (r4 >= 6 ? 0x7F : HardwareDivide(0x7F, 6 - r4)));
+    r1 = r4 < 2 ? -256 : (r4 >= 6 ? 0x100 : HardwareDivide(0x200, 6 - r4) - 0x100);
     func_ov001_02185068(0xFFFF, r1);
 }
 

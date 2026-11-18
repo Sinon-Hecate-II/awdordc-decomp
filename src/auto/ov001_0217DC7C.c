@@ -120,7 +120,7 @@ Ov001_FreeAlloc(&data_ov001_02193db4);
  * matching slice of the list background into the map-preview tilemap, queue that
  * tilemap's upload and place the row sprites. */
 void MapListRedrawInfoPanel(void) {
-    s32 func_02002088(u16, s32);
+    s32 HardwareDivide(u16, s32);
     void DrawMapInfoRowText(s32, s32);
     void DrawMapInfoRowIcon(s32, s32);
     void MapListUpdateRowSprites(void);
@@ -134,7 +134,7 @@ void MapListRedrawInfoPanel(void) {
     s32 row;
     s32 line;
 
-    topRow = func_02002088(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    topRow = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
     TextPanel_ClearText(M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_TEXT_PANEL), 0);
     row = topRow;
     line = 0;
@@ -367,9 +367,9 @@ void DrawMapInfoDottedValue(void *arg0, s32 arg1) {
 #pragma push
 #pragma opt_strength_reduction off
 void MapListUpdateRowSprites(void){
-s32 func_02002088(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;
+s32 HardwareDivide(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;
 s32 row,y,i,v;u32 *p;u32 xy[2];
-row=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
+row=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
 y=52-func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29);
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u32 **,0x34)){
 p=M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u32 **,0x34);

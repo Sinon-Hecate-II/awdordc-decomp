@@ -67,9 +67,9 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_ov007_0221ab20(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_022200b0;
-    func_01ffa3dc(&data_ov007_022200b0, 7);
+    CreateSpriteFromClass(&data_ov007_022200b0, 7);
 }
 
 void func_ov007_0221ab38(void) {

@@ -10,7 +10,7 @@ return result;
 extern void *gCur3DSpriteEngine;
 
 void func_020c4d28(M2C_UNK arg0) {
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 func_020761f8();
     s32 func_02076208();
     M2C_UNK func_02076244();
@@ -22,11 +22,11 @@ void func_020c4d28(M2C_UNK arg0) {
         GetLocalizedText(0xC000034C);
         func_02076244();
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 M2C_UNK func_020c4d64(s32 arg0, s32 arg1) {
-void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
 void *CreateSpriteObject(M2C_UNK *, s32);
 extern M2C_UNK data_0212a65c, data_0212a53c;
 s32 var_r5;
@@ -41,7 +41,7 @@ M2C_FIELD(temp_r0,M2C_UNK **,0)=&data_0212a53c;
 M2C_FIELD(temp_r0,s32 *,0x34)=var_r5;
 return;
 }
-temp_r0_2=func_01ffa3dc(&data_0212a65c,3);
+temp_r0_2=CreateSpriteFromClass(&data_0212a65c,3);
 if(temp_r0_2!=NULL) {
 M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a53c;
 M2C_FIELD(temp_r0_2,s32 *,0x34)=var_r5;
@@ -140,11 +140,11 @@ void func_020c4ff4(M2C_UNK arg0) {
         GetLocalizedText(0xC000034D);
         func_02076244();
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020c5030(s32 arg0, s32 arg1) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, s32);
     extern M2C_UNK data_0212a500;
     extern M2C_UNK data_0212a55c;
@@ -165,7 +165,7 @@ void func_020c5030(s32 arg0, s32 arg1) {
         M2C_FIELD(temp_r0, s32 *, 0x34) = var_r5;
         return;
     }
-    temp_r0_2 = func_01ffa3dc(&data_0212a55c, 3);
+    temp_r0_2 = CreateSpriteFromClass(&data_0212a55c, 3);
     if (temp_r0_2 != NULL) {
         M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &data_0212a500;
         M2C_FIELD(temp_r0_2, s32 *, 0x34) = var_r5;
@@ -202,11 +202,11 @@ void func_020c5230(M2C_UNK arg0) {
         GetLocalizedText(0xC000034D);
         func_02076244();
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 M2C_UNK func_020c526c(s32 arg0, s32 arg1) {
-void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
 void *CreateSpriteObject(M2C_UNK *, s32);
 extern M2C_UNK data_0212a594, data_0212a528;
 s32 var_r5;
@@ -221,7 +221,7 @@ M2C_FIELD(temp_r0,M2C_UNK **,0)=&data_0212a528;
 M2C_FIELD(temp_r0,s32 *,0x34)=var_r5;
 return;
 }
-temp_r0_2=func_01ffa3dc(&data_0212a594,3);
+temp_r0_2=CreateSpriteFromClass(&data_0212a594,3);
 if(temp_r0_2!=NULL) {
 M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a528;
 M2C_FIELD(temp_r0_2,s32 *,0x34)=var_r5;

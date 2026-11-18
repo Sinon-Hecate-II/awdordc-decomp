@@ -343,25 +343,28 @@ s32 gpiThink(void **connection, s32 waitId) {
     return result;
 }
 
-s32 gpiAppendAuthAddCommand(void **arg0, void *arg1) {
+/* Builds the authadd request on the connection's send buffer: the command name,
+ * the session key, the profile the friend add comes from, that profile's
+ * signature and the final marker. Always reports success. */
+s32 gpiAppendAuthAddCommand(void **connection, void *profile) {
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, s32);
-    extern M2C_UNK data_020fdd94;
+    extern M2C_UNK gpiKeyAuthAdd;
     extern M2C_UNK gpiKeySessionKey;
-    extern M2C_UNK data_020fddac;
-    extern M2C_UNK data_020fddbc;
+    extern M2C_UNK gpiKeyFromProfileID;
+    extern M2C_UNK gpiKeySig;
     extern M2C_UNK gpiKeyFinal;
-    void *temp_r4;
+    void *conn;
 
-    temp_r4 = *arg0;
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdd94);
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &gpiKeySessionKey);
-    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddac);
-    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, s32 *, 0));
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddbc);
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, M2C_UNK **, 0x10));
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &gpiKeyFinal);
+    conn = *connection;
+    gpiAppendStringField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, &gpiKeyAuthAdd);
+    gpiAppendStringField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, &gpiKeySessionKey);
+    gpiAppendIntField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, M2C_FIELD(conn, s32 *, GPI_CONN_SESSION_KEY));
+    gpiAppendStringField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, &gpiKeyFromProfileID);
+    gpiAppendIntField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, M2C_FIELD(profile, s32 *, 0));
+    gpiAppendStringField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, &gpiKeySig);
+    gpiAppendStringField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, M2C_FIELD(profile, M2C_UNK **, 0x10));
+    gpiAppendStringField(connection, (u8 *)conn + GPI_CONN_OUTPUT_BUFFER, &gpiKeyFinal);
     return 0;
 }
 

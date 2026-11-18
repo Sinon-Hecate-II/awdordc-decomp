@@ -21,14 +21,25 @@
 #define REG_SUB_BG1CNT (*(volatile u16 *)0x0400100A)
 #define BG_PRIORITY_MASK 3
 
+/* Display control of the main engine (the sub engine's copy is at 0x04001000). */
+#define REG_DISPCNT (*(volatile u32 *)0x04000000)
+/* DISPCNT bits 30 and 31 switch the main engine's extended palettes on: bit 30
+ * for the backgrounds, bit 31 for the OBJ (sprite) characters. */
+#define DISPCNT_BG_EXT_PALETTE  0x40000000
+#define DISPCNT_OBJ_EXT_PALETTE 0x80000000
+
 /* 3D display control. */
 #define REG_DISP3DCNT (*(volatile u16 *)0x04000060)
 
 /* Geometry engine command ports.  Writing a command's parameters to these
  * FIFO ports queues the command; see GBATEK's GX command list. */
 #define REG_GX_MTX_MODE   (*(volatile u32 *)0x04000440)
+#define REG_GX_MTX_PUSH   (*(volatile u32 *)0x04000444)
+#define REG_GX_MTX_POP    (*(volatile u32 *)0x04000448)
 #define REG_GX_MTX_STORE  (*(volatile u32 *)0x0400044C)
 #define REG_GX_MTX_IDENTITY (*(volatile u32 *)0x04000454)
+#define REG_GX_MTX_SCALE  (*(volatile u32 *)0x0400046C) /* 3 writes: sx, sy, sz in 20.12 */
+#define REG_GX_MTX_TRANS  (*(volatile u32 *)0x04000470) /* 3 writes: tx, ty, tz in 20.12 */
 #define REG_GX_SWAP_BUFFERS (*(volatile u32 *)0x04000540)
 #define REG_GX_COLOR      (*(volatile u32 *)0x04000480)
 #define REG_GX_TEX_COORD  (*(volatile u32 *)0x04000488)
@@ -88,6 +99,12 @@ enum {
 /* A bank control value for a run of main-engine OBJ (sprite) banks. */
 #define VRAM_CR_MAIN_OBJ(ofs) ((u8)(0x82 | ((ofs) << 3)))
 
+/* A bank control value that maps a VRAM bank into the main engine's extended
+ * palette area: MST 4 is the background palette, 5 the OBJ (sprite) palette, and
+ * bits 3..4 pick the palette slot inside that area. */
+#define VRAM_CR_MAIN_BG_PALETTE(slot)  ((u8)(0x84 | ((slot) << 3)))
+#define VRAM_CR_MAIN_OBJ_PALETTE(slot) ((u8)(0x85 | ((slot) << 3)))
+
 /* Field offsets of the allocator state (gVramBankState). */
 #define VRAM_BANKS_PENDING 0x00 /* banks released by the last change, set back to 0x80 */
 #define VRAM_BANKS_BG      0x02 /* banks assigned to the main engine background */
@@ -95,6 +112,7 @@ enum {
 #define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
 #define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
 #define VRAM_BANKS_OBJ_EXTPLTT 0x0A /* banks assigned to the OBJ extended palette */
+#define VRAM_BANKS_OBJ_PALETTE 0x10 /* banks assigned to the main engine OBJ extended palette (MST 5 area) */
 #define VRAM_BANKS_OBJ_CD  0x06 /* banks assigned to the OBJ area built from banks C/D */
 
 /* 3D engine state and render parameters. */

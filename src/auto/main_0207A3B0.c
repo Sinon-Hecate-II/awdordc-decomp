@@ -1,6 +1,9 @@
 /* 20 functions from 0x0207A3B0 to 0x0207B2F0 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "gx.h"
+#include "sprite.h"
+#include "gx.h"
 
 #pragma push
 #pragma opt_propagation off
@@ -89,12 +92,12 @@ void func_0207a710(void *arg0) {
     if (temp_r0 == 0) {
         return;
     }
-    M2C_FIELD(func_01ffa3dc(temp_r0, arg0), s16 *, 0x6C) = (s16) M2C_FIELD(arg0, s16 *, 0x6C);
+    M2C_FIELD(CreateSpriteFromClass(temp_r0, arg0), s16 *, 0x6C) = (s16) M2C_FIELD(arg0, s16 *, 0x6C);
 }
 
-void func_0207a748(s16 arg0) {
+void SetMapCursorVisible(s16 arg0) {
     extern M2C_UNK data_02100bb0;
-    M2C_FIELD(func_01ffa3dc(&data_02100bb0, 7), s16 *, 0x6C) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_02100bb0, 7), s16 *, 0x6C) = arg0;
 }
 
 void func_0207a768(void) {
@@ -470,7 +473,7 @@ void func_0207ad30(s32 value) {
     }
 }
 
-void func_0207ae2c(void *arg0) {
+void InitCursorCellBurst(void *arg0) {
     void *HeapAllocBlock(s32);
     extern void *gCurrentMap;
 
@@ -530,28 +533,31 @@ void func_0207ae2c(void *arg0) {
     }
 }
 
-void func_0207af6c(void *arg0) {
+void FreeCursorCellBurst(void *arg0) {
     M2C_UNK HeapFreeBlock(s32);
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
-void func_0207af7c(void *arg0){
-s16 (*p)[4]=M2C_FIELD(arg0,void **,0x54);s16 i;
-if(M2C_FIELD(arg0,s16 *,0x6e)==8){func_0207a748(1);DeleteSpriteObject(arg0);return;}
-M2C_FIELD(arg0,s16 *,0x6e)++;
-if(M2C_FIELD(arg0,s16 *,0x6c)>204)return;
+/* One frame of the cursor-cell burst transition: move every motion point by its
+ * velocity, and once eight frames have run tell SetMapCursorVisible the effect is
+ * over and delete the effect's sprite. */
+void UpdateCursorCellBurst(void *sprite){
+s16 (*points)[4]=M2C_FIELD(sprite,void **,SPRITE_SCATTER_POINTS);s16 i;
+if(M2C_FIELD(sprite,s16 *,SPRITE_SCATTER_FRAME)==SPRITE_SCATTER_FRAMES){SetMapCursorVisible(1);DeleteSpriteObject(sprite);return;}
+M2C_FIELD(sprite,s16 *,SPRITE_SCATTER_FRAME)++;
+if(M2C_FIELD(sprite,s16 *,SPRITE_SCATTER_COUNT)>SPRITE_SCATTER_MAX)return;
 SetSpritePaletteBase();
-for(i=0;i<M2C_FIELD(arg0,s16 *,0x6c);i++){
-p[i][0]+=p[i][2];
-p[i][1]+=p[i][3];
-*(volatile u32 *)0x040004a4=0x1f0080;
+for(i=0;i<M2C_FIELD(sprite,s16 *,SPRITE_SCATTER_COUNT);i++){
+points[i][0]+=points[i][2];
+points[i][1]+=points[i][3];
+REG_GX_POLYGON_ATTR=GX_POLYGON_DEFAULT;
 }
 }
 
-void func_0207b028(M2C_UNK arg0) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+void CreateCursorCellBurst(M2C_UNK arg0) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02100bd0;
-    func_01ffa3dc(&data_02100bd0, arg0);
+    CreateSpriteFromClass(&data_02100bd0, arg0);
 }
 
 void func_0207b040(void) {

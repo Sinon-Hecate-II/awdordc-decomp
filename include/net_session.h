@@ -10,6 +10,8 @@
 #define NET_SESSION_GAME_NAME      0x68 /* char * service name */
 #define NET_SESSION_LOGIN_CALLBACK 0x70 /* void (*)(s32 error, s32 profileId, s32 data) */
 #define NET_SESSION_LOGIN_DATA     0x74 /* s32 callback data */
+#define NET_SESSION_MATCH_CALLBACK 0x78 /* void (*)(s32 event, s32 data, s32 arg): match-making event callback, invoked once the session state has been restored */
+#define NET_SESSION_MATCH_DATA     0x7c /* s32 argument passed to the match callback */
 
 /* The session states whose online subsystem reports an operation's error. */
 enum {

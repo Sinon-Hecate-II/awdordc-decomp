@@ -5,7 +5,7 @@ typedef struct {u16 hp:7;u16 ammo:4;u16 flags:5;} DisplayHealth;
 typedef struct {u8 fuel:7;u8 flag:1;} DisplayFuel;
 extern void **gCurrentMap;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern s32 data_ov000_021df5e4;
+extern s32 gUnitListRows;
 extern u32 gUnitKindStats[];
 extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[],data_ov000_021b5c0b[];
 int func_020a8b9c(void);int func_020a8b90(void);int func_020a8bb4(void);int func_020a8ba8(void);int func_020a8b78(void);int func_020a8b84(void);
@@ -21,7 +21,7 @@ void ScrollListRebuild(s32 mode,s32 reverse){
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern s8 data_ov000_021aab79[];
-extern M2C_UNK data_ov000_021df5e4;
+extern M2C_UNK gUnitListRows;
 extern u32 gUnitKindStats[];
 void *HeapAllocBlock(s32);void HeapFreeBlock(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 Divide(s32,s32);
@@ -32,27 +32,27 @@ for(t=1;t<27;t++,order++){
 for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){
 map=*gCurrentMap;p=map+0x59a4+i*14;
 v=(u32)(p[0]<<26)>>26;
-if(v && v==*order)((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[n++]=i-M2C_FIELD(map,u16 *,0x52a8);
+if(v && v==*order)((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[n++]=i-M2C_FIELD(map,u16 *,0x52a8);
 }}
-((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[n]=0;
+((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[n]=0;
 out=0;
 switch(mode){
-case 0:MI_CpuCopy8(M2C_FIELD(&data_ov000_021df5e4,u8 **,4),tmp,64);break;
+case 0:MI_CpuCopy8(M2C_FIELD(&gUnitListRows,u8 **,4),tmp,64);break;
 case 1:
 for(h=10;h>0;h--)for(i=0;i<n;i++){
-map=*gCurrentMap;idx=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i]+M2C_FIELD(map,u16 *,0x52a8);
+map=*gCurrentMap;idx=((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[i]+M2C_FIELD(map,u16 *,0x52a8);
 v=(u32)(M2C_FIELD(map+idx*14,u16 *,0x59aa)<<25)>>25;
 if(v==0)v=0;else v=Divide(v-1,10)+1;
-if(h==v)tmp[out++]=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i];
+if(h==v)tmp[out++]=((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[i];
 }break;
 case 2:
 for(h=99;h>=0;h--)for(i=0;i<n;i++){
-map=*gCurrentMap;z=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i];idx=M2C_FIELD(map,u16 *,0x52a8)+z;
+map=*gCurrentMap;z=((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[i];idx=M2C_FIELD(map,u16 *,0x52a8)+z;
 if(h==((u32)(map[0x59ae + idx*14]<<25)>>25))tmp[out++]=z;
 }break;
 case 3:
 for(h=10;h>=-1;h--)for(i=0;i<n;i++){
-map=*gCurrentMap;z=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i];idx=M2C_FIELD(map,u16 *,0x52a8)+z;p=map+0x59a4+idx*14;
+map=*gCurrentMap;z=((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[i];idx=M2C_FIELD(map,u16 *,0x52a8)+z;p=map+0x59a4+idx*14;
 attr=(u8 *)gUnitKindStats+((u32)(p[0]<<26)>>26)*112;
 if(attr[9])v=(u32)(M2C_FIELD(p,u16 *,6)<<21)>>28;
 else {v=-1;if(attr[15])v=10;}
@@ -60,8 +60,8 @@ if(v==h)tmp[out++]=z;
 }break;
 }
 if(reverse){
-for(i=0;i<n;i++)((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i]=tmp[n-1-i];
-MI_CpuCopy8(M2C_FIELD(&data_ov000_021df5e4,u8 **,4),tmp,64);
+for(i=0;i<n;i++)((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[i]=tmp[n-1-i];
+MI_CpuCopy8(M2C_FIELD(&gUnitListRows,u8 **,4),tmp,64);
 }
 out=0;
 for(i=0;i<n;i++){
@@ -69,7 +69,7 @@ z=tmp[i];
 if(z){
 map=*gCurrentMap;p=map+0x59a4+(M2C_FIELD(map,u16 *,0x52a8)+z)*14;
 if(!(M2C_FIELD(p,u16 *,4)&8)){
-((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[out++]=z;tmp[i]=0;
+((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[out++]=z;tmp[i]=0;
 if(M2C_FIELD(p,u16 *,4)&16){
 for(j=0;j<2;j++){
 z=p[12+j];
@@ -78,14 +78,14 @@ map=*gCurrentMap;idx=z-M2C_FIELD(map,u16 *,0x52a8);
 for(k=0;k<n;k++){
 if(idx==tmp[k]){
 z=M2C_FIELD(map,u16 *,0x52a8)+idx;q=map+0x59a4+z*14;
-((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[out++]=tmp[k];tmp[k]=0;
+((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[out++]=tmp[k];tmp[k]=0;
 if(M2C_FIELD(q,u16 *,4)&16){
 for(l=0;l<2;l++){
 z=q[12+l];
 if(z){
 idx=z-M2C_FIELD(*gCurrentMap,u16 *,0x52a8);
 for(v=0;v<n;v++){
-if(idx==tmp[v]){((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[out++]=tmp[v];tmp[v]=0;break;}
+if(idx==tmp[v]){((u8 *)M2C_FIELD(&gUnitListRows,u8 **,4))[out++]=tmp[v];tmp[v]=0;break;}
 }
 }
 }}
@@ -172,8 +172,8 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  int shift;
  u8 *m;
  int id,offset,icon,health;
- data_ov000_021df5e4=0x1c4+(row+1)*24;
- id=((u8 *)((u32 *)&data_ov000_021df5e4)[1])[index];if(id==0)return;
+ gUnitListRows=0x1c4+(row+1)*24;
+ id=((u8 *)((u32 *)&gUnitListRows)[1])[index];if(id==0)return;
  saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
  m=*gCurrentMap;base=*(u16 *)(m+0x52a8);
  u=(void *)(m+0x59a4+(base+id)*14);
@@ -192,7 +192,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  DrawTilemapNumber(3,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),index+1,0,0);
  if(icon)func_0209c024((s16)(shift+5),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),icon,0,0);
  func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,void **,0x24),(u16)(offset+5),(u16)(row+5),u->unk0,(u16)base,u->unkC[0],(u8)((DisplayHealth *)((u8 *)u+6))->flags);
- func_0209b2dc(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)data_ov000_021df5e4);
+ func_0209b2dc(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)gUnitListRows);
  health=u->unk6;if(health==0)health=0;else health=Divide(health-1,10)+1;
  DrawTilemapNumber(18,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),health,0,0);
  DrawTilemapNumber(21,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayFuel *)((u8 *)u+10))->fuel,0,0);
@@ -333,17 +333,17 @@ void func_ov000_0216fb98(void *arg0) {
 }
 
 void ScrollListConfirm(u8 *a) {
-extern M2C_UNK data_ov000_021df5e4;
+extern M2C_UNK gUnitListRows;
 s32 p=GetScrollList();
-M2C_FIELD(p,s16 *,0x40)=M2C_FIELD(&data_ov000_021df5e4,u8 **,4)[M2C_FIELD(p,s16 *,0x3a)+*a];
+M2C_FIELD(p,s16 *,0x40)=M2C_FIELD(&gUnitListRows,u8 **,4)[M2C_FIELD(p,s16 *,0x3a)+*a];
 PlaySoundEffect(0x10016);
-func_01ffa6fc(p);
+Sprite_ResumeAnimation(p);
 func_020b21a0();
 func_020b2268();
 }
 
 void ScrollListCancel(void) {
-    M2C_UNK func_01ffa6fc(s32);
+    M2C_UNK Sprite_ResumeAnimation(s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
     M2C_UNK func_020b2268();
@@ -352,7 +352,7 @@ void ScrollListCancel(void) {
 
     temp_r4 = GetScrollList();
     PlaySoundEffect(0x10018);
-    func_01ffa6fc(temp_r4);
+    Sprite_ResumeAnimation(temp_r4);
     func_020b21a0();
     func_020b2268();
 }

@@ -6,7 +6,7 @@ void Reset3DSpriteBankState();void *func_020ab1c4(void *);void *GetLocalizedFile
 static inline u8 Visible149(void *p){return M2C_FIELD(M2C_FIELD(p,void **,100),u8 *,18)!=0;}
 
 extern s32 data_0215d8a0;extern u32 data_0215d8a8[];
-void func_020885fc(void);void *MemAlloc(s32);s32 func_020a8958(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 func_020a8aac(s32,s32);
+void func_020885fc(void);void *MemAlloc(s32);s32 func_020a8958(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
 static inline void *Entry149(void *base,s32 i){if(i<0)return 0;if(i>=64)return 0;return (u8 *)base+i*32;}
 static inline void *Cell149(void *base,s32 x,s32 y){if(x<0)return 0;if(y<0)return 0;if(x>=8)return 0;if(y>=8)return 0;return Entry149(base,x+y*8);}
 static inline u8 Flag149(void *p,u32 bit){return (M2C_FIELD(p,u8 *,4)&bit)?1:0;}
@@ -60,7 +60,7 @@ M2C_FIELD(p,u8 *,5)=(data_0215d8a8[id]<<3)>>29;
 }}
 base=M2C_FIELD(arg0,void **,92);
 for(i=0,cursor=base;i<64;i++,cursor+=32){if(i<0)p=0;else if(i>=64)p=0;else p=cursor;
-for(j=0;j<4;j++){n=func_020a8aac(M2C_FIELD(p,u8 *,7)+161,j);q=0;if(n){for(id=0;id<64;id++){q=base+id*32;if(n==M2C_FIELD(q,u8 *,7)+161)break;}if(id==64)q=0;}M2C_FIELD(p+j*4,void **,16)=q;}}
+for(j=0;j<4;j++){n=GetMapFollowupMapId(M2C_FIELD(p,u8 *,7)+161,j);q=0;if(n){for(id=0;id<64;id++){q=base+id*32;if(n==M2C_FIELD(q,u8 *,7)+161)break;}if(id==64)q=0;}M2C_FIELD(p+j*4,void **,16)=q;}}
 base=M2C_FIELD(arg0,void **,92);p=Find149(base,(u16)M2C_FIELD(&data_0215d8a0,u32 *,4));
 if(p&&p!=Selected149(base)&&Flag149(p,1)){for(i=0,cursor=base;i<64;i++,cursor+=32){if(i<0)q=0;else if(i>=64)q=0;else q=cursor;M2C_FIELD(q,u8 *,4)&=~2;}M2C_FIELD(p,u8 *,4)|=2;}
 if(p){y=M2C_FIELD(p,s16 *,2);x=M2C_FIELD(p,s16 *,0);M2C_FIELD(arg0,u16 *,68)=x;M2C_FIELD(arg0,u16 *,70)=y;M2C_FIELD(arg0,u16 *,72)=x;M2C_FIELD(arg0,u16 *,74)=y;}

@@ -1,5 +1,8 @@
 /* 7 functions from 0x0216E178 to 0x0216ECC8 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "battle_map.h"
+#include "battle_map.h"
 typedef struct MenuDisplayConfig { u16 fields[6]; } MenuDisplayConfig;
 
 #pragma opt_strength_reduction off
@@ -9,7 +12,7 @@ extern s32 gArmyInfoState; extern void **gCurrentMap; extern void *gCur3DSpriteE
 s32 HeapAllocBlock(s32); s32 func_020cfb94(void); s32 func_020a8c10(s32);
 void func_ov000_0216e054(void);void func_ov000_0216dd0c(void);void func_ov000_0216e09c(s32); void *GetLocalizedFileName(void *); void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);s32 func_020a7290(void);void *func_020a7278(void);void *func_020a72e8(s32);s32 GetUiColor(s32);
 extern u8 data_ov000_021b88e8[];extern u8 data_ov000_021b88fc[];extern u8 data_ov000_021b890c[];extern u8 data_ov000_021b8924[];extern u8 data_ov000_021b8934[];extern u8 data_ov000_021b8948[];extern u8 data_ov000_021b8958[];extern u8 data_ov000_021b896c[];extern u8 data_ov000_021b897c[];extern u8 data_ov000_021b898c[];extern u8 data_ov000_021b89a0[];s32 i,n,t; void *p,*dest,*old; volatile MenuDisplayConfig a,b;
-a=*(MenuDisplayConfig*)&data_ov000_021adcfc[9];b=*(MenuDisplayConfig*)&data_ov000_021adcfc[3];gArmyInfoState=HeapAllocBlock(36);func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_02002bb8(32);func_0200323c(128);func_020032bc(256);
+a=*(MenuDisplayConfig*)&data_ov000_021adcfc[9];b=*(MenuDisplayConfig*)&data_ov000_021adcfc[3];gArmyInfoState=HeapAllocBlock(36);func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);GX_SetBankForObjExtPalette(32);func_0200323c(128);func_020032bc(256);
 M2C_FIELD(gArmyInfoState,u8*,16)=0;M2C_FIELD(gArmyInfoState,u8*,17)=0;M2C_FIELD(gArmyInfoState,u16*,18)=12;M2C_FIELD(gArmyInfoState,u16*,20)=0;M2C_FIELD(gArmyInfoState,u8*,12)=0;
 n=0;for(i=0;i<func_020cfb94();i++){p=(u8*)*gCurrentMap+0x67a4+(i+1)*140;if(M2C_FIELD(p,u8*,30)&&!M2C_FIELD(p,u8*,25)){M2C_FIELD(gArmyInfoState,u8*,n)=i+1;M2C_FIELD(gArmyInfoState,u8*,n+8)=M2C_FIELD(*gCurrentMap,u8*,0x67c1+(i+1)*140);M2C_FIELD(gArmyInfoState,u8*,n+4)=func_020a8c10(i+1);n++;M2C_FIELD(gArmyInfoState,u8*,12)++;}}
 for(i=0;i<M2C_FIELD(gArmyInfoState,u8*,12);i++)if(M2C_FIELD(arg0,s16*,108)==M2C_FIELD(gArmyInfoState,u8*,i))func_ov000_0216e09c(i);
@@ -86,7 +89,7 @@ void func_ov000_0216eb7c(void) {
 }
 
 void func_ov000_0216ebac(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21e0();
     M2C_UNK func_020b2268();
@@ -94,7 +97,7 @@ void func_ov000_0216ebac(void) {
     PlaySoundEffect(0x10018);
     func_020b21e0();
     func_020b2268();
-    func_01ffa3dc(&data_ov000_021b87b8, 7);
+    CreateSpriteFromClass(&data_ov000_021b87b8, 7);
 }
 
 void func_ov000_0216ebd8(M2C_UNK arg0) {
@@ -112,5 +115,25 @@ void func_ov000_0216ebd8(M2C_UNK arg0) {
 }
 
 #pragma opt_lifetimes off
-s32 func_ov000_0216ec1c(void){extern u8 *data_ov000_021df5e4[2];extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];s32 j,i,n;u8 zero=0;void *base;u8 (*entries)[14];u16 start; for(j=0;j<64;j++)data_ov000_021df5e4[1][j]=zero;n=zero;base=*gCurrentMap;start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){entries=base+0x59a4;if((u32)(entries[i][0]<<26)>>26)n++;}return n;}
+/* Clears the army info screen's 64-entry unit order list and counts how many of
+ * the current player's unit slots hold a unit. */
+s32 CountCurrentPlayerUnits(void) {
+extern u8 *gUnitListRows[2];
+extern void **gCurrentMap;
+extern u16 gPlayerUnitIdBase[];
+s32 j,i,count;
+u8 zero=0;
+void *base;
+u8 (*units)[MAP_UNIT_STRIDE];
+u16 firstId;
+for(j=0;j<64;j++)gUnitListRows[1][j]=zero;
+count=zero;
+base=*gCurrentMap;
+firstId=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER)];
+for(i=firstId+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_GROUP_SCAN;i++){
+units=base+MAP_UNIT_RECORDS;
+if((u32)(units[i][MAP_UNIT_KIND]<<26)>>26)count++;
+}
+return count;
+}
 #pragma opt_lifetimes reset

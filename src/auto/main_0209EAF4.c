@@ -15,7 +15,7 @@ typedef struct { s32 unk; Unk09Position *p; s32 count; } Unk09List;
 
 void func_0209eaf4(s32 x,s32 y,s32 a){
 extern void **gCurrentMap;extern M2C_UNK gBattleCommand;extern M2C_UNK gBattlePreviewPanelDef;
-s32 GetRandomSeed(s32,s32,s32);void func_020d1690(u8,s32,void *);void *func_01ffa3dc(void *,s32);
+s32 GetRandomSeed(s32,s32,s32);void func_020d1690(u8,s32,void *);void *CreateSpriteFromClass(void *,s32);
 s32 base;void *p;s32 v,n;u32 b; s32 result;
 result=GetRandomSeed(x,y,a);
 p=(void *)gCurrentMap;
@@ -28,24 +28,38 @@ n=M2C_FIELD(base,s16 *,0x6ed4);
 v=b&127;
 if(v<n)v=0;else v-=n;
 M2C_FIELD(base+(x+M2C_FIELD((u32)base+(u32)y*2,u16 *,0x3758)),u8 *,0x539c)=v|(b&128);
-p=func_01ffa3dc(&gBattlePreviewPanelDef,7);
+p=CreateSpriteFromClass(&gBattlePreviewPanelDef,7);
 M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);
 M2C_FIELD(p,s32 *,0x60)=a;M2C_FIELD(p,s32 *,0x34)=0;M2C_FIELD(p,s32 *,0x38)=x;M2C_FIELD(p,s32 *,0x3c)=y;
 }
 
 void func_0209ebe0(void *p){extern M2C_UNK gBattleEndState;extern void **gCurrentMap;u32 v;if(M2C_FIELD(&gBattleEndState,u8 *,0)){if(M2C_FIELD(&gBattleEndState,u8 *,0))v=M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=19;else v=0;if(!(v&255))return;}StepMapViewToTile(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
 
-void func_0209ec44(void *p) {
-extern void **gCurrentMap;
-void *q=M2C_FIELD(p,void **,0x34); u32 v; s32 base; u32 off; u8 *tile;
-if(q){func_020b689c(q,p);v=M2C_FIELD(q,u8 *,4);}
-else {func_020b68f0(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c),p);
-base=(s32)*gCurrentMap;
-off=M2C_FIELD(base+M2C_FIELD(p,s32 *,0x3c)*2,u16 *,0x3758);
-tile=(u8 *)(M2C_FIELD(p,s32 *,0x38)+base);
-v=M2C_FIELD(off+tile,u8 *,0x539c)&127;
-}
-if(v==0&&q==0) {if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))AddRecordValue(31,1);}
+/* Gives the battle preview panel its graphic: the sprite of the unit under the
+ * cursor when it previews a unit, otherwise the sprite of the tile itself.
+ * Previewing a plain tile (one without destructible-terrain HP) is counted in
+ * the records when the current player is human. */
+void InitBattlePreviewSprite(void *panel) {
+    extern void **gCurrentMap;
+    void *unit = M2C_FIELD(panel, void **, 0x34);
+    u32 hp;
+    s32 map;
+    u32 rowOffset;
+    u8 *cell;
+
+    if (unit) {
+        CreateUnitPreviewSprite(unit, panel);
+        hp = M2C_FIELD(unit, u8 *, 4);
+    } else {
+        CreateTilePreviewSprite(M2C_FIELD(panel, s32 *, 0x38), M2C_FIELD(panel, s32 *, 0x3c), panel);
+        map = (s32)*gCurrentMap;
+        rowOffset = M2C_FIELD(map + M2C_FIELD(panel, s32 *, 0x3c) * 2, u16 *, MAP_ROW_OFFSETS);
+        cell = (u8 *)(M2C_FIELD(panel, s32 *, 0x38) + map);
+        hp = M2C_FIELD(rowOffset + cell, u8 *, MAP_CELL_TERRAIN_HP) & MAP_CELL_TERRAIN_HP_MASK;
+    }
+    if (hp == 0 && unit == 0) {
+        if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) AddRecordValue(31, 1);
+    }
 }
 
 void func_0209ecf0(s32 arg0, s32 arg1) {
@@ -55,7 +69,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     void func_020a2b98(s32, s32);
     s16 func_020a3518(s32);
     s32 func_020cd614(void);
-    void *func_01ffa3dc(void *, s32);
+    void *CreateSpriteFromClass(void *, s32);
     s32 func_020d468c(void);
     void BattleUpdateUnitCursor(void);
     extern void **gCurrentMap;
@@ -133,7 +147,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     M2C_FIELD((u8 *)*gCurrentMap + 0x2d8 + 0x6c00, s16 *, 0x12) = func_020a3518(unitBucket);
 
     if (func_020cd614() == 0) chosen = &data_0211f984; else chosen = &data_0211f8fc;
-    p = func_01ffa3dc(chosen, 7);
+    p = CreateSpriteFromClass(chosen, 7);
     M2C_FIELD(p, s32 *, 0x60) = arg1;
     M2C_FIELD(p, void **, 0x34) = unitPtr;
     M2C_FIELD(p, s32 *, 0x38) = (s32)M2C_FIELD(unitPtr, u8 *, 0x1);

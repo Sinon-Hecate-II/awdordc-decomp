@@ -1,5 +1,7 @@
 /* 12 functions from 0x020B34F8 to 0x020B4264 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "battle_map.h"
 #include "sprite_grid.h"
 extern void **gCurrentMap;
 extern u16 data_0215d9b8[];
@@ -226,39 +228,42 @@ void *func_020b3b6c(void *arg0) {
     return arg0;
 }
 
-void func_020b3b84(void) {
-    M2C_UNK func_02086810(u16, M2C_UNK);
-    u16 func_020a8aac(u16, s32);
+/* Finishes a battle: stamps the battle record's date, stores the result in the
+ * record unless that record type does it itself, marks the next maps of a
+ * preset-player (campaign) map - the four map ids listed for it plus the map
+ * itself - as available in the map list, and writes the save block. */
+void FinishBattleAndSave(void) {
     M2C_UNK func_020bef44();
     s32 func_020befd8();
     s32 func_020bf084(s32);
     M2C_UNK func_020bf0dc(M2C_UNK, s32);
     M2C_UNK func_020bf798();
+    u16 GetMapFollowupMapId(u16, s32);
     s32 func_020cd6d4();
     M2C_UNK func_020e4870();
     extern void **gCurrentMap;
-    s32 temp_r0;
-    s32 var_r6;
-    u16 temp_r0_2;
+    s32 recordType;
+    s32 slot;
+    u16 relatedMap;
 
-    temp_r0 = func_020befd8();
-    if (temp_r0 != 0) {
+    recordType = func_020befd8();
+    if (recordType != 0) {
         func_020bef44();
-        if (func_020bf084(temp_r0) == 0) {
-            func_020bf0dc(0, temp_r0);
+        if (func_020bf084(recordType) == 0) {
+            func_020bf0dc(0, recordType);
             func_020e4870();
         }
     }
     if (func_020cd6d4() != 0) {
-        var_r6 = 0;
+        slot = 0;
         do {
-            temp_r0_2 = func_020a8aac(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), var_r6);
-            if (temp_r0_2 != 0) {
-                func_02086810(temp_r0_2, 1);
+            relatedMap = GetMapFollowupMapId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), slot);
+            if (relatedMap != 0) {
+                SetMapListFlag(relatedMap, 1);
             }
-            var_r6 += 1;
-        } while (var_r6 < 4);
-        func_02086810(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), 1);
+            slot += 1;
+        } while (slot < 4);
+        SetMapListFlag(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), 1);
     }
     func_020bf798();
 }

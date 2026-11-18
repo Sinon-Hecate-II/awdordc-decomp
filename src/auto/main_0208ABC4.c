@@ -248,13 +248,13 @@ void func_0208b514(void) {
 }
 
 void func_0208b520(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *func_020898d0(void);
     extern M2C_UNK data_021027f0;
     s32 temp_r4;
     void *var_r0;
     temp_r4 = func_0208b5a8();
-    var_r0 = func_01ffa3dc(&data_021027f0, arg0);
+    var_r0 = CreateSpriteFromClass(&data_021027f0, arg0);
     if (var_r0 != 0) var_r0 = func_020898d0();
     M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
 }
@@ -296,9 +296,9 @@ void func_0208b600(void *arg0) {
 }
 
 void *func_0208b610(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021026d8;
-    void *p = func_01ffa3dc(&data_021026d8, 1);
+    void *p = CreateSpriteFromClass(&data_021026d8, 1);
     M2C_FIELD(p, s32 *, 0x34) = arg0;
     return p;
 }

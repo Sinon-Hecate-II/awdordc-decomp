@@ -119,12 +119,12 @@ gCur3DSpriteEngine=old;
 void func_020c4604(M2C_UNK arg0){extern u16 *gKeyState;extern void *gBreakCutIn;
 M2C_FIELD(gBreakCutIn,s32*,0)++;
 if((M2C_FIELD(gBreakCutIn,s32*,0)<250)&&!(*gKeyState&1))return;
-M2C_FIELD(gBreakCutIn,s32*,4)=0;func_01ffa6fc(arg0);}
+M2C_FIELD(gBreakCutIn,s32*,4)=0;Sprite_ResumeAnimation(arg0);}
 
 void func_020c4658(M2C_UNK arg0){extern void *gBreakCutIn;
 M2C_FIELD(gBreakCutIn,s32*,0)++;M2C_FIELD(gBreakCutIn,s32*,4)++;
 if(M2C_FIELD(gBreakCutIn,s32*,0)>=250)M2C_FIELD(gBreakCutIn,s32*,0)=250;
-if(M2C_FIELD(gBreakCutIn,s32*,4)<64)return;func_01ffa6fc(arg0);}
+if(M2C_FIELD(gBreakCutIn,s32*,4)<64)return;Sprite_ResumeAnimation(arg0);}
 
 /* Tear down the battle-start "break" cut-in: free its effect state and switch the
  * remaining layer flags off on the sub engine's sprite bank. */
@@ -223,12 +223,12 @@ void func_020c48ec(void *arg0) {
 }
 
 void func_020c4910(void) {
- void *func_01ffa3dc(M2C_UNK *,s32);
+ void *CreateSpriteFromClass(M2C_UNK *,s32);
  extern M2C_UNK data_0212a5cc;
  extern M2C_UNK data_0212a514;
  extern M2C_UNK data_02164098;
  extern M2C_UNK data_02164128;
- void *p=func_01ffa3dc(&data_0212a5cc,7);
+ void *p=CreateSpriteFromClass(&data_0212a5cc,7);
  if(p==0)return;
  M2C_FIELD(p,M2C_UNK **,0)=&data_0212a514;
  M2C_FIELD(p,M2C_UNK **,0x34)=&data_02164098;
@@ -398,7 +398,7 @@ void func_020c4bf8(void *arg0) {
 }
 
 void func_020c4c34(M2C_UNK arg0) {
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 func_020761f8();
     s32 func_02076208();
     M2C_UNK func_02076244();
@@ -410,11 +410,11 @@ void func_020c4c34(M2C_UNK arg0) {
         GetLocalizedText(0xC000034C);
         func_02076244();
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 M2C_UNK func_020c4c70(s32 arg0,s32 arg1) {
-void *func_01ffa3dc(M2C_UNK *,M2C_UNK);
+void *CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
 M2C_UNK CreateSpriteObject(M2C_UNK *,s32);
 extern M2C_UNK data_0212a614,data_0212a550;
 s32 var_r5; void *temp_r0; void *temp_r0_2;
@@ -422,7 +422,7 @@ var_r5=arg0;
 if(var_r5==0)var_r5=(s32)func_020c4acc();
 if(arg1!=0){temp_r0=(void *)CreateSpriteObject(&data_0212a614,arg1);if(temp_r0==NULL)return;
 M2C_FIELD(temp_r0,M2C_UNK **,0)=&data_0212a550;M2C_FIELD(temp_r0,s32*,0x34)=var_r5;return;}
-temp_r0_2=func_01ffa3dc(&data_0212a614,3);if(temp_r0_2!=NULL){M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a550;M2C_FIELD(temp_r0_2,s32*,0x34)=var_r5;}
+temp_r0_2=CreateSpriteFromClass(&data_0212a614,3);if(temp_r0_2!=NULL){M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a550;M2C_FIELD(temp_r0_2,s32*,0x34)=var_r5;}
 }
 
 void func_020c4cdc(M2C_UNK arg0) {

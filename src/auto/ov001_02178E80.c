@@ -1,25 +1,35 @@
 /* 53 functions from 0x02178E80 to 0x02179E74 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 
 /* The ov001 profile screen's confirmation state (gOv001ProfileChoice). */
 #define OV001_CHOICE_CONFIRMED 0x00 /* u8: set once the player has confirmed an option */
 #define OV001_CHOICE_OPTION    0x01 /* u8: the option the player picked (0 or 1) */
 
-void func_ov001_02178e80(void) {
+/* The Wi-Fi settings screen's two-choice message popup (gOv001MessageState). */
+#define OV001_MESSAGE_SHOWN  0x00 /* u8: nonzero while the popup is on screen */
+#define OV001_MESSAGE_OPTION 0x01 /* u8: the option the player picked (0 = the first one) */
+
+/* Step that leaves the Wi-Fi settings screen after its two-choice message popup:
+ * once both fades and the icon row are idle it frees the page background, hides
+ * the screen's planes (and, when the first option was picked, also frees the
+ * option background and hides plane 1) and installs the next step: the option
+ * menu when the first option was picked, the follow-up screen otherwise. */
+void Ov001_CloseMessageScreen(void) {
     s32 Ov001_IsIconRowIdle();
-    extern M2C_UNK data_ov001_02193d80;
+    extern M2C_UNK gOv001MessageState;
     extern M2C_UNK Ov001_InitOptionMenu;
     extern M2C_UNK func_ov001_02179320;
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
-    if (M2C_FIELD(&data_ov001_02193d80, u8 *, 1) == 0) {
+    if (M2C_FIELD(&gOv001MessageState, u8 *, OV001_MESSAGE_OPTION) == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (M2C_FIELD(&data_ov001_02193d80, u8 *, 1) == 0) {
+    if (M2C_FIELD(&gOv001MessageState, u8 *, OV001_MESSAGE_OPTION) == 0) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(&Ov001_InitOptionMenu);
         return;
@@ -372,14 +382,14 @@ s32 func_ov001_021796f8(void) {
 
 void func_ov001_02179718(void) {
     extern u8 data_ov001_02193d8c;
-    void func_ov001_02179778(void);
+    void Ov001_LoadWirelessSetupBg(void);
     void func_ov001_02179820(void);
     M2C_UNK func_ov001_021722ac();
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK Ov001_InitWirelessSetup();
     M2C_FIELD(&data_ov001_02193d8c, u16 *, 2) = 0;
-    func_ov001_02179778();
+    Ov001_LoadWirelessSetupBg();
     func_ov001_021722ac();
     Ov001_ShowMessagePanel(0x36, -1, 0);
     func_ov001_02171dd0(2);
@@ -390,18 +400,21 @@ void func_ov001_02179718(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179820);
 }
 
-void func_ov001_02179778(void) {
+/* Loads the local wireless (multi-card) setup screen's background: tile
+ * graphics, palette and map, then puts BG0/BG1 on the lowest priority. */
+void Ov001_LoadWirelessSetupBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190690, data_ov001_021906a8, data_ov001_021906c0;
+    extern M2C_UNK gOv001WirelessBgTilesPath, gOv001WirelessBgPalettePath, gOv001WirelessBgMapPath;
     extern M2C_UNK GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190690, &GX_LoadBG2Char);
-    Ov001_LoadAsset(&data_ov001_021906a8, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_021906c0, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
+
+    Ov001_LoadAsset(&gOv001WirelessBgTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001WirelessBgPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001WirelessBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
 void func_ov001_02179820(void) {

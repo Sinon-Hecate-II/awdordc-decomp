@@ -421,23 +421,26 @@ void func_020a1508(void) {
 
 }
 
-void func_020a150c(void *arg0) {
+/* Draw callback of a cursor direction marker: draws the arrow tile that shows
+ * the marker's direction (0x100 + 2 * direction) at the world position of the
+ * tile the marker sits on. */
+void DrawDirectionMarker(DirectionMarker *marker) {
     M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
     extern M2C_UNK gSpriteDesc16x16;
-    s32 vec[3];
-    s32 temp = M2C_FIELD(arg0, s16 *, 0x6C) * 2;
+    s32 pos[3];
+    s32 arrowIndex = marker->direction * 2;
     *(volatile s32 *)0x040004A4 = 0x1F0080;
-    vec[0] = (M2C_FIELD(arg0, s32 *, 0x34) << 4) * 0x30;
-    vec[1] = (M2C_FIELD(arg0, s32 *, 0x38) << 4) * 0x30;
-    vec[2] = 0x891;
-    func_0207d130(&gSpriteDesc16x16, vec, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, temp + 0x100);
+    pos[0] = (marker->x << 4) * 0x30;
+    pos[1] = (marker->y << 4) * 0x30;
+    pos[2] = 0x891;
+    func_0207d130(&gSpriteDesc16x16, pos, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrowIndex + 0x100);
 }
 
 void func_020a15b4(s32 arg0, s32 arg1, s16 arg2) {
-    void *func_01ffa3dc(M2C_UNK *, s32);
-    extern M2C_UNK data_0211fb60;
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
+    extern M2C_UNK gDirectionMarkerSpriteClass;
     void *temp_r0;
-    temp_r0 = func_01ffa3dc(&data_0211fb60, 7);
+    temp_r0 = CreateSpriteFromClass(&gDirectionMarkerSpriteClass, 7);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg2;
@@ -445,8 +448,8 @@ void func_020a15b4(s32 arg0, s32 arg1, s16 arg2) {
 
 void DeleteDirectionMarkerSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_0211fb60;
-    DeleteSpriteObjectsOfClass(&data_0211fb60);
+    extern M2C_UNK gDirectionMarkerSpriteClass;
+    DeleteSpriteObjectsOfClass(&gDirectionMarkerSpriteClass);
 }
 
 #pragma opt_strength_reduction off

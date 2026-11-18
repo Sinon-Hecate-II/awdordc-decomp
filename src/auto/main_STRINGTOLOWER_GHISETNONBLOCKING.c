@@ -191,7 +191,7 @@ void func_020498b8(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
     func_0204968c(temp_r0, -1);
 }
 
-s32 func_020498e4(M2C_UNK arg0) {
+s32 ghiInetAddr(M2C_UNK arg0) {
     s32 func_02021c40(M2C_UNK, s32 *);
     s32 sp0;
 

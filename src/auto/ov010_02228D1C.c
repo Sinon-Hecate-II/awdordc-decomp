@@ -518,7 +518,7 @@ s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     return ret != 0;
 }
 
-s32 func_ov010_02229850(void) {
+s32 Ov010Online_IsSendQueueEmpty(void) {
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern u16 gOv010OnlineSession;
     s32 result;

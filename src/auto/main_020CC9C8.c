@@ -50,7 +50,7 @@ void StepMapZoom(void *transition) {
     extern s32 *gCurrentMap;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void SetViewZoom(s32, s32);
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     s32 view;
 
     M2C_FIELD(transition, s32 *, 0x64)++;
@@ -59,7 +59,7 @@ void StepMapZoom(void *transition) {
     M2C_FIELD(view, s16 *, 0x28) = EaseInterpolate(4, M2C_FIELD(transition, s16 *, 0x6c), M2C_FIELD(transition, s16 *, 0x6e), M2C_FIELD(transition, s32 *, 0x64), M2C_FIELD(transition, s32 *, 0x68));
     view = *gCurrentMap + 0x5120;
     M2C_FIELD(view, s16 *, 0x2a) = EaseInterpolate(4, M2C_FIELD(transition, s16 *, 0x70), M2C_FIELD(transition, s16 *, 0x72), M2C_FIELD(transition, s32 *, 0x64), M2C_FIELD(transition, s32 *, 0x68));
-    if (M2C_FIELD(transition, s32 *, 0x64) == M2C_FIELD(transition, s32 *, 0x68)) func_01ffa6fc(transition);
+    if (M2C_FIELD(transition, s32 *, 0x64) == M2C_FIELD(transition, s32 *, 0x68)) Sprite_ResumeAnimation(transition);
 }
 
 void func_020ccc94(void) {
@@ -68,9 +68,9 @@ void func_020ccc94(void) {
 }
 
 void CreateMapMenu(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b424;
-    func_01ffa3dc(&data_0212b424, 7);
+    CreateSpriteFromClass(&data_0212b424, 7);
 }
 
 u8 func_020cccb8(void) {
@@ -131,9 +131,9 @@ void func_020cce04(s32 arg0) {
 }
 
 void func_020cce4c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b894;
-    func_01ffa3dc(&data_0212b894, 7);
+    CreateSpriteFromClass(&data_0212b894, 7);
 }
 
 /* Returns a player's battle outcome (BATTLE_RESULT_*): handles the link-battle
@@ -183,33 +183,36 @@ s32 func_020cd164(s32 arg0, s32 arg1) {
     return GetPlayerResult(arg0);
 }
 
+/* Whether the battle is won: a win by any human player decides it; otherwise a
+ * human player who lost (a defeat condition was hit) decides it was not won; and
+ * failing both, a win by any player still in the battle (an AI, say) counts. */
 s32 DidPlayerWin(void) {
     s32 IsPlayerHuman(s32);
-    s32 var_r4;
-    s32 var_r4_2;
-    s32 var_r4_3;
+    s32 human;
+    s32 human2;
+    s32 player;
 
-    var_r4 = 1;
+    human = 1;
 loop_1:
-    if ((IsPlayerHuman(var_r4) != 0) && (GetPlayerResult(var_r4) == 1)) {
+    if ((IsPlayerHuman(human) != 0) && (GetPlayerResult(human) == BATTLE_RESULT_WIN)) {
         return 1;
     }
-    var_r4 += 1;
-    if (var_r4 >= 5) {
-        var_r4_2 = 1;
+    human += 1;
+    if (human >= MAX_PLAYERS) {
+        human2 = 1;
 loop_6:
-        if ((IsPlayerHuman(var_r4_2) != 0) && (GetPlayerResult(var_r4_2) == 2)) {
+        if ((IsPlayerHuman(human2) != 0) && (GetPlayerResult(human2) == BATTLE_RESULT_LOSE)) {
             return 0;
         }
-        var_r4_2 += 1;
-        if (var_r4_2 >= 5) {
-            var_r4_3 = 1;
+        human2 += 1;
+        if (human2 >= MAX_PLAYERS) {
+            player = 1;
 loop_11:
-            if ((IsPlayerPresent(var_r4_3) != 0) && (GetPlayerResult(var_r4_3) == 1)) {
+            if ((IsPlayerPresent(player) != 0) && (GetPlayerResult(player) == BATTLE_RESULT_WIN)) {
                 return 1;
             }
-            var_r4_3 += 1;
-            if (var_r4_3 >= 5) {
+            player += 1;
+            if (player >= MAX_PLAYERS) {
                 return 0;
             }
             goto loop_11;
@@ -288,7 +291,7 @@ v&=~0xff0000;
 v&=~0xff00;
 data_0215d8a0[1]=(u16)(data_0215d8a0[1]&0xffff0000);
 data_0215d8a0[0]=v&~0xff000000;
-M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;func_02086810(161,1);func_01ffa3dc(&data_0212b804,7);
+M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;SetMapListFlag(161,1);CreateSpriteFromClass(&data_0212b804,7);
 }
 
 /* Starts a battle over the chosen map: reads the map kind, clears the map
@@ -307,7 +310,7 @@ void func_020cd544(s32 mapKind) {
     if (IsUnitAvailable(kind)) {
         func_020d4ac8(kind);
     } else {
-        func_01ffa3dc(&data_0212b844, 7);
+        CreateSpriteFromClass(&data_0212b844, 7);
     }
 }
 
@@ -315,7 +318,7 @@ void func_020cd5ac(void) {
     extern M2C_UNK data_0212b844;
     extern u16 gMapConfig;
     gMapConfig &= ~7;
-    func_01ffa3dc(&data_0212b844, 7);
+    CreateSpriteFromClass(&data_0212b844, 7);
 }
 
 /* True unless the options turn battle animations off. */

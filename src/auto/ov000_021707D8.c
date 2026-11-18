@@ -68,14 +68,14 @@ DrawTilemapNumber(16,17,dst,a,0,0);
 gCur3DSpriteEngine=old;
 }
 void func_ov000_02170ca0(void) {
-    M2C_UNK func_01ffa6fc(s32);
+    M2C_UNK Sprite_ResumeAnimation(s32);
     s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov000_021b8b88;
     s32 temp_r4;
     temp_r4 = FindObjectByClass(&data_ov000_021b8b88);
     PlaySoundEffect(0x10018);
-    func_01ffa6fc(temp_r4);
+    Sprite_ResumeAnimation(temp_r4);
 }
 
 #pragma opt_strength_reduction off
@@ -134,9 +134,9 @@ void func_ov000_02170fc4(void) {
 }
 
 void func_ov000_02171028(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021b8b88;
-    func_01ffa3dc(&data_ov000_021b8b88, 7);
+    CreateSpriteFromClass(&data_ov000_021b8b88, 7);
 }
 
 #pragma opt_common_subs off
@@ -177,16 +177,16 @@ void func_ov000_021711a4(void) {
 }
 
 void func_ov000_021711f0(s32 arg0) {
-    M2C_UNK func_01ffa6fc(s32);
+    M2C_UNK Sprite_ResumeAnimation(s32);
     extern u16 *gKeyState;
     if (!(*gKeyState & 2)) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov000_02171214(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021b8c18;
-    func_01ffa3dc(&data_ov000_021b8c18, 7);
+    CreateSpriteFromClass(&data_ov000_021b8c18, 7);
 }
 
 #pragma push
@@ -283,16 +283,16 @@ void func_ov000_021716c0(void) {
 }
 
 void func_ov000_0217172c(s32 arg0) {
-    M2C_UNK func_01ffa6fc(s32);
+    M2C_UNK Sprite_ResumeAnimation(s32);
     extern u16 *gKeyState;
     if (!(*gKeyState & 2)) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov000_02171750(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021b8c94;
-    func_01ffa3dc(&data_ov000_021b8c94, 7);
+    CreateSpriteFromClass(&data_ov000_021b8c94, 7);
 }
 
 s32 func_ov000_02171768(s32 arg0) {

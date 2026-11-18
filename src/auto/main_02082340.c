@@ -361,7 +361,7 @@ block_7:
 
 s32 func_02082fc4(u32 x){switch(x){case 0:return 1;case 2:return 3;case 1:return 2;case 3:return 4;case 4:return 5;case 5:return 6;case 6:return 7;default:return 0;}}
 
-s32 func_0208302c(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return 0;case 5:return 4;case 6:return 5;case 3:return 2;case 7:case 8:case 9:case 10:case 11:return 6;default:return 0;}}
+s32 MapListCategoryToDataCategory(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return 0;case 5:return 4;case 6:return 5;case 3:return 2;case 7:case 8:case 9:case 10:case 11:return 6;default:return 0;}}
 
 u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 IsCampaignMapRecordPlayable(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!IsCampaignMapRecordPlayable(x))return 7; return GetMapPlayerCount(x)+7; }
 
@@ -409,17 +409,21 @@ void BuildMapSelectionLists(u32 mode, MapSelectionLists *lists, s32 playerCount)
     }
 }
 #pragma opt_common_subs reset
-void BuildMapSelectionCategory(void *p,s32 b,s32 c){
-s32 IsLinkSessionActive(void);s32 func_02083320(s32,s32);
-s32 count=0; s32 i; s32 limit; u8 type;
-M2C_FIELD(p,u8 *,0x1fe)=b;
-type=func_0208302c(b);
-if(IsLinkSessionActive())limit=0x1a9;else limit=0x113;
-i=0;while(i<limit){if(func_020832a0(i,type,c)){if(i<0xe1 || i>=0x1a9 || func_02083320(i,b)){((u16 *)p)[count]=i;count++;}}i++;}
-M2C_FIELD(p,u8 *,0x1ff)=count;
+/* Fills one map-list category block with the ids the current session may pick:
+ * every selectable map of the category's map-record type and the requested player
+ * count, and outside the campaign range only the maps of this category's link
+ * block.  Stores the category at +0x1fe and the number of ids at +0x1ff. */
+void BuildMapSelectionCategory(void *categoryBlock,s32 listCategory,s32 playerCount){
+s32 IsLinkSessionActive(void);s32 IsMapInLinkCategory(s32,s32);
+s32 count=0; s32 mapId; s32 limit; u8 mapCategory;
+M2C_FIELD(categoryBlock,u8 *,MAP_LIST_CATEGORY_OFFSET)=listCategory;
+mapCategory=MapListCategoryToDataCategory(listCategory);
+if(IsLinkSessionActive())limit=MAP_CUSTOM_LINK_END;else limit=MAP_CUSTOM_LOCAL_END;
+mapId=0;while(mapId<limit){if(IsMapSelectable(mapId,mapCategory,playerCount)){if(mapId<MAP_CUSTOM_FIRST || mapId>=MAP_CUSTOM_LINK_END || IsMapInLinkCategory(mapId,listCategory)){((u16 *)categoryBlock)[count]=mapId;count++;}}mapId++;}
+M2C_FIELD(categoryBlock,u8 *,MAP_LIST_COUNT_OFFSET)=count;
 }
 
-s32 func_020832a0(s32 a,s32 b,s32 c){
+s32 IsMapSelectable(s32 a,s32 b,s32 c){
 s32 func_020a8958(void);s32 IsLinkSessionActive(void);s32 func_02086940(s32);s32 GetMapPlayerCount(u16);
 if(b!=func_020a8958())return 0;
 if(!func_02082f34(a))return 0;

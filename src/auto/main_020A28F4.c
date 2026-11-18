@@ -164,7 +164,7 @@ break;
 M2C_FIELD(view,s16 *,0x70)++;
 }while(M2C_FIELD(view,s16 *,0x70)<51);
 }
-if(M2C_FIELD(view,s16 *,0x70)==51)func_01ffa6fc(view);
+if(M2C_FIELD(view,s16 *,0x70)==51)Sprite_ResumeAnimation(view);
 M2C_FIELD(view,s16 *,0x6c)++;
 RefreshMapView();
 }

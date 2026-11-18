@@ -103,7 +103,7 @@ extern M2C_UNK data_02102aa8;
 if(func_0209600c())return;
 switch(arg0) {
 case 100:func_0208f890();return;
-case 101:func_01ffa3dc(&data_02102aa8,7);return;
+case 101:CreateSpriteFromClass(&data_02102aa8,7);return;
 default:func_0208f780(func_020ad584(arg0));return;
 }
 }
@@ -135,8 +135,8 @@ void func_020952ec(s32 arg0,s32 arg1,s32 arg2) {
 u32 value=(u8)func_02091e44();
 if(func_0209600c())arg2=0;
 switch(arg0) {
-case 0:func_020ad150((u8)arg1,(u16)arg2,value,7);return;
-case 1:func_020ad1f8((u8)arg1,(u16)arg2,value,7);return;
+case 0:CreateScreenTransitions((u8)arg1,(u16)arg2,value,7);return;
+case 1:StartScreenFades((u8)arg1,(u16)arg2,value,7);return;
 }
 }
 
@@ -155,13 +155,13 @@ i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;
 }
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 
 void func_020953d0(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102ac8;
-    func_01ffa3dc(&data_02102ac8, 7);
+    CreateSpriteFromClass(&data_02102ac8, 7);
 }
 
 u8 func_020953e8(void) {
@@ -178,12 +178,12 @@ u8 func_020953e8(void) {
 }
 
 void func_0209540c(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s32 func_02096064();
     s16 temp_r1;
 
     if (func_02096064() != 0) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     temp_r1 = M2C_FIELD(arg0, s16 *, 0x6C);
@@ -191,12 +191,12 @@ void func_0209540c(void *arg0) {
     if (temp_r1 != 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_0209544c(s16 arg0) {
     extern M2C_UNK data_02102a88;
-    M2C_FIELD(func_01ffa3dc(&data_02102a88, 7), s16 *, 0x6C) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_02102a88, 7), s16 *, 0x6C) = arg0;
 }
 
 u8 func_0209546c(void) {

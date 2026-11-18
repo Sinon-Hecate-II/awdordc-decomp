@@ -184,11 +184,11 @@ void func_02089310(void) {
 
 void func_0208931c(M2C_UNK arg0)
 {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102658;
     void *ptr;
 
-    ptr = func_01ffa3dc(&data_02102658, arg0);
+    ptr = CreateSpriteFromClass(&data_02102658, arg0);
 
     if (ptr == NULL) {
         return;
@@ -292,9 +292,9 @@ void func_020896e4(void) {
 }
 
 void func_020896f0(M2C_UNK arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102678;
-    void *ptr = func_01ffa3dc(&data_02102678, arg0);
+    void *ptr = CreateSpriteFromClass(&data_02102678, arg0);
     if (ptr == NULL) return;
     func_02089340(ptr);
 }
@@ -325,9 +325,9 @@ u8 func_02089758(void *arg0) {
 }
 
 void func_02089784(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102698;
-    M2C_FIELD(func_01ffa3dc(&data_02102698, 6), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_02102698, 6), s32 *, 0x34) = arg0;
 }
 
 void func_020897a4(void) {
@@ -369,9 +369,9 @@ void DrawUiGradientPulse(void) {
 }
 
 void func_0208989c(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102738;
-    M2C_FIELD(func_01ffa3dc(&data_02102738, 1), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_02102738, 1), s32 *, 0x34) = arg0;
 }
 
 void func_020898bc(void) {

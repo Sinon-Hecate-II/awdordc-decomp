@@ -167,7 +167,7 @@ void UpdateTextObject(TextState *st) {
     u32 func_0209dc9c(void);
     u32 func_0209dde0(void);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102eac;
     extern M2C_UNK data_02102e74;
@@ -226,7 +226,7 @@ void UpdateTextObject(TextState *st) {
             if (DrawTextStep(st) == 0) {
                 if (st->flags & 0x1) {
                     HideAllScenePanels();
-                    func_01ffa6fc(st);
+                    Sprite_ResumeAnimation(st);
                 } else {
                     DeleteSpriteObject(st);
                 }
@@ -288,12 +288,12 @@ skip8:
 }
 
 void func_0209b190(M2C_UNK arg0) {
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 func_02097be0();
     if (func_02097be0() != 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 /* Initialise a new text object from the current screen engine's shared default
@@ -353,12 +353,12 @@ void func_0209b32c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 a
 #pragma opt_propagation on
 M2C_UNK func_0209b370(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 e,s32 f,u16 g,u16 h,u16 i) {
 M2C_UNK func_0209be10(s32,M2C_UNK,M2C_UNK,M2C_UNK,s32,s32,s32,u16,u16,u16);
-M2C_UNK StopTextObject(s32);void *func_01ffa3dc(M2C_UNK *,s32);
+M2C_UNK StopTextObject(s32);void *CreateSpriteFromClass(M2C_UNK *,s32);
 extern s32 gCur3DSpriteEngine;extern M2C_UNK data_021032d8;
 s32 p=gCur3DSpriteEngine;
 p=M2C_FIELD(p,s32 *,0x54);
 func_0209be10(p,a,b,c,d,e,f,g,h,i);
-StopTextObject(p);func_01ffa3dc(&data_021032d8,7);
+StopTextObject(p);CreateSpriteFromClass(&data_021032d8,7);
 }
 #pragma opt_propagation reset
 /* Draws a decimal number into text-line cells: one digit per column, starting
@@ -455,11 +455,11 @@ void func_0209b8c0(void *arg0) {
 }
 
 void func_0209b8ec(s32 arg0, s32 arg1, s32 arg2) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021032b8;
     void *temp_r0;
 
-    temp_r0 = func_01ffa3dc(&data_021032b8, 1);
+    temp_r0 = CreateSpriteFromClass(&data_021032b8, 1);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;

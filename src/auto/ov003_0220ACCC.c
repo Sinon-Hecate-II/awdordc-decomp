@@ -271,7 +271,7 @@ void func_ov003_0220bb88(void *arg0) {
 
 /* Updates the entity's linked object orientation and commits derived state to globals. */
 void func_ov003_0220bbcc(void *entity) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK EnableMapConfirm();
     M2C_UNK func_020d885c(M2C_UNK);
@@ -286,7 +286,7 @@ void func_ov003_0220bbcc(void *entity) {
     }
     EnableMapConfirm();
     func_020d885c(0x12);
-    func_01ffa6fc(entity);
+    Sprite_ResumeAnimation(entity);
     PlaySoundEffect(0x1000E);
     linkedObject = M2C_FIELD(entity, void **, 0x40);
     M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16) ((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x3000) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 4) << 0x1E) >> 0x12));

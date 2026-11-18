@@ -161,7 +161,7 @@ if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)g
  * skip it, plays the per-row voice sounds, arms the sprite effects when the
  * portrait starts, plays the closing voice and bumps the frame counter. */
 void UpdateOccupationScreen(OccupationEffect *effect){
-void func_01ffa6fc(void *);
+void Sprite_ResumeAnimation(void *);
 void func_020c32bc(s32,s32);
 void PlaySoundEffect(s32);
 u32 Modulo(u32,u32);
@@ -170,11 +170,11 @@ extern u16 *gKeyState;
 extern u8 *gTouchState;
 u8 *co;
 u16 *sprite;
-if(effect->frame==effect->endFrame){func_01ffa6fc(effect);return;}
+if(effect->frame==effect->endFrame){Sprite_ResumeAnimation(effect);return;}
 if((*gKeyState&(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]){
 co=effect->co;
 if(co[5]==20 && effect->frame<effect->startFrame+7)func_020c32bc(co[0],0);
-func_01ffa6fc(effect);return;
+Sprite_ResumeAnimation(effect);return;
 }
 if(effect->frame==6){
 PlaySoundEffect((effect->progress+42)|0x10000);effect->progress++;

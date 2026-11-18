@@ -92,7 +92,7 @@ if(temp_r3&0x20)return; temp_r2=temp_r3&2; if(temp_r2!=0)return;
 if(gUnitSlotIds[M2C_FIELD(arg0,u8*,0)]<0)return; if(temp_r2!=0)return;
 M2C_FIELD(temp_r4,u16*,0x48)=temp_r3&~1;
 M2C_FIELD(temp_r4,u16*,0x48)=M2C_FIELD(temp_r4,u16*,0x48)|2;
-PlaySoundEffect(0x1000D); func_01ffa6fc(temp_r4);}
+PlaySoundEffect(0x1000D); Sprite_ResumeAnimation(temp_r4);}
 
 void func_020d9ee4(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
@@ -147,7 +147,7 @@ void func_020da008(void *arg0) {
     M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (temp_r0_3 | 1);
     M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 2);
     PlaySoundEffect(0x1000D);
-    func_01ffa6fc(temp_r4);
+    Sprite_ResumeAnimation(temp_r4);
 }
 
 void func_020da0a0(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
@@ -181,7 +181,7 @@ void func_020da0ec(void *a) {
 }
 
 void func_020da1e8(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     s32 temp_r0_2;
     u16 temp_r0;
@@ -196,7 +196,7 @@ void func_020da1e8(void *arg0) {
     if ((temp_r0_2 == 0) && (temp_r0_2 == 0)) {
         PlaySoundEffect(0x1000E);
         M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 4);
-        func_01ffa6fc(temp_r4);
+        Sprite_ResumeAnimation(temp_r4);
     }
 }
 
@@ -253,7 +253,7 @@ void func_020da3c8(void *arg0) {
     if ((temp_r0_2 == 0) && (temp_r0_2 == 0)) {
         PlaySoundEffect(0x1000E);
         M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 8);
-        func_01ffa6fc(temp_r4);
+        Sprite_ResumeAnimation(temp_r4);
     }
 }
 

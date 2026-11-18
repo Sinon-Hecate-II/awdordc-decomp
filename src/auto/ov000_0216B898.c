@@ -93,7 +93,7 @@ switch(M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)){
 case 8:PlaySoundEffect(0x1003e);
 case 0x68:PlaySoundEffect(0x1003f);
 }
-if((*gKeyState &(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]||M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)==0x83)func_01ffa6fc(arg0);
+if((*gKeyState &(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]||M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)==0x83)Sprite_ResumeAnimation(arg0);
 M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)++;
 }
 
@@ -154,7 +154,7 @@ void func_ov000_0216c1f4(void) {
  * holding that player's army state and colour, a unit-stat panel, and seven
  * icon animations each with its own frame table. */
 void BuildArmyInfoWindow(void) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_020a9218(void *);
     extern M2C_UNK gHeapObjectVTable;
@@ -189,7 +189,7 @@ void BuildArmyInfoWindow(void) {
     void *frames2;
     void *icon3;
 
-    window = func_01ffa3dc(&data_ov000_021b8578, 7);
+    window = CreateSpriteFromClass(&data_ov000_021b8578, 7);
     if (window == NULL) {
         return;
     }

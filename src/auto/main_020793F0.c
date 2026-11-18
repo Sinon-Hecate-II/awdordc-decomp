@@ -198,10 +198,10 @@ void func_02079b64(void *arg0) {
 }
 
 void func_02079b88(void *arg0) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     M2C_FIELD(arg0, s16 *, 0x6C)++;
     if (M2C_FIELD(arg0, s16 *, 0x6C) < M2C_FIELD(arg0, s16 *, 0x6E)) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_02079bb0(M2C_UNK arg0) {
@@ -225,10 +225,10 @@ void func_02079bf0(void *arg0) {
 }
 
 void func_02079c14(void *arg0) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     M2C_FIELD(arg0, s16 *, 0x6C)++;
     if (M2C_FIELD(arg0, s16 *, 0x6C) < M2C_FIELD(arg0, s16 *, 0x6E)) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_02079c3c(M2C_UNK arg0) {

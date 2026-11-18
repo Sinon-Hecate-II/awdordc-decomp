@@ -598,11 +598,11 @@ void func_ov001_02178b8c(void) {
 void func_ov001_02178bc0(void) {
     s8 Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_02178bfc(void);
-    extern s8 data_ov001_02193d80;
+    extern s8 gOv001MessageState;
     extern M2C_UNK func_ov001_02178c7c;
     func_ov001_02178bfc();
     func_ov001_02171e58(0x20);
-    data_ov001_02193d80 = Ov001_ShowMessagePanel(0x3C, -1, 0);
+    gOv001MessageState = Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_SetStepCallback(&func_ov001_02178c7c);
 }
 
@@ -619,11 +619,11 @@ void func_ov001_02178bfc(void) {
 }
 
 void func_ov001_02178c7c(void) {
-    extern s8 data_ov001_02193d80;
+    extern s8 gOv001MessageState;
     void func_ov001_02178ce4(void);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    if ((u8)data_ov001_02193d80 != 0) {
+    if ((u8)gOv001MessageState != 0) {
         Ov001_StartFade(2, 1, 1, 8);
         Ov001_EnableVisiblePlanes(1, 1);
     }
@@ -678,15 +678,15 @@ void func_ov001_02178da0(void) {
 void func_ov001_02178da4(void) {
     s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(s32);
-    extern s8 data_ov001_02193d80;
+    extern s8 gOv001MessageState;
     extern M2C_UNK func_ov001_02178dfc;
     switch (Ov001_GetIconRowSelection()) {
     case 1:
-        M2C_FIELD(&data_ov001_02193d80, u8 *, 1) = 1;
+        M2C_FIELD(&gOv001MessageState, u8 *, 1) = 1;
         Ov001_PlaySound(6);
         break;
     case 0:
-        M2C_FIELD(&data_ov001_02193d80, u8 *, 1) = 0;
+        M2C_FIELD(&gOv001MessageState, u8 *, 1) = 0;
         Ov001_PlaySound(7);
         break;
     default:
@@ -709,16 +709,16 @@ void func_ov001_02178e1c(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK func_ov001_02171694(void);
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern s8 data_ov001_02193d80;
-    extern M2C_UNK func_ov001_02178e80;
+    extern s8 gOv001MessageState;
+    extern M2C_UNK Ov001_CloseMessageScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_02171694();
-    if (M2C_FIELD(&data_ov001_02193d80, u8 *, 1) == 0) {
+    if (M2C_FIELD(&gOv001MessageState, u8 *, 1) == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02178e80);
+    Ov001_SetStepCallback(&Ov001_CloseMessageScreen);
 }
 

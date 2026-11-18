@@ -14,7 +14,7 @@ extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10
 void UpdateUnitMove(void *ctrl) {
 s32 func_0207b7c4(void);s32 GetFacingOffset(s32);
 void PlaySoundAtTile(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 IsMapOrderActive(void *);void PanMapViewToTile(u8,u8);void StepMapViewToTile(u8,u8);void func_01ffa6fc(void *);
+s32 IsMapOrderActive(void *);void PanMapViewToTile(u8,u8);void StepMapViewToTile(u8,u8);void Sprite_ResumeAnimation(void *);
 extern s32 *gCurrentMap;
 s32 startOffset,endOffset,facing,turnCount; u8 *unit; void *map; u8 *player;
 if(func_0207b7c4())return;
@@ -60,13 +60,13 @@ map=(void *)*gCurrentMap;
 player=(u8 *)map+0x67A4+M2C_FIELD(map,u16 *,0x52A4)*140;
 StepMapViewToTile(player[0x2D],player[0x2E]);
 }
-func_01ffa6fc(ctrl);
+Sprite_ResumeAnimation(ctrl);
 }
 
 void func_020a5ac8(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02120608;
-    func_01ffa3dc(&data_02120608, 7);
+    CreateSpriteFromClass(&data_02120608, 7);
 }
 
 s32 func_020a5ae0(u32 arg0) {

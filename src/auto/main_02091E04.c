@@ -163,10 +163,10 @@ void func_020920c4(void *arg0) {
 }
 
 s32 func_020920e8(void *arg0) {
-    M2C_UNK func_01ffa3dc(s32, s32);
+    M2C_UNK CreateSpriteFromClass(s32, s32);
     extern M2C_UNK data_02102a70;
     s32 temp_r0;
-    temp_r0 = func_01ffa3dc((s32)&data_02102a70, 7);
+    temp_r0 = CreateSpriteFromClass((s32)&data_02102a70, 7);
     M2C_FIELD(arg0, void (**)(void *), 8) = func_020920c4;
     M2C_FIELD(M2C_FIELD(arg0, void **, 4), void (**)(s32), 4)(temp_r0);
     M2C_FIELD(arg0, void **, 4) = (void *)(M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -333,11 +333,11 @@ s32 MoveMapViewToPlayerUnit(void *ctx) {
 }
 
 s32 func_02092434(void *arg0) {
-    M2C_UNK func_01ffa3dc(s32, s32);
+    M2C_UNK CreateSpriteFromClass(s32, s32);
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
-    func_01ffa3dc(M2C_FIELD(temp_r1, s32 *, 4), M2C_FIELD(temp_r1, s32 *, 0xC));
+    CreateSpriteFromClass(M2C_FIELD(temp_r1, s32 *, 4), M2C_FIELD(temp_r1, s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }

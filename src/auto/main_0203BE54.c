@@ -348,32 +348,35 @@ done:
     ;
 }
 #pragma pop
-void func_0203c878(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
+/* Starts hosting a match in connection mode 2: stores the callbacks run when a
+ * peer joins, makes our own player slot present, publishes the match status and
+ * starts QR2 reporting when the connection has no QR2 record yet. */
+void StartServingMatch(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 peerCallback, s32 peerCallbackData) {
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK ReportGpiSessionStatus();
     M2C_UNK BeginMatchmakingSession(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 ReportConnectionStatusResult();
     M2C_UNK SetConnectionState(M2C_UNK);
     extern M2C_UNK gConnectionMgr;
-    void *temp_r4;
+    void *conn;
 
     BeginMatchmakingSession(2, arg0, arg1, arg2);
-    M2C_FIELD(GetConnection(), s32 *, 0x46C) = arg3;
-    M2C_FIELD(GetConnection(), s32 *, 0x470) = arg4;
-    temp_r4 = GetConnection();
-    M2C_FIELD(temp_r4, s32 *, 0xF4) = (s32) M2C_FIELD(GetConnection(), s32 *, 0x200);
-    M2C_FIELD(GetConnection(), s32 *, 0x2F0) = 1;
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_CALLBACK) = peerCallback;
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_CALLBACK_DATA) = peerCallbackData;
+    conn = GetConnection();
+    M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS) = (s32) M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_PARAM);
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PLAYER_MASK) = 1;
     M2C_FIELD(GetConnection(), s8 *, 0xE) = 0;
-    M2C_FIELD(&gConnectionMgr, s8 *, 0x1D) = 0;
-    SetConnectionState(0xA);
+    M2C_FIELD(&gConnectionMgr, s8 *, MATCH_SESSION_DIRTY) = 0;
+    SetConnectionState(CONN_STATE_MATCH);
     ReportGpiSessionStatus();
     if (ReportConnectionStatusResult() != 0) {
         return;
     }
-    if (M2C_FIELD(GetConnection(), s32 *, 0x10) != 0) {
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_RECORD) != 0) {
         return;
     }
-    StartQr2Reporting(M2C_FIELD(GetConnection(), s32 *, 0x200));
+    StartQr2Reporting(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_PARAM));
 }
 
 /* Join the match hosted by playerId: set up connection mode 3, store the player

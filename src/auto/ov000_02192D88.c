@@ -1,5 +1,7 @@
 /* 4 functions from 0x02192D88 to 0x02193D6C (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 
 #pragma opt_strength_reduction off
 #pragma opt_if-conversion off
@@ -75,10 +77,102 @@ M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)ty<<26)>>20
 value=func_ov000_0217bd44(ux,uy,sx,sy);
 SetMapCursor((s16)ux,(s16)uy,8,(u8)value,0);
 }
-#pragma opt_if-conversion reset
-#pragma opt_strength_reduction reset
-void func_ov000_021935c4(void *arg0) { (void)arg0; }
+#pragma opt_strength_reduction off
+void func_ov000_021935c4(void *arg0) {
+    extern void **gCurrentMap;
+    extern u16 *gAiCommandState;
+    void FloodFillUnitRange(s32, s32, s32, s32, s32);
+    s32 IsPropertyCell(s32, s32);
+    s32 IsAllyUnitAtCell(s16, s16);
+    void PlanMoveDestination(s32, s32);
+#define CURSOR_UNIT M2C_FIELD(((u8 *)*gCurrentMap), u8 **, MAP_CURSOR_UNIT)
+#define CELL_MOVE(map, x, y) M2C_FIELD(M2C_FIELD((map) + (y)*4, s8 **, MAP_GRID), s8 *, (x))
+#define CELL_INDEX(map, x, y) ((x) + M2C_FIELD((map) + (y)*2, u16 *, MAP_ROW_OFFSETS))
+#define PROPERTY_INDEX(map, cell) M2C_FIELD((map) + (cell), s8 *, MAP_CELL_PROPERTY_INDEX)
+#define PROPERTY_USE(map, index) M2C_FIELD((map) + (index)*MAP_PROPERTY_STRIDE, u8 *, MAP_PROPERTY_CELLS + MAP_PROPERTY_COUNT)
+#define AI_FLAGS M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS)
+    u8 *map, *unit, *useCount;
+    u16 target;
+    s32 x, y, score, cell, index;
+    register s32 bestCost, bestX, bestY;
 
+    (void)arg0;
+    unit = CURSOR_UNIT;
+    FloodFillUnitRange(unit[MAP_UNIT_X], unit[MAP_UNIT_Y], (u32)(unit[MAP_UNIT_KIND] << 26) >> 26, 0x6e, 0);
+    map = ((u8 *)*gCurrentMap);
+    target = M2C_FIELD(M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_TARGET);
+    x = (u32)(target << 26) >> 26;
+    if (x != 63) {
+        y = (u32)(target << 20) >> 26;
+        if (CELL_MOVE(map, x, y) >= 0 && IsPropertyCell(x, y)) {
+            map = ((u8 *)*gCurrentMap);
+            index = PROPERTY_INDEX(map, CELL_INDEX(map, x, y));
+            if (!PROPERTY_USE(map, index) ||
+                (AI_FLAGS & AI_ACTION_SKIP_REPLAN)) {
+                if (!IsAllyUnitAtCell((s16)x, (s16)y)) {
+                map = ((u8 *)*gCurrentMap);
+                index = PROPERTY_INDEX(map, CELL_INDEX(map, x, y));
+                useCount = map + MAP_PROPERTY_CELLS + index*MAP_PROPERTY_STRIDE;
+                useCount[MAP_PROPERTY_COUNT]++;
+                PlanMoveDestination(x, y);
+                }
+            }
+        }
+    }
+
+    bestX = -1;
+    bestY = bestX;
+    bestCost = bestX + 0x8000;
+    unit = CURSOR_UNIT;
+    M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) = (M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) & ~0x3f) | 0x3f;
+    unit = CURSOR_UNIT;
+    M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) = (M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) & ~0xfc0) | 0xfc0;
+
+    for (y = 0; y < M2C_FIELD(((u8 *)*gCurrentMap), u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(((u8 *)*gCurrentMap), u16 *, MAP_WIDTH); x++) {
+            if (CELL_MOVE(((u8 *)*gCurrentMap), x, y) < 0 || !IsPropertyCell(x, y))
+                continue;
+            map = ((u8 *)*gCurrentMap);
+            cell = CELL_INDEX(map, x, y);
+            index = PROPERTY_INDEX(map, cell);
+            if (PROPERTY_USE(map, index) && !(AI_FLAGS & AI_ACTION_SKIP_REPLAN))
+                continue;
+            score = CELL_MOVE(map, x, y);
+            switch (M2C_FIELD(map + cell, u8 *, MAP_CELL_TERRAIN) & 31) {
+            case 15: break;
+            case 17: score += 2; break;
+            case 24: score += 2; break;
+            case 18: score += 3; break;
+            case 19: score += 4; break;
+            case 22: score += 4; break;
+            default: score += 6; break;
+            }
+            if (bestCost >= score) {
+                bestX = x;
+                bestY = y;
+                bestCost = score;
+            }
+        }
+    }
+    if (bestCost == 0x7fff)
+        return;
+    map = ((u8 *)*gCurrentMap);
+    index = PROPERTY_INDEX(map, CELL_INDEX(map, bestX, bestY));
+    useCount = map + MAP_PROPERTY_CELLS + index*MAP_PROPERTY_STRIDE;
+    useCount[MAP_PROPERTY_COUNT]++;
+    unit = CURSOR_UNIT;
+    M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) = (M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) & ~0x3f) | ((u16)bestX & 0x3f);
+    unit = CURSOR_UNIT;
+    M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) = (M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) & ~0xfc0) | (((u32)(u16)bestY << 26) >> 20);
+    PlanMoveDestination(bestX, bestY);
+#undef AI_FLAGS
+#undef PROPERTY_USE
+#undef PROPERTY_INDEX
+#undef CELL_INDEX
+#undef CELL_MOVE
+#undef CURSOR_UNIT
+}
+#pragma opt_strength_reduction reset
 u32 func_ov000_02193998(void) {
 extern void **data_027e0058;
 u16 flags;

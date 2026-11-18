@@ -193,7 +193,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_02080c50(M2C_UNK *, s32);
+    M2C_UNK LoadFileToAddress(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
@@ -210,7 +210,7 @@ void func_ov000_02170110(void *arg0) {
     s32 HeapAllocBlock(M2C_UNK);
     s32 func_ov000_0216ce10(u8);
     s32 func_ov000_0216ce84(u8);
-    s16 func_ov000_0216ec1c();
+    s16 CountCurrentPlayerUnits();
     M2C_UNK ScrollListRebuild(s16, s16);
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListDrawTabs(void *);
@@ -224,7 +224,7 @@ void func_ov000_02170110(void *arg0) {
     extern M2C_UNK data_ov000_021b8b58;
     extern M2C_UNK data_ov000_021b8b64;
     extern M2C_UNK data_ov000_021b8b78;
-    extern M2C_UNK data_ov000_021df5e4;
+    extern M2C_UNK gUnitListRows;
     void *p;
     void *q;
     void *r;
@@ -244,8 +244,8 @@ void func_ov000_02170110(void *arg0) {
         t();
     }
     func_020994e0(0);
-    M2C_FIELD(&data_ov000_021df5e4, s32 *, 4) = HeapAllocBlock(0x40);
-    M2C_FIELD(arg0, s16 *, 0x3C) = func_ov000_0216ec1c();
+    M2C_FIELD(&gUnitListRows, s32 *, 4) = HeapAllocBlock(0x40);
+    M2C_FIELD(arg0, s16 *, 0x3C) = CountCurrentPlayerUnits();
     M2C_FIELD(arg0, s16 *, 0x34) = 0;
     M2C_FIELD(arg0, s16 *, 0x36) = 0;
     M2C_FIELD(arg0, s16 *, 0x38) = 0;
@@ -268,7 +268,7 @@ void func_ov000_02170110(void *arg0) {
     CreateMenuTextSprite(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);
     CreateMenuTextSprite(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, zero);
     CreateMenuUnitSprite(arg0);
-    func_02080c50(&data_ov000_021b8b64, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x7780);
+    LoadFileToAddress(&data_ov000_021b8b64, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x7780);
     LoadFileToSpriteBuffer(&data_ov000_021b8b78, 0x380, 0x20);
     p = (void *) (M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x3880);
     MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
@@ -400,14 +400,14 @@ void func_ov000_0217074c(void) {
     M2C_UNK HeapFreeBlock(s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov000_021df5e4;
+    extern M2C_UNK gUnitListRows;
     void *temp_r4;
     void *next2;
     s32 value;
 
     temp_r4 = gCur3DSpriteEngine;
     next2 = *(void *volatile *)&g3DSpriteEngineMain;
-    value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
+    value = M2C_FIELD(&gUnitListRows, s32 *, 4);
     gCur3DSpriteEngine = next2;
     HeapFreeBlock(value);
     Clear3DSpriteLayer(1);
@@ -419,8 +419,8 @@ void func_ov000_0217074c(void) {
 }
 #pragma opt_common_subs reset
 void func_ov000_021707c0(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021b8a78;
-    func_01ffa3dc(&data_ov000_021b8a78, 7);
+    CreateSpriteFromClass(&data_ov000_021b8a78, 7);
 }
 

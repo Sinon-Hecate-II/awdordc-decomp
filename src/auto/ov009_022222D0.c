@@ -1,5 +1,6 @@
 /* 30 functions from 0x022222D0 to 0x02223290 (ov009), found by ds-decomp. */
 #include "common.h"
+#include "ov009_link.h"
 
 static inline u32 ov009DisableInterrupts(void) {
     u32 previous = *(volatile u16 *)0x04000208;
@@ -242,11 +243,11 @@ void func_ov009_0222281c(void *arg0) {
     SetLinkPhase(1);
 }
 
-s32 func_ov009_0222287c(u16 arg0) {
+s32 AnnounceNextLinkPlayer(u16 arg0) {
     s32 func_02011d58();
     void SignalLinkResult();
     void func_ov009_02222a00(M2C_UNK, M2C_UNK);
-    void func_ov009_02222958(void *);
+    void HandleLinkAnnounceEvent(void *);
     s32 mask=func_02011d58();
     if(mask==0x8000) {
         SignalLinkError(3);
@@ -261,7 +262,7 @@ s32 func_ov009_0222287c(u16 arg0) {
     while(!(mask & (1 << (arg0-1)))) {
         if((u32)arg0++>=0x10) return 0x19;
     }
-    func_ov009_02222a00((M2C_UNK)&func_ov009_02222958,arg0);
+    func_ov009_02222a00((M2C_UNK)&HandleLinkAnnounceEvent,arg0);
 }
 
 void SignalLinkResult(arg0)
@@ -278,39 +279,43 @@ s32 arg0;
     M2C_FIELD(state,void (**)(s32,s32),0x2C)(arg0,0);
 }
 
-void func_ov009_02222958(void *arg0) {
+/* Handles the answer to one player-announcement command: the answering player's
+ * slot joins the mask of players found so far (the answers that share the lowest
+ * reported value), then the next slot is announced; once no slot is left the
+ * link moves on to choosing the local player. */
+void HandleLinkAnnounceEvent(void *event) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     void SignalLinkEvent();
-    s32 func_ov009_0222287c(u16);
+    s32 AnnounceNextLinkPlayer(u16);
     extern M2C_UNK gLinkState;
-    u16 temp_r1;
-    u16 temp_r3;
-    u16 temp_r2;
-    u16 temp_ip;
-    s32 temp_r0;
+    u16 state;
+    u16 answerKey;
+    u16 foundKey;
+    u16 playerSlot;
+    s32 result;
 
-    temp_r1 = M2C_FIELD(arg0, u16 *, 2);
-    if (temp_r1 != 0) {
-        SignalLinkEvent(temp_r1);
-        SetLinkPhase(8);
+    state = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+    if (state != 0) {
+        SignalLinkEvent(state);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return;
     }
-    temp_r3 = M2C_FIELD(arg0, u16 *, 0xA);
-    temp_r2 = M2C_FIELD(&gLinkState, u16 *, 0xA);
-    temp_ip = M2C_FIELD(arg0, u16 *, 8);
-    if (temp_r2 > temp_r3) {
-        M2C_FIELD(&gLinkState, u16 *, 0xA) = temp_r3;
-        M2C_FIELD(&gLinkState, u16 *, 4) = (u16) (1 << (temp_ip - 1));
-    } else if (temp_r2 == temp_r3) {
-        M2C_FIELD(&gLinkState, u16 *, 4) = (u16) (M2C_FIELD(&gLinkState, u16 *, 4) | (1 << (temp_ip - 1)));
+    answerKey = M2C_FIELD(event, u16 *, LINK_EVENT_VALUE);
+    foundKey = M2C_FIELD(&gLinkState, u16 *, LINK_STATE_ANNOUNCE_KEY);
+    playerSlot = M2C_FIELD(event, u16 *, LINK_EVENT_COMMAND);
+    if (foundKey > answerKey) {
+        M2C_FIELD(&gLinkState, u16 *, LINK_STATE_ANNOUNCE_KEY) = answerKey;
+        M2C_FIELD(&gLinkState, u16 *, LINK_STATE_PLAYER_MASK) = (u16) (1 << (playerSlot - 1));
+    } else if (foundKey == answerKey) {
+        M2C_FIELD(&gLinkState, u16 *, LINK_STATE_PLAYER_MASK) = (u16) (M2C_FIELD(&gLinkState, u16 *, LINK_STATE_PLAYER_MASK) | (1 << (playerSlot - 1)));
     }
-    temp_r0 = func_ov009_0222287c((u16) (temp_ip + 1));
-    if (temp_r0 == 0x19) {
-        SetLinkPhase(6);
+    result = AnnounceNextLinkPlayer((u16) (playerSlot + 1));
+    if (result == LINK_ANNOUNCE_DONE) {
+        SetLinkPhase(LINK_PHASE_FOUND);
         return;
     }
-    if (temp_r0 == 2) return;
-    SetLinkPhase(8);
+    if (result == LINK_TASK_QUEUED) return;
+    SetLinkPhase(LINK_PHASE_ERROR);
 }
 
 void func_ov009_02222a00(M2C_UNK arg0, M2C_UNK arg1) {

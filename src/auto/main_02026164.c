@@ -84,7 +84,7 @@ void BigNumAdd(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     }
 }
 
-void func_02026338(u16 *dst, u16 *src, u32 carry, s32 len) {
+void BigNumAddCarry(u16 *dst, u16 *src, u32 carry, s32 len) {
     s32 i = 0;
     u32 s;
     for (; i < len; i++) {
@@ -100,12 +100,12 @@ void func_02026338(u16 *dst, u16 *src, u32 carry, s32 len) {
 }
 
 void BigNumNeg(u16 *arr, s32 n) {
-    void func_02026338(u16 *, u16 *, u32, s32);
+    void BigNumAddCarry(u16 *, u16 *, u32, s32);
     s32 i;
     for (i = 0; i < n; i++) {
         arr[i] = ~arr[i];
     }
-    func_02026338(arr, arr, 1, n);
+    BigNumAddCarry(arr, arr, 1, n);
 }
 
 void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
@@ -139,7 +139,7 @@ void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     }
 }
 
-void func_02026484(u16 *dst, u16 *src, u32 borrow, s32 len) {
+void BigNumSubBorrow(u16 *dst, u16 *src, u32 borrow, s32 len) {
     s32 i = 0;
     u32 s;
     for (; i < len; i++) {
@@ -164,7 +164,7 @@ s32 BigNumCmp(u16 *a, u16 *b, s32 n) {
     return 0;
 }
 
-void func_02026524(u16 *arr, u32 carry, s32 i, s32 len) {
+void BigNumAddCarryAt(u16 *arr, u32 carry, s32 i, s32 len) {
     u32 s;
     while (carry != 0 && i < len) {
         s = carry + arr[i];
@@ -174,16 +174,26 @@ void func_02026524(u16 *arr, u32 carry, s32 i, s32 len) {
     }
 }
 
-void BigNumMul(u16 *dst,u16 *src1,u16 *src2,s32 len){
-M2C_UNK MI_CpuFill8(u8 *,s32,u32);s32 BigNumLen(u16 *,s32);void func_02026524(u16 *,u32,s32,s32);
-s32 a,b,i,j;
-MI_CpuFill8((u8 *)dst,0,(u32)(len*2));
-a=BigNumLen(src1,len);b=BigNumLen(src2,len);
-for(i=0;i<b;i++){
-j=0;while(j<a && j<len-i){
-func_02026524(dst,(u32)src1[j]*(u32)src2[i],i+j,len);j++;
-}
-}
+/* dst = src1 * src2 over `len` 16-bit limbs, schoolbook style: each limb of
+ * src2 multiplies src1's limbs and the 32-bit product is carried into dst at
+ * that limb's offset. */
+void BigNumMul(u16 *dst, u16 *src1, u16 *src2, s32 len) {
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
+    s32 BigNumLen(u16 *, s32);
+    void BigNumAddCarryAt(u16 *, u32, s32, s32);
+    s32 len1, len2;
+    s32 i, j;
+
+    MI_CpuFill8((u8 *)dst, 0, (u32)(len * 2));
+    len1 = BigNumLen(src1, len);
+    len2 = BigNumLen(src2, len);
+    for (i = 0; i < len2; i++) {
+        j = 0;
+        while (j < len1 && j < len - i) {
+            BigNumAddCarryAt(dst, (u32)src1[j] * (u32)src2[i], i + j, len);
+            j++;
+        }
+    }
 }
 
 void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
@@ -214,7 +224,7 @@ s32 m=BigNumLen(src,n); s32 i,k,j; u32 p;
 if(n>m*2)MI_CpuFill8((u8*)(dst+m*2),0,(n-m*2)*2);
 i=0;if(m>0){j=0;do{if(j>=n)break;p=(u32)src[i]*src[i];dst[j]=p;if(j==n-1)break;i++;dst[j+1]=p>>16;j+=2;}while(i<m);}
 for(k=0;k<m;k++){i=k+1;goto test;
-body:p=(u32)src[i]*src[k];if(p<=0x7fff8000U)func_02026524(dst,p<<1,j,n);else{func_02026524(dst,p,j,n);func_02026524(dst,p,j,n);}i++;
+body:p=(u32)src[i]*src[k];if(p<=0x7fff8000U)BigNumAddCarryAt(dst,p<<1,j,n);else{BigNumAddCarryAt(dst,p,j,n);BigNumAddCarryAt(dst,p,j,n);}i++;
 test:if(i<m){j=k+i;if(j<n)goto body;}
 }
 }
@@ -423,7 +433,7 @@ void BigNumMontMul(u16 *result, u16 *base, s32 op, s32 n, s32 t, u16 *modulus, u
 void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     s32 BigNumLen(u16 *, s32);
-    void func_02026484(u16 *, u16 *, u32, s32);
+    void BigNumSubBorrow(u16 *, u16 *, u32, s32);
     void BigNumMul(u16 *, u16 *, u16 *, s32);
     void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
     void func_02026b70(u16 *, u16 *, u16 *, s32, u16 *);
@@ -462,7 +472,7 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
 
     func_02026b70(r6, buf, (u16 *)arg4, n, sp24);
     BigNumMul(r7, buf, r6, n);
-    func_02026484(r6, r7, 1, n);
+    BigNumSubBorrow(r6, r7, 1, n);
     BigNumDivMod(r6, r6, (u16 *)arg4, (u16 *)0, n, r5);
     BigNumMul(sp24, (u16 *)arg1, buf, n);
     BigNumDivMod((u16 *)0, sp24, (u16 *)arg4, sp24, n, r5);

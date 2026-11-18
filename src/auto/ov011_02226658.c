@@ -6,7 +6,7 @@ typedef struct { u8 active:1; u8 remaining:7; } TransitionFlags;
 u32 func_ov011_02226658(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK DeleteSpriteObject();
-    u8 func_01ffa6fc(void *);
+    u8 Sprite_ResumeAnimation(void *);
     s32 EaseInterpolate(s32, s32, M2C_UNK, s32, s32);
     M2C_UNK func_ov011_022257b4(void *);
     M2C_UNK DrawIntroMenuLabel(void *);
@@ -240,7 +240,7 @@ u32 func_ov011_02226658(void *arg0) {
         gCur3DSpriteEngine = temp_r4;
     }
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) >= 0x28FAU) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
     }
     if (*gKeyState & 8) {
         temp_r2_8 = M2C_FIELD(arg0, u8 *, 0x34);
@@ -288,7 +288,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x51) = 0x10;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x52) = 0;
     gCur3DSpriteEngine = temp_r1_8;
-    return func_01ffa6fc(arg0);
+    return Sprite_ResumeAnimation(arg0);
 }
 #pragma opt_common_subs reset
 void func_ov011_02227048(void *a){

@@ -385,9 +385,9 @@ return result;
 }
 
 void func_020ae1e8(s32 arg0) {
-void *func_01ffa3dc(void *,s32);
+void *CreateSpriteFromClass(void *,s32);
 extern M2C_UNK data_02127bc8;
-void *p=func_01ffa3dc(&data_02127bc8,7);
+void *p=CreateSpriteFromClass(&data_02127bc8,7);
 if(p)M2C_FIELD(p,s32 *,0x5c)=arg0;
 }
 

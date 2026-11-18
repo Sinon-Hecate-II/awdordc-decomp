@@ -111,9 +111,9 @@ M2C_FIELD(&data_ov006_02218e20,s32 *,4)=0;
 }
 
 void func_ov006_02217464(M2C_UNK arg0) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov006_02218a48;
-    func_01ffa3dc(&data_ov006_02218a48, arg0);
+    CreateSpriteFromClass(&data_ov006_02218a48, arg0);
 }
 
 void func_ov006_0221747c(void *arg0) {
@@ -608,7 +608,7 @@ i++;
 void func_ov006_02218128(void *p) {
 void *GetMapRecordStamp(s32); u32 i; u16 id; void *q; u32 flags; void *out; s32 value;
 i=M2C_FIELD(p,u8 *,0x3a);
-if(i>=M2C_FIELD(p,u8 *,0x39)){func_01ffa6fc(p);return;}
+if(i>=M2C_FIELD(p,u8 *,0x39)){Sprite_ResumeAnimation(p);return;}
 M2C_FIELD(p,u8 *,0x3a)=i+1;
 id=M2C_FIELD(p,u16 **,0x50)[i]; GetMapRecord(id); q=GetMapRecordStamp(id);
 flags=(M2C_FIELD(q,u32 *,0xc)>>29)<<8;

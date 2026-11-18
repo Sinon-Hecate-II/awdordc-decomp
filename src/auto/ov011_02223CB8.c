@@ -213,7 +213,7 @@ M2C_FIELD(p,u16 *,INTRO_TIMER)++;
 if(M2C_FIELD(p,u16 *,INTRO_TIMER)>120){
 M2C_FIELD(p,u16 *,INTRO_TIMER)=32;
 M2C_FIELD(p,u8 *,INTRO_STATE)++;
-func_01ffa6fc(p);return;
+Sprite_ResumeAnimation(p);return;
 }break;
 case 2:
 M2C_FIELD(p,u16 *,INTRO_TIMER)++;
@@ -233,7 +233,7 @@ if(M2C_FIELD(p,s32 *,INTRO_MODE)==2)SetSpriteAnimation(p,4);
 else SetSpriteAnimation(p,2);
 return;
 }
-func_01ffa6fc(p);return;
+Sprite_ResumeAnimation(p);return;
 }break;
 }
 HandleIntroInput(p);

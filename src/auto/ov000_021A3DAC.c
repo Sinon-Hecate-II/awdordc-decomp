@@ -9,7 +9,7 @@ static inline void *GetCandidateMapState(void) { extern void **gCurrentMap; retu
 #pragma opt_common_subs off
 #pragma opt_lifetimes off
 s32 PlanUnitKind24Action(void) {
- s32 func_ov000_021a6264(s32);void ResetAiTargetCandidates(void);
+ s32 FindAiBuildTargetCandidate(s32);void ResetAiTargetCandidates(void);
  void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void MarkAdjacentCellsForKind24(u8);
  s32 GetTerrainPropertyFlagsAt(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 IsCaptureKind(s32);
  s32 IsCurrentPlayerUnit(s16);s32 IsMidActionStep(s32);void CommitAiAction(s32);
@@ -22,7 +22,7 @@ s32 PlanUnitKind24Action(void) {
  void *map;
  void **holder;
  for(;;){
- index=func_ov000_021a6264(3);
+ index=FindAiBuildTargetCandidate(3);
  if(index==-1){ResetAiTargetCandidates();return 0;}
  candidate=gAiTargetCandidates+index*12;
  FloodFillUnitRange(candidate[0],candidate[1],2,110,0);
@@ -82,7 +82,7 @@ s32 PlanUnitKind24Action(void) {
  * must exist with enough ready combat units waiting for the empty kind-24 units. */
 s32 TryBuildKind24Unit(void){
 s32 GetUnitBuildCost(u16,s32);u8 HasAiBuildFlag(s32);s32 PlanUnitKind24Action(void);
-s32 func_ov000_021a6264(s32);s32 FindAiTargetOfType(s32);u8 CountPlayerUnitsOfKind(s32);
+s32 FindAiBuildTargetCandidate(s32);s32 FindAiTargetOfType(s32);u8 CountPlayerUnitsOfKind(s32);
 s32 CountReadyCombatUnits(void);s32 CountReadyCaptureUnits(void);s32 CountEmptyUnitsOfKind(s32);
 void CommitAiAction(s32);
 extern void **gCurrentMap;extern M2C_UNK gAiCommand;
@@ -91,7 +91,7 @@ if(!HasAiBuildFlag(AI_BUILD_FLAG_UNIT_24))return 0;
 map=*gCurrentMap;playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
 if(GetUnitBuildCost(playerId,24)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
 if(PlanUnitKind24Action()==1)return 1;
-targetIndex=func_ov000_021a6264(3);if(targetIndex==-1){targetIndex=FindAiTargetOfType(3);if(targetIndex==-1)return 0;}
+targetIndex=FindAiBuildTargetCandidate(3);if(targetIndex==-1){targetIndex=FindAiTargetOfType(3);if(targetIndex==-1)return 0;}
 availableUnits=CountPlayerUnitsOfKind(24);readyCombat=CountReadyCombatUnits();
 if(!readyCombat){if(CountReadyCaptureUnits()<=1)return 0;}
 if(availableUnits){kind24Empty=CountEmptyUnitsOfKind(24)+1;kind25Empty=CountEmptyUnitsOfKind(25);capacity=CountReadyCaptureUnits()-kind25Empty*2;if(capacity<0)capacity=0;if(readyCombat+capacity<kind24Empty*4)return 0;}

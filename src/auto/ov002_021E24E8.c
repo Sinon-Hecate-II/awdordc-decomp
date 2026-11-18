@@ -214,7 +214,7 @@ void func_ov002_021e2aa8(void *arg0) {
     func_ov002_021e1844(arg0);
 }
 
-void func_ov002_021e2c48(void *a,u8 b) {
+void SetEffectNodeDrawTransform(void *a,u8 b) {
  s32 x,y,z; u16 scale; s32 value;
  scale=(M2C_FIELD(a,u16 *,0x78)*M2C_FIELD(a,u16 *,0x42))>>8;
  if(M2C_FIELD(a,u16 *,0x86))b=!b;

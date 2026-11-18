@@ -118,12 +118,12 @@ void func_02095f90(void) {
 
 void func_02095f94(s32 arg0) {
 void func_02095fc0(void);
-M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
 void StringCopy(void *,s32);
 extern M2C_UNK data_02102b18;
 s32 p;
 func_02095fc0();
-p=func_01ffa3dc(&data_02102b18,7);
+p=CreateSpriteFromClass(&data_02102b18,7);
 StringCopy((u8 *)p+0x36,arg0);
 }
 
@@ -215,7 +215,7 @@ func_02097c50(GetMenuCursor(),pos[0]+M2C_FIELD(arg0,s16 *,0x4a),pos[1]);
 }
 
 void func_0209614c(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK GetMenuCursor();
     M2C_UNK HideMenuCursor();
@@ -236,7 +236,7 @@ void func_0209614c(void *arg0) {
     GetMenuCursor();
     HideMenuCursor();
     M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 /* Lay out the two-state widget p: turn the address of its selected-half tile in the
@@ -284,7 +284,7 @@ void UpdateToggleWidget(ToggleWidget *widget) {
     M2C_UNK PlaySoundEffect(M2C_UNK);
     s32 GetMenuCursor(void);
     M2C_UNK HideMenuCursor(s32);
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
 
     s16 selected;
     s16 oldSelected;
@@ -336,7 +336,7 @@ block_8:
     HideMenuCursor(GetMenuCursor());
     ClearScenePanelRows(3);
     widget->callback();
-    func_01ffa6fc(widget);
+    Sprite_ResumeAnimation(widget);
 }
 
 /* Loads the current map: campaign/arena maps (id in

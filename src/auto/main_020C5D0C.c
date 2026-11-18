@@ -484,7 +484,7 @@ void func_020c697c(void) {
     func_020c0adc();
     func_020c0784();
     func_020d464c();
-    func_01ffa3dc(&data_0212a6c4, 7);
+    CreateSpriteFromClass(&data_0212a6c4, 7);
 }
 
 void func_020c69a0(void) {
@@ -545,10 +545,10 @@ void func_020c6a10(void) {
 }
 
 void func_020c6a38(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212a714;
     func_020c0784();
-    func_01ffa3dc(&data_0212a714, 7);
+    CreateSpriteFromClass(&data_0212a714, 7);
 }
 
 void func_020c6a54(void) {

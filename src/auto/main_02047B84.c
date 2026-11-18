@@ -227,11 +227,11 @@ s32 func_0204800c(u8 *a, u8 *b, s32 c, u32 d, u32 e, s32 f) {
 }
 
 s32 func_02048108(s32 a,s32 b,void *c) {
-s32 func_020498e4(s32); void *ghiResolveHostname(s32);
+s32 ghiInetAddr(s32); void *ghiResolveHostname(s32);
 u16 v=b; void *p;
 M2C_FIELD(c,u8 *,1)=2;
 M2C_FIELD(c,u16 *,2)=((u8)((s32)v>>8))|((v<<8)&0xff00);
-M2C_FIELD(c,s32 *,4)=func_020498e4(a);
+M2C_FIELD(c,s32 *,4)=ghiInetAddr(a);
 if(M2C_FIELD(c,s32 *,4)==-1) {
 p=ghiResolveHostname(a);if(!p)return 0;
 M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);

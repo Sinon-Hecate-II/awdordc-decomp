@@ -5,10 +5,10 @@ typedef struct { s32 a; s32 b; } Pair;
 typedef struct { u8 pad[0x60]; u64 v; u64 *p; } UnkNode0208EE1C;
 
 
-void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+void func_0208e18c(s32 a0, s32 a1, s16 a2, s32 a3, u16 a4, s32 a5) {
     typedef struct { s32 t[5][5]; } TileTable;
     void AddSprite(u16, u16, u16, void *, u8);
-#define ADS ((void (*)(u16, u16, u16, void *, s32))AddSprite)
+#define AddSprite ((void (*)(u16,u16,u16,void *,s32))AddSprite)
 #define SHIFT (((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)
     s32 Divide(s32, s32);
     void DrawVerticalBar(s32, s16, s16, u16, s32);
@@ -21,43 +21,46 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     extern u8 gSpriteDesc8x8[];
     extern s16 gSinCosTable[];
     TileTable tbl;
-    s32 v4, v8, vc, v10, v14, v18, v1c, v20, v38, v3c;
+    s32 v8, vc, v10, v14, v18, v1c, v20, v38, v3c;
     s32 r4, r5, r6, r7, r11;
 
-    tbl = data_020f35c8;
+    s32 left, right, top, bottom, innerX, innerY, innerWidth, innerHeight;
 
-    r7 = a0 & 0x1ff;
-    r4 = a1 & 0xff;
-    ADS((u16)r7, (u8)r4, (u16)(a4 + ((0x54 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    tbl = data_020f35c8;
+    left = a0 & 0x1ff;
+    top = a1 & 0xff;
+    AddSprite((u16)left, (u16)top, (u16)(a4 + ((0x54 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
     v8 = a0 + a2 - 8;
-    r7 = v8 & 0x1ff;
-    ADS((u16)r7, (u8)r4, (u16)(a4 + ((0x56 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    right = v8 & 0x1ff;
+    AddSprite((u16)right, (u16)top, (u16)(a4 + ((0x56 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
     vc = a1 + a3 - 8;
-    r7 = vc & 0xff;
-    ADS((u16)(a0 & 0x1ff), (u8)r7, (u16)(a4 + ((0x58 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    bottom = vc & 0xff;
+    AddSprite((u16)left, (u16)bottom, (u16)(a4 + ((0x58 >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    AddSprite((u16)right, (u16)bottom, (u16)(a4 + ((0x5a >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
 
-    ADS((u16)(v8 & 0x1ff), (u8)r7, (u16)(a4 + ((0x5a >> SHIFT) & 0x3ff)), gSpriteDesc8x8, a5);
+    innerHeight = a3 - 16;
+    innerY = a1 + 8;
+    DrawVerticalBar(a0, (s16)innerY, (s16)innerHeight, (u16)(a4 + ((0x4a >> SHIFT) & 0x3ff)), a5);
+    DrawVerticalBarReverse((s16)v8, (s16)innerY, (s16)innerHeight, (u16)(a4 + ((0x4a >> SHIFT) & 0x3ff)), a5);
 
-    DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> SHIFT) & 0x3ff)), a5);
+    innerWidth = a2 - 16;
+    innerX = a0 + 8;
+    DrawHorizontalBar((s16)innerX, a1, (s16)innerWidth, (u16)(a4 + ((0x40 >> SHIFT) & 0x3ff)), a5);
+    DrawHorizontalBarReverse((s16)innerX, (s16)vc, (s16)innerWidth, (u16)(a4 + ((0x40 >> SHIFT) & 0x3ff)), a5);
 
-    DrawVerticalBarReverse((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> SHIFT) & 0x3ff)), a5);
+    v1c = (s16)innerHeight;
+    v20 = (s16)innerY;
+    r4 = 0x80;
+    a2 -= 16;
 
-    DrawHorizontalBar((s16)(a0 + 8), a1, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> SHIFT) & 0x3ff)), a5);
-
-    DrawHorizontalBarReverse((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> SHIFT) & 0x3ff)), a5);
-
-    v1c = (s16)(a3 - 16);
-    v20 = (s16)(a1 + 8);
-    v4 = (s16)(a2 - 16);
-
-    if (!(v4 < 0x40 && v1c < 0x40)) {
+    if (!(a2 < 0x40 && v1c < 0x40)) {
         s16 d0 = gSinCosTable[0];
         s16 d1 = gSinCosTable[1];
         s32 x5 = d1 << 4;
-        s32 x7 = (-d0) << 4;
-        s32 x6 = d0 << 4;
+        s32 x6 = d0 * 16;
+        s32 x7 = -d0 * 16;
         s32 c1 = Divide(x5, 0x200);
         s32 c2 = Divide(x7, 0x100);
         s32 c3 = Divide(x6, 0x200);
@@ -77,27 +80,26 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
 
     v10 = (s16)(a0 + 8);
     v18 = 0;
-    r4 = 0x80;
 
     while (v18 < 5) {
         if (v1c >= r4) {
-            v14 = v4;
-            v3c = (u16)(v20 & 0xff);
-            r11 = (u16)((v20 & 0xff) | 0x300);
+            v14 = a2;
             v38 = (u16)(((v20 - (r4 >> 1)) & 0xff) | 0x300);
+            r11 = (u16)((v20 & 0xff) | 0x300);
+            v3c = (u16)(v20 & 0xff);
             r5 = v10;
             r6 = 0x80;
             r7 = 0;
             while (r7 < 5) {
                 while (v14 >= r6) {
                     if (r6 >= 0x40 && r4 >= 0x40) {
-                        ADS((u16)((r5 & 0x1ff) | 0x3e00), (u16)r11, a4, (void *)tbl.t[v18][r7], a5);
+                        AddSprite((u16)((r5 & 0x1ff) | 0x3e00), (u16)r11, a4, (void *)tbl.t[v18][r7], a5);
                     } else if (r6 >= 0x40) {
-                        ADS((u16)((r5 & 0x1ff) | 0x3800), (u16)v38, a4, (void *)tbl.t[v18][r7], a5);
+                        AddSprite((u16)((r5 & 0x1ff) | 0x3800), (u16)v38, a4, (void *)tbl.t[v18][r7], a5);
                     } else if (r4 >= 0x40) {
-                        ADS((u16)(((r5 - (r6 >> 1)) & 0x1ff) | 0x3600), (u16)r11, a4, (void *)tbl.t[v18][r7], a5);
+                        AddSprite((u16)(((r5 - (r6 >> 1)) & 0x1ff) | 0x3600), (u16)r11, a4, (void *)tbl.t[v18][r7], a5);
                     } else {
-                        ADS((u16)((r5 & 0x1ff)), (u16)v3c, a4, (void *)tbl.t[v18][r7], a5);
+                        AddSprite((u16)((r5 & 0x1ff)), (u16)v3c, a4, (void *)tbl.t[v18][r7], a5);
                     }
                     r5 += r6;
                     v14 -= r6;
@@ -112,7 +114,7 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
         r4 >>= 1;
         v18++;
     }
-#undef ADS
+#undef AddSprite
 #undef SHIFT
 }
 
@@ -214,10 +216,10 @@ s32 func_0208ed44(s32 arg0) {
 void func_0208ed58(void *p){func_0208eb80(p);}
 
 void func_0208ed64(M2C_UNK arg0) {
-    s32 func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    s32 CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *func_0208ecc0();
     extern M2C_UNK data_021026b8;
-    if (func_01ffa3dc(&data_021026b8, arg0) == 0) {
+    if (CreateSpriteFromClass(&data_021026b8, arg0) == 0) {
         return;
     }
     func_0208ecc0();

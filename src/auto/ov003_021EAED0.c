@@ -1,5 +1,8 @@
 /* 16 functions from 0x021EAED0 to 0x021EBEC0 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
+#include "sound.h"
+#include "ds3dsprite.h"
 
 
 #pragma push
@@ -194,26 +197,30 @@ s32 func_ov003_021eba74(void) {
  return 1;
 }
 
-void func_ov003_021ebae0(void *arg0) {
+/* Opens the waypoint panel: marks it active, plays the open sound, advances the
+ * CO face to its next expression/tile row, hides the two selection sprites,
+ * switches the scene to its opened state and, in a link session, tells the peers
+ * that this player opened it. */
+void OpenWaypointPanel(void *panel) {
     M2C_UNK func_ov003_021e88e0(void *);
-    void *temp_r0;
+    void *face;
 
-    M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) | 0x80);
+    M2C_FIELD(panel, u8 *, 0x3A) = (u8) (M2C_FIELD(panel, u8 *, 0x3A) | 0x80);
     PlaySoundEffect(0x1000D);
-    temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), void **, 4);
-    if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
-        M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
-        M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
+    face = M2C_FIELD(M2C_FIELD(panel, void **, 0x64), void **, 4);
+    if ((s32) M2C_FIELD(face, s8 *, FACE_SPRITE_LAYOUT) >= 0) {
+        M2C_FIELD(face, s32 *, FACE_SPRITE_TILE) = (s32) ((M2C_FIELD(face, s32 *, FACE_SPRITE_TILE) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(face, u8 *, FACE_SPRITE_EXPRESSION) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
+        M2C_FIELD(face, s8 *, FACE_SPRITE_LAYOUT) = 0xC;
     }
-    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x58));
-    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x5C));
+    Hide3DSprite(M2C_FIELD(panel, s32 *, 0x58));
+    Hide3DSprite(M2C_FIELD(panel, s32 *, 0x5C));
     SetOv003SceneState(2);
-    M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    func_01ffa6fc(arg0);
+    M2C_FIELD(panel, s8 *, 0x38) = 0;
+    Sprite_ResumeAnimation(panel);
     if (func_ov003_021e6cfc() == 0) {
         return;
     }
-    func_ov003_021e88e0(arg0);
+    func_ov003_021e88e0(panel);
 }
 
 void func_ov003_021ebb88(void *arg0) {
@@ -324,7 +331,7 @@ void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {
 }
 
 void func_ov003_021ebdf4(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK PlaySoundEffect(s32);
     s32 func_ov003_021e6cfc();
@@ -337,7 +344,7 @@ void func_ov003_021ebdf4(void *arg0) {
     Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x5C));
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
     if (func_ov003_021e6cfc() == 0) {
         return;
     }

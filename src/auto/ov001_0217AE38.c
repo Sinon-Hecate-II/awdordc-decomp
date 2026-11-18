@@ -7,7 +7,7 @@ void RedrawNameEntryText(void);
 
 void func_ov001_0217b130(void);
 
-void func_ov001_0217ae38(s32 arg0, s32 arg1) {
+void MapSelectList_SetRowTiles(s32 arg0, s32 arg1) {
     extern M2C_UNK gMapSelectState;
     s32 offset;
     void *first, *second;
@@ -50,7 +50,7 @@ void MapSelectList_PositionRows(void) {
  * report the task's result.  Runs as the repeated-key scroll task. */
 void MapSelectList_ScrollUp(s32 task) {
     s32 func_020020c4(u16, s32); /* hardware divide unit: remainder */
-    s32 func_02002088(s32, s32); /* hardware divide unit: quotient */
+    s32 HardwareDivide(s32, s32); /* hardware divide unit: quotient */
     extern M2C_UNK gMapSelectState;
     s32 remainder;
 
@@ -72,7 +72,7 @@ void MapSelectList_ScrollUp(s32 task) {
     }
     MapSelectList_PositionRows();
     if (remainder != 0) return;
-    func_02002088(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
+    HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
     func_ov001_021839e4();
     Ov001_UnblockScrollBar();
     func_ov001_0217b130();
@@ -94,7 +94,7 @@ void MapSelectList_ScrollDown(s32 arg0) {
     }
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - result;
     MapSelectList_Redraw();
-    func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
+    HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
     func_ov001_021839e4();
     Ov001_UnblockScrollBar();
     func_ov001_0217b130();

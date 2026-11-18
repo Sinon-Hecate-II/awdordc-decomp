@@ -153,7 +153,7 @@ s32 SubmitWebRegisterRequest(void) {
     u8 *func_020c4acc();
     s32 RegisterWebRequest(M2C_UNK *, u8 *);
     M2C_UNK SetWebRequestError(M2C_UNK);
-    M2C_UNK **func_01ffa3dc(M2C_UNK *, s32);
+    M2C_UNK **CreateSpriteFromClass(M2C_UNK *, s32);
     void SetOnlineSessionFlag(M2C_UNK);
     extern M2C_UNK sOv010NasRegisterRequest;
     extern M2C_UNK sOv010RegisterSpriteClass;
@@ -188,7 +188,7 @@ s32 SubmitWebRegisterRequest(void) {
     if ((status != 0) && (status != 3)) {
         SetWebRequestError(status);
     } else {
-        slot = func_01ffa3dc(&sOv010RegisterSpriteClass, 3);
+        slot = CreateSpriteFromClass(&sOv010RegisterSpriteClass, 3);
         if (slot != NULL) {
             *slot = &sOv010RegisterSpriteVtable;
         }

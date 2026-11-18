@@ -28,7 +28,31 @@ struct FSFileRequest {
 #define FS_REQ_WANT_DIR  0x40 /* s32 nonzero when the path must name a directory */
 #define FS_REQ_OUT       0x44 /* void * receives the resolved directory or file entry */
 
-/* Scratch fields the directory-read command (3) keeps in the request. */
+/* Fields of a path request (the command that writes the full "device:/dir/name"
+ * path of a file or directory into a caller buffer). */
+#define FS_REQ_PATH_FILE_ID   0x20 /* u32 file id whose path is wanted (FS_REQ_DIRECTORY clear) */
+#define FS_REQ_PATH_DIRECTORY 0x24 /* u16 directory id whose path is wanted (FS_REQ_DIRECTORY set) */
+#define FS_REQ_PATH_OUT       0x30 /* u8 * buffer the path is written into */
+#define FS_REQ_PATH_CAPACITY  0x34 /* u32 bytes available at FS_REQ_PATH_OUT */
+#define FS_REQ_PATH_LENGTH    0x38 /* u16 computed path length, 0 until resolved */
+#define FS_REQ_PATH_DIR       0x3a /* u16 directory the file was found in */
+#define FS_NO_ENTRY_ID        0x10000 /* no file/directory id */
+
+/* The byte window of an open file a request reads from: the first and one-past-
+ * the-last byte positions, set when the file is opened, and the current stream
+ * position.  Until then +0x24/+0x28 hold the directory-command scratch fields
+ * above. */
+#define FS_REQ_RANGE_START 0x24 /* s32 file offset the window starts at */
+#define FS_REQ_RANGE_END   0x28 /* s32 file offset one past the window */
+#define FS_REQ_RANGE_POS   0x2C /* s32 current stream position in the window */
+
+/* After OpenFileRequest, an open request holds the data range of the file it
+ * opened: the two words give the file's size as END - START. */
+#define FS_REQ_FILE_START 0x24 /* u32 offset of the file's first byte */
+#define FS_REQ_FILE_END   0x28 /* u32 offset just past the file's last byte */
+
+/* Scratch fields the directory-read command (3) keeps in the request (it shares
+ * the +0x28 word with FS_REQ_FILE_END). */
 #define FS_REQ_DIR_INDEX  0x26 /* u16 index handed to the next short entry */
 #define FS_REQ_DIR_OFFSET 0x28 /* u32 stream offset of the next entry */
 #define FS_REQ_DIR_SKIP   0x34 /* s32 nonzero to skip the entry's name */
@@ -38,6 +62,7 @@ struct FSFileRequest {
 #define FS_REQ_QUEUED    0x00000002 /* still queued, dropped by a cancel */
 #define FS_REQ_COMPLETED 0x00000004 /* wake the caller waiting at +0x18 */
 #define FS_REQ_NOTIFIED  0x00000040 /* the file callback has seen this request */
+#define FS_REQ_DIRECTORY 0x00000020 /* the request names a directory rather than a file */
 
 /* The parts of the filesystem object (FSFile) the queue code touches. */
 #define FS_FILE_WAIT_QUEUE 0x14 /* OSThreadQueue woken when the file drains */

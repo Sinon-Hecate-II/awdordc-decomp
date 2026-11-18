@@ -320,12 +320,12 @@ if(flags&16){
 func_020d468c();
 CreateTargetCursor(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 SetBattleCommand(19,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),(u8)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
-func_01ffa6fc(a);return;}
+Sprite_ResumeAnimation(a);return;}
 if(flags&32){
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X);
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y);
 StepMapViewToTile(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
-SetSpriteAnimation(a,0);func_01ffa6fc(a);return;}
+SetSpriteAnimation(a,0);Sprite_ResumeAnimation(a);return;}
 if(flags&256){CreateMapMenu();return;}
 if(flags&64){func_020d8fa0();return;}
 }

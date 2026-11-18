@@ -374,7 +374,7 @@ void func_020e0b04(void *entity) {
     s32 FindTextLayer(void); M2C_UNK func_0208af20(void); void *CreateTextLayer(void *);
     M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
     void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);
-    void PlaySoundEffect(s32); void func_01ffa6fc(void *);
+    void PlaySoundEffect(s32); void Sprite_ResumeAnimation(void *);
     void MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
     extern s32 g3DSpriteEngineMain, g3DSpriteEngineSub, gCur3DSpriteEngine;
@@ -408,7 +408,7 @@ void func_020e0b04(void *entity) {
     if (M2C_FIELD(entity, u16 *, 0x48) & 8) return;
     PlaySoundEffect(0x1000e);
     M2C_FIELD(entity, u16 *, 0x48) |= 8;
-    func_01ffa6fc(entity);
+    Sprite_ResumeAnimation(entity);
 }
 
 void func_020e0d6c(void *entity) {

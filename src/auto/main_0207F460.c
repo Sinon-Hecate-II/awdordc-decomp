@@ -283,7 +283,7 @@ data_027e00f8=(u32)(M2C_FIELD(g3DSpriteBankMain,u16 *,2)<<29)>>29;
 }
 #pragma pop
 void func_02080358(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, s32);
     extern M2C_UNK data_02101d30;
     void *var_r0;
@@ -291,7 +291,7 @@ void func_02080358(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
     if (arg3 != 0) {
         var_r0 = CreateSpriteObject(&data_02101d30, arg3);
     } else {
-        var_r0 = func_01ffa3dc(&data_02101d30, 7);
+        var_r0 = CreateSpriteFromClass(&data_02101d30, 7);
     }
     M2C_FIELD(var_r0, s16 *, 0x6C) = arg0;
     M2C_FIELD(var_r0, s16 *, 0x6E) = arg1;

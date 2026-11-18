@@ -1,6 +1,7 @@
 /* 53 functions from 0x0217FB68 to 0x02180B68 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "wfc.h"
+#include "gx.h"
 
 void func_ov001_0217fb68(void) {
     extern u8 data_ov001_02193db8;
@@ -400,7 +401,7 @@ s32 func_ov001_021803cc(void) {
 void func_ov001_021803ec(void) {
 extern u8 data_ov001_02193dc4;
 void func_ov001_021804f0(void);
-void func_ov001_02180448(void);
+void Ov001_LoadOptionPageBg(void);
 M2C_UNK func_ov001_021722ac(void);
 M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK func_ov001_02171dd0(M2C_UNK);
@@ -408,7 +409,7 @@ M2C_UNK func_ov001_02171e58(M2C_UNK);
 M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
 M2C_UNK Ov001_PlaySound(M2C_UNK);
 data_ov001_02193dc4=0;
-func_ov001_02180448();
+Ov001_LoadOptionPageBg();
 func_ov001_021722ac();
 Ov001_ShowMessagePanel(0x37,-1,0);
 func_ov001_02171dd0(2);
@@ -418,18 +419,21 @@ Ov001_PlaySound(0xb);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021804f0);
 }
 
-void func_ov001_02180448(void) {
+/* Loads the ov001 option-page screen's background: tile graphics, palette and
+ * map, then puts BG0/BG1 on the lowest priority. */
+void Ov001_LoadOptionPageBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190914, data_ov001_0219092c, data_ov001_02190944;
+    extern M2C_UNK gOv001OptionPageBgTilesPath, gOv001OptionPageBgPalettePath, gOv001OptionPageBgMapPath;
     extern M2C_UNK GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190914, &GX_LoadBG2Char);
-    Ov001_LoadAsset(&data_ov001_0219092c, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_02190944, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
+
+    Ov001_LoadAsset(&gOv001OptionPageBgTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001OptionPageBgPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001OptionPageBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
 void func_ov001_021804f0(void) {
@@ -613,7 +617,7 @@ void func_ov001_02180840(void) {
 void func_ov001_02180860(void) {
 extern u8 gOv001FriendListState;
 extern M2C_UNK func_ov001_02180970;
-void func_ov001_021808c8(void);
+void Ov001_LoadFriendListBg(void);
 M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK func_ov001_021722ac(void);
 M2C_UNK func_ov001_02171dd0(M2C_UNK);
@@ -621,7 +625,7 @@ M2C_UNK func_ov001_02183f6c(void);
 M2C_UNK func_ov001_02183fd4(void);
 M2C_FIELD(&gOv001FriendListState,u16 *,2)=0;
 gOv001FriendListState=0;
-func_ov001_021808c8();
+Ov001_LoadFriendListBg();
 Ov001_ShowMessagePanel(0x33,-1,0);
 func_ov001_021722ac();
 func_ov001_02171dd0(2);
@@ -633,18 +637,21 @@ Ov001_PlaySound(10);
 Ov001_SetStepCallback(&func_ov001_02180970);
 }
 
-void func_ov001_021808c8(void) {
+/* Loads the friend-list screen's background: tile graphics, palette and map,
+ * then puts BG0/BG1 on the lowest priority. */
+void Ov001_LoadFriendListBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190958, data_ov001_02190970, data_ov001_02190988;
+    extern M2C_UNK gOv001FriendListBgTilesPath, gOv001FriendListBgPalettePath, gOv001FriendListBgMapPath;
     extern M2C_UNK GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190958, &GX_LoadBG2Char);
-    Ov001_LoadAsset(&data_ov001_02190970, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_02190988, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
+
+    Ov001_LoadAsset(&gOv001FriendListBgTilesPath, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&gOv001FriendListBgPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001FriendListBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
 void func_ov001_02180970(void) {

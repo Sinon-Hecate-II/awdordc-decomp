@@ -406,14 +406,14 @@ void SpawnMissileEffect(MissileEffect *effect) {
 }
 
 void func_020b5edc(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s32 EaseInterpolate(M2C_UNK, s32, s32, s16, s32);
     M2C_FIELD(arg0, s16 *, 0x48) = (s16) (M2C_FIELD(arg0, s16 *, 0x48) + 1);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
     if ((s32) M2C_FIELD(arg0, s16 *, 0x48) < (s32) M2C_FIELD(arg0, s16 *, 0x4A)) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
@@ -444,7 +444,7 @@ void func_020b5f74(s32 arg0, s32 arg1) {
     RefreshMapView();
 }
 
-void func_020b5fec(void *arg0) {
+void SpawnMissileStrike(void *arg0) {
     M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
     void *CreateAnimatedMapSprite(void *, s16, s16, M2C_UNK, s32, s32, void *);
     M2C_UNK ResetEffectSpritePool();
@@ -466,23 +466,26 @@ void func_020b5fec(void *arg0) {
     CreateTargetCursor(M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
-void func_020b607c(void *arg0) {
+/* Drives the missile strike's descent: the sprite eases from its start height
+ * down onto the target tile, and when it gets there it shows the impact frame of
+ * the effect's sprite sheet, plays the effect's end sound and resumes its task. */
+void StepMissileStrike(MissileEffect *effect) {
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
-    s32 temp_r0;
+    s32 endSound;
 
-    M2C_FIELD(arg0, s16 *, 0x48) = (s16) (M2C_FIELD(arg0, s16 *, 0x48) + 1);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
-    if ((s32) M2C_FIELD(arg0, s16 *, 0x48) < (s32) M2C_FIELD(arg0, s16 *, 0x4A)) {
+    effect->frame = (s16)(effect->frame + 1);
+    effect->missile->y = EaseInterpolate(0, effect->from, effect->to, effect->frame, (s32)effect->duration);
+    if ((s32)effect->frame < (s32)effect->duration) {
         return;
     }
-    SetAnimatedSpriteFrame(CreateAnimatedMapSprite(arg0 + 0x34, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0), 1);
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x50);
-    if (temp_r0 != 0) {
-        PlaySoundAtTile(temp_r0, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    SetAnimatedSpriteFrame(CreateAnimatedMapSprite(effect->name, effect->tileX, effect->tileY, 0x10, 0, 0, effect), 1);
+    endSound = effect->endSound;
+    if (endSound != 0) {
+        PlaySoundAtTile(endSound, effect->tileX, effect->tileY);
     }
-    DeleteSpriteObject(M2C_FIELD(arg0, void **, 0x60));
-    func_01ffa6fc(arg0);
+    DeleteSpriteObject(effect->missile);
+    Sprite_ResumeAnimation(effect);
 }
 
 void func_020b6124(void *arg0) {

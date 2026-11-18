@@ -106,7 +106,7 @@ void Ov001_FreeOptionSprites(void) {
  * 40), point the sprite's obj layout at the animation frame the tick selects,
  * then apply the attribute and palette bits of the sprite's kind. */
 void Ov001_AnimSpriteTask(void) {
-    s32 func_02002088(u8, M2C_UNK);
+    s32 HardwareDivide(u8, M2C_UNK);
     u8 func_020020c4(s32, M2C_UNK);
     M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK, s32, s32 *);
     extern M2C_UNK gOv001AnimSpritePalette;
@@ -118,7 +118,7 @@ void Ov001_AnimSpriteTask(void) {
     s32 *obj2;
 
     M2C_FIELD(gOv001AnimSprite, u8 *, 9) = func_020020c4(M2C_FIELD(gOv001AnimSprite, u8 *, 9) + 1, (M2C_UNK)0x28);
-    frame = func_02002088(M2C_FIELD(gOv001AnimSprite, u8 *, 9), 5);
+    frame = HardwareDivide(M2C_FIELD(gOv001AnimSprite, u8 *, 9), 5);
     Ov001_LoadSpriteObjLayout(0, frame + 0x47, M2C_FIELD(gOv001AnimSprite, s32 **, 4));
     obj = M2C_FIELD(gOv001AnimSprite, s32 **, 4);
     M2C_FIELD(obj, u16 *, 4) = (u16) ((M2C_FIELD(obj, u16 *, 4) & ~0xC00) | 0x400);

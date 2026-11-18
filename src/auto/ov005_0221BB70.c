@@ -57,7 +57,7 @@ void func_ov005_0221bc44(M2C_UNK arg0) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_02087db8(void *, s32);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     extern u16 *gKeyState;
     extern M2C_UNK data_ov005_02220d50;
     void *object;
@@ -67,7 +67,7 @@ void func_ov005_0221bc44(M2C_UNK arg0) {
     object = M2C_FIELD(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
     active = M2C_FIELD(object, u8 *, 0x12) != 0;
     if (active) func_02087db8(object, 1);
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 #pragma scheduling on
@@ -244,30 +244,30 @@ void func_ov005_0221c9d8(void) {
 
 void func_ov005_0221c9e4(M2C_UNK arg0) {
     s32 func_0209bf28();
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     if (func_0209bf28() != 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov005_0221ca04(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *, s32);
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
     void *FindObjectByClass(M2C_UNK *);
-    M2C_UNK func_01ffaa5c(s32);
+    M2C_UNK IncrementSpriteChildCount(s32);
     s32 func_01ffaa7c();
     extern M2C_UNK data_ov005_02220b00;
     extern M2C_UNK data_ov005_02220d50;
     extern M2C_UNK data_ov005_02220fb8;
     void *temp_r0;
 
-    temp_r0 = func_01ffa3dc(&data_ov005_02220b00, func_01ffaa7c());
+    temp_r0 = CreateSpriteFromClass(&data_ov005_02220b00, func_01ffaa7c());
     if (temp_r0 == NULL) {
         return;
     }
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov005_02220fb8;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    func_01ffaa5c(arg0);
+    IncrementSpriteChildCount(arg0);
     M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x40) = 0x20;
     M2C_FIELD(temp_r0, s8 *, 0x44) = 1;

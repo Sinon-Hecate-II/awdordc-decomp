@@ -278,10 +278,10 @@ void func_020c1bf0(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gC
 void func_020c1c88(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))DrawFrameRectBorder(M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
 
 void SetFrameRect(s32 a,s32 b,s32 c,s32 d) {
- void *func_01ffa3dc(void *,s32);
+ void *CreateSpriteFromClass(void *,s32);
  extern M2C_UNK data_021296b8;
  extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;
- void *p=func_01ffa3dc(&data_021296b8,7);
+ void *p=CreateSpriteFromClass(&data_021296b8,7);
  M2C_FIELD(p,s32 *,0x38)=a;
  M2C_FIELD(p,s32 *,0x3c)=b;
  M2C_FIELD(p,s32 *,0x5c)=c;

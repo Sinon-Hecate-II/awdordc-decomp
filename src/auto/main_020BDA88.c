@@ -249,9 +249,9 @@ void func_020be168(M2C_UNK arg0) {
 }
 
 void func_020be188(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212948c;
-    M2C_FIELD(func_01ffa3dc(&data_0212948c, 6), s32 *, 0x54) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_0212948c, 6), s32 *, 0x54) = arg0;
 }
 
 u8 func_020be1a8(void) {

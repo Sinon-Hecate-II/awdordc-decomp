@@ -370,7 +370,7 @@ void StartNextMap(void *p) {
     void ResetPlayerOrder(void);
     void AssignPlayerTeams(void);
     void MapEditor_SetMapModified(s32);
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     s32 id1,id2,id3,id4;
     if(func_020be1a8())return;
     CompactPlayerSlots();
@@ -384,7 +384,7 @@ void StartNextMap(void *p) {
     id1=GetSlotForPlayerId(1);id2=GetSlotForPlayerId(2);id3=GetSlotForPlayerId(3);id4=GetSlotForPlayerId(4);
     Map_ReassignPropertyOwners(id1,id2,id3,id4);
     ResetPlayerOrder();AssignPlayerTeams();MapEditor_SetMapModified(0);
-    if(M2C_FIELD(p,s16 *,0x6c)){if(M2C_FIELD(p,s32 *,0x5c)<50)return;func_01ffa6fc(p);return;}func_01ffa6fc(p);
+    if(M2C_FIELD(p,s16 *,0x6c)){if(M2C_FIELD(p,s32 *,0x5c)<50)return;Sprite_ResumeAnimation(p);return;}Sprite_ResumeAnimation(p);
 }
 
 void func_ov007_0221c4d4(void) {
@@ -397,7 +397,7 @@ void func_ov007_0221c4d4(void) {
 #pragma push
 #pragma optimization_level 3
 void func_ov007_0221c51c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_022201d8;
-    func_01ffa3dc(&data_ov007_022201d8, 7);
+    CreateSpriteFromClass(&data_ov007_022201d8, 7);
 }

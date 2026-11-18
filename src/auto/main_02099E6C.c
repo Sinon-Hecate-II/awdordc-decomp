@@ -4,7 +4,7 @@
 #pragma push
 #pragma scheduling off
 s32 func_02099e6c(void *arg0, s32 arg1) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void func_0207a3b0(s32, u32, u16, u8, s32, u16, s32, s32, s32, s32, s32);
     s32 Divide(s32, M2C_UNK);
     void *GetLocalizedText(s32);
@@ -106,7 +106,7 @@ loop_1:
     case 5:
     case 6:
         if (func_020999b8(arg0) == 0) {
-            temp_r0_2 = func_01ffa3dc(&data_02102e74, 7);
+            temp_r0_2 = CreateSpriteFromClass(&data_02102e74, 7);
             M2C_FIELD(temp_r0_2, s32 *, 0x4C) = arg1;
             M2C_FIELD(temp_r0_2, s32 *, 0x3C) = func_02099a0c(arg0);
             M2C_FIELD(temp_r0_2, s8 *, 0x40) = (s8) M2C_FIELD(arg0, s8 *, 0x57);
@@ -137,7 +137,7 @@ loop_1:
         return 3;
     case 2:
         if (func_020999b8(arg0) == 0) {
-            temp_r0_4 = func_01ffa3dc(&data_02102eac, 7);
+            temp_r0_4 = CreateSpriteFromClass(&data_02102eac, 7);
             M2C_FIELD(temp_r0_4, s32 *, 0x4C) = arg1;
             M2C_FIELD(temp_r0_4, s32 *, 0x3C) = func_02099a0c(arg0);
             M2C_FIELD(temp_r0_4, s8 *, 0x40) = (s8) M2C_FIELD(arg0, s8 *, 0x57);

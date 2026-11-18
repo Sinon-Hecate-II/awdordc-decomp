@@ -55,16 +55,16 @@ void func_02096d5c(void) {
     func_02003124(4);
     func_020031cc(8);
     func_02002ab8(0x10);
-    func_02002bb8(0x20);
+    GX_SetBankForObjExtPalette(0x20);
     func_0200323c(0x80);
     func_020032bc(0x100);
 }
 
 void func_02096da8(void) {
-    M2C_UNK func_02002bb8(M2C_UNK);
+    M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     M2C_UNK func_020b1800();
     func_020b1800();
-    func_02002bb8(0x40);
+    GX_SetBankForObjExtPalette(0x40);
 }
 
 void func_02096dbc(void) {

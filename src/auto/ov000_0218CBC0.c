@@ -1,5 +1,7 @@
 /* 5 functions from 0x0218CBC0 to 0x0218D908 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 
 typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u16 value:5; u8 tail[6]; } Unit0218C4;
 
@@ -134,8 +136,134 @@ void func_ov000_0218cfec(void) {
     }
 }
 
-void func_ov000_0218d040(void *arg0) { (void)arg0; }
+#pragma opt_strength_reduction off
+void func_ov000_0218d040(void *allowCurrentCell) {
+    extern void **gCurrentMap;
+    extern void *gAiCommandState;
+    extern u8 *gAiUnitTypeTuning;
+    extern u8 gUnitKindFlags[];
+    void func_ov000_0218d908(void);
+    M2C_UNK BuildUnitMoveRange(s32);
+    s32 IsAllyUnitAtCell(s16, s16);
+    s32 func_ov000_02178778(s16, s16);
+    s32 func_ov000_02178e84(s16, s16);
+    s32 CellMoveScore(s32, s32, s32, s32);
+    s32 GetTerrainMoveCost(s32, s32, s32);
+    s32 GetUnitAttackClass(u32);
+    void ClearUnitMoveTarget(void);
+    void SetMapCursor(s32, s32, s32, s32, s32);
+#define CMD_FLAGS M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS)
+#define MOVE_ROW(map, y) M2C_FIELD((map) + (y)*4, s8 **, MAP_GRID)
+#define ROW_OFFSET(map, y) M2C_FIELD((map) + (y)*2, u16 *, MAP_ROW_OFFSETS)
+#define CURSOR_UNIT(map) M2C_FIELD((map), u8 **, MAP_CURSOR_UNIT)
+#define UNIT_KIND(unit) ((u32)((unit)[MAP_UNIT_KIND] << 26) >> 26)
+    u8 *map, *unit, *cell;
+    s8 *row;
+    s32 x, y, score, terrainCost, rangeCost;
+    s32 bestX = -1, bestY = bestX;
+    s32 bestTerrainCost = bestX, bestScore = 0x7fffffff, bestRangeCost = bestX + 0x8000;
+    u16 flags;
 
+    if (!(CMD_FLAGS & AI_ACTION_DESTINATION_CHOSEN))
+        func_ov000_0218d908();
+    flags = CMD_FLAGS;
+    if ((flags & 1) && (flags & 2))
+        return;
+
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT));
+    map = *gCurrentMap;
+    y = 0;
+    while (y < M2C_FIELD(map, u16 *, MAP_HEIGHT)) {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, MAP_WIDTH)) {
+            s16 rowY = (s16)y;
+            do {
+                row = MOVE_ROW(map, y);
+                if (row[x] < 0)
+                    goto nextCell;
+                if (CMD_FLAGS & 1) {
+                    cell = ROW_OFFSET(map, y) + (map + x);
+                    if (M2C_FIELD(cell, s8 *, MAP_CELL_SCORE) < 0) {
+                        row[x] = -1;
+                        goto nextCell;
+                    }
+                }
+                if (!allowCurrentCell) {
+                    unit = CURSOR_UNIT(map);
+                    if (x == unit[MAP_UNIT_X] && y == unit[MAP_UNIT_Y])
+                        goto nextCell;
+                }
+                if (IsAllyUnitAtCell((s16)x, rowY))
+                    goto nextCell;
+                if (func_ov000_02178778((s16)x, rowY) == 1)
+                    goto nextCell;
+                if (!func_ov000_02178e84((s16)x, rowY))
+                    goto nextCell;
+                score = CellMoveScore(x, y, 1, 2);
+                map = *gCurrentMap;
+                cell = ROW_OFFSET(map, y) + (map + x);
+                terrainCost = GetTerrainMoveCost(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), UNIT_KIND(CURSOR_UNIT(map)), M2C_FIELD(cell, u8 *, MAP_CELL_TERRAIN) & 31);
+                map = *gCurrentMap;
+                rangeCost = MOVE_ROW(map, y)[x];
+                if (score > bestScore)
+                    goto nextCell;
+                if (CMD_FLAGS & AI_ACTION_DESTINATION_CHOSEN) {
+                    if (bestScore == score && rangeCost > bestRangeCost)
+                        goto nextCell;
+                    if (!(bestScore != score || rangeCost != bestRangeCost)) {
+                        if (terrainCost >= bestTerrainCost)
+                            goto chooseCell;
+                        goto nextCell;
+                    }
+                    goto chooseCell;
+                } else {
+                    if (bestScore == score && terrainCost < bestTerrainCost)
+                        goto nextCell;
+                    if (bestScore == score && terrainCost == bestTerrainCost && rangeCost > bestRangeCost)
+                        goto nextCell;
+                }
+            chooseCell:
+                bestX = x;
+                bestY = y;
+                bestRangeCost = rangeCost;
+                bestTerrainCost = terrainCost;
+                bestScore = score;
+            nextCell:
+                x++;
+                map = *gCurrentMap;
+            } while (x < M2C_FIELD(map, u16 *, MAP_WIDTH));
+        }
+        y++;
+    }
+    if (bestX == -1)
+        return;
+    flags = CMD_FLAGS;
+    if (flags & 1) {
+        unit = CURSOR_UNIT(map);
+        if (bestX == unit[MAP_UNIT_X] && bestY == unit[MAP_UNIT_Y])
+            return;
+    }
+    if (flags & AI_ACTION_DESTINATION_CHOSEN) {
+        cell = map + (bestX + ROW_OFFSET(map, bestY));
+        if (M2C_FIELD(cell, u8 *, MAP_CELL_THREAT_DIRECT) >= gAiUnitTypeTuning[1] ||
+            M2C_FIELD(cell, u8 *, MAP_CELL_THREAT_INDIRECT) >= gAiUnitTypeTuning[2]) {
+            u32 kind = UNIT_KIND(CURSOR_UNIT(map));
+            if (!(gUnitKindFlags[kind * UNIT_KIND_STATS_SIZE] & 7))
+                return;
+            if (GetUnitAttackClass(kind) != 1)
+                return;
+        }
+    }
+
+    ClearUnitMoveTarget();
+    SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
+#undef UNIT_KIND
+#undef CURSOR_UNIT
+#undef ROW_OFFSET
+#undef MOVE_ROW
+#undef CMD_FLAGS
+}
+#pragma opt_strength_reduction reset
 s32 func_ov000_0218d40c(void){
 extern void **gCurrentMap; extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[];
 u8 *p=M2C_FIELD(*gCurrentMap,u8 **,0x52D0); u32 type;

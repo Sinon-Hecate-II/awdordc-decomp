@@ -1,6 +1,7 @@
 /* 19 functions from 0x021A58C8 to 0x021A686C (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 pad[3]; u8 used:1; u8 rest:7; } Candidate1F14;
 typedef struct { u8 x,y; u8 unk[10]; } UnkA66Entry;
 
@@ -237,27 +238,36 @@ u8 *p; s32 i; s32 best; s32 result; u8 value;
 best=0x7fff; result=-1; p=(u8 *)&gAiTargetCandidates;
 for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU && ((u8 *)&gAiTargetGroups)[(s8)p[4]*8+2] && (arg0==4 || p[2]==arg0)) { value=p[9]; if(best > (s32)value) {best=value;result=i;} } } return result; }
 
-s32 func_ov000_021a6264(s32 arg0) {
+/* Picks the build target for `player` (4 = any player) from the AI's candidate
+ * records: the one with the smallest combat distance whose capture distance is
+ * not above the best score, preferring the earlier record on an equal combat
+ * distance when that record's combat target was not nearer than its capture
+ * target. Returns the record index, -1 when there is none. */
+s32 FindAiBuildTargetCandidate(s32 player) {
 extern u8 *gAiState; extern M2C_UNK gAiTargetCandidates;
-u8 *p; s32 i,best,result,flag; u8 a,b; s32 n;
-best=0x7fff; result=best-0x8000; flag=0; i=0; n=*gAiState; p=(u8 *)&gAiTargetCandidates;
-if(n>0) { for(;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xfcU && (arg0==4 || p[2]==arg0)) {
-a=p[9]; if(best>=a) { b=p[10]; if(!(best==b && flag==1)) {best=b;result=i;if((u32)b>=(u32)a) flag=1;else flag=0;} }
-} } }return result; }
+u8 *candidate; s32 index,bestScore,bestIndex,keepOnTie; u8 captureDistance,combatDistance; s32 count;
+bestScore=0x7fff; bestIndex=bestScore-0x8000; keepOnTie=0; index=0; count=*gAiState; candidate=(u8 *)&gAiTargetCandidates;
+if(count>0) { for(;index<*gAiState;index++,candidate+=AI_CANDIDATE_STRIDE) { if((u32)candidate[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && (player==4 || candidate[AI_CANDIDATE_TYPE]==player)) {
+captureDistance=candidate[AI_CANDIDATE_CAPTURE_DISTANCE]; if(bestScore>=captureDistance) { combatDistance=candidate[AI_CANDIDATE_COMBAT_DISTANCE]; if(!(bestScore==combatDistance && keepOnTie==1)) {bestScore=combatDistance;bestIndex=index;if((u32)combatDistance>=(u32)captureDistance) keepOnTie=1;else keepOnTie=0;} }
+} } }return bestIndex; }
 
-s32 func_ov000_021a6310(s32 a) {
+/* Picks the AI target candidate of `type` (4 = any type) whose closest enemy is
+ * nearest (AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE), the first one on a tie.  A base
+ * candidate (type 1) that sits in a target group flagged AI_GROUP_FLAG_PROPERTY
+ * has 255 added to its distance, so it is only used as a last resort. */
+s32 FindNearestTargetCandidateOfType(s32 type) {
 extern u8 *gAiState;
 extern M2C_UNK gAiTargetCandidates,gAiTargetGroups;
-u8 *p; s32 i,best,result,value;
-best=0x7fff;result=-1;p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12){
-if((u32)p[3]<0xfcU && (a==4 || p[2]==a)){
-value=p[7];
-if(p[2]==1 && (((u32)((u8 *)&gAiTargetGroups)[(s8)p[4]*8+3]<<29)>>31))value+=255;
-if(best>value){best=value;result=i;}
+u8 *candidate; s32 i,bestDistance,bestIndex,distance;
+bestDistance=0x7fff;bestIndex=-1;candidate=(u8 *)&gAiTargetCandidates;
+for(i=0;i<*gAiState;i++,candidate+=AI_CANDIDATE_STRIDE){
+if((u32)candidate[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && (type==4 || candidate[AI_CANDIDATE_TYPE]==type)){
+distance=candidate[AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE];
+if(candidate[AI_CANDIDATE_TYPE]==1 && (((u32)((u8 *)&gAiTargetGroups)[(s8)candidate[AI_CANDIDATE_GROUP]*AI_GROUP_STRIDE+AI_GROUP_FLAGS]<<29)>>31))distance+=255;
+if(bestDistance>distance){bestDistance=distance;bestIndex=i;}
 }
 }
-return result;
+return bestIndex;
 }
 
 s32 func_ov000_021a63b8(s32 a,s32 b) {
@@ -352,11 +362,11 @@ return r;
 #pragma optimization_level 4
 s32 func_ov000_021a67f0(s32 a) {
 extern u8 *gAiState;
-s32 func_ov000_021a6528(s32);s32 func_ov000_021a6310(s32);
+s32 func_ov000_021a6528(s32);s32 FindNearestTargetCandidateOfType(s32);
 s32 r=-1;
 if(gAiState[1]>=2)r=func_ov000_021a6528(a);
 if(r==-1)r=func_ov000_021a605c(a);
-if(r==-1)r=func_ov000_021a6310(a);
+if(r==-1)r=FindNearestTargetCandidateOfType(a);
 if(r==-1)r=FindAiTargetOfType(a);
 return r;
 }

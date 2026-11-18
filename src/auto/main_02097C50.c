@@ -422,7 +422,7 @@ void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 fun
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SetFileDirectory(s32);
-    M2C_UNK func_02080c50(s32, M2C_UNK);
+    M2C_UNK LoadFileToAddress(s32, M2C_UNK);
     s32 GetFaceTexturePath();
     s32 func_0209834c(M2C_UNK, M2C_UNK);
     s32 temp_r4;
@@ -434,7 +434,7 @@ void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
         return;
     }
     SetFileDirectory(temp_r5);
-    func_02080c50(temp_r4, arg2);
+    LoadFileToAddress(temp_r4, arg2);
 }
 
 void func_02098b94(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {

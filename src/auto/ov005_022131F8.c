@@ -244,7 +244,7 @@ void HistoryMenu_Update(void *widget) {
   M2C_UNK PlaySoundEffect(s32);
   void func_020b21e0(void);
   void func_020b2268(void);
-  M2C_UNK func_01ffa6fc(M2C_UNK);
+  M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
   void func_ov005_02212ef0(void);
   extern void *gHistoryMenu;
   extern u16 *gKeyState;
@@ -320,7 +320,7 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
     PlaySoundEffect(0x1000f);
     func_020b21e0();
     func_020b2268();
-    func_01ffa6fc(widget);
+    Sprite_ResumeAnimation(widget);
     return;
   }
   if (buttons & 0x100) {

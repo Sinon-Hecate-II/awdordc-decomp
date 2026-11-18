@@ -268,13 +268,13 @@ s32 func_02061fb8(void *arg0, s32 arg1) {
 }
 
 s32 SBServerListOpenConnection(void *p){
-s32 func_02061fb8(void*,s32);void StringCopy(void*,void*);void StringFormat(void*,void*,...);s32 func_020498e4(void*);void *ghiResolveHostname(void*);s32 ghiSocket(s32,s32,s32);s32 ghiConnect(s32,void*,s32);s32 func_020496b8(s32);
+s32 func_02061fb8(void*,s32);void StringCopy(void*,void*);void StringFormat(void*,void*,...);s32 ghiInetAddr(void*);void *ghiResolveHostname(void*);s32 ghiSocket(s32,s32,s32);s32 ghiConnect(s32,void*,s32);s32 func_020496b8(s32);
 extern void *data_0213e4bc;extern u8 data_02100160[];
 u8 buf[128];Addr617BC addr;s32 n,fd;void *host;
 n=func_02061fb8((u8*)p+12,20);
 if(M2C_FIELD(&data_0213e4bc,void**,4))StringCopy(buf,M2C_FIELD(&data_0213e4bc,void**,4));
 else StringFormat(buf,data_02100160,(u8*)p+12,n);
-addr.family=2;addr.port=0xee70;addr.addr=func_020498e4(buf);
+addr.family=2;addr.port=0xee70;addr.addr=ghiInetAddr(buf);
 if(addr.addr==-1){host=ghiResolveHostname(buf);if(!host)return 2;Copy617BC((u8*)&addr.addr,*M2C_FIELD(host,u8***,12));}
 fd=M2C_FIELD(p,s32*,0x4b0);
 if(fd==-1){fd=ghiSocket(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}

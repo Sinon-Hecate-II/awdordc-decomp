@@ -1,5 +1,6 @@
 /* 19 functions from 0x0200BDA4 to 0x0200CD68 (main), found by ds-decomp. */
 #include "common.h"
+#include "md5.h"
 typedef struct { u32 first, second; } Unk0200FilePair;
 
 void func_0200bda4(s32 arg0) {
@@ -386,7 +387,88 @@ void func_0200c55c(M2C_UNK arg0, void *arg1) {
     MI_CpuFill8(arg1, 0, 0x58);
 }
 
-void func_0200c614(void *arg0) { (void)arg0; }
+void func_0200c614(void *arg0) {
+    extern u32 data_020f52f0[64];
+    extern u32 data_020f5230[48];
+    MD5Context *ctx = arg0;
+    u32 a = ctx->state[0];
+    u32 b = ctx->state[1];
+    u32 c = ctx->state[2];
+    u32 d = ctx->state[3];
+    const u32 *words = (const u32 *)ctx->buffer;
+    const u32 *word = (const u32 *)ctx->buffer;
+    const u32 *constant = data_020f52f0;
+    const u32 *index;
+    u32 t;
+    s32 i;
+#define F(x, y, z) (((x) & (y)) | (~(x) & (z)))
+#define G(x, y, z) (((x) & (z)) | ((y) & ~(z)))
+#define H(x, y, z) ((z) ^ ((x) ^ (y)))
+#define I(x, y, z) ((y) ^ ((x) | ~(z)))
+#define STEP(f, a, b, c, d, word, k, shift) \
+    t = (k) + ((word) + ((a) + f((b), (c), (d)))); \
+    (a) = (b) + ((t << (shift)) | (t >> (32 - (shift))))
+
+    for (i = 0; i < 4; i++) {
+        STEP(F, a, b, c, d, word[0], constant[0], 7);
+        STEP(F, d, a, b, c, word[1], constant[1], 12);
+        STEP(F, c, d, a, b, word[2], constant[2], 17);
+        {
+            u32 lastWord = word[3];
+            u32 lastConstant = constant[3];
+            constant += 4;
+            word += 4;
+            STEP(F, b, c, d, a, lastWord, lastConstant, 22);
+        }
+    }
+    index = data_020f5230;
+    for (i = 0; i < 4; i++) {
+        STEP(G, a, b, c, d, words[index[0]], constant[0], 5);
+        STEP(G, d, a, b, c, words[index[1]], constant[1], 9);
+        STEP(G, c, d, a, b, words[index[2]], constant[2], 14);
+        {
+            u32 lastWord = words[index[3]];
+            u32 lastConstant = constant[3];
+            constant += 4;
+            index += 4;
+            STEP(G, b, c, d, a, lastWord, lastConstant, 20);
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        STEP(H, a, b, c, d, words[index[0]], constant[0], 4);
+        STEP(H, d, a, b, c, words[index[1]], constant[1], 11);
+        STEP(H, c, d, a, b, words[index[2]], constant[2], 16);
+        {
+            u32 lastWord = words[index[3]];
+            u32 lastConstant = constant[3];
+            constant += 4;
+            index += 4;
+            STEP(H, b, c, d, a, lastWord, lastConstant, 23);
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        STEP(I, a, b, c, d, words[index[0]], constant[0], 6);
+        STEP(I, d, a, b, c, words[index[1]], constant[1], 10);
+        STEP(I, c, d, a, b, words[index[2]], constant[2], 15);
+        {
+            u32 lastWord = words[index[3]];
+            u32 lastConstant = constant[3];
+            constant += 4;
+            index += 4;
+            STEP(I, b, c, d, a, lastWord, lastConstant, 21);
+        }
+    }
+
+    ctx->state[0] += a;
+    ctx->state[1] += b;
+    ctx->state[2] += c;
+    ctx->state[3] += d;
+#undef STEP
+#undef I
+#undef H
+#undef G
+#undef F
+}
 
 void Sha1Init(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;

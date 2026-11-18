@@ -1,5 +1,6 @@
 /* 33 functions from 0x02010C14 to 0x02011BB0 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 void func_02010c14(void){extern u8 data_0212fde0[],data_02130400[];M2C_UNK *func_02010c84(void);void func_0200fc58();void func_02010e68();u8 *p=data_0212fde0;u8 *q;s32 zero,minus,one;if(M2C_FIELD(p,s32 *,276))return;q=data_02130400;zero=0;minus=zero-1;one=1;M2C_FIELD(p,s32 *,276)=one;M2C_FIELD(p,s32 *,36)=zero;M2C_FIELD(p,s32 *,32)=zero;M2C_FIELD(p,s32 *,28)=zero;M2C_FIELD(p,s32 *,40)=minus;M2C_FIELD(p,s32 *,56)=zero;M2C_FIELD(p,s32 *,60)=zero;M2C_FIELD(q,s32 *,0)=zero;func_0200fc58();M2C_FIELD(data_02130400,s32 *,32)=(s32)func_02010c84();func_02010e68();}
 
@@ -124,13 +125,13 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     void DC_InvalidateRange();
     void DmaFill();
     void func_020118f4(void);
-    void func_020062d4();
+    void OS_InitMessageQueue();
     void DC_CleanRange();
-    s32 func_020062fc();
+    s32 OS_SendMessage();
     void SetFifoMessageHandler();
     M2C_UNK func_02011548();
     extern M2C_UNK data_02130660;
-    extern M2C_UNK data_02130668;
+    extern M2C_UNK gWfcFreeBufferQueue;
     extern M2C_UNK data_02130688;
     extern M2C_UNK data_02130700;
     void *p;
@@ -176,12 +177,12 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         ((s32 *)((u8 *)M2C_FIELD(&data_02130660, void **, 4) + 0xcc))[i] = 0;
         ((s32 *)((u8 *)M2C_FIELD(&data_02130660, void **, 4) + 0x10c))[i] = 0;
     }
-    func_020062d4(&data_02130668, &data_02130688, 10);
+    OS_InitMessageQueue(&gWfcFreeBufferQueue, &data_02130688, 10);
     buf = (u8 *)&data_02130700;
     for (j = 0; j < 10; j++) {
         *(u16 *)(buf + j * 256) = 0x8000;
         DC_CleanRange(buf + j * 256, 2);
-        func_020062fc(&data_02130668, buf + j * 256, 1);
+        OS_SendMessage(&gWfcFreeBufferQueue, buf + j * 256, 1);
     }
     SetFifoMessageHandler(10, func_02011548);
     M2C_FIELD(&data_02130660, u16 *, 0) = 1;
@@ -201,31 +202,55 @@ OS_RestoreInterrupts(saved);return 0;
 
 void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK data_02130660;M2C_FIELD(M2C_FIELD(&data_02130660,s32 *,4)+a*4,s32 *,24)=b;}
 
-u16 *func_020112cc(void) {
-    s32 func_02006390(M2C_UNK *, u16 **, M2C_UNK);
-    M2C_UNK func_02006434(M2C_UNK *, u16 *, M2C_UNK);
-    extern M2C_UNK data_02130668;
+u16 *WFC_AllocBuffer(void) {
+    s32 OS_ReceiveMessage(M2C_UNK *, u16 **, M2C_UNK);
+    M2C_UNK OS_JamMessage(M2C_UNK *, u16 *, M2C_UNK);
+    extern M2C_UNK gWfcFreeBufferQueue;
     u16 *sp0;
 
-    if (func_02006390(&data_02130668, &sp0, 0) == 0) {
+    if (OS_ReceiveMessage(&gWfcFreeBufferQueue, &sp0, 0) == 0) {
         return NULL;
     }
     DC_InvalidateRange(sp0, 2);
     if (*sp0 & 0x8000) {
         return sp0;
     }
-    func_02006434(&data_02130668, sp0, 1);
+    OS_JamMessage(&gWfcFreeBufferQueue, sp0, 1);
     return NULL;
 }
 
-s32 WFC_SendCommand(u16 a,u16 n,...) {
-extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void DC_CleanRange();
-s32 *ap; s32 i,r; s32 count;u16 *p;p=func_020112cc();if(!p)return 8;*p=a;count=n;ap=(s32 *)((u32)&n&~3)+1;for(i=0;i<count;i++){ap++;((s32 *)p)[i+1]=ap[-1];}DC_CleanRange(p,256);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
+/* Posts a command and its `count` 32-bit arguments to the ARM7 firmware in one of
+ * the channel's command blocks; the arguments follow `count` in the varargs list.
+ * The block goes back to the free pool once the FIFO has taken it. */
+s32 WFC_SendCommand(u16 command, u16 argCount, ...) {
+    extern M2C_UNK gWfcFreeBufferQueue;
+    s32 SendFifoMessage();
+    s32 OS_SendMessage();
+    void DC_CleanRange();
+    s32 *args;
+    s32 i;
+    s32 result;
+    s32 count;
+    u16 *block;
+
+    block = WFC_AllocBuffer();
+    if (!block) return WFC_CMD_NO_BUFFER;
+    *block = command;
+    count = argCount;
+    args = (s32 *)((u32)&argCount & ~3) + 1;
+    for (i = 0; i < count; i++) {
+        args++;
+        ((s32 *)block)[i + 1] = args[-1];
+    }
+    DC_CleanRange(block, WFC_CMD_BLOCK_SIZE);
+    result = SendFifoMessage(WFC_CMD_FIFO_TAG, block, 0);
+    OS_SendMessage(&gWfcFreeBufferQueue, block, OS_MESSAGE_BLOCK);
+    return result < 0 ? WFC_CMD_NO_BUFFER : WFC_CMD_OK;
 }
 
 s32 WFC_SendCommandPacket(void *a,s32 b) {
-extern M2C_UNK data_02130668;s32 SendFifoMessage();s32 func_020062fc();void DC_CleanRange();void MI_CpuCopy8();
-u16 *p=func_020112cc();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);DC_CleanRange(p,b);r=SendFifoMessage(10,p,0);func_020062fc(&data_02130668,p,1);return r<0?8:2;
+extern M2C_UNK gWfcFreeBufferQueue;s32 SendFifoMessage();s32 OS_SendMessage();void DC_CleanRange();void MI_CpuCopy8();
+u16 *p=WFC_AllocBuffer();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);DC_CleanRange(p,b);r=SendFifoMessage(10,p,0);OS_SendMessage(&gWfcFreeBufferQueue,p,1);return r<0?8:2;
 }
 
 s32 WFC_GetInfoBlock(void) {

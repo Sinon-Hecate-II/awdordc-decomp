@@ -44,7 +44,7 @@ static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteF
    sprite shows whether the unit of the slot under the cursor exists and confirming picks
    that unit. */
 void UnitPreviewMenuInput(void *arg0) {
-void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
+void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);
 s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
@@ -77,7 +77,7 @@ PressSprite(cursorSprite);
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)&=~1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
-PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);return;
+PlaySoundEffect(0x1000d);Sprite_ResumeAnimation(arg0);return;
 }
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
@@ -87,7 +87,7 @@ PressSprite(M2C_FIELD(arg0,void **,0x5c));
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)|=1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
-PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);
+PlaySoundEffect(0x1000d);Sprite_ResumeAnimation(arg0);
 }
 
 void func_020dd97c(void) {
@@ -98,7 +98,7 @@ void func_020dd97c(void) {
  * the cursor sprite shows whether the unit of the slot under the cursor exists
  * and confirming picks that unit. */
 void UnitDeployMenuInput(void *arg0) {
-void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
+void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);
 s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
@@ -133,7 +133,7 @@ PressSprite(cursorSprite);
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)&=~1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
-PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);return;
+PlaySoundEffect(0x1000d);Sprite_ResumeAnimation(arg0);return;
 }
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
@@ -143,7 +143,7 @@ PressSprite(M2C_FIELD(arg0,void **,0x5c));
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)|=1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
-PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);
+PlaySoundEffect(0x1000d);Sprite_ResumeAnimation(arg0);
 }
 
 void func_020dde30(void) {

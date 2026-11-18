@@ -133,6 +133,18 @@ enum {
 #define MAP_PATH_X          0x52e0 /* s16 tile x the movement path starts at */
 #define MAP_PATH_Y          0x52e2 /* s16 tile y the movement path starts at */
 #define MAP_CURSOR_PATH     0x5388 /* the path from the unit to the cursor */
+
+/* A cursor direction marker: the arrow sprite that shows an attack direction
+ * picked for one of the two attack targets.  The marker is an object of
+ * gDirectionMarkerSpriteClass; the draw callback draws its arrow tile at the
+ * tile it sits on, selected by the direction it shows. */
+typedef struct DirectionMarker {
+    u8  pad00[0x34];
+    s32 x;         /* +0x34 map tile x the marker sits on */
+    s32 y;         /* +0x38 map tile y the marker sits on */
+    u8  pad3C[0x30];
+    s16 direction; /* +0x6C direction of the arrow the marker shows */
+} DirectionMarker;
 #define MAP_CELL_BITMAP     0x5201 /* u8[0xA1] the second team's bitmap of the cells it can see or threaten */
 #define MAP_CELL_BITMAP_TEAM_A 0x5160 /* u8[0xA1] the first team's bitmap of the cells it can see or threaten */
 #define MAP_WIDTH           0x5144 /* u16 map width in cells */
@@ -604,6 +616,10 @@ typedef struct MapRecordHeader {
 #define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */
 #define MAP_RECORD_UNITS       0x3D8 /* packed unit entries in the runtime record */
 #define MAP_RECORD_PLAYER_COUNT 0x27 /* u8; a map-selection slot holding 0 is empty */
+
+/* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
+ * map-selection code reads a map's settings from. */
+#define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */
 
 /* A map-selection list: five runtime map records held one after another. */
 #define MAP_RECORD_LIST_COUNT 5

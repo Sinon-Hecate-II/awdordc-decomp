@@ -95,7 +95,7 @@ void func_ov010_0222bb64(M2C_UNK arg0) {
     extern M2C_UNK data_ov010_0222c4dc;
     M2C_UNK **temp_r0;
 
-    temp_r0 = func_01ffa3dc(&data_ov010_0222c4dc, arg0);
+    temp_r0 = CreateSpriteFromClass(&data_ov010_0222c4dc, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov010_0222c93c;
     }

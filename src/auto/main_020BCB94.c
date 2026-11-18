@@ -113,7 +113,7 @@ void func_020bcee4(void *arg0) {
     RefreshMapView();
 }
 
-void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}
+void func_020bcf14(s32 a){void *CreateSpriteFromClass(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=CreateSpriteFromClass(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}
 
 /* Aim the map cursor at the tile under the stylus: turn the current touch point
  * into map pixel coordinates, divide by a tile's size, clamp it to the map and,
@@ -148,12 +148,12 @@ void func_020bd078(void *arg0) {
 }
 
 void func_020bd084(void *arg0) {
-    M2C_UNK func_01ffa6fc();
+    M2C_UNK Sprite_ResumeAnimation();
     s16 temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, s16 *, 0x4C);
     if ((s32) temp_r1 >= 8) {
-        func_01ffa6fc();
+        Sprite_ResumeAnimation();
         return;
     }
     if ((s32) temp_r1 < 8) {
@@ -161,7 +161,7 @@ void func_020bd084(void *arg0) {
     }
 }
 
-void CreateTouchCursor(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *func_01ffa3dc(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=func_01ffa3dc(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
+void CreateTouchCursor(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *CreateSpriteFromClass(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=CreateSpriteFromClass(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
 
 void DeleteTouchCursor(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;DeleteSpriteObjectsOfClass(&data_021293d4);}
 

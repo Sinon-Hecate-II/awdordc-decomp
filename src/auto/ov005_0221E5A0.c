@@ -127,7 +127,7 @@ M2C_FIELD(p,u8 *,0x58)=1;
  * both 3D sprite screens down one pixel, and when START is pressed it creates the
  * object described by data_ov005_02220ad0 (unless a screen fade is running). */
 void UpdateResultsScreen(void *parent) {
-    s32 func_01ffa3dc(s32 *, void *);
+    s32 CreateSpriteFromClass(s32 *, void *);
     u8 IsScreenFadeActive(void);
     extern u32 gFrameCounter;
     extern void **g3DSpriteEngineSub, **g3DSpriteEngineMain, **gCur3DSpriteEngine;
@@ -152,7 +152,7 @@ void UpdateResultsScreen(void *parent) {
         gCur3DSpriteEngine = savedEngine;
     }
     if (*gKeyState & KEY_START) {
-        if (!IsScreenFadeActive()) func_01ffa3dc(data_ov005_02220ad0, parent);
+        if (!IsScreenFadeActive()) CreateSpriteFromClass(data_ov005_02220ad0, parent);
     }
 }
 
@@ -341,17 +341,17 @@ void func_ov005_0221f084(void *arg0) {
 }
 
 void func_ov005_0221f3e8(void *arg0) {
-    M2C_UNK func_01ffa6fc();
+    M2C_UNK Sprite_ResumeAnimation();
     extern u16 *gKeyState;
     extern void *gTouchState;
     s32 temp_r1;
 
     if (*gKeyState & 0xC0B) {
-        func_01ffa6fc();
+        Sprite_ResumeAnimation();
         return;
     }
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
-        func_01ffa6fc();
+        Sprite_ResumeAnimation();
         return;
     }
     temp_r1 = M2C_FIELD(arg0, s32 *, 0x38);

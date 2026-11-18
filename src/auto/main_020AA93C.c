@@ -383,13 +383,13 @@ fail:
 }
 
 void func_020ab150(void *arg0, s16 arg1) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02126b28;
     extern M2C_UNK data_02126bd0;
     void *temp_r0;
 
     DeleteSpriteObject(M2C_FIELD(arg0, void **, 0x60));
-    temp_r0 = func_01ffa3dc(&data_02126b28, 4);
+    temp_r0 = CreateSpriteFromClass(&data_02126b28, 4);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02126bd0;
     }
@@ -422,9 +422,9 @@ void func_020ab1b8(void) {
 
 void *func_020ab1c4(s32 arg0) {
  extern M2C_UNK data_02126b94, data_02126be4;
- void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+ void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
  void func_02089108(void *);
- void *result = func_01ffa3dc(&data_02126b94,arg0);
+ void *result = CreateSpriteFromClass(&data_02126b94,arg0);
  if (result != NULL) {
  func_02089108(result);
  M2C_FIELD(result,M2C_UNK **,0)=&data_02126be4;

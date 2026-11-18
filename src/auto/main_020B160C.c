@@ -68,9 +68,9 @@ void func_020b17dc(void) {
 
 void func_020b17ec(void) {
     void func_020b1800(void);
-    M2C_UNK func_02002bb8(M2C_UNK);
+    M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     func_020b1800();
-    func_02002bb8(0x40);
+    GX_SetBankForObjExtPalette(0x40);
 }
 
 void func_020b1800(void) {
@@ -83,7 +83,7 @@ void func_020b1800(void) {
 void func_020b1810(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
-    M2C_UNK func_02002bb8(M2C_UNK);
+    M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
@@ -95,7 +95,7 @@ void func_020b1810(void) {
     GX_SetBankForBG(8);
     GX_SetBankForOBJ(0x10);
     GX_SetBankForOBJExtPltt(0x20);
-    func_02002bb8(0x40);
+    GX_SetBankForObjExtPalette(0x40);
     func_02003124(4);
     func_020031cc(0x100);
     func_0200323c(0x80);

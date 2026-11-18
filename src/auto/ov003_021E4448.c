@@ -228,7 +228,7 @@ void func_ov003_021e48e8(void *arg0) {
 
 void func_ov003_021e4908(void *arg0) {
     void func_ov003_021f13ec(M2C_UNK *);
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK *);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK *);
     void *MemAlloc(s32);
     M2C_UNK SetTextSpriteValue(M2C_UNK *);
     void *HeapAllocBlock(s32);
@@ -249,7 +249,7 @@ void func_ov003_021e4908(void *arg0) {
     s32 i;
 
     func_ov003_021f13ec(&data_02102174);
-    r4 = func_01ffa3dc(&data_02102174, arg0);
+    r4 = CreateSpriteFromClass(&data_02102174, arg0);
     if (r4 == 0) {
         return;
     }

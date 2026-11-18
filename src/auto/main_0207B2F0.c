@@ -12,11 +12,11 @@ typedef struct SpriteBatch {
     s32 tileOffset[10]; /* +0x14 running tile offset of each placed sprite */
     u8 kind[10];        /* +0x3C tile kind of each placed sprite, 0 = empty */
     u8 selected[10];    /* +0x46 selection state of each placed sprite */
-    s32 tileBase2;      /* +0x50 */
+    s32 paletteBase;    /* +0x50 first palette id of the batch's sprites (GetBatchTile) */
     s32 count;          /* +0x54 sprites placed */
     s32 field58;        /* +0x58 */
     s32 field5C;        /* +0x5C */
-    s32 field60;        /* +0x60 */
+    s32 tileStride;     /* +0x60 tiles between two placed sprites (func_0207bd88) */
     s32 field64;        /* +0x64 kind drawn with the alternate palette */
 } SpriteBatch;
 
@@ -81,14 +81,14 @@ done_one:
 #pragma pop
 s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207b2f0(s32 *, s32 *, s32);
-    void *func_01ffa3dc(M2C_UNK *, s32);
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
     extern M2C_UNK data_02100c20;
     extern void *gCurrentMap;
     void *p;
     if (func_0207b7c4() != 0) return 1;
     if (func_0207b2f0(&arg0, &arg1, arg2) == 0) return 0;
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x5154) = 0;
-    p = func_01ffa3dc(&data_02100c20, 7);
+    p = CreateSpriteFromClass(&data_02100c20, 7);
     M2C_FIELD(p, s16 *, 0x38) = arg0 << 4;
     M2C_FIELD(p, s16 *, 0x3A) = arg1 << 4;
     return 1;
@@ -321,30 +321,34 @@ s32 ScreenToMapPosition(s32 arg0, s32 arg1, s32 *arg2) {
     return result;
 }
 
-void func_0207bbc8(s32 arg0) {
+void SetCurrentSpriteBatch(s32 arg0) {
     extern s32 gSpriteBatch;
     gSpriteBatch = arg0;
 }
 
-void func_0207bbd8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Initialises the current 3D sprite batch: remembers the two layers it draws on,
+ * the tile offset of its first sprite and the first palette of its sprites,
+ * points the batch at the first layer's VRAM address, clears the placed-sprite
+ * list and sets the batch's default tile stride. */
+void InitSpriteBatch(s32 layer, s32 layer2, s32 tileOffset, s32 paletteBase) {
     void func_0207bc94(s32, s32);
     void func_0207bcb0(s32);
     extern s32 gSpriteBatch;
     extern u16 **gCur3DSpriteEngine;
     s32 i;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 8) = arg0;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0xC) = arg1;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x10) = M2C_FIELD((u8 *)gCur3DSpriteEngine + arg0 * 4, s32 *, 0xC);
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x14) = arg2;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x50) = arg3;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x54) = 0;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x64) = 0;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0) = 0;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 4) = 0;
+    SPRITE_BATCH->bank = layer;
+    SPRITE_BATCH->bank2 = layer2;
+    SPRITE_BATCH->tileBase = DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[layer];
+    SPRITE_BATCH->tileOffset[0] = tileOffset;
+    SPRITE_BATCH->paletteBase = paletteBase;
+    SPRITE_BATCH->count = 0;
+    SPRITE_BATCH->field64 = 0;
+    SPRITE_BATCH->baseX = 0;
+    SPRITE_BATCH->baseY = 0;
     func_0207bc94(10, 2);
     func_0207bcb0(0x20);
     for (i = 0; i < 10; i++) {
-        M2C_FIELD((void *)(gSpriteBatch + i), u8 *, 0x3C) = 0;
+        SPRITE_BATCH->kind[i] = 0;
     }
 }
 

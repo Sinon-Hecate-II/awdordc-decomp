@@ -87,7 +87,7 @@ void func_020c8e78(void *arg0) {
 }
 
 void func_020c8ea0(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s32 temp_r0;
 
     LoadCampaignMapHeader(M2C_FIELD(arg0, s32 *, 0x5C) + 0xE1);
@@ -96,11 +96,11 @@ void func_020c8ea0(void *arg0) {
     if (temp_r0 != 0x32) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 #pragma optimization_level 2
-void func_020c8ed4(M2C_UNK arg0) { M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; func_01ffa3dc(&data_0212b07c,arg0); }
+void func_020c8ed4(M2C_UNK arg0) { M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; CreateSpriteFromClass(&data_0212b07c,arg0); }
 s32 func_020c8eec(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 gCampaignMapHeaders[]; return MI_CpuFill32(0,gCampaignMapHeaders,0x41a0); }
 
 /* Decodes a game text string into the font's glyph codes: ordinary characters go
@@ -157,7 +157,7 @@ void func_020c9060(void *arg0) {
     }
     temp_r1 = M2C_FIELD(arg0, u8 *, 0x35);
     if ((u32) temp_r1 >= (u32) M2C_FIELD(arg0, u8 *, 0x34)) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     temp_r5 = M2C_FIELD((arg0 + (temp_r1 * 4)), void **, 0x4C);
@@ -370,7 +370,7 @@ void UpdateMapActionPopup(void *arg0) {
     s32 GetFrameStep(void);
     s32 Divide(s32, s32);
     M2C_UNK DrawSprite3D(s32, s32 *, s32, M2C_UNK);
-    s32 func_01ffa6fc(void *);
+    s32 Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
     s32 pos[3];
     s32 step;
@@ -394,7 +394,7 @@ void UpdateMapActionPopup(void *arg0) {
         if ((next != 0) && !(*gKeyState & (KEY_A | KEY_B | KEY_START | KEY_X | KEY_Y))) {
             return;
         }
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     current = M2C_FIELD(arg0, s32 *, MAP_ACTION_SCALE);
@@ -433,7 +433,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_UNK GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_020813c4(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK *, M2C_UNK, s32);
-    M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
     s32 StepMapViewToTile(s32, s32);
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, s32);
     void PlayMapActionSound(s32, s32, s32);
@@ -484,7 +484,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
         func_020813c4(GetLocalizedFileName(&data_0212b788), 0x329a0);
         func_0208143c(&data_0212b794, 0x1560, 0x20);
     }
-    obj = (void *)func_01ffa3dc(&data_0212b3e4, 7);
+    obj = (void *)CreateSpriteFromClass(&data_0212b3e4, 7);
     M2C_FIELD(obj, s32 *, 0x34) = px;
     M2C_FIELD(obj, s32 *, 0x38) = py;
     M2C_FIELD(obj, s32 *, 0x3c) = x;

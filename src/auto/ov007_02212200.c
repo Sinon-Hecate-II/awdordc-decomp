@@ -42,9 +42,9 @@ void func_ov007_02212cc8(M2C_UNK arg0) {
 }
 
 void func_ov007_02212da0(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f6e8;
-    func_01ffa3dc(&data_ov007_0221f6e8, 7);
+    CreateSpriteFromClass(&data_ov007_0221f6e8, 7);
 }
 
 void func_ov007_02212db8(void) {

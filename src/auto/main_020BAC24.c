@@ -394,8 +394,8 @@ void func_020bbb08(void) {
 }
 
 void func_020bbba4(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212afac;
-    func_01ffa3dc(&data_0212afac, 7);
+    CreateSpriteFromClass(&data_0212afac, 7);
 }
 

@@ -44,7 +44,7 @@ void func_0208bc24(M2C_UNK arg0) {
     extern M2C_UNK data_02102760;
     void *var_r0;
 
-    var_r0 = func_01ffa3dc(&data_02102760, arg0);
+    var_r0 = CreateSpriteFromClass(&data_02102760, arg0);
     if (var_r0 != NULL) {
         var_r0 = func_0208b630();
     }
@@ -298,10 +298,10 @@ void func_0208c51c(void) {
 }
 
 void CreateAnimatedSpriteObject(M2C_UNK arg0) {
-    s32 func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    s32 CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK Init3DSpriteObject();
     extern M2C_UNK data_02102790;
-    if (func_01ffa3dc(&data_02102790, arg0) == 0) {
+    if (CreateSpriteFromClass(&data_02102790, arg0) == 0) {
         return;
     }
     Init3DSpriteObject();

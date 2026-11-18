@@ -298,13 +298,13 @@ void func_ov003_021f91a4(void *arg0) {
 
 /* Advance obj's animation step, or reset it, depending on its kind. */
 void func_ov003_021f9200(void *obj) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     u32 kind=(u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28;
     if ((u8)(kind==0)||(u8)(kind==2)||(u8)(kind==3)||(u8)(kind==4)) {
-        if(M2C_FIELD(obj,u8 *,0x38)==12) func_01ffa6fc(obj);
+        if(M2C_FIELD(obj,u8 *,0x38)==12) Sprite_ResumeAnimation(obj);
         M2C_FIELD(obj,u8 *,0x38)++;
     } else if ((u8)(kind==1)||(u8)(kind==5)||(u8)(kind==6)||(u8)(kind==7)||(u8)(kind==8)) {
-        func_01ffa6fc(obj);
+        Sprite_ResumeAnimation(obj);
     }
 }
 

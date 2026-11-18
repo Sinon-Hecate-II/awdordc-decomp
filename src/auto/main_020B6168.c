@@ -285,7 +285,7 @@ case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),
 case 2:break;case 3:break;case 4:func_020b5964(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
 }}
 #pragma opt_propagation reset
-s32 func_020b689c(s32 a,s32 b) {
+s32 CreateUnitPreviewSprite(s32 a,s32 b) {
 void func_020a488c(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK data_02128abc;
 s16 xy[2];s32 p;
 func_020a488c(a,xy);p=CreateSpriteObject(&data_02128abc,b);
@@ -295,7 +295,7 @@ M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(a,u8 *,4);
 M2C_FIELD(p,s32 *,0x34)=a;return p;
 }
 
-s32 func_020b68f0(s32 a,s32 b,s32 c) {
+s32 CreateTilePreviewSprite(s32 a,s32 b,s32 c) {
 extern M2C_UNK data_02128abc;extern void **data_027e0058;void *CreateSpriteObject();
 s32 p=CreateSpriteObject(&data_02128abc,c);
 void *base;
@@ -439,7 +439,7 @@ void StageAuroraEffect(void *effect) {
     s32 LoadEffectSpriteSheet(M2C_UNK *, s32);
     s32 GetEffectSpritePoolOffset(void);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     extern M2C_UNK gAuroraAimSprite, gAuroraSmokeSprite, gAuroraDamageSprite, gAuroraSprite;
     void AuroraBombardTargets(void *);
     void UpdateAuroraEffect(void *);
@@ -473,7 +473,7 @@ void StageAuroraEffect(void *effect) {
         M2C_FIELD(strike, void **, 0x68) = AuroraBombardTargets;
         M2C_FIELD(strike, void **, 0x6c) = UpdateAuroraEffect;
         M2C_FIELD(strike, void **, 0x70) = ApplyAuroraPendingDamage;
-        func_01ffa6fc(effect);
+        Sprite_ResumeAnimation(effect);
         break;
     }
 }

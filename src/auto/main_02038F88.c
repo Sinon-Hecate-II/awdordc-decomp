@@ -187,7 +187,7 @@ void func_02039478(s32 arg0, s32 arg1) {
     }
 }
 
-void func_020394d8(s32 arg0,s32 arg1) {
+void DispatchMatchSessionEvent(s32 arg0,s32 arg1) {
 extern void *gNetSession; void SetNetState(s32);
 s32 v=M2C_FIELD(gNetSession,s32 *,0x28);
 if(v!=4)SetNetState(v);

@@ -285,7 +285,7 @@ s32 func_0201f0b4(void) {
 
 s32 func_0201f0cc(s32 arg0) {
     void func_0201f210(s32);
-    M2C_UNK func_020062d4(s32, s32, s32);
+    M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     extern s32 gNetAllocator;
     extern M2C_UNK data_02138b00, data_02138b04;
     s32 temp_r5;
@@ -298,7 +298,7 @@ s32 func_0201f0cc(s32 arg0) {
     size = ((var_r4 * 0x2C) + 3) & ~3;
     temp_r0 = M2C_FIELD(gNetAllocator, s32 (**)(s32), 0x18)(size + temp_r5);
     if (temp_r0 == 0) return -1;
-    func_020062d4((s32)&data_02138b04, temp_r0, var_r4);
+    OS_InitMessageQueue((s32)&data_02138b04, temp_r0, var_r4);
     var_r5 = temp_r0 + temp_r5;
     if (var_r4 > 0) {
         do {
@@ -321,10 +321,10 @@ s32 func_0201f160(void) {
 }
 
 s32 func_0201f1a8(s32 arg0) {
-    s32 func_02006390(M2C_UNK *, s32 *, s32);
+    s32 OS_ReceiveMessage(M2C_UNK *, s32 *, s32);
     extern M2C_UNK data_02138b04;
     s32 result;
-    if (func_02006390(&data_02138b04, &result, arg0) != 0) return result;
+    if (OS_ReceiveMessage(&data_02138b04, &result, arg0) != 0) return result;
     return 0;
 }
 
@@ -340,12 +340,12 @@ s32 SocketAllocTask(M2C_UNK *arg0, s32 arg1, M2C_UNK arg2) {
 }
 
 void func_0201f210(s32 arg0) {
-    M2C_UNK func_020062fc(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK OS_SendMessage(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_02138b04;
     if (arg0 == 0) {
         return;
     }
-    func_020062fc(&data_02138b04, arg0, 0);
+    OS_SendMessage(&data_02138b04, arg0, 0);
 }
 
 s32 func_0201f230(void *arg0) {
@@ -367,7 +367,7 @@ s32 SocketQueueTask(M2C_UNK arg0, void *arg1) {
     } else {
         var_r2 = 0;
     }
-    temp_r0 = func_020062fc(arg0, arg1, var_r2);
+    temp_r0 = OS_SendMessage(arg0, arg1, var_r2);
     if (temp_r0 == 0) {
         func_0201f210(arg1);
     }
@@ -385,16 +385,16 @@ s32 func_0201f2a8(arg0, arg1)
 s32 arg0;
 void *arg1;
 {
-    M2C_UNK func_020062d4(s32, s32, s32);
-    s32 func_02006390(M2C_UNK *, s32 *, s32);
+    M2C_UNK OS_InitMessageQueue(s32, s32, s32);
+    s32 OS_ReceiveMessage(M2C_UNK *, s32 *, s32);
     u8 queue[0x20];
     s32 result;
     s32 message;
     if (M2C_FIELD(arg1, s8 *, 0xD) == 1) {
-        func_020062d4((s32)queue, (s32)&message, 1);
+        OS_InitMessageQueue((s32)queue, (s32)&message, 1);
         M2C_FIELD(arg1, void **, 8) = queue;
         SocketQueueTask(arg0, arg1);
-        func_02006390((M2C_UNK *)queue, &result, 1);
+        OS_ReceiveMessage((M2C_UNK *)queue, &result, 1);
     } else {
         M2C_FIELD(arg1, void **, 8) = NULL;
         result = SocketQueueTask(arg0, arg1);
@@ -407,7 +407,7 @@ void func_0201f318(void *arg0) {
     func_0201f2a8(M2C_FIELD(arg0, s32 *, 0x64));
 }
 
-void func_0201f328(void *arg0) {
+void SocketSubmitSendTask(void *arg0) {
     func_0201f2a8(M2C_FIELD(arg0, s32 *, 0x68));
 }
 
@@ -416,12 +416,12 @@ s32 func_0201f338(s32 arg0, s32 arg1) {
     return func_0201f2a8(func_0201f230(arg0), arg1);
 }
 
-void func_0201f350(s32 arg0) { s32 p,old,v; loop: func_020064d0(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
+void func_0201f350(s32 arg0) { s32 p,old,v; loop: OS_ReadMessage(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
 old=OS_DisableInterrupts();
 func_02006130();
-func_02006390(arg0,0,0);
+OS_ReceiveMessage(arg0,0,0);
 if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
-if(M2C_FIELD(p,s32*,8))func_020062fc(M2C_FIELD(p,s32*,8),v,0);
+if(M2C_FIELD(p,s32*,8))OS_SendMessage(M2C_FIELD(p,s32*,8),v,0);
 func_0201f210(p);func_02006164();OS_RestoreInterrupts(old); goto loop; done: return; }
 
 s32 SocketCreateFromConfig(void) {
@@ -488,7 +488,7 @@ s32 func_0201f598(void *arg0) {
 
 /* Duplicate the sprite/frame data referenced by `src` into `dst`, advancing the cursor. */
 s32 func_0201f5c0(void *dst, void *src) {
-    extern void *data_02138acc;
+    extern void *gClosingSocket;
     void *p;
     void *q;
     void *r0;
@@ -518,7 +518,7 @@ s32 func_0201f5c0(void *dst, void *src) {
         M2C_FIELD(q, s32 *, 0x108) = 0;
         M2C_FIELD(q, s32 *, 0x104) = 0;
     } else {
-        M2C_FIELD(dst, void **, 0x68) = M2C_FIELD(data_02138acc, void **, 0x68);
+        M2C_FIELD(dst, void **, 0x68) = M2C_FIELD(gClosingSocket, void **, 0x68);
     }
 
     return (s32)cur;
@@ -541,14 +541,14 @@ s32 func_0201f6bc(s32 arg0, void *arg1, s32 arg2) {
 s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK TaskCreate(s32, M2C_UNK *, s32, s32, s32, s32);
     M2C_UNK TaskWake(s32);
-    M2C_UNK func_020062d4(s32, s32, s32);
+    M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     M2C_UNK InitMutex(s32);
     s32 func_0201f598(void *);
     void func_0201f350();
     s32 temp_r4;
 
     temp_r4 = func_0201f598(arg2);
-    func_020062d4(arg1, arg0, M2C_FIELD(arg2, u8 *, 3));
+    OS_InitMessageQueue(arg1, arg0, M2C_FIELD(arg2, u8 *, 3));
     InitMutex(arg1 + 0xE0);
     TaskCreate(arg1 + 0x20, (M2C_UNK *)&func_0201f350, arg1, arg0 + temp_r4, (s32) M2C_FIELD(arg2, u16 *, 0), (s32) M2C_FIELD(arg2, u8 *, 2));
     TaskWake(arg1 + 0x20);

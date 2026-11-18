@@ -150,7 +150,7 @@ u8 func_020a8a84(void) {
 
 s32 func_020a8a94(s32 a){u8 *p=(u8*)MapData_GetRecord(a);return (p[19]<<8)|p[18];}
 
-u16 func_020a8aac(s32 a,s32 b){u16 *p=(u16*)MapData_GetRecord(a);return M2C_FIELD(p+b,u16 *,20);}
+u16 GetMapFollowupMapId(s32 a,s32 b){u16 *p=(u16*)MapData_GetRecord(a);return M2C_FIELD(p+b,u16 *,20);}
 
 s32 func_020a8ac4(s32 a,s32 b){s32 *p=MapData_GetRecord(a);return M2C_FIELD(p+(b-1),s32 *,40);}
 

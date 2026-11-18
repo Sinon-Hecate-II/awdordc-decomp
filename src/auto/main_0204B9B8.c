@@ -366,7 +366,7 @@ void func_0204c738(void *arg0) {
     void InvokeRequestCallback(void *, s32, s32);
     void func_0204926c(void);
     s32 ghiParseURL(void *);
-    s32 func_020498e4(s32);
+    s32 ghiInetAddr(s32);
     void *ghiResolveHostname(s32);
     extern s32 gHttpServerOverride;
     s32 host, address;
@@ -383,7 +383,7 @@ void func_0204c738(void *arg0) {
     if (host == 0) {
         host = gHttpServerOverride ? gHttpServerOverride : (s32) connection->host;
     }
-    address = func_020498e4(host);
+    address = ghiInetAddr(host);
     connection->addr = address;
     if (address == -1) {
         hostEntry = ghiResolveHostname(host);

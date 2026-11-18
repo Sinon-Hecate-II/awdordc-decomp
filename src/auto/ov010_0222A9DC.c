@@ -132,11 +132,11 @@ func_ov010_02228614();
 
 void func_ov010_0222aef8(M2C_UNK arg0) {
     s32 func_ov010_02228640();
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     if (func_ov010_02228640() != 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov010_0222af18(void) {
@@ -155,7 +155,7 @@ void func_ov010_0222af58(M2C_UNK arg0) {
         func_020c4cdc(arg0);
     }
     func_020c4dd0(arg0);
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov010_0222af9c(void *arg0) {
@@ -210,9 +210,9 @@ void func_ov010_0222b08c(M2C_UNK arg0) {
 
 void func_ov010_0222b0b0(void *arg0) {
     s32 GetScreenFlag(M2C_UNK);
-    M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if ((M2C_FIELD(arg0, u8 *, 0x34) & 2) && (GetScreenFlag(0) == 0)) {
-        func_020ad348(2, 8, 0, arg0);
+        StartScreenFadeChildren(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 4)) {
         return;
@@ -220,7 +220,7 @@ void func_ov010_0222b0b0(void *arg0) {
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    func_020ad348(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, arg0);
 }
 
 void func_ov010_0222b11c(M2C_UNK arg0) {
@@ -496,15 +496,15 @@ void func_ov010_0222b91c(M2C_UNK arg0) {
 }
 
 void func_ov010_0222b92c(void *arg0) {
-    M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        func_020ad2a0(2, 8, 0, arg0);
+        CreateScreenTransitionChildren(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    func_020ad2a0(2, 8, 1, arg0);
+    CreateScreenTransitionChildren(2, 8, 1, arg0);
     M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 4);
 }
 

@@ -10,7 +10,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
     u16 func_0201d04c();
     s32 SocketSendTask(void *);
     s32 SocketAllocTask(void *, s32, s32);
-    s32 func_0201f328(s32, s32);
+    s32 SocketSubmitSendTask(s32, s32);
     s32 MI_CpuCopy8(s32, s32, s32);
     void *ctx;
     void *entry;
@@ -65,7 +65,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
         }
     } else
         M2C_FIELD(entry, s32 *, 40) = 0;
-    if (func_0201f328(M2C_FIELD(ctx, s32 *, 0x10c), (s32)entry)) {
+    if (SocketSubmitSendTask(M2C_FIELD(ctx, s32 *, 0x10c), (s32)entry)) {
         byteCount = 0;
         M2C_FIELD(ctx, u16 *, 0x100) = curBuffer;
     }
@@ -184,47 +184,52 @@ s32 ReadSendRequest(s32 arg0, s32 arg1, void *arg2) {
 }
 
 #pragma opt_common_subs off
-s32 func_02020b18(void *arg0) {
-    s32 func_02020bc4(void *);
+/* Shut a socket down once its outstanding operation has finished.  A socket the
+ * stack does not know, one that never opened, and one that is either still busy
+ * or has already failed are refused; otherwise the socket is marked failed and
+ * the shutdown task is posted on its send connection, which tears the connection
+ * down when the socket is still duplex. */
+s32 SocketShutdown(void *socket) {
+    s32 SocketShutdownTask(void *);
     s32 SocketAllocTask(void *, s32, s32);
-    s32 func_0201f328(s32, s32);
+    s32 SocketSubmitSendTask(s32, s32);
     s32 SocketIsUnregistered(void);
-    void *temp_r5;
-    s32 r1;
+    void *sendConn;
+    s32 opened;
 
     if (SocketIsUnregistered() != 0) {
         return -0x1C;
     }
-    if (arg0 == 0) {
-        r1 = 0;
+    if (socket == 0) {
+        opened = 0;
     } else {
-        r1 = 0;
-        if (*(volatile s16 *)((u8 *)arg0 + 0x70) & 1) {
-            r1 = 1;
+        opened = 0;
+        if (M2C_FIELD(socket, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) {
+            opened = 1;
         }
     }
-    if (r1 == 0) {
+    if (opened == 0) {
         return -0x27;
     }
-    if (!(*(volatile s16 *)((u8 *)arg0 + 0x70) & 4) || (*(volatile s16 *)((u8 *)arg0 + 0x70) & 8)) {
+    if (!(M2C_FIELD(socket, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE) || (M2C_FIELD(socket, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_ERROR)) {
         return -0x38;
     }
-    *(volatile s16 *)((u8 *)arg0 + 0x70) |= 8;
-    temp_r5 = M2C_FIELD(arg0, void **, 0x68);
-    if (temp_r5 != NULL) {
-        s32 temp_r1 = M2C_FIELD(temp_r5, s32 *, 0x10C);
-        if (temp_r1 != 0) {
-            temp_r1 = SocketAllocTask(func_02020bc4, temp_r1, M2C_FIELD(arg0, s8 *, 0x72));
-            if (temp_r1 == 0) {
+    M2C_FIELD(socket, volatile s16 *, SOCK_FLAGS) |= SOCK_FLAG_ERROR;
+    sendConn = M2C_FIELD(socket, void **, SOCK_TX_CONN);
+    if (sendConn != NULL) {
+        s32 owner = M2C_FIELD(sendConn, s32 *, SEND_RING_OWNER);
+        if (owner != 0) {
+            owner = SocketAllocTask(SocketShutdownTask, owner, M2C_FIELD(socket, s8 *, SOCK_KIND));
+            if (owner == 0) {
                 return -0x21;
             }
-            return func_0201f328(M2C_FIELD(temp_r5, s32 *, 0x10C), temp_r1);
+            return SocketSubmitSendTask(M2C_FIELD(sendConn, s32 *, SEND_RING_OWNER), owner);
         }
     }
     return 0;
 }
 #pragma opt_common_subs reset
-s32 func_02020bc4(void *arg0) {
+s32 SocketShutdownTask(void *arg0) {
     M2C_UNK func_0201d484();
     s32 var_r1;
     s8 temp_r0;
@@ -349,8 +354,8 @@ void func_02020e90(s32 arg0) {
     M2C_UNK func_02005eac();
     M2C_UNK func_02006130();
     M2C_UNK func_02006164();
-    M2C_UNK func_020062fc(s32, M2C_UNK, M2C_UNK);
-    s32 func_02006390(s32, void **, M2C_UNK);
+    M2C_UNK OS_SendMessage(s32, M2C_UNK, M2C_UNK);
+    s32 OS_ReceiveMessage(s32, void **, M2C_UNK);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_0201f210(void *);
@@ -364,16 +369,16 @@ void func_02020e90(s32 arg0) {
     func_02005d60(arg0 + 0x20);
     temp_r8 = OS_DisableInterrupts();
     func_02006130();
-    if (func_02006390(arg0, &sp0, 0) != 0) {
+    if (OS_ReceiveMessage(arg0, &sp0, 0) != 0) {
         do {
             if (sp0 != NULL) {
                 temp_r0 = M2C_FIELD(sp0, s32 *, 8);
                 if (temp_r0 != 0) {
-                    func_020062fc(temp_r0, -0xB, 0);
+                    OS_SendMessage(temp_r0, -0xB, 0);
                 }
                 func_0201f210(sp0);
             }
-        } while (func_02006390(arg0, &sp0, 0) != 0);
+        } while (OS_ReceiveMessage(arg0, &sp0, 0) != 0);
     }
     func_02006164();
     func_02005eac();
@@ -384,10 +389,10 @@ M2C_UNK func_02020f30(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_02020d90();
-    extern M2C_UNK data_02138b30;
+    extern M2C_UNK gClosedSocketList;
     s32 temp_r5 = OS_DisableInterrupts();
-    if (data_02138b30 != 0) {
-        do { func_02020d90(); } while (data_02138b30 != 0);
+    if (gClosedSocketList != 0) {
+        do { func_02020d90(); } while (gClosedSocketList != 0);
     }
     OS_RestoreInterrupts(temp_r5);
 }
@@ -418,43 +423,45 @@ s32 func_02020f6c(void) {
     return temp_r4;
 }
 
-s32 func_02021010(void) {
+/* Closes every socket that is still open, one per pass, skipping the socket
+ * being shut down (gClosingSocket) and those already closing.  Returns 0 once
+ * the open and closed lists are both empty, SOCK_BUSY while any is left. */
+s32 SocketCloseAll(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK SocketClose(s32);
-    extern s32 data_02138acc;
-    extern M2C_UNK data_02138b2c;
-    extern M2C_UNK data_02138b30;
-    s32 var_r6;
-    s32 temp_r0;
-loop_1:
-    temp_r0 = OS_DisableInterrupts();
-    var_r6 = data_02138b2c;
-    while (var_r6 != 0) {
-        if (var_r6 != data_02138acc && !(M2C_FIELD(var_r6, s16 *, 0x70) & 0x10)) { break; }
-        var_r6 = M2C_FIELD(var_r6, s32 *, 0x7C);
+    extern M2C_UNK gActiveSocketList, gClosedSocketList;
+    extern s32 gClosingSocket;
+    s32 socket;
+    s32 lock;
+retry:
+    lock = OS_DisableInterrupts();
+    socket = gActiveSocketList;
+    while (socket != 0) {
+        if (socket != gClosingSocket && !(M2C_FIELD(socket, s16 *, SOCK_FLAGS) & SOCK_FLAG_CLOSING)) { break; }
+        socket = M2C_FIELD(socket, s32 *, SOCK_LIST_NEXT);
     }
-    OS_RestoreInterrupts(temp_r0);
-    if (var_r6 != 0) { SocketClose(var_r6); goto loop_1; }
-    if ((data_02138b2c == 0 || (data_02138b2c == data_02138acc && M2C_FIELD(data_02138b2c, s32 *, 0x7C) == 0)) && data_02138b30 == 0) { return 0; }
-    return -0x1A;
+    OS_RestoreInterrupts(lock);
+    if (socket != 0) { SocketClose(socket); goto retry; }
+    if ((gActiveSocketList == 0 || (gActiveSocketList == gClosingSocket && M2C_FIELD(gActiveSocketList, s32 *, SOCK_LIST_NEXT) == 0)) && gClosedSocketList == 0) { return 0; }
+    return SOCK_BUSY;
 }
 
 s32 func_020210b8(void) {
     s32 func_0201a4a8();
     M2C_UNK SocketClose(s32);
     M2C_UNK func_02020f30();
-    s32 func_02021010();
+    s32 SocketCloseAll();
     M2C_UNK func_02029828(M2C_UNK);
-    extern s32 data_02138acc;
+    extern s32 gClosingSocket;
     s32 var_r4;
 
-    if (data_02138acc != 0) {
-        var_r4 = func_02021010();
+    if (gClosingSocket != 0) {
+        var_r4 = SocketCloseAll();
         if (var_r4 == 0) {
-            SocketClose(data_02138acc);
-            if (func_02020bf4(data_02138acc) != 0) {
-                data_02138acc = 0;
+            SocketClose(gClosingSocket);
+            if (func_02020bf4(gClosingSocket) != 0) {
+                gClosingSocket = 0;
             }
             var_r4 = -0x1A;
         }
@@ -601,8 +608,8 @@ s32 func_020213e4(s32 arg0) {
 
 void func_020213f0(void *arg0) {
     void func_02021408(void **, void *);
-    extern M2C_UNK data_02138b2c;
-    func_02021408((void **)&data_02138b2c, arg0);
+    extern M2C_UNK gActiveSocketList;
+    func_02021408((void **)&gActiveSocketList, arg0);
 }
 
 void func_02021408(void **arg0, void *arg1) {
@@ -611,14 +618,14 @@ void func_02021408(void **arg0, void *arg1) {
 }
 
 void func_02021418(void *arg0) {
-    extern M2C_UNK data_02138b30;
-    func_02021408((void **)&data_02138b30, arg0);
+    extern M2C_UNK gClosedSocketList;
+    func_02021408((void **)&gClosedSocketList, arg0);
 }
 
 void func_02021430(M2C_UNK arg0) {
     M2C_UNK func_02021448(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02138b2c;
-    func_02021448(&data_02138b2c, arg0);
+    extern M2C_UNK gActiveSocketList;
+    func_02021448(&gActiveSocketList, arg0);
 }
 
 s32 func_02021448(s32 *arg0, s32 arg1) {
@@ -639,19 +646,19 @@ void *func_02021464(void *arg0, s32 arg1) {
 }
 
 void func_02021490(M2C_UNK arg0) {
-    extern M2C_UNK data_02138b30;
-    func_02021448(&data_02138b30, arg0);
+    extern M2C_UNK gClosedSocketList;
+    func_02021448(&gClosedSocketList, arg0);
 }
 
 s32 SocketIsUnregistered(s32 arg0) {
- extern M2C_UNK data_02138b2c;
- if (arg0 <= 0 || func_02021464(&data_02138b2c, arg0) == NULL) return 1;
+ extern M2C_UNK gActiveSocketList;
+ if (arg0 <= 0 || func_02021464(&gActiveSocketList, arg0) == NULL) return 1;
  return 0;
 }
 
 s32 SocketIsClosed(s32 arg0) {
- extern M2C_UNK data_02138b30;
- return func_02021464(&data_02138b30, arg0) != NULL;
+ extern M2C_UNK gClosedSocketList;
+ return func_02021464(&gClosedSocketList, arg0) != NULL;
 }
 
 void func_02021500(s32 unused, s32 arg1) {

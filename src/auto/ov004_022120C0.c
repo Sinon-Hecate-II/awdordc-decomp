@@ -207,13 +207,13 @@ void func_ov004_0221285c(void) {
 }
 
 void func_ov004_022128b8(void *arg0) {
-    M2C_UNK func_01ffa6fc();
+    M2C_UNK Sprite_ResumeAnimation();
     extern u16 *gKeyState;
     extern void *gTouchState;
     u16 temp_r1;
 
     if ((*gKeyState & 0xC0B) || (M2C_FIELD(gTouchState, u8 *, 0x14) != 0)) {
-        func_01ffa6fc();
+        Sprite_ResumeAnimation();
         return;
     }
     temp_r1 = M2C_FIELD(arg0, u16 *, 0x38);
@@ -221,6 +221,6 @@ void func_ov004_022128b8(void *arg0) {
         M2C_FIELD(arg0, u16 *, 0x38) = (u16) (temp_r1 + 1);
         return;
     }
-    func_01ffa6fc();
+    Sprite_ResumeAnimation();
 }
 

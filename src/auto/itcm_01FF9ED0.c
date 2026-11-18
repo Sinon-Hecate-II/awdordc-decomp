@@ -211,7 +211,7 @@ s32 func_01ffa334(s32 a,s32 b,s32 c) {
  return (s32)p;
 }
 
-void func_01ffa3dc(M2C_UNK arg0, M2C_UNK arg1) {
+void CreateSpriteFromClass(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_01ffa334(M2C_UNK, M2C_UNK, s32);
     extern s32 gCur3DSpriteEngine;
     func_01ffa334(arg0, arg1, gCur3DSpriteEngine);
@@ -235,7 +235,7 @@ void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_01ffa444(s32 a,s32 b) {
  if(b==0)b=7;
- if(b<12)func_01ffa3dc(a,b);else CreateSpriteObject(a,b);
+ if(b<12)CreateSpriteFromClass(a,b);else CreateSpriteObject(a,b);
 }
 
 void func_01ffa468(void *p) {
@@ -324,7 +324,7 @@ skip:
     if (node) Update3DSpriteObject(node);
 }
 #pragma scheduling reset
-void func_01ffa6fc(void *arg0) {
+void Sprite_ResumeAnimation(void *arg0) {
     s16 *temp_r2;
 
     if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
@@ -463,13 +463,13 @@ void func_01ffa968(M2C_UNK arg0, M2C_UNK *arg1) {
 }
 
 void func_01ffa9bc(M2C_UNK arg0) {
-    void func_01ffa6fc(void *);
-    func_01ffa928(arg0, (M2C_UNK *) &func_01ffa6fc);
+    void Sprite_ResumeAnimation(void *);
+    func_01ffa928(arg0, (M2C_UNK *) &Sprite_ResumeAnimation);
 }
 
 void func_01ffa9d0(M2C_UNK arg0) {
-    void func_01ffa6fc(void *);
-    func_01ffa968(arg0, (M2C_UNK *)&func_01ffa6fc);
+    void Sprite_ResumeAnimation(void *);
+    func_01ffa968(arg0, (M2C_UNK *)&Sprite_ResumeAnimation);
 }
 
 void DeleteSpriteObjectsOfClass(M2C_UNK arg0) {
@@ -500,7 +500,7 @@ void func_01ffaa0c(s32 arg0) {
     } while (i < 0x80);
 }
 
-void func_01ffaa5c(void *arg0) {
+void IncrementSpriteChildCount(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x31) = (u8) (M2C_FIELD(arg0, u8 *, 0x31) + 1);
 }
 

@@ -45,9 +45,9 @@ void func_0209cca8(void *arg0) {
 }
 
 void func_0209ccb8(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *);
+    void *CreateSpriteFromClass(M2C_UNK *);
     extern M2C_UNK data_0211e010;
-    M2C_FIELD(func_01ffa3dc(&data_0211e010), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_0211e010), s32 *, 0x34) = arg0;
 }
 
 void func_0209ccd4(void *arg0) {
@@ -55,9 +55,9 @@ void func_0209ccd4(void *arg0) {
 }
 
 void func_0209cce4(s32 arg0) {
-    void *func_01ffa3dc(M2C_UNK *);
+    void *CreateSpriteFromClass(M2C_UNK *);
     extern M2C_UNK data_0211dff0;
-    M2C_FIELD(func_01ffa3dc(&data_0211dff0), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_0211dff0), s32 *, 0x34) = arg0;
 }
 
 void func_0209cd00(s32 arg0) {
@@ -208,7 +208,7 @@ s32 func_0209cf2c(void *arg0) {
 }
 
 s32 func_0209cf60(void *arg0) {
-    func_01ffa3dc(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4), arg0);
+    CreateSpriteFromClass(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4), arg0);
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }
@@ -224,7 +224,7 @@ s32 func_0209cfb8(void *arg0) {
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 8);
-    func_01ffa3dc(M2C_FIELD(temp_r0, s32 *, 4), M2C_FIELD(temp_r0, s16 *, 2));
+    CreateSpriteFromClass(M2C_FIELD(temp_r0, s32 *, 4), M2C_FIELD(temp_r0, s16 *, 2));
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }
@@ -294,10 +294,10 @@ s32 func_0209d10c(void *arg0) {
 }
 
 void func_0209d124(void *arg0) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     M2C_FIELD(arg0, s16 *, 0x2C)--;
     if (M2C_FIELD(arg0, s16 *, 0x2C) > 0) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 s32 func_0209d148(void *arg0) {
@@ -314,16 +314,16 @@ s32 func_0209d148(void *arg0) {
 }
 
 void func_0209d178(void *arg0) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
     extern void *gTouchState;
     M2C_FIELD(arg0, s16 *, 0x2C)--;
     if (M2C_FIELD(arg0, s16 *, 0x2C) <= 0) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     if (*gKeyState == 0 && M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 s32 func_0209d1d4(void *arg0) {
@@ -408,8 +408,8 @@ s32 func_0209d3c8(void *arg0) {
 }
 
 s32 func_0209d3dc(void *arg0) {
-    void func_020ad150(s32, u16, s32, void *);
-    void func_020ad2a0(s32, u16, s32, void *);
+    void CreateScreenTransitions(s32, u16, s32, void *);
+    void CreateScreenTransitionChildren(s32, u16, s32, void *);
     void *cmd = M2C_FIELD(arg0, void **, 8);
     s32 mode = 3;
     s32 flags = M2C_FIELD(cmd, s32 *, 4);
@@ -417,15 +417,15 @@ s32 func_0209d3dc(void *arg0) {
     if (flags & 1) mode = 0;
     if (flags & 2) mode = 1;
     if (flags & 4) mode = 2;
-    if (flags & 8) func_020ad2a0(2, (u16)value, mode, arg0);
-    else func_020ad150(2, (u16)value, mode, arg0);
+    if (flags & 8) CreateScreenTransitionChildren(2, (u16)value, mode, arg0);
+    else CreateScreenTransitions(2, (u16)value, mode, arg0);
     M2C_FIELD(arg0, void **, 8) += 8;
     return 1;
 }
 
 s32 func_0209d44c(void *arg0) {
-    void func_020ad1f8(s32, u16, s32, void *);
-    void func_020ad348(s32, u16, s32, void *);
+    void StartScreenFades(s32, u16, s32, void *);
+    void StartScreenFadeChildren(s32, u16, s32, void *);
     void *cmd = M2C_FIELD(arg0, void **, 8);
     s32 mode = 3;
     s32 flags = M2C_FIELD(cmd, s32 *, 4);
@@ -433,15 +433,15 @@ s32 func_0209d44c(void *arg0) {
     if (flags & 1) mode = 0;
     if (flags & 2) mode = 1;
     if (flags & 4) mode = 2;
-    if (flags & 8) func_020ad348(2, (u16)value, mode, arg0);
-    else func_020ad1f8(2, (u16)value, mode, arg0);
+    if (flags & 8) StartScreenFadeChildren(2, (u16)value, mode, arg0);
+    else StartScreenFades(2, (u16)value, mode, arg0);
     M2C_FIELD(arg0, void **, 8) += 8;
     return 1;
 }
 
 s32 func_0209d4bc(void *arg0) {
-    void func_020ad150(s32, u16, s32, void *);
-    void func_020ad2a0(s32, u16, s32, void *);
+    void CreateScreenTransitions(s32, u16, s32, void *);
+    void CreateScreenTransitionChildren(s32, u16, s32, void *);
     void *cmd = M2C_FIELD(arg0, void **, 8);
     s32 mode = 3;
     s32 flags = M2C_FIELD(cmd, s32 *, 4);
@@ -449,15 +449,15 @@ s32 func_0209d4bc(void *arg0) {
     if (flags & 1) mode = 0;
     if (flags & 2) mode = 1;
     if (flags & 4) mode = 2;
-    if (flags & 8) func_020ad2a0(0, (u16)value, mode, arg0);
-    else func_020ad150(0, (u16)value, mode, arg0);
+    if (flags & 8) CreateScreenTransitionChildren(0, (u16)value, mode, arg0);
+    else CreateScreenTransitions(0, (u16)value, mode, arg0);
     M2C_FIELD(arg0, void **, 8) += 8;
     return 1;
 }
 
 s32 func_0209d52c(void *arg0) {
-    void func_020ad1f8(s32, u16, s32, void *);
-    void func_020ad348(s32, u16, s32, void *);
+    void StartScreenFades(s32, u16, s32, void *);
+    void StartScreenFadeChildren(s32, u16, s32, void *);
     void *cmd = M2C_FIELD(arg0, void **, 8);
     s32 mode = 3;
     s32 flags = M2C_FIELD(cmd, s32 *, 4);
@@ -465,15 +465,15 @@ s32 func_0209d52c(void *arg0) {
     if (flags & 1) mode = 0;
     if (flags & 2) mode = 1;
     if (flags & 4) mode = 2;
-    if (flags & 8) func_020ad348(0, (u16)value, mode, arg0);
-    else func_020ad1f8(0, (u16)value, mode, arg0);
+    if (flags & 8) StartScreenFadeChildren(0, (u16)value, mode, arg0);
+    else StartScreenFades(0, (u16)value, mode, arg0);
     M2C_FIELD(arg0, void **, 8) += 8;
     return 1;
 }
 
 s32 func_0209d59c(void *arg0) {
-    void func_020ad150(s32, u16, s32, void *);
-    void func_020ad2a0(s32, u16, s32, void *);
+    void CreateScreenTransitions(s32, u16, s32, void *);
+    void CreateScreenTransitionChildren(s32, u16, s32, void *);
     void *cmd = M2C_FIELD(arg0, void **, 8);
     s32 mode = 3;
     s32 flags = M2C_FIELD(cmd, s32 *, 4);
@@ -481,15 +481,15 @@ s32 func_0209d59c(void *arg0) {
     if (flags & 1) mode = 0;
     if (flags & 2) mode = 1;
     if (flags & 4) mode = 2;
-    if (flags & 8) func_020ad2a0(1, (u16)value, mode, arg0);
-    else func_020ad150(1, (u16)value, mode, arg0);
+    if (flags & 8) CreateScreenTransitionChildren(1, (u16)value, mode, arg0);
+    else CreateScreenTransitions(1, (u16)value, mode, arg0);
     M2C_FIELD(arg0, void **, 8) += 8;
     return 1;
 }
 
 s32 func_0209d60c(void *arg0) {
-    void func_020ad1f8(s32, u16, s32, void *);
-    void func_020ad348(s32, u16, s32, void *);
+    void StartScreenFades(s32, u16, s32, void *);
+    void StartScreenFadeChildren(s32, u16, s32, void *);
     void *cmd = M2C_FIELD(arg0, void **, 8);
     s32 mode = 3;
     s32 flags = M2C_FIELD(cmd, s32 *, 4);
@@ -497,8 +497,8 @@ s32 func_0209d60c(void *arg0) {
     if (flags & 1) mode = 0;
     if (flags & 2) mode = 1;
     if (flags & 4) mode = 2;
-    if (flags & 8) func_020ad348(1, (u16)value, mode, arg0);
-    else func_020ad1f8(1, (u16)value, mode, arg0);
+    if (flags & 8) StartScreenFadeChildren(1, (u16)value, mode, arg0);
+    else StartScreenFades(1, (u16)value, mode, arg0);
     M2C_FIELD(arg0, void **, 8) += 8;
     return 1;
 }
@@ -720,7 +720,7 @@ void func_0209da98(void *arg0) {
 
 void func_0209dabc(s32 arg0) {
     extern M2C_UNK data_0211e030;
-    M2C_FIELD(func_01ffa3dc(&data_0211e030), s32 *, 0x60) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_0211e030), s32 *, 0x60) = arg0;
 }
 
 void func_0209dad8(void **arg0) {

@@ -187,7 +187,7 @@ s32 func_ov000_021a1ab8(void) {
 }
 
 s32 func_ov000_021a1b1c(void){
-s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);M2C_UNK func_ov000_02199330();s32 FindPropertyTargetCandidate();s32 func_ov000_021a86dc();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
+s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);M2C_UNK func_ov000_02199330();s32 FindPropertyTargetCandidate();s32 PlayerHasHealthyCounterUnit();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
 extern void **gCurrentMap;extern void *gAiSettings,*gAiCommandState;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,0xa)<<20)>>29)&2))return 0;
@@ -195,7 +195,7 @@ if(M2C_FIELD(gAiSettings,u8 *,0xb0)==0)return 0;
 if(CanBuildUnitKind(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),14)==0)return 0;
 base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
 if(GetUnitBuildCost(id,14)*10>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0;
-if(func_ov000_021a86dc()==1)return 0;
+if(PlayerHasHealthyCounterUnit()==1)return 0;
 if(func_ov000_021a860c()==0)return 0;
 func_ov000_02199330();
 result=FindPropertyTargetCandidate();if(result==-1)return 0;

@@ -116,9 +116,9 @@ void func_02085428(M2C_UNK arg0) {
 }
 
 void func_02085440(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     Link_BroadcastMessage(0x85, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_02085464(M2C_UNK arg0) {
@@ -148,13 +148,13 @@ void func_020854d0(void *arg0) {
     s32 func_0208471c();
     s32 GetOverlayEventFlags();
     if ((func_0208471c() != 0) || (GetOverlayEventFlags() != 0)) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     if (M2C_FIELD(arg0, u8 *, 0x38) == 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_02085514(M2C_UNK arg0) {

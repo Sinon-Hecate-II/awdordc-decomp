@@ -493,10 +493,10 @@ u8 func_ov004_022147e0(void) {
 }
 
 void func_ov004_02214814(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    M2C_UNK func_02087c6c(s32, s32, s32, s32, s32, s32);
-    func_02087c6c(arg0, arg1, arg2 + 1, arg1, arg4, arg5);
-    func_02087c6c(arg2, arg1, arg2, arg3 + 1, arg4, arg5);
-    func_02087c6c(arg2 + 1, arg3, arg0, arg3, arg4, arg5);
-    func_02087c6c(arg0, arg3 + 1, arg0, arg1, arg4, arg5);
+    M2C_UNK DrawGxLine(s32, s32, s32, s32, s32, s32);
+    DrawGxLine(arg0, arg1, arg2 + 1, arg1, arg4, arg5);
+    DrawGxLine(arg2, arg1, arg2, arg3 + 1, arg4, arg5);
+    DrawGxLine(arg2 + 1, arg3, arg0, arg3, arg4, arg5);
+    DrawGxLine(arg0, arg3 + 1, arg0, arg1, arg4, arg5);
 }
 

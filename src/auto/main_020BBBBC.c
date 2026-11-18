@@ -60,7 +60,7 @@ void func_020bbc74(void *arg0) {
 }
 
 void func_020bbcec(s32 a) {
- void *func_01ffa3dc(M2C_UNK *,s32);
+ void *CreateSpriteFromClass(M2C_UNK *,s32);
  extern s32 *gCurrentMap;
  extern s16 data_0212924c[];
  extern M2C_UNK data_0212929c;
@@ -74,7 +74,7 @@ void func_020bbcec(s32 a) {
  void *p=(void *)(base+0x59a4+(s16)id*(s16)14);
  void *q;
  if(!p)return;
- q=func_01ffa3dc(&data_0212929c,7);
+ q=CreateSpriteFromClass(&data_0212929c,7);
  M2C_FIELD(q,s32 *,0x34)=x*2;
  M2C_FIELD(q,s32 *,0x38)=y*2;
  M2C_FIELD(q,void **,0x54)=p;
@@ -170,6 +170,101 @@ void AiProduceCargoUnit(void) {
 }
 
 void func_020bc0e0(void) {
+    extern s32 *gCurrentMap;
+    s32 GetUnitCaptureRate(void *, s32, s32);
+    void func_020baa64(void);
+    void func_020baaac(void);
+    s32 IsPlayerHuman();
+    s32 AddRecordValue(s32, s32);
+    s32 func_020cd5d8(void);
+    void CreateBattleEffect(s32, s32, s32, s32, u8, u8);
+    void func_020c32b0(s32, s32);
+    void func_020cf2c8(void);
+    void func_0207ab24(s32, s32);
+#define CURSOR_UNIT(map) M2C_FIELD((map), u8 **, MAP_CURSOR_UNIT)
+#define CURSOR_X(map) M2C_FIELD((map), s16 *, MAP_CURSOR_X)
+#define CURSOR_Y(map) M2C_FIELD((map), s16 *, MAP_CURSOR_Y)
+#define CURSOR_INDEX(map) (CURSOR_X(map) + M2C_FIELD((map) + CURSOR_Y(map)*2, u16 *, MAP_ROW_OFFSETS))
+#define CAPTURE(word) (((u32)(word) << 16) >> 27)
+    u8 *map, *unit, *terrains;
+    s32 points, unitId, cell, visible, replacement;
+    u16 captureAmmo;
+    u8 terrain;
+
+    map = (u8 *)*gCurrentMap;
+    points = GetUnitCaptureRate(CURSOR_UNIT(map), CURSOR_X(map), CURSOR_Y(map));
+    map = (u8 *)*gCurrentMap;
+    terrain = M2C_FIELD(map + CURSOR_INDEX(map), u8 *, MAP_CELL_TERRAIN);
+    unit = CURSOR_UNIT(map);
+    unitId = unit ? (s32)(unit - (map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
+    func_020baa64();
+    func_020baaac();
+    map = (u8 *)*gCurrentMap;
+    points += CAPTURE(M2C_FIELD(CURSOR_UNIT(map), u16 *, MAP_UNIT_CAPTURE));
+    if (points >= MAP_UNIT_CAPTURE_COMPLETE)
+        points = MAP_UNIT_CAPTURE_COMPLETE;
+    if (points == MAP_UNIT_CAPTURE_COMPLETE && IsPlayerHuman(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)))
+        AddRecordValue(0x23, 1);
+
+    map = (u8 *)*gCurrentMap;
+    if (map[MAP_FOG] || map[MAP_WEATHER] == 2) {
+        u16 player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+        s16 y = CURSOR_Y(map);
+        u8 side = M2C_FIELD(map + player*MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_SIDE);
+        s16 x = CURSOR_X(map);
+        visible = 1;
+        if (!(side & 2)) {
+            cell = x + M2C_FIELD(map + y*2, u16 *, MAP_ROW_OFFSETS);
+            if (!(u8)(M2C_FIELD(map + ((u32)cell >> 3), u8 *, MAP_CELL_BITMAP) & (visible << (cell & 7))))
+                visible = 0;
+        }
+        if (!visible)
+            goto updateCapture;
+    }
+    if (func_020cd5d8()) {
+        replacement = (terrain & MAP_TERRAIN_KIND_MASK) == 9 ? 21 : 20;
+        map = (u8 *)*gCurrentMap;
+        CreateBattleEffect((u8)M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), replacement & MAP_TERRAIN_KIND_MASK, 0,
+            M2C_FIELD(map + (((unitId & 0xc0) >> 6) + 1)*MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_PROPERTY_ARMY),
+            (u8)CAPTURE(M2C_FIELD(CURSOR_UNIT(map), u16 *, MAP_UNIT_CAPTURE)), (u8)points);
+    } else if (points >= MAP_UNIT_CAPTURE_COMPLETE) {
+        func_020c32b0(((unitId & 0xc0) >> 6) + 1, terrain & MAP_TERRAIN_KIND_MASK);
+    }
+
+updateCapture:
+    unit = CURSOR_UNIT((u8 *)*gCurrentMap);
+    M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) = (M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) & ~0xf800)
+        | (((u32)(u16)points << 27) >> 16);
+    unit = CURSOR_UNIT((u8 *)*gCurrentMap);
+    captureAmmo = M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE);
+    if (CAPTURE(captureAmmo) < MAP_UNIT_CAPTURE_COMPLETE)
+        return;
+    M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) = captureAmmo & ~0xf800;
+    unit = CURSOR_UNIT((u8 *)*gCurrentMap);
+    captureAmmo = M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO);
+    M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) = (captureAmmo & ~0x780)
+        | (((u32)(u16)((((u32)captureAmmo << 21) >> 28) + 0xffff) << 28) >> 21);
+
+    map = (u8 *)*gCurrentMap;
+    cell = CURSOR_INDEX(map);
+    terrains = map + MAP_CELL_TERRAIN;
+    if ((terrains[cell] & MAP_TERRAIN_KIND_MASK) == 9) {
+        terrains[cell] = 21;
+        map = (u8 *)*gCurrentMap;
+        M2C_FIELD(map + CURSOR_INDEX(map)*2, u16 *, MAP_CELL_TILE_ID) = 0x199;
+    } else {
+        terrains[cell] = 20;
+        map = (u8 *)*gCurrentMap;
+        M2C_FIELD(map + CURSOR_INDEX(map)*2, u16 *, MAP_CELL_TILE_ID) = 0x179;
+    }
+    func_020cf2c8();
+    map = (u8 *)*gCurrentMap;
+    func_0207ab24(CURSOR_X(map), CURSOR_Y(map));
+#undef CAPTURE
+#undef CURSOR_INDEX
+#undef CURSOR_Y
+#undef CURSOR_X
+#undef CURSOR_UNIT
 }
 
 #pragma push

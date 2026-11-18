@@ -112,8 +112,8 @@ M2C_FIELD(entry,u32 *,8)++;
 
 #pragma opt_common_subs off
 void func_ov010_02226d9c(void *a){
-s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 func_0204428c(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
-void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK func_01ffa6fc(void *);
+s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
+void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
 if(!IsOnlineSessionFlagSet(3))return;
@@ -124,7 +124,7 @@ if(!QueueCount26d9c())return;
 if(M2C_FIELD(a,void **,0x38)){
 M2C_FIELD(a,u16 *,0x44)=M2C_FIELD(M2C_FIELD(a,void **,0x38),u16 *,6);
 M2C_FIELD(a,u16 *,0x44)&=GetOnlinePeerMask();
-for(i=0;i<4;i++)if(self!=i && (M2C_FIELD(a,u16 *,0x44)&(1<<i))){if(!func_0204428c((u8)i))return;}
+for(i=0;i<4;i++)if(self!=i && (M2C_FIELD(a,u16 *,0x44)&(1<<i))){if(!CanStartSend((u8)i))return;}
 if(M2C_FIELD(a,u32 *,0x34)!=((Ov010Packet *)M2C_FIELD(a,void **,0x38))->size){
 {Ov010Packet header=*(Ov010Packet *)M2C_FIELD(a,void **,0x38); n=header.size;}
 n=n-M2C_FIELD(a,u32 *,0x34);if(n>0x594)n=0x594;
@@ -142,7 +142,7 @@ if(M2C_FIELD(a,void **,0x38)){func_ov010_02229580(M2C_FIELD(a,void **,0x38));M2C
 }else{
 M2C_FIELD(a,u16 *,0x44)=QueueMask26d9c();
 M2C_FIELD(a,u16 *,0x44)&=GetOnlinePeerMask();
-for(i=0;i<4;i++)if(self!=i && (M2C_FIELD(a,u16 *,0x44)&(1<<i))){if(!func_0204428c((u8)i))return;}
+for(i=0;i<4;i++)if(self!=i && (M2C_FIELD(a,u16 *,0x44)&(1<<i))){if(!CanStartSend((u8)i))return;}
 M2C_FIELD(a,u32 *,0x40)=QueueSize26d9c();
 p=func_ov010_02229568(M2C_FIELD(a,u32 *,0x40));M2C_FIELD(a,void **,0x3c)=p;
 QueuePop26d9c(p);
@@ -163,7 +163,7 @@ M2C_FIELD(a,u16 *,0x44)&=~0U ^ (one<<self);
 }
 if(M2C_FIELD(a,u16 *,0x44)){
 switch(((Ov010Packet *)M2C_FIELD(a,void **,0x3c))->flags){
-case 0:func_0204445c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_01ffa6fc(a);return;
+case 0:func_0204445c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));Sprite_ResumeAnimation(a);return;
 case 1:func_0204455c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;return;
 default:return;
 }}
@@ -171,20 +171,20 @@ func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_F
 }
 #pragma opt_common_subs reset
 void func_ov010_02227264(void *arg0) {
-M2C_UNK func_01ffa6fc(void *);
-s32 func_0204428c(u8);
+M2C_UNK Sprite_ResumeAnimation(void *);
+s32 CanStartSend(u8);
 M2C_UNK func_ov010_02229580(s32);
 s32 GetOnlinePeerMask();
 s32 i;
 u16 mask;
 mask = GetOnlinePeerMask() & M2C_FIELD(arg0,u16 *,0x44);
 for (i=0;i<4;i++) {
-if ((1 << i) & mask) { if (!func_0204428c((u8)i)) return; }
+if ((1 << i) & mask) { if (!CanStartSend((u8)i)) return; }
 }
 func_ov010_02229580(M2C_FIELD(arg0,s32 *,0x3c));
 M2C_FIELD(arg0,s32 *,0x3c)=0;
 M2C_FIELD(arg0,s32 *,0x40)=0;
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 
 #pragma opt_common_subs off

@@ -16,7 +16,7 @@ static inline void boxSize(void *p,u32 w,u32 h) { M2C_FIELD(p,u32*,0x40)=((M2C_F
 
 static inline void boxBounds(s32 x,s32 y,u32 w,u32 h,void *p) { boxPosition(p,x,y); boxSize(p,w,h); }
 void *FindObjectByClass(void*);
-void func_01ffa6fc(void*);
+void Sprite_ResumeAnimation(void*);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s16,s32,s32);
 s32 GetUnitSpriteWidth(void*);
@@ -107,7 +107,7 @@ void ResultsScreenAnimate(void *arg0) {
   M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=0;
   M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x53)=0;
   } gCur3DSpriteEngine=savedEngine;
-  M2C_FIELD(arg0,u8*,0x58)=0; M2C_FIELD(arg0,s32*,0x3c)=0;func_01ffa6fc(arg0);
+  M2C_FIELD(arg0,u8*,0x58)=0; M2C_FIELD(arg0,s32*,0x3c)=0;Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov005_0221cff8(void *arg0) {
@@ -152,7 +152,7 @@ void PlaySoundEffect(s32);
 void *FindObjectByClass(void *);
 void func_02087db8(void *,s32);
 void func_02087e34(void *);
-void func_01ffa6fc(void *);
+void Sprite_ResumeAnimation(void *);
 #pragma push
 #pragma opt_common_subs off
 void func_ov005_0221d160(void *arg0){
@@ -275,6 +275,6 @@ void func_ov005_0221d160(void *arg0){
             func_02087db8(p, 1);
     }
     func_02087e34(M2C_FIELD(arg0, void **, 0x34));
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 #pragma pop

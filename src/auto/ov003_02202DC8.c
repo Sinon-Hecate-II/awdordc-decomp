@@ -198,7 +198,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
 }
 
 void func_ov003_02203280(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK EnableMapConfirm();
@@ -233,7 +233,7 @@ void func_ov003_02203280(void *arg0) {
     Hide3DSprite(M2C_FIELD(self, s32 *, 0x4C));
     SetOv003SceneState(2);
     M2C_FIELD(self, s8 *, 0x38) = 0;
-    func_01ffa6fc(self);
+    Sprite_ResumeAnimation(self);
     if (func_ov003_02200c7c() == 0) {
         return;
     }

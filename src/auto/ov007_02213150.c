@@ -79,9 +79,9 @@ void func_ov007_022132bc(void) {
 }
 
 void func_ov007_0221330c(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f6b0;
-    func_01ffa3dc(&data_ov007_0221f6b0, 7);
+    CreateSpriteFromClass(&data_ov007_0221f6b0, 7);
 }
 
 u8 func_ov007_02213324(void) {
@@ -127,11 +127,11 @@ void func_ov007_02213378(void *arg0) {
 }
 
 void func_ov007_022133a8(s32 arg0, s32 arg1) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void SetUiMessageText(s32);
     extern M2C_UNK data_ov007_0221f7c0;
     SetUiMessageText(arg0);
-    M2C_FIELD(func_01ffa3dc(&data_ov007_0221f7c0, 7), s32 *, 0x5C) = arg1;
+    M2C_FIELD(CreateSpriteFromClass(&data_ov007_0221f7c0, 7), s32 *, 0x5C) = arg1;
 }
 
 void func_ov007_022133cc(void) {
@@ -201,7 +201,7 @@ void func_ov007_0221352c(s32 arg0, s32 arg1) {
     extern M2C_UNK data_ov007_0221f740;
     void *temp_r0;
 
-    temp_r0 = func_01ffa3dc(&data_ov007_0221f740, 7);
+    temp_r0 = CreateSpriteFromClass(&data_ov007_0221f740, 7);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg1;
 }

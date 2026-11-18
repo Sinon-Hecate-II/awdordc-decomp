@@ -24,7 +24,7 @@ void func_020e4490(void) {
     M2C_UNK func_02080bd4();
     M2C_UNK func_020883bc();
     M2C_UNK func_02086574();
-    M2C_UNK func_0208fba0();
+    M2C_UNK InitSound();
     M2C_UNK func_0209cc04();
     M2C_UNK func_020e4458();
     M2C_UNK func_0200ee70();
@@ -73,7 +73,7 @@ void func_020e4490(void) {
     func_02080bd4();
     func_020883bc();
     func_02086574();
-    func_0208fba0();
+    InitSound();
     func_0209cc04();
     func_020e4458();
     func_0200ee70();
@@ -474,7 +474,7 @@ void func_020e4ca0(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_02168fe
 void DrawGlyphString(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK data_02168fec;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&data_02168fec,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
 
 s8 func_020e4d80(void *arg0) {
-    s8 func_01ffa6fc(void *);
+    s8 Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
@@ -509,7 +509,7 @@ s8 func_020e4d80(void *arg0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5a) = 0xc;
     }
-    return func_01ffa6fc(arg0);
+    return Sprite_ResumeAnimation(arg0);
 }
 
 #pragma scheduling off

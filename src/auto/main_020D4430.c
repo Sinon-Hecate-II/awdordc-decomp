@@ -117,9 +117,9 @@ void func_020d4928(void) {
 }
 
 void func_020d4948(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212be74;
-    func_01ffa3dc(&data_0212be74, 7);
+    CreateSpriteFromClass(&data_0212be74, 7);
 }
 
 void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084cc0(void *); void func_02086330(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;func_02086330(func_02084cc0(arg0));}
@@ -170,16 +170,16 @@ void FinishBattle(void) {
 }
 
 void func_020d4a50(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212be0c;
-    func_01ffa3dc(&data_0212be0c, 7);
+    CreateSpriteFromClass(&data_0212be0c, 7);
 }
 
 void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();func_020b4c08(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();func_020d4b30();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
 
 void func_020d4ac8(s16 arg0) {
     extern M2C_UNK data_0212bdcc;
-    M2C_FIELD(func_01ffa3dc(&data_0212bdcc, 7), s16 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&data_0212bdcc, 7), s16 *, 0x34) = arg0;
 }
 
 int func_020d4ae8(void){extern void **gCurrentMap;int (*cb)(void);func_020d3d24();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x4c);if(cb)cb();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x50);if(cb)return cb();return (int)cb;}
@@ -249,10 +249,10 @@ void func_020d4cc8(void *);
 void func_020d4c50(void){void *p=func_020d4cd4();if(!p)return;if(!func_020d4cb0(p))return;func_02077c64();func_02077c78();func_020d4cc8(p);}
 
 void func_020d4c80(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK func_01ffaa0c(u16);
     func_01ffaa0c((u16) M2C_FIELD(arg0, s32 *, 0x5C));
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020d4ca4(void *arg0) {
@@ -280,7 +280,7 @@ void *func_020d4cd4(void) {
     return func_01ffa860(&data_0212bd84, 0xFF03);
 }
 
-void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,gBattleEndState; s32 func_01ffa810(s32);M2C_UNK func_01ffa3dc();void func_01ffa8bc(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=func_01ffa3dc(&data_0212bd84,4);func_01ffa8bc(p,0xff03);func_020d4cc8((void*)p);func_01ffa8bc(func_01ffa3dc(&data_0212bdb4,6),0xff03);func_01ffa8bc(func_01ffa3dc(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&gBattleEndState,u8*,0))func_020852a8();}
+void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,gBattleEndState; s32 func_01ffa810(s32);M2C_UNK CreateSpriteFromClass();void func_01ffa8bc(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=CreateSpriteFromClass(&data_0212bd84,4);func_01ffa8bc(p,0xff03);func_020d4cc8((void*)p);func_01ffa8bc(CreateSpriteFromClass(&data_0212bdb4,6),0xff03);func_01ffa8bc(CreateSpriteFromClass(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&gBattleEndState,u8*,0))func_020852a8();}
 
 int func_020d4d78(void){s32 func_01ffa810(s32);void *func_0209cce4(void (*)(void *),int);if(!func_01ffa810(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
 

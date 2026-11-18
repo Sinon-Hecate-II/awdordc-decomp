@@ -46,28 +46,28 @@ gCur3DSpriteEngine=old;
 void func_020b90d8(void) {M2C_UNK Clear3DSpriteLayer(M2C_UNK,s32);void RefreshMapView();void func_020d472c();extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;void *old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;((M2C_UNK (*)())Clear3DSpriteLayer)(1);((M2C_UNK (*)())Clear3DSpriteLayer)(2);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;RefreshMapView();func_020d472c();gCur3DSpriteEngine=old;}
 
 void func_020b9140(s32 arg0) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
     extern M2C_UNK data_021290dc;
     if (arg0 == 0) {
-        func_01ffa3dc(&data_021290dc, 7);
+        CreateSpriteFromClass(&data_021290dc, 7);
         return;
     }
-    func_01ffa3dc(&data_021290dc, arg0);
+    CreateSpriteFromClass(&data_021290dc, arg0);
 }
 
 #pragma optimization_level 2
 #pragma opt_common_subs off
 void DrawFundsCostRow(s32 x,s32 y,s32 a,s32 b,s32 c){
-void ClearTileRect(void *,s32,s32);s32 GetDigitCount(s32);void DrawTilemapNumber(s32,s32,s32,s32,u16,u16);void func_0209c0bc(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
+void ClearTileRect(void *,s32,s32);s32 GetDigitCount(s32);void DrawTilemapNumber(s32,s32,s32,s32,u16,u16);void DrawTilemapSymbol(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
 s32 pos,base=x; s32 color=0;
 if(c<0)color=3;
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+x*2+y*64,32,2);
 pos=x+4;DrawTilemapNumber((s16)(pos+(GetDigitCount(a)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
-pos=base+11;if(b<0){func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,0);if(b<0)b=-b;}else{func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),43,0,0);}
+pos=base+11;if(b<0){DrawTilemapSymbol(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,0);if(b<0)b=-b;}else{DrawTilemapSymbol(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),43,0,0);}
 a=base+14;DrawTilemapNumber((s16)(a+(GetDigitCount(b)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),b,0,0);
-func_0209c0bc(base+20,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),61,0,0);
+DrawTilemapSymbol(base+20,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),61,0,0);
 base+=23;
-if(c<0){func_0209c0bc(base++,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,color);if(c<0)c=-c;}
+if(c<0){DrawTilemapSymbol(base++,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,color);if(c<0)c=-c;}
 DrawTilemapNumber((s16)(base+(GetDigitCount(c)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),c,0,color);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 }
@@ -94,13 +94,13 @@ void func_020b939c(void *arg0) {
  * funds from the player's current funds down to what is left after the row's
  * unit cost, redraw the funds line with it, tick a sound every fourth frame, and
  * once the count-up is over hand the row object on to the sprite state. */
-void UpdateProductionFundsRow(void *row) {s32 GetUnitBuildCostTimes10(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void DrawFundsCostRow(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void func_01ffa6fc(void *);extern void **gCurrentMap;
+void UpdateProductionFundsRow(void *row) {s32 GetUnitBuildCostTimes10(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void DrawFundsCostRow(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);extern void **gCurrentMap;
 s32 frame,duration,funds,cost,remaining,kind,player;void *map;
 kind=M2C_FIELD(row,s32 *,PRODUCTION_ROW_KIND);M2C_FIELD(row,s16 *,PRODUCTION_ROW_FRAME)++;map=*gCurrentMap;frame=M2C_FIELD(row,s16 *,PRODUCTION_ROW_FRAME);duration=M2C_FIELD(row,s16 *,PRODUCTION_ROW_DURATION);
 player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);funds=M2C_FIELD((u8 *)map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF);
 cost=GetUnitBuildCostTimes10(player,kind);remaining=funds-cost;
 DrawFundsCostRow(0,1,EaseInterpolate(0,funds,remaining,frame,duration),-cost,remaining);
-if((frame&3)==1)PlaySoundEffect(0x10023);if(frame<duration)return;func_01ffa6fc(row);
+if((frame&3)==1)PlaySoundEffect(0x10023);if(frame<duration)return;Sprite_ResumeAnimation(row);
 }
 
 void func_020b94a4(void *a) {s32 ProduceUnit(s32,s32,s32);void SetBattleCommand(s32,u8,s32,s32);void func_ov000_0216aa44(s32,s32);extern void **gCurrentMap;s32 v=M2C_FIELD(a,s32 *,92);s32 result;void *g=*gCurrentMap;
@@ -201,7 +201,7 @@ void func_020b979c(u8 *a) {
  * menu's entry list from that mask and create the production menu screen. */
 void OpenProductionMenu(s32 x, s32 y) {
     void BuildProductionMenuEntries(s8 mask);
-    M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
     extern void **gCurrentMap;
     extern M2C_UNK gProductionMenuState;
     extern M2C_UNK gProductionMenuScreenClass;
@@ -221,7 +221,7 @@ void OpenProductionMenu(s32 x, s32 y) {
         break;
     }
     BuildProductionMenuEntries((s8)M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_KIND_MASK));
-    func_01ffa3dc(&gProductionMenuScreenClass, 7);
+    CreateSpriteFromClass(&gProductionMenuScreenClass, 7);
 }
 
 void BuildProductionMenuEntries(s8 mask) {

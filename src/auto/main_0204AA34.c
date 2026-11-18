@@ -142,17 +142,20 @@ s32 ghiFreeConnection(void *connection) {
     return 1;
 }
 
-void *func_0204aecc(s32 arg0) {
- extern M2C_UNK data_020fd108, ghiAssertFile, data_020fd050, data_020fd118, gGhiConnectionList;
+/* GameSpy ghttp (ghttpConnection.c): returns the connection holding the given
+ * request index, or NULL when the index is out of range or the slot is free.
+ * Asserts the index bounds, then re-checks them under the connection-list mutex. */
+void *ghiRequestToConnection(s32 request) {
+ extern M2C_UNK ghiAssertRequestNonNegative, ghiAssertFile, ghiAssertFuncRequestToConnection, ghiAssertRequestWithinLen, gGhiConnectionList;
  M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
- void *p;
- if(arg0<0) AssertFailed(&data_020fd108,&ghiAssertFile,&data_020fd050,0x101);
- if(arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) AssertFailed(&data_020fd118,&ghiAssertFile,&data_020fd050,0x102);
+ void *conn;
+ if(request<0) AssertFailed(&ghiAssertRequestNonNegative,&ghiAssertFile,&ghiAssertFuncRequestToConnection,0x101);
+ if(request>=M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_LENGTH)) AssertFailed(&ghiAssertRequestWithinLen,&ghiAssertFile,&ghiAssertFuncRequestToConnection,0x102);
  ghiLockMutex();
- if(arg0<0 || arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) {ghiUnlockMutex();return NULL;}
- p=M2C_FIELD(&gGhiConnectionList,void ***,4)[arg0];
- if(M2C_FIELD(p,s32 *,0)==0) p=NULL;
- ghiUnlockMutex(); return p;
+ if(request<0 || request>=M2C_FIELD(&gGhiConnectionList,s32 *,GHI_LIST_LENGTH)) {ghiUnlockMutex();return NULL;}
+ conn=M2C_FIELD(&gGhiConnectionList,void ***,GHI_LIST_CONNECTIONS)[request];
+ if(M2C_FIELD(conn,s32 *,0)==0) conn=NULL;
+ ghiUnlockMutex(); return conn;
 }
 
 void func_0204af74(M2C_UNK *arg0) {
@@ -259,7 +262,7 @@ s32 func_0204b210(void *operation) {
     s32 status;
 
     if (!operation) AssertFailed(&data_020fd170, &data_020fd17c, &data_020fd158, 0x5B);
-    if (func_0204aecc(M2C_FIELD(operation, s32 *, 4)) != operation)
+    if (ghiRequestToConnection(M2C_FIELD(operation, s32 *, 4)) != operation)
         AssertFailed(&data_020fd188, &data_020fd17c, &data_020fd158, 0x5C);
     if (M2C_FIELD(operation, s32 *, 0x12C)) return 0;
     M2C_FIELD(operation, s32 *, 0x12C) = 1;

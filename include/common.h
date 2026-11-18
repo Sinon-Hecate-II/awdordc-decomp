@@ -389,7 +389,10 @@ typedef struct MapSelectScreen {
  * It holds two rows of label sprites and a table of 42-byte map entries. */
 #define MAPSELECT_ENTRIES       0x00 /* void *: map entry table */
 #define MAPSELECT_ENTRY_SIZE    42   /* bytes per map entry */
+#define MAPSELECT_ENTRY_NAME_ID 0x26 /* u16 per entry: index of the map's name tile */
 #define MAPSELECT_ENTRY_FLAG    0x28 /* u8 per entry: selects the preview path */
+#define MAPSELECT_LABEL_TILES   0x42 /* u16[]: tile of a row label sprite, indexed by the entry's MAPSELECT_ENTRY_FLAG */
+#define MAPSELECT_NAME_TILES    0x48 /* u16[]: tile of a row name sprite, indexed by the entry's MAPSELECT_ENTRY_NAME_ID */
 #define MAPSELECT_ROW_OBJS_A    0x10 /* void *[MAPSELECT_ROWS] row labels */
 #define MAPSELECT_ROW_OBJS_B    0x24 /* void *[MAPSELECT_ROWS] map names */
 #define MAPSELECT_ROWS          5    /* rows shown at once */
@@ -401,17 +404,40 @@ typedef struct MapSelectScreen {
 #define MAPSELECT_SCROLL_ANIM   0x38 /* s32 token of the running list-scroll animation */
 #define MAPSELECT_TASK          0x3C /* s32 handle of the row-scroll task */
 #define MAPSELECT_MAX_SCROLL    0x40 /* u16 scroll position of the last row */
-#define MAPSELECT_LAST_ROW      0x53 /* u8 index of the last row */
+#define MAPSELECT_LAST_ROW      0x53 /* u8 the bar's handle travel in pixels (MAPSELECT_HANDLE_TRAVEL_*) */
 #define MAPSELECT_BUMP_LATCH    0x59 /* u8 set once the no-move sound played for a held key */
 #define MAPSELECT_SCROLL_DIRTY  0x56 /* u8 set when the list moved: refresh the BG scroll registers */
 #define MAPSELECT_ROW_BASE_Y    0x36 /* y of the first visible row with the list at scroll 0 */
 #define MAPSELECT_ROW_LABEL_X   0xB3 /* x of a row's label sprite */
 #define MAPSELECT_ROW_NAME_X    0xD2 /* x of a row's map-name sprite */
 
+/* The map-select list's scroll bar: the handle size (index into the bar's sprite
+ * table, so the longer it is the fewer maps fit), the travel of each handle and
+ * the bar's track on the screen. A list of MAPSELECT_NO_SCROLL_MAX maps or fewer
+ * does not scroll and gets no bar. */
+#define MAPSELECT_NO_SCROLL_MAX    4  /* maps that fit without scrolling */
+#define MAPSELECT_SHORT_HANDLE_MAX 8  /* up to this many maps the bar uses the short handle */
+#define MAPSELECT_HANDLE_NONE      0  /* no bar at all */
+#define MAPSELECT_HANDLE_SHORT     1
+#define MAPSELECT_HANDLE_LONG      2
+#define MAPSELECT_HANDLE_TRAVEL_SHORT 0x1F /* MAPSELECT_LAST_ROW value of the short handle */
+#define MAPSELECT_HANDLE_TRAVEL_LONG  0x37 /* MAPSELECT_LAST_ROW value of the long handle */
+#define MAPSELECT_SCROLLBAR_TRACK  0x55 /* track length in pixels */
+#define MAPSELECT_SCROLLBAR_X      0xEC /* x of the bar on the list screen */
+#define MAPSELECT_SCROLLBAR_Y      0x3F /* y of the bar */
+
 /* The fields of gMapSelectState in front of that object. */
 #define MAPSELECT_STATE_CURSOR  0x00 /* u8 highlighted row (0..4) */
 #define MAPSELECT_STATE_SCROLL  0x02 /* u16 list scroll position, 0x1c units per row */
 #define MAPSELECT_STATE_OBJ     0x04 /* void *: the map-list object (MAPSELECT_*) */
+
+/* The ov001 two-option Wi-Fi menu (gOv001WifiMenuSelection): the option the player
+ * has selected and the explanation text loaded for the screen. Its options open
+ * the access-point list or the options menu. */
+#define OV001_WIFI_MENU_CHOICE      0x00 /* u8 selected option (OV001_WIFI_MENU_*) */
+#define OV001_WIFI_MENU_TEXT        0x04 /* s32 loaded explanation text file */
+#define OV001_WIFI_MENU_ACCESS_POINT 0   /* open the access-point list */
+#define OV001_WIFI_MENU_OPTIONS      1   /* open the options menu */
 
 /* The in-memory game settings block. The word at +0x128 is stamped with this
  * magic once the defaults have been filled in; code that reads the settings
@@ -725,6 +751,10 @@ typedef struct ScrollList {
     void *spriteUp;   /* +0x44: list-up arrow sprite */
     void *spriteDown; /* +0x48: list-down arrow sprite */
 } ScrollList;
+
+/* The unit-list menu's row list (gUnitListRows): the list's pixel scroll value
+ * followed by the buffer of unit slots to show, which ScrollListRebuild sorts. */
+#define UNIT_LIST_ROW_CAPACITY 64 /* slots in the row list buffer (bytes) */
 
 /* Geometry of the unit list's clickable buttons: one highlight sprite per visible
  * row, 16 px apart and starting at y 39, 4 px in from the left; the four tab buttons
@@ -2195,7 +2225,7 @@ typedef struct Ov001TextPanel {
 #define MAP_ACTION_SPRITE  0x54 /* void *3D sprite the popup draws */
 #define MAP_ACTION_HOLD    0x1e /* frames the popup stays at normal size before it may end */
 
-/* The ov001 text/sprite context (data_ov001_02193e40, a 0x680-byte allocation). */
+/* The ov001 text/sprite context (gOv001TextContext, a 0x680-byte allocation). */
 #define OV001_CTX_FONTS       0x00  /* Ov001Font[2]: the parsed font sets */
 #define OV001_CTX_PANEL_QUEUE 0x670 /* ring queue of the 32 text-panel objects CreatePooledTextPanel hands out */
 
@@ -2417,6 +2447,30 @@ typedef struct Thread {
 #define MTX43_ROT     0  /* s32[9] rotation/scale coefficients */
 #define MTX43_TRANS   9  /* s32[3] translation */
 #define MTX_FX_SHIFT  12 /* fractional bits of a matrix coefficient */
+
+/* NitroSDK thread and message queues (os_thread.c, os_message.c).  An
+ * OSMessageQueue is a fixed ring of 32-bit messages, usually pointers, that
+ * threads hand to each other; a thread queue lists the threads asleep on it. */
+typedef struct OSThreadQueue {
+    void *head; /* +0x00 first thread waiting on the queue, NULL when empty */
+    void *tail; /* +0x04 last thread waiting on the queue */
+} OSThreadQueue; /* 8 bytes */
+
+typedef struct OSMessageQueue {
+    OSThreadQueue sendQueue;    /* +0x00 threads asleep because the queue is full */
+    OSThreadQueue receiveQueue; /* +0x08 threads asleep because the queue is empty */
+    s32 *msgArray;              /* +0x10 message slots */
+    s32 msgCount;               /* +0x14 number of slots */
+    s32 firstIndex;             /* +0x18 slot holding the oldest message */
+    s32 usedCount;              /* +0x1C messages queued */
+} OSMessageQueue; /* 0x20 bytes */
+
+/* Flags of OS_SendMessage, OS_JamMessage, OS_ReceiveMessage and OS_ReadMessage:
+ * bit 0 set makes the call sleep until the queue can take or give a message. */
+enum {
+    OS_MESSAGE_NOBLOCK = 0,
+    OS_MESSAGE_BLOCK   = 1
+};
 
 #endif
 

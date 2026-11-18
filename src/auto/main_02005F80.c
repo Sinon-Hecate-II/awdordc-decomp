@@ -172,7 +172,7 @@ s32 func_020062bc(void) {
     return v;
 }
 
-void func_020062d4(void *arg0, s32 arg1, s32 arg2) {
+void OS_InitMessageQueue(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
@@ -183,7 +183,7 @@ void func_020062d4(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
 }
 
-s32 func_020062fc(void *arg0, s32 arg1, s32 arg2) {
+s32 OS_SendMessage(void *arg0, s32 arg1, s32 arg2) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -206,7 +206,7 @@ s32 func_020062fc(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_02006390(void *arg0, s32 *arg1, s32 arg2) {
+s32 OS_ReceiveMessage(void *arg0, s32 *arg1, s32 arg2) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -232,7 +232,7 @@ s32 func_02006390(void *arg0, s32 *arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_02006434(void *arg0, s32 arg1, s32 arg2) {
+s32 OS_JamMessage(void *arg0, s32 arg1, s32 arg2) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -255,7 +255,7 @@ s32 func_02006434(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_020064d0(void *arg0, s32 *arg1, s32 arg2) {
+s32 OS_ReadMessage(void *arg0, s32 *arg1, s32 arg2) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);

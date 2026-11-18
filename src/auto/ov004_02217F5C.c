@@ -333,7 +333,7 @@ void func_ov004_022188c4(void *a){extern void **gCurrentMap;extern u32 data_0215
 
 /* Advance a 16-frame transition, linearly raising the 3D sprite engine's visibility and setting its display flags. */
 void func_ov004_02218950(void *transition) {
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, u8, s32);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
@@ -406,7 +406,7 @@ void func_ov004_02218950(void *transition) {
     if ((u32) M2C_FIELD(transition, u8 *, 0x36) < 0x10U) {
         return;
     }
-    func_01ffa6fc(transition);
+    Sprite_ResumeAnimation(transition);
 }
 
 void func_ov004_02218b7c(M2C_UNK arg0) {

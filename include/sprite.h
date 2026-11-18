@@ -33,6 +33,15 @@
 #define SPRITE_OAM_ATTR2 0x28 /* u32 OAM attribute word 2: tile id in bits 0..9, priority/palette above */
 #define SPRITE_PARTS     0x30 /* s32 extra quad parts of the sprite, 0 when it has none */
 
+/* Extra fields of the sprite that runs the map's tile-scatter transition
+ * (main_0207A3B0): the motion points of the effect, one x, y, velocity x,
+ * velocity y per map tile, and the frame counter that ends it. */
+#define SPRITE_SCATTER_POINTS 0x54 /* s16 (*)[4]: x, y, velocity x, velocity y of each point */
+#define SPRITE_SCATTER_COUNT  0x6C /* s16 points in use */
+#define SPRITE_SCATTER_FRAME  0x6E /* s16 frames the effect has run */
+#define SPRITE_SCATTER_MAX    204  /* points the effect's 0x660-byte array holds */
+#define SPRITE_SCATTER_FRAMES 8    /* frames the effect runs before the sprite is deleted */
+
 /* Script commands (the second u16 of a zero-duration entry). */
 #define SPRITE_CMD_LOOP    0xFF
 #define SPRITE_CMD_STOP    0x00

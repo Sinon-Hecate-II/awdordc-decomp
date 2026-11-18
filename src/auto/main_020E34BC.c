@@ -133,42 +133,42 @@ temp=saved; arg0=temp;
 }
 #pragma pop
 void func_020e3610(M2C_UNK arg0) {
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 func_0208471c();
     s32 func_0208477c();
     s32 func_ov010_02226364();
     if ((func_0208471c() != 0) || (func_0208477c() != 0)) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     if (func_ov010_02226364() == 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020e3654(M2C_UNK arg0) {
     s32 func_ov010_02226560();
     if ((func_0208471c() != 0) || (func_0208477c() != 0)) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     if (func_ov010_02226560() == 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020e3698(M2C_UNK arg0) {
     s32 func_ov010_022266ec();
     if ((func_0208471c() != 0) || (func_0208477c() != 0)) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     if (func_ov010_022266ec() == 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_020e36dc(void) {

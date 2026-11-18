@@ -16,17 +16,19 @@ if(IsPlayerActive(p) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)){
 u16 start=gPlayerUnitIdBase[p];i=start+1;end=start+0x33;while(i<end){UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];u32 kind=(u32)(entry->unk0 & 0x3f);if(kind && (gUnitKindStats[kind*112+0x13]&16))return 1;i++;}} p=p+1;}
 return 0;}
 #pragma pool_constants reset
-s32 func_ov000_021a86dc(void) {
+/* Whether the current player's unit block already holds a unit of the AI's
+ * counter kind that still has at least half its health. */
+s32 PlayerHasHealthyCounterUnit(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 i;
 
 void *base = *gCurrentMap;
-u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
-for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33; i++) {
-UnkStruct_ov000_021A860C *entry = &((UnkStruct_ov000_021A860C *)((u8 *)base + 0x59A4))[i];
-u32 type = entry->unk0;
-if (type != 0 && type == 0xE && entry->unk6 >= 0x32U) { return 1; }
+u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+BattleMapUnitHead *entry = &((BattleMapUnitHead *)((u8 *)base + MAP_UNIT_RECORDS))[i];
+u32 type = entry->kind;
+if (type != 0 && type == AI_COUNTER_UNIT_KIND && entry->health >= AI_COUNTER_UNIT_MIN_HEALTH) { return 1; }
 }
 return 0;
 }

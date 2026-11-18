@@ -119,12 +119,12 @@ void func_020a6b68(void *arg0) {
 void func_020a6b90(void *arg0) {
     extern void **gCurrentMap;
     s32 IsBattleEffectActive(void);
-    void func_01ffa6fc(void *);
+    void Sprite_ResumeAnimation(void *);
     void (*callback)(s32, s32, s32);
     callback = (void (*)(s32, s32, s32))M2C_FIELD(gCurrentMap[1], void **, 8);
     if (callback != 0) callback(M2C_FIELD(arg0, s32 *, 0x34) * 16, M2C_FIELD(arg0, s32 *, 0x38) * 16, 10);
     if (IsBattleEffectActive() != 0) return;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void SpawnUnitSprite(s32 arg0, void *unused) {
@@ -155,7 +155,7 @@ void func_020a6cbc(void *arg0) {
 }
 
 void ApplyAreaDamageEffect(void *effect){
-void DamageUnitAtTile(s32,s32,s32);s32 IsBattleEffectActive(void);s32 func_020a81d0(void *);void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);void func_01ffa6fc(void *);
+void DamageUnitAtTile(s32,s32,s32);s32 IsBattleEffectActive(void);s32 func_020a81d0(void *);void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);void Sprite_ResumeAnimation(void *);
 extern u16 gPlayerUnitIdBase[];
 u8 *covered=M2C_FIELD(effect,u8 **,0x54);s32 found=0,player,unitId;u32 index;s32 scan[8];UnkStruct_ov000_021A860C *unit;
 /* Area-damage effect: for the first eligible unit, apply 40 damage to every
@@ -180,7 +180,7 @@ found++;if(found==1)return;
 }
 }
 }
-if(!found)func_01ffa6fc(effect);
+if(!found)Sprite_ResumeAnimation(effect);
 }
 
 /* Turn start for the current player's units: clear the per-turn action bits on every
@@ -203,9 +203,9 @@ if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORD
 }}
 
 void func_020a6fcc(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021206a0;
-    func_01ffa3dc(&data_021206a0, 7);
+    CreateSpriteFromClass(&data_021206a0, 7);
 }
 
 #pragma scheduling off

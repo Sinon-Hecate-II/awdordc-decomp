@@ -209,7 +209,7 @@ return 1;
  * engine's blend register; when the duration is reached write the mode's end
  * value, clear the fade and post the completion message. */
 void Ov001_UpdateFade(M2C_UNK task, void *fadeArg) {
-    s32 func_02002088(s32, u16);
+    s32 HardwareDivide(s32, u16);
     void GX_SetBlendY(s32, s32);
     void Ov001_PostTaskMessage(s32, s32);
     extern u8 gOv001FadeTable[];
@@ -241,7 +241,7 @@ void Ov001_UpdateFade(M2C_UNK task, void *fadeArg) {
     fade->counter = fade->counter + 1;
     ramp = (s32)fade->counter << 4;
     duration = fade->duration;
-    value = func_02002088(ramp, duration);
+    value = HardwareDivide(ramp, duration);
 
     mode = fade->mode;
     flagTable = table + OV001_FADE_MODE_COUNT;
@@ -305,24 +305,24 @@ void func_ov001_0218aab4(void) {
     s32 Ov001_GetLanguage(void);
     s32 Ov001_LoadFile(M2C_UNK, M2C_UNK *, M2C_UNK);
     void func_ov001_02169130(void *, M2C_UNK);
-    extern M2C_UNK data_ov001_02193e40;
+    extern M2C_UNK gOv001TextContext;
     extern M2C_UNK data_ov001_021917c0;
     extern M2C_UNK data_ov001_021917c8;
     M2C_UNK p;
 
     p = (M2C_UNK)Ov001_Alloc(0x680, 4);
-    data_ov001_02193e40 = p;
-    M2C_FIELD((void *)data_ov001_02193e40, void **, 0x670) = Ov001_QueueCreateFromBuffer(0x20, (s32)p + 0x10, 0x30);
+    gOv001TextContext = p;
+    M2C_FIELD((void *)gOv001TextContext, void **, 0x670) = Ov001_QueueCreateFromBuffer(0x20, (s32)p + 0x10, 0x30);
 
     if (Ov001_GetLanguage() == 6) {
         s32 i;
         s32 acc = 0;
         M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c0);
         for (i = 0; i < 2; i++) {
-            M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674) =
+            M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674) =
                 (M2C_UNK)Ov001_LoadFile(arr[i], 0, 4);
-            func_ov001_02169130((void *)data_ov001_02193e40 + acc,
-                M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674));
+            func_ov001_02169130((void *)gOv001TextContext + acc,
+                M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674));
             acc += 8;
         }
     } else {
@@ -330,10 +330,10 @@ void func_ov001_0218aab4(void) {
         s32 i;
         M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c8);
         for (i = 0; i < 2; i++) {
-            M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674) =
+            M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674) =
                 (M2C_UNK)Ov001_LoadFile(arr[i], 0, 4);
-            func_ov001_02169130((void *)data_ov001_02193e40 + acc,
-                M2C_FIELD((void *)data_ov001_02193e40 + i * 4, M2C_UNK *, 0x674));
+            func_ov001_02169130((void *)gOv001TextContext + acc,
+                M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674));
             acc += 8;
         }
     }
@@ -343,12 +343,12 @@ void func_ov001_0218abb8(void) {
  void Ov001_FreeFile(s32);
  void func_ov001_0218a6d8(s32,...);
  M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
- extern M2C_UNK data_ov001_02193e40;
+ extern M2C_UNK gOv001TextContext;
  extern M2C_UNK data_ov001_02193e44;
- M2C_UNK *p=&data_ov001_02193e40;
+ M2C_UNK *p=&gOv001TextContext;
  s32 i;
  for(i=0;i<2;i++)Ov001_FreeFile(*((s32 *)((u8 *)(*p)+0x674)+i));
- func_ov001_0218a6d8(*((s32 *)((u8 *)data_ov001_02193e40+0x670)));
+ func_ov001_0218a6d8(*((s32 *)((u8 *)gOv001TextContext+0x670)));
  Ov001_FreeAlloc(&data_ov001_02193e44-1);
 }
 
@@ -357,7 +357,7 @@ void func_ov001_0218abb8(void) {
  * bitmap at the range, run its draw operation and publish the range's tile
  * offset and the size-derived layout value.  Returns the panel. */
 void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 *layoutOut, s32 fontSet) {
-    extern M2C_UNK data_ov001_02193e40;
+    extern M2C_UNK gOv001TextContext;
     s32 func_ov001_0218c228(s32, s32, s32, s32 *);
     s32 func_ov001_0216a33c(s32, s32);
     void func_ov001_0216a1a8(void *, s32, s32, s32, s32);
@@ -366,7 +366,7 @@ void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 
     s32 base;
     s32 offset;
 
-    panel = (Ov001TextPanel *)Ov001_QueuePop((void *)M2C_FIELD(data_ov001_02193e40, s32 *, OV001_CTX_PANEL_QUEUE));
+    panel = (Ov001TextPanel *)Ov001_QueuePop((void *)M2C_FIELD(gOv001TextContext, s32 *, OV001_CTX_PANEL_QUEUE));
     panel->width = width;
     panel->height = height;
     panel->tiles = (void *)func_ov001_0218c228(screen, width * height, forward, &tiles);
@@ -376,7 +376,7 @@ void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 
     if (screen == 1) base = 0x6600000; else base = 0x6400000;
     func_ov001_0216a1a8(panel, base + (offset << 7), width, height, 4);
     ((void (*)(void *, s32))M2C_FIELD(panel->ops, void **, 4))(panel, 0);
-    offset = data_ov001_02193e40 + fontSet * 8;
+    offset = gOv001TextContext + fontSet * 8;
     panel->self = panel;
     panel->font = (Ov001Font *)offset;
     panel->unk20 = 1;
@@ -387,9 +387,9 @@ void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 
 void func_ov001_0218ace0(M2C_UNK arg0) {
     M2C_UNK func_ov001_0218c3a0(M2C_UNK);
     void Ov001_QueuePush(void *, s32);
-    extern M2C_UNK data_ov001_02193e40;
+    extern M2C_UNK gOv001TextContext;
     func_ov001_0218c3a0(M2C_FIELD((void *)arg0, M2C_UNK *, 0x28));
-    Ov001_QueuePush((void *)M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x670), arg0);
+    Ov001_QueuePush((void *)M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x670), arg0);
 }
 
 #pragma opt_propagation off
@@ -398,16 +398,16 @@ void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 func_02003684(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
 void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void func_ov001_0218ae84(M2C_UNK,void*);
-extern M2C_UNK data_ov001_02193e40; extern u8 data_ov001_0218fd18[],data_ov001_0218fd1a[],data_ov001_0218fd14[];
+extern M2C_UNK gOv001TextContext; extern u8 data_ov001_0218fd18[],data_ov001_0218fd1a[],data_ov001_0218fd14[];
 void *base;
-void *p=(u8*)(void*)data_ov001_02193e40+0x610+arg0*0x30;
+void *p=(u8*)(void*)gOv001TextContext+0x610+arg0*0x30;
 u32 a=*(u16*)(data_ov001_0218fd1a+arg0*4);
 u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; u16 c; s32 zero;
 *(void**)((u8*)p+0x28)=Ov001_Alloc((b*a)<<5,32);
 if(arg0==1) { *(volatile u16*)0x4001008 &= ~0x40; *(volatile u16*)0x4001008=(*(volatile u16*)0x4001008&0x43)|0xc00; }
 else { *(volatile u16*)0x4000008 &= ~0x40; *(volatile u16*)0x4000008=(*(volatile u16*)0x4000008&0x43)|0xc00; }
 func_ov001_0216a17c(p,*(void**)((u8*)p+0x28),b,a,4);
-base=(void*)data_ov001_02193e40;
+base=(void*)gOv001TextContext;
 *(void**)((u8*)p+0x18)=p;
 *(void**)((u8*)p+0x1c)=(u8*)base+arg1*8;
 *(s32*)((u8*)p+0x20)=1; *(s32*)((u8*)p+0x24)=1;
@@ -416,7 +416,7 @@ zero=0;
 c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
 func_ov001_0216a230(v,b,a,zero,zero,32,c,15);
 TextPanel_ClearText(p,0);
-*(void**)((u8*)p+0x2c)=Ov001_AddTask(1,(M2C_UNK)func_ov001_0218ae84,(u8*)(void*)data_ov001_02193e40+0x67c+arg0,200);
+*(void**)((u8*)p+0x2c)=Ov001_AddTask(1,(M2C_UNK)func_ov001_0218ae84,(u8*)(void*)gOv001TextContext+0x67c+arg0,200);
 return p;
 }
 #pragma opt_propagation reset
@@ -424,25 +424,25 @@ void func_ov001_0218ae84(M2C_UNK arg0, void *arg1) {
     void DC_FlushRange(M2C_UNK, s32);
     void func_0200454c(M2C_UNK, s32, u32);
     void func_020045ac(M2C_UNK, s32, u32);
-    extern M2C_UNK data_ov001_02193e40;
+    extern M2C_UNK gOv001TextContext;
     if (!*(u8 *)arg1) {
         return;
     }
-    if (arg1 == (void *)((u8 *)data_ov001_02193e40 + 0x67C)) {
-        DC_FlushRange(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x638), 0x6000);
-        func_0200454c(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x638), 0, 0x6000);
+    if (arg1 == (void *)((u8 *)gOv001TextContext + 0x67C)) {
+        DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x638), 0x6000);
+        func_0200454c(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x638), 0, 0x6000);
     } else {
-        DC_FlushRange(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x668), 0x3000);
-        func_020045ac(M2C_FIELD((void *)data_ov001_02193e40, M2C_UNK *, 0x668), 0x3000, 0x3000);
+        DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x668), 0x3000);
+        func_020045ac(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x668), 0x3000, 0x3000);
     }
     *(u8 *)arg1 = 0;
 }
 
 M2C_UNK func_ov001_0218af0c(s32 arg0) {
-    extern M2C_UNK data_ov001_02193e40;
+    extern M2C_UNK gOv001TextContext;
     M2C_UNK temp_r0;
     func_ov001_0218c94c(1, M2C_FIELD((void *)arg0, M2C_UNK *, 0x2C));
-    if (arg0 == (M2C_UNK)data_ov001_02193e40 + 0x610) {
+    if (arg0 == (M2C_UNK)gOv001TextContext + 0x610) {
         temp_r0 = FillU16(0, func_02003834(), 0x6000);
     } else {
         temp_r0 = FillU16(0, func_02003834(), 0x3000);
@@ -452,8 +452,8 @@ M2C_UNK func_ov001_0218af0c(s32 arg0) {
 
 void Ov001_FreePageBackground(s32 arg0) {
     M2C_UNK func_ov001_0218af0c(s32);
-    extern s32 data_ov001_02193e40;
-    func_ov001_0218af0c((0x30 * arg0) + (data_ov001_02193e40 + 0x610));
+    extern s32 gOv001TextContext;
+    func_ov001_0218af0c((0x30 * arg0) + (gOv001TextContext + 0x610));
 }
 
 /* Draw an anchored text block on a text panel: choose the run direction from the
@@ -474,31 +474,34 @@ default:break;
 DrawAnchoredText(panel+0x18,x,y,colour,flags,text,dir);
 }
 
-void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {
+void DrawFontSetGlyph(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {
     M2C_UNK DrawTextGlyph(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov001_02193e40;
-    M2C_UNK base = data_ov001_02193e40;
+    extern M2C_UNK gOv001TextContext;
+    M2C_UNK base = gOv001TextContext;
     DrawTextGlyph((M2C_UNK)arg0, (M2C_UNK)((u8 *)base + arg5 * 8), arg1, arg2, (M2C_UNK)arg3, (M2C_UNK)arg4);
 }
 
-void DrawTextRun(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, s32 arg6) {
+/* Draw a NUL-terminated UTF-16 string as one horizontal line of glyphs from the
+ * context's font set `fontIndex`: each glyph is centred in a `cellWidth`-wide
+ * cell, and the pen moves one cell per character. */
+void DrawTextRun(void *panel, s32 x, s32 y, s32 color, s32 cellWidth, u16 *text, s32 fontIndex) {
     s32 GetFontGlyphIndex(void **a, u32 b);
     void *GetFontGlyphMetric(void **a, u32 b);
-    void func_ov001_0218b044(void *, s32, s32, s32, u16, s32);
-    extern M2C_UNK data_ov001_02193e40;
-    void **entry;
-    s32 id;
-    void *p;
-    if (*arg5 == 0) return;
+    void DrawFontSetGlyph(void *, s32, s32, s32, u16, s32);
+    extern M2C_UNK gOv001TextContext;
+    Ov001Font *font;
+    s32 glyph;
+    Ov001GlyphMetric *metric;
+    if (*text == 0) return;
     do {
-        entry = (void **)((u8 *)data_ov001_02193e40 + arg6 * 8);
-        id = GetFontGlyphIndex(entry, *arg5);
-        if (id == 0xffff) id = M2C_FIELD(*entry, u16 *, 2);
-        p = GetFontGlyphMetric(entry, id);
-        func_ov001_0218b044(arg0, arg1 + ((arg4 - M2C_FIELD(p, s8 *, 2)) >> 1), arg2, arg3, *arg5, arg6);
-        arg5++;
-        arg1 += arg4;
-    } while (*arg5);
+        font = (Ov001Font *)((u8 *)gOv001TextContext + fontIndex * 8);
+        glyph = GetFontGlyphIndex((void **)font, *text);
+        if (glyph == 0xffff) glyph = font->resource->defaultChar;
+        metric = (Ov001GlyphMetric *)GetFontGlyphMetric((void **)font, glyph);
+        DrawFontSetGlyph(panel, x + ((cellWidth - metric->advance) >> 1), y, color, *text, fontIndex);
+        text++;
+        x += cellWidth;
+    } while (*text);
 }
 
 void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
@@ -553,8 +556,8 @@ void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 a
 }
 
 void CloseTextPanel(s32 arg0) {
-    extern M2C_UNK data_ov001_02193e40;
-    void *p = M2C_FIELD(&data_ov001_02193e40, void **, 0);
+    extern M2C_UNK gOv001TextContext;
+    void *p = M2C_FIELD(&gOv001TextContext, void **, 0);
     if (arg0 == (s32)p + 0x610) {
         M2C_FIELD(p, u8 *, 0x67c) = 1;
     } else {

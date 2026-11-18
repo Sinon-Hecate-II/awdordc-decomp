@@ -320,13 +320,13 @@ void func_0200492c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_02004998(void) {
     M2C_UNK DmaWaitChannel(s32);
-    M2C_UNK func_02002bb8(M2C_UNK);
+    M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     extern s32 data_020f5204;
     extern M2C_UNK data_0212dbe0;
     if (data_020f5204 != -1) {
         DmaWaitChannel(data_020f5204);
     }
-    func_02002bb8(M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x8));
+    GX_SetBankForObjExtPalette(M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x8));
     M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x8) = 0;
     M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x4) = 0;
 }

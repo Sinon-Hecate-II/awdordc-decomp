@@ -10,7 +10,7 @@ void func_02002060(s32 arg0, s32 arg1) {
     M2C_FIELD((void *)0x04000280, s32 *, 0x1C) = 0;
 }
 
-s32 func_02002088(s32 arg0, s32 arg1) {
+s32 HardwareDivide(s32 arg0, s32 arg1) {
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = arg0;
     *(volatile s64 *)0x04000298 = (u32)arg1;
@@ -294,16 +294,29 @@ void func_02002ab8(s32 mode) {
     GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, 0));
 }
 
-void func_02002bb8(u32 a) {
-extern M2C_UNK gVramBankState;
-M2C_FIELD(&gVramBankState,u16*,0)=(M2C_FIELD(&gVramBankState,u16*,0)|M2C_FIELD(&gVramBankState,u16*,16))&~a;
-M2C_FIELD(&gVramBankState,u16*,16)=a;
-switch(a){
-case 0x20: *(volatile u32*)0x04000000|=0x80000000;*(volatile u8*)0x04000245=0x85;break;
-case 0x40: *(volatile u32*)0x04000000|=0x80000000;*(volatile u8*)0x04000246=0x85;break;
-case 0: *(volatile u32*)0x04000000&=~0x80000000;break;
-}
-GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16*,0));
+/* Give the requested banks to the main engine's OBJ (sprite) extended palette:
+ * each bank of the run is mapped into the palette area and DISPCNT's OBJ
+ * extended-palette bit is switched on (off when no banks are requested); the
+ * banks the palette no longer uses are released. */
+void GX_SetBankForObjExtPalette(u32 banks) {
+    extern M2C_UNK gVramBankState;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) =
+        (M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) | M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_OBJ_PALETTE)) & ~banks;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_OBJ_PALETTE) = banks;
+    switch (banks) {
+    case VRAM_BANK_F:
+        REG_DISPCNT |= DISPCNT_OBJ_EXT_PALETTE;
+        REG_VRAM_F_CR = VRAM_CR_MAIN_OBJ_PALETTE(0);
+        break;
+    case VRAM_BANK_G:
+        REG_DISPCNT |= DISPCNT_OBJ_EXT_PALETTE;
+        REG_VRAM_G_CR = VRAM_CR_MAIN_OBJ_PALETTE(0);
+        break;
+    case 0:
+        REG_DISPCNT &= ~DISPCNT_OBJ_EXT_PALETTE;
+        break;
+    }
+    GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING));
 }
 
 /* Assign the requested VRAM banks to the 3D texture area: each bank of a run

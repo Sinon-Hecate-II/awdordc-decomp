@@ -82,6 +82,12 @@
 /* Unit kinds the AI code names directly. */
 #define UNIT_KIND_INFANTRY  1
 #define UNIT_KIND_MECH      2
+
+/* The AI's counter-unit kind (func_ov000_021a1b1c builds one when an enemy has
+ * a unit of the class it answers).  An existing one is only considered usable
+ * while it keeps at least half its health. */
+#define AI_COUNTER_UNIT_KIND       14
+#define AI_COUNTER_UNIT_MIN_HEALTH 50
 #define UNIT_KIND_TRANSPORT 19
 #define UNIT_KIND_SUBMARINE 22 /* created submerged and charged 5 fuel a turn while submerged */
 #define UNIT_KIND_SUBMARINE_FUEL 5 /* fuel a submerged submarine spends per turn */
@@ -101,6 +107,18 @@
  * that can reach the tile and the distance to the closest of them. */
 #define AI_PROPERTY_CANDIDATE_ENEMY_COUNT    0x06 /* u8 enemy units that can reach the tile */
 #define AI_PROPERTY_CANDIDATE_ENEMY_DISTANCE 0x07 /* u8 Manhattan distance to the closest enemy (255 = none) */
+/* Distances UpdateAiCandidateCosts files on a candidate: the closest of the
+ * current player's capture units, and the closest unit that AI kind 24 can
+ * attack while it is in state 2. 0xFF/0x7F means none was found. */
+#define AI_CANDIDATE_CAPTURE_DISTANCE 0x09 /* u8 distance to the closest capture unit */
+#define AI_CANDIDATE_ATTACK_DISTANCE  0x0A /* u8 distance to the closest attackable unit */
+/* The remaining per-type fields, filled by UpdateAiCandidateCosts and the
+ * property/unit scans: each holds the distance to the cheapest reachable goal of
+ * its kind, 255 when there is none. */
+#define AI_CANDIDATE_UNIT_BALANCE      0x05 /* s8 friendly minus enemy units that can reach the tile */
+#define AI_CANDIDATE_PROPERTY_DISTANCE 0x08 /* u8 distance to the closest capturable property */
+#define AI_CANDIDATE_CAPTURE_DISTANCE  0x09 /* u8 distance to the closest capturable current-player unit */
+#define AI_CANDIDATE_COMBAT_DISTANCE   0x0A /* u8 distance to the closest unit a kind-24 unit can attack */
 #define AI_CANDIDATE_FRESH    0x7f /* untouched candidate */
 #define AI_CANDIDATE_REJECTED 0xfc /* candidate given up on */
 #define AI_CANDIDATE_SKIPPED  0xfd /* candidate skipped this turn */

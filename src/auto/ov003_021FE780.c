@@ -2,7 +2,7 @@
 #include "common.h"
 
 void func_ov003_021fe780(M2C_UNK arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK func_020a9188(void *, M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
@@ -32,7 +32,7 @@ void func_ov003_021fe780(M2C_UNK arg0) {
     void *temp_r5_3;
 
     func_ov003_021f13ec(&data_ov003_0220ff2c);
-    temp_r0 = func_01ffa3dc(&data_ov003_0220ff2c, arg0);
+    temp_r0 = CreateSpriteFromClass(&data_ov003_0220ff2c, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
@@ -151,7 +151,7 @@ void func_ov003_021fe780(M2C_UNK arg0) {
 }
 
 void func_ov003_021feb4c(M2C_UNK arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK func_020a9188(void *, M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
@@ -181,7 +181,7 @@ void func_ov003_021feb4c(M2C_UNK arg0) {
     void *temp_r5_3;
 
     func_ov003_021f13ec(&data_ov003_0220ff2c);
-    temp_r0 = func_01ffa3dc(&data_ov003_0220ff2c, arg0);
+    temp_r0 = CreateSpriteFromClass(&data_ov003_0220ff2c, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
@@ -315,7 +315,7 @@ void func_ov003_021fef18(void) {
 }
 
 void func_ov003_021fef58(M2C_UNK arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK func_020a9188(void *, M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
@@ -345,7 +345,7 @@ void func_ov003_021fef58(M2C_UNK arg0) {
     void *temp_r5_2;
     void *temp_r5_3;
 
-    temp_r0 = func_01ffa3dc(&data_ov003_0220fe1c, arg0);
+    temp_r0 = CreateSpriteFromClass(&data_ov003_0220fe1c, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;

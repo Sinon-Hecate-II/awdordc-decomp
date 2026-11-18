@@ -215,10 +215,10 @@ void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 a
 }
 
 s32 func_020c0634(s32 entries,s32 x,s32 y,s32 selection,s32 width) {
-void func_020b1b3c(void); s32 func_01ffa3dc(s32 *,s32); void func_020d4704(void);
+void func_020b1b3c(void); s32 CreateSpriteFromClass(s32 *,s32); void func_020d4704(void);
 extern s32 data_02129630;
 MenuC0634 *p; s16 n=0; u16 height=16; s32 i; s32 offset;
-func_020b1b3c(); p=(MenuC0634 *)func_01ffa3dc(&data_02129630,7); i=0; offset=0;
+func_020b1b3c(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=0; offset=0;
 p->entries=(void *)entries;
 for(;;) {
 u8 *entry=((u8 *)p->entries)+offset;
@@ -477,11 +477,11 @@ void func_020c0f18(void) {
 
 M2C_UNK func_020c0f24(void *p) {
 extern u8 data_02163f30[];
-void func_0207bbc8(void *);void func_0207bbd8(s32,s32,s32,s32);
+void SetCurrentSpriteBatch(void *);void InitSpriteBatch(s32,s32,s32,s32);
 void func_0207bcc4(u8,u8);void func_0207bdc4(void);void DrawSpriteBatchAt(s32,s32);
 s32 i;u16 v;
-func_0207bbc8(data_02163f30);
-func_0207bbd8(2,1,0x24,3);
+SetCurrentSpriteBatch(data_02163f30);
+InitSpriteBatch(2,1,0x24,3);
 for(i=0;i<M2C_FIELD(p,u8 *,0x4d);i++) {
 v=M2C_FIELD(func_020c03bc(p,i),u16 *,0x26);
 func_0207bcc4((u8)v,(u8)func_020c03d4((s32)p,i));
@@ -582,10 +582,10 @@ void func_020c1194(void *arg0) {
 s32 func_020c11e4(s32 a) {
 extern M2C_UNK data_02129690;
 s32 FindObjectByClass(M2C_UNK *);
-M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
+M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
 void *p;
 if(FindObjectByClass(&data_02129690))return 0;
-p=(void *)func_01ffa3dc(&data_02129690,7);
+p=(void *)CreateSpriteFromClass(&data_02129690,7);
 M2C_FIELD(p,s32 *,0x34)=a;
 return 1;
 }

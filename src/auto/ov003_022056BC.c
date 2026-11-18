@@ -23,7 +23,7 @@ typedef union ObjFlags20 {
 
 #pragma opt_strength_reduction off
 void func_ov003_022056bc(M2C_UNK arg0) {
-    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
@@ -55,7 +55,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     u8 var_r3_2;
 
     func_ov003_021f13ec(&data_ov003_02210544);
-    temp_r0 = func_01ffa3dc(&data_ov003_02210544, arg0);
+    temp_r0 = CreateSpriteFromClass(&data_ov003_02210544, arg0);
     if (temp_r0 == NULL) {
         return;
     }

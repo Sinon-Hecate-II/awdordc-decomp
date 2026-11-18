@@ -75,9 +75,9 @@ void func_0208ca08(void *arg0) {
 }
 
 void func_0208ca14(M2C_UNK arg0) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021027c0;
-    func_01ffa3dc(&data_021027c0, arg0);
+    CreateSpriteFromClass(&data_021027c0, arg0);
 }
 
 /* Sets up one of the two built-in patterns a 3D sprite panel is drawn with:

@@ -143,22 +143,22 @@ void func_02096b3c(void) {
 }
 
 void func_02096b50(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102dbc;
     SetUiMessageText();
-    func_01ffa3dc(&data_02102dbc, 7);
+    CreateSpriteFromClass(&data_02102dbc, 7);
 }
 
 void func_02096b6c(void) {
     extern M2C_UNK data_02102d4c;
     SetUiMessageText();
-    func_01ffa3dc(&data_02102d4c, 7);
+    CreateSpriteFromClass(&data_02102d4c, 7);
 }
 
 void func_02096b88(void) {
     extern M2C_UNK data_02102d84;
     SetUiMessageText();
-    func_01ffa3dc(&data_02102d84, 7);
+    CreateSpriteFromClass(&data_02102d84, 7);
 }
 
 /* Refresh the map records for `player`'s team when the view switches to it: count

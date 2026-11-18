@@ -23,12 +23,12 @@ s32 func_0208fea0(M2C_UNK arg0) {
 }
 
 s32 func_0208febc(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157834;
     u8 func_0208ff2c(void);
     M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (func_0208ff2c() == 0) {
@@ -42,10 +42,10 @@ s32 func_0208febc(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 u8 func_0208ff2c(void) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     u8 var_r0;
 
-    if (M2C_FIELD(&data_02157830, s32 *, 4) != 0) {
+    if (M2C_FIELD(&gSoundDriverState, s32 *, 4) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -54,14 +54,14 @@ u8 func_0208ff2c(void) {
 }
 
 u8 func_0208ff4c(s32 arg0) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern s32 gFrameCounter;
     u8 var_r0;
 
     if (func_0208ff2c() == 0) {
         return 0;
     }
-    if ((u32) gFrameCounter <= (u32) (M2C_FIELD(&data_02157830, s32 *, 0x1C) + arg0)) {
+    if ((u32) gFrameCounter <= (u32) (M2C_FIELD(&gSoundDriverState, s32 *, 0x1C) + arg0)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -70,12 +70,12 @@ u8 func_0208ff4c(s32 arg0) {
 }
 
 s32 SetSoundEffectVolume(M2C_UNK arg0) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157834;
     u8 func_0208ff2c(void);
     M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (func_0208ff2c() == 0) {
@@ -86,12 +86,12 @@ s32 SetSoundEffectVolume(M2C_UNK arg0) {
 }
 
 s32 PlaySlotPendingSound(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157850;
     M2C_UNK func_0208fd40(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02090034(s32, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     func_02090034(arg0, 0);
@@ -100,12 +100,12 @@ s32 PlaySlotPendingSound(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_02090034(s32 arg0, M2C_UNK arg1) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157850;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0208fd94(M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (IsSlotSoundActive(arg0) == 0) {
@@ -128,12 +128,12 @@ u8 IsSlotSoundActive(s32 arg0) {
 }
 
 s32 SetSlotSoundPending(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157850;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad50(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (IsSlotSoundActive(arg0) == 0) {
@@ -144,12 +144,12 @@ s32 SetSlotSoundPending(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 PlaySlotSoundEffect(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157850;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (IsSlotSoundActive(arg0) == 0) {
@@ -160,12 +160,12 @@ s32 PlaySlotSoundEffect(s32 arg0, s32 arg1) {
 }
 
 s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157850;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (IsSlotSoundActive(arg0) == 0) {
@@ -186,7 +186,7 @@ s32 PlaySlotScriptedSoundAtVolume(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 
 }
 
 s32 func_020901e0(s32 arg0) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157838;
     extern M2C_UNK data_0215783c;
     s32 func_0202d91c(M2C_UNK, M2C_UNK, s32);
@@ -195,7 +195,7 @@ s32 func_020901e0(s32 arg0) {
     s32 var_r4;
     u16 val;
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     val = (u16) arg0;
@@ -212,18 +212,18 @@ s32 func_020901e0(s32 arg0) {
 }
 
 s32 func_02090248(s32 arg0) {
-extern M2C_UNK data_02157830, data_0215783c, data_02157838;
+extern M2C_UNK gSoundDriverState, data_0215783c, data_02157838;
 u8 func_02090350(void); u8 func_02090370(void);
 M2C_UNK func_0202ac60(M2C_UNK,M2C_UNK);
 void func_0202d944(M2C_UNK,s32);
-if(M2C_FIELD(&data_02157830,u8 *,0)==0) return 0;
+if(M2C_FIELD(&gSoundDriverState,u8 *,0)==0) return 0;
 if(func_02090350()!=0) func_0202ac60(&data_0215783c,arg0);
 if(func_02090370()!=0) func_0202d944(&data_02157838,arg0);
 return 1;
 }
 
 s32 func_020902a8(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_0215783c;
     extern M2C_UNK data_02157838;
     u8 func_02090350(void);
@@ -231,7 +231,7 @@ s32 func_020902a8(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0202d960(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
     if (func_02090350() != 0) {
@@ -250,10 +250,10 @@ s32 func_020902a8(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 u8 func_02090350(void) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     u8 var_r0;
 
-    if (M2C_FIELD(&data_02157830, s32 *, 0xC) != 0) {
+    if (M2C_FIELD(&gSoundDriverState, s32 *, 0xC) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -262,10 +262,10 @@ u8 func_02090350(void) {
 }
 
 u8 func_02090370(void) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     u8 var_r0;
 
-    if (M2C_FIELD(&data_02157830, s32 *, 0x8) != 0) {
+    if (M2C_FIELD(&gSoundDriverState, s32 *, 0x8) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -274,23 +274,23 @@ u8 func_02090370(void) {
 }
 
 void func_02090390(void) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     void func_0202a9f0(void);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
     func_0202a9f0();
 }
 
 void func_020903b0(void) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     s32 func_0202c658(void *);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
-    func_0202c658(M2C_FIELD(&data_02157830, void **, 0x10));
+    func_0202c658(M2C_FIELD(&gSoundDriverState, void **, 0x10));
 }
 
 void func_020903d4(void) {
@@ -301,43 +301,43 @@ void func_020903d4(void) {
 }
 
 void func_020903f0(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     s32 func_0202c784(M2C_UNK *);
     s32 func_0202c860(M2C_UNK, M2C_UNK);
     s32 func_0202c88c(M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
-    func_0202c784(M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
-    func_0202c860(arg0, M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
-    func_0202c88c(arg1, M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
-    func_0202c784(M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
+    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    func_0202c860(arg0, M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    func_0202c88c(arg1, M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
 }
 
 M2C_UNK func_02090448(M2C_UNK arg0) {
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
     s32 func_0202c784(M2C_UNK *);
     M2C_UNK func_0202c848(M2C_UNK, M2C_UNK);
 
-    func_0202c784(M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
-    func_0202c848(arg0, M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
-    func_0202c784(M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
+    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    func_0202c848(arg0, M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
 }
 
 void func_02090480(s32 arg0) {
     M2C_UNK func_0202c778(M2C_UNK);
     M2C_UNK func_0202c6a4(M2C_UNK, s32);
-    extern M2C_UNK data_02157830;
+    extern M2C_UNK gSoundDriverState;
 
-    if (M2C_FIELD(&data_02157830, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
     {
         M2C_UNK r0;
         s32 diff;
 
-        r0 = func_0202c778(M2C_FIELD(&data_02157830, M2C_UNK *, 0x10));
+        r0 = func_0202c778(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
         if (r0 == 0) {
             return;
         }
@@ -345,7 +345,7 @@ void func_02090480(s32 arg0) {
         if (diff < 0) {
             diff = 0;
         }
-        func_0202c6a4(M2C_FIELD(&data_02157830, M2C_UNK *, 0x10), diff);
+        func_0202c6a4(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10), diff);
     }
 }
 
@@ -388,11 +388,11 @@ s32 func_0209051c(void) {
 }
 
 void func_02090574(void) {
-extern M2C_UNK data_02157830;
+extern M2C_UNK gSoundDriverState;
 extern M2C_UNK data_02157838;
 s32 func_020904c4(void);
 void func_0202d994(volatile s32 *, s32, s32);
-if(M2C_FIELD(&data_02157830,s32 *,8)!=0) {
+if(M2C_FIELD(&gSoundDriverState,s32 *,8)!=0) {
 s32 value=func_020904c4();
 func_0202d994(&data_02157838,0,value);
 func_0202d994(&data_02157838,1,value);

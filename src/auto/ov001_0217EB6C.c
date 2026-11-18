@@ -7,19 +7,19 @@ typedef struct { u16 a,b,c,d; } FourShorts;
 #pragma scheduling on
 s32 func_ov001_0217eb6c(void){
  s32 TouchRectPressed(void *);s32 func_ov001_0218bd1c(FourShorts *);
- s32 func_02002088(u16,s32);
+ s32 HardwareDivide(u16,s32);
  extern M2C_UNK gTouchScreenRect,gMapListState;
  extern FourBytes gOv001MapListLayout;
  extern u8 gMapListRowToState[],data_ov001_0218f952[];
  FourShorts rect; s32 value,i,j,k;u8 *p;
  if(!TouchRectPressed(&gTouchScreenRect))return 14;
- value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
+ value=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+4);
  for(i=0;i<4;i++,value++){
  if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return gMapListRowToState[value];}
  rect.b+=29;
  }
- value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
+ value=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
  for(j=0;j<4;j++,value++){
  if(value==2){
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+20);
@@ -31,7 +31,7 @@ s32 func_ov001_0217eb6c(void){
  break;
  }
  }
- value=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);
+ value=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
  for(k=0;k<4;k++,value++){
  if(value==6){
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+20);
@@ -49,11 +49,11 @@ s32 func_ov001_0217eb6c(void){
 }
 #pragma scheduling reset
 s32 func_ov001_0217ede0(s32 arg0) {
-    s32 func_02002088(u16, s32);
+    s32 HardwareDivide(u16, s32);
     extern M2C_UNK gMapListState;
     s32 value;
     s32 i;
-    value = func_02002088(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
+    value = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
     for (i = 0; i < 4; i++, value++) {
         if (value == arg0) return i;
     }
@@ -61,10 +61,10 @@ s32 func_ov001_0217ede0(s32 arg0) {
 }
 
 s32 func_ov001_0217ee24(s32 arg0) {
-    s32 func_02002088(u16, s32);
+    s32 HardwareDivide(u16, s32);
     extern M2C_UNK gMapListState;
     s32 result;
-    result = func_02002088(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
+    result = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
     result += arg0;
     return result;
 }
@@ -131,7 +131,7 @@ void MapListScrollDown(s32 arg0) {
     Ov001_PostTaskMessage(0, arg0);
 }
 
-void func_ov001_0217efb4(void){s32 func_02002088(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=func_02002088(M2C_FIELD(&gMapListState,u16 *,4),29);x=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
+void func_ov001_0217efb4(void){s32 HardwareDivide(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);x=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
 
 /* Selects a map-layout entry from the state index and applies it via Ov001_LayoutChoiceFrameRow. */
 void MapList_ApplyRowLayout(void) {
@@ -158,7 +158,7 @@ void MapList_ApplyRowLayout(void) {
  * and the row layout is re-applied either way. */
 M2C_UNK MapList_UpdateStateFromRow(void) {
     void *GetCurrentMapRecord(void);
-    s32 func_02002088(u16, s32);
+    s32 HardwareDivide(u16, s32);
     void MapList_ApplyRowLayout(void);
     extern M2C_UNK gMapListState;
     extern u8 gMapListRowToState[];
@@ -170,7 +170,7 @@ M2C_UNK MapList_UpdateStateFromRow(void) {
         return;
     }
     record = GetCurrentMapRecord();
-    row = func_02002088(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    row = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
     selected = M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_ROW);
     selected += row;
     switch (selected) {

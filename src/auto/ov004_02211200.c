@@ -10,11 +10,11 @@ void func_ov004_02211200(void) {
 
 void func_ov004_0221120c(M2C_UNK arg0) {
     s32 IsDialogActive();
-    M2C_UNK func_01ffa6fc(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     if (IsDialogActive() != 0) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov004_0221122c(M2C_UNK arg0) {
@@ -44,7 +44,7 @@ void func_ov004_0221126c(M2C_UNK arg0) {
         func_ov004_02227ecc_unk(arg0);
         func_020834c4();
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov004_022112b4(M2C_UNK arg0) {
@@ -478,19 +478,19 @@ void func_ov004_02211f0c(void) {
 }
 
 void func_ov004_02211f18(void) {
-    s32 func_01ffa3dc(M2C_UNK *, s32);
+    s32 CreateSpriteFromClass(M2C_UNK *, s32);
     void func_ov004_0221194c(s32, M2C_UNK *);
     extern M2C_UNK data_ov004_02218c20;
     extern M2C_UNK data_ov004_02218d90;
-    func_ov004_0221194c(func_01ffa3dc(&data_ov004_02218c20, 7), &data_ov004_02218d90);
+    func_ov004_0221194c(CreateSpriteFromClass(&data_ov004_02218c20, 7), &data_ov004_02218d90);
 }
 
 void func_ov004_02211f3c(void) {
-    s32 func_01ffa3dc(M2C_UNK *, s32);
+    s32 CreateSpriteFromClass(M2C_UNK *, s32);
     void func_ov004_0221194c(s32, M2C_UNK *);
     extern M2C_UNK data_ov004_02218c20;
     extern M2C_UNK data_ov004_02218d9c;
-    func_ov004_0221194c(func_01ffa3dc(&data_ov004_02218c20, 7), &data_ov004_02218d9c);
+    func_ov004_0221194c(CreateSpriteFromClass(&data_ov004_02218c20, 7), &data_ov004_02218d9c);
 }
 
 void func_ov004_02211f60(void) {

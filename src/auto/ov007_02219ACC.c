@@ -8,7 +8,7 @@ void func_ov007_02219acc(void *arg0) {
 }
 
 void func_ov007_02219ae8(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     s16 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
     void *GetPanelObject();
     void *temp_r4;
@@ -19,7 +19,7 @@ void func_ov007_02219ae8(void *arg0) {
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < 4) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov007_02219b38(void *arg0) {
@@ -39,7 +39,7 @@ void func_ov007_02219b64(void *arg0) {
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < 4) {
         return;
     }
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {

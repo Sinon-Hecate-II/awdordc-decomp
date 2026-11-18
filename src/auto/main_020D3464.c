@@ -254,7 +254,7 @@ void func_020d3a3c(void) {
     M2C_UNK UpdateMapMode();
     M2C_UNK func_0208b5a8();
     M2C_UNK func_02081fec();
-    void func_01ffa3dc(void *, s32);
+    void CreateSpriteFromClass(void *, s32);
     extern void **gCurrentMap;
     extern char data_0212ba7c[];
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
@@ -266,7 +266,7 @@ void func_020d3a3c(void) {
     }
     func_02081fec();
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 25;
-    func_01ffa3dc(data_0212ba7c, 7);
+    CreateSpriteFromClass(data_0212ba7c, 7);
 }
 
 #pragma optimization_level 2
@@ -281,10 +281,10 @@ void func_020d3aa4(void *arg0) {
 }
 #pragma optimization_level reset
 void func_020d3ae4(void) {
-    void func_01ffa3dc(void *, s32);
+    void CreateSpriteFromClass(void *, s32);
     extern void **gCurrentMap;
     extern char data_0212b9ac[];
-    func_01ffa3dc(data_0212b9ac, 7);
+    CreateSpriteFromClass(data_0212b9ac, 7);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 26;
 }
 
@@ -623,14 +623,14 @@ s32 IsCpuOnlyBattle(void) {
 
 void func_020d4110(void) {
     M2C_UNK ResolvePropertyCountVictory();
-    void func_01ffa3dc(void *, s32);
+    void CreateSpriteFromClass(void *, s32);
     extern M2C_UNK gMapData;
     extern char data_0212ba3c[];
     if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
         ResolvePropertyCountVictory();
         return;
     }
-    func_01ffa3dc(data_0212ba3c, 7);
+    CreateSpriteFromClass(data_0212ba3c, 7);
 }
 
 void func_020d4144(void) {

@@ -159,7 +159,7 @@ void func_ov000_02173f78(void *arg0) {
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_02080c50(M2C_UNK *, s32);
+    M2C_UNK LoadFileToAddress(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
@@ -172,7 +172,7 @@ void func_ov000_02173f78(void *arg0) {
     s32 func_020a7278();
     s32 func_020a7290();
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020ad150(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreateScreenTransitions(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK func_020af19c(M2C_UNK, M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
@@ -275,7 +275,7 @@ register s32 temp_r9;
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
     func_020a9a30(1, 0, 2, tiles + 0x1180);
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ec8), (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x1400);
-    func_02080c50(&data_ov000_021b8ed4, (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x2800);
+    LoadFileToAddress(&data_ov000_021b8ed4, (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x2800);
     temp_r5 = func_020a7290() << 5;
     temp_r4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0xE0;
     tiles = func_020a7278();
@@ -295,7 +295,7 @@ register s32 temp_r9;
     LoadFileToSpriteBuffer(&data_ov000_021b8f3c, 0x3C0, 0x20);
     LoadFileToSpriteBuffer(&data_ov000_021b8f4c, 0x3E0, 0x20);
     gCur3DSpriteEngine = sp4;
-    func_020ad150(0, 0x10, 1, 7);
+    CreateScreenTransitions(0, 0x10, 1, 7);
 }
 void func_ov000_021743ec(void) {
 

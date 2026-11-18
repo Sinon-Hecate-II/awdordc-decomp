@@ -7,7 +7,7 @@ typedef struct { u8 v[2]; } BytePair;
 typedef struct { u8 bytes[256]; s32 count; } NetworkFieldList;
 extern s32 gLocalIpCount;
 extern u8 gLocalIps[5][4];
-extern u8 data_020ffa44[16];
+extern u8 gBroadcastAddressText[16];
 extern u8 data_020eac30[8];
 
 void func_0205e95c(void *arg0) {
@@ -110,7 +110,13 @@ gLocalIpCount=++i;
 }while(i<5);
 }
 #pragma opt_common_subs reset
-s32 ResolveHostAddress(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&StringCompare(a,data_020ffa44)){p=ghiResolveHostname(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
+/* Fills a socket address (family AF_INET, `port` byte-swapped to network order,
+ * IPv4 address) for `hostname`: a NULL name means address 0 (INADDR_ANY), dotted
+ * numeric text is parsed by ghiInetAddr, anything else goes through the blocking
+ * resolver ghiResolveHostname - except the broadcast address "255.255.255.255",
+ * which is kept as-is instead of being resolved.  Optionally hands back the
+ * resolver's host record.  Returns 0 when the name does not resolve. */
+s32 ResolveHostAddress(s32 hostname,s32 port,void *addr,void **hostEntryOut){s32 ghiInetAddr(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 hostPort=port;void *hostEntry=0;M2C_FIELD(addr,u8 *,1)=2;M2C_FIELD(addr,u16 *,2)=((u8)(hostPort>>8))|((hostPort<<8)&0xff00);if(!hostname)M2C_FIELD(addr,s32 *,4)=0;else M2C_FIELD(addr,s32 *,4)=ghiInetAddr(hostname);if(M2C_FIELD(addr,s32 *,4)==-1&&StringCompare(hostname,gBroadcastAddressText)){hostEntry=ghiResolveHostname(hostname);if(!hostEntry)return 0;M2C_FIELD(addr,s32 *,4)=**M2C_FIELD(hostEntry,s32 ***,12);}if(hostEntryOut)*hostEntryOut=hostEntry;return 1;}
 
 void SwapBytes(u8 *arg0, u8 *arg1) {
     u8 temp_r3;

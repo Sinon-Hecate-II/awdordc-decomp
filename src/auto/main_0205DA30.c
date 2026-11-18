@@ -85,11 +85,11 @@ void NatNeg_SendConnectPong(void *peer) {
 #pragma opt_propagation reset
 s32 func_0205dd98(M2C_UNK arg0) {
     void *ghiResolveHostname(M2C_UNK);
-    s32 func_020498e4();
+    s32 ghiInetAddr();
     s32 temp_r0_2;
     void *temp_r0;
 
-    temp_r0_2 = func_020498e4();
+    temp_r0_2 = ghiInetAddr();
     if (temp_r0_2 != -1) {
         return temp_r0_2;
     }

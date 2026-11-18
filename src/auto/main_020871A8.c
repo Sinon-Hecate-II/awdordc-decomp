@@ -166,21 +166,24 @@ void DrawTexturedQuadUVFlip(s32 x, s32 y, s32 z, s32 w, s32 h, s32 u0, s32 v0, s
     }
 }
 
-void func_02087c6c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u16 f) {
- s32 x,y,z; s16 b=(s16)arg1,a=(s16)arg0,d=(s16)arg3,e=(s16)arg4,c=(s16)arg2;
+/* Draws a 1-pixel line from (x0, y0) to (x1, y1) at depth z in one GX colour.
+ * The DS has no line primitive, so it is sent as the degenerate triangle
+ * (start, end, start); the current vertex colour is left white afterwards. */
+void DrawGxLine(s32 x0,s32 y0,s32 x1,s32 y1,s32 z,u16 color) {
+ s32 start,end,depth; s16 yb=(s16)y0,xa=(s16)x0,yd=(s16)y1,ze=(s16)z,xc=(s16)x1;
  
- *(volatile u32 *)0x4000500=0;
- *(volatile u32 *)0x4000480=f;
- x=(u16)a|((u32)(u16)b<<16); z=(u16)e;
- *(volatile u32 *)0x400048c=x;
- *(volatile u32 *)0x400048c=z;
- y=(u16)c|((u32)(u16)d<<16);
- *(volatile u32 *)0x400048c=y;
- *(volatile u32 *)0x400048c=z;
- *(volatile u32 *)0x400048c=x;
- *(volatile u32 *)0x400048c=z;
- *(volatile u32 *)0x4000504=0;
- *(volatile u32 *)0x4000480=0x7fff;
+ REG_GX_BEGIN_VTXS=GX_PRIM_TRIANGLES;
+ REG_GX_COLOR=color;
+ start=(u16)xa|((u32)(u16)yb<<16); depth=(u16)ze;
+ REG_GX_VTX_16=start;
+ REG_GX_VTX_16=depth;
+ end=(u16)xc|((u32)(u16)yd<<16);
+ REG_GX_VTX_16=end;
+ REG_GX_VTX_16=depth;
+ REG_GX_VTX_16=start;
+ REG_GX_VTX_16=depth;
+ REG_GX_END_VTXS=0;
+ REG_GX_COLOR=GX_RGB_WHITE;
 }
 
 #pragma opt_strength_reduction off

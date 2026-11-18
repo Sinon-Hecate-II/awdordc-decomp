@@ -361,7 +361,7 @@ void func_020debf4(void *self){void MenuSpriteUpdate(void*);
 void *CreateTextLayer(void*);
 void RenderTextLayerMessage(void*,int,int,u32);
 void DisableMapConfirm(void);
-void func_01ffa6fc(void*);
+void Sprite_ResumeAnimation(void*);
 void PlaySoundEffect(u32);
 u32 GetActivePlayerMask(void);
 u32 CountBits(void);
@@ -418,7 +418,7 @@ M2C_FIELD(p,u32 *,0x58)|=0x1000;
 
 }gCur3DSpriteEngine=old;
 DisableMapConfirm();
-func_01ffa6fc(self);
+Sprite_ResumeAnimation(self);
 return;
 }
 else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(FindTextLayer())func_0208af20();
@@ -439,7 +439,7 @@ M2C_FIELD(p,u32 *,0x58)|=0x1000;
 
 }gCur3DSpriteEngine=old;
 DisableMapConfirm();
-func_01ffa6fc(self);
+Sprite_ResumeAnimation(self);
 return;
 }}
 p=M2C_FIELD(self,void * *,0x58);
@@ -450,7 +450,7 @@ if(can||(keys&2)){
 if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,frame+1,12);
 }
 DisableMapConfirm();
-func_01ffa6fc(self);
+Sprite_ResumeAnimation(self);
 PlaySoundEffect(0x1000f);
 return;
 }}
@@ -491,7 +491,7 @@ func_ov009_02224c34(0);
 func_ov009_02223fbc();
 EnableMapConfirm();
 ResetPlayerMask();
-func_01ffa6fc(self);
+Sprite_ResumeAnimation(self);
 PlaySoundEffect(0x1000e);return;
 
 }else{
@@ -516,7 +516,7 @@ func_ov009_022258a8(self);
 func_ov009_02223fbc();
 EnableMapConfirm();
 ResetPlayerMask();
-func_01ffa6fc(self);
+Sprite_ResumeAnimation(self);
 PlaySoundEffect(0x1000e);
 
 }

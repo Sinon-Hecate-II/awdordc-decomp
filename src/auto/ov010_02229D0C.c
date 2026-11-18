@@ -259,10 +259,10 @@ void ReportNetErrorToCallback(void *self) {
 }
 
 void func_ov010_0222a20c(s32 arg0) {
-    void *func_01ffa3dc(void *);
+    void *CreateSpriteFromClass(void *);
     extern M2C_UNK data_ov010_0222c544, data_ov010_0222c900;
     void *temp_r0;
-    temp_r0 = func_01ffa3dc(&data_ov010_0222c544);
+    temp_r0 = CreateSpriteFromClass(&data_ov010_0222c544);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, void **, 0) = &data_ov010_0222c900;
         M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
@@ -270,13 +270,13 @@ void func_ov010_0222a20c(s32 arg0) {
 }
 
 void func_ov010_0222a238(void) {
-    M2C_UNK func_01ffaa5c();
+    M2C_UNK IncrementSpriteChildCount();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov010_0222c544;
     if (FindObjectByClass(&data_ov010_0222c544) == 0) {
         return;
     }
-    func_01ffaa5c();
+    IncrementSpriteChildCount();
 }
 
 void func_ov010_0222a258(void) {
@@ -313,9 +313,9 @@ u8 func_ov010_0222a298(void) {
 
 void func_ov010_0222a2b4(void *arg0) {
     s32 GetScreenFlag(M2C_UNK);
-    M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
-        func_020ad348(2, 8, 0, arg0);
+        StartScreenFadeChildren(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
         return;
@@ -323,7 +323,7 @@ void func_ov010_0222a2b4(void *arg0) {
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    func_020ad348(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, arg0);
 }
 
 #pragma opt_common_subs off
@@ -389,15 +389,15 @@ default:func_ov010_0222a238();return;}}
 void func_ov010_0222a694(void *arg0){u32 v;if(!M2C_FIELD(arg0,s32 *,0x38))return;v=M2C_FIELD(arg0,u32 *,0x40);switch(v){case 0:case 1:case 2:func_ov010_0222a258();return;default:func_ov010_0222a258();return;case 3:case 4:case 5:case 6:case 7:return;}}
 
 void func_ov010_0222a6e4(void *arg0) {
-    M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        func_020ad2a0(2, 8, 0, arg0);
+        CreateScreenTransitionChildren(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    func_020ad2a0(2, 8, 1, arg0);
+    CreateScreenTransitionChildren(2, 8, 1, arg0);
     M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
 }
 
@@ -431,9 +431,9 @@ void func_ov010_0222a808(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK da
 
 void func_ov010_0222a880(void *arg0) {
     s32 GetScreenFlag(M2C_UNK);
-    M2C_UNK func_020ad348(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
-        func_020ad348(2, 8, 0, arg0);
+        StartScreenFadeChildren(2, 8, 0, arg0);
     }
     if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
         return;
@@ -441,7 +441,7 @@ void func_ov010_0222a880(void *arg0) {
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    func_020ad348(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, arg0);
 }
 
 void func_ov010_0222a8ec(void *a){M2C_UNK func_ov010_0222ba94(s32,u16,void *);if(!M2C_FIELD(a,volatile s32 *,0x38))return;func_ov010_0222a808(M2C_FIELD(a,s8 *,0x35),M2C_FIELD(a,u16 *,0x36),M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,u32 *,0x40),a);
@@ -452,15 +452,15 @@ void func_ov010_0222a96c(void) {
 }
 
 void func_ov010_0222a970(void *arg0) {
-    M2C_UNK func_020ad2a0(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        func_020ad2a0(2, 8, 0, arg0);
+        CreateScreenTransitionChildren(2, 8, 0, arg0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    func_020ad2a0(2, 8, 1, arg0);
+    CreateScreenTransitionChildren(2, 8, 1, arg0);
     M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
 }
 

@@ -179,7 +179,7 @@ if((u8)(unitId-11)==1 && !IsUnitAvailable(8)){type=MENU_ENTRY_INFO;value=5;}
 }
 switch(type){
 case MENU_ENTRY_UNIT:menu[MENU_ACTION]=49;Ov003_SetRowAnimation(menu,value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
-case MENU_ENTRY_INFO:EnableMapConfirm();func_020d885c(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ffa6fc(menu);PlaySoundEffect(0x1000e);break;
+case MENU_ENTRY_INFO:EnableMapConfirm();func_020d885c(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);break;
 case MENU_ENTRY_SUBMENU:switch(desc[MENU_DESC_VALUE]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(menu,1);func_020b4db0(value,menu);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(menu,3);func_020b4e10(menu);break;}break;
 }
 }
@@ -193,11 +193,11 @@ void Ov003_ConfirmRowValue(void *arg0, int arg1) {
  menu[MENU_FLAGS]&=~MENU_FLAG_PENDING;
  row=*(u8 **)(menu+MENU_SELECTION); rowValue=row[MENU_ROW_VALUE];
  PlaySoundEffect(0x1000f);   /* SOUND_MENU_CANCEL */
- if((u8)((((unsigned int)menu[MENU_MODE]<<24)>>28)==MENU_MODE_FIRST) || (u8)((((unsigned int)menu[MENU_MODE]<<24)>>28)==MENU_MODE_SECOND)){menu[MENU_SELECT_MODE]=1;DisableMapConfirm();func_01ffa6fc(menu);}
+ if((u8)((((unsigned int)menu[MENU_MODE]<<24)>>28)==MENU_MODE_FIRST) || (u8)((((unsigned int)menu[MENU_MODE]<<24)>>28)==MENU_MODE_SECOND)){menu[MENU_SELECT_MODE]=1;DisableMapConfirm();Sprite_ResumeAnimation(menu);}
  menu[MENU_FLAGS]&=~MENU_FLAG_ANIM;
  row=*(u8 **)(menu+MENU_SELECTION);row[row[MENU_ROW_COUNT]]=arg1;
  if(rowValue!=16){menu[MENU_ACTION]=30;Ov003_SetRowAnimation(menu,rowValue);Ov003_RefreshListRowAnimations(menu,5,MENU_MODE_IDLE);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
- else {DisableMapConfirm();func_01ffa6fc(menu);}
+ else {DisableMapConfirm();Sprite_ResumeAnimation(menu);}
 }
 
 void RequestMenuMode(void *arg0, s32 arg1) {

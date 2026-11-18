@@ -27,7 +27,7 @@ case 2:UpdateSplitTransition(M2C_FIELD(arg0,u16 *,0x3a)-M2C_FIELD(arg0,u16 *,0x3
 }
 if(M2C_FIELD(arg0,u16 *,0x38)>=M2C_FIELD(arg0,u16 *,0x3a)){
 ApplyScreenMode((u8)M2C_FIELD(arg0,s32 *,0x34));
-func_01ffa6fc(arg0);
+Sprite_ResumeAnimation(arg0);
 }
 next: i++;
 }while(i<2);
@@ -37,10 +37,10 @@ if(M2C_FIELD(arg0,s32 *,0x18)==1)func_020ac598(M2C_FIELD(arg0,u8 *,0x3c));
 
 s32 func_020ac924(M2C_UNK arg0, s32 arg1) {
  s32 func_01ffa860(M2C_UNK *, M2C_UNK);
- extern M2C_UNK data_02127360, data_02127390;
+ extern M2C_UNK gScreenTransitionClass, gScreenFadeClass;
  switch(arg1) {
- case 0: return func_01ffa860(&data_02127360,arg0);
- case 1: return func_01ffa860(&data_02127390,arg0);
+ case 0: return func_01ffa860(&gScreenTransitionClass,arg0);
+ case 1: return func_01ffa860(&gScreenFadeClass,arg0);
  default: return 0;
  }
 }
@@ -218,10 +218,10 @@ void func_020ace54(void) {
  * transition is instant (length 0, which applies the mode at once), create its
  * sprite on `layer` there, animating `mode` for `length` frames. */
 void CreateScreenTransitionSprite(s32 mode, s16 length, s32 layer) {
- void *func_01ffa3dc(M2C_UNK *, s32);
+ void *CreateSpriteFromClass(M2C_UNK *, s32);
  s32 GetScreenFlag(u8);
  void SetScreenMode(s32);
- extern M2C_UNK data_02127360;
+ extern M2C_UNK gScreenTransitionClass;
  extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
  s32 spriteLayer;
  u8 currentIsPrimary;
@@ -238,7 +238,7 @@ void CreateScreenTransitionSprite(s32 mode, s16 length, s32 layer) {
  }
  if(GetScreenFlag(screen)==0) return;
  DeleteScreenTransitionSprites(screen);
- sprite=func_01ffa3dc(&data_02127360,spriteLayer);
+ sprite=CreateSpriteFromClass(&gScreenTransitionClass,spriteLayer);
  M2C_FIELD(sprite,s16 *,DS3D_SPRITE_Z)=screen;
  M2C_FIELD(sprite,u8 *,TRANSITION_SPRITE_SCREEN)=screen;
  M2C_FIELD(sprite,s16 *,TRANSITION_SPRITE_LENGTH)=length;
@@ -252,10 +252,10 @@ void CreateScreenTransitionSprite(s32 mode, s16 length, s32 layer) {
  * instead, and nothing is created when the screen is already set up for the
  * other kind of transition. */
 void StartScreenFade(s32 mode, s16 duration, s32 createMode) {
-    void *func_01ffa3dc(M2C_UNK *, s32);
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
     s32 GetScreenFlag(u8);
     M2C_UNK ApplyScreenMode(M2C_UNK);
-    extern M2C_UNK data_02127390;
+    extern M2C_UNK gScreenFadeClass;
     extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
     s32 variant;
     u8 isPrimary;
@@ -273,7 +273,7 @@ void StartScreenFade(s32 mode, s16 duration, s32 createMode) {
     }
     if (GetScreenFlag(screen) == 1) return;
     DeleteScreenTransitionSprites(screen);
-    fade = func_01ffa3dc(&data_02127390, variant);
+    fade = CreateSpriteFromClass(&gScreenFadeClass, variant);
     M2C_FIELD(fade, s16 *, DS3D_SPRITE_Z) = screen;
     fade->screen = screen;
     fade->length = duration;
@@ -281,178 +281,207 @@ void StartScreenFade(s32 mode, s16 duration, s32 createMode) {
     fade->resource = 0;
 }
 
-void func_020ad000(s32 arg0, s16 arg1, s32 arg2) {
-void *func_01ffa3dc(M2C_UNK *, s32);
+/* Creates a screen-change transition sprite on the screen that is not active,
+ * attached as a child of `parent`: the parent's child count is incremented so it
+ * is not updated and outlives the transition (the transition's destructor
+ * releases it again).  A zero length applies the mode at once instead, and
+ * nothing is created when the screen is already set up for the other kind of
+ * transition. */
+void CreateScreenTransitionChild(s32 mode, s16 length, s32 parent) {
+void *CreateSpriteFromClass(M2C_UNK *, s32);
 s32 GetScreenFlag(u8);
-void SetScreenMode(M2C_UNK);
-M2C_UNK func_01ffaa5c(s32);
-extern M2C_UNK data_02127360;
+void SetScreenMode(s32);
+M2C_UNK IncrementSpriteChildCount(s32);
+extern M2C_UNK gScreenTransitionClass;
 extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
-u8 var_r0, var_r0_2;
-void *temp_r0;
-if(gCur3DSpriteEngine == g3DSpriteEngineMain) var_r0=1; else var_r0=0;
-if(var_r0 != 1) var_r0_2=1; else var_r0_2=0;
-if(arg1==0) {
-DeleteScreenTransitionSprites(var_r0_2);
-SetScreenMode(arg0);
+u8 isPrimary, screen;
+void *sprite;
+if(gCur3DSpriteEngine == g3DSpriteEngineMain) isPrimary=1; else isPrimary=0;
+if(isPrimary != 1) screen=1; else screen=0;
+if(length==0) {
+DeleteScreenTransitionSprites(screen);
+SetScreenMode(mode);
 return;
 }
-if(GetScreenFlag(var_r0_2)==0) return;
-DeleteScreenTransitionSprites(var_r0_2);
-temp_r0=func_01ffa3dc(&data_02127360,1);
-M2C_FIELD(temp_r0,s16 *,0x2e)=var_r0_2;
-M2C_FIELD(temp_r0,u8 *,0x3c)=var_r0_2;
-M2C_FIELD(temp_r0,s16 *,0x3a)=arg1;
-M2C_FIELD(temp_r0,s32 *,0x34)=arg0;
-M2C_FIELD(temp_r0,s32 *,0x40)=arg2;
-func_01ffaa5c(arg2);
+if(GetScreenFlag(screen)==0) return;
+DeleteScreenTransitionSprites(screen);
+sprite=CreateSpriteFromClass(&gScreenTransitionClass,1);
+M2C_FIELD(sprite,s16 *,DS3D_SPRITE_Z)=screen;
+M2C_FIELD(sprite,u8 *,TRANSITION_SPRITE_SCREEN)=screen;
+M2C_FIELD(sprite,s16 *,TRANSITION_SPRITE_LENGTH)=length;
+M2C_FIELD(sprite,s32 *,TRANSITION_SPRITE_MODE)=mode;
+M2C_FIELD(sprite,s32 *,TRANSITION_SPRITE_PARENT)=parent;
+IncrementSpriteChildCount(parent);
 }
 
-void func_020ad0a8(s32 arg0, s16 arg1, s32 arg2) {
-void *func_01ffa3dc(M2C_UNK *, s32);
+/* Starts a screen fade attached to a parent sprite (it counts as one of the
+ * parent's children, so the parent waits for it): on the screen the active
+ * 3D-sprite engine does NOT draw to, fades `mode` over `duration` frames.  A zero
+ * duration applies the mode at once instead, and nothing is created when the
+ * screen is already set up for a fade. */
+void StartScreenFadeChild(s32 mode, s16 duration, s32 parent) {
+void *CreateSpriteFromClass(M2C_UNK *, s32);
 s32 GetScreenFlag(u8);
 M2C_UNK ApplyScreenMode(M2C_UNK);
-M2C_UNK func_01ffaa5c(s32);
-extern M2C_UNK data_02127390;
+M2C_UNK IncrementSpriteChildCount(s32);
+extern M2C_UNK gScreenFadeClass;
 extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
-u8 var_r0, var_r0_2;
-void *temp_r0;
-if(gCur3DSpriteEngine == g3DSpriteEngineMain) var_r0=1; else var_r0=0;
-if(var_r0 != 1) var_r0_2=1; else var_r0_2=0;
-if(arg1==0) {
-DeleteScreenTransitionSprites(var_r0_2);
-ApplyScreenMode(arg0);
+u8 isPrimary, screen;
+void *fade;
+if(gCur3DSpriteEngine == g3DSpriteEngineMain) isPrimary=1; else isPrimary=0;
+if(isPrimary != 1) screen=1; else screen=0;
+if(duration==0) {
+DeleteScreenTransitionSprites(screen);
+ApplyScreenMode(mode);
 return;
 }
-if(GetScreenFlag(var_r0_2)==1) return;
-DeleteScreenTransitionSprites(var_r0_2);
-temp_r0=func_01ffa3dc(&data_02127390,1);
-M2C_FIELD(temp_r0,s16 *,0x2e)=var_r0_2;
-M2C_FIELD(temp_r0,u8 *,0x3c)=var_r0_2;
-M2C_FIELD(temp_r0,s16 *,0x3a)=arg1;
-M2C_FIELD(temp_r0,s32 *,0x34)=arg0;
-M2C_FIELD(temp_r0,s32 *,0x40)=arg2;
-func_01ffaa5c(arg2);
+if(GetScreenFlag(screen)==1) return;
+DeleteScreenTransitionSprites(screen);
+fade=CreateSpriteFromClass(&gScreenFadeClass,1);
+M2C_FIELD(fade,s16 *,DS3D_SPRITE_Z)=screen;
+M2C_FIELD(fade,u8 *,TRANSITION_SPRITE_SCREEN)=screen;
+M2C_FIELD(fade,s16 *,TRANSITION_SPRITE_LENGTH)=duration;
+M2C_FIELD(fade,s32 *,TRANSITION_SPRITE_MODE)=mode;
+M2C_FIELD(fade,s32 *,TRANSITION_SPRITE_PARENT)=parent;
+IncrementSpriteChildCount(parent);
 }
 
-void func_020ad150(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
+/* Starts a screen transition on the main screen, the sub screen, both screens
+ * or whichever screen is active: switches gCur3DSpriteEngine to each engine in
+ * turn and creates the transition sprite on the selected ones, then puts the
+ * previous engine back. */
+void CreateScreenTransitions(s32 mode, s16 length, s32 target, s32 variant) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
-    s32 temp_r5;
-    s32 var_r1;
-    s32 var_r6;
+    s32 savedEngine;
+    s32 engine;
+    s32 screen;
 
-    temp_r5 = gCur3DSpriteEngine;
-    var_r6 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r6 == 0) {
-            var_r1 = g3DSpriteEngineMain;
+        if (screen == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r1 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r1;
-        if (((arg2 != 0) || (var_r1 == g3DSpriteEngineMain)) &&
-            ((arg2 != 1) || (var_r1 == g3DSpriteEngineSub)) &&
-            ((arg2 != 3) || (var_r1 == temp_r5))) {
-            CreateScreenTransitionSprite(arg0, arg1, arg3);
+        gCur3DSpriteEngine = engine;
+        if (((target != DS3D_TARGET_MAIN) || (engine == g3DSpriteEngineMain)) &&
+            ((target != DS3D_TARGET_SUB) || (engine == g3DSpriteEngineSub)) &&
+            ((target != DS3D_TARGET_ACTIVE) || (engine == savedEngine))) {
+            CreateScreenTransitionSprite(mode, length, variant);
         }
-        var_r6 += 1;
-    } while (var_r6 < 2);
-    gCur3DSpriteEngine = temp_r5;
+        screen += 1;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020ad1f8(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
+/* Starts a screen fade on the main screen, the sub screen, both screens or
+ * whichever screen is active: switches gCur3DSpriteEngine to each engine in
+ * turn and creates the fade on the selected ones, then puts the previous engine
+ * back. */
+void StartScreenFades(s32 mode, s16 length, s32 target, s32 variant) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
-    s32 temp_r5;
-    s32 var_r1;
-    s32 var_r6;
+    s32 savedEngine;
+    s32 engine;
+    s32 screen;
 
-    temp_r5 = gCur3DSpriteEngine;
-    var_r6 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r6 == 0) {
-            var_r1 = g3DSpriteEngineMain;
+        if (screen == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r1 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r1;
-        if (((arg2 != 0) || (var_r1 == g3DSpriteEngineMain)) &&
-            ((arg2 != 1) || (var_r1 == g3DSpriteEngineSub)) &&
-            ((arg2 != 3) || (var_r1 == temp_r5))) {
-            StartScreenFade(arg0, arg1, arg3);
+        gCur3DSpriteEngine = engine;
+        if (((target != DS3D_TARGET_MAIN) || (engine == g3DSpriteEngineMain)) &&
+            ((target != DS3D_TARGET_SUB) || (engine == g3DSpriteEngineSub)) &&
+            ((target != DS3D_TARGET_ACTIVE) || (engine == savedEngine))) {
+            StartScreenFade(mode, length, variant);
         }
-        var_r6 += 1;
-    } while (var_r6 < 2);
-    gCur3DSpriteEngine = temp_r5;
+        screen += 1;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020ad2a0(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
+/* Creates a screen transition on the main screen, the sub screen, both screens
+ * or whichever screen is active, each one attached as a child of `parent`
+ * (unlike CreateScreenTransitions, the transition follows that sprite): switches
+ * gCur3DSpriteEngine to each engine in turn and creates the transition sprite on
+ * the selected ones, then puts the previous engine back. */
+void CreateScreenTransitionChildren(s32 mode, s16 length, s32 target, s32 parent) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
-    s32 temp_r5;
-    s32 var_r1;
-    s32 var_r6;
+    s32 savedEngine;
+    s32 engine;
+    s32 screen;
 
-    temp_r5 = gCur3DSpriteEngine;
-    var_r6 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r6 == 0) {
-            var_r1 = g3DSpriteEngineMain;
+        if (screen == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r1 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r1;
-        if (((arg2 != 0) || (var_r1 == g3DSpriteEngineMain)) &&
-            ((arg2 != 1) || (var_r1 == g3DSpriteEngineSub)) &&
-            ((arg2 != 3) || (var_r1 == temp_r5))) {
-            func_020ad000(arg0, arg1, arg3);
+        gCur3DSpriteEngine = engine;
+        if (((target != DS3D_TARGET_MAIN) || (engine == g3DSpriteEngineMain)) &&
+            ((target != DS3D_TARGET_SUB) || (engine == g3DSpriteEngineSub)) &&
+            ((target != DS3D_TARGET_ACTIVE) || (engine == savedEngine))) {
+            CreateScreenTransitionChild(mode, length, parent);
         }
-        var_r6 += 1;
-    } while (var_r6 < 2);
-    gCur3DSpriteEngine = temp_r5;
+        screen += 1;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020ad348(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
+/* Starts a screen fade on the main screen, the sub screen, both screens or
+ * whichever screen is active, each one attached as a child of `parent` (unlike
+ * StartScreenFades, the fade follows that sprite): switches gCur3DSpriteEngine to
+ * each engine in turn and creates the fade on the selected ones, then puts the
+ * previous engine back. */
+void StartScreenFadeChildren(s32 mode, s16 length, s32 target, s32 parent) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
-    s32 temp_r5;
-    s32 var_r1;
-    s32 var_r6;
+    s32 savedEngine;
+    s32 engine;
+    s32 screen;
 
-    temp_r5 = gCur3DSpriteEngine;
-    var_r6 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r6 == 0) {
-            var_r1 = g3DSpriteEngineMain;
+        if (screen == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r1 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r1;
-        if (((arg2 != 0) || (var_r1 == g3DSpriteEngineMain)) &&
-            ((arg2 != 1) || (var_r1 == g3DSpriteEngineSub)) &&
-            ((arg2 != 3) || (var_r1 == temp_r5))) {
-            func_020ad0a8(arg0, arg1, arg3);
+        gCur3DSpriteEngine = engine;
+        if (((target != DS3D_TARGET_MAIN) || (engine == g3DSpriteEngineMain)) &&
+            ((target != DS3D_TARGET_SUB) || (engine == g3DSpriteEngineSub)) &&
+            ((target != DS3D_TARGET_ACTIVE) || (engine == savedEngine))) {
+            StartScreenFadeChild(mode, length, parent);
         }
-        var_r6 += 1;
-    } while (var_r6 < 2);
-    gCur3DSpriteEngine = temp_r5;
+        screen += 1;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 u8 IsScreenFadeActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02127360;
-    extern M2C_UNK data_02127390;
+    extern M2C_UNK gScreenTransitionClass;
+    extern M2C_UNK gScreenFadeClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_02127360) != 0) {
+    if (FindObjectByClass(&gScreenTransitionClass) != 0) {
         return 1U;
     }
-    if (FindObjectByClass(&data_02127390) != 0) {
+    if (FindObjectByClass(&gScreenFadeClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

@@ -347,8 +347,129 @@ s32 ResolvePathEntry(void *request) {
     return 0;
 }
 
-void func_0200a780(void *arg0) { (void)arg0; }
-
+extern u8 gPathSeparator[];
+#pragma opt_propagation off
+s32 BuildFilePath(FSFileRequest *request) {
+    M2C_UNK InitFileRequest(M2C_UNK *);
+    FSArchive *archive = request->file;
+    PathEntry entry;
+    FSFileRequest dir;
+    u32 fileId, i, count, directory;
+    u32 remaining, prefix, nameLength;
+    u8 *out;
+    u32 isDirectory;
+    InitFileRequest((M2C_UNK *)&dir);
+    dir.file = request->file;
+    isDirectory = (request->flags & 0x20) ? 1 : 0;
+    if (isDirectory != 0) {
+        directory = M2C_FIELD(request, u16 *, 0x24);
+        fileId = 0x10000;
+        goto foundDirectory;
+    } else {
+        fileId = M2C_FIELD(request, u32 *, 0x20);
+        if (M2C_FIELD(request, u16 *, 0x38)) {
+            directory = M2C_FIELD(request, u16 *, 0x3a);
+            goto foundDirectory;
+        } else {
+            i = 0;
+            count = i;
+            directory = 0x10000;
+            do {
+                StartDirectoryRead(&dir, i);
+                if (i == 0) count = M2C_FIELD(&dir, u32 *, 0x2c);
+                M2C_FIELD(&dir, PathEntry **, 0x30) = &entry;
+                M2C_FIELD(&dir, u32 *, FS_REQ_DIR_SKIP) = 1;
+                while (ExecuteFileCommand(&dir, 3) == 0) {
+                    if (entry.kind == 0 && entry.block.b == fileId) {
+                        directory = M2C_FIELD(&dir, u16 *, 0x24);
+                        break;
+                    }
+                }
+                if (directory != 0x10000) goto foundDirectory;
+            } while (++i < count);
+        }
+    }
+foundDirectory:
+    if (directory == 0x10000) {
+        M2C_FIELD(request, u16 *, 0x38) = 0;
+        return 1;
+    }
+    if (!M2C_FIELD(request, u16 *, 0x38)) {
+        u32 id, parent, pathLength;
+        pathLength = 0;
+        id = archive->id;
+        if (id <= 0xff) pathLength += 1;
+        else if (id <= 0xff00) pathLength += 2;
+        else pathLength += 3;
+        pathLength += 2;
+        if (fileId != 0x10000) pathLength += entry.length;
+        parent = directory;
+        if (parent != 0) {
+            StartDirectoryRead(&dir, parent);
+            do {
+                StartDirectoryRead(&dir, M2C_FIELD(&dir, u32 *, 0x2c));
+                M2C_FIELD(&dir, PathEntry **, 0x30) = &entry;
+                M2C_FIELD(&dir, u32 *, FS_REQ_DIR_SKIP) = 1;
+                while (ExecuteFileCommand(&dir, 3) == 0) {
+                    if (entry.kind && M2C_FIELD(&entry, u16 *, 4) == parent) {
+                        pathLength += entry.length + 1;
+                        break;
+                    }
+                }
+                parent = M2C_FIELD(&dir, u16 *, 0x24);
+            } while (parent != 0);
+        }
+        M2C_FIELD(request, u16 *, 0x38) = pathLength + 1;
+        M2C_FIELD(request, u16 *, 0x3a) = directory;
+    }
+    out = M2C_FIELD(request, u8 **, 0x30);
+    if (out == 0) return 0;
+    remaining = M2C_FIELD(request, u16 *, 0x38);
+    if (M2C_FIELD(request, u32 *, 0x34) < remaining) return 1;
+    prefix = 0;
+    {
+        u32 id = archive->id;
+        if (id <= 0xff) nameLength = 1;
+        else if (id <= 0xff00) nameLength = 2;
+        else nameLength = 3;
+    }
+    MI_CpuCopy8((M2C_UNK)archive, (M2C_UNK)out, nameLength);
+    MI_CpuCopy8((M2C_UNK)gPathSeparator, (M2C_UNK)(out + (prefix + nameLength)), 2);
+    StartDirectoryRead(&dir, directory);
+    if (fileId != 0x10000) {
+        M2C_FIELD(&dir, PathEntry **, 0x30) = &entry;
+        M2C_FIELD(&dir, u32 *, FS_REQ_DIR_SKIP) = 0;
+        while (ExecuteFileCommand(&dir, 3) == 0) {
+            if (entry.kind == 0 && entry.block.b == fileId) break;
+        }
+        nameLength = entry.length + 1;
+        MI_CpuCopy8((M2C_UNK)entry.name, (M2C_UNK)(out + remaining - nameLength), nameLength);
+        remaining -= nameLength;
+    } else {
+        (out + remaining)[-1] = 0;
+        remaining--;
+    }
+    if (directory != 0) {
+        do {
+            StartDirectoryRead(&dir, M2C_FIELD(&dir, u32 *, 0x2c));
+            M2C_FIELD(&dir, PathEntry **, 0x30) = &entry;
+            M2C_FIELD(&dir, u32 *, FS_REQ_DIR_SKIP) = 0;
+            out[remaining - 1] = '/';
+            remaining--;
+            while (ExecuteFileCommand(&dir, 3) == 0) {
+                if (entry.kind && M2C_FIELD(&entry, u16 *, 4) == directory) {
+                    nameLength = entry.length;
+                    MI_CpuCopy8((M2C_UNK)entry.name, (M2C_UNK)(out + remaining - nameLength), nameLength);
+                    remaining -= nameLength;
+                    break;
+                }
+            }
+            directory = M2C_FIELD(&dir, u16 *, 0x24);
+        } while (directory != 0);
+    }
+    return 0;
+}
+#pragma opt_propagation reset
 s32 func_0200ab2c(void *p) {
 void *q=M2C_FIELD(p,void **,8); u32 n=M2C_FIELD(p,u32 *,0x34); u32 off=(n<<3); u32 out[2],in[2]; s32 r;
 if(off>=M2C_FIELD(q,u32 *,0x30)) return 1;

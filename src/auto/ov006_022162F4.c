@@ -233,12 +233,12 @@ void func_ov006_02216bb8(void) {
 }
 
 void func_ov006_02216bc4(void *arg0) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK UpdateSpriteAnimation(void *);
     void *ptr = M2C_FIELD(arg0, void **, 0x48);
     u8 equal = M2C_FIELD(ptr, u16 *, 2) == M2C_FIELD(ptr, s16 *, 0xC);
     if (equal) {
-        func_01ffa6fc(arg0);
+        Sprite_ResumeAnimation(arg0);
         return;
     }
     UpdateSpriteAnimation(ptr);
@@ -370,7 +370,7 @@ void *func_ov006_02216e0c(void *arg0) {
  return arg0;
 }
 
-u8 func_ov006_02216e6c(s32 arg0, s32 arg1, s32 arg2) {
+u8 IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
  s32 result;
  if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
  else result = 0;
@@ -407,9 +407,9 @@ u8 func_ov006_02216f10(void) {
 }
 
 void func_ov006_02216f30(void) {
-    u8 func_ov006_02216e6c(s32, s32, s32);
+    u8 IsValueInRange(s32, s32, s32);
     extern void **gCurrentMap;
-    func_ov006_02216e6c(M2C_FIELD(*gCurrentMap, s16 *, 0x5142), 0xE1, 0x1A9);
+    IsValueInRange(M2C_FIELD(*gCurrentMap, s16 *, 0x5142), 0xE1, 0x1A9);
 }
 
 void func_ov006_02216f5c(void *arg0) {
@@ -425,23 +425,28 @@ void func_ov006_02216f5c(void *arg0) {
  func_02085724(arg0+0x3c,M2C_FIELD(arg0+M2C_FIELD(arg0,u8 *,0x4c)*4,s32 *,0x3c),0x1068,arg0);
 }
 
-void func_ov006_02216fd0(void *arg0) {
- extern void **gCurrentMap;
- s32 Divide(s32,s32);
- s32 GetMapRecordBuffer();
- M2C_UNK LoadMapRecord(u16,s32);
- s32 func_020be120();
- M2C_UNK func_0208547c(s32,s32,void *);
- M2C_UNK func_0208559c(s32,s32,void *);
- u16 value=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
- u16 n=Divide(value-0xe1,0x32);
- if(!func_ov006_02216e6c((s16)value,0xe1,0x1a9)) return;
- if(M2C_FIELD(arg0,u8 *,0x4c)==n) {
- LoadMapRecord((u16)(value-n*0x32),GetMapRecordBuffer());
- func_0208547c(func_020be120(),0x6f8,arg0);
- return;
- }
- func_0208559c(func_020be120(),0x6f8,arg0);
+/* Syncs the battle map chosen in a link/online session among the players: the map
+ * id (gCurrentMap+0x5142, MAP_ID) is split into 4 blocks of 0x32 ids, one per
+ * player.  When the current id belongs to this player (setup+0x4c is the local
+ * player id) its map record is loaded and sent to the others; the other players
+ * receive it instead. */
+void SyncLinkBattleMap(void *setup) {
+extern void **gCurrentMap;
+s32 Divide(s32,s32);
+s32 GetMapRecordBuffer();
+M2C_UNK LoadMapRecord(u16,s32);
+s32 func_020be120();
+M2C_UNK func_0208547c(s32,s32,void *);
+M2C_UNK func_0208559c(s32,s32,void *);
+u16 mapId=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
+u16 slot=Divide(mapId-0xe1,0x32);
+if(!IsValueInRange((s16)mapId,0xe1,0x1a9)) return;
+if(M2C_FIELD(setup,u8 *,0x4c)==slot) {
+LoadMapRecord((u16)(mapId-slot*0x32),GetMapRecordBuffer());
+func_0208547c(func_020be120(),0x6f8,setup);
+return;
+}
+func_0208559c(func_020be120(),0x6f8,setup);
 }
 
 void func_ov006_02217078(void *arg0) {

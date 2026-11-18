@@ -8,7 +8,7 @@
 #pragma opt_strength_reduction off
 void func_ov005_02216518(u32 arg0){
 extern u16 *gKeyState;
-M2C_UNK PlaySoundEffect(s32);void func_020b21e0(void);void func_020b2268(void);void func_01ffa6fc(u32);
+M2C_UNK PlaySoundEffect(s32);void func_020b21e0(void);void func_020b2268(void);void Sprite_ResumeAnimation(u32);
 void RecordsMenu_HandlePick(s16);void func_ov005_022150d8(s16);void func_ov005_02215168(s16);s32 func_ov005_022140f8(s32);void RecordsMenu_ShuffleList(s32);void func_ov005_02214148(void);void func_ov005_022141cc(void);
 
 extern M2C_UNK gRecordsMenuState;
@@ -60,7 +60,7 @@ MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x17
 MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x17c));
 MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x180));
 MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x184));
-if(M2C_FIELD(gKeyState,u16 *,0)&2){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){func_02090248(15);M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=-1;RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));return;}if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x90)!=-1)return;PlaySoundEffect(0x1000f);func_020b21e0();func_020b2268();func_02090248(15);func_01ffa6fc(arg0);return;}
+if(M2C_FIELD(gKeyState,u16 *,0)&2){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){func_02090248(15);M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=-1;RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));return;}if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x90)!=-1)return;PlaySoundEffect(0x1000f);func_020b21e0();func_020b2268();func_02090248(15);Sprite_ResumeAnimation(arg0);return;}
 if(M2C_FIELD(gKeyState,u16 *,0)&4){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&1)M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&=~1;else M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)|=1;}
 if(M2C_FIELD(gKeyState,u16 *,0)&1)RecordsMenu_HandlePick((s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x94)));else {
 void *state; u16 keys=M2C_FIELD(gKeyState,u16 *,0); arg0=0; state=M2C_FIELD(&gRecordsMenuState,void **,8);
@@ -126,13 +126,13 @@ void func_ov005_022172a0(void) {
 }
 
 void func_ov005_022172d8(s16 arg0, s8 arg1) {
-void func_01ffa3dc(void *, s32);
+void CreateSpriteFromClass(void *, s32);
 s32 func_ov005_02215650(void);
 extern M2C_UNK gRecordsMenuState;
 extern M2C_UNK data_ov005_022204e0;
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x90) = arg0;
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s8 *, 0x8a) = arg1;
-func_01ffa3dc(&data_ov005_022204e0, func_ov005_02215650());
+CreateSpriteFromClass(&data_ov005_022204e0, func_ov005_02215650());
 }
 
 void SetOv005FileDirectory(void) {

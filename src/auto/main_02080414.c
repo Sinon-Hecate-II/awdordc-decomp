@@ -1,35 +1,36 @@
 /* 34 functions from 0x02080414 to 0x02081400 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "fs.h"
 
 void func_02080414(void *arg0) {
- M2C_UNK func_01ffa6fc(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
+ M2C_UNK Sprite_ResumeAnimation(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
  extern void *gCur3DSpriteEngine;
- if(M2C_FIELD(arg0,s16 *,0x6C)==0) {func_01ffa6fc(arg0);return;}
+ if(M2C_FIELD(arg0,s16 *,0x6C)==0) {Sprite_ResumeAnimation(arg0);return;}
  M2C_FIELD(arg0,s32 *,0x5C)++;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s8 *,0x50)=EaseInterpolate(0,0,16,M2C_FIELD(arg0,s32 *,0x5C),M2C_FIELD(arg0,s16 *,0x6C));
  if(M2C_FIELD(arg0,s32 *,0x5C)!=M2C_FIELD(arg0,s16 *,0x6C)) return;
- func_01ffa6fc(arg0);
+ Sprite_ResumeAnimation(arg0);
 }
 
 void func_02080498(void *arg0) {
- M2C_UNK func_01ffa6fc(void *);
+ M2C_UNK Sprite_ResumeAnimation(void *);
  s32 temp_r2;
- if(M2C_FIELD(arg0,s16 *,0x6E)==0) {func_01ffa6fc(arg0);return;}
+ if(M2C_FIELD(arg0,s16 *,0x6E)==0) {Sprite_ResumeAnimation(arg0);return;}
  temp_r2=M2C_FIELD(arg0,s32 *,0x60)+1;
  M2C_FIELD(arg0,s32 *,0x60)=temp_r2;
  if(temp_r2!=M2C_FIELD(arg0,s16 *,0x6E)) return;
- func_01ffa6fc(arg0);
+ Sprite_ResumeAnimation(arg0);
 }
 
 void func_020804d0(void *arg0) {
- M2C_UNK func_01ffa6fc(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
+ M2C_UNK Sprite_ResumeAnimation(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
  extern void *gCur3DSpriteEngine;
- if(M2C_FIELD(arg0,s16 *,0x70)==0) {func_01ffa6fc(arg0);return;}
+ if(M2C_FIELD(arg0,s16 *,0x70)==0) {Sprite_ResumeAnimation(arg0);return;}
  M2C_FIELD(arg0,s32 *,0x64)++;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s8 *,0x50)=EaseInterpolate(0,16,0,M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s16 *,0x70));
  if(M2C_FIELD(arg0,s32 *,0x64)!=M2C_FIELD(arg0,s16 *,0x70)) return;
- func_01ffa6fc(arg0);
+ Sprite_ResumeAnimation(arg0);
 }
 
 /* Moves the 3D sprite engine(s) selected by target to (x, y) scaled by scale
@@ -80,17 +81,17 @@ void func_0208068c(void *arg0) {
 }
 
 void func_020806b8(void *a) {
- M2C_UNK func_01ffa6fc(void *);
+ M2C_UNK Sprite_ResumeAnimation(void *);
  s16 (*p)[2]=M2C_FIELD(a,s16 (**)[2],0x54);
  if(p[M2C_FIELD(a,s32 *,0x5c)][0]==0x7fff) {
  M2C_FIELD(a,s32 *,0x5c)=0;
- if(M2C_FIELD(a,s16 *,0x4c)==-1){func_01ffa6fc(a);return;}
+ if(M2C_FIELD(a,s16 *,0x4c)==-1){Sprite_ResumeAnimation(a);return;}
  }
  Set3DSpriteOffset(M2C_FIELD(a,s16 *,0x50),M2C_FIELD(a,u16 *,0x52),p[M2C_FIELD(a,s32 *,0x5c)][0],p[M2C_FIELD(a,s32 *,0x5c)][1]);
  M2C_FIELD(a,s32 *,0x5c)++;
  M2C_FIELD(a,s32 *,0x60)++;
  if(M2C_FIELD(a,s32 *,0x60)!=M2C_FIELD(a,s16 *,0x4c))return;
- func_01ffa6fc(a);
+ Sprite_ResumeAnimation(a);
 }
 
 void func_02080750(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
@@ -99,10 +100,10 @@ void func_02080750(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 M2C_UNK func_02080774(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,s32 e) {
- void *func_01ffa3dc(M2C_UNK *,M2C_UNK);void *CreateSpriteObject(M2C_UNK *,s32);
+ void *CreateSpriteFromClass(M2C_UNK *,M2C_UNK);void *CreateSpriteObject(M2C_UNK *,s32);
  extern M2C_UNK data_02101cf8;extern void *data_02101cc4[];
  void *p;
- if(e)p=CreateSpriteObject(&data_02101cf8,e);else p=func_01ffa3dc(&data_02101cf8,6);
+ if(e)p=CreateSpriteObject(&data_02101cf8,e);else p=CreateSpriteFromClass(&data_02101cf8,6);
  M2C_FIELD(p,void **,0x54)=data_02101cc4[b];
  M2C_FIELD(p,s16 *,0x4c)=c;
  M2C_FIELD(p,s16 *,0x50)=a;
@@ -211,34 +212,37 @@ s32 func_02080c00(void *a) {
  n=buf[10]-buf[9];CloseFileRequest(buf);return n;
 }
 
-int func_02080c50(int arg0, int arg1) {
-    void *sp0[18];
-    int var_7;
-    int var_8;
-    int var_9;
+/* Reads the whole file at `path` into memory at `dest` in 0x2800-byte chunks and
+ * returns its size. Halts the system and returns 0 if the file cannot be opened
+ * or a read comes back short. */
+int LoadFileToAddress(void *path, void *dest) {
+    void *req[18];
+    int off;
+    int total;
+    int chunk;
 
-    InitFileRequest(sp0);
-    if (OpenFileRequest(sp0, arg0) == 0) {
+    InitFileRequest(req);
+    if (OpenFileRequest(req, path) == 0) {
         SystemHalt();
         return 0;
     }
-    var_8 = (int)sp0[10] - (int)sp0[9];
-    var_7 = 0;
-    if (var_8 != 0) {
+    total = (int)M2C_FIELD(req, u32 *, FS_REQ_FILE_END) - (int)M2C_FIELD(req, u32 *, FS_REQ_FILE_START);
+    off = 0;
+    if (total != 0) {
         do {
-            var_9 = var_8 - var_7;
-            if ((unsigned int)var_9 >= 0x2800) {
-                var_9 = 0x2800;
+            chunk = total - off;
+            if ((unsigned int)chunk >= 0x2800) {
+                chunk = 0x2800;
             }
-            if (FileRead(sp0, arg1 + var_7, var_9) != var_9) {
+            if (FileRead(req, (char *)dest + off, chunk) != chunk) {
                 SystemHalt();
                 return 0;
             }
-            var_7 += var_9;
-        } while (var_8 - var_7 != 0);
+            off += chunk;
+        } while (total - off != 0);
     }
-    CloseFileRequest(sp0);
-    return var_8;
+    CloseFileRequest(req);
+    return total;
 }
 
 /* Read the compressed file at `path` in 0x2000-byte chunks and decompress it to the

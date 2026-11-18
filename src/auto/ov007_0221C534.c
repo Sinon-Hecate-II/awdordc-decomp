@@ -44,9 +44,9 @@ SetMapCursorTargetTile((s16)viewX,(s16)viewY);func_0207b754(viewX,viewY);MapEdit
 }
 
 void func_ov007_0221c630(void) {
-    M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_02220178;
-    func_01ffa3dc(&data_ov007_02220178, 7);
+    CreateSpriteFromClass(&data_ov007_02220178, 7);
 }
 
 /* Prepare the map the editor opens on: a campaign map record is loaded with

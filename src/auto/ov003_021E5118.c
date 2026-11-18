@@ -288,12 +288,12 @@ void func_ov003_021e5c68(void *arg0) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    func_01ffa6fc(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 void func_ov003_021e5c8c(void) {
-    M2C_UNK func_01ffa6fc();
-    func_01ffa6fc();
+    M2C_UNK Sprite_ResumeAnimation();
+    Sprite_ResumeAnimation();
 }
 
 /* Draws the eight unit-category icons of the ov003 map-info screen in a

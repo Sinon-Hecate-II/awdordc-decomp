@@ -42,7 +42,7 @@ s32 FX_Div(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void ResetBattleMap(void);void func_020cf278(s32);void LoadBattleMap(s32);void func_ov003_021ff36c(void);
-s32 func_020a8958(s32);void SetSpriteAnimation(void *,s32);M2C_UNK func_01ffa6fc(void *);
+s32 func_020a8958(s32);void SetSpriteAnimation(void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
 switch(M2C_FIELD(state,u8 *,0x35)){
@@ -110,7 +110,7 @@ id=M2C_FIELD(entry,u8 *,7);
 ((Flags175 *)data_0215d8a8)[id].previous=((Flags175 *)data_0215d8a8)[id].current;
 if(M2C_FIELD(entry,u8 *,7)+161==186 && old==0)PlaySoundEffect(286);
 SetSpriteAnimation(state,3);return;
-default:func_01ffa6fc(state);return;
+default:Sprite_ResumeAnimation(state);return;
 }
 }
 #pragma opt_strength_reduction reset
@@ -191,7 +191,7 @@ void func_ov004_02217bb8(void *state) {
 
 /* Advances the zoom/pan interpolation one step and finalizes the transition. */
 void func_ov004_02217e50(void *state) {
-    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     u8 EaseInterpolate(M2C_UNK, s16, s16, u8, s32);
     u8 step;
 
@@ -208,7 +208,7 @@ void func_ov004_02217e50(void *state) {
     if ((s32) M2C_FIELD(state, u8 *, 0x36) < 0x10) {
         return;
     }
-    func_01ffa6fc(state);
+    Sprite_ResumeAnimation(state);
 }
 
 void func_ov004_02217f34(void) {
