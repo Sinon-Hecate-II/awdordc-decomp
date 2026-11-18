@@ -2,7 +2,7 @@
 #include "common.h"
 #include "gx.h"
 typedef struct { s32 x,y,z; } Vec02086dfc;
-extern const Vec02086dfc data_020f3578, data_020f3584;
+extern const Vec02086dfc gSpriteSceneCameraEye, gSpriteSceneCameraUp;
 extern void (*data_02168fe8)(void);
 extern u8 data_02157718[4];
 
@@ -353,7 +353,7 @@ u8 IsCampaignMapCleared(u32 arg0) {
     return (u8) (M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
-u8 func_02086980(u32 arg0) {
+u8 IsCampaignMapSaved(u32 arg0) {
     extern M2C_UNK data_021577ad;
     return (u8) (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
@@ -515,23 +515,27 @@ void Init3DRendering(void) {
     REG_GX_MTX_MODE = 2;
 }
 
-void func_02086dc8(void) {
+void SetDefault3DLightMaterial(void) {
     M2C_FIELD((void *)0x040004C8, s32 *, 0) = 0x1FF00000;
     M2C_FIELD((void *)0x040004C8, s32 *, 4) = 0x7FFF;
     M2C_FIELD((void *)0x040004C8, s32 *, -8) = 0x7FFFFFFF;
     M2C_FIELD((void *)0x040004C8, s32 *, -4) = 0x7FFF7FFF;
 }
 
-void func_02086dfc(void) {
+/* Set up the 3D engine for a flat sprite scene: clear its error state and set the
+ * default polygon attribute, place the look-at camera, set the default light and
+ * material, then start a new projection matrix and write a straight normal. */
+void SetupSprite3DScene(void) {
  void func_02003bd0(void);
  void func_0200402c(Vec02086dfc *,Vec02086dfc *,Vec02086dfc *,s32,s32);
- Vec02086dfc a=data_020f3578;
- Vec02086dfc c={0,0,0};
- Vec02086dfc b=data_020f3584;
- func_02003bd0();func_0200402c(&a,&b,&c,1,0);func_02086dc8();
- *(volatile u32 *)0x04000444=0;*(volatile u32 *)0x04000440=3;
- *(volatile u32 *)0x04000454=0;*(volatile u32 *)0x04000440=2;
- *(volatile u32 *)0x04000484=0x20000000;
+ void SetDefault3DLightMaterial(void);
+ Vec02086dfc eye=gSpriteSceneCameraEye;
+ Vec02086dfc center={0,0,0};
+ Vec02086dfc up=gSpriteSceneCameraUp;
+ func_02003bd0();func_0200402c(&eye,&up,&center,1,0);SetDefault3DLightMaterial();
+ REG_GX_MTX_PUSH=0;REG_GX_MTX_MODE=3;
+ REG_GX_MTX_IDENTITY=0;REG_GX_MTX_MODE=2;
+ REG_GX_NORMAL=0x20000000;
 }
 
 void func_02086e9c(void) {

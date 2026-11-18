@@ -18,7 +18,7 @@ void RunAiRole2EmptyAction(void) {
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0) << 26) >> 26) == 25) {
-        func_ov000_0218ca94();
+        RunAiAttackAction();
     }
     state = *gCurrentMap;
     if (M2C_FIELD(state + M2C_FIELD(state, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE)) {
@@ -56,7 +56,7 @@ void func_ov000_02181838(void) {
     }
     BuildAiInfluenceMaps();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0) << 26) >> 26) == 25) {
-        func_ov000_0218ca94();
+        RunAiAttackAction();
     }
     p = *gCurrentMap;
     if (M2C_FIELD(p + M2C_FIELD(p, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE)) {
@@ -81,7 +81,7 @@ void RunAiRole2LoadedAction(void) {
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 6) return;
     BuildAiInfluenceMaps();
-    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) == 25) func_ov000_0218ca94();
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) == 25) RunAiAttackAction();
     map = *gCurrentMap;
     if (M2C_FIELD(map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE)) func_ov000_02186a18();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
@@ -123,10 +123,10 @@ void RunAiRole5Action(void) {
     if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) == 24 && M2C_FIELD(unit, u8 *, MAP_UNIT_CARRIED) == 0) {
         SelectAiActionTarget();
     } else {
-        func_ov000_0218eea8();
+        SelectAiMoveActionTarget();
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) == 25) {
-        func_ov000_0218ca94();
+        RunAiAttackAction();
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
         func_ov000_021962f8();
@@ -179,14 +179,14 @@ SetMapCursor(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
 }
 
 void func_ov000_02181c10(void) {
-s32 func_ov000_0218cb20(void);
+s32 AiUnitHasAttackTarget(void);
 s32 func_ov000_021aa3bc(void);
 extern void *gAiSettings;
 extern void *gAiCommandState;
 s32 (*callback)(void);
 if(IsAiMap175Player2Override()!=0)return;
 BuildAiInfluenceMaps();
-if(func_ov000_0218cb20()!=0)return;
+if(AiUnitHasAttackTarget()!=0)return;
 callback=M2C_FIELD(gAiSettings,s32 (**)(void),4);
 if(callback==NULL) {if(!func_ov000_021aa3bc())return;} else {if(!callback())return;}
 M2C_FIELD(gAiCommandState,u16 *,8)|=0x100;

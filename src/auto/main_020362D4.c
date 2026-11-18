@@ -1,6 +1,7 @@
 /* 11 functions from 0x020362D4 to 0x02037214 (main), found by ds-decomp. */
 #include "common.h"
 #include "wfc.h"
+#include "net_socket.h"
 extern void *gWfcMatchSession;
 extern s32 gNasServer;
 extern s32 data_0213d13c[];
@@ -100,21 +101,31 @@ s32 UpdateWfcHttpConnection(void) {
     }
 }
 
+/* Send the WFC connection test's fixed "GET / HTTP/1.0" request over the
+ * connection's socket: a busy-socket result just waits for the next poll, a failed
+ * send marks the connection failed and shuts it down, and a successful send moves
+ * the connection on to reading the response. */
 void SendWfcHttpRequest(void) {
- s32 func_02021688(s32,M2C_UNK *,s32); M2C_UNK func_02021750(s32,s32); M2C_UNK func_0202175c(s32); s32 StringLength(M2C_UNK *);
- extern M2C_UNK sWfcConnTestRequest; extern M2C_UNK gWfcNet;
- s32 x;
- x=StringLength(&sWfcConnTestRequest);
- x=func_02021688(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),&sWfcConnTestRequest,x);
- if(x==-56) return;
- if(x<=0) {
- M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,60)=2;
- M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
- func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);
- func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0)); return;
- }
- M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=2;
- M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)=0;
+    s32 SocketSend(s32, M2C_UNK *, s32);
+    M2C_UNK func_02021750(s32, s32);
+    M2C_UNK func_0202175c(s32);
+    s32 StringLength(M2C_UNK *);
+    extern M2C_UNK sWfcConnTestRequest;
+    extern M2C_UNK gWfcNet;
+    s32 sent;
+
+    sent = StringLength(&sWfcConnTestRequest);
+    sent = SocketSend(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0), &sWfcConnTestRequest, sent);
+    if (sent == SOCK_ABORTED) return;
+    if (sent <= 0) {
+        M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x3C) = WFC_HTTP_RESULT_ERROR;
+        M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x38) = WFC_HTTP_DONE;
+        func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0), 2);
+        func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0));
+        return;
+    }
+    M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x38) = WFC_HTTP_RECEIVING;
+    M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x34) = 0;
 }
 
 /* Poll the WFC HTTP connection's response: receive the next chunk of the status

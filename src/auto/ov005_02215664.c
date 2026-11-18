@@ -63,14 +63,14 @@ gCur3DSpriteEngine=saved;func_02091cd0();RecordsMenu_DrawList(0);}
 void func_ov005_02216498(void) {
     M2C_UNK SetSpriteSlotFrameRect(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SelectSpriteSlot(M2C_UNK);
-    M2C_UNK func_020b2224();
+    M2C_UNK UnlockInactiveSpriteSlots();
     M2C_UNK AddSpriteSlot(M2C_UNK, s32, M2C_UNK *, s32);
     extern M2C_UNK data_ov005_02220490;
     extern M2C_UNK data_ov005_022204b8;
     s32 var_r8;
     s32 var_r9;
 
-    func_020b2224();
+    UnlockInactiveSpriteSlots();
     SetSpriteSlotFrameRect(0, -0x10, 0x100, -0x10);
     var_r8 = 0;
     var_r9 = 0x18;

@@ -22,7 +22,7 @@ s32 func_020b4264(u8 *arg0) {
     void SetPlayerArmyId(s32, s32);
     void func_020a233c(s32, s32);
     void func_020a44fc(u8 *, s32);
-    void func_020a16a8(u8 *);
+    void DecodeTerrainHitPoints(u8 *);
     extern void *gCurrentMap;
     extern M2C_UNK data_0215d9b8;
     extern M2C_UNK gMapConfig;
@@ -243,7 +243,7 @@ s32 func_020b4264(u8 *arg0) {
         func_020a44fc(dst, j);
         dst += 8;
     }
-    func_020a16a8(arg0 + 0x1194);
+    DecodeTerrainHitPoints(arg0 + 0x1194);
 }
 
 void func_020b4a44(void *arg0){s32 GetRandomSeed(); extern u8 data_02157718;extern M2C_UNK data_02168f68;s32 i;u8 *p;u8 v;
@@ -254,7 +254,7 @@ M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(&data_02168f68,s16 *,4);
 M2C_FIELD(arg0,s16 *,14)=M2C_FIELD(&data_02168f68,s16 *,6);
 M2C_FIELD(arg0,s32 *,16)=M2C_FIELD(&data_02168f68,s32 *,8);func_020b3c48(arg0);}
 
-void func_020b4ab4(void *arg0) {
+void RestoreBattleFromRecord(void *arg0) {
     M2C_UNK func_0207c2d0(s32);
     M2C_UNK func_020b4264();
     extern u8 data_02157718;
@@ -290,7 +290,7 @@ void func_020b4b34(void) {
     func_0208f8d8();
 }
 
-void func_020b4b40(void *arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!func_020bf084(v)){func_020bf0dc(0,v);func_020e4870();}func_020b4a44(func_020be120());func_020be438(v,func_020be120(),0x125c);}
+void func_020b4b40(void *arg0){void *GetSaveRecordBuffer();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!func_020bf084(v)){func_020bf0dc(0,v);func_020e4870();}func_020b4a44(GetSaveRecordBuffer());func_020be438(v,GetSaveRecordBuffer(),0x125c);}
 
 void func_020b4b98(void *arg0) {
     if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {
@@ -302,8 +302,8 @@ void func_020b4b98(void *arg0) {
 
 void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_UNK data_0212882c;func_020b3c44();if(gBattleEndState)return;M2C_FIELD(CreateSpriteForOwner(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
 
-void func_020b4c08(u8 arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *gCurrentMap;void (*fn)(void);
-LoadNewestSaveRecord(arg0,func_020be120());func_020b4ab4(func_020be120());if(!func_020bf084(arg0)){M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x70)|((u32)((u16)func_020bf0dc(0,arg0)<<29)>>25);}
+void ResumeSavedBattle(u8 arg0){void *GetSaveRecordBuffer();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *gCurrentMap;void (*fn)(void);
+LoadNewestSaveRecord(arg0,GetSaveRecordBuffer());RestoreBattleFromRecord(GetSaveRecordBuffer());if(!func_020bf084(arg0)){M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x70)|((u32)((u16)func_020bf0dc(0,arg0)<<29)>>25);}
 func_020cfd14();fn=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x50);if(fn)fn();SetupPlayerTeams();RefreshMapView();func_020c0a1c(3);}
 
 void func_020b4ca0(void) {

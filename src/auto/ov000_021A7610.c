@@ -99,7 +99,7 @@ s32 func_ov000_021a7e98(s32 arg0) {
     s32 GetUnitBuildCost(u16, M2C_UNK);
     s32 FindNearestTargetCandidate();
     s32 func_ov000_021a72c0(M2C_UNK);
-    s32 func_ov000_021a8784(M2C_UNK);
+    s32 CountPlayerUnitsOfKindTotal(M2C_UNK);
     extern void **gCurrentMap;
     register void *temp_r4;
     u16 temp_r5;
@@ -114,7 +114,7 @@ s32 func_ov000_021a7e98(s32 arg0) {
     if (func_ov000_021a72c0(0x15) == 0) {
         return -1;
     }
-    if (func_ov000_021a8784(0x15) != 0) {
+    if (CountPlayerUnitsOfKindTotal(0x15) != 0) {
         return -1;
     }
     return FindNearestTargetCandidate();

@@ -69,7 +69,7 @@ void Ov001_LeaveFriendList(void) {
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183fa0();
-    s32 func_ov001_021840d4();
+    s32 Ov001_CloseFriendRoster();
     void *GetCurrentMapRecord();
     M2C_UNK func_ov001_02184880(u8);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -88,7 +88,7 @@ void Ov001_LeaveFriendList(void) {
     }
     do {
 
-    } while (func_ov001_021840d4() == 0);
+    } while (Ov001_CloseFriendRoster() == 0);
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();

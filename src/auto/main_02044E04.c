@@ -343,18 +343,22 @@ s32 SendWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
     }
 }
 
-s32 func_020459ec(void) {
+/* Poll the request behind the active web transaction: the transaction fails when
+ * the request state falls back to idle/ready and completes when the request is
+ * done.  Returns 1 on a network error, 14 when no put/get/sync request is active,
+ * otherwise 0. */
+s32 PollWebTransaction(void) {
     s32 HasNetError();
     s32 func_020477ac();
     extern s32 gWebTransaction;
     if (HasNetError()) return 1;
-    if (gWebTransaction != 2 && gWebTransaction != 3 && gWebTransaction != 4) return 14;
+    if (gWebTransaction != WEB_TXN_PUT_SENT && gWebTransaction != WEB_TXN_GET_SENT && gWebTransaction != WEB_TXN_SYNC_SENT) return 14;
     switch (func_020477ac()) {
         case 1:
-            gWebTransaction = 6;
+            gWebTransaction = WEB_TXN_FAILED;
             break;
         case 0:
-            gWebTransaction = 6;
+            gWebTransaction = WEB_TXN_FAILED;
             break;
         case 2:
         case 3:
@@ -364,7 +368,7 @@ s32 func_020459ec(void) {
         case 7:
             break;
         case 8:
-            gWebTransaction = 5;
+            gWebTransaction = WEB_TXN_COMPLETE;
             break;
     }
     return 0;

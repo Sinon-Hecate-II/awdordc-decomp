@@ -7,21 +7,24 @@ typedef struct { u8 lo, hi; } PairBytes;
 static inline void copy633(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes *)src; *((PairBytes *)dst+1)=*((PairBytes *)src+1); }
 static inline void copy633h(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes *)src; }
 
-void func_02062770(void *a,s8 *b,s32 n) {
+/* Set up the server list's GameSpy stream cipher for a session: mix the
+ * challenge bytes with the list's key string into the 8-byte key at
+ * SB_SLIST_CRYPT_KEY, then build the cipher state at SB_SLIST_CRYPT from it. */
+void GsCryptSetKey(void *list,s8 *challenge,s32 length) {
 s32 StringLength(void *);
 void GsCryptInit(void *,void *,s32);
 s32 i;
-s32 size;
-s8 *p;
-size=StringLength((u8 *)a+0x54);
-p=(s8 *)a+0x54;
-for(i=0;i<n;i++){
-s32 x=p[i%size];
+s32 keyLen;
+s8 *key;
+keyLen=StringLength((u8 *)list+SB_SLIST_GAMEVERSION);
+key=(s8 *)list+SB_SLIST_GAMEVERSION;
+for(i=0;i<length;i++){
+s32 x=key[i%keyLen];
 s32 j=(i*x)%8;
-s8 value=M2C_FIELD((s8 *)a+i%8,s8 *,0x74)^b[i];
-M2C_FIELD((s8 *)a+j,s8 *,0x74)^=value;
+s8 value=M2C_FIELD((s8 *)list+i%8,s8 *,SB_SLIST_CRYPT_KEY)^challenge[i];
+M2C_FIELD((s8 *)list+j,s8 *,SB_SLIST_CRYPT_KEY)^=value;
 }
-GsCryptInit((u8 *)a+0x4bc,(u8 *)a+0x74,8);
+GsCryptInit((u8 *)list+SB_SLIST_CRYPT,(u8 *)list+SB_SLIST_CRYPT_KEY,8);
 }
 
 s32 func_02062810(u8 a) {
@@ -175,7 +178,7 @@ extern s32 sSbNoServer;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
 case 0:
-if(n<1)break;off=(p[0]^0xec)+2;if(n<off)break;len=p[off-1]^0xea;r=off+len;if(n<r)break;func_02062770(a,(s8 *)p+off,len);p+=r;n-=r;M2C_FIELD(a,s32 *,0x5c8)=1;func_0206006c((u8 *)a+0x4bc,p,n);
+if(n<1)break;off=(p[0]^0xec)+2;if(n<off)break;len=p[off-1]^0xea;r=off+len;if(n<r)break;GsCryptSetKey(a,(s8 *)p+off,len);p+=r;n-=r;M2C_FIELD(a,s32 *,0x5c8)=1;func_0206006c((u8 *)a+0x4bc,p,n);
 case 1:
 if(n<6)break;
 copy633((u8 *)a+0x4a0,p);

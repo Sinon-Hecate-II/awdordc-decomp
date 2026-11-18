@@ -4,7 +4,7 @@ func_ov006_02211388 kind:function(arm,size=0xdfc) addr:0x02211388
 func_ov006_02212184 kind:function(arm,size=0xc78) addr:0x02212184
 func_ov006_02212dfc kind:function(arm,size=0x109c) addr:0x02212dfc
 func_ov006_02213e98 kind:function(arm,size=0x574) addr:0x02213e98
-func_ov006_0221440c kind:function(arm,size=0xa0) addr:0x0221440c
+OpenMapCodeEntryScreen kind:function(arm,size=0xa0) addr:0x0221440c
 func_ov006_022144ac kind:function(arm,size=0xb64) addr:0x022144ac
 func_ov006_02215010 kind:function(arm,size=0xc) addr:0x02215010
 func_ov006_0221501c kind:function(arm,size=0xc) addr:0x0221501c
@@ -48,7 +48,7 @@ func_ov006_02216bb8 kind:function(arm,size=0xc) addr:0x02216bb8
 func_ov006_02216bc4 kind:function(arm,size=0x38) addr:0x02216bc4
 func_ov006_02216bfc kind:function(arm,size=0x14) addr:0x02216bfc
 func_ov006_02216c10 kind:function(arm,size=0x14) addr:0x02216c10
-func_ov006_02216c24 kind:function(arm,size=0x180) addr:0x02216c24
+CreateMapCodeEntryPanel kind:function(arm,size=0x180) addr:0x02216c24
 func_ov006_02216da4 kind:function(arm,size=0x68) addr:0x02216da4
 func_ov006_02216e0c kind:function(arm,size=0x60) addr:0x02216e0c
 IsValueInRange kind:function(arm,size=0x18) addr:0x02216e6c
@@ -66,9 +66,9 @@ func_ov006_022170e8 kind:function(arm,size=0x3c) addr:0x022170e8
 func_ov006_02217124 kind:function(arm,size=0x3c) addr:0x02217124
 func_ov006_02217160 kind:function(arm,size=0x4) addr:0x02217160
 func_ov006_02217164 kind:function(arm,size=0x14) addr:0x02217164
-func_ov006_02217178 kind:function(arm,size=0x9c) addr:0x02217178
-func_ov006_02217214 kind:function(arm,size=0x9c) addr:0x02217214
-func_ov006_022172b0 kind:function(arm,size=0x9c) addr:0x022172b0
+CreateMapTransferPanelStep1 kind:function(arm,size=0x9c) addr:0x02217178
+CreateMapTransferPanelStep2 kind:function(arm,size=0x9c) addr:0x02217214
+CreateMapTransferPanelStep3 kind:function(arm,size=0x9c) addr:0x022172b0
 CreateMapTransferPanel kind:function(arm,size=0xb0) addr:0x0221734c
 func_ov006_022173fc kind:function(arm,size=0x14) addr:0x022173fc
 func_ov006_02217410 kind:function(arm,size=0x4) addr:0x02217410
@@ -164,8 +164,8 @@ data_ov006_022188bc kind:data(any) addr:0x022188bc
 data_ov006_022188cc kind:data(any) addr:0x022188cc
 data_ov006_022188dc kind:data(any) addr:0x022188dc
 data_ov006_022188f8 kind:data(any) addr:0x022188f8
-data_ov006_0221890c kind:data(any) addr:0x0221890c
-data_ov006_02218918 kind:data(any) addr:0x02218918
+gMapTransferPanelVtable kind:data(any) addr:0x0221890c
+gMapTransferPanelStateClass kind:data(any) addr:0x02218918
 data_ov006_02218a48 kind:data(any) addr:0x02218a48
 data_ov006_02218a78 kind:data(any) addr:0x02218a78
 data_ov006_02218aa8 kind:data(any) addr:0x02218aa8
@@ -175,7 +175,7 @@ data_ov006_02218bd8 kind:data(any) addr:0x02218bd8
 data_ov006_02218cd8 kind:data(any) addr:0x02218cd8
 data_ov006_02218cdc kind:data(any) addr:0x02218cdc
 sMapCodeDebugFormat kind:data(any) addr:0x02218dd4
-data_ov006_02218e00 kind:bss addr:0x02218e00
+gMapCodeString kind:bss addr:0x02218e00
 gFriendCodeInput kind:bss addr:0x02218e10
 data_ov006_02218e20 kind:bss addr:0x02218e20
 data_ov006_02218e2c kind:bss addr:0x02218e2c

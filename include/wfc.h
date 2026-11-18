@@ -297,6 +297,10 @@ enum {
 #define WFC_FRIEND_SLOTS       0x1300 /* 20 slots, WFC_FRIEND_SLOT_STRIDE bytes each */
 #define WFC_FRIEND_SLOT_COUNT  20
 #define WFC_FRIEND_SLOT_STRIDE 0x2A
+#define WFC_FRIEND_REQUEST     0x1648 /* request packet handed to WFC_SendRequestPacket */
+#define WFC_FRIEND_REPLY       0x168C /* reply block the channel data is copied into; its +0 u16 state */
+#define WFC_FRIEND_CLOSING     0x1E5C /* u8 set when the roster stops taking replies (link ending) */
+#define WFC_REPLY_DONE         2      /* WFC_FRIEND_REPLY state once the reply has arrived */
 
 /* One friend slot of the roster; the code is all zero while the slot is free
  * (Ov001_GetFriendSlots counts the slots whose code is set). */
@@ -360,6 +364,10 @@ enum {
 #define NAS_LOGIN_KEY_TYPE       0x0C /* s32 key passed to FormatNasId */
 #define NAS_LOGIN_SESSION        0x1C /* void *local session/profile record */
 #define NAS_LOGIN_KEY            0x3C /* 12-byte profile key record */
+#define NAS_LOGIN_NAME           0x48 /* char[256] account name the NAS login returns */
+#define NAS_LOGIN_PASSWORD       0x148 /* char[256] account password it returns */
+#define NAS_LOGIN_GPI_PENDING    0x30 /* s32 nonzero while a gpi connection attempt runs; times out after 60 s */
+#define NAS_LOGIN_GPI_TICK       0x34 /* u64 GetSystemTick the attempt started at */
 
 /* The key record's check word at +8 is the high half of one 64-bit LCG step over
  * a console-entropy seed; StartNasRequest uses the same generator to refresh the
@@ -450,6 +458,7 @@ typedef struct NasRequest {
 #define WFC_STATE_CONN_RETRY   0xD15 /* u8 friend-connection attempts made, wraps at 3 */
 #define WFC_STATE_LINK_RETURN  0xD0E /* u8 session state to resume after the link step */
 #define WFC_STATE_RECORD_RESULT 0x444 /* u8 per friend record, stride 4: the record's connection result */
+#define WFC_STATE_RECORD_ID     0x445 /* u8 per friend record, stride 4: friend id the record resolved to */
 #define WFC_STATE_RECORD_SCORE  0x446 /* u8 per friend record, stride 4: connection score, higher first */
 #define WFC_STATE_RECORD_FLAGS  0x447 /* u8 per friend record, stride 4: bit 7 marks the record as sent */
 #define WFC_MIN_CONNECT_SCORE   20    /* lowest record score a friend connection is started for */
@@ -460,6 +469,7 @@ typedef struct NasRequest {
 #define WFC_RECORD_STRIDE      0xC0
 #define WFC_RECORD_CODE_LEN    0x0A /* u16 length of the record's code */
 #define WFC_RECORD_CODE        0x0C /* u8[] code bytes */
+#define WFC_RECORD_CODE_ALT    0x04 /* u8[] the record's other code, compared for duplicate friends */
 #define WFC_RECORD_COUNT_OFF 0x36 /* u16 entry count sent with the record, minus one in the message */
 #define WFC_RECORD_CODE_OFF  0x3C /* u8[] code bytes sent for the record */
 

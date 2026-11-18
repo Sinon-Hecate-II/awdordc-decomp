@@ -32,24 +32,30 @@ s32 StartGroupBattle(u16 playerMask) {
  return SendMatchPacket(0xea,mask,(s32)gMbWork);
 }
 
-void func_02014ccc(void *arg0) {
+/* Multiboot image-load task: read the cached block the loader picked (arg0+0x10)
+ * out of the archive named in the load queue (arg0+0x14) into the block's own
+ * buffer, over the block's range [offset, offset+size).  Marks the block resident
+ * once the whole range is read; on failure it resets the block to the empty one
+ * at offset 0 and still marks it resident. */
+void Mb_LoadBlockTask(void *arg0) {
  s32 FindArchive(void *,s32);
  void InitFileRequest(void *);
  s32 OpenFileDirect(void *,s32,s32,s32,s32);
  void CloseFileRequest(void *);
  s32 FileRead(void *,s32,s32);
- u32 sp4[18];
- s32 val;
- void *a,*b;
- b=M2C_FIELD(arg0,void **,0x14); a=M2C_FIELD(arg0,void **,0x10);
- InitFileRequest(sp4);
- val=M2C_FIELD(a,s32 *,0);
- if(OpenFileDirect(sp4,FindArchive(b+16,M2C_FIELD(b,s32 *,0x14)),val,val+M2C_FIELD(a,s32 *,4),-1)!=0){
- if(M2C_FIELD(a,s32 *,4)==FileRead(sp4,M2C_FIELD(a,s32 *,8),M2C_FIELD(a,s32 *,4))) M2C_FIELD(a,s32 *,12)=2;
- CloseFileRequest(sp4);
+ u32 request[18];
+ MbLoadBlock *block;
+ MbLoadQueue *queue;
+ s32 offset;
+ queue=M2C_FIELD(arg0,MbLoadQueue **,0x14); block=M2C_FIELD(arg0,MbLoadBlock **,0x10);
+ InitFileRequest(request);
+ offset=block->offset;
+ if(OpenFileDirect(request,FindArchive(&queue->name,queue->nameLength),offset,offset+block->size,-1)!=0){
+ if(block->size==FileRead(request,block->data,block->size)) block->state=MB_LOAD_STATE_RESIDENT;
+ CloseFileRequest(request);
  }
- if(M2C_FIELD(a,s32 *,12)==2)return;
- M2C_FIELD(a,s32 *,0)=0; M2C_FIELD(a,s32 *,12)=2;
+ if(block->state==MB_LOAD_STATE_RESIDENT)return;
+ block->offset=0; block->state=MB_LOAD_STATE_RESIDENT;
 }
 
 #pragma push
@@ -130,7 +136,7 @@ s32 func_02014d6c(void) {
                 M2C_FIELD(best,u32 *,0)=offset&~31;
                 M2C_FIELD(task,void **,16)=best;
                 M2C_FIELD(task,void **,20)=buffer;
-                func_02018764(task,func_02014ccc,0,4);
+                func_02018764(task,Mb_LoadBlockTask,0,4);
             }
         }
         return 21;

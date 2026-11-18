@@ -123,7 +123,7 @@ u8 *unit;
 s32 map, playerOffset;
 u32 tmp;
 player=M2C_FIELD(view,s32 *,0x5c);
-if(func_0207b7c4())return;
+if(IsMapViewScrolling())return;
 if(M2C_FIELD(view,s16 *,0x70)<51){
 playerOffset=player*0x8c;
 do {
@@ -140,7 +140,7 @@ if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8))goto visible;
 }
 if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8)){
 StepMapViewToTile(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
-if(func_0207b7c4())return;
+if(IsMapViewScrolling())return;
 }
 tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
 spriteSet=func_020a3460(player);
@@ -149,7 +149,7 @@ armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
 goto increment;
 visible:
 StepMapViewToTile(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
-if(func_0207b7c4())return;
+if(IsMapViewScrolling())return;
 tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
 spriteSet=func_020a3460(player);
 armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
@@ -284,11 +284,19 @@ M2C_FIELD(arg0*0x8c+*gCurrentMap,s8 *,0x6815)=0;
 
 u8 func_020a3150(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x6815]!=0;}
 
-void SetPlayerSelectedUnit(s32 a,u8 *b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);u8 *old; s32 index;
-old=GetPlayerSelectedUnit(a);if(old&&old!=b)*old&=~0xc0;
-if(b==0)index=0;else { if(b==0)index=0;else index=((s32)b-(*gCurrentMap+0x59a4))/14; }
-M2C_FIELD(*gCurrentMap+a*0x8c,u8 *,0x6814)=index;
-if(b)*b=(*b&~0xc0)|0xc0;
+/* Set the player's selected unit (0 clears it): drop the selection marker from the
+ * player's previous unit and set it on `unit`, and store the unit's record id in
+ * the player record. */
+void SetPlayerSelectedUnit(s32 player, u8 *unit) {
+    extern s32 *gCurrentMap;
+    u8 *GetPlayerSelectedUnit(s32);
+    u8 *old; s32 index;
+    old = GetPlayerSelectedUnit(player);
+    if (old && old != unit) *old &= ~MAP_UNIT_OWNER_MASK;
+    if (unit == 0) index = 0;
+    else { if (unit == 0) index = 0; else index = ((s32)unit - (*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE; }
+    M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_SELECTED_UNIT) = index;
+    if (unit) *unit = (*unit & ~MAP_UNIT_OWNER_MASK) | MAP_UNIT_OWNER_MASK;
 }
 
 void func_020a3224(s32 a,s32 b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);s32 GetUnitOwner(s32);s32 index;

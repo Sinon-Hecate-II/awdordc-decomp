@@ -127,7 +127,7 @@ void func_ov003_021e3708(void) {
 void func_ov003_021e3714(void *arg0) {
     u8 func_ov003_021e1500(s32, s32, s32);
     s32 Modulo(s32, s32);
-    void *func_020be120(void);
+    void *GetSaveRecordBuffer(void);
     void MI_CpuCopy32(void *, void *, u32);
     void ResetBattleMap(void);
     void func_020cf278(s32);
@@ -169,11 +169,11 @@ void func_ov003_021e3714(void *arg0) {
     }
     index = (u8)Modulo(*(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 6), 5);
     if (*(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 6) >= 5) {
-        src=func_020be120();
+        src=GetSaveRecordBuffer();
         offset=index * 0x6f8;
         MI_CpuCopy32((u8 *)M2C_FIELD(arg0,void **,0x6c) + offset, src, 0x6f8);
     } else {
-        src=func_020be120();
+        src=GetSaveRecordBuffer();
         offset=index * 0x6f8;
         MI_CpuCopy32((u8 *)M2C_FIELD(arg0,void **,0x68) + offset, src, 0x6f8);
     }

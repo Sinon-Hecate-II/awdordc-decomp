@@ -55,32 +55,35 @@ s32 BigNumSign(u16 *arr, s32 n) {
     return BigNumLen(arr, n) != 0;
 }
 
+/* dst = src1 + src2 over `len` 16-bit limbs: add the significant limbs of both
+ * operands plus one extra limb to carry out of the top, then zero the unused
+ * high limbs unless dst aliases an operand. */
 void BigNumAdd(u16 *dst, u16 *src1, u16 *src2, s32 len) {
-    s32 a;
-    s32 b;
-    s32 m;
-    s32 k;
+    s32 len1;
+    s32 len2;
+    s32 n;
+    s32 i;
     u32 carry;
 
-    a = BigNumLen(src1, len);
-    b = BigNumLen(src2, len);
-    m = a;
-    if (a < b) {
-        m = b;
+    len1 = BigNumLen(src1, len);
+    len2 = BigNumLen(src2, len);
+    n = len1;
+    if (len1 < len2) {
+        n = len2;
     }
-    if (m != len) {
-        m++;
+    if (n != len) {
+        n++;
     }
     carry = 0;
-    k = 0;
-    while (k < m) {
-        u32 s = src1[k] + src2[k] + carry;
-        dst[k] = (u16)s;
-        carry = s >> 16;
-        k++;
+    i = 0;
+    while (i < n) {
+        u32 sum = src1[i] + src2[i] + carry;
+        dst[i] = (u16)sum;
+        carry = sum >> 16;
+        i++;
     }
     if (dst != src1 && dst != src2) {
-        MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
+        MI_CpuFill8((u8 *)(dst + i), 0, (u32)((len - i) * 2));
     }
 }
 

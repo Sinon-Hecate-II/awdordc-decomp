@@ -16,7 +16,7 @@ extern s8 *gAiUnitListCursor;
 extern s8 gAiUnitList;
 extern M2C_UNK RunAiRole3Action;
 void ScoreAiUnitsByMoveRange(s32);
-void MoveChosenAiUnitFirst(void);
+void MoveSelectedAiUnitLast(void);
 s32 unitId; s32 offset; s8 *cursor; u16 firstUnitId; u32 kind; void *units; void *map;
 gAiUnitListCursor = &gAiUnitList;
 map = *gCurrentMap;
@@ -41,7 +41,7 @@ offset += MAP_UNIT_STRIDE;
 *gAiUnitListCursor = 0;
 gAiUnitListCursor = &gAiUnitList;
 ScoreAiUnitsByMoveRange(1);
-MoveChosenAiUnitFirst();
+MoveSelectedAiUnitLast();
 gAiUnitAction = &RunAiRole3Action;
 *gAiCommandState = 2;
 }

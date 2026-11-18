@@ -557,15 +557,15 @@ void func_0208fc4c(void) {
 }
 
 void OpenSoundPlayer(void){
- s32 func_020e34f4(s32);s32 func_0202c4ac(s32,s32);
+ s32 func_020e34f4(s32);s32 Sound_CreateHeap(s32,s32);
  extern M2C_UNK gSoundDriverState,data_02157880,data_021029ac;
  s32 p;
  if(M2C_FIELD(&gSoundDriverState,u8*,0))return;
  if(!M2C_FIELD(&gSoundDriverState,s32*,0x14))M2C_FIELD(&gSoundDriverState,s32*,0x14)=func_020e34f4(0xd0000);
- p=func_0202c4ac(M2C_FIELD(&gSoundDriverState,s32*,0x14),0xd0000);
+ p=Sound_CreateHeap(M2C_FIELD(&gSoundDriverState,s32*,0x14),0xd0000);
  M2C_FIELD(&gSoundDriverState,s32*,0x10)=p;
  func_0202bd00(&data_02157880,&data_021029ac,p,0);
- func_0202d294(M2C_FIELD(&gSoundDriverState,s32*,0x10));
+ Sound_InitArchiveChannels(M2C_FIELD(&gSoundDriverState,s32*,0x10));
  func_0202d6d4(10,M2C_FIELD(&gSoundDriverState,s32*,0x10));
  M2C_FIELD(&gSoundDriverState,u8*,0)=1;func_020903b0();
 }

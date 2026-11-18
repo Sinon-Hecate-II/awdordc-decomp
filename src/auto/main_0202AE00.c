@@ -219,7 +219,7 @@ M2C_FIELD(a,u32 *,36)&=~1;M2C_FIELD(a,u32 *,36)&=~2;
 
 s32 func_0202b4e4(void *a,s32 n,u8 *p){s32 func_0202aa64(s32);s32 bits=0; s32 i;for(i=0;i<n;i++){M2C_FIELD(a+i,u8 *,76)=p[i];bits|=1<<p[i];}if(!func_0202aa64(bits))return 0;M2C_FIELD(a,s32 *,72)=n;M2C_FIELD(a,s32 *,68)=bits;return 1;}
 
-void func_0202b544(void *arg0) {
+void Sound_StopVoices(void *arg0) {
     M2C_UNK func_0202aaac();
     if (M2C_FIELD(arg0, s32 *, 0x44) == 0) {
         return;

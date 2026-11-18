@@ -11,49 +11,55 @@ void func_02006f14(void) {
     void OS_SetFifoReceiveHandlers(u32, void (*)(void));
     void OS_EnableIrqMask(u32);
     void func_02006f9c(void);
-    extern u16 data_0212dfb4;
-    if (data_0212dfb4 != 0) return;
-    data_0212dfb4 = 1;
+    extern u16 gSystemTickState;
+    if (gSystemTickState != 0) return;
+    gSystemTickState = 1;
     func_02006ef8(0);
-    M2C_FIELD(&data_0212dfb4, u64 *, 8) = 0;
+    M2C_FIELD(&gSystemTickState, u64 *, 8) = 0;
     *(volatile u16 *)0x04000102 = 0;
     *(volatile u16 *)0x04000100 = 0;
     *(volatile u16 *)0x04000102 = 0xC1;
     OS_SetFifoReceiveHandlers(8, func_02006f9c);
     OS_EnableIrqMask(8);
-    M2C_FIELD(&data_0212dfb4, s32 *, 4) = 0;
+    M2C_FIELD(&gSystemTickState, s32 *, 4) = 0;
 }
 
 u16 func_02006f8c(void) {
-    extern u16 data_0212dfb4;
-    return data_0212dfb4;
+    extern u16 gSystemTickState;
+    return gSystemTickState;
 }
 
 #pragma opt_propagation off
 void func_02006f9c(void) {
-void func_02005154(u32,void (*)(void),u32); extern u16 data_0212dfb4;
-++M2C_FIELD(&data_0212dfb4,u64 *,8);
-if (M2C_FIELD(&data_0212dfb4,s32 *,4)) {
+void func_02005154(u32,void (*)(void),u32); extern u16 gSystemTickState;
+++M2C_FIELD(&gSystemTickState,u64 *,8);
+if (M2C_FIELD(&gSystemTickState,s32 *,4)) {
 *(volatile u16 *)0x04000102=0;
 *(volatile u16 *)0x04000100=0;
 *(volatile u16 *)0x04000102=0xc1;
-M2C_FIELD(&data_0212dfb4,s32 *,4)=0;
+M2C_FIELD(&gSystemTickState,s32 *,4)=0;
 }
 func_02005154(0,func_02006f9c,0);
 }
 #pragma opt_propagation reset
+/* The system tick: TIMER0's free-running 16-bit counter extended to 64 bits by
+ * counting its overflows.  The counter is read first, then the overflow count;
+ * when TIMER0's overflow interrupt is pending and the counter had not yet
+ * wrapped (its top bit is clear), one overflow is added for the wrap that just
+ * happened.  Interrupts are held off around the read so the pair stays
+ * consistent. */
 u64 GetSystemTick(void) {
     u32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(u32);
-    extern u16 data_0212dfb4;
-    volatile u16 timer;
-    volatile u64 count;
-    u32 state = OS_DisableInterrupts();
-    timer = *(volatile u16 *)0x04000100;
-    count = M2C_FIELD(&data_0212dfb4, volatile u64 *, 8) & 0x0000FFFFFFFFFFFFULL;
-    if ((*(volatile u32 *)0x04000214 & 8) && !(timer & 0x8000)) count++;
-    OS_RestoreInterrupts(state);
-    return (count << 16) | timer;
+    extern u16 gSystemTickState;
+    volatile u16 counter;
+    volatile u64 overflows;
+    u32 irq = OS_DisableInterrupts();
+    counter = *(volatile u16 *)REG_TM0D;
+    overflows = M2C_FIELD(&gSystemTickState, volatile u64 *, SYSTEM_TICK_OVERFLOW) & 0x0000FFFFFFFFFFFFULL;
+    if ((*(volatile u32 *)REG_IF & IRQ_TIMER0) && !(counter & TIMER0_HALF)) overflows++;
+    OS_RestoreInterrupts(irq);
+    return (overflows << 16) | counter;
 }
 
 u16 func_020070a4(void) {

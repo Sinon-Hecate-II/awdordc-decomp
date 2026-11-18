@@ -196,7 +196,7 @@ unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
 return SetMapCursor(unit[MAP_UNIT_X],unit[MAP_UNIT_Y],24,0,0);
 }
 
-s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
+s32 func_ov000_02193a40(s32 inputX, s32 inputY, s32 shoalMode) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32, s32);
     u8 IsPropertyTerrain(s32);
@@ -204,98 +204,77 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
     u8 SelectEnemyHqDestination(s16 *);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    s16 x, y;
-    s32 i, best = 0x7fff;
-    u8 *base, *rec, *rec7;
-    u16 start;
+    s32 i, offset, player, best = 0x7fff;
+    u8 *map = *gCurrentMap;
+    u8 *property;
     s16 coords[2];
-    x = (s16)arg0;
-    y = (s16)arg1;
-    base = (u8 *)*gCurrentMap;
-    start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52a4)];
-    for (i = start + 1; i < start + 0x33; i++) {
-        rec = base + 0x59a4 + i * 14;
-        {
-            u8 kind = rec[0] & 0x3f;
-            u16 flags;
-            u8 t;
-            u16 row;
-            if (kind == 0) continue;
-            if (kind != 0xd) continue;
-            flags = M2C_FIELD(rec, u16 *, 6);
-            if (!((flags >> 11) & 0x1f)) continue;
-            row = M2C_FIELD(base + arg1 * 2, u16 *, 0x3758);
-            t = M2C_FIELD(base, u8 *, 0x1420 + arg0 + row) & 0x1f;
-            if (t == 1) {
-                if (arg2 == 0) continue;
-            } else if (t == 9) {
-                if (arg2 != 0) continue;
-            }
-            {
-                s32 d = ManhattanDistance(x, y, rec[1], rec[2]);
-                if (d < best) best = d;
-            }
-        }
-    }
-    rec = base + 0x6c60;
-    rec7 = rec;
-    while (rec[0] != 0xff) {
-        u8 kind = rec[0];
-        u8 rx = rec[1];
-        u8 ry = rec[2];
+    volatile s32 x = inputX, y = inputY;
+    s16 tileX, tileY;
+
+    i = gPlayerUnitIdBase[M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)] + 1;
+    if (i < gPlayerUnitIdBase[M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)] + 0x33) {
+        offset = i * MAP_UNIT_STRIDE;
+        tileX = (s16)x; tileY = (s16)y;
+        do {
+        BattleMapUnitHead *unit = (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS + offset);
+        u32 kind = unit->kind;
         u16 row;
-        u8 t;
-        row = M2C_FIELD(base + ry * 2, u16 *, 0x3758);
-        t = M2C_FIELD(base, u8 *, 0x1420 + rx + row) & 0x1f;
-        (void)t;
-        if (!IsPropertyTerrain(M2C_FIELD(base, u8 *, 0x1420 + rx + row))) {
-            s32 d;
-            if (arg2 != 0) {
-                if (kind != 0x12 && kind != 0x14) {
-                    rec += 6;
-                    continue;
-                }
-            } else {
-                if (kind != 0x13 && kind != 0x15) {
-                    rec += 6;
-                    continue;
-                }
-            }
-            d = ManhattanDistance(x, y, rx, ry);
-            if (d < best) best = d;
+        u32 terrain;
+        s32 distance;
+        if (kind == 0 || kind != UNIT_KIND_RIG)
+            continue;
+        if (unit->facing == 0)
+            continue;
+        row = M2C_FIELD(map + y * 2,u16 *,MAP_ROW_OFFSETS);
+        terrain = M2C_FIELD(map + x + row,u8 *,MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+        if ((terrain == 1 && shoalMode == 0) || (terrain == 9 && shoalMode != 0))
+            continue;
+        distance = ManhattanDistance(tileX, tileY, unit->x, unit->y);
+        if (best > distance)
+            best = distance;
+        } while (++i, offset += MAP_UNIT_STRIDE, map = *gCurrentMap,
+                 i < gPlayerUnitIdBase[M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)] + 0x33);
+    }
+
+    property = map + MAP_PROPERTY_CELLS;
+    if (property[0] != 0xff) {
+      tileX = (s16)x; tileY = (s16)y;
+      do {
+        u16 row;
+        s32 distance;
+        map = *gCurrentMap;
+        row = M2C_FIELD(map + property[2] * 2,u16 *,MAP_ROW_OFFSETS);
+        if (IsPropertyTerrain(M2C_FIELD(map + property[1] + row,u8 *,MAP_CELL_TERRAIN)))
+            continue;
+        if ((shoalMode != 0 && (property[0] == 0x12 || property[0] == 0x14)) ||
+            (shoalMode == 0 && (property[0] == 0x13 || property[0] == 0x15))) {
+            distance = ManhattanDistance(tileX, tileY, property[1], property[2]);
+            if (best > distance)
+                best = distance;
         }
-        rec += 6;
+      } while ((property += 6)[0] != 0xff);
     }
-    rec7 = rec;
-    if (best != 0x7fff) {
-        goto done_func;
-    }
-    {
-        s16 c0, c1;
+
+    if (best == 0x7fff) {
         if (SelectEnemyHqDestination(coords)) {
-            best = 0x7fff - ManhattanDistance(x, y, coords[0], coords[1]);
+            best = 0x7fff - ManhattanDistance((s16)x, (s16)y, coords[0], coords[1]);
         } else {
-            s32 player;
             for (player = 1; player < 5; player++) {
-                if (!IsPlayerActive(player)) continue;
-                if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), player) != 0) continue;
-                {
-                    u16 start2 = gPlayerUnitIdBase[player];
-                    s32 i2;
-                    for (i2 = start2 + 1; i2 < start2 + 0x33; i2++) {
-                        u8 *rec2 = base + 0x59a4 + i2 * 14;
-                        u8 kind2 = rec2[0] & 0x3f;
-                        if (kind2 == 0) continue;
-                        {
-                            s32 d = ManhattanDistance(x, y, rec2[1], rec2[2]);
-                            if (d < best) best = d;
-                        }
+                if (!IsPlayerActive(player) || IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER), player))
+                    continue;
+                tileX = (s16)x; tileY = (s16)y;
+                for (i = gPlayerUnitIdBase[player] + 1, offset = i * MAP_UNIT_STRIDE;
+                     i < gPlayerUnitIdBase[player] + 0x33; i++, offset += MAP_UNIT_STRIDE) {
+                    BattleMapUnitHead *unit = (BattleMapUnitHead *)((u8 *)*gCurrentMap + offset + MAP_UNIT_RECORDS);
+                    if (unit->kind != 0) {
+                        s32 distance = ManhattanDistance((s16)x, (s16)y, property[1], property[2]);
+                        if (best > distance)
+                            best = distance;
                     }
                 }
             }
         }
     }
-done_func:
     return best;
 }
 

@@ -384,13 +384,13 @@ void func_020d8b34(void) {
 }
 
 s32 func_020d8b84(s32 arg0) {
-    s32 func_020be120();
+    s32 GetSaveRecordBuffer();
     M2C_UNK LoadNewestSaveRecord(M2C_UNK, s32);
-    func_020be120();
+    GetSaveRecordBuffer();
     if (arg0 != 1) {
         return 1;
     }
-    LoadNewestSaveRecord(8, func_020be120());
+    LoadNewestSaveRecord(8, GetSaveRecordBuffer());
     return 1;
 }
 

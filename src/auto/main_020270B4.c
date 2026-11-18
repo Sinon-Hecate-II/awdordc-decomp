@@ -166,7 +166,7 @@ s32 func_02027428(void) {
     }
 }
 
-void func_02027518(s32 a,s32 b){s32 func_020276b0(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)func_020276b0();else WFC_SubmitMatchRequest();}
+void func_02027518(s32 a,s32 b){s32 WFC_ProcessConnectStep(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)WFC_ProcessConnectStep();else WFC_SubmitMatchRequest();}
 
 void WFC_ProcessCallback(void);
 /* Fills the local player's match request from the friend code, name and status
@@ -194,17 +194,22 @@ case 3:default:WFC_SetState(11);OS_RestoreInterrupts(s);return 7;
 OS_RestoreInterrupts(s);return 3;
 }
 
-s32 func_020276b0(void) {
+/* One step of the WFC session in its connect phase (state 6): moves the session on
+ * to state 7 with substep 4 (the match is settled and the connection opens) and
+ * reports 3, its "progressed" code.  Returns 2 when the session is already past
+ * that phase, 0 while it is back in its ready state (3), and 1 when there is no
+ * session at all or it is in none of those states. */
+s32 WFC_ProcessConnectStep(void) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void WFC_SetState(s32); extern M2C_UNK gWfcSession;
-s32 r=OS_DisableInterrupts();
-if(M2C_FIELD(&gWfcSession,M2C_UNK *,0)==0){OS_RestoreInterrupts(r);return 1;}
-switch(M2C_FIELD(M2C_FIELD(&gWfcSession,M2C_UNK *,0),s32 *,0x2260)){
-case 6: WFC_SetState(7);M2C_FIELD(M2C_FIELD(&gWfcSession,M2C_UNK *,0),u16 *,0x2280)=4;break;
-case 7:OS_RestoreInterrupts(r);return 2;
-case 3:OS_RestoreInterrupts(r);return 0;
-default:OS_RestoreInterrupts(r);return 1;
+s32 irq=OS_DisableInterrupts();
+if(M2C_FIELD(&gWfcSession,M2C_UNK *,0)==0){OS_RestoreInterrupts(irq);return 1;}
+switch(M2C_FIELD(M2C_FIELD(&gWfcSession,M2C_UNK *,0),s32 *,WFC_SESSION_STATE)){
+case 6: WFC_SetState(7);M2C_FIELD(M2C_FIELD(&gWfcSession,M2C_UNK *,0),u16 *,WFC_SESSION_SUBSTATE)=4;break;
+case 7:OS_RestoreInterrupts(irq);return 2;
+case 3:OS_RestoreInterrupts(irq);return 0;
+default:OS_RestoreInterrupts(irq);return 1;
 }
-OS_RestoreInterrupts(r);return 3;
+OS_RestoreInterrupts(irq);return 3;
 }
 
 /* Starts the WFC connection: while the session is in the ready state, checks

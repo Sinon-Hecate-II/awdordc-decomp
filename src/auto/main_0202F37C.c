@@ -99,6 +99,9 @@ void Wfc_ClearWorkFlags(void) {
  func_0202f334(0x10, M2C_FIELD(&gWfcManager, void **, 0), 0xD18);
 }
 
+/* Whether the selected friend record may be connected to: returns 2 when another
+ * record with a valid friend id carries the same code, 1 otherwise (also when the
+ * selection resolves to no friend id). */
 s32 Wfc_GetFriendConnectResult(void) {
  s32 StringCompareN(void *, void *, s32);
  extern M2C_UNK gWfcManager;
@@ -109,15 +112,15 @@ s32 Wfc_GetFriendConnectResult(void) {
  void *p;
  u8 count;
  p = M2C_FIELD(&gWfcManager, void **, 0);
- selected = M2C_FIELD(p,u8 *,0xD13);
- base = p + 0x474;
- offset = (s16)selected * (s16)0xC0;
- if (M2C_FIELD(p,u8 *,0xD0D) >= 6) return 1;
- count = M2C_FIELD(p,u8 *,0xD12);
+ selected = M2C_FIELD(p,u8 *,WFC_STATE_RECORD_INDEX);
+ base = p + WFC_STATE_RECORDS + WFC_RECORD_CODE_ALT;
+ offset = (s16)selected * (s16)WFC_RECORD_STRIDE;
+ if (M2C_FIELD(p,u8 *,WFC_STATE_RESULT_ID) >= 6) return 1;
+ count = M2C_FIELD(p,u8 *,WFC_STATE_RECORD_COUNT);
  for (i=0;i<count;i++) {
-  if (i != selected && M2C_FIELD(p + i*4,u8 *,0x445)<6) {
-   s32 off = i*0xC0;
-   if (StringCompareN(base+offset,base+off,M2C_FIELD(p+off,u16 *,0x47A))==0) return 2;
+  if (i != selected && M2C_FIELD(p + i*4,u8 *,WFC_STATE_RECORD_ID)<6) {
+   s32 off = i*WFC_RECORD_STRIDE;
+   if (StringCompareN(base+offset,base+off,M2C_FIELD(p+off,u16 *,WFC_STATE_RECORDS+WFC_RECORD_CODE_LEN))==0) return 2;
   }
  }
  return 1;
@@ -547,7 +550,7 @@ s32 func_020301dc(s32 arg0) {
 s32 func_02030264(void) {
  void func_020271cc(void);
  void func_02027428(void);
- void func_020276b0(void);
+ void WFC_ProcessConnectStep(void);
  void WFC_ProcessLinkStep(void);
  void WFC_ProcessLinkState(void);
  u32 Wfc_GetLinkState(void);
@@ -555,7 +558,7 @@ s32 func_02030264(void) {
  case 0:return 1;
  case 1:func_020271cc();break;
  case 3:func_02027428();break;
- case 6:func_020276b0();break;
+ case 6:WFC_ProcessConnectStep();break;
  case 9:WFC_ProcessLinkStep();break;
  case 12:WFC_ProcessLinkState();break;
  case 11:func_0202f558(0);return -1;

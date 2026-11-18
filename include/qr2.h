@@ -33,6 +33,8 @@
 /* Fields of the QR2 connection record. */
 #define QR2_SOCKET        0x00  /* s32 UDP socket */
 #define QR2_GAMENAME      0x04  /* char[] game name reported to the master */
+#define QR2_SECRET_KEY    0x44  /* char[] secret key that ciphers the state string of a state reply */
+#define QR2_STATE_STRING_MAX 65 /* longest incoming state string, its terminating NUL included */
 #define QR2_LOCAL_IP      0x84  /* u8[4] random client id seeded at creation, echoed back by the master */
 #define QR2_CB_PUBLIC_ADDRESS 0xA8 /* void (*)(u32 ip, u16 port, void *ctx): set to be told the public address the master sees (also makes the state report carry it) */
 #define QR2_LAST_SENT     0xAC  /* s32 tick of the last state query */

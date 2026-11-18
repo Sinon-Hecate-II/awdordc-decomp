@@ -273,7 +273,7 @@ void func_ov005_0221b4cc(void) {
 
 void Tick3DSpriteAnimation(void *animState) {
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK gSpriteAnimConfig;
+    extern M2C_UNK gBattleResults;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     M2C_UNK Sprite_ResumeAnimation(void *);
     u16 *volatile sp38;
@@ -332,13 +332,13 @@ void Tick3DSpriteAnimation(void *animState) {
         M2C_FIELD(animState, u16 *, 0x38) = (u16)EaseInterpolate(4, -0xa0, 0, frame, 0x20);
     }
 
-    for (i = 0; i < MaxU8(M2C_FIELD(&gSpriteAnimConfig, u8 *, 0xC), M2C_FIELD(&gSpriteAnimConfig, u8 *, 0xD), M2C_FIELD(&gSpriteAnimConfig, u8 *, 0xE)); i++) {
+    for (i = 0; i < MaxU8(M2C_FIELD(&gBattleResults, u8 *, 0xC), M2C_FIELD(&gBattleResults, u8 *, 0xD), M2C_FIELD(&gBattleResults, u8 *, 0xE)); i++) {
         frame = M2C_FIELD(animState, s32 *, 0x34) - i * 2;
         if (frame > 0 && frame <= 0x20)
             ((u16 *)((u8 *)animState + 0x3A))[i] = (u16)EaseInterpolate(4, 0xa0, 0, frame, 0x20);
     }
 
-    if (M2C_FIELD(animState, s32 *, 0x34) != (MaxU8(M2C_FIELD(&gSpriteAnimConfig, u8 *, 0xC), M2C_FIELD(&gSpriteAnimConfig, u8 *, 0xD), M2C_FIELD(&gSpriteAnimConfig, u8 *, 0xE)) - 1) * 2 + 0x20)
+    if (M2C_FIELD(animState, s32 *, 0x34) != (MaxU8(M2C_FIELD(&gBattleResults, u8 *, 0xC), M2C_FIELD(&gBattleResults, u8 *, 0xD), M2C_FIELD(&gBattleResults, u8 *, 0xE)) - 1) * 2 + 0x20)
         return;
 
     sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);

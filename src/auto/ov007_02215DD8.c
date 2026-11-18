@@ -232,18 +232,20 @@ if(y+1<M2C_FIELD(*gCurrentMap,u16*,0x5146)){Map_SetCellTile(x,y+1,3);(gMapMarker
 Map_MarkUnitsMoved();Map_GrowTerrain(3,1);
 }
 
-void func_ov007_02216bf4(void) {
+/* Scatters single woods seeds (MAP_TILE_WOODS) on random plain cells and lets
+ * Map_GrowTerrain expand them into forest patches, then marks units moved. */
+void Map_GenerateWoodsTerrain(void) {
 s32 Map_InitMarkerGrid(void);s32 Map_RandomScaledValue(s32,s32);s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);s32 Map_SetCellTile(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void Map_GrowTerrain(s32,s32);
 extern u8 gMapMarkerGrid[];
-s32 x,y,i,n;
-Map_InitMarkerGrid();n=Map_RandomScaledValue(8,12);
-i=0;
-if(n>0){do{
+s32 x,y,placed,seedCount;
+Map_InitMarkerGrid();seedCount=Map_RandomScaledValue(8,12);
+placed=0;
+if(seedCount>0){do{
 if(!Map_PickRandomTileOfValue(&x,&y,1))break;
-Map_SetCellTile(x,y,32);
-*(gMapMarkerGrid+y*30+x)=2;
-i++;
-}while(i<n);}
-Map_MarkUnitsMoved();Map_GrowTerrain(32,1);
+Map_SetCellTile(x,y,MAP_TILE_WOODS);
+*(gMapMarkerGrid+y*MAP_MARKER_STRIDE+x)=MAP_MARKER_PATH;
+placed++;
+}while(placed<seedCount);}
+Map_MarkUnitsMoved();Map_GrowTerrain(MAP_TILE_WOODS,1);
 }
 

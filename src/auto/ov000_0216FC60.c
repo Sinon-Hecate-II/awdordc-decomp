@@ -1,5 +1,6 @@
 /* 9 functions from 0x0216FC60 to 0x021707D8 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 
 extern u8 gScrollListTabDesc0[40];
 extern u8 gScrollListTabDesc1[40];
@@ -7,25 +8,28 @@ extern u8 gScrollListTabDesc2[40];
 extern u8 gScrollListTabDesc3[40];
 extern u8 gScrollListRowDesc[40];
 
-void func_ov000_0216fc60(u8 *arg0) {
+/* Handle a click on one of the unit list's four tab buttons: the button's slot
+ * id (SCROLL_LIST_TAB_ID) selects the tab, then the list is rebuilt for it and
+ * its tabs and rows are redrawn. */
+void ScrollListSelectTab(u8 *selectedButton) {
     void *GetScrollList(void);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK ScrollListRebuild(s16, s16);
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListDrawTabs(void *);
-    void *p = GetScrollList();
-    if (p == NULL) return;
-    switch (*arg0) {
-    case 0xFB: M2C_FIELD(p, s16 *, 0x34) = 0; break;
-    case 0xFA: M2C_FIELD(p, s16 *, 0x34) = 1; break;
-    case 0xF9: M2C_FIELD(p, s16 *, 0x34) = 2; break;
-    case 0xF8: M2C_FIELD(p, s16 *, 0x34) = 3; break;
+    ScrollList *list = GetScrollList();
+    if (list == NULL) return;
+    switch (*selectedButton) {
+    case SCROLL_LIST_TAB_ID(0): list->tab = 0; break;
+    case SCROLL_LIST_TAB_ID(1): list->tab = 1; break;
+    case SCROLL_LIST_TAB_ID(2): list->tab = 2; break;
+    case SCROLL_LIST_TAB_ID(3): list->tab = 3; break;
     default: return;
     }
-    PlaySoundEffect(0x10020);
-    ScrollListRebuild(M2C_FIELD(p,s16 *,0x34), M2C_FIELD(p,s16 *,0x36));
-    ScrollListDrawTabs(p);
-    ScrollListDrawRows(M2C_FIELD(p,s16 *,0x38));
+    PlaySoundEffect(SOUND_MENU_TAB);
+    ScrollListRebuild(list->tab, list->reverse);
+    ScrollListDrawTabs(list);
+    ScrollListDrawRows(list->animPos);
 }
 
 void ScrollListNavigate(u8 *selection) {

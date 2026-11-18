@@ -1,5 +1,6 @@
 /* 4 functions from 0x0218BBD0 to 0x0218CBC0 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u16 value:5; u8 bytes8[3]; u8 state:4; u8 stateFlags:4; u8 tail[2]; } Unit0218C4;
 
@@ -11,7 +12,7 @@ typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u
 #pragma opt_peephole reset
 #pragma opt_strength_reduction off
 #pragma opt_if-conversion off
-int func_ov000_0218bbd0(void *arg0) {
+int SelectIndirectAttackAction(void *arg0) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
     extern u8 *gAiUnitTypeTuning;
@@ -139,7 +140,7 @@ int func_ov000_0218bbd0(void *arg0) {
     return 0;
 }
 #pragma opt_if-conversion reset
-s32 func_ov000_0218c400(s32 arg0) {
+s32 SelectMovingIndirectAttackAction(s32 arg0) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
     extern u8 *gAiUnitTypeTuning;
@@ -277,20 +278,23 @@ s32 func_ov000_0218c400(s32 arg0) {
     return 0;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_0218ca94(void) {
+void RunAiAttackAction(void) {
 extern void **gCurrentMap;
 switch(GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)){
-case 0: func_ov000_0218b0d8(0); return;
-case 1: if(func_020a85c8((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26))func_ov000_0218c400(0);else func_ov000_0218bbd0(0);return;
+case 0: SelectDirectAttackAction(0); return;
+case 1: if(IsMobileIndirectUnitKind((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26))SelectMovingIndirectAttackAction(0);else SelectIndirectAttackAction(0);return;
 }}
 
-s32 func_ov000_0218cb20(void) {
+/* Whether the AI unit under the cursor has an attack action it can take: a
+ * direct-combat action, or for an indirect unit the moving or static fire
+ * action.  The selectors are asked to check only (argument 1 = dry run). */
+s32 AiUnitHasAttackTarget(void) {
 extern void **gCurrentMap;
-u32 x=(u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26;
-if(x==6)return 0;
-switch(GetUnitAttackClass(x)){
-case 0: return func_ov000_0218b0d8(1);
-case 1: if(func_020a85c8((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26))return func_ov000_0218c400(1);else return func_ov000_0218bbd0(1);
+u32 kind=(u32)(*M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT)<<26)>>26;
+if(kind==6)return 0;
+switch(GetUnitAttackClass(kind)){
+case UNIT_ATTACK_DIRECT: return SelectDirectAttackAction(1);
+case UNIT_ATTACK_INDIRECT: if(IsMobileIndirectUnitKind((u32)(*M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT)<<26)>>26))return SelectMovingIndirectAttackAction(1);else return SelectIndirectAttackAction(1);
 default:return 0;
 }}
 

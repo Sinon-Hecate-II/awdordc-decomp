@@ -158,34 +158,37 @@ s32 GetMaxSendChunk(s32 size) {
     return size;
 }
 
-s32 ReadSendRequest(s32 arg0, s32 arg1, void *arg2) {
+/* Drain up to maxBytes from a queued send request's two ring pieces into the
+ * destination buffer, advancing the request's read pointers, and return how many
+ * bytes were copied. */
+s32 ReadSendRequest(u8 *dest, s32 maxBytes, SendRequest *req) {
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    s32 temp_r0;
-    s32 var_r4;
-    s32 var_r5;
+    s32 remaining;
+    s32 firstLen;
+    s32 secondLen;
 
-    var_r4 = M2C_FIELD(arg2, s32 *, 0x14);
-    var_r5 = M2C_FIELD(arg2, s32 *, 0x1C);
-    if (var_r4 > arg1) {
-        var_r4 = arg1;
-        var_r5 = 0;
+    firstLen = req->firstLen;
+    secondLen = req->secondLen;
+    if (firstLen > maxBytes) {
+        firstLen = maxBytes;
+        secondLen = 0;
     } else {
-        temp_r0 = arg1 - var_r4;
-        if (var_r5 > temp_r0) {
-            var_r5 = temp_r0;
+        remaining = maxBytes - firstLen;
+        if (secondLen > remaining) {
+            secondLen = remaining;
         }
     }
-    if (var_r4 > 0) {
-        MI_CpuCopy8(M2C_FIELD(arg2, s32 *, 0x10), arg0, var_r4);
-        M2C_FIELD(arg2, s32 *, 0x10) = (s32) (M2C_FIELD(arg2, s32 *, 0x10) + var_r4);
-        M2C_FIELD(arg2, s32 *, 0x14) = (s32) (M2C_FIELD(arg2, s32 *, 0x14) - var_r4);
+    if (firstLen > 0) {
+        MI_CpuCopy8(req->firstPtr, (s32)dest, firstLen);
+        req->firstPtr = (s32) (req->firstPtr + firstLen);
+        req->firstLen = (s32) (req->firstLen - firstLen);
     }
-    if (var_r5 > 0) {
-        MI_CpuCopy8(M2C_FIELD(arg2, s32 *, 0x18), arg0 + var_r4, var_r5);
-        M2C_FIELD(arg2, s32 *, 0x18) = (s32) (M2C_FIELD(arg2, s32 *, 0x18) + var_r5);
-        M2C_FIELD(arg2, s32 *, 0x1C) = (s32) (M2C_FIELD(arg2, s32 *, 0x1C) - var_r5);
+    if (secondLen > 0) {
+        MI_CpuCopy8(req->secondPtr, (s32)dest + firstLen, secondLen);
+        req->secondPtr = (s32) (req->secondPtr + secondLen);
+        req->secondLen = (s32) (req->secondLen - secondLen);
     }
-    return var_r4 + var_r5;
+    return firstLen + secondLen;
 }
 
 #pragma opt_common_subs off
@@ -284,51 +287,59 @@ state=M2C_FIELD(socket,s8*,SOCK_STATE);
 if(state!=0 && state!=4)duplex=0;
 if(duplex)SocketQueueTask(M2C_FIELD(socket,s32*,SOCK_TX_CONN),0);
 task=(void*)SocketAllocTask(&SocketCloseTask,socket,1);
-M2C_FIELD(task,s32*,TASK_RESULT)=0;
+M2C_FIELD(task,s32*,TASK_NOTIFY)=0;
 SocketSubmitTask(socket,task);
 return 0;
 }
 
-s32 SocketCloseTask(void *arg0) {
+/* Close task of a socket: while the socket is still duplex, shut its send
+ * connection down (join the connection's thread, finish the pending TCP send and
+ * reset the connection), clear the stack's current raw connection, drop the
+ * socket's busy/done flags, post a stop to the connection the socket still uses,
+ * then move the socket from the active list to the closed list under the
+ * interrupt lock and mark it closed. */
+s32 SocketCloseTask(void *request) {
+    M2C_UNK func_0201d484();
     M2C_UNK func_0201d4c0();
     M2C_UNK func_0201d224();
     M2C_UNK ClearCurrentRawConnection();
     M2C_UNK SocketQueueTask(s32, s32);
-    void func_02021418(void *);
-    void func_02021430(M2C_UNK);
-    s32 temp_r5;
-    s32 var_r0;
-    s32 var_r1;
-    s8 temp_r0;
-    void *temp_r4;
-    temp_r4 = M2C_FIELD(arg0, void **, 4);
-    var_r1 = 1;
-    temp_r0 = M2C_FIELD(temp_r4, s8 *, 0x73);
-    if ((temp_r0 != 0) && (temp_r0 != 4)) var_r1 = 0;
-    if (var_r1 != 0) {
-        func_02005d60(M2C_FIELD(temp_r4, s32 *, 0x68) + 0x20);
+    void SocketRemoveFromActiveList(M2C_UNK);
+    void SocketAddToClosedList(void *);
+    s32 irqState;
+    s32 connection;
+    s32 duplex;
+    s8 state;
+    void *socket;
+
+    socket = M2C_FIELD(request, void **, TASK_SOCKET);
+    duplex = 1;
+    state = M2C_FIELD(socket, s8 *, SOCK_STATE);
+    if ((state != SOCK_STATE_IDLE) && (state != SOCK_STATE_CONNECTED)) duplex = 0;
+    if (duplex != 0) {
+        OS_JoinThread(M2C_FIELD(socket, s32 *, SOCK_TX_CONN) + 0x20); /* the send connection's thread */
         func_0201d484();
         func_0201d4c0();
         func_0201d224();
     }
     ClearCurrentRawConnection();
-    M2C_FIELD(temp_r4, s16 *, 0x70) &= ~6;
-    if (M2C_FIELD(temp_r4, s8 *, 0x73) == 2) var_r0 = M2C_FIELD(temp_r4, s32 *, 0x68);
-    else var_r0 = M2C_FIELD(temp_r4, s32 *, 0x64);
-    SocketQueueTask(var_r0, 0);
-    temp_r5 = OS_DisableInterrupts();
-    func_02021430((M2C_UNK)temp_r4);
-    func_02021418(temp_r4);
-    OS_RestoreInterrupts(temp_r5);
-    M2C_FIELD(temp_r4, s16 *, 0x70) |= 0x20;
+    M2C_FIELD(socket, s16 *, SOCK_FLAGS) &= ~(SOCK_FLAG_BUSY | SOCK_FLAG_DONE);
+    if (M2C_FIELD(socket, s8 *, SOCK_STATE) == SOCK_STATE_SEND_ONLY) connection = M2C_FIELD(socket, s32 *, SOCK_TX_CONN);
+    else connection = M2C_FIELD(socket, s32 *, SOCK_RAW);
+    SocketQueueTask(connection, 0);
+    irqState = OS_DisableInterrupts();
+    SocketRemoveFromActiveList((M2C_UNK)socket);
+    SocketAddToClosedList(socket);
+    OS_RestoreInterrupts(irqState);
+    M2C_FIELD(socket, s16 *, SOCK_FLAGS) |= SOCK_FLAG_CLOSED;
     return 0;
 }
 
 /* Tear down an object: free its children, detach from queues, then free the object itself. */
 M2C_UNK func_02020d90(s32 obj) {
 extern void *gNetAllocator;
-void func_02020e90(s32);
-void func_02021430(M2C_UNK);
+void ConnectionAbort(s32);
+void SocketRemoveFromActiveList(M2C_UNK);
 void func_02021490(M2C_UNK);
 void OS_WakeupThread(s32);
 s32 child,next,lock,active;
@@ -338,7 +349,7 @@ M2C_FIELD(obj,s16*,0x70)=0;
 state=M2C_FIELD(obj,s8*,0x73);active=1;
 if(state!=0 && state!=4)active=0;
 if(active){
-func_02020e90(M2C_FIELD(obj,s32*,0x68));func_02020e90(M2C_FIELD(obj,s32*,0x64));
+ConnectionAbort(M2C_FIELD(obj,s32*,0x68));ConnectionAbort(M2C_FIELD(obj,s32*,0x64));
 }else if(state==1){
 child=M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x104);
 while(child){next=M2C_FIELD(child,s32*,0); M2C_FIELD(gNetAllocator,void (**)(s32),0x1c)(child);child=next;}
@@ -346,48 +357,52 @@ M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s16*,0x108)=0;
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x100)=0;
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x104)=0;
 OS_WakeupThread(M2C_FIELD(obj,s32*,0x64)+0x10c);
-func_02020e90(M2C_FIELD(obj,s32*,0x64));
-}else if(state==2)func_02020e90(M2C_FIELD(obj,s32*,0x68));
+ConnectionAbort(M2C_FIELD(obj,s32*,0x64));
+}else if(state==2)ConnectionAbort(M2C_FIELD(obj,s32*,0x68));
 lock=OS_DisableInterrupts();
-func_02021430(obj);func_02021490(obj);
+SocketRemoveFromActiveList(obj);func_02021490(obj);
 M2C_FIELD(gNetAllocator,void (**)(s32),0x1c)(obj);
 OS_RestoreInterrupts(lock);
 }
 
-void func_02020e90(s32 arg0) {
-    M2C_UNK func_02005d60(s32);
-    M2C_UNK func_02005eac();
-    M2C_UNK func_02006130();
-    M2C_UNK func_02006164();
+/* Tear a raw connection's task queue down: wait for the connection's worker thread
+ * to finish, then take every task still queued on it, tell the caller waiting on
+ * the task that it was aborted (SOCK_TASK_ABORTED) and give the task back to the
+ * pool. */
+void ConnectionAbort(s32 conn) {
+    M2C_UNK OS_JoinThread(s32);
+    M2C_UNK OS_Reschedule();
+    M2C_UNK OS_DisableScheduler();
+    M2C_UNK OS_EnableScheduler();
     M2C_UNK OS_SendMessage(s32, M2C_UNK, M2C_UNK);
     s32 OS_ReceiveMessage(s32, void **, M2C_UNK);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    M2C_UNK func_0201f210(void *);
-    void *sp0;
-    s32 temp_r0;
-    s32 temp_r8;
+    M2C_UNK SocketFreeTask(void *);
+    void *task;
+    s32 waiter;
+    s32 irq;
 
-    if (arg0 == 0) {
+    if (conn == 0) {
         return;
     }
-    func_02005d60(arg0 + 0x20);
-    temp_r8 = OS_DisableInterrupts();
-    func_02006130();
-    if (OS_ReceiveMessage(arg0, &sp0, 0) != 0) {
+    OS_JoinThread(conn + 0x20);
+    irq = OS_DisableInterrupts();
+    OS_DisableScheduler();
+    if (OS_ReceiveMessage(conn, &task, 0) != 0) {
         do {
-            if (sp0 != NULL) {
-                temp_r0 = M2C_FIELD(sp0, s32 *, 8);
-                if (temp_r0 != 0) {
-                    OS_SendMessage(temp_r0, -0xB, 0);
+            if (task != NULL) {
+                waiter = M2C_FIELD(task, s32 *, TASK_NOTIFY);
+                if (waiter != 0) {
+                    OS_SendMessage(waiter, SOCK_TASK_ABORTED, 0);
                 }
-                func_0201f210(sp0);
+                SocketFreeTask(task);
             }
-        } while (OS_ReceiveMessage(arg0, &sp0, 0) != 0);
+        } while (OS_ReceiveMessage(conn, &task, 0) != 0);
     }
-    func_02006164();
-    func_02005eac();
-    OS_RestoreInterrupts(temp_r8);
+    OS_EnableScheduler();
+    OS_Reschedule();
+    OS_RestoreInterrupts(irq);
 }
 
 M2C_UNK func_02020f30(void) {
@@ -626,12 +641,12 @@ void func_02021408(void **arg0, void *arg1) {
     *arg0 = arg1;
 }
 
-void func_02021418(void *arg0) {
+void SocketAddToClosedList(void *arg0) {
     extern M2C_UNK gClosedSocketList;
     func_02021408((void **)&gClosedSocketList, arg0);
 }
 
-void func_02021430(M2C_UNK arg0) {
+void SocketRemoveFromActiveList(M2C_UNK arg0) {
     M2C_UNK func_02021448(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gActiveSocketList;
     func_02021448(&gActiveSocketList, arg0);
@@ -716,7 +731,7 @@ s32 func_020215f8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg4
  return result;
 }
 
-void func_02021688(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void SocketSend(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02020478(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     func_02020478(arg0, arg1, arg2, 0, 0, 0);
 }

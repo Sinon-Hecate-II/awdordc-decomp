@@ -221,11 +221,11 @@ return M2C_FIELD(GetRecordDefinition(1,a),s32 *,0x14);
 
 s32 func_ov000_0216a7fc(void) {
     s32 EvalScriptConditions(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 *func_ov000_0216b0c8();
+    s32 *GetMapEventScript();
     s32 *temp_r0_2;
     s32 temp_r0;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = *temp_r0_2;
         if (temp_r0 != 0) {
@@ -239,7 +239,7 @@ s32 func_ov000_0216a834(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 4);
         if (temp_r0 != 0) {
@@ -253,7 +253,7 @@ s32 func_ov000_0216a86c(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 8);
         if (temp_r0 != 0) {
@@ -267,7 +267,7 @@ s32 func_ov000_0216a8a4(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0xC);
         if (temp_r0 != 0) {
@@ -277,19 +277,22 @@ s32 func_ov000_0216a8a4(void) {
     return 0;
 }
 
-u8 func_ov000_0216a8dc(s32 a) {
+/* Run the map's unit-selected event for the unit a player just picked: its condition
+ * list is evaluated with the unit (its action commands run when a condition holds).
+ * Units outside the first group of unit records have no event. */
+u8 RunUnitSelectedEvent(s32 unit) {
 extern s32 *gCurrentMap;
-s32 p= (s32)func_ov000_0216b0c8();s32 index;
-if(a==0)index=0;else index=(a-(*gCurrentMap+0x59a4))/14;
+s32 script= (s32)GetMapEventScript();s32 index;
+if(unit==0)index=0;else index=(unit-(*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;
 if((index&0xc0)>>6)return 0;
-if(p && M2C_FIELD(p,s32 *,16))return EvalScriptConditions(M2C_FIELD(p,s32 *,16),a,0,0,1);return 0;
+if(script && M2C_FIELD(script,s32 *,MAP_EVENT_UNIT_SELECTED))return EvalScriptConditions(M2C_FIELD(script,s32 *,MAP_EVENT_UNIT_SELECTED),unit,0,0,1);return 0;
 }
 
 s32 func_ov000_0216a97c(M2C_UNK arg0, M2C_UNK arg1) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x14);
         if (temp_r0 != 0) {
@@ -303,7 +306,7 @@ s32 func_ov000_0216a9bc(M2C_UNK arg0) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x18);
         if (temp_r0 != 0) {
@@ -317,7 +320,7 @@ s32 func_ov000_0216aa04(M2C_UNK arg0, M2C_UNK arg1) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x18);
         if (temp_r0 != 0) {
@@ -331,7 +334,7 @@ s32 func_ov000_0216aa44(M2C_UNK arg0, M2C_UNK arg1) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x1C);
         if (temp_r0 != 0) {
@@ -345,7 +348,7 @@ s32 func_ov000_0216aa84(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x20);
         if (temp_r0 != 0) {
@@ -359,7 +362,7 @@ s32 func_ov000_0216aabc(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x24);
         if (temp_r0 != 0) {
@@ -373,7 +376,7 @@ s32 func_ov000_0216aaf4(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x28);
         if (temp_r0 != 0) {
@@ -387,7 +390,7 @@ s32 func_ov000_0216ab2c(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x2C);
         if (temp_r0 != 0) {
@@ -401,7 +404,7 @@ s32 func_ov000_0216ab64(s32 arg0) {
     s32 temp_r0;
     void *temp_r0_2;
 
-    temp_r0_2 = func_ov000_0216b0c8();
+    temp_r0_2 = GetMapEventScript();
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x30);
         if (temp_r0 != 0) {

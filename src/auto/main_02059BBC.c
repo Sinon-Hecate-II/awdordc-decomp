@@ -78,16 +78,16 @@ s32 gti2GetBufferFreeSpace(void *arg0) {
 }
 
 void gti2AddByteToBuffer(void *p,s32 a) {
-extern M2C_UNK data_020ff5d4,data_020ff5f0,data_020ff5a8;
+extern M2C_UNK data_020ff5d4,gAssertFileNameBuffer,data_020ff5a8;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5d4,&data_020ff5f0,&data_020ff5a8,35);
+if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5d4,&gAssertFileNameBuffer,&data_020ff5a8,35);
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
 void gti2AddShortToBuffer(void *p,s32 a) {
-extern M2C_UNK data_020ff5fc,data_020ff5f0,data_020ff5bc;
+extern M2C_UNK data_020ff5fc,gAssertFileNameBuffer,data_020ff5bc;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-if(M2C_FIELD(p,s32 *,8)+2>M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5fc,&data_020ff5f0,&data_020ff5bc,46);
+if(M2C_FIELD(p,s32 *,8)+2>M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5fc,&gAssertFileNameBuffer,&data_020ff5bc,46);
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a>>8;
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
@@ -97,7 +97,7 @@ void gti2AddToBuffer(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK MemCopy(s32, s32, s32);
     s32 StringLength(s32);
     extern M2C_UNK data_020ff594;
-    extern M2C_UNK data_020ff5f0;
+    extern M2C_UNK gAssertFileNameBuffer;
     extern M2C_UNK data_020ff620;
     s32 var_r4;
 
@@ -107,43 +107,49 @@ void gti2AddToBuffer(void *arg0, s32 arg1, s32 arg2) {
             var_r4 = StringLength(arg1);
         }
         if ((s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4) > (s32) M2C_FIELD(arg0, s32 *, 4)) {
-            AssertFailed(&data_020ff620, &data_020ff5f0, &data_020ff594, 0x40);
+            AssertFailed(&data_020ff620, &gAssertFileNameBuffer, &data_020ff594, 0x40);
         }
         MemCopy(M2C_FIELD(arg0, s32 *, 0) + M2C_FIELD(arg0, s32 *, 8), arg1, var_r4);
         M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4);
     }
 }
 
-void gti2RemoveFromBuffer(void *p,s32 a,s32 b) {
-extern M2C_UNK data_020ff644,data_020ff5f0,data_020ff580,data_020ff65c;
-void MemMove(s32,s32,s32);s32 start;
-if(a==-1)a=M2C_FIELD(p,s32 *,8)-b;
-if(a>M2C_FIELD(p,s32 *,8))AssertFailed(&data_020ff644,&data_020ff5f0,&data_020ff580,79);
-if(b>M2C_FIELD(p,s32 *,8)-a)AssertFailed(&data_020ff65c,&data_020ff5f0,&data_020ff580,80);
-start=M2C_FIELD(p,s32 *,0)+a;
-MemMove(start,start+b,M2C_FIELD(p,s32 *,8)-a-b);
-M2C_FIELD(p,s32 *,8)-=b;
+/* Remove `shortenBy` bytes from the GT2 buffer starting at `start` (from the
+ * buffer's end when `start` is -1), shifting the following bytes down. */
+void gti2RemoveFromBuffer(Gt2Buffer *buffer,s32 start,s32 shortenBy) {
+extern M2C_UNK gAssertExprStartInBuffer,gAssertFileNameBuffer,gAssertNameBufferShorten,gAssertExprShortenFits;
+void MemMove(s32,s32,s32);s32 dst;
+if(start==-1)start=buffer->len-shortenBy;
+if(start>buffer->len)AssertFailed(&gAssertExprStartInBuffer,&gAssertFileNameBuffer,&gAssertNameBufferShorten,79);
+if(shortenBy>buffer->len-start)AssertFailed(&gAssertExprShortenFits,&gAssertFileNameBuffer,&gAssertNameBufferShorten,80);
+dst=M2C_FIELD(buffer,s32 *,0)+start;
+MemMove(dst,dst+shortenBy,buffer->len-start-shortenBy);
+buffer->len-=shortenBy;
 }
 
-s32 func_02059f18(void *arg0) {
+/* GameSpy GT2's socket error callback: report the error to the callback the
+ * socket was created with, held inside the socket's callback count so a socket
+ * asked to be freed is only freed once the outermost callback returns. Returns
+ * 1, or 0 once the socket has been freed. */
+s32 gti2SocketErrorCallback(void *socket) {
     M2C_UNK gti2FreeSocket(void *);
-    extern M2C_UNK data_020ff704;
-    extern M2C_UNK data_020ff774;
+    extern M2C_UNK gAssertExprSocketErrorCallback;
+    extern M2C_UNK gAssertNameSocket;
     extern M2C_UNK gAssertFileName;
-    if (arg0 == NULL) {
-        AssertFailed(&data_020ff774, &gAssertFileName, &data_020ff704, 0x1B);
+    if (socket == NULL) {
+        AssertFailed(&gAssertNameSocket, &gAssertFileName, &gAssertExprSocketErrorCallback, 0x1B);
     }
-    if (arg0 == NULL) {
+    if (socket == NULL) {
         return 1;
     }
-    if (M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x24) == NULL) {
+    if (M2C_FIELD(socket, M2C_UNK (**)(void *), GT2_SOCKET_ERROR_CALLBACK) == NULL) {
         return 1;
     }
-    M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) + 1);
-    M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x24)(arg0);
-    M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) - 1);
-    if ((M2C_FIELD(arg0, s32 *, 0x14) != 0) && (M2C_FIELD(arg0, s32 *, 0x1C) == 0)) {
-        gti2FreeSocket(arg0);
+    M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) = (s32) (M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) + 1);
+    M2C_FIELD(socket, M2C_UNK (**)(void *), GT2_SOCKET_ERROR_CALLBACK)(socket);
+    M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) = (s32) (M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) - 1);
+    if ((M2C_FIELD(socket, s32 *, GT2_SOCKET_DIRTY) != 0) && (M2C_FIELD(socket, s32 *, GT2_SOCKET_CALLBACKS) == 0)) {
+        gti2FreeSocket(socket);
         return 0;
     }
     return 1;
@@ -330,9 +336,9 @@ gti2FreeSocket(M2C_FIELD(p,void **,8));return 0;
  * received, keep the socket's and connection's callback refcounts, and free the
  * socket when it was closed and the last callback has returned. */
 s32 gti2DumpCallback(void *socket, void *connection, s32 address, s32 port, s32 flags, s32 message, s32 length, s32 send) {
-    extern int data_020ff774, gAssertFileName, data_020ff680;
+    extern int gAssertNameSocket, gAssertFileName, data_020ff680;
     void (*dumpHandler)(void *, void *, s32, s32, s32, s32, s32);
-    if (!socket) AssertFailed(&data_020ff774, &gAssertFileName, &data_020ff680, 0x160);
+    if (!socket) AssertFailed(&gAssertNameSocket, &gAssertFileName, &data_020ff680, 0x160);
     if (!socket) return 1;
     if (send) dumpHandler = M2C_FIELD(socket, void (**)(void *, void *, s32, s32, s32, s32, s32), 0x28);
     else dumpHandler = M2C_FIELD(socket, void (**)(void *, void *, s32, s32, s32, s32, s32), 0x2c);
@@ -349,9 +355,9 @@ s32 gti2DumpCallback(void *socket, void *connection, s32 address, s32 port, s32 
 
 /* Invoke the "unrecognized message" callback with refcount tracking, releasing the owning handler when idle. */
 s32 gti2UnrecognizedMessageCallback(void *p,s32 a,s32 b,s32 c,s32 d,s32 *out){
-extern int data_020ff774,gAssertFileName,data_020ff754;
+extern int gAssertNameSocket,gAssertFileName,data_020ff754;
 *out=0;
-if(!p)AssertFailed(&data_020ff774,&gAssertFileName,&data_020ff754,0x197);
+if(!p)AssertFailed(&gAssertNameSocket,&gAssertFileName,&data_020ff754,0x197);
 if(!p)return 1;
 if(!M2C_FIELD(p,void **,0x30))return 1;
 if(!d||!c){c=0;d=0;}

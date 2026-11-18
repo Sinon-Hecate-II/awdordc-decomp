@@ -48,7 +48,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     extern M2C_UNK data_0212d430;
     extern M2C_UNK data_0212d440;
     extern M2C_UNK data_0212d450;
-    s32 func_020de50c(s32, void *);
+    s32 GetPeerRatingMatchQuality(s32, void *);
     s32 func_020de5b0(M2C_UNK);
     void func_020de610(void);
 
@@ -106,7 +106,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
 
     updateFn=0;
     switch(M2C_FIELD(setup,s32 *,0x3c)) {
-    case 0: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)func_020de50c;break;
+    case 0: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)GetPeerRatingMatchQuality;break;
     case 1: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)func_020de5b0;break;
     }
 
@@ -118,21 +118,35 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     func_ov010_02228d48((s32)mode, setupCode2, (s32)func_020de610, (s32)setup, updateFn, (s32)setup, variant);
 }
 
-s32 func_020de50c(s32 arg0, void *arg1) {
-s32 func_0203c0b0(s32,s32 *,s32); void *GetLocalPlayerStatus(void); extern M2C_UNK data_0212c5d8;
-s32 saved,a,n,v; register s32 d; s32 t; void *p;
-p=GetLocalPlayerStatus();
-if(!(M2C_FIELD(p,u8 *,0x1a)&2)) return -1;
-saved=M2C_FIELD(p,s32 *,0x20);
-d=(saved>>12)-(func_0203c0b0(arg0,&data_0212c5d8,0x5dc000)>>12);
-if(d<0) a=-d; else a=d;
-t=M2C_FIELD(arg1,u16 *,0x4a);
-if(t<a) {n=t+20; if(n>=50000)n=50000; M2C_FIELD(arg1,u16 *,0x4a)=n;return -1;}
-if(d<0)n=-d; else n=d;
-v=0x7fffff-n;
-if(v>0x7fffff)v=0x7fffff;
-else if(v<0)v=0;
-return v;
+/* Per-frame wait for a joining peer (playerId's server entry) whose GameSpy
+ * skill rating is close enough to the local player's: -1 while it is not, with
+ * the tolerance widened by RATING_TOLERANCE_STEP each update, then the match
+ * quality, which falls by one point per rating point of difference. */
+s32 GetPeerRatingMatchQuality(s32 playerId, void *scene) {
+    s32 func_0203c0b0(s32, s32 *, s32);
+    void *GetLocalPlayerStatus(void);
+    extern M2C_UNK data_0212c5d8;
+    s32 saved, absDiff, tolerance, quality;
+    register s32 diff;
+    void *status;
+
+    status = GetLocalPlayerStatus();
+    if (!(M2C_FIELD(status, u8 *, LOCAL_STATUS_OPTIONS) & LOCAL_OPTION_ONLINE)) return -1;
+    saved = M2C_FIELD(status, s32 *, 0x20); /* the local player's rating, Q12 */
+    diff = (saved >> 12) - (func_0203c0b0(playerId, &data_0212c5d8, RATING_DEFAULT) >> 12);
+    if (diff < 0) absDiff = -diff; else absDiff = diff;
+    tolerance = M2C_FIELD(scene, u16 *, 0x4a);
+    if (tolerance < absDiff) {
+        tolerance = tolerance + RATING_TOLERANCE_STEP;
+        if (tolerance >= RATING_TOLERANCE_MAX) tolerance = RATING_TOLERANCE_MAX;
+        M2C_FIELD(scene, u16 *, 0x4a) = tolerance;
+        return -1;
+    }
+    if (diff < 0) quality = -diff; else quality = diff;
+    quality = MATCH_QUALITY_MAX - quality;
+    if (quality > MATCH_QUALITY_MAX) quality = MATCH_QUALITY_MAX;
+    else if (quality < 0) quality = 0;
+    return quality;
 }
 
 s32 func_020de5b0(M2C_UNK arg0) {
@@ -377,7 +391,7 @@ void EnableMapConfirm(void);
 void ResetPlayerMask(void);
 int func_020890b8(void*);
 int Is3DSpriteVisible(void*);
-void *func_ov009_02224070(int);
+void *GetActiveLinkPlayerSlot(int);
 void func_ov009_022258a8(void*);
 extern void *gKeyState;
 extern void *gCur3DSpriteEngine;
@@ -504,7 +518,7 @@ SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 else if(!func_020890b8(p)&&Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Hide3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000011);
 }
-p=func_ov009_02224070(0);
+p=GetActiveLinkPlayerSlot(0);
 if(!p||(M2C_FIELD(p,u8 *,0x16)&2))return;
 
 v=GetReadyPlayerMask();

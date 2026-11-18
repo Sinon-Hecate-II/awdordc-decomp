@@ -57,14 +57,18 @@ if(M2C_FIELD(M2C_FIELD(p,void **,4),s32 *,12)==0) return 3;
 WFC_SetChannelParam(16,arg0); r=WFC_SendCommand(16,0); if(!r) r=2; return r;
 }
 
-s32 func_02012dd4(s32 arg0, void *arg1, u32 arg2) {
+/* Send `length` bytes from `data` over the WFC data channel (command 17): refuse
+ * when the link is not in the expected channel state, when it is in the request
+ * mode, or when the payload is too small, write the buffer back to memory, then
+ * post the command with `param` and the buffer. */
+s32 WFC_SendDataBuffer(s32 param, void *data, u32 length) {
 void *WFC_GetInfoBlock(); s32 WFC_CheckChannelState(s32,s32); s32 DC_InvalidateRange(s32,s32); void DC_CleanRange(void *,u32); s32 WFC_SetChannelParam(s32,s32); s32 WFC_SendCommand(s32,s32);
-void *p; s32 r;
-p=WFC_GetInfoBlock(); r=WFC_CheckChannelState(1,8); if(r) return r;
-DC_InvalidateRange(M2C_FIELD(p,void **,4)+16,4);
-if(M2C_FIELD(M2C_FIELD(p,void **,4),s32 *,16)==1) return 3;
-if(arg2<16) return 6; if(!arg1) return 6;
-DC_CleanRange(arg1,arg2); WFC_SetChannelParam(17,arg0); r=((s32 (*)(s32,s32,void *,u32))WFC_SendCommand)(17,2,arg1,arg2); if(!r) r=2; return r;
+void *info; s32 result;
+info=WFC_GetInfoBlock(); result=WFC_CheckChannelState(1,8); if(result) return result;
+DC_InvalidateRange(M2C_FIELD(info,void **,WFC_INFO_LINK)+16,4);
+if(M2C_FIELD(M2C_FIELD(info,void **,WFC_INFO_LINK),s32 *,16)==1) return 3;
+if(length<16) return 6; if(!data) return 6;
+DC_CleanRange(data,length); WFC_SetChannelParam(17,param); result=((s32 (*)(s32,s32,void *,u32))WFC_SendCommand)(17,2,data,length); if(!result) result=2; return result;
 }
 
 /* Submit a WFC request: check the channel is in the expect-state, verify it is up

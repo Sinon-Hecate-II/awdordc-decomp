@@ -15,6 +15,10 @@
 #define NET_SESSION_LOGIN_DATA     0x74 /* s32 callback data */
 #define NET_SESSION_MATCH_CALLBACK 0x78 /* void (*)(s32 event, s32 data, s32 arg): match-making event callback, invoked once the session state has been restored */
 #define NET_SESSION_MATCH_DATA     0x7c /* s32 argument passed to the match callback */
+#define NET_SESSION_EVENT_CALLBACK 0x80 /* void (*)(s32 event, s32 arg, s32 data): the app's match event callback installed by the host/join entry points */
+#define NET_SESSION_EVENT_DATA     0x84 /* s32 argument handed to that callback */
+#define NET_SESSION_EVENT_CALLBACK5 0x88 /* void (*)(s32,s32,s32,s32,s32,s32): wider event callback invoked instead of the +0x80 one while the byte at +0x389 is 2 or 3 */
+#define NET_SESSION_EVENT_DATA5    0x8c /* s32 argument handed to the wider callback */
 
 /* The session states whose online subsystem reports an operation's error. */
 enum {
@@ -38,7 +42,10 @@ enum {
 #define GPI_INFO_SESSION       0x28 /* void * logged-in session, NULL until login */
 
 /* A GameSpy info string is a run of \key\value\ fields; the gpi info reader
- * (gpiGetInfoField) extracts one value into gGpiProfileScratch. */
+ * (gpiGetInfoField) extracts one value into gGpiProfileScratch.  The gpi reply
+ * keys are the gGpiKey* strings in main_02058CA4's data: \lid\, \pid\,
+ * \mod\ (modified), \length\, \data\, and the \getpdr\/\setpdr\ result echoes.
+ * gGpiEmptyValue is the empty string a missing field yields. */
 #define GPI_FIELD_DELIMITER 0x5C /* the backslash between a field's key and value */
 
 /* Fields of a GpiProfile record: a server profile's id and name. */

@@ -11,11 +11,11 @@ void func_020d4430(void){extern void **gCurrentMap;if((s32)M2C_FIELD(*gCurrentMa
    handle the current entry's pending flag, otherwise run the step sequence. */
 void func_020d447c(void) {
 extern void **gCurrentMap;
-void func_020cbdbc(void);
-u8 func_0207b7c4(void);
+void RefreshCursorCell(void);
+u8 IsMapViewScrolling(void);
 void *state;
 if(IsDialogActive())return;
-if(func_0207b7c4())return;
+if(IsMapViewScrolling())return;
 state=*gCurrentMap;
 if(M2C_FIELD((u8 *)state+M2C_FIELD(state,u16 *,0x52a4)*0x8c,u8 *,0x67bd)){
 M2C_FIELD(state,u16 *,0x52b0)=1;return;
@@ -25,9 +25,9 @@ if(func_020d0590(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){
 state=(u8 *)*gCurrentMap+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c;
 StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
-if(func_0207b7c4())return;
+if(IsMapViewScrolling())return;
 func_020a2b84(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-func_020cbdbc();func_020a3b58();func_020a694c();ApplyTurnRepairs();RefreshMapView();
+RefreshCursorCell();func_020a3b58();func_020a694c();ApplyTurnRepairs();RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
 
@@ -175,7 +175,7 @@ void func_020d4a50(void) {
     CreateSpriteFromClass(&data_0212be0c, 7);
 }
 
-void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();func_020b4c08(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();func_020d4b30();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
+void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();ResumeSavedBattle(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();func_020d4b30();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
 
 void func_020d4ac8(s16 arg0) {
     extern M2C_UNK data_0212bdcc;
@@ -187,7 +187,7 @@ int func_020d4ae8(void){extern void **gCurrentMap;int (*cb)(void);func_020d3d24(
 extern void func_020d4cf0(void);
 extern void func_020a44d0(void);
 extern void func_020d33d8(void);
-extern void func_020cbdbc(void);
+extern void RefreshCursorCell(void);
 extern int IsLinkSessionActive(void);
 extern void func_020852a8(void);
 extern void PlaySlotScriptedSoundAtVolume(int, int, int, int);
@@ -207,7 +207,7 @@ int func_020d4b30() {
     func_020d4cf0();
     func_020a44d0();
     func_020d33d8();
-    func_020cbdbc();
+    RefreshCursorCell();
 
     if (IsLinkSessionActive() == 1) {
         func_020852a8();

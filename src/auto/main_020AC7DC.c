@@ -657,7 +657,7 @@ extern s16 *gScreenTransition;
 *gScreenTransition &= ~1;
 }
 
-u8 func_020ad728(void) {
+u8 IsScreenTransitionDone(void) {
  extern s16 *gScreenTransition;
  u8 result;
  if (gScreenTransition[0] & 1) result=1; else result=0;

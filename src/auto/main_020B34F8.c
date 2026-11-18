@@ -182,9 +182,9 @@ return scroll<=tile && tile<scroll+total;
 
 void func_020b3a58(M2C_UNK arg0) {
     M2C_UNK func_02088044(M2C_UNK);
-    M2C_UNK func_020b316c();
+    M2C_UNK UpdateSpriteGridPixelOffset();
 
-    func_020b316c();
+    UpdateSpriteGridPixelOffset();
     func_02088044(arg0 + 0x18);
     func_020b35d4(arg0);
     func_020b38d0(arg0);
@@ -280,7 +280,7 @@ void func_020b3c44(void) {
 
 #pragma opt_strength_reduction off
 void func_020b3c48(void *p) {
-void LoadMapTileData(s32);void FreeMapTileData(void);void func_020a1720(void *);
+void LoadMapTileData(s32);void FreeMapTileData(void);void EncodeTerrainHitPoints(void *);
 u8 *map,*src;void *dst; s32 n,x,y,i,j,unitStart,saveStart,off;u16 tile,old;
 src=(u8 *)*gCurrentMap+0x52c2;
 M2C_FIELD(p,s16*,0x18)=M2C_FIELD(src,s16*,0);
@@ -416,5 +416,5 @@ M2C_FIELD(dst,s8*,4250)=M2C_FIELD(src,s8*,6);
 M2C_FIELD(dst,s8*,4251)=M2C_FIELD(src,s8*,7);
 off+=8;
 }
-func_020a1720((u8 *)p+0x1194);
+EncodeTerrainHitPoints((u8 *)p+0x1194);
 }

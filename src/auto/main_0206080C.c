@@ -141,13 +141,13 @@ void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
 }
 
 s32 SBServerGetStringValue(void *arg0,s32 arg1,s32 arg2){
- void *func_02048ff8(s32,s32 *);
+ void *TableLookup(s32,s32 *);
  M2C_UNK AssertFailed(void *,void *,void *,s32);
  extern M2C_UNK data_02100064,data_0210006c,data_02100048;
  s32 sp0[2]; void *temp_r0;
  if(!arg0)AssertFailed(&data_02100064,&data_0210006c,&data_02100048,0x97);
  if(!arg0)return 0;
- sp0[0]=arg1;temp_r0=func_02048ff8(M2C_FIELD(arg0,s32 *,0x18),sp0);
+ sp0[0]=arg1;temp_r0=TableLookup(M2C_FIELD(arg0,s32 *,0x18),sp0);
  if(temp_r0)arg2=M2C_FIELD(temp_r0,s32 *,4);
  return arg2;
 }
@@ -399,15 +399,19 @@ if(M2C_FIELD(server,s32 *,0)!=M2C_FIELD(self,s32 *,0x628))return;
 if(M2C_FIELD(server,u16 *,4)==M2C_FIELD(self,u16 *,0x62c))M2C_FIELD(self,s32 *,0x628)=0;
 }
 
-void func_0206133c(s32 arg0,s32 arg1,void *arg2,void *arg3){
- switch(arg1){
- case 1:M2C_FIELD(arg3,M2C_UNK (**)(void *,s32,void *,s32),0x630)(arg3,2,arg2,M2C_FIELD(arg3,s32 *,0x634));break;
- case 0:M2C_FIELD(arg3,M2C_UNK (**)(void *,s32,void *,s32),0x630)(arg3,1,arg2,M2C_FIELD(arg3,s32 *,0x634));break;
- case 2:M2C_FIELD(arg3,M2C_UNK (**)(void *,s32,void *,s32),0x630)(arg3,4,arg2,M2C_FIELD(arg3,s32 *,0x634));break;
+/* Callback the QR2 query engine calls for the single server a detail query is
+ * outstanding for: forwards each query stage to the application's server-list
+ * callback (1 = updated, 2 = update failed, 4 = query complete) and, once that
+ * server reports, clears the outstanding-query address. */
+void Qr2ServerQueryCallback(s32 unused,s32 stage,void *server,void *self){
+ switch(stage){
+ case 1:M2C_FIELD(self,M2C_UNK (**)(void *,s32,void *,s32),SB_LIST_NOTIFY)(self,2,server,M2C_FIELD(self,s32 *,SB_LIST_NOTIFY_DATA));break;
+ case 0:M2C_FIELD(self,M2C_UNK (**)(void *,s32,void *,s32),SB_LIST_NOTIFY)(self,1,server,M2C_FIELD(self,s32 *,SB_LIST_NOTIFY_DATA));break;
+ case 2:M2C_FIELD(self,M2C_UNK (**)(void *,s32,void *,s32),SB_LIST_NOTIFY)(self,4,server,M2C_FIELD(self,s32 *,SB_LIST_NOTIFY_DATA));break;
  }
- if(!arg2)return;
- if(M2C_FIELD(arg2,s32 *,0)!=M2C_FIELD(arg3,s32 *,0x628))return;
- if(M2C_FIELD(arg2,u16 *,4)==M2C_FIELD(arg3,u16 *,0x62c))M2C_FIELD(arg3,s32 *,0x628)=0;
+ if(!server)return;
+ if(M2C_FIELD(server,s32 *,0)!=M2C_FIELD(self,s32 *,SB_LIST_QUERY_SERVER_IP))return;
+ if(M2C_FIELD(server,u16 *,4)==M2C_FIELD(self,u16 *,SB_LIST_QUERY_SERVER_PORT))M2C_FIELD(self,s32 *,SB_LIST_QUERY_SERVER_IP)=0;
 }
 
 void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
@@ -416,7 +420,7 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     M2C_UNK SBServerListInit(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, M2C_UNK *, void *);
     extern s32 gDnsQueryState;
     void Qr2ServerEventCallback(void *,u32,void *,void *);
-    void func_0206133c(s32, s32, void *, void *);
+    void Qr2ServerQueryCallback(s32, s32, void *, void *);
     void *obj;
 
     if ((arg6 == 0) && (gDnsQueryState != 1)) {
@@ -430,11 +434,11 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     M2C_FIELD(obj, s32 *, 0x634) = arg8;
     M2C_FIELD(obj, s32 *, 0x624) = 0;
     SBServerListInit(obj + 0x4C, arg0, arg1, arg2, arg3, arg6, (M2C_UNK *)&Qr2ServerEventCallback, obj);
-    func_02060398(obj, arg4, arg5, arg6, (M2C_UNK *)&func_0206133c, obj);
+    func_02060398(obj, arg4, arg5, arg6, (M2C_UNK *)&Qr2ServerQueryCallback, obj);
     return obj;
 }
 
-void func_020614b0(s32 arg0) {
+void DestroyServerBrowser(s32 arg0) {
     M2C_UNK func_02060430(s32);
     M2C_UNK func_02062738(s32);
     func_02062738(arg0 + 0x4C);

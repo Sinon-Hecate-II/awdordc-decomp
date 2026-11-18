@@ -206,7 +206,7 @@ u8 Map_CanUnitKindStandOnCell(s32 a,s32 b,s32 c) {
  return M2C_FIELD(M2C_FIELD(gMovementCostTable,s8 **,0x64)+gMovementTypeTable[c*0x70]*32,s8 *,M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=-1;
 }
 
-s32 func_ov007_0221bd74(s32 a,s32 b) {
+s32 MapEditor_GetUnitKindAt(s32 a,s32 b) {
  extern s32 *gCurrentMap;
  s32 p=*gCurrentMap;
  u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
@@ -217,7 +217,7 @@ s32 func_ov007_0221bd74(s32 a,s32 b) {
 #pragma push
 #pragma optimizewithasm off
 #pragma peephole off
-s32 func_ov007_0221bdc0(s32 a,s32 b) {
+s32 MapEditor_GetUnitOwnerAt(s32 a,s32 b) {
  extern s32 *gCurrentMap;
  s32 p=*gCurrentMap;
  s32 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
@@ -225,7 +225,7 @@ s32 func_ov007_0221bdc0(s32 a,s32 b) {
  return ((id&0xC0)>>6)+1;
 }
 #pragma pop
-s32 func_ov007_0221be00(s32 a,s32 b) {
+s32 MapEditor_GetUnitStateAt(s32 a,s32 b) {
  extern s32 *gCurrentMap;
  s32 p=*gCurrentMap;
  u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);

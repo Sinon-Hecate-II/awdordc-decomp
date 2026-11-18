@@ -417,8 +417,8 @@ void func_020c79c4(s32 arg0, s32 arg1, M2C_UNK arg2) {
 }
 
 s32 GetMapRecordBuffer(void) {
-    s32 func_020be120();
-    return func_020be120();
+    s32 GetSaveRecordBuffer();
+    return GetSaveRecordBuffer();
 }
 
 s32 GetMapRecordTerrain(void) {

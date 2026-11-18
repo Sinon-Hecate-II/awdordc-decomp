@@ -9,7 +9,7 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 func_020b846c(s32);void RedrawListRows(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
+s32 func_020b846c(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 func_020ae0a8(void);s32 CanStartScreenTransition(void);void func_020ae164(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
@@ -18,9 +18,9 @@ if(v!=t){h=t-v;if(h<0)h=-h;step=h>>1;if(step==0)step=1;if(v>t)M2C_FIELD(a,s16*,0
 }else M2C_FIELD(a,s16*,0x3c)=0;
 if(M2C_FIELD(a,s16*,0x46)==0){
 if(func_020b846c(M2C_FIELD(a,s16*,0x38))){
-if(func_020d8f4c()==2){
-if(M2C_FIELD(a,s16*,0x38)!=func_020ae0a8() && func_020ae1a4() && func_020b846c(M2C_FIELD(a,s16*,0x38)))func_020ae164(M2C_FIELD(a,s16*,0x38));
-}else func_020d8f1c(2,M2C_FIELD(a,s16*,0x38));
+if(GetUiMode()==2){
+if(M2C_FIELD(a,s16*,0x38)!=func_020ae0a8() && CanStartScreenTransition() && func_020b846c(M2C_FIELD(a,s16*,0x38)))func_020ae164(M2C_FIELD(a,s16*,0x38));
+}else SetUiMode(2,M2C_FIELD(a,s16*,0x38));
 }
 }else M2C_FIELD(a,s16*,0x46)--;
 M2C_FIELD(a,s16*,0x36)=M2C_FIELD(a,s16*,0x38);
@@ -103,11 +103,25 @@ DrawFundsCostRow(0,1,EaseInterpolate(0,funds,remaining,frame,duration),-cost,rem
 if((frame&3)==1)PlaySoundEffect(0x10023);if(frame<duration)return;Sprite_ResumeAnimation(row);
 }
 
-void func_020b94a4(void *a) {s32 ProduceUnit(s32,s32,s32);void SetBattleCommand(s32,u8,s32,s32);void func_ov000_0216aa44(s32,s32);extern void **gCurrentMap;s32 v=M2C_FIELD(a,s32 *,92);s32 result;void *g=*gCurrentMap;
-result=ProduceUnit(M2C_FIELD(g,s16 *,0x52c2),M2C_FIELD(g,s16 *,0x52c4),v);
-M2C_FIELD(*gCurrentMap,s16 *,0x52dc)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
-M2C_FIELD(*gCurrentMap,s16 *,0x52de)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
-SetBattleCommand(1,v,0,0);func_ov000_0216aa44(14,result);M2C_FIELD(*gCurrentMap,s16 *,0x52b4)=0;
+/* Confirm a row of the unit-production menu: build the row's kind on the tile
+ * the cursor is aimed at, move the cursor onto it, record the build command for
+ * the link peer, run the map's unit-built event (14) and hand the map back to
+ * normal cursor input. */
+void ProductionMenu_ConfirmBuild(void *row) {
+    s32 ProduceUnit(s32, s32, s32);
+    void SetBattleCommand(s32, u8, s32, s32);
+    void func_ov000_0216aa44(s32, s32);
+    extern void **gCurrentMap;
+    s32 kind = M2C_FIELD(row, s32 *, PRODUCTION_ROW_KIND);
+    s32 unit;
+    void *map = *gCurrentMap;
+
+    unit = ProduceUnit(M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y), kind);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y);
+    SetBattleCommand(1, kind, 0, 0);
+    func_ov000_0216aa44(14, unit);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
 void func_020b953c(s32 arg0, s32 arg1) {

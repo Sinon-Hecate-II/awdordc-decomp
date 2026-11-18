@@ -197,35 +197,40 @@ CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=save;func_02091cd0();func_ov
 #pragma opt_instruction_scheduling reset
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-void func_ov005_02213cf4(void) {
-    M2C_UNK func_020b2224();
+/* Rebuilds the history menu's list rows: unlocks the slots of the other screens,
+ * frames the list, then creates one sprite slot per row of the tab with the most
+ * rows, up to a full page.  (maxRows is read before it is first set, as in the
+ * original, so the first tab's count only wins when it beats the old register.) */
+void HistoryMenu_CreateRowSlots(void) {
+    M2C_UNK UnlockInactiveSpriteSlots();
     M2C_UNK SetSpriteSlotFrameRect(s32, s32, s32, s32);
     M2C_UNK SelectSpriteSlot(s32);
     M2C_UNK AddSpriteSlot(s32, s32, M2C_UNK *, s32);
     void *HistoryTabAt(s32);
-    extern M2C_UNK data_ov005_022201e0;
-    s32 var_r4;
-    s32 var_r6;
-    s32 var_r7;
-    s32 var_r8;
-    func_020b2224();
+    extern M2C_UNK sHistoryRowSlotDef;
+    s32 tab;
+    s32 maxRows;
+    s32 y;
+    s32 row;
+
+    UnlockInactiveSpriteSlots();
     SetSpriteSlotFrameRect(0, -0x10, 0x100, -0x10);
-    var_r4 = 0;
+    tab = 0;
     do {
-        if (M2C_FIELD(HistoryTabAt(var_r4), s16 *, 8) > var_r6) {
-            var_r6 = M2C_FIELD(HistoryTabAt(var_r4), s16 *, 8);
+        if (((HistoryMenuTab *)HistoryTabAt(tab))->count > maxRows) {
+            maxRows = ((HistoryMenuTab *)HistoryTabAt(tab))->count;
         }
-        var_r4++;
-    } while (var_r4 < 3);
-    var_r8 = 0;
-    if (var_r6 > 0) {
-        var_r7 = 0x28;
+        tab++;
+    } while (tab < 3);
+    row = 0;
+    if (maxRows > 0) {
+        y = 0x28;
 loop:
-        if (var_r8 != 7) {
-            AddSpriteSlot(4, var_r7, &data_ov005_022201e0, var_r8);
-            var_r8++;
-            var_r7 += 0x10;
-            if (var_r8 < var_r6) goto loop;
+        if (row != HISTORY_MENU_PAGE_ROWS) {
+            AddSpriteSlot(4, y, &sHistoryRowSlotDef, row);
+            row++;
+            y += 0x10;
+            if (row < maxRows) goto loop;
         }
     }
     SelectSpriteSlot(0);
@@ -242,7 +247,7 @@ void HistoryMenu_Update(void *widget) {
   s32 HistoryScrollDown(void);
   M2C_UNK MenuSpriteUpdate(M2C_UNK);
   M2C_UNK PlaySoundEffect(s32);
-  void func_020b21e0(void);
+  void LockInactiveSpriteSlots(void);
   void func_020b2268(void);
   M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
   void func_ov005_02212ef0(void);
@@ -318,7 +323,7 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
   buttons = *gKeyState;
   if (buttons & 0x2) {
     PlaySoundEffect(0x1000f);
-    func_020b21e0();
+    LockInactiveSpriteSlots();
     func_020b2268();
     Sprite_ResumeAnimation(widget);
     return;

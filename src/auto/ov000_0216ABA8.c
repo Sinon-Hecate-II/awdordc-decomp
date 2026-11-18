@@ -75,7 +75,7 @@ u8 *SkipToNextConditionGroup(u8 *arg0) {
     return arg0;
 }
 #pragma optimization_level reset
-void *func_ov000_0216b0c8(void) {
+void *GetMapEventScript(void) {
     void *func_020a8b0c(u16);
     s32 func_020cd6d4();
     extern s32 *data_027e0058;
@@ -85,7 +85,7 @@ void *func_ov000_0216b0c8(void) {
     }
 }
 #pragma optimization_level 0
-s32 func_ov000_0216b104(void) {  void *p=func_ov000_0216b0c8(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return EvalScriptConditions(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
+s32 func_ov000_0216b104(void) {  void *p=GetMapEventScript(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return EvalScriptConditions(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
 #pragma optimization_level reset
 s32 func_ov000_0216b154(void) {
     return 0;

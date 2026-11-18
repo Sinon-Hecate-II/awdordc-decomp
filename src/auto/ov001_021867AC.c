@@ -93,13 +93,13 @@ void Ov001_SetRegionMenuY(s32 topY) {
 
 void Ov001_ClipSpriteLayout(M2C_UNK arg0,s32 arg1) {
 s32 func_ov001_0218a258();
-M2C_UNK func_ov001_0218a260(M2C_UNK,s32,s32,M2C_UNK);
+M2C_UNK Ov001_SetSpriteEntryFlags(M2C_UNK,s32,s32,M2C_UNK);
 M2C_UNK Ov001_GetSpritePosition(M2C_UNK,s32,M2C_UNK *,s32 *);
 M2C_UNK sp4; s32 sp0; s32 temp_r0; s32 var_r2; s32 var_r8;
 temp_r0=func_ov001_0218a258();var_r8=0;if(temp_r0<=0)return;
 do {Ov001_GetSpritePosition(arg0,var_r8,&sp4,&sp0);
 if(sp0>=arg1 && sp0<0xc0)var_r2=0;else var_r2=0x200;
-func_ov001_0218a260(arg0,var_r8,var_r2,0);var_r8++;
+Ov001_SetSpriteEntryFlags(arg0,var_r8,var_r2,0);var_r8++;
 }while(var_r8<temp_r0);
 }
 
@@ -242,19 +242,25 @@ s32 Ov001_LoadDownloadPlayProgram(s32 fileRequest) {
     return result;
 }
 
-void Ov001_HandleChildPhase1(s32 a) {
-extern void *gOv001LinkWork;
-u16 mask; s32 state;
-if(Mb_AckPlayerPhase(a,1))return;
-mask=~(1<<a);
-state=OS_DisableInterrupts();
-M2C_FIELD(gOv001LinkWork,u16 *,2) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,4) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,6) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,8) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,10) &= mask;
-M2C_FIELD(gOv001LinkWork,u16 *,12) &= mask;
-OS_RestoreInterrupts(state); Mb_RemovePlayer(a);
+/* Reacts to a download-play child acknowledging link phase 1: a child that has
+   not reached the phase's expected multiboot state is dropped from every link
+   bitmap (with interrupts off) and its connection closed. */
+void Ov001_HandleChildPhase1(s32 player) {
+    extern void *gOv001LinkWork;
+    u16 mask;
+    s32 state;
+
+    if (Mb_AckPlayerPhase(player, 1)) return;
+    mask = ~(1 << player);
+    state = OS_DisableInterrupts();
+    M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED) &= mask;
+    M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICKED) &= mask;
+    M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_PENDING) &= mask;
+    M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_ANSWERED) &= mask;
+    M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_READY) &= mask;
+    M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED_COPY) &= mask;
+    OS_RestoreInterrupts(state);
+    Mb_RemovePlayer(player);
 }
 
 /* Reacts to a download-play child acknowledging link phase 0: if the child has

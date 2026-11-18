@@ -563,9 +563,9 @@ advance:
 }
 #pragma scheduling on
 void func_020949f8(void) {
-    s32 func_0207b7c4();
+    s32 IsMapViewScrolling();
     void func_02094958(void *);
-    s32 func_020d8db0();
+    s32 IsUiModeSwitchBusy();
     extern M2C_UNK gDialogSequences;
     M2C_UNK (*temp_r1)(void *);
     u8 *var_r4;
@@ -577,10 +577,10 @@ void func_020949f8(void) {
     if (func_02094788() != 0) {
         return;
     }
-    if (func_0207b7c4() != 0) {
+    if (IsMapViewScrolling() != 0) {
         return;
     }
-    if (func_020d8db0() != 0) {
+    if (IsUiModeSwitchBusy() != 0) {
         return;
     }
     var_r4 = (u8 *) &gDialogSequences;

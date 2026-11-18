@@ -2,40 +2,42 @@
 #include "common.h"
 typedef struct CallbackPair { s32 first, second; } CallbackPair;
 
-void func_020543e8(void **arg0, void *arg1) {
+/* Frees a pending gpi operation: a search operation first closes its socket and
+ * releases its receive buffers and drops the connection's pending-search count,
+ * then the operation's data and the operation itself are released. */
+void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
     M2C_UNK func_020496b8(s32);
     M2C_UNK func_020496cc(s32, M2C_UNK);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe9b0;
-    extern M2C_UNK data_020fea00;
+    extern M2C_UNK sGpiOperationSourceFile;
     extern M2C_UNK data_020fea4c;
-    s32 temp_r0;
-    void *temp_r2;
-    void *temp_r5;
+    void *connection = *connectionRef;
+    void *search;
+    s32 count;
 
-    temp_r2 = *arg0;
-    if (M2C_FIELD(arg1, s32 *, 0) == 3) {
-        temp_r5 = M2C_FIELD(arg1, void **, 4);
-        temp_r0 = M2C_FIELD(temp_r2, s32 *, 0x210) - 1;
-        M2C_FIELD(temp_r2, s32 *, 0x210) = temp_r0;
-        if (temp_r0 < 0) {
-            AssertFailed(&data_020fea4c, &data_020fea00, &data_020fe9b0, 0xB6);
+    if (operation->type == GPI_OP_SEARCH) {
+        search = operation->data;
+        count = M2C_FIELD(connection, s32 *, GPI_CONN_SEARCH_COUNT) - 1;
+        M2C_FIELD(connection, s32 *, GPI_CONN_SEARCH_COUNT) = count;
+        if (count < 0) {
+            AssertFailed(&data_020fea4c, &sGpiOperationSourceFile, &data_020fe9b0, 0xB6);
         }
-        func_020496cc(M2C_FIELD(temp_r5, s32 *, 4), 2);
-        func_020496b8(M2C_FIELD(temp_r5, s32 *, 4));
-        gpiFree(M2C_FIELD(temp_r5, void **, 0x18));
-        M2C_FIELD(temp_r5, void **, 0x18) = NULL;
-        gpiFree(M2C_FIELD(temp_r5, void **, 8));
-        M2C_FIELD(temp_r5, void **, 8) = NULL;
+        func_020496cc(M2C_FIELD(search, s32 *, 4), 2);
+        func_020496b8(M2C_FIELD(search, s32 *, 4));
+        gpiFree(M2C_FIELD(search, void **, 0x18));
+        M2C_FIELD(search, void **, 0x18) = NULL;
+        gpiFree(M2C_FIELD(search, void **, 8));
+        M2C_FIELD(search, void **, 8) = NULL;
     }
-    gpiFree(M2C_FIELD(arg1, void **, 4));
-    M2C_FIELD(arg1, void **, 4) = NULL;
-    gpiFree(arg1);
+    gpiFree(operation->data);
+    operation->data = NULL;
+    gpiFree(operation);
 }
 
 void func_02054484(void **a,void *b) {
  void *base=*a; void *prev=NULL; void *p=M2C_FIELD(base,void **,0x424);
- while(p) {if(p==b) {if(!prev) M2C_FIELD(base,void **,0x424)=M2C_FIELD(p,void **,32); else M2C_FIELD(prev,void **,32)=M2C_FIELD(b,void **,32); func_020543e8(a,b); return;} prev=p; p=M2C_FIELD(p,void **,32);}
+ while(p) {if(p==b) {if(!prev) M2C_FIELD(base,void **,0x424)=M2C_FIELD(p,void **,32); else M2C_FIELD(prev,void **,32)=M2C_FIELD(b,void **,32); gpiFreeOperation(a,b); return;} prev=p; p=M2C_FIELD(p,void **,32);}
 }
 
 s32 func_020544d4(void **arg0, void **arg1, s32 arg2) {
@@ -69,23 +71,29 @@ s32 func_02054520(void **a) {
  return 0;
 }
 
-void *func_0205455c(void **a,void *b,s32 c) {
- void *gpiProcessConnect(void **,void *,s32);
- void *gpiProcessNewPlayer(void **,void *,s32);
- void *func_02052600(void **,void *,s32);
- void *gpiProcessLoginReply(void **,void *,s32);
- M2C_UNK gpiLogMessage(void **,M2C_UNK *,...);
- extern M2C_UNK data_020fea6c,data_020fea48,data_020fea00,data_020fe9d8;
- void *p=NULL;
- switch(M2C_FIELD(b,u32 *,0)) {
- case 0:p=gpiProcessConnect(a,b,c);break;
- case 1:p=gpiProcessNewPlayer(a,b,c);break;
- case 2:p=func_02052600(a,b,c);break;
- case 4:p=gpiProcessLoginReply(a,b,c);break;
- default:gpiLogMessage(a,&data_020fea6c,M2C_FIELD(b,u32 *,0));AssertFailed(&data_020fea48,&data_020fea00,&data_020fe9d8,326);break;
- }
- if(p) M2C_FIELD(b,void **,28)=p;
- return p;
+/* Dispatch one queued gpi request to the handler for its operation kind and
+ * record the handler's result on the operation; an unknown kind is logged and
+ * asserted. Returns the result, 0 when the operation is still pending. */
+s32 gpiProcessOperation(void **connection, GPIOperation *operation, char *message) {
+    s32 gpiProcessConnect(void **, void *, char *);
+    s32 gpiProcessNewPlayer(void **, void *, char *);
+    s32 func_02052600(void **, void *, char *);
+    s32 gpiProcessLoginReply(void **, void *, char *);
+    M2C_UNK gpiLogMessage(void **, M2C_UNK *,...);
+    extern M2C_UNK gGpiMsgInvalidOperationType, sGpiAssertZero, sGpiOperationSourceFile, sGpiProcessOperation;
+    s32 result = 0;
+    switch (operation->type) {
+    case GPI_OP_CONNECT: result = gpiProcessConnect(connection, operation, message); break;
+    case GPI_OP_NEW_PLAYER: result = gpiProcessNewPlayer(connection, operation, message); break;
+    case GPI_OP_GET_INFO: result = func_02052600(connection, operation, message); break;
+    case GPI_OP_LOGIN: result = gpiProcessLoginReply(connection, operation, message); break;
+    default:
+        gpiLogMessage(connection, &gGpiMsgInvalidOperationType, operation->type);
+        AssertFailed(&sGpiAssertZero, &sGpiOperationSourceFile, &sGpiProcessOperation, 326);
+        break;
+    }
+    if (result) operation->result = result;
+    return result;
 }
 
 /* Per-frame step of a gpi peer that is being connected: open the socket, build
@@ -105,7 +113,7 @@ s32 gpiPeerProcessConnecting(M2C_UNK a,void *peer) {
  s32 StringCompareN(M2C_UNK,M2C_UNK,s32);
  s32 gpiStartPeerChallenge(M2C_UNK,void *);
  s32 gpiPeerConnectionDone(void *);void gpiFreeBuddyList(M2C_UNK,void *);
- extern M2C_UNK gGpiErrorConnectPeer,gGsKeyAuth,gGsKeyPid,gGsKeyNickAuth,gGsKeySig,gGsKeyFinalAuth,data_020febb0,gGsKeyAuthNack,data_020febbc,gGsKeyAuthAck,data_020febe8,data_020fec08,data_020fec0c,data_020feb48;
+ extern M2C_UNK gGpiErrorConnectPeer,gGsKeyAuth,gGsKeyPid,gGsKeyNickAuth,gGsKeySig,gGsKeyFinalAuth,data_020febb0,gGsKeyAuthNack,data_020febbc,gGsKeyAuthAck,data_020febe8,data_020fec08,sGpiPeerSourceFile,data_020feb48;
  void *session=*(void **)a;
  s32 status,bytes,io,rc,clear;
  void *buddy,*p,*end,*text;
@@ -153,7 +161,7 @@ s32 gpiPeerProcessConnecting(M2C_UNK a,void *peer) {
  M2C_FIELD(peer,s32 *,0)=GPI_PEER_STATE_CONNECTED;M2C_FIELD(peer,s32 *,0x20)=0;
  break;
  default:
- AssertFailed(&data_020fec08,&data_020fec0c,&data_020feb48,0x9f);
+ AssertFailed(&data_020fec08,&sGpiPeerSourceFile,&data_020feb48,0x9f);
  break;
  }
  if(M2C_FIELD(peer,s32 *,0x30)>0) {
@@ -184,7 +192,7 @@ s32 gpiProcessPeerAcceptingConnection(M2C_UNK a, void *b) {
     M2C_UNK ParseInt(M2C_UNK);
     M2C_UNK StringFind(M2C_UNK, M2C_UNK);
 
-    extern M2C_UNK data_020fec18, data_020fec0c, data_020feb24, data_020febb0, gGsKeyFinalAuth;
+    extern M2C_UNK data_020fec18, sGpiPeerSourceFile, data_020feb24, data_020febb0, gGsKeyFinalAuth;
     extern M2C_UNK gGsKeyAuth, gGsKeyPid, gGsKeyNickAuth, gGsKeySig, gGsAuthSigFormat;
     extern M2C_UNK gGsKeyAuthNack, gGsKeyAuthAck;
 
@@ -204,7 +212,7 @@ s32 gpiProcessPeerAcceptingConnection(M2C_UNK a, void *b) {
     s32 ioResult;
 
     if (M2C_FIELD(b, s32 *, 0) != GPI_PEER_STATE_WAITING) {
-        AssertFailed(&data_020fec18, &data_020fec0c, &data_020feb24, 0xc1);
+        AssertFailed(&data_020fec18, &sGpiPeerSourceFile, &data_020feb24, 0xc1);
     }
 
     ioResult = gpiReceiveData(gpi, M2C_FIELD(b, s32 *, 8), (void *)((char *)b + 0x18), &bytesRead, &ioStatus, &data_020febb0);
@@ -406,18 +414,23 @@ block_42:
     goto loop_15;
 }
 
-s32 func_02054f0c(M2C_UNK a,void *b) {
- s32 gpiPeerProcessConnecting(M2C_UNK,void *);
- s32 gpiProcessPeerAcceptingConnection(M2C_UNK,void *);
- s32 gpiProcessPeer(void **,void *);
- extern M2C_UNK data_020fec54,data_020fec0c,data_020feac4;
- s32 v=0;
- if(M2C_FIELD(b,s32 *,0)==100) AssertFailed(&data_020fec54,&data_020fec0c,&data_020feac4,473);
- if(M2C_FIELD(b,s32 *,0)!=105) {
- if(M2C_FIELD(b,s32 *,4)) v=gpiPeerProcessConnecting(a,b);else v=gpiProcessPeerAcceptingConnection(a,b);
- }
- if(!v && M2C_FIELD(b,s32 *,0)==105) v=gpiProcessPeer(a,b);
- return v;
+/* Step one gpi peer for this frame: while it is not connected, run its outgoing or
+ * incoming connection handshake depending on which side opened the connection;
+ * once it is connected, relay the messages queued for it. Returns the handler's
+ * result, 0 while the peer is still working through its handshake. */
+s32 gpiProcessPeerState(M2C_UNK manager, void *peer) {
+    s32 gpiPeerProcessConnecting(M2C_UNK, void *);
+    s32 gpiProcessPeerAcceptingConnection(M2C_UNK, void *);
+    s32 gpiProcessPeer(void **, void *);
+    extern M2C_UNK sGpiPeerStateAssert, sGpiPeerSourceFile, sGpiProcessPeerName;
+    s32 result = 0;
+
+    if (M2C_FIELD(peer, s32 *, GPI_PEER_STATE) == GPI_PEER_STATE_CREATED) AssertFailed(&sGpiPeerStateAssert, &sGpiPeerSourceFile, &sGpiProcessPeerName, 473);
+    if (M2C_FIELD(peer, s32 *, GPI_PEER_STATE) != GPI_PEER_STATE_CONNECTED) {
+        if (M2C_FIELD(peer, s32 *, GPI_PEER_INITIATOR)) result = gpiPeerProcessConnecting(manager, peer); else result = gpiProcessPeerAcceptingConnection(manager, peer);
+    }
+    if (!result && M2C_FIELD(peer, s32 *, GPI_PEER_STATE) == GPI_PEER_STATE_CONNECTED) result = gpiProcessPeer(manager, peer);
+    return result;
 }
 
 M2C_UNK func_02054fa8(void **a,void *b) {
@@ -440,7 +453,7 @@ void func_02055008(void **manager, void *entry) {
     M2C_UNK gpiLogMessage(void **, M2C_UNK *, ...);
     extern M2C_UNK data_020feab4;
     extern M2C_UNK data_020fec08;
-    extern M2C_UNK data_020fec0c;
+    extern M2C_UNK sGpiPeerSourceFile;
     extern M2C_UNK data_020fec7c;
     extern M2C_UNK data_020fec8c;
     s32 count;
@@ -451,7 +464,7 @@ void func_02055008(void **manager, void *entry) {
 
     base = *manager;
     if (entry == NULL) {
-        AssertFailed(&data_020fec7c, &data_020fec0c, &data_020feab4, 0x213);
+        AssertFailed(&data_020fec7c, &sGpiPeerSourceFile, &data_020feab4, 0x213);
     }
     previous = M2C_FIELD(base, void **, 0x434);
     if (previous == entry) {
@@ -462,7 +475,7 @@ void func_02055008(void **manager, void *entry) {
     if (cursor != entry) {
 loop_5:
         if (cursor == NULL) {
-            AssertFailed(&data_020fec08, &data_020fec0c, &data_020feab4, 0x225);
+            AssertFailed(&data_020fec08, &sGpiPeerSourceFile, &data_020feab4, 0x225);
             gpiLogMessage(manager, &data_020fec8c);
             return;
         }
@@ -517,7 +530,7 @@ s32 func_0205519c(void **manager) {
     s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK func_020496b8(s32);
-    s32 func_02054f0c(M2C_UNK, void *);
+    s32 gpiProcessPeerState(M2C_UNK, void *);
     void func_02055008(void **, void *);
     void *gpiCreatePeer(void **, s32, s32);
     void func_02055124(M2C_UNK);
@@ -546,7 +559,7 @@ s32 func_0205519c(void **manager) {
     if (peer != NULL) {
         do {
             nextPeer = M2C_FIELD(peer, void **, 0x3C);
-            peerResult = func_02054f0c(manager, peer);
+            peerResult = gpiProcessPeerState(manager, peer);
             if ((M2C_FIELD(peer, s32 *, 0) == 0x6A) || (peerResult != 0) || (gpiGetTime(0) > (s32) M2C_FIELD(peer, s32 *, 0x10))) {
                 func_02055008(manager, peer);
             }
@@ -588,7 +601,7 @@ void *gpiCreatePeer(void **a,s32 b,s32 c) {
 }
 
 s32 gpiStartPeerChallenge(M2C_UNK arg0, void *arg1) {
-    s32 func_02053c04(M2C_UNK, s32, s32);
+    s32 gpiAppendInfoRequest(M2C_UNK, s32, s32);
     s32 gpiAddOperation(M2C_UNK, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
     void *spC;
     s32 temp_r0;
@@ -598,7 +611,7 @@ s32 gpiStartPeerChallenge(M2C_UNK arg0, void *arg1) {
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    var_r0 = func_02053c04(arg0, M2C_FIELD(arg1, s32 *, 0xC), M2C_FIELD(spC, s32 *, 0x18));
+    var_r0 = gpiAppendInfoRequest(arg0, M2C_FIELD(arg1, s32 *, 0xC), M2C_FIELD(spC, s32 *, 0x18));
     if (var_r0 == 0) {
         M2C_FIELD(arg1, s32 *, 0) = 0x65;
         var_r0 = 0;

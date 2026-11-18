@@ -212,7 +212,7 @@ flags=e|((f>>shift)&1023);
 return func_01ff883c((u16)x,(u8)b,(u16)flags,v);
 }
 
-M2C_UNK *func_020be120(void) {
+M2C_UNK *GetSaveRecordBuffer(void) {
     extern M2C_UNK data_0215deec;
     return &data_0215deec;
 }

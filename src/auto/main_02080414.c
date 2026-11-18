@@ -414,7 +414,7 @@ int ReadFileSection(int path, int dest, int offset, int size) {
     return 1;
 }
 
-s32 func_02081128(M2C_UNK a,M2C_UNK b) {
+s32 LoadFileToNewBuffer(M2C_UNK a,M2C_UNK b) {
  s32 ReadFileSection(M2C_UNK,s32,M2C_UNK,M2C_UNK);s32 func_020e34f4(M2C_UNK);
  s32 p=func_020e34f4(b);
  if(ReadFileSection(a,p,0,b))return p;
@@ -431,26 +431,29 @@ s32 LoadFileToSpriteBuffer(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     return 1;
 }
 
-s32 func_020811b8(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
- M2C_UNK func_0200478c(void); M2C_UNK func_0200482c(s32,s32,s32); M2C_UNK func_0200489c(void);
- M2C_UNK func_020049dc(void); M2C_UNK func_020049f4(s32,s32,s32); M2C_UNK func_02004a58(void);
+/* Loads a file into the BG extended palette of the current 3D sprite engine:
+ * the main engine's palette at the given 8 KB slot when the main engine is
+ * current, the sub engine's palette otherwise. */
+s32 LoadFileToBGExtPltt(M2C_UNK path, s32 paletteSlot, s32 offset, s32 size) {
+ M2C_UNK GX_BeginLoadBGExtPltt(void); M2C_UNK GX_LoadBGExtPltt(s32,s32,s32); M2C_UNK GX_EndLoadBGExtPltt(void);
+ M2C_UNK GX_BeginLoadBGExtPlttSub(void); M2C_UNK GX_LoadBGExtPlttSub(s32,s32,s32); M2C_UNK GX_EndLoadBGExtPlttSub(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
- s32 temp_r0; s32 var_r0;
- temp_r0=func_02081128(arg0,arg3);
- if(temp_r0==0) return 0;
- DC_FlushRange(temp_r0,arg3);
- if(gCur3DSpriteEngine==g3DSpriteEngineMain) var_r0=1; else var_r0=0;
- if(var_r0 & 0xFF) {func_0200478c();func_0200482c(temp_r0,arg2+(arg1<<13),arg3);func_0200489c();}
- else {func_020049dc();func_020049f4(temp_r0,arg2+(arg1<<13),arg3);func_02004a58();}
- HeapFreeBlock(temp_r0); return 1;
+ s32 buffer; s32 isMainEngine;
+ buffer=LoadFileToNewBuffer(path,size);
+ if(buffer==0) return 0;
+ DC_FlushRange(buffer,size);
+ if(gCur3DSpriteEngine==g3DSpriteEngineMain) isMainEngine=1; else isMainEngine=0;
+ if(isMainEngine & 0xFF) {GX_BeginLoadBGExtPltt();GX_LoadBGExtPltt(buffer,offset+(paletteSlot<<13),size);GX_EndLoadBGExtPltt();}
+ else {GX_BeginLoadBGExtPlttSub();GX_LoadBGExtPlttSub(buffer,offset+(paletteSlot<<13),size);GX_EndLoadBGExtPlttSub();}
+ HeapFreeBlock(buffer); return 1;
 }
 
 s32 func_02081254(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_0207c650(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 func_02081128(M2C_UNK, M2C_UNK);
+    s32 LoadFileToNewBuffer(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02081128(arg0, arg3);
+    temp_r0 = LoadFileToNewBuffer(arg0, arg3);
     if (temp_r0 == 0) {
         return 0;
     }
@@ -458,18 +461,21 @@ s32 func_02081254(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     return 1;
 }
 
-s32 func_020812a4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
- M2C_UNK func_020048e4(void); M2C_UNK func_0200492c(s32,s32,s32); M2C_UNK func_02004998(void);
- M2C_UNK func_02004a98(void); M2C_UNK func_02004ab0(s32,s32,s32); M2C_UNK func_02004b14(void);
+/* Loads a file into the OBJ (sprite) extended palette of the current 3D sprite
+ * engine: the main engine's palette at the given 8 KB slot when the main engine
+ * is current, the sub engine's palette otherwise. */
+s32 LoadFileToOBJExtPltt(M2C_UNK path, s32 paletteSlot, s32 offset, s32 size) {
+ M2C_UNK GX_BeginLoadOBJExtPltt(void); M2C_UNK GX_LoadOBJExtPltt(s32,s32,s32); M2C_UNK GX_EndLoadOBJExtPltt(void);
+ M2C_UNK GX_BeginLoadOBJExtPlttSub(void); M2C_UNK GX_LoadOBJExtPlttSub(s32,s32,s32); M2C_UNK GX_EndLoadOBJExtPlttSub(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
- s32 temp_r0; s32 var_r0;
- temp_r0=func_02081128(arg0,arg3);
- if(temp_r0==0) return 0;
- DC_FlushRange(temp_r0,arg3);
- if(gCur3DSpriteEngine==g3DSpriteEngineMain) var_r0=1; else var_r0=0;
- if(var_r0 & 0xFF) {func_020048e4();func_0200492c(temp_r0,arg2+(arg1<<13),arg3);func_02004998();}
- else {func_02004a98();func_02004ab0(temp_r0,arg2+(arg1<<13),arg3);func_02004b14();}
- HeapFreeBlock(temp_r0); return 1;
+ s32 buffer; s32 isMainEngine;
+ buffer=LoadFileToNewBuffer(path,size);
+ if(buffer==0) return 0;
+ DC_FlushRange(buffer,size);
+ if(gCur3DSpriteEngine==g3DSpriteEngineMain) isMainEngine=1; else isMainEngine=0;
+ if(isMainEngine & 0xFF) {GX_BeginLoadOBJExtPltt();GX_LoadOBJExtPltt(buffer,offset+(paletteSlot<<13),size);GX_EndLoadOBJExtPltt();}
+ else {GX_BeginLoadOBJExtPlttSub();GX_LoadOBJExtPlttSub(buffer,offset+(paletteSlot<<13),size);GX_EndLoadOBJExtPlttSub();}
+ HeapFreeBlock(buffer); return 1;
 }
 
 s32 func_02081340(M2C_UNK a,s32 b,M2C_UNK c,M2C_UNK d) {

@@ -436,9 +436,9 @@ void ApplyPaletteEffects(u16 *palette, u32 effects, s32 length) {
     ApplyGrayscaleToPalette(palette, length);
 }
 
-void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);ApplyPaletteEffects(q,e,512);func_0207c650(q,c,off,512,1);}
+void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 LoadFileToNewBuffer(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=LoadFileToNewBuffer(q,512);ApplyPaletteEffects(q,e,512);func_0207c650(q,c,off,512,1);}
 
-void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);ApplyPaletteEffects(q,d,512);func_0207c728(q,0,off,512,1);}
+void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 LoadFileToNewBuffer(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=LoadFileToNewBuffer(q,512);ApplyPaletteEffects(q,d,512);func_0207c728(q,0,off,512,1);}
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SetFileDirectory(s32);

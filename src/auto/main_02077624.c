@@ -102,7 +102,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  extern u8 gMapCellCodes[];
  extern u8 data_02142ebc[3840];
  extern u32 gTerrainClassFlags[][2];
- extern u8 data_02141788[];
+ extern u8 gMapCellShades[];
  s32 x,y;
  u32 flags;
  s32 base;
@@ -127,7 +127,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  fog=mapFog020778cc(bits,index);
  terrain=mapByte020778cc(base,index);
  a=(gMapCellCodes+x*40)[y];
- b=(data_02141788+x*40)[y];
+ b=(gMapCellShades+x*40)[y];
  Map_SubmitTerrainQuads(x,y,0xac,0,terrain,fog,a,b);
  }
  }
@@ -342,7 +342,7 @@ void func_02078068(void) {
     s32 func_020a334c(s32);
     s32 func_020d0468(s32, s32, s32);
     extern s32 *gCurrentMap;
-    extern u8 data_02141008[];
+    extern u8 gMapMoveRangeFlags[];
     u8 *base;
     s32 selected;
     u16 width;
@@ -359,7 +359,7 @@ void func_02078068(void) {
     selected = *(u16 *)(base + 0x52A4);
     width = *(u16 *)(base + 0x5144);
     height = *(u16 *)(base + 0x5146);
-    MI_CpuFill32(0, data_02141008, 0x780);
+    MI_CpuFill32(0, gMapMoveRangeFlags, 0x780);
     unit = GetPlayerSelectedUnit(selected);
     if (unit == 0) {
         return;
@@ -380,7 +380,7 @@ void func_02078068(void) {
         x = 0;
         while (x < width) {
             if (func_020d0468(selected, x, y) != -1) {
-                data_02141008[x * 0x28 + y] = 1;
+                gMapMoveRangeFlags[x * 0x28 + y] = 1;
             }
             x = x + 1;
         }
@@ -463,33 +463,36 @@ typedef struct MapOverlayPalette {
 } MapOverlayPalette;
 
 #pragma opt_strength_reduction off
-void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
+/* Fills the per-cell shade map for the visible rectangle, clamped to the map:
+ * cells flagged as inside the selected unit's movement range get the current
+ * value of the pulsing movement-range shade ramp, the rest shade 0. */
+void BuildMapCellShades(s32 x0, s32 y0, s32 x1, s32 y1) {
     extern s32 *gCurrentMap;
-    extern u8 data_02141008[];
-    extern u8 data_02141788[];
+    extern u8 gMapMoveRangeFlags[];
+    extern u8 gMapCellShades[];
     extern u32 gFrameCounter;
-    extern const MapOverlayPalette data_020eb1f0;
+    extern const MapOverlayPalette gMoveRangeShadeRamp;
     MapOverlayPalette palette;
-    u8 *mapDims = (u8 *)*gCurrentMap + 0x120;
-    u16 width = M2C_FIELD(mapDims, u16 *, 0x5024);
-    u16 height = M2C_FIELD(mapDims, u16 *, 0x5026);
+    u8 *viewRect = (u8 *)*gCurrentMap + 0x120;
+    u16 mapWidth = M2C_FIELD(viewRect, u16 *, 0x5024);
+    u16 mapHeight = M2C_FIELD(viewRect, u16 *, 0x5026);
     s32 x;
-    u8 color;
+    u8 shade;
 
     if (x0 < 0) x0 = 0;
     if (y0 < 0) y0 = 0;
-    if (x1 > width - 1) x1 = width - 1;
-    if (y1 > height - 1) y1 = height - 1;
+    if (x1 > mapWidth - 1) x1 = mapWidth - 1;
+    if (y1 > mapHeight - 1) y1 = mapHeight - 1;
 
     while (y0 <= y1) {
         x = x0;
         while (x <= x1) {
-            color = 0;
-            if ((data_02141008 + x * 40)[y0] != 0) {
-                palette = data_020eb1f0;
-                color = palette.shades[(gFrameCounter >> 2) & 31];
+            shade = 0;
+            if ((gMapMoveRangeFlags + x * 40)[y0] != 0) {
+                palette = gMoveRangeShadeRamp;
+                shade = palette.shades[(*(volatile u32 *)&gFrameCounter >> 2) & 31];
             }
-            (data_02141788 + x * 40)[y0] = color;
+            (gMapCellShades + x * 40)[y0] = shade;
             x++;
         }
         y0++;

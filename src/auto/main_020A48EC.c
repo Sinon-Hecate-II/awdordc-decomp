@@ -20,9 +20,12 @@ Unk020AEntry *AddMapOrder(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h) {
  return (Unk020AEntry*)p;
 }
 
-M2C_UNK func_020a49cc(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h,s32 i,s32 j,s32 k,s32 l) {
+/* Queue a map order and also set its playback fields: mode (which doubles as
+ * the initial countdown), kind, top and last.  Returns the new record. */
+M2C_UNK AddMapOrderEx(s32 x,s32 y,s32 width,s32 height,s32 type,s32 player,u8 enabled,s32 value,s32 mode,s32 kind,s32 top,s32 last) {
 Unk020AEntry *AddMapOrder(s32,s32,s32,s32,s32,s32,u8,s32);
-Unk020AEntry *p=AddMapOrder(a,b,c,d,e,f,g,h);u16 top=(u16)k;u16 kind=(u16)j;u8 last=l;p->mode=(u8)i;p->top=top;p->kind=kind;M2C_FIELD(p,s8 *,6)=i;p->last=last;return (s32)p;}
+Unk020AEntry *p=AddMapOrder(x,y,width,height,type,player,enabled,value);
+u16 topBits=(u16)top;u16 kindBits=(u16)kind;u8 lastByte=last;p->mode=(u8)mode;p->top=topBits;p->kind=kindBits;M2C_FIELD(p,s8 *,6)=mode;p->last=lastByte;return (s32)p;}
 
 void func_020a4a68(Unk020AEntry *p) {while(p->type){*p=p[1];p++;}}
 
@@ -40,24 +43,24 @@ s32 GetFacingOffset(s32 arg0) {
 }
 
 void func_020a4af0(s32 arg0, s32 arg1, s32 arg2) {
-    func_020a49cc(arg0 - 1, arg1 - 1, 3, 3, 4, arg2, 0, 0x63, 1, 1, 0, 0x32);
+    AddMapOrderEx(arg0 - 1, arg1 - 1, 3, 3, 4, arg2, 0, 0x63, 1, 1, 0, 0x32);
 }
 
 void func_020a4b48(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    M2C_UNK func_020a49cc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, u8, s32, s32, s32, s32, s32);
-    func_020a49cc(arg0, arg1, 1, 1, 5, arg2, 0, 0, arg3, arg4, 0, 0x32);
+    M2C_UNK AddMapOrderEx(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, u8, s32, s32, s32, s32, s32);
+    AddMapOrderEx(arg0, arg1, 1, 1, 5, arg2, 0, 0, arg3, arg4, 0, 0x32);
 }
 
 void func_020a4b94(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_020a49cc(arg0, arg1, 1, 1, 5, arg2, 0, 0, arg3, arg4, 1, 0x32);
+    AddMapOrderEx(arg0, arg1, 1, 1, 5, arg2, 0, 0, arg3, arg4, 1, 0x32);
 }
 
 void func_020a4be0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_020a49cc(arg0, arg1, 1, 1, 6, arg2, 1, 0x63, arg3, arg4, 3, 0x50);
+    AddMapOrderEx(arg0, arg1, 1, 1, 6, arg2, 1, 0x63, arg3, arg4, 3, 0x50);
 }
 
 void func_020a4c30(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    func_020a49cc(arg0, arg1, 1, 1, 7, arg2, 1, 0x63, arg3, arg4, 1, 0x50);
+    AddMapOrderEx(arg0, arg1, 1, 1, 7, arg2, 1, 0x63, arg3, arg4, 1, 0x50);
 }
 
 u8 IsMapOrderActive(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
@@ -69,8 +72,8 @@ while(p->type){if(p->type==a){if(IsMapOrderActive(p))n++;}p++;}return n!=0;
 }
 
 void func_020a4d58(void) {
-    M2C_UNK func_020a4528();
-    func_020a4528();
+    M2C_UNK ClearMapOrders();
+    ClearMapOrders();
 }
 
 void ClearSelectionQueue(void) {

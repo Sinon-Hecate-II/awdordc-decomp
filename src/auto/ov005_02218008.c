@@ -36,7 +36,7 @@ void CreateMainWallpaperSprite();
 void func_020a9a30(s32,s32,u8,void *);
 void SetTextById();
 void func_02088f1c();
-void func_020e3004();
+void SetShogunInfoFileDirectory();
 void SetOv005FileDirectory(void);
 void *HeapAllocBlock(int);
 void *GetLocalizedFileName(void *);
@@ -126,7 +126,7 @@ func_020a9a30(2,0,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,28)+0x3000);
 func_020a9a30(2,2,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,48)+0x2e0);
 M2C_FIELD(sprite,u32 *,68)=func_020aaf74(sprite);M2C_FIELD(sprite,u16 *,62)=0x180;M2C_FIELD(sprite,u32 *,64)=(M2C_FIELD(sprite,u32 *,64)&~0x3fc0000)|0x5c0000;M2C_FIELD(sprite,u16 *,60)=0xc00;
 M2C_FIELD(gOv005MenuState,void * *,28)=func_0208bc24(arg0);M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u16 *,62)=0x200;M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)=(M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)&~0x3fc0000)|0x200000;
-SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);func_02088f1c(M2C_FIELD(gOv005MenuState,void * *,28));func_020e3004();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
+SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);func_02088f1c(M2C_FIELD(gOv005MenuState,void * *,28));SetShogunInfoFileDirectory();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
 Ov005RefreshEntryFace();Ov005RefreshNameGraphic();CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=saved;func_020b1b3c();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
 }
 #pragma opt_strength_reduction reset

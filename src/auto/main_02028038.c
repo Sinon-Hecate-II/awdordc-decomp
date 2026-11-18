@@ -124,7 +124,7 @@ void WFC_ProcessSendCallback(u16 *p){switch(p[1]){case 0:WFC_SetState(3);WFC_Dis
 #pragma opt_strength_reduction off
 void func_0202899c(const u16 *p){
 extern void *gWfcSession;
-void func_02028cc8(u16 *);s32 func_02012dd4(void (*)(u16 *),void *,s32);
+void func_02028cc8(u16 *);s32 WFC_SendDataBuffer(void (*)(u16 *),void *,s32);
 s32 result;
 switch(p[1]){
 case 0:
@@ -146,7 +146,7 @@ case 7:
 if(M2C_FIELD(gWfcSession,s32 *,0x2260)==12){WFC_SetState(8);WFC_Finish();return;}
 if(p[5]>=1&&p[5]<=0x7d7){
 M2C_FIELD(gWfcSession,u16 *,0x2282)=p[5];
-result=func_02012dd4(func_02028cc8,(u8 *)gWfcSession+0x1500,0x620);
+result=WFC_SendDataBuffer(func_02028cc8,(u8 *)gWfcSession+0x1500,0x620);
 switch(result){case 2:return;case 3:break;case 8:WFC_SetState(12);WFC_DispatchEvent(1,(s32)((u8 *)gWfcSession+0x2140),0,0x7ed);return;
 }
 WFC_SetState(11);WFC_DispatchEvent(7,(s32)((u8 *)gWfcSession+0x2140),0,0x7f6);return;

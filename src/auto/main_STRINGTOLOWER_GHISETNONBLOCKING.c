@@ -158,7 +158,7 @@ void ghiRecv(void) {
 
 void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 func_020215f8(int,int,int,int,u8 *);s32 r;*e=*f;r=func_020215f8(a,b,c,d,e);*f=*e;func_0204968c(r,-1);}
 
-void func_02049810(void) {
+void ghiSend(void) {
     s32 func_020216a8();
     M2C_UNK func_0204968c(s32, M2C_UNK);
     func_0204968c(func_020216a8(), -1);

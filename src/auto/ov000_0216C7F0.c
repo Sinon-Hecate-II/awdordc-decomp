@@ -231,37 +231,39 @@ void ArmyInfo_DrawFaceSub(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov000_0216d130(void) {
+/* Load the selected CO's name graphic from shogun_name.narc into the sub screen
+ * engine's texture VRAM, or clear that range while the CO has no name file. */
+void ArmyInfo_RefreshNameGraphic(void) {
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_020e3004();
-    M2C_UNK *func_020e3018(u8);
+    M2C_UNK SetShogunInfoFileDirectory();
+    M2C_UNK *GetNameFileForFace(u8);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov000_021b884c;
+    extern M2C_UNK sShogunNameNarc;
     extern void *gArmyInfoState;
-    M2C_UNK *temp_r5;
-    s32 temp_z;
-    void *temp_r4;
+    M2C_UNK *nameFile;
+    s32 noNameFile;
+    void *savedEngine;
 
-    temp_r5 = func_020e3018(M2C_FIELD(gArmyInfoState, u8 *, 0xE));
-    temp_z = temp_r5 == NULL;
-    temp_r4 = gCur3DSpriteEngine;
+    nameFile = GetNameFileForFace(M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_SUB));
+    noNameFile = nameFile == NULL;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (!temp_z) {
-        func_020e3004();
-        GetLocalizedFileName(&data_ov000_021b884c);
+    if (!noNameFile) {
+        SetShogunInfoFileDirectory();
+        GetLocalizedFileName(&sShogunNameNarc);
         OpenNarcArchive();
-        LoadNarcFileDecompressed(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
+        LoadNarcFileDecompressed(GetLocalizedFileName(nameFile), M2C_FIELD(g3DSpriteEngineSub, s32 *, DS3D_ENGINE_TEXTURE) + ARMY_INFO_NAME_TEXTURE_OFFSET);
         CloseNarcArchive();
         SetArmyInfoFileDirectory();
     } else {
-        MI_CpuFill32(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
+        MI_CpuFill32(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, DS3D_ENGINE_TEXTURE) + ARMY_INFO_NAME_TEXTURE_OFFSET, ARMY_INFO_NAME_TEXTURE_SIZE);
     }
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_0216d1c8(void) {

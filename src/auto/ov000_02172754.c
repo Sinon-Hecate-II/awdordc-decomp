@@ -2,6 +2,11 @@
 #include "common.h"
 #include "battle_map.h"
 typedef struct PaletteIndices { u8 values[6]; } PaletteIndices;
+typedef struct ArmyInfoCoStatus {
+    u32 face : 8;
+    u32 : 13;
+    u32 power : 11;
+} ArmyInfoCoStatus;
 static inline u16 *ScenePalette(u32 n) { extern void *gCur3DSpriteEngine; return (u16 *)(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+((n<<5)&~1)); }
 extern s32 data_ov000_021b976c, data_ov000_021b9bec, data_ov000_021bb06c, data_ov000_021b9c6c, data_ov000_021b99ec, data_ov000_021bb1ec;
 extern void *g3DSpriteEngineSub;
@@ -9,7 +14,8 @@ extern void *gCur3DSpriteEngine;
 extern void **gCurrentMap;extern M2C_UNK gInfoFrameGfxUnset, gInfoFrameGfxEnglish, gInfoFrameGfxFrench, gInfoFrameGfxGerman, gInfoFrameGfxItalian, gInfoFrameGfxSpanish;
 extern M2C_UNK data_ov000_021d841c, data_ov000_021b8f5c;
 
-void func_ov000_02172754(void *arg0) {
+#pragma opt_strength_reduction off
+s32 func_ov000_02172754(void *arg0) {
     s32 func_ov000_0216cbc4(s32);
     s32 func_020a86c4(s32, s32);
     s32 Divide(s32, s32);
@@ -18,7 +24,7 @@ void func_ov000_02172754(void *arg0) {
     s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
     s32 func_020719d4(s32);
     s32 func_020714f0(s32, s32);
-    s32 func_02071a1c(u8);
+    s32 func_02071a1c(u32);
     s32 func_02071a64(u32, u32);
     s32 func_02071564(s32, s32);
     u32 func_020719a0(s32);
@@ -27,21 +33,28 @@ void func_ov000_02172754(void *arg0) {
     extern void **gCurrentMap;
     extern s8 gTerrainDefenseStars[32];
 
+    void *context = arg0;
+    s32 player;
+    s32 playerId;
+    s32 changed;
     void *saved;
+    s32 off;
     s32 *p18;
     s32 val;
     s32 i;
-    s32 off;
-    s32 changed;
-    void *rec;
     u8 *rcd;
-    s32 r7;
+    s32 funds;
+    s32 r8v;
+    int k;
+    void *rec;
 
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     p18 = *(s32 **)((u8 *)arg0 + 0x18);
-    val = func_ov000_0216cbc4(p18[0]);
+    changed = 0;
+    val = func_ov000_0216cbc4(*p18);
     val = func_020a86c4(0, val);
+    p18 = *(s32 **)((u8 *)context + 0x18);
     if (val >= 0 && val <= 0x270f && val != p18[2]) {
         s32 q,rem;
         q = Divide(val, 0x3e8);
@@ -55,73 +68,81 @@ void func_ov000_02172754(void *arg0) {
         p18[3] = rem - q * 0xa;
         p18[2] = val;
     }
-    p18[1] = gTerrainDefenseStars[func_ov000_0216cbc4(p18[0])];
-
-    changed = 0;
+    val = func_ov000_0216cbc4(**(s32 **)((u8 *)context + 0x18));
+    val = gTerrainDefenseStars[val];
+    (*(s32 **)((u8 *)context + 0x18))[1] = val;
     i = 0;
     off = 0;
-    while (i < 4) {
-        rec = (void *)((u8 *)*((void **)gCurrentMap) + 0x67a4 + (i + 1) * 0x8c);
-        rcd = (u8 *)p18 + 0x3c + off;
+    do {
+        u8 *map = *(u8 **)gCurrentMap;
+        u8 *info = *(u8 **)((u8 *)context + 0x18);
+        playerId = i + 1;
+        rec = map + 0x67a4 + playerId * 0x8c;
+        rcd = info + 0x3c + off;
         {
             u8 b1e = *((u8 *)rec + 0x1e);
-            u8 old33 = rcd[0x33];
-            u8 old34 = rcd[0x34];
-            if (b1e != 0) {
-                u8 b19 = *((u8 *)rec + 0x19);
-                if (b19 != 0) rcd[0x33] = 0; else rcd[0x33] = 1;
-                rcd[0x34] = (*((u8 *)rec + 0x1c) != 0);
+            u8 old34;
+            u8 old33;
+            old33 = rcd[0x33];
+            old34 = rcd[0x34];
+            player = playerId;
+            if (b1e == 0 || *((u8 *)rec + 0x19) != 0) {
+                rcd[0x33] = 0;
+            } else {
+                rcd[0x33] = 1;
             }
-            if (old33 != rcd[0x33]) changed = 1;
-            if (old34 != rcd[0x34]) {
-                s32 rec6c;
-                int j,k;
-                s32 r8v;
+            rcd[0x34] = (*((u8 *)rec + 0x1c) != 0);
+            if (rcd[0x33] != old33) changed = 1;
+            if (rcd[0x34] != old34) {
+                ArmyInfoCoStatus *co = (ArmyInfoCoStatus *)((u8 *)rec + 0x6c);
                 changed = 1;
-                rec6c = *(s32 *)((u8 *)rec + 0x6c);
-                LoadFacePalette((u8)(rec6c & 0xff), 0, 2, 0, (u8)8);
-                r7 = *(s32 *)rec;
-                if (r7 >= 0 && r7 <= 0xf423f) {
-                    if (r7 != *(s32 *)(rcd + 0x2c)) {
-                        s32 cur;
-                        *(s32 *)(rcd + 0x2c) = r7;
-                        *(s32 *)(rcd + 0x28) = 1;
-                        cur = r7;
+                LoadFacePalette((u8)co->face, 0, 2, (u16)i, (u8)8);
+            }
+            {
+                int j;
+                s32 ready;
+                ArmyInfoCoStatus *co = (ArmyInfoCoStatus *)((u8 *)rec + 0x6c);
+                funds = *(s32 *)rec;
+                if (funds >= 0 && funds <= 0xf423f) {
+                    if (funds != *(s32 *)(rcd + 0x2c)) {
+                        s32 initial = 1;
+                        *(s32 *)(rcd + 0x2c) = funds;
+                        *(s32 *)(rcd + 0x28) = initial;
                         for (k = 5; k >= 0; k--) {
-                            r8v = 1;
+                            r8v = initial;
                             for (j = 0; j < k; j++) r8v *= 10;
                             {
-                                s32 q2 = Divide(cur, r8v);
+                                s32 q2 = Divide(funds, r8v);
                                 if (*(s32 *)(rcd + 0x28) == 1 && q2 != 0) *(s32 *)(rcd + 0x28) = k + 1;
-                                cur = cur - q2 * r8v;
+                                funds = funds - q2 * r8v;
                                 *(s32 *)(rcd + 0x10 + k * 4) = q2;
                             }
                         }
                     }
                 }
-                rcd[0x0c] = *((u8 *)rec + 0x18);
-                rcd[0x08] = *((u8 *)rec + 0x31);
-                *(u8 *)(rcd + 0x30) = (u8)func_020a334c(1);
-                r7 = GetCoPowerMeterCost((M2C_UNK)1, (M2C_UNK)2);
-                if (func_020714f0(0, func_020719d4(r7)) != 0) {
-                    s32 r6c = *(s32 *)((u8 *)rec + 0x6c);
-                    u8 b21 = (u8)(r6c >> 21);
-                    s32 r4v = func_02071a64(0x41400000u, (u32)func_02071a1c(b21));
-                    *(s32 *)(rcd + 0x4) = func_020719a0(func_02071564(r4v, func_020719d4(r7)));
-                    *(u8 *)(rcd + 0x31) = (u8)((r7 == (r6c >> 21)) ? 1 : 0);
+                *(s32 *)(rcd + 0xc) = *((u8 *)rec + 0x18);
+                *(s32 *)(rcd + 8) = *((u8 *)rec + 0x31);
+                *(u8 *)(rcd + 0x30) = (u8)func_020a334c(player);
+                funds = GetCoPowerMeterCost(player, 2);
+                if (0.0f == (float)funds) {
+                    *(s32 *)(rcd + 4) = 0;
+                    rcd[0x31] = 0;
+                    ready = 0;
                 } else {
-                    *(s32 *)(rcd + 0x4) = 0;
-                    *(u8 *)(rcd + 0x31) = 0;
+                    u32 power = co->power;
+                    *(s32 *)(rcd + 4) = (s32)((12.0f * (float)power) / (float)funds);
+                    rcd[0x31] = ((u32)funds == (co->power));
+                    ready = 1;
                 }
-                *(u8 *)(rcd + 0x32) = 1;
+                rcd[0x32] = ready;
             }
         }
         i++;
         off += 0x38;
-    }
-    gCur3DSpriteEngine = saved;
+    } while (i < 4);
+    return (gCur3DSpriteEngine = saved, changed);
 }
-
+#pragma opt_strength_reduction reset
 /* Uploads the info window's frame graphics for the window's language
    (LANGUAGE_*) into the sub screen's tile buffer. */
 void DrawInfoWindowFrame(void *unused) {

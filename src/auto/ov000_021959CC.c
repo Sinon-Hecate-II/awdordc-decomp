@@ -38,6 +38,7 @@ if(GetAttackDamage(data,((UnitKind959 *)((u8 *)base+d*14+0x59a4))->kind,0)>=30)r
 return 0;
 }
 #pragma opt_propagation reset
+#pragma opt_strength_reduction off
 s32 func_ov000_02195b80(s16 *out) {
     s32 IsPropertyTerrain(s32);
     s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
@@ -53,7 +54,7 @@ s32 func_ov000_02195b80(s16 *out) {
     UnitKind959 *acting;
     s32 kind;
     u8 kindFlags;
-    register s32 targetX = -1, targetY = -1, bestCost = 0x7fff, occupied = 0, y, x;
+    s32 y, x, targetX = -1, bestCost = 0x7fff, occupied = 0, targetY = -1;
     u8 *map;
     acting = M2C_FIELD(*gCurrentMap, UnitKind959 **, MAP_CURSOR_UNIT);
     kind = acting->kind;
@@ -67,8 +68,6 @@ s32 func_ov000_02195b80(s16 *out) {
         for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
             u16 rowOffset;
             u8 terrain;
-            u8 threat;
-            u8 threatLimit;
             s32 range;
             u8 *cell;
             if (M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID)[x] < 0) continue;
@@ -84,11 +83,9 @@ s32 func_ov000_02195b80(s16 *out) {
             range = GetUnitAttackRangeMax(M2C_FIELD(map, void **, MAP_CURSOR_UNIT));
             if (!func_ov000_021959cc((s16)x, (s16)y, M2C_FIELD(*gCurrentMap, UnitKind959 **, MAP_CURSOR_UNIT)->kind, (u8)range)) continue;
             map = (u8 *)*gCurrentMap;
-            threatLimit = ((u8 *)gAiUnitTypeTuning)[2];
             rowOffset = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
             cell = map + x + rowOffset;
-            threat = M2C_FIELD(cell, u8 *, 0x2d48);
-            if (threat >= threatLimit) continue;
+            if (M2C_FIELD(cell, u8 *, 0x2d48) >= ((u8 *)gAiUnitTypeTuning)[2]) continue;
             if (M2C_FIELD(cell, s8 *, 0x2338) >= 0) {
                 if (IsAllyUnitAtCell((s16)x, (s16)y)) continue;
                 if (!IsValidMoveCell((s16)x, (s16)y)) continue;
@@ -107,6 +104,7 @@ s32 func_ov000_02195b80(s16 *out) {
     out[1] = targetY;
     return 1;
 }
+#pragma opt_strength_reduction reset
 
 void func_ov000_02195ea4(void) {
     s32 GetUnitAttackClass(u32);

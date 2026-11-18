@@ -265,7 +265,7 @@ void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))re
 
 void func_ov000_0219c774(void) {
     MarkKnownEnemyUnits();
-    func_020bbb08();
+    EndPlayerTurn();
     gAiCommandState[0] = 0;
     if (gBattleEndState[0] != 0) {
         func_020844f8();

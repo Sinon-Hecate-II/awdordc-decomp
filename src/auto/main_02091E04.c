@@ -261,8 +261,8 @@ s32 func_02092288(void *arg0) {
 }
 
 void OnMapScrollDone(void *arg0) {
-    s32 func_0207b7c4();
-    if (func_0207b7c4() == 0) {
+    s32 IsMapViewScrolling();
+    if (IsMapViewScrolling() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
@@ -404,8 +404,8 @@ s32 func_0209255c(void *arg0) {
 }
 
 s32 func_02092590(void *arg0) {
-    M2C_UNK func_020d8f1c(s16, M2C_UNK);
-    func_020d8f1c(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 0);
+    M2C_UNK SetUiMode(s16, M2C_UNK);
+    SetUiMode(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 0);
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -542,17 +542,22 @@ s32 func_02092984(void *arg0) {
     return 0;
 }
 
-s32 func_020929b0(void *arg0) {
-M2C_UNK SetListRowFlag(u8,M2C_UNK);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_020ae124(u8);
-s32 func_020ae1a4();s32 func_020d8db0();s32 func_020d8f4c();M2C_UNK func_020d8f1c(s16,s32);
-u8 v=(u8)M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
-void *p;
-SetListRowFlag(v,1);p=M2C_FIELD(arg0,void **,4);
-if(M2C_FIELD(p,s32 *,12)==0){M2C_FIELD(arg0,void **,4)=p+16;return 1;}
-if(func_020d8db0()!=0)return 0;
-if(func_020d8f4c()==2){if(func_020ae1a4()==0)return 0;func_020ae124(v);}
-else func_020d8f1c(2,v);
-PlaySoundEffect(0x121);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* List command: mark the highlighted row as chosen and, when the command's
+ * third word names a screen, change to that screen through the screen-change
+ * transition: ask for the transition's UI mode (2) and, once it is up, start the
+ * split transition to that screen.  Returns 1 to run the next command at once,
+ * 0 to run this one again next frame. */
+s32 SelectListRow(void *ctx) {
+M2C_UNK SetListRowFlag(u8,M2C_UNK);M2C_UNK PlaySoundEffect(s32);M2C_UNK StartScreenTransition(u8);
+s32 CanStartScreenTransition();s32 IsUiModeSwitchBusy();s32 GetUiMode();M2C_UNK SetUiMode(s16,s32);
+u8 row=(u8)M2C_FIELD(M2C_FIELD(ctx,void **,MAP_SCRIPT_STATE_IP),s16 *,8);
+void *cmd;
+SetListRowFlag(row,1);cmd=M2C_FIELD(ctx,void **,MAP_SCRIPT_STATE_IP);
+if(M2C_FIELD(cmd,s32 *,12)==0){M2C_FIELD(ctx,void **,MAP_SCRIPT_STATE_IP)=cmd+MAP_SCRIPT_COMMAND_SIZE;return 1;}
+if(IsUiModeSwitchBusy()!=0)return 0;
+if(GetUiMode()==2){if(CanStartScreenTransition()==0)return 0;StartScreenTransition(row);}
+else SetUiMode(2,row);
+PlaySoundEffect(0x121);M2C_FIELD(ctx,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 }
 
 s32 func_02092a54(void *arg0) {

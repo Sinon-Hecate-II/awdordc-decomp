@@ -2,13 +2,13 @@
 #include "common.h"
 
 M2C_UNK TlsComputeMasterSecret(void *p) {
- M2C_UNK func_0202321c(void *,void *,void *);
+ M2C_UNK TlsComputeMasterSecretChunk(void *,void *,void *);
  M2C_UNK MI_CpuCopy8(s32,s32,u32);
  extern M2C_UNK data_020fb048,data_020fb04c,data_020fb050;
  u8 buf[48];
- func_0202321c(buf,&data_020fb048,p);
- func_0202321c(buf+16,&data_020fb04c,p);
- func_0202321c(buf+32,&data_020fb050,p);
+ TlsComputeMasterSecretChunk(buf,&data_020fb048,p);
+ TlsComputeMasterSecretChunk(buf+16,&data_020fb04c,p);
+ TlsComputeMasterSecretChunk(buf+32,&data_020fb050,p);
  return MI_CpuCopy8((s32)buf,(s32)p,48);
 }
 

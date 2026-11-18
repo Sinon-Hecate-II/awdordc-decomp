@@ -11,6 +11,10 @@
 #define SB_LIST_FIELD_COUNT 0x40  /* s32 number of used entries in SB_LIST_FIELDS */
 #define SB_LIST_QUERY       0x4C  /* QR2 query record the SBServerList* API works on */
 #define SB_LIST_DISCONNECT  0x620 /* s32 disconnect the list once a running query ends */
+#define SB_LIST_QUERY_SERVER_IP   0x628 /* s32 address of the server a single-server query is outstanding for, 0 when none */
+#define SB_LIST_QUERY_SERVER_PORT 0x62C /* u16 port of that server */
+#define SB_LIST_NOTIFY      0x630 /* the application's SBServerListCallback: (list, event, server, instance) */
+#define SB_LIST_NOTIFY_DATA 0x634 /* the instance passed as SB_LIST_NOTIFY's last argument */
 
 /* SB_LIST_QUERY (the QR2 query record) starts with the SBServerList state word. */
 #define SB_LIST_STATE_IDLE     SB_SLIST_STATE_IDLE
@@ -27,12 +31,14 @@
 #define SB_SLIST_SECRETKEY   0x30  /* char[] secret key sent in the connect packet */
 #define SB_SLIST_GAMEVERSION 0x54  /* char[] game version reported to the master */
 #define SB_SLIST_SOCKET      0x4b0 /* s32 master-server socket, -1 when none */
+#define SB_SLIST_CRYPT       0x4bc /* GsCryptState of the session's GameSpy stream cipher (qr2.h) */
 #define SB_SLIST_QUERY_PORT  0x4b8 /* s32 port the master is queried on */
 #define SB_SLIST_CALLBACK    0x488 /* void (*)(list, event, server, instance) */
 #define SB_SLIST_INSTANCE    0x494 /* void *instance passed to SB_SLIST_CALLBACK */
 #define SB_SLIST_SORT_FIELD  0x498 /* char[] key the server list is sorted on */
 #define SB_SLIST_SORT_DESC   0x49c /* s32 nonzero to sort descending */
 #define SB_SLIST_START_TICK  0x4b4 /* u32 GetTickCountMs() the 2 s collection window starts at */
+#define SB_SLIST_CRYPT_KEY  0x74  /* u8[8] GameSpy cipher key derived from the session challenge */
 #define SB_SLIST_RECV_BUFFER 0x7c  /* char *reply buffer (SBServerListConnectAndQuery allocates it) */
 #define SB_SLIST_RECV_LENGTH 0x80  /* s32 bytes held in SB_SLIST_RECV_BUFFER */
 #define SB_SLIST_ERROR      0x4ac /* char *error message, NULL while none (SBServerListSetErrorString) */

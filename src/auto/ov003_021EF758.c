@@ -373,13 +373,13 @@ void Ov003_StartLinkMapTransfer(void *scene) {
     void func_ov003_021f152c(s32);
     void func_ov003_022006dc(s32);
     s32 GetPlayerCoIconIndex(u8);
-    void func_ov006_022172b0(void *);
+    void CreateMapTransferPanelStep3(void *);
     u8 packet[0x24];
     s32 mapConfirmed;
     if (!IsLinkSessionActive()) return;
     if (((u32)(M2C_FIELD(scene, u8 *, 0x39) << 31) >> 31) == 1) mapConfirmed = 1; else mapConfirmed = 0;
     if (!(mapConfirmed & 255)) return;
-    func_ov003_022006dc(0); func_ov003_021f152c(1); SetOv003SceneState(1); func_ov006_022172b0(scene);
+    func_ov003_022006dc(0); func_ov003_021f152c(1); SetOv003SceneState(1); CreateMapTransferPanelStep3(scene);
     if (!func_ov003_021e6d28()) return;
     if (!Link_ReceivePacket(packet, 0x24)) return;
     packet[13] = GetPlayerCoIconIndex((u8)GetPlayerCoId(GetLocalPlayerIdForOverlay() + 1));

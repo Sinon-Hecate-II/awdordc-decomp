@@ -151,47 +151,49 @@ p++;q++;n++;goto loop;
 func_ov000_0219c7ec(n);
 }
 
-void MoveChosenAiUnitFirst(void) {
+/* Moves the current player's selected unit to the end of the AI's unit list,
+ * closing the gap it leaves so the AI acts with the other units first. */
+void MoveSelectedAiUnitLast(void) {
     s32 IsUnitSelected(s32);
     extern s32 *gCurrentMap;
     extern u8 gAiUnitList;
-    unsigned var_r4;
-    u8 var_r5;
-    register u8 *var_r1;
-    u8 temp_r0;
-    u8 *var_r6;
-    u8 temp_r1;
-    long var_r7;
+    unsigned index;
+    u8 unit;
+    register u8 *dst;
+    u8 next;
+    u8 *slot;
+    u8 entry;
+    long found;
 
-    var_r4 = 0;
-    var_r6 = &gAiUnitList;
-    var_r7 = 0;
-    var_r5 = 0;
+    index = 0;
+    slot = &gAiUnitList;
+    found = 0;
+    unit = 0;
 loop_1:
-    temp_r1 = *var_r6;
-    if (temp_r1) {
-        if (IsUnitSelected((temp_r1 * 0xE) + (*gCurrentMap + 0x59A4)) != 0) {
-            var_r7 = var_r4;
-            var_r5 = (&gAiUnitList)[var_r4];
+    entry = *slot;
+    if (entry) {
+        if (IsUnitSelected((entry * MAP_UNIT_STRIDE) + (*gCurrentMap + MAP_UNIT_RECORDS)) != 0) {
+            found = index;
+            unit = (&gAiUnitList)[index];
         } else {
-            ++var_r6;
-            ++var_r4;
+            ++slot;
+            ++index;
             goto loop_1;
         }
     }
-    if (var_r5 == 0) {
+    if (unit == 0) {
         return;
     }
-    var_r1 = &(&gAiUnitList)[var_r7];
+    dst = &(&gAiUnitList)[found];
 loop_8:
-    temp_r0 = M2C_FIELD(var_r1, u8 *, 1);
-    if (temp_r0) {
-        ++var_r1;
-        M2C_FIELD(var_r1, u8 *, 0) = temp_r0;
-        ++var_r7;
+    next = M2C_FIELD(dst, u8 *, 1);
+    if (next) {
+        ++dst;
+        M2C_FIELD(dst, u8 *, 0) = next;
+        ++found;
         goto loop_8;
     }
-    (&gAiUnitList)[var_r7] = var_r5;
+    (&gAiUnitList)[found] = unit;
 }
 
 /* Collects the current player's role-1 units that are placed on the map, have not
@@ -412,7 +414,7 @@ extern M2C_UNK RunAiRole4Or6Action;
 void ScoreAiUnitsByHp(void);
 void ScoreAiUnitsByPosition(s32);
 void ScoreAiUnitsByMoveRange(s32);
-void MoveChosenAiUnitFirst(void);
+void MoveSelectedAiUnitLast(void);
 s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
 gAiUnitListCursor = &gAiUnitList;
 obj = *gCurrentMap;
@@ -443,7 +445,7 @@ if (M2C_FIELD(*gCurrentMap, u8 *, MAP_FOG) != 0 || M2C_FIELD(*gCurrentMap, u8 *,
 } else {
     ScoreAiUnitsByMoveRange(0);
 }
-MoveChosenAiUnitFirst();
+MoveSelectedAiUnitLast();
 gAiUnitAction = &RunAiRole4Or6Action;
 *gAiCommandState = 2;
 }
@@ -459,7 +461,7 @@ extern u8 gAiUnitList;
 extern M2C_UNK func_ov000_021812a8;
 void func_ov000_0219cc84(void);
 void func_ov000_0219caac(void);
-void MoveChosenAiUnitFirst(void);
+void MoveSelectedAiUnitLast(void);
 s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
 gAiUnitListCursor = &gAiUnitList;
 obj = *gCurrentMap;
@@ -491,7 +493,7 @@ goto skip;
 do_caac:
 func_ov000_0219caac();
 skip:
-MoveChosenAiUnitFirst();
+MoveSelectedAiUnitLast();
 gAiUnitAction = &func_ov000_021812a8;
 *gAiCommandState = 2;
 }

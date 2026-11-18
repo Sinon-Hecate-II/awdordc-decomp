@@ -317,23 +317,26 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
     return 0;
 }
 #pragma opt_propagation reset
-s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
+/* Append the fields of a profile-info ("getprofile") server request to the
+ * connection's outgoing command buffer: the session key, the profile id, the
+ * operation id and the "\final\" terminator. */
+s32 gpiAppendInfoRequest(void **connection, s32 profileId, s32 operationId) {
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, s32);
-    extern M2C_UNK data_020fe710;
+    extern M2C_UNK gGpiProfileIdField;
     extern M2C_UNK gGpiUpdateFinal;
-    extern M2C_UNK data_020fe990;
-    extern M2C_UNK data_020fe9a8;
-    void *temp_r4;
+    extern M2C_UNK gGpiGetProfileHeader;
+    extern M2C_UNK gGpiIdField;
+    void *session;
 
-    temp_r4 = *arg0;
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe990);
-    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe710);
-    gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg1);
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe9a8);
-    gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg2);
-    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &gGpiUpdateFinal);
+    session = *connection;
+    gpiAppendStringField(connection, session + GPI_CONN_OUTPUT_BUFFER, &gGpiGetProfileHeader);
+    gpiAppendIntField(connection, session + GPI_CONN_OUTPUT_BUFFER, M2C_FIELD(session, s32 *, GPI_CONN_SESSION_KEY));
+    gpiAppendStringField(connection, session + GPI_CONN_OUTPUT_BUFFER, &gGpiProfileIdField);
+    gpiAppendIntField(connection, session + GPI_CONN_OUTPUT_BUFFER, profileId);
+    gpiAppendStringField(connection, session + GPI_CONN_OUTPUT_BUFFER, &gGpiIdField);
+    gpiAppendIntField(connection, session + GPI_CONN_OUTPUT_BUFFER, operationId);
+    gpiAppendStringField(connection, session + GPI_CONN_OUTPUT_BUFFER, &gGpiUpdateFinal);
     return 0;
 }
 
@@ -360,7 +363,7 @@ rc=gpiAddCallback(connection,pair,buffer,operation,0);if(rc)return rc;
 func_02054484(connection,operation);
 }else{
 rc=gpiAddOperation(connection,2,0,&operation,doFinish,callback,callbackArg);if(rc)return rc;
-operationId=M2C_FIELD(operation,s32 *,24);rc=func_02053c04(connection,profileId,operationId);if(rc)return rc;
+operationId=M2C_FIELD(operation,s32 *,24);rc=gpiAppendInfoRequest(connection,profileId,operationId);if(rc)return rc;
 }
 if(doFinish){rc=gpiThink(connection,operationId);if(rc)return rc;}
 return 0;
@@ -427,11 +430,11 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
     s32 gpiAddCallback(void **, RequestPair534, void *, void *, s32);
     extern M2C_UNK data_020fe9ec;
     extern M2C_UNK data_020fe9c4;
-    extern M2C_UNK data_020fea00;
+    extern M2C_UNK sGpiOperationSourceFile;
     extern M2C_UNK data_020fea10;
     extern M2C_UNK data_020fea24;
     extern M2C_UNK data_020fea38;
-    extern M2C_UNK data_020fea48;
+    extern M2C_UNK sGpiAssertZero;
 
     void *base = *arg0;
     void *operation = arg1;
@@ -440,13 +443,13 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
     void *buffer;
 
     if (arg0 == NULL) {
-        AssertFailed((M2C_UNK)&data_020fe9ec, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x22);
+        AssertFailed((M2C_UNK)&data_020fe9ec, (M2C_UNK)&sGpiOperationSourceFile, (M2C_UNK)&data_020fe9c4, 0x22);
     }
     if (*arg0 == NULL) {
-        AssertFailed((M2C_UNK)&data_020fea10, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x23);
+        AssertFailed((M2C_UNK)&data_020fea10, (M2C_UNK)&sGpiOperationSourceFile, (M2C_UNK)&data_020fe9c4, 0x23);
     }
     if (operation == NULL) {
-        AssertFailed((M2C_UNK)&data_020fea24, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x24);
+        AssertFailed((M2C_UNK)&data_020fea24, (M2C_UNK)&sGpiOperationSourceFile, (M2C_UNK)&data_020fe9c4, 0x24);
     }
 
     pair.a = M2C_FIELD(operation, s32 *, 0xC);
@@ -542,7 +545,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                 }
                 break;
             default:
-                AssertFailed((M2C_UNK)&data_020fea48, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x6B);
+                AssertFailed((M2C_UNK)&sGpiAssertZero, (M2C_UNK)&sGpiOperationSourceFile, (M2C_UNK)&data_020fe9c4, 0x6B);
                 break;
         }
     }

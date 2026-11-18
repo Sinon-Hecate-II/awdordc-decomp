@@ -50,6 +50,10 @@ enum {
 #define LINK_PLAYER_NAME_OFFSET 12
 #define LINK_PLAYER_NAME_SIZE   26
 
+/* A gLinkPlayers slot: one per player slot, 0x60 bytes. */
+#define LINK_PLAYER_FLAGS 0x16 /* u8: bit 0 set while the slot holds a connected player */
+#define LINK_PLAYER_ID    0x17 /* s8: the player id the slot plays as, -1 when unset */
+
 /* gLinkState +0x28: u16 * mask of the player announcement in flight; the actor
  * stores its own bit there until every connected peer has answered. */
 #define LINK_STATE_ANNOUNCE 0x28

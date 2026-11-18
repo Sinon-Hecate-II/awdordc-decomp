@@ -180,32 +180,35 @@ void ApplyCounterHit(void *target, void *source) {
     M2C_FIELD(target, s16 *, 0xe) = ((u32) (M2C_FIELD(M2C_FIELD(target, void **, 0), u16 *, 6) << 25) >> 25) - M2C_FIELD(target, s16 *, 0x1a);
 }
 
-void ApplyCounterDamage(void *arg0, void *arg1) {
-    
-    s16 var_r0_2;
-    s32 var_r0;
-    s32 var_r0_3;
-    u32 temp_r0;
+/* Applies the two damage totals of a round in which the first side strikes and
+ * the other counters: scale the striker's damage by its health level and settle
+ * its hit, then scale the other side's damage by the health it has left after
+ * that hit and settle its counter. */
+void ApplyCounterDamage(BattleUnit *striker, BattleUnit *counter) {
+    s16 counterHealth;
+    s32 strikerLevel;
+    s32 counterLevel;
+    u32 health;
 
-    temp_r0 = (u32) (M2C_FIELD(M2C_FIELD(arg0, void **, 0), u16 *, 6) << 0x19) >> 0x19;
-    if (temp_r0 == 0) {
-        var_r0 = 0;
+    health = (u32) (M2C_FIELD(striker->unit, u16 *, 6) << 25) >> 25;
+    if (health == 0) {
+        strikerLevel = 0;
     } else {
-        var_r0 = Divide(temp_r0 - 1, 0xA) + 1;
+        strikerLevel = Divide(health - 1, 10) + 1;
     }
-    M2C_FIELD(arg0, s16 *, 0x14) = Divide(M2C_FIELD(arg0, s16 *, 0x14) * var_r0, 0xA);
-    ApplyCounterHit(arg1, arg0);
-    var_r0_2 = M2C_FIELD(arg1, s16 *, 0xE);
-    if ((s32) var_r0_2 < 0) {
-        var_r0_2 = 0;
+    striker->damage = Divide(striker->damage * strikerLevel, 10);
+    ApplyCounterHit(counter, striker);
+    counterHealth = counter->health;
+    if ((s32) counterHealth < 0) {
+        counterHealth = 0;
     }
-    if (var_r0_2 == 0) {
-        var_r0_3 = 0;
+    if (counterHealth == 0) {
+        counterLevel = 0;
     } else {
-        var_r0_3 = Divide(var_r0_2 - 1, 0xA) + 1;
+        counterLevel = Divide(counterHealth - 1, 10) + 1;
     }
-    M2C_FIELD(arg1, s16 *, 0x14) = Divide(M2C_FIELD(arg1, s16 *, 0x14) * var_r0_3, 0xA);
-    ApplyCounterHit(arg0, arg1);
+    counter->damage = Divide(counter->damage * counterLevel, 10);
+    ApplyCounterHit(striker, counter);
 }
 
 void ResolveBattleTie(void *arg0, void *arg1) {

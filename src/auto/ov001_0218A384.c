@@ -540,19 +540,23 @@ void TextPanel_ClearText(void *arg0, s32 arg1) {
 M2C_FIELD(M2C_FIELD(arg0,void **,0x14),void (**)(void *,s32),4)(arg0,arg1);
 }
 
-void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_ov001_0216a398(s32, u8, u8, M2C_UNK, s32, s32, s32, s32);
-          s32 Ov001_GetSpriteObjEntry(s32, s32);
-    M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+/* Draws a text panel's tile block into a sprite object: resets the object's
+ * entry flags and draw attributes, applies the given palette, then fills its
+ * width x height entries with the panel's tiles starting at the panel's first
+ * tile, at pixel (x, y). */
+void Ov001_DrawTextPanelToSprite(Ov001TextPanel *panel, s32 x, s32 y, void *spriteObj, s32 palette) {
+    M2C_UNK Ov001_FillTileRect(s32, u8, u8, M2C_UNK, s32, s32, s32, s32);
+    s32 Ov001_GetSpriteObjEntry(s32, s32);
+    M2C_UNK Ov001_SetSpriteEntryFlags(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetSpriteAttrs(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, s32);
-    s32 temp_r5;
+    s32 entry;
 
-    temp_r5 = Ov001_GetSpriteObjEntry(arg3, 0);
-    func_ov001_0218a260(arg3, -1, 0, 0);
-    Ov001_SetSpriteAttrs(arg3, -1, 0, 0xF);
-    Ov001_SetSpritePalette(arg3, -1, arg4);
-    func_ov001_0216a398(temp_r5, M2C_FIELD(arg0, u8 *, 0x2E), M2C_FIELD(arg0, u8 *, 0x2F), arg1, arg2, 0, (s32) M2C_FIELD(arg0, u16 *, 0x2C), 2);
+    entry = Ov001_GetSpriteObjEntry((s32)spriteObj, 0);
+    Ov001_SetSpriteEntryFlags(spriteObj, -1, 0, 0);
+    Ov001_SetSpriteAttrs(spriteObj, -1, 0, 0xF);
+    Ov001_SetSpritePalette(spriteObj, -1, palette);
+    Ov001_FillTileRect(entry, panel->width, panel->height, x, y, 0, (s32)panel->tileCount, 2);
 }
 
 void CloseTextPanel(s32 arg0) {

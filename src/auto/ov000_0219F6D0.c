@@ -421,7 +421,7 @@ void AiPlaceBuildingUnit(void) {
  extern u8 gAiTargetCandidates,gAiCommand[],gBattleEndState[];
  extern void *gAiCommandState;
  extern void **gCurrentMap;
- void PanMapViewToTile(u8,u8);s32 func_0207b7c4(void);
+ void PanMapViewToTile(u8,u8);s32 IsMapViewScrolling(void);
  BattleMapUnitHead *ProduceUnit(u8,u8,u8);
  s32 IsFootUnitKind(u32);u32 CountFootUnitsWithAiFlag(s32,s32);
  s32 GetUnitKindMaxAttackRange(u32);
@@ -447,7 +447,7 @@ void AiPlaceBuildingUnit(void) {
  if(visible)PanMapViewToTile(x,y);
  return;
  case 2:
- if(func_0207b7c4())return;
+ if(IsMapViewScrolling())return;
  gAiState[3]=0;
  unit=ProduceUnit(target[0],target[1],gAiCommand[6]);
  unit->aiState=gAiCommand[7];

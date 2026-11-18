@@ -112,7 +112,7 @@ s32 func_0204bad4(void *arg0) {
     return 1;
 }
 
-void func_0204bc64(void *arg0) {
+void ghiPostCleanup(void *arg0) {
  void Vector_Free(s32);
  s32 Vector_GetCount(s32);
  void *Vector_GetItem(s32,s32);

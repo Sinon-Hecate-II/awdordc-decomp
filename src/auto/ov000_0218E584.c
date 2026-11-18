@@ -1,6 +1,7 @@
 /* 7 functions from 0x0218E584 to 0x0218F468 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct UnitKind18e584 { u8 kind:6; u8 flags:2; } UnitKind18e584;
 
 
@@ -190,7 +191,10 @@ void SelectAiActionTarget(void) {
     }
 }
 
-void func_ov000_0218eea8(void) {
+/* Move-only counterpart of SelectAiActionTarget: when the acting unit has no
+ * target yet, fall back to joining a neighbour; then, for units the AI ordered
+ * to move, choose the tile the move ends on (an attack or capture target). */
+void SelectAiMoveActionTarget(void) {
     M2C_UNK func_ov000_0218dda4();
     M2C_UNK SelectJoinTarget();
     void SelectAiActionTargetAfterMove();
@@ -198,21 +202,21 @@ void func_ov000_0218eea8(void) {
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    void *temp_r0;
-    void *temp_r1;
+    u8 *unit;
+    u8 *acting;
 
-    temp_r0 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    if (func_ov000_021a93a8(temp_r0, M2C_FIELD(temp_r0, u8 *, 1), M2C_FIELD(temp_r0, u8 *, 2)) == 0) {
+    unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+    if (func_ov000_021a93a8(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y)) == 0) {
         SelectJoinTarget();
     }
-    temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    if (((u32) (M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) != 1) {
+    acting = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+    if (((u32) (M2C_FIELD(acting, u16 *, MAP_UNIT_ACTION) << 0x12) >> 0x1E) != MAP_UNIT_ACTION_MOVE) {
         return;
     }
-    if (IsFootUnitKind((u32) (M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) {
+    if (IsFootUnitKind((u32) (M2C_FIELD(acting, u8 *, MAP_UNIT_KIND) << 0x1A) >> 0x1A) != 0) {
         func_ov000_0218dda4();
     }
-    M2C_FIELD(gAiCommandState, u8 *, 7) = (u8) (M2C_FIELD(gAiCommandState, u8 *, 7) | 2);
+    M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_FLAGS) = (u8) (M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_FLAGS) | 2);
     SelectAiActionTargetAfterMove();
 }
 

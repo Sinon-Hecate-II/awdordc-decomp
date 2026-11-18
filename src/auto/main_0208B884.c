@@ -6,22 +6,64 @@
 typedef struct { u32 low:16, mode:3, a:1, b:1, c:1, d:2, e:2, high:6; } Flags0208;
 typedef struct { u32 low:10, middle:11, high:11; } Flags0208B;
 
-void func_0208b884(void *arg0) {
+void func_0208b884(void *sprite) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void *g3DSpriteEngineSub;
-    M2C_UNK func_0209b9a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK DS3D_AddSpriteQuad(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    extern u16 gSpriteDesc64x32[];
+    void func_0209b9a8(s32, s32, s32, u16, s32);
+    void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
 
     void *saved = gCur3DSpriteEngine;
-    s32 r9;
-    for (r9 = 0; r9 < 2; r9++) {
-        if (r9 == 0) gCur3DSpriteEngine = g3DSpriteEngineMain;
-        else gCur3DSpriteEngine = g3DSpriteEngineSub;
-        func_0209b9a8(0, 0, 0, 0);
+    s32 screen;
+    s32 x, y;
+    for (screen = 0; screen < 2; screen++) {
+        void *engine = *(screen == 0 ? &g3DSpriteEngineMain : &g3DSpriteEngineSub);
+        u32 screenMode;
+        u32 boundary;
+        s32 length;
+        u16 tile;
+        u16 scroll;
+
+        gCur3DSpriteEngine = engine;
+        screenMode = ((u32)M2C_FIELD(sprite, u8 *, 0x48) << 28) >> 29;
+        if ((screenMode == 0 && engine != g3DSpriteEngineMain) ||
+            (screenMode == 1 && engine != g3DSpriteEngineSub) ||
+            (screenMode == 3 && engine != saved)) continue;
+
+        boundary = ((u32)**(u16 **)engine << 17) >> 30;
+        tile = (u16)((((((u32)M2C_FIELD(sprite, u16 *, 0x3e) << 5) + 0x400) >> 5) >> boundary & 0x3ff) | 0x2000 | M2C_FIELD(sprite, u16 *, 0x3c));
+        scroll = M2C_FIELD(sprite, u16 *, 0x5a);
+        x = M2C_FIELD(sprite, s16 *, 0x34) + 1 - scroll;
+        y = M2C_FIELD(sprite, s16 *, 0x36) + 15;
+        length = M2C_FIELD(sprite, u16 *, 0x58);
+        if (M2C_FIELD(sprite, u8 *, 0x5c) < M2C_FIELD(sprite, u8 *, 0x5d)) {
+            M2C_FIELD(sprite, u8 *, 0x5c)++;
+        } else {
+            M2C_FIELD(sprite, u16 *, 0x5a) = (scroll + 1) & 0x1ff;
+        }
+
+        if (length > 256) {
+            func_0209b9a8((u16)(x & 0x1ff), (u8)y, 256, tile, 1);
+            boundary = ((u32)**(u16 **)gCur3DSpriteEngine << 17) >> 30;
+            func_0209b9a8((u16)((x + 256) & 0x1ff), (u8)y, (u16)(length - 256), (u16)(tile + (0x3ff & (64 >> (s32)boundary))), 1);
+        } else {
+            func_0209b9a8((u16)(x & 0x1ff), (u8)y, (u16)length, tile, 1);
+            func_0209b9a8((u16)((x + 256) & 0x1ff), (u8)y, (u16)(u32)length, tile, 1);
+        }
+
+        boundary = ((u32)**(u16 **)gCur3DSpriteEngine << 17) >> 30;
+        tile = (u16)((((((u32)M2C_FIELD(sprite, u16 *, 0x3e) << 5) >> 5) >> boundary) & 0x3ff) |
+               (((M2C_FIELD(sprite, u32 *, 0x40) << 6) >> 24) << 12) |
+               M2C_FIELD(sprite, u16 *, 0x3c));
+        x = M2C_FIELD(sprite, s16 *, 0x34);
+        y = M2C_FIELD(sprite, s16 *, 0x36);
+        DS3D_AddSpriteQuad((u16)(x & 0x1ff), (u8)y, tile, gSpriteDesc64x32);
+        DS3D_AddSpriteQuad((u16)((x + 64) & 0x1ff), (u8)y, tile, gSpriteDesc64x32);
+        DS3D_AddSpriteQuad((u16)((x + 128) & 0x1ff), (u8)y, tile, gSpriteDesc64x32);
+        DS3D_AddSpriteQuad((u16)((x + 192) & 0x1ff), (u8)y, tile, gSpriteDesc64x32);
     }
     gCur3DSpriteEngine = saved;
-    (void)arg0;
 }
 
 void func_0208bc00(void) {
@@ -340,7 +382,12 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     return temp_r4;
 }
 
-s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
+/* Load a compressed sprite asset's graphics and palette from the effect NARC:
+ * build the asset's .cg and .cl paths, open the archive once, decompress the
+ * graphics to the 3D sprite engine's texture area at destOffset and put the palette
+ * into the sprite buffer behind the sixteen reserved palette slots, one per frame.
+ * Returns the loaded graphics handle. */
+s32 LoadCompressedSpriteGraphics(M2C_UNK assetName, s32 destOffset, s32 frameCount) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
     s32 LoadDecompressedFileTo(M2C_UNK *, s32);
@@ -348,23 +395,23 @@ s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 BuildNarcPath();
     void OpenEffectNarcArchive(M2C_UNK);
     void CloseEffectNarcArchive(void);
-    extern M2C_UNK data_02102870;
-    extern M2C_UNK data_02102874;
+    extern M2C_UNK sCompressedSpriteCgExtension;
+    extern M2C_UNK sCompressedSpriteClExtension;
     extern void *gCur3DSpriteEngine;
-    M2C_UNK sp20[8], sp0[8];
-    s32 temp_r0;
-    s32 temp_r4;
+    M2C_UNK gfxPath[8], palPath[8];
+    s32 narcPath;
+    s32 gfx;
 
-    temp_r0 = BuildNarcPath();
-    StringCopy(sp20, temp_r0);
-    StringAppend(sp20, &data_02102870);
-    StringCopy(sp0, temp_r0);
-    StringAppend(sp0, &data_02102874);
-    OpenEffectNarcArchive(arg0);
-    temp_r4 = LoadDecompressedFileTo(sp20, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1);
-    LoadFileToSpriteBuffer(sp0, (arg2 + 0x10) << 5, 0x20);
+    narcPath = BuildNarcPath();
+    StringCopy(gfxPath, narcPath);
+    StringAppend(gfxPath, &sCompressedSpriteCgExtension);
+    StringCopy(palPath, narcPath);
+    StringAppend(palPath, &sCompressedSpriteClExtension);
+    OpenEffectNarcArchive(assetName);
+    gfx = LoadDecompressedFileTo(gfxPath, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + destOffset);
+    LoadFileToSpriteBuffer(palPath, (frameCount + 0x10) << 5, DS3D_PALETTE_BYTES);
     CloseEffectNarcArchive();
-    return temp_r4;
+    return gfx;
 }
 
 void OpenEffectNarcArchive(M2C_UNK arg0) {

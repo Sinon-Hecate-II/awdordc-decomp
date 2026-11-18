@@ -7,7 +7,6 @@ static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
  DS3D_AddSpriteQuad(x,(u8)((p->y>>8)-M2C_FIELD(map,s16 *,0x514a)),0,data_021204a4+p->sprite*8);
 }
 
-typedef struct { u8 x,y; u16 width:3; u16 height:3; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020ADimEntryTop;
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
 void func_020a38f4(s32 a) {
@@ -342,28 +341,30 @@ void func_020a44fc(M2C_UNK arg0, s32 arg1) {
     MI_CpuCopy8(arg0, *gCurrentMap + 0x58A4 + (arg1 * 8), 8);
 }
 
-void func_020a4528(void) {
-extern s32 *gCurrentMap;Unk020ADimEntryTop *p=(Unk020ADimEntryTop *)(*gCurrentMap+0x58a4);s32 i=0;
-do{p->height=0;p->width=p->height;
-M2C_FIELD(p,u8 *,0)=M2C_FIELD(p,u8 *,1)=p->width;
-p->type=0;p->value=0;p->mode=0;p->kind=0;p->extra=0;p->last=0;p++;i++;}while(i<32);
+/* Empties the map's order queue: every one of its 32 records is cleared, with the
+ * record's rectangle, type, value and countdown all set to 0. */
+void ClearMapOrders(void) {
+extern s32 *gCurrentMap;MapOrder *order=(MapOrder *)(*gCurrentMap+MAP_ORDERS);s32 i=0;
+do{order->height=0;order->width=order->height;
+M2C_FIELD(order,u8 *,0)=M2C_FIELD(order,u8 *,1)=order->width;
+order->type=0;order->value=0;order->mode=0;order->kind=0;order->timer=0;order->last=0;order++;i++;}while(i<MAP_ORDER_COUNT);
 }
 
 void func_020a45cc(void) {
- void func_020a4528(void);
+ void ClearMapOrders(void);
  extern s32 *gCurrentMap;
  M2C_FIELD(*gCurrentMap,u16 *,0x58a6)&=~0x3c0;
- func_020a4528();
+ ClearMapOrders();
 }
 
 void *func_020a45f8(s32 a,s32 b) {
-extern s32 *gCurrentMap;Unk020ADimEntryTop *p=(Unk020ADimEntryTop *)(*gCurrentMap+0x58a4);
+extern s32 *gCurrentMap;MapOrder *p=(MapOrder *)(*gCurrentMap+0x58a4);
 while(p->type){s32 x=M2C_FIELD(p,u8 *,0);s32 endx=x+p->width; s32 y=M2C_FIELD(p,u8 *,1);s32 endy=y+p->height;
 if(a>=x&&b>=y&&a<endx&&b<endy)return p;p++;}return 0;
 }
 
 void *func_020a4678(s32 a,s32 b,s32 c) {
-extern s32 *gCurrentMap;Unk020ADimEntryTop *p=(Unk020ADimEntryTop *)(*gCurrentMap+0x58a4);u32 t;
+extern s32 *gCurrentMap;MapOrder *p=(MapOrder *)(*gCurrentMap+0x58a4);u32 t;
 while(t=p->type){s32 x=M2C_FIELD(p,u8 *,0);s32 endx=x+p->width; s32 y=M2C_FIELD(p,u8 *,1);s32 endy=y+p->height;
 if(a>=x&&b>=y&&a<endx&&b<endy){if(t==c)return p;}p++;}return 0;
 }

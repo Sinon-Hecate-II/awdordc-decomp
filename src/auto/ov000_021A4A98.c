@@ -18,7 +18,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     s32 IsUnitOnCurrentTeam(s32);
     s32 GetTerrainPropertyFlagsAt(s32, s32);
     s32 func_ov000_021a43c4(void);
-    s32 func_ov000_021a8784(s32);
+    s32 CountPlayerUnitsOfKindTotal(s32);
     s32 IsCurrentPlayerUnit(s32);
     u8 func_ov000_021a9084(s32);
     s32 func_ov000_021a90a8(s32, s32, s32);
@@ -69,7 +69,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
                 rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
                 terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
                 if (terrain == 0x13) {
-                    if (func_ov000_021a8784(0x18) != 0) flag = 1;
+                    if (CountPlayerUnitsOfKindTotal(0x18) != 0) flag = 1;
                     else if (func_ov000_021a43c4() == 1) flag = 1;
                 }
                 if (flag == 0) {
@@ -78,7 +78,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
                     if (func_ov000_021a9084(terrain) != 0) {
                         rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
                         terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
-                        if (terrain != 0x13 && func_ov000_021a8784(0x18) != 0) flag = 1;
+                        if (terrain != 0x13 && CountPlayerUnitsOfKindTotal(0x18) != 0) flag = 1;
                         if (flag == 0) {
                             void *gp = gAiCommandState;
                             u16 t = ((u16 *)gp)[5];
@@ -136,7 +136,7 @@ s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
 s32 GetUnitMoveRange(s32,u32);void FloodFillUnitRange(s32,s32,s32,s32,s32);
 void MarkAdjacentCells(s8);s32 IsUnitOnCurrentTeam(s32);
 s32 GetUnitDamagePercent(u32,s32);s32 Divide(s32,s32);
-s32 GetUnitMaxAttackRange(s32,u32);s32 func_020a85c8(u32);
+s32 GetUnitMaxAttackRange(s32,u32);s32 IsMobileIndirectUnitKind(u32);
 s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,y,minX,minY,maxX,maxY,distance,value;u32 range;
 u8 flags=gUnitKindFlags[kind*112];
 u16 health;
@@ -180,7 +180,7 @@ if(kind==15&&KIND(unit)==6)value>>=1;sum+=value;continue;
 }
 range=GetUnitMaxAttackRange(UnitOwnerA4e08(unit),KIND(unit));
 if(range<=1)continue;
-if(range<distance&&!func_020a85c8(KIND(unit)))continue;
+if(range<distance&&!IsMobileIndirectUnitKind(KIND(unit)))continue;
 range=gUnitKindStats[KIND(unit)*112+12];if(range<=2)range=2;if(range>distance)continue;
 value=Divide(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 sum+=value;

@@ -66,10 +66,10 @@ s32 gpiPeerBeginConnect(M2C_UNK connection, void *peer) {
  * and queues it on the peer's message vector, then arms the peer's send timeout. */
 s32 gpiPeerAddMessage(s32 connection,void *peer,s32 id,s32 message) {
 s32 StringLength(s32 *);s32 gpiAppendStringField();s32 gpiAppendIntField();s32 gpiAppendStringToBufferLen();s32 gpiAppendChar();s32 gpiGetTime(s32);
-extern s32 data_020fec7c,data_020fec0c,data_020fead4,data_020fed34,gGpiMsgTag,gGpiLenTag,gGpiMsgBodyTag;
+extern s32 data_020fec7c,sGpiPeerSourceFile,data_020fead4,data_020fed34,gGpiMsgTag,gGpiLenTag,gGpiMsgBodyTag;
 s32 buffer[6];s32 len,result;
-if(!peer)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020fead4,0x340);
-if(!message)AssertFailed(&data_020fed34,&data_020fec0c,&data_020fead4,0x341);
+if(!peer)AssertFailed(&data_020fec7c,&sGpiPeerSourceFile,&data_020fead4,0x340);
+if(!message)AssertFailed(&data_020fed34,&sGpiPeerSourceFile,&data_020fead4,0x341);
 len=StringLength((s32 *)message);
 Init55550(buffer);buffer[4]=id;
 result=gpiAppendStringField(connection,buffer,&gGpiMsgTag);if(result)return result;
@@ -88,10 +88,10 @@ void gpiSendTransferHeader(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {
 M2C_UNK gpiSendString(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
 M2C_UNK StringFormat(void *,void *,...);
-extern M2C_UNK data_020fed58,data_020fec0c,data_020feae8,data_020fed64;
+extern M2C_UNK data_020fed58,sGpiPeerSourceFile,data_020feae8,data_020fed64;
 u8 buf[64];s32 b,a,c;
 a=arg3[0];b=arg3[1];c=arg3[2];
-if(!arg3)AssertFailed(&data_020fed58,&data_020fec0c,&data_020feae8,0x376);
+if(!arg3)AssertFailed(&data_020fed58,&sGpiPeerSourceFile,&data_020feae8,0x376);
 StringFormat(buf,&data_020fed64,arg2,a,b,c);
 gpiSendString(arg0,arg1,buf);
 }
@@ -108,9 +108,9 @@ s32 gpiSendString(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
 M2C_UNK StringFormat(void *,void *,...);
 s32 StringLength(M2C_UNK *);
-extern M2C_UNK data_020feb04,data_020fec0c,data_020fec7c,gGpiMessageHeaderFormat,data_020fed78;
+extern M2C_UNK data_020feb04,sGpiPeerSourceFile,data_020fec7c,gGpiMessageHeaderFormat,data_020fed78;
 M2C_UNK header[8];s32 result;
-if(!peer)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
+if(!peer)AssertFailed(&data_020fec7c,&sGpiPeerSourceFile,&data_020feb04,0x389);
 if(!message)message=&data_020fed78;
 if(length==-1)length=StringLength(message);
 StringFormat(header,&gGpiMessageHeaderFormat,length);
@@ -222,10 +222,10 @@ s32 func_02055aa0(void **connection, s32 playerId) {
 }
 
 s32 gpiFindBuddyStatus(void **arg0,s32 arg1,s32 *arg2) {
-s32 func_02048ff8(s32,void *);
+s32 TableLookup(s32,void *);
 s32 key[7];s32 v;void *p=*arg0;
 key[0]=arg1;
-v=func_02048ff8(M2C_FIELD(p,s32 *,0x428),key);
+v=TableLookup(M2C_FIELD(p,s32 *,0x428),key);
 if(arg2)*arg2=v;
 return v!=0;
 }
@@ -239,12 +239,12 @@ void func_02055bc0(void **arg0, M2C_UNK arg1) {
     if (gpiFindBuddyStatus(arg0, arg1, &sp0) == 0) {
         return;
     }
-    func_02048f54(M2C_FIELD(temp_r4, s32 *, 0x428), sp0);
+    TableRemove(M2C_FIELD(temp_r4, s32 *, 0x428), sp0);
 }
 
 void gpiFreeBuddyList(void **arg0) {
-    M2C_UNK func_02048f54(s32);
-    func_02048f54(M2C_FIELD(*arg0, s32 *, 0x428));
+    M2C_UNK TableRemove(s32);
+    TableRemove(M2C_FIELD(*arg0, s32 *, 0x428));
 }
 
 s32 func_02055c08(s32 arg0,void *arg1,void *arg2) {

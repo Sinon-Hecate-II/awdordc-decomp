@@ -71,12 +71,34 @@
 #define SEND_RING_WAIT  0x104 /* OSThreadQueue producers sleep on when the ring is full */
 #define SEND_RING_OWNER 0x10c /* void *socket that owns this connection */
 
+/* A queued send: the socket layer allocates one when a send is posted and the
+ * send task drains it.  The bytes to send may wrap in the send ring, so the
+ * record describes them as two (pointer, length) pieces.  It also carries the
+ * ring position the queueing ended at and the header fields the task puts in
+ * front of the data. */
+typedef struct SendRequest {
+    u8  filler_00[0x10];
+    s32 firstPtr;   /* +0x10 start of the first piece in the send ring */
+    s32 firstLen;   /* +0x14 bytes left in the first piece */
+    s32 secondPtr;  /* +0x18 start of the wrapped piece, 0 when there is none */
+    s32 secondLen;  /* +0x1C bytes left in the wrapped piece */
+    u16 position;   /* +0x20 send-ring write position the queueing ended at */
+    u16 reserved22; /* +0x22 unused */
+    u16 port;       /* +0x24 local port the data goes out from */
+    u16 tag;        /* +0x26 packet tag */
+    s32 fallback;   /* +0x28 address to send to when there is no connection */
+} SendRequest;
+
 /* The socket object's link in the socket layer's open/closed lists
  * (gActiveSocketList / gClosedSocketList). */
 #define SOCK_LIST_NEXT  0x7c /* void *next socket in the list */
 
 /* A socket result meaning the socket layer is still tearing sockets down. */
 #define SOCK_BUSY (-0x1A)
+
+/* Result a caller waiting on a queued task is given when its connection is torn
+ * down before the task could run (ConnectionAbort). */
+#define SOCK_TASK_ABORTED (-11)
 
 /* One queued received record: a 0xC-byte header followed by its payload. */
 #define REC_NEXT 0x00 /* void *next record, NULL at the tail */
@@ -95,7 +117,7 @@
  * calls TASK_FUNC with TASK_SOCKET and forwards TASK_RESULT to the waiter. */
 #define TASK_FUNC   0x00 /* void *(*)(void *) the task's function */
 #define TASK_SOCKET 0x04 /* void *socket the task works on */
-#define TASK_RESULT 0x08 /* s32 result the task reports back */
+#define TASK_NOTIFY 0x08 /* void *message queue the task's result is sent to, 0 when no caller waits */
 
 /* Receive-side drop counters. */
 #define RECV_STAT_NO_MEMORY  0x00 /* s32 records dropped because the allocator failed */
@@ -148,6 +170,16 @@ enum {
     SOCK_KIND_TCP  = 1,
     SOCK_KIND_UDP  = 10,
     SOCK_KIND_ICMP = 11
+};
+
+/* SOCK_STATE values: which directions the socket has open.  A receive-only
+ * socket reads the record queue SocketQueueReceivedData fills; the duplex states
+ * read the connection's receive window instead (see SocketPoll). */
+enum {
+    SOCK_STATE_IDLE      = 0, /* nothing open yet */
+    SOCK_STATE_RECV_ONLY = 1,
+    SOCK_STATE_SEND_ONLY = 2,
+    SOCK_STATE_CONNECTED = 4  /* both directions open */
 };
 
 #endif

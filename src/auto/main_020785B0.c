@@ -15,7 +15,7 @@ typedef struct { u8 x,y; u16 dx:3,dy:3,kind:4,unused:4,angle:2; u8 value; } MapR
 typedef struct { s32 x,y,z; } Vec3;
 typedef struct { u8 kind:6; u8 side:2; u8 pad[5]; u16 hp:7; u16 rest:9; } RenderUnit;
 typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;
-extern u8 gMapCellCodes[1920], data_02141788[1920];
+extern u8 gMapCellCodes[1920], gMapCellShades[1920];
 extern s16 gSinCosTable[2048];
 extern u32 gTerrainClassFlags[][2];
 
@@ -145,7 +145,7 @@ x0=ClampRenderCoord(rawx,(u16*)(*gCurrentMap+0x5120),18);
 y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
 x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
 y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
-func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);func_02078340(x0,y0,x1,y1);
+func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);BuildMapCellShades(x0,y0,x1,y1);
 func_02078528();func_020785b0();func_0207863c();func_0207f9f4();
 for(i=0;i<32;i++)counts[i]=0;
 *(volatile u32*)0x40004a8=0x6f600000;
@@ -159,7 +159,7 @@ tile=M2C_FIELD(base+index,u8*,0x1420);
 visible=((u8*)(base+0x5120+0xe1))[index>>3]&(1<<(index&7));
 visible=(u8)visible;
 if(!tile)continue;
-v1=(gMapCellCodes+x*40)[y];v2=(data_02141788+x*40)[y];
+v1=(gMapCellCodes+x*40)[y];v2=(gMapCellShades+x*40)[y];
 counts[tile&31]++;
 Map_SubmitTerrainQuads(x,y,a,b,tile,visible,v1,v2);
 }
@@ -178,7 +178,7 @@ SetAmbienceSoundVolume(1,0x108,counts[26]);SetAmbienceSoundVolume(2,0x109,counts
 #pragma pop
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
 void func_02004078(s32,s32); void Map_SubmitCellQuads(s32,s32,s32,s32,s32,s32);
-s32 a,b,c,d,sn,cs; a=(gMapCellCodes+x*40)[y];b=(data_02141788+x*40)[y];
+s32 a,b,c,d,sn,cs; a=(gMapCellCodes+x*40)[y];b=(gMapCellShades+x*40)[y];
 *(volatile u32 *)0x4000444=0;
 if(angle){d=(y<<4)*48+0x180;c=(x<<4)*48+0x180;
 cs=gSinCosTable[(angle>>4)*2+1];sn=gSinCosTable[(angle>>4)*2];

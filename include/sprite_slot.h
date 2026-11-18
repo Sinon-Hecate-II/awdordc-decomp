@@ -36,4 +36,24 @@ enum {
     SPRITE_SLOT_STATE_DRAGGING = 2  /* held too long; a release no longer clicks */
 };
 
+/* The definition a slot is created from (AddSpriteSlot's `desc`): the slot is
+ * placed at the caller's (x, y) plus dx/dy and gets the definition's size, flags,
+ * tile and callbacks, which land in the slot's own fields at 0x24..0x38 (the
+ * per-frame callback and SPRITE_SLOT_CLICK_CB among them). */
+#define SPRITE_SLOT_DEF_DX        0x00 /* s16 x offset on top of the caller's x */
+#define SPRITE_SLOT_DEF_DY        0x02 /* s16 y offset */
+#define SPRITE_SLOT_DEF_W         0x04 /* s16 width */
+#define SPRITE_SLOT_DEF_H         0x06 /* s16 height */
+#define SPRITE_SLOT_DEF_FLAGS     0x08 /* u16 SPRITE_SLOT_FLAG_* */
+#define SPRITE_SLOT_DEF_UNK0A     0x0A /* u16 */
+#define SPRITE_SLOT_DEF_TILE      0x0C /* u16 OBJ tile index */
+#define SPRITE_SLOT_DEF_PRIORITY  0x0E /* u16 */
+#define SPRITE_SLOT_DEF_UPDATE_CB 0x10 /* void * -> slot +0x24, run every frame */
+#define SPRITE_SLOT_DEF_UNK14     0x14 /* void * -> slot +0x28 */
+#define SPRITE_SLOT_DEF_CLICK_CB  0x18 /* void * -> slot +0x2C */
+#define SPRITE_SLOT_DEF_UNK1C     0x1C /* void * -> slot +0x30 */
+#define SPRITE_SLOT_DEF_UNK20     0x20 /* void * -> slot +0x34 */
+#define SPRITE_SLOT_DEF_UNK24     0x24 /* void * -> slot +0x38 */
+#define SPRITE_SLOT_DEF_SIZE      0x28
+
 #endif

@@ -71,7 +71,7 @@ s32 func_0206e2e4(u8 *p,s32 i) {
 }
 
 #pragma opt_space on
-void func_0206e350(u8 *p,s32 n) {
+void DecimalIncrementDigits(u8 *p,s32 n) {
  u8 *start=p+5; u8 *q=start+n-1;
  for(;;) {
  if(*q<9) { ++*q; return; }
@@ -88,7 +88,7 @@ void RoundDecimalToDigits(u8 *p,s32 n) {
  s32 r;
  if(n<=0)return; if(n>=p[4])return;
  r=func_0206e2e4(p,n); p[4]=n; if(r<0)return;
- func_0206e350(p,n);
+ DecimalIncrementDigits(p,n);
 }
 
 u64 U64Divide(u64,u64);
@@ -135,23 +135,29 @@ for(n=0;n<32 && cursor<endmark;n++)arg0[5+n]=*cursor++;
 arg0[4]=n;if(cursor>=endmark)return;
 tt=*cursor;if(tt<5)return;
 if(tt==5){for(p2=cursor+1;p2<endmark;++p2){if(*p2)goto call;}if(!(cursor[-1]&1))return;}
-call:func_0206e350(arg0,arg0[4]);
+call:DecimalIncrementDigits(arg0,arg0[4]);
 }
 #pragma scheduling reset
-void DecimalFromDigitString(u8 *p,s8 *s,s16 e) {
+/* Build a DecimalNumber from the ASCII digit string digitString (at most 32
+ * digits): copy the digits and set their count and the decimal exponent, then
+ * round the digits that did not fit (past 5 rounds up, exactly 5 rounds to even,
+ * below 5 truncates; the dropped digit is compared as the raw character, as the
+ * original does). */
+void DecimalFromDigitString(u8 *p,s8 *digitString,s16 exponent) {
+ DecimalNumber *number=(DecimalNumber *)p;
  s32 n=0;
- M2C_FIELD(p,s16 *,2)=e; p[0]=0;
- while(n<32 && *s) { p[5+n++]=*s++-'0'; }
- p[4]=n;
- if(*s==0)return;
- if(*s<5)return;
- if(*s<=5) {
- {s32 c=s[1]; s++;
- while(c) { if(c!='0')goto round; c=*++s; }}
- n--; if(!(M2C_FIELD(p+n,u8 *,5)&1))return;
+ number->exponent=exponent; number->sign=0;
+ while(n<32 && *digitString) { number->digits[n++]=*digitString++-'0'; }
+ number->length=n;
+ if(*digitString==0)return;
+ if(*digitString<5)return;
+ if(*digitString<=5) {
+ {s32 c=digitString[1]; digitString++;
+ while(c) { if(c!='0')goto round; c=*++digitString; }}
+ n--; if(!(number->digits[n]&1))return;
  }
 round:
- func_0206e350(p,p[4]);
+ DecimalIncrementDigits(p,number->length);
 }
 
 /* Store 2^exponent as a DecimalNumber.  The small exponents -64, -53, -32,

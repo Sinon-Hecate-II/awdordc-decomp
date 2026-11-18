@@ -615,17 +615,21 @@ u8 func_ov001_0218a258(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0xC);
 }
 
-void func_ov001_0218a260(void *arg0,s32 arg1,s32 arg2,s32 arg3){
-u32 (*array)[2]=*(u32 (**)[2])((u8 *)arg0+8);
-u32 val; s32 i;
-if(arg1>=0){
-if(arg2!=0x100 && arg2!=0x300){val=array[arg1][0]&0xc1fffcff;val|=arg2;array[arg1][0]=val;}
-else{val=array[arg1][0]&0xc1fffcff;val|=arg2;val|=arg3<<25;array[arg1][0]=val;}
+/* Sets the draw-mode attribute bits of a sprite object's entries: `flags` is the pair
+ * of entry attribute bits to write (SPRITE_ENTRY_AFFINE / SPRITE_ENTRY_HIDDEN) and
+ * `matrix` the rotation-scaling matrix index, written only into affine entries.
+ * Entry `index` alone is changed, or every entry of the object when index is negative. */
+void Ov001_SetSpriteEntryFlags(void *obj,s32 index,s32 flags,s32 matrix){
+u32 (*entries)[2]=*(u32 (**)[2])((u8 *)obj+8);
+u32 value;
+if(index>=0){
+if(flags!=SPRITE_ENTRY_AFFINE && flags!=SPRITE_ENTRY_AFFINE_DOUBLE){value=entries[index][0]&SPRITE_ENTRY_ATTR_MASK;value|=flags;entries[index][0]=value;}
+else{value=entries[index][0]&SPRITE_ENTRY_ATTR_MASK;value|=flags;value|=matrix<<SPRITE_ENTRY_MATRIX_SHIFT;entries[index][0]=value;}
 }else{
-for(arg1=0;arg1<M2C_FIELD(arg0,u8 *,12);arg1++){
-if(arg2!=0x100 && arg2!=0x300){val=array[arg1][0]&0xc1fffcff;val|=arg2;}
-else {val=array[arg1][0]&0xc1fffcff;val|=arg2;val|=arg3<<25;}
-array[arg1][0]=val;
+for(index=0;index<M2C_FIELD(obj,u8 *,12);index++){
+if(flags!=SPRITE_ENTRY_AFFINE && flags!=SPRITE_ENTRY_AFFINE_DOUBLE){value=entries[index][0]&SPRITE_ENTRY_ATTR_MASK;value|=flags;}
+else {value=entries[index][0]&SPRITE_ENTRY_ATTR_MASK;value|=flags;value|=matrix<<SPRITE_ENTRY_MATRIX_SHIFT;}
+entries[index][0]=value;
 }
 }
 }

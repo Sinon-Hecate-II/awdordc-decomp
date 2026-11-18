@@ -88,12 +88,12 @@ M2C_UNK *gpiGetInfoField(void *info, s8 *key) {
 
 M2C_UNK *gpiGetInfoFieldOrEmpty(void *arg0, M2C_UNK *arg1) {
     M2C_UNK *gpiGetInfoField();
-    extern M2C_UNK data_020ff4a8;
+    extern M2C_UNK gGpiEmptyValue;
     M2C_UNK *var_r0;
 
     var_r0 = gpiGetInfoField();
     if (var_r0 == NULL) {
-        var_r0 = &data_020ff4a8;
+        var_r0 = &gGpiEmptyValue;
     }
     return var_r0;
 }
@@ -135,7 +135,7 @@ void gpiHandleAuthReply(void *reply) {
     s32 *Vector_GetItem(s32, s32);
     M2C_UNK gpiReportProfileUpdate(s32, s32, s32, s32, s32);
     extern M2C_UNK gGpiKeyAuthResult;
-    extern M2C_UNK gKeyPid;
+    extern M2C_UNK gGpiKeyLid;
     extern M2C_UNK gGpiKeyErrorMsg;
     extern M2C_UNK gGpiInfoState;
     s32 success;
@@ -145,7 +145,7 @@ void gpiHandleAuthReply(void *reply) {
     s32 errorMessage;
 
     authResult = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyAuthResult));
-    pid = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gKeyPid));
+    pid = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyLid));
     errorMessage = gpiGetInfoFieldOrEmpty(reply, &gGpiKeyErrorMsg);
     profileIndex = gpiFindProfileRecord(GPI_PROFILE_STATUS, pid, 0);
     if (profileIndex == -1) {
@@ -165,14 +165,14 @@ void func_020590d0(void *arg0) {
     s32 *Vector_GetItem(s32, s32);
     M2C_UNK gpiReportProfileUpdate(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4c4;
-    extern M2C_UNK gKeyPid;
+    extern M2C_UNK gGpiKeyLid;
     extern M2C_UNK gGpiInfoState;
     s32 var_r1;
     s32 temp_r0;
     s32 temp_r4;
 
     temp_r4 = ParseInt(gpiGetInfoFieldOrEmpty(arg0, &data_020ff4c4));
-    temp_r0 = gpiFindProfileRecord(3, ParseInt(gpiGetInfoFieldOrEmpty(arg0, &gKeyPid)), 0);
+    temp_r0 = gpiFindProfileRecord(3, ParseInt(gpiGetInfoFieldOrEmpty(arg0, &gGpiKeyLid)), 0);
     if (temp_r0 == -1) {
         return;
     }
@@ -185,47 +185,50 @@ void func_020590d0(void *arg0) {
     gpiReportProfileUpdate(temp_r0, var_r1, 0, 0, 0);
 }
 
-/* Handle the server's reply to a \setpdr\ profile-update request: find the
-   player's auth-profile record, and report back its secret and status, with the
-   optional \pr\ text and its length (0 when the reply carries none). */
-void gpiHandleSetProfileReply(void *arg0) {
+/* Handle the server's reply to a \getpdr\ profile-data request: find the
+   player's auth-profile record, and report back its result and modified flag,
+   with the optional \data\ payload and its length (0 when the reply has none). */
+void gpiHandleGetProfileReply(void *arg0) {
 s32 ParseInt(M2C_UNK);s8 *StringFind(s8 *,s8 *);s32 gpiFindProfileRecord(s32,s32,s32);M2C_UNK gpiReportProfileUpdate(s32,s32,s32,s32,s32);M2C_UNK *gpiGetInfoFieldOrEmpty(void *,M2C_UNK *);
-extern M2C_UNK data_020ff4cc,gKeyPid,data_020ff4d4,data_020ff4d8,data_020ff4dc,data_020ff4e4,data_020ff4a8;
+extern M2C_UNK gGpiKeyGetPdr,gGpiKeyLid,gGpiKeyPid,gGpiKeyModified,gGpiKeyLength,gGpiKeyData,gGpiEmptyValue;
 s32 profileIndex; s32 textLength,secret,pid,p1,status; s8 *p,*text;
-secret=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&data_020ff4cc));
-pid=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&gKeyPid));
-p1=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&data_020ff4d4));
-status=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&data_020ff4d8));
+secret=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&gGpiKeyGetPdr));
+pid=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&gGpiKeyLid));
+p1=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&gGpiKeyPid));
+status=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&gGpiKeyModified));
 profileIndex=gpiFindProfileRecord(1,pid,p1);
 if(profileIndex==-1)return;
-textLength=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&data_020ff4dc));
-p=StringFind(arg0,(s8 *)&data_020ff4e4);
-if(!p){text=(s8 *)&data_020ff4a8;textLength=0;}else text=p+6;
+textLength=ParseInt(gpiGetInfoFieldOrEmpty(arg0,&gGpiKeyLength));
+p=StringFind(arg0,(s8 *)&gGpiKeyData);
+if(!p){text=(s8 *)&gGpiEmptyValue;textLength=0;}else text=p+6;
 gpiReportProfileUpdate(profileIndex,secret,status,(s32)text,textLength);
 }
 
-void func_02059240(void *arg0) {
+/* Handle the server's reply to a \setpdr\ profile-data update: find the info
+ * profile record the reply names with its \lid\ and \pid\ fields, then report
+ * the request's result and modified flag to the record's callback. */
+void gpiHandleSetProfileReply(void *reply) {
     s32 ParseInt(M2C_UNK);
     M2C_UNK gpiReportProfileUpdate(s32, s32, s32, s32, s32);
-    extern M2C_UNK data_020ff4ec;
-    extern M2C_UNK data_020ff4d4;
-    extern M2C_UNK gKeyPid;
-    extern M2C_UNK data_020ff4d8;
-    s32 temp_r0;
-    s32 temp_r4;
-    s32 temp_r4_2;
-    s32 temp_r5;
-    s32 temp_r6;
+    extern M2C_UNK gGpiKeySetPdr;
+    extern M2C_UNK gGpiKeyPid;
+    extern M2C_UNK gGpiKeyLid;
+    extern M2C_UNK gGpiKeyModified;
+    s32 profileIndex;
+    s32 lid;
+    s32 modified;
+    s32 pid;
+    s32 result;
 
-    temp_r6 = ParseInt(gpiGetInfoFieldOrEmpty(arg0, &data_020ff4ec));
-    temp_r5 = ParseInt(gpiGetInfoFieldOrEmpty(arg0, &data_020ff4d4));
-    temp_r4 = ParseInt(gpiGetInfoFieldOrEmpty(arg0, &gKeyPid));
-    temp_r4_2 = ParseInt(gpiGetInfoFieldOrEmpty(arg0, &data_020ff4d8));
-    temp_r0 = gpiFindProfileRecord(2, temp_r4, temp_r5);
-    if (temp_r0 == -1) {
+    result = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeySetPdr));
+    pid = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyPid));
+    lid = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyLid));
+    modified = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyModified));
+    profileIndex = gpiFindProfileRecord(GPI_PROFILE_INFO, lid, pid);
+    if (profileIndex == -1) {
         return;
     }
-    gpiReportProfileUpdate(temp_r0, temp_r6, temp_r4_2, 0, 0);
+    gpiReportProfileUpdate(profileIndex, result, modified, 0, 0);
 }
 
 /* Handle one complete \final\-terminated gpi info message: terminate its text and
@@ -234,8 +237,8 @@ void func_020592d8(s8 *arg0, s32 arg1) {
     s32 StringCompareN(void *, void *, s32);
     void gpiHandleAuthReply();
     void func_020590d0();
+    void gpiHandleGetProfileReply();
     void gpiHandleSetProfileReply();
-    void func_02059240();
     extern u8 data_020ff4f4[];
     extern u8 data_020ff500[];
     extern u8 data_020ff50c[];
@@ -245,9 +248,9 @@ void func_020592d8(s8 *arg0, s32 arg1) {
     if (StringCompareN(arg0, data_020ff4f4, 8) == 0) { gpiHandleAuthReply(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
-    if (StringCompareN(arg0, data_020ff50c, 8) == 0) { gpiHandleSetProfileReply(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff50c, 8) == 0) { gpiHandleGetProfileReply(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff518, 8) != 0) return;
-    func_02059240(arg0, arg1);
+    gpiHandleSetProfileReply(arg0, arg1);
 }
 
 s32 gpiInfoProcessRecvData(s8 *arg0, s32 arg1) {
@@ -366,7 +369,7 @@ s32 func_02059670(void *arg0, s32 arg1) {
 }
 
 M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
- s32 *func_02058658(s32, void *, s32, M2C_UNK *);
+ s32 *BucketNew(s32, void *, s32, M2C_UNK *);
  extern M2C_UNK gGpiInfoState;
  s32 *result;
  void *obj = arg0;
@@ -374,13 +377,13 @@ M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 ar
  if (obj == NULL) result = &arg3;
  else {
  result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, &arg3);
- if (result == NULL) result = func_02058658(M2C_FIELD(obj, s32 *, 0xc), arg1, 0, &arg3);
+ if (result == NULL) result = BucketNew(M2C_FIELD(obj, s32 *, 0xc), arg1, 0, &arg3);
  }
  return *result;
 }
 
 s64 func_02059708(void *arg0, void *arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
- s32 *func_02058658(s32, void *, s32, M2C_UNK *);
+ s32 *BucketNew(s32, void *, s32, M2C_UNK *);
  extern M2C_UNK gGpiInfoState;
  s32 *result;
  void *obj = arg0;
@@ -388,13 +391,13 @@ s64 func_02059708(void *arg0, void *arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
  if (obj == NULL) result = (s32 *)&arg3;
  else {
  result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, (s32 *)&arg3);
- if (result == NULL) result = func_02058658(M2C_FIELD(obj, s32 *, 0xc), arg1, 1, (s32 *)&arg3);
+ if (result == NULL) result = BucketNew(M2C_FIELD(obj, s32 *, 0xc), arg1, 1, (s32 *)&arg3);
  }
  return *(s64 *)result;
 }
 
 s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    s32 *func_02058658(s32, void *, s32, M2C_UNK *);
+    s32 *BucketNew(s32, void *, s32, M2C_UNK *);
     extern M2C_UNK gGpiInfoState;
     s32 result;
     void *obj = arg0;
@@ -402,7 +405,7 @@ s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) 
     if (obj == NULL) return arg3;
     result = ((s32 (*)(s32, void *, M2C_UNK))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, arg3);
     if (result != 0) return result;
-    return (s32)func_02058658(M2C_FIELD(obj, s32 *, 0xc), arg1, 2, (M2C_UNK *)arg3);
+    return (s32)BucketNew(M2C_FIELD(obj, s32 *, 0xc), arg1, 2, (M2C_UNK *)arg3);
 }
 
 void func_020597d4(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {

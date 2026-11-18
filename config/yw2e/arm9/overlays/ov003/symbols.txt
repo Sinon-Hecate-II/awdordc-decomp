@@ -87,7 +87,7 @@ func_ov003_021e6cc4 kind:function(arm,size=0x38) addr:0x021e6cc4
 func_ov003_021e6cfc kind:function(arm,size=0x2c) addr:0x021e6cfc
 func_ov003_021e6d28 kind:function(arm,size=0x2c) addr:0x021e6d28
 func_ov003_021e6d54 kind:function(arm,size=0x18) addr:0x021e6d54
-func_ov003_021e6d6c kind:function(arm,size=0x9c) addr:0x021e6d6c
+GetWaypointSlotGroup kind:function(arm,size=0x9c) addr:0x021e6d6c
 func_ov003_021e6e08 kind:function(arm,size=0x10) addr:0x021e6e08
 func_ov003_021e6e18 kind:function(arm,size=0x10) addr:0x021e6e18
 func_ov003_021e6e28 kind:function(arm,size=0x18) addr:0x021e6e28
@@ -624,7 +624,7 @@ func_ov003_0220ed6c kind:function(arm,size=0x14) addr:0x0220ed6c
 MapSelectScreen_Destroy kind:function(arm,size=0x300) addr:0x0220ed80
 func_ov003_0220f080 kind:function(arm,size=0x34) addr:0x0220f080
 func_ov003_0220f0b4 kind:function(arm,size=0x4) addr:0x0220f0b4
-data_ov003_0220f0b8 kind:data(any) addr:0x0220f0b8
+gWaypointSlotGroups kind:data(any) addr:0x0220f0b8
 data_ov003_0220f0c8 kind:data(any) addr:0x0220f0c8
 data_ov003_0220f12c kind:data(any) addr:0x0220f12c
 data_ov003_0220f202 kind:data(any) addr:0x0220f202

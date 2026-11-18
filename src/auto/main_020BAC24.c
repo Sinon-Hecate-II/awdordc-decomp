@@ -8,7 +8,7 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK func_020baa64();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK func_020babfc(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void func_020cbdbc(void);
+M2C_UNK func_020baa64();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK func_020babfc(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshCursorCell(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
 func_020baa64();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
@@ -50,7 +50,7 @@ if(!unit->health){if(unit)carrierId=unit-(BattleMapUnit*)((u8*)*gCurrentMap+MAP_
 RefreshMapView();
 if(func_020d66fc((u8*)*gCurrentMap+MAP_CURSOR_PATH))func_ov000_0216aa04(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
 else func_ov000_0216a9bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));
-func_020cbdbc();
+RefreshCursorCell();
 }
 
 void func_020bb028(void) {
@@ -448,15 +448,18 @@ void func_020bbac8(void) {
     func_020cb8cc(0);
 }
 
-void func_020bbb08(void) {
+/* End the current player's turn: pick and store the weather the next turn
+ * starts with, capture a fresh battle-command seed, remember where the player
+ * left the cursor, and move the map state machine to its end-of-turn step. */
+void EndPlayerTurn(void) {
  M2C_UNK RollNextWeather(); M2C_UNK GetRandomSeed(); M2C_UNK func_020a6fcc();
  extern void **gCurrentMap; extern u8 gBattleCommand[];
- u8 *p = (u8 *)*gCurrentMap + 0x5120;
- p[0x3a] = RollNextWeather();
- *(u32 *)(gBattleCommand+8) = GetRandomSeed();
- M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d1)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
- M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d2)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
- func_020a6fcc(); M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=1;
+ u8 *p = (u8 *)*gCurrentMap + MAP_NAME;
+ p[MAP_WEATHER_START - MAP_NAME] = RollNextWeather();
+ *(u32 *)(gBattleCommand + BATTLE_COMMAND_SEED) = GetRandomSeed();
+ M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_CURSOR_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X);
+ M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_CURSOR_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y);
+ func_020a6fcc(); M2C_FIELD(*gCurrentMap,u16 *,MAP_STATE)=1;
 }
 
 void func_020bbba4(void) {

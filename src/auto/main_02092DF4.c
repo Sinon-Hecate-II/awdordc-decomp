@@ -93,8 +93,8 @@ s32 func_020930bc(void *arg0) {
 }
 
 s32 func_020930e0(void *arg0) {
-    M2C_UNK func_020bbb08();
-    func_020bbb08();
+    M2C_UNK EndPlayerTurn();
+    EndPlayerTurn();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 0;
 }

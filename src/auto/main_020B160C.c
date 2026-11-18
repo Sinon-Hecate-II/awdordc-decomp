@@ -360,14 +360,14 @@ s32 i=0; u8 *p=gSpriteSlots;
 do { if(SpriteSlotHasFlags(p,1)!=0) p[1]=0; i++;p+=0x3c; } while(i<0x55);
 }
 
-void func_020b21e0(void) {
+void LockInactiveSpriteSlots(void) {
 extern u8 gSpriteSlots[];
 s32 i; u8 *p;
 p=gSpriteSlots; i=0;
 do { if(SpriteSlotHasFlags(p,1)!=1) M2C_FIELD(p,u16 *,0x1c)|=0x400; i++;p+=0x3c; } while(i<0x55);
 }
 
-void func_020b2224(void) {
+void UnlockInactiveSpriteSlots(void) {
 extern u8 gSpriteSlots[];
 s32 i; u8 *p;
 p=gSpriteSlots; i=0;

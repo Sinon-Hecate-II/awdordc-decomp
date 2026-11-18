@@ -13,7 +13,7 @@ void gpiAppendIntField(s32 a,s32 b) {
 }
 
 s32 gpiSendOrBufferChar(M2C_UNK arg0,s32 arg1,s8 *arg2,M2C_UNK arg3,M2C_UNK *arg4,s32 *arg5,M2C_UNK *arg6) {
-s32 func_02049810(M2C_UNK,s8 *,M2C_UNK,M2C_UNK);
+s32 ghiSend(M2C_UNK,s8 *,M2C_UNK,M2C_UNK);
 s32 ghiGetLastSocketError(M2C_UNK);
 void gpiCallErrorCallback(void **,s32,s32);
 M2C_UNK gpiLogMessage(M2C_UNK,M2C_UNK *,M2C_UNK *);
@@ -22,7 +22,7 @@ extern M2C_UNK data_020fdfb4;
 extern M2C_UNK data_020fdfdc;
 s8 *buf; s32 r; s32 e;
 buf=(s8 *)arg6;
-r=func_02049810(arg1,arg2,arg3,0);
+r=ghiSend(arg1,arg2,arg3,0);
 if(r==-1) {
 e=ghiGetLastSocketError(arg1);
 if(e!=-6 && e!=-26 && e!=-76) {

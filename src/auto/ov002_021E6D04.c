@@ -444,7 +444,7 @@ EndBattleScene(arg0);
 }
 
 void func_ov002_021e78e4(void) {
-    M2C_UNK func_02086dfc();
+    M2C_UNK SetupSprite3DScene();
     M2C_UNK func_02086ec8();
     M2C_UNK SetGxPolygonAttr(M2C_UNK, M2C_UNK);
     s32 func_ov002_021e3e00(M2C_UNK *);
@@ -454,7 +454,7 @@ void func_ov002_021e78e4(void) {
     extern M2C_UNK gUnitViews;
     s32 var_r2;
 
-    func_02086dfc();
+    SetupSprite3DScene();
     SetGxPolygonAttr(0, 0x1F);
     if (func_ov002_021e3e00(&data_ov002_021f3014) != 0) {
         func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, 1) * 0x2C) + (s32) &gUnitViews);

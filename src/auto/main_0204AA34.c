@@ -101,7 +101,7 @@ s32 ghiFreeConnection(void *connection) {
     extern M2C_UNK data_020fd0a4, ghiAssertFile, data_020fd024, data_020fd0b0, gGhiConnectionList, data_020fd0cc, data_020fd0f4;
     M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
     M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK func_020496b8(s32);
-    void ghiFreeBuffer(void *); void func_0204bc64(void *);
+    void ghiFreeBuffer(void *); void ghiPostCleanup(void *);
     s32 func_0204b688(void *); void func_0204b690(s32 *);
     GHIConnection *conn = (GHIConnection *)connection;
 
@@ -128,7 +128,7 @@ s32 ghiFreeConnection(void *connection) {
     ghiFreeBuffer(&conn->readBuffer);
     ghiFreeBuffer(&conn->decryptBuffer);
     ghiFreeBuffer(&conn->bodyBuffer);
-    if (conn->postItems) func_0204bc64(conn);
+    if (conn->postItems) ghiPostCleanup(conn);
     if (conn->postData && func_0204b688(conn->postData)) {
         func_0204b690(conn->postData);
         conn->postData = 0;
@@ -249,7 +249,7 @@ void func_0204c738(void *);
 void ghiDoConnect(void *);
 void ghiProcessConnected(void *);
 void ghiSendRequest(void *);
-void func_0204ce20(void *);
+void ghiDoPosting(void *);
 void func_0204ceb8(void *);
 void ghiReceiveStatusLine(void *);
 void func_0204d5c0(void *);
@@ -270,7 +270,7 @@ s32 func_0204b210(void *operation) {
     if (M2C_FIELD(operation, s32 *, 0x10) == 1) ghiDoConnect(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 2) ghiProcessConnected(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 3) ghiSendRequest(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 4) func_0204ce20(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 4) ghiDoPosting(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 6) ghiReceiveStatusLine(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 7) func_0204d5c0(operation);

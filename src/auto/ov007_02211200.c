@@ -33,7 +33,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- LoadMapTileset();LoadUiGraphicsBank(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();InitPlayerTurnState();
+ LoadMapTileset();LoadUiGraphicsBank(4);RefreshCursorCell();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();InitPlayerTurnState();
  MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -87,7 +87,11 @@ void MapEditor_SpawnCursorSprite(M2C_UNK arg0) {
     CreateSpriteFromClass(&data_ov007_0221f5c0, arg0);
 }
 
-void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Map editor unit brush: places the editor's selected unit kind, owner and flags
+ * on cell (x, y).  On success it refreshes the map and cursor, marks the map
+ * modified and plays the placement sound; a refused placement plays the error
+ * sound when `playErrorSound` is set. */
+void MapEditor_PlaceSelectedUnit(M2C_UNK editor, s32 x, s32 y, s32 playErrorSound) {
     s32 GetMapEditorUnitKind();
     s32 GetMapEditorUnitOwner();
     s32 GetMapEditorUnitFlags();
@@ -97,31 +101,34 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     void MapEditor_SetMapModified(s32);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
-    s32 temp_r0;
-    s32 temp_r4;
-    s32 temp_r5;
-    temp_r5 = GetMapEditorUnitKind();
-    temp_r4 = GetMapEditorUnitOwner();
-    temp_r0 = MapEditor_PlaceUnit(arg1, arg2, temp_r5, temp_r4, GetMapEditorUnitFlags());
-    switch (temp_r0) {
+    s32 result;
+    s32 owner;
+    s32 unitKind;
+    unitKind = GetMapEditorUnitKind();
+    owner = GetMapEditorUnitOwner();
+    result = MapEditor_PlaceUnit(x, y, unitKind, owner, GetMapEditorUnitFlags());
+    switch (result) {
     case 1:
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        MapEditor_SpawnCursorSprite(arg0);
-        SpawnSoundEffectAtTile(0x119, arg1, arg2, 1);
+        MapEditor_SpawnCursorSprite(editor);
+        SpawnSoundEffectAtTile(0x119, x, y, 1);
         return;
     case 0:
-        if (arg3 == 0) return;
+        if (playErrorSound == 0) return;
         PlaySoundEffect(0x1001D);
         return;
     }
 }
 
-void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_ov007_0221bd74(s32, s32);
-    s32 func_ov007_0221bdc0(s32, s32);
-    s32 func_ov007_0221be00(s32, s32);
+/* Map editor pick tool: copies the unit standing on cell (x, y) into the editor's
+ * brush (its kind, owner and state) and refreshes the palette; an empty cell plays
+ * the error sound when `playErrorSound` is set. */
+void MapEditor_PickUnit(M2C_UNK editor, s32 x, s32 y, s32 playErrorSound) {
+    s32 MapEditor_GetUnitKindAt(s32, s32);
+    s32 MapEditor_GetUnitOwnerAt(s32, s32);
+    s32 MapEditor_GetUnitStateAt(s32, s32);
     void SetMapEditorUnitKind(s32);
     void SetMapEditorUnitOwner(s32);
     void SetMapEditorUnitFlags(s32);
@@ -129,22 +136,22 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK MapEditor_RefreshGraphics();
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 temp_r6;
-    temp_r6 = func_ov007_0221bd74(arg1, arg2);
-    temp_r5 = func_ov007_0221bdc0(arg1, arg2);
-    temp_r4 = func_ov007_0221be00(arg1, arg2);
-    if (temp_r6 >= 0) {
-        SetMapEditorUnitKind(temp_r6);
-        SetMapEditorUnitOwner(temp_r5);
-        SetMapEditorUnitFlags(temp_r4);
+    s32 state;
+    s32 owner;
+    s32 unitKind;
+    unitKind = MapEditor_GetUnitKindAt(x, y);
+    owner = MapEditor_GetUnitOwnerAt(x, y);
+    state = MapEditor_GetUnitStateAt(x, y);
+    if (unitKind >= 0) {
+        SetMapEditorUnitKind(unitKind);
+        SetMapEditorUnitOwner(owner);
+        SetMapEditorUnitFlags(state);
         RefreshMapEditor();
         MapEditor_RefreshGraphics();
-        SpawnSoundEffectAtTile(0x11B, arg1, arg2, 1);
+        SpawnSoundEffectAtTile(0x11B, x, y, 1);
         return;
     }
-    if (arg3 == 0) return;
+    if (playErrorSound == 0) return;
     PlaySoundEffect(0x1001D);
 }
 
@@ -346,9 +353,9 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void func_ov007_0221330c(void);
     u8 GetMapEditorMode(void);
     u8 GetMapEditorTool(void);
-    void func_ov007_022114c4(M2C_UNK, s32, s32, s32);
+    void MapEditor_PlaceSelectedUnit(M2C_UNK, s32, s32, s32);
     void PaintMapTerrain(M2C_UNK, s32, s32, s32);
-    void func_ov007_02211560(M2C_UNK, s32, s32, s32);
+    void MapEditor_PickUnit(M2C_UNK, s32, s32, s32);
     void func_ov007_022117e0(M2C_UNK, M2C_UNK, M2C_UNK);
     void MapEditor_EraseUnit(M2C_UNK, s32, s32, s32);
     void MapEditor_EraseTerrain(M2C_UNK, s32, s32, s32);
@@ -397,7 +404,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         f = GetMapEditorMode();
         if (f == 0) goto L_c0;
         if (f != 1) return;
-        func_ov007_022114c4(arg0, r6, r7, r4 & 1);
+        MapEditor_PlaceSelectedUnit(arg0, r6, r7, r4 & 1);
         return;
     L_c0:
         PaintMapTerrain(arg0, r6, r7, r4 & 1);
@@ -408,7 +415,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         f = GetMapEditorMode();
         if (f == 0) goto L_c1;
         if (f != 1) return;
-        func_ov007_02211560(arg0, r6, r7, r4);
+        MapEditor_PickUnit(arg0, r6, r7, r4);
         return;
     L_c1:
         ((void (*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))func_ov007_022117e0)(arg0, r6, r7, r4);
@@ -439,9 +446,9 @@ L_b4c:
     f = GetMapEditorMode();
     if (f == 0) goto L_be4;
     if (f != 1) return;
-    if (r5 & 1) { func_ov007_022114c4(arg0, r6, r7, r4 & 1); return; }
+    if (r5 & 1) { MapEditor_PlaceSelectedUnit(arg0, r6, r7, r4 & 1); return; }
     mask = r4 & 2;
-    if (mask) { func_ov007_02211560(arg0, r6, r7, mask); return; }
+    if (mask) { MapEditor_PickUnit(arg0, r6, r7, mask); return; }
     if (*(u16 *)((u8 *)gKeyState + 6) & 0x400) { MapEditor_EraseUnit(arg0, r6, r7, r4 & 0x400); return; }
     mask = r4 & 0x800;
     if (mask) { func_ov007_022116a0(arg0, r6, r7, mask); return; }

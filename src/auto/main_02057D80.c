@@ -8,7 +8,7 @@ typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
 extern M2C_UNK data_020ff3ec, gGpiInfoState;
 extern s32 gGpiInfoSocket;
-extern M2C_UNK data_0213dcd0, data_020ff410, sGpiBucketSourceFile, data_020ff3f4;
+extern M2C_UNK data_0213dcd0, sGpiAssertSet, sGpiBucketSourceFile, sGpiBucketNewName;
 
 /* Processes the pending searches queued on the connection: allocates a temporary list of matching search entries, runs each through gpiProcessSingleSearch, and removes finished ones. */
 s32 gpiProcessSearches(void **connection) {
@@ -246,15 +246,22 @@ void gpiSetErrorString(s32 *arg0, M2C_UNK arg1) {
     StringCopyN(*arg0, arg1, 0x100);
 }
 
-void *func_02058658(void *a,s32 b,s32 c,void *d){
+/* gbucket.c BucketNew: add a key/value entry to a bucket store (the module's
+ * default store when store is null): duplicate the key, start the entry with one
+ * sample and no value yet, set the value, insert the entry into the store's hash
+ * table and return the value it now holds. */
+void *BucketNew(void *store,s32 key,s32 type,void *value){
 void *BucketValue(void *);void AssertFailed(void *,void *,void *,s32);s32 gpiStringDup(s32);
 s32 BucketSetValue(void *,void *);void TableEnter(s32,void *);void *BucketFind(void *,s32);
-s32 buf[5];
-if(!a)a=M2C_FIELD(&data_0213dcd0,void **,4);
-if(!a)AssertFailed(&data_020ff410,&sGpiBucketSourceFile,&data_020ff3f4,120);
-buf[0]=gpiStringDup(b);buf[1]=c;buf[3]=0;buf[2]=1;
-BucketSetValue(buf,d);TableEnter(M2C_FIELD(a,s32 *,0),buf);
-return BucketValue(BucketFind(a,b));
+s32 entry[5];
+if(!store)store=M2C_FIELD(&data_0213dcd0,void **,4);
+if(!store)AssertFailed(&sGpiAssertSet,&sGpiBucketSourceFile,&sGpiBucketNewName,120);
+M2C_FIELD(entry,s32 *,GPI_BUCKET_KEY)=gpiStringDup(key);
+M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)=type;
+M2C_FIELD(entry,s32 *,GPI_BUCKET_VALUE)=0;
+M2C_FIELD(entry,s32 *,GPI_BUCKET_COUNT)=1;
+BucketSetValue(entry,value);TableEnter(M2C_FIELD(store,s32 *,0),entry);
+return BucketValue(BucketFind(store,key));
 }
 
 s32 func_020586f4(void *a,s32 b,void *c){
@@ -401,11 +408,11 @@ void *BucketValue(void *arg0) {
 }
 
 void *BucketFind(void *a,s32 b){
-void AssertFailed(void *,void *,void *,s32);void *func_02048ff8(s32,void *);
+void AssertFailed(void *,void *,void *,s32);void *TableLookup(s32,void *);
 s32 buf[5];
 if(!a)a=M2C_FIELD(&data_0213dcd0,void **,4);
-if(!a)AssertFailed(&data_020ff410,&sGpiBucketSourceFile,&data_020ff3ec,0x153);
-buf[0]=b;return func_02048ff8(M2C_FIELD(a,s32 *,0),buf);
+if(!a)AssertFailed(&sGpiAssertSet,&sGpiBucketSourceFile,&data_020ff3ec,0x153);
+buf[0]=b;return TableLookup(M2C_FIELD(a,s32 *,0),buf);
 }
 
 void gpiInfoCloseSocket(void){

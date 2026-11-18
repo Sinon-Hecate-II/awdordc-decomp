@@ -345,7 +345,7 @@ void func_ov007_02217a5c(void) {
     M2C_UNK func_0207c240();
     M2C_UNK Map_SetCellTile(s32, s32, M2C_UNK);
     M2C_UNK Map_GenerateWastelandTerrain();
-    M2C_UNK func_ov007_02216bf4();
+    M2C_UNK Map_GenerateWoodsTerrain();
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     void Map_GeneratePaths(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217598(M2C_UNK *, M2C_UNK *);
@@ -382,7 +382,7 @@ void func_ov007_02217a5c(void) {
         } while (y < (s32) M2C_FIELD(map, u16 *, 0x5146));
     }
     Map_GenerateWastelandTerrain();
-    func_ov007_02216bf4();
+    Map_GenerateWoodsTerrain();
     func_ov007_02216c94(&sp14, &sp10);
     func_ov007_02216e08(&sp14, &sp10, &spC, &sp8, &sp4);
     Map_GeneratePaths(&sp14, &sp10, &spC, &sp8, &sp4);

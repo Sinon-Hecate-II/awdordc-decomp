@@ -1,7 +1,7 @@
 /* 28 functions from 0x02170830 to 0x021717FC (ov001), found by ds-decomp. */
 #include "common.h"
-extern s32 data_ov001_02192790[];
-extern s32 data_ov001_0218fde8[];
+extern s32 gWhState[];
+extern s32 gWhPacketInfo[];
 extern u8 data_ov001_0219283c[];
 typedef struct { u32 words[58]; } NetworkClearState;
 typedef struct { u32 w[8]; } ClearBlk8;
@@ -65,13 +65,13 @@ void *memset(void *,s32,u32);
 #pragma optimize_for_size off
 s32 func_ov001_021711e0(s32 a,s32 b,s32 c,s32 (*d)(s32),s32 e,s32 f){
 s32 r;u32 i;u32 *p;
-if(data_ov001_02192790[14]>=1 && data_ov001_02192790[14]<=5)return -10;
-data_ov001_0218fde8[4]=b;data_ov001_02192790[14]=7;data_ov001_02192790[31]=c;((s32 (**)(s32))data_ov001_02192790)[1]=d;data_ov001_02192790[3]=e;data_ov001_0218fde8[2]=f;
-r=func_ov001_0216e34c(b);data_ov001_02192790[29]=1;if(r<0){data_ov001_02192790[30]=r;return r;}
-r=((s32 (**)(s32))data_ov001_02192790)[1](data_ov001_0218fde8[2]);data_ov001_02192790[12]=r;if(!r){data_ov001_02192790[30]=-1;return -1;}if(func_02005ab0()!=1){data_ov001_02192790[30]=-9;return -9;}
-TaskCreate(data_ov001_0219283c,func_ov001_0216f78c,0,data_ov001_02192790[12]+(data_ov001_0218fde8[2]&~7),data_ov001_0218fde8[2],a);data_ov001_02192790[14]=1;data_ov001_0218fde8[3]=((s32 (*)(void))WhGetTime)()+60000;data_ov001_02192790[4]=0;
+if(gWhState[14]>=1 && gWhState[14]<=5)return -10;
+gWhPacketInfo[4]=b;gWhState[14]=7;gWhState[31]=c;((s32 (**)(s32))gWhState)[1]=d;gWhState[3]=e;gWhPacketInfo[2]=f;
+r=func_ov001_0216e34c(b);gWhState[29]=1;if(r<0){gWhState[30]=r;return r;}
+r=((s32 (**)(s32))gWhState)[1](gWhPacketInfo[2]);gWhState[12]=r;if(!r){gWhState[30]=-1;return -1;}if(func_02005ab0()!=1){gWhState[30]=-9;return -9;}
+TaskCreate(data_ov001_0219283c,func_ov001_0216f78c,0,gWhState[12]+(gWhPacketInfo[2]&~7),gWhPacketInfo[2],a);gWhState[14]=1;gWhPacketInfo[3]=((s32 (*)(void))WhGetTime)()+60000;gWhState[4]=0;
 p=gOv001LinkMatchSetup;i=58;do{*p++=0;}while(--i);
-func_ov001_021713a8();TaskWake(data_ov001_0219283c);data_ov001_02192790[25]=1;return 1;
+func_ov001_021713a8();TaskWake(data_ov001_0219283c);gWhState[25]=1;return 1;
 }
 #pragma optimize_for_size reset
 void Ov001_AnimSpriteTask(void);

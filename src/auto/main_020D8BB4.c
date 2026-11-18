@@ -53,8 +53,8 @@ void func_020d8ccc(s16 arg0) {
 }
 
 void func_020d8ce8(s32 arg0) {
-    extern void *data_0212c36c;
-    M2C_FIELD(data_0212c36c, s32 *, 8) = arg0;
+    extern void *gUiMode;
+    M2C_FIELD(gUiMode, s32 *, 8) = arg0;
 }
 
 void func_020d8cfc(void) {
@@ -78,31 +78,31 @@ u8 func_020d8d00(void) {
 
 void func_020d8d48(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK CreateSpriteFromClass(void *, s32);
-    extern void *data_0212c36c;
+    extern void *gUiMode;
     extern M2C_UNK data_0212c534;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r4;
-    M2C_FIELD(data_0212c36c, s32 *, 8) = arg1;
+    M2C_FIELD(gUiMode, s32 *, 8) = arg1;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    M2C_FIELD(data_0212c36c, s16 *, 0) = 0;
-    M2C_FIELD(data_0212c36c, s16 *, 2) = 0;
-    M2C_FIELD(data_0212c36c, s16 *, 4) = arg0;
+    M2C_FIELD(gUiMode, s16 *, 0) = 0;
+    M2C_FIELD(gUiMode, s16 *, 2) = 0;
+    M2C_FIELD(gUiMode, s16 *, 4) = arg0;
     CreateSpriteFromClass(&data_0212c534, 8);
     gCur3DSpriteEngine = temp_r4;
 }
 
-u8 func_020d8db0(void) {
+u8 IsUiModeSwitchBusy(void) {
     s32 FindObjectByClass(void *);
-    extern void *data_0212c36c;
+    extern void *gUiMode;
     extern M2C_UNK data_0212c498;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r4;
     u8 var_r0;
     if (func_020d8d00() == 0) return 0;
-    if (M2C_FIELD(data_0212c36c, s16 *, 4) != M2C_FIELD(data_0212c36c, s16 *, 2)) return 1;
+    if (M2C_FIELD(gUiMode, s16 *, 4) != M2C_FIELD(gUiMode, s16 *, 2)) return 1;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (FindObjectByClass(&data_0212c498) != 0) var_r0 = 1;
@@ -113,17 +113,17 @@ u8 func_020d8db0(void) {
 
 void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK data_0212c534;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&data_0212c534);gCur3DSpriteEngine=p;}
 
-void func_020d8e70(void){s32 func_020d8f1c(s32,s32);extern void *data_0212c36c;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;M2C_FIELD(data_0212c36c,s16 *,6)=M2C_FIELD(data_0212c36c,s16 *,2);p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d8f1c(3,M2C_FIELD(data_0212c36c,s32 *,8));gCur3DSpriteEngine=p;}
+void func_020d8e70(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;M2C_FIELD(gUiMode,s16 *,6)=M2C_FIELD(gUiMode,s16 *,2);p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(3,M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
 
-void func_020d8ecc(void){s32 func_020d8f1c(s32,s32);extern void *data_0212c36c;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d8f1c(M2C_FIELD(data_0212c36c,s16 *,6),M2C_FIELD(data_0212c36c,s32 *,8));gCur3DSpriteEngine=p;}
+void func_020d8ecc(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(M2C_FIELD(gUiMode,s16 *,6),M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
 
-s32 func_020d8f1c(s32 a,s32 b){extern void *data_0212c36c;if(a==M2C_FIELD(data_0212c36c,s16 *,2))return 0;M2C_FIELD(data_0212c36c,s16 *,4)=a;M2C_FIELD(data_0212c36c,s32 *,8)=b;return 1;}
+s32 SetUiMode(s32 a,s32 b){extern void *gUiMode;if(a==M2C_FIELD(gUiMode,s16 *,2))return 0;M2C_FIELD(gUiMode,s16 *,4)=a;M2C_FIELD(gUiMode,s32 *,8)=b;return 1;}
 
-s32 func_020d8f4c(void){extern void *data_0212c36c;return M2C_FIELD(data_0212c36c,s16 *,2);}
+s32 GetUiMode(void){extern void *gUiMode;return M2C_FIELD(gUiMode,s16 *,2);}
 
-s32 func_020d8f60(void){s32 func_ov000_02174d50(void);s32 func_020adff4(void);extern void *data_0212c36c;switch(M2C_FIELD(data_0212c36c,s16 *,2)){case 1:return func_ov000_02174d50();case 2:return func_020adff4();default:return 0;}}
+s32 func_020d8f60(void){s32 func_ov000_02174d50(void);s32 func_020adff4(void);extern void *gUiMode;switch(M2C_FIELD(gUiMode,s16 *,2)){case 1:return func_ov000_02174d50();case 2:return func_020adff4();default:return 0;}}
 
-s32 func_020d8fa0(void){void func_ov000_02174d78(void);void func_020ae068(void);void PlaySoundEffect(s32);extern void *data_0212c36c;if(!func_020d8f60())return 0;switch(M2C_FIELD(data_0212c36c,s16 *,2)){case 1:func_ov000_02174d78();break;case 2:func_020ae068();break;}PlaySoundEffect(0x10022);return 1;}
+s32 func_020d8fa0(void){void func_ov000_02174d78(void);void func_020ae068(void);void PlaySoundEffect(s32);extern void *gUiMode;if(!func_020d8f60())return 0;switch(M2C_FIELD(gUiMode,s16 *,2)){case 1:func_ov000_02174d78();break;case 2:func_020ae068();break;}PlaySoundEffect(0x10022);return 1;}
 
 void func_020d8ff8(void) {
     M2C_UNK func_01ffaa0c(s32);
@@ -134,7 +134,7 @@ void func_020d900c(void) {
 
 }
 
-void func_020d9010(void *a){void SetSpriteAnimation(void *,s32);extern void *data_0212c36c;if(M2C_FIELD(data_0212c36c,s16 *,2)==M2C_FIELD(data_0212c36c,s16 *,4))return;SetSpriteAnimation(a,2);}
+void func_020d9010(void *a){void SetSpriteAnimation(void *,s32);extern void *gUiMode;if(M2C_FIELD(gUiMode,s16 *,2)==M2C_FIELD(gUiMode,s16 *,4))return;SetSpriteAnimation(a,2);}
 
 void func_020d903c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
@@ -142,7 +142,7 @@ void func_020d903c(M2C_UNK arg0) {
     CreateSpriteObject(&data_0212c4c8, arg0);
 }
 
-void func_020d9054(s32 a){M2C_UNK CreateSpriteObject(M2C_UNK *,M2C_UNK);extern M2C_UNK data_0212c498;extern void *data_0212c36c;M2C_FIELD(data_0212c36c,s16 *,0)=M2C_FIELD(data_0212c36c,s16 *,2);M2C_FIELD(data_0212c36c,s16 *,2)=M2C_FIELD(data_0212c36c,s16 *,4);CreateSpriteObject(&data_0212c498,a);}
+void func_020d9054(s32 a){M2C_UNK CreateSpriteObject(M2C_UNK *,M2C_UNK);extern M2C_UNK data_0212c498;extern void *gUiMode;M2C_FIELD(gUiMode,s16 *,0)=M2C_FIELD(gUiMode,s16 *,2);M2C_FIELD(gUiMode,s16 *,2)=M2C_FIELD(gUiMode,s16 *,4);CreateSpriteObject(&data_0212c498,a);}
 
 /* Initialises the 3D sprite engine of the current screen: loads the shared setup
    block, runs the sub engine's teardown, clears the sprite bank's low control
@@ -221,7 +221,7 @@ void func_020d9290(void) {
     func_ov000_02174c88();
 }
 
-void func_020d929c(void){void func_020ae1e8(s32);extern void *data_0212c36c;func_020ae1e8(M2C_FIELD(data_0212c36c,s32 *,8));}
+void func_020d929c(void){void func_020ae1e8(s32);extern void *gUiMode;func_020ae1e8(M2C_FIELD(gUiMode,s32 *,8));}
 
 void func_020d92b8(void) {
     M2C_UNK func_020ae20c();
@@ -230,24 +230,24 @@ void func_020d92b8(void) {
 
 void func_020d92c4(s32 arg0) {
     M2C_UNK StartScreenFadeChildren(s32, s32, s32, s32);
-    extern void *data_0212c36c;
-    if (M2C_FIELD(data_0212c36c, s16 *, 2) == 3) return;
+    extern void *gUiMode;
+    if (M2C_FIELD(gUiMode, s16 *, 2) == 3) return;
     StartScreenFadeChildren(0, 8, 1, arg0);
 }
 
 void func_020d92f8(s32 arg0) {
     M2C_UNK CreateScreenTransitionChildren(s32, s32, s32, s32);
-    extern void *data_0212c36c;
-    if (M2C_FIELD(data_0212c36c, s16 *, 2) == 3) return;
+    extern void *gUiMode;
+    if (M2C_FIELD(gUiMode, s16 *, 2) == 3) return;
     CreateScreenTransitionChildren(0, 8, 1, arg0);
 }
 
-void func_020d932c(void){M2C_UNK CreateSpriteFromClass(void *,s32);extern void *data_0212c36c;extern M2C_UNK data_0212c4fc;CreateSpriteFromClass(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(data_0212c36c,s16 *,2)*12),8);}
+void func_020d932c(void){M2C_UNK CreateSpriteFromClass(void *,s32);extern void *gUiMode;extern M2C_UNK data_0212c4fc;CreateSpriteFromClass(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(gUiMode,s16 *,2)*12),8);}
 
 void func_020d9360(s32 arg0) {
 M2C_UNK CreateSpriteObject(M2C_UNK *,s32);
-extern void *data_0212c36c;extern M2C_UNK data_0212c4f8;
-CreateSpriteObject(*(M2C_UNK **)((u8*)&data_0212c4f8+M2C_FIELD(data_0212c36c,s16 *,2)*12),arg0);
+extern void *gUiMode;extern M2C_UNK data_0212c4f8;
+CreateSpriteObject(*(M2C_UNK **)((u8*)&data_0212c4f8+M2C_FIELD(gUiMode,s16 *,2)*12),arg0);
 }
 
 void func_020d9394(void) {
@@ -256,8 +256,8 @@ void func_020d9394(void) {
 }
 
 void func_020d93a8(void) {
-extern void *data_0212c36c;
-func_020d8d48(M2C_FIELD(data_0212c36c,s16 *,2),M2C_FIELD(data_0212c36c,s32 *,8));
+extern void *gUiMode;
+func_020d8d48(M2C_FIELD(gUiMode,s16 *,2),M2C_FIELD(gUiMode,s32 *,8));
 }
 
 void func_020d93c8(void) {

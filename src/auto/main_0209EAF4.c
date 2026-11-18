@@ -157,7 +157,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
 /* Orders two units for a battle preview: first by tile y, and for units on the
  * same row by their owner's HQ tile x (the low seven bits, bit 7 marks no HQ).
  * Returns 1 when unit a is drawn before unit b. */
-s32 func_0209f0a0(u8 *a,u8 *b){
+s32 IsUnitDrawnBefore(u8 *a,u8 *b){
 extern void **gCurrentMap;s32 i,j;u8 *p,*q,*base;
 if(a[1]>b[1])return 1;
 if(a[1]==b[1]){
@@ -171,7 +171,22 @@ if((p[0x2b]&127)>(q[0x2b]&127))return 1;
 return 0;
 }
 
-void func_0209f184(void *p){extern void **gCurrentMap;void *q=M2C_FIELD(p,void **,0x34);u8 *base;if(!func_0209f0a0(M2C_FIELD(*gCurrentMap,s32 *,0x52d0),q)){base=*gCurrentMap;func_ov002_021e85b0(M2C_FIELD(base,s32 *,0x52d0),q,base+0x6eb8,base+0x6ed8);}else{base=*gCurrentMap;func_ov002_021e85b0(q,M2C_FIELD(base,s32 *,0x52d0),base+0x6ed8,base+0x6eb8);}func_ov002_021e15f4(p);}
+/* Start the battle preview animation of `preview`: the cursor unit and the
+ * preview's target unit become the attacker and defender records, the one drawn
+ * first taking the attacker side; then the battle scene sprite is created. */
+void StartBattlePreview(void *preview) {
+    extern void **gCurrentMap;
+    void *target = M2C_FIELD(preview, void **, 0x34);
+    u8 *base;
+    if (!IsUnitDrawnBefore(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT), target)) {
+        base = *gCurrentMap;
+        SetupBattleAnimation(M2C_FIELD(base, s32 *, MAP_CURSOR_UNIT), target, base + MAP_BATTLE_ATTACKER, base + MAP_BATTLE_DEFENDER);
+    } else {
+        base = *gCurrentMap;
+        SetupBattleAnimation(target, M2C_FIELD(base, s32 *, MAP_CURSOR_UNIT), base + MAP_BATTLE_DEFENDER, base + MAP_BATTLE_ATTACKER);
+    }
+    CreateBattleSceneSprite(preview);
+}
 
 void func_0209f220(void) {
     extern void *g3DSpriteBankSub;

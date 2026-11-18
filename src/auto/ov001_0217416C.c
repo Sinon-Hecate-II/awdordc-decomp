@@ -12,7 +12,7 @@ void func_ov001_0217416c(void) {
     void *Ov001_Alloc(s32, s32);
     void *Ov001_CreateSpriteFromLayout(s32, s32);
     void *Ov001_CreateSprite(s32, s32, s32);
-    void func_ov001_0218a260(void *, s32, s32, s32);
+    void Ov001_SetSpriteEntryFlags(void *, s32, s32, s32);
     void Ov001_SetSpritePalette(void *, s32, s32);
     void *CreatePooledTextPanel(s32, s32, s32, s32, s32 *, s32);
     void DrawPanelText(void *, s32, s32, s32, s32, s32, s32, u16 *);
@@ -61,7 +61,7 @@ void func_ov001_0217416c(void) {
     extraIds = data_ov001_0218f5e0;
     for (extra = 0; extra < 2; extra++) {
         (((void **)gOv001Keypad + extra)[16]) = Ov001_CreateSprite(0, *extraIds++, 1);
-        func_ov001_0218a260((((void **)gOv001Keypad + extra)[16]), -1, 0x200, 0);
+        Ov001_SetSpriteEntryFlags((((void **)gOv001Keypad + extra)[16]), -1, 0x200, 0);
         Ov001_SetSpritePalette((((void **)gOv001Keypad + extra)[16]), -1, 3);
     }
     work.firstLabel = 0;
@@ -85,7 +85,7 @@ void func_ov001_0217416c(void) {
         (((void **)gOv001Keypad + i)[18]) = sprite;
     }
     M2C_FIELD(gOv001Keypad, void **, 0x58) = Ov001_CreateSprite(0, 0x44, 1);
-    func_ov001_0218a260(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 0x200, 0);
+    Ov001_SetSpriteEntryFlags(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 0x200, 0);
     Ov001_SetSpritePalette(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 2);
     M2C_FIELD(gOv001Keypad, void **, 0x5c) = Ov001_AddTask(0, func_ov001_02174548, 0, 0x78);
     func_ov001_02174f68(0, 192);

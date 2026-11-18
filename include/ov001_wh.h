@@ -55,6 +55,10 @@ enum {
     WH_DS_STEP_NO_CHILD   = 7  /* the parent has no child to share with */
 };
 
+/* Results of the per-child channel scan (ScanNextChild). */
+#define WH_SCAN_QUEUED 2    /* the scan command of the child was queued; its report arrives through the callback */
+#define WH_SCAN_DONE   0x18 /* no further child to scan (or the channel check reported the same code) */
+
 /* Connection object status field (+0x40). */
 enum {
     WH_STATUS_STOP           = 0,
@@ -83,6 +87,24 @@ enum {
     OV001_CHOICE_BACK    = 0, /* leave the option menu for the Wi-Fi menu */
     OV001_CHOICE_CONFIRM = 1  /* accept the highlighted option */
 };
+
+/* The WH user-data packet.  gWhPacket holds an 8-byte prefix - a big-endian
+ * u16 count of the tagged-field bytes that follow, then six zero bytes - and
+ * then the fields; gWhPacketInfo[0] points at the first of them.  A field has
+ * a big-endian u16 tag and byte length, its payload, then zero padding to a
+ * multiple of 8 bytes.  WhPacket_Wrap copies the block after a 6-byte header
+ * (u16 type, u16 payload bytes, u16 zero) and appends a big-endian u16
+ * checksum over header and payload. */
+#define WH_PACKET_FIELDS 0x08 /* bytes from gWhPacket to its first field */
+#define WH_PACKET_HEADER 0x06 /* outer header bytes before the payload */
+
+/* The WH packet/settings block at gWhPacketInfo: +0x00 points at the first
+ * field of gWhPacket, +0x08 is the packet buffer size, +0x0C the matchmaking
+ * deadline in WhGetTime units and +0x10 a caller-supplied setting. */
+#define WH_PACKET_INFO_FIELDS 0x00
+#define WH_PACKET_INFO_SIZE   0x08
+#define WH_PACKET_INFO_DEADLINE 0x0c
+#define WH_PACKET_INFO_SETTING  0x10
 
 /* Sound ids handed to Ov001_PlaySound. */
 enum {

@@ -148,7 +148,7 @@ s32 func_ov001_0216a33c(u32 a,u32 b) {
  return (t+(u>>2))*(s+(v>>2))+z;
 }
 #pragma opt_propagation reset
-s32 func_ov001_0216a398(void *dst,s32 w,s32 h,s32 x,s32 y,s32 mode,s32 tile,s32 shift){
+s32 Ov001_FillTileRect(void *dst,s32 w,s32 h,s32 x,s32 y,s32 mode,s32 tile,s32 shift){
 extern u8 data_ov001_0218c9e4[];s32 func_ov001_02169494(void *);
 s32 wx,hy,sx,sy,nx,ny,step,area,count,i,j,n;u32 aw,ah;u8 *p;
 wx=w<8?31-__builtin_clz(w):3;hy=h<8?31-__builtin_clz(h):3;
@@ -164,9 +164,9 @@ M2C_FIELD(dst,u32 *,0)=(M2C_FIELD(dst,u32 *,0)&~0x2000)|(mode<<13);
 dst=(u8 *)dst+8;
 }}
 count+=nx*ny;
-if(aw<(u32)w){s32 rem=w-aw;n=func_ov001_0216a398(dst,rem,ah,x+aw*8,y,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*rem*ah))>>shift;count+=n;}
-if(ah<(u32)h){s32 rem=h-ah;n=func_ov001_0216a398(dst,aw,rem,x,y+ah*8,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*aw*rem))>>shift;count+=n;}
-if(aw<(u32)w&&ah<(u32)h){n=func_ov001_0216a398(dst,w-aw,h-ah,x+aw*8,y+ah*8,mode,tile,shift);count+=n;}
+if(aw<(u32)w){s32 rem=w-aw;n=Ov001_FillTileRect(dst,rem,ah,x+aw*8,y,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*rem*ah))>>shift;count+=n;}
+if(ah<(u32)h){s32 rem=h-ah;n=Ov001_FillTileRect(dst,aw,rem,x,y+ah*8,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*aw*rem))>>shift;count+=n;}
+if(aw<(u32)w&&ah<(u32)h){n=Ov001_FillTileRect(dst,w-aw,h-ah,x+aw*8,y+ah*8,mode,tile,shift);count+=n;}
 return count;
 }
 

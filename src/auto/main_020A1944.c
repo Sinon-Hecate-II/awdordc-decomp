@@ -16,41 +16,51 @@ s32 GetRatingRank(s32 arg0) {
     return 4;
 }
 
-void func_020a196c(void) {
- s32 GetWinningPlayer(void); s32 GetSpeedRating(s32); s32 GetPowerRating(s32); s32 GetTechniqueRating(s32);
- s32 GetTotalRating(s32); void func_020a1a0c(void); void func_020a1adc(void);
- extern M2C_UNK gSpriteAnimConfig;
- s32 i, bits, mask;
- s32 value;
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14) = GetWinningPlayer();
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x10) = GetSpeedRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x11) = GetPowerRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x12) = GetTechniqueRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16) = GetTotalRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x13) = GetRatingRank(M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16));
- func_020a1a0c(); func_020a1adc();
- i=0; bits=M2C_FIELD(&gSpriteAnimConfig,s32 *,0x18);
- do {mask = -1 ^ (1 << i); i++; bits &= mask;} while(i<15);
- M2C_FIELD(&gSpriteAnimConfig,s32 *,0x18)=bits;
+/* Fills the battle-results block after a battle ends: stores the winning player
+ * and their speed, power and technique ratings, their total and its rank, then
+ * rebuilds the win/lose/draw player lists and the per-player property
+ * statistics, and clears the block's reveal flags. */
+void BattleResults_ComputeRatings(void) {
+    s32 GetWinningPlayer(void);
+    s32 GetSpeedRating(s32);
+    s32 GetPowerRating(s32);
+    s32 GetTechniqueRating(s32);
+    s32 GetTotalRating(s32);
+    void BattleResults_BuildPlayerLists(void);
+    void BattleResults_ComputePlayerStats(void);
+    extern M2C_UNK gBattleResults;
+    s32 bit, flags, clearMask;
+
+    M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_WINNER) = GetWinningPlayer();
+    M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_SPEED) = GetSpeedRating(M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_WINNER));
+    M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_POWER) = GetPowerRating(M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_WINNER));
+    M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_TECHNIQUE) = GetTechniqueRating(M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_WINNER));
+    M2C_FIELD(&gBattleResults, u16 *, BATTLE_RESULTS_TOTAL) = GetTotalRating(M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_WINNER));
+    M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_RANK) = GetRatingRank(M2C_FIELD(&gBattleResults, u16 *, BATTLE_RESULTS_TOTAL));
+    BattleResults_BuildPlayerLists();
+    BattleResults_ComputePlayerStats();
+    bit = 0; flags = M2C_FIELD(&gBattleResults, s32 *, BATTLE_RESULTS_FLAGS);
+    do { clearMask = -1 ^ (1 << bit); bit++; flags &= clearMask; } while (bit < 15);
+    M2C_FIELD(&gBattleResults, s32 *, BATTLE_RESULTS_FLAGS) = flags;
 }
 
 #pragma peephole off
-void func_020a1a0c(void) {
-    extern M2C_UNK gSpriteAnimConfig;
+void BattleResults_BuildPlayerLists(void) {
+    extern M2C_UNK gBattleResults;
     u8 *ctr;
     u8 *arr;
     s32 j;
     s32 i;
     u8 *p;
 
-    p = (u8 *)&gSpriteAnimConfig;
+    p = (u8 *)&gBattleResults;
     for (i = 0; i < 4; i++, p++) {
         p[0] = 0;
         p[4] = 0;
         p[8] = 0;
     }
-    ctr = (u8 *)&gSpriteAnimConfig;
-    arr = (u8 *)&gSpriteAnimConfig;
+    ctr = (u8 *)&gBattleResults;
+    arr = (u8 *)&gBattleResults;
     ctr[12] = 0;
     ctr[13] = 0;
     ctr[14] = 0;
@@ -83,7 +93,7 @@ void func_020a1a0c(void) {
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_020a1adc(void){
+void BattleResults_ComputePlayerStats(void){
 extern s32 *gCurrentMap;extern u8 gCoPlayerSlots[],gCoState[];
 s32 i,j,offset;register s32 y=0;u8 *out;u8 *base;s32 x;void **map2;u8 *rec,*attr; s32 cell,terrain;void **map;
 out=gCoPlayerSlots;map=(void **)gCurrentMap;
@@ -119,10 +129,10 @@ case 23:{u8 *p=gCoState+(terrain>>5)*12;p[19]++;break;}}
 }
 #pragma pop
 s32 GetTotalRating(s32 arg0) {
-    extern M2C_UNK gSpriteAnimConfig;
+    extern M2C_UNK gBattleResults;
     s32 var_r0;
 
-    var_r0 = M2C_FIELD(&gSpriteAnimConfig, u8 *, 0x12) + (M2C_FIELD(&gSpriteAnimConfig, u8 *, 0x10) + M2C_FIELD(&gSpriteAnimConfig, u8 *, 0x11));
+    var_r0 = M2C_FIELD(&gBattleResults, u8 *, 0x12) + (M2C_FIELD(&gBattleResults, u8 *, 0x10) + M2C_FIELD(&gBattleResults, u8 *, 0x11));
     if (var_r0 >= 0x3E8) {
         var_r0 = 0x3E7;
     }
@@ -574,7 +584,7 @@ else result=0;
 return result;
 }
 
-s32 func_020a2868(s32 arg0,s32 arg1,s32 arg2) {
+s32 GetCoZoneAttackBonus(s32 arg0,s32 arg1,s32 arg2) {
 extern s32 *gCurrentMap;
 extern M2C_UNK data_0211fbfd;
 extern s16 data_0211fbf4;

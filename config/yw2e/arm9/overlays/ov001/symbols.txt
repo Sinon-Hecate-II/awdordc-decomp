@@ -23,7 +23,7 @@ func_ov001_0216a1a8 kind:function(arm,size=0x88) addr:0x0216a1a8
 func_ov001_0216a230 kind:function(arm,size=0xb0) addr:0x0216a230
 func_ov001_0216a2e0 kind:function(arm,size=0x5c) addr:0x0216a2e0
 func_ov001_0216a33c kind:function(arm,size=0x5c) addr:0x0216a33c
-func_ov001_0216a398 kind:function(arm,size=0x2f8) addr:0x0216a398
+Ov001_FillTileRect kind:function(arm,size=0x2f8) addr:0x0216a398
 DrawFontTextLine kind:function(arm,size=0xb4) addr:0x0216a690
 DrawTextMultiline kind:function(arm,size=0x168) addr:0x0216a744
 DrawAnchoredText kind:function(arm,size=0x124) addr:0x0216a8ac
@@ -39,7 +39,7 @@ func_ov001_0216ae64 kind:function(thumb,size=0xa18) addr:0x0216ae64
 func_ov001_0216b87c kind:function(thumb,size=0x18) addr:0x0216b87c
 func_ov001_0216b894 kind:function(thumb,size=0x2c) addr:0x0216b894
 func_ov001_0216b8c0 kind:function(thumb,size=0x58) addr:0x0216b8c0
-func_ov001_0216b918 kind:function(thumb,size=0xc) addr:0x0216b918
+Ov001_SetRoomError kind:function(thumb,size=0xc) addr:0x0216b918
 func_ov001_0216b924 kind:function(thumb,size=0xc) addr:0x0216b924
 BuildRoomSetupPacket kind:function(thumb,size=0x1f8) addr:0x0216b930
 IsPrintableString kind:function(thumb,size=0x22) addr:0x0216bb28
@@ -47,11 +47,11 @@ func_ov001_0216bb4c kind:function(thumb,size=0x7c) addr:0x0216bb4c
 func_ov001_0216bbc8 kind:function(thumb,size=0x44) addr:0x0216bbc8
 func_ov001_0216bc0c kind:function(thumb,size=0x30) addr:0x0216bc0c
 func_ov001_0216bc3c kind:function(thumb,size=0x2c) addr:0x0216bc3c
-func_ov001_0216bc68 kind:function(thumb,size=0xa0) addr:0x0216bc68
-func_ov001_0216bd08 kind:function(thumb,size=0xdc) addr:0x0216bd08
+Ov001_DispatchRoomPacket kind:function(thumb,size=0xa0) addr:0x0216bc68
+Ov001_HandleRoomSetup kind:function(thumb,size=0xdc) addr:0x0216bd08
 Ov001_HandleRoomData kind:function(thumb,size=0xd8) addr:0x0216bde4
-func_ov001_0216bebc kind:function(thumb,size=0xa2) addr:0x0216bebc
-func_ov001_0216bf60 kind:function(thumb,size=0xf4) addr:0x0216bf60
+Ov001_HandleRoomResult kind:function(thumb,size=0xa2) addr:0x0216bebc
+Ov001_HandleRoomRequest kind:function(thumb,size=0xf4) addr:0x0216bf60
 func_ov001_0216c054 kind:function(thumb,size=0x44) addr:0x0216c054
 func_ov001_0216c098 kind:function(thumb,size=0x4c) addr:0x0216c098
 func_ov001_0216c0e4 kind:function(thumb,size=0xbc) addr:0x0216c0e4
@@ -151,12 +151,12 @@ func_ov001_0216ea84 kind:function(thumb,size=0xc) addr:0x0216ea84
 func_ov001_0216ea90 kind:function(thumb,size=0x6e) addr:0x0216ea90
 func_ov001_0216eb00 kind:function(thumb,size=0x4e) addr:0x0216eb00
 func_ov001_0216eb50 kind:function(thumb,size=0x32) addr:0x0216eb50
-func_ov001_0216eb84 kind:function(thumb,size=0xc2) addr:0x0216eb84
-func_ov001_0216ec48 kind:function(thumb,size=0x5e) addr:0x0216ec48
+WhPacket_Wrap kind:function(thumb,size=0xc2) addr:0x0216eb84
+WhPacket_AddField kind:function(thumb,size=0x5e) addr:0x0216ec48
 func_ov001_0216eca8 kind:function(thumb,size=0x28) addr:0x0216eca8
 func_ov001_0216ecd0 kind:function(thumb,size=0xd4) addr:0x0216ecd0
 func_ov001_0216eda4 kind:function(thumb,size=0x50) addr:0x0216eda4
-func_ov001_0216edf4 kind:function(thumb,size=0x9c) addr:0x0216edf4
+WhBuildUserPacket kind:function(thumb,size=0x9c) addr:0x0216edf4
 func_ov001_0216ee90 kind:function(thumb,size=0xa) addr:0x0216ee90
 func_ov001_0216ee9c kind:function(thumb,size=0xfc) addr:0x0216ee9c
 func_ov001_0216ef98 kind:function(thumb,size=0x1d4) addr:0x0216ef98
@@ -641,7 +641,7 @@ func_ov001_0217f1f0 kind:function(arm,size=0x2f0) addr:0x0217f1f0
 func_ov001_0217f4e0 kind:function(arm,size=0x34) addr:0x0217f4e0
 func_ov001_0217f514 kind:function(arm,size=0x54) addr:0x0217f514
 MapListHighlightCustomRow kind:function(arm,size=0xc4) addr:0x0217f568
-func_ov001_0217f62c kind:function(arm,size=0xa0) addr:0x0217f62c
+IsCurrentSaveSlotValid kind:function(arm,size=0xa0) addr:0x0217f62c
 func_ov001_0217f6cc kind:function(arm,size=0x40) addr:0x0217f6cc
 func_ov001_0217f70c kind:function(arm,size=0x20) addr:0x0217f70c
 SetMapListMode kind:function(arm,size=0x10) addr:0x0217f72c
@@ -860,7 +860,7 @@ func_ov001_02183f6c kind:function(arm,size=0x34) addr:0x02183f6c
 func_ov001_02183fa0 kind:function(arm,size=0x34) addr:0x02183fa0
 func_ov001_02183fd4 kind:function(arm,size=0xcc) addr:0x02183fd4
 func_ov001_021840a0 kind:function(arm,size=0x34) addr:0x021840a0
-func_ov001_021840d4 kind:function(arm,size=0x9c) addr:0x021840d4
+Ov001_CloseFriendRoster kind:function(arm,size=0x9c) addr:0x021840d4
 Ov001_GetFriendSlots kind:function(arm,size=0x5c) addr:0x02184170
 func_ov001_021841cc kind:function(arm,size=0x64) addr:0x021841cc
 func_ov001_02184230 kind:function(arm,size=0x1d4) addr:0x02184230
@@ -969,7 +969,7 @@ func_ov001_02187c60 kind:function(arm,size=0x64) addr:0x02187c60
 func_ov001_02187cc4 kind:function(arm,size=0x38) addr:0x02187cc4
 func_ov001_02187cfc kind:function(arm,size=0x64) addr:0x02187cfc
 HandleChildIndicate kind:function(arm,size=0x170) addr:0x02187d60
-func_ov001_02187ed0 kind:function(arm,size=0x98) addr:0x02187ed0
+Ov001_StartParent kind:function(arm,size=0x98) addr:0x02187ed0
 HandleParentStartResult kind:function(arm,size=0x12c) addr:0x02187f68
 func_ov001_02188094 kind:function(arm,size=0x3c) addr:0x02188094
 func_ov001_021880d0 kind:function(arm,size=0x30) addr:0x021880d0
@@ -991,7 +991,7 @@ Ov001_GetTaskStep kind:function(arm,size=0x14) addr:0x02188394
 WhStartChildScan kind:function(arm,size=0xd8) addr:0x021883a8
 ScanNextChild kind:function(arm,size=0x9c) addr:0x02188480
 HandleChildScanResult kind:function(arm,size=0xd8) addr:0x0218851c
-func_ov001_021885f4 kind:function(arm,size=0x20) addr:0x021885f4
+RequestChildChannelScan kind:function(arm,size=0x20) addr:0x021885f4
 WhChooseChild kind:function(arm,size=0x78) addr:0x02188614
 WhPickChild kind:function(arm,size=0xe8) addr:0x0218868c
 func_ov001_02188774 kind:function(arm,size=0x78) addr:0x02188774
@@ -1040,7 +1040,7 @@ func_ov001_0218a070 kind:function(arm,size=0x15c) addr:0x0218a070
 Ov001_DestroySprite kind:function(arm,size=0x80) addr:0x0218a1cc
 Ov001_GetSpriteObjEntry kind:function(arm,size=0xc) addr:0x0218a24c
 func_ov001_0218a258 kind:function(arm,size=0x8) addr:0x0218a258
-func_ov001_0218a260 kind:function(arm,size=0xa4) addr:0x0218a260
+Ov001_SetSpriteEntryFlags kind:function(arm,size=0xa4) addr:0x0218a260
 Ov001_SetSpriteAttrs kind:function(arm,size=0x80) addr:0x0218a304
 Ov001_MoveSpriteLayout kind:function(arm,size=0xf0) addr:0x0218a384
 Ov001_SetSpritePalette kind:function(arm,size=0x60) addr:0x0218a474
@@ -1075,7 +1075,7 @@ DrawFontSetGlyph kind:function(arm,size=0x3c) addr:0x0218b044
 DrawTextRun kind:function(arm,size=0xac) addr:0x0218b080
 DrawPanelText kind:function(arm,size=0xc0) addr:0x0218b12c
 TextPanel_ClearText kind:function(arm,size=0x14) addr:0x0218b1ec
-func_ov001_0218b200 kind:function(arm,size=0x98) addr:0x0218b200
+Ov001_DrawTextPanelToSprite kind:function(arm,size=0x98) addr:0x0218b200
 CloseTextPanel kind:function(arm,size=0x24) addr:0x0218b298
 func_ov001_0218b2bc kind:function(arm,size=0xc) addr:0x0218b2bc
 SetRect16 kind:function(arm,size=0x18) addr:0x0218b2c8
@@ -1114,8 +1114,8 @@ func_ov001_0218bf4c kind:function(arm,size=0x38) addr:0x0218bf4c
 func_ov001_0218bf84 kind:function(arm,size=0x30) addr:0x0218bf84
 Ov001_ListPushBack kind:function(arm,size=0x10) addr:0x0218bfb4
 Ov001_ListPushFront kind:function(arm,size=0x10) addr:0x0218bfc4
-func_ov001_0218bfd4 kind:function(arm,size=0x9c) addr:0x0218bfd4
-func_ov001_0218c070 kind:function(arm,size=0x48) addr:0x0218c070
+Ov001_InitSpriteObjs kind:function(arm,size=0x9c) addr:0x0218bfd4
+Ov001_FlushSpriteObjs kind:function(arm,size=0x48) addr:0x0218c070
 func_ov001_0218c0b8 kind:function(arm,size=0x2c) addr:0x0218c0b8
 func_ov001_0218c0e4 kind:function(arm,size=0x20) addr:0x0218c0e4
 Ov001_ReleaseSprite kind:function(arm,size=0x4c) addr:0x0218c104
@@ -1321,7 +1321,7 @@ data_ov001_0218fd4c kind:data(any) addr:0x0218fd4c
 data_ov001_0218fda4 kind:data(any) addr:0x0218fda4
 data_ov001_0218fdb0 kind:data(any) addr:0x0218fdb0
 data_ov001_0218fdb8 kind:data(any) addr:0x0218fdb8
-data_ov001_0218fde8 kind:data(any) addr:0x0218fde8
+gWhPacketInfo kind:data(any) addr:0x0218fde8
 data_ov001_0218fdfc kind:data(any) addr:0x0218fdfc
 data_ov001_0218fe54 kind:data(any) addr:0x0218fe54
 data_ov001_0218fe5c kind:data(any) addr:0x0218fe5c
@@ -1595,7 +1595,7 @@ data_ov001_021926e0 kind:bss addr:0x021926e0
 data_ov001_02192740 kind:bss addr:0x02192740
 data_ov001_02192768 kind:bss addr:0x02192768
 data_ov001_02192770 kind:bss addr:0x02192770
-data_ov001_02192790 kind:bss addr:0x02192790
+gWhState kind:bss addr:0x02192790
 data_ov001_021927e0 kind:bss addr:0x021927e0
 gWhEventCallback kind:bss addr:0x02192810
 data_ov001_02192814 kind:bss addr:0x02192814
@@ -1611,7 +1611,7 @@ data_ov001_02192ae4 kind:bss addr:0x02192ae4
 data_ov001_02192b10 kind:bss addr:0x02192b10
 data_ov001_02192b48 kind:bss addr:0x02192b48
 data_ov001_02192be0 kind:bss addr:0x02192be0
-data_ov001_02192c38 kind:bss addr:0x02192c38
+gWhMacAddress kind:bss addr:0x02192c38
 data_ov001_02192c40 kind:bss addr:0x02192c40
 data_ov001_02192c48 kind:bss addr:0x02192c48
 data_ov001_02192c50 kind:bss addr:0x02192c50
@@ -1619,7 +1619,7 @@ data_ov001_02192c60 kind:bss addr:0x02192c60
 data_ov001_02192c68 kind:bss addr:0x02192c68
 data_ov001_02192c80 kind:bss addr:0x02192c80
 data_ov001_02192ca0 kind:bss addr:0x02192ca0
-data_ov001_02192cc4 kind:bss addr:0x02192cc4
+gWhPacket kind:bss addr:0x02192cc4
 data_ov001_02192ccc kind:bss addr:0x02192ccc
 data_ov001_021934c4 kind:bss addr:0x021934c4
 gOv001AnimSprite kind:bss addr:0x02193cc4
@@ -1691,7 +1691,7 @@ data_ov001_02193e48 kind:bss addr:0x02193e48
 data_ov001_02193e4c kind:bss addr:0x02193e4c
 data_ov001_02193e50 kind:bss addr:0x02193e50
 data_ov001_02193e60 kind:bss addr:0x02193e60
-data_ov001_02193e68 kind:bss addr:0x02193e68
+gOv001SpriteArena kind:bss addr:0x02193e68
 gOv001TilePools kind:bss addr:0x02193e6c
 gVramBankGrants kind:bss addr:0x02193e70
 gOv001Tasks kind:bss addr:0x02193ea4

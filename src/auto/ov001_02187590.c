@@ -337,7 +337,7 @@ if(logCallback)logCallback(0x8000000,&data_ov001_021915c8,childId);
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,0x52)&=~childMask;
 break;
 case 0:
-if(func_ov001_02187ed0()==0)SetWhStatus(9);
+if(Ov001_StartParent()==0)SetWhStatus(9);
 break;
 case 2:break;
 default:
@@ -347,7 +347,7 @@ break;
 }
 }
 #pragma pop
-s32 func_ov001_02187ed0(void) {
+s32 Ov001_StartParent(void) {
 extern M2C_UNK gWhWork;
 extern M2C_UNK HandleParentStartResult;
 s32 func_02012b08(void *,void *,u16,void *,u16,s32);
@@ -573,17 +573,22 @@ s32 WhStartChildScan(void) {
     return 0;
 }
 
-u16 ScanNextChild(u16 arg0) {
-s32 WFC_GetPlayerMask();
-s32 func_ov001_021885f4(void *,u16);
-extern M2C_UNK HandleChildScanResult;
-s32 mask=WFC_GetPlayerMask();
-if(mask==0x8000) {SetWhError(3);SetWhStatus(9);return 3;}
-if(mask==0) {SetWhError(0x16);SetWhStatus(9);return 0x18;}
-while(!(mask & (1 << (arg0-1)))) {
-arg0++;
-if((u32)arg0>0x10) return 0x18;
-}
-return (u16)func_ov001_021885f4(&HandleChildScanResult,arg0);
+/* Scan the children of the wireless link from `firstChild` on: queue the channel
+ * scan of the next child present in WFC_GetPlayerMask and return its result. A
+ * not-ready mask (0x8000) fails with error 3, an empty mask with error 0x16, and
+ * running past child 16 reports WH_SCAN_DONE. */
+u16 ScanNextChild(u16 firstChild) {
+    s32 WFC_GetPlayerMask();
+    s32 RequestChildChannelScan(void *, u16);
+    extern M2C_UNK HandleChildScanResult;
+    s32 playerMask = WFC_GetPlayerMask();
+
+    if (playerMask == 0x8000) { SetWhError(3); SetWhStatus(9); return 3; }
+    if (playerMask == 0) { SetWhError(0x16); SetWhStatus(9); return WH_SCAN_DONE; }
+    while (!(playerMask & (1 << (firstChild - 1)))) {
+        firstChild++;
+        if ((u32)firstChild > 0x10) return WH_SCAN_DONE;
+    }
+    return (u16)RequestChildChannelScan(&HandleChildScanResult, firstChild);
 }
 

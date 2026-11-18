@@ -272,7 +272,7 @@ TaskWake(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK);
 }
 
 void func_02032a84(void) {
-M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *); M2C_UNK func_02033f3c(s32); M2C_UNK func_02005d60(void *);
+M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *); M2C_UNK func_02033f3c(s32); M2C_UNK OS_JoinThread(void *);
 extern M2C_UNK gNasConnection;
 if(!M2C_FIELD(&gNasConnection,void **,8))return;
 LockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
@@ -280,7 +280,7 @@ M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=1;
 UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))func_02033f3c(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
 if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384))return;
-func_02005d60(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
+OS_JoinThread(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
 }
 
 void func_02032b10(void) {
@@ -294,12 +294,12 @@ M2C_FIELD(&gNasConnection,void **,8)=0;
 }
 
 void func_02032b68(void) {
-    M2C_UNK func_02005d60(void *);
+    M2C_UNK OS_JoinThread(void *);
     extern M2C_UNK gNasConnection;
     if (M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, 0x1384) == 0) {
         return;
     }
-    func_02005d60(M2C_FIELD(&gNasConnection, void **, 8) + 0x1318);
+    OS_JoinThread(M2C_FIELD(&gNasConnection, void **, 8) + 0x1318);
 }
 
 s32 func_02032b98(void) {
@@ -358,7 +358,7 @@ return 0;
    answers or the retry budget is spent. */
 void NasConnectTask(void) {
 extern M2C_UNK gNasConnection;
-M2C_UNK func_02005d60(void *);
+M2C_UNK OS_JoinThread(void *);
 M2C_UNK LockMutex(void *);
 M2C_UNK UnlockMutex(void *);
 u64 GetSystemTick(void);
@@ -391,7 +391,7 @@ for (;;) {
     ctx = (u8 *)conn + 0x1000;
     stream = *(void **)((u8 *)ctx + 0x314);
     if (*(M2C_UNK *)((u8 *)stream + 0x1000 + 0xba4) != 0) {
-        func_02005d60((u8 *)stream + 0x338 + 0x1800);
+        OS_JoinThread((u8 *)stream + 0x338 + 0x1800);
     }
 
     conn = M2C_FIELD(&gNasConnection, void **, 8);

@@ -118,14 +118,14 @@ void MapEditor_FitPreviewToMap(void) {
 
 void Map_SetTileAndRefresh(s32 a,s32 b,u16 c,u16 d) {
 extern void **gCurrentMap;
-s32 func_ov007_0221bd74(s32,s32);
+s32 MapEditor_GetUnitKindAt(s32,s32);
 s32 Map_CanUnitKindStandOnCell(s32,s32,s32);
 void *p=*gCurrentMap;
 s32 t;
 M2C_FIELD((u8 *)p+2*(a+M2C_FIELD((u8 *)p+2*b,u16 *,0x3758)),s16 *,0xa10)=d;
 p=*gCurrentMap;
 M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+2*b,u16 *,0x3758)),s8 *,0x1420)=c;
-t=func_ov007_0221bd74(a,b);
+t=MapEditor_GetUnitKindAt(a,b);
 if(t<0)return;
 if(Map_CanUnitKindStandOnCell(a,b,t)!=0)return;
 MapEditor_DestroyUnitAt(a,b);

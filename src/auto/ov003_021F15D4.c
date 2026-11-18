@@ -324,114 +324,55 @@ M2C_UNK ApplyBgLayerVisibility(void) {
 void func_ov003_021f2008(void) {
     extern M2C_UNK gCur3DSpriteEngine;
     extern M2C_UNK g3DSpriteEngineMain;
-    extern M2C_UNK g3DSpriteEngineSub;
     extern M2C_UNK gSceneLayerConfig;
     extern s32 data_ov003_0220fc88[2][4];
+    extern M2C_UNK g3DSpriteEngineSub;
+    u8 *layers;
+    u8 layer;
+    s32 savedEngine;
 
-    u32 savedEngine;
-    u32 i;
-    u8 *gl;
-
-    savedEngine = (u32)gCur3DSpriteEngine;
-
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    gl = (u8 *)&gSceneLayerConfig + 4;
-    for (i = 0; i < 5; i++) {
-        if (data_ov003_0220fc88[0][i] != 0) continue;
-        if (gl[0] == 0) continue;
-        if (gl[1] != (u8)i) continue;
-        switch (i) {
-            case 0: {
-                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                *vp = *vp | 0x10;
-                break;
-            }
-            case 1: {
-                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                *vp = *vp | 0x20;
-                break;
-            }
-            case 2: {
-                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                *vp = *vp | 0x40;
-                break;
-            }
-            case 3: {
-                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                *vp = *vp | 0x80;
-                break;
-            }
-            case 4: {
-                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                *vp = *vp | 0x100;
-                break;
-            }
-        }
-    }
-
-    gCur3DSpriteEngine = g3DSpriteEngineSub;
-    for (i = 0; i < 5; i++) {
-        if (!(data_ov003_0220fc88[1][i] == 0 && gl[3] != 0 && gl[4] == (u8)i)) {
-            switch (i) {
-                case 0: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp & ~0x10;
-                    break;
-                }
-                case 1: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp & ~0x20;
-                    break;
-                }
-                case 2: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp & ~0x40;
-                    break;
-                }
-                case 3: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp & ~0x80;
-                    break;
-                }
-                case 4: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp & ~0x100;
-                    break;
-                }
+    for (layer = 0; layer < 4; layer++) {
+        if (data_ov003_0220fc88[0][layer] != 0 || ((layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[0] != 0 && layers[1] == layer)) {
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x100; break; }
             }
         } else {
-            switch (i) {
-                case 0: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp | 0x10;
-                    break;
-                }
-                case 1: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp | 0x20;
-                    break;
-                }
-                case 2: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp | 0x40;
-                    break;
-                }
-                case 3: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp | 0x80;
-                    break;
-                }
-                case 4: {
-                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
-                    *vp = *vp | 0x100;
-                    break;
-                }
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x100; break; }
             }
         }
     }
-
-    gCur3DSpriteEngine = (M2C_UNK)savedEngine;
-    return;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    for (layer = 0; layer < 4; layer++) {
+        if (data_ov003_0220fc88[1][layer] != 0 || ((layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[3] != 0 && layers[4] == layer)) {
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x100; break; }
+            }
+        } else {
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x100; break; }
+            }
+        }
+    }
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov003_021f242c(u16 *arg0) {

@@ -265,7 +265,7 @@ void func_ov004_02211844(void *ctx) {
         if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
             (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
-            func_0208c5fc(data_ov004_02218cec, 0, 0);
+            LoadCompressedSpriteGraphics(data_ov004_02218cec, 0, 0);
             func_02080774(1, 1, 0, 100, 0);
         }
         i++;

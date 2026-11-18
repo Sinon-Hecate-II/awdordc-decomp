@@ -1,5 +1,6 @@
 /* 39 functions from 0x0207B2F0 to 0x0207C2F0 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ds3dsprite.h"
 /* The current 3D sprite batch: gSpriteBatch holds a pointer to one. Up to ten sprites are
  * placed into the sprite engine's tile memory. */
@@ -22,12 +23,12 @@ typedef struct SpriteBatch {
 
 #define SPRITE_BATCH ((SpriteBatch *)gSpriteBatch)
 
-u8 func_0207b7c4(void);
+u8 IsMapViewScrolling(void);
 void func_0207b754(M2C_UNK, M2C_UNK);
 
 #pragma push
 #pragma optimization_level 2
-s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
+s32 ClampMapViewToTile(s32 *px, s32 *py, s32 third) {
     s32 GetMapViewWidth(void);
     s32 GetMapViewHeight(void);
     void SetMapCursorTargetTile(s32, s32);
@@ -79,26 +80,31 @@ done_one:
     return 1;
 }
 #pragma pop
-s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_0207b2f0(s32 *, s32 *, s32);
+/* Start scrolling the map view to the target tile (x, y): do nothing while a
+ * scroll is still running (its marker sprite exists) or when the view is already
+ * there; otherwise clear the view's scroll state and create the map-scroll task,
+ * storing the clamped tile the view will pan to.  A nonzero `pan` centers the
+ * view on the tile instead of stepping it by one cell. */
+s32 ScrollMapViewToTile(s32 x, s32 y, s32 pan) {
+    s32 ClampMapViewToTile(s32 *, s32 *, s32);
     void *CreateSpriteFromClass(M2C_UNK *, s32);
-    extern M2C_UNK data_02100c20;
+    extern M2C_UNK gMapScrollSpriteClass;
     extern void *gCurrentMap;
-    void *p;
-    if (func_0207b7c4() != 0) return 1;
-    if (func_0207b2f0(&arg0, &arg1, arg2) == 0) return 0;
-    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x5154) = 0;
-    p = CreateSpriteFromClass(&data_02100c20, 7);
-    M2C_FIELD(p, s16 *, 0x38) = arg0 << 4;
-    M2C_FIELD(p, s16 *, 0x3A) = arg1 << 4;
+    void *sprite;
+    if (IsMapViewScrolling() != 0) return 1;
+    if (ClampMapViewToTile(&x, &y, pan) == 0) return 0;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_VIEW_SCROLL_STATE) = 0;
+    sprite = CreateSpriteFromClass(&gMapScrollSpriteClass, 7);
+    ((MapScrollAnim *)sprite)->targetX = x << 4;
+    ((MapScrollAnim *)sprite)->targetY = y << 4;
     return 1;
 }
 
 s32 func_0207b648(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_0207b2f0(s32 *, s32 *, s32);
+    s32 ClampMapViewToTile(s32 *, s32 *, s32);
     extern void *gCurrentMap;
     void (*callback)(void);
-    if (func_0207b2f0(&arg0, &arg1, arg2) == 0) return 0;
+    if (ClampMapViewToTile(&arg0, &arg1, arg2) == 0) return 0;
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148) = arg0 << 4;
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514A) = arg1 << 4;
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x1C);
@@ -134,12 +140,12 @@ void func_0207b754(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 StepMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0207b5ac(M2C_UNK, M2C_UNK, M2C_UNK);
-    return func_0207b5ac(arg0, arg1, 0);
+    M2C_UNK ScrollMapViewToTile(M2C_UNK, M2C_UNK, M2C_UNK);
+    return ScrollMapViewToTile(arg0, arg1, 0);
 }
 
 s32 PanMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
-    return func_0207b5ac(arg0, arg1, 1);
+    return ScrollMapViewToTile(arg0, arg1, 1);
 }
 
 s32 func_0207b784(void *arg0) {
@@ -152,12 +158,12 @@ s32 func_0207b7a4(void *arg0) {
     return PanMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-u8 func_0207b7c4(void) {
+u8 IsMapViewScrolling(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02100c20;
+    extern M2C_UNK gMapScrollSpriteClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_02100c20) != 0) {
+    if (FindObjectByClass(&gMapScrollSpriteClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

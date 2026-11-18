@@ -120,7 +120,7 @@ s32 func_020a799c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 s32 func_020a79e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {
  s32 Divide(s32, s32);
- s32 func_020a7a74(s32, s32, s32, s32, u8);
+ s32 GetKindDamageBonus(s32, s32, s32, s32, u8);
  register s32 temp_r0;
  s32 var_r0;
  s32 base;
@@ -130,23 +130,27 @@ s32 func_020a79e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8
  base = 100;
  if (var_r5 <= temp_r0) var_r5 = temp_r0;
  if ((int)var_r5 == 0) return 0;
- temp_r0 = func_020a7a74(arg0, arg3, arg4, arg5, arg6);
+ temp_r0 = GetKindDamageBonus(arg0, arg3, arg4, arg5, arg6);
  base += temp_r0;
  var_r0 = Divide(var_r5 * base, 100);
  if (var_r0 <= 1) var_r0 = 1;
  return var_r0;
 }
-s32 func_020a7a74(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
- u8 func_020a8560(void);
- s32 func_020a881c(s32);
- s32 func_020a2868(s32, s32, s32);
- extern void **gCurrentMap;
- s32 var_r4 = 0;
- if (func_020a8560() != 0) return var_r4;
- var_r4 += func_020a881c(arg2);
- if (((u32)(M2C_FIELD((u8 *)*gCurrentMap + arg2 * 0x8c, s32 *, 0x6810) << 24) >> 24) != 10 && arg1 == 3) var_r4 -= 30;
- if (arg4 != 0 || arg3 != 0) var_r4 += func_020a2868(arg0, arg2, arg3);
- return var_r4;
+/* Percentage bonus a unit kind's damage estimate gets: the owner's attack
+ * properties (5 percent each), the sandstorm penalty that every army but the
+ * weather-immune one takes, and the army's CO-zone attack bonus for the kind. */
+s32 GetKindDamageBonus(s32 kind, s32 weather, s32 player, s32 bonusType, u8 applyBonus) {
+    u8 func_020a8560();
+    s32 GetPlayerAttackPropertyBonus(s32);
+    s32 GetCoZoneAttackBonus(s32, s32, s32);
+    extern void **gCurrentMap;
+    s32 bonus = 0;
+
+    if (func_020a8560(kind) != 0) return bonus;
+    bonus += GetPlayerAttackPropertyBonus(player);
+    if (((u32)(M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + ARMY_REC_ARMY_ID) << 24) >> 24) != ARMY_WEATHER_IMMUNE && weather == WEATHER_SANDSTORM) bonus -= 30;
+    if (applyBonus != 0 || bonusType != 0) bonus += GetCoZoneAttackBonus(kind, player, bonusType);
+    return bonus;
 }
 
 /* Byte 0 of a unit kind entry: the kind's first stat byte (gUnitKindTable). */
@@ -539,7 +543,7 @@ s32 func_020a85c0(void) {
     return 0;
 }
 
-u8 func_020a85c8(s32 arg0) {
+u8 IsMobileIndirectUnitKind(s32 arg0) {
     u8 var_r0;
 
     if (arg0 == 0x14) {

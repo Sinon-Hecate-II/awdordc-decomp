@@ -157,22 +157,22 @@ void QueueVramCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void func_0207c5d0(void *arg0) {
-    M2C_UNK func_0200478c(void);
-    M2C_UNK func_0200482c(s32, s32, s32);
-    M2C_UNK func_0200489c(void);
-    M2C_UNK func_020049dc(void);
-    M2C_UNK func_020049f4(s32, s32, s32);
-    M2C_UNK func_02004a58(void);
+    M2C_UNK GX_BeginLoadBGExtPltt(void);
+    M2C_UNK GX_LoadBGExtPltt(s32, s32, s32);
+    M2C_UNK GX_EndLoadBGExtPltt(void);
+    M2C_UNK GX_BeginLoadBGExtPlttSub(void);
+    M2C_UNK GX_LoadBGExtPlttSub(s32, s32, s32);
+    M2C_UNK GX_EndLoadBGExtPlttSub(void);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) {
-        func_0200478c();
-        func_0200482c(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
-        func_0200489c();
+        GX_BeginLoadBGExtPltt();
+        GX_LoadBGExtPltt(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_EndLoadBGExtPltt();
     } else {
-        func_020049dc();
-        func_020049f4(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
-        func_02004a58();
+        GX_BeginLoadBGExtPlttSub();
+        GX_LoadBGExtPlttSub(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_EndLoadBGExtPlttSub();
     }
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
@@ -193,22 +193,22 @@ void func_0207c650(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
 }
 
 void func_0207c6a8(void *arg0) {
-    M2C_UNK func_020048e4(void);
-    M2C_UNK func_0200492c(s32, s32, s32);
-    M2C_UNK func_02004998(void);
-    M2C_UNK func_02004a98(void);
-    M2C_UNK func_02004ab0(s32, s32, s32);
-    M2C_UNK func_02004b14(void);
+    M2C_UNK GX_BeginLoadOBJExtPltt(void);
+    M2C_UNK GX_LoadOBJExtPltt(s32, s32, s32);
+    M2C_UNK GX_EndLoadOBJExtPltt(void);
+    M2C_UNK GX_BeginLoadOBJExtPlttSub(void);
+    M2C_UNK GX_LoadOBJExtPlttSub(s32, s32, s32);
+    M2C_UNK GX_EndLoadOBJExtPlttSub(void);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) {
-        func_020048e4();
-        func_0200492c(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
-        func_02004998();
+        GX_BeginLoadOBJExtPltt();
+        GX_LoadOBJExtPltt(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_EndLoadOBJExtPltt();
     } else {
-        func_02004a98();
-        func_02004ab0(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
-        func_02004b14();
+        GX_BeginLoadOBJExtPlttSub();
+        GX_LoadOBJExtPlttSub(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_EndLoadOBJExtPlttSub();
     }
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));

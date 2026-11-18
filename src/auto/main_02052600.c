@@ -44,7 +44,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     extern M2C_UNK gGpiInfoFileName;
     extern M2C_UNK data_020fe6d8;
     extern M2C_UNK data_020fe6e0;
-    extern M2C_UNK data_020fe710;
+    extern M2C_UNK gGpiProfileIdField;
     extern M2C_UNK data_020fe71c;
     extern M2C_UNK data_020fe72c;
     extern M2C_UNK data_020fe734;
@@ -97,7 +97,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
-    if (gpiValueForKey(arg2, &data_020fe710, parse, 0x40) == 0) {
+    if (gpiValueForKey(arg2, &gGpiProfileIdField, parse, 0x40) == 0) {
         gpiSetError(arg0, 1, &data_020fe6e0);
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;

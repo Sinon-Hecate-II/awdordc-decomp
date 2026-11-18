@@ -178,85 +178,79 @@ case 8:if(record[0xf6])return;DrawMapInfoDottedValue(record+0xcc,line);break;
 }
 }
 
-void DrawMapInfoRowIcon(s32 arg0, s32 arg1) {
+void DrawMapInfoRowIcon(s32 row, s32 slot) {
     void *GetCurrentMapRecord(void);
     s32 func_ov001_0217e5e8(u32);
     void func_ov001_0217e67c(s32, s32, s32);
     extern M2C_UNK gMapListState;
-    void *p;
-    s32 r4 = arg0;
-    s32 r5 = 0;
-    s32 r1;
+    u8 *record;
+    s32 icon, variant;
 
-    p = GetCurrentMapRecord();
-
-    switch (r4) {
-        case 0:
-        case 1:
-            r4 = 0;
-            if (func_ov001_0217e5e8(0) == 0) {
-                r5 = 2;
-            }
-            break;
-        case 2: {
-            u8 f5 = ((u8 *)p)[0xF5];
-            void **root = M2C_FIELD(&gMapListState, void **, 8);
-            u8 b4 = ((u8 *)root)[4];
-            r4 = (f5 != 0) ? 1 : 2;
-            if (b4 != 0) {
-                r5 = 1;
-            }
-            r1 = 0;
-            if (((u8 *)root)[5] != 0) {
-                r1 = 1;
-            }
-            func_ov001_0217e67c(r4, r1, arg1);
-            return;
+    record = GetCurrentMapRecord();
+    switch (row) {
+    case 0:
+    case 1:
+        icon = 0;
+        variant = 0;
+        if (func_ov001_0217e5e8(icon) == 0)
+            variant = 2;
+        break;
+    case 2: {
+        u8 *flags = M2C_FIELD(&gMapListState, u8 **, 8);
+        u8 present = record[0xf5];
+        u8 available = flags[4];
+        s32 secondary, secondaryVariant = 0;
+        if (present != 0) {
+            icon = 1;
+            secondary = 4;
+        } else {
+            icon = 2;
+            secondary = 3;
         }
-        case 3:
-        case 4:
-        case 5:
-            r4 = 0;
-            if (((u8 *)p)[0xF5] != 0) {
-                r5 = 2;
-            } else {
-                r5 = 0;
-            }
-            break;
-        case 6: {
-            u8 f6 = ((u8 *)p)[0xF6];
-            r5 = 0;
-            if (f6 != 0) {
-                r4 = 1;
-            } else {
-                r4 = 2;
-                if (((u8 *)p)[0xF5] == 0) {
-                    r5 = 2;
-                }
-            }
-            {
-                void **root = M2C_FIELD(&gMapListState, void **, 8);
-                if (((u8 *)root)[6] != 0) {
-                    r5 = 1;
-                }
-                r1 = 0;
-                if (((u8 *)root)[7] != 0) {
-                    r1 = 1;
-                }
-                func_ov001_0217e67c(r4, r1, arg1);
-                return;
-            }
-        }
-        case 7:
-        case 8:
-            func_ov001_0217e67c(0, 2, arg1);
-            return;
-        default:
-            r4 = 0;
-            r5 = 2;
-            break;
+        variant = available ? 1 : secondaryVariant;
+        if (flags[5] != 0)
+            secondaryVariant = 1;
+        func_ov001_0217e67c(secondary, secondaryVariant, slot);
+        break;
     }
-    func_ov001_0217e67c(r4, r5, arg1);
+    case 3:
+    case 4:
+    case 5:
+        icon = 0;
+        variant = record[0xf5] != 0 ? 2 : icon;
+        break;
+    case 6: {
+        s32 secondary, secondaryVariant = 0;
+        u8 *flags;
+        variant = 0;
+        if (record[0xf6] != 0) {
+            icon = 1;
+            secondary = 4;
+        } else {
+            if (record[0xf5] == 0)
+                variant = 2;
+            icon = 2;
+            secondary = 3;
+        }
+        flags = M2C_FIELD(&gMapListState, u8 **, 8);
+        if (flags[6] != 0)
+            variant = 1;
+        if (flags[7] != 0)
+            secondaryVariant = 1;
+        func_ov001_0217e67c(secondary, secondaryVariant, slot);
+        break;
+    }
+    case 7:
+    case 8:
+        icon = 0;
+        variant = record[0xf6] != 0 ? 2 : icon;
+        break;
+    default:
+        icon = 0;
+        variant = 2;
+        break;
+    }
+    func_ov001_0217e67c(icon, variant, slot);
 }
 
 #pragma opt_common_subs reset

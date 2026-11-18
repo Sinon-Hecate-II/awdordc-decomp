@@ -76,7 +76,7 @@ void ExpandMapRecord(void *arg0, void *arg1) {
         HeapFreeBlock(src);
 }
 
-s32 func_020c7e58(s32 arg0) {
+s32 GetCampaignMapHeader(s32 arg0) {
     extern M2C_UNK gCampaignMapHeaders;
     return (0x54 * arg0) + (s32) &gCampaignMapHeaders;
 }
@@ -203,18 +203,23 @@ s32 IsLocalCampaignMapRecord(s32 a) {
  return IsLocalMacAddress(GetMapRecordStamp(a));
 }
 
-u8 func_020c80ec(s32 a) {
- s32 func_02086980(s32);
- s32 p,q; u8 r;
- if(a>=0xe1&&a<0x1a9) {
- p=GetMapRecordStamp(a);q=GetCampaignMapIndex(a);
- if(!IsCampaignMapRecordValid(a))return 0;
- if(IsLocalCampaignMapRecord(a))return 0;
- if(func_02086980(q))return 0;
- if(M2C_FIELD(p,u32 *,0xc)>>29)return 0;
- if(M2C_FIELD(p,s32 *,0x10))r=1;else r=0;
- return r;
- }return 0;
+/* Whether the current campaign map is one received over a link that is not stored
+ * here yet: a valid campaign-map record that is not local, whose slot does not
+ * already hold a saved user map, with no share mode in its stamp and a nonzero
+ * map code. */
+u8 IsReceivedCampaignMap(s32 mapId) {
+    s32 IsCampaignMapSaved(s32);
+    s32 stamp, index; u8 hasCode;
+    if (mapId >= MAP_ID_CAMPAIGN_FIRST && mapId < MAP_ID_CAMPAIGN_END) {
+        stamp = GetMapRecordStamp(mapId); index = GetCampaignMapIndex(mapId);
+        if (!IsCampaignMapRecordValid(mapId)) return 0;
+        if (IsLocalCampaignMapRecord(mapId)) return 0;
+        if (IsCampaignMapSaved(index)) return 0;
+        if (M2C_FIELD(stamp, u32 *, 0xc) >> 29) return 0;
+        if (M2C_FIELD(stamp, s32 *, 0x10)) hasCode = 1; else hasCode = 0;
+        return hasCode;
+    }
+    return 0;
 }
 
 s32 func_020c818c(s32 a,s32 b) {

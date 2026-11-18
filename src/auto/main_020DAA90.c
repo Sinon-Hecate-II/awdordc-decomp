@@ -267,7 +267,7 @@ void func_020db1a0(void *arg0) {
  M2C_UNK SetSpriteSlotScroll(s32,M2C_UNK);M2C_UNK ClearTileRect(u16 *,s32,s32);
  M2C_UNK DrawGlyphString(u16 *,u32,u32,u32,u16,u16,u32);
  M2C_UNK StringFormat(void *,const char *,...);M2C_UNK DrawTextLine(s32,s32,s32,void *,s32,s32);
- s32 func_ov009_02224064(void);s32 func_ov009_022246ac(s32);s32 func_ov009_02225470(void);s32 GetLinkPhase(void);s32 func_ov009_022241b4(void);s32 func_ov009_02224070(s32);
+ s32 func_ov009_02224064(void);s32 func_ov009_022246ac(s32);s32 func_ov009_02225470(void);s32 GetLinkPhase(void);s32 func_ov009_022241b4(void);s32 GetActiveLinkPlayerSlot(s32);
  extern void **gCur3DSpriteEngine,**g3DSpriteEngineMain;
  extern s32 gUnitSlotIds[];
  extern s8 data_0212d2ac[],data_0212d2b0[],data_0212d2c0[],data_0212d2c4[];
@@ -310,7 +310,7 @@ void func_020db1a0(void *arg0) {
  y=7;i=0;
  if(count>0){ z=0xe0;
  do {
- unit=(void *)func_ov009_02224070(i);
+ unit=(void *)GetActiveLinkPlayerSlot(i);
  if(unit&&func_ov009_02225470()>=2U) {
  ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+14+(z<<1)),20,2);
  DrawGlyphString(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,7,(u16)y,x);

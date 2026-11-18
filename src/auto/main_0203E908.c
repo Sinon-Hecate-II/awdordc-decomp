@@ -33,23 +33,28 @@ void BeginMatchmakingSession(u8 mode, u8 capacity, s32 eventCallback, s32 eventD
     Qr2_SetKeyName(QR2_GAMEKEY_CONST_1, (s8 *)&sDwcKeyEval);
 }
 
+/* Tear the match-making connection session down: free the session's GameSpy
+ * server browser (now, or through the think loop when a browser callback is
+ * running), run the deferred-connection teardown, reset the connection state,
+ * free the session's saved data buffer and drop the session players, then mark
+ * the session closed. */
 void TeardownConnectionSession(void) {
     M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_0203bd0c();
     M2C_UNK ClearSessionPlayers();
     void *GetConnection();
     M2C_UNK SetConnectionState(M2C_UNK);
-    M2C_UNK func_020614b0(s32);
+    M2C_UNK DestroyServerBrowser(s32);
     extern M2C_UNK gConnectionMgr;
     if (GetConnection() == NULL) {
         return;
     }
-    if (M2C_FIELD(GetConnection(), s32 *, 0xE4) != 0) {
-        if (M2C_FIELD(&gConnectionMgr, s32 *, 0x18) != 0) {
-            M2C_FIELD(&gConnectionMgr, s32 *, 0x14) = 1;
+    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SERVER_BROWSER) != 0) {
+        if (M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_BROWSER_DEPTH) != 0) {
+            M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_BROWSER_FREE) = 1;
         } else {
-            func_020614b0(M2C_FIELD(GetConnection(), s32 *, 0xE4));
-            M2C_FIELD(GetConnection(), s32 *, 0xE4) = 0;
+            DestroyServerBrowser(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SERVER_BROWSER));
+            M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SERVER_BROWSER) = 0;
         }
     }
     func_0203bd0c();
@@ -59,7 +64,7 @@ void TeardownConnectionSession(void) {
         M2C_FIELD(&gConnectionMgr, s32 *, 8) = 0;
     }
     ClearSessionPlayers();
-    M2C_FIELD(GetConnection(), s8 *, 0x18) = 1;
+    M2C_FIELD(GetConnection(), s8 *, CONN_SESSION_CLOSED) = 1;
 }
 
 /* Announces a match-making parameter (a "key = value" text built from the
@@ -273,7 +278,7 @@ loop_4:
    message and pass it to the connection's send callback; for commands 2, 6, 8
    and 9 record the command, peer, port, payload and time so it can be resent. */
 s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *values, s32 count) {
-    void func_0203f31c(M2C_UNK,s32,M2C_UNK,u8 *);
+    void SendConnectionTextCommand(M2C_UNK,s32,M2C_UNK,u8 *);
     s32 func_0203f20c(s32,s32,s32,s32,s32);
     void func_02007e70(s32,void *,s32);
     M2C_UNK StringFormatN();
@@ -298,7 +303,7 @@ s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *va
             }
         }
         message[length]=0;
-        result=((s32 (*)())func_0203f31c)(M2C_FIELD(GetConnection(),s32 *,0),command,peerId,message);
+        result=((s32 (*)())SendConnectionTextCommand)(M2C_FIELD(GetConnection(),s32 *,0),command,peerId,message);
     }
     if(command==2 || command==6 || (u8)(command+0xf8)<=1) {
         M2C_FIELD(GetConnection(),u8 *,0x3cc)=command;
@@ -362,47 +367,52 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
 
 #pragma opt_common_subs off
 #pragma opt_instruction_scheduling off
-void func_0203f31c(M2C_UNK arg0,s32 arg1,M2C_UNK arg2,u8 *arg3) {
-M2C_UNK StringFormatN(); s32 StringLength(u8*); void MI_CpuCopy8(u8*,u8*,u32); void func_0204e634(M2C_UNK,M2C_UNK,M2C_UNK);
-extern M2C_UNK data_020fca08,data_020fca10,data_020fca18;
-char buf[512]; s32 len; u8 *tail;
-len=StringFormatN((M2C_UNK)buf,512,(M2C_UNK)&data_020fca08,(M2C_UNK)&data_020fca10,3,(M2C_UNK)&data_020fca18);
-buf[len]=arg1; tail=(u8*)(buf+1);tail[len]=0;tail+=len;
-if(arg3){s32 alen=StringLength(arg3);MI_CpuCopy8(arg3,tail,alen);tail[alen]=0;}
-func_0204e634(arg0,arg2,(M2C_UNK)buf);
+/* Text form of a connection command (the binary form is func_0203f20c): build the
+ * peer message header from the tag, the protocol version and the kind, insert the
+ * command byte and append the message text, then queue the message for the peer. */
+void SendConnectionTextCommand(M2C_UNK gpi,s32 command,M2C_UNK peerId,u8 *text) {
+M2C_UNK StringFormatN(); s32 StringLength(u8*); void MI_CpuCopy8(u8*,u8*,u32); void gpiSendTextToPlayer(M2C_UNK,M2C_UNK,M2C_UNK);
+extern M2C_UNK sGpcmMessageFormat,sGpcmMessageTag,sGpcmMessageKind;
+char message[512]; s32 headerLength; u8 *append;
+headerLength=StringFormatN((M2C_UNK)message,512,(M2C_UNK)&sGpcmMessageFormat,(M2C_UNK)&sGpcmMessageTag,3,(M2C_UNK)&sGpcmMessageKind);
+message[headerLength]=command; append=(u8*)(message+1);append[headerLength]=0;append+=headerLength;
+if(text){s32 textLength=StringLength(text);MI_CpuCopy8(text,append,textLength);append[textLength]=0;}
+gpiSendTextToPlayer(gpi,peerId,(M2C_UNK)message);
 }
 #pragma opt_instruction_scheduling reset
 #pragma opt_common_subs reset
-s32 func_0203f3c0(u8 *arg0, u8 *arg1, s32 arg2) {
+/* Copy the `index`-th '/'-separated field of `text` into `dest`, terminate it and
+ * return its length; -1 when that field does not exist or is empty. */
+s32 ExtractSlashField(u8 *dest, u8 *text, s32 index) {
     s8 *StringFindChar(s8 *, s32);
     void MI_CpuCopy8(u8 *, u8 *, u32);
-    u8 *p = arg1;
-    u8 *end = (u8 *)StringFindChar((s8 *)arg1, 0);
+    u8 *field = text;
+    u8 *end = (u8 *)StringFindChar((s8 *)text, 0);
     s32 count = 0;
-    if (arg2 > 0) {
-        s8 *f;
+    if (index > 0) {
+        s8 *slash;
         do {
-            f = StringFindChar((s8 *)p, '/');
-            if (f == 0) {
+            slash = StringFindChar((s8 *)field, '/');
+            if (slash == 0) {
                 return -1;
             }
             count += 1;
-            p = (u8 *)f + 1;
-        } while (count < arg2);
+            field = (u8 *)slash + 1;
+        } while (count < index);
     }
     {
-        u8 *f2 = (u8 *)StringFindChar((s8 *)p, '/');
-        if (f2 == 0) {
-            f2 = end;
+        u8 *fieldEnd = (u8 *)StringFindChar((s8 *)field, '/');
+        if (fieldEnd == 0) {
+            fieldEnd = end;
         }
-        if (p == f2) {
+        if (field == fieldEnd) {
             return -1;
         }
         {
-            s32 len = (s32)(f2 - p);
-            MI_CpuCopy8(p, arg0, len);
-            arg0[len] = 0;
-            return len;
+            s32 length = (s32)(fieldEnd - field);
+            MI_CpuCopy8(field, dest, length);
+            dest[length] = 0;
+            return length;
         }
     }
 }

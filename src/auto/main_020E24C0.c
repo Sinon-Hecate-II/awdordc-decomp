@@ -181,13 +181,13 @@ void *func_020e2fd4(void *arg0) {
     return arg0;
 }
 
-void func_020e3004(void) {
+void SetShogunInfoFileDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_0212d678;
     SetFileDirectory(&data_0212d678);
 }
 
-s32 func_020e3018(s32 arg0) {
+s32 GetNameFileForFace(s32 arg0) {
  extern u8 data_0212d600[];
  s32 i;
  u8 *p;

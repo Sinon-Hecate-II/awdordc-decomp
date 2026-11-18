@@ -1,5 +1,6 @@
 /* 53 functions from 0x0200402C to 0x02004FF8 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct { u32 a,b,c,d,e,f,g,h; } FuncCopy8;
 
 typedef struct { u32 x, y, z; } FuncCopyV3;
@@ -30,17 +31,17 @@ void func_02004078(s32 arg0,s32 arg1) {
 void GX_LoadBGPltt(M2C_UNK arg0,s32 arg1,u32 arg2) {
  M2C_UNK func_02007a74(s32,M2C_UNK,s32,u32);
  M2C_UNK CopyU16(M2C_UNK,s32,u32);
- extern s32 data_020f5204;
- if(data_020f5204!=-1&&arg2>0x1CU){func_02007a74(data_020f5204,arg0,arg1+0x05000000,arg2);return;}
+ extern s32 gGxDmaChannel;
+ if(gGxDmaChannel!=-1&&arg2>0x1CU){func_02007a74(gGxDmaChannel,arg0,arg1+0x05000000,arg2);return;}
  CopyU16(arg0,arg1+0x05000000,arg2);
 }
 
 void func_02004108(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1 && arg2 > 0x1CU) {
-        func_02007a74(data_020f5204, arg0, arg1 + 0x05000400, arg2);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
+        func_02007a74(gGxDmaChannel, arg0, arg1 + 0x05000400, arg2);
         return;
     }
     CopyU16(arg0, arg1 + 0x05000400, arg2);
@@ -49,9 +50,9 @@ void func_02004108(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void GX_LoadOBJPltt(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1 && arg2 > 0x1CU) {
-        func_02007a74(data_020f5204, arg0, arg1 + 0x05000200, arg2);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
+        func_02007a74(gGxDmaChannel, arg0, arg1 + 0x05000200, arg2);
         return;
     }
     CopyU16(arg0, arg1 + 0x05000200, arg2);
@@ -60,9 +61,9 @@ void GX_LoadOBJPltt(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void func_020041b8(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1 && arg2 > 0x1CU) {
-        func_02007a74(data_020f5204, arg0, arg1 + 0x05000600, arg2);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
+        func_02007a74(gGxDmaChannel, arg0, arg1 + 0x05000600, arg2);
         return;
     }
     CopyU16(arg0, arg1 + 0x05000600, arg2);
@@ -71,9 +72,9 @@ void func_020041b8(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void func_02004210(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, arg1 + 0x07000000, arg2);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
+        func_02007a04(gGxDmaChannel, arg0, arg1 + 0x07000000, arg2);
         return;
     }
     func_02007e70(arg0, arg1 + 0x07000000, arg2);
@@ -82,9 +83,9 @@ void func_02004210(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void func_02004264(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, arg1 + 0x07000400, arg2);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
+        func_02007a04(gGxDmaChannel, arg0, arg1 + 0x07000400, arg2);
         return;
     }
     func_02007e70(arg0, arg1 + 0x07000400, arg2);
@@ -95,10 +96,10 @@ void func_02004264(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     register s32 base=0x06400000;
-    if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, base + arg1, arg2);
+    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
+        func_02007a04(gGxDmaChannel, arg0, base + arg1, arg2);
         return;
     }
     func_02007e70(arg0, base + arg1, arg2);
@@ -109,10 +110,10 @@ void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
 void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     register u32 base=0x06600000;
-    if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, base + arg1, arg2);
+    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
+        func_02007a04(gGxDmaChannel, arg0, base + arg1, arg2);
         return;
     }
     func_02007e70(arg0, base + arg1, arg2);
@@ -123,12 +124,12 @@ void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036b8();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_020036b8();
-    if ((data_020f5204 != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
+    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
+        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -138,12 +139,12 @@ void func_020043cc(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036d8();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_020036d8();
-    if ((data_020f5204 != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
+    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
+        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -153,12 +154,12 @@ void func_0200442c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_0200370c();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_0200370c();
-    if ((data_020f5204 != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
+    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
+        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -168,12 +169,12 @@ void GX_LoadBG2Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_0200372c();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_0200372c();
-    if ((data_020f5204 != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
+    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
+        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -183,12 +184,12 @@ void func_020044ec(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020037b0();
     M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_020037b0();
-    if ((data_020f5204 != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(data_020f5204, arg0, temp_ip + arg1, arg2);
+    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
+        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -196,99 +197,102 @@ void func_020044ec(M2C_UNK arg0, s32 arg1, u32 arg2) {
 
 void func_0200454c(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_02003834(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
- extern s32 data_020f5204; s32 temp_ip;
+ extern s32 gGxDmaChannel; s32 temp_ip;
  temp_ip=func_02003834();
- if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,temp_ip+arg1,arg2);return;}
+ if(gGxDmaChannel!=-1 && arg2>0x30U){func_02007a04(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
 void func_020045ac(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_02003868(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
- extern s32 data_020f5204; s32 temp_ip;
+ extern s32 gGxDmaChannel; s32 temp_ip;
  temp_ip=func_02003868();
- if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,temp_ip+arg1,arg2);return;}
+ if(gGxDmaChannel!=-1 && arg2>0x30U){func_02007a04(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
 void func_0200460c(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_02003888(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
- extern s32 data_020f5204; s32 temp_ip;
+ extern s32 gGxDmaChannel; s32 temp_ip;
  temp_ip=func_02003888();
- if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,temp_ip+arg1,arg2);return;}
+ if(gGxDmaChannel!=-1 && arg2>0x30U){func_02007a04(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
 void func_0200466c(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_020038bc(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
- extern s32 data_020f5204; s32 temp_ip;
+ extern s32 gGxDmaChannel; s32 temp_ip;
  temp_ip=func_020038bc();
- if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,temp_ip+arg1,arg2);return;}
+ if(gGxDmaChannel!=-1 && arg2>0x30U){func_02007a04(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
 void GX_LoadBG2Char(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_020038dc(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
- extern s32 data_020f5204; s32 temp_ip;
+ extern s32 gGxDmaChannel; s32 temp_ip;
  temp_ip=func_020038dc();
- if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,temp_ip+arg1,arg2);return;}
+ if(gGxDmaChannel!=-1 && arg2>0x30U){func_02007a04(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
 void func_0200472c(M2C_UNK arg0,s32 arg1,u32 arg2) {
  s32 func_0200392c(); M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32);
- extern s32 data_020f5204; s32 temp_ip;
+ extern s32 gGxDmaChannel; s32 temp_ip;
  temp_ip=func_0200392c();
- if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,temp_ip+arg1,arg2);return;}
+ if(gGxDmaChannel!=-1 && arg2>0x30U){func_02007a04(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
-void func_0200478c(void) {
-s32 func_02003370(void); extern M2C_UNK data_0212dbe0;
-s32 r=func_02003370();
-M2C_FIELD(&data_0212dbe0,s32 *,0x14)=r;
-switch(r) {
+/* Begins a main-engine background extended-palette load: releases the palette's
+ * bank grant, records it, and stores the VRAM base and offset the load copies
+ * into, chosen from the banks the release gave back. */
+void GX_BeginLoadBGExtPltt(void) {
+s32 func_02003370(void); extern M2C_UNK gGxExtPlttLoad;
+s32 banks=func_02003370();
+M2C_FIELD(&gGxExtPlttLoad,s32 *,GX_EXTPLTT_LOAD_BG_GRANT)=banks;
+switch(banks) {
 case 0: break;
-case 0x10: M2C_FIELD(&data_0212dbe0,M2C_UNK *,0x10)=(M2C_UNK)0x6880000; M2C_FIELD(&data_0212dbe0,s32 *,0xc)=0;break;
-case 0x40: M2C_FIELD(&data_0212dbe0,M2C_UNK *,0x10)=(M2C_UNK)0x6894000; M2C_FIELD(&data_0212dbe0,s32 *,0xc)=0x4000;break;
-case 0x20: case 0x60: M2C_FIELD(&data_0212dbe0,M2C_UNK *,0x10)=(M2C_UNK)0x6890000; M2C_FIELD(&data_0212dbe0,s32 *,0xc)=0;break;
+case VRAM_BANK_E: M2C_FIELD(&gGxExtPlttLoad,M2C_UNK *,GX_EXTPLTT_LOAD_BG_BASE)=(M2C_UNK)GX_BGEXTPLTT_BASE_E; M2C_FIELD(&gGxExtPlttLoad,s32 *,GX_EXTPLTT_LOAD_BG_OFFSET)=0;break;
+case VRAM_BANK_G: M2C_FIELD(&gGxExtPlttLoad,M2C_UNK *,GX_EXTPLTT_LOAD_BG_BASE)=(M2C_UNK)GX_BGEXTPLTT_BASE_G; M2C_FIELD(&gGxExtPlttLoad,s32 *,GX_EXTPLTT_LOAD_BG_OFFSET)=GX_BGEXTPLTT_OFFSET_G;break;
+case VRAM_BANK_F: case VRAM_BANK_F|VRAM_BANK_G: M2C_FIELD(&gGxExtPlttLoad,M2C_UNK *,GX_EXTPLTT_LOAD_BG_BASE)=(M2C_UNK)GX_BGEXTPLTT_BASE_F; M2C_FIELD(&gGxExtPlttLoad,s32 *,GX_EXTPLTT_LOAD_BG_OFFSET)=0;break;
 default: break;
 }
 }
 
-void func_0200482c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void GX_LoadBGExtPltt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    extern M2C_UNK data_0212dbe0;
-    M2C_UNK field10 = M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10);
-    M2C_UNK field0c = M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0xC);
+    extern s32 gGxDmaChannel;
+    extern M2C_UNK gGxExtPlttLoad;
+    M2C_UNK field10 = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x10);
+    M2C_UNK field0c = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0xC);
     M2C_UNK diff = field10 + (s32)arg1 - field0c;
-    if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, arg0, diff, arg2, 0, 0);
+    if (gGxDmaChannel != -1) {
+        func_02007ba4(gGxDmaChannel, arg0, diff, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, diff, (u32)arg2);
 }
 
-void func_0200489c(void) {
+void GX_EndLoadBGExtPltt(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK func_02002ab8(M2C_UNK);
-    extern s32 data_020f5204;
-    extern M2C_UNK data_0212dbe0;
-    if (data_020f5204 != -1) {
-        DmaWaitChannel(data_020f5204);
+    extern s32 gGxDmaChannel;
+    extern M2C_UNK gGxExtPlttLoad;
+    if (gGxDmaChannel != -1) {
+        DmaWaitChannel(gGxDmaChannel);
     }
-    func_02002ab8(M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x14));
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x14) = 0;
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = 0;
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0xc) = 0;
+    func_02002ab8(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14));
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14) = 0;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x10) = 0;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0xc) = 0;
 }
 
-void func_020048e4(void) {
+void GX_BeginLoadOBJExtPltt(void) {
     s32 func_02003394();
-    extern M2C_UNK data_0212dbe0;
+    extern M2C_UNK gGxExtPlttLoad;
     s32 v = func_02003394();
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x8) = (M2C_UNK)v;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x8) = (M2C_UNK)v;
     if (v == 0) {
         return;
     }
@@ -296,97 +300,97 @@ void func_020048e4(void) {
         goto store_6890;
     }
     if (v == 0x40) {
-        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x4) = (M2C_UNK)0x6894000;
+        M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4) = (M2C_UNK)0x6894000;
         return;
     }
     return;
 store_6890:
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x4) = (M2C_UNK)0x6890000;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4) = (M2C_UNK)0x6890000;
     return;
 }
 
-void func_0200492c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void GX_LoadOBJExtPltt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    extern M2C_UNK data_0212dbe0;
-    M2C_UNK field = M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x4);
-    if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, arg0, field + (s32)arg1, arg2, 0, 0);
+    extern s32 gGxDmaChannel;
+    extern M2C_UNK gGxExtPlttLoad;
+    M2C_UNK field = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4);
+    if (gGxDmaChannel != -1) {
+        func_02007ba4(gGxDmaChannel, arg0, field + (s32)arg1, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, field + (s32)arg1, (u32)arg2);
 }
 
-void func_02004998(void) {
+void GX_EndLoadOBJExtPltt(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
-    extern s32 data_020f5204;
-    extern M2C_UNK data_0212dbe0;
-    if (data_020f5204 != -1) {
-        DmaWaitChannel(data_020f5204);
+    extern s32 gGxDmaChannel;
+    extern M2C_UNK gGxExtPlttLoad;
+    if (gGxDmaChannel != -1) {
+        DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForObjExtPalette(M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x8));
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x8) = 0;
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x4) = 0;
+    GX_SetBankForObjExtPalette(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x8));
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x8) = 0;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4) = 0;
 }
 
-void func_020049dc(void) {
+void GX_BeginLoadBGExtPlttSub(void) {
     s32 func_02003408();
-    extern s32 data_0212dbe0;
-    data_0212dbe0 = func_02003408();
+    extern s32 gGxExtPlttLoad;
+    gGxExtPlttLoad = func_02003408();
 }
 
-void func_020049f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void GX_LoadBGExtPlttSub(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, arg0, (s32)arg1 + 0x6898000, arg2, 0, 0);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1) {
+        func_02007ba4(gGxDmaChannel, arg0, (s32)arg1 + 0x6898000, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, (s32)arg1 + 0x6898000, (u32)arg2);
 }
 
-void func_02004a58(void) {
+void GX_EndLoadBGExtPlttSub(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK func_0200323c(M2C_UNK);
-    extern s32 data_020f5204;
-    extern M2C_UNK data_0212dbe0;
-    if (data_020f5204 != -1) {
-        DmaWaitChannel(data_020f5204);
+    extern s32 gGxDmaChannel;
+    extern M2C_UNK gGxExtPlttLoad;
+    if (gGxDmaChannel != -1) {
+        DmaWaitChannel(gGxDmaChannel);
     }
-    func_0200323c(data_0212dbe0);
-    data_0212dbe0 = 0;
+    func_0200323c(gGxExtPlttLoad);
+    gGxExtPlttLoad = 0;
 }
 
-void func_02004a98(void) {
+void GX_BeginLoadOBJExtPlttSub(void) {
     s32 func_02003430();
-    extern M2C_UNK data_0212dbe0;
-    M2C_FIELD(&data_0212dbe0, s32 *, 0x18) = func_02003430();
+    extern M2C_UNK gGxExtPlttLoad;
+    M2C_FIELD(&gGxExtPlttLoad, s32 *, 0x18) = func_02003430();
 }
 
-void func_02004ab0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void GX_LoadOBJExtPlttSub(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, arg0, (s32)arg1 + 0x68a0000, arg2, 0, 0);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1) {
+        func_02007ba4(gGxDmaChannel, arg0, (s32)arg1 + 0x68a0000, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, (s32)arg1 + 0x68a0000, (u32)arg2);
 }
 
-void func_02004b14(void) {
+void GX_EndLoadOBJExtPlttSub(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK func_020032bc(M2C_UNK);
-    extern s32 data_020f5204;
-    extern M2C_UNK data_0212dbe0;
-    if (data_020f5204 != -1) {
-        DmaWaitChannel(data_020f5204);
+    extern s32 gGxDmaChannel;
+    extern M2C_UNK gGxExtPlttLoad;
+    if (gGxDmaChannel != -1) {
+        DmaWaitChannel(gGxDmaChannel);
     }
-    func_020032bc(M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x18));
-    M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x18) = 0;
+    func_020032bc(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x18));
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x18) = 0;
 }
 
 void func_02004b54(void) {
@@ -413,7 +417,7 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     extern M2C_UNK data_0212dbfc;
 
     M2C_UNK *bank = &data_0212dbfc;
@@ -435,13 +439,13 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
         } else {
             u32 head = (u32)split - ofs;
             s32 base = M2C_FIELD(bank, s32 *, 0x4);
-            if (data_020f5204 != -1 && head > 0x30U) {
-                func_02007a04(data_020f5204, p, base + (s32)ofs, head);
+            if (gGxDmaChannel != -1 && head > 0x30U) {
+                func_02007a04(gGxDmaChannel, p, base + (s32)ofs, head);
             } else {
                 func_02007e70(p, base + (s32)ofs, head);
             }
-            if (data_020f5204 != -1) {
-                func_02007ba4(data_020f5204, p + (M2C_UNK)head, base2, n - head, 0, 0);
+            if (gGxDmaChannel != -1) {
+                func_02007ba4(gGxDmaChannel, p + (M2C_UNK)head, base2, n - head, 0, 0);
             } else {
                 func_02007e70(p + (M2C_UNK)head, base2, n - head);
             }
@@ -449,8 +453,8 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
         }
     }
 
-    if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, p, dst, n, 0, 0);
+    if (gGxDmaChannel != -1) {
+        func_02007ba4(gGxDmaChannel, p, dst, n, 0, 0);
     } else {
         func_02007e70(p, dst, n);
     }
@@ -459,10 +463,10 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
 void func_02004cf0(void) {
     M2C_UNK GX_SetBankForTex(s32);
     M2C_UNK DmaWaitChannel(s32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     extern M2C_UNK data_0212dbfc;
-    if (data_020f5204 != -1) {
-        DmaWaitChannel(data_020f5204);
+    if (gGxDmaChannel != -1) {
+        DmaWaitChannel(gGxDmaChannel);
     }
     GX_SetBankForTex(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x14));
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x1C) = 0;
@@ -482,11 +486,11 @@ void func_02004d3c(void) {
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     extern M2C_UNK data_0212dbfc;
     s32 v8 = M2C_FIELD(&data_0212dbfc, s32 *, 0x8);
-    if (data_020f5204 != -1) {
-        func_02007ba4(data_020f5204, arg0, v8 + (s32)arg1, arg2, 0, 0);
+    if (gGxDmaChannel != -1) {
+        func_02007ba4(gGxDmaChannel, arg0, v8 + (s32)arg1, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, v8 + (s32)arg1, (u32)arg2);
@@ -495,10 +499,10 @@ void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 void func_02004ddc(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     extern M2C_UNK data_0212dbfc;
-    if (data_020f5204 != -1) {
-        DmaWaitChannel(data_020f5204);
+    if (gGxDmaChannel != -1) {
+        DmaWaitChannel(gGxDmaChannel);
     }
     GX_SetBankForOBJExtPltt(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc));
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc) = 0;

@@ -155,4 +155,25 @@ void func_ov006_02213e98(void *arg0) {
  }
 }
 
-void func_ov006_0221440c(void *a){u64 func_020c5430(void);extern M2C_UNK data_ov006_02218e00;u64 v;void *p;GetBattleSlotSummary(M2C_FIELD(M2C_FIELD(a,void**,0x4c),s16*,8));v=func_020c5430();if(v)func_020c5498(&data_ov006_02218e00,(u32)v,(u32)(v>>32));else MI_CpuFill8(&data_ov006_02218e00,0,13);func_01ffa920(a,0);p=M2C_FIELD(a,void**,0x3c);Hide3DSprite(M2C_FIELD(p,s32*,0));Hide3DSprite(M2C_FIELD(p,s32*,4));Hide3DSprite(M2C_FIELD(p,s32*,8));Hide3DSprite(M2C_FIELD(p,s32*,12));Hide3DSprite(M2C_FIELD(p,s32*,16));Hide3DSprite(M2C_FIELD(p,s32*,20));func_ov006_02216c24(&data_ov006_02218e00,a);}
+/* Map-code screen entry: load the selected battle slot's map code into the
+ * shared code string (clearing it when the slot has none), detach the screen
+ * callback, hide the six slot-list sprites and build the code-entry panel. */
+void OpenMapCodeEntryScreen(void *screen) {
+ u64 GetBattleSlotMapCode(void);
+ extern char gMapCodeString[];
+ u64 code;
+ void *sprites;
+ GetBattleSlotSummary(M2C_FIELD(M2C_FIELD(screen, void **, 0x4c), s16 *, 8));
+ code = GetBattleSlotMapCode();
+ if (code) FormatMapCodeString(gMapCodeString, (u32)code, (u32)(code >> 32));
+ else MI_CpuFill8(gMapCodeString, 0, 13);
+ func_01ffa920(screen, 0);
+ sprites = M2C_FIELD(screen, void **, 0x3c);
+ Hide3DSprite(M2C_FIELD(sprites, s32 *, 0));
+ Hide3DSprite(M2C_FIELD(sprites, s32 *, 4));
+ Hide3DSprite(M2C_FIELD(sprites, s32 *, 8));
+ Hide3DSprite(M2C_FIELD(sprites, s32 *, 12));
+ Hide3DSprite(M2C_FIELD(sprites, s32 *, 16));
+ Hide3DSprite(M2C_FIELD(sprites, s32 *, 20));
+ CreateMapCodeEntryPanel(gMapCodeString, screen);
+}

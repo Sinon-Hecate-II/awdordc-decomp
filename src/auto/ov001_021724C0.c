@@ -12,7 +12,7 @@ void func_ov001_021724c0(void) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_CreateSpriteFromLayout(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetSpriteEntryFlags(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK CreatePooledTextPanel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK DrawPanelText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -79,7 +79,7 @@ void func_ov001_021724c0(void) {
         p = Ov001_CreateSprite(0, b, 1);
         ((void **)((u8 *)gOv001MenuState + 0xfc))[u] = p;
         p = ((void **)((u8 *)gOv001MenuState + 0xfc))[u];
-        func_ov001_0218a260(p, (M2C_UNK)-1, 0x200, 0);
+        Ov001_SetSpriteEntryFlags(p, (M2C_UNK)-1, 0x200, 0);
         Ov001_SetSpritePalette(p, (M2C_UNK)-1, 3);
     }
     sp18val = 0;
@@ -123,7 +123,7 @@ void func_ov001_021724c0(void) {
     }
     ret = Ov001_CreateSprite(0, 0x40, 1);
     M2C_FIELD(gOv001MenuState, void **, 0x114) = ret;
-    func_ov001_0218a260(ret, (M2C_UNK)-1, 0x200, 0);
+    Ov001_SetSpriteEntryFlags(ret, (M2C_UNK)-1, 0x200, 0);
     Ov001_SetSpritePalette(ret, (M2C_UNK)-1, 2);
     ret = (void *)Ov001_AddTask(0, (M2C_UNK)func_ov001_021728b0, 0, 0x78);
     M2C_FIELD(gOv001MenuState, void **, 0x118) = ret;

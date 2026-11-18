@@ -14,7 +14,7 @@ extern u8 *gAiCommandState, *gAiUnitTypeTuning;
 u8 *func_020a47e0(int, int);
 #pragma push
 #pragma opt_strength_reduction off
-int func_ov000_0218b0d8(void *arg0) {
+int SelectDirectAttackAction(void *arg0) {
  int bestX=-1,bestY=bestX,blocked=0,bestId=0,best=0,repairX=bestX,repairY=bestX,repairHP=255,flags=0,rx,ry;
  int y,x;
  s16 pos[2];

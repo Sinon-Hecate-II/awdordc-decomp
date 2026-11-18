@@ -15,8 +15,8 @@ void func_ov000_02169020(void *arg0) {
 }
 
 void func_ov000_0216903c(void *arg0) {
-    s32 func_0207b7c4();
-    if (func_0207b7c4() == 0) {
+    s32 IsMapViewScrolling();
+    if (IsMapViewScrolling() == 0) {
         M2C_FIELD(arg0, s8 *, 0x41) = 2;
     }
 }

@@ -221,11 +221,11 @@ SleepMilliseconds(1);timeout-=0x20b;
 }return ready;
 }
 
-void func_02021de8(void *p) {
+void TlsRestoreSessionById(void *p) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); 
 void MI_CpuCopy8(void *,void *,u32);s32 ByteCompareN(void *,void *,s32);
-extern M2C_UNK data_02138cc8;
-s32 i; s32 old;void *q;old=OS_DisableInterrupts();i=0;q=&data_02138cc8;
+extern M2C_UNK gTlsSessionCache;
+s32 i; s32 old;void *q;old=OS_DisableInterrupts();i=0;q=&gTlsSessionCache;
 M2C_FIELD(p,u8 *,0x30)=0;
 do{
 if(M2C_FIELD(q,u8 *,0x5a)&&!M2C_FIELD(q,u32 *,0x54)&&!M2C_FIELD(q,u16 *,0x58)&&!ByteCompareN(q,p+0x74,32)){
@@ -236,31 +236,34 @@ i++;q+=92;
 OS_RestoreInterrupts(old);
 }
 
-void TlsRestoreSession(void *p,s32 a,s32 b) {
+/* Look the peer (address, port) up in the four-entry TLS session-resumption
+ * cache with interrupts disabled: on a hit copy the entry's session id and
+ * master secret into the channel, restamp it and mark the channel resumable. */
+void TlsRestoreSession(void *channel,s32 address,s32 port) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); 
 void MI_CpuCopy8(void *,void *,u32);u64 GetSystemTick(void);
-extern M2C_UNK data_02138cc8;
-s32 old=OS_DisableInterrupts();s32 i=0;void *q=&data_02138cc8;
-M2C_FIELD(p,u8 *,0x30)=0;
+extern M2C_UNK gTlsSessionCache;
+s32 old=OS_DisableInterrupts();s32 i=0;void *entry=&gTlsSessionCache;
+M2C_FIELD(channel,u8 *,TLS_SESSION_CACHED)=0;
 do{
-if(M2C_FIELD(q,u8 *,0x5a)&&M2C_FIELD(q,s32 *,0x54)==a&&M2C_FIELD(q,u16 *,0x58)==b){
-MI_CpuCopy8(q,p+0x74,32);MI_CpuCopy8(q+32,p,48);
-M2C_FIELD(q,u32 *,0x50)=GetSystemTick()>>16;
-M2C_FIELD(p,u8 *,0x30)=1;break;
+if(M2C_FIELD(entry,u8 *,TLS_CACHE_VALID)&&M2C_FIELD(entry,s32 *,TLS_CACHE_ADDRESS)==address&&M2C_FIELD(entry,u16 *,TLS_CACHE_PORT)==port){
+MI_CpuCopy8(entry,channel+TLS_SESSION_ID,32);MI_CpuCopy8(entry+TLS_CACHE_SECRET,channel,48);
+M2C_FIELD(entry,u32 *,TLS_CACHE_TICK)=GetSystemTick()>>16;
+M2C_FIELD(channel,u8 *,TLS_SESSION_CACHED)=1;break;
 }
-i++;q+=92;
-}while(i<4);
+i++;entry+=TLS_CACHE_ENTRY_SIZE;
+}while(i<TLS_CACHE_ENTRIES);
 OS_RestoreInterrupts(old);
 }
 
 void TlsStoreSession(u8 *arg0, s32 arg1, u16 arg2) {
 u64 GetSystemTick(void); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void MI_CpuCopy8(void *,void *,u32);
-extern M2C_UNK data_02138cc8;
+extern M2C_UNK gTlsSessionCache;
 s32 state; u32 now; u8 *best; s32 i; u32 maxage; u8 *p; u32 age; u64 ticks; u8 valid;
 u16 port; s32 addr; u8 *buffer;
 state=OS_DisableInterrupts(); ticks=GetSystemTick();
 port=arg2; addr=arg1; buffer=arg0;
-best=(u8 *)&data_02138cc8; maxage=0; now=(u32)(ticks>>16);
+best=(u8 *)&gTlsSessionCache; maxage=0; now=(u32)(ticks>>16);
 for(i=0,p=best;i<4;i++,p+=0x5C){
 valid=p[0x5A];
 if(valid && addr && addr==M2C_FIELD(p,s32 *,0x54) && port && port==M2C_FIELD(p,u16 *,0x58)){best=p;break;}
@@ -277,8 +280,8 @@ OS_RestoreInterrupts(state);
 
 void TlsSessionCacheDiscard(void *p) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 ByteCompareN(void *,void *,s32);
-extern M2C_UNK data_02138cc8;
-s32 i; s32 old;void *q;old=OS_DisableInterrupts();q=&data_02138cc8;i=0;
+extern M2C_UNK gTlsSessionCache;
+s32 i; s32 old;void *q;old=OS_DisableInterrupts();q=&gTlsSessionCache;i=0;
 do{
 if(M2C_FIELD(q,u8 *,0x5a)&&!ByteCompareN(q,p+0x74,32)){M2C_FIELD(q,u8 *,0x5a)=0;break;}
 i++;q+=92;

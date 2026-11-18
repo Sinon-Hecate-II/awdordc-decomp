@@ -160,7 +160,7 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
     s32 UnlockMutex();
     s32 TryLockMutex();
     s32 func_02007580();
-    s32 func_0201fd60(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    s32 SocketRecvLocked(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     s32 SocketIsUnregistered();
     void *temp_r4;
     s32 var_r5;
@@ -205,26 +205,32 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
     } else {
         LockMutex(temp_r4 + 0xE0);
     }
-    var_r5 = func_0201fd60(arg0, arg1, arg2, arg3, arg4, var_r5, arg5);
+    var_r5 = SocketRecvLocked(arg0, arg1, arg2, arg3, arg4, var_r5, arg5);
     UnlockMutex(temp_r4 + 0xE0);
     return var_r5;
 }
 #pragma optimization_level reset
-s32 func_0201fd60(void *p,s32 b,s32 c,s32 d,s32 e,s32 f,s32 flags) {
+/* Receive up to len bytes from sock into buf with the socket's mutex already
+ * held, through the path its state selects: a receive-only socket takes the
+ * next queued record, while a duplex socket reads the connection's receive
+ * window and releases it once the read finished.  With the peek bit (2) set in
+ * flags the raw connection is told to keep the record for the duration of the
+ * call; wait is passed on as the receive flags (bit 0: wait for data). */
+s32 SocketRecvLocked(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 wait, s32 flags) {
  s32 SocketRecv(void *,s32,s32,s32,s32,s32);
- s32 func_0201fdfc(void *,s32,s32,s32,s32,s32);
- s32 func_02020188(void *);
- void *q=M2C_FIELD(p,void **,0x64);
- s32 enabled=(flags&2)!=0 && q!=0;
+ s32 SocketRecvData(void *,s32,s32,s32,s32,s32);
+ s32 SocketReleaseRecvWindow(void *);
+ void *raw=M2C_FIELD(sock,void **,SOCK_RAW);
+ s32 peek=(flags&2)!=0 && raw!=0;
  s8 old;s32 result;
- if(enabled){old=M2C_FIELD(q,s8 *,0xFE);M2C_FIELD(q,s8 *,0xFE)=1;}
- if(M2C_FIELD(p,s8 *,0x73)==1)result=SocketRecv(p,b,c,d,e,f);
- else{result=func_0201fdfc(p,b,c,d,e,f);if(result>=0)func_02020188(p);}
- if(enabled)M2C_FIELD(q,s8 *,0xFE)=old;
+ if(peek){old=M2C_FIELD(raw,s8 *,CONN_RECV_HOLD);M2C_FIELD(raw,s8 *,CONN_RECV_HOLD)=1;}
+ if(M2C_FIELD(sock,s8 *,SOCK_STATE)==SOCK_STATE_RECV_ONLY)result=SocketRecv(sock,buf,len,peerPort,peerAddr,wait);
+ else{result=SocketRecvData(sock,buf,len,peerPort,peerAddr,wait);if(result>=0)SocketReleaseRecvWindow(sock);}
+ if(peek)M2C_FIELD(raw,s8 *,CONN_RECV_HOLD)=old;
  return result;
 }
 
-s32 func_0201fdfc(void *p,s32 b,s32 c,s32 d,s32 e,s32 flags) {
+s32 SocketRecvData(void *p,s32 b,s32 c,s32 d,s32 e,s32 flags) {
  s32 func_0201ffec(void *,s32,s32,s32,s32);
  s32 func_0201fe70(void *,s32,s32,u16 *,s32 *);
  s32 result;
@@ -391,7 +397,7 @@ loop_1:
     return var_r4;
 }
 
-s32 func_02020188(void *arg0) {
+s32 SocketReleaseRecvWindow(void *arg0) {
 void func_020201d4(void *);
 void *q=M2C_FIELD(arg0,void **,0x64),*p;
 if(M2C_FIELD(q,s32 *,0xf8)<M2C_FIELD(q,u16 *,0xfc))return 0;

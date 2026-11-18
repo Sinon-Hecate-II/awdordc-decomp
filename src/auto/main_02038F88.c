@@ -38,7 +38,7 @@ s32 FindPlayerConnection(s32 arg0) {
     return 0;
 }
 
-u8 func_020390b4(void) {
+u8 GetConnectionPlayerId(void) {
     void *func_0205b094();
     return M2C_FIELD(func_0205b094(), u8 *, 1);
 }
@@ -198,7 +198,7 @@ if(v!=4)SetNetState(v);
 M2C_FIELD(gNetSession,void (**)(s32,s32,s32),0x78)(arg0,arg1,M2C_FIELD(gNetSession,s32 *,0x7c));
 }
 
-void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
+void DispatchMatchEvent(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
     extern void *gNetSession;
     s32 func_0203dcf4(void);
     void SetNetState(s32);

@@ -28,6 +28,7 @@
 #define SOUND_HANDLE_TIMER_PERIOD  0xC6  /* u16 hardware timer period */
 #define SOUND_HANDLE_FLAGS         0x110 /* u32 player flag bits */
 #define SOUND_HANDLE_REQUEST_COUNT 0x11C /* s32 segment requests queued for this player */
+#define SOUND_HANDLE_CHANNEL_REFS  0x120 /* s32 voice-channel acquisitions the player holds */
 #define SOUND_HANDLE_MAX_CHANNELS  0x124 /* u8 channel limit */
 #define SOUND_HANDLE_SAMPLE_DATA   0x12C /* s32 sample data handle */
 #define SOUND_HANDLE_CHANNEL_BYTES 0x130 /* s32 sample bytes per channel */
@@ -41,6 +42,20 @@
 #define SOUND_HANDLE_SAMPLES_LEFT  0x160 /* s32 samples left in the current segment */
 #define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): restart the voices for a sound */
 #define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
+#define SOUND_HANDLE_CLOSE_CB      0x170 /* void (*)(void *player): close the sound's data source */
+
+/* Test one bit of a SOUND_HANDLE_FLAGS word the way the game reads it (a signed
+ * shift pair); `bit` is the bit number, 0 being the lowest bit. */
+#define SOUND_HANDLE_FLAG_IS_SET(flags, bit) ((s32) ((flags) << (31 - (bit))) >> 31)
+
+/* Bits of SOUND_HANDLE_FLAGS. */
+#define SOUND_HANDLE_BIT_ACTIVE   0 /* the slot holds a sound and its voice is allocated */
+#define SOUND_HANDLE_BIT_PLAYING  1 /* the player is producing sound */
+#define SOUND_HANDLE_BIT_PENDING  2 /* the voice is waiting for its first segment */
+#define SOUND_HANDLE_BIT_STOPPING 3 /* a stop/fade-out is finishing */
+#define SOUND_HANDLE_BIT_STREAMED 4 /* the sound is streamed (SOUND_HANDLE_TYPE 2) */
+#define SOUND_HANDLE_BIT_ENDED    5 /* the sound reached its last segment */
+#define SOUND_HANDLE_BIT_MONO     6 /* the sound plays mono (one channel) */
 
 /* The streamed-sound state (gStreamSoundState); its streamed voice object
  * (gStreamVoice) starts at +0x48. */
@@ -160,6 +175,15 @@ typedef struct PackedBankEntry {
 #define SOUND_CHANNEL_VOLUME      0x20 /* u8 volume, 0..SOUND_VOLUME_MAX */
 #define SOUND_CHANNEL_COUNT       32
 
+/* One of the 32 records of the loaded sound archive's channel table: how many
+ * heaps are preallocated for a channel, the volume written to it and the size
+ * of each of those heaps. */
+typedef struct SoundChannelRecord {
+    u8  count;    /* +0x00 heaps preallocated for the channel */
+    u16 volume;   /* +0x02 channel volume */
+    s32 heapSize; /* +0x04 bytes of each heap */
+} SoundChannelRecord;
+
 #define SOUND_VOLUME_MAX 0x7F /* full volume, in the 0..0x7F range */
 
 /* Per-hardware-channel state (gSoundChannelSampleState), two s32 words per channel,
@@ -175,6 +199,8 @@ typedef struct PackedBankEntry {
  * running, the heap that player lives in, and the sound ids already started this
  * frame (a sound effect plays at most once per frame). */
 #define SOUND_STATE_ENABLED      0x00 /* u8 nonzero once the sound system is up */
+#define SOUND_HEAP_BYTES         0xD0000 /* bytes the driver takes from the game heap for its own sound heap */
+#define SOUND_WORKER_PRIORITY    10  /* TaskCreate priority of the sound worker task */
 #define SOUND_STATE_READY        0x04 /* u8 nonzero once the sound player can be addressed */
 #define SOUND_STATE_PLAYER       0x10 /* void *SDK sound player */
 #define SOUND_STATE_HEAP         0x14 /* s32 sound heap block */
@@ -212,5 +238,7 @@ typedef struct PackedBankEntry {
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
 #define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */
 #define SOUND_MENU_CANCEL  0x1000F /* the choice was cancelled */
+#define SOUND_MENU_SELECT  0x10019 /* the highlighted list entry changed or was chosen */
+#define SOUND_MENU_TAB     0x10020 /* the active tab changed */
 
 #endif

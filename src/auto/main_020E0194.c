@@ -1,7 +1,7 @@
 /* 48 functions from 0x020E0194 to 0x020E0F14 (main), found by ds-decomp. */
 #include "common.h"
 M2C_UNK func_020e0e8c();
-M2C_UNK func_020e0194();
+M2C_UNK CloseLinkMenu();
 M2C_UNK CloseOnlineMenu();
 typedef struct { unsigned char value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
@@ -43,24 +43,30 @@ M2C_UNK func_ov009_02225348();
 M2C_UNK Hide3DSpriteSlide();
 s32 Is3DSpriteVisible();
 s16 GetSpriteAnimValue();
-M2C_UNK func_020e0194(void *arg0) { void *p;
- s16 v;
-void *q;
-u16 value;
- func_ov009_02225348();
- p=M2C_FIELD(arg0,void**,0x54);
- if(func_020e_check(p))Hide3DSpriteSlide(p);
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x58));
- if(Is3DSpriteVisible(M2C_FIELD(arg0,void**,0x60)))Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x60));
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x64));
- v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
- q=M2C_FIELD(arg0,void**,0x68);
- M2C_FIELD(q,s16*,0xe)=v;
- M2C_FIELD(q,s16*,0x10)=-255;
- M2C_FIELD(q,s16*,0xc)=12;
- value=M2C_FIELD(q,u16*,4);
-M2C_FIELD(q,u16*,2)=value;
- return value;
+/* Close a link-lobby menu: create the link overlay's companion object, hide the
+ * menu's button and child sprites and start the panel's slide-out tween (from the
+ * current animation value down to -255 over 12 frames).  Returns the tween's
+ * start value. */
+M2C_UNK CloseLinkMenu(void *menu) {
+    void *button;
+    s16 value;
+    SpriteTween *slide;
+    u16 start;
+
+    func_ov009_02225348();
+    button = M2C_FIELD(menu, void **, 0x54);
+    if (func_020e_check(button)) Hide3DSpriteSlide(button);
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
+    if (Is3DSpriteVisible(M2C_FIELD(menu, void **, 0x60))) Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x60));
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x64));
+    value = GetSpriteAnimValue(M2C_FIELD(menu, void **, 0x68));
+    slide = M2C_FIELD(menu, void **, 0x68);
+    slide->from = value;
+    slide->to = -255;
+    slide->duration = 12;
+    start = slide->start;
+    slide->current = start;
+    return start;
 }
 
 M2C_UNK func_020e0230(void *arg0) { void *p;
@@ -106,12 +112,12 @@ void func_020e0350(void) {
 }
 
 void func_020e035c(void) {
-    M2C_UNK func_020e0194();
-    ((M2C_UNK (*)())func_020e0194)();
+    M2C_UNK CloseLinkMenu();
+    ((M2C_UNK (*)())CloseLinkMenu)();
 }
 
 void func_020e0368(void) {
-    ((M2C_UNK (*)())func_020e0194)();
+    ((M2C_UNK (*)())CloseLinkMenu)();
 }
 
 s32 IsMapConfirmEnabled();

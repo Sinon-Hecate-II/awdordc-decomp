@@ -93,16 +93,16 @@ int func_ov001_0216c9a0(int a,int b,int c,signed char *d,void *e,void *f,int g) 
 
 #pragma thumb on
 int func_ov001_0216ca1c(int a,int b,int c,unsigned int d,void *e,void *f,int g) {
- int func_ov001_0216ad54(int); void func_ov001_0216ad64(int); void func_ov001_0216b918(int);
+ int func_ov001_0216ad54(int); void func_ov001_0216ad64(int); void Ov001_SetRoomError(int);
  void func_ov001_0216caa4(); void func_ov001_0216cb08(); int func_ov001_0216cb74(int,int); void Ov001MemCopy();
  int packet[4]; int h=func_ov001_0216ad54(c); packet[2]=h;
- if(!h) {func_ov001_0216b918(2); return -1;}
+ if(!h) {Ov001_SetRoomError(2); return -1;}
  Ov001MemCopy(&data_ov001_02192568,e,2);
  Ov001MemCopy(data_ov001_0219256a,f,g);
  func_ov001_0216caa4(packet,&data_ov001_02192568,g+2,c);
  func_ov001_0216cb08(packet,b,a,c);
  if((int *)func_ov001_0216cb74(b,c)!=(int *)d) {
- func_ov001_0216b918(0x12); func_ov001_0216ad64(packet[2]); return -1;
+ Ov001_SetRoomError(0x12); func_ov001_0216ad64(packet[2]); return -1;
  }
  func_ov001_0216ad64(packet[2]); return 0;
 }

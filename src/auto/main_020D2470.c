@@ -164,26 +164,39 @@ if(gUnitKindCargoCount[arg0*0x70]!=0) return 1;
 return 0;
 }
 
-void func_020d28bc(void) {
- extern s32 *gCurrentMap; s32 IsPlayerActive(s32);
- s32 j, joff, ioff, i; unsigned char *self, *other, *base;
- i=1;ioff=0x8c;
- do {
- if(IsPlayerActive(i)) {
- j=1;joff=0x8c;
- do {
- if(j!=i) {
- base=(unsigned char *)*gCurrentMap;other=base+joff;
- if(other[0x67c2]) {
- self=base+ioff;
- if(other[0x67ca]==self[0x67ca])*(u16 *)(other+0x67be)=0;
- }
- }
- j++;joff+=0x8c;
- }while(j<5);
- }
- i++;ioff+=0x8c;
- }while(i<5);
+/* After a player is defeated, give every other player of an army that still has
+ * an active player back their turn: clear the defeat turn of any player sharing
+ * an active player's army. */
+void RestorePlayersOfActiveArmies(void) {
+    extern s32 *gCurrentMap;
+    s32 IsPlayerActive(s32);
+    s32 j, joff, ioff, i;
+    u8 *self, *other, *base;
+
+    i = 1;
+    ioff = MAP_PLAYER_STRIDE;
+    do {
+        if (IsPlayerActive(i)) {
+            j = 1;
+            joff = MAP_PLAYER_STRIDE;
+            do {
+                if (j != i) {
+                    base = (u8 *)*gCurrentMap;
+                    other = base + joff;
+                    if (other[MAP_PLAYER_STATES + PLAYER_REC_CTRL]) {
+                        self = base + ioff;
+                        if (other[MAP_PLAYER_STATES + PLAYER_REC_ARMY] == self[MAP_PLAYER_STATES + PLAYER_REC_ARMY]) {
+                            *(u16 *)(other + MAP_PLAYER_STATES + PLAYER_REC_DEFEAT_TURN) = 0;
+                        }
+                    }
+                }
+                j++;
+                joff += MAP_PLAYER_STRIDE;
+            } while (j < MAX_PLAYERS);
+        }
+        i++;
+        ioff += MAP_PLAYER_STRIDE;
+    } while (i < MAX_PLAYERS);
 }
 
 void func_020d2958(void) {

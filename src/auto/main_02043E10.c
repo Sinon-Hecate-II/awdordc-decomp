@@ -326,9 +326,9 @@ s32 func_020446e8(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return
 
 void func_02044708(s32 a){extern s32 gTransferManager;void MI_CpuFill8(s32,s32,s32);gTransferManager=a;MI_CpuFill8(a,0,0x614);M2C_FIELD(gTransferManager,u16 *,0x610)=0x5b9;}
 
-void func_02044744(s32 a,s32 b,s32 c,s32 d){extern s32 gTransferManager;void func_02044a68(s32,s32,s32);void func_02044b5c(s32,s32,s32);if(!gTransferManager)return;if(!b||!c)return;if(d)func_02044a68(a,b,c);else func_02044b5c(a,b,c);}
+void func_02044744(s32 a,s32 b,s32 c,s32 d){extern s32 gTransferManager;void func_02044a68(s32,s32,s32);void TransferReceiveBuffer(s32,s32,s32);if(!gTransferManager)return;if(!b||!c)return;if(d)func_02044a68(a,b,c);else TransferReceiveBuffer(a,b,c);}
 
-void func_02044780(s32 a,s32 b){extern s32 gTransferManager;s32 func_020390b4(s32);s32 c;if(!M2C_FIELD(gTransferManager,s32 *,0x60c))return;c=func_020390b4(a);M2C_FIELD(gTransferManager,void (**)(s32,s32),0x60c)(b,c);}
+void func_02044780(s32 a,s32 b){extern s32 gTransferManager;s32 GetConnectionPlayerId(s32);s32 c;if(!M2C_FIELD(gTransferManager,s32 *,0x60c))return;c=GetConnectionPlayerId(a);M2C_FIELD(gTransferManager,void (**)(s32,s32),0x60c)(b,c);}
 
 /* Per-frame poll of the transfer slots: time out idle connections and send the
  * next chunk of each outgoing buffer whose destination has room. */
@@ -390,7 +390,7 @@ void SendConnectionData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) 
 /* Handle an inbound transfer request for slot `a`: dispatch by the slot's state. */
 void func_02044a68(s32 a, s32 b, s32 c) {
     extern s32 gTransferManager;
-    s32 func_020390b4(s32);
+    s32 GetConnectionPlayerId(s32);
     s32 GetTransferState(s32);
     u16 func_020446ac(void *);
     void func_02044da4(M2C_UNK, M2C_UNK);
@@ -398,7 +398,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
     void TransferReceiveData(s32, void *, s32);
     void SetNetError(s32, s32);
 
-    s32 id = func_020390b4(a);
+    s32 id = GetConnectionPlayerId(a);
     u32 kind;
 
     switch (GetTransferState(id)) {
@@ -428,7 +428,22 @@ void func_02044a68(s32 a, s32 b, s32 c) {
     }
 }
 
-void func_02044b5c(s32 a,s32 b,s32 c){extern s32 gTransferManager;s32 func_020390b4(s32);void MI_CpuCopy8(void *,void *,s32);u64 GetSystemTick(void);s32 i;void *p;void *q;void (*cb)(s32,void *,s32);i=func_020390b4(a);p=(void *)(gTransferManager+i*0x30);q=M2C_FIELD(p,void **,4);if(!q)return;if(M2C_FIELD(p,s32 *,8)<c)return;MI_CpuCopy8((void *)b,q,c);cb=M2C_FIELD(gTransferManager,void (**)(s32,void *,s32),0x604);if(cb)cb(i,M2C_FIELD(p,void **,4),c);if(!M2C_FIELD(gTransferManager,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;M2C_FIELD(p,u64 *,0x24)=GetSystemTick();}
+/* Deliver one whole inbound transfer buffer for the connection's slot: copy size
+ * bytes into the slot's inbound buffer, report the completed buffer through the
+ * manager's onReceived, and restart the slot's idle timer when it has one. */
+void TransferReceiveBuffer(s32 channel,s32 data,s32 size){
+extern s32 gTransferManager;s32 GetConnectionPlayerId(s32);void MI_CpuCopy8(void *,void *,s32);u64 GetSystemTick(void);
+TransferSlot *slot;s32 slotId;void (*callback)(s32,void *,s32);
+slotId=GetConnectionPlayerId(channel);
+slot=(TransferSlot *)(gTransferManager+slotId*0x30);
+if(!slot->inData)return;
+if(slot->inSize<size)return;
+MI_CpuCopy8((void *)data,slot->inData,size);
+callback=((TransferManager *)gTransferManager)->onReceived;
+if(callback)callback(slotId,slot->inData,size);
+if(!((TransferManager *)gTransferManager)->onTimeout||!slot->timeoutMs)return;
+slot->lastTick=GetSystemTick();
+}
 
 void func_02044bf8(s32 a,s32 b,s32 c) {
 extern s32 gTransferManager;

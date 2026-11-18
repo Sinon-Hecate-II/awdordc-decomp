@@ -1,5 +1,6 @@
 /* 37 functions from 0x02183A20 to 0x02184960 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 #pragma optimization_level 2
 void func_ov001_02183a20(void) {
@@ -350,24 +351,27 @@ s32 func_ov001_021840a0(void) {
     return 0;
 }
 
-s32 func_ov001_021840d4(void) {
+/* End the friend-roster link: mark the roster as closing, read its reply block
+ * (and, while the request is still in flight, queue the cancel and wait for the
+ * reply to arrive), then end the WFC link. */
+s32 Ov001_CloseFriendRoster(void) {
     s32 func_02011af8(void *);
     s32 func_02012274(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
     void func_ov001_021841cc();
     extern s32 gWfcFriendRoster;
 
-    *(u8 *)((s8 *)gWfcFriendRoster + 0x1e5c) = 1;
-    func_02011af8((void *)((s8 *)gWfcFriendRoster + 0x168c));
-    if (*(u16 *)((s8 *)gWfcFriendRoster + 0x168c) != 2) {
-        if (func_02012274(func_ov001_021841cc) != 2) {
+    *(u8 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_CLOSING) = 1;
+    func_02011af8((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
+    if (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE) {
+        if (func_02012274(func_ov001_021841cc) != WFC_CMD_OK) {
             return 0;
         }
         do {
-            func_02011af8((void *)((s8 *)gWfcFriendRoster + 0x168c));
-        } while (*(u16 *)((s8 *)gWfcFriendRoster + 0x168c) != 2);
+            func_02011af8((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
+        } while (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE);
     }
-    if (WFC_EndLink(func_ov001_021841cc) != 2) {
+    if (WFC_EndLink(func_ov001_021841cc) != WFC_CMD_OK) {
         return 0;
     }
     return 1;

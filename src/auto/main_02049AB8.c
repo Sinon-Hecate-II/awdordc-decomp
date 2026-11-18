@@ -286,7 +286,7 @@ if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c))return;
 M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c)(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,0x10),a,b,M2C_FIELD(p,s32 *,0x100),M2C_FIELD(p,s32 *,0x104),M2C_FIELD(p,s32 *,0x44));
 }
 
-void func_0204a594(void *arg0) {
+void ghiCallPostCallback(void *arg0) {
     s32 Vector_GetCount(s32);
     extern M2C_UNK data_020fcfa4;
     extern M2C_UNK data_020fcfec;
@@ -404,12 +404,12 @@ out=0;dst[got]=0;*len=r;if(r<=0)out=1;return out;
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
 s32 ghiSocketSend(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_02049810(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 ghiSend(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 ghiGetLastSocketError(s32);
     s32 temp_r0;
     s32 temp_r0_2;
 
-    temp_r0 = func_02049810(M2C_FIELD(arg0, s32 *, 0x48), arg1, arg2, 0);
+    temp_r0 = ghiSend(M2C_FIELD(arg0, s32 *, 0x48), arg1, arg2, 0);
     if (temp_r0 == -1) {
         temp_r0_2 = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
         if ((temp_r0_2 != -6) && (temp_r0_2 != -0x1A) && (temp_r0_2 != -0x4C)) {

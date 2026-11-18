@@ -5,7 +5,7 @@ extern void **gCurrentMap;
 extern u8 data_ov000_021dfb04[],data_ov000_021dfa60[],gUnitKindStats[];
 extern u16 gPlayerUnitIdBase[];
 s32 GetUnitAttackClass(u32);
-s32 func_020a85c8(u32);
+s32 IsMobileIndirectUnitKind(u32);
 s32 GetUnitDamagePercent(u32,s32);
 s32 GetUnitMaxAttackRange();
 static inline s32 UnitIndex83874(u8 *p) { if(p==0)return 0;return (s32)(p-((u8 *)*gCurrentMap+0x59a4))/14; }
@@ -24,7 +24,7 @@ if(!((u32)(p[0]<<26)>>26))continue;
 if(!(M2C_FIELD(p,u16 *,4)&1))continue;
 if(M2C_FIELD(p,u16 *,4)&8)continue;
 if(GetUnitAttackClass((u32)(p[0]<<26)>>26)!=1)continue;
-if(func_020a85c8((u32)(p[0]<<26)>>26))continue;
+if(IsMobileIndirectUnitKind((u32)(p[0]<<26)>>26))continue;
 if(((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<80)continue;
 if(GetUnitDamagePercent((u32)(p[0]<<26)>>26,7)){
 if(p[1]-GetUnitMaxAttackRange(UnitOwner83874(p)-1,(u32)(p[0]<<26)>>26)-1<0)left=0;else left=p[1]-GetUnitMaxAttackRange(UnitOwner83874(p)-1,(u32)(p[0]<<26)>>26)-1;

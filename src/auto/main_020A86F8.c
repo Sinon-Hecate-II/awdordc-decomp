@@ -45,7 +45,7 @@ void func_020a8804(u8 *arg0) {
     func_020a87b0((u32) (*arg0 << 0x18) >> 0x1E);
 }
 
-s32 func_020a881c(s32 arg0) {
+s32 GetPlayerAttackPropertyBonus(s32 arg0) {
     extern s32 *gCurrentMap;
     return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67B8) * 5;
 }

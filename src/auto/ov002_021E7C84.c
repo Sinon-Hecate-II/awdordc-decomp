@@ -402,7 +402,7 @@ SetBattleUnitAnimation(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,IsUnitSubmerg
 SetBattleUnitAnimation(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,IsUnitSubmerged(b));
 }
 
-void func_ov002_021e85b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void SetupBattleAnimation(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     void func_ov002_021e8470(u8 *, u8 *, u8 *, s32, s32);
     extern M2C_UNK gPlayerSettings;
     func_ov002_021e8470(&gPlayerSettings, arg0, arg1, arg2, arg3);

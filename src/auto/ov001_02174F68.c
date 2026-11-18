@@ -14,8 +14,8 @@ typedef struct { s32 x; u32 y; } Position;
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 void func_ov001_02174f68(s32 arg0, s32 arg1) {
- void func_ov001_0218b200(s32,u16,s32,s32,s32);
- void func_ov001_0218a260(s32,s32,s32,s32);
+ void Ov001_DrawTextPanelToSprite(s32,u16,s32,s32,s32);
+ void Ov001_SetSpriteEntryFlags(s32,s32,s32,s32);
  s32 Ov001_MoveSpriteLayout(s32,s32,u16,u16);
  volatile u8 a[5]={gKeypadLayout[21],gKeypadLayout[22],gKeypadLayout[23],gKeypadLayout[24],gKeypadLayout[25]};
  volatile u8 b[5]={gKeypadLayout[26],gKeypadLayout[27],gKeypadLayout[28],gKeypadLayout[29],gKeypadLayout[30]};
@@ -29,7 +29,7 @@ void func_ov001_02174f68(s32 arg0, s32 arg1) {
  *(u32 *)p=(*(u32 *)p&0xfe00ff00)|(arg1&255)|((y&511)<<16);
  j++;
  }
- if(arg0<4) func_ov001_0218b200(M2C_FIELD((u8 *)gOv001Keypad+arg0*4,s32 *,0),gKeypadDigitRects[arg0*6],arg1,M2C_FIELD((u8 *)gOv001Keypad+arg0*4,s32 *,0x48),2);
+ if(arg0<4) Ov001_DrawTextPanelToSprite(M2C_FIELD((u8 *)gOv001Keypad+arg0*4,s32 *,0),gKeypadDigitRects[arg0*6],arg1,M2C_FIELD((u8 *)gOv001Keypad+arg0*4,s32 *,0x48),2);
  for(i=0;i<b[arg0];i++){
  p=M2C_FIELD((u8 *)gOv001Keypad+i*4,void **,0x38);
  y=gKeypadAuxRects[i*2];
@@ -38,7 +38,7 @@ void func_ov001_02174f68(s32 arg0, s32 arg1) {
  *(u32 *)p=(*(u32 *)p&0xfe00ff00)|(arg1&255)|((y&511)<<16);
  }
  for(i=0;i<c[arg0];i++){
- func_ov001_0218a260(M2C_FIELD((u8 *)gOv001Keypad+i*4,s32 *,0x40),-1,0,0);
+ Ov001_SetSpriteEntryFlags(M2C_FIELD((u8 *)gOv001Keypad+i*4,s32 *,0x40),-1,0,0);
  Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)gOv001Keypad+i*4,s32 *,0x40),-1,gKeypadActionRects[i*2],arg1);
  }
 }

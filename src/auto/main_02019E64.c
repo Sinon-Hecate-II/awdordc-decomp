@@ -275,7 +275,7 @@ void func_0201a4f8(s32 arg0) {
     M2C_FIELD(&gNetStack, s32 *, 0x3C) = arg0;
 }
 
-void func_0201a508(void){void *func_0201a4a8(void);void func_02005d60(void *);void func_02005ccc(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,data_021374f8,gNetStack;func_0201a4a8();func_02005d60(&data_02137438);func_02005ccc(&data_021374f8);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
+void func_0201a508(void){void *func_0201a4a8(void);void OS_JoinThread(void *);void func_02005ccc(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,data_021374f8,gNetStack;func_0201a4a8();OS_JoinThread(&data_02137438);func_02005ccc(&data_021374f8);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
 
 void func_0201a550(s32 arg0) {
     M2C_UNK SetThreadPriority(M2C_UNK *, s32);

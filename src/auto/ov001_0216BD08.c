@@ -19,16 +19,16 @@ extern unsigned char data_ov001_0219256a[118];
  * unpack the room records and move on to state 2 once a requested group arrived. */
 int Ov001_HandleRoomData(int state,unsigned char *packet,int *failures,unsigned char *session) {
  int func_ov001_0216c098(); int Ov001SwapEndian16(unsigned short); int func_ov001_0216cec8(int);
- void func_ov001_0216b918(int); void Ov001MemClear(); int func_ov001_0216c400();
+ void Ov001_SetRoomError(int); void Ov001MemClear(); int func_ov001_0216c400();
  unsigned char *header,*chunk;
  if(state!=1) {++*failures;return state;}
  header=packet+OV001_PKT_PREFIX;chunk=packet+OV001_PKT_PREFIX+OV001_PKT_HEADER;
  if(func_ov001_0216c098(session+8,header+OV001_PKT_TOKEN)<0) {++*failures;return state;}
  if(Ov001SwapEndian16(*(unsigned short *)(chunk+OV001_CHUNK_LENGTH))==0) {++*failures;return state;}
  if(*chunk==OV001_CHUNK_ERROR) {
- if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-2) func_ov001_0216b918(20);
- else if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-3) func_ov001_0216b918(21);
- else func_ov001_0216b918(24);
+ if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-2) Ov001_SetRoomError(20);
+ else if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-3) Ov001_SetRoomError(21);
+ else Ov001_SetRoomError(24);
  return -1;
  }
  Ov001MemClear(gOv001RoomPlayerData,0,OV001_ROOM_PLAYER_DATA_SIZE);
@@ -38,18 +38,23 @@ int Ov001_HandleRoomData(int state,unsigned char *packet,int *failures,unsigned 
 }
 
 #pragma thumb on
-int func_ov001_0216bebc(int a,unsigned char *p,int *n,unsigned char *q) {
- int func_ov001_0216c098(); int Ov001SwapEndian16(unsigned short); int func_ov001_0216cec8(int); void func_ov001_0216b918(int);
- unsigned char *r,*t;
- if(a!=2) {++*n;return a;}
- r=p+12;t=p+36;
- if(func_ov001_0216c098(q+16,(int)r+16)<0) {++*n;return a;}
- if(*t!=7) {++*n;return a;}
- if(Ov001SwapEndian16(*(unsigned short *)(t+2))==0) {++*n;return a;}
- if(func_ov001_0216cec8(*(int *)(t+4))==0) return 100;
- if(func_ov001_0216cec8(*(int *)(t+4))==-2) {func_ov001_0216b918(20);return -1;}
- if(func_ov001_0216cec8(*(int *)(t+4))==-3) {func_ov001_0216b918(21);return -1;}
- func_ov001_0216b918(24);return -1;
+/* State-2 handler of the room protocol: a room-request result must answer this
+ * player's request, carry the error chunk kind and a non-zero chunk length; the
+ * status then decides the outcome: 0 means the request succeeded (100), -2 and -3
+ * map to the room error codes 20 and 21 and any other status to 24, each failing
+ * with -1. */
+int Ov001_HandleRoomResult(int state,unsigned char *packet,int *failures,unsigned char *session) {
+ int func_ov001_0216c098(); int Ov001SwapEndian16(unsigned short); int func_ov001_0216cec8(int); void Ov001_SetRoomError(int);
+ unsigned char *header,*chunk;
+ if(state!=2) {++*failures;return state;}
+ header=packet+OV001_PKT_PREFIX;chunk=packet+OV001_PKT_PREFIX+OV001_PKT_HEADER;
+ if(func_ov001_0216c098(session+16,(int)header+OV001_PKT_TOKEN)<0) {++*failures;return state;}
+ if(*(unsigned char *)(chunk+OV001_CHUNK_KIND)!=OV001_CHUNK_ERROR) {++*failures;return state;}
+ if(Ov001SwapEndian16(*(unsigned short *)(chunk+OV001_CHUNK_LENGTH))==0) {++*failures;return state;}
+ if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==0) return 100;
+ if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-2) {Ov001_SetRoomError(20);return -1;}
+ if(func_ov001_0216cec8(*(int *)(chunk+OV001_CHUNK_STATUS))==-3) {Ov001_SetRoomError(21);return -1;}
+ Ov001_SetRoomError(24);return -1;
 }
 
 s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {

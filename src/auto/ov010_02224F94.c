@@ -554,11 +554,11 @@ s32 out[4];func_ov010_02224f74(out);return out[0];
 void func_ov010_02225db8(void) {
 extern s32 gStreamSoundPlayer;
 extern s32 gStreamVoiceState;
-void func_0202b544(void *);
+void Sound_StopVoices(void *);
 void FreeBuffer(s32,s32);
 void func_0200e868(s32);
 Sound_StopIfPlaying(&gStreamSoundPlayer);
-func_0202b544(&gStreamSoundPlayer);
+Sound_StopVoices(&gStreamSoundPlayer);
 FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,12),M2C_FIELD(&gStreamVoiceState,s32 *,24));
 M2C_FIELD(&gStreamVoiceState,s32 *,12)=0;
 FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,28),M2C_FIELD(&gStreamVoiceState,s32 *,20));

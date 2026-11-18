@@ -39,7 +39,7 @@ M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,6)=(M2C_FIELD(*(void**)gCur3DSpriteEn
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,8)=(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,8)&~3)|1;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,10)=(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,10)&~3)|2;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,12)=(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,12)&~3)|3;
-{u16 *volatile q15; q15=(u16*)((u8*)*(void**)gCur3DSpriteEngine+18);*q15=*q15&~192;}M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,81)=0;M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,82)=0;M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,83)=0;func_02099450(1,0,0);SetArmyInfoFileDirectory();OpenNarcArchive(GetLocalizedFileName(&data_ov000_021b8958));LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b896c),M2C_FIELD(g3DSpriteEngineSub,void**,20));CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov000_021b897c,0,32);M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=1;M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;LoadDecompressedFileTo(&data_ov000_021b898c,(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+0x3480);LoadFileToSpriteBuffer(&data_ov000_021b89a0,0x2e0,32);func_020e3004();func_020e304c();LoadFileToSpriteBuffer(&data_ov000_021b8948,0x2c0,32);SetArmyInfoFileDirectory();LoadScenePanelPalette(1);LoadScenePanelPalette(18);ArmyInfo_DrawFaceSub();M2C_FIELD(gArmyInfoState,u8*,17)=1;func_ov000_0216d130();func_ov000_0216d1c8();func_ov000_0216d23c();CreateSubWallpaperSprite(3,15,3);gCur3DSpriteEngine=old;func_020b1b3c();SetArmyInfoFileDirectory();func_ov000_0216e054();func_ov000_0216dd0c();M2C_FIELD(gArmyInfoState,u16*,20)=0;
+{u16 *volatile q15; q15=(u16*)((u8*)*(void**)gCur3DSpriteEngine+18);*q15=*q15&~192;}M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,81)=0;M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,82)=0;M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,83)=0;func_02099450(1,0,0);SetArmyInfoFileDirectory();OpenNarcArchive(GetLocalizedFileName(&data_ov000_021b8958));LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b896c),M2C_FIELD(g3DSpriteEngineSub,void**,20));CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov000_021b897c,0,32);M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=1;M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;LoadDecompressedFileTo(&data_ov000_021b898c,(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+0x3480);LoadFileToSpriteBuffer(&data_ov000_021b89a0,0x2e0,32);SetShogunInfoFileDirectory();func_020e304c();LoadFileToSpriteBuffer(&data_ov000_021b8948,0x2c0,32);SetArmyInfoFileDirectory();LoadScenePanelPalette(1);LoadScenePanelPalette(18);ArmyInfo_DrawFaceSub();M2C_FIELD(gArmyInfoState,u8*,17)=1;ArmyInfo_RefreshNameGraphic();func_ov000_0216d1c8();func_ov000_0216d23c();CreateSubWallpaperSprite(3,15,3);gCur3DSpriteEngine=old;func_020b1b3c();SetArmyInfoFileDirectory();func_ov000_0216e054();func_ov000_0216dd0c();M2C_FIELD(gArmyInfoState,u16*,20)=0;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_instruction_scheduling reset
@@ -91,11 +91,11 @@ void func_ov000_0216eb7c(void) {
 void func_ov000_0216ebac(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020b21e0();
+    M2C_UNK LockInactiveSpriteSlots();
     M2C_UNK func_020b2268();
     extern M2C_UNK data_ov000_021b87b8;
     PlaySoundEffect(0x10018);
-    func_020b21e0();
+    LockInactiveSpriteSlots();
     func_020b2268();
     CreateSpriteFromClass(&data_ov000_021b87b8, 7);
 }

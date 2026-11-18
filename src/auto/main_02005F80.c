@@ -92,7 +92,7 @@ void func_02006120(void)
 
 }
 
-s32 func_02006130(void) {
+s32 OS_DisableScheduler(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gThreadManager;
@@ -111,7 +111,7 @@ s32 func_02006130(void) {
     return r;
 }
 
-s32 func_02006164(void) {
+s32 OS_EnableScheduler(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gThreadManager;
@@ -241,7 +241,10 @@ s32 OS_ReceiveMessage(OSMessageQueue *queue, s32 *msg, s32 flags) {
     return 1;
 }
 
-s32 OS_JamMessage(void *arg0, s32 arg1, s32 arg2) {
+/* Put a message at the front of a message queue: wait for a free slot when the
+ * flags allow blocking, step firstIndex one place back (wrapping), store the
+ * message there, and wake a thread waiting on the receive queue. */
+s32 OS_JamMessage(void *queue, s32 message, s32 flags) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -250,16 +253,19 @@ s32 OS_JamMessage(void *arg0, s32 arg1, s32 arg2) {
     s32 state;
 
     state = OS_DisableInterrupts();
-    while (M2C_FIELD(arg0, s32 *, 0x14) <= M2C_FIELD(arg0, s32 *, 0x1C)) {
-        if (!(arg2 & 1)) {
+    while (M2C_FIELD(queue, s32 *, 0x14) <= M2C_FIELD(queue, s32 *, 0x1C)) {
+        if (!(flags & OS_MESSAGE_BLOCK)) {
             OS_RestoreInterrupts(state);
             return 0;
         }
-        OS_SleepThread(arg0);
+        OS_SleepThread(queue);
     }
-    ((s32 *)M2C_FIELD(arg0, void **, 0x10))[M2C_FIELD(arg0,s32 *,0x18) = (s32)(func_020720f0(M2C_FIELD(arg0,s32 *,0x18)+M2C_FIELD(arg0,s32 *,0x14)-1,M2C_FIELD(arg0,s32 *,0x14))>>32)] = arg1;
-    M2C_FIELD(arg0, s32 *, 0x1C) = M2C_FIELD(arg0, s32 *, 0x1C) + 1;
-    OS_WakeupThread((u8 *)arg0 + 8);
+    ((s32 *)M2C_FIELD(queue, void **, 0x10))[
+        M2C_FIELD(queue, s32 *, 0x18) =
+            (s32)(func_020720f0(M2C_FIELD(queue, s32 *, 0x18) + M2C_FIELD(queue, s32 *, 0x14) - 1, M2C_FIELD(queue, s32 *, 0x14)) >> 32)
+    ] = message;
+    M2C_FIELD(queue, s32 *, 0x1C) = M2C_FIELD(queue, s32 *, 0x1C) + 1;
+    OS_WakeupThread((u8 *)queue + 8);
     OS_RestoreInterrupts(state);
     return 1;
 }

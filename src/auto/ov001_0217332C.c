@@ -74,9 +74,9 @@ if(KeyPressed(KEY_Y))Ov001_ToggleKeyboardSymbols();
 void func_ov001_0217355c(u8 arg0,s32 arg1,s32 arg2,u32 arg3){
 extern u8 data_ov001_0218f328[];
 extern u16 gKeyboardAuxKeyPos[],gKeyboardActionKeyPos[];
-void func_ov001_0218b200(s32,u16,s32,s32,s32);
+void Ov001_DrawTextPanelToSprite(s32,u16,s32,s32,s32);
 s32 HardwareDivideRemainder(s32,s32);
-void func_ov001_0218a260(void *,s32,s32,s32);
+void Ov001_SetSpriteEntryFlags(void *,s32,s32,s32);
 M2C_UNK Ov001_MoveSpriteLayout(s32,M2C_UNK,u16,u16);
 SpriteGroupCounts a,b,c;
 s32 index=arg1*12; s32 i,j;void *p;u16 tile;
@@ -92,7 +92,7 @@ p=M2C_FIELD((u8 *)gOv001MenuState+j*4,void **,0x30);
 M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|((u32)(tile<<23)>>7)|(arg2&255);
 j++;
 }
-if(arg1<4)func_ov001_0218b200(M2C_FIELD((u8 *)gOv001MenuState+arg0*16+arg1*4,s32 *,0),*(u16 *)(gKeyboardCharKeyPos+index*4),arg2,M2C_FIELD((u8 *)gOv001MenuState+arg1*4,s32 *,0x104),2);
+if(arg1<4)Ov001_DrawTextPanelToSprite(M2C_FIELD((u8 *)gOv001MenuState+arg0*16+arg1*4,s32 *,0),*(u16 *)(gKeyboardCharKeyPos+index*4),arg2,M2C_FIELD((u8 *)gOv001MenuState+arg1*4,s32 *,0x104),2);
 j=HardwareDivideRemainder(arg1+3,4);
 i=0;
 if(i<b.v[arg1]){
@@ -108,7 +108,7 @@ i++;
 }
 i=0;
 for(i=0;i<c.v[arg1];i++){
-func_ov001_0218a260(M2C_FIELD((u8 *)gOv001MenuState+i*4,void **,0xfc),-1,0,0);
+Ov001_SetSpriteEntryFlags(M2C_FIELD((u8 *)gOv001MenuState+i*4,void **,0xfc),-1,0,0);
 Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)gOv001MenuState+i*4,s32 *,0xfc),-1,gKeyboardActionKeyPos[i*2],arg2);
 }
 }

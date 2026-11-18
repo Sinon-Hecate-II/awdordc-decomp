@@ -144,33 +144,37 @@ if(M2C_FIELD(a,volatile u8 *,0x34)) return;
 SetSpriteAnimation(a,0);
 }
 
-void func_020c9060(void *arg0) {
+/* Per-frame step of the campaign map list loader: expands the next queued map
+ * record into the map headers - first clearing the flags and bumping the ten-bit
+ * counter of its stamp word - and sets that map's label.  When every queued
+ * record is done the loader resumes its waiting owner. */
+void LoadNextCampaignMapRecord(void *loader) {
     s32 func_020be1a8();
-    s32 temp_r2;
-    u16 temp_r4;
-    u32 temp_r1_2;
-    u8 temp_r1;
-    void *temp_r5;
+    s32 stamp;
+    u16 mapId;
+    u32 count;
+    u8 index;
+    void *record;
 
     if (func_020be1a8() != 0) {
         return;
     }
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0x35);
-    if ((u32) temp_r1 >= (u32) M2C_FIELD(arg0, u8 *, 0x34)) {
-        Sprite_ResumeAnimation(arg0);
+    index = M2C_FIELD(loader, u8 *, 0x35);
+    if ((u32) index >= (u32) M2C_FIELD(loader, u8 *, 0x34)) {
+        Sprite_ResumeAnimation(loader);
         return;
     }
-    temp_r5 = M2C_FIELD((arg0 + (temp_r1 * 4)), void **, 0x4C);
-    temp_r4 = M2C_FIELD((arg0 + (temp_r1 * 2)), u16 *, 0x36);
-    temp_r2 = M2C_FIELD(temp_r5, s32 *, 0x4C) & ~0xE0000000;
-    temp_r1_2 = (u32) (temp_r2 * 0x10) >> 0x16;
-    M2C_FIELD(temp_r5, s32 *, 0x4C) = temp_r2;
-    if (temp_r1_2 < 0x3E8U) {
-        M2C_FIELD(temp_r5, s32 *, 0x4C) = (s32) ((M2C_FIELD(temp_r5, s32 *, 0x4C) & 0xF003FFFF) | ((u32) ((temp_r1_2 + 1) << 0x16) >> 4));
+    record = M2C_FIELD((loader + (index * 4)), void **, 0x4C);
+    mapId = M2C_FIELD((loader + (index * 2)), u16 *, 0x36);
+    stamp = M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) & ~0xE0000000;
+    count = (u32) (stamp * 0x10) >> 0x16;
+    M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) = stamp;
+    if (count < MAP_RECORD_STAMP_COUNT_MAX) {
+        M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) = (s32) ((M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) & 0xF003FFFF) | ((u32) ((count + 1) << 0x16) >> 4));
     }
-    func_020c8d0c(temp_r4);
-    func_020c8624(temp_r4, temp_r5);
-    M2C_FIELD(arg0, u8 *, 0x35) = (u8) (M2C_FIELD(arg0, u8 *, 0x35) + 1);
+    func_020c8d0c(mapId);
+    func_020c8624(mapId, record);
+    M2C_FIELD(loader, u8 *, 0x35) = (u8) (M2C_FIELD(loader, u8 *, 0x35) + 1);
 }
 
 void func_020c9100(s32 a) {
@@ -508,10 +512,10 @@ second_path:
 }
 
 void func_020c9b70(void) {
-    M2C_UNK func_020d28bc();
+    M2C_UNK RestorePlayersOfActiveArmies();
     M2C_UNK func_ov000_0216aa84();
     extern void **gCurrentMap;
-    func_020d28bc();
+    RestorePlayersOfActiveArmies();
     func_ov000_0216aa84();
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 0x12;
 }

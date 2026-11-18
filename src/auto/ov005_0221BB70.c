@@ -73,7 +73,7 @@ void func_ov005_0221bc44(M2C_UNK arg0) {
 #pragma scheduling on
 void func_ov005_0221bcb0(void *arg0) {
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK gSpriteAnimConfig;
+    extern M2C_UNK gBattleResults;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *FindObjectByClass(M2C_UNK *);
 void SetSpriteAnimation(void *,s32);
@@ -98,7 +98,7 @@ extern M2C_UNK data_ov005_02220db8;void *object;
     s32 n;
     s32 i;
 
-    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14))-1)*2){object=FindObjectByClass(&data_ov005_02220db8);if(object)SetSpriteAnimation(object,0);}
+    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14))-1)*2){object=FindObjectByClass(&data_ov005_02220db8);if(object)SetSpriteAnimation(object,0);}
 M2C_FIELD(arg0, s32 *, 0x34) += 1;
     if (M2C_FIELD(arg0, s32 *, 0x34) == 1) {
         sp38 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
@@ -132,21 +132,21 @@ M2C_FIELD(arg0, s32 *, 0x34) += 1;
     }
 
     v = M2C_FIELD(arg0,s32 *,0x34);
-if(v>(MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14))-1)*2){
-v=M2C_FIELD(arg0,s32 *,0x34)-(MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14))-1)*2;
+if(v>(MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14))-1)*2){
+v=M2C_FIELD(arg0,s32 *,0x34)-(MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14))-1)*2;
 n=EaseInterpolate(0,0,16,v,32);
 *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine+0x51)=16-n;
 *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine+0x52)=n;
 M2C_FIELD(arg0,u16 *,0x38)=EaseInterpolate(1,0,-160,v,32);
 M2C_FIELD(arg0,s32 *,0x44)=EaseInterpolate(1,0,64,v,32);
 }
-    for (i = 0; i < MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14)); i++) {
+    for (i = 0; i < MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14)); i++) {
         v = M2C_FIELD(arg0, s32 *, 0x34) - i * 2;
         if (v > 0 && v <= 0x20)
-            ((u16 *)((u8 *)arg0+0x38))[MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14))-i]=(u16)EaseInterpolate(1,0,160,v,32);
+            ((u16 *)((u8 *)arg0+0x38))[MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14))-i]=(u16)EaseInterpolate(1,0,160,v,32);
     }
 
-    if (M2C_FIELD(arg0, s32 *, 0x34) != (MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14)) - 1) * 2 + 0x20)
+    if (M2C_FIELD(arg0, s32 *, 0x34) != (MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14)) - 1) * 2 + 0x20)
         return;
 
 Clear3DSpriteLayer(2);
@@ -168,7 +168,7 @@ int func_ov005_0221c150(void *arg0) {
 s32 DidPlayerWin(void);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
 void AddSprite(u16,u8,u16,void *,s32);
-extern M2C_UNK gCoState,gCoPlayerSlots,gSpriteAnimConfig,data_02101f4c,data_02101f1c;
+extern M2C_UNK gCoState,gCoPlayerSlots,gBattleResults,data_02101f4c,data_02101f1c;
 extern void *gCur3DSpriteEngine;
 extern void **gCurrentMap;
 s32 enabled,i,y,id,offset,x,x2,k;
@@ -179,9 +179,9 @@ else enabled=1;
 if(!enabled) return;
 x=M2C_FIELD(arg0,s16 *,0x38)&511;
 func_02098cb8(9,(s16)((x&0xfe00)|((x-1)&511)),0,(u16)(0x4800|((0x388 >> (((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),1,5);
-p=(u8 *)&gSpriteAnimConfig;
+p=(u8 *)&gBattleResults;
 y=0;
-for(i=0;i<M2C_FIELD(&gSpriteAnimConfig,u8 *,12);i++,p++,y+=18){
+for(i=0;i<M2C_FIELD(&gBattleResults,u8 *,12);i++,p++,y+=18){
 id=M2C_FIELD(p,s8 *,0)-1;
 offset=id*140;
 x=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+143)&511;
@@ -193,9 +193,9 @@ x2=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+183)&511;
 func_02098cb8(0,(s16)x2,(s16)(u8)(y+18),(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
 AddSprite((u16)((x2&0xfe00)|((x2+1)&511)),(u8)((u8)(y+18)+1),(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 }
-p=(u8 *)&gSpriteAnimConfig;
+p=(u8 *)&gBattleResults;
 y=0;
-for(i=0;i<M2C_FIELD(&gSpriteAnimConfig,u8 *,14);i++,p++,y+=18){
+for(i=0;i<M2C_FIELD(&gBattleResults,u8 *,14);i++,p++,y+=18){
 id=M2C_FIELD(p,s8 *,8)-1;
 offset=id*140;
 x=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+143)&511;
@@ -207,9 +207,9 @@ x2=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+183)&511;
 func_02098cb8(0,(s16)x2,(s16)(u8)(y+18),(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
 AddSprite((u16)((x2&0xfe00)|((x2+1)&511)),(u8)((u8)(y+18)+1),(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 }
-p=(u8 *)&gSpriteAnimConfig;
+p=(u8 *)&gBattleResults;
 y=98;
-for(i=0;i<M2C_FIELD(&gSpriteAnimConfig,u8 *,13);i++,p++,y+=18){
+for(i=0;i<M2C_FIELD(&gBattleResults,u8 *,13);i++,p++,y+=18){
 id=M2C_FIELD(p,s8 *,4)-1;
 offset=id*140;
 x=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+143)&511;

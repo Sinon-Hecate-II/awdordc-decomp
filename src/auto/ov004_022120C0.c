@@ -6,7 +6,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK func_020822b8();
     M2C_UNK SetFileDirectory();
     M2C_UNK LoadDecompressedFileTo();
-    M2C_UNK func_020811b8();
+    M2C_UNK LoadFileToBGExtPltt();
     M2C_UNK LoadFileToSpriteBuffer();
     M2C_UNK MI_CpuCopy32();
     M2C_UNK StringFormat();
@@ -86,7 +86,7 @@ void func_ov004_022120c0(void *arg0) {
             SetFileDirectory(&data_ov004_02218df8);
             LoadDecompressedFileTo(&data_ov004_02218e04, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
             LoadDecompressedFileTo(&data_ov004_02218e0c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c));
-            func_020811b8(&data_ov004_02218e14, 3, 0, 0x200);
+            LoadFileToBGExtPltt(&data_ov004_02218e14, 3, 0, 0x200);
             LoadFileToSpriteBuffer(&data_ov004_02218e1c, 0, 0x20);
             MI_CpuCopy32(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x20, 0x20);
             StringFormat(bp, &data_ov004_02218e24, *((u8 *)a0 + 0x3a));

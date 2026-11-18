@@ -56,7 +56,7 @@ void func_ov002_021e15e0(void) {
     func_01ffa9bc(&data_ov002_021ea68c);
 }
 
-void func_ov002_021e15f4(s32 a) {
+void CreateBattleSceneSprite(s32 a) {
     void func_ov002_021e152c(void);
     void CreateSpriteObject(void *,s32);
     extern u8 data_ov002_021f2f40;
@@ -199,8 +199,8 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK func_ov002_021e2770(void *, M2C_UNK);
     M2C_UNK Ov002_CreateEffectNode(void *, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov002_021e2928(void *, M2C_UNK);
-    M2C_UNK func_020afa00(M2C_UNK);
-    M2C_UNK func_020afa98(M2C_UNK);
+    M2C_UNK PlaySlotVolumeSound(M2C_UNK);
+    M2C_UNK PlaySlotVariantSound(M2C_UNK);
     M2C_UNK func_020afb34(M2C_UNK);
     M2C_UNK func_020afb94(M2C_UNK);
     if (M2C_FIELD(arg0, void **, 4) == NULL) return;
@@ -319,10 +319,10 @@ void func_ov002_021e1844(void *arg0) {
             func_ov002_021e2928(arg0, (M2C_UNK)((s32)M2C_FIELD(current, s16 *, 0x8) & 0xff));
             break;
         case 32:
-            func_020afa00(M2C_FIELD(arg0, u8 *, 0x53));
+            PlaySlotVolumeSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         case 33:
-            func_020afa98(M2C_FIELD(arg0, u8 *, 0x53));
+            PlaySlotVariantSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         case 34:
             func_020afb34(M2C_FIELD(arg0, u8 *, 0x53));

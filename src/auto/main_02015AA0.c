@@ -1,5 +1,6 @@
 /* 24 functions from 0x02015AA0 to 0x02016934 (main), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 typedef struct RangePair { u32 address; u32 size; } RangePair;
 typedef struct MemoryDescriptor {u32 dest;u32 source;u32 size;u32 flags;} MemoryDescriptor;
 typedef struct PacketBits { u8 low:2; u8 high:6; } PacketBits;
@@ -171,19 +172,19 @@ void func_02015f94(void *dest, void *src, s32 extra) {
     M2C_UNK FillU16(M2C_UNK, void *, M2C_UNK);
     M2C_UNK CopyU16(s32, void *, u16);
     M2C_UNK MI_CpuFill32(M2C_UNK, void *, M2C_UNK);
-    s32 func_02016084(s32, void *, M2C_UNK);
+    s32 LoadEntryResource(s32, void *, M2C_UNK);
 
     s32 hasSecond;
     s32 hasFirst;
 
     FillU16(0, dest, 0x4C0);
     M2C_FIELD(dest, s8 *, 0x4B2) = 0;
-    if (func_02016084(M2C_FIELD(src, s32 *, 0xC), dest, 1) == 0) {
+    if (LoadEntryResource(M2C_FIELD(src, s32 *, 0xC), dest, 1) == 0) {
         hasFirst = 1;
     } else {
         hasFirst = 0;
     }
-    if (func_02016084(M2C_FIELD(src, s32 *, 0x10), dest, 0) == 0) {
+    if (LoadEntryResource(M2C_FIELD(src, s32 *, 0x10), dest, 0) == 0) {
         hasSecond = 1;
     } else {
         hasSecond = 0;
@@ -204,16 +205,20 @@ void func_02015f94(void *dest, void *src, s32 extra) {
     M2C_FIELD(dest, s16 *, 0x4B0) = 1;
 }
 
-s32 func_02016084(s32 arg0,void *arg1,s32 arg2) {
+/* Read one of an entry's two fixed-size resource files into its work buffer: the
+ * large resource is 0x200 bytes at the buffer's +0x20, the small one 0x20 bytes at
+ * its start.  Returns 1 once the file was read, 0 when there is no path, the file
+ * cannot be opened or its size is not the expected one. */
+s32 LoadEntryResource(s32 path,void *buffer,s32 large) {
 void InitFileRequest(void *);s32 OpenFileRequest(void *,s32);
 void CloseFileRequest(void *);void FileRead(void *,void *,s32);
-u32 file[18];s32 size=arg2?0x200:0x20;
-if(arg2)arg1+=0x20;
-if(!arg0)return 0;
-InitFileRequest(file);
-if(!OpenFileRequest(file,arg0))return 0;
-if(size!=file[10]-file[9]) {CloseFileRequest(file);return 0;}
-FileRead(file,arg1,size);CloseFileRequest(file);return 1;
+u32 req[18];s32 size=large?0x200:0x20;
+if(large)buffer+=0x20;
+if(!path)return 0;
+InitFileRequest(req);
+if(!OpenFileRequest(req,path))return 0;
+if(size!=M2C_FIELD(req,u32 *,FS_REQ_FILE_END)-M2C_FIELD(req,u32 *,FS_REQ_FILE_START)) {CloseFileRequest(req);return 0;}
+FileRead(req,buffer,size);CloseFileRequest(req);return 1;
 }
 
 void func_02016124(void *arg0,s32 arg1,s32 arg2,s16 arg3) {
@@ -236,38 +241,38 @@ s32 func_02016194(s32 a) {
 #pragma dont_inline reset
 
 void func_020161bc(void *arg0) {
-extern M2C_UNK data_021311a0;
-void *p=M2C_FIELD(&data_021311a0,void **,0x18);void *next;
-if(!p)M2C_FIELD(&data_021311a0,void **,0x18)=arg0;
+extern M2C_UNK gDownloadSendState;
+void *p=M2C_FIELD(&gDownloadSendState,void **,0x18);void *next;
+if(!p)M2C_FIELD(&gDownloadSendState,void **,0x18)=arg0;
 else {while((next=M2C_FIELD(p,void **,0x4bc))!=0)p=next;M2C_FIELD(p,void **,0x4bc)=arg0;}
 M2C_FIELD(arg0,void **,0x4bc)=0;
 }
 
 void func_02016200(void) {
-void func_0201622c(void);
-extern M2C_UNK data_021311a0;
-M2C_FIELD(&data_021311a0,s32 *,0x18)=0;
-M2C_FIELD(&data_021311a0,s32 *,0x1c)=0;
-M2C_FIELD(&data_021311a0,u8 *,0x24)=1;
-M2C_FIELD(&data_021311a0,s32 *,0x14)=0;
-func_0201622c();
+void DownloadResetProgress(void);
+extern M2C_UNK gDownloadSendState;
+M2C_FIELD(&gDownloadSendState,s32 *,0x18)=0;
+M2C_FIELD(&gDownloadSendState,s32 *,0x1c)=0;
+M2C_FIELD(&gDownloadSendState,u8 *,0x24)=1;
+M2C_FIELD(&gDownloadSendState,s32 *,0x14)=0;
+DownloadResetProgress();
 }
 
-void func_0201622c(void) {
-    extern M2C_UNK data_021311a0;
-    M2C_FIELD(&data_021311a0, s8 *, 0x25) = 0;
-    M2C_FIELD(&data_021311a0, s8 *, 0x26) = 0;
-    M2C_FIELD(&data_021311a0, s8 *, 0x27) = 0;
-    M2C_FIELD(&data_021311a0, s8 *, 0x28) = 0;
-    M2C_FIELD(&data_021311a0, s8 *, 0x29) = 0;
+void DownloadResetProgress(void) {
+    extern M2C_UNK gDownloadSendState;
+    M2C_FIELD(&gDownloadSendState, s8 *, 0x25) = 0;
+    M2C_FIELD(&gDownloadSendState, s8 *, 0x26) = 0;
+    M2C_FIELD(&gDownloadSendState, s8 *, 0x27) = 0;
+    M2C_FIELD(&gDownloadSendState, s8 *, 0x28) = 0;
+    M2C_FIELD(&gDownloadSendState, s8 *, 0x29) = 0;
 }
 
 void func_02016250(s32 a,s32 b,s32 c) {
- extern M2C_UNK data_021311a0;
- s32 func_020162dc(void);void func_0201637c(void);
+ extern M2C_UNK gDownloadSendState;
+ s32 DownloadStartNextFile(void);void func_0201637c(void);
  void func_020163d0(s32,s32,s32);void func_02016534(void);void func_02016564(s32,s32,s32);
- for(;;) switch(M2C_FIELD(&data_021311a0,u8 *,0x24)){
- case 0:case 1:if(func_020162dc()==0)return;break;
+ for(;;) switch(M2C_FIELD(&gDownloadSendState,u8 *,0x24)){
+ case 0:case 1:if(DownloadStartNextFile()==0)return;break;
  case 2:func_0201637c();break;
  case 3:func_020163d0(a,b,c);return;
  case 4:func_02016534();break;
@@ -276,78 +281,81 @@ void func_02016250(s32 a,s32 b,s32 c) {
  }
 }
 
-s32 func_020162dc(void) {
- extern M2C_UNK data_021311a0;extern M2C_UNK data_021311e0;
+/* Start the next queued download file (or send the idle packet when the queue is
+ * empty): advance to the following file, reset its packet progress and move the
+ * send state machine into the sending step. */
+s32 DownloadStartNextFile(void) {
+ extern M2C_UNK gDownloadSendState;extern M2C_UNK gDownloadPacket;
  s32 func_02018390(void);s32 func_020183a4(void);
  void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
- void func_0201622c(void);
- void *p;
- if(M2C_FIELD(&data_021311a0,void **,0x18)==0){
- s32 x=func_02018390();
- WFC_SubmitDownloadData(0,&data_021311e0,0x70,x,func_020183a4(),8);return 0;
+ void DownloadResetProgress(void);
+ void *file;
+ if(M2C_FIELD(&gDownloadSendState,void **,DL_QUEUE)==0){
+ s32 sendCode=func_02018390();
+ WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,sendCode,func_020183a4(),8);return 0;
  }
- p=M2C_FIELD(&data_021311a0,void **,0x1C);
- if(p!=0 && M2C_FIELD(p,void **,0x4BC)!=0)p=M2C_FIELD(p,void **,0x4BC);
- else p=M2C_FIELD(&data_021311a0,void * volatile *,0x18);
- M2C_FIELD(&data_021311a0,void **,0x1C)=p;
- func_0201622c();
- M2C_FIELD(&data_021311a0,u8 *,0x26)=M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1C),u8 *,0x4B4);
- M2C_FIELD(&data_021311a0,u8 *,0x24)=2;
+ file=M2C_FIELD(&gDownloadSendState,void **,DL_CURRENT);
+ if(file!=0 && M2C_FIELD(file,void **,DL_FILE_NEXT)!=0)file=M2C_FIELD(file,void **,DL_FILE_NEXT);
+ else file=M2C_FIELD(&gDownloadSendState,void * volatile *,DL_QUEUE);
+ M2C_FIELD(&gDownloadSendState,void **,DL_CURRENT)=file;
+ DownloadResetProgress();
+ M2C_FIELD(&gDownloadSendState,u8 *,DL_FILE_INDEX)=M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,DL_CURRENT),u8 *,DL_FILE_STEP);
+ M2C_FIELD(&gDownloadSendState,u8 *,DL_STATE)=2;
  return 1;
 }
 
 void func_0201637c(void) {
- extern M2C_UNK data_021311a0;
+ extern M2C_UNK gDownloadSendState;
  void *p;
- if(M2C_FIELD(&data_021311a0,u8 *,0x24)!=2)return;
- p=M2C_FIELD(&data_021311a0,void **,0x1C);
+ if(M2C_FIELD(&gDownloadSendState,u8 *,0x24)!=2)return;
+ p=M2C_FIELD(&gDownloadSendState,void **,0x1C);
  if(M2C_FIELD(p,u8 *,0x4B2)==0){
- M2C_FIELD(&data_021311a0,u8 *,0x28)=9;
- M2C_FIELD(&data_021311a0,void **,0x20)=p;
+ M2C_FIELD(&gDownloadSendState,u8 *,0x28)=9;
+ M2C_FIELD(&gDownloadSendState,void **,0x20)=p;
  }else{
- M2C_FIELD(&data_021311a0,u8 *,0x28)=4;
- M2C_FIELD(&data_021311a0,void **,0x20)=p+0x220;
+ M2C_FIELD(&gDownloadSendState,u8 *,0x28)=4;
+ M2C_FIELD(&gDownloadSendState,void **,0x20)=p+0x220;
  }
- M2C_FIELD(&data_021311a0,u8 *,0x24)=3;
+ M2C_FIELD(&gDownloadSendState,u8 *,0x24)=3;
 }
 
 void func_020163d0(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_021311a0;
+extern M2C_UNK gDownloadSendState;
 extern M2C_UNK data_021311ee;
 extern M2C_UNK data_021311e8;
-extern M2C_UNK data_021311e0;
+extern M2C_UNK gDownloadPacket;
 s32 FillU16(s32,void *,s32);
 s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
-void *p=M2C_FIELD(&data_021311a0,void **,0x1c);
+void *p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
 u32 end=(u32)p+0x358;
-u32 src=M2C_FIELD(&data_021311a0,u32 *,0x20);
+u32 src=M2C_FIELD(&gDownloadSendState,u32 *,0x20);
 u32 n;
-if(src+0x62<=end)M2C_FIELD(&data_021311a0,u8 *,0x4c)=0x62;
-else {n=end-src;M2C_FIELD(&data_021311a0,u8 *,0x4c)=n;FillU16(0,(u8 *)&data_021311ee+(u8)n,0x62-(u8)n);}
-CopyU16(M2C_FIELD(&data_021311a0,s32 *,0x20),&data_021311ee,M2C_FIELD(&data_021311a0,u8 *,0x4c));
-M2C_FIELD(&data_021311a0,u8 *,0x4a)=M2C_FIELD(&data_021311a0,u8 *,0x27);
-M2C_FIELD(&data_021311a0,u8 *,0x4b)=M2C_FIELD(&data_021311a0,u8 *,0x28);
-p=M2C_FIELD(&data_021311a0,void **,0x1c);
-((PacketBits *)((u8 *)&data_021311a0+0x44))->low=M2C_FIELD(p,u8 *,0x4b2);
-M2C_FIELD(&data_021311a0,u8 *,0x45)=M2C_FIELD(p,u8 *,0x4b3);
-M2C_FIELD(&data_021311a0,u8 *,0x46)=M2C_FIELD(&data_021311a0,u8 *,0x26);
-M2C_FIELD(&data_021311a0,u32 *,0x40)=M2C_FIELD(p,u32 *,0x4b8);
-((PacketBits *)((u8 *)&data_021311a0+0x44))->high=M2C_FIELD(p,u8 *,0x4b5);
-M2C_FIELD(&data_021311a0,u8 *,0x47)=M2C_FIELD(&data_021311a0,u8 *,0x29)++;
-M2C_FIELD(&data_021311a0,u16 *,0x48)=0;
-M2C_FIELD(&data_021311a0,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
-if(++M2C_FIELD(&data_021311a0,u8 *,0x27)>=M2C_FIELD(&data_021311a0,u8 *,0x28))M2C_FIELD(&data_021311a0,u8 *,0x24)=4;
-else M2C_FIELD(&data_021311a0,u32 *,0x20)+=0x62;
-WFC_SubmitDownloadData(0,&data_021311e0,0x70,a,b,(u8)(c|3));
+if(src+0x62<=end)M2C_FIELD(&gDownloadSendState,u8 *,0x4c)=0x62;
+else {n=end-src;M2C_FIELD(&gDownloadSendState,u8 *,0x4c)=n;FillU16(0,(u8 *)&data_021311ee+(u8)n,0x62-(u8)n);}
+CopyU16(M2C_FIELD(&gDownloadSendState,s32 *,0x20),&data_021311ee,M2C_FIELD(&gDownloadSendState,u8 *,0x4c));
+M2C_FIELD(&gDownloadSendState,u8 *,0x4a)=M2C_FIELD(&gDownloadSendState,u8 *,0x27);
+M2C_FIELD(&gDownloadSendState,u8 *,0x4b)=M2C_FIELD(&gDownloadSendState,u8 *,0x28);
+p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
+((PacketBits *)((u8 *)&gDownloadSendState+0x44))->low=M2C_FIELD(p,u8 *,0x4b2);
+M2C_FIELD(&gDownloadSendState,u8 *,0x45)=M2C_FIELD(p,u8 *,0x4b3);
+M2C_FIELD(&gDownloadSendState,u8 *,0x46)=M2C_FIELD(&gDownloadSendState,u8 *,0x26);
+M2C_FIELD(&gDownloadSendState,u32 *,0x40)=M2C_FIELD(p,u32 *,0x4b8);
+((PacketBits *)((u8 *)&gDownloadSendState+0x44))->high=M2C_FIELD(p,u8 *,0x4b5);
+M2C_FIELD(&gDownloadSendState,u8 *,0x47)=M2C_FIELD(&gDownloadSendState,u8 *,0x29)++;
+M2C_FIELD(&gDownloadSendState,u16 *,0x48)=0;
+M2C_FIELD(&gDownloadSendState,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
+if(++M2C_FIELD(&gDownloadSendState,u8 *,0x27)>=M2C_FIELD(&gDownloadSendState,u8 *,0x28))M2C_FIELD(&gDownloadSendState,u8 *,0x24)=4;
+else M2C_FIELD(&gDownloadSendState,u32 *,0x20)+=0x62;
+WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
 }
 
 void func_02016534(void) {
-extern M2C_UNK data_021311a0;
-M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u16 *,0x4b0)=1;
-M2C_FIELD(&data_021311a0,u8 *,0x26)=M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u8 *,0x4b4);
-M2C_FIELD(&data_021311a0,u8 *,0x24)=5;
+extern M2C_UNK gDownloadSendState;
+M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u16 *,0x4b0)=1;
+M2C_FIELD(&gDownloadSendState,u8 *,0x26)=M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u8 *,0x4b4);
+M2C_FIELD(&gDownloadSendState,u8 *,0x24)=5;
 }
 
 #pragma push
@@ -355,14 +363,14 @@ M2C_FIELD(&data_021311a0,u8 *,0x24)=5;
 #pragma opt_common_subs off
 #pragma opt_lifetimes off
 void func_02016564(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_021311a0,data_02131248,data_021311f0,data_021311e8,data_021311e0;
+extern M2C_UNK gDownloadSendState,data_02131248,data_021311f0,data_021311e8,gDownloadPacket;
 s32 FillU16(s32,void *,s32);s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
-p=M2C_FIELD(&data_021311a0,void **,0x1c);
-if(M2C_FIELD(&data_021311a0,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))func_02016534();
-state=&data_021311a0;
+p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
+if(M2C_FIELD(&gDownloadSendState,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))func_02016534();
+state=&gDownloadSendState;
 ((PacketBits *)((u8 *)state+0x44))->low=2;
 p=M2C_FIELD(state,void **,0x1c); header=(u8 *)p+0x300;
 M2C_FIELD(state,u8 *,0x45)=M2C_FIELD(p,u8 *,0x4b3);
@@ -377,32 +385,32 @@ if(!M2C_FIELD(state,s32 *,0x10)){
 callback=M2C_FIELD(state,void (**)(u32),0x14);
 if(callback)callback(M2C_FIELD(p,u32 *,0x4b8));
 }
-i=0;dest=(u8 *)&data_02131248;p=M2C_FIELD(&data_021311a0,void **,0x1c); goto checkCopy;
+i=0;dest=(u8 *)&data_02131248;p=M2C_FIELD(&gDownloadSendState,void **,0x1c); goto checkCopy;
 copyLoop: dest[i]=M2C_FIELD((u32)p+i,u8 *,0x4a8); i++;
 checkCopy: if(i<8)goto copyLoop;
 FillU16(0,&data_021311f0,0x58);
-p=M2C_FIELD(&data_021311a0,void **,0x1c);
+p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
 count=0;
 mask=M2C_FIELD(p,u16 *,0x4b0)^M2C_FIELD(p,u16 *,0x35a);
 i=0;goto checkEntries;entriesLoop: {
 if(!(mask&(2<<i)))goto nextEntry;
-CopyU16((u8 *)M2C_FIELD(&data_021311a0,void **,0x1c)+0x35e + i*22,(u8 *)&data_021311f0+count*22,22);
+CopyU16((u8 *)M2C_FIELD(&gDownloadSendState,void **,0x1c)+0x35e + i*22,(u8 *)&data_021311f0+count*22,22);
 count++;
-M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u16 *,0x4b0)|=2<<i;
+M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u16 *,0x4b0)|=2<<i;
 if(count==4)goto entriesDone;
 }
 nextEntry:i++;
 checkEntries:if(i<15)goto entriesLoop;
 entriesDone:
 if(count<4)M2C_FIELD(&data_021311f0,u8 *,count*22)&=~0xf0;
-M2C_FIELD(&data_021311a0,u16 *,0x48)=0;
-M2C_FIELD(&data_021311a0,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
-p=M2C_FIELD(&data_021311a0,void **,0x1c);
-if(M2C_FIELD(p,u16 *,0x4b0)==M2C_FIELD(p,u16 *,0x35a))M2C_FIELD(&data_021311a0,u8 *,0x24)=1;
-WFC_SubmitDownloadData(0,&data_021311e0,0x70,a,b,(u8)(c|3));
-if(M2C_FIELD(&data_021311a0,s32 *,0x10)==1){
-callback=M2C_FIELD(&data_021311a0,void (**)(u32),0x14);
-if(callback)callback(M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u32 *,0x4b8));
+M2C_FIELD(&gDownloadSendState,u16 *,0x48)=0;
+M2C_FIELD(&gDownloadSendState,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
+p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
+if(M2C_FIELD(p,u16 *,0x4b0)==M2C_FIELD(p,u16 *,0x35a))M2C_FIELD(&gDownloadSendState,u8 *,0x24)=1;
+WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
+if(M2C_FIELD(&gDownloadSendState,s32 *,0x10)==1){
+callback=M2C_FIELD(&gDownloadSendState,void (**)(u32),0x14);
+if(callback)callback(M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u32 *,0x4b8));
 }
 }
 #pragma pop

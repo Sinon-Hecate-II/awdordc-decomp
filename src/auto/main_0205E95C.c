@@ -170,7 +170,7 @@ end:
     *dst = 0;
 }
 
-void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
+void Qr2CryptStateString(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     unsigned long long func_020720f0(s32, s32);
     u8 S[256];
     u8 *key;
@@ -220,19 +220,24 @@ void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
 
 void Qr2InitQuery(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIELD(a,s32 *,0x800)=5;}
 
-void Qr2_AppendStateString(void *a,void *b,s8 *p,s32 n) {
- void StringCopy(void *,void *);
- s32 StringLength(void *);
- void func_0205ee48(void *,s32,void *,s32);
- void Base64EncodeRaw(void *,s32,void *);
- s8 buf[65];
- if(n<1)return;
- if(n>65)return;
- if(p[n-1])return;
- StringCopy(buf,p);
- func_0205ee48((u8 *)a+68,StringLength((u8 *)a+68),buf,n-1);
- Base64EncodeRaw(buf,n-1,(u8 *)b+M2C_FIELD(b,s32 *,0x800));
- M2C_FIELD(b,s32 *,0x800)+=StringLength((u8 *)b+M2C_FIELD(b,s32 *,0x800))+1;
+/* Appends another player's state string to a state reply: the string must be 1 to
+   65 bytes with a terminating NUL, so it is copied out and ciphered with the QR2
+   state-string cipher keyed by the connection's secret key, then base64-encoded
+   into the reply buffer and the reply length moved past it. */
+void Qr2_AppendStateString(void *qr2, void *reply, s8 *state, s32 length) {
+    void StringCopy(void *, void *);
+    s32 StringLength(void *);
+    void Qr2CryptStateString(void *, s32, void *, s32);
+    void Base64EncodeRaw(void *, s32, void *);
+    s8 buf[QR2_STATE_STRING_MAX];
+
+    if (length < 1) return;
+    if (length > QR2_STATE_STRING_MAX) return;
+    if (state[length - 1]) return;
+    StringCopy(buf, state);
+    Qr2CryptStateString((u8 *)qr2 + QR2_SECRET_KEY, StringLength((u8 *)qr2 + QR2_SECRET_KEY), buf, length - 1);
+    Base64EncodeRaw(buf, length - 1, (u8 *)reply + M2C_FIELD(reply, s32 *, QR2_QUERY_COUNT));
+    M2C_FIELD(reply, s32 *, QR2_QUERY_COUNT) += StringLength((u8 *)reply + M2C_FIELD(reply, s32 *, QR2_QUERY_COUNT)) + 1;
 }
 
 /* GameSpy QR2: parse the master's public-address reply, which packs the address

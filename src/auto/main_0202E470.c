@@ -332,12 +332,12 @@ void Sound_SetPlayerCallbacks(void *arg0,s32 arg1) {
 }
 
 s32 func_0202ed18(void *arg0, s32 arg1) {
- s32 func_0202c3ac(s32,void *,s32,s32);
+ s32 Sound_ReadArchiveFile(s32,void *,s32,s32);
  void func_0202c424(void *);
  s32 OpenFileRange(void *,Unk0202ed18);
  s32 func_0202c35c(s32);
  Unk0202ed18 sp0;
- if(func_0202c3ac(arg1,arg0+0xA8,0x40,0)!=0x40)return 0;
+ if(Sound_ReadArchiveFile(arg1,arg0+0xA8,0x40,0)!=0x40)return 0;
  func_0202c424(&sp0);
  if(!OpenFileRange(arg0+0x5C,sp0))return 0;
  M2C_FIELD(arg0,s32 *,0xA4)=func_0202c35c(arg1);return 1;

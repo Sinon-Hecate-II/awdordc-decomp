@@ -163,11 +163,11 @@ void func_0203d910(s32 a, s32 b)
 }
 #pragma pop
 void func_0203db94(s32 arg0,s32 arg1,u8 *arg2) {
- s32 func_0203f3c0(void *,u8 *,s32); s32 func_0206abd8(void *,s32,s32);
+ s32 ExtractSlashField(void *,u8 *,s32); s32 func_0206abd8(void *,s32,s32);
  void HandleConnectionCommand(s32,s32,s32,s32,s32 *,s32);
  char buf[16]; s32 values[128]; s32 i;
  for(i=0;i<128;i++) {
- if(func_0203f3c0(buf,arg2+1,i)==-1) break;
+ if(ExtractSlashField(buf,arg2+1,i)==-1) break;
  values[i]=func_0206abd8(buf,0,10);
  }
  HandleConnectionCommand(arg2[0],arg1,0,0,values,i);

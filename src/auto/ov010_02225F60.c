@@ -139,8 +139,8 @@ M2C_UNK SetWebRequestError(M2C_UNK arg0) {
 }
 
 void func_ov010_02226130(void) {
-    M2C_UNK func_020459ec();
-    func_020459ec();
+    M2C_UNK PollWebTransaction();
+    PollWebTransaction();
 }
 
 /* Submit the NAS player-registration request for the local profile, create the
@@ -338,7 +338,7 @@ s32 func_ov010_022264e4(void) {
     return var_r4;
 }
 
-s32 func_ov010_02226538(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 SubmitWebGetRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
     s32 SendWebGetForKind();
     extern M2C_UNK data_ov010_0222c0a0;

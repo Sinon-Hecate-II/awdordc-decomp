@@ -155,7 +155,7 @@ loop:
 
 /* Chooses the next result code based on the current mode of the shared state. */
 u8 Wfc_StepLink(void) {
-    M2C_UNK func_020276b0();
+    M2C_UNK WFC_ProcessConnectStep();
     M2C_UNK WFC_ProcessLinkStep();
     M2C_UNK WFC_ProcessLinkState();
     u32 Wfc_GetLinkState();
@@ -182,7 +182,7 @@ u8 Wfc_StepLink(void) {
         }
         break;
     case 6:
-        func_020276b0();
+        WFC_ProcessConnectStep();
         break;
     case 9:
         WFC_ProcessLinkStep();
@@ -410,9 +410,9 @@ s32 Wfc_NextFriendStep(void *state, s32 finishedStep) {
  * still pending.  In the results state, report the end once every record has an
  * answer; otherwise, if that pending record's score is high enough, remember its
  * index and hand over to the link step - parking the session state first when
- * the WFC engine is not idle (func_020276b0). */
+ * the WFC engine is not idle (WFC_ProcessConnectStep). */
 s32 Wfc_StepFriendResults(void *friends, s32 state) {
-    s32 func_020276b0(void);
+    s32 WFC_ProcessConnectStep(void);
     M2C_UNK func_0202f558(M2C_UNK);
     s32 result = state;
     u8 count;
@@ -440,7 +440,7 @@ loop_next:
     if ((u32)M2C_FIELD(friends + index * 4, u8 *, WFC_STATE_RECORD_SCORE) < WFC_MIN_CONNECT_SCORE) return result;
 start_link:
     M2C_FIELD(friends, u8 *, WFC_STATE_RECORD_INDEX) = index;
-    if (func_020276b0() != 1) {
+    if (WFC_ProcessConnectStep() != 1) {
         M2C_FIELD(friends, s8 *, WFC_STATE_LINK_RETURN) = result;
         result = WFC_STEP_LINK;
     }

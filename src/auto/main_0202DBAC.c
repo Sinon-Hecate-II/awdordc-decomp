@@ -1,7 +1,7 @@
 /* 14 functions from 0x0202DBAC to 0x0202E470 (main), found by ds-decomp. */
 #include "common.h"
 #include "sound.h"
-void func_0202de74(void *);
+void Sound_StopPlayer(void *);
 void Sound_ReleaseChannel(void *);
 void Sound_FreeRequest(M2C_UNK);
 void func_0202e02c(M2C_UNK,void *);
@@ -103,16 +103,16 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
 }
 
 void func_0202de1c(void *arg0, s32 arg1) {
- void func_0202de74(void *);
+ void Sound_StopPlayer(void *);
  void func_0202eed8(void *, s32, s32);
  s32 flags = M2C_FIELD(arg0, s32 *, 0x110);
  s32 saved = arg1;
  if (((flags << 30) >> 31) == 0) {
-  func_0202de74(arg0);
+  Sound_StopPlayer(arg0);
   return;
  }
  if (arg1 == 0) {
-  func_0202de74(arg0);
+  Sound_StopPlayer(arg0);
   return;
  }
  func_0202eed8((u8 *)arg0 + 0xe8, 0, arg1);
@@ -120,32 +120,35 @@ void func_0202de1c(void *arg0, s32 arg1) {
  M2C_FIELD(arg0, s32 *, 0x150) = 0;
 }
 
-void func_0202de74(void *arg0) {
+/* Stop a sound player: under the sound task's locks, stop the voices if it is
+ * playing, close the sample source, and release the player's channels, queued
+ * segment requests and slot. */
+void Sound_StopPlayer(void *player) {
     M2C_UNK LockMutex(M2C_UNK *);
     M2C_UNK UnlockMutex(M2C_UNK *);
     M2C_UNK Sound_StopIfPlaying(void *);
-    M2C_UNK func_0202df0c(void *);
+    M2C_UNK Sound_ReleasePlayerResources(void *);
     extern M2C_UNK gSoundWorkerState;
     extern M2C_UNK gSoundWorkerLock;
     LockMutex(&gSoundWorkerLock);
-    if (M2C_FIELD(&gSoundWorkerState, s32 *, 4) != 0) {
-        LockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, 4) + 0x4C8);
+    if (M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_TASK) != 0) {
+        LockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_TASK) + SOUND_TASK_LOCK);
     }
-    if (((s32) (M2C_FIELD(arg0, s32 *, 0x110) << 0x1E) >> 0x1F) != 0) {
-        Sound_StopIfPlaying(arg0);
+    if (SOUND_HANDLE_FLAG_IS_SET(M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS), SOUND_HANDLE_BIT_PLAYING) != 0) {
+        Sound_StopIfPlaying(player);
     }
-    if (((s32) (M2C_FIELD(arg0, s32 *, 0x110) << 0x1F) >> 0x1F) != 0) {
-        M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x170)(arg0);
+    if (SOUND_HANDLE_FLAG_IS_SET(M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS), SOUND_HANDLE_BIT_ACTIVE) != 0) {
+        M2C_FIELD(player, void (**)(void *), SOUND_HANDLE_CLOSE_CB)(player);
     }
-    func_0202df0c(arg0);
+    Sound_ReleasePlayerResources(player);
     UnlockMutex(&gSoundWorkerLock);
-    if (M2C_FIELD(&gSoundWorkerState, s32 *, 4) == 0) {
+    if (M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_TASK) == 0) {
         return;
     }
-    UnlockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, 4) + 0x4C8);
+    UnlockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_TASK) + SOUND_TASK_LOCK);
 }
 
-M2C_UNK func_0202df0c(void *arg0) {
+M2C_UNK Sound_ReleasePlayerResources(void *arg0) {
 void func_0202e02c(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
 extern M2C_UNK gSoundRequestQueue; extern M2C_UNK gSoundWorkerState;
 if((M2C_FIELD(arg0,s32 *,0x110)<<31)>>31==0) return;
@@ -163,7 +166,7 @@ M2C_FIELD(arg0,s32 *,0x120)++; return 1;
 }
 
 void Sound_ReleaseChannel(void *arg0) {
-    M2C_UNK func_0202b544();
+    M2C_UNK Sound_StopVoices();
     s32 temp_r1;
     s32 temp_r1_2;
 
@@ -176,7 +179,7 @@ void Sound_ReleaseChannel(void *arg0) {
     if (temp_r1_2 != 0) {
         return;
     }
-    func_0202b544();
+    Sound_StopVoices();
 }
 
 void func_0202dfcc(void *arg0, s32 arg1) {
@@ -248,20 +251,22 @@ void Sound_FreeRequest(M2C_UNK arg0) {
     OS_RestoreInterrupts(temp_r4);
 }
 
-void func_0202e158(s32 arg0,s32 arg1,void *arg2) {
-M2C_UNK LockMutex(M2C_UNK *); M2C_UNK UnlockMutex(M2C_UNK *); M2C_UNK func_0202b544();
+/* A sound data block was freed: if it held this player's sample data, stop the
+ * player, forget the block and release the voice channels it had acquired. */
+void Sound_OnDataBlockFreed(s32 dataBlock, s32 size, void *player) {
+M2C_UNK LockMutex(M2C_UNK *); M2C_UNK UnlockMutex(M2C_UNK *); M2C_UNK Sound_StopVoices();
 extern M2C_UNK gSoundWorkerState; extern M2C_UNK gSoundWorkerLock;
-if(arg0!=M2C_FIELD(arg2,s32 *,0x12c)) return;
+if(dataBlock!=M2C_FIELD(player,s32 *,SOUND_HANDLE_SAMPLE_DATA)) return;
 LockMutex(&gSoundWorkerLock);
-if(M2C_FIELD(&gSoundWorkerState,s32 *,4)) LockMutex(M2C_FIELD(&gSoundWorkerState,s32 *,4)+0x4c8);
-func_0202de74(arg2);
-M2C_FIELD(arg2,s32 *,0x12c)=0; M2C_FIELD(arg2,s32 *,0x130)=0; M2C_FIELD(arg2,u8 *,0x124)=0;
-if(M2C_FIELD(arg2,s32 *,0x120)>0) {
-func_0202b544(arg2); M2C_FIELD(arg2,s32 *,0x120)=0;
+if(M2C_FIELD(&gSoundWorkerState,s32 *,SOUND_TASK_STATE_TASK)) LockMutex(M2C_FIELD(&gSoundWorkerState,s32 *,SOUND_TASK_STATE_TASK)+SOUND_TASK_LOCK);
+Sound_StopPlayer(player);
+M2C_FIELD(player,s32 *,SOUND_HANDLE_SAMPLE_DATA)=0; M2C_FIELD(player,s32 *,SOUND_HANDLE_CHANNEL_BYTES)=0; M2C_FIELD(player,u8 *,SOUND_HANDLE_MAX_CHANNELS)=0;
+if(M2C_FIELD(player,s32 *,SOUND_HANDLE_CHANNEL_REFS)>0) {
+Sound_StopVoices(player); M2C_FIELD(player,s32 *,SOUND_HANDLE_CHANNEL_REFS)=0;
 }
 UnlockMutex(&gSoundWorkerLock);
-if(!M2C_FIELD(&gSoundWorkerState,s32 *,4)) return;
-UnlockMutex(M2C_FIELD(&gSoundWorkerState,s32 *,4)+0x4c8);
+if(!M2C_FIELD(&gSoundWorkerState,s32 *,SOUND_TASK_STATE_TASK)) return;
+UnlockMutex(M2C_FIELD(&gSoundWorkerState,s32 *,SOUND_TASK_STATE_TASK)+SOUND_TASK_LOCK);
 }
 
 #pragma opt_common_subs off

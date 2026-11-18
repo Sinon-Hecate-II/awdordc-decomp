@@ -224,8 +224,8 @@ void func_020adc78(void) {
    sliding half on the first frames, moves the two halves apart with an eased
    offset, and marks the transition done when the last frame is reached. */
 void UpdateScreenTransition(void) {
-    u8 func_0207b7c4(void);
-    void func_020d8f1c(s16, s32);
+    u8 IsMapViewScrolling(void);
+    void SetUiMode(s16, s32);
     s32 GetScreenTransitionSide(void);
     void FlipScreenTransition(void);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
@@ -244,10 +244,10 @@ void UpdateScreenTransition(void) {
     s16 frame;
 
     if (((s16 *)gScreenTransition)[0] & 4) {
-        if (func_0207b7c4() != 0) {
+        if (IsMapViewScrolling() != 0) {
             return;
         }
-        func_020d8f1c(1, 0);
+        SetUiMode(1, 0);
         return;
     }
 
@@ -297,7 +297,7 @@ void UpdateScreenTransition(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
-s32 func_020adfd0(void) {
+s32 HasScreenTransitionSprite(void) {
  s32 FindObjectByClass(M2C_UNK *);
  extern M2C_UNK data_02127bc8;
  u8 var_r0;
@@ -307,7 +307,7 @@ s32 func_020adfd0(void) {
 
 s32 func_020adff4(void) {
  extern s32 gScreenTransition;
- if(func_020adfd0()==0) return 0;
+ if(HasScreenTransitionSprite()==0) return 0;
  if(gScreenTransition==0) return 0;
  return *(s16 *)gScreenTransition & 2;
 }
@@ -315,7 +315,7 @@ s32 func_020adff4(void) {
 void SetScreenTransitionEnabled(s32 arg0) {
  extern s32 gScreenTransition;
  s16 temp_r0;
- if(func_020adfd0()!=0 && gScreenTransition!=0) {
+ if(HasScreenTransitionSprite()!=0 && gScreenTransition!=0) {
  temp_r0=*(s16 *)gScreenTransition;
  if(arg0!=0) { *(s16 *)gScreenTransition=temp_r0|2; return; }
  *(s16 *)gScreenTransition=temp_r0 & ~2;
@@ -323,9 +323,9 @@ void SetScreenTransitionEnabled(s32 arg0) {
 }
 
 s32 func_020ae068(void) {
-    s32 func_020adfd0(void);
+    s32 HasScreenTransitionSprite(void);
     extern s32 gScreenTransition;
-    if (func_020adfd0() == 0) {
+    if (HasScreenTransitionSprite() == 0) {
         return 0;
     }
     if (gScreenTransition != 0) {
@@ -337,12 +337,12 @@ s32 func_020ae068(void) {
 
 s32 func_020ae0a8(void) {
     extern s32 gScreenTransition;
-    if (func_020adfd0() == 0) return -1;
+    if (HasScreenTransitionSprite() == 0) return -1;
     if (gScreenTransition == 0) return -1;
     return *(s16 *)(gScreenTransition + 2);
 }
 
-void func_020ae0d8(s32 arg0, s32 arg1) {
+void BeginScreenTransition(s32 arg0, s32 arg1) {
     M2C_UNK func_020ad70c();
     M2C_UNK func_020d8ce8(s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -355,32 +355,32 @@ void func_020ae0d8(s32 arg0, s32 arg1) {
     PlaySoundEffect(0x10021);
 }
 
-void func_020ae124(s32 arg0) {
-    s32 func_020ad728();
-    void func_020ae0d8(s32, s32);
+void StartScreenTransition(s32 arg0) {
+    s32 IsScreenTransitionDone();
+    void BeginScreenTransition(s32, s32);
     extern s32 gScreenTransition;
-    if (func_020adfd0() != 0 && gScreenTransition != 0) {
-        if (func_020ad728() == 0) return;
-        func_020ae0d8(arg0, 0x14);
+    if (HasScreenTransitionSprite() != 0 && gScreenTransition != 0) {
+        if (IsScreenTransitionDone() == 0) return;
+        BeginScreenTransition(arg0, 0x14);
     }
 }
 
 void func_020ae164(s32 arg0) {
-s32 func_020ad728();
+s32 IsScreenTransitionDone();
 extern s32 gScreenTransition;
-if(func_020adfd0()!=0 && gScreenTransition!=0) {
-if(func_020ad728()==0)return;
-func_020ae0d8(arg0,14);
+if(HasScreenTransitionSprite()!=0 && gScreenTransition!=0) {
+if(IsScreenTransitionDone()==0)return;
+BeginScreenTransition(arg0,14);
 }
 }
 
-u8 func_020ae1a4(void) {
-s32 func_020ad728();
+u8 CanStartScreenTransition(void) {
+s32 IsScreenTransitionDone();
 extern s32 gScreenTransition;
 u8 result;
-if(!func_020adfd0())return 0;
+if(!HasScreenTransitionSprite())return 0;
 if(!gScreenTransition)return 0;
-if(func_020ad728()!=0)result=1;else result=0;
+if(IsScreenTransitionDone()!=0)result=1;else result=0;
 return result;
 }
 
@@ -393,9 +393,9 @@ if(p)M2C_FIELD(p,s32 *,0x5c)=arg0;
 
 void func_020ae20c(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    s32 func_020adfd0();
+    s32 HasScreenTransitionSprite();
     extern M2C_UNK data_02127bc8;
-    if (func_020adfd0() == 0) {
+    if (HasScreenTransitionSprite() == 0) {
         return;
     }
     DeleteSpriteObjectsOfClass(&data_02127bc8);

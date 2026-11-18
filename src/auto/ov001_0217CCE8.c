@@ -510,7 +510,7 @@ case 0:case 1:case 4:case 5:case 6:break;
 M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)=a;
 if(a-11<=1){
 func_ov001_0217f4e0();
-if(func_ov001_0217f62c()==0){
+if(IsCurrentSaveSlotValid()==0){
 Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217f6cc);return;
 }
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);

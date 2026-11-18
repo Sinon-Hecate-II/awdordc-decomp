@@ -33,6 +33,12 @@ typedef struct UiNodeVTable {
 #define ARMY_INFO_FACE_PAGE 0x11 /* u8 alternate face page (0/1), toggled per redraw */
 #define ARMY_INFO_SLIDE     0x12 /* s16 slide-in offset, 0..12 */
 
+/* The selected CO's name graphic is decompressed into this range of the sub
+ * screen engine's texture VRAM; the range is cleared while the CO has no name
+ * file. */
+#define ARMY_INFO_NAME_TEXTURE_OFFSET 0x2800
+#define ARMY_INFO_NAME_TEXTURE_SIZE   0x800
+
 /* One icon animation: its frame table and the two animation templates it was
  * built from. */
 typedef struct ArmyInfoIcon {

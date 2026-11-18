@@ -333,18 +333,21 @@ s32 GetTerrainPropertyFlagsAt(s32 a,s32 b) {
  return gTerrainPropertyFlags[t&31];
 }
 
-u8 IsSelectableUnitAt(s32 a,s32 b) {
- extern void **data_027e0058;
- u8 *p; s32 v; u8 result;
- if(a<0||b<0)goto fail;
- p=*data_027e0058;
- if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;
+/* Report whether the unit standing at (x, y) can be selected: the cell must be
+ * on the map, hold a unit, and that unit must belong to the player the view
+ * belongs to (MAP_CURRENT_PLAYER) and not have acted yet (UNIT_FLAG_ACTED clear). */
+u8 IsSelectableUnitAt(s32 x,s32 y) {
+ extern void **gCurrentMap;
+ u8 *map; s32 unitId; u8 result;
+ if(x<0||y<0)goto fail;
+ map=*gCurrentMap;
+ if(x>=M2C_FIELD(map,u16 *,MAP_WIDTH)||y>=M2C_FIELD(map,u16 *,MAP_HEIGHT))goto fail;
  goto valid;
  fail:return 0;
- valid:v=p[a+M2C_FIELD(p+b*2,u16 *,0x3758)];
- if(!v)return 0;
- if((v>>6)+1!=M2C_FIELD(p,u16 *,0x52a4))return 0;
- if(M2C_FIELD(p+v*14,u16 *,0x59a8)&1)result=0;else result=1;
+ valid:unitId=map[x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)];
+ if(!unitId)return 0;
+ if((unitId>>MAP_UNIT_OWNER_SHIFT)+1!=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))return 0;
+ if(M2C_FIELD(map+unitId*MAP_UNIT_STRIDE,u16 *,MAP_UNIT_RECORDS+MAP_UNIT_FLAGS)&UNIT_FLAG_ACTED)result=0;else result=1;
  return result;
 }
 

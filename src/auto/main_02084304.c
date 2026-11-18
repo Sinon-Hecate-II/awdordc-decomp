@@ -1,5 +1,6 @@
 /* 58 functions from 0x02084304 to 0x020852F4 (main), found by ds-decomp. */
 #include "common.h"
+#include "ov009_link.h"
 
 typedef struct {u8 pad[0x1e];u8 value;u8 rest[0x6d];} PlayerEntry;
 typedef struct {u8 pad[0x67a4];PlayerEntry entries[5];} PlayerTable;
@@ -251,41 +252,43 @@ s32 GetReadyPlayerMask(void) {
 
 s32 func_0208492c(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(GetActiveOverlay()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
 
+/* Bit mask of the player ids of every connected player: from the link
+ * overlay's player slots, or from the online session's player records. */
 u16 GetActivePlayerMask(void) {
     s32 bit;
-    u16 var_r5;
-    u8 var_r6;
-    u8 var_r6_2;
-    void *temp_r0_2;
-    void *temp_r0_3;
+    u16 mask;
+    u8 player;
+    u8 onlinePlayer;
+    void *linkPlayer;
+    void *onlineRecord;
 
     bit = 0;
-    var_r5 = 0;
+    mask = 0;
     switch (GetActiveOverlay()) {
     case 1:
-        var_r6 = 0;
+        player = 0;
         bit = 1;
         do {
-            temp_r0_2 = func_ov009_02224070(var_r6);
-            if (temp_r0_2 != NULL) {
-                var_r5 = (u16)(var_r5 | ((u32) bit << M2C_FIELD(temp_r0_2, s8 *, 0x17)));
+            linkPlayer = GetActiveLinkPlayerSlot(player);
+            if (linkPlayer != NULL) {
+                mask = (u16)(mask | ((u32) bit << M2C_FIELD(linkPlayer, s8 *, LINK_PLAYER_ID)));
             }
-            var_r6 += 1;
-        } while ((u32) var_r6 < 4U);
+            player += 1;
+        } while ((u32) player < 4U);
         break;
     case 2:
-        var_r6_2 = 0;
+        onlinePlayer = 0;
         bit = 1;
         do {
-            temp_r0_3 = GetOnlinePlayerRecord(var_r6_2);
-            if (temp_r0_3 != NULL) {
-                var_r5 = (u16)(var_r5 | ((u32) bit << M2C_FIELD(temp_r0_3, s8 *, 0x1B)));
+            onlineRecord = GetOnlinePlayerRecord(onlinePlayer);
+            if (onlineRecord != NULL) {
+                mask = (u16)(mask | ((u32) bit << M2C_FIELD(onlineRecord, s8 *, ONLINE_PLAYER_ID)));
             }
-            var_r6_2 += 1;
-        } while ((u32) var_r6_2 < 4U);
+            onlinePlayer += 1;
+        } while ((u32) onlinePlayer < 4U);
         break;
     }
-    return var_r5;
+    return mask;
 }
 
 s32 func_02084a0c(void) {
@@ -339,7 +342,7 @@ s32 GetOverlayEventFlags(void) {
 s32 IsOverlayEventSet(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a)))r=0;return r;}
 
 s32 func_02084ac0(M2C_UNK arg0) {
-    s32 func_ov009_02224070(M2C_UNK);
+    s32 GetActiveLinkPlayerSlot(M2C_UNK);
     s32 GetOnlinePlayerRecord(M2C_UNK);
     s32 temp_r0;
     s32 temp_r0_2;
@@ -348,7 +351,7 @@ s32 func_02084ac0(M2C_UNK arg0) {
     temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
-        temp_r0_2 = func_ov009_02224070(arg0);
+        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
         if (temp_r0_2 != 0) {
             return temp_r0_2;
         }
@@ -370,7 +373,7 @@ s8 func_02084b08(M2C_UNK arg0) {
     temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
-        temp_r0_2 = func_ov009_02224070(arg0);
+        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
         if (temp_r0_2 != NULL) {
             return M2C_FIELD(temp_r0_2, s8 *, 0x18);
         }
@@ -392,7 +395,7 @@ s8 func_02084b58(M2C_UNK arg0) {
     temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
-        temp_r0_2 = func_ov009_02224070(arg0);
+        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
         if (temp_r0_2 != NULL) {
             return M2C_FIELD(temp_r0_2, s8 *, 0x19);
         }
@@ -414,7 +417,7 @@ s8 func_02084ba8(M2C_UNK arg0) {
     temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
-        temp_r0_2 = func_ov009_02224070(arg0);
+        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
         if (temp_r0_2 != NULL) {
             return M2C_FIELD(temp_r0_2, s8 *, 0x1A);
         }

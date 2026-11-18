@@ -136,7 +136,7 @@ if(v==target)return 1;
 return 0;
 }
 
-s32 func_02022e08(u8 *arg0,s32 arg1,s32 arg2) {
+s32 TlsPickCipherSuite(u8 *arg0,s32 arg1,s32 arg2) {
 extern u16 gTlsCipherSuites[];
 u32 i=0;
 do {
@@ -146,7 +146,7 @@ i++;
 return 0;
 }
 
-s32 func_02022e68(s32 arg0, s32 arg1) {
+s32 TlsIsSsl3Version(s32 arg0, s32 arg1) {
     if (arg0 == 3) {
         return 1;
     }
@@ -157,9 +157,9 @@ s32 func_02022e68(s32 arg0, s32 arg1) {
 void TlsProcessClientHelloSslV2(u8 *p,u8 *q){
 s32 MI_CpuCopy8(); void MI_CpuFill8();
 s32 size,offset,n;u16 value;
-if(!func_02022e68(q[0],q[1]))return;
+if(!TlsIsSsl3Version(q[0],q[1]))return;
 size=(q[2]<<8)+q[3];
-value=func_02022e08(q+8,size/3,3);
+value=TlsPickCipherSuite(q+8,size/3,3);
 if(!value)return;
 M2C_FIELD(p,u16*,0x32)=value;
 offset=(q[4]<<8)+q[5];n=(q[6]<<8)+q[7];
@@ -170,18 +170,23 @@ else {MI_CpuFill8(p+0x34,0,32-n);MI_CpuCopy8(q+offset,p+0x54-n,n);}
 p[0x455]=1;
 }
 #pragma opt_propagation reset
-void TlsProcessClientHello(void *arg0,u8 *arg1) {
-s32 MI_CpuCopy8(); void func_02021de8(void *);
-u32 n; u8 *p; u16 value;
-if(func_02022e68(arg1[0],arg1[1])==0)return;
-MI_CpuCopy8(arg1+2,(u8 *)arg0+0x34,32);
-n=arg1[0x22];p=arg1+0x23;
-if(n!=32)M2C_FIELD(arg0,u8 *,0x30)=0;
-else {MI_CpuCopy8(p,(u8 *)arg0+0x74,32);func_02021de8(arg0);}
-p+=n;
-value=func_02022e08(p+2,((p[0]<<8)+p[1])/2,2);
-M2C_FIELD(arg0,u16 *,0x32)=value;
-if(value)M2C_FIELD(arg0,u8 *,0x455)=1;
+/* Handle a ClientHello body: accept only an SSL 3.x record version, keep the
+ * client's random, take its session id (restoring the matching cached session
+ * when the id is the full 32 bytes, otherwise clearing the cache marker), then
+ * pick one of the cipher suites the body offers and record it as the handshake's
+ * hash algorithm; a picked suite moves the handshake to the ClientHello state. */
+void TlsProcessClientHello(void *channel,u8 *body) {
+s32 MI_CpuCopy8(); void TlsRestoreSessionById(void *);
+u32 sessionIdLen; u8 *cursor; u16 cipherSuite;
+if(TlsIsSsl3Version(body[0],body[1])==0)return;
+MI_CpuCopy8(body+2,(u8 *)channel+TLS_RANDOM_A,TLS_RANDOM_SIZE);
+sessionIdLen=body[0x22];cursor=body+0x23;
+if(sessionIdLen!=TLS_RANDOM_SIZE)M2C_FIELD(channel,u8 *,TLS_SESSION_CACHED)=0;
+else {MI_CpuCopy8(cursor,(u8 *)channel+TLS_SESSION_ID,TLS_RANDOM_SIZE);TlsRestoreSessionById(channel);}
+cursor+=sessionIdLen;
+cipherSuite=TlsPickCipherSuite(cursor+2,((cursor[0]<<8)+cursor[1])/2,2);
+M2C_FIELD(channel,u16 *,TLS_HASH_ALGORITHM)=cipherSuite;
+if(cipherSuite)M2C_FIELD(channel,u8 *,TLS_STATE)=TLS_STATE_CLIENT_HELLO;
 }
 
 /* Decrypt one RSA block (the TLS premaster secret) with the CRT private key: exponentiate the
@@ -255,20 +260,23 @@ void RsaCrtDecrypt(s32 out, s32 in, void *arg2) {
     ((void (*)(void *))gFree[0])((void *)base);
 }
 
-void func_0202321c(s32 arg0,u8 *arg1,u8 *arg2) {
+/* One 16-byte chunk of the SSLv3 master-secret PRF: hash the chunk label, the
+ * master secret and both handshake randoms with SHA1, then hash the master
+ * secret and that digest with MD5 into `out`. */
+void TlsComputeMasterSecretChunk(s32 out,u8 *label,u8 *session) {
 void MD5_Init(void *); void MD5_Update(void *,void *,s32); void MD5_Final(void *,s32);
 void SHA1_Init(void *); void SHA1_Update(void *,void *,s32);void SHA1_Final(void *,void *);
 s32 StringLength(void *);
-u8 sp0[20];
-SHA1_Init(arg2+0x348);
-SHA1_Update(arg2+0x348,arg1,StringLength(arg1));
-SHA1_Update(arg2+0x348,arg2,0x30);
-SHA1_Update(arg2+0x348,arg2+0x34,0x40);
-SHA1_Final(arg2+0x348,sp0);
-MD5_Init(arg2+0x3fc);
-MD5_Update(arg2+0x3fc,arg2,0x30);
-MD5_Update(arg2+0x3fc,sp0,20);
-MD5_Final(arg2+0x3fc,arg0);
+u8 sha1[20];
+SHA1_Init(session+TLS_SHA1_CTX);
+SHA1_Update(session+TLS_SHA1_CTX,label,StringLength(label));
+SHA1_Update(session+TLS_SHA1_CTX,session,TLS_MASTER_SECRET_SIZE);
+SHA1_Update(session+TLS_SHA1_CTX,session+TLS_RANDOM_A,TLS_RANDOM_SIZE*2);
+SHA1_Final(session+TLS_SHA1_CTX,sha1);
+MD5_Init(session+TLS_MD5_CTX);
+MD5_Update(session+TLS_MD5_CTX,session,TLS_MASTER_SECRET_SIZE);
+MD5_Update(session+TLS_MD5_CTX,sha1,20);
+MD5_Final(session+TLS_MD5_CTX,out);
 }
 #pragma opt_strength_reduction off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {

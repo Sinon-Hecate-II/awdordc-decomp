@@ -5,10 +5,10 @@ void func_020258ac(void *, u32 *, u32);
 
 void func_020251b8(s32 now) {
 void OS_DisableInterrupts(void);void OS_RestoreInterrupts(void);void TaskWake(void *);
-extern M2C_UNK data_02138cc8;extern M2C_UNK gSocketManager;
+extern M2C_UNK gTlsSessionCache;extern M2C_UNK gSocketManager;
 u8 *p; s32 i; void *node; void *q;
 OS_DisableInterrupts();
-i=0;p=(u8 *)&data_02138cc8;
+i=0;p=(u8 *)&gTlsSessionCache;
 do{
 if(p[0x5a]!=0 && now-M2C_FIELD(p,s32 *,0x50)>957)p[0x5a]=0;
 i++;p+=0x5c;
@@ -26,8 +26,8 @@ node=M2C_FIELD(node,void **,0x68);
 
 void func_02025298(void) {
     M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_02138cc8;
-    MI_CpuFill8(&data_02138cc8, 0, 0x170);
+    extern M2C_UNK gTlsSessionCache;
+    MI_CpuFill8(&gTlsSessionCache, 0, 0x170);
 }
 
 void func_020252b4(M2C_UNK *arg0, void *arg1, u32 arg2) {

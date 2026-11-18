@@ -18,7 +18,7 @@ HistoryScrollUp kind:function(arm,size=0x48) addr:0x02212118
 HistoryPageUp kind:function(arm,size=0x48) addr:0x02212160
 HistoryScrollDown kind:function(arm,size=0x50) addr:0x022121a8
 HistoryPageDown kind:function(arm,size=0x4c) addr:0x022121f8
-func_ov005_02212244 kind:function(arm,size=0x9c) addr:0x02212244
+HistoryMenu_DrawTier kind:function(arm,size=0x9c) addr:0x02212244
 func_ov005_022122e0 kind:function(arm,size=0x344) addr:0x022122e0
 func_ov005_02212624 kind:function(arm,size=0x190) addr:0x02212624
 func_ov005_022127b4 kind:function(arm,size=0x190) addr:0x022127b4
@@ -33,7 +33,7 @@ func_ov005_02212f54 kind:function(arm,size=0x2a4) addr:0x02212f54
 HistoryMenu_HandleDPad kind:function(arm,size=0x1a4) addr:0x022131f8
 func_ov005_0221339c kind:function(arm,size=0x2c) addr:0x0221339c
 func_ov005_022133c8 kind:function(arm,size=0x92c) addr:0x022133c8
-func_ov005_02213cf4 kind:function(arm,size=0xa0) addr:0x02213cf4
+HistoryMenu_CreateRowSlots kind:function(arm,size=0xa0) addr:0x02213cf4
 HistoryMenu_Update kind:function(arm,size=0x300) addr:0x02213d94
 func_ov005_02214094 kind:function(arm,size=0x38) addr:0x02214094
 func_ov005_022140cc kind:function(arm,size=0x18) addr:0x022140cc
@@ -213,7 +213,7 @@ data_ov005_022201a0 kind:data(any) addr:0x022201a0
 data_ov005_022201b0 kind:data(any) addr:0x022201b0
 data_ov005_022201c0 kind:data(any) addr:0x022201c0
 data_ov005_022201d0 kind:data(any) addr:0x022201d0
-data_ov005_022201e0 kind:data(any) addr:0x022201e0
+sHistoryRowSlotDef kind:data(any) addr:0x022201e0
 data_ov005_02220208 kind:data(any) addr:0x02220208
 data_ov005_02220270 kind:data(any) addr:0x02220270
 data_ov005_02220274 kind:data(any) addr:0x02220274

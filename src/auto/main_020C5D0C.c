@@ -98,7 +98,10 @@ s32 func_020c5e30(void) {
     return 2;
 }
 
-s32 func_020c5e60(void) {
+/* Whether any player taking part in the battle has an army (nation) assigned:
+ * returns 0 when one does, 2 when none does, the map's rule bit 1 blocks it or
+ * the battle has already ended. */
+s32 AnyPlayerHasArmy(void) {
     struct bits8 {
         u32 value : 8;
     };
@@ -106,40 +109,45 @@ s32 func_020c5e60(void) {
     s32 IsPlayerPresent(s32);
     extern u8 gBattleEndState;
     extern void **gCurrentMap;
-    s32 var_r4;
-    s32 var_r5;
-    u32 temp_r0;
+    s32 player;
+    s32 playerOffset;
+    u32 armyId;
 
-    if (func_020a88e8(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) != 0) {
+    if (func_020a88e8(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
         return 2;
     }
     if (gBattleEndState != 0) {
         return 2;
     }
-    var_r4 = 1;
-    var_r5 = 0x8C;
+    player = 1;
+    playerOffset = MAP_PLAYER_STRIDE;
     do {
-        if (IsPlayerPresent(var_r4) != 0) {
-            temp_r0 = ((struct bits8 *) ((s8 *) *gCurrentMap + var_r5 + 0x6810))->value;
-            if (temp_r0 != 0) {
+        if (IsPlayerPresent(player) != 0) {
+            armyId = ((struct bits8 *) ((s8 *) *gCurrentMap + playerOffset + (MAP_PLAYER_STATES + PLAYER_REC_SPRITE)))->value;
+            if (armyId != 0) {
                 return 0;
             }
         }
-        var_r4 += 1;
-        var_r5 += 0x8C;
-    } while (var_r4 < 5);
+        player += 1;
+        playerOffset += MAP_PLAYER_STRIDE;
+    } while (player < 5);
     return 2;
 }
 
-s32 func_020c5efc(void) {
+/* Whether the current player's own unit group is empty: 1 when every record of
+ * the group (ids gPlayerUnitIdBase[player]+1 .. +0x32) is unoccupied, 0 when at
+ * least one unit is left.  Unlike IsCurrentPlayerOutOfUnits this ignores the
+ * map-data rule that can suppress the rout test. */
+s32 CurrentPlayerHasNoUnits(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     s32 count = 0;
     s32 i;
     void *base = *gCurrentMap;
-    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
-    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33; i++) {
-        UnkStruct_020C5D0C *entry = &((UnkStruct_020C5D0C *)((u8 *)base + 0x59A4))[i];
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+        UnkStruct_020C5D0C *entry = &((UnkStruct_020C5D0C *)((u8 *)base + MAP_UNIT_RECORDS))[i];
         if (entry->unk0 != 0) { count += 1; }
     }
     if (count == 0) { return 1; }
@@ -148,11 +156,11 @@ s32 func_020c5efc(void) {
 
 s32 func_020c5f94(void) {
     s32 func_020c5cd4();
-    s32 func_020c5efc();
+    s32 CurrentPlayerHasNoUnits();
     if (func_020c5cd4() == 2) {
         return 2;
     }
-    return func_020c5efc();
+    return CurrentPlayerHasNoUnits();
 }
 
 /* Whether the current player has no units left: 1 when none of the player's
@@ -398,7 +406,7 @@ s32 func_020c6214(void) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5c09[], gUnitMinAttackRange[];
     s32 GetHeldDirection(s32);
-    s32 func_020a85c8(s32);
+    s32 IsMobileIndirectUnitKind(s32);
     s32 func_0209f990(void);
     s32 FillMapLayer(s32);
     void func_01ffc368(s32, s32, void *);
@@ -416,7 +424,7 @@ s32 func_020c6214(void) {
     }
     if (x != M2C_FIELD(base, s16 *, 0x52D8) || y != M2C_FIELD(base, s16 *, 0x52DA)) {
         s32 id = ((UnkStruct_020C5D0C *)M2C_FIELD(base, void **, 0x52D0))->unk0;
-        if (data_ov000_021b5c09[id * 0x70] != 1 && func_020a85c8(id) == 0) {
+        if (data_ov000_021b5c09[id * 0x70] != 1 && IsMobileIndirectUnitKind(id) == 0) {
             return 2;
         }
     }
@@ -538,10 +546,10 @@ void func_020c69f8(void) {
 
 void func_020c6a10(void) {
     M2C_UNK func_020844f8();
-    M2C_UNK func_020bbb08();
+    M2C_UNK EndPlayerTurn();
     extern u8 gBattleEndState;
     func_020c0784();
-    func_020bbb08();
+    EndPlayerTurn();
     if (gBattleEndState == 0) {
         return;
     }

@@ -226,14 +226,14 @@ s32 GetUnitThreatClass(u32 kind) {
 s32 ScaleAiDamageByRange(s32 value,s32 kind,s32 bonus) {
  s32 ComputeUnitMaxAttackRange(s32,u8,u16,s32,s32);
  s32 ComputeUnitMoveRange(s32,u8,u16,s32,s32);
- s32 func_020a85c8(s32);
+ s32 IsMobileIndirectUnitKind(s32);
  s32 GetUnitAttackClass(u8);
  extern s32 *gCurrentMap;
  extern u8 gUnitMinAttackRange[];
  extern void *gAiCommandState;
  if(kind==5 && M2C_FIELD(*gCurrentMap,u8 *,MAP_FOG)==0 && M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAYER)!=2) return 0;
  if(GetUnitAttackClass((u8)kind)==1) {
- if(func_020a85c8(kind))value<<=1;
+ if(IsMobileIndirectUnitKind(kind))value<<=1;
  value=(value*(ComputeUnitMaxAttackRange(kind,M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAYER),M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),bonus,1)+4-gUnitMinAttackRange[kind*UNIT_KIND_STATS_SIZE]))>>3;
  if(((u32)(M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_MODE)<<23)>>29)==1 && kind==11)value=(value*3)>>1;
  } else {
@@ -268,7 +268,7 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  if(gAiState[6]==3)v<<=1;
  }
  if(a==23 && (gUnitKindFlags[b*112]&16)){
- if((gAiState[6]==1 || gAiState[6]==3) && func_ov000_021a8784(23))v>>=1;
+ if((gAiState[6]==1 || gAiState[6]==3) && CountPlayerUnitsOfKindTotal(23))v>>=1;
  if(gAiState[6]==4)v<<=1;
  }
  v=ScaleAiDamageByRange(v,a,1); t=M2C_FIELD((s32)gAiSettings+(a-1)*12,u8 *,20); t*=v; return Divide(t,100);

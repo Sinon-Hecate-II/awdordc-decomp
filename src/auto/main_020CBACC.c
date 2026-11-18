@@ -74,26 +74,35 @@ void func_020cbcd0(void *arg0) {
     func_020b576c(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-void func_020cbce0(s32 arg0) {
+void CreateFuelCrashEffect(s32 arg0) {
     void *CreateSpriteObject(M2C_UNK *);
-    extern M2C_UNK data_0212b33c;
-    M2C_FIELD(CreateSpriteObject(&data_0212b33c), s32 *, 0x34) = arg0;
+    extern M2C_UNK gFuelCrashSpriteClass;
+    M2C_FIELD(CreateSpriteObject(&gFuelCrashSpriteClass), s32 *, 0x34) = arg0;
 }
 
 void func_020cbcfc(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x6C) = 0;
 }
 
-void func_020cbd08(void *a) {
+/* Start-of-turn fuel pass, one unit per frame: charge the turn fuel of each
+ * unit of the current player from the saved slot; the first air or sea unit
+ * left without fuel pans the view to it and starts its crash (the unit is
+ * destroyed when that animation ends). Once every slot has been visited the
+ * task finishes. */
+void CrashFuelStarvedUnits(void *task) {
 extern void **gCurrentMap;
-s32 ChargeUnitTurnFuel(void *);M2C_UNK Sprite_ResumeAnimation(void *);
-while(M2C_FIELD(a,s16 *,0x6c)<51) {
-void *p=(u8 *)*gCurrentMap+0x59a4;
-s32 n=(M2C_FIELD(a,s16 *,0x6c)+M2C_FIELD(*gCurrentMap,u16 *,0x52a8))*14;
-if((((UnkCBUnit *)((u8 *)p+n))->kind)&&ChargeUnitTurnFuel((u8 *)p+n)) {((void (*)(void *,void *))func_020cbce0)((u8 *)p+n,a);return;}
-M2C_FIELD(a,s16 *,0x6c)++;
+s32 ChargeUnitTurnFuel(void *);
+M2C_UNK Sprite_ResumeAnimation(void *);
+while (M2C_FIELD(task, s16 *, 0x6c) < MAP_UNIT_GROUP_SCAN) {
+    u8 *units = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS;
+    BattleMapUnitHead *unit = (BattleMapUnitHead *)(units + (M2C_FIELD(task, s16 *, 0x6c) + M2C_FIELD(*gCurrentMap, u16 *, MAP_UNIT_GROUP_BASE)) * MAP_UNIT_STRIDE);
+    if (unit->kind && ChargeUnitTurnFuel(unit)) {
+        ((void (*)(void *, void *))CreateFuelCrashEffect)(unit, task);
+        return;
+    }
+    M2C_FIELD(task, s16 *, 0x6c)++;
 }
-if(M2C_FIELD(a,s16 *,0x6c)>=51)Sprite_ResumeAnimation(a);
+if (M2C_FIELD(task, s16 *, 0x6c) >= MAP_UNIT_GROUP_SCAN) Sprite_ResumeAnimation(task);
 }
 
 void func_020cbda4(void) {
@@ -102,7 +111,7 @@ void func_020cbda4(void) {
     CreateSpriteFromClass(&data_0212b25c, 7);
 }
 
-void func_020cbdbc(void) {
+void RefreshCursorCell(void) {
 extern void **gCurrentMap;
 void func_020d8804(void);void *p;
 p=*gCurrentMap;
@@ -334,7 +343,7 @@ void CloseMapViewStep(void *a) {
         M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_TARGET_X) = (GetMapViewWidth() >> 1) + (M2C_FIELD(p, s16 *, 0x28) >> 4);
         p = (u8 *)*gCurrentMap + 0x5120;   /* +0x2a is MAP_VIEW_Y */
         M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_TARGET_Y) = (GetMapViewHeight() >> 1) + (M2C_FIELD(p, s16 *, 0x2a) >> 4);
-        func_020cbdbc();
+        RefreshCursorCell();
     }
     Reset3DSpriteBankState();
     func_020c0a88();
@@ -427,33 +436,37 @@ M2C_FIELD(a,s16 *,0x6e)=3;
 M2C_FIELD(a,s16 *,0x6e)=NextMapCursorOption(3,M2C_FIELD(a,s16 *,0x6c));
 }
 #pragma pop
-void func_020cc8d8(void *arg0) {
+/* One frame of the adjacent-ally selection: step the option within the direction
+ * mask the object offers and store it back, then act on the key: confirm marks the
+ * chosen neighbour with an ally marker and resumes the object's animation, cancel
+ * deletes the object and puts the cursor target back where it was. */
+void UpdateAdjacentAllySelection(void *option) {
     M2C_UNK UpdateMapCursorOption(s32 *, M2C_UNK);
     M2C_UNK DeleteSpriteObject(void *);
     void func_020d472c(void);
     void func_020c75cc(void);
-    M2C_UNK func_020bbcec(s32);
+    M2C_UNK CreateAdjacentAllyMarker(s32);
     M2C_UNK Sprite_ResumeAnimation(void *);
     extern void **gCurrentMap;
-    s32 sp0;
-    s32 ret;
-    s32 tmp;
+    s32 selected;
+    s32 action;
+    s32 mask;
 
-    tmp = M2C_FIELD(arg0, s16 *, 0x6c);
-    sp0 = M2C_FIELD(arg0, s16 *, 0x6e);
-    ret = UpdateMapCursorOption(&sp0, tmp);
-    M2C_FIELD(arg0, s16 *, 0x6e) = (s16)sp0;
-    if (ret & 0x20) {
-        DeleteSpriteObject(arg0);
+    mask = M2C_FIELD(option, s16 *, MAP_OPTION_DIR_MASK);
+    selected = M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED);
+    action = UpdateMapCursorOption(&selected, mask);
+    M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED) = (s16)selected;
+    if (action & 0x20) {
+        DeleteSpriteObject(option);
         func_020d472c();
         func_020c75cc();
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52c2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52d8);
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52c4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52da);
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_X);
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_Y);
         return;
     }
-    if (ret & 0x10) {
-        func_020bbcec(M2C_FIELD(arg0, s16 *, 0x6e));
-        Sprite_ResumeAnimation(arg0);
+    if (action & 0x10) {
+        CreateAdjacentAllyMarker(M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED));
+        Sprite_ResumeAnimation(option);
     }
 }
 

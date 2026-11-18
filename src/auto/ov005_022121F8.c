@@ -19,27 +19,29 @@ s16 HistoryPageDown(void) {
 }
 
 #pragma opt_strength_reduction off
-void func_ov005_02212244(s32 arg0,s32 arg1) {
+/* Draw one history-list record's rank: three 2x2 cells at the given column,
+ * the first `tier` of them filled (tile 0xC4) and the rest empty (0xC8). */
+void HistoryMenu_DrawTier(s32 column, s32 tier) {
  M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
  void *saved;
  s32 i, x;
  s32 tile;
- saved=gCur3DSpriteEngine;
- gCur3DSpriteEngine=g3DSpriteEngineMain;
- i=0;
- x=0x18;
+ saved = gCur3DSpriteEngine;
+ gCur3DSpriteEngine = g3DSpriteEngineMain;
+ i = 0;
+ x = 0x18;
  do {
- if(i<arg1) tile=0xC4; else tile=0xC8;
- FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+x*2+((arg0<<5)*2),2,2,(u16)tile,2);
- i++;
- x+=2;
- }while(i<3);
- gCur3DSpriteEngine=saved;
+  if (i < tier) tile = 0xC4; else tile = 0xC8;
+  FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24) + x*2 + ((column<<5)*2), 2, 2, (u16)tile, 2);
+  i++;
+  x += 2;
+ } while (i < 3);
+ gCur3DSpriteEngine = saved;
 }
 #pragma opt_strength_reduction reset
-M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
+void func_ov005_022122e0(s32 arg0, s32 arg1) {
     void *GetRecordDefinition(M2C_UNK);
     u32 GetRecordValue(M2C_UNK, M2C_UNK);
     s32 GetRecordTier(M2C_UNK, M2C_UNK);
@@ -47,56 +49,64 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
     M2C_UNK func_0209b26c(M2C_UNK, s16, M2C_UNK, s32, s32, s32);
     M2C_UNK func_0209b2dc(M2C_UNK, s16, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK DrawNumber(M2C_UNK, s16, M2C_UNK, u32, s32, s32);
-    M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov005_02212244(s32, s32);
-    void StringFormat(M2C_UNK, M2C_UNK, M2C_UNK);
+    void DrawTextLine(s32, s16, s32, const u8 *, s32, s32);
+    void HistoryMenu_DrawTier(s32, s32);
+    void StringFormat(u8 *, const u8 *, ...);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    extern void *data_ov005_02220274;
-    extern M2C_UNK data_ov005_02220278[];
-    extern M2C_UNK data_ov005_02220280[];
-    extern M2C_UNK data_ov005_02220284[];
+    extern void *gHistoryMenu;
+    extern const u8 data_ov005_02220274[];
+    extern const u8 data_ov005_02220278[];
+    extern const u8 data_ov005_02220280[];
+    extern const u8 data_ov005_02220284[];
     void *p;
     u32 money;
     s32 status;
     s32 y;
     void *saved;
-    M2C_UNK buf[4];
-    M2C_UNK lo[4];
+    u8 buf[24];
+    u8 first[2], second[2];
 
     p = GetRecordDefinition(0);
     money = GetRecordValue(0, arg1);
     status = GetRecordTier(0, arg1);
-    y = (arg0 + 1) * 0x2E + 0x144;
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
+    y = 0x144 + (arg0 + 1) * 0x2E;
     if (func_ov005_02211a54(0, arg1) == 0) {
         func_0209b26c(2, (s16)(arg0 + 5), 1, M2C_FIELD(p, s32 *, 0), 0x1000, (u16)y);
         if (M2C_FIELD(p, u16 *, 0x4) == 0) {
-            DrawNumber(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(data_ov005_02220274, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
-            DrawTextLine(0x11, (s16)(arg0 + 5), 1, (M2C_UNK)data_ov005_02220278, 0x1000, (u16)(y + 0x24));
-            StringFormat((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
-            lo[0] = buf[0];
-            lo[1] = buf[1];
-            lo[2] = 0;
-            lo[3] = 0;
-            DrawTextLine(0x12, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[2], 0x1000, (u16)(y + 0x26));
-            DrawTextLine(0x13, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[0], 0x1000, (u16)(y + 0x28));
-            DrawTextLine(0x14, (s16)(arg0 + 5), 1, (M2C_UNK)data_ov005_02220280, 0x1000, (u16)(y + 0x2A));
-            StringFormat((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
-            DrawTextLine(0x15, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[2], 0x1000, (u16)(y + 0x2C));
-            DrawTextLine(0x16, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[0], 0x1000, (u16)(y + 0x2E));
+            DrawNumber(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(gHistoryMenu, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
+            DrawTextLine(0x11, (s16)(arg0 + 5), 1, data_ov005_02220274, 0x1000, (u16)(y + 0x24));
+            StringFormat(buf, data_ov005_02220278, M2C_FIELD(gHistoryMenu, s32 *, 0x8));
+            {
+                u8 a = buf[0], b = buf[1];
+                first[1] = 0;
+                first[0] = a;
+                second[1] = 0;
+                second[0] = b;
+            }
+            DrawTextLine(0x12, (s16)(arg0 + 5), 1, first, 0x1000, (u16)(y + 0x26));
+            DrawTextLine(0x13, (s16)(arg0 + 5), 1, second, 0x1000, (u16)(y + 0x28));
+            DrawTextLine(0x14, (s16)(arg0 + 5), 1, data_ov005_02220280, 0x1000, (u16)(y + 0x2A));
+            StringFormat(buf, data_ov005_02220284, M2C_FIELD(gHistoryMenu, s32 *, 0xC));
+            {
+                u8 a = buf[0], b = buf[1];
+                first[0] = a;
+                second[0] = b;
+                second[1] = first[1] = 0;
+            }
+            DrawTextLine(0x15, (s16)(arg0 + 5), 1, first, 0x1000, (u16)(y + 0x2C));
+            DrawTextLine(0x16, (s16)(arg0 + 5), 1, second, 0x1000, (u16)(y + 0x2E));
         } else {
             if (money > 0x5F5E0FFU) money = 0x5F5E0FF;
             DrawNumber(0x16, (s16)(arg0 + 5), 1, money, 0x1000, (u16)(y + 0x1E));
         }
     } else {
-        if (money > 0x5F5E0FFU) money = 0x5F5E0FF;
-        DrawNumber(0x16, (s16)(arg0 + 5), 1, money, 0x1000, (u16)(y + 0x1E));
+        func_0209b2dc(2, (s16)(arg0 + 5), 1, 0x45000000, 0x1000, 3, (u16)y);
     }
-    func_ov005_02212244(arg0 + 5, status);
+    HistoryMenu_DrawTier(arg0 + 5, status);
     gCur3DSpriteEngine = saved;
-    return 0;
 }
 
 void func_ov005_02212624(s32 arg0,M2C_UNK arg1) {
@@ -119,7 +129,7 @@ func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
 DrawNumber(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
 }else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,0x1000,3,(u16)arg1);
-func_ov005_02212244(arg0+5,t);gCur3DSpriteEngine=(void *)saved;
+HistoryMenu_DrawTier(arg0+5,t);gCur3DSpriteEngine=(void *)saved;
 }
 
 #pragma opt_common_subs on
@@ -143,10 +153,10 @@ func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
 DrawNumber(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
 }else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,4096,3,(u16)position);
-func_ov005_02212244(arg0+5,status);gCur3DSpriteEngine=saved;
+HistoryMenu_DrawTier(arg0+5,status);gCur3DSpriteEngine=saved;
 }}
 void func_ov005_02212944(s32 arg0,s32 arg1) {
- M2C_UNK func_ov005_022122e0(s32,s32);
+ void func_ov005_022122e0(s32,s32);
  void func_ov005_02212624(s32,s32);
  void func_ov005_022127b4(s32,s32);
  extern void *gHistoryMenu;

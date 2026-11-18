@@ -30,7 +30,7 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
     extern M2C_UNK data_ov005_02220c88[], data_ov005_02220f68[], data_ov005_02220a3c[];
     extern M2C_UNK data_ov005_02220f2c[], data_ov005_02220e7c[], data_ov005_02220a84[];
     extern M2C_UNK data_ov005_02220e9c[], data_ov005_02220efc[], data_ov005_02220a54[], data_ov005_02220a60[];
-    extern u8 gCoState[], gSpriteAnimConfig[];
+    extern u8 gCoState[], gBattleResults[];
     void *sprite;
     void **saved;
     u16 *volatile bank;
@@ -98,9 +98,9 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
     M2C_FIELD((u8 *)sprite + slot * 2, s16 *, 0x3a) = 160;
     slot++;
     checkCount:
-    longest = gSpriteAnimConfig[13];
-    if (gSpriteAnimConfig[12] > longest) longest = gSpriteAnimConfig[12];
-    if ((s32)longest <= gSpriteAnimConfig[14]) longest = gSpriteAnimConfig[14];
+    longest = gBattleResults[13];
+    if (gBattleResults[12] > longest) longest = gBattleResults[12];
+    if ((s32)longest <= gBattleResults[14]) longest = gBattleResults[14];
     if (slot < (s32)longest) goto nextSlot;
 }
 #pragma opt_loop_invariants reset

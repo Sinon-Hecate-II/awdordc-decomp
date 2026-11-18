@@ -168,19 +168,24 @@ void MarkAdjacentCellsForKind24(s32 marker) {
     } while (y < M2C_FIELD(base, u16 *, MAP_HEIGHT));
 }
 #pragma pop
-s32 CountEmptyUnitsOfKind(s32 arg0) {
-extern void **gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-s32 count=0;
-s32 i;
-void *base=*gCurrentMap;
-u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
-for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
-UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)base+0x59a4))[i];
-u32 type=entry->unk0;
-if(type!=0 && type==arg0 && entry->unkC[0]==0) count++;
-}
-return count;
+/* Counts the current player's units of `kind` that are empty (carry no unit), in
+   the 0x33-unit group that starts after the player's first unit id. */
+s32 CountEmptyUnitsOfKind(s32 kind) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 count = 0;
+    s32 unitId;
+    void *base = *gCurrentMap;
+    u16 firstUnitId = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
+
+    for (unitId = firstUnitId + 1;
+         unitId < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN;
+         unitId++) {
+        UnkStruct_ov000_021A860C *unit = &((UnkStruct_ov000_021A860C *)((u8 *)base + MAP_UNIT_RECORDS))[unitId];
+        u32 unitKind = unit->unk0;
+        if (unitKind != 0 && unitKind == kind && unit->unkC[0] == 0) count++;
+    }
+    return count;
 }
 
 /* Counts the current player's capture-capable units that are still ready to act

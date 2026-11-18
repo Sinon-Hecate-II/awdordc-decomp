@@ -401,34 +401,37 @@ void func_020b3038(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s16 *, 0x12) = (s16) ((M2C_FIELD(arg0, s16 *, 0xC) - orig_c) * M2C_FIELD(arg0, u8 *, 0x7));
 }
 
-s16 func_020b316c(void *arg0) {
-    s16 temp_r2;
-    u8 temp_r3;
+/* Eases the sprite grid's animated pixel offset back to zero: a whole cell
+ * height per frame while it is at least that far from zero, a quarter of one
+ * once closer, without crossing zero.  Returns the remaining offset. */
+s16 UpdateSpriteGridPixelOffset(void *grid) {
+    s16 offset;
+    u8 cellHeight;
 
-    temp_r3 = M2C_FIELD(arg0, u8 *, 7);
-    temp_r2 = M2C_FIELD(arg0, s16 *, 0x12);
-    if ((s32) temp_r2 < (s32) (0 - temp_r3)) {
-        M2C_FIELD(arg0, s16 *, 0x12) = (s16) (temp_r2 + temp_r3);
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x12) > 0) {
-            M2C_FIELD(arg0, s16 *, 0x12) = 0;
+    cellHeight = M2C_FIELD(grid, u8 *, SPRITE_GRID_CELL_HEIGHT);
+    offset = M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET);
+    if ((s32) offset < (s32) (0 - cellHeight)) {
+        M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = (s16) (offset + cellHeight);
+        if ((s32) M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) > 0) {
+            M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = 0;
         }
-    } else if ((s32) temp_r2 < 0) {
-        M2C_FIELD(arg0, s16 *, 0x12) = (s16) (temp_r2 + ((s32) temp_r3 >> 2));
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x12) > 0) {
-            M2C_FIELD(arg0, s16 *, 0x12) = 0;
+    } else if ((s32) offset < 0) {
+        M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = (s16) (offset + ((s32) cellHeight >> 2));
+        if ((s32) M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) > 0) {
+            M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = 0;
         }
-    } else if ((s32) temp_r2 > (s32) temp_r3) {
-        M2C_FIELD(arg0, s16 *, 0x12) = (s16) (temp_r2 - temp_r3);
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x12) < 0) {
-            M2C_FIELD(arg0, s16 *, 0x12) = 0;
+    } else if ((s32) offset > (s32) cellHeight) {
+        M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = (s16) (offset - cellHeight);
+        if ((s32) M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) < 0) {
+            M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = 0;
         }
-    } else if ((s32) temp_r2 > 0) {
-        M2C_FIELD(arg0, s16 *, 0x12) = (s16) (temp_r2 - ((s32) temp_r3 >> 2));
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x12) < 0) {
-            M2C_FIELD(arg0, s16 *, 0x12) = 0;
+    } else if ((s32) offset > 0) {
+        M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = (s16) (offset - ((s32) cellHeight >> 2));
+        if ((s32) M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) < 0) {
+            M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET) = 0;
         }
     }
-    return M2C_FIELD(arg0, s16 *, 0x12);
+    return M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET);
 }
 
 u8 func_020b320c(void *p) {

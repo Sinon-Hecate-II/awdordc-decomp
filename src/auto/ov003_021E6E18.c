@@ -17,8 +17,8 @@ M2C_FIELD(p+M2C_FIELD(p,u8 *,7),u8 *,10)=v;M2C_FIELD(p,u8 *,8)=v;
 static inline void SelectSlot(void *p,u8 i) {M2C_FIELD(p,u8 *,7)=i;SetSlotValue(p,M2C_FIELD(p+i,u8 *,10));}
 
 u8 func_ov003_021e6e18(void) {
-    void *func_ov003_021e6d6c();
-    return M2C_FIELD(func_ov003_021e6d6c(), u8 *, 1);
+    void *GetWaypointSlotGroup();
+    return M2C_FIELD(GetWaypointSlotGroup(), u8 *, 1);
 }
 
 u8 func_ov003_021e6e28(s32 arg0) {

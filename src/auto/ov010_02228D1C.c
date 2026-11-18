@@ -69,7 +69,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     M2C_UNK func_0203a850(M2C_UNK *, s32);
     s8 func_0203bf80(u32, s32, s32);
     s8 func_0203be54(s8, s32, s32);
-    M2C_UNK func_02038838(s32, s32, s32, s32, s32, s32);
+    M2C_UNK StartHostingMatch(s32, s32, s32, s32, s32, s32);
     M2C_UNK func_020675bc(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov010_02228050(void);
     void Ov010Online_OnHostJoinEvent(void);
@@ -140,7 +140,7 @@ volatile Ov010CallbackFn d;
                    x,
                    y);
 
-    func_02038838(arg1 & 0xff, (s32)buf, (s32)Ov010Online_OnHostJoinEvent, arg3, (s32)func_ov010_02228050, arg5);
+    StartHostingMatch(arg1 & 0xff, (s32)buf, (s32)Ov010Online_OnHostJoinEvent, arg3, (s32)func_ov010_02228050, arg5);
 #pragma opt_dead_assignments reset
 }
 #pragma cplusplus off

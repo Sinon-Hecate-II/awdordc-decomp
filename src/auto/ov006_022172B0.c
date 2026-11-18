@@ -1,32 +1,8 @@
 /* 44 functions from 0x022172B0 to 0x02218200 (ov006), found by ds-decomp. */
 #include "common.h"
+#include "ov006_map_transfer.h"
 typedef struct { s32 v[4]; } Ov006Date;
 extern const Ov006Date data_ov006_02218394;
-
-/* The ov006 map-transfer object: the campaign map id it exchanges, its transfer
- * mode, and the buffers it receives player entries (0x310 bytes each) and
- * expanded map records (0x6F8 bytes each) into. */
-#define MAP_TRANSFER_MAP_ID      0x34 /* s32 campaign map id whose record is transferred */
-#define MAP_TRANSFER_MODE        0x38 /* s32 transfer mode selecting the operation */
-#define MAP_TRANSFER_COUNT       0x3C /* s32 number of player entries collected */
-#define MAP_TRANSFER_SOURCE      0x48 /* s32 source map record for the local mode */
-#define MAP_TRANSFER_ENTRIES     0x4C /* u8 * received player entries, MAP_TRANSFER_SLOTS of them */
-#define MAP_TRANSFER_RECORDS     0x50 /* u8 * expanded received map records */
-#define MAP_TRANSFER_CHOSEN      0x54 /* u8 * received map record picked for play */
-#define MAP_TRANSFER_SLOTS       10
-#define MAP_TRANSFER_ENTRY_SIZE  0x310
-#define MAP_TRANSFER_RECORD_SIZE 0x6F8
-
-/* The downloaded-map panel sprite the transfer screen creates (class
- * data_ov006_02218918): the step it shows, the per-player campaign-map page it
- * lists and which players' pages are ready, and the received-record buffers. */
-#define MAP_TRANSFER_PANEL_STEP    0x34 /* u8 transfer step, 1..4 */
-#define MAP_TRANSFER_PANEL_PAGE0   0x38 /* u8 *first player's campaign-map page */
-#define MAP_TRANSFER_PANEL_PAGES   0x3C /* s32[4] each ready player's page pointer */
-#define MAP_TRANSFER_PANEL_LOCAL   0x4C /* s8 local player id */
-#define MAP_TRANSFER_PANEL_READY   0x4D /* u8 bit per player whose page is ready */
-#define MAP_TRANSFER_PANEL_RECORDS 0x50 /* s32 received map-records buffer */
-#define MAP_TRANSFER_PANEL_CHOSEN  0x54 /* s32 chosen received map record */
 
 /* Status texts of the map-transfer screen: the valid pair is shown when the
  * campaign map record exists, the missing pair otherwise, one per transfer mode. */
@@ -35,24 +11,33 @@ extern const Ov006Date data_ov006_02218394;
 #define MAP_TRANSFER_MSG_MISSING_0 0x46000020
 #define MAP_TRANSFER_MSG_MISSING_1 0x46000021
 
-void func_ov006_022172b0(M2C_UNK arg0) {s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
-void *CreateSpriteObject(void *,M2C_UNK);
-extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
-u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
-if(p) {
-M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
-M2C_FIELD(p,u8 *,0x34)=3;
-M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
-M2C_FIELD(p,s8 *,0x4c)=GetLocalPlayerIdForOverlay();
-M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
-M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
-i=0;
-do {
-if(M2C_FIELD(p,u8 *,0x4d)&(1<<i))
-M2C_FIELD(p+i*4,s32 *,0x3c)=(s32)((u8 (*)[0x54])M2C_FIELD(p,s32 *,0x38)+i*0x32);
-i++;
-}while(i<4);
-}
+/* Create the map-transfer panel of the link map-setup screen at transfer step 3,
+ * attached to `owner`: it shows the campaign map header pages of the players that
+ * are ready and starts without any received-record buffer chosen yet. */
+void CreateMapTransferPanelStep3(M2C_UNK owner) {
+    s8 GetLocalPlayerIdForOverlay();
+    u8 GetReadyPlayerMask();
+    s32 GetCampaignMapHeader(M2C_UNK);
+    void *CreateSpriteObject(void *, M2C_UNK);
+    extern M2C_UNK data_ov006_0221890c, data_ov006_02218918;
+    u8 i;
+    void *panel = CreateSpriteObject(&data_ov006_02218918, owner);
+
+    if (panel) {
+        M2C_FIELD(panel, void **, 0) = &data_ov006_0221890c;
+        M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_STEP) = 3;
+        M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_RECORDS) = 0;
+        M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_CHOSEN) = 0;
+        M2C_FIELD(panel, s8 *, MAP_TRANSFER_PANEL_LOCAL) = GetLocalPlayerIdForOverlay();
+        M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_READY) = GetReadyPlayerMask();
+        M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0) = GetCampaignMapHeader(0);
+        i = 0;
+        do {
+            if (M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_READY) & (1 << i))
+                M2C_FIELD(panel + i * 4, s32 *, MAP_TRANSFER_PANEL_PAGES) = (s32)((u8 (*)[0x54]) M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0) + i * CAMPAIGN_PAGE_HEADERS);
+            i++;
+        } while (i < 4);
+    }
 }
 
 /* Creates the transfer screen's downloaded-map panel: links each ready player's
@@ -61,19 +46,19 @@ i++;
 void CreateMapTransferPanel(M2C_UNK owner, s32 records, s32 chosen) {
     s8 GetLocalPlayerIdForOverlay();
     u8 GetReadyPlayerMask();
-    s32 func_020c7e58(M2C_UNK);
+    s32 GetCampaignMapHeader(M2C_UNK);
     void *CreateSpriteObject(void *, M2C_UNK);
-    extern M2C_UNK data_ov006_0221890c, data_ov006_02218918;
+    extern M2C_UNK gMapTransferPanelVtable, gMapTransferPanelStateClass;
     u8 i;
-    void *p = CreateSpriteObject(&data_ov006_02218918, owner);
+    void *p = CreateSpriteObject(&gMapTransferPanelStateClass, owner);
     if (p) {
-        M2C_FIELD(p, void **, 0) = &data_ov006_0221890c;
+        M2C_FIELD(p, void **, 0) = &gMapTransferPanelVtable;
         M2C_FIELD(p, u8 *, MAP_TRANSFER_PANEL_STEP) = 4;
         M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_RECORDS) = 0;
         M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_CHOSEN) = 0;
         M2C_FIELD(p, s8 *, MAP_TRANSFER_PANEL_LOCAL) = GetLocalPlayerIdForOverlay();
         M2C_FIELD(p, u8 *, MAP_TRANSFER_PANEL_READY) = GetReadyPlayerMask();
-        M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_PAGE0) = func_020c7e58(0);
+        M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_PAGE0) = GetCampaignMapHeader(0);
         i = 0;
         do {
             if (M2C_FIELD(p, u8 *, MAP_TRANSFER_PANEL_READY) & (1 << i))
@@ -296,7 +281,7 @@ void func_ov006_0221791c(void *arg0) {
 }
 
 void func_ov006_02217948(void *arg0) {
-    M2C_UNK func_020e3b54(M2C_UNK, M2C_UNK, void *, void *);
+    M2C_UNK CreateOnlinePlayerListUpToLimitNode(M2C_UNK, M2C_UNK, void *, void *);
     M2C_UNK func_020e3d6c(M2C_UNK, void *, void *);
     M2C_UNK func_020e3f88(void *, M2C_UNK, void *, void *);
     s32 temp_r0;
@@ -305,7 +290,7 @@ void func_ov006_02217948(void *arg0) {
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x38);
     switch (temp_r0) {
     case 0:
-        func_020e3b54(M2C_FIELD(arg0, s32 *, 0x4C), 0x64, arg0 + 0x3C, arg0);
+        CreateOnlinePlayerListUpToLimitNode(M2C_FIELD(arg0, s32 *, 0x4C), 0x64, arg0 + 0x3C, arg0);
         return;
     case 1:
         func_020e3d6c(M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
@@ -403,7 +388,7 @@ void func_ov006_02217b08(void *arg0) {
 
 void func_ov006_02217b24(void *arg0) {
     M2C_UNK func_0208999c(s32, M2C_UNK, s32);
-    M2C_UNK func_02089b38(s32, M2C_UNK *);
+    M2C_UNK TextLayer_AppendText(s32, M2C_UNK *);
     s32 CreateTextLayer();
     M2C_UNK func_0209ccb8(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020c8e40();
@@ -413,8 +398,8 @@ void func_ov006_02217b24(void *arg0) {
 
     temp_r0 = CreateTextLayer();
     func_0208999c(temp_r0, 2, 0x4600001F);
-    func_02089b38(temp_r0, &data_ov006_02218cd8);
-    func_02089b38(temp_r0, M2C_FIELD(arg0, s32 *, 0x54) + 6);
+    TextLayer_AppendText(temp_r0, &data_ov006_02218cd8);
+    TextLayer_AppendText(temp_r0, M2C_FIELD(arg0, s32 *, 0x54) + 6);
     func_020c8e40();
     func_0209ccb8(&func_ov003_021fef18, 6);
 }
@@ -557,7 +542,7 @@ case 2: pid=MapCode_GetPid(M2C_FIELD(object,s32 *,0x3c),M2C_FIELD(object,s32 *,0
 
 void func_ov006_02217f20(void *arg0) {
     s32 GetOnlineLocalPlayerId();
-    s32 func_02086980(s32);
+    s32 IsCampaignMapSaved(s32);
     void *GetMapRecordStamp(s32);
     s32 j, i;
     for (j = 0; j < 10; j++) {
@@ -569,7 +554,7 @@ void func_ov006_02217f20(void *arg0) {
     M2C_FIELD(arg0, u32 *, 0x34) = 1;
     M2C_FIELD(arg0, u8 *, 0x38) = 1;
     for (j = 0; j < 50; j++) {
-        if (func_02086980(j)) {
+        if (IsCampaignMapSaved(j)) {
             i = j + 0xe1;
             M2C_FIELD(arg0, s32 **, 0x44)[M2C_FIELD(arg0, u32 *, 0x34)] = M2C_FIELD(GetMapRecordStamp(i), volatile s32 *, 0x10);
             M2C_FIELD(arg0, u16 **, 0x48)[M2C_FIELD(arg0, u32 *, 0x34)] = (u16)i;

@@ -423,7 +423,7 @@ void func_ov003_021f34e4(void *a) {
     void EnableMapConfirm(void);
     void DisableMapConfirm(void);
     s32 func_ov003_021f1bfc(void);
-    void func_ov006_02217214(void *);
+    void CreateMapTransferPanelStep2(void *);
     u8 mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
     s32 test;
     switch(mode) {
@@ -436,7 +436,7 @@ void func_ov003_021f34e4(void *a) {
         if(!IsLinkSessionActive()) return;
         mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
         if(mode!=1 && mode!=5) return;
-        func_ov006_02217214(a);
+        CreateMapTransferPanelStep2(a);
     } else DisableMapConfirm();
 }
 

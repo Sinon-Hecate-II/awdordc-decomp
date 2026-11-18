@@ -46,6 +46,7 @@
 #define REG_GX_MTX_TRANS  (*(volatile u32 *)0x04000470) /* 3 writes: tx, ty, tz in 20.12 */
 #define REG_GX_SWAP_BUFFERS (*(volatile u32 *)0x04000540)
 #define REG_GX_COLOR      (*(volatile u32 *)0x04000480)
+#define REG_GX_NORMAL     (*(volatile u32 *)0x04000484) /* one packed 10-bit-per-axis normal vector */
 #define REG_GX_TEX_COORD  (*(volatile u32 *)0x04000488)
 #define REG_GX_VTX_16     (*(volatile u32 *)0x0400048C)
 #define REG_GX_BEGIN_VTXS (*(volatile u32 *)0x04000500)
@@ -109,6 +110,25 @@ enum {
 #define VRAM_CR_MAIN_BG_PALETTE(slot)  ((u8)(0x84 | ((slot) << 3)))
 #define VRAM_CR_MAIN_OBJ_PALETTE(slot) ((u8)(0x85 | ((slot) << 3)))
 
+/* The four extended-palette loaders (GX_BeginLoad*ExtPltt / GX_Load*ExtPltt /
+ * GX_EndLoad*ExtPltt) keep their state in gGxExtPlttLoad: for each palette the
+ * bank grant it holds and the VRAM base and offset a load copies into. */
+#define GX_EXTPLTT_LOAD_SUB_BG_GRANT  0x00 /* grant of the sub-engine BG extended palette */
+#define GX_EXTPLTT_LOAD_OBJ_BASE      0x04 /* main-engine OBJ extended palette VRAM base */
+#define GX_EXTPLTT_LOAD_OBJ_GRANT     0x08 /* grant of the main-engine OBJ extended palette */
+#define GX_EXTPLTT_LOAD_BG_OFFSET     0x0c /* offset into the main-engine BG extended palette area */
+#define GX_EXTPLTT_LOAD_BG_BASE       0x10 /* main-engine BG extended palette VRAM base */
+#define GX_EXTPLTT_LOAD_BG_GRANT      0x14 /* grant of the main-engine BG extended palette */
+#define GX_EXTPLTT_LOAD_SUB_OBJ_GRANT 0x18 /* grant of the sub-engine OBJ extended palette */
+
+/* VRAM base the main-engine BG extended palette is loaded at, keyed by the bank
+ * grant GX_SetBankForBGExtPltt gave it (banks E, F and G).  G shares bank F's
+ * base and sits GX_BGEXTPLTT_OFFSET_G further in. */
+#define GX_BGEXTPLTT_BASE_E     0x06880000 /* bank E grant */
+#define GX_BGEXTPLTT_BASE_F     0x06890000 /* bank F grant, or F and G together */
+#define GX_BGEXTPLTT_BASE_G     0x06894000 /* bank G grant */
+#define GX_BGEXTPLTT_OFFSET_G   0x4000     /* bank-G palette offset from GX_BGEXTPLTT_BASE_F */
+
 /* Field offsets of the allocator state (gVramBankState). */
 #define VRAM_BANKS_PENDING 0x00 /* banks released by the last change, set back to 0x80 */
 #define VRAM_BANKS_BG      0x02 /* banks assigned to the main engine background */
@@ -131,6 +151,13 @@ enum {
 #define REG_GX_POLYGON_ATTR  (*(volatile u32 *)0x040004A4)
 #define REG_GX_TEXIMAGE_PARAM (*(volatile u32 *)0x040004A8)
 #define REG_GX_TEXPLTT_BASE  (*(volatile u32 *)0x040004AC)
+#define REG_GX_SHININESS     (*(volatile u32 *)0x040004D0) /* 32 writes: the shininess table */
+
+/* Table blocks of the geometry engine; G3X_InitTable clears them at start-up. */
+#define G3X_EDGE_TABLE_ADDR     0x04000330 /* 8 edge colours of 16 bits */
+#define G3X_EDGE_TABLE_SIZE     0x10
+#define G3X_FOG_TOON_TABLE_ADDR 0x04000360 /* 16-entry fog table, then the 32-entry toon table */
+#define G3X_FOG_TOON_TABLE_SIZE 0x60
 
 #define GXSTAT_GEOMETRY_BUSY 0x08000000
 #define GXSTAT_STACK_ERROR   0x00008000

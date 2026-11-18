@@ -1,5 +1,6 @@
 /* 14 functions from 0x0216AD74 to 0x0216BD08 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_room.h"
 
 #pragma thumb on
 u32 func_ov001_0216b87c(u32 a,u32 b) {u32 t=a&b; b=~b; a=((a&b)+1)|t; if(a>=(b|t)) a=1|t; return a;}
@@ -120,22 +121,27 @@ M2C_FIELD(p,u16 *,6)=func_ov001_0216ceb0(M2C_FIELD(p,u16 *,6));
 }
 }
 
-s32 func_ov001_0216bc68(s32 a,void *b,s32 *c,s32 d) {
-s32 func_ov001_0216bd08(s32,void *,s32 *,s32);
+/* Top-level dispatcher of the ov001 room protocol's packets: a packet must carry a
+ * non-zero header marker, be a room-protocol packet (kind 17) and pass the room
+ * request check; its command then picks the handler for the session's state
+ * (0x1010 the room setup, 0x2010 the room data, 0x3010 a room request's result).
+ * A rejected packet counts as a failure and the state is left alone. */
+s32 Ov001_DispatchRoomPacket(s32 state,void *packet,s32 *failures,s32 session) {
+s32 Ov001_HandleRoomSetup(s32,void *,s32 *,s32);
 s32 Ov001_HandleRoomData(s32,void *,s32 *,s32);
-s32 func_ov001_0216bebc(s32,void *,s32 *,s32);
-s32 func_ov001_0216bf60(void *);
+s32 Ov001_HandleRoomResult(s32,void *,s32 *,s32);
+s32 Ov001_HandleRoomRequest(void *);
 u32 Ov001SwapEndian16(u16);
-void *p=(u8 *)b+12;
-if(Ov001SwapEndian16(M2C_FIELD(b,u16 *,12))<1U){++*c;return a;}
-if(M2C_FIELD(p,u8 *,15)!=17){++*c;return a;}
-if(func_ov001_0216bf60((u8 *)b+12)>0){++*c;return a;}
-switch(Ov001SwapEndian16(M2C_FIELD(p,u16 *,6))) {
-case 0x1010:a=func_ov001_0216bd08(a,b,c,d);break;
-case 0x2010:a=Ov001_HandleRoomData(a,b,c,d);break;
-case 0x3010:a=func_ov001_0216bebc(a,b,c,d);break;
+void *header=(u8 *)packet+OV001_PKT_PREFIX;
+if(Ov001SwapEndian16(M2C_FIELD(packet,u16 *,OV001_PKT_PREFIX))<1U){++*failures;return state;}
+if(M2C_FIELD(header,u8 *,OV001_PKT_KIND)!=OV001_PKT_KIND_ROOM){++*failures;return state;}
+if(Ov001_HandleRoomRequest((u8 *)packet+OV001_PKT_PREFIX)>0){++*failures;return state;}
+switch(Ov001SwapEndian16(M2C_FIELD(header,u16 *,OV001_PKT_COMMAND))) {
+case 0x1010:state=Ov001_HandleRoomSetup(state,packet,failures,session);break;
+case 0x2010:state=Ov001_HandleRoomData(state,packet,failures,session);break;
+case 0x3010:state=Ov001_HandleRoomResult(state,packet,failures,session);break;
 }
-return a;
+return state;
 }
 #pragma thumb off
 

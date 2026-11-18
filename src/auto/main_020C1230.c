@@ -247,7 +247,7 @@ u8 IsDestroyedPipeTile(void) {
     return var_r0;
 }
 
-void func_020c1a9c(s32 a,s32 b){s32 GetUiColor(s32); Load3DSpritePattern(a<<5,(u16)b,GetUiColor(11),1);}
+void SetFrameRectPattern(s32 a,s32 b){s32 GetUiColor(s32); Load3DSpritePattern(a<<5,(u16)b,GetUiColor(11),1);}
 
 /* Draw the border of the frame rectangle whose top-left corner is (x, y): the
  * screen corners (0,0) and (256,192) are mapped to frame-tile coordinates, and
@@ -273,15 +273,38 @@ void DrawFrameRectBorder(s32 x, s32 y, s32 tile, s32 pal) {
         (u16)((tile >> SPRITE_ENGINE_MODE(gCur3DSpriteEngine) & 1023) | (u16)(pal << 12)), 0, FRAME_BORDER_INSIDE);
 }
 
-void func_020c1bf0(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))func_020c1a9c(M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
+/* Per-frame draw callback of a frame-rectangle sprite: on each engine the
+ * sprite's screen mode allows, loads the rectangle's frame tile pattern with
+ * its palette, then restores the engine that was current before. */
+void DrawFrameRectPattern(void *rect) {
+    extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
+    s32 savedEngine, pass, engine, screen;
 
-void func_020c1c88(void *a){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 old,i,p,mode; old=gCur3DSpriteEngine;i=0;do{if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;gCur3DSpriteEngine=p;mode=M2C_FIELD(a,s32 *,0x64);if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old)))DrawFrameRectBorder(M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,s32 *,0x5c),M2C_FIELD(a,s32 *,0x60));i++;}while(i<2);gCur3DSpriteEngine=old;}
+    savedEngine = gCur3DSpriteEngine;
+    pass = 0;
+    do {
+        if (pass == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        screen = M2C_FIELD(rect, s32 *, FRAME_RECT_SCREEN);
+        if (((screen != 0) || (engine == g3DSpriteEngineMain)) && ((screen != 1) || (engine == g3DSpriteEngineSub)) && ((screen != 3) || (engine == savedEngine))) {
+            SetFrameRectPattern(M2C_FIELD(rect, s32 *, FRAME_RECT_TILE), M2C_FIELD(rect, s32 *, FRAME_RECT_PAL));
+        }
+        pass++;
+    } while (pass < 2);
+    gCur3DSpriteEngine = savedEngine;
+}
+
+/* Draws the border of one frame-rectangle sprite: the border is stamped once for
+ * each screen, but only on the screens the sprite's mode allows (main only, sub
+ * only, or the engine that is active when the sprite is drawn). */
+void DrawFrameRectSprite(void *rect){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 savedEngine,pass,engine,screen; savedEngine=gCur3DSpriteEngine;pass=0;do{if(pass==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;gCur3DSpriteEngine=engine;screen=M2C_FIELD(rect,s32 *,FRAME_RECT_SCREEN);if(((screen!=0)||(engine==g3DSpriteEngineMain))&&((screen!=1)||(engine==g3DSpriteEngineSub))&&((screen!=3)||(engine==savedEngine)))DrawFrameRectBorder(M2C_FIELD(rect,s32 *,FRAME_RECT_X),M2C_FIELD(rect,s32 *,FRAME_RECT_Y),M2C_FIELD(rect,s32 *,FRAME_RECT_TILE),M2C_FIELD(rect,s32 *,FRAME_RECT_PAL));pass++;}while(pass<2);gCur3DSpriteEngine=savedEngine;}
 
 void SetFrameRect(s32 a,s32 b,s32 c,s32 d) {
  void *CreateSpriteFromClass(void *,s32);
- extern M2C_UNK data_021296b8;
+ extern M2C_UNK gFrameRectSpriteClass;
  extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;
- void *p=CreateSpriteFromClass(&data_021296b8,7);
+ void *p=CreateSpriteFromClass(&gFrameRectSpriteClass,7);
  M2C_FIELD(p,s32 *,0x38)=a;
  M2C_FIELD(p,s32 *,0x3c)=b;
  M2C_FIELD(p,s32 *,0x5c)=c;
@@ -291,8 +314,8 @@ void SetFrameRect(s32 a,s32 b,s32 c,s32 d) {
 
 void func_020c1d98(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_021296b8;
-    DeleteSpriteObjectsOfClass(&data_021296b8);
+    extern M2C_UNK gFrameRectSpriteClass;
+    DeleteSpriteObjectsOfClass(&gFrameRectSpriteClass);
 }
 
 u8 func_020c1dac(s32 arg0, s32 arg1, s32 arg2) {

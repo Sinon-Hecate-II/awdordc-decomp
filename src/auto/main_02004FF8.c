@@ -526,30 +526,30 @@ OS_DisableInterrupts();}func_02005c70();
 
 void func_02005c70(void){
 extern s32 gThreadManager;
-void func_02006130(void);
+void OS_DisableScheduler(void);
 void func_02006644(void *);
 void func_02005858(void *);
 void OS_WakeupThread(void *);
-void func_02006164(void);
+void OS_EnableScheduler(void);
 void SystemHalt(void);
-void func_02005eac(void);
+void OS_Reschedule(void);
 void *p=*M2C_FIELD(&gThreadManager,void ***,8);
-func_02006130();func_02006644(p);
+OS_DisableScheduler();func_02006644(p);
 if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
 M2C_FIELD(p,s32 *,100)=2;
-OS_WakeupThread(p+156);func_02006164();func_02005eac();SystemHalt();
+OS_WakeupThread(p+156);OS_EnableScheduler();OS_Reschedule();SystemHalt();
 }
 
 void func_02005ccc(void *p){
 void func_02005d48(void *);
-void func_02005eac(void);
+void OS_Reschedule(void);
 extern s32 gThreadManager;
 s32 old=OS_DisableInterrupts();
 if(M2C_FIELD(&gThreadManager,void **,40)==p)func_02005c70();
-func_02006130();func_02006644(p);func_02005d48(p);
+OS_DisableScheduler();func_02006644(p);func_02005d48(p);
 if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
 M2C_FIELD(p,s32 *,100)=2;
-OS_WakeupThread(p+156);func_02006164();OS_RestoreInterrupts(old);func_02005eac();
+OS_WakeupThread(p+156);OS_EnableScheduler();OS_RestoreInterrupts(old);OS_Reschedule();
 }
 
 void func_02005d48(void *arg0) {
@@ -560,7 +560,7 @@ void func_02005d48(void *arg0) {
     func_02007338();
 }
 
-void func_02005d60(void *arg0) {
+void OS_JoinThread(void *arg0) {
     M2C_UNK OS_SleepThread(void *);
     s32 temp_r4;
 
@@ -613,7 +613,7 @@ while (p && M2C_FIELD(p, s32 *, 0x64) != 1) p = M2C_FIELD(p, void **, 0x68);
 return p;
 }
 
-void func_02005eac(void) {
+void OS_Reschedule(void) {
 
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);

@@ -128,7 +128,7 @@ s32 gpiSetStatusInfo(void **connection, s32 status, s8 *statusString, s8 *locati
     return 0;
 }
 #pragma opt_common_subs reset
-s32 func_0204e634(void **arg0,s32 arg1,s32 arg2) {
+s32 gpiSendTextToPlayer(void **arg0,s32 arg1,s32 arg2) {
 s32 gpiSendMessageToPlayer(void **,s32,s32,s32);
 M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 extern M2C_UNK gGpiMsgDisconnected; extern M2C_UNK data_020fdb50;
@@ -222,7 +222,7 @@ s32 gpiHandleServerData(void *ctx) {
     void MemMove(void *, void *, s32);
     s32 ParseInt(void *);
     s32 func_020544d4(void **, void **, s32);
-    s32 func_0205455c(void *, s32, void *);
+    s32 gpiProcessOperation(void *, s32, void *);
     s32 gpiProcessErrorReply(void *, void *, s32);
     s32 StringCompareN(void *, void *, s32);
     s32 func_0204eee8(void *, void *);
@@ -270,7 +270,7 @@ s32 gpiHandleServerData(void *ctx) {
                 if (!func_020544d4(ctx, &operation, id)) {
                     gpiLogMessage(ctx, gGpiMsgNoOperation, id);
                 } else {
-                    result = func_0205455c(ctx, (s32)operation, M2C_FIELD(conn, void **, 0x1ec));
+                    result = gpiProcessOperation(ctx, (s32)operation, M2C_FIELD(conn, void **, 0x1ec));
                     if (result) return result;
                 }
             } else {

@@ -620,26 +620,29 @@ void func_ov003_021e6d54(M2C_UNK arg0) {
     func_02084ea0(0x4D4C5342, arg0);
 }
 
-u8 *func_ov003_021e6d6c(void *arg0) {
-    extern u16 data_ov003_0220f0b8[];
-    s32 var_r4 = 0;
+/* Return the group record (first slot, count) of the waypoint-list slot that
+ * contains the given slot index (0..25).  The returned bytes are read as a
+ * WaypointSlotGroup by the callers. */
+u8 *GetWaypointSlotGroup(s32 slot) {
+    extern WaypointSlotGroup gWaypointSlotGroups[];
+    s32 group = 0;
 
-    if (InRange(arg0, 0, 3) == 0) {
-        if (InRange(arg0, 4, 7) != 0) {
-            var_r4 = 1;
-        } else if (InRange(arg0, 8, 0x14) != 0) {
-            var_r4 = 2;
-        } else if (InRange(arg0, 0x15, 0x18) != 0) {
-            var_r4 = 3;
-        } else if (InRange(arg0, 0x19, 0x19) != 0) {
-            var_r4 = 4;
+    if (InRange(slot, 0, 3) == 0) {
+        if (InRange(slot, 4, 7) != 0) {
+            group = 1;
+        } else if (InRange(slot, 8, 0x14) != 0) {
+            group = 2;
+        } else if (InRange(slot, 0x15, 0x18) != 0) {
+            group = 3;
+        } else if (InRange(slot, 0x19, 0x19) != 0) {
+            group = 4;
         }
     }
-    return (u8 *) &data_ov003_0220f0b8[var_r4];
+    return (u8 *) &gWaypointSlotGroups[group];
 }
 
 u8 func_ov003_021e6e08(void) {
-    u8 *func_ov003_021e6d6c();
-    return *func_ov003_021e6d6c();
+    u8 *GetWaypointSlotGroup();
+    return *GetWaypointSlotGroup();
 }
 

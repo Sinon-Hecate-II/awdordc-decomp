@@ -153,29 +153,35 @@ if(index==-1)Vector_AddItem(M2C_FIELD(table,s32 **,0)[bucket],data);
 else Vector_ReplaceItem(M2C_FIELD(table,s32 **,0)[bucket],data,index);
 }
 
-s32 func_02048f54(void *p,s32 a) {
-extern M2C_UNK sAssertTable,gHashtableFileName,data_020fcd44;
-s32 Vector_Search(s32,s32,s32,s32,s32);
-s32 i,n;
-if(!p)AssertFailed(&sAssertTable,&gHashtableFileName,&data_020fcd44,0x82);
-if(!p)return 0;
-i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
-n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
-if(n==-1)return 0;
-Vector_RemoveItem(M2C_FIELD(p,s32 **,0)[i],n);
-return 1;
+/* GameSpy hashtable TableRemove: hashes the element into its bucket and
+ * removes the equal element found there; returns 0 if the table has none. */
+s32 TableRemove(HashTable *table, s32 data) {
+    extern M2C_UNK sAssertTable, gHashtableFileName, sTableRemoveName;
+    s32 Vector_Search(s32,s32,s32,s32,s32);
+    M2C_UNK Vector_RemoveItem(s32,s32);
+    s32 bucket, index;
+
+    if (!table) AssertFailed(&sAssertTable, &gHashtableFileName, &sTableRemoveName, 0x82);
+    if (!table) return 0;
+    bucket = table->hash(data, table->nBuckets);
+    index = Vector_Search(table->buckets[bucket], data, (s32)table->compare, 0, 0);
+    if (index == -1) return 0;
+    Vector_RemoveItem(table->buckets[bucket], index);
+    return 1;
 }
 
-s32 func_02048ff8(void *p,s32 a) {
-extern M2C_UNK sAssertTable,gHashtableFileName,data_020fcd50;
-s32 Vector_GetItem(s32,s32);
-s32 i,n;
-if(!p)AssertFailed(&sAssertTable,&gHashtableFileName,&data_020fcd50,0x94);
-if(!p)return 0;
-i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
-n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
-if(n==-1)return 0;
-return Vector_GetItem(M2C_FIELD(p,s32 **,0)[i],n);
+/* GameSpy hashtable.c TableLookup: hashes the key into its bucket and returns the
+ * element equal to it, or 0 when the table holds none. */
+s32 TableLookup(HashTable *table,s32 data) {
+ extern M2C_UNK sAssertTable,gHashtableFileName,sTableLookupName;
+ s32 Vector_GetItem(s32,s32);
+ s32 i,n;
+ if(!table)AssertFailed(&sAssertTable,&gHashtableFileName,&sTableLookupName,0x94);
+ if(!table)return 0;
+ i=table->hash(data,table->nBuckets);
+ n=Vector_Search(table->buckets[i],data,(s32)table->compare,0,0);
+ if(n==-1)return 0;
+ return Vector_GetItem(table->buckets[i],n);
 }
 
 void Vector_ForEach(void *p,s32 a,s32 b) {

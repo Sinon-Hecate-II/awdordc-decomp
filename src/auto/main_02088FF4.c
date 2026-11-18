@@ -9,7 +9,7 @@ if(magnitude>1)next=current+(delta>>1);
 return next;
 }
 #pragma pop
-void func_02089c34(void *, s32);
+void TextLayer_SetText(void *, s32);
 extern M2C_UNK data_02102638;
 
 #pragma opt_common_subs off
@@ -408,7 +408,7 @@ M2C_UNK **func_02089944(M2C_UNK **arg0) {
     M2C_UNK func_02089cec(M2C_UNK **);
     extern M2C_UNK data_02102638;
     *arg0 = &data_02102638;
-    func_02089bdc();
+    TextLayer_FreeText();
     func_02089cec(arg0);
     return arg0;
 }
@@ -417,7 +417,7 @@ M2C_UNK **func_0208996c(M2C_UNK **arg0) {
  M2C_UNK func_02089cec(M2C_UNK **);
  M2C_UNK MemFree(M2C_UNK **);
  *arg0=&data_02102638;
- func_02089bdc();func_02089cec(arg0);MemFree(arg0);return arg0;
+ TextLayer_FreeText();func_02089cec(arg0);MemFree(arg0);return arg0;
 }
 
 void func_0208999c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -486,36 +486,38 @@ M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
 }
 
 void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02089b38(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02089bdc();
-    func_02089bdc();
-    func_02089b38(arg0, arg1);
+    M2C_UNK TextLayer_AppendText(M2C_UNK, M2C_UNK);
+    M2C_UNK TextLayer_FreeText();
+    TextLayer_FreeText();
+    TextLayer_AppendText(arg0, arg1);
 }
 
 #pragma opt_common_subs off
-M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
+/* Append a string to a text layer's accumulated text (reallocating it), give the
+ * layer its two 8-byte render buffers, and hand the whole text to the renderer. */
+M2C_UNK TextLayer_AppendText(M2C_UNK arg0,M2C_UNK arg1) {
  s32 StringLength(s32);
  s32 HeapAllocBlock(s32);
  void StringCopy(s32,s32);
  void StringAppend(s32,s32);
- void func_02089c34(void *,s32);
- register s32 p; register s32 len;
+ void TextLayer_SetText(void *,s32);
+ register s32 text; register s32 len;
  if(!arg1)return;
- if(!M2C_FIELD(arg0,s32 *,0x64)) {
- M2C_FIELD(arg0,s32 *,0x64)=HeapAllocBlock(StringLength(arg1)+1);
- StringCopy(M2C_FIELD(arg0,s32 *,0x64),arg1);
+ if(!M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING)) {
+ M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING)=HeapAllocBlock(StringLength(arg1)+1);
+ StringCopy(M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING),arg1);
  } else {
- len=StringLength(M2C_FIELD(arg0,s32 *,0x64));
- p=HeapAllocBlock(len+StringLength(arg1)+1);
- StringCopy(p,M2C_FIELD(arg0,s32 *,0x64));StringAppend(p,arg1);
- func_02089bdc(arg0);M2C_FIELD(arg0,s32 *,0x64)=p;
+ len=StringLength(M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING));
+ text=HeapAllocBlock(len+StringLength(arg1)+1);
+ StringCopy(text,M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING));StringAppend(text,arg1);
+ TextLayer_FreeText(arg0);M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING)=text;
  }
- M2C_FIELD(arg0,s32 *,0x68)=HeapAllocBlock(8);
- M2C_FIELD(arg0,s32 *,0x6C)=HeapAllocBlock(8);
- func_02089c34((void *)arg0,M2C_FIELD(arg0,s32 *,0x64));
+ M2C_FIELD(arg0,s32 *,TEXT_LAYER_BUFFER_A)=HeapAllocBlock(8);
+ M2C_FIELD(arg0,s32 *,TEXT_LAYER_BUFFER_B)=HeapAllocBlock(8);
+ TextLayer_SetText((void *)arg0,M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING));
 }
 #pragma opt_common_subs reset
-M2C_UNK func_02089bdc(void *arg0) {
+M2C_UNK TextLayer_FreeText(void *arg0) {
     s32 HeapFreeBlock(s32);
     s32 p;
     p = *(volatile s32 *)((s8 *)arg0 + 0x64);
@@ -541,7 +543,7 @@ M2C_UNK func_02089bdc(void *arg0) {
 }
 
 #pragma peephole off
-void func_02089c34(void *arg0, s32 arg1) {
+void TextLayer_SetText(void *arg0, s32 arg1) {
     s32 func_0209c658(s32);
     u32 temp_r1;
 
@@ -559,7 +561,7 @@ void func_02089c80(void *arg0) {
  M2C_UNK SetSpriteAnimation(void *,s32);
  M2C_UNK DeleteSpriteObject(void *);
  s32 p=func_0209c658(M2C_FIELD(arg0,s32 *,0x70));
- if(p){func_02089c34(arg0,p);SetSpriteAnimation(arg0,0);return;}
+ if(p){TextLayer_SetText(arg0,p);SetSpriteAnimation(arg0,0);return;}
  DeleteSpriteObject(arg0);
 }
 

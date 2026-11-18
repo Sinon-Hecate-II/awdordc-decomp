@@ -95,9 +95,9 @@ void func_020d35d8(void) {
 
 void func_020d3628(void) {
     M2C_UNK func_020844f8();
-    M2C_UNK func_020bbb08();
+    M2C_UNK EndPlayerTurn();
     extern M2C_UNK gMapData;
-    func_020bbb08();
+    EndPlayerTurn();
     if (M2C_FIELD(&gMapData, u8 *, 4) == 0) {
         return;
     }
@@ -297,7 +297,7 @@ void func_020d3b24(void) {
     M2C_UNK func_020d3400();
     M2C_UNK HandleOverlayResult();
     M2C_UNK UpdateTurnTimer();
-    M2C_UNK func_020d8db0();
+    M2C_UNK IsUiModeSwitchBusy();
     M2C_UNK func_020d46e8();
     M2C_UNK func_020d4774();
     void func_020d4144();
@@ -339,7 +339,7 @@ void func_020d3b24(void) {
 
     if (HandleOverlayResult() != 0) return;
     if (UpdateTurnTimer() != 0) return;
-    if (func_020d8db0() != 0) return;
+    if (IsUiModeSwitchBusy() != 0) return;
     if (func_020d46e8() != 0) return;
     if (func_020d4774() != 0) return;
 

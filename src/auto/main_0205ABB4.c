@@ -32,10 +32,10 @@ gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);fu
 }
 
 void gti2MarkConnectionClosed(void *p,...) {
-void func_02048f54(s32,void **);void Vector_AddItem(s32,void **);
+void TableRemove(s32,void **);void Vector_AddItem(s32,void **);
 if(M2C_FIELD(p,s32 *,12)==7)return;
 M2C_FIELD(p,s32 *,12)=7;
-func_02048f54(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,12),&p);
+TableRemove(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,12),&p);
 Vector_AddItem(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,16),&p);
 }
 
@@ -259,15 +259,23 @@ if(!Gt2ConnectionCallMessageCallback(connection,message,length,1))return 0;
 return 1;
 }
 
-s32 func_0205b41c(void *a,void *b,s32 c) {
-void gti2ComputeResponse(void *,void *);void gti2GetChallenge(void *);
-s32 func_0205c6f4(void *,void *,void *);
-u8 x[32],y[32];
-if(M2C_FIELD(a,s32 *,12)!=2)return Gt2CloseConnection((s32)a)!=0;
-if(c<32)return Gt2CloseConnection((s32)a)!=0;
-gti2ComputeResponse(x,b);gti2GetChallenge(y);gti2ComputeResponse((u8 *)a+0x68,y);
-if(!func_0205c6f4(a,x,y))return 0;
-M2C_FIELD(a,s32 *,12)=3;return 1;
+/* Server side of the GT2 handshake: answer a client's CONNECT with a
+ * CONNECT_ACCEPT carrying the response to its challenge and our own challenge,
+ * remember the response we expect back, then await the client's RESPONSE. */
+s32 gti2HandleConnect(void *connection, void *message, s32 length) {
+    void gti2ComputeResponse(void *, void *);
+    void gti2GetChallenge(void *);
+    s32 gti2SendConnectAccept(void *, void *, void *);
+    u8 response[32], challenge[32];
+
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_AWAIT_CLIENT_CONNECT) return Gt2CloseConnection((s32)connection) != 0;
+    if (length < GT2_RESPONSE_SIZE) return Gt2CloseConnection((s32)connection) != 0;
+    gti2ComputeResponse(response, message);
+    gti2GetChallenge(challenge);
+    gti2ComputeResponse((u8 *)connection + GT2_CONNECTION_RESPONSE, challenge);
+    if (!gti2SendConnectAccept(connection, response, challenge)) return 0;
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_AWAIT_CLIENT_RESPONSE;
+    return 1;
 }
 
 /* Client side of the GT2 handshake: handle the server's CONNECT_ACCEPT (the
@@ -320,7 +328,7 @@ s32 Gt2DispatchCommand(void *object, s32 command, s32 param_a, s32 param_b) {
     s32 gti2HandleClientResponse(void *, s32, s32);
     M2C_FIELD(object, u16 *, 0x66)++;
     if (command == 0) { if (!gti2HandleDataCommand(object, param_a, param_b)) return 0; }
-    else if (command == 1) { if (!func_0205b41c(object, (void *)param_a, param_b)) return 0; }
+    else if (command == 1) { if (!gti2HandleConnect(object, (void *)param_a, param_b)) return 0; }
     else if (command == 2) { if (!gti2HandleConnectAccept(object, (void *)param_a, param_b)) return 0; }
     else if (command == 3) { if (!gti2HandleClientResponse(object, param_a, param_b)) return 0; }
     else if (command == 4) { if (!func_0205b6a0(object)) return 0; }

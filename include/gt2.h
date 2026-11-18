@@ -30,6 +30,7 @@
 #define GT2_SOCKET_CALLBACKS       0x1C /* s32 callbacks running on the socket */
 #define GT2_SOCKET_DIRTY           0x14 /* s32 set when the socket was asked to be freed */
 #define GT2_SOCKET_CONNECT_ATTEMPT 0x20 /* callback for incoming connections */
+#define GT2_SOCKET_ERROR_CALLBACK  0x24 /* void (*)(socket): socket error callback the socket was created with */
 /* A connection accepted by the server may stay silent for this long while its
  * handshake is in progress before GT2 gives up on it. */
 #define GT2_CONNECT_TIMEOUT 60000
@@ -37,6 +38,7 @@
 enum {
     GT2_STATE_AWAIT_CONNECT_ACCEPT = 0, /* client sent its challenge, waiting for CONNECT_ACCEPT */
     GT2_STATE_AWAIT_SERVER_ACCEPT = 1,  /* client sent its response, waiting for ACCEPT */
+    GT2_STATE_AWAIT_CLIENT_CONNECT = 2, /* server accepted a socket, waiting for the client's CONNECT */
     GT2_STATE_AWAIT_CLIENT_RESPONSE = 3,
     GT2_STATE_AWAIT_ACCEPT = 4,
     GT2_STATE_CONNECTED = 5,            /* both sides accepted the handshake; data flows */
@@ -46,12 +48,12 @@ enum {
     GT2_CONNECT_ACCEPT_SIZE = 64        /* challenge response + the server's challenge */
 };
 /* A GT2 byte buffer: the connection keeps one for received bytes and one for
- * sent bytes.  data holds size bytes, of which pos are used. */
+ * sent bytes.  data holds size bytes, of which len are used. */
 #define GT2_CONNECTION_RECV_BUFFER 0x44 /* Gt2Buffer holding received command bytes */
 typedef struct Gt2Buffer {
     u8  *data; /* +0x00 bytes */
     s32  size; /* +0x04 capacity in bytes */
-    s32  pos;  /* +0x08 bytes currently used */
+    s32  len;  /* +0x08 bytes currently used */
 } Gt2Buffer;
 
 /* One entry of GT2_CONNECTION_ACK_QUEUE: where the command's bytes sit in

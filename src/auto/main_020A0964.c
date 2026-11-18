@@ -13,7 +13,7 @@ static inline s32 GetPathY(s8 *ctx, s32 index) { return (ctx + index)[0x42]; }
 
 void func_020a0964(s32 a, s32 b, u16 *out) {
     M2C_UNK GetUnitAttackRangeMax(M2C_UNK);
-    M2C_UNK func_020a85c8(M2C_UNK);
+    M2C_UNK IsMobileIndirectUnitKind(M2C_UNK);
     M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK func_020a0560(void);
     M2C_UNK func_020a0360(void);
@@ -55,7 +55,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     attr = gUnitMinAttackRange[kind * 112];
     cap = GetUnitAttackRangeMax((M2C_UNK)unit);
 
-    if (cap > 1 && func_020a85c8(kind) == 0) {
+    if (cap > 1 && IsMobileIndirectUnitKind(kind) == 0) {
         out[0] = unit[1];
         out[1] = unit[2];
         return;
@@ -472,7 +472,7 @@ void ResetTerrainHitPoints(void) {
     }
 }
 #pragma opt_strength_reduction reset
-void func_020a16a8(u8 *arg0) {
+void DecodeTerrainHitPoints(u8 *arg0) {
     extern s32 *gCurrentMap;
     s32 var_ip;
     u8 *var_lr;
@@ -504,29 +504,33 @@ void func_020a16a8(u8 *arg0) {
     } while (*var_r0 != 0xFF);
 }
 
-void func_020a1720(u8 *dst) {
+/* Run-length encode the battle map's per-cell terrain-HP grid into dst: a run of
+ * zero cells becomes its count byte, a nonzero cell is written as itself (its
+ * MAP_CELL_TERRAIN_HP_PRESENT bit keeps it apart from a count) and
+ * MAP_TERRAIN_HP_RLE_END closes the data. */
+void EncodeTerrainHitPoints(u8 *dst) {
 extern s32 *gCurrentMap;
 s32 i;
-u8 count;
-u8 *p;
-s32 n;
+u8 zeroRun;
+u8 *cell;
+s32 cellCount;
 void *base;
-count = 0;
-i = count;
+zeroRun = 0;
+i = zeroRun;
 base=(void *)*gCurrentMap;
-n=M2C_FIELD(base,u16 *,0x5144)*M2C_FIELD(base,u16 *,0x5146);
-p=(u8 *)base+0x539c;
-for(;i<n;i++,p++) {
-if(*p) {
-if(count){*dst++=count;count=0;}
-*dst++=*p;
+cellCount=M2C_FIELD(base,u16 *,MAP_WIDTH)*M2C_FIELD(base,u16 *,MAP_HEIGHT);
+cell=(u8 *)base+MAP_CELL_TERRAIN_HP;
+for(;i<cellCount;i++,cell++) {
+if(*cell) {
+if(zeroRun){*dst++=zeroRun;zeroRun=0;}
+*dst++=*cell;
 }else {
-count++;
-if(count==127){*dst++=count;count=0;}
+zeroRun++;
+if(zeroRun==MAP_TERRAIN_HP_RLE_MAX){*dst++=zeroRun;zeroRun=0;}
 }
 }
-if(count)*dst++=count;
-*dst=255;
+if(zeroRun)*dst++=zeroRun;
+*dst=MAP_TERRAIN_HP_RLE_END;
 }
 
 #pragma opt_strength_reduction off

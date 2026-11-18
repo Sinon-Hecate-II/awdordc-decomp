@@ -54,7 +54,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     M2C_UNK SelectMapLayer();
     M2C_UNK func_01ffc2e8();
     void func_01ffbb04(s32);
-    M2C_UNK func_020a85c8();
+    M2C_UNK IsMobileIndirectUnitKind();
     void MarkUnitAttackRangeCells(void *);
     M2C_UNK FillMapLayer();
     void func_01ffc204(s32, s32, BattleMapUnitHead *);
@@ -81,7 +81,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
         M2C_FIELD(M2C_FIELD(gCurrentMap, u8 **, 0) + y * 4, s8 **, MAP_GRID)[x] = -1;
     }
     if (!showAttackRange) return;
-    if (func_020a85c8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind)) {
+    if (IsMobileIndirectUnitKind(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind)) {
         map = M2C_FIELD(gCurrentMap, u8 **, 0);
         M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER) = (M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) >> 6) + 1;
         func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
@@ -185,7 +185,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FI
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
 if(func_020cf878(x,y)) { if(playMoveEffect)OpenProductionMenu(x,y); return 1; }
 if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
-func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
+RunUnitSelectedEvent(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
 RefreshMapView();
@@ -222,7 +222,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     carrier = transport ? ((s32)transport - (s32)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_CARRIER) = carrier;
     M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_FLAGS) &= ~8;
-    func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    RunUnitSelectedEvent(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 56); if (cb) cb();
     RefreshMapView();

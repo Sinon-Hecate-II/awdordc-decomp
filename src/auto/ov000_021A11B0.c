@@ -287,14 +287,14 @@ s32 GetAiRandomChance(void) {
  * player can afford it, otherwise tier 1. */
 s32 BuildAiBasicUnit(void){
 s32 NextRandomValue(void);s32 Modulo(s32,s32);s32 GetUnitBuildCost(u16,M2C_UNK);
-s32 func_ov000_021a664c(void);s32 func_ov000_021a60d4(s32);s32 FindAiTargetOfType(s32);
+s32 FindBasicUnitTargetCandidate(void);s32 func_ov000_021a60d4(s32);s32 FindAiTargetOfType(s32);
 u8 CountPlayerUnitsOfKind(s32);M2C_UNK CommitAiAction(s32);
 extern void **gCurrentMap;extern void *gAiState,*gAiSettings;
 extern M2C_UNK gAiCommand,gAiTargetGroups,gAiTargetCandidateGroup;
 void *map,*group;u16 playerId;s32 candidate,r,cost;u8 flags,t;
 map=*gCurrentMap;playerId=M2C_FIELD(map,u16 *,0x52a4);
 if(GetUnitBuildCost(playerId,1)*10>M2C_FIELD(playerId*MAP_PLAYER_STRIDE+(s32)map,s32 *,MAP_PLAYER_STATES))return 0;
-candidate=func_ov000_021a664c();
+candidate=FindBasicUnitTargetCandidate();
 if(candidate==-1)candidate=func_ov000_021a60d4(1);
 if(candidate==-1)candidate=FindAiTargetOfType(1);
 if(candidate==-1)return 0;

@@ -528,7 +528,7 @@ M2C_UNK *func_ov009_02224064(void) {
     return &data_ov009_02226a20;
 }
 
-s32 func_ov009_02224070(s32 a){
+s32 GetActiveLinkPlayerSlot(s32 a){
  u16 GetConnectedPlayers(void);
  extern M2C_UNK gLinkPlayers;
  s32 p;
@@ -556,10 +556,10 @@ s32 func_ov009_022240c0(s32 arg0, M2C_UNK arg1) {
 }
 
 s32 func_ov009_022240f4(void) {
-    s32 func_ov009_02224070();
+    s32 GetActiveLinkPlayerSlot();
     s32 temp_r0;
 
-    temp_r0 = func_ov009_02224070();
+    temp_r0 = GetActiveLinkPlayerSlot();
     if (temp_r0 != 0) {
         return temp_r0 + 0x20;
     }
@@ -567,7 +567,7 @@ s32 func_ov009_022240f4(void) {
 }
 
 s32 func_ov009_0222410c(s32 a,s32 b,s32 c){
- s32 p=func_ov009_02224070(a);
+ s32 p=GetActiveLinkPlayerSlot(a);
  if(!p)return 0;
  MI_CpuCopy8(p+0x20,b,c);
  return b;

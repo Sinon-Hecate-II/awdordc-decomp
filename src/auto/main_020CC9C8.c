@@ -116,12 +116,12 @@ void func_020ccdd8(s32 arg0) {
 }
 
 void func_020cce04(s32 arg0) {
-    void func_020a196c(void);
+    void BattleResults_ComputeRatings(void);
     void func_0209c8d4(void);
     void SetSpriteAnimation(s32, s32);
     u8 func_020cd6d4(void);
     u8 DidPlayerLose(void);
-    func_020a196c();
+    BattleResults_ComputeRatings();
     func_0209c8d4();
     if (func_020cd6d4() && DidPlayerLose()) {
         SetSpriteAnimation(arg0, 1);

@@ -85,31 +85,36 @@ void func_0201dc28(void) {
     }
 }
 
-void func_0201dc68(void) {
+/* Claim the stack's local address: run the stack's upkeep callback, send two
+ * gratuitous ARP announcements for NETSTACK_LOCAL_IP, then poll the link every
+ * ARP_RETRY_MS until an ARP reply announcing the address arrives (which ends the
+ * step with status 4) or NETSTACK_ARP_TIMEOUT ticks pass without the link
+ * coming up. */
+void AnnounceLocalAddress(void) {
     extern M2C_UNK gNetStack;
     void SendArpRequest(s32);
     void SleepMilliseconds(s32);
     u64 GetSystemTick(void);
     void func_0201a134(s32);
-    s32 start;
-    M2C_FIELD(&gNetStack, void (**)(void), 0x18)();
-    if (!M2C_FIELD(&gNetStack, s32 *, 0x50)) return;
-    SendArpRequest(M2C_FIELD(&gNetStack, s32 *, 0x50));
-    SleepMilliseconds(100);
-    SendArpRequest(M2C_FIELD(&gNetStack, s32 *, 0x50));
-    start = (u32)(GetSystemTick() >> 16);
+    s32 startTick;
+    M2C_FIELD(&gNetStack, void (**)(void), NETSTACK_UPDATE)();
+    if (!M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP)) return;
+    SendArpRequest(M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP));
+    SleepMilliseconds(ARP_RETRY_MS);
+    SendArpRequest(M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP));
+    startTick = (u32)(GetSystemTick() >> 16);
     goto check;
     loop:
     {
-        if (M2C_FIELD(&gNetStack, u8 *, 1)) {
+        if (M2C_FIELD(&gNetStack, u8 *, NETSTACK_ARP_RESOLVED)) {
             func_0201a134(4);
             return;
         }
-        SleepMilliseconds(100);
+        SleepMilliseconds(ARP_RETRY_MS);
     }
     check:
-    if (!M2C_FIELD(&gNetStack, s32 (**)(void), 0x48)()) return;
-    if ((s32)((u32)(GetSystemTick() >> 16) - start) < 23) goto loop;
+    if (!M2C_FIELD(&gNetStack, s32 (**)(void), NETSTACK_POLL)()) return;
+    if ((s32)((u32)(GetSystemTick() >> 16) - startTick) < NETSTACK_ARP_TIMEOUT) goto loop;
 }
 
 void func_0201dd08(void) {
@@ -123,7 +128,7 @@ void func_0201dd08(void) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     u64 GetSystemTick(void);
     void SleepMilliseconds(s32);
-    void func_0201dc68(void);
+    void AnnounceLocalAddress(void);
     s32 func_0201e754(void);
     s32 func_0201e7ac(u32 *, s32);
     void func_0201a134(s32);
@@ -159,7 +164,7 @@ void func_0201dd08(void) {
             if (--wait == 0) {
                 if (M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) {
                     if (state == 0) {
-                        func_0201dc68();
+                        AnnounceLocalAddress();
                         state = 1;
                     }
                 } else {
@@ -172,7 +177,7 @@ void func_0201dd08(void) {
                         if (func_0201e754()) {
                             if (func_0201e7ac(&wait, 0)) goto connected;
                         }
-                        func_0201dc68();
+                        AnnounceLocalAddress();
                         state = 3;
                         break;
                     connected:

@@ -40,7 +40,7 @@ extern unsigned char data_ov001_0219256a[118];
  * record (type 2, the room group mask from gRoomState) into the room transfer
  * buffer, append this player's 8-byte session token, then post the transfer. */
 int Ov001_SendRoomRequest(int state, int session, int context) {
-    void func_ov001_0216b918(int);
+    void Ov001_SetRoomError(int);
     void func_ov001_0216c88c(int, unsigned char *, int, short *, short *, int);
     void func_ov001_0216c8e0(unsigned short *, int, int, int, signed char, signed char, void *);
     void func_ov001_0216c938(int, int, int, int);
@@ -71,7 +71,7 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
                        (int)&packet.work.type, &packet.work.length, &packet.work.flags, (int)&packet.work);
     Ov001MemCopy(packet.token, (void *)(session + 8), 8);
     if (func_ov001_0216cc0c(packet.token, 8, data_ov001_0218fdb0, 6)) {
-        func_ov001_0216b918(2);
+        Ov001_SetRoomError(2);
         return -1;
     }
     func_ov001_0216c8e0((unsigned short *)buffer, OV001_CMD_ROOM_REQUEST, packet.work.length, packet.work.flags, packet.work.status, OV001_PKT_KIND_ROOM, packet.token);

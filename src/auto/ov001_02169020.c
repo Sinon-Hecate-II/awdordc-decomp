@@ -501,85 +501,57 @@ MI_CpuFill32(v,M2C_FIELD(a,s32 *,0),(w*h)*((bits<<6)/8));
 #pragma optimization_level reset
 void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK MI_CpuFill32(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,sz;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);sz=(bits<<6)/8;stride=sz*M2C_FIELD(a,s32 *,16);width=sz*M2C_FIELD(a,s32 *,4);for(i=0;i<M2C_FIELD(a,s32 *,8);i++){MI_CpuFill32(v,p,width);p=(u8 *)p+stride;}}
 
-void func_ov001_02169ca0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp);
-    s32 sp2C;
-    s32 sp28;
-    s32 sp24;
-    s32 sp20;
-    s32 sp1C;
-    s32 sp18;
-    s32 sp14;
-    s32 sp10;
-    s32 spC;
-    s32 temp_r1;
-    s32 temp_r1_2;
-    s32 temp_r1_3;
-    s32 temp_r1_4;
-    s32 temp_r2;
-    s32 temp_r3;
-    s32 temp_r6;
-    s32 temp_r6_2;
-    s32 var_r0;
-    s32 var_r0_2;
-    s32 var_r1;
-    s32 var_r1_2;
-    s32 var_r4;
-    s32 var_r7;
-    s32 var_r8;
-    u8 temp_r11;
+void func_ov001_02169ca0(void *surface, u32 color, s32 x, s32 y, s32 width, s32 height) {
+    void func_ov001_021694b0(u32 *, s32, s32, s32, s32, u32, s32);
+    s32 tileY, right, bottom, endY;
+    u8 *row;
+    s32 startX, tileSize, pitch, top;
+    s32 endX, columns;
+    u8 depth;
+    u32 fill;
 
-    temp_r11 = M2C_FIELD(arg0, u8 *, 0xC);
-    sp28 = arg2 + arg4;
-    sp24 = arg3 + arg5;
-    var_r1 = temp_r11 == 4 ? ((arg1 | (arg1 << 4)) | ((arg1 | (arg1 << 4)) << 8)) : (arg1 | (arg1 << 8));
-    spC = arg3;
-    temp_r6 = temp_r11 << 6;
-    temp_r1_2 = spC & ~7;
-    sp2C = temp_r1_2;
-    temp_r2 = M2C_FIELD(arg0, s32 *, 0x10);
-    temp_r3 = arg2 & ~7;
-    sp18 = temp_r3;
-    sp14 = (s32) (temp_r6 + ((u32) (temp_r6 >> 2) >> 0x1D)) >> 3;
-    temp_r1_3 = (sp24 + 7) & ~7;
-    sp20 = temp_r1_3;
-    sp10 = temp_r2 * sp14;
-    sp1C = (sp14 * ((((s32) (temp_r1_2 + ((u32) (temp_r1_2 >> 2) >> 0x1D)) >> 3) * temp_r2) + ((s32) (temp_r3 + ((u32) (temp_r3 >> 2) >> 0x1D)) >> 3))) + M2C_FIELD(arg0, s32 *, 0);
-    temp_r6_2 = (sp28 + 7) & ~7;
-    if (sp2C >= temp_r1_3) {
-        return;
+    depth = M2C_FIELD(surface, u8 *, 0xc);
+    right = x + width;
+    bottom = y + height;
+    fill = color | (color << (depth == 4 ? 4 : 8));
+    if (depth == 4) fill |= fill << 8;
+    fill |= fill << 16;
+    top = y;
+    tileY = y & ~7;
+    columns = M2C_FIELD(surface, s32 *, 0x10);
+    startX = x & ~7;
+    {
+        s32 strideBits = depth << 6;
+        s32 offset = tileY / 8 * columns + startX / 8;
+        tileSize = strideBits / 8;
+        row = M2C_FIELD(surface, u8 **, 0) + tileSize * offset;
     }
+    endY = (bottom + 7) & ~7;
+    pitch = columns * tileSize;
+    endX = (right + 7) & ~7;
+    if (tileY >= endY) return;
     do {
-        if (sp2C >= spC) {
-            var_r8 = 0;
-        } else {
-            var_r8 = spC - sp2C;
-        }
-        var_r7 = sp1C;
-        var_r0 = sp24 - sp2C;
-        if (var_r0 > 8) {
-            var_r0 = 8;
-        }
-        var_r4 = sp18;
-        if (sp18 < temp_r6_2) {
+        s32 firstY, lastY, firstX, lastX, tileX;
+        u8 *tile;
+        if (tileY < top) firstY = top - tileY;
+        else firstY = 0;
+        tile = row;
+        lastY = bottom - tileY;
+        if (lastY > 8) lastY = 8;
+        lastY -= firstY;
+        tileX = startX;
+        if (tileX < endX) {
             do {
-                var_r0_2 = sp28 - var_r4;
-                if (var_r4 < arg2) {
-                    var_r1_2 = arg2 - var_r4;
-                } else {
-                    var_r1_2 = 0;
-                }
-                if (var_r0_2 > 8) {
-                    var_r0_2 = 8;
-                }
-                func_ov001_021694b0((u32 *)var_r7, var_r1_2, var_r8, var_r0_2 - var_r1_2, var_r0 - var_r8, var_r1 | (var_r1 << 0x10), (s32) temp_r11);
-                var_r4 += 8;
-                var_r7 += sp14;
-            } while (var_r4 < temp_r6_2);
+                lastX = right - tileX;
+                firstX = tileX < x ? x - tileX : 0;
+                if (lastX > 8) lastX = 8;
+                func_ov001_021694b0((u32 *)tile, firstX, firstY, lastX - firstX, lastY, fill, depth);
+                tileX += 8;
+                tile += tileSize;
+            } while (tileX < endX);
         }
-        sp1C += sp10;
-        temp_r1_4 = sp2C + 8;
-        sp2C = temp_r1_4;
-    } while (temp_r1_4 < sp20);
+        row += pitch;
+        tileY += 8;
+    } while (tileY < endY);
 }
 

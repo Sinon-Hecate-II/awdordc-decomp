@@ -148,19 +148,19 @@ s32 func_0200b2bc(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,void *g,void *h) {
 s32 func_0200b32c(void *a) {
  s32 OS_DisableInterrupts(void);
  s32 OS_RestoreInterrupts(s32);
- s32 func_0200b59c(void *);
- M2C_UNK func_0200b638(void *);
+ s32 BeginFileOperation(void *);
+ M2C_UNK EndFileOperation(void *);
  s32 CompleteFileRequest(void *,s32);
  s32 irq;void *p; s32 flag;void *next; s32 r;
  irq=OS_DisableInterrupts();
  flag=TestFileFlag(a,2);
  if(flag!=0){
- r=func_0200b59c(a);
+ r=BeginFileOperation(a);
  M2C_FIELD(a,s32 *,0x1c)|=128;
  p=M2C_FIELD(a,void **,0x24);
  while(p){next=M2C_FIELD(p,void **,4);CompleteFileRequest(p,3);p=next;}
  M2C_FIELD(a,void **,0x24)=0;
- if(r)func_0200b638(a);
+ if(r)EndFileOperation(a);
  M2C_FIELD(a,s32 *,0x28)=0;M2C_FIELD(a,s32 *,0x2c)=0;
  M2C_FIELD(a,s32 *,0x30)=0;M2C_FIELD(a,s32 *,0x34)=0;
  M2C_FIELD(a,s32 *,0x38)=0;M2C_FIELD(a,s32 *,0x40)=0;M2C_FIELD(a,s32 *,0x3c)=0;
@@ -205,12 +205,12 @@ return required;
 }
 
 s32 func_0200b510(void *a) {
- s32 func_0200b59c();
- s32 func_0200b638(void *);
+ s32 BeginFileOperation();
+ s32 EndFileOperation(void *);
  s32 r,flag,out=0;
  flag=TestFileFlag(a,2);
  if(flag!=0){
- r=func_0200b59c(a);
+ r=BeginFileOperation(a);
  flag=TestFileFlag(a,4);
  if(flag!=0){
  M2C_FIELD(a,s32 *,0x1c)&=~4;
@@ -219,14 +219,35 @@ s32 func_0200b510(void *a) {
  M2C_FIELD(a,s32 *,0x34)=M2C_FIELD(a,s32 *,0x40);
  M2C_FIELD(a,s32 *,0x50)=M2C_FIELD(a,s32 *,0x48);
  }
- if(r)func_0200b638(a);
+ if(r)EndFileOperation(a);
  }
  return out;
 }
 
-s32 func_0200b59c(void *a){void OS_SleepThread(void *);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 t,v,key=OS_DisableInterrupts();s32 r=((M2C_FIELD(a,volatile s32 *,28)&8)?1:0)==0;if(r){t=(M2C_FIELD(a,volatile s32 *,28)&16)?1:0;v=M2C_FIELD(a,volatile s32 *,28);if(t){M2C_FIELD(a,volatile s32 *,28)=v|64;do{OS_SleepThread(a+20);}while((M2C_FIELD(a,volatile s32 *,28)&64)?1:0);}else M2C_FIELD(a,volatile s32 *,28)=v|8;}OS_RestoreInterrupts(key);return r;}
+/* Claim a file for an operation: report whether it was free and, when it was,
+ * mark it busy - first waiting out an armed idle-notification callback, which
+ * sets the busy bit itself (FS_FILE_ABORTING) once it has run. */
+s32 BeginFileOperation(void *file) {
+    void OS_SleepThread(void *);
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    s32 notifyPending, state, irq = OS_DisableInterrupts();
+    s32 wasFree = ((M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) & FS_FILE_BUSY) ? 1 : 0) == 0;
+    if (wasFree) {
+        notifyPending = (M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) & FS_FILE_NOTIFY_PENDING) ? 1 : 0;
+        state = M2C_FIELD(file, volatile s32 *, FS_FILE_STATE);
+        if (notifyPending) {
+            M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) = state | FS_FILE_ABORTING;
+            do {
+                OS_SleepThread((u8 *)file + FS_FILE_WAIT_QUEUE);
+            } while ((M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) & FS_FILE_ABORTING) ? 1 : 0);
+        } else M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) = state | FS_FILE_BUSY;
+    }
+    OS_RestoreInterrupts(irq);
+    return wasFree;
+}
 
-s32 func_0200b638(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 p=0,key,r;key=OS_DisableInterrupts();r=((M2C_FIELD(a,s32 *,28)&8)?1:0)==0;if(!r){M2C_FIELD(a,s32 *,28)&=~8;p=GetNextFileRequest((s32)a);}OS_RestoreInterrupts(key);if(p)func_0200ae9c((void *)p);return r;}
+s32 EndFileOperation(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 p=0,key,r;key=OS_DisableInterrupts();r=((M2C_FIELD(a,s32 *,28)&8)?1:0)==0;if(!r){M2C_FIELD(a,s32 *,28)&=~8;p=GetNextFileRequest((s32)a);}OS_RestoreInterrupts(key);if(p)func_0200ae9c((void *)p);return r;}
 
 void func_0200b6a8(void *arg0, s32 arg1, s32 arg2) {
     s32 var_r1;

@@ -91,7 +91,7 @@ if(IsUnitInSight((u16)id))M2C_FIELD(unit,u16*,MAP_UNIT_FLAGS)|=UNIT_FLAG_VISIBLE
  * buffers. */
 void ResetBattleMap(void) {
     extern void **gCurrentMap;
-    void func_020cbdbc(void);
+    void RefreshCursorCell(void);
     void func_0207ce28(void *);
     void func_020d4754(void);
     void func_020d47b0(void);
@@ -106,7 +106,7 @@ void ResetBattleMap(void) {
     *(u16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_Y) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52c6) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52c8) = 0;
-    func_020cbdbc();
+    RefreshCursorCell();
 
     *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_X) = 0;
     *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_Y) = 0;

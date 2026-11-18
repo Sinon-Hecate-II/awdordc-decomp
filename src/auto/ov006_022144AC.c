@@ -5,7 +5,7 @@
 #pragma optimization_level 3
 void func_ov006_022144ac(void *arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern u8 data_ov006_02218e00[],data_ov006_022183cc[],data_ov006_022183ce[],data_ov006_02218728[],data_ov006_02218730[],data_ov006_02218740[],data_ov006_02218750[],data_ov006_02218764[];
+extern u8 gMapCodeString[],data_ov006_022183cc[],data_ov006_022183ce[],data_ov006_02218728[],data_ov006_02218730[],data_ov006_02218740[],data_ov006_02218750[],data_ov006_02218764[];
 u64 func_020c54ac(void *);void func_020c5618(s32,u32,u32);
 void func_02019e64(void *,s32,void *,s32,s32);void func_020c536c(s32,void *);
 void Configure3DSpriteLayer(s32,void *);void Clear3DSpriteLayer(s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
@@ -18,10 +18,10 @@ void func_ov006_02215010(void);
 u16 text[13];u16 *volatile p0,*volatile p1,*volatile p2,*volatile p3,*volatile p4,*volatile p5;
 MenuSprite_02213e98 **sprites;void *savedEngine; s32 id,tile;u64 code;
 if(IsMapConfirmEnabled()){
-code=func_020c54ac(data_ov006_02218e00);
+code=func_020c54ac(gMapCodeString);
 id=M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8);
 func_020c5618(id,(u32)code,(u32)(code>>32));
-func_02019e64(text,0,data_ov006_02218e00,0,0);
+func_02019e64(text,0,gMapCodeString,0,0);
 func_020c536c(id,text);M2C_FIELD(arg0,u8 *,0x34)=1;
 }
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -167,8 +167,8 @@ void func_ov006_022150e0(void) {
 }
 
 void func_ov006_022150ec(void) {
-    M2C_UNK func_ov006_0221440c();
-    func_ov006_0221440c();
+    M2C_UNK OpenMapCodeEntryScreen();
+    OpenMapCodeEntryScreen();
 }
 
 void func_ov006_022150f8(void) {

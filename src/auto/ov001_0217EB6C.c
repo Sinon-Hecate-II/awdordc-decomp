@@ -330,7 +330,27 @@ return;
 }
 }
 
-s32 func_ov001_0217f62c(void){void *GetCurrentMapRecord(void);s32 func_0204612c(void *);s32 func_020460b0(void *,void *);u8 *p=GetCurrentMapRecord();if(!p[0x40])return 0;if(!p[0xf6]&&!func_0204612c(p+0xc8)&&!func_0204612c(p+0xcc))return 0;if(!p[0xf5]){if(!func_0204612c(p+0xc0))return 0;if(!func_0204612c(p+0xc4))return 0;if(!func_020460b0(p+0xc0,p+0xf0))return 0;}return 1;}
+/* Whether the working save slot can be opened: a map name must be stored, each
+   stored pair of player codes must be present (the second pair needs only one
+   valid code, the first pair both), and the first pair must agree with the slot's
+   stored code word. */
+s32 IsCurrentSaveSlotValid(void) {
+    void *GetCurrentMapRecord(void);
+    s32 func_0204612c(void *);
+    s32 func_020460b0(void *, void *);
+    u8 *record = GetCurrentMapRecord();
+
+    if (!record[SAVE_SLOT_MAP_NAME]) return 0;
+    if (!record[SAVE_SLOT_EMPTY_B] &&
+        !func_0204612c(record + SAVE_SLOT_PLAYER_CODES + 8) &&
+        !func_0204612c(record + SAVE_SLOT_PLAYER_CODES + 12)) return 0;
+    if (!record[SAVE_SLOT_EMPTY_A]) {
+        if (!func_0204612c(record + SAVE_SLOT_PLAYER_CODES)) return 0;
+        if (!func_0204612c(record + SAVE_SLOT_PLAYER_CODES + 4)) return 0;
+        if (!func_020460b0(record + SAVE_SLOT_PLAYER_CODES, record + SAVE_SLOT_CODE)) return 0;
+    }
+    return 1;
+}
 
 void func_ov001_0217f6cc(void){s32 func_ov001_02186648(void);M2C_UNK Ov001_PlaySound(s32);M2C_UNK func_ov001_02186604();M2C_UNK func_ov001_0218384c(s32);extern M2C_UNK gMapListState;extern M2C_UNK func_ov001_0217f70c;if(func_ov001_02186648())return;Ov001_PlaySound(6);func_ov001_02186604();func_ov001_0218384c(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,12));Ov001_SetStepCallback(&func_ov001_0217f70c);}
 

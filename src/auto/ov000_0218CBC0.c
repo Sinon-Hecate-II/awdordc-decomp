@@ -119,7 +119,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
 }
 #pragma opt_strength_reduction reset
 void func_ov000_0218cfec(void) {
-    M2C_UNK func_ov000_0218bbd0(M2C_UNK);
+    M2C_UNK SelectIndirectAttackAction(M2C_UNK);
     M2C_UNK func_ov000_0218cbc0();
     s32 GetUnitAttackClass(u32);
     extern void **gCurrentMap;
@@ -131,7 +131,7 @@ void func_ov000_0218cfec(void) {
         func_ov000_0218cbc0();
         return;
     case 1:
-        func_ov000_0218bbd0(0);
+        SelectIndirectAttackAction(0);
         return;
     }
 }

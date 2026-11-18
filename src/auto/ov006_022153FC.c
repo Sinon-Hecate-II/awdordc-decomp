@@ -574,7 +574,7 @@ done:
  * unreadable code picks the matching error state; then updates the panel sprite
  * and plays the result sound. */
 M2C_UNK ConfirmFriendCode(void *entry){
-void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,s32);
+void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 BattleSaveSlotInUse(void *);void func_020b269c(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
 u32 codeWords[3];u64 enteredCode,ownCode;void *panel=M2C_FIELD(entry,void **,0x10);void *part;u16 **savedEngine;
 if(M2C_FIELD(entry,u8 *,0)==12){
@@ -582,7 +582,7 @@ part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16
 Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));DisableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000f);return;}
 ownCode=func_020c53e4(0);enteredCode=func_020c54ac(gFriendCodeInput);
 if((ownCode==0||enteredCode==0||ownCode!=enteredCode)&&func_020c5474(enteredCode)){
-func_020c5424(codeWords,enteredCode);if(!func_020c54e8(codeWords)){
+func_020c5424(codeWords,enteredCode);if(!BattleSaveSlotInUse(codeWords)){
 MI_CpuCopy8(gFriendCodeInput,M2C_FIELD(panel,s32 *,0x34),13);
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
 Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));EnableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000e);return;}

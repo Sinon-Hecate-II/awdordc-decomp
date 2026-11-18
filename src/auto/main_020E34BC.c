@@ -208,11 +208,11 @@ void func_020e3738(void *arg0) {
 void func_020e3788(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
  void *CreateSpriteForOwner(void *, s32);
  extern s32 data_0212d950;
- extern s32 data_0212da10;
+ extern s32 gOnlinePlayerListVtable;
  void *temp_r0;
  temp_r0 = CreateSpriteForOwner(&data_0212d950, arg3);
  if (temp_r0 == NULL) return;
- M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
+ M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
  M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
  M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
  M2C_FIELD(temp_r0, s32 *, 0x3c) = 0;
@@ -252,7 +252,7 @@ void func_020e37dc(void *arg0) {
 
 void func_020e3870(void *arg0) {
     void func_02007e70(s32, void *, s32);
-    s32 func_ov010_02226538(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
     s32 sp[68];
     s32 val;
@@ -264,7 +264,7 @@ void func_020e3870(void *arg0) {
     sp[3] = 0;
     sp[1] = 1;
     func_02007e70(M2C_FIELD(arg0, s32 *, 0x44), &sp[4], 0x100);
-    if (func_ov010_02226538(3, 0, 0xFF, sp, arg0) != 0) {
+    if (SubmitWebGetRequest(3, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
     SetSpriteAnimation(arg0, 1);
@@ -281,7 +281,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d870;
-    extern s32 data_0212da10;
+    extern s32 gOnlinePlayerListVtable;
     u32 end = (u32)records;
     void *node;
     s32 playerId;
@@ -290,7 +290,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
 
     node = CreateSpriteForOwner(&data_0212d870, capacity);
     if (node != NULL) {
-        M2C_FIELD(node, s32 **, LIST_VTABLE) = &data_0212da10;
+        M2C_FIELD(node, s32 **, LIST_VTABLE) = &gOnlinePlayerListVtable;
         M2C_FIELD(node, s32 *, LIST_FIRST) = (s32)records;
         M2C_FIELD(node, s32 *, LIST_COUNT) = 1;
         M2C_FIELD(node, s32 *, LIST_LIMIT) = 0;
@@ -319,7 +319,7 @@ void func_020e39d8(void *list) {
     s32 func_ov010_022267b0(s32, s32 *);
     s32 GetOnlineLocalPlayerId(void);
     void MI_CpuCopy8(s32, void *, s32);
-    extern s32 data_0212d744;
+    extern s32 gOnlinePlayerCount;
     s32 entry[7];
     s32 total;
     s32 count;
@@ -331,7 +331,7 @@ void func_020e39d8(void *list) {
         return;
     }
 
-    data_0212d744 = func_ov010_0222681c();
+    gOnlinePlayerCount = func_ov010_0222681c();
     total = func_ov010_02226744();
     count = 0;
     i = 0;
@@ -354,61 +354,70 @@ void func_020e39d8(void *list) {
     *M2C_FIELD(list, s32 **, 0x40) = count;
 }
 
-void func_020e3ab4(void *arg0) {
+/* Asks ov010 for a batch of the online players that are not collected yet,
+ * bounded by the list's limit: the limit is clamped to the players that exist, the
+ * batch starts at the list's count (clamped to the limit) and spans a random
+ * number of the players left.  +0x40 of the list holds the count the answering
+ * request fills in. */
+void RequestOnlinePlayersUpToLimit(void *list) {
     s32 RandomIntRange(s32, s32);
-    s32 func_ov010_02226538(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    extern s32 data_0212d744;
-    s32 sp[68];
-    u32 r1;
-    u32 r5;
-    s32 temp;
+    extern s32 gOnlinePlayerCount;
+    s32 request[68];
+    u32 limit;
+    u32 start;
+    s32 count;
 
-    *M2C_FIELD(arg0, s32 **, 0x40) = 0;
-    r1 = M2C_FIELD(arg0, u32 *, 0x3C);
-    r5 = M2C_FIELD(arg0, u32 *, 0x38);
-    if (r1 >= (u32)data_0212d744) {
-        r1 = data_0212d744;
+    *M2C_FIELD(list, s32 **, 0x40) = 0;
+    limit = M2C_FIELD(list, u32 *, LIST_LIMIT);
+    start = M2C_FIELD(list, u32 *, LIST_COUNT);
+    if (limit >= (u32)gOnlinePlayerCount) {
+        limit = gOnlinePlayerCount;
     }
-    if (r1 < r5) {
-        r5 = r1;
+    if (limit < start) {
+        start = limit;
     }
-    temp = RandomIntRange(0, r1 - r5) + 1;
-    sp[0] = 0x10;
-    sp[1] = 1;
-    sp[2] = r5;
-    sp[3] = 0;
-    sp[4] = temp;
-    if (func_ov010_02226538(6, 0, 0xFF, sp, arg0) != 0) {
+    count = RandomIntRange(0, limit - start) + 1;
+    request[0] = 0x10; /* payload length in bytes */
+    request[1] = 1;
+    request[2] = start;
+    request[3] = 0;
+    request[4] = count;
+    if (SubmitWebGetRequest(6, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
-void func_020e3b54(void *arg0, s32 arg1, s32 *arg2, s32 arg3) {
+/* Creates an online-player list node over a caller-owned array of player
+ * records: the list starts with *countPtr entries and may hold at most `limit`
+ * of them.  The list keeps no id array, and every record it covers is marked
+ * free (id -1) with no name data. */
+void CreateOnlinePlayerListUpToLimitNode(void *records, s32 limit, s32 *countPtr, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
-    extern s32 data_0212d988;
-    extern s32 data_0212da10;
-    u32 base = (u32)arg0;
-    void *temp_r0;
-    u8 *ptr;
+    extern s32 gOnlinePlayerListUpToLimitClass;
+    extern s32 gOnlinePlayerListVtable;
+    u32 base = (u32)records;
+    void *node;
+    u8 *rec;
 
-    temp_r0 = CreateSpriteForOwner(&data_0212d988, arg3);
-    if (temp_r0 == NULL) {
+    node = CreateSpriteForOwner(&gOnlinePlayerListUpToLimitClass, owner);
+    if (node == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32)arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = *arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x3c) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = (s32)arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
+    M2C_FIELD(node, s32 **, LIST_VTABLE) = &gOnlinePlayerListVtable;
+    M2C_FIELD(node, s32 *, LIST_FIRST) = (s32)records;
+    M2C_FIELD(node, s32 *, LIST_COUNT) = *countPtr;
+    M2C_FIELD(node, s32 *, LIST_LIMIT) = limit;
+    M2C_FIELD(node, s32 *, LIST_CAPACITY) = (s32)countPtr;
+    M2C_FIELD(node, s32 *, LIST_IDS) = 0;
+    M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
 
-    for (ptr = (u8 *)arg0; (u32)ptr < base + M2C_FIELD(temp_r0, s32 *, 0x38) * 0x310; ptr += 0x310) {
-        M2C_FIELD(ptr, s32 *, 0x4) = -1;
-        M2C_FIELD(ptr, s32 *, 0x8) = 0;
-        M2C_FIELD(ptr, s32 *, 0x30c) = 0;
+    for (rec = (u8 *)records; (u32)rec < base + M2C_FIELD(node, s32 *, LIST_COUNT) * PLAYER_REC_SIZE; rec += PLAYER_REC_SIZE) {
+        M2C_FIELD(rec, s32 *, PLAYER_ID) = -1;
+        M2C_FIELD(rec, s32 *, 0x8) = 0;
+        M2C_FIELD(rec, s32 *, PLAYER_DATA_LEN) = 0;
     }
 }
 
@@ -421,7 +430,7 @@ void func_020e3bf0(void *list) {
     s32 func_ov010_022267b0(s32, s32 *);
     s32 GetOnlineLocalPlayerId(void);
     void MI_CpuCopy8(s32, void *, s32);
-    extern s32 data_0212d744;
+    extern s32 gOnlinePlayerCount;
     s32 entry[7];
     s32 total;
     s32 count;
@@ -433,7 +442,7 @@ void func_020e3bf0(void *list) {
         return;
     }
 
-    data_0212d744 = func_ov010_0222681c();
+    gOnlinePlayerCount = func_ov010_0222681c();
     total = func_ov010_02226744();
     count = 0;
     i = 0;
@@ -456,41 +465,45 @@ void func_020e3bf0(void *list) {
     *M2C_FIELD(list, s32 **, 0x40) = count;
 }
 
-void func_020e3ccc(void *arg0) {
+/* Asks ov010 for a random page of online players: from the entries already
+ * collected on, a random number of the ones left, with the request's flag word
+ * randomly chosen; the node moves on once the request is queued.  +0x40 of the
+ * list holds the count the answering request fills in. */
+void RequestRandomOnlinePlayers(void *list) {
     s32 NextRandomValue(void);
     s32 RandomIntRange(s32, s32);
-    s32 func_ov010_02226538(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    extern s32 data_0212d744;
-    s32 sp[68];
-    s32 temp5;
-    u32 r6;
+    extern s32 gOnlinePlayerCount;
+    s32 request[68];
+    s32 count;
+    u32 start;
 
-    *M2C_FIELD(arg0, s32 **, 0x40) = 0;
-    r6 = M2C_FIELD(arg0, u32 *, 0x38);
-    if ((u32)data_0212d744 < r6) {
-        r6 = data_0212d744;
+    *M2C_FIELD(list, s32 **, 0x40) = 0;
+    start = M2C_FIELD(list, u32 *, LIST_COUNT);
+    if ((u32) gOnlinePlayerCount < start) {
+        start = gOnlinePlayerCount;
     }
-    temp5 = RandomIntRange(0, data_0212d744 - r6) + 1;
-    sp[0] = 0x10;
-    sp[1] = (NextRandomValue() & 1) == 0;
-    sp[2] = r6;
-    sp[3] = 0;
-    sp[4] = temp5;
-    if (func_ov010_02226538(6, 0, 0xFF, sp, arg0) != 0) {
+    count = RandomIntRange(0, gOnlinePlayerCount - start) + 1;
+    request[0] = 0x10; /* payload length in bytes */
+    request[1] = (NextRandomValue() & 1) == 0;
+    request[2] = start;
+    request[3] = 0;
+    request[4] = count;
+    if (SubmitWebGetRequest(6, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
 void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
 void *CreateSpriteForOwner(void *,s32);
-extern s32 data_0212d9c8;extern s32 data_0212da10;
+extern s32 data_0212d9c8;extern s32 gOnlinePlayerListVtable;
 u32 base=(u32)arg0;
 void *p;u8 *ptr;
 p=CreateSpriteForOwner(&data_0212d9c8,arg2);
 if(!p)return;
-M2C_FIELD(p,s32 **,0)=&data_0212da10;
+M2C_FIELD(p,s32 **,0)=&gOnlinePlayerListVtable;
 M2C_FIELD(p,s32 *,0x34)=(s32)arg0;
 M2C_FIELD(p,s32 *,0x38)=*arg1;
 M2C_FIELD(p,s32 *,0x3c)=0;
@@ -544,7 +557,7 @@ void func_020e3e04(void *arg0) {
 
 void func_020e3f08(void *arg0) {
     void func_02007e70(s32, void *, s32);
-    s32 func_ov010_02226538(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
     s32 sp[68];
     s32 val;
@@ -556,7 +569,7 @@ void func_020e3f08(void *arg0) {
     sp[3] = 0;
     sp[1] = 1;
     func_02007e70(M2C_FIELD(arg0, s32 *, 0x44), &sp[4], 0x100);
-    if (func_ov010_02226538(3, 0, 0xFF, sp, arg0) != 0) {
+    if (SubmitWebGetRequest(3, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
     SetSpriteAnimation(arg0, 1);
@@ -568,14 +581,14 @@ void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d838;
-    extern s32 data_0212da10;
+    extern s32 gOnlinePlayerListVtable;
     void *temp_r0;
     s32 temp_r2;
     register u8 *ptr;
 
     temp_r0 = CreateSpriteForOwner(&data_0212d838, arg3);
     if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
+        M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
         M2C_FIELD(temp_r0, s32 *, 0x34) = (s32)arg1;
         M2C_FIELD(temp_r0, s32 *, 0x38) = *arg2;
         M2C_FIELD(temp_r0, s32 *, 0x3c) = 0;
@@ -619,7 +632,7 @@ void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d8a8;
-    extern s32 data_0212da10;
+    extern s32 gOnlinePlayerListVtable;
     void *temp_r0;
     s32 sp0;
     s32 temp_r2;
@@ -627,7 +640,7 @@ void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     temp_r0 = CreateSpriteForOwner(&data_0212d8a8, arg3);
     if (temp_r0 != NULL) {
         sp0 = arg0;
-        M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
+        M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
         M2C_FIELD(temp_r0, s32 *, 0x34) = 0;
         M2C_FIELD(temp_r0, s32 *, 0x38) = 1;
         M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
@@ -646,7 +659,7 @@ void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d7d8;
-    extern s32 data_0212da10;
+    extern s32 gOnlinePlayerListVtable;
     void *temp_r0;
     s32 sp0;
     s32 temp_r2;
@@ -654,7 +667,7 @@ void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     temp_r0 = CreateSpriteForOwner(&data_0212d7d8, arg3);
     if (temp_r0 != NULL) {
         sp0 = arg0;
-        M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
+        M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
         M2C_FIELD(temp_r0, s32 *, 0x34) = 0;
         M2C_FIELD(temp_r0, s32 *, 0x38) = 1;
         M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
@@ -671,22 +684,22 @@ void func_020e4208(void *arg0) {
     s32 func_ov010_02226738(void);
     s32 func_ov010_0222681c(void);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    extern s32 data_0212d744;
+    extern s32 gOnlinePlayerCount;
 
     if (func_ov010_02226738() != 5) {
         SetSpriteAnimation(arg0, 1);
         return;
     }
-    data_0212d744 = func_ov010_0222681c();
+    gOnlinePlayerCount = func_ov010_0222681c();
 }
 
 void func_020e4240(void *arg0) {
-    s32 func_ov010_02226538(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    extern s32 data_0212d744;
+    extern s32 gOnlinePlayerCount;
     s32 sp[68];
 
-    if (data_0212d744 >= 0) {
+    if (gOnlinePlayerCount >= 0) {
         SetSpriteAnimation(arg0, 1);
         return;
     }
@@ -696,7 +709,7 @@ void func_020e4240(void *arg0) {
     sp[2] = 1;
     sp[3] = 0;
 
-    if (func_ov010_02226538(1, 0, 0xFF, sp, arg0) != 0) {
+    if (SubmitWebGetRequest(1, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
 
@@ -706,14 +719,14 @@ void func_020e4240(void *arg0) {
 void func_020e42bc(s32 arg0) {
     void *CreateSpriteForOwner(void *, s32);
     extern s32 data_0212d748;
-    extern s32 data_0212da10;
+    extern s32 gOnlinePlayerListVtable;
     void *temp_r0;
 
     temp_r0 = CreateSpriteForOwner(&data_0212d748, arg0);
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
+    M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
     M2C_FIELD(temp_r0, s32 *, 0x34) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x3c) = 0;
@@ -723,15 +736,15 @@ void func_020e42bc(s32 arg0) {
 }
 
 void func_020e4304(void) {
-    extern s32 data_0212d744;
-    data_0212d744 = -1;
+    extern s32 gOnlinePlayerCount;
+    gOnlinePlayerCount = -1;
 }
 
 void *func_020e4318(void *arg0) {
     void MemFree(void *);
-    extern M2C_UNK data_0212da10;
+    extern M2C_UNK gOnlinePlayerListVtable;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212da10;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gOnlinePlayerListVtable;
     if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
         HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x44));
     }
@@ -741,8 +754,8 @@ void *func_020e4318(void *arg0) {
 
 void *func_020e434c(void *arg0) {
     void HeapFreeBlock();
-    extern M2C_UNK data_0212da10;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212da10;
+    extern M2C_UNK gOnlinePlayerListVtable;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gOnlinePlayerListVtable;
     if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
         HeapFreeBlock();
     }
@@ -765,7 +778,7 @@ void func_020e4378(void) {
     M2C_UNK func_02007140();
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK Arm7CommandInit();
-    extern s32 data_020f5204;
+    extern s32 gGxDmaChannel;
     u16 *p;
     u16 *q;
     func_02006c58();
@@ -773,7 +786,7 @@ void func_020e4378(void) {
     func_02006f14();
     func_02007140();
     func_020022d8();
-    data_020f5204 = -1;
+    gGxDmaChannel = -1;
     GX_InitDisplay();
     func_02002490();
     *(s32 *)0x04001000 &= ~0x10000;

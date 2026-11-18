@@ -87,7 +87,7 @@ void LoadNarcMemberToBuffer(void) {
 }
 
 s32 func_020815bc(void *arg0, void *arg1) {
-    return func_02081128(BuildNarcPath(arg0), arg1);
+    return LoadFileToNewBuffer(BuildNarcPath(arg0), arg1);
 }
 
 void func_020815d4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -104,8 +104,8 @@ void LoadNarcFileToSpriteBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_0208161c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
- void func_020811b8(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_020811b8(BuildNarcPath(arg0), arg1, arg2, arg3);
+ void LoadFileToBGExtPltt(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ LoadFileToBGExtPltt(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void LoadNarcLayerPalette(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {

@@ -157,6 +157,7 @@ typedef struct DirectionMarker {
 #define MAP_VIEW_NO_SCROLL    10000 /* s16 sentinel: this axis does not need to scroll */
 #define MAP_VIEW_CELL_X     0x5150 /* s16 view scroll x, in whole cells (MAP_VIEW_X / 16) */
 #define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
+#define MAP_VIEW_SCROLL_STATE 0x5154 /* u8 map-view scroll flags; the low nibble is nonzero while a scroll runs (func_020d4dd0) */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 /* Inside the map view block (MAP_VIEW_ZOOM is its base): the Q12 matrix the view
  * projects a point with, and the world origin a projected point is relative to. */
@@ -230,10 +231,22 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_CELL_TERRAIN_HP_PRESENT 0x80 /* set on every nonzero HP byte: the saved-map run-length data keeps such bytes as literals */
 #define MAP_TERRAIN_IMPACT_HP_FULL  99   /* HP an impact feature has when the battle starts */
 
+/* Run-length form of the terrain-HP grid a saved map record holds at +0x1194: a
+ * run of zero cells is a count byte below 0x80, a nonzero cell is kept as itself
+ * (its MAP_CELL_TERRAIN_HP_PRESENT bit keeps it apart from a count), and
+ * MAP_TERRAIN_HP_RLE_END closes the data. */
+#define MAP_TERRAIN_HP_RLE_MAX 127  /* longest zero run one count byte holds */
+#define MAP_TERRAIN_HP_RLE_END 0xff /* byte that ends the run-length data */
+
 /* Tile ids the impact blast writes into the current tileset bank. */
 #define MAP_TILE_WASTELAND     3
 #define MAP_TILE_BLAST_GROUND  4
 #define MAP_TILE_BLAST_CRATER  5
+
+/* Tiles the random-map generator (overlay 7) seeds on plain ground and grows
+ * into patches with Map_GrowTerrain; their cells end up the given terrain kind. */
+#define MAP_TILE_WOODS         0x20 /* woods/forest, terrain kind 4 */
+#define MAP_TILE_ROCK          0x21 /* rock/mountain, terrain kind 3 */
 
 /* Reach of the impact blast: the movement range of a pseudo unit kind, searched
  * with an effectively unlimited movement-cost budget. */
@@ -243,14 +256,36 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_UNIT_STRIDE     14     /* bytes per unit record */
 #define MAP_UNIT_COUNT      256    /* unit records in MAP_UNIT_RECORDS */
 #define MAP_UNIT_GROUP_SIZE 64     /* records per player slot; a record's owner (player << 6) picks its group */
+#define MAP_UNIT_GROUP_BASE 0x52a8 /* u16 base id of the current player's unit group (gPlayerUnitIdBase[MAP_CURRENT_PLAYER], the owner bits of a group) */
 #define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
 /* The map's order queue: 8-byte MapOrder records at MAP_ORDERS, ended by one
  * whose type is 0.  +0x06 is an order's countdown: it is loaded with the order's
  * kind when the order's targets are played and ticked down one frame at a time. */
 #define MAP_ORDERS       0x58a4 /* first MapOrder record */
-#define MAP_ORDER_STRIDE 8      /* bytes per MapOrder record (see Unk020AEntry) */
+#define MAP_ORDER_STRIDE 8      /* bytes per MapOrder record (see MapOrder) */
+#define MAP_ORDER_COUNT  32     /* MapOrder records the queue holds */
 #define MAP_ORDER_TIMER  0x06   /* s8 frames left before the order's targets are played */
+#define MAP_ORDER_TYPE   0x02   /* u16 bits 6..9: the order's type (0 ends the queue) */
+
+/* One record of the map's order queue (MAP_ORDERS): the tile rectangle the order
+ * covers, its type and the value and countdown it runs with.  The byte at +0x05
+ * holds the player the order belongs to, its enabled flag and its mode. */
+typedef struct MapOrder {
+    u8 x;             /* +0x00 rectangle x */
+    u8 y;             /* +0x01 rectangle y */
+    u16 width:3;      /* +0x02 rectangle width in tiles */
+    u16 height:3;     /* +0x02 rectangle height in tiles */
+    u16 type:4;       /* +0x02 order type, 0 = free slot */
+    u16 kind:4;       /* +0x02 order kind, loaded into the countdown when it runs */
+    u16 top:2;        /* +0x02 */
+    u8 value;         /* +0x04 order value (health, amount...) */
+    u8 player:3;      /* +0x05 player the order belongs to */
+    u8 enabled:1;     /* +0x05 nonzero: the order is in effect */
+    u8 mode:4;        /* +0x05 order mode */
+    u8 timer;         /* +0x06 countdown; the order's targets play when it runs out */
+    u8 last;          /* +0x07 */
+} MapOrder;
 
 /* One command of a battle event script: the interpreter keeps the current command
  * in its context's +4 cursor and runs 0x10-byte commands.  +0x08 is an s16 player
@@ -436,6 +471,7 @@ typedef struct MapTargetEntry {
 #define MAP_CELL_THREAT_DIRECT   0x2840 /* u8 per cell: threat from direct attackers */
 #define MAP_CELL_THREAT_INDIRECT 0x2d48 /* u8 per cell: threat from indirect attackers */
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
+#define MAP_MODE_CURSOR     0      /* MAP_MODE value of the normal cursor handler (UpdateMapMode case 0) */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
 #define MAP_RETURN_STATE    0x52b2 /* u16 state to go back to after a temporary submode (0 = none) */
 
@@ -491,6 +527,8 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
 #define PLAYER_REC_PROPERTIES 0x18 /* u8 properties (cities/bases/HQ) the player owns, recounted when the map loads */
+#define PLAYER_REC_ATTACK_PROPERTIES 0x14 /* u8 attack-boosting properties the player owns (terrain kind 22), 5 percent attack each */
+#define PLAYER_ATTACK_PROPERTIES_OFF (MAP_PLAYER_STATES + PLAYER_REC_ATTACK_PROPERTIES) /* u8 */
 #define PLAYER_REC_DEFEAT_TURN   0x1A /* u16 turn the player was defeated on, 0 while still in the battle (IsPlayerActive) */
 #define PLAYER_REC_DEFEAT_REASON 0x1C /* u8 why the player was defeated: 8, 0x10, 1 or 2, the victory-rule flag that removed them */
 #define PLAYER_DEFEAT_PROPERTIES 0x20 /* PLAYER_REC_DEFEAT_REASON: fewer properties than the winner at the turn limit */
@@ -544,6 +582,10 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
  * cost table for the army's current weather. */
 #define ARMY_DATA_SIZE 0x9c
 #define ARMY_DATA_NAME 0x00
+#define ARMY_REC_ARMY_ID 0x6c /* u8 low byte of PLAYER_REC_SPRITE (i.e. player record +0x6c): the player's army id, a row of the army data table */
+
+/* Army id the weather rules leave alone: no rain movement penalty, no sandstorm damage penalty. */
+#define ARMY_WEATHER_IMMUNE 10
 
 /* gCurrentMap[1] is the map-view controller: it owns the scroll task and gets
  * a callback run each time a scroll pan finishes. */
@@ -578,6 +620,24 @@ enum {
     BATTLE_RESULT_LOSE = 2,
     BATTLE_RESULT_DRAW = 3
 };
+
+/* The battle-results summary block (gBattleResults).  When a battle ends the
+ * game lists the players by outcome and stores the winning player's ratings;
+ * the results screen (overlay 5) lays its rows out from the player lists and
+ * the counts that follow them. */
+#define BATTLE_RESULTS_WINNERS    0x00 /* u8[4] players that won (BATTLE_RESULT_WIN) */
+#define BATTLE_RESULTS_LOSERS     0x04 /* u8[4] players that lost (BATTLE_RESULT_LOSE) */
+#define BATTLE_RESULTS_DRAWERS    0x08 /* u8[4] players that drew (BATTLE_RESULT_DRAW) */
+#define BATTLE_RESULTS_WIN_COUNT  0x0c /* u8 entries used in BATTLE_RESULTS_WINNERS */
+#define BATTLE_RESULTS_LOSE_COUNT 0x0d /* u8 entries used in BATTLE_RESULTS_LOSERS */
+#define BATTLE_RESULTS_DRAW_COUNT 0x0e /* u8 entries used in BATTLE_RESULTS_DRAWERS */
+#define BATTLE_RESULTS_SPEED      0x10 /* u8 speed rating of the winning player, 0..150 */
+#define BATTLE_RESULTS_POWER      0x11 /* u8 power rating of the winning player, 0..150 */
+#define BATTLE_RESULTS_TECHNIQUE  0x12 /* u8 technique rating of the winning player, 0..150 */
+#define BATTLE_RESULTS_RANK       0x13 /* u8 grade of the total rating (GetRatingRank, 1..4) */
+#define BATTLE_RESULTS_WINNER     0x14 /* u8 player the ratings were computed for */
+#define BATTLE_RESULTS_TOTAL      0x16 /* u16 total of the three ratings, capped at 0x3e7 */
+#define BATTLE_RESULTS_FLAGS      0x18 /* s32 flag word; its low 15 bits are cleared when the ratings are recomputed */
 
 /* Battle-end state (gBattleEndState): byte 0 is non-zero once the battle has
  * finished, bytes 1 and 2 are the end conditions, byte 3 qualifies byte 2. */
@@ -641,6 +701,9 @@ typedef struct MapRecordHeader {
 #define MAP_RECORD_CHECKSUM    0x46 /* u16 CRC-16 of the record data (Crc16 from +0x54, 0x6A4 bytes) */
 #define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */
 #define MAP_RECORD_SIZE        0x6F8 /* expanded runtime record */
+#define MAP_RECORD_STAMP       0x40  /* u8[0x14] date, checksum and console id stamp */
+#define MAP_RECORD_STAMP_WORD  0x4C  /* u32 stamp word: a ten-bit counter in bits 18..27, flags in bits 28..31 */
+#define MAP_RECORD_STAMP_COUNT_MAX 1000 /* the counter is not bumped past this */
 #define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */
 #define MAP_RECORD_UNITS       0x3D8 /* packed unit entries in the runtime record */
 #define MAP_RECORD_PLAYER_COUNT 0x27 /* u8; a map-selection slot holding 0 is empty */
@@ -648,6 +711,13 @@ typedef struct MapRecordHeader {
 /* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
  * map-selection code reads a map's settings from. */
 #define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */
+#define MAP_DATA_EVENT_SCRIPT  0x44 /* void *the map's event-script block (GetMapEventScript) */
+
+/* The map's event-script block (the per-map data record's MAP_DATA_EVENT_SCRIPT):
+ * one compiled condition list per map event, each a pointer to 8-byte commands that
+ * end with opcode 0x22.  The EvalScriptConditions wrappers in ov000_02169F94 run
+ * one list per event. */
+#define MAP_EVENT_UNIT_SELECTED 0x10 /* run with the unit a player just selected */
 
 /* A map-selection list: five runtime map records held one after another. */
 #define MAP_RECORD_LIST_COUNT 5

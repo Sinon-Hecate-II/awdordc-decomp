@@ -6,7 +6,7 @@ void FillMapLayer(s8);
 s32 MarkAdjacentCells(s8);
 void MI_CpuFill8(void *, s32, s32);
 s32 Divide(s32, s32);
-s32 func_020a85c8(u32);
+s32 IsMobileIndirectUnitKind(u32);
 s32 IsCarrierUnitKind(u32);
 s32 func_020d0164(s32, s32);
 s32 IsUnitOnCurrentTeam(s32);
@@ -421,7 +421,7 @@ void func_ov000_02181c88(void) {
                         } while (var_r2 < (s32) M2C_FIELD(var_r6_4, u16 *, 0x5146));
                     }
                 }
-            } else if (func_020a85c8((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) != 0) {
+            } else if (IsMobileIndirectUnitKind((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) != 0) {
                 if (temp_r8 != 0) {
                     if (temp_r8 == 0) {
                         var_r3_5 = 0;

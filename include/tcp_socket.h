@@ -10,7 +10,8 @@
 #define TCP_SOCK_RESULT  0x34 /* s32 result of the last operation */
 
 /* Network stack state (gNetStack) callbacks. */
-#define NETSTACK_POLL 0x48 /* s32 (*poll)(void): nonzero while the link is up */
+#define NETSTACK_POLL   0x48 /* s32 (*poll)(void): nonzero while the link is up */
+#define NETSTACK_UPDATE 0x18 /* void (*)(void): stack upkeep callback run once per waiting step */
 
 /* gNetStack single-producer/single-consumer packet ring.  The producer appends
  * a record at NETSTACK_RING_WRITE (a u16 length followed by the packet data) and
@@ -44,6 +45,11 @@
 #define ARP_PACKET_SIZE 0x1C /* smallest ARP packet the handler accepts */
 #define ARP_OPCODE_REQUEST 1
 #define ARP_OPCODE_REPLY   2
+
+/* Gratuitous-ARP announcement of the stack's own address: the packet is sent
+ * ARP_RETRY_MS apart while the link is polled, for NETSTACK_ARP_TIMEOUT ticks. */
+#define ARP_RETRY_MS         100 /* milliseconds between the announcement packets */
+#define NETSTACK_ARP_TIMEOUT 23  /* (GetSystemTick >> 16) ticks the announcement waits before giving up */
 
 /* The IPv4 ARP cache (gArpCache): ARP_CACHE_COUNT entries mapping an address to
  * the hardware address learned for it, with the tick it was last refreshed. */

@@ -388,44 +388,58 @@ void Ov001_ListPushFront(void *arg0) {
     func_ov001_0218bf84(M2C_FIELD(arg0, s32 *, 4));
 }
 
-void func_ov001_0218bfd4(void){
-void func_ov001_0218c070(void);
-extern s32 data_ov001_02193e68;void MI_CpuFill32(s32,s32,s32);s32 Ov001_QueueCreateFromBuffer(s32,s32,s32);s32 Ov001_AddTask(s32,void (*)(void),s32,s32);
-s32 i,offset; s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(0x80c,4);data_ov001_02193e68=p;MI_CpuFill32(0x200,p,0x800);
-for(i=0,offset=0;i<2;i++){s32 result=Ov001_QueueCreateFromBuffer(0x40,data_ov001_02193e68+offset,8);offset+=0x400;((s32 *)data_ov001_02193e68)[i+0x200]=result;}
-M2C_FIELD(data_ov001_02193e68,s32 *,0x808)=Ov001_AddTask(1,func_ov001_0218c070,0,200);
+/* Set up the ov001 sprite-object arena: allocate both screens' OAM entry
+ * areas, fill them with the disabled-entry pattern, create each screen's queue
+ * of free 8-byte entries, and start the task that copies the arena to the
+ * hardware OAM. */
+void Ov001_InitSpriteObjs(void) {
+    void Ov001_FlushSpriteObjs(void);
+    extern s32 gOv001SpriteArena;
+    void MI_CpuFill32(s32, s32, s32);
+    s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
+    s32 i, offset;
+    s32 arena = ((s32 (*)(s32, s32))Ov001_Alloc)(OV001_SPRITE_OBJ_ARENA_SIZE, 4);
+    gOv001SpriteArena = arena;
+    MI_CpuFill32(0x200, arena, OV001_SPRITE_OBJ_BUFFER);
+    for (i = 0, offset = 0; i < 2; i++) {
+        s32 result = Ov001_QueueCreateFromBuffer(OV001_SPRITE_OBJ_COUNT, gOv001SpriteArena + offset, OV001_SPRITE_OBJ_STRIDE);
+        offset += OV001_SPRITE_OBJS_PER_SCREEN;
+        ((s32 *)gOv001SpriteArena)[i + OV001_SPRITE_OBJ_FREE_QUEUES / 4] = result;
+    }
+    M2C_FIELD(gOv001SpriteArena, s32 *, OV001_SPRITE_OBJ_TASK) = Ov001_AddTask(1, Ov001_FlushSpriteObjs, 0, OV001_SPRITE_OBJ_TASK_PERIOD);
 }
 
-void func_ov001_0218c070(void){
-extern s32 data_ov001_02193e68;void DC_FlushRange(s32,s32);void func_02004210(s32,s32,s32);void func_02004264(s32,s32,s32);
-DC_FlushRange(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x400);func_02004264(data_ov001_02193e68+0x400,0,0x400);
+void Ov001_FlushSpriteObjs(void){
+extern s32 gOv001SpriteArena;void DC_FlushRange(s32,s32);void func_02004210(s32,s32,s32);void func_02004264(s32,s32,s32);
+DC_FlushRange(gOv001SpriteArena,0x800);func_02004210(gOv001SpriteArena,0,0x400);func_02004264(gOv001SpriteArena+0x400,0,0x400);
 }
 
 #pragma pool_constants off
 void func_ov001_0218c0b8(void) {
-    extern s32 data_ov001_02193e68;
+    extern s32 gOv001SpriteArena;
     extern s32 gOv001TilePools;
-    func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193e68, s32 *, 0x808));
+    func_ov001_0218c94c(1, M2C_FIELD(gOv001SpriteArena, s32 *, 0x808));
     Ov001_FreeAlloc(&gOv001TilePools-1);
 }
 #pragma pool_constants reset
 void func_ov001_0218c0e4(s32 n){
-extern s32 data_ov001_02193e68; void Ov001_QueuePop(s32);
-Ov001_QueuePop(M2C_FIELD(data_ov001_02193e68+(n<<2),s32 *,0x800));
+extern s32 gOv001SpriteArena; void Ov001_QueuePop(s32);
+Ov001_QueuePop(M2C_FIELD(gOv001SpriteArena+(n<<2),s32 *,0x800));
 }
 
 void Ov001_ReleaseSprite(u32 *p){
-extern s32 data_ov001_02193e68;
+extern s32 gOv001SpriteArena;
 void Ov001_QueuePush(s32,void *);
 s32 i=0;
 *p=(*p&0xc1fffcff)|0x200;
-if((u32)p>=(u32)(data_ov001_02193e68+0x400))i=1;
-Ov001_QueuePush(M2C_FIELD(data_ov001_02193e68+(i<<2),s32 *,0x800),p);
+if((u32)p>=(u32)(gOv001SpriteArena+0x400))i=1;
+Ov001_QueuePush(M2C_FIELD(gOv001SpriteArena+(i<<2),s32 *,0x800),p);
 }
 
 s32 Ov001_SpriteObjAddr(s32 arg0, s32 arg1) {
-    extern s32 data_ov001_02193e68;
-    return data_ov001_02193e68 + (arg0 << 0xA) + (arg1 * 8);
+    extern s32 gOv001SpriteArena;
+    return gOv001SpriteArena + (arg0 << 0xA) + (arg1 * 8);
 }
 
 /* Creates the two ov001 tile-range pools (one per tile screen): each gets a list

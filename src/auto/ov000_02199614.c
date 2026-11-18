@@ -225,7 +225,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
     s32 UnpackCursorPath(void *, void *);
     s32 GetRandomSeed(void);
-    s32 func_020a641c(s32, s32);
+    s32 GetUnitMoveFuelCost(s32, s32);
     void func_ov000_02199ce0(void);
     extern s32 *gCurrentMap;
     extern M2C_UNK data_ov000_021df604;
@@ -265,7 +265,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         gAiCommand[6] = arg3;
         gAiCommand[7] = arg4;
 
-        result=func_020a641c((s32)*(u8 **)((u8 *)*gCurrentMap+0x52d0),((u8 *)*gCurrentMap)[0x52d5]);
+        result=GetUnitMoveFuelCost((s32)*(u8 **)((u8 *)*gCurrentMap+0x52d0),((u8 *)*gCurrentMap)[0x52d5]);
         state=gAiCommand;
         unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
         ((volatile u8 *)state)[0x12] = ((u32)(unit[10]<<25)>>25)-result;
@@ -290,7 +290,7 @@ void func_ov000_02199f38(void) {
 void SetBattleCommand(s32 kind, s32 actor, s32 arg, s32 argY) {
     s32 UnpackCursorPath(void *, void *);
     s32 GetRandomSeed(void);
-    s32 func_020a641c(s32, s32);
+    s32 GetUnitMoveFuelCost(s32, s32);
     void SendBattleCommandPacket(s32, s32, s32, s32);
     extern s32 *gCurrentMap;
     extern u8 gCommandPath[];
@@ -307,7 +307,7 @@ void SetBattleCommand(s32 kind, s32 actor, s32 arg, s32 argY) {
     gAiCommand[AI_COMMAND_UNIT] = (u8)arg;
     gAiCommand[AI_COMMAND_ARG_Y] = (u8)argY;
     if (*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT) != 0) {
-        s32 fuelCost = func_020a641c(*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT),
+        s32 fuelCost = GetUnitMoveFuelCost(*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT),
                                      (u8)*((u8 *)*gCurrentMap + MAP_CURSOR_DIR));
         volatile u8 *actingUnit = (volatile u8 *)*(s32 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
         gAiCommand[AI_COMMAND_FUEL_LEFT] = (((u32)actingUnit[0xa] << 25) >> 25) - fuelCost;

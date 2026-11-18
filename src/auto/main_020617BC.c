@@ -186,19 +186,19 @@ void func_02061c8c(void *arg0) {
 
 s32 StringIntern(s32 a,s32 b) {
 s32 func_020609bc(s32);
-s32 *func_02048ff8(s32,s32 *);
+s32 *TableLookup(s32,s32 *);
 s32 gpiStringDup(s32);
 void TableEnter(s32,s32 *);
 s32 pair[2]; s32 *p;
 pair[0]=b;
-p=func_02048ff8(func_020609bc(a),pair);
+p=TableLookup(func_020609bc(a),pair);
 if(p){p[1]++;return p[0];}
 pair[0]=gpiStringDup(b);pair[1]=1;
 TableEnter(func_020609bc(a),pair);
 return pair[0];
 }
 
-void StringInternRelease(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,sSbFileName,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
+void StringInternRelease(void *a,s32 b) {s32 func_020609bc(s32);s32 *TableLookup(s32,s32 *);void TableRemove(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=TableLookup(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,sSbFileName,data_02100094,0xf4);if(!p)return;if(--p[1])return;TableRemove(func_020609bc((s32)a),pair);}
 
 s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
 
@@ -337,32 +337,35 @@ void GenerateSessionKey(void *arg0) {
  i++; }while(i<8);
 }
 
-s32 func_02062324(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_02049810(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+/* Send length bytes of data on the list's master-server socket.  When the send
+ * fails, disconnect, reconnect and redo the query before one more attempt;
+ * returns 3 when the send keeps failing, 0 on success. */
+s32 SBServerListSendToMaster(void *list, void *data, s32 length) {
+    s32 ghiSend(s32, s32, s32, s32);
     M2C_UNK SBServerListCheckQueryError(void *);
     s32 SBServerListConnectAndQuery(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 var_r7;
+    s32 err;
+    s32 sent;
+    s32 retries;
 
-    var_r7 = 1;
+    retries = 1;
 loop_1:
-    var_r7 -= 1;
-    temp_r0_2 = func_02049810(M2C_FIELD(arg0, s32 *, 0x4B0), arg1, arg2, 0);
-    if ((temp_r0_2 <= 0) && (var_r7 >= 0)) {
-        SBServerListDisconnect(arg0);
-        temp_r0 = SBServerListConnectAndQuery(arg0, 0, 0, 2, 0);
-        if (temp_r0 != 0) {
-            SBServerListCheckQueryError(arg0);
-            return temp_r0;
+    retries -= 1;
+    sent = ghiSend(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET), data, length, 0);
+    if ((sent <= 0) && (retries >= 0)) {
+        SBServerListDisconnect(list);
+        err = SBServerListConnectAndQuery(list, 0, 0, 2, 0);
+        if (err != 0) {
+            SBServerListCheckQueryError(list);
+            return err;
         }
-        if (var_r7 < 0) {
+        if (retries < 0) {
             goto block_6;
         }
         goto loop_1;
     }
 block_6:
-    if (temp_r0_2 <= 0) {
+    if (sent <= 0) {
         return 3;
     }
     return 0;
@@ -375,7 +378,7 @@ block_6:
    flags and (for flag 0x80) the maximum server count; allocate the receive buffer. */
 s32 SBServerListConnectAndQuery(void *slist, M2C_UNK filter, M2C_UNK fields, M2C_UNK queryFlags, s32 maxServers) {
 extern u8 data_0210017c[],data_02100100[];extern M2C_UNK sSbEmptyString;
-void AssertFailed(void*,void*,void*,s32);s32 StringLength(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 gpiMalloc(s32);
+void AssertFailed(void*,void*,void*,s32);s32 StringLength(M2C_UNK*);s32 ghiSend(s32,s32,s32,s32);s32 gpiMalloc(s32);
 u8 packet[768];s32 length;u8 *out;u16 beLength;u8 *lenBytes,*packetBytes;s32 err;
 if(M2C_FIELD(slist,s32*,0)!=1)AssertFailed(data_0210017c,sSbFileName,data_02100100,0x20a);
 if(!filter)filter=(s32)&sSbEmptyString;if(!fields)fields=(s32)&sSbEmptyString;
@@ -394,7 +397,7 @@ if(M2C_FIELD(slist,s32*,0x5c4)&128)AppendInt32BE(&out,maxServers,&length);
 lenBytes=(u8 *)&beLength;
 beLength=(((u16)length>>8)&255)|(((u16)length<<8)&0xff00);
 packetBytes=packet;*((Pair617BC *)packetBytes)=*((Pair617BC *)lenBytes);
-if(func_02049810(M2C_FIELD(slist,s32*,0x4b0),(s32)packetBytes,length,0)<=0){SBServerListDisconnect(slist);return 3;}
+if(ghiSend(M2C_FIELD(slist,s32*,0x4b0),(s32)packetBytes,length,0)<=0){SBServerListDisconnect(slist);return 3;}
 M2C_FIELD(slist,s32*,0)=3;M2C_FIELD(slist,s32*,0x5c8)=0;
 if(!M2C_FIELD(slist,s32*,0x7c)){M2C_FIELD(slist,s32*,0x7c)=gpiMalloc(4096);if(!M2C_FIELD(slist,s32*,0x7c))return 5;M2C_FIELD(slist,s32*,0x80)=0;}
 return 0;

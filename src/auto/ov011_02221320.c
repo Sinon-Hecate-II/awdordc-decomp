@@ -298,7 +298,7 @@ void LoadOpeningScreenAssets(s32 unused, u32 asset, s32 screen) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020812a4(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToOBJExtPltt(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
@@ -371,7 +371,7 @@ void LoadOpeningScreenAssets(s32 unused, u32 asset, s32 screen) {
                 break;
             case 7:
                 LoadDecompressedFileTo(&gTitleNoaCgPath, M2C_FIELD(engine, s32 *, 0x1C));
-                func_020812a4(&gTitleNoaClPath, 0, 0, 0x200);
+                LoadFileToOBJExtPltt(&gTitleNoaClPath, 0, 0, 0x200);
                 break;
             default:
                 break;

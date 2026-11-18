@@ -281,7 +281,7 @@ value=p[7];if(best>value){best=value;result=i;}
 return result;
 }
 
-s32 func_ov000_021a6440(s32 a,s32 b) {
+s32 FindBestCandidateInGroup(s32 a,s32 b) {
 extern u8 *gAiState;extern M2C_UNK gAiTargetCandidates;
 u8 *p; s32 i,best,result;u8 value;
 best=0;result=-1;p=(u8 *)&gAiTargetCandidates;
@@ -298,15 +298,19 @@ best=0; result=-1; p=(u8 *)&gAiTargetCandidates;
 for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU ) { value=(s8)p[5]; if(best < (s32)value) {best=value;result=i;} } } return result; }
 
 #pragma opt_lifetimes off
-s32 func_ov000_021a6528(s32 arg0) {
-void ReleaseAiTargetGroups(void); s32 func_ov000_021a6440(s32,s32);
-extern u8 *gAiState; extern M2C_UNK gAiTargetGroups;
-u8 *p; s32 result; s32 i; s32 r; s32 best;
-p=(u8 *)&gAiTargetGroups; best=0; ReleaseAiTargetGroups();
-for(;;) { result=-1; for(i=0;i<(s32)gAiState[1];i++,p+=8) { if(p[1]!=255 && best<(s32)p[0]) { best=p[0];result=i; } } if(result==-1)return -1; r=func_ov000_021a6440(arg0,result); if(r!=-1)return r; p[1]=255; }
+/* Pick a target candidate of `type` (4 = any type) from the AI's best-scoring
+ * unclaimed target group: take the highest-scoring group, ask
+ * FindBestCandidateInGroup for its best candidate, and claim the group when it
+ * has none.  Returns the candidate index, or -1 when no group is left. */
+s32 FindTargetInBestGroup(s32 type) {
+ void ReleaseAiTargetGroups(void); s32 FindBestCandidateInGroup(s32,s32);
+ extern u8 *gAiState; extern M2C_UNK gAiTargetGroups;
+ u8 *group; s32 result; s32 i; s32 candidate; s32 best;
+ group=(u8 *)&gAiTargetGroups; best=0; ReleaseAiTargetGroups();
+ for(;;) { result=-1; for(i=0;i<(s32)gAiState[AI_STATE_GROUP_COUNT];i++,group+=AI_GROUP_STRIDE) { if(group[AI_GROUP_CLAIMED]!=255 && best<(s32)group[AI_GROUP_SCORE]) { best=group[AI_GROUP_SCORE];result=i; } } if(result==-1)return -1; candidate=FindBestCandidateInGroup(type,result); if(candidate!=-1)return candidate; group[AI_GROUP_CLAIMED]=255; }
 }
 #pragma opt_lifetimes reset
-s32 func_ov000_021a65c4(s32 arg0, s32 arg1) {
+s32 FindNearestPropertyCandidateInGroup(s32 arg0, s32 arg1) {
     extern u8 *gAiState;
     extern M2C_UNK gAiTargetCandidates;
     u8 *p;
@@ -329,12 +333,35 @@ s32 func_ov000_021a65c4(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 func_ov000_021a664c(void) {
-void ReleaseAiTargetGroups(void); s32 func_ov000_021a65c4(s32,s32);
-extern u8 *gAiState; extern M2C_UNK gAiTargetGroups;
-s32 result; s32 i; s32 r; u8 *p;
-p=(u8 *)&gAiTargetGroups; ReleaseAiTargetGroups();
-for(;;) { result=-1; for(i=0;i<(s32)gAiState[1];i++,p+=8) { if(p[1]!=255 && ((Candidate1F14 *)p)->used==0) {result=i;break;} } if(result==-1)return -1; r=func_ov000_021a65c4(1,result); if(r!=-1)return r; p[1]=255; }
+/* Picks the AI's build target for a basic unit: the nearest property (type 1)
+ * candidate inside the first target group that no build has claimed yet. Groups
+ * without such a candidate are marked claimed and skipped. Returns the candidate
+ * index, or -1 when no group is left. */
+s32 FindBasicUnitTargetCandidate(void) {
+    void ReleaseAiTargetGroups(void);
+    s32 FindNearestPropertyCandidateInGroup(s32, s32);
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetGroups;
+    s32 groupIndex;
+    s32 i;
+    s32 candidate;
+    u8 *group;
+
+    group = (u8 *)&gAiTargetGroups;
+    ReleaseAiTargetGroups();
+    for (;;) {
+        groupIndex = -1;
+        for (i = 0; i < (s32)gAiState[AI_STATE_GROUP_COUNT]; i++, group += AI_GROUP_STRIDE) {
+            if (group[AI_GROUP_CLAIMED] != 255 && ((Candidate1F14 *)group)->used == 0) {
+                groupIndex = i;
+                break;
+            }
+        }
+        if (groupIndex == -1) return -1;
+        candidate = FindNearestPropertyCandidateInGroup(1, groupIndex);
+        if (candidate != -1) return candidate;
+        group[AI_GROUP_CLAIMED] = 255;
+    }
 }
 
 #pragma optimization_level 3
@@ -349,7 +376,7 @@ for(i=0;i<gAiState[1];i++,p+=8){
 if(p[1]!=255 && ((u32)(p[3]<<30)>>31)){found=i;break;}
 }
 if(found==-1)return -1;
-r=func_ov000_021a6440(1,found);
+r=FindBestCandidateInGroup(1,found);
 if(r!=-1)r=func_ov000_021a63b8(1,found);
 if(r==-1)break;
 entry=(u8 *)&gAiTargetCandidates+r*12;map=*data_027e0058;
@@ -362,9 +389,9 @@ return r;
 #pragma optimization_level 4
 s32 func_ov000_021a67f0(s32 a) {
 extern u8 *gAiState;
-s32 func_ov000_021a6528(s32);s32 FindNearestTargetCandidateOfType(s32);
+s32 FindTargetInBestGroup(s32);s32 FindNearestTargetCandidateOfType(s32);
 s32 r=-1;
-if(gAiState[1]>=2)r=func_ov000_021a6528(a);
+if(gAiState[1]>=2)r=FindTargetInBestGroup(a);
 if(r==-1)r=func_ov000_021a605c(a);
 if(r==-1)r=FindNearestTargetCandidateOfType(a);
 if(r==-1)r=FindAiTargetOfType(a);

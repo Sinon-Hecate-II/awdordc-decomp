@@ -265,27 +265,31 @@ void func_ov002_021e2d2c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     M2C_FIELD(arg0, s16 *, 0x86) = 0;
 }
 
-void SetEffectNodeTransform(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s16 arg6, s16 arg7) {
- s32 var_r2=arg2; s32 var_r4; s32 var_r5;
- M2C_FIELD(arg0,s32 *,0x5c)=arg3*arg5-arg1;
- M2C_FIELD(arg0,s32 *,0x60)=var_r2-arg4*arg5;
- M2C_FIELD(arg0,s32 *,0x64)=-arg3;
- M2C_FIELD(arg0,s32 *,0x68)=arg4;
- M2C_FIELD(arg0,s32 *,0x70)=arg5;
- M2C_FIELD(arg0,s32 *,0x74)=arg5;
- M2C_FIELD(arg0,s16 *,0x7c)=arg6-arg7*arg5;
- M2C_FIELD(arg0,s16 *,0x7e)=arg7;
- var_r5=-arg1;
- M2C_FIELD(arg0,s16 *,0x78)=M2C_FIELD(arg0,s16 *,0x7c);
- var_r4=0;
- if(arg5>0)do {
- var_r5+=arg3;
- M2C_FIELD(arg0,s32 *,0x54)-=var_r5;
- var_r2-=arg4;
- M2C_FIELD(arg0,s32 *,0x58)-=var_r2;
- var_r4++;
- }while(var_r4<arg5);
- M2C_FIELD(arg0,s16 *,0x86)=1;
+/* Configure an effect node's timed motion from an effect's transform values:
+ * per-tick velocity and acceleration, the duration and the scale ramp, then
+ * rewind the node's fixed-point position by the whole path so it settles on
+ * (x, y) once the motion finishes. */
+void SetEffectNodeTransform(void *node, s32 x, s32 y, s32 accelX, s32 accelY, s32 frames, s16 endScale, s16 scaleStep) {
+ s32 moveY=y; s32 i; s32 moveX;
+ M2C_FIELD(node,s32 *,FX_NODE_VX)=accelX*frames-x;
+ M2C_FIELD(node,s32 *,FX_NODE_VY)=moveY-accelY*frames;
+ M2C_FIELD(node,s32 *,FX_NODE_AX)=-accelX;
+ M2C_FIELD(node,s32 *,FX_NODE_AY)=accelY;
+ M2C_FIELD(node,s32 *,FX_NODE_DURATION)=frames;
+ M2C_FIELD(node,s32 *,FX_NODE_TARGET)=frames;
+ M2C_FIELD(node,s16 *,FX_NODE_SCALE_TO)=endScale-scaleStep*frames;
+ M2C_FIELD(node,s16 *,FX_NODE_SCALE_STEP)=scaleStep;
+ moveX=-x;
+ M2C_FIELD(node,s16 *,FX_NODE_SCALE)=M2C_FIELD(node,s16 *,FX_NODE_SCALE_TO);
+ i=0;
+ if(frames>0)do {
+ moveX+=accelX;
+ M2C_FIELD(node,s32 *,FX_NODE_X_FIXED)-=moveX;
+ moveY-=accelY;
+ M2C_FIELD(node,s32 *,FX_NODE_Y_FIXED)-=moveY;
+ i++;
+ }while(i<frames);
+ M2C_FIELD(node,s16 *,FX_NODE_MODE_86)=1;
 }
 
 void SetEffectNodeScreenPosition(void *arg0, s16 arg1, s16 arg2, s16 arg3) {

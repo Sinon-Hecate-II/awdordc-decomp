@@ -121,33 +121,38 @@ void DrawOptionProgressBars(void *entry) {
  }
 }
 #pragma scheduling reset
-void func_020da008(void *arg0) {
-    u16 temp_r0;
-    u16 temp_r0_3;
-    void *temp_r0_2;
-    void *temp_r4;
+/* Takes the menu's second option: if the menu is still idle, presses the option's
+ * sprite (frame +1 for 12 frames), records the second option as chosen and plays
+ * the confirm sound with the menu's close animation. */
+void ConfirmMenuOption(void *entry) {
+    M2C_UNK PlaySoundEffect(s32);
+    M2C_UNK Sprite_ResumeAnimation(void *);
+    u16 state;
+    u16 stateAfterPress;
+    void *pressSprite;
+    void *menu;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0x10);
-    temp_r0 = M2C_FIELD(temp_r4, u16 *, 0x48);
-    if (temp_r0 & 0x20) {
+    menu = M2C_FIELD(entry, void **, 0x10);
+    state = M2C_FIELD(menu, u16 *, MENU_STATE);
+    if (state & MENU_STATE_ACCEPTED) {
         return;
     }
-    if (temp_r0 & 2) {
+    if (state & MENU_STATE_CHOSEN) {
         return;
     }
-    temp_r0_2 = M2C_FIELD(temp_r4, void **, 0x5C);
-    if ((s32) M2C_FIELD(temp_r0_2, s8 *, 0x5A) >= 0) {
-        M2C_FIELD(temp_r0_2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0_2, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0_2, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
-        M2C_FIELD(temp_r0_2, s8 *, 0x5A) = 0xC;
+    pressSprite = M2C_FIELD(menu, void **, MENU_PRESS_SPRITE);
+    if ((s32) M2C_FIELD(pressSprite, s8 *, MENU_SPRITE_TIMER) >= 0) {
+        M2C_FIELD(pressSprite, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(pressSprite, s32 *, MENU_SPRITE_FRAME) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(pressSprite, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
+        M2C_FIELD(pressSprite, s8 *, MENU_SPRITE_TIMER) = 0xC;
     }
-    temp_r0_3 = M2C_FIELD(temp_r4, u16 *, 0x48);
-    if (temp_r0_3 & 2) {
+    stateAfterPress = M2C_FIELD(menu, u16 *, MENU_STATE);
+    if (stateAfterPress & MENU_STATE_CHOSEN) {
         return;
     }
-    M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (temp_r0_3 | 1);
-    M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 2);
-    PlaySoundEffect(0x1000D);
-    Sprite_ResumeAnimation(temp_r4);
+    M2C_FIELD(menu, u16 *, MENU_STATE) = (u16) (stateAfterPress | MENU_STATE_OPTION);
+    M2C_FIELD(menu, u16 *, MENU_STATE) = (u16) (M2C_FIELD(menu, u16 *, MENU_STATE) | MENU_STATE_CHOSEN);
+    PlaySoundEffect(0x1000D); /* SOUND_MENU_CONFIRM */
+    Sprite_ResumeAnimation(menu);
 }
 
 void func_020da0a0(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;

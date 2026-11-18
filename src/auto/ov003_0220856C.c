@@ -3,7 +3,7 @@
 
 s16 GetSpriteAnimValue(void *);
 void func_02086e9c(void);
-void func_02086dfc(s32);
+void SetupSprite3DScene(s32);
 s32 Divide(s32, s32);
 void SetGxPolygonAttr(s32, s32);
 void func_020a8cf0(s32, s32, s32, s32, u16, s32, u16, u16, u16, volatile u16);
@@ -23,7 +23,7 @@ static inline u8 Small856(s32 value){return value<3;}
 
 void func_ov003_0220856c(void *arg0,s32 arg1,s32 arg2){
 s32 x,sx,sy,i,y;s16 width;void *entry,*data; s32 originY,scaleX,scaleY,alpha,color;void *desc;s32 shiftedX,image,imageSel,align,image2,image2Sel,offset,half,halfSel,shade,shiftedY,base,none,white;
-originY=(s16)arg2;func_02086dfc((s16)arg2);
+originY=(s16)arg2;SetupSprite3DScene((s16)arg2);
 data=M2C_FIELD(arg0,void **,68);i=0;
 if((s32)M2C_FIELD(data,u8 *,0)>0){base=0x8ec0;none=-1;white=none+0x8000;offset=0;
 do{

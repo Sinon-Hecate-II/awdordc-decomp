@@ -761,36 +761,38 @@ done:
     }
 }
 
-void func_02090bd8(void *arg0) {
-    void func_02090bd8(void *);
+/* Draw one script player into the 3D sprite engine, then every player after it
+ * on the same owner's list (SPRITE_PLAYER_NEXT).  Hidden players are skipped and
+ * the draw helper is picked by SPRITE_PLAYER_FLAG_3D. */
+void SpritePlayer_DrawList(void *player) {
     void func_01ffabac(s32, s32, s32, s32, s32, void *, s32);
     void func_01ffad4c(s32, s32, s32, s32, s32, void *, s32);
 
     u8 flags;
 
-    flags = M2C_FIELD(arg0, u8 *, 0x2D);
-    if (flags & 0x1) {
+    flags = M2C_FIELD(player, u8 *, SPRITE_PLAYER_FLAGS);
+    if (flags & SPRITE_PLAYER_FLAG_HIDDEN) {
         return;
     }
-    if ((flags & 0x2) == 0) {
-        func_01ffabac(M2C_FIELD(arg0, s16 *, 0x20),
-                      M2C_FIELD(arg0, s16 *, 0x22),
-                      (u16)M2C_FIELD(arg0, u16 *, 0x24),
-                      (u16)M2C_FIELD(arg0, u16 *, 0x26),
-                      M2C_FIELD(arg0, u16 *, 0x28),
-                      (void *)M2C_FIELD(arg0, void **, 0x18),
-                      M2C_FIELD(arg0, s8 *, 0x2A) + M2C_FIELD(arg0, s8 *, 0x2B));
+    if ((flags & SPRITE_PLAYER_FLAG_3D) == 0) {
+        func_01ffabac(M2C_FIELD(player, s16 *, SPRITE_PLAYER_X),
+                      M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y),
+                      (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_X_HIGH),
+                      (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y_HIGH),
+                      M2C_FIELD(player, u16 *, SPRITE_PLAYER_TILE),
+                      (void *)M2C_FIELD(player, void **, SPRITE_PLAYER_FRAME),
+                      M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY) + M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY_ADD));
     } else {
-        func_01ffad4c(M2C_FIELD(arg0, s16 *, 0x20),
-                      M2C_FIELD(arg0, s16 *, 0x22),
-                      (u16)M2C_FIELD(arg0, u16 *, 0x24),
-                      (u16)M2C_FIELD(arg0, u16 *, 0x26),
-                      M2C_FIELD(arg0, u16 *, 0x28),
-                      (void *)M2C_FIELD(arg0, void **, 0x18),
-                      M2C_FIELD(arg0, s8 *, 0x2A) + M2C_FIELD(arg0, s8 *, 0x2B));
+        func_01ffad4c(M2C_FIELD(player, s16 *, SPRITE_PLAYER_X),
+                      M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y),
+                      (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_X_HIGH),
+                      (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y_HIGH),
+                      M2C_FIELD(player, u16 *, SPRITE_PLAYER_TILE),
+                      (void *)M2C_FIELD(player, void **, SPRITE_PLAYER_FRAME),
+                      M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY) + M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY_ADD));
     }
-    if (M2C_FIELD(arg0, void **, 0x8) != 0) {
-        func_02090bd8(M2C_FIELD(arg0, void **, 0x8));
+    if (M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT) != 0) {
+        SpritePlayer_DrawList(M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT));
     }
 }
 
@@ -814,7 +816,7 @@ void Sprite_DestroyAuxList(void *arg0) {
 }
 
 s32 func_02090cbc(void *p) {
-void func_020908dc(void *);void func_02090d84(void *);void DeleteSpriteObject(void *);void func_02090bd8(void *);
+void func_020908dc(void *);void func_02090d84(void *);void DeleteSpriteObject(void *);void SpritePlayer_DrawList(void *);
 void *q;
 if(M2C_FIELD(p,void **,0x38))func_020908dc(M2C_FIELD(p,void **,0x38));
 q=M2C_FIELD(p,void **,0x3C);
@@ -829,7 +831,7 @@ Call02090Node(q);q=M2C_FIELD(q,void **,0xC);
 if(q)func_02090d84(q);
 }}}}
 if(!M2C_FIELD(p,void **,0x38) && !M2C_FIELD(p,void **,0x3C))DeleteSpriteObject(p);
-else if(M2C_FIELD(p,void **,0x38))func_02090bd8(M2C_FIELD(p,void **,0x38));
+else if(M2C_FIELD(p,void **,0x38))SpritePlayer_DrawList(M2C_FIELD(p,void **,0x38));
 }
 
 #pragma optimization_level 4

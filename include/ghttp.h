@@ -210,6 +210,17 @@ typedef struct WebRequest {
     s32 sourceId; /* +0x04 id of the record the request is about */
 } WebRequest;
 
+/* WebRequest::status values. */
+enum {
+    WEB_TXN_IDLE      = 0, /* no request queued */
+    WEB_TXN_READY     = 1, /* a request may be sent */
+    WEB_TXN_PUT_SENT  = 2, /* put.asp has been queued */
+    WEB_TXN_GET_SENT  = 3, /* get.asp has been queued */
+    WEB_TXN_SYNC_SENT = 4, /* sync.asp has been queued */
+    WEB_TXN_COMPLETE  = 5, /* the request finished, a new one may be sent */
+    WEB_TXN_FAILED    = 6  /* the request failed */
+};
+
 /* Kind of a multipart/form-data part (GHIPostData.type), from ghttpPost.c. */
 enum {
     GHIString = 0,      /* name=value string */

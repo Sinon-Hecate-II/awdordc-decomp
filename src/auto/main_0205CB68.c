@@ -52,10 +52,10 @@ void func_0205cc90(s32 *arg0) {
 }
 
 s32 func_0205cca0(void *p,s32 a,s32 b) {
-s32 *func_02048ff8(s32,void *);
+s32 *TableLookup(s32,void *);
 s32 data[40];void *ptr;s32 *res;
 data[0]=a;M2C_FIELD(data,s16 *,4)=b;ptr=data;
-res=func_02048ff8(M2C_FIELD(p,s32 *,12),&ptr);
+res=TableLookup(M2C_FIELD(p,s32 *,12),&ptr);
 if(res)return *res;return 0;
 }
 
@@ -242,7 +242,7 @@ s32 func_0205d164(s32 arg) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
     void Vector_RemoveItem(s32, s32);
-    void func_02048f54(s32, void *);
+    void TableRemove(s32, void *);
     void *p = (void *)arg;
     s32 v = M2C_FIELD(p, s32 *, 0x14);
     if (v == 0) v = M2C_FIELD(p, s32 *, 0x24);
@@ -264,7 +264,7 @@ s32 func_0205d164(s32 arg) {
     }
     {
         s32 *field8 = (s32 *)M2C_FIELD(p, s32 *, 0x08);
-        func_02048f54(M2C_FIELD(field8, s32 *, 0x0C), (void *)&arg);
+        TableRemove(M2C_FIELD(field8, s32 *, 0x0C), (void *)&arg);
         return 0;
     }
 }
@@ -369,11 +369,11 @@ void func_0205d464(void *arg0) {
 
 void func_0205d49c(void *a) {
     void GT2NotifyConnectionClosed(void *);
-    s32 func_02059f18(void *);
+    s32 gti2SocketErrorCallback(void *);
     if (M2C_FIELD(a, s32 *, 0x18)) return;
     M2C_FIELD(a, s32 *, 0x18) = 1;
     GT2NotifyConnectionClosed(a);
-    if (!func_02059f18(a)) return;
+    if (!gti2SocketErrorCallback(a)) return;
     gti2FreeSocket(a);
 }
 

@@ -80,26 +80,32 @@ void MapSelectList_ScrollUp(s32 task) {
     Ov001_PostTaskMessage(0, task);
 }
 
-void MapSelectList_ScrollDown(s32 arg0) {
-    s32 HardwareDivideRemainder(u16, s32);
+/* Page the map-select list down towards its last row: push the scroll position
+ * forward four units a frame; once the step lands on a row boundary, snap the
+ * scroll to it and finish - redraw the visible rows, move the scroll bar handle,
+ * release the scroll bar and report the task's result.  Before then the rows are
+ * only moved on screen.  Runs as the repeated-key scroll task. */
+void MapSelectList_ScrollDown(s32 task) {
+    s32 HardwareDivideRemainder(u16, s32); /* hardware divide unit: remainder */
     extern M2C_UNK gMapSelectState;
-    s32 result;
+    s32 remainder;
+
     Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
-    M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) + 4;
-    result = HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
-    if (result >= 4) {
+    M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) + 4;
+    remainder = HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
+    if (remainder >= 4) {
         MapSelectList_PositionRows();
         return;
     }
-    M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - result;
+    M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) - remainder;
     MapSelectList_Redraw();
-    HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
+    HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
     Ov001_UpdateScrollbarHandle();
     Ov001_UnblockScrollBar();
     func_ov001_0217b130();
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
-    Ov001_PostTaskMessage(0, arg0);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = 0;
+    Ov001_PostTaskMessage(0, task);
 }
 
 void func_ov001_0217b0d4(void) {

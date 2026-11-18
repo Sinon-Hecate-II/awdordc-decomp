@@ -395,7 +395,7 @@ void GX_SetBlendControl(s32,s32,s32);s32 Ov001_CreateSprite(s32,s32,s32);
 s32 Ov001_MoveSpriteLayout(s32,s32,s32,s32);void Ov001_SetSpritePalette(s32,s32,s32);
 s32 CreatePooledTextPanel(s32,s32,s32,s32,s32*,s32);s32 func_ov001_0218a070(s32,s32,s32);
 s32 Ov001_GetTextFontId(void);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void*);
-void func_ov001_0218b200(s32,s32,s32,s32,s32);void func_ov001_0218b4dc(s32,s32,s32,s32);
+void Ov001_DrawTextPanelToSprite(s32,s32,s32,s32,s32);void func_ov001_0218b4dc(s32,s32,s32,s32);
 void SetWindowRect(s32,s32,const void*);s32 Ov001_SetRegionMenuY(s32);
 s32 Ov001_AddTask(s32,void(*)(),s32,s32);void func_ov001_02186678();void Ov001_SlideRegionMenuIn();
 extern const u8 data_ov001_0218fc40[],data_ov001_0218fcf4[],data_ov001_0218fc66[],data_ov001_0218fc4a[];
@@ -429,7 +429,7 @@ i++;}while(i<gOv001RegionItemCount[b]);}
 M2C_FIELD(gOv001RegionMenu,s32*,0x10)=CreatePooledTextPanel(0,32,12,1,&layout,0);
 M2C_FIELD(gOv001RegionMenu,s32*,4)=func_ov001_0218a070(0,layout,0);
 DrawPanelText(M2C_FIELD(gOv001RegionMenu,s32*,0x10),0,0,data_ov001_0218fc84[b*2],data_ov001_0218fc86[b*2],2,Ov001_GetTextFontId(),text);
-func_ov001_0218b200(M2C_FIELD(gOv001RegionMenu,s32*,0x10),256,0,M2C_FIELD(gOv001RegionMenu,s32*,4),0);
+Ov001_DrawTextPanelToSprite(M2C_FIELD(gOv001RegionMenu,s32*,0x10),256,0,M2C_FIELD(gOv001RegionMenu,s32*,4),0);
 func_ov001_0218b4dc(0,0,31,0);
 func_ov001_0218b4dc(0,1,31,palette[M2C_FIELD(gOv001RegionMenu,u8*,0x1c)]);
 func_ov001_0218b4dc(0,3,31,1);

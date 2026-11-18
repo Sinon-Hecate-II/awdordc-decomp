@@ -301,19 +301,22 @@ void func_0208e0b8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     DrawVerticalBar((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg3, arg4);
 }
 
-void DrawUiGradient(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+/* Draws the UI bar gradient: decompresses the gradient strip into the engine's
+ * texture area at textureOffset and writes the two caller colours and four grey
+ * shades into OBJ palette `paletteIndex`. */
+void DrawUiGradient(s32 textureOffset, s32 paletteIndex, s16 colorA, s16 colorB) {
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
-    extern M2C_UNK data_0211e394;
+    extern M2C_UNK gUiGradientGraphics;
     extern void *gCur3DSpriteEngine;
-    s32 temp_r3;
-    LoadGraphicsBlock(&data_0211e394, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
-    temp_r3 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + (((arg1 + 0x10) << 5) & ~1);
-    M2C_FIELD(temp_r3, s16 *, 6) = arg2;
-    M2C_FIELD(temp_r3, s16 *, 8) = arg3;
-    M2C_FIELD(temp_r3, s16 *, 0xA) = 0x5AD6;
-    M2C_FIELD(temp_r3, s16 *, 0xC) = 0x35AD;
-    M2C_FIELD(temp_r3, s16 *, 0xE) = 0x4E73;
-    M2C_FIELD(temp_r3, s16 *, 0x10) = 0x6F7B;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
+    s32 palette;
+    LoadGraphicsBlock(&gUiGradientGraphics, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + textureOffset);
+    palette = M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + (((paletteIndex + 0x10) << 5) & ~1);
+    M2C_FIELD(palette, s16 *, 6) = colorA;
+    M2C_FIELD(palette, s16 *, 8) = colorB;
+    M2C_FIELD(palette, s16 *, 0xA) = UI_GRADIENT_SHADE_1;
+    M2C_FIELD(palette, s16 *, 0xC) = UI_GRADIENT_SHADE_2;
+    M2C_FIELD(palette, s16 *, 0xE) = UI_GRADIENT_SHADE_3;
+    M2C_FIELD(palette, s16 *, 0x10) = UI_GRADIENT_SHADE_4;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_PALETTE);
 }
 

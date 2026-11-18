@@ -241,11 +241,11 @@ void func_02073eb8(void *arg0, s32 arg1, s32 arg2) {
  * run the block's opcodes until one continues or ends execution.  Returns 0 when the
  * block runs to its end (or the record has no handler). */
 void Js_RunHandler(void *a){
-void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *func_02072b20(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void func_0207453c(void *,void *);
+void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *func_02072b20(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void Js_DecodeFrameData(void *,void *);
 s32 frame[6]; s32 operands[4]; u8 *p; u8 *data;
 FindExceptionTableHandler(M2C_FIELD(a,s32 *,16),frame);
 if(!frame[1])func_020742e0();
-func_0207453c(a,frame);
+Js_DecodeFrameData(a,frame);
 if(M2C_FIELD(a,s32 *,0))M2C_FIELD(a,s32 *,12)=0;
 else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,frame);if(!M2C_FIELD(a,s32 *,12))func_020742e0();}
 p=func_02073cdc(a,frame,&operands[0]);
@@ -473,53 +473,57 @@ s32 func_020744e0(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x54);
 }
 
-void func_0207453c(void *arg0, void *arg1) {
+/* Decode a handler's data block (state->data) into the unwinder's frame record:
+ * copy which JS_KIND_* bits the block's header sets into the record, take the
+ * block's register count into the record's save mask, decode the block's two
+ * values, then pick the frame pointer the handler's operands are read from. */
+void Js_DecodeFrameData(void *frame, void *state) {
     void *DecodeExceptionValue(void *, M2C_UNK *);
-    void *temp_r1;
-    void *temp_r0_2;
-    u8 flags;
-    s32 temp_r4;
-    s32 temp_r5;
-    s8 var_r2;
-    s8 var_r2_2;
-    s8 var_r0;
+    void *lsda;
+    void *cursor;
+    u8 kind;
+    s32 immediate;
+    s32 bigEndian;
+    s8 immediateFlag;
+    s8 id4Flag;
+    s8 bigEndianFlag;
 
-    temp_r1 = M2C_FIELD(arg1, void **, 4);
-    flags = M2C_FIELD(temp_r1, u8 *, 0);
-    temp_r4 = flags & 0x40;
-    if (temp_r4 != 0) {
-        var_r2 = 1;
+    lsda = M2C_FIELD(state, void **, 4);
+    kind = M2C_FIELD(lsda, u8 *, 0);
+    immediate = kind & JS_KIND_IMMEDIATE;
+    if (immediate != 0) {
+        immediateFlag = 1;
     } else {
-        var_r2 = 0;
+        immediateFlag = 0;
     }
-    M2C_FIELD(arg0, u8 *, 0x6B) = var_r2;
-    if (flags & 0x20) {
-        var_r2_2 = 1;
+    M2C_FIELD(frame, u8 *, JS_FRAME_IMMEDIATE) = immediateFlag;
+    if (kind & JS_KIND_ID4) {
+        id4Flag = 1;
     } else {
-        var_r2_2 = 0;
+        id4Flag = 0;
     }
-    temp_r5 = flags & 0x80;
-    M2C_FIELD(arg0, u8 *, 0x6A) = var_r2_2;
-    if (temp_r5 != 0) {
-        var_r0 = 1;
+    bigEndian = kind & JS_KIND_BIGENDIAN;
+    M2C_FIELD(frame, u8 *, JS_FRAME_ID4) = id4Flag;
+    if (bigEndian != 0) {
+        bigEndianFlag = 1;
     } else {
-        var_r0 = 0;
+        bigEndianFlag = 0;
     }
-    M2C_FIELD(arg0, u8 *, 0x6C) = var_r0;
-    M2C_FIELD(arg0, u16 *, 0x68) = (u16) (M2C_FIELD(temp_r1, u8 *, 1) << 4);
-    M2C_FIELD(arg0, u16 *, 0x68) = (u16) (M2C_FIELD(arg0, u16 *, 0x68) | 0x4000);
-    temp_r0_2 = DecodeExceptionValue((u8 *)temp_r1 + 2, (M2C_UNK *)((u8 *)arg0 + 0x60));
-    if (temp_r4 != 0) {
-        DecodeExceptionValue(temp_r0_2, (M2C_UNK *)((u8 *)arg0 + 0x64));
+    M2C_FIELD(frame, u8 *, JS_FRAME_BIGENDIAN) = bigEndianFlag;
+    M2C_FIELD(frame, u16 *, JS_FRAME_SAVE_MASK) = (u16) (M2C_FIELD(lsda, u8 *, 1) << 4);
+    M2C_FIELD(frame, u16 *, JS_FRAME_SAVE_MASK) = (u16) (M2C_FIELD(frame, u16 *, JS_FRAME_SAVE_MASK) | 0x4000);
+    cursor = DecodeExceptionValue((u8 *)lsda + 2, (M2C_UNK *)((u8 *)frame + JS_FRAME_SAVE_SIZE));
+    if (immediate != 0) {
+        DecodeExceptionValue(cursor, (M2C_UNK *)((u8 *)frame + JS_FRAME_SAVE_VALUE));
     }
-    if (temp_r4 != 0) {
-        if (temp_r5 != 0) {
-            M2C_FIELD(arg0, s32 *, 0x18) = M2C_FIELD(arg0, s32 *, 0x38);
+    if (immediate != 0) {
+        if (bigEndian != 0) {
+            M2C_FIELD(frame, s32 *, JS_FRAME_TOP) = M2C_FIELD(frame, s32 *, JS_FRAME_ALT_FP);
         } else {
-            M2C_FIELD(arg0, s32 *, 0x18) = M2C_FIELD(arg0, s32 *, 0x48);
+            M2C_FIELD(frame, s32 *, JS_FRAME_TOP) = M2C_FIELD(frame, s32 *, JS_FRAME_ALT_IP);
         }
     } else {
-        M2C_FIELD(arg0, s32 *, 0x18) = M2C_FIELD(arg0, s32 *, 0x14);
+        M2C_FIELD(frame, s32 *, JS_FRAME_TOP) = M2C_FIELD(frame, s32 *, JS_FRAME_PREV);
     }
 }
 

@@ -15,8 +15,8 @@ void SetTextSpriteValue(void *,int);
 void DrawTextSprite(void *);
 void *GetBattleSlotSummary(int);
 u16 *func_020c53ac(int);
-u64 func_020c5430(void *);
-void func_020c5498(char *,u64);
+u64 GetBattleSlotMapCode(void *);
+void FormatMapCodeString(char *,u64);
 void FillU16(int,void *,int);
 void CopyU16(void *,void *,int);
 void MI_CpuCopy8(void *,void *,int);
@@ -84,8 +84,8 @@ if(item) {
 u16 *custom=func_020c53ac(i);
 if(custom[0]) CopyU16(custom,text,26);
 else {
-id=func_020c5430(item);
-if(id) {func_020c5498(name,id);func_02019e64(text,0,name,0,0);}
+id=GetBattleSlotMapCode(item);
+if(id) {FormatMapCodeString(name,id);func_02019e64(text,0,name,0,0);}
 else MI_CpuCopy8(data_ov006_022186b4,text,26);
 }
 } else MI_CpuCopy8(data_ov006_022186d0,text,26);
@@ -190,7 +190,7 @@ DrawTextLine(26,21,1,data_ov006_02218720,0x7000,(u16)(tile+24));
 gCur3DSpriteEngine[70]|=2;
 id=func_020c53e4(0);
 if(id) {
-func_020c5498(digits,id);
+FormatMapCodeString(digits,id);
 engine=M2C_FIELD(p,u8 **,0x44);engine[40]&=~0xe0;
 xx=60;yy=108;
 for(i=0;digits[i];i++) {

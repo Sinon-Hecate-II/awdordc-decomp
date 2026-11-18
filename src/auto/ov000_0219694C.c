@@ -231,7 +231,7 @@ s32 ApplyAttackBonus(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 /* Scales a base value by percentage modifiers derived from up to two optional unit pointers; returns the base unchanged when neither modifier applies. */
 s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
-    s32 func_020a2868(u32, s32, s32);
+    s32 GetCoZoneAttackBonus(u32, s32, s32);
     s32 func_020a28f4(u32, s32, s32);
     s32 func_020a334c(u16);
     s32 IsUnitSelected(void *);
@@ -240,7 +240,7 @@ s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
     s32 n, idx, a, b;
     if (secondUnit && IsUnitSelected(secondUnit)) {
         if (secondUnit) { if (!secondUnit) n = 0; else n = (s32)((u8 *)secondUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
-        a = func_020a2868((u32)(M2C_FIELD(secondUnit, u8 *, 0) << 26) >> 26, idx, 0);
+        a = GetCoZoneAttackBonus((u32)(M2C_FIELD(secondUnit, u8 *, 0) << 26) >> 26, idx, 0);
     } else a = 0;
     if (firstUnit && (IsUnitSelected(firstUnit) || func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)))) {
         if (firstUnit) { if (!firstUnit) n = 0; else n = (s32)((u8 *)firstUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;

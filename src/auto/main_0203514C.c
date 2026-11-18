@@ -4,7 +4,7 @@
 #pragma scheduling on
 void func_0203514c(void){extern void *gWfcNet;extern M2C_UNK data_020fb800,data_020fb810,data_020fb82c,data_020fb84c;void (*cb)(void*,void*,s32); void *base=*(void *volatile *)&gWfcNet;void *condition=*(void *volatile *)((char *)&gWfcNet+20);cb=M2C_FIELD(base,void (**)(void*,void*,s32),0x110c);if(condition){HttpClientCleanup();cb(&data_020fb800,M2C_FIELD(&gWfcNet,void**,20),0);M2C_FIELD(&gWfcNet,void**,20)=0;}func_02032b10();if(!gWfcNet)return;if(M2C_FIELD(gWfcNet,void**,0x1114)){cb(&data_020fb810,M2C_FIELD(gWfcNet,void**,0x1114),0);M2C_FIELD(gWfcNet,void**,0x1114)=0;}if(M2C_FIELD(gWfcNet,void**,0x1118)){cb(&data_020fb82c,M2C_FIELD(gWfcNet,void**,0x1118),0);M2C_FIELD(gWfcNet,void**,0x1118)=0;}cb(&data_020fb84c,gWfcNet,0);gWfcNet=0;}
 void func_02035244(void) {
-    M2C_UNK func_02005d60(void *);
+    M2C_UNK OS_JoinThread(void *);
     M2C_UNK func_02032a84(void);
     M2C_UNK func_02033f3c(void);
     extern void *gWfcNet;
@@ -14,7 +14,7 @@ void func_02035244(void) {
     }
     func_02032a84();
     if (M2C_FIELD(gWfcNet, s32 *, 0x1188) != 0) {
-        func_02005d60(gWfcNet + 0x111C);
+        OS_JoinThread(gWfcNet + 0x111C);
     }
     M2C_FIELD(gWfcNet, s32 *, 0x1004) = -7;
 }

@@ -31,26 +31,30 @@ if(ReportNasError())return;
 }
 
 void NasLoginRequestCallback(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_0203a04c(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
+    void StartNasGpiConnection(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
     void NasConnectionResultCallback(M2C_UNK, Record39 *);
-    func_0203a04c(arg0, arg1, (M2C_UNK *)&NasConnectionResultCallback, 2);
+    StartNasGpiConnection(arg0, arg1, (M2C_UNK *)&NasConnectionResultCallback, 2);
 }
 
-void func_0203a04c(M2C_UNK a,M2C_UNK b,M2C_UNK *c,M2C_UNK d) {
+/* Start the gpi connection that carries the NAS login: keep the account name and
+ * password in the login context, stamp the attempt's tick and arm its 60-second
+ * timeout, then open the raw gpi connection on the context's handle with the given
+ * completion callback.  When that succeeds the login moves to nextState. */
+void StartNasGpiConnection(M2C_UNK name,M2C_UNK password,M2C_UNK *callback,M2C_UNK nextState) {
 extern M2C_UNK gNasLogin;
 void StringCopy(void *,M2C_UNK);
 u64 GetSystemTick(void);
 void gpiStartConnectionRaw(s32,void *,void *,s32,s32,M2C_UNK *,s32);
 s32 ReportNasError(void);
-void *p;
-StringCopy((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x48,a);
-StringCopy((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x148,b);
-p=M2C_FIELD(&gNasLogin,void **,4);
-M2C_FIELD(p,u64 *,0x34)=GetSystemTick();
-M2C_FIELD(p,s32 *,0x30)=1;
-p=M2C_FIELD(&gNasLogin,void **,4);
-gpiStartConnectionRaw(M2C_FIELD(p,s32 *,0),(u8 *)p+0x48,(u8 *)p+0x148,1,0,c,0);
-if(ReportNasError()) return; M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,4)=d;
+void *context;
+StringCopy((u8 *)M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT)+NAS_LOGIN_NAME,name);
+StringCopy((u8 *)M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT)+NAS_LOGIN_PASSWORD,password);
+context=M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT);
+M2C_FIELD(context,u64 *,NAS_LOGIN_GPI_TICK)=GetSystemTick();
+M2C_FIELD(context,s32 *,NAS_LOGIN_GPI_PENDING)=1;
+context=M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT);
+gpiStartConnectionRaw(M2C_FIELD(context,s32 *,0),(u8 *)context+NAS_LOGIN_NAME,(u8 *)context+NAS_LOGIN_PASSWORD,1,0,callback,0);
+if(ReportNasError()) return; M2C_FIELD(M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT),s32 *,NAS_LOGIN_STATE)=nextState;
 }
 
 /* Starts an online/NAS request for source `b`, remembering the completion callback `a`.
@@ -94,7 +98,7 @@ void func_0203a2b4(void) {
     void StringCopy(void *, M2C_UNK);
     void HeapFree(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02032370(void *);
-    void func_0203a04c(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
+    void StartNasGpiConnection(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
     void MI_CpuFill8(void *, s32, s32);
     s32 Utf16StringLength(s32);
     void MI_CpuCopy8(s32, void *, s32);
@@ -122,7 +126,7 @@ void func_0203a2b4(void) {
                 (void *)((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x148),
                 M2C_FIELD(&gNasLogin,s32 *,0));
         } else {
-            func_0203a04c(
+            StartNasGpiConnection(
                 (M2C_UNK)((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x48),
                 (M2C_UNK)((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x148),
                 (M2C_UNK *)NasConnectionResultCallback,

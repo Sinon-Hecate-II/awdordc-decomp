@@ -314,6 +314,22 @@ enum {
     TRANSITION_MODE_SPLIT  = 2  /* split the screen into two sliding windows */
 };
 
+/* The UI mode the list/menu screens are in (gUiMode points at one UiModeState):
+ * the mode in effect, the one asked for with SetUiMode and, while a sub screen
+ * (mode 3) is up, the mode to come back to.  A requested mode is applied in one
+ * step (previous <- current <- requested) once the screen change that covers the
+ * swap has finished, that is once IsUiModeSwitchBusy() returns 0; `param` is the
+ * value the new mode's screen object is created with, the chosen list row for
+ * the modes that take one.  Mode 1 is the battle map screen (overlay 0) and mode
+ * 2 is entered through the screen-change transition. */
+typedef struct UiModeState {
+    s16 previous;  /* +0x00 mode before the current one */
+    s16 current;   /* +0x02 mode in effect, returned by GetUiMode */
+    s16 requested; /* +0x04 mode asked for by SetUiMode */
+    s16 saved;     /* +0x06 mode saved while a sub screen (mode 3) is up */
+    s32 param;     /* +0x08 parameter of the requested mode */
+} UiModeState;
+
 /* Fields of a 3D sprite object, the nodes of the twelve per-layer sprite lists
  * (g3DSpriteLists) that Update3DSpriteObject walks.  An object has a sibling
  * chain through NEXT and a child tree through CHILD. */

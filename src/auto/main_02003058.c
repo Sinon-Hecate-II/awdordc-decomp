@@ -396,7 +396,26 @@ void GX_SetClearColor(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD((void *)0x04000350, s16 *, 4) = arg2;
 }
 
-void G3X_InitTable(void){extern s32 data_020f5204;s32 i; if(data_020f5204!=-1){DmaFillAsync(data_020f5204,0x4000330,0,16,0,0);DmaFill(data_020f5204,0x4000360,0,96);}else{CpuFill(0,0x4000330,16);CpuFill(0,0x4000360,96);}i=0;do{i++;*(volatile s32 *)0x40004d0=0;}while(i<32);}
+/* Zero the geometry engine's lookup tables at start-up: the edge-colour table,
+   the fog and toon tables, and the 32-entry shininess table.  The bulk fills go
+   through the GX DMA channel when one is set up and through the CPU otherwise. */
+void G3X_InitTable(void) {
+    extern s32 gGxDmaChannel;
+    s32 i;
+
+    if (gGxDmaChannel != -1) {
+        DmaFillAsync(gGxDmaChannel, G3X_EDGE_TABLE_ADDR, 0, G3X_EDGE_TABLE_SIZE, 0, 0);
+        DmaFill(gGxDmaChannel, G3X_FOG_TOON_TABLE_ADDR, 0, G3X_FOG_TOON_TABLE_SIZE);
+    } else {
+        CpuFill(0, G3X_EDGE_TABLE_ADDR, G3X_EDGE_TABLE_SIZE);
+        CpuFill(0, G3X_FOG_TOON_TABLE_ADDR, G3X_FOG_TOON_TABLE_SIZE);
+    }
+    i = 0;
+    do {
+        i++;
+        REG_GX_SHININESS = 0;
+    } while (i < 32);
+}
 
 void func_02003f24(s32 arg0) {
     *(s32 *)0x04000010 = arg0;

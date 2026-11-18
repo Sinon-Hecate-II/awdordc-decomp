@@ -347,7 +347,7 @@ void func_020e49ec(void) {
 }
 
 void func_020e4a18(s32 arg0) {
-    s32 func_020be120(void);
+    s32 GetSaveRecordBuffer(void);
     s32 LoadNewestSaveRecord(s32, s32);
     extern M2C_UNK data_0215d8a0;
     extern M2C_UNK data_0215d8a8;
@@ -362,7 +362,7 @@ void func_020e4a18(s32 arg0) {
     u8 *p;
     u8 *q;
 
-    handle = func_020be120();
+    handle = GetSaveRecordBuffer();
     if (LoadNewestSaveRecord(4, handle) == 0) {
         return;
     }

@@ -174,37 +174,40 @@ void ghiSendRequest(void *request) {
   InvokeRequestCallback(request, 0, 0);
 }
 #pragma pop
-void func_0204ce20(void *arg0) {
-    M2C_UNK func_0204a594(void *);
-    M2C_UNK func_0204bc64(void *);
+/* GHI_STATE_POSTING step: push the connection's POST body through its item list.
+ * A failed upload must already have failed the request, a write that moved the
+ * offset reports progress, and a finished upload moves on to waiting for the
+ * response. */
+void ghiDoPosting(void *arg0) {
     s32 ghiPostDoPosting(void *);
- extern M2C_UNK gGhttpProcessFileName;
- M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-    extern M2C_UNK data_020fd7d0;
-    extern M2C_UNK data_020fd93c;
-    s32 temp_r0;
-    s32 temp_r5;
+    void ghiPostCleanup(void *);
+    void ghiCallPostCallback(void *);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    extern M2C_UNK gGhttpProcessFileName;
+    extern M2C_UNK gGhttpAssertPostCompleted;
+    extern M2C_UNK gGhiDoPostingName;
+    GHIConnection *connection = arg0;
+    s32 result;
+    s32 postOffset;
 
-    temp_r5 = M2C_FIELD(arg0, s32 *, 0x148);
-    temp_r0 = ghiPostDoPosting(arg0);
-    if (temp_r0 == 0) {
-        if ((M2C_FIELD(arg0, s32 *, 0xFC) != 0) && (M2C_FIELD(arg0, s32 *, 0x38) != 0)) {
-
-        } else {
-            AssertFailed(&data_020fd93c, &gGhttpProcessFileName, &data_020fd7d0, 0x200);
+    postOffset = connection->postOffset;
+    result = ghiPostDoPosting(connection);
+    if (result == 0) {
+        if (!(connection->completed && connection->result)) {
+            AssertFailed(&gGhttpAssertPostCompleted, &gGhttpProcessFileName, &gGhiDoPostingName, 0x200);
         }
-        func_0204bc64(arg0);
+        ghiPostCleanup(connection);
         return;
     }
-    if (temp_r5 != M2C_FIELD(arg0, s32 *, 0x148)) {
-        func_0204a594(arg0);
+    if (postOffset != connection->postOffset) {
+        ghiCallPostCallback(connection);
     }
-    if (temp_r0 != 1) {
+    if (result != 1) {
         return;
     }
-    func_0204bc64(arg0);
-    M2C_FIELD(arg0, s32 *, 0x10) = 5;
-    InvokeRequestCallback(arg0, 0, 0);
+    ghiPostCleanup(connection);
+    connection->state = GHI_STATE_WAITING;
+    InvokeRequestCallback(connection, 0, 0);
 }
 
 void func_0204ceb8(void *arg0) {

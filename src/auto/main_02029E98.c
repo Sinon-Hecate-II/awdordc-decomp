@@ -672,21 +672,21 @@ void func_0202abb4(s32 arg0, s32 arg1) {
 
 s32 func_0202abcc(s32 arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK ListAppend(s32, void *);
-    s32 func_0202c4ac(void *, s32);
-    void *func_0202c5f0(s32 *, s32, s32, s32, s32);
+    s32 Sound_CreateHeap(void *, s32);
+    void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
     extern M2C_UNK gSoundChannels;
     extern M2C_UNK func_0202b3bc;
     s32 temp_r0_2;
     void *temp_r0;
 
-    temp_r0 = func_0202c5f0((s32 *)arg1, arg2 + 0x14, (s32)&func_0202b3bc, 0, 0);
+    temp_r0 = Sound_AllocDataBlock((s32 *)arg1, arg2 + 0x14, (s32)&func_0202b3bc, 0, 0);
     if (temp_r0 == 0) {
         return 0;
     }
     M2C_FIELD(temp_r0, s32 *, 0xC) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x10) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x8) = 0;
-    temp_r0_2 = func_0202c4ac((void *)((char *)temp_r0 + 0x14), arg2);
+    temp_r0_2 = Sound_CreateHeap((void *)((char *)temp_r0 + 0x14), arg2);
     if (temp_r0_2 == 0) {
         return 0;
     }

@@ -12,12 +12,12 @@ extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10
  * unit's sub-tile offset toward the next facing, and at the end restores the
  * map cursor to the moving player's position. */
 void UpdateUnitMove(void *ctrl) {
-s32 func_0207b7c4(void);s32 GetFacingOffset(s32);
+s32 IsMapViewScrolling(void);s32 GetFacingOffset(s32);
 void PlaySoundAtTile(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 IsMapOrderActive(void *);void PanMapViewToTile(u8,u8);void StepMapViewToTile(u8,u8);void Sprite_ResumeAnimation(void *);
 extern s32 *gCurrentMap;
 s32 startOffset,endOffset,facing,turnCount; u8 *unit; void *map; u8 *player;
-if(func_0207b7c4())return;
+if(IsMapViewScrolling())return;
 unit=M2C_FIELD(ctrl,u8 **,0x38);
 if(unit){
 facing=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30);
@@ -321,10 +321,28 @@ if(((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money>999999999
 if(IsPlayerHuman(id)&&!func_020cd728())AddRecordFunds(12,income);
 }
 
-s32 func_020a641c(u8 *p,s32 a){extern s32 *gCurrentMap;s32 func_020a85c0(u32);s32 func_020a86f0(s32);s32 n,v;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(func_020a85c0((u32)(p[0]<<26)>>26))return 0;v=func_020a86f0(n)*a;n=(u32)(p[10]<<25)>>25;if(v>n)v=n;return v;}
+/* The fuel a unit spends for a move of `cost` steps: the cost scaled by the owning
+ * player's fuel rate, but never more than the unit's remaining fuel.  Returns 0
+ * for unit kinds that do not pay fuel. */
+s32 GetUnitMoveFuelCost(u8 *unit, s32 cost) {
+    extern s32 *gCurrentMap;
+    s32 func_020a85c0(u32);
+    s32 func_020a86f0(s32);
+    s32 player, fuel;
+    if (unit) {
+        if (!unit) player = 0;
+        else player = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / 14;
+        player = (player >> MAP_UNIT_OWNER_SHIFT) + 1;
+    } else player = 0;
+    if (func_020a85c0((u32)(unit[MAP_UNIT_KIND] << 26) >> 26)) return 0;
+    fuel = func_020a86f0(player) * cost;
+    player = (u32)(unit[MAP_UNIT_FUEL] << 25) >> 25;
+    if (fuel > player) fuel = player;
+    return fuel;
+}
 
 void func_020a64bc(void *p){
-s32 n=((s32 (*)(void *))func_020a641c)(p);
+s32 n=((s32 (*)(void *))GetUnitMoveFuelCost)(p);
 u8 b=M2C_FIELD(p,u8 *,10);
 s32 low=(u32)(b<<25)>>25;
 n=(u8)(low-n);

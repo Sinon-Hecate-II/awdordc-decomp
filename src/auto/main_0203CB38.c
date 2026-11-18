@@ -14,7 +14,7 @@ int ByteCompareN(void *, void *, int);
 extern u8 gConnectionMgr[];
 void OnPeerConnect(s32,s32,s32,void *);
 s32 SBServerListThink(s32);
-s32 func_020614b0(s32);
+s32 DestroyServerBrowser(s32);
 s32 func_02061750(s32);
 void Qr2_ServiceConnection(s32);
 void func_0205e178(void);
@@ -181,7 +181,7 @@ void func_0203cb38(void *arg0) {
         M2C_FIELD(gConnectionMgr,s32 *,0x14)=0;
         SBServerListThink(M2C_FIELD(GetConnection(),s32 *,0xe4));
         if(M2C_FIELD(gConnectionMgr,s32 *,0x14)) {
-            func_020614b0(M2C_FIELD(GetConnection(),s32 *,0xe4));
+            DestroyServerBrowser(M2C_FIELD(GetConnection(),s32 *,0xe4));
             M2C_FIELD(GetConnection(),s32 *,0xe4)=0;
         }
         if(M2C_FIELD(GetConnection(),s32 *,0xe4) &&

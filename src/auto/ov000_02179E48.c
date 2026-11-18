@@ -355,19 +355,22 @@ u8 func_ov000_0217ab5c(s32 arg0, s32 arg1, s32 arg2) {
  return GetUnitDamagePercent(arg2, ((u32)(M2C_FIELD(base + id * 14, u8 *, 0x59A4) << 26) >> 26)) > 1;
 }
 
-u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {
- extern void **gCurrentMap;
- s32 IsPropertyCell(s32,s32);
- s32 IsCurrentPlayerUnit(s32);
- s32 IsFootUnitKind(s32);
- void *base;
- s32 id;
- if (IsPropertyCell(arg0,arg1) == 0) return 0;
- base = *gCurrentMap;
- id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
- if (id == 0) return 1;
- if (IsCurrentPlayerUnit((s16)id) == 0) return 0;
- return IsFootUnitKind(((u32)(M2C_FIELD(*gCurrentMap + id * 14, u8 *, 0x59A4) << 26) >> 26)) == 0;
+/* AI move-search goal for property tiles: true for a property cell that holds no
+   unit, or holds a unit of the current player that is not a foot unit. */
+u8 IsPropertyMoveGoal(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    s32 IsPropertyCell(s32, s32);
+    s32 IsCurrentPlayerUnit(s32);
+    s32 IsFootUnitKind(s32);
+    void *map;
+    s32 unitId;
+
+    if (IsPropertyCell(x, y) == 0) return 0;
+    map = *gCurrentMap;
+    unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, 0);
+    if (unitId == 0) return 1;
+    if (IsCurrentPlayerUnit((s16)unitId) == 0) return 0;
+    return IsFootUnitKind(((u32)(M2C_FIELD(*gCurrentMap + unitId * MAP_UNIT_STRIDE, u8 *, MAP_UNIT_RECORDS) << 26) >> 26)) == 0;
 }
 
 u8 func_ov000_0217ac78(s32 arg0, s32 arg1) {

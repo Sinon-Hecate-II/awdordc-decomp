@@ -4,7 +4,7 @@ extern void *gWfcNet;
 extern void *data_020fb7b4,*gNasServer;
 extern u8 data_0213d150[],gSocketManager[],data_020fb8c8[],data_020fb8d4[],data_020fb8f4[],data_020fb8fc[],data_020fb904[],data_020fb82c[];
 extern s32 gErrno;
-s32 HttpClientInit(void*,void*);s32 func_02033de8(void*);void HttpClientCleanup(void*);void func_02036290(s32);s32 func_02006028(s32);void HttpClientStartTask(void*,s32);void func_02005d60(void*);
+s32 HttpClientInit(void*,void*);s32 func_02033de8(void*);void HttpClientCleanup(void*);void func_02036290(s32);s32 func_02006028(s32);void HttpClientStartTask(void*,s32);void OS_JoinThread(void*);
 s32 ParseHttpResponse(void*,s32);void *FindHttpHeader(void*,void*);s32 ParseInt(void*);s32 StringCompare(void*,void*);s32 func_020336c0(void*);s32 func_02033988(void*,void*,s32);
 s32 func_020346d0(void*,void*,void*,s32);s32 StringLength(void*);void StringCopyPad(void*,void*,s32);void GetWfcProfile(void*);
 s32 CreateNasConnection(void*,void*);void func_02032b68(void);s32 func_02032b98(void);void func_02032be4(void*);void func_02032b10(void);
@@ -17,7 +17,7 @@ static inline void SetNetConfig(void *callback,s32 mode,s32 size,void *alloc,voi
 M2C_FIELD(&gWfcNet,void**,0x18)=callback;M2C_FIELD(&gWfcNet,s32*,0x1c)=mode;M2C_FIELD(&gWfcNet,s32*,0x20)=size;
 M2C_FIELD(&gWfcNet,void**,0x24)=alloc;M2C_FIELD(&gWfcNet,void**,0x28)=free;M2C_FIELD(&gWfcNet,s32*,0x30)=timeout;
 }
-static inline void WaitRequest(void){s32 priority=func_02006028(M2C_FIELD(gSocketManager,s32*,4))-1;HttpClientStartTask(NetHandle(),priority);if(M2C_FIELD(NetHandle(),s32*,0x1ba4))func_02005d60((u8*)NetHandle()+0x1b38);}
+static inline void WaitRequest(void){s32 priority=func_02006028(M2C_FIELD(gSocketManager,s32*,4))-1;HttpClientStartTask(NetHandle(),priority);if(M2C_FIELD(NetHandle(),s32*,0x1ba4))OS_JoinThread((u8*)NetHandle()+0x1b38);}
 
 
 #pragma optimization_level 3

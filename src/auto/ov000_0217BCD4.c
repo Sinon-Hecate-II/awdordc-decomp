@@ -18,11 +18,11 @@ gMoveSearchGoal=func_ov000_0217ab5c;
 return func_ov000_0217b3bc(a,b,c,d);
 }
 s32 func_ov000_0217bcf4(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_ov000_0217abd8(s32, s32, s32);
+    s32 IsPropertyMoveGoal(s32, s32, s32);
     s32 func_ov000_0217b8f0(s32, s32, s32, s32);
     extern s32 (*gMoveSearchGoal)(s32, s32, s32);
 
-    gMoveSearchGoal = func_ov000_0217abd8;
+    gMoveSearchGoal = IsPropertyMoveGoal;
     if (gMoveSearchGoal(arg0, arg1, 0) == 1) {
         return 1;
     }

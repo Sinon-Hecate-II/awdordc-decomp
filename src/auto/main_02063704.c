@@ -51,7 +51,7 @@ apply:
 
 #pragma scheduling reset
 s32 func_020637fc(void *arg0) {
-    s32 func_02049810(s32, void *, s32, s32);
+    s32 ghiSend(s32, void *, s32, s32);
     M2C_UNK SBServerListCheckQueryError(void *);
     s32 SBServerListParseKeyList(void *, u8 *, s32);
     s32 GpiHandleRecordList(void *, u8 *, s32);
@@ -86,7 +86,7 @@ s32 func_020637fc(void *arg0) {
             result = func_02063704(arg0, buf + 3, size - 3);
             break;
         case 3:
-            if (func_02049810(M2C_FIELD(arg0, s32 *, 0x4B0), buf, size, zero) <= 0) {
+            if (ghiSend(M2C_FIELD(arg0, s32 *, 0x4B0), buf, size, zero) <= 0) {
                 return 3;
             }
             break;
@@ -155,7 +155,7 @@ s32 func_020639c0(void *arg0) {
 }
 #pragma opt_strength_reduction off
 s32 func_02063aa8(void *arg0,u32 arg1,u32 arg2,void *arg3,s32 arg4) {
-s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 SBServerListConnectAndQuery(void *,s32,s32,s32,s32);
+s32 ghiSend(s32,void *,s32,s32);s32 SBServerListSendToMaster(void *,void *,s32);s32 SBServerListConnectAndQuery(void *,s32,s32,s32,s32);
 u8 packet[16]; u16 size; u16 temp; s32 result; u8 *d; u8 *s;
 if(M2C_FIELD(arg0,s32 *,0)==1) {
 SBServerListConnectAndQuery(arg0,0,0,2,0);
@@ -166,8 +166,8 @@ d=packet;s=(u8 *)&size;Copy2(d,s);
 d=packet+3;s=(u8 *)&arg1;Copy4(d,s);
 d=packet+7;s=(u8 *)&arg2;Copy2(d,s);
 packet[2]=2;
-result=func_02062324(arg0,packet,9);if(result)return result;
-return func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
+result=SBServerListSendToMaster(arg0,packet,9);if(result)return result;
+return ghiSend(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
 }
 #pragma opt_strength_reduction reset
 void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

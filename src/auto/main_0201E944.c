@@ -65,7 +65,7 @@ func_0201d70c(size);
 return result;
 }
 #pragma pop
-s32 func_0201ebec(u8 *arg0, u8 **arg1) {
+s32 ParseDecimal(u8 *arg0, u8 **arg1) {
 #pragma opt_propagation on
 #pragma opt_common_subs on
     s32 var_ip;
@@ -86,19 +86,22 @@ loop_1:
     return var_ip;
 }
 
-s32 func_0201ec20(u8 *arg0, s32 *arg1) {
+/* Parses a dotted-decimal IPv4 address ("a.b.c.d", each part 0..255) and stores
+ * its packed big-endian address; returns 1, or 0 when the text is not a complete
+ * address. */
+s32 ParseIpAddress(u8 *text, s32 *address) {
     u8 *end;
     s32 value = 0;
-    s32 i = 0;
+    s32 octet = 0;
     u32 part;
-    for (; i < 4; i++) {
-        part = func_0201ebec(arg0, &end);
-        if (arg0 == end) return 0;
-        arg0 = end;
-        if (part > 255 || (i != 3 && *arg0++ != '.') || (i == 3 && *arg0 != 0)) return 0;
+    for (; octet < 4; octet++) {
+        part = ParseDecimal(text, &end);
+        if (text == end) return 0;
+        text = end;
+        if (part > 255 || (octet != 3 && *text++ != '.') || (octet == 3 && *text != 0)) return 0;
         value = part | (value << 8);
     }
-    *arg1 = value;
+    *address = value;
     return 1;
 }
 
@@ -139,7 +142,7 @@ state+=inc;
 M2C_FIELD(&gNetStack,u32*,0x68)=(u32)state;
 M2C_FIELD(&gNetStack,u32*,0x6c)=state>>32;
 rnd[1]=((u64)(u32)(state>>32)<<16)>>32;
-if(func_0201ec20((u8*)arg0,&out)) return out;
+if(ParseIpAddress((u8*)arg0,&out)) return out;
 flags[0]=1; flags[1]=1;
 for(i=0;i<3;i++){
 for(j=0,p=flags;j<2;j++,p++){
@@ -284,7 +287,7 @@ s32 func_0201f0b4(void) {
 }
 
 s32 func_0201f0cc(s32 arg0) {
-    void func_0201f210(s32);
+    void SocketFreeTask(s32);
     M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     extern s32 gNetAllocator;
     extern M2C_UNK data_02138b00, data_02138b04;
@@ -302,7 +305,7 @@ s32 func_0201f0cc(s32 arg0) {
     var_r5 = temp_r0 + temp_r5;
     if (var_r4 > 0) {
         do {
-            func_0201f210(var_r5);
+            SocketFreeTask(var_r5);
             var_r4 -= 1;
             var_r5 += 0x2C;
         } while (var_r4 > 0);
@@ -339,7 +342,7 @@ s32 SocketAllocTask(M2C_UNK *arg0, s32 arg1, M2C_UNK arg2) {
     return temp_r0;
 }
 
-void func_0201f210(s32 arg0) {
+void SocketFreeTask(s32 arg0) {
     M2C_UNK OS_SendMessage(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_02138b04;
     if (arg0 == 0) {
@@ -369,7 +372,7 @@ s32 SocketQueueTask(M2C_UNK arg0, void *arg1) {
     }
     temp_r0 = OS_SendMessage(arg0, arg1, var_r2);
     if (temp_r0 == 0) {
-        func_0201f210(arg1);
+        SocketFreeTask(arg1);
     }
     if (temp_r0 != 0) {
         return 0;
@@ -418,11 +421,11 @@ s32 func_0201f338(s32 arg0, s32 arg1) {
 
 void func_0201f350(s32 arg0) { s32 p,old,v; loop: OS_ReadMessage(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
 old=OS_DisableInterrupts();
-func_02006130();
+OS_DisableScheduler();
 OS_ReceiveMessage(arg0,0,0);
 if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
 if(M2C_FIELD(p,s32*,8))OS_SendMessage(M2C_FIELD(p,s32*,8),v,0);
-func_0201f210(p);func_02006164();OS_RestoreInterrupts(old); goto loop; done: return; }
+SocketFreeTask(p);OS_EnableScheduler();OS_RestoreInterrupts(old); goto loop; done: return; }
 
 s32 SocketCreateFromConfig(void) {
     s32 SocketAllocTask(M2C_UNK *, s32, M2C_UNK);

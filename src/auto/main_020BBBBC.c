@@ -59,25 +59,28 @@ void func_020bbc74(void *arg0) {
     func_020a8050(temp_r4, arr1, arr0, buf);
 }
 
-void func_020bbcec(s32 a) {
+/* Create the marker sprite for the adjacent unit the map-cursor option in
+ * direction `dir` points at: place it at the cursor cell offset by that direction
+ * and attach the unit standing on the target cell. */
+void CreateAdjacentAllyMarker(s32 dir) {
  void *CreateSpriteFromClass(M2C_UNK *,s32);
  extern s32 *gCurrentMap;
- extern s16 data_0212924c[];
- extern M2C_UNK data_0212929c;
+ extern s16 gAdjacentCellOffsets[];
+ extern M2C_UNK gAdjacentAllyMarkerClass;
  s32 base=*gCurrentMap;
- s32 x=data_0212924c[a*2];
- s32 y=data_0212924c[a*2+1];
- s32 xx=M2C_FIELD(base,s16 *,0x52dc)+x;
- s32 yy=M2C_FIELD(base,s16 *,0x52de)+y;
- s32 row=M2C_FIELD(base+yy*2,u16 *,0x3758);
- u8 id=M2C_FIELD(base+(xx+row),u8 *,0x508);
- void *p=(void *)(base+0x59a4+(s16)id*(s16)14);
- void *q;
- if(!p)return;
- q=CreateSpriteFromClass(&data_0212929c,7);
- M2C_FIELD(q,s32 *,0x34)=x*2;
- M2C_FIELD(q,s32 *,0x38)=y*2;
- M2C_FIELD(q,void **,0x54)=p;
+ s32 dx=gAdjacentCellOffsets[dir*2];
+ s32 dy=gAdjacentCellOffsets[dir*2+1];
+ s32 x=M2C_FIELD(base,s16 *,MAP_CURSOR_X)+dx;
+ s32 y=M2C_FIELD(base,s16 *,MAP_CURSOR_Y)+dy;
+ s32 row=M2C_FIELD(base+y*2,u16 *,MAP_ROW_OFFSETS);
+ u8 id=M2C_FIELD(base+(x+row),u8 *,MAP_CELL_UNIT_ID);
+ void *unit=(void *)(base+MAP_UNIT_RECORDS+(s16)id*(s16)MAP_UNIT_STRIDE);
+ void *marker;
+ if(!unit)return;
+ marker=CreateSpriteFromClass(&gAdjacentAllyMarkerClass,7);
+ M2C_FIELD(marker,s32 *,0x34)=dx*2;
+ M2C_FIELD(marker,s32 *,0x38)=dy*2;
+ M2C_FIELD(marker,void **,0x54)=unit;
 }
 
 void func_020bbd8c(void) {

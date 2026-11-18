@@ -1,6 +1,7 @@
 /* 17 functions from 0x020C9B9C to 0x020CAB8C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "sound.h"
 
 /* A selection menu (sprite object type 7): the highlighted entry and how many
    entries the menu has. */
@@ -171,14 +172,14 @@ void func_020c9f74(s32 arg0) {
 void StartPlayerDefeat(s32 arg0, s32 arg1) {
     void func_020ca484(void);
     void func_020a3498(void);
-    void func_020bbb08(void);
+    void EndPlayerTurn(void);
     extern void **gCurrentMap;
     func_020c9f74(arg0);
     func_020c9e94((u16)arg0, (u16)arg1);
     MarkPlayerDefeated(arg0, arg1);
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52A4) == arg0) {
         func_020a3498();
-        func_020bbb08();
+        EndPlayerTurn();
     }
     if (arg1 != 2) return;
     func_020ca484();
@@ -296,28 +297,34 @@ void func_020ca4c0(void) {
     StartPlayerDefeatSequences();
 }
 
-void func_020ca4fc(void *arg0) {
-    void PlaySoundEffect(s32);
-    s16 GetTargetCount(void);
+/* Opens the target-selection dialog on its first entry: select entry 0 and take
+   the number of entries from the battle map's target list, then aim the map
+   cursor at the selected target's cell so the packed cursor cell and its HUD
+   panel catch up, put the cursor back where the dialog was opened, and play the
+   selection sound. */
+void InitTargetSelectionMenu(void *dialog) {
     void *GetTargetPosition(s16);
-    void func_020cbdbc(void);
+    s16 GetTargetCount(void);
+    void RefreshCursorCell(void);
+    void PlaySoundEffect(s32);
     extern void **gCurrentMap;
-    s16 temp_r4;
-    s16 temp_r5;
-    void *temp_r0;
-    void *temp_r1;
-    M2C_FIELD(arg0, s16 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6E) = GetTargetCount();
-    temp_r1 = *gCurrentMap;
-    temp_r4 = M2C_FIELD(temp_r1, s16 *, 0x52C2);
-    temp_r5 = M2C_FIELD(temp_r1, s16 *, 0x52C4);
-    temp_r0 = GetTargetPosition(M2C_FIELD(arg0, s16 *, 0x6C));
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(temp_r0, s16 *, 4);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(temp_r0, s16 *, 6);
-    func_020cbdbc();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = temp_r4;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = temp_r5;
-    PlaySoundEffect(0x10019);
+    s16 savedX;
+    s16 savedY;
+    MapTargetEntry *target;
+    void *map;
+
+    ((SelectionMenu *)dialog)->selection = 0;
+    ((SelectionMenu *)dialog)->count = GetTargetCount();
+    map = *gCurrentMap;
+    savedX = M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X);
+    savedY = M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y);
+    target = (MapTargetEntry *)GetTargetPosition(((SelectionMenu *)dialog)->selection);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = target->x;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = target->y;
+    RefreshCursorCell();
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = savedX;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = savedY;
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 /* Per-frame update of the target-list selection menu: read the confirm, cancel
@@ -325,7 +332,7 @@ void func_020ca4fc(void *arg0) {
    entry or close the menu. */
 void UpdateUnitSelectionMenu(void *dialog) {
     M2C_UNK func_020be010(void);
-    s32 func_0207b7c4(void);
+    s32 IsMapViewScrolling(void);
     s32 func_020cccb8(void);
     s32 GetKeyActionFlags(void);
     s32 GetTouchActionFlags(s16);
@@ -357,7 +364,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     if (count > 1) {
         func_020be010();
     }
-    if (func_0207b7c4() != 0) return;
+    if (IsMapViewScrolling() != 0) return;
     if (func_020cccb8() != 0) return;
 
     flags |= GetKeyActionFlags();
@@ -400,7 +407,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(target, s16 *, 0x4);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(target, s16 *, 0x6);
     StepMapViewToTile(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
-    if (func_0207b7c4() != 0) return;
+    if (IsMapViewScrolling() != 0) return;
     MoveMapCursorToTarget(2);
     DrawUnitInfoPanel(1);
 }

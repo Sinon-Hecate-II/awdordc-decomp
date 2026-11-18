@@ -285,7 +285,7 @@ void HttpClientStartTask(void *client, s32 priority) {
 }
 
 void func_02033f3c(void *arg0) {
-    M2C_UNK func_02005d60(void *);
+    M2C_UNK OS_JoinThread(void *);
     if (M2C_FIELD(arg0, u8 *, 0x1000) != 0xFF) {
         return;
     }
@@ -295,7 +295,7 @@ void func_02033f3c(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x1BA4) == 0) {
         return;
     }
-    func_02005d60(arg0 + 0x1B38);
+    OS_JoinThread(arg0 + 0x1B38);
 }
 
 s32 func_02033f98(void *arg0) {

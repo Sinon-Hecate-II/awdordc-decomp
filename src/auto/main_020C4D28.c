@@ -305,7 +305,7 @@ void func_020c5424(void) {
     func_02032634();
 }
 
-u64 func_020c5430(s32 arg0) {
+u64 GetBattleSlotMapCode(s32 arg0) {
 u64 func_02032558();
 if(arg0==0)return 0;
 return func_02032558();
@@ -331,7 +331,7 @@ void func_020c5474(M2C_UNK arg0, M2C_UNK arg1) {
     func_02031f58(func_020c4acc() + 4, arg0, arg1);
 }
 
-s32 func_020c5498(s32 arg0) {
+s32 FormatMapCodeString(s32 arg0) {
     M2C_UNK func_02032004();
     func_02032004();
     return arg0;
@@ -342,7 +342,7 @@ void func_020c54ac(void) {
     func_02032024();
 }
 
-s32 func_020c54b8(void) {
+s32 CanModifyBattleSave(void) {
     s32 func_0203a8dc();
     s32 GetActiveOverlay();
     s32 IsOnlineSessionFlagSet(M2C_UNK);
@@ -355,7 +355,7 @@ s32 func_020c54b8(void) {
     return func_0203a8dc();
 }
 
-s32 func_020c54e8(s32 arg0) {
+s32 BattleSaveSlotInUse(s32 arg0) {
 s32 func_02032710(s32,s32);
 s32 p, result=0, i, id;
 p=GetBattleSaveBlock();
@@ -371,44 +371,60 @@ p+=12;
 return result;
 }
 
-s32 func_020c5574(s32 arg0, M2C_UNK arg1) {
-M2C_UNK FillU16(M2C_UNK,s32,M2C_UNK);
-M2C_UNK MI_CpuCopy8(M2C_UNK,s32,u32);
-s32 func_020c54b8(void);s32 func_020c54e8(M2C_UNK);s32 GetBattleSaveBlock(void);
-void *p;
-if(func_020c54b8()==0)return -1;
-if(func_020c54e8(arg1)!=0)return -1;
-p=(void*)GetBattleSaveBlock();if(!p)return -1;
-MI_CpuCopy8(arg1,p+4+arg0*12,12);
-{ s32 offset=arg0*0x28;FillU16(0,p+0x2d4+offset,0x1a);
-{void *q=p+offset;
-M2C_FIELD(q,s16 *,0x2ee)=0;M2C_FIELD(q,s16 *,0x2f0)=0;M2C_FIELD(q,s16 *,0x2f2)=0;
-M2C_FIELD(q,s8 *,0x2f4)=-1;M2C_FIELD(q,s8 *,0x2f5)=-2;M2C_FIELD(q,s8 *,0x2f6)=-2;}}
-return arg0;
+/* Registers a battle save in a slot: stores the 12-byte slot summary and
+ * clears the slot's record, marking its tail fields empty. Returns the slot
+ * index, or -1 when saving is not allowed or the slot is already in use. */
+s32 CreateBattleSaveSlot(s32 slot, M2C_UNK summary) {
+    M2C_UNK FillU16(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32, u32);
+    s32 CanModifyBattleSave(void);
+    s32 BattleSaveSlotInUse(M2C_UNK);
+    s32 GetBattleSaveBlock(void);
+    void *block;
+    s32 offset;
+
+    if (CanModifyBattleSave() == 0) return -1;
+    if (BattleSaveSlotInUse(summary) != 0) return -1;
+    block = (void *)GetBattleSaveBlock();
+    if (!block) return -1;
+    MI_CpuCopy8(summary, block + SAVE_SUMMARIES_OFFSET + slot * SAVE_SLOT_SUMMARY_SIZE, SAVE_SLOT_SUMMARY_SIZE);
+    offset = slot * SAVE_SLOT_RECORD_SIZE;
+    FillU16(0, block + SAVE_RECORDS_OFFSET + offset, 0x1a);
+    {
+        /* the record's tail: counts at +0x1A..+0x1E, then three empty markers */
+        void *record = block + offset;
+        M2C_FIELD(record, s16 *, 0x2ee) = 0;
+        M2C_FIELD(record, s16 *, 0x2f0) = 0;
+        M2C_FIELD(record, s16 *, 0x2f2) = 0;
+        M2C_FIELD(record, s8 *, 0x2f4) = -1;
+        M2C_FIELD(record, s8 *, 0x2f5) = -2;
+        M2C_FIELD(record, s8 *, 0x2f6) = -2;
+    }
+    return slot;
 }
 
 void func_020c5618(s32 arg0) {
 u8 sp0[12];
 func_02032634(sp0);
-func_020c5574(arg0,(s32)sp0);
+CreateBattleSaveSlot(arg0,(s32)sp0);
 }
 
 s32 func_020c5640(M2C_UNK arg0) {
     s32 func_020c4798();
-    s32 func_020c5574(s32, M2C_UNK);
+    s32 CreateBattleSaveSlot(s32, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = func_020c4798();
     if (temp_r0 < 0) {
         return -1;
     }
-    return func_020c5574(temp_r0, arg0);
+    return CreateBattleSaveSlot(temp_r0, arg0);
 }
 
 #pragma opt_common_subs off
 s32 func_020c5664(s32 arg0) {
 s32 base,p,off,result;
-if(!func_020c54b8()) return 0;
+if(!CanModifyBattleSave()) return 0;
 result=0;
 base=GetBattleSaveBlock();
 if(!base)return result;

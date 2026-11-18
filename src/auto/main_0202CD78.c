@@ -5,7 +5,7 @@
 s32 func_0202cd78(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 func_0202c444();
     M2C_UNK func_0202c46c(M2C_UNK, s32);
-    s32 func_0202cc6c(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
+    s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
     extern M2C_UNK func_0202d01c;
     s32 var_r2;
     s32 var_r4;
@@ -15,9 +15,9 @@ s32 func_0202cd78(M2C_UNK arg0, s32 arg1, s32 arg2) {
         if (arg2 == 0) {
             var_r2 = 0;
         } else {
-            var_r2 = func_0202c02c();
+            var_r2 = Sound_GetCurrentArchive();
         }
-        var_r4 = func_0202cc6c(arg0, &func_0202d01c, var_r2, arg0, arg1);
+        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d01c, var_r2, arg0, arg1);
         if ((arg2 != 0) && (var_r4 != 0)) {
             func_0202c46c(arg0, var_r4);
         }
@@ -28,7 +28,7 @@ s32 func_0202cd78(M2C_UNK arg0, s32 arg1, s32 arg2) {
 s32 func_0202cde4(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 func_0202c444();
     M2C_UNK func_0202c46c(M2C_UNK, s32);
-    s32 func_0202cc6c(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
+    s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
     extern M2C_UNK func_0202d044;
     s32 var_r2;
     s32 var_r4;
@@ -38,9 +38,9 @@ s32 func_0202cde4(M2C_UNK arg0, s32 arg1, s32 arg2) {
         if (arg2 == 0) {
             var_r2 = 0;
         } else {
-            var_r2 = func_0202c02c();
+            var_r2 = Sound_GetCurrentArchive();
         }
-        var_r4 = func_0202cc6c(arg0, &func_0202d044, var_r2, arg0, arg1);
+        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d044, var_r2, arg0, arg1);
         if ((arg2 != 0) && (var_r4 != 0)) {
             func_0202c46c(arg0, var_r4);
         }
@@ -51,7 +51,7 @@ s32 func_0202cde4(M2C_UNK arg0, s32 arg1, s32 arg2) {
 s32 func_0202ce50(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 func_0202c444();
     M2C_UNK func_0202c46c(M2C_UNK, s32);
-    s32 func_0202cc6c(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
+    s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
     extern M2C_UNK func_0202d074;
     s32 var_r2;
     s32 var_r4;
@@ -61,9 +61,9 @@ s32 func_0202ce50(M2C_UNK arg0, s32 arg1, s32 arg2) {
         if (arg2 == 0) {
             var_r2 = 0;
         } else {
-            var_r2 = func_0202c02c();
+            var_r2 = Sound_GetCurrentArchive();
         }
-        var_r4 = func_0202cc6c(arg0, &func_0202d074, var_r2, arg0, arg1);
+        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d074, var_r2, arg0, arg1);
         if ((arg2 != 0) && (var_r4 != 0)) {
             func_0202c46c(arg0, var_r4);
         }
@@ -72,12 +72,12 @@ s32 func_0202ce50(M2C_UNK arg0, s32 arg1, s32 arg2) {
 }
 
 M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
-    void *func_0202c5f0(s32 *, s32, s32, s32, s32);
-    s32 func_0202c3ac(s32, void *, s32, s32);
+    void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
+    s32 Sound_ReadArchiveFile(s32, void *, s32, s32);
     M2C_UNK DC_CleanRange(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_0202c02c();
+    s32 Sound_GetCurrentArchive();
     M2C_UNK func_0202c46c(M2C_UNK, M2C_UNK);
     s32 func_0202c444();
     extern M2C_UNK data_0213c254;
@@ -97,7 +97,7 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     if (r5 != NULL) {
         return r5;
     }
-    if (func_0202c3ac(r9, &data_0213c254, 0x3C, 0) != 0x3C) {
+    if (Sound_ReadArchiveFile(r9, &data_0213c254, 0x3C, 0) != 0x3C) {
         return NULL;
     }
     r6 = M2C_FIELD(&data_0213c254, s32 *, 0x38) * 4;
@@ -108,13 +108,13 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     if (r7 == 0) {
         r3 = 0;
     } else {
-        r3 = func_0202c02c();
+        r3 = Sound_GetCurrentArchive();
     }
-    r5 = (M2C_UNK *)func_0202c5f0(r8, r4 + 0x5C, (s32)&func_0202d0a4, r3, r9);
+    r5 = (M2C_UNK *)Sound_AllocDataBlock(r8, r4 + 0x5C, (s32)&func_0202d0a4, r3, r9);
     if (r5 == NULL) {
         return NULL;
     }
-    if (func_0202c3ac(r9, r5, r6 + 0x3C, 0) != (r6 + 0x3C)) {
+    if (Sound_ReadArchiveFile(r9, r5, r6 + 0x3C, 0) != (r6 + 0x3C)) {
         return NULL;
     }
     temp_r0 = r5 + 0x3C; /* cast ignored? */
@@ -188,8 +188,8 @@ void FreeWaveArchiveEntry(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
 s32 LoadWaveArchiveEntry(s32 archive, u16 entryIndex, s32 fileId, s32 pool) {
     s32 GetPackedTableEntry(M2C_UNK, M2C_UNK);
     s32 GetPackedTableCount(M2C_UNK);
-    void *func_0202c5f0(s32 *, s32, s32, s32, s32);
-    s32 func_0202c3ac(s32, void *, s32, s32);
+    void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
+    s32 Sound_ReadArchiveFile(s32, void *, s32, s32);
     M2C_UNK DC_CleanRange(M2C_UNK, M2C_UNK);
     M2C_UNK SetPackedTableEntry(M2C_UNK, M2C_UNK, M2C_UNK);
     void FreeWaveArchiveEntry(s32, s32, M2C_UNK, M2C_UNK);
@@ -221,11 +221,11 @@ s32 LoadWaveArchiveEntry(s32 archive, u16 entryIndex, s32 fileId, s32 pool) {
     }
     {
         void *buffer;
-        buffer = func_0202c5f0((s32 *)pool, size + 32, (s32)FreeWaveArchiveEntry, archive, entryIndex);
+        buffer = Sound_AllocDataBlock((s32 *)pool, size + 32, (s32)FreeWaveArchiveEntry, archive, entryIndex);
         if (buffer == 0) {
             return 0;
         }
-        if (size != func_0202c3ac(fileId, buffer, size, start)) {
+        if (size != Sound_ReadArchiveFile(fileId, buffer, size, start)) {
             return 0;
         }
         DC_CleanRange((M2C_UNK)buffer, size);
@@ -258,21 +258,24 @@ if(!LoadWaveArchiveEntry(archive,entry.waveEntry,waveFileId,pool))return 0;
 return 1;
 }
 
-s32 func_0202d294(s32 arg0) {
-void *func_0202c230(s32);
+/* Initialise the 32 sound channels from the current sound archive's channel
+ * table: store each channel's record values, then preallocate its sequence heaps
+ * from `pool`.  Returns 0 if a heap cannot be allocated. */
+s32 Sound_InitArchiveChannels(s32 pool) {
+void *GetSoundArchiveChannelRecord(s32);
 void func_0202ab94(s32,u8);
 void func_0202abb4(s32,u16);
 s32 func_0202abcc(s32,s32,s32);
-s32 i; void *p; s32 j; s32 saved=arg0;
-func_0202c02c();
+s32 i; SoundChannelRecord *rec; s32 j; s32 saved=pool;
+Sound_GetCurrentArchive();
 for(i=0;i<32;i++) {
-p=func_0202c230(i);
-if(p) {
-func_0202ab94(i,M2C_FIELD(p,u8 *,0));
-func_0202abb4(i,M2C_FIELD(p,u16 *,2));
-if(M2C_FIELD(p,s32 *,4) && saved)
-for(j=0;j<M2C_FIELD(p,u8 *,0);j++)
-if(!func_0202abcc(i,saved,M2C_FIELD(p,s32 *,4)))return 0;
+rec=GetSoundArchiveChannelRecord(i);
+if(rec) {
+func_0202ab94(i,rec->count);
+func_0202abb4(i,rec->volume);
+if(rec->heapSize && saved)
+for(j=0;j<rec->count;j++)
+if(!func_0202abcc(i,saved,rec->heapSize))return 0;
 }
 }
 return 1;
@@ -475,10 +478,10 @@ loop_7:
 }
 
 s32 func_0202d7d8(s32 a){
-u8 *func_0202c294(s32);void *func_0202c5f0(s32*,s32,s32,s32,s32);void func_0202de74();extern u8 data_0213c92c[];extern M2C_UNK func_0202e158;
-s32 i=0; s32 j=0; const s32 callback=(s32)&func_0202e158; u8 *p=data_0213c92c; u8 *q; s32 size; int handle;
+u8 *func_0202c294(s32);void *Sound_AllocDataBlock(s32*,s32,s32,s32,s32);void Sound_StopPlayer();extern u8 data_0213c92c[];extern M2C_UNK Sound_OnDataBlockFreed;
+s32 i=0; s32 j=0; const s32 callback=(s32)&Sound_OnDataBlockFreed; u8 *p=data_0213c92c; u8 *q; s32 size; int handle;
 do {q=func_0202c294(i);if(q){j=0;p[0x124]=q[0];if((s32)q[0]>0){do{u8 v=q[j+1];u8 *dst=p+j;j++;dst[0x126]=v;}while(j<q[0]);}
-if(a){size=p[0x124]<<11;handle=(s32)func_0202c5f0((s32*)a,size,callback,(s32)p,0);if(!handle)return 0;func_0202de74(p);M2C_FIELD(p,s32*,0x12c)=handle;M2C_FIELD(p,s32*,0x130)=size;}}
+if(a){size=p[0x124]<<11;handle=(s32)Sound_AllocDataBlock((s32*)a,size,callback,(s32)p,0);if(!handle)return 0;Sound_StopPlayer(p);M2C_FIELD(p,s32*,0x12c)=handle;M2C_FIELD(p,s32*,0x130)=size;}}
 i++;p+=0x174;}while(i<4);return 1;
 }
 
@@ -527,14 +530,14 @@ void func_0202d9cc(void **arg0) {
 }
 
 void func_0202d9e4(void) {
-void func_0202b70c(void *); void func_0202b77c(void *,s32); void func_0202de74(void *);
+void func_0202b70c(void *); void func_0202b77c(void *,s32); void Sound_StopPlayer(void *);
 s32 func_0202ef00(void *); void func_0202ef34(void *); s32 func_0202ef4c(void *);
 extern u8 data_0213c92c[]; extern s16 data_020e9ca0[];
 s32 i; s16 a; s32 b; u8 *p; p=data_0213c92c; i=0;
 do {
 s32 flags=M2C_FIELD(p,s32 *,0x110);
 if((flags<<31)>>31) {
-if(!M2C_FIELD(p,s32 *,0x114))func_0202de74(p);
+if(!M2C_FIELD(p,s32 *,0x114))Sound_StopPlayer(p);
 else {
 if(((flags<<29)>>31) && M2C_FIELD(p,s32 *,0x118)) {
 func_0202b70c(p);
@@ -545,7 +548,7 @@ func_0202ef34(p+0xe8);
 a=data_020e9ca0[M2C_FIELD(p,s32 *,0x154)];
 b=data_020e9ca0[M2C_FIELD(p,s32 *,0x158)]+(data_020e9ca0[func_0202ef00(p+0xe8)>>8]+a);
 if(b!=M2C_FIELD(p,s32 *,0x15c)){func_0202b77c(p,b); M2C_FIELD(p,s32 *,0x15c)=b;}
-if(((M2C_FIELD(p,s32 *,0x110)<<28)>>31) && func_0202ef4c(p+0xe8))func_0202de74(p);
+if(((M2C_FIELD(p,s32 *,0x110)<<28)>>31) && func_0202ef4c(p+0xe8))Sound_StopPlayer(p);
 }
 }
 }
@@ -553,7 +556,7 @@ i++;p+=0x174;
 }while(i<4);
 }
 
-void *Sound_AcquirePlayer(void **a,s32 b,s32 c){extern u8 data_0213c92c[];void func_0202d9cc(void **);void func_0202de74(void *);void *p;if(*a)func_0202d9cc(a);p=data_0213c92c+b*0x174;if(!M2C_FIELD(p,s32 *,0x12c))return 0;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<31)>>31)!=0){if(c<M2C_FIELD(p,s32 *,0x150))return 0;func_0202de74(p);}M2C_FIELD(p,s32 *,0x150)=c;M2C_FIELD(p,u32 *,0x110)=(M2C_FIELD(p,u32 *,0x110)&~1)|1;M2C_FIELD(p,void ***,0x14c)=a;*a=p;return p;}
+void *Sound_AcquirePlayer(void **a,s32 b,s32 c){extern u8 data_0213c92c[];void func_0202d9cc(void **);void Sound_StopPlayer(void *);void *p;if(*a)func_0202d9cc(a);p=data_0213c92c+b*0x174;if(!M2C_FIELD(p,s32 *,0x12c))return 0;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<31)>>31)!=0){if(c<M2C_FIELD(p,s32 *,0x150))return 0;Sound_StopPlayer(p);}M2C_FIELD(p,s32 *,0x150)=c;M2C_FIELD(p,u32 *,0x110)=(M2C_FIELD(p,u32 *,0x110)&~1)|1;M2C_FIELD(p,void ***,0x14c)=a;*a=p;return p;}
 
 void Sound_ReleasePlayer(void *arg0) {
 s32 *p=M2C_FIELD(arg0,s32 **,0x14c);

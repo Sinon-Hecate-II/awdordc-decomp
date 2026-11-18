@@ -1,6 +1,7 @@
 /* 32 functions from 0x020B6168 to 0x020B7138 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 
 void func_020b6168(void *arg0) {
@@ -201,29 +202,33 @@ void func_020b65e4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = temp_r2;
 }
 
-void func_020b65f8(void *arg0) {
+/* Per-frame update of a falling "flare" sprite: eases its y from the descent start
+ * to the target the sprite was given (its +0x58 and +0x5C) over the fade duration in
+ * its SpriteTimer, and every 16 elapsed frames drops a copy of the flare sheet at
+ * the sprite's current position. */
+void UpdateFlareSprite(void *sprite) {
     s32 EaseInterpolate(s32, s32, s32, u16, s32);
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     M2C_UNK SetAnimatedSpriteFrame(void *, s32);
-    extern M2C_UNK data_02128ecc;
-    u16 count;
+    extern M2C_UNK gFlareName;
+    u16 elapsed;
     u32 bits;
-    void *p;
-    bits = M2C_FIELD(arg0, u32 *, 0x48);
-    count = (u16)(bits >> 21);
-    M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), count, (u16)((bits << 11) >> 21));
-    if ((s32)count % 16 != 0) return;
-    p = (void *)CreateAnimatedMapSprite(&data_02128ecc, 0, 0, 16, 0, 0, arg0);
-    SetAnimatedSpriteFrame(p, 2);
-    M2C_FIELD(p, s32 *, 0x34) = M2C_FIELD(arg0, s32 *, 0x34);
-    M2C_FIELD(p, s32 *, 0x38) = M2C_FIELD(arg0, s32 *, 0x38);
+    void *copy;
+    bits = M2C_FIELD(sprite, u32 *, 0x48);
+    elapsed = (u16)(bits >> 21);
+    M2C_FIELD(sprite, s32 *, 0x38) = EaseInterpolate(EASE_LINEAR, M2C_FIELD(sprite, s32 *, 0x58), M2C_FIELD(sprite, s32 *, 0x5C), elapsed, (u16)((bits << 11) >> 21));
+    if ((s32)elapsed % 16 != 0) return;
+    copy = (void *)CreateAnimatedMapSprite(&gFlareName, 0, 0, 0x10, 0, 0, sprite);
+    SetAnimatedSpriteFrame(copy, 2);
+    M2C_FIELD(copy, s32 *, 0x34) = M2C_FIELD(sprite, s32 *, 0x34);
+    M2C_FIELD(copy, s32 *, 0x38) = M2C_FIELD(sprite, s32 *, 0x38);
 }
 
 void func_020b6698(void *arg0) {
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     M2C_UNK SetAnimatedSpriteFrame(void *, s32);
     void func_020b65e4(void *);
-    void func_020b65f8(void *);
+    void UpdateFlareSprite(void *);
     extern M2C_UNK data_02128ed4, data_02128edc;
     void *p;
     ResetEffectSpritePool();
@@ -231,7 +236,7 @@ void func_020b6698(void *arg0) {
     p = func_020b5188(&data_02128edc, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 16, 0, 0, arg0);
     SetAnimatedSpriteFrame(p, 1);
     M2C_FIELD(p, void (**)(void *), 0x68) = func_020b65e4;
-    M2C_FIELD(p, void (**)(void *), 0x6C) = func_020b65f8;
+    M2C_FIELD(p, void (**)(void *), 0x6C) = UpdateFlareSprite;
     PlaySoundAtTile(0x130, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
@@ -330,12 +335,25 @@ if(n>0) PlaySoundAtTile(0x6d,Divide(sx,n),Divide(sy,n));
 else func_0208facc(0x6d);
 }
 
-s32 func_020b6a9c(s16 start) {
-s32 GetTargetCount(void); void *GetTargetPosition(s32);s32 func_020720f0(s32,s32);
-extern void **gCurrentMap;
-s32 x=0,y=0,n=0,i=start;void *p;u16 id;
-for(;i<GetTargetCount();i++){id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;x+=M2C_FIELD(p,u8 *,1);y+=M2C_FIELD(p,u8 *,2);n++;}
-if(n>0)PanMapViewToTile(func_020720f0(x,n),func_020720f0(y,n));
+/* Centres the map view on the average tile of the battle targets from index
+ * start on (the list GetTargetCount / GetTargetPosition describe). */
+s32 PanMapViewToTargetCenter(s16 start) {
+    s32 GetTargetCount(void);
+    void *GetTargetPosition(s32);
+    s32 func_020720f0(s32, s32);
+    extern void **gCurrentMap;
+    BattleMapUnit *unit;
+    s32 sumX = 0, sumY = 0, count = 0, i = start;
+    u16 id;
+
+    for (; i < GetTargetCount(); i++) {
+        id = M2C_FIELD(GetTargetPosition(i), u16 *, 0);
+        unit = (BattleMapUnit *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS) + id;
+        sumX += unit->x;
+        sumY += unit->y;
+        count++;
+    }
+    if (count > 0) PanMapViewToTile(func_020720f0(sumX, count), func_020720f0(sumY, count));
 }
 
 void UpdateAuroraAimMarker(void *arg0) {
@@ -479,7 +497,7 @@ void StageAuroraEffect(void *effect) {
 }
 
 void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
-    M2C_UNK func_020b6a9c(s16);
+    M2C_UNK PanMapViewToTargetCenter(s16);
     extern M2C_UNK data_02128cac;
     void *temp_r0;
 
@@ -488,7 +506,7 @@ temp_r0 = CreateSpriteObject(&data_02128cac, arg3);
     M2C_FIELD(temp_r0, s32 *, 0x38) = (s32) (arg0 + 1);
     M2C_FIELD(temp_r0, s32 *, 0x3C) = (s32) (arg1 + 1);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg2;
-    func_020b6a9c(arg2);
+    PanMapViewToTargetCenter(arg2);
 }
 
 void func_020b6fd8(void *arg0) {

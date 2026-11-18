@@ -359,7 +359,7 @@ s32 gti2SendConnect(s32 arg0, M2C_UNK arg1) {
     return 0;
 }
 
-s32 func_0205c6f4(s32 p,s32 a,s32 b){s32 s; s32 v;if(!gti2BeginCommand(p,2,0x47,&s))return 0;if(s)return 1;gti2AddToBuffer(p+0x50,a,0x20);gti2AddToBuffer(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
+s32 gti2SendConnectAccept(s32 p,s32 a,s32 b){s32 s; s32 v;if(!gti2BeginCommand(p,2,0x47,&s))return 0;if(s)return 1;gti2AddToBuffer(p+0x50,a,0x20);gti2AddToBuffer(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
 
 s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     s32 sp0;
