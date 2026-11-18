@@ -8,7 +8,7 @@ typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
 extern M2C_UNK data_020ff3ec, gGpiInfoState;
 extern s32 gGpiInfoSocket;
-extern M2C_UNK data_0213dcd0, data_020ff410, data_020ff414, data_020ff3f4;
+extern M2C_UNK data_0213dcd0, data_020ff410, sGpiBucketSourceFile, data_020ff3f4;
 
 /* Processes the pending searches queued on the connection: allocates a temporary list of matching search entries, runs each through gpiProcessSingleSearch, and removes finished ones. */
 s32 gpiProcessSearches(void **connection) {
@@ -58,15 +58,27 @@ s32 gpiProcessSearches(void **connection) {
     return 0;
 }
 
-s32 func_02057ed0(s32 a,s32 b,s32 c,s32 d,void *p) {
-s32 func_020556e0(s32,s32,s32,s32);s32 func_020501d8(s32,s32,void *);s32 func_0205575c(s32,s32,void *,s32);void StringFormat(void *,void *,s32,s32);
-extern M2C_UNK data_020ff228,data_020ff22c;
-u8 buf[32];s32 r;
-if(!p)p=&data_020ff228;
-r=func_020556e0(a,c,201,b);if(r)return r;
-StringFormat(buf,&data_020ff22c,1,d);
-r=func_020501d8(a,c,buf);if(r)return r;
-r=func_0205575c(a,c,p,-1);if(!r)r=0;return r;
+/* Send the reply to a game-data transfer request: the \m\<type>\xfer\ header
+ * carrying the request's three values, then the \version\1\result\<code> body
+ * and the message framing around message (an empty one by default).  Returns 0
+ * on success or the first send error. */
+s32 gpiSendTransferReply(void **gpi, s32 *values, void *peer, s32 result, void *message) {
+    s32 gpiSendTransferHeader(void **, void *, s32, s32 *);
+    s32 gpiSendString(void **, void *, void *);
+    s32 gpiSendFramedMessage(void **, void *, void *, s32);
+    void StringFormat(void *, void *, s32, s32);
+    extern M2C_UNK gGpiEmptyMessage, gGpiVersionResultFormat;
+    u8 buf[32];
+    s32 error;
+    if (!message) message = &gGpiEmptyMessage;
+    error = gpiSendTransferHeader(gpi, peer, GPI_MSG_XFER_REPLY, values);
+    if (error) return error;
+    StringFormat(buf, &gGpiVersionResultFormat, GPI_PROTOCOL_VERSION, result);
+    error = gpiSendString(gpi, peer, buf);
+    if (error) return error;
+    error = gpiSendFramedMessage(gpi, peer, message, -1);
+    if (!error) error = 0;
+    return error;
 }
 
 void func_02057f74(s32 a,s32 b,s32 c,s32 d) {
@@ -75,7 +87,7 @@ extern M2C_UNK data_020ff244,data_020ff24c;
 u8 buf[64];s32 z,y,x;
 if(!gpiValueForKey(d,&data_020ff244,buf,64))return;
 if(StringScanf(buf,&data_020ff24c,&x,&y,&z)!=3)return;
-func_02057ed0(a,(s32)&x,b,2,0);
+gpiSendTransferReply(a,(s32)&x,b,2,0);
 }
 
 /* Handles a server message of type 4 (a player's "login" reply): any "rn" request
@@ -235,74 +247,78 @@ void gpiSetErrorString(s32 *arg0, M2C_UNK arg1) {
 }
 
 void *func_02058658(void *a,s32 b,s32 c,void *d){
-void *func_02058b94(void *);void AssertFailed(void *,void *,void *,s32);s32 gpiStringDup(s32);
-s32 func_02058b18(void *,void *);void TableEnter(s32,void *);void *func_02058bb4(void *,s32);
+void *BucketValue(void *);void AssertFailed(void *,void *,void *,s32);s32 gpiStringDup(s32);
+s32 BucketSetValue(void *,void *);void TableEnter(s32,void *);void *BucketFind(void *,s32);
 s32 buf[5];
 if(!a)a=M2C_FIELD(&data_0213dcd0,void **,4);
-if(!a)AssertFailed(&data_020ff410,&data_020ff414,&data_020ff3f4,120);
+if(!a)AssertFailed(&data_020ff410,&sGpiBucketSourceFile,&data_020ff3f4,120);
 buf[0]=gpiStringDup(b);buf[1]=c;buf[3]=0;buf[2]=1;
-func_02058b18(buf,d);TableEnter(M2C_FIELD(a,s32 *,0),buf);
-return func_02058b94(func_02058bb4(a,b));
+BucketSetValue(buf,d);TableEnter(M2C_FIELD(a,s32 *,0),buf);
+return BucketValue(BucketFind(a,b));
 }
 
 s32 func_020586f4(void *a,s32 b,void *c){
-void *func_02058bb4(void *,s32);s32 func_02058b18(void *,void *);
-void *p=func_02058bb4(a,b);if(!p)return 0;
-M2C_FIELD(p,s32 *,8)=0;return func_02058b18(p,c);
+void *BucketFind(void *,s32);s32 BucketSetValue(void *,void *);
+void *p=BucketFind(a,b);if(!p)return 0;
+M2C_FIELD(p,s32 *,8)=0;return BucketSetValue(p,c);
 }
 
 s32 func_02058720(void *a,s32 b,void *c){
-void *func_02058b94(void *);M2C_UNK *func_02058ab4(s32);M2C_UNK *func_02058acc(s32,s32);
-void *func_02058bb4(void *,s32);s32 func_02058b18(void *,void *);s32 func_0205893c(void *,s32,void *);
+void *BucketValue(void *);M2C_UNK *func_02058ab4(s32);M2C_UNK *func_02058acc(s32,s32);
+void *BucketFind(void *,s32);s32 BucketSetValue(void *,void *);s32 BucketConcat(void *,s32,void *);
 s64 func_02070134(s64,s64);
-void *p=func_02058bb4(a,b);void *q;s64 v;
+void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=func_02058b94(p);return func_02058b18(p,func_02058ab4(M2C_FIELD(c,s32 *,0)+M2C_FIELD(q,s32 *,0)));}
-else if(M2C_FIELD(p,s32 *,4)==1){q=func_02058b94(p);v=func_02070134(*(s64 *)c,*(s64 *)q);return func_02058b18(p,func_02058acc((s32)v,(s32)(v>>32)));}
-else return func_0205893c(a,b,c);
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(M2C_FIELD(c,s32 *,0)+M2C_FIELD(q,s32 *,0)));}
+else if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070134(*(s64 *)c,*(s64 *)q);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+else return BucketConcat(a,b,c);
 }
 
 s32 func_020587b4(void *a,s32 b,void *c) {
-void *func_02058bb4(void *,s32);M2C_UNK *func_02058ab4(s32);s32 func_02058b18(void *,void *);
-void *func_02058b94(void *);M2C_UNK *func_02058acc(s32,s32);
+void *BucketFind(void *,s32);M2C_UNK *func_02058ab4(s32);s32 BucketSetValue(void *,void *);
+void *BucketValue(void *);M2C_UNK *func_02058acc(s32,s32);
 s64 func_02070b70(s64,s64);
-void *p=func_02058bb4(a,b);void *q;s64 v;
+void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=func_02058b94(p);return func_02058b18(p,func_02058ab4(M2C_FIELD(q,s32 *,0) - M2C_FIELD(c,s32 *,0)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=func_02058b94(p);v=func_02070b70(*(s64 *)q,*(s64 *)c);return func_02058b18(p,func_02058acc((s32)v,(s32)(v>>32)));}
-return (s32)func_02058b94(p);
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(M2C_FIELD(q,s32 *,0) - M2C_FIELD(c,s32 *,0)));}
+if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070b70(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+return (s32)BucketValue(p);
 }
 
 s32 func_02058838(void *a,s32 b,void *c) {
-void *func_02058bb4(void *,s32);M2C_UNK *func_02058ab4(s32);s32 func_02058b18(void *,void *);
-void *func_02058b94(void *);M2C_UNK *func_02058acc(s32,s32);
+void *BucketFind(void *,s32);M2C_UNK *func_02058ab4(s32);s32 BucketSetValue(void *,void *);
+void *BucketValue(void *);M2C_UNK *func_02058acc(s32,s32);
 s64 func_02070658(s64,s64);
-void *p=func_02058bb4(a,b);void *q;s64 v;
+void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=func_02058b94(p);return func_02058b18(p,func_02058ab4(M2C_FIELD(c,s32 *,0) * M2C_FIELD(q,s32 *,0)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=func_02058b94(p);v=func_02070658(*(s64 *)c,*(s64 *)q);return func_02058b18(p,func_02058acc((s32)v,(s32)(v>>32)));}
-return (s32)func_02058b94(p);
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(M2C_FIELD(c,s32 *,0) * M2C_FIELD(q,s32 *,0)));}
+if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070658(*(s64 *)c,*(s64 *)q);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+return (s32)BucketValue(p);
 }
 
 s32 func_020588b8(void *a,s32 b,void *c) {
-void *func_02058bb4(void *,s32);M2C_UNK *func_02058ab4(s32);s32 func_02058b18(void *,void *);
-void *func_02058b94(void *);M2C_UNK *func_02058acc(s32,s32);
+void *BucketFind(void *,s32);M2C_UNK *func_02058ab4(s32);s32 BucketSetValue(void *,void *);
+void *BucketValue(void *);M2C_UNK *func_02058acc(s32,s32);
 s64 func_020724f8(s64,s64);s32 func_020720f0(s32,s32);
-void *p=func_02058bb4(a,b);void *q;s64 v;
+void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=func_02058b94(p);return func_02058b18(p,func_02058ab4(func_020720f0(M2C_FIELD(q,s32 *,0),M2C_FIELD(c,s32 *,0))));}
-if(M2C_FIELD(p,s32 *,4)==1){q=func_02058b94(p);v=func_020724f8(*(s64 *)q,*(s64 *)c);return func_02058b18(p,func_02058acc((s32)v,(s32)(v>>32)));}
-return (s32)func_02058b94(p);
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(func_020720f0(M2C_FIELD(q,s32 *,0),M2C_FIELD(c,s32 *,0))));}
+if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_020724f8(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+return (s32)BucketValue(p);
 }
 
-s32 func_0205893c(void *a,s32 b,void *c) {
-void *func_02058bb4(void *,s32);void *func_02058b94(void *);void AssertFailed(void *,void *,void *,s32);s32 StringLength(void *);void *gpiMalloc(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void gpiFree(void *);s32 func_02058b18(void *,void *);
-extern M2C_UNK data_020ff420,data_020ff414,data_020ff400;
-void *p=func_02058bb4(a,b);void *q;void *r;s32 n;
-if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)!=2)AssertFailed(&data_020ff420,&data_020ff414,&data_020ff400,209);
-q=func_02058b94(p);n=StringLength(q);n+=StringLength(c);
-r=gpiMalloc(n+1);StringCopy(r,q);StringAppend(r,c);func_02058b18(p,r);gpiFree(r);return (s32)func_02058b94(p);
+/* BucketConcat (gbucket.c): append the string `text` to the string value of key
+ * `key` in bucket `store`, replacing the entry's value with the concatenation.
+ * Asserts that the entry is a string entry; returns the entry's new value, or 0
+ * when the key is absent. */
+s32 BucketConcat(void *store,s32 key,void *text) {
+void *BucketFind(void *,s32);void *BucketValue(void *);void AssertFailed(void *,void *,void *,s32);s32 StringLength(void *);void *gpiMalloc(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void gpiFree(void *);s32 BucketSetValue(void *,void *);
+extern M2C_UNK sGpiAssertBucketTypeString,sGpiBucketSourceFile,sGpiBucketConcatName;
+void *entry=BucketFind(store,key);void *value;void *concat;s32 length;
+if(!entry)return 0;
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)!=GPI_BUCKET_STRING)AssertFailed(&sGpiAssertBucketTypeString,&sGpiBucketSourceFile,&sGpiBucketConcatName,209);
+value=BucketValue(entry);length=StringLength(value);length+=StringLength(text);
+concat=gpiMalloc(length+1);StringCopy(concat,value);StringAppend(concat,text);BucketSetValue(entry,concat);gpiFree(concat);return (s32)BucketValue(entry);
 }
 
 /* Fold a new sample into a gpi key/value entry and store the entry's running
@@ -316,30 +332,30 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
     s64 func_02070134(s64, s64);
     s64 func_020724f8(s64, s64);
     s32 func_020720f0(s32, s32);
-    void *func_02058bb4(void *, s32);
-    void *func_02058b94(void *);
-    s32 func_02058b18(void *, void *);
+    void *BucketFind(void *, s32);
+    void *BucketValue(void *);
+    s32 BucketSetValue(void *, void *);
     M2C_UNK *func_02058ab4(s32);
     M2C_UNK *func_02058acc(s32, s32);
-    void *entry = func_02058bb4(store, key);
+    void *entry = BucketFind(store, key);
     void *old;
     s32 count;
     s64 average;
 
     if (!entry) return 0;
     if (M2C_FIELD(entry, s32 *, 4) == 0) {
-        old = func_02058b94(entry);
+        old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
-        return func_02058b18(entry, func_02058ab4(func_020720f0(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
+        return BucketSetValue(entry, func_02058ab4(func_020720f0(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
     }
     if (M2C_FIELD(entry, s32 *, 4) == 1) {
-        old = func_02058b94(entry);
+        old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
         average = func_02070134(*(s64 *)value, func_02070658(func_020705dc(count), *(s64 *)old));
         average = func_020724f8(average, func_020705dc(count));
-        return func_02058b18(entry, func_02058acc((s32)average, (s32)(average >> 32)));
+        return BucketSetValue(entry, func_02058acc((s32)average, (s32)(average >> 32)));
     }
-    return (s32)func_02058b94(entry);
+    return (s32)BucketValue(entry);
 }
 
 M2C_UNK *func_02058ab4(s32 a) {
@@ -361,8 +377,8 @@ if(c){do{if(c==92)*p=47;c=*++p;}while(c);}
 return q;
 }
 
-s32 func_02058b18(void *p,void *q) {
-void gpiFree(void *);s32 gpiStringDup(s32);s8 *func_02058ae8(s8 *);void *func_02058b94(void *);
+s32 BucketSetValue(void *p,void *q) {
+void gpiFree(void *);s32 gpiStringDup(s32);s8 *func_02058ae8(s8 *);void *BucketValue(void *);
 s32 t=M2C_FIELD(p,s32 *,4);void *r;
 if(t==0)M2C_FIELD(p,s32 *,12)=M2C_FIELD(q,s32 *,0);
 else if(t==1){M2C_FIELD(p,double *,12)=M2C_FIELD(q,double *,0);}
@@ -371,10 +387,10 @@ r=M2C_FIELD(p,void **,12);if(r)gpiFree(r);
 if(!q)r=0;else r=func_02058ae8((s8 *)gpiStringDup((s32)q));
 M2C_FIELD(p,void **,12)=r;
 }
-return (s32)func_02058b94(p);
+return (s32)BucketValue(p);
 }
 
-void *func_02058b94(void *arg0) {
+void *BucketValue(void *arg0) {
     if (arg0 == NULL) {
         return NULL;
     }
@@ -384,11 +400,11 @@ void *func_02058b94(void *arg0) {
     return arg0 + 0xC;
 }
 
-void *func_02058bb4(void *a,s32 b){
+void *BucketFind(void *a,s32 b){
 void AssertFailed(void *,void *,void *,s32);void *func_02048ff8(s32,void *);
 s32 buf[5];
 if(!a)a=M2C_FIELD(&data_0213dcd0,void **,4);
-if(!a)AssertFailed(&data_020ff410,&data_020ff414,&data_020ff3ec,0x153);
+if(!a)AssertFailed(&data_020ff410,&sGpiBucketSourceFile,&data_020ff3ec,0x153);
 buf[0]=b;return func_02048ff8(M2C_FIELD(a,s32 *,0),buf);
 }
 

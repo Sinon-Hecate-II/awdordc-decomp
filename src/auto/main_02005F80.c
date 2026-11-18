@@ -211,7 +211,11 @@ s32 OS_SendMessage(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 OS_ReceiveMessage(void *arg0, s32 *arg1, s32 arg2) {
+/* Takes one message from a thread message queue: with OS_MESSAGE_BLOCK it waits
+ * for the queue to fill, then copies out the oldest message, advances firstIndex
+ * modulo the slot count, drops usedCount and wakes a sender.  Returns 0 when a
+ * non-blocking call finds the queue empty, 1 when a message was taken. */
+s32 OS_ReceiveMessage(OSMessageQueue *queue, s32 *msg, s32 flags) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -220,19 +224,19 @@ s32 OS_ReceiveMessage(void *arg0, s32 *arg1, s32 arg2) {
     s32 state;
 
     state = OS_DisableInterrupts();
-    while (M2C_FIELD(arg0, s32 *, 0x1C) == 0) {
-        if (!(arg2 & 1)) {
+    while (queue->usedCount == 0) {
+        if (!(flags & OS_MESSAGE_BLOCK)) {
             OS_RestoreInterrupts(state);
             return 0;
         }
-        OS_SleepThread((u8 *)arg0 + 8);
+        OS_SleepThread((u8 *)queue + 8);
     }
-    if (arg1 != NULL) {
-        *arg1 = ((s32 *)M2C_FIELD(arg0, void **, 0x10))[M2C_FIELD(arg0, s32 *, 0x18)];
+    if (msg != NULL) {
+        *msg = queue->msgArray[queue->firstIndex];
     }
-    M2C_FIELD(arg0, s32 *, 0x18) = (s32)(func_020720f0(M2C_FIELD(arg0, s32 *, 0x18) + 1, M2C_FIELD(arg0, s32 *, 0x14)) >> 32);
-    M2C_FIELD(arg0, s32 *, 0x1C) = M2C_FIELD(arg0, s32 *, 0x1C) - 1;
-    OS_WakeupThread(arg0);
+    queue->firstIndex = (s32)(func_020720f0(queue->firstIndex + 1, queue->msgCount) >> 32);
+    queue->usedCount = queue->usedCount - 1;
+    OS_WakeupThread(queue);
     OS_RestoreInterrupts(state);
     return 1;
 }
@@ -442,7 +446,7 @@ void InitArenaTable(void);
     M2C_UNK func_020077cc();
     M2C_UNK func_02008bb8();
     M2C_UNK func_02009d34();
-    M2C_UNK func_0200e2f8();
+    M2C_UNK Arm7CommandInit();
     M2C_UNK func_02010c14();
     M2C_UNK Mb_BootInit();
     InitArenaTable();
@@ -459,7 +463,7 @@ void InitArenaTable(void);
     func_020075b4();
     Mb_BootInit();
     func_02010c14();
-    func_0200e2f8();
+    Arm7CommandInit();
     func_02006838();
 }
 

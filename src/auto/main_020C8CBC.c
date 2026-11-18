@@ -174,9 +174,9 @@ void func_020c9060(void *arg0) {
 }
 
 void func_020c9100(s32 a) {
-void *func_01ffa444();
+void *CreateSpriteForOwner();
 extern M2C_UNK data_0212b0ac;
-M2C_FIELD(func_01ffa444(&data_0212b0ac,a),u8 *,0x34)=0;
+M2C_FIELD(CreateSpriteForOwner(&data_0212b0ac,a),u8 *,0x34)=0;
 }
 
 void func_020c9120(s16 arg0, s32 arg1) {
@@ -206,9 +206,9 @@ void func_020c9168(void *arg0) {
 }
 
 void func_020c9190(s32 arg0) {
-    void *func_01ffa444();
+    void *CreateSpriteForOwner();
     extern M2C_UNK data_0212b114;
-    M2C_FIELD(func_01ffa444(&data_0212b114), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteForOwner(&data_0212b114), s32 *, 0x34) = arg0;
 }
 
 #pragma opt_instruction_scheduling off

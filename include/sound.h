@@ -27,6 +27,7 @@
 #define SOUND_HANDLE_RATE          0xC4  /* u16 sample rate */
 #define SOUND_HANDLE_TIMER_PERIOD  0xC6  /* u16 hardware timer period */
 #define SOUND_HANDLE_FLAGS         0x110 /* u32 player flag bits */
+#define SOUND_HANDLE_REQUEST_COUNT 0x11C /* s32 segment requests queued for this player */
 #define SOUND_HANDLE_MAX_CHANNELS  0x124 /* u8 channel limit */
 #define SOUND_HANDLE_SAMPLE_DATA   0x12C /* s32 sample data handle */
 #define SOUND_HANDLE_CHANNEL_BYTES 0x130 /* s32 sample bytes per channel */
@@ -181,6 +182,31 @@ typedef struct PackedBankEntry {
 #define SOUND_STATE_FRAME        0x1C /* s32 gFrameCounter the count belongs to */
 #define SOUND_PLAYED_MAX         8    /* sound ids remembered per frame (gSoundFrameIds) */
 #define SOUND_SLOT_COUNT         4    /* sound effect slots (gSoundSlotHandles) */
+
+/* A segment of a playing sound queued for the sound task (one request per
+ * segment, eight request nodes in gSoundRequestPool, 0x30 bytes each; the list
+ * links sit at +0 and +4 so a request is on one list at a time). */
+#define SOUND_REQUEST_MAX_NOTES  6    /* note buffers one request can carry */
+#define SOUND_REQUEST_PLAYER     0x08 /* void *player the segment plays on */
+#define SOUND_REQUEST_MODE       0x0C /* s32 0 = first segment, 1 = continuation */
+#define SOUND_REQUEST_NOTE_COUNT 0x10 /* s32 note buffers to fill */
+#define SOUND_REQUEST_BUFFERS    0x14 /* u32 *[MAX_NOTES] the note buffers to fill */
+#define SOUND_REQUEST_SIZE       0x2C /* s32 bytes to fill in each note buffer */
+#define SOUND_REQUEST_STRIDE     0x30
+
+/* The sound task (gSoundWorker): the worker's thread object with its stack
+ * inside it, the wait queue the worker sleeps on and the queue of segment
+ * requests.  The worker fills each request's note buffers, then frees it. */
+#define SOUND_TASK_WAIT_QUEUE    0x4C0 /* thread wait queue the worker sleeps on */
+#define SOUND_TASK_LOCK          0x4C8 /* OSMutex guarding the request queue */
+#define SOUND_TASK_REQUEST_QUEUE 0x4E0 /* list of pending segment requests, links at +0 */
+
+/* The sound task's global state (gSoundWorkerState): whether the task exists,
+ * the task a sound's first segment is queued on (NULL = gSoundWorker) and the
+ * ADPCM decode state streamed sounds are decoded into. */
+#define SOUND_TASK_STATE_READY   0x00 /* s32 nonzero once the task is initialised */
+#define SOUND_TASK_STATE_TASK    0x04 /* void *task first segments go on, or NULL */
+#define SOUND_TASK_STATE_DECODER 0x08 /* u8 *streamed-sound ADPCM decode state */
 
 /* Menu sounds handed to PlaySoundEffect. */
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */

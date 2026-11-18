@@ -75,7 +75,7 @@ void func_ov001_0217355c(u8 arg0,s32 arg1,s32 arg2,u32 arg3){
 extern u8 data_ov001_0218f328[];
 extern u16 gKeyboardAuxKeyPos[],gKeyboardActionKeyPos[];
 void func_ov001_0218b200(s32,u16,s32,s32,s32);
-s32 func_020020c4(s32,s32);
+s32 HardwareDivideRemainder(s32,s32);
 void func_ov001_0218a260(void *,s32,s32,s32);
 M2C_UNK Ov001_MoveSpriteLayout(s32,M2C_UNK,u16,u16);
 SpriteGroupCounts a,b,c;
@@ -93,7 +93,7 @@ M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|((u32)(tile<<23)>>7)|(arg
 j++;
 }
 if(arg1<4)func_ov001_0218b200(M2C_FIELD((u8 *)gOv001MenuState+arg0*16+arg1*4,s32 *,0),*(u16 *)(gKeyboardCharKeyPos+index*4),arg2,M2C_FIELD((u8 *)gOv001MenuState+arg1*4,s32 *,0x104),2);
-j=func_020020c4(arg1+3,4);
+j=HardwareDivideRemainder(arg1+3,4);
 i=0;
 if(i<b.v[arg1]){
 j*=4;

@@ -429,33 +429,33 @@ void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0202b46c(s32);
     M2C_UNK func_0202d7d8(M2C_UNK);
     M2C_UNK func_0202dfcc(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0213c290;
-    extern M2C_UNK data_0213c29c;
-    extern M2C_UNK data_0213c2a8;
-    extern M2C_UNK data_0213c2c0;
-    extern M2C_UNK data_0213c440;
+    extern M2C_UNK gSoundWorkerState;
+    extern M2C_UNK gSoundFreeRequests;
+    extern M2C_UNK gSoundDecodeLock;
+    extern M2C_UNK gSoundRequestPool;
+    extern M2C_UNK gSoundWorker;
     extern u8 data_0213c92c[];
     extern M2C_UNK data_0213cf00;
     s32 temp_r6;
     s32 var_r5;
     s32 var_r9;
 
-    if (M2C_FIELD(&data_0213c290, s32 *, 0) != 0) {
+    if (M2C_FIELD(&gSoundWorkerState, s32 *, 0) != 0) {
         func_0202d7d8(arg1);
         return;
     }
-    M2C_FIELD(&data_0213c290, s32 *, 0) = 1;
-    ListInit(&data_0213c29c, 0);
+    M2C_FIELD(&gSoundWorkerState, s32 *, 0) = 1;
+    ListInit(&gSoundFreeRequests, 0);
     var_r9 = 0;
 loop_4:
     if (var_r9 < 8) {
-        ListAppend(&data_0213c29c, (var_r9 * 0x30) + (s32) &data_0213c2c0);
+        ListAppend(&gSoundFreeRequests, (var_r9 * 0x30) + (s32) &gSoundRequestPool);
         var_r9 += 1;
         goto loop_4;
     }
-    InitMutex(&data_0213c2a8);
+    InitMutex(&gSoundDecodeLock);
     var_r5 = 0;
-    M2C_FIELD(&data_0213c290, M2C_UNK **, 8) = &data_0213cf00;
+    M2C_FIELD(&gSoundWorkerState, M2C_UNK **, 8) = &data_0213cf00;
 loop_7:
     if (var_r5 < 4) {
         temp_r6 = (var_r5 * 0x174) + (s32) data_0213c92c;
@@ -471,7 +471,7 @@ loop_7:
         goto loop_7;
     }
     func_0202d7d8(arg1);
-    func_0202dfcc(&data_0213c440, arg0);
+    func_0202dfcc(&gSoundWorker, arg0);
 }
 
 s32 func_0202d7d8(s32 a){

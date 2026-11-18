@@ -81,7 +81,7 @@ void func_ov007_02211480(void) {
     func_020bfbc0(0);
 }
 
-void func_ov007_022114ac(M2C_UNK arg0) {
+void MapEditor_SpawnCursorSprite(M2C_UNK arg0) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f5c0;
     CreateSpriteFromClass(&data_ov007_0221f5c0, arg0);
@@ -108,7 +108,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        func_ov007_022114ac(arg0);
+        MapEditor_SpawnCursorSprite(arg0);
         SpawnSoundEffectAtTile(0x119, arg1, arg2, 1);
         return;
     case 0:
@@ -148,7 +148,11 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     PlaySoundEffect(0x1001D);
 }
 
-void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Unit-page erase tool: destroys the unit on the cell under the cursor; on success
+   refreshes the cells and editor, marks the map modified, spawns the editor's cursor
+   sprite and the unit-erase explosion at the cell, otherwise plays the error sound
+   when `sound` is set. */
+void MapEditor_EraseUnit(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     s32 MapEditor_DestroyUnitAt(s32, s32);
     M2C_UNK RefreshMapCellUnits();
     void RefreshMapEditor(void);
@@ -156,17 +160,17 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
-    extern M2C_UNK data_ov007_0221f680;
-    if (MapEditor_DestroyUnitAt(arg1, arg2) != 0) {
+    extern M2C_UNK gUnitEraseEffect;
+    if (MapEditor_DestroyUnitAt(x, y) != 0) {
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        func_ov007_022114ac(arg0);
-        CreateAnimatedMapSprite(&data_ov007_0221f680, arg1, arg2, 0x50, 0, 0, arg0);
-        SpawnSoundEffectAtTile(0x8A, arg1, arg2, 1);
+        MapEditor_SpawnCursorSprite(editor);
+        CreateAnimatedMapSprite(&gUnitEraseEffect, x, y, 0x50, 0, 0, editor);
+        SpawnSoundEffectAtTile(0x8A, x, y, 1);
         return;
     }
-    if (arg3 == 0) return;
+    if (sound == 0) return;
     PlaySoundEffect(0x1001D);
 }
 
@@ -191,7 +195,7 @@ u8 GetMapEditorTerrainKind();u8 GetMapEditorTerrainOwner();s32 Map_PaintTile(s32
 M2C_UNK RefreshMapCellUnits();void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);M2C_UNK SpawnSoundEffectAtTile(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
 s32 kind=GetMapEditorTerrainKind();s32 owner=GetMapEditorTerrainOwner();
 switch(Map_PaintTile(x,y,kind,owner,1)){
-case 1:RefreshMapCellUnits();RefreshMapEditor();MapEditor_SetMapModified(1);func_ov007_022114ac(a);
+case 1:RefreshMapCellUnits();RefreshMapEditor();MapEditor_SetMapModified(1);MapEditor_SpawnCursorSprite(a);
 switch(kind){case 7:case 8:case 9:case 10:case 11:case 12:SpawnSoundEffectAtTile(0x11a,x,y,1);break;
 default:SpawnSoundEffectAtTile(0x119,x,y,1);break;}break;
 case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
@@ -237,7 +241,7 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        func_ov007_022114ac(editor);
+        MapEditor_SpawnCursorSprite(editor);
         CreateAnimatedMapSprite(&data_ov007_0221f690, x, y, 0x50, 0, 0, editor);
         SpawnSoundEffectAtTile(0x8a, x, y, 1);
         return;
@@ -346,7 +350,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void PaintMapTerrain(M2C_UNK, s32, s32, s32);
     void func_ov007_02211560(M2C_UNK, s32, s32, s32);
     void func_ov007_022117e0(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov007_022115fc(M2C_UNK, s32, s32, s32);
+    void MapEditor_EraseUnit(M2C_UNK, s32, s32, s32);
     void MapEditor_EraseTerrain(M2C_UNK, s32, s32, s32);
     void func_ov007_022116a0(M2C_UNK, s32, s32, s32);
     void func_ov007_0221190c(M2C_UNK, s32, s32, s32);
@@ -414,7 +418,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         f = GetMapEditorMode();
         if (f == 0) goto L_c2;
         if (f != 1) return;
-        func_ov007_022115fc(arg0, r6, r7, r4 & 1);
+        MapEditor_EraseUnit(arg0, r6, r7, r4 & 1);
         return;
     L_c2:
         MapEditor_EraseTerrain(arg0, r6, r7, r4 & 1);
@@ -438,7 +442,7 @@ L_b4c:
     if (r5 & 1) { func_ov007_022114c4(arg0, r6, r7, r4 & 1); return; }
     mask = r4 & 2;
     if (mask) { func_ov007_02211560(arg0, r6, r7, mask); return; }
-    if (*(u16 *)((u8 *)gKeyState + 6) & 0x400) { func_ov007_022115fc(arg0, r6, r7, r4 & 0x400); return; }
+    if (*(u16 *)((u8 *)gKeyState + 6) & 0x400) { MapEditor_EraseUnit(arg0, r6, r7, r4 & 0x400); return; }
     mask = r4 & 0x800;
     if (mask) { func_ov007_022116a0(arg0, r6, r7, mask); return; }
     return;

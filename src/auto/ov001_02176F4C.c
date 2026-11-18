@@ -519,10 +519,10 @@ void func_ov001_02177bb4(void) {
 void func_ov001_02177bdc(void) {
     void Ov001_HandleOptionMenuInput(void);
     void func_ov001_02177ce4(void);
-    void func_ov001_02177ce8(void);
+    void Ov001_OptionMenuConfirm(void);
     Ov001_HandleOptionMenuInput();
     func_ov001_02177ce4();
-    func_ov001_02177ce8();
+    Ov001_OptionMenuConfirm();
 }
 
 #pragma opt_strength_reduction off
@@ -560,44 +560,48 @@ void func_ov001_02177ce4(void) {
 
 }
 
-void func_ov001_02177ce8(void) {
+/* Reacts to the option menu's icon row choice: back leaves the menu for the
+ * Wi-Fi menu, confirm starts opening the highlighted option - unless that option
+ * needs a Wi-Fi profile and none is registered, in which case it buzzes and
+ * stays on the menu. */
+void Ov001_OptionMenuConfirm(void) {
     M2C_UNK GetWfcProfile(void *);
     M2C_UNK Ov001_SetIconRowSelection(M2C_UNK);
-    M2C_UNK func_ov001_02177fac();
-    void func_ov001_02177d8c(void);
+    M2C_UNK Ov001_LoadSelectedOptionTile();
+    void Ov001_OptionMenuExit(void);
     extern M2C_UNK gOv001OptionMenuState;
-    struct { u64 value; u32 unk_08[3]; } sp0;
+    WfcProfile profile;
     switch (Ov001_GetIconRowSelection()) {
-    case 0:
-        Ov001_PlaySound(7);
+    case OV001_CHOICE_BACK:
+        Ov001_PlaySound(OV001_SOUND_CANCEL);
         break;
-    case 1:
-        GetWfcProfile(&sp0);
-        if (M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) != 0) {
-            if (sp0.value == 0) {
-                Ov001_PlaySound(9);
+    case OV001_CHOICE_CONFIRM:
+        GetWfcProfile(&profile);
+        if (((Ov001OptionMenuState *)&gOv001OptionMenuState)->selected != 0) {
+            if (profile.value == 0) {
+                Ov001_PlaySound(OV001_SOUND_ERROR);
                 Ov001_SetIconRowSelection(-1);
                 return;
             }
         }
-        Ov001_PlaySound(6);
-        func_ov001_02177fac();
-        M2C_FIELD(&gOv001OptionMenuState, u8 *, 1) = 1;
+        Ov001_PlaySound(OV001_SOUND_CONFIRM);
+        Ov001_LoadSelectedOptionTile();
+        ((Ov001OptionMenuState *)&gOv001OptionMenuState)->paletteLoaded = 1;
         break;
     default:
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177d8c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_OptionMenuExit);
 }
 
-void func_ov001_02177d8c(void) {
-    extern M2C_UNK func_ov001_02177dac;
+void Ov001_OptionMenuExit(void) {
+    extern M2C_UNK Ov001_FadeOutOptionMenu;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02177dac);
+    Ov001_SetStepCallback(&Ov001_FadeOutOptionMenu);
 }
 
-void func_ov001_02177dac(void) {
+void Ov001_FadeOutOptionMenu(void) {
     extern M2C_UNK gOv001OptionMenuState;
     extern M2C_UNK Ov001_OptionMenuClose;
     if (Ov001_IsFadeActive(1) != 0) {

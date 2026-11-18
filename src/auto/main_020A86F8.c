@@ -112,7 +112,7 @@ u8 func_020a8958(s32 arg0) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0xA);
 }
 
-u8 func_020a8984(void) {
+u8 MapData_GetTurnLimit(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0xB);
 }
 
@@ -359,56 +359,62 @@ s16 GetSpriteAnimValue(void *arg0) {
     return 0;
 }
 
-void func_020a9188(void *arg0, u16 arg1) {
-    s32 Divide();
-    M2C_FIELD(arg0, s16 *, 6) = Divide(0x10000);
-    M2C_FIELD(arg0, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 4);
+/* Starts a tween: sets its per-frame step so it advances 0x10000 over `frames`
+ * frames, then moves its current value back to its start value. */
+void SpriteTween_Start(void *tween, u16 frames) {
+    s32 Divide(s32, s32);
+    M2C_FIELD(tween, s16 *, 6) = Divide(0x10000, frames);
+    M2C_FIELD(tween, u16 *, 2) = (u16) M2C_FIELD(tween, u16 *, 4);
 }
 
 void StepAnimationFrames(void *arg0) {
 void UpdateSpriteAnimation(void *);
-void func_020a9218(void *);
+void SpriteAnim_SetupFrame(void *);
 u8 *p;
 if(M2C_FIELD(arg0,u8 *,14)||M2C_FIELD(arg0,u8 *,15))return;
 M2C_FIELD(arg0,u16 *,12)++;
 if(M2C_FIELD(arg0,u16 *,12)>=M2C_FIELD(M2C_FIELD(arg0,void **,8),s16 *,0)){
-func_020a9218(arg0);
+SpriteAnim_SetupFrame(arg0);
 p=M2C_FIELD(arg0,u8 **,8)+12;
 M2C_FIELD(arg0,u8 **,8)=p;
 if(M2C_FIELD(p,s32 *,4)==-1) M2C_FIELD(arg0,u8 *,15)=1;
 }else UpdateSpriteAnimation(M2C_FIELD(arg0,void **,0));
 }
 
-void func_020a9218(void *arg0) {
-void func_020a9188(void *,u16);
-void *p=M2C_FIELD(arg0,void **,8);
-void *q;
-void *obj;
-s32 a,b,c,d;
-M2C_FIELD(M2C_FIELD(arg0,void **,0),u8 *,0)=M2C_FIELD(p,s32 *,4);
-q=M2C_FIELD(arg0,void **,8);
-switch(M2C_FIELD(q,u32 *,4)){
+/* Configures an animation player's tween from the frame entry playing now: copies
+ * the entry's mode into the tween, sets the tween's duration and its from/to
+ * values, and restarts it (mode 0 derives the per-frame step from the entry's
+ * frame count, mode 2 forces a zero-length segment). */
+void SpriteAnim_SetupFrame(void *anim) {
+void SpriteTween_Start(void *,u16);
+SpriteTween *tween;
+void *frame=M2C_FIELD(anim,void **,8);
+void *next;
+s32 length,from,to;
+M2C_FIELD(M2C_FIELD(anim,void **,0),u8 *,0)=M2C_FIELD(frame,s32 *,4);
+next=M2C_FIELD(anim,void **,8);
+switch(M2C_FIELD(next,u32 *,4)){
 case 1:case 3:case 4:
-a=M2C_FIELD(p,s16 *,12)-M2C_FIELD(q,s16 *,0);
-c=M2C_FIELD(q,s16 *,8);
-d=M2C_FIELD(p,s16 *,20);
-obj=M2C_FIELD(arg0,void **,0);
-M2C_FIELD(obj,s16 *,14)=c;
-M2C_FIELD(obj,s16 *,16)=d;
-M2C_FIELD(obj,s16 *,12)=a;
-M2C_FIELD(obj,u16 *,2)=M2C_FIELD(obj,u16 *,4);
+length=M2C_FIELD(frame,s16 *,12)-M2C_FIELD(next,s16 *,0);
+from=M2C_FIELD(next,s16 *,8);
+to=M2C_FIELD(frame,s16 *,20);
+tween=M2C_FIELD(anim,SpriteTween **,0);
+tween->from=from;
+tween->to=to;
+tween->duration=length;
+tween->current=tween->start;
 break;
 case 0:
-func_020a9188(M2C_FIELD(arg0,void **,0),M2C_FIELD(q,u16 *,8));
+SpriteTween_Start(M2C_FIELD(anim,void **,0),M2C_FIELD(next,u16 *,8));
 break;
 case 2:
-d=M2C_FIELD(p,s16 *,20);
-c=M2C_FIELD(q,s16 *,8);
-obj=M2C_FIELD(arg0,void **,0);
-M2C_FIELD(obj,s16 *,14)=c;
-M2C_FIELD(obj,s16 *,16)=d;
-M2C_FIELD(obj,s16 *,12)=0;
-M2C_FIELD(obj,u16 *,2)=M2C_FIELD(obj,u16 *,4);
+to=M2C_FIELD(frame,s16 *,20);
+from=M2C_FIELD(next,s16 *,8);
+tween=M2C_FIELD(anim,SpriteTween **,0);
+tween->from=from;
+tween->to=to;
+tween->duration=0;
+tween->current=tween->start;
 break;
 }
 }

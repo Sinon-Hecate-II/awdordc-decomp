@@ -76,4 +76,20 @@ enum {
     OV001_OPTION_ERASE_WFC    = 2  /* erase the saved WFC profile */
 };
 
+/* What the ov001 option menu's icon row reports: the shared row has a back icon
+ * and a confirm icon, and the menu latches a touch or key press as one of them
+ * (see Ov001_GetIconRowSelection). */
+enum {
+    OV001_CHOICE_BACK    = 0, /* leave the option menu for the Wi-Fi menu */
+    OV001_CHOICE_CONFIRM = 1  /* accept the highlighted option */
+};
+
+/* Sound ids handed to Ov001_PlaySound. */
+enum {
+    OV001_SOUND_CONFIRM = 6, /* an action was accepted */
+    OV001_SOUND_CANCEL  = 7, /* the screen is being left without an action */
+    OV001_SOUND_MOVE    = 8, /* the cursor moved to another row */
+    OV001_SOUND_ERROR   = 9  /* the action is not possible */
+};
+
 #endif

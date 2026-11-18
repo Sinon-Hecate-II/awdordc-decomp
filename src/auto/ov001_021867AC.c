@@ -178,7 +178,7 @@ void MI_CpuCopy8(void *,void *,s32);
 s32 MultiBoot_StartParent(void *,void *,s32,s32,s32);
 void func_02017c40(s32,s32);
 void func_02013e70(void (*)(void));
-void func_ov001_02187590(void);
+void Ov001_HandleLinkEvent(void);
 MbParentInfo parentInfo;
 u8 ownerInfo[84];
 func_02007740(ownerInfo);
@@ -193,7 +193,7 @@ Ov001LinkHeader zero={0};
 M2C_FIELD(gOv001LinkWork,void **,0x1b140)=(u8 *)gOv001LinkWork+0x10040;
 if(MultiBoot_StartParent(M2C_FIELD(gOv001LinkWork,void **,0x1b140),&parentInfo,param,programId,2))SystemHalt();
 func_02017c40(256,1);
-func_02013e70(func_ov001_02187590);
+func_02013e70(Ov001_HandleLinkEvent);
 Ov001_SetLinkStatus(1);
 }
 
@@ -242,7 +242,7 @@ s32 Ov001_LoadDownloadPlayProgram(s32 fileRequest) {
     return result;
 }
 
-void func_ov001_021870bc(s32 a) {
+void Ov001_HandleChildPhase1(s32 a) {
 extern void *gOv001LinkWork;
 u16 mask; s32 state;
 if(Mb_AckPlayerPhase(a,1))return;
@@ -373,7 +373,7 @@ M2C_UNK func_0201808c();M2C_UNK Ov001_SetLinkStatus(M2C_UNK);
 Ov001_SetLinkStatus(6);func_0201808c();
 }
 
-void func_ov001_02187560(void) {
+void Ov001_TryStartTransfer(void) {
     extern void *gOv001LinkWork;
     if ((M2C_FIELD(gOv001LinkWork, u16 *, 0) == 4) && (M2C_FIELD(gOv001LinkWork, u16 *, 2) == M2C_FIELD(gOv001LinkWork, u16 *, 0xC))) {
         func_0201808c();

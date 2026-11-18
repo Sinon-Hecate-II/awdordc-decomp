@@ -6,7 +6,10 @@
 #define NET_SESSION_RX_BUFFER      0x14 /* s32 receive buffer size handed to the GT2 socket */
 #define NET_SESSION_TX_BUFFER      0x18 /* s32 send buffer size handed to the GT2 socket */
 #define NET_SESSION_STATE          0x24 /* s32 current NET_STATE_* */
+#define NET_SESSION_LOCAL_PLAYER_ID 0x2c /* u8 this console's player id in the session */
+#define NET_SESSION_ANNOUNCING_CLOSE 0x2d /* u8 set while a deliberate GT2 connection close is announced, so the per-peer disconnect handlers skip their reporting path */
 #define NET_SESSION_LOGIN_NAME     0x2e /* u16[26], NUL terminated */
+#define NET_SESSION_LAST_PLAYER    0x381 /* u8 index of the last entry of the session's player table (+0x468 sockets, +0x644 ids), i.e. the player count minus one: 0 while only this console is in the session */
 #define NET_SESSION_GAME_NAME      0x68 /* char * service name */
 #define NET_SESSION_LOGIN_CALLBACK 0x70 /* void (*)(s32 error, s32 profileId, s32 data) */
 #define NET_SESSION_LOGIN_DATA     0x74 /* s32 callback data */

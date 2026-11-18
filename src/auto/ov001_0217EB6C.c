@@ -74,7 +74,7 @@ s32 func_ov001_0217ee24(s32 arg0) {
  * sprites, move the scroll bar handle and hand the finished scroll back to the
  * list state machine. */
 void MapListScrollUp(s32 message) {
-    s32 func_020020c4(u16, s32);
+    s32 HardwareDivideRemainder(u16, s32);
     extern M2C_UNK gMapListState;
     s32 delta, remainder;
     Ov001_BlockScrollBar();
@@ -83,7 +83,7 @@ void MapListScrollUp(s32 message) {
         M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) - 6;
     else
         M2C_FIELD(&gMapListState, u16 *, 4) = 0;
-    remainder = func_020020c4(M2C_FIELD(&gMapListState, u16 *, 4), 29);
+    remainder = HardwareDivideRemainder(M2C_FIELD(&gMapListState, u16 *, 4), 29);
     if (remainder == 23) {
         MapListRedrawInfoPanel();
         return;
@@ -95,43 +95,48 @@ void MapListScrollUp(s32 message) {
     }
     MapListUpdateRowSprites();
     if (remainder != 0) return;
-    func_ov001_021839e4((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
+    Ov001_UpdateScrollbarHandle((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
     Ov001_UnblockScrollBar();
     MapList_UpdateStateFromRow();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = 0;
     Ov001_PostTaskMessage(0, message);
 }
 
-void MapListScrollDown(s32 arg0) {
-    s32 func_020020c4(u16, s32);
+/* One step of the map-list scroll-down animation, the mirror of MapListScrollUp:
+ * move the scroll position a row step toward the bottom, and once it lands on a
+ * row boundary rebuild the rows' sprites, move the scroll-bar handle, snap the
+ * selected row's state and hand the finished scroll back to the list state
+ * machine; between boundaries it only advances the row sprites. */
+void MapListScrollDown(s32 message) {
+    s32 HardwareDivideRemainder(u16, s32);
     M2C_UNK Ov001_BlockScrollBar();
     M2C_UNK Ov001_FreeSpriteObjects();
     M2C_UNK MapListUpdateRowSprites();
     M2C_UNK MapListRedrawInfoPanel();
-    M2C_UNK func_ov001_021839e4(s32);
+    M2C_UNK Ov001_UpdateScrollbarHandle(s32);
     M2C_UNK Ov001_UnblockScrollBar();
     M2C_UNK MapList_UpdateStateFromRow();
     M2C_UNK Ov001_PostTaskMessage(s32, s32);
     extern M2C_UNK gMapListState;
-    s32 result;
+    s32 remainder;
     Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
-    M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) + 6;
-    result = func_020020c4(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
-    if (result >= 6) {
+    M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) = M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) + OV001_MAP_LIST_SCROLL_STEP;
+    remainder = HardwareDivideRemainder(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    if (remainder >= OV001_MAP_LIST_SCROLL_STEP) {
         MapListUpdateRowSprites();
         return;
     }
-    M2C_FIELD(&gMapListState, u16 *, 4) = M2C_FIELD(&gMapListState, u16 *, 4) - result;
+    M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) = M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) - remainder;
     MapListRedrawInfoPanel();
-    func_ov001_021839e4((M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
+    Ov001_UpdateScrollbarHandle((M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) * OV001_MAP_LIST_HANDLE_TRAVEL) / OV001_MAP_LIST_SCROLL_MAX);
     Ov001_UnblockScrollBar();
     MapList_UpdateStateFromRow();
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x38) = 0;
-    Ov001_PostTaskMessage(0, arg0);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_TASK) = 0;
+    Ov001_PostTaskMessage(0, message);
 }
 
-void func_ov001_0217efb4(void){s32 HardwareDivide(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);x=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
+void func_ov001_0217efb4(void){s32 HardwareDivide(u16,s32);s32 HardwareDivideRemainder(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);x=HardwareDivideRemainder(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
 
 /* Selects a map-layout entry from the state index and applies it via Ov001_LayoutChoiceFrameRow. */
 void MapList_ApplyRowLayout(void) {
@@ -236,7 +241,7 @@ void func_ov001_0217f1f0(s32 event) {
             M2C_FIELD(&gMapListState, u8 *, 2) = 0;
             M2C_FIELD(&gMapListState, u16 *, 4) = 0;
             MapListRedrawInfoPanel();
-            func_ov001_021839e4(0);
+            Ov001_UpdateScrollbarHandle(0);
         } else {
             result = 2;
         }
@@ -249,7 +254,7 @@ void func_ov001_0217f1f0(s32 event) {
             M2C_FIELD(&gMapListState, u8 *, 2) = 3;
             M2C_FIELD(&gMapListState, u16 *, 4) = 145;
             MapListRedrawInfoPanel();
-            func_ov001_021839e4(55);
+            Ov001_UpdateScrollbarHandle(55);
         } else if (event == 3) {
             if (M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47)) return;
             Ov001_PlaySound(9);

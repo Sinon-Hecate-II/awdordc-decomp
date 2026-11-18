@@ -331,7 +331,7 @@ u8 func_020a7dc4(void *arg0) {
  return var_r0;
 }
 
-u8 func_020a7e08(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}
+u8 IsSupplyUnitKind(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}
 
 /* If `unit` is the unit its player has selected, drops that selection: the
  * selected-unit slot is cleared and, when `clearState` is set, the selection

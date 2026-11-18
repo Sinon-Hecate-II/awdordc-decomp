@@ -5,7 +5,7 @@ static inline s16 BC454Direction(s16 *p,s32 dir) { return p[dir*2]; }
 
 void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    void *func_01ffa444(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     s32 IsPlayerHuman(u16);
     extern s32 *gCurrentMap;
     extern M2C_UNK data_0212b00c;
@@ -14,7 +14,7 @@ void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
         AddRecordValue(0xD, 1);
     }
-    temp_r0 = func_01ffa444(&data_0212b00c, arg4);
+    temp_r0 = CreateSpriteForOwner(&data_0212b00c, arg4);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x6E) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg2;

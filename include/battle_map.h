@@ -158,6 +158,10 @@ typedef struct DirectionMarker {
 #define MAP_VIEW_CELL_X     0x5150 /* s16 view scroll x, in whole cells (MAP_VIEW_X / 16) */
 #define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
+/* Inside the map view block (MAP_VIEW_ZOOM is its base): the Q12 matrix the view
+ * projects a point with, and the world origin a projected point is relative to. */
+#define MAP_VIEW_MATRIX     0xb0 /* s32[9]: Q12 matrix the view projects with */
+#define MAP_VIEW_ORIGIN     0xf0 /* s32[3]: world position a projected point is added to */
 #define MAP_TILESET         0x5157 /* u8 battle-setting/tileset index, selects the terrain tileset bank */
 #define MAP_FOG             0x5156 /* u8 nonzero when fog of war hides distant units */
 /* Values stored in the map's weather fields. */
@@ -268,6 +272,13 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_CURSOR_OPTION_RIGHT 1
 #define MAP_CURSOR_OPTION_DOWN  2
 #define MAP_CURSOR_OPTION_LEFT  3
+
+/* The task object that drives a directional map-cursor option (the arrows that
+ * pick a neighbouring cell): the directions that may be chosen, the option
+ * chosen so far, and, for a cargo drop, the carried-unit slot it acts on. */
+#define MAP_OPTION_DIR_MASK    0x6C /* s16 MAP_DIR_* bits of the directions that can be picked */
+#define MAP_OPTION_SELECTED    0x6E /* s16 chosen option, MAP_CURSOR_OPTION_* */
+#define MAP_OPTION_CARGO_SLOT  0x70 /* s16 carried-unit slot a cargo drop acts on (0 = first, 1 = next) */
 
 /* The map's property-cell list, rebuilt by func_020cf2c8: one 6-byte record per
  * property (or kind 0x18 special) cell, ended by a 0xff terrain kind. */
@@ -427,6 +438,15 @@ typedef struct MapTargetEntry {
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
 #define MAP_RETURN_STATE    0x52b2 /* u16 state to go back to after a temporary submode (0 = none) */
+
+/* The map's interaction state as the battle HUD asks for it: whether the local
+ * human player is driving the map and which kind of cursor is up. */
+enum {
+    MAP_INPUT_CURSOR    = 0, /* the human player's cursor is active */
+    MAP_INPUT_MENU      = 1, /* a map menu is up */
+    MAP_INPUT_NOT_HUMAN = 2, /* it is not the local human player's turn */
+    MAP_INPUT_BLOCKED   = 3  /* a dialog, or any other state, blocks map input */
+};
 #define MAP_CURSOR_OWNER    0x52a8 /* u16 owner mask the unit under the cursor must match */
 #define MAP_CONFIRM_ENABLED 0x52ad /* u8 nonzero while the current map/choice is confirmed (IsMapConfirmEnabled) */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
@@ -456,6 +476,13 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
  * are allies sharing one of those armies (see MAP_TEAM_A_PLAYER / MAP_TEAM_B_PLAYER). */
 #define MAP_PLAYER_STATES  0x67a4
 #define MAP_PLAYER_STRIDE  0x8c
+
+/* Map scripts are arrays of MAP_SCRIPT_COMMAND_SIZE-byte commands, run by the
+ * opcode handlers in main_02092DF4.  The interpreter state keeps the block at
+ * +0, the command being run at +4 and a wait callback at +8; a command holds
+ * s16 operands at +8 and +10 and a s32 operand at +0x0C. */
+#define MAP_SCRIPT_COMMAND_SIZE 0x10
+#define MAP_SCRIPT_STATE_IP     0x04
 #define PLAYER_REC_FUNDS   0x00 /* s32 funds: builds cost ten times the unit's price */
 #define PLAYER_REC_FUNDS_SPENT 0x04 /* s32 total funds the player has spent */
 #define PLAYER_FUNDS_SPENT_MAX 999999999 /* cap of PLAYER_REC_FUNDS_SPENT */

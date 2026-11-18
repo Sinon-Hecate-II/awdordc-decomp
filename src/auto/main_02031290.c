@@ -142,8 +142,8 @@ s32 func_02031518(void *arg0) {
 }
 
 s32 func_0203152c(void) {
- s32 func_020210b8(void);s32 func_02021c04(void);
- u32 v; if(func_020210b8()!=0)return 11;
+ s32 NetworkPollClosing(void);s32 func_02021c04(void);
+ u32 v; if(NetworkPollClosing()!=0)return 11;
  v=func_02021c04();return v==0 || v==(u32)-39 ?9:11;
 }
 

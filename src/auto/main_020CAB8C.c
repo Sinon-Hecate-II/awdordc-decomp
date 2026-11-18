@@ -30,17 +30,35 @@ s32 NextMapCursorOption(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&gMapCursorDirs[a][0
 
 s32 PrevMapCursorOption(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
 
-void func_020cac5c(void *arg0) {
- M2C_UNK FillMapLayer(M2C_UNK); M2C_UNK SelectMapLayer(void *); M2C_UNK SetMapCursorVisible(M2C_UNK);
- s32 GetUnitMoveDirections(s16,s16,u8); M2C_UNK ClearMapCursorOptionCells(s16,s16,s32);
- extern void **gCurrentMap;
- s32 n;void *p;
- p=*gCurrentMap;
- n=GetUnitMoveDirections(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD((M2C_FIELD(p,s32 *,0x52d0)+M2C_FIELD(arg0,s16 *,0x70)),u8 *,0xc));
- SelectMapLayer((u8 *)*gCurrentMap+0x1e30);FillMapLayer(-1);
- p=*gCurrentMap;ClearMapCursorOptionCells(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);SetMapCursorVisible(0);
- M2C_FIELD(arg0,s16 *,0x6c)=n;M2C_FIELD(arg0,s16 *,0x6e)=3;
- M2C_FIELD(arg0,s16 *,0x6e)=NextMapCursorOption(M2C_FIELD(arg0,s16 *,0x6e),n);
+/* Starts choosing the direction to drop one of the transport's carried units:
+ * computes the directions the carried unit could be dropped into from the
+ * cursor tile, selects the cursor layer, clears the old option cells and hides
+ * the unit cursor, then arms the direction mask and steps the chosen option to
+ * the first available direction.  MAP_OPTION_CARGO_SLOT picks which carried
+ * unit the drop acts on. */
+void BeginCargoDrop(void *option) {
+    M2C_UNK FillMapLayer(M2C_UNK);
+    M2C_UNK SelectMapLayer(void *);
+    M2C_UNK SetMapCursorVisible(M2C_UNK);
+    s32 GetUnitMoveDirections(s16, s16, u8);
+    M2C_UNK ClearMapCursorOptionCells(s16, s16, s32);
+    extern void **gCurrentMap;
+    s32 mask;
+    void *map;
+
+    map = *gCurrentMap;
+    mask = GetUnitMoveDirections(
+        M2C_FIELD(map, s16 *, MAP_CURSOR_X),
+        M2C_FIELD(map, s16 *, MAP_CURSOR_Y),
+        M2C_FIELD((M2C_FIELD(map, s32 *, MAP_CURSOR_UNIT) + M2C_FIELD(option, s16 *, MAP_OPTION_CARGO_SLOT)), u8 *, MAP_UNIT_FIRST_CARRIED));
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
+    FillMapLayer(-1);
+    map = *gCurrentMap;
+    ClearMapCursorOptionCells(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), mask);
+    SetMapCursorVisible(0);
+    M2C_FIELD(option, s16 *, MAP_OPTION_DIR_MASK) = mask;
+    M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED) = MAP_CURSOR_OPTION_LEFT;
+    M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED) = NextMapCursorOption(M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED), mask);
 }
 
 void func_020cad00(s32 arg0) {
@@ -259,7 +277,7 @@ if(!health)level=0;else level=Divide(health-1,10)+1;
 ((UnitHealthCB*)unit)->health=(u16)(level*10);
 return totalCost;
 }
-s32 IsAllySupplyUnitAtCell(s32 a,s32 b){extern void **gCurrentMap;s32 func_020a7e08(void *);u8 *base=*gCurrentMap;u8 *start=base+0x59a4;u8 *p=start+(s16)base[a+((u16 *)(base+0x3758))[b]]*14;s32 index=p?(p-start)/14:0;if(M2C_FIELD(base,u16 *,0x52a8)==(index&0xc0) && func_020a7e08(p))return 1;return 0;}
+s32 IsAllySupplyUnitAtCell(s32 a,s32 b){extern void **gCurrentMap;s32 IsSupplyUnitKind(void *);u8 *base=*gCurrentMap;u8 *start=base+0x59a4;u8 *p=start+(s16)base[a+((u16 *)(base+0x3758))[b]]*14;s32 index=p?(p-start)/14:0;if(M2C_FIELD(base,u16 *,0x52a8)==(index&0xc0) && IsSupplyUnitKind(p))return 1;return 0;}
 
 /* Whether unit `unit` can be supplied where it stands: its kind must be
  * supplyable and one of its four orthogonal neighbours inside the map must hold

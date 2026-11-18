@@ -64,6 +64,7 @@
 
 /* A query collects at most this many key ids before appending them. */
 #define QR2_KEY_LIST_SIZE 256
+#define QR2_KEY_LIST_COUNT 0x100 /* s32 number of key ids the callback appended */
 
 /* A field-list length byte of 0xFF means "every key of the group": the list
  * itself is left out and the record's key callback supplies the ids.  0 means

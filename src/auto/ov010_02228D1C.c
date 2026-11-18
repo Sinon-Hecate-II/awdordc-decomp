@@ -72,7 +72,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     M2C_UNK func_02038838(s32, s32, s32, s32, s32, s32);
     M2C_UNK func_020675bc(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov010_02228050(void);
-    void func_ov010_02227fac(void);
+    void Ov010Online_OnHostJoinEvent(void);
 
     extern Ov010Member data_ov010_0222c128;
     extern M2C_UNK data_ov010_0222f02c;
@@ -140,7 +140,7 @@ volatile Ov010CallbackFn d;
                    x,
                    y);
 
-    func_02038838(arg1 & 0xff, (s32)buf, (s32)func_ov010_02227fac, arg3, (s32)func_ov010_02228050, arg5);
+    func_02038838(arg1 & 0xff, (s32)buf, (s32)Ov010Online_OnHostJoinEvent, arg3, (s32)func_ov010_02228050, arg5);
 #pragma opt_dead_assignments reset
 }
 #pragma cplusplus off
@@ -167,7 +167,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     M2C_UNK func_020388d8(s32,s32,s32,s32,...);
     M2C_UNK func_020675bc(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov010_02228050(void);
-    void func_ov010_02227fac(void);
+    void Ov010Online_OnHostJoinEvent(void);
 
     extern Ov010Member data_ov010_0222c128;
     extern M2C_UNK data_ov010_0222f02c;
@@ -230,7 +230,7 @@ volatile Ov010CallbackFn d;
     func_0203be54(0, (s32)&data_ov010_0222c4cc, (s32)&data_ov010_0222ef08);
 
     arg3=arg6;
-    func_020388d8(0,60,(u8)arg1,arg2,(s32)func_ov010_02227fac,arg4,(s32)func_ov010_02228050,arg3);
+    func_020388d8(0,60,(u8)arg1,arg2,(s32)Ov010Online_OnHostJoinEvent,arg4,(s32)func_ov010_02228050,arg3);
 #pragma opt_dead_assignments reset
 }
 extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {

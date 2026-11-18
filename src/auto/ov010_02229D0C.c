@@ -427,7 +427,7 @@ void StringStorageConcat(void *out, void *first, void *last) {
     StringStorageReplace(r, firstLen, 0, last, last + lastLen, flags[0]);
 }
 
-void func_ov010_0222a808(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *func_01ffa444(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=func_01ffa444(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
+void func_ov010_0222a808(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *CreateSpriteForOwner(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=CreateSpriteForOwner(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
 
 void func_ov010_0222a880(void *arg0) {
     s32 GetScreenFlag(M2C_UNK);

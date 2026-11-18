@@ -11,7 +11,7 @@ void MapListHandleState(void) {
  extern M2C_UNK MapListScrollUp,MapListScrollDown;
  s32 GetMenuState(void);
  s32 GetMenuRow(void);
- s32 func_020020c4(u16,s32);
+ s32 HardwareDivideRemainder(u16,s32);
  void Ov001_FreeSpriteObjects(void);
  void MapListRedrawInfoPanel(void);
  void MapList_UpdateStateFromRow(void);
@@ -31,7 +31,7 @@ void MapListHandleState(void) {
  M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,69)=0;
  M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
  Ov001_PlaySound(19);MapListRedrawInfoPanel();
- remainder=func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29);
+ remainder=HardwareDivideRemainder(M2C_FIELD(&gMapListState,u16 *,4),29);
  if(remainder==0){MapList_UpdateStateFromRow();return;}
  if(remainder<16){M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollUp,0,120);return;}
  M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56)=Ov001_AddTask(0,(s32)&MapListScrollDown,0,120);return;
@@ -367,10 +367,10 @@ void DrawMapInfoDottedValue(void *arg0, s32 arg1) {
 #pragma push
 #pragma opt_strength_reduction off
 void MapListUpdateRowSprites(void){
-s32 HardwareDivide(u16,s32);s32 func_020020c4(u16,s32);extern M2C_UNK gMapListState;
+s32 HardwareDivide(u16,s32);s32 HardwareDivideRemainder(u16,s32);extern M2C_UNK gMapListState;
 s32 row,y,i,v;u32 *p;u32 xy[2];
 row=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
-y=52-func_020020c4(M2C_FIELD(&gMapListState,u16 *,4),29);
+y=52-HardwareDivideRemainder(M2C_FIELD(&gMapListState,u16 *,4),29);
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u32 **,0x34)){
 p=M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u32 **,0x34);
 if(row==0)xy[1]=38;else xy[1]=256;

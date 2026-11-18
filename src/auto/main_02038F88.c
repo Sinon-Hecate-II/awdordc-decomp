@@ -149,21 +149,25 @@ default:detail+=0xfffe9c88;break;
 func_0203accc(errCode,detail);return error;
 }
 
-u32 ReportGt2SocketResult(u32 a, u32 unused, u32 off) {
-    u32 ret = a;
-    u32 code;
-    code = ret;
+/* Reports a GameSpy GT2 socket result: turns the result code into a network
+ * error class and WFC error detail and hands them to the NAS login error path.
+ * A result of 0 (success) or 2/5 (nothing to report) returns without reporting.
+ * Returns the result code. */
+u32 ReportGt2SocketResult(u32 result, u32 unused, u32 detail) {
+    u32 ret = result;
+    u32 errCode;
+    errCode = ret;
     if (ret == 0) return 0;
     switch (ret) {
-    case 1: code = 9; off = code - 10; break;
+    case 1: errCode = 9; detail = errCode - 10; break;
     case 2:
-    case 5: code = 0; off = code; ret = code; break;
-    case 3: code = 6; off = code - 16; break;
-    case 4: code = 6; off = code - 36; break;
-    case 6: code = 6; off = code - 76; break;
-    case 7: code = 6; off = code - 86; break;
+    case 5: errCode = 0; detail = errCode; ret = errCode; break;
+    case 3: errCode = 6; detail = errCode - 16; break;
+    case 4: errCode = 6; detail = errCode - 36; break;
+    case 6: errCode = 6; detail = errCode - 76; break;
+    case 7: errCode = 6; detail = errCode - 86; break;
     }
-    if (code) ReportNasLoginError(code, (s32)(off + 0xFFFEFA48));
+    if (errCode) ReportNasLoginError(errCode, (s32)(detail + 0xFFFEFA48));
     return ret;
 }
 

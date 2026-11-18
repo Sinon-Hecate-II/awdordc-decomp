@@ -381,12 +381,12 @@ void func_ov001_021812fc(void) {
 void Ov001_FinishRegionMenu(void){
 extern M2C_UNK data_ov001_021909f4,data_ov001_02193dd0;
 extern M2C_UNK Ov001_OpenWifiMenu,func_ov001_02181a84,InitMapListScreen,func_ov001_02182d0c;
-s32 Ov001_IsFadeActive(s32);s32 func_ov001_02185b34(void);s32 Ov001_IsIconRowIdle(void);void *GetCurrentMapRecord(void);
+s32 Ov001_IsFadeActive(s32);s32 Ov001_IsMenuLayoutReady(void);s32 Ov001_IsIconRowIdle(void);void *GetCurrentMapRecord(void);
 void Ov001_DestroySprite(s32);
 u32 i;s32 p;
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
-if(!func_ov001_02185b34())return;
+if(!Ov001_IsMenuLayoutReady())return;
 if(!Ov001_IsIconRowIdle())return;
 for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->top[i];if(p)Ov001_DestroySprite(p);}
 for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->middle[i];if(p)Ov001_DestroySprite(p);}

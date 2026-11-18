@@ -62,7 +62,7 @@ M2C_FIELD(dest,u32 *,0x6c)=(M2C_FIELD(dest,u32 *,0x6c)&~255)|(value&255);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-s32 func_02092f84(void *arg0){
+s32 MapScriptSetCursor(void *arg0){
 extern void **gCurrentMap;
 M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
 M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,10);
@@ -71,13 +71,17 @@ M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
-s32 func_02093018(void *arg0){
-extern void **gCurrentMap;
-M2C_FIELD(*gCurrentMap,s16 *,0x52c2)+=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c4)+=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,10);
-M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d1)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
-M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d2)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* Map-script opcode: move the map cursor by adding the command's two signed
+ * operands to MAP_CURSOR_TARGET_X/Y, then record the new target as the current
+ * player's cursor.  Advances the script and keeps running. */
+s32 MapScriptMoveCursor(void *state) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) += M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, 8);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) += M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, 10);
+    M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_CURSOR_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X);
+    M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_CURSOR_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 s32 func_020930bc(void *arg0) {

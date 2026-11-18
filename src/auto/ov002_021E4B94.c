@@ -11,7 +11,7 @@ s32 GetLanguage(void);
 s32 RandomIntRange(s32,s32);
 void func_ov002_021e497c(s32,s32,s32,s32);
 
-extern u8 data_ov002_021f30fd[],data_ov002_021f30fe[],data_ov002_021f3107[],data_ov002_021f3105[],data_ov002_021f3106[];
+extern u8 data_ov002_021f30fd[],gVersusGaugeHp[],data_ov002_021f3107[],data_ov002_021f3105[],data_ov002_021f3106[];
 extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data_ov002_021f3044[],data_ov002_021f3018[];
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void ResetGxTextureParams(void);
@@ -19,7 +19,7 @@ void DrawSolidQuad(s32,s32,s32,s32,s32,u16);
 void func_ov002_021e5974(s32 *,s32 *);
 void DrawFlatQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawGradientQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
-s32 func_ov002_021e4b68(void);
+s32 AreUnitViewGaugesDone(void);
 void func_ov002_021e4728(s32,s32,s32,s32,s32);
 void func_ov002_021e47b0(s32,s32,s32,s32,s32);
 void DrawVersusPanelArtFlipped(s32,s32,s32,s32,s32);
@@ -28,7 +28,7 @@ void DrawVersusPanelArt(s32,s32,s32,s32,s32);
 
 void func_ov002_021e4b94(void *arg0) {
 u8 *p=arg0; s32 width,b,a,color,tiles,offset,yy,i,xx;s16 x,y;
-width=EaseInterpolate(0,data_ov002_021f30fd[((u32)(p[3]<<28)>>28)*24],data_ov002_021f30fe[((u32)(p[3]<<28)>>28)*24],p[0],p[1]);
+width=EaseInterpolate(0,data_ov002_021f30fd[((u32)(p[3]<<28)>>28)*24],gVersusGaugeHp[((u32)(p[3]<<28)>>28)*24],p[0],p[1]);
 y=166-(s8)p[2];ResetGxTextureParams();DrawSolidQuad(0,y,10,256,20,0x1cc2);
 offset=((u32)(p[3]<<28)>>28)*24;
 color=data_ov002_021f3107[offset]?M2C_FIELD(p,u16 *,6):0x7fff;
@@ -44,7 +44,7 @@ if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+14,b,y+14,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+14,256,y+14,8,color,1);
 if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
 y=167-(s8)p[2];
-tiles=M2C_FIELD((func_ov002_021e4b68()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
+tiles=M2C_FIELD((AreUnitViewGaugesDone()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
 if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e4728(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 else func_ov002_021e47b0(208,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 }
@@ -59,7 +59,7 @@ if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+28,b,y+28,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+28,256,y+28,8,color,1);
 if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
 y=119-(s8)p[2];
-tiles=M2C_FIELD((func_ov002_021e4b68()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
+tiles=M2C_FIELD((AreUnitViewGaugesDone()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
 if(((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 else DrawVersusPanelArt(184,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 }
@@ -107,7 +107,7 @@ for(xx=x+i*10;i<4;i++,xx+=10){
 AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x11a)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
 
 }}
-if(func_ov002_021e4b68() && (s8)p[4]!=-1){
+if(AreUnitViewGaugesDone() && (s8)p[4]!=-1){
 if(data_ov002_021f3106[((u32)(p[3]<<28)>>28)*24]==2)x=(s16)(((u32)(p[3]<<28)>>28)==0?76:100);
 else x=(s16)(((u32)(p[3]<<28)>>28)==0?52:124);
 y=124-(s8)p[2];
@@ -124,7 +124,7 @@ void func_ov002_021e5974(s32 *arg0, s32 *arg1) {
     *arg1 = temp_r3;
 }
 
-void func_ov002_021e5988(u16 *arg0, s32 arg1) {
+void MirrorTilemapHorizontally(u16 *arg0, s32 arg1) {
     s32 j;
     s32 i;
     u16 a;

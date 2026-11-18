@@ -125,8 +125,8 @@ void func_020b551c(void *arg0) {
 }
 
 M2C_UNK func_020b5594(s32 a,s32 b,s32 c,s32 d) {
-void *func_01ffa444(M2C_UNK *,s32); extern M2C_UNK data_02128c6c;
-void *p=func_01ffa444(&data_02128c6c,d);
+void *CreateSpriteForOwner(M2C_UNK *,s32); extern M2C_UNK data_02128c6c;
+void *p=CreateSpriteForOwner(&data_02128c6c,d);
 M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
 }
 

@@ -504,7 +504,7 @@ void func_ov002_021e88ac(void *p) { extern s8 data_ov002_021f2ef0[]; s32 i; if(M
 }
 
 void func_ov002_021e8914(void *arg0) {
-    void func_ov002_021e42c4(void *);
+    void StepUnitViewGauge(void *);
     s32 func_ov002_021e79ac(void *);
     void func_ov002_021e8e8c(void *);
     extern u8 data_ov002_021f30e4[];
@@ -517,6 +517,6 @@ void func_ov002_021e8914(void *arg0) {
     } while(i<5);
     func_ov002_021e88ac(arg0);
     if(M2C_FIELD(arg0,u8 *,0x28)!=0) M2C_FIELD(arg0,s16 *,0x20)--;
-    func_ov002_021e42c4(arg0);
+    StepUnitViewGauge(arg0);
 }
 

@@ -1,12 +1,13 @@
 /* 14 functions from 0x021E41AC to 0x021E4B94 (ov002), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov002_panel.h"
 
 
 /* Compares two entries (index temp_r0 vs its counterpart) and returns 0/1/2. */
 s32 func_ov002_021e41ac(void *entry, s32 flag) {
     extern u8 data_ov002_021f3105[];
-    extern u8 data_ov002_021f30fe[];
+    extern u8 gVersusGaugeHp[];
     extern u8 gVersusPlayerStates[];
     u32 idx;
     u8 val0, val1;
@@ -16,12 +17,12 @@ s32 func_ov002_021e41ac(void *entry, s32 flag) {
     if (data_ov002_021f3105[idx * 0x18] == 0) {
         return 0;
     }
-    val0 = data_ov002_021f30fe[idx * 0x18];
+    val0 = gVersusGaugeHp[idx * 0x18];
     if (val0 == 0) {
         return 2;
     }
     alt = (idx == 0) ? 1 : 0;
-    if (data_ov002_021f30fe[alt * 0x18] == 0) {
+    if (gVersusGaugeHp[alt * 0x18] == 0) {
         return 1;
     }
     if (flag != 0) {
@@ -31,7 +32,7 @@ s32 func_ov002_021e41ac(void *entry, s32 flag) {
         }
     }
     alt = (idx == 0) ? 1 : 0;
-    val1 = data_ov002_021f30fe[alt * 0x18];
+    val1 = gVersusGaugeHp[alt * 0x18];
     if (((val0 + 9) / 10) + 4 <= ((val1 + 9) / 10)) {
         return 2;
     }
@@ -46,16 +47,19 @@ void func_ov002_021e42b0(void *arg0) {
     M2C_FIELD(arg0, u8 *, 3) = (u8) ((M2C_FIELD(arg0, u8 *, 3) & ~0xF0) | 0x10);
 }
 
-void func_ov002_021e42c4(u8 *p) {
+/* One frame of a versus screen unit view: advance its HP-gauge fill animation a
+ * step and, when the fill settles, play the defeat sound if the player is out of
+ * HP; then decay the view's screenshake counter while the gauges are moving. */
+void StepUnitViewGauge(u8 *view) {
  u32 func_020af9cc(u32,s32,s32);
- extern u8 data_ov002_021f30fe[];
- if((u32)(p[3]<<24)>>28) {
- if((u32)p[0]<(u32)p[1]) {
- if(++p[0]==(u32)p[1]) {
- u32 id=(u32)(p[3]<<28)>>28;
- if(((s32)data_ov002_021f30fe[id*24]+9)/10==0) func_020af9cc(id,32,0);
+ extern u8 gVersusGaugeHp[];
+ if((u32)(view[UNIT_VIEW_FLAGS]<<24)>>28) {
+ if((u32)view[UNIT_VIEW_GAUGE_FRAME]<(u32)view[UNIT_VIEW_GAUGE_LENGTH]) {
+ if(++view[UNIT_VIEW_GAUGE_FRAME]==(u32)view[UNIT_VIEW_GAUGE_LENGTH]) {
+ u32 player=(u32)(view[UNIT_VIEW_FLAGS]<<28)>>28;
+ if(((s32)gVersusGaugeHp[player*VERSUS_DATA_STRIDE]+9)/10==0) func_020af9cc(player,32,0);
  }}}
- if(func_ov002_021e4b68() && p[5]) --p[5];
+ if(AreUnitViewGaugesDone() && view[UNIT_VIEW_SHAKE]) --view[UNIT_VIEW_SHAKE];
 }
 
 /* Draws a flat single-colour quad from its four corners at depth z, submitting
@@ -218,7 +222,7 @@ AddSprite((u16)((x+8)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((u
 }
 }
 #pragma scheduling reset
-s32 func_ov002_021e4b68(void) {
+s32 AreUnitViewGaugesDone(void) {
     extern M2C_UNK gUnitViews;
     if ((M2C_FIELD(&gUnitViews, u8 *, 0) == M2C_FIELD(&gUnitViews, u8 *, 1)) && (M2C_FIELD(&gUnitViews, u8 *, 0x2C) == M2C_FIELD(&gUnitViews, u8 *, 0x2D))) {
         return 1;

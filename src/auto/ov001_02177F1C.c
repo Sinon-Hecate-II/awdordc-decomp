@@ -2,7 +2,7 @@
 #include "common.h"
 
 void Ov001_MoveOptionSelection(s32 arg0) {
-    s32 func_020020c4(s32, s32);
+    s32 HardwareDivideRemainder(s32, s32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
     extern M2C_UNK gOv001OptionFrameLeft;
@@ -12,21 +12,21 @@ extern M2C_UNK gOv001OptionFrameBottom;
     extern M2C_UNK gOv001OptionMenuState;
     s32 offset;
     if (arg0 == 1) {
-        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = func_020020c4(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 2, 3);
+        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = HardwareDivideRemainder(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 2, 3);
     } else {
-        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = func_020020c4(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 1, 3);
+        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = HardwareDivideRemainder(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 1, 3);
     }
     Ov001_PlaySound(8);
     offset = M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) * 8;
     Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset), M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset), M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset), M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset));
 }
 
-void func_ov001_02177fac(void) {
+void Ov001_LoadSelectedOptionTile(void) {
     void Ov001_LoadObjTile(s32,u8,u8);
-    extern M2C_UNK data_ov001_0218f72c;
+    extern M2C_UNK gOv001OptionIconTiles;
     extern M2C_UNK gOv001OptionMenuState;
     u8 value;
-    value = M2C_FIELD(&data_ov001_0218f72c, u8 *, M2C_FIELD(&gOv001OptionMenuState,u8 *,0));
+    value = M2C_FIELD(&gOv001OptionIconTiles, u8 *, M2C_FIELD(&gOv001OptionMenuState,u8 *,0));
     Ov001_LoadObjTile(M2C_FIELD(&gOv001OptionMenuState,s32 *,4),value,value);
 }
 

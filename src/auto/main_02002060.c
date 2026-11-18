@@ -18,7 +18,7 @@ s32 HardwareDivide(s32 arg0, s32 arg1) {
     return *(volatile s32 *)0x040002A0;
 }
 
-s32 func_020020c4(s32 arg0, s32 arg1) {
+s32 HardwareDivideRemainder(s32 arg0, s32 arg1) {
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = arg0;
     *(volatile s64 *)0x04000298 = (u32)arg1;

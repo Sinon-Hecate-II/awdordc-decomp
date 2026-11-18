@@ -564,9 +564,9 @@ s32 func_02030264(void) {
 }
 
 s32 func_020302f4(void) {
- s32 func_020210b8(void); s32 func_02021c04(void);
+ s32 NetworkPollClosing(void); s32 func_02021c04(void);
  s32 v;
- if(func_020210b8()!=0) return 0;
+ if(NetworkPollClosing()!=0) return 0;
  v=func_02021c04();
  return v==0 || v==-39;
 }

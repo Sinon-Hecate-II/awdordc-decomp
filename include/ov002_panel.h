@@ -17,6 +17,23 @@
 #define PANEL_STAT_DISPLAY 0x4a /* PanelStat[5]: those values rebased onto the other player and drawn as the gauge entries */
 #define PANEL_GAUGES_SHOWN 0x65 /* u8 nonzero when the player's CO gauge entries are drawn (CO record byte 0x3C) */
 
+/* One side's battle unit view on the versus screen (gUnitViews): the HP-gauge
+ * animation and the character effect drawn for that player.  The two views lie
+ * UNIT_VIEW_SIZE bytes apart, player 0 then player 1. */
+#define UNIT_VIEW_GAUGE_FRAME  0x00 /* u8 elapsed frame of the HP-gauge fill */
+#define UNIT_VIEW_GAUGE_LENGTH 0x01 /* u8 frames the gauge fill takes */
+#define UNIT_VIEW_Y            0x02 /* s8 vertical offset of the panel */
+#define UNIT_VIEW_FLAGS        0x03 /* u8 NibbleFlags: low = player index, high nonzero while the gauge animates */
+#define UNIT_VIEW_EXPRESSION   0x04 /* s8 character expression, -1 = none */
+#define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
+#define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */
+#define UNIT_VIEW_SIZE         0x2C
+
+/* The versus screen's per-player data, VERSUS_DATA_STRIDE bytes per player.  The
+ * fields are named as separate arrays in the game's symbols, each indexed by
+ * player * VERSUS_DATA_STRIDE; gVersusPlayerHp is the HP the gauge animates to. */
+#define VERSUS_DATA_STRIDE 0x18
+
 /* Effect node (ov002 effect system), 0x88 bytes; built by Ov002_AddEffectNode
  * and animated by func_ov002_021e2aa8. */
 #define FX_NODE_RESOURCE    0x00 /* void *resource/particle the node draws */

@@ -96,7 +96,7 @@ s32 func_02013e24(M2C_UNK arg0, M2C_UNK arg1) {
 void func_02013e70(s32 arg0) { s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern s32 gMbWork; s32 state=OS_DisableInterrupts(); M2C_FIELD(gMbWork,s32 *,0x14e4)=arg0; OS_RestoreInterrupts(state); }
 
 #pragma opt_strength_reduction off
-void *func_02013e98(s32 arg0) {
+void *MultiBoot_GetPlayerInfo(s32 arg0) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02015214(); void MI_CpuCopy8(void *,void *,u32); extern s32 gMbWork;
 s32 state=OS_DisableInterrupts();
 if(gMbWork && func_02015214(arg0)){

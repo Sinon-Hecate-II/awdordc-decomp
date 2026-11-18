@@ -4,7 +4,7 @@
 static inline void ResetSlot(void *p, u16 value) {
 M2C_FIELD(p,s32 *,8)=M2C_FIELD(p,s32 *,4);
 M2C_FIELD(p,u16 *,12)=value;
-func_020a9218(p);
+SpriteAnim_SetupFrame(p);
 M2C_FIELD(p,u8 *,14)=value;
 M2C_FIELD(p,u8 *,15)=M2C_FIELD(p,u8 *,14);
 }
@@ -14,7 +14,7 @@ static inline void SetSlotAnim(void *p, s32 anim) {
 M2C_FIELD(p,s32 *,4)=anim;
 M2C_FIELD(p,s32 *,8)=anim;
 M2C_FIELD(p,u16 *,12)=0;
-func_020a9218(p);
+SpriteAnim_SetupFrame(p);
 M2C_FIELD(p,u8 *,14)=0;
 M2C_FIELD(p,u8 *,15)=M2C_FIELD(p,u8 *,14);
 }

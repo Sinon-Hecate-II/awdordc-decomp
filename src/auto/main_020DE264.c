@@ -372,7 +372,7 @@ void SetTextById(void*,u32);
 u32 GetReadyPlayerMask(void);
 void func_ov009_02224064(void);
 void func_ov009_02224c34(int);
-void func_ov009_02223fbc(void);
+void AnnounceLinkPlayer(void);
 void EnableMapConfirm(void);
 void ResetPlayerMask(void);
 int func_020890b8(void*);
@@ -488,7 +488,7 @@ p=M2C_FIELD(self,void * *,0x54);
 if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+1,12);
 }
 func_ov009_02224c34(0);
-func_ov009_02223fbc();
+AnnounceLinkPlayer();
 EnableMapConfirm();
 ResetPlayerMask();
 Sprite_ResumeAnimation(self);
@@ -513,7 +513,7 @@ if(v!=GetActivePlayerMask())return;
 func_ov009_022258a8(self);
 
 }
-func_ov009_02223fbc();
+AnnounceLinkPlayer();
 EnableMapConfirm();
 ResetPlayerMask();
 Sprite_ResumeAnimation(self);

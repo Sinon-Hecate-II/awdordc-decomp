@@ -8,6 +8,9 @@
 #define GT2_CONNECTION_SEND_BUFFER 0x50 /* u8 *ring buffer keeping sent command bytes until the peer acknowledges them */
 #define GT2_CONNECTION_ACK_QUEUE   0x60 /* Vector *of sent commands awaiting the peer's acknowledgement, sorted by sequence */
 #define GT2_CONNECTION_STATE       0x0C /* s32 handshake/connection state */
+#define GT2_CONNECTION_INITIATOR   0x10 /* s32 nonzero for a connection this side opened (the client), 0 for one the peer opened and the server accepted */
+#define GT2_CONNECTION_LAST_RECEIVE 0x1C /* u32 tick of the last command received, set to the creation time at first */
+#define GT2_CONNECTION_TIMEOUT     0x20 /* u32 silence limit in ms while this connection handshakes, 0 to use GT2_CONNECT_TIMEOUT */
 #define GT2_CONNECTION_RESPONSE    0x68 /* 32-byte expected challenge response */
 #define GT2_CONNECTION_SEND_SEQUENCE 0x64 /* u16 sequence number the next sent command carries */
 #define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds */
@@ -27,6 +30,10 @@
 #define GT2_SOCKET_CALLBACKS       0x1C /* s32 callbacks running on the socket */
 #define GT2_SOCKET_DIRTY           0x14 /* s32 set when the socket was asked to be freed */
 #define GT2_SOCKET_CONNECT_ATTEMPT 0x20 /* callback for incoming connections */
+/* A connection accepted by the server may stay silent for this long while its
+ * handshake is in progress before GT2 gives up on it. */
+#define GT2_CONNECT_TIMEOUT 60000
+
 enum {
     GT2_STATE_AWAIT_CONNECT_ACCEPT = 0, /* client sent its challenge, waiting for CONNECT_ACCEPT */
     GT2_STATE_AWAIT_SERVER_ACCEPT = 1,  /* client sent its response, waiting for ACCEPT */

@@ -15,6 +15,15 @@
 #define OV001_LINK_READY         0x0a /* players ready to start */
 #define OV001_LINK_JOINED_COPY   0x0c /* second joined map, must equal +2 when the link ends */
 
+/* Per-player records that follow the header, OV001_LINK_RECORD_SIZE bytes each,
+ * player 1 first. */
+#define OV001_LINK_RECORDS          0x0e /* work-block offset of the first record */
+#define OV001_LINK_RECORD_SIZE      0x1e
+#define OV001_LINK_RECORD_INFO      0x00 /* 0x16-byte block copied from the multiboot record */
+#define OV001_LINK_RECORD_INFO_SIZE 0x16
+#define OV001_LINK_RECORD_ADDRESS   0x16 /* six-byte peer link address from the join request */
+#define OV001_LINK_RECORD_ID        0x1c /* u16 one-based player id, 0 while the slot is unused */
+
 /* Multiboot buffers inside the work block. */
 #define OV001_LINK_TRANSFER      0x1b140 /* void *: buffer handed to MultiBoot_StartParent */
 #define OV001_LINK_PROGRAM       0x1b144 /* void *: program image loaded at work +0x2c */

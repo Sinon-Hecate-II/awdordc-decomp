@@ -3,7 +3,7 @@
 #include "battle_map.h"
 typedef struct { u16 id:8; u16 index:4; u16 mode:4; } SaveInitEntry;
 
-s32 func_020a1944(s32 arg0) {
+s32 GetRatingRank(s32 arg0) {
     if (arg0 < 0xC8) {
         return 1;
     }
@@ -17,17 +17,17 @@ s32 func_020a1944(s32 arg0) {
 }
 
 void func_020a196c(void) {
- s32 GetWinningPlayer(void); s32 func_020a1da0(s32); s32 GetPowerRating(s32); s32 func_020a1f88(s32);
- s32 func_020a1d74(s32); void func_020a1a0c(void); void func_020a1adc(void);
+ s32 GetWinningPlayer(void); s32 GetSpeedRating(s32); s32 GetPowerRating(s32); s32 GetTechniqueRating(s32);
+ s32 GetTotalRating(s32); void func_020a1a0c(void); void func_020a1adc(void);
  extern M2C_UNK gSpriteAnimConfig;
  s32 i, bits, mask;
  s32 value;
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14) = GetWinningPlayer();
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x10) = func_020a1da0(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x10) = GetSpeedRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
  M2C_FIELD(&gSpriteAnimConfig,u8 *,0x11) = GetPowerRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x12) = func_020a1f88(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16) = func_020a1d74(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
- M2C_FIELD(&gSpriteAnimConfig,u8 *,0x13) = func_020a1944(M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x12) = GetTechniqueRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16) = GetTotalRating(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x13) = GetRatingRank(M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16));
  func_020a1a0c(); func_020a1adc();
  i=0; bits=M2C_FIELD(&gSpriteAnimConfig,s32 *,0x18);
  do {mask = -1 ^ (1 << i); i++; bits &= mask;} while(i<15);
@@ -118,7 +118,7 @@ case 23:{u8 *p=gCoState+(terrain>>5)*12;p[19]++;break;}}
 }}
 }
 #pragma pop
-s32 func_020a1d74(s32 arg0) {
+s32 GetTotalRating(s32 arg0) {
     extern M2C_UNK gSpriteAnimConfig;
     s32 var_r0;
 
@@ -129,15 +129,19 @@ s32 func_020a1d74(s32 arg0) {
     return var_r0;
 }
 
-s32 func_020a1da0(s32 arg0) {
- s32 func_020a8984(u16); s32 IsPlayerActive(s32); s32 Divide(s32,s32);
+/* The battle-results speed rating (0..150) for a player: 100 plus one point per
+   percent of the map's turn limit still unused, or 100 minus a third of that per
+   percent of the limit overshot, clamped to 0..150.  Returns 0 when the player is
+   not active or the map sets no turn limit. */
+s32 GetSpeedRating(s32 player) {
+ s32 MapData_GetTurnLimit(u16); s32 IsPlayerActive(s32); s32 Divide(s32,s32);
  extern s32 *gCurrentMap;
  s32 base, result, difference;
  u16 current;
- base = func_020a8984(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
- if (IsPlayerActive(arg0) == 0) return 0;
+ base = MapData_GetTurnLimit(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+ if (IsPlayerActive(player) == 0) return 0;
  if (base == 0) return 0;
- current = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
+ current = M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN);
  difference = base - current;
  if (difference < 0) difference = -difference;
  if (current <= base) result = Divide(difference * 100, base) + 100;
@@ -190,7 +194,7 @@ s32 GetPowerRating(s32 player) {
     return result;
 }
 
-s32 func_020a1f88(s32 player) {
+s32 GetTechniqueRating(s32 player) {
     extern s32 *gCurrentMap;
     extern s8 data_ov000_021b5580[];
     s32 IsPlayerActive(s32); u32 func_020d303c(s32);u32 func_020d30a8(s32);

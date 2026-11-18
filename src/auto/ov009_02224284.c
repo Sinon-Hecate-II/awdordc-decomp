@@ -695,7 +695,7 @@ void *func_ov009_02224d30(void *arg0, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32
  return arg0;
 }
 
-s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetLinkPhase(void);
     M2C_UNK func_ov009_022254a4(void);
     M2C_UNK GetConnectedPlayers(void);

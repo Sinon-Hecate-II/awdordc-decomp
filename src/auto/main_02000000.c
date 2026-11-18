@@ -78,7 +78,7 @@ if(d==temp)MTX_Copy33(temp,arg1);
 return 0;
 }
 #pragma pop
-void func_02000f90(void *arg0, void *arg1, void *arg2) {
+void MTX_Apply33(void *arg0, void *arg1, void *arg2) {
 s32 *a=arg0,*m=arg1,*o=arg2;
 s32 x=a[0],y=a[1],z=a[2]; u64 t;
 t=(s64)y*m[3]; t-=-((s64)x*m[0]); t+=(s64)z*m[6]; o[0]=t>>12;

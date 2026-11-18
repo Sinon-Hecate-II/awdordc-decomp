@@ -10,7 +10,7 @@ void func_0203d910(s32 a, s32 b)
     s32 StringFormatN(void *, s32, void *, s32);
     s32 gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
-    void func_02043230(void);
+    void ReportGt2ConnectResult(void);
     void ReportConnectionError(s32, s32);
     s32 FindFreePlayerSlot(void);
     s32 *GetPlayerConnectionSlot(s32);
@@ -91,7 +91,7 @@ void func_0203d910(s32 a, s32 b)
             );
 
             if (r == 1) {
-                func_02043230();
+                ReportGt2ConnectResult();
                 return;
             }
 
@@ -401,15 +401,19 @@ void UpdateConnectedPlayerCount(void) {
 
 s32 func_0203e338(s32 *arg0) { if(GetConnection()==0)return 0; *arg0=GetConnection()+0x2d0; return M2C_FIELD(GetConnection(),u8 *,0xd)+1; }
 
-s32 func_0203e36c(u8 **a){extern u8 data_0213daf4[];s32 GetConnection(void);s32 i;u8 *p;void *q;
+/* Copies the slot ids of the session's present players (those whose bit is set in
+ * CONN_SESSION_PLAYER_MASK) into gActivePlayerSlots, up to the first absent one,
+ * and returns how many were written (0 when there is no connection); *slots is
+ * left pointing at the buffer. */
+s32 GetActivePlayerSlots(u8 **slots){extern u8 gActivePlayerSlots[];s32 GetConnection(void);s32 slot;u8 *out;void *q;
 if(!GetConnection())return 0;
-MI_CpuFill8(data_0213daf4,0,32);
-i=0;if(i<=M2C_FIELD(GetConnection(),u8 *,14)){p=data_0213daf4;do{
+MI_CpuFill8(gActivePlayerSlots,0,32);
+slot=0;if(slot<=M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ACTIVE_MAX)){out=gActivePlayerSlots;do{
 q=(void *)GetConnection();
-if(!(M2C_FIELD(q,u32 *,0x2f0)&(1<<M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0))))break;
-*p++=M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0);
-i++;}while(i<=M2C_FIELD(GetConnection(),u8 *,14));}
-*a=data_0213daf4;return M2C_FIELD(GetConnection(),u8 *,14)+1;
+if(!(M2C_FIELD(q,u32 *,CONN_SESSION_PLAYER_MASK)&(1<<M2C_FIELD((u8 *)GetConnection()+slot,u8 *,CONN_SESSION_PEER_SLOTS))))break;
+*out++=M2C_FIELD((u8 *)GetConnection()+slot,u8 *,CONN_SESSION_PEER_SLOTS);
+slot++;}while(slot<=M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ACTIVE_MAX));}
+*slots=gActivePlayerSlots;return M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ACTIVE_MAX)+1;
 }
 
 /* Report the connected session's match type and player count to the master as

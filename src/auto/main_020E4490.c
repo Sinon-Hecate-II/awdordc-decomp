@@ -4,7 +4,7 @@
 typedef struct { u8 pixels[32]; } Unk020ETile;
 typedef struct { u8 count; u8 pad[3]; s32 ptr; } Unk02168Fec;
 u16 *func_020e4c10(u16 *,u16 *,u16 *,u32);
-extern s32 data_02168ff4;
+extern s32 gMicTestIpc;
 
 #pragma opt_common_subs off
 void func_020e4490(void) {
@@ -25,7 +25,7 @@ void func_020e4490(void) {
     M2C_UNK func_020883bc();
     M2C_UNK func_02086574();
     M2C_UNK InitSound();
-    M2C_UNK func_0209cc04();
+    M2C_UNK Init3DSpritePool();
     M2C_UNK func_020e4458();
     M2C_UNK func_0200ee70();
     M2C_UNK func_0207c240();
@@ -74,7 +74,7 @@ void func_020e4490(void) {
     func_020883bc();
     func_02086574();
     InitSound();
-    func_0209cc04();
+    Init3DSpritePool();
     func_020e4458();
     func_0200ee70();
     func_0207c240();
@@ -540,7 +540,7 @@ void func_020e4eb0(void *arg0) {
     void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
-    extern s32 data_02168ff4;
+    extern s32 gMicTestIpc;
     extern u8 gSpriteDesc32x32[];
 
     u8 cond;
@@ -573,7 +573,7 @@ void func_020e4eb0(void *arg0) {
     cond = (*(volatile s16 *)((char *)arg0 + 0x3e) == 0);
     if (!cond) goto skip_all;
 
-    arr = (u8 *)data_02168ff4;
+    arr = (u8 *)gMicTestIpc;
     DC_InvalidateRange(arr, 0x20);
 
     maxv = 0;

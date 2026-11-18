@@ -38,7 +38,7 @@ void Sound_InitVoices(void) {
 
 void func_0202aeb4(void) {
     s32 func_02009800(void);
-    void *func_02029ddc(void *, s32);
+    void *ListNext(void *, s32);
     s32 func_02009524(void *);
     M2C_UNK func_02008c38(u8, s32);
     void func_02008c18(u8);
@@ -54,13 +54,13 @@ void func_0202aeb4(void) {
     void *r7;
     s32 r4;
     r11 = func_02009800();
-    r6 = func_02029ddc(&gActiveVoices, 0);
+    r6 = ListNext(&gActiveVoices, 0);
     if (r6 == 0) {
         return;
     }
     r4 = -0x8000;
     do {
-        r7 = func_02029ddc(&gActiveVoices, r6);
+        r7 = ListNext(&gActiveVoices, r6);
         if (*(u8 *)((u8 *)r6 + 0x2D) == 0) {
             if (func_02009524(*(void **)((u8 *)r6 + 0x30))) {
                 *(u8 *)((u8 *)r6 + 0x2D) = 1;
@@ -114,10 +114,10 @@ void func_0202aeb4(void) {
 }
 
 void *Sound_AcquireVoice(void *a,s32 b,s32 c){
-extern M2C_UNK gSoundChannels;void *func_02029ddc();void *func_0202b2d0();void func_0202acbc();
+extern M2C_UNK gSoundChannels;void *ListNext();void *func_0202b2d0();void func_0202acbc();
 void func_0202b298(void *);M2C_UNK func_0202b1f4(M2C_UNK *,void *);void *old=M2C_FIELD(a,void **,0);void *p=(u8 *)&gSoundChannels+b*36;void *q;
 if(old)func_0202acbc(a);
-if(M2C_FIELD(p,u16 *,8)>=M2C_FIELD(p,u32 *,24)){q=func_02029ddc(p,0);if(!q)return 0;if(c<M2C_FIELD(q,u8 *,61))return 0;func_0202b298(q);}
+if(M2C_FIELD(p,u16 *,8)>=M2C_FIELD(p,u32 *,24)){q=ListNext(p,0);if(!q)return 0;if(c<M2C_FIELD(q,u8 *,61))return 0;func_0202b298(q);}
 q=func_0202b2d0(c);if(!q)return 0;func_0202b1f4(p,q);M2C_FIELD(q,void **,0)=a;M2C_FIELD(a,void **,0)=q;return q;
 }
 
@@ -134,7 +134,7 @@ func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 
 
 void func_0202b10c(void *a,s32 b){void func_0202b298(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void func_0202b40c(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){func_0202b298(a);return;}func_0202eed8(a+28,0,b);func_0202b40c(a,0);M2C_FIELD(a,u8 *,44)=2;}
 
-void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK gSoundChannels;void *func_02029ddc();M2C_UNK ListRemove();M2C_UNK Sound_FreeAllBlocks();void *p=(u8 *)&gSoundChannels+a*36;void *q=func_02029ddc(p+12,0);if(!q)return 0;ListRemove(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;Sound_FreeAllBlocks(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
+void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK gSoundChannels;void *ListNext();M2C_UNK ListRemove();M2C_UNK Sound_FreeAllBlocks();void *p=(u8 *)&gSoundChannels+a*36;void *q=ListNext(p+12,0);if(!q)return 0;ListRemove(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;Sound_FreeAllBlocks(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
 
 void func_0202b1ac(void *arg0) {
     M2C_UNK func_0202eec0(void *);
@@ -150,9 +150,9 @@ void func_0202b1ac(void *arg0) {
     func_0202eed8(arg0 + 0x1C, 0x7F00, 1);
 }
 
-M2C_UNK func_0202b1f4(M2C_UNK *a,void *b){void *func_02029ddc();M2C_UNK func_02029d18();void *p=func_02029ddc(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=func_02029ddc(a,p);}func_02029d18(a,p,b);M2C_FIELD(b,void **,4)=a;}
+M2C_UNK func_0202b1f4(M2C_UNK *a,void *b){void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}func_02029d18(a,p,b);M2C_FIELD(b,void **,4)=a;}
 
-M2C_UNK func_0202b244(void *a){extern M2C_UNK gActiveVoices;void *func_02029ddc();M2C_UNK func_02029d18();void *p=func_02029ddc(&gActiveVoices,0);while(p){if(M2C_FIELD(a,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=func_02029ddc(&gActiveVoices,p);}func_02029d18(&gActiveVoices,p,a);}
+M2C_UNK func_0202b244(void *a){extern M2C_UNK gActiveVoices;void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(&gActiveVoices,0);while(p){if(M2C_FIELD(a,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(&gActiveVoices,p);}func_02029d18(&gActiveVoices,p,a);}
 
 void func_0202b298(void *arg0) {
     M2C_UNK func_02008bd0(u8);
@@ -164,7 +164,7 @@ void func_0202b298(void *arg0) {
     func_0202b338(arg0);
 }
 
-void *func_0202b2d0(s32 a){void *func_02029ddc();M2C_UNK ListRemove();M2C_UNK func_0202b244(void *);extern M2C_UNK gFreeVoices,gActiveVoices;void *p=func_02029ddc(&gFreeVoices,0);if(!p){p=func_02029ddc(&gActiveVoices,0);if(a<M2C_FIELD(p,u8 *,61))return 0;func_0202b298(p);}ListRemove(&gFreeVoices,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
+void *func_0202b2d0(s32 a){void *ListNext();M2C_UNK ListRemove();M2C_UNK func_0202b244(void *);extern M2C_UNK gFreeVoices,gActiveVoices;void *p=ListNext(&gFreeVoices,0);if(!p){p=ListNext(&gActiveVoices,0);if(a<M2C_FIELD(p,u8 *,61))return 0;func_0202b298(p);}ListRemove(&gFreeVoices,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
 
 void func_0202b338(void *a){M2C_UNK ListRemove();void ListAppend();extern M2C_UNK gActiveVoices,gFreeVoices;void *p=M2C_FIELD(a,void **,0);void *list;
 if(p){M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(a,s32 *,0)=0;}

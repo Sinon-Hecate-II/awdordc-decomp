@@ -73,7 +73,7 @@ void Qr2_DestroyConnection(void *p){extern void *gQr2Connection;extern M2C_UNK g
 
 #pragma optimization_level 2
 #pragma opt_cond_exec off
-void func_0205eb50(u8 *p, s32 a) {
+void Qr2AppendKeyId(u8 *p, s32 a) {
     s32 n = M2C_FIELD(p, s32 *, 0x100);
     if (n >= 254) return;
     if (a < 1 || a > 254) return;

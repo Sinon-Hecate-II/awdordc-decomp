@@ -22,7 +22,7 @@ s32 func_02050c24(void **arg0, void *arg1) {
     extern M2C_UNK data_020fe340;
     extern M2C_UNK data_020fe370;
     extern M2C_UNK data_020fe3a4;
-    extern M2C_UNK data_020fe3c4;
+    extern M2C_UNK sGpiConnectSourceFile;
     extern M2C_UNK data_020fe3d4;
     s32 sp8;
     u16 sp6;
@@ -99,7 +99,7 @@ block_13:
     temp_r0_4 = **M2C_FIELD(temp_r0_3, s32 ***, 0xC);
     sp8 = temp_r0_4;
     if (temp_r0_4 == 0) {
-        AssertFailed(&data_020fe3a4, &data_020fe3c4, &data_020fe1f0, 0x90);
+        AssertFailed(&data_020fe3a4, &sGpiConnectSourceFile, &data_020fe1f0, 0x90);
     }
     sp6 = 0xCC74;
     if (ghiConnect(M2C_FIELD(temp_r4, s32 *, 0x1D4), &sp4, 8) == -1) {

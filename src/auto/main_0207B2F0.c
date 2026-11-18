@@ -306,14 +306,14 @@ u32 func_0207badc(s32 arg0, s32 arg1, M2C_UNK arg2) {
 }
 
 s32 ScreenToMapPosition(s32 arg0, s32 arg1, s32 *arg2) {
-    void func_02079d0c(s32, s32, s32 *);
+    void ScreenToMapFixedPoint(s32, s32, s32 *);
     extern void *gCurrentMap;
     s32 result = 1;
     s32 maxX, maxY;
     void *map = M2C_FIELD(gCurrentMap, void **, 0);
     maxX = M2C_FIELD(map, u16 *, 0x5144) * 0x300 - 1;
     maxY = M2C_FIELD(map, u16 *, 0x5146) * 0x300 - 1;
-    func_02079d0c(arg0, arg1, arg2);
+    ScreenToMapFixedPoint(arg0, arg1, arg2);
     if (arg2[0] < 0) { result = 0; arg2[0] = 0; }
     if (arg2[1] < 0) { result = 0; arg2[1] = 0; }
     if (arg2[0] > maxX) { arg2[0] = maxX; result = 0; }

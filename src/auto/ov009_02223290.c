@@ -117,11 +117,17 @@ if(func_02012b08(HandleLinkTransferTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&
 SignalLinkError();return 0;
 }
 
-void HandleLinkTransferTaskEvent(void *arg0) {
-    M2C_UNK func_ov009_02224d9c(s32,s32,s32,s32);
+/* Completion callback of the Download Play transfer task that StartLinkTransfer
+ * starts: a failed status signals the link error and moves to the error phase, and
+ * the task's data-done command (LINK_TASK_CMD_DATA_DONE) marks the link up - it
+ * enters the active phase, records this console's player slot, tells the peers
+ * about itself and announces the local player again.  The benign statuses 9, 13
+ * and 15 and the progress commands 11..13 are ignored. */
+void HandleLinkTransferTaskEvent(void *event) {
+    M2C_UNK QueueHostLinkPacket(s32,s32,s32,s32);
     s8 GetLinkLocalPlayerId();
     extern M2C_UNK gLinkState;
-    u16 state = M2C_FIELD(arg0, u16 *, 2);
+    u16 state = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
     if (state != 0) {
         switch (state) {
         case 9: return;
@@ -129,16 +135,16 @@ void HandleLinkTransferTaskEvent(void *arg0) {
         case 15: return;
         }
         SignalLinkEvent(state);
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return;
     }
-    switch (M2C_FIELD(arg0, u16 *, 4)) {
-    case 10:
-        SetLinkPhase(4);
-        func_ov009_02224d9c(5,0,0,1);
-        M2C_FIELD(&gLinkState, u8 *, 0x156) = M2C_FIELD(&gLinkState, u8 *, 0x156) | 1;
-        M2C_FIELD(&gLinkState, u8 *, 0x157) = GetLinkLocalPlayerId();
-        func_ov009_02223fbc();
+    switch (M2C_FIELD(event, u16 *, LINK_TASK_EVENT_COMMAND)) {
+    case LINK_TASK_CMD_DATA_DONE:
+        SetLinkPhase(LINK_PHASE_ACTIVE);
+        QueueHostLinkPacket(5,0,0,1);
+        M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) = M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) | LINK_STATE_FLAG_LINKED;
+        M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LOCAL_PLAYER) = GetLinkLocalPlayerId();
+        AnnounceLinkPlayer();
         return;
     case 11: return;
     case 12: return;
@@ -489,24 +495,24 @@ void func_ov009_02223f7c(s32 a,s32 b){
  M2C_FIELD(&data_ov009_022269e0,u16*,4)=0x60;
 }
 
-s32 func_ov009_02223fbc(void){
+s32 AnnounceLinkPlayer(void){
  s32 func_ov009_022254a4(void);
  s32 func_ov009_02224c70(void);
  s32 GetLinkPhase(void);
  s8 GetLinkLocalPlayerId(void);
  void func_ov009_02222278(s32,void*);
- M2C_UNK func_ov009_02224d9c(s32,s32,s32,s32);
+ M2C_UNK QueueHostLinkPacket(s32,s32,s32,s32);
  extern M2C_UNK data_ov009_02226a20;
  if(func_ov009_022254a4()){if(!func_ov009_02224c70())return 0;}
  if(GetLinkPhase()==4 || GetLinkPhase()==5){
  func_ov009_02222278(GetLinkLocalPlayerId(),&data_ov009_02226a20);
- func_ov009_02224d9c(11,(s32)&data_ov009_02226a20,0x60,0xffff);
+ QueueHostLinkPacket(11,(s32)&data_ov009_02226a20,0x60,0xffff);
  }return 1;
 }
 
 void func_ov009_02224024(void) {
     s32 GetLinkPhase();
-    M2C_UNK func_ov009_02224d9c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK QueueHostLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_ov009_022254d8();
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return;
@@ -514,7 +520,7 @@ void func_ov009_02224024(void) {
     if (func_ov009_022254d8() == 0) {
         return;
     }
-    func_ov009_02224d9c(5, 0, 0, 1);
+    QueueHostLinkPacket(5, 0, 0, 1);
 }
 
 M2C_UNK *func_ov009_02224064(void) {

@@ -636,6 +636,18 @@ enum {
     SPRITE_TWEEN_EASE_OUT = 4  /* from -> to, quadratic ease-out */
 };
 
+/* An animation player stepped by StepAnimationFrames: it owns a SpriteTween that
+ * the frame entries drive, the frame table it walks and the entry playing now.
+ * Each table entry is 12 bytes: s16 segment end frame, s32 mode, u16 value. */
+typedef struct SpriteAnimPlayer {
+    SpriteTween *tween; /* +0x00 tween the frame entries drive */
+    void *frames;       /* +0x04 start of the frame table */
+    void *frame;        /* +0x08 frame entry playing now */
+    u16  index;         /* +0x0C frame counter, absolute across the table */
+    u8   done;          /* +0x0E nonzero: stop stepping */
+    u8   ended;         /* +0x0F the table's end marker was reached */
+} SpriteAnimPlayer;
+
 /* Streaming voice state (the ov010 gStreamVoiceState object).  The voice reads from
  * two sample buffers that the stream callback refills. */
 #define STREAM_VOICE_ACTIVE          0x04 /* s32 voice started */
@@ -815,8 +827,12 @@ enum {
     GPI_MSG_CHALLENGE       = 102, /* challenge request */
     GPI_MSG_CHALLENGE_REPLY = 103, /* answer to a challenge request */
     GPI_MSG_GAME_DATA_FIRST = 200,
+    GPI_MSG_XFER_REPLY      = 201, /* answer to a \xfer\ game-data transfer */
     GPI_MSG_GAME_DATA_LAST  = 208
 };
+
+/* The \version\ value the game's gpi messages carry in their body. */
+#define GPI_PROTOCOL_VERSION 1
 
 /* GameSpy gpi receive buffer (the connection field at +0x1DC, and a peer's
  * message buffer at peer + 0x18): storage, the allocated size, the number of
@@ -841,6 +857,18 @@ typedef struct GPISendBuffer {
     s32   len;  /* +0x08 bytes queued */
     s32   pos;  /* +0x0C offset of the first unsent byte */
 } GPISendBuffer;
+
+/* One key/value entry of a GameSpy gpi bucket (gbucket.c, the store behind the
+ * gpiValue* helpers).  A numeric entry keeps its value inline at +0x0C; a string
+ * entry owns a pointer there. */
+#define GPI_BUCKET_TYPE   0x04 /* s32: GPI_BUCKET_* value type */
+#define GPI_BUCKET_COUNT  0x08 /* s32: samples folded in by gpiValueAverage */
+#define GPI_BUCKET_VALUE  0x0C /* s32, double or owned char * depending on the type */
+enum {
+    GPI_BUCKET_INT    = 0, /* bt_int */
+    GPI_BUCKET_DOUBLE = 1, /* bt_double */
+    GPI_BUCKET_STRING = 2  /* bt_string */
+};
 
 /* A queued GameSpy gpi callback (gpiCallback.c).  gpiCallCallback invokes
  * callback.callback(connection, arg, callback.param) and then frees arg
@@ -912,7 +940,17 @@ typedef struct GpiStringListData {
 /* Public gpi operations return empty success results in simulation mode. */
 #define GPI_CONN_SIMULATION 0x108 /* s32 nonzero bypasses network operations */
 #define GPI_CONN_STATE 0x1D8 /* s32 connection state */
+#define GPI_STATE_IDLE         0 /* no connection */
+#define GPI_STATE_CONNECTING   1 /* the socket is opened and the handshake runs */
+#define GPI_STATE_CONNECTED    2 /* the server accepted the socket */
+#define GPI_STATE_LOGGED_IN    3 /* the login reply was handled; commands may flow */
 #define GPI_STATE_DISCONNECTED 4
+
+/* State gpiCheckConnectionSocket leaves in its argument for a connection's
+ * socket: no activity this poll, the connection accepted, or refused. */
+#define GPI_SOCKET_NONE     0
+#define GPI_SOCKET_ACCEPTED 3 /* the caller's assert names this GPI_CONNECTED */
+#define GPI_SOCKET_REFUSED  4
 #define GPI_INFO_RESULT_WORDS 129 /* 0x204-byte profile-info callback record */
 #define GPI_SEARCH_RESULT_WORDS 4 /* s32 words in a search callback record */
 #define GPI_SEARCH_MORE 0x601 /* search status: more result pages follow (0x600 when complete) */
@@ -991,6 +1029,7 @@ enum {
 #define CONN_SESSION_STATE        0x1A0 /* s32 state, one of CONN_STATE_* */
 #define CONN_SESSION_SLOT         0x14  /* u8 peer slots in use: the slot arrays are indexed 1..this */
 #define CONN_SESSION_PLAYER_COUNT 0x0D  /* u8  number of connected peers */
+#define CONN_SESSION_ACTIVE_MAX   0x0E  /* u8  number of set bits in CONN_SESSION_PLAYER_MASK minus 1, 0 when none */
 #define CONN_SESSION_PEER_IDS     0xF4  /* s32 peer ids, 4 bytes per slot */
 #define CONN_SESSION_SYNC_ACKS    0x1D8 /* u32 bitmask of peers that answered */
 #define CONN_SESSION_SYNC_SENT    0x1E8 /* u64 time the last sync notice was sent */
@@ -1112,6 +1151,24 @@ typedef struct MbBootState {
 #define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player 1-byte flag, -1 = gave up, indexed from 1 */
 #define MB_BLOCK_SIZE       0x1318 /* u32 bytes carried by one transfer block, at this work-area offset */
 
+/* Events a multiboot command callback receives.  The callback pointer lives in
+ * MB_PLAYER_STATE + 0 (set by func_02013e70) and is run by func_0201409c as
+ * (event, value, packet): func_020140c4 maps the link state machine's commands
+ * onto the events, func_02015230 reports a status. */
+#define MB_EVENT_JOIN         2  /* a player's join request arrived (packet = its record) */
+#define MB_EVENT_LEAVE        3  /* a player was removed from the link */
+#define MB_EVENT_GROUP_REJECT 4  /* the player could not join a group */
+#define MB_EVENT_GROUP_JOIN   5  /* the player joined a group */
+#define MB_EVENT_GROUP_DATA   6  /* the group's data exchange finished */
+#define MB_EVENT_CHUNK_ACK    7  /* the player acknowledged a downloaded chunk */
+#define MB_EVENT_CHUNK_SENT   8  /* the player's chunk transfer finished */
+#define MB_EVENT_KICK         9  /* the player was dropped mid-group */
+#define MB_EVENT_PLAYER_DATA  10 /* the player's info block arrived (packet = it) */
+#define MB_EVENT_ROSTER_DONE  11 /* the group's roster is complete */
+#define MB_EVENT_TEARDOWN     12 /* the match state is being cleared */
+#define MB_EVENT_STATUS       13 /* a status code arrived (packet = the s16 code) */
+#define MB_EVENT_GROUP_LEAVE  14 /* a group-leave request was received */
+
 /* Address windows a download chunk may occupy, chosen by the chunk kind kept in
  * sMbChunkKinds (2 = the fixed header window, 0 = main RAM below 0x022C0000,
  * 1 = the rest of main RAM or the 0x037F8000 window). Kinds 0 and 1 may not
@@ -1184,6 +1241,10 @@ typedef struct NetError {
 #define OV010_FLAG_RUNNING 3 /* the online session is running (cleared when it stops or its start fails) */
 #define OV010_FLAG_FAILED  4 /* the session start failed or the session stopped */
 #define OV010_FLAG_ERROR   6 /* a network error has been handed to the UI, so it is not reported again */
+
+/* Fields of the ov010 online session the match event handlers touch. */
+#define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback */
+#define OV010_SESSION_LOCAL_ID 0xfb /* u8 this console's transport player id, stored when the match starts */
 
 /* A match player's info record (0x210 bytes), filled by gpGetBuddyStatus from
  * the GameSpy buddy list (gp.c's GPBuddyStatus). The key/value string holds the
@@ -2362,6 +2423,52 @@ typedef struct FifoMessage {
  * remembers when the LCD was last switched off, so that an immediate re-enable
  * (a bouncing lid or power button) can be debounced. */
 #define POWER_SERVICE_LAST_OFF 0x10 /* u32: shared frame counter at the last LCD power-off */
+#define ARM7_CMD_FIFO_TAG  8    /* IPC FIFO handler tag of the ARM7 command service */
+#define ARM7_CMD_INIT      0x00 /* u16: nonzero once the command service is initialised */
+#define ARM7_CMD_BUSY      0x18 /* s32: nonzero while a command is outstanding */
+#define ARM7_CMD_CALLBACK  0x1C /* void (*)(s32, s32): called with a command's reply */
+#define ARM7_CMD_USER      0x20 /* s32: second argument handed to ARM7_CMD_CALLBACK */
+#define ARM7_CMD_VALUE_PTR 0x24 /* s32 *: where the reply to command 0x67 is stored */
+
+/* One of the command service's five reply slots (gArm7CommandReplies, 8 bytes
+ * each): when reply command 0x70..0x74 arrives its value is stored through
+ * dest and written is then set.  gArm7CommandReplySlots holds the five; the
+ * dest field of each starts four bytes in (the old data_0212fd10 symbol). */
+typedef struct Arm7CommandReplySlot {
+    u16 written; /* +0x00 nonzero once the reply value has been stored */
+    u16 *dest;   /* +0x04 where to store it, or NULL */
+} Arm7CommandReplySlot;
+
+#define ARM7_CMD_REPLY_COUNT 5
+#define ARM7_CMD_REPLY_SIZE  8
+
+/* The mic test screen's state object (class descriptor at 0x0212DA88, vtable
+ * at 0x0212DBA0, built by the screen's constructor): it measures the
+ * microphone's peak level over the last ten windows, averages them into a bar
+ * count and animates its sprites accordingly. */
+typedef struct MicTestScreen {
+    void *vtable;          /* +0x00 the screen's vtable (at 0x0212DBA0) */
+    u8 filler_04[0x30];
+    void *levelSprite;     /* +0x34 sprite driven by the measured level */
+    void *menuSprite;      /* +0x38 mic illustration, updated as a menu sprite */
+    u8 flags;              /* +0x3C bit 0: measurement requested, bit 1: measuring */
+    u8 pad_3d;
+    s16 timer;             /* +0x3E frames left before the next measurement (180) */
+    u8 levelIndex;         /* +0x40 slot the next level is written to */
+    u8 levels[10];         /* +0x41 last ten peak levels, 0..4 */
+} MicTestScreen;           /* 0x4B bytes */
+
+/* The mic test screen's IPC block (at 0x02168FF4): the 32-byte ARM7 microphone
+ * sample buffer at +0 and, four bytes in, the ARM7 transfer descriptor that
+ * fills it (+4 is the old data_02168ff8 symbol). */
+#define MIC_TEST_SAMPLES      0x00 /* u8 *: microphone sample buffer */
+#define MIC_TEST_TRANSFER     0x04 /* ARM7 transfer descriptor */
+#define MIC_TEST_SAMPLE_COUNT 0x20 /* bytes of samples per transfer */
+#define MIC_TEST_LEVEL_COUNT  10   /* levels averaged into the bar count */
+#define MIC_TEST_LEVEL_HISTORY 0x41 /* MicTestScreen offset of levels[] */
+#define MIC_TEST_FLAG_START   0x01 /* flags bit 0 */
+#define MIC_TEST_FLAG_RUNNING 0x02 /* flags bit 1 */
+#define MIC_TEST_MAX_BARS     3    /* bars the average level can fill */
 
 /* POWCNT1, whose bit 0 enables the LCD. */
 #define REG_POWCNT1        0x04000304 /* u16 */
@@ -2394,6 +2501,10 @@ typedef struct FifoMessage {
 #define OV001_MAP_LIST_ROW_HEIGHT 29   /* pixels of one list row; five are visible */
 #define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
+#define OV001_MAP_LIST_TASK       0x38 /* object: s32 id of the running scroll task, 0 while idle */
+#define OV001_MAP_LIST_SCROLL_STEP 6   /* pixels the scroll animation moves per step */
+#define OV001_MAP_LIST_SCROLL_MAX  145 /* scroll range in pixels */
+#define OV001_MAP_LIST_HANDLE_TRAVEL 55 /* pixels the scroll-bar handle travels over the range */
 
 /* The ov001 friend-roster screen's vertical scroll bar (gOv001Scrollbar, a
  * 0x20-byte object built by Ov001_CreateScrollBar): a sprite whose touch

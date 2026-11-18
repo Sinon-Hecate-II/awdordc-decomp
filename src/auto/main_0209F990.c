@@ -182,7 +182,7 @@ s32 func_0209fd2c(void) {
     return count;
 }
 
-s32 func_0209fe44(void) {
+s32 CollectSupplyTargets(void) {
     s32 IsSupplyTargetAt(s32, s32);
     extern void *data_0215be00;
     extern M2C_UNK *gCurrentMap;

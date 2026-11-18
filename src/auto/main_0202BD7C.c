@@ -190,26 +190,26 @@ void func_0202c51c(s32 *arg0) {
  * release callback, unlinks the group from the player's list, resets the
  * player's heap and flushes the sound commands, then adds a fresh block. */
 s32 Sound_FreeAllBlocks(void *player){
-s32 ListNext(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 func_0202c7ec(void *);
+s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 func_0202c7ec(void *);
 void *group;s32 changed=0;void *block;
-group=(void *)ListNext(player+4,0);
+group=(void *)ListPrev(player+4,0);
 while(group){
-block=(void *)ListNext(group,0);
+block=(void *)ListPrev(group,0);
 while(block){
 if(M2C_FIELD(block,void (**)(void *,s32,s32,s32),12)){
 M2C_FIELD(block,void (**)(void *,s32,s32,s32),12)(block+32,M2C_FIELD(block,s32 *,8),M2C_FIELD(block,s32 *,16),M2C_FIELD(block,s32 *,20));changed=1;
 }
-block=(void *)ListNext(group,(s32)block);
+block=(void *)ListPrev(group,(s32)block);
 }
-ListRemove(player+4,group);group=(void *)ListNext(player+4,0);
+ListRemove(player+4,group);group=(void *)ListPrev(player+4,0);
 }
 func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return func_0202c7ec(player);
 }
 
 void *func_0202c5f0(s32 *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 ListNext(void *,M2C_UNK);M2C_UNK ListAppend(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
+s32 ListPrev(void *,M2C_UNK);M2C_UNK ListAppend(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
 temp_r0=func_0202a67c(*arg0,((arg1+31)&~31)+32,32);if(!temp_r0)return 0;
-temp_r0_2=ListNext(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;ListAppend(temp_r0_2,temp_r0);return temp_r0+32;
+temp_r0_2=ListPrev(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;ListAppend(temp_r0_2,temp_r0);return temp_r0+32;
 }
 
 s32 func_0202c658(void *arg0) {
@@ -227,7 +227,7 @@ s32 func_0202c658(void *arg0) {
 }
 
 void func_0202c6a4(void *p, s32 count) {
-    s32 ListNext(void *, M2C_UNK);
+    s32 ListPrev(void *, M2C_UNK);
     void ListRemove(void *, void *);
     s32 func_0202a764(s32, s32);
     s32 func_0202a714(s32, u16);
@@ -245,14 +245,14 @@ void func_0202c6a4(void *p, s32 count) {
         return;
     }
     while (count < M2C_FIELD(p, u16 *, 12)) {
-        a = (void *)ListNext(p + 4, 0);
-        b = (void *)ListNext(a, (s32)b);
+        a = (void *)ListPrev(p + 4, 0);
+        b = (void *)ListPrev(a, (s32)b);
         while (b) {
             if (M2C_FIELD(b, void (**)(void *, s32, s32, s32), 12)) {
                 M2C_FIELD(b, void (**)(void *, s32, s32, s32), 12)(b + 32, M2C_FIELD(b, s32 *, 8), M2C_FIELD(b, s32 *, 16), M2C_FIELD(b, s32 *, 20));
                 changed = 1;
             }
-            b = (void *)ListNext(a, (s32)b);
+            b = (void *)ListPrev(a, (s32)b);
         }
         ListRemove(p + 4, a);
     }

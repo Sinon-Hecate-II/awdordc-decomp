@@ -300,7 +300,7 @@ void func_020b4b98(void *arg0) {
     SetUiMessageText(0);
 }
 
-void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_UNK data_0212882c;func_020b3c44();if(gBattleEndState)return;M2C_FIELD(func_01ffa444(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
+void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_UNK data_0212882c;func_020b3c44();if(gBattleEndState)return;M2C_FIELD(CreateSpriteForOwner(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
 
 void func_020b4c08(u8 arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *gCurrentMap;void (*fn)(void);
 LoadNewestSaveRecord(arg0,func_020be120());func_020b4ab4(func_020be120());if(!func_020bf084(arg0)){M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x70)|((u32)((u16)func_020bf0dc(0,arg0)<<29)>>25);}
@@ -373,7 +373,7 @@ void func_020b4d80(void) {
 
 void func_020b4db0(s32 arg0) {
     extern M2C_UNK data_0212895c;
-    M2C_FIELD(func_01ffa444(&data_0212895c), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteForOwner(&data_0212895c), s32 *, 0x5C) = arg0;
 }
 
 void func_020b4dcc(void *arg0) {
@@ -392,13 +392,13 @@ void func_020b4dcc(void *arg0) {
 
 void func_020b4df4(s32 arg0) {
     extern M2C_UNK data_0212874c;
-    M2C_FIELD(func_01ffa444(&data_0212874c), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteForOwner(&data_0212874c), s32 *, 0x5C) = arg0;
 }
 
 void func_020b4e10(M2C_UNK arg0) {
-    M2C_UNK func_01ffa444(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02128a0c;
-    func_01ffa444(&data_02128a0c, arg0);
+    CreateSpriteForOwner(&data_02128a0c, arg0);
 }
 
 /* Set up the 3D-sprite overlay of both screens for the map: reset each engine's

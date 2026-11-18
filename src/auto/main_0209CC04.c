@@ -1,43 +1,48 @@
 /* 65 functions from 0x0209CC04 to 0x0209DB48 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
-void func_0209cc04(void) {
- extern M2C_UNK data_021581a8;
- extern s32 data_021581ac[];
- extern void *data_021581dc[];
- extern M2C_UNK data_021583e0;
- u8 *p;
- s32 i;
- s32 j;
- i = 0;
- p = (u8 *)&data_021583e0;
-  do {
- M2C_FIELD(p, s32 *, 0) = 0;
-M2C_FIELD(p, s32 *, 4) = 0;
-M2C_FIELD(p, s32 *, 8) = 0;
-M2C_FIELD(p, s32 *, 12) = 0;
-M2C_FIELD(p, s32 *, 16) = 0;
-M2C_FIELD(p, s32 *, 20) = 0;
-M2C_FIELD(p, s32 *, 24) = 0;
-M2C_FIELD(p, s32 *, 28) = 0;
-M2C_FIELD(p, s32 *, 32) = 0;
-M2C_FIELD(p, s32 *, 36) = 0;
-M2C_FIELD(p, s32 *, 40) = 0;
- M2C_FIELD(p, s16 *, 0x2c) = 0;
- M2C_FIELD(p, u16 *, 0x2e) = 0xff00;
- M2C_FIELD(p, s8 *, 0x30) = 1;
- data_021581dc[i] = p;
- i++;
- M2C_FIELD(p, s8 *, 0x31) = 0;
- p += 0x74;
- } while(i < 0x80);
- M2C_FIELD(&data_021581a8, s32 *, 0x234) = 0;
- M2C_FIELD(&data_021581a8, void **, 0) = &data_021581dc;
- j = 0;
- do {
- data_021581ac[j] = 0;
- j++;
- } while(j < 12);
+/* Initialise the 3D sprite object pool and its allocator: every object is emptied
+ * (dead, no class or links, no depth), the order array lists the whole pool with
+ * the allocator's free-slot cursor at its front, and the twelve per-layer lists
+ * start empty. */
+void Init3DSpritePool(void) {
+    extern M2C_UNK g3DSpriteOrderCursor;
+    extern s32 g3DSpriteLayerLists[];
+    extern void *g3DSpriteSortOrder[];
+    extern M2C_UNK g3DSpriteObjectPool;
+    u8 *object;
+    s32 i;
+    s32 layer;
+    i = 0;
+    object = (u8 *)&g3DSpriteObjectPool;
+    do {
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_CLASS) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_ALIVE) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_ANIM) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_DELETE_CB) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_UPDATE_CB) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_DRAW_CB) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_PARENT) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_CHILD) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_PREV) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_NEXT) = 0;
+        M2C_FIELD(object, s32 *, DS3D_SPRITE_ENGINE) = 0;
+        M2C_FIELD(object, s16 *, DS3D_SPRITE_LAYER) = 0;
+        M2C_FIELD(object, u16 *, DS3D_SPRITE_Z) = DS3D_SPRITE_Z_NONE;
+        M2C_FIELD(object, s8 *, DS3D_SPRITE_FLAGS) = DS3D_SPRITE_FLAG_DEAD;
+        g3DSpriteSortOrder[i] = object;
+        i++;
+        M2C_FIELD(object, s8 *, DS3D_SPRITE_CHILD_COUNT) = 0;
+        object += DS3D_SPRITE_SIZE;
+    } while (i < DS3D_SPRITE_COUNT);
+    M2C_FIELD(&g3DSpriteOrderCursor, s32 *, DS3D_ALLOC_TAIL) = 0;
+    M2C_FIELD(&g3DSpriteOrderCursor, void **, DS3D_ALLOC_CURSOR) = &g3DSpriteSortOrder;
+    layer = 0;
+    do {
+        g3DSpriteLayerLists[layer] = 0;
+        layer++;
+    } while (layer < 12);
 }
 
 void func_0209cca8(void *arg0) {
@@ -63,10 +68,10 @@ void func_0209cce4(s32 arg0) {
 void func_0209cd00(s32 arg0) {
  M2C_UNK DeleteSpriteObject();
  extern M2C_UNK data_0211dff0;
- extern M2C_UNK data_021583e0;
+ extern M2C_UNK g3DSpriteObjectPool;
  u8 *p;
  s32 i;
- p = (u8 *)&data_021583e0;
+ p = (u8 *)&g3DSpriteObjectPool;
  i = 0;
  do {
   if (M2C_FIELD(p, void **, 4) == &data_0211dff0 && M2C_FIELD(p, s32 *, 0x34) == arg0) DeleteSpriteObject(p);
@@ -346,12 +351,12 @@ s32 func_0209d204(void *arg0) {
 }
 
 s32 func_0209d224(void *arg0) {
-    extern M2C_UNK data_021581a8;
-    extern void *data_021581dc[];
+    extern M2C_UNK g3DSpriteOrderCursor;
+    extern void *g3DSpriteSortOrder[];
     extern s32 gCur3DSpriteEngine;
     void **p;
-    p = data_021581dc;
-    for (; p < M2C_FIELD(&data_021581a8, void ***, 0); p++) {
+    p = g3DSpriteSortOrder;
+    for (; p < M2C_FIELD(&g3DSpriteOrderCursor, void ***, 0); p++) {
         void *other = *p;
         if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
             if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
@@ -365,12 +370,12 @@ s32 func_0209d224(void *arg0) {
 }
 
 s32 func_0209d2b0(void *arg0) {
-    extern M2C_UNK data_021581a8;
-    extern void *data_021581dc[];
+    extern M2C_UNK g3DSpriteOrderCursor;
+    extern void *g3DSpriteSortOrder[];
     extern s32 gCur3DSpriteEngine;
     void **p;
-    p = data_021581dc;
-    for (; p < M2C_FIELD(&data_021581a8, void ***, 0); p++) {
+    p = g3DSpriteSortOrder;
+    for (; p < M2C_FIELD(&g3DSpriteOrderCursor, void ***, 0); p++) {
         void *other = *p;
         if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
             if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
@@ -384,12 +389,12 @@ s32 func_0209d2b0(void *arg0) {
 }
 
 s32 func_0209d33c(void *arg0) {
-    extern M2C_UNK data_021581a8;
-    extern void *data_021581dc[];
+    extern M2C_UNK g3DSpriteOrderCursor;
+    extern void *g3DSpriteSortOrder[];
     extern s32 gCur3DSpriteEngine;
     void **p;
-    p = data_021581dc;
-    for (; p < M2C_FIELD(&data_021581a8, void ***, 0); p++) {
+    p = g3DSpriteSortOrder;
+    for (; p < M2C_FIELD(&g3DSpriteOrderCursor, void ***, 0); p++) {
         void *other = *p;
         if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
             if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {

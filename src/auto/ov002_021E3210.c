@@ -13,7 +13,7 @@ typedef struct PanelStat {
     u8 padding;
 } PanelStat;
 
-extern u8 data_ov002_021f30fd[], data_ov002_021f30fe[];
+extern u8 data_ov002_021f30fd[], gVersusGaugeHp[];
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 void func_ov002_021e3210(void *arg0) {
@@ -82,7 +82,7 @@ void func_ov002_021e3210(void *arg0) {
     }
     if (CountPanelEntries(panel + PANEL_STAT_SOURCE) != 0 &&
         M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN) &&
-        data_ov002_021f30fe[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] == 0) {
+        gVersusGaugeHp[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] == 0) {
         u8 *flags = panel + PANEL_STAT_SOURCE + 2;
         flags[(CountPanelEntries(panel + PANEL_STAT_SOURCE) - 1) * 4] |= 0x40;
         marked = 1;
@@ -123,7 +123,7 @@ void func_ov002_021e3210(void *arg0) {
     }
     }
     if (!marked && M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN) &&
-        data_ov002_021f30fe[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] == 0) {
+        gVersusGaugeHp[M2C_FIELD(panel, u8 *, PANEL_PLAYER) * 0x18] == 0) {
         u8 *flags = panel + PANEL_STAT_SOURCE + 2;
         flags[(CountPanelEntries(panel + PANEL_STAT_SOURCE) - 1) * 4] |= 0x40;
     }

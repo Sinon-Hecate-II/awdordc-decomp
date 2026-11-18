@@ -240,7 +240,7 @@ void MapSelectList_HandleInput(void) {
  s32 GetMenuState(void);
  s32 GetMenuRow(void);
  s32 HardwareDivide(s32,u16);
- s32 func_020020c4(s32,s32);
+ s32 HardwareDivideRemainder(s32,s32);
  M2C_UNK Ov001_LockIconRow();
  void Ov001_FreeSpriteObjects(void);
  M2C_UNK Ov001_UnlockIconRow();
@@ -268,7 +268,7 @@ void MapSelectList_HandleInput(void) {
  M2C_FIELD(&gMapSelectState,u16 *,2)=HardwareDivide(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*GetMenuRow(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
  Ov001_PlaySound(0x13);
  MapSelectList_Redraw();
- remainder=func_020020c4(M2C_FIELD(&gMapSelectState,u16 *,2),0x1c);
+ remainder=HardwareDivideRemainder(M2C_FIELD(&gMapSelectState,u16 *,2),0x1c);
  if(remainder==0) {func_ov001_0217b130();return;}
  if(remainder<14) {
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=Ov001_AddTask(0,(s32)&MapSelectList_ScrollUp,0,120);

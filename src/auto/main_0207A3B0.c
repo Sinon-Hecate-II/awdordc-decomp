@@ -22,7 +22,7 @@ player=(c>>6)+1;
 flag=d;
 if(flag)flag=1;
 tile=func_020a72b0(player,b);
-if(func_020d2850(b,M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4),(u16)player))mark=0x92;
+if(Map_ShowsCargoForUnit(b,M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4),(u16)player))mark=0x92;
 else if(flag)mark=0x86;
 else if((u8)e)mark=0x8a;
 else if((u16)g)mark=0x8e;
@@ -64,24 +64,28 @@ void func_0207a668(void) {
 
 }
 
-void WriteMapTileQuad(s32 arg0, s32 arg1) {
+/* Writes the screen-brighten overlay's 2x2 tile quad for map cell (x,y) into the
+   engine's tile buffer.  The cell's position is taken relative to the view's
+   top-left cell (wrapping every 16 cells); an impassable cell (negative grid
+   value) is left blank, the rest get the bright tiles 0x124..0x127. */
+void WriteMapTileQuad(s32 x, s32 y) {
  extern void *gCurrentMap;
  extern void *gCur3DSpriteEngine;
- void *temp_r2;
- void *temp_r4;
- temp_r4 = M2C_FIELD(gCurrentMap,void **,0);
- temp_r2 = (u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + (((u32)((arg0 - M2C_FIELD(temp_r4,u16 *,0x5150)) << 28) >> 27) * 2) + (((u32)((arg1 - M2C_FIELD(temp_r4,u16 *,0x5152)) << 28) >> 22) * 2);
- if (M2C_FIELD(M2C_FIELD((u8 *)temp_r4 + arg1*4,s8 **,0x52e8),s8 *,arg0) < 0) {
- M2C_FIELD(temp_r2,u16 *,0)=0;
- M2C_FIELD(temp_r2,u16 *,2)=0;
- M2C_FIELD(temp_r2,u16 *,0x40)=0;
- M2C_FIELD(temp_r2,u16 *,0x42)=0;
+ void *cell;
+ void *map;
+ map = M2C_FIELD(gCurrentMap,void **,0);
+ cell = (u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + (((u32)((x - M2C_FIELD(map,u16 *,MAP_VIEW_CELL_X)) << 28) >> 27) * 2) + (((u32)((y - M2C_FIELD(map,u16 *,MAP_VIEW_CELL_Y)) << 28) >> 22) * 2);
+ if (M2C_FIELD(M2C_FIELD((u8 *)map + y*4,s8 **,MAP_GRID),s8 *,x) < 0) {
+ M2C_FIELD(cell,u16 *,0)=0;
+ M2C_FIELD(cell,u16 *,2)=0;
+ M2C_FIELD(cell,u16 *,0x40)=0;
+ M2C_FIELD(cell,u16 *,0x42)=0;
  return;
  }
- M2C_FIELD(temp_r2,u16 *,0)=0x124;
- M2C_FIELD(temp_r2,u16 *,2)=0x125;
- M2C_FIELD(temp_r2,u16 *,0x40)=0x126;
- M2C_FIELD(temp_r2,u16 *,0x42)=0x127;
+ M2C_FIELD(cell,u16 *,0)=0x124;
+ M2C_FIELD(cell,u16 *,2)=0x125;
+ M2C_FIELD(cell,u16 *,0x40)=0x126;
+ M2C_FIELD(cell,u16 *,0x42)=0x127;
 }
 
 void func_0207a710(void *arg0) {

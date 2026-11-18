@@ -26,8 +26,8 @@ extern u32 data_02101fd8;
 void *MemAllocArray(int);
 void *HeapAllocBlock(int);
 void MI_CpuFill8(void *, int, int);
-void func_020a9218(void *);
-void func_020a9188(void *, int);
+void SpriteAnim_SetupFrame(void *);
+void SpriteTween_Start(void *, int);
 void func_020a9a1c(void *, int, int);
 void ScrollBar_PlaceThumb(void *, int, int);
 int func_020bf9e0(void);
@@ -100,7 +100,7 @@ sprite->unk2=sprite->unk4;
 }
 
 anim->sprite=sprite; anim->current=anim->start; anim->index=0;
-func_020a9218(anim); anim->unkE=0; anim->unkF=0;
+SpriteAnim_SetupFrame(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p, u8 **, 0x4c), Unk0220C6C8Anim **, 0x18)=anim;
 anim=MemAlloc(0x10);
@@ -114,7 +114,7 @@ sprite->unk2=sprite->unk4;
 }
 
 anim->sprite=sprite; anim->current=anim->start; anim->index=0;
-func_020a9218(anim); anim->unkE=0; anim->unkF=0;
+SpriteAnim_SetupFrame(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p, u8 **, 0x4c), Unk0220C6C8Anim **, 0x1c)=anim;
 M2C_FIELD(p, void **, 0x48)=MemAllocArray(0xd8);
@@ -129,7 +129,7 @@ sprite->unk2=sprite->unk4;
 }
 
 anim->sprite=sprite; anim->current=anim->start; anim->index=0;
-func_020a9218(anim); anim->unkE=0; anim->unkF=0;
+SpriteAnim_SetupFrame(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p,u8 **,0x48)+i*0x24,Unk0220C6C8Anim **,24)=anim;
 anim=MemAlloc(0x10);
@@ -143,7 +143,7 @@ sprite->unk2=sprite->unk4;
 }
 
 anim->sprite=sprite; anim->current=anim->start; anim->index=0;
-func_020a9218(anim); anim->unkE=0; anim->unkF=0;
+SpriteAnim_SetupFrame(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p,u8 **,0x48)+i*0x24,Unk0220C6C8Anim **,28)=anim;
 anim=MemAlloc(0x10);
@@ -157,7 +157,7 @@ sprite->unk2=sprite->unk4;
 }
 
 anim->sprite=sprite; anim->current=anim->start; anim->index=0;
-func_020a9218(anim); anim->unkE=0; anim->unkF=0;
+SpriteAnim_SetupFrame(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p,u8 **,0x48)+i*0x24,Unk0220C6C8Anim **,32)=anim;
 }
@@ -168,7 +168,7 @@ sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; 
 sprite->unk2=sprite->unk4;
 }
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)=sprite;
-func_020a9188(sprite,0x78);
+SpriteTween_Start(sprite,0x78);
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)->unk4=0xc000;
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)->unk8=7;
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)->unkA=7;

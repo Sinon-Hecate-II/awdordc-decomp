@@ -575,7 +575,7 @@ void func_ov001_0218273c(void) {
 void func_ov001_02182740(void) {
     M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     M2C_UNK func_ov001_0218560c();
-    extern M2C_UNK func_ov001_02182798;
+    extern M2C_UNK Ov001_FinishWfcScreen;
     s32 sp0;
 
     Ov001_GetNameEntryMode(0, &sp0);
@@ -584,19 +584,22 @@ void func_ov001_02182740(void) {
     }
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02182798);
+    Ov001_SetStepCallback(&Ov001_FinishWfcScreen);
 }
 
-void func_ov001_02182798(void) {
+/* Last step of the Wi-Fi (WFC) screen: waits for both close fades and for the menu
+   layout to settle, frees the screen's backgrounds and hides its planes, then goes to
+   the map list when the name entry mode is 0 and to the Wi-Fi menu otherwise. */
+void Ov001_FinishWfcScreen(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
-    s32 func_ov001_02185b34();
+    s32 Ov001_IsMenuLayoutReady();
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_OpenWifiMenu;
     extern M2C_UNK InitMapListScreen;
-    s32 sp0;
+    s32 nameEntryMode;
 
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -604,7 +607,7 @@ void func_ov001_02182798(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (func_ov001_02185b34() == 0) {
+    if (Ov001_IsMenuLayoutReady() == 0) {
         return;
     }
     Ov001_FreePageBackground(0);
@@ -612,8 +615,8 @@ void func_ov001_02182798(void) {
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(2, 1);
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 == 0) {
+    Ov001_GetNameEntryMode(0, &nameEntryMode);
+    if (nameEntryMode == 0) {
         Ov001_SetNameEntryMode(0, 0);
         Ov001_SetStepCallback(&InitMapListScreen);
         return;

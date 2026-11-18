@@ -313,17 +313,21 @@ if(FindFreeUnitRecord(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))==0)retur
 return 0;
 }
 
-s32 func_020c6718(void) {
+/* Whether the unit under the cursor can resupply: the map must not be in the mode
+ * that blocks the action, joining and loading must be unavailable, the cursor unit
+ * must be a supply kind, and at least one adjacent friendly unit must need
+ * resupply.  Returns 0 when the action is available, 2 when it is not. */
+s32 CanSupplyAtCursor(void) {
  extern void **gCurrentMap;
- s32 func_020a7e08(void *); s32 FillMapLayer(s32); s32 ClearAdjacentMoveDirs(s32,s32); s32 func_0209fe44(s32);
+ s32 IsSupplyUnitKind(void *); s32 FillMapLayer(s32); s32 ClearAdjacentMoveDirs(s32,s32); s32 CollectSupplyTargets(s32);
  void *base;
- if(M2C_FIELD(*gCurrentMap,u16 *,0x52B4)==7)return 2;
+ if(M2C_FIELD(*gCurrentMap,u16 *,MAP_MODE)==7)return 2;
  if(CanJoinUnitAtCursor()==0)return 2;
  if(CanLoadUnitAtCursor()==0)return 2;
- if(func_020a7e08(M2C_FIELD(*gCurrentMap,void **,0x52D0))==0)return 2;
+ if(IsSupplyUnitKind(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))==0)return 2;
  FillMapLayer(-1);
  base=*gCurrentMap;
- if(func_0209fe44(ClearAdjacentMoveDirs(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE)))!=0)return 0;
+ if(CollectSupplyTargets(ClearAdjacentMoveDirs(M2C_FIELD(base,s16 *,MAP_CURSOR_X),M2C_FIELD(base,s16 *,MAP_CURSOR_Y)))!=0)return 0;
  return 2;
 }
 

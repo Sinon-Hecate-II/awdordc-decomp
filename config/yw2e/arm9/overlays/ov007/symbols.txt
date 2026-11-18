@@ -1,10 +1,10 @@
 MapEditor_StartMap kind:function(arm,size=0x22c) addr:0x02211200
 func_ov007_0221142c kind:function(arm,size=0x54) addr:0x0221142c
 func_ov007_02211480 kind:function(arm,size=0x2c) addr:0x02211480
-func_ov007_022114ac kind:function(arm,size=0x18) addr:0x022114ac
+MapEditor_SpawnCursorSprite kind:function(arm,size=0x18) addr:0x022114ac
 func_ov007_022114c4 kind:function(arm,size=0x9c) addr:0x022114c4
 func_ov007_02211560 kind:function(arm,size=0x9c) addr:0x02211560
-func_ov007_022115fc kind:function(arm,size=0xa4) addr:0x022115fc
+MapEditor_EraseUnit kind:function(arm,size=0xa4) addr:0x022115fc
 func_ov007_022116a0 kind:function(arm,size=0x34) addr:0x022116a0
 PaintMapTerrain kind:function(arm,size=0x10c) addr:0x022116d4
 func_ov007_022117e0 kind:function(arm,size=0x60) addr:0x022117e0
@@ -259,7 +259,7 @@ data_ov007_0221f5a4 kind:data(any) addr:0x0221f5a4
 data_ov007_0221f5c0 kind:data(any) addr:0x0221f5c0
 data_ov007_0221f5f8 kind:data(any) addr:0x0221f5f8
 gMapNameFormat kind:data(any) addr:0x0221f678
-data_ov007_0221f680 kind:data(any) addr:0x0221f680
+gUnitEraseEffect kind:data(any) addr:0x0221f680
 data_ov007_0221f690 kind:data(any) addr:0x0221f690
 data_ov007_0221f6a0 kind:data(any) addr:0x0221f6a0
 data_ov007_0221f6b0 kind:data(any) addr:0x0221f6b0

@@ -318,7 +318,26 @@ case 10:func_020d54b8();break;
 }
 }
 
-int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(IsDialogActive())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
+/* The interaction state of the battle map for the HUD: whether the local human
+ * player is driving the cursor or a menu, or the map shows a non-human turn or
+ * is blocked by a dialog or another state. */
+int GetMapInputState(void) {
+    extern void **gCurrentMap;
+    u16 state;
+    if (!IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) return MAP_INPUT_NOT_HUMAN;
+    if (IsDialogActive()) return MAP_INPUT_BLOCKED;
+    state = M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE);
+    if (state == 12 || state == 13 || state == 20) {
+        switch (M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE)) {
+        case 0:
+        case 2:
+        case 3: return MAP_INPUT_CURSOR;
+        case 4:
+        case 5: return MAP_INPUT_MENU;
+        }
+    }
+    return MAP_INPUT_BLOCKED;
+}
 
 /* Battle-map cursor handler (cursor mode 0): plays the cursor sound when the
  * touch cursor moved or was cancelled, moves the cursor, lets the state's touch

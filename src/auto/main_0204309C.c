@@ -51,20 +51,24 @@ if(code)ReportConnectionError(code,0xfffeb007);
 return a;
 }
 #pragma opt_propagation reset
-u32 func_02043230(u32 a,u32 unused,u32 off) {
-u32 ret=a;
-u32 code;
-code=ret;
+/* Reports a GameSpy GT2 result: turns the result code into a network error class
+ * and WFC error detail and hands them to the connection error path.  A result of
+ * 0 (success) or 2/5 (nothing to report) returns without reporting.  Returns the
+ * result code. */
+u32 ReportGt2ConnectResult(u32 result,u32 unused,u32 detail) {
+u32 ret=result;
+u32 errCode;
+errCode=ret;
 if(ret==0)return 0;
 switch(ret){
-case 1:code=9;off=code-10;break;
-case 2:case 5:code=0;off=code;ret=code;break;
-case 3:code=6;off=code-16;break;
-case 4:code=6;off=code-36;break;
-case 6:code=6;off=code-76;break;
-case 7:code=6;off=code-86;break;
+case 1:errCode=9;detail=errCode-10;break;
+case 2:case 5:errCode=0;detail=errCode;ret=errCode;break;
+case 3:errCode=6;detail=errCode-16;break;
+case 4:errCode=6;detail=errCode-36;break;
+case 6:errCode=6;detail=errCode-76;break;
+case 7:errCode=6;detail=errCode-86;break;
 }
-if(code)ReportConnectionError(code,off+0xfffeac28);
+if(errCode)ReportConnectionError(errCode,detail+0xfffeac28);
 return ret;
 }
 
@@ -390,19 +394,32 @@ void Qr2AppendIndex2Noop(void) {
 
 }
 
-void Qr2CollectKeys(s32 a,s32 b) {
-extern u8 gSessionPlayers[];
-s32 i;u8 *p;
-switch(a){case 0:break;case 1:case 2:default:return;}
-func_0205eb50(b,8);
-func_0205eb50(b,10);
-func_0205eb50(b,50);
-func_0205eb50(b,51);
-func_0205eb50(b,52);
-func_0205eb50(b,53);
-func_0205eb50(b,54);
-p=gSessionPlayers;
-for(i=0;i<154;i++,p+=12)if(*p)func_0205eb50(b,*p);
+/* QR2 collect-keys callback: for the plain (mode 0) state query, list the
+ * connection's own game keys followed by the key of every live session player;
+ * the indexed queries (modes 1 and 2) report no keys at all. */
+void Qr2CollectKeys(s32 mode, u8 *keyList) {
+    extern u8 gSessionPlayers[];
+    s32 i;
+    u8 *player;
+
+    switch (mode) {
+    case 0:
+        break;
+    case 1:
+    case 2:
+    default:
+        return;
+    }
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_CONN_14);
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_CONN_16);
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_QR2_PARAM);
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_MODE);
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_MATCH_ADDR);
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_CONST_3);
+    Qr2AppendKeyId(keyList, QR2_GAMEKEY_CONST_1);
+    player = gSessionPlayers;
+    for (i = 0; i < QR2_PLAYER_COUNT; i++, player += QR2_PLAYER_STRIDE)
+        if (*player) Qr2AppendKeyId(keyList, *player);
 }
 
 s32 Qr2RepeatCountNone(void) {

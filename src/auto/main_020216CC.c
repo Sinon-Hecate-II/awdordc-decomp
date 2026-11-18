@@ -164,8 +164,8 @@ func_0201ee58(&data_02138b74);
 }
 
 void func_02021c04(void) {
-    M2C_UNK func_02020f6c();
-    func_02020f6c();
+    M2C_UNK NetworkShutdown();
+    NetworkShutdown();
 }
 
 M2C_UNK *IpToString(s32 a,...){

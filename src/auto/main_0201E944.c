@@ -194,14 +194,14 @@ void func_0201eed4(void) {
     s32 func_02020f30(void);
     s32 func_0201f0b4(void);
     extern s32 gNetAllocator;
-    extern s32 data_02138ad0;
+    extern s32 gNetStackState;
     extern s32 data_02138ac0;
     extern s32 gTcpSocketConfig;
     extern s32 data_021372e0;
     void *base;
     void *ctx;
     s32 tmp;
-    base = (void *)&data_02138ad0;
+    base = (void *)&gNetStackState;
     ctx = (void *)gNetAllocator;
     MI_CpuFill8(base, 0, 0x30);
     M2C_FIELD(&data_02138ac0, s32 *, 0x14) = M2C_FIELD(ctx, s32 *, 0x18);
@@ -311,7 +311,7 @@ s32 func_0201f0cc(s32 arg0) {
     return 0;
 }
 
-s32 func_0201f160(void) {
+s32 NetworkFreeTaskPool(void) {
     extern s32 gNetAllocator;
     extern M2C_UNK data_02138b00;
     if (M2C_FIELD(&data_02138b00, s32 *, 0x20) < M2C_FIELD(&data_02138b00, s32 *, 0x18)) return -1;

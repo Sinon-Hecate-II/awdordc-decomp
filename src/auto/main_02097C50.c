@@ -213,34 +213,54 @@ s32 func_0209834c(s32 index, s32 type) {
     }
 }
 
-s32 func_02098440(s32 arg0) {
- switch((u32)arg0) {
-case 0: return 48;
-case 1: return 56;
-case 2: return 72;
-case 3: return 72;
-case 4: return 72;
-case 5: return 48;
-case 6: return 48;
-case 7: return 48;
-case 8: return 160;
-case 9: return 160;
-case 10: return 160;
-case 11: return 256;
- default:return 0;
- }
+/* Returns the pixel width of a face layout's texture (0 for an unknown
+ * layout); the layout types are FACE_LAYOUT_*. */
+s32 GetFaceLayoutWidth(s32 layout) {
+    switch ((u32)layout) {
+    case FACE_LAYOUT_INFO: return 48;
+    case FACE_LAYOUT_SELECT: return 56;
+    case FACE_LAYOUT_BTL_N: return 72;
+    case FACE_LAYOUT_BTL_S: return 72;
+    case FACE_LAYOUT_BTL_A: return 72;
+    case FACE_LAYOUT_TALK_N: return 48;
+    case FACE_LAYOUT_TALK_S: return 48;
+    case FACE_LAYOUT_TALK_A: return 48;
+    case FACE_LAYOUT_BODY_N: return 160;
+    case FACE_LAYOUT_BODY_S: return 160;
+    case FACE_LAYOUT_BODY_A: return 160;
+    case FACE_LAYOUT_BREAK: return 256;
+    default: return 0;
+    }
 }
 
-s32 func_020984e4(s32 a){switch((u32)a){case 0:return 16;case 1:return 56;case 2:return 64;case 3:return 64;case 4:return 64;case 5:return 48;case 6:return 48;case 7:return 48;case 8:return 192;case 9:return 192;case 10:return 192;case 11:return 64;default:return 0;}}
+/* Returns the pixel height of a face layout's texture (0 for an unknown
+ * layout); the layout types are FACE_LAYOUT_*. */
+s32 GetFaceLayoutHeight(s32 layout) {
+    switch ((u32)layout) {
+    case FACE_LAYOUT_INFO: return 16;
+    case FACE_LAYOUT_SELECT: return 56;
+    case FACE_LAYOUT_BTL_N: return 64;
+    case FACE_LAYOUT_BTL_S: return 64;
+    case FACE_LAYOUT_BTL_A: return 64;
+    case FACE_LAYOUT_TALK_N: return 48;
+    case FACE_LAYOUT_TALK_S: return 48;
+    case FACE_LAYOUT_TALK_A: return 48;
+    case FACE_LAYOUT_BODY_N: return 192;
+    case FACE_LAYOUT_BODY_S: return 192;
+    case FACE_LAYOUT_BODY_A: return 192;
+    case FACE_LAYOUT_BREAK: return 64;
+    default: return 0;
+    }
+}
 
 s32 GetFaceLayoutSize(s32 arg0) {
-    s32 func_02098440();
-    s32 func_020984e4(s32);
+    s32 GetFaceLayoutWidth();
+    s32 GetFaceLayoutHeight(s32);
     s32 temp_r4;
     s32 var_r0;
 
-    temp_r4 = func_02098440(arg0);
-    var_r0 = temp_r4 * func_020984e4(arg0);
+    temp_r4 = GetFaceLayoutWidth(arg0);
+    var_r0 = temp_r4 * GetFaceLayoutHeight(arg0);
     if (arg0 == 1) {
         var_r0 += temp_r4;
     }
@@ -343,9 +363,9 @@ void FillFaceTileMap(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, 
     s32 cols;
     s32 rows;
 
-    widthPx = func_02098440(layout);
+    widthPx = GetFaceLayoutWidth(layout);
     tileWidth = (s32) (widthPx + ((u32) (widthPx >> 2) >> 0x1D)) >> 3;
-    heightPx = func_020984e4(layout);
+    heightPx = GetFaceLayoutHeight(layout);
     tileHeight = (s32) (heightPx + ((u32) (heightPx >> 2) >> 0x1D)) >> 3;
     cols = tileWidth;
     rows = tileHeight;

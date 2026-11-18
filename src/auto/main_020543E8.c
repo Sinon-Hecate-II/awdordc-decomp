@@ -70,7 +70,7 @@ s32 func_02054520(void **a) {
 }
 
 void *func_0205455c(void **a,void *b,s32 c) {
- void *func_0205180c(void **,void *,s32);
+ void *gpiProcessConnect(void **,void *,s32);
  void *gpiProcessNewPlayer(void **,void *,s32);
  void *func_02052600(void **,void *,s32);
  void *gpiProcessLoginReply(void **,void *,s32);
@@ -78,7 +78,7 @@ void *func_0205455c(void **a,void *b,s32 c) {
  extern M2C_UNK data_020fea6c,data_020fea48,data_020fea00,data_020fe9d8;
  void *p=NULL;
  switch(M2C_FIELD(b,u32 *,0)) {
- case 0:p=func_0205180c(a,b,c);break;
+ case 0:p=gpiProcessConnect(a,b,c);break;
  case 1:p=gpiProcessNewPlayer(a,b,c);break;
  case 2:p=func_02052600(a,b,c);break;
  case 4:p=gpiProcessLoginReply(a,b,c);break;

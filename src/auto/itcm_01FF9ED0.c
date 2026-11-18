@@ -58,8 +58,8 @@ void Update3DSpriteVram(void) {
 }
 #pragma opt_common_subs reset
 s32 GetSpriteLayerHead(s32 arg0) {
-    extern s32 data_021581ac[];
-    return data_021581ac[arg0];
+    extern s32 g3DSpriteLayerLists[];
+    return g3DSpriteLayerLists[arg0];
 }
 
 u8 func_01ffa14c(u32 arg0) {
@@ -105,33 +105,33 @@ void Update3DSpriteState(void *arg0) {
 }
 
 void *AllocSpriteObject(void) {
-    extern void **data_021581a8;
+    extern void **g3DSpriteOrderCursor;
     void **var_r3;
     void *temp_r2;
     void *var_r0;
 
-    var_r0 = *data_021581a8;
+    var_r0 = *g3DSpriteOrderCursor;
     if (M2C_FIELD(var_r0, u8 *, 0x30) & 0x20) {
-        var_r3 = data_021581a8;
+        var_r3 = g3DSpriteOrderCursor;
         do {
             var_r3 += 1;
             temp_r2 = *var_r3;
         } while (M2C_FIELD(temp_r2, u8 *, 0x30) & 0x20);
-        *data_021581a8 = temp_r2;
+        *g3DSpriteOrderCursor = temp_r2;
         *var_r3 = var_r0;
-        var_r0 = *data_021581a8;
+        var_r0 = *g3DSpriteOrderCursor;
     }
-    data_021581a8 += 1;
+    g3DSpriteOrderCursor += 1;
     return var_r0;
 }
 
 void func_01ffa244(s32 arg0) {
-    extern void **data_021581a8;
+    extern void **g3DSpriteOrderCursor;
     void **var_r2;
     s32 temp_r3;
 
-    data_021581a8 -= 1;
-    var_r2 = data_021581a8;
+    g3DSpriteOrderCursor -= 1;
+    var_r2 = g3DSpriteOrderCursor;
     temp_r3 = (s32) *var_r2;
     if (temp_r3 == arg0) {
         return;
@@ -140,12 +140,12 @@ void func_01ffa244(s32 arg0) {
         var_r2 -= 1;
     } while ((s32) *var_r2 != arg0);
     *var_r2 = (void *) temp_r3;
-    *data_021581a8 = (void *) arg0;
+    *g3DSpriteOrderCursor = (void *) arg0;
 }
 
 void InsertSpriteInLayer(void *arg0, u32 arg1) {
- extern s32 data_021581ac[];
- void **table=(void **)data_021581ac;
+ extern s32 g3DSpriteLayerLists[];
+ void **table=(void **)g3DSpriteLayerLists;
  void *prev=table[arg1];
  if(prev!=NULL) {
  M2C_FIELD(prev,void **,0x20)=arg0;
@@ -168,7 +168,7 @@ void InsertSpriteInParent(void *arg0, void *arg1) {
 }
 
 void func_01ffa2cc(void *p) {
- extern s32 data_021581ac[];
+ extern s32 g3DSpriteLayerLists[];
  void *n=M2C_FIELD(p,void **,0x20);
  u32 parent;
  if(n)M2C_FIELD(n,void **,0x24)=M2C_FIELD(p,void **,0x24);
@@ -178,7 +178,7 @@ void func_01ffa2cc(void *p) {
  if(parent>12) {
  if(M2C_FIELD(parent,void **,0x1C)==p)M2C_FIELD(parent,void **,0x1C)=M2C_FIELD(p,void **,0x24);
  } else {
- if(M2C_FIELD(data_021581ac,void **,parent*4)==p)data_021581ac[parent]=M2C_FIELD(p,s32 *,0x24);
+ if(M2C_FIELD(g3DSpriteLayerLists,void **,parent*4)==p)g3DSpriteLayerLists[parent]=M2C_FIELD(p,s32 *,0x24);
  }
  M2C_FIELD(p,s32 *,0x20)=0;
  M2C_FIELD(p,s32 *,0x24)=0;
@@ -239,7 +239,7 @@ void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
     func_01ffa3f4(arg0, arg1, gCur3DSpriteEngine);
 }
 
-void func_01ffa444(s32 a,s32 b) {
+void CreateSpriteForOwner(s32 a,s32 b) {
  if(b==0)b=7;
  if(b<12)CreateSpriteFromClass(a,b);else CreateSpriteObject(a,b);
 }
@@ -361,11 +361,11 @@ void func_01ffa730(void *arg0) {
 }
 
 void *FindObjectByClass(s32 arg0) {
- extern void **data_021581a8;
- extern void *data_021581dc[];
- void **p=data_021581dc;
+ extern void **g3DSpriteOrderCursor;
+ extern void *g3DSpriteSortOrder[];
+ void **p=g3DSpriteSortOrder;
  void *q;
- for(;p<data_021581a8;p++) {
+ for(;p<g3DSpriteOrderCursor;p++) {
  q=*p;
  if(M2C_FIELD(q,s32 *,4)==arg0)return q;
  }
@@ -373,12 +373,12 @@ void *FindObjectByClass(s32 arg0) {
 }
 
 void *func_01ffa7b4(s32 arg0) {
- extern void **data_021581a8;
- extern void *data_021581dc[];
+ extern void **g3DSpriteOrderCursor;
+ extern void *g3DSpriteSortOrder[];
  extern s32 gCur3DSpriteEngine;
- void **p=data_021581dc;
+ void **p=g3DSpriteSortOrder;
  void *q;
- for(;p<data_021581a8;p++) {
+ for(;p<g3DSpriteOrderCursor;p++) {
  q=*p;
  if(M2C_FIELD(q,s32 *,0x28)==gCur3DSpriteEngine && M2C_FIELD(q,s32 *,4)==arg0)return q;
  }
@@ -386,22 +386,22 @@ void *func_01ffa7b4(s32 arg0) {
 }
 
 void *func_01ffa810(s32 a) {
- extern void **data_021581a8;
- extern void *data_021581dc[];
+ extern void **g3DSpriteOrderCursor;
+ extern void *g3DSpriteSortOrder[];
  void **q;void *p;
  if(a==0xFF00)return 0;
- for(q=data_021581dc;q<data_021581a8;q++){
+ for(q=g3DSpriteSortOrder;q<g3DSpriteOrderCursor;q++){
  p=*q;if(M2C_FIELD(p,u16 *,0x2E)==a)return p;
  }
  return 0;
 }
 
 void *func_01ffa860(s32 a,s32 b) {
- extern void **data_021581a8;
- extern void *data_021581dc[];
+ extern void **g3DSpriteOrderCursor;
+ extern void *g3DSpriteSortOrder[];
  void **q;void *p;
  if(b==0xFF00)return 0;
- for(q=data_021581dc;q<data_021581a8;q++){
+ for(q=g3DSpriteSortOrder;q<g3DSpriteOrderCursor;q++){
  p=*q;if(M2C_FIELD(p,s32 *,4)==a && M2C_FIELD(p,u16 *,0x2E)==b)return p;
  }
  return 0;
@@ -438,8 +438,8 @@ void func_01ffa920(void *arg0, s32 arg1) {
 }
 
 void func_01ffa928(M2C_UNK arg0, M2C_UNK *arg1) {
-    extern u8 data_021583e0[];
-    u8 *p = data_021583e0;
+    extern u8 g3DSpriteObjectPool[];
+    u8 *p = g3DSpriteObjectPool;
     s32 i;
 
     i = 0;
@@ -453,9 +453,9 @@ void func_01ffa928(M2C_UNK arg0, M2C_UNK *arg1) {
 }
 
 void func_01ffa968(M2C_UNK arg0, M2C_UNK *arg1) {
-    extern u8 data_021583e0[];
+    extern u8 g3DSpriteObjectPool[];
     extern s32 gCur3DSpriteEngine;
-    u8 *p = data_021583e0;
+    u8 *p = g3DSpriteObjectPool;
     s32 i;
 
     i = 0;
@@ -489,8 +489,8 @@ void func_01ffa9f8(M2C_UNK arg0) {
 }
 
 void func_01ffaa0c(s32 arg0) {
-    extern u8 data_021583e0[];
-    u8 *p = data_021583e0;
+    extern u8 g3DSpriteObjectPool[];
+    u8 *p = g3DSpriteObjectPool;
     s32 i;
 
     if (arg0 == 0xFF00) {

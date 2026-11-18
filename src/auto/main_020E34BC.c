@@ -206,11 +206,11 @@ void func_020e3738(void *arg0) {
 }
 
 void func_020e3788(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
- void *func_01ffa444(void *, s32);
+ void *CreateSpriteForOwner(void *, s32);
  extern s32 data_0212d950;
  extern s32 data_0212da10;
  void *temp_r0;
- temp_r0 = func_01ffa444(&data_0212d950, arg3);
+ temp_r0 = CreateSpriteForOwner(&data_0212d950, arg3);
  if (temp_r0 == NULL) return;
  M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
  M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
@@ -275,7 +275,7 @@ void func_020e3870(void *arg0) {
  * from the heap, store the local player's id in it (the rest zero), and clear
  * every player record in the array.  Returns the node, or NULL on failure. */
 void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
-    void *func_01ffa444(void *, s32);
+    void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
     s32 GetOnlineLocalPlayerId(void);
     void func_02007e70(s32, void *, s32);
@@ -288,7 +288,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
     s32 count;
     u8 *rec;
 
-    node = func_01ffa444(&data_0212d870, capacity);
+    node = CreateSpriteForOwner(&data_0212d870, capacity);
     if (node != NULL) {
         M2C_FIELD(node, s32 **, LIST_VTABLE) = &data_0212da10;
         M2C_FIELD(node, s32 *, LIST_FIRST) = (s32)records;
@@ -386,14 +386,14 @@ void func_020e3ab4(void *arg0) {
 }
 
 void func_020e3b54(void *arg0, s32 arg1, s32 *arg2, s32 arg3) {
-    void *func_01ffa444(void *, s32);
+    void *CreateSpriteForOwner(void *, s32);
     extern s32 data_0212d988;
     extern s32 data_0212da10;
     u32 base = (u32)arg0;
     void *temp_r0;
     u8 *ptr;
 
-    temp_r0 = func_01ffa444(&data_0212d988, arg3);
+    temp_r0 = CreateSpriteForOwner(&data_0212d988, arg3);
     if (temp_r0 == NULL) {
         return;
     }
@@ -484,11 +484,11 @@ void func_020e3ccc(void *arg0) {
 }
 
 void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
-void *func_01ffa444(void *,s32);
+void *CreateSpriteForOwner(void *,s32);
 extern s32 data_0212d9c8;extern s32 data_0212da10;
 u32 base=(u32)arg0;
 void *p;u8 *ptr;
-p=func_01ffa444(&data_0212d9c8,arg2);
+p=CreateSpriteForOwner(&data_0212d9c8,arg2);
 if(!p)return;
 M2C_FIELD(p,s32 **,0)=&data_0212da10;
 M2C_FIELD(p,s32 *,0x34)=(s32)arg0;
@@ -563,7 +563,7 @@ void func_020e3f08(void *arg0) {
 }
 
 void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
-    void *func_01ffa444(void *, s32);
+    void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
@@ -573,7 +573,7 @@ void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
     s32 temp_r2;
     register u8 *ptr;
 
-    temp_r0 = func_01ffa444(&data_0212d838, arg3);
+    temp_r0 = CreateSpriteForOwner(&data_0212d838, arg3);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
         M2C_FIELD(temp_r0, s32 *, 0x34) = (s32)arg1;
@@ -614,7 +614,7 @@ void func_020e4090(void *arg0) {
 }
 
 void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void *func_01ffa444(void *, s32);
+    void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
@@ -624,7 +624,7 @@ void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 sp0;
     s32 temp_r2;
 
-    temp_r0 = func_01ffa444(&data_0212d8a8, arg3);
+    temp_r0 = CreateSpriteForOwner(&data_0212d8a8, arg3);
     if (temp_r0 != NULL) {
         sp0 = arg0;
         M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
@@ -641,7 +641,7 @@ void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void *func_01ffa444(void *, s32);
+    void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
     void func_02007e70(s32, void *, s32);
     void CpuFill(s32, s32, s32);
@@ -651,7 +651,7 @@ void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 sp0;
     s32 temp_r2;
 
-    temp_r0 = func_01ffa444(&data_0212d7d8, arg3);
+    temp_r0 = CreateSpriteForOwner(&data_0212d7d8, arg3);
     if (temp_r0 != NULL) {
         sp0 = arg0;
         M2C_FIELD(temp_r0, s32 **, 0) = &data_0212da10;
@@ -704,12 +704,12 @@ void func_020e4240(void *arg0) {
 }
 
 void func_020e42bc(s32 arg0) {
-    void *func_01ffa444(void *, s32);
+    void *CreateSpriteForOwner(void *, s32);
     extern s32 data_0212d748;
     extern s32 data_0212da10;
     void *temp_r0;
 
-    temp_r0 = func_01ffa444(&data_0212d748, arg0);
+    temp_r0 = CreateSpriteForOwner(&data_0212d748, arg0);
     if (temp_r0 == NULL) {
         return;
     }
@@ -764,7 +764,7 @@ void func_020e4378(void) {
     M2C_UNK func_02006f14();
     M2C_UNK func_02007140();
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_0200e2f8();
+    M2C_UNK Arm7CommandInit();
     extern s32 data_020f5204;
     u16 *p;
     u16 *q;
@@ -777,7 +777,7 @@ void func_020e4378(void) {
     GX_InitDisplay();
     func_02002490();
     *(s32 *)0x04001000 &= ~0x10000;
-    func_0200e2f8();
+    Arm7CommandInit();
     func_02003104(0x1FF);
     MI_CpuFill32(0, 0x6800000, 0xA4000);
     func_020035f8();

@@ -1,5 +1,6 @@
 /* 16 functions from 0x020793F0 to 0x0207A3B0 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 mode:3; u16 rest:13; } Mode0207;
 typedef struct { u8 kind:6; u8 group:2; u8 pad[10]; u8 variant:4; u8 rest:4; } UnitBits7971c;
 typedef struct { s32 values[4]; } DrawLookup793f0;
@@ -260,20 +261,23 @@ arg2[0]=Divide((arg2[0]+0x1000)<<8,0x2000);
 arg2[1]=Divide((0x1000-arg2[1])*0xC0,0x2000);
 }
 #pragma opt_common_subs reset
-void func_02079d0c(s32 arg0, s32 arg1, s32 *arg2) {
-    M2C_UNK func_02000f90(Vec3 *, void *, Vec3 *);
+/* Convert a point on the main screen (up to 256x192) to the map's fixed-point
+ * position (0x300 units per cell), unprojected through the map view's matrix
+ * and offset by the view's world origin. */
+void ScreenToMapFixedPoint(s32 screenX, s32 screenY, Vec3 *out) {
+    M2C_UNK MTX_Apply33(Vec3 *, void *, Vec3 *);
     s32 Divide(s32, s32);
     extern s32 *gCurrentMap;
     Vec3 pos;
-    void *temp_r4;
-    temp_r4 = (void *)(*gCurrentMap + 0x6EF8);
-    pos.x = Divide((arg0 << 12) - 0x80000, 0x80);
-    pos.y = -Divide((arg1 << 12) - 0x60000, 0x60);
+    void *view;
+    view = (void *)(*gCurrentMap + MAP_VIEW_ZOOM);
+    pos.x = Divide((screenX << 12) - 0x80000, 0x80);
+    pos.y = -Divide((screenY << 12) - 0x60000, 0x60);
     pos.z = 0;
-    func_02000f90(&pos, temp_r4 + 0xB0, &pos);
-    arg2[0] = M2C_FIELD(temp_r4,s32 *,0xF0) + pos.x;
-    arg2[1] = M2C_FIELD(temp_r4,s32 *,0xF4) + pos.y;
-    arg2[2] = M2C_FIELD(temp_r4,s32 *,0xF8) + pos.z;
+    MTX_Apply33(&pos, view + MAP_VIEW_MATRIX, &pos);
+    out->x = M2C_FIELD(view, s32 *, MAP_VIEW_ORIGIN) + pos.x;
+    out->y = M2C_FIELD(view, s32 *, MAP_VIEW_ORIGIN + 4) + pos.y;
+    out->z = M2C_FIELD(view, s32 *, MAP_VIEW_ORIGIN + 8) + pos.z;
 }
 
 #pragma opt_propagation off

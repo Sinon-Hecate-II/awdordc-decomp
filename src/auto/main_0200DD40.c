@@ -237,37 +237,41 @@ void Arm7FinishCommand(s32 arg0) {
     callback(arg0,value);
 }
 
-void func_0200e2f8(void) {
+/* Bring the ARM7 command service up once: start the ARM7 link, wait for the
+ * IPC FIFO handler tag, install the reply handler, clear the five pending reply
+ * slots, create the reply mutex and record the current frame as the last LCD
+ * power-off. */
+void Arm7CommandInit(void) {
     M2C_UNK InitMutex(M2C_UNK *);
     M2C_UNK func_02009d34();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);
     extern M2C_UNK gArm7CommandState;
-    extern M2C_UNK data_0212fcf4;
-    extern M2C_UNK data_0212fd0c;
+    extern M2C_UNK gArm7CommandMutex;
+    extern M2C_UNK gArm7CommandReplySlots;
     extern M2C_UNK Arm7CommandReply;
     s32 i;
-    if(M2C_FIELD(&gArm7CommandState,u16 *,0)!=0) return;
-    M2C_FIELD(&gArm7CommandState,u16 *,0)=1;
-    M2C_FIELD(&gArm7CommandState,s32 *,0x18)=0;
-    M2C_FIELD(&gArm7CommandState,s32 *,0x1C)=0;
+    if(M2C_FIELD(&gArm7CommandState,u16 *,ARM7_CMD_INIT)!=0) return;
+    M2C_FIELD(&gArm7CommandState,u16 *,ARM7_CMD_INIT)=1;
+    M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_BUSY)=0;
+    M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_CALLBACK)=0;
     func_02009d34();
-    do {} while(IsFifoMessageReady(8,1)==0);
-    SetFifoMessageHandler(8,&Arm7CommandReply);
-    for(i=0;i<5;i++) ((u16 (*)[4])&data_0212fd0c)[i][0]=0;
-    InitMutex(&data_0212fcf4);
-    M2C_FIELD(&gArm7CommandState,s32 *,0x10)=*(s32 *)0x027FFC3C;
+    do {} while(IsFifoMessageReady(ARM7_CMD_FIFO_TAG,1)==0);
+    SetFifoMessageHandler(ARM7_CMD_FIFO_TAG,&Arm7CommandReply);
+    for(i=0;i<ARM7_CMD_REPLY_COUNT;i++) ((u16 (*)[4])&gArm7CommandReplySlots)[i][0]=0;
+    InitMutex(&gArm7CommandMutex);
+    M2C_FIELD(&gArm7CommandState,s32 *,POWER_SERVICE_LAST_OFF)=*(s32 *)SHARED_FRAME_COUNTER;
 }
 
 /* Arm7CommandReply: the ARM7 command service's FIFO handler (tag 8) for one reply
    word — a command in bits 8..14 and a value in bits 0..7.  Commands 0x70..0x74
-   store the value into the matching reply slot (data_0212fd0c/data_0212fd10: a
+   store the value into the matching reply slot (gArm7CommandReplySlots/data_0212fd10: a
    u16 "written" flag and a u16 *destination per slot), 0x60/0x62 set the
    service's done flags and 0x67 stores it through the caller's pointer; the
    pending command is then finished with that value.  A non-zero error finishes
    it as error 2 without touching anything. */
 void Arm7CommandReply(s32 tag, u32 word, s32 error) {
-extern M2C_UNK data_0212fd10; extern M2C_UNK data_0212fd0c; extern M2C_UNK gArm7CommandState;
+extern M2C_UNK data_0212fd10; extern M2C_UNK gArm7CommandReplySlots; extern M2C_UNK gArm7CommandState;
 u32 command; u16 value; u16 *dest;
 if(error!=0) { Arm7FinishCommand(2); return; }
 command=(u16)((word & 0x7F00)>>8);
@@ -277,7 +281,7 @@ command-=0x70;
 dest=((u16 *(*)[2])&data_0212fd10)[command][0];
 value=(u8)value;
 if(dest) *dest=value;
-((u16 (*)[4])&data_0212fd0c)[command][0]=1;
+((u16 (*)[4])&gArm7CommandReplySlots)[command][0]=1;
 value=0;
 } else if(command==0x60) M2C_FIELD(&gArm7CommandState,s32 *,4)=1;
 else if(command==0x62) M2C_FIELD(&gArm7CommandState,s32 *,8)=1;
@@ -321,12 +325,12 @@ s32 Arm7SetPowerState(u32 arg0, s32 arg1, s32 arg2) {
 s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     void func_0200e8f4(s32);
     extern M2C_UNK gArm7CommandState;
-    extern M2C_UNK data_0212fd0c;
+    extern M2C_UNK gArm7CommandReplySlots;
     extern M2C_UNK data_0212fd10;
     if (func_0200e234() == 0) return 1;
     M2C_FIELD(&gArm7CommandState, void (**)(s32, s32 *), 0x1C) = arg2;
     M2C_FIELD(&gArm7CommandState, s32 **, 0x20) = arg3;
-    ((u16 (*)[4])&data_0212fd0c)[arg0][0] = 0;
+    ((u16 (*)[4])&gArm7CommandReplySlots)[arg0][0] = 0;
     *(s32 *)((u8 *)&data_0212fd10 + arg0 * 8) = arg1;
     func_0200e8f4((u8)arg0 | 0x03006500);
     return 0;

@@ -577,7 +577,7 @@ void func_0209c8d4(void) {
     M2C_UNK func_02086844(u16, M2C_UNK);
     M2C_UNK func_02086878(u16, M2C_UNK);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    s32 func_020a1944();
+    s32 GetRatingRank();
     M2C_UNK func_020bf814(u16);
     s32 IsCoUnlocked(s32);
     s32 DidPlayerWin();
@@ -640,7 +640,7 @@ void func_0209c8d4(void) {
                     data_0215d8a8[temp_r9] = temp_r3;
                     temp_r3_2 = (temp_r3 & 0xFFFE007F) | ((u32) (M2C_FIELD(*data_027e0058, u16 *, 0x52A2) << 0x16) >> 0xF);
                     data_0215d8a8[temp_r9] = (temp_r3_2 & ~0x1C000000) | ((u32) ((temp_r3_2 >> 0x1D) << 0x1D) >> 3);
-                    data_0215d8a8[temp_r9] = (data_0215d8a8[temp_r9] & ~0xE0000000) | (func_020a1944() << 0x1D);
+                    data_0215d8a8[temp_r9] = (data_0215d8a8[temp_r9] & ~0xE0000000) | (GetRatingRank() << 0x1D);
                 }
                 temp_r0 = data_0215d8a8[temp_r9];
                 temp_r0_2 = temp_r0 & ~7;

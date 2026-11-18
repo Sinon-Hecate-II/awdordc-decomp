@@ -3,7 +3,7 @@
 
 #pragma opt_cse off
 void func_020e5080(void *arg0) {
-extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub,data_02168ff4;
+extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub,gMicTestIpc;
 extern u8 data_0212da70[],data_0212da40[],data_0212db88[],data_0212db38[],data_0212db78[],data_0212da4c[],data_0212da7c[],data_0212da34[],data_0212db28[],data_0212db68[],data_0212db58[],data_0212da58[],data_0212db48[],data_0212da64[];
 void Set3DSpriteVramBanks(void);void func_02003560(void);void GX_SetBankForObjExtPalette(s32);
 void func_020822b8(void*);void CreateMainWallpaperSprite(s32,s32,s32);void CreateSubWallpaperSprite(s32,s32,s32);
@@ -16,7 +16,7 @@ void func_02088e84(void*,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void*);s32 GetU
 void func_02087d84(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
 void *func_0208931c(void*);void func_020a9a30(s32,s32,s32,void*);s32 func_020aaf74(void*);
 void func_01ff9b38(void);M2C_UNK func_02090640(M2C_UNK,M2C_UNK);
-void func_0200dd40(void);void func_0200e2f8(void);M2C_UNK func_0200e868(M2C_UNK);void func_0200e880(s32);
+void func_0200dd40(void);void Arm7CommandInit(void);M2C_UNK func_0200e868(M2C_UNK);void func_0200e880(s32);
 s32 saved;void *obj;s32 y,x,w,h;u16 *volatile p0, *volatile p1, *volatile p2, *volatile p3, *volatile p4, *volatile p5, *volatile p6, *volatile p7, *volatile p8, *volatile p9, *volatile p10, *volatile p11;
 Set3DSpriteVramBanks();func_02003560();GX_SetBankForObjExtPalette(0x40);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -79,14 +79,14 @@ M2C_FIELD(obj,s32 *,0x44)=func_020aaf74(obj);
 M2C_FIELD(obj,s16 *,0x3e)=0x150;
 M2C_FIELD(obj,u32 *,0x40)=(M2C_FIELD(obj,u32 *,0x40)&~0x3fc0000)|0x5c0000;
 M2C_FIELD(obj,s16 *,0x3c)=0xc00;
-gCur3DSpriteEngine=saved;func_01ff9b38();func_02090640(2,0x20);func_0200dd40();func_0200e2f8();func_0200e868(1);func_0200e880(3);
-M2C_FIELD(&data_02168ff4,s32 *,4)=0;
-M2C_FIELD(&data_02168ff4,s32 *,8)=data_02168ff4;
-M2C_FIELD(&data_02168ff4,s32 *,0xc)=0x20;
-M2C_FIELD(&data_02168ff4,s32 *,0x10)=0x105d;
-M2C_FIELD(&data_02168ff4,s32 *,0x14)=1;
-M2C_FIELD(&data_02168ff4,s32 *,0x18)=0;
-M2C_FIELD(&data_02168ff4,s32 *,0x1c)=0;
+gCur3DSpriteEngine=saved;func_01ff9b38();func_02090640(2,0x20);func_0200dd40();Arm7CommandInit();func_0200e868(1);func_0200e880(3);
+M2C_FIELD(&gMicTestIpc,s32 *,4)=0;
+M2C_FIELD(&gMicTestIpc,s32 *,8)=gMicTestIpc;
+M2C_FIELD(&gMicTestIpc,s32 *,0xc)=0x20;
+M2C_FIELD(&gMicTestIpc,s32 *,0x10)=0x105d;
+M2C_FIELD(&gMicTestIpc,s32 *,0x14)=1;
+M2C_FIELD(&gMicTestIpc,s32 *,0x18)=0;
+M2C_FIELD(&gMicTestIpc,s32 *,0x1c)=0;
 }
 #pragma opt_cse reset
 void func_020e5678(void) {
@@ -100,40 +100,44 @@ void func_020e5678(void) {
     func_0200e868(0);
 }
 
-void func_020e569c(M2C_UNK arg0) {
- void *func_01ffa444(M2C_UNK *, M2C_UNK);
- M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
- s16 Divide(s32, M2C_UNK);
- s32 func_020e3580(M2C_UNK, M2C_UNK);
- extern M2C_UNK data_0212da88;
- extern M2C_UNK data_0212dba0;
- extern s32 data_02168ff4, g3DSpriteEngineMain, gCur3DSpriteEngine;
- s32 saved;
- void *obj;
- saved = gCur3DSpriteEngine;
- gCur3DSpriteEngine = g3DSpriteEngineMain;
- obj = func_01ffa444(&data_0212da88, arg0);
- if (obj != NULL) {
- M2C_FIELD(obj, void **, 0) = &data_0212dba0;
- M2C_FIELD(obj, s32 *, 0x34) = 0;
- M2C_FIELD(obj, s32 *, 0x38) = 0;
- M2C_FIELD(obj, u8 *, 0x3C) = 0;
- M2C_FIELD(obj, s16 *, 0x3E) = Divide(0x2BF20, 0x3E8);
- M2C_FIELD(obj, u8 *, 0x40) = 0;
- data_02168ff4 = func_020e3580(0x20, 0x20);
- MI_CpuFill8((u8 *)obj + 0x41, 0, 0xA);
- }
- gCur3DSpriteEngine = saved;
+/* Create the mic test screen's object on the main engine: install its vtable,
+ * clear its sprites and level history, start its measurement timer and
+ * allocate the microphone sample buffer.  owner is the sprite layer (or parent
+ * sprite) it is created under. */
+void CreateMicTestObject(s32 owner) {
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
+    M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
+    s16 Divide(s32, M2C_UNK);
+    s32 func_020e3580(M2C_UNK, M2C_UNK);
+    extern M2C_UNK gMicTestClass;
+    extern M2C_UNK gMicTestVtbl;
+    extern s32 gMicTestIpc, g3DSpriteEngineMain, gCur3DSpriteEngine;
+    s32 saved;
+    MicTestScreen *screen;
+    saved = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    screen = (MicTestScreen *)CreateSpriteForOwner(&gMicTestClass, owner);
+    if (screen != NULL) {
+        screen->vtable = &gMicTestVtbl;
+        screen->levelSprite = NULL;
+        screen->menuSprite = NULL;
+        screen->flags = 0;
+        screen->timer = Divide(0x2BF20, 0x3E8);
+        screen->levelIndex = 0;
+        gMicTestIpc = func_020e3580(MIC_TEST_SAMPLE_COUNT, MIC_TEST_SAMPLE_COUNT);
+        MI_CpuFill8(screen->levels, 0, sizeof(screen->levels));
+    }
+    gCur3DSpriteEngine = saved;
 }
 
 void func_020e5740(void) {
  void *FindObjectByClass(M2C_UNK *);
  M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
  s16 Divide(s32, M2C_UNK);
- extern M2C_UNK data_0212da88;
+ extern M2C_UNK gMicTestClass;
  u8 flags;
  void *obj;
- obj = FindObjectByClass(&data_0212da88);
+ obj = FindObjectByClass(&gMicTestClass);
  if (obj == NULL) return;
  flags = M2C_FIELD(obj, u8 *, 0x3C);
  if (!(flags & 2)) {
@@ -148,20 +152,20 @@ void func_020e5740(void) {
 M2C_UNK **func_020e57b4(M2C_UNK **arg0) {
  M2C_UNK HeapFreeBlock();
  M2C_UNK MemFree(M2C_UNK **);
- extern M2C_UNK data_0212dba0;
- extern s32 data_02168ff4;
- *arg0 = &data_0212dba0;
- if (data_02168ff4 != 0) HeapFreeBlock();
+ extern M2C_UNK gMicTestVtbl;
+ extern s32 gMicTestIpc;
+ *arg0 = &gMicTestVtbl;
+ if (gMicTestIpc != 0) HeapFreeBlock();
  MemFree(arg0);
  return arg0;
 }
 
 M2C_UNK **func_020e57f0(M2C_UNK **arg0) {
     M2C_UNK HeapFreeBlock();
-    extern M2C_UNK data_0212dba0;
-    extern s32 data_02168ff4;
-    *arg0 = &data_0212dba0;
-    if (data_02168ff4 != 0) {
+    extern M2C_UNK gMicTestVtbl;
+    extern s32 gMicTestIpc;
+    *arg0 = &gMicTestVtbl;
+    if (gMicTestIpc != 0) {
         HeapFreeBlock();
     }
     return arg0;

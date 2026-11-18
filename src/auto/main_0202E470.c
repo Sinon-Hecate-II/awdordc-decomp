@@ -47,8 +47,8 @@ void func_0202e470(void *arg0) {
     u32 func_020722fc(s32, u32);
     extern s8 data_020ea780[16];
     extern s16 data_020ea790[90];
-    extern M2C_UNK data_0213c290;
-    extern M2C_UNK data_0213c2a8;
+    extern M2C_UNK gSoundWorkerState;
+    extern M2C_UNK gSoundDecodeLock;
     void *sp3C;
     s32 sp38;
     s32 sp34;
@@ -214,8 +214,8 @@ loop_35:
                 var_r4_2 = var_r1_3;
                 if (spC < (s32) M2C_FIELD(sp3C, u8 *, 0xC2)) {
                     if (M2C_FIELD(sp3C, u8 *, 0xC0) == 2) {
-                        LockMutex(&data_0213c2a8);
-                        var_r1_3 = M2C_FIELD(&data_0213c290, u8 **, 8);
+                        LockMutex(&gSoundDecodeLock);
+                        var_r1_3 = M2C_FIELD(&gSoundWorkerState, u8 **, 8);
                     }
                     if (M2C_FIELD(sp3C, s32 (**)(void *, u8 *, u32, s32), 0x16C)(sp3C, var_r1_3, sp18, (spC * sp2C) + sp24) != sp18) {
                         sp1C = 0;
@@ -223,11 +223,11 @@ loop_35:
                         sp20 = 0;
                         sp38 = 0;
                         if (M2C_FIELD(sp3C, u8 *, 0xC0) == 2) {
-                            UnlockMutex(&data_0213c2a8);
+                            UnlockMutex(&gSoundDecodeLock);
                         }
                     } else {
                         if (M2C_FIELD(sp3C, u8 *, 0xC0) == 2) {
-                            var_r1_3 = M2C_FIELD(&data_0213c290, u8 **, 8);
+                            var_r1_3 = M2C_FIELD(&gSoundWorkerState, u8 **, 8);
                             var_r0=var_r1_3;
                             if (sp28 == 0) {
                                 var_r0 = var_r1_3 + 4;
@@ -255,7 +255,7 @@ loop_35:
                             if (var_r1_4 < sp14) {
                                 M2C_FIELD(var_r4_2,s16 *,0)=Decode470(var_r5,*var_r0&15);
                             }
-                            UnlockMutex(&data_0213c2a8);
+                            UnlockMutex(&gSoundDecodeLock);
                         }
                         goto block_118;
                     }
@@ -385,12 +385,12 @@ void func_0202ee2c(void) {
 
 #pragma opt_common_subs off
 void func_0202ee30(void *arg0) {
-void OS_SleepThread(void *);void LockMutex(void *);void UnlockMutex(void *);void *func_0202e09c(void *);void func_0202e470(void *);void func_0202e12c(void *);
+void OS_SleepThread(void *);void LockMutex(void *);void UnlockMutex(void *);void *func_0202e09c(void *);void func_0202e470(void *);void Sound_FreeRequest(void *);
 void *p;char *base=(char*)arg0; base+=0xc8;
 for(;;){OS_SleepThread((char*)arg0+0x4c0);for(;;){
 LockMutex((char*)base+0x400);p=func_0202e09c((char*)arg0+0x4e0);
 if(!p){UnlockMutex((char*)base+0x400);break;}
-func_0202e470(p);func_0202e12c(p);UnlockMutex((char*)base+0x400);
+func_0202e470(p);Sound_FreeRequest(p);UnlockMutex((char*)base+0x400);
 }}
 }
 #pragma opt_common_subs reset

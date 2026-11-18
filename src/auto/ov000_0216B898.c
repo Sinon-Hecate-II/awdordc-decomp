@@ -156,7 +156,7 @@ void func_ov000_0216c1f4(void) {
 void BuildArmyInfoWindow(void) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
-    M2C_UNK func_020a9218(void *);
+    M2C_UNK SpriteAnim_SetupFrame(void *);
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gMapConfig;
     extern void *gCurrentMap;
@@ -253,7 +253,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon0, void **, 0) = frames0;
         M2C_FIELD(icon0, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon0, M2C_UNK **, 4);
         M2C_FIELD(icon0, s16 *, 0xC) = 0;
-        func_020a9218(icon0);
+        SpriteAnim_SetupFrame(icon0);
         M2C_FIELD(icon0, s8 *, 0xE) = 0;
         M2C_FIELD(icon0, s8 *, 0xF) = 0;
     }
@@ -282,7 +282,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon1, void **, 0) = frames1;
         M2C_FIELD(icon1, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon1, M2C_UNK **, 4);
         M2C_FIELD(icon1, s16 *, 0xC) = 0;
-        func_020a9218(icon1);
+        SpriteAnim_SetupFrame(icon1);
         M2C_FIELD(icon1, s8 *, 0xE) = 0;
         M2C_FIELD(icon1, s8 *, 0xF) = 0;
     }
@@ -311,7 +311,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon2, void **, 0) = frames2;
         M2C_FIELD(icon2, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon2, M2C_UNK **, 4);
         M2C_FIELD(icon2, s16 *, 0xC) = 0;
-        func_020a9218(icon2);
+        SpriteAnim_SetupFrame(icon2);
         M2C_FIELD(icon2, s8 *, 0xE) = 0;
         M2C_FIELD(icon2, s8 *, 0xF) = 0;
     }
@@ -340,7 +340,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon3, void **, 0) = frames3;
         M2C_FIELD(icon3, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon3, M2C_UNK **, 4);
         M2C_FIELD(icon3, s16 *, 0xC) = 0;
-        func_020a9218(icon3);
+        SpriteAnim_SetupFrame(icon3);
         M2C_FIELD(icon3, s8 *, 0xE) = 0;
         M2C_FIELD(icon3, s8 *, 0xF) = 0;
     }
@@ -369,7 +369,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon4, void **, 0) = frames4;
         M2C_FIELD(icon4, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon4, M2C_UNK **, 4);
         M2C_FIELD(icon4, s16 *, 0xC) = 0;
-        func_020a9218(icon4);
+        SpriteAnim_SetupFrame(icon4);
         M2C_FIELD(icon4, s8 *, 0xE) = 0;
         M2C_FIELD(icon4, s8 *, 0xF) = 0;
     }
@@ -398,7 +398,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon5, void **, 0) = frames5;
         M2C_FIELD(icon5, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon5, M2C_UNK **, 4);
         M2C_FIELD(icon5, s16 *, 0xC) = 0;
-        func_020a9218(icon5);
+        SpriteAnim_SetupFrame(icon5);
         M2C_FIELD(icon5, s8 *, 0xE) = 0;
         M2C_FIELD(icon5, s8 *, 0xF) = 0;
     }
@@ -427,7 +427,7 @@ void BuildArmyInfoWindow(void) {
         M2C_FIELD(icon6, void **, 0) = frames6;
         M2C_FIELD(icon6, M2C_UNK **, 8) = (M2C_UNK *) M2C_FIELD(icon6, M2C_UNK **, 4);
         M2C_FIELD(icon6, s16 *, 0xC) = 0;
-        func_020a9218(icon6);
+        SpriteAnim_SetupFrame(icon6);
         M2C_FIELD(icon6, s8 *, 0xE) = 0;
         M2C_FIELD(icon6, s8 *, 0xF) = 0;
     }

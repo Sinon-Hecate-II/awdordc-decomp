@@ -403,14 +403,36 @@ s32 gti2SendRaw(void *arg0, M2C_UNK arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_0205aa34(void *p,u32 t) {
-s32 Gt2ConnectionCallCallback(void *,s32,s32,s32);void gti2SendClosed(void *);void gti2MarkConnectionClosed(void *);
-s32 state=M2C_FIELD(p,s32 *,12),flag;
-if(state<5){flag=0;
-if(M2C_FIELD(p,s32 *,16)){u32 limit=M2C_FIELD(p,u32 *,32);if(limit){if(t-M2C_FIELD(p,u32 *,28)>limit)flag=1;}}
-else if(state<4){if(t-M2C_FIELD(p,u32 *,28)>60000)flag=1;}
-if(flag){gti2SendClosed(p);gti2MarkConnectionClosed(p);if(!Gt2ConnectionCallCallback(p,6,0,0))return 0;}}
-return 1;
+/* Check one GT2 connection for a handshake timeout.  While the handshake is
+ * still in progress, a connection this side opened is dropped when it has been
+ * silent longer than its own timeout, and a connection accepted from a peer
+ * when it has been silent longer than GT2_CONNECT_TIMEOUT.  A timed-out
+ * connection sends its CLOSED command, is marked closed, and reports event 6
+ * (the timeout) to the connection's callback.  Returns 1 to keep the
+ * connection, or 0 once a callback freed the socket. */
+s32 gti2CheckTimeout(void *connection, u32 now) {
+    s32 Gt2ConnectionCallCallback(void *, s32, s32, s32);
+    void gti2SendClosed(void *);
+    void gti2MarkConnectionClosed(void *);
+    s32 state = M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE), timedOut;
+
+    if (state < GT2_STATE_CONNECTED) {
+        timedOut = 0;
+        if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_INITIATOR)) {
+            u32 timeout = M2C_FIELD(connection, u32 *, GT2_CONNECTION_TIMEOUT);
+            if (timeout) {
+                if (now - M2C_FIELD(connection, u32 *, GT2_CONNECTION_LAST_RECEIVE) > timeout) timedOut = 1;
+            }
+        } else if (state < GT2_STATE_AWAIT_ACCEPT) {
+            if (now - M2C_FIELD(connection, u32 *, GT2_CONNECTION_LAST_RECEIVE) > GT2_CONNECT_TIMEOUT) timedOut = 1;
+        }
+        if (timedOut) {
+            gti2SendClosed(connection);
+            gti2MarkConnectionClosed(connection);
+            if (!Gt2ConnectionCallCallback(connection, 6, 0, 0)) return 0;
+        }
+    }
+    return 1;
 }
 
 s32 func_0205aad8(void *p,u32 t) {

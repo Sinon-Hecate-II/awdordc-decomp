@@ -390,7 +390,7 @@ M2C_FIELD(gOv001ProfileState,u8 *,0xA91)=M2C_FIELD(gOv001ProfileState,u8 *,0xA90
 }
 
 void func_ov001_02189308(void) {
-    func_02013e98(1);
+    MultiBoot_GetPlayerInfo(1);
 }
 
 /* Step the download-play child search from the wireless task status: while idle

@@ -84,8 +84,8 @@ Vector_AddItem(M2C_FIELD(peer,s32 *,0x38),buffer);
 M2C_FIELD(peer,s32 *,16)=gpiGetTime(0)+300;
 return 0;
 }
-void func_020556e0(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {
-M2C_UNK func_020501d8(s32,s32,void *);
+void gpiSendTransferHeader(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {
+M2C_UNK gpiSendString(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
 M2C_UNK StringFormat(void *,void *,...);
 extern M2C_UNK data_020fed58,data_020fec0c,data_020feae8,data_020fed64;
@@ -93,18 +93,18 @@ u8 buf[64];s32 b,a,c;
 a=arg3[0];b=arg3[1];c=arg3[2];
 if(!arg3)AssertFailed(&data_020fed58,&data_020fec0c,&data_020feae8,0x376);
 StringFormat(buf,&data_020fed64,arg2,a,b,c);
-func_020501d8(arg0,arg1,buf);
+gpiSendString(arg0,arg1,buf);
 }
 
 /* Queues a gpi message to a peer: sends the "\len\<n>\msg\\n" header (the
  * length being the string's when -1 is passed, an empty string when none), the
  * message bytes themselves and the terminating NUL, then sets the peer's
  * deadline to 300 ticks from now.  Returns a nonzero error code on failure. */
-s32 func_0205575c(M2C_UNK connection, void *peer, M2C_UNK *message, s32 length) {
+s32 gpiSendFramedMessage(M2C_UNK connection, void *peer, M2C_UNK *message, s32 length) {
 s32 gpiGetTime(M2C_UNK);
 s32 gpiSendOrBufferSingleChar(M2C_UNK,void *,M2C_UNK);
 s32 gpiSendOrBufferStringLen(M2C_UNK,void *,M2C_UNK *,s32);
-s32 func_020501d8(s32,s32,void *);
+s32 gpiSendString(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
 M2C_UNK StringFormat(void *,void *,...);
 s32 StringLength(M2C_UNK *);
@@ -114,7 +114,7 @@ if(!peer)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
 if(!message)message=&data_020fed78;
 if(length==-1)length=StringLength(message);
 StringFormat(header,&gGpiMessageHeaderFormat,length);
-result=func_020501d8(connection,peer,header);if(result)return result;
+result=gpiSendString(connection,peer,header);if(result)return result;
 result=gpiSendOrBufferStringLen(connection,peer,message,length);if(result)return result;
 result=gpiSendOrBufferSingleChar(connection,peer,0);if(result)return result;
 M2C_FIELD(peer,s32 *,0x10)=gpiGetTime(0)+0x12c;

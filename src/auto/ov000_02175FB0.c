@@ -176,7 +176,7 @@ for(otherKind=0;otherKind<M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x100)-1;o
 }
 u8 func_ov000_02176dcc(void *arg0) {
     s32 func_020d46e8();
-    s32 func_020d4ea8();
+    s32 GetMapInputState();
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u8 *, 0xC) == 0) {
@@ -185,7 +185,7 @@ u8 func_ov000_02176dcc(void *arg0) {
     if (func_020d46e8() != 0) {
         return 0U;
     }
-    if (func_020d4ea8() == 0) {
+    if (GetMapInputState() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

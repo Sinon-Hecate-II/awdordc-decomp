@@ -126,12 +126,12 @@ void func_02085464(M2C_UNK arg0) {
 }
 
 void func_0208547c(s32 arg0, s32 arg1, M2C_UNK arg2) {
-    void *func_01ffa444(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021020bc;
     extern M2C_UNK data_02102188;
     void *temp_r0;
 
-    temp_r0 = func_01ffa444(&data_021020bc, arg2);
+    temp_r0 = CreateSpriteForOwner(&data_021020bc, arg2);
     if (temp_r0 == NULL) {
         return;
     }
@@ -183,9 +183,9 @@ s32 func_0208552c(M2C_UNK arg0, void *arg1) {
 }
 
 void func_0208559c(s32 a,s32 b,s32 c) {
-    void *func_01ffa444(M2C_UNK *,M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *,M2C_UNK);
     extern M2C_UNK data_021020f4, data_021021b0;
-    void *p=func_01ffa444(&data_021020f4,c);
+    void *p=CreateSpriteForOwner(&data_021020f4,c);
     if(!p) return;
     M2C_FIELD(p,void **,0)=&data_021021b0;
     M2C_FIELD(p,s32 *,0x34)=func_02084fc0((M2C_UNK *)&func_0208552c);
@@ -257,10 +257,10 @@ s32 Link_HandlePlayerDataMessage(u32 arg0, void *message) {
 }
 
 void func_02085724(s32 a,s32 b,s32 c,s32 d) {
-    void *func_01ffa444(M2C_UNK *,M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *,M2C_UNK);
     s32 GetLocalPlayerIdForOverlay(void);
     extern M2C_UNK gLinkPlayerDataClass, data_0210219c;
-    void *p=func_01ffa444(&gLinkPlayerDataClass,d);
+    void *p=CreateSpriteForOwner(&gLinkPlayerDataClass,d);
     if(!p) return;
     M2C_FIELD(p,void **,0)=&data_0210219c;
     M2C_FIELD(p,s32 *,0x34)=func_02084fc0((M2C_UNK *)&Link_HandlePlayerDataMessage);

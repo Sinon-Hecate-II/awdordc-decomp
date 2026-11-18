@@ -334,6 +334,17 @@ enum {
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
 #define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
 
+/* The 3D sprite pool and its allocator.  g3DSpriteObjects is the pool of
+ * DS3D_SPRITE_COUNT objects of DS3D_SPRITE_SIZE bytes each; g3DSpriteOrder is the
+ * array of pointers to them with the live objects first, g3DSpriteAllocator is the
+ * boundary into that array (its cursor field) and g3DSpriteLayerHeads holds the
+ * twelve per-layer list heads. */
+#define DS3D_SPRITE_COUNT  0x80  /* objects in the pool */
+#define DS3D_SPRITE_SIZE   0x74  /* bytes of one object */
+#define DS3D_SPRITE_Z_NONE 0xFF00 /* DS3D_SPRITE_Z of an object with no depth set */
+#define DS3D_ALLOC_CURSOR  0x00  /* void *: first free slot in the order array */
+#define DS3D_ALLOC_TAIL    0x234 /* word after the order array; the reset clears it */
+
 /* DS3D_SPRITE_FLAGS bits. */
 #define DS3D_SPRITE_FLAG_DEAD       0x01 /* removed from its list; the walk stops for it */
 #define DS3D_SPRITE_FLAG_TREE_OWNED 0x02 /* freed as part of a tree, not on its own */
@@ -453,5 +464,24 @@ typedef struct ToggleWidget {
 #define FACE_EFFECT_DIM_HALF 0x08 /* blend half way towards black */
 #define FACE_EFFECT_DIM_MOST 0x10 /* blend down to a quarter brightness */
 #define FACE_EFFECT_BLACK 0x20 /* blend all the way to black */
+
+/* Face layout types, the index into the face graphics file table (see
+ * GetFaceLayoutFile): info.cg, select.cg, the battle (btl), talk and body
+ * poses neutral/smile/angry, and the defeated break.cg.  The layout size
+ * helpers give the pixel size of each layout's texture. */
+enum {
+    FACE_LAYOUT_INFO = 0,
+    FACE_LAYOUT_SELECT = 1,
+    FACE_LAYOUT_BTL_N = 2,
+    FACE_LAYOUT_BTL_S = 3,
+    FACE_LAYOUT_BTL_A = 4,
+    FACE_LAYOUT_TALK_N = 5,
+    FACE_LAYOUT_TALK_S = 6,
+    FACE_LAYOUT_TALK_A = 7,
+    FACE_LAYOUT_BODY_N = 8,
+    FACE_LAYOUT_BODY_S = 9,
+    FACE_LAYOUT_BODY_A = 10,
+    FACE_LAYOUT_BREAK = 11
+};
 
 #endif

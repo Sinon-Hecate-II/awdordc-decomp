@@ -74,7 +74,7 @@ ComparePlayerGauges kind:function(arm,size=0x178) addr:0x021e4034
 func_ov002_021e41ac kind:function(arm,size=0xfc) addr:0x021e41ac
 func_ov002_021e42a8 kind:function(arm,size=0x8) addr:0x021e42a8
 func_ov002_021e42b0 kind:function(arm,size=0x14) addr:0x021e42b0
-func_ov002_021e42c4 kind:function(arm,size=0xa4) addr:0x021e42c4
+StepUnitViewGauge kind:function(arm,size=0xa4) addr:0x021e42c4
 DrawFlatQuad kind:function(arm,size=0x114) addr:0x021e4368
 DrawGradientQuad kind:function(arm,size=0x144) addr:0x021e447c
 DrawVersusPanelArtFlipped kind:function(arm,size=0xb4) addr:0x021e45c0
@@ -84,11 +84,11 @@ func_ov002_021e47b0 kind:function(arm,size=0x7c) addr:0x021e47b0
 DrawGaugeFillAnchoredRight kind:function(arm,size=0xbc) addr:0x021e482c
 func_ov002_021e48e8 kind:function(arm,size=0x94) addr:0x021e48e8
 func_ov002_021e497c kind:function(arm,size=0x1ec) addr:0x021e497c
-func_ov002_021e4b68 kind:function(arm,size=0x2c) addr:0x021e4b68
+AreUnitViewGaugesDone kind:function(arm,size=0x2c) addr:0x021e4b68
 func_ov002_021e4b94 kind:function(arm,size=0xde0) addr:0x021e4b94
 func_ov002_021e5974 kind:function(arm,size=0x14) addr:0x021e5974
-func_ov002_021e5988 kind:function(arm,size=0x5c) addr:0x021e5988
-func_ov002_021e59e4 kind:function(arm,size=0x378) addr:0x021e59e4
+MirrorTilemapHorizontally kind:function(arm,size=0x5c) addr:0x021e5988
+SetupCountryGraphics kind:function(arm,size=0x378) addr:0x021e59e4
 func_ov002_021e5d5c kind:function(arm,size=0xf80) addr:0x021e5d5c
 func_ov002_021e6cdc kind:function(arm,size=0x28) addr:0x021e6cdc
 ReleaseBattleSceneResources kind:function(arm,size=0xb0) addr:0x021e6d04
@@ -1212,7 +1212,7 @@ data_ov002_021f1bf4 kind:data(any) addr:0x021f1bf4
 data_ov002_021f2d1c kind:data(any) addr:0x021f2d1c
 data_ov002_021f2d2a kind:data(any) addr:0x021f2d2a
 data_ov002_021f2d4c kind:data(any) addr:0x021f2d4c
-data_ov002_021f2d84 kind:data(any) addr:0x021f2d84
+sUnitShadowPaletteFile kind:data(any) addr:0x021f2d84
 data_ov002_021f2d94 kind:data(any) addr:0x021f2d94
 data_ov002_021f2da0 kind:data(any) addr:0x021f2da0
 data_ov002_021f2dac kind:data(any) addr:0x021f2dac
@@ -1268,9 +1268,9 @@ data_ov002_021f306e kind:bss addr:0x021f306e
 data_ov002_021f30e4 kind:bss addr:0x021f30e4
 gPlayerSettings kind:bss addr:0x021f30f0
 gEffectTable kind:bss addr:0x021f30f4
-data_ov002_021f30f8 kind:bss addr:0x021f30f8
+gScreenCountryAssets kind:bss addr:0x021f30f8
 data_ov002_021f30fd kind:bss addr:0x021f30fd
-data_ov002_021f30fe kind:bss addr:0x021f30fe
+gVersusGaugeHp kind:bss addr:0x021f30fe
 data_ov002_021f30ff kind:bss addr:0x021f30ff
 data_ov002_021f3101 kind:bss addr:0x021f3101
 gEffectDefaultVariant kind:bss addr:0x021f3103

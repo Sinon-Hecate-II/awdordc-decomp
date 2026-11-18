@@ -429,14 +429,14 @@ s8 func_02084ba8(M2C_UNK arg0) {
 }
 
 s32 Link_BroadcastMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_ov009_02224d9c(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 QueueHostLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 func_ov010_02229608(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02224d9c(arg0, arg1, arg2, 0xFFFF);
+        return QueueHostLinkPacket(arg0, arg1, arg2, 0xFFFF);
     case 2:
         return func_ov010_02229608(arg0, arg1, arg2, 0xFFFF);
     default:
@@ -450,7 +450,7 @@ s32 Link_SendMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02224d9c(arg0, arg1, arg2, arg3);
+        return QueueHostLinkPacket(arg0, arg1, arg2, arg3);
     case 2:
         return func_ov010_02229608(arg0, arg1, arg2, arg3);
     default:
@@ -555,14 +555,14 @@ void func_02084e64(void) {
 }
 
 void Link_FlushSend(void) {
-    M2C_UNK func_ov009_02223fbc();
+    M2C_UNK AnnounceLinkPlayer();
     M2C_UNK func_ov010_02229a94();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        func_ov009_02223fbc();
+        AnnounceLinkPlayer();
         return;
     case 2:
         func_ov010_02229a94();

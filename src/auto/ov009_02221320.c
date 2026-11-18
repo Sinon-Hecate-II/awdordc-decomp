@@ -273,7 +273,7 @@ loop_1:
 #pragma opt_lifetimes off
 void func_ov009_02221ae8(Receive21ae8 *state){
 s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK func_ov009_02224d1c(s32);
-s32 func_ov009_022254a4(void);s32 func_ov009_02224d9c(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
+s32 func_ov009_022254a4(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
 s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
 M2C_UNK MI_CpuCopy8();void func_ov009_02222278(s32,M2C_UNK);
 s32 GetLinkLocalPlayerId(void);s32 func_ov009_022240ac(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 func_ov009_022222d0(u8);
@@ -287,9 +287,9 @@ channel=M2C_FIELD(packet,PacketBits215a4 *,5).low;
 switch(M2C_FIELD(packet,u8 *,4)){
 case 2:
 value=func_ov009_022254a4();p=M2C_FIELD(gLinkState,s32 *,0x48);
-if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))func_ov009_02224d9c(2,p,8,(u16)(1<<channel));}
-else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))func_ov009_02224d9c(3,p,8,(u16)(1<<channel));
-else func_ov009_02224d9c(2,packet+12,8,(u16)(1<<channel));break;
+if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))QueueHostLinkPacket(2,p,8,(u16)(1<<channel));}
+else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))QueueHostLinkPacket(3,p,8,(u16)(1<<channel));
+else QueueHostLinkPacket(2,packet+12,8,(u16)(1<<channel));break;
 case 3:
 value=func_ov009_022254a4();p=M2C_FIELD(gLinkState,s32 *,0x48);
 if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))M2C_FIELD(p,u16 *,4)|=1<<channel;}
@@ -297,7 +297,7 @@ else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))M2C_FIELD(p,u16 *,
 case 4:
 ClearPlayerActive(M2C_FIELD(packet,s32 *,12),M2C_FIELD(packet,s32 *,16),M2C_FIELD(packet,s32 *,20),M2C_FIELD(packet,u8 *,24),0);break;
 case 5:
-func_ov009_02224d9c(6,(s32)gLinkSession,2,(u16)(1<<channel));break;
+QueueHostLinkPacket(6,(s32)gLinkSession,2,(u16)(1<<channel));break;
 case 6:
 SetConnectedPlayers(M2C_FIELD(packet,u16 *,12));p=M2C_FIELD(gLinkState,s32 *,0x24);
 if(p){M2C_FIELD(p,u8 *,0)=1;M2C_FIELD(M2C_FIELD(gLinkState,s32 *,0x24),u16 *,2)=GetConnectedPlayers();}break;
@@ -315,12 +315,12 @@ if(M2C_FIELD(p,u8 *,4)<16)Push21ae8(data_ov009_02226980,channel,p);else Push21ae
 state->channels[channel].offset=0;p=state->channels[channel].packet;
 if(p){func_ov009_02224d1c(p);state->channels[channel].packet=0;}func_ov009_02224cd8();break;
 case 11:
-func_ov009_02222278((u8)channel,packet+12);GetLinkLocalPlayerId();p=func_ov009_022240ac();func_ov009_02224d9c(12,p,96,(u16)(1<<channel));break;
+func_ov009_02222278((u8)channel,packet+12);GetLinkLocalPlayerId();p=func_ov009_022240ac();QueueHostLinkPacket(12,p,96,(u16)(1<<channel));break;
 case 12:
 func_ov009_02222278((u8)channel,packet+12);p=M2C_FIELD(gLinkState,s32 *,32);if(p)M2C_FIELD(p,u16 *,2)|=1<<channel;break;
 case 13:
 if(GetBattleSaveBlock()){value=func_020c5640(packet+12);if(value>=0)func_020c536c(value,packet+24);func_ov009_022222d0((u8)channel);}
-else func_ov009_02224d9c(14,0,0,0xffff);break;
+else QueueHostLinkPacket(14,0,0,0xffff);break;
 case 14:
 p=M2C_FIELD(gLinkState,s32 *,40);if(p)M2C_FIELD(p,u16 *,0)|=1<<channel;break;
 case 15:

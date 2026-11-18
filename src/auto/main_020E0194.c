@@ -2,7 +2,7 @@
 #include "common.h"
 M2C_UNK func_020e0e8c();
 M2C_UNK func_020e0194();
-M2C_UNK func_020e02ac();
+M2C_UNK CloseOnlineMenu();
 typedef struct { unsigned char value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 static inline s32 E0B04Process(void *entity) {
@@ -76,29 +76,33 @@ u16 value;
  
 }
 
-M2C_UNK func_020e02ac(void *arg0) { void *p;
- s16 v;
-void *q;
-u16 value;
- func_ov010_022294ec();func_ov010_02228c88(arg0);
- p=M2C_FIELD(arg0,void**,0x54);
- if(func_020e_check(p))Hide3DSpriteSlide(p);
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x58));
- if(Is3DSpriteVisible(M2C_FIELD(arg0,void**,0x60)))Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x60));
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x64));
- v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
- q=M2C_FIELD(arg0,void**,0x68);
- M2C_FIELD(q,s16*,0xe)=v;
- M2C_FIELD(q,s16*,0x10)=-255;
- M2C_FIELD(q,s16*,0xc)=12;
- value=M2C_FIELD(q,u16*,4);
-M2C_FIELD(q,u16*,2)=value;
- return value;
+/* Closes the online session, hides the menu's button sprites and starts the menu
+ * panel's slide-out tween.  Returns the tween's start value. */
+M2C_UNK CloseOnlineMenu(void *menu) {
+    void *button;
+    s16 value;
+    SpriteTween *slide;
+    u16 start;
+
+    func_ov010_022294ec(); func_ov010_02228c88(menu);
+    button = M2C_FIELD(menu, void **, 0x54);
+    if (func_020e_check(button)) Hide3DSpriteSlide(button);
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
+    if (Is3DSpriteVisible(M2C_FIELD(menu, void **, 0x60))) Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x60));
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x64));
+    value = GetSpriteAnimValue(M2C_FIELD(menu, void **, 0x68));
+    slide = M2C_FIELD(menu, void **, 0x68);
+    slide->from = value;
+    slide->to = -255;
+    slide->duration = 12;
+    start = slide->start;
+    slide->current = start;
+    return start;
 }
 
 void func_020e0350(void) {
-    M2C_UNK func_020e02ac();
-    ((M2C_UNK (*)())func_020e02ac)();
+    M2C_UNK CloseOnlineMenu();
+    ((M2C_UNK (*)())CloseOnlineMenu)();
 }
 
 void func_020e035c(void) {
@@ -152,7 +156,7 @@ M2C_UNK DismissOnlineMenu(void *menu) {
 }
 
 void func_020e0468(void) {
-    ((M2C_UNK (*)())func_020e02ac)();
+    ((M2C_UNK (*)())CloseOnlineMenu)();
 }
 
 void func_020e0474(void) {

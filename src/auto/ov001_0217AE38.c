@@ -23,12 +23,12 @@ void MapSelectList_SetRowTiles(s32 arg0, s32 arg1) {
  * each of the up-to-five visible rows, one 0x1C-pixel row apart, offset by the
  * list's current scroll position; then flag the BG scroll registers as dirty. */
 void MapSelectList_PositionRows(void) {
-    s32 func_020020c4(u16, s32); /* hardware divide unit: remainder */
+    s32 HardwareDivideRemainder(u16, s32); /* hardware divide unit: remainder */
     extern M2C_UNK gMapSelectState;
     u32 *label, *name;
     s32 y, count, row;
 
-    y = MAPSELECT_ROW_BASE_Y - func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
+    y = MAPSELECT_ROW_BASE_Y - HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
     count = M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_COUNT);
     row = 0;
     if (count > MAPSELECT_ROWS) count = MAPSELECT_ROWS;
@@ -49,7 +49,7 @@ void MapSelectList_PositionRows(void) {
  * and at the end of the step redraw the visible rows, release the scroll bar and
  * report the task's result.  Runs as the repeated-key scroll task. */
 void MapSelectList_ScrollUp(s32 task) {
-    s32 func_020020c4(u16, s32); /* hardware divide unit: remainder */
+    s32 HardwareDivideRemainder(u16, s32); /* hardware divide unit: remainder */
     s32 HardwareDivide(s32, s32); /* hardware divide unit: quotient */
     extern M2C_UNK gMapSelectState;
     s32 remainder;
@@ -61,7 +61,7 @@ void MapSelectList_ScrollUp(s32 task) {
     } else {
         M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) = 0;
     }
-    remainder = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
+    remainder = HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS);
     if (remainder == MAPSELECT_ROW_UNITS - 4) {
         MapSelectList_Redraw();
         return;
@@ -73,7 +73,7 @@ void MapSelectList_ScrollUp(s32 task) {
     MapSelectList_PositionRows();
     if (remainder != 0) return;
     HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
-    func_ov001_021839e4();
+    Ov001_UpdateScrollbarHandle();
     Ov001_UnblockScrollBar();
     func_ov001_0217b130();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = 0;
@@ -81,13 +81,13 @@ void MapSelectList_ScrollUp(s32 task) {
 }
 
 void MapSelectList_ScrollDown(s32 arg0) {
-    s32 func_020020c4(u16, s32);
+    s32 HardwareDivideRemainder(u16, s32);
     extern M2C_UNK gMapSelectState;
     s32 result;
     Ov001_BlockScrollBar();
     Ov001_FreeSpriteObjects();
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) + 4;
-    result = func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
+    result = HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C);
     if (result >= 4) {
         MapSelectList_PositionRows();
         return;
@@ -95,7 +95,7 @@ void MapSelectList_ScrollDown(s32 arg0) {
     M2C_FIELD(&gMapSelectState, u16 *, 2) = M2C_FIELD(&gMapSelectState, u16 *, 2) - result;
     MapSelectList_Redraw();
     HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, 2) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x53), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40));
-    func_ov001_021839e4();
+    Ov001_UpdateScrollbarHandle();
     Ov001_UnblockScrollBar();
     func_ov001_0217b130();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = 0;
@@ -103,14 +103,14 @@ void MapSelectList_ScrollDown(s32 arg0) {
 }
 
 void func_ov001_0217b0d4(void) {
-    s32 func_020020c4(u16, M2C_UNK);
+    s32 HardwareDivideRemainder(u16, M2C_UNK);
     extern M2C_UNK gMapSelectState;
     s32 temp_r1;
 
     if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x56) == 0) {
         return;
     }
-    temp_r1 = 0x01FF0000 & ((func_020020c4(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C) - 0x32) << 0x10);
+    temp_r1 = 0x01FF0000 & ((HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C) - 0x32) << 0x10);
     M2C_FIELD((void *)0x04000010, s32 *, 0) = temp_r1;
     M2C_FIELD((void *)0x04000010, s32 *, 8) = temp_r1;
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x56) = 0U;
@@ -141,7 +141,7 @@ M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELEC
 }} else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 1:case 2: if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>(row+1))M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {func_ov001_0217b33c();return;}break;
-case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;MapSelectList_Redraw();func_ov001_021839e4(0);}break;
+case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;MapSelectList_Redraw();Ov001_UpdateScrollbarHandle(0);}break;
 }
 if(!moved){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH))return;Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH)=1;return;}
 Ov001_PlaySound(8);func_ov001_0217b130();

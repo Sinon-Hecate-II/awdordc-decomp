@@ -164,19 +164,19 @@ s32 func_ov009_022254d8(void) {
 }
 
 M2C_UNK func_ov009_0222550c(void *arg0, s32 arg1) {
-    M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
+    M2C_UNK QueueHostLinkPacket(s32, void *, s32, s32);
     extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, s32 *, 0) = arg1;
     M2C_FIELD(arg0, s16 *, 4) = 1 << GetLinkLocalPlayerId();
     M2C_FIELD(&gLinkState, void **, 0x48) = arg0;
     if (func_ov009_022254a4() == 0) return;
-    func_ov009_02224d9c(2, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
+    QueueHostLinkPacket(2, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
 }
 
 s32 func_ov009_02225560(s32 arg0) {
     s32 GetConnectedPlayers();
     s32 GetLinkPhase();
-    M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
+    M2C_UNK QueueHostLinkPacket(s32, void *, s32, s32);
     extern M2C_UNK gLinkState;
     s32 temp_r4;
     s32 var_r5;
@@ -187,7 +187,7 @@ s32 func_ov009_02225560(s32 arg0) {
     if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r5 = 0;
     if (!(temp_r4 & 1)) var_r5 = 0;
     if (var_r5 == 0 && func_ov009_022254a4() != 0)
-        func_ov009_02224d9c(3, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
+        QueueHostLinkPacket(3, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
     return var_r5;
 }
 
@@ -231,10 +231,10 @@ void *func_ov009_02225654(s32 arg0, M2C_UNK arg1) {
 }
 
 M2C_UNK func_ov009_022256a4(s32 arg0) {
-    s32 func_ov009_02223fbc();
+    s32 AnnounceLinkPlayer();
     extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, u16 *, 2) = 1 << GetLinkLocalPlayerId();
-    M2C_FIELD(arg0, u8 *, 0) = func_ov009_02223fbc();
+    M2C_FIELD(arg0, u8 *, 0) = AnnounceLinkPlayer();
     M2C_FIELD(&gLinkState, s32 *, 0x20) = arg0;
 }
 
@@ -386,7 +386,7 @@ void BroadcastLinkPlayerInfo(void *maskPtr) {
     s32 GetLocalPlayerName();
     s32 GetLocalPlayerNameLength(void);
     void MI_CpuCopy8(void *, void *, s32);
-    M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
+    M2C_UNK QueueHostLinkPacket(s32, void *, s32, s32);
     extern M2C_UNK gLinkState;
     u8 packet[LINK_PLAYER_INFO_SIZE];
     u16 peers;
@@ -405,7 +405,7 @@ void BroadcastLinkPlayerInfo(void *maskPtr) {
         MI_CpuFill8((s32)(packet+LINK_PLAYER_NAME_OFFSET),0,LINK_PLAYER_NAME_SIZE);
         name=(void *)GetLocalPlayerName();
         MI_CpuCopy8(name,packet+LINK_PLAYER_NAME_OFFSET,GetLocalPlayerNameLength()*2);
-        func_ov009_02224d9c(LINK_MSG_PLAYER_INFO,packet,LINK_PLAYER_INFO_SIZE,peers);
+        QueueHostLinkPacket(LINK_MSG_PLAYER_INFO,packet,LINK_PLAYER_INFO_SIZE,peers);
     } else {
         M2C_FIELD(maskPtr, u16 *, 0)=1<<GetLinkLocalPlayerId();
         M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE)=NULL;
@@ -699,11 +699,11 @@ void func_ov009_02225f48(void *arg0) {
 }
 
 M2C_UNK func_ov009_02225fb4(s8 arg0, u16 arg1, s32 arg2, void *arg3) {
-    void *func_01ffa444(void *, void *);
+    void *CreateSpriteForOwner(void *, void *);
     extern M2C_UNK data_ov009_0222682c, data_ov009_0222673c;
     void *temp_r0;
     if (arg2 == 0) return;
-    temp_r0 = func_01ffa444(&data_ov009_0222682c, arg3);
+    temp_r0 = CreateSpriteForOwner(&data_ov009_0222682c, arg3);
     if (temp_r0 == NULL) return;
     M2C_FIELD(temp_r0, void **, 0) = &data_ov009_0222673c;
     M2C_FIELD(temp_r0, u8 *, 0x34) = 0;
@@ -781,7 +781,7 @@ void func_ov009_02226154(void) {
 }
 
 void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
-    void *func_01ffa444(void *, void *);
+    void *CreateSpriteForOwner(void *, void *);
     s32 GetLocalPlayerName();
     M2C_UNK func_02085c4c();
     M2C_UNK func_ov009_02223f34(s32);
@@ -801,18 +801,18 @@ void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
     func_ov009_02223f34(0x654);
     func_ov009_02223f44(GetLocalPlayerName(), 0x14);
     func_02085c4c();
-    func_01ffa444(&data_ov009_02226784, arg2);
+    CreateSpriteForOwner(&data_ov009_02226784, arg2);
 }
 
 void func_ov009_022261e4(M2C_UNK arg0, u16 arg1, void *arg2) {
     s32 GetLinkPhase(void);
     M2C_UNK EnableMapConfirm(void);
-    void *func_01ffa444(void *, void *);
+    void *CreateSpriteForOwner(void *, void *);
     extern M2C_UNK data_ov009_022267b4;
     if (GetLinkPhase() == 0) {
         EnableMapConfirm();
         return;
     }
-    func_01ffa444(&data_ov009_022267b4, arg2);
+    CreateSpriteForOwner(&data_ov009_022267b4, arg2);
 }
 

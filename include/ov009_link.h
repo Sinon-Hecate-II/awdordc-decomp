@@ -11,6 +11,16 @@
 #define LINK_EVENT_COMMAND 0x08 /* u16 command reported by the task */
 #define LINK_EVENT_VALUE   0x0a /* u16 command argument */
 
+/* Event record of a link completion task started with func_02012b08: like the
+ * callback above it carries the status at +0x02, but its command word is at +0x04. */
+#define LINK_TASK_EVENT_COMMAND 0x04 /* u16 command reported by a completion task */
+#define LINK_TASK_CMD_DATA_DONE 10   /* the task's data step finished; the link is up */
+
+/* gLinkState link-setup flags and the console's own player slot. */
+#define LINK_STATE_FLAGS        0x156 /* u8: link setup flags */
+#define LINK_STATE_FLAG_LINKED  0x01  /* the link is up: set when a task reports its data step */
+#define LINK_STATE_LOCAL_PLAYER 0x157 /* u8: this console's player slot */
+
 /* Phases of the link state machine (gLinkState +0x10). */
 enum {
     LINK_PHASE_IDLE    = 0,

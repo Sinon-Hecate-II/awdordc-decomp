@@ -789,14 +789,14 @@ void ListRemove(void *arg0, void *arg1) {
     *(u16 *)((u8 *)arg0 + 0x8) = idx;
 }
 
-s32 func_02029ddc(void *arg0, s32 arg1) {
+s32 ListNext(void *arg0, s32 arg1) {
     if (arg1 == 0) {
         return M2C_FIELD(arg0, s32 *, 0);
     }
     return M2C_FIELD((arg1 + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 4);
 }
 
-s32 ListNext(void *arg0, s32 arg1) {
+s32 ListPrev(void *arg0, s32 arg1) {
     if (arg1 == 0) {
         return M2C_FIELD(arg0, s32 *, 4);
     }
@@ -804,13 +804,13 @@ s32 ListNext(void *arg0, s32 arg1) {
 }
 
 M2C_UNK func_02029e08(M2C_UNK *arg0, M2C_UNK arg1) {
-    s32 func_02029ddc(void *, s32);
+    s32 ListNext(void *, s32);
     M2C_UNK orig = (M2C_UNK)arg0;
     M2C_UNK key = arg1;
     M2C_UNK cur;
     M2C_UNK r;
 
-    cur = func_02029ddc((void *)arg0, 0);
+    cur = ListNext((void *)arg0, 0);
     while (cur != 0) {
         if (M2C_FIELD((void *)cur, u32 *, 0x18) > (u32)key) {
             goto advance;
@@ -824,7 +824,7 @@ M2C_UNK func_02029e08(M2C_UNK *arg0, M2C_UNK arg1) {
         }
         return cur;
     advance:
-        cur = func_02029ddc((void *)orig, cur);
+        cur = ListNext((void *)orig, cur);
     }
     return 0;
 }

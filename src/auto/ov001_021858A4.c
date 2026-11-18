@@ -84,7 +84,7 @@ for(i=0;i<OV001_MENU_ROWS;i++)Ov001_DestroySprite(((s32 *)M2C_FIELD(&gOv001MenuL
 Ov001_FreeAlloc(&data_ov001_02193e10);
 }
 #pragma opt_strength_reduction reset
-s32 func_ov001_02185b34(void) {
+s32 Ov001_IsMenuLayoutReady(void) {
     extern M2C_UNK gOv001MenuLayout;
     if (M2C_FIELD(&gOv001MenuLayout, void **, 4) == NULL) {
         return 1;

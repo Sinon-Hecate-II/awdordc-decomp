@@ -1,104 +1,112 @@
 /* 37 functions from 0x02187590 to 0x0218851C (ov001), found by ds-decomp. */
 #include "common.h"
 #include "ov001_wh.h"
+#include "ov001_link.h"
 
 #pragma merge_duplicate_code off
-void func_ov001_02187590(s32 player, u32 event, const u8 *report) {
+/* Callback the multiboot command layer runs for the ov001 Download Play link.
+ * Each event moves the child's bit between the link header's stage bitmaps as it
+ * joins, reports its info block or leaves, and fills the child's work-block
+ * record.  On teardown the pending multiboot requests are dropped; a status event
+ * either fails the link or is ignored.  Events are MB_EVENT_* ids; packet is the
+ * event's record (a join request or a status word) or NULL. */
+void Ov001_HandleLinkEvent(s32 player, u32 event, const u8 *packet) {
     extern s16 *gOv001LinkWork;
     u16 Ov001_GetLinkStatus(void);
     void Ov001_SetLinkStatus(s16);
-    s32 func_ov001_02187934(s32);
-    void func_ov001_02187560(void);
-    void func_ov001_021870bc(s32);
+    s32 Ov001_GetPlayerStage(s32);
+    void Ov001_TryStartTransfer(void);
+    void Ov001_HandleChildPhase1(s32);
     void Ov001_HandleChildPhase0(s32);
     void Ov001_CompletePlayerLeave(s32);
-    void *func_02013e98(s32);
+    void *MultiBoot_GetPlayerInfo(s32);
     void *OS_DisableInterrupts();
     void OS_RestoreInterrupts(void *);
     s32 MI_CpuCopy8(void *, void *, s32);
     void SystemHalt(void);
-    u16 *work;
+    u16 *header;
     u8 *address;
     s32 offset;
     void *interrupts;
     void *child;
-    u16 keep;
+    u16 clearMask;
     u16 status;
 
     switch (event) {
-    case 2:
+    case MB_EVENT_JOIN:
         if (Ov001_GetLinkStatus() != 2) return;
-        work = (u16 *)gOv001LinkWork;
+        header = (u16 *)gOv001LinkWork;
         interrupts = OS_DisableInterrupts();
-        work[1] |= 1 << player;
+        header[OV001_LINK_JOINED / 2] |= 1 << player;
         OS_RestoreInterrupts(interrupts);
-        offset = (player - 1) * 30;
-        address = (u8 *)gOv001LinkWork + 0x24 + offset;
-        address[0] = report[0xa];
-        address[1] = report[0xb];
-        address[2] = report[0xc];
-        address[3] = report[0xd];
-        address[4] = report[0xe];
-        address[5] = report[0xf];
-        M2C_FIELD((u8 *)gOv001LinkWork + offset, u16 *, 0x2a) = player;
+        offset = (player - 1) * OV001_LINK_RECORD_SIZE;
+        address = (u8 *)gOv001LinkWork + OV001_LINK_RECORDS + OV001_LINK_RECORD_ADDRESS + offset;
+        address[0] = packet[0xa];
+        address[1] = packet[0xb];
+        address[2] = packet[0xc];
+        address[3] = packet[0xd];
+        address[4] = packet[0xe];
+        address[5] = packet[0xf];
+        M2C_FIELD((u8 *)gOv001LinkWork + OV001_LINK_RECORDS + offset, u16 *, OV001_LINK_RECORD_ID) = player;
         return;
-    case 3:
-        if (func_ov001_02187934(player) == 6) return;
-        keep = ~(1 << player);
+    case MB_EVENT_LEAVE:
+        if (Ov001_GetPlayerStage(player) == 6) return;
+        clearMask = ~(1 << player);
         interrupts = OS_DisableInterrupts();
-        ((u16 *)gOv001LinkWork)[1] &= keep;
-        ((u16 *)gOv001LinkWork)[2] &= keep;
-        ((u16 *)gOv001LinkWork)[3] &= keep;
-        ((u16 *)gOv001LinkWork)[4] &= keep;
-        ((u16 *)gOv001LinkWork)[5] &= keep;
-        ((u16 *)gOv001LinkWork)[6] &= keep;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED) &= clearMask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICKED) &= clearMask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_PENDING) &= clearMask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_ANSWERED) &= clearMask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_READY) &= clearMask;
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED_COPY) &= clearMask;
         OS_RestoreInterrupts(interrupts);
-        func_ov001_02187560();
+        Ov001_TryStartTransfer();
         return;
-    case 10:
+    case MB_EVENT_PLAYER_DATA:
         if (Ov001_GetLinkStatus() != 2) {
             Ov001_HandleChildPhase0(player);
             return;
         }
-        ((u16 *)gOv001LinkWork)[2] |= 1 << player;
-        func_ov001_021870bc(player);
-        child = func_02013e98(player);
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICKED) |= 1 << player;
+        Ov001_HandleChildPhase1(player);
+        child = MultiBoot_GetPlayerInfo(player);
         if (child == NULL) return;
-        MI_CpuCopy8(child, (u8 *)gOv001LinkWork + 0xe + (player - 1) * 30, 0x16);
+        MI_CpuCopy8(child, (u8 *)gOv001LinkWork + OV001_LINK_RECORDS + (player - 1) * OV001_LINK_RECORD_SIZE, OV001_LINK_RECORD_INFO_SIZE);
         return;
-    case 14:
-        ((u16 *)gOv001LinkWork)[2] &= ~(1 << player);
-        ((u16 *)gOv001LinkWork)[3] |= 1 << player;
+    case MB_EVENT_GROUP_LEAVE:
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICKED) &= ~(1 << player);
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_PENDING) |= 1 << player;
         if (Ov001_GetLinkStatus() == 3) Ov001_CompletePlayerLeave(player);
         return;
-    case 7:
-        ((u16 *)gOv001LinkWork)[4] &= ~(1 << player);
-        ((u16 *)gOv001LinkWork)[5] |= 1 << player;
+    case MB_EVENT_CHUNK_ACK:
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_KICK_ANSWERED) &= ~(1 << player);
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_READY) |= 1 << player;
         return;
-    case 9:
-        ((u16 *)gOv001LinkWork)[5] &= ~(1 << player);
-        ((u16 *)gOv001LinkWork)[6] |= 1 << player;
-        func_ov001_02187560();
+    case MB_EVENT_KICK:
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_READY) &= ~(1 << player);
+        M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED_COPY) |= 1 << player;
+        Ov001_TryStartTransfer();
         return;
-    case 12: {
-        u8 *pending;
+    case MB_EVENT_TEARDOWN: {
+        u8 *tail;
         void *request;
         if (Ov001_GetLinkStatus() == 4) Ov001_SetLinkStatus(5);
         else Ov001_SetLinkStatus(0);
-        pending = (u8 *)gOv001LinkWork;
-        pending += 0x1b000;
-        request = M2C_FIELD(pending, void **, 0x144);
+        /* drop the pending multiboot program (+0x144) and transfer (+0x140) requests */
+        tail = (u8 *)gOv001LinkWork;
+        tail += 0x1b000;
+        request = M2C_FIELD(tail, void **, 0x144);
         if (request != NULL)
-            M2C_FIELD(pending, void **, 0x144) = NULL;
-        pending = (u8 *)gOv001LinkWork;
-        pending += 0x1b000;
-        request = M2C_FIELD(pending, void **, 0x140);
+            M2C_FIELD(tail, void **, 0x144) = NULL;
+        tail = (u8 *)gOv001LinkWork;
+        tail += 0x1b000;
+        request = M2C_FIELD(tail, void **, 0x140);
         if (request != NULL)
-            M2C_FIELD(pending, void **, 0x140) = NULL;
+            M2C_FIELD(tail, void **, 0x140) = NULL;
         return;
     }
-    case 13:
-        status = *(const u16 *)report;
+    case MB_EVENT_STATUS:
+        status = *(const u16 *)packet;
         switch (status) {
         case 1:
         case 2:
@@ -110,11 +118,11 @@ void func_ov001_02187590(s32 player, u32 event, const u8 *report) {
             return;
         }
     case 1: break;
-    case 4: break;
-    case 5: break;
-    case 6: break;
-    case 8: break;
-    case 11: break;
+    case MB_EVENT_GROUP_REJECT: break;
+    case MB_EVENT_GROUP_JOIN: break;
+    case MB_EVENT_GROUP_DATA: break;
+    case MB_EVENT_CHUNK_SENT: break;
+    case MB_EVENT_ROSTER_DONE: break;
     default:
         SystemHalt();
         break;
@@ -140,7 +148,7 @@ table[3]=(u16*)(q+4);table[4]=(u16*)(q+5);table[5]=(u16*)(q+6);
 return *(u16 *)M2C_FIELD(data_ov001_02190c68,s32 *,arg0*4);
 }
 #pragma scheduling off
-s32 func_ov001_02187934(s32 arg0) {
+s32 Ov001_GetPlayerStage(s32 arg0) {
     void *OS_DisableInterrupts(s32);
     void OS_RestoreInterrupts(void *);
     s32 MI_CpuCopy8(void *, void *, s32);

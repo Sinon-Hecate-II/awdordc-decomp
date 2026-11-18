@@ -5,7 +5,7 @@ extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020f
 
 
 #pragma opt_strength_reduction off
-s32 func_0205180c(void **a, void *b, char *text) {
+s32 gpiProcessConnect(void **a, void *b, char *text) {
 s32 gpiProcessErrorReply(void **,char *,s32);
 s32 gpiValueForKey(char *,M2C_UNK *,void *,s32);
 s32 ParseInt(char *);
@@ -100,22 +100,27 @@ break;
 return 0;
 }
 #pragma opt_strength_reduction on
-s32 func_02051ed0(void **arg0) {
+/* gpiCheckConnect (gpiConnect.c): one step of the gpi connection handshake.  Poll
+ * the connection's socket and, when the server has accepted it, move the
+ * connection into the connected state; a refused socket raises the connection
+ * error and reports it, and no activity leaves the connection alone.  Returns a
+ * nonzero error code to stop the caller. */
+s32 gpiCheckConnect(void **connection) {
 M2C_UNK gpiCallErrorCallback(void **,s32,s32);
 s32 gpiCheckConnectionSocket(void **,s32,s32 *);
 M2C_UNK gpiSetError(void **,s32,M2C_UNK *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-extern M2C_UNK data_020fe200,data_020fe3c4,data_020fe628,data_020fe650;
-s32 state,result;void *p=*arg0;
-result=gpiCheckConnectionSocket(arg0,M2C_FIELD(p,s32 *,0x1d4),&state);
+extern M2C_UNK sGpiConnectCheckName,sGpiConnectSourceFile,gGpiMsgConnectionRefused,sGpiAssertStateConnected;
+s32 state,result;void *session=*connection;
+result=gpiCheckConnectionSocket(connection,M2C_FIELD(session,s32 *,0x1d4),&state);
 if(result)return result;
-if(state==4){
-gpiSetError(arg0,0x107,&data_020fe628);
-gpiCallErrorCallback(arg0,4,1);return 4;
+if(state==GPI_SOCKET_REFUSED){
+gpiSetError(connection,0x107,&gGpiMsgConnectionRefused);
+gpiCallErrorCallback(connection,4,1);return 4;
 }
-if(state==0)return 0;
-if(state!=3)AssertFailed(&data_020fe650,&data_020fe3c4,&data_020fe200,0x2ef);
-M2C_FIELD(p,s32 *,0x1d8)=2;
+if(state==GPI_SOCKET_NONE)return 0;
+if(state!=GPI_SOCKET_ACCEPTED)AssertFailed(&sGpiAssertStateConnected,&sGpiConnectSourceFile,&sGpiConnectCheckName,0x2ef);
+M2C_FIELD(session,s32 *,GPI_CONN_STATE)=GPI_STATE_CONNECTED;
 return 0;
 }
 

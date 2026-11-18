@@ -3,7 +3,7 @@
 #include "sound.h"
 void func_0202de74(void *);
 void Sound_ReleaseChannel(void *);
-void func_0202e12c(M2C_UNK);
+void Sound_FreeRequest(M2C_UNK);
 void func_0202e02c(M2C_UNK,void *);
 
 /* Set up and start one sound/music player slot from a sample descriptor:
@@ -21,7 +21,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     s32 Sound_StartVoice(void *, s32, s32, s32, s32, s32, s32, s32);
     void Sound_ReleaseChannel(void *);
     void Sound_SetChannelVolume(void *, s32, M2C_UNK);
-    void func_0202e1f4();
+    void Sound_QueueSegment();
 
     void *player;
     void *pb;
@@ -86,7 +86,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     {
         s32 scaledSize = M2C_FIELD(player, s32 *, 0x130) * channels;
         s32 channelBytes = (s32)func_020722fc((u32)scaledSize, (u32)M2C_FIELD(player, u8 *, 0x124));
-        if (Sound_StartVoice(player, playMode, M2C_FIELD(player, s32 *, 0x12C), channelBytes, M2C_FIELD(player, u16 *, 0xC6), 4, (M2C_UNK)func_0202e1f4, (M2C_UNK)player) == 0) {
+        if (Sound_StartVoice(player, playMode, M2C_FIELD(player, s32 *, 0x12C), channelBytes, M2C_FIELD(player, u16 *, 0xC6), 4, (M2C_UNK)Sound_QueueSegment, (M2C_UNK)player) == 0) {
             Sound_ReleaseChannel(player);
             M2C_FIELD(player, void (**)(void *), 0x168)(player);
             Sound_ReleasePlayer(player);
@@ -125,11 +125,11 @@ void func_0202de74(void *arg0) {
     M2C_UNK UnlockMutex(M2C_UNK *);
     M2C_UNK Sound_StopIfPlaying(void *);
     M2C_UNK func_0202df0c(void *);
-    extern M2C_UNK data_0213c290;
-    extern M2C_UNK data_0213c908;
-    LockMutex(&data_0213c908);
-    if (M2C_FIELD(&data_0213c290, s32 *, 4) != 0) {
-        LockMutex(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
+    extern M2C_UNK gSoundWorkerState;
+    extern M2C_UNK gSoundWorkerLock;
+    LockMutex(&gSoundWorkerLock);
+    if (M2C_FIELD(&gSoundWorkerState, s32 *, 4) != 0) {
+        LockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, 4) + 0x4C8);
     }
     if (((s32) (M2C_FIELD(arg0, s32 *, 0x110) << 0x1E) >> 0x1F) != 0) {
         Sound_StopIfPlaying(arg0);
@@ -138,21 +138,21 @@ void func_0202de74(void *arg0) {
         M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x170)(arg0);
     }
     func_0202df0c(arg0);
-    UnlockMutex(&data_0213c908);
-    if (M2C_FIELD(&data_0213c290, s32 *, 4) == 0) {
+    UnlockMutex(&gSoundWorkerLock);
+    if (M2C_FIELD(&gSoundWorkerState, s32 *, 4) == 0) {
         return;
     }
-    UnlockMutex(M2C_FIELD(&data_0213c290, s32 *, 4) + 0x4C8);
+    UnlockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, 4) + 0x4C8);
 }
 
 M2C_UNK func_0202df0c(void *arg0) {
 void func_0202e02c(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
-extern M2C_UNK data_0213c920; extern M2C_UNK data_0213c290;
+extern M2C_UNK gSoundRequestQueue; extern M2C_UNK gSoundWorkerState;
 if((M2C_FIELD(arg0,s32 *,0x110)<<31)>>31==0) return;
 Sound_ReleaseChannel(arg0);
 M2C_FIELD(arg0,void (**)(void *),0x168)(arg0);
-func_0202e02c((M2C_UNK)&data_0213c920,arg0);
-if(M2C_FIELD(&data_0213c290,void **,4)) func_0202e02c((M2C_UNK)((u8 *)M2C_FIELD(&data_0213c290,void **,4)+0x4e0),arg0);
+func_0202e02c((M2C_UNK)&gSoundRequestQueue,arg0);
+if(M2C_FIELD(&gSoundWorkerState,void **,4)) func_0202e02c((M2C_UNK)((u8 *)M2C_FIELD(&gSoundWorkerState,void **,4)+0x4e0),arg0);
 Sound_ReleasePlayer(arg0);
 }
 
@@ -195,13 +195,13 @@ void func_0202dfcc(void *arg0, s32 arg1) {
 
 void func_0202e02c(M2C_UNK arg0,void *arg1) {
 s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);
-void *func_02029ddc(M2C_UNK,M2C_UNK); M2C_UNK ListRemove(M2C_UNK,void *);
+void *ListNext(M2C_UNK,M2C_UNK); M2C_UNK ListRemove(M2C_UNK,void *);
 s32 saved; void *node,*next;
 saved=OS_DisableInterrupts();
-node=func_02029ddc(arg0,0);
+node=ListNext(arg0,0);
 while(node) {
-next=func_02029ddc(arg0,(M2C_UNK)node);
-if(M2C_FIELD(node,void **,8)==arg1) {ListRemove(arg0,node);func_0202e12c((M2C_UNK)node);}
+next=ListNext(arg0,(M2C_UNK)node);
+if(M2C_FIELD(node,void **,8)==arg1) {ListRemove(arg0,node);Sound_FreeRequest((M2C_UNK)node);}
 node=next;
 }
 OS_RestoreInterrupts(saved);
@@ -209,13 +209,13 @@ OS_RestoreInterrupts(saved);
 
 void *func_0202e09c(M2C_UNK arg0) {
     M2C_UNK ListRemove(M2C_UNK, void *);
-    void *func_02029ddc(M2C_UNK, M2C_UNK);
+    void *ListNext(M2C_UNK, M2C_UNK);
     s32 temp_r4;
     void *temp_r0;
     void *temp_r1;
 
     temp_r4 = OS_DisableInterrupts();
-    temp_r0 = func_02029ddc(arg0, 0);
+    temp_r0 = ListNext(arg0, 0);
     if (temp_r0 != NULL) {
         ListRemove(arg0, temp_r0);
         temp_r1 = M2C_FIELD(temp_r0, void **, 8);
@@ -226,101 +226,105 @@ void *func_0202e09c(M2C_UNK arg0) {
 }
 
 #pragma opt_common_subs off
-M2C_UNK func_0202e0ec(void) {
-extern M2C_UNK data_0213c29c[];
+M2C_UNK Sound_AllocRequest(void) {
+extern M2C_UNK gSoundFreeRequests[];
 s32 saved; M2C_UNK node;
 saved=OS_DisableInterrupts();
-node=(M2C_UNK)func_02029ddc((M2C_UNK)data_0213c29c,0);
-if(node!=0) ListRemove((M2C_UNK)&data_0213c29c,(void *)node);
+node=(M2C_UNK)ListNext((M2C_UNK)gSoundFreeRequests,0);
+if(node!=0) ListRemove((M2C_UNK)&gSoundFreeRequests,(void *)node);
 OS_RestoreInterrupts(saved);
 return node;
 }
 #pragma opt_common_subs reset
-void func_0202e12c(M2C_UNK arg0) {
+void Sound_FreeRequest(M2C_UNK arg0) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK ListAppend(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0213c29c[];
+    extern M2C_UNK gSoundFreeRequests[];
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    ListAppend(data_0213c29c, arg0);
+    ListAppend(gSoundFreeRequests, arg0);
     OS_RestoreInterrupts(temp_r4);
 }
 
 void func_0202e158(s32 arg0,s32 arg1,void *arg2) {
 M2C_UNK LockMutex(M2C_UNK *); M2C_UNK UnlockMutex(M2C_UNK *); M2C_UNK func_0202b544();
-extern M2C_UNK data_0213c290; extern M2C_UNK data_0213c908;
+extern M2C_UNK gSoundWorkerState; extern M2C_UNK gSoundWorkerLock;
 if(arg0!=M2C_FIELD(arg2,s32 *,0x12c)) return;
-LockMutex(&data_0213c908);
-if(M2C_FIELD(&data_0213c290,s32 *,4)) LockMutex(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
+LockMutex(&gSoundWorkerLock);
+if(M2C_FIELD(&gSoundWorkerState,s32 *,4)) LockMutex(M2C_FIELD(&gSoundWorkerState,s32 *,4)+0x4c8);
 func_0202de74(arg2);
 M2C_FIELD(arg2,s32 *,0x12c)=0; M2C_FIELD(arg2,s32 *,0x130)=0; M2C_FIELD(arg2,u8 *,0x124)=0;
 if(M2C_FIELD(arg2,s32 *,0x120)>0) {
 func_0202b544(arg2); M2C_FIELD(arg2,s32 *,0x120)=0;
 }
-UnlockMutex(&data_0213c908);
-if(!M2C_FIELD(&data_0213c290,s32 *,4)) return;
-UnlockMutex(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
+UnlockMutex(&gSoundWorkerLock);
+if(!M2C_FIELD(&gSoundWorkerState,s32 *,4)) return;
+UnlockMutex(M2C_FIELD(&gSoundWorkerState,s32 *,4)+0x4c8);
 }
 
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
-void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, s32 playMode, s32 callbackArg) {
-    M2C_UNK func_02029ddc(M2C_UNK, M2C_UNK);
+/* A player's segment callback, run when a segment starts: queues a request for
+ * the sound worker to fill the segment's note buffers.  When the player already
+ * has two requests queued, it first drops the player's oldest request and
+ * silences the note buffers that request would have filled. */
+void Sound_QueueSegment(s32 mode, s32 noteCount, u8 **buffers, s32 size, s32 playMode, s32 callbackArg) {
+    M2C_UNK ListNext(M2C_UNK, M2C_UNK);
     M2C_UNK ListRemove(M2C_UNK, void *);
-    void func_0202e12c(M2C_UNK);
-    M2C_UNK func_0202e0ec(void);
+    void Sound_FreeRequest(M2C_UNK);
+    M2C_UNK Sound_AllocRequest(void);
     M2C_UNK ListAppend(M2C_UNK *, M2C_UNK);
     void OS_WakeupThread(void *);
     void MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0213c920;
-    extern M2C_UNK data_0213c440;
-    extern M2C_UNK data_0213c290;
+    extern M2C_UNK gSoundRequestQueue;
+    extern M2C_UNK gSoundWorker;
+    extern M2C_UNK gSoundWorkerState;
 
     u8 *player = (u8 *)callbackArg;
-    M2C_UNK node;
-    void *base;
+    M2C_UNK request;
+    void *worker;
     s32 i;
 
-    if (M2C_FIELD(player, s32 *, 0x11c) >= 2) {
+    if (M2C_FIELD(player, s32 *, SOUND_HANDLE_REQUEST_COUNT) >= 2) {
         M2C_UNK oldRequest;
-        s32 channel;
-        oldRequest = func_02029ddc((M2C_UNK)&data_0213c920, 0);
+        s32 note;
+        oldRequest = ListNext((M2C_UNK)&gSoundRequestQueue, 0);
         while (oldRequest != 0) {
-            if (M2C_FIELD(oldRequest, void **, 8) == player)
+            if (M2C_FIELD(oldRequest, void **, SOUND_REQUEST_PLAYER) == player)
                 break;
-            oldRequest = func_02029ddc((M2C_UNK)&data_0213c920, oldRequest);
+            oldRequest = ListNext((M2C_UNK)&gSoundRequestQueue, oldRequest);
         }
-        channel = 0;
-        if (M2C_FIELD(oldRequest, s32 *, 0x10) > 0) {
+        note = 0;
+        if (M2C_FIELD(oldRequest, s32 *, SOUND_REQUEST_NOTE_COUNT) > 0) {
             do {
-                MI_CpuFill8(M2C_FIELD((u8 *)oldRequest + channel * 4, void **, 0x14), 0, M2C_FIELD(oldRequest, M2C_UNK *, 0x2c));
-                ++channel;
-            } while (channel < M2C_FIELD(oldRequest, s32 *, 0x10));
+                MI_CpuFill8(M2C_FIELD((u8 *)oldRequest + note * 4, u8 **, SOUND_REQUEST_BUFFERS), 0, M2C_FIELD(oldRequest, M2C_UNK *, SOUND_REQUEST_SIZE));
+                ++note;
+            } while (note < M2C_FIELD(oldRequest, s32 *, SOUND_REQUEST_NOTE_COUNT));
         }
-        ListRemove((M2C_UNK)&data_0213c920, (void *)oldRequest);
-        --M2C_FIELD(player, s32 *, 0x11c);
-        func_0202e12c(oldRequest);
+        ListRemove((M2C_UNK)&gSoundRequestQueue, (void *)oldRequest);
+        --M2C_FIELD(player, s32 *, SOUND_HANDLE_REQUEST_COUNT);
+        Sound_FreeRequest(oldRequest);
     }
 
-    node = func_0202e0ec();
-    *(void **)((u8 *)node + 8) = player;
-    *(M2C_UNK *)((u8 *)node + 0xc) = arg0;
-    *(s32 *)((u8 *)node + 0x10) = arg1;
-    for (i = 0; i < arg1; i++) {
-        M2C_FIELD((u8 *)node + i * 4, M2C_UNK *, 0x14) = arg2[i];
+    request = Sound_AllocRequest();
+    M2C_FIELD(request, void **, SOUND_REQUEST_PLAYER) = player;
+    M2C_FIELD(request, s32 *, SOUND_REQUEST_MODE) = mode;
+    M2C_FIELD(request, s32 *, SOUND_REQUEST_NOTE_COUNT) = noteCount;
+    for (i = 0; i < noteCount; i++) {
+        M2C_FIELD((u8 *)request + i * 4, u8 **, SOUND_REQUEST_BUFFERS) = buffers[i];
     }
-    *(M2C_UNK *)((u8 *)node + 0x2c) = arg3;
+    M2C_FIELD(request, s32 *, SOUND_REQUEST_SIZE) = size;
 
-    base = &data_0213c440;
-    if (arg0 == 0) {
-        void *current = M2C_FIELD(&data_0213c290, void **, 4);
-        if (current != NULL) base = current;
+    worker = &gSoundWorker;
+    if (mode == 0) {
+        void *current = M2C_FIELD(&gSoundWorkerState, void **, SOUND_TASK_STATE_TASK);
+        if (current != NULL) worker = current;
     }
-    *(s32 *)((u8 *)player + 0x11c) = *(s32 *)((u8 *)player + 0x11c) + 1;
-    ListAppend((M2C_UNK *)((u8 *)base + 0x4e0), node);
-    OS_WakeupThread((void *)((u8 *)base + 0x4c0));
+    *(s32 *)((u8 *)player + SOUND_HANDLE_REQUEST_COUNT) = *(s32 *)((u8 *)player + SOUND_HANDLE_REQUEST_COUNT) + 1;
+    ListAppend((M2C_UNK *)((u8 *)worker + SOUND_TASK_REQUEST_QUEUE), request);
+    OS_WakeupThread((void *)((u8 *)worker + SOUND_TASK_WAIT_QUEUE));
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset

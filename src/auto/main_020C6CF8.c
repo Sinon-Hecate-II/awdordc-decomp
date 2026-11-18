@@ -360,10 +360,10 @@ void func_020c7850(void *arg0) {
 }
 
 void func_020c7874(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
-    void *func_01ffa444(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212ae54;
     void *temp_r0;
-    temp_r0 = func_01ffa444(&data_0212ae54, arg4);
+    temp_r0 = CreateSpriteForOwner(&data_0212ae54, arg4);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x64) = arg2;
@@ -380,10 +380,10 @@ void func_020c78c4(void *arg0) {
 }
 
 void func_020c78e8(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
-    void *func_01ffa444(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212aeec;
     void *temp_r0;
-    temp_r0 = func_01ffa444(&data_0212aeec, arg4);
+    temp_r0 = CreateSpriteForOwner(&data_0212aeec, arg4);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x64) = arg2;
@@ -407,11 +407,11 @@ void func_020c7920(void *arg0) {
 void func_020c79ac(void *arg0) { void func_020b67e0(s32,s32,void *); func_020b67e0(M2C_FIELD(arg0,s32 *,0x34),M2C_FIELD(arg0,s32 *,0x38),arg0); }
 
 void func_020c79c4(s32 arg0, s32 arg1, M2C_UNK arg2) {
-    void *func_01ffa444(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212ae9c;
     void *temp_r0;
 
-    temp_r0 = func_01ffa444(&data_0212ae9c, arg2);
+    temp_r0 = CreateSpriteForOwner(&data_0212ae9c, arg2);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
 }

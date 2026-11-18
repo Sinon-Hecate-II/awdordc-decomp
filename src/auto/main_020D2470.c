@@ -152,7 +152,7 @@ s32 IsPropertyOwnedByTeam(s32 arg0, s32 arg1, s32 arg2) {
     return IsSameTeam(arg0, byte >> 5);
 }
 
-s32 func_020d2850(s32 arg0,s32 arg1,s32 arg2) {
+s32 Map_ShowsCargoForUnit(s32 arg0,s32 arg1,s32 arg2) {
 extern s32 *gCurrentMap;
 extern u8 gUnitKindCargoCount[];
 void *base=*gCurrentMap;

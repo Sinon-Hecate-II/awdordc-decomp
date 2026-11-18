@@ -93,15 +93,18 @@ CopyToObjPaletteShadow(GetTerrainPalette(terrainId,armyVariant),0x2e0,32);
 AddSprite((u16)((x+4)&511),(u16)((y+12)&255),(u16)((0x3ff&(0x210>>DS3D_BOUNDARY_SHIFT))+0x7000),gSpriteDesc16x32,8);
 }
 #pragma pop
-s32 GetUnitPanelKind(void *arg0) {
-    s32 func_020d2850(u32, u16, u8);
+/* Classifies the unit-info panel a map unit needs: 0 for no unit (the terrain
+   panel), 2 when the unit is a transport whose carried units are shown, and 1 for
+   an ordinary unit's status panel. */
+s32 GetUnitPanelKind(void *unit) {
+    s32 Map_ShowsCargoForUnit(u32, u16, u8);
     extern void **gCurrentMap;
-    s32 var_r3;
-    if (arg0 == NULL) return 0;
-    if (arg0 == NULL) var_r3 = 0;
-    else var_r3 = ((s32)arg0 - (s32)((u8 *)*gCurrentMap + 0x59A4)) / 14;
-    if (func_020d2850((u32)(M2C_FIELD(arg0,u8 *,0) << 26) >> 26, M2C_FIELD(*gCurrentMap,u16 *,0x52A4), (u8)((var_r3 >> 6)+1)) != 0) return 2;
-    if ((M2C_FIELD(arg0,u8 *,12) | M2C_FIELD(arg0,u8 *,13)) != 0) return 2;
+    s32 unitId;
+    if (unit == NULL) return 0;
+    if (unit == NULL) unitId = 0;
+    else unitId = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+    if (Map_ShowsCargoForUnit((u32)(M2C_FIELD(unit,u8 *,0) << 26) >> 26, M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER), (u8)((unitId >> 6)+1)) != 0) return 2;
+    if ((M2C_FIELD(unit,u8 *,MAP_UNIT_FIRST_CARRIED) | M2C_FIELD(unit,u8 *,MAP_UNIT_NEXT_CARRIED)) != 0) return 2;
     return 1;
 }
 

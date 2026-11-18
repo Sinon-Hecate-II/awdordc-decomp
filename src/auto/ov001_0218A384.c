@@ -125,7 +125,7 @@ void func_ov001_0218a6d8(s32 arg0, ...) {
 }
 
 void Ov001_QueuePush(void *arg0, s32 arg1) {
-    u8 func_020020c4(s32, u16);
+    u8 HardwareDivideRemainder(s32, u16);
     M2C_UNK OS_EnableIrqMask(s32);
     s32 OS_DisableIrqMask(M2C_UNK);
     M2C_UNK SystemHalt();
@@ -133,7 +133,7 @@ void Ov001_QueuePush(void *arg0, s32 arg1) {
     u8 temp_r0;
 
     temp_r6 = OS_DisableIrqMask(1);
-    temp_r0 = func_020020c4(M2C_FIELD(arg0, u8 *, 3) + 1, M2C_FIELD(arg0, u16 *, 0));
+    temp_r0 = HardwareDivideRemainder(M2C_FIELD(arg0, u8 *, 3) + 1, M2C_FIELD(arg0, u16 *, 0));
     if (temp_r0 == M2C_FIELD(arg0, u8 *, 2)) {
         SystemHalt();
     }
@@ -143,12 +143,12 @@ void Ov001_QueuePush(void *arg0, s32 arg1) {
 }
 
 s32 Ov001_QueuePop(void *arg0) {
-M2C_UNK OS_EnableIrqMask(M2C_UNK);s32 OS_DisableIrqMask(M2C_UNK);u8 func_020020c4(s32,u16);
+M2C_UNK OS_EnableIrqMask(M2C_UNK);s32 OS_DisableIrqMask(M2C_UNK);u8 HardwareDivideRemainder(s32,u16);
 s32 result=0,saved,value;u8 head,tail,idx;u16 size;
 
 saved=OS_DisableIrqMask(1);head=M2C_FIELD(arg0,u8 *,3);tail=M2C_FIELD(arg0,u8 *,2);
 if(tail!=head){size=M2C_FIELD(arg0,u16 *,0);
-value=func_020020c4(head+size-1,size);M2C_FIELD(arg0,u8 *,3)=value;idx=M2C_FIELD(arg0,u8 *,3);
+value=HardwareDivideRemainder(head+size-1,size);M2C_FIELD(arg0,u8 *,3)=value;idx=M2C_FIELD(arg0,u8 *,3);
 result=M2C_FIELD((u8*)arg0+(idx<<2),s32 *,4);}
 OS_EnableIrqMask(saved);return result;
 }

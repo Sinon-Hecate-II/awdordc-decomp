@@ -444,6 +444,8 @@ typedef struct NasRequest {
 
 #define WFC_STATE_CONN_FLAGS   0xD0B /* u8: bits 2-3 connection status, bits 4-5 mode, high nibble attempts */
 #define WFC_STATE_FRIEND_MASK  0xD16 /* u16: one bit per friend id taking part in the friend connection */
+#define WFC_FRIEND_ID_COUNT    13    /* friend ids: bits 0..12 of WFC_STATE_FRIEND_MASK */
+#define WFC_FRIEND_CODE_WAIT_MS 300  /* state 3 waits this long for a code before trying the next friend id */
 #define WFC_STATE_CONN_EVENT   0xD14 /* u8 outcome of the friend connection: 1 cancelled, 2/3/4 results */
 #define WFC_STATE_CONN_RETRY   0xD15 /* u8 friend-connection attempts made, wraps at 3 */
 #define WFC_STATE_LINK_RETURN  0xD0E /* u8 session state to resume after the link step */

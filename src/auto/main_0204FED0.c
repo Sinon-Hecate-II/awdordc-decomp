@@ -118,7 +118,7 @@ s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s
     return 0;
 }
 
-void func_020501d8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void gpiSendString(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK gpiSendOrBufferStringLen(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 StringLength(M2C_UNK);
     gpiSendOrBufferStringLen(arg0, arg1, arg2, StringLength(arg2));

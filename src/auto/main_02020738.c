@@ -3,7 +3,7 @@
 #include "net_socket.h"
 
 
-s32 func_020210b8(void);
+s32 NetworkPollClosing(void);
 
 s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16 tag, s32 fallback, s32 mode) {
     /* Queue a (possibly wrapped) send from connection's circular buffer and remember how much was taken. */
@@ -119,38 +119,43 @@ s32 SocketSendTask(void *request) {
  return total;
 }
 
-s32 GetMaxSendChunk(s32 arg0) {
+/* Clamps a requested send size to a whole number of the connection's send units.
+   A unit is twice the smaller of the connection's two send windows (0x2C/0x2E),
+   further capped by the network stack's maximum (gNetStackState+0x24); without a
+   connection the stack maximum is used.  Returns `size` itself when no unit is
+   known or the unit is larger than the request. */
+s32 GetMaxSendChunk(s32 size) {
     s32 func_020720f0(s32, s32);
     extern M2C_UNK gSocketManager;
-    extern M2C_UNK data_02138ad0;
-    s32 temp_r0;
+    extern M2C_UNK gNetStackState;
+    s32 count;
     s32 lock;
-    s32 var_r5;
-    s32 max;
-    s32 temp_r2;
-    s32 var_r3;
-    void *temp_r5;
-    temp_r5 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
+    s32 chunkUnit;
+    s32 maxUnit;
+    s32 sendWindow;
+    s32 unit;
+    void *socket;
+    socket = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, SOCK_OBJECT_RAW);
     lock = OS_DisableInterrupts();
-    if (temp_r5 != NULL) {
-        var_r3 = M2C_FIELD(temp_r5, u16 *, 0x2E);
-        if ((var_r3 != 0) && (temp_r2 = M2C_FIELD(temp_r5, u16 *, 0x2C), temp_r2 != 0)) {
-            max = M2C_FIELD(&data_02138ad0, s32 *, 0x24);
-            if (var_r3 > temp_r2) var_r3 = temp_r2;
-            if (var_r3 > max) var_r3 = max;
-            var_r5 = var_r3 * 2;
+    if (socket != NULL) {
+        unit = M2C_FIELD(socket, u16 *, 0x2E);
+        if ((unit != 0) && (sendWindow = M2C_FIELD(socket, u16 *, 0x2C), sendWindow != 0)) {
+            maxUnit = M2C_FIELD(&gNetStackState, s32 *, 0x24);
+            if (unit > sendWindow) unit = sendWindow;
+            if (unit > maxUnit) unit = maxUnit;
+            chunkUnit = unit * 2;
         } else {
-            var_r5 = M2C_FIELD(&data_02138ad0, s32 *, 0x24) * 2;
+            chunkUnit = M2C_FIELD(&gNetStackState, s32 *, 0x24) * 2;
         }
     } else {
-        var_r5 = M2C_FIELD(&data_02138ad0, s32 *, 0x24) * 2;
+        chunkUnit = M2C_FIELD(&gNetStackState, s32 *, 0x24) * 2;
     }
     OS_RestoreInterrupts(lock);
-    if (var_r5 > 0) {
-        temp_r0 = func_020720f0(arg0, var_r5);
-        if (temp_r0 > 0) return var_r5 * temp_r0;
+    if (chunkUnit > 0) {
+        count = func_020720f0(size, chunkUnit);
+        if (count > 0) return chunkUnit * count;
     }
-    return arg0;
+    return size;
 }
 
 s32 ReadSendRequest(s32 arg0, s32 arg1, void *arg2) {
@@ -397,30 +402,34 @@ M2C_UNK func_02020f30(void) {
     OS_RestoreInterrupts(temp_r5);
 }
 
-s32 func_02020f6c(void) {
+/* Shuts the network stack down: latches its init token, waits while sockets are
+   still closing, frees the socket task pool and, when the net allocator has no
+   block outstanding, frees the stack's buffer and clears gNetAllocator.  Returns
+   the task-pool result (negative on failure). */
+s32 NetworkShutdown(void) {
     M2C_UNK SleepMilliseconds(M2C_UNK);
     M2C_UNK func_0201a4f8(s32);
     M2C_UNK func_0201a508();
-    s32 func_0201f160();
+    s32 NetworkFreeTaskPool();
     extern void *gNetAllocator;
     extern s32 data_021372e0;
     extern s32 data_02138ac4;
-    extern M2C_UNK data_02138ad0;
-    s32 temp_r4;
+    extern M2C_UNK gNetStackState;
+    s32 result;
     if (data_02138ac4 == 0) { data_02138ac4 = data_021372e0; }
-    if (func_020210b8() == -0x1A) {
-        do { SleepMilliseconds(0x64); } while (func_020210b8() == -0x1A);
+    if (NetworkPollClosing() == SOCK_BUSY) {
+        do { SleepMilliseconds(0x64); } while (NetworkPollClosing() == SOCK_BUSY);
     }
-    temp_r4 = func_0201f160();
-    if (temp_r4 >= 0) {
+    result = NetworkFreeTaskPool();
+    if (result >= 0) {
         func_0201a508();
         func_0201a4f8(0);
         if (M2C_FIELD(gNetAllocator, s32 *, 0x28) == 0) {
-            M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&data_02138ad0, s32 *, 0x1C));
+            M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&gNetStackState, s32 *, 0x1C));
         }
         gNetAllocator = NULL;
     }
-    return temp_r4;
+    return result;
 }
 
 /* Closes every socket that is still open, one per pass, skipping the socket
@@ -447,7 +456,7 @@ retry:
     return SOCK_BUSY;
 }
 
-s32 func_020210b8(void) {
+s32 NetworkPollClosing(void) {
     s32 func_0201a4a8();
     M2C_UNK SocketClose(s32);
     M2C_UNK func_02020f30();

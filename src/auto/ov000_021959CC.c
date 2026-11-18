@@ -40,126 +40,71 @@ return 0;
 #pragma opt_propagation reset
 s32 func_ov000_02195b80(s16 *out) {
     s32 IsPropertyTerrain(s32);
-    s32 GetUnitAttackClass(u32);
-    s32 func_ov000_0217bc34(s32, s32, s32, s32);
     s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     void SelectMapLayer(void *);
     void BuildUnitMoveRange(void *);
     s32 IsAllyUnitAtCell(s16, s16);
     s32 IsValidMoveCell(s16, s16);
-    s32 func_ov000_021959cc(s32, s32, s32, s32);
     s32 GetUnitAttackRangeMax(void *);
-
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
+    extern s8 gTerrainPropertyType[];
     extern void *gAiUnitTypeTuning;
-    extern u8 gTerrainPropertyType[];
-
-    void *up;
-    s32 unitKind;
-    u8 attr;
-    void *map;
-    s32 resX = -1;
-    s32 resY = -1;
-    s32 best = 0x7fff;
-    s32 flag = 0;
-    s32 y, x;
-    s32 height, width;
-
-    up = *(void **)((u8 *)*gCurrentMap + 0x52d0);
-    unitKind = ((u8 *)up)[0] & 0x3f;
-    attr = gUnitKindFlags[unitKind * 0x70];
-    if (attr & 0x20) {
-        return 0;
-    }
-    FloodFillUnitRange(((u8 *)up)[1], ((u8 *)up)[2], (u32)unitKind, 110, 0);
-
-    map = *gCurrentMap;
-    SelectMapLayer((u8 *)map + 0x2338);
-    BuildUnitMoveRange((u8 *)map + 0x52d0);
-    SelectMapLayer((u8 *)map + 0x1e30);
-
-    height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
-    for (y = 0; y < height; y++) {
-        width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
-        for (x = 0; x < width; x++) {
-            s8 cand;
-            void *rows;
-            u8 *m;
-            u16 rowOff;
-            u8 grid0;
-
-            rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
-            cand = ((s8 *)rows)[x];
-            if (cand < 0) continue;
-
-            m = (u8 *)*gCurrentMap;
-            rowOff = *(u16 *)(m + 0x3758 + y * 2);
-            grid0 = *(u8 *)(m + x + rowOff + 0x1420);
-            if (IsPropertyTerrain(grid0 & 0x1f) == 0) continue;
-
-            m = (u8 *)*gCurrentMap;
-            rowOff = *(u16 *)(m + 0x3758 + y * 2);
-            grid0 = *(u8 *)(m + x + rowOff + 0x1420);
-            if (*(u16 *)(m + 0x52a6) != (grid0 & 0xe0)) continue;
-
-            rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
-            cand = ((s8 *)rows)[x];
-            if (best < cand) continue;
-
-            {
-                u8 thr;
-                u8 grid1;
-                m = (u8 *)*gCurrentMap;
-                rowOff = *(u16 *)(m + 0x3758 + y * 2);
-                grid1 = *(u8 *)(m + x + rowOff + 0x2d48);
-                thr = ((u8 *)gAiUnitTypeTuning)[2];
-                if (grid1 >= thr) continue;
-
-                if (gTerrainPropertyType[grid0 & 0x1f] != 0) continue;
-
-                {
-                    s32 mask;
-                    mask = GetUnitAttackRangeMax(*(void **)((u8 *)*gCurrentMap + 0x52d0));
-                    if (func_ov000_021959cc(x, y, unitKind, mask & 0xff) == 0) continue;
-                }
-
-                {
-                    u8 *m2 = (u8 *)*gCurrentMap;
-                    u16 r2off = *(u16 *)(m2 + 0x3758 + y * 2);
-                    u8 g1 = *(u8 *)(m2 + x + r2off + 0x2d48);
-                    u8 thr2 = ((u8 *)gAiUnitTypeTuning)[2];
-                    if (g1 >= thr2) continue;
-                }
-
-                {
-                    u8 *m2 = (u8 *)*gCurrentMap;
-                    u16 r2off = *(u16 *)(m2 + 0x3758 + y * 2);
-                    s8 *p = (s8 *)(m2 + x + r2off + 0x2338);
-                    if (*p < 0) continue;
-                }
-
-                if (IsAllyUnitAtCell((s16)x, (s16)y) != 0) continue;
-                if (IsValidMoveCell((s16)x, (s16)y) == 0) continue;
-
-                if (flag != 0) {
-                    rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
-                    cand = ((s8 *)rows)[x];
-                    if (best < cand) continue;
-                    flag = 1;
-                } else {
-                    resX = x;
-                    resY = y;
-                    rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
-                    best = ((s8 *)rows)[x];
-                }
+    UnitKind959 *acting;
+    s32 kind;
+    u8 kindFlags;
+    register s32 targetX = -1, targetY = -1, bestCost = 0x7fff, occupied = 0, y, x;
+    u8 *map;
+    acting = M2C_FIELD(*gCurrentMap, UnitKind959 **, MAP_CURSOR_UNIT);
+    kind = acting->kind;
+    kindFlags = gUnitKindFlags[kind * 0x70];
+    if (kindFlags & 0x20) return 0;
+    FloodFillUnitRange(M2C_FIELD(acting, u8 *, MAP_UNIT_X), M2C_FIELD(acting, u8 *, MAP_UNIT_Y), kind, 110, 0);
+    SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT));
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
+    for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+            u16 rowOffset;
+            u8 terrain;
+            u8 threat;
+            u8 threatLimit;
+            s32 range;
+            u8 *cell;
+            if (M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID)[x] < 0) continue;
+            map = (u8 *)*gCurrentMap;
+            rowOffset = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            terrain = M2C_FIELD(map + x + rowOffset, u8 *, MAP_CELL_TERRAIN);
+            if (!IsPropertyTerrain(terrain & MAP_TERRAIN_KIND_MASK)) continue;
+            map = (u8 *)*gCurrentMap;
+            rowOffset = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            terrain = M2C_FIELD(map + x + rowOffset, u8 *, MAP_CELL_TERRAIN);
+            if (gTerrainPropertyType[terrain & MAP_TERRAIN_KIND_MASK] != 0) continue;
+            if (M2C_FIELD(map, u16 *, MAP_CURRENT_OWNER) != (terrain & MAP_TERRAIN_OWNER_MASK)) continue;
+            range = GetUnitAttackRangeMax(M2C_FIELD(map, void **, MAP_CURSOR_UNIT));
+            if (!func_ov000_021959cc((s16)x, (s16)y, M2C_FIELD(*gCurrentMap, UnitKind959 **, MAP_CURSOR_UNIT)->kind, (u8)range)) continue;
+            map = (u8 *)*gCurrentMap;
+            threatLimit = ((u8 *)gAiUnitTypeTuning)[2];
+            rowOffset = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            cell = map + x + rowOffset;
+            threat = M2C_FIELD(cell, u8 *, 0x2d48);
+            if (threat >= threatLimit) continue;
+            if (M2C_FIELD(cell, s8 *, 0x2338) >= 0) {
+                if (IsAllyUnitAtCell((s16)x, (s16)y)) continue;
+                if (!IsValidMoveCell((s16)x, (s16)y)) continue;
+                if (occupied && bestCost < M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID)[x]) continue;
+                occupied = 1;
+            } else {
+                if (occupied || bestCost < M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x]) continue;
             }
+            targetX = x;
+            targetY = y;
+            bestCost = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID)[x];
         }
     }
-
-    if (best == 0x7fff) return 0;
-    out[0] = (s16)resX;
-    out[1] = (s16)resY;
+    if (bestCost == 0x7fff) return 0;
+    out[0] = targetX;
+    out[1] = targetY;
     return 1;
 }
 

@@ -460,7 +460,7 @@ void func_ov003_021fd47c(void) {
 void func_ov003_021fd488(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
-    M2C_UNK func_020a9188(void *, M2C_UNK);
+    M2C_UNK SpriteTween_Start(void *, M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     extern M2C_UNK data_02102174;
@@ -537,7 +537,7 @@ void func_ov003_021fd488(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_2, s16 *, 0x2A) = 0;
             M2C_FIELD(temp_r0_2, s16 *, 0x2C) = 0;
             M2C_FIELD(temp_r0_2, u16 *, 0x1E) = (u16) M2C_FIELD(temp_r0_2, u16 *, 0x20);
-            func_020a9188(temp_r0_2 + 0x1C, 0x69);
+            SpriteTween_Start(temp_r0_2 + 0x1C, 0x69);
             M2C_FIELD(temp_r0_2, u16 *, 0x20) = 0xC000U;
             M2C_FIELD(temp_r0_2, s16 *, 0x24) = 8;
             M2C_FIELD(temp_r0_2, s16 *, 0x26) = 8;

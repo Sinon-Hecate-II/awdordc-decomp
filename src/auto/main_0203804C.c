@@ -344,7 +344,36 @@ tail:
 
 s32 func_02038d14(s32 a,s32 b){extern void *gNetSession;if(!gNetSession)return 0;M2C_FIELD(gNetSession,s32 *,144)=a;M2C_FIELD(gNetSession,s32 *,148)=b;return 1;}
 
-s32 func_02038d40(void){extern void *gNetSession;extern M2C_UNK gEmptyString;s32 HasNetError(void);void SetGpiStatus(s32,void *,s32);void func_0203bd0c(void);void SetNetState(s32);void GT2NotifyConnectionClosed(void *);s32 state;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;if(!M2C_FIELD(gNetSession,u8 *,0x381)){SetGpiStatus(1,&gEmptyString,0);func_0203bd0c();SetNetState(3);return 1;}M2C_FIELD(gNetSession,u8 *,0x2d)=1;GT2NotifyConnectionClosed(M2C_FIELD(gNetSession,void **,0));M2C_FIELD(gNetSession,u8 *,0x2d)=0;return 0;}
+/* Leaves the online match and returns the session to the lobby.  With no other
+   player left in the session, reset the GameSpy status and close the connection
+   manager at once; with players still in it, announce that the GT2 connection
+   was closed so their disconnect handling brings the session down.  The
+   announcement flag keeps those handlers from reporting it as an error.
+   Returns -1 when no match is being set up or running. */
+s32 LeaveNetMatch(void) {
+    extern void *gNetSession;
+    extern M2C_UNK gEmptyString;
+    s32 HasNetError(void);
+    void SetGpiStatus(s32, void *, s32);
+    void func_0203bd0c(void);
+    void SetNetState(s32);
+    void GT2NotifyConnectionClosed(void *);
+    s32 state;
+
+    if (!gNetSession || HasNetError() ||
+        ((state = M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE)) != NET_STATE_STARTING && state != NET_STATE_MATCH))
+        return -1;
+    if (M2C_FIELD(gNetSession, u8 *, NET_SESSION_LAST_PLAYER) == 0) {
+        SetGpiStatus(1, &gEmptyString, 0);
+        func_0203bd0c();
+        SetNetState(NET_STATE_READY);
+        return 1;
+    }
+    M2C_FIELD(gNetSession, u8 *, NET_SESSION_ANNOUNCING_CLOSE) = 1;
+    GT2NotifyConnectionClosed(M2C_FIELD(gNetSession, void **, NET_SESSION_SOCKET));
+    M2C_FIELD(gNetSession, u8 *, NET_SESSION_ANNOUNCING_CLOSE) = 0;
+    return 0;
+}
 
 s32 DisconnectPeerSlot(s32 a){extern void *gNetSession;s32 HasNetError(void);void *FindPlayerConnection(s32);void GT2FailConnectionAttempt(void *);s32 state;void *p;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;p=FindPlayerConnection(a);if(!p)return -2;GT2FailConnectionAttempt(p);return 0;}
 
@@ -358,7 +387,7 @@ u8 GetLocalPlayerId(void) {
     return 0U;
 }
 
-s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 func_0203e36c(s32 *);s32 func_0203e338(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e36c(a);return func_0203e338(a);}
+s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 GetActivePlayerSlots(s32 *);s32 func_0203e338(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return GetActivePlayerSlots(a);return func_0203e338(a);}
 
 s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 func_02039284(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return func_02039284(a,b);}
 

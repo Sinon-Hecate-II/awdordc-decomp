@@ -55,7 +55,7 @@ void func_ov009_022222d0(s32 arg0) {
     s32 GetLocalPlayerName();
     s32 GetLocalPlayerNameLength();
     s32 CopyLocalPlayerRecord(void *);
-    M2C_UNK func_ov009_02224d9c(M2C_UNK, void *, M2C_UNK, s32);
+    M2C_UNK QueueHostLinkPacket(M2C_UNK, void *, M2C_UNK, s32);
     u8 spC[0x1C];
     u8 sp0[0xC];
     s32 temp_r4;
@@ -63,7 +63,7 @@ void func_ov009_022222d0(s32 arg0) {
     MI_CpuFill8(spC,0,0x1A);
     temp_r4=GetLocalPlayerName();
     MI_CpuCopy8(temp_r4,spC,GetLocalPlayerNameLength()*2);
-    func_ov009_02224d9c(0xF,sp0,0x28,(u16)(1<<arg0));
+    QueueHostLinkPacket(0xF,sp0,0x28,(u16)(1<<arg0));
 }
 
 #pragma scheduling off
@@ -403,9 +403,9 @@ void func_ov009_02222b8c(void *event) {
     void SignalLinkEvent(s32);
     void SignalLinkError();
     s32 func_0201280c(s32, s32);
-    M2C_UNK func_ov009_02224d9c(M2C_UNK, void *, M2C_UNK, s32);
+    M2C_UNK QueueHostLinkPacket(M2C_UNK, void *, M2C_UNK, s32);
     void ClearPlayerActive(s32, s32, s32, s32, s32);
-    void func_ov009_02223fbc(void);
+    void AnnounceLinkPlayer(void);
     extern M2C_UNK gLinkState;
     extern Ov009CallbackFn gLinkSession[];
     u16 status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
@@ -426,23 +426,23 @@ void func_ov009_02222b8c(void *event) {
         }
         one = 1;
         M2C_FIELD(&gLinkSession, u16 *, 0) |= one << M2C_FIELD(event, u16 *, 0x10);
-        func_ov009_02224d9c(7, gLinkSession, 2, 0x10000 - one);
+        QueueHostLinkPacket(7, gLinkSession, 2, 0x10000 - one);
         M2C_FIELD(&gLinkState, u8 *, 0x15b)++;
-        func_ov009_02223fbc();
+        AnnounceLinkPlayer();
         return;
     case 9:
         {
             LinkPlayerRemoval notice;
             one = 1;
             M2C_FIELD(&gLinkSession, u16 *, 0) &= (one - 2) ^ (one << M2C_FIELD(event, u16 *, 0x10));
-            func_ov009_02224d9c(7, gLinkSession, 2, 0x10000 - one);
+            QueueHostLinkPacket(7, gLinkSession, 2, 0x10000 - one);
             M2C_FIELD(&gLinkState, u8 *, 0x15b)--;
-            func_ov009_02223fbc();
+            AnnounceLinkPlayer();
             ClearPlayerActive(M2C_FIELD(event, u16 *, LINK_EVENT_STATE), 1, 0, (u8)M2C_FIELD(event, u16 *, 0x10), 0);
             notice = data_ov009_022262f4;
             notice.status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
             notice.player = M2C_FIELD(event, u16 *, 0x10);
-            func_ov009_02224d9c(4, &notice, sizeof(notice), 0xffff);
+            QueueHostLinkPacket(4, &notice, sizeof(notice), 0xffff);
             return;
         }
     case 0x1a:
@@ -450,14 +450,14 @@ void func_ov009_02222b8c(void *event) {
             LinkPlayerRemoval notice;
             one = 1;
             M2C_FIELD(&gLinkSession, u16 *, 0) &= (one - 2) ^ (one << M2C_FIELD(event, u16 *, 0x10));
-            func_ov009_02224d9c(7, gLinkSession, 2, 0x10000 - one);
+            QueueHostLinkPacket(7, gLinkSession, 2, 0x10000 - one);
             M2C_FIELD(&gLinkState, u8 *, 0x15b)--;
-            func_ov009_02223fbc();
+            AnnounceLinkPlayer();
             ClearPlayerActive(M2C_FIELD(event, u16 *, LINK_EVENT_STATE), 0, 1, (u8)M2C_FIELD(event, u16 *, 0x10), 0);
             notice = data_ov009_02226304;
             notice.status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
             notice.player = M2C_FIELD(event, u16 *, 0x10);
-            func_ov009_02224d9c(4, &notice, sizeof(notice), 0xffff);
+            QueueHostLinkPacket(4, &notice, sizeof(notice), 0xffff);
             return;
         }
     case 0:
@@ -502,7 +502,7 @@ void HandleLinkConnectTaskEvent(void *arg0) {
  SetLinkPhase(4);
  M2C_FIELD(&gLinkState,u8 *,0x156) = M2C_FIELD(&gLinkState,u8 *,0x156) | 1;
  M2C_FIELD(&gLinkState,u8 *,0x157) = GetLinkLocalPlayerId();
- func_ov009_02223fbc();
+ AnnounceLinkPlayer();
  return;
  case 11: return;
  case 12: return;

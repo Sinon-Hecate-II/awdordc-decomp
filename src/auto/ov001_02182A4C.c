@@ -638,7 +638,7 @@ u8 GetMenuRow(void) {
 
 u8 GetMenuState(void){extern void *gOv001Scrollbar;return M2C_FIELD(gOv001Scrollbar,u8 *,29);}
 
-void func_ov001_021839e4(void) { M2C_UNK Ov001_SetScrollbarHandlePos(); Ov001_SetScrollbarHandlePos(); }
+void Ov001_UpdateScrollbarHandle(void) { M2C_UNK Ov001_SetScrollbarHandlePos(); Ov001_SetScrollbarHandlePos(); }
 
 void Ov001_UnblockScrollBar(void){extern void *gOv001Scrollbar;M2C_FIELD(gOv001Scrollbar,u8 *,30)=0;}
 

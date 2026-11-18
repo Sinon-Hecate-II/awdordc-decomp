@@ -137,12 +137,41 @@ void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
     MI_CpuCopy8(arg1, (arg0 * 0x6C) + (s32) &data_ov010_0222f02c);
 }
 
-void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {
-s32 GetNetErrorCode(void); void SetOnlineSessionFlag(s32); M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK); s32 GetOnlineTransportPlayerId(void); s32 func_0203a850(void *,s32); void func_ov010_02227f14(void); s32 func_ov010_02229a94(void); extern M2C_UNK gOv010OnlineSession; extern M2C_UNK gLocalPlayerStatus;
-s32 t; void (*cb)(s32,s32,s32);
-t=GetNetErrorCode();t=(t!=0);
-if(t==0) {if(arg1==0) {SetOnlineSessionFlag(3);M2C_FIELD(&gOv010OnlineSession,u8 *,0xfb)=GetOnlineTransportPlayerId();func_0203a850(&gLocalPlayerStatus,0x6c);func_ov010_02227f14();func_ov010_02229a94();}else{SetOnlineSessionFlag(4);}}else{SetOnlineSessionFlag(4);Ov010Online_ClearStepFlag(3);}
-cb=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
+/* Host/join match event callback: with no network error and the event not
+ * aborted, mark the session running, record the local transport player id, copy
+ * the local player status and start the transfer lists; otherwise mark the
+ * start failed.  The event is then passed to the running match's callback. */
+void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
+    s32 GetNetErrorCode(void);
+    void SetOnlineSessionFlag(s32);
+    M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
+    s32 GetOnlineTransportPlayerId(void);
+    s32 func_0203a850(void *, s32);
+    void func_ov010_02227f14(void);
+    s32 func_ov010_02229a94(void);
+    extern M2C_UNK gOv010OnlineSession;
+    extern M2C_UNK gLocalPlayerStatus;
+    s32 netError;
+    void (*cb)(s32, s32, s32);
+    netError = GetNetErrorCode();
+    netError = (netError != 0);
+    if (netError == 0) {
+        if (aborted == 0) {
+            SetOnlineSessionFlag(OV010_FLAG_RUNNING);
+            M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_LOCAL_ID) = GetOnlineTransportPlayerId();
+            func_0203a850(&gLocalPlayerStatus, 0x6c);
+            func_ov010_02227f14();
+            func_ov010_02229a94();
+        } else {
+            SetOnlineSessionFlag(OV010_FLAG_FAILED);
+        }
+    } else {
+        SetOnlineSessionFlag(OV010_FLAG_FAILED);
+        Ov010Online_ClearStepFlag(OV010_FLAG_RUNNING);
+    }
+    cb = M2C_FIELD(&gOv010OnlineSession, void (**)(s32, s32, s32), OV010_SESSION_CALLBACK);
+    if (cb == 0) return;
+    cb(error, aborted, data);
 }
 
 s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK gOv010OnlineSession; s32 result=1; s32 (*fp)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,s32 (**)(s32,s32),0x20); if(fp) result+=fp(a,b); return result; }
@@ -707,9 +736,9 @@ s32 func_ov010_02228bb0(s32 arg0) {
 }
 
 void func_ov010_02228bc8(void) {
-    M2C_UNK func_02038d40();
+    M2C_UNK LeaveNetMatch();
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    func_02038d40();
+    LeaveNetMatch();
     Ov010Online_ClearStepFlag(3);
 }
 

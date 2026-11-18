@@ -201,6 +201,7 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
     extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     extern M2C_UNK gSpriteDesc16x32, gSpriteDesc32x16, gSpriteDesc16x16;
     u16 **saved;
+    s32 x, y;
     s32 tile;
     s32 player;
     s32 selected;
@@ -234,19 +235,23 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
         cursor[0x36 / 2] = row * 32 + 8;
         if ((s8)entries[0] >= 0) {
             do {
-                s32 x = entries[1] * 36 + 2;
-                s32 y = entries[2] * 32 + 8;
-                if ((s8)entries[0] == 15 && M2C_FIELD(panel + panel[0x37], u8 *, 0x38) == 4)
-                    goto nextLarge;
+                x = entries[1] * 36 + 2;
+                y = entries[2] * 32 + 8;
+                if (*(volatile s8 *)entries == 15) {
+                    if (M2C_FIELD(panel + panel[0x37], u8 *, 0x38) == 4) {
+                        tile += 24;
+                        goto nextLarge;
+                    }
+                }
                 {
                     u32 id = entries[4];
-                    if (M2C_FIELD(panel, u16 *, 0x3c + id * 2) > 16)
+                    if (M2C_FIELD(panel + id * 2, u16 *, 0x3c) > 16)
                         AddSprite((u16)(((x + 8) & 511) | ((id & 31) << 9)), (u16)(((y - 16) & 255) | 0x500), (u16)(((tile >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | (((entries[3] + 6) & 15) << 12)), &gSpriteDesc16x32, 15);
                 }
                 if (M2C_FIELD(panel, u16 *, 0x3c) > 16)
                     AddSprite((u16)(x & 511), (u16)(((y + 16) & 255) | 0x500), (u16)((((tile + 8) >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x2000), &gSpriteDesc32x16, 15);
-            nextLarge:
                 tile += 24;
+            nextLarge:
                 entries += 5;
             } while ((s8)entries[0] >= 0);
         }
@@ -261,11 +266,11 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
         cursor[0x36 / 2] = row * 32 + 8;
         if ((s8)entries[0] >= 0) {
             do {
-                s32 x = entries[1] * 36 + 2;
-                s32 y = entries[2] * 32 + 8;
+                x = entries[1] * 36 + 2;
+                y = entries[2] * 32 + 8;
                 {
                     u32 id = entries[4];
-                    if (M2C_FIELD(panel, u16 *, 0x3c + id * 2) > 16)
+                    if (M2C_FIELD(panel + id * 2, u16 *, 0x3c) > 16)
                         AddSprite((u16)(((x + 8) & 511) | ((id & 31) << 9)), (u16)(((y) & 255) | 0x500), (u16)(((tile >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x6000), &gSpriteDesc16x16, 15);
                 }
                 if (M2C_FIELD(panel, u16 *, 0x3c) > 16)

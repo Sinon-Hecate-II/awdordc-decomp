@@ -302,7 +302,7 @@ s32 gpiHandleServerData(void *ctx) {
    error code is returned to stop. */
 s32 gpiThink(void **connection, s32 waitId) {
     void gpiSleep(s32); s32 gpiHandleServerData(void *); s32 gpiRemoveCallbacks(void **,s32);
-    s32 func_02051ed0(void **); void gpiFinishOperation(void **); void func_02054484(void **,void *);
+    s32 gpiCheckConnect(void **); void gpiFinishOperation(void **); void func_02054484(void **,void *);
     s32 func_020544d4(void **,void **,s32); s32 func_0205519c(void **);
     s32 gpiProcessSearches(void **); s32 gpiDisconnect(void **,s32);
     void AssertFailed(void *,void *,void *,s32);
@@ -317,7 +317,7 @@ s32 gpiThink(void **connection, s32 waitId) {
     if(M2C_FIELD(session,u32 *,0x1d8)>4)AssertFailed(&data_020fdc80,&data_020fdd78,&data_020fdb64,0x1b6);
     if(M2C_FIELD(session,u32 *,0x1d8)==1) {
         do {
-            result=func_02051ed0(connection);
+            result=gpiCheckConnect(connection);
             if(result==0 && waitId && M2C_FIELD(session,u32 *,0x1d8)==1)keepPolling=1;else keepPolling=0;
             if(keepPolling)gpiSleep(10);
         }while(keepPolling);

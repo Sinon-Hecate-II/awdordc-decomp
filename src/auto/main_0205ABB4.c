@@ -4,11 +4,11 @@
 typedef struct { s32 offset,size,command;u16 sequence; } Command5B8B0;
 
 s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_0205aa34();
+    s32 gti2CheckTimeout();
     s32 func_0205aad8(M2C_UNK, M2C_UNK);
     s32 func_0205ab44(M2C_UNK, M2C_UNK);
     s32 func_0205ab80(M2C_UNK, M2C_UNK);
-    if (func_0205aa34() == 0) {
+    if (gti2CheckTimeout() == 0) {
         return 0;
     }
     if (func_0205ab80(arg0, arg1) == 0) {

@@ -121,7 +121,7 @@ void Map_SubmitTerrainQuads(s32,s32,s32,s32,s32,s32,s32,s32);
 void func_02078828(void) {
 extern s32 *gCurrentMap;
 extern u16 data_02142ebc[],data_02143dbc[];
-void func_02079d0c(s32,s32,Vec3*);
+void ScreenToMapFixedPoint(s32,s32,Vec3*);
 s32 Divide(s32,s32);
 s32 rawx,rawy,rawx1,rawy1;
 s32 i,y,x,x1,mode,x0,y0,y1;
@@ -137,9 +137,9 @@ UpdateToonTableBlend();func_02077a4c();DrawMapBackground();
 *(volatile u32*)0x4000454=0;
 *(volatile u32*)0x4000440=2;
 *(volatile u32*)0x4000454=0;
-func_02079d0c(0,0,&pos);
+ScreenToMapFixedPoint(0,0,&pos);
 rawx=Divide(pos.x,768); rawy=Divide(pos.y,768);
-func_02079d0c(256,192,&pos);
+ScreenToMapFixedPoint(256,192,&pos);
 rawx1=Divide(pos.x,768);rawy1=Divide(pos.y,768);
 x0=ClampRenderCoord(rawx,(u16*)(*gCurrentMap+0x5120),18);
 y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
@@ -237,7 +237,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     s32 IsUnitSubmerged(void *);
     s32 UnitHasFacing(void *);
     s32 UnitHasCargo(void *);
-    s32 func_020d2850(s32, u16, s32);
+    s32 Map_ShowsCargoForUnit(s32, u16, s32);
     s32 HasUnitActed(void *);
     s32 IsUnitSelected(void *);
     s32 IsUnitMarkedForRepair(void *);
@@ -274,7 +274,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     if (UnitHasCargo((void *)unit)) flags |= 0x80;
     {
         kind = ((RenderUnit *)unit)->kind;
-        if (func_020d2850(kind, *(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER), (u16)player)) flags |= 0x100;
+        if (Map_ShowsCargoForUnit(kind, *(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER), (u16)player)) flags |= 0x100;
     }
     if (HasUnitActed((void *)unit)) flags |= 0x200;
     if (IsUnitSelected((void *)unit)) flags |= 0x400;
