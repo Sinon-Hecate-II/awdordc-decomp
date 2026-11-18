@@ -25,7 +25,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     s32 gpiStringDup(s8 *);
     M2C_UNK gpiCallErrorCallback(void **, M2C_UNK, M2C_UNK);
     s32 gpiAddCallback(void **, Callback526, void *, void *, s32);
-    s32 func_02052360(void **, s32, s32 *, s32 *, s32 *);
+    s32 gpiIntToDate(void **, s32, s32 *, s32 *, s32 *);
     M2C_UNK gpiCopyInfo(s8 **, void *);
     M2C_UNK func_02053e40(void **, void *, s8 **);
     M2C_UNK func_02054484(void **, void *);
@@ -41,7 +41,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     s32 ParseInt(s8 *);
     s32 func_0207044c();
     extern M2C_UNK data_020fe690;
-    extern M2C_UNK data_020fe6a4;
+    extern M2C_UNK gGpiInfoFileName;
     extern M2C_UNK data_020fe6d8;
     extern M2C_UNK data_020fe6e0;
     extern M2C_UNK data_020fe710;
@@ -104,7 +104,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     }
     temp_r0_3 = ParseInt(parse);
     if (temp_r0_3 <= 0) {
-        AssertFailed(&data_020fe71c, &data_020fe6a4, &data_020fe690, 0x15A);
+        AssertFailed(&data_020fe71c, &gGpiInfoFileName, &data_020fe690, 0x15A);
     }
     gpiFindBuddyStatus(arg0, temp_r0_3, &sp10);
     }
@@ -167,7 +167,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
         response.nBC = 0;
         goto block_41;
     }
-    temp_r0_2 = func_02052360(arg0, ParseInt(&buffers.bufEC[0]), &response.nB4, &response.nB8, &response.nBC);
+    temp_r0_2 = gpiIntToDate(arg0, ParseInt(&buffers.bufEC[0]), &response.nB4, &response.nB8, &response.nBC);
     if (temp_r0_2 != 0) {
         return temp_r0_2;
     }

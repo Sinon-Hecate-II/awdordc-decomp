@@ -17,7 +17,7 @@ void func_020e4490(void) {
     M2C_UNK func_02082cb4();
     M2C_UNK func_02082078();
     M2C_UNK func_020e31f0();
-    M2C_UNK func_01ff85ec();
+    M2C_UNK Reset3DSpriteOam();
     M2C_UNK func_0208232c();
     M2C_UNK func_0209daec();
     M2C_UNK func_020e3448();
@@ -63,7 +63,7 @@ void func_020e4490(void) {
         } else {
             gCur3DSpriteEngine = data_027e00c4;
         }
-        func_01ff85ec();
+        Reset3DSpriteOam();
         func_0208232c();
         var_r8 += 1;
     } while (var_r8 < 2);
@@ -133,7 +133,7 @@ func_02004e60(1,1);
 }
 
 void func_020e4688(void) {
-    void func_01ff873c(void);
+    void Upload3DSpriteOam(void);
     void func_01ff87e4(void);
     M2C_UNK func_01ff9b38();
     void Update3DSpriteVram(void);
@@ -161,7 +161,7 @@ void func_020e4688(void) {
         Update3DSpriteObject();
         func_01ff9b38();
         Update3DSpriteVram();
-        func_01ff873c();
+        Upload3DSpriteOam();
         data_027e15b4 = 1;
     } else {
         func_01ff87e4();

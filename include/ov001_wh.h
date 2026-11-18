@@ -31,6 +31,8 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_EVENT_CHILD_ID 0x10 /* u16 child index, a bit position in the child bitmap */
 
 /* Connection object fields (gWhWork+4). */
+#define WH_DS_CHANNEL   0x13e0 /* channel state object the data-sharing exchange runs on (see wfc_channel.h) */
+#define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */
 #define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
 #define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */
 #define WH_CHILD_BITS   0x60 /* u16: one bit per child still wanted */
@@ -44,6 +46,14 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_RANDOM_SEED  0x58 /* u32: xorshift/LCG state for picking a child */
 #define WH_RANDOM_MUL   0x10dcd /* seed multiplier of the game's LCG */
 #define WH_RANDOM_ADD   0x3039 /* seed increment of the game's LCG */
+
+/* Results of one data-sharing channel step. */
+enum {
+    WH_DS_STEP_PROGRESS   = 0, /* a slot was exchanged; the caller processes it */
+    WH_DS_STEP_FAILED     = 1, /* the exchange failed; SetWhError carries the code */
+    WH_DS_STEP_NO_DATASET = 5, /* the peer had no data set ready */
+    WH_DS_STEP_NO_CHILD   = 7  /* the parent has no child to share with */
+};
 
 /* Connection object status field (+0x40). */
 enum {

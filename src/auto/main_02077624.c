@@ -19,7 +19,7 @@ extern const Unk0207Color3 data_020eb1a8;
 extern void *gCur3DSpriteEngine;
 s16 GetViewZoom(void *);
 s32 EaseInterpolate(s32, s32, s32, s32, s32);
-void func_0207d990(s32, void *, void *);
+void BuildMapViewProjection(s32, void *, void *);
 
 /* Recomputes the GX toon table every frame: each RGB555 entry is interpolated
  * between two reference tables with a 64-frame ping-pong phase taken from
@@ -147,9 +147,9 @@ void func_02077a4c(void) {extern M2C_UNK data_02140f70;M2C_FIELD(&data_02140f70,
 void func_02077a7c(void) {void Map_BeginFrame();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *gCurrentMap;
 Map_BeginFrame();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*gCurrentMap+0x6ef8);func_0207cbb0();func_0207749c();}
 
-/* Interpolate two constant backdrop colors by blend factor t and store the resulting RGB plus engine viewport dimensions into data_02140f88. */
+/* Interpolate two constant backdrop colors by blend factor t and store the resulting RGB plus engine viewport dimensions into gMapViewProjection. */
 M2C_UNK func_02077ab8(s32 arg0) {
-    extern M2C_UNK data_02140f88;
+    extern M2C_UNK gMapViewProjection;
     Unk0207Color3 colorTop = data_020eb1b4;
     Unk0207Color3 colorBottom = data_020eb1a8;
     s32 t = GetViewZoom((void *)arg0);
@@ -164,11 +164,11 @@ M2C_UNK func_02077ab8(s32 arg0) {
     dims[0] = (M2C_FIELD(engine, s16 *, 0x3C) + M2C_FIELD(engine, s16 *, 0x40)) * 0x30;
     dims[1] = (M2C_FIELD(engine, s16 *, 0x3E) + M2C_FIELD(engine, s16 *, 0x42)) * 0x30;
     dims[2] = 0;
-    func_0207d990((s32)&data_02140f88, colors, dims);
+    BuildMapViewProjection((s32)&gMapViewProjection, colors, dims);
 }
 
-void ApplyMapViewProjection(s32 arg0) {void func_02003a8c();void func_02001034();extern M2C_UNK data_02140f88;u8 temp[64];
-*(volatile u32 *)0x4000440=0;*(volatile u32 *)0x4000454=0;func_02003a8c(&data_02140f88);func_02001034(arg0+28,temp);func_02003a8c(temp);*(volatile u32 *)0x4000440=2;*(volatile u32 *)0x4000454=0;}
+void ApplyMapViewProjection(s32 arg0) {void func_02003a8c();void func_02001034();extern M2C_UNK gMapViewProjection;u8 temp[64];
+*(volatile u32 *)0x4000440=0;*(volatile u32 *)0x4000454=0;func_02003a8c(&gMapViewProjection);func_02001034(arg0+28,temp);func_02003a8c(temp);*(volatile u32 *)0x4000440=2;*(volatile u32 *)0x4000454=0;}
 
 void func_02077c10(void) {
     M2C_UNK func_02077ab8(s32);
@@ -177,7 +177,7 @@ void func_02077c10(void) {
     M2C_UNK func_0207cddc(s32, M2C_UNK *);
     M2C_UNK func_0207ce54(s32);
     M2C_UNK func_0207d95c(M2C_UNK);
-    extern M2C_UNK data_02140f88;
+    extern M2C_UNK gMapViewProjection;
     extern s32 *gCurrentMap;
     s32 temp_r4;
 
@@ -186,7 +186,7 @@ void func_02077c10(void) {
     func_02077ab8(temp_r4 + 0x6C00);
     func_0207ce54(temp_r4 + 0x6C00);
     BuildMapViewTransform(temp_r4 + 0x6C00);
-    func_0207cddc(temp_r4 + 0x6C00, &data_02140f88);
+    func_0207cddc(temp_r4 + 0x6C00, &gMapViewProjection);
     ApplyMapViewProjection(temp_r4 + 0x6C00);
 }
 

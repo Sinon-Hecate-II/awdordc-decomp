@@ -62,7 +62,7 @@ zero:
 #pragma opt_propagation on
 #pragma opt_strength_reduction on
 char *func_02066444(double arg0, char *end, HexFormat fmt) {
-void func_0206f034(void *, double, void *);
+void FormatDoubleAsDecimal(void *, double, void *);
 int func_02071284(s32,s32,s32,s32);
 void func_02066320(void *, int);
 
@@ -82,7 +82,7 @@ char esign;
 char *result;
 if(precision>509)return 0;
 form.mode=0; form.digits=32;
-func_0206f034(&form,value,&dec);
+FormatDoubleAsDecimal(&form,value,&dec);
 q=dec.digits+dec.len;
 while(dec.len>1 && *--q=='0'){dec.len--;dec.exp++;}
 switch((u8)dec.digits[0]){

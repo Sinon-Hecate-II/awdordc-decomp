@@ -100,11 +100,11 @@ if(func_020a334c(a)!=0)return;
 func_020a3684(a,b);
 }
 
-s32 func_020a2bd8(void) {
+s32 GetCoPowerMeterPointsPerStar(void) {
     return 0xA;
 }
 
-u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 func_020a3594(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!func_020a3594(a,2))return 0;t=func_020a3518(a);if(t>=func_020a3594(a,2))r=1;else r=0;return r;}
+u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 GetCoPowerMeterCost(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!GetCoPowerMeterCost(a,2))return 0;t=func_020a3518(a);if(t>=GetCoPowerMeterCost(a,2))r=1;else r=0;return r;}
 
 void func_020a2c58(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
@@ -336,9 +336,9 @@ void func_020a3498(M2C_UNK arg0) {
 void func_020a34a8(s32 a){u32 v;u32 n;extern s32 *gCurrentMap;s32 p;p=*gCurrentMap;p+=0x3a4;p+=0x6400;p+=a*0x8c;v=*(u32*)(p+0x6c);n=(v<<14)>>28;if(n>=10)return;*(u32*)(p+0x6c)=(v&~0x3c000)|(((n+1)<<28)>>14);}
 #pragma opt_common_subs reset
 void func_020a34f4(M2C_UNK arg0) {
-    s32 func_020a3594(M2C_UNK, M2C_UNK);
+    s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
     M2C_UNK func_020a3684(M2C_UNK, s32);
-    func_020a3684(arg0, 0 - func_020a3594(arg0, 2));
+    func_020a3684(arg0, 0 - GetCoPowerMeterCost(arg0, 2));
 }
 
 #pragma opt_common_subs off
@@ -358,21 +358,32 @@ void func_020a3550(s32 a,s32 b){
  M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&0x1fffff)|((u32)b<<21);
 }
 
-s32 func_020a3594(s32 a,s32 b){
-extern s32 *gCurrentMap;
-extern u8 data_02126184[],data_02126188[];
-s32 func_020a2bd8(void);
-s32 value;u32 idx;
-switch(b){
-default:case 0:value=0;break;
-case 1:
-idx=(u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<24)>>24;
-value=*(s32 *)(data_02126184+idx*0x9c);break;
-case 2:
-idx=(u32)(M2C_FIELD((u8 *)*gCurrentMap+a*0x8c,s32 *,0x6810)<<24)>>24;
-value=*(s32 *)(data_02126188+idx*0x9c);break;
-}
-return value*((s32 (*)(s32))func_020a2bd8)(a);
+/* Meter points needed for a player's CO power level: nothing at level 0,
+ * otherwise the commander's star cost of that power from the per-commander CO
+ * table (gArmyCoPowerCost is its +0x18 field, gArmyDualPowerCost the +0x1c
+ * one), at ten meter points per star. */
+s32 GetCoPowerMeterCost(s32 player, s32 level) {
+    extern s32 *gCurrentMap;
+    extern u8 gArmyCoPowerCost[], gArmyDualPowerCost[];
+    s32 GetCoPowerMeterPointsPerStar(void);
+    s32 cost;
+    u32 commander;
+
+    switch (level) {
+    default:
+    case 0:
+        cost = 0;
+        break;
+    case 1:
+        commander = (u32)(M2C_FIELD(*gCurrentMap + player * 0x8c, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24;
+        cost = *(s32 *)(gArmyCoPowerCost + commander * ARMY_DATA_SIZE);
+        break;
+    case 2:
+        commander = (u32)(M2C_FIELD((u8 *)*gCurrentMap + player * 0x8c, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24;
+        cost = *(s32 *)(gArmyDualPowerCost + commander * ARMY_DATA_SIZE);
+        break;
+    }
+    return cost * ((s32 (*)(s32))GetCoPowerMeterPointsPerStar)(player);
 }
 
 s32 RefreshPlayerArmyDisplay(s32 a){
@@ -391,7 +402,7 @@ s32 RefreshPlayerArmyDisplay(s32 a){
 s32 func_020a3684(s32 a, s32 b) {
   extern s32 *gCurrentMap;
   s32 func_020a3518(s32);
-  s32 func_020a3594(s32, s32);
+  s32 GetCoPowerMeterCost(s32, s32);
   void func_020a3550(s32, s32);
   s32 idx = (s32)((u32)(M2C_FIELD(*gCurrentMap + a * 0x8c, s32 *, 0x6810) << 24) >> 24);
   if (idx == 0) {
@@ -399,7 +410,7 @@ s32 func_020a3684(s32 a, s32 b) {
   }
   {
     s32 t = func_020a3518(a);
-    s32 x = func_020a3594(a, 2);
+    s32 x = GetCoPowerMeterCost(a, 2);
     s32 val = t + b;
     if (val < 0) val = 0;
     if (val > x) val = x;

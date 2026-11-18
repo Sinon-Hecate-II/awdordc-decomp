@@ -370,7 +370,7 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     s32 GetUnitAttackClass(s32);
     s32 IsUnitSelected(void *);
     s32 func_ov000_02178e84(s32, s32);
-    s32 func_ov000_021a9904(s32);
+    s32 GetKindAttackClass(s32);
     s32 func_ov000_021a90a8(s32, s32, s32);
     s32 func_ov000_02178778(s32, s32);
     s32 func_ov000_021a9084(s32);
@@ -410,7 +410,7 @@ valid:
     }
     {
 u32 unitKind2=((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0;
-if(gUnitKindFlags[unitKind2*0x70]!=0x20 && func_ov000_021a9904(unitKind2)!=2) {
+if(gUnitKindFlags[unitKind2*0x70]!=0x20 && GetKindAttackClass(unitKind2)!=2) {
 u8 *m=(u8 *)*gCurrentMap;
 u16 rowOffset=*(u16 *)(m+y*2+0x3758);
 u8 terrain=(m+(x+rowOffset)+0x1000)[0x420]&0x1f;

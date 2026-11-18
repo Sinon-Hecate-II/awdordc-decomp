@@ -63,7 +63,7 @@ func_ov001_0216c400 kind:function(thumb,size=0x110) addr:0x0216c400
 func_ov001_0216c510 kind:function(thumb,size=0xe) addr:0x0216c510
 func_ov001_0216c520 kind:function(thumb,size=0x52) addr:0x0216c520
 func_ov001_0216c574 kind:function(thumb,size=0x144) addr:0x0216c574
-func_ov001_0216c6b8 kind:function(thumb,size=0xdc) addr:0x0216c6b8
+Ov001_SendRoomRequest kind:function(thumb,size=0xdc) addr:0x0216c6b8
 func_ov001_0216c794 kind:function(thumb,size=0x6c) addr:0x0216c794
 func_ov001_0216c800 kind:function(thumb,size=0x8c) addr:0x0216c800
 func_ov001_0216c88c kind:function(thumb,size=0x54) addr:0x0216c88c
@@ -95,7 +95,7 @@ func_ov001_0216ce68 kind:function(thumb,size=0x2) addr:0x0216ce68
 func_ov001_0216ce6c kind:function(thumb,size=0x8) addr:0x0216ce6c
 func_ov001_0216ce74 kind:function(thumb,size=0xc) addr:0x0216ce74
 func_ov001_0216ce80 kind:function(thumb,size=0x8) addr:0x0216ce80
-func_ov001_0216ce88 kind:function(thumb,size=0x28) addr:0x0216ce88
+Ov001SwapEndian32 kind:function(thumb,size=0x28) addr:0x0216ce88
 func_ov001_0216ceb0 kind:function(thumb,size=0x16) addr:0x0216ceb0
 func_ov001_0216cec8 kind:function(thumb,size=0x28) addr:0x0216cec8
 Ov001SwapEndian16 kind:function(thumb,size=0x16) addr:0x0216cef0
@@ -988,11 +988,11 @@ func_ov001_02188344 kind:function(arm,size=0x28) addr:0x02188344
 func_ov001_0218836c kind:function(arm,size=0x14) addr:0x0218836c
 func_ov001_02188380 kind:function(arm,size=0x14) addr:0x02188380
 Ov001_GetTaskStep kind:function(arm,size=0x14) addr:0x02188394
-func_ov001_021883a8 kind:function(arm,size=0xd8) addr:0x021883a8
+WhStartChildScan kind:function(arm,size=0xd8) addr:0x021883a8
 ScanNextChild kind:function(arm,size=0x9c) addr:0x02188480
 HandleChildScanResult kind:function(arm,size=0xd8) addr:0x0218851c
 func_ov001_021885f4 kind:function(arm,size=0x20) addr:0x021885f4
-func_ov001_02188614 kind:function(arm,size=0x78) addr:0x02188614
+WhChooseChild kind:function(arm,size=0x78) addr:0x02188614
 WhPickChild kind:function(arm,size=0xe8) addr:0x0218868c
 func_ov001_02188774 kind:function(arm,size=0x78) addr:0x02188774
 func_ov001_021887ec kind:function(arm,size=0x20) addr:0x021887ec
@@ -1001,7 +1001,7 @@ func_ov001_02188858 kind:function(arm,size=0x50) addr:0x02188858
 func_ov001_021888a8 kind:function(arm,size=0x178) addr:0x021888a8
 func_ov001_02188a20 kind:function(arm,size=0x14) addr:0x02188a20
 func_ov001_02188a34 kind:function(arm,size=0x28) addr:0x02188a34
-func_ov001_02188a5c kind:function(arm,size=0xa8) addr:0x02188a5c
+DWCi_MOV_WH_StepDataSharing kind:function(arm,size=0xa8) addr:0x02188a5c
 func_ov001_02188b04 kind:function(arm,size=0x1c) addr:0x02188b04
 func_ov001_02188b20 kind:function(arm,size=0x108) addr:0x02188b20
 func_ov001_02188c28 kind:function(arm,size=0x50) addr:0x02188c28
@@ -1013,7 +1013,7 @@ func_ov001_02188f0c kind:function(arm,size=0x34) addr:0x02188f0c
 func_ov001_02188f40 kind:function(arm,size=0x384) addr:0x02188f40
 func_ov001_021892c4 kind:function(arm,size=0x44) addr:0x021892c4
 func_ov001_02189308 kind:function(arm,size=0x10) addr:0x02189308
-func_ov001_02189318 kind:function(arm,size=0xa8) addr:0x02189318
+Ov001_UpdateChildSearch kind:function(arm,size=0xa8) addr:0x02189318
 func_ov001_021893c0 kind:function(arm,size=0x24) addr:0x021893c0
 Ov001_UpdateLinkState kind:function(arm,size=0x1b8) addr:0x021893e4
 func_ov001_0218959c kind:function(arm,size=0x2c) addr:0x0218959c
@@ -1559,8 +1559,8 @@ data_ov001_02191684 kind:data(any) addr:0x02191684
 data_ov001_0219169c kind:data(any) addr:0x0219169c
 data_ov001_021916b4 kind:data(any) addr:0x021916b4
 data_ov001_021916cc kind:data(any) addr:0x021916cc
-data_ov001_021916e8 kind:data(any) addr:0x021916e8
-data_ov001_02191718 kind:data(any) addr:0x02191718
+sWhLogNoChild kind:data(any) addr:0x021916e8
+sWhLogNoDataSet kind:data(any) addr:0x02191718
 data_ov001_0219174c kind:data(any) addr:0x0219174c
 data_ov001_02191770 kind:data(any) addr:0x02191770
 data_ov001_02191794 kind:data(any) addr:0x02191794

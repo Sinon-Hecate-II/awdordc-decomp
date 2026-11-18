@@ -181,7 +181,7 @@ func_02054484(connection,request);return 0;
    record in the connection's buddy table when there is none yet.  Returns 1 when
    the record exists afterwards, 0 for an invalid id. */
 s32 func_02055aa0(void **connection, s32 playerId) {
-    M2C_UNK func_02048eac(s32,s32 *);
+    M2C_UNK TableEnter(s32,s32 *);
     M2C_UNK AssertFailed();
     extern M2C_UNK data_020fed8c;
     extern M2C_UNK data_020fedf4;
@@ -213,7 +213,7 @@ s32 func_02055aa0(void **connection, s32 playerId) {
     key[4] = 0;
     key[6] = 0;
     key[5] = 0;
-    func_02048eac(M2C_FIELD(gpi, s32 *, 0x428),key);
+    TableEnter(M2C_FIELD(gpi, s32 *, 0x428),key);
     M2C_FIELD(gpi, s32 *, 0x42C) = (s32) (M2C_FIELD(gpi, s32 *, 0x42C) + 1);
     if (gpiFindBuddyStatus(connection, playerId, &record) != 0) {
         return record;

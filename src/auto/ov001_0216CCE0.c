@@ -22,15 +22,15 @@ void func_ov001_0216cd28(s32 arg0, s32 arg1) {
 }
 
 s32 func_ov001_0216cd38(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_ov001_0216ce88(s32);
+    s32 Ov001SwapEndian32(s32);
     s32 func_02021a90(void *);
     void SleepMilliseconds();
     extern s32 data_021372e0;
     extern M2C_UNK data_ov001_0218fd44;
     extern M2C_UNK data_ov001_0218fd4c;
-    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x18) = func_ov001_0216ce88(arg0);
-    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x1c) = func_ov001_0216ce88(arg1);
-    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x20) = func_ov001_0216ce88(arg2);
+    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x18) = Ov001SwapEndian32(arg0);
+    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x1c) = Ov001SwapEndian32(arg1);
+    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x20) = Ov001SwapEndian32(arg2);
     if (func_02021a90(&data_ov001_0218fd4c) < 0) return -1;
     while (data_021372e0 == 0) SleepMilliseconds(100);
     return 0;
@@ -109,7 +109,7 @@ void func_ov001_0216ce80(void) {
     func_0202175c();
 }
 
-s32 func_ov001_0216ce88(s32 arg0) {
+s32 Ov001SwapEndian32(s32 arg0) {
     u32 x = (u32) arg0;
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
@@ -226,7 +226,7 @@ s32 func_ov001_0216d1e4(void) {
 #pragma opt_propagation off
 #pragma thumb on
 s32 func_ov001_0216d394(void *arg0,s32 *arg1){
- s32 OS_ReceiveMessage(void *,s32 *,s32);void func_02007190(void *);void func_020072cc(void *,s32,s32,void *,s32);void func_02007338(void *);
+ s32 OS_ReceiveMessage(void *,s32 *,s32);void InitTimer(void *);void ScheduleTimer(void *,s32,s32,void *,s32);void func_02007338(void *);
  void MI_CpuFill8(s32,u8);void func_02029220(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
  extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
@@ -246,7 +246,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  MI_CpuCopy8((s32)((u8 *)p+44),(s32)(packet+offset),M2C_FIELD(p,s32 *,40));
  func_02029220();
  if(func_ov001_0216d8e4(0,(u8 *)p+4,M2C_FIELD(p,s32 *,0),0x30bffe)){
- tries=0;func_02007190(timer);func_020072cc(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
+ tries=0;InitTimer(timer);ScheduleTimer(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
  goto test;
  do {
  OS_ReceiveMessage(&data_ov001_02192600,&msg,1);

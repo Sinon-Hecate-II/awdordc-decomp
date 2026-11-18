@@ -164,7 +164,7 @@ void func_02049810(void) {
     func_0204968c(func_020216a8(), -1);
 }
 
-s32 func_02049824(int a,int b,int c,int d,UnkSocketAddress *e,int f) {
+s32 ghiSendTo(int a,int b,int c,int d,UnkSocketAddress *e,int f) {
 s32 func_020216cc(int,int,int,int,UnkSocketAddress *);
 UnkSocketAddress addr; addr=*(UnkSocketAddress const *)e;
 addr.bytes[0]=f;

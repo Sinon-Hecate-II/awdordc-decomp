@@ -125,11 +125,11 @@ void func_02060a60(void **arg0) {
 
 M2C_UNK gpiPlayerSetString(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
     s32 StringIntern(s32, M2C_UNK *);
-    M2C_UNK func_02048eac(s32, s32 *);
+    M2C_UNK TableEnter(s32, s32 *);
     s32 values[2];
     values[0] = StringIntern(0, arg1);
     values[1] = StringIntern(0, arg2);
-    func_02048eac(M2C_FIELD(arg0, s32 *, 0x18), values);
+    TableEnter(M2C_FIELD(arg0, s32 *, 0x18), values);
 }
 
 void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){

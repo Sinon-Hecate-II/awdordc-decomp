@@ -87,197 +87,53 @@ void func_020be718(SaveSettingsSnapshot *save) {
     save->listData[2] = *(SaveBytes35 *)&data_0215778a;
     save->listFooter = *(SaveBytes7 *)&data_021577ad;
 }
-#pragma opt_common_subs reset
-#pragma opt_strength_reduction reset
-void func_020beabc(M2C_UNK *arg0) {
-    extern M2C_UNK gGameSettings;
-    extern M2C_UNK data_0215d990;
-    extern M2C_UNK data_0215d9c0;
-    extern M2C_UNK data_0215d9e0;
-    extern M2C_UNK data_0215d9ec;
-    extern M2C_UNK gMapSettings;
-    extern M2C_UNK gCoUnlocked;
-    extern M2C_UNK gRecordValues;
-    extern M2C_UNK data_0215dba4;
-    extern M2C_UNK data_0215771c;
-    extern M2C_UNK data_02157724;
-    extern M2C_UNK data_02157734;
-    extern M2C_UNK gListRowFlags;
-    extern M2C_UNK data_02157744;
-    extern M2C_UNK data_02157767;
-    extern M2C_UNK data_0215778a;
-    extern M2C_UNK data_021577ad;
-    void func_020e4b24(void);
-    u8 *p = (u8 *)arg0;
-    u32 *g0 = (u32 *)&gGameSettings;
-    M2C_FIELD(&gGameSettings, u32 *, 0x128) = *(u32 *)(p + 0x98);
-    M2C_FIELD(&gGameSettings, u8 *, 0x12c) = p[0x9c];
-    M2C_FIELD(&gGameSettings, u8 *, 0x12d) = p[0x9d];
-    M2C_FIELD(&data_0215d990, u16 *, 0x2e) = *(u16 *)(p + 0x9e);
-    {
-        u16 *s = (u16 *)(p + 0xa0);
-        u16 *d = (u16 *)&data_0215d9c0;
-        s32 i;
-        for (i = 3; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma scheduling off
+void func_020e4b24(void);
+#pragma opt_strength_reduction off
+#pragma scheduling on
+#pragma opt_common_subs off
+#pragma opt_loop_invariants off
+void func_020beabc(SaveSettingsSnapshot *save) {
+    extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
+    extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
+    extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
+    extern M2C_UNK data_0215771c, data_02157724, data_02157734, gListRowFlags;
+    extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
+    s32 i;
+
+    M2C_FIELD(&gGameSettings, u32 *, 0x128) = save->settingsWord;
+    M2C_FIELD(&gGameSettings, u8 *, 0x12c) = save->settingsByte0;
+    M2C_FIELD(&gGameSettings, u8 *, 0x12d) = save->settingsByte1;
+    M2C_FIELD(&data_0215d990, u16 *, 0x2e) = save->settingsHalfword;
+    *(SaveHalfwords14 *)&data_0215d9c0 = save->settingsGroup0;
+    *(SaveWords16 *)&data_0215d9d0 = save->settingsGroup1;
+    *(SaveWords12 *)&data_0215d9e0 = save->settingsGroup2;
+    *(SaveWords32 *)&data_0215d9ec = save->settingsGroup3;
+    *(SaveWords16 *)&gMapSettings = save->mapSettings;
+    *(SaveBytes15 *)&gCoUnlocked = save->coUnlocked;
+    *(SaveWords376 *)&gRecordValues = save->recordValues;
+    for (i = 0; i < 3; i++) {
+        ((SaveRecordBlock *)&data_0215dba4)[i].header[0] = save->records[i].header[0];
+        ((SaveRecordBlock *)&data_0215dba4)[i].header[1] = save->records[i].header[1];
+        ((SaveRecordBlock *)&data_0215dba4)[i].payload = save->records[i].payload;
+        ((SaveRecordBlock *)&data_0215dba4)[i].metadata = save->records[i].metadata;
+        ((SaveRecordBlock *)&data_0215dba4)[i].stamp = save->records[i].stamp;
     }
-    M2C_FIELD(&data_0215d9c0, u16 *, 0xc) = *(u16 *)(p + 0xac);
-    {
-        u32 *s = (u32 *)(p + 0xb0);
-        u32 *d = (u32 *)&data_0215d9e0;
-        s32 i;
-        for (i = 4; i; i--) *d++ = *s++;
-    }
-    {
-        u32 *s = (u32 *)(p + 0xc0);
-        u32 *d = (u32 *)&data_0215d9ec;
-        s32 i;
-        for (i = 3; i; i--) *d++ = *s++;
-    }
-    {
-        u32 *s = (u32 *)(p + 0xcc);
-        u32 *d = (u32 *)&gMapSettings;
-        s32 i;
-        for (i = 8; i; i--) *d++ = *s++;
-    }
-    {
-        u32 *s = (u32 *)(p + 0xec);
-        u32 *d = (u32 *)&gCoUnlocked;
-        s32 i;
-        for (i = 4; i; i--) *d++ = *s++;
-    }
-    {
-        u8 *s = p + 0xfc;
-        u8 *d = (u8 *)&gRecordValues;
-        s32 i;
-        for (i = 7; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-        *d = *s;
-    }
-    {
-        u8 *s = p + 0x10c;
-        u8 *d = (u8 *)&data_0215dba4;
-        s32 i;
-        for (i = 0x17; i; i--) {
-            s32 j;
-            for (j = 4; j; j--) {
-                *d++ = *s++;
-                *d++ = *s++;
-                *d++ = *s++;
-                *d++ = *s++;
-            }
-        }
-        *d++ = *s++;
-        *d++ = *s++;
-        *d = *s;
-    }
-    {
-        s32 idx;
-        for (idx = 0; idx < 3; idx++) {
-            s32 off = idx * 0x118;
-            u8 *sp = p + off;
-            u8 *dp = (u8 *)&data_0215771c + off;
-            *(u32 *)(dp + 0x0) = *(u32 *)(sp + 0x284);
-            *(u32 *)(dp + 0x4) = *(u32 *)(sp + 0x288);
-            {
-                u32 *ss = (u32 *)(sp + 0x28c);
-                u32 *dd = (u32 *)(dp + 0x8);
-                s32 i;
-                for (i = 0x10; i; i--) *dd++ = *ss++;
-            }
-            {
-                u8 *ss = sp + 0x38c;
-                u8 *dd = dp + 0x108;
-                s32 i;
-                for (i = 4; i; i--) {
-                    *dd++ = *ss++;
-                    *dd++ = *ss++;
-                }
-            }
-            {
-                u8 *ss = sp + 0x394;
-                u8 *dd = dp + 0x110;
-                s32 i;
-                for (i = 4; i; i--) {
-                    *dd++ = *ss++;
-                    *dd++ = *ss++;
-                }
-            }
-        }
-    }
-    {
-        u8 *s = p;
-        u8 *d = (u8 *)&data_02157724;
-        s32 i;
-        for (i = 4; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-    }
-    {
-        u8 *s = p + 0x8;
-        u8 *d = (u8 *)&data_02157734;
-        s32 i;
-        for (i = 8; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-    }
-    {
-        u8 *s = p + 0x18;
-        u8 *d = (u8 *)&gListRowFlags;
-        s32 i;
-        for (i = 4; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-    }
-    {
-        u8 *s = p + 0x20;
-        u8 *d = (u8 *)&data_02157744;
-        s32 i;
-        for (i = 4; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-    }
-    {
-        u8 *s = p + 0x28;
-        u8 *d = (u8 *)&data_02157767;
-        s32 i;
-        for (i = 0x11; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-        *d = *s;
-    }
-    {
-        u8 *s = p + 0x4b;
-        u8 *d = (u8 *)&data_0215778a;
-        s32 i;
-        for (i = 0x11; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-        *d = *s;
-    }
-    {
-        u8 *s = p + 0x6e;
-        u8 *d = (u8 *)&data_021577ad;
-        s32 i;
-        for (i = 0x11; i; i--) {
-            *d++ = *s++;
-            *d++ = *s++;
-        }
-        *d = *s;
-    }
+    *(SaveBytes8 *)&data_0215771c = save->listHeader;
+    *(SaveBytes16 *)&data_02157724 = save->listSelection;
+    *(SaveBytes8 *)&data_02157734 = save->listState;
+    *(SaveBytes8 *)&gListRowFlags = save->listRowFlags;
+    *(SaveBytes35 *)&data_02157744 = save->listData[0];
+    *(SaveBytes35 *)&data_02157767 = save->listData[1];
+    *(SaveBytes35 *)&data_0215778a = save->listData[2];
+    *(SaveBytes7 *)&data_021577ad = save->listFooter;
     func_020e4b24();
 }
-
+#pragma opt_loop_invariants reset
+#pragma opt_common_subs reset
+#pragma opt_strength_reduction reset
 s32 IsUnitAvailable(M2C_UNK arg0) {
     s32 func_020be4c0(M2C_UNK);
     void *GetBattleRecord();

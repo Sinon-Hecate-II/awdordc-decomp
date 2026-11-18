@@ -198,7 +198,7 @@ s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
 }
 
 #pragma opt_propagation off
-void func_020a5f4c(s32 arg0) {
+void IsMapUnitRevealed(s32 arg0) {
     M2C_UNK func_020a5d8c(s32, u8, u8);
     extern s32 *gCurrentMap;
     s32 mul = 14;

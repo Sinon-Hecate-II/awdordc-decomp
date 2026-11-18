@@ -1,9 +1,11 @@
 /* 25 functions from 0x0218851C to 0x021893E4 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 /* The ov001 profile / download-play setup state (gOv001ProfileState). */
 #define PROFILE_STATE      0xA90 /* u8: current profile / download-play screen state */
 #define PROFILE_RESULT     0xAAC /* u8: result the state-2 list start acts on (1 start list, 2 leave) */
 #define PROFILE_LINK_FRAMES 0xA98 /* u32: frames the download-play link step has been running */
+#define PROFILE_CHILD      0x64A /* u16: child the channel measurement picked (1..16, 0 = none) */
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
 extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
@@ -72,19 +74,23 @@ void func_02013aa8(void *, void *, s32);
 func_02013aa8((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x13E0,(u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x1C00,arg0);
 }
 
-s32 func_ov001_02188a5c(void *arg0){
+/* Step the DWC data-sharing exchange on the connection's channel: pass the step's
+ * result to the WH state machine.  A progress result advances (returns 1); a
+ * missing child or data set is logged and reported as a failure; any other result
+ * fails through SetWhError. */
+s32 DWCi_MOV_WH_StepDataSharing(void *arg0){
 extern M2C_UNK gWhWork;
-extern M2C_UNK data_ov001_021916e8;
-extern M2C_UNK data_ov001_02191718;
+extern M2C_UNK sWhLogNoChild;
+extern M2C_UNK sWhLogNoDataSet;
 s32 func_02013248(void *,void *,void *);
-s32 result=func_02013248((u8 *)M2C_FIELD(&gWhWork,void **,4)+0x13e0,arg0,(u8 *)M2C_FIELD(&gWhWork,void **,4)+0x1c00);
-if(result==7){
-if(M2C_FIELD(&gWhWork,void (**)(s32,void *),0))M2C_FIELD(&gWhWork,void (**)(s32,void *),0)(0x8000000,&data_ov001_021916e8);
+s32 result=func_02013248((u8 *)M2C_FIELD(&gWhWork,void **,4)+WH_DS_CHANNEL,arg0,(u8 *)M2C_FIELD(&gWhWork,void **,4)+WH_DS_PLAYERS);
+if(result==WH_DS_STEP_NO_CHILD){
+if(M2C_FIELD(&gWhWork,void (**)(s32,void *),0))M2C_FIELD(&gWhWork,void (**)(s32,void *),0)(0x8000000,&sWhLogNoChild);
 return 0;}
-if(result==5){
-if(M2C_FIELD(&gWhWork,void (**)(s32,void *),0))M2C_FIELD(&gWhWork,void (**)(s32,void *),0)(0x8000000,&data_ov001_02191718);
+if(result==WH_DS_STEP_NO_DATASET){
+if(M2C_FIELD(&gWhWork,void (**)(s32,void *),0))M2C_FIELD(&gWhWork,void (**)(s32,void *),0)(0x8000000,&sWhLogNoDataSet);
 SetWhError(result);return 0;}
-if(result==0)return 1;
+if(result==WH_DS_STEP_PROGRESS)return 1;
 SetWhError();return 0;
 }
 
@@ -211,7 +217,7 @@ Ov001_DropUnacknowledgedPlayers();return 1;
 
 void func_ov001_02188f40(void) {
     s32 func_ov001_02188ec4(void);
-    void func_ov001_02189318(void);
+    void Ov001_UpdateChildSearch(void);
     void func_ov001_021893c0(void);
     void Ov001_UpdateLinkState(void);
     void func_ov001_0218959c(void);
@@ -242,7 +248,7 @@ void func_ov001_02188f40(void) {
         return;
     }
     case 3:
-        func_ov001_02189318();
+        Ov001_UpdateChildSearch();
         return;
     case 4:
         func_ov001_021893c0();
@@ -387,7 +393,38 @@ void func_ov001_02189308(void) {
     func_02013e98(1);
 }
 
-void func_ov001_02189318(void) { M2C_UNK SystemHalt(); extern void *gOv001ProfileState; s32 value; switch(Ov001_GetTaskStep()) { case 1: func_ov001_021883a8(); return; case 7: value=func_ov001_02188614(); M2C_FIELD(gOv001ProfileState,u16 *,0x64a)=value; M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 0: M2C_FIELD(gOv001ProfileState,s32 *,0xa98)=0; M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=3;return; case 9: func_ov001_02188b04();return; case 3: break; default: SystemHalt();return; } }
+/* Step the download-play child search from the wireless task status: while idle
+ * start scanning the children's channels, once the measurement has picked the
+ * best child remember it and keep the state on the search step, and report a
+ * failed setup. */
+void Ov001_UpdateChildSearch(void) {
+    M2C_UNK SystemHalt();
+    extern void *gOv001ProfileState;
+    s32 child;
+    switch (Ov001_GetTaskStep()) {
+    case WH_STATUS_IDLE:
+        WhStartChildScan();
+        return;
+    case WH_STATUS_MEASURECHAN:
+        child = WhChooseChild();
+        M2C_FIELD(gOv001ProfileState, u16 *, PROFILE_CHILD) = child;
+        M2C_FIELD(gOv001ProfileState, s32 *, PROFILE_LINK_FRAMES) = 0;
+        M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 3;
+        return;
+    case WH_STATUS_STOP:
+        M2C_FIELD(gOv001ProfileState, s32 *, PROFILE_LINK_FRAMES) = 0;
+        M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 3;
+        return;
+    case WH_STATUS_PARENT_START:
+        func_ov001_02188b04();
+        return;
+    case WH_STATUS_BUSY:
+        break;
+    default:
+        SystemHalt();
+        return;
+    }
+}
 
 void func_ov001_021893c0(void) {
     M2C_UNK Ov001_StartDownloadPlay(s32, u16);

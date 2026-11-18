@@ -237,8 +237,8 @@ return 1;
  * deadline; on success initialise the network config and mark the join ready. */
 s32 WhJoinSelectedHost(void) {
     M2C_UNK SleepMilliseconds(s32);
-    M2C_UNK func_02007190(void *);
-    M2C_UNK func_020072cc(void *, s32, s32, void *, s32);
+    M2C_UNK InitTimer(void *);
+    M2C_UNK ScheduleTimer(void *, s32, s32, void *, s32);
     M2C_UNK func_02007338(void *);
     s32 func_02021a90(void *);
     u32 WhGetTime();
@@ -253,8 +253,8 @@ s32 WhJoinSelectedHost(void) {
               + M2C_FIELD(&data_ov001_02192790, s32 *, 0x18) * 192;
     if (!candidate) return 0;
     if (!WhStartConnection(candidate, 0, 0x30000)) return -2;
-    func_02007190(alarm);
-    func_020072cc(alarm, 0x3fec42, 0, WhEventTimerCallback, 18);
+    InitTimer(alarm);
+    ScheduleTimer(alarm, 0x3fec42, 0, WhEventTimerCallback, 18);
     do {
         if (WhGetTime() >= M2C_FIELD(&data_ov001_0218fde8, u32 *, 12)) {
             result = -3;
@@ -304,8 +304,8 @@ s32 WhJoinSelectedHost(void) {
 #pragma opt_common_subs on
 s32 func_ov001_0216e79c(void) {
     M2C_UNK SleepMilliseconds(s32);
-    M2C_UNK func_02007190(void *);
-    M2C_UNK func_020072cc(void *, s32, s32, void *, s32);
+    M2C_UNK InitTimer(void *);
+    M2C_UNK ScheduleTimer(void *, s32, s32, void *, s32);
     M2C_UNK func_02007338(void *);
     M2C_UNK MemCopy(void *, void *, s32);
     M2C_UNK StringCopy(void *, void *);
@@ -341,8 +341,8 @@ s32 func_ov001_0216e79c(void) {
             result = -2;
             goto ret;
         }
-        func_02007190(timer);
-        func_020072cc(timer, 0xffb10, 0, WhEventTimerCallback, 0x13);
+        InitTimer(timer);
+        ScheduleTimer(timer, 0xffb10, 0, WhEventTimerCallback, 0x13);
         again = 1;
         result = 0;
         do {
@@ -359,7 +359,7 @@ s32 func_ov001_0216e79c(void) {
                     m = func_ov001_0216df50(M2C_FIELD(&data_ov001_02192790, s32 *, 0x5c), M2C_FIELD(&data_ov001_02192790, s32 *, 0x70));
                     if (m > result) { result = m;
                     func_02007338(timer);
-                    func_020072cc(timer, 0xffb10, 0, WhEventTimerCallback, 0x13); }
+                    ScheduleTimer(timer, 0xffb10, 0, WhEventTimerCallback, 0x13); }
                     break;
                 case 10:
                     again = 0;

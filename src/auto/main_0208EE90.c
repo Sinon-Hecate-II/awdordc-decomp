@@ -390,7 +390,7 @@ void func_0208f8d8(void) {
     func_0208f8ec(0x7F, 0x1E);
 }
 
-s32 func_0208f8ec(s32 a,s32 b){s32 func_020902a8(s32,s32,s32);return func_020902a8(-1,a,b);}
+s32 func_0208f8ec(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_FadeVolume(-1,a,b);}
 
 void func_0208f904(void){
  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK*);

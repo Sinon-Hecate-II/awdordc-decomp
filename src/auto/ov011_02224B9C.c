@@ -268,19 +268,22 @@ void InitIntroMenuEntry(void *entry) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov011_02225348(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s16 arg3, s16 arg4, register u32 arg5) {
+/* Advance a menu entry's slide from (fromX, fromY) to (toX, toY) over `frames`
+ * frames: interpolate the entry's position for the current frame and move its
+ * animated sprite there; once the last frame is reached the sprite is deleted. */
+void IntroMenu_UpdateEntrySlide(void *arg0, M2C_UNK fromX, M2C_UNK fromY, s16 toX, s16 toY, register u32 frames) {
  M2C_UNK DeleteSpriteObject(void *);
  s16 EaseInterpolate(M2C_UNK, M2C_UNK, s16, u32, s32);
- u32 temp_ip; void *temp_r3; s32 x,y;
- temp_ip=M2C_FIELD(arg0,u32 *,0x48);
- if(temp_ip >= (u32)(arg5-1)) {
- if(M2C_FIELD(arg0,void **,0x4c)!=NULL) DeleteSpriteObject(M2C_FIELD(arg0,void **,0x4c));
- M2C_FIELD(arg0,void **,0x4c)=NULL; return; }
- M2C_FIELD(arg0,s16 *,0x38)=EaseInterpolate(0,arg1,arg3,temp_ip,arg5);
- M2C_FIELD(arg0,s16 *,0x3a)=EaseInterpolate(0,arg2,arg4,M2C_FIELD(arg0,u32 *,0x48),arg5);
- temp_r3=M2C_FIELD(arg0,void **,0x4c); if(!temp_r3)return;
- y=M2C_FIELD(arg0,s16 *,0x3a); x=M2C_FIELD(arg0,s16 *,0x38);
- M2C_FIELD(temp_r3,s32 *,0x34)=x; M2C_FIELD(temp_r3,s32 *,0x38)=y; M2C_FIELD(temp_r3,s32 *,0x3c)=0;
+ u32 timer; void *sprite; s32 x,y;
+ timer=((MenuEntry011 *)arg0)->slideTimer;
+ if(timer >= (u32)(frames-1)) {
+ if(((MenuEntry011 *)arg0)->sprite!=NULL) DeleteSpriteObject(((MenuEntry011 *)arg0)->sprite);
+ ((MenuEntry011 *)arg0)->sprite=NULL; return; }
+ ((MenuEntry011 *)arg0)->posX=EaseInterpolate(0,fromX,toX,timer,frames);
+ ((MenuEntry011 *)arg0)->posY=EaseInterpolate(0,fromY,toY,((MenuEntry011 *)arg0)->slideTimer,frames);
+ sprite=((MenuEntry011 *)arg0)->sprite; if(!sprite)return;
+ y=((MenuEntry011 *)arg0)->posY; x=((MenuEntry011 *)arg0)->posX;
+ M2C_FIELD(sprite,s32 *,ANIMATED_SPRITE_X)=x; M2C_FIELD(sprite,s32 *,ANIMATED_SPRITE_Y)=y; M2C_FIELD(sprite,s32 *,ANIMATED_SPRITE_Z)=0;
 }
 
 void func_ov011_022253f0(void *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
@@ -364,7 +367,7 @@ void func_ov011_02225604(void *arg0) {
 void func_ov011_02225624(void *arg0) {
  M2C_UNK DeleteSpriteObject(void *); void DrawMenuEntryHighlight();
 if(M2C_FIELD(arg0,s32 *,0x50))DrawMenuEntryHighlight(arg0);
- func_ov011_02225348(arg0,M2C_FIELD(arg0,s16 *,0x3c),M2C_FIELD(arg0,s16 *,0x3e),M2C_FIELD(arg0,s16 *,0x40),M2C_FIELD(arg0,s16 *,0x42),120);
+ IntroMenu_UpdateEntrySlide(arg0,M2C_FIELD(arg0,s16 *,0x3c),M2C_FIELD(arg0,s16 *,0x3e),M2C_FIELD(arg0,s16 *,0x40),M2C_FIELD(arg0,s16 *,0x42),120);
  if(M2C_FIELD(arg0,u32 *,0x44)<199)return; DeleteSpriteObject(arg0);
 }
 

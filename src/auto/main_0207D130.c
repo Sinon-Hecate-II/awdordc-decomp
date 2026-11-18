@@ -241,16 +241,21 @@ void func_0207d95c(M2C_UNK *arg0) {
     *(s32 *)0x04000580 = M2C_FIELD(var_r0, s32 *, 0) | (M2C_FIELD(var_r0, s32 *, 4) << 8) | (M2C_FIELD(var_r0, s32 *, 8) << 0x10) | (M2C_FIELD(var_r0, s32 *, 0xC) << 0x18);
 }
 
-void func_0207d990(s32 arg0, void *arg1, void *arg2) {
-    M2C_UNK MTX_TransApply44(s32, s32, s32, s32, s32);
-    M2C_UNK MatrixScale44(s32, s32, s32, s32, s32);
-    M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
-    M2C_FIELD((void *)0x04000440, s32 *, 0) = 0;
-    M2C_FIELD((void *)0x04000440, s32 *, 0x14) = 0;
-    GX_SetOrthoProjection(-0x1200, 0x1200, -0x1800, 0x1800, 0, 0x2000, 0x1000, 1, arg0);
-    MTX_TransApply44(arg0, arg0, M2C_FIELD(arg2, s32 *, 0), M2C_FIELD(arg2, s32 *, 4), M2C_FIELD(arg2, s32 *, 8));
-    MatrixScale44(arg0, arg0, M2C_FIELD(arg1, s32 *, 0), M2C_FIELD(arg1, s32 *, 4), M2C_FIELD(arg1, s32 *, 8));
-    *(s32 *)0x0400044C = 0;
+/* Build the map view's orthographic projection matrix: load the fixed Q12
+ * projection into `matrix` and the GX projection stack, then fold in the
+ * view's zoom (a Q12 scale on each axis) and its scroll offset (a Q12
+ * x/y/z translation). */
+void BuildMapViewProjection(s32 *matrix, s32 *zoom, s32 *offset) {
+    void MTX_TransApply44(s32 *, s32 *, s32, s32, s32);
+    void MatrixScale44(s32 *, s32 *, s32, s32, s32);
+    void GX_SetOrthoProjection(s32, s32, s32, s32, s32, s32, s32, s32, s32 *);
+
+    REG_GX_MTX_MODE = 0;
+    REG_GX_MTX_IDENTITY = 0;
+    GX_SetOrthoProjection(-0x1200, 0x1200, -0x1800, 0x1800, 0, 0x2000, 0x1000, 1, matrix);
+    MTX_TransApply44(matrix, matrix, offset[0], offset[1], offset[2]);
+    MatrixScale44(matrix, matrix, zoom[0], zoom[1], zoom[2]);
+    REG_GX_MTX_STORE = 0;
 }
 
 void func_0207da34(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

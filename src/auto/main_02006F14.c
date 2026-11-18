@@ -92,7 +92,7 @@ u16 func_02007180(void) {
     return data_0212dfc4;
 }
 
-void func_02007190(void *arg0) {
+void InitTimer(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
@@ -152,7 +152,7 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
         }
     }
 }
-void func_020072cc(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
+void ScheduleTimer(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
  M2C_UNK SystemHalt(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_020071a0();
  u32 state; u64 time;
  if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)SystemHalt();

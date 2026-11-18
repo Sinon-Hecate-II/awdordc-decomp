@@ -227,7 +227,7 @@ ret:
     return (s32)r0;
 }
 
-u64 func_02070550(u32 lo,u32 hi){s32 n;u32 m;
+u64 DoubleToU64(u32 lo,u32 hi){s32 n;u32 m;
 if(!(hi&0x80000000)){
 n=0x43e - (hi>>20);
 if(n<0)goto overflow;

@@ -151,7 +151,7 @@ if(!((u32)(candidate[0]<<26)>>26)||candidate==M2C_FIELD(map,u8 **,MAP_CURSOR_UNI
 unitIndex=candidate ? (candidate-unitsBase)/14:0;
 if(!func_020d27a4(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),unitIndex))goto next;
 if(!GetUnitDamagePercent((u32)(candidate[0]<<26)>>26,(u32)(target[0]<<26)>>26))goto next;
-if(func_ov000_021a9904((u32)(candidate[0]<<26)>>26))goto next;
+if(GetKindAttackClass((u32)(candidate[0]<<26)>>26))goto next;
 if(IsFootUnitKind((u32)(candidate[0]<<26)>>26))goto next;
 if(((u32)(candidate[0]<<26)>>26)==4)goto next;
 if(((u32)(M2C_FIELD(candidate,u16 *,6)<<25)>>25)<60)goto next;

@@ -383,7 +383,7 @@ void *func_020057c8(void *arg0) {
     return temp_r2;
 }
 
-void func_020057f8(void *a) {
+void InsertReadyThread(void *a) {
 extern M2C_UNK gThreadManager;
 void *p, *prev, *head;
 prev=0; head=M2C_FIELD(&gThreadManager,void **,0x2c); p=head;
@@ -422,7 +422,7 @@ func_02006270((s32)next);
 
 #pragma peephole off
 void func_02005968(void) {
-extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,data_027e0000,gSocketManager,data_0212dcb4,data_0212defc;
+extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,data_027e0000,gSocketManager,gIdleThread,data_0212defc;
 extern char data_00000000[],data_00000800[]; void func_02006120(void);
 void TaskCreate(void *,void *,s32,u8 *,u32,s32);
 s32 size;u8 *end,*start;
@@ -451,7 +451,7 @@ M2C_FIELD(&gThreadManager,u16 *,36)=0;
 M2C_FIELD(&gThreadManager,u16 *,38)=0;
 *(void **)0x027fffa0=&gSocketManager;
 func_020060f8(0);
-TaskCreate(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
+TaskCreate(&gIdleThread,func_02006120,0,(u8 *)&data_0212defc,200,31);
 M2C_FIELD(&gThreadManager,s32 *,164)=32;
 M2C_FIELD(&gThreadManager,s32 *,152)=1;
 }
@@ -472,7 +472,7 @@ id=func_020056b0();
 M2C_FIELD(obj,s32 *,0x70)=priority;
 M2C_FIELD(obj,s32 *,0x6c)=id;
 M2C_FIELD(obj,s32 *,0x74)=M2C_FIELD(obj,s32 *,0x64)=0;
-func_020057f8(obj);
+InsertReadyThread(obj);
 M2C_FIELD(obj,u8 **,0x94)=buf;
 base=buf-bufLen;
 M2C_FIELD(obj,u8 **,0x90)=base;

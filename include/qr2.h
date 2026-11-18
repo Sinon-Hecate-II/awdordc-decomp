@@ -11,17 +11,40 @@
  * datagram bytes so that the last byte can always be the terminating NUL. */
 #define QR2_RECV_MAX     255
 
+/* Layout of a binary QR2 datagram: magic, type, 4-byte request id (the client
+ * id for queries, an arbitrary id for replies that comes back echoed), payload.
+ * The request id is a different value from the query one in master replies. */
+#define QR2_MAGIC_1      0xFE
+#define QR2_MAGIC_2      0xFD
+#define QR2_HEADER_SIZE  7  /* magic(2) + type(1) + request id(4) */
+#define QR2_MAX_PING     32 /* payload bytes of a type 2 ping that are echoed */
+
+/* Packet types.  5 and 7 are the replies to 2 and 6 (the same request id). */
+#define QR2_TYPE_QUERY   0  /* a peer's query: player record, answered from ours */
+#define QR2_TYPE_STATE   1  /* a peer's state: public address plus state string */
+#define QR2_TYPE_PING    2  /* keep-alive, answered as QR2_TYPE_PING_ACK */
+#define QR2_TYPE_PING_ACK 5
+#define QR2_TYPE_ERROR   4  /* master error: code and message for the error callback */
+#define QR2_TYPE_PEER    6  /* message relayed from another player, answered as QR2_TYPE_PEER_ACK */
+#define QR2_TYPE_PEER_ACK 7
+#define QR2_TYPE_RESERVED1 3 /* not handled */
+#define QR2_TYPE_RESERVED2 8 /* not handled */
+
 /* Fields of the QR2 connection record. */
 #define QR2_SOCKET        0x00  /* s32 UDP socket */
 #define QR2_GAMENAME      0x04  /* char[] game name reported to the master */
-#define QR2_LOCAL_IP      0x84  /* u8[4] local IPv4 address */
+#define QR2_LOCAL_IP      0x84  /* u8[4] random client id seeded at creation, echoed back by the master */
 #define QR2_CB_PUBLIC_ADDRESS 0xA8 /* void (*)(u32 ip, u16 port, void *ctx): set to be told the public address the master sees (also makes the state report carry it) */
 #define QR2_LAST_SENT     0xAC  /* s32 tick of the last state query */
 #define QR2_LAST_POLL     0xB0  /* s32 tick of the last keep-alive */
 #define QR2_STATE_DIRTY   0xB4  /* s32 state changed since the last update */
+#define QR2_ERROR_REPORTED 0xB8 /* s32: 1 at creation, 0 once any packet has arrived, -1 once the master reported an error */
 #define QR2_LOCAL_PORT    0xC0  /* s32 local port */
 #define QR2_NATNEG        0xC8  /* s32 NAT negotiation enabled */
-#define QR2_REQUEST_ID    0xCC  /* u8[8] request id */
+#define QR2_REQUEST_ID    0xCC  /* 8-byte socket address of the master server: the destination of every query (and the buffer the resolve fills in) */
+#define QR2_CB_ASCII      0xD4  /* void (*)(const char *text, s32 length, void *address): ';' console line from the master */
+#define QR2_RECENT_IDS    0xD8  /* s32[10] request ids handled recently (a ring for dropping repeats) */
+#define QR2_RECENT_INDEX  0x100 /* s32 next slot in QR2_RECENT_IDS */
 #define QR2_PUBLIC_IP     0x104 /* s32 public IPv4 address */
 #define QR2_PUBLIC_PORT   0x108 /* u16 public port */
 
@@ -34,6 +57,9 @@
 #define QR2_CB_APPEND_IDX2   0x90 /* void (*)(s32 key, s32 index, void *query, void *ctx) */
 #define QR2_CB_COLLECT_KEYS  0x94 /* void (*)(s32 mode, u8 *keyList, void *ctx) */
 #define QR2_CB_REPEAT_COUNT  0x98 /* s32 (*)(s32 mode, void *ctx) */
+#define QR2_CB_REPORT_ERROR  0x9C /* void (*)(s32 error, const char *message, void *ctx): the master reported an error */
+#define QR2_CB_STATE_CHANGED 0xA0 /* void (*)(s32 target, void *ctx): the peer to connect to is now `target` (an IPv4 address in host order) */
+#define QR2_CB_RECEIVE_STATE 0xA4 /* void (*)(const void *packet, s32 bytes, void *ctx): a raw message from another player */
 #define QR2_CTX              0x10C /* void *context passed to every callback */
 
 /* A query collects at most this many key ids before appending them. */

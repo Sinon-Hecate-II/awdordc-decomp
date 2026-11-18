@@ -5,20 +5,160 @@ typedef struct { u8 v[4]; } PacketBytes4;
 typedef struct { u8 header[3]; PacketBytes4 id; u8 rest[249]; } Packet256;
 typedef struct { u8 v[13]; } PacketBytes13;
 typedef struct { u8 v[8]; } PacketBytes8;
+
+typedef struct {
+    u8 data[QR2_QUERY_SIZE];
+    s32 length;
+} Qr2Reply;
 extern PacketBytes13 data_02100014;
 extern PacketBytes8 data_02100024;
 
-void Qr2_HandlePacket(void *a, void *b, s32 c, void *d) {
-}
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_propagation off
+/* Handle one QR2 datagram, from the master server or relayed from another
+ * player: ';' console text goes to the ASCII callback, a '\' request is
+ * answered with the final query, and the binary 0xFE 0xFD packets are
+ * dispatched on their type byte.  Types 0 and 1 answer a peer's query with our
+ * player record / state string, 2 is a ping echoed back as type 5, 4 hands a
+ * master error to the error callback and 6 is a message relayed from another
+ * player, echoed back as type 7 and delivered once.  Every reply goes back to
+ * the master server's address as one datagram. */
+void Qr2_HandlePacket(void *qr2, void *packet, s32 length, void *address)
+{
+    extern void *gQr2Connection;
+    M2C_UNK Qr2InitQuery(void *, s32, void *);
+    void Qr2AppendPlayerRecord(void *, void *, u8 *, s32);
+    void Qr2_ParsePublicAddress(void *, void *);
+    void Qr2_AppendStateString(void *, void *, s8 *, s32);
+    void Qr2_AppendFinalQuery(void *, void *);
+    void Qr2_HandlePeerPacket(void *, void *, s32);
+    s32 Qr2_RememberRequest(void *, s32);
+    M2C_UNK ghiSendTo(s32, void *, s32, s32, void *, s32);
+    void MemCopy(void *, const void *, u32);
+    void (*asciiCallback)(void *, s32, void *);
+    s8 *bytes = packet;
+    s8 *requestId;
+    s8 *payload;
+    s8 type;
+    s32 i;
+    Qr2Reply reply;
 
+    reply.length = 0;
+    if (qr2 == NULL)
+        qr2 = gQr2Connection;
+    if (bytes[0] == ';') {
+        asciiCallback = M2C_FIELD(qr2, void (**)(void *, s32, void *), QR2_CB_ASCII);
+        if (asciiCallback)
+            asciiCallback(bytes, length, address);
+        return;
+    }
+    if (bytes[0] == '\\') {
+        Qr2_AppendFinalQuery(qr2, &reply);
+        ghiSendTo(M2C_FIELD(qr2, s32 *, QR2_SOCKET), &reply,
+                  reply.length, 0, address, 8);
+        return;
+    }
+    if (length < QR2_HEADER_SIZE || (u8)bytes[0] != QR2_MAGIC_1 || (u8)bytes[1] != QR2_MAGIC_2)
+        return;
+    requestId = bytes + 3;
+    if (M2C_FIELD(qr2, s32 *, QR2_ERROR_REPORTED) > 0)
+        M2C_FIELD(qr2, s32 *, QR2_ERROR_REPORTED) = 0;
+    type = bytes[2];
+    payload = bytes + QR2_HEADER_SIZE;
+    length -= QR2_HEADER_SIZE;
+    Qr2InitQuery(reply.data, type, (PacketBytes4 *)requestId);
+
+    switch (type) {
+    case QR2_TYPE_QUERY:
+        Qr2AppendPlayerRecord(qr2, &reply, (u8 *)payload, length);
+        break;
+    case QR2_TYPE_STATE:
+        if (length >= 13 && M2C_FIELD(qr2, void **, QR2_CB_PUBLIC_ADDRESS))
+            Qr2_ParsePublicAddress(qr2, payload + length - 13);
+        Qr2_AppendStateString(qr2, &reply, payload, length);
+        break;
+    case QR2_TYPE_PING:
+        if (length > QR2_MAX_PING)
+            length = QR2_MAX_PING;
+        reply.data[0] = QR2_TYPE_PING_ACK;
+        MemCopy(reply.data + reply.length, payload, length);
+        reply.length += length;
+        break;
+    case QR2_TYPE_ERROR:
+        if (M2C_FIELD(qr2, s32 *, QR2_ERROR_REPORTED) == -1)
+            return;
+        /* Only an error addressed to this client (its id in the request id) is ours. */
+        i = 0;
+        do {
+            if (requestId[i] != M2C_FIELD((u8 *)qr2 + i, s8 *, QR2_LOCAL_IP))
+                return;
+        } while (++i < 4);
+        if (length < 2)
+            return;
+        M2C_FIELD(qr2, s32 *, QR2_ERROR_REPORTED) = -1;
+        M2C_FIELD(qr2, void (**)(s32, s8 *, void *), QR2_CB_REPORT_ERROR)(
+            payload[0], payload + 1, M2C_FIELD(qr2, void **, QR2_CTX));
+        return;
+    case QR2_TYPE_PEER:
+        i = 0;
+        do {
+            if (requestId[i] != M2C_FIELD((u8 *)qr2 + i, s8 *, QR2_LOCAL_IP))
+                return;
+        } while (++i < 4);
+        if (length < 4)
+            return;
+        reply.data[0] = QR2_TYPE_PEER_ACK;
+        /* Echo the 4-byte id of the message after the reply header. */
+        {
+            u8 *output = reply.data;
+            const u8 *input = (const u8 *)payload;
+            s32 pos = reply.length;
+            u8 first = input[0];
+            u8 second = input[1];
+            output[pos] = first;
+            output += pos;
+            output[1] = second;
+            first = input[2];
+            second = input[3];
+            output[2] = first;
+            output[3] = second;
+        }
+        reply.length += 4;
+        /* The same four bytes are the message's id: deliver only the first copy. */
+        {
+            u8 *token = (u8 *)&i;
+            const u8 *input = (const u8 *)payload;
+            u8 first = input[0];
+            u8 second = input[1];
+            token[0] = first;
+            token[1] = second;
+            first = input[2];
+            second = input[3];
+            token[2] = first;
+            token[3] = second;
+        }
+        if (!Qr2_RememberRequest(qr2, i))
+            Qr2_HandlePeerPacket(qr2, payload + 4, length - 4);
+        break;
+    case QR2_TYPE_PEER_ACK:
+    case QR2_TYPE_RESERVED2:
+    default:
+        return;
+    }
+    ghiSendTo(M2C_FIELD(qr2, s32 *, QR2_SOCKET), &reply,
+              reply.length, 0, address, 8);
+}
+#pragma pop
 void func_0205fb50(void *arg0){
  s32 GetTickCountMs(void);
- M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
+ M2C_UNK ghiSendTo(s32,void *,s32,s32,void *,s32);
  M2C_UNK Qr2InitQuery(void *,s32,void *);
  u8 sp8[0x804];
  *(s32 *)(sp8+0x800)=0;
  Qr2InitQuery(sp8,8,(u8 *)arg0+0x84);
- func_02049824(M2C_FIELD(arg0,s32 *,0),sp8,*(s32 *)(sp8+0x800),0,(u8 *)arg0+0xcc,8);
+ ghiSendTo(M2C_FIELD(arg0,s32 *,0),sp8,*(s32 *)(sp8+0x800),0,(u8 *)arg0+0xcc,8);
  M2C_FIELD(arg0,s32 *,0xb0)=GetTickCountMs();
 }
 
@@ -28,7 +168,7 @@ void func_0205fb50(void *arg0){
 void Qr2_SendState(void *qr2, s32 state) {
     s32 IpToString(s32);
     s32 GetTickCountMs(void);
-    M2C_UNK func_02049824(s32, void *, s32, s32, void *, s32);
+    M2C_UNK ghiSendTo(s32, void *, s32, s32, void *, s32);
     M2C_UNK Qr2AppendInt(void *, s32);
     M2C_UNK Qr2AppendString(void *, void *);
     M2C_UNK Qr2InitQuery(void *, s32, void *);
@@ -93,7 +233,7 @@ void Qr2_SendState(void *qr2, s32 state) {
             query[used] = 0;
         }
     }
-    func_02049824(M2C_FIELD(qr2, s32 *, QR2_SOCKET), query, M2C_FIELD(query, s32 *, QR2_QUERY_COUNT), 0, (char *)qr2 + QR2_REQUEST_ID, 8);
+    ghiSendTo(M2C_FIELD(qr2, s32 *, QR2_SOCKET), query, M2C_FIELD(query, s32 *, QR2_QUERY_COUNT), 0, (char *)qr2 + QR2_REQUEST_ID, 8);
     tick = GetTickCountMs();
     M2C_FIELD(qr2, s32 *, QR2_LAST_SENT) = tick;
     M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = tick;
@@ -227,7 +367,7 @@ void func_020601a4(void *arg0) {
 #pragma opt_propagation off
 void func_020601b8(void *a,void *b,s32 unused){
 s32 GetTickCountMs(void);
-M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
+M2C_UNK ghiSendTo(s32,void *,s32,s32,void *,s32);
 u8 buf[256]; u8 addr[8]; s32 n,i,j; u8 *dst;
 func_020600a8(a+8,b); M2C_FIELD(b,s32 *,28)=GetTickCountMs();
 addr[1]=2;
@@ -247,7 +387,7 @@ else{*(PacketBytes8 *)dst=data_02100024;n=8;} }
 if(M2C_FIELD(b,s32 *,0)==M2C_FIELD(a,s32 *,40)&&(M2C_FIELD(b,u8 *,21)&2)){
 *(s32 *)(addr+4)=M2C_FIELD(b,s32 *,8);*(u16 *)(addr+2)=M2C_FIELD(b,u16 *,12);
 }else{*(s32 *)(addr+4)=M2C_FIELD(b,s32 *,0);*(u16 *)(addr+2)=M2C_FIELD(b,u16 *,4);}
-func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
+ghiSendTo(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
 }
 #pragma opt_propagation reset
 void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {

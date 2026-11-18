@@ -3,7 +3,7 @@
 s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
 
 extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],gUnitKindFlags[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],gAiIndirectRangeBitmap[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
-void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 func_ov000_021a9904(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 WillCaptureCompleteThisTurn(void *);
+void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 GetKindAttackClass(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 WillCaptureCompleteThisTurn(void *);
 static inline u8 Tile76(s32 x,s32 y,s32 offset){u8 *map=*gCurrentMap;return M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,offset);}
 static inline u8 Bit76(u8 *bits,s32 x,s32 y){u32 index=x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144);return bits[index>>3]&(1<<(index&7));}
 
@@ -15,9 +15,9 @@ func_020d166c(M2C_FIELD((*gCurrentMap),u8 *,21204),(u16)arg0,pos);
 if(!M2C_FIELD((*gCurrentMap),s16 *,28374))return 0;
 a=M2C_FIELD((*gCurrentMap),u8 * *,28344);b=M2C_FIELD((*gCurrentMap),u8 * *,28376);
 if(((u32)(M2C_FIELD(M2C_FIELD((*gCurrentMap),u8 * *,21200),u8 *,11)<<28)>>28)==10 && IsUnitSelected(b))return 0xffff;
-if(((u32)(a[0]<<26)>>26)==25&&M2C_FIELD((*gCurrentMap),s16 *,28390)&&func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2)return 0;
+if(((u32)(a[0]<<26)>>26)==25&&M2C_FIELD((*gCurrentMap),s16 *,28390)&&GetKindAttackClass(((u32)(b[0]<<26)>>26))==2)return 0;
 if(arg0&0x20000){if(M2C_FIELD((*gCurrentMap),s16 *,28370)>=10)return 0;if(!M2C_FIELD((*gCurrentMap),s16 *,28358))return 0;}
-if(arg0&0x10000){if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2)return 0;if(M2C_FIELD((*gCurrentMap),s16 *,28390)&&M2C_FIELD((*gCurrentMap),s16 *,28402)<30)return 0;}
+if(arg0&0x10000){if(GetKindAttackClass(((u32)(b[0]<<26)>>26))==2)return 0;if(M2C_FIELD((*gCurrentMap),s16 *,28390)&&M2C_FIELD((*gCurrentMap),s16 *,28402)<30)return 0;}
 va=Divide(M2C_FIELD(data_ov000_021b5c00+((u32)(a[0]<<26)>>26)*112,u16 *,0)*((s32)((u32)(M2C_FIELD(a,u16 *,6)<<25)>>25)-M2C_FIELD((*gCurrentMap),s16 *,28358)),100);
 vb=Divide(M2C_FIELD(data_ov000_021b5c00+((u32)(b[0]<<26)>>26)*112,u16 *,0)*((s32)((u32)(M2C_FIELD(b,u16 *,6)<<25)>>25)-M2C_FIELD((*gCurrentMap),s16 *,28390)),100);
 if(IsUnitSelected(b)&&!M2C_FIELD((*gCurrentMap),s16 *,28390))vb=M2C_FIELD(data_ov000_021b5c00+((u32)(b[0]<<26)>>26)*112,u16 *,0);
@@ -26,7 +26,7 @@ if((u32)(M2C_FIELD(b,u16 *,6)<<16)>>27){
 map=*gCurrentMap;index=b[1]+M2C_FIELD(map+b[2]*2,u16 *,0x3758);terrain=M2C_FIELD(map+index,u8 *,0x1420)&31;
 if(terrain==15){index=a[1]+M2C_FIELD(map+a[2]*2,u16 *,0x3758);if(!func_ov000_021a90a8(M2C_FIELD(map+index,u8 *,0x508),b[1],b[2])&&WillCaptureCompleteThisTurn(b)==1)goto special;}
 }
-if(arg0&0x40000){if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2)return 0;if(vb<Divide(M2C_FIELD(data_ov000_021b5efc,u16 *,20)*60,100))return 0;}
+if(arg0&0x40000){if(GetKindAttackClass(((u32)(b[0]<<26)>>26))==2)return 0;if(vb<Divide(M2C_FIELD(data_ov000_021b5efc,u16 *,20)*60,100))return 0;}
 if(arg0&0xc00000){
 if(((u32)(M2C_FIELD(a,u16 *,6)<<25)>>25)>=40){
 if(Bit76(data_ov000_021df918,pos[0],pos[1]))goto passed;
@@ -57,7 +57,7 @@ if(cost>=gAiUnitTypeTuning[1])return 0;
 if(M2C_FIELD((u8 *)(*gCurrentMap)+(pos[0]+M2C_FIELD((u8 *)(*gCurrentMap)+pos[1]*2,u16 *,0x3758)),u8 *,0x2d48)>=gAiUnitTypeTuning[2])return 0;
 }}
 if((arg0&0x80000)&&!IsFootUnitKind(((u32)(a[0]<<26)>>26))&&((u32)(a[0]<<26)>>26)!=4){
-if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2)return 0;
+if(GetKindAttackClass(((u32)(b[0]<<26)>>26))==2)return 0;
 if(M2C_FIELD(data_ov000_021b5efc,u16 *,244)<=M2C_FIELD(data_ov000_021b5c00+((u32)(a[0]<<26)>>26)*112,u16 *,0)){if(vb<Divide(M2C_FIELD(data_ov000_021b5efc,u16 *,244)*40,100))return 0;}
 else if(vb<Divide(M2C_FIELD(data_ov000_021b5efc,u16 *,20)*40,100))return 0;
 if(M2C_FIELD((*gCurrentMap),s16 *,28390)&&M2C_FIELD((*gCurrentMap),s16 *,28402)<20)return 0;
@@ -65,7 +65,7 @@ if(M2C_FIELD((u8 *)(*gCurrentMap)+M2C_FIELD((*gCurrentMap),u16 *,21156)*140,u8 *
 }
 if((arg0&0x100000)&&((u32)(b[0]<<26)>>26)!=22&&M2C_FIELD((u8 *)(*gCurrentMap)+M2C_FIELD((*gCurrentMap),u16 *,21156)*140,u8 *,0x67ce)!=0){
 if(M2C_FIELD((*gCurrentMap),s16 *,28390)&&M2C_FIELD((*gCurrentMap),s16 *,28402)<20)return 0;
-if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2&&(gUnitKindFlags[((u32)(b[0]<<26)>>26)*112]&32))return 0;
+if(GetKindAttackClass(((u32)(b[0]<<26)>>26))==2&&(gUnitKindFlags[((u32)(b[0]<<26)>>26)*112]&32))return 0;
 }
 combat_check:
 if(M2C_FIELD((*gCurrentMap),s16 *,28390)&&(s32)((u32)(M2C_FIELD(b,u16 *,6)<<25)>>25)-M2C_FIELD((*gCurrentMap),s16 *,28390)<=10)vb>>=2;
@@ -94,7 +94,7 @@ if((M2C_FIELD(map+index,u8 *,0x1420)&31)==15)value<<=1;
 }
 }
 if(((u32)(b[0]<<26)>>26)==21)value*=3;
-else if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2){if(!b[12])vb>>=2;else if(M2C_FIELD((*gCurrentMap),s16 *,28390))vb>>=1;}
+else if(GetKindAttackClass(((u32)(b[0]<<26)>>26))==2){if(!b[12])vb>>=2;else if(M2C_FIELD((*gCurrentMap),s16 *,28390))vb>>=1;}
 else {if(GetUnitAttackClass(((u32)(b[0]<<26)>>26))==0)value<<=1;else if(GetUnitAttackClass(((u32)(b[0]<<26)>>26))==1)value*=3;}
 if(vb*value-va*2<0){if(GetUnitDamagePercent(((u32)(b[0]<<26)>>26),((u32)(a[0]<<26)>>26))>1)goto failed;if(M2C_FIELD((*gCurrentMap),s16 *,28358))va=0;else {failed:return 0;}}
 vb+=(vb*func_ov000_0217c9f4(b))>>5;

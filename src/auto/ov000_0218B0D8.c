@@ -96,7 +96,7 @@ int func_ov000_0218b0d8(void *arg0) {
  if(!func_ov000_02177f24(x,y,pos)) continue;
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
  if(map[n+0x2d48]>=gAiUnitTypeTuning[2] || map[n+0x2840]>=gAiUnitTypeTuning[1]) {
- if(!p[12] && func_ov000_021a9904(((UnkStruct_ov000_021A860C *)p)->unk0)==2) continue;
+ if(!p[12] && GetKindAttackClass(((UnkStruct_ov000_021A860C *)p)->unk0)==2) continue;
  }
  if(!CanAttackUnitFrom(pos[0],pos[1],p)) extra=0x80000;
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];

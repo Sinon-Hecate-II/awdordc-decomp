@@ -298,21 +298,21 @@ void func_020220a8(s32 arg0) {
 }
 
 s32 BoostThreadPriority(void) {
-s32 func_02006028(void *); void func_02005f80(s32,u32);
+s32 func_02006028(void *); void SetThreadPriority(s32,u32);
 extern M2C_UNK gTlsCipherSuites, gSocketManager;
 void *p; s32 x;
 if(M2C_FIELD(&gTlsCipherSuites,u32 *,4)>=32)return -1;
 p=M2C_FIELD(&gSocketManager,void **,4);
 x=func_02006028(p);
-func_02005f80((s32)p,M2C_FIELD(&gTlsCipherSuites,u32 *,4));
+SetThreadPriority((s32)p,M2C_FIELD(&gTlsCipherSuites,u32 *,4));
 return x;
 }
 
 void RestoreThreadPriority(u32 a){
-void func_02005f80(s32,u32);
+void SetThreadPriority(s32,u32);
 extern M2C_UNK gSocketManager;
 if(a>=32)return;
-func_02005f80(M2C_FIELD(&gSocketManager,s32 *,4),a);
+SetThreadPriority(M2C_FIELD(&gSocketManager,s32 *,4),a);
 }
 
 void func_02022128(s32 arg0, s32 arg1) {

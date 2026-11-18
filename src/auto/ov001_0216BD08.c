@@ -253,11 +253,11 @@ unsigned int func_ov001_0216c510(unsigned int x) { unsigned int result = 0; if (
 int func_ov001_0216c520(int mode, int a, int b, int c) {
  void func_ov001_0216bc3c(int);
  int func_ov001_0216c574(int,int,int);
- int func_ov001_0216c6b8(int,int,int);
+ int Ov001_SendRoomRequest(int,int,int);
  int func_ov001_0216c794(int,int,int);
  switch(mode) {
  case 0: func_ov001_0216bc3c(2); return func_ov001_0216c574(a,b,c);
- case 1: func_ov001_0216bc3c(3); return func_ov001_0216c6b8(a,b,c);
+ case 1: func_ov001_0216bc3c(3); return Ov001_SendRoomRequest(a,b,c);
  case 2: func_ov001_0216bc3c(5); return func_ov001_0216c794(a,b,c);
  default: return -1;
  }

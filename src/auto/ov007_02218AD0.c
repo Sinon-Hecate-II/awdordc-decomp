@@ -194,138 +194,89 @@ void func_ov007_02218d8c(void *arg0) {
 }
 
 M2C_UNK func_ov007_02218e98(void *arg0) {
-    M2C_UNK func_ov007_02217b64(s32);
+    u8 *func_ov007_02217b64(s32);
     void func_ov007_02218ad0(void *);
     void func_ov007_02218d8c(void *);
     M2C_UNK AddSprite(u16, s32, u16, M2C_UNK *, s32);
-    extern u16 **gCur3DSpriteEngine;
-    extern u16 **g3DSpriteEngineMain;
-    extern M2C_UNK gSpriteDesc16x32;
-    extern M2C_UNK gSpriteDesc32x16;
-    extern M2C_UNK gSpriteDesc16x16;
+    extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
+    extern M2C_UNK gSpriteDesc16x32, gSpriteDesc32x16, gSpriteDesc16x16;
     u16 **saved;
-    s32 r7;
-    u8 player;
-    u8 selected;
-    s8 *base;
-    u16 *p;
-    u8 idxByte;
-    s8 *selRec;
-    u16 *sp50;
-    s8 *rec;
-    u8 a;
-    u8 b;
-    s8 s0;
-    u8 idx;
-    u16 dist;
-    u8 p3;
-    u16 x;
-    u16 y;
-    u16 bits;
-    u16 third;
-    u16 val2;
+    s32 tile;
+    s32 player;
+    s32 selected;
+    u8 *entries;
+    u16 *tabs;
+    s32 tab;
+    u8 *panel = arg0;
 
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    r7 = 0x3dc;
-    player = M2C_FIELD(arg0, u8 *, 0x37);
-    selected = M2C_FIELD((u8 *)arg0 + player, u8 *, 0x3a);
-    base = (s8 *)func_ov007_02217b64(player);
+    tile = 0x3dc;
+    player = panel[0x37];
+    selected = M2C_FIELD(panel + player, u8 *, 0x3a);
+    entries = func_ov007_02217b64(player);
 
-    func_ov007_02218ad0(arg0);
-    func_ov007_02218d8c(arg0);
+    func_ov007_02218ad0(panel);
+    func_ov007_02218d8c(panel);
 
-    p = M2C_FIELD(arg0, u16 **, 0x54);
-    idxByte = M2C_FIELD((u8 *)arg0 + player, u8 *, 0x38);
-    M2C_FIELD(p, u16 *, 0x34) = (u16)(idxByte * 0x18 + 0x8);
-    M2C_FIELD(p, u16 *, 0x36) = 0x8c;
+    tabs = M2C_FIELD(panel, u16 **, 0x54);
+    tab = M2C_FIELD(panel + panel[0x37], u8 *, 0x38);
+    tabs[0x34 / 2] = tab * 24 + 8;
+    tabs[0x36 / 2] = 140;
 
-    switch (M2C_FIELD(arg0, u8 *, 0x37)) {
-    case 0:
-        selRec = base + selected * 5;
-        sp50 = M2C_FIELD(arg0, u16 **, 0x50);
-        M2C_FIELD(sp50, u16 *, 0x34) = (u16)(selRec[1] * 0x24 + 0xa);
-        M2C_FIELD(sp50, u16 *, 0x36) = (u16)(selRec[2] * 0x20 + 0x8);
-        rec = base;
-        if (rec[0] >= 0) {
+    switch (panel[0x37]) {
+    case 0: {
+        u8 *entry = entries + selected * 5;
+        s32 col = entry[1];
+        s32 row = entry[2];
+        u16 *cursor = M2C_FIELD(panel, u16 **, 0x50);
+        cursor[0x34 / 2] = col * 36 + 10;
+        cursor[0x36 / 2] = row * 32 + 8;
+        if ((s8)entries[0] >= 0) {
             do {
-                a = (u8)rec[1];
-                b = (u8)rec[2];
-                s0 = rec[0];
-                idx = (u8)rec[4];
-                if (s0 == 0x0f) {
-                    idxByte = M2C_FIELD((u8 *)arg0 + player, u8 *, 0x38);
-                    if (idxByte == 4) {
-                        r7 += 0x18;
-                        rec += 5;
-                        continue;
-                    }
+                s32 x = entries[1] * 36 + 2;
+                s32 y = entries[2] * 32 + 8;
+                if ((s8)entries[0] == 15 && M2C_FIELD(panel + panel[0x37], u8 *, 0x38) == 4)
+                    goto nextLarge;
+                {
+                    u32 id = entries[4];
+                    if (M2C_FIELD(panel, u16 *, 0x3c + id * 2) > 16)
+                        AddSprite((u16)(((x + 8) & 511) | ((id & 31) << 9)), (u16)(((y - 16) & 255) | 0x500), (u16)(((tile >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | (((entries[3] + 6) & 15) << 12)), &gSpriteDesc16x32, 15);
                 }
-                dist = M2C_FIELD((u8 *)arg0 + idx * 2, u16 *, 0x3c);
-                if (dist > 0x10) {
-                    p3 = (u8)rec[3];
-                    x = (u16)(((a * 0x24 + 0x2) + 0x8) & 0x1ff);
-                    x |= (u16)(idx << 9);
-                    y = (u16)(((b * 0x20 + 0x8) - 0x10) & 0xff);
-                    y |= 0x500;
-                    bits = (u16)(((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1e));
-                    third = (u16)((0x3ff & (r7 >> bits)) | ((p3 + 0x6) << 12));
-                    AddSprite(x, y, third, &gSpriteDesc16x32, 0xf);
-                }
-                val2 = M2C_FIELD(arg0, u16 *, 0x3c);
-                if (val2 > 0x10) {
-                    x = (u16)((a * 0x24 + 0x2) & 0x1ff);
-                    y = (u16)(((b * 0x20 + 0x8) + 0x10) & 0xff);
-                    y |= 0x500;
-                    bits = (u16)(((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1e));
-                    third = (u16)((0x3ff & ((r7 + 0x8) >> bits)) | 0x2000);
-                    AddSprite(x, y, third, &gSpriteDesc32x16, 0xf);
-                }
-                r7 += 0x18;
-                rec += 5;
-            } while (rec[0] >= 0);
+                if (M2C_FIELD(panel, u16 *, 0x3c) > 16)
+                    AddSprite((u16)(x & 511), (u16)(((y + 16) & 255) | 0x500), (u16)((((tile + 8) >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x2000), &gSpriteDesc32x16, 15);
+            nextLarge:
+                tile += 24;
+                entries += 5;
+            } while ((s8)entries[0] >= 0);
         }
-        break;
-    case 1:
-        selRec = base + selected * 5;
-        sp50 = M2C_FIELD(arg0, u16 **, 0x50);
-        M2C_FIELD(sp50, u16 *, 0x34) = (u16)(selRec[1] * 0x24 + 0xa);
-        M2C_FIELD(sp50, u16 *, 0x36) = (u16)(selRec[2] * 0x20 + 0x8);
-        rec = base;
-        if (rec[0] >= 0) {
-            do {
-                a = (u8)rec[1];
-                b = (u8)rec[2];
-                s0 = rec[0];
-                idx = (u8)rec[4];
-                dist = M2C_FIELD((u8 *)arg0 + idx * 2, u16 *, 0x3c);
-                if (dist > 0x10) {
-                    x = (u16)(((a * 0x24 + 0x2) + 0x8) & 0x1ff);
-                    x |= (u16)(idx << 9);
-                    y = (u16)((b * 0x20 + 0x8) & 0xff);
-                    y |= 0x500;
-                    bits = (u16)(((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1e));
-                    third = (u16)((0x3ff & (r7 >> bits)) | 0x6000);
-                    AddSprite(x, y, third, &gSpriteDesc16x16, 0xf);
-                }
-                val2 = M2C_FIELD(arg0, u16 *, 0x3c);
-                if (val2 > 0x10) {
-                    x = (u16)((a * 0x24 + 0x2) & 0x1ff);
-                    y = (u16)(((b * 0x20 + 0x8) + 0x10) & 0xff);
-                    y |= 0x500;
-                    bits = (u16)(((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1e));
-                    third = (u16)((0x3ff & ((r7 + 0x4) >> bits)) | 0x2000);
-                    AddSprite(x, y, third, &gSpriteDesc32x16, 0xf);
-                }
-                r7 += 0xc;
-                rec += 5;
-            } while (rec[0] >= 0);
-        }
-        break;
-    default:
         break;
     }
-
+    case 1: {
+        u8 *entry = entries + selected * 5;
+        s32 col = entry[1];
+        s32 row = entry[2];
+        u16 *cursor = M2C_FIELD(panel, u16 **, 0x50);
+        cursor[0x34 / 2] = col * 36 + 10;
+        cursor[0x36 / 2] = row * 32 + 8;
+        if ((s8)entries[0] >= 0) {
+            do {
+                s32 x = entries[1] * 36 + 2;
+                s32 y = entries[2] * 32 + 8;
+                {
+                    u32 id = entries[4];
+                    if (M2C_FIELD(panel, u16 *, 0x3c + id * 2) > 16)
+                        AddSprite((u16)(((x + 8) & 511) | ((id & 31) << 9)), (u16)(((y) & 255) | 0x500), (u16)(((tile >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x6000), &gSpriteDesc16x16, 15);
+                }
+                if (M2C_FIELD(panel, u16 *, 0x3c) > 16)
+                    AddSprite((u16)(x & 511), (u16)(((y + 16) & 255) | 0x500), (u16)((((tile + 4) >> ((u32)(**gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x2000), &gSpriteDesc32x16, 15);
+                tile += 12;
+                entries += 5;
+            } while ((s8)entries[0] >= 0);
+        }
+        break;
+    }
+    }
     gCur3DSpriteEngine = saved;
 }
 

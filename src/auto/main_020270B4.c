@@ -29,7 +29,7 @@ s32 WFC_InitSession(void *buffer, u32 size) {
     WFC_InitSessionStatus(); WFC_InitSendState();
     if (!func_02006f8c()) func_02006f14();
     if (!func_02007180()) func_02007140();
-    func_02007190((void *)(gWfcSession + WFC_SESSION_TIMER));
+    InitTimer((void *)(gWfcSession + WFC_SESSION_TIMER));
     OS_RestoreInterrupts(irq); return 0;
 }
 

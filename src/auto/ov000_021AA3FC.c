@@ -3,29 +3,33 @@
 #include "battle_map.h"
 #include "ov000_unit_entry.h"
 
-s32 CalcAreaEffectDamage(void *arg0,s32 arg1,s32 arg2){
-s32 func_ov000_021a9904(u32);
+/* Estimate the damage an area effect of `unit`'s kind deals to the unit: the
+ * kind's attack power times the number of damage steps `power` allows (capped at
+ * the unit's HP minus one), halved for friendly units and kept at a floor of 2
+ * when the effect kind cannot attack. */
+s32 CalcAreaEffectDamage(UnkStruct_ov000_021A860C *unit,s32 power,s32 isEnemy){
+s32 GetKindAttackClass(u32);
 extern u16 data_ov000_021b5c00;
-s32 result;u32 n;u16 count;u32 kind;
-if(((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<=10)return 2;
-if(func_ov000_021a9904((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==1)return 2;
-kind=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
-result=M2C_FIELD(&data_ov000_021b5c00,u16 *,kind*0x70);
-n=(u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25;
-if(arg1<(s32)n)count=arg1;else count=n-1;
-result*=count;
-if(func_ov000_021a9904(kind)==2 && arg2==0)result>>=1;
-return result;
+s32 damage;u32 hp;u16 hits;u32 kind;
+if(unit->unk6<=10)return 2;
+if(GetKindAttackClass(unit->unk0)==UNIT_ATTACK_NONE && isEnemy==1)return 2;
+kind=unit->unk0;
+damage=M2C_FIELD(&data_ov000_021b5c00,u16 *,kind*0x70);
+hp=unit->unk6;
+if(power<(s32)hp)hits=power;else hits=hp-1;
+damage*=hits;
+if(GetKindAttackClass(kind)==UNIT_ATTACK_NONE && isEnemy==0)damage>>=1;
+return damage;
 }
 
 u32 CalcAreaEffectUnitCount(void *arg0,s32 arg1,s32 arg2){
-s32 func_ov000_021a9904(u32);
+s32 GetKindAttackClass(u32);
 u32 n;u16 count;
 if(((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<=10)return 1;
-if(func_ov000_021a9904((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==1)return 1;
+if(GetKindAttackClass((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==1)return 1;
 n=(u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25;
 if(arg1<(s32)n)count=arg1;else count=n-1;
-if(func_ov000_021a9904((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==0)count/=2;
+if(GetKindAttackClass((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==0)count/=2;
 return count;
 }
 

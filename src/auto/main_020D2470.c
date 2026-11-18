@@ -298,13 +298,13 @@ s32 GetPlayerCommanderId(s32 arg0) {
 #pragma pop
 s32 func_020d2c58(s32 arg0) {
  extern M2C_UNK gMapData;
- s32 func_020a334c(s32);s32 func_020a3594(s32,s32);s32 func_020a3518(s32);
+ s32 func_020a334c(s32);s32 GetCoPowerMeterCost(s32,s32);s32 func_020a3518(s32);
  s32 r5; s32 count=0;
  if((((u32)M2C_FIELD(&gMapData,u16 *,12)<<19)>>31)==0)return 0;
  if(func_020a334c(arg0))return 0;
- if(!func_020a3594(arg0,2))return 0;
- r5=func_020a3518(arg0);if(r5>=func_020a3594(arg0,1))count++;
- r5=func_020a3518(arg0);if(r5>=func_020a3594(arg0,2))count++;
+ if(!GetCoPowerMeterCost(arg0,2))return 0;
+ r5=func_020a3518(arg0);if(r5>=GetCoPowerMeterCost(arg0,1))count++;
+ r5=func_020a3518(arg0);if(r5>=GetCoPowerMeterCost(arg0,2))count++;
  return count;
 }
 

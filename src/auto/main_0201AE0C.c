@@ -197,24 +197,27 @@ SendIpPacket(seg,hdrLen,payload,dataLen,M2C_FIELD(conn,u32 *,28),6);
 M2C_FIELD(conn,u32 *,40)+=dataLen;if(flags&3)M2C_FIELD(conn,u32 *,40)+=1;
 }
 
-void SendArpReply(void *arg0) {
+/* Turn the received ARP request `frame` into a reply in place and send it: the
+ * request's sender becomes the reply's target, this host's MAC and IPv4 address
+ * go in the sender fields, and the frame is sent back to the requester's MAC. */
+void SendArpReply(void *frame) {
     M2C_UNK MI_CpuCopy8(M2C_UNK *, void *, M2C_UNK);
     M2C_UNK SendLinkFrame(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNetStack;
     extern M2C_UNK gLocalMacAddress;
-    u16 temp_ip;
-    u16 temp_ip_2;
+    u16 localIpHi;
+    u16 localIpLo;
 
-    M2C_FIELD(arg0, s16 *, 6) = 0x200;
-    MI_CpuCopy8(arg0 + 8, arg0 + 0x12, 0xA);
-    MI_CpuCopy8(&gLocalMacAddress, arg0 + 8, 6);
-    temp_ip = (u16) ((u32) M2C_FIELD(&gNetStack, u32 *, 0x50) >> 0x10);
-    M2C_FIELD(arg0, s16 *, 0xE) = (s16) ((temp_ip >> 8) | (temp_ip << 8));
-    temp_ip_2 = (u16) M2C_FIELD(&gNetStack, u32 *, 0x50);
-    M2C_FIELD(arg0, s16 *, 0x10) = (s16) ((temp_ip_2 >> 8) | (temp_ip_2 << 8));
-    MI_CpuCopy8(arg0 + 0x12, arg0 - 0xE, 6);
-    MI_CpuCopy8(&gLocalMacAddress, arg0 - 8, 6);
-    SendLinkFrame(arg0 - 0xE, 0x2A, 0, 0);
+    M2C_FIELD(frame, s16 *, ARP_OPCODE) = ARP_OPCODE_REPLY << 8;
+    MI_CpuCopy8(frame + ARP_SENDER_MAC, frame + ARP_TARGET_MAC, ARP_ADDR_PAIR_SIZE);
+    MI_CpuCopy8(&gLocalMacAddress, frame + ARP_SENDER_MAC, 6);
+    localIpHi = (u16) ((u32) M2C_FIELD(&gNetStack, u32 *, NETSTACK_LOCAL_IP) >> 0x10);
+    M2C_FIELD(frame, s16 *, ARP_SENDER_IP) = (s16) ((localIpHi >> 8) | (localIpHi << 8));
+    localIpLo = (u16) M2C_FIELD(&gNetStack, u32 *, NETSTACK_LOCAL_IP);
+    M2C_FIELD(frame, s16 *, ARP_SENDER_IP + 2) = (s16) ((localIpLo >> 8) | (localIpLo << 8));
+    MI_CpuCopy8(frame + ARP_TARGET_MAC, (u8 *) frame - ETH_HEADER_SIZE + ETH_DEST_MAC, 6);
+    MI_CpuCopy8(&gLocalMacAddress, (u8 *) frame - ETH_HEADER_SIZE + ETH_SRC_MAC, 6);
+    SendLinkFrame((u8 *) frame - ETH_HEADER_SIZE, ETH_HEADER_SIZE + ARP_PACKET_SIZE, 0, 0);
 }
 
 #pragma optimization_level 2

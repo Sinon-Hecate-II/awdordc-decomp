@@ -8,7 +8,7 @@ extern u16 data_02100564[], data_02100570[], data_0210057c[], data_02100584[], d
 
 #pragma scheduling on
 u16 *func_0206bd7c(double arg0, u16 *end, FormatBD fmt) {
-void func_0206f034(void *, double, void *);
+void FormatDoubleAsDecimal(void *, double, void *);
 int func_02071284(s32,s32,s32,s32);
 void func_0206bc58(void *, int);
 u16 *func_0206cdac(u16 *, u16 *);
@@ -28,7 +28,7 @@ char esign;
 u16 *result;
 if(precision>509)return 0;
 form.mode=0; form.digits=32;
-func_0206f034(&form,value,&dec);
+FormatDoubleAsDecimal(&form,value,&dec);
 q=dec.digits+dec.len;
 while(dec.len>1 && *--q=='0'){dec.len--;dec.exp++;}
 switch((u8)dec.digits[0]){

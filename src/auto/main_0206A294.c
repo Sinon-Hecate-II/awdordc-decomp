@@ -22,10 +22,157 @@ void atof(M2C_UNK string) {
     func_0206a294(string, 0);
 }
 
-u32 ScanUint(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, M2C_UNK *e, M2C_UNK *f, M2C_UNK *g) {
-    return 0;
-}
+#pragma opt_peephole off
+u32 ScanUint(s32 base, s32 width, s32 (*read)(void *, s32, s32), void *stream, s32 *count, s32 *negative, s32 *overflow)
+{
+  extern u16 gCharClassTable[];
+  extern u8 data_020eacc0[];
+  u32 func_020722fc(u32, u32);
+  register s32 state;
+  s32 ch;
+  register u32 consumed;
+  s32 spaces;
+  u32 limit;
+  u32 value;
+  state = 0;
+  spaces = (*overflow = state);
+  *negative = state;
+  limit = state;
+  consumed = 0;
+  value = state;
+  state = 1;
+  if ((((base < 0) || (base == 1)) || (base > 36)) || (width < 1))
+  {
+    state = 64;
+  }
+  else
+  {
+    ch = read(stream, spaces, (consumed = spaces + 1, spaces));
+  }
+  if (base)
+  {
+    limit = func_020722fc(~0U, base);
+  }
+  while ((((s32)consumed <= width) && (ch != (-1))) && (!(state & 96)))
+  {
+    switch (state)
+    {
+      case 1:
+        if (((ch < 0) || (ch >= 128)) ? (0) : (gCharClassTable[ch] & 256))
+      {
+        ch = read(stream, 0, 0);
+        ++spaces;
+        break;
+      }
+        if (ch == '+')
+      {
+        ++consumed;
+        ch = read(stream, 0, 0);
+      }
+      else
+        if (ch == '-')
+      {
+        ++consumed;
+        ch = read(stream, 0, 0);
+        *negative = 1;
+      }
+        state = 2;
+        break;
 
+      case 2:
+        if (((base == 0) || (base == 16)) && (ch == '0'))
+      {
+        state = 4;
+        ++consumed;
+        ch = read(stream, 0, 0);
+      }
+      else
+      {
+        state = 8;
+      }
+        break;
+
+      case 4:
+        if ((ch == 'X') || (ch == 'x'))
+      {
+        base = 16;
+        state = 8;
+        ++consumed;
+        ch = read(stream, 0, 0);
+      }
+      else
+      {
+        if (!base)
+        {
+          base = 8;
+        }
+        state = 16;
+      }
+        break;
+
+      case 8:
+
+      case 16:
+        if (!base)
+      {
+        base = 10;
+      }
+        if (!limit)
+      {
+        limit = func_020722fc(~0U, base);
+      }
+        if (((ch < 0) || (ch >= 128)) ? (0) : (gCharClassTable[ch] & 8))
+      {
+        ch -= '0';
+        if (ch >= base)
+        {
+          state = (state == 16) ? (32) : (64);
+          ch += '0';
+          break;
+        }
+      }
+      else
+      {
+        if ((!(((ch < 0) || (ch >= 128)) ? (0) : (gCharClassTable[ch] & 1))) || (((((ch < 0) || (ch >= 128)) ? (ch) : (data_020eacc0[ch])) - ('A' - 10)) >= base))
+        {
+          state = (state == 16) ? (32) : (64);
+          break;
+        }
+        ch = ((ch < 0) || (ch >= 128)) ? (ch) : (data_020eacc0[ch]);
+        ch -= 'A' - 10;
+      }
+        if (value > limit)
+      {
+        *overflow = 1;
+      }
+        value *= base;
+        if (((u32) ch) > ((~0U) - value))
+      {
+        *overflow = 1;
+      }
+        value += ch;
+        state = 16;
+        ++consumed;
+        ch = read(stream, 0, 0);
+        break;
+
+    }
+
+  }
+
+  if (!(state & 52))
+  {
+    value = 0;
+    *count = 0;
+  }
+  else
+  {
+    *count = (consumed - 1) + spaces;
+  }
+  read(stream, ch, 1);
+  return value;
+}
+#pragma opt_peephole reset
 u64 func_0206a76c(s32 base,s32 width,s32 (*get)(void *,s32,s32),void *ctx,s32 *count,s32 *negative,s32 *overflow) {
 extern u16 gCharClassTable[]; extern u8 data_020eacc0[];
 s32 state,c,n,space,d; u64 limit,value;

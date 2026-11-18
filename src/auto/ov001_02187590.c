@@ -2,11 +2,125 @@
 #include "common.h"
 #include "ov001_wh.h"
 
-void func_ov001_02187590(void *a, s32 b, void *c) {
-    volatile s32 x = 1;
-    (void)a; (void)b; (void)c; (void)x;
-}
+#pragma merge_duplicate_code off
+void func_ov001_02187590(s32 player, u32 event, const u8 *report) {
+    extern s16 *gOv001LinkWork;
+    u16 Ov001_GetLinkStatus(void);
+    void Ov001_SetLinkStatus(s16);
+    s32 func_ov001_02187934(s32);
+    void func_ov001_02187560(void);
+    void func_ov001_021870bc(s32);
+    void Ov001_HandleChildPhase0(s32);
+    void Ov001_CompletePlayerLeave(s32);
+    void *func_02013e98(s32);
+    void *OS_DisableInterrupts();
+    void OS_RestoreInterrupts(void *);
+    s32 MI_CpuCopy8(void *, void *, s32);
+    void SystemHalt(void);
+    u16 *work;
+    u8 *address;
+    s32 offset;
+    void *interrupts;
+    void *child;
+    u16 keep;
+    u16 status;
 
+    switch (event) {
+    case 2:
+        if (Ov001_GetLinkStatus() != 2) return;
+        work = (u16 *)gOv001LinkWork;
+        interrupts = OS_DisableInterrupts();
+        work[1] |= 1 << player;
+        OS_RestoreInterrupts(interrupts);
+        offset = (player - 1) * 30;
+        address = (u8 *)gOv001LinkWork + 0x24 + offset;
+        address[0] = report[0xa];
+        address[1] = report[0xb];
+        address[2] = report[0xc];
+        address[3] = report[0xd];
+        address[4] = report[0xe];
+        address[5] = report[0xf];
+        M2C_FIELD((u8 *)gOv001LinkWork + offset, u16 *, 0x2a) = player;
+        return;
+    case 3:
+        if (func_ov001_02187934(player) == 6) return;
+        keep = ~(1 << player);
+        interrupts = OS_DisableInterrupts();
+        ((u16 *)gOv001LinkWork)[1] &= keep;
+        ((u16 *)gOv001LinkWork)[2] &= keep;
+        ((u16 *)gOv001LinkWork)[3] &= keep;
+        ((u16 *)gOv001LinkWork)[4] &= keep;
+        ((u16 *)gOv001LinkWork)[5] &= keep;
+        ((u16 *)gOv001LinkWork)[6] &= keep;
+        OS_RestoreInterrupts(interrupts);
+        func_ov001_02187560();
+        return;
+    case 10:
+        if (Ov001_GetLinkStatus() != 2) {
+            Ov001_HandleChildPhase0(player);
+            return;
+        }
+        ((u16 *)gOv001LinkWork)[2] |= 1 << player;
+        func_ov001_021870bc(player);
+        child = func_02013e98(player);
+        if (child == NULL) return;
+        MI_CpuCopy8(child, (u8 *)gOv001LinkWork + 0xe + (player - 1) * 30, 0x16);
+        return;
+    case 14:
+        ((u16 *)gOv001LinkWork)[2] &= ~(1 << player);
+        ((u16 *)gOv001LinkWork)[3] |= 1 << player;
+        if (Ov001_GetLinkStatus() == 3) Ov001_CompletePlayerLeave(player);
+        return;
+    case 7:
+        ((u16 *)gOv001LinkWork)[4] &= ~(1 << player);
+        ((u16 *)gOv001LinkWork)[5] |= 1 << player;
+        return;
+    case 9:
+        ((u16 *)gOv001LinkWork)[5] &= ~(1 << player);
+        ((u16 *)gOv001LinkWork)[6] |= 1 << player;
+        func_ov001_02187560();
+        return;
+    case 12: {
+        u8 *pending;
+        void *request;
+        if (Ov001_GetLinkStatus() == 4) Ov001_SetLinkStatus(5);
+        else Ov001_SetLinkStatus(0);
+        pending = (u8 *)gOv001LinkWork;
+        pending += 0x1b000;
+        request = M2C_FIELD(pending, void **, 0x144);
+        if (request != NULL)
+            M2C_FIELD(pending, void **, 0x144) = NULL;
+        pending = (u8 *)gOv001LinkWork;
+        pending += 0x1b000;
+        request = M2C_FIELD(pending, void **, 0x140);
+        if (request != NULL)
+            M2C_FIELD(pending, void **, 0x140) = NULL;
+        return;
+    }
+    case 13:
+        status = *(const u16 *)report;
+        switch (status) {
+        case 1:
+        case 2:
+        case 9:
+            Ov001_SetLinkStatus(7);
+            return;
+        case 8:
+        default:
+            return;
+        }
+    case 1: break;
+    case 4: break;
+    case 5: break;
+    case 6: break;
+    case 8: break;
+    case 11: break;
+    default:
+        SystemHalt();
+        break;
+    }
+}
+#pragma merge_duplicate_code reset
 void Ov001_SetLinkStatus(s16 arg0) {
     extern s16 *gOv001LinkWork;
     *gOv001LinkWork = arg0;
@@ -420,7 +534,7 @@ extern M2C_UNK gWhWork;
 return M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
 }
 
-s32 func_ov001_021883a8(void) {
+s32 WhStartChildScan(void) {
     void GetMacAddress(u8 *);
     void SetWhStatus(s32);
     u16 ScanNextChild(u16);

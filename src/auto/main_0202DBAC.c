@@ -21,7 +21,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     s32 Sound_StartVoice(void *, s32, s32, s32, s32, s32, s32, s32);
     void Sound_ReleaseChannel(void *);
     void Sound_SetChannelVolume(void *, s32, M2C_UNK);
-    void func_0202e1f4(M2C_UNK, s32, M2C_UNK *, M2C_UNK, void *);
+    void func_0202e1f4();
 
     void *player;
     void *pb;
@@ -264,7 +264,9 @@ if(!M2C_FIELD(&data_0213c290,s32 *,4)) return;
 UnlockMutex(M2C_FIELD(&data_0213c290,s32 *,4)+0x4c8);
 }
 
-void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *arg4) {
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, s32 playMode, s32 callbackArg) {
     M2C_UNK func_02029ddc(M2C_UNK, M2C_UNK);
     M2C_UNK ListRemove(M2C_UNK, void *);
     void func_0202e12c(M2C_UNK);
@@ -276,61 +278,52 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
     extern M2C_UNK data_0213c440;
     extern M2C_UNK data_0213c290;
 
+    u8 *player = (u8 *)callbackArg;
     M2C_UNK node;
     void *base;
     s32 i;
-    s32 n;
 
-    if (M2C_FIELD(arg4, s32 *, 0x11c) >= 2) {
-        node = func_02029ddc((M2C_UNK)&data_0213c920, 0);
-        if (node != 0 && *(void **)((u8 *)node + 8) != arg4) {
+    if (M2C_FIELD(player, s32 *, 0x11c) >= 2) {
+        M2C_UNK oldRequest;
+        s32 channel;
+        oldRequest = func_02029ddc((M2C_UNK)&data_0213c920, 0);
+        while (oldRequest != 0) {
+            if (M2C_FIELD(oldRequest, void **, 8) == player)
+                break;
+            oldRequest = func_02029ddc((M2C_UNK)&data_0213c920, oldRequest);
+        }
+        channel = 0;
+        if (M2C_FIELD(oldRequest, s32 *, 0x10) > 0) {
             do {
-                node = func_02029ddc((M2C_UNK)&data_0213c920, node);
-            } while (node != 0 && *(void **)((u8 *)node + 8) != arg4);
+                MI_CpuFill8(M2C_FIELD((u8 *)oldRequest + channel * 4, void **, 0x14), 0, M2C_FIELD(oldRequest, M2C_UNK *, 0x2c));
+                ++channel;
+            } while (channel < M2C_FIELD(oldRequest, s32 *, 0x10));
         }
-        if (node != 0) {
-            n = *(s32 *)((u8 *)node + 0x10);
-            if (n > 0) {
-                i = 0;
-                while (i < n) {
-                    MI_CpuFill8(*(void **)((u8 *)node + 0x14 + i * 4), (M2C_UNK)i, *(M2C_UNK *)((u8 *)node + 0x2c));
-                    i++;
-                }
-            }
-        }
-        ListRemove((M2C_UNK)&data_0213c920, (void *)node);
-        *(s32 *)((u8 *)arg4 + 0x11c) = *(s32 *)((u8 *)arg4 + 0x11c) - 1;
-        func_0202e12c(node);
+        ListRemove((M2C_UNK)&data_0213c920, (void *)oldRequest);
+        --M2C_FIELD(player, s32 *, 0x11c);
+        func_0202e12c(oldRequest);
     }
 
     node = func_0202e0ec();
-    *(void **)((u8 *)node + 8) = arg4;
+    *(void **)((u8 *)node + 8) = player;
     *(M2C_UNK *)((u8 *)node + 0xc) = arg0;
     *(s32 *)((u8 *)node + 0x10) = arg1;
-    if (arg1 > 0) {
-        i = 0;
-        while (i < arg1) {
-            *(M2C_UNK *)((u8 *)node + 0x14 + i * 4) = arg2[i];
-            i++;
-        }
+    for (i = 0; i < arg1; i++) {
+        M2C_FIELD((u8 *)node + i * 4, M2C_UNK *, 0x14) = arg2[i];
     }
     *(M2C_UNK *)((u8 *)node + 0x2c) = arg3;
 
+    base = &data_0213c440;
     if (arg0 == 0) {
-        void *t = *(void **)((u8 *)&data_0213c290 + 4);
-        if (t != 0) {
-            base = t;
-        } else {
-            base = (void *)&data_0213c440;
-        }
-    } else {
-        base = (void *)&data_0213c440;
+        void *current = M2C_FIELD(&data_0213c290, void **, 4);
+        if (current != NULL) base = current;
     }
-    *(s32 *)((u8 *)arg4 + 0x11c) = *(s32 *)((u8 *)arg4 + 0x11c) + 1;
+    *(s32 *)((u8 *)player + 0x11c) = *(s32 *)((u8 *)player + 0x11c) + 1;
     ListAppend((M2C_UNK *)((u8 *)base + 0x4e0), node);
     OS_WakeupThread((void *)((u8 *)base + 0x4c0));
 }
-
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 /* Asks the player's segment callback for the next streamed segment, looks the
  * returned sound id up in the archive, restarts the voices with it and
  * recomputes the samples left.  Gives up if the callback or the sound is

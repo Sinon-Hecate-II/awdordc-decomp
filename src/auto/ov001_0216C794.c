@@ -65,13 +65,13 @@ void func_ov001_0216c8e0(unsigned short *p,int a,int b,int c,signed char d,signe
 void func_ov001_0216c938(int a,int b,int c,int d) {
  void Ov001MemClear();
  void func_ov001_0216ce58();
- int func_ov001_0216ce88(int);
+ int Ov001SwapEndian32(int);
  short func_ov001_0216ceb0(unsigned short);
  int packet[2];
  Ov001MemClear(packet,0,8);
  ((char *)packet)[1]=2;
  ((short *)packet)[1]=func_ov001_0216ceb0(0x5790);
- packet[1]=func_ov001_0216ce88(*(int *)(gRoomState+0x34));
+ packet[1]=Ov001SwapEndian32(*(int *)(gRoomState+0x34));
  if(c==255 || data_ov001_02191820[0x1c]==0) packet[1]=-1;
  func_ov001_0216ce58(d,a,b,0,packet,8);
 }

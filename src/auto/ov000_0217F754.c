@@ -16,21 +16,21 @@ static inline s32 MapSearchDistance(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void func_ov000_0217f754(s32 x, s32 y, u8 *out, u8 *value) {
-    s32 func_ov000_021a9904(u32);
+    s32 GetKindAttackClass(u32);
     u8 func_ov000_0217f318(s32, s32);
     u8 func_ov000_0217f494(s32, s32);
     s32 func_020a85c8(u32);
     extern void **gCurrentMap;
     u8 *p;
     u8 result;
-    if (func_ov000_021a9904((u32)(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[0] << 26) >> 26) == 0) {
+    if (GetKindAttackClass((u32)(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[0] << 26) >> 26) == 0) {
         result = func_ov000_0217f318(x, y);
         if (!result) return;
         *out = 4;
         *value = result;
         return;
     }
-    if (func_ov000_021a9904((u32)(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[0] << 26) >> 26) != 1) return;
+    if (GetKindAttackClass((u32)(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[0] << 26) >> 26) != 1) return;
     p = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
     if (p[1] != x || p[2] != y) {
         if (!func_020a85c8((u32)(p[0] << 26) >> 26)) return;
@@ -171,7 +171,7 @@ SelectMapLayer((u8*)*gCurrentMap+0x2338);func_01ffc2e8(arg0);SelectMapLayer((u8*
 #pragma opt_strength_reduction reset
 void func_ov000_02180268(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 *gAiCommandState;extern u8 *gAiUnitListCursor;
-s32 func_ov000_021a9904(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void SetMapCursor(s32,s32,s32,s32,s32);
+s32 GetKindAttackClass(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void SetMapCursor(s32,s32,s32,s32,s32);
 u8 *base=*gCurrentMap;u8 *p,*q;u32 index,selected;
 index=base[x+M2C_FIELD(base+(unsigned)y*2,u16 *,0x3758)];selected=M2C_FIELD(base,u8 *,0x52d4);p=(u8 *)((u32)(base+0x59a4)+index*14);q=M2C_FIELD(base,u8 **,0x52d0);
 if(M2C_FIELD(p,u16 *,4)&1)return;
@@ -180,11 +180,11 @@ M2C_FIELD(gAiCommandState,u16 *,8)|=1;
 if(((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27)!=0 || ((u32)(M2C_FIELD(q,u16 *,6)<<25)>>25)<((u32)(M2C_FIELD((u32)p,u16 *,6)<<25)>>25)){
 SetAiActingUnit(selected,(u32)index);gAiUnitListCursor -= 1;
 if((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27)SetMapCursor(p[1],p[2],3,0,0);
-switch(func_ov000_021a9904((u32)(q[0]<<26)>>26)){case 0:func_ov000_0217f96c(q);break;case 1:func_ov000_0217fe68(q);break;}
+switch(GetKindAttackClass((u32)(q[0]<<26)>>26)){case 0:func_ov000_0217f96c(q);break;case 1:func_ov000_0217fe68(q);break;}
 SetAiActingUnit(index,selected);++gAiUnitListCursor;
 }else{
 *gAiUnitListCursor=index;gAiUnitListCursor -= 1;
-switch(func_ov000_021a9904((u32)(p[0]<<26)>>26)){case 0:func_ov000_0217f96c(p);break;case 1:func_ov000_0217fe68(p);break;}
+switch(GetKindAttackClass((u32)(p[0]<<26)>>26)){case 0:func_ov000_0217f96c(p);break;case 1:func_ov000_0217fe68(p);break;}
 ++gAiUnitListCursor;
 }
 }

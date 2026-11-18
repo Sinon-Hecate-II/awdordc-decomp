@@ -342,7 +342,7 @@ s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_0205c694(s32 arg0, M2C_UNK arg1) {
+s32 gti2SendConnect(s32 arg0, M2C_UNK arg1) {
     M2C_UNK gti2AddToBuffer(s32, M2C_UNK, M2C_UNK);
     s32 sp0;
 

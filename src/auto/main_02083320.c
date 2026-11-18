@@ -82,28 +82,30 @@ void func_020834c4(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_0208352c(void *arg0) {
+/* Prepare a sprite-text label's reveal animation: reset the frame counter; an
+ * inactive label just gets its idle animation, an active one gets a per-glyph
+ * reveal start spread evenly over the label's length by averaging two eased
+ * ramps. */
+void InitSpriteTextReveal(SpriteText *text) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    s32 i, n, a;
-    s8 *p;
+    s32 i, count, delay;
 
     i = 0;
-    M2C_FIELD(arg0, u16 *, 0x54) = 0;
-    if (M2C_FIELD(arg0, u8 *, 0x62) == 0) {
-        SetSpriteAnimation(arg0, 0);
+    text->timer = 0;
+    if (text->active == 0) {
+        SetSpriteAnimation(text, 0);
         return;
     }
-    n = M2C_FIELD(arg0, u16 *, 0x5a);
-    if (n <= 0) return;
+    count = text->length;
+    if (count <= 0) return;
     do {
-        a = EaseInterpolate(0, 0, 48, i, (s32)M2C_FIELD(arg0, volatile u16 *, 0x5a) - 1);
-        a = (a + EaseInterpolate(4, 0, 48, i, n - 1)) >> 1;
-        p = (s8 *)arg0 + i;
-        p[0x44] = (s8)a;
-        n = M2C_FIELD(arg0, u16 *, 0x5a);
+        delay = EaseInterpolate(0, 0, 48, i, (s32)M2C_FIELD(text, volatile u16 *, 0x5a) - 1);
+        delay = (delay + EaseInterpolate(4, 0, 48, i, count - 1)) >> 1;
+        text->reveal[i] = (s8)delay;
+        count = text->length;
         ++i;
-    } while (i < n);
+    } while (i < count);
 }
 #pragma opt_strength_reduction off
 void func_020835d4(void *obj) {

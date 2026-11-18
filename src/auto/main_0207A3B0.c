@@ -473,66 +473,59 @@ void func_0207ad30(s32 value) {
     }
 }
 
-void InitCursorCellBurst(void *arg0) {
-    void *HeapAllocBlock(s32);
+#pragma push
+#pragma opt_loop_invariants off
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+/* Start the cursor-cell burst: allocate one particle per cell of the grid area
+ * marked with bit 0x40 (the unit's reachable cells), skipping the cursor cell
+ * itself, and seed each particle at the cursor cell with a velocity towards its
+ * own cell. */
+void InitCursorCellBurst(void *sprite)
+{
     extern void *gCurrentMap;
-
-    void *map;
-    s32 selX;
-    s32 selY;
-    void *alloc;
-    s32 rows;
-    s32 cols;
-    s32 i;
-    s32 j;
-    s32 r7;
-    s32 r12;
-    s32 r2;
-
-    map = M2C_FIELD(gCurrentMap, void **, 0);
-    selX = M2C_FIELD((u8 *)map + 0x52d0, u8 *, 1);
-    selY = M2C_FIELD((u8 *)map + 0x52d0, u8 *, 2);
-
-    alloc = HeapAllocBlock(0x660);
-    M2C_FIELD(arg0, void **, 0x54) = alloc;
-    M2C_FIELD(arg0, s16 *, 0x6c) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6e) = 0;
-
-    rows = M2C_FIELD((u8 *)map + 0x5100, u16 *, 0x46);
-    if (rows <= 0) {
-        return;
-    }
-    cols = M2C_FIELD((u8 *)map + 0x5100, u16 *, 0x44);
-    if (cols <= 0) {
-        return;
-    }
-
-    for (i = 0; i < rows; i++) {
-        r7 = selX << 4;
-        r12 = selY << 4;
-        r2 = (i - selY) * 2;
-
-        for (j = 0; j < cols; j++) {
-            signed char gridByte = M2C_FIELD(M2C_FIELD((u8 *)map + i * 4 + 0x5000, void **, 0x2e8), s8 *, j);
-            if (gridByte < 0) {
-                continue;
-            }
-            if (j == selX && i == selY) {
-                continue;
-            }
-            if (!(gridByte & 0x40)) {
-                continue;
-            }
-
-            M2C_FIELD(alloc, s16 *, M2C_FIELD(arg0, u16 *, 0x6c) * 8) = (s16)r7;
-            M2C_FIELD(alloc, s16 *, M2C_FIELD(arg0, u16 *, 0x6c) * 8 + 2) = (s16)r12;
-            M2C_FIELD(alloc, s16 *, M2C_FIELD(arg0, u16 *, 0x6c) * 8 + 4) = (s16)((j - selX) * 2);
-            M2C_FIELD(alloc, s16 *, M2C_FIELD(arg0, u16 *, 0x6c) * 8 + 6) = (s16)r2;
-            M2C_FIELD(arg0, s16 *, 0x6c) = (s16)(M2C_FIELD(arg0, u16 *, 0x6c) + 1);
-        }
+    void *HeapAllocBlock(s32);
+    BattleMapUnit *cursorUnit = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), BattleMapUnit **, MAP_CURSOR_UNIT);
+    s32 cursorX = cursorUnit->x;
+    s32 cursorY = cursorUnit->y;
+    s16 (*particles)[4] = HeapAllocBlock(0x660);
+    s32 x, y;
+    s32 originX, originY;
+    M2C_FIELD(sprite, void **, SPRITE_SCATTER_POINTS) = particles;
+    y = 0;
+    M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_COUNT) = y;
+    M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_FRAME) = y;
+    {
+        u8 *map = M2C_FIELD(gCurrentMap, u8 **, 0);
+        if (M2C_FIELD(map, u16 *, MAP_HEIGHT) <= y)
+            return;
+        originX = cursorX * 16;
+        originY = cursorY * 16;
+        do {
+        s32 velocityY;
+        x = 0;
+        if (M2C_FIELD(map, u16 *, MAP_WIDTH) <= x)
+            goto nextRow;
+        velocityY = (y - cursorY) * 2;
+        do {
+            s8 cell = M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x];
+            if (cell < 0 || (x == cursorX && y == cursorY) || !(cell & 0x40))
+                goto nextCell;
+            particles[M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_COUNT)][0] = (s16)originX;
+            particles[M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_COUNT)][1] = (s16)originY;
+            particles[M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_COUNT)][2] = (s16)((x - cursorX) * 2);
+            particles[M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_COUNT)][3] = (s16)velocityY;
+            M2C_FIELD(sprite, s16 *, SPRITE_SCATTER_COUNT)++;
+        nextCell:
+            ++x;
+            map = M2C_FIELD(gCurrentMap, u8 **, 0);
+        } while (x < M2C_FIELD(map, u16 *, MAP_WIDTH));
+    nextRow:
+        ++y;
+        } while (y < M2C_FIELD(map, u16 *, MAP_HEIGHT));
     }
 }
-
+#pragma pop
 void FreeCursorCellBurst(void *arg0) {
     M2C_UNK HeapFreeBlock(s32);
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));

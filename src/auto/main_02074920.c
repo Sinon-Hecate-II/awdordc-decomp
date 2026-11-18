@@ -179,15 +179,18 @@ void SaveManager_CheckArchive(void *arg0) {
     }
 }
 
-u8 func_02074d44(void *arg0) {
+/* Probe the save archive before it is written: the archive must be initialised
+ * and not marked unusable, and a 4-byte read at its start must succeed. Returns
+ * 1 when the archive can be accessed, 0 otherwise. */
+u8 SaveManager_ProbeArchive(void *manager) {
 s32 OS_GetLockID(void); void OS_ReleaseLockID(u8); void CARD_LockBackup(u16); void CARD_UnlockBackup(u8);
 s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);
-s32 out; u8 low; u8 result; u16 id;
-if(!M2C_FIELD(arg0,u8 *,0x2050)) return 0;
-if(M2C_FIELD(arg0,u8 *,0x2052)==1) return 0;
-id=OS_GetLockID(); CARD_LockBackup(id); low=id;
-if(SaveDevice_Transfer(0,&out,4,0,0,0,6,1,0)) result=1; else result=0;
-CARD_UnlockBackup(low); OS_ReleaseLockID(low); return result;
+s32 header; u8 lockIdLow; u8 result; u16 lockId;
+if(!M2C_FIELD(manager,u8 *,SAVE_MANAGER_ACTIVE)) return 0;
+if(M2C_FIELD(manager,u8 *,SAVE_MANAGER_STATE)==1) return 0;
+lockId=OS_GetLockID(); CARD_LockBackup(lockId); lockIdLow=lockId;
+if(SaveDevice_Transfer(0,&header,4,0,0,0,6,1,0)) result=1; else result=0;
+CARD_UnlockBackup(lockIdLow); OS_ReleaseLockID(lockIdLow); return result;
 }
 
 void SaveManager_ScanArchive(s32 arg0){

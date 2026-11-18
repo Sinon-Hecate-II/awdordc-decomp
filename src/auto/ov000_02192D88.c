@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
+#include "ov000_unit_entry.h"
 
 #pragma opt_strength_reduction off
 #pragma opt_if-conversion off
@@ -173,22 +174,26 @@ void func_ov000_021935c4(void *arg0) {
 #undef CURSOR_UNIT
 }
 #pragma opt_strength_reduction reset
-u32 func_ov000_02193998(void) {
-extern void **data_027e0058;
+/* Per-unit AI action for a kind-13 unit (the Rig) that is partway through
+ * building a temporary airfield or port: the Rig must still have ammo and the
+ * map must still be saveable, and its build command (24) is only issued while
+ * the build is at most two turns from finishing; anything else is returned. */
+u32 RunAiKind13BuildAction(void) {
+extern void **gCurrentMap;
 u16 flags;
-u32 x;
-u8 *p;
-p=M2C_FIELD(*data_027e0058,u8 **,0x52d0);
-x=(u32)(p[0]<<26)>>26; if(x!=13)return x;
-flags=*(u16 *)(p+6);
-x=(u32)(flags<<21)>>28;
-if(x==0)return flags;
-x=(u32)(flags<<16)>>27;
-if(x==0)return x;
-x=CanSaveHiddenTerrainMap(); if(!x)return x;
-{s32 v=GetCaptureTurnsLeft(M2C_FIELD(*data_027e0058,void **,0x52d0));if(v>=3)return v;}
-p=M2C_FIELD(*data_027e0058,u8 **,0x52d0);
-return SetMapCursor(p[1],p[2],24,0,0);
+u32 value;
+u8 *unit;
+unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+value=(u32)(unit[MAP_UNIT_KIND]<<26)>>26; if(value!=UNIT_KIND_RIG)return value;
+flags=M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH);
+value=(u32)(flags<<21)>>28;
+if(value==0)return flags;
+value=(u32)(flags<<16)>>27;
+if(value==0)return value;
+value=CanSaveHiddenTerrainMap(); if(!value)return value;
+{s32 turns=GetCaptureTurnsLeft(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT));if(turns>=3)return turns;}
+unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+return SetMapCursor(unit[MAP_UNIT_X],unit[MAP_UNIT_Y],24,0,0);
 }
 
 s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {

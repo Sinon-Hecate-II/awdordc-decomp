@@ -367,7 +367,7 @@ u16 *func_0206b5c0(s64 value, u16 *end, FormatFlags flags) {
 
 u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
     u16 *func_0206cdac(u16 *, u16 *);
-    void func_0206f034(void *, double, void *);
+    void FormatDoubleAsDecimal(void *, double, void *);
     u16 *FormatInteger(s32, u16 *, FormatFlags);
     double fabs(double);
     extern u16 data_02100558[], data_02100564[], data_02100570[], data_0210057c[], data_02100584[], data_0210058c[], data_02100598[], data_021005a4[], data_021005ac[];
@@ -390,7 +390,7 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
     signFlag = fmt.sign;
     if (precision > 509) return 0;
     conv[0] = 0; *(u16 *)(conv + 2) = 32;
-    func_0206f034(conv, value, decimal);
+    FormatDoubleAsDecimal(conv, value, decimal);
     if (fabs(value) == 0.0) {
         p = end - 6;
         func_0206cdac(p, data_02100558);

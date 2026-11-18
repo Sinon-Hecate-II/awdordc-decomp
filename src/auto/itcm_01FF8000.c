@@ -1,5 +1,6 @@
 /* 22 functions from 0x01FF8000 to 0x01FF8F90 (itcm), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_01ff8000(void) {
  extern void (*data_027e0000[])(void);
@@ -13,14 +14,14 @@ void func_01ff8000(void) {
 }
 
 void func_01ff81e4(void) {
-    M2C_UNK func_01ff8300();
+    M2C_UNK LoadCardImage();
     extern volatile u16 data_0212dfe4;
     M2C_UNK func_01ff8218();
     do {
 
     } while (data_0212dfe4 == 0);
     *(s16 *)0x04000208 = 0;
-    func_01ff8300();
+    LoadCardImage();
     func_01ff8218();
 }
 
@@ -34,9 +35,54 @@ void func_01ff82e4(u32 r0, void *r1, u32 r2) {
     }
 }
 
-s32 func_01ff8300(void) { s32 func_01ff83a8(u32,void *,s32); void func_0200673c(void);void func_02006748(void);void func_02006804(void);void func_02006810(void);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32); u32 base,start;void *dst;s32 size;u32 start2;void *dst2;s32 size2,state,diff; base=*(u32*)0x27ffc2c; if(base>=0x8000)func_01ff83a8(base,(void*)0x27ffe00,0x160); start=*(u32*)0x27ffe20; dst=*(void**)0x27ffe28; size=*(s32*)0x27ffe2c; start2=*(s32*)0x27ffe30; dst2=*(void**)0x27ffe38; size2=*(s32*)0x27ffe3c; state=OS_DisableInterrupts();func_02006748();func_0200673c();OS_RestoreInterrupts(state);func_02006810();func_02006804(); start+=base;if(start<0x8000){diff=0x8000-start;dst=(u8*)dst+diff;size-=diff;start=0x8000;}func_01ff83a8(start,dst,size);return func_01ff83a8(start2+base,dst2,size2); }
+/* Load a card image into memory: re-read the 0x160-byte image header from card
+ * offset 0x027FFC2C when that holds a card address, reset the card and its DMA
+ * around the transfer, then load the two blocks the header describes (each a
+ * source offset relative to the header, a destination pointer and a size).  A
+ * block that starts below CARD_SECURE_AREA_END skips the unreadable part.
+ * Returns the address the second read ended at. */
+s32 LoadCardImage(void) {
+    s32 ReadCardRange(u32, void *, s32);
+    void func_0200673c(void);
+    void func_02006748(void);
+    void func_02006804(void);
+    void func_02006810(void);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    u32 cardBase, block0Src;
+    void *block0Dst;
+    s32 block0Size;
+    u32 block1Src;
+    void *block1Dst;
+    s32 block1Size, irqState, skip;
 
-int func_01ff83a8(unsigned int addr, void *dst, int size)
+    cardBase = *(u32 *)0x27ffc2c;
+    if (cardBase >= CARD_SECURE_AREA_END)
+        ReadCardRange(cardBase, (void *)MB_WINDOW_HEADER_START, MB_WINDOW_HEADER_SIZE);
+    block0Src = *(u32 *)0x27ffe20;
+    block0Dst = *(void **)0x27ffe28;
+    block0Size = *(s32 *)0x27ffe2c;
+    block1Src = *(s32 *)0x27ffe30;
+    block1Dst = *(void **)0x27ffe38;
+    block1Size = *(s32 *)0x27ffe3c;
+    irqState = OS_DisableInterrupts();
+    func_02006748();
+    func_0200673c();
+    OS_RestoreInterrupts(irqState);
+    func_02006810();
+    func_02006804();
+    block0Src += cardBase;
+    if (block0Src < CARD_SECURE_AREA_END) {
+        skip = CARD_SECURE_AREA_END - block0Src;
+        block0Dst = (u8 *)block0Dst + skip;
+        block0Size -= skip;
+        block0Src = CARD_SECURE_AREA_END;
+    }
+    ReadCardRange(block0Src, block0Dst, block0Size);
+    return ReadCardRange(block1Src + cardBase, block1Dst, block1Size);
+}
+
+int ReadCardRange(unsigned int addr, void *dst, int size)
 {
     unsigned int control;
     unsigned int status;
@@ -141,7 +187,7 @@ void func_01ff8554(s32 a, s32 b, s32 c, s32 d) {
 }
 void AddToU16Array(u16 *p,s32 size,s32 add){u16 n=size>>1;u16 *q;u16 v;if(!n)return;do{q=p;v=*p++;*q=v+add;n--;}while(n);}
 
-void func_01ff85ec(void) {
+void Reset3DSpriteOam(void) {
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x48) = 0;
@@ -149,7 +195,7 @@ void func_01ff85ec(void) {
     MI_CpuFill32(0xC0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x34), 0x400);
 }
 
-void func_01ff8624(s32 start, s32 end) {
+void Write3DSpriteOamEntries(s32 start, s32 end) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
     void *base;
     u16 *dst;
@@ -186,36 +232,40 @@ void func_01ff8624(s32 start, s32 end) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a) = 0;
 }
 
-void func_01ff873c(void) {
+/* Upload both 3D sprite engines' OAM to the hardware, main engine first: copy
+ * the engine's 0x400-byte OAM shadow to its OAM window, write the quads queued
+ * since the last frame and clear the engine for the next one.  The engine that
+ * was current when the function was called is current again afterwards. */
+void Upload3DSpriteOam(void) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     void MI_CpuCopy32(void *, void *, s32);
-    void func_01ff8624(s32, s32);
-    void func_01ff85ec(void);
+    void Write3DSpriteOamEntries(s32, s32);
+    void Reset3DSpriteOam(void);
     void *saved = gCur3DSpriteEngine;
-    void *p;
+    void *engine;
     void *dest;
     s32 i = 0;
-    u8 same;
+    u8 isMain;
     do {
-        p = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        same = p == g3DSpriteEngineMain;
-        gCur3DSpriteEngine = p;
-        if (same == 1) {
-            dest = (void *)0x7000000;
+        engine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        isMain = engine == g3DSpriteEngineMain;
+        gCur3DSpriteEngine = engine;
+        if (isMain == 1) {
+            dest = (void *)DS3D_OAM_MAIN;
         } else {
-            dest = (void *)0x7000400;
+            dest = (void *)DS3D_OAM_SUB;
         }
-        MI_CpuCopy32(M2C_FIELD(p, void **, 0x34), dest, 0x400);
-        func_01ff8624(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48), 0);
-        func_01ff85ec();
+        MI_CpuCopy32(M2C_FIELD(engine, void **, DS3D_ENGINE_OAM), dest, DS3D_OAM_BYTES);
+        Write3DSpriteOamEntries(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_COUNT), 0);
+        Reset3DSpriteOam();
         i++;
     } while (i < 2);
     gCur3DSpriteEngine = saved;
 }
 
-void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;void func_01ff8624(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=p;func_01ff8624(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
+void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;void Write3DSpriteOamEntries(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=p;Write3DSpriteOamEntries(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
 
 /* Draw a run of sprites from src into the current 3D sprite engine bank. */
 void func_01ff883c(s32 x, s32 y, s32 attr, u16 *src) {

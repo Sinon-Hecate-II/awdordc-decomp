@@ -4,7 +4,6 @@
 #include "ov001_room.h"
 extern unsigned char data_ov001_0218fd40[];
 extern unsigned char data_ov001_0218fdb0[];
-typedef struct PacketWork { signed char a; short b,c; unsigned short pad; unsigned char type,zero; short len; int value; } PacketWork;
 extern unsigned char gOv001RoomPlayerData[];
 extern unsigned char gOv001RoomRecords[];
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
@@ -37,43 +36,46 @@ extern unsigned char data_ov001_0219256a[118];
 #pragma thumb on
 
 #pragma thumb on
-int func_ov001_0216c6b8(int state, int session, int context) {
+/* Build and send the room-data request for this player: fill the room request
+ * record (type 2, the room group mask from gRoomState) into the room transfer
+ * buffer, append this player's 8-byte session token, then post the transfer. */
+int Ov001_SendRoomRequest(int state, int session, int context) {
     void func_ov001_0216b918(int);
     void func_ov001_0216c88c(int, unsigned char *, int, short *, short *, int);
     void func_ov001_0216c8e0(unsigned short *, int, int, int, signed char, signed char, void *);
     void func_ov001_0216c938(int, int, int, int);
     int func_ov001_0216cc0c(void *, int, void *, int);
-    int func_ov001_0216ce88(int);
+    int Ov001SwapEndian32(int);
     short func_ov001_0216ceb0(u16);
     void Ov001MemClear();
     void Ov001MemCopy();
     struct {
-        PacketWork work;
+        Ov001RequestWork work;
         u8 token[8];
     } packet;
     u8 *buffer;
 
-    packet.work.a = 0;
-    packet.work.c = 0;
-    packet.work.b = 0;
-    buffer = M2C_FIELD(gRoomState, u8 **, 0x14);
+    packet.work.status = 0;
+    packet.work.length = 0;
+    packet.work.flags = 0;
+    buffer = M2C_FIELD(gRoomState, u8 **, OV001_TRANSFER_BUFFER);
     Ov001MemClear(&packet.work.type, 0, 8);
-    Ov001MemClear(buffer, 0, 0x5dc);
+    Ov001MemClear(buffer, 0, OV001_TRANSFER_BYTES);
     packet.work.type = 2;
     packet.work.zero = 0;
-    packet.work.len = func_ov001_0216ceb0(4);
-    packet.work.value = M2C_FIELD(gRoomState, int *, 0x2c);
-    packet.work.value = func_ov001_0216ce88(packet.work.value);
-    packet.work.c = 8;
-    func_ov001_0216c88c(M2C_FIELD(gRoomState, int *, 0), buffer + 0x18,
-                       (int)&packet.work.type, &packet.work.c, &packet.work.b, (int)&packet.work);
+    packet.work.recordLen = func_ov001_0216ceb0(4);
+    packet.work.value = M2C_FIELD(gRoomState, int *, OV001_REQUEST_MASK);
+    packet.work.value = Ov001SwapEndian32(packet.work.value);
+    packet.work.length = 8;
+    func_ov001_0216c88c(M2C_FIELD(gRoomState, int *, 0), buffer + OV001_PKT_HEADER,
+                       (int)&packet.work.type, &packet.work.length, &packet.work.flags, (int)&packet.work);
     Ov001MemCopy(packet.token, (void *)(session + 8), 8);
     if (func_ov001_0216cc0c(packet.token, 8, data_ov001_0218fdb0, 6)) {
         func_ov001_0216b918(2);
         return -1;
     }
-    func_ov001_0216c8e0((unsigned short *)buffer, 0x2000, packet.work.c, packet.work.b, packet.work.a, 0x11, packet.token);
-    packet.work.c += 0x18;
-    func_ov001_0216c938((int)buffer, packet.work.c, 0, context);
+    func_ov001_0216c8e0((unsigned short *)buffer, OV001_CMD_ROOM_REQUEST, packet.work.length, packet.work.flags, packet.work.status, OV001_PKT_KIND_ROOM, packet.token);
+    packet.work.length += OV001_PKT_HEADER;
+    func_ov001_0216c938((int)buffer, packet.work.length, 0, context);
     return 0;
 }

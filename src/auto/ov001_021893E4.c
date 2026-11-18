@@ -224,7 +224,7 @@ M2C_UNK func_ov001_02189828(void) {
 
 void func_ov001_0218986c(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK Ov001_GetTaskStep(void);
-    M2C_UNK func_ov001_02188a5c(void *);
+    M2C_UNK DWCi_MOV_WH_StepDataSharing(void *);
     M2C_UNK func_ov001_02188380(void);
     M2C_UNK func_ov001_02188a34(s32);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -245,7 +245,7 @@ void func_ov001_0218986c(s32 arg0, s32 arg1, void *arg2) {
     if (Ov001_GetTaskStep() != 5) {
         return;
     }
-    if (func_ov001_02188a5c(gOv001ProfileState) == 0) {
+    if (DWCi_MOV_WH_StepDataSharing(gOv001ProfileState) == 0) {
         *(u32 *)((u8 *)gOv001ProfileState + 0x204) += 4;
         return;
     }

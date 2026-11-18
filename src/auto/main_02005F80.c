@@ -9,15 +9,18 @@ typedef struct QueueFields {
     s32 count;
 } QueueFields;
 
-s32 func_02005f80(void *arg0,s32 arg1) {
-M2C_UNK func_020057f8(void *); M2C_UNK RescheduleThreads(); s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern M2C_UNK gThreadManager; extern M2C_UNK data_0212dcb4;
-void *cur; void *prev; s32 state;
-cur=M2C_FIELD(&gThreadManager,void **,0x2c);prev=0;state=OS_DisableInterrupts();
-while(cur!=0 && cur!=arg0){prev=cur;cur=M2C_FIELD(cur,void **,0x68);}
-if(cur==0 || cur==&data_0212dcb4){OS_RestoreInterrupts(state);return 0;}
-if(M2C_FIELD(cur,s32 *,0x70)!=arg1){
-if(prev==0){M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(arg0,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(arg0,void **,0x68);}
-M2C_FIELD(arg0,s32 *,0x70)=arg1;func_020057f8(arg0);RescheduleThreads();}
+/* Change a ready thread's run priority: unlink it, store the new priority and
+ * re-insert it into the priority-ordered ready list, then reschedule.  Returns
+ * 0 when the thread is not in the ready list or is the idle thread, 1 otherwise. */
+s32 SetThreadPriority(Thread *thread,s32 priority) {
+M2C_UNK InsertReadyThread(void *); M2C_UNK RescheduleThreads(); s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern M2C_UNK gThreadManager; extern Thread gIdleThread;
+Thread *cur; Thread *prev; s32 state;
+cur=M2C_FIELD(&gThreadManager,Thread **,THREAD_MANAGER_READY);prev=0;state=OS_DisableInterrupts();
+while(cur!=0 && cur!=thread){prev=cur;cur=cur->next;}
+if(cur==0 || cur==&gIdleThread){OS_RestoreInterrupts(state);return 0;}
+if(cur->priority!=priority){
+if(prev==0){M2C_FIELD(&gThreadManager,Thread **,THREAD_MANAGER_READY)=thread->next;}else{prev->next=thread->next;}
+thread->priority=priority;InsertReadyThread(thread);RescheduleThreads();}
 OS_RestoreInterrupts(state);return 1;
 }
 
@@ -25,33 +28,35 @@ s32 func_02006028(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x70);
 }
 
-void SleepMilliseconds(s32 arg0) {
+/* Put the running thread to sleep for at least `milliseconds`: arm a one-shot
+ * timer whose callback wakes the thread, then sleep until it fires. */
+void SleepMilliseconds(s32 milliseconds) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02007190(void *);
-    void func_020072cc(void *, u64, void (*)(void **), void **);
+    void InitTimer(void *);
+    void ScheduleTimer(void *, u64, void (*)(void **), void **);
     M2C_UNK OS_SleepThread(void *);
     extern M2C_UNK gThreadManager;
-    extern void func_020060d8(void **);
-    register s32 argSaved = arg0;
-    s32 buf[11];
-    void *node;
+    extern void SleepTimerCallback(void **);
+    register s32 savedMs = milliseconds;
+    s32 timer[11];
+    void *thread;
     s32 state;
     u64 delay;
 
-    func_02007190(buf);
-    node = M2C_FIELD(M2C_FIELD(&gThreadManager, void **, 8), void **, 0);
+    InitTimer(timer);
+    thread = M2C_FIELD(M2C_FIELD(&gThreadManager, void **, 8), void **, 0);
     state = OS_DisableInterrupts();
-    delay = ((u64)(u32)argSaved * 0x82EAULL) >> 6;
-    M2C_FIELD(node, void **, 0xB0) = buf;
-    func_020072cc(buf, delay, func_020060d8, &node);
-    while (node != NULL) {
+    delay = ((u64)(u32)savedMs * 0x82EAULL) >> 6;
+    M2C_FIELD(thread, void **, THREAD_WAKE_TIMER) = timer;
+    ScheduleTimer(timer, delay, SleepTimerCallback, &thread);
+    while (thread != NULL) {
         OS_SleepThread(NULL);
     }
     OS_RestoreInterrupts(state);
 }
 
-void func_020060d8(void **arg0) {
+void SleepTimerCallback(void **arg0) {
     M2C_UNK TaskWake(void *);
     void *temp_r2;
 
@@ -463,7 +468,7 @@ void InitArenaTable(void);
 void InitArenaTable(void) {
     s32 func_02006a38(s32);
     void func_02006bc4(s32, s32);
-    s32 func_02006b1c(s32);
+    s32 GetArenaBottom(s32);
     void func_02006bd8(s32, s32);
     extern M2C_UNK data_0212defc;
 
@@ -472,17 +477,17 @@ void InitArenaTable(void) {
     }
     M2C_FIELD(&data_0212defc, s32 *, 0) = 1;
     func_02006bc4(0, func_02006a38(0));
-    func_02006bd8(0, func_02006b1c(0));
+    func_02006bd8(0, GetArenaBottom(0));
     func_02006bd8(2, 0);
     func_02006bc4(2, 0);
     func_02006bc4(3, func_02006a38(3));
-    func_02006bd8(3, func_02006b1c(3));
+    func_02006bd8(3, GetArenaBottom(3));
     func_02006bc4(4, func_02006a38(4));
-    func_02006bd8(4, func_02006b1c(4));
+    func_02006bd8(4, GetArenaBottom(4));
     func_02006bc4(5, func_02006a38(5));
-    func_02006bd8(5, func_02006b1c(5));
+    func_02006bd8(5, GetArenaBottom(5));
     func_02006bc4(6, func_02006a38(6));
-    func_02006bd8(6, func_02006b1c(6));
+    func_02006bd8(6, GetArenaBottom(6));
 }
 
 s32 func_02006a10(s32 arg0) {
@@ -510,23 +515,26 @@ if(arg0==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(arg0<0)return 0x27e15
 case 5:return 0x27ff680;case 6:return 0x37f8000;default:return 0;
 }}
 
-s32 func_02006b1c(s32 arg0) {
+/* Return the bottom address of a heap arena's memory range; arena 1 has none,
+ * and arena 2's range depends on the boot's extended-memory flag and on the
+ * console type. */
+s32 GetArenaBottom(s32 arena) {
     s32 func_020062bc(void);
     extern M2C_UNK data_0212defc;
 
-    switch (arg0) {
+    switch (arena) {
     case 0:
         return 0x0223c840;
     case 2:
         if (M2C_FIELD(&data_0212defc, s32 *, 4) == 0) {
-            goto Lzero;
+            goto empty;
         }
         if ((func_020062bc() & 0x3) != 1) {
-            goto Lval;
+            goto extended;
         }
-Lzero:
+empty:
         return 0;
-Lval:
+extended:
         return 0x023e0000;
     case 3:
         return 0x01ffc780;

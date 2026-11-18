@@ -139,7 +139,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     s32 GetTickCountMs(void);
     s32 func_02059cf8(void *, s32);
     s32 Vector_New(s32, s32, void (*)(void *));
-    void func_02048eac(void *, void **);
+    void TableEnter(void *, void **);
     s32 gpiFree(void *);
     s32 Vector_Free(s32);
 
@@ -198,7 +198,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
         goto fail;
     }
 
-    func_02048eac(*(void **)((u8 *)owner + 0xC), &conn);
+    TableEnter(*(void **)((u8 *)owner + 0xC), &conn);
     result = func_0205cca0(owner, address, (s16)port);
     *(s32 *)connOut = result;
     if (result != 0) {
@@ -272,7 +272,7 @@ s32 func_0205d164(s32 arg) {
 s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     void func_0205d70c(M2C_UNK **, s32 *);
     s32 func_0204955c(s32);
-    s32 func_02049824(s32, s32, s32, s32, void *, s32);
+    s32 ghiSendTo(s32, s32, s32, s32, void *, s32);
     s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, s32, s32);
     void func_0205d49c(void *);
@@ -294,7 +294,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     pkt.b = 2;
     pkt.d = arg1;
 
-    res = func_02049824(*(s32 *)p, (s32)arg3, arg4, 0, &pkt, 8);
+    res = ghiSendTo(*(s32 *)p, (s32)arg3, arg4, 0, &pkt, 8);
     if (res == -1) {
         s32 r = ghiGetLastSocketError(*(s32 *)p);
         if (r == -15) {
@@ -559,12 +559,12 @@ s32 IsNatNegPacket(M2C_UNK arg0) {
 
 #pragma scheduling off
 void func_0205d944(s32 a,s32 b,s32 c,s32 d,s32 e) {
-s32 func_02049824(s32,s32,s32,s32,void *,s32);
+s32 ghiSendTo(s32,s32,s32,s32,void *,s32);
 struct Packet_0205 p;
 p.d=b;
 c=((c>>8)&255)|((c<<8)&0xff00);
 p.c=c;p.b=2;
-func_02049824(a,d,e,0,&p,8);
+ghiSendTo(a,d,e,0,&p,8);
 }
 #pragma scheduling reset
 s32 func_0205d998(s32 a) {

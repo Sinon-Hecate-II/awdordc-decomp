@@ -72,20 +72,20 @@ void func_02048c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
    and comparison callbacks.  Table layout: +0x00 buckets, +0x04 count,
    +0x08 userData, +0x0C hashFn, +0x10 compFn. */
 M2C_UNK TableNew2(M2C_UNK elemSize, M2C_UNK nBuckets, M2C_UNK bucketSize, M2C_UNK hashFn, s32 compFn, M2C_UNK userData) {
-    extern M2C_UNK data_020fcd7c, data_020fcd84, data_020fcd14, data_020fcd90, data_020fcd98, data_020fcda4, data_020fcdb0, data_020fcdb8;
+    extern M2C_UNK data_020fcd7c, gHashtableFileName, data_020fcd14, data_020fcd90, data_020fcd98, data_020fcda4, sAssertTable, data_020fcdb8;
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK gpiMalloc(s32);
     M2C_UNK Vector_New(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK table;
     s32 i;
-    if (hashFn == 0) AssertFailed(&data_020fcd7c, &data_020fcd84, &data_020fcd14, 0x38);
-    if (compFn == 0) AssertFailed(&data_020fcd90, &data_020fcd84, &data_020fcd14, 0x39);
-    if (elemSize == 0) AssertFailed(&data_020fcd98, &data_020fcd84, &data_020fcd14, 0x3a);
-    if (nBuckets == 0) AssertFailed(&data_020fcda4, &data_020fcd84, &data_020fcd14, 0x3b);
+    if (hashFn == 0) AssertFailed(&data_020fcd7c, &gHashtableFileName, &data_020fcd14, 0x38);
+    if (compFn == 0) AssertFailed(&data_020fcd90, &gHashtableFileName, &data_020fcd14, 0x39);
+    if (elemSize == 0) AssertFailed(&data_020fcd98, &gHashtableFileName, &data_020fcd14, 0x3a);
+    if (nBuckets == 0) AssertFailed(&data_020fcda4, &gHashtableFileName, &data_020fcd14, 0x3b);
     table = gpiMalloc(0x14);
-    if (table == 0) AssertFailed(&data_020fcdb0, &data_020fcd84, &data_020fcd14, 0x3e);
+    if (table == 0) AssertFailed(&sAssertTable, &gHashtableFileName, &data_020fcd14, 0x3e);
     M2C_FIELD(table, M2C_UNK **, 0) = (M2C_UNK *)gpiMalloc((s32)nBuckets * 4);
-    if (M2C_FIELD(table, M2C_UNK **, 0) == 0) AssertFailed(&data_020fcdb8, &data_020fcd84, &data_020fcd14, 0x41);
+    if (M2C_FIELD(table, M2C_UNK **, 0) == 0) AssertFailed(&data_020fcdb8, &gHashtableFileName, &data_020fcd14, 0x41);
     i = 0;
     if ((s32)nBuckets <= 0) goto done;
     do {
@@ -105,12 +105,12 @@ void func_02048dc4(s32 **arg0) {
     M2C_UNK Vector_Free(s32);
     M2C_UNK gpiFree(M2C_UNK);
     extern M2C_UNK data_020fcd20;
-    extern M2C_UNK data_020fcd84;
-    extern M2C_UNK data_020fcdb0;
+    extern M2C_UNK gHashtableFileName;
+    extern M2C_UNK sAssertTable;
     s32 var_r4;
 
     if (arg0 == NULL) {
-        AssertFailed(&data_020fcdb0, &data_020fcd84, &data_020fcd20, 0x51);
+        AssertFailed(&sAssertTable, &gHashtableFileName, &data_020fcd20, 0x51);
     }
     if (arg0 == NULL) {
         return;
@@ -127,34 +127,37 @@ void func_02048dc4(s32 **arg0) {
 }
 
 s32 func_02048e38(void *p) {
-extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd38;
+extern M2C_UNK sAssertTable,gHashtableFileName,data_020fcd38;
 s32 Vector_GetCount(s32);
 s32 i, sum=0;
-if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd38,0x61);
+if(!p)AssertFailed(&sAssertTable,&gHashtableFileName,&data_020fcd38,0x61);
 if(!p)return 0;
 for(i=0;i<M2C_FIELD(p,s32 *,4);i++)sum+=Vector_GetCount(M2C_FIELD(p,s32 **,0)[i]);
 return sum;
 }
 
-void func_02048eac(void *p,s32 a) {
-extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd2c;
+/* GameSpy hashtable TableEnter: hashes the element with the table's hash
+ * function and appends it to that bucket's vector, or replaces the equal
+ * element already in the bucket. */
+void TableEnter(void *table,s32 data) {
+extern M2C_UNK sAssertTable,gHashtableFileName,sTableEnterName;
 s32 Vector_Search(s32,s32,s32,s32,s32);
 M2C_UNK Vector_AddItem(s32,s32);
-M2C_UNK func_02048964(s32,s32,s32);
-s32 i,n;
-if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd2c,0x71);
-if(!p)return;
-i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
-n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
-if(n==-1)Vector_AddItem(M2C_FIELD(p,s32 **,0)[i],a);
-else func_02048964(M2C_FIELD(p,s32 **,0)[i],a,n);
+M2C_UNK Vector_ReplaceItem(s32,s32,s32);
+s32 bucket,index;
+if(!table)AssertFailed(&sAssertTable,&gHashtableFileName,&sTableEnterName,0x71);
+if(!table)return;
+bucket=M2C_FIELD(table,s32 (**)(s32,s32),12)(data,M2C_FIELD(table,s32 *,4));
+index=Vector_Search(M2C_FIELD(table,s32 **,0)[bucket],data,M2C_FIELD(table,s32 *,16),0,0);
+if(index==-1)Vector_AddItem(M2C_FIELD(table,s32 **,0)[bucket],data);
+else Vector_ReplaceItem(M2C_FIELD(table,s32 **,0)[bucket],data,index);
 }
 
 s32 func_02048f54(void *p,s32 a) {
-extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd44;
+extern M2C_UNK sAssertTable,gHashtableFileName,data_020fcd44;
 s32 Vector_Search(s32,s32,s32,s32,s32);
 s32 i,n;
-if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd44,0x82);
+if(!p)AssertFailed(&sAssertTable,&gHashtableFileName,&data_020fcd44,0x82);
 if(!p)return 0;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
 n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
@@ -164,10 +167,10 @@ return 1;
 }
 
 s32 func_02048ff8(void *p,s32 a) {
-extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd50;
+extern M2C_UNK sAssertTable,gHashtableFileName,data_020fcd50;
 s32 Vector_GetItem(s32,s32);
 s32 i,n;
-if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd50,0x94);
+if(!p)AssertFailed(&sAssertTable,&gHashtableFileName,&data_020fcd50,0x94);
 if(!p)return 0;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
 n=Vector_Search(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
@@ -176,18 +179,18 @@ return Vector_GetItem(M2C_FIELD(p,s32 **,0)[i],n);
 }
 
 void Vector_ForEach(void *p,s32 a,s32 b) {
-extern M2C_UNK data_020fcdc8,data_020fcd84,data_020fcd5c;
+extern M2C_UNK data_020fcdc8,gHashtableFileName,data_020fcd5c;
 void func_02048a9c(s32,s32,s32);
 s32 i;
-if(!a)AssertFailed(&data_020fcdc8,&data_020fcd84,&data_020fcd5c,0xb6);
+if(!a)AssertFailed(&data_020fcdc8,&gHashtableFileName,&data_020fcd5c,0xb6);
 for(i=0;i<M2C_FIELD(p,s32 *,4);i++)func_02048a9c(M2C_FIELD(p,s32 **,0)[i],a,b);
 }
 
 s32 func_02049104(void *p,s32 a,s32 b) {
-extern M2C_UNK data_020fcdc8,data_020fcd84,data_020fcd6c;
+extern M2C_UNK data_020fcdc8,gHashtableFileName,data_020fcd6c;
 s32 func_02048afc(s32,s32,s32);
 s32 i,n;
-if(!a)AssertFailed(&data_020fcdc8,&data_020fcd84,&data_020fcd6c,0xd3);
+if(!a)AssertFailed(&data_020fcdc8,&gHashtableFileName,&data_020fcd6c,0xd3);
 for(i=0;i<M2C_FIELD(p,s32 *,4);i++){n=func_02048afc(M2C_FIELD(p,s32 **,0)[i],a,b);if(n)return n;}
 return 0;
 }

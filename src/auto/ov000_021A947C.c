@@ -152,7 +152,7 @@ s32 GetUnitAttackClass(s32 arg0) {
     return 2;
 }
 
-s32 func_ov000_021a9904(s32 arg0) {
+s32 GetKindAttackClass(s32 arg0) {
     s32 temp_r0;
 
     temp_r0 = GetUnitKindMaxAttackRange();

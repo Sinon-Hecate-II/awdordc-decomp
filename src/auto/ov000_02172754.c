@@ -15,7 +15,7 @@ void func_ov000_02172754(void *arg0) {
     s32 Divide(s32, s32);
     void LoadFacePalette(s32, s32, s32, s32, u8);
     s32 func_020a334c(s32);
-    s32 func_020a3594(M2C_UNK, M2C_UNK);
+    s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
     s32 func_020719d4(s32);
     s32 func_020714f0(s32, s32);
     s32 func_02071a1c(u8);
@@ -102,7 +102,7 @@ void func_ov000_02172754(void *arg0) {
                 rcd[0x0c] = *((u8 *)rec + 0x18);
                 rcd[0x08] = *((u8 *)rec + 0x31);
                 *(u8 *)(rcd + 0x30) = (u8)func_020a334c(1);
-                r7 = func_020a3594((M2C_UNK)1, (M2C_UNK)2);
+                r7 = GetCoPowerMeterCost((M2C_UNK)1, (M2C_UNK)2);
                 if (func_020714f0(0, func_020719d4(r7)) != 0) {
                     s32 r6c = *(s32 *)((u8 *)rec + 0x6c);
                     u8 b21 = (u8)(r6c >> 21);

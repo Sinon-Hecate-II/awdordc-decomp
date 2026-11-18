@@ -168,7 +168,10 @@ s32 ProcessAiCommandStep(void) {
     return continues;
 }
 
-s32 func_ov000_0219e9f4(void) {
+#pragma push
+#pragma opt_common_subs off
+s32 func_ov000_0219e9f4(void)
+{
     s32 func_0207c2d0(s32);
     s32 StepMapViewToTile(u8, u8);
     void func_020844a0(u8 *, u8 *);
@@ -178,166 +181,158 @@ s32 func_ov000_0219e9f4(void) {
     u8 IsUnitSubmerged(void *);
     u8 func_020a7d68(void *);
     s32 func_ov000_0219e8d0(void);
-
     extern u8 gAiCommand[];
     extern s8 *gAiCommandState;
     extern void **gCurrentMap;
     extern u8 gCommandPath[];
     extern u8 gBattleEndState;
 
-    u8 *G0 = gAiCommand;
-    void *map;
-    s32 state;
-    s32 r3;
-    s32 r4;
-    u8 *sel;
+    u8 *map;
+    u8 *unit;
+    u16 player;
+    u16 flags;
+    u32 cell;
+    u8 x, y;
+    u8 kind;
     s32 visible;
-    u8 r12;
-    s32 range;
-    u16 f;
-    u16 row;
-    u8 unitId;
+    s32 scrolling;
 
-    func_0207c2d0(*(s32 *)(G0 + 8));
-    state = G0[0];
-    if (state == 0x14) {
-        gAiCommandState[1] = 2;
+    func_0207c2d0(M2C_FIELD(gAiCommand, s32 *, AI_COMMAND_SEED));
+    kind = gAiCommand[AI_COMMAND_KIND];
+    if (kind == 20) {
+        gAiCommandState[AI_COMMAND_STATE_STEP] = 2;
         return 1;
     }
-    if (state == 1 || (state >= 12 && state <= 13) || (state >= 15 && state <= 18)) {
-        map = *gCurrentMap;
-        r3 = 0;
-        if (state == 0x0f) {
-            ((u8 *)map)[0x52d4] = G0[1];
-            *(void **)((u8 *)map + 0x52d0) = (u8 *)map + 0x59a4 + ((u8 *)map)[0x52d4] * 14;
-            sel = *(void **)((u8 *)map + 0x52d0);
-            if (sel != 0) {
-                sel[10] = (u8)((sel[10] & ~0x7f) | (G0[18] & 0x7f));
-            }
+
+    switch (kind) {
+    case 1:
+    case 12:
+    case 13:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+        scrolling = 0;
+        if (kind == 15) {
+            M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID) = gAiCommand[AI_COMMAND_ACTOR];
+            map = *gCurrentMap;
+            M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT) =
+                map + MAP_UNIT_RECORDS + M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
+            unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+            if (unit != NULL)
+                ((BattleMapUnitHead *)unit)->fuel = gAiCommand[AI_COMMAND_FUEL_LEFT];
         }
-        if (state == 0x10) {
-            ((u8 *)map)[0x52d4] = G0[1];
-            *(void **)((u8 *)map + 0x52d0) = (u8 *)map + 0x59a4 + ((u8 *)map)[0x52d4] * 14;
-            sel = *(void **)((u8 *)map + 0x52d0);
-            range = *(u16 *)((u8 *)map + 0x52a4);
-            if ((((u8 *)map)[range * 140 + 0x67c3]) & 2) {
+        if (gAiCommand[AI_COMMAND_KIND] == 16) {
+            M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID) = gAiCommand[AI_COMMAND_ACTOR];
+            map = *gCurrentMap;
+            M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT) =
+                map + MAP_UNIT_RECORDS + M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
+            map = *gCurrentMap;
+            player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+            unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
+            y = unit[MAP_UNIT_Y];
+            x = unit[MAP_UNIT_X];
+            if (M2C_FIELD(map + player * MAP_PLAYER_STRIDE, u8 *, 0x67c3) & 2) {
                 visible = 1;
             } else {
-                row = *(u16 *)((u8 *)map + sel[2] * 2 + 0x3758);
-                if ((((u8 *)map)[((sel[1] + row) >> 3) + 0x5201] & (1 << ((sel[1] + row) & 7)))) {
-                    visible = 1;
-                } else {
+                visible = 1;
+                    cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+                if ((u8)(M2C_FIELD(map + (cell >> 3), u8 *, MAP_CELL_BITMAP) & (visible << (cell & 7))) == 0)
                     visible = 0;
-                }
             }
-            r3 = 0;
-            if (visible) {
-                r3 = StepMapViewToTile(sel[1], sel[2]);
-            }
+            if (visible)
+                scrolling = StepMapViewToTile(x, y);
         }
-        gAiCommandState[1] = 2;
-        if (r3 == 0) return 1;
-        return 0;
+        gAiCommandState[AI_COMMAND_STATE_STEP] = 2;
+        return (u8)(scrolling == 0);
     }
 
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID) = gAiCommand[AI_COMMAND_ACTOR];
     map = *gCurrentMap;
-    ((u8 *)map)[0x52d4] = G0[1];
-    *(void **)((u8 *)map + 0x52d0) = (u8 *)map + 0x59a4 + G0[1] * 14;
-    ((u16 *)((u8 *)map + 0x5200))[0x70] = G0[4];
-    ((u16 *)((u8 *)map + 0x5200))[0x71] = G0[5];
-    ((u16 *)((u8 *)map + 0x5200))[0x6c] = G0[4];
-    ((u16 *)((u8 *)map + 0x5200))[0x6d] = G0[5];
-    ((u16 *)((u8 *)map + 0x5200))[0x6e] = G0[2];
-    ((u16 *)((u8 *)map + 0x5200))[0x6f] = G0[3];
+    M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT) =
+        map + MAP_UNIT_RECORDS + M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_PATH_X) = gAiCommand[AI_COMMAND_OLD_X];
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_PATH_Y) = gAiCommand[AI_COMMAND_OLD_Y];
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_OLD_X) = gAiCommand[AI_COMMAND_OLD_X];
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_OLD_Y) = gAiCommand[AI_COMMAND_OLD_Y];
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_X) = gAiCommand[AI_COMMAND_CURSOR_X];
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_Y) = gAiCommand[AI_COMMAND_CURSOR_Y];
 
-    if ((u8)(G0[0] + 0xea) <= 1) {
-        r4 = 0;
-        if (func_ov000_0219e8d0() == 0) {
-            sel = *(void **)((u8 *)map + 0x52d0);
-            range = *(u16 *)((u8 *)map + 0x52a4);
-            if ((((u8 *)map)[range * 140 + 0x67c3]) & 2) {
-                r12 = 1;
+    if ((u8)(gAiCommand[AI_COMMAND_KIND] + 0xea) <= 1) {
+        scrolling = 0;
+        if (!func_ov000_0219e8d0()) {
+            map = *gCurrentMap;
+            player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+            unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
+            y = unit[MAP_UNIT_Y];
+            x = unit[MAP_UNIT_X];
+            if (M2C_FIELD(map + player * MAP_PLAYER_STRIDE, u8 *, 0x67c3) & 2) {
+                visible = 1;
             } else {
-                row = *(u16 *)((u8 *)map + sel[2] * 2 + 0x3758);
-                if ((((u8 *)map)[((sel[1] + row) >> 3) + 0x5201] & (1 << ((sel[1] + row) & 7)))) {
-                    r12 = 1;
-                } else {
-                    r12 = 0;
-                }
+                visible = 1;
+                    cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+                if ((u8)(M2C_FIELD(map + (cell >> 3), u8 *, MAP_CELL_BITMAP) & (visible << (cell & 7))) == 0)
+                    visible = 0;
             }
-            if (r12) {
-                r4 = StepMapViewToTile(sel[1], sel[2]);
-            }
+            if (visible)
+                scrolling = StepMapViewToTile(x, y);
         }
-        func_020844a0(gCommandPath, (u8 *)map + 0x5388);
+        func_020844a0(gCommandPath, (u8 *)*gCurrentMap + MAP_CURSOR_PATH);
         func_020d61f0();
-        gAiCommandState[1] = 2;
-        if (r4 == 0) return 1;
-        return 0;
+        gAiCommandState[AI_COMMAND_STATE_STEP] = 2;
+        return (u8)(scrolling == 0);
     }
 
-    range = *(u16 *)((u8 *)map + 0x52a4);
-    if (func_020d1a1c(range) == 0) {
-        sel = *(void **)((u8 *)map + 0x52d0);
-        f = *(u16 *)(sel + 4);
-        if ((f & 8) == 0) {
-            ((u8 *)map)[0x52d6] = 0;
+    if (!func_020d1a1c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+        map = *gCurrentMap;
+        unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
+        flags = M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS);
+        if (!(flags & 8)) {
+            M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER) = 0;
         } else {
-            *(u16 *)(sel + 4) = (u16)(f & ~8);
+            M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) = flags & ~8;
+            map = *gCurrentMap;
+            y = gAiCommand[AI_COMMAND_OLD_Y];
+            x = gAiCommand[AI_COMMAND_OLD_X];
+            cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER) = map[cell];
         }
     }
-    {
-        u8 *g0 = G0;
-        row = *(u16 *)((u8 *)map + g0[5] * 2 + 0x3758);
-        unitId = ((u8 *)map)[g0[4] + row];
-        ((u8 *)map)[0x52d6] = unitId;
+
+    if ((M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) == 14 && gBattleEndState && !func_0208485c()) ||
+        M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) == 19) {
+        M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR) = 0;
+        unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+        ((BattleMapUnitHead *)unit)->fuel = gAiCommand[AI_COMMAND_FUEL_LEFT];
+        gAiCommandState[AI_COMMAND_STATE_STEP] = 1;
     }
 
-    if (*(u16 *)((u8 *)map + 0x52b0) == 0x0e && gBattleEndState != 0) {
-        func_0208485c();
-    }
-
-    if (*(u16 *)((u8 *)map + 0x52b0) == 0x13) {
-        sel = *(void **)((u8 *)map + 0x52d0);
-        ((u8 *)map)[0x52d5] = 0;
-        sel[10] = (u8)((sel[10] & ~0x7f) | (G0[18] & 0x7f));
-        gAiCommandState[1] = 1;
-        r4 = 0;
-        if (func_ov000_0219e8d0() != 0) {
-            return 0;
-        }
-        goto final_visibility;
-    }
-
-final_visibility:
-    r4 = 0;
-    sel = *(void **)((u8 *)map + 0x52d0);
-    range = *(u16 *)((u8 *)map + 0x52a4);
-    if ((((u8 *)map)[range * 140 + 0x67c3]) & 2) {
-        r12 = 1;
-    } else {
-        row = *(u16 *)((u8 *)map + sel[2] * 2 + 0x3758);
-        if ((((u8 *)map)[((sel[1] + row) >> 3) + 0x5201] & (1 << ((sel[1] + row) & 7)))) {
-            r12 = 1;
+    scrolling = 0;
+    if (!func_ov000_0219e8d0()) {
+        map = *gCurrentMap;
+        player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+        unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
+        visible = M2C_FIELD(map + player * MAP_PLAYER_STRIDE, u8 *, 0x67c3);
+        y = unit[MAP_UNIT_Y];
+        x = unit[MAP_UNIT_X];
+        if (visible & 2) {
+            visible = 1;
         } else {
-            r12 = 0;
+            cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            visible = 1;
+            if ((u8)(M2C_FIELD(map + (cell >> 3), u8 *, MAP_CELL_BITMAP) & (visible << (cell & 7))) == 0)
+                visible = 0;
+        }
+        if ((u8)!visible == 0 && (!IsUnitSubmerged(unit) ||
+            func_020a7d68(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT)))) {
+            unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+            scrolling = StepMapViewToTile(unit[MAP_UNIT_X], unit[MAP_UNIT_Y]);
         }
     }
-    if (r12 == 0) {
-        return 0;
-    }
-    if (!IsUnitSubmerged(sel)) {
-        return 0;
-    }
-    if (!func_020a7d68(sel)) {
-        return 0;
-    }
-    r4 = StepMapViewToTile(sel[1], sel[2]);
-    gAiCommandState[1] = 1;
-    if (r4 == 0) return 1;
-    return 0;
+    gAiCommandState[AI_COMMAND_STATE_STEP] = 1;
+    return (u8)(scrolling == 0);
 }
-
+#pragma pop
 s32 func_ov000_0219efa4(void) {
     void func_020d61f0(void);
     void *func_ov000_0216939c(void *);

@@ -221,11 +221,11 @@ u8 func_ov004_02214030(void) {
 }
 
 u8 func_ov004_02214050(void) {
-    s32 func_020a3594(M2C_UNK, M2C_UNK);
+    s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
     s32 temp_r4;
     u8 var_r0;
 
-    temp_r4 = func_020a3594(1, 2);
+    temp_r4 = GetCoPowerMeterCost(1, 2);
     if ((temp_r4 - func_020a3518(1)) == 0) {
         var_r0 = 1;
     } else {
@@ -274,7 +274,7 @@ return 0;
 s32 func_ov004_022141bc(void) {
     s32 temp_r4;
 
-    temp_r4 = func_020a3594(1, 2);
+    temp_r4 = GetCoPowerMeterCost(1, 2);
     if ((temp_r4 == func_020a3518(1)) && (func_020a3518(1) > 0)) {
         return 1;
     }

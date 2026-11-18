@@ -3,121 +3,94 @@
 #include "ov001_keypad.h"
 
 
+#pragma scheduling on
 void func_ov001_0217416c(void) {
     extern u8 gKeypadLayout[];
-    extern u8 data_ov001_0218f5dc[];
-    extern u8 data_ov001_0218f628[];
-    extern u8 func_ov001_02174548[];
+    extern u8 data_ov001_0218f5dc[], data_ov001_0218f5e0[];
+    extern u16 data_ov001_0218f628[];
     extern void *gOv001Keypad;
-    M2C_UNK Ov001_Alloc();
-    M2C_UNK Ov001_CreateSpriteFromLayout();
-    M2C_UNK Ov001_CreateSprite();
-    M2C_UNK func_ov001_0218a260();
-    M2C_UNK Ov001_SetSpritePalette();
-    M2C_UNK CreatePooledTextPanel();
-    M2C_UNK func_ov001_0218a070();
-    M2C_UNK func_ov001_02174f68();
-    M2C_UNK Ov001_AddTask();
+    void *Ov001_Alloc(s32, s32);
+    void *Ov001_CreateSpriteFromLayout(s32, s32);
+    void *Ov001_CreateSprite(s32, s32, s32);
+    void func_ov001_0218a260(void *, s32, s32, s32);
+    void Ov001_SetSpritePalette(void *, s32, s32);
+    void *CreatePooledTextPanel(s32, s32, s32, s32, s32 *, s32);
+    void DrawPanelText(void *, s32, s32, s32, s32, s32, s32, u16 *);
+    void *func_ov001_0218a070(s32, s32, s32);
+    void *Ov001_AddTask(s32, void (*)(s32), s32, s32);
+    void func_ov001_02174548(s32);
+    void func_ov001_02174f68(s32, s32);
+    void *sprite;
+    s32 i, label, j;
+    s32 extra;
+    const u8 *extraIds;
+    const u8 *ids;
+    struct {
+        s32 firstLabel;
+        u16 text[2];
+        s32 layout;
+        u16 x;
+        u16 y, width, height;
+    } work;
 
-    u16 sp1c;
-    u16 sp1e;
-    u16 sp20;
-    u16 sp22;
-    void *p;
-    s32 mask;
-    s32 i;
-    u8 *src;
-    u16 h;
-    u8 *r9;
-    s32 r10;
-    s32 r8i;
-    u16 r2h;
-    u16 sp14;
-    u16 sp0;
-    s32 sp4;
-    s32 sp8;
-    void *spc;
-    u16 sp1cnew;
-    void *q;
-    void *x;
-    s32 sp10;
-    u16 sp16;
-
-    sp1c = *(u16*)(gKeypadLayout + 0x20);
-    sp1e = *(u16*)(gKeypadLayout + 0x22);
-    sp20 = 0x1c;
-    sp22 = 0x14;
-
-    p = (void*)Ov001_Alloc(0x6c, 0x4);
-    gOv001Keypad = p;
-    M2C_FIELD(p, u8*, 0x60) = 0x1f;
-    M2C_FIELD(p, u8*, 0x63) = 0;
-    M2C_FIELD(p, u8*, 0x66) = 1;
-    M2C_FIELD(p, u8*, 0x67) = 1;
-    M2C_FIELD(p, u8*, 0x68) = 1;
-
-    mask = 0xc1fffcff;
-    for (i = 0; i < 10; i++) {
-        q = (void*)Ov001_CreateSpriteFromLayout(0, 0x36);
-        M2C_FIELD(p, void**, 0x10 + i*4) = q;
-        *(s32*)q = (*(s32*)q & mask) | 0x200;
-        h = M2C_FIELD(q, u16*, 0x4);
-        h = (h & ~0xc00) | 0xc00;
-        M2C_FIELD(q, u16*, 0x4) = h;
+    work.x = M2C_FIELD(gKeypadLayout, u16 *, 0x20);
+    work.y = M2C_FIELD(gKeypadLayout, u16 *, 0x22);
+    work.width = 28;
+    work.height = 20;
+    gOv001Keypad = Ov001_Alloc(0x6c, 4);
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = 31;
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = 0;
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CAN_DELETE) = 1;
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_DIGITS_ON) = 1;
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CAN_NEXT) = 1;
+    for (i = 0; i < KEYPAD_KEY_COUNT; i++) {
+        (((void **)gOv001Keypad + i)[4]) = Ov001_CreateSpriteFromLayout(0, 0x36);
+        sprite = (((void **)gOv001Keypad + i)[4]);
+        *(u32 *)sprite = (*(u32 *)sprite & 0xc1fffcff) | 0x200;
+        sprite = (((void **)gOv001Keypad + i)[4]);
+        M2C_FIELD(sprite, u16 *, 4) = (M2C_FIELD(sprite, u16 *, 4) & ~0xc00) | 0xc00;
     }
-    src = data_ov001_0218f5dc;
+    ids = data_ov001_0218f5dc;
     for (i = 0; i < 2; i++) {
-        u8 b = *src++;
-        q = (void*)Ov001_CreateSpriteFromLayout(0, b);
-        M2C_FIELD(p, void**, 0x38 + i*4) = q;
-        *(s32*)q = (*(s32*)q & mask) | 0x200;
-        h = M2C_FIELD(q, u16*, 0x4);
-        h = (h & ~0xc00) | 0xc00;
-        M2C_FIELD(q, u16*, 0x4) = h;
+        (((void **)gOv001Keypad + i)[14]) = Ov001_CreateSpriteFromLayout(0, *ids++);
+        sprite = (((void **)gOv001Keypad + i)[14]);
+        *(u32 *)sprite = (*(u32 *)sprite & 0xc1fffcff) | 0x200;
+        sprite = (((void **)gOv001Keypad + i)[14]);
+        M2C_FIELD(sprite, u16 *, 4) = (M2C_FIELD(sprite, u16 *, 4) & ~0xc00) | 0xc00;
     }
-
-    r9 = data_ov001_0218f628;
-    r10 = 0;
-    while (r10 < 2) {
-        u8 b2 = *r9++;
-        void *q2 = (void*)Ov001_CreateSprite(0, b2, 1);
-        M2C_FIELD(p, void**, 0x40 + r10*4) = q2;
-        func_ov001_0218a260(q2, -1, 0x200, 0);
-        Ov001_SetSpritePalette(q2, 3);
-        r10++;
+    extraIds = data_ov001_0218f5e0;
+    for (extra = 0; extra < 2; extra++) {
+        (((void **)gOv001Keypad + extra)[16]) = Ov001_CreateSprite(0, *extraIds++, 1);
+        func_ov001_0218a260((((void **)gOv001Keypad + extra)[16]), -1, 0x200, 0);
+        Ov001_SetSpritePalette((((void **)gOv001Keypad + extra)[16]), -1, 3);
     }
-
-    sp10 = 0;
-    sp16 = 0;
-    r10 = 0;
-    r8i = 0;
-    while (r10 < 4) {
-        r2h = *(u16*)(func_ov001_02174548 + (r8i << 1));
-        sp14 = r2h;
-        sp0 = sp22;
-        sp4 = 2;
-        sp8 = 0x480;
-        spc = (void*)&sp14;
-        CreatePooledTextPanel(0, 0xc, 0x4, 0, 0, 0);
-        sp1c = sp1c + 0x20;
-        r8i++;
-        r10++;
+    work.firstLabel = 0;
+    work.text[1] = 0;
+    for (i = 0; i < 4; i++) {
+        void *panel = CreatePooledTextPanel(0, 12, 4, 0, &work.layout, 0);
+        j = 0;
+        ((void **)gOv001Keypad)[i] = panel;
+        label = work.firstLabel;
+        work.x = 0;
+        for (; j < 3; j++, label++) {
+            s32 character = data_ov001_0218f628[label];
+            s32 height = work.height;
+            s32 x = work.x;
+            work.text[0] = character;
+            DrawPanelText(((void **)gOv001Keypad)[i], x, work.y, work.width, height, 2, 0x480, work.text);
+            work.x += 32;
+        }
+        sprite = func_ov001_0218a070(0, work.layout, 0);
+        work.firstLabel = label;
+        (((void **)gOv001Keypad + i)[18]) = sprite;
     }
-
-    q = (void*)Ov001_CreateSprite(0, -1, 2);
-    M2C_FIELD(p, void**, 0x58) = q;
-    func_ov001_0218a260(q, -1, 0x200, 0);
-    Ov001_SetSpritePalette(q, 2);
-
-    x = (void*)Ov001_AddTask(0, 0, 0, 0x78);
-    M2C_FIELD(p, void**, 0x5c) = x;
-    func_ov001_02174f68(0, 0);
-
-    (void)sp0; (void)sp4; (void)sp8; (void)spc;
-    (void)sp10; (void)sp14; (void)sp16; (void)sp1c; (void)sp1e; (void)sp20; (void)sp22;
-    (void)p; (void)sp1cnew;
+    M2C_FIELD(gOv001Keypad, void **, 0x58) = Ov001_CreateSprite(0, 0x44, 1);
+    func_ov001_0218a260(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 0x200, 0);
+    Ov001_SetSpritePalette(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 2);
+    M2C_FIELD(gOv001Keypad, void **, 0x5c) = Ov001_AddTask(0, func_ov001_02174548, 0, 0x78);
+    func_ov001_02174f68(0, 192);
 }
-
+#pragma scheduling reset
 void func_ov001_021744a8(void) {
     extern void *gOv001Keypad;
     void func_ov001_021753c8(void);

@@ -622,10 +622,10 @@ SetMapCursor(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),23,0,0);
 }
 
 void RunAiKind13Action(void) {
-    M2C_UNK func_ov000_02193998();
+    M2C_UNK RunAiKind13BuildAction();
     if (IsAiMap175Player2Override() != 0) {
         return;
     }
-    func_ov000_02193998();
+    RunAiKind13BuildAction();
 }
 

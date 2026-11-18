@@ -261,109 +261,80 @@ M2C_UNK func_020cfd38(void) {
     func_0207843c(0, 0, 48, 40);
 }
 
-s32 func_020cfe2c(void) {
-    extern s32 *gCurrentMap;
-    s32 func_020a5f4c(u16);
-    s32 h;
-    s32 y;
-    s32 w;
-    s32 x;
-    u8 *base;
-    s32 i;
-    u8 *entry;
-    u8 kind;
-    u16 flags;
-    s32 ey;
-    s32 ex;
-    u16 row2;
-    u8 val;
-    u16 recFlags;
-    u16 unitIdx;
-    s32 attr;
-    s32 off;
-    u8 bm;
-    s32 bit;
+/* Rebuild the map's per-cell unit layers from the unit records: first clear the
+ * visible-unit byte (offset 0) and the unit id byte (MAP_CELL_UNIT_ID) of every
+ * cell, then write each placed unit's index into both.  A human player only sees
+ * a unit written to the visible layer when its cell is in the first team's sight
+ * bitmap, and the last pass removes from that layer the hidden units that are
+ * not in sight (a CPU player sees everything).  Units that are moving
+ * (flag 0x02) are not shown until they stop. */
+void RefreshMapCellUnits(void) {
+    s32 IsMapUnitRevealed(s32);
+    s32 x, y;
+    u8 *map;
+    u8 *cell;
+    u8 occupant;
+    u32 cellIndex;
+    u8 sightBits;
 
-    h = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x5146);
-    for (y = 0; y < h; y++) {
-        u16 row = M2C_FIELD((void *)*gCurrentMap + y * 2, u16 *, 0x3758);
-        w = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x5144);
-        for (x = 0; x < w; x++) {
-            *((u8 *)*gCurrentMap + row + x) = (u8)y;
-            *((u8 *)*gCurrentMap + row + x + 0x508) = (u8)y;
+    s32 noUnit = 0;
+
+    for (y = 0; y < M2C_FIELD((void *)*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD((void *)*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+            map = (u8 *)*gCurrentMap;
+            (map + x)[((Map16E8 *)map)->rows[y]] = noUnit;
+            map = (u8 *)*gCurrentMap;
+            (map + x)[((Map16E8 *)map)->rows[y] + MAP_CELL_UNIT_ID] = noUnit;
         }
     }
-    base = (u8 *)*gCurrentMap + 0x59A4;
-    for (i = 1; i < 256; i++) {
-        entry = base + i * 14;
-        kind = entry[0] & 0x3F;
-        if (kind == 0) {
-            continue;
-        }
-        flags = *(u16 *)(entry + 4);
-        if ((flags & 2) && !(flags & 4)) {
-            continue;
-        }
-        ey = entry[2];
-        ex = entry[1];
-        row2 = M2C_FIELD((void *)*gCurrentMap + ey * 2, u16 *, 0x3758);
-        val = *((u8 *)*gCurrentMap + row2 + ex + 0x508);
-        if (val != 0) {
-            recFlags = *(u16 *)((u8 *)*gCurrentMap + (s32)val * 14 + 0x59A8);
-            if (!(recFlags & 4)) {
-                continue;
+    {
+        s32 i;
+        BattleMapUnitHead *unit;
+        s32 unitOffset;
+        BattleMapUnitHead *units;
+        for (i = 1, unitOffset = MAP_UNIT_STRIDE; i < MAP_UNIT_COUNT; i++, unitOffset += MAP_UNIT_STRIDE) {
+            map = (u8 *)*gCurrentMap;
+            units = (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS);
+            unit = (BattleMapUnitHead *)((u8 *)units + unitOffset);
+            if (!unit->kind) continue;
+            if ((unit->flags & 2) && !(unit->flags & 4)) continue;
+            cell = map + unit->x + M2C_FIELD(map + unit->y * 2, u16 *, MAP_ROW_OFFSETS);
+            occupant = cell[MAP_CELL_UNIT_ID];
+            if (occupant && !(M2C_FIELD(map + occupant * MAP_UNIT_STRIDE, u16 *, MAP_UNIT_RECORDS + MAP_UNIT_FLAGS) & 4)) continue;
+            cell[MAP_CELL_UNIT_ID] = (u8)(unit ? unit - units : noUnit);
+            if (unit->flags & 2) continue;
+            map = (u8 *)*gCurrentMap;
+            if (map[PLAYER_CONTROL_OFF + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE] != PLAYER_CONTROL_CPU) {
+                cellIndex = unit->x + M2C_FIELD(map + unit->y * 2, u16 *, MAP_ROW_OFFSETS);
+                sightBits = map[MAP_CELL_BITMAP_TEAM_A + (cellIndex >> 3)];
+                if (!(u8)((1 << (cellIndex & 7)) & sightBits)) continue;
             }
-            *((u8 *)*gCurrentMap + row2 + ex + 0x508) = (u8)i;
+            occupant = (u8)(unit ? unit - (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS) : noUnit);
+            (map + unit->x)[M2C_FIELD(map + unit->y * 2, u16 *, MAP_ROW_OFFSETS)] = occupant;
         }
-        if (flags & 2) {
-            continue;
-        }
-        unitIdx = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x52A4);
-        attr = *((u8 *)*gCurrentMap + (s32)unitIdx * 0x8C + 0x67C2);
-        if (attr == 2) {
-            *((u8 *)*gCurrentMap + row2 + ex) = (u8)i;
-            continue;
-        }
-        off = ex + row2;
-        bm = *((u8 *)*gCurrentMap + (off >> 3) + 0x5160);
-        bit = off & 7;
-        if (bm & (1 << bit)) {
-            continue;
-        }
-        *((u8 *)*gCurrentMap + row2 + ex) = (u8)i;
     }
-    for (i = 1; i < 256; i++) {
-        entry = base + i * 14;
-        kind = entry[0] & 0x3F;
-        if (kind == 0) {
-            continue;
+    {
+        s32 i;
+        BattleMapUnitHead *unit;
+        BattleMapUnitHead *units;
+        s32 unitOffset;
+        for (i = 1, unitOffset = MAP_UNIT_STRIDE; i < MAP_UNIT_COUNT; i++, unitOffset += MAP_UNIT_STRIDE) {
+            map = (u8 *)*gCurrentMap;
+            units = (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS);
+            unit = (BattleMapUnitHead *)((u8 *)units + unitOffset);
+            if (!unit->kind) continue;
+            if (unit->flags & 2) continue;
+            if (unit->flags & UNIT_FLAG_VISIBLE) continue;
+            if (map[PLAYER_CONTROL_OFF + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE] == PLAYER_CONTROL_CPU) continue;
+            if (IsMapUnitRevealed((u16)(unit ? unit - units : noUnit))) {
+                map = (u8 *)*gCurrentMap;
+                cellIndex = unit->x + M2C_FIELD(map + unit->y * 2, u16 *, MAP_ROW_OFFSETS);
+                sightBits = map[MAP_CELL_BITMAP_TEAM_A + (cellIndex >> 3)];
+                if ((u8)((1 << (cellIndex & 7)) & sightBits)) continue;
+            }
+            map = (u8 *)*gCurrentMap;
+            (map + unit->x)[M2C_FIELD(map + unit->y * 2, u16 *, MAP_ROW_OFFSETS)] = noUnit;
         }
-        flags = *(u16 *)(entry + 4);
-        if (flags & 2) {
-            continue;
-        }
-        if (flags & 0x40) {
-            continue;
-        }
-        unitIdx = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x52A4);
-        attr = *((u8 *)*gCurrentMap + (s32)unitIdx * 0x8C + 0x67C2);
-        if (attr == 2) {
-            continue;
-        }
-        if (func_020a5f4c((u16)i) == 0) {
-            continue;
-        }
-        ey = entry[2];
-        ex = entry[1];
-        row2 = M2C_FIELD((void *)*gCurrentMap + ey * 2, u16 *, 0x3758);
-        off = ex + row2;
-        bm = *((u8 *)*gCurrentMap + (off >> 3) + 0x5160);
-        bit = off & 7;
-        if (bm & (1 << bit)) {
-            continue;
-        }
-        row2 = M2C_FIELD((void *)*gCurrentMap + ey * 2, u16 *, 0x3758);
-        *((u8 *)*gCurrentMap + row2 + ex) = 0;
     }
 }
 
@@ -390,8 +361,8 @@ func_02078068();
 }
 
 M2C_UNK func_020d0270(void) {
- M2C_UNK func_020ce9a0(); M2C_UNK func_020cfe2c(); M2C_UNK func_020d0178(); M2C_UNK func_ov000_02174ce8();
- func_020ce9a0(); func_020cfe2c(); func_020d0178(); func_ov000_02174ce8();
+ M2C_UNK func_020ce9a0(); M2C_UNK func_020d0178(); M2C_UNK func_ov000_02174ce8();
+ func_020ce9a0(); RefreshMapCellUnits(); func_020d0178(); func_ov000_02174ce8();
 }
 
 void InitAreaScan(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {

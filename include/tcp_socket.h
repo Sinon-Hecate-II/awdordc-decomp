@@ -40,6 +40,7 @@
 #define ARP_SENDER_IP  0x0E /* u32 sender protocol address */
 #define ARP_TARGET_MAC 0x12 /* u8[6] target hardware address */
 #define ARP_TARGET_IP  0x18 /* u32 target protocol address */
+#define ARP_ADDR_PAIR_SIZE 0x0A /* bytes of one hardware+protocol address pair (MAC + IPv4) */
 #define ARP_PACKET_SIZE 0x1C /* smallest ARP packet the handler accepts */
 #define ARP_OPCODE_REQUEST 1
 #define ARP_OPCODE_REPLY   2

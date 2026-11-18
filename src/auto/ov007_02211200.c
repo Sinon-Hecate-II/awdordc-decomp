@@ -92,7 +92,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 GetMapEditorUnitOwner();
     s32 GetMapEditorUnitFlags();
     s32 MapEditor_PlaceUnit(s32, s32, s32, s32, s32);
-    M2C_UNK func_020cfe2c();
+    M2C_UNK RefreshMapCellUnits();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
@@ -105,7 +105,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     temp_r0 = MapEditor_PlaceUnit(arg1, arg2, temp_r5, temp_r4, GetMapEditorUnitFlags());
     switch (temp_r0) {
     case 1:
-        func_020cfe2c();
+        RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
         func_ov007_022114ac(arg0);
@@ -150,7 +150,7 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 MapEditor_DestroyUnitAt(s32, s32);
-    M2C_UNK func_020cfe2c();
+    M2C_UNK RefreshMapCellUnits();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
@@ -158,7 +158,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov007_0221f680;
     if (MapEditor_DestroyUnitAt(arg1, arg2) != 0) {
-        func_020cfe2c();
+        RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
         func_ov007_022114ac(arg0);
@@ -188,10 +188,10 @@ void func_ov007_022116a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
  * error sound when `sound` is set. */
 void PaintMapTerrain(M2C_UNK a,s32 x,s32 y,s32 sound){
 u8 GetMapEditorTerrainKind();u8 GetMapEditorTerrainOwner();s32 Map_PaintTile(s32,s32,s32,s32,s32);
-M2C_UNK func_020cfe2c();void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);M2C_UNK SpawnSoundEffectAtTile(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
+M2C_UNK RefreshMapCellUnits();void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);M2C_UNK SpawnSoundEffectAtTile(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
 s32 kind=GetMapEditorTerrainKind();s32 owner=GetMapEditorTerrainOwner();
 switch(Map_PaintTile(x,y,kind,owner,1)){
-case 1:func_020cfe2c();RefreshMapEditor();MapEditor_SetMapModified(1);func_ov007_022114ac(a);
+case 1:RefreshMapCellUnits();RefreshMapEditor();MapEditor_SetMapModified(1);func_ov007_022114ac(a);
 switch(kind){case 7:case 8:case 9:case 10:case 11:case 12:SpawnSoundEffectAtTile(0x11a,x,y,1);break;
 default:SpawnSoundEffectAtTile(0x119,x,y,1);break;}break;
 case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
@@ -224,7 +224,7 @@ void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     s32 Map_IsWastelandTile(s32, s32);
     s32 Map_PaintTile(s32, s32, s32, s32, s32);
-    M2C_UNK func_020cfe2c();
+    M2C_UNK RefreshMapCellUnits();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
@@ -234,7 +234,7 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     s32 terrain = MAP_TERRAIN_PLAIN;
     if (Map_IsWastelandTile(x, y)) terrain = MAP_TERRAIN_WASTELAND;
     if (Map_PaintTile(x, y, terrain, 0, 1) == 1) {
-        func_020cfe2c();
+        RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
         func_ov007_022114ac(editor);

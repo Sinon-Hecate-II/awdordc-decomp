@@ -530,9 +530,9 @@ s32 func_0200fa50(void *arg0) {
 }
 #pragma opt_instruction_scheduling reset
 void func_0200fb0c(s32 arg0) {
-void func_02005f80(void *,s32); void func_02005e5c(void *); extern M2C_UNK data_0212fde0;
+void SetThreadPriority(void *,s32); void func_02005e5c(void *); extern M2C_UNK data_0212fde0;
 void *p=&data_0212fde0; s32 flags; void *thread;
-func_02005f80((u8 *)p+0x44,M2C_FIELD(p,s32 *,0x108));
+SetThreadPriority((u8 *)p+0x44,M2C_FIELD(p,s32 *,0x108));
 flags=M2C_FIELD(p,s32 *,0x114)|8;
 thread=(u8 *)p+0x44;
 M2C_FIELD(p,s32 *,0x114)=flags;

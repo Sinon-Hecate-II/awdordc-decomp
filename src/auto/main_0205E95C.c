@@ -8,7 +8,7 @@ typedef struct { u8 bytes[256]; s32 count; } NetworkFieldList;
 extern s32 gLocalIpCount;
 extern u8 gLocalIps[5][4];
 extern u8 gBroadcastAddressText[16];
-extern u8 data_020eac30[8];
+extern u8 sQr2ConnectTargetMagic[8];
 
 void func_0205e95c(void *arg0) {
     /* Check connection timeouts and retry/reset state as needed. */
@@ -51,12 +51,12 @@ block_14:
 void Qr2_StateChanged(void *arg0) {
     s32 GetTickCountMs();
     M2C_UNK Qr2_SendState(void *, M2C_UNK);
-    extern void *data_020ff8d4;
+    extern void *gQr2Connection;
     void *var_r4;
 
     var_r4 = arg0;
     if (var_r4 == NULL) {
-        var_r4 = data_020ff8d4;
+        var_r4 = gQr2Connection;
     }
     if (M2C_FIELD(var_r4, s32 *, 0xBC) == 0) {
         return;
@@ -69,7 +69,7 @@ void Qr2_StateChanged(void *arg0) {
     M2C_FIELD(var_r4, s32 *, 0xB4) = 0;
 }
 
-void Qr2_DestroyConnection(void *p){extern void *data_020ff8d4;extern M2C_UNK gQr2DefaultConnection;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=data_020ff8d4;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&gQr2DefaultConnection)return;gpiFree(p);}
+void Qr2_DestroyConnection(void *p){extern void *gQr2Connection;extern M2C_UNK gQr2DefaultConnection;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=gQr2Connection;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&gQr2DefaultConnection)return;gpiFree(p);}
 
 #pragma optimization_level 2
 #pragma opt_cond_exec off
@@ -220,7 +220,7 @@ void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
 
 void Qr2InitQuery(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIELD(a,s32 *,0x800)=5;}
 
-void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
+void Qr2_AppendStateString(void *a,void *b,s8 *p,s32 n) {
  void StringCopy(void *,void *);
  s32 StringLength(void *);
  void func_0205ee48(void *,s32,void *,s32);
@@ -410,7 +410,7 @@ void Qr2AppendKeys(M2C_UNK qr2Record, void *query, M2C_UNK mode) {
     } while (i < keyList.count);
 }
 
-void func_0205f64c(M2C_UNK arg0, void *arg1) {
+void Qr2_AppendFinalQuery(M2C_UNK arg0, void *arg1) {
     void Qr2AppendString(void *, M2C_UNK *);
                       void Qr2AppendKeys(M2C_UNK, void *, M2C_UNK);
     extern M2C_UNK data_020ffa74;
@@ -424,7 +424,7 @@ void func_0205f64c(M2C_UNK arg0, void *arg1) {
 }
 
 #pragma opt_strength_reduction off
-void func_0205f6b0(void *arg0, void *arg1, s32 arg2) {
+void Qr2_HandlePeerPacket(void *arg0, void *arg1, s32 arg2) {
     volatile u8 key[6];
     u32 buffer;
     
@@ -436,12 +436,12 @@ void func_0205f6b0(void *arg0, void *arg1, s32 arg2) {
     M2C_UNK (*cb0)(M2C_UNK, M2C_UNK);
     M2C_UNK (*cb4)(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    key[0] = data_020eac30[0];
-    key[1] = data_020eac30[1];
-    key[2] = data_020eac30[2];
-    key[3] = data_020eac30[3];
-    key[4] = data_020eac30[4];
-    key[5] = data_020eac30[5];
+    key[0] = sQr2ConnectTargetMagic[0];
+    key[1] = sQr2ConnectTargetMagic[1];
+    key[2] = sQr2ConnectTargetMagic[2];
+    key[3] = sQr2ConnectTargetMagic[3];
+    key[4] = sQr2ConnectTargetMagic[4];
+    key[5] = sQr2ConnectTargetMagic[5];
 
     match = 1;
     if (arg2 >= 10) {
@@ -477,7 +477,7 @@ no_match:
     }
 }
 #pragma opt_strength_reduction reset
-s32 func_0205f7d8(void *a,s32 b) {
+s32 Qr2_RememberRequest(void *a,s32 b) {
  s32 i=0;
 loop:
  if(M2C_FIELD((u8 *)a+((u32)i<<2),s32 *,0xd8)==b)return 1;

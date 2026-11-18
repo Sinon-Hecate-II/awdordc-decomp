@@ -1,6 +1,7 @@
 /* 45 functions from 0x0208FE7C to 0x02090E0C (main), found by ds-decomp. */
 #include "common.h"
 #include "sprite_script.h"
+#include "sound.h"
 static inline void CallNodeMethod(void *node) {
     M2C_FIELD(*(void **)node, void (**)(void *), 0)(node);
 }
@@ -222,7 +223,10 @@ if(func_02090370()!=0) func_0202d944(&data_02157838,arg0);
 return 1;
 }
 
-s32 func_020902a8(s32 arg0, s32 arg1, s32 arg2) {
+/* Fade the volume of both of the game's sound players (the sequence player and
+ * the effect player) to `targetVolume` over `frames` frames.  A `snapVolume`
+ * other than -1 sets the volume to it at once before the fade starts. */
+s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_0215783c;
     extern M2C_UNK data_02157838;
@@ -231,20 +235,20 @@ s32 func_020902a8(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0202d960(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
     if (func_02090350() != 0) {
-        if (arg0 != -1) {
-            func_0202ad04(&data_0215783c, arg0, 0);
+        if (snapVolume != -1) {
+            func_0202ad04(&data_0215783c, snapVolume, 0);
         }
-        func_0202ad04(&data_0215783c, arg1, arg2);
+        func_0202ad04(&data_0215783c, targetVolume, frames);
     }
     if (func_02090370() != 0) {
-        if (arg0 != -1) {
-            func_0202d960(&data_02157838, arg0, 0);
+        if (snapVolume != -1) {
+            func_0202d960(&data_02157838, snapVolume, 0);
         }
-        func_0202d960(&data_02157838, arg1, arg2);
+        func_0202d960(&data_02157838, targetVolume, frames);
     }
     return 1;
 }

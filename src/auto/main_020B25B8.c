@@ -505,22 +505,27 @@ M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
     return var_r0;
 }
 
-u8 func_020b3368(void *arg0) {
+/* Scroll a sprite grid up one row: do nothing while the previous scroll's pixel
+ * offset is still animating or the grid is already at its top row; otherwise move
+ * the top row and the cursor back a row, play the scroll sound when the top row
+ * changed and set the pixel offset the animation eases back to zero.  Returns 1
+ * when the offset changed. */
+u8 ScrollSpriteGridUp(void *grid) {
 M2C_UNK Divide();
 M2C_UNK PlaySoundEffect(s32);
-s16 current; s32 step; s32 active; s32 old; u8 result; s32 factor, delta;
-if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
+s16 scroll; s32 columns; s32 active; s32 oldScroll; u8 result; s32 cellHeight, delta;
+if(M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0)active=1;else active=0;
 if(active&255)return 0;
-step=M2C_FIELD(arg0,u8 *,5);
-Divide(M2C_FIELD(arg0,s16 *,0xa)+step-1,step);
-current=M2C_FIELD(arg0,s16 *,0xc);old=M2C_FIELD(arg0,volatile s16 *,0xc);
-if(current==0)return 0;
-M2C_FIELD(arg0,s16 *,0xc)=current-1;
-M2C_FIELD(arg0,s16 *,8)-=step;
-if(old!=M2C_FIELD(arg0,s16 *,0xc))PlaySoundEffect(0x10019);
-delta=M2C_FIELD(arg0,s16 *,0xc); factor=M2C_FIELD(arg0,volatile u8 *,7); delta-=old;
-M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
-if(M2C_FIELD(arg0,s16 *,0x12)!=0)result=1;else result=0;
+columns=M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS);
+Divide(M2C_FIELD(grid,s16 *,SPRITE_GRID_ITEM_COUNT)+columns-1,columns);
+scroll=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);oldScroll=M2C_FIELD(grid,volatile s16 *,SPRITE_GRID_SCROLL);
+if(scroll==0)return 0;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)=scroll-1;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)-=columns;
+if(oldScroll!=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL))PlaySoundEffect(0x10019);
+delta=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL); cellHeight=M2C_FIELD(grid,volatile u8 *,SPRITE_GRID_CELL_HEIGHT); delta-=oldScroll;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)=delta*cellHeight;
+if(M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0)result=1;else result=0;
 return result;
 }
 

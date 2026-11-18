@@ -105,7 +105,7 @@ s32 func_02075b58(M2C_UNK *arg0, s32 arg1) {
 void SaveList_Flush(M2C_UNK *p) {
 u8 *req;u32 i;
 if(((Queue02075*)p)->active!=0 && ((Queue02075*)p)->state!=1){
-if(!func_02074d44(p)){((Queue02075*)p)->state=1;return;}
+if(!SaveManager_ProbeArchive(p)){((Queue02075*)p)->state=1;return;}
 SaveList_ClearUsed((void*)p+0xc4c);
 req=(void*)p+0x2054;i=0;
 if(((Queue02075*)p)->count>i){

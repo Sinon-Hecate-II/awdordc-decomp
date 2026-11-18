@@ -59,4 +59,13 @@ typedef struct Gt2SentCommand {
     s32 lastSent; /* +0x0C tick it was last sent at */
 } Gt2SentCommand;
 
+/* The four callbacks a connection reports events through, stored as a block at
+ * GT2_CONNECTION_CALLBACK (0x28) .. GT2_CONNECTION_CALLBACK_PING (0x34). */
+typedef struct GT2ConnectionCallbacks {
+    void (*connected)(void *connection, s32 event, s32 data, s32 length); /* +0x00 */
+    void (*message)(void *connection, s32 message, s32 length, s32 param); /* +0x04 */
+    void (*closed)(void *connection, s32 reason);                          /* +0x08 */
+    void (*ping)(void *connection, s32 ping);                              /* +0x0C */
+} GT2ConnectionCallbacks;
+
 #endif

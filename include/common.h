@@ -187,6 +187,15 @@ typedef struct DecimalNumber {
     u8  digits[33]; /* +0x05 the digits, most significant first */
 } DecimalNumber;    /* 0x26 bytes */
 
+/* Values ClassifyDouble returns for the class of a double. */
+enum {
+    DOUBLE_CLASS_NAN       = 1,
+    DOUBLE_CLASS_INFINITE  = 2,
+    DOUBLE_CLASS_ZERO      = 3,
+    DOUBLE_CLASS_NORMAL    = 4,
+    DOUBLE_CLASS_SUBNORMAL = 5
+};
+
 /* TLS connection (the channel object the TLS record code passes around).  The
  * hash and RC4 states are embedded; the key fields point into the channel's key
  * block, and each direction's sequence number is an 8-byte big-endian counter. */
@@ -521,6 +530,7 @@ typedef struct JsResume {
  * bytes per kind): the kind's name, movement and combat numbers.  The in-use and
  * not-yet-named fields are kept as raw bytes. */
 #define UNIT_KIND_STATS_NAME     0x00 /* char[?]: the kind's name */
+#define UNIT_KIND_STATS_POWER    0x04 /* u16 attack power the AI's damage estimates multiply */
 #define UNIT_KIND_STATS_FUEL_COST 0x56 /* s8 *: per-terrain fuel cost table, 0x20 terrain entries */
 #define UNIT_KIND_STATS_LOSE_FUEL 0x5C /* u8 per kind: terrain (MAP_TERRAIN_PLAIN-based) kinds the unit loses fuel on */
 #define UNIT_KIND_STATS_LOSE_FUEL2 0x5D /* u8 per kind: a second kind the unit loses fuel on */
@@ -1116,6 +1126,11 @@ typedef struct MbBootState {
 #define MB_WINDOW_EXT_START    0x037F8000 /* start of the second address window */
 #define MB_WINDOW_EXT_END      0x0380F000 /* one past the second address window */
 
+/* The first 0x8000 bytes of a DS game card hold the header and the secure
+ * area; the normal card read command cannot fetch them, so a card load that
+ * starts in that range skips the unreadable part. */
+#define CARD_SECURE_AREA_END   0x8000
+
 /* One multiboot member's chunk transfer: the next block to send, where it goes in
  * the member's memory and which program chunk it belongs to. */
 typedef struct MbChunkTransfer {
@@ -1352,6 +1367,11 @@ enum {
  * bits 8..15 (0x1202 = kind 2, bit 18).  The device must report state 2 after. */
 #define SAVE_DEVICE_CONFIG      0x1202
 #define SAVE_DEVICE_STATE_READY 2      /* SaveDevice_GetState result once configured */
+
+/* The save manager / queued save list object (gSaveManager): byte 0x2050 is
+ * nonzero once the archive was initialised, 0x2052 becomes 1 once it failed. */
+#define SAVE_MANAGER_ACTIVE 0x2050 /* u8: the archive was initialised */
+#define SAVE_MANAGER_STATE  0x2052 /* u8: 1 = the archive is unusable */
 
 /* Kinds of 4-byte connection notice sent by SendConnectionPacket(kind, slot). */
 enum {
@@ -2437,6 +2457,10 @@ typedef struct Thread {
     u32 id;              /* +0x6c creation id */
     s32 priority;        /* +0x70 run priority; equal priorities round-robin */
 } Thread;
+
+/* The timer object scheduled to wake a thread that is sleeping in
+ * SleepMilliseconds; 0 when the thread is not sleeping on a timer. */
+#define THREAD_WAKE_TIMER 0xB0
 
 /* The CO roster state (gCoState): +0x04 a u8, +0x08 the s32 bitset of the COs
  * the player has unlocked (bit i = CO i). */

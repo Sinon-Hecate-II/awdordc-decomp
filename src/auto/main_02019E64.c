@@ -278,13 +278,13 @@ void func_0201a4f8(s32 arg0) {
 void func_0201a508(void){void *func_0201a4a8(void);void func_02005d60(void *);void func_02005ccc(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,data_021374f8,gNetStack;func_0201a4a8();func_02005d60(&data_02137438);func_02005ccc(&data_021374f8);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
 
 void func_0201a550(s32 arg0) {
-    M2C_UNK func_02005f80(M2C_UNK *, s32);
+    M2C_UNK SetThreadPriority(M2C_UNK *, s32);
     extern s32 data_020faf74;
     extern M2C_UNK data_02137438;
     extern M2C_UNK data_021374f8;
     data_020faf74 = arg0;
-    func_02005f80(&data_021374f8, arg0);
-    func_02005f80(&data_02137438, arg0);
+    SetThreadPriority(&data_021374f8, arg0);
+    SetThreadPriority(&data_02137438, arg0);
 }
 
 /* Adds the 16-bit words of a buffer to a running one's-complement checksum and

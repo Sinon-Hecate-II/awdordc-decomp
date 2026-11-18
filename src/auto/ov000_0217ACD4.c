@@ -255,107 +255,106 @@ M2C_FIELD(gMoveSearchWrite,u8 *,3)=c;
 gMoveSearchWrite+=4;gMoveSearchCount++;return 0;
 }
 
+#pragma push
+#pragma optimization_level 3
 s32 func_ov000_0217b8f0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 ExpandRangeSearchNode(M2C_UNK);
+    s32 ExpandRangeSearchNode(s32);
     s32 GetUnitMoveRange(u16, s32);
-    extern void **data_027e0058;
-    extern void *gMoveSearchState;
     extern s8 gMoveSearchBuffer;
     extern void *gMoveSearchCurrent;
     extern s32 gMoveSearchCount;
     extern void *gMoveSearchWrite;
-    u8 var_r0;
-    void *temp_r0;
-    void *temp_r0_2;
-
-    gMoveSearchCurrent = gMoveSearchState + 0x5A0;
-    gMoveSearchBuffer = 0;
-    gMoveSearchWrite = gMoveSearchState + 0x28;
-    gMoveSearchCount = 0;
-    M2C_FIELD(gMoveSearchState, s16 *, 0x20) = (s16)arg3;
-    M2C_FIELD(gMoveSearchState, s16 *, 0x22) = (s16)GetUnitMoveRange(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), arg2);
-    M2C_FIELD(gMoveSearchState, s8 *, 0x26) = (s8)arg2;
-    M2C_FIELD(gMoveSearchWrite, s8 *, 0) = (s8)arg0;
-    M2C_FIELD(gMoveSearchWrite, s8 *, 1) = (s8)arg1;
+    extern void *gMoveSearchState;
+    extern void **gCurrentMap;
+    void *p;
+    u8 state;
+    {
+        u8 *work = gMoveSearchState;
+        u8 *out = work + MOVE_SEARCH_QUEUE_A;
+        u8 *in = work + MOVE_SEARCH_QUEUE_B;
+        s32 empty = 0;
+        gMoveSearchCount = empty;
+        gMoveSearchCurrent = in;
+        gMoveSearchBuffer = empty;
+        gMoveSearchWrite = out;
+    }
+    M2C_FIELD(gMoveSearchState, s16 *, MOVE_SEARCH_COST_LIMIT) = arg3;
+    M2C_FIELD(gMoveSearchState, s16 *, MOVE_SEARCH_MOVE_RANGE) = GetUnitMoveRange(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), arg2);
+    M2C_FIELD(gMoveSearchState, s8 *, MOVE_SEARCH_MOVEMENT_TYPE) = arg2;
+    M2C_FIELD(gMoveSearchWrite, s8 *, 0) = arg0;
+    M2C_FIELD(gMoveSearchWrite, s8 *, 1) = arg1;
     M2C_FIELD(gMoveSearchWrite, s8 *, 2) = 1;
     M2C_FIELD(gMoveSearchWrite, s8 *, 3) = 0;
-    temp_r0 = (void *)((u8 *)gMoveSearchWrite + 4);
-    gMoveSearchWrite = temp_r0;
-    M2C_FIELD(temp_r0, s8 *, 2) = 0;
-loop_1:
-    if (gMoveSearchBuffer == 0) {
-        gMoveSearchWrite = gMoveSearchState + 0x5A0;
-        gMoveSearchCurrent = gMoveSearchState + 0x28;
-        gMoveSearchBuffer = 1;
-    } else {
-        gMoveSearchWrite = gMoveSearchState + 0x28;
-        gMoveSearchCurrent = gMoveSearchState + 0x5A0;
-        gMoveSearchBuffer = 0;
-    }
-    gMoveSearchCount = 0;
-    var_r0 = M2C_FIELD(gMoveSearchCurrent, u8 *, 2);
-    if (var_r0 != 0) {
-        if (var_r0 != 0) {
-loop_7:
-            switch (var_r0) {
-            default:
-            case 0:
-block_36:
-                M2C_FIELD(gMoveSearchWrite, s8 *, 2) = 0;
-                temp_r0_2 = (void *)((u8 *)gMoveSearchCurrent + 4);
-                gMoveSearchCurrent = temp_r0_2;
-                var_r0 = M2C_FIELD(temp_r0_2, u8 *, 2);
-                if (var_r0 == 0) {
-                    goto loop_1;
-                }
-                goto loop_7;
-            case 1:
-                if ((ExpandRangeSearchNode(2) != 1) && (ExpandRangeSearchNode(3) != 1) && (ExpandRangeSearchNode(4) != 1) && (ExpandRangeSearchNode(5) != 1)) {
-                    goto block_36;
-                }
-                M2C_FIELD(gMoveSearchState, s8 *, 0x24) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-                M2C_FIELD(gMoveSearchState, s8 *, 0x25) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5146);
-                return 1;
-            case 2:
-                if ((ExpandRangeSearchNode(2) != 1) && (ExpandRangeSearchNode(4) != 1) && (ExpandRangeSearchNode(5) != 1)) {
-                    goto block_36;
-                }
-                M2C_FIELD(gMoveSearchState, s8 *, 0x24) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-                M2C_FIELD(gMoveSearchState, s8 *, 0x25) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5146);
-                return 1;
-            case 3:
-                if ((ExpandRangeSearchNode(3) != 1) && (ExpandRangeSearchNode(4) != 1) && (ExpandRangeSearchNode(5) != 1)) {
-                    goto block_36;
-                }
-                M2C_FIELD(gMoveSearchState, s8 *, 0x24) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-                M2C_FIELD(gMoveSearchState, s8 *, 0x25) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5146);
-                return 1;
-            case 4:
-                if ((ExpandRangeSearchNode(2) != 1) && (ExpandRangeSearchNode(3) != 1) && (ExpandRangeSearchNode(4) != 1)) {
-                    goto block_36;
-                }
-                M2C_FIELD(gMoveSearchState, s8 *, 0x24) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-                M2C_FIELD(gMoveSearchState, s8 *, 0x25) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5146);
-                return 1;
-            case 5:
-                if ((ExpandRangeSearchNode(2) != 1) && (ExpandRangeSearchNode(3) != 1) && (ExpandRangeSearchNode(5) != 1)) {
-                    goto block_36;
-                }
-                M2C_FIELD(gMoveSearchState, s8 *, 0x24) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-                M2C_FIELD(gMoveSearchState, s8 *, 0x25) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5146);
-                return 1;
-            }
+    p = gMoveSearchWrite + 4;
+    gMoveSearchWrite = p;
+    M2C_FIELD(p, s8 *, 2) = 0;
+    for (;;) {
+        if (gMoveSearchBuffer == 0) {
+            gMoveSearchWrite = gMoveSearchState + MOVE_SEARCH_QUEUE_B;
+            gMoveSearchCurrent = gMoveSearchState + MOVE_SEARCH_QUEUE_A;
+            gMoveSearchBuffer = 1;
         } else {
-            goto loop_1;
+            gMoveSearchWrite = gMoveSearchState + MOVE_SEARCH_QUEUE_A;
+            gMoveSearchCurrent = gMoveSearchState + MOVE_SEARCH_QUEUE_B;
+            gMoveSearchBuffer = 0;
+            gMoveSearchCount = 0;
         }
-    } else {
-        M2C_FIELD(gMoveSearchState, s8 *, 0x24) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-        M2C_FIELD(gMoveSearchState, s8 *, 0x25) = (s8) M2C_FIELD(*data_027e0058, u16 *, 0x5146);
-        return 0;
+        state = M2C_FIELD(gMoveSearchCurrent, u8 *, 2);
+        if (state == 0)
+            goto exhausted;
+        while (state != 0) {
+            switch (state) {
+            case 0:
+                break;
+            case 1:
+                if (ExpandRangeSearchNode(2) != 1 &&
+                    ExpandRangeSearchNode(3) != 1 &&
+                    ExpandRangeSearchNode(4) != 1 &&
+                    ExpandRangeSearchNode(5) != 1)
+                    goto advance;
+                goto found;
+            case 2:
+                if (ExpandRangeSearchNode(2) != 1 &&
+                    ExpandRangeSearchNode(4) != 1 &&
+                    ExpandRangeSearchNode(5) != 1)
+                    goto advance;
+                goto found;
+            case 3:
+                if (ExpandRangeSearchNode(3) != 1 &&
+                    ExpandRangeSearchNode(4) != 1 &&
+                    ExpandRangeSearchNode(5) != 1)
+                    goto advance;
+                goto found;
+            case 4:
+                if (ExpandRangeSearchNode(2) != 1 &&
+                    ExpandRangeSearchNode(3) != 1 &&
+                    ExpandRangeSearchNode(4) != 1)
+                    goto advance;
+                goto found;
+            case 5:
+                if (ExpandRangeSearchNode(2) != 1 &&
+                    ExpandRangeSearchNode(3) != 1 &&
+                    ExpandRangeSearchNode(5) != 1)
+                    goto advance;
+                goto found;
+            }
+        advance:
+            M2C_FIELD(gMoveSearchWrite, s8 *, 2) = 0;
+            p = gMoveSearchCurrent + 4;
+            gMoveSearchCurrent = p;
+            state = M2C_FIELD(p, u8 *, 2);
+        }
     }
+exhausted:
+    M2C_FIELD(gMoveSearchState, s8 *, MOVE_SEARCH_WIDTH) = M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH);
+    M2C_FIELD(gMoveSearchState, s8 *, MOVE_SEARCH_HEIGHT) = M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);
+    return 0;
+found:
+    M2C_FIELD(gMoveSearchState, s8 *, MOVE_SEARCH_WIDTH) = M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH);
+    M2C_FIELD(gMoveSearchState, s8 *, MOVE_SEARCH_HEIGHT) = M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);
+    return 1;
 }
-
-#pragma scheduling reset
+#pragma pop
 s32 func_ov000_0217bc34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov000_0217ab10();
     s32 func_ov000_0217ae9c(s32, s32, s32, s32);

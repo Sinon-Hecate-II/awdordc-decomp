@@ -148,7 +148,7 @@ void func_0200836c(void *arg0, u32 *arg1) {
     s32 var_r8;
     u32 *var_r0;
     u32 *var_r1;
-    s32 var_ip;
+    u32 var_ip;
     u32 var_r3;
     u32 var_r5;
     u8 *temp_r7;

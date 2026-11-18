@@ -10,6 +10,11 @@
 #define RESULT_SPARK_END_X   0x108 /* x at which the spark has left the right edge */
 #define RESULT_SPARK_END_Y   (-8)  /* y at which the spark has left the top edge */
 
+/* The result-screen slide object (AnimateResultSlide and its draw callback). */
+#define RESULT_SLIDE_TIMER  0x3C /* s32: frames the slide has run (0..16) */
+#define RESULT_SLIDE_Y      0x40 /* s32: y position the slide has reached */
+#define RESULT_SLIDE_ACTIVE 0x44 /* u8: nonzero while the slide band is shown */
+
 void func_ov005_02218fd0(void *arg0) {
     M2C_UNK AddToU16Array(s32, M2C_UNK, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
@@ -462,18 +467,21 @@ func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;Sprite_Resume
 }
 }
 
-void func_ov005_02219d98(void *arg0) {
+/* Draw the result screen's sliding band while it is active: four 64x32 sprites
+ * across the screen at the slide's y, with the tile base shifted by the sprite
+ * bank's OBJ boundary mode. */
+void DrawResultSlideBand(void *slide) {
 M2C_UNK AddSprite(u16,u16,u16,void *,s32);
 extern s32 gCur3DSpriteEngine; extern s32 gSpriteDesc64x32;
-s32 val; s32 y; s32 i; s32 x; u16 t; u32 bits; s32 mask=511,mask2=1023,base=440;
-if(!M2C_FIELD(arg0,u8 *,0x44))return;
-val=M2C_FIELD(arg0,s32 *,0x40);
-y=(val&0xff00)|((val+0xa0)&255);
-for(i=0;i<4;i++){
-x=i*64;
-t=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0);
-bits=((u32)t<<17)>>30;
-AddSprite((u16)(x&mask),y,(u16)((mask2&(base>>bits))|0xec00),&gSpriteDesc64x32,0);
+s32 slideY; s32 screenY; s32 column; s32 columnX; u16 bankFlags; u32 boundary; s32 xMask=511,tileMask=1023,tileBase=440;
+if(!M2C_FIELD(slide,u8 *,RESULT_SLIDE_ACTIVE))return;
+slideY=M2C_FIELD(slide,s32 *,RESULT_SLIDE_Y);
+screenY=(slideY&0xff00)|((slideY+0xa0)&255);
+for(column=0;column<4;column++){
+columnX=column*64;
+bankFlags=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0);
+boundary=((u32)bankFlags<<17)>>30;
+AddSprite((u16)(columnX&xMask),screenY,(u16)((tileMask&(tileBase>>boundary))|0xec00),&gSpriteDesc64x32,0);
 }
 }
 
@@ -483,8 +491,8 @@ void func_ov005_02219e40(void) {
 }
 
 void func_ov005_02219e4c(void) {
-    void func_ov005_02219d98();
-    func_ov005_02219d98();
+    void DrawResultSlideBand();
+    DrawResultSlideBand();
 }
 
 #pragma opt_strength_reduction off

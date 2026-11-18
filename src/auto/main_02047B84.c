@@ -241,11 +241,11 @@ return 1;
 
 void func_0204817c(void) {
     s32 GetTickCountMs();
-    M2C_UNK func_02049824(s32, M2C_UNK *, s32, M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK ghiSendTo(s32, M2C_UNK *, s32, M2C_UNK, M2C_UNK *, s32);
     extern s32 gDnsQueryState[];
     extern M2C_UNK gDnsPacketHeader;
     extern M2C_UNK data_0213db94;
-    func_02049824(M2C_FIELD(&gDnsQueryState, s32 *, 4), &data_0213db94, M2C_FIELD(&gDnsQueryState, s32 *, 0x50), 0, &gDnsPacketHeader, 8);
+    ghiSendTo(M2C_FIELD(&gDnsQueryState, s32 *, 4), &data_0213db94, M2C_FIELD(&gDnsQueryState, s32 *, 0x50), 0, &gDnsPacketHeader, 8);
     M2C_FIELD(&gDnsQueryState, s32 *, 0x54) = GetTickCountMs();
 }
 
@@ -426,7 +426,7 @@ if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc2c,0xca
 func_020484b8(a,b);func_0204887c(a,b);
 }
 
-void func_02048964(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc4c,0xd3);func_020484b8(a,c);Vector_SetItem(a,b,c);}
+void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc4c,0xd3);func_020484b8(a,c);Vector_SetItem(a,b,c);}
 
 void func_020489c4(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02067610(s32, s32, s32, M2C_UNK);

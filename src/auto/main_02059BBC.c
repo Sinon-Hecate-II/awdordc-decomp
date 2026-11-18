@@ -366,13 +366,18 @@ s32 func_0205a830(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2Creat
 
 s32 func_0205a860(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
 
-s32 func_0205a890(void *p,s32 a,s32 b,Unk0205Copy *q,...) {
-s32 func_0205d70c(s32 *,s32 *);void gti2GetChallenge(void *);u8 *gti2ComputeResponse(void *,void *);void func_0205c694(void *,void *);
-s32 local[8];s32 r;
-func_0205d70c(&a,&b);
-if(b>0){r=gpiMalloc(b);M2C_FIELD(p,s32 *,0x38)=r;if(!r)return 1;MemCopy(r,a,b);M2C_FIELD(p,s32 *,0x3c)=b;}
-if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q;
-gti2GetChallenge(local);gti2ComputeResponse((u8 *)p+0x68,local);func_0205c694(p,local);M2C_FIELD(p,s32 *,12)=0;return 0;
+/* Start a client-side GT2 connection attempt: store the connect message and the
+ * callbacks on the connection, generate our challenge, compute the response the
+ * peer must echo, send the CONNECT command carrying the challenge and wait for
+ * the peer's CONNECT_ACCEPT.  Returns 0 on success, 1 if the message could not
+ * be copied. */
+s32 gti2StartConnectionAttempt(void *connection,s32 message,s32 messageLen,GT2ConnectionCallbacks *callbacks,...) {
+s32 func_0205d70c(s32 *,s32 *);void gti2GetChallenge(void *);u8 *gti2ComputeResponse(void *,void *);void gti2SendConnect(void *,void *);
+s32 challenge[8];s32 messageCopy;
+func_0205d70c(&message,&messageLen);
+if(messageLen>0){messageCopy=gpiMalloc(messageLen);M2C_FIELD(connection,s32 *,GT2_CONNECTION_DATA)=messageCopy;if(!messageCopy)return 1;MemCopy(messageCopy,message,messageLen);M2C_FIELD(connection,s32 *,GT2_CONNECTION_DATA_LEN)=messageLen;}
+if(callbacks)M2C_FIELD(connection,GT2ConnectionCallbacks *,GT2_CONNECTION_CALLBACK)=*callbacks;
+gti2GetChallenge(challenge);gti2ComputeResponse((u8 *)connection+GT2_CONNECTION_RESPONSE,challenge);gti2SendConnect(connection,challenge);M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)=GT2_STATE_AWAIT_CONNECT_ACCEPT;return 0;
 }
 
 s32 func_0205a938(void *p,Unk0205Copy *q) {

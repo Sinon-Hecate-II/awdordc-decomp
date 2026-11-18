@@ -236,12 +236,12 @@ void gpiSetErrorString(s32 *arg0, M2C_UNK arg1) {
 
 void *func_02058658(void *a,s32 b,s32 c,void *d){
 void *func_02058b94(void *);void AssertFailed(void *,void *,void *,s32);s32 gpiStringDup(s32);
-s32 func_02058b18(void *,void *);void func_02048eac(s32,void *);void *func_02058bb4(void *,s32);
+s32 func_02058b18(void *,void *);void TableEnter(s32,void *);void *func_02058bb4(void *,s32);
 s32 buf[5];
 if(!a)a=M2C_FIELD(&data_0213dcd0,void **,4);
 if(!a)AssertFailed(&data_020ff410,&data_020ff414,&data_020ff3f4,120);
 buf[0]=gpiStringDup(b);buf[1]=c;buf[3]=0;buf[2]=1;
-func_02058b18(buf,d);func_02048eac(M2C_FIELD(a,s32 *,0),buf);
+func_02058b18(buf,d);TableEnter(M2C_FIELD(a,s32 *,0),buf);
 return func_02058b94(func_02058bb4(a,b));
 }
 

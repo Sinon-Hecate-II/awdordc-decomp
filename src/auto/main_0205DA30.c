@@ -499,38 +499,38 @@ s32 Qr2_CreateConnection(u8 **outConnection, s32 socket, s32 localPort, s32 game
 }
 #pragma pop
 void func_0205e834(void *arg0, s32 arg1) {
-    extern void *data_020ff8d4;
+    extern void *gQr2Connection;
     void *var_r0;
 
     var_r0 = arg0;
     if (var_r0 == NULL) {
-        var_r0 = data_020ff8d4;
+        var_r0 = gQr2Connection;
     }
     M2C_FIELD(var_r0, s32 *, 0xA0) = arg1;
 }
 
 void func_0205e84c(void *arg0, s32 arg1) {
-    extern void *data_020ff8d4;
+    extern void *gQr2Connection;
     void *var_r0;
 
     var_r0 = arg0;
     if (var_r0 == NULL) {
-        var_r0 = data_020ff8d4;
+        var_r0 = gQr2Connection;
     }
     M2C_FIELD(var_r0, s32 *, 0xA4) = arg1;
 }
 
 void func_0205e864(void *arg0, s32 arg1) {
- extern void *data_020ff8d4;
- if (arg0 == NULL) arg0 = data_020ff8d4;
+ extern void *gQr2Connection;
+ if (arg0 == NULL) arg0 = gQr2Connection;
  M2C_FIELD(arg0,s32 *,0xA8)=arg1;
 }
 
 void Qr2_Think(void *p) {
- extern void *data_020ff8d4;
+ extern void *gQr2Connection;
  void func_0205e95c(void *);
  void Qr2_ReadPackets(void *);
- if(p==NULL)p=data_020ff8d4;
+ if(p==NULL)p=gQr2Connection;
  if(M2C_FIELD(p,s32 *,0xbc))func_0205e95c(p);
  Qr2_ReadPackets(p);
 }

@@ -166,7 +166,7 @@ s32 func_020184ec(s32 *arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
 void func_02018584(void *r7) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02005f80(void *, s32);
+    void SetThreadPriority(void *, s32);
     void OS_SleepThread(s32);
     s32 func_02006028(void *);
     void func_02005bbc(void);
@@ -181,13 +181,13 @@ void func_02018584(void *r7) {
             do {
                 r6 = (void (*)(void *))0;
                 r4 = (void *)0;
-                func_02005f80(r7, 0);
+                SetThreadPriority(r7, 0);
                 OS_SleepThread(0);
             } while (*(void **)((u8 *)r7 + 0xc0) == (void *)0);
         }
         r4 = *(void **)((u8 *)r7 + 0xc0);
         *(void **)((u8 *)r7 + 0xc0) = *(void **)((u8 *)r4 + 0x0);
-        func_02005f80(r7, (s32)(*(unsigned int *)((u8 *)r4 + 0x4) >> 1));
+        SetThreadPriority(r7, (s32)(*(unsigned int *)((u8 *)r4 + 0x4) >> 1));
         OS_RestoreInterrupts(saved);
         if (*(void **)((u8 *)r4 + 0x8) != (void *)0) {
             ((void (*)(void *))(*(void **)((u8 *)r4 + 0x8)))(r4);
@@ -209,7 +209,7 @@ void func_02018584(void *r7) {
                 }
             }
             if (adj != val) {
-                func_02005f80(r7, adj);
+                SetThreadPriority(r7, adj);
             }
         }
         *(void **)((u8 *)r4 + 0x0) = (void *)0;

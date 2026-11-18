@@ -98,7 +98,7 @@ void func_020d672c(void) {
 void DrawUnitInfoPanel(s32 mode) {
  extern void **gCurrentMap;
  void func_020d87d8(void); s32 GetUnitPanelKind(void *);
- void func_020d6a20(s32,s32,u32,u32); void func_020d759c(s32,s32,s32);
+ void DrawTurnCounter(s32,s32,u32,u32); void func_020d759c(s32,s32,s32);
  void DrawCarriedUnits(s32,s32,s32,void *);void DrawUnitStatus(s32,s32,s32,void *);
  void DrawTerrainStatus(s32,s32,u32,u32,s32, void *);void DrawUnitInfoFrame(s32,s32,s32,s32);
  u32 panelVisible=(u32)(*(u16 *)gMapConfig<<21)>>31;
@@ -114,7 +114,7 @@ void DrawUnitInfoPanel(s32 mode) {
  panelKind=GetUnitPanelKind(unit);
  map=*gCurrentMap;panelX=*(s16 *)(map+0x52e4);
  if(panelX<=bounds.v[0]) {panelY=bounds.v[1];side=0;}else {panelY=bounds.v[3];side=1;}
- switch(mode) {case 0:func_020d6a20(2,2,*(u16 *)(map+0x52a2),gMapConfig[3]);break;case 1:func_020d759c(panelX,panelY,side);break;case 2:break;}
+ switch(mode) {case 0:DrawTurnCounter(2,2,*(u16 *)(map+0x52a2),gMapConfig[3]);break;case 1:func_020d759c(panelX,panelY,side);break;case 2:break;}
  switch(panelKind) {case 2:DrawCarriedUnits(panelX,panelY,side,unit);case 1:DrawUnitStatus(panelX,panelY,side,unit);case 0:DrawTerrainStatus(panelX,panelY,cursorCol,cursorRow,side,unit);break;}
  DrawUnitInfoFrame(panelX,panelY,side,panelKind);
 }
@@ -131,12 +131,55 @@ x-=8;number/=10;
 }while(number);
 }
 
-void func_020d6a20(s32 a, s32 b, u32 c, u32 d) {
-    s32 GetLanguage(void);
-    (void)a; (void)b; (void)c; (void)d;
-    if (GetLanguage() != 0) {
-        return;
-    }
-    return;
-}
+s32 GetDigitCount(s32);
+s32 Divide(s32, s32);
+M2C_UNK AddSprite(u16, u16, u16, M2C_UNK *, s32);
+s32 GetLanguage(void);
+#pragma push
+#pragma opt_strength_reduction off
+/* Draw the turn counter at (x,y): the "turn" label sprite, the current turn's
+ * digits and, when the map has a turn limit, a slash and the limit's digits.
+ * Digits are drawn right to left, with the label row moved down one line for
+ * languages that need it. */
+void DrawTurnCounter(s32 x, s32 y, u32 primary, u32 secondary) {
+    extern u16 **gCur3DSpriteEngine;
+    extern M2C_UNK gSpriteDesc32x8, gSpriteDesc8x16;
+    s32 labelY;
+    s32 digitY;
+    s32 limit = secondary;
+    s32 turn = primary;
 
+    switch (GetLanguage()) {
+    case 0:
+        labelY = y + 12;
+        break;
+    default:
+        labelY = y;
+        y += 7;
+        break;
+    }
+    AddSprite((u16)((x) & 511), (u16)(labelY & 255), (u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x9000) + (((0x36) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023)), &gSpriteDesc32x8, 8);
+    if (limit != 0) {
+        s32 turnDigits = GetDigitCount(turn);
+        x += (turnDigits + GetDigitCount(limit)) * 8;
+        digitY = y & 255;
+        AddSprite((u16)((x + 8) & 511), (u16)(digitY), (u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x9000) + (((0x34) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023)), &gSpriteDesc8x16, 10);
+        do {
+            AddSprite((u16)((x) & 511), (u16)(digitY), (u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x9000) + (((0x20 + (limit % 10) * 2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023)), &gSpriteDesc8x16, 10);
+            x -= 8;
+            limit = Divide(limit, 10);
+        } while (limit != 0);
+        AddSprite((u16)((x) & 511), (u16)(digitY), (u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x9000) + (((0x3e) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023)), &gSpriteDesc8x16, 10);
+        x -= 8;
+    } else {
+        x += (GetDigitCount(turn) - 1) * 8;
+        digitY = y & 255;
+        AddSprite((u16)((x + 8) & 511), (u16)(digitY), (u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x9000) + (((0x34) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023)), &gSpriteDesc8x16, 10);
+    }
+    do {
+        AddSprite((u16)((x) & 511), (u16)(digitY), (u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023) | 0x9000) + (((0x20 + (turn % 10) * 2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine << 17) >> 30)) & 1023)), &gSpriteDesc8x16, 10);
+        x -= 8;
+        turn = Divide(turn, 10);
+    } while (turn != 0);
+}
+#pragma pop

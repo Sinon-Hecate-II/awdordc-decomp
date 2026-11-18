@@ -337,7 +337,7 @@ if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
  * effect, and finally plays the impact sound if a side's HP changed. */
 void ApplyBattleResult(void){
 extern u8 gMapData[];
-void func_020d18fc(s32,s32);s32 IsPlayerHuman(s32);s32 func_020a3594(s32,s32);M2C_UNK PlaySoundEffect(s32);
+void func_020d18fc(s32,s32);s32 IsPlayerHuman(s32);s32 GetCoPowerMeterCost(s32,s32);M2C_UNK PlaySoundEffect(s32);
 void *unit,*record;
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec6)<=0){
 if((u32)(M2C_FIELD(gMapData,u16*,12)<<23)>>31){
@@ -363,11 +363,11 @@ if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)func_020d
 ((void (*)())func_020d1094)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec4)!=M2C_FIELD(*gCurrentMap,s16*,0x6eca)){
 record=(void*)(*gCurrentMap+0x6eb8);
-if(M2C_FIELD(record,s16*,18)==func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),2))goto sound;
+if(M2C_FIELD(record,s16*,18)==GetCoPowerMeterCost(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),2))goto sound;
 }
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ee4)==M2C_FIELD(*gCurrentMap,s16*,0x6eea))return;
 record=(void*)(*gCurrentMap+0x6ed8);
-if(M2C_FIELD(record,s16*,18)!=func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),2))return;
+if(M2C_FIELD(record,s16*,18)!=GetCoPowerMeterCost(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),2))return;
 sound:PlaySoundEffect(0x115);
 }
 

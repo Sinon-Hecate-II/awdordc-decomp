@@ -29,10 +29,10 @@ u8 CountFootUnitsWithAiFlag(s32 excludedUnitId, s32 holdFlag) {
  * special map 0xae for player 3, 5 while the AI is in phase 12, and 4 for an
  * indirect unit when fog of war or snow is up. */
 s32 SelectAiUnitState(M2C_UNK kind) {
-s32 IsFootUnitKind(); s32 GetUnitAttackClass(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
+s32 IsFootUnitKind(); s32 GetUnitAttackClass(M2C_UNK); s32 GetKindAttackClass(M2C_UNK);
 extern u16 gMapConfig; extern void **gCurrentMap; extern void *gAiState;
 void *map;
-if(IsFootUnitKind()!=0 || func_ov000_021a9904(kind)==UNIT_ATTACK_NONE)return 0;
+if(IsFootUnitKind()!=0 || GetKindAttackClass(kind)==UNIT_ATTACK_NONE)return 0;
 if(!(((u32)(gMapConfig<<29)>>29)&255)) { /* gMapConfig low three bits: battle mode, 0 = team mode */
 map=*gCurrentMap;
 switch(M2C_FIELD(map,u16*,MAP_ID)) {case 0xae: if(M2C_FIELD(map,u16*,MAP_CURRENT_PLAYER)==3)return 10; break;default:break;}

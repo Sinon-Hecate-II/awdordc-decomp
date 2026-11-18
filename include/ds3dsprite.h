@@ -160,12 +160,23 @@ typedef struct DS3DSpriteEngine {
     void *filler_54; /* +0x54 this screen's shared default text object (TextState, main_0209ACC4) */
 } DS3DSpriteEngine;
 
+/* The hardware OAM of the two screens: 0x400 bytes each, filled with 0xC0
+ * attribute bytes to disable every entry. */
+#define DS3D_OAM_MAIN     0x07000000
+#define DS3D_OAM_SUB      0x07000400
+#define DS3D_OAM_BYTES    0x400
+#define DS3D_OAM_DISABLED 0xC0
+
 /* The engine a gCur3DSpriteEngine / g3DSpriteEngineMain pointer refers to, and
  * the sprite bank that engine owns (its first word). */
 #define DS3D_ENGINE(enginePtr) ((DS3DSpriteEngine *)(enginePtr))
 #define DS3D_BANK(enginePtr) ((DS3DSpriteBank *)(*(void **)(enginePtr)))
 
 /* Engine fields code reaches through a void *gCur3DSpriteEngine. */
+#define DS3D_ENGINE_OAM      0x34 /* void *OAM shadow of this engine, 0x400 bytes */
+#define DS3D_ENGINE_SRC      0x38 /* u16 *quads queued for the next flush, four u16 each */
+#define DS3D_ENGINE_COUNT    0x48 /* u8 OAM entries in use */
+#define DS3D_ENGINE_INDEX    0x4A /* u8 quads queued since the last flush */
 #define DS3D_ENGINE_TEXTURE 0x1C /* u32 VRAM address graphics blocks are decompressed to */
 #define DS3D_ENGINE_PALETTES 0x30 /* void *0x400-byte OBJ palette shadow: 32 palettes of 0x20 bytes */
 #define DS3D_ENGINE_DIRTY    0x46 /* u8 DS3D_DIRTY_* bits (and bit i per layer) */

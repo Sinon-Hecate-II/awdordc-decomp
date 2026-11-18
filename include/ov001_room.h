@@ -26,4 +26,31 @@
 /* Bytes of the decoded record data of one room (four player entries). */
 #define OV001_ROOM_PLAYER_DATA_SIZE 0x6a0
 
+/* gRoomState fields of the room session used by the request builders. */
+#define OV001_TRANSFER_BUFFER 0x14 /* u8 *room transfer buffer, cleared before each request */
+#define OV001_REQUEST_MASK    0x2c /* u32 room groups this client asks for */
+
+/* Bytes cleared in the transfer buffer before a request is written. */
+#define OV001_TRANSFER_BYTES 0x5dc
+
+/* Transfer command of the room-data request. */
+#define OV001_CMD_ROOM_REQUEST 0x2000
+/* Kind byte marking a room-protocol packet (value of OV001_PKT_KIND). */
+#define OV001_PKT_KIND_ROOM 0x11
+
+/* The request record the ov001 request builders fill in before the transfer is
+ * written into the buffer: a status byte, a flag word and the transfer length
+ * so far, followed by the record itself (a type byte, a zero byte, a
+ * big-endian record length and a 32-bit value, the room group mask). */
+typedef struct Ov001RequestWork {
+    s8 status;      /* +0x00 */
+    s16 flags;      /* +0x02 set once the record got a length prefix */
+    s16 length;     /* +0x04 bytes written to the transfer buffer so far */
+    u16 pad;        /* +0x06 */
+    u8 type;        /* +0x08 record type */
+    u8 zero;        /* +0x09 */
+    s16 recordLen;  /* +0x0a record length, big-endian */
+    s32 value;      /* +0x0c record value */
+} Ov001RequestWork; /* 0x10 bytes */
+
 #endif

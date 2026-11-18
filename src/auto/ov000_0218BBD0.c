@@ -29,7 +29,7 @@ int func_ov000_0218bbd0(void *arg0) {
     s32 func_ov000_021a9c90(s32, s32);
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a93ec(s16, s16);
-    s32 func_ov000_021a9904(s32);
+    s32 GetKindAttackClass(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
     void ClearUnitMoveTarget(void);
@@ -157,7 +157,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     s32 func_ov000_021a9c90(s32, s32);
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a93ec(s16, s16);
-    s32 func_ov000_021a9904(s32);
+    s32 GetKindAttackClass(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
     void ClearUnitMoveTarget(void);
@@ -249,7 +249,7 @@ s32 func_ov000_0218c400(s32 arg0) {
                         if (v1 < d1) goto score;
                     }
                 bonus_chk:
-                    if (other[0xc] == 0 && func_ov000_021a9904(((Unit0218C4 *)other)->kind) == 2 && CanAttackUnitFrom(position[0], position[1], other) == 0)
+                    if (other[0xc] == 0 && GetKindAttackClass(((Unit0218C4 *)other)->kind) == 2 && CanAttackUnitFrom(position[0], position[1], other) == 0)
                         bonus = 0x80000;
                 score:
                     score = func_ov000_02176e28(flags | (bonus | ((u8 *)*gCurrentMap)[x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758)]), position);

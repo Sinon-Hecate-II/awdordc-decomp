@@ -21,17 +21,17 @@ double Frexp(double value,s32 *exponent) {
 }
 
 double func_02070134(double,double);
-s32 func_0206f7a8(double);
+s32 ClassifyDouble(double);
 /* scalbn: return x * 2^scale, splitting the scaling into two steps and going
    through the soft-float multiply/copysign helpers at the overflow and
    underflow limits (2^54 steps for subnormals). */
 double ScaleDoubleByExp(double x, s32 scale) {
     double func_02070658(double, double);
     double func_02070134(double, double);
-    s32 func_0206f7a8(double);
+    s32 ClassifyDouble(double);
     s32 exponent, hiWord, loWord;
 
-    if (func_0206f7a8(x) <= 2 || x == 0.0) return x;
+    if (ClassifyDouble(x) <= 2 || x == 0.0) return x;
     hiWord = ((s32 *)&x)[1];
     loWord = ((s32 *)&x)[0];
     exponent = (hiWord & 0x7ff00000) >> 20;
@@ -72,21 +72,19 @@ s32 func_0206e2e4(u8 *p,s32 i) {
 
 #pragma opt_space on
 void func_0206e350(u8 *p,s32 n) {
-u8 *start=p+5;u8 *q=start+n-1;
-again:
-{
-if(*q<9){++*q;return;}
-if(q==start){*q=1;M2C_FIELD(p,s16 *,2)+=1;return;}
-*q--=0;
-goto again;
-}
+ u8 *start=p+5; u8 *q=start+n-1;
+ for(;;) {
+ if(*q<9) { ++*q; return; }
+ if(q==start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; return; }
+ *q--=0;
+ }
 }
 #pragma opt_space off
 void func_0206e39c(void) {
 
 }
 
-void func_0206e3a0(u8 *p,s32 n) {
+void RoundDecimalToDigits(u8 *p,s32 n) {
  s32 r;
  if(n<=0)return; if(n>=p[4])return;
  r=func_0206e2e4(p,n); p[4]=n; if(r<0)return;
@@ -118,7 +116,7 @@ void DecimalFromU64(DecimalNumber *p, u64 value) {
 }
 
 #pragma scheduling off
-void func_0206e4ac(u8 *arg0, u8 *arg1, u8 *arg2) {
+void DecimalMultiply(u8 *arg0, u8 *arg1, u8 *arg2) {
 u8 buf[64]; register s32 total; register u32 acc; register u8 *cursor; register u8 *endmark;
 s32 n; u8 *base1,*base2; register s32 cnt,t,idx; u8 *p1,*p2; s32 lim; u8 tt;
 acc=0;total=arg1[4]+arg2[4]-1;cursor=buf+total+1;endmark=cursor;
@@ -140,7 +138,7 @@ if(tt==5){for(p2=cursor+1;p2<endmark;++p2){if(*p2)goto call;}if(!(cursor[-1]&1))
 call:func_0206e350(arg0,arg0[4]);
 }
 #pragma scheduling reset
-void func_0206e630(u8 *p,s8 *s,s16 e) {
+void DecimalFromDigitString(u8 *p,s8 *s,s16 e) {
  s32 n=0;
  M2C_FIELD(p,s16 *,2)=e; p[0]=0;
  while(n<32 && *s) { p[5+n++]=*s++-'0'; }
@@ -156,159 +154,114 @@ round:
  func_0206e350(p,p[4]);
 }
 
-void func_0206e6cc(u16 *arg0, s32 arg1) {
-    void func_0206e4ac(u8 *, u8 *, u8 *);
-    void func_0206e630(u8 *, s8 *, s16);
-    extern s8 data_021005fc[];
-    extern s8 data_0210062c[];
-    extern s8 data_02100654[];
-    extern s8 data_0210066c[];
-    extern s8 data_0210067c[];
-    extern s8 data_02100684[];
-    extern s8 data_0210068c[];
-    extern s8 data_02100694[];
-    extern s8 data_0210069c[];
-    extern s8 data_021006a0[];
-    extern s8 data_021006a4[];
-    extern s8 data_021006a8[];
-    extern s8 data_021006ac[];
-    extern s8 data_021006b0[];
-    extern s8 data_021006b4[];
-    extern s8 data_021006b8[];
-    extern s8 data_021006bc[];
-    extern s8 data_021006c0[];
-    extern s8 data_021006c4[];
-    extern s8 data_021006c8[];
-    extern s8 data_021006cc[];
-    u16 sp26;
-    u16 sp0;
-    s32 var_r2;
-    u16 *var_ip;
-    u16 *var_r3;
-    u16 temp_r0;
-    u16 temp_r1_2;
-    u32 temp_r1;
+/* Store 2^exponent as a DecimalNumber.  The small exponents -64, -53, -32,
+ * -16 and -8..8 come from precomputed digit strings (2^-64 is the smallest
+ * power the soft-float code needs); any other exponent is halved and computed
+ * recursively, squared, and for an odd exponent multiplied once more by 2
+ * (positive) or by 0.5 (negative). */
+void DecimalFromPowerOfTwo(DecimalNumber *out, s32 exponent) {
+    extern s8 gPow2Neg64Digits[];
+    extern s8 gPow2Neg53Digits[];
+    extern s8 gPow2Neg32Digits[];
+    extern s8 gPow2Neg16Digits[];
+    extern s8 gPow2Neg8Digits[];
+    extern s8 gPow2Neg7Digits[];
+    extern s8 gPow2Neg6Digits[];
+    extern s8 gPow2Neg5Digits[];
+    extern s8 gPow2Neg4Digits[];
+    extern s8 gPow2Neg3Digits[];
+    extern s8 gPow2Neg2Digits[];
+    extern s8 gPow2Neg1Digits[];
+    extern s8 gPow2ZeroDigits[];
+    extern s8 gPow2OneDigits[];
+    extern s8 gPow2TwoDigits[];
+    extern s8 gPow2ThreeDigits[];
+    extern s8 gPow2FourDigits[];
+    extern s8 gPow2FiveDigits[];
+    extern s8 gPow2SixDigits[];
+    extern s8 gPow2SevenDigits[];
+    extern s8 gPow2EightDigits[];
+    DecimalNumber power;
+    DecimalNumber squared;
 
-    if (arg1 <= -0x35) {
-        if (arg1 < -0x35) {
-            if (arg1 != -0x40) {
-                goto block_69;
-            }
-            func_0206e630((u8 *)arg0, data_021005fc, -0x14);
-            return;
-        }
-        func_0206e630((u8 *)arg0, data_0210062c, -0x10);
+    switch (exponent) {
+    case -64:
+        DecimalFromDigitString((u8 *)out, gPow2Neg64Digits, -20);
         return;
-    }
-    temp_r1 = arg1 + 0x20;
-    switch (temp_r1) {
-    default:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-    case 15:
-    case 17:
-    case 18:
-    case 19:
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-block_69:
-        func_0206e6cc(&sp26, (s32) (arg1 + ((u32) (arg1 & 0x80000000) >> 0x1F)) >> 1);
-        func_0206e4ac((u8 *)arg0, (u8 *)&sp26, (u8 *)&sp26);
-        if (!(arg1 & 1)) {
-            return;
-        }
-        var_r3 = &sp0;
-        var_ip = arg0;
-        var_r2 = 9;
-        do {
-            temp_r1_2 = var_ip[0];
-            temp_r0 = var_ip[1];
-            var_ip += 2;
-            var_r2 -= 1;
-            var_r3[0] = temp_r1_2;
-            var_r3[1] = temp_r0;
-            var_r3 += 2;
-        } while (var_r2 != 0);
-        var_r3[0] = var_ip[0];
-        if (arg1 > 0) {
-            func_0206e630((u8 *)&sp26, data_021006b0, 0);
-        } else {
-            func_0206e630((u8 *)&sp26, data_021006a8, -1);
-        }
-        func_0206e4ac((u8 *)arg0, (u8 *)&sp0, (u8 *)&sp26);
+    case -53:
+        DecimalFromDigitString((u8 *)out, gPow2Neg53Digits, -16);
+        return;
+    case -32:
+        DecimalFromDigitString((u8 *)out, gPow2Neg32Digits, -0xA);
+        return;
+    case -16:
+        DecimalFromDigitString((u8 *)out, gPow2Neg16Digits, -5);
+        return;
+    case -8:
+        DecimalFromDigitString((u8 *)out, gPow2Neg8Digits, -3);
+        return;
+    case -7:
+        DecimalFromDigitString((u8 *)out, gPow2Neg7Digits, -3);
+        return;
+    case -6:
+        DecimalFromDigitString((u8 *)out, gPow2Neg6Digits, -2);
+        return;
+    case -5:
+        DecimalFromDigitString((u8 *)out, gPow2Neg5Digits, -2);
+        return;
+    case -4:
+        DecimalFromDigitString((u8 *)out, gPow2Neg4Digits, -2);
+        return;
+    case -3:
+        DecimalFromDigitString((u8 *)out, gPow2Neg3Digits, -1);
+        return;
+    case -2:
+        DecimalFromDigitString((u8 *)out, gPow2Neg2Digits, -1);
+        return;
+    case -1:
+        DecimalFromDigitString((u8 *)out, gPow2Neg1Digits, -1);
         return;
     case 0:
-        func_0206e630((u8 *)arg0, data_02100654, -0xA);
+        DecimalFromDigitString((u8 *)out, gPow2ZeroDigits, 0);
         return;
-    case 16:
-        func_0206e630((u8 *)arg0, data_0210066c, -5);
+    case 1:
+        DecimalFromDigitString((u8 *)out, gPow2OneDigits, 0);
         return;
-    case 24:
-        func_0206e630((u8 *)arg0, data_0210067c, -3);
+    case 2:
+        DecimalFromDigitString((u8 *)out, gPow2TwoDigits, 0);
         return;
-    case 25:
-        func_0206e630((u8 *)arg0, data_02100684, -3);
+    case 3:
+        DecimalFromDigitString((u8 *)out, gPow2ThreeDigits, 0);
         return;
-    case 26:
-        func_0206e630((u8 *)arg0, data_0210068c, -2);
+    case 4:
+        DecimalFromDigitString((u8 *)out, gPow2FourDigits, 1);
         return;
-    case 27:
-        func_0206e630((u8 *)arg0, data_02100694, -2);
+    case 5:
+        DecimalFromDigitString((u8 *)out, gPow2FiveDigits, 1);
         return;
-    case 28:
-        func_0206e630((u8 *)arg0, data_0210069c, -2);
+    case 6:
+        DecimalFromDigitString((u8 *)out, gPow2SixDigits, 1);
         return;
-    case 29:
-        func_0206e630((u8 *)arg0, data_021006a0, -1);
+    case 7:
+        DecimalFromDigitString((u8 *)out, gPow2SevenDigits, 2);
         return;
-    case 30:
-        func_0206e630((u8 *)arg0, data_021006a4, -1);
+    case 8:
+        DecimalFromDigitString((u8 *)out, gPow2EightDigits, 2);
         return;
-    case 31:
-        func_0206e630((u8 *)arg0, data_021006a8, -1);
-        return;
-    case 32:
-        func_0206e630((u8 *)arg0, data_021006ac, 0);
-        return;
-    case 33:
-        func_0206e630((u8 *)arg0, data_021006b0, 0);
-        return;
-    case 34:
-        func_0206e630((u8 *)arg0, data_021006b4, 0);
-        return;
-    case 35:
-        func_0206e630((u8 *)arg0, data_021006b8, 0);
-        return;
-    case 36:
-        func_0206e630((u8 *)arg0, data_021006bc, 1);
-        return;
-    case 37:
-        func_0206e630((u8 *)arg0, data_021006c0, 1);
-        return;
-    case 38:
-        func_0206e630((u8 *)arg0, data_021006c4, 1);
-        return;
-    case 39:
-        func_0206e630((u8 *)arg0, data_021006c8, 2);
-        return;
-    case 40:
-        func_0206e630((u8 *)arg0, data_021006cc, 2);
-        return;
+    default:
+        break;
     }
+
+    DecimalFromPowerOfTwo(&power, (s32)(exponent + (((u32)exponent & 0x80000000U) >> 31)) >> 1);
+    DecimalMultiply((u8 *)out, (u8 *)&power, (u8 *)&power);
+    if (!(exponent & 1))
+        return;
+    squared = *out;
+    if (exponent > 0)
+        DecimalFromDigitString((u8 *)&power, gPow2OneDigits, 0);
+    else
+        DecimalFromDigitString((u8 *)&power, gPow2Neg1Digits, -1);
+    DecimalMultiply((u8 *)out, (u8 *)&squared, (u8 *)&power);
 }
 
 /* Compare two digits BCD values: header byte +0 is the sign, +2 the exponent,

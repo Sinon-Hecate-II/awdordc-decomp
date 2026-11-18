@@ -188,13 +188,13 @@ s32 StringIntern(s32 a,s32 b) {
 s32 func_020609bc(s32);
 s32 *func_02048ff8(s32,s32 *);
 s32 gpiStringDup(s32);
-void func_02048eac(s32,s32 *);
+void TableEnter(s32,s32 *);
 s32 pair[2]; s32 *p;
 pair[0]=b;
 p=func_02048ff8(func_020609bc(a),pair);
 if(p){p[1]++;return p[0];}
 pair[0]=gpiStringDup(b);pair[1]=1;
-func_02048eac(func_020609bc(a),pair);
+TableEnter(func_020609bc(a),pair);
 return pair[0];
 }
 
@@ -305,7 +305,15 @@ void AppendByte(s8 **arg0, s8 arg1, s32 *arg2) {
     *arg0 += 1;
 }
 
-void AppendInt32BE(u8 **a,s32 b,s32 *c,...) {u8 *p=*a;const u8 *q=(u8 *)&b;s32 x,y;x=q[0];y=q[1];p[0]=x;p[1]=y;x=q[2];y=q[3];p[2]=x;p[3]=y;*c+=4;*a+=4;}
+void AppendInt32BE(u8 **cursor, s32 value, s32 *length, ...) {
+    u8 *out = *cursor;
+    const u8 *in = (const u8 *)&value;
+    struct BytePair { u8 first, second; };
+    *(struct BytePair *)out = *(const struct BytePair *)in;
+    *(struct BytePair *)(out + 2) = *(const struct BytePair *)(in + 2);
+    *length += 4;
+    *cursor += 4;
+}
 
 void AppendBytes(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
 M2C_UNK MemCopy(s32,M2C_UNK *,s32);

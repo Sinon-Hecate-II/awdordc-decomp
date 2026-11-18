@@ -221,7 +221,7 @@ void gpiDisconnect(void **arg0, s32 arg1) {
 }
 
 /* Returns 1 if (day, month, year) is a valid calendar date (years 1900..2079, leap rules), 0 otherwise; treats 0/0/0 as valid sentinel. */
-s32 func_02052200(s32 day,s32 month,s32 year){
+s32 gpiIsValidDate(s32 day,s32 month,s32 year){
  if(day==0 && month==0 && year==0)return 1;
  if(day<0 || month<0 || year<0)return 0;
  switch(month){
@@ -243,16 +243,19 @@ s32 func_02052200(s32 day,s32 month,s32 year){
  return 1;
 }
 
-s32 func_02052360(M2C_UNK arg0,s32 arg1,s32 *arg2,s32 *arg3,s32 *arg4){
-s32 func_02052200(s32,s32,s32);
+/* Split a GameSpy packed date (day in the top byte, month in the next, year in
+ * the low 16 bits) into day, month and year.  An invalid date asserts and then
+ * reports "Invalid date." through the connection's error string, returning 2. */
+s32 gpiIntToDate(M2C_UNK connection,s32 date,s32 *day,s32 *month,s32 *year){
+s32 gpiIsValidDate(s32,s32,s32);
 M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-extern M2C_UNK data_020fe680,data_020fe6a4,data_020fe6b0,data_020fe6c0;
-s32 hi=(u8)(arg1>>24),mid=(u8)(arg1>>16);
-s32 low=(u16)arg1;
-if(!func_02052200(hi,mid,low))AssertFailed(&data_020fe6c0,&data_020fe6a4,&data_020fe680,0xb7);
-if(!func_02052200(hi,mid,low)){gpiSetErrorString(arg0,&data_020fe6b0);return 2;}
-*arg2=hi;*arg3=mid;*arg4=low;
+extern M2C_UNK sGpiIntToDateName,gGpiInfoFileName,sGpiInvalidDateError,sGpiIsValidDateArgCheck;
+s32 d=(u8)(date>>24),m=(u8)(date>>16);
+s32 y=(u16)date;
+if(!gpiIsValidDate(d,m,y))AssertFailed(&sGpiIsValidDateArgCheck,&gGpiInfoFileName,&sGpiIntToDateName,0xb7);
+if(!gpiIsValidDate(d,m,y)){gpiSetErrorString(connection,&sGpiInvalidDateError);return 2;}
+*day=d;*month=m;*year=y;
 return 0;
 }
 

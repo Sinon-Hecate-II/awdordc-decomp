@@ -9,49 +9,58 @@ extern u32 data_02100734[6];
 extern u32 data_0210074c[4];
 
 #pragma opt_strength_reduction off
-void func_0206eeb4(u8 *out,double x){
-u32 func_0206f794(double,...);s32 func_0206f7a8(double,...);s32 func_0206f700(u64);
-double Frexp(double,s32 *);double ScaleDoubleByExp(double,s32);u64 func_02070550(double);
-void func_0206e6cc(void *,s32);void DecimalFromU64(void *,u64);void func_0206e4ac(void *,void *,void *);
-s32 exp,n;u8 b[38],a[38];u64 bits;DoubleBits value; s8 sign;
-sign=func_0206f794(x)!=0;
-if(x==0.0){out[0]=sign;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=0;return;}
-if(func_0206f7a8(x)<=2){out[0]=sign;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=func_0206f7a8(x)==1?'N':'I';return;}
-if(sign)x=-x;
-x=Frexp(x,&exp);
-value.d=x;bits=value.u|0x10000000000000ULL;
-n=53-func_0206f700((bits & -bits)-1);
-func_0206e6cc(a,exp-n);
-x=ScaleDoubleByExp(x,n);
-DecimalFromU64(b,func_02070550(x));
-func_0206e4ac(out,b,a);out[0]=sign;
+/* Convert the double `value` to the decimal number in `out`: store its sign,
+ * give zero, NaN and infinity their class byte, then take the 53-bit mantissa,
+ * scale it to an integer and multiply the decimal forms of the mantissa and of
+ * the power of two it was scaled by. */
+void DoubleToDecimal(u8 *out,double value){
+u32 DoubleSignBit(double,...);s32 ClassifyDouble(double,...);s32 CountBits64(u64);
+double Frexp(double,s32 *);double ScaleDoubleByExp(double,s32);u64 DoubleToU64(double);
+void DecimalFromPowerOfTwo(void *,s32);void DecimalFromU64(void *,u64);void DecimalMultiply(void *,void *,void *);
+s32 exponent,scale;u8 mantissa[38],power[38];u64 mantissaBits;DoubleBits parts; s8 negative;
+negative=DoubleSignBit(value)!=0;
+if(value==0.0){out[0]=negative;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=0;return;}
+if(ClassifyDouble(value)<=DOUBLE_CLASS_INFINITE){out[0]=negative;M2C_FIELD(out,u16 *,2)=0;out[4]=1;out[5]=ClassifyDouble(value)==DOUBLE_CLASS_NAN?'N':'I';return;}
+if(negative)value=-value;
+value=Frexp(value,&exponent);
+parts.d=value;mantissaBits=parts.u|0x10000000000000ULL;
+scale=53-CountBits64((mantissaBits & -mantissaBits)-1);
+DecimalFromPowerOfTwo(power,exponent-scale);
+value=ScaleDoubleByExp(value,scale);
+DecimalFromU64(mantissa,DoubleToU64(value));
+DecimalMultiply(out,mantissa,power);out[0]=negative;
 }
 
-void func_0206f034(void *arg0, s32 arg1, s32 arg2, void *arg3) {
- M2C_UNK func_0206e3a0(void *, s32);
- void func_0206eeb4();
- s32 n = M2C_FIELD(arg0,s16 *,2);
+/* Format the double value (passed through and read by DoubleToDecimal) as the
+ * decimal number `number` with the digit count stored at `form`+2: convert it,
+ * clamp the count to 32, round and pad the digits out to that count, shift the
+ * exponent to match and add '0' to every digit to make it ASCII.  A non-finite
+ * value (whose first digit byte is above 9) is left alone. */
+void FormatDoubleAsDecimal(void *form, s32 valueLo, s32 valueHi, Decimal38 *number) {
+ M2C_UNK RoundDecimalToDigits(void *, s32);
+ void DoubleToDecimal();
+ s32 n = M2C_FIELD(form,s16 *,2);
  s32 i;
- s32 unused = arg1 + arg2;
- func_0206eeb4(arg3);
- if (M2C_FIELD(arg3,u8 *,5)>9U) return;
+ s32 unused = valueLo + valueHi;
+ DoubleToDecimal(number);
+ if (number->digits[0]>9U) return;
  if(n>32)n=32;
- func_0206e3a0(arg3,n);
- while(M2C_FIELD(arg3,u8 *,4)<n) {
- ((u8 *)arg3)[5+M2C_FIELD(arg3,u8 *,4)++]=0;
+ RoundDecimalToDigits(number,n);
+ while(number->length<n) {
+ number->digits[number->length++]=0;
  }
- M2C_FIELD(arg3,s16 *,2)-=M2C_FIELD(arg3,u8 *,4)-1;
- i=0; if ((s32)M2C_FIELD(arg3,u8 *,4)>0) do { void *p=(u8 *)arg3+i; u8 c=M2C_FIELD(p,u8 *,5); i++; M2C_FIELD(p,u8 *,5)=c+0x30; } while(i<M2C_FIELD(arg3,u8 *,4));
+ number->exponent-=number->length-1;
+ i=0; if ((s32)number->length>0) do { void *p=(u8 *)number+i; u8 c=M2C_FIELD(p,u8 *,5); i++; M2C_FIELD(p,u8 *,5)=c+0x30; } while(i<number->length);
  (void)unused;
 }
 
 double func_0206f0dc(Decimal38 *input){
-s32 func_0206f7a8(double,...);
+s32 ClassifyDouble(double,...);
 double func_0206df88(double,double);
 double func_0207191c(u32);
 double func_0206e2d8(double,double);
 double ScaleDoubleByExp(double,s32);
-void func_0206e630(void*,void*,s32);
+void DecimalFromDigitString(void*,void*,s32);
 int func_0206eb30(void*,void*);
 int Bcd_IsEqual(void*,void*);
 void func_0206ec10(void*,void*,void*);
@@ -72,7 +81,7 @@ nanp->u=0x7ff0000000000000ULL;if(input->sign)nanp->u|=0x8000000000000000ULL;nanp
 value=*input;cursor=value.digits;end=cursor+value.length;
 if(cursor<end)do{*cursor=(u8)(*cursor-'0');cursor++;}while(cursor<end);
 value.exponent+=value.length-1;exp=value.exponent;
-func_0206e630(&a,data_021006d0,0x134);
+DecimalFromDigitString(&a,data_021006d0,0x134);
 if(func_0206eb30(&a,&value))return func_0206df88(func_0207191c(data_021002e8),input->sign==0?1.0:-1.0);
 cursor=value.digits;x=*cursor++;
 while(cursor<end){
@@ -85,13 +94,13 @@ x=tmp;exp-=n;
 if(exp<0)x/=func_0206e2d8(5.0,(double)-exp);
 else x*=func_0206e2d8(5.0,(double)exp);
 x=ScaleDoubleByExp(x,exp);
-if(func_0206f7a8(x)==2){(*(u64*)&x)=0x7fefffffffffffffULL;}
-yp=(u64*)&y;func_0206eeb4((u8*)&b,x);
+if(ClassifyDouble(x)==2){(*(u64*)&x)=0x7fefffffffffffffULL;}
+yp=(u64*)&y;DoubleToDecimal((u8*)&b,x);
 above=0;if(!Bcd_IsEqual(&b,&value)){
 above=0;if(func_0206eb30(&b,&value))above=1;
 for(;;){
 below=above==0;y=x;
-if(!below){(*(u64*)&y)++;if(func_0206f7a8(y)==2)break;}else (*yp)--;func_0206eeb4((u8*)&c,y);
+if(!below){(*(u64*)&y)++;if(ClassifyDouble(y)==2)break;}else (*yp)--;DoubleToDecimal((u8*)&c,y);
 if(above){if(!func_0206eb30(&c,&value))break;}
 if(!above && !func_0206eb30(&value,&c)){d=b;b=c;c=d;tmp=x;x=y;y=tmp;break;}
 b=c;x=y;
@@ -104,7 +113,7 @@ if(value.sign)x=-x;return x;
 }
 
 #pragma opt_strength_reduction reset
-s32 func_0206f700(unsigned long long x) {
+s32 CountBits64(unsigned long long x) {
  x=x-((x>>1)&0x5555555555555555ULL);
  x=(x&0x3333333333333333ULL)+((x>>2)&0x3333333333333333ULL);
  x=(x+(x>>4))&0x0f0f0f0f0f0f0f0fULL;
@@ -112,9 +121,9 @@ s32 func_0206f700(unsigned long long x) {
  return (u32)x&255;
 }
 
-u32 func_0206f794(double x, ...) { return ((u32 *)&x)[1] & 0x80000000; }
+u32 DoubleSignBit(double x, ...) { return ((u32 *)&x)[1] & 0x80000000; }
 
-s32 func_0206f7a8(double x, ...) {
+s32 ClassifyDouble(double x, ...) {
  u32 hi=((u32 *)&x)[1];
  u32 exp=hi&0x7ff00000;
  if(exp!=0) {
