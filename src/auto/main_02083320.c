@@ -179,11 +179,65 @@ void DrawSpriteText(SpriteText *obj) {
         gSpriteDesc64x64, obj->priority + 1);
 }
 
-s32 func_02083e50(void *arg0) {
-    (void)arg0;
-    return 0;
-}
+#pragma opt_strength_reduction off
+void func_02083e50(SpriteText *text) {
+    extern s16 gSinCosTable[];
+    s32 Divide(s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
+    void SetSpriteQuad(s32, s16, s16, s16, s16);
+    void Sprite_ResumeAnimation(void *);
+    s32 scaleX, scaleY;
+    s32 xx, xy, yx, yy;
+    s32 i, glyph;
+    u16 x = text->x;
+    u16 y = text->y;
+    s32 sinValue, cosValue, scaledCos;
+    u16 elapsed;
+    const s16 *sincos;
 
+    text->timer++;
+    scaleX = (EaseInterpolate(0,64,256,text->timer,16) < 0
+              ? -EaseInterpolate(0,64,256,text->timer,16)
+              : EaseInterpolate(0,64,256,text->timer,16)) >= 2
+        ? EaseInterpolate(0,64,256,text->timer,16)
+        : (EaseInterpolate(0,64,256,text->timer,16) > 2 ? 2
+           : (EaseInterpolate(0,64,256,text->timer,16) < -2 ? -2
+              : EaseInterpolate(0,64,256,text->timer,16)));
+    elapsed = text->timer;
+    sincos = gSinCosTable;
+    cosValue = sincos[1];
+    sinValue = sincos[0];
+    scaleY = (EaseInterpolate(0,64,256,elapsed,16) < 0
+              ? -EaseInterpolate(0,64,256,text->timer,16)
+              : EaseInterpolate(0,64,256,text->timer,16)) >= 2
+        ? EaseInterpolate(0,64,256,text->timer,16)
+        : (EaseInterpolate(0,64,256,text->timer,16) > 2 ? 2
+           : (EaseInterpolate(0,64,256,text->timer,16) < -2 ? -2
+              : EaseInterpolate(0,64,256,text->timer,16)));
+
+    scaledCos = cosValue << 4;
+    xx = Divide(scaledCos, 256);
+    xy = Divide(-sinValue << 4, scaleY);
+    yx = Divide(sinValue << 4, 256);
+    yy = Divide(scaledCos, scaleX);
+    SetSpriteQuad(31, (s16)xx, (s16)xy, (s16)yx, (s16)yy);
+    EaseInterpolate(4, 128, 0, text->timer, 16);
+    for (i = 0; i < text->length; i++) {
+        AddSprite((u16)((x & 511) | 0x3e00), (u16)((y & 255) | 256),
+                  (u16)(text->attr | ((((text->tileBase + (text->glyphs[i] << 3))
+                      >> ((DrawControl *)M2C_FIELD(gCur3DSpriteEngine, void **, 0))->mode) & 1023)
+                      + ((text->palette & 15) << 12))),
+                  gSpriteDesc16x32, text->priority);
+        glyph = text->glyphs[i];
+        if (glyph == 255) x = (u16)(x + 14);
+        else x = (u16)(x + (gGlyphAdvance[glyph] - 2));
+    }
+    if (text->timer == 16) {
+        text->timer = 0;
+        Sprite_ResumeAnimation(text);
+    }
+}
+#pragma opt_strength_reduction reset
 /* Draw the glyph run of a sprite-text label from its own x position (no end caps):
  * one 16x32 sprite per glyph, advancing x by each glyph's width. */
 void DrawSpriteTextGlyphs(void *a){

@@ -104,7 +104,7 @@ void Update3DSpriteState(void *arg0) {
     }
 }
 
-void *func_01ffa1ec(void) {
+void *AllocSpriteObject(void) {
     extern void **data_021581a8;
     void **var_r3;
     void *temp_r2;
@@ -155,7 +155,7 @@ void InsertSpriteInLayer(void *arg0, u32 arg1) {
  table[arg1]=arg0;
 }
 
-void func_01ffa2ac(void *arg0, void *arg1) {
+void InsertSpriteInParent(void *arg0, void *arg1) {
     void *temp_r2;
 
     temp_r2 = M2C_FIELD(arg1, void **, 0x1C);
@@ -184,41 +184,47 @@ void func_01ffa2cc(void *p) {
  M2C_FIELD(p,s32 *,0x24)=0;
 }
 
-s32 func_01ffa334(s32 a,s32 b,s32 c) {
+/* Creates a sprite object of `spriteClass` on engine `engine`, owned by `owner` (a
+ * layer index below 12, otherwise a parent sprite to attach it to): takes a free
+ * object from the pool, stores the class in its class and animation-state fields,
+ * clears its callbacks and links, inserts it, runs its first state update with
+ * `engine` current and clears the initialising flag.  Returns the new object. */
+s32 CreateSpriteObjectInLayer(s32 spriteClass,s32 owner,s32 engine) {
  void InsertSpriteInLayer(void *,u32);
+ void InsertSpriteInParent(void *,void *);
  extern s32 gCur3DSpriteEngine;
- void *p=func_01ffa1ec();
- s32 old;
- M2C_FIELD(p,s32 *,4)=a;
- M2C_FIELD(p,s32 *,8)=a;
- M2C_FIELD(p,s32 *,0xC)=0;
- M2C_FIELD(p,s32 *,0x10)=0;
- M2C_FIELD(p,s32 *,0x14)=0;
- M2C_FIELD(p,s32 *,0x18)=0;
- M2C_FIELD(p,s32 *,0x1C)=0;
- M2C_FIELD(p,s32 *,0x20)=0;
- M2C_FIELD(p,s32 *,0x24)=0;
- M2C_FIELD(p,s32 *,0x28)=c;
- M2C_FIELD(p,u16 *,0x2C)=0;
- M2C_FIELD(p,u16 *,0x2E)=0xFF00;
- M2C_FIELD(p,u8 *,0x31)=0;
- M2C_FIELD(p,u8 *,0x30)=0x18;
- if((u32)b<12)InsertSpriteInLayer(p,b);else func_01ffa2ac(p,(void *)b);
- old=gCur3DSpriteEngine;gCur3DSpriteEngine=c;
- Update3DSpriteState(p);
- gCur3DSpriteEngine=old;
- M2C_FIELD(p,u8 *,0x30)&=~8;
- return (s32)p;
+ void *sprite=AllocSpriteObject();
+ s32 savedEngine;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_ALIVE)=spriteClass;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_ANIM)=spriteClass;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_DELETE_CB)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_UPDATE_CB)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_DRAW_CB)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_PARENT)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_CHILD)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_PREV)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_NEXT)=0;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_ENGINE)=engine;
+ M2C_FIELD(sprite,u16 *,DS3D_SPRITE_LAYER)=0;
+ M2C_FIELD(sprite,u16 *,DS3D_SPRITE_Z)=0xFF00;
+ M2C_FIELD(sprite,u8 *,DS3D_SPRITE_CHILD_COUNT)=0;
+ M2C_FIELD(sprite,u8 *,DS3D_SPRITE_FLAGS)=DS3D_SPRITE_FLAG_INIT|DS3D_SPRITE_FLAG_NEW;
+ if((u32)owner<12)InsertSpriteInLayer(sprite,owner);else InsertSpriteInParent(sprite,(void *)owner);
+ savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=engine;
+ Update3DSpriteState(sprite);
+ gCur3DSpriteEngine=savedEngine;
+ M2C_FIELD(sprite,u8 *,DS3D_SPRITE_FLAGS)&=~DS3D_SPRITE_FLAG_INIT;
+ return (s32)sprite;
 }
 
 void CreateSpriteFromClass(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_01ffa334(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK CreateSpriteObjectInLayer(M2C_UNK, M2C_UNK, s32);
     extern s32 gCur3DSpriteEngine;
-    func_01ffa334(arg0, arg1, gCur3DSpriteEngine);
+    CreateSpriteObjectInLayer(arg0, arg1, gCur3DSpriteEngine);
 }
 
 s32 func_01ffa3f4(s32 a,s32 b,s32 c) {
- void *p=(void *)func_01ffa334(a,b,c);
+ void *p=(void *)CreateSpriteObjectInLayer(a,b,c);
  void *parent;
  if(M2C_FIELD(p,s32 *,4)==0)return 0;
  M2C_FIELD(p,u8 *,0x30)|=4;

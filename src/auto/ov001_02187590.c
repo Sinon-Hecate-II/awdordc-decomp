@@ -452,10 +452,10 @@ s32 func_ov001_021883a8(void) {
 }
 
 u16 ScanNextChild(u16 arg0) {
-s32 func_02011d58();
+s32 WFC_GetPlayerMask();
 s32 func_ov001_021885f4(void *,u16);
 extern M2C_UNK HandleChildScanResult;
-s32 mask=func_02011d58();
+s32 mask=WFC_GetPlayerMask();
 if(mask==0x8000) {SetWhError(3);SetWhStatus(9);return 3;}
 if(mask==0) {SetWhError(0x16);SetWhStatus(9);return 0x18;}
 while(!(mask & (1 << (arg0-1)))) {

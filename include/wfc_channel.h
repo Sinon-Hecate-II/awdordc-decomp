@@ -15,9 +15,12 @@
 #define WFC_INFO_LINK             0x04  /* void *: the link state object */
 
 /* Link state object fields (u16 unless noted). */
+#define WFC_LINK_STATE            0x00  /* link state; 9/10/11 carry the status value below */
 #define WFC_LINK_TEARDOWN         0x0C  /* s32 1 while the link is being torn down */
 #define WFC_LINK_BLOCK_WORDS      0x3E  /* one player's transfer block, in 16-bit words */
+#define WFC_LINK_STATUS_VALUE     0xBC  /* status value the +0xBC link-status getter reports (states 9-11) */
 #define WFC_LINK_PLAYERS          0xF8  /* players taking part in the transfer */
+#define WFC_LINK_CONNECTED_MASK   0x182 /* bit per connected player slot (bit n = slot n) */
 #define WFC_LINK_RESET            0x188 /* nonzero while the link is being reset */
 
 /* Completion event handed to a channel's callback. */

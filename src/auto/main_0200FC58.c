@@ -445,31 +445,74 @@ fail:
     func_02010688();
 }
 
-s32 func_020107ac(void *arg0) {
-    extern void *data_0212fde0;
-    void *p = &data_0212fde0;
-    s32 r6 = 0;
-    s32 r9 = *(s32 *)((u8 *)p + 0x20);
-    void *r11 = arg0;
-    s32 r7 = 0;
-    s32 r8 = 0;
-    s32 r1 = 0;
-    s32 r10 = r9 & 0x1f;
-    s32 r5 = *(s32 *)((u8 *)p + 0x24);
-    s32 r0;
-    
-    if (r10 == 0) {
-        r0 = *(s32 *)((u8 *)p + 0x28);
-        if (r0 <= 3) {
-            r1 = 1;
-        }
-        if (r1 != 0) {
-            s32 func_02006c8c(void);
-            func_02006c8c();
-            // ...
-        }
+s32 func_020107ac(void *command) {
+    extern void *data_020f553c, *data_0212fde0;
+    void func_01ff8000(void);
+    u32 func_02006c8c(void);
+    void func_0200681c(u32, u32);
+    void func_02006810(void);
+    void func_02006804(void);
+    void func_02006774(void);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void OS_SetFifoReceiveHandlers(u32, void (*)(void));
+    void OS_SetIrqMask(s32);
+    void OS_EnableIrqMask(u32);
+    void DC_CleanRange(void *, u32);
+    void DC_InvalidateRange(void *, s32);
+    void *state = &data_0212fde0;
+    u32 length;
+    s32 started;
+    s32 alignedTransfer, validRange, validMode;
+    u32 dest, misalignment;
+    u32 dtcm, end, irq;
+    s32 invalidRange, overlapsItcm;
+
+    started = 0;
+    dest = M2C_FIELD(state, u32 *, 0x20);
+    alignedTransfer = 0;
+    validRange = 0;
+    validMode = 0;
+    misalignment = dest & 31;
+    length = M2C_FIELD(state, u32 *, 0x24);
+
+    if (misalignment == 0 && M2C_FIELD(state, u32 *, 0x28) <= 3) validMode = 1;
+    if (validMode) {
+        dtcm = func_02006c8c();
+        invalidRange = 1;
+        overlapsItcm = 0;
+        end = dest + length;
+        if (end > (u32)func_01ff8000) overlapsItcm = (dest < 0x02000000) ? invalidRange : 0;
+        if (!overlapsItcm && (dtcm >= end || dtcm + 0x4000 <= dest)) invalidRange = 0;
+        if (!invalidRange) validRange = 1;
     }
-    return r6;
+    if (validRange && ((M2C_FIELD(state, u32 *, 0x1c) | length) & 511) == 0) alignedTransfer = 1;
+    if (alignedTransfer && length != 0) started = 1;
+    M2C_FIELD(command, u32 *, 4) = (M2C_FIELD(data_020f553c, u32 *, 0x60) & ~0x07000000) | 0xa1000000;
+
+    if (started) {
+        irq = OS_DisableInterrupts();
+        if (length < M2C_FIELD(state, u32 *, 0x118)) func_0200681c(dest, length);
+        else func_02006810();
+        if (length < M2C_FIELD(state, u32 *, 0x11c)) {
+            if (misalignment != 0) {
+                dest -= misalignment;
+                DC_CleanRange((void *)dest, 32);
+                DC_CleanRange((void *)(dest + length), 32);
+                length += 32;
+            }
+            DC_InvalidateRange((void *)dest, length);
+            func_02006804();
+        } else {
+            func_02006774();
+        }
+        OS_SetFifoReceiveHandlers(0x80000, func_020106dc);
+        OS_SetIrqMask(0x80000);
+        OS_EnableIrqMask(0x80000);
+        OS_RestoreInterrupts(irq);
+        func_02010688();
+    }
+    return started;
 }
 
 void func_02010938(void *arg0) {

@@ -1,5 +1,7 @@
 /* 3 functions from 0x02193D6C to 0x02194AB8 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 #include "ov000_unit_entry.h"
 typedef struct { u16 x:6; u16 y:6; u16 unk:2; u16 state:2; } Position_02194090;
 #include "ov000_unit_entry.h"
@@ -16,8 +18,81 @@ extern M2C_UNK gUnitKindStats;
 #define COST(x,y,off) M2C_FIELD(MAP+(x)+ROW(y),s8*,off)
 #define PATH(x,y) M2C_FIELD(MAP+(y)*4,s8**,0x52e8)[x]
 
-void func_ov000_02193d6c(void *arg0) { (void)arg0; }
-
+#pragma opt_strength_reduction off
+/* AI destination scan for the Rig (kind 13): pick a plain or shoal cell to build
+ * a temporary airfield (plain) or temporary port (shoal) on, preferring the cell
+ * farthest from the AI's other builders and properties that is least exposed to
+ * enemy threat, then move the AI's cursor there. */
+void SelectAiRigBuildDestination(s32 force) {
+    s32 GetCaptureTurnsLeft(void *);
+    s32 IsAllyUnitAtCell(s16, s16);
+    u8 IsPlainOrShoalTerrain(s32, s32);
+    s32 func_ov000_02193a40(s32, s32, s32);
+    UnkStruct_ov000_021A860C *unit = (UnkStruct_ov000_021A860C *)SEL;
+    s32 bestX, bestY, bestScore, bestCost;
+    s32 score, cost, x, y;
+    s16 rowY;
+    void *map;
+    if (unit->unk0 != UNIT_KIND_RIG) return;
+    if (!((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 21) >> 28)) return;
+    if (unit->unkC[0]) return;                     /* the Rig must carry nothing to build */
+    if (!CanSaveHiddenTerrainMap()) return;
+    if (!force && GetCaptureTurnsLeft(SEL) >= 5) return;
+    unit = (UnkStruct_ov000_021A860C *)SEL;
+    if ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27)
+        SetMapCursor(unit->unk1[0], unit->unk1[1], 24, 0, 0);
+    BuildUnitMoveRange(SEL);
+    bestY = 9999;
+    bestX = bestY;
+    bestScore = -1;
+    bestCost = 0x7fff;
+    map = MAP;
+    for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); ++y) {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, MAP_WIDTH)) {
+            rowY = (s16)y;
+            do {
+                if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 &&
+                    !IsAllyUnitAtCell((s16)x, rowY) && IsPlainOrShoalTerrain(x, y)) {
+                    u8 terrain = CELL(x, y, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+                    /* The terrain predicate above admits only plain and shoal. */
+                    switch (terrain) {
+                    case MAP_TERRAIN_PLAIN:
+                        if (!(((u32)(M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_MODE) << 26) >> 29) & 2)) break;
+                        score = func_ov000_02193a40(x, y, 1);
+                        goto choose;
+                    case MAP_TERRAIN_SHOAL:
+                        if (!(((u32)(M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_MODE) << 26) >> 29) & 4)) break;
+                        score = func_ov000_02193a40(x, y, 0);
+                    default:
+                    choose:
+                        if (!force && score <= 5) break;
+                        if (bestScore <= score) {
+                            u8 *cell;
+                            map = MAP;
+                            cell = (u8 *)map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+                            cost = M2C_FIELD(cell, u8 *, MAP_CELL_THREAT_DIRECT) + M2C_FIELD(cell, u8 *, MAP_CELL_THREAT_INDIRECT);
+                            if (bestScore == score) {
+                                if (bestCost < cost) break;
+                                if (bestCost == cost && M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_TIEBREAK) < 50) break;
+                            }
+                            bestX = x;
+                            bestY = y;
+                            bestScore = score;
+                            bestCost = cost;
+                        }
+                        break;
+                    }
+                }
+                map = MAP;
+            } while (++x < M2C_FIELD(map, u16 *, MAP_WIDTH));
+        }
+    }
+    if (bestScore == -1) return;
+    ClearUnitMoveTarget();
+    SetMapCursor((s16)bestX, (s16)bestY, 24, 0, 0);
+}
+#pragma opt_strength_reduction reset
 /* Scan reachable cells for a current-player unit that can attack the highlighted unit and move the cursor to it. */
 void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off

@@ -92,8 +92,8 @@ s32 func_020815bc(void *arg0, void *arg1) {
 
 void func_020815d4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
- void func_02081080(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081080(BuildNarcPath(arg0), arg1, arg2, arg3);
+ void ReadFileSection(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ ReadFileSection(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void LoadNarcFileToSpriteBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

@@ -46,8 +46,8 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
     s32 func_02011034(s32, s32);
     s32 func_020119dc(s32);
     s32 func_020120f8(void *);
-    u16 func_02011d58(void);
-    s32 func_02011244(void);
+    u16 WFC_GetPlayerMask(void);
+    s32 WFC_ShutdownCommandChannel(void);
     void func_0202830c(void);
     void WFC_OperationCallback(void);
     extern s32 gWfcSession;
@@ -91,8 +91,8 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
     case 0:
         break;
     }
-    if (func_02011d58() == 0) {
-        if (func_02011244() != 0) {
+    if (WFC_GetPlayerMask() == 0) {
+        if (WFC_ShutdownCommandChannel() != 0) {
             WFC_SetState(11);
             OS_RestoreInterrupts(irq);
             return 7;
@@ -356,7 +356,7 @@ s32 WFC_ProcessLinkStep(void) {
 s32 WFC_ProcessLinkState(void){
 u16 *func_02011910(void);
 M2C_UNK DC_InvalidateRange();
-s32 func_02011244(void);
+s32 WFC_ShutdownCommandChannel(void);
 s32 func_02012158(void *);
 s32 func_020121d8(M2C_UNK);
 s32 func_02012274(void *);
@@ -383,7 +383,7 @@ linkState=func_02011910();
 DC_InvalidateRange(linkState,2);
 switch(*linkState){
 case 0:
-if((result=func_02011244())==0){
+if((result=WFC_ShutdownCommandChannel())==0){
 WFC_SetState(1);M2C_FIELD((void *)gWfcSession,u16 *,WFC_SESSION_SUBSTATE)=0;
 OS_RestoreInterrupts(irq);return 0;
 }

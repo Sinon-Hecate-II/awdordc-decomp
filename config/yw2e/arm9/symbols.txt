@@ -648,7 +648,7 @@ func_02010f84 kind:function(arm,size=0x60) addr:0x02010f84
 func_02010fe4 kind:function(arm,size=0x50) addr:0x02010fe4
 func_02011034 kind:function(arm,size=0x2c) addr:0x02011034
 func_02011060 kind:function(arm,size=0x1e4) addr:0x02011060
-func_02011244 kind:function(arm,size=0x70) addr:0x02011244
+WFC_ShutdownCommandChannel kind:function(arm,size=0x70) addr:0x02011244
 WFC_SetChannelParam kind:function(arm,size=0x18) addr:0x020112b4
 WFC_AllocBuffer kind:function(arm,size=0x58) addr:0x020112cc
 WFC_SendCommand kind:function(arm,size=0xac) addr:0x02011324
@@ -657,7 +657,7 @@ WFC_GetInfoBlock kind:function(arm,size=0x10) addr:0x02011440
 WFC_CheckReady kind:function(arm,size=0x1c) addr:0x02011450
 func_0201146c kind:function(arm,size=0x48) addr:0x0201146c
 WFC_CheckChannelState kind:function(arm,size=0x94) addr:0x020114b4
-func_02011548 kind:function(arm,size=0x3ac) addr:0x02011548
+WFC_CommandHandler kind:function(arm,size=0x3ac) addr:0x02011548
 func_020118f4 kind:function(arm,size=0x1c) addr:0x020118f4
 func_02011910 kind:function(arm,size=0x24) addr:0x02011910
 func_02011934 kind:function(arm,size=0x30) addr:0x02011934
@@ -669,8 +669,8 @@ func_02011af8 kind:function(arm,size=0x4c) addr:0x02011af8
 func_02011b44 kind:function(arm,size=0x6c) addr:0x02011b44
 MultiBoot_GetMinPayloadSize kind:function(arm,size=0xc4) addr:0x02011bb0
 MultiBoot_FindPlayerMessage kind:function(arm,size=0xe4) addr:0x02011c74
-func_02011d58 kind:function(arm,size=0x20) addr:0x02011d58
-func_02011d78 kind:function(arm,size=0x90) addr:0x02011d78
+WFC_GetPlayerMask kind:function(arm,size=0x20) addr:0x02011d58
+WFC_GetLinkStatusValue kind:function(arm,size=0x90) addr:0x02011d78
 func_02011e08 kind:function(arm,size=0x90) addr:0x02011e08
 func_02011e98 kind:function(arm,size=0x94) addr:0x02011e98
 func_02011f2c kind:function(arm,size=0x158) addr:0x02011f2c
@@ -2452,7 +2452,7 @@ func_0205f7d8 kind:function(arm,size=0x64) addr:0x0205f7d8
 Qr2_HandlePacket kind:function(arm,size=0x314) addr:0x0205f83c
 func_0205fb50 kind:function(arm,size=0x60) addr:0x0205fb50
 Qr2_SendState kind:function(arm,size=0x20c) addr:0x0205fbb0
-func_0205fdbc kind:function(arm,size=0x20) addr:0x0205fdbc
+Qr2_SetKeyName kind:function(arm,size=0x20) addr:0x0205fdbc
 GsCryptInitStep kind:function(arm,size=0xb4) addr:0x0205fddc
 GsCryptInitDefault kind:function(arm,size=0x48) addr:0x0205fe90
 GsCryptInit kind:function(arm,size=0xc8) addr:0x0205fed8
@@ -3084,7 +3084,7 @@ LoadDecompressedFileTo kind:function(arm,size=0x134) addr:0x02080cfc
 LoadFileToBuffer kind:function(arm,size=0xcc) addr:0x02080e30
 LoadDecompressedFileBuffer kind:function(arm,size=0x174) addr:0x02080efc
 func_02081070 kind:function(arm,size=0x10) addr:0x02081070
-func_02081080 kind:function(arm,size=0xa8) addr:0x02081080
+ReadFileSection kind:function(arm,size=0xa8) addr:0x02081080
 func_02081128 kind:function(arm,size=0x44) addr:0x02081128
 LoadFileToSpriteBuffer kind:function(arm,size=0x4c) addr:0x0208116c
 func_020811b8 kind:function(arm,size=0x9c) addr:0x020811b8
@@ -3225,7 +3225,7 @@ Link_BroadcastMessage kind:function(arm,size=0x64) addr:0x02084bf8
 Link_SendMessage kind:function(arm,size=0x64) addr:0x02084c5c
 func_02084cc0 kind:function(arm,size=0x38) addr:0x02084cc0
 GetOnlineLocalPlayerId kind:function(arm,size=0x24) addr:0x02084cf8
-func_02084d1c kind:function(arm,size=0x20) addr:0x02084d1c
+SetOnlineLocalPlayerId kind:function(arm,size=0x20) addr:0x02084d1c
 Link_ReceivePacket kind:function(arm,size=0x4c) addr:0x02084d3c
 Link_SendPacket kind:function(arm,size=0x44) addr:0x02084d88
 func_02084dcc kind:function(arm,size=0x58) addr:0x02084dcc
@@ -5487,8 +5487,8 @@ func_020c9120 kind:function(arm,size=0x48) addr:0x020c9120
 func_020c9168 kind:function(arm,size=0x28) addr:0x020c9168
 func_020c9190 kind:function(arm,size=0x1c) addr:0x020c9190
 func_020c91ac kind:function(arm,size=0x98) addr:0x020c91ac
-func_020c9244 kind:function(arm,size=0x24) addr:0x020c9244
-func_020c9268 kind:function(arm,size=0x20) addr:0x020c9268
+MapCode_GetPid kind:function(arm,size=0x24) addr:0x020c9244
+MapCode_GetCrc kind:function(arm,size=0x20) addr:0x020c9268
 DrawMapCode kind:function(arm,size=0x144) addr:0x020c9288
 func_020c93cc kind:function(arm,size=0x30) addr:0x020c93cc
 func_020c93fc kind:function(arm,size=0x34) addr:0x020c93fc
@@ -5572,7 +5572,7 @@ MapFadeInStep kind:function(arm,size=0x1fc) addr:0x020cc234
 func_020cc430 kind:function(arm,size=0x60) addr:0x020cc430
 func_020cc490 kind:function(arm,size=0x74) addr:0x020cc490
 func_020cc504 kind:function(arm,size=0x80) addr:0x020cc504
-func_020cc584 kind:function(arm,size=0xa8) addr:0x020cc584
+CloseMapViewStep kind:function(arm,size=0xa8) addr:0x020cc584
 func_020cc62c kind:function(arm,size=0x18) addr:0x020cc62c
 func_020cc644 kind:function(arm,size=0x28) addr:0x020cc644
 CreateTargetCursor kind:function(arm,size=0x38) addr:0x020cc66c
@@ -5653,7 +5653,7 @@ func_020cf828 kind:function(arm,size=0x28) addr:0x020cf828
 func_020cf850 kind:function(arm,size=0x28) addr:0x020cf850
 func_020cf878 kind:function(arm,size=0x90) addr:0x020cf878
 func_020cf908 kind:function(arm,size=0xe8) addr:0x020cf908
-func_020cf9f0 kind:function(arm,size=0x68) addr:0x020cf9f0
+IsPlainOrShoalTerrain kind:function(arm,size=0x68) addr:0x020cf9f0
 LoadMapTileData kind:function(arm,size=0xfc) addr:0x020cfa58
 FreeMapTileData kind:function(arm,size=0x24) addr:0x020cfb54
 GetCurrentMapName kind:function(arm,size=0x1c) addr:0x020cfb78
@@ -5862,7 +5862,7 @@ func_020d549c kind:function(arm,size=0x18) addr:0x020d549c
 func_020d54b4 kind:function(arm,size=0x4) addr:0x020d54b4
 func_020d54b8 kind:function(arm,size=0x5c) addr:0x020d54b8
 func_020d5514 kind:function(arm,size=0x40) addr:0x020d5514
-func_020d5554 kind:function(arm,size=0x314) addr:0x020d5554
+ShowCursorUnitRanges kind:function(arm,size=0x314) addr:0x020d5554
 func_020d5868 kind:function(arm,size=0x5c) addr:0x020d5868
 SelectCursorTarget kind:function(arm,size=0x1dc) addr:0x020d58c4
 ConfirmCursorTile kind:function(arm,size=0x26c) addr:0x020d5aa0
@@ -10725,12 +10725,12 @@ data_02130212 kind:bss addr:0x02130212
 data_02130400 kind:bss addr:0x02130400
 data_02130420 kind:bss addr:0x02130420
 data_02130640 kind:bss addr:0x02130640
-data_02130660 kind:bss addr:0x02130660
+gWfcChannelState kind:bss addr:0x02130660
 gWfcFreeBufferQueue kind:bss addr:0x02130668
 data_02130688 kind:bss addr:0x02130688
-data_021306b0 kind:bss addr:0x021306b0
-data_021306c4 kind:bss addr:0x021306c4
-data_021306d4 kind:bss addr:0x021306d4
+gWfcEventPacket kind:bss addr:0x021306b0
+gWfcEventMac kind:bss addr:0x021306c4
+gWfcEventPayload kind:bss addr:0x021306d4
 data_02130700 kind:bss addr:0x02130700
 data_02131000 kind:bss addr:0x02131000
 gWfcRequestBuffer kind:bss addr:0x02131100

@@ -407,8 +407,8 @@ if(callback)callback(M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u32 *,0x4b
 }
 #pragma pop
 s32 func_020167d0(void *arg0) {
-s32 func_02011d58();s32 bits;u16 n,start,candidate;
-bits=func_02011d58();if(!bits)return 0;
+s32 WFC_GetPlayerMask();s32 bits;u16 n,start,candidate;
+bits=WFC_GetPlayerMask();if(!bits)return 0;
 start=M2C_FIELD(arg0,u16 *,4);n=0;candidate=start;
 do {
 if((bits&(1<<(candidate-1))) && start!=candidate) {

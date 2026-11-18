@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "gx.h"
+#include "ds3dsprite.h"
 typedef struct { s16 coords[24]; } TerrainCoords48;
 typedef struct { s16 coords[12]; } TerrainCoords24;
 extern void **gCurrentMap;
@@ -16,9 +17,101 @@ extern const u8 data_020ec6bc[], data_020ecabc[], data_020ecebc[], data_020ed2bc
 extern u32 data_0214c0c0[2];
 extern const u16 data_020ebddc[8];
 
-void func_0207d130(void *a, void *b, s32 c, s32 d) {
-    extern void **gCur3DSpriteEngine;
-    (void)a; (void)b; (void)c; (void)d; (void)gCur3DSpriteEngine;
+extern s16 gSinCosTable[2048];
+extern s16 data_02101834[4][4][2];
+extern void *gCur3DSpriteEngine;
+void func_02004078(s32, s32);
+void func_0207d49c(s32, s32, s32);
+void DrawTexturedQuad(s32, s32, s32);
+s32 GetGxTextureSizeCode(s32);
+s32 GetGxTextureSizeCode2(s32);
+void func_0207d130(const u16 *attr, const s32 *position, u32 texture, u32 palette,
+                  s32 scale, s32 angle, s32 centered, s32 texWidth, s32 texHeight,
+                  s32 tileScale, s32 tileOffset) {
+    register s32 count = *attr++;
+    register volatile u32 *gx = (volatile u32 *)0x04000440;
+    s32 palNum, flips, posX, posY, posZ, drawX, drawY, heightCode, cosine, sine;
+    posX = position[0];
+    posY = position[1];
+    posZ = position[2];
+    gx[0] = 3;
+    gx[1] = 0;
+    gx[0] = 2;
+    if (count > 0) {
+        cosine = gSinCosTable[(angle >> 4) * 2 + 1];
+        sine = gSinCosTable[(angle >> 4) * 2];
+        while (count > 0) {
+            u16 a0, a1, a2;
+            s32 width, height, x, y, tile;
+            s32 widthCode;
+            DS3DSpriteEngine *engine;
+            gx[1] = 0;
+            a0 = attr[0];
+            a1 = attr[1];
+            a2 = attr[2];
+            width = data_02101834[a0 >> 14][a1 >> 14][0];
+            height = data_02101834[a0 >> 14][a1 >> 14][1];
+            palNum = (a2 & 0xf000) >> 12;
+            x = a1 & 0x1ff;
+            y = a0 & 0xff;
+            tile = a2 & 0x3ff;
+            flips = a1 & 0x3000;
+            if (tileScale) {
+                s32 tileX, tileY;
+                u32 tileIndex;
+                gx[0] = 3;
+                gx[5] = 0;
+                tileIndex = tileOffset + tile;
+                tileX = (tileIndex & 0x1f) << 7;
+                tileY = (s32)(tileIndex & 0x3e0) >> 2;
+                tileX <<= 12;
+                tileY <<= 16;
+                gx[12] = ((s64)tileX * tileScale + GX_FX_HALF) >> 12;
+                gx[12] = ((s64)tileY * tileScale + GX_FX_HALF) >> 12;
+                gx[12] = 0;
+                gx[11] = tileScale;
+                gx[11] = tileScale;
+                gx[11] = 0;
+                gx[0] = 2;
+            }
+            --count;
+            if (x & 0x100) x |= -0x200;
+            if (y & 0x80) y |= -0x100;
+            if (centered) {
+                s32 centerX = x + (width >> 1);
+                s32 centerY = y + height;
+                engine = DS3D_ENGINE(gCur3DSpriteEngine);
+                drawX = engine->offsetX + centerX;
+                drawY = engine->offsetY + centerY;
+            } else {
+                engine = DS3D_ENGINE(gCur3DSpriteEngine);
+                drawX = x + engine->offsetX;
+                drawY = y + engine->offsetY;
+            }
+            gx[12] = posX;
+            gx[12] = posY;
+            gx[12] = posZ;
+            func_02004078(sine, cosine);
+            gx[11] = scale;
+            gx[11] = scale;
+            gx[11] = GX_FX_ONE;
+            gx[12] = drawX;
+            gx[12] = drawY;
+            gx[12] = count;
+            heightCode = GetGxTextureSizeCode2(texHeight ? texHeight : height);
+            widthCode = GetGxTextureSizeCode(texWidth ? texWidth : width);
+            gx[26] = ((texture + (tile << 5)) >> 3) | 0x4c000000 |
+                                    (widthCode << 20) | (heightCode << 23) | 0x20000000;
+            gx[27] = (palette + (palNum << 5)) >> 4;
+            if (centered) func_0207d49c(width, height, flips);
+            else DrawTexturedQuad(width, height, flips);
+            gx[2] = 1;
+            attr += 3;
+        }
+    }
+    REG_GX_MTX_MODE = 3;
+    REG_GX_MTX_POP = 1;
+    REG_GX_MTX_MODE = 2;
 }
 
 void func_0207d49c(s32 a,s32 b,s32 flags){

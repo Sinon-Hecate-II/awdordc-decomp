@@ -229,55 +229,53 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     return 1;
 }
 
+#pragma optimization_level 3
 s32 func_0205c344(void *conn) {
-    s32 ghiSocketCanRecv(void *);
-    s32 ghiRecvFrom(void *, void *, s32, s32, void *, s32 *);
-    s32 ghiGetLastSocketError(void);
+    s32 ghiSocketCanRecv(s32);
+    s32 ghiRecvFrom(s32, void *, s32, s32, void *, s32 *);
+    s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, M2C_UNK, M2C_UNK);
     void func_0205d49c(void *);
     s32 gti2HandleMessage(void *, void *, s32, M2C_UNK, M2C_UNK);
-
-    s32 cnt;
-    s32 val_c;
-    M2C_UNK val_10;
     u8 buffer[0x5dc];
-    s32 read;
-    s32 x;
+    struct {
+        u16 family;
+        u16 port;
+        u32 address;
+    } peer;
+    s32 length;
+    s32 received;
+    s32 error;
 
-    if (ghiSocketCanRecv((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
-        return 0;
+    if (ghiSocketCanRecv(M2C_FIELD(conn, s32 *, 0)) != 0) {
+        do {
+            length = sizeof(peer);
+            received = ghiRecvFrom(M2C_FIELD(conn, s32 *, 0), buffer, sizeof(buffer), 0,
+                                   &peer, &length);
+            switch (received) {
+            case 0:
+                error = ghiGetLastSocketError(M2C_FIELD(conn, s32 *, 0));
+                if (error == -15) {
+                    if (!func_0205c244(conn, peer.address,
+                                      (u16)(((peer.port >> 8) & 0xff) | ((peer.port << 8) & 0xff00)))) {
+                        return 0;
+                    }
+                } else if (error != -35) {
+                    func_0205d49c(conn);
+                    return 0;
+                }
+                break;
+            default:
+                if (!gti2HandleMessage(conn, buffer, received, peer.address,
+                                       (u16)(((peer.port >> 8) & 0xff) | ((peer.port << 8) & 0xff00)))) {
+                    return 0;
+                }
+            }
+        } while (ghiSocketCanRecv(M2C_FIELD(conn, s32 *, 0)) != 0);
     }
-
-    cnt = 8;
-
-    for (;;) {
-        read = ghiRecvFrom((void *)M2C_FIELD(conn, s32 *, 0), buffer, 0x5dc, 0,
-                              (u8 *)&val_c, &cnt);
-        if (read != -1) {
-            u16 hv = *(u16 *)((char *)&val_c + 2);
-            u16 bsw = (u16)(((hv >> 8) & 0xff) | ((hv << 8) & 0xff00));
-            if (gti2HandleMessage(conn, buffer, read, val_10, bsw) == 0) {
-                return 0;
-            }
-            if (ghiSocketCanRecv((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
-                return 1;
-            }
-        } else {
-            x = ghiGetLastSocketError();
-            if (x == -15) {
-                u16 hv = *(u16 *)((char *)&val_c + 2);
-                u16 bsw = (u16)(((hv >> 8) & 0xff) | ((hv << 8) & 0xff00));
-                func_0205c244(conn, val_10, bsw);
-                return 0;
-            }
-            if (x != -35) {
-                func_0205d49c(conn);
-            }
-            return 0;
-        }
-    }
+    return 1;
 }
-
+#pragma optimization_level reset
 s32 gti2QueueSentCommand(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Vector_AddItem(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
 
 /* Starts the next command in the connection's send buffer: queues the command's

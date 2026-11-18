@@ -1,6 +1,7 @@
 /* 29 functions from 0x021E24E8 to 0x021E3210 (ov002), found by ds-decomp. */
 #include "common.h"
 #include "ov002_panel.h"
+#include "gx.h"
 
 typedef struct SlotEntry { s16 value; u8 index:3; u8 rest:5; u8 pad; } SlotEntry;
 static inline void SetSlotIndex(SlotEntry *p, u8 index) { p->index=index; }
@@ -214,20 +215,25 @@ void func_ov002_021e2aa8(void *arg0) {
     func_ov002_021e1844(arg0);
 }
 
-void SetEffectNodeDrawTransform(void *a,u8 b) {
+/* Effect-node class transform callback (vtable +0x0C), run by DrawEffectNode just
+ * before the node's vertices: queue the node's translation into the geometry
+ * engine's matrix (x negated on the flipped side; the node's mode-86 flag inverts
+ * `flip`), then, unless the scale (current scale * speed / 256) is exactly 1.0,
+ * a uniform scale of it in the GX's 20.12 fixed point. */
+void SetEffectNodeDrawTransform(void *node,u8 flip) {
  s32 x,y,z; u16 scale; s32 value;
- scale=(M2C_FIELD(a,u16 *,0x78)*M2C_FIELD(a,u16 *,0x42))>>8;
- if(M2C_FIELD(a,u16 *,0x86))b=!b;
- if(!b) {
- z=M2C_FIELD(a,s16 *,0x40);y=M2C_FIELD(a,s16 *,0x3e);x=M2C_FIELD(a,s16 *,0x3c);
- *(volatile s32 *)0x4000470=x;*(volatile s32 *)0x4000470=y;*(volatile s32 *)0x4000470=z;
+ scale=(M2C_FIELD(node,u16 *,FX_NODE_SCALE)*M2C_FIELD(node,u16 *,FX_NODE_SPEED))>>8;
+ if(M2C_FIELD(node,u16 *,FX_NODE_MODE_86))flip=!flip;
+ if(!flip) {
+ z=M2C_FIELD(node,s16 *,FX_NODE_Z);y=M2C_FIELD(node,s16 *,FX_NODE_Y);x=M2C_FIELD(node,s16 *,FX_NODE_X);
+ REG_GX_MTX_TRANS=x;REG_GX_MTX_TRANS=y;REG_GX_MTX_TRANS=z;
  }else{
- x=M2C_FIELD(a,s16 *,0x3c);z=M2C_FIELD(a,s16 *,0x40);y=M2C_FIELD(a,s16 *,0x3e);
- *(volatile s32 *)0x4000470=-x;*(volatile s32 *)0x4000470=y;*(volatile s32 *)0x4000470=z;
+ x=M2C_FIELD(node,s16 *,FX_NODE_X);z=M2C_FIELD(node,s16 *,FX_NODE_Z);y=M2C_FIELD(node,s16 *,FX_NODE_Y);
+ REG_GX_MTX_TRANS=-x;REG_GX_MTX_TRANS=y;REG_GX_MTX_TRANS=z;
  }
  if(scale==256)return;
  value=(s32)(scale<<12)>>8;
- *(volatile s32 *)0x400046c=value;*(volatile s32 *)0x400046c=value;*(volatile s32 *)0x400046c=4096;
+ REG_GX_MTX_SCALE=value;REG_GX_MTX_SCALE=value;REG_GX_MTX_SCALE=4096;
 }
 
 void func_ov002_021e2cf0(void *arg0) {

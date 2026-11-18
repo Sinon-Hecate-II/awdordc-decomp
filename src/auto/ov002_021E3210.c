@@ -24,7 +24,7 @@ void func_ov002_021e3210(void *arg0) {
     s32 scanned, count, marked;
     s32 i;
     PanelStat *out;
-    s32 slot;
+    register s32 slot;
     void *other;
     for (i = 0; i < 5; ++i) M2C_FIELD(panel + i * 4, s16 *, PANEL_STAT_SOURCE) = -1;
     count = CountPanelEntries(M2C_FIELD(panel, void **, PANEL_OTHER) + PANEL_ENTRIES);
@@ -53,14 +53,13 @@ void func_ov002_021e3210(void *arg0) {
     }
     {
         PanelStat *out;
-        u32 stat;
         PanelStat *entries = (PanelStat *)(panel + PANEL_STAT_SOURCE);
         i = 0;
         if (i < outCount) {
             out = entries;
             do {
-            stat = out->stat;
-            if (M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE + 1) || M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN)) {
+            slot = out->stat;
+            if (M2C_FIELD(panel + slot * 2, u8 *, PANEL_STAT_STATE + 1) || M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN)) {
                 out->highlighted = 0;
             } else {
                 s32 j;
@@ -69,7 +68,7 @@ void func_ov002_021e3210(void *arg0) {
                 if (j < outCount) {
                     next = entries + j;
                     do {
-                    if (stat == next->stat) {
+                    if (slot == next->stat) {
                         out->highlighted = 0;
                         break;
                     }
@@ -91,9 +90,9 @@ void func_ov002_021e3210(void *arg0) {
         marked = 0;
     }
     {
+    register PanelStat *out;
     s32 stat;
-    PanelStat *out = (PanelStat *)(panel + PANEL_STAT_SOURCE);
-    out += outCount;
+    out = (PanelStat *)(panel + PANEL_STAT_SOURCE) + outCount;
     for (; scanned < 5; ++scanned) {
         stat = M2C_FIELD(panel + scanned, u8 *, 0x1c);
         if (M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE) != M2C_FIELD(panel + stat * 2, u8 *, PANEL_STAT_STATE + 1)) {

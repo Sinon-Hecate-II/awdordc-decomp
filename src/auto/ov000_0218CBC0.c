@@ -264,16 +264,25 @@ void func_ov000_0218d040(void *allowCurrentCell) {
 #undef CMD_FLAGS
 }
 #pragma opt_strength_reduction reset
-s32 func_ov000_0218d40c(void){
-extern void **gCurrentMap; extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[];
-u8 *p=M2C_FIELD(*gCurrentMap,u8 **,0x52D0); u32 type;
-if(((u32)(M2C_FIELD(p,volatile u16 *,6)<<25)>>25)<=90)return 1;
-type=(u32)(p[0]<<26)>>26;
-if((s32)((u32)(p[10]<<25)>>25)<(s32)gUnitKindMaxFuel[type*112]>>1){
-if(type!=1 && type!=2)return 1;
-}
-if(gUnitKindMaxAmmo[type*112]>=6U && ((u32)(M2C_FIELD(p,volatile u16 *,6)<<21)>>28)<=3)return 1;
-return 0;
+/* Whether the unit under the cursor is worth acting on during the AI turn:
+ * it can act if it is healthy (>90 HP), or if it is otherwise in need of
+ * attention: below half fuel (for non-infantry/mech kinds) or, for an
+ * ammo-armed kind, down to 3 or fewer shots. */
+s32 AiUnitCanAct(void) {
+    extern void **gCurrentMap;
+    extern u8 gUnitKindMaxFuel[], gUnitKindMaxAmmo[];
+    u8 *unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+    u32 kind;
+    if (((u32)(M2C_FIELD(unit, volatile u16 *, MAP_UNIT_HEALTH) << 25) >> 25) <= 90)
+        return 1;
+    kind = (u32)(unit[MAP_UNIT_KIND] << 26) >> 26;
+    if ((s32)((u32)(unit[MAP_UNIT_FUEL] << 25) >> 25) < (s32)gUnitKindMaxFuel[kind * UNIT_KIND_STATS_SIZE] >> 1) {
+        if (kind != UNIT_KIND_INFANTRY && kind != UNIT_KIND_MECH)
+            return 1;
+    }
+    if (gUnitKindMaxAmmo[kind * UNIT_KIND_STATS_SIZE] >= 6U && ((u32)(M2C_FIELD(unit, volatile u16 *, MAP_UNIT_AMMO) << 21) >> 28) <= 3)
+        return 1;
+    return 0;
 }
 
 #pragma opt_strength_reduction off
@@ -283,7 +292,7 @@ return 0;
 void FindBestMoveTarget(void) {
     extern void **gCurrentMap;
     extern u8 *gAiUnitTypeTuning;
-    s32 func_ov000_0218d40c(void);
+    s32 AiUnitCanAct(void);
     M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
@@ -304,7 +313,7 @@ void FindBestMoveTarget(void) {
     void *map;
     s32 score, moveCost;
 
-    if (!func_ov000_0218d40c()) return;
+    if (!AiUnitCanAct()) return;
     if(!func_ov000_02196430(unitPos)){
         unitPos[0]=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,1);
         unitPos[1]=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,2);

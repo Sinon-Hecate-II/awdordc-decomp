@@ -2,10 +2,40 @@
 #include "common.h"
 typedef struct { u16 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1,b8:1,b9:1,b10:1,b11:1,b12:1,b13:1,b14:1,b15:1; } SetupFlags;
 typedef struct { u8 low:4; u8 high:4; } NibbleFlags;
+
+typedef struct BattleEffectEvent {
+    s16 frame;
+    u8 unit : 3;
+    u8 effect : 3;
+    u8 flag : 1;
+    u8 skip : 1;
+    u8 padding;
+} BattleEffectEvent;
+
+typedef struct BattleEffectUnitView {
+    u8 pad0[8];
+    void *units[8];
+    u8 pad28[3];
+    u8 remaining;
+} BattleEffectUnitView;
+
+typedef struct BattleEffectArmy {
+    u8 pad0[0x1c];
+    void *variants[1];
+} BattleEffectArmy;
+
+typedef struct BattleEffectSettings {
+    u8 pad0[4];
+    BattleEffectArmy *army;
+    u8 pad8[0xb];
+    u8 variant;
+    u8 pad14[4];
+} BattleEffectSettings;
 /* One side of the ov002 battle scene's loaded resources: six file handles.  The
  * two sides are 0x64-byte entries of the scene's resource table. */
 typedef struct BattleSideResources {
     void *handle[6]; /* +0x00 handles, allocated by the scene's resource setup */
+    u8 pad18[0x4c];
 } BattleSideResources;
 static inline u8 IsEntryReady(void *p) {
 s32 ready=1;
@@ -279,10 +309,114 @@ void func_ov002_021e7474(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0;
 }
 
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+#pragma opt_loop_invariants off
 void func_ov002_021e749c(void *arg0) {
-    (void)arg0;
-}
+    extern u8 gEffectVariants[];
+    extern M2C_UNK gUnitViews, gPlayerSettings, data_ov002_021f3018;
+    void func_ov002_021e994c(void *, s32, s32, s32, s32);
+    void func_ov002_021e97d8(void *, s32, s32, s32);
+    void func_ov002_021e42b0(void *);
+    void func_020afa64(s32);
+    void func_020af8c8(s32, s32);
+    BattleEffectEvent *event;
+    s32 side, i;
+    u8 *variants;
+    BattleEffectUnitView *view;
 
+    if (M2C_FIELD(arg0, u32 *, 0) == 1) {
+        variants = gEffectVariants;
+        view = (BattleEffectUnitView *)&gUnitViews;
+        side = 0;
+        do {
+            i = 0;
+            event = (BattleEffectEvent *)(variants + 0x36);
+            do {
+                s32 frame = event->frame;
+                if (frame == -1) break;
+                if (!event->skip) {
+                    func_ov002_021e994c(view->units[event->unit],
+                                       frame - 1, 1, (s8)event->effect, (s8)event->flag);
+                }
+                i++;
+                event++;
+            } while (i < 5);
+            side++;
+            variants += 0x68;
+            view++;
+        } while (side < 2);
+    }
+
+    if (M2C_FIELD(arg0, u32 *, 0) < (u32)-1) {
+        M2C_FIELD(arg0, u32 *, 0)++;
+    }
+    variants = gEffectVariants;
+    view = (BattleEffectUnitView *)&gUnitViews;
+    side = 0;
+    do {
+        i = 0;
+        event = (BattleEffectEvent *)(variants + 0x22);
+        do {
+            if (event->frame == -1) break;
+            if (event->frame == M2C_FIELD(arg0, u32 *, 0)) {
+                func_ov002_021e97d8(view->units[event->unit], 0, 0, 0);
+            }
+            i++;
+            event++;
+        } while (i < 5);
+
+        event = (BattleEffectEvent *)(variants + 0x36);
+        i = 0;
+        do {
+            if (event->frame == -1) break;
+            if (event->frame == M2C_FIELD(arg0, u32 *, 0)) {
+                BattleEffectSettings *settings = (BattleEffectSettings *)&gPlayerSettings;
+                s32 variantSide = side == 0;
+                s32 armySide = side == 0;
+                if (!settings[armySide].army->variants[(u32)settings[variantSide].variant]) {
+                    func_ov002_021e42b0(view);
+                }
+                if (!event->skip) {
+                    func_ov002_021e97d8(view->units[event->unit], 1,
+                                       (s8)event->effect, (s8)event->flag);
+                    if (((BattleSideResources *)&data_ov002_021f3018)[side == 0].handle[2]) {
+                        func_020afa64(side);
+                    }
+                }
+            }
+            i++;
+            event++;
+        } while (i < 5);
+
+        event = (BattleEffectEvent *)(variants + 0x4a);
+        i = 0;
+        do {
+            if (event->frame == -1) break;
+            if (event->frame == M2C_FIELD(arg0, u32 *, 0)) {
+                BattleEffectSettings *settings = (BattleEffectSettings *)&gPlayerSettings;
+                s32 variantSide = side == 0;
+                s32 armySide = side == 0;
+                if (settings[armySide].army->variants[(u32)settings[variantSide].variant]) {
+                    func_ov002_021e42b0(view);
+                }
+                func_ov002_021e97d8(view->units[event->unit], 2,
+                                   (s8)event->effect, (s8)event->flag);
+                if (event->flag) {
+                    func_020af8c8(side, --view->remaining);
+                }
+            }
+            i++;
+            event++;
+        } while (i < 5);
+        side++;
+        variants += 0x68;
+        view++;
+    } while (side < 2);
+}
+#pragma opt_loop_invariants reset
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 /* AreUnitViewsReady: 1 once the battle scene's unit views have finished loading —
    when gPlayerSettings+0x2C is set, unit view 0 must be ready, and when
    gPlayerSettings+0x14 is set, unit view 1 must be ready.  The caller waits on

@@ -23,7 +23,7 @@ s32 func_ov000_0217c9f4(Unit0217d428 *unit) {
 s32 GetUnitAttackClass(u32);
 s32 func_ov000_0217c4c8(void *);
 s32 GetUnitMoveRange(s32,u32);
-s32 func_ov000_0217c420(void *,void *);
+s32 UnitKindMasksOverlap(void *,void *);
 s32 IsUnitOnCurrentTeam(s32);
 extern u8 gUnitKindStats[],gUnitKindFlags[];
 s32 count=0,maxY,minY,maxX,minX,x,y,dx,dy; u32 dist;
@@ -60,7 +60,7 @@ map=*gCurrentMap;
 units=map+0x59a4;
 id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 record=units+id*14;
-if(func_ov000_0217c420(record,unit)){
+if(UnitKindMasksOverlap(record,unit)){
 count++;
 if(gUnitKindStats[((Unit0217d428 *)record)->kind*112+19]&16)count++;
 }
@@ -68,7 +68,7 @@ if(gUnitKindStats[((Unit0217d428 *)record)->kind*112+19]&16)count++;
 }
 }
 }
-if(func_ov000_0217c420(M2C_FIELD(*gCurrentMap,void**,0x52d0),unit)==1){
+if(UnitKindMasksOverlap(M2C_FIELD(*gCurrentMap,void**,0x52d0),unit)==1){
 count++;
 if(gUnitKindFlags[((Unit0217d428 *)M2C_FIELD(*gCurrentMap,void**,0x52d0))->kind*112]&16)count++;
 }

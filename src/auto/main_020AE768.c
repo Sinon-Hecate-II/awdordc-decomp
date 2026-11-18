@@ -1,6 +1,7 @@
 /* 26 functions from 0x020AE768 to 0x020AF760 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "gx.h"
 static inline u16 SpriteTileSize(s32 n) { return n << 12; }
 
 void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -31,14 +32,86 @@ s32 GetWallpaperFileSet(s32 arg0) {
     return (0x14 * arg0) + (s32) &gWallpaperFileSets;
 }
 
-void func_020ae7e0(void) {
-    M2C_UNK func_020ae7ec();
-    func_020ae7ec();
+void func_020ae7ec(void *sprite);
+void func_020ae7e0(void *sprite) {
+    func_020ae7ec(sprite);
 }
 
-s32 func_020ae7ec(void) { return 0; }
-
-#pragma opt_common_subs off
+#pragma scheduling off
+#pragma opt_lifetimes off
+void func_020ae7ec(void *sprite) {
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
+    extern void *g3DSpriteBankMain;
+    s32 Modulo(s32, s32);
+    u8 period = M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), u8 *, 0xC);
+    u8 main = gCur3DSpriteEngine == g3DSpriteEngineMain;
+    u8 layer;
+    s16 dx, dy;
+    if (main) {
+        if (period && !Modulo(M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_STATE), period)) {
+            DS3D_BANK(gCur3DSpriteEngine)->corner[M2C_FIELD(sprite, u8 *, WALLPAPER_MAIN_LAYER)] = M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_A);
+            M2C_FIELD((u8 *)DS3D_BANK(gCur3DSpriteEngine) + M2C_FIELD(sprite, u8 *, WALLPAPER_MAIN_LAYER) * 2, s16 *, 0x40) = M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_B);
+            M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_A) += M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), s8 *, 0xD);
+            if (M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_A) >= M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), u16 *, 6))
+                M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_A) = 0;
+            M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_B) += M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), s8 *, 0xE);
+            if (M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_B) >= M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), u16 *, 8))
+                M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_OFFSET_B) = 0;
+        }
+        layer = M2C_FIELD(sprite, u8 *, WALLPAPER_MAIN_LAYER);
+        {
+            void **engine = gCur3DSpriteEngine;
+            DS3DSpriteEngine *offsetEngine = DS3D_ENGINE(g3DSpriteEngineMain);
+            u16 x = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x38);
+            u16 y = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x40);
+            dx = x - offsetEngine->offsetX;
+            dy = y - offsetEngine->offsetY;
+        }
+        switch (layer) {
+        case 0:
+            if (!((u8)((u32)(((DS3DSpriteBank *)g3DSpriteBankMain)->flags << 28) >> 31)))
+                {u16 mask = 0x1ff; volatile u32 *reg = &REG_BG0OFS; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));}
+            break;
+        case 1: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04000014; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        case 2: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04000018; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        case 3: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x0400001C; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        }
+        M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_STATE)++;
+        if (M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_STATE) >= 1024)
+            M2C_FIELD(sprite, s16 *, WALLPAPER_MAIN_STATE) -= 1024;
+    } else {
+        if (period && !Modulo(M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_STATE), period)) {
+            DS3D_BANK(gCur3DSpriteEngine)->corner[M2C_FIELD(sprite, u8 *, WALLPAPER_SUB_LAYER)] = M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_A);
+            M2C_FIELD((u8 *)DS3D_BANK(gCur3DSpriteEngine) + M2C_FIELD(sprite, u8 *, WALLPAPER_SUB_LAYER) * 2, s16 *, 0x40) = M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_B);
+            M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_A) += M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), s8 *, 0xD);
+            if (M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_A) >= M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), u16 *, 6))
+                M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_A) = 0;
+            M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_B) += M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), s8 *, 0xE);
+            if (M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_B) >= M2C_FIELD(M2C_FIELD(sprite, WallpaperFileSet **, WALLPAPER_FILE_SET), u16 *, 8))
+                M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_OFFSET_B) = 0;
+        }
+        layer = M2C_FIELD(sprite, u8 *, WALLPAPER_SUB_LAYER);
+        {
+            void **engine = gCur3DSpriteEngine;
+            DS3DSpriteEngine *offsetEngine = DS3D_ENGINE(g3DSpriteEngineSub);
+            u16 x = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x38);
+            u16 y = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x40);
+            dx = x - offsetEngine->offsetX;
+            dy = y - offsetEngine->offsetY;
+        }
+        switch (layer) {
+        case 0: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04001010; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        case 1: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04001014; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        case 2: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04001018; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        case 3: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x0400101C; u32 yMask = mask; yMask <<= 16; *reg = (mask & (u32)dx) | (yMask & ((u32)dy << 16));} break;
+        }
+        M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_STATE)++;
+        if (M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_STATE) >= 1024)
+            M2C_FIELD(sprite, s16 *, WALLPAPER_SUB_STATE) -= 1024;
+    }
+}
+#pragma opt_lifetimes reset
+#pragma scheduling reset
 void LoadWallpaperGraphics(void *wallpaperSprite, s32 layerIndex, s32 paletteIndex) {
     M2C_UNK GetLanguage(void);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
@@ -260,90 +333,94 @@ void DeleteWallpaperSprites(void) {
     func_01ffa9f8(&gWallpaperSpriteClass);
 }
 
-M2C_UNK func_020af244(void *p) {
-    M2C_UNK Modulo(M2C_UNK);
+#pragma opt_common_subs off
+#pragma opt_propagation off
+void func_020af244(void *sprite) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-    extern M2C_UNK g3DSpriteBankMain;
-
-    s32 idx;
-    void *base;
-    void *dBase;
-    s16 *pp = (s16 *)p;
-    s16 v;
-    u16 w0, w1;
-    s32 dx, dy;
-    u32 c, value;
-    s32 t;
-
-    if (*(void **)gCur3DSpriteEngine == *(void **)g3DSpriteEngineMain) {
-        if (pp[0x1D] != 0) {
-            if (!Modulo(pp[0x21])) {
-                idx = ((u8 *)p)[0x34];
-                base = *(void **)gCur3DSpriteEngine;
-                ((s16 *)base)[idx + 0x1C] = pp[0x1B];
+    extern void *g3DSpriteBankMain;
+    s32 Modulo(s32, s32);
+    u8 main = gCur3DSpriteEngine == g3DSpriteEngineMain;
+    u8 layer;
+    s16 dx, dy;
+    if (main) {
+        {
+            s16 period = M2C_FIELD(sprite, s16 *, 0x3a);
+            if (period && !Modulo(M2C_FIELD(sprite, s16 *, 0x42), period)) {
+                M2C_FIELD((u8 *)DS3D_BANK(gCur3DSpriteEngine) + M2C_FIELD(sprite, u8 *, 0x34) * 2, s16 *, 0x38) = M2C_FIELD(sprite, s16 *, 0x36);
+                M2C_FIELD(sprite, s16 *, 0x36) += M2C_FIELD(sprite, s16 *, 0x3c);
+                if (M2C_FIELD(sprite, s16 *, 0x36) >= 256) M2C_FIELD(sprite, s16 *, 0x36) = 0;
             }
-            pp[0x1B] = (s16)(pp[0x1B] + pp[0x1E]);
-            if (pp[0x1B] >= 0x100) pp[0x1B] = 0;
         }
-        if (pp[0x1F] != 0) {
-            if (!Modulo(pp[0x21])) {
-                idx = ((u8 *)p)[0x34];
-                base = *(void **)gCur3DSpriteEngine;
-                ((s16 *)base)[idx + 0x20] = pp[0x1C];
+        {
+            s16 period = M2C_FIELD(sprite, s16 *, 0x3e);
+            if (period && !Modulo(M2C_FIELD(sprite, s16 *, 0x42), period)) {
+                M2C_FIELD((u8 *)DS3D_BANK(gCur3DSpriteEngine) + M2C_FIELD(sprite, u8 *, 0x34) * 2, s16 *, 0x40) = M2C_FIELD(sprite, s16 *, 0x38);
+                M2C_FIELD(sprite, s16 *, 0x38) += M2C_FIELD(sprite, s16 *, 0x40);
+                if (M2C_FIELD(sprite, s16 *, 0x38) >= 256) M2C_FIELD(sprite, s16 *, 0x38) = 0;
             }
-            pp[0x1C] = (s16)(pp[0x1C] + pp[0x20]);
-            if (pp[0x1C] >= 0x100) pp[0x1C] = 0;
         }
-        idx = ((u8 *)p)[0x34];
-        base = *(void **)gCur3DSpriteEngine;
-        dBase = *(void **)g3DSpriteEngineMain;
-        w0 = ((u16 *)base)[idx + 0x1C];
-        w1 = ((u16 *)base)[idx + 0x20];
-        dx = (s32)w0 - (s32)((s16 *)dBase)[0x1E];
-        dy = (s32)w1 - (s32)((s16 *)dBase)[0x1F];
-        c = (u32)g3DSpriteBankMain;
-        value = (c & (u32)dx) | ((c << 16) & (u32)(dy << 16));
-        if (idx <= 3) *(u32 *)(0x4000010 + idx * 4) = value;
-        pp[0x21] = (s16)(pp[0x21] + 1);
-        if (pp[0x21] >= 0x400) pp[0x21] = (s16)(pp[0x21] - 0x400);
+        layer = M2C_FIELD(sprite, u8 *, 0x34);
+        {
+            void **engine = gCur3DSpriteEngine;
+            DS3DSpriteEngine *offsetEngine = DS3D_ENGINE(g3DSpriteEngineMain);
+            u16 x = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x38);
+            u16 y = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x40);
+            dx = x - offsetEngine->offsetX;
+            dy = y - offsetEngine->offsetY;
+        }
+        switch (layer) {
+        case 0:
+            if (!((u8)((u32)(((DS3DSpriteBank *)g3DSpriteBankMain)->flags << 28) >> 31)))
+                {u16 mask = 0x1ff; volatile u32 *reg = &REG_BG0OFS; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));}
+            break;
+        case 1: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04000014; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        case 2: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04000018; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        case 3: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x0400001C; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        }
+        M2C_FIELD(sprite, s16 *, 0x42)++;
+        if (M2C_FIELD(sprite, s16 *, 0x42) >= 1024)
+            M2C_FIELD(sprite, s16 *, 0x42) -= 1024;
     } else {
-        if (pp[0x25] != 0) {
-            if (!Modulo(pp[0x29])) {
-                idx = ((u8 *)p)[0x44];
-                base = *(void **)gCur3DSpriteEngine;
-                ((s16 *)base)[idx + 0x1C] = pp[0x23];
+        {
+            s16 period = M2C_FIELD(sprite, s16 *, 0x4a);
+            if (period && !Modulo(M2C_FIELD(sprite, s16 *, 0x52), period)) {
+                M2C_FIELD((u8 *)DS3D_BANK(gCur3DSpriteEngine) + M2C_FIELD(sprite, u8 *, 0x44) * 2, s16 *, 0x38) = M2C_FIELD(sprite, s16 *, 0x46);
+                M2C_FIELD(sprite, s16 *, 0x46) += M2C_FIELD(sprite, s16 *, 0x4c);
+                if (M2C_FIELD(sprite, s16 *, 0x46) >= 256) M2C_FIELD(sprite, s16 *, 0x46) = 0;
             }
-            pp[0x23] = (s16)(pp[0x23] + pp[0x26]);
-            if (pp[0x23] >= 0x100) pp[0x23] = 0;
         }
-        if (pp[0x27] != 0) {
-            if (!Modulo(pp[0x29])) {
-                idx = ((u8 *)p)[0x44];
-                base = *(void **)gCur3DSpriteEngine;
-                ((s16 *)base)[idx + 0x20] = pp[0x24];
+        {
+            s16 period = M2C_FIELD(sprite, s16 *, 0x4e);
+            if (period && !Modulo(M2C_FIELD(sprite, s16 *, 0x52), period)) {
+                M2C_FIELD((u8 *)DS3D_BANK(gCur3DSpriteEngine) + M2C_FIELD(sprite, u8 *, 0x44) * 2, s16 *, 0x40) = M2C_FIELD(sprite, s16 *, 0x48);
+                M2C_FIELD(sprite, s16 *, 0x48) += M2C_FIELD(sprite, s16 *, 0x50);
+                if (M2C_FIELD(sprite, s16 *, 0x48) >= 256) M2C_FIELD(sprite, s16 *, 0x48) = 0;
             }
-            pp[0x24] = (s16)(pp[0x24] + pp[0x28]);
-            if (pp[0x24] >= 0x100) pp[0x24] = 0;
         }
-        idx = ((u8 *)p)[0x44];
-        base = *(void **)gCur3DSpriteEngine;
-        dBase = *(void **)g3DSpriteEngineMain;
-        w0 = ((u16 *)base)[idx + 0x1C];
-        w1 = ((u16 *)base)[idx + 0x20];
-        dx = (s32)w0 - (s32)((s16 *)dBase)[0x1E];
-        dy = (s32)w1 - (s32)((s16 *)dBase)[0x1F];
-        c = (u32)g3DSpriteEngineSub;
-        value = (c & (u32)dx) | ((c << 16) & (u32)(dy << 16));
-        if (idx <= 3) *(u32 *)(0x4001010 + idx * 4) = value;
-        pp[0x29] = (s16)(pp[0x29] + 1);
-        if (pp[0x29] >= 0x400) pp[0x29] = (s16)(pp[0x29] - 0x400);
+        layer = M2C_FIELD(sprite, u8 *, 0x44);
+        {
+            void **engine = gCur3DSpriteEngine;
+            DS3DSpriteEngine *offsetEngine = DS3D_ENGINE(g3DSpriteEngineSub);
+            u16 x = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x38);
+            u16 y = M2C_FIELD((u8 *)*engine + layer * 2, u16 *, 0x40);
+            dx = x - offsetEngine->offsetX;
+            dy = y - offsetEngine->offsetY;
+        }
+        switch (layer) {
+        case 0: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04001010; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        case 1: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04001014; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        case 2: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x04001018; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        case 3: {u16 mask = 0x1ff; volatile u32 *reg = &*(volatile u32 *)0x0400101C; *reg = (mask & (u32)dx) | (((u32)mask << 16) & ((u32)dy << 16));} break;
+        }
+        M2C_FIELD(sprite, s16 *, 0x52)++;
+        if (M2C_FIELD(sprite, s16 *, 0x52) >= 1024)
+            M2C_FIELD(sprite, s16 *, 0x52) -= 1024;
     }
-    return 0;
 }
-
-void func_020af620(void) {
-    M2C_UNK func_020af244();
-    func_020af244();
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
+void func_020af620(void *sprite) {
+    func_020af244(sprite);
 }
 
 /* Creates two 3D sprite objects (primary then secondary engine) carrying a pair of 4-value payloads. */

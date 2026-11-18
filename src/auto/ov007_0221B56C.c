@@ -168,24 +168,29 @@ if(unitKind==((u32)(unit[MAP_UNIT_KIND]<<26)>>26)&&((u32)(unit[MAP_UNIT_AI_STATE
 return 1;
 }
 
-s32 func_ov007_0221bc18(s32 a,s32 b,s32 c,s32 d,s32 e) {
+/* Map editor unit brush: place a unit of `unitKind` owned by `player` with AI
+ * state `unitState` on cell (x, y).  MapEditor_CanPlaceUnit's verdict is passed
+ * through (0 refused, 2 the same unit already stands there); otherwise the unit
+ * on the cell is destroyed and the new record created, its AI state stamped in.
+ * Returns 0 when no free unit record was left. */
+s32 MapEditor_PlaceUnit(s32 x,s32 y,s32 unitKind,s32 player,s32 unitState) {
  extern s32 *gCurrentMap;
  s32 MapEditor_CanPlaceUnit(s32,s32,s32,s32,s32);
  M2C_UNK DestroyUnit(s32);
  void *CreateMapUnit(s16,s16,s16,s32);
- s32 p,r; u8 id; Unk_0221BC18 *entry;
- r=MapEditor_CanPlaceUnit(a,b,c,d,e);
+ s32 map,r; u8 id; BattleMapUnitHead *unit;
+ r=MapEditor_CanPlaceUnit(x,y,unitKind,player,unitState);
  if(r!=1)return r;
- p=*gCurrentMap;
- id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
+ map=*gCurrentMap;
+ id=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_VISIBLE_UNIT);
  if(id)DestroyUnit(id);
- entry=CreateMapUnit((s16)a,(s16)b,(s16)c,d);
- if(!entry)return 0;
- entry->low=(u8)e;
+ unit=CreateMapUnit((s16)x,(s16)y,(s16)unitKind,player);
+ if(!unit)return 0;
+ unit->aiState=(u8)unitState;
  return 1;
 }
 
-s32 func_ov007_0221bcc0(s32 a,s32 b) {
+s32 MapEditor_DestroyUnitAt(s32 a,s32 b) {
  extern s32 *gCurrentMap; M2C_UNK DestroyUnit(s32);
  s32 p=*gCurrentMap;
  u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);

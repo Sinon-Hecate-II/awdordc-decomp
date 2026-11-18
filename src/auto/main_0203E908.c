@@ -1,32 +1,36 @@
 /* 10 functions from 0x0203E908 to 0x0203F45C (main), found by ds-decomp. */
 #include "common.h"
+#include "qr2.h"
 void *GetConnection(void);
 typedef struct PacketTag5 { u8 a, b, c, d, e; } PacketTag5;
 typedef struct SendPacket { u8 tag[4]; s32 kind; s8 command; u8 length; u16 id; s32 value; s32 state; u32 payload[32]; } SendPacket;
 typedef M2C_UNK (*fmt_fn_t)(M2C_UNK, s32, M2C_UNK, M2C_UNK, s32, M2C_UNK);
 
 
-void BeginMatchmakingSession(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
+/* Start a new match-making session: reset the connection, store its mode,
+ * capacity, event callback and event data, clear the connect-attempt state, then
+ * register the five DWC match-making query key names the session reports. */
+void BeginMatchmakingSession(u8 mode, u8 capacity, s32 eventCallback, s32 eventData) {
     void ResetConnection(s32);
     void *GetConnection(void);
-    void func_0205fdbc(s32, s8 *);
+    void Qr2_SetKeyName(s32, s8 *);
     extern M2C_UNK sDwcKeyPid;
     extern M2C_UNK sDwcKeyMType;
     extern M2C_UNK sDwcKeyMResv;
     extern M2C_UNK sDwcKeyMVer;
     extern M2C_UNK sDwcKeyEval;
     ResetConnection(0);
-    M2C_FIELD(GetConnection(), u8 *, 0x15) = arg0;
-    M2C_FIELD(GetConnection(), u8 *, 0x16) = arg1;
-    M2C_FIELD(GetConnection(), s32 *, 0x464) = arg2;
-    M2C_FIELD(GetConnection(), s32 *, 0x468) = arg3;
-    M2C_FIELD(GetConnection(), u8 *, 0x17D) = 0;
-    M2C_FIELD(GetConnection(), u8 *, 0x2D0) = 0;
-    func_0205fdbc(0x32, (s8 *)&sDwcKeyPid);
-    func_0205fdbc(0x33, (s8 *)&sDwcKeyMType);
-    func_0205fdbc(0x34, (s8 *)&sDwcKeyMResv);
-    func_0205fdbc(0x35, (s8 *)&sDwcKeyMVer);
-    func_0205fdbc(0x36, (s8 *)&sDwcKeyEval);
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) = mode;
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_CAPACITY) = capacity;
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_EVENT_CALLBACK) = eventCallback;
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_EVENT_DATA) = eventData;
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_CONNECT_ATTEMPTS) = 0;
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PEER_SLOTS) = 0;
+    Qr2_SetKeyName(QR2_GAMEKEY_QR2_PARAM, (s8 *)&sDwcKeyPid);
+    Qr2_SetKeyName(QR2_GAMEKEY_MODE, (s8 *)&sDwcKeyMType);
+    Qr2_SetKeyName(QR2_GAMEKEY_MATCH_ADDR, (s8 *)&sDwcKeyMResv);
+    Qr2_SetKeyName(QR2_GAMEKEY_CONST_3, (s8 *)&sDwcKeyMVer);
+    Qr2_SetKeyName(QR2_GAMEKEY_CONST_1, (s8 *)&sDwcKeyEval);
 }
 
 void TeardownConnectionSession(void) {

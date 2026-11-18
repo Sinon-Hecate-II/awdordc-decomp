@@ -91,7 +91,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 GetMapEditorUnitKind();
     s32 GetMapEditorUnitOwner();
     s32 GetMapEditorUnitFlags();
-    s32 func_ov007_0221bc18(s32, s32, s32, s32, s32);
+    s32 MapEditor_PlaceUnit(s32, s32, s32, s32, s32);
     M2C_UNK func_020cfe2c();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
@@ -102,7 +102,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_r5;
     temp_r5 = GetMapEditorUnitKind();
     temp_r4 = GetMapEditorUnitOwner();
-    temp_r0 = func_ov007_0221bc18(arg1, arg2, temp_r5, temp_r4, GetMapEditorUnitFlags());
+    temp_r0 = MapEditor_PlaceUnit(arg1, arg2, temp_r5, temp_r4, GetMapEditorUnitFlags());
     switch (temp_r0) {
     case 1:
         func_020cfe2c();
@@ -149,7 +149,7 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_ov007_0221bcc0(s32, s32);
+    s32 MapEditor_DestroyUnitAt(s32, s32);
     M2C_UNK func_020cfe2c();
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
@@ -157,7 +157,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov007_0221f680;
-    if (func_ov007_0221bcc0(arg1, arg2) != 0) {
+    if (MapEditor_DestroyUnitAt(arg1, arg2) != 0) {
         func_020cfe2c();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);

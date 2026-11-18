@@ -113,7 +113,7 @@ if(gUnitKindFlags[offset]&32) {if(func_020d04d4(value,19))return 1;}
 return 0;
 }
 
-u8 func_020cf9f0(s32 arg0,s32 arg1) {
+u8 IsPlainOrShoalTerrain(s32 arg0,s32 arg1) {
  u8 func_020d04d4(s32,s32);
  extern s32 *gCurrentMap;
  void *p=(void *)*gCurrentMap;

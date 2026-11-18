@@ -2,6 +2,16 @@
 #include "common.h"
 #include "ov009_link.h"
 
+typedef struct LinkPlayerRemoval {
+    s32 status;
+    s32 disconnected;
+    s32 kicked;
+    u8 player;
+    u8 padding[3];
+} LinkPlayerRemoval;
+
+extern const LinkPlayerRemoval data_ov009_022262f4, data_ov009_02226304;
+
 static inline u32 ov009DisableInterrupts(void) {
     u32 previous = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -45,7 +55,7 @@ void func_ov009_022222d0(s32 arg0) {
     s32 GetLocalPlayerName();
     s32 GetLocalPlayerNameLength();
     s32 CopyLocalPlayerRecord(void *);
-    M2C_UNK func_ov009_02224d9c(M2C_UNK, void *, M2C_UNK, u16);
+    M2C_UNK func_ov009_02224d9c(M2C_UNK, void *, M2C_UNK, s32);
     u8 spC[0x1C];
     u8 sp0[0xC];
     s32 temp_r4;
@@ -244,11 +254,11 @@ void func_ov009_0222281c(void *arg0) {
 }
 
 s32 AnnounceNextLinkPlayer(u16 arg0) {
-    s32 func_02011d58();
+    s32 WFC_GetPlayerMask();
     void SignalLinkResult();
     void func_ov009_02222a00(M2C_UNK, M2C_UNK);
     void HandleLinkAnnounceEvent(void *);
-    s32 mask=func_02011d58();
+    s32 mask=WFC_GetPlayerMask();
     if(mask==0x8000) {
         SignalLinkError(3);
         SetLinkPhase(8);
@@ -386,10 +396,80 @@ s32 func_ov009_02222b3c(void) {
     }
 }
 
-void func_ov009_02222b8c(void *arg0) {
-    (void)arg0;
+#pragma opt_common_subs off
+#pragma opt_propagation off
+void func_ov009_02222b8c(void *event) {
+    s32 StartLinkSession(void);
+    void SignalLinkEvent(s32);
+    void SignalLinkError();
+    s32 func_0201280c(s32, s32);
+    M2C_UNK func_ov009_02224d9c(M2C_UNK, void *, M2C_UNK, s32);
+    void ClearPlayerActive(s32, s32, s32, s32, s32);
+    void func_ov009_02223fbc(void);
+    extern M2C_UNK gLinkState;
+    extern Ov009CallbackFn gLinkSession[];
+    u16 status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+    s32 one;
+    if (status != 0) {
+        SignalLinkEvent(status);
+        SetLinkPhase(LINK_PHASE_ERROR);
+        return;
+    }
+    switch (M2C_FIELD(event, u16 *, LINK_EVENT_COMMAND)) {
+    case 7:
+        if (M2C_FIELD(&gLinkState, s32 (**)(void *), 0x58) &&
+            !M2C_FIELD(&gLinkState, s32 (**)(void *), 0x58)(event) &&
+            func_0201280c(0, M2C_FIELD(event, u16 *, 0x10)) != LINK_TASK_QUEUED) {
+            SignalLinkError();
+            SetLinkPhase(LINK_PHASE_ERROR);
+            return;
+        }
+        one = 1;
+        M2C_FIELD(&gLinkSession, u16 *, 0) |= one << M2C_FIELD(event, u16 *, 0x10);
+        func_ov009_02224d9c(7, gLinkSession, 2, 0x10000 - one);
+        M2C_FIELD(&gLinkState, u8 *, 0x15b)++;
+        func_ov009_02223fbc();
+        return;
+    case 9:
+        {
+            LinkPlayerRemoval notice;
+            one = 1;
+            M2C_FIELD(&gLinkSession, u16 *, 0) &= (one - 2) ^ (one << M2C_FIELD(event, u16 *, 0x10));
+            func_ov009_02224d9c(7, gLinkSession, 2, 0x10000 - one);
+            M2C_FIELD(&gLinkState, u8 *, 0x15b)--;
+            func_ov009_02223fbc();
+            ClearPlayerActive(M2C_FIELD(event, u16 *, LINK_EVENT_STATE), 1, 0, (u8)M2C_FIELD(event, u16 *, 0x10), 0);
+            notice = data_ov009_022262f4;
+            notice.status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+            notice.player = M2C_FIELD(event, u16 *, 0x10);
+            func_ov009_02224d9c(4, &notice, sizeof(notice), 0xffff);
+            return;
+        }
+    case 0x1a:
+        {
+            LinkPlayerRemoval notice;
+            one = 1;
+            M2C_FIELD(&gLinkSession, u16 *, 0) &= (one - 2) ^ (one << M2C_FIELD(event, u16 *, 0x10));
+            func_ov009_02224d9c(7, gLinkSession, 2, 0x10000 - one);
+            M2C_FIELD(&gLinkState, u8 *, 0x15b)--;
+            func_ov009_02223fbc();
+            ClearPlayerActive(M2C_FIELD(event, u16 *, LINK_EVENT_STATE), 0, 1, (u8)M2C_FIELD(event, u16 *, 0x10), 0);
+            notice = data_ov009_02226304;
+            notice.status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+            notice.player = M2C_FIELD(event, u16 *, 0x10);
+            func_ov009_02224d9c(4, &notice, sizeof(notice), 0xffff);
+            return;
+        }
+    case 0:
+        if (!StartLinkSession()) SetLinkPhase(LINK_PHASE_ERROR);
+        return;
+    case 2:
+    default:
+        return;
+    }
 }
-
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
 /* Starts the single-card link session: does nothing while a link is already
  * up (phases 4/5), otherwise registers the event handler on tasks 4 and 12,
  * enters phase 4 and starts the connect task; a failure signals a link error. */
@@ -432,10 +512,10 @@ void HandleLinkConnectTaskEvent(void *arg0) {
 }
 
 s32 func_ov009_02222f84(void) {
-s32 func_02011d58(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
+s32 WFC_GetPlayerMask(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
 extern M2C_UNK gLinkState; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
 s32 bits; s32 result;
-bits=func_02011d58();
+bits=WFC_GetPlayerMask();
 if(bits==0x8000) {SignalLinkError(3);return 0;}
 if(bits==0) {SignalLinkResult(0x17);return 0;}
 if(M2C_FIELD(&gLinkState,u16 *,6)==0) {

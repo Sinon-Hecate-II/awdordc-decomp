@@ -435,64 +435,56 @@ void func_ov002_021e85e8(void *p) {
 s32 func_ov002_021e86f8(s32 arg0,s32 arg1) { s32 result=20; s32 i=0; do { if(i!=arg1) { if((u32)M2C_FIELD(arg0+i*8,u16 *,6)>(u32)M2C_FIELD(arg0+arg1*8,u16 *,6)) result+=20; } i++; }while(i<5); return result; }
 #pragma opt_loop_invariants reset
 #pragma opt_strength_reduction reset
-void func_ov002_021e8738(void *p) {
+void func_ov002_021e8738(void *view) {
+#pragma opt_common_subs off
     M2C_UNK MemAlloc(s32);
-    void func_ov002_021e8d0c(void *, s8, s8);
+    void func_ov002_021e8d0c(void *, u8, u8);
     void func_ov002_021e997c(void *);
-    s32 func_ov002_021e86f8(s32, s32);
-    void func_ov002_021e8ff0(void *, s16, s16, s16);
-    void func_ov002_021e9000(void *, s16);
+    void func_ov002_021e8ff0(void *, s32, s32, s32);
+    void func_ov002_021e9000(void *, u16);
     void ReplaceSlotSound(s32, s32);
-    extern u8 gEffectVariants[];
-    extern u8 data_ov002_021ea704[];
-    extern u8 data_ov002_021f2f1c[];
+    extern u8 gEffectVariants[], data_ov002_021ea704[], data_ov002_021f2f1c[];
     extern M2C_UNK gPlayerSettings;
-    u8 *tableBase;
-    void *alloc;
-    s32 owner;
-    s32 flag;
-    s32 idx;
+    u8 *baseClass = data_ov002_021ea704;
+    u8 *effects = gEffectVariants;
+    void *unit;
+    u8 *positions;
+    s16 x, y, z;
+    u16 order;
+    s32 i = 0;
 
-    flag = M2C_FIELD(p, u8 *, 0x2A);
-    owner = M2C_FIELD(p, u8 *, 0x27);
-    idx = 0;
-loop:
-    if (flag == 0) {
-        if (M2C_FIELD(gEffectVariants + owner * 0x68, u8 *, idx * 2 + 8) == 0) goto tail2;
-    }
-    alloc = MemAlloc(0x90);
-    if (alloc != 0) {
-        M2C_FIELD(alloc, void **, 0x00) = (void *)data_ov002_021ea704;
-        M2C_FIELD(alloc, s32 *, 0x08) = 0;
-        M2C_FIELD(alloc, s32 *, 0x0C) = 0;
-        M2C_FIELD(alloc, void **, 0x00) = (void *)data_ov002_021f2f1c;
-        M2C_FIELD(alloc, s32 *, 0x54) = 0;
-        M2C_FIELD(alloc, s32 *, 0x58) = 0;
-        M2C_FIELD(alloc, s32 *, 0x5C) = 0;
-        M2C_FIELD(alloc, s32 *, 0x60) = 0;
-        M2C_FIELD(alloc, s32 *, 0x64) = 0;
-        M2C_FIELD(alloc, s32 *, 0x68) = 0;
-        M2C_FIELD(p, void **, 0x08 + idx * 4) = alloc;
-        func_ov002_021e8d0c(alloc, (s8)owner, (s8)idx);
-        func_ov002_021e997c(alloc);
-        tableBase = M2C_FIELD(M2C_FIELD((void *)((u8 *)&gPlayerSettings + owner * 0x18), void **, 0x04), void **, 0x28);
-        func_ov002_021e8ff0(M2C_FIELD(p, void **, 0x08 + idx * 4),
-            (s16)(M2C_FIELD(tableBase, s16 *, idx * 8 + 0) - 0x80),
-            M2C_FIELD(tableBase, s16 *, idx * 8 + 2),
-            (s16)(M2C_FIELD(tableBase, s16 *, idx * 8 + 4) + (flag != 0 ? 0x14 : func_ov002_021e86f8((s32)tableBase, idx))));
-        func_ov002_021e9000(M2C_FIELD(p, void **, 0x08 + idx * 4), M2C_FIELD(tableBase, u16 *, idx * 8 + 6));
-    }
-    if (flag != 0) goto tail;
-    idx++;
-    if (idx < 5) goto loop;
-tail:
-    ReplaceSlotSound(owner, M2C_FIELD(p, u8 *, 0x2B));
-    return;
-tail2:
-    if (flag != 0) goto tail;
-    idx++;
-    if (idx < 5) goto loop;
-    goto tail;
+    do {
+        if (M2C_FIELD(view, u8 *, 0x2a) || M2C_FIELD(effects + M2C_FIELD(view, u8 *, 0x27) * 0x68 + i * 2, u8 *, 8)) {
+            unit = MemAlloc(0x90);
+            if (unit != 0) {
+                M2C_FIELD(unit, void **, 0) = baseClass;
+                M2C_FIELD(unit, s32 *, 8) = 0;
+                M2C_FIELD(unit, s32 *, 0xc) = 0;
+                M2C_FIELD(unit, void **, 0) = data_ov002_021f2f1c;
+                M2C_FIELD(unit, s32 *, 0x54) = 0;
+                M2C_FIELD(unit, s32 *, 0x58) = 0;
+                M2C_FIELD(unit, s32 *, 0x5c) = 0;
+                M2C_FIELD(unit, s32 *, 0x60) = 0;
+                M2C_FIELD(unit, s32 *, 0x64) = 0;
+                M2C_FIELD(unit, s32 *, 0x68) = 0;
+            }
+            M2C_FIELD((u8 *)view + i * 4, void **, 8) = unit;
+            func_ov002_021e8d0c(unit, M2C_FIELD(view, u8 *, 0x27), (u8)i);
+            func_ov002_021e997c(M2C_FIELD((u8 *)view + i * 4, void **, 8));
+            positions = M2C_FIELD(M2C_FIELD((u8 *)&gPlayerSettings + M2C_FIELD(view, u8 *, 0x27) * 0x18, void **, 4), u8 **, 0x28);
+            x = M2C_FIELD(positions + i * 8, s16 *, 0) - 128;
+            y = M2C_FIELD(positions + i * 8, s16 *, 2);
+            z = M2C_FIELD(positions + i * 8, s16 *, 4);
+            order = M2C_FIELD(positions + i * 8, u16 *, 6);
+            if (M2C_FIELD(view, u8 *, 0x2a)) z += 20;
+            else z += func_ov002_021e86f8((s32)positions, (u8)i);
+            func_ov002_021e8ff0(M2C_FIELD((u8 *)view + i * 4, void **, 8), x, y, z);
+            func_ov002_021e9000(M2C_FIELD((u8 *)view + i * 4, void **, 8), order);
+            if (M2C_FIELD(view, u8 *, 0x2a)) break;
+        }
+        i++;
+    } while (i < 5);
+    ReplaceSlotSound(M2C_FIELD(view, u8 *, 0x27), M2C_FIELD(view, u8 *, 0x2b));
 }
 
 void func_ov002_021e8898(void *arg0, s16 arg1) {

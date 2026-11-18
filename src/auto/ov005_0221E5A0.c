@@ -18,12 +18,95 @@ extern u8 data_ov005_02220f1c[];
 extern u8 data_ov005_02220e5c[];
 extern u8 data_ov005_02220eec[];
 
-void func_ov005_0221e5a0(M2C_UNK arg0) {
-    (void)arg0;
-    return;
-}
-
 #pragma opt_strength_reduction off
+#pragma opt_loop_invariants off
+#pragma opt_propagation off
+#pragma opt_lifetimes off
+void func_ov005_0221e5a0(M2C_UNK parent) {
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    s32 GetLocalizedFileName(M2C_UNK *);
+    s32 func_020cfb94(void);
+    extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
+    extern M2C_UNK data_ov005_02220c88[], data_ov005_02220f68[], data_ov005_02220a3c[];
+    extern M2C_UNK data_ov005_02220f2c[], data_ov005_02220e7c[], data_ov005_02220a84[];
+    extern M2C_UNK data_ov005_02220e9c[], data_ov005_02220efc[], data_ov005_02220a54[], data_ov005_02220a60[];
+    extern u8 gCoState[], gSpriteAnimConfig[];
+    void *sprite;
+    void **saved;
+    u16 *volatile bank;
+    s32 i;
+    u32 longest;
+    s32 slot;
+    void **engine;
+
+    sprite = CreateSpriteObject(data_ov005_02220c88, parent);
+    if (!sprite) return;
+    M2C_FIELD(sprite, void **, 0) = data_ov005_02220f68;
+    SetFileDirectory(data_ov005_02220a3c);
+    saved = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    SetLayerSize(1, 2);
+    SetLayerSize(0, 2);
+    Clear3DSpriteLayer(1);
+    Clear3DSpriteLayer(0);
+    OpenNarcArchive(GetLocalizedFileName(data_ov005_02220f2c));
+    LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e7c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
+    if (IsBattleDraw()) {
+        LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220a84), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+        Clear3DSpriteLayer(1);
+    } else {
+        LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e9c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+        if (DidPlayerWin()) {
+            LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220efc), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        } else {
+            Clear3DSpriteLayer(1);
+        }
+    }
+    CloseNarcArchive();
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x800, 0x2000);
+    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x800, 0x2000);
+    DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER2;
+    DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER1;
+    DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER0;
+    bank = *(u16 **)gCur3DSpriteEngine;
+    *bank = *bank & ~0x20;
+    func_020a9a30(1, 2, 0, (u8 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamBuffer + 0x2c0);
+    LoadDecompressedFileTo(data_ov005_02220a54, DS3D_ENGINE(gCur3DSpriteEngine)->textureAddr + 0x3b00);
+    LoadFileToSpriteBuffer(data_ov005_02220a60, 0x2e0, 0x20);
+    engine = gCur3DSpriteEngine;
+    func_020a9a30(4, 0, 0, DS3D_ENGINE(engine)->textureAddr + 0x4400);
+    engine = gCur3DSpriteEngine;
+    func_020a9a30(5, 2, 0, (u8 *)DS3D_ENGINE(engine)->oamBuffer + 0x300);
+    i = 0;
+    if (func_020cfb94() > 0) {
+        s32 tile = 0x270;
+        u8 *co = gCoState;
+        do {
+            func_02098b94(M2C_FIELD(co, u16 *, 0x18), 0, tile << 5, (u16)i);
+            i++;
+            tile += 0x18;
+            co += 0xc;
+        } while (i < func_020cfb94());
+    }
+    gCur3DSpriteEngine = saved;
+    slot = 0;
+    M2C_FIELD(sprite, s32 *, 0x34) = slot;
+    M2C_FIELD(sprite, s32 *, 0x44) = slot;
+    M2C_FIELD(sprite, s16 *, 0x38) = slot - 160;
+    goto checkCount;
+    nextSlot:
+    M2C_FIELD((u8 *)sprite + slot * 2, s16 *, 0x3a) = 160;
+    slot++;
+    checkCount:
+    longest = gSpriteAnimConfig[13];
+    if (gSpriteAnimConfig[12] > longest) longest = gSpriteAnimConfig[12];
+    if ((s32)longest <= gSpriteAnimConfig[14]) longest = gSpriteAnimConfig[14];
+    if (slot < (s32)longest) goto nextSlot;
+}
+#pragma opt_loop_invariants reset
+#pragma opt_strength_reduction reset
+#pragma opt_lifetimes reset
+#pragma opt_propagation reset
 void func_ov005_0221e88c(void *arg0) {
 void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
 void *MemAlloc(s32);

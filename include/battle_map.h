@@ -203,6 +203,7 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 
 /* Terrain kinds the map code names directly; the tileset's MAP_TILE_TERRAIN
  * table maps each tile id to one of these packed values. */
+#define MAP_TERRAIN_SHOAL      9    /* shoal (beach) ground: a sea unit can enter it and a Rig builds a temporary port on it */
 #define MAP_TERRAIN_PLAIN      1    /* plain ground */
 #define MAP_TERRAIN_WASTELAND  8    /* barren ground a destroyed owned property leaves */
 #define MAP_TERRAIN_PROPERTY_FIRST 0x0f /* first property terrain kind: headquarters */

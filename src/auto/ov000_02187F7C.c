@@ -7,11 +7,73 @@ u8 func_ov000_021889ac(void);
 u8 func_ov000_02188850(void);
 
 
+#pragma opt_strength_reduction off
 void func_ov000_02187f7c(void) {
     extern void **gCurrentMap;
-    (void)gCurrentMap;
-}
+    extern void *gAiCommandState;
+    extern s32 (*data_ov000_021df64c)(void);
+    extern s32 (*data_ov000_021df648)(void);
+    s32 GetAiUnitSearchRange(void *);
+    s32 func_ov000_02187eac(s16 *);
+    u8 func_ov000_021a9084(s32);
+    void SelectMapLayer(void *);
+    void FillMapCellLayer(void *, s32);
+    u8 *map = *gCurrentMap;
+    BattleMapUnitHead *cursor = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    BattleMapUnitHead *table = (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS);
+    s32 offset = (s16)cursor->firstCarried * (s16)sizeof(BattleMapUnitHead);
+    s32 range;
+    s16 tile[2];
 
+    if (!((BattleMapUnitHead *)((u8 *)table + offset))->kind) return;
+    range = GetAiUnitSearchRange((u8 *)table + offset);
+    cursor = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    FloodFillUnitRange(cursor->x, cursor->y, cursor->kind, MAP_GRID_NO_UNIT_MAX, 0);
+    FillMapCellLayer((u8 *)*gCurrentMap + 0x3250, 0);
+nextTile:
+    if (!func_ov000_02187eac(tile)) return;
+    {
+        s32 x, y;
+        SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_SCORE);
+        FloodFillUnitRange(tile[0], tile[1], (u32)(M2C_FIELD((u8 *)table, u8 *, offset) << 26) >> 26, range, 0);
+        if (data_ov000_021df64c() == 1) {
+            s32 score = data_ov000_021df648();
+            map = *gCurrentMap;
+            for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
+                for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
+                    u8 *cell;
+                    if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 &&
+                        func_ov000_021a9084(M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
+                        map = *gCurrentMap;
+                        cell = (map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)) + 0x3000;
+                        if (M2C_FIELD(cell, u8 *, 0x250) < score) {
+                            M2C_FIELD(cell, s8 *, 0x250) = score;
+                            M2C_FIELD(gAiCommandState, u16 *, 8) |= 8;
+                        }
+                        map = *gCurrentMap;
+                        M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), s8 *, MAP_CELL_ORDER) = -1;
+                    }
+                    map = *gCurrentMap;
+                }
+            }
+        } else {
+            map = *gCurrentMap;
+            for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
+                for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
+                    if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 &&
+                        func_ov000_021a9084(M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
+                        map = *gCurrentMap;
+                        M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), s8 *, MAP_CELL_ORDER) = -1;
+                    }
+                    map = *gCurrentMap;
+                }
+            }
+        }
+        SelectMapLayer(map + MAP_CELL_ORDER);
+        goto nextTile;
+    }
+}
+#pragma opt_strength_reduction reset
 s32 func_ov000_021882c4(void) {
     s32 CountUnusedCapturableProperties();
     s32 flag, count, current;

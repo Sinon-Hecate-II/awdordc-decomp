@@ -76,7 +76,7 @@ messages[i]=messages[i-1]+M2C_FIELD(batch,u16 *,6);
 return 0;
 }
 
-u16 func_02011d58(void) {
+u16 WFC_GetPlayerMask(void) {
     s32 WFC_CheckReady();
     if (WFC_CheckReady() != 0) {
         return 0x8000U;
@@ -84,7 +84,7 @@ u16 func_02011d58(void) {
     return *(u16 *)0x027FFCFA;
 }
 
-u16 func_02011d78(void){void *WFC_GetInfoBlock();s32 WFC_CheckReady();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;u16 n;if(WFC_CheckReady())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
+u16 WFC_GetLinkStatusValue(void){void *WFC_GetInfoBlock();s32 WFC_CheckReady();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;u16 n;if(WFC_CheckReady())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
 
 u16 func_02011e08(void){void GetMacAddress(u8 *);u8 buf[6];u16 sum;s32 i;u8 *p;u16 v;GetMacAddress(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*7;return (s32)v%20+200;}
 

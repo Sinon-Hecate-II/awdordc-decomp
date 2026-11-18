@@ -368,7 +368,73 @@ void func_020bb608(s32 arg0) {
     }
 }
 
+extern u8 gUnitKindMaxAmmo[], gUnitKindMaxFuel[];
+M2C_UNK AddRecordValue(s32, s32);
+s32 GetUnitBuildCost(s32, s32);
+void func_020d2bc0(s32, s32);
+s32 func_020d1a1c(s32);
+void func_020a64bc(void *, s32);
+s32 IsUnitSelected(BattleMapUnitHead *);
+void func_020a3224(BattleMapUnitHead *, BattleMapUnitHead *);
+void func_020d31e4(s32, s32);
+s32 Divide(s32, s32);
 void func_020bb768(void) {
+    M2C_UNK IsPlayerHuman(u16);
+    extern void **gCurrentMap;
+    BattleMapUnitHead *unit;
+    BattleMapUnitHead *other;
+    u8 *map;
+    s16 x, y;
+    u16 row;
+    register s32 hp;
+    s32 otherHp;
+    u8 amount, limit;
+    register u8 total;
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+        AddRecordValue(18, 1);
+    }
+    map = *gCurrentMap;
+    y = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
+    unit = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    x = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+    row = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+    other = (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS) + M2C_FIELD(map + (x + row), u8 *, MAP_CELL_UNIT_ID);
+    hp = unit->health;
+    hp = hp ? Divide(hp - 1, 10) + 1 : 0;
+    otherHp = other->health;
+    otherHp = otherHp ? Divide(otherHp - 1, 10) + 1 : 0;
+    total = otherHp + hp;
+    if (total > 10) {
+        s32 cost = GetUnitBuildCost(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER),
+            M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind);
+        func_020d2bc0(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), (total - 10) * cost);
+        total = 10;
+    }
+    M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->health = (u16)(total * 10);
+    unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    unit->owner = unit->owner > other->owner ? unit->owner : other->owner;
+    M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->facing = other->facing;
+    unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    amount = unit->ammo + other->ammo;
+    limit = gUnitKindMaxAmmo[unit->kind * 0x70];
+    if (amount > limit) unit->ammo = limit;
+    else unit->ammo = amount;
+    if (func_020d1a1c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+        func_020a64bc(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT), M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR));
+        M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR) = 0;
+    }
+    unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    amount = unit->fuel + other->fuel;
+    limit = gUnitKindMaxFuel[unit->kind * 0x70];
+    if (amount > limit) unit->fuel = limit;
+    else unit->fuel = amount;
+    if (IsUnitSelected(other)) {
+        func_020a3224(other, M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT));
+    }
+    other->kind = 0;
+    func_020baaac();
+    func_020d31e4(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER),
+        M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind);
 }
 
 void func_020bbac8(void) {

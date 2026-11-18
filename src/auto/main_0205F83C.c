@@ -102,7 +102,7 @@ void Qr2_SendState(void *qr2, s32 state) {
     }
 }
 
-void func_0205fdbc(s32 arg0, s32 arg1) {
+void Qr2_SetKeyName(s32 arg0, s32 arg1) {
     extern s32 gQr2KeyNames[];
     if (arg0 < 50 || arg0 > 254) return;
     gQr2KeyNames[arg0] = arg1;

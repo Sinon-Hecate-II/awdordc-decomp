@@ -221,11 +221,11 @@ if (!v) return 0;
 return ((u64)(u16)~v<<36) | ((u64)(s32)M2C_FIELD(p,u16 *,6)<<20) | ((u64)(s32)(u16)(~v>>16)<<4) | ((M2C_FIELD(p,u32 *,0xc)<<14>>20)&15);
 }
 #pragma opt_instruction_scheduling reset
-s32 func_020c9244(u64 a) {
+s32 MapCode_GetPid(u64 a) {
 return ~((u32)((a>>4)&0xffff)<<16 | (u32)((a>>36)&0xffff));
 }
 
-u16 func_020c9268(u64 a) {
+u16 MapCode_GetCrc(u64 a) {
 return (u16)((a>>20)&0xffff);
 }
 
@@ -240,7 +240,7 @@ u64 code=func_020c91ac(mapIndex), mid, top; s32 group3,group2,group1,group0; cha
 GetMapRecordStamp(mapIndex);
 if(!code)return 0;
 mid=code/10000; top=mid/10000;
-func_020c9244(code);func_020c9268(code);
+MapCode_GetPid(code);MapCode_GetCrc(code);
 group3=(top/10000)%10000; group2=top%10000; group1=mid%10000; group0=code%10000;
 StringFormat(buf,sMapCodeFormat,group3,group2,group1,group0);
 sprite=CreateTextLayer(owner);RenderTextLayer(sprite,2,y<<5,buf);

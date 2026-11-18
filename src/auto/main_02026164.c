@@ -108,34 +108,37 @@ void BigNumNeg(u16 *arr, s32 n) {
     BigNumAddCarry(arr, arr, 1, n);
 }
 
+/* dst = src1 - src2 over `len` 16-bit limbs: subtract the significant limbs of
+ * both operands plus one extra limb to absorb the final borrow, then zero the
+ * unused high limbs unless dst aliases an operand. */
 void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     s32 BigNumLen(u16 *, s32);
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
-    s32 a;
-    s32 b;
-    s32 m;
-    s32 k;
+    s32 len1;
+    s32 len2;
+    s32 n;
+    s32 i;
     s32 borrow;
 
-    a = BigNumLen(src1, len);
-    b = BigNumLen(src2, len);
-    m = a;
-    if (a < b) {
-        m = b;
+    len1 = BigNumLen(src1, len);
+    len2 = BigNumLen(src2, len);
+    n = len1;
+    if (len1 < len2) {
+        n = len2;
     }
-    if (m != len) {
-        m++;
+    if (n != len) {
+        n++;
     }
     borrow = 0;
-    k = 0;
-    while (k < m || (k < len && borrow != 0)) {
-        s32 s = src1[k] - src2[k] + borrow;
-        dst[k] = (u16)s;
+    i = 0;
+    while (i < n || (i < len && borrow != 0)) {
+        s32 s = src1[i] - src2[i] + borrow;
+        dst[i] = (u16)s;
         borrow = s >> 16;
-        k++;
+        i++;
     }
     if (dst != src1 && dst != src2) {
-        MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
+        MI_CpuFill8((u8 *)(dst + i), 0, (u32)((len - i) * 2));
     }
 }
 

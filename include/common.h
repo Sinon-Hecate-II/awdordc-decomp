@@ -1007,6 +1007,7 @@ enum {
 #define CONN_SESSION_PEER_CALLBACK_DATA 0x470 /* s32 data passed to PEER_CALLBACK */
 #define CONN_SESSION_SCORE_CALLBACK     0x474 /* s32 callback (index, data) scoring browsed sessions */
 #define CONN_SESSION_SCORE_CALLBACK_DATA 0x478 /* s32 data passed to SCORE_CALLBACK */
+#define CONN_SESSION_CONNECT_ATTEMPTS 0x17D /* u8 failed peer-connect attempts; 5 gives up */
 #define CONN_SESSION_TARGET_NOTICES  0x17C /* u8 QR2 state notices seen from the connect target */
 #define CONN_SESSION_CONNECT_TARGET  0x180 /* s32 peer id the outstanding connect targets */
 #define CONN_SESSION_JOIN_TICK       0x184 /* u64 time the outstanding join was opened */

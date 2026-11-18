@@ -21,6 +21,11 @@ typedef struct {
 /* Unit kind whose unkC[] chain names the units it carries. */
 #define UNIT_KIND_CARRIER 21
 
+/* Kind-13 unit: the Rig, the transport that can build a temporary airfield on
+ * plain ground or a temporary port on a shoal (CanBuildTemporaryAirfield /
+ * CanBuildTemporaryPort), spending ammo as it builds. */
+#define UNIT_KIND_RIG 13
+
 /* The unit record's two-bit state field at +0x08 bits 14..15 (read through the
  * UnkState_021a36e4 overlay).  The AI counts a unit whose state is 2 as ready
  * to act this turn. */

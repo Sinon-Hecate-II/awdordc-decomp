@@ -28,7 +28,7 @@ void func_ov000_0218d908(void) {
     extern void *gAiCommandState;
     extern u8 *gAiUnitTypeTuning;
     extern u8 gUnitKindStats[], gAiRangeBitmap[];
-    s32 func_ov000_0218d40c(void);
+    s32 AiUnitCanAct(void);
     M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
@@ -47,7 +47,7 @@ void func_ov000_0218d908(void) {
     void *map;
     s32 score, moveCost;
 
-    if (!func_ov000_0218d40c()) return;
+    if (!AiUnitCanAct()) return;
     BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
     y = 0;
     map = *gCurrentMap;

@@ -227,27 +227,31 @@ s32 func_0209c168(void *arg0, s32 arg1) {
     return 0;
 }
 
-s32 MeasureGlyphWidth(u8 *arg0, s32 *arg1) {
+/* Measure one glyph at `glyph`: add its pixel advance to *width (including the
+ * one-pixel gap that follows it once something has already been measured) and
+ * return the number of bytes the glyph occupies (2 for a lead byte or an escape
+ * pair, 1 for a plain glyph, 0 for a NULL pointer). */
+s32 MeasureGlyphWidth(u8 *glyph, s32 *width) {
     u8 IsLeadByte(u8 *);
     u8 IsGlyphEscape(u8 *);
     extern u8 gGlyphWidthTable[256];
 
-    if (arg0 != NULL) {
-        if (IsLeadByte(arg0)) {
-            *arg1 += 8;
+    if (glyph != NULL) {
+        if (IsLeadByte(glyph)) {
+            *width += 8;
             return 2;
         }
-        if (IsGlyphEscape(arg0)) {
-            if (*arg1 != 0) {
-                *arg1 += 1;
+        if (IsGlyphEscape(glyph)) {
+            if (*width != 0) {
+                *width += 1;
             }
-            *arg1 += gGlyphWidthTable[arg0[1]];
+            *width += gGlyphWidthTable[glyph[1]];
             return 2;
         }
-        if (*arg1 != 0) {
-            *arg1 += 1;
+        if (*width != 0) {
+            *width += 1;
         }
-        *arg1 += gGlyphWidthTable[arg0[0]];
+        *width += gGlyphWidthTable[glyph[0]];
         return 1;
     }
     return 0;

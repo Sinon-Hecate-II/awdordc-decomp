@@ -183,6 +183,66 @@ typedef struct WfcSendState {
 #define WFC_CMD_OK         2 /* the command was posted, its completion arrives as an event */
 #define WFC_CMD_NO_BUFFER  8 /* no free block, or the FIFO refused the message */
 
+/* The WFC command channel's global state (gWfcChannelState).  The ARM9 allocates
+ * one work area, splits it into buffers and keeps their pointers in the info block
+ * the state points at (+WFC_CMD_STATE_INFO).  The firmware writes command packets
+ * into the packet buffer and the connection data into the data block; the FIFO
+ * handler reads them and dispatches to the callbacks. */
+#define WFC_CMD_STATE_READY  0x00 /* u16 1 once the channel is initialized */
+#define WFC_CMD_STATE_INFO   0x04 /* void *the info block below */
+#define WFC_CMD_STATE_EVENT  0x50 /* the event packet (WFC_EVENT_*), 0x44 bytes */
+
+/* Fields of the info block (WFC_CMD_STATE_INFO). */
+#define WFC_CMD_INFO_BUFFER0 0x00  /* void *first buffer of the work area */
+#define WFC_CMD_INFO_DATA    0x04  /* void *0x800-byte connection-data block the firmware fills */
+#define WFC_CMD_INFO_BUFFER1 0x0c  /* void *0x100-byte buffer */
+#define WFC_CMD_INFO_PACKET  0x10  /* void *0x100-byte command packet the firmware wrote */
+#define WFC_CMD_INFO_MODE    0x14  /* u16 mode of the channel */
+#define WFC_CMD_INFO_DATA_CACHED 0x16 /* u16 nonzero once the data block has been read */
+#define WFC_CMD_INFO_CALLBACK 0xc8 /* void (*)(void *): general event callback */
+#define WFC_CMD_INFO_CHANNELS 0xcc /* void (*[16])(void *): per-channel callbacks */
+#define WFC_CMD_INFO_VALUES  0x10c /* s32[16]: per-channel argument values */
+#define WFC_CMD_INFO_AID_MASK 0x14c /* u32 bitmask of the connected players' aids */
+#define WFC_CMD_INFO_LOCAL_AID 0x150 /* u16 the local player's aid */
+
+/* Fields of the event packet (WFC_CMD_STATE_EVENT) that the command handler fills
+ * before it hands the packet to the callbacks. */
+#define WFC_EVENT_COMMAND   0x00 /* u16 command id (WFC_CMD_CHANNEL_EVENT) */
+#define WFC_EVENT_INDEX     0x02 /* u16 */
+#define WFC_EVENT_KIND      0x04 /* u16 event kind */
+#define WFC_EVENT_CHANNEL   0x06 /* u16 channel the event belongs to */
+#define WFC_EVENT_RESERVED08 0x08 /* u32 zeroed */
+#define WFC_EVENT_RESERVED0C 0x0c /* u32 zeroed */
+#define WFC_EVENT_RESERVED10 0x10 /* u16 zeroed */
+#define WFC_EVENT_AID       0x12 /* u16 the affected player's aid */
+#define WFC_EVENT_MAC       0x14 /* u8[6] the peer's MAC address */
+#define WFC_EVENT_SENTINEL  0x1a /* u16 0xffff */
+#define WFC_EVENT_VALUE     0x1c /* u32 per-channel argument value */
+#define WFC_EVENT_LOCAL_AID 0x20 /* u16 the local player's aid */
+#define WFC_EVENT_AID_MASK  0x22 /* u16 bitmask of the connected players' aids */
+#define WFC_EVENT_PAYLOAD   0x24 /* u8[0x18] event payload the handler copies or zero-fills */
+#define WFC_EVENT_PAYLOAD_SIZE 0x18
+#define WFC_EVENT_REASON    0x3c /* u16 reason reported with the event */
+#define WFC_EVENT_FIRST     0x40 /* u16 first value of the peer/local aid pair */
+#define WFC_EVENT_SECOND    0x42 /* u16 second value of the pair */
+
+/* Command ids the WFC command channel carries in the packet's first u16.  Ids at
+ * or above WFC_CMD_EVENT_BASE are asynchronous events, the lower ones report the
+ * completion of a posted command. */
+#define WFC_CMD_EVENT_BASE   0x2c
+#define WFC_CMD_SHUTDOWN     2    /* the channel is being shut down */
+#define WFC_CMD_PEER_STATUS  8    /* a peer's connection status (mac +0xa, aid +0x10, reason +0x12, payload +0x14) */
+#define WFC_CMD_SELF_STATUS  0xc  /* the local connection status (aid +0xa, reason +0xc, mac +0x10) */
+#define WFC_CMD_LINK_STATUS  0xe  /* link-status notification */
+#define WFC_CMD_GENERAL_EVENT 0x80 /* asynchronous event for the general callback (reason +2, 0x13 halts) */
+#define WFC_CMD_COMMAND_REPLY 0x81 /* reply to a posted command: becomes 0xf and runs the callback at +0x1c */
+#define WFC_CMD_CHANNEL_EVENT 0x82 /* per-channel event: runs the channel's callback after filling the packet */
+
+/* Event kinds carried in WFC_EVENT_KIND. */
+#define WFC_EVENT_JOINED 7    /* a player joined: set its aid bit in WFC_CMD_INFO_AID_MASK */
+#define WFC_EVENT_LEFT   9    /* a player left: clear its aid bit */
+#define WFC_EVENT_OTHER  0x1a /* another roster change the handler reports as-is */
+
 /* The local player's connection data (0xC0 bytes). It is filled from the
  * connection-setup screen, copied into the session when a match is started,
  * reported to the event handlers and sent to the server. Two flag words live

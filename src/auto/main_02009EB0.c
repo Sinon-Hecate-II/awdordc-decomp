@@ -349,6 +349,12 @@ s32 ResolvePathEntry(void *request) {
 
 extern u8 gPathSeparator[];
 #pragma opt_propagation off
+/* Nitro FS path command (5): writes the full "device:/dir/.../name" path of the
+ * file id (or directory id, FS_REQ_DIRECTORY) the request names into the request's
+ * output buffer.  It finds the directory holding the file, measures the path,
+ * writes the archive's device name, ":/" and then the directory chain and file
+ * name from the end of the buffer.  Returns 0 when the path was written (or no
+ * buffer was given), 1 when the entry was not found or the buffer is too small. */
 s32 BuildFilePath(FSFileRequest *request) {
     M2C_UNK InitFileRequest(M2C_UNK *);
     FSArchive *archive = request->file;
@@ -360,20 +366,20 @@ s32 BuildFilePath(FSFileRequest *request) {
     u32 isDirectory;
     InitFileRequest((M2C_UNK *)&dir);
     dir.file = request->file;
-    isDirectory = (request->flags & 0x20) ? 1 : 0;
+    isDirectory = (request->flags & FS_REQ_DIRECTORY) ? 1 : 0;
     if (isDirectory != 0) {
-        directory = M2C_FIELD(request, u16 *, 0x24);
-        fileId = 0x10000;
+        directory = M2C_FIELD(request, u16 *, FS_REQ_PATH_DIRECTORY);
+        fileId = FS_NO_ENTRY_ID;
         goto foundDirectory;
     } else {
-        fileId = M2C_FIELD(request, u32 *, 0x20);
-        if (M2C_FIELD(request, u16 *, 0x38)) {
-            directory = M2C_FIELD(request, u16 *, 0x3a);
+        fileId = M2C_FIELD(request, u32 *, FS_REQ_PATH_FILE_ID);
+        if (M2C_FIELD(request, u16 *, FS_REQ_PATH_LENGTH)) {
+            directory = M2C_FIELD(request, u16 *, FS_REQ_PATH_DIR);
             goto foundDirectory;
         } else {
             i = 0;
             count = i;
-            directory = 0x10000;
+            directory = FS_NO_ENTRY_ID;
             do {
                 StartDirectoryRead(&dir, i);
                 if (i == 0) count = M2C_FIELD(&dir, u32 *, 0x2c);
@@ -385,16 +391,16 @@ s32 BuildFilePath(FSFileRequest *request) {
                         break;
                     }
                 }
-                if (directory != 0x10000) goto foundDirectory;
+                if (directory != FS_NO_ENTRY_ID) goto foundDirectory;
             } while (++i < count);
         }
     }
 foundDirectory:
-    if (directory == 0x10000) {
-        M2C_FIELD(request, u16 *, 0x38) = 0;
+    if (directory == FS_NO_ENTRY_ID) {
+        M2C_FIELD(request, u16 *, FS_REQ_PATH_LENGTH) = 0;
         return 1;
     }
-    if (!M2C_FIELD(request, u16 *, 0x38)) {
+    if (!M2C_FIELD(request, u16 *, FS_REQ_PATH_LENGTH)) {
         u32 id, parent, pathLength;
         pathLength = 0;
         id = archive->id;
@@ -402,7 +408,7 @@ foundDirectory:
         else if (id <= 0xff00) pathLength += 2;
         else pathLength += 3;
         pathLength += 2;
-        if (fileId != 0x10000) pathLength += entry.length;
+        if (fileId != FS_NO_ENTRY_ID) pathLength += entry.length;
         parent = directory;
         if (parent != 0) {
             StartDirectoryRead(&dir, parent);
@@ -419,13 +425,13 @@ foundDirectory:
                 parent = M2C_FIELD(&dir, u16 *, 0x24);
             } while (parent != 0);
         }
-        M2C_FIELD(request, u16 *, 0x38) = pathLength + 1;
-        M2C_FIELD(request, u16 *, 0x3a) = directory;
+        M2C_FIELD(request, u16 *, FS_REQ_PATH_LENGTH) = pathLength + 1;
+        M2C_FIELD(request, u16 *, FS_REQ_PATH_DIR) = directory;
     }
-    out = M2C_FIELD(request, u8 **, 0x30);
+    out = M2C_FIELD(request, u8 **, FS_REQ_PATH_OUT);
     if (out == 0) return 0;
-    remaining = M2C_FIELD(request, u16 *, 0x38);
-    if (M2C_FIELD(request, u32 *, 0x34) < remaining) return 1;
+    remaining = M2C_FIELD(request, u16 *, FS_REQ_PATH_LENGTH);
+    if (M2C_FIELD(request, u32 *, FS_REQ_PATH_CAPACITY) < remaining) return 1;
     prefix = 0;
     {
         u32 id = archive->id;
@@ -436,7 +442,7 @@ foundDirectory:
     MI_CpuCopy8((M2C_UNK)archive, (M2C_UNK)out, nameLength);
     MI_CpuCopy8((M2C_UNK)gPathSeparator, (M2C_UNK)(out + (prefix + nameLength)), 2);
     StartDirectoryRead(&dir, directory);
-    if (fileId != 0x10000) {
+    if (fileId != FS_NO_ENTRY_ID) {
         M2C_FIELD(&dir, PathEntry **, 0x30) = &entry;
         M2C_FIELD(&dir, u32 *, FS_REQ_DIR_SKIP) = 0;
         while (ExecuteFileCommand(&dir, 3) == 0) {

@@ -329,15 +329,27 @@ p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~0xFC0)|0xFC0;
 }
 
-u8 func_ov000_0217c420(u8 *arg0,u8 *arg1) {
-extern M2C_UNK data_ov000_021b5c11,data_ov000_021b5c12;
-u32 kind=(u32)(*arg0<<26)>>26; u8 result;
-switch((s32)kind) {
-case 1:case 2:case 3:case 25:case 24:case 19:case 13:return 0;
-default:
-if(M2C_FIELD(&data_ov000_021b5c12,u8 *,kind*112)&M2C_FIELD(&data_ov000_021b5c11,u8 *,((u32)(*arg1<<26)>>26)*112)) result=1; else result=0;
-return result;
-}}
+/* Whether two unit kinds pass the AI's kind-pair mask test: the mask byte at
+ * +0x12 of `unit`'s kind record must share a bit with the mask byte at +0x11 of
+ * `other`'s kind record (records are 112 = UNIT_KIND_STATS_SIZE bytes apart; the
+ * two externs name those two columns).  Kinds 1, 2, 3, 13, 19, 24 and 25 never
+ * pass. */
+u8 UnitKindMasksOverlap(u8 *unit, u8 *other) {
+    extern M2C_UNK data_ov000_021b5c11, data_ov000_021b5c12;
+    u32 kind = (u32)(unit[MAP_UNIT_KIND] << 26) >> 26;
+    u8 result;
+    switch ((s32)kind) {
+    case 1: case 2: case 3: case 25: case 24: case 19: case 13:
+        return 0;
+    default:
+        if (M2C_FIELD(&data_ov000_021b5c12, u8 *, kind * 112) &
+            M2C_FIELD(&data_ov000_021b5c11, u8 *, ((u32)(other[MAP_UNIT_KIND] << 26) >> 26) * 112))
+            result = 1;
+        else
+            result = 0;
+        return result;
+    }
+}
 
 #pragma opt_propagation off
 s32 func_ov000_0217c4c8(u8 *p){
@@ -358,7 +370,7 @@ if(dist>GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26))continue;
 map=*gCurrentMap;
 {u16 row=M2C_FIELD(map+y*2,u16 *,0x3758);u8 id=map[x+row];if(!id)continue;if(!IsUnitOnCurrentTeam(id))continue;}
 map=*gCurrentMap;
-if(func_ov000_0217c420(map+0x59a4+map[x+M2C_FIELD(map+y*2,u16 *,0x3758)]*14,p))count++;
+if(UnitKindMasksOverlap(map+0x59a4+map[x+M2C_FIELD(map+y*2,u16 *,0x3758)]*14,p))count++;
 }
 return count*3;
 }

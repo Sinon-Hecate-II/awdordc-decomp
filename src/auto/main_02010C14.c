@@ -106,10 +106,10 @@ void func_02010fe4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_02011034(s32 a,s32 b) {
-s32 func_02011060(s32,s32,s32);extern M2C_UNK data_02130660;
+s32 func_02011060(s32,s32,s32);extern M2C_UNK gWfcChannelState;
 s32 result=func_02011060(a,b,0xF00);
 if(result!=0)return result;
-M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),u16 *,0x16)=0;
+M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),u16 *,0x16)=0;
 return result;
 }
 
@@ -129,8 +129,8 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     void DC_CleanRange();
     s32 OS_SendMessage();
     void SetFifoMessageHandler();
-    M2C_UNK func_02011548();
-    extern M2C_UNK data_02130660;
+    void WFC_CommandHandler(u32, void *, u32);
+    extern M2C_UNK gWfcChannelState;
     extern M2C_UNK gWfcFreeBufferQueue;
     extern M2C_UNK data_02130688;
     extern M2C_UNK data_02130700;
@@ -140,7 +140,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
  s32 saved;
     u8 *buf;
     saved = OS_DisableInterrupts();
-    if (M2C_FIELD(&data_02130660, u16 *, 0) != 0) {
+    if (M2C_FIELD(&gWfcChannelState, u16 *, 0) != 0) {
         OS_RestoreInterrupts(saved);
         return 3;
     }
@@ -164,18 +164,18 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     DC_InvalidateRange(arg0, arg2);
     DmaFill(arg1, arg0, 0, arg2);
     p = (void *)arg0;
-    M2C_FIELD(&data_02130660, void **, 4) = p;
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0) = arg0 + 0x200;
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 4) = M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0) + 0x300;
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0xc) = M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 4) + 0x800;
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0x10) = M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0xc) + 0x100;
+    M2C_FIELD(&gWfcChannelState, void **, 4) = p;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0) = arg0 + 0x200;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 4) = M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0) + 0x300;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0xc) = M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 4) + 0x800;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0x10) = M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0xc) + 0x100;
     func_020118f4();
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), u16 *, 0x14) = (u16)arg1;
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), s32 *, 0x14c) = 0;
-    M2C_FIELD(M2C_FIELD(&data_02130660, void **, 4), u16 *, 0x150) = 0;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), u16 *, 0x14) = (u16)arg1;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0x14c) = 0;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), u16 *, 0x150) = 0;
     for (i = 0; i < 0x10; i++) {
-        ((s32 *)((u8 *)M2C_FIELD(&data_02130660, void **, 4) + 0xcc))[i] = 0;
-        ((s32 *)((u8 *)M2C_FIELD(&data_02130660, void **, 4) + 0x10c))[i] = 0;
+        ((s32 *)((u8 *)M2C_FIELD(&gWfcChannelState, void **, 4) + 0xcc))[i] = 0;
+        ((s32 *)((u8 *)M2C_FIELD(&gWfcChannelState, void **, 4) + 0x10c))[i] = 0;
     }
     OS_InitMessageQueue(&gWfcFreeBufferQueue, &data_02130688, 10);
     buf = (u8 *)&data_02130700;
@@ -184,23 +184,23 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         DC_CleanRange(buf + j * 256, 2);
         OS_SendMessage(&gWfcFreeBufferQueue, buf + j * 256, 1);
     }
-    SetFifoMessageHandler(10, func_02011548);
-    M2C_FIELD(&data_02130660, u16 *, 0) = 1;
+    SetFifoMessageHandler(10, WFC_CommandHandler);
+    M2C_FIELD(&gWfcChannelState, u16 *, 0) = 1;
     OS_RestoreInterrupts(saved);
     return 0;
 }
 #pragma pop
-s32 func_02011244(void) {
-s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);s32 WFC_CheckChannelState(s32,...);void func_020118f4(void);extern M2C_UNK data_02130660;
+s32 WFC_ShutdownCommandChannel(void) {
+s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);s32 WFC_CheckChannelState(s32,...);void func_020118f4(void);extern M2C_UNK gWfcChannelState;
 s32 saved=OS_DisableInterrupts();s32 result;
 if(WFC_CheckReady()!=0){OS_RestoreInterrupts(saved);return 3;}
 result=WFC_CheckChannelState(1,0);if(result!=0)return result;
 func_020118f4();SetFifoMessageHandler(10,0);
-M2C_FIELD(&data_02130660,s32 *,4)=0;M2C_FIELD(&data_02130660,u16 *,0)=0;
+M2C_FIELD(&gWfcChannelState,s32 *,4)=0;M2C_FIELD(&gWfcChannelState,u16 *,0)=0;
 OS_RestoreInterrupts(saved);return 0;
 }
 
-void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK data_02130660;M2C_FIELD(M2C_FIELD(&data_02130660,s32 *,4)+a*4,s32 *,24)=b;}
+void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK gWfcChannelState;M2C_FIELD(M2C_FIELD(&gWfcChannelState,s32 *,4)+a*4,s32 *,24)=b;}
 
 u16 *WFC_AllocBuffer(void) {
     s32 OS_ReceiveMessage(M2C_UNK *, u16 **, M2C_UNK);
@@ -254,27 +254,145 @@ u16 *p=WFC_AllocBuffer();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);DC_CleanRange(p
 }
 
 s32 WFC_GetInfoBlock(void) {
-    extern M2C_UNK data_02130660;
-    return M2C_FIELD(&data_02130660, s32 *, 4);
+    extern M2C_UNK gWfcChannelState;
+    return M2C_FIELD(&gWfcChannelState, s32 *, 4);
 }
 
-s32 WFC_CheckReady(void) { extern M2C_UNK data_02130660; if(M2C_FIELD(&data_02130660,u16 *,0))return 0;return 3; }
+s32 WFC_CheckReady(void) { extern M2C_UNK gWfcChannelState; if(M2C_FIELD(&gWfcChannelState,u16 *,0))return 0;return 3; }
 
 s32 func_0201146c(void) {
-extern M2C_UNK data_02130660;s32 r=WFC_CheckReady();if(r)return r;
-DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
-return M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0)<=1U?3:0;
+extern M2C_UNK gWfcChannelState;s32 r=WFC_CheckReady();if(r)return r;
+DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),2);
+return M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),u16 *,0)<=1U?3:0;
 }
 
-s32 WFC_CheckChannelState(s32 count,...) { extern M2C_UNK data_02130660; s32 result=WFC_CheckReady();s32 *args;u16 value;
+s32 WFC_CheckChannelState(s32 count,...) { extern M2C_UNK gWfcChannelState; s32 result=WFC_CheckReady();s32 *args;u16 value;
 if(result)return result;
-DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
-value=M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0);
+DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),2);
+value=M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),u16 *,0);
 args=(s32 *)((u32)&count&~3)+1;result=3;while(count){args++;if(args[-1]==value)result=0;count--;}return result;
 }
 
-M2C_UNK func_02011548(void) {
-    return 0;
+/* WFC command-channel FIFO handler: the ARM7 firmware posts a command packet,
+ * and this dispatches it to the general event callback, the per-channel
+ * callbacks and the connection-status path, rebuilding the connection event
+ * packet (gWfcChannelState + WFC_CMD_STATE_EVENT) those callbacks read. */
+void WFC_CommandHandler(u32 fifoTag, void *packet, u32 error) {
+    void SystemHalt(void);
+    void func_020118f4(void);
+    void DC_CleanRange();
+    extern M2C_UNK gWfcChannelState, gWfcEventPacket, gWfcEventMac, gWfcEventPayload;
+    void *info = M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO);
+    u32 command;
+    u16 event, aid, localAid, reason, second;
+    void *mac, *extra;
+    u16 first, channel;
+    void *entry;
+    void (*callback)(void *);
+    (void)fifoTag;
+    if (error) return;
+    DC_InvalidateRange(M2C_FIELD(info, void **, WFC_CMD_INFO_PACKET), WFC_CMD_BLOCK_SIZE);
+    if (!M2C_FIELD(info, u16 *, WFC_CMD_INFO_DATA_CACHED))
+        DC_InvalidateRange(M2C_FIELD(info, void **, WFC_CMD_INFO_DATA), 0x800);
+    if (packet != M2C_FIELD(info, void **, WFC_CMD_INFO_PACKET))
+        DC_InvalidateRange(packet, WFC_CMD_BLOCK_SIZE);
+    command = M2C_FIELD(packet, u16 *, 0);
+    if (command >= WFC_CMD_EVENT_BASE) {
+        if (command == WFC_CMD_GENERAL_EVENT) {
+            if (M2C_FIELD(packet, u16 *, 2) == 0x13) SystemHalt();
+            callback = M2C_FIELD(info, void (**)(void *), WFC_CMD_INFO_CALLBACK);
+            if (callback) callback(packet);
+        } else if (command == WFC_CMD_CHANNEL_EVENT) {
+            channel = M2C_FIELD(packet, u16 *, 6);
+            if (M2C_FIELD(info + channel * 4, void (**)(void *), WFC_CMD_INFO_CHANNELS)) {
+                M2C_FIELD(packet, u32 *, 0x1c) = M2C_FIELD(info + channel * 4, u32 *, WFC_CMD_INFO_VALUES);
+                M2C_FIELD(packet, u16 *, 0x22) = M2C_FIELD(info, u32 *, WFC_CMD_INFO_AID_MASK);
+                DC_InvalidateRange(M2C_FIELD(packet, void **, 8), M2C_FIELD(M2C_FIELD(info, void **, WFC_CMD_INFO_DATA), u16 *, 0x72));
+                M2C_FIELD(info + M2C_FIELD(packet, u16 *, 6) * 4, void (**)(void *), WFC_CMD_INFO_CHANNELS)(packet);
+            }
+        } else if (command == WFC_CMD_COMMAND_REPLY) {
+            M2C_FIELD(packet, u16 *, 0) = 0xf;
+            callback = M2C_FIELD(packet, void (**)(void *), 0x1c);
+            if (callback) callback(packet);
+        }
+    } else {
+        if (command == WFC_CMD_LINK_STATUS && (u16)(M2C_FIELD(packet, u16 *, 4) + 0xfff5) <= 1 &&
+            M2C_FIELD(packet, u16 *, 2) == 0) {
+            DC_InvalidateRange(M2C_FIELD(packet, void **, 8), M2C_FIELD(M2C_FIELD(info, void **, WFC_CMD_INFO_DATA), u16 *, 0x72));
+        }
+        command = M2C_FIELD(packet, u16 *, 0);
+        if (command == WFC_CMD_SHUTDOWN && M2C_FIELD(packet, u16 *, 2) == 0) {
+            entry = info + command * 4;
+            callback = M2C_FIELD(entry, void (**)(void *), 0x18);
+            WFC_ShutdownCommandChannel();
+            if (callback) callback(packet);
+            return;
+        }
+        entry = info + command * 4;
+        callback = M2C_FIELD(entry, void (**)(void *), 0x18);
+        if (callback) {
+            callback(packet);
+            if (!M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_READY)) return;
+        }
+        command = M2C_FIELD(packet, u16 *, 0);
+        if (command == WFC_CMD_PEER_STATUS || command == WFC_CMD_SELF_STATUS) {
+            if (command == WFC_CMD_PEER_STATUS) {
+                mac = packet + 0xa;
+                event = M2C_FIELD(packet, u16 *, 8);
+                aid = M2C_FIELD(packet, u16 *, 0x10);
+                reason = M2C_FIELD(packet, u16 *, 0x12);
+                extra = packet + 0x14;
+                localAid = 0;
+                first = M2C_FIELD(packet, u16 *, 0x2c);
+                second = M2C_FIELD(packet, u16 *, 0x2e);
+            } else if (command == WFC_CMD_SELF_STATUS) {
+                event = M2C_FIELD(packet, u16 *, 8);
+                localAid = M2C_FIELD(packet, u16 *, 0xa);
+                reason = M2C_FIELD(packet, u16 *, 0xc);
+                aid = 0;
+                extra = NULL;
+                mac = packet + 0x10;
+                first = M2C_FIELD(packet, u16 *, 0x16);
+                second = M2C_FIELD(packet, u16 *, 0x18);
+            }
+            if (event == WFC_EVENT_JOINED || event == WFC_EVENT_LEFT || event == WFC_EVENT_OTHER) {
+                if (event == WFC_EVENT_JOINED) M2C_FIELD(info, u32 *, WFC_CMD_INFO_AID_MASK) |= 1U << aid;
+                else M2C_FIELD(info, u32 *, WFC_CMD_INFO_AID_MASK) &= ~(1U << aid);
+                M2C_FIELD(info, u16 *, WFC_CMD_INFO_LOCAL_AID) = localAid;
+                MI_CpuFill8(&gWfcEventPacket, 0, 0x44);
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_COMMAND) = WFC_CMD_CHANNEL_EVENT;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_INDEX) = 0;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_KIND) = event;
+                M2C_FIELD(&gWfcChannelState, u32 *, WFC_CMD_STATE_EVENT + WFC_EVENT_RESERVED08) = 0;
+                M2C_FIELD(&gWfcChannelState, u32 *, WFC_CMD_STATE_EVENT + WFC_EVENT_RESERVED0C) = 0;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_RESERVED10) = 0;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_AID) = aid;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_LOCAL_AID) = localAid;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_AID_MASK) = M2C_FIELD(info, u32 *, WFC_CMD_INFO_AID_MASK);
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_SENTINEL) = 0xffff;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_REASON) = reason;
+                MI_CpuCopy8(mac, &gWfcEventMac, 6);
+                if (extra) CopyU16(extra, &gWfcEventPayload, 0x18);
+                else FillU16(0, &gWfcEventPayload, 0x18);
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_FIRST) = localAid == 0 ? first : second;
+                M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_SECOND) = localAid == 0 ? second : first;
+                for (channel = 0; channel < 16; ++channel) {
+                    M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_EVENT + WFC_EVENT_CHANNEL) = channel;
+                    entry = info + channel * 4;
+                    if (M2C_FIELD(entry, void (**)(void *), WFC_CMD_INFO_CHANNELS)) {
+                        M2C_FIELD(&gWfcChannelState, u32 *, WFC_CMD_STATE_EVENT + WFC_EVENT_VALUE) = M2C_FIELD(entry, u32 *, WFC_CMD_INFO_VALUES);
+                        M2C_FIELD(entry, void (**)(void *), WFC_CMD_INFO_CHANNELS)(&gWfcEventPacket);
+                    }
+                }
+            }
+        }
+    }
+    DC_InvalidateRange(M2C_FIELD(info, void **, WFC_CMD_INFO_PACKET), WFC_CMD_BLOCK_SIZE);
+    func_020118f4();
+    if (packet != M2C_FIELD(info, void **, WFC_CMD_INFO_PACKET)) {
+        M2C_FIELD(packet, u16 *, 0) |= WFC_CMD_BLOCK_FREE;
+        DC_CleanRange(packet, WFC_CMD_BLOCK_SIZE);
+    }
 }
 
 void func_020118f4(void) {
@@ -287,18 +405,18 @@ void func_020118f4(void) {
 }
 
 s32 func_02011910(void) {
-extern M2C_UNK data_02130660;
+extern M2C_UNK gWfcChannelState;
 if(WFC_CheckReady()!=0)return 0;
-return M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),s32 *,4);
+return M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),s32 *,4);
 }
 
 s32 func_02011934(void) {
-extern M2C_UNK data_02130660;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&data_02130660,void **,4);if(p)r=M2C_FIELD(p,u16 *,0x150);else r=0;OS_RestoreInterrupts(s);return r;
+extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&gWfcChannelState,void **,4);if(p)r=M2C_FIELD(p,u16 *,0x150);else r=0;OS_RestoreInterrupts(s);return r;
 }
 
-u16 func_02011964(void) { s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32); extern M2C_UNK data_02130660;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&data_02130660,void **,4);if(p)r=M2C_FIELD(p,s32 *,0x14c);else r=0;OS_RestoreInterrupts(s);return r;}
+u16 func_02011964(void) { s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32); extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&gWfcChannelState,void **,4);if(p)r=M2C_FIELD(p,s32 *,0x14c);else r=0;OS_RestoreInterrupts(s);return r;}
 
-s32 func_02011994(void) {s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK DC_InvalidateRange();extern M2C_UNK data_02130660;s32 r;void *p;s32 s;s=OS_DisableInterrupts();p=M2C_FIELD(&data_02130660,void **,4);if(!p)r=0;else {p=M2C_FIELD(p,void **,4);DC_InvalidateRange(p+0x86,2);r=M2C_FIELD(p,u16 *,0x86);}OS_RestoreInterrupts(s);return r;}
+s32 func_02011994(void) {s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK DC_InvalidateRange();extern M2C_UNK gWfcChannelState;s32 r;void *p;s32 s;s=OS_DisableInterrupts();p=M2C_FIELD(&gWfcChannelState,void **,4);if(!p)r=0;else {p=M2C_FIELD(p,void **,4);DC_InvalidateRange(p+0x86,2);r=M2C_FIELD(p,u16 *,0x86);}OS_RestoreInterrupts(s);return r;}
 
 s32 func_020119dc(s32 arg0) {
     s32 OS_DisableInterrupts();

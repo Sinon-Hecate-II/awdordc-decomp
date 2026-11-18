@@ -24,7 +24,156 @@ u8 pad1a18[0x20];
 Pair02034164 headers[32];     /* +0x1A38: parsed response header name/value pairs */
 } Unk02034164;
 
-void HttpClientTask(void) { return; }
+void HttpClientTask(Unk02034164 *client) {
+    void func_02034010(Unk02034164 *);
+    s32 func_02034068(Unk02034164 *);
+    void func_0201d1f0(void);
+    M2C_UNK MI_CpuFill8(void *, s32, s32);
+    void func_02022128(void *, s32);
+    void func_02025188(s32);
+    void func_0201d190(s32, s32, s32);
+    s32 func_0201d3a4(void);
+    void func_0201d224(void);
+    void ClearCurrentRawConnection(void);
+    s32 SendNetPacket(s32, s32);
+    void func_0201dc28(void);
+    s32 func_02033f98(Unk02034164 *);
+    u64 GetSystemTick(void);
+    s32 func_0201dbb8(void);
+    void *func_0201d618(s32 *);
+    void MI_CpuCopy8(s32, s32, s32);
+    void LockMutex(void *);
+    void UnlockMutex(void *);
+    s32 HttpParseContentLength(Unk02034164 *);
+    void func_0201d70c(u32);
+    u64 U64Divide(u64, u64);
+    void func_0201d484(void);
+    void func_0201d4c0(void);
+    s32 func_02034864(s32);
+    extern u8 data_020fb528[];
+    extern s32 data_021372e0[];
+
+    u8 *work;
+    void *mutex;
+    s32 *bodySize;
+    u8 *tlsConfig;
+    u8 *tls;
+    s32 host;
+    Buffer02034164 *recv;
+    s32 copied;
+    s32 timeout;
+    s32 received;
+    s32 request;
+    s32 remaining, destination;
+    void *packet;
+    u64 progress, now;
+    s32 parsed;
+
+    timeout = M2C_FIELD(client, s32 *, 0x101c);
+    tlsConfig = (u8 *)client + 0x1138;
+    tls = (u8 *)client + 0x119c;
+    recv = &client->recvBuffer;
+    parsed = 0;
+
+    if (timeout <= 0) timeout = 60000;
+    func_02034010(client);
+    host = func_02034068(client);
+    if (host == 0) {
+        M2C_FIELD(client, s32 *, 0x1020) = 2;
+        return;
+    }
+    client->unk112c = host;
+    func_0201d1f0();
+    if (client->useTls == 1) {
+        MI_CpuFill8(tls, 0, 0x830);
+        M2C_FIELD(tls, s32 (**)(s32), 0x810) = func_02034864;
+        M2C_FIELD(tls, s32 *, 0x800) = M2C_FIELD(client, s32 *, 0x1124);
+        M2C_FIELD(tlsConfig, void **, 0xc) = tls;
+        func_02022128(data_020fb528, 0xc);
+        func_02025188(1);
+    }
+    func_0201d190(0, client->port, host);
+    if (func_0201d3a4() != 0) {
+        M2C_FIELD(client, s32 *, 0x1020) = 3;
+        func_0201d224();
+        ClearCurrentRawConnection();
+        return;
+    }
+    request = client->buffer[0];
+    received = SendNetPacket(request, StringLength(request));
+    if (received <= 0) {
+        M2C_FIELD(client, s32 *, 0x1020) = 5;
+        goto cleanup;
+    }
+    func_0201dc28();
+    if (func_02033f98(client) == 0) {
+        M2C_FIELD(client, s32 *, 0x1020) = 7;
+        goto cleanup;
+    }
+    recv->current = recv->start;
+    recv->end = recv->start + recv->size;
+    progress = GetSystemTick();
+    bodySize = (s32 *)((u8 *)client + 0x1a34);
+    mutex = (u8 *)client + 0x1a18;
+
+    work = (u8 *)client + 0x1000;
+    do {
+        if (!data_021372e0[0]) {
+            M2C_FIELD(client, s32 *, 0x1020) = 5;
+            goto cleanup;
+        }
+        received = func_0201dbb8();
+        if (received < 0) break;
+        if (received > 0) {
+            progress = GetSystemTick();
+            packet = func_0201d618(&received);
+            if (!packet) break;
+            destination = recv->current;
+            remaining = recv->end - 1 - destination;
+            copied = received;
+            if (copied >= remaining) copied = remaining;
+            MI_CpuCopy8((s32)packet, destination, copied);
+            recv->current += copied;
+            *(char *)recv->current = 0;
+            if (parsed == 1) {
+                LockMutex(mutex);
+                *bodySize += copied;
+                UnlockMutex(mutex);
+            } else {
+                parsed = HttpParseContentLength(client);
+            }
+            if ((u32)received > (u32)copied) {
+                func_0201d70c(received);
+                break;
+            }
+            func_0201d70c(copied);
+        }
+        if (M2C_FIELD(work, s32 *, 0xa30) >= 0 &&
+            M2C_FIELD(work, s32 *, 0xa34) >= M2C_FIELD(work, s32 *, 0xa30)) break;
+        now = GetSystemTick();
+        if (U64Divide((now - progress) << 6, 0x82eaULL) > (u64)timeout) {
+            M2C_FIELD(client, s32 *, 0x1020) = 6;
+            goto cleanup;
+        }
+        if (func_02033f98(client) == 0) {
+            M2C_FIELD(client, s32 *, 0x1020) = 7;
+            goto cleanup;
+        }
+    } while (1);
+
+    func_0201d484();
+    func_0201d4c0();
+    func_0201d224();
+    ClearCurrentRawConnection();
+    M2C_FIELD(client, s32 *, 0x1020) = 8;
+    return;
+
+cleanup:
+    func_0201d484();
+    func_0201d4c0();
+    func_0201d224();
+    ClearCurrentRawConnection();
+}
 
 /* Releases everything HttpClientInit allocated for the client - the parsed
  * response header pairs, the response and request buffers and the low-level
@@ -213,7 +362,29 @@ if(v)fn(&sHttpFreeBufBufferName,v,0);
 MI_CpuFill8(arg1,0,16);
 }
 
-s32 HttpBufferGrow(s32 a,void *arg,s32 c){extern M2C_UNK sHttpAllocNewptrName;extern M2C_UNK sHttpFreeBufBufferName;void MI_CpuCopy8(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&sHttpAllocNewptrName,b[3]+c);if(!p)return 0;MI_CpuCopy8(b[0],p,b[3]);freep(&sHttpFreeBufBufferName,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
+s32 HttpBufferGrow(s32 client, void *arg, s32 extra) {
+    /* Grow the HTTP request buffer by `extra` bytes: allocate a larger buffer
+     * through the client's alloc callback, copy the old contents over, free the
+     * old buffer, and adjust the descriptor's pointers.  Returns 1 on success,
+     * 0 when the request is empty or the allocation fails. */
+    extern M2C_UNK sHttpAllocNewptrName; extern M2C_UNK sHttpFreeBufBufferName;
+    void MI_CpuCopy8(s32, s32, s32);
+    s32 *buf = arg;
+    void (*freeBuf)(void *, s32, s32) = M2C_FIELD(client, void (**)(void *, s32, s32), 0x1014);
+    s32 (*allocBuf)(void *, s32) = M2C_FIELD(client, s32 (**)(void *, s32), 0x1010);
+    s32 p;
+    if (extra <= 0) return 0;
+    p = allocBuf(&sHttpAllocNewptrName, buf[3] + extra);
+    if (!p) return 0;
+    MI_CpuCopy8(buf[0], p, buf[3]);
+    freeBuf(&sHttpFreeBufBufferName, buf[0], 0);
+    if (!p) return 0;
+    buf[1] += p - buf[0];
+    buf[3] += extra;
+    buf[0] = p;
+    buf[2] = p + buf[3];
+    return 1;
+}
 
 #pragma opt_common_subs off
 /* Parse "http[s]://host[:port][/path]" from urlText into the client: copy the

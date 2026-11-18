@@ -176,9 +176,14 @@ typedef struct DS3DSpriteEngine {
 typedef struct WallpaperFileSet {
     const char *name;  /* +0x00 base name of the set's files, e.g. "wallp_bmap_s" */
     u8   sizeCode;     /* +0x04 tile size class, see SetLayerSize */
-    u8   filler_05[5];
+    u8   filler_05;
+    u16  scrollWidth;  /* +0x06 horizontal wrap threshold */
+    u16  scrollHeight; /* +0x08 vertical wrap threshold */
     s16  screenGap;    /* +0x0A added to both offsets on the second screen */
-    u32  filler_0C;
+    u8   scrollPeriod; /* +0x0C frames between scroll updates, 0 disables scrolling */
+    s8   scrollX;      /* +0x0D horizontal step */
+    s8   scrollY;      /* +0x0E vertical step */
+    u8   filler_0F;
     s16  offsetA;      /* +0x10 copied to the wallpaper object */
     s16  offsetB;      /* +0x12 copied to the wallpaper object */
 } WallpaperFileSet;

@@ -28,6 +28,10 @@
 #define DISPCNT_BG_EXT_PALETTE  0x40000000
 #define DISPCNT_OBJ_EXT_PALETTE 0x80000000
 
+/* Interrupt master enable: code saves it, writes 0 to keep interrupts off while
+ * it reads shared WFC / queue state, then restores the saved value. */
+#define REG_IME (*(volatile u16 *)0x04000208)
+
 /* 3D display control. */
 #define REG_DISP3DCNT (*(volatile u16 *)0x04000060)
 

@@ -306,9 +306,9 @@ void func_ov001_02183f6c(void) {
 #pragma opt_common_subs off
 #pragma pool_constants off
 void func_ov001_02183fa0(void) {
- u16 func_02011d58(void); M2C_UNK Ov001_FreeAlloc(M2C_UNK *); extern M2C_UNK gWfcFriendRoster; extern s32 gSaveData;
+ u16 WFC_GetPlayerMask(void); M2C_UNK Ov001_FreeAlloc(M2C_UNK *); extern M2C_UNK gWfcFriendRoster; extern s32 gSaveData;
  if(*(volatile M2C_UNK *)&gWfcFriendRoster==0)return;
- while(func_02011d58()!=0x8000){}
+ while(WFC_GetPlayerMask()!=0x8000){}
  Ov001_FreeAlloc(&gSaveData-1);
 }
 #pragma pool_constants reset

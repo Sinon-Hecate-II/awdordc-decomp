@@ -1,5 +1,6 @@
 /* 30 functions from 0x021717FC to 0x021724C0 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 void Ov001_FreeSpriteObjects(void);
 extern s32 data_ov001_02193d14;
 extern u8 data_ov001_021900e4[];
@@ -367,22 +368,27 @@ void Ov001_HideWfcIcon(void) {
  Ov001_FreeAlloc((M2C_UNK *)&gOv001WfcIcon);
 }
 
-void Ov001_WfcIconUpdate(s32 a) {
- s32 func_02011d58(void);
- s32 func_02011d78(void);
+/* Per-frame task of the ov001 Wi-Fi indicator: with interrupts masked, read the
+ * link status value (only when the WFC channel is up, i.e. WFC_GetPlayerMask
+ * didn't answer 0x8000) and load that one of the icon style's four status
+ * layouts into the sprite, then restore the OAM attribute words the layout load
+ * overwrote (same fixup Ov001_ShowWfcIcon does at creation). */
+void Ov001_WfcIconUpdate(s32 task) {
+ s32 WFC_GetPlayerMask(void);
+ s32 WFC_GetLinkStatusValue(void);
  void Ov001_LoadSpriteObjLayout(s32,s32,s32);
- volatile u16 *ime=(volatile u16 *)0x4000208;
- u16 old=*ime;
- s32 offset=0;
- s32 *p; s32 *q;
+ volatile u16 *ime=&REG_IME;
+ u16 savedIme=*ime;
+ s32 status=0;
+ s32 *attr0; s32 *attr1;
  *ime=0;
- if(func_02011d58()!=0x8000) offset=func_02011d78();
+ if(WFC_GetPlayerMask()!=0x8000) status=WFC_GetLinkStatusValue();
  (void)*ime;
- *ime=old;
- Ov001_LoadSpriteObjLayout(0,(gOv001WfcIconLayouts+M2C_FIELD(gOv001WfcIcon,s8 *,8)*4)[offset],M2C_FIELD(gOv001WfcIcon,s32 *,0));
- p=M2C_FIELD(gOv001WfcIcon,s32 **,0);
- *p=(*p&0xFE00FF00)|0xE50026;
- q=M2C_FIELD(gOv001WfcIcon,s32 **,0);
- M2C_FIELD(q,u16 *,4)=(M2C_FIELD(q,u16 *,4)&~0xC00)|0x800;
+ *ime=savedIme;
+ Ov001_LoadSpriteObjLayout(0,(gOv001WfcIconLayouts+gOv001WfcIcon->style*4)[status],M2C_FIELD(gOv001WfcIcon,s32 *,0));
+ attr0=M2C_FIELD(gOv001WfcIcon,s32 **,0);
+ *attr0=(*attr0&0xFE00FF00)|0xE50026;
+ attr1=M2C_FIELD(gOv001WfcIcon,s32 **,0);
+ M2C_FIELD(attr1,u16 *,4)=(M2C_FIELD(attr1,u16 *,4)&~0xC00)|0x800;
 }
 

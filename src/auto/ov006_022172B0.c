@@ -542,13 +542,17 @@ void func_ov006_02217de4(void *arg0) {
     }
 }
 
-void func_ov006_02217e78(void *arg0) {
-M2C_UNK StringFormat(void *,void *,s32,s32); M2C_UNK func_02084d1c(s32); M2C_UNK RenderTextLayer(void *,s32,s32,void *); s32 func_020c9244(s32,s32); s32 func_020c9268(s32,s32); 
-extern M2C_UNK data_ov006_02218dd4;
-u8 sp0[64]; s32 x,y; void *p;
-switch(M2C_FIELD(arg0,u8 *,0x3b)) {
-case 1: func_02084d1c(M2C_FIELD(arg0,s32 *,0x3c)); return;
-case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); y=func_020c9268(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); func_02084d1c(x); StringFormat(sp0,&data_ov006_02218dd4,x,y); p=(void *)CreateTextLayer(arg0); RenderTextLayer(p,2,0xcc00,sp0); M2C_FIELD(p,s32 *,0x58)|=0x400; return;
+/* Fills the map-code screen's info text according to the display kind at
+ * object+0x3b: kind 1 publishes the local online player id, kind 2 unfolds the
+ * 64-bit map code at object+0x3c/+0x40 into its PID and CRC, publishes the PID and
+ * renders "PID = %d\nCRC = %04X" in a text layer attached to the object. */
+void DrawMapCodeInfo(void *object) {
+M2C_UNK StringFormat(void *,void *,s32,s32); M2C_UNK SetOnlineLocalPlayerId(s32); M2C_UNK RenderTextLayer(void *,s32,s32,void *); s32 MapCode_GetPid(s32,s32); s32 MapCode_GetCrc(s32,s32); 
+extern M2C_UNK sMapCodeDebugFormat;
+u8 buf[64]; s32 pid,crc; void *sprite;
+switch(M2C_FIELD(object,u8 *,0x3b)) {
+case 1: SetOnlineLocalPlayerId(M2C_FIELD(object,s32 *,0x3c)); return;
+case 2: pid=MapCode_GetPid(M2C_FIELD(object,s32 *,0x3c),M2C_FIELD(object,s32 *,0x40)); crc=MapCode_GetCrc(M2C_FIELD(object,s32 *,0x3c),M2C_FIELD(object,s32 *,0x40)); SetOnlineLocalPlayerId(pid); StringFormat(buf,&sMapCodeDebugFormat,pid,crc); sprite=(void *)CreateTextLayer(object); RenderTextLayer(sprite,2,0xcc00,buf); M2C_FIELD(sprite,s32 *,0x58)|=0x400; return;
 }}
 
 void func_ov006_02217f20(void *arg0) {

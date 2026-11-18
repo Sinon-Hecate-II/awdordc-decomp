@@ -29,10 +29,10 @@ void RunAiRole2EmptyAction(void) {
         FinishAiUnitAction();
         return;
     }
-    func_ov000_02193d6c(0);
+    SelectAiRigBuildDestination(0);
     func_ov000_02191970();
-    func_ov000_02193d6c(1);
-    func_ov000_02192018();
+    SelectAiRigBuildDestination(1);
+    SelectAiPropertyDestination();
     FinishAiUnitAction();
 }
 

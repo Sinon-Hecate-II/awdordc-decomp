@@ -458,73 +458,41 @@ void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
         }
     }
 }
+typedef struct MapOverlayPalette {
+    u8 shades[32];
+} MapOverlayPalette;
+
 #pragma opt_strength_reduction off
 void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     extern s32 *gCurrentMap;
-    extern u8 data_02141008[1920];
-    extern u8 data_02141788[1920];
+    extern u8 data_02141008[];
+    extern u8 data_02141788[];
     extern u32 gFrameCounter;
-    extern const u8 data_020eb1f0[32];
-    u8 pal[32];
-    u8 *base;
-    u8 *sub;
-    s32 w;
-    s32 h;
+    extern const MapOverlayPalette data_020eb1f0;
+    MapOverlayPalette palette;
+    u8 *mapDims = (u8 *)*gCurrentMap + 0x120;
+    u16 width = M2C_FIELD(mapDims, u16 *, 0x5024);
+    u16 height = M2C_FIELD(mapDims, u16 *, 0x5026);
     s32 x;
-    s32 y;
-    s32 c;
+    u8 color;
 
-    base = *(u8 **)gCurrentMap;
-    sub = base + 0x120;
-    w = *(u16 *)((u8 *)sub + 0x5024);
-    h = *(u16 *)((u8 *)sub + 0x5026);
-    if (x0 < 0) {
-        x0 = 0;
-    }
-    if (y0 < 0) {
-        y0 = 0;
-    }
-    if (x1 > w - 1) {
-        x1 = w - 1;
-    }
-    if (y1 > h - 1) {
-        y1 = h - 1;
-    }
-    y = y0;
-    goto outer_test;
-outer:
-    x = x0;
-    goto inner_test;
-inner:
-    c = 0;
-    if (data_02141008[x * 0x28 + y] != 0) {
-        s32 i;
-        u8 *pp;
-        const u8 *qq;
-#pragma opt_strength_reduction on
-        pp = pal;
-        qq = data_020eb1f0;
-        i = 0x10;
-        do {
-            pp[0] = qq[0];
-            pp[1] = qq[1];
-            pp = pp + 2;
-            qq = qq + 2;
-            i = i - 1;
-        } while (i != 0);
-#pragma opt_strength_reduction off
-        c = pal[(gFrameCounter >> 2) & 0x1F];
-    }
-    data_02141788[x * 0x28 + y] = (u8)c;
-    x = x + 1;
-inner_test:
-    if (x <= x1) {
-        goto inner;
-    }
-    y = y + 1;
-outer_test:
-    if (y <= y1) {
-        goto outer;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > width - 1) x1 = width - 1;
+    if (y1 > height - 1) y1 = height - 1;
+
+    while (y0 <= y1) {
+        x = x0;
+        while (x <= x1) {
+            color = 0;
+            if ((data_02141008 + x * 40)[y0] != 0) {
+                palette = data_020eb1f0;
+                color = palette.shades[(gFrameCounter >> 2) & 31];
+            }
+            (data_02141788 + x * 40)[y0] = color;
+            x++;
+        }
+        y0++;
     }
 }
 #pragma opt_strength_reduction on

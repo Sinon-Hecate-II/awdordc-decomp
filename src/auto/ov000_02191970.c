@@ -1,5 +1,6 @@
 /* 2 functions from 0x02191970 to 0x0219234C (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df7e4[];
@@ -85,9 +86,82 @@ data_ov000_021df7e4[chosen&63]++;
 if(bestDistance<limit)SetMapCursor(bestX,bestY,2,0,0);
 else PlanMoveDestination(bestX,bestY);
 }
-#pragma optimization_level reset
-#pragma opt_propagation reset
-#pragma opt_common_subs reset
-#pragma opt_strength_reduction reset
-void func_ov000_02192018(void) {
+#pragma opt_strength_reduction off
+/* AI destination scan: mark every cell a two-tile infantry move can reach from one
+ * of the current player's own kind-0x11 properties, flood the acting unit's whole
+ * movement range and, among the reachable marked cells that pass the AI target
+ * checks, pick the closest one and plan the move to it. */
+void SelectAiPropertyDestination(void) {
+    void SelectMapLayer(void *);
+    void FillMapLayer(s32);
+    void FloodFillUnitRange(s32, s32, u32, s32, s32);
+    s32 IsAllyUnitAtCell(s16, s16);
+    s32 func_ov000_02178e84(s16, s16);
+    s32 func_ov000_02178778(s16, s16);
+    void PlanMoveDestination(s32, s32);
+    s32 best = 0x7fff, bestX = best - 0x8000, bestY = 0;
+    s32 x, y, scanX, scanY, distance;
+    s16 rowY;
+    u8 terrain, unitId;
+    void *map = MAP;
+    if (M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_FIRST_CARRIED)) return;
+    SelectMapLayer(map + MAP_CELL_SCORE);
+    FillMapLayer(-1);
+    SelectMapLayer(MAP + MAP_CELL_ORDER);
+    map = MAP;
+    for (y = bestY; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); ++y) {
+        for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); ++x) {
+            u8 *cell = (u8 *)map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            terrain = M2C_FIELD(cell, u8 *, MAP_CELL_TERRAIN);
+            if ((terrain & MAP_TERRAIN_KIND_MASK) == 17 && M2C_FIELD(map, u16 *, MAP_CURRENT_OWNER) == (terrain & MAP_TERRAIN_OWNER_MASK)) {
+                unitId = cell[0];
+                if (!unitId || !(M2C_FIELD(map + unitId * MAP_UNIT_STRIDE, u16 *, 0x59a8) & 1)) {
+                    FloodFillUnitRange(x, y, 1, 2, 1);
+                    map = MAP;
+                    for (scanY = 0; scanY < M2C_FIELD(map, u16 *, MAP_HEIGHT); ++scanY) {
+                        for (scanX = 0; scanX < M2C_FIELD(map, u16 *, MAP_WIDTH); ++scanX) {
+                            distance = M2C_FIELD(map + scanY * 4, s8 **, MAP_GRID)[scanX];
+                            if (distance >= 0) {
+                                u8 *target = (u8 *)map + scanX + M2C_FIELD(map + scanY * 2, u16 *, MAP_ROW_OFFSETS);
+                                M2C_FIELD(target, s8 *, MAP_CELL_SCORE) = distance;
+                            }
+                            map = MAP;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    {
+        void *unit = M2C_FIELD(map, void **, MAP_CURSOR_UNIT);
+        FloodFillUnitRange(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y), KIND(unit), 110, 1);
+    }
+    {
+    s32 x, y;
+    map = MAP;
+    for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); ++y) {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, MAP_WIDTH)) {
+            rowY = (s16)y;
+            do {
+                if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 &&
+                    M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), s8 *, MAP_CELL_SCORE) >= 0 &&
+                    !IsAllyUnitAtCell((s16)x, rowY) &&
+                    func_ov000_02178e84((s16)x, rowY) &&
+                    func_ov000_02178778((s16)x, rowY) != 1) {
+                    distance = M2C_FIELD(MAP + y * 4, s8 **, MAP_GRID)[x];
+                    if (distance <= best) {
+                        bestX = x;
+                        bestY = y;
+                        best = distance;
+                    }
+                }
+                map = MAP;
+            } while (++x < M2C_FIELD(map, u16 *, MAP_WIDTH));
+        }
+    }
+    }
+    if (bestX == -1) return;
+    PlanMoveDestination(bestX, bestY);
 }
+#pragma opt_strength_reduction reset

@@ -14,7 +14,13 @@ src/auto/ov001_0216AD74.c:
     .text start:0x0216ad74 end:0x0216bd08
 
 src/auto/ov001_0216BD08.c:
-    .text start:0x0216bd08 end:0x0216cce0
+    .text start:0x0216bd08 end:0x0216c6b8
+
+src/auto/ov001_0216C6B8.c:
+    .text start:0x0216c6b8 end:0x0216c794
+
+src/auto/ov001_0216C794.c:
+    .text start:0x0216c794 end:0x0216cce0
 
 src/auto/ov001_0216CCE0.c:
     .text start:0x0216cce0 end:0x0216dbdc

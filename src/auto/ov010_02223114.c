@@ -397,8 +397,121 @@ s32 Link_AssignPacketSequence(void *channel, void *packet, u32 seq) {
     return 1;
 }
 
-s32 func_ov010_02223b18(void *arg0, void *arg1) { (void)arg0; (void)arg1; return 0; }
-
+#pragma opt_propagation off
+#pragma optimization_level 3
+s32 func_ov010_02223b18(void *arg0, void *arg1) {
+    u64 GetSystemTick(void);
+    register void *channel = arg0;
+    register void *packet = arg1;
+    u32 seq, lastSeq;
+    s32 drift;
+    s32 reset = 0;
+    u32 elapsed;
+    s32 deviation, delay, window, margin, low, driftLimit, baseline, negativeLimit, tickDelta;
+    u64 now;
+    if (M2C_FIELD(channel, s32 *, 0x5c)) {
+        Link_ResetChannelSequence(channel, (u16)M2C_FIELD(packet, u32 *, 0x18));
+    } else {
+        if (!Link_AssignPacketSequence(channel, packet, (u16)M2C_FIELD(packet, u32 *, 0x18))) {
+            M2C_FIELD(channel, u32 *, 0x14)++;
+            return reset;
+        }
+        M2C_FIELD(channel, u32 *, 0x10) = M2C_FIELD(packet, u32 *, 0x18);
+        seq = M2C_FIELD(packet, u32 *, 0x18);
+        lastSeq = M2C_FIELD(channel, u32 *, 0x54);
+        if (lastSeq == seq) {
+            M2C_FIELD(channel, u32 *, 0x14)++;
+            return reset;
+        }
+        if (lastSeq + 1 != seq && !M2C_FIELD(packet, s32 *, 0x45c)) {
+            s32 gap = seq - lastSeq;
+            if (gap < 0) gap = -gap;
+            if (gap > 100) {
+                M2C_FIELD(channel, u32 *, 0x54) = seq;
+                return 0;
+            }
+            if (lastSeq > seq) M2C_FIELD(channel, u32 *, 0x1c)++;
+        }
+    }
+    M2C_FIELD(channel, u32 *, 0x54) = M2C_FIELD(packet, u32 *, 0x18);
+    if (M2C_FIELD(channel, u32 *, 0x4c) == 0) {
+        M2C_FIELD(channel, u32 *, 0x4c) = M2C_FIELD(packet, u32 *, 0x460);
+        M2C_FIELD(channel, u64 *, 0x44) = M2C_FIELD(packet, u64 *, 0x464);
+        M2C_FIELD(channel, u32 *, 0x6c) = 0;
+    }
+    elapsed = (M2C_FIELD(packet, u32 *, 0x460) - M2C_FIELD(channel, u32 *, 0x4c)) << 6;
+    tickDelta = M2C_FIELD(packet, u32 *, 0x464) - M2C_FIELD(channel, u32 *, 0x44);
+    drift = elapsed - tickDelta;
+    baseline = M2C_FIELD(channel, s32 *, 0x80);
+    if (baseline != 0) {
+        if (M2C_FIELD(packet, s32 *, 0x45c)) {
+            M2C_FIELD(channel, s32 *, 0x80) = drift;
+            goto timestamp;
+        }
+    } else {
+        M2C_FIELD(channel, s32 *, 0x80) = drift;
+    }
+    deviation = drift - baseline;
+    if (deviation < 0) deviation = -deviation;
+    if ((u64)(s64)deviation > (u64)(s64)((M2C_FIELD(channel, s32 *, 0x7c) + 35608) * 2) + 52365) {
+        M2C_FIELD(channel, s32 *, 0x84) = deviation / 35608 + 2;
+    }
+    if (M2C_FIELD(channel, s32 *, 0x84) <= 0) {
+        delay = M2C_FIELD(channel, s32 *, 0x7c);
+        delay += (deviation - delay) >> 4;
+        M2C_FIELD(channel, s32 *, 0x7c) = delay;
+        M2C_FIELD(channel, s32 *, 0x18) = delay;
+    }
+timestamp:
+    M2C_FIELD(packet, u64 *, 0x46c) = elapsed + M2C_FIELD(channel, u64 *, 0x44) + M2C_FIELD(channel, u32 *, 4);
+    now = GetSystemTick();
+    if (M2C_FIELD(packet, u64 *, 0x46c) + 35608 < now) return 0;
+    if (M2C_FIELD(packet, u64 *, 0x46c) > now + 523656) return 0;
+    if (M2C_FIELD(channel, s32 *, 0x84) <= 0) {
+        margin = M2C_FIELD(channel, s32 *, 0x7c) * 3;
+        window = margin / 35608;
+        if ((u32)margin > M2C_FIELD(channel, u32 *, 0x8c)) {
+            M2C_FIELD(channel, s32 *, 0x8c) = (window + 1) * 35608 + 79071;
+            M2C_FIELD(channel, s32 *, 0x88) = M2C_FIELD(channel, s32 *, 0x8c) - 53412;
+            M2C_FIELD(channel, u32 *, 4) = window * 35608 + 79071;
+            M2C_FIELD(channel, u32 *, 0x90) = 0;
+        } else if (margin < M2C_FIELD(channel, s32 *, 0x88)) {
+            M2C_FIELD(channel, u32 *, 0x90)++;
+            if (M2C_FIELD(channel, u32 *, 0x90) > 70) {
+                M2C_FIELD(channel, s32 *, 0x8c) = (window + 1) * 35608 + 79071;
+                low = window * 35608 - 17804;
+                M2C_FIELD(channel, s32 *, 0x88) = low;
+                if (low < 0) M2C_FIELD(channel, s32 *, 0x88) = 0;
+                M2C_FIELD(channel, u32 *, 4) = window * 35608 + 79071;
+                M2C_FIELD(channel, u32 *, 0x90) = 0;
+            }
+        }
+        if (M2C_FIELD(channel, u32 *, 4) > 427296) M2C_FIELD(channel, u32 *, 4) = 427296;
+        if (M2C_FIELD(channel, u32 *, 0x6c) < 16) {
+            M2C_FIELD(channel, u32 *, 0x6c)++;
+            M2C_FIELD(channel, s32 *, 0x74) = drift;
+            M2C_FIELD(channel, s32 *, 0x78) = drift;
+        } else {
+            M2C_FIELD(channel, s32 *, 0x74) = (drift + M2C_FIELD(channel, s32 *, 0x74) * 31) / 32;
+        }
+        driftLimit = M2C_FIELD(channel, s32 *, 0x78) - M2C_FIELD(channel, s32 *, 0x74);
+        M2C_FIELD(channel, s32 *, 0xc) = driftLimit;
+        negativeLimit = -0x8701;
+        if (driftLimit > 0x8701) reset = 1;
+        if (driftLimit < negativeLimit) {
+            reset = negativeLimit + 0x8700;
+            M2C_FIELD(channel, u32 *, 0x70)++;
+        }
+        if (reset) {
+            M2C_FIELD(channel, u32 *, 0x6c) = 0;
+            M2C_FIELD(channel, u32 *, 0x4c) = 0;
+        }
+    }
+    M2C_FIELD(channel, s32 *, 0x84)--;
+    return 1;
+}
+#pragma opt_propagation reset
+#pragma optimization_level reset
 s32 func_ov010_02223ec8(s32 a) {
 s32 VoiceLink_AllocContext(s32);
 extern s32 gLinkConfig;

@@ -391,37 +391,40 @@ void func_02081070(M2C_UNK arg0, M2C_UNK arg1) {
     LoadDecompressedFileBuffer(arg0, arg1, 0);
 }
 
-int func_02081080(int arg0, int arg1, int arg2, int arg3) {
-    void *sp0[18];
+/* Open the file at `path`, seek to `offset` and read `size` bytes into `dest`.
+ * Halts the system and returns 0 if the file cannot be opened, the seek fails or
+ * the read comes back short; returns 1 on success. */
+int ReadFileSection(int path, int dest, int offset, int size) {
+    void *req[18];
 
-    InitFileRequest(sp0);
-    if (OpenFileRequest(sp0, arg0) == 0) {
+    InitFileRequest(req);
+    if (OpenFileRequest(req, path) == 0) {
         SystemHalt();
         return 0;
     }
-    if (FileSeek(sp0, arg2, 0) == 0) {
+    if (FileSeek(req, offset, 0) == 0) {
         SystemHalt();
         return 0;
     }
-    if (FileRead(sp0, arg1, arg3) != arg3) {
+    if (FileRead(req, dest, size) != size) {
         SystemHalt();
         return 0;
     }
-    CloseFileRequest(sp0);
+    CloseFileRequest(req);
     return 1;
 }
 
 s32 func_02081128(M2C_UNK a,M2C_UNK b) {
- s32 func_02081080(M2C_UNK,s32,M2C_UNK,M2C_UNK);s32 func_020e34f4(M2C_UNK);
+ s32 ReadFileSection(M2C_UNK,s32,M2C_UNK,M2C_UNK);s32 func_020e34f4(M2C_UNK);
  s32 p=func_020e34f4(b);
- if(func_02081080(a,p,0,b))return p;
+ if(ReadFileSection(a,p,0,b))return p;
  HeapFreeBlock(p);return 0;
 }
 
 s32 LoadFileToSpriteBuffer(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
-    s32 func_02081080(M2C_UNK, s32, M2C_UNK, M2C_UNK);
+    s32 ReadFileSection(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    if (func_02081080(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, 0, arg2) == 0) {
+    if (ReadFileSection(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, 0, arg2) == 0) {
         return 0;
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
@@ -471,7 +474,7 @@ s32 func_020812a4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 s32 func_02081340(M2C_UNK a,s32 b,M2C_UNK c,M2C_UNK d) {
  extern void *gCur3DSpriteEngine;
- if(!func_02081080(a,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+b,c,d))return 0;
+ if(!ReadFileSection(a,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+b,c,d))return 0;
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=0x10;
  return 1;
 }

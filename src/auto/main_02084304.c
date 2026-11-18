@@ -476,7 +476,7 @@ void func_02084cc0(M2C_UNK arg0) {
 
 s32 GetOnlineLocalPlayerId(void){void *GetLocalPlayerStatus(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(GetLocalPlayerStatus(),s32 *,0x1c);return v;}
 
-void func_02084d1c(s32 arg0) {
+void SetOnlineLocalPlayerId(s32 arg0) {
     s32 GetActiveOverlay();
     void *GetLocalPlayerStatus();
     if (GetActiveOverlay() != 2) {

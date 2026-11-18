@@ -107,7 +107,7 @@ func_ov006_02217d0c kind:function(arm,size=0x1c) addr:0x02217d0c
 func_ov006_02217d28 kind:function(arm,size=0x74) addr:0x02217d28
 func_ov006_02217d9c kind:function(arm,size=0x48) addr:0x02217d9c
 func_ov006_02217de4 kind:function(arm,size=0x94) addr:0x02217de4
-func_ov006_02217e78 kind:function(arm,size=0xa8) addr:0x02217e78
+DrawMapCodeInfo kind:function(arm,size=0xa8) addr:0x02217e78
 func_ov006_02217f20 kind:function(arm,size=0xd8) addr:0x02217f20
 BuildJoinableMapList kind:function(arm,size=0x130) addr:0x02217ff8
 func_ov006_02218128 kind:function(arm,size=0x7c) addr:0x02218128
@@ -174,7 +174,7 @@ data_ov006_02218ba8 kind:data(any) addr:0x02218ba8
 data_ov006_02218bd8 kind:data(any) addr:0x02218bd8
 data_ov006_02218cd8 kind:data(any) addr:0x02218cd8
 data_ov006_02218cdc kind:data(any) addr:0x02218cdc
-data_ov006_02218dd4 kind:data(any) addr:0x02218dd4
+sMapCodeDebugFormat kind:data(any) addr:0x02218dd4
 data_ov006_02218e00 kind:bss addr:0x02218e00
 gFriendCodeInput kind:bss addr:0x02218e10
 data_ov006_02218e20 kind:bss addr:0x02218e20

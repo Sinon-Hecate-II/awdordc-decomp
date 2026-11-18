@@ -575,8 +575,8 @@ s32 func_ov009_02224140(s32 a){
 }
 
 void func_ov009_02224158(void) {
-    M2C_UNK func_02011d78();
-    func_02011d78();
+    M2C_UNK WFC_GetLinkStatusValue();
+    WFC_GetLinkStatusValue();
 }
 
 M2C_UNK SetConnectedPlayers(s32 a) {extern u16 gLinkSession; gLinkSession=a;}

@@ -321,19 +321,24 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=n;
 if(!M2C_FIELD(a,s16 *,0x34))Sprite_ResumeAnimation(a);
 }
 
-void func_020cc584(void *a) {
-extern void **gCurrentMap;
-u32 GetMapViewWidth(void);u32 GetMapViewHeight(void);
-void *p;
-if(M2C_FIELD(a,s16 *,0x3a)) {
-p=(u8 *)*gCurrentMap+0x5120;
-M2C_FIELD(*gCurrentMap,u16 *,0x52c2)=(GetMapViewWidth()>>1)+(M2C_FIELD(p,s16 *,0x28)>>4);
-p=(u8 *)*gCurrentMap+0x5120;
-M2C_FIELD(*gCurrentMap,u16 *,0x52c4)=(GetMapViewHeight()>>1)+(M2C_FIELD(p,s16 *,0x2a)>>4);
-func_020cbdbc();
-}
-Reset3DSpriteBankState();func_020c0a88();
-M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;
+/* Closing step of the battle map-view task: when the view is being closed,
+ * recentre the battle cursor's target on the middle of the shown map view, then
+ * reset the 3D sprite bank and map layer state and return the map to mode 0. */
+void CloseMapViewStep(void *a) {
+    extern void **gCurrentMap;
+    u32 GetMapViewWidth(void);u32 GetMapViewHeight(void);
+    MapViewTask *task = (MapViewTask *)a;
+    void *p;
+    if (task->unk3A) {
+        p = (u8 *)*gCurrentMap + 0x5120;   /* +0x28 is MAP_VIEW_X */
+        M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_TARGET_X) = (GetMapViewWidth() >> 1) + (M2C_FIELD(p, s16 *, 0x28) >> 4);
+        p = (u8 *)*gCurrentMap + 0x5120;   /* +0x2a is MAP_VIEW_Y */
+        M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_TARGET_Y) = (GetMapViewHeight() >> 1) + (M2C_FIELD(p, s16 *, 0x2a) >> 4);
+        func_020cbdbc();
+    }
+    Reset3DSpriteBankState();
+    func_020c0a88();
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) = 0;
 }
 
 void func_020cc62c(void) {

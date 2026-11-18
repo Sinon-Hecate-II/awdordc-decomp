@@ -7,146 +7,88 @@ static inline u32 dateDay(PackedDate *p) { return p->day; }
 static inline u32 dateHour(PackedDate *p) { return p->hour; }
 static inline u32 dateMinute(PackedDate *p) { return p->minute; }
 
-void func_020be718(void *arg0) {
-    extern M2C_UNK gGameSettings;
-    extern M2C_UNK data_0215d990;
-    extern M2C_UNK data_0215d9c0;
-    extern M2C_UNK data_0215d9d0;
-    extern M2C_UNK data_0215d9e0;
-    extern M2C_UNK data_0215d9ec;
-    extern M2C_UNK gMapSettings;
-    extern M2C_UNK gCoUnlocked;
-    extern M2C_UNK gRecordValues;
-    extern M2C_UNK data_0215dba4;
-    extern M2C_UNK data_0215771c;
-    extern M2C_UNK data_02157724;
-    extern M2C_UNK data_02157734;
-    extern M2C_UNK gListRowFlags;
-    extern M2C_UNK data_02157744;
-    extern M2C_UNK data_02157767;
-    extern M2C_UNK data_0215778a;
-    extern M2C_UNK data_021577ad;
+typedef struct { u8 bytes[7]; } SaveBytes7;
+typedef struct { u8 bytes[8]; } SaveBytes8;
+typedef struct { u8 bytes[15]; } SaveBytes15;
+typedef struct { u8 bytes[16]; } SaveBytes16;
+typedef struct { u8 bytes[35]; } SaveBytes35;
+typedef struct { u16 halfwords[7]; } SaveHalfwords14;
+typedef struct { u32 words[3]; } SaveWords12;
+typedef struct { u32 words[4]; } SaveWords16;
+typedef struct { u32 words[8]; } SaveWords32;
+typedef struct { u32 words[64]; } SaveWords256;
+typedef struct { u32 words[94]; } SaveWords376;
 
-    {
-        M2C_UNK *r1 = &gGameSettings;
-        u8 *lr = (u8 *)arg0;
-        M2C_FIELD(lr, M2C_UNK *, 0x98) = M2C_FIELD(r1, M2C_UNK *, 0x128);
-        M2C_FIELD(lr, u8 *, 0x9c) = M2C_FIELD(r1, u8 *, 0x12c);
-        M2C_FIELD(lr, u8 *, 0x9d) = M2C_FIELD(r1, u8 *, 0x12d);
-        M2C_FIELD(lr, u16 *, 0x9e) = M2C_FIELD(&data_0215d990, u16 *, 0x2e);
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0xa0;
-        u8 *src = (u8 *)&data_0215d9c0;
-        int i;
-        for (i = 0; i < 12; i++) dst[i] = src[i];
-    }
-    {
-        M2C_UNK *r0 = &data_0215d9d0;
-        M2C_UNK *r4 = (M2C_UNK *)((u8 *)arg0 + 0xb0);
-        int i;
-        for (i=0;i<4;i++) r4[i] = r0[i];
-    }
-    {
-        M2C_UNK *r0 = &data_0215d9e0;
-        M2C_UNK *r3 = (M2C_UNK *)((u8 *)arg0 + 0xc0);
-        int i;
-        for (i=0;i<3;i++) r3[i] = r0[i];
-    }
-    {
-        M2C_UNK *r9 = &data_0215d9ec;
-        M2C_UNK *r8 = (M2C_UNK *)((u8 *)arg0 + 0xcc);
-        int i;
-        for (i=0;i<8;i++) r8[i] = r9[i];
-    }
-    {
-        M2C_UNK *r7 = &gMapSettings;
-        M2C_UNK *r6 = (M2C_UNK *)((u8 *)arg0 + 0xec);
-        int i;
-        for (i=0;i<4;i++) r6[i] = r7[i];
-    }
-    {
-        u8 *r12 = (u8 *)arg0 + 0xfc;
-        u8 *r5 = (u8 *)&gCoUnlocked;
-        int i;
-        for (i=0;i<7;i++) { r12[i*2]=r5[i*2]; r12[i*2+1]=r5[i*2+1]; }
-        r12[14] = r5[14];
-    }
-    {
-        u8 *r5 = (u8 *)arg0 + 0x10c;
-        u8 *r6 = (u8 *)&gRecordValues;
-        int i;
-        for (i=0;i<376;i++) r5[i] = r6[i];
-    }
+typedef struct SaveRecordBlock {
+    u32 header[2];
+    SaveWords256 payload;
+    SaveBytes8 metadata;
+    SaveBytes8 stamp;
+} SaveRecordBlock;
 
-    /* per-index block approximately: copy data_0215dba4 stride 0x118 for 3 */
-    {
-        int idx;
-        for (idx=0; idx<3; idx++) {
-            M2C_UNK *dst = (M2C_UNK *)((u8 *)arg0 + 0x284 + idx*0x118);
-            M2C_UNK *src = (M2C_UNK *)((u8 *)&data_0215dba4 + idx*0x118);
-            int i;
-            /* first words */
-            for (i=0;i<2;i++) dst[i] = src[i];
-            /* skip detailed byte loops; keep a few */
-            (void)dst;(void)src;
-        }
-    }
+typedef struct SaveSettingsSnapshot {
+    SaveBytes8 listHeader;
+    SaveBytes16 listSelection;
+    SaveBytes8 listState;
+    SaveBytes8 listRowFlags;
+    SaveBytes35 listData[3];
+    SaveBytes7 listFooter;
+    u32 settingsWord;
+    u8 settingsByte0;
+    u8 settingsByte1;
+    u16 settingsHalfword;
+    SaveHalfwords14 settingsGroup0;
+    u8 padAE[2];
+    SaveWords16 settingsGroup1;
+    SaveWords12 settingsGroup2;
+    SaveWords32 settingsGroup3;
+    SaveWords16 mapSettings;
+    SaveBytes15 coUnlocked;
+    u8 pad10B;
+    SaveWords376 recordValues;
+    SaveRecordBlock records[3];
+} SaveSettingsSnapshot;
 
-    /* tail byte copies */
-    {
-        u8 *dst = (u8 *)arg0;
-        u8 *src = (u8 *)&data_0215771c;
-        int i;
-        for (i=0;i<4;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+void func_020be718(SaveSettingsSnapshot *save) {
+    extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
+    extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
+    extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
+    extern M2C_UNK data_0215771c, data_02157724, data_02157734, gListRowFlags;
+    extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
+    SaveRecordBlock *records = (SaveRecordBlock *)&data_0215dba4;
+    s32 i;
+
+    save->settingsWord = M2C_FIELD(&gGameSettings, u32 *, 0x128);
+    save->settingsByte0 = M2C_FIELD(&gGameSettings, u8 *, 0x12c);
+    save->settingsByte1 = M2C_FIELD(&gGameSettings, u8 *, 0x12d);
+    save->settingsHalfword = M2C_FIELD(&data_0215d990, u16 *, 0x2e);
+    save->settingsGroup0 = *(SaveHalfwords14 *)&data_0215d9c0;
+    save->settingsGroup1 = *(SaveWords16 *)&data_0215d9d0;
+    save->settingsGroup2 = *(SaveWords12 *)&data_0215d9e0;
+    save->settingsGroup3 = *(SaveWords32 *)&data_0215d9ec;
+    save->mapSettings = *(SaveWords16 *)&gMapSettings;
+    save->coUnlocked = *(SaveBytes15 *)&gCoUnlocked;
+    save->recordValues = *(SaveWords376 *)&gRecordValues;
+    for (i = 0; i < 3; i++) {
+        save->records[i].header[0] = records[i].header[0];
+        save->records[i].header[1] = records[i].header[1];
+        save->records[i].payload = records[i].payload;
+        save->records[i].metadata = records[i].metadata;
+        save->records[i].stamp = records[i].stamp;
     }
-    {
-        u8 *dst = (u8 *)arg0 + 0x08;
-        u8 *src = (u8 *)&data_02157724;
-        int i;
-        for (i=0;i<8;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0x18;
-        u8 *src = (u8 *)&data_02157734;
-        int i;
-        for (i=0;i<4;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0x20;
-        u8 *src = (u8 *)&gListRowFlags;
-        int i;
-        for (i=0;i<4;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0x28;
-        u8 *src = (u8 *)&data_02157744;
-        int i;
-        for (i=0;i<0x11;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0x4b;
-        u8 *src = (u8 *)&data_02157767;
-        int i;
-        for (i=0;i<0x11;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-        dst[0x22] = src[0x22];
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0x6e;
-        u8 *src = (u8 *)&data_0215778a;
-        int i;
-        for (i=0;i<0x11;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-        dst[0x22] = src[0x22];
-    }
-    {
-        u8 *dst = (u8 *)arg0 + 0x91;
-        u8 *src = (u8 *)&data_021577ad;
-        int i;
-        for (i=0;i<3;i++){ dst[i*2]=src[i*2]; dst[i*2+1]=src[i*2+1]; }
-        dst[6] = src[6];
-    }
+    save->listHeader = *(SaveBytes8 *)&data_0215771c;
+    save->listSelection = *(SaveBytes16 *)&data_02157724;
+    save->listState = *(SaveBytes8 *)&data_02157734;
+    save->listRowFlags = *(SaveBytes8 *)&gListRowFlags;
+    save->listData[0] = *(SaveBytes35 *)&data_02157744;
+    save->listData[1] = *(SaveBytes35 *)&data_02157767;
+    save->listData[2] = *(SaveBytes35 *)&data_0215778a;
+    save->listFooter = *(SaveBytes7 *)&data_021577ad;
 }
-
+#pragma opt_common_subs reset
+#pragma opt_strength_reduction reset
 void func_020beabc(M2C_UNK *arg0) {
     extern M2C_UNK gGameSettings;
     extern M2C_UNK data_0215d990;

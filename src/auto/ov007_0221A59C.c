@@ -128,7 +128,7 @@ M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+2*b,u16 *,0x3758)),s8 *,0x1420)=c;
 t=func_ov007_0221bd74(a,b);
 if(t<0)return;
 if(Map_CanUnitKindStandOnCell(a,b,t)!=0)return;
-func_ov007_0221bcc0(a,b);
+MapEditor_DestroyUnitAt(a,b);
 }
 
 s32 Map_CanPlaceTile(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {

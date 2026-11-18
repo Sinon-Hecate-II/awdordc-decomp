@@ -12,7 +12,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     M2C_UNK StringLength(s32);
     M2C_UNK StringCopy(M2C_UNK, s32);
     s32 StringCompare(void);
-    M2C_UNK func_0205fdbc(s8, s32);
+    M2C_UNK Qr2_SetKeyName(s8, s32);
     extern u8 gSessionPlayers[];
     extern u8 gSessionPlayerIsString[];
     extern u8 data_0213d3be[];
@@ -53,7 +53,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     }
     StringCopy(temp_r0, var_r6);
     *((volatile s32 *)(gSessionPlayerValue + temp_r4)) = var_r5;
-    func_0205fdbc(var_r7, *((volatile s32 *)(data_0213d3c0 + temp_r4)));
+    Qr2_SetKeyName(var_r7, *((volatile s32 *)(data_0213d3c0 + temp_r4)));
     return var_r7;
 }
 #pragma pop
@@ -65,7 +65,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK StringLength(s32);
     M2C_UNK StringCopy(M2C_UNK, s32);
     s32 StringCompare(void);
-    M2C_UNK func_0205fdbc(s8, s32);
+    M2C_UNK Qr2_SetKeyName(s8, s32);
     extern u8 gSessionPlayers[];
     extern u8 gSessionPlayerIsString[];
     extern u8 data_0213d3be[];
@@ -113,7 +113,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
         }
         StringCopy(temp_r0, var_r6);
         *((s32 *)(gSessionPlayerValue + temp_r4)) = var_r5;
-        func_0205fdbc((s8) var_r7, *((s32 *)(var_r8 + temp_r4)));
+        Qr2_SetKeyName((s8) var_r7, *((s32 *)(var_r8 + temp_r4)));
         return (s8) var_r7;
     }
     return 0;
