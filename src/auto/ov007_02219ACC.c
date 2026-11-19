@@ -209,6 +209,17 @@ data_ov007_02221e08=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x1c)+0
 gCur3DSpriteEngine=old;
 }
 
+typedef struct MapEditorBankFlags {
+    u16 mode : 3;
+    u16 flags : 13;
+} MapEditorBankFlags;
+
+typedef struct MapEditorPreviewPreset {
+    u16 mode;
+    u16 layerSetup;
+    u16 layers[4];
+} MapEditorPreviewPreset;
+
 void func_ov007_0221a160(void) {
     M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK func_020822b8(M2C_UNK *);
@@ -217,9 +228,9 @@ void func_ov007_0221a160(void) {
     void OpenNarcArchive(M2C_UNK);
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK, M2C_UNK);
     void LoadFileToSpriteBuffer(M2C_UNK, s32, s32);
-    s32 Get3DSpriteLayerSize(s32);
+    s32 Get3DSpriteLayerSize(u8, s32);
     void AddToU16Array(M2C_UNK, u16, s32);
-    void DrawMapPreview(M2C_UNK, M2C_UNK);
+    void DrawMapPreview(s32, s32, s32, s32);
     void CreateWallpaperSprite(s32, s32, s32);
     void InitTextTiles(s32, s32, s32);
     void LoadScenePanelPalette(s32);
@@ -230,7 +241,7 @@ void func_ov007_0221a160(void) {
     void func_020ae528(void *);
     void MapEditor_FitPreviewToMap(void);
 
-    extern u16 data_ov007_0221f508[];
+    extern const MapEditorPreviewPreset data_ov007_0221f508;
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern M2C_UNK data_ov007_022200d8;
@@ -254,16 +265,12 @@ void func_ov007_0221a160(void) {
     u16 *volatile p4;
     u16 *volatile p5;
     s32 savedEngine;
-    u16 arr[6];
-    u8 i;
+    MapEditorPreviewPreset preset;
+    s32 i;
+    s32 zero, two;
     s32 base;
 
-    arr[0] = data_ov007_0221f508[0];
-    arr[1] = data_ov007_0221f508[1];
-    arr[2] = data_ov007_0221f508[2];
-    arr[3] = data_ov007_0221f508[3];
-    arr[4] = data_ov007_0221f508[4];
-    arr[5] = data_ov007_0221f508[5];
+    preset = data_ov007_0221f508;
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
@@ -274,19 +281,19 @@ void func_ov007_0221a160(void) {
     Clear3DSpriteLayer(3);
 
     p0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *p0 &= ~7;
-    func_020822b8(arr);
+    *p0 = (u16)(*p0 & ~7);
+    func_020822b8((M2C_UNK *)&preset);
 
     p1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *p1 |= 0x10;
+    *p1 = (u16)(*p1 | 0x10);
     p2 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *p2 |= 0x20;
+    *p2 = (u16)(*p2 | 0x20);
     p3 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *p3 |= 0x40;
+    *p3 = (u16)(*p3 | 0x40);
     p4 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *p4 |= 0x80;
+    *p4 = (u16)(*p4 | 0x80);
     p5 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *p5 |= 0x100;
+    *p5 = (u16)(*p5 | 0x100);
 
     SetFileDirectory(&data_ov007_022200d8);
 
@@ -301,29 +308,37 @@ void func_ov007_0221a160(void) {
     LoadFileToSpriteBuffer(&data_ov007_02220108, 0x40, 0x180);
 
     {
-        u16 w = *M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-        s32 sh = Get3DSpriteLayerSize(w & 7);
+        MapEditorBankFlags *flags = M2C_FIELD(gCur3DSpriteEngine, MapEditorBankFlags **, 0);
+        s32 sh = Get3DSpriteLayerSize(flags->mode, 1);
         AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), (u16)sh, 0x2000);
     }
 
+    two = 2;
+    zero = 0;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3A) = 2;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x42) = 0;
-    DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3A) = two;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x42) = zero;
+    DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 1, 14);
 
     CreateWallpaperSprite(3, 0xF, 6);
-    InitTextTiles(0, 0, 1);
+    InitTextTiles(zero, zero, 1);
     LoadScenePanelPalette(1);
 
-    func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
-    func_020a9a30(1, 0, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2980);
-    func_020a9a30(1, 2, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x38) = two;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x40) = 1;
+    func_020a9a30(1, zero, two, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
+    func_020a9a30(1, zero, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2980);
+    func_020a9a30(1, two, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
 
+    i = zero;
     base = 0x158;
-    for (i = 0; i < 4; i++) {
+    do {
+        s32 dest = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + (base << 5);
         M2C_UNK ret = func_ov000_0216ce10(i + 1);
-        MI_CpuCopy32(ret, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((base + i * 4) << 5), 0x80);
-    }
+        MI_CpuCopy32(ret, dest, 0x80);
+        i++;
+        base += 4;
+    } while (i < 4);
 
     SetFrameRectPattern(0x80, 1);
 

@@ -10,7 +10,7 @@ s32 Wfc_StepMatch(void) {
     s32 Wfc_GetSessionState();
     s32 Wfc_StepFriendConnect(void *);
     s32 func_0203152c();
-    M2C_UNK func_02035244();
+    M2C_UNK Wfc_AbortNetworkSession();
     s32 state;
     u32 tmp;
     void *ctx;
@@ -50,8 +50,8 @@ s32 Wfc_StepMatch(void) {
             state = func_0203152c();
             break;
         case 14:                               /* switch 2 */
-            func_02035244();
-            func_0203514c();
+            Wfc_AbortNetworkSession();
+            Wfc_ReleaseNetwork();
             /* fallthrough */
         default:                               /* switch 2 */
             state = 0xB;
@@ -118,7 +118,7 @@ s32 func_02031480(void) {
 
 s32 func_020314ac(void *arg0) {
     s32 Wfc_FriendIdToSlot(u8);
-    M2C_UNK func_0203514c();
+    M2C_UNK Wfc_ReleaseNetwork();
     s32 func_020352ac();
     s32 func_020352ec();
     s32 temp_r0;
@@ -130,7 +130,7 @@ s32 func_020314ac(void *arg0) {
         if (M2C_FIELD(temp_r4, u8 *, 0x15) == Wfc_FriendIdToSlot(M2C_FIELD(arg0, u8 *, 0xD0D))) {
             M2C_FIELD(temp_r4, s32 *, 0x10) = func_020352ec();
         }
-        func_0203514c();
+        Wfc_ReleaseNetwork();
         if (temp_r0 == 0xB) {
             return 0xF;
         }

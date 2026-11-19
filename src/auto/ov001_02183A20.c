@@ -628,33 +628,33 @@ void StorePlayerName(u8 *arg0) {
 }
 
 void func_ov001_02184660(u8 *arg0) {
-    void func_ov001_02184ec4(u8 *, u8 *);
+    void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4c0);
+    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4c0);
 }
 
 void func_ov001_0218467c(u8 *arg0) {
-    void func_ov001_02184ec4(u8 *, u8 *);
+    void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4f0);
+    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4f0);
 }
 
 void func_ov001_02184698(u8 *arg0) {
-    void func_ov001_02184ec4(u8 *, u8 *);
+    void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4c4);
+    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4c4);
 }
 
 void func_ov001_021846b8(u8 *arg0) {
-    void func_ov001_02184ec4(u8 *, u8 *);
+    void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4c8);
+    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4c8);
 }
 
 void func_ov001_021846d8(u8 *arg0) {
-    void func_ov001_02184ec4(u8 *, u8 *);
+    void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    func_ov001_02184ec4(arg0, (u8 *)gSaveData + 0x4cc);
+    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4cc);
 }
 
 void func_ov001_021846f8(u8 *arg0) {

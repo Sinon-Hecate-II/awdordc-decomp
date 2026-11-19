@@ -396,7 +396,7 @@ void func_ov001_0217ca10(void) {
 s32 IsCodeEntryValid(void) {
 extern const u16 data_ov001_0218f848[];
 extern void *gOv001FriendCodeState;
-void func_ov001_02184ec4(void *,void *);
+void ParsePlayerCode(void *,void *);
 s32 Ov001_GetNameEntryMode(s32 *,s32);
 s32 func_0204612c(void *);
 u8 maxDigits[4]="255"; s32 entryMode; u8 code[4]; u8 *group; s32 bit,groupIndex,seenZero; u8 *base;
@@ -407,7 +407,7 @@ group=(u8 *)gOv001FriendCodeState+8+groupIndex*3;
 if(*group==32) continue;
 for(bit=0;bit<3;bit++){if(group[bit]>maxDigits[bit])return 0;if(group[bit]<maxDigits[bit])break;}
 }
-func_ov001_02184ec4((u8 *)gOv001FriendCodeState+8,code);
+ParsePlayerCode((u8 *)gOv001FriendCodeState+8,code);
 Ov001_GetNameEntryMode(&entryMode,0);
 if(entryMode==1){seenZero=0;for(groupIndex=0;groupIndex<4;groupIndex++){for(bit=0;bit<8;bit++){if(seenZero){if(code[groupIndex]&(1<<(7-bit)))return 0;}else if(!(code[groupIndex]&(1<<(7-bit))))seenZero=1;}}return 1;}
 return func_0204612c(code)!=0;

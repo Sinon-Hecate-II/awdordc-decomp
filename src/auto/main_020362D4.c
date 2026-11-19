@@ -196,7 +196,7 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 func_02006028();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
+ s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
@@ -232,7 +232,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  if(func_020346d0(gWfcMatchSession,sWfcParamWords,namesBuf,(totalLen-1)*2))goto fail;
  HeapFree(0,namesBuf,0);namesBuf=0;
  if(HttpAppendConnectionHeaders(gWfcMatchSession))goto fail;
- n=func_02006028(gSocketManager[1]);
+ n=GetThreadPriority(gSocketManager[1]);
  HttpClientStartTask(gWfcMatchSession,n-1);
  if(M2C_FIELD(gWfcMatchSession,s32 *,0x1ba4))return 1;
 fail:

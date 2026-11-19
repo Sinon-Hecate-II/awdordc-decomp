@@ -101,6 +101,18 @@ enum {
     VRAM_BANK_I = 0x100
 };
 
+/* The mask of all banks, and how many banks there are. */
+#define VRAM_BANK_MASK (VRAM_BANK_A | VRAM_BANK_B | VRAM_BANK_C | VRAM_BANK_D | \
+                        VRAM_BANK_E | VRAM_BANK_F | VRAM_BANK_G | VRAM_BANK_H | VRAM_BANK_I)
+#define VRAM_BANK_COUNT 9
+
+/* Ownership bookkeeping of the banks: which banks have been given to an owner
+ * (one bit per bank, VRAM_BANK_A..I) and, for each bank, the owner it was given
+ * to (0 when it has none).  GX_ReleaseBanksByOwner hands back the banks of one
+ * owner that are also selected in a mask. */
+extern s32 gVramBankOwnerMask; /* the VRAM_BANK_* bits of the banks that have an owner */
+extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
+
 /* A bank control value: bit 7 enables the bank, bits 0-2 pick the engine and
  * purpose (1 = main engine background), bits 3-4 the offset in 32 KiB units. */
 #define VRAM_CR_MAIN_BG(ofs) ((u8)(0x81 | ((ofs) << 3)))

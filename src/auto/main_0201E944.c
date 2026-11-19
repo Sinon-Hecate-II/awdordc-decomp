@@ -186,7 +186,7 @@ s32 func_0201ee94(void) {
 }
 
 void func_0201eed4(void) {
-    void MI_CpuFill8(void *, s32, s32);
+    void func_02007f8c(void *, s32, s32);
     void func_0201a4f8(s32);
     void func_0201a550(s32);
     void func_0201f030(void);
@@ -196,17 +196,17 @@ void func_0201eed4(void) {
     void func_0201aa74(s32, s32, s32, s32);
     s32 func_02020f30(void);
     s32 func_0201f0b4(void);
-    extern s32 gNetAllocator;
-    extern s32 gNetStackState;
+    extern s32 data_020faf98;
+    extern s32 data_02138ad0;
     extern s32 data_02138ac0;
-    extern s32 gTcpSocketConfig;
-    extern s32 gLocalIpAddress;
+    extern s32 data_020fafb8;
+    extern s32 data_021372e0;
     void *base;
     void *ctx;
     s32 tmp;
-    base = (void *)&gNetStackState;
-    ctx = (void *)gNetAllocator;
-    MI_CpuFill8(base, 0, 0x30);
+    base = (void *)&data_02138ad0;
+    ctx = (void *)data_020faf98;
+    func_02007f8c(base, 0, 0x30);
     M2C_FIELD(&data_02138ac0, s32 *, 0x14) = M2C_FIELD(ctx, s32 *, 0x18);
     M2C_FIELD(&data_02138ac0, s32 *, 0x18) = M2C_FIELD(ctx, s32 *, 0x1C);
     M2C_FIELD(&data_02138ac0, s32 *, 0x20) = (s32)func_0201f0b4;
@@ -226,10 +226,10 @@ void func_0201eed4(void) {
         if (v30 == 0) v30 = 0x240;
         r12 = v30 - 0x28;
         if (lr == 0) lr = 0x10C0;
-        M2C_FIELD(&gTcpSocketConfig, s16 *, 0x2) = (s16)lr;
-        M2C_FIELD(&gTcpSocketConfig, s16 *, 0x4) = (s16)((lr + (lr >> 31)) >> 1);
+        M2C_FIELD(&data_020fafb8, s16 *, 0x2) = (s16)lr;
+        M2C_FIELD(&data_020fafb8, s16 *, 0x4) = (s16)((lr + (lr >> 31)) >> 1);
         M2C_FIELD(base, s32 *, 0x24) = r12;
-        M2C_FIELD(&gLocalIpAddress, s32 *, 0x0) = 0;
+        M2C_FIELD(&data_021372e0, s32 *, 0x0) = 0;
         if (M2C_FIELD(ctx, s32 *, 0x0) != 0) {
             M2C_FIELD(base, s32 *, 0x0) = 0;
             M2C_FIELD(base, s32 *, 0xC) = (s32)func_0201f09c;

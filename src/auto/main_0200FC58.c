@@ -622,22 +622,22 @@ void SaveDevice_FinishTransfer(void) {
 }
 
 void func_02010b1c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5, s32 arg6) {
-    extern u32 gSaveDeviceCommand[];
-    extern void *gSaveDeviceState;
+    extern u32 data_02130420[];
+    extern void *data_0212fde0;
     extern u32 data_02130400[];
-    extern M2C_UNK gSocketManager;
+    extern M2C_UNK data_0212dca4;
     void func_0200fd78(void);
-    s32 OS_DisableInterrupts(void);
-    void OS_RestoreInterrupts(s32);
-    void OS_SleepThread(void *);
-    s32 DmaStopChannel(s32);
+    s32 func_0200751c(void);
+    void func_02007530(s32);
+    void func_02005da4(void *);
+    s32 func_02007ca4(s32);
     s32 func_020107ac(void *);
     void func_02010c78(void);
     void func_0200fb0c(void *);
-    void SaveDevice_FinishTransfer(void);
+    void func_02010a84(void);
 
-    void *r4 = gSaveDeviceCommand;
-    void *r5 = &gSaveDeviceState;
+    void *r4 = data_02130420;
+    void *r5 = &data_0212fde0;
     u32 r10 = arg0;
     s32 r9 = arg1;
     s32 r8 = arg2;
@@ -646,10 +646,10 @@ void func_02010b1c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5,
     s32 r;
 
     func_0200fd78();
-    state = OS_DisableInterrupts();
+    state = func_0200751c();
     goto test;
 loop:
-    OS_SleepThread((u8 *)r5 + 0x10c);
+    func_02005da4((u8 *)r5 + 0x10c);
 test:
     if (M2C_FIELD(r5, volatile u32 *, 0x114) & 4) goto loop;
     {
@@ -659,7 +659,7 @@ test:
     }
     M2C_FIELD(r5, s32 *, 0x38) = arg4;
     M2C_FIELD(r5, void **, 0x3c) = arg5;
-    OS_RestoreInterrupts(state);
+    func_02007530(state);
     {
         u32 *_dp = data_02130400;
         M2C_FIELD(r5, u32 *, 0x28) = r10;
@@ -671,7 +671,7 @@ test:
     }
     M2C_FIELD(r5, u32 *, 0x24) = r7;
     if (r10 <= 3) {
-        DmaStopChannel(r10);
+        func_02007ca4(r10);
     }
     r = func_020107ac(r4);
     if (r != 0) {
@@ -682,10 +682,10 @@ test:
         return;
     }
     if (arg6 != 0) {
-        func_0200fb0c((void *)SaveDevice_FinishTransfer);
+        func_0200fb0c((void *)func_02010a84);
         return;
     }
-    M2C_FIELD(r5, u32 *, 0x104) = M2C_FIELD(&gSocketManager, u32 *, 4);
-    SaveDevice_FinishTransfer();
+    M2C_FIELD(r5, u32 *, 0x104) = M2C_FIELD(&data_0212dca4, u32 *, 4);
+    func_02010a84();
 }
 

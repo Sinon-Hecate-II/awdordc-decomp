@@ -124,84 +124,80 @@ extern M2C_UNK data_ov000_021b67cc;
 return *(s32 *)((u8 *)&data_ov000_021b67cc+i*8);
 }
 
-s32 func_ov000_0216a5ac(s32 arg0) {
+/* Find the player's favourite record of group 1: each record's value times its
+ * weight (at +0x18), the highest wins.  With byGroup clear it instead returns
+ * the group (record +0x06, 0..2) whose records add up to the highest total.
+ * -1 when no record of the group has a value yet. */
+s32 GetFavouriteRecord(s32 byGroup) {
     s32 GetRecordDefinition(s32, s32);
     u32 GetRecordValue(s32, s32);
 
-    s32 *p;
-    s32 i;
-    u32 flag;
-    unsigned long long total2;
-    unsigned long long total0;
-    unsigned long long total1;
-    unsigned long long best;
-    u32 n;
-    u8 byte;
-    s16 mode;
-    s8 bestIndex;
+    s32 index;
+    u64 group2Total;
+    u64 group0Total;
+    u64 group1Total;
+    long long bestIndex;
+    u64 bestValue;
+    u32 empty;
+    s32 *record;
+    u32 value;
+    u8 weight;
+    s16 group;
 
-    p = (s32 *)0;
-    i = 0;
-    flag = 1;
-    total0 = 0;
-    total1 = 0;
-    total2 = 0;
-    best = 0;
+    group0Total = 0;
+    empty = 1;
+    group1Total = 0;
+    group2Total = 0;
     bestIndex = 0;
+    bestValue = 0;
+    index = 0;
 
-    p = (s32 *)GetRecordDefinition(1, 0);
-    while (*p != 0) {
-        n = GetRecordValue(1, i);
-        if (n != 0) {
-            flag = 0;
+    record = (s32 *)GetRecordDefinition(1, index);
+    while (*record != 0) {
+        value = GetRecordValue(1, index);
+        if (value != 0) {
+            empty = 0;
         }
-        byte = *(u8 *)((u8 *)GetRecordDefinition(1, i) + 0x18);
-        n = n * byte;
-        mode = *(s16 *)((u8 *)GetRecordDefinition(1, i) + 6);
-        switch (mode) {
+        weight = *(u8 *)((u8 *)GetRecordDefinition(1, index) + 0x18);
+        value = value * weight;
+        group = *(s16 *)((u8 *)GetRecordDefinition(1, index) + 6);
+        switch (group) {
             case 0:
-                total0 = total0 + n;
+                group0Total = group0Total + value;
                 break;
             case 1:
-                total1 = total1 + n;
+                group1Total = group1Total + value;
                 break;
             case 2:
-                total2 = total2 + n;
+                group2Total = group2Total + value;
                 break;
         }
-        if ((unsigned long long)n > best) {
-            best = n;
-            bestIndex = i;
+        if ((unsigned long long)value > bestValue) {
+            bestIndex = index;
+            bestValue = value;
         }
-        i = i + 1;
-        p = (s32 *)((u8 *)p + 0x30);
+        index = index + 1;
+        record = (s32 *)((u8 *)record + 0x30);
     }
 
-    if (arg0 != 0) {
-        if (flag != 0) {
+    if (byGroup == 0) {
+        if (empty != 0) {
             return -1;
         }
-        return bestIndex;
-    }
-    if (flag != 0) {
-        return -1;
-    }
-    if (total0 < total1) {
-        if (total1 < total2) {
-            return 2;
+        if (group0Total >= group1Total && group0Total >= group2Total) {
+            return 0;
         }
-        return 1;
-    } else {
-        if (total0 < total2) {
-            return 2;
+        if (group1Total >= group0Total && group1Total >= group2Total) {
+            return 1;
         }
-        return 0;
+        return 2;
     }
+    return empty ? -1 : (s8)bestIndex;
 }
 
 void func_ov000_0216a76c(void) {
-    M2C_UNK func_ov000_0216a5ac(M2C_UNK);
-    func_ov000_0216a5ac(0);
+    M2C_UNK GetFavouriteRecord(M2C_UNK);
+    GetFavouriteRecord(0);
 }
 
 s32 func_ov000_0216a77c(s32 a) {
@@ -211,7 +207,7 @@ table=data_ov000_021aabb0;return table.values[a];
 }
 
 void func_ov000_0216a7c4(void) {
-    func_ov000_0216a5ac(1);
+    GetFavouriteRecord(1);
 }
 
 s32 func_ov000_0216a7d4(s32 a) {

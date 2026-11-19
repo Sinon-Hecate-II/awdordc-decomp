@@ -162,14 +162,17 @@ void UpdateSaveChecksums(s32 a) {
  Ov001_FreeAlloc(&ptr);
 }
 #pragma pop
-void func_ov001_02184ec4(u8 *a,u8 *b) {
+/* Parse a 12-character player code into its four 3-character groups (values
+ * [0..3]): each group is copied into a buffer whose leading zero bytes are
+ * turned into spaces so the number parser stops there, then parsed. */
+void ParsePlayerCode(u8 *text,u8 *values) {
 M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32); s32 ParseInt(void *);
-u8 buf[4]; s32 i,j,offset; u8 *p;
-MI_CpuFill8(buf,0,4);
+u8 digits[4]; s32 i,j,offset; u8 *p;
+MI_CpuFill8(digits,0,4);
 for(i=0,offset=0;i<4;i++,offset+=3) {
-MI_CpuCopy8(a+offset,buf,3);
-for(j=0,p=buf;j<3;j++) { if(*p) break; *p++=32; }
-b[i]=ParseInt(buf);
+MI_CpuCopy8(text+offset,digits,3);
+for(j=0,p=digits;j<3;j++) { if(*p) break; *p++=32; }
+values[i]=ParseInt(digits);
 }
 }
 

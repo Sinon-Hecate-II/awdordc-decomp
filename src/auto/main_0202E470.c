@@ -532,13 +532,13 @@ u8 func_0202f248(void) {
 s32 Wfc_EndSession(void) {
  u32 Wfc_GetSessionState();
  void Wfc_FreeWorkBlocks(void);
- void func_020301dc(u8 *);
+ void Wfc_AdvanceSessionState(u8 *);
  void Wfc_PublishState(u32);
  u8 n=Wfc_GetSessionState();
  if(n==0 || n==18) {
  Wfc_FreeWorkBlocks(); return 1;
  }
- func_020301dc(&n);Wfc_PublishState(n);return 0;
+ Wfc_AdvanceSessionState(&n);Wfc_PublishState(n);return 0;
 }
 
 void Wfc_SetSlotImage(s32 arg0, M2C_UNK arg1) {

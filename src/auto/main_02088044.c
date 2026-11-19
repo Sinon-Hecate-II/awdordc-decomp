@@ -352,6 +352,20 @@ typedef struct SpriteFadeWord {
     u32 alpha : 6;
 } SpriteFadeWord;
 
+static inline void ApplySpriteBlend(s32 alpha, s32 complement) {
+    extern void *gCur3DSpriteEngine;
+    u16 *volatile flags;
+    void *engine;
+    flags = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *flags = (*flags & ~0xC0) | 0x40;
+    engine = *(void **)gCur3DSpriteEngine;
+    M2C_FIELD(engine, u8 *, 0x51) = (u8)alpha;
+    engine = *(void **)gCur3DSpriteEngine;
+    M2C_FIELD(engine, u8 *, 0x52) = (u8)complement;
+}
+
+
+#pragma scheduling off
 void UpdateSpriteFade(void *arg0) {
     void Show3DSprite(void *);
     void Hide3DSprite(void *);
@@ -368,12 +382,10 @@ void UpdateSpriteFade(void *arg0) {
     u16 *volatile flags7;
     u16 *volatile flags8;
     u16 *volatile flags9;
-    u16 *volatile flags10;
     void *previousEngine;
     void *engine;
     void *chosen;
     s32 visibility;
-    u32 field40;
     int i;
     s32 top2;
     s32 category;
@@ -387,13 +399,10 @@ void UpdateSpriteFade(void *arg0) {
     }
         M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(M2C_FIELD(arg0, u8 *, 0x4b) + 1);
         visibility = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x4b), M2C_FIELD(arg0, u8 *, 0x4a));
-        field40 = M2C_FIELD(arg0, u32 *, 0x40);
-        field40 = (field40 & ~0xFC000000U) | ((u32)visibility << 26);
-        M2C_FIELD(arg0, u32 *, 0x40) = field40;
+        M2C_FIELD(arg0, SpriteFadeWord *, 0x40).alpha = visibility;
         if ((((u32)M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) == 2) {
-            field40 = M2C_FIELD(arg0, u32 *, 0x40);
-            field40 = (field40 & ~0xFC000000U) | ((16U - (field40 >> 26)) << 26);
-            M2C_FIELD(arg0, u32 *, 0x40) = field40;
+            M2C_FIELD(arg0, SpriteFadeWord *, 0x40).alpha =
+                16 - M2C_FIELD(arg0, SpriteFadeWord *, 0x40).alpha;
         }
 
     previousEngine = gCur3DSpriteEngine;
@@ -457,15 +466,8 @@ void UpdateSpriteFade(void *arg0) {
         *flags9 = (u16)(*flags9 & ~0x1000);
 
         {
-            int top6 = (int)(M2C_FIELD(arg0, u32 *, 0x40) >> 26);
-            int complement = 16 - top6;
-            engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-            flags10 = (u16 *)((u8 *)engine + 0x12);
-            *flags10 = (u16)((*flags10 & ~0xC0) | 0x40);
-            engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-            M2C_FIELD(engine, u8 *, 0x51) = (u8)top6;
-            engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-            M2C_FIELD(engine, u8 *, 0x52) = (u8)complement;
+            s32 alpha = M2C_FIELD(arg0, SpriteFadeWord *, 0x40).alpha;
+            ApplySpriteBlend(alpha, 16 - alpha);
         }
     }
 
@@ -478,7 +480,7 @@ void UpdateSpriteFade(void *arg0) {
     }
         M2C_FIELD(arg0, u8 *, 0x48) = (u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30);
 }
-
+#pragma scheduling reset
 /* Animate a shown 3D sprite actor's slide: count the frames of the current
  * slide and ease its position from the slide origin to the target with an
  * EASE_OUT_QUAD (4) curve, then finish the slide's show/hide step. */

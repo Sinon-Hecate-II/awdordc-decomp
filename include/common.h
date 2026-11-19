@@ -664,11 +664,15 @@ typedef struct RecordsScreen {
 typedef struct RecordDefinition {
     u32 present;        /* +0x00 nonzero while the entry is in use */
     u16 id;             /* +0x04 id of the unit/event the record counts */
-    u16 pad06;
+    u16 group;          /* +0x06 group (0..2) the record's counts add up in */
     u32 bronze;         /* +0x08 tier 1 threshold */
     u32 silver;         /* +0x0C tier 2 threshold */
     u32 gold;           /* +0x10 tier 3 threshold */
-    u8 pad14[0x1C];
+    u32 value;          /* +0x14 id describing what the record's value holds */
+    u8 weight;          /* +0x18 how much one count weighs when picking a favourite */
+    u8 pad19[3];
+    u32 tierText[3];    /* +0x1C text ids of the three tiers' descriptions */
+    u8 pad28[8];
 } RecordDefinition;     /* 0x30 bytes */
 
 /* Panels of the ov000 map info window (the box that follows the map cursor). */
@@ -1335,6 +1339,13 @@ typedef struct MbBootState {
 #define MB_JOB_SECOND       0x04 /* void (*)(void *job): runs after the job's first callback */
 #define MB_JOB_RESULT       0x08 /* s32 result the first callback returned */
 #define MB_JOB_REST         0x0C /* s32[6] */
+
+/* Priority codes a queued multiboot job may use besides 0..MB_TASK_PRIORITY_MIN:
+ * an absolute value, or one relative to the worker thread's current priority. */
+#define MB_TASK_PRIORITY_MIN     31 /* lowest priority value a request may use */
+#define MB_TASK_PRIORITY_HIGHER  32 /* one step above the worker's current priority */
+#define MB_TASK_PRIORITY_LOWER   33 /* one step below the worker's current priority */
+#define MB_TASK_PRIORITY_SAME    34 /* the worker's current priority */
 
 /* The game group id a download-play parent advertises in its beacon: a value
  * from MB_GROUP_ID_COUNT ids starting at MB_GROUP_ID_FIRST, picked from the

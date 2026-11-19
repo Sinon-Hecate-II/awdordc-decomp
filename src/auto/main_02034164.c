@@ -3,6 +3,7 @@
 typedef struct Callbacks3506c { void *(*alloc)(void *,int); int b,c; } Callbacks3506c;
 extern M2C_UNK gWfcNet, data_020fb7dc, data_020fb7f0;
 extern M2C_UNK sHttpHeaderLineFormat, gHttpHeaderEnd, data_020fb680, data_020fb684;
+extern M2C_UNK sHttpHeaderNameFreeTag, sHttpHeaderValueFreeTag;
 typedef struct Pair02034164 {s32 first, second;} Pair02034164;
 typedef struct Buffer02034164 { s32 start, current, end, size; } Buffer02034164;
 typedef struct Unk02034164 {
@@ -500,17 +501,19 @@ c[n]=0;return n;
 #pragma optimize_ifs reset
 s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 FindHttpHeader(void *,s32);s32 StringLength(s32);void StringCopy(void *,s32);s32 p=FindHttpHeader(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;StringCopy(c,p);return 1;}
 
+/* Frees every name and value string held in an HTTP header pair table and
+ * clears each pair. */
 void HttpHeaders_Free(void *arg0, void *arg1, s32 arg2) {
-extern M2C_UNK data_020fb77c; extern M2C_UNK data_020fb798;
-M2C_UNK (*fn)(M2C_UNK *,s32,s32)=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
-Pair02034164 *p=arg1;
-M2C_UNK *name1,*name2;
+Unk02034164 *client=arg0;
+Pair02034164 *entries=arg1;
+M2C_UNK (*free)(M2C_UNK *,s32,s32)=client->free;
+M2C_UNK *nameTag,*valueTag;
 s32 i=0;
 if(arg2<=0)return;
-name1=&data_020fb77c;name2=&data_020fb798;
+nameTag=&sHttpHeaderNameFreeTag;valueTag=&sHttpHeaderValueFreeTag;
 do {
-if(p[i].first){fn(name1,p[i].first,0);p[i].first=0;}
-if(p[i].second){fn(name2,p[i].second,0);p[i].second=0;}
+if(entries[i].first){free(nameTag,entries[i].first,0);entries[i].first=0;}
+if(entries[i].second){free(valueTag,entries[i].second,0);entries[i].second=0;}
 i++;}while(i<arg2);
 return;
 }

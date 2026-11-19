@@ -163,6 +163,12 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
     WFC_SESSION_STATE_LINKED     = 12, /* the link is up and its first packets are exchanged */
     WFC_SESSION_STATE_DONE       = 13  /* the link is complete; final */
 };
+
+/* Wrapper states Wfc_ProcessStep uses around the WFC library's own: the
+ * matchmaking walk and the states that end a session. */
+#define WFC_SESSION_STATE_MATCHMAKING 10 /* start the next match: build the host configuration */
+#define WFC_SESSION_STATE_HTTP        14 /* the DWC HTTP matchmaking session is open */
+#define WFC_SESSION_STATE_ENDED       18 /* the session is over; Wfc_ProcessStep frees the work blocks */
 #define WFC_SESSION_STATUS   0x2264 /* u32 status bits, set by WFC_SetStatusBits */
 /* A match tracks WFC_PLAYER_SLOT_COUNT player slots in bits 1..13 of
  * WFC_SESSION_STATUS: slot n owns bit n, and a set bit means the slot is taken. */

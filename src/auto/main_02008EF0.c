@@ -82,7 +82,7 @@ M2C_FIELD(command,s32 **,8)=gSoundCommandBufferPtr;
 EnqueueSoundCommand(command);Sound_FlushCommands(1);
 }
 #pragma opt_common_subs off
-s32 func_02009100(s32 flags){
+s32 Sound_DequeueCommand(s32 flags){
 extern M2C_UNK gSoundCommandQueueState;extern QueueNode09298 *data_0212e044[];
 s32 OS_DisableInterrupts(void);s32 func_0200982c(void);
 State09100 *state; s32 irq;QueueNode09298 *head,*tail;
@@ -109,34 +109,36 @@ OS_RestoreInterrupts(irq);
 return (s32)head;
 }
 #pragma opt_common_subs reset
-void *AllocSoundCommand(int flags){
-  void func_0200968c(void);
-  s32 Sound_FlushCommands(s32);
-  s32 func_020096fc(void);
-  void *func_020096b4(void);
-  s32 func_02009100(int);
+/* Take a free node of the ARM7 sound command queue so a command can be written
+ * into it. Bit 0 of `flags` makes it wait for one: it first discards commands
+ * that are still only queued when others are already in flight, or else flushes
+ * the queue to the ARM7, then blocks until a command has been handed over. */
+void *AllocSoundCommand(int flags) {
+    void Sound_SignalArm7(void);
+    s32 Sound_FlushCommands(s32);
+    s32 Sound_IsCommandChannelReady(void);
+    void *Sound_PopFreeCommand(void);
+    s32 Sound_DequeueCommand(int);
+    void *command;
 
-void *p;
-if(!func_020096fc())return 0;
-p=func_020096b4();
-if(p)return p;
-if(!(flags&1))return 0;
-if(func_020095ec()>0){
-while(func_02009100(0)!=0){
-}
-p=func_020096b4();
-if(p)return p;
-}
-else{
-Sound_FlushCommands(1);
-}
-func_0200968c();
-do{
-func_02009100(1);
-p=func_020096b4();
-}
-while(!p);
-return p;
+    if (!Sound_IsCommandChannelReady()) return 0;
+    command = Sound_PopFreeCommand();
+    if (command) return command;
+    if (!(flags & 1)) return 0;
+    if (Sound_CountInFlightCommands() > 0) {
+        while (Sound_DequeueCommand(0) != 0) {
+        }
+        command = Sound_PopFreeCommand();
+        if (command) return command;
+    } else {
+        Sound_FlushCommands(1);
+    }
+    Sound_SignalArm7();
+    do {
+        Sound_DequeueCommand(1);
+        command = Sound_PopFreeCommand();
+    } while (!command);
+    return command;
 }
 
 
@@ -150,15 +152,15 @@ p[3]=arg0;*arg0=0;return OS_RestoreInterrupts(s);
 #pragma opt_common_subs reset
 s32 Sound_FlushCommands(s32 flags) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
-s32 func_02009100(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
-s32 SendFifoMessage(s32,M2C_UNK,s32); void func_0200968c(void);
+s32 Sound_DequeueCommand(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
+s32 SendFifoMessage(s32,M2C_UNK,s32); void Sound_SignalArm7(void);
 extern M2C_UNK gSoundCommandQueueState; extern u8 gSoundCommandNodes[]; extern QueueNode09298 *data_0212e044[];
 s32 irq=OS_DisableInterrupts();
 
 if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
 if(((State09100*)&gSoundCommandQueueState)->pending>=8){
 if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
-do {func_02009100(1);} while(((State09100*)&gSoundCommandQueueState)->pending>=8);
+do {Sound_DequeueCommand(1);} while(((State09100*)&gSoundCommandQueueState)->pending>=8);
 if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 DC_FlushRange((M2C_UNK)gSoundCommandNodes,0x1800);
@@ -169,7 +171,7 @@ buf=gSoundCommandNodes;
 goto retry;
 again: {
 OS_RestoreInterrupts(irq);
-func_02009100(0);
+Sound_DequeueCommand(0);
 irq=OS_DisableInterrupts();
 DC_FlushRange((M2C_UNK)buf,0x1800);
 if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
@@ -190,18 +192,18 @@ if(((State09100*)&gSoundCommandQueueState)->unk18>8)((State09100*)&gSoundCommand
 ((State09100*)&gSoundCommandQueueState)->pending++;
 ((State09100*)&gSoundCommandQueueState)->unk20++;
 OS_RestoreInterrupts(irq);
-if(flags&2)func_0200968c();
+if(flags&2)Sound_SignalArm7();
 return 1;
 }
 #pragma opt_common_subs reset
 void Sound_WaitForCommand(int a) {
-void func_0200968c(void);
+void Sound_SignalArm7(void);
 if(func_02009524(a))return;
-while(func_02009100(0)){}
+while(Sound_DequeueCommand(0)){}
 if(func_02009524(a))return;
-func_0200968c();
+Sound_SignalArm7();
 if(func_02009524(a))return;
-do {func_02009100(1);}while(!func_02009524(a));
+do {Sound_DequeueCommand(1);}while(!func_02009524(a));
 }
 
 s32 Sound_GetCommandCounter(void) {
@@ -217,7 +219,7 @@ s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(
 
 s32 func_020095b0(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,8);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 
-s32 func_020095ec(void) {
+s32 Sound_CountInFlightCommands(void) {
     s32 func_02009574();
     s32 func_020095b0();
     s32 temp_r4;
@@ -230,18 +232,18 @@ void func_02009608(int unused,int arg1) {
 s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);OS_RestoreInterrupts(s);
 }
 
-void InitSoundCommandLink(void){M2C_UNK WaitCycles(M2C_UNK);s32 func_020096fc();M2C_UNK SetFifoMessageHandler(M2C_UNK,M2C_UNK *);s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);SetFifoMessageHandler(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(IsFifoMessageReady(7,1))return;do{WaitCycles(100);}while(!IsFifoMessageReady(7,1));}
+void InitSoundCommandLink(void){M2C_UNK WaitCycles(M2C_UNK);s32 Sound_IsCommandChannelReady();M2C_UNK SetFifoMessageHandler(M2C_UNK,M2C_UNK *);s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);SetFifoMessageHandler(7,(M2C_UNK *)&func_02009608);if(!Sound_IsCommandChannelReady())return;if(IsFifoMessageReady(7,1))return;do{WaitCycles(100);}while(!IsFifoMessageReady(7,1));}
 
-void func_0200968c(void) {
+void Sound_SignalArm7(void) {
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
     do {
 
     } while (SendFifoMessage(7, 0, 0) < 0);
 }
 
-void *func_020096b4(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&gSoundCommandQueueState,void **,0)=next;if(!next)M2C_FIELD(&gSoundCommandQueueState,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
+void *Sound_PopFreeCommand(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&gSoundCommandQueueState,void **,0)=next;if(!next)M2C_FIELD(&gSoundCommandQueueState,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
 
-s32 func_020096fc(void){s32 func_020062b4(void);s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 state,v,result;if(!func_020062b4())return 1;state=OS_DisableInterrupts();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;OS_RestoreInterrupts(state);if(v)result=1;else result=0;return result;}
+s32 Sound_IsCommandChannelReady(void){s32 func_020062b4(void);s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 state,v,result;if(!func_020062b4())return 1;state=OS_DisableInterrupts();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;OS_RestoreInterrupts(state);if(v)result=1;else result=0;return result;}
 
 void func_0200973c(void){extern M2C_UNK data_0212fb00;int i=0;u8 *p=(u8 *)&data_0212fb00;int zero=i;do{*(s32 *)p=zero;*(s32 *)(p+4)=zero;i++;p[8]=zero;p+=12;}while(i<8);}
 

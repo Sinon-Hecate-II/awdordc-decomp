@@ -553,20 +553,24 @@ case 8:case 9:break;
 }return M2C_FIELD(out,u8 *,0)!=0;
 }
 
-s32 func_020301dc(s32 arg0) {
- s32 Wfc_UpdateSession(void); void func_02035244(void); void func_0203514c(void);
- u8 *p=(u8 *)arg0;
- u32 v=*p;
- if(v<=10) {
- v=Wfc_UpdateSession();
- if(v==1) {*p=0; return 1;}
- if(v==-1) {*p=18;return 1;}
- } else if(v==14) {
- func_02035244();func_0203514c();*p=12;
- } else if(v<18) {
- v=func_020302f4(); if(v==1) *p=10;
- }
- return 0;
+/* Drive one step of the session state the pointer addresses: let Wfc_UpdateSession
+ * run a session that is still starting, abort the HTTP matchmaking session once
+ * it has been opened, and start a new match once the network has gone down.
+ * Returns 1 when the session has ended (state 0 or 18), 0 while it continues. */
+s32 Wfc_AdvanceSessionState(s32 stateAddress) {
+    s32 Wfc_UpdateSession(void); void Wfc_AbortNetworkSession(void); void Wfc_ReleaseNetwork(void); s32 Wfc_IsNetworkDown(void);
+    u8 *state=(u8 *)stateAddress;
+    u32 current=*state;
+    if(current<=WFC_SESSION_STATE_MATCHMAKING) {
+        current=Wfc_UpdateSession();
+        if(current==1) {*state=WFC_SESSION_STATE_NONE; return 1;}
+        if(current==-1) {*state=WFC_SESSION_STATE_ENDED;return 1;}
+    } else if(current==WFC_SESSION_STATE_HTTP) {
+        Wfc_AbortNetworkSession();Wfc_ReleaseNetwork();*state=WFC_SESSION_STATE_LINKED;
+    } else if(current<WFC_SESSION_STATE_ENDED) {
+        current=Wfc_IsNetworkDown(); if(current==1) *state=WFC_SESSION_STATE_MATCHMAKING;
+    }
+    return 0;
 }
 
 /* Drives the WFC session one step in whatever state it is in: releases a session
@@ -606,7 +610,7 @@ s32 Wfc_UpdateSession(void) {
     return 0;
 }
 
-s32 func_020302f4(void) {
+s32 Wfc_IsNetworkDown(void) {
  s32 NetworkPollClosing(void); s32 func_02021c04(void);
  s32 v;
  if(NetworkPollClosing()!=0) return 0;
@@ -615,8 +619,8 @@ s32 func_020302f4(void) {
 }
 
 s32 Wfc_StepWait(void) {
-    s32 func_020301dc(s32);
-    if (func_020301dc((s32)(Wfc_GetWorkBlock(1) + 0xA)) == 1) {
+    s32 Wfc_AdvanceSessionState(s32);
+    if (Wfc_AdvanceSessionState((s32)(Wfc_GetWorkBlock(1) + 0xA)) == 1) {
         return 0x12;
     }
     return 0x11;

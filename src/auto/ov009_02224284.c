@@ -16,6 +16,9 @@ static inline u32 ov009RestoreInterrupts(u32 saved) {
     return previous;
 }
 #pragma cplusplus on
+class Ov009LinkPeer;
+typedef void (Ov009LinkPeer::*Ov009PeerCallback)(void);
+
 class Ov009InterruptGuard {
     u32 saved;
 public:
@@ -204,7 +207,8 @@ void func_ov009_0222454c(void) {
     M2C_FIELD(&gLinkState, s32 *, 0x30) = 0;
 }
 
-s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
+#pragma cplusplus on
+extern "C" s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     s32 func_ov009_02224718(s32);
     void CopyU16(void *, void *, s32);
@@ -223,8 +227,6 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     u8 *cur;
     s32 x;
     s32 y;
-    s32 val;
-    u8 *slot;
 
     SetLinkPhase(2);
     func_ov009_02224718(arg0);
@@ -242,6 +244,7 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
         MemSet((s32)&data_ov009_02226968, value, count);
     }
 
+    sp18 = &stk[0];
     y = M2C_FIELD(&gLinkSession, s32 *, 0x24);
     x = M2C_FIELD(&gLinkSession, s32 *, 0x20);
 
@@ -252,21 +255,17 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     stk[0] = x;
     stk[1] = y;
 
-    sp18 = &stk[0];
     cur = (u8 *)&data_ov009_02226cc0;
     end = (u8 *)&data_ov009_02226fe0;
-    while (cur != end) {
-        val = sp18[1];
-        slot = cur + (val >> 1);
-        if (val & 1) {
-            void **fnTable = *(void ***)slot;
-            void (*cb)(void) = (void (*)(void))*(void **)((u8 *)fnTable + sp18[0]);
-            cb();
-        }
-        cur += 0xc8;
-    }
-    stk[6] = sp18[0];
-    stk[7] = sp18[1];
+    goto test;
+next:
+    (((Ov009LinkPeer *)cur)->*(*(Ov009PeerCallback *)sp18))();
+    cur += 0xc8;
+test:
+    if (cur != end) goto next;
+
+    stk[6] = stk[0];
+    stk[7] = stk[1];
 
     if (func_ov009_02222f84() != 0) {
         return 1;
@@ -274,7 +273,7 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     SetLinkPhase(8);
     return 0;
 }
-
+#pragma cplusplus off
 s32 func_ov009_02224688(void) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     if (GetLinkPhase() != 2) {
@@ -757,20 +756,18 @@ done:
 }
 #pragma pop
 s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 GetLinkPhase(void);
-    s32 IsLinkHost(void);
-    s32 GetConnectedPlayers(void);
-    s32 GetLinkLocalPlayerId(void);
+    M2C_UNK GetLinkPhase(void);
+    M2C_UNK IsLinkHost(void);
+    M2C_UNK GetConnectedPlayers(void);
+    M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK gLinkState;
 
-    u16 saved;
-    void *ptr;
-    u16 masked;
+    volatile u32 saved;
     s32 r5;
-    s32 first;
+    void *ptr;
 
     if (GetLinkPhase() != 4) {
         if (GetLinkPhase() != 5) {
@@ -778,37 +775,42 @@ s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
     }
     if (IsLinkHost() != 0) {
-        arg3 = arg3 & GetConnectedPlayers();
+        arg3 &= GetConnectedPlayers();
     }
-    first = GetLinkLocalPlayerId();
-    masked = (u16)(arg3 & ((1 - 2) ^ (1 << first)));
+    arg3 = (u16)(arg3 & (-1 ^ (1 << GetLinkLocalPlayerId())));
     r5 = GetLinkLocalPlayerId();
 
-    saved = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
+    {
+        u32 previous = *(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = 0;
+        saved = previous;
+    }
 
     ptr = (void *)func_ov009_0222132c((M2C_UNK)(arg2 + 0x10), 0x20);
     if (ptr == 0) {
+        u32 previous = saved;
         (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = saved;
-        return 1;
+        *(volatile u16 *)0x04000208 = previous;
+        goto done;
     }
 
     MI_CpuFill8(ptr, 0, 0x10);
-    func_ov009_02224d30((u8 *)ptr + 4, arg0, r5, 1, arg1, arg2, masked);
+    ((void *(*)(void *, s8, s32, s32, s32, s32, s32))func_ov009_02224d30)((u8 *)ptr + 4, arg0, r5, 1, arg1, arg2, arg3);
 
     if (M2C_FIELD(&gLinkState, void **, 0x68) == 0) {
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
         M2C_FIELD(&gLinkState, void **, 0x64) = ptr;
     } else {
-        M2C_FIELD(M2C_FIELD(&gLinkState, void **,0x68), void **,0) = ptr;
+        M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x68), void **, 0) = ptr;
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
     }
-    M2C_FIELD(&gLinkState, s32 *, 0x6c) =
-        M2C_FIELD(&gLinkState, s32 *, 0x6c) + 1;
-
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = saved;
+    {
+        u32 previous = saved;
+        M2C_FIELD(&gLinkState, s32 *, 0x6c)++;
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = previous;
+    }
+done:
     return 1;
 }
 

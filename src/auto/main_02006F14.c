@@ -1,9 +1,8 @@
 /* 51 functions from 0x02006F14 to 0x02007EF4 (main), found by ds-decomp. */
 #include "common.h"
 #include "dma.h"
-extern s32 data_0212dfe8;
+#include "gx.h"
 extern u32 data_0212dfbc[2];
-extern u16 data_0212dfec[10];
 typedef struct { u8 bytes[0x64]; u16 flags; } SystemInfo;
 
 void func_02006f14(void) {
@@ -402,28 +401,31 @@ void GetSystemUserProfile(void *arg0) {
 s32 func_020077c4(u32 arg0) {
     return __CLZ(arg0);
 }
-void func_020077cc(void) {
+void GX_ResetBankOwners(void) {
  s32 i=0;
- data_0212dfe8=0;
- do { data_0212dfec[i]=0; i++; } while(i<9);
+ gVramBankOwnerMask=0;
+ do { gVramBankOwners[i]=0; i++; } while(i<9);
 }
 
-void GX_ReleaseBanksByOwner(s32 arg0,s32 arg1) {
+/* Give back the banks selected in `banks` that are owned by `owner`: each one
+ * loses its owner and drops out of the owned-bank mask.  The owner tables are
+ * shared with the interrupt handlers, so they change with interrupts off. */
+void GX_ReleaseBanksByOwner(s32 banks,s32 owner) {
  u32 OS_DisableInterrupts(void);
  void OS_RestoreInterrupts(u32);
  s32 func_020077c4(u32);
- s32 bits;
+ s32 remaining;
  u32 state;
  s32 index,mask;
  state=OS_DisableInterrupts();
- bits=arg0 & data_0212dfe8 & 0x1ff;
+ remaining=banks & gVramBankOwnerMask & VRAM_BANK_MASK;
 
  loop:
- index=31-func_020077c4(bits);
+ index=31-func_020077c4(remaining); /* highest remaining bank bit, -1 when none */
  if(index>=0) {
  mask=~(1<<index);
- bits &= mask;
- if(arg1==data_0212dfec[index]) {data_0212dfec[index]=0; data_0212dfe8 &= mask;}
+ remaining &= mask;
+ if(owner==gVramBankOwners[index]) {gVramBankOwners[index]=0; gVramBankOwnerMask &= mask;}
  goto loop;
  }
  OS_RestoreInterrupts(state);

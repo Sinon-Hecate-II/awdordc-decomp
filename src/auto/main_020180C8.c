@@ -183,7 +183,7 @@ void func_02018584(void *r7) {
     void OS_RestoreInterrupts(s32);
     void SetThreadPriority(void *, s32);
     void OS_SleepThread(s32);
-    s32 func_02006028(void *);
+    s32 GetThreadPriority(void *);
     void func_02005bbc(void);
 
     s32 saved;
@@ -210,7 +210,7 @@ void func_02018584(void *r7) {
         saved = OS_DisableInterrupts();
         r6 = (void (*)(void *))(*(void **)((u8 *)r4 + 0xc));
         {
-            s32 val = func_02006028(r7);
+            s32 val = GetThreadPriority(r7);
             s32 adj;
             void *p = *(void **)((u8 *)r7 + 0xc0);
             if (p == (void *)0) {
@@ -284,63 +284,67 @@ typedef struct MbWorkerRequest {
     struct MbWorkerRequest *next;
     u32 queued : 1;
     u32 priority : 31;
-    s32 callback;
-    s32 argument;
+    void (*run)(void *request);
+    void (*finish)(void *request);
 } MbWorkerRequest;
 
-void Mb_QueueTask(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
+/* Queue a job on the multiboot worker: resolve its priority (codes 32..34
+ * select a priority relative to the worker thread's own), fill in the job
+ * record, then link it into the worker's priority-ordered queue and wake the
+ * worker.  The worker's own job record ends the worker when it runs. */
+void Mb_QueueTask(M2C_UNK requestNode, s32 run, M2C_UNK finish, s32 requestedPriority) {
     extern s32 gMbWorkerTask;
     s32 Mb_IsTaskCreated(void);
-    s32 func_02006028(void *);
+    s32 GetThreadPriority(void *);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void TaskWake(M2C_UNK);
-    void *base;
+    void *worker;
     s32 saved;
     MbWorkerRequest *request;
     MbWorkerRequest *prev, *next;
     u32 priority;
 
-    base = (void *)gMbWorkerTask;
-    request = (MbWorkerRequest *)arg0;
-    priority = arg3;
+    worker = (void *)gMbWorkerTask;
+    request = (MbWorkerRequest *)requestNode;
+    priority = requestedPriority;
     if (!Mb_IsTaskCreated() || request->queued) {
         return;
     }
-    if (priority > 31) {
-        u32 current = func_02006028(base);
-        if (priority == 32) {
+    if (priority > MB_TASK_PRIORITY_MIN) {
+        u32 current = GetThreadPriority(worker);
+        if (priority == MB_TASK_PRIORITY_HIGHER) {
             priority = current != 0 ? current - 1 : 0;
-        } else if (priority == 33) {
-            priority = current < 31 ? current + 1 : 31;
-        } else if (priority == 34) {
+        } else if (priority == MB_TASK_PRIORITY_LOWER) {
+            priority = current < MB_TASK_PRIORITY_MIN ? current + 1 : MB_TASK_PRIORITY_MIN;
+        } else if (priority == MB_TASK_PRIORITY_SAME) {
             priority = current;
         } else {
-            priority = 31;
+            priority = MB_TASK_PRIORITY_MIN;
         }
     }
 
     saved = OS_DisableInterrupts();
     request->queued = 1;
     request->priority = priority;
-    request->callback = arg1;
-    request->argument = arg2;
-    if (M2C_FIELD(base, MbWorkerRequest *volatile *, 0xc0) == NULL) {
-        if (request == (MbWorkerRequest *)((u8 *)base + 0xc4)) {
+    request->run = (void (*)(void *))run;
+    request->finish = (void (*)(void *))finish;
+    if (M2C_FIELD(worker, MbWorkerRequest *volatile *, MB_TASK_JOB) == NULL) {
+        if (request == (MbWorkerRequest *)((u8 *)worker + MB_TASK_JOB_BLOCK)) {
             gMbWorkerTask = 0;
         }
-        M2C_FIELD(base, MbWorkerRequest **, 0xc0) = request;
-        TaskWake((M2C_UNK)base);
+        M2C_FIELD(worker, MbWorkerRequest **, MB_TASK_JOB) = request;
+        TaskWake((M2C_UNK)worker);
     } else {
-        prev = M2C_FIELD(base, MbWorkerRequest *volatile *, 0xc0);
-        if (request == (MbWorkerRequest *)((u8 *)base + 0xc4)) {
+        prev = M2C_FIELD(worker, MbWorkerRequest *volatile *, MB_TASK_JOB);
+        if (request == (MbWorkerRequest *)((u8 *)worker + MB_TASK_JOB_BLOCK)) {
             while (prev->next != NULL) {
                 prev = prev->next;
             }
             prev->next = request;
             gMbWorkerTask = 0;
         } else if (priority < prev->priority) {
-            M2C_FIELD(base, MbWorkerRequest **, 0xc0) = request;
+            M2C_FIELD(worker, MbWorkerRequest **, MB_TASK_JOB) = request;
             request->next = prev;
         } else {
             goto checkNext;

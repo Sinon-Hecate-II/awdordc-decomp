@@ -24,7 +24,7 @@ thread->priority=priority;InsertReadyThread(thread);RescheduleThreads();}
 OS_RestoreInterrupts(state);return 1;
 }
 
-s32 func_02006028(void *arg0) {
+s32 GetThreadPriority(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x70);
 }
 
@@ -454,7 +454,7 @@ void InitArenaTable(void);
     void func_02006ce4();
     M2C_UNK func_020074c0();
     M2C_UNK func_020075b4();
-    M2C_UNK func_020077cc();
+    M2C_UNK GX_ResetBankOwners();
     M2C_UNK func_02008bb8();
     M2C_UNK func_02009d34();
     M2C_UNK Arm7CommandInit();
@@ -469,7 +469,7 @@ void InitArenaTable(void);
     func_02006ce4();
     func_02008bb8();
     func_020074c0();
-    func_020077cc();
+    GX_ResetBankOwners();
     func_02005968();
     func_020075b4();
     Mb_BootInit();

@@ -568,14 +568,14 @@ void InitSoundDriver(void) {
 }
 
 void func_0202a9f0(void) {
-    s32 func_02009100(M2C_UNK);
+    s32 Sound_DequeueCommand(M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK func_0202aeb4();
     M2C_UNK UpdateStreamVoiceVolume();
     M2C_UNK func_0202d9e4();
     do {
 
-    } while (func_02009100(0) != 0);
+    } while (Sound_DequeueCommand(0) != 0);
     func_0202aeb4();
     UpdateStreamVoiceVolume();
     func_0202d9e4();
